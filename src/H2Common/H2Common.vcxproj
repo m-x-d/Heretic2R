@@ -16,6 +16,7 @@
     <ClCompile Include="ResourceManager.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\qcommon\Angles.h" />
     <ClInclude Include="..\qcommon\H2Common.h" />
     <ClInclude Include="..\qcommon\Matrix.h" />
     <ClInclude Include="..\qcommon\q_Typedef.h" />
