@@ -20,6 +20,7 @@
     <ClInclude Include="..\qcommon\Matrix.h" />
     <ClInclude Include="..\qcommon\q_Typedef.h" />
     <ClInclude Include="..\qcommon\ResourceManager.h" />
+    <ClInclude Include="..\qcommon\Vector.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <SccProjectName />

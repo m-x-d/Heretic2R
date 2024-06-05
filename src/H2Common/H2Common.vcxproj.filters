@@ -35,5 +35,8 @@
     <ClInclude Include="..\qcommon\Matrix.h">
       <Filter>qcommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\qcommon\Vector.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
