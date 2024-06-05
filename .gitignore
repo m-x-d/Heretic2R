@@ -1,0 +1,10 @@
+/src/.vs
+/src/debug
+/src/H2Common/debug
+/src/H2Common/release
+/src/H2Common/H2Common.vcxproj.user
+/build/*.dll
+/build/*.exp
+/build/*.ilk
+/build/*.lib
+/build/*.pdb
