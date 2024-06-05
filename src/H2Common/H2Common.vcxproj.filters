@@ -26,5 +26,8 @@
     <ClInclude Include="..\qcommon\ResourceManager.h">
       <Filter>qcommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\qcommon\q_Typedef.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
