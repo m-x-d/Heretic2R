@@ -7,10 +7,24 @@
     <Filter Include="src">
       <UniqueIdentifier>{098ea8a6-bbf2-450d-be1f-169edadc9337}</UniqueIdentifier>
     </Filter>
+    <Filter Include="qcommon">
+      <UniqueIdentifier>{153830ad-1cdd-44c7-8e61-eca69c2e1fb4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="ResourceManager.c">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\qcommon\H2Common.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\ResourceManager.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

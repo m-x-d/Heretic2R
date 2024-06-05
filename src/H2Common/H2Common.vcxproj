@@ -12,6 +12,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.c" />
+    <ClCompile Include="ResourceManager.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\qcommon\H2Common.h" />
+    <ClInclude Include="..\qcommon\ResourceManager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <SccProjectName />
