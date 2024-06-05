@@ -18,6 +18,9 @@
     <ClCompile Include="ResourceManager.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="Matrix.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\H2Common.h">
@@ -27,6 +30,9 @@
       <Filter>qcommon</Filter>
     </ClInclude>
     <ClInclude Include="..\qcommon\q_Typedef.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Matrix.h">
       <Filter>qcommon</Filter>
     </ClInclude>
   </ItemGroup>

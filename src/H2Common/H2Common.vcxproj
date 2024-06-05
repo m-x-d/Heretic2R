@@ -12,10 +12,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.c" />
+    <ClCompile Include="Matrix.c" />
     <ClCompile Include="ResourceManager.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\H2Common.h" />
+    <ClInclude Include="..\qcommon\Matrix.h" />
     <ClInclude Include="..\qcommon\q_Typedef.h" />
     <ClInclude Include="..\qcommon\ResourceManager.h" />
   </ItemGroup>
