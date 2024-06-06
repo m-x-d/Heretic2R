@@ -19,7 +19,7 @@ H2COMMON_API void Matrix3MultByMatrix3(const matrix3_t a, const matrix3_t b, mat
 H2COMMON_API void Matrix3MultByVec3(const matrix3_t a, const vec3_t b, vec3_t out);
 H2COMMON_API void Matrix3FromAngles(const vec3_t angles, matrix3_t rotationMatrix);
 H2COMMON_API void IMatrix3FromAngles(const vec3_t angles, matrix3_t rotationMatrix);
-H2COMMON_API void Matrixs3FromDirAndUp(const vec3_t direction, const vec3_t up, matrix3_t toLocal, matrix3_t fromLocal); //TODO: typo in function name. Rename?
+//H2COMMON_API void Matrixs3FromDirAndUp(const vec3_t direction, const vec3_t up, matrix3_t toLocal, matrix3_t fromLocal); //mxd. Missing function definition
 H2COMMON_API double Matricies3FromDirAndUp(const vec3_t direction, const vec3_t up, matrix3_t toWorld, matrix3_t partialToLocal); //TODO: typo in function name. Rename?
 H2COMMON_API void RotatePointAboutLocalOrigin(const matrix3_t rotation, const vec3_t origin, vec3_t point);
 H2COMMON_API void TransformPoint(const matrix3_t rotation, const vec3_t origin, const vec3_t newOrigin, vec3_t point);

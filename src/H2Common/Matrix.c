@@ -5,6 +5,7 @@
 //
 
 #include "Matrix.h"
+#include "Vector.h"
 #include <math.h>
 #include <string.h>
 
@@ -118,54 +119,6 @@ H2COMMON_API void IMatrix3FromAngles(const vec3_t angles, matrix3_t rotationMatr
 	Matrix3MultByMatrix3(m_roll, m_tmp, rotationMatrix);
 }
 
-//TODO: remove after adding Vector.h!!!
-H2COMMON_API float Vec3Normalize(vec3_t v1);
-
-//mxd. Decompiled logic does NOT match with CMatrix::Matrixs3FromDirAndUp from Tools/qMView!
-H2COMMON_API void Matrixs3FromDirAndUp(const vec3_t direction, const vec3_t up, matrix3_t toLocal, matrix3_t fromLocal)
-{
-	vec3_t v_pitch, v_rotated_up;
-	matrix3_t m_pitch, m_yaw, m_pitchyaw, m_tmp;
-
-	float pitch = asinf(direction[2]);
-	if (HACK_Pitch_Adjust && direction[0] < 0.0f)
-		pitch = (float)M_PI - pitch;
-
-	CreatePitchMatrix(m_pitch, -pitch);
-	Matrix3MultByVec3(m_pitch, direction, v_pitch);
-
-	float yaw = 0.0f;
-	if (direction[0] != 0.0f)
-		yaw = atan2f(v_pitch[1], v_pitch[0]);
-
-	CreateYawMatrix(m_yaw, yaw);
-	Matrix3MultByMatrix3(m_pitch, m_yaw, m_pitchyaw);
-
-	Matrix3MultByVec3(m_pitchyaw, up, v_rotated_up);
-	v_rotated_up[0] = 0.0f;
-	Vec3Normalize(v_rotated_up);
-
-	memset(m_tmp, 0, sizeof(matrix3_t));
-	m_tmp[0][0] = 1.0f;
-
-	const float roll = -(atan2f(v_rotated_up[2], v_rotated_up[1]) - ANGLE_90);
-
-	m_tmp[1][1] = cosf(roll);
-	m_tmp[2][2] = cosf(roll);
-
-	m_tmp[1][2] = sinf(roll);
-	m_tmp[2][1] = -sinf(roll);
-
-	Matrix3MultByMatrix3(m_tmp, m_pitchyaw, toLocal);
-
-	if (fromLocal != NULL)
-	{
-		CreatePitchMatrix(m_pitch, pitch);
-		CreateYawMatrix(m_yaw, -yaw);
-		Matrix3MultByMatrix3(m_yaw, m_pitch, fromLocal);
-	}
-}
-
 //mxd. Decompiled logic does NOT match with CMatrix::Matricies3FromDirAndUp from Tools/qMView!
 H2COMMON_API double Matricies3FromDirAndUp(const vec3_t direction, const vec3_t up, matrix3_t toWorld, matrix3_t partialToLocal)
 {
@@ -193,7 +146,7 @@ H2COMMON_API double Matricies3FromDirAndUp(const vec3_t direction, const vec3_t 
 	memset(m_tmp, 0, sizeof(matrix3_t));
 	m_tmp[0][0] = 1.0f;
 
-	float roll = -(atan2f(v_rotated_up[2], v_rotated_up[1]) - ANGLE_90);
+	double roll = -(atan2(v_rotated_up[2], v_rotated_up[1]) - ANGLE_90);
 
 	m_tmp[1][1] = cosf(roll);
 	m_tmp[2][2] = cosf(roll);
@@ -208,15 +161,11 @@ H2COMMON_API double Matricies3FromDirAndUp(const vec3_t direction, const vec3_t 
 		CreatePitchMatrix(m_pitch, pitch);
 		CreateYawMatrix(m_yaw, -yaw);
 		Matrix3MultByMatrix3(m_yaw, m_pitch, partialToLocal);
-		roll *= -1.0f;
+		roll *= -1.0;
 	}
 
 	return roll;
 }
-
-//TODO: remove after adding Vector.h!!!
-H2COMMON_API void VectorSubtract(const vec3_t veca, const vec3_t vecb, vec3_t out);
-H2COMMON_API void VectorAdd(const vec3_t veca, const vec3_t vecb, vec3_t out);
 
 //mxd. Decompiled logic DOES match with CMatrix::RotatePointAboutLocalOrigin from Tools/qMView (but I replaced math ops with VectorAdd/VectorSubtract anyway...).
 H2COMMON_API void RotatePointAboutLocalOrigin(const matrix3_t rotation, const vec3_t origin, vec3_t point)
