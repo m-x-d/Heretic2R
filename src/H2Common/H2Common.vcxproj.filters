@@ -27,6 +27,9 @@
     <ClCompile Include="Random.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="Motion.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\H2Common.h">
@@ -48,6 +51,9 @@
       <Filter>qcommon</Filter>
     </ClInclude>
     <ClInclude Include="..\qcommon\Random.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Motion.h">
       <Filter>qcommon</Filter>
     </ClInclude>
   </ItemGroup>
