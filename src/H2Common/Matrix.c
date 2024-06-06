@@ -148,11 +148,11 @@ H2COMMON_API double Matricies3FromDirAndUp(const vec3_t direction, const vec3_t 
 
 	double roll = -(atan2(v_rotated_up[2], v_rotated_up[1]) - ANGLE_90);
 
-	m_tmp[1][1] = cosf(roll);
-	m_tmp[2][2] = cosf(roll);
+	m_tmp[1][1] = cosf((float)roll);
+	m_tmp[2][2] = cosf((float)roll);
 
-	m_tmp[1][2] = sinf(roll);
-	m_tmp[2][1] = -sinf(roll);
+	m_tmp[1][2] = sinf((float)roll);
+	m_tmp[2][1] = -sinf((float)roll);
 
 	Matrix3MultByMatrix3(m_tmp, m_pitchyaw, toWorld);
 
