@@ -16,6 +16,9 @@
 	#endif
 #endif
 
+//TODO: move to more appropriate place
+#define clamp(val,lo,hi) (min(max(val,lo),hi))
+
 //TODO: remove when appropriate headers are added...
 
 //Defined in q_shared.h:

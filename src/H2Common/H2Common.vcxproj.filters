@@ -30,6 +30,9 @@
     <ClCompile Include="Motion.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="q_Physics.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\H2Common.h">
@@ -54,6 +57,9 @@
       <Filter>qcommon</Filter>
     </ClInclude>
     <ClInclude Include="..\qcommon\Motion.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\q_Physics.h">
       <Filter>qcommon</Filter>
     </ClInclude>
   </ItemGroup>

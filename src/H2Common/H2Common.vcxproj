@@ -14,6 +14,7 @@
     <ClCompile Include="DllMain.c" />
     <ClCompile Include="Matrix.c" />
     <ClCompile Include="Motion.c" />
+    <ClCompile Include="q_Physics.c" />
     <ClCompile Include="Random.c" />
     <ClCompile Include="ResourceManager.c" />
     <ClCompile Include="Vector.c" />
@@ -23,6 +24,7 @@
     <ClInclude Include="..\qcommon\H2Common.h" />
     <ClInclude Include="..\qcommon\Matrix.h" />
     <ClInclude Include="..\qcommon\Motion.h" />
+    <ClInclude Include="..\qcommon\q_Physics.h" />
     <ClInclude Include="..\qcommon\q_Typedef.h" />
     <ClInclude Include="..\qcommon\Random.h" />
     <ClInclude Include="..\qcommon\ResourceManager.h" />
