@@ -394,9 +394,9 @@ H2COMMON_API void VectorAbs(const vec3_t in, vec3_t out)
 {
 	assert(out != vec3_origin);
 
-	out[0] = Q_fabs(in[0]);
-	out[1] = Q_fabs(in[1]);
-	out[2] = Q_fabs(in[2]);
+	out[0] = fabsf(in[0]);
+	out[1] = fabsf(in[1]);
+	out[2] = fabsf(in[2]);
 }
 
 H2COMMON_API void VectorRound(vec3_t v)
@@ -558,12 +558,12 @@ H2COMMON_API void Vec3ScaleAssign(const float value, vec3_t scaleBy)
 
 H2COMMON_API qboolean FloatIsZeroEpsilon(const float f)
 {
-	return (Q_fabs(f) < FLOAT_ZERO_EPSILON);
+	return (fabsf(f) < FLOAT_ZERO_EPSILON);
 }
 
 H2COMMON_API qboolean FloatIsZero(const float f, const float epsilon)
 {
-	return (Q_fabs(f) < epsilon);
+	return (fabsf(f) < epsilon);
 }
 
 H2COMMON_API qboolean Vec3EqualsEpsilon(const vec3_t v1, const vec3_t v2)
