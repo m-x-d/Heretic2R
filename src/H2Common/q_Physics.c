@@ -27,7 +27,7 @@ H2COMMON_API qboolean BoundVelocity(vec3_t vel)
 		}
 		else
 		{
-			vel[i] = clamp(vel[i], -2000.0f, 2000.0f);
+			vel[i] = Clamp(vel[i], -2000.0f, 2000.0f);
 		}
 	}
 

@@ -4,10 +4,11 @@
 // Copyright 1998 Raven Software
 //
 
-#include "Matrix.h"
-#include "Vector.h"
 #include <math.h>
 #include <string.h>
+#include "Matrix.h"
+#include "Vector.h"
+#include "q_shared.h" //mxd. For M_PI...
 
 H2COMMON_API qboolean HACK_Pitch_Adjust = false;
 

@@ -4,10 +4,11 @@
 // Copyright 1998 Raven Software
 //
 
-#include "ResourceManager.h"
 #include <assert.h>
 #include <stdio.h>
 #include <windows.h>
+#include "ResourceManager.h"
+#include "q_shared.h"
 
 typedef struct ResMngr_Block_s
 {
@@ -68,7 +69,7 @@ H2COMMON_API void ResMngr_Des(ResourceManager_t *resource)
 	if (resource->numResourcesAllocated)
 	{
 		char mess[100];
-		sprintf(mess,"Potential memory leak %d bytes unfreed\n",resource->resSize * resource->numResourcesAllocated);
+		Com_sprintf(mess, sizeof(mess), "Potential memory leak %d bytes unfreed\n", resource->resSize * resource->numResourcesAllocated); //mxd. sprintf -> Com_sprintf
 		OutputDebugString(mess);
 	}
 #endif

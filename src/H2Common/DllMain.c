@@ -5,7 +5,7 @@
 //
 
 #include <windows.h>
-#include "..\qcommon\ResourceManager.h"
+#include "ResourceManager.h"
 
 ResourceManager_t res_mgr;
 

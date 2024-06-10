@@ -105,15 +105,15 @@ H2COMMON_API void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right
 
 	if (right)
 	{
-		right[0] = (-1.0f * sr * sp * cy + -1.0f * cr * -sy);
-		right[1] = (-1.0f * sr * sp * sy + -1.0f * cr * cy);
+		right[0] = -1.0f * sr * sp * cy + -1.0f * cr * -sy;
+		right[1] = -1.0f * sr * sp * sy + -1.0f * cr * cy;
 		right[2] = -1.0f * sr * cp;
 	}
 
 	if (up)
 	{
-		up[0] = (cr * sp * cy + -sr * -sy);
-		up[1] = (cr * sp * sy + -sr * cy);
+		up[0] = cr * sp * cy + -sr * -sy;
+		up[1] = cr * sp * sy + -sr * cy;
 		up[2] = cr * cp;
 	}
 }

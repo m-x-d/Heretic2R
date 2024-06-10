@@ -15,13 +15,3 @@
 		#define H2COMMON_API __declspec(dllimport)
 	#endif
 #endif
-
-//TODO: move to more appropriate place
-#define clamp(val,lo,hi) (min(max(val,lo),hi))
-
-//TODO: remove when appropriate headers are added...
-
-//Defined in q_shared.h:
-#ifndef M_PI
-	#define M_PI		3.14159265358979323846	// matches value in gcc v2 math.h
-#endif

@@ -8,25 +8,11 @@
 
 #include <math.h>
 #include <assert.h>
+
 #include "H2Common.h"
 #include "q_Typedef.h"
 #include "Angles.h"
-//#include "q_shared.h" //TODO: re-enable!
-
-//TODO: remove (defined in q_shared.h)
-_inline float Q_fabs(float _X) 
-{
-	*((long*)&_X) &= 0x7fffffff;
-	return (_X);
-}
-
-// Angle indexes //TODO: remove: already defined in q_shared.h!
-enum VectorAxis
-{
-	PITCH = 0,	// up / down
-	YAW = 1,	// left / right
-	ROLL = 2	// fall over
-};
+#include "q_shared.h"
 
 #define FLOAT_ZERO_EPSILON 0.0005f
 

@@ -8,7 +8,7 @@
 
 #include "H2Common.h"
 #include "q_Typedef.h"
-//#include "q_Shared.h"	// for trace_t	//TODO: re-enable
+#include "q_Shared.h"	// for trace_t
 
 #define ELASTICITY_NONE				0.0f
 #define ELASTICITY_SLIDE			1.0001f
@@ -34,23 +34,22 @@
 #define	CHECK_BELOW_DIST			0.5
 #define Z_VEL_NOT_ONGROUND			100
 
-//TODO: re-enable
-/*typedef struct FormMove_s
+typedef struct FormMove_s
 {
-	vec3_t	mins;
-	vec3_t	maxs;
-	float*	start;
-	float*	end;
-	void*	passEntity;
-	int		clipMask;
-	trace_t	trace;
-	int		waterLevel;
-	int		waterType;
-	float	stepHeight;
-	float	dropHeight;
-	int		processFlags;	// Filled in prior to passing in the FormMove to a high level physics call
-	int		resultFlags;	// Will eventually be filled in by physics
-} FormMove_t;*/
+	vec3_t mins;
+	vec3_t maxs;
+	float* start;
+	float* end;
+	void* passEntity;
+	int clipMask;
+	trace_t trace;
+	int waterLevel;
+	int waterType;
+	float stepHeight;
+	float dropHeight;
+	int processFlags;	// Filled in prior to passing in the FormMove to a high level physics call
+	int resultFlags;	// Will eventually be filled in by physics
+} FormMove_t;
 
 
 //************************************************************************
