@@ -92,5 +92,11 @@
     <ClInclude Include="Console.h">
       <Filter>headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\qcommon\SinglyLinkedList.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\GenericUnions.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
