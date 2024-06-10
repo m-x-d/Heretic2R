@@ -11,15 +11,23 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\game\q_shared.c" />
+    <ClCompile Include="ByteOrder.c" />
+    <ClCompile Include="Common.c" />
+    <ClCompile Include="Console.c" />
     <ClCompile Include="DllMain.c" />
+    <ClCompile Include="InfoStrings.c" />
+    <ClCompile Include="Math.c" />
     <ClCompile Include="Matrix.c" />
     <ClCompile Include="Motion.c" />
     <ClCompile Include="q_Physics.c" />
     <ClCompile Include="Random.c" />
     <ClCompile Include="ResourceManager.c" />
+    <ClCompile Include="TextPalette.c" />
     <ClCompile Include="Vector.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="..\qcommon\Angles.h" />
     <ClInclude Include="..\qcommon\H2Common.h" />
     <ClInclude Include="..\qcommon\Matrix.h" />
@@ -29,6 +37,7 @@
     <ClInclude Include="..\qcommon\Random.h" />
     <ClInclude Include="..\qcommon\ResourceManager.h" />
     <ClInclude Include="..\qcommon\Vector.h" />
+    <ClInclude Include="Console.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <SccProjectName />
@@ -79,7 +88,7 @@
       <AssemblerListingLocation>.\debug\</AssemblerListingLocation>
       <ObjectFileName>.\debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\qcommon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\qcommon;..\game;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Midl>
@@ -120,7 +129,7 @@
       <AssemblerListingLocation>.\release\</AssemblerListingLocation>
       <ObjectFileName>.\release\</ObjectFileName>
       <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\qcommon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\qcommon;..\game;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Midl>
