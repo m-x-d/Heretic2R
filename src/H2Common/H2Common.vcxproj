@@ -23,6 +23,7 @@
     <ClCompile Include="q_Physics.c" />
     <ClCompile Include="Random.c" />
     <ClCompile Include="ResourceManager.c" />
+    <ClCompile Include="SinglyLinkedList.c" />
     <ClCompile Include="TextPalette.c" />
     <ClCompile Include="Vector.c" />
   </ItemGroup>

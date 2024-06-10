@@ -57,6 +57,9 @@
     <ClCompile Include="InfoStrings.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="SinglyLinkedList.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\H2Common.h">

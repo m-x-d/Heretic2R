@@ -1,0 +1,146 @@
+//
+// SinglyLinkedList.c
+//
+// Copyright 1998 Raven Software
+//
+
+#include "SinglyLinkedList.h"
+#include "ResourceManager.h"
+
+typedef struct SinglyLinkedListNode_s
+{
+	union GenericUnion4_u data;
+	struct SinglyLinkedListNode_s* next;
+} SinglyLinkedListNode_t;
+
+extern ResourceManager_t res_mgr;
+
+H2COMMON_API void SLList_DefaultCon(SinglyLinkedList_t* this_ptr)
+{
+	SinglyLinkedListNode_t* node = ResMngr_AllocateResource(&res_mgr, 8);
+	node->next = NULL;
+
+	this_ptr->rearSentinel = node;
+	this_ptr->front = node;
+	this_ptr->current = node;
+}
+
+H2COMMON_API void SLList_Des(SinglyLinkedList_t* this_ptr)
+{
+	SinglyLinkedListNode_t* next;
+	SinglyLinkedListNode_t* toDeallocate = this_ptr->front;
+
+	if (this_ptr->front != this_ptr->rearSentinel)
+	{
+		do
+		{
+			next = toDeallocate->next;
+			ResMngr_DeallocateResource(&res_mgr, toDeallocate, 8);
+			toDeallocate = next;
+		} while (next != this_ptr->rearSentinel);
+	}
+
+	this_ptr->current = this_ptr->rearSentinel;
+	ResMngr_DeallocateResource(&res_mgr, this_ptr->rearSentinel, 8);
+}
+
+H2COMMON_API qboolean SLList_AtEnd(const SinglyLinkedList_t* this_ptr)
+{
+	return this_ptr->current == this_ptr->rearSentinel;
+}
+
+H2COMMON_API qboolean SLList_AtLast(const SinglyLinkedList_t* this_ptr)
+{
+	return this_ptr->current->next == this_ptr->rearSentinel;
+}
+
+H2COMMON_API qboolean SLList_IsEmpty(const SinglyLinkedList_t* this_ptr)
+{
+	return this_ptr->front == this_ptr->rearSentinel;
+}
+
+H2COMMON_API GenericUnion4_t SLList_Increment(SinglyLinkedList_t* this_ptr)
+{
+	SinglyLinkedListNode_t* next = this_ptr->current->next;
+	this_ptr->current = next;
+
+	return next->data;
+}
+
+H2COMMON_API GenericUnion4_t SLList_PostIncrement(SinglyLinkedList_t* this_ptr)
+{
+	const GenericUnion4_t val = this_ptr->current->data;
+	this_ptr->current = this_ptr->current->next;
+
+	return val;
+}
+
+H2COMMON_API GenericUnion4_t SLList_Front(SinglyLinkedList_t* this_ptr)
+{
+	this_ptr->current = this_ptr->front;
+	return this_ptr->front->data;
+}
+
+H2COMMON_API GenericUnion4_t SLList_ReplaceCurrent(const SinglyLinkedList_t* this_ptr, GenericUnion4_t to_replace)
+{
+	const GenericUnion4_t val = this_ptr->current->data;
+	this_ptr->current->data = to_replace;
+
+	return val;
+}
+
+H2COMMON_API void SLList_PushEmpty(SinglyLinkedList_t* this_ptr)
+{
+	SinglyLinkedListNode_t* node = ResMngr_AllocateResource(&res_mgr, 8);
+	node->next = this_ptr->front;
+	this_ptr->front = node;
+}
+
+H2COMMON_API void SLList_Push(SinglyLinkedList_t* this_ptr, GenericUnion4_t to_insert)
+{
+	SinglyLinkedListNode_t* node = ResMngr_AllocateResource(&res_mgr, 8);
+	node->data = to_insert;
+	node->next = this_ptr->front;
+	this_ptr->front = node;
+}
+
+H2COMMON_API GenericUnion4_t SLList_Pop(SinglyLinkedList_t* this_ptr)
+{
+	SinglyLinkedListNode_t* front = this_ptr->front;
+	SinglyLinkedListNode_t* next = front->next;
+
+	this_ptr->front = next;
+	if (this_ptr->current == front)
+		this_ptr->current = next;
+
+	const GenericUnion4_t val = front->data;
+	ResMngr_DeallocateResource(&res_mgr, front, 8);
+
+	return val;
+}
+
+H2COMMON_API void SLList_Chop(SinglyLinkedList_t* this_ptr)
+{
+	SinglyLinkedListNode_t* next_next;
+	SinglyLinkedListNode_t* next = this_ptr->current->next;
+
+	if (next != this_ptr->rearSentinel)
+	{
+		do
+		{
+			next_next = next->next;
+			ResMngr_DeallocateResource(&res_mgr, next, 8);
+			next = next_next;
+		} while (next_next != this_ptr->rearSentinel);
+	}
+ 
+	this_ptr->current = this_ptr->rearSentinel;
+}
+
+H2COMMON_API void SLList_InsertAfter(const SinglyLinkedList_t* this_ptr, const GenericUnion4_t to_insert)
+{
+	SinglyLinkedListNode_t* node = ResMngr_AllocateResource(&res_mgr, 8);
+	node->data = to_insert;
+	node->next = this_ptr->current->next;
+	this_ptr->current->next = node;
+}

@@ -15,7 +15,8 @@ typedef vec_t vec5_t[5];	//TODO: unused?
 typedef float matrix3_t[3][3];
 typedef float matrix3d_t[3][3];	//TODO: unused?
 
-typedef unsigned uint; //mxd. Shorter than "size_t", way shorter than "unsigned int". Also I'm a C# guy, so there...
+typedef unsigned uint;			//mxd. Shorter than "size_t", way shorter than "unsigned int". Also I'm a C# guy, so there...
+typedef unsigned long ulong;	//mxd. Way shorter than "unsigned long". Also I'm a C# guy, so there...
 typedef	int	fixed4_t;		//TODO: unused?
 typedef	int	fixed8_t;		//TODO: unused?
 typedef	int	fixed16_t;		//TODO: unused?
