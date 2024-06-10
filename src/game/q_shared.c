@@ -1,5 +1,11 @@
+//
+// q_shared.c
+//
+// Copyright 1998 Raven Software
+//
+
 #include "q_shared.h"
-#include "random.h"
+//#include "Random.h"
 
 /*
 ==================
@@ -8,13 +14,12 @@ BoxOnPlaneSide
 Returns 1, 2, or 1 + 2
 ==================
 */
-#if !id386
-int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
+//#if !id386
+int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, struct cplane_s *p)
 {
-	float	dist1, dist2;
-	int		sides;
+	float dist1, dist2;
 
-// fast axial cases
+	// Fast axial cases
 	if (p->type < 3)
 	{
 		if (p->dist <= emins[p->type])
@@ -24,58 +29,67 @@ int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
 		return 3;
 	}
 	
-// general case
+	// General case
 	switch (p->signbits)
 	{
 	case 0:
-dist1 = p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2];
-dist2 = p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2];
+		dist1 = p->normal[0] * emaxs[0] + p->normal[1] * emaxs[1] + p->normal[2] * emaxs[2];
+		dist2 = p->normal[0] * emins[0] + p->normal[1] * emins[1] + p->normal[2] * emins[2];
 		break;
+
 	case 1:
-dist1 = p->normal[0]*emins[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2];
-dist2 = p->normal[0]*emaxs[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2];
+		dist1 = p->normal[0] * emins[0] + p->normal[1] * emaxs[1] + p->normal[2] * emaxs[2];
+		dist2 = p->normal[0] * emaxs[0] + p->normal[1] * emins[1] + p->normal[2] * emins[2];
 		break;
+
 	case 2:
-dist1 = p->normal[0]*emaxs[0] + p->normal[1]*emins[1] + p->normal[2]*emaxs[2];
-dist2 = p->normal[0]*emins[0] + p->normal[1]*emaxs[1] + p->normal[2]*emins[2];
+		dist1 = p->normal[0] * emaxs[0] + p->normal[1] * emins[1] + p->normal[2] * emaxs[2];
+		dist2 = p->normal[0] * emins[0] + p->normal[1] * emaxs[1] + p->normal[2] * emins[2];
 		break;
+
 	case 3:
-dist1 = p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emaxs[2];
-dist2 = p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emins[2];
+		dist1 = p->normal[0] * emins[0] + p->normal[1] * emins[1] + p->normal[2] * emaxs[2];
+		dist2 = p->normal[0] * emaxs[0] + p->normal[1] * emaxs[1] + p->normal[2] * emins[2];
 		break;
+
 	case 4:
-dist1 = p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emins[2];
-dist2 = p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emaxs[2];
+		dist1 = p->normal[0] * emaxs[0] + p->normal[1] * emaxs[1] + p->normal[2] * emins[2];
+		dist2 = p->normal[0] * emins[0] + p->normal[1] * emins[1] + p->normal[2] * emaxs[2];
 		break;
+
 	case 5:
-dist1 = p->normal[0]*emins[0] + p->normal[1]*emaxs[1] + p->normal[2]*emins[2];
-dist2 = p->normal[0]*emaxs[0] + p->normal[1]*emins[1] + p->normal[2]*emaxs[2];
+		dist1 = p->normal[0] * emins[0] + p->normal[1] * emaxs[1] + p->normal[2] * emins[2];
+		dist2 = p->normal[0] * emaxs[0] + p->normal[1] * emins[1] + p->normal[2] * emaxs[2];
 		break;
+
 	case 6:
-dist1 = p->normal[0]*emaxs[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2];
-dist2 = p->normal[0]*emins[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2];
+		dist1 = p->normal[0] * emaxs[0] + p->normal[1] * emins[1] + p->normal[2] * emins[2];
+		dist2 = p->normal[0] * emins[0] + p->normal[1] * emaxs[1] + p->normal[2] * emaxs[2];
 		break;
+
 	case 7:
-dist1 = p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2];
-dist2 = p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2];
+		dist1 = p->normal[0] * emins[0] + p->normal[1] * emins[1] + p->normal[2] * emins[2];
+		dist2 = p->normal[0] * emaxs[0] + p->normal[1] * emaxs[1] + p->normal[2] * emaxs[2];
 		break;
+
 	default:
-		dist1 = dist2 = 0;		// shut up compiler
-		assert( 0 );
+		dist1 = 0.0f;
+		dist2 = 0.0f;
 		break;
 	}
 
-	sides = 0;
+	int sides = 0;
 	if (dist1 >= p->dist)
 		sides = 1;
 	if (dist2 < p->dist)
 		sides |= 2;
 
-	assert( sides != 0 );
+	assert(sides != 0);
 
 	return sides;
 }
-#else
+
+/*#else
 #pragma warning( disable: 4035 )
 
 __declspec(naked) int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
@@ -308,4 +322,4 @@ Lerror:
 	}
 }
 #pragma warning( default: 4035 )
-#endif
+#endif*/
