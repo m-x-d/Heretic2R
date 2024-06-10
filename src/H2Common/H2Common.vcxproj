@@ -29,6 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\game\q_shared.h" />
+    <ClInclude Include="..\Player\p_types.h" />
     <ClInclude Include="..\qcommon\Angles.h" />
     <ClInclude Include="..\qcommon\GenericUnions.h" />
     <ClInclude Include="..\qcommon\H2Common.h" />
@@ -39,6 +40,7 @@
     <ClInclude Include="..\qcommon\Random.h" />
     <ClInclude Include="..\qcommon\ResourceManager.h" />
     <ClInclude Include="..\qcommon\SinglyLinkedList.h" />
+    <ClInclude Include="..\qcommon\SurfaceProps.h" />
     <ClInclude Include="..\qcommon\Vector.h" />
     <ClInclude Include="Console.h" />
   </ItemGroup>
