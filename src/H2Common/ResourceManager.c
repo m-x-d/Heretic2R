@@ -12,42 +12,43 @@
 
 typedef struct ResMngr_Block_s
 {
-	char *start;
+	char* start;
 	uint size;
-	struct ResMngr_Block_s *next;
+	struct ResMngr_Block_s* next;
 } ResMngr_Block_t;
 
-static void ResMngr_CreateBlock(ResourceManager_t *resource)
+static void ResMngr_CreateBlock(ResourceManager_t* resource)
 {
-	const uint _blockSize = resource->nodeSize * resource->resPerBlock;
-	char* block = malloc(_blockSize);
+	const uint block_size = resource->nodeSize * resource->resPerBlock;
+	char* block = malloc(block_size);
 
 	assert(block);
 
 	ResMngr_Block_t* temp = malloc(sizeof(ResMngr_Block_t));
 
 	temp->start = block;
-	temp->size = _blockSize;
+	temp->size = block_size;
 	temp->next = resource->blockList;
 
 	resource->blockList = temp; 
-	resource->free = (char **)block;
+	resource->free = (char**)block;
 
 	char** current = resource->free;
 
-	for (uint i = 1; i < resource->resPerBlock; ++i)
+	for (uint i = 0; i < resource->resPerBlock - 1; i++)
 	{
 		// Set current->next to point to next node
-		*current = (char *)current + resource->nodeSize;
+		*current = (char*)current + resource->nodeSize;
 
 		// Set current node to current->next
-		current = (char **)(*current);
+		current = (char**)(*current);
 	}
 
+	//mxd. No current->next for the last block
 	*current = NULL;
 }
 
-H2COMMON_API void ResMngr_Con(ResourceManager_t *resource, const uint init_resSize, const uint init_resPerBlock)
+H2COMMON_API void ResMngr_Con(ResourceManager_t* resource, const uint init_resSize, const uint init_resPerBlock)
 {
 	resource->resSize = init_resSize;
 	resource->resPerBlock = init_resPerBlock;
@@ -55,40 +56,42 @@ H2COMMON_API void ResMngr_Con(ResourceManager_t *resource, const uint init_resSi
 	resource->blockList = NULL;
 
 #ifndef NDEBUG
-	resource->numResourcesAllocated = 0;
+	//TODO: mxd. Disabled, so it works with original binaries when built in Debug mode...
+	//resource->numResourcesAllocated = 0;
 #endif
 
 	ResMngr_CreateBlock(resource);
 }
 
-H2COMMON_API void ResMngr_Des(ResourceManager_t *resource)
+// ResourceManager destructor
+H2COMMON_API void ResMngr_Des(ResourceManager_t* resource)
 {
-	ResMngr_Block_t *toDelete;
-
 #ifndef NDEBUG
-	if (resource->numResourcesAllocated)
+	//TODO: mxd. Disabled, so it works with original binaries when built in Debug mode...
+	/*if (resource->numResourcesAllocated)
 	{
 		char mess[100];
 		Com_sprintf(mess, sizeof(mess), "Potential memory leak %d bytes unfreed\n", resource->resSize * resource->numResourcesAllocated); //mxd. sprintf -> Com_sprintf
 		OutputDebugString(mess);
-	}
+	}*/
 #endif
 
 	while (resource->blockList)
 	{
-		toDelete = resource->blockList;
+		ResMngr_Block_t* toDelete = resource->blockList;
 		resource->blockList = resource->blockList->next;
 		free(toDelete->start);
 		free(toDelete);
 	}
 }
 
-H2COMMON_API void *ResMngr_AllocateResource(ResourceManager_t *resource, const uint size)
+H2COMMON_API void* ResMngr_AllocateResource(ResourceManager_t* resource, const uint size)
 {
 	assert(size == resource->resSize);
 
 #ifndef NDEBUG
-	++resource->numResourcesAllocated;
+	//TODO: mxd. Disabled, so it works with original binaries when built in Debug mode...
+	//++resource->numResourcesAllocated;
 #endif
 
 	// Constructor not called; possibly due to a static object containing a static ResourceManagerFastLarge
@@ -109,21 +112,23 @@ H2COMMON_API void *ResMngr_AllocateResource(ResourceManager_t *resource, const u
 	return toPop + 1;
 }
 
-H2COMMON_API void ResMngr_DeallocateResource(ResourceManager_t *resource, void *toDeallocate, const uint size)
+H2COMMON_API void ResMngr_DeallocateResource(ResourceManager_t* resource, void* toDeallocate, const uint size)
 {
 	assert(size == resource->resSize);
 
 #ifndef NDEBUG
-	assert(resource->numResourcesAllocated);
-	--resource->numResourcesAllocated;
+	//TODO: mxd. Disabled, so it works with original binaries when built in Debug mode...
+	//assert(resource->numResourcesAllocated);
+	//--resource->numResourcesAllocated;
 #endif
 
-	char** toPush = (char **)toDeallocate - 1;
+	char** toPush = (char**)toDeallocate - 1;
 
-	assert(resource->free);	// See same assert at top of AllocateResource
+	// See same assert at top of AllocateResource
+	assert(resource->free);	
 
 	// Set toPop->next to current unallocated front
-	*toPush = (char *)resource->free;
+	*toPush = (char*)resource->free;
 
 	// Set unallocated to the node removed from allocated
 	resource->free = toPush;
