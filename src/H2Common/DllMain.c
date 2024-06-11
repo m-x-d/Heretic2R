@@ -11,10 +11,19 @@ ResourceManager_t res_mgr;
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
-	if (fdwReason == 1)
-		ResMngr_Con(&res_mgr, 8, 256);
-	else
-		ResMngr_Des(&res_mgr);
+	switch (fdwReason)
+	{
+		case DLL_PROCESS_ATTACH:
+			ResMngr_Con(&res_mgr, 8, 256);
+			break;
+
+		case DLL_PROCESS_DETACH:
+			ResMngr_Des(&res_mgr);
+			break;
+
+		default:
+			break;
+	}
 
 	return TRUE;
 }
