@@ -13,9 +13,6 @@
     <Filter Include="headers">
       <UniqueIdentifier>{2df7b8ce-135a-4f4b-8db1-dccacbae30d6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Player">
-      <UniqueIdentifier>{af7a0b56-b7ae-457c-975c-febdbfda40c0}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.c">
@@ -63,6 +60,9 @@
     <ClCompile Include="SinglyLinkedList.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="SurfaceProps.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\H2Common.h">
@@ -106,9 +106,6 @@
     </ClInclude>
     <ClInclude Include="..\qcommon\SurfaceProps.h">
       <Filter>qcommon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Player\p_types.h">
-      <Filter>Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

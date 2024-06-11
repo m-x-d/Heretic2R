@@ -24,12 +24,12 @@
     <ClCompile Include="Random.c" />
     <ClCompile Include="ResourceManager.c" />
     <ClCompile Include="SinglyLinkedList.c" />
+    <ClCompile Include="SurfaceProps.c" />
     <ClCompile Include="TextPalette.c" />
     <ClCompile Include="Vector.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\game\q_shared.h" />
-    <ClInclude Include="..\Player\p_types.h" />
     <ClInclude Include="..\qcommon\Angles.h" />
     <ClInclude Include="..\qcommon\GenericUnions.h" />
     <ClInclude Include="..\qcommon\H2Common.h" />
