@@ -25,19 +25,15 @@ H2COMMON_API void SLList_DefaultCon(SinglyLinkedList_t* this_ptr)
 	this_ptr->current = node;
 }
 
+// List destructor
 H2COMMON_API void SLList_Des(SinglyLinkedList_t* this_ptr)
 {
-	SinglyLinkedListNode_t* next;
-	SinglyLinkedListNode_t* toDeallocate = this_ptr->front;
-
-	if (this_ptr->front != this_ptr->rearSentinel)
+	SinglyLinkedListNode_t* node = this_ptr->front;
+	while (node != this_ptr->rearSentinel)
 	{
-		do
-		{
-			next = toDeallocate->next;
-			ResMngr_DeallocateResource(&res_mgr, toDeallocate, 8);
-			toDeallocate = next;
-		} while (next != this_ptr->rearSentinel);
+		SinglyLinkedListNode_t* next = node->next;
+		ResMngr_DeallocateResource(&res_mgr, node, 8);
+		node = next;
 	}
 
 	this_ptr->current = this_ptr->rearSentinel;
@@ -61,10 +57,8 @@ H2COMMON_API qboolean SLList_IsEmpty(const SinglyLinkedList_t* this_ptr)
 
 H2COMMON_API GenericUnion4_t SLList_Increment(SinglyLinkedList_t* this_ptr)
 {
-	SinglyLinkedListNode_t* next = this_ptr->current->next;
-	this_ptr->current = next;
-
-	return next->data;
+	this_ptr->current = this_ptr->current->next;
+	return this_ptr->current->data;
 }
 
 H2COMMON_API GenericUnion4_t SLList_PostIncrement(SinglyLinkedList_t* this_ptr)
@@ -78,7 +72,7 @@ H2COMMON_API GenericUnion4_t SLList_PostIncrement(SinglyLinkedList_t* this_ptr)
 H2COMMON_API GenericUnion4_t SLList_Front(SinglyLinkedList_t* this_ptr)
 {
 	this_ptr->current = this_ptr->front;
-	return this_ptr->front->data;
+	return this_ptr->current->data;
 }
 
 H2COMMON_API GenericUnion4_t SLList_ReplaceCurrent(const SinglyLinkedList_t* this_ptr, GenericUnion4_t to_replace)
@@ -121,17 +115,12 @@ H2COMMON_API GenericUnion4_t SLList_Pop(SinglyLinkedList_t* this_ptr)
 
 H2COMMON_API void SLList_Chop(SinglyLinkedList_t* this_ptr)
 {
-	SinglyLinkedListNode_t* next_next;
 	SinglyLinkedListNode_t* next = this_ptr->current->next;
-
-	if (next != this_ptr->rearSentinel)
+	while (next != this_ptr->rearSentinel)
 	{
-		do
-		{
-			next_next = next->next;
-			ResMngr_DeallocateResource(&res_mgr, next, 8);
-			next = next_next;
-		} while (next_next != this_ptr->rearSentinel);
+		SinglyLinkedListNode_t* next_next = next->next;
+		ResMngr_DeallocateResource(&res_mgr, next, 8);
+		next = next_next;
 	}
  
 	this_ptr->current = this_ptr->rearSentinel;
