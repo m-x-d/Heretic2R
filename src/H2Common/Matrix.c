@@ -8,7 +8,6 @@
 #include <string.h>
 #include "Matrix.h"
 #include "Vector.h"
-#include "q_shared.h" //mxd. For M_PI...
 
 H2COMMON_API qboolean HACK_Pitch_Adjust = false;
 
@@ -75,15 +74,15 @@ H2COMMON_API void R_ConcatTransforms(const float in1[3][4], const float in2[3][4
 
 H2COMMON_API void Matrix3MultByMatrix3(const matrix3_t a, const matrix3_t b, matrix3_t out)
 {
-	out[0][0] = b[0][2] * a[2][0] + a[1][0] * b[0][1] + a[0][0] * b[0][0];
-	out[0][1] = a[2][1] * b[0][2] + a[0][1] * b[0][0] + a[1][1] * b[0][1];
-	out[0][2] = a[2][2] * b[0][2] + a[0][2] * b[0][0] + a[1][2] * b[0][1];
+	out[0][0] = a[0][0] * b[0][0] + a[1][0] * b[0][1] + a[2][0] * b[0][2];
+	out[0][1] = a[0][1] * b[0][0] + a[1][1] * b[0][1] + a[2][1] * b[0][2];
+	out[0][2] = a[0][2] * b[0][0] + a[1][2] * b[0][1] + a[2][2] * b[0][2];
 
-	out[1][0] = b[1][0] * a[0][0] + b[1][2] * a[2][0] + a[1][0] * b[1][1];
+	out[1][0] = a[0][0] * b[1][0] + a[1][0] * b[1][1] + a[2][0] * b[1][2];
 	out[1][1] = a[0][1] * b[1][0] + a[1][1] * b[1][1] + a[2][1] * b[1][2];
 	out[1][2] = a[0][2] * b[1][0] + a[1][2] * b[1][1] + a[2][2] * b[1][2];
 
-	out[2][0] = a[2][0] * b[2][2] + a[1][0] * b[2][1] + a[0][0] * b[2][0];
+	out[2][0] = a[0][0] * b[2][0] + a[1][0] * b[2][1] + a[2][0] * b[2][2];
 	out[2][1] = a[0][1] * b[2][0] + a[1][1] * b[2][1] + a[2][1] * b[2][2];
 	out[2][2] = a[0][2] * b[2][0] + a[1][2] * b[2][1] + a[2][2] * b[2][2];
 }
@@ -91,8 +90,8 @@ H2COMMON_API void Matrix3MultByMatrix3(const matrix3_t a, const matrix3_t b, mat
 H2COMMON_API void Matrix3MultByVec3(const matrix3_t a, const vec3_t b, vec3_t out)
 {
 	out[0] = a[0][0] * b[0] + a[1][0] * b[1] + a[2][0] * b[2];
-	out[1] = a[1][1] * b[1] + a[0][1] * b[0] + a[2][1] * b[2];
-	out[2] = a[1][2] * b[1] + a[0][2] * b[0] + a[2][2] * b[2];
+	out[1] = a[0][1] * b[0] + a[1][1] * b[1] + a[2][1] * b[2];
+	out[2] = a[0][2] * b[0] + a[1][2] * b[1] + a[2][2] * b[2];
 }
 
 H2COMMON_API void Matrix3FromAngles(const vec3_t angles, matrix3_t rotationMatrix)
@@ -128,7 +127,7 @@ H2COMMON_API double Matricies3FromDirAndUp(const vec3_t direction, const vec3_t 
 
 	float pitch = asinf(direction[2]);
 	if (HACK_Pitch_Adjust && direction[0] < 0.0f)
-		pitch = (float)M_PI - pitch;
+		pitch = ANGLE_180 - pitch;
 
 	CreatePitchMatrix(m_pitch, -pitch);
 	Matrix3MultByVec3(m_pitch, direction, v_pitch);
