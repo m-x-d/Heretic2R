@@ -43,15 +43,13 @@ H2COMMON_API void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const ve
 // Q2 counterpart
 H2COMMON_API void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal)
 {
-	const float inv_denom = 1.0f / DotProduct(normal, normal);
+	const float inv_denom = 1.0f / VectorLengthSquared(normal);
 	const float d = DotProduct(normal, p) * inv_denom;
 
 	vec3_t n;
 	VectorScale(normal, inv_denom, n);
-
-	dst[0] = p[0] - d * n[0];
-	dst[1] = p[1] - d * n[1];
-	dst[2] = p[2] - d * n[2];
+	VectorScale(n, d, n);
+	VectorSubtract(p, n, dst);
 }
 
 // Q2 counterpart. Assumes "src" is normalized
@@ -84,15 +82,15 @@ H2COMMON_API void PerpendicularVector(vec3_t dst, const vec3_t src)
 // Q2 counterpart
 H2COMMON_API void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
 {
-	float angle = angles[YAW] * ((float)M_PI * 2.0f / 360.0f);
+	float angle = angles[YAW] * ANGLE_TO_RAD;
 	const float sy = sinf(angle);
 	const float cy = cosf(angle);
 
-	angle = angles[PITCH] * ((float)M_PI * 2.0f / 360.0f);
+	angle = angles[PITCH] * ANGLE_TO_RAD;
 	const float sp = sinf(angle);
 	const float cp = cosf(angle);
 
-	angle = angles[ROLL] * ((float)M_PI * 2.0f / 360.0f);
+	angle = angles[ROLL] * ANGLE_TO_RAD;
 	const float sr = sinf(angle);
 	const float cr = cosf(angle);
 
@@ -139,15 +137,15 @@ H2COMMON_API void RealAngleVectors(const vec3_t angles, vec3_t forward, vec3_t r
 
 	if (right)
 	{
-		right[0] = (-1.0f * sr * sp * cy + -1.0f * cr * -sy);
-		right[1] = (-1.0f * sr * sp * sy + -1.0f * cr * cy);
+		right[0] = -1.0f * sr * sp * cy + -1.0f * cr * -sy;
+		right[1] = -1.0f * sr * sp * sy + -1.0f * cr * cy;
 		right[2] = -1.0f * sr * cp;
 	}
 
 	if (up)
 	{
-		up[0] = (cr * sp * cy + -sr * -sy);
-		up[1] = (cr * sp * sy + -sr * cy);
+		up[0] = cr * sp * cy + -sr * -sy;
+		up[1] = cr * sp * sy + -sr * cy;
 		up[2] = cr * cp;
 	}
 }
