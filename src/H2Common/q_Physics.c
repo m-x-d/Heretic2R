@@ -4,14 +4,13 @@
 // Copyright 1998 Raven Software
 //
 
-#include <stdlib.h>
 #include "q_Physics.h"
 #include "Vector.h"
 
 H2COMMON_API void BounceVelocity(const vec3_t in, const vec3_t normal, vec3_t out, const float elasticity)
 {
 	const float len = DotProduct(in, normal) * elasticity;
-	VectorMA(normal, -len, in, out);
+	VectorMA(in, -len, normal, out);
 }
 
 H2COMMON_API qboolean BoundVelocity(vec3_t vel)
