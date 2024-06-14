@@ -44,12 +44,12 @@ H2COMMON_API void CreatePitchMatrix(matrix3_t m, const float pitch)
 {
 	memset(m, 0, sizeof(matrix3_t));
 
-	m[0][0] = -cosf(pitch);
-	m[2][2] = -cosf(pitch);
+	m[0][0] = cosf(-pitch);
+	m[2][2] = cosf(-pitch);
 
 	m[1][1] = 1.0f;
 
-	m[2][0] = -sinf(pitch);
+	m[2][0] = sinf(-pitch);
 	m[0][2] = sinf(pitch);
 }
 
@@ -119,13 +119,16 @@ H2COMMON_API void IMatrix3FromAngles(const vec3_t angles, matrix3_t rotationMatr
 	Matrix3MultByMatrix3(m_roll, m_tmp, rotationMatrix);
 }
 
-//mxd. Decompiled logic does NOT match with CMatrix::Matricies3FromDirAndUp from Tools/qMView!
+//mxd. Assumes "direction" is normalized. Decompiled logic does NOT match with CMatrix::Matricies3FromDirAndUp from Tools/qMView!
 H2COMMON_API double Matricies3FromDirAndUp(const vec3_t direction, const vec3_t up, matrix3_t toWorld, matrix3_t partialToLocal)
 {
 	vec3_t v_pitch, v_rotated_up;
 	matrix3_t m_pitch, m_yaw, m_pitchyaw, m_tmp;
 
-	float pitch = asinf(direction[2]);
+	float pitch = asinf(direction[2]); //mxd. asinf expects value in [-1.0; 1.0] range.
+
+	assert(!isnan(pitch)); //mxd
+
 	if (HACK_Pitch_Adjust && direction[0] < 0.0f)
 		pitch = ANGLE_180 - pitch;
 
