@@ -202,8 +202,8 @@ H2COMMON_API char* va(const char *format, ...);
 #define	MAX_INFO_STRING		512
 
 H2COMMON_API char* Info_ValueForKey(const char *s, const char *key);
-H2COMMON_API void Info_RemoveKey(char *s, char *key);
-H2COMMON_API void Info_SetValueForKey(char *s, char *key, char *value);
+H2COMMON_API void Info_RemoveKey(char *s, const char *key);
+H2COMMON_API void Info_SetValueForKey(char *s, const char *key, const char *value);
 H2COMMON_API qboolean Info_Validate(const char *s);
 H2COMMON_API void Set_Com_Printf(void (*toSet)(const char *fmt, ...));
 
@@ -213,8 +213,8 @@ H2COMMON_API void Set_Com_Printf(void (*toSet)(const char *fmt, ...));
 // *************************************************************
 
 struct cplane_s;
-extern H2COMMON_API vec3_t vec3_origin;
-extern H2COMMON_API vec3_t vec3_up;
+extern H2COMMON_API const vec3_t vec3_origin;
+extern H2COMMON_API const vec3_t vec3_up;
 
 extern int curtime; // Time returned by last Sys_Milliseconds
 

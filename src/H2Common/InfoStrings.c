@@ -52,7 +52,7 @@ H2COMMON_API char* Info_ValueForKey(const char* s, const char* key)
 }
 
 // Q2 counterpart
-H2COMMON_API void Info_RemoveKey(char* s, char* key)
+H2COMMON_API void Info_RemoveKey(char* s, const char* key)
 {
 	char pkey[512];
 	char value[512];
@@ -99,7 +99,7 @@ H2COMMON_API void Info_RemoveKey(char* s, char* key)
 }
 
 // Q2 counterpart. H2: Com_Printf replaced with com_printf reference
-H2COMMON_API void Info_SetValueForKey(char* s, char* key, char* value)
+H2COMMON_API void Info_SetValueForKey(char* s, const char* key, const char* value)
 {
 	char newi[MAX_INFO_STRING];
 
