@@ -7,11 +7,13 @@
 #include "q_shared.h"
 #include "Vector.h"
 
-// Q2 counterpart
+// Q2 counterpart. Expects a positive value.
 H2COMMON_API int Q_log2(int val)
 {
 	int answer = 0;
 
+	assert(val > -1); //mxd
+	
 	while (val >>= 1)
 		answer++;
 
@@ -52,7 +54,7 @@ H2COMMON_API float anglemod_old(const float a)
 	if (a >= 0.0f)
 		return a - 360.0f * (int)(a / 360.0f);
 
-	return a + 360.0f * (int)(-a / 360.0f); //mxd. Q2 logic: 360 * (1 + (int)(-a / 360));
+	return a + 360.0f * (int)(-a / 360.0f) + 360.0f; //mxd. Q2 logic: 360 * (1 + (int)(-a / 360));
 }
 
 //mxd. Inverse of Q2 logic!
@@ -87,7 +89,7 @@ H2COMMON_API float Approach(const float curr, const float dest, const float rate
 	if (diff < 0.0f)
 		return curr - rate;
 
-	if (diff >= 0.0f)
+	if (diff > 0.0f)
 		return curr + rate;
 
 	return curr;
