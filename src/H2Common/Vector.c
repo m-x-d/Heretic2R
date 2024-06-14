@@ -10,9 +10,9 @@
 #include "Matrix.h"
 #include "Random.h"
 
-H2COMMON_API vec3_t vec3_origin =	{ 0.0f, 0.0f, 0.0f };
-H2COMMON_API vec3_t vec3_right =	{ 1.0f, 0.0f, 0.0f }; //mxd. NOT exported in original .dll!
-H2COMMON_API vec3_t vec3_up =		{ 0.0f, 0.0f, 1.0f };
+H2COMMON_API const vec3_t vec3_origin =	{ 0.0f, 0.0f, 0.0f };
+H2COMMON_API const vec3_t vec3_right =	{ 1.0f, 0.0f, 0.0f }; //mxd. NOT exported in original .dll!
+H2COMMON_API const vec3_t vec3_up =		{ 0.0f, 0.0f, 1.0f };
 
 //mxd. Function logic does NOT match Q2 counterpart
 H2COMMON_API void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, const float degrees)
@@ -170,18 +170,24 @@ H2COMMON_API void DirAndUpFromAngles(const vec3_t angles, vec3_t direction, vec3
 	Matrix3MultByVec3(m, vec3_up, up);
 }
 
+//mxd. Assumes "direction" is normalized
 H2COMMON_API void AnglesFromDir(const vec3_t direction, vec3_t angles)
 {
-	angles[PITCH] = asinf(direction[ROLL]);
+	angles[PITCH] = asinf(direction[ROLL]); //mxd. asinf expects value in [-1.0; 1.0] range.
 	angles[YAW] = atan2f(direction[YAW], direction[PITCH]);
 	angles[ROLL] = 0.0f;
+
+	assert(!isnan(angles[PITCH])); //mxd
 }
 
+//mxd. Assumes "direction" is normalized
 H2COMMON_API void AnglesFromDirI(const vec3_t direction, vec3_t angles)
 {
-	angles[PITCH] = asinf(direction[ROLL]);
+	angles[PITCH] = asinf(direction[ROLL]); //mxd. asinf expects value in [-1.0; 1.0] range.
 	angles[YAW] = atan2f(direction[YAW], direction[PITCH]);
 	angles[ROLL] = -angles[YAW];
+
+	assert(!isnan(angles[PITCH])); //mxd
 }
 
 //mxd. Function logic does NOT match Q2 counterpart
@@ -200,12 +206,15 @@ H2COMMON_API void vectoangles(const vec3_t in, vec3_t out)
 	VectorScale(out, RAD_TO_ANGLE, out);
 }
 
+//mxd. Assumes "direction" is normalized
 H2COMMON_API void AnglesFromDirAndUp(vec3_t direction, vec3_t up, vec3_t angles)
 {
 	vec3_t v_dir, v_up;
 	matrix3_t m1, m2, m3;
 
-	angles[0] = asinf(direction[2]);
+	angles[0] = asinf(direction[2]); //mxd. asinf expects value in [-1.0; 1.0] range.
+
+	assert(!isnan(angles[0])); //mxd
 
 	memset(m1, 0, sizeof(matrix3_t));
 	m1[2][0] = direction[2];
@@ -283,7 +292,11 @@ H2COMMON_API void VectorMA(const vec3_t veca, const float scale, const vec3_t ve
 
 H2COMMON_API void VectorAverage(const vec3_t veca, const vec3_t vecb, vec3_t out)
 {
-	VectorMA(veca, 0.5f, vecb, out);
+	assert(out != vec3_origin);
+
+	out[0] = (veca[0] + vecb[0]) * 0.5f;
+	out[1] = (veca[1] + vecb[1]) * 0.5f;
+	out[2] = (veca[2] + vecb[2]) * 0.5f;
 }
 
 H2COMMON_API void VectorGetOffsetOrigin(const vec3_t offset, const vec3_t origin, const float angle_deg, vec3_t out)
@@ -329,6 +342,8 @@ H2COMMON_API float VectorLengthSquared(const vec3_t v)
 
 H2COMMON_API void VectorRandomAdd(const vec3_t origin, const vec3_t random_amount, vec3_t out)
 {
+	assert(out != vec3_origin);
+	
 	for (int i = 0; i < 3; i++)
 		out[i] = origin[i] + flrand(-random_amount[i], random_amount[i]);
 }
