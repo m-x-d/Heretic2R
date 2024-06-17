@@ -4,4 +4,6 @@
 /src/.vs
 /src/H2Common/debug
 /src/H2Common/release
-/src/H2Common/H2Common.vcxproj.user
+/src/ref_gl/debug
+/src/ref_gl/release
+*.user
