@@ -77,7 +77,7 @@ char* SurfaceMaterialNames[MAX_SURFACE_MAT_NAMES] =
 };
 
 //TODO: mxd. Seems to be used from Player.dll only. Move there?
-//TODO: mxd. GROSS HACKS (because I don't want to include Player just sources yet...)
+//TODO: mxd. GROSS HACKS (because I don't want to include Player.dll sources just yet...)
 //H2COMMON_API char* GetClientGroundSurfaceMaterialName(const playerinfo_t* playerinfo)
 H2COMMON_API char* GetClientGroundSurfaceMaterialName(const void* playerinfo)
 {
