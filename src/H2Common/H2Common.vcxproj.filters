@@ -10,9 +10,6 @@
     <Filter Include="game">
       <UniqueIdentifier>{6bbcdb2d-faa7-459f-a24f-e2029d2431fc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="headers">
-      <UniqueIdentifier>{2df7b8ce-135a-4f4b-8db1-dccacbae30d6}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.c">
@@ -95,9 +92,6 @@
     <ClInclude Include="..\game\q_shared.h">
       <Filter>game</Filter>
     </ClInclude>
-    <ClInclude Include="Console.h">
-      <Filter>headers</Filter>
-    </ClInclude>
     <ClInclude Include="..\qcommon\SinglyLinkedList.h">
       <Filter>qcommon</Filter>
     </ClInclude>
@@ -106,6 +100,9 @@
     </ClInclude>
     <ClInclude Include="..\qcommon\SurfaceProps.h">
       <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="Console.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
