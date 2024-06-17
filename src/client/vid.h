@@ -1,4 +1,12 @@
+//
 // vid.h -- video driver defs
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
+
+#include "q_Typedef.h" //mxd
 
 #define	MIN_GAMMA	0.1			// These also need to be defined in gl_local.h
 #define MAX_GAMMA	4.0
@@ -8,26 +16,27 @@
 
 typedef struct vrect_s
 {
-	int				x,y,width,height;
+	int x;
+	int y;
+	int width;
+	int height;
 } vrect_t;
 
 typedef struct
 {
-	int			 	width;		
-	int				height;
-	byte			*pixels;
+	int width;
+	int height;
+	byte* pixels;
 } viddef_t;
 
-extern	viddef_t	viddef;				// global video state
+extern viddef_t viddef;	// Global video state
 
 // Video module initialisation etc
-void	VID_Init (void);
-void	VID_Shutdown (void);
-void	VID_CheckChanges (void);
+void VID_Init(void);
+void VID_Shutdown(void);
+void VID_CheckChanges(void);
 
-void	VID_MenuInit( void );
-void	VID_PreMenuInit( void );
-void	__stdcall VID_MenuDraw();
-char	* __stdcall VID_MenuKey( int );
-
-// end
+void VID_MenuInit(void);
+void VID_PreMenuInit(void);
+void VID_MenuDraw(void);
+char* VID_MenuKey(int);

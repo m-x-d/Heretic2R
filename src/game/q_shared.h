@@ -121,8 +121,6 @@ int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, struct cplane_s *plane);
 	:										\
 		BoxOnPlaneSide( (emins), (emaxs), (p)))*/
 
-//=============================================
-
 #define MAX_COLORS	33
 
 extern H2COMMON_API paletteRGBA_t TextPalette[MAX_COLORS];
@@ -167,8 +165,6 @@ typedef enum
 	P_FRAGNAME,
 } PalIdx_t;
 
-//=============================================
-
 H2COMMON_API char* COM_SkipPath(char *pathname);
 H2COMMON_API void COM_StripExtension(const char *in, char *out);
 H2COMMON_API void COM_FileBase(const char *in, char *out);
@@ -179,7 +175,6 @@ H2COMMON_API char* COM_Parse(char **data_p);
 H2COMMON_API void Com_sprintf(char *dest, int size, const char *fmt, ...);
 H2COMMON_API void Com_PageInMemory(const byte *buffer, int size);
 
-//=============================================
 
 H2COMMON_API short BigShort(short l);
 H2COMMON_API int BigLong(int l);
@@ -194,8 +189,6 @@ H2COMMON_API int ClampI(int src, int min, int max);
 H2COMMON_API float Approach(float curr, float dest, float rate);
 H2COMMON_API char* va(const char *format, ...);
 
-//=============================================
-
 // Key / value info strings
 #define	MAX_INFO_KEY		64
 #define	MAX_INFO_VALUE		64
@@ -208,9 +201,7 @@ H2COMMON_API qboolean Info_Validate(const char *s);
 H2COMMON_API void Set_Com_Printf(void (*toSet)(const char *fmt, ...));
 
 
-// *************************************************************
-// SYSTEM SPECIFIC
-// *************************************************************
+#pragma region ========================== SYSTEM SPECIFIC ==========================
 
 struct cplane_s;
 extern H2COMMON_API const vec3_t vec3_origin;
@@ -244,10 +235,9 @@ void Sys_Error(char *error, ...);
 void Com_Printf(char *msg, ...);
 void Com_ColourPrintf(PalIdx_t colour, char *msg, ...);
 
+#pragma endregion
 
-// *************************************************************
-// CVARS (console variables)
-// *************************************************************
+#pragma region ========================== CVARS (console variables) ==========================
 
 #ifndef CVAR
 #define	CVAR
@@ -274,10 +264,10 @@ typedef struct cvar_s
 
 cvar_t* Cvar_Get(char *var_name, char *value, int flags);
 
+#pragma endregion
 
-// *************************************************************
-// Palette info
-// *************************************************************
+#pragma region ========================== Palette info ==========================
+
 typedef struct paletteRGB_s
 {
 	struct //TODO: Why this inner struct?
@@ -286,10 +276,9 @@ typedef struct paletteRGB_s
 	};
 } paletteRGB_t;
 
+#pragma endregion
 
-// *************************************************************
-// Additional info for flex models with mesh nodes
-// *************************************************************
+#pragma region ========================== Additional info for flex models with mesh nodes ==========================
 
 #define MAX_FM_MESH_NODES	16 // Also defined in ref_gl/fmodel.h
 
@@ -309,10 +298,9 @@ typedef struct
 #define FMNI_NO_DRAW		(1<<4)
 #define FMNI_USE_REFLECT	(1<<5)
 
+#pragma endregion
 
-// *************************************************************
-// Contents flags.
-// *************************************************************
+#pragma region ========================== Contents flags ==========================
 
 // Lower bits are stronger, and will eat weaker brushes completely.
 #define	CONTENTS_EMPTY			0x00000000	// Nothing
@@ -364,10 +352,9 @@ typedef struct
 // only as an argument to trace fucntions.
 #define CONTENTS_WORLD_ONLY		0x80000000
 
+#pragma endregion
 
-// ************************************************************************************************
-// Contents masks.
-// ************************************************************************************************
+#pragma region ========================== Contents masks ==========================
 
 #define	MASK_ALL			0x7fffffff
 #define	MASK_SOLID			(CONTENTS_SOLID | CONTENTS_WINDOW)
@@ -380,10 +367,9 @@ typedef struct
 #define MASK_CURRENT		(CONTENTS_CURRENT_0 | CONTENTS_CURRENT_90 | CONTENTS_CURRENT_180 | CONTENTS_CURRENT_270 | CONTENTS_CURRENT_UP | CONTENTS_CURRENT_DOWN)
 #define MASK_DRIP			(CONTENTS_SOLID | CONTENTS_WATER | CONTENTS_LAVA | CONTENTS_SLIME | CONTENTS_WINDOW)
 
+#pragma endregion
 
-// ************************************************************************************************
-// Surface flags.
-// ************************************************************************************************
+#pragma region ========================== Surface flags ==========================
 
 #define	SURF_LIGHT			0x1			// Value will hold the light strength.
 #define	SURF_SLICK			0x2			// Affects game physics.
@@ -398,6 +384,8 @@ typedef struct
 #define	SURF_ANIMSPEED		0x00001000	// Value will hold the anim speed in fps
 #define SURF_UNDULATE		0x00002000	// Rock surface up and down...
 #define SURF_QUAKE			0x00004000	// Rock surface up and down when quake value on
+
+#pragma endregion
 
 // gi.BoxEdicts() can return a list of either solid or trigger entities
 // FIXME: eliminate AREA_ distinction?
@@ -438,10 +426,7 @@ typedef struct csurface_s
 	int value;
 } csurface_t;
 
-
-// ************************************************************************************************
-// trace_t. A trace is returned when a box is swept through the world.
-// ************************************************************************************************
+// A trace is returned when a box is swept through the world.
 typedef struct trace_s
 {
 	byte allsolid;		// If true, plane is not valid
@@ -457,10 +442,6 @@ typedef struct trace_s
 	struct edict_s* ent;// Not set by CM_*() functions
 } trace_t;
 
-
-// ************************************************************************************************
-// pmtype_t
-// ************************************************************************************************
 typedef enum 
 {
 	PM_NORMAL,			// Can accelerate and turn, clips.
@@ -471,10 +452,7 @@ typedef enum
 	PM_INTERMISSION,	// An existing remote camera view is already underway.
 } pmtype_t;
 
-
-// ************************************************************************************************
 // pmove->pm_flags
-// ************************************************************************************************
 #define	PMF_STANDSTILL		0x0001
 #define	PMF_ON_GROUND		0x0004
 #define	PMF_TIME_LAND		0x0008	// pm_time is time before rejump
@@ -492,15 +470,11 @@ typedef enum
 #define	WF_SWIMFREE			0x0008	// Currently swimming freely underwater
 #define	WF_SINK				0x0010	// Sink below the surface of the water
 
-
-// ************************************************************************************************
 // pmove_state_t
-// -------------
-// This structure contains the information necessary for client side movement prediction. It MUST
-// be communicated bit-accurate from the server to the client to guarantee that prediction stays in
-// sync., so no floats are used. If any part of the game code modifies this struct, it will result
-// in a prediction error of some degree.
-// ************************************************************************************************
+
+// This structure contains the information necessary for client side movement prediction.
+// It MUST be communicated bit-accurate from the server to the client to guarantee that prediction stays in sync, so no floats are used.
+// If any part of the game code modifies this struct, it will result in a prediction error of some degree.
 typedef struct
 {
 	pmtype_t pm_type;
@@ -517,10 +491,7 @@ typedef struct
 	short camera_delta_angles[3];
 } pmove_state_t;
 
-
-// ************************************************************************************************
 // BUTTON_XXX
-// ************************************************************************************************
 #define	BUTTON_ATTACK		1
 #define	BUTTON_DEFEND		2
 #define	BUTTON_ACTION		4
@@ -532,10 +503,7 @@ typedef struct
 #define BUTTON_INVENTORY	256
 #define	BUTTON_ANY			512	// Any key whatsoever.
 
-
-// ************************************************************************************************
-// usercmd_t. Sent to the server each client frame.
-// ************************************************************************************************
+// Sent to the server each client frame.
 typedef struct usercmd_s
 {
 	byte msec;
@@ -550,11 +518,6 @@ typedef struct usercmd_s
 	byte prediction;
 	byte lightlevel; // Light level the player is standing on.
 } usercmd_t;
-
-
-// ************************************************************************************************
-// pmove_t
-// ************************************************************************************************
 
 #define	MAXTOUCH	32
 
@@ -724,10 +687,7 @@ typedef struct
 
 #define DF_DEATHMATCH_SET		0x80000000	// High bit indicates deathmatch, so that it can be transmitted in playerinfo.
 
-
-// *************************************************************
-// ELEMENTS COMMUNICATED ACROSS THE NET
-// *************************************************************
+#pragma region ========================== ELEMENTS COMMUNICATED ACROSS THE NET ==========================
 
 #define	ANGLE2SHORT(x)	((int)((x)*65536/360) & 65535)
 #define	SHORT2ANGLE(x)	((x)*(360.0/65536))
@@ -754,10 +714,9 @@ typedef struct
 #define CS_WELCOME			(CS_PLAYERSKINS + MAX_CLIENTS)  // Give us 4 welcome string messages so we can have a total of 256 characters per message
 #define	MAX_CONFIGSTRINGS	(CS_WELCOME + 4)
 
+#pragma endregion
 
-// ************************************************************************************************
-// EffectsBuffer_t
-// ************************************************************************************************
+#pragma region ========================== EffectsBuffer_t ==========================
 
 #define ENTITY_FX_BUF_SIZE			192
 #define ENTITY_FX_BUF_BLOCK_SIZE	256
@@ -782,13 +741,11 @@ typedef struct PerEffectsBuffer_s
 	int fx_num;
 } PerEffectsBuffer_t;
 
+#pragma endregion
 
-// ************************************************************************************************
-// entity_state_t
-// --------------
-// This is the information conveyed from the server to clients in an update message, about entities
-// that the client will need to render.
-// ************************************************************************************************
+#pragma region ========================== entity_state_t ==========================
+
+// This is the information conveyed from the server to clients in an update message, about entities that the client will need to render.
 typedef struct entity_state_s
 {
 	short number;			// Edict index.
@@ -831,14 +788,12 @@ typedef struct entity_state_s
 	byte usageCount;		// Used by the client to verify is this still the same entity it last had.
 } entity_state_t;
 
+#pragma endregion
 
-// ************************************************************************************************
-// player_state_t
-// --------------
-// This is the information needed in addition to the 'pmove_state_t' to render a view. There will
-// only be 10 'player_state_t's sent each second, but the number of pmove_state_t changes will be
-// relative to client frame rates.
-// ************************************************************************************************
+#pragma region ========================== player_state_t ==========================
+
+// This is the information needed in addition to the 'pmove_state_t' to render a view.
+// There will only be 10 'player_state_t's sent each second, but the number of pmove_state_t changes will be relative to client frame rates.
 typedef struct
 {
 	pmove_state_t pmove;		// For prediction (must be communicated bit precise).
@@ -947,10 +902,10 @@ typedef struct
 
 } player_state_t;
 
+#pragma endregion
 
-// *************************************************************
-// Inlines //TODO: mxd. Remove
-// *************************************************************
+#pragma region ========================== Inlines ==========================
+//TODO: mxd. Remove
 
 // microsoft's fabs seems to be ungodly slow...
 _inline float Q_fabs(float f)
@@ -996,10 +951,9 @@ _inline int Q_strcasecmp(char* s1, char* s2)
 	return _stricmp(s1, s2);
 }
 
+#pragma endregion
 
-// *************************************************************
-// Sound flags
-// *************************************************************
+#pragma region ========================== Sound flags ==========================
 
 // For ambient sounds.
 typedef enum AmbientSoundID_e
@@ -1124,13 +1078,12 @@ enum
 	EAX_PSYCHOTIC,
 };
 
+#pragma endregion
 
-// ************************************************************************************************
-// Skin defines
-// -----------
+#pragma region ========================== Skin defines ==========================
+
 // Indicates what skin Corvus has.
 // When indicated on the model, each odd-numbered skin is the damaged version of the previous skin.
-// ************************************************************************************************
 
 // For code clarity
 #define PLAGUE_NUM_LEVELS 3
@@ -1141,3 +1094,5 @@ enum
 #define SKIN_PLAGUE2	(DAMAGE_NUM_LEVELS * 2)
 #define SKIN_REFLECTION	(DAMAGE_NUM_LEVELS)	// We don't maintain a skin for every plague level anymore.
 #define SKIN_MAX		(SKIN_REFLECTION + 1)
+
+#pragma endregion
