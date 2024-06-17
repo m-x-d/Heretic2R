@@ -1,4 +1,6 @@
 /build/**
+/lib/*.exp
+/lib/*.lib
 /src/.vs
 /src/H2Common/debug
 /src/H2Common/release
