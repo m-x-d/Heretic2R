@@ -11,16 +11,36 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\qcommon\Skeletons.c" />
+    <ClCompile Include="gl_draw.c" />
+    <ClCompile Include="gl_draw_cinematic.c" />
+    <ClCompile Include="gl_find_surface.c" />
+    <ClCompile Include="gl_image.c" />
     <ClCompile Include="gl_main.c" />
+    <ClCompile Include="gl_model.c" />
+    <ClCompile Include="gl_warp.c" />
+    <ClCompile Include="m_Reference.c" />
+    <ClCompile Include="qgl_imp.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\client\ref.h" />
     <ClInclude Include="..\client\screen.h" />
     <ClInclude Include="..\client\vid.h" />
     <ClInclude Include="..\game\q_shared.h" />
+    <ClInclude Include="..\qcommon\ArrayedList.h" />
+    <ClInclude Include="..\qcommon\Placement.h" />
     <ClInclude Include="..\qcommon\qcommon.h" />
     <ClInclude Include="..\qcommon\qfiles.h" />
+    <ClInclude Include="..\qcommon\q_Surface.h" />
+    <ClInclude Include="..\qcommon\Reference.h" />
+    <ClInclude Include="..\qcommon\Skeletons.h" />
+    <ClInclude Include="fmodel.h" />
     <ClInclude Include="gl_local.h" />
+    <ClInclude Include="gl_model.h" />
+    <ClInclude Include="m_Reference.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <SccProjectName />
@@ -73,6 +93,8 @@
       <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>..\client;..\qcommon;..\game;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
+      <UndefinePreprocessorDefinitions>
+      </UndefinePreprocessorDefinitions>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -116,6 +138,7 @@
       <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>..\client;..\qcommon;..\game;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
+      <UndefinePreprocessorDefinitions>H2COMMON</UndefinePreprocessorDefinitions>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>

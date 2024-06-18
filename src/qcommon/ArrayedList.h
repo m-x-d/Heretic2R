@@ -1,4 +1,10 @@
-#include <assert.h>
+//
+// ArrayedList.h
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
 
 typedef struct ArrayedListNode_s
 {
@@ -9,24 +15,23 @@ typedef struct ArrayedListNode_s
 
 #define ARRAYEDLISTNODE_NULL -1
 
-_inline int GetFreeNode(ArrayedListNode_t *nodeArray, int max)
+//TODO: un-inline?
+_inline int GetFreeNode(ArrayedListNode_t* nodeArray, int max)
 {
-	int i;
-
-	for(i = 0; i < max; ++i)
+	for (int i = 0; i < max; ++i)
 	{
-		if(!nodeArray[i].inUse)
+		if (!nodeArray[i].inUse)
 		{
 			nodeArray[i].inUse = 1;
 			return i;
 		}
 	}
 
-	assert(0);
 	return -1;
 }
 
-_inline void FreeNode(ArrayedListNode_t *nodeArray, int index)
+//TODO: un-inline?
+_inline void FreeNode(ArrayedListNode_t* nodeArray, int index)
 {
 	nodeArray[index].inUse = 0;
 }

@@ -1,10 +1,15 @@
-#ifndef REFERENCE_H
-#define REFERENCE_H
+//
+// Reference.h
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
 
 #include "Placement.h"
 
 #define MAX_REFPOINTS		16
-#define REF_MINCULLTIME		1.0
+#define REF_MINCULLTIME		1.0f //mxd. double -> float
 
 typedef struct Reference_s
 {
@@ -14,67 +19,71 @@ typedef struct Reference_s
 
 typedef struct LERPedReferences_s
 {
-	int			refType;
-	int			*jointIDs;
-	float		lastUpdate;
+	int refType;
+	int* jointIDs;
+	float lastUpdate;
 	Reference_t references[MAX_REFPOINTS];
 	Reference_t oldReferences[MAX_REFPOINTS];
 } LERPedReferences_t;
 
 // Reference Types
-enum {
+enum
+{
 	REF_NULL = -1,
-	REF_CORVUS,//0
-	REF_INSECT,//1
-	REF_PRIESTESS,//2
-	REF_MORK,//3
-	NUM_REFERENCED//4
+	REF_CORVUS,		//0
+	REF_INSECT,		//1
+	REF_PRIESTESS,	//2
+	REF_MORK,		//3
+	NUM_REFERENCED	//4
 };
 
 // Corvus Reference Points
-enum {
-	CORVUS_LEFTHAND,//0
+enum
+{
+	CORVUS_LEFTHAND,		//0
 	CORVUS_RIGHTHAND,
 	CORVUS_LEFTFOOT,
 	CORVUS_RIGHTFOOT,
 	CORVUS_STAFF,
 	CORVUS_BLADE,
 	CORVUS_HELL_HEAD,
-	NUM_REFERENCES_CORVUS//7
+	NUM_REFERENCES_CORVUS	//7
 };
 
 // Tchekrik Reference Points
-enum {
-	INSECT_STAFF,//0
+enum
+{
+	INSECT_STAFF,			//0
 	INSECT_SWORD,
 	INSECT_SPEAR,
 	INSECT_RIGHTFOOT,
 	INSECT_LEFTFOOT,
-	NUM_REFERENCES_INSECT//5
+	NUM_REFERENCES_INSECT	//5
 };
 
 // High Priestess Reference Points
-enum {
-	PRIESTESS_BACK,//0
+enum
+{
+	PRIESTESS_BACK,				//0
 	PRIESTESS_STAFF,
 	PRIESTESS_LHAND,
 	PRIESTESS_RHAND,
 	PRIESTESS_RFOOT,
 	PRIESTESS_LFOOT,
-	NUM_REFERENCES_PRIESTESS//6
+	NUM_REFERENCES_PRIESTESS	//6
 };
 
 // Morcalavin Reference Points
 enum 
 {
-	MORK_STAFFREF,//0
-	MORK_RFOOTREF,//1
-	MORK_LFOOTREF,//2
-	MORK_RHANDREF,//3
-	MORK_LHANDREF,//4
-	MORK_LEYEREF,//5
-	MORK_REYEREF,//6
-	NUM_REFERENCES_MORK//7
+	MORK_STAFFREF,		//0
+	MORK_RFOOTREF,		//1
+	MORK_LFOOTREF,		//2
+	MORK_RHANDREF,		//3
+	MORK_LHANDREF,		//4
+	MORK_LEYEREF,		//5
+	MORK_REYEREF,		//6
+	NUM_REFERENCES_MORK	//7
 };
 
 #define CORVUS_LIMBS_MASK	((1 << CORVUS_LEFTHAND) | (1 << CORVUS_RIGHTHAND) | (1 << CORVUS_LEFTFOOT) | (1 << CORVUS_RIGHTFOOT))
@@ -87,17 +96,15 @@ enum
 
 #define MORK_MASK			((1 << MORK_STAFFREF) | (1 << MORK_RFOOTREF) | (1 << MORK_LFOOTREF) | (1 << MORK_RHANDREF) | (1 << MORK_LHANDREF) | (1 << MORK_LEYEREF) | (1 << MORK_REYEREF))
 
-extern char *referenceRootNames[];
+extern char* referenceRootNames[];
 extern int referenceRootNameOffsets[];
 extern int numReferences[];
 
-void EnableRefPoints(LERPedReferences_t *refInfo, int mask);
-void DisableRefPoints(LERPedReferences_t *refInfo, int mask);
+void EnableRefPoints(LERPedReferences_t* refInfo, int mask);
+void DisableRefPoints(LERPedReferences_t* refInfo, int mask);
 
-void InitReferenceMngr();
-void ReleaseReferenceMngr();
+void InitReferenceMngr(void);
+void ReleaseReferenceMngr(void);
 
-LERPedReferences_t *LERPedReferences_new(int init_refType);
-void LERPedReferences_delete(LERPedReferences_t *toDelete);
-
-#endif
+LERPedReferences_t* LERPedReferences_new(int init_refType);
+void LERPedReferences_delete(LERPedReferences_t* toDelete);

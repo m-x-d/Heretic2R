@@ -18,6 +18,33 @@
     <ClCompile Include="gl_main.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="gl_model.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_image.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_draw.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_warp.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="m_Reference.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\Skeletons.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_draw_cinematic.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="qgl_imp.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_find_surface.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gl_local.h">
@@ -41,5 +68,32 @@
     <ClInclude Include="..\qcommon\qfiles.h">
       <Filter>qcommon</Filter>
     </ClInclude>
+    <ClInclude Include="fmodel.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="m_Reference.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Placement.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\ArrayedList.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Reference.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Skeletons.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="gl_model.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\q_Surface.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

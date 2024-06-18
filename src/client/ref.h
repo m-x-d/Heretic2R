@@ -11,7 +11,7 @@
 // These are the maximum number that maybe rendered on any given frame
 #define	MAX_DLIGHTS			32
 #define	MAX_ENTITIES		128	
-#define MAX_ALPHA_ENTITIES	MAX_ENTITIES * 2
+#define MAX_ALPHA_ENTITIES	(MAX_ENTITIES * 2)
 #define	MAX_SERVER_ENTITIES	MAX_ENTITIES
 #define	MAX_PARTICLES		4096
 #define	MAX_LIGHTSTYLES		256
@@ -89,7 +89,7 @@ typedef struct entity_s
 			int padToUnionSize2[11];	// Use this space up to add any more variable sprite fields
 		};
 
-		// info for line sprites
+		// Info for line sprites
 		struct
 		{
 			float startpos[3];
@@ -198,7 +198,7 @@ typedef struct
 	void (*SetSky)(char* name, float rotate, vec3_t axis);
 	void (*EndRegistration)(void);
 
-	int (*GetReferencedID)(struct model_s* model);
+	int (*GetReferencedID)(const struct model_s* model);
 
 	int (*RenderFrame)(refdef_t* fd);
 

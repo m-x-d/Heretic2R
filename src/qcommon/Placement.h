@@ -1,7 +1,12 @@
-#ifndef PLACEMENT_H
-#define PLACEMENT_H
+//
+// Placement.h
+//
+// Copyright 1998 Raven Software
+//
 
-typedef float vec3_t[3];
+#pragma once
+
+#include "q_Typedef.h" //mxd
 
 typedef struct Placement_s
 {
@@ -9,5 +14,3 @@ typedef struct Placement_s
 	vec3_t direction;
 	vec3_t up;
 } Placement_t;
-
-#endif

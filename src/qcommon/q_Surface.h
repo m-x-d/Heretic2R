@@ -1,5 +1,10 @@
-#ifndef Q_SURFACE_H
-#define Q_SURFACE_H
+//
+// q_Surface.h
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
 
 #include "q_shared.h"
 
@@ -7,18 +12,16 @@
 
 typedef struct Poly_s
 {
-	float		fraction;
-	int			numverts;
-	int			flags;
-	float		(*verts)[7];
+	float fraction;
+	int numverts;
+	int flags;
+	float (*verts)[7];
 } Poly_t;
 
 typedef struct Surface_s
 {
-	cplane_t	*plane;
-	vec3_t		normal;
-	vec3_t		point;			// point of intersection with line segment used to find the surface
-	Poly_t		poly;
+	cplane_t* plane;
+	vec3_t normal;
+	vec3_t point; // Point of intersection with line segment used to find the surface
+	Poly_t poly;
 } Surface_t;
-
-#endif // Q_SURFACE_H

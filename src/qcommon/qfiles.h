@@ -74,7 +74,7 @@ typedef struct
 #define MAX_TRIANGLES	4096
 #define MAX_VERTS		2048
 #define MAX_FRAMES		512
-#define MAX_MD2SKINS	64
+#define MAX_MD2SKINS	64	//mxd. 32 in Q2
 #define MAX_SKINNAME	64
 
 typedef struct

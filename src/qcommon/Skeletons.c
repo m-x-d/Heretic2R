@@ -3,13 +3,11 @@
 //
 // Copyright 1998 Raven Software
 //
-// Heretic II
-//
 
 #include "Skeletons.h"
-#include "ArrayedList.h"
+//#include "ArrayedList.h" //mxd. Disabled
 
-char *skeletonRootNames[] =
+char* skeletonRootNames[] =
 {
 	"RAVEN_ROOT",
 	"BOX_ROOT",
@@ -29,7 +27,7 @@ int skeletonRNameOffsets[] =
 	5,	// CORVUS
 };
 
-char *skeletonJointNames[] =
+char* skeletonJointNames[] =
 {
 	"RAVEN_LOWERBACK",	// 0
 	"RAVEN_UPPERBACK",
@@ -90,11 +88,11 @@ int numNodesInSkeleton[] =
 	2,	// CORVUS
 };
 
-void CreateRavenSkel(void *skeletalJoints, size_t jointSize, struct ArrayedListNode_s *jointNodes, int root);
-void CreateBoxSkel(void *skeletalJoints, size_t jointSize, struct ArrayedListNode_s *jointNodes, int root);
-void CreateBeetleSkel(void *skeletalJoints, size_t jointSize, ArrayedListNode_t *jointNodes, int rootIndex);
-void CreateElfLordSkel(void *skeletalJoints, size_t jointSize, ArrayedListNode_t *jointNodes, int rootIndex);
-void CreatePlagueElfSkel(void *skeletalJoints, size_t jointSize, ArrayedListNode_t *jointNodes, int rootIndex);
+void CreateRavenSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int root);
+void CreateBoxSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int root);
+void CreateBeetleSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex);
+void CreateElfLordSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex);
+void CreatePlagueElfSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex);
 
 CreateSkeleton_t SkeletonCreators[NUM_SKELETONS] =
 {
@@ -103,23 +101,19 @@ CreateSkeleton_t SkeletonCreators[NUM_SKELETONS] =
 	CreateBeetleSkel,
 	CreateElfLordSkel,
 	CreatePlagueElfSkel,
-	CreatePlagueElfSkel,	// Corvus has the same structure as the Plague Elf
+	CreatePlagueElfSkel, // Corvus has the same structure as the Plague Elf
 };
 
-void CreateRavenSkel(void *skeletalJoints, size_t jointSize, ArrayedListNode_t *jointNodes, int rootIndex)
+void CreateRavenSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex)
 {
-	char *root;
-	int *children;
-	int nodeIndex;
+	char* root = (char*)skeletalJoints + rootIndex * jointSize;
 
-	root = (char *)skeletalJoints + rootIndex * jointSize;
-
-	children = (int *)(root + RAVEN_HEAD * jointSize);
+	int* children = (int*)(root + RAVEN_HEAD * jointSize);
 	*children = ARRAYEDLISTNODE_NULL;
 
-	nodeIndex = GetFreeNode(jointNodes, MAX_ARRAYED_JOINT_NODES);
+	int nodeIndex = GetFreeNode(jointNodes, MAX_ARRAYED_JOINT_NODES);
 
-	children = (int *)(root + RAVEN_UPPERBACK * jointSize);
+	children = (int*)(root + RAVEN_UPPERBACK * jointSize);
 	*children = nodeIndex;
 
 	jointNodes[nodeIndex].data = rootIndex + RAVEN_HEAD;
@@ -127,78 +121,62 @@ void CreateRavenSkel(void *skeletalJoints, size_t jointSize, ArrayedListNode_t *
 
 	nodeIndex = GetFreeNode(jointNodes, MAX_ARRAYED_JOINT_NODES);
 
-	children = (int *)(root + RAVEN_LOWERBACK * jointSize);
+	children = (int*)(root + RAVEN_LOWERBACK * jointSize);
 	*children = nodeIndex;
 
 	jointNodes[nodeIndex].data = rootIndex + RAVEN_UPPERBACK;
 	jointNodes[nodeIndex].next = ARRAYEDLISTNODE_NULL;
 }
 
-void CreateBoxSkel(void *skeletalJoints, size_t jointSize, ArrayedListNode_t *jointNodes, int rootIndex)
+void CreateBoxSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex)
 {
-	char *root;
-	int *children;
-
-	root = (char *)skeletalJoints + rootIndex * jointSize;
-
-	children = (int *)(root + RAVEN_HEAD * jointSize);
+	char* root = (char*)skeletalJoints + rootIndex * jointSize;
+	int* children = (int*)(root + RAVEN_HEAD * jointSize);
 	*children = ARRAYEDLISTNODE_NULL;
 }
 
-void CreateBeetleSkel(void *skeletalJoints, size_t jointSize, ArrayedListNode_t *jointNodes, int rootIndex)
+void CreateBeetleSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex)
 {
-	char *root;
-	int *children;
-	int nodeIndex;
+	char* root = (char*)skeletalJoints + rootIndex * jointSize;
 
-	root = (char *)skeletalJoints + rootIndex * jointSize;
-
-	children = (int *)(root + BEETLE_HEAD * jointSize);
+	int* children = (int*)(root + BEETLE_HEAD * jointSize);
 	*children = ARRAYEDLISTNODE_NULL;
 
-	nodeIndex = GetFreeNode(jointNodes, MAX_ARRAYED_JOINT_NODES);
+	const int nodeIndex = GetFreeNode(jointNodes, MAX_ARRAYED_JOINT_NODES);
 
-	children = (int *)(root + BEETLE_NECK * jointSize);
+	children = (int*)(root + BEETLE_NECK * jointSize);
 	*children = nodeIndex;
 
 	jointNodes[nodeIndex].data = rootIndex + BEETLE_HEAD;
 	jointNodes[nodeIndex].next = ARRAYEDLISTNODE_NULL;
 }
 
-void CreateElfLordSkel(void *skeletalJoints, size_t jointSize, ArrayedListNode_t *jointNodes, int rootIndex)
+void CreateElfLordSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex)
 {
-	char *root;
-	int *children;
-	int nodeIndex;
+	char* root = (char*)skeletalJoints + rootIndex * jointSize;
 
-	root = (char *)skeletalJoints + rootIndex * jointSize;
-
-	children = (int *)(root + BEETLE_HEAD * jointSize);
+	int* children = (int*)(root + BEETLE_HEAD * jointSize);
 	*children = ARRAYEDLISTNODE_NULL;
 
-	nodeIndex = GetFreeNode(jointNodes, MAX_ARRAYED_JOINT_NODES);
+	const int nodeIndex = GetFreeNode(jointNodes, MAX_ARRAYED_JOINT_NODES);
 
-	children = (int *)(root + BEETLE_NECK * jointSize);
+	children = (int*)(root + BEETLE_NECK * jointSize);
 	*children = nodeIndex;
 
 	jointNodes[nodeIndex].data = rootIndex + BEETLE_HEAD;
 	jointNodes[nodeIndex].next = ARRAYEDLISTNODE_NULL;
 }
 
-void CreatePlagueElfSkel(void *skeletalJoints, size_t jointSize, ArrayedListNode_t *jointNodes, int rootIndex)
+void CreatePlagueElfSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex)
 {
-	char *root;
-	int *children;
-	int nodeIndex;
+	char* root = (char*)skeletalJoints + rootIndex * jointSize;
 
-	root = (char *)skeletalJoints + rootIndex * jointSize;
-
-	children = (int *)(root + PLAGUE_ELF_HEAD * jointSize);
+	int* children = (int*)(root + PLAGUE_ELF_HEAD * jointSize);
 	*children = ARRAYEDLISTNODE_NULL;
 
-	nodeIndex = GetFreeNode(jointNodes, MAX_ARRAYED_JOINT_NODES);
+	int nodeIndex = GetFreeNode(jointNodes, MAX_ARRAYED_JOINT_NODES);
 
-	children = (int *)(root + PLAGUE_ELF_UPPERBACK * jointSize);
+	children = (int*)(root + PLAGUE_ELF_UPPERBACK * jointSize);
 	*children = nodeIndex;
 
 	jointNodes[nodeIndex].data = rootIndex + PLAGUE_ELF_HEAD;
