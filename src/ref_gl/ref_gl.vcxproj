@@ -12,15 +12,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\qcommon\Skeletons.c" />
+    <ClCompile Include="..\win32\glw_imp.c" />
     <ClCompile Include="gl_draw.c" />
     <ClCompile Include="gl_draw_cinematic.c" />
     <ClCompile Include="gl_find_surface.c" />
     <ClCompile Include="gl_image.c" />
     <ClCompile Include="gl_main.c" />
+    <ClCompile Include="gl_misc.c" />
     <ClCompile Include="gl_model.c" />
     <ClCompile Include="gl_warp.c" />
     <ClCompile Include="m_Reference.c" />
     <ClCompile Include="qgl_imp.c" />
+    <ClCompile Include="qgl_win.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\client\ref.h" />
@@ -34,10 +37,12 @@
     <ClInclude Include="..\qcommon\q_Surface.h" />
     <ClInclude Include="..\qcommon\Reference.h" />
     <ClInclude Include="..\qcommon\Skeletons.h" />
+    <ClInclude Include="..\win32\glw_win.h" />
     <ClInclude Include="fmodel.h" />
     <ClInclude Include="gl_local.h" />
     <ClInclude Include="gl_model.h" />
     <ClInclude Include="m_Reference.h" />
+    <ClInclude Include="qgl.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
@@ -91,7 +96,7 @@
       <AssemblerListingLocation>.\debug\</AssemblerListingLocation>
       <ObjectFileName>.\debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\client;..\qcommon;..\game;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\client;..\qcommon;..\game;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
@@ -120,7 +125,7 @@
       <ImportLibrary>
       </ImportLibrary>
       <ModuleDefinitionFile>.\ref_gl.def</ModuleDefinitionFile>
-      <AdditionalDependencies>quake2.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>H2Common.lib;quake2.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -136,7 +141,7 @@
       <AssemblerListingLocation>.\release\</AssemblerListingLocation>
       <ObjectFileName>.\release\</ObjectFileName>
       <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\client;..\qcommon;..\game;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\client;..\qcommon;..\game;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <UndefinePreprocessorDefinitions>H2COMMON</UndefinePreprocessorDefinitions>
     </ClCompile>
@@ -164,7 +169,7 @@
       <ImportLibrary>
       </ImportLibrary>
       <ModuleDefinitionFile>.\ref_gl.def</ModuleDefinitionFile>
-      <AdditionalDependencies>quake2.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>H2Common.lib;quake2.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

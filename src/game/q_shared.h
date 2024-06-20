@@ -55,6 +55,9 @@
 #define NULL ((void *)0)
 #endif*/
 
+//mxd. Development aid //TODO: remove
+#define NOT_IMPLEMENTED		assert(!("Not implemented!"));
+
 // Angle indexes
 #define	PITCH				0		// up / down
 #define	YAW					1		// left / right

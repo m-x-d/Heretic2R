@@ -6,7 +6,15 @@
 
 #pragma once
 
+#ifdef _WIN32
+	#include <windows.h>
+#endif
+
+#include <GL/gl.h>
 #include "ref.h"
+#include "qgl.h"
+
+#define	REF_VERSION	"GL 2.1" //mxd. GL 0.01 in Q2
 
 typedef enum //mxd. Changed in H2
 {
@@ -37,9 +45,131 @@ typedef struct image_s //mxd. Changed in H2. Original size: 104 bytes
 	struct palette_s* palette;			// .M8 palette
 } image_t;
 
+typedef enum
+{
+	rserr_ok,
+	rserr_invalid_fullscreen,
+	rserr_invalid_mode,
+	rserr_unknown
+} rserr_t;
+
 #include "gl_model.h" //mxd. MUST be below image_t definition...
 
+#pragma region ========================== CVARS  ==========================
+
+extern cvar_t* r_norefresh;
+extern cvar_t* r_fullbright;
+extern cvar_t* r_drawentities;
+extern cvar_t* r_drawworld;
+extern cvar_t* r_novis;
+extern cvar_t* r_nocull;
+extern cvar_t* r_lerpmodels;
+extern cvar_t* r_speeds;
+
+extern cvar_t* r_lightlevel;
+
+extern cvar_t* r_farclipdist;
+extern cvar_t* r_fog;
+extern cvar_t* r_fog_mode;
+extern cvar_t* r_fog_density;
+extern cvar_t* r_fog_startdist;
+extern cvar_t* r_fog_color_r;
+extern cvar_t* r_fog_color_g;
+extern cvar_t* r_fog_color_b;
+extern cvar_t* r_fog_color_a;
+extern cvar_t* r_fog_color_scale;
+extern cvar_t* r_fog_lightmap_adjust;
+extern cvar_t* r_fog_underwater;
+extern cvar_t* r_fog_underwater_mode;
+extern cvar_t* r_fog_underwater_density;
+extern cvar_t* r_fog_underwater_startdist;
+extern cvar_t* r_fog_underwater_color_r;
+extern cvar_t* r_fog_underwater_color_g;
+extern cvar_t* r_fog_underwater_color_b;
+extern cvar_t* r_fog_underwater_color_a;
+extern cvar_t* r_fog_underwater_color_scale;
+extern cvar_t* r_fog_underwater_lightmap_adjust;
+extern cvar_t* r_underwater_color;
+extern cvar_t* r_frameswap;
+extern cvar_t* r_references;
+
+extern cvar_t* gl_nosubimage;
+extern cvar_t* gl_allow_software;
+
+extern cvar_t* gl_particle_min_size;
+extern cvar_t* gl_particle_max_size;
+extern cvar_t* gl_particle_size;
+extern cvar_t* gl_particle_att_a;
+extern cvar_t* gl_particle_att_b;
+extern cvar_t* gl_particle_att_c;
+extern cvar_t* gl_noartifacts;
+
+extern cvar_t* gl_modulate;
+extern cvar_t* gl_log;
+extern cvar_t* gl_bitdepth;
+extern cvar_t* gl_lightmap;
+extern cvar_t* gl_shadows;
+extern cvar_t* gl_dynamic;
+extern cvar_t* gl_nobind;
+extern cvar_t* gl_round_down;
+extern cvar_t* gl_showtris;
+extern cvar_t* gl_reporthash;
+extern cvar_t* gl_ztrick;
+extern cvar_t* gl_finish;
+extern cvar_t* gl_clear;
+extern cvar_t* gl_cull;
+extern cvar_t* gl_polyblend;
+extern cvar_t* gl_flashblend;
+extern cvar_t* gl_playermip;
+extern cvar_t* gl_monolightmap; //TODO: remove
+extern cvar_t* gl_driver; //TODO: remove
+extern cvar_t* gl_texturemode;
+extern cvar_t* gl_lockpvs;
+
+extern cvar_t* gl_drawflat;
+extern cvar_t* gl_devel1;
+extern cvar_t* gl_trans33;
+extern cvar_t* gl_trans66;
+extern cvar_t* gl_picmip;
+extern cvar_t* gl_skinmip;
+extern cvar_t* gl_bookalpha;
+
+extern cvar_t* gl_ext_swapinterval;
+extern cvar_t* gl_ext_gamma;
+extern cvar_t* gl_ext_palettedtexture;
+extern cvar_t* gl_ext_multitexture;
+extern cvar_t* gl_ext_pointparameters;
+extern cvar_t* gl_drawmode;
+
+extern cvar_t* gl_drawbuffer;
+extern cvar_t* gl_swapinterval;
+extern cvar_t* gl_sortmulti;
+
+extern cvar_t* gl_saturatelighting;
+
+//TODO: remove
+extern cvar_t* gl_3dlabs_broken;
+extern cvar_t* gl_lostfocus_broken;
+extern cvar_t* gl_fog_broken;
+extern cvar_t* gl_envmap_broken;
+extern cvar_t* gl_screenshot_broken;
+
+extern cvar_t* vid_fullscreen;
+extern cvar_t* vid_gamma;
+extern cvar_t* vid_brightness;
+extern cvar_t* vid_contrast;
+
+extern cvar_t* vid_ref;
+
+extern cvar_t* vid_mode;
+extern cvar_t* menus_active;
+extern cvar_t* cl_camera_under_surface;
+extern cvar_t* quake_amount;
+
+#pragma endregion
+
 // gl_draw.c
+void Draw_InitLocal(void);
 void Draw_GetPicSize(int* w, int* h, char* name);
 void Draw_Pic(int x, int y, char* name, float alpha);
 void Draw_StretchPic(int x, int y, int w, int h, char* name, float alpha, qboolean scale);
@@ -52,6 +182,69 @@ void Draw_BookPic(int w, int h, char* name, float scale); // New in H2
 
 int BF_Strlen(char* text); // New in H2
 
+// gl_image.c
+extern int gl_filter_min;
+extern int gl_filter_max;
+
+void InitGammaTable(void); // New in H2
+void GL_TexEnv(GLenum mode);
+void GL_TextureMode(char* string);
+void GL_ImageList_f(void);
+void GL_InitImages(void);
+void GL_ShutdownImages(void);
+
+// gl_misc.c
+void GL_ScreenShot_f(void);
+void GL_Strings_f(void);
+void GL_SetDefaultState(void);
+
+// gl_model.c
+extern int registration_sequence;
+
+void Mod_Modellist_f(void);
+
+#pragma region ========================== GL config stuff  ==========================
+
+#define GL_RENDERER_DEFAULT 0 //mxd. Don't bother with ancient videocards
+
+// Q2 counterpart
+typedef struct
+{
+	int renderer;
+	const char* renderer_string;
+	const char* vendor_string;
+	const char* version_string;
+	const char* extensions_string;
+
+	qboolean allow_cds; //TODO: always true. Remove?
+} glconfig_t;
+
+typedef struct
+{
+	float inverse_intensity;
+	qboolean fullscreen;
+
+	int prev_mode;
+	// Missing: unsigned char *d_16to8table;
+	int lightmap_textures;
+	int	currenttextures[2];
+	int currenttmu;
+
+	//TODO: Broken implementation (http://www.benryves.com/products/stereoquake/). Probably unusable nowadays. Remove?
+	float camera_separation;
+	qboolean stereo_enabled;
+
+	//TODO: unused?
+	byte originalRedGammaTable[256];
+	byte originalGreenGammaTable[256];
+	byte originalBlueGammaTable[256];
+} glstate_t;
+
+extern glconfig_t gl_config;
+extern glstate_t gl_state;
+
+#pragma endregion
+
 #pragma region ========================== IMPORTED FUNCTIONS ==========================
 
 extern refimport_t ri;
@@ -61,6 +254,11 @@ extern refimport_t ri;
 #pragma region ========================== IMPLEMENTATION-SPECIFIC FUNCTIONS ==========================
 
 void GLimp_EndFrame(void);
+qboolean GLimp_Init(void* hinstance, void* hWnd); //mxd. Changed return type
+void GLimp_Shutdown(void);
+rserr_t GLimp_SetMode(int* pwidth, int* pheight, int mode, qboolean fullscreen, qboolean create_window);
 void GLimp_AppActivate(qboolean active);
+void GLimp_EnableLogging(qboolean enable);
+void GLimp_LogNewFrame(void);
 
 #pragma endregion

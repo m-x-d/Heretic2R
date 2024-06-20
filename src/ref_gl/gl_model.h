@@ -222,3 +222,5 @@ typedef struct model_s
 } model_t;
 
 #pragma endregion
+
+void Mod_Init(void);
