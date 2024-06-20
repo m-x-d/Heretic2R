@@ -396,7 +396,10 @@ extern void (APIENTRY* qglViewport)(GLint x, GLint y, GLsizei width, GLsizei hei
 
 extern void (APIENTRY* qglPointParameterfEXT)(GLenum param, GLfloat value);
 extern void (APIENTRY* qglPointParameterfvEXT)(GLenum param, const GLfloat* value);
-extern void (APIENTRY* qglColorTableEXT)(int, int, int, int, int, const void*);
+
+//mxd. Required 'GL_EXT_shared_texture_palette' extension unsupported since GeForceFX release...
+// https://community.khronos.org/t/does-not-support-ext-paletted-texture-on-geforcefx
+//extern void (APIENTRY* qglColorTableEXT)(int, int, int, int, int, const void*); 
 
 extern void (APIENTRY* qglLockArraysEXT) (int, int);
 extern void (APIENTRY* qglUnlockArraysEXT) (void);

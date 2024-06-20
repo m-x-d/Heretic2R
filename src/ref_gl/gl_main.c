@@ -207,7 +207,7 @@ void R_Register(void)
 
 	gl_ext_swapinterval = Cvar_Get("gl_ext_swapinterval", "1", CVAR_ARCHIVE);
 	gl_ext_gamma = Cvar_Get("gl_ext_gamma", "1", CVAR_ARCHIVE);
-	gl_ext_palettedtexture = Cvar_Get("gl_ext_palettedtexture", "1", CVAR_ARCHIVE);
+	gl_ext_palettedtexture = Cvar_Get("gl_ext_palettedtexture", "1", CVAR_ARCHIVE); //TODO: ignored. Remove?
 	gl_ext_multitexture = Cvar_Get("gl_ext_multitexture", "1", CVAR_ARCHIVE);
 	gl_ext_pointparameters = Cvar_Get("gl_ext_pointparameters", "1", CVAR_ARCHIVE);
 	gl_drawmode = Cvar_Get("gl_drawmode", "0", 0);
@@ -377,23 +377,8 @@ qboolean R_Init(void* hinstance, void* hWnd)
 		Com_Printf("...GL_EXT_point_parameters not found\n");
 	}
 
-	if (strstr(gl_config.extensions_string, "GL_EXT_paletted_texture") &&
-		strstr(gl_config.extensions_string, "GL_EXT_shared_texture_palette"))
-	{
-		if ((int)gl_ext_palettedtexture->value)
-		{
-			Com_Printf("...using GL_EXT_shared_texture_palette\n");
-			qglColorTableEXT = (void (APIENTRY*)(int, int, int, int, int, const void*))qwglGetProcAddress("glColorTableEXT");
-		}
-		else
-		{
-			Com_Printf("...ignoring GL_EXT_shared_texture_palette\n");
-		}
-	}
-	else
-	{
-		Com_Printf("...GL_EXT_shared_texture_palette not found\n");
-	}
+	//mxd. Skip qglColorTableEXT logic. Required 'GL_EXT_shared_texture_palette' extension is unsupported since GeForceFX
+	//https://community.khronos.org/t/does-not-support-ext-paletted-texture-on-geforcefx
 
 	if (strstr(gl_config.extensions_string, "GL_ARB_multitexture"))
 	{

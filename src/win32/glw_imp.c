@@ -192,7 +192,44 @@ rserr_t GLimp_SetMode(int* pwidth, int* pheight, const int mode, const qboolean 
 
 void GLimp_Shutdown(void)
 {
-	NOT_IMPLEMENTED
+	if (qwglMakeCurrent != NULL && !qwglMakeCurrent(NULL, NULL))
+		ri.Con_Printf(PRINT_ALL, "ref_gl::GLimp_Shutdown() - wglMakeCurrent failed\n");
+
+	if (glw_state.hGLRC != NULL)
+	{
+		if (qwglDeleteContext != NULL && !qwglDeleteContext(glw_state.hGLRC))
+			ri.Con_Printf(PRINT_ALL, "ref_gl::GLimp_Shutdown() - wglDeleteContext failed\n");
+
+		glw_state.hGLRC = NULL;
+	}
+
+	if (glw_state.hDC != NULL)
+	{
+		if (!ReleaseDC(glw_state.hWnd, glw_state.hDC))
+			ri.Con_Printf(PRINT_ALL, "ref_gl::GLimp_Shutdown() - ReleaseDC failed\n");
+
+		glw_state.hDC = NULL;
+	}
+
+	if (glw_state.hWnd != NULL)
+	{
+		DestroyWindow(glw_state.hWnd);
+		glw_state.hWnd = NULL;
+	}
+
+	if (glw_state.log_fp != NULL)
+	{
+		fclose(glw_state.log_fp);
+		glw_state.log_fp = NULL;
+	}
+
+	UnregisterClass(WINDOW_CLASS_NAME, glw_state.hInstance);
+
+	if (gl_state.fullscreen)
+	{
+		ChangeDisplaySettings(NULL, 0);
+		gl_state.fullscreen = false;
+	}
 }
 
 // Q2 counterpart (in original .dll). We'll just ASSUME we are running on Win95 OSR2 or better
@@ -201,19 +238,6 @@ qboolean GLimp_Init(void* hinstance, void* wndproc)
 	glw_state.hInstance = (HINSTANCE)hinstance;
 	glw_state.wndproc = wndproc;
 	glw_state.allowdisplaydepthchange = true; // False on pre-OSR2 Win95
-
-	return true;
-}
-
-static qboolean VerifyDriver(void)
-{
-	char buffer[1024];
-
-	strcpy_s(buffer, sizeof(buffer), (const char*)qglGetString(GL_RENDERER)); //mxd. strcpy -> strcpy_s
-	_strlwr_s(buffer, sizeof(buffer)); //mxd. strlwr -> _strlwr_s
-
-	if (strcmp(buffer, "gdi generic") == 0 && !glw_state.mcd_accelerated) // TODO: mcd_accelerated is always true
-		return false;
 
 	return true;
 }
@@ -273,7 +297,7 @@ qboolean GLimp_InitGL(void)
 	if (glw_state.hDC == NULL)
 	{
 		ri.Con_Printf(PRINT_ALL, "GLimp_Init() - GetDC failed\n");
-		return 0;
+		return false;
 	}
 
 	//mxd. Ignore minidriver logic
@@ -293,13 +317,11 @@ qboolean GLimp_InitGL(void)
 	DescribePixelFormat(glw_state.hDC, pixelformat, sizeof(pfd), &pfd);
 
 	//mxd. Ignore gl_allow_software logic
-	if (!(pfd.dwFlags & PFD_GENERIC_ACCELERATED))
+	if (!(pfd.dwFlags & PFD_GENERIC_ACCELERATED) && (pfd.dwFlags & PFD_GENERIC_FORMAT))
 	{
 		ri.Con_Printf(PRINT_ALL, "GLimp_Init() - no hardware acceleration detected\n");
 		return false;
 	}
-
-	glw_state.mcd_accelerated = true;
 
 	// Startup the OpenGL subsystem by creating a context and making it current
 	glw_state.hGLRC = qwglCreateContext(glw_state.hDC);
@@ -318,12 +340,7 @@ qboolean GLimp_InitGL(void)
 		return false;
 	}
 
-	if (!VerifyDriver())
-	{
-		ri.Con_Printf(PRINT_ALL, "GLimp_Init() - no hardware acceleration detected\n");
-		ReleaseContexts();
-		return false;
-	}
+	//mxd. Ignore VerifyDriver() logic. PFD_GENERIC_ACCELERATED and PFD_GENERIC_FORMAT flags check should be enough
 
 	// Print out PFD specifics
 	ri.Con_Printf(PRINT_ALL, "GL PFD: color(%d-bits) Z(%d-bit)\n", pfd.cColorBits, pfd.cDepthBits);

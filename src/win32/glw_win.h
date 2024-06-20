@@ -19,9 +19,9 @@ typedef struct
 
 	HINSTANCE hinstOpenGL;	// HINSTANCE for the OpenGL library
 
-	qboolean minidriver; //TODO: always false. Remove?
+	qboolean minidriver; //TODO: ignored. Remove?
 	qboolean allowdisplaydepthchange; //TODO: always true on Win95 OSR2+. Remove?
-	qboolean mcd_accelerated; //TODO: always true. Remove?
+	qboolean mcd_accelerated; //TODO: ignored. Remove?
 
 	FILE* log_fp;
 	qboolean minimized; // NEW!

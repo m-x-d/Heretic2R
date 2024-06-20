@@ -384,7 +384,7 @@ BOOL (WINAPI* qwglSetDeviceGammaRampEXT)(const unsigned char*, const unsigned ch
 
 void (APIENTRY* qglPointParameterfEXT)(GLenum param, GLfloat value);
 void (APIENTRY* qglPointParameterfvEXT)(GLenum param, const GLfloat* value);
-void (APIENTRY* qglColorTableEXT)(int, int, int, int, int, const void*);
+//void (APIENTRY* qglColorTableEXT)(int, int, int, int, int, const void*);
 //void (APIENTRY* qglSelectTextureSGIS)(GLenum);
 //void (APIENTRY* qglMTexCoord2fSGIS)(GLenum, GLfloat, GLfloat);
 void (APIENTRY* qglMultiTexCoord2fARB)(GLenum target, GLfloat s, GLfloat t); // New in H2
@@ -2998,7 +2998,7 @@ void QGL_Shutdown(void)
 	//mxd
 	qglPointParameterfEXT = NULL;
 	qglPointParameterfvEXT = NULL;
-	qglColorTableEXT = NULL;
+	//qglColorTableEXT = NULL;
 	qglMultiTexCoord2fARB = NULL;
 	qglActiveTextureARB = NULL;
 }
@@ -3388,7 +3388,7 @@ qboolean QGL_Init(const char* dllname)
 	qwglSwapIntervalEXT = NULL;
 	qglPointParameterfEXT = NULL;
 	qglPointParameterfvEXT = NULL;
-	qglColorTableEXT = NULL;
+	//qglColorTableEXT = NULL;
 	qglMultiTexCoord2fARB = NULL;
 	qglActiveTextureARB = NULL;
 	//qglSelectTextureSGIS = NULL;

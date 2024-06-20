@@ -61,6 +61,7 @@ void GL_SetDefaultState(void)
 		qglPointParameterfvEXT(GL_DISTANCE_ATTENUATION_EXT, attenuations);
 	}
 
-	if (qglColorTableEXT && (int)gl_ext_palettedtexture->value)
-		qglEnable(GL_SHARED_TEXTURE_PALETTE_EXT);
+	//mxd. Required 'GL_EXT_shared_texture_palette' extension is unsupported since GeForceFX...
+	//if (qglColorTableEXT && (int)gl_ext_palettedtexture->value)
+		//qglEnable(GL_SHARED_TEXTURE_PALETTE_EXT);
 }
