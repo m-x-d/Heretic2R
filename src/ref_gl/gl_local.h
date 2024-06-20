@@ -94,7 +94,6 @@ extern cvar_t* r_frameswap;
 extern cvar_t* r_references;
 
 extern cvar_t* gl_nosubimage;
-extern cvar_t* gl_allow_software;
 
 extern cvar_t* gl_particle_min_size;
 extern cvar_t* gl_particle_max_size;

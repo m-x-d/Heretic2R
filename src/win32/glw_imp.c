@@ -131,10 +131,10 @@ rserr_t GLimp_SetMode(int* pwidth, int* pheight, const int mode, const qboolean 
 
 		//mxd. Ignore gl_bitdepth cvar logic (Win7+ can't into 8 and 16-bit color modes)
 		const HDC hdc = GetDC(NULL);
-		ri.Con_Printf(0, "...using desktop display depth of %d\n", GetDeviceCaps(hdc, BITSPIXEL));
-		ReleaseDC(0, hdc);
+		ri.Con_Printf(PRINT_ALL, "...using desktop display depth of %d\n", GetDeviceCaps(hdc, BITSPIXEL));
+		ReleaseDC(NULL, hdc);
 
-		ri.Con_Printf(0, "...calling CDS: ");
+		ri.Con_Printf(PRINT_ALL, "...calling CDS: ");
 		if (ChangeDisplaySettings(&dm, CDS_FULLSCREEN) == DISP_CHANGE_SUCCESSFUL)
 		{
 			gl_state.fullscreen = true;
@@ -147,8 +147,8 @@ rserr_t GLimp_SetMode(int* pwidth, int* pheight, const int mode, const qboolean 
 		}
 
 		// First CDS failed, so maybe we're running on some weird dual monitor system
-		ri.Con_Printf(0, "failed\n");
-		ri.Con_Printf(0, "...calling CDS assuming dual monitors:");
+		ri.Con_Printf(PRINT_ALL, "failed\n");
+		ri.Con_Printf(PRINT_ALL, "...calling CDS assuming dual monitors:");
 
 		dm.dmPelsWidth = width * 2;
 		dm.dmPelsHeight = height;
@@ -205,10 +205,129 @@ qboolean GLimp_Init(void* hinstance, void* wndproc)
 	return true;
 }
 
+static qboolean VerifyDriver(void)
+{
+	char buffer[1024];
+
+	strcpy_s(buffer, sizeof(buffer), (const char*)qglGetString(GL_RENDERER)); //mxd. strcpy -> strcpy_s
+	_strlwr_s(buffer, sizeof(buffer)); //mxd. strlwr -> _strlwr_s
+
+	if (strcmp(buffer, "gdi generic") == 0 && !glw_state.mcd_accelerated) // TODO: mcd_accelerated is always true
+		return false;
+
+	return true;
+}
+
+//mxd. To avoid label jumps...
+static void ReleaseContexts(void)
+{
+	if (glw_state.hGLRC)
+	{
+		qwglDeleteContext(glw_state.hGLRC);
+		glw_state.hGLRC = NULL;
+	}
+
+	if (glw_state.hDC)
+	{
+		ReleaseDC(glw_state.hWnd, glw_state.hDC);
+		glw_state.hDC = NULL;
+	}
+}
+
+//mxd. Original H2 logic does extra strlwr on gl_driver->string before calling strstr
 qboolean GLimp_InitGL(void)
 {
-	NOT_IMPLEMENTED
-	return false;
+	PIXELFORMATDESCRIPTOR pfd =
+	{
+		sizeof(PIXELFORMATDESCRIPTOR),	// size of this pfd
+		1,								// version number
+		PFD_DRAW_TO_WINDOW |			// support window
+		PFD_SUPPORT_OPENGL |			// support OpenGL
+		PFD_DOUBLEBUFFER,				// double buffered
+		PFD_TYPE_RGBA,					// RGBA type
+		24,								// 24-bit color depth
+		0, 0, 0, 0, 0, 0,				// color bits ignored
+		0,								// no alpha buffer
+		0,								// shift bit ignored
+		0,								// no accumulation buffer
+		0, 0, 0, 0, 					// accum bits ignored
+		32,								// 32-bit z-buffer	
+		0,								// no stencil buffer
+		0,								// no auxiliary buffer
+		PFD_MAIN_PLANE,					// main layer
+		0,								// reserved
+		0, 0, 0							// layer masks ignored
+	};
+
+	//mxd. Don't set PFD_STEREO
+	gl_state.stereo_enabled = false;
+
+	//mxd. We are not running on a minidriver
+	glw_state.minidriver = false;
+
+	// Get a DC for the specified window
+	if (glw_state.hDC != NULL)
+		ri.Con_Printf(PRINT_ALL, "GLimp_Init() - non-NULL DC exists\n");
+
+	glw_state.hDC = GetDC(glw_state.hWnd);
+	if (glw_state.hDC == NULL)
+	{
+		ri.Con_Printf(PRINT_ALL, "GLimp_Init() - GetDC failed\n");
+		return 0;
+	}
+
+	//mxd. Ignore minidriver logic
+	const int pixelformat = ChoosePixelFormat(glw_state.hDC, &pfd);
+	if (pixelformat == 0)
+	{
+		ri.Con_Printf(PRINT_ALL, "GLimp_Init() - ChoosePixelFormat failed\n");
+		return false;
+	}
+
+	if (!SetPixelFormat(glw_state.hDC, pixelformat, &pfd))
+	{
+		ri.Con_Printf(PRINT_ALL, "GLimp_Init() - SetPixelFormat failed\n");
+		return false;
+	}
+
+	DescribePixelFormat(glw_state.hDC, pixelformat, sizeof(pfd), &pfd);
+
+	//mxd. Ignore gl_allow_software logic
+	if (!(pfd.dwFlags & PFD_GENERIC_ACCELERATED))
+	{
+		ri.Con_Printf(PRINT_ALL, "GLimp_Init() - no hardware acceleration detected\n");
+		return false;
+	}
+
+	glw_state.mcd_accelerated = true;
+
+	// Startup the OpenGL subsystem by creating a context and making it current
+	glw_state.hGLRC = qwglCreateContext(glw_state.hDC);
+
+	if (glw_state.hGLRC == NULL)
+	{
+		ri.Con_Printf(PRINT_ALL, "GLimp_Init() - qwglCreateContext failed\n");
+		ReleaseContexts();
+		return false;
+	}
+
+	if (!qwglMakeCurrent(glw_state.hDC, glw_state.hGLRC))
+	{
+		ri.Con_Printf(PRINT_ALL, "GLimp_Init() - qwglMakeCurrent failed\n");
+		ReleaseContexts();
+		return false;
+	}
+
+	if (!VerifyDriver())
+	{
+		ri.Con_Printf(PRINT_ALL, "GLimp_Init() - no hardware acceleration detected\n");
+		ReleaseContexts();
+		return false;
+	}
+
+	// Print out PFD specifics
+	ri.Con_Printf(PRINT_ALL, "GL PFD: color(%d-bits) Z(%d-bit)\n", pfd.cColorBits, pfd.cDepthBits);
+	return true;
 }
 
 void GLimp_EndFrame(void)

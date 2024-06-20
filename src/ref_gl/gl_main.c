@@ -52,7 +52,7 @@ cvar_t* r_frameswap;
 cvar_t* r_references;
 
 cvar_t* gl_nosubimage;
-cvar_t* gl_allow_software;
+cvar_t* gl_allow_software; //TODO: ignored. Remove?
 
 cvar_t* gl_particle_min_size;
 cvar_t* gl_particle_max_size;
@@ -64,7 +64,7 @@ cvar_t* gl_noartifacts;
 
 cvar_t* gl_modulate;
 cvar_t* gl_log;
-cvar_t* gl_bitdepth; //mxd. Ignored (Win7+ can't into 8 and 16-bit color modes).
+cvar_t* gl_bitdepth; //TODO: ignored (Win7+ can't into 8 and 16-bit color modes). Remove?
 cvar_t* gl_lightmap;
 cvar_t* gl_shadows;
 cvar_t* gl_dynamic;
@@ -301,7 +301,6 @@ qboolean R_Init(void* hinstance, void* hWnd)
 		r_turbsin[j] *= 0.5f;
 
 	Com_Printf("ref_gl version: "REF_VERSION"\n"); // ri.Con_Printf in Q2 (here and below)
-	//Missing: Draw_GetPalette();
 	R_Register();
 
 	// Initialize our QGL dynamic bindings
