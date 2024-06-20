@@ -98,7 +98,7 @@ char com_token[MAX_TOKEN_CHARS];
 // Q2 counterpart. Parse a token out of a string
 H2COMMON_API char* COM_Parse(char** data_p)
 {
-	char c; //mxd. in -> char
+	char c; //mxd. int -> char
 
 	char* data = *data_p;
 	int len = 0;
