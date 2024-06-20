@@ -7,11 +7,88 @@
 #include "../ref_gl/gl_local.h"
 #include "glw_win.h"
 
+#define WINDOW_CLASS_NAME "Heretic II R" // 'Heretic 2' in H2
+
 glwstate_t glw_state;
 
-qboolean VID_CreateWindow(int width, int height, qboolean fullscreen)
+qboolean GLimp_InitGL(void); // VID_CreateWindow forward declaration
+
+qboolean VID_CreateWindow(const int width, const int height, const qboolean fullscreen)
 {
-	NOT_IMPLEMENTED
+	WNDCLASS wc;
+	RECT r;
+	int stylebits;
+	int exstyle;
+	int x;
+	int y;
+	
+	// Register the frame class
+	wc.style = CS_OWNDC; // 0 in Q2
+	wc.lpfnWndProc = (WNDPROC)glw_state.wndproc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = glw_state.hInstance;
+	wc.hIcon = LoadIcon(glw_state.hInstance, MAKEINTRESOURCE(103)); // Q2: 0
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wc.hbrBackground = (void*)COLOR_GRAYTEXT;
+	wc.lpszMenuName = NULL;
+	wc.lpszClassName = WINDOW_CLASS_NAME;
+
+	if (!RegisterClass(&wc))
+		ri.Sys_Error(ERR_FATAL, "Couldn't register window class");
+
+	if (fullscreen)
+		stylebits = WS_POPUP | WS_VISIBLE | WS_SYSMENU; // Q2: WS_POPUP | WS_VISIBLE
+	else
+		stylebits = WS_OVERLAPPED | WS_BORDER | WS_CAPTION | WS_VISIBLE | WS_SYSMENU | WS_GROUP; // Q2: WS_OVERLAPPED | WS_BORDER | WS_CAPTION | WS_VISIBLE
+
+	// Based on 'fullscreen' var in Q2
+	vid_fullscreen = ri.Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
+	if ((int)vid_fullscreen->value)
+		exstyle = WS_EX_TOPMOST | WS_EX_APPWINDOW; // Q2: WS_EX_TOPMOST
+	else
+		exstyle = WS_EX_APPWINDOW; // Q2: 0
+
+	r.left = 0;
+	r.top = 0;
+	r.right = width;
+	r.bottom = height;
+
+	AdjustWindowRect(&r, stylebits, FALSE);
+
+	const int w = r.right - r.left;
+	const int h = r.bottom - r.top;
+
+	if (fullscreen)
+	{
+		x = 0;
+		y = 0;
+	}
+	else
+	{
+		const cvar_t* vid_xpos = ri.Cvar_Get("vid_xpos", "0", 0);
+		const cvar_t* vid_ypos = ri.Cvar_Get("vid_ypos", "0", 0);
+		x = (int)vid_xpos->value;
+		y = (int)vid_ypos->value;
+	}
+
+	glw_state.hWnd = CreateWindowEx(exstyle, WINDOW_CLASS_NAME, WINDOW_CLASS_NAME, stylebits, x, y, w, h, 0, 0, glw_state.hInstance, 0);
+	if (!glw_state.hWnd)
+		ri.Sys_Error(ERR_FATAL, "Couldn't create window");
+
+	SetForegroundWindow(glw_state.hWnd);
+	SetFocus(glw_state.hWnd);
+	Sleep(500);
+
+	// Init all the gl stuff for the window
+	if (GLimp_InitGL())
+	{
+		// Let the sound and input subsystems know about the new window
+		ri.Vid_NewWindow(width, height);
+		return true;
+	}
+
+	ri.Con_Printf(PRINT_ALL, "VID_CreateWindow() - GLimp_InitGL failed\n");
 	return false;
 }
 
@@ -126,6 +203,12 @@ qboolean GLimp_Init(void* hinstance, void* wndproc)
 	glw_state.allowdisplaydepthchange = true; // False on pre-OSR2 Win95
 
 	return true;
+}
+
+qboolean GLimp_InitGL(void)
+{
+	NOT_IMPLEMENTED
+	return false;
 }
 
 void GLimp_EndFrame(void)
