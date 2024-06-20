@@ -253,6 +253,7 @@ extern refimport_t ri;
 
 #pragma region ========================== IMPLEMENTATION-SPECIFIC FUNCTIONS ==========================
 
+// glw_imp.c
 void GLimp_EndFrame(void);
 qboolean GLimp_Init(void* hinstance, void* hWnd); //mxd. Changed return type
 void GLimp_Shutdown(void);

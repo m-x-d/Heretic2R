@@ -42,19 +42,16 @@
     <ClCompile Include="gl_draw_cinematic.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="qgl_imp.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="gl_find_surface.c">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="gl_misc.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="qgl_win.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\win32\glw_imp.c">
+      <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="qgl_win.c">
       <Filter>win32</Filter>
     </ClCompile>
   </ItemGroup>

@@ -64,7 +64,7 @@ cvar_t* gl_noartifacts;
 
 cvar_t* gl_modulate;
 cvar_t* gl_log;
-cvar_t* gl_bitdepth;
+cvar_t* gl_bitdepth; //mxd. Ignored (Win7+ can't into 8 and 16-bit color modes).
 cvar_t* gl_lightmap;
 cvar_t* gl_shadows;
 cvar_t* gl_dynamic;
