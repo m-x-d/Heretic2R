@@ -119,6 +119,7 @@ void GL_TextureMode(char* string)
 			GL_BindImage(glt); // Q2: GL_Bind(glt->texnum)
 
 			//mxd. Decompiled code passes 0x84fe instead of GL_TEXTURE_MIN_FILTER and GL_TEXTURE_MAG_FILTER, which doesn't seem to be a known GL parameter...
+			//mxd. but Loki Linux release uses GL_TEXTURE_MIN_FILTER and GL_TEXTURE_MAG_FILTER, just like Q2
 			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min); //mxd. Q2/H2: qglTexParameterf
 			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max); //mxd. Q2/H2: qglTexParameterf
 		}
@@ -128,6 +129,12 @@ void GL_TextureMode(char* string)
 void GL_ImageList_f(void)
 {
 	NOT_IMPLEMENTED
+}
+
+image_t* GL_FindImage(char* name, imagetype_t type)
+{
+	NOT_IMPLEMENTED
+	return NULL;
 }
 
 struct image_s* R_RegisterSkin(char* name, qboolean* retval)

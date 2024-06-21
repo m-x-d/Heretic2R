@@ -15,6 +15,13 @@ refimport_t ri;
 glconfig_t gl_config;
 glstate_t gl_state;
 
+image_t* r_notexture; // Used for missing textures
+image_t* r_particletexture;
+image_t* r_aparticletexture;
+image_t* r_reflecttexture;
+image_t* r_font1;
+image_t* r_font2;
+
 cvar_t* r_norefresh;
 cvar_t* r_fullbright;
 cvar_t* r_drawentities;
@@ -438,7 +445,6 @@ int R_RenderFrame(refdef_t* fd)
 void R_BeginRegistration(char* model);
 struct model_s* R_RegisterModel(char* name);
 struct image_s* R_RegisterSkin(char* name, qboolean* retval);
-struct image_s* Draw_FindPic(char* name);
 void R_SetSky(char* name, float rotate, vec3_t axis);
 void R_EndRegistration(void);
 

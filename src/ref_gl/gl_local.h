@@ -45,6 +45,18 @@ typedef struct image_s //mxd. Changed in H2. Original size: 104 bytes
 	struct palette_s* palette;			// .M8 palette
 } image_t;
 
+// New in H2. Font character definition struct
+typedef struct glxy_s
+{
+	float xl;
+	float yt;
+	float xr;
+	float yb;
+	int w;
+	int h;
+	int baseline;
+} glxy_t;
+
 #define MAX_GLTEXTURES	2048 // Q2: 1024
 
 typedef enum
@@ -56,6 +68,16 @@ typedef enum
 } rserr_t;
 
 #include "gl_model.h" //mxd. MUST be below image_t definition...
+
+extern image_t gltextures[MAX_GLTEXTURES];
+extern int numgltextures;
+
+extern image_t* r_notexture;
+extern image_t* r_particletexture;
+extern image_t* r_aparticletexture; // New in H2
+extern image_t* r_reflecttexture; // New in H2
+extern image_t* r_font1; // New in H2
+extern image_t* r_font2; // New in H2
 
 #pragma region ========================== CVARS  ==========================
 
@@ -175,6 +197,7 @@ void Draw_GetPicSize(int* w, int* h, char* name);
 void Draw_Pic(int x, int y, char* name, float alpha);
 void Draw_StretchPic(int x, int y, int w, int h, char* name, float alpha, qboolean scale);
 void Draw_Char(int x, int y, int c, paletteRGBA_t color);
+image_t* Draw_FindPic(char* name); // Q2: not in gl_local.h
 void Draw_BigFont(int x, int y, char* text, float alpha); // New in H2
 void Draw_TileClear(int x, int y, int w, int h, char* pic);
 void Draw_Fill(int x, int y, int w, int h, byte r, byte g, byte b);
@@ -192,6 +215,7 @@ void GL_TexEnv(GLenum mode);
 void GL_BindImage(const image_t* img); // New in H2
 void GL_TextureMode(char* string);
 void GL_ImageList_f(void);
+image_t* GL_FindImage(char* name, imagetype_t type);
 void GL_InitImages(void);
 void GL_ShutdownImages(void);
 
