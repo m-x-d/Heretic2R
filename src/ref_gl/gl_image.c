@@ -135,14 +135,14 @@ void GL_ImageList_f(void)
 }
 
 // Actually loads .M8 image.
-image_t* GL_LoadWal(char* name)
+static image_t* GL_LoadWal(char* name, imagetype_t type)
 {
 	NOT_IMPLEMENTED
 	return NULL;
 }
 
 // New in H2. Loads .M32 image.
-image_t* GL_LoadWal32(char* name, imagetype_t type)
+static image_t* GL_LoadWal32(char* name, imagetype_t type)
 {
 	NOT_IMPLEMENTED
 	return NULL;
@@ -191,7 +191,7 @@ image_t* GL_FindImage(char* name, imagetype_t type)
 
 	// Not hashed. Load image from disk.
 	if (!strcmp(name + len - 3, ".m8"))
-		image = GL_LoadWal(name);
+		image = GL_LoadWal(name, type);
 	else if (!strcmp(name + len - 4, ".m32"))
 		image = GL_LoadWal32(name, type);
 	else
