@@ -9,6 +9,9 @@
 image_t gltextures[MAX_GLTEXTURES];
 int numgltextures;
 
+image_t* gltextures_hashed[256]; // New in H2
+qboolean disablerendering;
+
 static byte gammatable[256];
 
 int gl_filter_min = GL_NEAREST; // Q2: GL_LINEAR_MIPMAP_NEAREST;
@@ -119,7 +122,7 @@ void GL_TextureMode(char* string)
 			GL_BindImage(glt); // Q2: GL_Bind(glt->texnum)
 
 			//mxd. Decompiled code passes 0x84fe instead of GL_TEXTURE_MIN_FILTER and GL_TEXTURE_MAG_FILTER, which doesn't seem to be a known GL parameter...
-			//mxd. but Loki Linux release uses GL_TEXTURE_MIN_FILTER and GL_TEXTURE_MAG_FILTER, just like Q2
+			//mxd. ...but Loki Linux release uses GL_TEXTURE_MIN_FILTER and GL_TEXTURE_MAG_FILTER, just like Q2
 			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min); //mxd. Q2/H2: qglTexParameterf
 			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max); //mxd. Q2/H2: qglTexParameterf
 		}
@@ -131,10 +134,77 @@ void GL_ImageList_f(void)
 	NOT_IMPLEMENTED
 }
 
-image_t* GL_FindImage(char* name, imagetype_t type)
+// Actually loads .M8 image.
+image_t* GL_LoadWal(char* name)
 {
 	NOT_IMPLEMENTED
 	return NULL;
+}
+
+// New in H2. Loads .M32 image.
+image_t* GL_LoadWal32(char* name, imagetype_t type)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
+// Now with name hashing. When no texture found, returns r_notexture instead of NULL
+image_t* GL_FindImage(char* name, imagetype_t type)
+{
+	//mxd. Skipping new gl_lostfocus_broken logic
+	//if (disablerendering && gl_lostfocus_broken->value)
+		//return r_notexture;
+
+	if (!name)
+	{
+		Com_Printf("GL_FindImage: Invalid null name\n");
+		return r_notexture;
+	}
+
+	const uint len = strlen(name);
+
+	if (len < 8)
+	{
+		Com_Printf("GL_FindImage: Name too short (%s)\n", name);
+		return r_notexture;
+	}
+
+	// Check for hashed image first.
+	const byte hash = name[len - 7] + name[len - 5] * name[len - 6];
+	image_t* image = gltextures_hashed[hash];
+
+	if (image != NULL)
+	{
+		while (strcmp(name, image->name) != 0)
+		{
+			image = image->next;
+			if (image == NULL)
+				break;
+		}
+
+		if (image != NULL)
+		{
+			image->registration_sequence = registration_sequence;
+			return image;
+		}
+	}
+
+	// Not hashed. Load image from disk.
+	if (!strcmp(name + len - 3, ".m8"))
+		image = GL_LoadWal(name);
+	else if (!strcmp(name + len - 4, ".m32"))
+		image = GL_LoadWal32(name, type);
+	else
+		Com_Printf("GL_FindImage: Extension not recognized in %s\n", name);
+
+	if (image == NULL)
+		return r_notexture;
+
+	// Add image to hash.
+	image->next = gltextures_hashed[hash];
+	gltextures_hashed[hash] = image;
+
+	return image;
 }
 
 struct image_s* R_RegisterSkin(char* name, qboolean* retval)

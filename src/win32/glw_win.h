@@ -8,6 +8,7 @@
 
 #include <windows.h>
 
+// Q2 counterpart
 typedef struct
 {
 	HINSTANCE hInstance;
@@ -24,7 +25,6 @@ typedef struct
 	qboolean mcd_accelerated; //TODO: ignored. Remove?
 
 	FILE* log_fp;
-	qboolean minimized; // NEW!
 } glwstate_t;
 
 extern glwstate_t glw_state;

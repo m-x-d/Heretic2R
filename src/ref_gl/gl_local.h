@@ -72,6 +72,8 @@ typedef enum
 extern image_t gltextures[MAX_GLTEXTURES];
 extern int numgltextures;
 
+extern qboolean disablerendering; // New in H2 //TODO: unused. Remove?
+
 extern image_t* r_notexture;
 extern image_t* r_particletexture;
 extern image_t* r_aparticletexture; // New in H2
