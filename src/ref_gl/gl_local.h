@@ -45,6 +45,8 @@ typedef struct image_s //mxd. Changed in H2. Original size: 104 bytes
 	struct palette_s* palette;			// .M8 palette
 } image_t;
 
+#define MAX_GLTEXTURES	2048 // Q2: 1024
+
 typedef enum
 {
 	rserr_ok,
@@ -187,6 +189,7 @@ extern int gl_filter_max;
 
 void InitGammaTable(void); // New in H2
 void GL_TexEnv(GLenum mode);
+void GL_BindImage(image_t* img); // New in H2
 void GL_TextureMode(char* string);
 void GL_ImageList_f(void);
 void GL_InitImages(void);

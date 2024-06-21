@@ -6,6 +6,9 @@
 
 #include "gl_local.h"
 
+image_t gltextures[MAX_GLTEXTURES];
+int numgltextures;
+
 static byte gammatable[256];
 
 int gl_filter_min = GL_NEAREST; // Q2: GL_LINEAR_MIPMAP_NEAREST;
@@ -56,9 +59,60 @@ void GL_TexEnv(GLenum mode)
 	}
 }
 
-void GL_TextureMode(char* string)
+void GL_BindImage(image_t* img)
 {
 	NOT_IMPLEMENTED
+}
+
+typedef struct
+{
+	char* name;
+	int	minimize;
+	int maximize;
+} glmode_t;
+
+glmode_t modes[] =
+{
+	{ "GL_NEAREST", GL_NEAREST, GL_NEAREST },
+	{ "GL_LINEAR", GL_LINEAR, GL_LINEAR },
+	{ "GL_NEAREST_MIPMAP_NEAREST", GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST },
+	{ "GL_LINEAR_MIPMAP_NEAREST", GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR },
+	{ "GL_NEAREST_MIPMAP_LINEAR", GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST },
+	{ "GL_LINEAR_MIPMAP_LINEAR", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR }
+};
+
+#define NUM_GL_MODES ((int)(sizeof(modes) / sizeof(glmode_t))) //mxd. Added int cast
+
+void GL_TextureMode(char* string)
+{
+	int i;
+
+	for (i = 0; i < NUM_GL_MODES; i++)
+		if (!Q_stricmp(modes[i].name, string))
+			break;
+
+	if (i == NUM_GL_MODES)
+	{
+		ri.Con_Printf(PRINT_ALL, "Bad texture filter name\n"); // H2: text change
+		return;
+	}
+
+	gl_filter_min = modes[i].minimize;
+	gl_filter_max = modes[i].maximize;
+
+	// Change all the existing mipmap texture objects
+	image_t* glt;
+	for (i = 0, glt = gltextures; i < numgltextures; i++, glt++)
+	{
+		if (glt->type != it_pic && glt->type != it_sky)
+		{
+			GL_BindImage(glt); // Q2: GL_Bind(glt->texnum)
+
+			//mxd. Decompiled code passes 0x84fe instead of GL_TEXTURE_MIN_FILTER and GL_TEXTURE_MAG_FILTER, which doesn't seem to be a known GL parameter...
+			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min); //mxd. Q2/H2: qglTexParameterf
+			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max); //mxd. Q2/H2: qglTexParameterf
+		}
+	}
 }
 
 void GL_ImageList_f(void)
