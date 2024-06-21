@@ -59,9 +59,19 @@ void GL_TexEnv(GLenum mode)
 	}
 }
 
-void GL_BindImage(image_t* img)
+//mxd. Most likely was changed from GL_Bind in H2 to use img->palette in qglColorTableEXT logic (which we skip...)
+void GL_BindImage(const image_t* img)
 {
-	NOT_IMPLEMENTED
+	extern image_t* draw_chars;
+	const int texnum = ((int)gl_nobind->value && draw_chars ? draw_chars->texnum : img->texnum);
+
+	if (gl_state.currenttextures[gl_state.currenttmu] != texnum)
+	{
+		//mxd. Skipping qglColorTableEXT logic
+
+		gl_state.currenttextures[gl_state.currenttmu] = texnum;
+		qglBindTexture(GL_TEXTURE_2D, texnum);
+	}
 }
 
 typedef struct

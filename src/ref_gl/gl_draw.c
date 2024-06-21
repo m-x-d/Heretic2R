@@ -6,6 +6,8 @@
 
 #include "gl_local.h"
 
+image_t* draw_chars;
+
 void Draw_InitLocal(void)
 {
 	NOT_IMPLEMENTED
