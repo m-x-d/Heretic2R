@@ -263,24 +263,24 @@ qboolean GLimp_InitGL(void)
 {
 	PIXELFORMATDESCRIPTOR pfd =
 	{
-		sizeof(PIXELFORMATDESCRIPTOR),	// size of this pfd
-		1,								// version number
-		PFD_DRAW_TO_WINDOW |			// support window
-		PFD_SUPPORT_OPENGL |			// support OpenGL
-		PFD_DOUBLEBUFFER,				// double buffered
+		sizeof(PIXELFORMATDESCRIPTOR),	// Size of this pfd
+		1,								// Version number
+		PFD_DRAW_TO_WINDOW |			// Support window
+		PFD_SUPPORT_OPENGL |			// Support OpenGL
+		PFD_DOUBLEBUFFER,				// Double buffered
 		PFD_TYPE_RGBA,					// RGBA type
 		24,								// 24-bit color depth
-		0, 0, 0, 0, 0, 0,				// color bits ignored
-		0,								// no alpha buffer
-		0,								// shift bit ignored
-		0,								// no accumulation buffer
-		0, 0, 0, 0, 					// accum bits ignored
-		32,								// 32-bit z-buffer	
-		0,								// no stencil buffer
-		0,								// no auxiliary buffer
-		PFD_MAIN_PLANE,					// main layer
-		0,								// reserved
-		0, 0, 0							// layer masks ignored
+		0, 0, 0, 0, 0, 0,				// Color bits ignored
+		0,								// No alpha buffer
+		0,								// Shift bit ignored
+		0,								// No accumulation buffer
+		0, 0, 0, 0, 					// Accum bits ignored
+		32,								// 32-bit z-buffer
+		0,								// No stencil buffer
+		0,								// No auxiliary buffer
+		PFD_MAIN_PLANE,					// Main layer
+		0,								// Reserved
+		0, 0, 0							// Layer masks ignored
 	};
 
 	//mxd. Don't set PFD_STEREO
@@ -316,7 +316,8 @@ qboolean GLimp_InitGL(void)
 
 	DescribePixelFormat(glw_state.hDC, pixelformat, sizeof(pfd), &pfd);
 
-	//mxd. Ignore gl_allow_software logic
+	//mxd. Ignore gl_allow_software logic. Add PFD_GENERIC_FORMAT flag check.
+	//mxd. These 2 flag checks should be enough to determine whether pixelformat is accelerated.
 	if (!(pfd.dwFlags & PFD_GENERIC_ACCELERATED) && (pfd.dwFlags & PFD_GENERIC_FORMAT))
 	{
 		ri.Con_Printf(PRINT_ALL, "GLimp_Init() - no hardware acceleration detected\n");
@@ -340,7 +341,7 @@ qboolean GLimp_InitGL(void)
 		return false;
 	}
 
-	//mxd. Ignore VerifyDriver() logic. PFD_GENERIC_ACCELERATED and PFD_GENERIC_FORMAT flags check should be enough
+	//mxd. Skip VerifyDriver() logic
 
 	// Print out PFD specifics
 	ri.Con_Printf(PRINT_ALL, "GL PFD: color(%d-bits) Z(%d-bit)\n", pfd.cColorBits, pfd.cDepthBits);
