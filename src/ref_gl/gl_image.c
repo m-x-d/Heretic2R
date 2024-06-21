@@ -50,6 +50,12 @@ void InitGammaTable(void)
 	}
 }
 
+image_t* GL_GetFreeImage(void)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
 // Q2 counterpart
 void GL_TexEnv(GLenum mode)
 {
@@ -134,11 +140,72 @@ void GL_ImageList_f(void)
 	NOT_IMPLEMENTED
 }
 
-// Actually loads .M8 image.
-static image_t* GL_LoadWal(char* name, imagetype_t type)
+static void GrabPalette(palette_t* src, palette_t* dst)
 {
 	NOT_IMPLEMENTED
-	return NULL;
+}
+
+static void GL_Upload8M(miptex_t* mt, image_t* image)
+{
+	NOT_IMPLEMENTED
+}
+
+// Actually loads .M8 image.
+static image_t* GL_LoadWal(char* name, const imagetype_t type)
+{
+	miptex_t* mt;
+	ri.FS_LoadFile(name, (void**)&mt);
+
+	if (mt == NULL)
+	{
+		Com_Printf("GL_LoadWal : Can't load %s\n", name);
+		return NULL;
+	}
+
+	if (mt->version != MIP_VERSION)
+	{
+		Com_Printf("GL_LoadWal : Invalid version for %s\n", name);
+		ri.FS_FreeFile(mt); //mxd
+
+		return NULL;
+	}
+
+	if (strlen(name) >= MAX_QPATH)
+	{
+		Com_Printf("GL_LoadWal : \"%s\" is too long a string\n", name);
+		ri.FS_FreeFile(mt); //mxd
+
+		return NULL;
+	}
+
+	palette_t* palette = malloc(768);
+
+	if (palette == NULL)
+	{
+		Com_Printf("GL_LoadWal : Failed to allocate palette for %s\n", name); //mxd
+		ri.FS_FreeFile(mt); //mxd
+
+		return NULL;
+	}
+
+	GrabPalette(mt->palette, palette);
+
+	image_t* image = GL_GetFreeImage();
+	strcpy_s(image->name, sizeof(image->name), name);
+	image->registration_sequence = registration_sequence;
+	image->width = (int)mt->width[0];
+	image->height = (int)mt->height[0];
+	image->type = type;
+	image->palette = palette;
+	image->has_alpha = 0;
+	image->texnum = TEXNUM_IMAGES + (image - gltextures);
+	image->num_frames = (byte)mt->value;
+
+	GL_BindImage(image);
+	GL_Upload8M(mt, image);
+	ri.FS_FreeFile(mt);
+
+	return image;
 }
 
 // New in H2. Loads .M32 image.

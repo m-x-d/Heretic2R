@@ -57,6 +57,8 @@ typedef struct glxy_s
 	int baseline;
 } glxy_t;
 
+#define TEXNUM_IMAGES	1153
+
 #define MAX_GLTEXTURES	2048 // Q2: 1024
 
 typedef enum
@@ -213,6 +215,7 @@ extern int gl_filter_min;
 extern int gl_filter_max;
 
 void InitGammaTable(void); // New in H2
+image_t* GL_GetFreeImage(void); // New in H2
 void GL_TexEnv(GLenum mode);
 void GL_BindImage(const image_t* img); // New in H2
 void GL_TextureMode(char* string);
