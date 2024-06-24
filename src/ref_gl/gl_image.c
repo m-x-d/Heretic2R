@@ -142,7 +142,16 @@ void GL_ImageList_f(void)
 
 static void GrabPalette(palette_t* src, palette_t* dst)
 {
-	NOT_IMPLEMENTED
+	int i;
+	palette_t* src_p;
+	palette_t* dst_p;
+
+	for (i = 0, src_p = src, dst_p = dst; i < 256; i++, src_p++, dst_p++)
+	{
+		dst_p->r = gammatable[src_p->r];
+		dst_p->g = gammatable[src_p->g];
+		dst_p->b = gammatable[src_p->b];
+	}
 }
 
 static void GL_Upload8M(miptex_t* mt, image_t* image)
@@ -179,15 +188,6 @@ static image_t* GL_LoadWal(char* name, const imagetype_t type)
 	}
 
 	palette_t* palette = malloc(768);
-
-	if (palette == NULL)
-	{
-		Com_Printf("GL_LoadWal : Failed to allocate palette for %s\n", name); //mxd
-		ri.FS_FreeFile(mt); //mxd
-
-		return NULL;
-	}
-
 	GrabPalette(mt->palette, palette);
 
 	image_t* image = GL_GetFreeImage();
