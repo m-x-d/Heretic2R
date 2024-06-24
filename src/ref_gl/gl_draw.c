@@ -76,7 +76,7 @@ image_t* Draw_FindPic(char* name)
 	if (name[0] != '/' && name[0] != '\\')
 	{
 		char fullname[MAX_QPATH];
-		Com_sprintf(fullname, 64, "pics/%s", name); // Q2: pics/%s.pcx
+		Com_sprintf(fullname, sizeof(fullname), "pics/%s", name); // Q2: pics/%s.pcx
 
 		return GL_FindImage(fullname, it_pic);
 	}
@@ -87,8 +87,15 @@ image_t* Draw_FindPic(char* name)
 // New in H2
 image_t* Draw_FindPicFilter(char* name)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	if (name[0] != '/' && name[0] != '\\')
+	{
+		char fullname[MAX_QPATH];
+		Com_sprintf(fullname, sizeof(fullname), "pics/%s", name);
+
+		return GL_FindImage(fullname, it_sky);
+	}
+
+	return GL_FindImage(name + 1, it_sky);
 }
 
 void Draw_GetPicSize(int* w, int* h, char* name)
