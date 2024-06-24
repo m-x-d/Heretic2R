@@ -472,9 +472,43 @@ struct image_s* R_RegisterSkin(char* name, qboolean* retval)
 	return NULL;
 }
 
-void GL_FreeUnusedImages(void)
+// New in H2
+static void GL_FreeImage(image_t* image)
 {
 	NOT_IMPLEMENTED
+}
+
+void GL_FreeUnusedImages(void)
+{
+	int i;
+	image_t* image;
+
+	// Never free r_notexture or particle texture
+	r_notexture->registration_sequence = registration_sequence;
+	r_particletexture->registration_sequence = registration_sequence;
+
+	// H2: extra never-to-free textures:
+	r_aparticletexture->registration_sequence = registration_sequence;
+	r_reflecttexture->registration_sequence = registration_sequence;
+	draw_chars->registration_sequence = registration_sequence;
+	r_font1->registration_sequence = registration_sequence;
+	r_font2->registration_sequence = registration_sequence;
+
+	for (i = 0, image = gltextures; i < numgltextures; i++, image++)
+	{
+		// Used in this sequence
+		if (image->registration_sequence == registration_sequence)
+			continue;
+
+		// Free image_t slot
+		if (!image->registration_sequence)
+			continue;
+
+		// Missing: it_pic check
+
+		// Free it
+		GL_FreeImage(image);
+	}
 }
 
 // New in H2

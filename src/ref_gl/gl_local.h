@@ -80,6 +80,7 @@ extern image_t* r_notexture;
 extern image_t* r_particletexture;
 extern image_t* r_aparticletexture; // New in H2
 extern image_t* r_reflecttexture; // New in H2
+extern image_t* draw_chars; // Local to gl_draw.c in H2
 extern image_t* r_font1; // New in H2
 extern image_t* r_font2; // New in H2
 
