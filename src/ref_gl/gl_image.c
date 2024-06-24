@@ -512,9 +512,33 @@ void GL_FreeUnusedImages(void)
 }
 
 // New in H2
-static void GL_RefreshImage(image_t* img)
+static void GL_RefreshImage(image_t* image)
 {
-	NOT_IMPLEMENTED
+	qglDeleteTextures(1, (GLuint*)&image->texnum);
+
+	const uint len = strlen(image->name);
+	if (!strcmp(image->name + len - 3, ".m8"))
+	{
+		miptex_t* mt;
+		ri.FS_LoadFile(image->name, (void**)&mt);
+
+		GrabPalette(mt->palette, image->palette);
+		GL_BindImage(image);
+		GL_Upload8M(mt, image);
+
+		ri.FS_FreeFile(mt);
+	}
+	else if (!strcmp(image->name + len - 4, ".m32"))
+	{
+		miptex32_t* mt;
+		ri.FS_LoadFile(image->name, (void**)&mt);
+
+		GL_ApplyGamma32(mt);
+		GL_BindImage(image);
+		GL_Upload32M(mt, image);
+
+		ri.FS_FreeFile(mt);
+	}
 }
 
 void GL_GammaAffect(void)
