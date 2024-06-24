@@ -348,6 +348,11 @@ qboolean GLimp_InitGL(void)
 	return true;
 }
 
+void GLimp_BeginFrame(float camera_separation)
+{
+	NOT_IMPLEMENTED
+}
+
 void GLimp_EndFrame(void)
 {
 	//mxd. Missing: qglGetError() logic

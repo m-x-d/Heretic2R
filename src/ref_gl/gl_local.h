@@ -226,6 +226,8 @@ void GL_SetFilter(const image_t* image); // New in H2
 void GL_ImageList_f(void);
 void GL_UploadPaletted(int level, const byte* data, const palette_t* palette, int width, int height); // New in H2
 image_t* GL_FindImage(char* name, imagetype_t type);
+void GL_FreeUnusedImages(void);
+void GL_GammaAffect(void); // New in H2
 void GL_InitImages(void);
 void GL_ShutdownImages(void);
 
@@ -233,6 +235,7 @@ void GL_ShutdownImages(void);
 void GL_ScreenShot_f(void);
 void GL_Strings_f(void);
 void GL_SetDefaultState(void);
+void GL_UpdateSwapInterval(void);
 
 // gl_model.c
 extern int registration_sequence;
@@ -290,6 +293,7 @@ extern refimport_t ri;
 #pragma region ========================== IMPLEMENTATION-SPECIFIC FUNCTIONS ==========================
 
 // glw_imp.c
+void GLimp_BeginFrame(float camera_separation);
 void GLimp_EndFrame(void);
 qboolean GLimp_Init(void* hinstance, void* hWnd); //mxd. Changed return type
 void GLimp_Shutdown(void);

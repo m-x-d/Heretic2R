@@ -65,3 +65,8 @@ void GL_SetDefaultState(void)
 	//if (qglColorTableEXT && (int)gl_ext_palettedtexture->value)
 		//qglEnable(GL_SHARED_TEXTURE_PALETTE_EXT);
 }
+
+void GL_UpdateSwapInterval(void)
+{
+	NOT_IMPLEMENTED
+}

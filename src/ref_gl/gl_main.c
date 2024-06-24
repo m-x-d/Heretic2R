@@ -130,6 +130,11 @@ cvar_t* menus_active;
 cvar_t* cl_camera_under_surface;
 cvar_t* quake_amount;
 
+static void R_Clear(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void R_Register(void)
 {
 	r_norefresh = Cvar_Get("r_norefresh", "0", 0);
@@ -430,9 +435,81 @@ void R_Shutdown(void)
 	NOT_IMPLEMENTED
 }
 
-void R_BeginFrame(float camera_separation)
+void R_BeginFrame(const float camera_separation)
 {
-	NOT_IMPLEMENTED
+	gl_state.camera_separation = camera_separation;
+
+	// Change modes if necessary
+	if (vid_mode->modified || vid_fullscreen->modified)
+	{
+		// FIXME: only restart if CDS is required
+		cvar_t* ref = Cvar_Get("vid_ref", "gl", 0);
+		ref->modified = true;
+	}
+
+	if (gl_log->modified)
+	{
+		GLimp_EnableLogging((qboolean)gl_log->value);
+		gl_log->modified = false;
+	}
+
+	if ((int)gl_log->value)
+		GLimp_LogNewFrame();
+
+	// Changed
+	if (vid_gamma->modified || vid_brightness->modified || vid_contrast->modified)
+	{
+		InitGammaTable();
+		GL_GammaAffect();
+
+		vid_gamma->modified = false;
+		vid_brightness->modified = false;
+		vid_contrast->modified = false;
+	}
+
+	GLimp_BeginFrame(camera_separation);
+
+	// Go into 2D mode
+	qglViewport(0, 0, viddef.width, viddef.height);
+	qglMatrixMode(GL_PROJECTION);
+	qglLoadIdentity();
+	qglOrtho(0.0, viddef.width, viddef.height, 0.0, -99999.0, 99999.0);
+	qglMatrixMode(GL_MODELVIEW);
+	qglLoadIdentity();
+	qglDisable(GL_DEPTH_TEST);
+	qglDisable(GL_CULL_FACE);
+	qglDisable(GL_BLEND);
+	qglEnable(GL_ALPHA_TEST);
+	qglColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+	// Draw buffer stuff
+	if (gl_drawbuffer->modified)
+	{
+		gl_drawbuffer->modified = false;
+
+		if (!gl_state.stereo_enabled || gl_state.camera_separation == 0.0f)
+		{
+			if (Q_stricmp(gl_drawbuffer->string, "GL_FRONT") == 0)
+				qglDrawBuffer(GL_FRONT);
+			else
+				qglDrawBuffer(GL_BACK);
+		}
+	}
+
+	// Texturemode stuff
+	if (gl_texturemode->modified)
+	{
+		GL_TextureMode(gl_texturemode->string);
+		gl_texturemode->modified = false;
+	}
+
+	// Missing: gl_texturealphamode and gl_texturesolidmode logic
+
+	// Swapinterval stuff
+	GL_UpdateSwapInterval();
+
+	// Clear screen if desired
+	R_Clear();
 }
 
 int R_RenderFrame(refdef_t* fd)

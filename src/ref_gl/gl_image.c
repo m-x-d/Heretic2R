@@ -472,6 +472,16 @@ struct image_s* R_RegisterSkin(char* name, qboolean* retval)
 	return NULL;
 }
 
+void GL_FreeUnusedImages(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void GL_GammaAffect(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void GL_InitImages(void)
 {
 	registration_sequence = 1;
