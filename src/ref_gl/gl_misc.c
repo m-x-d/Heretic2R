@@ -66,7 +66,19 @@ void GL_SetDefaultState(void)
 		//qglEnable(GL_SHARED_TEXTURE_PALETTE_EXT);
 }
 
+// Q2 counterpart
 void GL_UpdateSwapInterval(void)
 {
-	NOT_IMPLEMENTED
+	if (gl_swapinterval->modified)
+	{
+		gl_swapinterval->modified = false;
+
+		if (!gl_state.stereo_enabled) //TODO: always false. Remove?
+		{
+#ifdef _WIN32
+			if (qwglSwapIntervalEXT)
+				qwglSwapIntervalEXT((int)gl_swapinterval->value);
+#endif
+		}
+	}
 }
