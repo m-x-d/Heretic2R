@@ -181,7 +181,9 @@ void GL_ImageList_f(void)
 	NOT_IMPLEMENTED
 }
 
-//mxd. Somewhat similar to Q2's GL_Upload8()
+#pragma region ========================== .M8 LOADING ==========================
+
+// New in H2. Somewhat similar to Q2's GL_Upload8()
 void GL_UploadPaletted(const int level, const byte* data, const palette_t* palette, const int width, const int height)
 {
 	paletteRGBA_t trans[256 * 256];
@@ -209,6 +211,7 @@ void GL_UploadPaletted(const int level, const byte* data, const palette_t* palet
 	qglTexImage2D(GL_TEXTURE_2D, level, GL_TEX_SOLID_FORMAT, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
 }
 
+// New in H2
 static void GrabPalette(palette_t* src, palette_t* dst)
 {
 	int i;
@@ -223,6 +226,7 @@ static void GrabPalette(palette_t* src, palette_t* dst)
 	}
 }
 
+// New in H2
 static int GL_GetMipLevel8(const miptex_t* mt, const imagetype_t type)
 {
 	int mip = (int)(type == it_skin ? gl_skinmip->value : gl_picmip->value);
@@ -233,6 +237,7 @@ static int GL_GetMipLevel8(const miptex_t* mt, const imagetype_t type)
 	return mip;
 }
 
+// New in H2
 static void GL_Upload8M(miptex_t* mt, const image_t* image)
 {
 	uploaded_paletted = false;
@@ -299,12 +304,108 @@ static image_t* GL_LoadWal(char* name, const imagetype_t type)
 	return image;
 }
 
-// New in H2. Loads .M32 image.
-static image_t* GL_LoadWal32(char* name, imagetype_t type)
+#pragma endregion
+
+#pragma region ========================== .M32 LOADING ==========================
+
+// New in H2
+static void GL_ApplyGamma32(miptex32_t* mt)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	for (int mip = 0; mip < MIPLEVELS - 1; mip++) //TODO: last mip level is skipped. Unintentional?
+	{
+		const uint mip_size = mt->width[mip] * mt->height[mip];
+		if (mip_size == 0)
+			return;
+
+		// Adjust RGBA colors at offset...
+		paletteRGBA_t* color = (paletteRGBA_t*)((byte*)mt + mt->offsets[mip]);
+		for (uint i = 0; i < mip_size; i++, color++)
+		{
+			color->r = gammatable[color->r];
+			color->g = gammatable[color->g];
+			color->b = gammatable[color->b];
+		}
+	}
 }
+
+// New in H2. Same logic as in GL_GetMipLevel8(), but for miptex32_t...
+static int GL_GetMipLevel32(const miptex32_t* mt, const imagetype_t type)
+{
+	int mip = (int)(type == it_skin ? gl_skinmip->value : gl_picmip->value);
+	mip = ClampI(mip, 0, MIPLEVELS - 1);
+	while (mip > 0 && (mt->width[mip] == 0 || mt->height[mip] == 0)) //mxd. Added mip > 0 sanity check
+		mip--;
+
+	return mip;
+}
+
+// New in H2
+static void GL_Upload32M(miptex32_t* mt, const image_t* img)
+{
+	uploaded_paletted = false;
+
+	int mip = GL_GetMipLevel32(mt, img->type);
+
+	for (int level = 0; mip < MIPLEVELS; mip++, level++)
+	{
+		if (mt->width[mip] == 0 || mt->height[mip] == 0)
+			break;
+
+		qglTexImage2D(GL_TEXTURE_2D, level, GL_TEX_ALPHA_FORMAT, (int)mt->width[mip], (int)mt->height[mip], 0, GL_RGBA, GL_UNSIGNED_BYTE, (byte*)mt + mt->offsets[mip]);
+	}
+
+	GL_SetFilter(img);
+}
+
+// New in H2. Loads .M32 image.
+static image_t* GL_LoadWal32(char* name, const imagetype_t type)
+{
+	miptex32_t* mt;
+
+	ri.FS_LoadFile(name, (void**)&mt);
+	if (mt == NULL)
+	{
+		Com_Printf("GL_LoadWal32 : Can\'t load %s\n", name);
+		return NULL;
+	}
+
+	if (mt->version != MIP32_VERSION)
+	{
+		Com_Printf("GL_LoadWal32 : Invalid version for %s\n", name);
+		ri.FS_FreeFile(mt); //mxd
+
+		return NULL;
+	}
+
+	if (strlen(name) >= MAX_QPATH)
+	{
+		Com_Printf("GL_LoadWal32 : \"%s\" is too long a string\n", name);
+		ri.FS_FreeFile(mt); //mxd
+
+		return NULL;
+	}
+
+	GL_ApplyGamma32(mt);
+
+	image_t* image = GL_GetFreeImage();
+	strcpy_s(image->name, sizeof(image->name), name);
+	image->registration_sequence = registration_sequence;
+	image->width = (int)mt->width[0];
+	image->height = (int)mt->height[0];
+	image->type = type;
+	image->palette = NULL;
+	image->has_alpha = 1;
+	image->texnum = TEXNUM_IMAGES + (image - gltextures);
+	image->num_frames = (byte)mt->value;
+
+	GL_BindImage(image);
+	GL_Upload32M(mt, image);
+	ri.FS_FreeFile(mt);
+
+	return image;
+}
+
+#pragma endregion
 
 // Now with name hashing. When no texture found, returns r_notexture instead of NULL
 image_t* GL_FindImage(char* name, imagetype_t type)

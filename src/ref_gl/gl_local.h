@@ -212,6 +212,7 @@ int BF_Strlen(char* text); // New in H2
 
 // gl_image.c
 #define GL_TEX_SOLID_FORMAT 3 //mxd. gl_tex_solid_format var in Q2
+#define GL_TEX_ALPHA_FORMAT 4 //mxd. gl_tex_alpha_format var in Q2
 
 extern int gl_filter_min;
 extern int gl_filter_max;
