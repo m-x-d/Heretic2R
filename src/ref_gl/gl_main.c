@@ -443,7 +443,7 @@ void R_BeginFrame(const float camera_separation)
 	if (vid_mode->modified || vid_fullscreen->modified)
 	{
 		// FIXME: only restart if CDS is required
-		cvar_t* ref = Cvar_Get("vid_ref", "gl", 0);
+		cvar_t* ref = Cvar_Get("vid_ref", "gl", 0); //TODO: can't we just use vid_ref global var here? 
 		ref->modified = true;
 	}
 

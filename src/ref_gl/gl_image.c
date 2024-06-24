@@ -477,9 +477,27 @@ void GL_FreeUnusedImages(void)
 	NOT_IMPLEMENTED
 }
 
-void GL_GammaAffect(void)
+// New in H2
+static void GL_RefreshImage(image_t* img)
 {
 	NOT_IMPLEMENTED
+}
+
+void GL_GammaAffect(void)
+{
+	int i;
+	image_t* image;
+
+	GL_FreeUnusedImages();
+
+	for (i = 0, image = gltextures; i < numgltextures; i++, image++)
+	{
+		if (image->registration_sequence == 0)
+			continue;
+
+		if (image->type == it_pic || image->type == it_sky || !(int)menus_active->value)
+			GL_RefreshImage(image);
+	}
 }
 
 void GL_InitImages(void)
