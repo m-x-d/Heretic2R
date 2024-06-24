@@ -9,8 +9,9 @@
 image_t gltextures[MAX_GLTEXTURES];
 int numgltextures;
 
-image_t* gltextures_hashed[256]; // New in H2
-qboolean disablerendering;
+image_t* gltextures_hashed[256];	// New in H2
+qboolean disablerendering;			// New in H2
+qboolean uploaded_paletted;			// New in H2 //TODO: used only by qglColorTableEXT logic? Remove?
 
 static byte gammatable[256];
 
@@ -153,9 +154,59 @@ void GL_TextureMode(char* string)
 	}
 }
 
+void GL_SetFilter(const image_t* image)
+{
+	//mxd. Q2/H2: qglTexParameterf
+	switch (image->type)
+	{
+		case it_pic:
+			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			break;
+
+		case it_sky:
+			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_max);
+			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+			break;
+
+		default:
+			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
+			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+			break;
+	}
+}
+
 void GL_ImageList_f(void)
 {
 	NOT_IMPLEMENTED
+}
+
+//mxd. Somewhat similar to Q2's GL_Upload8()
+void GL_UploadPaletted(const int level, const byte* data, const palette_t* palette, const int width, const int height)
+{
+	paletteRGBA_t trans[256 * 256];
+
+	//mxd. Skipping qglColorTableEXT logic
+
+	const uint size = width * height;
+
+	//mxd. Added sanity check
+	if (size > sizeof(trans) / 4)
+		Sys_Error("GL_UploadPaletted : Image is too large (%i x %i).\n", width, height);
+
+	for (uint i = 0; i < size; i++)
+	{
+		const palette_t* src_p = palette + data[i];
+		paletteRGBA_t* dst_p = &trans[i];
+
+		// Copy rgb components
+		dst_p->r = src_p->r;
+		dst_p->g = src_p->g;
+		dst_p->b = src_p->b;
+		dst_p->a = 255;
+	}
+
+	qglTexImage2D(GL_TEXTURE_2D, level, GL_TEX_SOLID_FORMAT, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
 }
 
 static void GrabPalette(palette_t* src, palette_t* dst)
@@ -164,7 +215,7 @@ static void GrabPalette(palette_t* src, palette_t* dst)
 	palette_t* src_p;
 	palette_t* dst_p;
 
-	for (i = 0, src_p = src, dst_p = dst; i < 256; i++, src_p++, dst_p++)
+	for (i = 0, src_p = src, dst_p = dst; i < PAL_SIZE; i++, src_p++, dst_p++)
 	{
 		dst_p->r = gammatable[src_p->r];
 		dst_p->g = gammatable[src_p->g];
@@ -172,9 +223,31 @@ static void GrabPalette(palette_t* src, palette_t* dst)
 	}
 }
 
-static void GL_Upload8M(miptex_t* mt, image_t* image)
+static int GL_GetMipLevel8(const miptex_t* mt, const imagetype_t type)
 {
-	NOT_IMPLEMENTED
+	int mip = (int)(type == it_skin ? gl_skinmip->value : gl_picmip->value);
+	mip = ClampI(mip, 0, MIPLEVELS - 1);
+	while (mip > 0 && (mt->width[mip] == 0 || mt->height[mip] == 0)) //mxd. Added mip > 0 sanity check
+		mip--;
+
+	return mip;
+}
+
+static void GL_Upload8M(miptex_t* mt, const image_t* image)
+{
+	uploaded_paletted = false;
+
+	int mip = GL_GetMipLevel8(mt, image->type);
+
+	for (int level = 0; mip < MIPLEVELS; mip++, level++)
+	{
+		if (mt->width[mip] == 0 || mt->height[mip] == 0)
+			break;
+
+		GL_UploadPaletted(level, (byte*)mt + mt->offsets[mip], image->palette, (int)mt->width[mip], (int)mt->height[mip]);
+	}
+
+	GL_SetFilter(image);
 }
 
 // Actually loads .M8 image.

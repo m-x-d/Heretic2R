@@ -211,6 +211,8 @@ void Draw_BookPic(int w, int h, char* name, float scale); // New in H2
 int BF_Strlen(char* text); // New in H2
 
 // gl_image.c
+#define GL_TEX_SOLID_FORMAT 3 //mxd. gl_tex_solid_format var in Q2
+
 extern int gl_filter_min;
 extern int gl_filter_max;
 
@@ -219,7 +221,9 @@ image_t* GL_GetFreeImage(void); // New in H2
 void GL_TexEnv(GLenum mode);
 void GL_BindImage(const image_t* img); // New in H2
 void GL_TextureMode(char* string);
+void GL_SetFilter(const image_t* image); // New in H2
 void GL_ImageList_f(void);
+void GL_UploadPaletted(int level, const byte* data, const palette_t* palette, int width, int height); // New in H2
 image_t* GL_FindImage(char* name, imagetype_t type);
 void GL_InitImages(void);
 void GL_ShutdownImages(void);
