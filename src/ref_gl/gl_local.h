@@ -218,7 +218,7 @@ extern int gl_filter_max;
 
 void InitGammaTable(void); // New in H2
 image_t* GL_GetFreeImage(void); // New in H2
-void GL_TexEnv(GLenum mode);
+void GL_TexEnv(GLint mode);
 void GL_BindImage(const image_t* img); // New in H2
 void GL_TextureMode(char* string);
 void GL_SetFilter(const image_t* image); // New in H2

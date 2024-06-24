@@ -76,13 +76,13 @@ image_t* GL_GetFreeImage(void)
 }
 
 // Q2 counterpart
-void GL_TexEnv(GLenum mode)
+void GL_TexEnv(const GLint mode)
 {
-	static GLenum lastmodes[2] = { -1, -1 };
+	static GLint lastmodes[2] = { -1, -1 };
 
 	if (mode != lastmodes[gl_state.currenttmu])
 	{
-		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, (GLfloat)mode);
+		qglTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, mode); //mxd. Q2/H2: qglTexEnvf 
 		lastmodes[gl_state.currenttmu] = mode;
 	}
 }
