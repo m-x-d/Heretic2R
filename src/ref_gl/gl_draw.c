@@ -73,8 +73,15 @@ int BF_Strlen(char* text)
 
 image_t* Draw_FindPic(char* name)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	if (name[0] != '/' && name[0] != '\\')
+	{
+		char fullname[MAX_QPATH];
+		Com_sprintf(fullname, 64, "pics/%s", name); // Q2: pics/%s.pcx
+
+		return GL_FindImage(fullname, it_pic);
+	}
+
+	return GL_FindImage(name + 1, it_pic);
 }
 
 // New in H2
