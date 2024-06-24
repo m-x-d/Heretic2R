@@ -50,10 +50,28 @@ void InitGammaTable(void)
 	}
 }
 
+//mxd. Part of GL_LoadPic logic in Q2
 image_t* GL_GetFreeImage(void)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	int i;
+	image_t* image;
+
+	// Find a free image_t
+	for (i = 0, image = gltextures; i < numgltextures; i++, image++)
+		if (image->registration_sequence == 0)
+			break;
+
+	if (i == numgltextures)
+	{
+		if (numgltextures == MAX_GLTEXTURES)
+			Sys_Error("GL_GetFreeImage : No image_t slots free.\n");
+
+		numgltextures++;
+	}
+
+	memset(image, 0, sizeof(image_t));
+
+	return image;
 }
 
 // Q2 counterpart
