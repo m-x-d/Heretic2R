@@ -348,9 +348,12 @@ qboolean GLimp_InitGL(void)
 	return true;
 }
 
-void GLimp_BeginFrame(float camera_separation)
+// Q2 counterpart (in original H2 .dll)
+void GLimp_BeginFrame(const float camera_separation)
 {
-	NOT_IMPLEMENTED
+	//mxd. Skip gl_bitdepth / allowdisplaydepthchange logic
+	//mxd. Skip stereo rendering logic
+	qglDrawBuffer(GL_BACK);
 }
 
 void GLimp_EndFrame(void)
