@@ -350,10 +350,23 @@ qboolean GLimp_InitGL(void)
 
 void GLimp_EndFrame(void)
 {
-	NOT_IMPLEMENTED
+	//mxd. Missing: qglGetError() logic
+
+	if (!_stricmp(gl_drawbuffer->string, "GL_BACK") && !qwglSwapBuffers(glw_state.hDC))
+		ri.Sys_Error(ERR_FATAL, "GLimp_EndFrame() - SwapBuffers() failed!\n");
 }
 
-void GLimp_AppActivate(qboolean active)
+void GLimp_AppActivate(const qboolean active)
 {
-	NOT_IMPLEMENTED
+	if (active)
+	{
+		SetForegroundWindow(glw_state.hWnd);
+		ShowWindow(glw_state.hWnd, SW_RESTORE);
+	}
+	else if ((int)vid_fullscreen->value)
+	{
+		ShowWindow(glw_state.hWnd, SW_MINIMIZE);
+	}
+	
+	disablerendering = !active; // New in H2
 }
