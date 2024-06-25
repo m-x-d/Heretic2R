@@ -147,7 +147,8 @@ typedef enum
 	mod_bad,
 	mod_brush,
 	mod_sprite,
-	mod_alias,
+	mod_alias,	//TODO: unused in H2.Remove?
+	mod_unknown,//TODO: unused in H2.Remove?
 	mod_fmdl,	// New in H2
 	mod_book	// New in H2
 } modtype_t;
