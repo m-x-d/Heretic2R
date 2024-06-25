@@ -14,6 +14,7 @@
     <ClCompile Include="..\qcommon\Skeletons.c" />
     <ClCompile Include="..\win32\glw_imp.c" />
     <ClCompile Include="gl_draw.c" />
+    <ClCompile Include="gl_draw_book.c" />
     <ClCompile Include="gl_draw_cinematic.c" />
     <ClCompile Include="gl_find_surface.c" />
     <ClCompile Include="gl_image.c" />

@@ -54,6 +54,9 @@
     <ClCompile Include="qgl_win.c">
       <Filter>win32</Filter>
     </ClCompile>
+    <ClCompile Include="gl_draw_book.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gl_local.h">

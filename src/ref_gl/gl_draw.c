@@ -58,19 +58,6 @@ void Draw_Char(int x, int y, int c, paletteRGBA_t color)
 	NOT_IMPLEMENTED
 }
 
-// New in H2
-void Draw_BigFont(int x, int y, char* text, float alpha)
-{
-	NOT_IMPLEMENTED
-}
-
-// New in H2. BigFont_Strlen?
-int BF_Strlen(char* text)
-{
-	NOT_IMPLEMENTED
-	return 0;
-}
-
 image_t* Draw_FindPic(char* name)
 {
 	if (name[0] != '/' && name[0] != '\\')
@@ -140,11 +127,6 @@ void Draw_Fill(const int x, const int y, const int w, const int h, const byte r,
 }
 
 void Draw_FadeScreen(paletteRGBA_t color)
-{
-	NOT_IMPLEMENTED
-}
-
-void Draw_BookPic(int w, int h, char* name, float scale)
 {
 	NOT_IMPLEMENTED
 }
