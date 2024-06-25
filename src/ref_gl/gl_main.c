@@ -12,6 +12,9 @@
 viddef_t viddef; // H2: renamed from vid, defined in vid.h?
 refimport_t ri;
 
+float gldepthmin;
+float gldepthmax;
+
 glconfig_t gl_config;
 glstate_t gl_state;
 
@@ -130,9 +133,69 @@ cvar_t* menus_active;
 cvar_t* cl_camera_under_surface;
 cvar_t* quake_amount;
 
-static void R_Clear(void)
+// New in H2
+static void GL_Fog(void)
 {
 	NOT_IMPLEMENTED
+}
+
+// New in H2
+static void GL_WaterFog(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void R_Clear(void)
+{
+	if ((int)gl_ztrick->value) //TODO: mxd. No fog rendering when gl_ztrick is enabled. Curious...
+	{
+		static int trickframe;
+
+		if ((int)gl_clear->value)
+			qglClear(GL_COLOR_BUFFER_BIT);
+
+		trickframe++;
+		if (trickframe & 1)
+		{
+			gldepthmin = 0.0f;
+			gldepthmax = 0.49999f;
+			qglDepthFunc(GL_LEQUAL);
+		}
+		else
+		{
+			gldepthmin = 1.0f;
+			gldepthmax = 0.5f;
+			qglDepthFunc(GL_GEQUAL);
+		}
+	}
+	else
+	{
+		// H2: extra fog rendering logic.
+		// mxd. Removed gl_fog_broken cvar logic, moved cl_camera_under_surface logic to separate else if case.
+		if (!(int)r_fog->value || r_farclipdist->value < r_fog_startdist->value)
+		{
+			qglDisable(GL_FOG);
+
+			if ((int)gl_clear->value)
+				qglClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			else
+				qglClear(GL_DEPTH_BUFFER_BIT);
+		}
+		else if ((int)cl_camera_under_surface->value)
+		{
+			GL_WaterFog();
+		}
+		else
+		{
+			GL_Fog();
+		}
+
+		gldepthmin = 0.0f;
+		gldepthmax = 1.0f;
+		qglDepthFunc(GL_LEQUAL);
+	}
+
+	qglDepthRange((double)gldepthmin, (double)gldepthmax);
 }
 
 void R_Register(void)

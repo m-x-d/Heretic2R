@@ -71,6 +71,9 @@ typedef enum
 
 #include "gl_model.h" //mxd. MUST be below image_t definition...
 
+extern float gldepthmin;
+extern float gldepthmax;
+
 extern image_t gltextures[MAX_GLTEXTURES];
 extern int numgltextures;
 
