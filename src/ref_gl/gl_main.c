@@ -133,10 +133,38 @@ cvar_t* menus_active;
 cvar_t* cl_camera_under_surface;
 cvar_t* quake_amount;
 
+GLint fog_modes[] = { GL_LINEAR, GL_EXP, GL_EXP2 }; // New in H2
+
 // New in H2
 static void GL_Fog(void)
 {
-	NOT_IMPLEMENTED
+	const int mode = ClampI((int)r_fog_mode->value, 0, sizeof(fog_modes) / sizeof(fog_modes[0])); //mxd. Added ClampI
+	qglFogi(GL_FOG_MODE, fog_modes[mode]);
+
+	if (mode == 0)
+	{
+		qglFogf(GL_FOG_START, r_fog_startdist->value);
+		qglFogf(GL_FOG_END, r_farclipdist->value);
+	}
+	else
+	{
+		qglFogf(GL_FOG_DENSITY, r_fog_density->value);
+	}
+
+	const float color[] =
+	{
+		r_fog_color_r->value,
+		r_fog_color_g->value,
+		r_fog_color_b->value,
+		r_fog_color_a->value
+	};
+
+	qglFogfv(GL_FOG_COLOR, color);
+	qglEnable(GL_FOG);
+
+	qglClearColor(color[0], color[1], color[2], color[3]);
+	qglClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	qglColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 // New in H2
