@@ -497,6 +497,11 @@ static void GL_FreeImage(image_t* image)
 	image->registration_sequence = 0;
 }
 
+void GL_FreeImageNoHash(image_t* image)
+{
+	NOT_IMPLEMENTED
+}
+
 void GL_FreeUnusedImages(void)
 {
 	int i;
