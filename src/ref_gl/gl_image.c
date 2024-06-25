@@ -87,11 +87,10 @@ void GL_TexEnv(const GLint mode)
 	}
 }
 
-//mxd. Most likely was changed from GL_Bind in H2 to use img->palette in qglColorTableEXT logic (which we skip...)
-void GL_BindImage(const image_t* img)
+//mxd. Most likely was changed from GL_Bind in H2 to use image->palette in qglColorTableEXT logic (which we skip...)
+void GL_BindImage(const image_t* image)
 {
-	extern image_t* draw_chars;
-	const int texnum = ((int)gl_nobind->value && draw_chars ? draw_chars->texnum : img->texnum);
+	const int texnum = ((int)gl_nobind->value && draw_chars ? draw_chars->texnum : image->texnum);
 
 	if (gl_state.currenttextures[gl_state.currenttmu] != texnum)
 	{
