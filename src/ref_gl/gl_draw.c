@@ -90,6 +90,11 @@ void Draw_GetPicSize(int* w, int* h, char* name)
 	NOT_IMPLEMENTED
 }
 
+void Draw_Render(int x, int y, int w, int h, image_t* image, float alpha)
+{
+	NOT_IMPLEMENTED
+}
+
 void Draw_StretchPic(int x, int y, int w, int h, char* name, float alpha, qboolean scale)
 {
 	NOT_IMPLEMENTED

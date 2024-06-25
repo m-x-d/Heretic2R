@@ -202,6 +202,7 @@ extern cvar_t* quake_amount;
 // gl_draw.c
 void Draw_InitLocal(void);
 void Draw_GetPicSize(int* w, int* h, char* name);
+void Draw_Render(int x, int y, int w, int h, image_t* image, float alpha); // New in H2
 void Draw_Pic(int x, int y, char* name, float alpha);
 void Draw_StretchPic(int x, int y, int w, int h, char* name, float alpha, qboolean scale);
 void Draw_Char(int x, int y, int c, paletteRGBA_t color);
@@ -246,6 +247,7 @@ void GL_UpdateSwapInterval(void);
 // gl_model.c
 extern int registration_sequence;
 
+struct model_s* R_RegisterModel(char* name);
 void Mod_Modellist_f(void);
 
 #pragma region ========================== GL config stuff  ==========================
