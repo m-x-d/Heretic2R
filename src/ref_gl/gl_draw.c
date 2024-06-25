@@ -118,9 +118,25 @@ void Draw_TileClear(int x, int y, int w, int h, char* pic)
 	NOT_IMPLEMENTED
 }
 
-void Draw_Fill(int x, int y, int w, int h, byte r, byte g, byte b)
+void Draw_Fill(const int x, const int y, const int w, const int h, const byte r, const byte g, const byte b)
 {
-	NOT_IMPLEMENTED
+	qglDisable(GL_TEXTURE_2D);
+
+	//mxd. qglColor4f -> qglColor3ub; H2: qglColor4f((float)r / 256.0f, (float)g / 256.0f,(float)b / 256.0f, 1.0f); Q2: color components divided by 255.0
+	qglColor3ub(r, g, b); 
+
+	qglBegin(GL_QUADS);
+
+	//mxd. qglVertex2f -> qglVertex2i
+	qglVertex2i(x, y);
+	qglVertex2i(x + w, y);
+	qglVertex2i(x + w, y + h);
+	qglVertex2i(x, y + h);
+
+	qglEnd();
+
+	qglColor3f(1.0f, 1.0f, 1.0f); // mxd. qglColor4f -> qglColor3f
+	qglEnable(GL_TEXTURE_2D);
 }
 
 void Draw_FadeScreen(paletteRGBA_t color)
