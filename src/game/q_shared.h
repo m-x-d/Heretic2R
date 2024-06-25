@@ -168,14 +168,14 @@ typedef enum
 	P_FRAGNAME,
 } PalIdx_t;
 
-H2COMMON_API char* COM_SkipPath(char *pathname);
-H2COMMON_API void COM_StripExtension(const char *in, char *out);
-H2COMMON_API void COM_FileBase(const char *in, char *out);
-H2COMMON_API void COM_FilePath(const char *in, char *out);
-H2COMMON_API void COM_DefaultExtension(char *path, const char *extension);
+H2COMMON_API char* COM_SkipPath(char* pathname);
+H2COMMON_API void COM_StripExtension(const char* in, char* out);
+H2COMMON_API void COM_FileBase(const char* in, char* out);
+H2COMMON_API void COM_FilePath(const char* in, char* out);
+H2COMMON_API void COM_DefaultExtension(char* path, const char* extension);
 
-H2COMMON_API char* COM_Parse(char **data_p);
-H2COMMON_API void Com_sprintf(char *dest, int size, const char *fmt, ...);
+H2COMMON_API char* COM_Parse(char** data_p);
+H2COMMON_API void Com_sprintf(char* dest, int size, const char* fmt, ...);
 H2COMMON_API void Com_PageInMemory(const byte *buffer, int size);
 
 
@@ -190,18 +190,18 @@ H2COMMON_API float BigFloat(float f);
 H2COMMON_API float Clamp(float src, float min, float max);
 H2COMMON_API int ClampI(int src, int min, int max);
 H2COMMON_API float Approach(float curr, float dest, float rate);
-H2COMMON_API char* va(const char *format, ...);
+H2COMMON_API char* va(const char* format, ...);
 
 // Key / value info strings
 #define	MAX_INFO_KEY		64
 #define	MAX_INFO_VALUE		64
 #define	MAX_INFO_STRING		512
 
-H2COMMON_API char* Info_ValueForKey(const char *s, const char *key);
-H2COMMON_API void Info_RemoveKey(char *s, const char *key);
-H2COMMON_API void Info_SetValueForKey(char *s, const char *key, const char *value);
-H2COMMON_API qboolean Info_Validate(const char *s);
-H2COMMON_API void Set_Com_Printf(void (*toSet)(const char *fmt, ...));
+H2COMMON_API char* Info_ValueForKey(const char* s, const char* key);
+H2COMMON_API void Info_RemoveKey(char* s, const char* key);
+H2COMMON_API void Info_SetValueForKey(char* s, const char* key, const char* value);
+H2COMMON_API qboolean Info_Validate(const char* s);
+H2COMMON_API void Set_Com_Printf(void (*toSet)(const char* fmt, ...));
 
 
 #pragma region ========================== SYSTEM SPECIFIC ==========================
@@ -213,12 +213,12 @@ extern H2COMMON_API const vec3_t vec3_up;
 extern int curtime; // Time returned by last Sys_Milliseconds
 
 int Sys_Milliseconds(void);
-void Sys_Mkdir(char *path);
+void Sys_Mkdir(char* path);
 
 // Large block stack allocation routines
 void* Hunk_Begin(int maxsize);
 void* Hunk_Alloc(int size);
-void Hunk_Free(void *buf);
+void Hunk_Free(void* buf);
 int Hunk_End(void);
 
 // Directory searching
@@ -229,14 +229,14 @@ int Hunk_End(void);
 #define SFF_SYSTEM  0x10
 
 // Pass in an attribute mask of things you wish to REJECT
-char* Sys_FindFirst(char *path, uint musthave, uint canthave);
+char* Sys_FindFirst(char* path, uint musthave, uint canthave);
 char* Sys_FindNext(uint musthave, uint canthave);
 void Sys_FindClose(void);
 
 // This is only here so the functions in q_shared.c and q_shwin.c can link //TODO: mxd. Check if still true
-void Sys_Error(char *error, ...);
-void Com_Printf(char *msg, ...);
-void Com_ColourPrintf(PalIdx_t colour, char *msg, ...);
+void Sys_Error(char* error, ...);
+void Com_Printf(char* msg, ...);
+void Com_ColourPrintf(PalIdx_t colour, char* msg, ...);
 
 #pragma endregion
 
@@ -265,7 +265,7 @@ typedef struct cvar_s
 
 #endif // CVAR
 
-cvar_t* Cvar_Get(char *var_name, char *value, int flags);
+cvar_t* Cvar_Get(char* var_name, char* value, int flags);
 
 #pragma endregion
 
