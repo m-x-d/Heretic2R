@@ -60,6 +60,9 @@
     <ClCompile Include="fmodel.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\win32\q_shwin.c">
+      <Filter>win32</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gl_local.h">

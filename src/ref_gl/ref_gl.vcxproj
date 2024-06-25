@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="..\qcommon\Skeletons.c" />
     <ClCompile Include="..\win32\glw_imp.c" />
+    <ClCompile Include="..\win32\q_shwin.c" />
     <ClCompile Include="fmodel.c" />
     <ClCompile Include="gl_draw.c" />
     <ClCompile Include="gl_draw_book.c" />
