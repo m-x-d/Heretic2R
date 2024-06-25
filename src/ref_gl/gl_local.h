@@ -230,7 +230,7 @@ void GL_SetFilter(const image_t* image); // New in H2
 void GL_ImageList_f(void);
 void GL_UploadPaletted(int level, const byte* data, const palette_t* palette, int width, int height); // New in H2
 image_t* GL_FindImage(char* name, imagetype_t type);
-void GL_FreeImageNoHash(image_t* img); // New in H2
+void GL_FreeImageNoHash(image_t* image); // New in H2
 void GL_FreeUnusedImages(void);
 void GL_GammaAffect(void); // New in H2
 void GL_InitImages(void);

@@ -499,7 +499,14 @@ static void GL_FreeImage(image_t* image)
 
 void GL_FreeImageNoHash(image_t* image)
 {
-	NOT_IMPLEMENTED
+	qglDeleteTextures(1, (GLuint*)&image->texnum);
+	if (image->palette != NULL)
+	{
+		free(image->palette);
+		image->palette = NULL;
+	}
+
+	image->registration_sequence = 0;
 }
 
 void GL_FreeUnusedImages(void)
