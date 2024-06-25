@@ -32,10 +32,34 @@ void Mod_Init(void)
 	memset(mod_novis, 0xff, sizeof(mod_novis));
 }
 
-// New in H2
-static void Mod_LoadBookModel(model_t* mod, void* buffer)
+// New in H2 //TODO: byteswapping?
+static void Mod_LoadBookModel(model_t* mod, const void* buffer)
 {
-	NOT_IMPLEMENTED
+	int i;
+	bookframe_t* frame;
+	char frame_name[MAX_QPATH];
+
+	const book_t* book_in = buffer;
+	book_t* book_out = Hunk_Alloc(modfilelen);
+
+	if (book_in->bheader.version != BOOK_VERSION)
+		Sys_Error("%s has wrong version number (%i should be %i)", mod->name, book_in->bheader.version, BOOK_VERSION);
+
+	if (book_in->bheader.num_segments > MAX_MD2SKINS)
+		Sys_Error("%s has too many frames (%i > %i)", mod->name, book_in->bheader.num_segments, MAX_MD2SKINS);
+
+	// Copy everything
+	memcpy(book_out, book_in, book_in->bheader.num_segments * sizeof(bookframe_t) + sizeof(bookheader_t));
+
+	// Pre-load frame images
+	for (i = 0, frame = book_out->bframes; i < book_out->bheader.num_segments; i++, frame++)
+	{
+		Com_sprintf(frame_name, sizeof(frame_name), "Book/%s", frame->name);
+		mod->skins[i] = GL_FindImage(frame_name, it_pic);
+	}
+
+	// Set model type
+	mod->type = mod_book;
 }
 
 static void Mod_LoadBrushModel(model_t* mod, void* buffer)

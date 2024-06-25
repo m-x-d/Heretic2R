@@ -47,6 +47,7 @@ void Draw_BookPic(const int w, const int h, char* name, const float scale)
  
 	for (i = 0, bframe = book->bframes; i < book->bheader.num_segments; i++, bframe++)
 	{
+		//TODO: not needed? Mod_LoadBookModel already loads all frames into mod.skins[]. Could use mod.skins[i] instead of frame_img?
 		Com_sprintf(frame_name, sizeof(frame_name), "/book/%s", bframe->name);
 		image_t* frame_img = Draw_FindPic(frame_name);
 
