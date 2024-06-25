@@ -238,6 +238,9 @@ void GL_GammaAffect(void); // New in H2
 void GL_InitImages(void);
 void GL_ShutdownImages(void);
 
+// gl_main.c
+extern model_t* r_worldmodel;
+
 // gl_misc.c
 void GL_ScreenShot_f(void);
 void GL_Strings_f(void);
