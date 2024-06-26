@@ -214,6 +214,7 @@ image_t* Draw_FindPic(char* name); // Q2: not in gl_local.h
 void Draw_TileClear(int x, int y, int w, int h, char* pic);
 void Draw_Fill(int x, int y, int w, int h, byte r, byte g, byte b);
 void Draw_FadeScreen(paletteRGBA_t color);
+void ShutdownFonts(void); // New in H2
 
 // gl_draw_book.c
 int BF_Strlen(const char* text); // New in H2
@@ -251,11 +252,9 @@ void GL_Strings_f(void);
 void GL_SetDefaultState(void);
 void GL_UpdateSwapInterval(void);
 
-// gl_model.c
+// gl_model.c (Mod_XX function declarations are in gl_model.h)
 extern int registration_sequence;
-
 struct model_s* R_RegisterModel(char* name);
-void Mod_Modellist_f(void);
 
 #pragma region ========================== GL config stuff  ==========================
 

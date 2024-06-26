@@ -22,7 +22,6 @@ void InitFonts(void)
 	ri.FS_LoadFile("pics/misc/font2.fnt", (void**)&font2);
 }
 
-// New in H2
 void ShutdownFonts(void)
 {
 	if (font1 != NULL)

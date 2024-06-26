@@ -235,3 +235,8 @@ void R_EndRegistration(void)
 {
 	NOT_IMPLEMENTED
 }
+
+void Mod_FreeAll(void)
+{
+	NOT_IMPLEMENTED
+}

@@ -552,7 +552,21 @@ qboolean R_Init(void* hinstance, void* hWnd)
 
 void R_Shutdown(void)
 {
-	NOT_IMPLEMENTED
+	ShutdownFonts(); // New in H2
+
+	ri.Cmd_RemoveCommand("modellist");
+	ri.Cmd_RemoveCommand("screenshot");
+	ri.Cmd_RemoveCommand("imagelist");
+	ri.Cmd_RemoveCommand("gl_strings");
+
+	Mod_FreeAll();
+	GL_ShutdownImages();
+
+	// Shutdown OS-specific OpenGL stuff like contexts, etc.
+	GLimp_Shutdown();
+
+	// Shutdown our QGL subsystem
+	QGL_Shutdown();
 }
 
 void R_BeginFrame(const float camera_separation)

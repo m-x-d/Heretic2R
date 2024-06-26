@@ -225,3 +225,5 @@ typedef struct model_s
 #pragma endregion
 
 void Mod_Init(void);
+void Mod_Modellist_f(void);
+void Mod_FreeAll(void);
