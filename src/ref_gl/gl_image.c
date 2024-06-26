@@ -407,7 +407,7 @@ static image_t* GL_LoadWal32(char* name, const imagetype_t type)
 #pragma endregion
 
 // Now with name hashing. When no texture found, returns r_notexture instead of NULL
-image_t* GL_FindImage(char* name, imagetype_t type)
+image_t* GL_FindImage(char* name, const imagetype_t type)
 {
 	//mxd. Skipping new gl_lostfocus_broken logic
 	//if (disablerendering && gl_lostfocus_broken->value)
