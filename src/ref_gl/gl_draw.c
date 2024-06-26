@@ -185,13 +185,13 @@ void Draw_StretchPic(int x, int y, int w, int h, char* name, const float alpha, 
 
 	if (scale)
 	{
-		const int end_x = x + w;
-		const int end_y = y + h;
+		const int xr = x + w;
+		const int yb = y + h;
 
 		x = viddef.width * x / DEF_WIDTH;
 		y = viddef.height * y / DEF_HEIGHT;
-		w = viddef.width * end_x / DEF_WIDTH - x;
-		h = viddef.height * end_y / DEF_HEIGHT - y;
+		w = viddef.width * xr / DEF_WIDTH - x;
+		h = viddef.height * yb / DEF_HEIGHT - y;
 	}
 
 	Draw_Render(x, y, w, h, image, alpha);
