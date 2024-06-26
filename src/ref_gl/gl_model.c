@@ -73,7 +73,7 @@ static void Mod_LoadVertexes(const lump_t* l)
 	dvertex_t* in = (void*)(mod_base + l->fileofs);
 
 	if (l->filelen % sizeof(dvertex_t) != 0)
-		ri.Sys_Error(ERR_DROP, "Mod_LoadVertexes: funny lump size in %s", loadmodel);
+		ri.Sys_Error(ERR_DROP, "Mod_LoadVertexes: funny lump size in %s", loadmodel->name);
 
 	const int count = l->filelen / (int)sizeof(dvertex_t);
 	mvertex_t* out = Hunk_Alloc(count * (int)sizeof(mvertex_t));
@@ -89,9 +89,24 @@ static void Mod_LoadVertexes(const lump_t* l)
 	}
 }
 
-static void Mod_LoadEdges(lump_t* l)
+static void Mod_LoadEdges(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	dedge_t* in = (void*)(mod_base + l->fileofs);
+
+	if (l->filelen % sizeof(dedge_t) != 0)
+		ri.Sys_Error(ERR_DROP, "Mod_LoadEdges: funny lump size in %s", loadmodel->name);
+
+	const int count = l->filelen / (int)sizeof(dedge_t);
+	medge_t* out = Hunk_Alloc((count + 1) * (int)sizeof(medge_t));
+
+	loadmodel->edges = out;
+	loadmodel->numedges = count;
+
+	for (int i = 0; i < count; i++, in++, out++)
+	{
+		out->v[0] = (ushort)LittleShort(in->v[0]);
+		out->v[1] = (ushort)LittleShort(in->v[1]);
+	}
 }
 
 static void Mod_LoadSurfedges(lump_t* l)
