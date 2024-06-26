@@ -8,8 +8,10 @@
 
 image_t* draw_chars;
 
-glxy_t* font1; // New in H2
-glxy_t* font2; // New in H2
+//mxd. Each font contains 224 char definitions
+glxy_t* font1;
+glxy_t* font2;
+glxy_t* curfont;
 
 qboolean gl_alphatest_broken;
 

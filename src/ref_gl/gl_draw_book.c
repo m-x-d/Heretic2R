@@ -12,11 +12,54 @@ void Draw_BigFont(int x, int y, char* text, float alpha)
 	NOT_IMPLEMENTED
 }
 
-// BigFont_Strlen?
-int BF_Strlen(char* text)
+// BigFont_Strlen. Returns width of given text in pixels.
+int BF_Strlen(const char* text)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	if (font1 == NULL || font2 == NULL)
+		return 0;
+
+	int width = 0;
+	curfont = font1;
+
+	while (true)
+	{
+		const byte c = *text++;
+
+		switch (c)
+		{
+			case 0:
+			case 1:
+			case '\t':
+			case '\n':
+				return width;
+
+			case 2:
+				curfont = font1;
+				break;
+
+			case 3:
+				curfont = font2;
+				break;
+
+			case '\r':
+				break;
+
+			case ' ':
+				width += 8;
+				break;
+
+			default:
+				if (c > 32) // When printable char
+				{
+					glxy_t* char_def = &curfont[c - 32];
+					if (char_def->w == 0) //TODO: is this ever triggered?
+						char_def = &curfont[14]; // Dot chardef?
+
+					width += char_def->w;
+				}
+				break;
+		}
+	}
 }
 
 //TODO: w and h args are ignored
@@ -49,7 +92,7 @@ void Draw_BookPic(const int w, const int h, char* name, const float scale)
 	{
 		//TODO: not needed? Mod_LoadBookModel already loads all frames into mod.skins[]. Could use mod.skins[i] instead of frame_img?
 		Com_sprintf(frame_name, sizeof(frame_name), "/book/%s", bframe->name);
-		image_t* frame_img = Draw_FindPic(frame_name);
+		const image_t* frame_img = Draw_FindPic(frame_name);
 
 		const int pic_x = (const int)floorf((float)bframe->x * vid_w / header_w * scale);
 		const int pic_y = (const int)floorf((float)bframe->y * vid_h / header_h * scale);
