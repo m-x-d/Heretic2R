@@ -209,8 +209,8 @@ typedef struct
 	void (*DrawTileClear)(int x, int y, int w, int h, char* name);
 	void (*DrawFill)(int x, int y, int w, int h, byte r, byte g, byte b);
 	void (*DrawFadeScreen)(paletteRGBA_t color);
-	void (*DrawBigFont)(int x, int y, char* text, float alpha);
-	int (*BF_Strlen)(char* text);
+	void (*DrawBigFont)(int x, int y, const char* text, float alpha);
+	int (*BF_Strlen)(const char* text);
 	void (*BookDrawPic)(int w, int h, char* name, float scale);
 
 	// Draw images for cinematic rendering (which can have a different palette). Note that calls
