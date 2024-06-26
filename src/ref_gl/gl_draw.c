@@ -11,6 +11,8 @@ image_t* draw_chars;
 glxy_t* font1; // New in H2
 glxy_t* font2; // New in H2
 
+qboolean gl_alphatest_broken;
+
 // New in H2
 void InitFonts(void)
 {
@@ -90,9 +92,38 @@ void Draw_GetPicSize(int* w, int* h, char* name)
 	NOT_IMPLEMENTED
 }
 
-void Draw_Render(int x, int y, int w, int h, image_t* image, float alpha)
+void Draw_Render(const int x, const int y, const int w, const int h, const image_t* image, const float alpha)
 {
-	NOT_IMPLEMENTED
+	if (gl_alphatest_broken && !image->has_alpha)
+		qglDisable(GL_ALPHA_TEST);
+
+	GL_BindImage(image);
+
+	qglColor4f(1.0f, 1.0f, 1.0f, alpha);
+	qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	qglAlphaFunc(GL_GREATER, 0.05f);
+	qglEnable(GL_BLEND);
+
+	GL_TexEnv(GL_MODULATE);
+	qglBegin(GL_QUADS);
+
+	qglTexCoord2f(0.0f, 0.0f);
+	qglVertex2i(x, y); //mxd. qglVertex2f -> qglVertex2i
+
+	qglTexCoord2f(1.0f, 0.0f);
+	qglVertex2i(x + w, y); //mxd. qglVertex2f -> qglVertex2i
+
+	qglTexCoord2f(1.0f, 1.0f);
+	qglVertex2i(x + w, y + h); //mxd. qglVertex2f -> qglVertex2i
+
+	qglTexCoord2f(0.0f, 1.0f);
+	qglVertex2i(x, y + h); //mxd. qglVertex2f -> qglVertex2i
+
+	qglEnd();
+	GL_TexEnv(GL_REPLACE);
+
+	if (gl_alphatest_broken && !image->has_alpha)
+		qglEnable(GL_ALPHA_TEST);
 }
 
 void Draw_StretchPic(int x, int y, int w, int h, char* name, float alpha, qboolean scale)
