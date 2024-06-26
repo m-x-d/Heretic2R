@@ -27,6 +27,9 @@ image_t* r_reflecttexture;
 image_t* r_font1;
 image_t* r_font2;
 
+int r_viewcluster;
+int r_oldviewcluster;
+
 cvar_t* r_norefresh;
 cvar_t* r_fullbright;
 cvar_t* r_drawentities;

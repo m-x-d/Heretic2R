@@ -87,6 +87,9 @@ extern image_t* draw_chars; // Local to gl_draw.c in H2
 extern image_t* r_font1; // New in H2
 extern image_t* r_font2; // New in H2
 
+extern int r_viewcluster;
+extern int r_oldviewcluster;
+
 #pragma region ========================== CVARS  ==========================
 
 extern cvar_t* r_norefresh;
