@@ -67,9 +67,26 @@ static void Mod_LoadBookModel(model_t* mod, const void* buffer)
 
 byte* mod_base;
 
-static void Mod_LoadVertexes(lump_t* l)
+// Q2 counterpart
+static void Mod_LoadVertexes(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	dvertex_t* in = (void*)(mod_base + l->fileofs);
+
+	if (l->filelen % sizeof(dvertex_t) != 0)
+		ri.Sys_Error(ERR_DROP, "Mod_LoadVertexes: funny lump size in %s", loadmodel);
+
+	const int count = l->filelen / (int)sizeof(dvertex_t);
+	mvertex_t* out = Hunk_Alloc(count * (int)sizeof(mvertex_t));
+
+	loadmodel->vertexes = out;
+	loadmodel->numvertexes = count;
+
+	for (int i = 0; i < count; i++, in++, out++)
+	{
+		out->position[0] = LittleFloat(in->point[0]);
+		out->position[1] = LittleFloat(in->point[1]);
+		out->position[2] = LittleFloat(in->point[2]);
+	}
 }
 
 static void Mod_LoadEdges(lump_t* l)
