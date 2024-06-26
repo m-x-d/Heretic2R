@@ -132,9 +132,18 @@ static void Mod_LoadSurfedges(const lump_t* l)
 		out[i] = LittleLong(in[i]);
 }
 
-static void Mod_LoadLighting(lump_t* l)
+// Q2 counterpart
+static void Mod_LoadLighting(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	if (l->filelen > 0)
+	{
+		loadmodel->lightdata = Hunk_Alloc(l->filelen);
+		memcpy(loadmodel->lightdata, mod_base + l->fileofs, l->filelen);
+	}
+	else
+	{
+		loadmodel->lightdata = NULL;
+	}
 }
 
 static void Mod_LoadPlanes(lump_t* l)
