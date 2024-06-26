@@ -57,9 +57,50 @@ void Draw_InitLocal(void)
 	InitFonts();
 }
 
-void Draw_Char(int x, int y, int c, paletteRGBA_t color)
+// Draws one 8*8 graphics character with 0 being transparent.
+// It can be clipped to the top of the screen to allow the console to be smoothly scrolled off.
+void Draw_Char(const int x, const int y, int c, const paletteRGBA_t color)
 {
-	NOT_IMPLEMENTED
+	#define CELL_SIZE	0.0625f	// 16 chars per row/column (0.0625 == 1 / 16)
+	#define CHAR_SIZE	8		// Each char is 8x8 pixels
+
+	c &= 255;
+
+	// Skip when whitespace char or totally off-screen
+	if ((c & 127) == 32 || y <= -8)
+		return;
+
+	const float frow = (float)(c >> 4) * CELL_SIZE;
+	const float fcol = (float)(c & 15) * CELL_SIZE;
+
+	GL_BindImage(draw_chars);
+ 
+	qglEnable(GL_ALPHA_TEST);
+	qglEnable(GL_BLEND);
+	qglColor4ub(color.r, color.g, color.b, color.a);
+	qglBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
+	qglAlphaFunc(GL_GREATER, 0.05f);
+
+	GL_TexEnv(GL_MODULATE);
+	qglBegin(GL_QUADS);
+
+	qglTexCoord2f(fcol, frow);
+	qglVertex2i(x, y); //mxd. qglVertex2f -> qglVertex2i
+
+	qglTexCoord2f(fcol + CELL_SIZE, frow);
+	qglVertex2i(x + CHAR_SIZE, y); //mxd. qglVertex2f -> qglVertex2i
+
+	qglTexCoord2f(fcol + CELL_SIZE, frow + CELL_SIZE);
+	qglVertex2i(x + CHAR_SIZE, y + CHAR_SIZE); //mxd. qglVertex2f -> qglVertex2i
+
+	qglTexCoord2f(fcol, frow + CELL_SIZE);
+	qglVertex2i(x, y + CHAR_SIZE); //mxd. qglVertex2f -> qglVertex2i
+
+	qglEnd();
+	GL_TexEnv(GL_REPLACE);
+
+	qglDisable(GL_ALPHA_TEST);
+	qglDisable(GL_BLEND);
 }
 
 image_t* Draw_FindPic(char* name)
