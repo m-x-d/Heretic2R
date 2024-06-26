@@ -7,9 +7,105 @@
 #include "gl_local.h"
 #include "vid.h"
 
-void Draw_BigFont(int x, int y, char* text, float alpha)
+//mxd. Not part of original logic
+static void Draw_BigFontChar(int x, int y, const glxy_t* char_def)
 {
-	NOT_IMPLEMENTED
+	y -= char_def->baseline;
+
+	const int xl = viddef.width * x / DEF_WIDTH;
+	const int xr = viddef.width * (char_def->w + x) / DEF_WIDTH;
+	const int yt = viddef.height * y / DEF_HEIGHT;
+	const int yb = viddef.height * (char_def->h + y) / DEF_HEIGHT;
+
+	qglBegin(GL_QUADS);
+
+	qglTexCoord2f(char_def->xl, char_def->yt);
+	qglVertex2i(xl, yt); //mxd. qglVertex2f -> qglVertex2i
+
+	qglTexCoord2f(char_def->xr, char_def->yt);
+	qglVertex2i(xr, yt); //mxd. qglVertex2f -> qglVertex2i
+
+	qglTexCoord2f(char_def->xr, char_def->yb);
+	qglVertex2i(xr, yb); //mxd. qglVertex2f -> qglVertex2i
+
+	qglTexCoord2f(char_def->xl, char_def->yb);
+	qglVertex2i(xl, yb); //mxd. qglVertex2f -> qglVertex2i
+
+	qglEnd();
+}
+
+void Draw_BigFont(const int x, const int y, const char* text, const float alpha)
+{
+	if (font1 == NULL || font2 == NULL)
+		return;
+
+	qglEnable(GL_ALPHA_TEST);
+	qglEnable(GL_BLEND);
+	qglColor4f(1.0f, 1.0f, 1.0f, alpha);
+	qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	qglAlphaFunc(GL_GREATER, 0.05f);
+	GL_TexEnv(GL_MODULATE);
+
+	const glxy_t* curfont = font1;
+	GL_BindImage(r_font1);
+
+	int ox = x;
+	int oy = y;
+
+	while (true)
+	{
+		const byte c = *text++;
+
+		if (c == 0)
+			break;
+
+		switch (c)
+		{
+			case 1:
+				ox = (viddef.width - BF_Strlen(text)) / 2;
+				break;
+
+			case 2:
+				curfont = font1;
+				GL_BindImage(r_font1);
+				break;
+			case 3:
+				curfont = font2;
+				GL_BindImage(r_font2);
+				break;
+			
+			case '\t':
+				ox += 63;
+				break;
+
+			case '\n':
+				oy += 18;
+				ox = x;
+				break;
+
+			case '\r':
+				break;
+
+			case 32: // Whitespace char
+				ox += 8;
+				break;
+
+			default:
+				if (c > 32)
+				{
+					const glxy_t* char_def = &curfont[c - 32];
+					if (curfont[c - 32].w == 0) //TODO: is this ever triggered?
+						char_def = &curfont[14];
+
+					Draw_BigFontChar(ox, oy, char_def); //mxd. Logic split into helper function
+					ox += char_def->w;
+				}
+				break;
+		}
+	}
+
+	qglDisable(GL_ALPHA_TEST);
+	qglDisable(GL_BLEND);
 }
 
 // BigFont_Strlen. Returns width of given text in pixels.
@@ -19,7 +115,7 @@ int BF_Strlen(const char* text)
 		return 0;
 
 	int width = 0;
-	curfont = font1;
+	const glxy_t* curfont = font1;
 
 	while (true)
 	{
@@ -44,14 +140,14 @@ int BF_Strlen(const char* text)
 			case '\r':
 				break;
 
-			case ' ':
+			case 32: // Whitespace char
 				width += 8;
 				break;
 
 			default:
 				if (c > 32) // When printable char
 				{
-					glxy_t* char_def = &curfont[c - 32];
+					const glxy_t* char_def = &curfont[c - 32];
 					if (char_def->w == 0) //TODO: is this ever triggered?
 						char_def = &curfont[14]; // Dot chardef?
 

@@ -202,7 +202,6 @@ extern cvar_t* quake_amount;
 // gl_draw.c
 extern glxy_t* font1; // New in H2
 extern glxy_t* font2; // New in H2
-extern glxy_t* curfont; // New in H2
 extern qboolean gl_alphatest_broken; // Hew in H2 //TODO: remove?
 
 void Draw_InitLocal(void);
@@ -218,7 +217,7 @@ void Draw_FadeScreen(paletteRGBA_t color);
 
 // gl_draw_book.c
 int BF_Strlen(const char* text); // New in H2
-void Draw_BigFont(int x, int y, char* text, float alpha); // New in H2
+void Draw_BigFont(int x, int y, const char* text, float alpha); // New in H2
 void Draw_BookPic(int w, int h, char* name, float scale); // New in H2
 
 // gl_image.c
