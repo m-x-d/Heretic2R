@@ -596,5 +596,10 @@ void GL_InitImages(void)
 
 void GL_ShutdownImages(void)
 {
-	NOT_IMPLEMENTED
+	int i;
+	image_t* image;
+
+	for (i = 0, image = gltextures; i < numgltextures; i++, image++)
+		if (image->registration_sequence != 0)
+			GL_FreeImage(image);
 }
