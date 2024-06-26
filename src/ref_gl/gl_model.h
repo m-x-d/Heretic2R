@@ -226,4 +226,5 @@ typedef struct model_s
 
 void Mod_Init(void);
 void Mod_Modellist_f(void);
+void Mod_Free(model_t* mod);
 void Mod_FreeAll(void);

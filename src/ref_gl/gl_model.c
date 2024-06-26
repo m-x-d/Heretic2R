@@ -236,7 +236,17 @@ void R_EndRegistration(void)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
+void Mod_Free(model_t* mod)
+{
+	Hunk_Free(mod->extradata);
+	memset(mod, 0, sizeof(*mod));
+}
+
+// Q2 counterpart
 void Mod_FreeAll(void)
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < mod_numknown; i++)
+		if (mod_known[i].extradatasize)
+			Mod_Free(&mod_known[i]);
 }
