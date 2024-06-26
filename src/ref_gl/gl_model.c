@@ -89,6 +89,7 @@ static void Mod_LoadVertexes(const lump_t* l)
 	}
 }
 
+// Q2 counterpart
 static void Mod_LoadEdges(const lump_t* l)
 {
 	dedge_t* in = (void*)(mod_base + l->fileofs);
@@ -109,9 +110,26 @@ static void Mod_LoadEdges(const lump_t* l)
 	}
 }
 
-static void Mod_LoadSurfedges(lump_t* l)
+// Q2 counterpart
+static void Mod_LoadSurfedges(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	const int* in = (void*)(mod_base + l->fileofs);
+
+	if (l->filelen % sizeof(int) != 0)
+		ri.Sys_Error(ERR_DROP, "Mod_LoadSurfedges: funny lump size in %s", loadmodel->name);
+
+	const int count = l->filelen / (int)sizeof(int);
+
+	if (count < 1 || count >= MAX_MAP_SURFEDGES)
+		ri.Sys_Error(ERR_DROP, "Mod_LoadSurfedges: bad surfedges count in %s: %i", loadmodel->name, count);
+
+	int* out = Hunk_Alloc(count * (int)sizeof(int));
+
+	loadmodel->surfedges = out;
+	loadmodel->numsurfedges = count;
+
+	for (int i = 0; i < count; i++)
+		out[i] = LittleLong(in[i]);
 }
 
 static void Mod_LoadLighting(lump_t* l)
