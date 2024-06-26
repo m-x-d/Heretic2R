@@ -6,6 +6,7 @@
 
 #include "gl_local.h"
 #include "fmodel.h"
+#include "Vector.h"
 
 model_t* loadmodel;
 int modfilelen;
@@ -62,10 +63,131 @@ static void Mod_LoadBookModel(model_t* mod, const void* buffer)
 	mod->type = mod_book;
 }
 
-static void Mod_LoadBrushModel(model_t* mod, void* buffer)
+#pragma region ========================== BRUSHMODEL LOADING ==========================
+
+byte* mod_base;
+
+static void Mod_LoadVertexes(lump_t* l)
 {
 	NOT_IMPLEMENTED
 }
+
+static void Mod_LoadEdges(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Mod_LoadSurfedges(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Mod_LoadLighting(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Mod_LoadPlanes(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Mod_LoadTexinfo(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Mod_LoadFaces(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Mod_LoadMarksurfaces(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Mod_LoadVisibility(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Mod_LoadLeafs(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Mod_LoadNodes(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Mod_LoadSubmodels(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart
+static void Mod_LoadBrushModel(model_t* mod, void* buffer)
+{
+	loadmodel->type = mod_brush;
+	if (loadmodel != mod_known)
+		ri.Sys_Error(ERR_DROP, "Loaded a brush model after the world");
+
+	dheader_t* header = buffer;
+
+	if (header->version != BSPVERSION)
+		ri.Sys_Error(ERR_DROP, "Mod_LoadBrushModel: %s has wrong version number (%i should be %i)", mod->name, header->version, BSPVERSION);
+
+	// Swap all the lumps
+	mod_base = (byte*)header;
+
+	for (uint i = 0; i < sizeof(dheader_t) / 4; i++)
+		((int*)header)[i] = LittleLong(((int*)header)[i]);
+
+	Mod_LoadVertexes(&header->lumps[LUMP_VERTEXES]);
+	Mod_LoadEdges(&header->lumps[LUMP_EDGES]);
+	Mod_LoadSurfedges(&header->lumps[LUMP_SURFEDGES]);
+	Mod_LoadLighting(&header->lumps[LUMP_LIGHTING]);
+	Mod_LoadPlanes(&header->lumps[LUMP_PLANES]);
+	Mod_LoadTexinfo(&header->lumps[LUMP_TEXINFO]);
+	Mod_LoadFaces(&header->lumps[LUMP_FACES]);
+	Mod_LoadMarksurfaces(&header->lumps[LUMP_LEAFFACES]);
+	Mod_LoadVisibility(&header->lumps[LUMP_VISIBILITY]);
+	Mod_LoadLeafs(&header->lumps[LUMP_LEAFS]);
+	Mod_LoadNodes(&header->lumps[LUMP_NODES]);
+	Mod_LoadSubmodels(&header->lumps[LUMP_MODELS]);
+
+	// Regular and alternate animation
+	mod->numframes = 2; 
+
+	// Set up the submodels
+	for (int i = 0; i < mod->numsubmodels; i++)
+	{
+		const mmodel_t* bm = &mod->submodels[i];
+		model_t* starmod = &mod_inline[i];
+
+		*starmod = *loadmodel;
+
+		starmod->firstmodelsurface = bm->firstface;
+		starmod->nummodelsurfaces = bm->numfaces;
+		starmod->firstnode = bm->headnode;
+
+		if (starmod->firstnode >= loadmodel->numnodes)
+			ri.Sys_Error(ERR_DROP, "Inline model %i has bad firstnode", i);
+
+		VectorCopy(bm->maxs, starmod->maxs);
+		VectorCopy(bm->mins, starmod->mins);
+		starmod->radius = bm->radius;
+
+		if (i == 0)
+			*loadmodel = *starmod;
+
+		mod_inline[i].numleafs = bm->visleafs;
+	}
+}
+
+#pragma endregion
 
 static void Mod_LoadSpriteModel(model_t* mod, void* buffer)
 {
