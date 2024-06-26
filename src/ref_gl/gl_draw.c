@@ -5,6 +5,7 @@
 //
 
 #include "gl_local.h"
+#include "vid.h"
 
 image_t* draw_chars;
 
@@ -127,9 +128,19 @@ void Draw_Render(const int x, const int y, const int w, const int h, const image
 		qglEnable(GL_ALPHA_TEST);
 }
 
-void Draw_StretchPic(int x, int y, int w, int h, char* name, float alpha, qboolean scale)
+void Draw_StretchPic(int x, int y, int w, int h, char* name, const float alpha, const qboolean scale)
 {
-	NOT_IMPLEMENTED
+	const image_t* image = Draw_FindPicFilter(name);
+
+	if (scale)
+	{
+		x = viddef.width * x / DEF_WIDTH;
+		y = viddef.height * y / DEF_HEIGHT;
+		w = viddef.width * (x + w) / DEF_WIDTH - x;
+		h = viddef.height * (y + h) / DEF_HEIGHT - y;
+	}
+
+	Draw_Render(x, y, w, h, image, alpha);
 }
 
 void Draw_Pic(int x, int y, char* name, float alpha)
