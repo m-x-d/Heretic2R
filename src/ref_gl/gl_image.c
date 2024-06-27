@@ -75,9 +75,18 @@ image_t* GL_GetFreeImage(void)
 	return image;
 }
 
-void GL_EnableMultitexture(qboolean enable)
+//mxd. Removed qglSelectTextureSGIS logic
+void GL_EnableMultitexture(const qboolean enable)
 {
-	NOT_IMPLEMENTED
+	if (qglActiveTextureARB != NULL)
+	{
+		GL_SelectTexture(GL_TEXTURE1);
+		qglToggle(GL_TEXTURE_2D, enable);
+		GL_TexEnv(GL_REPLACE);
+
+		GL_SelectTexture(GL_TEXTURE0);
+		GL_TexEnv(GL_REPLACE);
+	}
 }
 
 void GL_SelectTexture(GLenum texture)

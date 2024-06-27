@@ -412,6 +412,8 @@ extern void (APIENTRY* qglMultiTexCoord2fARB)(GLenum target, GLfloat s, GLfloat 
 extern void (APIENTRY* qglActiveTextureARB)(GLenum);
 extern void (APIENTRY* qglClientActiveTextureARB)(GLenum);
 
+#define qglToggle(param, enable) ((enable) ? qglEnable(param) : qglDisable(param)) //mxd
+
 #pragma endregion
 
 #pragma region ========================== Extension constants ==========================
