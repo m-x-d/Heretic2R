@@ -27,6 +27,8 @@ image_t* r_reflecttexture;
 image_t* r_font1;
 image_t* r_font2;
 
+model_t* currentmodel;
+
 int r_viewcluster;
 int r_oldviewcluster;
 

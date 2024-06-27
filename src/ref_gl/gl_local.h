@@ -248,6 +248,7 @@ void GL_ShutdownImages(void);
 
 // gl_main.c
 extern model_t* r_worldmodel;
+extern model_t* currentmodel;
 
 // gl_misc.c
 void GL_ScreenShot_f(void);
@@ -258,6 +259,9 @@ void GL_UpdateSwapInterval(void);
 // gl_model.c (Mod_XX function declarations are in gl_model.h)
 extern int registration_sequence;
 struct model_s* R_RegisterModel(char* name);
+
+// gl_warp.c
+void GL_SubdivideSurface(msurface_t* fa);
 
 #pragma region ========================== GL config stuff  ==========================
 

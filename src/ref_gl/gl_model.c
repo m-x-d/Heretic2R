@@ -225,9 +225,92 @@ static void Mod_LoadTexinfo(const lump_t* l)
 	}
 }
 
-static void Mod_LoadFaces(lump_t* l)
+static void CalcSurfaceExtents(msurface_t* s)
 {
 	NOT_IMPLEMENTED
+}
+
+// Referenced by Mod_LoadFaces only:
+void GL_BeginBuildingLightmaps(model_t* m);
+void GL_EndBuildingLightmaps(void);
+void GL_BuildPolygonFromSurface(msurface_t* fa);
+void GL_CreateSurfaceLightmap(msurface_t* surf);
+
+static void Mod_LoadFaces(const lump_t* l)
+{
+	dface_t* in = (void*)(mod_base + l->fileofs);
+	if (l->filelen % sizeof(dface_t) != 0)
+		ri.Sys_Error(ERR_DROP, "Mod_LoadFaces: funny lump size in %s", loadmodel->name);
+
+	const int count = l->filelen / (int)sizeof(dface_t);
+	msurface_t* out = Hunk_Alloc(count * (int)sizeof(msurface_t));
+
+	loadmodel->surfaces = out;
+	loadmodel->numsurfaces = count;
+
+	currentmodel = loadmodel;
+
+	GL_BeginBuildingLightmaps(loadmodel);
+
+	for (int surfnum = 0; surfnum < count; surfnum++, in++, out++)
+	{
+		out->firstedge = LittleLong(in->firstedge);
+		out->numedges = LittleShort(in->numedges);
+		out->flags = 0;
+		out->polys = NULL;
+
+		const int planenum = LittleShort(in->planenum);
+
+		if (LittleShort(in->side) != 0)
+			out->flags |= SURF_PLANEBACK;
+
+		out->plane = loadmodel->planes + planenum;
+
+		const int texinfo = LittleShort(in->texinfo);
+		if (texinfo < 0 || texinfo >= loadmodel->numtexinfo)
+			ri.Sys_Error(ERR_DROP, "Mod_LoadFaces: bad texinfo number");
+
+		out->texinfo = loadmodel->texinfo + texinfo;
+
+		CalcSurfaceExtents(out);
+
+		// Lighting info
+		for (int i = 0; i < MAXLIGHTMAPS; i++)
+			out->styles[i] = in->styles[i];
+
+		const int lightofs = LittleLong(in->lightofs);
+		if (lightofs == -1)
+			out->samples = NULL;
+		else
+			out->samples = loadmodel->lightdata + lightofs;
+
+		// Set the drawing flags
+		if (out->texinfo->flags & SURF_WARP)
+		{
+			out->flags |= SURF_DRAWTURB;
+
+			if (out->texinfo->flags & SURF_UNDULATE) // New in H2
+				out->flags |= SURF_UNDULATE;
+
+			for (int i = 0; i < 2; i++)
+			{
+				out->extents[i] = 16384;
+				out->texturemins[i] = -8192;
+			}
+
+			// Cut up polygon for warps
+			GL_SubdivideSurface(out);
+		}
+
+		// Create lightmaps and polygons
+		if (!(out->texinfo->flags & (SURF_SKY | SURF_TRANS33 | SURF_TRANS66 | SURF_WARP | SURF_TALL_WALL))) // H2: extra SURF_TALL_WALL flag
+			GL_CreateSurfaceLightmap(out);
+
+		if (!(out->texinfo->flags & SURF_WARP))
+			GL_BuildPolygonFromSurface(out);
+	}
+
+	GL_EndBuildingLightmaps();
 }
 
 static void Mod_LoadMarksurfaces(lump_t* l)

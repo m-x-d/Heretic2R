@@ -28,6 +28,11 @@ float r_turbsin[] =
 	-3.06147f, -2.87916f, -2.69512f, -2.50945f, -2.32228f, -2.1337f, -1.94384f, -1.75281f, -1.56072f, -1.3677f, -1.17384f, -0.979285f, -0.784137f, -0.588517f, -0.392541f, -0.19633f,
 };
 
+void GL_SubdivideSurface(msurface_t* fa)
+{
+	NOT_IMPLEMENTED
+}
+
 void R_SetSky(char* name, float rotate, vec3_t axis)
 {
 	NOT_IMPLEMENTED

@@ -63,6 +63,9 @@
     <ClCompile Include="..\win32\q_shwin.c">
       <Filter>win32</Filter>
     </ClCompile>
+    <ClCompile Include="gl_surf.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gl_local.h">
