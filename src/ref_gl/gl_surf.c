@@ -6,6 +6,8 @@
 
 #include "gl_local.h"
 
+#define LIGHTMAP_BYTES			4
+
 #define BLOCK_WIDTH				128
 #define BLOCK_HEIGHT			128
 
@@ -30,6 +32,9 @@ typedef struct
 } gllightmapstate_t;
 
 static gllightmapstate_t gl_lms;
+
+extern void R_SetCacheState(msurface_t* surf);
+extern void R_BuildLightMap(msurface_t* surf, byte* dest, int stride);
 
 // Q2 counterpart. //TODO: parameter 'm' is never used
 void GL_BeginBuildingLightmaps(model_t* m)
@@ -73,12 +78,50 @@ void GL_EndBuildingLightmaps(void)
 	NOT_IMPLEMENTED
 }
 
+static void LM_InitBlock(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void LM_UploadBlock(qboolean dynamic)
+{
+	NOT_IMPLEMENTED
+}
+
+static qboolean LM_AllocBlock(int w, int h, int* x, int* y)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
 void GL_BuildPolygonFromSurface(msurface_t* fa)
 {
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
 void GL_CreateSurfaceLightmap(msurface_t* surf)
 {
-	NOT_IMPLEMENTED
+	if (surf->flags & (SURF_DRAWSKY | SURF_DRAWTURB))
+		return;
+
+	const int smax = ((int)surf->extents[0] >> 4) + 1;
+	const int tmax = ((int)surf->extents[1] >> 4) + 1;
+
+	if (!LM_AllocBlock(smax, tmax, &surf->light_s, &surf->light_t))
+	{
+		LM_UploadBlock(false);
+		LM_InitBlock();
+
+		if (!LM_AllocBlock(smax, tmax, &surf->light_s, &surf->light_t))
+			ri.Sys_Error(ERR_FATAL, "Consecutive calls to LM_AllocBlock(%d,%d) failed\n", smax, tmax);
+	}
+
+	surf->lightmaptexturenum = gl_lms.current_lightmap_texture;
+
+	byte* base = gl_lms.lightmap_buffer;
+	base += (surf->light_t * BLOCK_WIDTH + surf->light_s) * LIGHTMAP_BYTES;
+
+	R_SetCacheState(surf);
+	R_BuildLightMap(surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES);
 }

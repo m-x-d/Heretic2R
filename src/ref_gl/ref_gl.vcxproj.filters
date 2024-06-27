@@ -66,6 +66,9 @@
     <ClCompile Include="gl_surf.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="gl_light.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gl_local.h">

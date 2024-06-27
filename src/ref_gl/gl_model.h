@@ -36,6 +36,7 @@ typedef struct
 } mmodel_t;
 
 #define SURF_PLANEBACK		2
+#define	SURF_DRAWSKY		4
 #define SURF_DRAWTURB		16
 
 // Q2 counterpart

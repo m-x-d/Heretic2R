@@ -20,6 +20,7 @@
     <ClCompile Include="gl_draw_cinematic.c" />
     <ClCompile Include="gl_find_surface.c" />
     <ClCompile Include="gl_image.c" />
+    <ClCompile Include="gl_light.c" />
     <ClCompile Include="gl_main.c" />
     <ClCompile Include="gl_misc.c" />
     <ClCompile Include="gl_model.c" />
