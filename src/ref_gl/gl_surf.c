@@ -111,7 +111,8 @@ static qboolean LM_AllocBlock(const int w, const int h, int* x, int* y)
 		{
 			// This is a valid spot
 			*x = i;
-			*y = best = best2;
+			*y = best2;
+			best = best2;
 		}
 	}
 
