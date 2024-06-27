@@ -177,9 +177,52 @@ static void Mod_LoadPlanes(const lump_t* l)
 	}
 }
 
-static void Mod_LoadTexinfo(lump_t* l)
+static void Mod_LoadTexinfo(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	char name[MAX_QPATH];
+
+	texinfo_t* in = (void*)(mod_base + l->fileofs);
+	if (l->filelen % sizeof(texinfo_t) != 0)
+		ri.Sys_Error(ERR_DROP, "Mod_LoadTexinfo: funny lump size in %s", loadmodel->name);
+
+	const int count = l->filelen / (int)sizeof(texinfo_t);
+	mtexinfo_t* out = Hunk_Alloc(count * (int)sizeof(mtexinfo_t));
+
+	loadmodel->texinfo = out;
+	loadmodel->numtexinfo = count;
+
+	for (int i = 0; i < count; i++, in++, out++)
+	{
+		for (int j = 0; j < 8; j++)
+			out->vecs[0][j] = LittleFloat(in->vecs[0][j]);
+
+		out->flags = LittleLong(in->flags);
+		const int next = LittleLong(in->nexttexinfo);
+
+		if (next > 0)
+			out->next = loadmodel->texinfo + next;
+		else
+			out->next = NULL;
+
+		Com_sprintf(name, sizeof(name), "textures/%s.m8", in->texture); // H2: .wal -> .m8
+		out->image = GL_FindImage(name, it_wall2); // H2: type: 2 -> 4
+
+		if (out->image == NULL)
+		{
+			ri.Con_Printf(PRINT_ALL, "Couldn\'t load %s\n", name);
+			out->image = r_notexture;
+		}
+	}
+
+	// Count animation frames
+	for (int i = 0; i < count; i++)
+	{
+		out = &loadmodel->texinfo[i];
+		out->numframes = 1;
+
+		for (const mtexinfo_t* step = out->next; step != NULL && step != out; step = step->next)
+			out->numframes++;
+	}
 }
 
 static void Mod_LoadFaces(lump_t* l)
