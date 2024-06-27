@@ -116,15 +116,28 @@ void GL_TexEnv(const GLint mode)
 	}
 }
 
+// Q2 counterpart
 void GL_Bind(int texnum)
 {
-	NOT_IMPLEMENTED
+	if ((int)gl_nobind->value && draw_chars != NULL) // Performance evaluation option
+		texnum = draw_chars->texnum;
+
+	if (gl_state.currenttextures[gl_state.currenttmu] != texnum)
+	{
+		gl_state.currenttextures[gl_state.currenttmu] = texnum;
+		qglBindTexture(GL_TEXTURE_2D, texnum);
+	}
 }
 
 //mxd. Most likely was changed from GL_Bind in H2 to use image->palette in qglColorTableEXT logic (which we skip...)
 void GL_BindImage(const image_t* image)
 {
-	const int texnum = ((int)gl_nobind->value && draw_chars ? draw_chars->texnum : image->texnum);
+	int texnum;
+
+	if ((int)gl_nobind->value && draw_chars != NULL) // Performance evaluation option
+		texnum = draw_chars->texnum;
+	else
+		texnum = image->texnum;
 
 	if (gl_state.currenttextures[gl_state.currenttmu] != texnum)
 	{
