@@ -146,9 +146,35 @@ static void Mod_LoadLighting(const lump_t* l)
 	}
 }
 
-static void Mod_LoadPlanes(lump_t* l)
+// Q2 counterpart
+static void Mod_LoadPlanes(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	dplane_t* in = (void*)(mod_base + l->fileofs);
+
+	if (l->filelen % sizeof(dplane_t) != 0)
+		ri.Sys_Error(ERR_DROP, "Mod_LoadPlanes: funny lump size in %s", loadmodel->name);
+
+	const int count = l->filelen / (int)sizeof(dplane_t);
+	cplane_t* out = Hunk_Alloc(count * (int)sizeof(cplane_t) * 2);
+
+	loadmodel->planes = out;
+	loadmodel->numplanes = count;
+
+	for (int i = 0; i < count; i++, in++, out++)
+	{
+		int bits = 0;
+
+		for (int j = 0; j < 3; j++)
+		{
+			out->normal[j] = LittleFloat(in->normal[j]);
+			if (out->normal[j] < 0)
+				bits |= 1 << j;
+		}
+
+		out->dist = LittleFloat(in->dist);
+		out->type = (byte)LittleLong(in->type);
+		out->signbits = (byte)bits;
+	}
 }
 
 static void Mod_LoadTexinfo(lump_t* l)
