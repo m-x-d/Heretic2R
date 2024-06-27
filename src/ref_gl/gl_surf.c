@@ -19,7 +19,7 @@
 typedef struct
 {
 	int internal_format;
-	int	current_lightmap_texture;
+	int current_lightmap_texture;
 
 	msurface_t* lightmap_surfaces[MAX_LIGHTMAPS];
 	msurface_t* tallwall_lightmap_surfaces[MAX_TALLWALL_LIGHTMAPS]; // New in H2
@@ -88,10 +88,40 @@ static void LM_UploadBlock(qboolean dynamic)
 	NOT_IMPLEMENTED
 }
 
-static qboolean LM_AllocBlock(int w, int h, int* x, int* y)
+// Q2 counterpart. Returns a texture number and the position inside it.
+static qboolean LM_AllocBlock(const int w, const int h, int* x, int* y)
 {
-	NOT_IMPLEMENTED
-	return false;
+	int j;
+	int best = BLOCK_HEIGHT;
+
+	for (int i = 0; i < BLOCK_WIDTH - w; i++)
+	{
+		int best2 = 0;
+
+		for (j = 0; j < w; j++)
+		{
+			if (gl_lms.allocated[i + j] >= best)
+				break;
+
+			if (gl_lms.allocated[i + j] > best2)
+				best2 = gl_lms.allocated[i + j];
+		}
+
+		if (j == w)
+		{
+			// This is a valid spot
+			*x = i;
+			*y = best = best2;
+		}
+	}
+
+	if (best + h > BLOCK_HEIGHT)
+		return false;
+
+	for (int i = 0; i < w; i++)
+		gl_lms.allocated[*x + i] = best + h;
+
+	return true;
 }
 
 void GL_BuildPolygonFromSurface(msurface_t* fa)
