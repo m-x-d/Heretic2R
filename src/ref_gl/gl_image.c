@@ -89,9 +89,19 @@ void GL_EnableMultitexture(const qboolean enable)
 	}
 }
 
-void GL_SelectTexture(GLenum texture)
+//mxd. Removed qglSelectTextureSGIS logic
+void GL_SelectTexture(const GLenum texture)
 {
-	NOT_IMPLEMENTED
+	if (qglActiveTextureARB != NULL)
+	{
+		const int tmu = (texture == GL_TEXTURE1);
+		if (tmu != gl_state.currenttmu)
+		{
+			gl_state.currenttmu = tmu;
+			qglActiveTextureARB(texture);
+			// Missing: qglClientActiveTextureARB(texture);
+		}
+	}
 }
 
 // Q2 counterpart

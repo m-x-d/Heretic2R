@@ -389,7 +389,6 @@ void (APIENTRY* qglPointParameterfvEXT)(GLenum param, const GLfloat* value);
 //void (APIENTRY* qglMTexCoord2fSGIS)(GLenum, GLfloat, GLfloat);
 void (APIENTRY* qglMultiTexCoord2fARB)(GLenum target, GLfloat s, GLfloat t); // New in H2
 void (APIENTRY* qglActiveTextureARB)(GLenum);
-void (APIENTRY* qglClientActiveTextureARB)(GLenum);
 
 static void (APIENTRY* dllAccum)(GLenum op, GLfloat value);
 static void (APIENTRY* dllAlphaFunc)(GLenum func, GLclampf ref);

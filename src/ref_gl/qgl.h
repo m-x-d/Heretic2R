@@ -410,7 +410,6 @@ extern void (APIENTRY* qglUnlockArraysEXT) (void);
 
 extern void (APIENTRY* qglMultiTexCoord2fARB)(GLenum target, GLfloat s, GLfloat t); // Named qglMTexCoord2fSGIS in Q2
 extern void (APIENTRY* qglActiveTextureARB)(GLenum);
-extern void (APIENTRY* qglClientActiveTextureARB)(GLenum);
 
 #define qglToggle(param, enable) ((enable) ? qglEnable(param) : qglDisable(param)) //mxd
 
