@@ -225,9 +225,49 @@ static void Mod_LoadTexinfo(const lump_t* l)
 	}
 }
 
+// Q2 counterpart. Fills in s->texturemins[] and s->extents[]
 static void CalcSurfaceExtents(msurface_t* s)
 {
-	NOT_IMPLEMENTED
+	float mins[2];
+	float maxs[2];
+	mvertex_t* v;
+
+	mins[0] = 999999.0f;
+	mins[1] = 999999.0f;
+
+	maxs[0] = -99999.0f;
+	maxs[1] = -99999.0f;
+
+	const mtexinfo_t* tex = s->texinfo;
+
+	for (int i = 0; i < s->numedges; i++)
+	{
+		const int edge = loadmodel->surfedges[s->firstedge + i];
+		if (edge >= 0)
+			v = &loadmodel->vertexes[loadmodel->edges[edge].v[0]];
+		else
+			v = &loadmodel->vertexes[loadmodel->edges[-edge].v[1]];
+
+		for (int j = 0; j < 2; j++)
+		{
+			const float val = v->position[0] * tex->vecs[j][0] + 
+							  v->position[1] * tex->vecs[j][1] + 
+							  v->position[2] * tex->vecs[j][2] +
+							  tex->vecs[j][3];
+
+			mins[j] = min(mins[j], val);
+			maxs[j] = max(maxs[j], val);
+		}
+	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		const int bmin = (const int)floorf(mins[i] / 16);
+		const int bmax = (const int)ceilf(maxs[i] / 16);
+
+		s->texturemins[i] = (short)(bmin * 16);
+		s->extents[i] = (short)((bmax - bmin) * 16);
+	}
 }
 
 // Referenced by Mod_LoadFaces only:
