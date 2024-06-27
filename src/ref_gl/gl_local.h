@@ -57,9 +57,10 @@ typedef struct glxy_s
 	int baseline;
 } glxy_t;
 
-#define TEXNUM_IMAGES	1153
+#define TEXNUM_LIGHTMAPS	1024
+#define TEXNUM_IMAGES		1153
 
-#define MAX_GLTEXTURES	2048 // Q2: 1024
+#define MAX_GLTEXTURES		2048 // Q2: 1024
 
 typedef enum
 {
@@ -86,9 +87,6 @@ extern image_t* r_reflecttexture; // New in H2
 extern image_t* draw_chars; // Local to gl_draw.c in H2
 extern image_t* r_font1; // New in H2
 extern image_t* r_font2; // New in H2
-
-extern int r_viewcluster;
-extern int r_oldviewcluster;
 
 #pragma region ========================== CVARS  ==========================
 
@@ -233,7 +231,10 @@ extern int gl_filter_max;
 
 void InitGammaTable(void); // New in H2
 image_t* GL_GetFreeImage(void); // New in H2
+void GL_EnableMultitexture(qboolean enable);
+void GL_SelectTexture(GLenum texture);
 void GL_TexEnv(GLint mode);
+void GL_Bind(int texnum);
 void GL_BindImage(const image_t* image); // New in H2
 void GL_TextureMode(char* string);
 void GL_SetFilter(const image_t* image); // New in H2
@@ -247,8 +248,13 @@ void GL_InitImages(void);
 void GL_ShutdownImages(void);
 
 // gl_main.c
+extern refdef_t r_newrefdef;
+extern int r_viewcluster;
+extern int r_oldviewcluster;
+
 extern model_t* r_worldmodel;
 extern model_t* currentmodel;
+extern int r_framecount;
 
 // gl_misc.c
 void GL_ScreenShot_f(void);

@@ -75,6 +75,16 @@ image_t* GL_GetFreeImage(void)
 	return image;
 }
 
+void GL_EnableMultitexture(qboolean enable)
+{
+	NOT_IMPLEMENTED
+}
+
+void GL_SelectTexture(GLenum texture)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart
 void GL_TexEnv(const GLint mode)
 {
@@ -85,6 +95,11 @@ void GL_TexEnv(const GLint mode)
 		qglTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, mode); //mxd. Q2/H2: qglTexEnvf 
 		lastmodes[gl_state.currenttmu] = mode;
 	}
+}
+
+void GL_Bind(int texnum)
+{
+	NOT_IMPLEMENTED
 }
 
 //mxd. Most likely was changed from GL_Bind in H2 to use image->palette in qglColorTableEXT logic (which we skip...)

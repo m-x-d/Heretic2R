@@ -422,4 +422,7 @@ extern void (APIENTRY* qglClientActiveTextureARB)(GLenum);
 #define GL_DISTANCE_ATTENUATION_EXT			0x8129
 //#define GL_SHARED_TEXTURE_PALETTE_EXT		0x81FB //mxd. Unused
 
+#define GL_TEXTURE0							0x84C0 //mxd. Q2: GL_TEXTURE0_ARB
+#define GL_TEXTURE1							0x84C1 //mxd. Q2: GL_TEXTURE1_ARB
+
 #pragma endregion

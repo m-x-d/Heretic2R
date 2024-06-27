@@ -29,6 +29,10 @@ image_t* r_font2;
 
 model_t* currentmodel;
 
+int r_framecount; // Used for dlight push checking
+
+refdef_t r_newrefdef; // Screen size info
+
 int r_viewcluster;
 int r_oldviewcluster;
 
