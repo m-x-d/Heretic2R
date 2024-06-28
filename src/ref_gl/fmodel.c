@@ -45,10 +45,27 @@ static qboolean fmLoadHeader(model_t* model, const int version, const int datasi
 	return true;
 }
 
-static qboolean fmLoadSkin(model_t* model, int version, int datasize, void* buffer)
+static qboolean fmLoadSkin(model_t* model, const int version, const int datasize, const void* buffer)
 {
-	NOT_IMPLEMENTED
-	return false;
+	if (version != FM_SKIN_VER)
+		ri.Sys_Error(ERR_DROP, "invalid SKIN version for block %s: %d != %d\n", FM_SKIN_NAME, FM_SKIN_VER, version);
+
+	const int skin_names_size = fmodel->header.num_skins * MAX_QPATH;
+	if (skin_names_size != datasize)
+	{
+		ri.Con_Printf(PRINT_ALL, "skin sizes do not match: %d != %d\n", datasize, skin_names_size);
+		return false;
+	}
+
+	fmodel->skin_names = (char*)Hunk_Alloc(skin_names_size);
+	memcpy(fmodel->skin_names, buffer, skin_names_size);
+
+	// Precache skins...
+	char* skin_name = fmodel->skin_names;
+	for (int i = 0; i < fmodel->header.num_skins; i++, skin_name += MAX_QPATH)
+		model->skins[i] = GL_FindImage(skin_name, it_skin);
+
+	return true;
 }
 
 static qboolean fmLoadST(model_t* model, int version, int datasize, void* buffer)
@@ -174,7 +191,7 @@ void Mod_LoadFlexModel(model_t* mod, void* buffer, int length)
 		}
 
 		if (loader->ident[0] == 0)
-			ri.Con_Printf(0, "Mod_LoadFlexModel: unknown block %s\n", header->ident);
+			ri.Con_Printf(PRINT_ALL, "Mod_LoadFlexModel: unknown block %s\n", header->ident);
 
 		in += header->size; // Skip to next block header...
 		length -= (header->size + (int)sizeof(fmdl_blockheader_t));
