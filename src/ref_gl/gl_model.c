@@ -585,7 +585,35 @@ static void Mod_LoadBrushModel(model_t* mod, void* buffer)
 
 static void Mod_LoadSpriteModel(model_t* mod, void* buffer)
 {
-	NOT_IMPLEMENTED
+	char sprite_name[MAX_OSPATH]; // New in H2
+
+	dsprite_t* sprin = buffer;
+	dsprite_t* sprout = Hunk_Alloc(modfilelen);
+
+	sprout->ident = LittleLong(sprin->ident);
+	sprout->version = LittleLong(sprin->version);
+	sprout->numframes = LittleLong(sprin->numframes);
+
+	if (sprout->version != SPRITE_VERSION)
+		ri.Sys_Error(ERR_DROP, "%s has wrong version number (%i should be %i)", mod->name, sprout->version, SPRITE_VERSION);
+
+	if (sprout->numframes > MAX_MD2SKINS)
+		ri.Sys_Error(ERR_DROP, "%s has too many frames (%i > %i)", mod->name, sprout->numframes, MAX_MD2SKINS);
+
+	// Byte swap everything
+	for (int i = 0; i < sprout->numframes; i++)
+	{
+		sprout->frames[i].width = LittleLong(sprin->frames[i].width);
+		sprout->frames[i].height = LittleLong(sprin->frames[i].height);
+		sprout->frames[i].origin_x = LittleLong(sprin->frames[i].origin_x);
+		sprout->frames[i].origin_y = LittleLong(sprin->frames[i].origin_y);
+		memcpy(sprout->frames[i].name, sprin->frames[i].name, MAX_SKINNAME);
+
+		Com_sprintf(sprite_name, sizeof(sprite_name), "Sprites/%s", sprout->frames->name); // New in H2
+		mod->skins[i] = GL_FindImage(sprite_name, it_sprite);
+	}
+
+	mod->type = mod_sprite;
 }
 
 static model_t* Mod_ForName(const char* name, const qboolean crash)
