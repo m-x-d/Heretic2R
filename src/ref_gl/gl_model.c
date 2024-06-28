@@ -480,9 +480,40 @@ static void Mod_LoadNodes(const lump_t* l)
 	Mod_SetParent(loadmodel->nodes, NULL);
 }
 
-static void Mod_LoadSubmodels(lump_t* l)
+static float RadiusFromBounds(vec3_t mins, vec3_t maxs)
 {
 	NOT_IMPLEMENTED
+	return 0;
+}
+
+// Q2 counterpart
+static void Mod_LoadSubmodels(const lump_t* l)
+{
+	dmodel_t* in = (void*)(mod_base + l->fileofs);
+	if (l->filelen % sizeof(dmodel_t))
+		ri.Sys_Error(ERR_DROP, "Mod_LoadSubmodels: funny lump size in %s", loadmodel->name);
+
+	const int count = l->filelen / (int)sizeof(dmodel_t);
+	mmodel_t* out = Hunk_Alloc(count * (int)sizeof(mmodel_t));
+
+	loadmodel->submodels = out;
+	loadmodel->numsubmodels = count;
+
+	for (int i = 0; i < count; i++, in++, out++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			// Spread the mins / maxs by a pixel
+			out->mins[j] = LittleFloat(in->mins[j]) - 1;
+			out->maxs[j] = LittleFloat(in->maxs[j]) + 1;
+			out->origin[j] = LittleFloat(in->origin[j]);
+		}
+
+		out->radius = RadiusFromBounds(out->mins, out->maxs);
+		out->headnode = LittleLong(in->headnode);
+		out->firstface = LittleLong(in->firstface);
+		out->numfaces = LittleLong(in->numfaces);
+	}
 }
 
 // Q2 counterpart
