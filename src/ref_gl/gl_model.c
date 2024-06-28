@@ -480,10 +480,15 @@ static void Mod_LoadNodes(const lump_t* l)
 	Mod_SetParent(loadmodel->nodes, NULL);
 }
 
-static float RadiusFromBounds(vec3_t mins, vec3_t maxs)
+// Q2 counterpart
+static float RadiusFromBounds(const vec3_t mins, const vec3_t maxs)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	vec3_t corner;
+
+	for (int i = 0; i < 3; i++)
+		corner[i] = max(fabsf(mins[i]), fabsf(maxs[i]));
+
+	return VectorLength(corner);
 }
 
 // Q2 counterpart
