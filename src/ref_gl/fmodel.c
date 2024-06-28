@@ -78,10 +78,26 @@ static qboolean fmLoadTris(model_t* model, const int version, const int datasize
 	return true;
 }
 
-static qboolean fmLoadFrames(model_t* model, int version, int datasize, void* buffer)
+static qboolean fmLoadFrames(model_t* model, const int version, const int datasize, const void* buffer)
 {
-	NOT_IMPLEMENTED
-	return false;
+	if (version != FM_FRAME_VER)
+		ri.Sys_Error(ERR_DROP, "invalid FRAMES version for block %s: %d != %d\n", FM_FRAME_NAME, FM_FRAME_VER, version);
+
+	fmodel->frames = Hunk_Alloc(fmodel->header.num_frames * fmodel->header.framesize);
+
+	for (int i = 0; i < fmodel->header.num_frames; i++)
+	{
+		const fmaliasframe_t* in = (const fmaliasframe_t*)((const byte*)buffer + i * fmodel->header.framesize);
+		fmaliasframe_t* out = &fmodel->frames[i];
+
+		VectorCopy(in->scale, out->scale);
+		VectorCopy(in->translate, out->translate);
+
+		memcpy(out->name, in->name, sizeof(out->name));
+		memcpy(out->verts, in->verts, fmodel->header.num_xyz * sizeof(fmtrivertx_t));
+	}
+
+	return true;
 }
 
 static qboolean fmLoadGLCmds(model_t* model, int version, int datasize, void* buffer)
