@@ -34,50 +34,7 @@ typedef struct
 
 static gllightmapstate_t gl_lms;
 
-extern void R_SetCacheState(msurface_t* surf);
-extern void R_BuildLightMap(msurface_t* surf, byte* dest, int stride);
-
-// Q2 counterpart. //TODO: parameter 'm' is never used
-void GL_BeginBuildingLightmaps(model_t* m)
-{
-	static lightstyle_t	lightstyles[MAX_LIGHTSTYLES];
-	static uint dummy[BLOCK_WIDTH * BLOCK_HEIGHT]; //mxd. Made it static.
-	
-	memset(gl_lms.allocated, 0, sizeof(gl_lms.allocated));
-
-	r_framecount = 1; // No dlightcache.
-
-	GL_EnableMultitexture(true);
-	GL_SelectTexture(GL_TEXTURE1);
-
-	// Setup the base lightstyles so the lightmaps won't have to be regenerated the first time they're seen.
-	for (int i = 0; i < MAX_LIGHTSTYLES; i++)
-	{
-		lightstyles[i].rgb[0] = 1.0f;
-		lightstyles[i].rgb[1] = 1.0f;
-		lightstyles[i].rgb[2] = 1.0f;
-		lightstyles[i].white = 3.0f;
-	}
-
-	r_newrefdef.lightstyles = lightstyles;
-	gl_state.lightmap_textures = TEXNUM_LIGHTMAPS; //mxd. Set only here, never changed.
-	gl_lms.current_lightmap_texture = 1;
-
-	//mxd. Skip gl_monolightmap logic.
-	gl_lms.internal_format = GL_TEX_SOLID_FORMAT;
-
-	// Initialize the dynamic lightmap texture.
-	GL_Bind(gl_state.lightmap_textures);
-
-	qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); //mxd. qglTexParameterf -> qglTexParameteri
-	qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); //mxd. qglTexParameterf -> qglTexParameteri
-	qglTexImage2D(GL_TEXTURE_2D, 0, gl_lms.internal_format, BLOCK_WIDTH, BLOCK_HEIGHT, 0, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, dummy);
-}
-
-void GL_EndBuildingLightmaps(void)
-{
-	NOT_IMPLEMENTED
-}
+#pragma region ========================== LIGHTMAP ALLOCATION ==========================
 
 // Q2 counterpart
 static void LM_InitBlock(void)
@@ -148,6 +105,8 @@ static qboolean LM_AllocBlock(const int w, const int h, int* x, int* y)
 	return true;
 }
 
+#pragma endregion
+
 // Q2 counterpart
 void GL_BuildPolygonFromSurface(msurface_t* fa)
 {
@@ -207,6 +166,10 @@ void GL_BuildPolygonFromSurface(msurface_t* fa)
 	}
 }
 
+// Referenced by GL_CreateSurfaceLightmap only:
+extern void R_SetCacheState(msurface_t* surf);
+extern void R_BuildLightMap(msurface_t* surf, byte* dest, int stride);
+
 // Q2 counterpart
 void GL_CreateSurfaceLightmap(msurface_t* surf)
 {
@@ -232,4 +195,46 @@ void GL_CreateSurfaceLightmap(msurface_t* surf)
 
 	R_SetCacheState(surf);
 	R_BuildLightMap(surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES);
+}
+
+// Q2 counterpart. //TODO: parameter 'm' is never used
+void GL_BeginBuildingLightmaps(model_t* m)
+{
+	static lightstyle_t	lightstyles[MAX_LIGHTSTYLES];
+	static uint dummy[BLOCK_WIDTH * BLOCK_HEIGHT]; //mxd. Made it static.
+
+	memset(gl_lms.allocated, 0, sizeof(gl_lms.allocated));
+
+	r_framecount = 1; // No dlightcache.
+
+	GL_EnableMultitexture(true);
+	GL_SelectTexture(GL_TEXTURE1);
+
+	// Setup the base lightstyles so the lightmaps won't have to be regenerated the first time they're seen.
+	for (int i = 0; i < MAX_LIGHTSTYLES; i++)
+	{
+		lightstyles[i].rgb[0] = 1.0f;
+		lightstyles[i].rgb[1] = 1.0f;
+		lightstyles[i].rgb[2] = 1.0f;
+		lightstyles[i].white = 3.0f;
+	}
+
+	r_newrefdef.lightstyles = lightstyles;
+	gl_state.lightmap_textures = TEXNUM_LIGHTMAPS; //mxd. Set only here, never changed.
+	gl_lms.current_lightmap_texture = 1;
+
+	//mxd. Skip gl_monolightmap logic.
+	gl_lms.internal_format = GL_TEX_SOLID_FORMAT;
+
+	// Initialize the dynamic lightmap texture.
+	GL_Bind(gl_state.lightmap_textures);
+
+	qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); //mxd. qglTexParameterf -> qglTexParameteri
+	qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); //mxd. qglTexParameterf -> qglTexParameteri
+	qglTexImage2D(GL_TEXTURE_2D, 0, gl_lms.internal_format, BLOCK_WIDTH, BLOCK_HEIGHT, 0, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, dummy);
+}
+
+void GL_EndBuildingLightmaps(void)
+{
+	NOT_IMPLEMENTED
 }
