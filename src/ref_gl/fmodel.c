@@ -1,18 +1,48 @@
 //
-// fmodel.c
+// fmodel.c -- Heretic 2 FlexModel loading
 //
 // Copyright 1998 Raven Software
 //
 
 #include "gl_local.h"
 #include "fmodel.h"
+#include "Vector.h"
 
 fmdl_t* fmodel;
 
-static qboolean fmLoadHeader(model_t* model, int version, int datasize, void* buffer)
+static qboolean fmLoadHeader(model_t* model, const int version, const int datasize, const void* buffer)
 {
-	NOT_IMPLEMENTED
-	return false;
+	if (version != FM_HEADER_VER)
+		ri.Sys_Error(ERR_DROP, "invalid HEADER version for block %s: %d != %d\n", FM_HEADER_NAME, FM_HEADER_VER, version);
+
+	// Read header...
+	memcpy(&fmodel->header, buffer, sizeof(fmheader_t));
+
+	// Sanity checks...
+	if (fmodel->header.skinheight > SKINPAGE_HEIGHT)
+		ri.Sys_Error(ERR_DROP, "model %s has a skin taller than %d", model->name, SKINPAGE_HEIGHT);
+
+	if (fmodel->header.num_xyz < 1)
+		ri.Sys_Error(ERR_DROP, "model %s has no vertices", model->name);
+
+	if (fmodel->header.num_xyz > MAX_FM_VERTS)
+		ri.Sys_Error(ERR_DROP, "model %s has too many vertices", model->name);
+
+	if (fmodel->header.num_st < 1)
+		ri.Sys_Error(ERR_DROP, "model %s has no st vertices", model->name);
+
+	if (fmodel->header.num_tris < 1)
+		ri.Sys_Error(ERR_DROP, "model %s has no triangles", model->name);
+
+	if (fmodel->header.num_frames < 1)
+		ri.Sys_Error(ERR_DROP, "model %s has no frames", model->name);
+
+	//TODO: skinwidth, MAX_FM_TRIANGLES, MAX_FM_FRAMES checks?
+
+	VectorSet(model->mins, -32.0f, -32.0f, -32.0f);
+	VectorSet(model->maxs, 32.0f, 32.0f, 32.0f);
+
+	return true;
 }
 
 static qboolean fmLoadSkin(model_t* model, int version, int datasize, void* buffer)
