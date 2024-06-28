@@ -388,6 +388,9 @@ typedef struct
 #define SURF_UNDULATE		0x00002000	// Rock surface up and down...
 #define SURF_QUAKE			0x00004000	// Rock surface up and down when quake value on
 
+//mxd. Helper define to check for non-lightmapped surfaces.
+#define SURF_FULLBRIGHT		(SURF_SKY | SURF_TRANS33 | SURF_TRANS66 | SURF_WARP | SURF_TALL_WALL) // H2: extra SURF_TALL_WALL flag
+
 #pragma endregion
 
 // gi.BoxEdicts() can return a list of either solid or trigger entities

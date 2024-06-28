@@ -343,7 +343,7 @@ static void Mod_LoadFaces(const lump_t* l)
 		}
 
 		// Create lightmaps and polygons
-		if (!(out->texinfo->flags & (SURF_SKY | SURF_TRANS33 | SURF_TRANS66 | SURF_WARP | SURF_TALL_WALL))) // H2: extra SURF_TALL_WALL flag
+		if (!(out->texinfo->flags & SURF_FULLBRIGHT)) //mxd. SURF_FULLBRIGHT define
 			GL_CreateSurfaceLightmap(out);
 
 		if (!(out->texinfo->flags & SURF_WARP))

@@ -20,9 +20,10 @@ void R_SetCacheState(msurface_t* surf)
 		surf->cached_light[maps] = r_newrefdef.lightstyles[surf->styles[maps]].white;
 }
 
+// Q2 counterpart (in H2, except for extra SURF_TALL_WALL flag)
 void R_BuildLightMap(msurface_t* surf, byte* dest, int stride)
 {
-	if (surf->texinfo->flags & (SURF_SKY | SURF_TRANS33 | SURF_TRANS66 | SURF_WARP | SURF_TALL_WALL)) // H2: extra SURF_TALL_WALL flag
+	if (surf->texinfo->flags & SURF_FULLBRIGHT) //mxd. SURF_FULLBRIGHT define
 		ri.Sys_Error(ERR_DROP, "R_BuildLightMap called for non-lit surface");
 
 	const int smax = (surf->extents[0] >> 4) + 1;
@@ -40,11 +41,7 @@ void R_BuildLightMap(msurface_t* surf, byte* dest, int stride)
 	}
 	else
 	{
-		// Count the number of maps
-		int nummaps = 0;
-		while (nummaps < MAXLIGHTMAPS && surf->styles[nummaps] != 255)
-			nummaps++;
-
+		//mxd. Don't count the number of maps
 		const byte* lightmap = surf->samples;
 
 		// Add all the lightmaps //mxd. Skip nummaps == 1 logic
