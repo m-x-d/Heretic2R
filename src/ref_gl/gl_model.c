@@ -396,9 +396,34 @@ static void Mod_LoadVisibility(const lump_t* l)
 	}
 }
 
-static void Mod_LoadLeafs(lump_t* l)
+static void Mod_LoadLeafs(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	dleaf_t* in = (void*)(mod_base + l->fileofs);
+	if (l->filelen % sizeof(dleaf_t))
+		ri.Sys_Error(ERR_DROP, "Mod_LoadLeafs: funny lump size in %s", loadmodel->name);
+
+	const int count = l->filelen / (int)sizeof(dleaf_t);
+	mleaf_t* out = Hunk_Alloc(count * (int)sizeof(mleaf_t));
+
+	loadmodel->leafs = out;
+	loadmodel->numleafs = count;
+
+	const float offset = ((int)gl_noartifacts->value ? 32.0f : 0.0f); // New in H2
+
+	for (int i = 0; i < count; i++, in++, out++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			out->minmaxs[j + 0] = LittleShort(in->mins[j]) - offset; // H2: +offset
+			out->minmaxs[j + 3] = LittleShort(in->maxs[j]) + offset; // H2: +offset
+		}
+
+		out->contents = LittleLong(in->contents);
+		out->cluster = LittleShort(in->cluster);
+		out->area = LittleShort(in->area);
+		out->firstmarksurface = loadmodel->marksurfaces + LittleShort(in->firstleafface);
+		out->nummarksurfaces = LittleShort(in->numleaffaces);
+	}
 }
 
 static void Mod_LoadNodes(lump_t* l)
