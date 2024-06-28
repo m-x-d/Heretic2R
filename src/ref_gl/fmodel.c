@@ -68,16 +68,14 @@ static qboolean fmLoadSkin(model_t* model, const int version, const int datasize
 	return true;
 }
 
-static qboolean fmLoadST(model_t* model, int version, int datasize, void* buffer)
+static qboolean fmLoadST(model_t* model, const int version, const int datasize, const void* buffer)
 {
-	NOT_IMPLEMENTED
-	return false;
+	return true;
 }
 
-static qboolean fmLoadTris(model_t* model, int version, int datasize, void* buffer)
+static qboolean fmLoadTris(model_t* model, const int version, const int datasize, const void* buffer)
 {
-	NOT_IMPLEMENTED
-	return false;
+	return true;
 }
 
 static qboolean fmLoadFrames(model_t* model, int version, int datasize, void* buffer)
