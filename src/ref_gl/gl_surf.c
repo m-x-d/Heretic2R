@@ -234,7 +234,9 @@ void GL_BeginBuildingLightmaps(model_t* m)
 	qglTexImage2D(GL_TEXTURE_2D, 0, gl_lms.internal_format, BLOCK_WIDTH, BLOCK_HEIGHT, 0, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, dummy);
 }
 
+// Q2 counterpart
 void GL_EndBuildingLightmaps(void)
 {
-	NOT_IMPLEMENTED
+	LM_UploadBlock(false);
+	GL_EnableMultitexture(false);
 }
