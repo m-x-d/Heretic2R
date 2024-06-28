@@ -426,9 +426,51 @@ static void Mod_LoadLeafs(const lump_t* l)
 	}
 }
 
-static void Mod_LoadNodes(lump_t* l)
+static void Mod_SetParent(mnode_t* node, mnode_t* parent)
 {
 	NOT_IMPLEMENTED
+}
+
+static void Mod_LoadNodes(const lump_t* l)
+{
+	dnode_t* in = (void*)(mod_base + l->fileofs);
+	if (l->filelen % sizeof(dnode_t))
+		ri.Sys_Error(ERR_DROP, "Mod_LoadNodes: funny lump size in %s", loadmodel->name);
+
+	const int count = l->filelen / (int)sizeof(dnode_t);
+	mnode_t* out = Hunk_Alloc(count * (int)sizeof(mnode_t));
+
+	loadmodel->nodes = out;
+	loadmodel->numnodes = count;
+
+	const float offset = ((int)gl_noartifacts->value ? 32.0f : 0.0f); // New in H2
+
+	for (int i = 0; i < count; i++, in++, out++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			out->minmaxs[j + 0] = LittleShort(in->mins[j]) - offset; // H2: +offset
+			out->minmaxs[j + 3] = LittleShort(in->maxs[j]) + offset; // H2: +offset
+		}
+
+		out->plane = loadmodel->planes + LittleLong(in->planenum);
+
+		out->firstsurface = LittleShort(in->firstface);
+		out->numsurfaces = LittleShort(in->numfaces);
+		out->contents = -1;	// Differentiate from leafs
+
+		for (int j = 0; j < 2; j++)
+		{
+			const int child_index = LittleLong(in->children[j]);
+			if (child_index >= 0)
+				out->children[j] = loadmodel->nodes + child_index;
+			else
+				out->children[j] = (mnode_t*)(loadmodel->leafs + (-1 - child_index));
+		}
+	}
+
+	// Set nodes and leafs
+	Mod_SetParent(loadmodel->nodes, NULL);
 }
 
 static void Mod_LoadSubmodels(lump_t* l)
