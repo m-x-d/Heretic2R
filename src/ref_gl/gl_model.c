@@ -376,9 +376,24 @@ static void Mod_LoadMarksurfaces(const lump_t* l)
 	}
 }
 
-static void Mod_LoadVisibility(lump_t* l)
+// Q2 counterpart
+static void Mod_LoadVisibility(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	if (l->filelen == 0)
+	{
+		loadmodel->vis = NULL;
+		return;
+	}
+
+	loadmodel->vis = Hunk_Alloc(l->filelen);
+	memcpy(loadmodel->vis, mod_base + l->fileofs, l->filelen);
+
+	loadmodel->vis->numclusters = LittleLong(loadmodel->vis->numclusters);
+	for (int i = 0; i < loadmodel->vis->numclusters; i++)
+	{
+		loadmodel->vis->bitofs[i][0] = LittleLong(loadmodel->vis->bitofs[i][0]);
+		loadmodel->vis->bitofs[i][1] = LittleLong(loadmodel->vis->bitofs[i][1]);
+	}
 }
 
 static void Mod_LoadLeafs(lump_t* l)
