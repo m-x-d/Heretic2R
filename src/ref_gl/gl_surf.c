@@ -79,9 +79,10 @@ void GL_EndBuildingLightmaps(void)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
 static void LM_InitBlock(void)
 {
-	NOT_IMPLEMENTED
+	memset(gl_lms.allocated, 0, sizeof(gl_lms.allocated));
 }
 
 // Q2 counterpart
