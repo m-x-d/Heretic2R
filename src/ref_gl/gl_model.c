@@ -353,9 +353,27 @@ static void Mod_LoadFaces(const lump_t* l)
 	GL_EndBuildingLightmaps();
 }
 
-static void Mod_LoadMarksurfaces(lump_t* l)
+// Q2 counterpart
+static void Mod_LoadMarksurfaces(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	const short* in = (void*)(mod_base + l->fileofs);
+	if (l->filelen % sizeof(short) != 0)
+		ri.Sys_Error(ERR_DROP, "Mod_LoadMarksurfaces: funny lump size in %s", loadmodel->name);
+
+	const int count = l->filelen / (int)sizeof(short);
+	msurface_t** out = Hunk_Alloc(count * (int)sizeof(msurface_t*));
+
+	loadmodel->marksurfaces = out;
+	loadmodel->nummarksurfaces = count;
+
+	for (int i = 0; i < count; i++)
+	{
+		const int j = LittleShort(in[i]);
+		if (j < 0 || j >= loadmodel->numsurfaces)
+			ri.Sys_Error(ERR_DROP, "Mod_ParseMarksurfaces: bad surface number");
+
+		out[i] = loadmodel->surfaces + j;
+	}
 }
 
 static void Mod_LoadVisibility(lump_t* l)
