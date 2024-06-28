@@ -426,9 +426,16 @@ static void Mod_LoadLeafs(const lump_t* l)
 	}
 }
 
+// Q2 counterpart
 static void Mod_SetParent(mnode_t* node, mnode_t* parent)
 {
-	NOT_IMPLEMENTED
+	node->parent = parent;
+
+	if (node->contents == -1)
+	{
+		Mod_SetParent(node->children[0], node);
+		Mod_SetParent(node->children[1], node);
+	}
 }
 
 static void Mod_LoadNodes(const lump_t* l)
