@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\qcommon\Reference.c" />
     <ClCompile Include="..\qcommon\Skeletons.c" />
     <ClCompile Include="..\win32\glw_imp.c" />
     <ClCompile Include="..\win32\q_shwin.c" />
