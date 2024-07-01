@@ -57,6 +57,13 @@ typedef struct glxy_s
 	int baseline;
 } glxy_t;
 
+// New in H2
+typedef struct CL_SkeletalJoint_s
+{
+	int children;
+	vec3_t angles;
+} CL_SkeletalJoint_t;
+
 #define TEXNUM_LIGHTMAPS	1024
 #define TEXNUM_IMAGES		1153
 
