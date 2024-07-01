@@ -152,31 +152,31 @@ static qboolean fmLoadMeshNodes(model_t* model, const int version, const int dat
 	return true;
 }
 
-static qboolean fmLoadShortFrames(model_t* model, int version, int datasize, void* buffer)
+static qboolean fmLoadShortFrames(model_t* model, const int version, const int datasize, const void* buffer)
 {
 	NOT_IMPLEMENTED
 	return false;
 }
 
-static qboolean fmLoadNormal(model_t* model, int version, int datasize, void* buffer)
+static qboolean fmLoadNormal(model_t* model, const int version, const int datasize, const void* buffer)
 {
 	NOT_IMPLEMENTED
 	return false;
 }
 
-static qboolean fmLoadComp(model_t* model, int version, int datasize, void* buffer)
+static qboolean fmLoadComp(model_t* model, const int version, const int datasize, const void* buffer)
 {
 	NOT_IMPLEMENTED
 	return false;
 }
 
-static qboolean fmLoadSkeleton(model_t* model, int version, int datasize, void* buffer)
+static qboolean fmLoadSkeleton(model_t* model, const int version, const int datasize, const void* buffer)
 {
 	NOT_IMPLEMENTED
 	return false;
 }
 
-static qboolean fmLoadReferences(model_t* model, int version, int datasize, void* buffer)
+static qboolean fmLoadReferences(model_t* model, const int version, const int datasize, const void* buffer)
 {
 	NOT_IMPLEMENTED
 	return false;
@@ -196,23 +196,23 @@ typedef struct
 typedef struct
 {
 	char ident[FMDL_BLOCK_IDENT_SIZE];
-	qboolean(*load)(model_t* model, int version, int datasize, void* buffer);
+	qboolean(*load)(model_t* model, int version, int datasize, const void* buffer);
 } fmdl_loader_t;
 
 fmdl_loader_t fmblocks[] =
 {
-	{ FM_HEADER_NAME,			fmLoadHeader },
+	{ FM_HEADER_NAME,		fmLoadHeader },
 	{ FM_SKIN_NAME,			fmLoadSkin },
-	{ FM_ST_NAME,				fmLoadST },
+	{ FM_ST_NAME,			fmLoadST },
 	{ FM_TRI_NAME,			fmLoadTris },
-	{ FM_FRAME_NAME,			fmLoadFrames },
-	{ FM_GLCMDS_NAME,			fmLoadGLCmds },
+	{ FM_FRAME_NAME,		fmLoadFrames },
+	{ FM_GLCMDS_NAME,		fmLoadGLCmds },
 	{ FM_MESH_NAME,			fmLoadMeshNodes },
 	{ FM_SHORT_FRAME_NAME,	fmLoadShortFrames },
-	{ FM_NORMAL_NAME,			fmLoadNormal },
+	{ FM_NORMAL_NAME,		fmLoadNormal },
 	{ FM_COMP_NAME,			fmLoadComp },
 	{ FM_SKELETON_NAME,		fmLoadSkeleton },
-	{ FM_REFERENCES_NAME,		fmLoadReferences },
+	{ FM_REFERENCES_NAME,	fmLoadReferences },
 	{ "",					NULL },
 };
 
