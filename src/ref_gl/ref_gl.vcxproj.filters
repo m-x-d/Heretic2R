@@ -75,6 +75,9 @@
     <ClCompile Include="..\game\g_Skeletons.c">
       <Filter>game</Filter>
     </ClCompile>
+    <ClCompile Include="r_Skeletons.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gl_local.h">
@@ -141,6 +144,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="m_Skeleton.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="r_Skeletons.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

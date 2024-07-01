@@ -30,6 +30,7 @@
     <ClCompile Include="gl_warp.c" />
     <ClCompile Include="m_Reference.c" />
     <ClCompile Include="qgl_win.c" />
+    <ClCompile Include="r_Skeletons.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\client\ref.h" />
@@ -54,6 +55,7 @@
     <ClInclude Include="m_SkeletalCluster.h" />
     <ClInclude Include="m_Skeleton.h" />
     <ClInclude Include="qgl.h" />
+    <ClInclude Include="r_Skeletons.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
