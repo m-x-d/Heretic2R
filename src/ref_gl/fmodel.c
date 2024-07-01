@@ -6,6 +6,8 @@
 
 #include "gl_local.h"
 #include "fmodel.h"
+#include "m_Reference.h"
+#include "Reference.h"
 #include "Vector.h"
 
 fmdl_t* fmodel;
@@ -178,8 +180,53 @@ static qboolean fmLoadSkeleton(model_t* model, const int version, const int data
 
 static qboolean fmLoadReferences(model_t* model, const int version, const int datasize, const void* buffer)
 {
-	NOT_IMPLEMENTED
-	return false;
+	//mxd. Helper data type...
+	typedef struct
+	{
+		int referenceType;
+		qboolean haveRefs;
+		M_Reference_t* refsForFrame;
+	} dmreferences_t;
+
+	if (version != FM_REFERENCES_VER)
+	{
+		ri.Con_Printf(PRINT_ALL, "invalid REFERENCES version for block %s: %d != %d\n", FM_REFERENCES_NAME, FM_REFERENCES_VER, version);
+		return false;
+	}
+
+	const dmreferences_t* in = buffer;
+	fmodel->referenceType = in->referenceType;
+
+	if (!in->haveRefs)
+	{
+		fmodel->header.num_xyz += numReferences[fmodel->referenceType] * -3;
+		return true;
+	}
+
+	const int num_refs = numReferences[fmodel->referenceType];
+	fmodel->refsForFrame = Hunk_Alloc(fmodel->header.num_frames * num_refs * (int)sizeof(M_Reference_t));
+
+	if (fmodel->header.num_frames < 1)
+		return true;
+
+	const M_Reference_t* ref_in = (const M_Reference_t*)&in->refsForFrame;
+	M_Reference_t* ref_out = fmodel->refsForFrame;
+
+	for (int i = 0; i < fmodel->header.num_frames; i++)
+	{
+		for (int j = 0; j < num_refs; j++, ref_in++, ref_out++)
+		{
+			for (int c = 0; c < 3; c++)
+			{
+				//TODO: done this way to perform byte-swapping (otherwise we can just memcpy the whole thing)?
+				ref_out->placement.origin[c] = ref_in->placement.origin[c];
+				ref_out->placement.direction[c] = ref_in->placement.direction[c];
+				ref_out->placement.up[c] = ref_in->placement.up[c];
+			}
+		}
+	}
+
+	return true;
 }
 
 //mxd. FlexModel on-disk block header. Named 'header_t' and stored in qcommon\flex.h in Heretic II Toolkit v1.06.
