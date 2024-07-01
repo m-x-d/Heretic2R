@@ -100,10 +100,16 @@ static qboolean fmLoadFrames(model_t* model, const int version, const int datasi
 	return true;
 }
 
-static qboolean fmLoadGLCmds(model_t* model, int version, int datasize, void* buffer)
+static qboolean fmLoadGLCmds(model_t* model, const int version, const int datasize, const void* buffer)
 {
-	NOT_IMPLEMENTED
-	return false;
+	if (version != FM_GLCMDS_VER)
+		ri.Sys_Error(ERR_DROP, "invalid GLCMDS version for block %s: %d != %d\n", FM_GLCMDS_NAME, FM_GLCMDS_VER, version);
+
+	const uint size = fmodel->header.num_glcmds * sizeof(int);
+	fmodel->glcmds = Hunk_Alloc((int)size);
+	memcpy(fmodel->glcmds, buffer, size);
+
+	return true;
 }
 
 static qboolean fmLoadMeshNodes(model_t* model, int version, int datasize, void* buffer)
