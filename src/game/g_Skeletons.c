@@ -3,174 +3,140 @@
 //
 // Copyright 1998 Raven Software
 //
-// Heretic II
-//
 
+#include <stdlib.h>
+#include "g_local.h"
 #include "g_Skeletons.h"
 #include "ArrayedList.h"
-
-#include "g_local.h"
-
-#include <assert.h>
 
 G_SkeletalJoint_t skeletalJoints[MAX_ARRAYED_SKELETAL_JOINTS];
 ArrayedListNode_t jointNodes[MAX_ARRAYED_JOINT_NODES];
 
-// ********************************************************************
-// Skeleton Managment stuff
-// ********************************************************************
+#pragma region ========================== Skeleton Managment ==========================
 
-static int GetRootIndex(int max, int numJoints)
+static int GetRootIndex(const int max, const int numJoints)
 {
-	int i, j, max2;
 	qboolean cont = false;
 
-	for(i = 0; i < max; ++i)
+	for (int i = 0; i < max; i++)
 	{
-		if(!skeletalJoints[i].inUse)
+		if (!skeletalJoints[i].inUse)
 		{
-			max2 = i + numJoints;
+			const int max2 = numJoints + i;
 
-			// check the size of the array
-			if(max2 > max)
-			{
-				assert(0);
+			// Check the size of the array
+			if (max2 > max)
 				return -1;
-			}
 
-			// check for a big enough unused block
-			for(j = i + 1; j < max2; ++j)
+			// Check for a big enough unused block
+			for (int j = i + 1; j < max2; j++)
 			{
-				if(skeletalJoints[j].inUse)
+				if (skeletalJoints[j].inUse)
 				{
 					i = j;
 					cont = true;
+
 					break;
 				}
 			}
 
-			if(cont) // not a big enough block, so continue searching
+			// Not a big enough block, so continue searching
+			if (cont) 
 			{
 				cont = false;
 				continue;
 			}
 
-			// found a block, mark it as used
-			for(j = i; j < max2; ++j)
-			{
+			// Found a block, mark it as used
+			for (int j = i; j < max2; j++)
 				skeletalJoints[j].inUse = true;
-			}
 
 			return i;
 		}
 	}
 
-	// couldn't find a block
-	assert(0);
+	// Couldn't find a block
 	return -1;
 }
 
-int CreateSkeleton(int structure)
+int CreateSkeleton(const int structure)
 {
-	int index;
-
-	index = GetRootIndex(MAX_ARRAYED_SKELETAL_JOINTS, numJointsInSkeleton[structure]);
-
+	const int index = GetRootIndex(MAX_ARRAYED_SKELETAL_JOINTS, numJointsInSkeleton[structure]);
 	SkeletonCreators[structure](skeletalJoints, sizeof(G_SkeletalJoint_t), jointNodes, index);
 
 	return index;
 }
 
-void FreeSkeleton(int root)
+void FreeSkeleton(const int root)
 {
-	int child;
-
-	for(child = skeletalJoints[root].children; child != ARRAYEDLISTNODE_NULL; child = jointNodes[child].next)
+	for (int child = skeletalJoints[root].children; child != ARRAYEDLISTNODE_NULL; child = jointNodes[child].next)
 	{
 		FreeSkeleton(jointNodes[child].data);
-
 		FreeNode(jointNodes, child);
 	}
 
 	skeletalJoints[root].inUse = false;
 }
 
-void UpdateSkeletons()
+//TODO: unused?
+void UpdateSkeletons(void)
 {
-	int i, j;
-
-	for(i = 0; i < MAX_ARRAYED_SKELETAL_JOINTS; ++i)
+	for (int i = 0; i < MAX_ARRAYED_SKELETAL_JOINTS; i++)
 	{
-		G_SkeletalJoint_t *joint;
-		joint = &skeletalJoints[i];
+		G_SkeletalJoint_t* joint = &skeletalJoints[i];
 
-		if(joint->inUse)
+		if (!joint->inUse)
+			continue;
+
+		for (int j = 0; j < 3; j++)
 		{
-			for(j = 0; j < 3; ++j)
-			{
-				float destAngle, *angle;
+			joint->changed[j] = false;
 
-				joint->changed[j] = false;
-				destAngle = joint->destAngles[j];
-				angle = joint->angles + j;
+			if (joint->angles[j] == joint->destAngles[j])
+				continue;
 
-				if(*angle != destAngle)
-				{
-					*angle += joint->angVels[j]*FRAMETIME;
+			joint->angles[j] += joint->angVels[j] * (float)FRAMETIME;
 
-					if(joint->angVels[j] > 0)
-					{
-						if(*angle > destAngle)
-						{
-							*angle = destAngle;
-						}
-					}
-					else if(joint->angVels[j] < 0)
-					{
-						if(*angle < destAngle)
-						{
-							*angle = destAngle;
-						}
-					}
-				}
-			}
+			if (joint->angVels[j] > 0.0f)
+				joint->angles[j] = min(joint->destAngles[j], joint->angles[j]);
+			else if (joint->angVels[j] < 0.0f)
+				joint->angles[j] = max(joint->destAngles[j], joint->angles[j]);
 		}
-	}	
+	}
 }
 
-// ********************************************************************
-// Skeletal Manipulation stuff
-//
-// Mirrored in cl_Skeletons.c
-// ********************************************************************
+#pragma endregion
 
-float GetJointAngle(int jointIndex, int angleIndex)
+#pragma region ========================== Skeletal Manipulation (mirrored in cl_Skeletons.c) ==========================
+
+float GetJointAngle(const int jointIndex, const int angleIndex)
 {
 	return skeletalJoints[jointIndex].angles[angleIndex];
 }
 
-qboolean SetJointAngVel(int jointIndex, int angleIndex, float destAngle, float angSpeed)
+qboolean SetJointAngVel(const int jointIndex, const int angleIndex, const float destAngle, const float angSpeed)
 {
-	G_SkeletalJoint_t *joint;
+	const G_SkeletalJoint_t* joint = &skeletalJoints[jointIndex];
 
-	joint = &skeletalJoints[jointIndex];
-
-	if(destAngle < joint->destAngles[angleIndex])
+	if (destAngle < joint->destAngles[angleIndex])
 	{
 		skeletalJoints[jointIndex].destAngles[angleIndex] = destAngle;
 		skeletalJoints[jointIndex].angVels[angleIndex] = -angSpeed;
 		skeletalJoints[jointIndex].changed[angleIndex] = true;
+
 		return true;
 	}
-	else if(destAngle > joint->destAngles[angleIndex])
+
+	if (destAngle > joint->destAngles[angleIndex])
 	{
 		skeletalJoints[jointIndex].destAngles[angleIndex] = destAngle;
 		skeletalJoints[jointIndex].angVels[angleIndex] = angSpeed;
 		skeletalJoints[jointIndex].changed[angleIndex] = true;
+
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+
+	return false;
 }
+
+#pragma endregion

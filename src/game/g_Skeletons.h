@@ -1,11 +1,13 @@
-#ifndef G_SKELETON_H
-#define G_SKELETON_H
+//
+// g_Skeletons.h
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
+
 #include "g_Skeleton.h"
-#endif
-#ifndef SKELETONS_H
-#define SKELETONS_H
 #include "Skeletons.h"
-#endif
 
 extern G_SkeletalJoint_t skeletalJoints[MAX_ARRAYED_SKELETAL_JOINTS];
 extern struct ArrayedListNode_s jointNodes[MAX_ARRAYED_JOINT_NODES];
