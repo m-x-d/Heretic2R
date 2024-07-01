@@ -137,6 +137,9 @@
     <ClInclude Include="..\game\g_local.h">
       <Filter>game</Filter>
     </ClInclude>
+    <ClInclude Include="m_SkeletalCluster.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
