@@ -7,7 +7,9 @@
 #include "gl_local.h"
 #include "fmodel.h"
 #include "m_Reference.h"
+#include "m_Skeleton.h"
 #include "Reference.h"
+#include "r_Skeletons.h"
 #include "Vector.h"
 
 fmdl_t* fmodel;
@@ -174,8 +176,92 @@ static qboolean fmLoadComp(model_t* model, const int version, const int datasize
 
 static qboolean fmLoadSkeleton(model_t* model, const int version, const int datasize, const void* buffer)
 {
-	NOT_IMPLEMENTED
-	return false;
+	if (version != FM_SKELETON_VER)
+	{
+		ri.Con_Printf(PRINT_ALL, "invalid SKELETON version for block %s: %d != %d\n", FM_SKELETON_NAME, FM_SKELETON_VER, version);
+		return false;
+	}
+
+	const int* in_i = buffer;
+
+	fmodel->skeletalType = *in_i;
+	fmodel->rootCluster = CreateSkeleton(fmodel->skeletalType);
+
+	const int num_clusters = *(++in_i);
+
+	// Count and allocate verts...
+	int num_verts = 0;
+	for (int cluster = num_clusters - 1; cluster > -1; cluster--)
+	{
+		num_verts += *(++in_i);
+
+		const int cluster_index = fmodel->rootCluster + cluster;
+		SkeletalClusters[cluster_index].numVerticies = num_verts;
+		SkeletalClusters[cluster_index].verticies = Hunk_Alloc(num_verts * (int)sizeof(int));
+	}
+
+	int start_vert_index = 0;
+	for (int cluster = num_clusters - 1; cluster > -1; cluster--)
+	{
+		for (int v = start_vert_index; v < SkeletalClusters[fmodel->rootCluster + cluster].numVerticies; v++)
+		{
+			const int vert_index = *(++in_i);
+			for (int c = 0; c <= cluster; c++)
+				SkeletalClusters[fmodel->rootCluster + c].verticies[v] = vert_index;
+		}
+
+		start_vert_index = SkeletalClusters[fmodel->rootCluster + cluster].numVerticies;
+	}
+
+	// Check for duplicates...
+	for (int i = 0; i < num_clusters; i++)
+	{
+		const int c = fmodel->rootCluster + i;
+		for (int v1 = 0; v1 < SkeletalClusters[c].numVerticies - 1; v1++)
+			for (int v2 = v1 + 1; v2 < SkeletalClusters[c].numVerticies; v2++)
+				if (SkeletalClusters[c].verticies[v1] == SkeletalClusters[c].verticies[v2])
+					Com_Printf("Warning duplicate vertex:  %d\n", SkeletalClusters[c].verticies[v1]);
+	}
+
+	const qboolean have_skeleton = *(++in_i);
+
+	// Create skeleton
+	if (have_skeleton)
+	{
+		const float* in_f = (const float*)in_i;
+
+		fmodel->skeletons = Hunk_Alloc(fmodel->header.num_frames * (int)sizeof(ModelSkeleton_t));
+
+		for (int i = 0; i < fmodel->header.num_frames; i++)
+		{
+			CreateSkeletonAsHunk(fmodel->skeletalType, fmodel->skeletons + i);
+
+			for (int c = 0; c < num_clusters; c++)
+			{
+				fmodel->skeletons[i].rootJoint[c].model.origin[0] = *in_f++;
+				fmodel->skeletons[i].rootJoint[c].model.origin[1] = *in_f++;
+				fmodel->skeletons[i].rootJoint[c].model.origin[2] = *in_f++;
+
+				fmodel->skeletons[i].rootJoint[c].model.direction[0] = *in_f++;
+				fmodel->skeletons[i].rootJoint[c].model.direction[1] = *in_f++;
+				fmodel->skeletons[i].rootJoint[c].model.direction[2] = *in_f++;
+
+				fmodel->skeletons[i].rootJoint[c].model.up[0] = *in_f++;
+				fmodel->skeletons[i].rootJoint[c].model.up[1] = *in_f++;
+				fmodel->skeletons[i].rootJoint[c].model.up[2] = *in_f++;
+
+				VectorCopy(fmodel->skeletons[i].rootJoint[c].model.origin, fmodel->skeletons[i].rootJoint[c].parent.origin);
+				VectorCopy(fmodel->skeletons[i].rootJoint[c].model.direction, fmodel->skeletons[i].rootJoint[c].parent.direction);
+				VectorCopy(fmodel->skeletons[i].rootJoint[c].model.up, fmodel->skeletons[i].rootJoint[c].parent.up);
+			}
+		}
+	}
+	else
+	{
+		fmodel->header.num_xyz -= num_clusters * 3;
+	}
+
+	return true;
 }
 
 static qboolean fmLoadReferences(model_t* model, const int version, const int datasize, const void* buffer)
@@ -199,7 +285,7 @@ static qboolean fmLoadReferences(model_t* model, const int version, const int da
 
 	if (!in->haveRefs)
 	{
-		fmodel->header.num_xyz += numReferences[fmodel->referenceType] * -3;
+		fmodel->header.num_xyz -= numReferences[fmodel->referenceType] * 3;
 		return true;
 	}
 
