@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\game\g_Skeletons.c" />
     <ClCompile Include="..\qcommon\Reference.c" />
     <ClCompile Include="..\qcommon\Skeletons.c" />
     <ClCompile Include="..\win32\glw_imp.c" />
@@ -34,6 +35,9 @@
     <ClInclude Include="..\client\ref.h" />
     <ClInclude Include="..\client\screen.h" />
     <ClInclude Include="..\client\vid.h" />
+    <ClInclude Include="..\game\g_local.h" />
+    <ClInclude Include="..\game\g_Skeleton.h" />
+    <ClInclude Include="..\game\g_Skeletons.h" />
     <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="..\qcommon\ArrayedList.h" />
     <ClInclude Include="..\qcommon\Placement.h" />

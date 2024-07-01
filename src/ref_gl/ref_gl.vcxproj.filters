@@ -72,6 +72,9 @@
     <ClCompile Include="..\qcommon\Reference.c">
       <Filter>qcommon</Filter>
     </ClCompile>
+    <ClCompile Include="..\game\g_Skeletons.c">
+      <Filter>game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gl_local.h">
@@ -124,6 +127,15 @@
     </ClInclude>
     <ClInclude Include="qgl.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\g_Skeletons.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\g_Skeleton.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\g_local.h">
+      <Filter>game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
