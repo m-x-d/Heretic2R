@@ -112,10 +112,44 @@ static qboolean fmLoadGLCmds(model_t* model, const int version, const int datasi
 	return true;
 }
 
-static qboolean fmLoadMeshNodes(model_t* model, int version, int datasize, void* buffer)
+static qboolean fmLoadMeshNodes(model_t* model, const int version, const int datasize, const void* buffer)
 {
-	NOT_IMPLEMENTED
-	return false;
+	int i;
+	const fmmeshnode_t* in;
+	fmmeshnode_t* out;
+	short tri_indices[MAX_FM_TRIANGLES];
+	
+	if (version != FM_MESH_VER)
+		ri.Sys_Error(ERR_DROP, "invalid MESH version for block %s: %d != %d\n", FM_MESH_NAME, FM_MESH_VER, version);
+
+	if (fmodel->header.num_mesh_nodes < 1)
+		return true;
+
+	//TODO: check for fmodel->header.num_tris >= MAX_FM_TRIANGLES?
+
+	fmodel->mesh_nodes = Hunk_Alloc(fmodel->header.num_mesh_nodes * (int)sizeof(fmmeshnode_t));
+
+	for (i = 0, in = buffer, out = fmodel->mesh_nodes; i < fmodel->header.num_mesh_nodes; i++, in++, out++)
+	{
+		// Copy tris
+		int num_tris = 0;
+		for (int tri_index = 0; tri_index < fmodel->header.num_tris; tri_index++)
+			if ((1 << (tri_index & 7)) != 0 && in->tris[tri_index >> 3] != 0)
+				tri_indices[num_tris++] = (short)tri_index;
+
+		out->num_tris = num_tris;
+		out->triIndicies = Hunk_Alloc(num_tris * (int)sizeof(short));
+		memcpy(out->triIndicies, tri_indices, num_tris);
+
+		// Copy verts
+		memcpy(out->verts, in->verts, sizeof(out->verts));
+
+		// Copy glcmds
+		out->start_glcmds = in->start_glcmds;
+		out->num_glcmds = in->num_glcmds;
+	}
+
+	return true;
 }
 
 static qboolean fmLoadShortFrames(model_t* model, int version, int datasize, void* buffer)
