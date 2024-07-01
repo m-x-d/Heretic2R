@@ -52,6 +52,7 @@
     <ClInclude Include="gl_model.h" />
     <ClInclude Include="m_Reference.h" />
     <ClInclude Include="m_SkeletalCluster.h" />
+    <ClInclude Include="m_Skeleton.h" />
     <ClInclude Include="qgl.h" />
   </ItemGroup>
   <ItemGroup>

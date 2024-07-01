@@ -140,6 +140,9 @@
     <ClInclude Include="m_SkeletalCluster.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="m_Skeleton.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
