@@ -175,10 +175,16 @@ void R_PolyBlend(void)
 	NOT_IMPLEMENTED
 }
 
-static int SignbitsForPlane(cplane_t* out)
+// Q2 counterpart
+static byte SignbitsForPlane(const cplane_t* plane) //mxd. Changed return type to byte
 {
-	NOT_IMPLEMENTED
-	return 0;
+	// For fast box on planeside test
+	byte bits = 0;
+	for (int i = 0; i < 3; i++)
+		if (plane->normal[i] < 0.0f)
+			bits |= 1 << i;
+
+	return bits;
 }
 
 void R_SetFrustum(void)
