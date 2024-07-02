@@ -30,6 +30,8 @@ image_t* r_font2;
 
 model_t* currentmodel;
 
+cplane_t frustum[4];
+
 int r_framecount; // Used for dlight push checking
 
 int c_brush_polys;
@@ -173,9 +175,30 @@ void R_PolyBlend(void)
 	NOT_IMPLEMENTED
 }
 
-void R_SetFrustum(void)
+static int SignbitsForPlane(cplane_t* out)
 {
 	NOT_IMPLEMENTED
+	return 0;
+}
+
+void R_SetFrustum(void)
+{
+	RotatePointAroundVector(frustum[0].normal, vup,		vpn, -(90.0f - r_newrefdef.fov_x * 0.5f));	// Rotate VPN right by FOV_X/2 degrees
+	RotatePointAroundVector(frustum[1].normal, vup,		vpn,   90.0f - r_newrefdef.fov_x * 0.5f);	// Rotate VPN left by FOV_X/2 degrees
+	RotatePointAroundVector(frustum[2].normal, vright,	vpn,   90.0f - r_newrefdef.fov_y * 0.5f);	// Rotate VPN up by FOV_X/2 degrees
+	RotatePointAroundVector(frustum[3].normal, vright,	vpn, -(90.0f - r_newrefdef.fov_y * 0.5f));	// Rotate VPN down by FOV_X/2 degrees
+
+	for (int i = 0; i < 4; i++)
+	{
+		// New in H2:
+		const float frustum_dist = VectorLength(frustum[i].normal);
+		if (frustum_dist <= 0.999999f)
+			Com_Printf("Frustum normal dist %f < 1.0\n", (double)frustum_dist);
+
+		frustum[i].type = PLANE_ANYZ;
+		frustum[i].dist = DotProduct(r_origin, frustum[i].normal);
+		frustum[i].signbits = SignbitsForPlane(&frustum[i]);
+	}
 }
 
 // Q2 counterpart

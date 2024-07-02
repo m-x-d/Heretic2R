@@ -278,6 +278,7 @@ extern int r_oldviewcluster2;
 
 extern model_t* r_worldmodel;
 extern model_t* currentmodel;
+extern cplane_t frustum[4];
 extern int r_framecount;
 
 // gl_misc.c
