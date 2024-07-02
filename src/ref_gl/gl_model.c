@@ -22,6 +22,12 @@ model_t mod_inline[MAX_MOD_KNOWN];
 
 int registration_sequence;
 
+mleaf_t* Mod_PointInLeaf(vec3_t p, model_t* model)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
 void Mod_Modellist_f(void)
 {
 	NOT_IMPLEMENTED

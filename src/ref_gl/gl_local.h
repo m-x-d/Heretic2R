@@ -263,11 +263,18 @@ void R_MarkLights(dlight_t* light, int bit, mnode_t* node);
 void R_PushDlights(void);
 
 // gl_main.c
+extern vec3_t vup;
+extern vec3_t vpn;
+extern vec3_t vright;
+extern vec3_t r_origin;
+
 extern refdef_t r_newrefdef;
 extern int c_brush_polys;
 extern int c_alias_polys;
 extern int r_viewcluster;
+extern int r_viewcluster2;
 extern int r_oldviewcluster;
+extern int r_oldviewcluster2;
 
 extern model_t* r_worldmodel;
 extern model_t* currentmodel;
