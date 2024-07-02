@@ -5,6 +5,12 @@
 //
 
 #include "gl_local.h"
+#include "Vector.h"
+
+char skyname[MAX_QPATH];
+float skyrotate;
+vec3_t skyaxis;
+image_t* sky_images[6];
 
 // Speed up sin calculations - Ed
 //mxd. Pre-calculated sine wave in [-8.0 .. 8.0] range. Values are the same as in Q2 //TODO: replace with sinf()?
@@ -33,7 +39,34 @@ void GL_SubdivideSurface(msurface_t* fa)
 	NOT_IMPLEMENTED
 }
 
-void R_SetSky(char* name, float rotate, vec3_t axis)
+float sky_min;
+float sky_max;
+
+void R_SetSky(const char* name, const float rotate, const vec3_t axis)
 {
-	NOT_IMPLEMENTED
+	static char* suf[] = { "rt", "bk", "lf", "ft", "up", "dn" }; // 3dstudio environment map names //mxd. Made local static
+	char pathname[MAX_QPATH];
+
+	strncpy_s(skyname, sizeof(skyname), name, sizeof(skyname) - 1); //mxd. strncpy -> strncpy_s
+	skyrotate = rotate;
+	VectorCopy(axis, skyaxis);
+
+	for (int i = 0; i < 6; i++)
+	{
+		// H2: missing gl_skymip and qglColorTableEXT logic, 'env/%s%s.pcx' / 'env/%s%s.tga' -> 'pics/skies/%s%s.m8'
+		Com_sprintf(pathname, sizeof(pathname), "pics/skies/%s%s.m8", skyname, suf[i]);
+		sky_images[i] = GL_FindImage(pathname, it_sky);
+
+		if ((int)gl_picmip->value || skyrotate != 0.0f) //H2: gl_skymip -> gl_picmip
+		{
+			// Take less memory
+			sky_min = 1.0f / 256.0f;
+			sky_max = 255.0f / 256.0f;
+		}
+		else
+		{
+			sky_min = 1.0f / 512.0f;
+			sky_max = 511.0f / 512.0f;
+		}
+	}
 }
