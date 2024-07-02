@@ -238,17 +238,17 @@ static qboolean fmLoadSkeleton(model_t* model, const int version, const int data
 
 			for (int c = 0; c < num_clusters; c++)
 			{
-				fmodel->skeletons[i].rootJoint[c].model.origin[0] = *in_f++;
-				fmodel->skeletons[i].rootJoint[c].model.origin[1] = *in_f++;
-				fmodel->skeletons[i].rootJoint[c].model.origin[2] = *in_f++;
+				fmodel->skeletons[i].rootJoint[c].model.origin[0] = *(++in_f);
+				fmodel->skeletons[i].rootJoint[c].model.origin[1] = *(++in_f);
+				fmodel->skeletons[i].rootJoint[c].model.origin[2] = *(++in_f);
 
-				fmodel->skeletons[i].rootJoint[c].model.direction[0] = *in_f++;
-				fmodel->skeletons[i].rootJoint[c].model.direction[1] = *in_f++;
-				fmodel->skeletons[i].rootJoint[c].model.direction[2] = *in_f++;
+				fmodel->skeletons[i].rootJoint[c].model.direction[0] = *(++in_f);
+				fmodel->skeletons[i].rootJoint[c].model.direction[1] = *(++in_f);
+				fmodel->skeletons[i].rootJoint[c].model.direction[2] = *(++in_f);
 
-				fmodel->skeletons[i].rootJoint[c].model.up[0] = *in_f++;
-				fmodel->skeletons[i].rootJoint[c].model.up[1] = *in_f++;
-				fmodel->skeletons[i].rootJoint[c].model.up[2] = *in_f++;
+				fmodel->skeletons[i].rootJoint[c].model.up[0] = *(++in_f);
+				fmodel->skeletons[i].rootJoint[c].model.up[1] = *(++in_f);
+				fmodel->skeletons[i].rootJoint[c].model.up[2] = *(++in_f);
 
 				VectorCopy(fmodel->skeletons[i].rootJoint[c].model.origin, fmodel->skeletons[i].rootJoint[c].parent.origin);
 				VectorCopy(fmodel->skeletons[i].rootJoint[c].model.direction, fmodel->skeletons[i].rootJoint[c].parent.direction);
