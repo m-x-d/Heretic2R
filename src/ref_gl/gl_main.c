@@ -260,9 +260,20 @@ void R_SetupFrame(void)
 	}
 }
 
-static void MYgluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar)
+// Q2 counterpart //mxd. Changed args types: GLdouble -> const float.
+static void MYgluPerspective(const float fovy, const float aspect, const float zNear, const float zFar)
 {
-	NOT_IMPLEMENTED
+	//mxd. Original H2 logic sets additional global float FovY_rad to tan(fovy * M_PI / 360.0) here. Used only in unused GL_DrawBackPoly() function.
+	const GLdouble ymax = (double)(zNear * tanf(fovy * (float)M_PI / 360.0f));
+	const GLdouble ymin = -ymax;
+
+	GLdouble xmin = ymin * (double)aspect;
+	GLdouble xmax = ymax * (double)aspect;
+
+	xmin += (double)(-(2 * gl_state.camera_separation) / zNear);
+	xmax += (double)(-(2 * gl_state.camera_separation) / zNear);
+
+	qglFrustum(xmin, xmax, ymin, ymax, (GLdouble)zNear, (GLdouble)zFar);
 }
 
 static void R_SetupGL(void)
@@ -285,7 +296,7 @@ static void R_SetupGL(void)
 	const float screenaspect = (float)r_newrefdef.width / (float)r_newrefdef.height;
 	qglMatrixMode(GL_PROJECTION);
 	qglLoadIdentity();
-	MYgluPerspective((double)r_newrefdef.fov_y, (double)screenaspect, 1.0, (double)r_farclipdist->value); // Q2: last 2 args are 4, 4096
+	MYgluPerspective(r_newrefdef.fov_y, screenaspect, 1.0f, r_farclipdist->value); // Q2: last 2 args are 4, 4096
 
 	qglCullFace(GL_FRONT);
 	qglMatrixMode(GL_MODELVIEW);
