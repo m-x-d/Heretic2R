@@ -790,9 +790,17 @@ struct model_s* R_RegisterModel(char* name)
 	return mod;
 }
 
+// Q2 counterpart
 void R_EndRegistration(void)
 {
-	NOT_IMPLEMENTED
+	model_t* mod;
+	int i;
+
+	for (i = 0, mod = mod_known; i < mod_numknown; i++, mod++)
+		if (!mod->name[0] && mod->registration_sequence != registration_sequence)
+			Mod_Free(mod); // Don't need this model
+
+	GL_FreeUnusedImages();
 }
 
 // Q2 counterpart
