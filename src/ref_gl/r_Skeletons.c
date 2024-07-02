@@ -289,10 +289,10 @@ void SetupCompressedJoints(ModelSkeleton_t* liSkel, const int liIndex, float* le
 			SetupCompressedJoints(liSkel, liSkel->rootNode[liChild].data, lerp + 9);
 
 	VectorCopy(lerp, liJoint->model.origin);
-	lerp+=3;
+	lerp += 3;
 
 	VectorCopy(lerp, liJoint->model.direction);
-	lerp+=3;
+	lerp += 3;
 
 	VectorCopy(lerp, liJoint->model.up);
 

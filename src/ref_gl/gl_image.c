@@ -512,10 +512,14 @@ image_t* GL_FindImage(char* name, const imagetype_t type)
 	return image;
 }
 
+// H2: new 'retval' arg.
 struct image_s* R_RegisterSkin(char* name, qboolean* retval)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	image_t* img = GL_FindImage(name, it_skin);
+	if (retval != NULL)
+		*retval = (img != r_notexture);
+
+	return img;
 }
 
 // New in H2

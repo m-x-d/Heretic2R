@@ -57,11 +57,13 @@ typedef struct glxy_s
 	int baseline;
 } glxy_t;
 
-// New in H2
+// New in H2. Size: 48 bytes. Contents are guessed (except for 'children' and 'angles' props).
 typedef struct CL_SkeletalJoint_s
 {
 	int children;
+	byte unknown1[22]; //TODO
 	vec3_t angles;
+	byte unknown2[8]; //TODO
 } CL_SkeletalJoint_t;
 
 #define TEXNUM_LIGHTMAPS	1024
