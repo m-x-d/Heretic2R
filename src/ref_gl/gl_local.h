@@ -259,6 +259,7 @@ void GL_DisplayHashTable(void); // New in H2
 
 // gl_light.c
 void R_RenderDlights(void);
+void R_MarkLights(dlight_t* light, int bit, mnode_t* node);
 void R_PushDlights(void);
 
 // gl_main.c
