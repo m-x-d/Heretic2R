@@ -255,9 +255,16 @@ void GL_FreeUnusedImages(void);
 void GL_GammaAffect(void); // New in H2
 void GL_InitImages(void);
 void GL_ShutdownImages(void);
+void GL_DisplayHashTable(void); // New in H2
+
+// gl_light.c
+void R_RenderDlights(void);
+void R_PushDlights(void);
 
 // gl_main.c
 extern refdef_t r_newrefdef;
+extern int c_brush_polys;
+extern int c_alias_polys;
 extern int r_viewcluster;
 extern int r_oldviewcluster;
 
@@ -274,6 +281,14 @@ void GL_UpdateSwapInterval(void);
 // gl_model.c (Mod_XX function declarations are in gl_model.h)
 extern int registration_sequence;
 struct model_s* R_RegisterModel(char* name);
+
+// gl_surf.c
+extern int c_visible_lightmaps;
+extern int c_visible_textures;
+
+void R_MarkLeaves(void);
+void R_SortAndDrawAlphaSurfaces(void); // New in H2
+void R_DrawWorld(void);
 
 // gl_warp.c
 void GL_SubdivideSurface(msurface_t* fa);

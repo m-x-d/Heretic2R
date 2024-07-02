@@ -15,6 +15,9 @@
 #define MAX_LIGHTMAPS			128
 #define MAX_TALLWALL_LIGHTMAPS	512 // New in H2
 
+int c_visible_lightmaps;
+int c_visible_textures;
+
 #define GL_LIGHTMAP_FORMAT		GL_RGBA
 
 typedef struct
@@ -33,6 +36,11 @@ typedef struct
 } gllightmapstate_t;
 
 static gllightmapstate_t gl_lms;
+
+void R_MarkLeaves(void)
+{
+	NOT_IMPLEMENTED
+}
 
 #pragma region ========================== LIGHTMAP ALLOCATION ==========================
 
@@ -106,6 +114,8 @@ static qboolean LM_AllocBlock(const int w, const int h, int* x, int* y)
 }
 
 #pragma endregion
+
+#pragma region ========================== LIGHTMAP BUILDING ==========================
 
 // Q2 counterpart
 void GL_BuildPolygonFromSurface(msurface_t* fa)
@@ -239,4 +249,16 @@ void GL_EndBuildingLightmaps(void)
 {
 	LM_UploadBlock(false);
 	GL_EnableMultitexture(false);
+}
+
+#pragma endregion
+
+void R_SortAndDrawAlphaSurfaces(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void R_DrawWorld(void)
+{
+	NOT_IMPLEMENTED
 }

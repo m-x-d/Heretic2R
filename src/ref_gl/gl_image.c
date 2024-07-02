@@ -654,3 +654,8 @@ void GL_ShutdownImages(void)
 		if (image->registration_sequence != 0)
 			GL_FreeImage(image);
 }
+
+void GL_DisplayHashTable(void)
+{
+	NOT_IMPLEMENTED
+}

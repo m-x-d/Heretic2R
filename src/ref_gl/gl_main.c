@@ -31,6 +31,9 @@ model_t* currentmodel;
 
 int r_framecount; // Used for dlight push checking
 
+int c_brush_polys;
+int c_alias_polys;
+
 refdef_t r_newrefdef; // Screen size info
 
 int r_viewcluster;
@@ -143,6 +146,36 @@ cvar_t* vid_mode; // gl_mode in Q2
 cvar_t* menus_active;
 cvar_t* cl_camera_under_surface;
 cvar_t* quake_amount;
+
+void R_DrawEntitiesOnList(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void GL_DrawParticles(int num_particles, particle_t* particles, qboolean alpha_particle)
+{
+	NOT_IMPLEMENTED
+}
+
+void R_PolyBlend(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void R_SetFrustum(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void R_SetupFrame(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void R_SetupGL(void)
+{
+	NOT_IMPLEMENTED
+}
 
 // New in H2
 static void GL_Fog(void)
@@ -655,9 +688,50 @@ void R_BeginFrame(const float camera_separation)
 	R_Clear();
 }
 
-static void R_RenderView(refdef_t* fd)
+static void R_RenderView(const refdef_t* fd)
 {
-	NOT_IMPLEMENTED
+	if ((int)r_norefresh->value)
+		return;
+
+	r_newrefdef = *fd;
+
+	if (r_worldmodel == NULL && !(r_newrefdef.rdflags & RDF_NOWORLDMODEL))
+		Sys_Error("R_RenderView: NULL worldmodel"); // Q2: ri.Sys_Error(ERR_DROP, "R_RenderView: NULL worldmodel");
+
+	if ((int)r_speeds->value)
+	{
+		c_brush_polys = 0;
+		c_alias_polys = 0;
+	}
+
+	R_PushDlights();
+
+	if ((int)gl_finish->value)
+		qglFinish();
+
+	R_SetupFrame();
+	R_SetFrustum();
+	R_SetupGL();
+	R_MarkLeaves(); // Done here so we know if we're in water
+	R_DrawWorld();
+	R_DrawEntitiesOnList();
+	R_RenderDlights();
+
+	// Changed in H2:
+	qglDepthMask(GL_FALSE);
+	R_SortAndDrawAlphaSurfaces();
+	GL_DrawParticles(r_newrefdef.num_particles, r_newrefdef.particles, false);
+	GL_DrawParticles(r_newrefdef.anum_particles, r_newrefdef.aparticles, true);
+	qglDepthMask(GL_TRUE);
+
+	// Changed in H2: R_Flash() call replaced with R_PolyBlend() call (or optimization?)
+	R_PolyBlend();
+
+	if ((int)r_speeds->value)
+		Com_Printf("%4i wpoly %4i epoly %i tex %i lmaps\n", c_brush_polys, c_alias_polys, c_visible_textures, c_visible_lightmaps); // H2: ri.Con_Printf -> Com_Printf
+
+	if ((int)gl_reporthash->value) // New in H2
+		GL_DisplayHashTable();
 }
 
 static void R_SetGL2D(void)
