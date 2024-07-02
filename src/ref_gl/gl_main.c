@@ -655,9 +655,48 @@ void R_BeginFrame(const float camera_separation)
 	R_Clear();
 }
 
-int R_RenderFrame(refdef_t* fd)
+static void R_RenderView(refdef_t* fd)
 {
 	NOT_IMPLEMENTED
+}
+
+static void R_SetGL2D(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void R_SetLightLevel(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void GL_ScreenFlash(paletteRGBA_t color)
+{
+	NOT_IMPLEMENTED
+}
+
+// H2: return type: void -> int //TODO: useless: always returns 0 
+int R_RenderFrame(refdef_t* fd)
+{
+	paletteRGBA_t color;
+
+	color.c = ri.Is_Screen_Flashing();
+	if ((int)cl_camera_under_surface->value)
+		color.c = strtoul(r_underwater_color->string, NULL, 0);
+
+	if (color.a != 255)
+	{
+		// Q2 version calls these 3 functions only
+		R_RenderView(fd);
+		R_SetLightLevel();
+		R_SetGL2D();
+
+		if (color.a == 0)
+			return 0;
+	}
+
+	GL_ScreenFlash(color);
+
 	return 0;
 }
 
