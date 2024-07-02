@@ -228,7 +228,7 @@ typedef struct model_s
 
 #pragma endregion
 
-mleaf_t* Mod_PointInLeaf(vec3_t p, model_t* model);
+mleaf_t* Mod_PointInLeaf(vec3_t p, const model_t* model);
 void Mod_Init(void);
 void Mod_Modellist_f(void);
 void Mod_Free(model_t* mod);
