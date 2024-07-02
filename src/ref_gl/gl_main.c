@@ -45,6 +45,8 @@ vec3_t vpn;
 vec3_t vright;
 vec3_t r_origin;
 
+float r_world_matrix[16];
+
 refdef_t r_newrefdef; // Screen size info
 
 int r_viewcluster;
@@ -187,7 +189,7 @@ static byte SignbitsForPlane(const cplane_t* plane) //mxd. Changed return type t
 	return bits;
 }
 
-void R_SetFrustum(void)
+static void R_SetFrustum(void)
 {
 	RotatePointAroundVector(frustum[0].normal, vup,		vpn, -(90.0f - r_newrefdef.fov_x * 0.5f));	// Rotate VPN right by FOV_X/2 degrees
 	RotatePointAroundVector(frustum[1].normal, vup,		vpn,   90.0f - r_newrefdef.fov_x * 0.5f);	// Rotate VPN left by FOV_X/2 degrees
@@ -258,9 +260,66 @@ void R_SetupFrame(void)
 	}
 }
 
-void R_SetupGL(void)
+static void MYgluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar)
 {
 	NOT_IMPLEMENTED
+}
+
+static void R_SetupGL(void)
+{
+	//mxd. Removed unneeded integer multiplications/divisions 
+	const int xl = r_newrefdef.x;
+	const int xr = r_newrefdef.x + r_newrefdef.width;
+	const int yt = viddef.height - r_newrefdef.y;
+	const int yb = viddef.height - (r_newrefdef.y + r_newrefdef.height);
+
+	//mxd. Original logic:
+	//const int xl = (int)floorf(r_newrefdef.x * viddef.width / viddef.width);
+	//const int xr = (int)ceilf((r_newrefdef.x + r_newrefdef.width) * viddef.width / viddef.width);
+	//const int yt = (int)floorf(viddef.height - r_newrefdef.y * viddef.height / viddef.height);
+	//const int yb = (int)ceilf(viddef.height - (r_newrefdef.y + r_newrefdef.height) * viddef.height / viddef.height);
+
+	qglViewport(xl, yb, xr - xl, yt - yb);
+
+	// Set up projection matrix
+	const float screenaspect = (float)r_newrefdef.width / (float)r_newrefdef.height;
+	qglMatrixMode(GL_PROJECTION);
+	qglLoadIdentity();
+	MYgluPerspective((double)r_newrefdef.fov_y, (double)screenaspect, 1.0, (double)r_farclipdist->value); // Q2: last 2 args are 4, 4096
+
+	qglCullFace(GL_FRONT);
+	qglMatrixMode(GL_MODELVIEW);
+	qglLoadIdentity();
+
+	qglRotatef(-90.0f, 1.0f, 0.0f, 0.0f); // Put Z going up
+	qglRotatef( 90.0f, 0.0f, 0.0f, 1.0f); // Put Z going up
+	qglRotatef(-r_newrefdef.viewangles[2], 1.0f, 0.0f, 0.0f);
+	qglRotatef(-r_newrefdef.viewangles[0], 0.0f, 1.0f, 0.0f);
+	qglRotatef(-r_newrefdef.viewangles[1], 0.0f, 0.0f, 1.0f);
+	qglTranslatef(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
+
+	qglGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
+
+	// Set drawing parms
+	qglToggle(GL_CULL_FACE, (int)gl_cull->value);
+	qglDisable(GL_BLEND);
+	qglDisable(GL_ALPHA_TEST);
+
+	// H2: extra gl_drawmode logic
+	if ((int)gl_drawmode->value)
+	{
+		qglClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		qglClear(GL_COLOR_BUFFER_BIT);
+		qglClearColor(1.0f, 0.0f, 0.5f, 0.5f);
+	}
+	else
+	{
+		qglEnable(GL_DEPTH_TEST);
+	}
+
+	// New in H2 (never triggered: qboolean DoDrawBackPoly is never set)
+	//if (DoDrawBackPoly)
+		//GL_DrawBackPoly();
 }
 
 // New in H2

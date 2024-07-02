@@ -268,6 +268,8 @@ extern vec3_t vpn;
 extern vec3_t vright;
 extern vec3_t r_origin;
 
+extern float r_world_matrix[16];
+
 extern refdef_t r_newrefdef;
 extern int c_brush_polys;
 extern int c_alias_polys;
