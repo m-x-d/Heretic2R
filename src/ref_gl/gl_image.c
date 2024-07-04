@@ -156,9 +156,11 @@ void GL_MBind(const GLenum target, const int texnum)
 		GL_Bind(texnum);
 }
 
-void GL_MBindImage(GLenum target, image_t* image)
+void GL_MBindImage(const GLenum target, const image_t* image)
 {
-	NOT_IMPLEMENTED
+	GL_SelectTexture(target);
+	if (gl_state.currenttextures[target == GL_TEXTURE1] != image->texnum)
+		GL_BindImage(image);
 }
 
 typedef struct

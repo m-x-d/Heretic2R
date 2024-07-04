@@ -246,7 +246,7 @@ void GL_TexEnv(GLint mode);
 void GL_Bind(int texnum);
 void GL_BindImage(const image_t* image); // New in H2
 void GL_MBind(GLenum target, int texnum);
-void GL_MBindImage(GLenum target, image_t* image); // New in H2
+void GL_MBindImage(GLenum target, const image_t* image); // New in H2
 void GL_TextureMode(char* string);
 void GL_SetFilter(const image_t* image); // New in H2
 void GL_ImageList_f(void);
