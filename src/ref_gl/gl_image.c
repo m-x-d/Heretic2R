@@ -148,9 +148,12 @@ void GL_BindImage(const image_t* image)
 	}
 }
 
-void GL_MBind(GLenum target, int texnum)
+// Q2 counterpart
+void GL_MBind(const GLenum target, const int texnum)
 {
-	NOT_IMPLEMENTED
+	GL_SelectTexture(target);
+	if (gl_state.currenttextures[target == GL_TEXTURE1] != texnum)
+		GL_Bind(texnum);
 }
 
 void GL_MBindImage(GLenum target, image_t* image)
