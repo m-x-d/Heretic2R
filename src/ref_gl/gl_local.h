@@ -36,8 +36,8 @@ typedef struct image_s //mxd. Changed in H2. Original size: 104 bytes
 	int width;
 	int height;
 	int registration_sequence;			// 0 = free
-	struct msurface_t* texturechain;	// For sort-by-texture world drawing
-	struct msurface_t* multitexturechain;
+	struct msurface_s* texturechain;	// For sort-by-texture world drawing
+	struct msurface_s* multitexturechain;
 	int texnum;							// gl texture binding
 	byte has_alpha;
 	byte num_frames;
