@@ -163,6 +163,12 @@ cvar_t* menus_active;
 cvar_t* cl_camera_under_surface;
 cvar_t* quake_amount;
 
+qboolean R_CullBox(vec3_t mins, vec3_t maxs)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
 void R_DrawEntitiesOnList(void)
 {
 	NOT_IMPLEMENTED

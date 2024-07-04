@@ -8,6 +8,7 @@
 #include "Vector.h"
 
 static vec3_t modelorg; // Relative to viewpoint
+static msurface_t* r_alpha_surfaces;
 
 #define LIGHTMAP_BYTES			4
 
@@ -44,6 +45,12 @@ static gllightmapstate_t gl_lms;
 
 #pragma region ========================== BRUSH MODELS ==========================
 
+static image_t* R_TextureAnimation(mtexinfo_t* tex)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
 static void R_BlendLightmaps(void)
 {
 	NOT_IMPLEMENTED
@@ -64,13 +71,124 @@ static void DrawTextureChains(void)
 	NOT_IMPLEMENTED
 }
 
+static void GL_RenderLightmappedPoly_ARB(msurface_t* surf)
+{
+	NOT_IMPLEMENTED
+}
+
 #pragma endregion
 
 #pragma region ========================== WORLD MODEL ==========================
 
 static void R_RecursiveWorldNode(mnode_t* node)
 {
-	NOT_IMPLEMENTED
+	msurface_t* surf;
+	int c;
+	int side;
+	int sidebit;
+	
+	if (node->contents == CONTENTS_SOLID || node->visframe != r_visframecount || R_CullBox(node->minmaxs, node->minmaxs + 3))
+		return;
+
+	// If a leaf node, draw stuff
+	if (node->contents != -1)
+	{
+		const mleaf_t* pleaf = (mleaf_t*)node;
+
+		// Check for door connected areas
+		if (r_newrefdef.areabits && !(r_newrefdef.areabits[pleaf->area >> 3] & (1 << (pleaf->area & 7))))
+			return; // Not visible
+
+		msurface_t** mark = pleaf->firstmarksurface;
+		for (int i = pleaf->nummarksurfaces; i > 0; i--)
+		{
+			(*mark)->visframe = r_framecount;
+			mark++;
+		}
+
+		return;
+	}
+
+	// Node is just a decision point, so go down the appropriate sides.
+
+	// Find which side of the node we are on.
+	const cplane_t* plane = node->plane;
+	float dot;
+
+	switch (plane->type)
+	{
+		case PLANE_X:
+		case PLANE_Y:
+		case PLANE_Z:
+			dot = modelorg[plane->type] - plane->dist;
+			break;
+
+		default:
+			dot = DotProduct(modelorg, plane->normal) - plane->dist;
+			break;
+	}
+	
+	if (dot >= 0.0f)
+	{
+		side = 0;
+		sidebit = 0;
+	}
+	else
+	{
+		side = 1;
+		sidebit = SURF_PLANEBACK;
+	}
+
+	// Recurse down the children, front side first
+	R_RecursiveWorldNode(node->children[side]);
+
+	// Draw stuff
+	for (c = node->numsurfaces, surf = r_worldmodel->surfaces + node->firstsurface; c > 0; c--, surf++)
+	{
+		if (surf->visframe != r_framecount || (surf->flags & SURF_PLANEBACK) != sidebit)
+			continue; // Wrong frame or side
+
+		if (surf->texinfo->flags & SURF_SKY)
+		{
+			// Just adds to visible sky bounds
+			R_AddSkySurface(surf);
+		}
+		else if (surf->texinfo->flags & (SURF_TRANS33 | SURF_TRANS66))
+		{
+			// Add to the translucent chain
+			surf->texturechain = r_alpha_surfaces;
+			r_alpha_surfaces = surf;
+		}
+		else if (qglMultiTexCoord2fARB != NULL 
+				&& !(surf->flags & SURF_DRAWTURB) && !(surf->flags & SURF_TALL_WALL)
+				&& !(int)r_fullbright->value && !(int)gl_drawflat->value) // H2: extra SURF_TALL_WALL, r_fullbright, gl_drawflat checks.
+		{
+			// H2: extra gl_sortmulti cvar logic
+			if ((int)gl_sortmulti->value)
+			{
+				// The polygon is visible, so add it to the multi-texture sorted chain
+				image_t* image = R_TextureAnimation(surf->texinfo);
+				surf->texturechain = image->multitexturechain;
+				image->multitexturechain = surf;
+				num_sorted_multitextures += 1;
+			}
+			else
+			{
+				GL_RenderLightmappedPoly_ARB(surf);
+			}
+		}
+		else //mxd. Skipping qglMTexCoord2fSGIS logic...
+		{
+			// The polygon is visible, so add it to the texture sorted chain
+			// FIXME: this is a hack for animation
+			image_t* image = R_TextureAnimation(surf->texinfo);
+			surf->texturechain = image->texturechain;
+			image->texturechain = surf;
+		}
+	}
+
+	// Recurse down the back side
+	R_RecursiveWorldNode(node->children[!side]);
 }
 
 void R_DrawWorld(void)

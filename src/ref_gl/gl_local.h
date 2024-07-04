@@ -284,6 +284,8 @@ extern model_t* currentmodel;
 extern cplane_t frustum[4];
 extern int r_framecount;
 
+qboolean R_CullBox(vec3_t mins, vec3_t maxs);
+
 // gl_misc.c
 void GL_ScreenShot_f(void);
 void GL_Strings_f(void);
@@ -304,6 +306,7 @@ void R_DrawWorld(void);
 
 // gl_warp.c
 void GL_SubdivideSurface(msurface_t* fa);
+void R_AddSkySurface(msurface_t* fa);
 void R_ClearSkyBox(void);
 void R_DrawSkyBox(void);
 

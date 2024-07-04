@@ -44,6 +44,11 @@ float skymaxs[2][6];
 float sky_min;
 float sky_max;
 
+void R_AddSkySurface(msurface_t* fa)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart
 void R_ClearSkyBox(void)
 {
