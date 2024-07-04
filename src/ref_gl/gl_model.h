@@ -230,7 +230,7 @@ typedef struct model_s
 
 mleaf_t* Mod_PointInLeaf(vec3_t p, const model_t* model);
 void Mod_Init(void);
-byte* Mod_ClusterPVS(int cluster, model_t* model);
+byte* Mod_ClusterPVS(int cluster, const model_t* model);
 void Mod_Modellist_f(void);
 void Mod_Free(model_t* mod);
 void Mod_FreeAll(void);
