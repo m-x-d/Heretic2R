@@ -41,10 +41,19 @@ mleaf_t* Mod_PointInLeaf(vec3_t p, const model_t* model)
 	return (mleaf_t*)node;
 }
 
-byte* Mod_ClusterPVS(int cluster, model_t* model)
+static byte* Mod_DecompressVis(byte* in, model_t* model)
 {
 	NOT_IMPLEMENTED
 	return NULL;
+}
+
+// Q2 couterpart
+byte* Mod_ClusterPVS(const int cluster, model_t* model)
+{
+	if (cluster > -1 && model->vis)
+		return Mod_DecompressVis((byte*)model->vis + model->vis->bitofs[cluster][DVIS_PVS], model);
+
+	return mod_novis;
 }
 
 void Mod_Modellist_f(void)
