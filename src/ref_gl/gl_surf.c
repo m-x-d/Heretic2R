@@ -45,10 +45,24 @@ static gllightmapstate_t gl_lms;
 
 #pragma region ========================== BRUSH MODELS ==========================
 
-static image_t* R_TextureAnimation(mtexinfo_t* tex)
+// Returns the proper texture for a given time and base texture
+static image_t* R_TextureAnimation(const mtexinfo_t* tex)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	if (tex->next != NULL)
+	{
+		int frame;
+		if (tex->flags & SURF_ANIMSPEED && tex->image->num_frames > 0) // H2: extra SURF_ANIMSPEED logic
+			frame = (int)((float)tex->image->num_frames * r_newrefdef.time);
+		else
+			frame = currententity->frame;
+
+		frame %= tex->numframes;
+
+		while (frame--)
+			tex = tex->next;
+	}
+
+	return tex->image;
 }
 
 static void R_BlendLightmaps(void)
