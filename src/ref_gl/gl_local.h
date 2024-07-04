@@ -245,6 +245,8 @@ void GL_SelectTexture(GLenum texture);
 void GL_TexEnv(GLint mode);
 void GL_Bind(int texnum);
 void GL_BindImage(const image_t* image); // New in H2
+void GL_MBind(GLenum target, int texnum);
+void GL_MBindImage(GLenum target, image_t* image); // New in H2
 void GL_TextureMode(char* string);
 void GL_SetFilter(const image_t* image); // New in H2
 void GL_ImageList_f(void);
@@ -261,6 +263,8 @@ void GL_DisplayHashTable(void); // New in H2
 void R_RenderDlights(void);
 void R_MarkLights(dlight_t* light, int bit, mnode_t* node);
 void R_PushDlights(void);
+void R_SetCacheState(msurface_t* surf);
+void R_BuildLightMap(msurface_t* surf, byte* dest, int stride);
 
 // gl_main.c
 extern vec3_t vup;

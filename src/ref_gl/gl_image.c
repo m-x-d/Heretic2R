@@ -148,6 +148,16 @@ void GL_BindImage(const image_t* image)
 	}
 }
 
+void GL_MBind(GLenum target, int texnum)
+{
+	NOT_IMPLEMENTED
+}
+
+void GL_MBindImage(GLenum target, image_t* image)
+{
+	NOT_IMPLEMENTED
+}
+
 typedef struct
 {
 	char* name;
