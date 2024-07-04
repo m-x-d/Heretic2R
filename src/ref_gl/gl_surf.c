@@ -66,6 +66,95 @@ static void DrawTextureChains(void)
 
 #pragma endregion
 
+#pragma region ========================== WORLD MODEL ==========================
+
+static void R_RecursiveWorldNode(mnode_t* node)
+{
+	NOT_IMPLEMENTED
+}
+
+void R_DrawWorld(void)
+{
+	if (!(int)r_drawworld->value || r_newrefdef.rdflags & RDF_NOWORLDMODEL)
+		return;
+
+	currentmodel = r_worldmodel;
+	VectorCopy(r_newrefdef.vieworg, modelorg);
+
+	// Auto cycle the world frame for texture animation
+	entity_t ent = { 0 }; //mxd. memset -> zero initialization.
+	ent.frame = (int)(r_newrefdef.time * 2);
+	currententity = &ent;
+
+	gl_state.currenttextures[0] = -1;
+	gl_state.currenttextures[1] = -1;
+
+	if ((int)gl_drawmode->value) // H2: new gl_drawmode logic
+	{
+		qglColor4f(1.0f, 1.0f, 1.0f, 0.4f);
+		qglEnable(GL_BLEND);
+	}
+	else
+	{
+		qglColor3f(1.0f, 1.0f, 1.0f);
+	}
+
+	memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
+	gl_lms.tallwall_lightmaptexturenum = 0; // New in H2
+	R_ClearSkyBox();
+	num_sorted_multitextures = 0; // New in H2
+
+	// H2: new r_fullbright and gl_drawflat cvar checks
+	if (!(int)r_fullbright->value && !(int)gl_drawflat->value && qglMultiTexCoord2fARB != NULL)
+	{
+		GL_EnableMultitexture(true);
+
+		GL_SelectTexture(GL_TEXTURE0);
+		GL_TexEnv(GL_REPLACE);
+		GL_SelectTexture(GL_TEXTURE1);
+
+		if ((int)gl_lightmap->value)
+			GL_TexEnv(GL_REPLACE);
+		else
+			GL_TexEnv(GL_MODULATE);
+
+		R_RecursiveWorldNode(r_worldmodel->nodes);
+
+		GL_EnableMultitexture(false);
+	}
+	else
+	{
+		R_RecursiveWorldNode(r_worldmodel->nodes);
+	}
+
+	// Theoretically nothing should happen in the next two functions if multitexture is enabled
+
+	// H2: new gl_drawflat cvar logic
+	if ((int)gl_drawflat->value)
+	{
+		qglDisable(GL_TEXTURE_2D);
+		DrawTextureChains();
+		qglEnable(GL_TEXTURE_2D);
+		qglColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	}
+	else
+	{
+		DrawTextureChains();
+	}
+
+	R_BlendLightmaps();
+
+	// H2: new gl_drawmode cvar logic
+	if ((int)gl_drawmode->value)
+	{
+		qglDisable(GL_BLEND);
+		qglEnable(GL_DEPTH_TEST);
+	}
+
+	R_DrawSkyBox();
+	R_DrawTriangleOutlines();
+}
+
 // Q2 counterpart
 // Mark the leaves and nodes that are in the PVS for the current cluster
 void R_MarkLeaves(void)
@@ -132,6 +221,8 @@ void R_MarkLeaves(void)
 		}
 	}
 }
+
+#pragma endregion
 
 #pragma region ========================== LIGHTMAP ALLOCATION ==========================
 
@@ -340,97 +431,6 @@ void GL_EndBuildingLightmaps(void)
 {
 	LM_UploadBlock(false);
 	GL_EnableMultitexture(false);
-}
-
-#pragma endregion
-
-#pragma region ========================== WORLD MODEL ==========================
-
-static void R_RecursiveWorldNode(mnode_t* node)
-{
-	NOT_IMPLEMENTED
-}
-
-void R_DrawWorld(void)
-{
-	if (!(int)r_drawworld->value || r_newrefdef.rdflags & RDF_NOWORLDMODEL)
-		return;
-
-	currentmodel = r_worldmodel;
-	VectorCopy(r_newrefdef.vieworg, modelorg);
-
-	// Auto cycle the world frame for texture animation
-	entity_t ent = {0}; //mxd. memset -> zero initialization.
-	ent.frame = (int)(r_newrefdef.time * 2);
-	currententity = &ent;
-
-	gl_state.currenttextures[0] = -1;
-	gl_state.currenttextures[1] = -1;
-
-	if ((int)gl_drawmode->value) // H2: new gl_drawmode logic
-	{
-		qglColor4f(1.0f, 1.0f, 1.0f, 0.4f);
-		qglEnable(GL_BLEND);
-	}
-	else
-	{
-		qglColor3f(1.0f, 1.0f, 1.0f);
-	}
-
-	memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
-	gl_lms.tallwall_lightmaptexturenum = 0; // New in H2
-	R_ClearSkyBox();
-	num_sorted_multitextures = 0; // New in H2
-
-	// H2: new r_fullbright and gl_drawflat cvar checks
-	if (!(int)r_fullbright->value && !(int)gl_drawflat->value && qglMultiTexCoord2fARB != NULL)
-	{
-		GL_EnableMultitexture(true);
-
-		GL_SelectTexture(GL_TEXTURE0);
-		GL_TexEnv(GL_REPLACE);
-		GL_SelectTexture(GL_TEXTURE1);
-
-		if ((int)gl_lightmap->value)
-			GL_TexEnv(GL_REPLACE);
-		else
-			GL_TexEnv(GL_MODULATE);
-
-		R_RecursiveWorldNode(r_worldmodel->nodes);
-
-		GL_EnableMultitexture(false);
-	}
-	else
-	{
-		R_RecursiveWorldNode(r_worldmodel->nodes);
-	}
-
-	// Theoretically nothing should happen in the next two functions if multitexture is enabled
-
-	// H2: new gl_drawflat cvar logic
-	if ((int)gl_drawflat->value)
-	{
-		qglDisable(GL_TEXTURE_2D);
-		DrawTextureChains();
-		qglEnable(GL_TEXTURE_2D);
-		qglColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	}
-	else
-	{
-		DrawTextureChains();
-	}
-
-	R_BlendLightmaps();
-
-	// H2: new gl_drawmode cvar logic
-	if ((int)gl_drawmode->value)
-	{
-		qglDisable(GL_BLEND);
-		qglEnable(GL_DEPTH_TEST);
-	}
-  
-	R_DrawSkyBox();
-	R_DrawTriangleOutlines();
 }
 
 #pragma endregion
