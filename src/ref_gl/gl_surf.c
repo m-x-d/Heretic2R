@@ -75,6 +75,23 @@ static void R_DrawTriangleOutlines(void)
 	NOT_IMPLEMENTED
 }
 
+static void R_RenderBrushPoly(msurface_t* fa)
+{
+	NOT_IMPLEMENTED
+}
+
+// New in H2
+static void R_RenderBrushPoly_ARB(msurface_t* fa)
+{
+	NOT_IMPLEMENTED
+}
+
+// New in H2
+static void R_RenderFlatShadedBrushPoly(msurface_t* fa)
+{
+	NOT_IMPLEMENTED
+}
+
 void R_SortAndDrawAlphaSurfaces(void)
 {
 	NOT_IMPLEMENTED
@@ -82,7 +99,85 @@ void R_SortAndDrawAlphaSurfaces(void)
 
 static void DrawTextureChains(void)
 {
-	NOT_IMPLEMENTED
+	int i;
+	image_t* image;
+
+	c_visible_textures = 0;
+
+	// H2: extra gl_sortmulti logic:
+	if ((int)gl_sortmulti->value && num_sorted_multitextures > 0)
+	{
+		GL_EnableMultitexture(true);
+		GL_SelectTexture(GL_TEXTURE0);
+		GL_TexEnv(GL_REPLACE);
+		GL_SelectTexture(GL_TEXTURE1);
+		GL_TexEnv((int)gl_lightmap->value ? GL_REPLACE : GL_MODULATE);
+
+		for (i = 0, image = gltextures; i < numgltextures; i++, image++)
+		{
+			if (image->registration_sequence == 0 || image->multitexturechain == NULL)
+				continue;
+
+			c_visible_textures++;
+
+			for (msurface_t* s = image->multitexturechain; s; s = s->texturechain)
+				R_RenderBrushPoly_ARB(s);
+
+			image->multitexturechain = NULL;
+		}
+
+		GL_EnableMultitexture(false);
+		num_sorted_multitextures = 0;
+	}
+
+	void (*render_brush_poly)(msurface_t*) = ((int)gl_drawflat->value ? R_RenderFlatShadedBrushPoly : R_RenderBrushPoly); // H2: new gl_drawflat logic
+
+	// Original Q2 logic:
+	if (qglActiveTextureARB == NULL)
+	{
+		for (i = 0, image = gltextures; i < numgltextures; i++, image++)
+		{
+			if (!image->registration_sequence || image->texturechain == NULL)
+				continue;
+
+			c_visible_textures++;
+
+			for (msurface_t* s = image->texturechain; s; s = s->texturechain)
+				render_brush_poly(s); // H2: new gl_drawflat logic
+
+			image->texturechain = NULL;
+		}
+	}
+	else
+	{
+		for (i = 0, image = gltextures; i < numgltextures; i++, image++)
+		{
+			if (!image->registration_sequence || image->texturechain == NULL)
+				continue;
+
+			c_visible_textures++;
+
+			for (msurface_t* s = image->texturechain; s; s = s->texturechain)
+				if (!(s->flags & SURF_DRAWTURB))
+					render_brush_poly(s); // H2: new gl_drawflat logic
+		}
+
+		GL_EnableMultitexture(false);
+
+		for (i = 0, image = gltextures; i < numgltextures; i++, image++)
+		{
+			if (!image->registration_sequence || image->texturechain == NULL)
+				continue;
+
+			for (msurface_t* s = image->texturechain; s; s = s->texturechain)
+				if (s->flags & SURF_DRAWTURB)
+					render_brush_poly(s); // H2: new gl_drawflat logic
+
+			image->texturechain = NULL;
+		}
+	}
+
+	GL_TexEnv(GL_REPLACE);
 }
 
 //mxd. Similar to Q2's GL_RenderLightmappedPoly (except for missing SURF_FLOWING logic). Original H2 .dll also includes GL_RenderLightmappedPoly_SGIS variant.
