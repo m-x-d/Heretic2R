@@ -279,6 +279,7 @@ extern int r_oldviewcluster;
 extern int r_oldviewcluster2;
 
 extern model_t* r_worldmodel;
+extern entity_t* currententity;
 extern model_t* currentmodel;
 extern cplane_t frustum[4];
 extern int r_framecount;
@@ -303,6 +304,8 @@ void R_DrawWorld(void);
 
 // gl_warp.c
 void GL_SubdivideSurface(msurface_t* fa);
+void R_ClearSkyBox(void);
+void R_DrawSkyBox(void);
 
 #pragma region ========================== GL config stuff  ==========================
 

@@ -42,6 +42,16 @@ void GL_SubdivideSurface(msurface_t* fa)
 float sky_min;
 float sky_max;
 
+void R_ClearSkyBox(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void R_DrawSkyBox(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void R_SetSky(const char* name, const float rotate, const vec3_t axis)
 {
 	static char* suf[] = { "rt", "bk", "lf", "ft", "up", "dn" }; // 3dstudio environment map names //mxd. Made local static

@@ -28,6 +28,7 @@ image_t* r_reflecttexture;
 image_t* r_font1;
 image_t* r_font2;
 
+entity_t* currententity;
 model_t* currentmodel;
 
 cplane_t frustum[4];
