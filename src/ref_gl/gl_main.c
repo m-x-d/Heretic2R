@@ -165,7 +165,13 @@ cvar_t* quake_amount;
 
 qboolean R_CullBox(vec3_t mins, vec3_t maxs)
 {
-	NOT_IMPLEMENTED
+	if (!(int)r_nocull->value)
+	{
+		for (int i = 0; i < 4; i++)
+			if (BoxOnPlaneSide(mins, maxs, &frustum[i]) == 2) // H2: BoxOnPlaneSide call instead of BOX_ON_PLANE_SIDE macro
+				return true;
+	}
+
 	return false;
 }
 
