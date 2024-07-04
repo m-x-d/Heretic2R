@@ -105,24 +105,7 @@ H2COMMON_API float anglemod(float a);
 H2COMMON_API float anglemod_old(float a);
 H2COMMON_API float LerpAngle(float a1, float a2, float frac);
 
-//TODO: mxd. Used only in cmodel.c -> move there?
-int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, struct cplane_s *plane);
-
-/*#define BOX_ON_PLANE_SIDE(emins, emaxs, p)	\
-	(((p)->type < 3)?						\
-	(										\
-		((p)->dist <= (emins)[(p)->type])?	\
-			1								\
-		:									\
-		(									\
-			((p)->dist >= (emaxs)[(p)->type])?\
-				2							\
-			:								\
-				3							\
-		)									\
-	)										\
-	:										\
-		BoxOnPlaneSide( (emins), (emaxs), (p)))*/
+int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, const struct cplane_s *plane);
 
 #define MAX_COLORS	33
 

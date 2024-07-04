@@ -75,6 +75,9 @@
     <ClCompile Include="r_Skeletons.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\game\q_shared.c">
+      <Filter>game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gl_local.h">
