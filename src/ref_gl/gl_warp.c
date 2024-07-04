@@ -39,12 +39,21 @@ void GL_SubdivideSurface(msurface_t* fa)
 	NOT_IMPLEMENTED
 }
 
+float skymins[2][6];
+float skymaxs[2][6];
 float sky_min;
 float sky_max;
 
+// Q2 counterpart
 void R_ClearSkyBox(void)
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < 6; i++)
+	{
+		skymins[0][i] = 9999.0f;
+		skymins[1][i] = 9999.0f;
+		skymaxs[0][i] = -9999.0f;
+		skymaxs[1][i] = -9999.0f;
+	}
 }
 
 void R_DrawSkyBox(void)
