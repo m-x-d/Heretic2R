@@ -234,9 +234,37 @@ static void R_BlendLightmaps(void)
 	qglDepthMask(1);
 }
 
+// Q2 counterpart
 static void R_DrawTriangleOutlines(void)
 {
-	NOT_IMPLEMENTED
+	if (!(int)gl_showtris->value)
+		return;
+
+	qglDisable(GL_TEXTURE_2D);
+	qglDisable(GL_DEPTH_TEST);
+	qglColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+	for (int i = 0; i < MAX_LIGHTMAPS; i++)
+	{
+		for (const msurface_t* surf = gl_lms.lightmap_surfaces[i]; surf != NULL; surf = surf->lightmapchain)
+		{
+			for (const glpoly_t* p = surf->polys; p != NULL; p = p->chain)
+			{
+				for (int j = 2; j < p->numverts; j++)
+				{
+					qglBegin(GL_LINE_STRIP);
+					qglVertex3fv(p->verts[0]);
+					qglVertex3fv(p->verts[j - 1]);
+					qglVertex3fv(p->verts[j]);
+					qglVertex3fv(p->verts[0]);
+					qglEnd();
+				}
+			}
+		}
+	}
+
+	qglEnable(GL_DEPTH_TEST);
+	qglEnable(GL_TEXTURE_2D);
 }
 
 static void R_RenderBrushPoly(msurface_t* fa)
