@@ -283,7 +283,70 @@ void R_SortAndDrawAlphaSurfaces(void)
 	NOT_IMPLEMENTED
 }
 
-static void GL_RenderLightmappedPoly_ARB(msurface_t* surf);
+//mxd. Similar to Q2's GL_RenderLightmappedPoly (except for missing SURF_FLOWING logic). Original H2 .dll also includes GL_RenderLightmappedPoly_SGIS variant.
+static void GL_RenderLightmappedPoly_ARB(msurface_t* surf)
+{
+	int map;
+	int lmtex = surf->lightmaptexturenum;
+	qboolean lightmap_updated = false;
+
+	for (map = 0; map < MAXLIGHTMAPS && surf->styles[map] != 255; map++)
+	{
+		if (r_newrefdef.lightstyles[surf->styles[map]].white != surf->cached_light[map])
+		{
+			lightmap_updated = true; //mxd. Avoid unnecessary gotos
+			break;
+		}
+	}
+
+	// Dynamic this frame or dynamic previously
+	qboolean is_dynamic = false;
+	if (lightmap_updated || surf->dlightframe == r_framecount)
+		is_dynamic = ((int)gl_dynamic->value && !(surf->texinfo->flags & SURF_FULLBRIGHT)); //mxd. SURF_FULLBRIGHT define
+
+	if (is_dynamic)
+	{
+		uint temp[BLOCK_WIDTH * BLOCK_HEIGHT];
+
+		const int smax = (surf->extents[0] >> 4) + 1;
+		const int tmax = (surf->extents[1] >> 4) + 1;
+
+		if ((surf->styles[map] >= 32 || surf->styles[map] == 0) && surf->dlightframe != r_framecount)
+		{
+			R_BuildLightMap(surf, (byte*)temp, smax * 4);
+			R_SetCacheState(surf);
+			GL_MBind(GL_TEXTURE1, surf->lightmaptexturenum + gl_state.lightmap_textures);
+			lmtex = surf->lightmaptexturenum;
+		}
+		else
+		{
+			R_BuildLightMap(surf, (byte*)temp, smax * 4);
+			GL_MBind(GL_TEXTURE1, gl_state.lightmap_textures);
+			lmtex = 0;
+		}
+
+		qglTexSubImage2D(GL_TEXTURE_2D, 0, surf->light_s, surf->light_t, smax, tmax, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, temp);
+	}
+
+	c_brush_polys++;
+
+	GL_MBindImage(GL_TEXTURE0, R_TextureAnimation(surf->texinfo)); // H2: GL_MBind -> GL_MBindImage
+	GL_MBind(GL_TEXTURE1, gl_state.lightmap_textures + lmtex);
+
+	// Missing: SURF_FLOWING logic
+	for (glpoly_t* p = surf->polys; p != NULL; p = p->chain)
+	{
+		float* v = p->verts[0];
+		qglBegin(GL_POLYGON);
+		for (int i = 0; i < surf->polys->numverts; i++, v += VERTEXSIZE)
+		{
+			qglMultiTexCoord2fARB(GL_TEXTURE0, v[3], v[4]);
+			qglMultiTexCoord2fARB(GL_TEXTURE1, v[5], v[6]);
+			qglVertex3fv(v);
+		}
+		qglEnd();
+	}
+}
 
 static void DrawTextureChains(void)
 {
@@ -366,71 +429,6 @@ static void DrawTextureChains(void)
 	}
 
 	GL_TexEnv(GL_REPLACE);
-}
-
-//mxd. Similar to Q2's GL_RenderLightmappedPoly (except for missing SURF_FLOWING logic). Original H2 .dll also includes GL_RenderLightmappedPoly_SGIS variant.
-static void GL_RenderLightmappedPoly_ARB(msurface_t* surf)
-{
-	int map;
-	int lmtex = surf->lightmaptexturenum;
-	qboolean lightmap_updated = false;
-
-	for (map = 0; map < MAXLIGHTMAPS && surf->styles[map] != 255; map++)
-	{
-		if (r_newrefdef.lightstyles[surf->styles[map]].white != surf->cached_light[map])
-		{
-			lightmap_updated = true; //mxd. Avoid unnecessary gotos
-			break;
-		}
-	}
-
-	// Dynamic this frame or dynamic previously
-	qboolean is_dynamic = false;
-	if (lightmap_updated || surf->dlightframe == r_framecount)
-		is_dynamic = ((int)gl_dynamic->value && !(surf->texinfo->flags & SURF_FULLBRIGHT)); //mxd. SURF_FULLBRIGHT define
-
-	if (is_dynamic)
-	{
-		uint temp[BLOCK_WIDTH * BLOCK_HEIGHT];
-
-		const int smax = (surf->extents[0] >> 4) + 1;
-		const int tmax = (surf->extents[1] >> 4) + 1;
-
-		if ((surf->styles[map] >= 32 || surf->styles[map] == 0) && surf->dlightframe != r_framecount)
-		{
-			R_BuildLightMap(surf, (byte*)temp, smax * 4);
-			R_SetCacheState(surf);
-			GL_MBind(GL_TEXTURE1, surf->lightmaptexturenum + gl_state.lightmap_textures);
-			lmtex = surf->lightmaptexturenum;
-		}
-		else
-		{
-			R_BuildLightMap(surf, (byte*)temp, smax * 4);
-			GL_MBind(GL_TEXTURE1, gl_state.lightmap_textures);
-			lmtex = 0;
-		}
-
-		qglTexSubImage2D(GL_TEXTURE_2D, 0, surf->light_s, surf->light_t, smax, tmax, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, temp);
-	}
-
-	c_brush_polys++;
-
-	GL_MBindImage(GL_TEXTURE0, R_TextureAnimation(surf->texinfo)); // H2: GL_MBind -> GL_MBindImage
-	GL_MBind(GL_TEXTURE1, gl_state.lightmap_textures + lmtex);
-
-	// Missing: SURF_FLOWING logic
-	for (glpoly_t* p = surf->polys; p != NULL; p = p->chain)
-	{
-		float* v = p->verts[0];
-		qglBegin(GL_POLYGON);
-		for (int i = 0; i < surf->polys->numverts; i++, v += VERTEXSIZE)
-		{
-			qglMultiTexCoord2fARB(GL_TEXTURE0, v[3], v[4]);
-			qglMultiTexCoord2fARB(GL_TEXTURE1, v[5], v[6]);
-			qglVertex3fv(v);
-		}
-		qglEnd();
-	}
 }
 
 static void R_DrawInlineBModel(void)
