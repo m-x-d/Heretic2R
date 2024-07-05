@@ -20,7 +20,7 @@
 
 typedef struct entity_s
 {
-	struct model_s** model; // Opaque type outside refresh
+	struct model_s** model; // Opaque type outside refresh // Q2: struct model_s*
 	float angles[3];
 	float origin[3];
 	int frame;
@@ -147,7 +147,7 @@ typedef struct
 	lightstyle_t* lightstyles;	// [MAX_LIGHTSTYLES]
 
 	int num_entities;
-	entity_t** entities;
+	entity_t** entities; // Q2: entity_t*
 
 	int num_alpha_entities;
 	entity_t** alpha_entities;

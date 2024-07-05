@@ -437,6 +437,11 @@ static void GL_RenderLightmappedPoly_ARB(msurface_t* surf)
 	}
 }
 
+void R_DrawBrushModel(entity_t* e)
+{
+	NOT_IMPLEMENTED
+}
+
 #pragma endregion
 
 #pragma region ========================== WORLD MODEL ==========================

@@ -304,6 +304,7 @@ struct model_s* R_RegisterModel(char* name);
 extern int c_visible_lightmaps;
 extern int c_visible_textures;
 
+void R_DrawBrushModel(entity_t* e);
 void R_MarkLeaves(void);
 void R_SortAndDrawAlphaSurfaces(void); // New in H2
 void R_DrawWorld(void);

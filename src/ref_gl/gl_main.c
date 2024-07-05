@@ -5,6 +5,7 @@
 //
 
 #include "gl_local.h"
+#include "fmodel.h"
 #include "m_Reference.h"
 #include "q_Surface.h"
 #include "Vector.h"
@@ -175,9 +176,63 @@ qboolean R_CullBox(vec3_t mins, vec3_t maxs)
 	return false;
 }
 
-void R_DrawEntitiesOnList(void)
+static void R_DrawSpriteModel(entity_t* e)
 {
 	NOT_IMPLEMENTED
+}
+
+static void R_DrawNullModel(void)
+{
+	NOT_IMPLEMENTED
+}
+
+// H2: simplified: no separate non-transparent/transparent drawing chains
+void R_DrawEntitiesOnList(void)
+{
+	if (!(int)r_drawentities->value)
+		return;
+
+	for (int i = 0; i < r_newrefdef.num_entities; i++)
+	{
+		currententity = r_newrefdef.entities[i];
+		if (currententity == NULL) // H2: extra sanity check
+		{
+			Com_Printf("Attempt to draw NULL model\n");
+			R_DrawNullModel();
+			continue;
+		}
+
+		currentmodel = *currententity->model;
+		if (currentmodel == NULL)
+		{
+			R_DrawNullModel();
+			continue;
+		}
+
+		// H2: no mod_alias case, new mod_bad and mod_fmdl cases
+		switch (currentmodel->type)
+		{
+			case mod_bad:
+				Com_Printf("WARNING:  currentmodel->type == 0; reload the map\n");
+				break;
+
+			case mod_brush:
+				R_DrawBrushModel(currententity);
+				break;
+
+			case mod_sprite:
+				R_DrawSpriteModel(currententity);
+				break;
+
+			case mod_fmdl:
+				R_DrawFlexModel(currententity);
+				break;
+
+			default:
+				Sys_Error("Bad modeltype"); // Q2: ri.Sys_Error
+				break;
+		}
+	}
 }
 
 void GL_DrawParticles(int num_particles, particle_t* particles, qboolean alpha_particle)
