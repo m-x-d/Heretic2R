@@ -105,6 +105,7 @@ H2COMMON_API float anglemod(float a);
 H2COMMON_API float anglemod_old(float a);
 H2COMMON_API float LerpAngle(float a1, float a2, float frac);
 
+void TransformVector(vec3_t v, vec3_t out); // New in H2
 int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, const struct cplane_s *plane);
 
 #define MAX_COLORS	33

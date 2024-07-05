@@ -278,10 +278,146 @@ static void R_RenderFlatShadedBrushPoly(msurface_t* fa)
 	NOT_IMPLEMENTED
 }
 
-void R_SortAndDrawAlphaSurfaces(void)
+#pragma region ========================== ALPHA SURFACES RENDERING ==========================
+
+//mxd. Reconstructed data type. Original name unknown
+typedef struct
+{
+	union
+	{
+		entity_t* entity;
+		msurface_t* surface;
+	};
+	//qboolean is_entity; // Unused
+	float depth;
+} AlphaSurfaceSortInfo_t;
+
+// New in H2
+static int AlphaSurfComp(const AlphaSurfaceSortInfo_t* info1, const AlphaSurfaceSortInfo_t* info2)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+// New in H2
+static void R_DrawAlphaEntity(entity_t* ent)
 {
 	NOT_IMPLEMENTED
 }
+
+// New in H2
+static void R_DrawAlphaSurface(msurface_t* surf)
+{
+	NOT_IMPLEMENTED
+}
+
+void R_SortAndDrawAlphaSurfaces(void)
+{
+	#define MAX_ALPHA_SURFACES 512 //TODO: is max number of alpha surfaces actually defined somewhere?
+
+	int i;
+	entity_t* ent;
+	msurface_t* surf;
+	AlphaSurfaceSortInfo_t sorted_ents[MAX_ALPHA_ENTITIES];
+	AlphaSurfaceSortInfo_t sorted_surfs[MAX_ALPHA_SURFACES];
+
+	// Initialize 1-st entity entry...
+	AlphaSurfaceSortInfo_t* info = &sorted_ents[0];
+	info->entity = NULL;
+	info->depth = -100000.0f;
+
+	// Add alpha entities to array...
+	for (i = 0, ent = r_newrefdef.alpha_entities[0], info = &sorted_ents[0]; i < r_newrefdef.num_alpha_entities; i++, ent++, info++)
+	{
+		info->entity = ent;
+		info->depth = ent->depth;
+	}
+
+	VectorScale(r_origin, -1.0f, modelorg);
+
+	// Initialize last entity entry...
+	info = &sorted_ents[r_newrefdef.num_alpha_entities];
+	info->entity = NULL;
+	info->depth = -100000.0f;
+
+	currentmodel = r_worldmodel;
+
+	// Initialize 1-st surface entry...
+	info = &sorted_surfs[0];
+	info->surface = NULL;
+	info->depth = -100000.0f;
+
+	// Add alpha surfaces to array
+	int num_surfaces;
+	for (num_surfaces = 0, surf = r_alpha_surfaces, info = &sorted_surfs[0]; surf != NULL; num_surfaces++, surf = surf->texturechain, info++)
+	{
+		info->surface = surf;
+		info->depth = -100000.0f;
+
+		for (int j = 0; j < surf->numedges; j++)
+		{
+			const int lindex = r_worldmodel->surfedges[surf->firstedge + i];
+			float* vec;
+
+			if (lindex > 0)
+			{
+				const medge_t* edge = &r_worldmodel->edges[lindex];
+				vec = r_worldmodel->vertexes[edge->v[0]].position;
+			}
+			else
+			{
+				const medge_t* edge = &r_worldmodel->edges[-lindex];
+				vec = r_worldmodel->vertexes[edge->v[1]].position;
+			}
+
+			vec3_t diff;
+			VectorSubtract(vec, r_origin, diff);
+
+			vec3_t screen_pos;
+			TransformVector(diff, screen_pos);
+
+			info->depth = max(info->depth, screen_pos[2]);
+		}
+
+		if (num_surfaces >= MAX_ALPHA_SURFACES)
+		{
+			Com_DPrintf("Warning : Attempting to draw too many alpha surfaces.\n");
+			break;
+		}
+	}
+
+	// Initialize last surface entry...
+	info = &sorted_surfs[num_surfaces];
+	info->surface = NULL;
+	info->depth = -100000.0f;
+
+	// Sort surfaces...
+	qsort(sorted_surfs, num_surfaces, sizeof(AlphaSurfaceSortInfo_t), (int (*)(const void*, const void*))AlphaSurfComp);
+
+	const int num_elements = r_newrefdef.num_alpha_entities + num_surfaces;
+	const AlphaSurfaceSortInfo_t* sorted_ent = &sorted_ents[0];
+	const AlphaSurfaceSortInfo_t* sorted_surf = &sorted_surfs[0];
+
+	// Draw them all
+	for (int j = 0; j < num_elements; j++)
+	{
+		if (sorted_surf->depth > sorted_ent->depth)
+		{
+			currentmodel = r_worldmodel;
+			R_DrawAlphaSurface(sorted_surf->surface);
+			sorted_surf++;
+		}
+		else
+		{
+			R_DrawAlphaEntity(sorted_ent->entity);
+			sorted_ent++;
+		}
+	}
+
+	r_alpha_surfaces = NULL;
+}
+
+#pragma endregion
 
 //mxd. Similar to Q2's GL_RenderLightmappedPoly (except for missing SURF_FLOWING logic). Original H2 .dll also includes GL_RenderLightmappedPoly_SGIS variant.
 static void GL_RenderLightmappedPoly_ARB(msurface_t* surf)

@@ -6,6 +6,12 @@
 
 #include "q_shared.h"
 
+// Transforms vector to screen space?
+void TransformVector(vec3_t v, vec3_t out)
+{
+	NOT_IMPLEMENTED
+}
+
 // Returns 1, 2, or 1 + 2
 int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, const struct cplane_s *p)
 {
