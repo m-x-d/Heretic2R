@@ -437,9 +437,101 @@ static void GL_RenderLightmappedPoly_ARB(msurface_t* surf)
 	}
 }
 
-void R_DrawBrushModel(entity_t* e)
+static void R_DrawInlineBModel(void)
 {
 	NOT_IMPLEMENTED
+}
+
+void R_DrawBrushModel(entity_t* e)
+{
+	vec3_t mins;
+	vec3_t maxs;
+	qboolean rotated;
+
+	if (currentmodel->nummodelsurfaces == 0)
+		return;
+
+	// H2: missing: currententity = e;
+	gl_state.currenttextures[0] = -1;
+	gl_state.currenttextures[1] = -1;
+
+	if (e->angles[0] != 0.0f || e->angles[1] != 0.0f || e->angles[2] != 0.0f)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			mins[i] = e->origin[i] - currentmodel->radius;
+			maxs[i] = e->origin[i] + currentmodel->radius;
+		}
+
+		rotated = true;
+	}
+	else
+	{
+		VectorAdd(e->origin, currentmodel->mins, mins);
+		VectorAdd(e->origin, currentmodel->maxs, maxs);
+
+		rotated = false;
+	}
+
+	if (R_CullBox(mins, maxs))
+		return;
+
+	// H2: new gl_drawmode logic
+	if ((int)gl_drawmode->value)
+	{
+		qglColor4f(1.0f, 1.0f, 1.0f, 0.4f);
+		qglEnable(GL_BLEND);
+		qglDisable(GL_DEPTH_TEST);
+	}
+	else
+	{
+		qglColor3f(1.0f, 1.0f, 1.0f);
+	}
+
+	memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
+	VectorSubtract(r_newrefdef.vieworg, e->origin, modelorg);
+
+	if (rotated)
+	{
+		vec3_t temp;
+		vec3_t angles;
+		vec3_t forward;
+		vec3_t right;
+		vec3_t up;
+
+		VectorScale(e->angles, RAD_TO_ANGLE, angles); // H2: new RAD_TO_ANGLE rescale
+		VectorCopy(modelorg, temp);
+		AngleVectors(angles, forward, right, up);
+
+		modelorg[0] = DotProduct(temp, forward);
+		modelorg[1] = -DotProduct(temp, right);
+		modelorg[2] = DotProduct(temp, up);
+	}
+
+	qglPushMatrix();
+	e->angles[0] *= -1.0f; // stupid quake bug
+	e->angles[2] *= -1.0f; // stupid quake bug
+	R_RotateForEntity(e);
+	e->angles[0] *= -1.0f; // stupid quake bug
+	e->angles[2] *= -1.0f; // stupid quake bug
+
+	GL_EnableMultitexture(true);
+	GL_SelectTexture(GL_TEXTURE0);
+	GL_TexEnv(GL_REPLACE);
+	GL_SelectTexture(GL_TEXTURE1);
+	GL_TexEnv(GL_MODULATE);
+
+	R_DrawInlineBModel();
+	GL_EnableMultitexture(false);
+
+	// H2: new gl_drawmode logic
+	if ((int)gl_drawmode->value)
+	{
+		qglDisable(GL_BLEND);
+		qglEnable(GL_DEPTH_TEST);
+	}
+
+	qglPopMatrix();
 }
 
 #pragma endregion

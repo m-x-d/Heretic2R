@@ -176,6 +176,11 @@ qboolean R_CullBox(vec3_t mins, vec3_t maxs)
 	return false;
 }
 
+void R_RotateForEntity(entity_t* e)
+{
+	NOT_IMPLEMENTED
+}
+
 static void R_DrawSpriteModel(entity_t* e)
 {
 	NOT_IMPLEMENTED
