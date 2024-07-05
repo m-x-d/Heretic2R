@@ -290,6 +290,8 @@ extern int r_framecount;
 
 qboolean R_CullBox(vec3_t mins, vec3_t maxs);
 void R_RotateForEntity(const entity_t* e);
+void R_DrawSpriteModel(entity_t* e); // Q2: local to gl_rmain.c
+void R_DrawNullModel(void); // Q2: local to gl_rmain.c
 
 // gl_misc.c
 void GL_ScreenShot_f(void);

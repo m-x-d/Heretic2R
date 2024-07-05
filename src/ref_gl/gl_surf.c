@@ -5,6 +5,7 @@
 //
 
 #include "gl_local.h"
+#include "fmodel.h"
 #include "Vector.h"
 
 static vec3_t modelorg; // Relative to viewpoint
@@ -299,10 +300,51 @@ static int AlphaSurfComp(const AlphaSurfaceSortInfo_t* info1, const AlphaSurface
 	return 0;
 }
 
-// New in H2
+// New in H2 //TODO: logic identical to for loop logic in R_DrawEntitiesOnList (except for 1-st warning message). Move to gl_rmain as R_DrawEntity and replace said logic?
 static void R_DrawAlphaEntity(entity_t* ent)
 {
-	NOT_IMPLEMENTED
+	currententity = ent;
+
+	if (!(int)r_drawentities->value)
+		return;
+
+	if (currententity == NULL)
+	{
+		Com_DPrintf("Attempt to draw NULL alpha model\n");
+		R_DrawNullModel();
+
+		return;
+	}
+
+	currentmodel = *ent->model;
+	if (currentmodel == NULL)
+	{
+		R_DrawNullModel();
+		return;
+	}
+
+	switch (currentmodel->type)
+	{
+		case mod_bad:
+			Com_Printf("WARNING:  currentmodel->type == 0; reload the map\n");
+			break;
+
+		case mod_brush:
+			R_DrawBrushModel(ent);
+			break;
+
+		case mod_sprite:
+			R_DrawSpriteModel(ent);
+			break;
+
+		case mod_fmdl:
+			R_DrawFlexModel(ent);
+			break;
+
+		default:
+			Sys_Error("Bad modeltype");
+			break;
+	}
 }
 
 // New in H2
