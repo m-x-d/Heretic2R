@@ -273,12 +273,6 @@ static void R_RenderBrushPoly(msurface_t* fa)
 }
 
 // New in H2
-static void R_RenderBrushPoly_ARB(msurface_t* fa)
-{
-	NOT_IMPLEMENTED
-}
-
-// New in H2
 static void R_RenderFlatShadedBrushPoly(msurface_t* fa)
 {
 	NOT_IMPLEMENTED
@@ -288,6 +282,8 @@ void R_SortAndDrawAlphaSurfaces(void)
 {
 	NOT_IMPLEMENTED
 }
+
+static void GL_RenderLightmappedPoly_ARB(msurface_t* surf);
 
 static void DrawTextureChains(void)
 {
@@ -313,7 +309,7 @@ static void DrawTextureChains(void)
 			c_visible_textures++;
 
 			for (msurface_t* s = image->multitexturechain; s; s = s->texturechain)
-				R_RenderBrushPoly_ARB(s);
+				GL_RenderLightmappedPoly_ARB(s);
 
 			image->multitexturechain = NULL;
 		}
@@ -439,7 +435,68 @@ static void GL_RenderLightmappedPoly_ARB(msurface_t* surf)
 
 static void R_DrawInlineBModel(void)
 {
-	NOT_IMPLEMENTED
+	#define BACKFACE_EPSILON 0.01f // Q2: defined in gl_local.h
+
+	// Calculate dynamic lighting for bmodel
+	if (!(int)gl_flashblend->value)
+	{
+		dlight_t* lt = r_newrefdef.dlights;
+		for (int k = 0; k < r_newrefdef.num_dlights; k++, lt++)
+			R_MarkLights(lt, 1 << k, currentmodel->nodes + currentmodel->firstnode);
+	}
+
+	msurface_t* psurf = &currentmodel->surfaces[currentmodel->firstmodelsurface];
+
+	// H2: extra RF_TRANS_ADD and RF_TRANS_GHOST flags
+	if (currententity->flags & (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_GHOST))
+	{
+		qglEnable(GL_BLEND);
+		qglColor4f(1.0f, 1.0f, 1.0f, 0.25f);
+		GL_TexEnv(GL_MODULATE);
+	}
+
+	// Draw texture
+	for (int i = 0; i < currentmodel->nummodelsurfaces; i++, psurf++)
+	{
+		// Find which side of the node we are on
+		const cplane_t* pplane = psurf->plane;
+		const float dot = DotProduct(modelorg, pplane->normal) - pplane->dist;
+
+		// Draw the polygon
+		if (((psurf->flags & SURF_PLANEBACK) && dot < -BACKFACE_EPSILON) ||
+			!(psurf->flags & SURF_PLANEBACK) && dot > BACKFACE_EPSILON)
+		{
+			if (psurf->texinfo->flags & (SURF_TRANS33 | SURF_TRANS66))
+			{
+				// Add to the translucent chain
+				psurf->texturechain = r_alpha_surfaces;
+				r_alpha_surfaces = psurf;
+			}
+			else if (qglMultiTexCoord2fARB != NULL && !(psurf->flags & SURF_DRAWTURB) && !(int)r_fullbright->value && !(int)gl_drawflat->value) // H2: extra r_fullbright and gl_drawflat checks
+			{
+				GL_RenderLightmappedPoly_ARB(psurf); // Q2: GL_RenderLightmappedPoly
+			}
+			else //mxd. Skipped qglMTexCoord2fSGIS check
+			{
+				GL_EnableMultitexture(false);
+				R_RenderBrushPoly(psurf);
+				GL_EnableMultitexture(true);
+			}
+		}
+	}
+
+	// H2: extra RF_TRANS_ADD and RF_TRANS_GHOST flags
+	if (!(currententity->flags & (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_GHOST)))
+	{
+		if (qglMultiTexCoord2fARB == NULL) //mxd. Removed qglMTexCoord2fSGIS check
+			R_BlendLightmaps();
+	}
+	else
+	{
+		qglDisable(GL_BLEND);
+		qglColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		GL_TexEnv(GL_REPLACE);
+	}
 }
 
 void R_DrawBrushModel(entity_t* e)
