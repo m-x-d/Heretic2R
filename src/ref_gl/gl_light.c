@@ -9,10 +9,42 @@
 static int r_dlightframecount; //mxd. Made static
 static float s_blocklights[34 * 34 * 3];
 
-void R_RenderDlights(void)
+#pragma region ========================== DYNAMIC LIGHTS RENDERING ==========================
+
+static void R_RenderDlight(dlight_t* light)
 {
 	NOT_IMPLEMENTED
 }
+
+void R_RenderDlights(void)
+{
+	int i;
+	dlight_t* l;
+
+	if ((int)gl_flashblend->value) //TODO: H2 check is opposite to Q2 check! A bug?
+		return;
+
+	r_dlightframecount = r_framecount + 1; // Because the count hasn't advanced yet for this frame
+
+	qglDepthMask(0);
+	qglDisable(GL_TEXTURE_2D);
+	qglShadeModel(GL_SMOOTH);
+	qglEnable(GL_BLEND);
+	qglBlendFunc(GL_ONE, GL_ONE);
+
+	for (i = 0, l = r_newrefdef.dlights; i < r_newrefdef.num_dlights; i++, l++)
+		R_RenderDlight(l);
+
+	qglColor3f(1.0f, 1.0f, 1.0f);
+	qglDisable(GL_BLEND);
+	qglEnable(GL_TEXTURE_2D);
+	qglBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR); // Q2: GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
+	qglDepthMask(1);
+}
+
+#pragma endregion
+
+#pragma region ========================== DYNAMIC LIGHTS ==========================
 
 void R_MarkLights(dlight_t* light, int bit, mnode_t* node)
 {
@@ -25,7 +57,7 @@ void R_PushDlights(void)
 	int i;
 	dlight_t* l;
 
-	if ((int)gl_flashblend->value == 0)
+	if (!(int)gl_flashblend->value)
 	{
 		r_dlightframecount = r_framecount + 1; // Because the count hasn't advanced yet for this frame
 
@@ -33,6 +65,8 @@ void R_PushDlights(void)
 			R_MarkLights(l, 1 << i, r_worldmodel->nodes);
 	}
 }
+
+#pragma endregion
 
 static void R_AddDynamicLights(msurface_t* surf)
 {
