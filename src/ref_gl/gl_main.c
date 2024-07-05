@@ -176,9 +176,14 @@ qboolean R_CullBox(vec3_t mins, vec3_t maxs)
 	return false;
 }
 
-void R_RotateForEntity(entity_t* e)
+void R_RotateForEntity(const entity_t* e)
 {
-	NOT_IMPLEMENTED
+	qglTranslatef(e->origin[0], e->origin[1], e->origin[2]);
+
+	// H2: new RAD_TO_ANGLE scaler
+	qglRotatef( e->angles[1] * RAD_TO_ANGLE, 0.0f, 0.0f, 1.0f);
+	qglRotatef(-e->angles[0] * RAD_TO_ANGLE, 0.0f, 1.0f, 0.0f);
+	qglRotatef(-e->angles[2] * RAD_TO_ANGLE, 1.0f, 0.0f, 0.0f);
 }
 
 static void R_DrawSpriteModel(entity_t* e)

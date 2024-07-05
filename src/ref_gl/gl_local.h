@@ -289,7 +289,7 @@ extern cplane_t frustum[4];
 extern int r_framecount;
 
 qboolean R_CullBox(vec3_t mins, vec3_t maxs);
-void R_RotateForEntity(entity_t* e);
+void R_RotateForEntity(const entity_t* e);
 
 // gl_misc.c
 void GL_ScreenShot_f(void);
