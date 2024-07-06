@@ -78,6 +78,9 @@
     <ClCompile Include="..\game\q_shared.c">
       <Filter>game</Filter>
     </ClCompile>
+    <ClCompile Include="anormtab.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gl_local.h">
@@ -138,6 +141,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="r_Skeletons.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="anormtab.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
