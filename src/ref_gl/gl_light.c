@@ -5,6 +5,7 @@
 //
 
 #include "gl_local.h"
+#include "Vector.h"
 
 static int r_dlightframecount; //mxd. Made static
 static float s_blocklights[34 * 34 * 3];
@@ -68,10 +69,54 @@ void R_PushDlights(void)
 
 #pragma endregion
 
-void R_LightPoint(vec3_t p, vec3_t color)
+#pragma region ========================== LIGHT SAMPLING ==========================
+
+vec3_t pointcolor;
+
+static int RecursiveLightPoint(mnode_t* node, vec3_t start, vec3_t end)
 {
 	NOT_IMPLEMENTED
+	return 0;
 }
+
+void R_LightPoint(vec3_t p, vec3_t color)
+{
+	int lnum;
+	dlight_t* dl;
+	vec3_t end;
+
+	if (r_worldmodel->lightdata == NULL)
+	{
+		VectorSet(color, 1.0f, 1.0f, 1.0f);
+		return;
+	}
+
+	VectorSet(end, p[0], p[1], p[2] - 3072.0f); // Q2: p[2] - 2048
+	const int r = RecursiveLightPoint(r_worldmodel->nodes, p, end);
+
+	if (r == -1)
+		VectorSet(color, 0.25f, 0.25f, 0.25f); // Q2: VectorCopy(vec3_origin, color)
+	else
+		VectorCopy(pointcolor, color);
+
+	// Add dynamic lights
+	for (lnum = 0, dl = r_newrefdef.dlights; lnum < r_newrefdef.num_dlights; lnum++, dl++)
+	{
+		vec3_t dist;
+		VectorSubtract(currententity->origin, dl->origin, dist);
+		const float add = (dl->intensity - VectorLength(dist)) / 256.0f;
+
+		if (add > 0.0f)
+		{
+			for (int i = 0; i < 3; i++)
+				color[i] += (float)dl->color.c_array[i] / 255.0f * add;
+		}
+	}
+
+	VectorScale(color, gl_modulate->value, color);
+}
+
+#pragma endregion
 
 static void R_AddDynamicLights(msurface_t* surf)
 {
