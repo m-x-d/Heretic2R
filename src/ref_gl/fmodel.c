@@ -6,11 +6,14 @@
 
 #include "gl_local.h"
 #include "fmodel.h"
+#include "anormtab.h"
 #include "m_Reference.h"
 #include "m_Skeleton.h"
 #include "Reference.h"
 #include "r_Skeletons.h"
 #include "Vector.h"
+
+#pragma region ========================== FLEX MODEL LOADING ==========================
 
 fmdl_t* fmodel;
 
@@ -395,12 +398,147 @@ void Mod_RegisterFlexModel(model_t* mod)
 		mod->skins[i] = GL_FindImage(skin_name, it_skin);
 }
 
-void R_DrawFlexModel(entity_t* e)
+#pragma endregion
+
+#pragma region ========================== FLEX MODEL RENDERING ==========================
+
+static vec3_t shadelight;
+static vec3_t shadevector;
+static float fmdl_backlep;
+
+static qboolean R_CullFlexModel(fmdl_t* model, entity_t* ent)
 {
 	NOT_IMPLEMENTED
+	return false;
+}
+
+static image_t* GetSkin(void)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
+static void GL_DrawFlexFrameLerp(void)
+{
+	NOT_IMPLEMENTED
+}
+
+//mxd. Somewhat similar to R_DrawAliasModel from Q2. Original code used 'currententity' global var instead of 'e' arg.
+void R_DrawFlexModel(entity_t* e)
+{
+	fmodel = (fmdl_t*)(*e->model)->extradata; //mxd. Original code used 'currentmodel' global var here
+	
+	if (R_CullFlexModel(fmodel, e))
+		return;
+
+	// Get lighting information
+	if (e->flags & RF_TRANS_ADD_ALPHA)
+	{
+		const float alpha = (float)e->color.a / 255.0f;
+		VectorSet(shadelight, alpha, alpha, alpha);
+	}
+	else if (e->flags & RF_FULLBRIGHT)
+	{
+		VectorSet(shadelight, 1.0f, 1.0f, 1.0f);
+	}
+	else if (e->absLight.r != 0 || e->absLight.g != 0 || e->absLight.b != 0)
+	{
+		VectorSet(shadelight, (float)e->absLight.r / 255.0f, (float)e->absLight.g / 255.0f, (float)e->absLight.b / 255.0f);
+	}
+	else
+	{
+		R_LightPoint(e->origin, shadelight);
+
+		// Player lighting hack for communication back to server. Big hack!
+		if (e->flags & RF_WEAPONMODEL)
+		{
+			// Pick the greatest component, which should be the same as the mono value returned by software
+			r_lightlevel->value = max(shadelight[0], max(shadelight[1], shadelight[2])) * 150.0f;
+		}
+
+		//mxd. Skip gl_monolightmap logic
+	}
+
+	shadelight[0] *= (float)e->color.r / 255.0f;
+	shadelight[1] *= (float)e->color.g / 255.0f;
+	shadelight[2] *= (float)e->color.b / 255.0f;
+
+	if (e->flags & RF_MINLIGHT)
+	{
+		int c;
+		for (c = 0; c < 3; c++)
+			if (shadelight[c] > 0.1f)
+				break;
+
+		if (c == 3)
+			VectorSet(shadelight, 0.1f, 0.1f, 0.1f);
+	}
+
+	if (e->flags & RF_GLOW)
+	{
+		// Bonus items will pulse with time
+		const float val = sinf(r_newrefdef.time * 7.0f) * 0.3f + 0.7f;
+		VectorSet(shadelight, val, val, val);
+	}
+
+	shadedots = r_avertexnormal_dots[((int)(e->angles[1] * (SHADEDOT_QUANT / 360.0f * RAD_TO_ANGLE)) & (SHADEDOT_QUANT - 1))];
+
+	VectorSet(shadevector, cosf(-e->angles[1]), sinf(-e->angles[1]), 1.0f);
+	VectorNormalize(shadevector);
+
+	// Locate the proper data
+	c_alias_polys += fmodel->header.num_tris;
+
+	// Draw all the triangles
+	if (e->flags & RF_DEPTHHACK) // Hack the depth range to prevent view model from poking into walls
+		qglDepthRange(gldepthmin, (gldepthmax - gldepthmin) * 0.3f + gldepthmin);
+
+	qglPushMatrix();
+	R_RotateForEntity(e);
+
+	// Select skin
+	GL_BindImage(GetSkin());
+
+	// Draw it
+	qglShadeModel(GL_SMOOTH);
+	GL_TexEnv(GL_MODULATE);
+
+	if (e->frame < 0 || e->frame >= fmodel->header.num_frames)
+	{
+		e->frame = 0;
+		e->oldframe = 0;
+	}
+
+	if (e->oldframe < 0 || e->oldframe >= fmodel->header.num_frames)
+	{
+		ri.Con_Printf(PRINT_ALL, "R_DrawFlexModel: no such oldframe %d\n");
+		e->frame = 0;
+		e->oldframe = 0;
+	}
+
+	if (!(int)r_lerpmodels->value)
+		e->backlerp = 0.0f;
+
+	fmdl_backlep = e->backlerp;
+
+	GL_DrawFlexFrameLerp();
+
+	GL_TexEnv(GL_REPLACE);
+	qglShadeModel(GL_FLAT);
+	qglPopMatrix();
+
+	if (e->flags & (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_GHOST))
+		qglDisable(GL_BLEND);
+
+	if (e->flags & RF_DEPTHHACK)
+		qglDepthRange(gldepthmin, gldepthmax);
+
+	qglColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void GL_LerpVert(vec3_t newPoint, vec3_t oldPoint, vec3_t interpolatedPoint, float move[3], float frontv[3], float backv[3])
 {
 	NOT_IMPLEMENTED
 }
+
+#pragma endregion

@@ -68,6 +68,11 @@ void R_PushDlights(void)
 
 #pragma endregion
 
+void R_LightPoint(vec3_t p, vec3_t color)
+{
+	NOT_IMPLEMENTED
+}
+
 static void R_AddDynamicLights(msurface_t* surf)
 {
 	NOT_IMPLEMENTED

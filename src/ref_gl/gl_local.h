@@ -263,6 +263,7 @@ void GL_DisplayHashTable(void); // New in H2
 void R_RenderDlights(void);
 void R_MarkLights(dlight_t* light, int bit, mnode_t* node);
 void R_PushDlights(void);
+void R_LightPoint(vec3_t p, vec3_t color);
 void R_SetCacheState(msurface_t* surf);
 void R_BuildLightMap(msurface_t* surf, byte* dest, int stride);
 
