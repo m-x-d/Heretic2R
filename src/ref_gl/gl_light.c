@@ -72,11 +72,89 @@ void R_PushDlights(void)
 #pragma region ========================== LIGHT SAMPLING ==========================
 
 vec3_t pointcolor;
+cplane_t* lightplane; // Used as shadow plane
+vec3_t lightspot;
 
-static int RecursiveLightPoint(mnode_t* node, vec3_t start, vec3_t end)
+static int RecursiveLightPoint(const mnode_t* node, vec3_t start, vec3_t end)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	int i;
+	msurface_t* surf;
+	vec3_t mid;
+	
+	// Didn't hit anything
+	if (node->contents != -1)
+		return -1;
+
+	// Calculate mid point
+	cplane_t* plane = node->plane;
+	const float front = DotProduct(start, plane->normal) - plane->dist;
+	const float back = DotProduct(end, plane->normal) - plane->dist;
+	const int side = front < 0.0f;
+
+	if ((back < 0.0f) == side)
+		return RecursiveLightPoint(node->children[side], start, end);
+
+	float frac = front / (front - back);
+
+	for (int c = 0; c < 3; c++)
+		mid[c] = start[c] + (end[c] - start[c]) * frac;
+
+	// Go down front side
+	const int r = RecursiveLightPoint(node->children[side], start, mid);
+
+	// Hit something
+	if (r >= 0)
+		return r;
+
+	// Didn't hit anything
+	if ((back < 0.0f) == side)
+		return -1;
+
+	// Check for impact on this node
+	VectorCopy(mid, lightspot);
+	lightplane = plane;
+
+	for (i = 0, surf = r_worldmodel->surfaces + node->firstsurface; i < node->numsurfaces; i++, surf++)
+	{
+		if (surf->flags & (SURF_DRAWTURB | SURF_DRAWSKY))
+			continue; // No lightmaps
+
+		mtexinfo_t* tex = surf->texinfo;
+
+		const int s = (int)(DotProduct(mid, tex->vecs[0]) + tex->vecs[0][3]);
+		const int t = (int)(DotProduct(mid, tex->vecs[1]) + tex->vecs[1][3]);
+
+		if (s < surf->texturemins[0] || t < surf->texturemins[1])
+			continue;
+
+		const int ds = s - surf->texturemins[0];
+		const int dt = t - surf->texturemins[1];
+
+		if (ds > surf->extents[0] || dt > surf->extents[1])
+			continue;
+
+		if (surf->samples == NULL)
+			return 0;
+
+		VectorCopy(vec3_origin, pointcolor);
+
+		byte* lightmap = surf->samples + ((dt >> 4) * ((surf->extents[0] >> 4) + 1) + (ds >> 4)) * 3;
+		for (int maps = 0; maps < MAXLIGHTMAPS && surf->styles[maps] != 255; maps++)
+		{
+			for (int c = 0; c < 3; c++)
+			{
+				const float scale = gl_modulate->value * r_newrefdef.lightstyles[surf->styles[maps]].rgb[c];
+				pointcolor[c] += (float)lightmap[c] * scale / 255.0f;
+			}
+
+			lightmap += ((surf->extents[0] >> 4) + 1) * ((surf->extents[1] >> 4) + 1) * 3;
+		}
+
+		return 1;
+	}
+
+	// Go down back side
+	return RecursiveLightPoint(node->children[!side], mid, end);
 }
 
 void R_LightPoint(vec3_t p, vec3_t color)
