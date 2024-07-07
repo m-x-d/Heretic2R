@@ -811,7 +811,8 @@ void R_DrawFlexModel(entity_t* e)
 
 void GL_LerpVert(vec3_t newPoint, vec3_t oldPoint, vec3_t interpolatedPoint, float move[3], float frontv[3], float backv[3])
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < 3; i++)
+		interpolatedPoint[i] = newPoint[i] * frontv[i] + oldPoint[i] * backv[i] + move[i];
 }
 
 #pragma endregion

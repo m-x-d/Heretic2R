@@ -38,7 +38,7 @@ static void LerpVerts(const int num_verts, fmtrivertx_t* verts, fmtrivertx_t* ol
 {
 	for (int i = 0; i < num_verts; i++, verts++, old_verts++, translation++)
 		for (int j = 0; j < 3; j++)
-			(*translation)[j] = move[j] + (float)verts->v[j] * front[j] + (float)old_verts->v[j] * back[j];
+			(*translation)[j] = (float)verts->v[j] * front[j] + (float)old_verts->v[j] * back[j] + move[j];
 }
 
 static void DoSkeletalRotations(void)
