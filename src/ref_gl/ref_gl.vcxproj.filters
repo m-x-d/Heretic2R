@@ -84,6 +84,9 @@
     <ClCompile Include="anorms.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="r_SkeletonLerp.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gl_local.h">
@@ -150,6 +153,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="anorms.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="r_SkeletonLerp.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

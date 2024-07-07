@@ -32,6 +32,7 @@
     <ClCompile Include="gl_warp.c" />
     <ClCompile Include="m_Reference.c" />
     <ClCompile Include="qgl_win.c" />
+    <ClCompile Include="r_SkeletonLerp.c" />
     <ClCompile Include="r_Skeletons.c" />
   </ItemGroup>
   <ItemGroup>
@@ -56,6 +57,7 @@
     <ClInclude Include="m_SkeletalCluster.h" />
     <ClInclude Include="m_Skeleton.h" />
     <ClInclude Include="qgl.h" />
+    <ClInclude Include="r_SkeletonLerp.h" />
     <ClInclude Include="r_Skeletons.h" />
   </ItemGroup>
   <ItemGroup>

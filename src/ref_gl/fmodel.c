@@ -11,6 +11,7 @@
 #include "m_Reference.h"
 #include "m_Skeleton.h"
 #include "Reference.h"
+#include "r_SkeletonLerp.h"
 #include "r_Skeletons.h"
 #include "Vector.h"
 
@@ -405,21 +406,6 @@ void Mod_RegisterFlexModel(model_t* mod)
 
 static vec3_t shadelight;
 static vec3_t shadevector;
-
-//mxd. Reconstructed data type. Original name unknown.
-typedef struct
-{
-	vec3_t front_vector;
-	vec3_t back_vector;
-	fmtrivertx_t* verts;
-	fmtrivertx_t* old_verts;
-	fmtrivertx_t* unknown_verts; //TODO: better name
-} SkeletonFrameLerpInfo_t;
-
-static int fmdl_num_xyz;
-static float fmdl_backlep;
-static float fmdl_inverted_backlep;
-static SkeletonFrameLerpInfo_t sfl;
 static vec3_t s_lerped[MAX_VERTS];
 
 //mxd. Somewhat similar to R_CullAliasModel from Q2
@@ -547,11 +533,6 @@ static image_t* GetSkinFromNode(int nodeinfo_index)
 {
 	NOT_IMPLEMENTED
 	return NULL;
-}
-
-static void FrameLerp(void)
-{
-	NOT_IMPLEMENTED
 }
 
 static void InterpolateVertexNormals(int num_xyz, float inverted_backlep, float backlep, fmtrivertx_t* verts, fmtrivertx_t* old_verts, vec3_t* normals)
