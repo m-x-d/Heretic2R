@@ -186,9 +186,62 @@ void R_RotateForEntity(const entity_t* e)
 	qglRotatef(-e->angles[2] * RAD_TO_ANGLE, 1.0f, 0.0f, 0.0f);
 }
 
-void HandleTrans(entity_t* e)
+void HandleTrans(const entity_t* e)
 {
-	NOT_IMPLEMENTED
+	if (!(e->flags & RF_TRANS_ADD))
+	{
+		qglEnable(GL_ALPHA_TEST);
+		qglAlphaFunc(GL_GREATER, 0.05f);
+
+		if (e->flags & RF_TRANS_GHOST)
+		{
+			qglBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
+		}
+		else
+		{
+			qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			qglColor4ub(e->color.r, e->color.g, e->color.b, e->color.a);
+		}
+
+		qglEnable(GL_BLEND);
+
+		return;
+	}
+
+	if (!(e->flags & RF_TRANS_ADD_ALPHA))
+	{
+		if (!(e->flags & RF_ALPHA_TEXTURE))
+		{
+			if ((int)r_fog->value || (int)cl_camera_under_surface->value) //mxd. Skipped gl_fog_broken check
+				qglDisable(GL_FOG);
+
+			qglDisable(GL_ALPHA_TEST);
+			qglBlendFunc(GL_ONE, GL_ONE);
+			qglColor4ub(e->color.r, e->color.g, e->color.b, 255);
+			qglEnable(GL_BLEND);
+
+			return;
+		}
+	}
+	else if (!(e->flags & RF_ALPHA_TEXTURE))
+	{
+		if ((int)r_fog->value || (int)cl_camera_under_surface->value) //mxd. Skipped gl_fog_broken check
+			qglDisable(GL_FOG);
+
+		qglDisable(GL_ALPHA_TEST);
+		qglBlendFunc(GL_ONE, GL_ONE);
+		const float alpha = (float)e->color.a / 255.0f / 255.0f; //TODO: why is it divided twice?..
+		qglColor4f((float)e->color.r * alpha, (float)e->color.g * alpha, (float)e->color.b * alpha, 1.0f);
+		qglEnable(GL_BLEND);
+
+		return;
+	}
+
+	qglEnable(GL_ALPHA_TEST);
+	qglAlphaFunc(GL_GREATER, 0.0f);
+	qglBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	qglColor4ub(e->color.r, e->color.g, e->color.b, e->color.a);
+	qglEnable(GL_BLEND);
 }
 
 void CleanupTrans(entity_t* e)
