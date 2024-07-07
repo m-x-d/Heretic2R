@@ -624,7 +624,7 @@ static void R_DrawInlineBModel(void)
 	msurface_t* psurf = &currentmodel->surfaces[currentmodel->firstmodelsurface];
 
 	// H2: extra RF_TRANS_ADD and RF_TRANS_GHOST flags
-	if (currententity->flags & (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_GHOST))
+	if (currententity->flags & RF_TRANS_ANY)
 	{
 		qglEnable(GL_BLEND);
 		qglColor4f(1.0f, 1.0f, 1.0f, 0.25f);
@@ -662,7 +662,7 @@ static void R_DrawInlineBModel(void)
 	}
 
 	// H2: extra RF_TRANS_ADD and RF_TRANS_GHOST flags
-	if (!(currententity->flags & (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_GHOST)))
+	if (!(currententity->flags & RF_TRANS_ANY))
 	{
 		if (qglMultiTexCoord2fARB == NULL) //mxd. Removed qglMTexCoord2fSGIS check
 			R_BlendLightmaps();

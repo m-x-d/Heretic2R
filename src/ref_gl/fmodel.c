@@ -569,7 +569,7 @@ static void GL_DrawFlexFrameLerp(void)
 	const image_t* skin = GetSkin();
 	float alpha = 0.0f; //mxd. Set initial value to avoid compiler warnings...
 
-	if (currententity->color.a != 255 || currententity->flags & (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_GHOST) || skin->has_alpha)
+	if (currententity->color.a != 255 || currententity->flags & RF_TRANS_ANY || skin->has_alpha)
 	{
 		if (currententity->flags & RF_TRANS_GHOST)
 			alpha = shadelight[0] * 0.5f;
@@ -820,7 +820,7 @@ void R_DrawFlexModel(entity_t* e)
 	qglShadeModel(GL_FLAT);
 	qglPopMatrix();
 
-	if (e->flags & (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_GHOST))
+	if (e->flags & RF_TRANS_ANY)
 		qglDisable(GL_BLEND);
 
 	if (e->flags & RF_DEPTHHACK)
