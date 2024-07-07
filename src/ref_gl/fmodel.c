@@ -514,10 +514,17 @@ static qboolean R_CullFlexModel(const fmdl_t* model, entity_t* e)
 	return aggregatemask != 0;
 }
 
+//TODO: rewrite to use entity_t* arg instead of 'currententity'
 static image_t* GetSkin(void)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	if (currententity->skin != NULL)
+		return currententity->skin;
+
+	const int skinnum = (currententity->skinnum < MAX_MD2SKINS ? currententity->skinnum : 0);
+	if (currentmodel->skins[skinnum] != NULL)
+		return currentmodel->skins[skinnum];
+
+	return r_notexture;
 }
 
 static void GL_DrawFlexFrameLerp(void)
