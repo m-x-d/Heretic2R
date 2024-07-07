@@ -420,7 +420,7 @@ static int fmdl_num_xyz;
 static float fmdl_backlep;
 static float fmdl_inverted_backlep;
 static SkeletonFrameLerpInfo_t sfl;
-static vec3_t* s_lerped_ptr; //TODO: better name
+static vec3_t s_lerped[MAX_VERTS];
 
 //mxd. Somewhat similar to R_CullAliasModel from Q2
 static qboolean R_CullFlexModel(const fmdl_t* model, entity_t* e)
@@ -690,7 +690,7 @@ static void GL_DrawFlexFrameLerp(void)
 					qglColor4f(l * shadelight[0], l * shadelight[1], l * shadelight[2], alpha);
 				}
 
-				qglVertex3fv(s_lerped_ptr[index_xyz]);
+				qglVertex3fv(s_lerped[index_xyz]);
 			} while (count--);
 
 			qglEnd();
