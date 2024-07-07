@@ -7,6 +7,7 @@
 #pragma once
 
 #include "fmodel.h"
+#include "qfiles.h"
 
 //mxd. Reconstructed data type. Original name unknown.
 typedef struct
@@ -19,8 +20,10 @@ typedef struct
 } SkeletonFrameLerpInfo_t;
 
 extern int fmdl_num_xyz;
-extern float fmdl_backlep;
-extern float fmdl_inverted_backlep;
+extern float framelerp;
+extern float framelerp_inv;
 extern SkeletonFrameLerpInfo_t sfl;
+
+extern vec3_t s_lerped[MAX_VERTS];
 
 void FrameLerp(void);

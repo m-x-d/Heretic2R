@@ -406,7 +406,6 @@ void Mod_RegisterFlexModel(model_t* mod)
 
 static vec3_t shadelight;
 static vec3_t shadevector;
-static vec3_t s_lerped[MAX_VERTS];
 
 //mxd. Somewhat similar to R_CullAliasModel from Q2
 static qboolean R_CullFlexModel(const fmdl_t* model, entity_t* e)
@@ -568,7 +567,7 @@ static void GL_DrawFlexFrameLerp(void)
 	if (draw_reflection)
 	{
 		if (fmodel->frames != NULL)
-			InterpolateVertexNormals(fmdl_num_xyz, fmdl_inverted_backlep, fmdl_backlep, sfl.verts, sfl.old_verts, normals_array);
+			InterpolateVertexNormals(fmdl_num_xyz, framelerp_inv, framelerp, sfl.verts, sfl.old_verts, normals_array);
 
 		qglEnable(GL_TEXTURE_GEN_S);
 		qglEnable(GL_TEXTURE_GEN_T);
@@ -793,7 +792,7 @@ void R_DrawFlexModel(entity_t* e)
 	if (!(int)r_lerpmodels->value)
 		e->backlerp = 0.0f;
 
-	fmdl_backlep = e->backlerp;
+	framelerp = e->backlerp;
 
 	GL_DrawFlexFrameLerp();
 
