@@ -16,6 +16,7 @@
     <ClCompile Include="..\qcommon\Skeletons.c" />
     <ClCompile Include="..\win32\glw_imp.c" />
     <ClCompile Include="..\win32\q_shwin.c" />
+    <ClCompile Include="anorms.c" />
     <ClCompile Include="anormtab.c" />
     <ClCompile Include="fmodel.c" />
     <ClCompile Include="gl_draw.c" />
@@ -46,6 +47,7 @@
     <ClInclude Include="..\qcommon\Reference.h" />
     <ClInclude Include="..\qcommon\Skeletons.h" />
     <ClInclude Include="..\win32\glw_win.h" />
+    <ClInclude Include="anorms.h" />
     <ClInclude Include="anormtab.h" />
     <ClInclude Include="fmodel.h" />
     <ClInclude Include="gl_local.h" />
