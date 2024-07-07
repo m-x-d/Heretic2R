@@ -186,6 +186,16 @@ void R_RotateForEntity(const entity_t* e)
 	qglRotatef(-e->angles[2] * RAD_TO_ANGLE, 1.0f, 0.0f, 0.0f);
 }
 
+void HandleTrans(entity_t* e)
+{
+	NOT_IMPLEMENTED
+}
+
+void CleanupTrans(entity_t* e)
+{
+	NOT_IMPLEMENTED
+}
+
 void R_DrawSpriteModel(entity_t* e)
 {
 	NOT_IMPLEMENTED

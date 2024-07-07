@@ -6,6 +6,7 @@
 
 #include "gl_local.h"
 #include "fmodel.h"
+#include "anorms.h"
 #include "anormtab.h"
 #include "m_Reference.h"
 #include "m_Skeleton.h"
@@ -404,7 +405,22 @@ void Mod_RegisterFlexModel(model_t* mod)
 
 static vec3_t shadelight;
 static vec3_t shadevector;
+
+//mxd. Reconstructed data type. Original name unknown.
+typedef struct
+{
+	vec3_t front_vector;
+	vec3_t back_vector;
+	fmtrivertx_t* verts;
+	fmtrivertx_t* old_verts;
+	fmtrivertx_t* unknown_verts; //TODO: better name
+} SkeletonFrameLerpInfo_t;
+
+static int fmdl_num_xyz;
 static float fmdl_backlep;
+static float fmdl_inverted_backlep;
+static SkeletonFrameLerpInfo_t sfl;
+static vec3_t* s_lerped_ptr; //TODO: better name
 
 //mxd. Somewhat similar to R_CullAliasModel from Q2
 static qboolean R_CullFlexModel(const fmdl_t* model, entity_t* e)
@@ -527,9 +543,177 @@ static image_t* GetSkin(void)
 	return r_notexture;
 }
 
-static void GL_DrawFlexFrameLerp(void)
+static image_t* GetSkinFromNode(int nodeinfo_index)
 {
 	NOT_IMPLEMENTED
+	return NULL;
+}
+
+static void FrameLerp(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void InterpolateVertexNormals(int num_xyz, float inverted_backlep, float backlep, fmtrivertx_t* verts, fmtrivertx_t* old_verts, vec3_t* normals)
+{
+	NOT_IMPLEMENTED
+}
+
+static void GL_DrawFlexFrameLerp(void)
+{
+	int i;
+	fmnodeinfo_t* nodeinfo;
+	vec3_t normals_array[MAX_VERTS];
+
+	const qboolean draw_reflection = (currententity->flags & RF_REFLECTION); //mxd. Skpped gl_envmap_broken check
+	const image_t* skin = GetSkin();
+	float alpha = 0.0f; //mxd. Set initial value to avoid compiler warnings...
+
+	if (currententity->color.a != 255 || currententity->flags & (RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_GHOST) || skin->has_alpha)
+	{
+		if (currententity->flags & RF_TRANS_GHOST)
+			alpha = shadelight[0] * 0.5f;
+		else
+			alpha = (float)currententity->color.a / 255.0f;
+
+		HandleTrans(currententity);
+	}
+
+	if (!(int)r_frameswap->value)
+		currententity->swapFrame = -1;
+
+	FrameLerp();
+
+	if (draw_reflection)
+	{
+		if (fmodel->frames != NULL)
+			InterpolateVertexNormals(fmdl_num_xyz, fmdl_inverted_backlep, fmdl_backlep, sfl.verts, sfl.old_verts, normals_array);
+
+		qglEnable(GL_TEXTURE_GEN_S);
+		qglEnable(GL_TEXTURE_GEN_T);
+		qglTexGeni(MEM_RESERVE, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+		qglTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+
+		GL_BindImage(r_reflecttexture);
+	}
+
+	for (i = 0, nodeinfo = currententity->fmnodeinfo; i < fmodel->header.num_mesh_nodes; i++, nodeinfo++)
+	{
+		qboolean use_color = false;
+		qboolean use_skin = false;
+		qboolean use_reflect = false;
+
+		if (nodeinfo != NULL)
+		{
+			if (nodeinfo->flags & FMNI_NO_DRAW)
+				continue;
+
+			use_color = (nodeinfo->flags & FMNI_USE_COLOR);
+			if (use_color)
+			{
+				qglEnable(GL_BLEND);
+				qglColor4ub(nodeinfo->color.r, nodeinfo->color.g, nodeinfo->color.b, nodeinfo->color.a);
+			}
+
+			if (draw_reflection || !(nodeinfo->flags & FMNI_USE_REFLECT))
+			{
+				if (nodeinfo->flags & FMNI_USE_SKIN)
+				{
+					use_skin = true;
+					GL_BindImage(GetSkinFromNode(i));
+				}
+			}
+			else
+			{
+				qglEnable(GL_TEXTURE_GEN_S);
+				qglEnable(GL_TEXTURE_GEN_T);
+				qglTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+				qglTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+
+				use_skin = true;
+				use_reflect = true;
+				GL_BindImage(r_reflecttexture);
+			}
+		}
+
+		int* order = fmodel->glcmds + fmodel->mesh_nodes[i].start_glcmds;
+
+		while (true)
+		{
+			// Get the vertex count and primitive type
+			int count = *order++;
+			if (count == 0)
+				break; // Done
+
+			if (count < 0)
+			{
+				count = -count;
+				qglBegin(GL_TRIANGLE_FAN);
+			}
+			else
+			{
+				qglBegin(GL_TRIANGLE_STRIP);
+			}
+
+			do
+			{
+				const int index_xyz = order[2];
+
+				if (draw_reflection || use_reflect)
+				{
+					vec3_t* normal;
+					if (fmodel->frames == NULL)
+						normal = &r_avertexnormals[fmodel->lightnormalindex[index_xyz]];
+					else if (draw_reflection)
+						normal = &normals_array[index_xyz];
+					else
+						normal = &r_avertexnormals[sfl.unknown_verts[index_xyz].lightnormalindex];
+
+					qglNormal3f((*normal)[0], (*normal)[1], (*normal)[2]);
+				}
+				else
+				{
+					// Texture coordinates come from the draw list
+					qglTexCoord2f(((float*)order)[0], ((float*)order)[1]);
+				}
+
+				order += 3;
+
+				if (!use_color && !(currententity->flags & RF_FULLBRIGHT))
+				{
+					float l;
+					if (fmodel->frames == NULL)
+						l = shadedots[fmodel->lightnormalindex[index_xyz]];
+					else
+						l = shadedots[sfl.unknown_verts[index_xyz].lightnormalindex];
+
+					qglColor4f(l * shadelight[0], l * shadelight[1], l * shadelight[2], alpha);
+				}
+
+				qglVertex3fv(s_lerped_ptr[index_xyz]);
+			} while (count--);
+
+			qglEnd();
+		}
+
+		if (use_reflect)
+		{
+			qglDisable(GL_TEXTURE_GEN_S);
+			qglDisable(GL_TEXTURE_GEN_T);
+		}
+
+		if (use_skin)
+			GL_BindImage(skin);
+	}
+
+	if (draw_reflection)
+	{
+		qglDisable(GL_TEXTURE_GEN_S);
+		qglDisable(GL_TEXTURE_GEN_T);
+		GL_BindImage(skin);
+	}
+
+	CleanupTrans(currententity);
 }
 
 //mxd. Somewhat similar to R_DrawAliasModel from Q2. Original code used 'currententity' global var instead of 'e' arg.
