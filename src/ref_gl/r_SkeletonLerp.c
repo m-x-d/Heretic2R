@@ -32,9 +32,11 @@ static M_SkeletalCluster_t* fmdl_cur_skeletal_cluster;
 
 static vec3_t qfl;
 
-static void LerpVerts(int num_verts, fmtrivertx_t* verts, fmtrivertx_t* old_verts, vec3_t* translation, vec3_t move, vec3_t front, vec3_t back)
+static void LerpVerts(const int num_verts, fmtrivertx_t* verts, fmtrivertx_t* old_verts, vec3_t* translation, const vec3_t move, const vec3_t front, const vec3_t back)
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < num_verts; i++, verts++, old_verts++, translation++)
+		for (int j = 0; j < 3; j++)
+			(*translation)[j] = move[j] + (float)verts->v[j] * front[j] + (float)old_verts->v[j] * back[j];
 }
 
 static void LerpStandardSkeleton(void)
