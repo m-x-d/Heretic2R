@@ -7,7 +7,7 @@
 #include "anorms.h"
 
 // Stored in anorms.h in Q2. Values are the same as in Q2
-float r_avertexnormals[NUMVERTEXNORMALS][3] =
+vec3_t r_avertexnormals[NUMVERTEXNORMALS] =
 {
 	{ -0.525731f, 0.000000f, 0.850651f },
 	{ -0.442863f, 0.238856f, 0.864188f },

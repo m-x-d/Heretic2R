@@ -6,7 +6,7 @@
 
 #include "anormtab.h"
 
-// Precalculated dot products for quantized angles. Stored in anormtab.h in Q2
+// Precalculated dot products for quantized angles. Stored in anormtab.h in Q2. Values are the same as in Q2
 float r_avertexnormal_dots[SHADEDOT_QUANT][256] =
 {
 	{

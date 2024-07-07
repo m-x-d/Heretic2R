@@ -6,6 +6,7 @@
 
 #pragma once
 
-#define NUMVERTEXNORMALS 162
+#include "q_Typedef.h"
 
-extern float r_avertexnormals[NUMVERTEXNORMALS][3];
+#define NUMVERTEXNORMALS 162
+extern vec3_t r_avertexnormals[NUMVERTEXNORMALS];
