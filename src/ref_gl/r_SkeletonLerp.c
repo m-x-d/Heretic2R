@@ -20,13 +20,13 @@ SkeletonFrameLerpInfo_t sfl;
 vec3_t s_lerped[MAX_VERTS];
 
 static ModelSkeleton_t fmdl_skeleton1;
-static M_SkeletalJoint_t fmdl_skeleton1_root_joint;
-static ArrayedListNode_t fmdl_skeleton1_root_node;
+static M_SkeletalJoint_t fmdl_skeleton1_joints[MAX_JOINTS_PER_SKELETON];
+static ArrayedListNode_t fmdl_skeleton1_nodes[MAX_JOINT_NODES_PER_SKELETON];
 static SkeletonFrameLerpInfo_t sfl_skel1;
 
 static ModelSkeleton_t fmdl_skeleton2;
-static M_SkeletalJoint_t fmdl_skeleton2_root_joint;
-static ArrayedListNode_t fmdl_skeleton2_root_node;
+static M_SkeletalJoint_t fmdl_skeleton2_joints[MAX_JOINTS_PER_SKELETON];
+static ArrayedListNode_t fmdl_skeleton2_nodes[MAX_JOINT_NODES_PER_SKELETON];
 
 static struct LERPedReferences_s* fmdl_referenceInfo;
 static M_SkeletalCluster_t* fmdl_cur_skeletal_cluster;
@@ -43,7 +43,24 @@ static void LerpVerts(const int num_verts, fmtrivertx_t* verts, fmtrivertx_t* ol
 
 static void DoSkeletalRotations(void)
 {
-	NOT_IMPLEMENTED
+	if (currententity->rootJoint == -1)
+		return;
+
+	if (currententity->swapFrame != -1)
+	{
+		RotateModelSegments(&fmdl_skeleton1, 0, fmodel->rootCluster, currententity->rootJoint, s_lerped);
+
+		for (int i = 0; i < fmdl_cur_skeletal_cluster->numVerticies; i++)
+		{
+			vec3_t* v = &s_lerped[fmdl_cur_skeletal_cluster->verticies[i]];
+			VectorSubtract(*v, fmdl_skeleton1.rootJoint->model.origin, *v);
+			VectorAdd(*v, fmdl_skeleton2.rootJoint->model.origin, *v);
+		}
+	}
+	else
+	{
+		RotateModelSegments(&fmdl_skeleton2, 0, fmodel->rootCluster, currententity->rootJoint, s_lerped);
+	}
 }
 
 static void LerpStandardSkeleton(void)
@@ -143,10 +160,10 @@ static void CompressedFrameLerp(void)
 
 void FrameLerp(void)
 {
-	fmdl_skeleton1.rootJoint = &fmdl_skeleton1_root_joint;
-	fmdl_skeleton1.rootNode = &fmdl_skeleton1_root_node;
-	fmdl_skeleton2.rootJoint = &fmdl_skeleton2_root_joint;
-	fmdl_skeleton2.rootNode = &fmdl_skeleton2_root_node;
+	fmdl_skeleton1.rootJoint = fmdl_skeleton1_joints;
+	fmdl_skeleton1.rootNode = fmdl_skeleton1_nodes;
+	fmdl_skeleton2.rootJoint = fmdl_skeleton2_joints;
+	fmdl_skeleton2.rootNode = fmdl_skeleton2_nodes;
 
 	if (fmodel->skeletalType != -1)
 		fmdl_cur_skeletal_cluster = SkeletalClusters + fmodel->rootCluster + currententity->swapCluster;
