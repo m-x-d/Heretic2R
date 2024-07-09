@@ -7,8 +7,10 @@
 #include "r_SkeletonLerp.h"
 #include "gl_local.h"
 #include "ArrayedList.h"
+#include "m_Reference.h"
 #include "m_SkeletalCluster.h"
 #include "m_Skeleton.h"
+#include "Reference.h"
 #include "r_Skeletons.h"
 #include "Vector.h"
 
@@ -28,7 +30,7 @@ static ModelSkeleton_t fmdl_skeleton2;
 static M_SkeletalJoint_t fmdl_skeleton2_joints[MAX_JOINTS_PER_SKELETON];
 static ArrayedListNode_t fmdl_skeleton2_nodes[MAX_JOINT_NODES_PER_SKELETON];
 
-static struct LERPedReferences_s* fmdl_referenceInfo;
+static LERPedReferences_t* fmdl_referenceInfo;
 static M_SkeletalCluster_t* fmdl_cur_skeletal_cluster;
 
 static vec3_t qfl;
@@ -107,9 +109,84 @@ static void LerpStandardSkeleton(void)
 	DoSkeletalRotations();
 }
 
-static void LerpReferences(void)
+static void ApplySkeletonToRef(Placement_t* placement, int joint_index, qboolean update_placement)
 {
 	NOT_IMPLEMENTED
+}
+
+static void LerpReferences(void)
+{
+	const float delta = r_newrefdef.time - fmdl_referenceInfo->lastUpdate;
+	fmdl_referenceInfo->lastUpdate = r_newrefdef.time;
+
+	const int num_refs = numReferences[fmodel->referenceType];
+
+	if (currententity->rootJoint != -1)
+	{
+		HACK_Pitch_Adjust = true; //mxd. Interestingly, Loki version doesn't set/unset this here... //TODO: check Loki version of Matricies3FromDirAndUp()?
+
+		SetupJointRotations(&fmdl_skeleton2, 0, currententity->rootJoint);
+		FinishJointRotations(&fmdl_skeleton2, 0);
+
+		if (currententity->swapFrame != -1)
+		{
+			SetupJointRotations(&fmdl_skeleton1, 0, currententity->rootJoint);
+			FinishJointRotations(&fmdl_skeleton1, 0);
+		}
+
+		HACK_Pitch_Adjust = false;
+	}
+
+	for (int i = 0; i < num_refs; i++)
+	{
+		Placement_t* cur_placement = &fmdl_referenceInfo->references[i].placement;
+		Placement_t* old_placement = &fmdl_referenceInfo->oldReferences[i].placement;
+		qboolean update_placement = false;
+
+		if (delta <= 1.0f)
+			memcpy(old_placement, cur_placement, sizeof(Placement_t));
+
+		if (fmodel->frames == NULL)
+		{
+			if (currententity->swapFrame == -1 || fmdl_referenceInfo->jointIDs[i] < currententity->swapCluster)
+			{
+				VectorCopy(s_lerped[fmdl_num_xyz + i * 3 + 0], cur_placement->origin);
+				VectorCopy(s_lerped[fmdl_num_xyz + i * 3 + 1], cur_placement->direction);
+				VectorCopy(s_lerped[fmdl_num_xyz + i * 3 + 2], cur_placement->up);
+			}
+			else
+			{
+				//mxd. Skipping compressed frame lerp logic for now (decompiled code is VERY cursed; is it even used in H2?)...
+				NOT_IMPLEMENTED
+			}
+		}
+		else if (currententity->swapFrame == -1 || fmdl_referenceInfo->jointIDs[i] < currententity->swapCluster)
+		{
+			Placement_t* frame = &fmodel->refsForFrame[currententity->frame * num_refs].placement;
+			Placement_t* oldframe = &fmodel->refsForFrame[currententity->oldframe * num_refs].placement;
+
+			GL_LerpVert(frame->origin,		oldframe->origin,	cur_placement->origin,		qfl, sfl.front_vector, sfl.back_vector);
+			GL_LerpVert(frame->direction,	oldframe->direction,	cur_placement->direction,	qfl, sfl.front_vector, sfl.back_vector);
+			GL_LerpVert(frame->up,			oldframe->up,		cur_placement->up,			qfl, sfl.front_vector, sfl.back_vector);
+		}
+		else
+		{
+			Placement_t* swapFrame = &fmodel->refsForFrame[currententity->swapFrame * num_refs].placement;
+			Placement_t* oldSwapFrame = &fmodel->refsForFrame[currententity->oldSwapFrame * num_refs].placement;
+
+			GL_LerpVert(swapFrame->origin,		oldSwapFrame->origin,	cur_placement->origin,		fmdl_move, sfl_skel1.front_vector, sfl_skel1.back_vector);
+			GL_LerpVert(swapFrame->direction,	oldSwapFrame->direction,	cur_placement->direction,	fmdl_move, sfl_skel1.front_vector, sfl_skel1.back_vector);
+			GL_LerpVert(swapFrame->up,			oldSwapFrame->up,		cur_placement->up,			fmdl_move, sfl_skel1.front_vector, sfl_skel1.back_vector);
+
+			update_placement = true;
+		}
+
+		if (fmdl_referenceInfo->jointIDs != NULL && fmdl_referenceInfo->jointIDs[i] != -1 && (int)r_references->value)
+			ApplySkeletonToRef(cur_placement, i, update_placement);
+
+		if (delta > 1.0f)
+			memcpy(old_placement, cur_placement, sizeof(Placement_t));
+	}
 }
 
 static void StandardFrameLerp(void)
