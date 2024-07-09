@@ -233,9 +233,65 @@ void R_LightPoint(vec3_t p, vec3_t color)
 
 #pragma endregion
 
-static void R_AddDynamicLights(msurface_t* surf)
+// Q2 counterpart (except for dlight color handling).
+static void R_AddDynamicLights(const msurface_t* surf)
 {
-	NOT_IMPLEMENTED
+	vec3_t impact;
+	vec3_t local;
+	int s;
+	int t;
+	int fsacc;
+	int ftacc;
+
+	int smax = (surf->extents[0] >> 4) + 1;
+	int tmax = (surf->extents[1] >> 4) + 1;
+	const mtexinfo_t* tex = surf->texinfo;
+
+	for (int lnum = 0; lnum < r_newrefdef.num_dlights; lnum++)
+	{
+		if (!(surf->dlightbits & (1 << lnum)))
+			continue; // Not lit by this light
+
+		const dlight_t* dl = &r_newrefdef.dlights[lnum];
+		float fdist = DotProduct(dl->origin, surf->plane->normal) - surf->plane->dist;
+		float frad = dl->intensity - fabsf(fdist);
+		// Rad is now the highest intensity on the plane
+
+		float fminlight = DLIGHT_CUTOFF; // FIXME: make configurable?
+		if (frad < fminlight)
+			continue;
+
+		fminlight = frad - fminlight;
+
+		for (int i = 0; i < 3; i++)
+			impact[i] = dl->origin[i] - surf->plane->normal[i] * fdist;
+
+		local[0] = DotProduct(impact, tex->vecs[0]) + tex->vecs[0][3] - (float)surf->texturemins[0];
+		local[1] = DotProduct(impact, tex->vecs[1]) + tex->vecs[1][3] - (float)surf->texturemins[1];
+
+		float* pfBL = s_blocklights;
+		for (t = 0, ftacc = 0; t < tmax; t++, ftacc += 16)
+		{
+			const int td = abs((int)local[1] - ftacc);
+
+			for (s = 0, fsacc = 0; s < smax; s++, fsacc += 16, pfBL += 3)
+			{
+				const int sd = abs((int)local[0] - fsacc);
+
+				if (sd > td)
+					fdist = (float)(sd + (td >> 1));
+				else
+					fdist = (float)(td + (sd >> 1));
+
+				if (fdist < fminlight)
+				{
+					pfBL[0] += (frad - fdist) * ((float)dl->color.r / 255.0f); // H2: different color handling
+					pfBL[1] += (frad - fdist) * ((float)dl->color.g / 255.0f);
+					pfBL[2] += (frad - fdist) * ((float)dl->color.b / 255.0f);
+				}
+			}
+		}
+	}
 }
 
 // Q2 counterpart
