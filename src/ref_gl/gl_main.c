@@ -1212,7 +1212,16 @@ static void R_SetGL2D(void)
 
 static void R_SetLightLevel(void)
 {
-	NOT_IMPLEMENTED
+	if (!(r_newrefdef.rdflags & RDF_NOWORLDMODEL))
+	{
+		vec3_t shadelight;
+
+		// Save off light value for server to look at (BIG HACK!)
+		R_LightPoint(r_newrefdef.clientmodelorg, shadelight); // H2: vieworg -> clientmodelorg
+
+		// Pick the greatest component, which should be the same as the mono value returned by software
+		r_lightlevel->value = max(shadelight[0], max(shadelight[1], shadelight[2])) * 150.0f;
+	}
 }
 
 static void GL_ScreenFlash(paletteRGBA_t color)
