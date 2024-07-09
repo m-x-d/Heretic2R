@@ -14,9 +14,33 @@ static float s_blocklights[34 * 34 * 3];
 
 #pragma region ========================== DYNAMIC LIGHTS RENDERING ==========================
 
-static void R_RenderDlight(dlight_t* light)
+// Q2 counterpart (except for dlight color handling).
+static void R_RenderDlight(const dlight_t* light)
 {
-	NOT_IMPLEMENTED
+	vec3_t v;
+
+	const float rad = light->intensity * 0.35f;
+	VectorSubtract(light->origin, r_origin, v);
+
+	qglBegin(GL_TRIANGLE_FAN);
+
+	qglColor3f((float)light->color.r / 255.0f * 0.2f, (float)light->color.g / 255.0f * 0.2f, (float)light->color.b / 255.0f * 0.2f);
+	for (int i = 0; i < 3; i++)
+		v[i] = light->origin[i] - vpn[i] * rad;
+	qglVertex3fv(v);
+
+	qglColor3f(0.0f, 0.0f, 0.0f);
+	for (int i = 16; i >= 0; i--)
+	{
+		const float a = (float)i / 16.0f * ANGLE_360;
+
+		for (int j = 0; j < 3; j++)
+			v[j] = light->origin[j] + vright[j] * cosf(a) * rad + vup[j] * sinf(a) * rad;
+
+		qglVertex3fv(v);
+	}
+
+	qglEnd();
 }
 
 void R_RenderDlights(void)
