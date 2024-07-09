@@ -54,6 +54,19 @@ static vec3_t skyclip[6] =
 	{ -1.0f,  0.0f, 1.0f }
 };
 
+// 1 = s, 2 = t, 3 = 2048
+static int st_to_vec[6][3] =
+{
+	{  3, -1,  2 },
+	{ -3,  1,  2 },
+
+	{  1,  3,  2 },
+	{ -1, -3,  2 },
+
+	{ -2, -1,  3 },	// 0 degrees yaw, look straight up
+	{  2, -1, -3 }	// Look straight down
+};
+
 // s = [0]/[2], t = [1]/[2]
 static int vec_to_st[6][3] =
 {
@@ -257,9 +270,38 @@ void R_ClearSkyBox(void)
 	}
 }
 
-static void MakeSkyVec(float s, float t, int axis)
+static void MakeSkyVec(float s, float t, const int axis)
 {
-	NOT_IMPLEMENTED
+	vec3_t v;
+	vec3_t b;
+	float clipdist;
+
+	// H2: new r_farclipdist logic
+	if ((int)r_fog->value) //mxd. Removed gl_fog_broken cvar check
+		clipdist = r_farclipdist->value;
+	else
+		clipdist = r_farclipdist->value * 0.5773503f; //TODO: what's with the scaler?
+
+	VectorSet(b, s * clipdist, t * clipdist, clipdist); // Q2: 2300
+
+	for (int i = 0; i < 3; i++)
+	{
+		const int k = st_to_vec[axis][i];
+		if (k < 0)
+			v[i] = -b[-k - 1];
+		else
+			v[i] = b[k - 1];
+	}
+
+	// Avoid bilerp seam
+	s = (s + 1.0f) * 0.5f;
+	t = (t + 1.0f) * 0.5f;
+
+	Clamp(s, sky_min, sky_max);
+	Clamp(t, sky_min, sky_max);
+
+	qglTexCoord2f(s, 1.0f - t);
+	qglVertex3fv(v);
 }
 
 void R_DrawSkyBox(void)
