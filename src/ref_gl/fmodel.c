@@ -671,7 +671,7 @@ static void GL_DrawFlexFrameLerp(void)
 				}
 
 				qglVertex3fv(s_lerped[index_xyz]);
-			} while (count--);
+			} while (--count);
 
 			qglEnd();
 		}
