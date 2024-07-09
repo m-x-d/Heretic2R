@@ -39,12 +39,12 @@ void GL_SubdivideSurface(msurface_t* fa)
 	NOT_IMPLEMENTED
 }
 
-float skymins[2][6];
-float skymaxs[2][6];
-float sky_min;
-float sky_max;
+static float skymins[2][6];
+static float skymaxs[2][6];
+static float sky_min;
+static float sky_max;
 
-vec3_t skyclip[6] =
+static vec3_t skyclip[6] =
 {
 	{  1.0f,  1.0f, 0.0f },
 	{  1.0f, -1.0f, 0.0f },
@@ -54,9 +54,75 @@ vec3_t skyclip[6] =
 	{ -1.0f,  0.0f, 1.0f }
 };
 
-static void DrawSkyPolygon(int nump, vec3_t vecs)
+// s = [0]/[2], t = [1]/[2]
+static int vec_to_st[6][3] =
 {
-	NOT_IMPLEMENTED
+	{ -2,  3,  1 },
+	{  2,  3, -1 },
+
+	{  1,  3,  2 },
+	{ -1,  3, -2 },
+
+	{ -2, -1,  3 },
+	{ -2,  1,- 3 }
+};
+
+// Q2 counterpart
+static void DrawSkyPolygon(const int nump, vec3_t vecs)
+{
+	int i;
+	float* vp;
+	vec3_t v;
+	vec3_t av;
+	float s;
+	float t;
+	float dv;
+	int axis;
+
+	// Decide which face it maps to
+	VectorCopy(vec3_origin, v);
+	for (i = 0, vp = vecs; i < nump; i++, vp += 3)
+		VectorAdd(vp, v, v);
+
+	VectorAbs(v, av);
+
+	if (av[0] > av[1] && av[0] > av[2])
+		axis = (v[0] < 0 ? 1 : 0);
+	else if (av[1] > av[2] && av[1] > av[0])
+		axis = (v[1] < 0 ? 3 : 2);
+	else
+		axis = (v[2] < 0 ? 5 : 4);
+
+	// Project new texture coords
+	for (i = 0; i < nump; i++, vecs += 3)
+	{
+		int j = vec_to_st[axis][2];
+		if (j > 0)
+			dv = vecs[j - 1];
+		else
+			dv = -vecs[-j - 1];
+
+		if (dv < 0.001f)
+			continue; // Don't divide by zero
+
+		j = vec_to_st[axis][0];
+		if (j < 0)
+			s = -vecs[-j - 1] / dv;
+		else
+			s = vecs[j - 1] / dv;
+
+		j = vec_to_st[axis][1];
+		if (j < 0)
+			t = -vecs[-j - 1] / dv;
+		else
+			t = vecs[j - 1] / dv;
+
+		skymins[0][axis] = min(s, skymins[0][axis]);
+		skymins[1][axis] = min(t, skymins[1][axis]);
+
+		skymaxs[0][axis] = max(s, skymaxs[0][axis]);
+		skymaxs[1][axis] = max(t, skymaxs[1][axis]);
+	}
 }
 
 #define MAX_CLIP_VERTS	64
