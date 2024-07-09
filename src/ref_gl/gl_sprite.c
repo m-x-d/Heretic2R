@@ -80,9 +80,42 @@ static void R_DrawVariableSprite(const entity_t* e, const dsprframe_t* frame, ve
 }
 
 // Long linear semi-oriented sprite with two verts (xyz start and end) and a width.
-static void R_DrawLineSprite(const entity_t* e, const dsprframe_t* frame, vec3_t* up)
+static void R_DrawLineSprite(const entity_t* e, const dsprframe_t* frame, vec3_t up)
 {
-	NOT_IMPLEMENTED
+	vec3_t point;
+	vec3_t start_offset;
+	vec3_t end_offset;
+	vec3_t dir;
+	vec3_t diff;
+
+	VectorSubtract(e->endpos, e->startpos, diff);
+	CrossProduct(diff, up, dir);
+	VectorNormalize(dir);
+
+	VectorScale(dir, e->scale * 0.5f, start_offset);
+	VectorScale(dir, e->scale2 * 0.5f, end_offset);
+
+	const float tile = (e->tile > 0.0f ? e->tile : 1.0f);
+
+	qglBegin(GL_QUADS);
+
+	qglTexCoord2f(0.0f, e->tileoffset);
+	VectorSubtract(e->startpos, start_offset, point);
+	qglVertex3fv(point);
+
+	qglTexCoord2f(1.0f, e->tileoffset);
+	VectorAdd(e->startpos, start_offset, point);
+	qglVertex3fv(point);
+
+	qglTexCoord2f(1.0f, e->tileoffset + tile);
+	VectorAdd(e->endpos, end_offset, point);
+	qglVertex3fv(point);
+
+	qglTexCoord2f(0.0f, e->tileoffset + tile);
+	VectorSubtract(e->endpos, end_offset, point);
+	qglVertex3fv(point);
+
+	qglEnd();
 }
 
 void R_DrawSpriteModel(entity_t* e)
@@ -150,7 +183,7 @@ void R_DrawSpriteModel(entity_t* e)
 			break;
 
 		case SPRITE_LINE:
-			R_DrawLineSprite(e, frame, &vpn);
+			R_DrawLineSprite(e, frame, vpn);
 			break;
 
 		default: //mxd. Avoid compiler warnings...
