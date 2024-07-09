@@ -8,6 +8,7 @@
 #include "q_Sprite.h"
 #include "Vector.h"
 
+// Standard square sprite
 static void R_DrawStandardSprite(const entity_t* e, const dsprframe_t* frame, vec3_t up, vec3_t right)
 {
 	vec3_t point;
@@ -42,17 +43,44 @@ static void R_DrawStandardSprite(const entity_t* e, const dsprframe_t* frame, ve
 	qglEnd();
 }
 
-static void R_DrawDynamicSprite(entity_t* e, dsprframe_t* frame, vec3_t up, vec3_t right)
+// Sprite with 4 variable verts(x, y scale and s, t); texture must be square.
+static void R_DrawDynamicSprite(const entity_t* e, const dsprframe_t* frame, vec3_t up, vec3_t right)
+{
+	vec3_t point;
+
+	qglBegin(GL_QUADS);
+
+	qglTexCoord2f(e->verts[0][2], e->verts[0][3]);
+	VectorMA(e->origin, e->scale * e->verts[0][1], up, point);
+	VectorMA(point, e->scale * e->verts[0][0], right, point);
+	qglVertex3fv(point);
+
+	qglTexCoord2f(e->verts[1][2], e->verts[1][3]);
+	VectorMA(e->origin, e->scale * e->verts[1][1], up, point);
+	VectorMA(point, e->scale * e->verts[1][0], right, point);
+	qglVertex3fv(point);
+
+	qglTexCoord2f(e->verts[2][2], e->verts[2][3]);
+	VectorMA(e->origin, e->scale * e->verts[2][1], up, point);
+	VectorMA(point, e->scale * e->verts[2][0], right, point);
+	qglVertex3fv(point);
+
+	qglTexCoord2f(e->verts[3][2], e->verts[3][3]);
+	VectorMA(e->origin, e->scale * e->verts[3][1], up, point);
+	VectorMA(point, e->scale * e->verts[3][0], right, point);
+	qglVertex3fv(point);
+
+	qglEnd();
+}
+
+// Sprite with n variable verts (x,y scale and s,t); texture must be square. //TODO: seems unused. Remove?
+static void R_DrawVariableSprite(const entity_t* e, const dsprframe_t* frame, vec3_t up, vec3_t right)
 {
 	NOT_IMPLEMENTED
 }
 
-static void R_DrawVariableSprite(entity_t* e, dsprframe_t* frame, vec3_t up, vec3_t right)
-{
-	NOT_IMPLEMENTED
-}
-
-static void R_DrawLineSprite(entity_t* e, dsprframe_t* frame, vec3_t* up)
+// Long linear semi-oriented sprite with two verts (xyz start and end) and a width.
+static void R_DrawLineSprite(const entity_t* e, const dsprframe_t* frame, vec3_t* up)
 {
 	NOT_IMPLEMENTED
 }
