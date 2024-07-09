@@ -28,6 +28,7 @@
     <ClCompile Include="gl_main.c" />
     <ClCompile Include="gl_misc.c" />
     <ClCompile Include="gl_model.c" />
+    <ClCompile Include="gl_sky.c" />
     <ClCompile Include="gl_sprite.c" />
     <ClCompile Include="gl_surf.c" />
     <ClCompile Include="gl_warp.c" />

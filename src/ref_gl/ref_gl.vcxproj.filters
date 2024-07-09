@@ -90,6 +90,9 @@
     <ClCompile Include="gl_sprite.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="gl_sky.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gl_local.h">

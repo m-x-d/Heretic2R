@@ -305,6 +305,11 @@ void GL_UpdateSwapInterval(void);
 extern int registration_sequence;
 struct model_s* R_RegisterModel(char* name);
 
+// gl_sky.c
+void R_AddSkySurface(const msurface_t* fa);
+void R_ClearSkyBox(void);
+void R_DrawSkyBox(void);
+
 // gl_sprite.c
 void R_DrawSpriteModel(entity_t* e); // Q2: local to gl_rmain.c
 
@@ -319,9 +324,6 @@ void R_DrawWorld(void);
 
 // gl_warp.c
 void GL_SubdivideSurface(msurface_t* fa);
-void R_AddSkySurface(const msurface_t* fa);
-void R_ClearSkyBox(void);
-void R_DrawSkyBox(void);
 
 #pragma region ========================== GL config stuff  ==========================
 
