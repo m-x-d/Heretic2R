@@ -9,6 +9,8 @@
 #include "H2Common.h"
 #include "q_Typedef.h"
 
+extern H2COMMON_API qboolean HACK_Pitch_Adjust;
+
 H2COMMON_API void CreateRollMatrix(matrix3_t, float);
 H2COMMON_API void CreateYawMatrix(matrix3_t, float);
 H2COMMON_API void CreatePitchMatrix(matrix3_t, float);
