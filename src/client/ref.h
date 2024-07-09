@@ -195,7 +195,7 @@ typedef struct
 	struct model_s* (*RegisterModel)(char* name);
 	struct image_s* (*RegisterSkin)(char* name, qboolean* retval);
 	struct image_s* (*RegisterPic)(char* name);
-	void (*SetSky)(char* name, float rotate, vec3_t axis);
+	void (*SetSky)(const char* name, float rotate, const vec3_t axis);
 	void (*EndRegistration)(void);
 
 	int (*GetReferencedID)(const struct model_s* model);
