@@ -316,12 +316,13 @@ static void R_DrawAlphaEntity(entity_t* ent)
 		return;
 	}
 
-	currentmodel = *ent->model;
-	if (currentmodel == NULL)
+	if (ent->model == NULL)
 	{
 		R_DrawNullModel();
 		return;
 	}
+
+	currentmodel = *ent->model;
 
 	switch (currentmodel->type)
 	{
