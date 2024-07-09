@@ -87,6 +87,9 @@
     <ClCompile Include="r_SkeletonLerp.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="gl_sprite.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gl_local.h">
@@ -157,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="r_SkeletonLerp.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\q_Sprite.h">
+      <Filter>qcommon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

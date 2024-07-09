@@ -28,6 +28,7 @@
     <ClCompile Include="gl_main.c" />
     <ClCompile Include="gl_misc.c" />
     <ClCompile Include="gl_model.c" />
+    <ClCompile Include="gl_sprite.c" />
     <ClCompile Include="gl_surf.c" />
     <ClCompile Include="gl_warp.c" />
     <ClCompile Include="m_Reference.c" />
@@ -44,6 +45,7 @@
     <ClInclude Include="..\qcommon\Placement.h" />
     <ClInclude Include="..\qcommon\qcommon.h" />
     <ClInclude Include="..\qcommon\qfiles.h" />
+    <ClInclude Include="..\qcommon\q_Sprite.h" />
     <ClInclude Include="..\qcommon\q_Surface.h" />
     <ClInclude Include="..\qcommon\Reference.h" />
     <ClInclude Include="..\qcommon\Skeletons.h" />

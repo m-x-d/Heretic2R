@@ -262,11 +262,6 @@ void CleanupTrans(const entity_t* e)
 	}
 }
 
-void R_DrawSpriteModel(entity_t* e)
-{
-	NOT_IMPLEMENTED
-}
-
 // Q2 counterpart
 void R_DrawNullModel(void)
 {

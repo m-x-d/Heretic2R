@@ -293,7 +293,6 @@ qboolean R_CullBox(vec3_t mins, vec3_t maxs);
 void R_RotateForEntity(const entity_t* e);
 void HandleTrans(const entity_t* e); // New in H2
 void CleanupTrans(const entity_t* e); // New in H2
-void R_DrawSpriteModel(entity_t* e); // Q2: local to gl_rmain.c
 void R_DrawNullModel(void); // Q2: local to gl_rmain.c
 
 // gl_misc.c
@@ -305,6 +304,9 @@ void GL_UpdateSwapInterval(void);
 // gl_model.c (Mod_XX function declarations are in gl_model.h)
 extern int registration_sequence;
 struct model_s* R_RegisterModel(char* name);
+
+// gl_sprite.c
+void R_DrawSpriteModel(entity_t* e); // Q2: local to gl_rmain.c
 
 // gl_surf.c
 extern int c_visible_lightmaps;
