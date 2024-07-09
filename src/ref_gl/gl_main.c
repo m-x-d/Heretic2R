@@ -1205,9 +1205,21 @@ static void R_RenderView(const refdef_t* fd)
 		GL_DisplayHashTable();
 }
 
+// Q2 counterpart
 static void R_SetGL2D(void)
 {
-	NOT_IMPLEMENTED
+	// Set 2D virtual screen size
+	qglViewport(0, 0, viddef.width, viddef.height);
+	qglMatrixMode(GL_PROJECTION);
+	qglLoadIdentity();
+	qglOrtho(0.0, (double)viddef.width, (double)viddef.height, 0.0, -99999.0, 99999.0);
+	qglMatrixMode(GL_MODELVIEW);
+	qglLoadIdentity();
+	qglDisable(GL_DEPTH_TEST);
+	qglDisable(GL_CULL_FACE);
+	qglDisable(GL_BLEND);
+	qglEnable(GL_ALPHA_TEST);
+	qglColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 static void R_SetLightLevel(void)
