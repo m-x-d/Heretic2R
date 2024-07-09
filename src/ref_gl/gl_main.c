@@ -267,9 +267,37 @@ void R_DrawSpriteModel(entity_t* e)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
 void R_DrawNullModel(void)
 {
-	NOT_IMPLEMENTED
+	vec3_t shadelight;
+
+	if (currententity->flags & RF_FULLBRIGHT)
+		VectorSet(shadelight, 1.0f, 1.0f, 1.0f);
+	else
+		R_LightPoint(currententity->origin, shadelight);
+
+	qglPushMatrix();
+	R_RotateForEntity(currententity);
+
+	qglDisable(GL_TEXTURE_2D);
+	qglColor3fv(shadelight);
+
+	qglBegin(GL_TRIANGLE_FAN);
+	qglVertex3f(0.0f, 0.0f, -16.0f);
+	for (int i = 0; i < 5; i++)
+		qglVertex3f(16.0f * cosf((float)i * ANGLE_90), 16.0f * sinf((float)i * ANGLE_90), 0.0f); //mxd. M_PI/2 -> ANGLE_90
+	qglEnd();
+
+	qglBegin(GL_TRIANGLE_FAN);
+	qglVertex3f(0.0f, 0.0f, 16.0f);
+	for (int i = 4; i > -1; i--)
+		qglVertex3f(16.0f * cosf((float)i * ANGLE_90), 16.0f * sinf((float)i * ANGLE_90), 0.0f); //mxd. M_PI/2 -> ANGLE_90
+	qglEnd();
+
+	qglColor3f(1.0f, 1.0f, 1.0f);
+	qglPopMatrix();
+	qglEnable(GL_TEXTURE_2D);
 }
 
 // H2: simplified: no separate non-transparent/transparent drawing chains
