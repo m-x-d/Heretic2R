@@ -457,9 +457,39 @@ static void GL_DrawParticles(const int num_particles, particle_t* particles, con
 	GL_TexEnv(GL_REPLACE);
 }
 
+// Q2 counterpart
 void R_PolyBlend(void)
 {
-	NOT_IMPLEMENTED
+	if ((int)gl_polyblend->value && v_blend[3] != 0.0f)
+	{
+		qglDisable(GL_ALPHA_TEST);
+		qglEnable(GL_BLEND);
+		qglDisable(GL_DEPTH_TEST);
+		qglDisable(GL_TEXTURE_2D);
+
+		qglLoadIdentity();
+
+		// FIXME: get rid of these
+		qglRotatef(-90.0f, 1.0f, 0.0f, 0.0f);	// Put Z going up
+		qglRotatef(90.0f, 0.0f, 0.0f, 1.0f);	// Put Z going up
+
+		qglColor4fv(v_blend);
+
+		qglBegin(GL_QUADS);
+
+		qglVertex3f(10.0f,  100.0f,  100.0f);
+		qglVertex3f(10.0f, -100.0f,  100.0f);
+		qglVertex3f(10.0f, -100.0f, -100.0f);
+		qglVertex3f(10.0f,  100.0f, -100.0f);
+
+		qglEnd();
+
+		qglDisable(GL_BLEND);
+		qglEnable(GL_TEXTURE_2D);
+		qglEnable(GL_ALPHA_TEST);
+
+		qglColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	}
 }
 
 // Q2 counterpart
