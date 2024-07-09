@@ -244,9 +244,22 @@ void HandleTrans(const entity_t* e)
 	qglEnable(GL_BLEND);
 }
 
-void CleanupTrans(entity_t* e)
+void CleanupTrans(const entity_t* e)
 {
-	NOT_IMPLEMENTED
+	qglDisable(GL_BLEND);
+
+	if (e->flags & (RF_TRANS_GHOST | RF_TRANS_ADD))
+	{
+		if ((int)r_fog->value || (int)cl_camera_under_surface->value) //mxd. Removed gl_fog_broken cvar check
+			qglEnable(GL_FOG);
+
+		qglBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
+	}
+	else
+	{
+		qglDisable(GL_ALPHA_TEST);
+		qglAlphaFunc(GL_GREATER, 0.666f);
+	}
 }
 
 void R_DrawSpriteModel(entity_t* e)
