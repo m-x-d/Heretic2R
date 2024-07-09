@@ -109,9 +109,25 @@ static void LerpStandardSkeleton(void)
 	DoSkeletalRotations();
 }
 
-static void ApplySkeletonToRef(Placement_t* placement, int joint_index, qboolean update_placement)
+static void ApplySkeletonToRef(Placement_t* placement, const int joint_index, const qboolean update_placement)
 {
-	NOT_IMPLEMENTED
+	M_SkeletalJoint_t* joint;
+	const int joint_id = fmdl_referenceInfo->jointIDs[joint_index];
+
+	if (update_placement)
+		joint = &fmdl_skeleton1.rootJoint[joint_id];
+	else
+		joint = &fmdl_skeleton2.rootJoint[joint_id];
+
+	TransformPoint(joint->rotation, joint->model.origin, joint->parent.origin, placement->origin);
+	TransformPoint(joint->rotation, joint->model.origin, joint->parent.origin, placement->direction);
+	TransformPoint(joint->rotation, joint->model.origin, joint->parent.origin, placement->up);
+
+	if (update_placement)
+	{
+		VectorSubtract(placement->origin, fmdl_skeleton1.rootJoint->model.origin, placement->origin);
+		VectorAdd(placement->origin, fmdl_skeleton2.rootJoint->model.origin, placement->origin);
+	}
 }
 
 static void LerpReferences(void)
