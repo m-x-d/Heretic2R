@@ -13,6 +13,7 @@ int GetReferencedID(const struct model_s* model)
 	const fmdl_t* temp = model->extradata;
 
 	//mxd. H2 Toolkit code checks for model->model_type, decompiled code checks for model->skeletal_model...
+	//TODO: check which one is correct!
 	if (model->skeletal_model && temp->referenceType > REF_NULL && temp->referenceType < NUM_REFERENCED)
 		return temp->referenceType;
 
