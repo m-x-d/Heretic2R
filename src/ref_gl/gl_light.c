@@ -10,6 +10,8 @@
 static int r_dlightframecount; //mxd. Made static
 static float s_blocklights[34 * 34 * 3];
 
+#define DLIGHT_CUTOFF	64
+
 #pragma region ========================== DYNAMIC LIGHTS RENDERING ==========================
 
 static void R_RenderDlight(dlight_t* light)
@@ -47,9 +49,44 @@ void R_RenderDlights(void)
 
 #pragma region ========================== DYNAMIC LIGHTS ==========================
 
-void R_MarkLights(dlight_t* light, int bit, mnode_t* node)
+// Q2 counterpart
+void R_MarkLights(dlight_t* light, const int bit, const mnode_t* node)
 {
-	NOT_IMPLEMENTED
+	int i;
+	msurface_t* surf;
+
+	if (node->contents != -1)
+		return;
+
+	cplane_t* splitplane = node->plane;
+	const float dist = DotProduct(light->origin, splitplane->normal) - splitplane->dist;
+
+	if (dist > light->intensity - DLIGHT_CUTOFF)
+	{
+		R_MarkLights(light, bit, node->children[0]);
+		return;
+	}
+
+	if (dist < -light->intensity + DLIGHT_CUTOFF)
+	{
+		R_MarkLights(light, bit, node->children[1]);
+		return;
+	}
+
+	// Mark the polygons
+	for (i = 0, surf = r_worldmodel->surfaces + node->firstsurface; i < node->numsurfaces; i++, surf++)
+	{
+		if (surf->dlightframe != r_dlightframecount)
+		{
+			surf->dlightbits = 0;
+			surf->dlightframe = r_dlightframecount;
+		}
+
+		surf->dlightbits |= bit;
+	}
+
+	R_MarkLights(light, bit, node->children[0]);
+	R_MarkLights(light, bit, node->children[1]);
 }
 
 // Q2 counterpart

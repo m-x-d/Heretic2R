@@ -140,7 +140,7 @@ void R_DrawSpriteModel(entity_t* e)
 	}
 
 	e->frame %= psprite->numframes;
-	dsprframe_t* frame = &psprite->frames[e->frame];
+	const dsprframe_t* frame = &psprite->frames[e->frame];
 
 	// All-new logic from here and down!!!
 	qglShadeModel(GL_SMOOTH);
