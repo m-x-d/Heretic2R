@@ -8,9 +8,38 @@
 #include "q_Sprite.h"
 #include "Vector.h"
 
-static void R_DrawStandardSprite(entity_t* e, dsprframe_t* frame, vec3_t up, vec3_t right)
+static void R_DrawStandardSprite(const entity_t* e, const dsprframe_t* frame, vec3_t up, vec3_t right)
 {
-	NOT_IMPLEMENTED
+	vec3_t point;
+
+	const float xl = (float)-frame->origin_x * e->scale;
+	const float xr = (float)(frame->width - frame->origin_x) * e->scale;
+	const float yt = (float)-frame->origin_y * e->scale;
+	const float yb = (float)(frame->height - frame->origin_y) * e->scale;
+
+	qglBegin(GL_QUADS);
+
+	qglTexCoord2f(0.0f, 1.0f);
+	VectorMA(e->origin, yt, up, point);
+	VectorMA(point, xl, right, point);
+	(*qglVertex3fv)(point);
+
+	qglTexCoord2f(0.0f, 0.0f);
+	VectorMA(e->origin, yb, up, point);
+	VectorMA(point, xl, right, point);
+	qglVertex3fv(point);
+
+	qglTexCoord2f(1.0f, 0.0f);
+	VectorMA(e->origin, yb, up, point);
+	VectorMA(point, xr, right, point);
+	(*qglVertex3fv)(point);
+
+	qglTexCoord2f(1.0f, 1.0f);
+	VectorMA(e->origin, yt, up, point);
+	VectorMA(point, xr, right, point);
+	qglVertex3fv(point);
+
+	qglEnd();
 }
 
 static void R_DrawDynamicSprite(entity_t* e, dsprframe_t* frame, vec3_t up, vec3_t right)
