@@ -197,9 +197,10 @@ void Draw_StretchPic(int x, int y, int w, int h, char* name, const float alpha, 
 	Draw_Render(x, y, w, h, image, alpha);
 }
 
-void Draw_Pic(int x, int y, char* name, float alpha)
+void Draw_Pic(const int x, const int y, char* name, const float alpha)
 {
-	NOT_IMPLEMENTED
+	const image_t* pic = Draw_FindPic(name);
+	Draw_Render(x, y, pic->width, pic->height, pic, alpha);
 }
 
 void Draw_TileClear(int x, int y, int w, int h, char* pic)
