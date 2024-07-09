@@ -7,10 +7,14 @@
 #include "gl_local.h"
 #include "Vector.h"
 
+extern model_t* loadmodel;
+
 char skyname[MAX_QPATH];
 float skyrotate;
 vec3_t skyaxis;
 image_t* sky_images[6];
+
+msurface_t* warpface;
 
 // Speed up sin calculations - Ed
 //mxd. Pre-calculated sine wave in [-8.0 .. 8.0] range. Values are the same as in Q2 //TODO: replace with sinf()?
@@ -34,9 +38,33 @@ float r_turbsin[] =
 	-3.06147f, -2.87916f, -2.69512f, -2.50945f, -2.32228f, -2.1337f, -1.94384f, -1.75281f, -1.56072f, -1.3677f, -1.17384f, -0.979285f, -0.784137f, -0.588517f, -0.392541f, -0.19633f,
 };
 
-void GL_SubdivideSurface(msurface_t* fa)
+static void SubdividePolygon(int numverts, float* verts)
 {
 	NOT_IMPLEMENTED
+}
+
+void GL_SubdivideSurface(msurface_t* fa)
+{
+	static vec3_t verts[64]; //mxd. Made static
+	float* vec;
+
+	warpface = fa;
+
+	// Convert edges back to a normal polygon
+	int c;
+	for (c = 0; c < fa->numedges; c++)
+	{
+		const int lindex = loadmodel->surfedges[fa->firstedge + c];
+
+		if (lindex > 0)
+			vec = loadmodel->vertexes[loadmodel->edges[lindex].v[0]].position;
+		else
+			vec = loadmodel->vertexes[loadmodel->edges[-lindex].v[1]].position;
+
+		VectorCopy(vec, verts[c]);
+	}
+
+	SubdividePolygon(c, verts[0]);
 }
 
 static float skymins[2][6];
