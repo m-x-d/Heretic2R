@@ -35,8 +35,12 @@ typedef struct
 	int numfaces;
 } mmodel_t;
 
+#define SIDE_FRONT			0
+#define SIDE_BACK			1
+#define SIDE_ON				2
+
 #define SURF_PLANEBACK		2
-#define	SURF_DRAWSKY		4
+#define SURF_DRAWSKY		4
 #define SURF_DRAWTURB		16
 
 // Q2 counterpart

@@ -44,11 +44,124 @@ float skymaxs[2][6];
 float sky_min;
 float sky_max;
 
-#define MAX_CLIP_VERTS	64
+vec3_t skyclip[6] =
+{
+	{  1.0f,  1.0f, 0.0f },
+	{  1.0f, -1.0f, 0.0f },
+	{  0.0f, -1.0f, 1.0f },
+	{  0.0f,  1.0f, 1.0f },
+	{  1.0f,  0.0f, 1.0f },
+	{ -1.0f,  0.0f, 1.0f }
+};
 
-static void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
+static void DrawSkyPolygon(int nump, vec3_t vecs)
 {
 	NOT_IMPLEMENTED
+}
+
+#define MAX_CLIP_VERTS	64
+#define ON_EPSILON		0.1f // Point on plane side epsilon
+
+// Q2 counterpart
+static void ClipSkyPolygon(const int nump, vec3_t vecs, const int stage)
+{
+	int i;
+	float* v;
+	float dists[MAX_CLIP_VERTS];
+	int sides[MAX_CLIP_VERTS];
+	vec3_t newv[2][MAX_CLIP_VERTS];
+	int newc[2];
+	
+	if (nump > MAX_CLIP_VERTS - 2)
+		ri.Sys_Error(ERR_DROP, "ClipSkyPolygon: MAX_CLIP_VERTS");
+
+	if (stage == 6)
+	{	
+		// Fully clipped, so draw it
+		DrawSkyPolygon(nump, vecs);
+		return;
+	}
+
+	qboolean front = false;
+	qboolean back = false;
+	const float* norm = skyclip[stage];
+
+	for (i = 0, v = vecs; i < nump; i++, v += 3)
+	{
+		const float d = DotProduct(v, norm);
+
+		if (d > ON_EPSILON)
+		{
+			front = true;
+			sides[i] = SIDE_FRONT;
+		}
+		else if (d < -ON_EPSILON)
+		{
+			back = true;
+			sides[i] = SIDE_BACK;
+		}
+		else
+		{
+			sides[i] = SIDE_ON;
+		}
+
+		dists[i] = d;
+	}
+
+	if (!front || !back)
+	{
+		// Not clipped
+		ClipSkyPolygon(nump, vecs, stage + 1);
+		return;
+	}
+
+	// Clip it
+	sides[i] = sides[0];
+	dists[i] = dists[0];
+	VectorCopy(vecs, vecs + i * 3);
+	newc[0] = 0;
+	newc[1] = 0;
+
+	for (i = 0, v = vecs; i < nump; i++, v += 3)
+	{
+		switch (sides[i])
+		{
+			case SIDE_FRONT:
+				VectorCopy(v, newv[0][newc[0]]);
+				newc[0]++;
+				break;
+
+			case SIDE_BACK:
+				VectorCopy(v, newv[1][newc[1]]);
+				newc[1]++;
+				break;
+
+			case SIDE_ON:
+				VectorCopy(v, newv[0][newc[0]]);
+				newc[0]++;
+				VectorCopy(v, newv[1][newc[1]]);
+				newc[1]++;
+				break;
+		}
+
+		if (sides[i] == SIDE_ON || sides[i + 1] == SIDE_ON || sides[i + 1] == sides[i])
+			continue;
+
+		const float d = dists[i] / (dists[i] - dists[i + 1]);
+		for (int j = 0; j < 3; j++)
+		{
+			const float e = v[j] + d * (v[j + 3] - v[j]);
+			newv[0][newc[0]][j] = e;
+			newv[1][newc[1]][j] = e;
+		}
+
+		newc[0]++;
+		newc[1]++;
+	}
+
+	// Continue
+	ClipSkyPolygon(newc[0], newv[0][0], stage + 1);
+	ClipSkyPolygon(newc[1], newv[1][0], stage + 1);
 }
 
 // Q2 counterpart
