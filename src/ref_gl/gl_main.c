@@ -321,9 +321,140 @@ void R_DrawEntitiesOnList(void)
 	}
 }
 
-void GL_DrawParticles(int num_particles, particle_t* particles, qboolean alpha_particle)
+static GLfloat particle_st_coords[NUM_PARTICLE_TYPES][4] =
 {
-	NOT_IMPLEMENTED
+	{ 0.00390625f, 0.00390625f, 0.02734375f, 0.02734375f },
+	{ 0.03515625f, 0.00390625f, 0.05859375f, 0.02734375f },
+	{ 0.06640625f, 0.00390625f, 0.08984375f, 0.02734375f },
+	{ 0.09765625f, 0.00390625f, 0.12109375f, 0.02734375f },
+	{ 0.00390625f, 0.03515625f, 0.02734375f, 0.05859375f },
+	{ 0.03515625f, 0.03515625f, 0.05859375f, 0.05859375f },
+	{ 0.06640625f, 0.03515625f, 0.08984375f, 0.05859375f },
+	{ 0.09765625f, 0.03515625f, 0.12109375f, 0.05859375f },
+	{ 0.00390625f, 0.06640625f, 0.02734375f, 0.08984375f },
+	{ 0.03515625f, 0.06640625f, 0.05859375f, 0.08984375f },
+	{ 0.06640625f, 0.06640625f, 0.08984375f, 0.08984375f },
+	{ 0.09765625f, 0.06640625f, 0.12109375f, 0.08984375f },
+	{ 0.00390625f, 0.09765625f, 0.02734375f, 0.12109375f },
+	{ 0.03515625f, 0.09765625f, 0.05859375f, 0.12109375f },
+	{ 0.06640625f, 0.09765625f, 0.08984375f, 0.12109375f },
+	{ 0.09765625f, 0.09765625f, 0.12109375f, 0.12109375f },
+	{ 0.12890625f, 0.00390625f, 0.18359375f, 0.05859375f },
+	{ 0.19140625f, 0.00390625f, 0.24609375f, 0.05859375f },
+	{ 0.12890625f, 0.06640625f, 0.18359375f, 0.12109375f },
+	{ 0.19140625f, 0.06640625f, 0.24609375f, 0.12109375f },
+	{ 0.00390625f, 0.12890625f, 0.12109375f, 0.24609375f },
+	{ 0.12890625f, 0.12890625f, 0.24609375f, 0.24609375f },
+	{ 0.25390625f, 0.00390625f, 0.37109375f, 0.12109375f },
+	{ 0.37890625f, 0.00390625f, 0.49609375f, 0.12109375f },
+	{ 0.25390625f, 0.12890625f, 0.37109375f, 0.24609375f },
+	{ 0.37890625f, 0.12890625f, 0.49609375f, 0.24609375f },
+	{ 0.00390625f, 0.25390625f, 0.24609375f, 0.49609375f },
+	{ 0.25390625f, 0.25390625f, 0.49609375f, 0.49609375f },
+	{ 0.50390625f, 0.00390625f, 0.74609375f, 0.24609375f },
+	{ 0.75390625f, 0.00390625f, 0.99609375f, 0.24609375f },
+	{ 0.50390625f, 0.25390625f, 0.74609375f, 0.49609375f },
+	{ 0.75390625f, 0.25390625f, 0.87109375f, 0.37109375f },
+	{ 0.87890625f, 0.25390625f, 0.99609375f, 0.37109375f },
+	{ 0.75390625f, 0.37890625f, 0.87109375f, 0.49609375f },
+	{ 0.87890625f, 0.37890625f, 0.99609375f, 0.49609375f },
+	{ 0.00390625f, 0.50390625f, 0.24609375f, 0.74609375f },
+	{ 0.00390625f, 0.50390625f, 0.24609375f, 0.74609375f },
+	{ 0.25390625f, 0.50390625f, 0.37109375f, 0.62109375f },
+	{ 0.37890625f, 0.50390625f, 0.43359375f, 0.55859375f },
+	{ 0.44140625f, 0.50390625f, 0.49609375f, 0.55859375f },
+	{ 0.37890625f, 0.56640625f, 0.43359375f, 0.62109375f },
+	{ 0.44140625f, 0.56640625f, 0.49609375f, 0.62109375f },
+	{ 0.25390625f, 0.62890625f, 0.30859375f, 0.68359375f },
+	{ 0.31640625f, 0.62890625f, 0.37109375f, 0.68359375f },
+	{ 0.25390625f, 0.69140625f, 0.30859375f, 0.74609375f },
+	{ 0.31640625f, 0.69140625f, 0.37109375f, 0.74609375f },
+	{ 0.37890625f, 0.62890625f, 0.43359375f, 0.68359375f },
+	{ 0.44140625f, 0.62890625f, 0.49609375f, 0.68359375f },
+	{ 0.37890625f, 0.69140625f, 0.43359375f, 0.74609375f },
+	{ 0.44140625f, 0.69140625f, 0.49609375f, 0.74609375f },
+	{ 0.00390625f, 0.75390625f, 0.24609375f, 0.99609375f },
+	{ 0.25390625f, 0.75390625f, 0.49609375f, 0.99609375f },
+	{ 0.50390625f, 0.50390625f, 0.62109375f, 0.62109375f },
+	{ 0.62890625f, 0.50390625f, 0.74609375f, 0.62109375f },
+	{ 0.50390625f, 0.62890625f, 0.62109375f, 0.74609375f },
+	{ 0.62890625f, 0.62890625f, 0.74609375f, 0.74609375f },
+	{ 0.75390625f, 0.50390625f, 0.99609375f, 0.74609375f },
+	{ 0.50390625f, 0.75390625f, 0.74609375f, 0.99609375f },
+	{ 0.75390625f, 0.75390625f, 0.87109375f, 0.87109375f },
+	{ 0.87890625f, 0.75390625f, 0.99609375f, 0.87109375f },
+	{ 0.75390625f, 0.87890625f, 0.87109375f, 0.99609375f },
+	{ 0.87890625f, 0.87890625f, 0.99609375f, 0.99609375f }
+};
+
+static void GL_DrawParticles(const int num_particles, particle_t* particles, const qboolean alpha_particle)
+{
+	int i;
+	particle_t* p;
+
+	if (alpha_particle)
+	{
+		GL_BindImage(r_aparticletexture);
+		qglBlendFunc(GL_ONE, GL_ONE);
+
+		if ((int)r_fog->value || (int)cl_camera_under_surface->value) //mxd. Removed gl_fog_broken cvar check
+			qglDisable(GL_FOG);
+
+		qglDisable(GL_ALPHA_TEST);
+	}
+	else
+	{
+		GL_BindImage(r_particletexture);
+		qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
+	qglEnable(GL_BLEND);
+	GL_TexEnv(GL_MODULATE);
+
+	qglBegin(GL_QUADS);
+
+	for (i = 0, p = particles; i < num_particles; i++, p++)
+	{
+		vec3_t p_up;
+		VectorScale(vup, p->scale, p_up);
+
+		vec3_t p_right;
+		VectorScale(vright, p->scale, p_right);
+
+		paletteRGBA_t c = p->color;
+		if (!alpha_particle)
+			c.a = 255;
+
+		const byte p_type = p->type & 127; // Strip particle flags
+
+		qglColor4ubv(c.c_array);
+
+		qglTexCoord2f(particle_st_coords[p_type][0], particle_st_coords[p_type][1]);
+		qglVertex3f(p->origin[0] + p_up[0], p->origin[1] + p_up[1], p->origin[2] + p_up[2]);
+
+		qglTexCoord2f(particle_st_coords[p_type][2], particle_st_coords[p_type][1]);
+		qglVertex3f(p->origin[0] + p_right[0], p->origin[1] + p_right[1], p->origin[2] + p_right[2]);
+
+		qglTexCoord2f(particle_st_coords[p_type][2], particle_st_coords[p_type][3]);
+		qglVertex3f(p->origin[0] - p_up[0], p->origin[1] - p_up[1], p->origin[2] - p_up[2]);
+
+		qglTexCoord2f(particle_st_coords[p_type][0], particle_st_coords[p_type][3]);
+		qglVertex3f(p->origin[0] - p_right[0], p->origin[1] - p_right[1], p->origin[2] - p_right[2]);
+	}
+
+	qglEnd();
+
+	if (alpha_particle)
+	{
+		if ((int)r_fog->value || (int)cl_camera_under_surface->value) //mxd. Removed gl_fog_broken cvar check
+			qglEnable(GL_FOG);
+
+		qglEnable(GL_ALPHA_TEST);
+	}
+
+	qglDisable(GL_BLEND);
+	qglColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	GL_TexEnv(GL_REPLACE);
 }
 
 void R_PolyBlend(void)
