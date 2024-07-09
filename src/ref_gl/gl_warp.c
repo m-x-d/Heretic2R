@@ -44,9 +44,26 @@ float skymaxs[2][6];
 float sky_min;
 float sky_max;
 
-void R_AddSkySurface(msurface_t* fa)
+#define MAX_CLIP_VERTS	64
+
+static void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
 {
 	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart
+void R_AddSkySurface(const msurface_t* fa)
+{
+	vec3_t verts[MAX_CLIP_VERTS];
+
+	// Calculate vertex values for sky box
+	for (const glpoly_t* p = fa->polys; p != NULL; p = p->next)
+	{
+		for (int i = 0; i < p->numverts; i++)
+			VectorSubtract(p->verts[i], r_origin, verts[i]);
+
+		ClipSkyPolygon(p->numverts, verts[0], 0);
+	}
 }
 
 // Q2 counterpart

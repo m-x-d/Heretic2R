@@ -317,7 +317,7 @@ void R_DrawWorld(void);
 
 // gl_warp.c
 void GL_SubdivideSurface(msurface_t* fa);
-void R_AddSkySurface(msurface_t* fa);
+void R_AddSkySurface(const msurface_t* fa);
 void R_ClearSkyBox(void);
 void R_DrawSkyBox(void);
 
