@@ -71,11 +71,6 @@ static void DrawGLPoly(glpoly_t* p)
 	NOT_IMPLEMENTED
 }
 
-static void EmitWaterPolys(const msurface_t* fa, const qboolean undulate)
-{
-	NOT_IMPLEMENTED
-}
-
 static void DrawGLPolyChain(glpoly_t* p, float soffset, float toffset)
 {
 	NOT_IMPLEMENTED
