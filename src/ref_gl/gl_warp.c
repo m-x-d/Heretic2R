@@ -34,9 +34,20 @@ float r_turbsin[] =
 	-3.06147f, -2.87916f, -2.69512f, -2.50945f, -2.32228f, -2.1337f, -1.94384f, -1.75281f, -1.56072f, -1.3677f, -1.17384f, -0.979285f, -0.784137f, -0.588517f, -0.392541f, -0.19633f,
 };
 
-static void BoundPoly(int numverts, float* verts, vec3_t mins, vec3_t maxs)
+// Q2 counterpart
+static void BoundPoly(const int numverts, const float* verts, vec3_t mins, vec3_t maxs)
 {
-	NOT_IMPLEMENTED
+	ClearBounds(mins, maxs); //mxd. Original code directly sets mins to 9999, maxs to -9999.
+
+	const float* v = verts;
+	for (int i = 0; i < numverts; i++)
+	{
+		for (int j = 0; j < 3; j++, v++)
+		{
+			mins[j] = min(*v, mins[j]);
+			maxs[j] = max(*v, maxs[j]);
+		}
+	}
 }
 
 // Q2 counterpart
