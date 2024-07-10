@@ -304,7 +304,7 @@ void R_DrawEntitiesOnList(void)
 	for (int i = 0; i < r_newrefdef.num_entities; i++)
 	{
 		currententity = r_newrefdef.entities[i];
-		if (currententity == NULL) // H2: extra sanity check
+		if (currententity->model == NULL) // H2: extra sanity check
 		{
 			Com_Printf("Attempt to draw NULL model\n");
 			R_DrawNullModel();
