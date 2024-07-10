@@ -84,9 +84,9 @@ static void LerpStandardSkeleton(void)
 
 		for (int i = 0; i < 3; i++)
 		{
-			fmdl_move[i] = framelerp * pframe->translate[i] + framelerp_inv * poldframe->translate[i];
-			sfl_skel1.front_vector[i] = framelerp * pframe->scale[i];
-			sfl_skel1.back_vector[i] = framelerp_inv * poldframe->scale[i];
+			fmdl_move[i] = framelerp_inv * pframe->translate[i] + framelerp * poldframe->translate[i];
+			sfl_skel1.front_vector[i] = framelerp_inv * pframe->scale[i];
+			sfl_skel1.back_vector[i] = framelerp * poldframe->scale[i];
 		}
 		
 		LerpVerts(fmdl_num_xyz, sfl_skel1.verts, sfl_skel1.old_verts, lerped, fmdl_move, sfl_skel1.front_vector, sfl_skel1.back_vector);
@@ -225,9 +225,9 @@ static void StandardFrameLerp(void)
 
 	for (int i = 0; i < 3; i++)
 	{
-		qfl[i] = framelerp * pframe->translate[i] + framelerp_inv * poldframe->translate[i];
-		sfl.front_vector[i] = framelerp * pframe->scale[i];
-		sfl.back_vector[i] = framelerp_inv * poldframe->scale[i];
+		qfl[i] = framelerp_inv * pframe->translate[i] + framelerp * poldframe->translate[i];
+		sfl.front_vector[i] = framelerp_inv * pframe->scale[i];
+		sfl.back_vector[i] = framelerp * poldframe->scale[i];
 	}
 
 	if (currententity->scale != 1.0)
