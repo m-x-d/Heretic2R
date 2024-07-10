@@ -528,10 +528,25 @@ static image_t* GetSkin(void)
 	return r_notexture;
 }
 
-static image_t* GetSkinFromNode(int nodeinfo_index)
+static image_t* GetSkinFromNode(const int index)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	image_t* skin;
+
+	if (currententity->skin != NULL && currententity->skins != NULL)
+		skin = currententity->skins[currententity->fmnodeinfo[index].skin];
+	else
+		skin = currentmodel->skins[currententity->fmnodeinfo[index].skin];
+
+	if (skin != NULL)
+		return skin;
+
+	if (currententity->skin != NULL)
+		return currententity->skin;
+
+	if (currentmodel->skins[0] != NULL)
+		return currentmodel->skins[0];
+
+	return r_notexture;
 }
 
 static void InterpolateVertexNormals(int num_xyz, float inverted_backlep, float backlep, fmtrivertx_t* verts, fmtrivertx_t* old_verts, vec3_t* normals)
