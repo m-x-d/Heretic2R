@@ -178,8 +178,8 @@ static void LerpReferences(void)
 		}
 		else if (currententity->swapFrame == -1 || fmdl_referenceInfo->jointIDs[i] < currententity->swapCluster)
 		{
-			Placement_t* frame = &fmodel->refsForFrame[currententity->frame * num_refs].placement;
-			Placement_t* oldframe = &fmodel->refsForFrame[currententity->oldframe * num_refs].placement;
+			Placement_t* frame = &fmodel->refsForFrame[currententity->frame * num_refs + i].placement;
+			Placement_t* oldframe = &fmodel->refsForFrame[currententity->oldframe * num_refs + i].placement;
 
 			GL_LerpVert(frame->origin,		oldframe->origin,	cur_placement->origin,		qfl, sfl.front_vector, sfl.back_vector);
 			GL_LerpVert(frame->direction,	oldframe->direction,	cur_placement->direction,	qfl, sfl.front_vector, sfl.back_vector);
