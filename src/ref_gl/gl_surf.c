@@ -308,7 +308,7 @@ static void R_DrawAlphaEntity(entity_t* ent)
 	if (!(int)r_drawentities->value)
 		return;
 
-	if (currententity == NULL)
+	if (currententity->model == NULL)
 	{
 		Com_DPrintf("Attempt to draw NULL alpha model\n");
 		R_DrawNullModel();
@@ -359,7 +359,6 @@ void R_SortAndDrawAlphaSurfaces(void)
 	#define MAX_ALPHA_SURFACES 512 //TODO: is max number of alpha surfaces actually defined somewhere?
 
 	int i;
-	entity_t* ent;
 	msurface_t* surf;
 	AlphaSurfaceSortInfo_t sorted_ents[MAX_ALPHA_ENTITIES];
 	AlphaSurfaceSortInfo_t sorted_surfs[MAX_ALPHA_SURFACES];
@@ -370,8 +369,10 @@ void R_SortAndDrawAlphaSurfaces(void)
 	info->depth = -100000.0f;
 
 	// Add alpha entities to array...
-	for (i = 0, ent = r_newrefdef.alpha_entities[0], info = &sorted_ents[0]; i < r_newrefdef.num_alpha_entities; i++, ent++, info++)
+	for (i = 0, info = &sorted_ents[0]; i < r_newrefdef.num_alpha_entities; i++, info++)
 	{
+		entity_t* ent = r_newrefdef.alpha_entities[i];
+
 		info->entity = ent;
 		info->depth = ent->depth;
 	}
