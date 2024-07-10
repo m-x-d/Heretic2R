@@ -25,7 +25,7 @@ int registration_sequence;
 // Q2 counterpart
 mleaf_t* Mod_PointInLeaf(vec3_t p, const model_t* model)
 {
-	if (!model || !model->nodes)
+	if (model == NULL || model->nodes == NULL)
 		ri.Sys_Error(ERR_DROP, "Mod_PointInLeaf: bad model");
 
 	mnode_t* node = model->nodes;
