@@ -66,6 +66,16 @@ static image_t* R_TextureAnimation(const mtexinfo_t* tex)
 	return tex->image;
 }
 
+static void DrawGLPoly(glpoly_t* p)
+{
+	NOT_IMPLEMENTED
+}
+
+static void EmitWaterPolys(const msurface_t* fa, const qboolean undulate)
+{
+	NOT_IMPLEMENTED
+}
+
 static void DrawGLPolyChain(glpoly_t* p, float soffset, float toffset)
 {
 	NOT_IMPLEMENTED
@@ -348,9 +358,39 @@ static void R_DrawAlphaEntity(entity_t* ent)
 }
 
 // New in H2
-static void R_DrawAlphaSurface(msurface_t* surf)
+static void R_DrawAlphaSurface(const msurface_t* surf)
 {
-	NOT_IMPLEMENTED
+	qglEnable(GL_ALPHA_TEST);
+	qglAlphaFunc(GL_GREATER, 0.05f);
+	qglBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
+	qglLoadMatrixf(r_world_matrix);
+	qglEnable(GL_BLEND);
+	GL_TexEnv(GL_MODULATE);
+
+	GL_BindImage(surf->texinfo->image);
+	c_brush_polys += 1;
+	currentmodel = r_worldmodel;
+
+	float alpha;
+	if (surf->texinfo->flags & SURF_TRANS33)
+		alpha = gl_trans33->value;
+	else if (surf->texinfo->flags & SURF_TRANS66)
+		alpha = gl_trans66->value;
+	else
+		alpha = 1.0f;
+
+	qglColor4f(gl_state.inverse_intensity, gl_state.inverse_intensity, gl_state.inverse_intensity, alpha);
+
+	if (surf->flags & SURF_DRAWTURB)
+		EmitWaterPolys(surf, surf->flags & SURF_UNDULATE);
+	else
+		DrawGLPoly(surf->polys);
+
+	GL_TexEnv(GL_REPLACE);
+	qglColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	qglDisable(GL_BLEND);
+	qglDisable(GL_ALPHA_TEST);
+	qglAlphaFunc(GL_GREATER, 0.666f);
 }
 
 void R_SortAndDrawAlphaSurfaces(void)
@@ -550,7 +590,7 @@ static void DrawTextureChains(void)
 
 			c_visible_textures++;
 
-			for (msurface_t* s = image->multitexturechain; s; s = s->texturechain)
+			for (msurface_t* s = image->multitexturechain; s != NULL; s = s->texturechain)
 				GL_RenderLightmappedPoly_ARB(s);
 
 			image->multitexturechain = NULL;
@@ -572,7 +612,7 @@ static void DrawTextureChains(void)
 
 			c_visible_textures++;
 
-			for (msurface_t* s = image->texturechain; s; s = s->texturechain)
+			for (msurface_t* s = image->texturechain; s != NULL; s = s->texturechain)
 				render_brush_poly(s); // H2: new gl_drawflat logic
 
 			image->texturechain = NULL;
@@ -587,7 +627,7 @@ static void DrawTextureChains(void)
 
 			c_visible_textures++;
 
-			for (msurface_t* s = image->texturechain; s; s = s->texturechain)
+			for (msurface_t* s = image->texturechain; s != NULL; s = s->texturechain)
 				if (!(s->flags & SURF_DRAWTURB))
 					render_brush_poly(s); // H2: new gl_drawflat logic
 		}
@@ -599,7 +639,7 @@ static void DrawTextureChains(void)
 			if (!image->registration_sequence || image->texturechain == NULL)
 				continue;
 
-			for (msurface_t* s = image->texturechain; s; s = s->texturechain)
+			for (msurface_t* s = image->texturechain; s != NULL; s = s->texturechain)
 				if (s->flags & SURF_DRAWTURB)
 					render_brush_poly(s); // H2: new gl_drawflat logic
 
