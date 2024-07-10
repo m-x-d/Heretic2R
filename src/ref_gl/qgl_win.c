@@ -3016,7 +3016,7 @@ qboolean QGL_Init(const char* dllname)
 		char* error_msg = NULL;
 
 		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&error_msg, 0, NULL);
-		ri.Con_Printf(PRINT_ALL, "s: Failed to load '%s': %s\n", __func__, dllname, error_msg); //mxd. More detailed output
+		ri.Con_Printf(PRINT_ALL, "Failed to load '%s': %s\n", dllname, error_msg);
 		LocalFree(error_msg); // NEW
 
 		return false;
