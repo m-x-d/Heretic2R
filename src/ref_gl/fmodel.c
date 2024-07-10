@@ -97,7 +97,7 @@ static qboolean fmLoadFrames(model_t* model, const int version, const int datasi
 	for (int i = 0; i < fmodel->header.num_frames; i++)
 	{
 		const fmaliasframe_t* in = (const fmaliasframe_t*)((const byte*)buffer + i * fmodel->header.framesize);
-		fmaliasframe_t* out = &fmodel->frames[i];
+		fmaliasframe_t* out = (fmaliasframe_t*)((byte*)fmodel->frames + i * fmodel->header.framesize);
 
 		VectorCopy(in->scale, out->scale);
 		VectorCopy(in->translate, out->translate);
@@ -545,9 +545,9 @@ static void GL_DrawFlexFrameLerp(void)
 	fmnodeinfo_t* nodeinfo;
 	vec3_t normals_array[MAX_VERTS];
 
-	const qboolean draw_reflection = (currententity->flags & RF_REFLECTION); //mxd. Skpped gl_envmap_broken check
+	const qboolean draw_reflection = (currententity->flags & RF_REFLECTION); //mxd. Skipped gl_envmap_broken check
 	const image_t* skin = GetSkin();
-	float alpha = 0.0f; //mxd. Set initial value to avoid compiler warnings...
+	float alpha = 1.0f; //mxd. Set in Loki Linux version, but not in Windows version.
 
 	if (currententity->color.a != 255 || currententity->flags & RF_TRANS_ANY || skin->has_alpha)
 	{
