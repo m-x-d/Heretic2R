@@ -10,6 +10,8 @@
 extern model_t* loadmodel;
 msurface_t* warpface;
 
+#define SUBDIVIDE_SIZE	64
+
 // Speed up sin calculations - Ed
 //mxd. Pre-calculated sine wave in [-8.0 .. 8.0] range. Values are the same as in Q2 //TODO: replace with sinf()?
 float r_turbsin[] =
@@ -32,9 +34,113 @@ float r_turbsin[] =
 	-3.06147f, -2.87916f, -2.69512f, -2.50945f, -2.32228f, -2.1337f, -1.94384f, -1.75281f, -1.56072f, -1.3677f, -1.17384f, -0.979285f, -0.784137f, -0.588517f, -0.392541f, -0.19633f,
 };
 
-static void SubdividePolygon(int numverts, float* verts)
+static void BoundPoly(int numverts, float* verts, vec3_t mins, vec3_t maxs)
 {
 	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart
+static void SubdividePolygon(int numverts, float* verts)
+{
+	vec3_t mins;
+	vec3_t maxs;
+	vec3_t front[64];
+	vec3_t back[64];
+	float dist[64];
+	vec3_t total;
+
+	if (numverts > 60)
+		ri.Sys_Error(ERR_DROP, "numverts = %i", numverts);
+
+	BoundPoly(numverts, verts, mins, maxs);
+
+	for (int i = 0; i < 3; i++)
+	{
+		float m = (mins[i] + maxs[i]) * 0.5f;
+		m = SUBDIVIDE_SIZE * floorf(m / SUBDIVIDE_SIZE + 0.5f); //mxd. floor -> floorf
+
+		if (maxs[i] - m < 8.0f || m - mins[i] < 8.0f)
+			continue;
+
+		// Cut it
+		float* v = verts + i;
+		for (int j = 0; j < numverts; j++, v += 3)
+			dist[j] = *v - m;
+
+		// Wrap cases
+		dist[numverts] = dist[0];
+		v -= i;
+		VectorCopy(verts, v);
+
+		int f = 0;
+		int b = 0;
+		v = verts;
+		for (int j = 0; j < numverts; j++, v += 3)
+		{
+			if (dist[j] >= 0)
+			{
+				VectorCopy(v, front[f]);
+				f++;
+			}
+
+			if (dist[j] <= 0)
+			{
+				VectorCopy(v, back[b]);
+				b++;
+			}
+
+			if (dist[j] == 0.0f || dist[j + 1] == 0.0f)
+				continue;
+
+			if ((dist[j] > 0) != (dist[j + 1] > 0))
+			{
+				// Clip point
+				const float frac = dist[j] / (dist[j] - dist[j + 1]);
+
+				for (int k = 0; k < 3; k++)
+					front[f][k] = back[b][k] = v[k] + frac * (v[3 + k] - v[k]);
+
+				f++;
+				b++;
+			}
+		}
+
+		SubdividePolygon(f, front[0]);
+		SubdividePolygon(b, back[0]);
+
+		return;
+	}
+
+	// Add a point in the center to help keep warp valid
+	glpoly_t* poly = Hunk_Alloc((int)sizeof(glpoly_t) + ((numverts - 4) + 2) * VERTEXSIZE * sizeof(float));
+	poly->next = warpface->polys;
+	warpface->polys = poly;
+	poly->numverts = numverts + 2;
+	VectorClear(total);
+
+	float total_s = 0.0f;
+	float total_t = 0.0f;
+
+	for (int i = 0; i < numverts; i++, verts += 3)
+	{
+		VectorCopy(verts, poly->verts[i + 1]);
+		const float s = DotProduct(verts, warpface->texinfo->vecs[0]);
+		const float t = DotProduct(verts, warpface->texinfo->vecs[1]);
+
+		total_s += s;
+		total_t += t;
+		VectorAdd(total, verts, total);
+
+		poly->verts[i + 1][3] = s;
+		poly->verts[i + 1][4] = t;
+	}
+
+	VectorScale(total, 1.0f / (float)numverts, poly->verts[0]);
+	poly->verts[0][3] = total_s / (float)numverts;
+	poly->verts[0][4] = total_t / (float)numverts;
+
+	// Copy first vertex to last
+	memcpy(poly->verts[numverts + 1], poly->verts[1], sizeof(poly->verts[0]));
 }
 
 void GL_SubdivideSurface(msurface_t* fa)
