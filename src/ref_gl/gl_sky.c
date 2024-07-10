@@ -7,7 +7,6 @@
 #include "gl_local.h"
 #include "Vector.h"
 
-static char skyname[MAX_QPATH];
 static float skyrotate;
 static vec3_t skyaxis;
 static image_t* sky_images[6];
@@ -328,6 +327,7 @@ void R_SetSky(const char* name, const float rotate, const vec3_t axis)
 {
 	static char* suf[] = { "rt", "bk", "lf", "ft", "up", "dn" }; // 3dstudio environment map names //mxd. Made local static
 	char pathname[MAX_QPATH];
+	char skyname[MAX_QPATH];
 
 	strncpy_s(skyname, sizeof(skyname), name, sizeof(skyname) - 1); //mxd. strncpy -> strncpy_s
 	skyrotate = rotate;
