@@ -269,8 +269,8 @@ static void MakeSkyVec(float s, float t, const int axis)
 	s = (s + 1.0f) * 0.5f;
 	t = (t + 1.0f) * 0.5f;
 
-	Clamp(s, sky_min, sky_max);
-	Clamp(t, sky_min, sky_max);
+	s = Clamp(s, sky_min, sky_max);
+	t = Clamp(t, sky_min, sky_max);
 
 	qglTexCoord2f(s, 1.0f - t);
 	qglVertex3fv(v);
