@@ -296,8 +296,7 @@ typedef struct
 // New in H2
 static int AlphaSurfComp(const AlphaSurfaceSortInfo_t* info1, const AlphaSurfaceSortInfo_t* info2)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	return (int)((info2->depth - info1->depth) * 1000.0f);
 }
 
 // New in H2 //TODO: logic identical to for loop logic in R_DrawEntitiesOnList (except for 1-st warning message). Move to gl_rmain as R_DrawEntity and replace said logic?
