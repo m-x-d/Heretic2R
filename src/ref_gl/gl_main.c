@@ -204,24 +204,16 @@ void HandleTrans(const entity_t* e)
 		}
 
 		qglEnable(GL_BLEND);
-
-		return;
 	}
-
-	if (!(e->flags & RF_TRANS_ADD_ALPHA))
+	else if (!(e->flags & RF_TRANS_ADD_ALPHA) && !(e->flags & RF_ALPHA_TEXTURE))
 	{
-		if (!(e->flags & RF_ALPHA_TEXTURE))
-		{
-			if ((int)r_fog->value || (int)cl_camera_under_surface->value) //mxd. Skipped gl_fog_broken check
-				qglDisable(GL_FOG);
+		if ((int)r_fog->value || (int)cl_camera_under_surface->value) //mxd. Skipped gl_fog_broken check
+			qglDisable(GL_FOG);
 
-			qglDisable(GL_ALPHA_TEST);
-			qglBlendFunc(GL_ONE, GL_ONE);
-			qglColor4ub(e->color.r, e->color.g, e->color.b, 255);
-			qglEnable(GL_BLEND);
-
-			return;
-		}
+		qglDisable(GL_ALPHA_TEST);
+		qglBlendFunc(GL_ONE, GL_ONE);
+		qglColor4ub(e->color.r, e->color.g, e->color.b, 255);
+		qglEnable(GL_BLEND);
 	}
 	else if (!(e->flags & RF_ALPHA_TEXTURE))
 	{
@@ -233,15 +225,15 @@ void HandleTrans(const entity_t* e)
 		const float alpha = (float)e->color.a / 255.0f / 255.0f; //TODO: why is it divided twice?..
 		qglColor4f((float)e->color.r * alpha, (float)e->color.g * alpha, (float)e->color.b * alpha, 1.0f);
 		qglEnable(GL_BLEND);
-
-		return;
 	}
-
-	qglEnable(GL_ALPHA_TEST);
-	qglAlphaFunc(GL_GREATER, 0.0f);
-	qglBlendFunc(GL_SRC_ALPHA, GL_ONE);
-	qglColor4ub(e->color.r, e->color.g, e->color.b, e->color.a);
-	qglEnable(GL_BLEND);
+	else
+	{
+		qglEnable(GL_ALPHA_TEST);
+		qglAlphaFunc(GL_GREATER, 0.0f);
+		qglBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		qglColor4ub(e->color.r, e->color.g, e->color.b, e->color.a);
+		qglEnable(GL_BLEND);
+	}
 }
 
 void CleanupTrans(const entity_t* e)
@@ -1265,7 +1257,7 @@ static void GL_ScreenFlash(paletteRGBA_t color)
 }
 
 // H2: return type: void -> int //TODO: useless: always returns 0 
-int R_RenderFrame(refdef_t* fd)
+int R_RenderFrame(const refdef_t* fd)
 {
 	paletteRGBA_t color;
 
