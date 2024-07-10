@@ -66,9 +66,21 @@ static image_t* R_TextureAnimation(const mtexinfo_t* tex)
 	return tex->image;
 }
 
-static void DrawGLPoly(glpoly_t* p)
+// Q2 counterpart
+static void DrawGLPoly(const glpoly_t* p)
 {
-	NOT_IMPLEMENTED
+	int i;
+	const float* v;
+	
+	qglBegin(GL_POLYGON);
+
+	for (i = 0, v = p->verts[0]; i < p->numverts; i++, v += VERTEXSIZE)
+	{
+		qglTexCoord2f(v[3], v[4]);
+		qglVertex3fv(v);
+	}
+
+	qglEnd();
 }
 
 static void DrawGLPolyChain(glpoly_t* p, float soffset, float toffset)
