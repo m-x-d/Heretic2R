@@ -5,6 +5,7 @@
 //
 
 #include "gl_local.h"
+#include "Vector.h"
 
 void GL_ScreenShot_f(void)
 {
@@ -81,4 +82,12 @@ void GL_UpdateSwapInterval(void)
 #endif
 		}
 	}
+}
+
+// Transforms vector to screen space?
+void TransformVector(const vec3_t v, vec3_t out)
+{
+	out[0] = DotProduct(v, vright);
+	out[1] = DotProduct(v, vup);
+	out[2] = DotProduct(v, vpn);
 }

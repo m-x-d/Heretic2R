@@ -300,6 +300,7 @@ void GL_ScreenShot_f(void);
 void GL_Strings_f(void);
 void GL_SetDefaultState(void);
 void GL_UpdateSwapInterval(void);
+void TransformVector(const vec3_t v, vec3_t out); // New in H2
 
 // gl_model.c (Mod_XX function declarations are in gl_model.h)
 extern int registration_sequence;
