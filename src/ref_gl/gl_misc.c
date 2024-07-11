@@ -14,7 +14,11 @@ void GL_ScreenShot_f(void)
 
 void GL_Strings_f(void)
 {
-	NOT_IMPLEMENTED
+	//mxd. ri.Con_Printf() in Q2.
+	Com_Printf("GL_VENDOR: %s\n", gl_config.vendor_string);
+	Com_Printf("GL_RENDERER: %s\n", gl_config.renderer_string);
+	Com_Printf("GL_VERSION: %s\n", gl_config.version_string);
+	//Com_Printf("GL_EXT: %s\n", gl_config.extensions_string); //mxd. Disabled, because Com_Printf can't handle strings longer than 1024 chars. //TODO: implement?
 }
 
 void GL_SetDefaultState(void)
