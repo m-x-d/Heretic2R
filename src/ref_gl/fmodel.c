@@ -549,9 +549,16 @@ static image_t* GetSkinFromNode(const int index)
 	return r_notexture;
 }
 
-static void InterpolateVertexNormals(int num_xyz, float inverted_backlep, float backlep, fmtrivertx_t* verts, fmtrivertx_t* old_verts, vec3_t* normals)
+static void InterpolateVertexNormals(const int num_xyz, const float lerp_inv, const float lerp, const fmtrivertx_t* verts, const fmtrivertx_t* old_verts, vec3_t* normals)
 {
-	NOT_IMPLEMENTED
+	int i;
+	const fmtrivertx_t* v;
+	const fmtrivertx_t* ov;
+	vec3_t* n;
+
+	for (i = 0, v = verts, ov = old_verts, n = normals; i < num_xyz; i++, v++, ov++, n++)
+		for (int j = 0; j < 3; j++)
+			(*n)[j] = lerp * r_avertexnormals[ov->lightnormalindex][j] + lerp_inv * r_avertexnormals[v->lightnormalindex][j];
 }
 
 static void GL_DrawFlexFrameLerp(void)
