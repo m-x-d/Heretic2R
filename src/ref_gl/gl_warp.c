@@ -53,7 +53,7 @@ static void BoundPoly(const int numverts, const float* verts, vec3_t mins, vec3_
 }
 
 // Q2 counterpart
-static void SubdividePolygon(int numverts, float* verts)
+static void SubdividePolygon(const int numverts, float* verts)
 {
 	vec3_t mins;
 	vec3_t maxs;
