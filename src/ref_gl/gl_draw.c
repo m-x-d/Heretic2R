@@ -203,9 +203,39 @@ void Draw_Pic(const int x, const int y, char* name, const float alpha)
 	Draw_Render(x, y, pic->width, pic->height, pic, alpha);
 }
 
-void Draw_TileClear(int x, int y, int w, int h, char* pic)
+void Draw_TileClear(const int x, const int y, const int w, const int h, char* pic)
 {
-	NOT_IMPLEMENTED
+	const image_t* image = Draw_FindPic(pic);
+
+	if (gl_alphatest_broken && !image->has_alpha)
+		qglDisable(GL_ALPHA_TEST);
+
+	GL_BindImage(image);
+
+	//mxd. Divided by 64 in Q2
+	const float sl = (float)x / 128.0f;
+	const float sr = (float)(x + w) / 128.0f;
+	const float tt = (float)y / 128.0f;
+	const float tb = (float)(y + h) / 128.0f;
+
+	qglBegin(GL_QUADS);
+
+	qglTexCoord2f(sl, tt);
+	qglVertex2i(x, y); //mxd. qglVertex2f -> qglVertex2i
+
+	qglTexCoord2f(sr, tt);
+	qglVertex2i(x + w, y); //mxd. qglVertex2f -> qglVertex2i
+
+	qglTexCoord2f(sr, tb);
+	qglVertex2i(x + w, y + h); //mxd. qglVertex2f -> qglVertex2i
+
+	qglTexCoord2f(sl, tb);
+	qglVertex2i(x, y + h); //mxd. qglVertex2f -> qglVertex2i
+
+	qglEnd();
+
+	if (gl_alphatest_broken && !image->has_alpha)
+		qglEnable(GL_ALPHA_TEST);
 }
 
 void Draw_Fill(const int x, const int y, const int w, const int h, const byte r, const byte g, const byte b)
