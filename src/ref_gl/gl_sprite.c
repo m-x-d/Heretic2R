@@ -23,7 +23,7 @@ static void R_DrawStandardSprite(const entity_t* e, const dsprframe_t* frame, ve
 	qglTexCoord2f(0.0f, 1.0f);
 	VectorMA(e->origin, yt, up, point);
 	VectorMA(point, xl, right, point);
-	(*qglVertex3fv)(point);
+	qglVertex3fv(point);
 
 	qglTexCoord2f(0.0f, 0.0f);
 	VectorMA(e->origin, yb, up, point);
@@ -33,7 +33,7 @@ static void R_DrawStandardSprite(const entity_t* e, const dsprframe_t* frame, ve
 	qglTexCoord2f(1.0f, 0.0f);
 	VectorMA(e->origin, yb, up, point);
 	VectorMA(point, xr, right, point);
-	(*qglVertex3fv)(point);
+	qglVertex3fv(point);
 
 	qglTexCoord2f(1.0f, 1.0f);
 	VectorMA(e->origin, yt, up, point);
