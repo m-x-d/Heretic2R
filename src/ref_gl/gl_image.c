@@ -239,7 +239,75 @@ void GL_SetFilter(const image_t* image)
 
 void GL_ImageList_f(void)
 {
-	NOT_IMPLEMENTED
+	int i;
+	image_t* image;
+
+	int tex_count = 0;
+	int tex_texels = 0;
+	int sky_count = 0;
+	int sky_texels = 0;
+	int skin_count = 0;
+	int skin_texels = 0;
+	int sprite_count = 0;
+	int sprite_texels = 0;
+	int pic_count = 0;
+	int pic_texels = 0;
+	
+	char* palstrings[] = { "RGB", "PAL" };
+
+	Com_Printf("---------------------------\n");
+
+	for (i = 0, image = gltextures; i < numgltextures; i++, image++)
+	{
+		switch (image->type)
+		{
+			case it_skin:
+				Com_Printf("M");
+				skin_count++;
+				skin_texels += image->width * image->height;
+				break;
+
+			case it_sprite:
+				Com_Printf("S");
+				sprite_count++;
+				sprite_texels += image->width * image->height;
+				break;
+
+			case it_wall1:
+			case it_wall2:
+			case it_wall3:
+				Com_Printf("W");
+				tex_count++;
+				tex_texels += (image->width * image->height * 4) / 3;
+				break;
+
+			case it_pic:
+				Com_Printf("P");
+				pic_count++;
+				pic_texels += image->width * image->height;
+				break;
+
+			case it_sky:
+				Com_Printf("K"); //mxd. Was also "P" in original logic.
+				sky_count++;
+				sky_texels += image->width * image->height;
+				break;
+
+			default: //mxd. Added to silence compiler warning
+				Com_Printf("Unknown image type %i for '%s'!\n", image->type, image->name);
+				break;
+		}
+
+		Com_Printf(" %3i %3i %s %s\n", image->width, image->height, palstrings[image->palette != NULL], image->name);
+	}
+	
+	Com_Printf("-------------------------------\n");
+	Com_Printf("Total skin   : %i (%i texels)\n", skin_count, skin_texels);
+	Com_Printf("Total world  : %i (%i texels)\n", tex_count, tex_texels);
+	Com_Printf("Total sky    : %i (%i texels)\n", sky_count, sky_texels);
+	Com_Printf("Total sprite : %i (%i texels)\n", sprite_count, sprite_texels);
+	Com_Printf("Total pic    : %i (%i texels)\n", pic_count, pic_texels);
+	Com_Printf("-------------------------------\n");
 }
 
 #pragma region ========================== .M8 LOADING ==========================
