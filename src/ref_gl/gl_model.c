@@ -82,9 +82,25 @@ byte* Mod_ClusterPVS(const int cluster, const model_t* model)
 	return mod_novis;
 }
 
+// Q2 counterpart
 void Mod_Modellist_f(void)
 {
-	NOT_IMPLEMENTED
+	int i;
+	model_t* mod;
+
+	int total = 0;
+	ri.Con_Printf(PRINT_ALL, "Loaded models:\n");
+
+	for (i = 0, mod = mod_known; i < mod_numknown; i++, mod++)
+	{
+		if (mod->name[0])
+		{
+			ri.Con_Printf(PRINT_ALL, "%8i : %s\n", mod->extradatasize, mod->name);
+			total += mod->extradatasize;
+		}
+	}
+
+	ri.Con_Printf(PRINT_ALL, "Total resident: %i\n", total);
 }
 
 // Q2 counterpart
