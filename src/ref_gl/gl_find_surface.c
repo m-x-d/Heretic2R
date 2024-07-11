@@ -6,6 +6,7 @@
 
 #include "q_Surface.h"
 
+//TODO: seems unused. Remove?
 int FindSurface(vec3_t start, vec3_t end, struct Surface_s* surface)
 {
 	NOT_IMPLEMENTED

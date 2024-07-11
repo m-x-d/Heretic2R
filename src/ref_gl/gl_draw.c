@@ -203,6 +203,7 @@ void Draw_Pic(const int x, const int y, char* name, const float alpha)
 	Draw_Render(x, y, pic->width, pic->height, pic, alpha);
 }
 
+//mxd. Used in SCR_TileClear frame border drawing logic. //TODO: remove?
 void Draw_TileClear(const int x, const int y, const int w, const int h, char* pic)
 {
 	const image_t* image = Draw_FindPic(pic);
