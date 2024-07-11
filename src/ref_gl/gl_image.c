@@ -475,7 +475,7 @@ image_t* GL_FindImage(char* name, const imagetype_t type)
 	//if (disablerendering && gl_lostfocus_broken->value)
 		//return r_notexture;
 
-	if (!name)
+	if (name == NULL)
 	{
 		Com_Printf("GL_FindImage: Invalid null name\n");
 		return r_notexture;
