@@ -565,7 +565,7 @@ static void GL_DrawFlexFrameLerp(void)
 {
 	int i;
 	fmnodeinfo_t* nodeinfo;
-	vec3_t normals_array[MAX_VERTS];
+	static vec3_t normals_array[MAX_VERTS]; //mxd. Made static
 
 	const qboolean draw_reflection = (currententity->flags & RF_REFLECTION); //mxd. Skipped gl_envmap_broken check
 	const image_t* skin = GetSkin();
