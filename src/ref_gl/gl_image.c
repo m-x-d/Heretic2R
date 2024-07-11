@@ -9,9 +9,11 @@
 image_t gltextures[MAX_GLTEXTURES];
 int numgltextures;
 
-image_t* gltextures_hashed[256];	// New in H2
-qboolean disablerendering;			// New in H2
-qboolean uploaded_paletted;			// New in H2 //TODO: used only by qglColorTableEXT logic? Remove?
+#define NUM_HASHED_GLTEXTURES	256
+
+image_t* gltextures_hashed[NUM_HASHED_GLTEXTURES]; // New in H2
+qboolean disablerendering; // New in H2
+qboolean uploaded_paletted; // New in H2 //TODO: used only by qglColorTableEXT logic? Remove?
 
 static byte gammatable[256];
 
@@ -740,5 +742,26 @@ void GL_ShutdownImages(void)
 
 void GL_DisplayHashTable(void)
 {
-	NOT_IMPLEMENTED
+	int i;
+	image_t** gl;
+
+	int total_count = 0;
+	int hashed_count = 0;
+
+	for (i = 0, gl = gltextures_hashed; i < NUM_HASHED_GLTEXTURES; i++, gl++)
+	{
+		const image_t* image = *gl;
+		if (image != NULL)
+		{
+			while (image != NULL)
+			{
+				image = image->next;
+				total_count++;
+			}
+
+			hashed_count++;
+		}
+	}
+
+	Com_Printf("Hash entries: %d, Total images: %d\n", hashed_count, total_count);
 }
