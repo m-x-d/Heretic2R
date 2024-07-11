@@ -260,9 +260,34 @@ void Draw_Fill(const int x, const int y, const int w, const int h, const byte r,
 	qglEnable(GL_TEXTURE_2D);
 }
 
-void Draw_FadeScreen(paletteRGBA_t color)
+void Draw_FadeScreen(const paletteRGBA_t color)
 {
-	NOT_IMPLEMENTED
+	qglEnable(GL_BLEND);
+	qglEnable(GL_ALPHA_TEST);
+	qglDisable(GL_TEXTURE_2D);
+	qglBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
+	qglAlphaFunc(GL_GREATER, 0.05f);
+	qglColor4ubv(color.c_array); //mxd. qglColor4ub -> qglColor4ubv
+
+	qglBegin(GL_QUADS);
+
+	const int x = r_newrefdef.x;
+	const int y = viddef.height - r_newrefdef.y - r_newrefdef.height;
+	const int w = r_newrefdef.width;
+	const int h = r_newrefdef.height;
+
+	//mxd. qglVertex2f -> qglVertex2i
+	qglVertex2i(x, y); 
+	qglVertex2i(x + w, y);
+	qglVertex2i(x + w, y + h);
+	qglVertex2i(x, y + h);
+
+	qglEnd();
+
+	qglColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	qglEnable(GL_TEXTURE_2D);
+	qglDisable(GL_ALPHA_TEST);
+	qglDisable(GL_BLEND);
 }
 
 void Draw_Name(vec3_t origin, char* name, paletteRGBA_t color)
