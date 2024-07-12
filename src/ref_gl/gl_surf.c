@@ -83,9 +83,25 @@ static void DrawGLPoly(const glpoly_t* p)
 	qglEnd();
 }
 
-static void DrawGLPolyChain(glpoly_t* p, float soffset, float toffset)
+// Q2 counterpart
+static void DrawGLPolyChain(glpoly_t* p, const float soffset, const float toffset)
 {
-	NOT_IMPLEMENTED
+	int i;
+	float* v;
+
+	//mxd. Removed optimized case when soffset and toffset are 0.
+	for (; p != NULL; p = p->chain)
+	{
+		qglBegin(GL_POLYGON);
+
+		for (i = 0, v = p->verts[0]; i < p->numverts; i++, v += VERTEXSIZE)
+		{
+			qglTexCoord2f(v[5] - soffset, v[6] - toffset);
+			qglVertex3fv(v);
+		}
+
+		qglEnd();
+	}
 }
 
 static void LM_InitBlock(void);
