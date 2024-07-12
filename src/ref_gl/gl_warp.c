@@ -36,6 +36,36 @@ float r_turbsin[] =
 
 #define TURBSCALE	(256.0f / ANGLE_360) //mxd. Replaced (2 * M_PI) with ANGLE_360
 
+void EmitUnderWaterPolys(const msurface_t* fa)
+{
+	int i;
+	float* v;
+	
+	for (glpoly_t* p = fa->polys; p != NULL; p = p->next)
+	{
+		qglBegin(GL_TRIANGLE_FAN);
+
+		for (i = 0, v = p->verts[0]; i < p->numverts; i++, v += VERTEXSIZE)
+		{
+			vec3_t pos;
+			VectorCopy(v, pos);
+
+			pos[2] += r_turbsin[Q_ftol(((v[0] * 2.3f + v[1]) * 0.015f + r_newrefdef.time * 3.0f) * TURBSCALE) & 255] * 0.5f +
+					  r_turbsin[Q_ftol(((v[1] * 2.3f + v[0]) * 0.015f + r_newrefdef.time * 6.0f) * TURBSCALE) & 255] * 0.25f;
+
+			qglTexCoord2f(v[3], v[4]);
+			qglVertex3fv(pos);
+		}
+
+		qglEnd();
+	}
+}
+
+void EmitQuakeFloorPolys(const msurface_t* fa)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart
 static void BoundPoly(const int numverts, const float* verts, vec3_t mins, vec3_t maxs)
 {

@@ -301,16 +301,6 @@ static void R_DrawTriangleOutlines(void)
 	qglEnable(GL_TEXTURE_2D);
 }
 
-static void EmitUnderWaterPolys(msurface_t* fa)
-{
-	NOT_IMPLEMENTED
-}
-
-static void EmitQuakeFloorPolys(msurface_t* fa)
-{
-	NOT_IMPLEMENTED
-}
-
 //mxd. Seems to be called only when r_fullbright == 1
 static void R_RenderBrushPoly(msurface_t* fa)
 {
