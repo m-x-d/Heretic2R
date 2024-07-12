@@ -130,7 +130,7 @@ void R_DrawSpriteModel(entity_t* e)
 		return;
 
 	// Don't even bother culling, because it's just a single polygon without a surface cache
-	dsprite_t* psprite = currentmodel->extradata;
+	const dsprite_t* psprite = currentmodel->extradata;
 
 	//mxd. #if 0-ed in Q2
 	if (e->frame < 0 || e->frame >= psprite->numframes)
