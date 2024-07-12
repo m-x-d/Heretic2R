@@ -6,10 +6,98 @@
 
 #include "gl_local.h"
 #include "Vector.h"
+#include "vid.h"
 
 void GL_ScreenShot_f(void)
 {
-	NOT_IMPLEMENTED
+	uint i;
+	FILE* f;
+	char picname[80];
+	char filename[MAX_OSPATH];
+
+	//mxd. Skipping gl_screenshot_broken logic.
+
+	// Create the screenshots directory if it doesn't exist.
+	Com_sprintf(filename, sizeof(filename), "%s/scrnshot/", ri.FS_Userdir()); // H2: FS_Gamedir -> FS_Userdir
+	ri.FS_CreatePath(filename);
+	strcpy_s(picname, sizeof(picname), "Htic2-00.tga");
+
+	for (i = 0; i < 100; i++)
+	{
+		picname[6] = (char)(i / 10 + '0');
+		picname[7] = (char)(i % 10 + '0');
+		Com_sprintf(filename, sizeof(filename), "%s/scrnshot/%s", ri.FS_Userdir(), picname); // H2: FS_Gamedir -> FS_Userdir
+
+		fopen_s(&f, filename, "rb"); //mxd. fopen -> fopen_s
+		if (f == NULL)
+			break;
+
+		fclose(f);
+	}
+
+	if (i == 100)
+	{
+		Com_Printf("SCR_ScreenShot_f: Couldn\'t create a file\n");
+		return;
+	}
+
+	const uint tga_size = viddef.width * viddef.height * 3 + 18;
+	byte* buffer = malloc(tga_size);
+
+	if (buffer == NULL) // H2: extra sanity check
+	{
+		Com_Printf("SCR_ScreenShot_f: Unable to malloc\n");
+		return;
+	}
+
+	memset(buffer, 0, 18);
+
+	// Set TGA header
+	buffer[2] = 2; // Uncompressed type
+	buffer[12] = (byte)viddef.width;
+	buffer[13] = (byte)(viddef.width >> 8);
+	buffer[14] = (byte)viddef.height;
+	buffer[15] = (byte)(viddef.height >> 8);
+	buffer[16] = 24; // Pixel size
+
+	qglReadPixels(0, 0, viddef.width, viddef.height, GL_RGB, GL_UNSIGNED_BYTE, buffer + 18);
+
+	// Swap rgb to bgr
+	float brightness = 0.0f;
+	for (i = 18; i < tga_size; i += 3)
+	{
+		const byte temp = buffer[i];
+		buffer[i] = buffer[i + 2];
+		buffer[i + 2] = temp;
+
+		// H2: store total brightness
+		brightness += (float)(buffer[i] + buffer[i + 1] + buffer[i + 2]);
+	}
+
+	uint written_size = 0;
+	fopen_s(&f, filename, "wb"); //mxd. fopen -> fopen_s
+	if (f != NULL)
+	{
+		written_size = fwrite(buffer, 1, tga_size, f);
+		fclose(f);
+	}
+	free(buffer);
+
+	if (tga_size != written_size) // H2: extra sanity check
+	{
+		Com_Printf("Error writing %s\n", filename);
+		return;
+	}
+
+	// H2: new brightness warnings
+	brightness /= (float)(tga_size - 18);
+
+	if (brightness < 5.0f)
+		Com_Printf("**WARNING** Overly dark image %s (brightness = %2.1f)\n", filename, brightness);
+	else if (brightness > 225.0f)
+		Com_Printf("**WARNING** Overly bright image %s (brightness = %2.1f)\n", filename, brightness);
+	else
+		Com_Printf("Wrote %s (brightness = %2.1f)\n", filename, brightness);
 }
 
 void GL_Strings_f(void)
