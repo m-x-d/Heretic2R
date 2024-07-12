@@ -111,21 +111,31 @@ void Draw_CloseCinematic(void)
 	num_cinematic_tiles = 0;
 }
 
-static void CopyChunkToImage(const byte* src, const int w, const int h, const int cols, const int rows, image_t* img, byte* dst)
+static void CopyChunkToImage(const byte* src, const int w, const int h, const int cols, const int rows, const image_t* img, byte* dst)
 {
-	NOT_IMPLEMENTED
+	const byte* src_p = src + w + cols * h;
+
+	for (int ch = 0; ch < img->height; ch++, src_p += ((cols - img->width) >> 2) * 4)
+	{
+		if (img->width >= 0 && (img->width & 0xFFFFFFF8) != 0)
+		{
+			memcpy(dst, src_p, img->width);
+			src_p += img->width;
+			dst += img->width;
+		}
+	}
 }
 
 void Draw_Cinematic(const int cols, const int rows, const byte* data, const paletteRGB_t* palette, const float alpha)
 {
 	int i;
 	CinematicTile_t* tile;
-	byte frame_data[65536];
+	static byte frame_data[65536]; //mxd. Made static
 
 	Draw_Fill(0, 0, viddef.width, viddef.height, 0, 0, 0);
 
 	const int alpha255 = Q_ftol(alpha * 255.0f);
-	for (i = 0; i < 256; i++)
+	for (i = 0; i < 256; i++, palette++)
 	{
 		cinematic_palette[i].r = (byte)((palette->r * alpha255) >> 8);
 		cinematic_palette[i].g = (byte)((palette->g * alpha255) >> 8);
