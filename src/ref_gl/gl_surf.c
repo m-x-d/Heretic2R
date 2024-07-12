@@ -301,9 +301,115 @@ static void R_DrawTriangleOutlines(void)
 	qglEnable(GL_TEXTURE_2D);
 }
 
-static void R_RenderBrushPoly(msurface_t* fa)
+static void EmitUnderWaterPolys(msurface_t* fa)
 {
 	NOT_IMPLEMENTED
+}
+
+static void EmitQuakeFloorPolys(msurface_t* fa)
+{
+	NOT_IMPLEMENTED
+}
+
+//mxd. Seems to be called only when r_fullbright == 1
+static void R_RenderBrushPoly(msurface_t* fa)
+{
+	c_brush_polys++;
+
+	GL_BindImage(R_TextureAnimation(fa->texinfo)); // Q2: GL_Bind
+
+	// H2: new cl_camera_under_surface logic
+	if ((int)cl_camera_under_surface->value) 
+	{
+		EmitUnderWaterPolys(fa);
+		GL_TexEnv(GL_REPLACE);
+
+		return;
+	}
+
+	// H2: new quake_amount logic
+	if ((int)quake_amount->value) 
+	{
+		EmitQuakeFloorPolys(fa);
+		GL_TexEnv(GL_REPLACE);
+
+		return;
+	}
+
+	if (fa->flags & SURF_DRAWTURB)
+	{
+		// Warp texture, no lightmaps
+		GL_TexEnv(GL_MODULATE);
+		qglColor4f(gl_state.inverse_intensity, gl_state.inverse_intensity, gl_state.inverse_intensity, 1.0f);
+		EmitWaterPolys(fa, fa->flags & SURF_UNDULATE);
+		GL_TexEnv(GL_REPLACE);
+
+		return;
+	}
+
+	GL_TexEnv(GL_REPLACE);
+
+	// H2: missing SURF_FLOWING flag logic
+	DrawGLPoly(fa->polys);
+
+	int map;
+	qboolean is_dynamic = false;
+
+	// Check for lightmap modification
+	for (map = 0; map < MAXLIGHTMAPS && fa->styles[map] != 255; map++)
+	{
+		if (r_newrefdef.lightstyles[fa->styles[map]].white != fa->cached_light[map])
+		{
+			is_dynamic = true; //mxd. Avoid unnecessary gotos.
+			break;
+		}
+	}
+
+	// Dynamic this frame or dynamic previously
+	if (fa->dlightframe == r_framecount || is_dynamic)
+	{
+		if ((int)gl_dynamic->value && !(fa->texinfo->flags & SURF_FULLBRIGHT)) //mxd. SURF_FULLBRIGHT define
+		{
+			if ((fa->styles[map] >= 32 || fa->styles[map] == 0) && fa->dlightframe != r_framecount)
+			{
+				uint temp[34 * 34];
+				const int smax = (fa->extents[0] >> 4) + 1;
+				const int tmax = (fa->extents[1] >> 4) + 1;
+
+				R_BuildLightMap(fa, (byte*)temp, smax * 4);
+				R_SetCacheState(fa);
+				GL_Bind(fa->lightmaptexturenum + gl_state.lightmap_textures);
+
+				qglTexSubImage2D(GL_TEXTURE_2D, 0, fa->light_s, fa->light_t, smax, tmax, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, temp);
+
+				fa->lightmapchain = gl_lms.lightmap_surfaces[fa->lightmaptexturenum];
+				gl_lms.lightmap_surfaces[fa->lightmaptexturenum] = fa;
+			}
+			else
+			{
+				fa->lightmapchain = gl_lms.lightmap_surfaces[0];
+				gl_lms.lightmap_surfaces[0] = fa;
+			}
+
+			return;
+		}
+	}
+
+	// H2: new tall wall logic:
+	if (!(fa->texinfo->flags & SURF_TALL_WALL))
+	{
+		fa->lightmapchain = gl_lms.lightmap_surfaces[fa->lightmaptexturenum];
+		gl_lms.lightmap_surfaces[fa->lightmaptexturenum] = fa;
+	}
+	else if (gl_lms.tallwall_lightmaptexturenum < 512)
+	{
+		gl_lms.tallwall_lightmap_surfaces[gl_lms.tallwall_lightmaptexturenum] = fa;
+		gl_lms.tallwall_lightmaptexturenum++;
+	}
+	else
+	{
+		Com_Printf("WARNING: To many tall wall surfaces!");
+	}
 }
 
 // New in H2
