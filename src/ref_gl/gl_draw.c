@@ -5,6 +5,7 @@
 //
 
 #include "gl_local.h"
+#include "Vector.h"
 #include "vid.h"
 
 image_t* draw_chars;
@@ -290,7 +291,32 @@ void Draw_FadeScreen(const paletteRGBA_t color)
 	qglDisable(GL_BLEND);
 }
 
-void Draw_Name(vec3_t origin, char* name, paletteRGBA_t color)
+//TODO: is this used?
+void Draw_Name(const vec3_t origin, const char* name, const paletteRGBA_t color)
 {
-	NOT_IMPLEMENTED
+	vec3_t diff;
+	vec3_t screen_pos;
+
+	VectorSubtract(origin, r_origin, diff);
+	TransformVector(diff, screen_pos);
+
+	if (screen_pos[2] < 0.01f)
+		return;
+
+	const int len = (int)strlen(name);
+	const float center_x = (float)r_newrefdef.width * 0.5f;
+	const float center_y = (float)r_newrefdef.height * 0.5f;
+	const float scaler = center_x / screen_pos[2] * 1.28f;
+
+	int x = (int)(center_x + screen_pos[0] * scaler) - len * 4;
+	int y = (int)(center_y - screen_pos[1] * scaler);
+
+	if (x < 0 || y < 0 || x + len * 8 > r_newrefdef.width || y + 8 > r_newrefdef.height)
+		return;
+
+	for (int i = 0; i < len; i++)
+	{
+		Draw_Char(x, y, name[i], color);
+		x += 8;
+	}
 }

@@ -1296,7 +1296,7 @@ void Draw_InitCinematic(int w, int h, char* overlay, char* backdrop);
 void Draw_CloseCinematic(void);
 void Draw_Cinematic(int cols, int rows, const byte* data, const paletteRGB_t* palette, float alpha);
 
-void Draw_Name(vec3_t origin, char* name, paletteRGBA_t color);
+void Draw_Name(const vec3_t origin, const char* name, paletteRGBA_t color);
 int FindSurface(vec3_t start, vec3_t end, struct Surface_s* surface);
 
 refexport_t GetRefAPI(refimport_t rimp)
