@@ -5,6 +5,7 @@
 //
 
 #include "gl_local.h"
+#include "vid.h"
 
 #define MAX_CINEMATIC_TILES 50
 
@@ -18,6 +19,8 @@ typedef struct
 
 static CinematicTile_t cinematic_tiles[MAX_CINEMATIC_TILES];
 static int num_cinematic_tiles;
+
+static palette_t cinematic_palette[256];
 
 static int GetCoords(int size, int* offsets)
 {
@@ -108,7 +111,46 @@ void Draw_CloseCinematic(void)
 	num_cinematic_tiles = 0;
 }
 
-void Draw_Cinematic(int cols, int rows, byte* data, paletteRGB_t* palette, float alpha)
+static void CopyChunkToImage(const byte* src, const int w, const int h, const int cols, const int rows, image_t* img, byte* dst)
 {
 	NOT_IMPLEMENTED
+}
+
+void Draw_Cinematic(const int cols, const int rows, const byte* data, const paletteRGB_t* palette, const float alpha)
+{
+	int i;
+	CinematicTile_t* tile;
+	byte frame_data[65536];
+
+	Draw_Fill(0, 0, viddef.width, viddef.height, 0, 0, 0);
+
+	const int alpha255 = Q_ftol(alpha * 255.0f);
+	for (i = 0; i < 256; i++)
+	{
+		cinematic_palette[i].r = (byte)((palette->r * alpha255) >> 8);
+		cinematic_palette[i].g = (byte)((palette->g * alpha255) >> 8);
+		cinematic_palette[i].b = (byte)((palette->b * alpha255) >> 8);
+	}
+
+	const float col_width = (float)viddef.width / (float)cols;
+	const float col_height = ((float)viddef.height - (float)rows * col_width) / (col_width * 2.0f);
+
+	for (i = 0, tile = cinematic_tiles; i < num_cinematic_tiles; i++, tile++)
+	{
+		image_t* img = tile->image;
+		img->palette = cinematic_palette;
+
+		CopyChunkToImage(data, tile->offset_x, tile->offset_y, cols, rows, img, frame_data);
+
+		GL_BindImage(img);
+		GL_UploadPaletted(0, frame_data, img->palette, img->width, img->height);
+		GL_SetFilter(img);
+
+		const int x = Q_ftol(floorf((float)tile->offset_x * col_width));
+		const int y = Q_ftol(floorf(((float)tile->offset_y + col_height) * col_width));
+		const int w = Q_ftol(ceilf((float)img->width * col_width));
+		const int h = Q_ftol(ceilf((float)img->height * col_width));
+
+		Draw_Render(x, y, w, h, img, 1.0f);
+	}
 }
