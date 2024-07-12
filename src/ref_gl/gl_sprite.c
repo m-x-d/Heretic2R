@@ -73,10 +73,24 @@ static void R_DrawDynamicSprite(const entity_t* e, const dsprframe_t* frame, vec
 	qglEnd();
 }
 
-// Sprite with n variable verts (x,y scale and s,t); texture must be square. //TODO: seems unused. Remove?
+// Sprite with n variable verts(x, y scale and s, t); texture must be square. //TODO: seems unused, so can't test if it works correctly...
 static void R_DrawVariableSprite(const entity_t* e, const dsprframe_t* frame, vec3_t up, vec3_t right)
 {
-	NOT_IMPLEMENTED
+	int i;
+	float (*v)[4];
+	vec3_t point;
+
+	qglBegin(GL_POLYGON);
+
+	for (i = 0, v = e->verts_p; i < e->numVerts; i++, v++)
+	{
+		qglTexCoord2f(*v[2], *v[3]);
+		VectorMA(e->origin, e->scale * *v[1], up, point);
+		VectorMA(point, e->scale * *v[0], right, point);
+		qglVertex3fv(point);
+	}
+
+	qglEnd();
 }
 
 // Long linear semi-oriented sprite with two verts (xyz start and end) and a width.
