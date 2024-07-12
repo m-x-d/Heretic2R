@@ -130,7 +130,7 @@ void Draw_Cinematic(const int cols, const int rows, const byte* data, const pale
 {
 	int i;
 	CinematicTile_t* tile;
-	static byte frame_data[65536]; //mxd. Made static
+	static byte frame_data[256 * 256]; //mxd. Made static
 
 	Draw_Fill(0, 0, viddef.width, viddef.height, 0, 0, 0);
 
