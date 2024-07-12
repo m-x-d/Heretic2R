@@ -186,6 +186,7 @@ void R_RotateForEntity(const entity_t* e)
 	qglRotatef(-e->angles[2] * RAD_TO_ANGLE, 1.0f, 0.0f, 0.0f);
 }
 
+//TODO: particles and water surface rendering is broken when underwater...
 void HandleTrans(const entity_t* e)
 {
 	if (!(e->flags & RF_TRANS_ADD))
