@@ -16,12 +16,18 @@ typedef struct CinematicFrame_s
 	image_t* image;
 } CinematicFrame_t;
 
-CinematicFrame_t cinematic_frames[MAX_CINEMATIC_FRAMES];
-int num_cinematic_frames;
+static CinematicFrame_t cinematic_frames[MAX_CINEMATIC_FRAMES];
+static int num_cinematic_frames;
 
-void Draw_InitCinematic(int w, int h, char* overlay, char* backdrop)
+static int ChopImage(int w, int h)
 {
 	NOT_IMPLEMENTED
+	return 0;
+}
+
+void Draw_InitCinematic(const int w, const int h, char* overlay, char* backdrop)
+{
+	num_cinematic_frames = ChopImage(w, h);
 }
 
 // New in H2
