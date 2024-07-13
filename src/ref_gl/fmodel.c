@@ -525,6 +525,9 @@ static image_t* GetSkin(void)
 	if (currentmodel->skins[skinnum] != NULL)
 		return currentmodel->skins[skinnum];
 
+	if (currentmodel->skins[0] != NULL)
+		return currentmodel->skins[0];
+
 	return r_notexture;
 }
 
