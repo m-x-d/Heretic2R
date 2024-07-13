@@ -186,10 +186,37 @@ void R_RotateForEntity(const entity_t* e)
 	qglRotatef(-e->angles[2] * RAD_TO_ANGLE, 1.0f, 0.0f, 0.0f);
 }
 
-//TODO: particles and water surface rendering is broken when underwater...
 void HandleTrans(const entity_t* e)
 {
-	if (!(e->flags & RF_TRANS_ADD))
+	if (e->flags & RF_TRANS_ADD)
+	{
+		if (e->flags & RF_ALPHA_TEXTURE)
+		{
+			qglEnable(GL_ALPHA_TEST);
+			qglAlphaFunc(GL_GREATER, 0.0f);
+			qglBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			qglColor4ub(e->color.r, e->color.g, e->color.b, e->color.a);
+		}
+		else
+		{
+			if ((int)r_fog->value || (int)cl_camera_under_surface->value) //mxd. Skipped gl_fog_broken check
+				qglDisable(GL_FOG);
+
+			qglDisable(GL_ALPHA_TEST);
+			qglBlendFunc(GL_ONE, GL_ONE);
+
+			if (e->flags & RF_TRANS_ADD_ALPHA)
+			{
+				const float scaler = (float)e->color.a / 255.0f / 255.0f; //TODO: why is it divided twice?..
+				qglColor3f((float)e->color.r * scaler, (float)e->color.g * scaler, (float)e->color.b * scaler); //mxd. qglColor4f -> qglColor3f
+			}
+			else
+			{
+				qglColor3ub(e->color.r, e->color.g, e->color.b); //mxd. qglColor4ub -> qglColor3ub
+			}
+		}
+	}
+	else
 	{
 		qglEnable(GL_ALPHA_TEST);
 		qglAlphaFunc(GL_GREATER, 0.05f);
@@ -203,38 +230,9 @@ void HandleTrans(const entity_t* e)
 			qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			qglColor4ub(e->color.r, e->color.g, e->color.b, e->color.a);
 		}
+	}
 
-		qglEnable(GL_BLEND);
-	}
-	else if (!(e->flags & RF_TRANS_ADD_ALPHA) && !(e->flags & RF_ALPHA_TEXTURE))
-	{
-		if ((int)r_fog->value || (int)cl_camera_under_surface->value) //mxd. Skipped gl_fog_broken check
-			qglDisable(GL_FOG);
-
-		qglDisable(GL_ALPHA_TEST);
-		qglBlendFunc(GL_ONE, GL_ONE);
-		qglColor4ub(e->color.r, e->color.g, e->color.b, 255);
-		qglEnable(GL_BLEND);
-	}
-	else if (!(e->flags & RF_ALPHA_TEXTURE))
-	{
-		if ((int)r_fog->value || (int)cl_camera_under_surface->value) //mxd. Skipped gl_fog_broken check
-			qglDisable(GL_FOG);
-
-		qglDisable(GL_ALPHA_TEST);
-		qglBlendFunc(GL_ONE, GL_ONE);
-		const float alpha = (float)e->color.a / 255.0f / 255.0f; //TODO: why is it divided twice?..
-		qglColor4f((float)e->color.r * alpha, (float)e->color.g * alpha, (float)e->color.b * alpha, 1.0f);
-		qglEnable(GL_BLEND);
-	}
-	else
-	{
-		qglEnable(GL_ALPHA_TEST);
-		qglAlphaFunc(GL_GREATER, 0.0f);
-		qglBlendFunc(GL_SRC_ALPHA, GL_ONE);
-		qglColor4ub(e->color.r, e->color.g, e->color.b, e->color.a);
-		qglEnable(GL_BLEND);
-	}
+	qglEnable(GL_BLEND);
 }
 
 void CleanupTrans(const entity_t* e)
