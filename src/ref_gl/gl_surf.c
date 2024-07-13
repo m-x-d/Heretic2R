@@ -368,7 +368,7 @@ static void R_RenderBrushPoly(msurface_t* fa)
 
 				R_BuildLightMap(fa, (byte*)temp, smax * 4);
 				R_SetCacheState(fa);
-				GL_Bind(fa->lightmaptexturenum + gl_state.lightmap_textures);
+				GL_Bind(gl_state.lightmap_textures + fa->lightmaptexturenum);
 
 				qglTexSubImage2D(GL_TEXTURE_2D, 0, fa->light_s, fa->light_t, smax, tmax, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, temp);
 
@@ -405,7 +405,76 @@ static void R_RenderBrushPoly(msurface_t* fa)
 // New in H2
 static void R_RenderFlatShadedBrushPoly(msurface_t* fa)
 {
-	NOT_IMPLEMENTED
+	int i;
+	float* v;
+
+	c_brush_polys++;
+
+	// Use fa->polys pointer as random, but constant color...
+	paletteRGBA_t color;
+	color.c = (uint)fa->polys;
+	qglColor3ubv(color.c_array); //mxd. qglColor3f -> qglColor3ubv
+
+	qglBegin(GL_POLYGON);
+
+	for (i = 0, v = fa->polys->verts[0]; i < fa->polys->numverts; i++, v += VERTEXSIZE)
+		qglVertex3fv(v);
+
+	qglEnd();
+
+	// Done when gl_drawflat == 1
+	if ((int)gl_drawflat->value == 1)
+		return;
+
+	// Draw lightmaps (gl_drawflat >= 2). Same logic as in R_RenderBrushPoly().
+	int map;
+	qboolean is_dynamic = false;
+
+	// Check for lightmap modification
+	for (map = 0; map < MAXLIGHTMAPS && fa->styles[map] != 255; map++)
+	{
+		if (r_newrefdef.lightstyles[fa->styles[map]].white != fa->cached_light[map])
+		{
+			is_dynamic = true; //mxd. Avoid unnecessary gotos.
+			break;
+		}
+	}
+
+	// Dynamic this frame or dynamic previously
+	if (fa->dlightframe == r_framecount || is_dynamic)
+	{
+		if ((int)gl_dynamic->value && !(fa->texinfo->flags & SURF_FULLBRIGHT)) //mxd. SURF_FULLBRIGHT define
+		{
+			if ((fa->styles[map] >= 32 || fa->styles[map] == 0) && fa->dlightframe != r_framecount)
+			{
+				uint temp[34 * 34];
+				const int smax = (fa->extents[0] >> 4) + 1;
+				const int tmax = (fa->extents[1] >> 4) + 1;
+
+				R_BuildLightMap(fa, (byte*)temp, smax * 4);
+				R_SetCacheState(fa);
+				GL_Bind(gl_state.lightmap_textures + fa->lightmaptexturenum);
+
+				qglTexSubImage2D(GL_TEXTURE_2D, 0, fa->light_s, fa->light_t, smax, tmax, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE, temp);
+
+				fa->lightmapchain = gl_lms.lightmap_surfaces[fa->lightmaptexturenum];
+				gl_lms.lightmap_surfaces[fa->lightmaptexturenum] = fa;
+			}
+			else
+			{
+				fa->lightmapchain = gl_lms.lightmap_surfaces[0];
+				gl_lms.lightmap_surfaces[0] = fa;
+			}
+
+			return;
+		}
+	}
+
+	if (!(fa->texinfo->flags & SURF_TALL_WALL))
+	{
+		fa->lightmapchain = gl_lms.lightmap_surfaces[fa->lightmaptexturenum];
+		gl_lms.lightmap_surfaces[fa->lightmaptexturenum] = fa;
+	}
 }
 
 #pragma region ========================== ALPHA SURFACES RENDERING ==========================
