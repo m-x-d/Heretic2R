@@ -756,9 +756,18 @@ static void R_Clear(void)
 	}
 	else
 	{
-		// H2: extra fog rendering logic.
-		// mxd. Removed gl_fog_broken cvar logic, moved cl_camera_under_surface logic to separate else if case.
-		if (!(int)r_fog->value || r_farclipdist->value < r_fog_startdist->value)
+		// H2: extra fog rendering logic. //mxd. Removed gl_fog_broken cvar checks.
+		if ((int)cl_camera_under_surface->value) //TODO: r_fog_underwater cvar check seems logical here, but isn't present in original dll.
+		{
+			GL_WaterFog();
+		}
+		//mxd. Removed 'r_fog_startdist->value < r_farclipdist->value' check, because it's relevant only for fog mode 0.
+		// Also there's no r_fog_underwater_startdist check in GL_WaterFog case in original .dll.
+		else if ((int)r_fog->value)
+		{
+			GL_Fog();
+		}
+		else
 		{
 			qglDisable(GL_FOG);
 
@@ -766,14 +775,6 @@ static void R_Clear(void)
 				qglClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			else
 				qglClear(GL_DEPTH_BUFFER_BIT);
-		}
-		else if ((int)cl_camera_under_surface->value)
-		{
-			GL_WaterFog();
-		}
-		else
-		{
-			GL_Fog();
 		}
 
 		gldepthmin = 0.0f;
