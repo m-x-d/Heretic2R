@@ -703,7 +703,7 @@ static void GL_WaterFog(void)
 {
 	static GLint fog_modes[] = { GL_LINEAR, GL_EXP, GL_EXP2 };
 
-	const int mode = ClampI((int)r_fog_underwater_mode->value, 0, sizeof(fog_modes) / sizeof(fog_modes[0])); //mxd. Added ClampI
+	const int mode = ClampI((int)r_fog_underwater_mode->value, 0, sizeof(fog_modes) / sizeof(fog_modes[0]) - 1); //mxd. Added ClampI
 	qglFogi(GL_FOG_MODE, fog_modes[mode]);
 
 	if (mode == 0)
@@ -809,7 +809,7 @@ void R_Register(void)
 	r_fog_color_a = Cvar_Get("r_fog_color_a", "0.0", 0);
 	r_fog_color_scale = Cvar_Get("r_fog_color_scale", "1.0", 0);
 	r_fog_lightmap_adjust = Cvar_Get("r_fog_lightmap_adjust", "5.0", 0);
-	r_fog_underwater = Cvar_Get("r_fog_underwater", "0", 0);
+	r_fog_underwater = Cvar_Get("r_fog_underwater", "0", 0); //TODO: unused
 	r_fog_underwater_mode = Cvar_Get("r_fog_underwater_mode", "1", 0);
 	r_fog_underwater_density = Cvar_Get("r_fog_underwater_density", "0.0015", 0);
 	r_fog_underwater_startdist = Cvar_Get("r_fog_underwater_startdist", "100.0", 0);
