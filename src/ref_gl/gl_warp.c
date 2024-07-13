@@ -36,6 +36,10 @@ float r_turbsin[] =
 
 #define TURBSCALE	(256.0f / ANGLE_360) //mxd. Replaced (2 * M_PI) with ANGLE_360
 
+//mxd. Helper defines...
+#define TURBSIN_V0(v0, v1)	(Q_ftol((((v0) * 2.3f + (v1)) * 0.015f + r_newrefdef.time * 3.0f) * TURBSCALE) & 255)
+#define TURBSIN_V1(v0, v1)	(Q_ftol((((v1) * 2.3f + (v0)) * 0.015f + r_newrefdef.time * 6.0f) * TURBSCALE) & 255)
+
 void EmitWaterPolys(const msurface_t* fa, const qboolean undulate)
 {
 	int i;
@@ -70,8 +74,8 @@ void EmitWaterPolys(const msurface_t* fa, const qboolean undulate)
 				vec3_t pos;
 				VectorCopy(v, pos);
 
-				pos[2] += r_turbsin[Q_ftol(((v[0] * 2.3f + v[1]) * 0.015f + r_newrefdef.time * 3.0f) * TURBSCALE) & 255] * 0.25f +
-						  r_turbsin[Q_ftol(((v[1] * 2.3f + v[0]) * 0.015f + r_newrefdef.time * 6.0f) * TURBSCALE) & 255] * 0.125f;
+				pos[2] += r_turbsin[TURBSIN_V0(v[0], v[1])] * 0.25f + 
+						  r_turbsin[TURBSIN_V1(v[0], v[1])] * 0.125f;
 
 				qglVertex3fv(pos);
 			}
@@ -100,8 +104,8 @@ void EmitUnderWaterPolys(const msurface_t* fa)
 			vec3_t pos;
 			VectorCopy(v, pos);
 
-			pos[2] += r_turbsin[Q_ftol(((v[0] * 2.3f + v[1]) * 0.015f + r_newrefdef.time * 3.0f) * TURBSCALE) & 255] * 0.5f +
-					  r_turbsin[Q_ftol(((v[1] * 2.3f + v[0]) * 0.015f + r_newrefdef.time * 6.0f) * TURBSCALE) & 255] * 0.25f;
+			pos[2] += r_turbsin[TURBSIN_V0(v[0], v[1])] * 0.5f + 
+					  r_turbsin[TURBSIN_V1(v[0], v[1])] * 0.25f;
 
 			qglTexCoord2f(v[3], v[4]);
 			qglVertex3fv(pos);
@@ -111,9 +115,31 @@ void EmitUnderWaterPolys(const msurface_t* fa)
 	}
 }
 
+//TODO: Warps all bmodel polys when quake_amount > 0. Seems to be used only when r_fullbright is 1. H2 bug?
 void EmitQuakeFloorPolys(const msurface_t* fa)
 {
-	NOT_IMPLEMENTED
+	int i;
+	float* v;
+
+	for (glpoly_t* p = fa->polys; p != NULL; p = p->next)
+	{
+		qglBegin(GL_TRIANGLE_FAN);
+
+		for (i = 0, v = p->verts[0]; i < p->numverts; i++, v += VERTEXSIZE)
+		{
+			vec3_t pos;
+			VectorCopy(v, pos);
+
+			pos[2] += r_turbsin[TURBSIN_V0(v[0], v[1])] * (quake_amount->value * 0.05f) * 0.5f +
+					  r_turbsin[TURBSIN_V1(v[0], v[1])] * (quake_amount->value * 0.05f) * 0.25f;
+
+			qglTexCoord2f(v[3], v[4]);
+			qglVertex3fv(pos);
+
+		}
+
+		qglEnd();
+	}
 }
 
 // Q2 counterpart

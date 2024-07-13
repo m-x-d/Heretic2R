@@ -324,7 +324,7 @@ void R_SortAndDrawAlphaSurfaces(void); // New in H2
 void R_DrawWorld(void);
 
 // gl_warp.c
-void EmitUnderWaterPolys(const msurface_t* fa);
+void EmitUnderWaterPolys(const msurface_t* fa); // New in H2
 void EmitQuakeFloorPolys(const msurface_t* fa); // New in H2
 void GL_SubdivideSurface(msurface_t* fa);
 void EmitWaterPolys(const msurface_t* fa, qboolean undulate); // H2: extra 'undulate' arg.
