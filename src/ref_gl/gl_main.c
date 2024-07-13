@@ -401,10 +401,10 @@ static GLfloat particle_st_coords[NUM_PARTICLE_TYPES][4] =
 	{ 0.87890625f, 0.87890625f, 0.99609375f, 0.99609375f }
 };
 
-static void GL_DrawParticles(const int num_particles, particle_t* particles, const qboolean alpha_particle)
+static void GL_DrawParticles(const int num_particles, const particle_t* particles, const qboolean alpha_particle)
 {
 	int i;
-	particle_t* p;
+	const particle_t* p;
 
 	if (alpha_particle)
 	{
@@ -436,8 +436,12 @@ static void GL_DrawParticles(const int num_particles, particle_t* particles, con
 		VectorScale(vright, p->scale, p_right);
 
 		paletteRGBA_t c = p->color;
-		if (!alpha_particle)
-			c.a = 255;
+		if (alpha_particle)
+		{
+			c.r = c.r * c.a / 255;
+			c.g = c.g * c.a / 255;
+			c.b = c.b * c.a / 255;
+		}
 
 		const byte p_type = p->type & 127; // Strip particle flags
 
