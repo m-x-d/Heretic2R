@@ -36,6 +36,56 @@ float r_turbsin[] =
 
 #define TURBSCALE	(256.0f / ANGLE_360) //mxd. Replaced (2 * M_PI) with ANGLE_360
 
+void EmitWaterPolys(const msurface_t* fa, const qboolean undulate)
+{
+	int i;
+	float* v;
+	float scroll;
+
+	if (fa->texinfo->flags & SURF_FLOWING)
+		scroll = -64.0f * ((r_newrefdef.time * 0.5f) - floorf(r_newrefdef.time * 0.5f)); //mxd. Replaced int cast with floorf.
+	else
+		scroll = 0.0f;
+
+	for (glpoly_t* p = fa->polys; p != NULL; p = p->next)
+	{
+		qglBegin(GL_TRIANGLE_FAN);
+
+		for (i = 0, v = p->verts[0]; i < p->numverts; i++, v += VERTEXSIZE)
+		{
+			const float os = v[3];
+			const float ot = v[4];
+
+			float s = os + r_turbsin[Q_ftol((ot * 0.125f + r_newrefdef.time) * TURBSCALE) & 255];
+			s += scroll;
+			s /= 64.0f;
+
+			float t = ot + r_turbsin[Q_ftol((os * 0.125f + r_newrefdef.time) * TURBSCALE) & 255];
+			t /= 64.0f;
+
+			qglTexCoord2f(s, t);
+
+			if (undulate) // H2: new undulate logic
+			{
+				vec3_t pos;
+				VectorCopy(v, pos);
+
+				pos[2] += r_turbsin[Q_ftol(((v[0] * 2.3f + v[1]) * 0.015f + r_newrefdef.time * 3.0f) * TURBSCALE) & 255] * 0.25f +
+						  r_turbsin[Q_ftol(((v[1] * 2.3f + v[0]) * 0.015f + r_newrefdef.time * 6.0f) * TURBSCALE) & 255] * 0.125f;
+
+				qglVertex3fv(pos);
+			}
+			else
+			{
+				qglVertex3fv(v);
+			}
+		}
+
+		qglEnd();
+	}
+}
+
+//TODO: Warps all bmodel polys when camera is underwater. Seems to be used only when r_fullbright is 1. H2 bug?
 void EmitUnderWaterPolys(const msurface_t* fa)
 {
 	int i;
@@ -208,53 +258,4 @@ void GL_SubdivideSurface(msurface_t* fa)
 	}
 
 	SubdividePolygon(c, verts[0]);
-}
-
-void EmitWaterPolys(const msurface_t* fa, const qboolean undulate)
-{
-	int i;
-	float* v;
-	float scroll;
-
-	if (fa->texinfo->flags & SURF_FLOWING)
-		scroll = -64.0f * ((r_newrefdef.time * 0.5f) - floorf(r_newrefdef.time * 0.5f)); //mxd. Replaced int cast with floorf.
-	else
-		scroll = 0.0f;
-
-	for (glpoly_t* p = fa->polys; p != NULL; p = p->next)
-	{
-		qglBegin(GL_TRIANGLE_FAN);
-
-		for (i = 0, v = p->verts[0]; i < p->numverts; i++, v += VERTEXSIZE)
-		{
-			const float os = v[3];
-			const float ot = v[4];
-
-			float s = os + r_turbsin[Q_ftol((ot * 0.125f + r_newrefdef.time) * TURBSCALE) & 255];
-			s += scroll;
-			s /= 64.0f;
-
-			float t = ot + r_turbsin[Q_ftol((os * 0.125f + r_newrefdef.time) * TURBSCALE) & 255];
-			t /= 64.0f;
-
-			qglTexCoord2f(s, t);
-
-			if (undulate) // H2: new undulate logic
-			{
-				vec3_t pos;
-				VectorCopy(v, pos);
-
-				pos[2] += r_turbsin[Q_ftol(((v[0] * 2.3f + v[1]) * 0.015f + r_newrefdef.time * 3.0f) * TURBSCALE) & 255] * 0.25f +
-						  r_turbsin[Q_ftol(((v[1] * 2.3f + v[0]) * 0.015f + r_newrefdef.time * 6.0f) * TURBSCALE) & 255] * 0.125f;
-
-				qglVertex3fv(pos);
-			}
-			else
-			{
-				qglVertex3fv(v);
-			}
-		}
-
-		qglEnd();
-	}
 }
