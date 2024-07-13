@@ -14,18 +14,15 @@
 #include "ref.h"
 #include "qgl.h"
 
-#define	REF_VERSION	"GL 2.1" //mxd. GL 0.01 in Q2
+#define REF_VERSION	"GL 2.1" //mxd. GL 0.01 in Q2
 
 typedef enum //mxd. Changed in H2
 {
-	it_undefined,
-	it_skin,
-	it_sprite,
-	it_wall1, //TODO: better name...
-	it_wall2, //TODO: better name...
-	it_pic, //mxd. Or it_book?
-	it_sky,
-	it_wall3 //TODO: better name...
+	it_skin		= 1,
+	it_sprite	= 2,
+	it_wall		= 4,
+	it_pic		= 5,
+	it_sky		= 6
 } imagetype_t;
 
 typedef struct image_s //mxd. Changed in H2. Original size: 104 bytes

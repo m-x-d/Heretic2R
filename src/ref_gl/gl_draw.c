@@ -43,7 +43,7 @@ image_t* Draw_FindPicFilter(char* name);
 void Draw_InitLocal(void)
 {
 	r_notexture = NULL;
-	r_notexture = GL_FindImage("textures/general/notex.m8", it_wall2);
+	r_notexture = GL_FindImage("textures/general/notex.m8", it_wall);
 	if (r_notexture == NULL)
 		Sys_Error("Draw_InitLocal: could not find textures/general/notex.m8");
 

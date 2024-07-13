@@ -275,9 +275,7 @@ void GL_ImageList_f(void)
 				sprite_texels += image->width * image->height;
 				break;
 
-			case it_wall1:
-			case it_wall2:
-			case it_wall3:
+			case it_wall:
 				Com_Printf("W");
 				tex_count++;
 				tex_texels += (image->width * image->height * 4) / 3;
@@ -296,7 +294,7 @@ void GL_ImageList_f(void)
 				break;
 
 			default: //mxd. Added to silence compiler warning
-				Com_Printf("Unknown image type %i for '%s'!\n", image->type, image->name);
+				Com_Printf("U%i", image->type, image->name);
 				break;
 		}
 

@@ -281,7 +281,7 @@ static void Mod_LoadTexinfo(const lump_t* l)
 			out->next = NULL;
 
 		Com_sprintf(name, sizeof(name), "textures/%s.m8", in->texture); // H2: .wal -> .m8
-		out->image = GL_FindImage(name, it_wall2); // H2: type: 2 -> 4
+		out->image = GL_FindImage(name, it_wall);
 
 		if (out->image == NULL)
 		{
