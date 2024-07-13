@@ -18,7 +18,7 @@
     <ClCompile Include="..\win32\q_shwin.c" />
     <ClCompile Include="anorms.c" />
     <ClCompile Include="anormtab.c" />
-    <ClCompile Include="fmodel.c" />
+    <ClCompile Include="gl_fmodel.c" />
     <ClCompile Include="gl_draw.c" />
     <ClCompile Include="gl_draw_book.c" />
     <ClCompile Include="gl_draw_cinematic.c" />
@@ -53,7 +53,7 @@
     <ClInclude Include="..\win32\glw_win.h" />
     <ClInclude Include="anorms.h" />
     <ClInclude Include="anormtab.h" />
-    <ClInclude Include="fmodel.h" />
+    <ClInclude Include="gl_fmodel.h" />
     <ClInclude Include="gl_local.h" />
     <ClInclude Include="gl_model.h" />
     <ClInclude Include="m_Reference.h" />

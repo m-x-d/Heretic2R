@@ -5,7 +5,7 @@
 //
 
 #include "gl_local.h"
-#include "fmodel.h"
+#include "gl_fmodel.h"
 #include "m_Reference.h"
 #include "q_Surface.h"
 #include "Vector.h"

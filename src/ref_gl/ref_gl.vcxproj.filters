@@ -57,9 +57,6 @@
     <ClCompile Include="gl_draw_book.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="fmodel.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\win32\q_shwin.c">
       <Filter>win32</Filter>
     </ClCompile>
@@ -93,6 +90,9 @@
     <ClCompile Include="gl_sky.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="gl_fmodel.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gl_local.h">
@@ -115,9 +115,6 @@
     </ClInclude>
     <ClInclude Include="..\qcommon\qfiles.h">
       <Filter>qcommon</Filter>
-    </ClInclude>
-    <ClInclude Include="fmodel.h">
-      <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="m_Reference.h">
       <Filter>src</Filter>
@@ -166,6 +163,9 @@
     </ClInclude>
     <ClInclude Include="..\qcommon\q_Sprite.h">
       <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="gl_fmodel.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

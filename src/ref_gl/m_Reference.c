@@ -6,7 +6,7 @@
 
 #include "Reference.h"
 #include "gl_local.h"
-#include "fmodel.h"
+#include "gl_fmodel.h"
 
 int GetReferencedID(const struct model_s* model)
 {

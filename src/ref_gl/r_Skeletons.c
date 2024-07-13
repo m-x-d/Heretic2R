@@ -5,7 +5,7 @@
 //
 
 #include "gl_local.h"
-#include "fmodel.h"
+#include "gl_fmodel.h"
 #include "m_SkeletalCluster.h"
 #include "m_Skeleton.h"
 #include "r_Skeletons.h"

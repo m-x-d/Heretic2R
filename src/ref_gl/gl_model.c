@@ -5,7 +5,7 @@
 //
 
 #include "gl_local.h"
-#include "fmodel.h"
+#include "gl_fmodel.h"
 #include "Vector.h"
 
 model_t* loadmodel;

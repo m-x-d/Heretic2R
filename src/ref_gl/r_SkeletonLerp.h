@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "fmodel.h"
+#include "gl_fmodel.h"
 #include "qfiles.h"
 
 //mxd. Reconstructed data type. Original name unknown.
