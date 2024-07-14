@@ -592,7 +592,7 @@ static void GL_DrawFlexFrameLerp(void)
 	if (draw_reflection)
 	{
 		if (fmodel->frames != NULL)
-			InterpolateVertexNormals(fmdl_num_xyz, framelerp_inv, framelerp, sfl.verts, sfl.old_verts, normals_array);
+			InterpolateVertexNormals(fmdl_num_xyz, framelerp_inv, framelerp, sfl_cur_skel.verts, sfl_cur_skel.old_verts, normals_array);
 
 		qglEnable(GL_TEXTURE_GEN_S);
 		qglEnable(GL_TEXTURE_GEN_T);
@@ -672,7 +672,7 @@ static void GL_DrawFlexFrameLerp(void)
 					else if (draw_reflection)
 						normal = &normals_array[index_xyz];
 					else
-						normal = &r_avertexnormals[sfl.verts[index_xyz].lightnormalindex];
+						normal = &r_avertexnormals[sfl_cur_skel.verts[index_xyz].lightnormalindex];
 
 					qglNormal3f((*normal)[0], (*normal)[1], (*normal)[2]);
 				}
@@ -690,7 +690,7 @@ static void GL_DrawFlexFrameLerp(void)
 					if (fmodel->frames == NULL)
 						l = shadedots[fmodel->lightnormalindex[index_xyz]];
 					else
-						l = shadedots[sfl.verts[index_xyz].lightnormalindex];
+						l = shadedots[sfl_cur_skel.verts[index_xyz].lightnormalindex];
 
 					qglColor4f(l * shadelight[0], l * shadelight[1], l * shadelight[2], alpha);
 				}
