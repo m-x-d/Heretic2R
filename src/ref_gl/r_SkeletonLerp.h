@@ -16,7 +16,7 @@ typedef struct
 	vec3_t back_vector;
 	fmtrivertx_t* verts;
 	fmtrivertx_t* old_verts;
-	fmtrivertx_t* unknown_verts; //TODO: better name
+	//fmtrivertx_t* unknown_verts; //mxd. All usages replaced with verts.
 } SkeletonFrameLerpInfo_t;
 
 extern int fmdl_num_xyz;

@@ -672,7 +672,7 @@ static void GL_DrawFlexFrameLerp(void)
 					else if (draw_reflection)
 						normal = &normals_array[index_xyz];
 					else
-						normal = &r_avertexnormals[sfl.unknown_verts[index_xyz].lightnormalindex];
+						normal = &r_avertexnormals[sfl.verts[index_xyz].lightnormalindex];
 
 					qglNormal3f((*normal)[0], (*normal)[1], (*normal)[2]);
 				}
@@ -690,7 +690,7 @@ static void GL_DrawFlexFrameLerp(void)
 					if (fmodel->frames == NULL)
 						l = shadedots[fmodel->lightnormalindex[index_xyz]];
 					else
-						l = shadedots[sfl.unknown_verts[index_xyz].lightnormalindex];
+						l = shadedots[sfl.verts[index_xyz].lightnormalindex];
 
 					qglColor4f(l * shadelight[0], l * shadelight[1], l * shadelight[2], alpha);
 				}

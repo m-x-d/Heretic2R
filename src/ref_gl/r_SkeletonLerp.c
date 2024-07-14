@@ -80,7 +80,6 @@ static void LerpStandardSkeleton(void)
 
 		sfl_skel1.verts = pframe->verts;
 		sfl_skel1.old_verts = poldframe->verts;
-		sfl_skel1.unknown_verts = sfl_skel1.verts;
 
 		for (int i = 0; i < 3; i++)
 		{
@@ -221,7 +220,6 @@ static void StandardFrameLerp(void)
 
 	sfl.verts = pframe->verts;
 	sfl.old_verts = poldframe->verts;
-	sfl.unknown_verts = sfl.verts;
 
 	for (int i = 0; i < 3; i++)
 	{
