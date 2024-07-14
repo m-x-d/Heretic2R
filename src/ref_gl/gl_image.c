@@ -275,6 +275,7 @@ void GL_ImageList_f(void)
 				sprite_texels += image->width * image->height;
 				break;
 
+			//mxd. Original code also handles types 3 and 7 here. These aren't used anywhere else in the code.
 			case it_wall:
 				Com_Printf("W");
 				tex_count++;
