@@ -7,6 +7,7 @@
 #pragma once
 
 #include "q_shared.h"
+#include "Heretic2.h" //mxd. Moved to separate include, to pull only necessary stuff into launcher...
 
 #define	BASEDIRNAME			"base" //TODO: unused?
 
@@ -19,13 +20,7 @@
 #define VERSIONDISP			(VERSION_MAJOR"."VERSION_MINOR)
 #define VERSIONFULL			(VERSION_MAJOR"."VERSION_MINOR"."VERSION_LOCAL"."VERSION_DATE"."VERSION_ITERATION)
 
-#ifdef _HERETIC2_
-	#define GAME_DECLSPEC __declspec(dllexport)
-#else 
-	#define GAME_DECLSPEC __declspec(dllimport)
-#endif
-
-#define NO_BLOOD 0
+#define NO_BLOOD 0 //TODO: unused?
 
 #ifdef WIN32
 	#ifdef NDEBUG
