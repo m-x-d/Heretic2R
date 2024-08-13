@@ -20,7 +20,7 @@
     <ResourceCompile Include="Heretic2R.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\Heretic2R_tmp\icon.ico" />
+    <Image Include="icon.ico" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <SccProjectName />
