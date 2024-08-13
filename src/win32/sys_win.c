@@ -27,9 +27,32 @@ void Sys_Error(char* error, ...)
 
 #pragma endregion
 
+// Q2 counterpart
 static void ParseCommandLine(LPSTR lpCmdLine)
 {
-	NOT_IMPLEMENTED
+	argc = 1;
+	argv[0] = "exe";
+
+	while (*lpCmdLine && argc < MAX_NUM_ARGVS)
+	{
+		while (*lpCmdLine && (*lpCmdLine <= ' ' || *lpCmdLine > '~'))
+			lpCmdLine++;
+
+		if (*lpCmdLine)
+		{
+			argv[argc] = lpCmdLine;
+			argc++;
+
+			while (*lpCmdLine && (*lpCmdLine > ' ' && *lpCmdLine <= '~'))
+				lpCmdLine++;
+
+			if (*lpCmdLine)
+			{
+				*lpCmdLine = 0;
+				lpCmdLine++;
+			}
+		}
+	}
 }
 
 int GAME_DECLSPEC Quake2Main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
