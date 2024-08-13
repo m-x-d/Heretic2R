@@ -162,7 +162,8 @@
       <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>..\client;..\qcommon;..\game;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
-      <UndefinePreprocessorDefinitions>H2COMMON</UndefinePreprocessorDefinitions>
+      <UndefinePreprocessorDefinitions>
+      </UndefinePreprocessorDefinitions>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
