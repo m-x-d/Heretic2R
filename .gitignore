@@ -4,6 +4,8 @@
 /src/.vs
 /src/H2Common/debug
 /src/H2Common/release
+/src/launcher/debug
 /src/ref_gl/debug
 /src/ref_gl/release
+/src/win32/debug
 *.user
