@@ -97,7 +97,7 @@
       <OutputFile>..\..\build\quake2.dll</OutputFile>
       <ImportLibrary>$(SolutionDir)..\lib\$(TargetName).lib</ImportLibrary>
       <ModuleDefinitionFile>.\quake2.def</ModuleDefinitionFile>
-      <AdditionalDependencies>H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;wsock32.lib;H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -141,7 +141,7 @@
       <OutputFile>..\..\build\quake2.dll</OutputFile>
       <ImportLibrary>$(SolutionDir)..\lib\$(TargetName).lib</ImportLibrary>
       <ModuleDefinitionFile>.\quake2.def</ModuleDefinitionFile>
-      <AdditionalDependencies>H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;wsock32.lib;H2Common.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
