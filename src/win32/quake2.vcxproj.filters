@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="win32">
+      <UniqueIdentifier>{f4b42e80-f83d-41cd-ad5c-699a959fd136}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="qcommon">
+      <UniqueIdentifier>{7e5245c5-b973-45e6-ab45-c51e6dbf1952}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="sys_win.c">
+      <Filter>win32</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\qcommon\qcommon.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="Quake2Main.h">
+      <Filter>win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Heretic2.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
