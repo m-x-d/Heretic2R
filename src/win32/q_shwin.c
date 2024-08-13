@@ -66,3 +66,9 @@ void Hunk_Free(void* buf)
 
 	hunkcount--;
 }
+
+int Sys_Milliseconds(void)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}

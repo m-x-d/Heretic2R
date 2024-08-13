@@ -12,6 +12,12 @@
     <ClCompile Include="sys_win.c">
       <Filter>win32</Filter>
     </ClCompile>
+    <ClCompile Include="..\qcommon\common.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="q_shwin.c">
+      <Filter>win32</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">

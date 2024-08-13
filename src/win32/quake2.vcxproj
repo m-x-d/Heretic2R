@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\qcommon\common.c" />
+    <ClCompile Include="q_shwin.c" />
     <ClCompile Include="sys_win.c" />
   </ItemGroup>
   <ItemGroup>
