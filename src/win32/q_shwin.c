@@ -13,6 +13,8 @@ int hunkcount;
 uint hunkmaxsize; //mxd. int -> uint
 uint cursize; //mxd. int -> uint
 
+int curtime;
+
 // Q2 counterpart
 void* Hunk_Begin(const int maxsize)
 {
@@ -67,8 +69,19 @@ void Hunk_Free(void* buf)
 	hunkcount--;
 }
 
+// Q2 counterpart
 int Sys_Milliseconds(void)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	static int base;
+	static qboolean	initialized = false;
+
+	if (!initialized)
+	{
+		// Let base retain 16 bits of effectively random data.
+		base = (int)(timeGetTime() & 0xffff0000);
+		initialized = true;
+	}
+	curtime = (int)timeGetTime() - base;
+
+	return curtime;
 }
