@@ -437,7 +437,7 @@ void Cmd_Init(void);
 // Called by the init functions of other parts of the program to register commands and functions to call for them.
 // The cmd_name is referenced later, so it should not be in temp memory.
 // If function is NULL, the command will be forwarded to the server as a clc_stringcmd instead of executed locally.
-void Cmd_AddCommand(char* cmd_name, xcommand_t function);
+void Cmd_AddCommand(const char* cmd_name, xcommand_t function);
 
 void Cmd_RemoveCommand(char* cmd_name);
 
@@ -504,7 +504,7 @@ void Cvar_SetValue(char* var_name, float value);
 float Cvar_VariableValue(char* var_name);
 
 // Returns an empty string if not defined
-char* Cvar_VariableString(char* var_name);
+char* Cvar_VariableString(const char* var_name);
 
 // Attempts to match a partial variable name for command line completion returns NULL if nothing fits.
 char* Cvar_CompleteVariable(char* partial);

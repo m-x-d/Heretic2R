@@ -33,6 +33,11 @@ cvar_t* player_dll;
 
 #pragma region ========================== CLIENT / SERVER INTERACTIONS ====================
 
+void Com_Printf(char* fmt, ...)
+{
+	NOT_IMPLEMENTED
+}
+
 void Com_ColourPrintf(PalIdx_t colour, char* msg, ...)
 {
 	NOT_IMPLEMENTED
@@ -98,6 +103,12 @@ zhead_t z_chain;
 static void Z_Stats_f(void)
 {
 	NOT_IMPLEMENTED
+}
+
+void* Z_Malloc(int size)
+{
+	NOT_IMPLEMENTED
+	return NULL;
 }
 
 #pragma endregion

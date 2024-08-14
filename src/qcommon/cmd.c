@@ -77,13 +77,47 @@ static void Cmd_CpuID_f(void)
 
 #pragma region ========================== COMMAND EXECUTION =======================
 
-void Cmd_AddCommand(char* cmd_name, xcommand_t function)
+typedef struct cmd_function_s
 {
-	NOT_IMPLEMENTED
+	struct cmd_function_s* next;
+	const char* name;
+	xcommand_t function;
+} cmd_function_t;
+
+static cmd_function_t* cmd_functions; // Possible commands to execute
+
+// Q2 counterpart
+void Cmd_AddCommand(const char* cmd_name, const xcommand_t function)
+{
+	cmd_function_t* cmd;
+
+	// Fail if the command is a variable name
+	if (Cvar_VariableString(cmd_name)[0])
+	{
+		Com_Printf("Cmd_AddCommand: %s already defined as a var\n", cmd_name);
+		return;
+	}
+
+	// Fail if the command already exists
+	for (cmd = cmd_functions; cmd; cmd = cmd->next)
+	{
+		if (!strcmp(cmd_name, cmd->name))
+		{
+			Com_Printf("Cmd_AddCommand: %s already defined\n", cmd_name);
+			return;
+		}
+	}
+
+	cmd = Z_Malloc(sizeof(cmd_function_t));
+	cmd->name = cmd_name;
+	cmd->function = function;
+	cmd->next = cmd_functions;
+	cmd_functions = cmd;
 }
 
 void Cmd_Init(void)
 {
+	// Register our commands
 	Cmd_AddCommand("cmdlist", Cmd_List_f);
 	Cmd_AddCommand("exec", Cmd_Exec_f);
 	Cmd_AddCommand("echo", Cmd_Echo_f);
