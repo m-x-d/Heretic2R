@@ -579,9 +579,9 @@ image_t* GL_FindImage(char* name, const imagetype_t type)
 	}
 
 	// Not hashed. Load image from disk.
-	if (!strcmp(name + len - 3, ".m8"))
+	if (strcmp(name + len - 3, ".m8") == 0)
 		image = GL_LoadWal(name, type);
-	else if (!strcmp(name + len - 4, ".m32"))
+	else if (strcmp(name + len - 4, ".m32") == 0)
 		image = GL_LoadWal32(name, type);
 	else
 		Com_Printf("GL_FindImage: Extension not recognized in %s\n", name);
@@ -682,7 +682,7 @@ static void GL_RefreshImage(image_t* image)
 	qglDeleteTextures(1, (GLuint*)&image->texnum);
 
 	const uint len = strlen(image->name);
-	if (!strcmp(image->name + len - 3, ".m8"))
+	if (strcmp(image->name + len - 3, ".m8") == 0)
 	{
 		miptex_t* mt;
 		ri.FS_LoadFile(image->name, (void**)&mt);
@@ -693,7 +693,7 @@ static void GL_RefreshImage(image_t* image)
 
 		ri.FS_FreeFile(mt);
 	}
-	else if (!strcmp(image->name + len - 4, ".m32"))
+	else if (strcmp(image->name + len - 4, ".m32") == 0)
 	{
 		miptex32_t* mt;
 		ri.FS_LoadFile(image->name, (void**)&mt);

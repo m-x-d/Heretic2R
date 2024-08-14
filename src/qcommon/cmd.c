@@ -99,9 +99,9 @@ void Cmd_AddCommand(const char* cmd_name, const xcommand_t function)
 	}
 
 	// Fail if the command already exists
-	for (cmd = cmd_functions; cmd; cmd = cmd->next)
+	for (cmd = cmd_functions; cmd != NULL; cmd = cmd->next)
 	{
-		if (!strcmp(cmd_name, cmd->name))
+		if (strcmp(cmd_name, cmd->name) == 0)
 		{
 			Com_Printf("Cmd_AddCommand: %s already defined\n", cmd_name);
 			return;

@@ -41,7 +41,7 @@ H2COMMON_API char* Info_ValueForKey(const char* s, const char* key)
 
 		*o = 0;
 
-		if (!strcmp(key, pkey))
+		if (strcmp(key, pkey) == 0)
 			return value[valueindex];
 
 		if (!*s)
@@ -87,7 +87,7 @@ H2COMMON_API void Info_RemoveKey(char* s, const char* key)
 
 		*o = 0;
 
-		if (!strcmp(key, pkey))
+		if (strcmp(key, pkey) == 0)
 		{
 			memmove(start, s, strlen(s) + 1); // Remove this part //mxd. strcpy -> memmove
 			return;
