@@ -50,6 +50,15 @@ void Com_Quit(void)
 
 #pragma endregion
 
+#pragma region ========================== SIZEBUFFER HANDLING =============================
+
+void SZ_Init(sizebuf_t* buf, byte* data, int length)
+{
+	NOT_IMPLEMENTED
+}
+
+#pragma endregion
+
 #pragma region ========================== COMMAND LINE ARGS PROCESSING ====================
 
 // Q2 counterpart

@@ -8,9 +8,13 @@
 
 #pragma region ========================== COMMAND BUFFER ==========================
 
+sizebuf_t cmd_text;
+byte cmd_text_buf[8192];
+
+// Q2 counterpart
 void Cbuf_Init(void)
 {
-	NOT_IMPLEMENTED
+	SZ_Init(&cmd_text, cmd_text_buf, sizeof(cmd_text_buf));
 }
 
 void Cbuf_AddText(char* text)
