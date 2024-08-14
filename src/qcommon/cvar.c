@@ -6,9 +6,14 @@
 
 #include "qcommon.h"
 
+cvar_t* cvar_vars;
+
 static cvar_t* Cvar_FindVar(const char* var_name)
 {
-	NOT_IMPLEMENTED
+	for (cvar_t* var = cvar_vars; var != NULL; var = var->next)
+		if (strcmp(var_name, var->name) == 0)
+			return var;
+
 	return NULL;
 }
 
