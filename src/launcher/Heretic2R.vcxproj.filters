@@ -4,8 +4,28 @@
     <Filter Include="src">
       <UniqueIdentifier>{51ffa44e-4721-46cf-b903-62a42580e4a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{cd41368e-0c12-4056-8ec6-b78533160a20}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.c" />
+    <ResourceCompile Include="Heretic2R.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico">
+      <Filter>Resources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
