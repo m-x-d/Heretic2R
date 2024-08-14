@@ -89,6 +89,8 @@ static void COM_InitArgv(const int argc, char** argv)
 
 #pragma region ========================== ZONE MEMORY ALLOCATION ==========================
 
+#define Z_MAGIC		0x1d1d
+
 typedef struct zhead_s
 {
 	struct zhead_s* prev;
@@ -99,16 +101,43 @@ typedef struct zhead_s
 } zhead_t;
 
 zhead_t z_chain;
+int z_count;
+int z_bytes;
 
 static void Z_Stats_f(void)
 {
 	NOT_IMPLEMENTED
 }
 
-void* Z_Malloc(int size)
+// Q2 counterpart
+void* Z_TagMalloc(int size, const int tag)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	size += sizeof(zhead_t);
+	zhead_t* z = malloc(size);
+
+	if (z == NULL)
+		Com_Error(ERR_FATAL, "Z_Malloc: failed on allocation of %i bytes", size);
+
+	memset(z, 0, size);
+
+	z_count++;
+	z_bytes += size;
+	z->magic = Z_MAGIC;
+	z->tag = (short)tag;
+	z->size = size;
+
+	z->next = z_chain.next;
+	z->prev = &z_chain;
+	z_chain.next->prev = z;
+	z_chain.next = z;
+
+	return z + 1;
+}
+
+// Q2 counterpart
+void* Z_Malloc(const int size)
+{
+	return Z_TagMalloc(size, 0);
 }
 
 #pragma endregion
