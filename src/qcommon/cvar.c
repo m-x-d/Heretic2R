@@ -30,7 +30,19 @@ cvar_t* Cvar_Get(char* var_name, char* var_value, int flags)
 	return NULL;
 }
 
-void Cvar_Init(void)
+static void Cvar_Set_f(void)
 {
 	NOT_IMPLEMENTED
+}
+
+static void Cvar_List_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart
+void Cvar_Init(void)
+{
+	Cmd_AddCommand("set", Cvar_Set_f);
+	Cmd_AddCommand("cvarlist", Cvar_List_f);
 }
