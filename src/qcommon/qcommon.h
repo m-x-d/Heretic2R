@@ -22,17 +22,18 @@
 
 #define NO_BLOOD 0 //TODO: unused?
 
-#ifdef WIN32
+#ifdef _WIN32
 	#ifdef NDEBUG
 		#define BUILDSTRING "RELEASE"
 	#else
 		#define BUILDSTRING "DEBUG"
 	#endif
 
-	//TODO: remove?
-	//#ifdef _M_IX86 //mxd. Disabled
-	//#define	CPUSTRING	"x86"
-	//#endif
+	#ifdef _WIN64
+		#define CPUSTRING	"x64"
+	#else
+		#define CPUSTRING	"x86"
+	#endif
 #endif
 
 //============================================================================
@@ -119,7 +120,7 @@ int COM_CheckParm(char* parm);
 void COM_AddParm(char* parm);
 
 void COM_Init(void);
-void COM_InitArgv(int argc, char** argv);
+//void COM_InitArgv(int argc, char** argv); //mxd. Not needed
 
 char* CopyString(char* in);
 

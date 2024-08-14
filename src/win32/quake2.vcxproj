@@ -11,13 +11,27 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\client\cl_main.c" />
+    <ClCompile Include="..\client\cl_screen.c" />
+    <ClCompile Include="..\client\keys.c" />
+    <ClCompile Include="..\client\snd_dll.c" />
+    <ClCompile Include="..\qcommon\cmd.c" />
     <ClCompile Include="..\qcommon\common.c" />
+    <ClCompile Include="..\qcommon\cvar.c" />
+    <ClCompile Include="..\qcommon\files.c" />
+    <ClCompile Include="..\qcommon\net_chan.c" />
+    <ClCompile Include="..\server\sv_main.c" />
+    <ClCompile Include="net_wins.c" />
     <ClCompile Include="q_shwin.c" />
     <ClCompile Include="sys_win.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\client\keys.h" />
+    <ClInclude Include="..\client\screen.h" />
+    <ClInclude Include="..\client\snd_dll.h" />
     <ClInclude Include="..\qcommon\Heretic2.h" />
     <ClInclude Include="..\qcommon\qcommon.h" />
+    <ClInclude Include="..\server\server.h" />
     <ClInclude Include="Quake2Main.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -69,7 +83,7 @@
       <AssemblerListingLocation>.\debug\</AssemblerListingLocation>
       <ObjectFileName>.\debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\client;..\qcommon;..\game;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\client;..\server;..\qcommon;..\game;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
@@ -113,7 +127,7 @@
       <AssemblerListingLocation>.\release\</AssemblerListingLocation>
       <ObjectFileName>.\release\</ObjectFileName>
       <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\client;..\qcommon;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\client;..\server;..\qcommon;..\game;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>

@@ -4,18 +4,167 @@
 // Copyright 1998 Raven Software
 //
 
+#include <setjmp.h>
 #include "qcommon.h"
+#include "keys.h"
+#include "screen.h"
+#include "snd_dll.h"
 
+jmp_buf abortframe; // An ERR_DROP occured, exit the entire frame.
+
+cvar_t* host_speeds;
+cvar_t* log_stats;
+cvar_t* developer;
+cvar_t* timescale;
+cvar_t* fixedtime;
+cvar_t* logfile_active;	// 1 = buffer log, 2 = flush after each print
+cvar_t* showtrace;
 cvar_t* dedicated;
+
+// New in H2:
+cvar_t* fpu_precision;
+cvar_t* hideconprint;
+cvar_t* player_dll;
+
+#pragma region ========================== CLIENT / SERVER INTERACTIONS ====================
+
+void Com_ColourPrintf(PalIdx_t colour, char* msg, ...)
+{
+	NOT_IMPLEMENTED
+}
 
 void Com_Quit(void)
 {
 	NOT_IMPLEMENTED
 }
 
-void Qcommon_Init(int argc, char** argv)
+#pragma endregion
+
+#pragma region ========================== COMMAND LINE ARGS PROCESSING ====================
+
+static void COM_InitArgv(int argc, char** argv)
 {
 	NOT_IMPLEMENTED
+}
+
+#pragma endregion
+
+#pragma region ========================== ZONE MEMORY ALLOCATION ==========================
+
+typedef struct zhead_s
+{
+	struct zhead_s* prev;
+	struct zhead_s* next;
+	short magic;
+	short tag; // For group free
+	int size;
+} zhead_t;
+
+zhead_t z_chain;
+
+static void Z_Stats_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+#pragma endregion
+
+static void Com_Error_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void Qcommon_Init(int argc, char** argv)
+{
+	if (setjmp(abortframe))
+		Sys_Error("Error during initialization");
+
+	z_chain.prev = &z_chain;
+	z_chain.next = &z_chain;
+
+	// Prepare enough of the subsystems to handle cvar and command buffer management
+	COM_InitArgv(argc, argv);
+
+	// Missing in H2: Swap_Init();
+	Cbuf_Init();
+
+	Cmd_Init();
+	Cvar_Init();
+
+	Key_Init();
+
+	// We need to add the early commands twice, because a basedir or cddir needs to be set before execing config files,
+	// but we want other params to override the settings of the config files.
+	Cbuf_AddEarlyCommands(false);
+	Cbuf_Execute();
+
+	FS_InitFilesystem();
+	SndDll_Init(); // New in H2
+
+	Cbuf_AddText("exec default.cfg\n");
+	Cbuf_AddText("exec config.cfg\n");
+
+	Cbuf_AddEarlyCommands(true);
+	Cbuf_Execute();
+
+	// Init commands and vars
+	Cmd_AddCommand("z_stats", Z_Stats_f);
+	Cmd_AddCommand("error", Com_Error_f);
+
+	host_speeds = Cvar_Get("host_speeds", "0", 0);
+	log_stats = Cvar_Get("log_stats", "0", 0);
+	developer = Cvar_Get("developer", "0", 0);
+	timescale = Cvar_Get("timescale", "1", 0);
+	fixedtime = Cvar_Get("fixedtime", "0", 0);
+	logfile_active = Cvar_Get("logfile", "0", 0);
+	showtrace = Cvar_Get("showtrace", "0", 0);
+	dedicated = Cvar_Get("dedicated", "0", CVAR_NOSET);
+
+	// New in H2:
+	fpu_precision = Cvar_Get("fpu_precision", "1", 0);
+	//sys_copyfail = Cvar_Get("sys_copyfail", "You must have the Heretic II CD in the drive to play.", 0); //mxd. Relevant logic skipped
+	hideconprint = Cvar_Get("hideconprint", "0", 0);
+	player_dll = Cvar_Get("player_dll", "Player", 0);
+
+	char* s = va("%s:  %s %s %s", VERSIONFULL, CPUSTRING, __DATE__, BUILDSTRING);
+	Cvar_Get("version", s, CVAR_SERVERINFO | CVAR_NOSET);
+
+	// Q2: allow_download_ cvars inited in SV_Init()
+	allow_download = Cvar_Get("allow_download", "1", CVAR_ARCHIVE);
+	allow_download_maps = Cvar_Get("allow_download_maps", "1", CVAR_ARCHIVE);
+	allow_download_players = Cvar_Get("allow_download_players", "1", CVAR_ARCHIVE);
+	allow_download_models = Cvar_Get("allow_download_models", "1", CVAR_ARCHIVE);
+	allow_download_sounds = Cvar_Get("allow_download_sounds", "1", CVAR_ARCHIVE);
+
+	if ((int)dedicated->value)
+		Cmd_AddCommand("quit", Com_Quit);
+
+	Sys_Init();
+
+	NET_Init();
+	Netchan_Init();
+
+	SV_Init();
+	CL_Init();
+
+	// Add + commands from command line.
+	if (!Cbuf_AddLateCommands())
+	{
+		// If the user didn't give any commands, run default action.
+		if ((int)dedicated->value)
+			Cbuf_AddText("dedicated_start\n");
+		else
+			Cbuf_AddText("demo_loop\n"); // Q2: "d1\n"
+
+		Cbuf_Execute();
+	}
+	else
+	{
+		// The user asked for something explicit, so drop the loading plaque.
+		SCR_EndLoadingPlaque();
+	}
+
+	Com_ColourPrintf(P_HEADER, "====== Heretic 2 Initialized ======\n\n"); // Q2: Com_Printf
 }
 
 void Qcommon_Frame(int msec)

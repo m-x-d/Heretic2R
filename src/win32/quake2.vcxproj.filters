@@ -7,6 +7,12 @@
     <Filter Include="qcommon">
       <UniqueIdentifier>{7e5245c5-b973-45e6-ab45-c51e6dbf1952}</UniqueIdentifier>
     </Filter>
+    <Filter Include="client">
+      <UniqueIdentifier>{6fe0e484-2420-4776-93d6-81074b2b0383}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="server">
+      <UniqueIdentifier>{f37660ba-f385-478b-9a61-21354afb2d2c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sys_win.c">
@@ -18,6 +24,36 @@
     <ClCompile Include="q_shwin.c">
       <Filter>win32</Filter>
     </ClCompile>
+    <ClCompile Include="..\client\keys.c">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\cmd.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\cvar.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\files.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\snd_dll.c">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\server\sv_main.c">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="net_wins.c">
+      <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\net_chan.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\cl_main.c">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\cl_screen.c">
+      <Filter>client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -28,6 +64,18 @@
     </ClInclude>
     <ClInclude Include="..\qcommon\Heretic2.h">
       <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\keys.h">
+      <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\snd_dll.h">
+      <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\server\server.h">
+      <Filter>server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\screen.h">
+      <Filter>client</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

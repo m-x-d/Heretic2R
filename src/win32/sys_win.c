@@ -27,6 +27,11 @@ void Sys_Error(char* error, ...)
 
 #pragma endregion
 
+void Sys_Init(void)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart
 static void ParseCommandLine(LPSTR lpCmdLine)
 {
