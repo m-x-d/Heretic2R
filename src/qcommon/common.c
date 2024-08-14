@@ -10,6 +10,11 @@
 #include "screen.h"
 #include "snd_dll.h"
 
+#define MAX_NUM_ARGVS	50
+
+int com_argc;
+char* com_argv[MAX_NUM_ARGVS + 1];
+
 jmp_buf abortframe; // An ERR_DROP occured, exit the entire frame.
 
 cvar_t* host_speeds;
@@ -33,6 +38,11 @@ void Com_ColourPrintf(PalIdx_t colour, char* msg, ...)
 	NOT_IMPLEMENTED
 }
 
+void Com_Error(int code, char* fmt, ...)
+{
+	NOT_IMPLEMENTED
+}
+
 void Com_Quit(void)
 {
 	NOT_IMPLEMENTED
@@ -42,9 +52,20 @@ void Com_Quit(void)
 
 #pragma region ========================== COMMAND LINE ARGS PROCESSING ====================
 
-static void COM_InitArgv(int argc, char** argv)
+// Q2 counterpart
+static void COM_InitArgv(const int argc, char** argv)
 {
-	NOT_IMPLEMENTED
+	if (argc > MAX_NUM_ARGVS)
+		Com_Error(ERR_FATAL, "argc > MAX_NUM_ARGVS");
+
+	com_argc = argc;
+	for (int i = 0; i < argc; i++)
+	{
+		if (argv[i] == NULL || strlen(argv[i]) >= MAX_TOKEN_CHARS)
+			com_argv[i] = "";
+		else
+			com_argv[i] = argv[i];
+	}
 }
 
 #pragma endregion
