@@ -52,9 +52,12 @@ void Com_Quit(void)
 
 #pragma region ========================== SIZEBUFFER HANDLING =============================
 
-void SZ_Init(sizebuf_t* buf, byte* data, int length)
+// Q2 counterpart
+void SZ_Init(sizebuf_t* buf, byte* data, const int length)
 {
-	NOT_IMPLEMENTED
+	memset(buf, 0, sizeof(sizebuf_t));
+	buf->data = data;
+	buf->maxsize = length;
 }
 
 #pragma endregion
