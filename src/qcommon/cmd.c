@@ -42,6 +42,37 @@ qboolean Cbuf_AddLateCommands(void)
 
 #pragma region ========================== SCRIPT COMMANDS =========================
 
+static void Cmd_List_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Cmd_Exec_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Cmd_Echo_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Cmd_Alias_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Cmd_Wait_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+// New in H2
+static void Cmd_CpuID_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
 #pragma endregion
 
 #pragma region ========================== COMMAND EXECUTION =======================
@@ -53,7 +84,12 @@ void Cmd_AddCommand(char* cmd_name, xcommand_t function)
 
 void Cmd_Init(void)
 {
-	NOT_IMPLEMENTED
+	Cmd_AddCommand("cmdlist", Cmd_List_f);
+	Cmd_AddCommand("exec", Cmd_Exec_f);
+	Cmd_AddCommand("echo", Cmd_Echo_f);
+	Cmd_AddCommand("alias", Cmd_Alias_f);
+	Cmd_AddCommand("wait", Cmd_Wait_f);
+	Cmd_AddCommand("cpuid", Cmd_CpuID_f); // New in H2
 }
 
 #pragma endregion
