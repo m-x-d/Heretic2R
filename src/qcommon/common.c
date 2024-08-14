@@ -70,6 +70,28 @@ void SZ_Init(sizebuf_t* buf, byte* data, const int length)
 #pragma region ========================== COMMAND LINE ARGS PROCESSING ====================
 
 // Q2 counterpart
+int COM_Argc(void)
+{
+	return com_argc;
+}
+
+// Q2 counterpart
+char* COM_Argv(const int arg)
+{
+	if (arg >= 0 && arg < com_argc && com_argv[arg] != NULL)
+		return com_argv[arg];
+
+	return "";
+}
+
+// Q2 counterpart
+void COM_ClearArgv(const int arg)
+{
+	if (arg >= 0 && arg < com_argc && com_argv[arg] != NULL)
+		com_argv[arg] = "";
+}
+
+// Q2 counterpart
 static void COM_InitArgv(const int argc, char** argv)
 {
 	if (argc > MAX_NUM_ARGVS)

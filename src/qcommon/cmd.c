@@ -27,9 +27,25 @@ void Cbuf_Execute(void)
 	NOT_IMPLEMENTED
 }
 
-void Cbuf_AddEarlyCommands(qboolean clear)
+// Q2 counterpart
+void Cbuf_AddEarlyCommands(const qboolean clear)
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < COM_Argc(); i++)
+	{
+		if (strcmp(COM_Argv(i), "+set") != 0)
+			continue;
+
+		Cbuf_AddText(va("set %s %s\n", COM_Argv(i + 1), COM_Argv(i + 2)));
+
+		if (clear)
+		{
+			COM_ClearArgv(i);
+			COM_ClearArgv(i + 1);
+			COM_ClearArgv(i + 2);
+		}
+
+		i += 2;
+	}
 }
 
 qboolean Cbuf_AddLateCommands(void)
