@@ -6,6 +6,11 @@
 
 #include "qcommon.h"
 
+qboolean cmd_wait;
+
+#define ALIAS_LOOP_COUNT	16
+int alias_count; // For detecting runaway loops
+
 #pragma region ========================== COMMAND BUFFER ==========================
 
 sizebuf_t cmd_text;
@@ -22,9 +27,58 @@ void Cbuf_AddText(char* text)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
 void Cbuf_Execute(void)
 {
-	NOT_IMPLEMENTED
+	int i;
+	char line[1024];
+
+	alias_count = 0; // Don't allow infinite alias loops
+
+	while (cmd_text.cursize)
+	{
+		// Find a \n or ; line break
+		char* text = (char*)cmd_text.data;
+
+		int quotes = 0;
+		for (i = 0; i < cmd_text.cursize; i++)
+		{
+			if (text[i] == '"')
+				quotes++;
+
+			if (!(quotes & 1) && text[i] == ';')
+				break; // Don't break if inside a quoted string
+
+			if (text[i] == '\n')
+				break;
+		}
+
+		memcpy(line, text, i);
+		line[i] = 0;
+
+		// Delete the text from the command buffer and move remaining commands down.
+		// This is necessary because commands (exec, alias) can insert data at the beginning of the text buffer.
+		if (i == cmd_text.cursize)
+		{
+			cmd_text.cursize = 0;
+		}
+		else
+		{
+			i++;
+			cmd_text.cursize -= i;
+			memmove(text, text + i, cmd_text.cursize);
+		}
+
+		// Execute the command line
+		Cmd_ExecuteString(line);
+
+		if (cmd_wait)
+		{
+			// Skip out while text still remains in buffer, leaving it for next frame.
+			cmd_wait = false;
+			break;
+		}
+	}
 }
 
 // Q2 counterpart
@@ -129,6 +183,11 @@ void Cmd_AddCommand(const char* cmd_name, const xcommand_t function)
 	cmd->function = function;
 	cmd->next = cmd_functions;
 	cmd_functions = cmd;
+}
+
+void Cmd_ExecuteString(char* text)
+{
+	NOT_IMPLEMENTED
 }
 
 void Cmd_Init(void)
