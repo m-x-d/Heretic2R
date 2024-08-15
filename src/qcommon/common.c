@@ -10,6 +10,7 @@
 #include "screen.h"
 #include "snd_dll.h"
 
+#define MAXPRINTMSG		4096
 #define MAX_NUM_ARGVS	50
 
 int com_argc;
@@ -35,9 +36,17 @@ int server_state;
 
 #pragma region ========================== CLIENT / SERVER INTERACTIONS ====================
 
+// Both client and server can use this, and it will output to the appropriate place.
 void Com_Printf(char* fmt, ...)
 {
-	NOT_IMPLEMENTED
+	char msg[MAXPRINTMSG];
+	va_list argptr;
+
+	va_start(argptr, fmt);
+	vsprintf_s(msg, sizeof(msg), fmt, argptr); //mxd. vsprintf -> vsprintf_s
+	va_end(argptr);
+
+	Com_ColourPrintf(P_WHITE, "%s", msg); // Changed in H2
 }
 
 void Com_ColourPrintf(PalIdx_t colour, char* msg, ...)
