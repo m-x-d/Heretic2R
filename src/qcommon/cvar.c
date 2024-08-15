@@ -31,10 +31,45 @@ char* Cvar_VariableString(const char* var_name)
 	return (var != NULL ? var->string : "");
 }
 
-cvar_t* Cvar_Get(char* var_name, char* var_value, int flags)
+// Q2 counterpart
+// If the variable already exists, the value will not be set.
+// The flags will be or 'ed in if the variable exists.
+cvar_t* Cvar_Get(const char* var_name, const char* var_value, const int flags)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	if (flags & (CVAR_USERINFO | CVAR_SERVERINFO) && !Cvar_InfoValidate(var_name))
+	{
+		Com_Printf("invalid info cvar name\n");
+		return NULL;
+	}
+
+	cvar_t* var = Cvar_FindVar(var_name);
+	if (var != NULL)
+	{
+		var->flags |= flags;
+		return var;
+	}
+
+	if (var_value == NULL)
+		return NULL;
+
+	if (flags & (CVAR_USERINFO | CVAR_SERVERINFO) && !Cvar_InfoValidate(var_value)) //BUG: original Heretic 2 code validates 'var_name' again here (H2 bug?)
+	{
+		Com_Printf("invalid info cvar value\n");
+		return NULL;
+	}
+
+	var = Z_Malloc(sizeof(cvar_t));
+	var->name = CopyString(var_name);
+	var->string = CopyString(var_value);
+	var->modified = true;
+	var->value = (float)strtod(var->string, NULL); //mxd. atof -> strtod
+	var->flags = flags;
+
+	// Link the variable in
+	var->next = cvar_vars;
+	cvar_vars = var;
+
+	return var;
 }
 
 cvar_t* Cvar_Set2(char* var_name, char* value, const qboolean force)

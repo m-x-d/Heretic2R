@@ -487,7 +487,7 @@ float ClampCvar(float min, float max, float value);
 
 // Creates the variable if it doesn't exist, or returns the existing one if it exists.
 // The value will not be changed, but flags will be ORed in that allows variables to be unarchived without needing bitflags.
-cvar_t* Cvar_Get(char* var_name, char* value, int flags); //TODO: check redundant declaration...
+cvar_t* Cvar_Get(const char* var_name, const char* var_value, int flags); //TODO: check redundant declaration...
 
 // Will create the variable if it doesn't exist
 cvar_t* Cvar_Set(char* var_name, char* value);
