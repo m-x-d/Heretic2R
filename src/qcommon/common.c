@@ -69,6 +69,12 @@ void SZ_Init(sizebuf_t* buf, byte* data, const int length)
 
 #pragma region ========================== COMMAND LINE ARGS PROCESSING ====================
 
+int COM_CheckParm(char* parm)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
 // Q2 counterpart
 int COM_Argc(void)
 {

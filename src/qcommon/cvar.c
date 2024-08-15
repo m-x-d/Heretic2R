@@ -30,6 +30,11 @@ cvar_t* Cvar_Get(char* var_name, char* var_value, int flags)
 	return NULL;
 }
 
+void Cvar_SetValue(char* var_name, float value)
+{
+	NOT_IMPLEMENTED
+}
+
 static void Cvar_Set_f(void)
 {
 	NOT_IMPLEMENTED

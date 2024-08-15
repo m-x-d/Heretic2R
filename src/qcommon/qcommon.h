@@ -9,7 +9,7 @@
 #include "q_shared.h"
 #include "Heretic2.h" //mxd. Moved to separate include, to pull only necessary stuff into launcher...
 
-#define	BASEDIRNAME			"base" //TODO: unused?
+#define	BASEDIRNAME			"base"
 
 #define VERSION_MAJOR		"1"
 #define VERSION_MINOR		"06"
