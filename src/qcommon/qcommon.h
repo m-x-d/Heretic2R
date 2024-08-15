@@ -116,7 +116,7 @@ extern char* sz_filename;
 int	COM_Argc(void);
 char* COM_Argv(int arg); // Range and null checked
 void COM_ClearArgv(int arg);
-int COM_CheckParm(char* parm);
+int COM_CheckParm(const char* parm);
 void COM_AddParm(char* parm);
 
 void COM_Init(void);

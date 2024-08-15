@@ -69,9 +69,15 @@ void SZ_Init(sizebuf_t* buf, byte* data, const int length)
 
 #pragma region ========================== COMMAND LINE ARGS PROCESSING ====================
 
-int COM_CheckParm(char* parm)
+// Q2 counterpart
+// Returns the position (1 to argc-1) in the program's argument list where the given parameter appears,
+// or 0 if not present.
+int COM_CheckParm(const char* parm)
 {
-	NOT_IMPLEMENTED
+	for (int i = 1; i < com_argc; i++)
+		if (strcmp(parm, com_argv[i]) == 0)
+			return i;
+
 	return 0;
 }
 
