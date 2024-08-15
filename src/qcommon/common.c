@@ -133,10 +133,14 @@ static void COM_InitArgv(const int argc, char** argv)
 
 #pragma endregion
 
-char* CopyString(char* in)
+// Q2 counterpart
+char* CopyString(const char* in)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	const int len = (int)strlen(in) + 1;
+	char* out = Z_Malloc(len);
+	strcpy_s(out, len, in); //mxd. strcpy -> strcpy_s
+
+	return out;
 }
 
 #pragma region ========================== ZONE MEMORY ALLOCATION ==========================

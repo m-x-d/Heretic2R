@@ -122,7 +122,7 @@ void COM_AddParm(char* parm);
 void COM_Init(void);
 //void COM_InitArgv(int argc, char** argv); //mxd. Not needed
 
-char* CopyString(char* in);
+char* CopyString(const char* in);
 
 
 void Info_Print(char* s);
