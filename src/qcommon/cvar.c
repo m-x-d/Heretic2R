@@ -30,9 +30,29 @@ cvar_t* Cvar_Get(char* var_name, char* var_value, int flags)
 	return NULL;
 }
 
-void Cvar_SetValue(char* var_name, float value)
+cvar_t* Cvar_Set2(char* var_name, char* value, qboolean force)
 {
 	NOT_IMPLEMENTED
+	return NULL;
+}
+
+// Q2 counterpart
+cvar_t* Cvar_Set(char* var_name, char* value)
+{
+	return Cvar_Set2(var_name, value, false);
+}
+
+// Q2 counterpart
+void Cvar_SetValue(char* var_name, const float value)
+{
+	char val[32];
+
+	if (value == (int)value)
+		Com_sprintf(val, sizeof(val), "%i", (int)value);
+	else
+		Com_sprintf(val, sizeof(val), "%f", (double)value);
+
+	Cvar_Set(var_name, val);
 }
 
 static void Cvar_Set_f(void)
