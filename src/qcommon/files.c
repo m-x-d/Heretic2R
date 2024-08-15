@@ -5,6 +5,7 @@
 //
 
 #include "qcommon.h"
+#include "qfiles.h"
 
 char fs_gamedir[MAX_OSPATH];
 cvar_t* fs_basedir;
@@ -37,10 +38,62 @@ typedef struct searchpath_s
 searchpath_t* fs_searchpaths;
 searchpath_t* fs_base_searchpaths; // Without gamedirs
 
+static int pakfile_comparer(const void* f1, const void* f2)
+{
+	const packfile_t* pf1 = f1;
+	const packfile_t* pf2 = f2;
+
+	return strcmp(pf1->name, pf2->name);
+}
+
 static pack_t* FS_LoadPackFile(char* packfile)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	static dpackfile_t info[MAX_FILES_IN_PACK]; //mxd. Made static
+
+	FILE* packhandle;
+	dpackheader_t header;
+
+	if (fopen_s(&packhandle, packfile, "rb") != 0) //mxd. fopen -> fopen_s
+		return NULL;
+
+	fread(&header, 1, sizeof(header), packhandle);
+	if (header.ident != IDPAKHEADER)
+		Com_Error(ERR_FATAL, "%s is not a packfile", packfile);
+
+	const int numpackfiles = header.dirlen / (int)sizeof(dpackfile_t);
+
+	if (numpackfiles > MAX_FILES_IN_PACK)
+		Com_Error(ERR_FATAL, "%s has %i files", packfile, numpackfiles);
+
+	packfile_t* newfiles = Z_Malloc(numpackfiles * (int)sizeof(packfile_t));
+
+	fseek(packhandle, header.dirofs, SEEK_SET);
+	fread(info, 1, header.dirlen, packhandle);
+
+	// CRC the directory to check for modifications.
+	//Com_BlockChecksum(info, header.dirlen); //mxd. Skipped: checksum is unused
+
+	// Parse the directory
+	for (int i = 0; i < numpackfiles; i++)
+	{
+		strcpy_s(newfiles[i].name, sizeof(newfiles[i].name), info[i].name); //mxd. strcpy -> strcpy_s
+		newfiles[i].filepos = info[i].filepos;
+		newfiles[i].filelen = info[i].filelen;
+	}
+
+	// H2: sort newfiles by name
+	qsort(newfiles, numpackfiles, sizeof(packfile_t), pakfile_comparer);
+
+	// Create pack_t
+	pack_t* pack = Z_Malloc(sizeof(pack_t));
+	strcpy_s(pack->filename, sizeof(pack->filename), packfile); //mxd. strcpy -> strcpy_s
+	pack->handle = packhandle;
+	pack->numfiles = numpackfiles;
+	pack->files = newfiles;
+
+	Com_Printf("Added packfile %s (%i files)\n", packfile, numpackfiles);
+
+	return pack;
 }
 
 // Sets fs_gamedir, adds the directory to the head of the path, loads and adds Htic2-0.pak Htic2-1.pak ... (not necessarily in this order!)
