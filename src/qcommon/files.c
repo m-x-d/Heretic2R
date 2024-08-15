@@ -37,9 +37,51 @@ typedef struct searchpath_s
 searchpath_t* fs_searchpaths;
 searchpath_t* fs_base_searchpaths; // Without gamedirs
 
-static void FS_AddGameDirectory(char* dir)
+static pack_t* FS_LoadPackFile(char* packfile)
 {
 	NOT_IMPLEMENTED
+	return NULL;
+}
+
+// Sets fs_gamedir, adds the directory to the head of the path, loads and adds Htic2-0.pak Htic2-1.pak ... (not necessarily in this order!)
+static void FS_AddGameDirectory(char* dir)
+{
+	strcpy_s(fs_gamedir, sizeof(fs_gamedir), dir); //mxd. strcpy -> strcpy_s
+
+	// Add the directory to the search path?
+	const cvar_t* pakfirst = Cvar_Get("pakfirst", "0", CVAR_ARCHIVE); // H2: new 'pakfirst' logic
+	if ((int)pakfirst->value)
+	{
+		searchpath_t* search = Z_Malloc(sizeof(searchpath_t));
+		strcpy_s(search->filename, sizeof(search->filename), dir); //mxd. strcpy -> strcpy_s
+		search->next = fs_searchpaths;
+		fs_searchpaths = search;
+	}
+
+	// Add any pak files in the format Htic2-0.pak, Htic2-1.pak, ...
+	for (int i = 0; i < 10; i++)
+	{
+		char pakfile[MAX_OSPATH];
+		Com_sprintf(pakfile, sizeof(pakfile), "%s/Htic2-%i.pak", dir, i);
+
+		pack_t* pak = FS_LoadPackFile(pakfile);
+		if (pak != NULL)
+		{
+			searchpath_t* search = Z_Malloc(sizeof(searchpath_t));
+			search->pack = pak;
+			search->next = fs_searchpaths;
+			fs_searchpaths = search;
+		}
+	}
+
+	// Add the directory to the search path?
+	if (!(int)pakfirst->value) // H2: new 'pakfirst' logic
+	{
+		searchpath_t* search = Z_Malloc(sizeof(searchpath_t));
+		strcpy_s(search->filename, sizeof(search->filename), dir); //mxd. strcpy -> strcpy_s
+		search->next = fs_searchpaths;
+		fs_searchpaths = search;
+	}
 }
 
 char* FS_Gamedir(void)
