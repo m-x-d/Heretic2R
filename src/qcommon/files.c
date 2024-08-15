@@ -53,6 +53,11 @@ void FS_SetGamedir(char* dir)
 	NOT_IMPLEMENTED
 }
 
+void FS_ExecAutoexec(void)
+{
+	NOT_IMPLEMENTED
+}
+
 static void FS_Link_f(void)
 {
 	NOT_IMPLEMENTED

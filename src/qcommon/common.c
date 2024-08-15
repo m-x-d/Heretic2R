@@ -31,6 +31,8 @@ cvar_t* fpu_precision;
 cvar_t* hideconprint;
 cvar_t* player_dll;
 
+int server_state;
+
 #pragma region ========================== CLIENT / SERVER INTERACTIONS ====================
 
 void Com_Printf(char* fmt, ...)
@@ -51,6 +53,16 @@ void Com_Error(int code, char* fmt, ...)
 void Com_Quit(void)
 {
 	NOT_IMPLEMENTED
+}
+
+int Com_ServerState(void)
+{
+	return server_state;
+}
+
+void Com_SetServerState(const int state)
+{
+	server_state = state;
 }
 
 #pragma endregion
@@ -121,6 +133,12 @@ static void COM_InitArgv(const int argc, char** argv)
 
 #pragma endregion
 
+char* CopyString(char* in)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
 #pragma region ========================== ZONE MEMORY ALLOCATION ==========================
 
 #define Z_MAGIC		0x1d1d
@@ -137,6 +155,11 @@ typedef struct zhead_s
 zhead_t z_chain;
 int z_count;
 int z_bytes;
+
+void Z_Free(void* ptr)
+{
+	NOT_IMPLEMENTED
+}
 
 static void Z_Stats_f(void)
 {
