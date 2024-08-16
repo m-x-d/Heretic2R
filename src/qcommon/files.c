@@ -148,6 +148,12 @@ void FS_SetGamedir(char* dir)
 	NOT_IMPLEMENTED
 }
 
+char* FS_Userdir(void)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
 void FS_ExecAutoexec(void)
 {
 	NOT_IMPLEMENTED

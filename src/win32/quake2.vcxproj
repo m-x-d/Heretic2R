@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="..\client\cl_main.c" />
     <ClCompile Include="..\client\cl_screen.c" />
+    <ClCompile Include="..\client\console.c" />
     <ClCompile Include="..\client\keys.c" />
     <ClCompile Include="..\client\snd_dll.c" />
     <ClCompile Include="..\qcommon\cmd.c" />
@@ -26,6 +27,7 @@
     <ClCompile Include="sys_win.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\client\console.h" />
     <ClInclude Include="..\client\keys.h" />
     <ClInclude Include="..\client\screen.h" />
     <ClInclude Include="..\client\snd_dll.h" />

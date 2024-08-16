@@ -32,6 +32,11 @@ void Sys_Init(void)
 	NOT_IMPLEMENTED
 }
 
+void Sys_ConsoleOutput(char* string)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart
 static void ParseCommandLine(LPSTR lpCmdLine)
 {

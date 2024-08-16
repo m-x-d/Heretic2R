@@ -5,6 +5,8 @@
 //
 
 #include <setjmp.h>
+
+#include "console.h"
 #include "qcommon.h"
 #include "keys.h"
 #include "screen.h"
@@ -32,9 +34,16 @@ cvar_t* fpu_precision;
 cvar_t* hideconprint;
 cvar_t* player_dll;
 
+FILE* logfile;
+
 int server_state;
 
 #pragma region ========================== CLIENT / SERVER INTERACTIONS ====================
+
+static int rd_target;
+static char* rd_buffer;
+static int rd_buffersize;
+static void	(*rd_flush)(int target, char* buffer);
 
 // Both client and server can use this, and it will output to the appropriate place.
 void Com_Printf(char* fmt, ...)
@@ -49,9 +58,59 @@ void Com_Printf(char* fmt, ...)
 	Com_ColourPrintf(P_WHITE, "%s", msg); // Changed in H2
 }
 
-void Com_ColourPrintf(PalIdx_t colour, char* msg, ...)
+//mxd. Similar to Q2's Com_Printf
+void Com_ColourPrintf(const PalIdx_t colour, char* fmt, ...)
 {
-	NOT_IMPLEMENTED
+	if (hideconprint == NULL || !(int)hideconprint->value)
+	{
+		va_list argptr;
+		char msg[MAXPRINTMSG];
+
+		va_start(argptr, fmt);
+		vsprintf_s(msg, sizeof(msg), fmt, argptr); //mxd. vsprintf -> vsprintf_s
+		va_end(argptr);
+
+		con.current_color = TextPalette[colour];
+
+		if (rd_target)
+		{
+			if ((int)(strlen(msg) + strlen(rd_buffer)) > rd_buffersize - 1)
+			{
+				rd_flush(rd_target, rd_buffer);
+				*rd_buffer = 0;
+			}
+
+			strcat_s(rd_buffer, rd_buffersize, msg); //mxd. strcat -> strcat_s
+		}
+		else
+		{
+			// Print to console
+			Con_Print(msg);
+
+			// Also echo to debugging console
+			Sys_ConsoleOutput(msg);
+
+			// Write to logfile?
+			if (logfile_active && (int)logfile_active->value)
+			{
+				if (logfile == NULL)
+				{
+					char name[MAX_QPATH];
+					Com_sprintf(name, sizeof(name), "%s/qconsole.log", FS_Userdir()); // Q2: FS_Gamedir()
+					// MISSING: fopen(name, "a"); case
+					fopen_s(&logfile, name, "w"); //mxd. fopen -> fopen_s
+				}
+
+				if (logfile != NULL)
+					fprintf(logfile, "%s", msg);
+
+				if (logfile_active->value > 1.0f)
+					fflush(logfile); // Force it to save every time
+			}
+		}
+	}
+
+	con.current_color = TextPalette[P_WHITE];
 }
 
 void Com_Error(int code, char* fmt, ...)

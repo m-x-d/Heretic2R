@@ -54,6 +54,9 @@
     <ClCompile Include="..\client\cl_screen.c">
       <Filter>client</Filter>
     </ClCompile>
+    <ClCompile Include="..\client\console.c">
+      <Filter>client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -75,6 +78,9 @@
       <Filter>server</Filter>
     </ClInclude>
     <ClInclude Include="..\client\screen.h">
+      <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\console.h">
       <Filter>client</Filter>
     </ClInclude>
   </ItemGroup>

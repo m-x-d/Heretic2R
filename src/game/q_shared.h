@@ -219,7 +219,7 @@ void Sys_FindClose(void);
 // This is only here so the functions in q_shared.c and q_shwin.c can link //TODO: mxd. Check if still true
 void Sys_Error(char* error, ...);
 void Com_Printf(char* fmt, ...);
-void Com_ColourPrintf(PalIdx_t colour, char* msg, ...);
+void Com_ColourPrintf(PalIdx_t colour, char* fmt, ...);
 
 #pragma endregion
 
