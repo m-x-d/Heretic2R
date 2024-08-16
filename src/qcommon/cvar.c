@@ -9,10 +9,13 @@
 cvar_t* cvar_vars;
 qboolean userinfo_modified;
 
-static qboolean Cvar_InfoValidate(char* s)
+// Q2 counterpart
+static qboolean Cvar_InfoValidate(const char* s)
 {
-	NOT_IMPLEMENTED
-	return false;
+	if (strstr(s, "\\") || strstr(s, "\"") || strstr(s, ";"))
+		return false;
+
+	return true;
 }
 
 static cvar_t* Cvar_FindVar(const char* var_name)
