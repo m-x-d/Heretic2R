@@ -808,7 +808,7 @@ void Sys_UnloadGame(void);
 void* Sys_GetGameAPI(void* parms); // Loads the game dll and calls the api init function.
 
 char* Sys_ConsoleInput(void);
-void Sys_ConsoleOutput(char* string);
+void Sys_ConsoleOutput(const char* string);
 void Sys_SendKeyEvents(void);
 void Sys_Error(char* error, ...); //TODO: check redundant declaration...
 void Sys_Quit(void);

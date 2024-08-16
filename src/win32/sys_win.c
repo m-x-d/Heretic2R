@@ -10,6 +10,9 @@
 
 qboolean Minimized;
 
+static HANDLE hinput;
+static HANDLE houtput;
+
 uint sys_msg_time;
 
 #define MAX_NUM_ARGVS	128
@@ -32,9 +35,31 @@ void Sys_Init(void)
 	NOT_IMPLEMENTED
 }
 
-void Sys_ConsoleOutput(char* string)
+static char console_text[256];
+static int console_textlen;
+
+// Q2 counterpart
+void Sys_ConsoleOutput(const char* string)
 {
-	NOT_IMPLEMENTED
+	DWORD dummy;
+	char text[256];
+
+	if (!dedicated || !(int)dedicated->value)
+		return;
+
+	if (console_textlen > 0)
+	{
+		text[0] = '\r';
+		memset(&text[1], ' ', console_textlen);
+		text[console_textlen + 1] = '\r';
+		text[console_textlen + 2] = 0;
+		WriteFile(houtput, text, console_textlen + 2, &dummy, NULL);
+	}
+
+	WriteFile(houtput, string, strlen(string), &dummy, NULL);
+
+	if (console_textlen > 0)
+		WriteFile(houtput, console_text, console_textlen, &dummy, NULL);
 }
 
 // Q2 counterpart
