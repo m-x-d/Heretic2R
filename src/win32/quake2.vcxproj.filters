@@ -13,6 +13,12 @@
     <Filter Include="server">
       <UniqueIdentifier>{f37660ba-f385-478b-9a61-21354afb2d2c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Player">
+      <UniqueIdentifier>{9dc94f0a-c6f6-4f7f-a25a-48bcd776ffef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game">
+      <UniqueIdentifier>{803eb527-9cf7-4fb1-88ba-09fcb9297af3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sys_win.c">
@@ -82,6 +88,27 @@
     </ClInclude>
     <ClInclude Include="..\client\console.h">
       <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\client.h">
+      <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\input.h">
+      <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\LevelMaps.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\q_ClientServer.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Player\p_types.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Player\Player.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\g_itemstats.h">
+      <Filter>game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

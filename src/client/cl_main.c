@@ -4,8 +4,9 @@
 // Copyright 1998 Raven Software
 //
 
-#include "q_shared.h"
-//#include "client.h" //TODO
+#include "client.h"
+
+client_static_t cls;
 
 void CL_Init(void)
 {

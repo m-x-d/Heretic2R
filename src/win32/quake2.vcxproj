@@ -27,12 +27,19 @@
     <ClCompile Include="sys_win.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\client\client.h" />
     <ClInclude Include="..\client\console.h" />
+    <ClInclude Include="..\client\input.h" />
     <ClInclude Include="..\client\keys.h" />
     <ClInclude Include="..\client\screen.h" />
     <ClInclude Include="..\client\snd_dll.h" />
+    <ClInclude Include="..\game\g_itemstats.h" />
+    <ClInclude Include="..\Player\Player.h" />
+    <ClInclude Include="..\Player\p_types.h" />
     <ClInclude Include="..\qcommon\Heretic2.h" />
+    <ClInclude Include="..\qcommon\LevelMaps.h" />
     <ClInclude Include="..\qcommon\qcommon.h" />
+    <ClInclude Include="..\qcommon\q_ClientServer.h" />
     <ClInclude Include="..\server\server.h" />
     <ClInclude Include="Quake2Main.h" />
   </ItemGroup>
@@ -85,7 +92,7 @@
       <AssemblerListingLocation>.\debug\</AssemblerListingLocation>
       <ObjectFileName>.\debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\client;..\server;..\qcommon;..\game;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\client;..\server;..\qcommon;..\game;..\Player;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
@@ -129,7 +136,7 @@
       <AssemblerListingLocation>.\release\</AssemblerListingLocation>
       <ObjectFileName>.\release\</ObjectFileName>
       <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\client;..\server;..\qcommon;..\game;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\client;..\server;..\qcommon;..\game;..\Player;..\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>

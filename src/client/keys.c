@@ -4,9 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
-#include "keys.h"
-#include "qcommon.h"
-//#include "client.h" //TODO
+#include "client.h"
 
 // Key up events are sent even if in console mode
 

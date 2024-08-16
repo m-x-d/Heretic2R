@@ -1,4 +1,8 @@
-#pragma once
+//
+// LevelMaps.h
+//
+// Copyright 1998 Raven Software
+//
 
 // Level progression map only needs to work on the dmireswamp, kellcaves, canyon, oglemine1, and oglemine2.
 // The other levels should simply highlight a city on the map.
@@ -31,21 +35,22 @@
 // Cloudhub, Cloudlabs, Cloudquarters, Cloudsanctum.
 // All weapons have been acquired at this point.
 
+#pragma once
+
 #define LMI_PROGRESS	1
 #define LMI_DRAW		2
 #define LMI_NODRAW		4
 
 typedef struct level_map_info_s
 {
-	int		hub;
-	int		flags;
-	char	*world_map;
-	char	*city_map;
-	short	message;
-	short	pad;
-	int		x, y;
-	int		count;
-	int		*dot_coords;
+	int hub;
+	int flags;
+	char* world_map;
+	char* city_map;
+	short message;
+	short pad;
+	int x;
+	int y;
+	int count;
+	int* dot_coords;
 } level_map_info_t;
-
-// end
