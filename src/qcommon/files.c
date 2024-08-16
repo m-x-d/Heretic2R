@@ -137,10 +137,10 @@ static void FS_AddGameDirectory(char* dir)
 	}
 }
 
+// Q2 counterpart
 char* FS_Gamedir(void)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	return fs_gamedir;
 }
 
 void FS_SetGamedir(char* dir)
