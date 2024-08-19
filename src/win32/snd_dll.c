@@ -4,7 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
-#include "snd_dll.h"
+#include "sound.h"
 
 void SndDll_Init(void)
 {
