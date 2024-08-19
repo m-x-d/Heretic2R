@@ -10,7 +10,7 @@
 #include "qcommon.h"
 #include "keys.h"
 #include "screen.h"
-#include "snd_dll.h"
+#include "sound.h"
 
 #define MAXPRINTMSG		4096
 #define MAX_NUM_ARGVS	50
@@ -111,6 +111,11 @@ void Com_ColourPrintf(const PalIdx_t colour, char* fmt, ...)
 	}
 
 	con.current_color = TextPalette[P_WHITE];
+}
+
+void Com_DPrintf(char* fmt, ...)
+{
+	NOT_IMPLEMENTED
 }
 
 void Com_Error(int code, char* fmt, ...)

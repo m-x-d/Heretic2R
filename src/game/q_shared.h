@@ -21,6 +21,7 @@
 #include <time.h>
 
 #include "H2Common.h"
+#include "Heretic2.h"
 #include "q_Typedef.h"
 //#include "player.h" //TODO: initially commented out. Remove?
 
@@ -217,9 +218,9 @@ char* Sys_FindNext(uint musthave, uint canthave);
 void Sys_FindClose(void);
 
 // This is only here so the functions in q_shared.c and q_shwin.c can link //TODO: mxd. Check if still true
-void Sys_Error(char* error, ...);
-void Com_Printf(char* fmt, ...);
-void Com_ColourPrintf(PalIdx_t colour, char* fmt, ...);
+GAME_DECLSPEC void Sys_Error(char* error, ...);
+GAME_DECLSPEC void Com_Printf(char* fmt, ...);
+GAME_DECLSPEC void Com_ColourPrintf(PalIdx_t colour, char* fmt, ...);
 
 #pragma endregion
 
@@ -248,7 +249,7 @@ typedef struct cvar_s
 
 #endif // CVAR
 
-cvar_t* Cvar_Get(const char* var_name, const char* var_value, int flags);
+GAME_DECLSPEC cvar_t* Cvar_Get(const char* var_name, const char* var_value, int flags);
 
 #pragma endregion
 

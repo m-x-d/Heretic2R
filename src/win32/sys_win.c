@@ -90,7 +90,7 @@ static void ParseCommandLine(LPSTR lpCmdLine)
 	}
 }
 
-int GAME_DECLSPEC Quake2Main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+GAME_DECLSPEC int Quake2Main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 	int time;
 	int newtime;

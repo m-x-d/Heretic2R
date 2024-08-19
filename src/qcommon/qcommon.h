@@ -437,9 +437,9 @@ void Cmd_Init(void);
 // Called by the init functions of other parts of the program to register commands and functions to call for them.
 // The cmd_name is referenced later, so it should not be in temp memory.
 // If function is NULL, the command will be forwarded to the server as a clc_stringcmd instead of executed locally.
-void Cmd_AddCommand(const char* cmd_name, xcommand_t function);
+GAME_DECLSPEC void Cmd_AddCommand(const char* cmd_name, xcommand_t function);
 
-void Cmd_RemoveCommand(char* cmd_name);
+GAME_DECLSPEC void Cmd_RemoveCommand(char* cmd_name);
 
 // Used by the cvar code to check for cvar / command name overlap
 qboolean Cmd_Exists(char* cmd_name);
@@ -452,8 +452,8 @@ char* Cmd_CompleteCommandNext(char* partial, char* last);
 
 // The functions that execute commands get their parameters with these functions.
 // Cmd_Argv () will return an empty string, not a NULL if arg > argc, so string operations are always safe.
-int Cmd_Argc(void);
-char* Cmd_Argv(int arg);
+GAME_DECLSPEC int Cmd_Argc(void);
+GAME_DECLSPEC char* Cmd_Argv(int arg);
 char* Cmd_Args(void);
 
 // Takes a null terminated string. Does not need to be /n terminated. Breaks the string up into arg tokens.
@@ -487,10 +487,10 @@ float ClampCvar(float min, float max, float value);
 
 // Creates the variable if it doesn't exist, or returns the existing one if it exists.
 // The value will not be changed, but flags will be ORed in that allows variables to be unarchived without needing bitflags.
-cvar_t* Cvar_Get(const char* var_name, const char* var_value, int flags); //TODO: check redundant declaration...
+GAME_DECLSPEC cvar_t* Cvar_Get(const char* var_name, const char* var_value, int flags); //TODO: check redundant declaration...
 
 // Will create the variable if it doesn't exist
-cvar_t* Cvar_Set(char* var_name, char* value);
+GAME_DECLSPEC cvar_t* Cvar_Set(char* var_name, char* value);
 
 // Will set the variable even if NOSET or LATCH
 cvar_t* Cvar_ForceSet(char* var_name, char* value);
@@ -722,16 +722,16 @@ char* FS_Userdir(void);
 char* FS_NextPath(char* prevpath);
 void FS_ExecAutoexec(void);
 
-int FS_FOpenFile(char* filename, FILE** file);
-void FS_FCloseFile(FILE* f); // Note: this can't be called from another DLL, due to MS libc issues
+GAME_DECLSPEC int FS_FOpenFile(char* filename, FILE** file);
+GAME_DECLSPEC void FS_FCloseFile(FILE* f); // Note: this can't be called from another DLL, due to MS libc issues
 
 // A null buffer will just return the file length without loading. A -1 length is not present
-int FS_LoadFile(char* path, void** buffer);
+GAME_DECLSPEC int FS_LoadFile(char* path, void** buffer);
 
 // Properly handles partial reads
 void FS_Read(void* buffer, int len, FILE* f);
 
-void FS_FreeFile(void* buffer);
+GAME_DECLSPEC void FS_FreeFile(void* buffer);
 void FS_CreatePath(char* path);
 
 #pragma endregion
@@ -753,9 +753,9 @@ void FS_CreatePath(char* path);
 
 void Com_BeginRedirect(int target, char* buffer, int buffersize, void* flush);
 void Com_EndRedirect(void);
-void Com_Printf(char* fmt, ...); //TODO: check redundant declaration...
-void Com_DPrintf(char* fmt, ...);
-void Com_Error(int code, char* fmt, ...);
+GAME_DECLSPEC void Com_Printf(char* fmt, ...); //TODO: check redundant declaration...
+GAME_DECLSPEC void Com_DPrintf(char* fmt, ...);
+GAME_DECLSPEC void Com_Error(int code, char* fmt, ...);
 void Com_Quit(void);
 int Com_ServerState(void);
 void Com_SetServerState(int state);
@@ -785,8 +785,8 @@ extern	__int64	time_before_ref;
 extern	__int64	time_after_ref;
 #endif	// _DEVEL*/
 
-void Z_Free(void* ptr);
-void* Z_Malloc(int size); // Returns 0 filled memory
+GAME_DECLSPEC void Z_Free(void* ptr);
+GAME_DECLSPEC void* Z_Malloc(int size); // Returns 0 filled memory
 void* Z_TagMalloc(int size, int tag);
 void Z_FreeTags(int tag);
 
@@ -810,7 +810,7 @@ void* Sys_GetGameAPI(void* parms); // Loads the game dll and calls the api init 
 char* Sys_ConsoleInput(void);
 void Sys_ConsoleOutput(const char* string);
 void Sys_SendKeyEvents(void);
-void Sys_Error(char* error, ...); //TODO: check redundant declaration...
+GAME_DECLSPEC void Sys_Error(char* error, ...); //TODO: check redundant declaration...
 void Sys_Quit(void);
 char* Sys_GetClipboardData(void);
 void Sys_CopyProtect(void); //TODO: remove
