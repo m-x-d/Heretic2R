@@ -42,9 +42,6 @@
     <ClCompile Include="..\qcommon\files.c">
       <Filter>qcommon</Filter>
     </ClCompile>
-    <ClCompile Include="..\client\snd_dll.c">
-      <Filter>client</Filter>
-    </ClCompile>
     <ClCompile Include="..\server\sv_main.c">
       <Filter>server</Filter>
     </ClCompile>
@@ -63,6 +60,18 @@
     <ClCompile Include="..\client\console.c">
       <Filter>client</Filter>
     </ClCompile>
+    <ClCompile Include="vid_dll.c">
+      <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="clfx_dll.c">
+      <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\cl_ents.c">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="snd_dll.c">
+      <Filter>win32</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -77,7 +86,7 @@
     <ClInclude Include="..\client\keys.h">
       <Filter>client</Filter>
     </ClInclude>
-    <ClInclude Include="..\client\snd_dll.h">
+    <ClInclude Include="..\client\sound.h">
       <Filter>client</Filter>
     </ClInclude>
     <ClInclude Include="..\server\server.h">
@@ -109,6 +118,15 @@
     </ClInclude>
     <ClInclude Include="..\game\g_itemstats.h">
       <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\snd_loc.h">
+      <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="vid_dll.h">
+      <Filter>win32</Filter>
+    </ClInclude>
+    <ClInclude Include="clfx_dll.h">
+      <Filter>win32</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
