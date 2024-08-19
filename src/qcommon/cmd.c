@@ -154,7 +154,27 @@ typedef struct cmd_function_s
 	xcommand_t function;
 } cmd_function_t;
 
+static int cmd_argc;
+static char* cmd_argv[MAX_STRING_TOKENS];
+static char* cmd_null_string = "";
+static char cmd_args[MAX_STRING_CHARS];
+
 static cmd_function_t* cmd_functions; // Possible commands to execute
+
+// Q2 counterpart
+int Cmd_Argc(void)
+{
+	return cmd_argc;
+}
+
+// Q2 counterpart
+char* Cmd_Argv(const int arg)
+{
+	if ((uint)arg >= (uint)cmd_argc)
+		return cmd_null_string;
+
+	return cmd_argv[arg];
+}
 
 // Q2 counterpart
 void Cmd_AddCommand(const char* cmd_name, const xcommand_t function)
@@ -183,6 +203,11 @@ void Cmd_AddCommand(const char* cmd_name, const xcommand_t function)
 	cmd->function = function;
 	cmd->next = cmd_functions;
 	cmd_functions = cmd;
+}
+
+void Cmd_RemoveCommand(char* cmd_name)
+{
+	NOT_IMPLEMENTED
 }
 
 void Cmd_ExecuteString(char* text)
