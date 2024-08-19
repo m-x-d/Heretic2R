@@ -98,7 +98,7 @@ static int pakfile_comparer(const void* f1, const void* f2)
 	const packfile_t* pf1 = f1;
 	const packfile_t* pf2 = f2;
 
-	return strcmp(pf1->name, pf2->name);
+	return Q_stricmp(pf1->name, pf2->name);
 }
 
 static pack_t* FS_LoadPackFile(char* packfile)

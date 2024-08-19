@@ -61,7 +61,7 @@ void SndDll_Init(void)
 	if (snd_dll == NULL)
 		snd_dll = Cvar_Get("snd_dll", "", 0);
 
-	if (strcmp(snd_dll->string, "a3dsnd") == 0)
+	if (Q_stricmp(snd_dll->string, "a3dsnd") == 0)
 	{
 		Com_ColourPrintf(P_OBIT, "Attempting A3D 2.0 support\n");
 		if (!A3D_CheckAvailability())
@@ -70,7 +70,7 @@ void SndDll_Init(void)
 			Cvar_Set("snd_dll", "winsnd");
 		}
 	}
-	else if (strcmp(snd_dll->string, "eaxsnd") == 0)
+	else if (Q_stricmp(snd_dll->string, "eaxsnd") == 0)
 	{
 		Com_ColourPrintf(P_OBIT, "Attempting EAX 1.0 support\n");
 		if (!EAX_CheckAvailability())
@@ -79,7 +79,7 @@ void SndDll_Init(void)
 			Cvar_Set("snd_dll", "winsnd");
 		}
 	}
-	else if (strcmp(snd_dll->string, "") == 0)
+	else if (Q_stricmp(snd_dll->string, "") == 0)
 	{
 		if (A3D_CheckAvailability())
 		{
@@ -97,9 +97,9 @@ void SndDll_Init(void)
 		}
 	}
 
-	if (strcmp(snd_dll->string, "") == 0) //mxd. For whatever reason this check is inside of 'if (sound_library == NULL)' block in original version.
+	if (Q_stricmp(snd_dll->string, "") == 0) //mxd. For whatever reason this check is inside of 'if (sound_library == NULL)' block in original version.
 		Sys_Error("Couldn\'t load default sound dll!");
-	else if (strcmp(snd_dll->string, "winsnd") == 0)
+	else if (Q_stricmp(snd_dll->string, "winsnd") == 0)
 		Com_ColourPrintf(P_OBIT, "Setting Default Sound support\n");
 
 	Com_ColourPrintf(P_HEADER, "------- Loading %s -------\n", snd_dll->string);
