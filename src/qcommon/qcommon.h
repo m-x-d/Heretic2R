@@ -51,8 +51,8 @@ typedef struct sizebuf_s
 void SZ_Init(sizebuf_t* buf, byte* data, int length);
 void SZ_Clear(sizebuf_t* buf);
 void* SZ_GetSpace(sizebuf_t* buf, int length);
-void SZ_Write(sizebuf_t* buf, void* data, int length);
-void SZ_Print(sizebuf_t* buf, char* data);	// strcats onto the sizebuf
+void SZ_Write(sizebuf_t* buf, const void* data, int length);
+void SZ_Print(sizebuf_t* buf, char* data); // strcats onto the sizebuf
 
 
 struct usercmd_s;
@@ -400,7 +400,7 @@ void Cbuf_Init(void);
 
 // As new commands are generated from the console or keybindings,
 // the text is added to the end of the command buffer.
-void Cbuf_AddText(char* text);
+void Cbuf_AddText(const char* text);
 
 // When a command wants to issue other commands immediately, the text is
 // inserted at the beginning of the buffer, before any remaining unexecuted commands.

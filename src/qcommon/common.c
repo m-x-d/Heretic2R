@@ -150,6 +150,18 @@ void SZ_Init(sizebuf_t* buf, byte* data, const int length)
 	buf->maxsize = length;
 }
 
+void* SZ_GetSpace(sizebuf_t* buf, int length)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
+// Q2 counterpart
+void SZ_Write(sizebuf_t* buf, const void* data, const int length)
+{
+	memcpy(SZ_GetSpace(buf, length), data, length);
+}
+
 #pragma endregion
 
 #pragma region ========================== COMMAND LINE ARGS PROCESSING ====================

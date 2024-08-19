@@ -22,9 +22,15 @@ void Cbuf_Init(void)
 	SZ_Init(&cmd_text, cmd_text_buf, sizeof(cmd_text_buf));
 }
 
-void Cbuf_AddText(char* text)
+// Q2 counterpart
+void Cbuf_AddText(const char* text)
 {
-	NOT_IMPLEMENTED
+	const int len = (int)strlen(text);
+
+	if (cmd_text.cursize + len < cmd_text.maxsize)
+		SZ_Write(&cmd_text, text, len);
+	else
+		Com_Printf("Cbuf_AddText: overflow\n");
 }
 
 // Q2 counterpart
