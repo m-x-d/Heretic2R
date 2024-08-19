@@ -38,6 +38,61 @@ typedef struct searchpath_s
 searchpath_t* fs_searchpaths;
 searchpath_t* fs_base_searchpaths; // Without gamedirs
 
+// Q2 counterpart
+// For some reason, other dll's can't just cal fclose() on files returned by FS_FOpenFile...
+void FS_FCloseFile(FILE* f)
+{
+	fclose(f);
+}
+
+int FS_FOpenFile(char* filename, FILE** file)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+void FS_Read(void* buffer, int len, FILE* file)
+{
+	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart
+// Filenames are relative to the quake search path.
+// Passing a null buffer will return the file length without loading it.
+int FS_LoadFile(char* path, void** buffer)
+{
+	FILE* file;
+
+	const int len = FS_FOpenFile(path, &file);
+	if (file == NULL)
+	{
+		if (buffer != NULL)
+			*buffer = NULL;
+
+		return -1;
+	}
+ 
+	if (buffer == NULL)
+	{
+		fclose(file);
+		return len;
+	}
+ 
+	byte* buf = Z_Malloc(len);
+	*buffer = buf;
+
+	FS_Read(buf, len, file);
+	fclose(file);
+
+	return len;
+}
+
+// Q2 counterpart
+void FS_FreeFile(void* buffer)
+{
+	Z_Free(buffer);
+}
+
 static int pakfile_comparer(const void* f1, const void* f2)
 {
 	const packfile_t* pf1 = f1;
@@ -137,7 +192,7 @@ static void FS_AddGameDirectory(char* dir)
 	}
 }
 
-// Q2 counterpart
+// Called to find where to write a file (demos, savegames, etc).
 char* FS_Gamedir(void)
 {
 	return fs_gamedir;
