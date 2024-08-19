@@ -173,6 +173,12 @@ void Cvar_SetValue(char* var_name, const float value)
 	Cvar_Set(var_name, val);
 }
 
+qboolean Cvar_Command(void)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
 static void Cvar_Set_f(void)
 {
 	NOT_IMPLEMENTED

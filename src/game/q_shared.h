@@ -922,7 +922,7 @@ _inline __declspec( naked ) long Q_ftol(float f)
 }
 #pragma warning (default:4035)*/
 
-_inline int Q_stricmp(char* s1, char* s2)
+_inline int Q_stricmp(const char* s1, const char* s2)
 {
 #ifdef WIN32
 	return _stricmp(s1, s2);
@@ -931,12 +931,12 @@ _inline int Q_stricmp(char* s1, char* s2)
 #endif
 }
 
-_inline int Q_strncasecmp(char* s1, char* s2, int n)
+_inline int Q_strncasecmp(const char* s1, const char* s2, const int n)
 {
 	return _strnicmp(s1, s2, n);
 }
 
-_inline int Q_strcasecmp(char* s1, char* s2)
+_inline int Q_strcasecmp(const char* s1, const char* s2)
 {
 	return _stricmp(s1, s2);
 }

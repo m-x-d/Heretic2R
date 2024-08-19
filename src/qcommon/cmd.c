@@ -6,6 +6,17 @@
 
 #include "qcommon.h"
 
+#define MAX_ALIAS_NAME	32
+
+typedef struct cmdalias_s
+{
+	struct cmdalias_s* next;
+	char name[MAX_ALIAS_NAME];
+	char* value;
+} cmdalias_t;
+
+cmdalias_t* cmd_alias;
+
 qboolean cmd_wait;
 
 #define ALIAS_LOOP_COUNT	16
@@ -31,6 +42,11 @@ void Cbuf_AddText(const char* text)
 		SZ_Write(&cmd_text, text, len);
 	else
 		Com_Printf("Cbuf_AddText: overflow\n");
+}
+
+void Cbuf_InsertText(char* text)
+{
+	NOT_IMPLEMENTED
 }
 
 // Q2 counterpart
@@ -182,6 +198,11 @@ char* Cmd_Argv(const int arg)
 	return cmd_argv[arg];
 }
 
+void Cmd_TokenizeString(char* text, qboolean macroExpand)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart
 void Cmd_AddCommand(const char* cmd_name, const xcommand_t function)
 {
@@ -216,7 +237,54 @@ void Cmd_RemoveCommand(char* cmd_name)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
+// A complete command line has been parsed, so try to execute it.
+// FIXME: lookupnoadd the token to speed search?
 void Cmd_ExecuteString(char* text)
+{
+	Cmd_TokenizeString(text, true);
+
+	// Execute the command line
+	if (!Cmd_Argc())
+		return; // No tokens
+
+	// Check functions
+	for (const cmd_function_t* cmd = cmd_functions; cmd != NULL; cmd = cmd->next)
+	{
+		if (Q_stricmp(cmd_argv[0], cmd->name) == 0)
+		{
+			if (cmd->function != NULL)
+				cmd->function();
+			else
+				Cmd_ExecuteString(va("cmd %s", text)); // Forward to server command
+
+			return;
+		}
+	}
+
+	// Check alias
+	for (const cmdalias_t* a = cmd_alias; a != NULL; a = a->next)
+	{
+		if (Q_stricmp(cmd_argv[0], a->name) == 0)
+		{
+			if (++alias_count < ALIAS_LOOP_COUNT)
+				Cbuf_InsertText(a->value);
+			else
+				Com_Printf("ALIAS_LOOP_COUNT\n");
+			
+			return;
+		}
+	}
+
+	// Check cvars
+	if (Cvar_Command())
+		return;
+
+	// Send it as a server command if we are connected
+	Cmd_ForwardToServer();
+}
+
+void Cmd_ForwardToServer(void)
 {
 	NOT_IMPLEMENTED
 }
