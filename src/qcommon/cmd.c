@@ -139,9 +139,17 @@ static void Cmd_List_f(void)
 	NOT_IMPLEMENTED
 }
 
-static void AddTextToCommandBuffer(char* f, uint len)
+// Part of Cmd_Exec_f in Q2
+static void AddTextToCommandBuffer(const char* f, const int len)
 {
-	NOT_IMPLEMENTED
+	// The file doesn't have a trailing 0, so we need to copy it off
+	char* f2 = Z_Malloc(len + 1);
+	memcpy(f2, f, len);
+	f2[len] = '\0';
+
+	Cbuf_InsertText(f2);
+
+	Z_Free(f2);
 }
 
 static qboolean Cmd_Exec(char* cmd)
