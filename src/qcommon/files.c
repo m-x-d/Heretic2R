@@ -198,7 +198,7 @@ void FS_Read(void* buffer, const int len, FILE* file)
 
 		//mxd. Skip logic related to reading from a CD...
 		if (read < 1)
-			Com_Error(ERR_FATAL, "FS_Read: 0 bytes read", read);
+			Com_Error(ERR_FATAL, "FS_Read: %i bytes read", read);
 
 		// Do some progress bar thing here...
 		remaining -= read;
