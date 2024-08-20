@@ -183,15 +183,33 @@ int FS_FOpenFile(const char* filename, FILE** file)
 	}
 }
 
-void FS_Read(void* buffer, int len, FILE* file)
+// Q2 counterpart (original H2 logic)
+// Properly handles partial reads
+void FS_Read(void* buffer, const int len, FILE* file)
 {
-	NOT_IMPLEMENTED
+	byte* buf = buffer;
+
+	// Read in chunks for progress bar
+	int remaining = len;
+	while (remaining > 0)
+	{
+		const int block = min(remaining, 0x10000); // Read in blocks of 64k
+		const int read = (int)fread(buf, 1, block, file);
+
+		//mxd. Skip logic related to reading from a CD...
+		if (read < 1)
+			Com_Error(ERR_FATAL, "FS_Read: 0 bytes read", read);
+
+		// Do some progress bar thing here...
+		remaining -= read;
+		buf += read;
+	}
 }
 
 // Q2 counterpart
 // Filenames are relative to the quake search path.
 // Passing a null buffer will return the file length without loading it.
-int FS_LoadFile(char* path, void** buffer)
+int FS_LoadFile(const char* path, void** buffer)
 {
 	FILE* file;
 

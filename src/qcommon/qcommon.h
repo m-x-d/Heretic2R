@@ -726,10 +726,10 @@ GAME_DECLSPEC int FS_FOpenFile(const char* filename, FILE** file);
 GAME_DECLSPEC void FS_FCloseFile(FILE* f); // Note: this can't be called from another DLL, due to MS libc issues
 
 // A null buffer will just return the file length without loading. A -1 length is not present
-GAME_DECLSPEC int FS_LoadFile(char* path, void** buffer);
+GAME_DECLSPEC int FS_LoadFile(const char* path, void** buffer);
 
 // Properly handles partial reads
-void FS_Read(void* buffer, int len, FILE* f);
+void FS_Read(void* buffer, int len, FILE* file);
 int FS_FileLength(FILE* f); //mxd. Made public
 
 GAME_DECLSPEC void FS_FreeFile(void* buffer);
