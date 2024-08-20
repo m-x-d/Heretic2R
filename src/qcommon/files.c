@@ -41,6 +41,16 @@ typedef struct pack_s
 	packfile_t* files;
 } pack_t;
 
+typedef struct filelink_s
+{
+	struct filelink_s* next;
+	char* from;
+	int fromlength;
+	char* to;
+} filelink_t;
+
+filelink_t* fs_links;
+
 typedef struct searchpath_s
 {
 	char filename[MAX_OSPATH];
@@ -50,6 +60,8 @@ typedef struct searchpath_s
 
 searchpath_t* fs_searchpaths;
 searchpath_t* fs_base_searchpaths; // Without gamedirs
+
+qboolean file_from_pak = false; //mxd. int in Q2
 
 int FS_FileLength(FILE* f)
 {
@@ -64,10 +76,103 @@ void FS_FCloseFile(FILE* f)
 	fclose(f);
 }
 
-int FS_FOpenFile(char* filename, FILE** file)
+// Finds the file in the search path. Returns file size and an open FILE*.
+// Used for streaming data out of either a pak file or a separate file.
+int FS_FOpenFile(const char* filename, FILE** file)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	char filepath[MAX_OSPATH];
+	char netpath[MAX_OSPATH];
+
+	file_from_pak = false;
+
+	// H2: fix separator chars, trim end spaces...
+	strcpy_s(filepath, sizeof(filepath), filename);
+
+	const int len = (int)strlen(filename);
+	for (int i = 0; i < len; i++)
+		if (filepath[i] == '\\')
+			filepath[i] = '/';
+
+	for (int i = len - 1; i >= 0 && filepath[i] != ' '; i--)
+		filepath[i] = '\0';
+
+	// Check for links first
+	for (const filelink_t* link = fs_links; link != NULL; link = link->next)
+	{
+		if (!strncmp(filename, link->from, link->fromlength))
+		{
+			Com_sprintf(netpath, sizeof(netpath), "%s%s", link->to, filename + link->fromlength);
+
+			if (fopen_s(file, netpath, "rb") == 0) //mxd. fopen -> fopen_s
+			{
+				Com_DPrintf("link file: %s\n", netpath);
+				return FS_FileLength(*file);
+			}
+
+			return -1;
+		}
+	}
+
+	// Search through the path, one element at a time
+	for (searchpath_t* search = fs_searchpaths; ; search = search->next)
+	{
+		if (search == NULL)
+		{
+			Com_DPrintf("FindFile: can't find %s\n", filename);
+			*file = NULL;
+
+			return -1;
+		}
+
+		// Is the element a pak file?
+		if (search->pack != NULL)
+		{
+			// Look through all the pak file elements
+			pack_t* pak = search->pack;
+
+			// H2: do binary search instead of iteration, because pak filenames are sorted alphabetically.
+			int start = 0;
+			int end = pak->numfiles;
+
+			do
+			{
+				const int index = (start + end) / 2;
+				const int cmp = Q_stricmp(pak->files[index].name, filename);
+
+				if (cmp == 0)
+				{
+					// Found it!
+					file_from_pak = true;
+					Com_DPrintf("PackFile: %s : %s\n", pak->filename, filename);
+
+					// Open a new file on the pakfile
+					if (fopen_s(file, pak->filename, "rb") != 0) //mxd. fopen -> fopen_s
+						Com_Error(ERR_FATAL, "Couldn't reopen %s", pak->filename);
+
+					fseek(*file, pak->files[index].filepos, SEEK_SET);
+
+					return pak->files[index].filelen;
+				}
+
+				if (cmp > 0)
+					start = index + 1;
+				else // cmp < 0
+					end = index;
+			} while (start < end);
+		}
+		else
+		{
+			// Check a file in the directory tree
+			Com_sprintf(netpath, sizeof(netpath), "%s/%s", search->filename, filename);
+
+			if (fopen_s(file, netpath, "rb") != 0) //mxd. fopen -> fopen_s
+				continue;
+
+			Com_DPrintf("FindFile: %s\n", netpath);
+
+			return FS_FileLength(*file);
+		}
+	}
 }
 
 void FS_Read(void* buffer, int len, FILE* file)

@@ -722,7 +722,7 @@ char* FS_Userdir(void);
 char* FS_NextPath(char* prevpath);
 void FS_ExecAutoexec(void);
 
-GAME_DECLSPEC int FS_FOpenFile(char* filename, FILE** file);
+GAME_DECLSPEC int FS_FOpenFile(const char* filename, FILE** file);
 GAME_DECLSPEC void FS_FCloseFile(FILE* f); // Note: this can't be called from another DLL, due to MS libc issues
 
 // A null buffer will just return the file length without loading. A -1 length is not present
