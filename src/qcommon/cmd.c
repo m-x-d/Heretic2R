@@ -198,9 +198,68 @@ char* Cmd_Argv(const int arg)
 	return cmd_argv[arg];
 }
 
-void Cmd_TokenizeString(char* text, qboolean macroExpand)
+// Cmd_MacroExpandString in Q2
+static char* MacroExpandString(char* text)
 {
 	NOT_IMPLEMENTED
+	return NULL;
+}
+
+// Q2 counterpart
+// Parses the given string into command line tokens.
+// $Cvars will be expanded unless they are in a quoted token
+void Cmd_TokenizeString(char* text, const qboolean macro_expand)
+{
+	// Clear the args from the last string
+	for (int i = 0; i < cmd_argc; i++)
+		Z_Free(cmd_argv[i]);
+
+	cmd_argc = 0;
+	cmd_args[0] = '\0';
+
+	// Macro expand the text
+	if (macro_expand)
+		text = MacroExpandString(text);
+
+	if (text == NULL)
+		return;
+
+	while (true)
+	{
+		// Skip whitespace up to a /n
+		while (*text != '\0' && *text <= ' ' && *text != '\n')
+			text++;
+
+		if (*text == '\n')
+		{
+			// A newline separates commands in the buffer
+			text++;
+			break;
+		}
+
+		if (*text == '\0')
+			return;
+
+		// Set cmd_args to everything after the first arg
+		if (cmd_argc == 1)
+		{
+			strcpy_s(cmd_args, sizeof(cmd_args), text); //mxd. strcpy -> strcpy_s
+
+			// Strip off any trailing whitespaces
+			for (int l = (int)strlen(cmd_args) - 1; l >= 0 && cmd_args[l] <= ' '; l--)
+				cmd_args[l] = '\0';
+		}
+
+		const char* com_token = COM_Parse(&text);
+		if (text != NULL && cmd_argc < MAX_STRING_TOKENS)
+		{
+			// Store argument
+			const int arg_len = (int)strlen(com_token) + 1;
+			cmd_argv[cmd_argc] = Z_Malloc(arg_len);
+			strcpy_s(cmd_argv[cmd_argc], arg_len, com_token); //mxd. strcpy -> strcpy_s
+			cmd_argc++;
+		}
+	}
 }
 
 // Q2 counterpart

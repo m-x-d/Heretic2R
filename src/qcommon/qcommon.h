@@ -457,7 +457,7 @@ GAME_DECLSPEC char* Cmd_Argv(int arg);
 char* Cmd_Args(void);
 
 // Takes a null terminated string. Does not need to be /n terminated. Breaks the string up into arg tokens.
-void Cmd_TokenizeString(char* text, qboolean macroExpand);
+void Cmd_TokenizeString(char* text, qboolean macro_expand);
 
 // Parses a single line of text into arguments and tries to execute it as if it was typed at the console.
 void Cmd_ExecuteString(char* text);
