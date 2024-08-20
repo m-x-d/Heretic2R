@@ -113,9 +113,21 @@ void Com_ColourPrintf(const PalIdx_t colour, char* fmt, ...)
 	con.current_color = TextPalette[P_WHITE];
 }
 
+// A Com_Printf that only shows up if the "developer" cvar is set
 void Com_DPrintf(char* fmt, ...)
 {
-	NOT_IMPLEMENTED
+	va_list argptr;
+	char msg[MAXPRINTMSG];
+
+	// Don't confuse non-developers with techie stuff...
+	if (developer != NULL && (int)developer->value)
+	{
+		va_start(argptr, fmt);
+		vsprintf_s(msg, sizeof(msg), fmt, argptr); //mxd. vsprintf -> vsprintf_s
+		va_end(argptr);
+
+		Com_ColourPrintf(P_YELLOW, "%s", msg); // Q2: Com_Printf
+	}
 }
 
 void Com_Error(int code, char* fmt, ...)
