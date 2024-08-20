@@ -63,10 +63,16 @@ searchpath_t* fs_base_searchpaths; // Without gamedirs
 
 qboolean file_from_pak = false; //mxd. int in Q2
 
+// Q2 counterpart
 int FS_FileLength(FILE* f)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	const int pos = ftell(f);
+	fseek(f, 0, SEEK_END);
+
+	const int end = ftell(f);
+	fseek(f, pos, SEEK_SET);
+
+	return end;
 }
 
 // Q2 counterpart
