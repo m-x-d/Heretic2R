@@ -129,6 +129,8 @@ int FS_FOpenFile(const char* filename, FILE** file)
 		{
 			// Look through all the pak file elements
 			pack_t* pak = search->pack;
+			if (pak->numfiles < 1)
+				continue;
 
 			// H2: do binary search instead of iteration, because pak filenames are sorted alphabetically.
 			int start = 0;
