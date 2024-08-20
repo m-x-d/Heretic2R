@@ -198,11 +198,76 @@ char* Cmd_Argv(const int arg)
 	return cmd_argv[arg];
 }
 
+// Q2 counterpart
 // Cmd_MacroExpandString in Q2
 static char* MacroExpandString(char* text)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	static char expanded[MAX_STRING_CHARS];
+	char temporary[MAX_STRING_CHARS];
+
+	qboolean inquote = false;
+	char* scan = text;
+
+	int len = (int)strlen(scan);
+	if (len >= MAX_STRING_CHARS)
+	{
+		Com_Printf("Line exceeded %i chars, discarded.\n", MAX_STRING_CHARS);
+		return NULL;
+	}
+
+	int count = 0;
+
+	for (int i = 0; i < len; i++)
+	{
+		if (scan[i] == '"')
+			inquote ^= 1;
+
+		// Don't expand inside quotes
+		if (inquote)
+			continue; 
+
+		if (scan[i] != '$')
+			continue;
+
+		// Scan out the complete macro
+		char* start = scan + i + 1;
+		const char* token = COM_Parse(&start);
+
+		if (start == NULL)
+			continue;
+
+		token = Cvar_VariableString(token);
+
+		const int j = (int)strlen(token);
+		len += j;
+		if (len >= MAX_STRING_CHARS)
+		{
+			Com_Printf("Expanded line exceeded %i chars, discarded.\n", MAX_STRING_CHARS);
+			return NULL;
+		}
+
+		strncpy_s(temporary, sizeof(temporary), scan, i); //mxd. strncpy -> strncpy_s
+		strcpy_s(temporary + i, sizeof(temporary) - i, token); //mxd. strcpy -> strcpy_s
+		strcpy_s(temporary + i + j, sizeof(temporary) - i - j, start); //mxd. strcpy -> strcpy_s
+
+		strcpy_s(expanded, sizeof(expanded), temporary); //mxd. strcpy -> strcpy_s
+		scan = expanded;
+		i--;
+
+		if (++count == 100)
+		{
+			Com_Printf("Macro expansion loop, discarded.\n");
+			return NULL;
+		}
+	}
+
+	if (inquote)
+	{
+		Com_Printf("Line has unmatched quote, discarded.\n");
+		return NULL;
+	}
+
+	return scan;
 }
 
 // Q2 counterpart
