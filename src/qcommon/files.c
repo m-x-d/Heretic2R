@@ -224,8 +224,7 @@ void FS_SetGamedir(char* dir)
 
 char* FS_Userdir(void)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	return fs_userdir->string;
 }
 
 void FS_ExecAutoexec(void)
