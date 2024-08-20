@@ -139,9 +139,34 @@ static void Cmd_List_f(void)
 	NOT_IMPLEMENTED
 }
 
-static void Cmd_Exec_f(void)
+static qboolean Cmd_Exec(char* cmd)
 {
 	NOT_IMPLEMENTED
+	return false;
+}
+
+static void Cmd_Exec_f(void)
+{
+	char arg_list[200];
+
+	if (Cmd_Argc() < 2) // != 2 in Q2
+	{
+		Com_Printf("exec <filename> : execute a script file\n");
+		return;
+	}
+
+	arg_list[0] = '\0';
+
+	for (int i = 1; i < Cmd_Argc(); i++)
+	{
+		strcat_s(arg_list, sizeof(arg_list), Cmd_Argv(i)); //mxd. strcat -> strcat_s
+		strcat_s(arg_list, sizeof(arg_list), " "); //mxd. strcat -> strcat_s
+	}
+
+	arg_list[strlen(arg_list) - 1] = '\0';
+
+	if (!Cmd_Exec(arg_list))
+		Com_Printf("Unable to exec %s\n", Cmd_Argv(1));
 }
 
 static void Cmd_Echo_f(void)
