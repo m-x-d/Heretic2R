@@ -139,9 +139,51 @@ static void Cmd_List_f(void)
 	NOT_IMPLEMENTED
 }
 
-static qboolean Cmd_Exec(char* cmd)
+static void AddTextToCommandBuffer(char* f, uint len)
 {
 	NOT_IMPLEMENTED
+}
+
+static qboolean Cmd_Exec(char* cmd)
+{
+	char filename[MAX_QPATH];
+	char* buf;
+	FILE* f;
+	int len;
+
+	if (strchr(cmd, ':') != NULL || strstr(cmd, "\\\\") != NULL || strstr(cmd, "//") != NULL)
+		Com_sprintf(filename, sizeof(filename), "%s", cmd);
+	else
+		Com_sprintf(filename, sizeof(filename), "%s/%s", FS_Userdir(), cmd);
+
+	// Try to load from OS filesystem
+	if (fopen_s(&f, filename, "rb") == 0) //mxd. fopen -> fopen_s
+	{
+		Com_Printf("execing %s\n", cmd);
+
+		len = FS_FileLength(f);
+		buf = Z_Malloc(len);
+
+		fread_s(buf, len, 1, len, f); //mxd. fread -> fread_s
+		AddTextToCommandBuffer(buf, len);
+
+		Z_Free(buf);
+		fclose(f);
+
+		return true;
+	}
+
+	// Load from quake filesystem
+	len = FS_LoadFile(cmd, (void**)&buf);
+	if (buf != NULL)
+	{
+		Com_Printf("execing %s\n", cmd);
+		AddTextToCommandBuffer(buf, len);
+		FS_FreeFile(buf);
+
+		return true;
+	}
+
 	return false;
 }
 

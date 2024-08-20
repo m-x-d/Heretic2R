@@ -4,6 +4,19 @@
 // Copyright 1998 Raven Software
 //
 
+// All of Quake's data access is through a hierarchical file system, but the contents of the file system
+// can be transparently merged from several sources.
+
+// The "base directory" is the path to the directory holding the quake.exe and all game directories.
+// The sys_* files pass this to host_init in quakeparms_t->basedir. This can be overridden with the "-basedir" command line param
+// to allow code debugging in a different directory.
+// The base directory is only used during filesystem initialization.
+
+// The "game directory" is the first tree on the search path and directory that all generated files
+// (savegames, screenshots, demos, config files) will be saved to. This can be overridden with the "-game" command line parameter.
+// The game directory can never be changed while quake is executing.
+// This is a precaution against having a malicious server instruct clients to write files over areas they shouldn't.
+
 #include "qcommon.h"
 #include "qfiles.h"
 
@@ -37,6 +50,12 @@ typedef struct searchpath_s
 
 searchpath_t* fs_searchpaths;
 searchpath_t* fs_base_searchpaths; // Without gamedirs
+
+int FS_FileLength(FILE* f)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
 
 // Q2 counterpart
 // For some reason, other dll's can't just cal fclose() on files returned by FS_FOpenFile...

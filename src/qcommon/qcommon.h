@@ -730,6 +730,7 @@ GAME_DECLSPEC int FS_LoadFile(char* path, void** buffer);
 
 // Properly handles partial reads
 void FS_Read(void* buffer, int len, FILE* f);
+int FS_FileLength(FILE* f); //mxd. Made public
 
 GAME_DECLSPEC void FS_FreeFile(void* buffer);
 void FS_CreatePath(char* path);
