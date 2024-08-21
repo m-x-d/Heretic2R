@@ -184,6 +184,7 @@ H2COMMON_API void Com_sprintf(char* dest, const int size, const char* fmt, ...)
 	const int len = vsnprintf(dest, size, fmt, argptr); //mxd. vsprintf -> vsnprintf
 	va_end(argptr);
 
+	//TODO: if triggered, this will cause an exception when called before Sys_Init() is called in quake2.dll...
 	if (len >= size)
 		(*com_printf)("Com_sprintf: overflow of %i in %i\n", len, size); //mxd. Q2 uses regular Com_Printf here
 }
