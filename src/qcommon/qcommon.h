@@ -404,7 +404,7 @@ void Cbuf_AddText(const char* text);
 
 // When a command wants to issue other commands immediately, the text is
 // inserted at the beginning of the buffer, before any remaining unexecuted commands.
-void Cbuf_InsertText(char* text);
+void Cbuf_InsertText(const char* text);
 
 // This can be used in place of either Cbuf_AddText or Cbuf_InsertText
 void Cbuf_ExecuteText(int exec_when, char* text);

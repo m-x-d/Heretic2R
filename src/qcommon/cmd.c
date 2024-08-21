@@ -44,9 +44,36 @@ void Cbuf_AddText(const char* text)
 		Com_Printf("Cbuf_AddText: overflow\n");
 }
 
-void Cbuf_InsertText(char* text)
+// Adds command text immediately after the current command. Adds a \n to the text.
+// FIXME: actually change the command buffer to do less copying.
+void Cbuf_InsertText(const char* text)
 {
-	NOT_IMPLEMENTED
+	char* temp;
+
+	// Copy off any commands still remaining in the exec buffer
+	const int templen = cmd_text.cursize;
+
+	if (templen > 0)
+	{
+		temp = Z_Malloc(templen);
+		memcpy(temp, cmd_text.data, templen);
+		SZ_Clear(&cmd_text);
+	}
+	else
+	{
+		temp = NULL; // Shut up compiler
+	}
+
+	// Add the entire text of the file
+	Cbuf_AddText(text);
+	Cbuf_AddText("\n"); // New in H2
+
+	// Add the copied off data
+	if (templen > 0)
+	{
+		SZ_Write(&cmd_text, temp, templen);
+		Z_Free(temp);
+	}
 }
 
 // Q2 counterpart
@@ -391,7 +418,11 @@ void Cmd_TokenizeString(char* text, const qboolean macro_expand)
 		}
 
 		const char* com_token = COM_Parse(&text);
-		if (text != NULL && cmd_argc < MAX_STRING_TOKENS)
+
+		if (text == NULL)
+			return;
+
+		if (cmd_argc < MAX_STRING_TOKENS)
 		{
 			// Store argument
 			const int arg_len = (int)strlen(com_token) + 1;
