@@ -160,6 +160,12 @@ cvar_t* Cvar_Set(char* var_name, char* value)
 	return Cvar_Set2(var_name, value, false);
 }
 
+cvar_t* Cvar_FullSet(char* var_name, char* value, int flags)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
 // Q2 counterpart
 void Cvar_SetValue(char* var_name, const float value)
 {
@@ -179,9 +185,41 @@ qboolean Cvar_Command(void)
 	return false;
 }
 
+// Q2 counterpart
+// Allows setting and defining of arbitrary cvars from console
 static void Cvar_Set_f(void)
 {
-	NOT_IMPLEMENTED
+	int flags;
+
+	const int c = Cmd_Argc();
+	if (c != 3 && c != 4)
+	{
+		Com_Printf("usage: set <variable> <value> [u / s]\n");
+		return;
+	}
+
+	if (c == 4)
+	{
+		if (strcmp(Cmd_Argv(3), "u") == 0)
+		{
+			flags = CVAR_USERINFO;
+		}
+		else if (strcmp(Cmd_Argv(3), "s") == 0)
+		{
+			flags = CVAR_SERVERINFO;
+		}
+		else
+		{
+			Com_Printf("flags can only be 'u' or 's'\n");
+			return;
+		}
+
+		Cvar_FullSet(Cmd_Argv(1), Cmd_Argv(2), flags);
+	}
+	else
+	{
+		Cvar_Set(Cmd_Argv(1), Cmd_Argv(2));
+	}
 }
 
 static void Cvar_List_f(void)
