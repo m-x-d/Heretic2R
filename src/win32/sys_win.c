@@ -4,9 +4,11 @@
 // Copyright 1998 Raven Software
 //
 
-#include "qcommon.h"
 #include "Quake2Main.h"
+#include <VersionHelpers.h> //mxd
+#include "qcommon.h"
 #include "q_shared.h"
+#include "conproc.h"
 
 qboolean Minimized;
 
@@ -23,7 +25,7 @@ HINSTANCE global_hInstance;
 
 #pragma region ========================== SYSTEM IO ==========================
 
-void Sys_Error(char* error, ...)
+void Sys_Error(const char* error, ...)
 {
 	NOT_IMPLEMENTED
 }
@@ -32,7 +34,24 @@ void Sys_Error(char* error, ...)
 
 void Sys_Init(void)
 {
-	NOT_IMPLEMENTED
+	Set_Com_Printf(Com_Printf); // New in H2
+	timeBeginPeriod(1);
+
+	//mxd. Skip ancient OS versions checks.
+	if (!IsWindows7OrGreater())
+		Sys_Error("Heretic 2 R requires Windows 7 or greater");
+
+	if ((int)dedicated->value)
+	{
+		if (!AllocConsole())
+			Sys_Error("Couldn\'t create dedicated server console");
+
+		hinput = GetStdHandle(STD_INPUT_HANDLE);
+		houtput = GetStdHandle(STD_OUTPUT_HANDLE);
+
+		// Let QHOST hook in
+		InitConProc(argc, argv);
+	}
 }
 
 static char console_text[256];

@@ -23,6 +23,7 @@
     <ClCompile Include="..\qcommon\net_chan.c" />
     <ClCompile Include="..\server\sv_main.c" />
     <ClCompile Include="clfx_dll.c" />
+    <ClCompile Include="conproc.c" />
     <ClCompile Include="net_wins.c" />
     <ClCompile Include="q_shwin.c" />
     <ClCompile Include="snd_dll.c" />
@@ -46,6 +47,7 @@
     <ClInclude Include="..\qcommon\q_ClientServer.h" />
     <ClInclude Include="..\server\server.h" />
     <ClInclude Include="clfx_dll.h" />
+    <ClInclude Include="conproc.h" />
     <ClInclude Include="Quake2Main.h" />
     <ClInclude Include="vid_dll.h" />
   </ItemGroup>

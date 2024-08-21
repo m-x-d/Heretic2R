@@ -754,9 +754,9 @@ void FS_CreatePath(char* path);
 
 void Com_BeginRedirect(int target, char* buffer, int buffersize, void* flush);
 void Com_EndRedirect(void);
-GAME_DECLSPEC void Com_Printf(char* fmt, ...); //TODO: check redundant declaration...
-GAME_DECLSPEC void Com_DPrintf(char* fmt, ...);
-GAME_DECLSPEC void Com_Error(int code, char* fmt, ...);
+GAME_DECLSPEC void Com_Printf(const char* fmt, ...); //TODO: check redundant declaration...
+GAME_DECLSPEC void Com_DPrintf(const char* fmt, ...);
+GAME_DECLSPEC void Com_Error(int code, const char* fmt, ...);
 void Com_Quit(void);
 int Com_ServerState(void);
 void Com_SetServerState(int state);
@@ -811,7 +811,7 @@ void* Sys_GetGameAPI(void* parms); // Loads the game dll and calls the api init 
 char* Sys_ConsoleInput(void);
 void Sys_ConsoleOutput(const char* string);
 void Sys_SendKeyEvents(void);
-GAME_DECLSPEC void Sys_Error(char* error, ...); //TODO: check redundant declaration...
+GAME_DECLSPEC void Sys_Error(const char* error, ...); //TODO: check redundant declaration...
 void Sys_Quit(void);
 char* Sys_GetClipboardData(void);
 void Sys_CopyProtect(void); //TODO: remove

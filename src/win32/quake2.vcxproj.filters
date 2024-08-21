@@ -72,6 +72,9 @@
     <ClCompile Include="snd_dll.c">
       <Filter>win32</Filter>
     </ClCompile>
+    <ClCompile Include="conproc.c">
+      <Filter>win32</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -126,6 +129,9 @@
       <Filter>win32</Filter>
     </ClInclude>
     <ClInclude Include="clfx_dll.h">
+      <Filter>win32</Filter>
+    </ClInclude>
+    <ClInclude Include="conproc.h">
       <Filter>win32</Filter>
     </ClInclude>
   </ItemGroup>

@@ -218,9 +218,9 @@ char* Sys_FindNext(uint musthave, uint canthave);
 void Sys_FindClose(void);
 
 // This is only here so the functions in q_shared.c and q_shwin.c can link //TODO: mxd. Check if still true
-GAME_DECLSPEC void Sys_Error(char* error, ...);
-GAME_DECLSPEC void Com_Printf(char* fmt, ...);
-GAME_DECLSPEC void Com_ColourPrintf(PalIdx_t colour, char* fmt, ...);
+GAME_DECLSPEC void Sys_Error(const char* error, ...);
+GAME_DECLSPEC void Com_Printf(const char* fmt, ...);
+GAME_DECLSPEC void Com_ColourPrintf(PalIdx_t colour, const char* fmt, ...);
 
 #pragma endregion
 

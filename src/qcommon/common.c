@@ -46,7 +46,7 @@ static int rd_buffersize;
 static void	(*rd_flush)(int target, char* buffer);
 
 // Both client and server can use this, and it will output to the appropriate place.
-void Com_Printf(char* fmt, ...)
+void Com_Printf(const char* fmt, ...)
 {
 	char msg[MAXPRINTMSG];
 	va_list argptr;
@@ -59,7 +59,7 @@ void Com_Printf(char* fmt, ...)
 }
 
 //mxd. Similar to Q2's Com_Printf
-void Com_ColourPrintf(const PalIdx_t colour, char* fmt, ...)
+void Com_ColourPrintf(const PalIdx_t colour, const char* fmt, ...)
 {
 	if (hideconprint == NULL || !(int)hideconprint->value)
 	{
@@ -114,7 +114,7 @@ void Com_ColourPrintf(const PalIdx_t colour, char* fmt, ...)
 }
 
 // A Com_Printf that only shows up if the "developer" cvar is set
-void Com_DPrintf(char* fmt, ...)
+void Com_DPrintf(const char* fmt, ...)
 {
 	va_list argptr;
 	char msg[MAXPRINTMSG];
@@ -130,7 +130,7 @@ void Com_DPrintf(char* fmt, ...)
 	}
 }
 
-void Com_Error(int code, char* fmt, ...)
+void Com_Error(int code, const char* fmt, ...)
 {
 	NOT_IMPLEMENTED
 }
