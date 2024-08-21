@@ -180,7 +180,22 @@ void Key_SetBinding(const int keynum, const char* binding)
 // Very similar to Key_SetBinding
 void Key_SetDoubleBinding(const int keynum, const char* binding)
 {
-	NOT_IMPLEMENTED
+	if (keynum == -1)
+		return;
+
+	// Free old bindings
+	if (keybindings_double[keynum])
+	{
+		Z_Free(keybindings_double[keynum]);
+		keybindings_double[keynum] = NULL;
+	}
+
+	// Allocate memory for new binding
+	const int l = (int)strlen(binding) + 1;
+	char* new = Z_Malloc(l);
+	strcpy_s(new, l, binding); //mxd. strcpy -> strcpy_s
+	//new[l - 1] = 0; //mxd. Not needed? strlen already stops at '0'.
+	keybindings_double[keynum] = new;
 }
 
 // Very similar to Key_SetBinding
