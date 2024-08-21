@@ -177,9 +177,25 @@ void Key_SetBinding(const int keynum, const char* binding)
 	keybindings[keynum] = new;
 }
 
+// Very similar to Key_SetBinding
 static void Key_SetCommandBinding(const int keynum, const char* binding)
 {
-	NOT_IMPLEMENTED
+	if (keynum == -1)
+		return;
+
+	// Free old bindings
+	if (commandbindings[keynum])
+	{
+		Z_Free(commandbindings[keynum]);
+		commandbindings[keynum] = NULL;
+	}
+
+	// Allocate memory for new binding
+	const int l = (int)strlen(binding) + 1;
+	char* new = Z_Malloc(l);
+	strcpy_s(new, l, binding); //mxd. strcpy -> strcpy_s
+	//new[l - 1] = 0; //mxd. Not needed? strlen already stops at '0'.
+	commandbindings[keynum] = new;
 }
 
 static void Key_Unbind_f(void)
