@@ -13,9 +13,29 @@
 char key_lines[32][MAXCMDLINE];
 int key_linepos;
 
+char* keybindings[256];
+char* keybindings_double[256];
 qboolean consolekeys[256];	// If true, can't be rebound while in console
 qboolean menubound[256];	// If true, can't be rebound while in menu
 int keyshift[256];			// Key to map to if Shift held down in console
+int key_repeats[256];		// if > 1, it is autorepeating
+
+static int Key_StringToKeynum(char* str)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+char* Key_KeynumToString(int keynum)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
+void Key_SetBinding(int keynum, char* binding)
+{
+	NOT_IMPLEMENTED
+}
 
 static void Key_Unbind_f(void)
 {
@@ -27,9 +47,46 @@ static void Key_Unbindall_f(void)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
 static void Key_Bind_f(void)
 {
-	NOT_IMPLEMENTED
+	char cmd[1024];
+
+	const int c = Cmd_Argc();
+	if (c < 2)
+	{
+		Com_Printf("bind <key> [command] : attach a command to a key\n");
+		return;
+	}
+
+	const int b = Key_StringToKeynum(Cmd_Argv(1));
+	if (b == -1)
+	{
+		Com_Printf("\"%s\" isn't a valid key\n", Cmd_Argv(1));
+		return;
+	}
+
+	if (c == 2)
+	{
+		if (keybindings[b] != NULL)
+			Com_Printf("\"%s\" = \"%s\"\n", Cmd_Argv(1), keybindings[b]);
+		else
+			Com_Printf("\"%s\" is not bound\n", Cmd_Argv(1));
+
+		return;
+	}
+
+	// Copy the rest of the command line
+	cmd[0] = 0; // Start out with a null string
+
+	for (int i = 2; i < c; i++)
+	{
+		strcat_s(cmd, sizeof(cmd), Cmd_Argv(i)); //mxd. strcat -> strcat_s
+		if (i != c - 1)
+			strcat_s(cmd, sizeof(cmd), " "); //mxd. strcat -> strcat_s
+	}
+
+	Key_SetBinding(b, cmd);
 }
 
 static void Key_Bindlist_f(void)
