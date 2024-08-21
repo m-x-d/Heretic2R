@@ -126,6 +126,6 @@ void Key_Init(void);
 void Key_WriteBindings(FILE* f);
 void Key_WriteBindings_Double(FILE* f);
 void Key_SetBinding(int keynum, const char* binding);
-void Key_SetDoubleBinding(int keynum, char* binding);
+void Key_SetDoubleBinding(int keynum, const char* binding);
 void Key_ClearStates(void);
 int Key_GetKey(void);

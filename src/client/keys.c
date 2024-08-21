@@ -178,6 +178,12 @@ void Key_SetBinding(const int keynum, const char* binding)
 }
 
 // Very similar to Key_SetBinding
+void Key_SetDoubleBinding(const int keynum, const char* binding)
+{
+	NOT_IMPLEMENTED
+}
+
+// Very similar to Key_SetBinding
 static void Key_SetCommandBinding(const int keynum, const char* binding)
 {
 	if (keynum == -1)
@@ -255,14 +261,51 @@ static void Key_Bindlist_f(void)
 	NOT_IMPLEMENTED
 }
 
-static void Key_BindDouble_f(void)
+static void Key_UnbindDouble_f(void)
 {
 	NOT_IMPLEMENTED
 }
 
-static void Key_UnbindDouble_f(void)
+// Very similar to Key_Bind_f
+static void Key_BindDouble_f(void)
 {
-	NOT_IMPLEMENTED
+	char cmd[1024];
+
+	const int c = Cmd_Argc();
+	if (c < 2)
+	{
+		Com_Printf("bind_double <key> [command] : attach a command to a double tapped key\n");
+		return;
+	}
+
+	const int b = Key_StringToKeynum(Cmd_Argv(1));
+	if (b == -1)
+	{
+		Com_Printf("\"%s\" isn't a valid key\n", Cmd_Argv(1));
+		return;
+	}
+
+	if (c == 2)
+	{
+		if (keybindings_double[b] != NULL)
+			Com_Printf("\"%s\" = \"%s\"\n", Cmd_Argv(1), keybindings_double[b]);
+		else
+			Com_Printf("\"%s\" is not bound\n", Cmd_Argv(1));
+
+		return;
+	}
+
+	// Copy the rest of the command line
+	cmd[0] = 0; // Start out with a null string
+
+	for (int i = 2; i < c; i++)
+	{
+		strcat_s(cmd, sizeof(cmd), Cmd_Argv(i));
+		if (i != c - 1)
+			strcat_s(cmd, sizeof(cmd), " ");
+	}
+
+	Key_SetDoubleBinding(b, cmd);
 }
 
 static void Key_DoubleBindList_f(void)
