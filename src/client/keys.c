@@ -20,10 +20,133 @@ qboolean menubound[256];	// If true, can't be rebound while in menu
 int keyshift[256];			// Key to map to if Shift held down in console
 int key_repeats[256];		// if > 1, it is autorepeating
 
-static int Key_StringToKeynum(char* str)
+typedef struct
 {
-	NOT_IMPLEMENTED
-	return 0;
+	char* name;
+	int keynum;
+} keyname_t;
+
+keyname_t keynames[] =
+{
+	{ "Tab",		K_TAB },
+	{ "Enter",		K_ENTER },
+	{ "Escape",		K_ESCAPE },
+	{ "Space",		K_SPACE },
+	{ "Backspace",	K_BACKSPACE },
+	{ "UpArrow",	K_UPARROW },
+	{ "DownArrow",	K_DOWNARROW },
+	{ "LeftArrow",	K_LEFTARROW },
+	{ "RightArrow",	K_RIGHTARROW },
+
+	{ "Alt",	K_ALT },
+	{ "Ctrl",	K_CTRL },
+	{ "Shift",	K_SHIFT },
+
+	{ "F1",		K_F1 },
+	{ "F2",		K_F2 },
+	{ "F3",		K_F3 },
+	{ "F4",		K_F4 },
+	{ "F5",		K_F5 },
+	{ "F6",		K_F6 },
+	{ "F7",		K_F7 },
+	{ "F8",		K_F8 },
+	{ "F9",		K_F9 },
+	{ "F10",	K_F10 },
+	{ "F11",	K_F11 },
+	{ "F12",	K_F12 },
+
+	{ "Ins",	K_INS },
+	{ "Del",	K_DEL },
+	{ "PgDn",	K_PGDN },
+	{ "PgUp",	K_PGUP },
+	{ "Home",	K_HOME },
+	{ "End",	K_END },
+
+	{ "Mouse1",	K_MOUSE1 },
+	{ "Mouse2",	K_MOUSE2 },
+	{ "Mouse3",	K_MOUSE3 },
+
+	{ "Joy1",	K_JOY1 },
+	{ "Joy2",	K_JOY2 },
+	{ "Joy3",	K_JOY3 },
+	{ "Joy4",	K_JOY4 },
+
+	{ "Aux1",	K_AUX1 },
+	{ "Aux2",	K_AUX2 },
+	{ "Aux3",	K_AUX3 },
+	{ "Aux4",	K_AUX4 },
+	{ "Aux5",	K_AUX5 },
+	{ "Aux6",	K_AUX6 },
+	{ "Aux7",	K_AUX7 },
+	{ "Aux8",	K_AUX8 },
+	{ "Aux9",	K_AUX9 },
+	{ "Aux10",	K_AUX10 },
+	{ "Aux11",	K_AUX11 },
+	{ "Aux12",	K_AUX12 },
+	{ "Aux13",	K_AUX13 },
+	{ "Aux14",	K_AUX14 },
+	{ "Aux15",	K_AUX15 },
+	{ "Aux16",	K_AUX16 },
+	{ "Aux17",	K_AUX17 },
+	{ "Aux18",	K_AUX18 },
+	{ "Aux19",	K_AUX19 },
+	{ "Aux20",	K_AUX20 },
+	{ "Aux21",	K_AUX21 },
+	{ "Aux22",	K_AUX22 },
+	{ "Aux23",	K_AUX23 },
+	{ "Aux24",	K_AUX24 },
+	{ "Aux25",	K_AUX25 },
+	{ "Aux26",	K_AUX26 },
+	{ "Aux27",	K_AUX27 },
+	{ "Aux28",	K_AUX28 },
+	{ "Aux29",	K_AUX29 },
+	{ "Aux30",	K_AUX30 },
+	{ "Aux31",	K_AUX31 },
+	{ "Aux32",	K_AUX32 },
+
+	{ "Kp_Home",	K_KP_HOME },
+	{ "Kp_Up",		K_KP_UPARROW },
+	{ "Kp_PgUp",	K_KP_PGUP },
+	{ "Kp_Left",	K_KP_LEFTARROW },
+	{ "Kp_5",		K_KP_5 },
+	{ "Kp_Right",	K_KP_RIGHTARROW },
+	{ "Kp_End",		K_KP_END },
+	{ "Kp_Down",	K_KP_DOWNARROW },
+	{ "Kp_PgDn",	K_KP_PGDN },
+	{ "Kp_Enter",	K_KP_ENTER },
+	{ "Kp_Ins",		K_KP_INS },
+	{ "Kp_Del",		K_KP_DEL },
+	{ "Kp_Slash",	K_KP_SLASH },
+	{ "Kp_Minus",	K_KP_MINUS },
+	{ "Kp_Plus",	K_KP_PLUS },
+	{ "Kp_NumLock",	K_KP_NUMLOCK }, // New in H2
+
+	{ "MWheelUp",	K_MWHEELUP },
+	{ "MWheelDown",	K_MWHEELDOWN },
+
+	{ "Pause",		K_PAUSE },
+
+	{ "Semicolon",	';' }, // Because a raw semicolon separates commands.
+
+	{ NULL,	0 }
+};
+
+// Q2 counterpart
+// Returns a key number to be used to index keybindings[] by looking at the given string.
+// Single ascii characters return themselves, while the K_* names are matched up.
+static int Key_StringToKeynum(const char* str)
+{
+	if (str == NULL || str[0] == 0)
+		return -1;
+
+	if (str[1] == 0)
+		return str[0];
+
+	for (const keyname_t* kn = keynames; kn->name != NULL; kn++)
+		if (!Q_stricmp(str, kn->name)) // Q2: Q_strcasecmp
+			return kn->keynum;
+
+	return -1;
 }
 
 char* Key_KeynumToString(int keynum)
