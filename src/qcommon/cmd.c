@@ -251,9 +251,61 @@ static void Cmd_Echo_f(void)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
+// Creates a new command that executes a command string (possibly ; seperated).
 static void Cmd_Alias_f(void)
 {
-	NOT_IMPLEMENTED
+	cmdalias_t* a;
+	char cmd[1024];
+
+	if (Cmd_Argc() == 1)
+	{
+		Com_Printf("Current alias commands:\n");
+		for (a = cmd_alias; a != NULL; a = a->next)
+			Com_Printf("%s : %s\n", a->name, a->value);
+
+		return;
+	}
+
+	const char* s = Cmd_Argv(1);
+	if (strlen(s) >= MAX_ALIAS_NAME)
+	{
+		Com_Printf("Alias name is too long\n");
+		return;
+	}
+
+	// If the alias already exists, reuse it.
+	for (a = cmd_alias; a != NULL; a = a->next)
+	{
+		if (strcmp(s, a->name) == 0)
+		{
+			Z_Free(a->value);
+			break;
+		}
+	}
+
+	if (a == NULL)
+	{
+		a = Z_Malloc(sizeof(cmdalias_t));
+		a->next = cmd_alias;
+		cmd_alias = a;
+	}
+
+	strcpy_s(a->name, sizeof(a->name), s); //mxd. strcpy -> strcpy_s
+
+	// Copy the rest of the command line.
+	cmd[0] = 0; // Start out with a null string.
+
+	const int c = Cmd_Argc();
+	for (int i = 2; i < c; i++)
+	{
+		strcat_s(cmd, sizeof(cmd), Cmd_Argv(i)); //mxd. strcat -> strcat_s
+		if (i != c - 1)
+			strcat_s(cmd, sizeof(cmd), " "); //mxd. strcat -> strcat_s
+	}
+
+	strcat_s(cmd, sizeof(cmd), "\n");
+	a->value = CopyString(cmd);
 }
 
 static void Cmd_Wait_f(void)
