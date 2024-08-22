@@ -8,5 +8,5 @@
 
 #include <windows.h>
 
-extern void Sys_LoadDll(char* name, HINSTANCE* hinst, DWORD* chkSum);
+extern void Sys_LoadDll(char* dll_name, HINSTANCE* hinst, DWORD* checksum);
 extern void Sys_UnloadDll(char* name, HINSTANCE* hinst);

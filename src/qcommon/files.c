@@ -373,6 +373,12 @@ static void FS_Path_f(void)
 	NOT_IMPLEMENTED
 }
 
+char* FS_NextPath(char* prevpath)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
 void FS_InitFilesystem(void)
 {
 	Cmd_AddCommand("path", FS_Path_f);

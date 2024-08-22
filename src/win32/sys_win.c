@@ -34,9 +34,53 @@ void Sys_Error(const char* error, ...)
 
 #pragma region ========================== DLL HANDLING ==========================
 
-void Sys_LoadDll(char* name, HINSTANCE* hinst, DWORD* chkSum)
+void Sys_LoadDll(char* dll_name, HINSTANCE* hinst, DWORD* checksum)
 {
-	NOT_IMPLEMENTED
+	IMAGE_DOS_HEADER dos_header;
+	IMAGE_OPTIONAL_HEADER win_header;
+	char name[MAX_OSPATH];
+	char dll_path[MAX_OSPATH];
+	FILE* f;
+
+	// Run through the search paths
+	char* path = NULL;
+	while (true)
+	{
+		path = FS_NextPath(path);
+		if (path == NULL)
+			break; // Couldn't find one anywhere
+
+		Com_sprintf(name, sizeof(name), "%s/%s", path, dll_name);
+		*hinst = LoadLibrary(name);
+		if (*hinst != NULL)
+		{
+			sprintf_s(dll_path, sizeof(dll_path), "%s.dll", name);
+			break;
+		}
+	}
+
+	if (*hinst == NULL)
+	{
+		Sys_Error("Failed to load %s", dll_name);
+		return;
+	}
+
+	// Read file checksum //TODO: remove? result never used?
+	if (fopen_s(&f, dll_path, "r") == 0)
+	{
+		fread(&dos_header, sizeof(dos_header), 1, f);
+		fseek(f, dos_header.e_lfanew + 24, SEEK_SET); //mxd. Skip PE signature and IMAGE_FILE_HEADER struct.
+		fread(&win_header, sizeof(win_header), 1, f);
+		fclose(f);
+
+		*checksum = win_header.CheckSum;
+	}
+	else
+	{
+		*checksum = 0;
+	}
+
+	Com_DPrintf("LoadLibrary (%s)\n", dll_path);
 }
 
 void Sys_UnloadDll(char* name, HINSTANCE* hinst)
