@@ -5,7 +5,6 @@
 //
 
 #include <stdlib.h>
-#include "qcommon.h"
 #include "server.h"
 #include "clfx_dll.h"
 

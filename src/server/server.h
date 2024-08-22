@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "q_shared.h"
+#include "qcommon.h"
 
 // sv_ccmds.c
 void SV_InitOperatorCommands(void);
