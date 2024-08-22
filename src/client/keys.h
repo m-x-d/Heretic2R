@@ -121,6 +121,12 @@ extern char chat_buffer[];
 extern int chat_bufferlen;
 extern qboolean chat_team;
 
+//mxd. Made global
+#define MAXCMDLINE	256
+extern char key_lines[32][MAXCMDLINE];
+extern int edit_line;
+extern int key_linepos;
+
 void Key_Event(int key, qboolean down, uint time);
 void Key_Init(void);
 void Key_WriteBindings(FILE* f);

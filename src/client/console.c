@@ -5,7 +5,6 @@
 //
 
 #include "client.h"
-#include "q_shared.h" //TODO: added for NOT_IMPLEMENTED macro!
 
 console_t con;
 
@@ -13,9 +12,11 @@ static cvar_t* con_notifytime;
 static cvar_t* con_alpha; // New in H2
 static cvar_t* nextserver; // New in H2
 
+// Q2 counterpart
 static void Key_ClearTyping(void)
 {
-	NOT_IMPLEMENTED
+	key_lines[edit_line][1] = '\0'; // Clear any typing
+	key_linepos = 1;
 }
 
 void Con_ClearNotify(void)
