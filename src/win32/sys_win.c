@@ -85,7 +85,10 @@ void Sys_LoadDll(char* dll_name, HINSTANCE* hinst, DWORD* checksum)
 
 void Sys_UnloadDll(char* name, HINSTANCE* hinst)
 {
-	NOT_IMPLEMENTED
+	if (!FreeLibrary(*hinst))
+		Sys_Error("Failed to unload %s", name);
+
+	*hinst = NULL;
 }
 
 #pragma endregion
