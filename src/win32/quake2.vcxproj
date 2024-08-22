@@ -43,6 +43,7 @@
     <ClInclude Include="..\client\screen.h" />
     <ClInclude Include="..\client\sound.h" />
     <ClInclude Include="..\client\snd_loc.h" />
+    <ClInclude Include="..\client\vid.h" />
     <ClInclude Include="..\game\g_itemstats.h" />
     <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="..\Player\Player.h" />

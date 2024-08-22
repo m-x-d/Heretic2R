@@ -155,5 +155,8 @@
     <ClInclude Include="dll_io.h">
       <Filter>win32</Filter>
     </ClInclude>
+    <ClInclude Include="..\client\vid.h">
+      <Filter>client</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

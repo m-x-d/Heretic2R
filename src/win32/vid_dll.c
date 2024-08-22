@@ -5,7 +5,10 @@
 //
 
 #include "vid_dll.h"
-#include "q_shared.h" //TODO: added only for NOT_IMPLEMENTED macro!
+#include "client.h"
+
+// Global variables used internally by this module
+viddef_t viddef; // Global video state; used by other modules
 
 HWND cl_hwnd; // Main window handle for life of program
 

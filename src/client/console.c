@@ -13,6 +13,16 @@ static cvar_t* con_notifytime;
 static cvar_t* con_alpha; // New in H2
 static cvar_t* nextserver; // New in H2
 
+static void Key_ClearTyping(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void Con_ClearNotify(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void Con_ToggleConsole_f(void)
 {
 	NOT_IMPLEMENTED
@@ -48,9 +58,57 @@ void Con_Chars_f(void)
 	NOT_IMPLEMENTED
 }
 
+// If the line width has changed, reformat the buffer.
 void Con_CheckResize(void)
 {
-	NOT_IMPLEMENTED
+	char tbuf[CON_TEXTSIZE];
+	paletteRGBA_t cbuf[MAX_LINES];
+
+	const int width = (viddef.width >> 3) - 2;
+
+	if (width == con.linewidth)
+		return;
+
+	if (width < 1) // Video hasn't been initialized yet
+	{
+		con.linewidth = 78;
+		con.totallines = CON_TEXTSIZE / con.linewidth;
+		memset(con.text, ' ', sizeof(con.text));
+		memset(con.color, 0xFF, sizeof(con.color));
+	}
+	else
+	{
+		const int oldwidth = con.linewidth;
+		con.linewidth = width;
+
+		const int oldtotallines = con.totallines;
+		con.totallines = CON_TEXTSIZE / con.linewidth;
+
+		const int numlines = min(con.totallines, oldtotallines);
+		const int numchars = min(con.linewidth, oldwidth);
+
+		memcpy(tbuf, con.text, sizeof(tbuf));
+		memset(con.text, ' ', sizeof(con.text));
+		memcpy(cbuf, con.color, sizeof(cbuf)); // H2
+		memset(con.color, 0xFF, sizeof(con.color)); // H2
+
+		for (int i = 0; i < numlines; i++)
+		{
+			const int con_line_index = con.totallines - 1 - i;
+			const int buf_line_index = (con.current - i + oldtotallines) % oldtotallines;
+			con.color[con_line_index] = cbuf[buf_line_index]; // H2
+
+			for (int j = 0; j < numchars; j++)
+				con.text[con_line_index * con.linewidth + j] = tbuf[buf_line_index * oldwidth + j];
+		}
+
+		Con_ClearNotify();
+	}
+
+	con.current = con.totallines - 1;
+	con.display = con.current;
+
+	Key_ClearTyping(); // H2
 }
 
 void Con_Init(void)
