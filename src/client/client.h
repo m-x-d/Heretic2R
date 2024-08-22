@@ -593,6 +593,7 @@ void CL_Record_f(void);
 
 // cl_parse.c
 extern char* svc_strings[256];
+extern char client_string[128]; //mxd
 
 void CL_ParseServerMessage(void);
 void CL_LoadClientinfo(clientinfo_t* ci, char* s, int index);

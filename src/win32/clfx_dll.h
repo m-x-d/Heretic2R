@@ -12,7 +12,5 @@
 extern client_fx_import_t fxi;
 extern HINSTANCE clfx_library;
 
-client_fx_export_t (*GetfxAPI)(client_fx_import_t import);
-
 extern void CLFX_Init(void);
 extern void CLFX_LoadDll(void);

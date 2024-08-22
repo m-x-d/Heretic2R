@@ -32,6 +32,20 @@ void Sys_Error(const char* error, ...)
 
 #pragma endregion
 
+#pragma region ========================== DLL HANDLING ==========================
+
+void Sys_LoadDll(char* name, HINSTANCE* hinst, DWORD* chkSum)
+{
+	NOT_IMPLEMENTED
+}
+
+void Sys_UnloadDll(char* name, HINSTANCE* hinst)
+{
+	NOT_IMPLEMENTED
+}
+
+#pragma endregion
+
 void Sys_Init(void)
 {
 	Set_Com_Printf(Com_Printf); // New in H2
