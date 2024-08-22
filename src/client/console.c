@@ -9,6 +9,11 @@
 
 console_t con;
 
+void Con_Init(void)
+{
+	NOT_IMPLEMENTED
+}
+
 static void Con_Linefeed(void)
 {
 	NOT_IMPLEMENTED

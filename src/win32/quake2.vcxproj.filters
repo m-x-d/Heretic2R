@@ -81,6 +81,15 @@
     <ClCompile Include="..\client\cl_parse.c">
       <Filter>client</Filter>
     </ClCompile>
+    <ClCompile Include="input_win.c">
+      <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menu.c">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\cl_view.c">
+      <Filter>client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">

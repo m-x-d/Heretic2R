@@ -5,7 +5,10 @@
 //
 
 #include "client.h"
+#include "ResourceManager.h"
 #include "sound.h"
+
+ResourceManager_t cl_FXBufMngr;
 
 void CL_GetEntitySoundOrigin(int ent, vec3_t org)
 {

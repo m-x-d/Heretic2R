@@ -15,8 +15,10 @@
     <ClCompile Include="..\client\cl_main.c" />
     <ClCompile Include="..\client\cl_parse.c" />
     <ClCompile Include="..\client\cl_screen.c" />
+    <ClCompile Include="..\client\cl_view.c" />
     <ClCompile Include="..\client\console.c" />
     <ClCompile Include="..\client\keys.c" />
+    <ClCompile Include="..\client\menu.c" />
     <ClCompile Include="..\qcommon\cmd.c" />
     <ClCompile Include="..\qcommon\common.c" />
     <ClCompile Include="..\qcommon\cvar.c" />
@@ -26,6 +28,7 @@
     <ClCompile Include="..\server\sv_main.c" />
     <ClCompile Include="clfx_dll.c" />
     <ClCompile Include="conproc.c" />
+    <ClCompile Include="input_win.c" />
     <ClCompile Include="net_wins.c" />
     <ClCompile Include="q_shwin.c" />
     <ClCompile Include="snd_dll.c" />

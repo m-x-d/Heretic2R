@@ -4,8 +4,12 @@
 // Copyright 1998 Raven Software
 //
 
-#include "q_shared.h"
-//#include "client.h" //TODO
+#include "client.h"
+
+void SCR_Init(void)
+{
+	NOT_IMPLEMENTED
+}
 
 void SCR_EndLoadingPlaque(void)
 {
