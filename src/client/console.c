@@ -9,9 +9,71 @@
 
 console_t con;
 
-void Con_Init(void)
+static cvar_t* con_notifytime;
+static cvar_t* con_alpha; // New in H2
+static cvar_t* nextserver; // New in H2
+
+void Con_ToggleConsole_f(void)
 {
 	NOT_IMPLEMENTED
+}
+
+void Con_ToggleChat_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void Con_MessageMode_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void Con_MessageMode2_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void Con_Clear_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void Con_Dump_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void Con_Chars_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void Con_CheckResize(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void Con_Init(void)
+{
+	con.linewidth = -1;
+
+	Con_CheckResize();
+	Com_Printf("Console initialized.\n");
+
+	// Register our commands
+	con_notifytime = Cvar_Get("con_notifytime", "3", 0);
+	con_alpha = Cvar_Get("con_alpha", "0.5", CVAR_ARCHIVE); // New in H2
+	nextserver = Cvar_Get("nextserver", "", 0); // New in H2
+
+	Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);
+	Cmd_AddCommand("togglechat", Con_ToggleChat_f);
+	Cmd_AddCommand("messagemode", Con_MessageMode_f);
+	Cmd_AddCommand("messagemode2", Con_MessageMode2_f);
+	Cmd_AddCommand("clear", Con_Clear_f);
+	Cmd_AddCommand("condump", Con_Dump_f);
+	Cmd_AddCommand("conchars", Con_Chars_f); // New in H2
+
+	con.initialized = true;
 }
 
 static void Con_Linefeed(void)
