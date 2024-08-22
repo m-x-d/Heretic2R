@@ -54,6 +54,10 @@ static cvar_t* net_sendrate;
 static cvar_t* net_receiverate;
 static cvar_t* net_latency;
 
+netadr_t net_from;
+sizebuf_t net_message;
+byte net_message_buffer[MAX_MSGLEN];
+
 void Netchan_Init(void)
 {
 	// Pick a port value that should be nice and random.

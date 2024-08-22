@@ -13,3 +13,8 @@ void CLFX_Init(void)
 {
 	NOT_IMPLEMENTED
 }
+
+void CLFX_LoadDll(void)
+{
+	NOT_IMPLEMENTED
+}

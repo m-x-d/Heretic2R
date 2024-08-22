@@ -75,6 +75,9 @@
     <ClCompile Include="conproc.c">
       <Filter>win32</Filter>
     </ClCompile>
+    <ClCompile Include="..\server\sv_ccmds.c">
+      <Filter>server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -133,6 +136,9 @@
     </ClInclude>
     <ClInclude Include="conproc.h">
       <Filter>win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\q_shared.h">
+      <Filter>game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
