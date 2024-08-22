@@ -301,24 +301,24 @@ typedef struct
 	// If api_version is different, the dll cannot be used
 	int api_version;
 
-	void (*Init)();
-	void (*ShutDown)();
+	void (*Init)(void);
+	void (*ShutDown)(void);
 
-	void (*Clear)();
+	void (*Clear)(void);
 
-	void (*RegisterSounds)();
-	void (*RegisterModels)();
+	void (*RegisterSounds)(void);
+	void (*RegisterModels)(void);
 
 	void (*ParseClientEffects)(centity_t* cent);
 	void (*RemoveClientEffects)(centity_t* cent);
 
 	void (*AddPacketEntities)(frame_t* frame);
 	void (*AddEffects)(qboolean freeze);
-	void (*UpdateEffects)();
+	void (*UpdateEffects)(void);
 
 	void (*SetLightstyle)(int i);
-	level_map_info_t* (*GetLMI)();
-	int (*GetLMIMax)();
+	level_map_info_t* (*GetLMI)(void);
+	int (*GetLMIMax)(void);
 
 	char* client_string;
 } client_fx_export_t;
