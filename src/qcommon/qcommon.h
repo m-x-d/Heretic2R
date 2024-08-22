@@ -719,7 +719,7 @@ char* FS_GetPath(char* name);
 void FS_SetGamedir(char* dir);
 char* FS_Gamedir(void);
 char* FS_Userdir(void);
-char* FS_NextPath(char* prevpath);
+char* FS_NextPath(const char* prevpath);
 void FS_ExecAutoexec(void);
 
 GAME_DECLSPEC int FS_FOpenFile(const char* filename, FILE** file);

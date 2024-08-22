@@ -373,9 +373,25 @@ static void FS_Path_f(void)
 	NOT_IMPLEMENTED
 }
 
-char* FS_NextPath(char* prevpath)
+// Q2 counterpart
+// Allows enumerating all of the directories in the search path
+char* FS_NextPath(const char* prevpath)
 {
-	NOT_IMPLEMENTED
+	if (prevpath == NULL)
+		return fs_gamedir;
+
+	const char* prev = fs_gamedir;
+	for (searchpath_t* s = fs_searchpaths; s != NULL; s = s->next)
+	{
+		if (s->pack)
+			continue;
+
+		if (prevpath == prev)
+			return s->filename;
+
+		prev = s->filename;
+	}
+
 	return NULL;
 }
 
