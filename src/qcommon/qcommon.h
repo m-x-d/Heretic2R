@@ -501,7 +501,7 @@ cvar_t* Cvar_FullSet(char* var_name, char* value, int flags);
 void Cvar_SetValue(char* var_name, float value);
 
 // Returns 0 if not defined or non numeric
-float Cvar_VariableValue(char* var_name);
+float Cvar_VariableValue(const char* var_name);
 
 // Returns an empty string if not defined
 char* Cvar_VariableString(const char* var_name);

@@ -27,10 +27,14 @@ static cvar_t* Cvar_FindVar(const char* var_name)
 	return NULL;
 }
 
-float Cvar_VariableValue(char* var_name)
+// Q2 counterpart
+float Cvar_VariableValue(const char* var_name)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	const cvar_t* var = Cvar_FindVar(var_name);
+	if (var != NULL)
+		return (float)strtod(var->string, NULL); //mxd. atof -> strtod
+
+	return 0.0f;
 }
 
 // Q2 counterpart
