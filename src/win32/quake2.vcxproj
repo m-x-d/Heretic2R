@@ -64,6 +64,7 @@
     <ClInclude Include="conproc.h" />
     <ClInclude Include="dll_io.h" />
     <ClInclude Include="Quake2Main.h" />
+    <ClInclude Include="snd_dll.h" />
     <ClInclude Include="vid_dll.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

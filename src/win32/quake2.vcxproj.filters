@@ -179,5 +179,8 @@
     <ClInclude Include="..\client\menu.h">
       <Filter>client</Filter>
     </ClInclude>
+    <ClInclude Include="snd_dll.h">
+      <Filter>win32</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

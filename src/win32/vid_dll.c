@@ -6,7 +6,10 @@
 
 #include "client.h"
 #include "vid_dll.h"
+#include "clfx_dll.h"
+#include "snd_dll.h"
 #include "menu.h"
+#include "sound.h"
 
 // Structure containing functions exported from refresh DLL
 refexport_t	re;
@@ -30,6 +33,16 @@ HWND cl_hwnd; // Main window handle for life of program
 
 qboolean vid_restart_required; // New in H2
 
+static void WIN_DisableAltTab(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void WIN_EnableAltTab(void)
+{
+	NOT_IMPLEMENTED
+}
+
 static void VID_Restart_f(void)
 {
 	NOT_IMPLEMENTED
@@ -45,9 +58,92 @@ static void VID_ShowModes_f(void)
 	NOT_IMPLEMENTED
 }
 
-void VID_CheckChanges(void)
+static qboolean VID_GetModeInfo(int* width, int* height, int mode)
 {
 	NOT_IMPLEMENTED
+	return false;
+}
+
+static void VID_UpdateWindowPosAndSize(int x, int y, int width, int height)
+{
+	NOT_IMPLEMENTED
+}
+
+static qboolean VID_LoadRefresh(char* name)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
+// This function gets called once just before drawing each frame, and it's sole purpose is to check to see
+// if any of the video mode parameters have changed, and if they have to update the rendering DLL and/or video mode to match.
+void VID_CheckChanges(void)
+{
+	int height;
+	int width;
+	char name[100];
+
+	if (win_noalttab->modified)
+	{
+		if ((int)win_noalttab->value)
+			WIN_DisableAltTab();
+		else
+			WIN_EnableAltTab();
+
+		win_noalttab->modified = false;
+	}
+
+	while (vid_restart_required || vid_ref->modified || vid_fullscreen->modified)
+	{
+		// Refresh has changed
+		vid_restart_required = false; // H2
+
+		vid_ref->modified = false;
+		vid_fullscreen->modified = true;
+		cl.force_refdef = true;
+		cl.refresh_prepped = false;
+		cls.disable_screen = true;
+
+		if (sound_library != NULL) // H2
+			S_StopAllSounds();
+
+		Cvar_SetValue("win_ignore_destroy", true); // H2
+
+		if (Q_stricmp(vid_ref->string, "gl") == 0 && (int)vid_fullscreen->value) // H2
+			Cvar_SetValue("win_noalttab", false);
+
+		Com_sprintf(name, sizeof(name), "ref_%s.dll", vid_ref->string);
+		if (!VID_LoadRefresh(name))
+		{
+			if (strcmp(vid_ref->string, "gl") == 0) // Q2: strcmp(vid_ref->string, "soft") //TODO: H2 never switches to software mode?
+				Com_Error(ERR_FATAL, "Couldn't fall back to software refresh!");
+
+			Cvar_Set("vid_ref", "gl");
+
+			vid_restart_required = true; // H2
+
+			// Drop the console if we fail to load a refresh
+			if (cls.key_dest != key_console)
+				Con_ToggleConsole_f();
+		}
+
+		Cvar_SetValue("win_ignore_destroy", false); // H2
+
+		if (cl.configstrings[CS_MODELS + 1][0]) // H2
+			CLFX_Init();
+
+		cls.disable_screen = false;
+	}
+
+	// Update our window position
+	if (vid_xpos->modified || vid_ypos->modified)
+	{
+		VID_GetModeInfo(&width, &height, (int)vid_mode->value); // H2
+		VID_UpdateWindowPosAndSize((int)vid_xpos->value, (int)vid_ypos->value, width, height);
+
+		vid_xpos->modified = false;
+		vid_ypos->modified = false;
+	}
 }
 
 void VID_Init(void)

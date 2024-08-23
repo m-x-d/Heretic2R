@@ -8,11 +8,12 @@
 #include "qcommon.h"
 #include "client.h"
 #include "sound.h"
+#include "snd_dll.h" //mxd
 #include "snd_loc.h"
 #include "clfx_dll.h"
 
 cvar_t* snd_dll;
-static HINSTANCE sound_library;
+HINSTANCE sound_library;
 
 // Sound library function pointers.
 void (*S_Init)(void);
