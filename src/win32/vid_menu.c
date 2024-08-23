@@ -22,9 +22,25 @@ static int gl_drivers_count;
 static char gl_drivernames[NUM_DRIVERNAMES - 2][MAX_DRIVERNAME_LENGTH];
 static char* gl_drivername_labels[NUM_DRIVERNAMES];
 
-static void VID_MenuSetDetail(int detail)
+static void VID_MenuSetDetail(const int detail)
 {
-	NOT_IMPLEMENTED
+	switch (detail)
+	{
+		case 0:
+			Cvar_SetValue("gl_picmip", 1.0f);
+			Cvar_SetValue("gl_skinmip", 2.0f);
+			break;
+
+		case 1:
+			Cvar_SetValue("gl_picmip", 0.0f);
+			Cvar_SetValue("gl_skinmip", 1.0f);
+			break;
+
+		default: //mxd (cases 2 and 3 in original logic)
+			Cvar_SetValue("gl_picmip", 0.0f);
+			Cvar_SetValue("gl_skinmip", 0.0f);
+			break;
+	}
 }
 
 static void VID_Menu_GetDriverNames(void)
