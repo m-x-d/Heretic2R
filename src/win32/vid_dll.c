@@ -15,6 +15,7 @@
 refexport_t	re;
 
 static cvar_t* win_noalttab;
+static qboolean s_alttab_disabled;
 
 // Console variables that we need to access from this module
 cvar_t* vid_gamma;
@@ -33,14 +34,28 @@ HWND cl_hwnd; // Main window handle for life of program
 
 qboolean vid_restart_required; // New in H2
 
+// Q2 counterpart
 static void WIN_DisableAltTab(void)
 {
-	NOT_IMPLEMENTED
+	if (!s_alttab_disabled)
+	{
+		//mxd. Skip s_win95 logic
+		RegisterHotKey(NULL, 0, MOD_ALT, VK_TAB);
+		RegisterHotKey(NULL, 1, MOD_ALT, VK_RETURN);
+		s_alttab_disabled = true;
+	}
 }
 
+// Q2 counterpart
 static void WIN_EnableAltTab(void)
 {
-	NOT_IMPLEMENTED
+	if (s_alttab_disabled)
+	{
+		//mxd. Skip s_win95 logic
+		UnregisterHotKey(NULL, 0);
+		UnregisterHotKey(NULL, 1);
+		s_alttab_disabled = false;
+	}
 }
 
 static void VID_Restart_f(void)
