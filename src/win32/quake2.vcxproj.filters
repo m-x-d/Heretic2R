@@ -90,6 +90,9 @@
     <ClCompile Include="..\client\cl_view.c">
       <Filter>client</Filter>
     </ClCompile>
+    <ClCompile Include="vid_menu.c">
+      <Filter>win32</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -156,6 +159,24 @@
       <Filter>win32</Filter>
     </ClInclude>
     <ClInclude Include="..\client\vid.h">
+      <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\q_Typedef.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\qfiles.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\ref.h">
+      <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\ResourceManager.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\H2Common.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menu.h">
       <Filter>client</Filter>
     </ClInclude>
   </ItemGroup>

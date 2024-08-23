@@ -27,6 +27,12 @@ static cvar_t* Cvar_FindVar(const char* var_name)
 	return NULL;
 }
 
+float Cvar_VariableValue(char* var_name)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
 // Q2 counterpart
 char* Cvar_VariableString(const char* var_name)
 {

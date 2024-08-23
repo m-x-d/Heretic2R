@@ -6,6 +6,8 @@
 
 #include "client.h"
 
+cvar_t* scr_viewsize;
+
 void SCR_Init(void)
 {
 	NOT_IMPLEMENTED

@@ -6,6 +6,7 @@
 
 #include "client.h"
 #include "vid_dll.h"
+#include "menu.h"
 
 // Structure containing functions exported from refresh DLL
 refexport_t	re;
@@ -20,13 +21,14 @@ cvar_t* vid_ref;	// Name of Refresh DLL loaded
 cvar_t* vid_xpos;	// X coordinate of window position
 cvar_t* vid_ypos;	// Y coordinate of window position
 cvar_t* vid_fullscreen;
+cvar_t* vid_mode;
 
 // Global variables used internally by this module
 viddef_t viddef; // Global video state; used by other modules
 
 HWND cl_hwnd; // Main window handle for life of program
 
-static qboolean vid_restart_required; // New in H2
+qboolean vid_restart_required; // New in H2
 
 static void VID_Restart_f(void)
 {
@@ -39,11 +41,6 @@ static void VID_Front_f(void)
 }
 
 static void VID_ShowModes_f(void)
-{
-	NOT_IMPLEMENTED
-}
-
-void VID_InitGL(void)
 {
 	NOT_IMPLEMENTED
 }
@@ -75,7 +72,7 @@ void VID_Init(void)
 	//mxd. Skip 'Disable the 3Dfx splash screen' logic.
 
 	// New in H2
-	VID_InitGL();
+	VID_PreMenuInit();
 
 	// Start the graphics mode and load refresh DLL
 	VID_CheckChanges();

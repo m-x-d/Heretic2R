@@ -34,12 +34,15 @@
     <ClCompile Include="snd_dll.c" />
     <ClCompile Include="sys_win.c" />
     <ClCompile Include="vid_dll.c" />
+    <ClCompile Include="vid_menu.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\client\client.h" />
     <ClInclude Include="..\client\console.h" />
     <ClInclude Include="..\client\input.h" />
     <ClInclude Include="..\client\keys.h" />
+    <ClInclude Include="..\client\menu.h" />
+    <ClInclude Include="..\client\ref.h" />
     <ClInclude Include="..\client\screen.h" />
     <ClInclude Include="..\client\sound.h" />
     <ClInclude Include="..\client\snd_loc.h" />
@@ -48,10 +51,14 @@
     <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="..\Player\Player.h" />
     <ClInclude Include="..\Player\p_types.h" />
+    <ClInclude Include="..\qcommon\H2Common.h" />
     <ClInclude Include="..\qcommon\Heretic2.h" />
     <ClInclude Include="..\qcommon\LevelMaps.h" />
     <ClInclude Include="..\qcommon\qcommon.h" />
+    <ClInclude Include="..\qcommon\qfiles.h" />
     <ClInclude Include="..\qcommon\q_ClientServer.h" />
+    <ClInclude Include="..\qcommon\q_Typedef.h" />
+    <ClInclude Include="..\qcommon\ResourceManager.h" />
     <ClInclude Include="..\server\server.h" />
     <ClInclude Include="clfx_dll.h" />
     <ClInclude Include="conproc.h" />
