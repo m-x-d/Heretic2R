@@ -38,19 +38,19 @@ static void VID_Menu_GetDriverNames(void)
 	for (int i = 0; i < NUM_DRIVERNAMES - gl_drivers_count; i++)
 	{
 		Com_sprintf(buffer, sizeof(buffer), "gl_driver%d", i);
-		const cvar_t* cvar = Cvar_Get(buffer, "", CVAR_ARCHIVE);
-		const uint len = strlen(cvar->string);
+		const cvar_t* var = Cvar_Get(buffer, "", CVAR_ARCHIVE);
+		const uint len = strlen(var->string);
 
 		if (len == 0)
 			break;
 
 		if (len > MAX_DRIVERNAME_LENGTH - 1)
 		{
-			Com_Printf("*** ERROR : Invalid driver name %s\n", cvar->string);
-			strcpy_s(cvar->string, len, "Invalid Driver");
+			Com_Printf("*** ERROR : Invalid driver name %s\n", var->string);
+			strcpy_s(var->string, len, "Invalid Driver");
 		}
 
-		strncpy_s(gl_drivernames[i], sizeof(gl_drivernames[i]), cvar->string, MAX_DRIVERNAME_LENGTH - 1);
+		strncpy_s(gl_drivernames[i], sizeof(gl_drivernames[i]), var->string, MAX_DRIVERNAME_LENGTH - 1);
 
 		gl_drivername_labels[gl_drivers_count] = gl_drivernames[i];
 		gl_drivers_count++;
