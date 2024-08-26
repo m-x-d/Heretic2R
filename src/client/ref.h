@@ -238,16 +238,16 @@ typedef struct
 	struct CL_SkeletalJoint_s* skeletalJoints;
 	struct ArrayedListNode_s* jointNodes;
 
-	void (*Sys_Error)(int err_level, char* str, ...);
-	void (*Com_Error)(int code, char* fmt, ...);
-	void (*Con_Printf)(int print_level, char* str, ...);
+	void (*Sys_Error)(int err_level, char* fmt, ...);
+	void (*Com_Error)(int code, const char* fmt, ...);
+	void (*Con_Printf)(int print_level, char* fmt, ...);
 
-	cvar_t* (*Cvar_Get)(char* name, char* value, int flags);
+	cvar_t* (*Cvar_Get)(const char* name, const char* value, int flags);
 	cvar_t* (*Cvar_FullSet)(char* name, char* value, int flags);
 	cvar_t* (*Cvar_Set)(char* name, char* value);
 	void (*Cvar_SetValue)(char* name, float value);
 
-	void (*Cmd_AddCommand)(char* name, void (*cmd)(void));
+	void (*Cmd_AddCommand)(const char* name, void (*cmd)(void));
 	void (*Cmd_RemoveCommand)(char* name);
 	int (*Cmd_Argc)(void);
 	char* (*Cmd_Argv)(int i);
@@ -262,7 +262,7 @@ typedef struct
 	// or a discrete file from anywhere in the quake search path.
 	// A -1 return means the file does not exist.
 	// NULL can be passed for buf to just determine existence.
-	int (*FS_LoadFile)(char* name, void** buf);
+	int (*FS_LoadFile)(const char* name, void** buf);
 	void (*FS_FreeFile)(void* buf);
 
 	// gamedir will be the current directory that generated files should be stored to, ie: "f:\quake\id1"

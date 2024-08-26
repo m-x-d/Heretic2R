@@ -75,6 +75,11 @@ int FS_FileLength(FILE* f)
 	return end;
 }
 
+void FS_CreatePath(char* path)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart
 // For some reason, other dll's can't just cal fclose() on files returned by FS_FOpenFile...
 void FS_FCloseFile(FILE* f)

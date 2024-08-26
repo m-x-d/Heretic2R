@@ -5,14 +5,15 @@
 //
 
 #include "client.h"
+#include "cl_skeletons.h"
 #include "vid_dll.h"
 #include "clfx_dll.h"
 #include "snd_dll.h"
-#include "menu.h"
 #include "sound.h"
+#include "menu.h"
 
 // Structure containing functions exported from refresh DLL
-refexport_t	re;
+refexport_t re;
 
 static cvar_t* win_noalttab;
 static qboolean s_alttab_disabled;
@@ -29,6 +30,8 @@ cvar_t* vid_mode;
 
 // Global variables used internally by this module
 viddef_t viddef; // Global video state; used by other modules
+static HINSTANCE reflib_library; // Handle to refresh DLL 
+static qboolean reflib_active = false;
 
 HWND cl_hwnd; // Main window handle for life of program
 
@@ -58,6 +61,48 @@ static void WIN_EnableAltTab(void)
 	}
 }
 
+static LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+#pragma region ========================== DLL GLUE ==========================
+
+static void VID_Printf(int print_level, char* fmt, ...)
+{
+	NOT_IMPLEMENTED
+}
+
+static void VID_Error(int err_level, char* fmt, ...)
+{
+	NOT_IMPLEMENTED
+}
+
+#pragma endregion
+
+#pragma region ========================== H2 SCREEN FLASH ==========================
+
+void Activate_Screen_Flash(int color)
+{
+	NOT_IMPLEMENTED
+}
+
+// Screen flash unset
+void Deactivate_Screen_Flash(void)
+{
+	NOT_IMPLEMENTED
+}
+
+// Return screen flash value
+int Is_Screen_Flashing(void)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+#pragma endregion
+
 static void VID_Restart_f(void)
 {
 	NOT_IMPLEMENTED
@@ -84,10 +129,91 @@ static void VID_UpdateWindowPosAndSize(int x, int y, int width, int height)
 	NOT_IMPLEMENTED
 }
 
-static qboolean VID_LoadRefresh(char* name)
+static void VID_NewWindow(int width, int height)
 {
 	NOT_IMPLEMENTED
-	return false;
+}
+
+static void VID_FreeReflib(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static qboolean VID_LoadRefresh(const char* name)
+{
+	refimport_t ri;
+
+	if (reflib_active)
+	{
+		re.Shutdown();
+		VID_FreeReflib();
+	}
+
+	Com_ColourPrintf(P_HEADER, "------- Loading %s -------\n", name); // Q2: Com_Printf
+
+	reflib_library = LoadLibrary(name);
+	if (reflib_library == NULL)
+	{
+		Com_Printf("LoadLibrary(\"%s\") failed\n", name);
+		return false;
+	}
+
+	ri.Sys_Error = VID_Error;
+	ri.Com_Error = Com_Error;
+	ri.Con_Printf = VID_Printf;
+	ri.Cvar_Get = Cvar_Get;
+	ri.Cvar_FullSet = Cvar_FullSet;
+	ri.Cvar_Set = Cvar_Set;
+	ri.Cvar_SetValue = Cvar_SetValue;
+	ri.Cmd_AddCommand = Cmd_AddCommand;
+	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
+	ri.Cmd_Argc = Cmd_Argc;
+	ri.Cmd_Argv = Cmd_Argv;
+	ri.Cmd_ExecuteText = Cbuf_ExecuteText;
+	ri.FS_LoadFile = FS_LoadFile;
+	ri.FS_FreeFile = FS_FreeFile;
+	ri.FS_Gamedir = FS_Gamedir;
+	ri.FS_Userdir = FS_Userdir;
+	ri.FS_CreatePath = FS_CreatePath;
+	ri.Vid_GetModeInfo = VID_GetModeInfo;
+	ri.Vid_MenuInit = VID_MenuInit;
+	ri.Vid_NewWindow = VID_NewWindow;
+	ri.Is_Screen_Flashing = Is_Screen_Flashing;
+	ri.Deactivate_Screen_Flash = Deactivate_Screen_Flash;
+	ri.skeletalJoints = skeletal_joints;
+	ri.jointNodes = joint_nodes;
+
+	GetRefAPI_t GetRefAPI = (void*)GetProcAddress(reflib_library, "GetRefAPI");
+	if (GetRefAPI == NULL)
+		Com_Error(ERR_FATAL, "GetProcAddress failed on %s", name);
+
+	re = GetRefAPI(ri);
+
+	if (re.api_version != API_VERSION)
+	{
+		VID_FreeReflib();
+		Com_Error(ERR_FATAL, "%s has incompatible api_version", name);
+	}
+
+	if (re.Init(global_hInstance, (void*)MainWndProc) == -1)
+	{
+		re.Shutdown();
+		VID_FreeReflib();
+
+		return false;
+	}
+
+#ifdef __A3D_GEOM
+	if (A3D_ExportRenderGeom != NULL)
+		A3D_ExportRenderGeom(&re);
+#endif
+
+	Com_ColourPrintf(P_HEADER, "------------------------------------\n"); // Q2: Com_Printf
+	reflib_active = true;
+
+	// Missing: PGM vidref_val logic
+
+	return true;
 }
 
 // This function gets called once just before drawing each frame, and it's sole purpose is to check to see

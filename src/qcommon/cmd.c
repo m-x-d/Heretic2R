@@ -76,6 +76,11 @@ void Cbuf_InsertText(const char* text)
 	}
 }
 
+void Cbuf_ExecuteText(int exec_when, char* text)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart
 void Cbuf_Execute(void)
 {

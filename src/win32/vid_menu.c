@@ -135,3 +135,8 @@ void VID_PreMenuInit(void)
 	const float detail = Cvar_VariableValue("r_detail");
 	VID_MenuSetDetail((int)detail);
 }
+
+void VID_MenuInit(void)
+{
+	NOT_IMPLEMENTED
+}

@@ -15,6 +15,7 @@
     <ClCompile Include="..\client\cl_main.c" />
     <ClCompile Include="..\client\cl_parse.c" />
     <ClCompile Include="..\client\cl_screen.c" />
+    <ClCompile Include="..\client\cl_skeletons.c" />
     <ClCompile Include="..\client\cl_view.c" />
     <ClCompile Include="..\client\console.c" />
     <ClCompile Include="..\client\keys.c" />
@@ -38,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\client\client.h" />
+    <ClInclude Include="..\client\cl_skeletons.h" />
     <ClInclude Include="..\client\console.h" />
     <ClInclude Include="..\client\input.h" />
     <ClInclude Include="..\client\keys.h" />
