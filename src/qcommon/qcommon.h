@@ -495,7 +495,7 @@ GAME_DECLSPEC cvar_t* Cvar_Set(char* var_name, char* value);
 // Will set the variable even if NOSET or LATCH
 cvar_t* Cvar_ForceSet(char* var_name, char* value);
 
-cvar_t* Cvar_FullSet(char* var_name, char* value, int flags);
+cvar_t* Cvar_FullSet(const char* var_name, const char* value, int flags);
 
 // Expands value to a string and calls Cvar_Set
 GAME_DECLSPEC void Cvar_SetValue(char* var_name, float value);

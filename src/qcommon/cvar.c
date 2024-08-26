@@ -170,10 +170,25 @@ cvar_t* Cvar_Set(char* var_name, char* value)
 	return Cvar_Set2(var_name, value, false);
 }
 
-cvar_t* Cvar_FullSet(char* var_name, char* value, int flags)
+// Q2 counterpart
+cvar_t* Cvar_FullSet(const char* var_name, const char* value, const int flags)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	cvar_t* var = Cvar_FindVar(var_name);
+	if (var == NULL)
+		return Cvar_Get(var_name, value, flags); // Create it
+
+	var->modified = true;
+
+	if (var->flags & CVAR_USERINFO)
+		userinfo_modified = true; // Transmit at next opportunity
+
+	Z_Free(var->string); // Free the old value string
+
+	var->string = CopyString(value);
+	var->value = (float)strtod(var->string, NULL); //mxd. atof -> strtod
+	var->flags = flags;
+
+	return var;
 }
 
 // Q2 counterpart
