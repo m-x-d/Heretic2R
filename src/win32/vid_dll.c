@@ -69,9 +69,34 @@ static LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 #pragma region ========================== DLL GLUE ==========================
 
-static void VID_Printf(int print_level, char* fmt, ...)
+#define MAXPRINTMSG	4096
+
+// Q2 counterpart
+static void VID_Printf(const int print_level, char* fmt, ...)
 {
-	NOT_IMPLEMENTED
+	va_list argptr;
+	char msg[MAXPRINTMSG];
+
+	va_start(argptr, fmt);
+	vsprintf_s(msg, sizeof(msg), fmt, argptr); //mxd. vsprintf -> vsprintf_s
+	va_end(argptr);
+
+	switch (print_level)
+	{
+		case PRINT_ALL:
+		default: //mxd. Added 'default' case 
+			Com_Printf("%s", msg);
+			break;
+
+		case PRINT_DEVELOPER:
+			Com_DPrintf("%s", msg);
+			break;
+
+		case PRINT_ALERT:
+			MessageBox(NULL, msg, "PRINT_ALERT", MB_ICONWARNING);
+			OutputDebugString(msg);
+			break;
+	}
 }
 
 static void VID_Error(int err_level, char* fmt, ...)
