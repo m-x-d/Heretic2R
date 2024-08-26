@@ -135,9 +135,18 @@ void Con_Init(void)
 	con.initialized = true;
 }
 
+// Q2 counterpart
 static void Con_Linefeed(void)
 {
-	NOT_IMPLEMENTED
+	con.x = 0;
+
+	if (con.display == con.current)
+		con.display++;
+
+	con.current++;
+
+	const int offset = (con.current % con.totallines) * con.linewidth;
+	memset(&con.text[offset], ' ', con.linewidth);
 }
 
 // Handles cursor positioning, line wrapping, etc.

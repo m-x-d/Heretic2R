@@ -498,7 +498,7 @@ cvar_t* Cvar_ForceSet(char* var_name, char* value);
 cvar_t* Cvar_FullSet(char* var_name, char* value, int flags);
 
 // Expands value to a string and calls Cvar_Set
-void Cvar_SetValue(char* var_name, float value);
+GAME_DECLSPEC void Cvar_SetValue(char* var_name, float value);
 
 // Returns 0 if not defined or non numeric
 float Cvar_VariableValue(const char* var_name);
