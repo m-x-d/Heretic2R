@@ -37,6 +37,30 @@ HWND cl_hwnd; // Main window handle for life of program
 
 qboolean vid_restart_required; // New in H2
 
+#define VID_NUM_MODES	(sizeof(vid_modes) / sizeof(vid_modes[0]))
+
+typedef struct vidmode_s
+{
+	const char* description;
+	int width;
+	int height;
+	int mode;
+} vidmode_t;
+
+static vidmode_t vid_modes[] =
+{
+	{ "Mode 0: 320x240",	320,	240,	0 },
+	{ "Mode 1: 400x300",	400,	300,	1 },
+	{ "Mode 2: 512x384",	512,	384,	2 },
+	{ "Mode 3: 640x480",	640,	480,	3 },
+	{ "Mode 4: 800x600",	800,	600,	4 },
+	{ "Mode 5: 960x720",	960,	720,	5 },
+	{ "Mode 6: 1024x768		1024,	768,	6 },
+	{ "Mode 7: 1152x864",	1152,	864,	7 },
+	{ "Mode 8: 1280x960",	1280,	960,	8 },
+	{ "Mode 9: 1600x1200",	1600,	1200,	9 }
+}; //mxd. H2 has no mode 10
+
 // Q2 counterpart
 static void WIN_DisableAltTab(void)
 {
@@ -143,9 +167,17 @@ static void VID_ShowModes_f(void)
 	NOT_IMPLEMENTED
 }
 
-static qboolean VID_GetModeInfo(int* width, int* height, int mode)
+// Q2 counterpart
+static qboolean VID_GetModeInfo(int* width, int* height, const int mode)
 {
-	NOT_IMPLEMENTED
+	if (mode >= 0 && mode < (int)VID_NUM_MODES)
+	{
+		*width =  vid_modes[mode].width;
+		*height = vid_modes[mode].height;
+
+		return true;
+	}
+
 	return false;
 }
 
