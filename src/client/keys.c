@@ -480,3 +480,8 @@ void Key_Init(void)
 	Cmd_AddCommand("unbindall_command", Key_UnbindallCommands_f);
 	Cmd_AddCommand("bindlist_command", Key_CommandsList_f);
 }
+
+void Key_Event(int key, qboolean down, uint time)
+{
+	NOT_IMPLEMENTED
+}

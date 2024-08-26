@@ -17,3 +17,8 @@ void SCR_EndLoadingPlaque(void)
 {
 	NOT_IMPLEMENTED
 }
+
+void SCR_DirtyScreen(void)
+{
+	NOT_IMPLEMENTED
+}

@@ -11,6 +11,7 @@
 #include "snd_dll.h"
 #include "sound.h"
 #include "menu.h"
+#include "sys_win.h"
 
 // Structure containing functions exported from refresh DLL
 refexport_t re;
@@ -85,12 +86,6 @@ static void WIN_EnableAltTab(void)
 	}
 }
 
-static LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	NOT_IMPLEMENTED
-	return 0;
-}
-
 #pragma region ========================== DLL GLUE ==========================
 
 #define MAXPRINTMSG	4096
@@ -126,6 +121,159 @@ static void VID_Printf(const int print_level, char* fmt, ...)
 static void VID_Error(int err_level, char* fmt, ...)
 {
 	NOT_IMPLEMENTED
+}
+
+#pragma endregion
+
+#pragma region ========================== WND PROC ==========================
+
+static int MapKey(int key)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+static void AppActivate(BOOL fActive, BOOL minimize)
+{
+	NOT_IMPLEMENTED
+}
+
+// Main window procedure
+static LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	static uint MSH_MOUSEWHEEL;
+
+	if (uMsg == MSH_MOUSEWHEEL) //TODO: do we still need this logic? Should be handled by WM_MOUSEWHEEL on Win98+
+	{
+		const int key = ((int)wParam > 0 ? K_MWHEELUP : K_MWHEELDOWN);
+		Key_Event(key, true, sys_msg_time);
+		Key_Event(key, false, sys_msg_time);
+
+		return DefWindowProc(hWnd, uMsg, wParam, lParam);
+	}
+
+	switch (uMsg)
+	{
+		// This chunk of code theoretically only works under NT4 and Win98 since this message doesn't exist under Win95.
+		case WM_MOUSEWHEEL:
+		{
+			const int key = ((short)HIWORD(wParam) > 0 ? K_MWHEELUP : K_MWHEELDOWN);
+			Key_Event(key, true, sys_msg_time);
+			Key_Event(key, false, sys_msg_time);
+		}
+		break;
+
+		case WM_HOTKEY:
+			return 0;
+
+		case WM_CREATE:
+			cl_hwnd = hWnd;
+			MSH_MOUSEWHEEL = RegisterWindowMessage("MSWHEEL_ROLLMSG");
+			break;
+
+		case WM_PAINT:
+			SCR_DirtyScreen(); // Force entire screen to update next frame
+			break;
+
+		case WM_DESTROY:
+			// Let sound and input know about this?
+			if (cl_hwnd != NULL && Cvar_VariableValue("win_ignore_destroy") == 0.0f) // Changed in H2
+			{
+				cl_hwnd = NULL;
+				Com_Quit();
+			}
+			break;
+
+		case WM_ACTIVATE:
+		{
+			// KJB: Watch this for problems in fullscreen modes with Alt-tabbing.
+			const int fActive = LOWORD(wParam);
+			const int fMinimized = HIWORD(wParam);
+
+			AppActivate(fActive != WA_INACTIVE, fMinimized);
+
+			if (reflib_active)
+				re.AppActivate(fActive != WA_INACTIVE);
+
+			cls.disable_screen = (float)(fActive == WA_INACTIVE); // New in H2
+		}
+		break;
+
+		case WM_MOVE:
+			if ((int)vid_fullscreen->value == 0)
+			{
+				const int xPos = (short)LOWORD(lParam); // Horizontal position 
+				const int yPos = (short)HIWORD(lParam); // Vertical position 
+
+				RECT r = { 0, 0, 1, 1 };
+				const int style = GetWindowLong(hWnd, GWL_STYLE);
+				AdjustWindowRect(&r, style, FALSE);
+
+				Cvar_SetValue("vid_xpos", (float)(xPos + r.left));
+				Cvar_SetValue("vid_ypos", (float)(yPos + r.top));
+				vid_xpos->modified = false;
+				vid_ypos->modified = false;
+
+				if (ActiveApp)
+					IN_Activate(true);
+			}
+			break;
+
+		// This is complicated because Win32 seems to pack multiple mouse events into one update sometimes,
+		// so we always check all states and look for events.
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		case WM_RBUTTONDOWN:
+		case WM_RBUTTONUP:
+		case WM_MBUTTONDOWN:
+		case WM_MBUTTONUP:
+		case WM_MOUSEMOVE:
+		{
+			int temp = 0;
+
+			if (wParam & MK_LBUTTON)
+				temp |= 1;
+
+			if (wParam & MK_RBUTTON)
+				temp |= 2;
+
+			if (wParam & MK_MBUTTON)
+				temp |= 4;
+
+			IN_MouseEvent(temp);
+		}
+		break;
+
+		case WM_SYSCOMMAND:
+			if (wParam == SC_SCREENSAVE)
+				return 0;
+			break;
+
+		case WM_SYSKEYDOWN:
+			if (wParam == 13)
+			{
+				if (vid_fullscreen != NULL)
+					Cvar_SetValue("vid_fullscreen", (float)(vid_fullscreen->value == 0.0f));
+				return 0;
+			}
+		// Intentional fallthrough
+		case WM_KEYDOWN:
+			Key_Event(MapKey(lParam), true, sys_msg_time);
+			break;
+
+		case WM_SYSKEYUP:
+		case WM_KEYUP:
+			Key_Event(MapKey(lParam), false, sys_msg_time);
+			break;
+
+		//mxd. Skip MM_MCINOTIFY / CDAudio_MessageHandler logic.
+
+		default:
+			break;
+	}
+
+	// Pass all unhandled messages to DefWindowProc
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 #pragma endregion

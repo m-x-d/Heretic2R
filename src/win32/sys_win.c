@@ -9,7 +9,9 @@
 #include "qcommon.h"
 #include "q_shared.h"
 #include "conproc.h"
+#include "sys_win.h" //mxd
 
+qboolean ActiveApp;
 qboolean Minimized;
 
 static HANDLE hinput;

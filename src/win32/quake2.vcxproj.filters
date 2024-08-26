@@ -188,5 +188,8 @@
     <ClInclude Include="..\client\cl_skeletons.h">
       <Filter>client</Filter>
     </ClInclude>
+    <ClInclude Include="sys_win.h">
+      <Filter>win32</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,12 +6,6 @@
 
 #pragma once
 
-#include <windows.h>
-#include "Heretic2.h"
-
-GAME_DECLSPEC extern HWND cl_hwnd;
-extern HINSTANCE global_hInstance;
-
 extern cvar_t* vid_ref;
 extern cvar_t* vid_fullscreen;
 
