@@ -61,3 +61,8 @@ void CL_Init(void)
 
 	CL_InitMessages();
 }
+
+void CL_Shutdown(void)
+{
+	NOT_IMPLEMENTED
+}

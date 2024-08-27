@@ -29,7 +29,24 @@ HINSTANCE global_hInstance;
 
 void Sys_Error(const char* error, ...)
 {
-	NOT_IMPLEMENTED
+	va_list argptr;
+	char text[1024];
+
+	va_start(argptr, error);
+	vsprintf_s(text, sizeof(text), error, argptr); //mxd. vsprintf -> vsprintf_s
+	va_end(argptr);
+
+	CL_Shutdown();
+
+	if (dedicated != NULL && (int)dedicated->value) // H2
+		FreeConsole();
+
+	MessageBox(NULL, text, "Error", MB_OK);
+
+	// Shut down QHOST hooks if necessary
+	DeinitConProc();
+
+	exit(1);
 }
 
 #pragma endregion
