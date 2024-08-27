@@ -150,7 +150,7 @@ int FS_FOpenFile(const char* filename, FILE** file)
 			do
 			{
 				const int index = (start + end) / 2;
-				const int cmp = Q_stricmp(pak->files[index].name, filename);
+				const int cmp = Q_stricmp(filename, pak->files[index].name);
 
 				if (cmp == 0)
 				{
