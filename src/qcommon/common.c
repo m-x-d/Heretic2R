@@ -306,6 +306,11 @@ static void Z_Stats_f(void)
 	NOT_IMPLEMENTED
 }
 
+void Z_FreeTags(int tag)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart
 void* Z_TagMalloc(int size, const int tag)
 {

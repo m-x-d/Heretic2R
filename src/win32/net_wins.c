@@ -27,3 +27,8 @@ void NET_Init(void)
 
 	net_shownet = Cvar_Get("net_shownet", "0", 0);
 }
+
+void NET_Shutdown(void)
+{
+	NOT_IMPLEMENTED
+}

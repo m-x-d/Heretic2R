@@ -16,6 +16,7 @@
     <ClCompile Include="..\client\cl_parse.c" />
     <ClCompile Include="..\client\cl_screen.c" />
     <ClCompile Include="..\client\cl_skeletons.c" />
+    <ClCompile Include="..\client\cl_smk.c" />
     <ClCompile Include="..\client\cl_view.c" />
     <ClCompile Include="..\client\console.c" />
     <ClCompile Include="..\client\keys.c" />
@@ -25,6 +26,7 @@
     <ClCompile Include="..\qcommon\cvar.c" />
     <ClCompile Include="..\qcommon\files.c" />
     <ClCompile Include="..\qcommon\net_chan.c" />
+    <ClCompile Include="..\qcommon\p_dll.c" />
     <ClCompile Include="..\server\sv_ccmds.c" />
     <ClCompile Include="..\server\sv_main.c" />
     <ClCompile Include="clfx_dll.c" />
@@ -40,6 +42,7 @@
   <ItemGroup>
     <ClInclude Include="..\client\client.h" />
     <ClInclude Include="..\client\cl_skeletons.h" />
+    <ClInclude Include="..\client\cl_smk.h" />
     <ClInclude Include="..\client\console.h" />
     <ClInclude Include="..\client\input.h" />
     <ClInclude Include="..\client\keys.h" />

@@ -10,6 +10,7 @@
 client_fx_import_t fxi;
 client_fx_export_t fxe;
 HINSTANCE clfx_library;
+qboolean fxapi_initialized;
 
 void CLFX_Init(void)
 {
@@ -22,7 +23,7 @@ void CLFX_LoadDll(void)
 	DWORD checksum;
 
 	const cvar_t* fx_dll = Cvar_Get("cl_fx_dll", "Client Effects", 0);
-	Sys_LoadDll(fx_dll->string, &dll_handle, &checksum);
+	Sys_LoadGameDll(fx_dll->string, &dll_handle, &checksum);
 
 	const GetfxAPI_t GetfxAPI = (void*)GetProcAddress(dll_handle, "GetfxAPI");
 	if (GetfxAPI == NULL)
@@ -34,5 +35,5 @@ void CLFX_LoadDll(void)
 	fxe.Clear = NULL;
 	fxe.RegisterSounds = NULL;
 
-	Sys_UnloadDll(fx_dll->string, &dll_handle);
+	Sys_UnloadGameDll(fx_dll->string, &dll_handle);
 }

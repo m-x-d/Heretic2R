@@ -96,6 +96,12 @@
     <ClCompile Include="..\client\cl_skeletons.c">
       <Filter>client</Filter>
     </ClCompile>
+    <ClCompile Include="..\qcommon\p_dll.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\cl_smk.c">
+      <Filter>client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -190,6 +196,9 @@
     </ClInclude>
     <ClInclude Include="sys_win.h">
       <Filter>win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\cl_smk.h">
+      <Filter>client</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

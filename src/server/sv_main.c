@@ -48,6 +48,11 @@ cvar_t* sv_loopcoop;
 
 cvar_t* r_farclipdist;
 
+void SV_UnloadClientEffects(void)
+{
+	NOT_IMPLEMENTED
+}
+
 // Only called at quake2.exe startup, not for each game
 void SV_Init(void)
 {

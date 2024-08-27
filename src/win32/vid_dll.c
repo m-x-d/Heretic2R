@@ -542,3 +542,8 @@ void VID_Init(void)
 	// Start the graphics mode and load refresh DLL
 	VID_CheckChanges();
 }
+
+void VID_Shutdown(void)
+{
+	NOT_IMPLEMENTED
+}

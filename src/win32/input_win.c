@@ -14,6 +14,11 @@ static qboolean in_appactive;
 static qboolean mouseactive; // False when not focus app
 static qboolean mouseinitialized;
 
+void IN_DeactivateMouse(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void IN_MouseEvent(int mstate)
 {
 	NOT_IMPLEMENTED

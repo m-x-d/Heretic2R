@@ -53,7 +53,7 @@ void Sys_Error(const char* error, ...)
 
 #pragma region ========================== DLL HANDLING ==========================
 
-void Sys_LoadDll(char* dll_name, HINSTANCE* hinst, DWORD* checksum)
+void Sys_LoadGameDll(char* dll_name, HINSTANCE* hinst, DWORD* checksum)
 {
 	IMAGE_DOS_HEADER dos_header;
 	IMAGE_OPTIONAL_HEADER win_header;
@@ -102,7 +102,7 @@ void Sys_LoadDll(char* dll_name, HINSTANCE* hinst, DWORD* checksum)
 	Com_DPrintf("LoadLibrary (%s)\n", dll_path);
 }
 
-void Sys_UnloadDll(char* name, HINSTANCE* hinst)
+void Sys_UnloadGameDll(char* name, HINSTANCE* hinst)
 {
 	if (!FreeLibrary(*hinst))
 		Sys_Error("Failed to unload %s", name);

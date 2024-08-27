@@ -5,6 +5,8 @@
 //
 
 #include "client.h"
+#include "clfx_dll.h"
+#include "cl_smk.h"
 #include "ResourceManager.h"
 #include "sound.h"
 
@@ -21,7 +23,17 @@ static void CL_InitLocal(void)
 	NOT_IMPLEMENTED
 }
 
-static void CL_InitMessages(void)
+static void CL_WriteConfiguration(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void InitMessages(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void ClearGameMessages(void)
 {
 	NOT_IMPLEMENTED
 }
@@ -59,10 +71,46 @@ void CL_Init(void)
 	Cbuf_AddText("exec user.cfg\n");
 	Cbuf_Execute();
 
-	CL_InitMessages();
+	InitMessages();
 }
 
+// FIXME: this is a callback from Sys_Quit and Com_Error.
+// It would be better to run quit through here before the final handoff to the sys code.
 void CL_Shutdown(void)
 {
-	NOT_IMPLEMENTED
+	static qboolean isdown = false;
+
+	if (isdown)
+	{
+		printf("recursive shutdown\n");
+		return;
+	}
+
+	isdown = true;
+
+	Cvar_SetValue("win_ignore_destroy", 1.0f);
+
+	if (SNDEAX_SetEnvironment != NULL)
+	{
+		SNDEAX_SetEnvironment(0);
+		SNDEAX_SetEnvironment = NULL;
+	}
+
+	ResMngr_Des(&cl_FXBufMngr); //mxd. Was a separate function in H2
+
+	CL_WriteConfiguration();
+
+	if (fxapi_initialized)
+		SV_UnloadClientEffects();
+
+	P_Freelib();
+	SMK_Stop();
+	ClearGameMessages();
+	//CDAudio_Shutdown(); //mxd. Skip CDAudio logic
+	S_Shutdown();
+	IN_DeactivateMouse();
+	VID_Shutdown();
+	SndDll_FreeLibrary();
+	NET_Shutdown();
+	Z_FreeTags(0);
 }
