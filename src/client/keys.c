@@ -485,3 +485,8 @@ void Key_Event(int key, qboolean down, uint time)
 {
 	NOT_IMPLEMENTED
 }
+
+void Key_ClearStates(void)
+{
+	NOT_IMPLEMENTED
+}

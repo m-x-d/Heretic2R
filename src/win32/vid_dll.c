@@ -86,6 +86,15 @@ static void WIN_EnableAltTab(void)
 	}
 }
 
+//mxd
+static void WIN_SetAltTabState(const qboolean disable)
+{
+	if (disable)
+		WIN_DisableAltTab();
+	else
+		WIN_EnableAltTab();
+}
+
 #pragma region ========================== DLL GLUE ==========================
 
 #define MAXPRINTMSG	4096
@@ -133,9 +142,24 @@ static int MapKey(int key)
 	return 0;
 }
 
-static void AppActivate(BOOL fActive, BOOL minimize)
+static void AppActivate(const BOOL fActive, const BOOL minimize)
 {
-	NOT_IMPLEMENTED
+	Minimized = minimize;
+
+	Key_ClearStates();
+
+	// We don't want to act like we're active if we're minimized
+	ActiveApp = (fActive && !Minimized);
+
+	// Minimize/restore mouse-capture on demand
+	IN_Activate(ActiveApp);
+	//CDAudio_Activate(ActiveApp); //mxd. Skip CDAudio logic.
+
+	if (sound_library != NULL) // H2: new check
+		S_Activate(ActiveApp);
+
+	if ((int)win_noalttab->value)
+		WIN_SetAltTabState(ActiveApp); //mxd
 }
 
 // Main window procedure
@@ -253,7 +277,7 @@ static LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			if (wParam == 13)
 			{
 				if (vid_fullscreen != NULL)
-					Cvar_SetValue("vid_fullscreen", (float)(vid_fullscreen->value == 0.0f));
+					Cvar_SetValue("vid_fullscreen", (vid_fullscreen->value == 0.0f ? 1.0f : 0.0f));
 				return 0;
 			}
 		// Intentional fallthrough
@@ -431,11 +455,7 @@ void VID_CheckChanges(void)
 
 	if (win_noalttab->modified)
 	{
-		if ((int)win_noalttab->value)
-			WIN_DisableAltTab();
-		else
-			WIN_EnableAltTab();
-
+		WIN_SetAltTabState((int)win_noalttab->value);
 		win_noalttab->modified = false;
 	}
 
