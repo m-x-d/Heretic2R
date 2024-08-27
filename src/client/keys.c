@@ -274,6 +274,16 @@ static void Key_Bind_f(void)
 	Key_SetBinding(b, cmd);
 }
 
+void Key_WriteBindings(FILE* f)
+{
+	NOT_IMPLEMENTED
+}
+
+void Key_WriteBindings_Double(FILE* f)
+{
+	NOT_IMPLEMENTED
+}
+
 static void Key_Bindlist_f(void)
 {
 	NOT_IMPLEMENTED

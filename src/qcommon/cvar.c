@@ -247,6 +247,11 @@ static void Cvar_Set_f(void)
 	}
 }
 
+void Cvar_WriteVariables(char* path)
+{
+	NOT_IMPLEMENTED
+}
+
 static void Cvar_List_f(void)
 {
 	NOT_IMPLEMENTED
