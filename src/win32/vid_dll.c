@@ -358,9 +358,12 @@ static void VID_UpdateWindowPosAndSize(int x, int y, int width, int height)
 	NOT_IMPLEMENTED
 }
 
-static void VID_NewWindow(int width, int height)
+// Q2 counterpart
+static void VID_NewWindow(const int width, const int height)
 {
-	NOT_IMPLEMENTED
+	viddef.width = width;
+	viddef.height = height;
+	cl.force_refdef = true; // Can't use a paused refdef
 }
 
 static void VID_FreeReflib(void)
