@@ -10,16 +10,19 @@
 
 char key_lines[32][MAXCMDLINE];
 int key_linepos;
+qboolean anykeydown;
 
 int edit_line = 0;
 
 char* keybindings[256];
 char* keybindings_double[256];
-char* commandbindings[256]; //New in H2
-qboolean consolekeys[256];	// If true, can't be rebound while in console
-qboolean menubound[256];	// If true, can't be rebound while in menu
-int keyshift[256];			// Key to map to if Shift held down in console
-int key_repeats[256];		// if > 1, it is autorepeating
+int key_repeats[256]; // if > 1, it is auto-repeating
+
+static char* commandbindings[256];	// New in H2
+static qboolean consolekeys[256];	// If true, can't be rebound while in console
+static qboolean menubound[256];		// If true, can't be rebound while in menu
+static int keyshift[256];			// Key to map to if Shift held down in console
+static qboolean keydown[256];
 
 typedef struct
 {
@@ -486,7 +489,17 @@ void Key_Event(int key, qboolean down, uint time)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
 void Key_ClearStates(void)
 {
-	NOT_IMPLEMENTED
+	anykeydown = false;
+
+	for (int i = 0; i < 256; i++)
+	{
+		if (keydown[i] || key_repeats[i])
+			Key_Event(i, false, 0);
+
+		keydown[i] = 0;
+		key_repeats[i] = 0;
+	}
 }

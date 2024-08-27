@@ -116,7 +116,7 @@ extern char* keybindings[256];
 extern char* keybindings_double[256]; // New in H2
 extern int key_repeats[256];
 
-extern qboolean anykeydown;
+extern qboolean anykeydown; // int in Q2
 extern char chat_buffer[];
 extern int chat_bufferlen;
 extern qboolean chat_team;
