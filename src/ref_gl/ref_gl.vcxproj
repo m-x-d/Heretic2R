@@ -144,7 +144,7 @@
       <ImportLibrary>
       </ImportLibrary>
       <ModuleDefinitionFile>.\ref_gl.def</ModuleDefinitionFile>
-      <AdditionalDependencies>H2Common.lib;quake2.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Winmm.lib;H2Common.lib;quake2.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -189,7 +189,7 @@
       <ImportLibrary>
       </ImportLibrary>
       <ModuleDefinitionFile>.\ref_gl.def</ModuleDefinitionFile>
-      <AdditionalDependencies>H2Common.lib;quake2.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Winmm.lib;H2Common.lib;quake2.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
