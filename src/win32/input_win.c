@@ -7,17 +7,32 @@
 #include "client.h"
 #include "sys_win.h"
 
+static qboolean in_appactive;
+
+#pragma region ========================== MOUSE CONTROL ==========================
+
+static qboolean mouseactive; // False when not focus app
+static qboolean mouseinitialized;
+
 void IN_MouseEvent(int mstate)
 {
 	NOT_IMPLEMENTED
 }
+
+#pragma endregion
 
 void IN_Init(void)
 {
 	NOT_IMPLEMENTED
 }
 
-void IN_Activate(qboolean active)
+// Called when the main window gains or loses focus.
+// The window may have been destroyed and recreated between a deactivate and an activate.
+void IN_Activate(const qboolean active)
 {
-	NOT_IMPLEMENTED
+	in_appactive = active;
+
+	// H2: new checks, no longer sets 'mouseactive' to true
+	if (active || (mouseactive && !mouseinitialized)) 
+		mouseactive = false;
 }
