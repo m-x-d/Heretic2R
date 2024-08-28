@@ -174,9 +174,13 @@ static void CL_Userinfo_f(void)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
+// Restart the sound subsystem so it can pick up new parameters and flush all sounds.
 void CL_Snd_Restart_f(void)
 {
-	NOT_IMPLEMENTED
+	SndDll_Init();
+	S_Init();
+	CL_RegisterSounds();
 }
 
 static void CL_Changing_f(void)
