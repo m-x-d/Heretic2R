@@ -109,16 +109,39 @@ char* Sys_FindFirst(const char* path, const uint musthave, const uint canthave)
 	COM_FilePath(path, findbase);
 	findhandle = _findfirst(path, &findinfo);
 
-	if (findhandle != -1 && CompareAttributes(findinfo.attrib, musthave, canthave))
-	{
-		Com_sprintf(findpath, sizeof(findpath), "%s/%s", findbase, findinfo.name);
-		return findpath;
-	}
+	if (findhandle == -1)
+		return NULL;
 
-	return NULL;
+	if (!CompareAttributes(findinfo.attrib, musthave, canthave))
+		return NULL;
+
+	Com_sprintf(findpath, sizeof(findpath), "%s/%s", findbase, findinfo.name);
+	return findpath;
 }
 
+// Q2 counterpart
+char* Sys_FindNext(const uint musthave, const uint canthave)
+{
+	struct _finddata_t findinfo;
+
+	if (findhandle == -1)
+		return NULL;
+
+	if (_findnext(findhandle, &findinfo) == -1)
+		return NULL;
+
+	if (!CompareAttributes(findinfo.attrib, musthave, canthave))
+		return NULL;
+
+	Com_sprintf(findpath, sizeof(findpath), "%s/%s", findbase, findinfo.name);
+	return findpath;
+}
+
+// Q2 counterpart
 void Sys_FindClose(void)
 {
-	NOT_IMPLEMENTED
+	if (findhandle != -1)
+		_findclose(findhandle);
+	
+	findhandle = 0;
 }
