@@ -161,6 +161,11 @@ void Sys_ConsoleOutput(const char* string)
 		WriteFile(houtput, console_text, console_textlen, &dummy, NULL);
 }
 
+void Sys_SendKeyEvents(void)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart
 static void ParseCommandLine(LPSTR lpCmdLine)
 {
