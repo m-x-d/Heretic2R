@@ -538,7 +538,7 @@ void CL_ParseLayout(void);
 extern refexport_t re; // Interface to refresh DLL.
 extern player_export_t playerExport; // Interface to player DLL.
 
-void CL_Init(void);
+void CL_Init(void); //TODO: check redundant declaration
 char* CL_GetGameString(int i);
 char* CL_GetGameWav(int i);
 char* CL_GetLevelString(int i);

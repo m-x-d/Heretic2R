@@ -125,6 +125,8 @@ client_state_t cl;
 centity_t cl_entities[MAX_NETWORKABLE_EDICTS]; //mxd. MAX_EDICTS in Q2
 entity_state_t cl_parse_entities[MAX_PARSE_ENTITIES];
 
+static qboolean ignored_players[MAX_CLIENTS];
+
 static void CL_ForwardToServer_f(void)
 {
 	NOT_IMPLEMENTED
@@ -232,7 +234,8 @@ static void CL_Config_f(void)
 
 static void ClearIgnoredPlayersList(void)
 {
-	NOT_IMPLEMENTED
+	//mxd. Original code clears only first 8 entries. H2 bug?
+	memset(ignored_players, 0, sizeof(ignored_players));
 }
 
 static void CL_InitLocal(void)
