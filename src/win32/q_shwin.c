@@ -85,3 +85,14 @@ int Sys_Milliseconds(void)
 
 	return curtime;
 }
+
+char* Sys_FindFirst(char* path, uint musthave, uint canthave)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
+void Sys_FindClose(void)
+{
+	NOT_IMPLEMENTED
+}

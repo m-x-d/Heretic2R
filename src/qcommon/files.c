@@ -365,7 +365,18 @@ char* FS_Userdir(void)
 
 void FS_ExecAutoexec(void)
 {
-	NOT_IMPLEMENTED
+	char name[MAX_OSPATH]; // Q2: MAX_QPATH
+
+	const char* dir = Cvar_VariableString("gamedir");
+	if (*dir == 0)
+		dir = BASEDIRNAME;
+
+	Com_sprintf(name, sizeof(name), "%s/%s/autoexec.cfg", fs_basedir->string, dir);
+
+	if (Sys_FindFirst(name, 0, SFF_SUBDIR | SFF_HIDDEN | SFF_SYSTEM))
+		Cbuf_AddText("exec autoexec.cfg\n");
+
+	Sys_FindClose();
 }
 
 static void FS_Link_f(void)
