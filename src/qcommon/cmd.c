@@ -358,6 +358,13 @@ char* Cmd_Argv(const int arg)
 }
 
 // Q2 counterpart
+// Returns a single string containing argv(1) to argv(argc() - 1)
+char* Cmd_Args(void)
+{
+	return cmd_args;
+}
+
+// Q2 counterpart
 // Cmd_MacroExpandString in Q2
 static char* MacroExpandString(char* text)
 {
@@ -569,11 +576,6 @@ void Cmd_ExecuteString(char* text)
 
 	// Send it as a server command if we are connected
 	Cmd_ForwardToServer();
-}
-
-void Cmd_ForwardToServer(void)
-{
-	NOT_IMPLEMENTED
 }
 
 void Cmd_Init(void)

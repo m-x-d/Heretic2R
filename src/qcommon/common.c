@@ -202,6 +202,11 @@ void SZ_Write(sizebuf_t* buf, const void* data, const int length)
 	memcpy(SZ_GetSpace(buf, length), data, length);
 }
 
+void SZ_Print(sizebuf_t* buf, char* data)
+{
+	NOT_IMPLEMENTED
+}
+
 #pragma endregion
 
 #pragma region ========================== COMMAND LINE ARGS PROCESSING ====================

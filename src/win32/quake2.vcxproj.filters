@@ -195,6 +195,9 @@
     <ClCompile Include="..\client\cl_input.c">
       <Filter>client</Filter>
     </ClCompile>
+    <ClCompile Include="..\qcommon\netmsg_write.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">

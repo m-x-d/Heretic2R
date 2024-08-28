@@ -127,6 +127,28 @@ entity_state_t cl_parse_entities[MAX_PARSE_ENTITIES];
 
 static qboolean ignored_players[MAX_CLIENTS];
 
+// Q2 counterpart
+// Adds the current command line as a clc_stringcmd to the client message.
+// Things like godmode, noclip, etc, are commands directed to the server,
+// so when they are typed in at the console, they will need to be forwarded.
+void Cmd_ForwardToServer(void)
+{
+	char* cmd = Cmd_Argv(0);
+	if (cls.state <= ca_connected || *cmd == '-' || *cmd == '+')
+	{
+		Com_Printf("Unknown command \"%s\"\n", cmd);
+		return;
+	}
+
+	MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
+	SZ_Print(&cls.netchan.message, cmd);
+	if (Cmd_Argc() > 1)
+	{
+		SZ_Print(&cls.netchan.message, " ");
+		SZ_Print(&cls.netchan.message, Cmd_Args());
+	}
+}
+
 static void CL_ForwardToServer_f(void)
 {
 	NOT_IMPLEMENTED
