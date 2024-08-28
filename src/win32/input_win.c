@@ -62,14 +62,16 @@ void IN_MouseEvent(int mstate)
 
 #pragma region ========================== JOYSTICK CONTROL ==========================
 
-static void IN_InitJoystic(void)
+static void IN_InitJoystick(void)
 {
-	NOT_IMPLEMENTED
+	in_joystick = Cvar_Get("in_joystick", "0", CVAR_ARCHIVE);
+
+	//TODO: skipped for now. Add gamepad support later.
 }
 
 void IN_StartupJoystick(void)
 {
-	NOT_IMPLEMENTED
+	//TODO: skipped for now. Add gamepad support later.
 }
 
 #pragma endregion
@@ -77,7 +79,7 @@ void IN_StartupJoystick(void)
 void IN_Init(void)
 {
 	IN_InitMouse();
-	IN_InitJoystic();
+	IN_InitJoystick();
 
 	// Centering
 	v_centermove = Cvar_Get("v_centermove", "0.15", 0);
