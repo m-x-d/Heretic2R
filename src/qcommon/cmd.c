@@ -156,10 +156,63 @@ void Cbuf_AddEarlyCommands(const qboolean clear)
 	}
 }
 
+// Q2 counterpart
+// Adds command line parameters as script statements.
+// Commands lead with a + and continue until another + or -.
+// Returns true if any late commands were added, which will keep the demoloop from immediately starting.
 qboolean Cbuf_AddLateCommands(void)
 {
-	NOT_IMPLEMENTED
-	return false;
+	// Build the combined string to parse from
+	int s = 0;
+	const int argc = COM_Argc();
+	for (int i = 1; i < argc; i++)
+		s += (int)strlen(COM_Argv(i)) + 1;
+
+	if (s == 0)
+		return false;
+
+	const int text_len = s + 1;
+	char* text = Z_Malloc(text_len);
+	text[0] = 0;
+	for (int i = 1; i < argc; i++)
+	{
+		strcat_s(text, text_len, COM_Argv(i)); //mxd. strcat -> strcat_s
+		if (i != argc - 1)
+			strcat_s(text, text_len, " "); //mxd. strcat -> strcat_s
+	}
+
+	// Pull out the commands
+	char* build = Z_Malloc(text_len);
+	build[0] = 0;
+
+	for (int i = 0; i < s - 1; i++)
+	{
+		if (text[i] == '+')
+		{
+			i++;
+
+			int j = i;
+			while (text[j] != '+' && text[j] != '-' && text[j] != 0)
+				j++;
+
+			const char c = text[j];
+			text[j] = 0;
+
+			strcat_s(build, text_len, text + i); //mxd. strcat -> strcat_s
+			strcat_s(build, text_len, "\n"); //mxd. strcat -> strcat_s
+			text[j] = c;
+			i = j - 1;
+		}
+	}
+
+	const qboolean ret = (build[0] != 0);
+	if (ret)
+		Cbuf_AddText(build);
+
+	Z_Free(text);
+	Z_Free(build);
+
+	return ret;
 }
 
 #pragma endregion
