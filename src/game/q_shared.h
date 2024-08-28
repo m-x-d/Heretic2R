@@ -213,7 +213,7 @@ int Hunk_End(void);
 #define SFF_SYSTEM  0x10
 
 // Pass in an attribute mask of things you wish to REJECT
-char* Sys_FindFirst(char* path, uint musthave, uint canthave);
+char* Sys_FindFirst(const char* path, uint musthave, uint canthave);
 char* Sys_FindNext(uint musthave, uint canthave);
 void Sys_FindClose(void);
 

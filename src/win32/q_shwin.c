@@ -5,6 +5,7 @@
 //
 
 #include <windows.h>
+#include <io.h>
 #include "qcommon.h"
 
 byte* membase;
@@ -14,6 +15,10 @@ uint hunkmaxsize; //mxd. int -> uint
 uint cursize; //mxd. int -> uint
 
 int curtime;
+
+static char findbase[MAX_OSPATH];
+static char findpath[MAX_OSPATH];
+static int findhandle;
 
 // Q2 counterpart
 void* Hunk_Begin(const int maxsize)
@@ -86,9 +91,30 @@ int Sys_Milliseconds(void)
 	return curtime;
 }
 
-char* Sys_FindFirst(char* path, uint musthave, uint canthave)
+static qboolean CompareAttributes(uint found, uint musthave, uint canthave)
 {
 	NOT_IMPLEMENTED
+	return false;
+}
+
+// Q2 counterpart
+char* Sys_FindFirst(const char* path, const uint musthave, const uint canthave)
+{
+	struct _finddata_t findinfo;
+
+	if (findhandle != 0)
+		Sys_Error("Sys_BeginFind without close");
+	//findhandle = 0; //mxd. Not needed.
+
+	COM_FilePath(path, findbase);
+	findhandle = _findfirst(path, &findinfo);
+
+	if (findhandle != -1 && CompareAttributes(findinfo.attrib, musthave, canthave))
+	{
+		Com_sprintf(findpath, sizeof(findpath), "%s/%s", findbase, findinfo.name);
+		return findpath;
+	}
+
 	return NULL;
 }
 
