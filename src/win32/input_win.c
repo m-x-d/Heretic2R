@@ -13,14 +13,34 @@ static qboolean in_appactive;
 static cvar_t* v_centermove;
 static cvar_t* v_centerspeed;
 
+cvar_t* in_mouse;
+cvar_t* in_joystick;
+
 #pragma region ========================== MOUSE CONTROL ==========================
+
+// Mouse variables
+cvar_t * m_filter;
 
 static qboolean mouseactive; // False when not focus app
 static qboolean mouseinitialized;
 
-static void IN_InitMouse(void)
+static void IN_MLookDown(void)
 {
 	NOT_IMPLEMENTED
+}
+
+static void IN_MLookUp(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void IN_InitMouse(void)
+{
+	m_filter = Cvar_Get("m_filter", "0", 0);
+	in_mouse = Cvar_Get("in_mouse", "1", CVAR_ARCHIVE);
+
+	Cmd_AddCommand("+mlook", IN_MLookDown);
+	Cmd_AddCommand("-mlook", IN_MLookUp);
 }
 
 void IN_DeactivateMouse(void)
