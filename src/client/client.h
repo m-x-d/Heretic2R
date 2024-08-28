@@ -404,7 +404,7 @@ typedef client_fx_export_t (*GetfxAPI_t)(client_fx_import_t);
 extern cvar_t* cl_stereo_separation;
 extern cvar_t* cl_stereo;
 
-extern cvar_t* cl_gun;
+//extern cvar_t* cl_gun; //mxd. Unused
 extern cvar_t* cl_add_blend;
 extern cvar_t* cl_add_lights;
 extern cvar_t* cl_add_particles;

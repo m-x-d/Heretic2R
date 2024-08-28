@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\client\cl_ents.c" />
+    <ClCompile Include="..\client\cl_input.c" />
     <ClCompile Include="..\client\cl_main.c" />
     <ClCompile Include="..\client\cl_parse.c" />
     <ClCompile Include="..\client\cl_screen.c" />

@@ -192,6 +192,9 @@
     <ClCompile Include="..\client\menus\menu_worldmap.c">
       <Filter>client\menus</Filter>
     </ClCompile>
+    <ClCompile Include="..\client\cl_input.c">
+      <Filter>client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
