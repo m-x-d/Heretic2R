@@ -204,10 +204,22 @@ void Cvar_SetValue(char* var_name, const float value)
 	Cvar_Set(var_name, val);
 }
 
+// Q2 counterpart
+// Handles variable inspection and changing from the console
 qboolean Cvar_Command(void)
 {
-	NOT_IMPLEMENTED
-	return false;
+	// Check variables
+	const cvar_t* v = Cvar_FindVar(Cmd_Argv(0));
+	if (v == NULL)
+		return false;
+
+	// Perform a variable print or set
+	if (Cmd_Argc() == 1)
+		Com_Printf("\"%s\" is \"%s\"\n", v->name, v->string);
+	else
+		Cvar_Set(v->name, Cmd_Argv(1));
+
+	return true;
 }
 
 // Q2 counterpart
