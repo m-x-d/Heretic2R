@@ -48,7 +48,10 @@ static qboolean EAX_CheckAvailability(void)
 
 void SndDll_FreeLibrary(void)
 {
-	NOT_IMPLEMENTED
+	if (sound_library != NULL && !FreeLibrary(sound_library))
+		Sys_Error("Sound Lib FreeLibrary failed");
+
+	sound_library = NULL;
 }
 
 void SndDll_Init(void)
