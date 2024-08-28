@@ -6,7 +6,28 @@
 
 #include "client.h"
 
+qboolean scr_initialized; // Ready to draw
+
 cvar_t* scr_viewsize;
+cvar_t* scr_centertime;
+cvar_t* scr_showturtle;
+cvar_t* scr_showpause;
+cvar_t* scr_printspeed;
+
+cvar_t* scr_netgraph;
+cvar_t* scr_timegraph;
+cvar_t* scr_debuggraph;
+cvar_t* scr_graphheight;
+cvar_t* scr_graphscale;
+cvar_t* scr_graphshift;
+cvar_t* scr_drawall;
+
+// New in H2:
+cvar_t* scr_statbar;
+cvar_t* scr_item_paused;
+cvar_t* scr_item_loading;
+cvar_t* r_fog;
+cvar_t* r_fog_density;
 
 typedef struct
 {
@@ -18,9 +39,78 @@ typedef struct
 
 static dirty_t scr_dirty;
 
-void SCR_Init(void)
+static void SCR_TimeRefresh_f(void)
 {
 	NOT_IMPLEMENTED
+}
+
+static void SCR_Loading_f(void)
+{
+	SCR_BeginLoadingPlaque();
+}
+
+static void SCR_SizeUp_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SCR_SizeDown_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SCR_Sky_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SCR_GammaUp_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SCR_GammaDown_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void SCR_BeginLoadingPlaque(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void SCR_Init(void)
+{
+	scr_viewsize = Cvar_Get("viewsize", "100", CVAR_ARCHIVE);
+	scr_showturtle = Cvar_Get("scr_showturtle", "0", 0);
+	scr_showpause = Cvar_Get("scr_showpause", "1", 0);
+	scr_centertime = Cvar_Get("scr_centertime", "2.5", 0);
+	scr_printspeed = Cvar_Get("scr_printspeed", "8", 0);
+	scr_netgraph = Cvar_Get("scr_netgraph", "0", 0);
+	scr_timegraph = Cvar_Get("scr_timegraph", "0", 0);
+	scr_debuggraph = Cvar_Get("scr_debuggraph", "0", 0);
+	scr_graphheight = Cvar_Get("scr_graphheight", "112", 0);
+	scr_graphscale = Cvar_Get("scr_graphscale", "1", 0);
+	scr_drawall = Cvar_Get("scr_drawall", "0", 0);
+
+	// New in H2:
+	scr_statbar = Cvar_Get("scr_statbar", "1", 0);
+	scr_item_paused = Cvar_Get("scr_item_paused", "Paused", 0);
+	scr_item_loading = Cvar_Get("scr_item_loading", "Loading", 0);
+	r_fog = Cvar_Get("r_fog", "0", 0);
+	r_fog_density = Cvar_Get("r_fog_density", "0", 0);
+	//gl_lostfocus_broken = Cvar_Get("gl_lostfocus_broken", "0", 0); //mxd. Ignored
+
+	// Register our commands
+	Cmd_AddCommand("timerefresh", SCR_TimeRefresh_f);
+	Cmd_AddCommand("loading", SCR_Loading_f);
+	Cmd_AddCommand("sizeup", SCR_SizeUp_f);
+	Cmd_AddCommand("sizedown", SCR_SizeDown_f);
+	Cmd_AddCommand("sky", SCR_Sky_f);
+	Cmd_AddCommand("vid_gamma_up", SCR_GammaUp_f);
+	Cmd_AddCommand("vid_gamma_down", SCR_GammaDown_f);
+
+	scr_initialized = true;
 }
 
 void SCR_EndLoadingPlaque(void)
