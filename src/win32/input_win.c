@@ -21,8 +21,13 @@ cvar_t* in_joystick;
 // Mouse variables
 cvar_t * m_filter;
 
+static int mouse_buttons;
+
 static qboolean mouseactive; // False when not focus app
+
 static qboolean mouseinitialized;
+static int originalmouseparms[3] = { 0, 0, 1 };
+static qboolean mouseparmsvalid;
 
 static void IN_MLookDown(void)
 {
@@ -50,7 +55,16 @@ void IN_DeactivateMouse(void)
 
 static void IN_StartupMouse(void)
 {
-	NOT_IMPLEMENTED
+	if (COM_CheckParm("-nomouse")) // H2
+		return;
+
+	const cvar_t* cv = Cvar_Get("in_initmouse", "1", CVAR_NOSET);
+	if ((int)cv->value)
+	{
+		mouseinitialized = true;
+		mouseparmsvalid = SystemParametersInfo(SPI_GETMOUSE, 0, originalmouseparms, 0);
+		mouse_buttons = 3;
+	}
 }
 
 void IN_MouseEvent(int mstate)
