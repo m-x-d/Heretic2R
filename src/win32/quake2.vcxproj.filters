@@ -19,6 +19,9 @@
     <Filter Include="game">
       <UniqueIdentifier>{803eb527-9cf7-4fb1-88ba-09fcb9297af3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="client\menus">
+      <UniqueIdentifier>{cb9b321b-4852-456f-967f-67cf8ed4a248}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sys_win.c">
@@ -101,6 +104,93 @@
     </ClCompile>
     <ClCompile Include="..\client\cl_smk.c">
       <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_actionkeys.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_addressbook.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_cameracfg.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_citymap.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_credits.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_dmoptions.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_doubletapkeys.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_downloadoptions.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_game.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_help.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_info.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_joinserver.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_loadcfg.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_loadgame.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_main.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_misc.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_mousecfg.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_movekeys.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_multiplayer.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_objectives.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_options.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_playerconfig.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_quit.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_savegame.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_shortkeys.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_sound.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_startserver.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_video.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\menus\menu_worldmap.c">
+      <Filter>client\menus</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -199,6 +289,93 @@
     </ClInclude>
     <ClInclude Include="..\client\cl_smk.h">
       <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_actionkeys.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_addressbook.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_cameracfg.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_citymap.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_credits.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_dmoptions.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_doubletapkeys.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_downloadoptions.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_game.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_help.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_info.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_joinserver.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_loadcfg.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_loadgame.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_main.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_misc.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_mousecfg.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_movekeys.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_multiplayer.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_objectives.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_options.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_playerconfig.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_quit.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_savegame.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_shortkeys.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_sound.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_startserver.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_video.h">
+      <Filter>client\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_worldmap.h">
+      <Filter>client\menus</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -8,6 +8,15 @@
 #include "menu.h"
 #include "vid_dll.h"
 
+cvar_t* m_item_driver;
+cvar_t* m_item_vidmode;
+cvar_t* m_item_screensize;
+cvar_t* m_item_gamma;
+cvar_t* m_item_brightness;
+cvar_t* m_item_contrast;
+cvar_t* m_item_detail;
+cvar_t* m_item_fullscreen;
+
 static int s_current_menu_index;
 
 static menulist_s s_ref_list[2];
