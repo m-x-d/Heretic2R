@@ -526,9 +526,29 @@ void Cmd_AddCommand(const char* cmd_name, const xcommand_t function)
 	cmd_functions = cmd;
 }
 
+// Q2 counterpart
 void Cmd_RemoveCommand(char* cmd_name)
 {
-	NOT_IMPLEMENTED
+	cmd_function_t** back = &cmd_functions;
+	while (true)
+	{
+		cmd_function_t* cmd = *back;
+		if (cmd == NULL)
+		{
+			Com_Printf("Cmd_RemoveCommand: %s not added\n", cmd_name);
+			return;
+		}
+
+		if (strcmp(cmd_name, cmd->name) == 0)
+		{
+			*back = cmd->next;
+			Z_Free(cmd);
+
+			return;
+		}
+
+		back = &cmd->next;
+	}
 }
 
 // Q2 counterpart
