@@ -197,7 +197,7 @@ extern H2COMMON_API const vec3_t vec3_up;
 extern int curtime; // Time returned by last Sys_Milliseconds
 
 int Sys_Milliseconds(void);
-void Sys_Mkdir(char* path);
+void Sys_Mkdir(const char* path);
 
 // Large block stack allocation routines
 void* Hunk_Begin(int maxsize);

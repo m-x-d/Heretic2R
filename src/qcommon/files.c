@@ -75,9 +75,19 @@ int FS_FileLength(FILE* f)
 	return end;
 }
 
+// Creates any directories needed to store the given filename
 void FS_CreatePath(char* path)
 {
-	NOT_IMPLEMENTED
+	for (char* ofs = path + 1; *ofs != 0; ofs++)
+	{
+		if (*ofs == '/' || *ofs == '\\') // H2: extra '\\' check.
+		{
+			// Create the directory
+			*ofs = 0;
+			Sys_Mkdir(path);
+			*ofs = '/';
+		}
+	}
 }
 
 // Q2 counterpart

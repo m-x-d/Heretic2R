@@ -91,6 +91,12 @@ int Sys_Milliseconds(void)
 	return curtime;
 }
 
+// Q2 counterpart
+void Sys_Mkdir(const char* path)
+{
+	_mkdir(path);
+}
+
 static qboolean CompareAttributes(uint found, uint musthave, uint canthave)
 {
 	NOT_IMPLEMENTED
