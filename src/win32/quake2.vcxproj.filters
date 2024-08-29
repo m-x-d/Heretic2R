@@ -386,5 +386,14 @@
     <ClInclude Include="..\client\menus\menu_worldmap.h">
       <Filter>client\menus</Filter>
     </ClInclude>
+    <ClInclude Include="..\game\game.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\g_BoundingForm.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\g_NewSystem.h">
+      <Filter>game</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
