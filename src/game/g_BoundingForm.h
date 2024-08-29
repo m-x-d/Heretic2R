@@ -1,9 +1,14 @@
-#ifndef G_BOUNDINGFORM_H
-#define G_BOUNDINGFORM_H
+//
+// g_BoundingForm.h
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
 
 #include "q_Typedef.h"
 
-// sides for a nonrotating box
+// Sides for a non-rotating box
 enum Box_BoundingForm_Sides_e
 {
 	BOX_BOUNDINGFORM_SIDE_WEST,
@@ -14,5 +19,3 @@ enum Box_BoundingForm_Sides_e
 	BOX_BOUNDINGFORM_SIDE_TOP,
 	NUM_BOX_BOUNDINGFORM_SIDES
 } Box_BoundingForm_Sides_t;
-
-#endif // G_BOUNDINGFORM_H

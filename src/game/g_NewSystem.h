@@ -1,7 +1,11 @@
-#ifndef G_NEW_SYSTEM_H
-#define G_NEW_SYSTEM_H
+//
+// g_NewSystem.h
+//
+// Copyright 1998 Raven Software
+//
 
+#pragma once
+
+//TODO: remove? Not very new as of today...
 #define G_NEW_PHYSICS
 #define G_TRANSITION
-
-#endif // G_NEW_SYSTEM_H
