@@ -8,9 +8,35 @@
 
 #pragma region ========================== SAVEGAME FILES ==========================
 
+// Delete save/<XXX>/
+//mxd. Same as Q2 version, except FS_Gamedir() -> FS_Userdir() change.
 static void SV_WipeSavegame(char* savename)
 {
-	NOT_IMPLEMENTED
+	char name[MAX_OSPATH];
+
+	Com_sprintf(name, sizeof(name), "%s/save/%s/server.ssv", FS_Userdir(), savename);
+	remove(name);
+
+	Com_sprintf(name, sizeof(name), "%s/save/%s/game.ssv", FS_Userdir(), savename);
+	remove(name);
+
+	Com_sprintf(name, sizeof(name), "%s/save/%s/*.sav", FS_Userdir(), savename);
+	const char* s = Sys_FindFirst(name, 0, 0);
+	while (s != NULL)
+	{
+		remove(s);
+		s = Sys_FindNext(0, 0);
+	}
+	Sys_FindClose();
+
+	Com_sprintf(name, sizeof(name), "%s/save/%s/*.sv2", FS_Userdir(), savename);
+	s = Sys_FindFirst(name, 0, 0);
+	while (s != NULL)
+	{
+		remove(s);
+		s = Sys_FindNext(0, 0);
+	}
+	Sys_FindClose();
 }
 
 #pragma endregion
