@@ -198,6 +198,9 @@
     <ClCompile Include="..\qcommon\netmsg_write.c">
       <Filter>qcommon</Filter>
     </ClCompile>
+    <ClCompile Include="..\server\sv_init.c">
+      <Filter>server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">

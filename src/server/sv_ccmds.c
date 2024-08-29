@@ -6,6 +6,15 @@
 
 #include "server.h"
 
+#pragma region ========================== SAVEGAME FILES ==========================
+
+static void SV_WipeSavegame(char* savename)
+{
+	NOT_IMPLEMENTED
+}
+
+#pragma endregion
+
 #pragma region ========================== OPERATOR CONSOLE ONLY COMMANDS ==========================
 // These commands can only be entered from stdin or by a remote operator datagram
 
@@ -34,17 +43,27 @@ static void SV_DumpUser_f(void)
 	NOT_IMPLEMENTED
 }
 
-static void SV_Map_f(void)
+static void SV_GameMap_f(void)
 {
 	NOT_IMPLEMENTED
+}
+
+// Goes directly to a given map without any savegame archiving. For development work.
+static void SV_Map_f(void)
+{
+	if (Cmd_Argc() == 2)
+	{
+		sv.state = ss_dead; // Don't save current level when changing
+		SV_WipeSavegame("current");
+		SV_GameMap_f();
+	}
+	else
+	{
+		Com_Printf("USAGE: map <map>\n");
+	}
 }
 
 static void SV_DemoMap_f(void)
-{
-	NOT_IMPLEMENTED
-}
-
-static void SV_GameMap_f(void)
 {
 	NOT_IMPLEMENTED
 }
