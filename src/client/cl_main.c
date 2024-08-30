@@ -238,6 +238,11 @@ void CL_Quit_f(void)
 	NOT_IMPLEMENTED
 }
 
+void CL_Drop(void)
+{
+	NOT_IMPLEMENTED
+}
+
 static void CL_Connect_f(void)
 {
 	NOT_IMPLEMENTED

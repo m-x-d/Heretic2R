@@ -204,6 +204,11 @@ void Cvar_SetValue(char* var_name, const float value)
 	Cvar_Set(var_name, val);
 }
 
+void Cvar_GetLatchedVars(void)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart
 // Handles variable inspection and changing from the console
 qboolean Cvar_Command(void)

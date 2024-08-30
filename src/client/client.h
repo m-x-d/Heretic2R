@@ -622,4 +622,3 @@ void CL_ClipMoveToEntities(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, t
 
 // cl_view.c
 void Grab_EAX_Environment_type(void);
-void CL_CleanScreenShake(void);

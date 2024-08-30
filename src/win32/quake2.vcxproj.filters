@@ -204,6 +204,9 @@
     <ClCompile Include="..\server\sv_send.c">
       <Filter>server</Filter>
     </ClCompile>
+    <ClCompile Include="..\server\sv_game.c">
+      <Filter>server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">

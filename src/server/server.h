@@ -46,6 +46,9 @@ typedef struct
 	qboolean timedemo; // Don't time sync
 } server_t;
 
+#define EDICT_NUM(n)		((edict_t *)((byte *)ge->edicts + ge->edict_size * (n)))
+#define NUM_FOR_EDICT(e)	(((byte *)(e) - (byte *)ge->edicts) / ge->edict_size)
+
 typedef enum
 {
 	cs_free,		// Can be reused for a new connection.
@@ -165,6 +168,10 @@ void SV_InitOperatorCommands(void);
 
 // sv_init.c
 void SV_Map(qboolean attractloop, const char* levelstring, qboolean loadgame);
+
+// sv_game.c
+extern game_export_t* ge;
+void SV_InitGameProgs(void);
 
 // sv_send.c
 void SV_BroadcastCommand(char* fmt, ...);

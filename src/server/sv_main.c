@@ -102,5 +102,10 @@ void SV_Init(void)
 	sv_reconnect_limit = Cvar_Get("sv_reconnect_limit", "3", CVAR_ARCHIVE);
 
 	SZ_Init(&net_message, net_message_buffer, sizeof(net_message_buffer));
-	CLFX_LoadDll();
+	CLFX_LoadDll(); // H2
+}
+
+void SV_Shutdown(char* finalmsg, qboolean reconnect)
+{
+	NOT_IMPLEMENTED
 }

@@ -14,6 +14,11 @@ static cvar_t* ipxfix; // New in H2
 
 static WSADATA winsockdata;
 
+void NET_Config(qboolean multiplayer)
+{
+	NOT_IMPLEMENTED
+}
+
 void NET_Init(void)
 {
 	if (WSAStartup(MAKEWORD(1, 1), &winsockdata) != 0)

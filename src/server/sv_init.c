@@ -5,7 +5,6 @@
 //
 
 #include "server.h"
-#include "client.h"
 
 server_static_t svs; // Persistent server info
 server_t sv; // Local server
@@ -15,9 +14,69 @@ static void SV_SpawnServer(char* server, char* spawnpoint, server_state_t server
 	NOT_IMPLEMENTED
 }
 
+// A brand new game has been started
 static void SV_InitGame(void)
 {
-	NOT_IMPLEMENTED
+	if (svs.initialized)
+		SV_Shutdown("Server restarted\n", true); // Cause any connected clients to reconnect
+	else
+		CL_Drop(); // Make sure the client is down
+
+	// Get any latched variable changes (maxclients, etc).
+	Cvar_GetLatchedVars();
+
+	svs.initialized = true;
+
+	if ((int)Cvar_VariableValue("coop") && (int)Cvar_VariableValue("deathmatch"))
+	{
+		Com_Printf("Deathmatch and Coop both set, disabling Coop\n");
+		Cvar_FullSet("coop", "0", CVAR_SERVERINFO | CVAR_LATCH);
+	}
+
+	// Dedicated servers are can't be single player and are usually DM
+	// so unless they explicitly set coop, force them to deathmatch.
+	if ((int)dedicated->value && !(int)Cvar_VariableValue("coop"))
+		Cvar_FullSet("deathmatch", "1", CVAR_SERVERINFO | CVAR_LATCH);
+
+	// Init clients
+	if ((int)Cvar_VariableValue("deathmatch"))
+	{
+		if (maxclients->value <= 1)
+			Cvar_FullSet("maxclients", "8", CVAR_SERVERINFO | CVAR_LATCH);
+		else if (maxclients->value > MAX_CLIENTS)
+			Cvar_FullSet("maxclients", va("%i", MAX_CLIENTS), CVAR_SERVERINFO | CVAR_LATCH);
+	}
+	else if ((int)Cvar_VariableValue("coop"))
+	{
+		if (maxclients->value <= 1 || maxclients->value > 4)
+			Cvar_FullSet("maxclients", "4", CVAR_SERVERINFO | CVAR_LATCH);
+	}
+	else // Non-deathmatch, non-coop is one player.
+	{
+		Cvar_FullSet("maxclients", "1", CVAR_SERVERINFO | CVAR_LATCH);
+	}
+
+	svs.spawncount = rand();
+	svs.clients = Z_Malloc((int)maxclients->value * (int)sizeof(client_t));
+	svs.num_client_entities = (int)maxclients->value * UPDATE_BACKUP * 64;
+	svs.client_entities = Z_Malloc(svs.num_client_entities * (int)sizeof(entity_state_t));
+
+	// Init network stuff
+	NET_Config(maxclients->value > 1);
+
+	// Heartbeats will always be sent to the id master
+	svs.last_heartbeat = -99999; // Send immediately
+
+	// Init game
+	SV_InitGameProgs();
+
+	for (int i = 0; i < (int)maxclients->value; i++)
+	{
+		edict_t* ent = EDICT_NUM(i + 1);
+		ent->s.number = (short)(i + 1);
+		svs.clients[i].edict = ent;
+		memset(&svs.clients[i].lastcmd, 0, sizeof(svs.clients[i].lastcmd));
+	}
 }
 
 static void SetNextserver(char* levelstring)
