@@ -204,9 +204,26 @@ void Cvar_SetValue(char* var_name, const float value)
 	Cvar_Set(var_name, val);
 }
 
+// Q2 counterpart
+// Any variables with latched values will now be updated
 void Cvar_GetLatchedVars(void)
 {
-	NOT_IMPLEMENTED
+	for (cvar_t* var = cvar_vars; var != NULL; var = var->next)
+	{
+		if (var->latched_string == NULL)
+			continue;
+
+		Z_Free(var->string);
+		var->string = var->latched_string;
+		var->latched_string = NULL;
+		var->value = (float)strtod(var->string, NULL); //mxd. atof -> strtod
+
+		if (strcmp(var->name, "game") == 0)
+		{
+			FS_SetGamedir(var->string);
+			FS_ExecAutoexec();
+		}
+	}
 }
 
 // Q2 counterpart
