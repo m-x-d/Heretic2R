@@ -142,6 +142,11 @@ static GameMessage_t game_messages[MAX_MESSAGES];
 static char* level_messages_text;
 static GameMessage_t level_messages[MAX_MESSAGES];
 
+void CL_Disconnect(void)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart
 // Adds the current command line as a clc_stringcmd to the client message.
 // Things like godmode, noclip, etc, are commands directed to the server,
@@ -238,9 +243,18 @@ void CL_Quit_f(void)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
+// Called after an ERR_DROP was thrown
 void CL_Drop(void)
 {
-	NOT_IMPLEMENTED
+	if (cls.state == ca_uninitialized || cls.state == ca_disconnected)
+		return;
+
+	CL_Disconnect();
+
+	// Drop loading plaque unless this is the initial game start
+	if (cls.disable_servercount != -1)
+		SCR_EndLoadingPlaque(); // Get rid of loading plaque
 }
 
 static void CL_Connect_f(void)
