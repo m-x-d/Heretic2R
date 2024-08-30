@@ -96,7 +96,7 @@ static void SV_GameMap_f(void)
 	char buffer[MAX_QPATH];
 	char savepath[MAX_OSPATH];
 
-	const int len = (int)strlen(Cmd_Argv(1));
+	const int len = (int)strlen(Cmd_Argv(1)); // H2
 	if (len > 4)
 	{
 		const char* arg = Cmd_Argv(1);
@@ -136,12 +136,12 @@ static void SV_GameMap_f(void)
 	{
 		// H2: check if map savegame exists
 		strcpy_s(buffer, sizeof(buffer), map);
-		char* c = strstr(buffer, "$"); //TODO: What's the meaning of the '$' marker?
+		char* c = strstr(buffer, "$"); // Strip spawnpoint marker
 		if (c != NULL)
 			*c = 0;
 
 		if (buffer[0] == '*')
-			strcpy_s(buffer, sizeof(buffer), &buffer[1]);
+			strcpy_s(buffer, sizeof(buffer), buffer + 1);
 
 		Com_sprintf(savepath, sizeof(savepath), "%s/save/current/%s.sav", FS_Userdir(), buffer);
 
