@@ -332,11 +332,9 @@ typedef struct
 	client_static_t* cls;
 
 	// Client versions of the game entities.
-
 	centity_t* server_entities;
 
 	// Buffer into which net stuff is parsed.
-
 	entity_state_t	*parse_entities;
 
 	sizebuf_t* net_message;
@@ -345,7 +343,6 @@ typedef struct
 	entity_t** PlayerEntPtr;
 
 	// Client prediction stuff.
-
 	cvar_t* cl_predict;
 	int* cl_effectpredict;
 	predictinfo_t* predictinfo;
@@ -354,13 +351,9 @@ typedef struct
 	float* EffectEventIdTimeArray;
 	EffectsBuffer_t* clientPredEffects;
 
-	//
-
 	void (*Sys_Error)(int err_level, char* str, ...);
 	void (*Com_Error)(int code, char* fmt, ...);
 	void (*Con_Printf)(int print_level, char* str, ...);
-
-	//
 
 	cvar_t* (*Cvar_Get)(char* name, char* value, int flags);
 	cvar_t* (*Cvar_Set)(char* name, char* value);
@@ -629,3 +622,4 @@ void CL_ClipMoveToEntities(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, t
 
 // cl_view.c
 void Grab_EAX_Environment_type(void);
+void CL_CleanScreenShake(void);

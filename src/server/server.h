@@ -164,4 +164,8 @@ extern cvar_t* sv_cinematicfreeze;
 void SV_InitOperatorCommands(void);
 
 // sv_init.c
-void SV_Map(qboolean attractloop, char* levelstring, qboolean loadgame);
+void SV_Map(qboolean attractloop, const char* levelstring, qboolean loadgame);
+
+// sv_send.c
+void SV_BroadcastCommand(char* fmt, ...);
+void SV_SendClientMessages(qboolean send_client_data); // H2: + 'send_client_data' arg

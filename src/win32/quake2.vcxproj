@@ -61,6 +61,7 @@
     <ClCompile Include="..\server\sv_ccmds.c" />
     <ClCompile Include="..\server\sv_init.c" />
     <ClCompile Include="..\server\sv_main.c" />
+    <ClCompile Include="..\server\sv_send.c" />
     <ClCompile Include="clfx_dll.c" />
     <ClCompile Include="conproc.c" />
     <ClCompile Include="input_win.c" />

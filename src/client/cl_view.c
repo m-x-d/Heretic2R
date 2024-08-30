@@ -15,3 +15,8 @@ void V_Init(void)
 	cl_stats = Cvar_Get("cl_stats", "0", 0);
 	crosshair = Cvar_Get("crosshair", "0", CVAR_ARCHIVE);
 }
+
+void CL_CleanScreenShake(void)
+{
+	NOT_IMPLEMENTED
+}

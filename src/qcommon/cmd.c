@@ -76,6 +76,11 @@ void Cbuf_InsertText(const char* text)
 	}
 }
 
+void Cbuf_CopyToDefer(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void Cbuf_ExecuteText(int exec_when, char* text)
 {
 	NOT_IMPLEMENTED
