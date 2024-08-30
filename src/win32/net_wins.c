@@ -7,6 +7,9 @@
 #include <winsock.h>
 #include "qcommon.h"
 
+static int ip_sockets[3]; // 2 in Q2
+static int ipx_sockets[3]; // 2 in Q2
+
 static cvar_t* net_shownet;
 static cvar_t* noudp;
 static cvar_t* noipx;
@@ -14,9 +17,53 @@ static cvar_t* ipxfix; // New in H2
 
 static WSADATA winsockdata;
 
-void NET_Config(qboolean multiplayer)
+static void NET_OpenIP(void)
 {
 	NOT_IMPLEMENTED
+}
+
+static void NET_OpenIPX(void)
+{
+	NOT_IMPLEMENTED
+}
+
+// A single player game will only use the loopback code
+void NET_Config(const qboolean multiplayer)
+{
+	static qboolean old_config;
+
+	if (old_config == multiplayer)
+		return;
+
+	old_config = multiplayer;
+
+	if (multiplayer)
+	{
+		// Open sockets
+		if (!(int)noudp->value)
+			NET_OpenIP();
+
+		if (!(int)noipx->value)
+			NET_OpenIPX();
+	}
+	else
+	{
+		// Shut down any existing sockets (2 in Q2, 3 in H2)
+		for (int i = 0; i < 3; i++)
+		{
+			if (ip_sockets[i] != 0)
+			{
+				closesocket(ip_sockets[i]);
+				ip_sockets[i] = 0;
+			}
+
+			if (ipx_sockets[i] != 0)
+			{
+				closesocket(ipx_sockets[i]);
+				ipx_sockets[i] = 0;
+			}
+		}
+	}
 }
 
 void NET_Init(void)
