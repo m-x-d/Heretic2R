@@ -85,7 +85,7 @@ cvar_t* Cvar_Get(const char* var_name, const char* var_value, const int flags)
 	return var;
 }
 
-cvar_t* Cvar_Set2(char* var_name, char* value, const qboolean force)
+static cvar_t* Cvar_Set2(const char* var_name, const char* value, const qboolean force)
 {
 	cvar_t* var = Cvar_FindVar(var_name);
 	if (var == NULL) // Create it
@@ -165,7 +165,13 @@ cvar_t* Cvar_Set2(char* var_name, char* value, const qboolean force)
 }
 
 // Q2 counterpart
-cvar_t* Cvar_Set(char* var_name, char* value)
+cvar_t* Cvar_ForceSet(const char* var_name, const char* value)
+{
+	return Cvar_Set2(var_name, value, true);
+}
+
+// Q2 counterpart
+cvar_t* Cvar_Set(const char* var_name, const char* value)
 {
 	return Cvar_Set2(var_name, value, false);
 }
