@@ -107,9 +107,42 @@ static void SV_InitGame(void)
 	}
 }
 
+// Modifies levelstring!
 static void SetNextserver(char* levelstring)
 {
-	NOT_IMPLEMENTED
+	// If there is a + in the map, set nextserver to the remainder
+	char* ch = strstr(levelstring, "+");
+	if (ch != NULL)
+	{
+		*ch = 0;
+
+		if (((int)Cvar_VariableValue("coop") || (int)Cvar_VariableValue("deathmatch")) && 
+			(strcmp(levelstring, "intro.smk") == 0 || strcmp(levelstring, "outro.smk") == 0))
+		{
+			const int len = (int)strlen(levelstring);
+			strcpy_s(levelstring, len - 10, levelstring + 10); // 10 == strlen("intro.smk")
+			levelstring[10] = 0;
+
+			Cvar_Set("nextserver", "");
+		}
+		else
+		{
+			Cvar_Set("nextserver", va("gamemap \"%s\"", ch + 1));
+		}
+
+		return;
+	}
+
+	ch = strstr(levelstring, "@");
+	if (ch != NULL)
+	{
+		*ch = 0;
+		Cvar_Set("nextserver", va("disconnect;%s", ch + 1));
+
+		return;
+	}
+
+	Cvar_Set("nextserver", "");
 }
 
 qboolean SV_ValidateMapFilename(char* level)
