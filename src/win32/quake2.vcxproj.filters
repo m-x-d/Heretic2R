@@ -207,6 +207,18 @@
     <ClCompile Include="..\server\sv_game.c">
       <Filter>server</Filter>
     </ClCompile>
+    <ClCompile Include="..\server\sv_world.c">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\server\sv_effects.c">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\cmodel.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\pmove.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -400,6 +412,15 @@
     </ClInclude>
     <ClInclude Include="..\game\g_NewSystem.h">
       <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\server\sv_effects.h">
+      <Filter>server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\cmodel.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\cmodel_private.h">
+      <Filter>qcommon</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

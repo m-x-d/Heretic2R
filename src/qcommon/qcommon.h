@@ -490,10 +490,10 @@ float ClampCvar(float min, float max, float value);
 GAME_DECLSPEC cvar_t* Cvar_Get(const char* var_name, const char* var_value, int flags); //TODO: check redundant declaration...
 
 // Will create the variable if it doesn't exist
-GAME_DECLSPEC cvar_t* Cvar_Set(char* var_name, char* value);
+GAME_DECLSPEC cvar_t* Cvar_Set(const char* var_name, const char* value);
 
 // Will set the variable even if NOSET or LATCH
-cvar_t* Cvar_ForceSet(char* var_name, char* value);
+cvar_t* Cvar_ForceSet(const char* var_name, const char* value);
 
 cvar_t* Cvar_FullSet(const char* var_name, const char* value, int flags);
 

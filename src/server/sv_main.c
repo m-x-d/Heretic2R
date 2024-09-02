@@ -48,6 +48,8 @@ cvar_t* sv_loopcoop;
 
 cvar_t* r_farclipdist;
 
+qboolean is_local_client; // H2
+
 void SV_UnloadClientEffects(void)
 {
 	NOT_IMPLEMENTED

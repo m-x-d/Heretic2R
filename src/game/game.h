@@ -222,10 +222,10 @@ typedef struct
 	void (*FreeTags)(int tag);
 
 	// Console variable interaction.
-	cvar_t* (*cvar)(char* var_name, char* value, int flags);
-	cvar_t* (*cvar_set)(char* var_name, char* value);
-	cvar_t* (*cvar_forceset)(char* var_name, char* value);
-	float (*cvar_variablevalue)(char* var_name);
+	cvar_t* (*cvar)(const char* var_name, const char* value, int flags);
+	cvar_t* (*cvar_set)(const char* var_name, const char* value);
+	cvar_t* (*cvar_forceset)(const char* var_name, const char* value);
+	float (*cvar_variablevalue)(const char* var_name);
 
 	// ClientCommand and console command parameter checking.
 	int (*argc)(void);
@@ -233,7 +233,7 @@ typedef struct
 	char* (*args)(void);
 
 	// Add commands to the server console as if they were typed in for map changing, etc.
-	void (*AddCommandString)(char* text);
+	void (*AddCommandString)(const char* text);
 
 	// Debugging aid.
 	void (*DebugGraph)(float value, byte r, byte g, byte b);
@@ -241,7 +241,7 @@ typedef struct
 	// Files will be memory mapped read only. The returned buffer may be part of a larger '.pak' file,
 	// or a discrete file from anywhere in the quake search path. A -1 return means the file does not exist.
 	// NULL can be passed for buf to just determine existence.
-	int (*FS_LoadFile)(char* name, void** buf);
+	int (*FS_LoadFile)(const char* path, void** buf);
 	void (*FS_FreeFile)(void* buf);
 	char* (*FS_Userdir)(void);
 	void (*FS_CreatePath)(char* path);

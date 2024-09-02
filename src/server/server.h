@@ -9,6 +9,8 @@
 #include "qcommon.h"
 #include "qfiles.h"
 #include "game.h"
+#include "q_Physics.h"
+#include "SinglyLinkedList.h"
 
 typedef enum
 {
@@ -163,16 +165,69 @@ extern cvar_t* maxclients;
 extern cvar_t* sv_cooptimeout;
 extern cvar_t* sv_cinematicfreeze;
 
+extern qboolean is_local_client; // H2
+
 // sv_ccmds.c
 void SV_InitOperatorCommands(void);
 
 // sv_init.c
+int SV_ModelIndex(char* name);
+int SV_SoundIndex(char* name);
+int SV_ImageIndex(char* name);
+void SV_ModelRemove(char* name); // H2
+void SV_SoundRemove(char* name); // H2
 void SV_Map(qboolean attractloop, const char* levelstring, qboolean loadgame);
 
 // sv_game.c
 extern game_export_t* ge;
 void SV_InitGameProgs(void);
+void SV_ShutdownGameProgs(void);
 
 // sv_send.c
+void SV_BroadcastPrintf(int level, char* fmt, ...);
+void SV_BroadcastCaption(int printlevel, short stringid);
+void SV_BroadcastObituary(int printlevel, short stringid, short client1, short client2);
 void SV_BroadcastCommand(char* fmt, ...);
+void SV_Multicast(vec3_t origin, multicast_t to);
+void SV_StartSound(vec3_t origin, edict_t* entity, int channel, int soundindex, float volume, float attenuation, float timeofs);
 void SV_SendClientMessages(qboolean send_client_data); // H2: + 'send_client_data' arg
+
+// sv_world.c
+
+// Needs to be called any time an entity changes origin, mins, maxs, or solid. Automatically unlinks if needed.
+// sets ent->v.absmin and ent->v.absmax.
+// sets ent->leafnums[] for pvs determination even if the entity is not solid.
+void SV_LinkEdict(edict_t* ent);
+
+// Call before removing an entity, and before trying to move one, so it doesn't clip against itself.
+void SV_UnlinkEdict(edict_t* ent);
+
+// Fills in a table of edict pointers with edicts that have bounding boxes that intersect the given area.
+// It is possible for a non-axial bmodel to be returned that doesn't actually intersect the area on an exact test.
+// returns the number of pointers filled in.
+int SV_AreaEdicts(vec3_t mins, vec3_t maxs, edict_t** list, int maxcount, int areatype);
+
+// New in H2
+int SV_FindEntitiesInBounds(vec3_t mins, vec3_t maxs, struct SinglyLinkedList_s* list, int areatype);
+
+// Returns the CONTENTS_* value from the world at the given point.
+// Quake 2 extends this to also check entities, to allow moving liquids.
+int SV_PointContents(vec3_t p);
+
+// mins and maxs are relative.
+// If the entire move stays in a solid volume, trace.startsolid and trace.allsolid will be set, and trace.fraction will be 0.
+// If the starting point is in a solid, it will be allowed to move out to an open area.
+// passedict is explicitly excluded from clipping checks (normally NULL).
+void SV_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t* passent, int contentmask, trace_t* tr); // H2: different definition
+
+// New in H2
+void SV_TraceBoundingForm(struct FormMove_s* formMove);
+
+// New in H2
+qboolean SV_ResizeBoundingForm(edict_t* self, struct FormMove_s* formMove);
+
+// New in H2
+int SV_GetContentsAtPoint(vec3_t point);
+
+// New in H2
+qboolean SV_CheckDistances(vec3_t origin, float dist);

@@ -20,6 +20,8 @@ void SCR_ObituaryPrint(char* str, byte client1, byte client2, uint colour);
 void SCR_BeginLoadingPlaque(void);
 void SCR_EndLoadingPlaque(void);
 
+void SCR_DebugGraph(float value, int color); //mxd. Re-added
+
 void SCR_TouchPics(void);
 void SCR_RunConsole(void);
 

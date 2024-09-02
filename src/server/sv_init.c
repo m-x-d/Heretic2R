@@ -9,6 +9,34 @@
 server_static_t svs; // Persistent server info
 server_t sv; // Local server
 
+int SV_ModelIndex(char* name)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+int SV_SoundIndex(char* name)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+int SV_ImageIndex(char* name)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+void SV_ModelRemove(char* name)
+{
+	NOT_IMPLEMENTED
+}
+
+void SV_SoundRemove(char* name)
+{
+	NOT_IMPLEMENTED
+}
+
 static void SV_SpawnServer(char* server, char* spawnpoint, server_state_t serverstate, qboolean attractloop, qboolean loadgame)
 {
 	NOT_IMPLEMENTED

@@ -39,6 +39,15 @@ typedef struct
 
 static dirty_t scr_dirty;
 
+#pragma region ========================== BAR GRAPHS ==========================
+
+void SCR_DebugGraph(float value, int color)
+{
+	NOT_IMPLEMENTED
+}
+
+#pragma endregion
+
 static void SCR_TimeRefresh_f(void)
 {
 	NOT_IMPLEMENTED
