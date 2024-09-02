@@ -19,9 +19,17 @@ static void PF_Unicast(edict_t* ent, qboolean reliable)
 	NOT_IMPLEMENTED
 }
 
+// Debug print to server console
 static void PF_dprintf(char* fmt, ...)
 {
-	NOT_IMPLEMENTED
+	char msg[1024];
+	va_list argptr;
+
+	va_start(argptr, fmt);
+	vsprintf_s(msg, sizeof(msg), fmt, argptr); //mxd. vsprintf -> vsprintf_s
+	va_end(argptr);
+
+	Com_DPrintf("%s", msg); // Q2: Com_Printf
 }
 
 static void PF_cprintf(edict_t* ent, int level, char* fmt, ...)
