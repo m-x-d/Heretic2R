@@ -231,7 +231,25 @@ static void SCR_DrawGameMessageIfNecessary(void)
 
 static void SCR_UpdateFogDensity(void)
 {
-	NOT_IMPLEMENTED
+	static int old_msec;
+	static float old_density;
+
+	const int msec = Sys_Milliseconds();
+
+	if (cl.frame.playerstate.fog_density > 0.0f) //TODO: != 0.0f in original logic. Can playerstate.fog_density be negative?
+	{
+		r_fog_density->value += (cl.frame.playerstate.fog_density - old_density) * (float)(msec - old_msec) * 0.0008f;
+		old_density = r_fog_density->value;
+		r_fog->value = 1.0f;
+	}
+	else
+	{
+		r_fog_density->value = 0.0f;
+		old_density = 0.0f;
+		r_fog->value = 0.0f;
+	}
+
+	old_msec = msec;
 }
 
 // This is called every frame, and can also be called explicitly to flush text to the screen.
