@@ -302,9 +302,16 @@ static void SCR_TileClear(void)
 	}
 }
 
-static void SCR_DrawStats(void)
+static void SCR_ExecuteLayoutString(char* s)
 {
 	NOT_IMPLEMENTED
+}
+
+// The status bar is a small layout program that is based on the stats array.
+static void SCR_DrawStats(void)
+{
+	if ((int)scr_statbar->value && !cl.frame.playerstate.cinematicfreeze) // H2: extra checks
+		SCR_ExecuteLayoutString(cl.configstrings[CS_STATUSBAR]);
 }
 
 static void SCR_DrawLayout(void)
