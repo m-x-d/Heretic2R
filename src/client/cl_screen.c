@@ -5,8 +5,13 @@
 //
 
 #include "client.h"
+#include "sound.h"
 
 qboolean scr_initialized; // Ready to draw
+
+qboolean scr_draw_loading_plaque; // H2
+static qboolean scr_draw_loading; // int in Q2
+static int scr_progressbar_offset_x; // H2
 
 cvar_t* scr_viewsize;
 cvar_t* scr_centertime;
@@ -85,6 +90,27 @@ static void SCR_GammaDown_f(void)
 
 void SCR_BeginLoadingPlaque(void)
 {
+	S_StopAllSounds_Sounding();
+	cl.sound_prepped = false; // Don't play ambients
+	//CDAudio_Stop(); //mxd. Skip CDAudio logic.
+
+	scr_draw_loading_plaque = true; // H2
+
+	if (!(int)cls.disable_screen && !(int)developer->value && cls.key_dest != key_console)
+	{
+		if (cl.cinematictime == 0)
+			scr_draw_loading = true;
+
+		scr_progressbar_offset_x = 0; // H2
+
+		SCR_UpdateScreen();
+		cls.disable_screen = 1; // Q2: Sys_Milliseconds()
+		cls.disable_servercount = cl.servercount;
+	}
+}
+
+void SCR_EndLoadingPlaque(void)
+{
 	NOT_IMPLEMENTED
 }
 
@@ -141,4 +167,9 @@ void SCR_DirtyScreen(void)
 {
 	SCR_AddDirtyPoint(0, 0);
 	SCR_AddDirtyPoint(viddef.width - 1, viddef.height - 1);
+}
+
+void SCR_UpdateScreen(void)
+{
+	NOT_IMPLEMENTED
 }

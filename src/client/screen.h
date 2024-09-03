@@ -25,6 +25,8 @@ void SCR_DebugGraph(float value, int color); //mxd. Re-added
 void SCR_TouchPics(void);
 void SCR_RunConsole(void);
 
+extern qboolean scr_draw_loading_plaque; //mxd
+
 extern float scr_con_current;
 extern float scr_conlines;	// Lines of console to display
 
