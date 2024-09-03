@@ -7,6 +7,8 @@
 #include "client.h"
 #include "sound.h"
 
+float scr_con_current; // Aproaches scr_conlines at scr_conspeed.
+
 qboolean scr_initialized; // Ready to draw
 
 qboolean scr_draw_loading_plaque; // H2
@@ -27,7 +29,7 @@ cvar_t* scr_debuggraph;
 cvar_t* scr_graphheight;
 cvar_t* scr_graphscale;
 cvar_t* scr_graphshift;
-cvar_t* scr_drawall;
+static cvar_t* scr_drawall;
 
 // New in H2:
 cvar_t* scr_statbar;
@@ -218,9 +220,86 @@ void SCR_DirtyScreen(void)
 	SCR_AddDirtyPoint(viddef.width - 1, viddef.height - 1);
 }
 
+//TODO: remove - irrelevant in OpenGL
+// Clear any parts of the tiled background that were drawn on last frame
 static void SCR_TileClear(void)
 {
-	NOT_IMPLEMENTED
+	static dirty_t scr_old_dirty[2]; //mxd. Made static
+
+	// For power vr or broken page flippers...
+	if ((int)scr_drawall->value)
+		SCR_DirtyScreen();
+
+	// Skip when fullscreen console, rendering or cinematic.
+	if (scr_con_current == 1.0f || scr_viewsize->value == 100.0f || cl.cinematictime > 0)
+		return;
+
+	// Erase rect will be the union of the past three frames so triple buffering works properly
+	dirty_t clear = scr_dirty;
+	for (int i = 0; i < 2; i++)
+	{
+		if (scr_old_dirty[i].x1 < clear.x1)
+			clear.x1 = scr_old_dirty[i].x1;
+		if (scr_old_dirty[i].x2 > clear.x2)
+			clear.x2 = scr_old_dirty[i].x2;
+		if (scr_old_dirty[i].y1 < clear.y1)
+			clear.y1 = scr_old_dirty[i].y1;
+		if (scr_old_dirty[i].y2 > clear.y2)
+			clear.y2 = scr_old_dirty[i].y2;
+	}
+
+	scr_old_dirty[1] = scr_old_dirty[0];
+	scr_old_dirty[0] = scr_dirty;
+
+	scr_dirty.x1 = 9999;
+	scr_dirty.x2 = -9999;
+	scr_dirty.y1 = 9999;
+	scr_dirty.y2 = -9999;
+
+	// Don't bother with anything covered by the console
+	const int console_top = (int)(scr_con_current * (float)viddef.height);
+	if (console_top >= clear.y1)
+		clear.y1 = console_top;
+
+	if (clear.y2 <= clear.y1)
+		return; // Nothing disturbed
+
+	const int top = scr_vrect.y;
+	const int bottom = top + scr_vrect.height - 1;
+	const int left = scr_vrect.x;
+	const int right = left + scr_vrect.width - 1;
+
+	// Clear above view screen?
+	if (clear.y1 < top)
+	{
+		const int i = (clear.y2 < top - 1 ? clear.y2 : top - 1);
+		re.DrawTileClear(clear.x1, clear.y1, clear.x2 - clear.x1 + 1, i - clear.y1 + 1, "misc/backtile.m8"); // H2: backtile -> misc/backtile.m8
+		clear.y1 = top;
+	}
+
+	// Clear below view screen?
+	if (clear.y2 > bottom)
+	{
+		const int i = (clear.y1 > bottom + 1 ? clear.y1 : bottom + 1);
+		re.DrawTileClear(clear.x1, i, clear.x2 - clear.x1 + 1, clear.y2 - i + 1, "misc/backtile.m8"); // H2: backtile -> misc/backtile.m8
+		clear.y2 = bottom;
+	}
+
+	// Clear left of view screen?
+	if (clear.x1 < left)
+	{
+		const int i = (clear.x2 < left - 1 ? clear.x2 : left - 1);
+		re.DrawTileClear(clear.x1, clear.y1, i - clear.x1 + 1, clear.y2 - clear.y1 + 1, "misc/backtile.m8"); // H2: backtile -> misc/backtile.m8
+		clear.x1 = left;
+	}
+
+	// Clear left of view screen?
+	if (clear.x2 > right)
+	{
+		const int i = (clear.x1 > right + 1 ? clear.x1 : right + 1);
+		re.DrawTileClear(i, clear.y1, clear.x2 - i + 1, clear.y2 - clear.y1 + 1, "misc/backtile.m8"); // H2: backtile -> misc/backtile.m8
+		//clear.x2 = right;
+	}
 }
 
 static void SCR_DrawStats(void)
