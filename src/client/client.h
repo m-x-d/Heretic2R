@@ -519,6 +519,8 @@ int CL_ParseEntityBits(byte* bf, byte* bfNonZero);
 void CL_ParseDelta(entity_state_t* from, entity_state_t* to, int number, byte* bf);
 void CL_ParseFrame(void);
 
+void CL_AddEntities(void); //mxd
+
 void CL_PrepRefresh(void);
 void CL_RegisterSounds(void);
 

@@ -20,6 +20,8 @@ char* com_argv[MAX_NUM_ARGVS + 1];
 
 jmp_buf abortframe; // An ERR_DROP occured, exit the entire frame.
 
+FILE* log_stats_file;
+
 cvar_t* host_speeds;
 cvar_t* log_stats;
 cvar_t* developer;

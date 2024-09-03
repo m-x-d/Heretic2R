@@ -10,6 +10,11 @@
 
 ResourceManager_t cl_FXBufMngr;
 
+void CL_AddEntities(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void CL_GetEntitySoundOrigin(int ent, vec3_t org)
 {
 	NOT_IMPLEMENTED
