@@ -148,11 +148,6 @@ void SCR_Init(void)
 	scr_initialized = true;
 }
 
-void SCR_EndLoadingPlaque(void)
-{
-	NOT_IMPLEMENTED
-}
-
 // Q2 counterpart
 void SCR_AddDirtyPoint(const int x, const int y)
 {
