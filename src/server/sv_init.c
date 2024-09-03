@@ -116,6 +116,7 @@ static void SetNextserver(char* levelstring)
 	{
 		*ch = 0;
 
+		// Skip intro/outro cinematics in multiplayer.
 		if (((int)Cvar_VariableValue("coop") || (int)Cvar_VariableValue("deathmatch")) && 
 			(strcmp(levelstring, "intro.smk") == 0 || strcmp(levelstring, "outro.smk") == 0))
 		{
@@ -145,10 +146,23 @@ static void SetNextserver(char* levelstring)
 	Cvar_Set("nextserver", "");
 }
 
+//mxd. Sys_CopyProtect() logic skipped.
 qboolean SV_ValidateMapFilename(char* level)
 {
-	NOT_IMPLEMENTED
-	return false;
+	char mappath[MAX_QPATH];
+
+	// Check map file
+	Com_sprintf(mappath, sizeof(mappath), "maps/%s.bsp", level);
+	if (FS_LoadFile(mappath, 0) != -1)
+		return true;
+
+	// Check demo file
+	Com_sprintf(mappath, sizeof(mappath), "demos/%s", level);
+	if (FS_LoadFile(mappath, 0) != -1)
+		return true;
+
+	// Check movie file
+	return (Q_stricmp(&level[strlen(level) - 4], ".smk") == 0);
 }
 
 // The full syntax is:
