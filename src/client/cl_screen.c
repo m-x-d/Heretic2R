@@ -13,6 +13,8 @@ qboolean scr_draw_loading_plaque; // H2
 static qboolean scr_draw_loading; // int in Q2
 static int scr_progressbar_offset_x; // H2
 
+vrect_t scr_vrect; // Position of render window on screen
+
 cvar_t* scr_viewsize;
 cvar_t* scr_centertime;
 cvar_t* scr_showturtle;
@@ -63,9 +65,26 @@ static void SCR_DrawDebugGraph(void)
 
 #pragma endregion
 
+// Sets scr_vrect, the coordinates of the rendered window.
 static void SCR_CalcVrect(void)
 {
-	NOT_IMPLEMENTED
+	// Bound viewsize
+	if (scr_viewsize->value < 30.0f) // 40 in Q2
+		Cvar_Set("viewsize", "30");
+
+	if (scr_viewsize->value > 100.0f)
+		Cvar_Set("viewsize", "100");
+
+	const int size = (int)scr_viewsize->value;
+
+	scr_vrect.width = viddef.width * size / 100;
+	scr_vrect.width &= ~7;
+
+	scr_vrect.height = viddef.height * size / 100;
+	scr_vrect.height &= ~1;
+
+	scr_vrect.x = (viddef.width - scr_vrect.width) / 2;
+	scr_vrect.y = (viddef.height - scr_vrect.height) / 2;
 }
 
 static void SCR_TimeRefresh_f(void)
