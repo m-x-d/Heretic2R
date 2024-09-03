@@ -9,6 +9,11 @@
 cvar_t* crosshair;
 static cvar_t* cl_stats;
 
+void V_RenderView(float stereo_separation)
+{
+	NOT_IMPLEMENTED
+}
+
 //mxd. Very stripped down compared to Q2 version.
 void V_Init(void)
 {

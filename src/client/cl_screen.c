@@ -51,7 +51,22 @@ void SCR_DebugGraph(float value, int color)
 	NOT_IMPLEMENTED
 }
 
+static void SCR_ShowDebugGraph(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SCR_DrawDebugGraph(void)
+{
+	NOT_IMPLEMENTED
+}
+
 #pragma endregion
+
+static void SCR_CalcVrect(void)
+{
+	NOT_IMPLEMENTED
+}
 
 static void SCR_TimeRefresh_f(void)
 {
@@ -84,6 +99,11 @@ static void SCR_GammaUp_f(void)
 }
 
 static void SCR_GammaDown_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SCR_DrawConsole(void)
 {
 	NOT_IMPLEMENTED
 }
@@ -148,6 +168,21 @@ void SCR_Init(void)
 	scr_initialized = true;
 }
 
+static void SCR_DrawNet(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SCR_DrawPause(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SCR_DrawLoading(void)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart
 void SCR_AddDirtyPoint(const int x, const int y)
 {
@@ -164,7 +199,112 @@ void SCR_DirtyScreen(void)
 	SCR_AddDirtyPoint(viddef.width - 1, viddef.height - 1);
 }
 
-void SCR_UpdateScreen(void)
+static void SCR_TileClear(void)
 {
 	NOT_IMPLEMENTED
+}
+
+static void SCR_DrawStats(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SCR_DrawLayout(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SCR_DrawNames(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SCR_DrawFill(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SCR_DrawGameMessageIfNecessary(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SCR_UpdateFogDensity(void)
+{
+	NOT_IMPLEMENTED
+}
+
+// This is called every frame, and can also be called explicitly to flush text to the screen.
+void SCR_UpdateScreen(void)
+{
+	int numframes;
+	float separation[2] = { 0.0f, 0.0f };
+
+	// If the screen is disabled (loading plaque is up, or vid mode changing) or screen/console aren't initialized, do nothing at all.
+	if ((int)cls.disable_screen || !scr_initialized || !con.initialized)
+		return;
+
+	// Range check cl_camera_separation so we don't inadvertently fry someone's brain.
+	if (cl_stereo_separation->value > 1.0f)
+		Cvar_SetValue("cl_stereo_separation", 1.0f);
+	else if (cl_stereo_separation->value < 0.0f)
+		Cvar_SetValue("cl_stereo_separation", 0.0f);
+
+	if ((int)cl_stereo->value)
+	{
+		separation[0] = -cl_stereo_separation->value * 0.5f;
+		separation[1] = cl_stereo_separation->value * 0.5f;
+		numframes = 2;
+	}
+	else
+	{
+		separation[0] = 0.0f;
+		separation[1] = 0.0f;
+		numframes = 1;
+	}
+
+	SCR_UpdateFogDensity(); // H2
+
+	for (int i = 0; i < numframes; i++)
+	{
+		re.BeginFrame(separation[i]);
+
+		// If a cinematic is supposed to be running, handle menus and console specially.
+		if (cl.cinematictime > 0)
+		{
+			SCR_DrawCinematic();
+
+			if (cls.key_dest == key_menu)
+				M_Draw();
+			else if (cls.key_dest == key_console)
+				SCR_DrawConsole();
+		}
+		else
+		{
+			// Do 3D refresh drawing, and then update the screen.
+			SCR_CalcVrect();
+
+			// Clear any dirty part of the background.
+			SCR_TileClear();
+
+			V_RenderView(separation[i]);
+
+			SCR_DrawStats();
+			SCR_DrawLayout();
+			SCR_DrawNet();
+			SCR_DrawNames(); // H2
+			SCR_DrawFill(); // H2
+			SCR_DrawGameMessageIfNecessary(); // H2
+
+			SCR_ShowDebugGraph(); // H2
+			SCR_DrawDebugGraph();
+			SCR_DrawConsole();
+			SCR_DrawPause();
+			SCR_DrawLoading();
+
+			M_Draw();
+		}
+	}
+
+	re.EndFrame();
 }

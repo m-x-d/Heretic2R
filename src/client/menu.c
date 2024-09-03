@@ -311,3 +311,8 @@ void M_Init(void)
 	Cvar_Get("blood_level", "0", CVAR_ARCHIVE);
 	Cvar_Get("dm_no_bodies", "0", CVAR_ARCHIVE);
 }
+
+void M_Draw(void)
+{
+	NOT_IMPLEMENTED
+}
