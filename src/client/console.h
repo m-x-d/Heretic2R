@@ -8,7 +8,7 @@
 
 #include "q_Typedef.h"
 
-#define NUM_CON_TIMES	8
+#define NUM_CON_TIMES	8 // Q2: 4
 #define CON_TEXTSIZE	32768
 #define MAX_LINES		((CON_TEXTSIZE / 38) + 8)
 

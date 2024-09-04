@@ -24,9 +24,11 @@ static void Key_ClearTyping(void)
 	key_linepos = 1;
 }
 
+// Q2 counterpart
 void Con_ClearNotify(void)
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < NUM_CON_TIMES; i++)
+		con.times[i] = 0.0f;
 }
 
 void Con_ToggleConsole_f(void)
