@@ -36,8 +36,6 @@
 	#endif
 #endif
 
-//============================================================================
-
 typedef struct sizebuf_s
 {
 	qboolean allowoverflow;	// If false, do a Com_Error
@@ -53,7 +51,6 @@ void SZ_Clear(sizebuf_t* buf);
 void* SZ_GetSpace(sizebuf_t* buf, int length);
 void SZ_Write(sizebuf_t* buf, const void* data, int length);
 void SZ_Print(sizebuf_t* buf, char* data); // strcats onto the sizebuf
-
 
 struct usercmd_s;
 struct entity_state_s;
@@ -105,13 +102,12 @@ void MSG_ReadData(sizebuf_t* sb, void* buffer, int size);
 void MSG_ReadJoints(sizebuf_t* msg_read, entity_state_t* ent);
 void MSG_ReadEffects(sizebuf_t* msg_read, EffectsBuffer_t* fxBuf);
 
+//TODO: debug stuff from original version. Remove?
+//extern qboolean bigendien;
+//extern int sz_line;
+//extern char* sz_filename;
 
-extern qboolean bigendien;
-extern int sz_line;
-extern char* sz_filename;
-
-#define set_sz_data	sz_filename = __FILE__; sz_line = __LINE__; 
-
+//#define set_sz_data	sz_filename = __FILE__; sz_line = __LINE__; 
 
 int	COM_Argc(void);
 char* COM_Argv(int arg); // Range and null checked
