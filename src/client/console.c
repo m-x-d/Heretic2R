@@ -229,10 +229,26 @@ void Con_DrawNotify(void)
 	NOT_IMPLEMENTED
 }
 
-static qboolean ShouldDrawConsole(void)
+static qboolean ShouldDrawConsole(void) // H2
 {
-	NOT_IMPLEMENTED
-	return false;
+	static int console_delay;
+
+	if ((int)developer->value)
+		return true;
+
+	if (nextserver != NULL && strlen(nextserver->string) > 0)
+	{
+		console_delay = 5;
+		return false;
+	}
+
+	if (console_delay > 0)
+	{
+		console_delay--;
+		return false;
+	}
+
+	return true;
 }
 
 // Draws the console with the solid background.
@@ -241,7 +257,7 @@ void Con_DrawConsole(float frac)
 	//TODO: why it doesn't work as a #define?
 	static char* backscroll_arrows = " ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^  ";
 	
-	if (!ShouldDrawConsole())
+	if (!ShouldDrawConsole()) // H2
 	{
 		re.DrawFill(0, 0, viddef.width, viddef.height, 0, 0, 0);
 		return;
