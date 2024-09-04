@@ -561,9 +561,16 @@ static void SCR_DrawNames(void) // H2
 	}
 }
 
-static void SCR_DrawFill(void)
+static void SCR_DrawCinematicBorders(void) // H2
 {
-	NOT_IMPLEMENTED
+	if (cls.key_dest != key_console && cl.frame.playerstate.cinematicfreeze)
+	{
+		const int top_height = (viddef.height * 48) / 480;
+		const int bottom_height = (viddef.height * 64) / 480;
+
+		re.DrawFill(0, 0, viddef.width, top_height, 0, 0, 0);
+		re.DrawFill(0, viddef.height - bottom_height, viddef.width, bottom_height, 0, 0, 0);
+	}
 }
 
 static void SCR_DrawGameMessageIfNecessary(void)
@@ -653,7 +660,7 @@ void SCR_UpdateScreen(void)
 			SCR_DrawLayout();
 			SCR_DrawNet();
 			SCR_DrawNames(); // H2
-			SCR_DrawFill(); // H2
+			SCR_DrawCinematicBorders(); // H2
 			SCR_DrawGameMessageIfNecessary(); // H2
 
 			SCR_ShowDebugGraph(); // H2
