@@ -12,6 +12,11 @@ static cvar_t* con_notifytime;
 static cvar_t* con_alpha; // New in H2
 static cvar_t* nextserver; // New in H2
 
+void DrawString(int x, int y, char* s, uint color, int maxlen)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart
 static void Key_ClearTyping(void)
 {

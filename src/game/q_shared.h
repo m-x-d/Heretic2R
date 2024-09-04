@@ -910,6 +910,12 @@ _inline long Q_ftol(float f)
 	return (int)f;
 }
 
+//mxd
+_inline int Q_atoi(const char* s)
+{
+	return strtol(s, NULL, 10);
+}
+
 // Quick version of float to long (trunc/round undefined)
 /*#pragma warning (disable:4035)
 _inline __declspec( naked ) long Q_ftol(float f)

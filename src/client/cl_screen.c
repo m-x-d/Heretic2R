@@ -302,9 +302,212 @@ static void SCR_TileClear(void)
 	}
 }
 
-static void SCR_ExecuteLayoutString(char* s)
+static void DrawPic(int x, int y, char* str, qboolean use_alpha)
 {
 	NOT_IMPLEMENTED
+}
+
+static void DrawTeamBlock(int x, int y, char* str)
+{
+	NOT_IMPLEMENTED
+}
+
+static void DrawClientBlock(int x, int y, char* str)
+{
+	NOT_IMPLEMENTED
+}
+
+static void DrawAClientBlock(int x, int y, char* str)
+{
+	NOT_IMPLEMENTED
+}
+
+static void DrawHudNum(int x, int y, int width, int value, qboolean is_red)
+{
+	NOT_IMPLEMENTED
+}
+
+static void DrawBar(int x, int y, int width, int height, int stat_index)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SCR_ExecuteLayoutString(char* s)
+{
+	if (cls.state != ca_active || !cl.refresh_prepped || s[0] == 0)
+		return;
+
+	//TODO: add SCR_GetHUDScale logic from YQ2
+
+	int x = 0;
+	int y = 0;
+	int width = 3;
+
+	while (s != NULL)
+	{
+		const char* token = COM_Parse(&s);
+
+		if (strcmp(token, "xl") == 0)
+		{
+			x = Q_atoi(COM_Parse(&s));
+		}
+		else if (strcmp(token, "xr") == 0)
+		{
+			x = viddef.width + Q_atoi(COM_Parse(&s));
+		}
+		else if (strcmp(token, "xv") == 0)
+		{
+			x = viddef.width / 2 - 160 + Q_atoi(COM_Parse(&s));
+		}
+		else if (strcmp(token, "xc") == 0) // H2
+		{
+			const int offset = cl.frame.playerstate.stats[STAT_PUZZLE_COUNT] * 40;
+			x = (viddef.width - offset) / 2 + Q_atoi(COM_Parse(&s));
+		}
+		else if (strcmp(token, "yt") == 0)
+		{
+			y = Q_atoi(COM_Parse(&s));
+		}
+		else if (strcmp(token, "yb") == 0)
+		{
+			y = viddef.height + Q_atoi(COM_Parse(&s));
+		}
+		else if (strcmp(token, "yv") == 0)
+		{
+			y = viddef.height / 2 - 120 + Q_atoi(COM_Parse(&s));
+		}
+		else if (strcmp(token, "yp") == 0) // H2
+		{
+			y += Q_atoi(COM_Parse(&s));
+		}
+		else if (strcmp(token, "pic") == 0)
+		{
+			// Draw a pic from a stat number.
+			DrawPic(x, y, s, false);
+		}
+		else if (strcmp(token, "pici") == 0) // H2
+		{
+			// When 'Show puzzle inventory' flag is set.
+			if ((cl.frame.playerstate.stats[STAT_LAYOUTS] & 4) != 0)
+				DrawPic(x, y, s, true);
+		}
+		else if (strcmp(token, "tm") == 0) // H2
+		{
+			DrawTeamBlock(x, y, s);
+		}
+		else if (strcmp(token, "client") == 0)
+		{
+			// Draw a deathmatch client block.
+			DrawClientBlock(x, y, s);
+		}
+		else if (strcmp(token, "aclient") == 0) // H2
+		{
+			// Draw a ??? client block.
+			DrawAClientBlock(x, y, s);
+		}
+		else if (strcmp(token, "picn") == 0)
+		{
+			// Draw a pic from a name.
+			SCR_AddDirtyPoint(x, y);
+			SCR_AddDirtyPoint(x + 32, y + 32);
+
+			re.DrawPic(x, y, COM_Parse(&s), 1.0f);
+		}
+		else if (strcmp(token, "num") == 0)
+		{
+			// Draw a number.
+			width = Q_atoi(COM_Parse(&s));
+			const int value = cl.frame.playerstate.stats[Q_atoi(COM_Parse(&s))];
+
+			DrawHudNum(x, y, width, value, value <= 0);
+		}
+		else if (strcmp(token, "hnum") == 0) // H2
+		{
+			// Draw health number.
+			const int amount = max(-99, cl.frame.playerstate.stats[STAT_HEALTH]);
+			DrawHudNum(x, y, width, amount, amount <= 25);
+		}
+		else if (strcmp(token, "arm") == 0) // H2
+		{
+			// Draw armor number.
+			if (cl.frame.playerstate.stats[STAT_ARMOUR] != 0)
+			{
+				const int amount = max(-99, cl.frame.playerstate.stats[STAT_ARMOUR]);
+				DrawHudNum(x, y, width, amount, amount <= 25);
+			}
+		}
+		else if (strcmp(token, "am") == 0) // H2
+		{
+			// Draw ammo number.
+			if (cl.frame.playerstate.stats[STAT_AMMO_ICON] != 0)
+			{
+				const int amount = max(0, cl.frame.playerstate.stats[STAT_AMMO]);
+				DrawHudNum(x, y, width, amount, amount <= 10);
+			}
+		}
+		else if (strcmp(token, "bar") == 0) // H2
+		{
+			const int stat_index = Q_atoi(COM_Parse(&s));
+			width = Q_atoi(COM_Parse(&s));
+			const int height = Q_atoi(COM_Parse(&s));
+
+			DrawBar(x, y, width, height, stat_index);
+		}
+		else if (strcmp(token, "gbar") == 0) // H2
+		{
+			const int index = Q_atoi(COM_Parse(&s));
+			width = cl.frame.playerstate.stats[index];
+			const int height = cl.frame.playerstate.stats[index + 1];
+
+			DrawBar(x, y, width, height, index + 2);
+		}
+		else if (strcmp(token, "stat_string") == 0)
+		{
+			int index = Q_atoi(COM_Parse(&s));
+			if (index < 0 || index >= MAX_CONFIGSTRINGS)
+				Com_Error(ERR_DROP, "Bad stat_string index");
+
+			index = cl.frame.playerstate.stats[index];
+			if (index < 0 || index >= MAX_CONFIGSTRINGS)
+				Com_Error(ERR_DROP, "Bad stat_string index");
+
+			DrawString(x, y, cl.configstrings[index], TextPalette[P_WHITE].c, -1);
+		}
+		else if (strcmp(token, "hstring") == 0) // H2
+		{
+			x = viddef.width / 2 - 160 + Q_atoi(COM_Parse(&s));
+			y = viddef.height / 2 - 120 + Q_atoi(COM_Parse(&s));
+			const int pal_index = Q_atoi(COM_Parse(&s));
+			const char* str = COM_Parse(&s);
+
+			DrawString(x, y, str, TextPalette[pal_index].c, -1);
+		}
+		else if (strcmp(token, "string") == 0)
+		{
+			x = Q_atoi(COM_Parse(&s));
+			y = Q_atoi(COM_Parse(&s));
+			const int pal_index = Q_atoi(COM_Parse(&s));
+			const char* str = COM_Parse(&s);
+
+			DrawString(x, y, str, TextPalette[pal_index].c, -1);
+		}
+		else if (strcmp(token, "if") == 0)
+		{
+			// Draw a number
+			token = COM_Parse(&s);
+			if (cl.frame.playerstate.stats[Q_atoi(token)] == 0)
+			{
+				// Skip to endif
+				while (strcmp(token, "endif") != 0)
+				{
+					if (s == NULL)
+						return;
+
+					token = COM_Parse(&s);
+				}
+			}
+		}
+	}
 }
 
 // The status bar is a small layout program that is based on the stats array.
