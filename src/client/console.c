@@ -217,12 +217,87 @@ void Con_Print(const char* txt)
 	}
 }
 
+#pragma region ========================== DRAWING ==========================
+
+static void Con_DrawInput(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void Con_DrawNotify(void)
 {
 	NOT_IMPLEMENTED
 }
 
-void Con_DrawConsole(float frac)
+static qboolean ShouldDrawConsole(void)
 {
 	NOT_IMPLEMENTED
+	return false;
 }
+
+// Draws the console with the solid background.
+void Con_DrawConsole(float frac)
+{
+	//TODO: why it doesn't work as a #define?
+	static char* backscroll_arrows = " ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^  ";
+	
+	if (!ShouldDrawConsole())
+	{
+		re.DrawFill(0, 0, viddef.width, viddef.height, 0, 0, 0);
+		return;
+	}
+
+	int lines = min((int)(frac * (float)DEF_HEIGHT), DEF_HEIGHT);
+
+	if (lines < 1)
+		return;
+
+	lines = (viddef.height * lines) / DEF_HEIGHT;
+
+	if (cls.state == ca_active)
+		frac = con_alpha->value;
+	else
+		frac = 1.0f;
+
+	// Draw the background
+	re.DrawStretchPic(0, lines - DEF_HEIGHT, DEF_WIDTH, DEF_HEIGHT, "misc/conback.m8", frac, true);
+	
+	SCR_AddDirtyPoint(0, 0);
+	SCR_AddDirtyPoint(viddef.width - 1, lines - 1);
+
+	// Draw version
+	char version[MAX_QPATH];
+	Com_sprintf(version, sizeof(version), "Heretic II: %s", VERSIONDISP);
+	DrawString(viddef.width - ((int)strlen(version) * 8 + 8), lines - 12, version, TextPalette[P_VERSION].c, -1);
+
+	// Draw the text
+	con.vislines = lines;
+
+	// H2 uses #if 0-ed version of Q2 logic.
+	int rows = (lines - 8) >> 3; // Rows of text to draw
+	int y = lines - 24;
+
+	// Draw from the bottom up
+	if (con.display != con.current)
+	{
+		// Draw arrows to show the buffer is backscrolled
+		DrawString(8, y, backscroll_arrows, TextPalette[P_WHITE].c, con.linewidth);
+
+		y -= 8;
+		rows--;
+	}
+
+	int row = con.display;
+	for (int i = 0; i < rows; i++, y -= 8, row--)
+	{
+		if (row < 0 || con.current - row >= con.totallines)
+			break; // Past scrollback wrap point
+
+		DrawString(8, y, &con.text[(row % con.totallines) * con.linewidth], con.color[row % con.totallines].c, con.linewidth);
+	}
+
+	// Draw the input prompt, user text, and cursor if desired
+	Con_DrawInput();
+}
+
+#pragma endregion
