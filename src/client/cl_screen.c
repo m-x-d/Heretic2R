@@ -156,7 +156,28 @@ static void SCR_GammaDown_f(void)
 
 static void SCR_DrawConsole(void)
 {
-	NOT_IMPLEMENTED
+	Con_CheckResize();
+
+	if (cls.state == ca_disconnected || cls.state == ca_connecting)
+	{
+		// Forced fullscreen console.
+		Con_DrawConsole(1.0f);
+	}
+	else if (cls.state != ca_active || !cl.refresh_prepped)
+	{
+		// Connected, but can't render.
+		Con_DrawConsole(1.0f);
+		SCR_DirtyScreen(); // H2
+	}
+	else if (scr_con_current != 0.0f)
+	{
+		Con_DrawConsole(scr_con_current);
+	}
+	else if (cls.key_dest == key_game || cls.key_dest == key_message)
+	{
+		// Only draw notify in game.
+		Con_DrawNotify();
+	}
 }
 
 void SCR_BeginLoadingPlaque(void)

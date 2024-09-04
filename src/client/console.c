@@ -214,3 +214,13 @@ void Con_Print(const char* txt)
 		}
 	}
 }
+
+void Con_DrawNotify(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void Con_DrawConsole(float frac)
+{
+	NOT_IMPLEMENTED
+}
