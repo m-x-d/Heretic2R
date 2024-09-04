@@ -248,7 +248,24 @@ static void SCR_DrawNet(void)
 
 static void SCR_DrawPause(void)
 {
-	NOT_IMPLEMENTED
+	if (!(int)scr_showpause->value || !(int)cl_paused->value) // Turn off for screenshots
+		return;
+
+	if (Cvar_VariableValue("maxclients") < 2 && Com_ServerState() != 0)
+	{
+		char pause_pic[MAX_QPATH];
+		Com_sprintf(pause_pic, sizeof(pause_pic), "\x03%s", scr_item_paused->string);
+
+		const int w = re.BF_Strlen(pause_pic);
+		const int x = (DEF_WIDTH - w) / 2;
+
+		re.DrawStretchPic(x - 16, 48, w + 32, 48, "misc/textback.m32", 1.0f, true);
+		re.DrawBigFont(x, 80, pause_pic, 1.0f);
+	}
+	else
+	{
+		Cvar_SetValue("paused", 0);
+	}
 }
 
 static void SCR_DrawLoading(void)
