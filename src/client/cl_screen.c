@@ -56,9 +56,10 @@ void SCR_DebugGraph(float value, int color)
 	NOT_IMPLEMENTED
 }
 
-static void SCR_ShowDebugGraph(void)
+static void SCR_AddTimeGraph(void) // H2
 {
-	NOT_IMPLEMENTED
+	if ((int)scr_timegraph->value)
+		SCR_DebugGraph((float)frame_index, 0xffffff);
 }
 
 static void SCR_DrawDebugGraph(void)
@@ -690,7 +691,7 @@ void SCR_UpdateScreen(void)
 			SCR_DrawCinematicBorders(); // H2
 			SCR_DrawGameMessage(); // H2
 
-			SCR_ShowDebugGraph(); // H2
+			SCR_AddTimeGraph(); // H2
 			SCR_DrawDebugGraph();
 			SCR_DrawConsole();
 			SCR_DrawPause();

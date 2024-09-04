@@ -603,6 +603,9 @@ void SHOWNET(char* s);
 void CL_ParseClientinfo(int player);
 int COLOUR(cvar_t* cvar);
 
+// cl_view.c
+extern int frame_index; //mxd
+
 void V_Init(void);
 void V_RenderView(float stereo_separation);
 

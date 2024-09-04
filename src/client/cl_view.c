@@ -10,7 +10,7 @@
 cvar_t* crosshair;
 static cvar_t* cl_stats;
 
-static int frame_index; // H2
+int frame_index; // H2
 
 static float CalcFov(float fov_x, float width, float height)
 {
