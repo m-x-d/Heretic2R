@@ -573,9 +573,36 @@ static void SCR_DrawCinematicBorders(void) // H2
 	}
 }
 
-static void SCR_DrawGameMessageIfNecessary(void)
+static void SCR_DrawGameMessage(void) // H2
 {
-	NOT_IMPLEMENTED
+	int line_len;
+
+	game_message_dispay_time -= cls.frametime;
+
+	if (game_message_dispay_time <= 0.0f)
+		return;
+		
+	//mxd. The above code was in a separate function in original version.
+	if (strlen(game_message) > 9999)
+		return;
+
+	const float scaler = (game_message_show_at_top ? 0.9f : 0.4f);
+	int y = (int)((float)viddef.height * scaler) - (game_message_num_lines / 2) * 8;
+
+	for (char* s = game_message; *s != 0; s += line_len, y += 8)
+	{
+		for (line_len = 0; line_len < 60; line_len++)
+		{
+			const char c = s[line_len];
+			if (c == 0 || c == '\n')
+				break;
+		}
+
+		const int x = (viddef.width - line_len * 8) / 2;
+		SCR_AddDirtyPoint(x, y);
+		DrawString(x, y, s, game_message_color.c, line_len);
+		SCR_AddDirtyPoint(x + line_len * 8, y + 8);
+	}
 }
 
 static void SCR_UpdateFogDensity(void)
@@ -661,7 +688,7 @@ void SCR_UpdateScreen(void)
 			SCR_DrawNet();
 			SCR_DrawNames(); // H2
 			SCR_DrawCinematicBorders(); // H2
-			SCR_DrawGameMessageIfNecessary(); // H2
+			SCR_DrawGameMessage(); // H2
 
 			SCR_ShowDebugGraph(); // H2
 			SCR_DrawDebugGraph();

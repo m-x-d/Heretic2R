@@ -9,6 +9,13 @@
 
 char client_string[128];
 
+// H2 game messages
+char game_message[1024];
+int game_message_num_lines;
+paletteRGBA_t game_message_color;
+qboolean game_message_show_at_top;
+float game_message_dispay_time;
+
 int COLOUR(cvar_t* cvar)
 {
 	NOT_IMPLEMENTED
