@@ -9,6 +9,12 @@
 
 char client_string[128];
 
+int COLOUR(cvar_t* cvar)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
 void CL_RegisterSounds(void)
 {
 	S_BeginRegistration();

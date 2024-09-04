@@ -6,6 +6,7 @@
 
 #include "client.h"
 #include "sound.h"
+#include "Vector.h"
 
 float scr_con_current; // Aproaches scr_conlines at scr_conspeed.
 
@@ -516,9 +517,48 @@ static void SCR_DrawLayout(void)
 		SCR_ExecuteLayoutString(cl.layout);
 }
 
-static void SCR_DrawNames(void)
+static void SCR_DrawNames(void) // H2
 {
-	NOT_IMPLEMENTED
+	vec3_t origin;
+	paletteRGBA_t color;
+
+	if (!(int)shownames->value)
+		return;
+
+	for (int i = 0; i < Q_atoi(cl.configstrings[CS_MAXCLIENTS]); i++)
+	{
+		// Undefined skin (???)
+		if (cl.configstrings[CS_PLAYERSKINS + i] == 0)
+			continue;
+
+		// Not in player's view
+		if ((cl.PIV & cl.frame.playerstate.PIV & (1 << i)) == 0)
+			continue;
+
+		if (cl.frame.playerstate.dmflags & DF_SKINTEAMS)
+		{
+			if (Q_stricmp(cl.clientinfo[i].skin_name, cl.clientinfo[cl.playernum].skin_name) == 0)
+				color = TextPalette[P_GREEN];
+			else
+				color = TextPalette[P_RED];
+		}
+		else if (cl.frame.playerstate.dmflags & DF_MODELTEAMS)
+		{
+			if (Q_stricmp(cl.clientinfo[i].model_name, cl.clientinfo[cl.playernum].model_name) == 0)
+				color = TextPalette[P_GREEN];
+			else
+				color = TextPalette[P_RED];
+		}
+		else
+		{
+			color = TextPalette[COLOUR(colour_names)];
+		}
+
+		VectorCopy(cl.clientinfo[i].origin, origin);
+		origin[2] += 64.0f - shownames->value * 32.0f;
+
+		re.Draw_Name(origin, cl.clientinfo[i].name, color);
+	}
 }
 
 static void SCR_DrawFill(void)
