@@ -191,7 +191,8 @@ void SCR_Init(void)
 
 static void SCR_DrawNet(void)
 {
-	NOT_IMPLEMENTED
+	if (cls.netchan.outgoing_sequence - cls.netchan.incoming_acknowledged >= CMD_BACKUP - 1)
+		re.DrawPic(scr_vrect.x + 16, scr_vrect.y + 16, "misc/net.m8", 1.0f); // Q2: re.DrawPic(scr_vrect.x + 64, scr_vrect.y, "net");
 }
 
 static void SCR_DrawPause(void)
