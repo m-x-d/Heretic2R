@@ -615,8 +615,8 @@ static void SCR_DrawCinematicBorders(void) // H2
 {
 	if (cls.key_dest != key_console && cl.frame.playerstate.cinematicfreeze)
 	{
-		const int top_height = (viddef.height * 48) / 480;
-		const int bottom_height = (viddef.height * 64) / 480;
+		const int top_height = (viddef.height * 48) / DEF_HEIGHT;
+		const int bottom_height = (viddef.height * 64) / DEF_HEIGHT;
 
 		re.DrawFill(0, 0, viddef.width, top_height, 0, 0, 0);
 		re.DrawFill(0, viddef.height - bottom_height, viddef.width, bottom_height, 0, 0, 0);
