@@ -8,6 +8,11 @@
 
 cvar_t* m_banner_worldmap;
 
+void M_WorldMap_Draw(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void M_Menu_World_Map_f(void)
 {
 	NOT_IMPLEMENTED

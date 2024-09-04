@@ -10,4 +10,5 @@
 
 extern cvar_t* m_banner_worldmap;
 
+void M_WorldMap_Draw(void);
 void M_Menu_World_Map_f(void);

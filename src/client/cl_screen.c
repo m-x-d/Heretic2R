@@ -7,6 +7,7 @@
 #include "client.h"
 #include "sound.h"
 #include "Vector.h"
+#include "menus/menu_worldmap.h"
 
 float scr_con_current; // Aproaches scr_conlines at scr_conspeed.
 
@@ -270,7 +271,31 @@ static void SCR_DrawPause(void)
 
 static void SCR_DrawLoading(void)
 {
-	NOT_IMPLEMENTED
+	if (!scr_draw_loading || strcmp(cls.servername, "localhost") != 0 || (int)Cvar_VariableValue("coop") || (int)Cvar_VariableValue("deathmatch"))
+		return;
+
+	// Draw map bg.
+	cls.m_menuscale = 1.0f;
+	cls.m_menualpha = 1.0f;
+
+	M_WorldMap_Draw();
+
+	cls.m_menuscale = 0.0f;
+	cls.m_menualpha = 0.0f;
+
+	char label[MAX_QPATH];
+	Com_sprintf(label, sizeof(label), "\x03%s", scr_item_loading->string);
+
+	const int w = re.BF_Strlen(label);
+	const int x = (DEF_WIDTH - w) >> 1;
+
+	// Draw label.
+	re.DrawStretchPic(x - 16, 48, w + 32, 48, "misc/textback.m32", 1.0f, true);
+	re.DrawBigFont(x, 80, label, 1.0f);
+
+	// Draw progressbar.
+	re.DrawStretchPic(49, 432, 70, 16, "icons/breath2.m8", 1.0f, true);
+	re.DrawStretchPic(52, 432, scr_progressbar_offset_x, 16, "icons/breath.m8", 1.0f, true);
 }
 
 // Q2 counterpart
