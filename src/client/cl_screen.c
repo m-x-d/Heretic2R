@@ -496,16 +496,8 @@ static void SCR_ExecuteLayoutString(char* s)
 			// Draw a number
 			token = COM_Parse(&s);
 			if (cl.frame.playerstate.stats[Q_atoi(token)] == 0)
-			{
-				// Skip to endif
-				while (strcmp(token, "endif") != 0)
-				{
-					if (s == NULL)
-						return;
-
+				while (s != NULL && strcmp(token, "endif") != 0) // Skip to endif
 					token = COM_Parse(&s);
-				}
-			}
 		}
 	}
 }
@@ -519,7 +511,8 @@ static void SCR_DrawStats(void)
 
 static void SCR_DrawLayout(void)
 {
-	NOT_IMPLEMENTED
+	if ((cl.frame.playerstate.stats[STAT_LAYOUTS] & 1) != 0) // H2: proceed when 'Show scores' flag is set.
+		SCR_ExecuteLayoutString(cl.layout);
 }
 
 static void SCR_DrawNames(void)
