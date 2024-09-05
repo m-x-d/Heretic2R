@@ -6,6 +6,7 @@
 
 #include "server.h"
 #include "sv_effects.h"
+#include "Vector.h"
 
 server_static_t svs; // Persistent server info
 server_t sv; // Local server
@@ -38,9 +39,24 @@ void SV_SoundRemove(char* name)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
+// Entity baselines are used to compress the update messages to the clients.
+// Only the fields that differ from the baseline will be transmitted.
 static void SV_CreateBaseline(void)
 {
-	NOT_IMPLEMENTED
+	for (int entnum = 1; entnum < ge->num_edicts; entnum++)
+	{
+		edict_t* svent = EDICT_NUM(entnum);
+
+		if (svent->inuse && (svent->s.modelindex || svent->s.sound || svent->s.effects))
+		{
+			svent->s.number = (short)entnum;
+
+			// Take current state as baseline
+			VectorCopy(svent->s.origin, svent->s.old_origin);
+			sv.baselines[entnum] = svent->s;
+		}
+	}
 }
 
 static qboolean SV_CheckForSavegame(void)
