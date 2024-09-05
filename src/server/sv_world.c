@@ -6,9 +6,32 @@
 
 #include "server.h"
 
-void SV_ClearWorld(void)
+#define AREA_NODES	32
+
+typedef struct areanode_s
+{
+	int axis; // -1 = leaf node
+	float dist;
+	struct areanode_s* children[2];
+	link_t trigger_edicts;
+	link_t solid_edicts;
+} areanode_t;
+
+areanode_t sv_areanodes[AREA_NODES];
+int sv_numareanodes;
+
+static areanode_t* SV_CreateAreaNode(int depth, vec3_t mins, vec3_t maxs)
 {
 	NOT_IMPLEMENTED
+	return NULL;
+}
+
+// Q2 counterpart
+void SV_ClearWorld(void)
+{
+	memset(sv_areanodes, 0, sizeof(sv_areanodes));
+	sv_numareanodes = 0;
+	SV_CreateAreaNode(0, sv.models[1]->mins, sv.models[1]->maxs);
 }
 
 void SV_UnlinkEdict(edict_t* ent)
