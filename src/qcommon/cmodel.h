@@ -9,7 +9,7 @@
 #include "qcommon.h"
 
 // cmodel.c
-cmodel_t* CM_LoadMap(char* name, qboolean clientload, uint* checksum);
+cmodel_t* CM_LoadMap(const char* name, qboolean clientload, uint* checksum);
 cmodel_t* CM_InlineModel(char* name); // *1, *2, etc
 
 int CM_NumClusters(void);
