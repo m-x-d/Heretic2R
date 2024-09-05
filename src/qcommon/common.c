@@ -313,9 +313,17 @@ static void Z_Stats_f(void)
 	NOT_IMPLEMENTED
 }
 
-void Z_FreeTags(int tag)
+// Q2 counterpart
+void Z_FreeTags(const int tag)
 {
-	NOT_IMPLEMENTED
+	zhead_t* next;
+
+	for (zhead_t* z = z_chain.next; z != &z_chain; z = next)
+	{
+		next = z->next;
+		if (z->tag == tag)
+			Z_Free(z + 1);
+	}
 }
 
 // Q2 counterpart
