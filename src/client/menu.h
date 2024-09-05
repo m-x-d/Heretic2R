@@ -118,3 +118,5 @@ typedef struct
 	int curvalue;
 	const char** itemnames;
 } menulist_s;
+
+void M_UpdateOrigMode(void); // H2

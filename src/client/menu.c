@@ -108,6 +108,29 @@ cvar_t* m_dmlist;
 cvar_t* m_cooplist;
 cvar_t* m_origmode;
 
+static qboolean m_entersound; // Play after drawing a frame, so caching won't disrupt the sound. //TODO: doesn't seem to be related to playing sounds. Rename?
+
+void (*m_drawfunc)(void);
+const char* (*m_keyfunc)(int key);
+const char* (*m_keyfunc2)(int key); // H2
+
+#define MAX_MENU_DEPTH	9 // Q2: 8
+
+typedef struct
+{
+	void (*draw)(void);
+	const char* (*key)(int k);
+} menulayer_t;
+
+menulayer_t	m_layers[MAX_MENU_DEPTH];
+static int m_menudepth;
+static uint m_menu_side; // H2 (0 - left, 1 - right)?
+
+void M_ForceMenuOff(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void M_Init(void)
 {
 	Cmd_AddCommand("menu_main", M_Menu_Main_f);
@@ -312,7 +335,120 @@ void M_Init(void)
 	Cvar_Get("dm_no_bodies", "0", CVAR_ARCHIVE);
 }
 
-void M_Draw(void)
+void M_UpdateOrigMode(void) // H2
 {
 	NOT_IMPLEMENTED
+}
+
+static float GetMenuAlpha(int menutime)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+void M_Draw(void)
+{
+	if (cls.key_dest != key_menu)
+		return;
+
+	// Repaint everything next frame
+	SCR_DirtyScreen();
+
+	switch (cls.m_menustate)
+	{
+		case 0: // MENU_START_OPENING?
+			m_entersound = false;
+			cls.startmenu = Sys_Milliseconds();
+			m_menu_side = ((m_menudepth & 1) == 0);
+			m_layers[0].draw = m_drawfunc;
+			m_keyfunc2 = m_keyfunc;
+			cls.m_menustate = 1;
+			cls.m_menualpha = 0.0f;
+			cls.m_menuscale = 1.0f;
+			m_drawfunc();
+			break;
+
+		case 1: // MENU_OPENING?
+			cls.m_menualpha = GetMenuAlpha(cls.startmenu);
+			m_layers[0].draw();
+			if (cls.m_menualpha == 1.0f || quick_menus->value > 1.0f)
+				cls.m_menustate = 2;
+			break;
+
+		case 2: // MENU_OPENED?
+			cls.m_menualpha = 1.0f;
+			m_layers[0].draw();
+			break;
+
+		case 3:
+			cls.startmenu = Sys_Milliseconds();
+			cls.m_menustate = 4;
+			cls.m_menualpha = 1.0f;
+			m_layers[0].draw();
+			break;
+
+		case 4:
+			cls.m_menualpha = 1.0f - GetMenuAlpha(cls.startmenu);
+			m_layers[0].draw();
+
+			if (cls.m_menualpha == 0.0f || quick_menus->value > 1.0f)
+				cls.m_menustate = (m_menudepth > 0 ? 0 : 6);
+			break;
+
+		case 5:
+			cls.startmenuzoom = Sys_Milliseconds();
+			m_layers[0].draw = m_drawfunc;
+			m_menu_side = ((m_menudepth & 1) == 0);
+			m_keyfunc2 = m_keyfunc;
+			cls.m_menuscale = 0.0f;
+			cls.m_menualpha = 0.0f;
+
+			if ((int)quick_menus->value || cls.state == ca_disconnected)
+				cls.m_menustate = 0;
+			else
+				cls.m_menustate = 7;
+			break;
+
+		case 6: // MENU_START_CLOSING?
+			m_entersound = true;
+			cls.startmenuzoom = Sys_Milliseconds();
+			cls.m_menuscale = 1.0f;
+			m_layers[0].draw();
+
+			if ((int)quick_menus->value || cls.state == ca_disconnected)
+			{
+				cls.m_menustate = 0;
+
+				M_ForceMenuOff();
+				M_UpdateOrigMode();
+			}
+			else
+			{
+				cls.m_menustate = 8;
+			}
+			break;
+
+		case 7:
+			cls.m_menuscale = GetMenuAlpha(cls.startmenuzoom);
+			m_layers[0].draw();
+
+			if (cls.m_menuscale == 1.0f)
+				cls.m_menustate = 0;
+			break;
+
+		case 8: // MENU_CLOSING?
+			cls.m_menuscale = 1.0f - GetMenuAlpha(cls.startmenuzoom);
+			m_layers[0].draw();
+
+			if (cls.m_menuscale == 0.0f)
+			{
+				M_ForceMenuOff();
+				M_UpdateOrigMode();
+			}
+			break;
+
+		default: //mxd. Added default case.
+			Sys_Error("Unexpected menu index %i", cls.m_menustate);
+			break;
+	}
 }
