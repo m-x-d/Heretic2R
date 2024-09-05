@@ -61,12 +61,41 @@ static void SV_CreateBaseline(void)
 
 static qboolean SV_CheckForSavegame(void)
 {
-	NOT_IMPLEMENTED
-	return false;
+	char temp[MAX_OSPATH];
+	char name[MAX_OSPATH];
+
+	if ((int)sv_noreload->value || (int)Cvar_VariableValue("deathmatch"))
+		return false;
+
+	// H2: strip directory path from sv.name... Checks only for '/' separator.
+	strcpy_s(temp, sizeof(temp), sv.name); //mxd. strcpy -> strcpy_s
+
+	//mxd. Rewritten the logic...
+	const char* c = strrchr(temp, '/');
+	if (c != NULL)
+	{
+		const int pos = (c - temp);
+		memmove_s(temp, sizeof(temp), c + 1, strlen(temp) - pos);
+		temp[pos] = 0;
+	}
+
+	Com_sprintf(name, sizeof(name), "%s/save/current/%s.sav", FS_Userdir(), temp); // H2: FS_Gamedir
+
+	FILE* f;
+	if (fopen_s(&f, name, "rb") == 0)
+	{
+		fclose(f);
+		SV_ClearWorld();
+		SV_ReadLevelFile(); // Get configstrings and areaportals
+
+		return true;
+	}
+
+	return false; // No savegame
 }
 
 // Change the server to a new map, taking all connected clients along with it.
-static void SV_SpawnServer(char* server, char* spawnpoint, server_state_t serverstate, qboolean attractloop, qboolean loadgame)
+static void SV_SpawnServer(char* server, char* spawnpoint, const server_state_t serverstate, const qboolean attractloop, const qboolean loadgame)
 {
 	uint checksum;
 
@@ -182,7 +211,7 @@ static void SV_SpawnServer(char* server, char* spawnpoint, server_state_t server
 	}
 
 	if (svs.have_current_save) // H2
-		for (int i = 0; i <= 100; i++)
+		for (int i = 0; i < 100; i++)
 			ge->RunFrame();
 
 	// Set serverinfo variable.

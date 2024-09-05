@@ -165,10 +165,12 @@ extern cvar_t* maxclients;
 extern cvar_t* sv_cooptimeout;
 extern cvar_t* sv_cinematicfreeze;
 extern cvar_t* sv_welcome_mess; // H2
+extern cvar_t* sv_noreload;
 
 extern qboolean is_local_client; // H2
 
 // sv_ccmds.c
+void SV_ReadLevelFile(void);
 void SV_InitOperatorCommands(void);
 
 // sv_init.c

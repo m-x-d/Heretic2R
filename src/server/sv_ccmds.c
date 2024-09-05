@@ -49,6 +49,11 @@ static void SV_WriteLevelFile(void)
 	NOT_IMPLEMENTED
 }
 
+void SV_ReadLevelFile(void)
+{
+	NOT_IMPLEMENTED
+}
+
 static void SV_WriteServerFile(qboolean autosave)
 {
 	NOT_IMPLEMENTED
