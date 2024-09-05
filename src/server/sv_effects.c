@@ -8,6 +8,8 @@
 
 ResourceManager_t sv_FXBufMngr;
 ResourceManager_t EffectsBufferMngr;
+
+int per_effects_buffers_size;
 PerEffectsBuffer_t persistant_effects_array[MAX_PERSISTANT_EFFECTS];
 
 int effects_buffer_index;

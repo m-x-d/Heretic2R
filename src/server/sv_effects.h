@@ -11,6 +11,8 @@
 
 extern ResourceManager_t sv_FXBufMngr;
 extern ResourceManager_t EffectsBufferMngr;
+
+extern int per_effects_buffers_size; //TODO: better name?
 extern PerEffectsBuffer_t persistant_effects_array[MAX_PERSISTANT_EFFECTS];
 
 extern int effects_buffer_index;

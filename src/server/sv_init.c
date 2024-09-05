@@ -5,6 +5,7 @@
 //
 
 #include "server.h"
+#include "sv_effects.h"
 
 server_static_t svs; // Persistent server info
 server_t sv; // Local server
@@ -37,9 +38,141 @@ void SV_SoundRemove(char* name)
 	NOT_IMPLEMENTED
 }
 
-static void SV_SpawnServer(char* server, char* spawnpoint, server_state_t serverstate, qboolean attractloop, qboolean loadgame)
+static void SV_CreateBaseline(void)
 {
 	NOT_IMPLEMENTED
+}
+
+static qboolean SV_CheckForSavegame(void)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
+// Change the server to a new map, taking all connected clients along with it.
+static void SV_SpawnServer(char* server, char* spawnpoint, server_state_t serverstate, qboolean attractloop, qboolean loadgame)
+{
+	uint checksum;
+
+	if (attractloop)
+		Cvar_Set("paused", "0");
+
+	Com_ColourPrintf(P_HEADER, "------- Server Initialization -------\n"); // Q2: Com_Printf
+
+	Com_DPrintf("SpawnServer: %s\n", server);
+	if (sv.demofile)
+		fclose(sv.demofile);
+
+	Cvar_SetValue("server_machine", 1.0f); // H2
+
+	svs.spawncount++; // Any partially connected client will be restarted.
+
+	sv.state = ss_dead;
+	Com_SetServerState(sv.state);
+	
+	// Wipe the entire per-level structure.
+	memset(&sv, 0, sizeof(sv));
+	svs.realtime = 0;
+	sv.loadgame = loadgame;
+	sv.attractloop = attractloop;
+
+	// Save name and welcome message for levels that don't set message.
+	strcpy_s(sv.configstrings[CS_NAME], sizeof(sv.configstrings[CS_NAME]), server); //mxd. strcpy -> strcpy_s
+	strcpy_s(sv.configstrings[CS_WELCOME], sizeof(sv.configstrings[CS_WELCOME]), sv_welcome_mess->string); // H2 //mxd. strcpy -> strcpy_s
+
+	SZ_Init(&sv.multicast, sv.multicast_buf, sizeof(sv.multicast_buf));
+
+	strcpy_s(sv.name, sizeof(sv.name), server); //mxd. strcpy -> strcpy_s
+
+	// Leave slots at start for clients only.
+	for (int i = 0; i < (int)maxclients->value; i++)
+	{
+		// Needs to reconnect
+		if (svs.clients[i].state > cs_connected)
+			svs.clients[i].state = cs_connected;
+
+		svs.clients[i].lastframe = -1;
+	}
+
+	sv.time = 200; // Q2: 1000
+
+	// Save name and welcome message for levels that don't set message. AGAIN. //TODO: why are these set twice?
+	strcpy_s(sv.name, sizeof(sv.name), server);
+	strcpy_s(sv.configstrings[CS_NAME], sizeof(sv.configstrings[CS_NAME]), server);
+	strcpy_s(sv.configstrings[CS_WELCOME], sizeof(sv.configstrings[CS_WELCOME]), sv_welcome_mess->string); // H2
+
+	if (serverstate == ss_game)
+	{
+		Com_sprintf(sv.configstrings[CS_MODELS + 1], sizeof(sv.configstrings[CS_MODELS + 1]), "maps/%s.bsp", server);
+		sv.models[1] = CM_LoadMap(sv.configstrings[CS_MODELS + 1], false, &checksum);
+	}
+	else
+	{
+		sv.models[1] = CM_LoadMap("", false, &checksum); // No real map
+	}
+
+	Com_sprintf(sv.configstrings[CS_MAPCHECKSUM], sizeof(sv.configstrings[CS_MAPCHECKSUM]), "%i", checksum);
+
+	// Clear physics interaction links.
+	SV_ClearWorld();
+
+	per_effects_buffers_size = 0; // H2
+	memset(persistant_effects_array, 0, sizeof(persistant_effects_array)); // H2
+
+	for (int i = 1; i < CM_NumInlineModels(); i++)
+	{
+		Com_sprintf(sv.configstrings[CS_MODELS + 1 + i], sizeof(sv.configstrings[CS_MODELS + 1 + i]), "*%i", i);
+		sv.models[i + 1] = CM_InlineModel(sv.configstrings[CS_MODELS + 1 + i]);
+	}
+
+	// Spawn the rest of the entities on the map.
+
+	// Precache and static commands can be issued during map initialization.
+	sv.state = ss_loading;
+	Com_SetServerState(sv.state);
+
+	// Load and spawn all other entities
+	ge->SpawnEntities(sv.name, CM_EntityString(), spawnpoint, sv.loadgame); // H2: extra arg
+
+	// All precaches are complete.
+	sv.state = serverstate;
+	Com_SetServerState(serverstate);
+
+	// Create a baseline for more efficient communications.
+	SV_CreateBaseline();
+
+	// Check for a savegame.
+	const qboolean revisiting = SV_CheckForSavegame();
+
+	ge->ConstructEntities(); // H2
+	ge->CheckCoopTimeout(revisiting); // H2
+
+	if ((int)dedicated->value) // H2
+	{
+		const int cooptimeout = (int)Cvar_VariableValue("sv_cooptimeout");
+		if (cooptimeout > 0)
+		{
+			char msg[MAX_OSPATH];
+			sprintf_s(msg, sizeof(msg), "Cinematic pending - waiting %i seconds for other players to join.\n\n", cooptimeout); //mxd. sprintf -> sprintf_s
+			Com_Printf("%s", msg);
+		}
+	}
+
+	// Run two frames to allow everything to settle.
+	if (!sv.loadgame)
+	{
+		ge->RunFrame();
+		ge->RunFrame();
+	}
+
+	if (svs.have_current_save) // H2
+		for (int i = 0; i <= 100; i++)
+			ge->RunFrame();
+
+	// Set serverinfo variable.
+	Cvar_FullSet("mapname", sv.name, CVAR_SERVERINFO | CVAR_NOSET);
+
+	Com_ColourPrintf(P_HEADER, "-------------------------------------\n"); // Q2: Com_Printf
 }
 
 // A brand new game has been started

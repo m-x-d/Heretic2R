@@ -6,6 +6,11 @@
 
 #include "server.h"
 
+void SV_ClearWorld(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void SV_UnlinkEdict(edict_t* ent)
 {
 	NOT_IMPLEMENTED

@@ -164,6 +164,7 @@ extern cvar_t* maxclients;
 
 extern cvar_t* sv_cooptimeout;
 extern cvar_t* sv_cinematicfreeze;
+extern cvar_t* sv_welcome_mess; // H2
 
 extern qboolean is_local_client; // H2
 
@@ -193,6 +194,8 @@ void SV_StartSound(vec3_t origin, edict_t* entity, int channel, int soundindex, 
 void SV_SendClientMessages(qboolean send_client_data); // H2: + 'send_client_data' arg
 
 // sv_world.c
+// Called after the world model has been loaded, before linking any entities.
+void SV_ClearWorld(void);
 
 // Needs to be called any time an entity changes origin, mins, maxs, or solid. Automatically unlinks if needed.
 // sets ent->v.absmin and ent->v.absmax.
