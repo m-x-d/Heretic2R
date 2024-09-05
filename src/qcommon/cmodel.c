@@ -78,16 +78,16 @@ cmodel_t* CM_InlineModel(char* name)
 	return NULL;
 }
 
+// Q2 counterpart
 int CM_NumInlineModels(void)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	return numcmodels;
 }
 
+// Q2 counterpart
 char* CM_EntityString(void)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	return map_entitystring;
 }
 
 void FloodAreaConnections(void)
