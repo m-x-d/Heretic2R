@@ -91,16 +91,16 @@ float MSG_ReadCoord(sizebuf_t* sb);
 void MSG_ReadPos(sizebuf_t* sb, vec3_t pos);
 float MSG_ReadAngle(sizebuf_t* sb);
 float MSG_ReadAngle16(sizebuf_t* sb);
-void MSG_ReadDeltaUsercmd(sizebuf_t* sb, struct usercmd_s* from, struct usercmd_s* cmd);
+void MSG_ReadDeltaUsercmd(sizebuf_t* sb, const struct usercmd_s* from, struct usercmd_s* move);
 
-void MSG_ReadDir(sizebuf_t* sb, vec3_t vector);
+void MSG_ReadDir(sizebuf_t* sb, vec3_t dir);
 void MSG_ReadDirMag(sizebuf_t* sb, vec3_t dir);
-void MSG_ReadYawPitch(sizebuf_t* sb, vec3_t vector);
-void MSG_ReadShortYawPitch(sizebuf_t* sb, vec3_t vector);
+void MSG_ReadYawPitch(sizebuf_t* sb, vec3_t dir);
+void MSG_ReadShortYawPitch(sizebuf_t* sb, vec3_t dir);
 
-void MSG_ReadData(sizebuf_t* sb, void* buffer, int size);
-void MSG_ReadJoints(sizebuf_t* msg_read, entity_state_t* ent);
-void MSG_ReadEffects(sizebuf_t* msg_read, EffectsBuffer_t* fxBuf);
+void MSG_ReadData(sizebuf_t* sb, void* data, int size);
+void MSG_ReadJoints(sizebuf_t* sb, entity_state_t* ent); //TODO: no implementation? unused?
+void MSG_ReadEffects(sizebuf_t* sb, EffectsBuffer_t* fxBuf);
 
 //TODO: debug stuff from original version. Remove?
 //extern qboolean bigendien;
@@ -789,9 +789,6 @@ void Z_FreeTags(int tag);
 
 void Qcommon_Init(int argc, char** argv);
 void Qcommon_Frame(int msec);
-
-#define NUMVERTEXNORMALS	162
-extern vec3_t bytedirs[NUMVERTEXNORMALS];
 
 #pragma endregion
 
