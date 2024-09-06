@@ -422,5 +422,8 @@
     <ClInclude Include="..\qcommon\cmodel_private.h">
       <Filter>qcommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\qcommon\cl_strings.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

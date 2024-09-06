@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include "server.h"
 #include "clfx_dll.h"
+#include "sv_effects.h"
+#include "cl_strings.h"
 
 cvar_t* sv_paused;
 
@@ -60,6 +62,11 @@ static void SV_SendWelcomeMessasge(char* msg) // H2
 	NOT_IMPLEMENTED
 }
 
+static void SV_DropClient(client_t* drop)
+{
+	NOT_IMPLEMENTED
+}
+
 static void SV_CalcPings(void)
 {
 	NOT_IMPLEMENTED
@@ -75,9 +82,36 @@ static void SV_ReadPackets(void)
 	NOT_IMPLEMENTED
 }
 
+// If a packet has not been received from a client for timeout->value seconds, drop the connection.
+// Server frames are used instead of realtime to avoid dropping the local client while debugging.
+
+// When a client is normally dropped, the client_t goes into a zombie state for a few seconds
+// to make sure any final reliable message gets resent if necessary.
 static void SV_CheckTimeouts(void)
 {
-	NOT_IMPLEMENTED
+	const int droppoint = (int)((float)svs.realtime - timeout->value * 1000.0f);
+	const int zombiepoint = (int)((float)svs.realtime - zombietime->value * 1000.0f);
+
+	client_t* client = svs.clients;
+
+	for (int i = 0; i < (int)maxclients->value; i++, client++)
+	{
+		// Message times may be wrong across a changelevel.
+		client->lastmessage = min(svs.realtime, client->lastmessage);
+
+		if (client->state == cs_zombie && client->lastmessage < zombiepoint)
+		{
+			SV_RemoveEdictFromEffectsArray(client->edict); // H2
+			client->state = cs_free; // Can now be reused
+		}
+		else if ((client->state == cs_connected || client->state == cs_spawned) && client->lastmessage < droppoint)
+		{
+			SV_BroadcastObituary(PRINT_HIGH, GM_TIMEDOUT, client->edict->s.number, 0); // H2
+			SV_DropClient(client);
+			SV_RemoveEdictFromEffectsArray(client->edict); // H2
+			client->state = cs_free; // Don't bother with zombie state.
+		}
+	}
 }
 
 static void SV_PrepWorldFrame(void)

@@ -47,6 +47,11 @@ qboolean SV_RemovePersistantEffect(int toRemove, int call_from)
 	return false;
 }
 
+void SV_RemoveEdictFromEffectsArray(edict_t* ed)
+{
+	NOT_IMPLEMENTED
+}
+
 void SV_ClearPersistantEffects(void)
 {
 	NOT_IMPLEMENTED

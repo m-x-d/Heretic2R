@@ -126,6 +126,7 @@
     <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="..\Player\Player.h" />
     <ClInclude Include="..\Player\p_types.h" />
+    <ClInclude Include="..\qcommon\cl_strings.h" />
     <ClInclude Include="..\qcommon\cmodel.h" />
     <ClInclude Include="..\qcommon\cmodel_private.h" />
     <ClInclude Include="..\qcommon\H2Common.h" />
