@@ -51,11 +51,13 @@
     <ClCompile Include="..\client\menus\menu_startserver.c" />
     <ClCompile Include="..\client\menus\menu_video.c" />
     <ClCompile Include="..\client\menus\menu_worldmap.c" />
+    <ClCompile Include="..\qcommon\anorms.c" />
     <ClCompile Include="..\qcommon\cmd.c" />
     <ClCompile Include="..\qcommon\cmodel.c" />
     <ClCompile Include="..\qcommon\common.c" />
     <ClCompile Include="..\qcommon\cvar.c" />
     <ClCompile Include="..\qcommon\files.c" />
+    <ClCompile Include="..\qcommon\netmsg_read.c" />
     <ClCompile Include="..\qcommon\netmsg_write.c" />
     <ClCompile Include="..\qcommon\net_chan.c" />
     <ClCompile Include="..\qcommon\pmove.c" />
@@ -66,6 +68,7 @@
     <ClCompile Include="..\server\sv_init.c" />
     <ClCompile Include="..\server\sv_main.c" />
     <ClCompile Include="..\server\sv_send.c" />
+    <ClCompile Include="..\server\sv_user.c" />
     <ClCompile Include="..\server\sv_world.c" />
     <ClCompile Include="clfx_dll.c" />
     <ClCompile Include="conproc.c" />
@@ -126,6 +129,7 @@
     <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="..\Player\Player.h" />
     <ClInclude Include="..\Player\p_types.h" />
+    <ClInclude Include="..\qcommon\anorms.h" />
     <ClInclude Include="..\qcommon\cl_strings.h" />
     <ClInclude Include="..\qcommon\cmodel.h" />
     <ClInclude Include="..\qcommon\cmodel_private.h" />

@@ -67,6 +67,11 @@ static void SV_DropClient(client_t* drop)
 	NOT_IMPLEMENTED
 }
 
+static void SV_ConnectionlessPacket(void)
+{
+	NOT_IMPLEMENTED
+}
+
 static void SV_CalcPings(void)
 {
 	NOT_IMPLEMENTED
@@ -79,7 +84,52 @@ static void SV_GiveMsec(void)
 
 static void SV_ReadPackets(void)
 {
-	NOT_IMPLEMENTED
+	while (NET_GetPacket(NS_SERVER, &net_from, &net_message))
+	{
+		// Check for connectionless packet (0xffffffff) first.
+		if (*(int*)net_message.data == -1)
+		{
+			SV_ConnectionlessPacket();
+			continue;
+		}
+
+		// Read the qport out of the message so we can fix up stupid address translating routers.
+		MSG_BeginReading(&net_message);
+		MSG_ReadLong(&net_message); // Sequence number
+		MSG_ReadLong(&net_message); // Sequence number
+		const ushort qport = (ushort)MSG_ReadShort(&net_message);
+
+		// Check for packets from connected clients.
+		client_t* client = svs.clients;
+		for (int i = 0; i < (int)maxclients->value; i++, client++)
+		{
+			if (client->state == cs_free)
+				continue;
+
+			if (!NET_CompareBaseAdr(net_from, client->netchan.remote_address))
+				continue;
+
+			if (client->netchan.qport != qport)
+				continue;
+
+			if (client->netchan.remote_address.port != net_from.port)
+			{
+				Com_Printf("SV_ReadPackets: fixing up a translated port\n");
+				client->netchan.remote_address.port = net_from.port;
+			}
+
+			if (Netchan_Process(&client->netchan, &net_message) && client->state != cs_zombie)
+			{
+				// This is a valid, sequenced packet, so process it.
+				client->lastmessage = svs.realtime;	// Don't timeout.
+				SV_ExecuteClientMessage(client);
+			}
+
+			break;
+		}
+	}
+
+	//mxd. H2 Gamespy logic skipped.
 }
 
 // If a packet has not been received from a client for timeout->value seconds, drop the connection.

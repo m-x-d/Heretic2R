@@ -195,6 +195,9 @@ void SV_Multicast(vec3_t origin, multicast_t to);
 void SV_StartSound(vec3_t origin, edict_t* entity, int channel, int soundindex, float volume, float attenuation, float timeofs);
 void SV_SendClientMessages(qboolean send_client_data); // H2: + 'send_client_data' arg
 
+// sv_user.c
+void SV_ExecuteClientMessage(client_t* cl);
+
 // sv_world.c
 // Called after the world model has been loaded, before linking any entities.
 void SV_ClearWorld(void);

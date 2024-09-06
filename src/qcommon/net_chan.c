@@ -72,3 +72,9 @@ void Netchan_Init(void)
 	net_receiverate = Cvar_Get("net_receiverate", "1", 0);
 	net_latency = Cvar_Get("net_latency", "0", 0);
 }
+
+qboolean Netchan_Process(netchan_t* chan, sizebuf_t* msg)
+{
+	NOT_IMPLEMENTED
+	return false;
+}

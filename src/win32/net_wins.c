@@ -17,6 +17,26 @@ static cvar_t* ipxfix; // New in H2
 
 static WSADATA winsockdata;
 
+//TODO: use pointer args
+qboolean NET_CompareAdr(netadr_t a, netadr_t b)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
+//TODO: use pointer args
+qboolean NET_CompareBaseAdr(netadr_t a, netadr_t b)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
+qboolean NET_GetPacket(netsrc_t sock, netadr_t* net_from, sizebuf_t* net_message)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
 static void NET_OpenIP(void)
 {
 	NOT_IMPLEMENTED
