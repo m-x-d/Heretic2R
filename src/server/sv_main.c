@@ -55,9 +55,87 @@ void SV_UnloadClientEffects(void)
 	NOT_IMPLEMENTED
 }
 
-void SV_Frame(int msec)
+static void SV_SendWelcomeMessasge(char* msg) // H2
 {
 	NOT_IMPLEMENTED
+}
+
+static void SV_CalcPings(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SV_GiveMsec(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SV_ReadPackets(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SV_CheckTimeouts(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SV_PrepWorldFrame(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SV_RunGameFrame(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Master_Heartbeat(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void SV_Frame(const int msec)
+{
+	// If server is not active, do nothing.
+	if (!svs.initialized)
+		return;
+
+	svs.realtime += msec;
+
+	rand(); // Keep the random time dependent.
+
+	SV_CheckTimeouts();	// Check timeouts.
+	SV_ReadPackets();	// Get packets from clients.
+
+	// Move autonomous things around if enough time has passed.
+	if ((uint)svs.realtime < sv.time)
+	{
+		// Never let the time get too far off.
+		if (sv.time - svs.realtime > 100)
+		{
+			if ((int)sv_showclamp->value)
+				Com_Printf("sv lowclamp\n");
+
+			svs.realtime = (int)sv.time - 100;
+		}
+
+		return;
+	}
+
+	// H2: send welcome message to clients?
+	if (sv_welcome_mess->modified)
+	{
+		SV_SendWelcomeMessasge(sv_welcome_mess->string);
+		sv_welcome_mess->modified = false;
+	}
+
+	SV_CalcPings();		// Update ping based on the last known frame from all clients.
+	SV_GiveMsec();		// Give the clients some timeslices.
+	SV_RunGameFrame();	// Let everything in the world think and move. 
+	SV_SendClientMessages(true); // Send messages back to the clients that had packets read this frame.
+	Master_Heartbeat();	// Send a heartbeat to the master if needed.
+	SV_PrepWorldFrame(); // Clear teleport flags, etc. for next frame.
 }
 
 // Only called at quake2.exe startup, not for each game
