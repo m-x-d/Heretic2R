@@ -12,6 +12,12 @@ static cvar_t* cl_stats;
 
 int frame_index; // H2
 
+// H2 screen shake
+static float screen_shake_duration;
+static float screen_shake_intensity_max;
+static float screen_shake_endtime;
+static int screen_shake_flags;
+
 static float CalcFov(float fov_x, float width, float height)
 {
 	NOT_IMPLEMENTED
@@ -144,7 +150,10 @@ void V_Init(void)
 	crosshair = Cvar_Get("crosshair", "0", CVAR_ARCHIVE);
 }
 
-void CL_CleanScreenShake(void)
+void CL_ClearScreenShake(void) // H2
 {
-	NOT_IMPLEMENTED
+	screen_shake_duration = 0.0f;
+	screen_shake_intensity_max = 0.0f;
+	screen_shake_endtime = -1.0f;
+	screen_shake_flags = 0;
 }
