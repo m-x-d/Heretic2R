@@ -372,7 +372,7 @@ typedef struct
 
 	void (*S_StartSound)(vec3_t origin, int entnum, int entchannel, struct sfx_s* sfx, float fvol, int attenuation, float timeofs);
 	struct sfx_s* (*S_RegisterSound)(char* name);
-	struct model_s* (*RegisterModel) (char* name);
+	struct model_s* (*RegisterModel)(char* name);
 
 	int (*GetEffect)(centity_t* ent, int flags, char* format, ...);
 

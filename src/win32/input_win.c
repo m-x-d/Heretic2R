@@ -22,6 +22,7 @@ cvar_t* in_joystick;
 cvar_t * m_filter;
 
 static int mouse_buttons;
+static int mouse_oldbuttonstate;
 
 static qboolean mouseactive; // False when not focus app
 
@@ -67,9 +68,24 @@ static void IN_StartupMouse(void)
 	}
 }
 
-void IN_MouseEvent(int mstate)
+// Q2 counterpart.
+void IN_MouseEvent(const int mstate)
 {
-	NOT_IMPLEMENTED
+	if (!mouseinitialized)
+		return;
+
+	// Perform button actions.
+	for (int i = 0; i < mouse_buttons; i++)
+	{
+		const int flag = (1 << i);
+		const qboolean is_pressed = (mstate & flag);
+		const qboolean was_pressed = (mouse_oldbuttonstate & flag);
+
+		if (is_pressed != was_pressed)
+			Key_Event(K_MOUSE1 + i, is_pressed, sys_msg_time);
+	}
+
+	mouse_oldbuttonstate = mstate;
 }
 
 #pragma endregion
