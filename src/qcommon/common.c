@@ -4,8 +4,10 @@
 // Copyright 1998 Raven Software
 //
 
+#include <float.h>
 #include <setjmp.h>
 
+#include "cmodel.h"
 #include "console.h"
 #include "qcommon.h"
 #include "keys.h"
@@ -22,7 +24,7 @@ jmp_buf abortframe; // An ERR_DROP occured, exit the entire frame.
 
 FILE* log_stats_file;
 
-cvar_t* host_speeds;
+cvar_t* host_speeds; //TODO: unused. Remove?
 cvar_t* log_stats;
 cvar_t* developer;
 cvar_t* timescale;
@@ -459,5 +461,62 @@ void Qcommon_Init(int argc, char** argv)
 
 void Qcommon_Frame(int msec)
 {
-	NOT_IMPLEMENTED
+	uint control_word; //mxd
+
+	if (setjmp(abortframe))
+		return; // An ERR_DROP was thrown
+
+	// H2: set fpu precision (done in WinMain in Q2). //TODO: is this relevant? _controlfp logic is removed in YQ2.
+	if (fpu_precision->value == 0.0f)
+		_controlfp_s(&control_word, _PC_24, _MCW_PC);
+	else if (fpu_precision->value == 1.0f)
+		_controlfp_s(&control_word, _PC_53, _MCW_PC);
+	else
+		_controlfp_s(&control_word, _PC_64, _MCW_PC);
+
+	if (log_stats->modified)
+	{
+		log_stats->modified = false;
+
+		if (log_stats_file != NULL)
+		{
+			fclose(log_stats_file);
+			log_stats_file = NULL;
+		}
+
+		if ((int)log_stats->value && fopen_s(&log_stats_file, "stats.log", "w") == 0) //mxd. fopen -> fopen_s
+			fprintf(log_stats_file, "entities,dlights,parts,frame time\n");
+	}
+
+	if ((int)fixedtime->value)
+	{
+		msec = (int)fixedtime->value;
+	}
+	else if ((int)timescale->value)
+	{
+		msec *= (int)timescale->value;
+		msec = max(1, msec);
+	}
+
+	if ((int)showtrace->value)
+	{
+		Com_Printf("%4i traces  %4i points\n", c_traces, c_pointcontents);
+		c_traces = 0;
+		c_brush_traces = 0;
+		c_pointcontents = 0;
+	}
+
+	while (true)
+	{
+		char* s = Sys_ConsoleInput();
+		if (s == NULL)
+			break;
+
+		Cbuf_AddText(va("%s\n", s));
+	}
+
+	// H2: no 'host_speeds' logic.
+	Cbuf_Execute();
+	SV_Frame(msec);
+	CL_Frame(msec);
 }

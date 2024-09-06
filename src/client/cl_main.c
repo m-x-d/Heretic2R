@@ -486,6 +486,11 @@ static void CL_WriteConfiguration(void)
 	Cvar_WriteVariables(path);
 }
 
+void CL_Frame(int msec)
+{
+	NOT_IMPLEMENTED
+}
+
 static int LoadMessages(char* filename, char** message_out)
 {
 	char* buf;

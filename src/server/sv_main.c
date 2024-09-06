@@ -55,6 +55,11 @@ void SV_UnloadClientEffects(void)
 	NOT_IMPLEMENTED
 }
 
+void SV_Frame(int msec)
+{
+	NOT_IMPLEMENTED
+}
+
 // Only called at quake2.exe startup, not for each game
 void SV_Init(void)
 {

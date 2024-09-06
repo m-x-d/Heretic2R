@@ -101,10 +101,6 @@ extern qboolean portalopen[MAX_MAP_AREAPORTALS]; // 4096 bytes
 
 extern cvar_t* map_noareas;
 
-extern int c_pointcontents;
-extern int c_traces;
-extern int c_brush_traces;
-
 extern cplane_t* box_planes;
 extern int box_headnode;
 extern cbrush_t* box_brush;

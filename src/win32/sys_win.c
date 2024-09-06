@@ -137,6 +137,12 @@ void Sys_Init(void)
 static char console_text[256];
 static int console_textlen;
 
+char* Sys_ConsoleInput(void)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
 // Q2 counterpart
 void Sys_ConsoleOutput(const char* string)
 {

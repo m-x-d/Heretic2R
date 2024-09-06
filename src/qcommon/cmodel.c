@@ -28,6 +28,10 @@ qboolean portalopen[MAX_MAP_AREAPORTALS];
 
 cvar_t* map_noareas;
 
+int c_pointcontents;
+int c_traces;
+int c_brush_traces;
+
 cmodel_t* CM_LoadMap(const char* name, const qboolean clientload, uint* checksum)
 {
 	static uint last_checksum;
