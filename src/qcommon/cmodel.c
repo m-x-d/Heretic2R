@@ -84,10 +84,40 @@ int CM_NumInlineModels(void)
 	return numcmodels;
 }
 
+int CM_LeafCluster(int leafnum)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+int CM_LeafArea(int leafnum)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+int CM_PointLeafnum(vec3_t p)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
 // Q2 counterpart
 char* CM_EntityString(void)
 {
 	return map_entitystring;
+}
+
+byte* CM_ClusterPVS(int cluster)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
+byte* CM_ClusterPHS(int cluster)
+{
+	NOT_IMPLEMENTED
+	return NULL;
 }
 
 void FloodAreaConnections(void)
