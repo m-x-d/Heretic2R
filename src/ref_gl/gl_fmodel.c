@@ -561,7 +561,7 @@ static void InterpolateVertexNormals(const int num_xyz, const float lerp_inv, co
 
 	for (i = 0, v = verts, ov = old_verts, n = normals; i < num_xyz; i++, v++, ov++, n++)
 		for (int j = 0; j < 3; j++)
-			(*n)[j] = lerp * r_avertexnormals[ov->lightnormalindex][j] + lerp_inv * r_avertexnormals[v->lightnormalindex][j];
+			(*n)[j] = lerp * bytedirs[ov->lightnormalindex][j] + lerp_inv * bytedirs[v->lightnormalindex][j];
 }
 
 static void GL_DrawFlexFrameLerp(void)
@@ -668,11 +668,11 @@ static void GL_DrawFlexFrameLerp(void)
 				{
 					vec3_t* normal;
 					if (fmodel->frames == NULL)
-						normal = &r_avertexnormals[fmodel->lightnormalindex[index_xyz]];
+						normal = &bytedirs[fmodel->lightnormalindex[index_xyz]];
 					else if (draw_reflection)
 						normal = &normals_array[index_xyz];
 					else
-						normal = &r_avertexnormals[sfl_cur_skel.verts[index_xyz].lightnormalindex];
+						normal = &bytedirs[sfl_cur_skel.verts[index_xyz].lightnormalindex];
 
 					qglNormal3f((*normal)[0], (*normal)[1], (*normal)[2]);
 				}

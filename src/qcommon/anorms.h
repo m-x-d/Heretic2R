@@ -9,4 +9,4 @@
 #include "q_Typedef.h"
 
 #define NUMVERTEXNORMALS 162
-extern vec3_t r_avertexnormals[NUMVERTEXNORMALS];
+extern vec3_t bytedirs[NUMVERTEXNORMALS];

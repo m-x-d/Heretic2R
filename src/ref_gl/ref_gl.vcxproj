@@ -12,11 +12,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\game\q_shared.c" />
+    <ClCompile Include="..\qcommon\anorms.c" />
     <ClCompile Include="..\qcommon\Reference.c" />
     <ClCompile Include="..\qcommon\Skeletons.c" />
     <ClCompile Include="..\win32\glw_imp.c" />
     <ClCompile Include="..\win32\q_shwin.c" />
-    <ClCompile Include="anorms.c" />
     <ClCompile Include="anormtab.c" />
     <ClCompile Include="gl_fmodel.c" />
     <ClCompile Include="gl_draw.c" />
@@ -42,6 +42,7 @@
     <ClInclude Include="..\client\screen.h" />
     <ClInclude Include="..\client\vid.h" />
     <ClInclude Include="..\game\q_shared.h" />
+    <ClInclude Include="..\qcommon\anorms.h" />
     <ClInclude Include="..\qcommon\ArrayedList.h" />
     <ClInclude Include="..\qcommon\Placement.h" />
     <ClInclude Include="..\qcommon\qcommon.h" />
@@ -51,7 +52,6 @@
     <ClInclude Include="..\qcommon\Reference.h" />
     <ClInclude Include="..\qcommon\Skeletons.h" />
     <ClInclude Include="..\win32\glw_win.h" />
-    <ClInclude Include="anorms.h" />
     <ClInclude Include="anormtab.h" />
     <ClInclude Include="gl_fmodel.h" />
     <ClInclude Include="gl_local.h" />
