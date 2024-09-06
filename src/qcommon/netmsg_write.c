@@ -6,12 +6,18 @@
 
 #include "client.h"
 
-void MSG_WriteByte(sizebuf_t* sb, int c)
+// Q2 counterpart
+void MSG_WriteByte(sizebuf_t* sb, const int c)
 {
-	NOT_IMPLEMENTED
+	byte* buf = SZ_GetSpace(sb, 1);
+	buf[0] = (byte)c;
 }
 
-void MSG_WriteString(sizebuf_t* sb, char* s)
+// Q2 counterpart
+void MSG_WriteString(sizebuf_t* sb, const char* s)
 {
-	NOT_IMPLEMENTED
+	if (s != NULL)
+		SZ_Write(sb, s, (int)strlen(s) + 1);
+	else
+		SZ_Write(sb, "", 1);
 }
