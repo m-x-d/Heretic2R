@@ -137,9 +137,68 @@ void Sys_Init(void)
 static char console_text[256];
 static int console_textlen;
 
+// Q2 counterpart
 char* Sys_ConsoleInput(void)
 {
-	NOT_IMPLEMENTED
+	INPUT_RECORD recs[1024];
+	DWORD dummy;
+	DWORD numread;
+	DWORD numevents;
+
+	if (dedicated == NULL || !(int)dedicated->value)
+		return NULL;
+
+	while (true)
+	{
+		if (!GetNumberOfConsoleInputEvents(hinput, &numevents))
+			Sys_Error("Error getting # of console events");
+
+		if (numevents < 1)
+			break;
+
+		if (!ReadConsoleInput(hinput, recs, 1, &numread))
+			Sys_Error("Error reading console input");
+
+		if (numread != 1)
+			Sys_Error("Couldn't read console input");
+
+		if (recs[0].EventType == KEY_EVENT && !recs[0].Event.KeyEvent.bKeyDown)
+		{
+			char ch = recs[0].Event.KeyEvent.uChar.AsciiChar;
+
+			switch (ch)
+			{
+				case '\r':
+					WriteFile(houtput, "\r\n", 2, &dummy, NULL);
+
+					if (console_textlen > 0)
+					{
+						console_text[console_textlen] = 0;
+						console_textlen = 0;
+						return console_text;
+					}
+					break;
+
+				case '\b':
+					if (console_textlen > 0)
+					{
+						console_textlen--;
+						WriteFile(houtput, "\b \b", 3, &dummy, NULL);
+					}
+					break;
+
+				default:
+					if (ch >= ' ' && console_textlen < (int)sizeof(console_text) - 2)
+					{
+						WriteFile(houtput, &ch, 1, &dummy, NULL);
+						console_text[console_textlen] = ch;
+						console_textlen++;
+					}
+					break;
+			}
+		}
+	}
+
 	return NULL;
 }
 
