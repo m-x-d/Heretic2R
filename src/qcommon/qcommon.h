@@ -579,6 +579,7 @@ typedef enum
 extern int gamespy_port; //TODO: remove
 
 extern cvar_t* net_receiverate; // H2
+extern cvar_t* net_latency; // H2
 
 typedef struct
 {

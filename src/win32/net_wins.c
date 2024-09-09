@@ -8,8 +8,36 @@
 #include "qcommon.h"
 #include "Random.h"
 
-static int ip_sockets[3]; // 2 in Q2
-static int ipx_sockets[3]; // 2 in Q2
+#define MAX_LOOPBACK	4
+
+typedef struct
+{
+	byte data[MAX_MSGLEN];
+	int datalen;
+} loopmsg_t;
+
+typedef struct // H2
+{
+	byte data[MAX_MSGLEN];
+	int datalen;
+	uint timestamp;
+	qboolean is_free;
+} loopmsg2_t;
+
+typedef struct
+{
+	loopmsg_t msgs[MAX_LOOPBACK];
+	int get;
+	int send;
+} loopback_t;
+
+#define NUM_SOCKETS			3 //mxd
+#define NUM_LOOPMESSAGES	20 //mxd
+
+static loopback_t loopbacks[NUM_SOCKETS];
+static loopmsg2_t loopmessages[NUM_SOCKETS][NUM_LOOPMESSAGES]; // H2
+static int ip_sockets[NUM_SOCKETS]; // 2 in Q2
+static int ipx_sockets[NUM_SOCKETS]; // 2 in Q2
 
 static cvar_t* net_shownet;
 static cvar_t* noudp;
@@ -51,10 +79,51 @@ static char* NET_ErrorString(void)
 
 #pragma region ========================== LOOPBACK BUFFERS FOR LOCAL PLAYER ==========================
 
-static qboolean	NET_GetLoopPacket(netsrc_t sock, netadr_t* net_from, sizebuf_t* net_message)
+static qboolean	NET_GetLoopPacket(const netsrc_t sock, netadr_t* n_from, sizebuf_t* n_message)
 {
-	NOT_IMPLEMENTED
-	return false;
+	// H2: simulate net latency //TODO: dev logic. Remove?
+	if (net_latency->value > 0.0f && net_latency->value < 2000.0f)
+	{
+		const uint time = timeGetTime();
+		loopmsg2_t* msg = &loopmessages[sock][0];
+
+		for (int i = 0; i < 20; i++, msg++)
+		{
+			if (msg->is_free && msg->timestamp < time)
+			{
+				msg->is_free = false;
+
+				memcpy(n_message->data, msg->data, msg->datalen);
+				n_message->cursize = msg->datalen;
+
+				memset(n_from, 0, sizeof(*n_from));
+				n_from->type = NA_LOOPBACK;
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	// Q2 logic:
+	loopback_t* loop = &loopbacks[sock];
+
+	if (loop->send - loop->get > MAX_LOOPBACK)
+		loop->get = loop->send - MAX_LOOPBACK;
+
+	if (loop->get >= loop->send)
+		return false;
+
+	const int i = loop->get & (MAX_LOOPBACK - 1);
+	loop->get++;
+
+	memcpy(n_message->data, loop->msgs[i].data, loop->msgs[i].datalen);
+	n_message->cursize = loop->msgs[i].datalen;
+	memset(n_from, 0, sizeof(*n_from));
+	n_from->type = NA_LOOPBACK;
+
+	return true;
 }
 
 #pragma endregion
@@ -66,7 +135,7 @@ qboolean NET_GetPacket(const netsrc_t sock, netadr_t* n_from, sizebuf_t* n_messa
 
 	if (NET_GetLoopPacket(sock, n_from, n_message))
 	{
-		// H2: simulate packet loss
+		// H2: simulate packet loss //TODO: dev logic. Remove?
 		if (net_receiverate->value > 0.0f && net_receiverate->value < 1.0f && flrand(0.0f, 1.0f) > net_receiverate->value)
 		{
 			n_message->cursize = 0;
@@ -111,7 +180,7 @@ qboolean NET_GetPacket(const netsrc_t sock, netadr_t* n_from, sizebuf_t* n_messa
 			continue;
 		}
 
-		// H2: simulate packet loss
+		// H2: simulate packet loss //TODO: dev logic. Remove?
 		if (net_receiverate->value > 0.0f && net_receiverate->value < 1.0f && flrand(0.0f, 1.0f) > net_receiverate->value)
 		{
 			n_message->cursize = 0;

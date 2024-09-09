@@ -52,7 +52,7 @@ static cvar_t* qport;
 // New in H2:
 static cvar_t* net_sendrate;
 cvar_t* net_receiverate;
-static cvar_t* net_latency;
+cvar_t* net_latency;
 
 netadr_t net_from;
 sizebuf_t net_message;
