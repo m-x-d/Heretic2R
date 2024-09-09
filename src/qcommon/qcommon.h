@@ -578,6 +578,8 @@ typedef enum
 
 extern int gamespy_port; //TODO: remove
 
+extern cvar_t* net_receiverate; // H2
+
 typedef struct
 {
 	netadrtype_t type;
@@ -592,7 +594,7 @@ void NET_TotalShutdown(void);
 
 void NET_Config(qboolean multiplayer);
 
-qboolean NET_GetPacket(netsrc_t sock, netadr_t* net_from, sizebuf_t* net_message);
+qboolean NET_GetPacket(netsrc_t sock, netadr_t* n_from, sizebuf_t* n_message);
 void NET_SendPacket(netsrc_t sock, int length, void* data, netadr_t to);
 
 qboolean NET_CompareAdr(netadr_t a, netadr_t b);
