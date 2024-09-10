@@ -595,9 +595,52 @@ static float GetFrameModifier(const float frametime) // H2
 	return 1.0f;
 }
 
+typedef struct
+{
+	char* name;
+	char* value;
+	cvar_t* var;
+} cheatvar_t;
+
+// H2: missing 'sw_draworder', 'gl_lightmap' and 'gl_saturatelighting'.
+cheatvar_t cheatvars[] =
+{
+	{ "timescale", "1", NULL },
+	{ "timedemo", "0", NULL },
+	{ "r_drawworld", "1", NULL },
+	{ "cl_testlights", "0", NULL },
+	{ "r_fullbright", "0", NULL },
+	{ "r_drawflat", "0", NULL },
+	{ "paused", "0", NULL },
+	{ "freezeworldset", "0", NULL }, // H2
+	{ "fixedtime", "0", NULL },
+	{ NULL, NULL, NULL }
+};
+
+// Q2 counterpart
 static void CL_FixCvarCheats(void)
 {
-	NOT_IMPLEMENTED
+	static int numcheatvars = 0; //mxd. Made local/static.
+
+	// Can cheat in single player
+	if (strcmp(cl.configstrings[CS_MAXCLIENTS], "1") == 0 || cl.configstrings[CS_MAXCLIENTS][0] == 0)
+		return;
+
+	// Find all the cvars if we haven't done it yet.
+	if (numcheatvars == 0)
+	{
+		while (cheatvars[numcheatvars].name != NULL)
+		{
+			cheatvars[numcheatvars].var = Cvar_Get(cheatvars[numcheatvars].name, cheatvars[numcheatvars].value, 0);
+			numcheatvars++;
+		}
+	}
+
+	// Make sure they are all set to the proper values.
+	cheatvar_t* var = cheatvars;
+	for (int i = 0; i < numcheatvars; i++, var++)
+		if (strcmp(var->var->string, var->value) != 0)
+			Cvar_Set(var->name, var->value);
 }
 
 // Q2 counterpart
