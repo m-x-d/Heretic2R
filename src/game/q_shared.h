@@ -60,30 +60,30 @@
 #define NOT_IMPLEMENTED		assert(!("Not implemented!"));
 
 // Angle indexes
-#define	PITCH				0		// up / down
-#define	YAW					1		// left / right
-#define	ROLL				2		// fall over
+#define PITCH				0		// up / down
+#define YAW					1		// left / right
+#define ROLL				2		// fall over
 
-#define	MAX_STRING_CHARS	1024	// max length of a string passed to Cmd_TokenizeString
-#define	MAX_STRING_TOKENS	80		// max tokens resulting from Cmd_TokenizeString
-#define	MAX_TOKEN_CHARS		128		// max length of an individual token
+#define MAX_STRING_CHARS	1024	// max length of a string passed to Cmd_TokenizeString
+#define MAX_STRING_TOKENS	80		// max tokens resulting from Cmd_TokenizeString
+#define MAX_TOKEN_CHARS		128		// max length of an individual token
 
-#define	MAX_QPATH			64		// max length of a quake game pathname
-#define	MAX_OSPATH			128		// max length of a filesystem pathname
+#define MAX_QPATH			64		// max length of a quake game pathname
+#define MAX_OSPATH			128		// max length of a filesystem pathname
 
 // Game print flags
-#define	PRINT_LOW			0		// pickup messages
-#define	PRINT_MEDIUM		1		// death messages
-#define	PRINT_HIGH			2		// critical messages
-#define	PRINT_CHAT			3		// chat messages
-#define	PRINT_CAPTION		4		// captioning at bottom
-#define	PRINT_TEAM			5		// chat message to team members
+#define PRINT_LOW			0		// pickup messages
+#define PRINT_MEDIUM		1		// death messages
+#define PRINT_HIGH			2		// critical messages
+#define PRINT_CHAT			3		// chat messages
+#define PRINT_CAPTION		4		// captioning at bottom
+#define PRINT_TEAM			5		// chat message to team members
 
-#define	ERR_FATAL			0		// exit the entire game with a popup window
-#define	ERR_DROP			1		// print to console and disconnect from game
-#define	ERR_DISCONNECT		2		// don't kill server
+#define ERR_FATAL			0		// exit the entire game with a popup window
+#define ERR_DROP			1		// print to console and disconnect from game
+#define ERR_DISCONNECT		2		// don't kill server
 
-#define	PRINT_ALL			0
+#define PRINT_ALL			0
 #define PRINT_DEVELOPER		1		// only print when "developer 1"
 #define PRINT_ALERT			2		
 
@@ -177,9 +177,9 @@ H2COMMON_API float Approach(float curr, float dest, float rate);
 H2COMMON_API char* va(const char* format, ...);
 
 // Key / value info strings
-#define	MAX_INFO_KEY		64
-#define	MAX_INFO_VALUE		64
-#define	MAX_INFO_STRING		512
+#define MAX_INFO_KEY		64
+#define MAX_INFO_VALUE		64
+#define MAX_INFO_STRING		512
 
 H2COMMON_API char* Info_ValueForKey(const char* s, const char* key);
 H2COMMON_API void Info_RemoveKey(char* s, const char* key);
@@ -227,13 +227,13 @@ GAME_DECLSPEC void Com_ColourPrintf(PalIdx_t colour, const char* fmt, ...);
 #pragma region ========================== CVARS (console variables) ==========================
 
 #ifndef CVAR
-#define	CVAR
+#define CVAR
 
-#define	CVAR_ARCHIVE	1	// Set to cause it to be saved to vars.rc
-#define	CVAR_USERINFO	2	// Added to userinfo  when changed
-#define	CVAR_SERVERINFO	4	// Added to serverinfo when changed
-#define	CVAR_NOSET		8	// Don't allow change from console at all, but can be set from the command line
-#define	CVAR_LATCH		16	// Save changes until server restart
+#define CVAR_ARCHIVE	1	// Set to cause it to be saved to vars.rc
+#define CVAR_USERINFO	2	// Added to userinfo  when changed
+#define CVAR_SERVERINFO	4	// Added to serverinfo when changed
+#define CVAR_NOSET		8	// Don't allow change from console at all, but can be set from the command line
+#define CVAR_LATCH		16	// Save changes until server restart
 
 // Nothing outside the Cvar_*() functions should modify these fields!
 typedef struct cvar_s
@@ -290,50 +290,50 @@ typedef struct
 #pragma region ========================== Contents flags ==========================
 
 // Lower bits are stronger, and will eat weaker brushes completely.
-#define	CONTENTS_EMPTY			0x00000000	// Nothing
-#define	CONTENTS_SOLID			0x00000001	// An eye is never valid in a solid.
-#define	CONTENTS_WINDOW			0x00000002	// Translucent, but not watery.
-#define	CONTENTS_ILLUSIONARY	0x00000004  // Was CONTENTS_AUX.
-#define	CONTENTS_LAVA			0x00000008
-#define	CONTENTS_SLIME			0x00000010
-#define	CONTENTS_WATER			0x00000020
-#define	CONTENTS_MIST			0x00000040
-#define	LAST_VISIBLE_CONTENTS	CONTENTS_MIST
+#define CONTENTS_EMPTY			0x00000000	// Nothing
+#define CONTENTS_SOLID			0x00000001	// An eye is never valid in a solid.
+#define CONTENTS_WINDOW			0x00000002	// Translucent, but not watery.
+#define CONTENTS_ILLUSIONARY	0x00000004  // Was CONTENTS_AUX.
+#define CONTENTS_LAVA			0x00000008
+#define CONTENTS_SLIME			0x00000010
+#define CONTENTS_WATER			0x00000020
+#define CONTENTS_MIST			0x00000040
+#define LAST_VISIBLE_CONTENTS	CONTENTS_MIST
 
 // Remaining contents are non-visible, and don't eat brushes.
-#define	CONTENTS_AREAPORTAL		0x00008000
-#define	CONTENTS_PLAYERCLIP		0x00010000
-#define	CONTENTS_MONSTERCLIP	0x00020000
+#define CONTENTS_AREAPORTAL		0x00008000
+#define CONTENTS_PLAYERCLIP		0x00010000
+#define CONTENTS_MONSTERCLIP	0x00020000
 
 // Currents can be added to any other contents, and may be mixed.
-#define	CONTENTS_CURRENT_0		0x00040000
-#define	CONTENTS_CURRENT_90		0x00080000
-#define	CONTENTS_CURRENT_180	0x00100000
-#define	CONTENTS_CURRENT_270	0x00200000
-#define	CONTENTS_CURRENT_UP		0x00400000
-#define	CONTENTS_CURRENT_DOWN	0x00800000
+#define CONTENTS_CURRENT_0		0x00040000
+#define CONTENTS_CURRENT_90		0x00080000
+#define CONTENTS_CURRENT_180	0x00100000
+#define CONTENTS_CURRENT_270	0x00200000
+#define CONTENTS_CURRENT_UP		0x00400000
+#define CONTENTS_CURRENT_DOWN	0x00800000
 
 // Removed before bsping an entity.
-#define	CONTENTS_ORIGIN			0x01000000
+#define CONTENTS_ORIGIN			0x01000000
 
 // Should never be on a brush, only in game (i.e. set by CM_ functions at map load time).
-#define	CONTENTS_MONSTER		0x02000000
-#define	CONTENTS_DEADMONSTER	0x04000000
+#define CONTENTS_MONSTER		0x02000000
+#define CONTENTS_DEADMONSTER	0x04000000
 
 // Brushes to be added after vis leaves.
-#define	CONTENTS_DETAIL			0x08000000
+#define CONTENTS_DETAIL			0x08000000
 
 // Auto set if any surface has transparency, e.g. water.
-#define	CONTENTS_TRANSLUCENT	0x10000000
+#define CONTENTS_TRANSLUCENT	0x10000000
 
 // This flag is special in that it is not stored in the .bsp by QuakeEd. It is passed into the trace
 // functions to say that anything with CONTENTS_CAMERANOBLOCK should be ignored. So we can get away
 // with defining it = CONTENTS_CAMERANOBLOCK.
-#define	CONTENTS_CAMERABLOCK	0x20000000	// Was CONTENTS_LADDER.
+#define CONTENTS_CAMERABLOCK	0x20000000	// Was CONTENTS_LADDER.
 
 // This flag is special in that it is NOT passed into the trace functions, but may be stored in the
 //.bsp by QuakeEd to say that traces with CONTENTS_CAMERABLOCK as the mask will ignore any brushes with this flag.
-#define	CONTENTS_CAMERANOBLOCK	0x40000000
+#define CONTENTS_CAMERANOBLOCK	0x40000000
 
 // Only do the trace against the world, not entities within it. Not stored in the .bsp and passed
 // only as an argument to trace fucntions.
@@ -343,14 +343,14 @@ typedef struct
 
 #pragma region ========================== Contents masks ==========================
 
-#define	MASK_ALL			0x7fffffff
-#define	MASK_SOLID			(CONTENTS_SOLID | CONTENTS_WINDOW)
-#define	MASK_PLAYERSOLID	(CONTENTS_SOLID | CONTENTS_PLAYERCLIP | CONTENTS_WINDOW | CONTENTS_MONSTER)
-#define	MASK_DEADSOLID		(CONTENTS_SOLID | CONTENTS_PLAYERCLIP | CONTENTS_WINDOW)
-#define	MASK_MONSTERSOLID	(CONTENTS_SOLID | CONTENTS_MONSTERCLIP | CONTENTS_WINDOW | CONTENTS_MONSTER)
-#define	MASK_WATER			(CONTENTS_WATER | CONTENTS_LAVA|CONTENTS_SLIME)
-#define	MASK_OPAQUE			(CONTENTS_SOLID | CONTENTS_SLIME|CONTENTS_LAVA)
-#define	MASK_SHOT			(CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_WINDOW | CONTENTS_DEADMONSTER)
+#define MASK_ALL			0x7fffffff
+#define MASK_SOLID			(CONTENTS_SOLID | CONTENTS_WINDOW)
+#define MASK_PLAYERSOLID	(CONTENTS_SOLID | CONTENTS_PLAYERCLIP | CONTENTS_WINDOW | CONTENTS_MONSTER)
+#define MASK_DEADSOLID		(CONTENTS_SOLID | CONTENTS_PLAYERCLIP | CONTENTS_WINDOW)
+#define MASK_MONSTERSOLID	(CONTENTS_SOLID | CONTENTS_MONSTERCLIP | CONTENTS_WINDOW | CONTENTS_MONSTER)
+#define MASK_WATER			(CONTENTS_WATER | CONTENTS_LAVA|CONTENTS_SLIME)
+#define MASK_OPAQUE			(CONTENTS_SOLID | CONTENTS_SLIME|CONTENTS_LAVA)
+#define MASK_SHOT			(CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_WINDOW | CONTENTS_DEADMONSTER)
 #define MASK_CURRENT		(CONTENTS_CURRENT_0 | CONTENTS_CURRENT_90 | CONTENTS_CURRENT_180 | CONTENTS_CURRENT_270 | CONTENTS_CURRENT_UP | CONTENTS_CURRENT_DOWN)
 #define MASK_DRIP			(CONTENTS_SOLID | CONTENTS_WATER | CONTENTS_LAVA | CONTENTS_SLIME | CONTENTS_WINDOW)
 
@@ -358,17 +358,17 @@ typedef struct
 
 #pragma region ========================== Surface flags ==========================
 
-#define	SURF_LIGHT			0x1			// Value will hold the light strength.
-#define	SURF_SLICK			0x2			// Affects game physics.
-#define	SURF_SKY			0x4			// Don't draw, but add to skybox.
-#define	SURF_WARP			0x8			// Turbulent water warp.
-#define	SURF_TRANS33		0x10
-#define	SURF_TRANS66		0x20
-#define	SURF_FLOWING		0x40		// Scroll towards angle.
-#define	SURF_NODRAW			0x80		// Don't bother referencing the texture.
-#define	SURF_TALL_WALL		0x00000400	// Face doesn't get broken up as normal.
-#define	SURF_ALPHA_TEXTURE	0x00000800	// Texture has alpha in it, and should show through in bsp process
-#define	SURF_ANIMSPEED		0x00001000	// Value will hold the anim speed in fps
+#define SURF_LIGHT			0x1			// Value will hold the light strength.
+#define SURF_SLICK			0x2			// Affects game physics.
+#define SURF_SKY			0x4			// Don't draw, but add to skybox.
+#define SURF_WARP			0x8			// Turbulent water warp.
+#define SURF_TRANS33		0x10
+#define SURF_TRANS66		0x20
+#define SURF_FLOWING		0x40		// Scroll towards angle.
+#define SURF_NODRAW			0x80		// Don't bother referencing the texture.
+#define SURF_TALL_WALL		0x00000400	// Face doesn't get broken up as normal.
+#define SURF_ALPHA_TEXTURE	0x00000800	// Texture has alpha in it, and should show through in bsp process
+#define SURF_ANIMSPEED		0x00001000	// Value will hold the anim speed in fps
 #define SURF_UNDULATE		0x00002000	// Rock surface up and down...
 #define SURF_QUAKE			0x00004000	// Rock surface up and down when quake value on
 
@@ -379,8 +379,8 @@ typedef struct
 
 // gi.BoxEdicts() can return a list of either solid or trigger entities
 // FIXME: eliminate AREA_ distinction?
-#define	AREA_SOLID		1
-#define	AREA_TRIGGERS	2
+#define AREA_SOLID		1
+#define AREA_TRIGGERS	2
 
 typedef struct cplane_s
 {
@@ -443,10 +443,10 @@ typedef enum
 } pmtype_t;
 
 // pmove->pm_flags
-#define	PMF_STANDSTILL		0x0001
-#define	PMF_ON_GROUND		0x0004
-#define	PMF_TIME_LAND		0x0008	// pm_time is time before rejump
-#define	PMF_TIME_TELEPORT	0x0010	// pm_time is non-moving time
+#define PMF_STANDSTILL		0x0001
+#define PMF_ON_GROUND		0x0004
+#define PMF_TIME_LAND		0x0008	// pm_time is time before rejump
+#define PMF_TIME_TELEPORT	0x0010	// pm_time is non-moving time
 #define PMF_NO_PREDICTION	0x0020	// Temporarily disables prediction (used for grappling hook)
 #define PMF_LOCKMOVE		0x0040
 #define PMF_LOCKTURN		0x0080
@@ -454,11 +454,11 @@ typedef enum
 #define PC_COLLISION		0x0001	// Collided on a move
 #define PC_SLIDING			0x0002	// Sliding down a steep slope
 
-#define	WF_SURFACE			0x0001	// On the surface
-#define	WF_DIVE				0x0002	// Dive on next animation
-#define	WF_DIVING			0x0004	// Currently diving
-#define	WF_SWIMFREE			0x0008	// Currently swimming freely underwater
-#define	WF_SINK				0x0010	// Sink below the surface of the water
+#define WF_SURFACE			0x0001	// On the surface
+#define WF_DIVE				0x0002	// Dive on next animation
+#define WF_DIVING			0x0004	// Currently diving
+#define WF_SWIMFREE			0x0008	// Currently swimming freely underwater
+#define WF_SINK				0x0010	// Sink below the surface of the water
 
 // pmove_state_t
 
@@ -482,16 +482,16 @@ typedef struct
 } pmove_state_t;
 
 // BUTTON_XXX
-#define	BUTTON_ATTACK		1
-#define	BUTTON_DEFEND		2
-#define	BUTTON_ACTION		4
+#define BUTTON_ATTACK		1
+#define BUTTON_DEFEND		2
+#define BUTTON_ACTION		4
 #define BUTTON_CREEP		8
 #define BUTTON_RUN			16
 #define BUTTON_AUTOAIM		32
 #define BUTTON_LOOKAROUND	64
 #define BUTTON_QUICKTURN	128
 #define BUTTON_INVENTORY	256
-#define	BUTTON_ANY			512	// Any key whatsoever.
+#define BUTTON_ANY			512	// Any key whatsoever.
 
 // Sent to the server each client frame.
 typedef struct usercmd_s
@@ -509,7 +509,7 @@ typedef struct usercmd_s
 	byte lightlevel; // Light level the player is standing on.
 } usercmd_t;
 
-#define	MAXTOUCH	32
+#define MAXTOUCH	32
 
 typedef struct
 {
@@ -558,15 +558,15 @@ typedef struct
 } pmove_t;
 
 // entity_state_t->renderfx flags
-#define	RF_MINLIGHT			0x00000001		// Allways have some light (viewmodel)
-#define	RF_REFLECTION		0x00000002		// Use GL spherical mapping, if available
-#define	RF_WEAPONMODEL		0x00000004		// Only draw through eyes
-#define	RF_FULLBRIGHT		0x00000008		// Allways draw full intensity
-#define	RF_DEPTHHACK		0x00000010		// For view weapon Z crunching
-#define	RF_TRANSLUCENT		0x00000020
-#define	RF_FRAMELERP		0x00000040
-#define	RF_CUSTOMSKIN		0x00000080		// Skin is an index in image_precache
-#define	RF_GLOW				0x00000100		// Pulse lighting for bonus items
+#define RF_MINLIGHT			0x00000001		// Allways have some light (viewmodel)
+#define RF_REFLECTION		0x00000002		// Use GL spherical mapping, if available
+#define RF_WEAPONMODEL		0x00000004		// Only draw through eyes
+#define RF_FULLBRIGHT		0x00000008		// Allways draw full intensity
+#define RF_DEPTHHACK		0x00000010		// For view weapon Z crunching
+#define RF_TRANSLUCENT		0x00000020
+#define RF_FRAMELERP		0x00000040
+#define RF_CUSTOMSKIN		0x00000080		// Skin is an index in image_precache
+#define RF_GLOW				0x00000100		// Pulse lighting for bonus items
 #define RF_SCALE_XYZ		0x00000200
 #define RF_SCALE_XY			0x00000400
 #define RF_SCALE_Z			0x00000800
@@ -581,36 +581,36 @@ typedef struct
 #define RF_NODEPTHTEST		0x00080000		// Turns off depth testing for sprites only
 #define RF_IGNORE_REFS		0x00100000		// Don't update the ref points for a model
 #define RF_NODRAW			0x00200000
-#define	RF_CULL_LARGE		0x00400000		// If set on a poly that is really close to the near clip plane and occupies
+#define RF_CULL_LARGE		0x00400000		// If set on a poly that is really close to the near clip plane and occupies
 											// a signifiant amount of screen real-estate, the poly will be culled. Used for particles in software.
 
 #define RF_TRANS_ANY		(RF_TRANS_ADD | RF_TRANS_GHOST | RF_TRANSLUCENT)
 
 // player_state_t->refdef flags
-#define	RDF_UNDERWATER		0x00000001		// warp the screen as apropriate
+#define RDF_UNDERWATER		0x00000001		// warp the screen as apropriate
 #define RDF_NOWORLDMODEL	0x00000002		// used for player configuration screen
 
 // Sound channels
 // Channel 0 never willingly overrides
 // Other channels (1-7) always override a playing sound on that channel
-#define	CHAN_AUTO				0
-#define	CHAN_WEAPON				1
-#define	CHAN_VOICE				2
-#define	CHAN_ITEM				3
-#define	CHAN_BODY				4
+#define CHAN_AUTO				0
+#define CHAN_WEAPON				1
+#define CHAN_VOICE				2
+#define CHAN_ITEM				3
+#define CHAN_BODY				4
 #define CHAN_FOOTSTEP			5
 #define CHAN_FOOTSTEP2			6
 #define CHAN_WEAPON2			7
 
 // Modifier flags
-#define	CHAN_NO_PHS_ADD			8	// Send to all clients, not just ones in PHS (ATTN 0 will also do this)
-#define	CHAN_RELIABLE			16	// Send by reliable message, not datagram
+#define CHAN_NO_PHS_ADD			8	// Send to all clients, not just ones in PHS (ATTN 0 will also do this)
+#define CHAN_RELIABLE			16	// Send by reliable message, not datagram
 
 // Sound attenuation values
-#define	ATTN_NONE				0	// Full volume the entire level
-#define	ATTN_NORM				1
-#define	ATTN_IDLE				2
-#define	ATTN_STATIC				3	// Diminish very rapidly with distance
+#define ATTN_NONE				0	// Full volume the entire level
+#define ATTN_NORM				1
+#define ATTN_IDLE				2
+#define ATTN_STATIC				3	// Diminish very rapidly with distance
 #define ATTN_VERYSTATIC			4
 #define ATTN_LEFT				256
 #define ATTN_RIGHT				512
@@ -619,11 +619,11 @@ typedef struct
 
 // * - MUST BE SEQUENTIAL!!!
 #define STAT_HEALTH_ICON		0		// Icon for health
-#define	STAT_HEALTH				1		// Health value
-#define	STAT_AMMO_ICON			2		// Icon for ammo
-#define	STAT_AMMO				3		// Amount of ammo
-#define	STAT_WEAPON_ICON		4		// Current offensive weapon
-#define	STAT_WEAPON				5
+#define STAT_HEALTH				1		// Health value
+#define STAT_AMMO_ICON			2		// Icon for ammo
+#define STAT_AMMO				3		// Amount of ammo
+#define STAT_WEAPON_ICON		4		// Current offensive weapon
+#define STAT_WEAPON				5
 #define STAT_DEFENCE_ICON		6		// Current defensive weapon
 #define STAT_DEFENCE			7
 #define STAT_OFFMANA_ICON		8		// * Icon describing offensive mana
@@ -632,15 +632,15 @@ typedef struct
 #define STAT_DEFMANA_ICON		11		// * Amount of defensive mana
 #define STAT_DEFMANA_BACK		12
 #define STAT_DEFMANA			13
-#define	STAT_FRAGS_ICON			14		// Cleared each frame, 1 = health, 2 = armor
-#define	STAT_FRAGS				15		// Which status to print                    
-#define	STAT_FLASHES			16
-#define	STAT_LAYOUTS			17
-#define	STAT_PUZZLE_ITEM1		18
-#define	STAT_PUZZLE_ITEM2		19
-#define	STAT_PUZZLE_ITEM3		20
-#define	STAT_PUZZLE_ITEM4		21
-#define	STAT_PUZZLE_COUNT		22
+#define STAT_FRAGS_ICON			14		// Cleared each frame, 1 = health, 2 = armor
+#define STAT_FRAGS				15		// Which status to print                    
+#define STAT_FLASHES			16
+#define STAT_LAYOUTS			17
+#define STAT_PUZZLE_ITEM1		18
+#define STAT_PUZZLE_ITEM2		19
+#define STAT_PUZZLE_ITEM3		20
+#define STAT_PUZZLE_ITEM4		21
+#define STAT_PUZZLE_COUNT		22
 #define STAT_POWERUP_ICON		23		// * THESE MUST BE SEQUENTIAL !!!!!
 #define STAT_POWERUP_BACK		24
 #define STAT_POWERUP_TIMER		25
@@ -655,16 +655,16 @@ typedef struct
 #define STAT_ARMOUR_ICON		34
 #define STAT_ARMOUR				35
 
-#define	MAX_STATS				48
+#define MAX_STATS				48
 
 // dmflags->value flags
-#define	DF_WEAPONS_STAY			0x0001
-#define	DF_NO_SHRINE			0x0002
+#define DF_WEAPONS_STAY			0x0001
+#define DF_NO_SHRINE			0x0002
 #define DF_NONAMES				0x0004
-#define	DF_NO_HEALTH			0x0008
+#define DF_NO_HEALTH			0x0008
 #define DF_SHOW_LEADER			0x0010
-#define	DF_SHRINE_CHAOS			0x0020
-#define	DF_SAME_LEVEL			0x0040
+#define DF_SHRINE_CHAOS			0x0020
+#define DF_SAME_LEVEL			0x0040
 #define DF_FORCE_RESPAWN		0x0080
 #define DF_SKINTEAMS			0x0100
 #define DF_MODELTEAMS			0x0200
@@ -679,30 +679,30 @@ typedef struct
 
 #pragma region ========================== ELEMENTS COMMUNICATED ACROSS THE NET ==========================
 
-#define	ANGLE2SHORT(x)	((int)((x)*65536/360) & 65535)
-#define	SHORT2ANGLE(x)	((x)*(360.0/65536))
+#define ANGLE2SHORT(x)	((int)((x) * 65536 / 360) & 65535)
+#define SHORT2ANGLE(x)	((x) * (360.0f / 65536.0f))
 
 #define DEG2RAD(a) (((a) * M_PI) / 180.0F)
 
 // Config strings are a general means of communication from the server to all connected clients.
 // Each config string can be at most MAX_QPATH characters.
-#define	CS_NAME				0
-#define	CS_CDTRACK			1
-#define	CS_SKY				2
-#define	CS_SKYAXIS			3	// %f %f %f format
-#define	CS_SKYROTATE		4
+#define CS_NAME				0
+#define CS_CDTRACK			1
+#define CS_SKY				2
+#define CS_SKYAXIS			3	// %f %f %f format
+#define CS_SKYROTATE		4
 #define CS_LEVEL_NUMBER		5
-#define	CS_STATUSBAR		6	// Display program string (this seems to take up several slots - hence must be last)
-#define	CS_MAXCLIENTS		30
-#define	CS_MAPCHECKSUM		31	// For catching cheater maps
-#define	CS_MODELS			32
-#define	CS_SOUNDS			(CS_MODELS + MAX_MODELS)
-#define	CS_IMAGES			(CS_SOUNDS + MAX_SOUNDS)
-#define	CS_LIGHTS			(CS_IMAGES + MAX_IMAGES)
-#define	CS_ITEMS			(CS_LIGHTS + MAX_LIGHTSTYLES)
-#define	CS_PLAYERSKINS		(CS_ITEMS + MAX_ITEMS)
+#define CS_STATUSBAR		6	// Display program string (this seems to take up several slots - hence must be last)
+#define CS_MAXCLIENTS		30
+#define CS_MAPCHECKSUM		31	// For catching cheater maps
+#define CS_MODELS			32
+#define CS_SOUNDS			(CS_MODELS + MAX_MODELS)
+#define CS_IMAGES			(CS_SOUNDS + MAX_SOUNDS)
+#define CS_LIGHTS			(CS_IMAGES + MAX_IMAGES)
+#define CS_ITEMS			(CS_LIGHTS + MAX_LIGHTSTYLES)
+#define CS_PLAYERSKINS		(CS_ITEMS + MAX_ITEMS)
 #define CS_WELCOME			(CS_PLAYERSKINS + MAX_CLIENTS)  // Give us 4 welcome string messages so we can have a total of 256 characters per message
-#define	MAX_CONFIGSTRINGS	(CS_WELCOME + 4)
+#define MAX_CONFIGSTRINGS	(CS_WELCOME + 4)
 
 #pragma endregion
 
