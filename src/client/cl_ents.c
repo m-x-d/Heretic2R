@@ -9,6 +9,7 @@
 #include "sound.h"
 
 ResourceManager_t cl_FXBufMngr;
+int camera_timer; // H2
 
 void CL_AddEntities(void)
 {

@@ -129,3 +129,8 @@ void IN_Activate(const qboolean active)
 	if (active || (mouseactive && !mouseinitialized)) 
 		mouseactive = false;
 }
+
+void IN_Frame(void)
+{
+	NOT_IMPLEMENTED
+}

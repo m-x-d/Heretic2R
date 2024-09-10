@@ -38,6 +38,7 @@ extern console_t con;
 void Con_DrawCharacter(int cx, int line, int num);
 
 void Con_CheckResize(void);
+void Con_UpdateConsoleHeight(void);
 void Con_Init(void);
 void Con_DrawConsole(float frac);
 void Con_Print(const char* txt);

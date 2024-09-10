@@ -18,6 +18,11 @@ static float screen_shake_intensity_max;
 static float screen_shake_endtime;
 static int screen_shake_flags;
 
+void CL_PrepRefresh(void)
+{
+	NOT_IMPLEMENTED
+}
+
 static float CalcFov(float fov_x, float width, float height)
 {
 	NOT_IMPLEMENTED

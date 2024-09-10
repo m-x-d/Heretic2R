@@ -119,6 +119,11 @@ void Con_CheckResize(void)
 	Key_ClearTyping(); // H2
 }
 
+void Con_UpdateConsoleHeight(void) // H2
+{
+	NOT_IMPLEMENTED
+}
+
 void Con_Init(void)
 {
 	con.linewidth = -1;

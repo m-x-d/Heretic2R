@@ -6,6 +6,7 @@
 
 #include "client.h"
 #include "clfx_dll.h"
+#include "cl_skeletons.h"
 #include "cl_smk.h"
 #include "ResourceManager.h"
 #include "sound.h"
@@ -167,6 +168,11 @@ void Cmd_ForwardToServer(void)
 		SZ_Print(&cls.netchan.message, " ");
 		SZ_Print(&cls.netchan.message, Cmd_Args());
 	}
+}
+
+void CL_ReadPackets(void)
+{
+	NOT_IMPLEMENTED
 }
 
 static void CL_ForwardToServer_f(void)
@@ -486,9 +492,130 @@ static void CL_WriteConfiguration(void)
 	Cvar_WriteVariables(path);
 }
 
-void CL_Frame(int msec)
+static void CL_StorePredictInfo(void) // H2
 {
 	NOT_IMPLEMENTED
+}
+
+static void CL_SendPlayerInventoryChanges(void) // H2
+{
+	NOT_IMPLEMENTED
+}
+
+static float GetFrameModifier(float frametime) // H2
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+static void CL_SendCommand(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void CL_Frame(const int msec)
+{
+	static int extratime;
+	static int lasttimecalled;
+
+	if ((int)dedicated->value)
+		return;
+
+	extratime += msec;
+
+	if (!(int)cl_timedemo->value && cl.cinematictime == 0) // H2: extra cl.cinematictime check
+	{
+		// Don't flood packets out while connecting.
+		if (cls.state == ca_connected && extratime < 100)
+			return;
+
+		// Framerate is too high.
+		if (extratime < (int)(1000.0f / cl_maxfps->value))
+			return;
+	}
+
+	// let the mouse activate or deactivate.
+	IN_Frame();
+
+	// Decide the simulation time.
+	cls.frametime = (float)extratime / 1000.0f;
+	cls.framemodifier = GetFrameModifier(cls.frametime); // H2
+
+	if ((int)cl_frametime->value && !(int)cl_paused->value) // H2
+		Com_Printf("Framerate = %f.\n", (double)(1.0f / cls.frametime));
+
+	cl.time += extratime;
+	cls.realtime = curtime;
+	camera_timer += extratime; // H2
+
+	extratime = 0;
+
+	// #if 0-ed in Q2
+	cls.frametime = min(1.0f / cl_minfps->value, cls.frametime);
+
+	// If in the debugger last frame, don't timeout.
+	if (msec > 5000)
+		cls.netchan.last_received = Sys_Milliseconds();
+
+	// Fetch results from server.
+	CL_ReadPackets();
+
+	if ((int)cl_predict->value) // H2
+		CL_SendPlayerInventoryChanges();
+
+	// Send a new command message to the server.
+	CL_SendCommand();
+
+	// Predict all unacknowledged movements.
+	CL_PredictMovement();
+
+	if ((int)cl_predict->value) // H2
+		CL_StorePredictInfo();
+
+	// Allow rendering DLL change.
+	VID_CheckChanges();
+	if (!cl.refresh_prepped && cls.state == ca_active)
+		CL_PrepRefresh();
+
+	// Update the screen.
+	Con_UpdateConsoleHeight(); // H2
+	SCR_UpdateScreen();
+
+	// Update audio.
+	S_Update(cl.refdef.vieworg, cl.v_forward, cl.v_right, cl.v_up);
+	// CDAudio_Update(); //mxd. Skip CDAudio logic.
+
+	// Advance local effects for next frame.
+	if (cl.frame.valid && !(int)cl_paused->value && !(int)cl_freezeworld->value) // H2
+	{
+		if (fxe.UpdateEffects != NULL)
+			fxe.UpdateEffects();
+
+		SK_UpdateSkeletons();
+	}
+
+	SCR_RunCinematic();
+	//CDAudio_RestartTrackIfNecessary(); //mxd. Skip CDAudio logic.
+
+	cls.framecount++;
+
+	if ((int)log_stats->value && cls.state == ca_active)
+	{
+		if (lasttimecalled == 0)
+		{
+			lasttimecalled = Sys_Milliseconds();
+			if (log_stats_file != NULL)
+				fprintf(log_stats_file, "0\n");
+		}
+		else
+		{
+			const int now = Sys_Milliseconds();
+			if (log_stats_file != NULL)
+				fprintf(log_stats_file, "%d\n", now - lasttimecalled);
+
+			lasttimecalled = now;
+		}
+	}
 }
 
 static int LoadMessages(char* filename, char** message_out)

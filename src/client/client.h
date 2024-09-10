@@ -507,6 +507,7 @@ GAME_DECLSPEC extern entity_state_t cl_parse_entities[MAX_PARSE_ENTITIES];
 #define ENTITY_FX_BUF_BLOCK_SIZE 256
 
 extern struct ResourceManager_s cl_FXBufMngr;
+extern int camera_timer; //mxd
 
 extern netadr_t net_from;
 extern sizebuf_t net_message;

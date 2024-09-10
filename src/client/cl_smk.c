@@ -13,6 +13,11 @@ qboolean SCR_DrawCinematic(void)
 	return false;
 }
 
+void SCR_RunCinematic(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void SMK_Stop(void) //TODO: rename to SMK_StopCinematic?
 {
 	NOT_IMPLEMENTED

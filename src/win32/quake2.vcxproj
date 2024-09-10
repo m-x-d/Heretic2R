@@ -15,6 +15,7 @@
     <ClCompile Include="..\client\cl_input.c" />
     <ClCompile Include="..\client\cl_main.c" />
     <ClCompile Include="..\client\cl_parse.c" />
+    <ClCompile Include="..\client\cl_pred.c" />
     <ClCompile Include="..\client\cl_screen.c" />
     <ClCompile Include="..\client\cl_skeletons.c" />
     <ClCompile Include="..\client\cl_smk.c" />
