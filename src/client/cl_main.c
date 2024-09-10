@@ -502,10 +502,38 @@ static void CL_SendPlayerInventoryChanges(void) // H2
 	NOT_IMPLEMENTED
 }
 
-static float GetFrameModifier(float frametime) // H2
+static float GetFrameModifier(const float frametime) // H2
 {
-	NOT_IMPLEMENTED
-	return 0;
+	#define NUM_FRAMETIMES	16
+
+	static int frametime_index = 0;
+	static float frametimes[NUM_FRAMETIMES];
+
+	frametimes[(frametime_index++) & (NUM_FRAMETIMES - 1)] = frametime;
+
+	float result = 0.0f;
+	for (int i = 0; i < NUM_FRAMETIMES; i++)
+		result += frametimes[i];
+
+	result *= (sc_framerate->value / NUM_FRAMETIMES);
+
+	if (result > 0.0f)
+	{
+		result = 1.0f / result;
+
+		if (result < 0.25f)
+			return 0.25f;
+
+		if (result > 1.0f)
+		{
+			result = result * 0.25f + 1.0f;
+			return min(2.0f, result);
+		}
+
+		return result;
+	}
+
+	return 1.0f;
 }
 
 static void CL_SendCommand(void)
