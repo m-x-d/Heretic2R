@@ -297,6 +297,12 @@ static void Cvar_List_f(void)
 	NOT_IMPLEMENTED
 }
 
+char* Cvar_Userinfo(void)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
 // Q2 counterpart
 void Cvar_Init(void)
 {

@@ -361,6 +361,13 @@ void* Z_Malloc(const int size)
 
 #pragma endregion
 
+//mxd. Named 'COM_BlockSequenceCRCByte' in Q2
+byte COM_BlockSequenceCheckByte(byte* base, int length, int sequence)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
 static void Com_Error_f(void)
 {
 	NOT_IMPLEMENTED

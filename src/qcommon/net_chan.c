@@ -73,6 +73,12 @@ void Netchan_Init(void)
 	net_latency = Cvar_Get("net_latency", "0", 0);
 }
 
+int Netchan_Transmit(netchan_t* chan, int length, byte* data)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
 qboolean Netchan_Process(netchan_t* chan, sizebuf_t* msg)
 {
 	NOT_IMPLEMENTED
