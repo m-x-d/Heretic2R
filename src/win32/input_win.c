@@ -26,6 +26,7 @@ static int mouse_oldbuttonstate;
 
 static qboolean mouseactive; // False when not focus app
 
+static qboolean restore_spi;
 static qboolean mouseinitialized;
 static int originalmouseparms[3] = { 0, 0, 1 };
 static qboolean mouseparmsvalid;
@@ -54,9 +55,21 @@ static void IN_ActivateMouse(void)
 	NOT_IMPLEMENTED
 }
 
+// Called when the window loses focus.
 void IN_DeactivateMouse(void)
 {
-	NOT_IMPLEMENTED
+	if (mouseinitialized && mouseactive)
+	{
+		if (restore_spi)
+			SystemParametersInfo(SPI_SETMOUSE, 0, originalmouseparms, 0);
+
+		mouseactive = false;
+
+		ClipCursor(NULL);
+		ReleaseCapture();
+
+		while (ShowCursor(TRUE) < 0) { }
+	}
 }
 
 static void IN_StartupMouse(void)
