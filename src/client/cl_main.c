@@ -311,6 +311,11 @@ void CL_Drop(void)
 		SCR_EndLoadingPlaque(); // Get rid of loading plaque
 }
 
+static void CL_CheckForResend(void)
+{
+	NOT_IMPLEMENTED
+}
+
 static void CL_Connect_f(void)
 {
 	NOT_IMPLEMENTED
@@ -590,9 +595,20 @@ static float GetFrameModifier(const float frametime) // H2
 	return 1.0f;
 }
 
-static void CL_SendCommand(void)
+static void CL_FixCvarCheats(void)
 {
 	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart
+static void CL_SendCommand(void)
+{
+	Sys_SendKeyEvents();	// Get new key events.
+	IN_Commands();			// Allow gamepads to add commands.
+	Cbuf_Execute();			// Process console commands.
+	CL_FixCvarCheats();		// Fix any cheat cvars.
+	CL_SendCmd();			// Send intentions now.
+	CL_CheckForResend();	// Resend a connection request if necessary.
 }
 
 void CL_Frame(const int msec)

@@ -122,6 +122,11 @@ void IN_StartupJoystick(void)
 	//TODO: skipped for now. Add gamepad support later.
 }
 
+void IN_Commands(void) //TODO: rename to IN_JoystickCommands?
+{
+	//TODO: skipped for now. Add gamepad support later.
+}
+
 #pragma endregion
 
 void IN_Init(void)

@@ -284,3 +284,8 @@ void CL_InitInput(void)
 
 	cl_nodelta = Cvar_Get("cl_nodelta", "0", 0);
 }
+
+void CL_SendCmd(void)
+{
+	NOT_IMPLEMENTED
+}
