@@ -16,5 +16,6 @@ extern qboolean ActiveApp;
 extern qboolean Minimized;
 
 extern uint sys_msg_time;
+extern uint sys_frame_time;
 
 void IN_MouseEvent(int mstate);

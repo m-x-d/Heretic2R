@@ -18,6 +18,7 @@ static HANDLE hinput;
 static HANDLE houtput;
 
 uint sys_msg_time;
+uint sys_frame_time;
 
 #define MAX_NUM_ARGVS	128
 int argc;
@@ -47,6 +48,11 @@ void Sys_Error(const char* error, ...)
 	DeinitConProc();
 
 	exit(1);
+}
+
+void Sys_Quit(void)
+{
+	NOT_IMPLEMENTED
 }
 
 #pragma endregion
@@ -226,9 +232,24 @@ void Sys_ConsoleOutput(const char* string)
 		WriteFile(houtput, console_text, console_textlen, &dummy, NULL);
 }
 
+// Q2 counterpart
+// Send Key_Event calls.
 void Sys_SendKeyEvents(void)
 {
-	NOT_IMPLEMENTED
+	MSG msg;
+
+	while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
+	{
+		if (!GetMessage(&msg, NULL, 0, 0))
+			Sys_Quit();
+
+		sys_msg_time = msg.time;
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+
+	// Grab frame time.
+	sys_frame_time = timeGetTime();	// FIXME: should this be at start?
 }
 
 // Q2 counterpart
