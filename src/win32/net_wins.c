@@ -65,6 +65,7 @@ qboolean NET_CompareBaseAdr(netadr_t a, netadr_t b)
 	return false;
 }
 
+//TODO: use pointer arg
 char* NET_AdrToString(netadr_t a)
 {
 	NOT_IMPLEMENTED

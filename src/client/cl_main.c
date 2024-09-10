@@ -170,9 +170,57 @@ void Cmd_ForwardToServer(void)
 	}
 }
 
-void CL_ReadPackets(void)
+static void CL_ConnectionlessPacket(void)
 {
 	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart
+void CL_ReadPackets(void)
+{
+	while (NET_GetPacket(NS_CLIENT, &net_from, &net_message))
+	{
+		// Remote command packet.
+		if (*(int*)net_message.data == -1)
+		{
+			CL_ConnectionlessPacket();
+			continue;
+		}
+
+		// Dump it if not connected.
+		if (cls.state == ca_disconnected || cls.state == ca_connecting)
+			continue;
+
+		if (net_message.cursize < 8)
+		{
+			Com_Printf("%s: Runt packet\n", NET_AdrToString(net_from));
+			continue;
+		}
+
+		// Packet from server.
+		if (!NET_CompareAdr(net_from, cls.netchan.remote_address))
+		{
+			Com_DPrintf("%s:sequenced packet without connection\n", NET_AdrToString(net_from));
+			continue;
+		}
+
+		if (Netchan_Process(&cls.netchan, &net_message))
+			CL_ParseServerMessage();
+	}
+
+	// Check timeout.
+	if (cls.state >= ca_connected && cls.realtime - cls.netchan.last_received > (int)(cl_timeout->value * 1000))
+	{
+		if (++cl.timeoutcount > 5) // timeoutcount saves debugger
+		{
+			Com_Printf("\nServer connection timed out.\n");
+			CL_Disconnect();
+		}
+	}
+	else
+	{
+		cl.timeoutcount = 0;
+	}
 }
 
 static void CL_ForwardToServer_f(void)

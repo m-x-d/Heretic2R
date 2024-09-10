@@ -40,3 +40,8 @@ void CL_RegisterSounds(void)
 
 	S_EndRegistration();
 }
+
+void CL_ParseServerMessage(void)
+{
+	NOT_IMPLEMENTED
+}
