@@ -49,6 +49,11 @@ static void IN_InitMouse(void)
 	Cmd_AddCommand("-mlook", IN_MLookUp);
 }
 
+static void IN_ActivateMouse(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void IN_DeactivateMouse(void)
 {
 	NOT_IMPLEMENTED
@@ -130,7 +135,27 @@ void IN_Activate(const qboolean active)
 		mouseactive = false;
 }
 
+// Called every frame, even if not generating commands.
 void IN_Frame(void)
 {
-	NOT_IMPLEMENTED
+	if (!mouseinitialized)
+		return;
+
+	if (in_mouse == NULL || !in_appactive)
+	{
+		IN_DeactivateMouse();
+		return;
+	}
+
+	if (!cl.refresh_prepped || cls.key_dest == key_console || cls.key_dest == key_menu)
+	{
+		// Temporarily deactivate if in fullscreen.
+		if (Cvar_VariableValue("vid_fullscreen") == 0.0f)
+		{
+			IN_DeactivateMouse();
+			return;
+		}
+	}
+
+	IN_ActivateMouse();
 }
