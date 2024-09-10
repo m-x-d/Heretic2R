@@ -545,9 +545,15 @@ static void CL_StorePredictInfo(void) // H2
 	NOT_IMPLEMENTED
 }
 
-static void CL_SendPlayerInventoryChanges(void) // H2
+static void CL_StorePlayerInventoryInfo(void) // H2
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < cl.frame.playerstate.NoOfItems; i++)
+	{
+		const int ic = cl.frame.playerstate.inventory_changes[i];
+		const int ir = cl.frame.playerstate.inventory_remaining[i];
+
+		cl.playerinfo.pers.inventory.Items[ic] = ir;
+	}
 }
 
 static float GetFrameModifier(const float frametime) // H2
@@ -637,7 +643,7 @@ void CL_Frame(const int msec)
 	CL_ReadPackets();
 
 	if ((int)cl_predict->value) // H2
-		CL_SendPlayerInventoryChanges();
+		CL_StorePlayerInventoryInfo();
 
 	// Send a new command message to the server.
 	CL_SendCommand();
