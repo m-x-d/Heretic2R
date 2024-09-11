@@ -29,12 +29,15 @@ static uint old_sys_frame_time;
 
 kbutton_t in_klook;
 kbutton_t in_strafe;
+kbutton_t in_speed;
 
 static kbutton_t in_left;
 static kbutton_t in_right;
 static kbutton_t in_forward;
 static kbutton_t in_back;
 
+static kbutton_t in_lookup;
+static kbutton_t in_lookdown;
 static kbutton_t in_moveleft;
 static kbutton_t in_moveright;
 
@@ -324,9 +327,35 @@ static float CL_KeyState(kbutton_t* key)
 	return 0;
 }
 
+// Moves the local angle positions.
 static void CL_AdjustAngles(void)
 {
-	NOT_IMPLEMENTED
+	float speed;
+	float scaler;
+
+	if (in_speed.state & 1)
+		speed = cls.frametime * cl_anglespeedkey->value;
+	else
+		speed = cls.frametime;
+
+	if (!(in_strafe.state & 1))
+	{
+		scaler = speed * cl_yawspeed->value;
+
+		cl.delta_inputangles[YAW] -= CL_KeyState(&in_right) * scaler;
+		cl.delta_inputangles[YAW] += CL_KeyState(&in_left) * scaler;
+	}
+
+	scaler = speed * cl_pitchspeed->value;
+
+	if (in_klook.state & 1)
+	{
+		cl.delta_inputangles[PITCH] -= CL_KeyState(&in_forward) * scaler;
+		cl.delta_inputangles[PITCH] += CL_KeyState(&in_back) * scaler;
+	}
+
+	cl.delta_inputangles[PITCH] -= CL_KeyState(&in_lookup) * scaler;
+	cl.delta_inputangles[PITCH] += CL_KeyState(&in_lookdown) * scaler;
 }
 
 // Send the intended movement message to the server.
