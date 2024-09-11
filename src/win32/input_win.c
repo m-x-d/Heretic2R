@@ -19,10 +19,16 @@ cvar_t* in_joystick;
 #pragma region ========================== MOUSE CONTROL ==========================
 
 // Mouse variables
-cvar_t * m_filter;
+static cvar_t * m_filter;
+static qboolean mlooking;
 
 static int mouse_buttons;
 static int mouse_oldbuttonstate;
+static POINT current_pos;
+static int mouse_x;
+static int mouse_y;
+static int old_mouse_x;
+static int old_mouse_y;
 
 static qboolean mouseactive; // False when not focus app
 
@@ -30,6 +36,9 @@ static qboolean restore_spi;
 static qboolean mouseinitialized;
 static int originalmouseparms[3] = { 0, 0, 1 };
 static qboolean mouseparmsvalid;
+
+static int window_center_x;
+static int window_center_y;
 
 static void IN_MLookDown(void)
 {
@@ -108,7 +117,47 @@ void IN_MouseEvent(const int mstate)
 
 static void IN_MouseMove(usercmd_t* cmd)
 {
-	NOT_IMPLEMENTED
+	if (!mouseactive)
+		return;
+
+	// Find mouse movement
+	GetCursorPos(&current_pos);
+
+	const int mx = current_pos.x - window_center_x;
+	const int my = current_pos.y - window_center_y;
+
+	// Check #if 0-ed in Q2
+	if (mx == 0 && my == 0)
+		return;
+
+	if ((int)m_filter->value)
+	{
+		mouse_x = (mx + old_mouse_x) / 2;
+		mouse_y = (my + old_mouse_y) / 2;
+	}
+	else
+	{
+		mouse_x = mx;
+		mouse_y = my;
+	}
+
+	old_mouse_y = my;
+	old_mouse_x = mx;
+
+	mouse_x = (int)((float)mouse_x * mouse_sensitivity_x->value); // 'sensitivity' cvar in Q2
+	mouse_y = (int)((float)mouse_y * mouse_sensitivity_y->value); // 'sensitivity' cvar in Q2
+
+	// Add mouse X/Y movement to cmd.
+	if ((in_strafe.state & 1) || ((int)lookstrafe->value && mlooking)) //TODO: remove 'lookstrafe' cvar, always freelook
+		cmd->sidemove += (short)((float)mouse_x * m_side->value);
+	else
+		cl.delta_inputangles[YAW] -= (float)mouse_x * m_yaw->value;
+
+	if (!(in_strafe.state & 1) || ((int)freelook->value && mlooking)) // H2: no 'else' case //TODO: remove freelook cvar, always freelook
+		cl.delta_inputangles[PITCH] += (float)mouse_y * m_pitch->value;
+
+	// Force the mouse to the center, so there's room to move.
+	SetCursorPos(window_center_x, window_center_y);
 }
 
 #pragma endregion
