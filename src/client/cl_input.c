@@ -5,8 +5,12 @@
 //
 
 #include "client.h"
+#include "Vector.h"
 
 static cvar_t* cl_nodelta;
+
+static uint frame_msec;
+static uint old_sys_frame_time;
 
 static void IN_UpDown(void)
 {
@@ -285,11 +289,57 @@ void CL_InitInput(void)
 	cl_nodelta = Cvar_Get("cl_nodelta", "0", 0);
 }
 
-static usercmd_t CL_CreateCmd(void)
+void CL_BaseMove(usercmd_t* cmd)
 {
 	NOT_IMPLEMENTED
+}
 
+static void CL_FinishMove(usercmd_t* cmd)
+{
+	NOT_IMPLEMENTED
+}
+
+static usercmd_t CL_CreateCmd(void)
+{
+	static qboolean reset_input_angles = false;
 	usercmd_t cmd;
+
+	frame_msec = ClampI((int)(sys_frame_time - old_sys_frame_time), 1, 200);
+
+	if (cl.frame.playerstate.cinematicfreeze) // H2
+	{
+		memset(&cmd, 0, sizeof(cmd));
+
+		if (cls.esc_cinematic)
+		{
+			cmd.buttons |= BUTTON_ACTION;
+			cls.esc_cinematic = false;
+		}
+
+		reset_input_angles = true;
+	}
+	else
+	{
+		// Get basic movement from keyboard.
+		CL_BaseMove(&cmd);
+
+		// Allow mice or other external controllers to add to the move.
+		IN_Move(&cmd);
+
+		if (reset_input_angles) // H2
+		{
+			reset_input_angles = false;
+
+			VectorClear(cl.inputangles);
+			VectorClear(cl.delta_inputangles);
+			VectorClear(cl.viewangles);
+		}
+	}
+
+	CL_FinishMove(&cmd);
+
+	old_sys_frame_time = sys_frame_time;
+
 	return cmd;
 }
 

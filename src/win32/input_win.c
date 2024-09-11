@@ -177,3 +177,8 @@ void IN_Frame(void)
 
 	IN_ActivateMouse();
 }
+
+void IN_Move(usercmd_t* cmd)
+{
+	NOT_IMPLEMENTED
+}
