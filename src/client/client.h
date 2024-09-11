@@ -578,7 +578,7 @@ void CL_BaseMove(usercmd_t* cmd);
 
 void IN_CenterView(void);
 
-float CL_KeyState(kbutton_t* key);
+//float CL_KeyState(kbutton_t* key); //mxd. Made static
 char* Key_KeynumToString(int keynum);
 
 // cl_demo.c

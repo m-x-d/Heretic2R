@@ -12,6 +12,35 @@ static cvar_t* cl_nodelta;
 static uint frame_msec;
 static uint old_sys_frame_time;
 
+// KEY BUTTONS
+
+// Continuous button event tracking is complicated by the fact that two different input sources
+// (say, mouse button 1 and the control key) can both press the same button,
+// but the button should only be released when both of the pressing key have been released.
+
+// When a key event issues a button command (+forward, +attack, etc), it appends its key number
+// as a parameter to the command so it can be matched up with the release.
+
+// state bit 0 is the current state of the key
+// state bit 1 is edge triggered on the up to down transition
+// state bit 2 is edge triggered on the down to up transition
+
+#define MOVE_SCALER	64.0f //mxd
+
+kbutton_t in_klook;
+kbutton_t in_strafe;
+
+static kbutton_t in_left;
+static kbutton_t in_right;
+static kbutton_t in_forward;
+static kbutton_t in_back;
+
+static kbutton_t in_moveleft;
+static kbutton_t in_moveright;
+
+static kbutton_t in_up;
+static kbutton_t in_down;
+
 static void IN_UpDown(void)
 {
 	NOT_IMPLEMENTED
@@ -289,9 +318,47 @@ void CL_InitInput(void)
 	cl_nodelta = Cvar_Get("cl_nodelta", "0", 0);
 }
 
-void CL_BaseMove(usercmd_t* cmd)
+static float CL_KeyState(kbutton_t* key)
 {
 	NOT_IMPLEMENTED
+	return 0;
+}
+
+static void CL_AdjustAngles(void)
+{
+	NOT_IMPLEMENTED
+}
+
+// Send the intended movement message to the server.
+void CL_BaseMove(usercmd_t* cmd)
+{
+	memset(cmd, 0, sizeof(usercmd_t));
+
+	VectorCopy(cl.delta_inputangles, cl.old_delta_inputangles);
+	VectorClear(cl.delta_inputangles);
+
+	for (int i = 0; i < 3; i++)
+		cmd->angles[i] = (short)(cl.inputangles[i] * 182.0444f);
+
+	CL_AdjustAngles();
+
+	if (in_strafe.state & 1)
+	{
+		cmd->sidemove += (short)(CL_KeyState(&in_right) * MOVE_SCALER);
+		cmd->sidemove -= (short)(CL_KeyState(&in_left) * MOVE_SCALER);
+	}
+
+	cmd->sidemove += (short)(CL_KeyState(&in_moveright) * MOVE_SCALER);
+	cmd->sidemove -= (short)(CL_KeyState(&in_moveleft) * MOVE_SCALER);
+
+	cmd->upmove += (short)(CL_KeyState(&in_up) * MOVE_SCALER);
+	cmd->upmove -= (short)(CL_KeyState(&in_down) * MOVE_SCALER);
+
+	if (!(in_klook.state & 1))
+	{
+		cmd->forwardmove += (short)(CL_KeyState(&in_forward) * MOVE_SCALER);
+		cmd->forwardmove -= (short)(CL_KeyState(&in_back) * MOVE_SCALER);
+	}
 }
 
 static void CL_FinishMove(usercmd_t* cmd)
