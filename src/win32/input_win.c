@@ -106,6 +106,11 @@ void IN_MouseEvent(const int mstate)
 	mouse_oldbuttonstate = mstate;
 }
 
+static void IN_MouseMove(usercmd_t* cmd)
+{
+	NOT_IMPLEMENTED
+}
+
 #pragma endregion
 
 #pragma region ========================== JOYSTICK CONTROL ==========================
@@ -123,6 +128,11 @@ void IN_StartupJoystick(void)
 }
 
 void IN_Commands(void) //TODO: rename to IN_JoystickCommands?
+{
+	//TODO: skipped for now. Add gamepad support later.
+}
+
+static void IN_JoyMove(usercmd_t* cmd)
 {
 	//TODO: skipped for now. Add gamepad support later.
 }
@@ -178,7 +188,10 @@ void IN_Frame(void)
 	IN_ActivateMouse();
 }
 
+// Q2 counterpart
 void IN_Move(usercmd_t* cmd)
 {
-	NOT_IMPLEMENTED
+	IN_MouseMove(cmd);
+	if (ActiveApp)
+		IN_JoyMove(cmd);
 }
