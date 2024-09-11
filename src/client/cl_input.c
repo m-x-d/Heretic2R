@@ -321,10 +321,22 @@ void CL_InitInput(void)
 	cl_nodelta = Cvar_Get("cl_nodelta", "0", 0);
 }
 
+// Q2 counterpart
+// Returns the fraction of the frame that the key was down.
 static float CL_KeyState(kbutton_t* key)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	key->state &= 1; // Clear impulses.
+
+	uint msec = key->msec;
+	key->msec = 0;
+
+	if (key->state) // Still down.
+	{
+		msec += sys_frame_time - key->downtime;
+		key->downtime = sys_frame_time;
+	}
+
+	return Clamp((float)msec / (float)frame_msec, 0.0f, 1.0f);
 }
 
 // Moves the local angle positions.
