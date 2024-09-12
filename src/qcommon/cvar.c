@@ -198,7 +198,7 @@ cvar_t* Cvar_FullSet(const char* var_name, const char* value, const int flags)
 }
 
 // Q2 counterpart
-void Cvar_SetValue(char* var_name, const float value)
+void Cvar_SetValue(const char* var_name, const float value)
 {
 	char val[32];
 
