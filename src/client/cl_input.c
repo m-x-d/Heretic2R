@@ -420,7 +420,24 @@ void CL_BaseMove(usercmd_t* cmd)
 
 static void CL_ClampPitch(void)
 {
-	NOT_IMPLEMENTED
+	float pitch = SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[PITCH]);
+
+	if (pitch > 180.0f)
+		pitch -= 360.0f;
+
+	// H2. Clamp input angles.
+	if (cl.inputangles[PITCH] + pitch > 89.0f)
+		cl.inputangles[PITCH] = 89.0f - pitch;
+
+	if (cl.inputangles[PITCH] + pitch < -89.0f)
+		cl.inputangles[PITCH] = -89.0f - pitch;
+
+	// Clamp view angles.
+	if (cl.viewangles[PITCH] + pitch > 89.0f)
+		cl.viewangles[PITCH] = 89.0f - pitch;
+
+	if (cl.viewangles[PITCH] + pitch < -89.0f)
+		cl.viewangles[PITCH] = -89.0f - pitch;
 }
 
 //TODO: rename 'st_unknown' cvars, check conditions & annotate of all angles calculation branches when we get to playable state.
