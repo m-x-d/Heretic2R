@@ -639,6 +639,10 @@ static void CL_WriteConfiguration(void)
 
 static void CL_StorePredictInfo(void) // H2
 {
+	//mxd. Skip when unable to render //TODO: more reliable way to check we are ingame (sv.state does this)?
+	if (!cl.refresh_prepped)
+		return;
+
 	NOT_IMPLEMENTED
 }
 

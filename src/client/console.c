@@ -121,7 +121,10 @@ void Con_CheckResize(void)
 
 void Con_UpdateConsoleHeight(void) // H2
 {
-	NOT_IMPLEMENTED
+	if (cls.key_dest == key_console)
+		scr_con_current = 0.5f;
+	else
+		scr_con_current = 0.0f;
 }
 
 void Con_Init(void)
