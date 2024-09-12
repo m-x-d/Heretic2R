@@ -77,7 +77,7 @@ cvar_t* shownames;
 static cvar_t* r_detail;
 static cvar_t* compass;
 cvar_t* cl_showcaptions;
-static cvar_t* cl_doautoaim;
+cvar_t* cl_doautoaim;
 
 cvar_t* cl_camera_combat;
 cvar_t* cl_camera_clipdamp;

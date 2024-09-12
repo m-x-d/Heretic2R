@@ -5,12 +5,16 @@
 //
 
 #include "client.h"
+#include "EffectFlags.h"
 #include "Vector.h"
 
 static cvar_t* cl_nodelta;
 
 static uint frame_msec;
 static uint old_sys_frame_time;
+
+int pred_pm_flags; // H2
+int pred_pm_w_flags; // H2
 
 // KEY BUTTONS
 
@@ -27,9 +31,12 @@ static uint old_sys_frame_time;
 
 #define MOVE_SCALER	64.0f //mxd
 
+qboolean in_do_autoaim;
+
 kbutton_t in_klook;
 kbutton_t in_strafe;
 kbutton_t in_speed;
+kbutton_t in_lookaround;
 
 static kbutton_t in_left;
 static kbutton_t in_right;
@@ -43,6 +50,15 @@ static kbutton_t in_moveright;
 
 static kbutton_t in_up;
 static kbutton_t in_down;
+
+static kbutton_t in_attack;
+static kbutton_t in_defend; // H2
+static kbutton_t in_action; // H2
+
+static kbutton_t in_creep; // H2
+static kbutton_t in_inventory; // H2
+static kbutton_t in_quickturn; // H2
+static kbutton_t in_autoaim; // H2
 
 static void IN_UpDown(void)
 {
@@ -379,7 +395,7 @@ void CL_BaseMove(usercmd_t* cmd)
 	VectorClear(cl.delta_inputangles);
 
 	for (int i = 0; i < 3; i++)
-		cmd->angles[i] = (short)(cl.inputangles[i] * 182.0444f);
+		cmd->angles[i] = ANGLE2SHORT(cl.inputangles[i]);
 
 	CL_AdjustAngles();
 
@@ -402,9 +418,306 @@ void CL_BaseMove(usercmd_t* cmd)
 	}
 }
 
-static void CL_FinishMove(usercmd_t* cmd)
+static void CL_ClampPitch(void)
 {
 	NOT_IMPLEMENTED
+}
+
+//TODO: rename 'st_unknown' cvars, check conditions & annotate of all angles calculation branches when we get to playable state.
+static void CL_FinishMove(usercmd_t* cmd)
+{
+	static float quickturn_rate_scaler;
+	static float quickturn_rate;
+	static qboolean st_unknown1;
+	static qboolean st_unknown2;
+	static qboolean st_unknown3;
+	static qboolean st_unknown4;
+	static qboolean st_unknown5;
+	static qboolean st_unknown6;
+
+	// Figure button bits
+
+	// He attac
+	if (in_attack.state & 3)
+		cmd->buttons |= BUTTON_ATTACK;
+	in_attack.state &= ~2;
+
+	// But also protec
+	if (in_defend.state & 2)
+		cmd->buttons |= BUTTON_DEFEND;
+	in_defend.state &= ~2;
+
+	// Action
+	if (in_action.state & 3 && !cl.frame.playerstate.cinematicfreeze)
+		cmd->buttons |= BUTTON_ACTION;
+	in_action.state &= ~2;
+
+	// Run
+	const qboolean speed_state = (in_speed.state & 3);
+	const qboolean run = (int)cl_run->value;
+	if ((speed_state || run) && ((speed_state && !run) || speed_state == (cmd->forwardmove < -10)))
+		cmd->buttons |= BUTTON_RUN;
+	in_speed.state &= ~2;
+
+	// Crouch
+	if (in_creep.state & 3)
+		cmd->buttons |= BUTTON_CREEP;
+	in_creep.state &= ~2;
+
+	// Autoaim
+	if ((in_autoaim.state & 3) != (uint)cl_doautoaim->value)
+		cmd->buttons |= BUTTON_AUTOAIM;
+	in_autoaim.state &= ~2;
+
+	in_do_autoaim = (cmd->buttons & BUTTON_AUTOAIM);
+
+	// TR-style look around
+	if (in_lookaround.state & 3)
+		cmd->buttons |= BUTTON_LOOKAROUND;
+	in_lookaround.state &= ~2;
+
+	// TR-style quick-turn
+	if (in_quickturn.state & 3)
+	{
+		cmd->buttons |= BUTTON_QUICKTURN;
+		if (quickturn_rate_scaler == 0.0f)
+			quickturn_rate_scaler = 0.5f;
+	}
+	in_quickturn.state &= ~2;
+
+	// Open inventory
+	if (in_inventory.state & 3)
+		cmd->buttons |= BUTTON_INVENTORY;
+	in_inventory.state &= ~2;
+
+	if (anykeydown && cls.key_dest == key_game)
+		cmd->buttons |= BUTTON_ANY;
+
+	// Look around key pressed?
+	const qboolean do_lookaround = (in_lookaround.state & 1);
+	if (do_lookaround)
+	{
+		cl.lookangles[PITCH] += cl.delta_inputangles[PITCH];
+		cl.lookangles[YAW] += cl.delta_inputangles[YAW];
+	}
+	else
+	{
+		cl.lookangles[PITCH] = cl.viewangles[PITCH];
+		cl.lookangles[YAW] = cl.viewangles[YAW];
+	}
+
+	// Can't do much when chicken...
+	if (cl_entities[cl.playernum + 1].current.effects & EF_CHICKEN)
+	{
+		if (!do_lookaround)
+		{
+			cl.viewangles[PITCH] += cl.delta_inputangles[PITCH];
+			cl.inputangles[YAW] = cl.viewangles[YAW] + cl.delta_inputangles[YAW];
+			cl.viewangles[YAW] = cl.inputangles[YAW];
+		}
+
+		goto LABEL_END;
+	}
+
+	// When in water
+	if (pred_pm_w_flags != 0)
+	{
+		if (pred_pm_w_flags & (WF_SURFACE | WF_DIVE))
+		{
+			st_unknown3 = true;
+
+			if (st_unknown1)
+			{
+				st_unknown1 = false;
+				cl.viewangles[YAW] = cl.inputangles[YAW];
+				cl.delta_inputangles[YAW] = 0.0f;
+			}
+
+			if (st_unknown2)
+			{
+				st_unknown2 = false;
+				cl.delta_inputangles[PITCH] = 0.0f;
+				cl.inputangles[PITCH] = -((float)cl.frame.playerstate.pmove.delta_angles[PITCH] * SHORT_TO_ANGLE);
+				cl.viewangles[PITCH] = cl.inputangles[PITCH];
+			}
+		}
+		else
+		{
+			st_unknown2 = true;
+
+			if (st_unknown3 && (pred_pm_w_flags & WF_SWIMFREE))
+			{
+				st_unknown3 = false;
+				cl.viewangles[PITCH] = cl.inputangles[PITCH];
+			}
+
+			if (st_unknown1 && (pred_pm_w_flags & WF_SWIMFREE))
+			{
+				st_unknown1 = false;
+				cl.inputangles[PITCH] = cl.viewangles[PITCH];
+				cl.delta_inputangles[PITCH] = 0.0f;
+			}
+		}
+
+		if (!do_lookaround)
+		{
+			cl.inputangles[PITCH] = cl.inputangles[PITCH] + cl.delta_inputangles[PITCH];
+			cl.inputangles[YAW] = cl.inputangles[YAW] + cl.delta_inputangles[YAW];
+			cl.viewangles[PITCH] = cl.viewangles[PITCH] + cl.delta_inputangles[PITCH];
+			cl.viewangles[YAW] = cl.viewangles[YAW] + cl.delta_inputangles[YAW];
+		}
+
+		goto LABEL_END;
+	}
+
+	// When on land
+	st_unknown1 = true;
+
+	// When not frozen in place.
+	if (!(pred_pm_flags & PMF_STANDSTILL))
+	{
+		st_unknown5 = true;
+
+		if (st_unknown4)
+		{
+			st_unknown4 = false;
+			cl.inputangles[YAW] = cl.viewangles[YAW];
+		}
+
+		if (!do_lookaround)
+		{
+			if (!(pred_pm_flags & PMF_LOCKTURN))
+			{
+				cl.inputangles[YAW] += cl.delta_inputangles[YAW];
+				cl.viewangles[YAW] += cl.delta_inputangles[YAW];
+			}
+
+			cl.viewangles[PITCH] += cl.delta_inputangles[PITCH];
+		}
+
+		goto LABEL_END;
+	}
+
+	// When executing quickturn
+	if ((int)cl_predict->value)
+		quickturn_rate = cl.playerinfo.quickturn_rate;
+	else
+		quickturn_rate = cl.frame.playerstate.quickturn_rate;
+
+	if (quickturn_rate_scaler > 0.0f && quickturn_rate != 0.0f)
+	{
+		quickturn_rate_scaler -= cls.frametime;
+
+		float scaled_rate = 0.0f;
+		if (quickturn_rate_scaler < 0.0f)
+		{
+			scaled_rate = quickturn_rate * quickturn_rate_scaler;
+			quickturn_rate_scaler = 0.0f;
+		}
+
+		const float offset = cls.frametime * quickturn_rate + scaled_rate;
+		cl.inputangles[YAW] += offset;
+		cl.viewangles[YAW] += offset;
+
+		goto LABEL_END;
+	}
+
+	// Default camera movement logic (???)
+	st_unknown4 = true;
+
+	if (st_unknown5)
+	{
+		st_unknown5 = false;
+		cl.inputangles[YAW] = cl.viewangles[YAW];
+		cl.inputangles[PITCH] = -((float)cl.frame.playerstate.pmove.delta_angles[PITCH] * SHORT_TO_ANGLE);
+	}
+
+	if (!do_lookaround)
+	{
+		cl.viewangles[PITCH] += cl.delta_inputangles[PITCH];
+		cl.viewangles[YAW] += cl.delta_inputangles[YAW];
+	}
+
+	const float delta_yaw = cl.viewangles[YAW] - cl.inputangles[YAW];
+
+	if (delta_yaw > 66.0f || delta_yaw < -66.0f)
+		st_unknown6 = true;
+	else if (!st_unknown6)
+		goto LABEL_END;
+
+	if (cl.delta_inputangles[YAW] != 0.0f)
+	{
+		if ((cl.delta_inputangles[YAW] > 0.0f && cl.old_delta_inputangles[YAW] >= 0.0f) ||
+			(cl.delta_inputangles[YAW] < 0.0f && cl.old_delta_inputangles[YAW] <= 0.0f))
+		{
+			cl.inputangles[YAW] += cl.delta_inputangles[YAW];
+			goto LABEL_END;
+		}
+
+		st_unknown6 = false;
+		goto LABEL_END;
+	}
+
+	if (delta_yaw >= 0.0f)
+	{
+		if (delta_yaw > 0.0f)
+		{
+			if (cl.inputangles[YAW] > cl.viewangles[YAW])
+			{
+				st_unknown6 = false;
+				goto LABEL_END;
+			}
+
+			cl.inputangles[YAW] += delta_yaw * 0.25f;
+
+			if (Q_fabs(cl.viewangles[YAW] - cl.inputangles[YAW]) >= 5.0f)
+				goto LABEL_END;
+
+			cl.inputangles[YAW] = cl.viewangles[YAW];
+		}
+
+		st_unknown6 = false;
+		goto LABEL_END;
+	}
+
+	if (cl.inputangles[YAW] >= cl.viewangles[YAW])
+	{
+		cl.inputangles[YAW] += delta_yaw * 0.25f;
+
+		if (Q_fabs(cl.viewangles[YAW] - cl.inputangles[YAW]) < 5.0f)
+		{
+			st_unknown6 = false;
+			cl.inputangles[YAW] = cl.viewangles[YAW];
+		}
+	}
+	else
+	{
+		st_unknown6 = false;
+	}
+
+LABEL_END:
+	CL_ClampPitch();
+
+	// Store angles in usercmd.
+	for (int i = 0; i < 3; i++)
+	{
+		cmd->angles[i] = ANGLE2SHORT(cl.inputangles[i]);
+		cmd->aimangles[i] = (short)(cl.frame.playerstate.pmove.delta_angles[i] - ANGLE2SHORT(-cl.viewangles[i]));
+		cmd->camera_vieworigin[i] = (short)(cl.camera_vieworigin[i] * 8.0f);
+		cmd->camera_viewangles[i] = ANGLE2SHORT(cl.camera_viewangles[i]);
+	}
+
+	cmd->prediction = (cl_predict->value != 0.0f);
+
+	// Send the ambient light level at the player's current position
+	cmd->lightlevel = (byte)cl_lightlevel->value;
+
+	// Send milliseconds of time to apply the move
+	int ms = (int)(cls.frametime * 1000.0f);
+	if (ms > 250)
+		ms = 100; // Time was unreasonable
+
+	cmd->msec = (byte)ms;
 }
 
 static usercmd_t CL_CreateCmd(void)

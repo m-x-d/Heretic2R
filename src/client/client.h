@@ -473,6 +473,7 @@ extern cvar_t* cl_cinematicfreeze;
 extern cvar_t* shownames;
 extern cvar_t* autoweapon;
 extern cvar_t* cl_showcaptions;
+extern cvar_t* cl_doautoaim; //mxd
 
 extern cvar_t* colour_obituary;
 extern cvar_t* colour_chat;
@@ -563,6 +564,8 @@ extern kbutton_t in_klook;
 extern kbutton_t in_strafe;
 extern kbutton_t in_speed;
 extern kbutton_t in_lookaround;
+
+extern qboolean in_do_autoaim; //mxd
 
 void CL_InitInput(void);
 void CL_SendCmd(void);

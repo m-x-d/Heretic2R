@@ -440,5 +440,8 @@
     <ClInclude Include="..\qcommon\anorms.h">
       <Filter>qcommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\qcommon\EffectFlags.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
