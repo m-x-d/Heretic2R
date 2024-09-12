@@ -598,7 +598,7 @@ void NET_TotalShutdown(void);
 void NET_Config(qboolean multiplayer);
 
 qboolean NET_GetPacket(netsrc_t sock, netadr_t* n_from, sizebuf_t* n_message);
-void NET_SendPacket(netsrc_t sock, int length, void* data, netadr_t to);
+void NET_SendPacket(netsrc_t sock, int length, const void* data, netadr_t to);
 
 qboolean NET_CompareAdr(netadr_t a, netadr_t b);
 qboolean NET_CompareBaseAdr(netadr_t a, netadr_t b);
