@@ -311,9 +311,82 @@ void CL_Drop(void)
 		SCR_EndLoadingPlaque(); // Get rid of loading plaque
 }
 
-static void CL_CheckForResend(void)
+static void CL_SendConnectPacket(void)
 {
 	NOT_IMPLEMENTED
+}
+
+// Resend a connect message if the last one has timed out.
+static void CL_CheckForResend(void)
+{
+	netadr_t adr;
+
+	if (cls.state == ca_disconnected && Com_ServerState())
+	{
+		cls.state = ca_connecting;
+		strncpy_s(cls.servername, sizeof(cls.servername), "localhost", sizeof(cls.servername) - 1); //mxd. strncpy -> strncpy_s
+		CL_SendConnectPacket();
+
+		return;
+	}
+
+	// H2. Update predict cvars.
+	if (cls.state >= ca_connected)
+	{
+		if (strcmp(cls.servername, "localhost") == 0)
+		{
+			if (cl_predict->value != cl_predict_local->value)
+			{
+				Cvar_SetValue("cl_predict", cl_predict->value);
+				cl_predict_local->value = cl_predict->value;
+				Cvar_SetValue("cl_predict_local", cl_predict_local->value);
+			}
+		}
+		else if (cl_predict->value != cl_predict_remote->value)
+		{
+			Cvar_SetValue("cl_predict", cl_predict->value);
+			cl_predict_remote->value = cl_predict->value;
+			Cvar_SetValue("cl_predict_remote", cl_predict_remote->value);
+		}
+	}
+
+	// Resend if we haven't gotten a reply yet.
+	if (cls.state != ca_connecting || (float)cls.realtime - cls.connect_time < 3000.0f)
+		return;
+
+	if (!NET_StringToAdr(cls.servername, &adr))
+	{
+		Com_Printf("Bad server address\n");
+		cls.state = ca_disconnected;
+
+		return;
+	}
+
+	if (adr.port == 0)
+		adr.port = BigShort(PORT_SERVER);
+
+	// H2. Update cl_predict.
+	if (strcmp(cls.servername, "localhost") == 0)
+	{
+		if (cl_predict->value != cl_predict_local->value)
+		{
+			cl_predict->value = cl_predict_local->value;
+			Cvar_SetValue("cl_predict", cl_predict->value);
+		}
+	}
+	else
+	{
+		if (cl_predict->value != cl_predict_remote->value)
+		{
+			cl_predict->value = cl_predict_remote->value;
+			Cvar_SetValue("cl_predict", cl_predict->value);
+		}
+	}
+
+	cls.connect_time = (float)cls.realtime; // For retransmit requests
+
+	Com_Printf("Connecting to %s...\n", cls.servername);
+	Netchan_OutOfBandPrint(NS_CLIENT, adr, "getchallenge\n");
 }
 
 static void CL_Connect_f(void)

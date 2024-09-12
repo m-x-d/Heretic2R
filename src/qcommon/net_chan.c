@@ -73,6 +73,11 @@ void Netchan_Init(void)
 	net_latency = Cvar_Get("net_latency", "0", 0);
 }
 
+void Netchan_OutOfBandPrint(int net_socket, netadr_t adr, char* format, ...)
+{
+	NOT_IMPLEMENTED
+}
+
 int Netchan_Transmit(netchan_t* chan, int length, byte* data)
 {
 	NOT_IMPLEMENTED

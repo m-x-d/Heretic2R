@@ -72,6 +72,12 @@ char* NET_AdrToString(netadr_t a)
 	return NULL;
 }
 
+qboolean NET_StringToAdr(char* s, netadr_t* a)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
 static char* NET_ErrorString(void)
 {
 	NOT_IMPLEMENTED
