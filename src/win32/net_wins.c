@@ -224,6 +224,11 @@ qboolean NET_GetPacket(const netsrc_t sock, netadr_t* n_from, sizebuf_t* n_messa
 	return false;
 }
 
+void NET_SendPacket(netsrc_t sock, int length, void* data, netadr_t to)
+{
+	NOT_IMPLEMENTED
+}
+
 static void NET_OpenIP(void)
 {
 	NOT_IMPLEMENTED

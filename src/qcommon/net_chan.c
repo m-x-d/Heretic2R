@@ -73,15 +73,28 @@ void Netchan_Init(void)
 	net_latency = Cvar_Get("net_latency", "0", 0);
 }
 
-static void Netchan_OutOfBand(int net_socket, netadr_t adr, int length, byte* data)
+// Q2 counterpart
+// Sends an out-of-band datagram.
+static void Netchan_OutOfBand(const int net_socket, const netadr_t adr, const int length, const byte* data)
 {
-	NOT_IMPLEMENTED
+	sizebuf_t send;
+	byte send_buf[MAX_MSGLEN];
+
+	// Write the packet header.
+	SZ_Init(&send, send_buf, sizeof(send_buf));
+
+	MSG_WriteLong(&send, -1); // -1 sequence means out of band.
+	SZ_Write(&send, data, length);
+
+	// Send the datagram.
+	NET_SendPacket(net_socket, send.cursize, send.data, adr);
 }
 
+// Q2 counterpart
 // Sends a text message in an out-of-band datagram.
 void Netchan_OutOfBandPrint(const int net_socket, const netadr_t adr, char* format, ...)
 {
-	static char string[MAX_MSGLEN]; // Q2: MAX_MSGLEN - 4
+	static char string[MAX_MSGLEN - 4]; //mxd. Keep 4 bytes for out of band marker
 	va_list argptr;
 
 	va_start(argptr, format);
