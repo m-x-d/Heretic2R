@@ -73,9 +73,22 @@ void Netchan_Init(void)
 	net_latency = Cvar_Get("net_latency", "0", 0);
 }
 
-void Netchan_OutOfBandPrint(int net_socket, netadr_t adr, char* format, ...)
+static void Netchan_OutOfBand(int net_socket, netadr_t adr, int length, byte* data)
 {
 	NOT_IMPLEMENTED
+}
+
+// Sends a text message in an out-of-band datagram.
+void Netchan_OutOfBandPrint(const int net_socket, const netadr_t adr, char* format, ...)
+{
+	static char string[MAX_MSGLEN]; // Q2: MAX_MSGLEN - 4
+	va_list argptr;
+
+	va_start(argptr, format);
+	vsprintf_s(string, sizeof(string), format, argptr); //mxd. vsprintf -> vsprintf_s
+	va_end(argptr);
+
+	Netchan_OutOfBand(net_socket, adr, (int)strlen(string), (byte*)string);
 }
 
 int Netchan_Transmit(netchan_t* chan, int length, byte* data)
