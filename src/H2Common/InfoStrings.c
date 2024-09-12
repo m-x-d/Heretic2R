@@ -103,7 +103,7 @@ H2COMMON_API void Info_SetValueForKey(char* s, const char* key, const char* valu
 {
 	char newi[MAX_INFO_STRING];
 
-	if (!key)
+	if (key == NULL)
 		return;
 
 	if (strstr(key, "\\") || (value && strstr(value, "\\")))
@@ -132,7 +132,7 @@ H2COMMON_API void Info_SetValueForKey(char* s, const char* key, const char* valu
 
 	Info_RemoveKey(s, key);
 
-	if (!value || !strlen(value))
+	if (value == NULL || strlen(value) == 0)
 		return;
 
 	Com_sprintf(newi, sizeof(newi), "\\%s\\%s", key, value);
@@ -147,7 +147,7 @@ H2COMMON_API void Info_SetValueForKey(char* s, const char* key, const char* valu
 	s += strlen(s);
 	const char* v = newi;
 
-	while (*v)
+	while (*v != 0)
 	{
 		const char c = *v++; //mxd. int c -> char c
 		//c &= 127; // Strip high bits
@@ -163,10 +163,7 @@ H2COMMON_API void Info_SetValueForKey(char* s, const char* key, const char* valu
 // Some characters are illegal in info strings because they can mess up the server's parsing
 H2COMMON_API qboolean Info_Validate(const char* s)
 {
-	if (strstr(s, "\""))
-		return false;
-
-	if (strstr(s, ";"))
+	if (strstr(s, "\"") || strstr(s, ";"))
 		return false;
 
 	return true;
