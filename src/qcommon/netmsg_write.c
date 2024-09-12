@@ -13,9 +13,14 @@ void MSG_WriteByte(sizebuf_t* sb, const int c)
 	buf[0] = (byte)c;
 }
 
-void MSG_WriteLong(sizebuf_t* sb, int c)
+// Q2 counterpart
+void MSG_WriteLong(sizebuf_t* sb, const int c)
 {
-	NOT_IMPLEMENTED
+	byte* buf = SZ_GetSpace(sb, 4);
+	buf[0] = c & 0xff;
+	buf[1] = (c >> 8) & 0xff;
+	buf[2] = (c >> 16) & 0xff;
+	buf[3] = (c >> 24);
 }
 
 // Q2 counterpart
