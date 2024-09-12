@@ -297,10 +297,24 @@ static void Cvar_List_f(void)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
+static char* Cvar_BitInfo(const int bit)
+{
+	static char	info[MAX_INFO_STRING];
+
+	info[0] = 0;
+
+	for (const cvar_t* var = cvar_vars; var != NULL; var = var->next)
+		if (var->flags & bit)
+			Info_SetValueForKey(info, var->name, var->string);
+
+	return info;
+}
+
+// Q2 counterpart
 char* Cvar_Userinfo(void)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	return Cvar_BitInfo(CVAR_USERINFO);
 }
 
 // Q2 counterpart
