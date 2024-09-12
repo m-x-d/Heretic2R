@@ -311,9 +311,27 @@ void CL_Drop(void)
 		SCR_EndLoadingPlaque(); // Get rid of loading plaque
 }
 
+// Q2 counterpart
+// We have gotten a challenge from the server, so try and connect.
 static void CL_SendConnectPacket(void)
 {
-	NOT_IMPLEMENTED
+	netadr_t adr;
+
+	if (NET_StringToAdr(cls.servername, &adr))
+	{
+		if (adr.port == 0)
+			adr.port = BigShort(PORT_SERVER);
+
+		const int port = (int)Cvar_VariableValue("qport");
+		userinfo_modified = false;
+
+		Netchan_OutOfBandPrint(NS_CLIENT, adr, "connect %i %i %i \"%s\"\n", PROTOCOL_VERSION, port, cls.challenge, Cvar_Userinfo());
+	}
+	else
+	{
+		Com_Printf("Bad server address\n");
+		cls.connect_time = 0.0f;
+	}
 }
 
 // Resend a connect message if the last one has timed out.
@@ -321,11 +339,12 @@ static void CL_CheckForResend(void)
 {
 	netadr_t adr;
 
+	// If the local server is running and we aren't, then connect.
 	if (cls.state == ca_disconnected && Com_ServerState())
 	{
 		cls.state = ca_connecting;
 		strncpy_s(cls.servername, sizeof(cls.servername), "localhost", sizeof(cls.servername) - 1); //mxd. strncpy -> strncpy_s
-		CL_SendConnectPacket();
+		CL_SendConnectPacket(); // We don't need a challenge on the localhost.
 
 		return;
 	}
