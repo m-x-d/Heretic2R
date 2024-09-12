@@ -76,11 +76,28 @@ static qboolean NET_StringToSockaddr(char* s, struct sockaddr* sadr)
 	return false;
 }
 
-//TODO: use pointer arg
-char* NET_AdrToString(netadr_t a)
+// Q2 counterpart
+//mxd. Use pointer arg instead of pass-by-value.
+char* NET_AdrToString(const netadr_t* a)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	static char s[64];
+
+	switch (a->type)
+	{
+		case NA_LOOPBACK:
+			Com_sprintf(s, sizeof(s), "loopback");
+			break;
+
+		case NA_IP:
+			Com_sprintf(s, sizeof(s), "%i.%i.%i.%i:%i", a->ip[0], a->ip[1], a->ip[2], a->ip[3], ntohs(a->port));
+			break;
+
+		default:
+			Com_sprintf(s, sizeof(s), "%02x%02x%02x%02x:%02x%02x%02x%02x%02x%02x:%i", a->ipx[0], a->ipx[1], a->ipx[2], a->ipx[3], a->ipx[4], a->ipx[5], a->ipx[6], a->ipx[7], a->ipx[8], a->ipx[9], ntohs(a->port));
+			break;
+	}
+
+	return s;
 }
 
 // Q2 counterpart
@@ -233,9 +250,9 @@ qboolean NET_GetPacket(const netsrc_t sock, netadr_t* n_from, sizebuf_t* n_messa
 			{
 				// Let dedicated servers continue after errors
 				if ((int)dedicated->value)
-					Com_Printf("NET_GetPacket: %s from %s\n", NET_ErrorString(), NET_AdrToString(*n_from));
+					Com_Printf("NET_GetPacket: %s from %s\n", NET_ErrorString(), NET_AdrToString(n_from));
 				else
-					Com_Error(ERR_DROP, "NET_GetPacket: %s from %s", NET_ErrorString(), NET_AdrToString(*n_from));
+					Com_Error(ERR_DROP, "NET_GetPacket: %s from %s", NET_ErrorString(), NET_AdrToString(n_from));
 			}
 
 			continue;
@@ -245,7 +262,7 @@ qboolean NET_GetPacket(const netsrc_t sock, netadr_t* n_from, sizebuf_t* n_messa
 
 		if (ret == n_message->maxsize)
 		{
-			Com_Printf("Oversize packet from %s\n", NET_AdrToString(*n_from));
+			Com_Printf("Oversize packet from %s\n", NET_AdrToString(n_from));
 			continue;
 		}
 
@@ -314,7 +331,7 @@ void NET_SendPacket(const netsrc_t sock, const int length, const void* data, net
 		if ((int)dedicated->value)
 			Com_Printf("NET_SendPacket ERROR: %s\n", NET_ErrorString());
 		else if (err == WSAEADDRNOTAVAIL)
-			Com_DPrintf("NET_SendPacket Warning: %s : %s\n", NET_ErrorString(), NET_AdrToString(to));
+			Com_DPrintf("NET_SendPacket Warning: %s : %s\n", NET_ErrorString(), NET_AdrToString(&to));
 		else
 			Com_Error(ERR_DROP, "NET_SendPacket ERROR: %s\n", NET_ErrorString());
 	}

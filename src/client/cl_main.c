@@ -193,14 +193,14 @@ void CL_ReadPackets(void)
 
 		if (net_message.cursize < 8)
 		{
-			Com_Printf("%s: Runt packet\n", NET_AdrToString(net_from));
+			Com_Printf("%s: Runt packet\n", NET_AdrToString(&net_from));
 			continue;
 		}
 
 		// Packet from server.
 		if (!NET_CompareAdr(net_from, cls.netchan.remote_address))
 		{
-			Com_DPrintf("%s:sequenced packet without connection\n", NET_AdrToString(net_from));
+			Com_DPrintf("%s:sequenced packet without connection\n", NET_AdrToString(&net_from));
 			continue;
 		}
 

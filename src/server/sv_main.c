@@ -114,7 +114,7 @@ static void SV_ConnectionlessPacket(void)
 	Cmd_TokenizeString(s, false);
 
 	char* c = Cmd_Argv(0);
-	Com_DPrintf("Packet %s : %s\n", NET_AdrToString(net_from), c);
+	Com_DPrintf("Packet %s : %s\n", NET_AdrToString(&net_from), c);
 
 	if (strcmp(c, "ping") == 0)
 		SVC_Ping();
@@ -131,7 +131,7 @@ static void SV_ConnectionlessPacket(void)
 	else if (strcmp(c, "rcon") == 0)
 		SVC_RemoteCommand();
 	else
-		Com_Printf("bad connectionless packet from %s:\n%s\n", NET_AdrToString(net_from), s);
+		Com_Printf("bad connectionless packet from %s:\n%s\n", NET_AdrToString(&net_from), s);
 }
 
 static void SV_CalcPings(void)
