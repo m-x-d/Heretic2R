@@ -46,6 +46,11 @@ static cvar_t* ipxfix; // New in H2
 
 static WSADATA winsockdata;
 
+static void NetadrToSockadr(netadr_t* a, struct sockaddr* s)
+{
+	NOT_IMPLEMENTED
+}
+
 static void SockadrToNetadr(struct sockaddr* s, netadr_t* a)
 {
 	NOT_IMPLEMENTED
@@ -156,6 +161,11 @@ static qboolean	NET_GetLoopPacket(const netsrc_t sock, netadr_t* n_from, sizebuf
 	return true;
 }
 
+static void NET_SendLoopPacket(netsrc_t sock, int length, void* data, netadr_t to)
+{
+	NOT_IMPLEMENTED
+}
+
 #pragma endregion
 
 qboolean NET_GetPacket(const netsrc_t sock, netadr_t* n_from, sizebuf_t* n_message)
@@ -224,9 +234,61 @@ qboolean NET_GetPacket(const netsrc_t sock, netadr_t* n_from, sizebuf_t* n_messa
 	return false;
 }
 
-void NET_SendPacket(netsrc_t sock, int length, void* data, netadr_t to)
+void NET_SendPacket(const netsrc_t sock, const int length, void* data, netadr_t to)
 {
-	NOT_IMPLEMENTED
+	struct sockaddr addr;
+	int net_socket;
+
+	// H2: simulate packet loss.
+	if (net_sendrate->value > 0.0f && net_sendrate->value < 1.0f && net_sendrate->value < flrand(0.0f, 1.0f))
+		return;
+
+	switch (to.type)
+	{
+		case NA_LOOPBACK:
+			NET_SendLoopPacket(sock, length, data, to);
+			return;
+
+		case NA_IP:
+		case NA_BROADCAST:
+			net_socket = ip_sockets[sock];
+			break;
+
+		case NA_IPX:
+		case NA_BROADCAST_IPX:
+			net_socket = ipx_sockets[sock];
+			break;
+
+		default:
+			Com_Error(ERR_FATAL, "NET_SendPacket: bad address type");
+			return;
+	}
+
+	if (net_socket == 0)
+		return;
+
+	NetadrToSockadr(&to, &addr);
+
+	if (sendto(net_socket, data, length, 0, &addr, sizeof(addr)) == -1)
+	{
+		const int err = WSAGetLastError();
+
+		// Wouldblock is silent.
+		if (err == WSAEWOULDBLOCK)
+			return;
+
+		// Some PPP links don't allow broadcasts.
+		if (err == WSAEADDRNOTAVAIL && (to.type == NA_BROADCAST || to.type == NA_BROADCAST_IPX))
+			return;
+
+		// Let dedicated servers continue after errors.
+		if ((int)dedicated->value)
+			Com_Printf("NET_SendPacket ERROR: %s\n", NET_ErrorString());
+		else if (err == WSAEADDRNOTAVAIL)
+			Com_DPrintf("NET_SendPacket Warning: %s : %s\n", NET_ErrorString(), NET_AdrToString(to));
+		else
+			Com_Error(ERR_DROP, "NET_SendPacket ERROR: %s\n", NET_ErrorString());
+	}
 }
 
 static void NET_OpenIP(void)

@@ -50,7 +50,7 @@ static cvar_t* showdrop;
 static cvar_t* qport;
 
 // New in H2:
-static cvar_t* net_sendrate;
+cvar_t* net_sendrate;
 cvar_t* net_receiverate;
 cvar_t* net_latency;
 
