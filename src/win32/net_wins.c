@@ -65,6 +65,12 @@ qboolean NET_CompareBaseAdr(netadr_t a, netadr_t b)
 	return false;
 }
 
+static qboolean NET_StringToSockaddr(char* s, struct sockaddr* sadr)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
 //TODO: use pointer arg
 char* NET_AdrToString(netadr_t a)
 {
@@ -72,9 +78,26 @@ char* NET_AdrToString(netadr_t a)
 	return NULL;
 }
 
+// Q2 counterpart
+// Input string examples: 'localhost', 'idnewt', 'idnewt:28000', '192.246.40.70', '192.246.40.70:28000'
 qboolean NET_StringToAdr(char* s, netadr_t* a)
 {
-	NOT_IMPLEMENTED
+	struct sockaddr sadr;
+
+	if (strcmp(s, "localhost") == 0)
+	{
+		memset(a, 0, sizeof(netadr_t));
+		a->type = NA_LOOPBACK;
+
+		return true;
+	}
+
+	if (NET_StringToSockaddr(s, &sadr))
+	{
+		SockadrToNetadr(&sadr, a);
+		return true;
+	}
+
 	return false;
 }
 
