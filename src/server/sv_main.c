@@ -67,9 +67,71 @@ static void SV_DropClient(client_t* drop)
 	NOT_IMPLEMENTED
 }
 
-static void SV_ConnectionlessPacket(void)
+static void SVC_Ping(void)
 {
 	NOT_IMPLEMENTED
+}
+
+static void SVC_Ack(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SVC_Status(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SVC_Info(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SVC_GetChallenge(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SVC_DirectConnect(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SVC_RemoteCommand(void)
+{
+	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart
+// A connectionless packet has four leading 0xff characters to distinguish it from a game channel.
+// Clients that are in the game can still send connectionless packets.
+static void SV_ConnectionlessPacket(void)
+{
+	MSG_BeginReading(&net_message);
+	MSG_ReadLong(&net_message); // Skip the -1 marker.
+
+	char* s = MSG_ReadStringLine(&net_message);
+	Cmd_TokenizeString(s, false);
+
+	char* c = Cmd_Argv(0);
+	Com_DPrintf("Packet %s : %s\n", NET_AdrToString(net_from), c);
+
+	if (strcmp(c, "ping") == 0)
+		SVC_Ping();
+	else if (strcmp(c, "ack") == 0)
+		SVC_Ack();
+	else if (strcmp(c, "status") == 0)
+		SVC_Status();
+	else if (strcmp(c, "info") == 0)
+		SVC_Info();
+	else if (strcmp(c, "getchallenge") == 0)
+		SVC_GetChallenge();
+	else if (strcmp(c, "connect") == 0)
+		SVC_DirectConnect();
+	else if (strcmp(c, "rcon") == 0)
+		SVC_RemoteCommand();
+	else
+		Com_Printf("bad connectionless packet from %s:\n%s\n", NET_AdrToString(net_from), s);
 }
 
 static void SV_CalcPings(void)
