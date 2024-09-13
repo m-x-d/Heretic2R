@@ -226,7 +226,7 @@ static void SVC_DirectConnect(void)
 		Netchan_OutOfBandPrint(NS_SERVER, *adr, "client_connect");
 		Netchan_Setup(NS_SERVER, &newcl->netchan, adr, qport);
 		newcl->state = cs_connected;
-		SV_RemoveEdictFromEffectsArray(newcl->edict); // H2
+		SV_RemoveEdictFromPersistantEffectsArray(newcl->edict); // H2
 
 		SZ_Init(&newcl->datagram, newcl->datagram_buf, sizeof(newcl->datagram_buf));
 		newcl->datagram.allowoverflow = true;
@@ -360,14 +360,14 @@ static void SV_CheckTimeouts(void)
 
 		if (client->state == cs_zombie && client->lastmessage < zombiepoint)
 		{
-			SV_RemoveEdictFromEffectsArray(client->edict); // H2
+			SV_RemoveEdictFromPersistantEffectsArray(client->edict); // H2
 			client->state = cs_free; // Can now be reused
 		}
 		else if ((client->state == cs_connected || client->state == cs_spawned) && client->lastmessage < droppoint)
 		{
 			SV_BroadcastObituary(PRINT_HIGH, GM_TIMEDOUT, client->edict->s.number, 0); // H2
 			SV_DropClient(client);
-			SV_RemoveEdictFromEffectsArray(client->edict); // H2
+			SV_RemoveEdictFromPersistantEffectsArray(client->edict); // H2
 			client->state = cs_free; // Don't bother with zombie state.
 		}
 	}

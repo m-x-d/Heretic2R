@@ -24,5 +24,5 @@ void SV_CreateEffectEvent(byte EventId, entity_state_t* ent, int type, int flags
 void SV_RemoveEffectsEvent(byte EventId, entity_state_t* ent, int type);
 int SV_CreatePersistantEffect(entity_state_t* ent, int type, int flags, vec3_t origin, char* format, ...);
 qboolean SV_RemovePersistantEffect(int toRemove, int call_from);
-void SV_RemoveEdictFromEffectsArray(edict_t* ed);
+void SV_RemoveEdictFromPersistantEffectsArray(const edict_t* ed);
 void SV_ClearPersistantEffects(void);
