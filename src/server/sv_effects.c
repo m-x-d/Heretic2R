@@ -55,6 +55,11 @@ void SV_RemoveEdictFromPersistantEffectsArray(const edict_t* ed)
 		persistant_effects_array[i].send_mask &= bit;
 }
 
+void SV_UpdatePersistantEffectsDemoMask(client_t* cl)
+{
+	NOT_IMPLEMENTED
+}
+
 void SV_ClearPersistantEffects(void)
 {
 	NOT_IMPLEMENTED

@@ -78,7 +78,7 @@ typedef struct
 	int senttime; // For ping calculations
 } client_frame_t;
 
-#define LATENCY_COUNTS	16
+#define LATENCY_COUNTS	32 // Q2: 16
 #define RATE_MESSAGES	10
 
 typedef struct client_s
@@ -91,11 +91,6 @@ typedef struct client_s
 
 	int commandMsec; // Every ?? seconds this is reset, if user commands exhaust it, assume time cheating.
 	int frame_latency[LATENCY_COUNTS];
-
-	//TODO: remove
-	int ping_UNUSED;
-	int message_size_UNUSED[10];
-	byte unknown1_UNUSED[20];
 
 	int ping;
 	int message_size[RATE_MESSAGES]; // Used to rate drop packets
@@ -160,18 +155,22 @@ typedef struct
 extern server_static_t svs; // Persistent server info
 extern server_t sv; // Local server
 
+extern cvar_t* sv_paused;
 extern cvar_t* maxclients;
 
 extern cvar_t* sv_cooptimeout;
 extern cvar_t* sv_cinematicfreeze;
 extern cvar_t* sv_welcome_mess; // H2
+extern cvar_t* sv_freezeworldset; // H2
 extern cvar_t* sv_noreload;
 
 extern client_t* sv_client;
+extern edict_t* sv_player;
 
 extern qboolean is_local_client; // H2
 
 // sv_main.c
+void SV_DropClient(client_t* drop);
 void SV_UserinfoChanged(client_t* client);
 
 // sv_ccmds.c

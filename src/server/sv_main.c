@@ -64,7 +64,7 @@ static void SV_SendWelcomeMessasge(char* msg) // H2
 	NOT_IMPLEMENTED
 }
 
-static void SV_DropClient(client_t* drop)
+void SV_DropClient(client_t* drop)
 {
 	NOT_IMPLEMENTED
 }
