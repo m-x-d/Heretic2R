@@ -7,6 +7,13 @@
 #include "client.h"
 
 // Q2 counterpart
+void MSG_WriteChar(sizebuf_t* sb, const int c)
+{
+	byte* buf = SZ_GetSpace(sb, 1);
+	*buf = (char)c;
+}
+
+// Q2 counterpart
 void MSG_WriteByte(sizebuf_t* sb, const int c)
 {
 	byte* buf = SZ_GetSpace(sb, 1);
@@ -14,13 +21,21 @@ void MSG_WriteByte(sizebuf_t* sb, const int c)
 }
 
 // Q2 counterpart
+void MSG_WriteShort(sizebuf_t* sb, const int c)
+{
+	byte* buf = SZ_GetSpace(sb, 2);
+	buf[0] = (byte)(c);
+	buf[1] = (byte)(c >> 8);
+}
+
+// Q2 counterpart
 void MSG_WriteLong(sizebuf_t* sb, const int c)
 {
 	byte* buf = SZ_GetSpace(sb, 4);
-	buf[0] = c & 0xff;
-	buf[1] = (c >> 8) & 0xff;
-	buf[2] = (c >> 16) & 0xff;
-	buf[3] = (c >> 24);
+	buf[0] = (byte)(c);
+	buf[1] = (byte)(c >> 8);
+	buf[2] = (byte)(c >> 16);
+	buf[3] = (byte)(c >> 24);
 }
 
 // Q2 counterpart
