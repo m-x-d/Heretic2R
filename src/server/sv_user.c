@@ -9,9 +9,98 @@
 
 edict_t* sv_player;
 
-static void SV_ExecuteUserCommand(char* s)
+#pragma region ========================== USER STRINGCMD EXECUTION ==========================
+
+static void SV_New_f(void)
 {
 	NOT_IMPLEMENTED
+}
+
+static void SV_Configstrings_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SV_Baselines_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SV_Begin_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SV_Nextserver_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SV_Disconnect_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SV_ShowServerinfo_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SV_BeginDownload_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SV_NextDownload_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+#pragma endregion
+
+typedef struct
+{
+	char* name;
+	void (*func)(void);
+} ucmd_t;
+
+ucmd_t ucmds[] =
+{
+	// Auto-issued.
+	{ "new", SV_New_f },
+	{ "configstrings", SV_Configstrings_f },
+	{ "baselines", SV_Baselines_f },
+	{ "begin", SV_Begin_f },
+	{ "nextserver", SV_Nextserver_f },
+	{ "disconnect", SV_Disconnect_f },
+
+	// Issued by hand at client consoles.
+	{ "info", SV_ShowServerinfo_f },
+	{ "download", SV_BeginDownload_f },
+	{ "nextdl", SV_NextDownload_f },
+
+	{ NULL, NULL }
+};
+
+// Q2 counterpart
+static void SV_ExecuteUserCommand(char* s)
+{
+	ucmd_t* u;
+
+	Cmd_TokenizeString(s, true);
+	sv_player = sv_client->edict;
+
+	for (u = ucmds; u->name != NULL; u++)
+	{
+		if (strcmp(Cmd_Argv(0), u->name) == 0)
+		{
+			u->func();
+			break;
+		}
+	}
+
+	if (u->name == NULL && sv.state == ss_game)
+		ge->ClientCommand(sv_player);
 }
 
 #pragma region ========================== USER CMD EXECUTION ==========================
