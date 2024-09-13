@@ -431,9 +431,28 @@ void SV_Frame(const int msec)
 	SV_PrepWorldFrame(); // Clear teleport flags, etc. for next frame.
 }
 
+// Pull specific info from a newly changed userinfo string into a more C-friendly form.
 void SV_UserinfoChanged(client_t* client)
 {
-	NOT_IMPLEMENTED
+	// Call prog code to allow overrides.
+	ge->ClientUserinfoChanged(client->edict, client->userinfo);
+
+	// Name for C code.
+	const char* name = Info_ValueForKey(client->userinfo, "name");
+	strncpy_s(client->name, sizeof(client->name), name, sizeof(client->name) - 1); //mxd. strncpy -> strncpy_s
+	//mxd. Missing: mask off high bit logic.
+
+	// rate command.
+	const char* rate = Info_ValueForKey(client->userinfo, "rate");
+	if (strlen(rate) > 0)
+		client->rate = ClampI(Q_atoi(rate), 100, 15000);
+	else
+		client->rate = 5000;
+
+	// msg command.
+	const char* msg = Info_ValueForKey(client->userinfo, "msg");
+	if (strlen(msg) > 0)
+		client->messagelevel = Q_atoi(msg);
 }
 
 // Only called at quake2.exe startup, not for each game
