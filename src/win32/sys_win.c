@@ -252,6 +252,11 @@ void Sys_SendKeyEvents(void)
 	sys_frame_time = timeGetTime();	// FIXME: should this be at start?
 }
 
+void Sys_AppActivate(void)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart
 static void ParseCommandLine(LPSTR lpCmdLine)
 {

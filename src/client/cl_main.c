@@ -170,59 +170,6 @@ void Cmd_ForwardToServer(void)
 	}
 }
 
-static void CL_ConnectionlessPacket(void)
-{
-	NOT_IMPLEMENTED
-}
-
-// Q2 counterpart
-void CL_ReadPackets(void)
-{
-	while (NET_GetPacket(NS_CLIENT, &net_from, &net_message))
-	{
-		// Remote command packet.
-		if (*(int*)net_message.data == -1)
-		{
-			CL_ConnectionlessPacket();
-			continue;
-		}
-
-		// Dump it if not connected.
-		if (cls.state == ca_disconnected || cls.state == ca_connecting)
-			continue;
-
-		if (net_message.cursize < 8)
-		{
-			Com_Printf("%s: Runt packet\n", NET_AdrToString(&net_from));
-			continue;
-		}
-
-		// Packet from server.
-		if (!NET_CompareAdr(net_from, cls.netchan.remote_address))
-		{
-			Com_DPrintf("%s:sequenced packet without connection\n", NET_AdrToString(&net_from));
-			continue;
-		}
-
-		if (Netchan_Process(&cls.netchan, &net_message))
-			CL_ParseServerMessage();
-	}
-
-	// Check timeout.
-	if (cls.state >= ca_connected && cls.realtime - cls.netchan.last_received > (int)(cl_timeout->value * 1000))
-	{
-		if (++cl.timeoutcount > 5) // timeoutcount saves debugger
-		{
-			Com_Printf("\nServer connection timed out.\n");
-			CL_Disconnect();
-		}
-	}
-	else
-	{
-		cl.timeoutcount = 0;
-	}
-}
-
 static void CL_ForwardToServer_f(void)
 {
 	NOT_IMPLEMENTED
@@ -441,6 +388,124 @@ static void CL_Precache_f(void)
 static void CL_Config_f(void)
 {
 	NOT_IMPLEMENTED
+}
+
+static void CL_ParseStatusMessage(void)
+{
+	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart
+// Responses to broadcasts, etc.
+static void CL_ConnectionlessPacket(void)
+{
+	MSG_BeginReading(&net_message);
+	MSG_ReadLong(&net_message);	// Skip the -1
+
+	char* s = MSG_ReadStringLine(&net_message);
+	Cmd_TokenizeString(s, false);
+
+	char* c = Cmd_Argv(0);
+	Com_Printf("%s: %s\n", NET_AdrToString(&net_from), c);
+
+	if (strcmp(c, "client_connect") == 0) // Server connection.
+	{
+		if (cls.state == ca_connected)
+		{
+			Com_Printf("Dup connect received.  Ignored.\n");
+			return;
+		}
+
+		Netchan_Setup(NS_CLIENT, &cls.netchan, &net_from, cls.quakePort);
+		MSG_WriteChar(&cls.netchan.message, clc_stringcmd);
+		MSG_WriteString(&cls.netchan.message, "new");
+		cls.state = ca_connected;
+	}
+	else if (strcmp(c, "info") == 0) // Server responding to a status broadcast.
+	{
+		CL_ParseStatusMessage();
+	}
+	else if (strcmp(c, "cmd") == 0) // Remote command from gui front end.
+	{
+		if (!NET_IsLocalAddress(&net_from))
+		{
+			Com_Printf("Command packet from remote host.  Ignored.\n");
+			return;
+		}
+
+		Sys_AppActivate();
+		Cbuf_AddText(MSG_ReadString(&net_message));
+		Cbuf_AddText("\n");
+	}
+	else if (strcmp(c, "print") == 0) // Print command from somewhere.
+	{
+		Com_Printf("%s", MSG_ReadString(&net_message));
+	}
+	else if (strcmp(c, "ping") == 0) // Ping from somewhere.
+	{
+		Netchan_OutOfBandPrint(NS_CLIENT, net_from, "ack");
+	}
+	else if (strcmp(c, "challenge") == 0) // Challenge from the server we are connecting to.
+	{
+		cls.challenge = Q_atoi(Cmd_Argv(1));
+		CL_SendConnectPacket();
+	}
+	else if (strcmp(c, "echo") == 0) // Echo request from server.
+	{
+		Netchan_OutOfBandPrint(NS_CLIENT, net_from, "%s", Cmd_Argv(1));
+	}
+	else
+	{
+		Com_Printf("Unknown command.\n");
+	}
+}
+
+// Q2 counterpart
+void CL_ReadPackets(void)
+{
+	while (NET_GetPacket(NS_CLIENT, &net_from, &net_message))
+	{
+		// Remote command packet.
+		if (*(int*)net_message.data == -1)
+		{
+			CL_ConnectionlessPacket();
+			continue;
+		}
+
+		// Dump it if not connected.
+		if (cls.state == ca_disconnected || cls.state == ca_connecting)
+			continue;
+
+		if (net_message.cursize < 8)
+		{
+			Com_Printf("%s: Runt packet\n", NET_AdrToString(&net_from));
+			continue;
+		}
+
+		// Packet from server.
+		if (!NET_CompareAdr(net_from, cls.netchan.remote_address))
+		{
+			Com_DPrintf("%s:sequenced packet without connection\n", NET_AdrToString(&net_from));
+			continue;
+		}
+
+		if (Netchan_Process(&cls.netchan, &net_message))
+			CL_ParseServerMessage();
+	}
+
+	// Check timeout.
+	if (cls.state >= ca_connected && cls.realtime - cls.netchan.last_received > (int)(cl_timeout->value * 1000))
+	{
+		if (++cl.timeoutcount > 5) // timeoutcount saves debugger
+		{
+			Com_Printf("\nServer connection timed out.\n");
+			CL_Disconnect();
+		}
+	}
+	else
+	{
+		cl.timeoutcount = 0;
+	}
 }
 
 static void ClearIgnoredPlayersList(void)
