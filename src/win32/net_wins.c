@@ -129,6 +129,12 @@ static char* NET_ErrorString(void)
 	return NULL;
 }
 
+qboolean NET_IsLocalAddress(netadr_t adr)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
 #pragma region ========================== LOOPBACK BUFFERS FOR LOCAL PLAYER ==========================
 
 static qboolean NET_GetLoopPacket(const netsrc_t sock, netadr_t* n_from, sizebuf_t* n_message)

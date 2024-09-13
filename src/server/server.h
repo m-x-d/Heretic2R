@@ -167,7 +167,12 @@ extern cvar_t* sv_cinematicfreeze;
 extern cvar_t* sv_welcome_mess; // H2
 extern cvar_t* sv_noreload;
 
+extern client_t* sv_client;
+
 extern qboolean is_local_client; // H2
+
+// sv_main.c
+void SV_UserinfoChanged(client_t* client);
 
 // sv_ccmds.c
 void SV_ReadLevelFile(void);

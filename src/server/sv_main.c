@@ -10,6 +10,8 @@
 #include "sv_effects.h"
 #include "cl_strings.h"
 
+client_t* sv_client; // Current client
+
 cvar_t* sv_paused;
 
 static cvar_t* rcon_password; // Password for remote server commands
@@ -92,9 +94,157 @@ static void SVC_GetChallenge(void)
 	NOT_IMPLEMENTED
 }
 
+// A connection request that did not come from the master.
 static void SVC_DirectConnect(void)
 {
-	NOT_IMPLEMENTED
+	static char userinfo[MAX_INFO_STRING]; //mxd. Made static.
+	client_t temp;
+
+	const netadr_t* adr = &net_from; //mxd. 'adr' type changed to pointer.
+	Com_DPrintf("SVC_DirectConnect()\n");
+
+	const int version = Q_atoi(Cmd_Argv(1));
+	if (version != PROTOCOL_VERSION)
+	{
+		Netchan_OutOfBandPrint(NS_SERVER, *adr, "print\nServer is version %d.\n", PROTOCOL_VERSION); // Q2 uses VERSION macro here.
+		Com_DPrintf("	rejected connect from version %i\n", version);
+
+		return;
+	}
+
+	const int qport = Q_atoi(Cmd_Argv(2));
+	const int challenge = Q_atoi(Cmd_Argv(3));
+
+	strncpy_s(userinfo, sizeof(userinfo), Cmd_Argv(4), sizeof(userinfo) - 1); //mxd. strncpy -> strncpy_s
+
+	// Force the IP key/value pair so the game can filter based on ip
+	Info_SetValueForKey(userinfo, "ip", NET_AdrToString(adr));
+
+	// Attract loop servers are ONLY for local clients.
+	if (sv.attractloop && !NET_IsLocalAddress(*adr))
+	{
+		Com_Printf("Remote connect in attract loop.  Ignored.\n");
+		Netchan_OutOfBandPrint(NS_SERVER, *adr, "print\nConnection refused.\n");
+
+		return;
+	}
+
+	// See if the challenge is valid
+	if (!NET_IsLocalAddress(*adr))
+	{
+		// H2: check game type.
+		if ((int)Cvar_VariableValue("coop") && !(int)Cvar_VariableValue("dedicated") && !is_local_client)
+			return;
+
+		int ci;
+		for (ci = 0; ci < MAX_CHALLENGES; ci++)
+		{
+			if (NET_CompareBaseAdr(*adr, svs.challenges[ci].adr))
+			{
+				if (challenge != svs.challenges[ci].challenge)
+				{
+					Netchan_OutOfBandPrint(NS_SERVER, *adr, "print\nBad challenge.\n");
+					return;
+				}
+
+				break; // Good
+			}
+		}
+
+		if (ci == MAX_CHALLENGES)
+		{
+			Netchan_OutOfBandPrint(NS_SERVER, *adr, "print\nNo challenge for address.\n");
+			return;
+		}
+	}
+
+	client_t* newcl = NULL; //mxd
+
+	// If there is already a slot for this ip, reuse it.
+	client_t* client = svs.clients;
+	for (int i = 0; i < (int)maxclients->value; i++, client++)
+	{
+		if (client->state == cs_free)
+			continue;
+
+		if (NET_CompareBaseAdr(*adr, client->netchan.remote_address) && (client->netchan.qport == qport || adr->port == client->netchan.remote_address.port))
+		{
+			if (svs.realtime - client->lastconnect < (int)(sv_reconnect_limit->value * 1000)) // H2: missing !NET_IsLocalAddress(adr) check
+			{
+				Com_DPrintf("%s:reconnect rejected : too soon\n", NET_AdrToString(adr));
+				return;
+			}
+
+			Com_Printf("%s:reconnect\n", NET_AdrToString(adr));
+
+			// Found existing client.
+			newcl = &temp;
+			memcpy(newcl, client, sizeof(client_t));
+
+			break;
+		}
+	}
+
+	// Find a free client slot?
+	if (newcl == NULL)
+	{
+		client = svs.clients;
+		for (int i = 0; i < (int)maxclients->value; i++, client++)
+		{
+			if (client->state == cs_free)
+			{
+				newcl = &temp;
+				memcpy(newcl, client, sizeof(client_t));
+
+				break;
+			}
+		}
+
+		if (newcl == NULL)
+		{
+			Netchan_OutOfBandPrint(NS_SERVER, *adr, "print\nServer is full.\n");
+			Com_DPrintf("Rejected a connection.\n");
+
+			return;
+		}
+	}
+
+	// Build a new connection and accept the new client.
+	// This is the only place a client_t is ever initialized.
+	sv_client = newcl;
+
+	const int edictnum = newcl - svs.clients + 1;
+	edict_t* ent = EDICT_NUM(edictnum);
+	newcl->edict = ent;
+	//mxd. Missing: newcl->challenge = challenge;
+
+	// Get the game a chance to reject this connection or modify the userinfo.
+	if (ge->ClientConnect(ent, userinfo))
+	{
+		// Parse some info from the info strings.
+		strncpy_s(newcl->userinfo, sizeof(newcl->userinfo), userinfo, sizeof(newcl->userinfo) - 1); //mxd. strncpy -> strncpy_s
+		SV_UserinfoChanged(newcl);
+
+		// Send the connect packet to the client.
+		Netchan_OutOfBandPrint(NS_SERVER, *adr, "client_connect");
+		Netchan_Setup(NS_SERVER, &newcl->netchan, *adr, qport);
+		newcl->state = cs_connected;
+		SV_RemoveEdictFromEffectsArray(newcl->edict); // H2
+
+		SZ_Init(&newcl->datagram, newcl->datagram_buf, sizeof(newcl->datagram_buf));
+		newcl->datagram.allowoverflow = true;
+		newcl->lastmessage = svs.realtime; // Don't timeout.
+		newcl->lastconnect = svs.realtime;
+
+		if (NET_IsLocalAddress(*adr)) // H2
+			is_local_client = true;
+	}
+	else
+	{
+		//mxd. Missing: if (*Info_ValueForKey (userinfo, "rejmsg")) Q2 logic.
+		Netchan_OutOfBandPrint(NS_SERVER, *adr, "print\nConnection refused.\n");
+		Com_DPrintf("Game rejected a connection.\n");
+	}
 }
 
 static void SVC_RemoteCommand(void)
@@ -282,6 +432,11 @@ void SV_Frame(const int msec)
 	SV_SendClientMessages(true); // Send messages back to the clients that had packets read this frame.
 	Master_Heartbeat();	// Send a heartbeat to the master if needed.
 	SV_PrepWorldFrame(); // Clear teleport flags, etc. for next frame.
+}
+
+void SV_UserinfoChanged(client_t* client)
+{
+	NOT_IMPLEMENTED
 }
 
 // Only called at quake2.exe startup, not for each game

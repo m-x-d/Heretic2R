@@ -104,6 +104,11 @@ void Netchan_OutOfBandPrint(const int net_socket, const netadr_t adr, char* form
 	Netchan_OutOfBand(net_socket, adr, (int)strlen(string), (byte*)string);
 }
 
+void Netchan_Setup(netsrc_t sock, netchan_t* chan, netadr_t adr, int qport)
+{
+	NOT_IMPLEMENTED
+}
+
 int Netchan_Transmit(netchan_t* chan, int length, byte* data)
 {
 	NOT_IMPLEMENTED
