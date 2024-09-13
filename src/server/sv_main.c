@@ -322,9 +322,20 @@ static void SV_CalcPings(void)
 	}
 }
 
+// Q2 counterpart
+// Every few frames, gives all clients an allotment of milliseconds for their command moves.
+// If they exceed it, assume cheating.
 static void SV_GiveMsec(void)
 {
-	NOT_IMPLEMENTED
+	if (sv.framenum & 15)
+		return;
+
+	for (int i = 0; i < (int)maxclients->value; i++)
+	{
+		client_t* client = &svs.clients[i];
+		if (client->state != cs_free)
+			client->commandMsec = 1800; // 1600 + some slop
+	}
 }
 
 static void SV_ReadPackets(void)
