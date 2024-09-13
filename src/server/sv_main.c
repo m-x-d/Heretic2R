@@ -98,8 +98,7 @@ static void SVC_GetChallenge(void)
 static void SVC_DirectConnect(void)
 {
 	static char userinfo[MAX_INFO_STRING]; //mxd. Made static.
-	client_t temp;
-
+	
 	const netadr_t* adr = &net_from; //mxd. 'adr' type changed to pointer.
 	Com_DPrintf("SVC_DirectConnect()\n");
 
@@ -178,9 +177,7 @@ static void SVC_DirectConnect(void)
 			Com_Printf("%s:reconnect\n", NET_AdrToString(adr));
 
 			// Found existing client.
-			newcl = &temp;
-			memcpy(newcl, client, sizeof(client_t));
-
+			newcl = client;
 			break;
 		}
 	}
@@ -193,9 +190,7 @@ static void SVC_DirectConnect(void)
 		{
 			if (client->state == cs_free)
 			{
-				newcl = &temp;
-				memcpy(newcl, client, sizeof(client_t));
-
+				newcl = client;
 				break;
 			}
 		}
@@ -211,6 +206,8 @@ static void SVC_DirectConnect(void)
 
 	// Build a new connection and accept the new client.
 	// This is the only place a client_t is ever initialized.
+	const client_t temp = { 0 };
+	memcpy(newcl, &temp, sizeof(client_t));
 	sv_client = newcl;
 
 	const int edictnum = newcl - svs.clients + 1;
