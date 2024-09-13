@@ -59,9 +59,23 @@ void SV_UnloadClientEffects(void)
 	NOT_IMPLEMENTED
 }
 
-static void SV_SendWelcomeMessasge(char* msg) // H2
+static void SV_SendWelcomeMessage(const char* msg) // H2
 {
-	NOT_IMPLEMENTED
+	if (msg != NULL && *msg != 0)
+	{
+		sv.baselines[0].number = 0;
+		const int size = sizeof(sv.configstrings[CS_WELCOME]);
+		strncpy_s(sv.configstrings[CS_WELCOME], size, msg, size); //mxd. strncpy -> strncpy_s
+
+		if (sv.state != ss_loading)
+		{
+			SZ_Clear(&sv.multicast);
+			MSG_WriteByte(&sv.multicast, svc_configstring);
+			MSG_WriteShort(&sv.multicast, CS_WELCOME);
+			MSG_WriteString(&sv.multicast, msg);
+			SV_Multicast(vec3_origin, MULTICAST_ALL_R);
+		}
+	}
 }
 
 void SV_DropClient(client_t* drop)
@@ -419,7 +433,7 @@ void SV_Frame(const int msec)
 	// H2: send welcome message to clients?
 	if (sv_welcome_mess->modified)
 	{
-		SV_SendWelcomeMessasge(sv_welcome_mess->string);
+		SV_SendWelcomeMessage(sv_welcome_mess->string);
 		sv_welcome_mess->modified = false;
 	}
 
