@@ -652,7 +652,7 @@ extern byte net_message_buffer[MAX_MSGLEN];
 void Netchan_Init(void);
 void Netchan_Setup(netsrc_t sock, netchan_t* chan, const netadr_t* adr, int port); //mxd. Changed 'adr' arg type to netadr_t*.
 
-qboolean Netchan_NeedReliable(netchan_t* chan);
+qboolean Netchan_NeedReliable(const netchan_t* chan);
 int Netchan_Transmit(netchan_t* chan, int length, const byte* data); // Q2: void return type.
 //void Netchan_OutOfBand(int net_socket, netadr_t adr, int length, byte* data); //mxd. Made static
 void Netchan_OutOfBandPrint(int net_socket, netadr_t adr, char* format, ...);

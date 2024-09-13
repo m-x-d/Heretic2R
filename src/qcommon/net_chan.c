@@ -121,9 +121,17 @@ void Netchan_Setup(const netsrc_t sock, netchan_t* chan, const netadr_t* adr, co
 	chan->message.allowoverflow = true;
 }
 
-qboolean Netchan_NeedReliable(netchan_t* chan)
+// Q2 counterpart
+qboolean Netchan_NeedReliable(const netchan_t* chan)
 {
-	NOT_IMPLEMENTED
+	// If the remote side dropped the last reliable message, resend it.
+	if (chan->incoming_acknowledged > chan->last_reliable_sequence && chan->incoming_reliable_acknowledged != chan->reliable_sequence)
+		return true;
+
+	// If the reliable transmit buffer is empty, copy the current message out.
+	if (chan->reliable_length == 0 && chan->message.cursize > 0)
+		return true;
+
 	return false;
 }
 
