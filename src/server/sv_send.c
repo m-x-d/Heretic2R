@@ -43,7 +43,7 @@ void SV_BroadcastCommand(char* fmt, ...)
 // MULTICAST_ALL - same as broadcast(origin can be NULL).
 // MULTICAST_PVS - send to clients potentially visible from origin.
 // MULTICAST_PHS - send to clients potentially hearable from origin.
-void SV_Multicast(vec3_t origin, const multicast_t to)
+void SV_Multicast(const vec3_t origin, const multicast_t to)
 {
 	byte* mask;
 	

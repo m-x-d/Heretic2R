@@ -686,7 +686,7 @@ void CM_TransformedBoxTrace(vec3_t start, vec3_t end, vec3_t mins, vec3_t maxs, 
 byte* CM_ClusterPVS(int cluster);
 byte* CM_ClusterPHS(int cluster);
 
-int CM_PointLeafnum(vec3_t p);
+int CM_PointLeafnum(const vec3_t p);
 
 // Call with topnode set to the headnode, returns with topnode set to the first node that splits the box.
 int CM_BoxLeafnums(vec3_t mins, vec3_t maxs, int* list, int listsize, int* topnode);

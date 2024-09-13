@@ -82,9 +82,28 @@ static void PF_setmodel(edict_t* ent, char* name)
 	NOT_IMPLEMENTED
 }
 
-static void PF_Configstring(int index, char* val)
+// Q2 counterpart
+static void PF_Configstring(const int index, const char* val)
 {
-	NOT_IMPLEMENTED
+	if (index < 0 || index >= MAX_CONFIGSTRINGS)
+		Com_Error(ERR_DROP, "configstring: bad index %i\n", index);
+
+	if (val == NULL)
+		val = "";
+
+	// Change the string in sv
+	strcpy_s(sv.configstrings[index], sizeof(sv.configstrings[index]), val);
+
+	if (sv.state != ss_loading)
+	{
+		// Send the update to everyone
+		SZ_Clear(&sv.multicast);
+		MSG_WriteChar(&sv.multicast, svc_configstring);
+		MSG_WriteShort(&sv.multicast, index);
+		MSG_WriteString(&sv.multicast, val);
+
+		SV_Multicast(vec3_origin, MULTICAST_ALL_R);
+	}
 }
 
 static void PF_WriteByte(int c)

@@ -100,7 +100,7 @@ int CM_LeafArea(int leafnum)
 	return 0;
 }
 
-int CM_PointLeafnum(vec3_t p)
+int CM_PointLeafnum(const vec3_t p)
 {
 	NOT_IMPLEMENTED
 	return 0;
