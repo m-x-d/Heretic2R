@@ -63,11 +63,27 @@ qboolean NET_CompareAdr(netadr_t a, netadr_t b)
 	return false;
 }
 
-//TODO: use pointer args
-qboolean NET_CompareBaseAdr(netadr_t a, netadr_t b)
+// Q2 counterpart
+// Compares without the port
+qboolean NET_CompareBaseAdr(const netadr_t* a, const netadr_t* b)
 {
-	NOT_IMPLEMENTED
-	return false;
+	if (a->type != b->type)
+		return false;
+
+	switch (a->type)
+	{
+		case NA_LOOPBACK:
+			return true;
+
+		case NA_IP:
+			return (memcmp(a->ip, b->ip, 4) == 0);
+
+		case NA_IPX:
+			return (memcmp(a->ipx, b->ipx, 10) == 0);
+
+		default:
+			return false;
+	}
 }
 
 static qboolean NET_StringToSockaddr(char* s, struct sockaddr* sadr)

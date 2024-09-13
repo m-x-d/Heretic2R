@@ -601,7 +601,7 @@ qboolean NET_GetPacket(netsrc_t sock, netadr_t* n_from, sizebuf_t* n_message);
 void NET_SendPacket(netsrc_t sock, int length, const void* data, netadr_t to);
 
 qboolean NET_CompareAdr(netadr_t a, netadr_t b);
-qboolean NET_CompareBaseAdr(netadr_t a, netadr_t b);
+qboolean NET_CompareBaseAdr(const netadr_t* a, const netadr_t* b); //mxd. Changed args type to netadr_t*.
 qboolean NET_IsLocalAddress(const netadr_t* a); //mxd. Changed arg type to netadr_t*.
 char* NET_AdrToString(const netadr_t* a); //mxd. Changed arg type to netadr_t*.
 qboolean NET_StringToAdr(char* s, netadr_t* a);

@@ -138,7 +138,7 @@ static void SVC_DirectConnect(void)
 		int ci;
 		for (ci = 0; ci < MAX_CHALLENGES; ci++)
 		{
-			if (NET_CompareBaseAdr(*adr, svs.challenges[ci].adr))
+			if (NET_CompareBaseAdr(adr, &svs.challenges[ci].adr))
 			{
 				if (challenge != svs.challenges[ci].challenge)
 				{
@@ -166,7 +166,7 @@ static void SVC_DirectConnect(void)
 		if (client->state == cs_free)
 			continue;
 
-		if (NET_CompareBaseAdr(*adr, client->netchan.remote_address) && (client->netchan.qport == qport || adr->port == client->netchan.remote_address.port))
+		if (NET_CompareBaseAdr(adr, &client->netchan.remote_address) && (client->netchan.qport == qport || adr->port == client->netchan.remote_address.port))
 		{
 			if (svs.realtime - client->lastconnect < (int)(sv_reconnect_limit->value * 1000)) // H2: missing !NET_IsLocalAddress(adr) check
 			{
@@ -315,7 +315,7 @@ static void SV_ReadPackets(void)
 			if (client->state == cs_free)
 				continue;
 
-			if (!NET_CompareBaseAdr(net_from, client->netchan.remote_address))
+			if (!NET_CompareBaseAdr(&net_from, &client->netchan.remote_address))
 				continue;
 
 			if (client->netchan.qport != qport)
