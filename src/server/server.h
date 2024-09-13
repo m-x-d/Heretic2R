@@ -61,7 +61,7 @@ typedef enum
 
 typedef enum
 {
-	cst_unknown0,
+	cst_default,			// 0
 	cst_unknown1,
 	cst_unknown2,
 	cst_cinematic_freeze,	// 3

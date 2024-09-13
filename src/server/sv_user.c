@@ -5,15 +5,69 @@
 //
 
 #include "server.h"
+#include "client.h"
 #include "sv_effects.h"
 
 edict_t* sv_player;
 
 #pragma region ========================== USER STRINGCMD EXECUTION ==========================
 
-static void SV_New_f(void)
+static void SV_BeginDemoserver(void)
 {
 	NOT_IMPLEMENTED
+}
+
+// Sends the first message from the server to a connected client.
+// This will be sent on the initial connection and upon each server load.
+static void SV_New_f(void)
+{
+	Com_DPrintf("New() from %s\n", sv_client->name);
+
+	if (sv_client->state != cs_connected)
+	{
+		Com_Printf("New not valid -- already spawned\n");
+		return;
+	}
+
+	// Demo servers just dump the file message.
+	if (sv.state == ss_demo)
+	{
+		SV_BeginDemoserver();
+		return;
+	}
+
+	// serverdata needs to go over for all types of servers to make sure the protocol is right, and to set the gamedir.
+
+	// Send the serverdata.
+	MSG_WriteByte(&sv_client->netchan.message, svc_serverdata);
+	MSG_WriteLong(&sv_client->netchan.message, PROTOCOL_VERSION);
+	MSG_WriteLong(&sv_client->netchan.message, svs.spawncount);
+	MSG_WriteByte(&sv_client->netchan.message, sv.attractloop);
+	MSG_WriteString(&sv_client->netchan.message, Cvar_VariableString("gamedir"));
+	MSG_WriteByte(&sv_client->netchan.message, (Cvar_VariableValue("deathmatch") != 0.0f)); // H2
+	MSG_WriteString(&sv_client->netchan.message, client_string); // H2
+
+	const int playernum = (sv.state == ss_cinematic ? -1 : sv_client - svs.clients);
+	MSG_WriteShort(&sv_client->netchan.message, playernum);
+
+	// Send full levelname.
+	MSG_WriteString(&sv_client->netchan.message, sv.configstrings[CS_NAME]);
+
+	// Game server.
+	if (sv.state == ss_game)
+	{
+		// Set up the entity for the client.
+		edict_t* ent = EDICT_NUM(playernum + 1);
+		ent->s.number = (short)(playernum + 1);
+		sv_client->edict = ent;
+		memset(&sv_client->lastcmd, 0, sizeof(sv_client->lastcmd));
+
+		// Begin fetching configstrings.
+		MSG_WriteByte(&sv_client->netchan.message, svc_stufftext);
+		MSG_WriteString(&sv_client->netchan.message, va("cmd configstrings %i 0\n", svs.spawncount));
+	}
+
+	sv_client->coop_state = cst_default; // H2
 }
 
 static void SV_Configstrings_f(void)
