@@ -104,9 +104,21 @@ void Netchan_OutOfBandPrint(const int net_socket, const netadr_t adr, char* form
 	Netchan_OutOfBand(net_socket, adr, (int)strlen(string), (byte*)string);
 }
 
-void Netchan_Setup(netsrc_t sock, netchan_t* chan, netadr_t adr, int qport)
+// Q2 counterpart
+// Called to open a channel to a remote system.
+void Netchan_Setup(const netsrc_t sock, netchan_t* chan, const netadr_t* adr, const int port)
 {
-	NOT_IMPLEMENTED
+	memset(chan, 0, sizeof(*chan));
+	memcpy(&chan->remote_address, adr, sizeof(netadr_t)); //mxd
+
+	chan->sock = sock;
+	chan->qport = port;
+	chan->last_received = curtime;
+	chan->incoming_sequence = 0;
+	chan->outgoing_sequence = 1;
+
+	SZ_Init(&chan->message, chan->message_buf, sizeof(chan->message_buf));
+	chan->message.allowoverflow = true;
 }
 
 int Netchan_Transmit(netchan_t* chan, int length, byte* data)

@@ -224,7 +224,7 @@ static void SVC_DirectConnect(void)
 
 		// Send the connect packet to the client.
 		Netchan_OutOfBandPrint(NS_SERVER, *adr, "client_connect");
-		Netchan_Setup(NS_SERVER, &newcl->netchan, *adr, qport);
+		Netchan_Setup(NS_SERVER, &newcl->netchan, adr, qport);
 		newcl->state = cs_connected;
 		SV_RemoveEdictFromEffectsArray(newcl->edict); // H2
 
