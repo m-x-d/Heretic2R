@@ -217,8 +217,62 @@ int Netchan_Transmit(netchan_t* chan, const int length, const byte* data) // H2:
 	return send.cursize; // H2
 }
 
+// Q2 counterpart
+// Called when the current net_message is from remote_address.
+// Modifies net_message so that it points to the packet payload.
 qboolean Netchan_Process(netchan_t* chan, sizebuf_t* msg)
 {
-	NOT_IMPLEMENTED
-	return false;
+	// Get sequence numbers.
+	MSG_BeginReading(msg);
+	uint sequence = MSG_ReadLong(msg);
+	uint sequence_ack = MSG_ReadLong(msg);
+
+	// Read the qport if we are a server.
+	if (chan->sock == NS_SERVER)
+		MSG_ReadShort(msg);
+
+	const uint reliable_message = sequence >> 31;
+	const uint reliable_ack = sequence_ack >> 31;
+
+	sequence &= ~(1 << 31);
+	sequence_ack &= ~(1 << 31);
+
+	if ((int)showpackets->value)
+	{
+		if (reliable_message)
+			Com_Printf("recv %4i : s=%i reliable=%i ack=%i rack=%i\n", 
+				msg->cursize, sequence, chan->incoming_reliable_sequence ^ 1, sequence_ack, reliable_ack);
+		else
+			Com_Printf("recv %4i : s=%i ack=%i rack=%i\n", msg->cursize, sequence, sequence_ack, reliable_ack);
+	}
+
+	// Discard stale or duplicated packets.
+	if (sequence <= (uint)chan->incoming_sequence)
+	{
+		if ((int)showdrop->value)
+			Com_Printf("%s:Out of order packet %i at %i\n", NET_AdrToString(&chan->remote_address), sequence, chan->incoming_sequence);
+
+		return false;
+	}
+
+	// Dropped packets don't keep the message from being used.
+	chan->dropped = (int)sequence - (chan->incoming_sequence + 1);
+	if (chan->dropped > 0 && (int)showdrop->value)
+		Com_Printf("%s:Dropped %i packets at %i\n", NET_AdrToString(&chan->remote_address), chan->dropped, sequence);
+
+	// If the current outgoing reliable message has been acknowledged, clear the buffer to make way for the next.
+	if (reliable_ack == (uint)chan->reliable_sequence)
+		chan->reliable_length = 0; // It has been received
+
+	// If this message contains a reliable message, bump incoming_reliable_sequence.
+	chan->incoming_sequence = (int)sequence;
+	chan->incoming_acknowledged = (int)sequence_ack;
+	chan->incoming_reliable_acknowledged = (int)reliable_ack;
+	if (reliable_message > 0)
+		chan->incoming_reliable_sequence ^= 1;
+
+	// The message can now be read from the current message pointer.
+	chan->last_received = curtime;
+
+	return true;
 }
