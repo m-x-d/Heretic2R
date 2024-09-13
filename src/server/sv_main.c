@@ -295,9 +295,31 @@ static void SV_ConnectionlessPacket(void)
 		Com_Printf("bad connectionless packet from %s:\n%s\n", NET_AdrToString(&net_from), s);
 }
 
+// Q2 counterpart
+// Updates the cl->ping variables.
 static void SV_CalcPings(void)
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < (int)maxclients->value; i++)
+	{
+		client_t* client = &svs.clients[i];
+		if (client->state != cs_spawned)
+			continue;
+
+		int total = 0;
+		int count = 0;
+
+		for (int j = 0; j < LATENCY_COUNTS; j++)
+		{
+			if (client->frame_latency[j] > 0)
+			{
+				total += client->frame_latency[j];
+				count++;
+			}
+		}
+
+		client->ping = (count > 0 ? total / count : 0);
+		client->edict->client->ping = client->ping; // Let the game dll know about the ping.
+	}
 }
 
 static void SV_GiveMsec(void)
