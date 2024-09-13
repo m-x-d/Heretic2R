@@ -120,7 +120,7 @@ static void SVC_DirectConnect(void)
 	Info_SetValueForKey(userinfo, "ip", NET_AdrToString(adr));
 
 	// Attract loop servers are ONLY for local clients.
-	if (sv.attractloop && !NET_IsLocalAddress(*adr))
+	if (sv.attractloop && !NET_IsLocalAddress(adr))
 	{
 		Com_Printf("Remote connect in attract loop.  Ignored.\n");
 		Netchan_OutOfBandPrint(NS_SERVER, *adr, "print\nConnection refused.\n");
@@ -129,7 +129,7 @@ static void SVC_DirectConnect(void)
 	}
 
 	// See if the challenge is valid
-	if (!NET_IsLocalAddress(*adr))
+	if (!NET_IsLocalAddress(adr))
 	{
 		// H2: check game type.
 		if ((int)Cvar_VariableValue("coop") && !(int)Cvar_VariableValue("dedicated") && !is_local_client)
@@ -233,7 +233,7 @@ static void SVC_DirectConnect(void)
 		newcl->lastmessage = svs.realtime; // Don't timeout.
 		newcl->lastconnect = svs.realtime;
 
-		if (NET_IsLocalAddress(*adr)) // H2
+		if (NET_IsLocalAddress(adr)) // H2
 			is_local_client = true;
 	}
 	else

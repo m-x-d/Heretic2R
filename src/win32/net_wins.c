@@ -77,7 +77,6 @@ static qboolean NET_StringToSockaddr(char* s, struct sockaddr* sadr)
 }
 
 // Q2 counterpart
-//mxd. Use pointer arg instead of pass-by-value.
 char* NET_AdrToString(const netadr_t* a)
 {
 	static char s[64];
@@ -129,10 +128,10 @@ static char* NET_ErrorString(void)
 	return NULL;
 }
 
-qboolean NET_IsLocalAddress(netadr_t adr)
+// Q2 counterpart.
+qboolean NET_IsLocalAddress(const netadr_t* a)
 {
-	NOT_IMPLEMENTED
-	return false;
+	return a->type == NA_LOOPBACK;
 }
 
 #pragma region ========================== LOOPBACK BUFFERS FOR LOCAL PLAYER ==========================
