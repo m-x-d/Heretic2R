@@ -50,6 +50,7 @@ typedef struct
 
 #define EDICT_NUM(n)		((edict_t *)((byte *)ge->edicts + ge->edict_size * (n)))
 #define NUM_FOR_EDICT(e)	(((byte *)(e) - (byte *)ge->edicts) / ge->edict_size)
+#define EDICT_MASK(e)		(1 << (NUM_FOR_EDICT(e) - 1)) //mxd
 
 typedef enum
 {

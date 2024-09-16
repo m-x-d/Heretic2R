@@ -50,7 +50,7 @@ qboolean SV_RemovePersistantEffect(int toRemove, int call_from)
 void SV_RemoveEdictFromPersistantEffectsArray(const edict_t* ed)
 {
 	// Remove edict from send_mask of all persistant_effects...
-	const int bit = ~(1 << (NUM_FOR_EDICT(ed) - 1));
+	const int bit = ~EDICT_MASK(ed);
 	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++)
 		persistant_effects_array[i].send_mask &= bit;
 }
