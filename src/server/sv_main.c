@@ -425,9 +425,34 @@ static void SV_PrepWorldFrame(void)
 	NOT_IMPLEMENTED
 }
 
+// H2: missing 'host_speeds' cvar logic.
 static void SV_RunGameFrame(void)
 {
-	NOT_IMPLEMENTED
+	// We always need to bump framenum, even if we don't run the world,
+	// otherwise the delta compression can get confused when a client has the "current" frame.
+	sv.framenum++;
+	sv.time = sv.framenum * 100;
+
+	// Don't run if paused // H2: extra 'sv_freezeworldset' check.
+	if ((!(int)sv_paused->value && !(int)sv_freezeworldset->value) || maxclients->value > 1)
+	{
+		// H2: new loop logic.
+		do
+		{
+			ge->RunFrame();
+			if (!(int)sv_jumpcinematic->value)
+				break;
+		} while ((int)sv_cinematicfreeze->value);
+
+		// Never get more than one tic behind.
+		if (sv.time < (uint)svs.realtime)
+		{
+			if ((int)sv_showclamp->value)
+				Com_Printf("sv highclamp\n");
+
+			svs.realtime = (uint)sv.time;
+		}
+	}
 }
 
 static void Master_Heartbeat(void)
