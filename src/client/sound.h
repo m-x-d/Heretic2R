@@ -16,7 +16,7 @@ extern void (*S_Shutdown)(void);
 
 // If origin is NULL, the sound will be dynamically sourced from the entity
 extern void (*S_StartSound)(vec3_t origin, int entnum, int entchannel, struct sfx_s* sfx, float fvol, int attenuation, float timeofs);
-extern void (*S_StartLocalSound)(char* sound);
+extern void (*S_StartLocalSound)(const char* sound);
 
 extern void (*S_StopAllSounds)(void);
 extern void (*S_StopAllSounds_Sounding)(void);

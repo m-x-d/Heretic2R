@@ -52,6 +52,11 @@ static dirty_t scr_dirty;
 
 #pragma region ========================== BAR GRAPHS ==========================
 
+void CL_AddNetgraph(void)
+{
+	NOT_IMPLEMENTED
+}
+
 typedef struct
 {
 	float value;
@@ -675,7 +680,7 @@ static void SCR_DrawGameMessage(void) // H2
 		return;
 		
 	//mxd. The above code was in a separate function in original version.
-	if (strlen(game_message) > 9999)
+	if (strlen(game_message) > 9999) // TODO: but game_message[] it only 1024 chars long?..
 		return;
 
 	const float scaler = (game_message_show_at_top ? 0.9f : 0.4f);

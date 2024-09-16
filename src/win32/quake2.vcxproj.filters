@@ -231,6 +231,9 @@
     <ClCompile Include="..\client\cl_pred.c">
       <Filter>client</Filter>
     </ClCompile>
+    <ClCompile Include="..\client\cl_inventory.c">
+      <Filter>client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">

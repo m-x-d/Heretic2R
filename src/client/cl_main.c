@@ -126,7 +126,7 @@ client_state_t cl;
 centity_t cl_entities[MAX_NETWORKABLE_EDICTS]; //mxd. MAX_EDICTS in Q2
 entity_state_t cl_parse_entities[MAX_PARSE_ENTITIES];
 
-static qboolean ignored_players[MAX_CLIENTS];
+qboolean ignored_players[MAX_CLIENTS];
 
 // Game / level messages
 typedef struct GameMessage_s
@@ -142,6 +142,11 @@ static GameMessage_t game_messages[MAX_MESSAGES];
 
 static char* level_messages_text;
 static GameMessage_t level_messages[MAX_MESSAGES];
+
+void CL_WriteDemoMessage(void)
+{
+	NOT_IMPLEMENTED
+}
 
 void CL_Disconnect(void)
 {
@@ -205,6 +210,11 @@ void CL_Snd_Restart_f(void)
 }
 
 static void CL_Changing_f(void)
+{
+	NOT_IMPLEMENTED
+}
+
+void CL_OnServerDisconnected(void) // H2
 {
 	NOT_IMPLEMENTED
 }

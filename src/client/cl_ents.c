@@ -11,6 +11,11 @@
 ResourceManager_t cl_FXBufMngr;
 int camera_timer; // H2
 
+void CL_ParseFrame(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void CL_AddEntities(void)
 {
 	NOT_IMPLEMENTED

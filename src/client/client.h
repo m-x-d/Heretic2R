@@ -505,6 +505,8 @@ extern cdlight_t cl_dlights[MAX_DLIGHTS];
 #define MAX_PARSE_ENTITIES	1024
 GAME_DECLSPEC extern entity_state_t cl_parse_entities[MAX_PARSE_ENTITIES];
 
+extern qboolean ignored_players[MAX_CLIENTS]; //mxd
+
 #define ENTITY_FX_BUF_BLOCK_SIZE 256
 
 extern struct ResourceManager_s cl_FXBufMngr;
@@ -545,6 +547,7 @@ void CL_RequestNextDownload(void);
 
 void CL_Disconnect(void);
 void CL_Disconnect_f(void);
+void CL_OnServerDisconnected(void); //mxd
 void CL_GetChallengePacket(void);
 void CL_PingServers_f(void);
 void CL_Snd_Restart_f(void);

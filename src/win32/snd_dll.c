@@ -19,7 +19,7 @@ HINSTANCE sound_library;
 void (*S_Init)(void);
 void (*S_Shutdown)(void);
 void (*S_StartSound)(vec3_t origin, int entnum, int entchannel, struct sfx_s* sfx, float fvol, int attenuation, float timeofs); //TODO: float attenuation in Q2. Which is correct?..
-void (*S_StartLocalSound)(char* sound);
+void (*S_StartLocalSound)(const char* sound);
 void (*S_StopAllSounds)(void);
 void (*S_StopAllSounds_Sounding)(void);
 void (*S_Update)(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up);
