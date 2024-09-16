@@ -56,11 +56,26 @@ static void SockadrToNetadr(struct sockaddr* s, netadr_t* a)
 	NOT_IMPLEMENTED
 }
 
-//TODO: use pointer args
-qboolean NET_CompareAdr(netadr_t a, netadr_t b)
+// Q2 counterpart
+qboolean NET_CompareAdr(const netadr_t* a, const netadr_t* b)
 {
-	NOT_IMPLEMENTED
-	return false;
+	if (a->type != b->type)
+		return false;
+
+	switch (a->type)
+	{
+		case NA_LOOPBACK:
+			return true;
+
+		case NA_IP:
+			return (a->port == b->port && memcmp(a->ip, b->ip, 4) == 0);
+
+		case NA_IPX:
+			return (a->port == b->port && memcmp(a->ipx, b->ipx, 10) == 0);
+
+		default:
+			return false;
+	}
 }
 
 // Q2 counterpart

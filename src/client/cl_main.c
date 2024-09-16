@@ -483,7 +483,7 @@ void CL_ReadPackets(void)
 		}
 
 		// Packet from server.
-		if (!NET_CompareAdr(net_from, cls.netchan.remote_address))
+		if (!NET_CompareAdr(&net_from, &cls.netchan.remote_address))
 		{
 			Com_DPrintf("%s:sequenced packet without connection\n", NET_AdrToString(&net_from));
 			continue;
