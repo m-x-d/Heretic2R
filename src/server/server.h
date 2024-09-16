@@ -12,6 +12,8 @@
 #include "q_Physics.h"
 #include "SinglyLinkedList.h"
 
+#define MAX_MASTERS	8 // Max. recipients for heartbeat packets
+
 typedef enum
 {
 	ss_dead,	// No map loaded
@@ -152,6 +154,8 @@ typedef struct
 
 	qboolean have_current_save; // H2. More members after this in Q2!
 } server_static_t;
+
+extern netadr_t master_adr[MAX_MASTERS]; // Address of the master server
 
 extern server_static_t svs; // Persistent server info
 extern server_t sv; // Local server

@@ -10,6 +10,8 @@
 #include "sv_effects.h"
 #include "cl_strings.h"
 
+netadr_t master_adr[MAX_MASTERS]; // Address of group servers
+
 client_t* sv_client; // Current client
 
 cvar_t* sv_paused;
@@ -81,6 +83,14 @@ static void SV_SendWelcomeMessage(const char* msg) // H2
 void SV_DropClient(client_t* drop)
 {
 	NOT_IMPLEMENTED
+}
+
+#pragma region ========================== CONNECTIONLESS COMMANDS ==========================
+
+static char* SV_StatusString(void)
+{
+	NOT_IMPLEMENTED
+	return NULL;
 }
 
 static void SVC_Ping(void)
@@ -295,6 +305,8 @@ static void SV_ConnectionlessPacket(void)
 		Com_Printf("bad connectionless packet from %s:\n%s\n", NET_AdrToString(&net_from), s);
 }
 
+#pragma endregion
+
 // Q2 counterpart
 // Updates the cl->ping variables.
 static void SV_CalcPings(void)
@@ -455,9 +467,38 @@ static void SV_RunGameFrame(void)
 	}
 }
 
+// Send a message to the master every few minutes to let it know we are alive, and log information.
 static void Master_Heartbeat(void)
 {
-	NOT_IMPLEMENTED
+#define HEARTBEAT_SECONDS	300
+
+	if (!(int)dedicated->value || !(int)public_server->value) // H2: missing dedicated / public_server NULL checks.
+		return;
+
+	// Check for time wraparound.
+	svs.last_heartbeat = min(svs.realtime, svs.last_heartbeat);
+
+	if (svs.realtime - svs.last_heartbeat < HEARTBEAT_SECONDS * 1000)
+		return; // Not time to send yet.
+
+	svs.last_heartbeat = svs.realtime;
+
+	// Send the same string that we would give for a status OOB command.
+	char* string = SV_StatusString();
+
+	//mxd. Skip GameSpy default addresses initialization logic.
+
+	// Send to group master.
+	for (int i = 0; i < MAX_MASTERS; i++)
+	{
+		if (master_adr[i].port)
+		{
+			Com_Printf("Sending heartbeat to %s\n", NET_AdrToString(&master_adr[i]));
+			Netchan_OutOfBandPrint(NS_SERVER, master_adr[i], "heartbeat\n%s", string);
+		}
+	}
+
+	//mxd. Skip GameSpy_OutOfBandPrint logic.
 }
 
 void SV_Frame(const int msec)
