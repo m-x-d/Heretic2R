@@ -432,9 +432,25 @@ static void SV_CheckTimeouts(void)
 	}
 }
 
+// This has to be done before the world logic, because player processing happens outside RunWorldFrame.
 static void SV_PrepWorldFrame(void)
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < ge->num_edicts; i++)
+	{
+		edict_t* ent = EDICT_NUM(i);
+		EffectsBuffer_t* fx_buf = &ent->s.clientEffects; // H2
+
+		// H2. Effects only last for a single message.
+		if (fx_buf->buf != NULL)
+		{
+			ResMngr_DeallocateResource(&sv_FXBufMngr, fx_buf->buf, ENTITY_FX_BUF_SIZE);
+
+			fx_buf->buf = NULL;
+			fx_buf->bufSize = 0;
+			fx_buf->freeBlock = 0;
+			fx_buf->numEffects = 0;
+		}
+	}
 }
 
 // H2: missing 'host_speeds' cvar logic.
