@@ -1,25 +1,65 @@
 //
-// cl_smk.c
+// cl_smk.c -- libsmacker interface (https://libsmacker.sourceforge.net)
 //
 // Copyright 1998 Raven Software
 //
 
-#include "cl_smk.h"
 #include "client.h"
-#include "q_shared.h" //mxd. Added only for NOT_IMPLEMENTED macro!
 #include "screen.h"
 #include "snd_dll.h"
 #include "sound.h"
+#include "libsmacker/smacker.h"
 
 static cvar_t* cin_rate;
 
 static int cinematic_frame;
 static int cinematic_total_frames;
 
-static int SMK_Open(const char* name)
+static smk smk_obj;
+static byte* smk_buffer;
+
+static void SMK_Stop(void)
 {
 	NOT_IMPLEMENTED
-	return 0;
+}
+
+// Returns number of frames in .smk
+static int SMK_Open(const char* name)
+{
+	char backdrop[MAX_QPATH];
+	char overlay[MAX_QPATH];
+	int width;
+	int height;
+	int frame_count;
+
+	smk_obj = smk_open_file(name, SMK_MODE_DISK);
+	if (smk_obj == NULL)
+		return 0;
+
+	smk_enable_all(smk_obj, SMK_VIDEO_TRACK | SMK_AUDIO_TRACK_0);
+	smk_info_all(smk_obj, NULL, &frame_count, NULL);
+	smk_info_video(smk_obj, &width, &height, NULL);
+
+	const int buffer_size = width * height;
+	smk_buffer = Z_Malloc(buffer_size);
+	if (smk_buffer == NULL)
+	{
+		SMK_Stop();
+		return 0;
+	}
+
+	if ((width & 7) != 0 || (height & 7) != 0)
+	{
+		Com_Printf("...Smacker file must but a multiple of 8 high and wide\n");
+		SMK_Stop();
+
+		return 0;
+	}
+
+	memset(smk_buffer, 0, buffer_size);
+	re.DrawInitCinematic(width, height, overlay, backdrop);
+
+	return frame_count;
 }
 
 static void SCR_DoCinematicFrame(void)
@@ -119,12 +159,12 @@ void SCR_RunCinematic(void)
 		SCR_EndLoadingPlaque();
 }
 
-void SCR_FinishCinematic(void)
+void SCR_StopCinematic(void)
 {
 	NOT_IMPLEMENTED
 }
 
-void SMK_Stop(void) //TODO: rename to SMK_StopCinematic?
+void SCR_FinishCinematic(void)
 {
 	NOT_IMPLEMENTED
 }

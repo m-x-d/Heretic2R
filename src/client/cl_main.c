@@ -7,7 +7,6 @@
 #include "client.h"
 #include "clfx_dll.h"
 #include "cl_skeletons.h"
-#include "cl_smk.h"
 #include "ResourceManager.h"
 #include "sound.h"
 
@@ -1083,7 +1082,7 @@ void CL_Shutdown(void)
 		SV_UnloadClientEffects();
 
 	P_Freelib();
-	SMK_Stop();
+	SCR_StopCinematic();
 	ClearGameMessages();
 	//CDAudio_Shutdown(); //mxd. Skip CDAudio logic
 	S_Shutdown();

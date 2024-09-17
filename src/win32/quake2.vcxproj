@@ -23,6 +23,9 @@
     <ClCompile Include="..\client\cl_view.c" />
     <ClCompile Include="..\client\console.c" />
     <ClCompile Include="..\client\keys.c" />
+    <ClCompile Include="..\client\libsmacker\smacker.c" />
+    <ClCompile Include="..\client\libsmacker\smk_bitstream.c" />
+    <ClCompile Include="..\client\libsmacker\smk_hufftree.c" />
     <ClCompile Include="..\client\menu.c" />
     <ClCompile Include="..\client\menus\menu_actionkeys.c" />
     <ClCompile Include="..\client\menus\menu_addressbook.c" />
@@ -85,10 +88,13 @@
   <ItemGroup>
     <ClInclude Include="..\client\client.h" />
     <ClInclude Include="..\client\cl_skeletons.h" />
-    <ClInclude Include="..\client\cl_smk.h" />
     <ClInclude Include="..\client\console.h" />
     <ClInclude Include="..\client\input.h" />
     <ClInclude Include="..\client\keys.h" />
+    <ClInclude Include="..\client\libsmacker\smacker.h" />
+    <ClInclude Include="..\client\libsmacker\smk_bitstream.h" />
+    <ClInclude Include="..\client\libsmacker\smk_hufftree.h" />
+    <ClInclude Include="..\client\libsmacker\smk_malloc.h" />
     <ClInclude Include="..\client\menu.h" />
     <ClInclude Include="..\client\menus\menu_actionkeys.h" />
     <ClInclude Include="..\client\menus\menu_addressbook.h" />
