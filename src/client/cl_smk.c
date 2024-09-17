@@ -25,6 +25,11 @@ static int SCR_CinematicWait(void)
 	return 0;
 }
 
+void SCR_PlayCinematic(const char* name)
+{
+	NOT_IMPLEMENTED
+}
+
 qboolean SCR_DrawCinematic(void)
 {
 	NOT_IMPLEMENTED

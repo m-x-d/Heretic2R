@@ -122,7 +122,53 @@ static void CL_ParseDownload(void)
 
 static void CL_ParseServerData(void)
 {
-	NOT_IMPLEMENTED
+	Com_DPrintf("Serverdata packet received.\n");
+
+	// Wipe the client_state_t struct.
+	CL_ClearState();
+	cls.state = 3;
+
+	// Parse protocol version number.
+	cls.serverProtocol = MSG_ReadLong(&net_message);
+	if (cls.serverProtocol != PROTOCOL_VERSION)
+		Com_Error(ERR_DROP, "Server returned version %i, not %i", cls.serverProtocol, PROTOCOL_VERSION);
+
+	cl.servercount = MSG_ReadLong(&net_message);
+	cl.attractloop = MSG_ReadByte(&net_message);
+
+	// Parse game directory.
+	const char* str = MSG_ReadString(&net_message);
+	strncpy_s(cl.gamedir, sizeof(cl.gamedir), str, sizeof(cl.gamedir) - 1); //mxd. strncpy -> strncpy_s
+
+	// Set game directory.
+	if ((*str != 0 && (fs_gamedirvar->string == NULL || *fs_gamedirvar->string == 0 || strcmp(fs_gamedirvar->string, str) != 0)) ||
+		(*str == 0 && (fs_gamedirvar->string != NULL && *fs_gamedirvar->string == 0))) //BUGFIX: mxd. 2-nd fs_gamedirvar check is broken in both Q2 and H2
+		Cvar_Set("game", str);
+
+	game_downloadable_type->value = (int)MSG_ReadByte(&net_message); // H2
+
+	// H2. Check client effects version.
+	str = MSG_ReadString(&net_message);
+	if (Q_stricmp(str, client_string) != 0)
+	{
+		Com_Printf("Error ! Client effects on Server different from Local\n%s on server.\n%s on Local\n", str, client_string);
+		Com_Error(ERR_DROP, "Dropping Connect.\n");
+	}
+
+	// Parse player entity number.
+	cl.playernum = MSG_ReadShort(&net_message);
+
+	// Get the full level name.
+	str = MSG_ReadString(&net_message);
+	if (cl.playernum == -1)
+	{
+		SCR_PlayCinematic(str); // Playing a cinematic, not a level.
+	}
+	else
+	{
+		Com_Printf("\n%s\n\n", str);
+		cl.refresh_prepped = false; // Need to prep refresh at next opportunity.
+	}
 }
 
 static void CL_ParseBaseline(void)

@@ -148,6 +148,11 @@ void CL_WriteDemoMessage(void)
 	NOT_IMPLEMENTED
 }
 
+void CL_ClearState(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void CL_Disconnect(void)
 {
 	NOT_IMPLEMENTED
