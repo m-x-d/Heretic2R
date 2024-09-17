@@ -143,6 +143,11 @@ static GameMessage_t game_messages[MAX_MESSAGES];
 static char* level_messages_text;
 static GameMessage_t level_messages[MAX_MESSAGES];
 
+static void ClearSkeletalEntities(void) // H2
+{
+	NOT_IMPLEMENTED
+}
+
 void CL_WriteDemoMessage(void)
 {
 	NOT_IMPLEMENTED
@@ -150,7 +155,9 @@ void CL_WriteDemoMessage(void)
 
 void CL_ClearState(void)
 {
-	NOT_IMPLEMENTED
+	ClearSkeletalEntities(); // H2
+	memset(&cl, 0, sizeof(cl)); // Wipe the entire cl structure.
+	SZ_Clear(&cls.netchan.message);
 }
 
 void CL_Disconnect(void)
