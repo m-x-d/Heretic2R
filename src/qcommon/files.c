@@ -90,14 +90,26 @@ void FS_CreatePath(char* path)
 	}
 }
 
+// Returns path for given filename.
 char* FS_GetPath(const char* name) // H2
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	char* path = FS_NextPath(NULL);
+	while (path != NULL)
+	{
+		const char* filepath = Sys_FindFirst(va("%s/%s", path, name), 0, 0);
+		Sys_FindClose();
+
+		if (filepath != NULL)
+			break;
+
+		path = FS_NextPath(path);
+	}
+
+	return path;
 }
 
 // Q2 counterpart
-// For some reason, other dll's can't just cal fclose() on files returned by FS_FOpenFile...
+// For some reason, other dll's can't just call fclose() on files returned by FS_FOpenFile...
 void FS_FCloseFile(FILE* f)
 {
 	fclose(f);
