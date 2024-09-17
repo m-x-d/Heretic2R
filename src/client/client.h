@@ -470,6 +470,7 @@ extern cvar_t* cl_playertrans;
 extern cvar_t* EAX_preset;
 extern cvar_t* EAX_default;
 extern cvar_t* cl_cinematicfreeze;
+extern cvar_t* cl_fx_dll; //mxd
 extern cvar_t* shownames;
 extern cvar_t* autoweapon;
 extern cvar_t* cl_showcaptions;
@@ -593,6 +594,9 @@ void CL_ParseDemoClientEffects(void);
 void CL_WriteDemoMessage(void);
 void CL_Stop_f(void);
 void CL_Record_f(void);
+
+// cl_effects.c //mxd
+void CL_InitClientEffects(const char* dll_name);
 
 // cl_parse.c
 extern char* svc_strings[256];

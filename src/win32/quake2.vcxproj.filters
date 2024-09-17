@@ -246,6 +246,9 @@
     <ClCompile Include="..\client\libsmacker\smk_hufftree.c">
       <Filter>client\libsmacker</Filter>
     </ClCompile>
+    <ClCompile Include="..\client\cl_effects.c">
+      <Filter>client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -466,6 +469,9 @@
     </ClInclude>
     <ClInclude Include="..\client\libsmacker\smk_malloc.h">
       <Filter>client\libsmacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\tokens.h">
+      <Filter>qcommon</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

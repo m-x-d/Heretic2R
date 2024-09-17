@@ -96,7 +96,7 @@ cvar_t* cl_playertrans;
 cvar_t* EAX_preset;
 cvar_t* EAX_default;
 cvar_t* quake_amount;
-static cvar_t* cl_fx_dll;
+cvar_t* cl_fx_dll;
 cvar_t* cl_cinematicfreeze;
 static cvar_t* sc_framerate;
 

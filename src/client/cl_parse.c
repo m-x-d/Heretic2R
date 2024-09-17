@@ -6,6 +6,7 @@
 
 #include "client.h"
 #include "sound.h"
+#include "tokens.h"
 
 char* svc_strings[256] =
 {
@@ -176,9 +177,182 @@ static void CL_ParseBaseline(void)
 	NOT_IMPLEMENTED
 }
 
-static void CL_ParseConfigString(void)
+void CL_ParseClientinfo(int player)
 {
 	NOT_IMPLEMENTED
+}
+
+static void CL_ParseConfigString(void)
+{
+	char buffer1[200];
+	char buffer2[200];
+
+	const int i = MSG_ReadShort(&net_message);
+
+	if (i < 0 || i >= MAX_CONFIGSTRINGS)
+		Com_Error(ERR_DROP, "configstring > MAX_CONFIGSTRINGS");
+
+	const char* s = MSG_ReadString(&net_message);
+	strcpy_s(cl.configstrings[i], sizeof(cl.configstrings[i]), s); //mxd. strcpy -> strcpy_s
+
+	// Set lightstyle?
+	if (i >= CS_LIGHTS && i < CS_LIGHTS + MAX_LIGHTSTYLES)
+	{
+		fxe.SetLightstyle(i - CS_LIGHTS);
+		return;
+	}
+
+	// Change CD track?
+	if (i == CS_CDTRACK)
+	{
+		//if (cl.refresh_prepped) //mxd. Skip CDAudio logic.
+			//CDAudio_Play(Q_atoi(cl.configstrings[CS_CDTRACK]), true);
+
+		return;
+	}
+
+	// Load model?
+	if (i >= CS_MODELS && i < CS_MODELS + MAX_MODELS)
+	{
+		if (cl.configstrings[i][0] == 0)
+			return;
+
+		if (i == CS_MODELS + 1)
+		{
+			CL_InitClientEffects(cl_fx_dll->string);
+			strcpy_s(client_string, sizeof(client_string), fxe.client_string); //mxd. strcpy -> strcpy_s
+			P_Load(player_dll->string);
+		}
+
+		// H2: expand model path.
+		strcpy_s(buffer1, sizeof(buffer1), cl.configstrings[i]); //mxd. strcpy -> strcpy_s
+		strcpy_s(buffer2, sizeof(buffer2), cl.configstrings[i]); //mxd. strcpy -> strcpy_s
+
+		switch (buffer2[0])
+		{
+			case TOKEN_M_OBJECTS:
+				buffer2[0] = '/';
+				sprintf_s(buffer1, sizeof(buffer1), "models/objects%s", buffer2); //mxd. sprintf -> sprintf_s
+				break;
+
+			case TOKEN_M_MONSTERS:
+				buffer2[0] = '/';
+				sprintf_s(buffer1, sizeof(buffer1), "models/monsters%s", buffer2); //mxd. sprintf -> sprintf_s
+				break;
+
+			case TOKEN_M_MODELS:
+				buffer2[0] = '/';
+				sprintf_s(buffer1, sizeof(buffer1), "models%s", buffer2); //mxd. sprintf -> sprintf_s
+				break;
+
+			default:
+				break;
+		}
+
+		char* c = &buffer2[strlen(buffer1) - 1];
+		if (*c == -2)
+		{
+			*c = 0;
+			sprintf_s(cl.configstrings[i], sizeof(cl.configstrings[i]), "%s/tris.fm", buffer1); //mxd. sprintf -> sprintf_s
+		}
+
+		if (cl.refresh_prepped)
+		{
+			cl.model_draw[i - CS_MODELS] = re.RegisterModel(cl.configstrings[i]);
+
+			if (cl.configstrings[i][0] == '*')
+				cl.model_clip[i - CS_MODELS] = CM_InlineModel(cl.configstrings[i]);
+			else
+				cl.model_clip[i - CS_MODELS] = NULL;
+		}
+
+		return;
+	}
+
+	// Pre-cache sound?
+	if (i >= CS_SOUNDS && i < CS_SOUNDS + MAX_SOUNDS)
+	{
+		if (cl.configstrings[i][0] == 0)
+			return;
+
+		// H2: expand sound path.
+		strcpy_s(buffer1, sizeof(buffer1), cl.configstrings[i]);
+		strcpy_s(buffer2, sizeof(buffer2), cl.configstrings[i]);
+
+		switch (buffer2[0])
+		{
+			case TOKEN_S_ITEMS:
+				buffer2[0] = '/';
+				sprintf_s(buffer1, sizeof(buffer1), "items%s", buffer2); //mxd. sprintf -> sprintf_s
+				break;
+
+			case TOKEN_S_PLAYER:
+				buffer2[0] = '/';
+				sprintf_s(buffer1, sizeof(buffer1), "player%s", buffer2); //mxd. sprintf -> sprintf_s
+				break;
+
+			case TOKEN_S_WEAPONS:
+				buffer2[0] = '/';
+				sprintf_s(buffer1, sizeof(buffer1), "weapons%s", buffer2); //mxd. sprintf -> sprintf_s
+				break;
+
+			case TOKEN_S_MONSTERS:
+				buffer2[0] = '/';
+				sprintf_s(buffer1, sizeof(buffer1), "monsters%s", buffer2); //mxd. sprintf -> sprintf_s
+				break;
+
+			case TOKEN_S_MISC:
+				buffer2[0] = '/';
+				sprintf_s(buffer1, sizeof(buffer1), "misc%s", buffer2); //mxd. sprintf -> sprintf_s
+				break;
+
+			case TOKEN_S_CORVUS:
+				buffer2[0] = '/';
+				sprintf_s(buffer1, sizeof(buffer1), "corvus%s", buffer2); //mxd. sprintf -> sprintf_s
+				break;
+
+			case TOKEN_S_CINEMATICS:
+				buffer2[0] = '/';
+				sprintf_s(buffer1, sizeof(buffer1), "cinematics%s", buffer2); //mxd. sprintf -> sprintf_s
+				break;
+
+			case TOKEN_S_AMBIENT:
+				buffer2[0] = '/';
+				sprintf_s(buffer1, sizeof(buffer1), "ambient%s", buffer2); //mxd. sprintf -> sprintf_s
+				break;
+
+			default:
+				break;
+		}
+
+		char* c = &buffer2[strlen(buffer1) - 1];
+		if (*c == -2)
+		{
+			*c = 0;
+			sprintf_s(cl.configstrings[i], sizeof(cl.configstrings[i]), "%s.wav", buffer1); //mxd. sprintf -> sprintf_s
+		}
+
+		if (cl.refresh_prepped)
+			cl.sound_precache[i - CS_SOUNDS] = S_RegisterSound(cl.configstrings[i]);
+
+		return;
+	}
+
+	// Pre-cache image?
+	if (i >= CS_IMAGES && i < CS_IMAGES + MAX_IMAGES)
+	{
+		if (cl.refresh_prepped)
+			cl.image_precache[i - CS_IMAGES] = re.RegisterPic(cl.configstrings[i]);
+
+		return;
+	}
+
+	// Load client info?
+	if (i >= CS_PLAYERSKINS && i < CS_PLAYERSKINS + MAX_CLIENTS)
+	{
+		if (cl.refresh_prepped)
+			CL_ParseClientinfo(i - CS_PLAYERSKINS);
+	}
 }
 
 #pragma endregion
