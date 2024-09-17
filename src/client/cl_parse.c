@@ -364,9 +364,11 @@ static void CL_ParseStartSoundPacket(void)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
 void SHOWNET(char* s)
 {
-	NOT_IMPLEMENTED
+	if (cl_shownet->value >= 2.0f)
+		Com_Printf("%3i:%s\n", net_message.readcount - 1, s);
 }
 
 static void ChangeCDTrack(void) // H2
