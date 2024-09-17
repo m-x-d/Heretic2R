@@ -90,7 +90,7 @@ void FS_CreatePath(char* path)
 	}
 }
 
-// Returns path for given filename.
+// Returns OS path for given filename.
 char* FS_GetPath(const char* name) // H2
 {
 	char* path = FS_NextPath(NULL);

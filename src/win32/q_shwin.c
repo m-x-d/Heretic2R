@@ -97,10 +97,32 @@ void Sys_Mkdir(const char* path)
 	_mkdir(path);
 }
 
-static qboolean CompareAttributes(uint found, uint musthave, uint canthave)
+// Q2 counterpart
+static qboolean CompareAttributes(const uint found, const uint musthave, const uint canthave)
 {
-	NOT_IMPLEMENTED
-	return false;
+	if ((found & _A_RDONLY) && (canthave & SFF_RDONLY))
+		return false;
+	if ((found & _A_HIDDEN) && (canthave & SFF_HIDDEN))
+		return false;
+	if ((found & _A_SYSTEM) && (canthave & SFF_SYSTEM))
+		return false;
+	if ((found & _A_SUBDIR) && (canthave & SFF_SUBDIR))
+		return false;
+	if ((found & _A_ARCH) && (canthave & SFF_ARCH))
+		return false;
+
+	if ((musthave & SFF_RDONLY) && !(found & _A_RDONLY))
+		return false;
+	if ((musthave & SFF_HIDDEN) && !(found & _A_HIDDEN))
+		return false;
+	if ((musthave & SFF_SYSTEM) && !(found & _A_SYSTEM))
+		return false;
+	if ((musthave & SFF_SUBDIR) && !(found & _A_SUBDIR))
+		return false;
+	if ((musthave & SFF_ARCH) && !(found & _A_ARCH))
+		return false;
+
+	return true;
 }
 
 // Q2 counterpart
