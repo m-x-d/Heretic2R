@@ -8,11 +8,19 @@
 #include "client.h"
 #include "q_shared.h" //mxd. Added only for NOT_IMPLEMENTED macro!
 #include "screen.h"
+#include "snd_dll.h"
+#include "sound.h"
 
 static cvar_t* cin_rate;
 
 static int cinematic_frame;
 static int cinematic_total_frames;
+
+static int SMK_Open(const char* name)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
 
 static void SCR_DoCinematicFrame(void)
 {
@@ -27,7 +35,51 @@ static int SCR_CinematicWait(void)
 
 void SCR_PlayCinematic(const char* name)
 {
-	NOT_IMPLEMENTED
+	char smk_filepath[MAX_OSPATH];
+
+	SCR_BeginLoadingPlaque();
+
+	cin_rate = Cvar_Get("cin_rate", "15.0", 0); // H2
+
+	//CDAudio_Stop(); //mxd. Skip CDAudio logic. //mxd. Already done in SCR_BeginLoadingPlaque()!
+	if (sound_library != NULL)
+		S_Shutdown();
+
+	//mxd. Skip 'SmackW32.dll' loading logic.
+
+	sprintf_s(smk_filepath, sizeof(smk_filepath), "video/%s", name); //mxd. sprintf -> sprintf_s
+	const char* path = FS_GetPath(smk_filepath);
+	if (path == NULL)
+	{
+		Com_Printf("...Unable to find file\n");
+		SCR_FinishCinematic();
+
+		return;
+	}
+
+	sprintf_s(smk_filepath, sizeof(smk_filepath), "%s/video/%s", path, name); //mxd. sprintf -> sprintf_s
+	Com_Printf("Opening cinematic file : %s.....\n", smk_filepath);
+
+	cinematic_frame = 0;
+	cinematic_total_frames = SMK_Open(smk_filepath);
+	if (cinematic_total_frames == 0)
+	{
+		Com_Printf("...Unable to open file\n");
+		SCR_FinishCinematic();
+
+		return;
+	}
+
+	cl.cinematictime = (int)((float)(cls.realtime - 2000) / cin_rate->value);
+
+	SCR_DoCinematicFrame();
+	SCR_DrawCinematic();
+
+	Cvar_SetValue("paused", 0);
+	cls.state = ca_connected;
+
+	Key_ClearStates();
+	cls.key_dest = key_game;
 }
 
 qboolean SCR_DrawCinematic(void)

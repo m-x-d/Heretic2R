@@ -718,7 +718,7 @@ void Pmove(pmove_t* pmove, qboolean server);
 extern cvar_t * fs_gamedirvar; //mxd
 
 void FS_InitFilesystem(void);
-char* FS_GetPath(char* name);
+char* FS_GetPath(const char* name); // H2
 void FS_SetGamedir(char* dir);
 char* FS_Gamedir(void);
 char* FS_Userdir(void);

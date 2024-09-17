@@ -90,6 +90,12 @@ void FS_CreatePath(char* path)
 	}
 }
 
+char* FS_GetPath(const char* name) // H2
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
 // Q2 counterpart
 // For some reason, other dll's can't just cal fclose() on files returned by FS_FOpenFile...
 void FS_FCloseFile(FILE* f)
