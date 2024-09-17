@@ -52,9 +52,14 @@ static dirty_t scr_dirty;
 
 #pragma region ========================== BAR GRAPHS ==========================
 
+// A new packet was just parsed.
 void CL_AddNetgraph(void)
 {
-	NOT_IMPLEMENTED
+	// If using the debuggraph for something else, don't add the net lines.
+	if ((int)scr_debuggraph->value || (int)scr_timegraph->value)
+		return;
+
+	SCR_DebugGraph((float)net_transmit_size, 0xfffffff);
 }
 
 typedef struct

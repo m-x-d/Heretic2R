@@ -519,6 +519,7 @@ extern sizebuf_t net_message;
 void DrawString(int x, int y, char* s, uint color, int maxlen);
 qboolean CL_CheckOrDownloadFile(char* filename);
 
+extern uint net_transmit_size; //mxd
 void CL_AddNetgraph(void);
 int CL_ParseEntityBits(byte* bf, byte* bfNonZero);
 void CL_ParseDelta(entity_state_t* from, entity_state_t* to, int number, byte* bf);

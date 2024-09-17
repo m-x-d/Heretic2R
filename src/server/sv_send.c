@@ -8,6 +8,8 @@
 #include "sv_effects.h"
 #include "cl_strings.h"
 
+uint net_transmit_size; // H2
+
 void SV_BroadcastPrintf(int level, char* fmt, ...)
 {
 	NOT_IMPLEMENTED
