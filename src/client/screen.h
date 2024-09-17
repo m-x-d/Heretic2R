@@ -42,7 +42,7 @@ void SCR_DirtyScreen(void);
 
 // scr_cin.c
 void SCR_PlayCinematic(const char *name);
-qboolean SCR_DrawCinematic(void);
+void SCR_DrawCinematic(void); //mxd. Removed unused qboolean return type.
 void SCR_RunCinematic(void);
 void SCR_FinishCinematic(void);
 void SCR_StopCinematic(void);

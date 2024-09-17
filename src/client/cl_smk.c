@@ -16,7 +16,10 @@ static int cinematic_frame;
 static int cinematic_total_frames;
 
 static smk smk_obj;
-static byte* smk_buffer;
+static const byte* smk_frame;
+static const byte* smk_palette;
+static int smk_width;
+static int smk_height;
 
 static void SMK_Stop(void)
 {
@@ -28,8 +31,6 @@ static int SMK_Open(const char* name)
 {
 	char backdrop[MAX_QPATH];
 	char overlay[MAX_QPATH];
-	int width;
-	int height;
 	int frame_count;
 
 	smk_obj = smk_open_file(name, SMK_MODE_DISK);
@@ -38,17 +39,12 @@ static int SMK_Open(const char* name)
 
 	smk_enable_all(smk_obj, SMK_VIDEO_TRACK | SMK_AUDIO_TRACK_0);
 	smk_info_all(smk_obj, NULL, &frame_count, NULL);
-	smk_info_video(smk_obj, &width, &height, NULL);
+	smk_info_video(smk_obj, &smk_width, &smk_height, NULL);
 
-	const int buffer_size = width * height;
-	smk_buffer = Z_Malloc(buffer_size);
-	if (smk_buffer == NULL)
-	{
-		SMK_Stop();
-		return 0;
-	}
+	smk_first(smk_obj);
+	smk_palette = smk_get_palette(smk_obj);
 
-	if ((width & 7) != 0 || (height & 7) != 0)
+	if ((smk_width & 7) != 0 || (smk_height & 7) != 0)
 	{
 		Com_Printf("...Smacker file must but a multiple of 8 high and wide\n");
 		SMK_Stop();
@@ -56,15 +52,21 @@ static int SMK_Open(const char* name)
 		return 0;
 	}
 
-	memset(smk_buffer, 0, buffer_size);
-	re.DrawInitCinematic(width, height, overlay, backdrop);
+	re.DrawInitCinematic(smk_width, smk_height, overlay, backdrop);
 
 	return frame_count;
 }
 
+static void SMK_DoFrame(void)
+{
+	smk_frame = smk_get_video(smk_obj);
+	smk_next(smk_obj);
+}
+
 static void SCR_DoCinematicFrame(void)
 {
-	NOT_IMPLEMENTED
+	SMK_DoFrame();
+	cinematic_frame++;
 }
 
 static int SCR_CinematicWait(void)
@@ -122,10 +124,10 @@ void SCR_PlayCinematic(const char* name)
 	cls.key_dest = key_game;
 }
 
-qboolean SCR_DrawCinematic(void)
+void SCR_DrawCinematic(void)
 {
-	NOT_IMPLEMENTED
-	return false;
+	if (cl.cinematictime > 0)
+		re.DrawCinematic(smk_width, smk_height, smk_frame, (const paletteRGB_t*)smk_palette, 1.0f);
 }
 
 void SCR_RunCinematic(void)
