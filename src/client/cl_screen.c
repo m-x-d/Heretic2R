@@ -219,7 +219,10 @@ void SCR_BeginLoadingPlaque(void)
 
 void SCR_EndLoadingPlaque(void)
 {
-	NOT_IMPLEMENTED
+	cls.disable_screen = 0;
+	scr_draw_loading_plaque = false; // H2
+	scr_draw_loading = false; // H2
+	Con_ClearNotify();
 }
 
 void SCR_Init(void)
