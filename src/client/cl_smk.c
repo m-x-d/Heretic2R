@@ -69,12 +69,6 @@ static void SCR_DoCinematicFrame(void)
 	cinematic_frame++;
 }
 
-static int SCR_CinematicWait(void)
-{
-	NOT_IMPLEMENTED
-	return 0;
-}
-
 void SCR_PlayCinematic(const char* name)
 {
 	char smk_filepath[MAX_OSPATH];
@@ -142,10 +136,10 @@ void SCR_RunCinematic(void)
 		return;
 	}
 
-	if (SCR_CinematicWait())
-		return;
-
 	const int frame = (int)((float)(cls.realtime - cl.cinematictime) * cin_rate->value / 1000.0f);
+
+	if (frame <= cinematic_frame) //mxd. Original code waits using SmackWait function.
+		return;
 
 	if (frame > cinematic_frame + 1)
 	{
