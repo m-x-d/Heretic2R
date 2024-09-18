@@ -71,9 +71,14 @@ typedef struct
 static int current;
 static graphsamp_t values[256]; // Q2: 1024
 
-void SCR_DebugGraph(float value, int color)
+void SCR_DebugGraph(const float value, const int color)
 {
-	NOT_IMPLEMENTED
+	paletteRGBA_t pc;
+	pc.c = color;
+
+	values[current & 255].value = Q_fabs(value);
+	values[current & 255].color = pc;
+	current++;
 }
 
 static void SCR_AddTimeGraph(void) // H2
