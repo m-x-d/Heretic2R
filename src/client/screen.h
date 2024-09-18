@@ -46,3 +46,4 @@ void SCR_DrawCinematic(void); //mxd. Removed unused qboolean return type.
 void SCR_RunCinematic(void);
 void SCR_FinishCinematic(void);
 void SCR_StopCinematic(void);
+void SMK_Shutdown(void); //mxd

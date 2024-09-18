@@ -63,6 +63,14 @@ static void SMK_DoFrame(void)
 	smk_next(smk_obj);
 }
 
+void SMK_Shutdown(void)
+{
+	smk_close(smk_obj);
+
+	smk_frame = NULL;
+	smk_palette = NULL;
+}
+
 static void SCR_DoCinematicFrame(void)
 {
 	SMK_DoFrame();
@@ -157,10 +165,18 @@ void SCR_RunCinematic(void)
 
 void SCR_StopCinematic(void)
 {
-	NOT_IMPLEMENTED
+	cl.cinematictime = 0; // Done
+	SMK_Shutdown(); // H2
 }
 
+// Called when either the cinematic completes, or it is aborted.
 void SCR_FinishCinematic(void)
 {
-	NOT_IMPLEMENTED
+	// Tell the server to advance to the next map / cinematic.
+	MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
+	SZ_Print(&cls.netchan.message, va("nextserver %i\n", cl.servercount));
+
+	SCR_StopCinematic();
+	if (sound_library != NULL) //TODO: not needed?
+		S_Init();
 }

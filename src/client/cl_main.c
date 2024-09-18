@@ -1082,7 +1082,7 @@ void CL_Shutdown(void)
 		SV_UnloadClientEffects();
 
 	P_Freelib();
-	SCR_StopCinematic();
+	SMK_Shutdown();
 	ClearGameMessages();
 	//CDAudio_Shutdown(); //mxd. Skip CDAudio logic
 	S_Shutdown();
