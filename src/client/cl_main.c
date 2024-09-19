@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include <setjmp.h>
 #include "client.h"
 #include "clfx_dll.h"
 #include "cl_skeletons.h"
@@ -222,7 +223,8 @@ static void CL_Changing_f(void)
 
 void CL_OnServerDisconnected(void) // H2
 {
-	NOT_IMPLEMENTED
+	CL_Drop();
+	longjmp(abortframe, -1);
 }
 
 void CL_Disconnect_f(void)

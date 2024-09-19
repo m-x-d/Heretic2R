@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <setjmp.h>
 #include "q_shared.h"
 #include "Heretic2.h" //mxd. Moved to separate include, to pull only necessary stuff into launcher...
 
@@ -819,6 +820,8 @@ void Sys_CopyProtect(void); //TODO: remove
 #pragma endregion
 
 #pragma region ========================== CLIENT / SERVER SYSTEMS ==========================
+
+extern jmp_buf abortframe; //mxd
 
 void CL_Init(void);
 void CL_Drop(void);
