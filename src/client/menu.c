@@ -110,21 +110,26 @@ cvar_t* m_origmode;
 
 static qboolean m_entersound; // Play after drawing a frame, so caching won't disrupt the sound. //TODO: doesn't seem to be related to playing sounds. Rename?
 
-void (*m_drawfunc)(void);
-const char* (*m_keyfunc)(int key);
-const char* (*m_keyfunc2)(int key); // H2
+m_drawfunc_t m_drawfunc;
+m_keyfunc_t m_keyfunc;
+m_keyfunc_t m_keyfunc2; // H2
 
 #define MAX_MENU_DEPTH	9 // Q2: 8
 
 typedef struct
 {
-	void (*draw)(void);
-	const char* (*key)(int k);
+	m_drawfunc_t draw;
+	m_keyfunc_t key;
 } menulayer_t;
 
 menulayer_t	m_layers[MAX_MENU_DEPTH];
 static int m_menudepth;
 static uint m_menu_side; // H2 (0 - left, 1 - right)?
+
+void M_PushMenu(m_drawfunc_t draw, m_keyfunc_t key)
+{
+	NOT_IMPLEMENTED
+}
 
 void M_ForceMenuOff(void)
 {

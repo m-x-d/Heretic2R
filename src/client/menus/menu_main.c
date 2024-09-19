@@ -5,10 +5,25 @@
 //
 
 #include "menu_main.h"
+#include "client.h"
 
 cvar_t* m_banner_main;
 
-void M_Menu_Main_f(void)
+static void M_Main_Draw(void)
 {
 	NOT_IMPLEMENTED
+}
+
+static const char* M_Main_Key(int key)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
+void M_Menu_Main_f(void)
+{
+	if (cl.frame.playerstate.cinematicfreeze)
+		cls.esc_cinematic = 1;
+	else
+		M_PushMenu(M_Main_Draw, M_Main_Key);
 }

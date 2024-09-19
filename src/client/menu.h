@@ -86,6 +86,9 @@ extern cvar_t* m_dmlist;
 extern cvar_t* m_cooplist;
 extern cvar_t* m_origmode;
 
+typedef void (*m_drawfunc_t)(void); //mxd
+typedef const char* (*m_keyfunc_t)(int key); //mxd
+
 typedef struct menuframework_t
 {
 	int x;
@@ -119,4 +122,5 @@ typedef struct
 	const char** itemnames;
 } menulist_s;
 
+void M_PushMenu(m_drawfunc_t draw, m_keyfunc_t key);
 void M_UpdateOrigMode(void); // H2
