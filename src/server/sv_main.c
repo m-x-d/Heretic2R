@@ -517,6 +517,11 @@ static void Master_Heartbeat(void)
 	//mxd. Skip GameSpy_OutOfBandPrint logic.
 }
 
+static void Master_Shutdown(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void SV_Frame(const int msec)
 {
 	// If server is not active, do nothing.
@@ -636,7 +641,34 @@ void SV_Init(void)
 	CLFX_LoadDll(); // H2
 }
 
-void SV_Shutdown(char* finalmsg, qboolean reconnect)
+static void SV_FinalMessage(const char* message, qboolean reconnect)
 {
 	NOT_IMPLEMENTED
+}
+
+// Called when each game quits, before Sys_Quit or Sys_Error.
+void SV_Shutdown(const char* finalmsg, const qboolean reconnect)
+{
+	if (svs.clients != NULL)
+		SV_FinalMessage(finalmsg, reconnect);
+
+	Master_Shutdown();
+	SV_ShutdownGameProgs();
+
+	// Free current level.
+	if (sv.demofile != NULL)
+		fclose(sv.demofile);
+
+	memset(&sv, 0, sizeof(sv));
+	Com_SetServerState(sv.state);
+	Cvar_SetValue("server_machine", 0); // H2
+
+	// Free server static data.
+	if (svs.clients != NULL)
+		Z_Free(svs.clients);
+
+	if (svs.client_entities != NULL)
+		Z_Free(svs.client_entities);
+
+	memset(&svs, 0, sizeof(svs));
 }
