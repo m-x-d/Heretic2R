@@ -85,9 +85,16 @@ static void SV_Begin_f(void)
 	NOT_IMPLEMENTED
 }
 
-static void SV_Nextserver_f(void)
+void SV_Nextserver(void)
 {
 	NOT_IMPLEMENTED
+}
+
+// A cinematic has completed or been aborted by a client, so move to the next server.
+static void SV_Nextserver_f(void)
+{
+	if (Q_atoi(Cmd_Argv(1)) == svs.spawncount)
+		SV_Nextserver();
 }
 
 static void SV_Disconnect_f(void)
