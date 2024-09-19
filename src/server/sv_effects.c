@@ -64,3 +64,8 @@ void SV_ClearPersistantEffects(void)
 {
 	NOT_IMPLEMENTED
 }
+
+void SV_ClearPersistantEffectBuffersArray(void)
+{
+	NOT_IMPLEMENTED
+}

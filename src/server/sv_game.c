@@ -178,9 +178,20 @@ static void CleanLevel(void)
 	NOT_IMPLEMENTED
 }
 
+// Called when either the entire server is being killed, or it is changing to a different game directory.
 void SV_ShutdownGameProgs(void)
 {
-	NOT_IMPLEMENTED
+	if (ge != NULL)
+	{
+		// H2: shutdown effect buffers
+		SV_ClearPersistantEffectBuffersArray();
+		ResMngr_Des(&sv_FXBufMngr);
+		ResMngr_Des(&EffectsBufferMngr);
+
+		ge->Shutdown();
+		Sys_UnloadGameDll("gamex86", &game_library); // H2
+		ge = NULL;
+	}
 }
 
 // Init the game subsystem for a new map
