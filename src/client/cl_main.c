@@ -225,9 +225,10 @@ void CL_OnServerDisconnected(void) // H2
 	NOT_IMPLEMENTED
 }
 
-static void SV_Disconnect_f(void)
+void CL_Disconnect_f(void)
 {
-	NOT_IMPLEMENTED
+	SV_Shutdown("Disconnected from server\n", false);
+	CL_OnServerDisconnected();
 }
 
 void CL_Record_f(void)
@@ -653,7 +654,7 @@ static void CL_InitLocal(void)
 	Cmd_AddCommand("userinfo", CL_Userinfo_f);
 	Cmd_AddCommand("snd_restart", CL_Snd_Restart_f);
 	Cmd_AddCommand("changing", CL_Changing_f);
-	Cmd_AddCommand("disconnect", SV_Disconnect_f);
+	Cmd_AddCommand("disconnect", CL_Disconnect_f);
 	Cmd_AddCommand("record", CL_Record_f);
 	Cmd_AddCommand("stop", CL_Stop_f);
 	Cmd_AddCommand("ignore", CL_Ignore_f);
