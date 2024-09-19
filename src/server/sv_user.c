@@ -87,7 +87,18 @@ static void SV_Begin_f(void)
 
 void SV_Nextserver(void)
 {
-	NOT_IMPLEMENTED
+	if (sv.state == ss_game)
+		return; // Can't nextserver while playing a normal game.
+
+	svs.spawncount++; // Make sure another doesn't sneak in.
+	const char* v = Cvar_VariableString("nextserver");
+
+	if (*v == 0)
+		Cbuf_AddText("killserver\n");
+	else
+		Cbuf_AddText(va("%s\n", v));
+
+	Cvar_Set("nextserver", "");
 }
 
 // A cinematic has completed or been aborted by a client, so move to the next server.
