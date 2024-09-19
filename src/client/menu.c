@@ -5,6 +5,7 @@
 //
 
 #include "client.h"
+#include "sound.h"
 #include "menu.h"
 
 #include "menus/menu_actionkeys.h"
@@ -173,7 +174,23 @@ void M_PushMenu(const m_drawfunc_t draw, const m_keyfunc_t key) // H2
 
 void M_ForceMenuOff(void)
 {
-	NOT_IMPLEMENTED
+	m_layers[0].draw = NULL;
+	m_keyfunc2 = NULL;
+	cls.key_dest = key_game;
+	cls.m_menustate = 0;
+	m_menudepth = 0;
+
+	Key_ClearStates();
+	SCR_StopCinematic(); // H2
+
+	Cvar_Set("paused", "0");
+	Cvar_Set("menus_active", "0"); // H2
+
+	// H2: update EAX preset.
+	if (Q_stricmp(snd_dll->string, "eaxsnd") == 0 && SNDEAX_SetEnvironment != NULL)
+		SNDEAX_SetEnvironment((int)EAX_preset->value);
+
+	m_entersound = false;
 }
 
 void M_Init(void)
