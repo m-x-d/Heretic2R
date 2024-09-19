@@ -10,7 +10,7 @@
 
 char key_lines[32][MAXCMDLINE];
 int key_linepos;
-qboolean anykeydown;
+int anykeydown;
 
 int edit_line = 0;
 
@@ -134,6 +134,16 @@ keyname_t keynames[] =
 
 	{ NULL,	0 }
 };
+
+static void Key_Console(int key)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Key_Message(int key)
+{
+	NOT_IMPLEMENTED
+}
 
 // Q2 counterpart
 // Returns a key number to be used to index keybindings[] by looking at the given string.
@@ -494,9 +504,247 @@ void Key_Init(void)
 	Cmd_AddCommand("bindlist_command", Key_CommandsList_f);
 }
 
-void Key_Event(int key, qboolean down, uint time)
+static qboolean IsAutorepeatKey(int key) // H2
 {
 	NOT_IMPLEMENTED
+	return false;
+}
+
+// Called by the system between frames for both key up and key down events.
+// Should NOT be called during an interrupt!
+void Key_Event(int key, const qboolean down, const uint time)
+{
+	static qboolean key_doubletaps[256];
+	static qboolean menu_keys_pressed_state[256];
+	static uint key_doubletap_delays[256];
+	static int key_waiting;
+	static qboolean shift_down;
+	char cmd[1024];
+
+	char* kb = NULL;
+	qboolean is_doubletap_key = false;
+
+	// H2
+	if (cls.key_dest != key_menu && (int)(time - key_doubletap_delays[key]) < (int)doubletap_speed->value)
+	{
+		key_doubletaps[key] = true;
+		is_doubletap_key = true;
+	}
+
+	// Hack for modal presses.
+	if (key_waiting == -1)
+	{
+		if (down)
+			key_waiting = key;
+
+		return;
+	}
+
+	// Update auto-repeat status.
+	if (down)
+	{
+		key_repeats[key]++;
+
+		if (!IsAutorepeatKey(key))
+			return;
+
+		if (key >= 200 && keybindings[key] == NULL)
+			Com_Printf("%s is unbound.\n", Key_KeynumToString(key));
+	}
+	else
+	{
+		key_repeats[key] = 0;
+	}
+
+	if (key == K_SHIFT)
+	{
+		shift_down = down;
+	}
+	else if (key == '`' || key == '~') // Console key is hardcoded, so the user can never unbind it.
+	{
+		if (down)
+			Con_ToggleConsole_f();
+		
+		return;
+	}
+
+	// Menu key is hardcoded, so the user can never unbind it.
+	if (key == K_ESCAPE || (cl.attractloop && cls.key_dest != key_menu)) // H2: extra checks
+	{
+		if (!down)
+			return;
+
+		switch (cls.key_dest)
+		{
+			case key_game:
+			case key_console:
+				M_Menu_Main_f();
+				return;
+
+			case key_message:
+				Key_Message(K_ESCAPE);
+				return;
+
+			case key_menu:
+				M_Keydown(K_ESCAPE); // Q2: M_Keydown(key);
+				return;
+
+			default:
+				Com_Error(ERR_FATAL, "Bad cls.key_dest");
+				break;
+		}
+
+		return;
+	}
+
+	// Track if any key is down for BUTTON_ANY.
+	keydown[key] = down;
+	if (down)
+	{
+		if (key_repeats[key] == 1)
+			anykeydown++;
+	}
+	else
+	{
+		anykeydown = max(0, anykeydown - 1);
+	}
+
+	if (down)
+	{
+		// If not a consolekey, send to the interpreter no matter what mode is.
+		if ((cls.key_dest == key_menu && menubound[key]) ||
+			(cls.key_dest == key_console && !consolekeys[key]) ||
+			(cls.key_dest == key_game && (cls.state == ca_active || !consolekeys[key]))) // H2
+		{
+			if (!command_down || menu_keys_pressed_state[key])
+			{
+				if (!is_doubletap_key)
+				{
+					kb = keybindings_double[key];
+					if (kb == NULL || Q_stricmp(kb, "") == 0)
+						kb = keybindings[key];
+				}
+			}
+			else
+			{
+				kb = commandbindings[key];
+				if (kb == NULL || Q_stricmp(kb, "") == 0)
+					kb = keybindings[key];
+				else
+					menu_keys_pressed_state[key] = true;
+			}
+
+			if (kb != NULL)
+			{
+				if (*kb == '+')
+				{
+					Com_sprintf(cmd, sizeof(cmd), "%s %i %i\n", kb, key, time);
+					Cbuf_AddText(cmd);
+				}
+				else
+				{
+					Cbuf_AddText(kb);
+					Cbuf_AddText("\n");
+				}
+			}
+
+			return;
+		}
+		
+		if (shift_down)
+			key = keyshift[key];
+
+		switch (cls.key_dest)
+		{
+			case key_game:
+			case key_console:
+				Key_Console(key);
+				return;
+
+			case key_message:
+				Key_Message(key);
+				return;
+
+			case key_menu:
+				M_Keydown(key);
+				return;
+
+			default:
+				Com_Error(0, "Bad cls.key_dest");
+				return;
+		}
+	}
+
+	if (key_doubletaps[key])
+	{
+		key_doubletaps[key] = false;
+		is_doubletap_key = true;
+	}
+
+	key_doubletap_delays[key] = time;
+
+	if (command_down && keybindings[key] != NULL && Q_stricmp(keybindings[key], "+command") == 0)
+		command_down = false;
+
+	// Key up events only generate commands if the game key binding is a button command (leading + sign).
+	// These will occur even in console mode, to keep the character from continuing an action started before a console switch.
+	// Button commands include the keynum as a parameter, so multiple downs can be matched with ups.
+	if (menu_keys_pressed_state[key])
+	{
+		kb = commandbindings[key];
+		if (kb == NULL || Q_stricmp(kb, "") == 0)
+			kb = keybindings[key];
+		else
+			menu_keys_pressed_state[key] = false;
+	}
+	else if (!is_doubletap_key)
+	{
+		kb = keybindings_double[key];
+		if (kb == NULL || Q_stricmp(kb, "") == 0)
+			kb = keybindings[key];
+	}
+
+	if (kb != NULL && *kb == '+')
+	{
+		Com_sprintf(cmd, sizeof(cmd), "-%s %i %i\n", kb + 1, key, time);
+		Cbuf_AddText(cmd);
+	}
+
+	if (keyshift[key] == key)
+		return;
+
+	key = keyshift[key];
+
+	if (menu_keys_pressed_state[key])
+	{
+		kb = commandbindings[key];
+		if (kb == NULL || Q_stricmp(kb, "") == 0)
+		{
+			key = keyshift[key];
+			kb = keybindings[key];
+		}
+		else
+		{
+			menu_keys_pressed_state[keyshift[key]] = false;
+		}
+	}
+	else if (is_doubletap_key)
+	{
+		kb = keybindings_double[key];
+
+		if (kb == NULL || Q_stricmp(kb, "") == 0)
+			kb = keybindings[keyshift[key]];
+	}
+	else
+	{
+		kb = keybindings[key];
+	}
+
+	if (kb != NULL && *kb == '+')
+	{
+		Com_sprintf(cmd, sizeof(cmd), "-%s %i %i\n", kb + 1, key, time);
+		Cbuf_AddText(cmd);
+	}
 }
 
 // Q2 counterpart

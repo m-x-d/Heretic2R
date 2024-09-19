@@ -572,6 +572,7 @@ extern kbutton_t in_speed;
 extern kbutton_t in_lookaround;
 
 extern qboolean in_do_autoaim; //mxd
+extern qboolean command_down; //mxd
 
 void CL_InitInput(void);
 void CL_SendCmd(void);

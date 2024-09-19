@@ -16,6 +16,8 @@ static uint old_sys_frame_time;
 int pred_pm_flags; // H2
 int pred_pm_w_flags; // H2
 
+qboolean command_down; // H2
+
 // KEY BUTTONS
 
 // Continuous button event tracking is complicated by the fact that two different input sources
@@ -507,7 +509,7 @@ static void CL_FinishMove(usercmd_t* cmd)
 		cmd->buttons |= BUTTON_INVENTORY;
 	in_inventory.state &= ~2;
 
-	if (anykeydown && cls.key_dest == key_game)
+	if (anykeydown > 0 && cls.key_dest == key_game)
 		cmd->buttons |= BUTTON_ANY;
 
 	// Look around key pressed?
@@ -796,7 +798,7 @@ void CL_SendCmd(void)
 		return;
 
 	// H2. Skip the rest of the cinematic?
-	if (anykeydown && cl.cinematictime > 0 && !cl.attractloop && cls.realtime - cl.cinematictime > 1000)
+	if (anykeydown > 0 && cl.cinematictime > 0 && !cl.attractloop && cls.realtime - cl.cinematictime > 1000)
 		SCR_FinishCinematic();
 
 	if (cls.state == ca_connected)

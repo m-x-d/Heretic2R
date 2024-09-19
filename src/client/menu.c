@@ -452,3 +452,8 @@ void M_Draw(void)
 			break;
 	}
 }
+
+void M_Keydown(int key)
+{
+	NOT_IMPLEMENTED
+}
