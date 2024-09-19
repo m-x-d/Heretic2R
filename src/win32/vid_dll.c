@@ -62,6 +62,28 @@ static vidmode_t vid_modes[] =
 	{ "Mode 9: 1600x1200",	1600,	1200,	9 }
 }; //mxd. H2 has no mode 10
 
+static byte scantokey[128] =
+{
+//	0				1		2			3				4		5				6				7 
+//	8				9		A			B				C		D				E				F 
+	0,				27,		'1',		'2',			'3',	'4',			'5',			'6',
+	'7',			'8',	'9',		'0',			'-',	'=',			K_BACKSPACE,	9,		// 0 
+	'q',			'w',	'e',		'r',			't',	'y',			'u',			'i',
+	'o',			'p',	'[',		']',			13 ,	K_CTRL,			'a',			's',	// 1 
+	'd',			'f',	'g',		'h',			'j',	'k',			'l',			';',
+	'\'',			'`',	K_SHIFT,	'\\',			'z',	'x',			'c',			'v',	// 2 
+	'b',			'n',	'm',		',',			'.',	'/',			K_SHIFT,		'*',
+	K_ALT,			' ',	0,			K_F1,			K_F2,	K_F3,			K_F4,			K_F5,	// 3 
+	K_F6,			K_F7,	K_F8,		K_F9,			K_F10,	K_PAUSE,		0,				K_HOME,
+	K_UPARROW,		K_PGUP,	K_KP_MINUS,	K_LEFTARROW,	K_KP_5,	K_RIGHTARROW,	K_KP_PLUS,		K_END,	// 4 
+	K_DOWNARROW,	K_PGDN,	K_INS,		K_DEL,			0,		0,				0,				K_F11,
+	K_F12,			0,		0,			0,				0,		0,				0,				0,		// 5
+	0,				0,		0,			0,				0,		0,				0,				0,
+	0,				0,		0,			0,				0,		0,				0,				0,		// 6 
+	0,				0,		0,			0,				0,		0,				0,				0,
+	0,				0,		0,			0,				0,		0,				0,				0		// 7 
+};
+
 // Q2 counterpart
 static void WIN_DisableAltTab(void)
 {
@@ -136,10 +158,74 @@ static void VID_Error(int err_level, char* fmt, ...)
 
 #pragma region ========================== WND PROC ==========================
 
-static int MapKey(int key)
+// Map from windows to quake keynums.
+static int MapKey(const int key)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	const int modified = (key >> 16) & 255;
+	if (modified > 127)
+		return 0;
+
+	const qboolean is_extended = key & (1 << 24);
+	const int result = scantokey[modified];
+
+	if (!is_extended)
+	{
+		switch (result)
+		{
+			case K_UPARROW:
+				return K_KP_UPARROW;
+
+			case K_DOWNARROW:
+				return K_KP_DOWNARROW;
+
+			case K_LEFTARROW:
+				return K_KP_LEFTARROW;
+
+			case K_RIGHTARROW:
+				return K_KP_RIGHTARROW;
+
+			case K_INS:
+				return K_KP_INS;
+
+			case K_DEL:
+				return K_KP_DEL;
+
+			case K_PGDN:
+				return K_KP_PGDN;
+
+			case K_PGUP:
+				return K_KP_PGUP;
+
+			case K_HOME:
+				return K_KP_HOME;
+
+			case K_END:
+				return K_KP_END;
+
+			default:
+				return result;
+		}
+	}
+	else
+	{
+		switch (result)
+		{
+			case K_ENTER:
+				return K_KP_ENTER;
+
+			case K_SLASH:
+				return K_KP_SLASH;
+
+			case K_KP_NUMLOCK:
+				return K_KP_PLUS;
+
+			case K_PAUSE: // H2
+				return K_KP_NUMLOCK;
+
+			default:
+				return result;
+		}
+	}
 }
 
 static void AppActivate(const BOOL fActive, const BOOL minimize)

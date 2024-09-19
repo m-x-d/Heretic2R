@@ -14,6 +14,7 @@
 #define K_ENTER			13
 #define K_ESCAPE		27
 #define K_SPACE			32
+#define K_SLASH			47 //mxd
 
 // Normal keys should be passed as lowercased ascii
 #define K_BACKSPACE		127
