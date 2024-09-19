@@ -65,10 +65,13 @@ static void SMK_DoFrame(void)
 
 void SMK_Shutdown(void)
 {
-	smk_close(smk_obj);
-
-	smk_frame = NULL;
-	smk_palette = NULL;
+	if (smk_obj != NULL)
+	{
+		smk_close(smk_obj);
+		smk_obj = NULL;
+		smk_frame = NULL;
+		smk_palette = NULL;
+	}
 }
 
 static void SCR_DoCinematicFrame(void)
