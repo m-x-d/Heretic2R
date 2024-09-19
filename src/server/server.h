@@ -177,6 +177,7 @@ extern qboolean is_local_client; // H2
 // sv_main.c
 void SV_DropClient(client_t* drop);
 void SV_UserinfoChanged(client_t* client);
+void SV_PrepWorldFrame(void);
 
 // sv_ccmds.c
 void SV_ReadLevelFile(void);

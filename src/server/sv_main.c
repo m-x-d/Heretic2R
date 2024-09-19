@@ -433,7 +433,7 @@ static void SV_CheckTimeouts(void)
 }
 
 // This has to be done before the world logic, because player processing happens outside RunWorldFrame.
-static void SV_PrepWorldFrame(void)
+void SV_PrepWorldFrame(void)
 {
 	for (int i = 0; i < ge->num_edicts; i++)
 	{

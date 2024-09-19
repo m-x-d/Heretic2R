@@ -67,5 +67,7 @@ void SV_ClearPersistantEffects(void)
 
 void SV_ClearPersistantEffectBuffersArray(void)
 {
-	NOT_IMPLEMENTED
+	SV_PrepWorldFrame();
+	per_effects_buffers_size = 0;
+	memset(persistant_effects_array, 0, sizeof(persistant_effects_array));
 }
