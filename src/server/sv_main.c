@@ -517,9 +517,23 @@ static void Master_Heartbeat(void)
 	//mxd. Skip GameSpy_OutOfBandPrint logic.
 }
 
+// Informs all masters that this server is going down.
 static void Master_Shutdown(void)
 {
-	NOT_IMPLEMENTED
+	if (!(int)dedicated->value || !(int)public_server->value) // H2: missing dedicated / public_server NULL checks.
+		return;
+
+	// Send to group master
+	for (int i = 0; i < MAX_MASTERS; i++)
+	{
+		if (master_adr[i].port != 0)
+		{
+			if (i > 0)
+				Com_Printf("Sending heartbeat to %s\n", NET_AdrToString(&master_adr[i]));
+
+			Netchan_OutOfBandPrint(NS_SERVER, master_adr[i], "shutdown");
+		}
+	}
 }
 
 void SV_Frame(const int msec)
