@@ -213,6 +213,7 @@ void Con_Print(const char* txt)
 				break;
 
 			default:
+			{
 				// Display character and advance
 				const int y = con.current % con.totallines;
 				con.text[y * con.linewidth + con.x] = *c;
@@ -220,7 +221,7 @@ void Con_Print(const char* txt)
 				con.x++;
 				if (con.x >= con.linewidth)
 					con.x = 0;
-				break;
+			} break;
 		}
 	}
 }

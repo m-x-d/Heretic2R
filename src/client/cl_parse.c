@@ -146,7 +146,7 @@ static void CL_ParseServerData(void)
 		(*str == 0 && (fs_gamedirvar->string != NULL && *fs_gamedirvar->string == 0))) //BUGFIX: mxd. 2-nd fs_gamedirvar check is broken in both Q2 and H2
 		Cvar_Set("game", str);
 
-	game_downloadable_type->value = (int)MSG_ReadByte(&net_message); // H2
+	game_downloadable_type->value = (float)(int)MSG_ReadByte(&net_message); // H2
 
 	// H2. Check client effects version.
 	str = MSG_ReadString(&net_message);
