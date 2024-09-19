@@ -190,9 +190,9 @@ void CL_Disconnect(void)
 
 	// Send a disconnect message to the server.
 	final[0] = clc_stringcmd;
-	strcpy_s((char*)final + 1, sizeof(final), "disconnect"); //mxd. strcpy -> strcpy_s
+	strcpy_s((char*)final + 1, sizeof(final) - 1, "disconnect"); //mxd. strcpy -> strcpy_s
 
-	const int len = (int)strlen((char*)final);
+	const int len = (int)strlen((const char*)final);
 	Netchan_Transmit(&cls.netchan, len, final);
 	Netchan_Transmit(&cls.netchan, len, final);
 	Netchan_Transmit(&cls.netchan, len, final);
@@ -200,7 +200,7 @@ void CL_Disconnect(void)
 	CL_ClearState();
 
 	// Stop download.
-	if (cls.download)
+	if (cls.download != NULL)
 	{
 		fclose(cls.download);
 		cls.download = NULL;
