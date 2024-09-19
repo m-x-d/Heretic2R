@@ -641,9 +641,25 @@ void SV_Init(void)
 	CLFX_LoadDll(); // H2
 }
 
-static void SV_FinalMessage(const char* message, qboolean reconnect)
+// Used by SV_Shutdown to send a final message to all connected clients before the server goes down.
+// The messages are sent immediately, not just stuck on the outgoing message list,
+// because the server is going to totally exit after returning from this function.
+static void SV_FinalMessage(const char* message, const qboolean reconnect)
 {
-	NOT_IMPLEMENTED
+	SZ_Clear(&net_message);
+	MSG_WriteByte(&net_message, svc_print);
+	MSG_WriteByte(&net_message, PRINT_HIGH);
+	MSG_WriteString(&net_message, message);
+	MSG_WriteByte(&net_message, (reconnect ? svc_reconnect : svc_disconnect));
+
+	// Send it twice. Stagger the packets to crutch operating system limited buffers.
+	for (int c = 0; c < 2; c++)
+	{
+		client_t* client = svs.clients;
+		for (int i = 0; i < (int)maxclients->value; i++, client++)
+			if (client->state >= cs_connected)
+				Netchan_Transmit(&client->netchan, net_message.cursize, net_message.data);
+	}
 }
 
 // Called when each game quits, before Sys_Quit or Sys_Error.
