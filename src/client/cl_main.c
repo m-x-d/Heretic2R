@@ -10,6 +10,7 @@
 #include "cl_skeletons.h"
 #include "ResourceManager.h"
 #include "sound.h"
+#include "Vector.h"
 
 //TODO: used only in CL_InitLocal(). Can be removed?
 static cvar_t* adr0;
@@ -155,9 +156,57 @@ void CL_ClearState(void)
 	SZ_Clear(&cls.netchan.message);
 }
 
+static void ClearIgnoredPlayersList(void)
+{
+	//mxd. Original code clears only first 8 entries. H2 bug?
+	memset(ignored_players, 0, sizeof(ignored_players));
+}
+
+// Goes from a connected state to full screen console state.
+// Sends a disconnect message to the server.
+// This is also called on Com_Error, so it shouldn't cause any errors.
 void CL_Disconnect(void)
 {
-	NOT_IMPLEMENTED
+	byte final[32];
+
+	if (cls.state == ca_disconnected)
+		return;
+
+	if (cl_timedemo != NULL && (int)cl_timedemo->value)
+	{
+		const int time = Sys_Milliseconds() - cl.timedemo_start;
+		if (time > 0)
+			Com_Printf("%i frames, %3.1f seconds: %3.1f fps\n", cl.timedemo_frames, time / 1000.0, cl.timedemo_frames * 1000.0 / time);
+	}
+
+	VectorClear(cl.refdef.blend);
+	ClearIgnoredPlayersList(); // H2
+	M_ForceMenuOff();
+	SCR_EndLoadingPlaque();
+
+	cls.connect_time = 0;
+	if (cls.demorecording)
+		CL_Stop_f();
+
+	// Send a disconnect message to the server.
+	final[0] = clc_stringcmd;
+	strcpy_s((char*)final + 1, sizeof(final), "disconnect"); //mxd. strcpy -> strcpy_s
+
+	const int len = (int)strlen((char*)final);
+	Netchan_Transmit(&cls.netchan, len, final);
+	Netchan_Transmit(&cls.netchan, len, final);
+	Netchan_Transmit(&cls.netchan, len, final);
+
+	CL_ClearState();
+
+	// Stop download.
+	if (cls.download)
+	{
+		fclose(cls.download);
+		cls.download = NULL;
+	}
+
+	cls.state = ca_disconnected;
 }
 
 // Q2 counterpart
@@ -525,12 +574,6 @@ void CL_ReadPackets(void)
 	{
 		cl.timeoutcount = 0;
 	}
-}
-
-static void ClearIgnoredPlayersList(void)
-{
-	//mxd. Original code clears only first 8 entries. H2 bug?
-	memset(ignored_players, 0, sizeof(ignored_players));
 }
 
 static void CL_InitLocal(void)
