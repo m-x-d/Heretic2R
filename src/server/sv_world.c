@@ -30,6 +30,11 @@ static void ClearLink(link_t* l)
 	l->prev = l;
 }
 
+static void RemoveLink(link_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart
 // Builds a uniformly subdivided tree for the given world size.
 static areanode_t* SV_CreateAreaNode(const int depth, vec3_t mins, vec3_t maxs)
@@ -84,9 +89,15 @@ void SV_ClearWorld(void)
 	SV_CreateAreaNode(0, sv.models[1]->mins, sv.models[1]->maxs);
 }
 
+// Q2 counterpart
 void SV_UnlinkEdict(edict_t* ent)
 {
-	NOT_IMPLEMENTED
+	if (ent->area.prev != NULL)
+	{
+		RemoveLink(&ent->area);
+		ent->area.next = NULL;
+		ent->area.prev = NULL;
+	}
 }
 
 void SV_LinkEdict(edict_t* ent)
