@@ -504,10 +504,38 @@ void Key_Init(void)
 	Cmd_AddCommand("bindlist_command", Key_CommandsList_f);
 }
 
-static qboolean IsAutorepeatKey(int key) // H2
+static qboolean IsAutorepeatKey(const int key) // H2
 {
-	NOT_IMPLEMENTED
-	return false;
+	switch (key)
+	{
+		case K_BACKSPACE:
+		case K_PAUSE:
+		case K_PGUP:
+		case K_KP_PGUP:
+		case K_PGDN:
+		case K_KP_PGDN:
+			return true;
+
+		default:
+			break;
+	}
+
+	if (cls.key_dest == key_menu)
+	{
+		switch (key)
+		{
+			case K_LEFTARROW:
+			case K_RIGHTARROW:
+			case K_KP_LEFTARROW:
+			case K_KP_RIGHTARROW:
+				return true;
+
+			default:
+				break;
+		}
+	}
+
+	return key_repeats[key] < 2;
 }
 
 // Called by the system between frames for both key up and key down events.
@@ -545,7 +573,7 @@ void Key_Event(int key, const qboolean down, const uint time)
 	{
 		key_repeats[key]++;
 
-		if (!IsAutorepeatKey(key))
+		if (!IsAutorepeatKey(key)) // H2
 			return;
 
 		if (key >= 200 && keybindings[key] == NULL)
@@ -750,7 +778,7 @@ void Key_Event(int key, const qboolean down, const uint time)
 // Q2 counterpart
 void Key_ClearStates(void)
 {
-	anykeydown = false;
+	anykeydown = 0;
 
 	for (int i = 0; i < 256; i++)
 	{
