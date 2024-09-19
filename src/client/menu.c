@@ -126,9 +126,49 @@ menulayer_t	m_layers[MAX_MENU_DEPTH];
 static int m_menudepth;
 static uint m_menu_side; // H2 (0 - left, 1 - right)?
 
-void M_PushMenu(m_drawfunc_t draw, m_keyfunc_t key)
+static void UpdateItemTexts(void)
 {
 	NOT_IMPLEMENTED
+}
+
+static void UpdateVidModeVars(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void PushMenu(m_drawfunc_t draw, m_keyfunc_t key) // M_PushMenu() in Q2
+{
+	NOT_IMPLEMENTED
+}
+
+void M_PushMenu(const m_drawfunc_t draw, const m_keyfunc_t key) // H2
+{
+	if (cl.cinematictime > 0)
+	{
+		SCR_FinishCinematic();
+		return;
+	}
+
+	if (!scr_draw_loading_plaque && !m_entersound && !cl.frame.playerstate.cinematicfreeze)
+	{
+		m_entersound = true;
+		m_drawfunc = draw;
+		m_keyfunc = key;
+
+		if (m_menudepth == 0)
+		{
+			cls.m_menustate = 5;
+			UpdateItemTexts();
+			UpdateVidModeVars();
+		}
+		else
+		{
+			cls.m_menustate = 3;
+		}
+
+		cls.key_dest = key_menu;
+		PushMenu(draw, key);
+	}
 }
 
 void M_ForceMenuOff(void)
