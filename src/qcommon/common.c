@@ -206,9 +206,14 @@ void SZ_Write(sizebuf_t* buf, const void* data, const int length)
 	memcpy(SZ_GetSpace(buf, length), data, length);
 }
 
-void SZ_Print(sizebuf_t* buf, char* data)
+// Q2 counterpart
+void SZ_Print(sizebuf_t* buf, const char* data)
 {
-	NOT_IMPLEMENTED
+	const int len = (int)strlen(data) + 1;
+	if (buf->cursize == 0 || buf->data[buf->cursize - 1])
+		memcpy(SZ_GetSpace(buf, len), data, len); // No trailing 0.
+	else
+		memcpy((byte*)SZ_GetSpace(buf, len - 1) - 1, data, len); // Write over trailing 0.
 }
 
 #pragma endregion
