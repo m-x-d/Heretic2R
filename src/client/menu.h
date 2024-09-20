@@ -11,6 +11,12 @@
 #define MAXMENUITEMS	32 // Q2: 64
 #define MENU_CENTER_X	(DEF_WIDTH / 2) //mxd
 
+//mxd. Menu sounds
+#define SND_MENU1	"misc/menu1.wav"
+#define SND_MENU2	"misc/menu2.wav"
+#define SND_MENU3	"misc/menu3.wav"
+#define SND_MENU4	"misc/menu4.wav"
+
 extern cvar_t* vid_mode;
 extern cvar_t* vid_menu_mode;
 
@@ -184,11 +190,15 @@ typedef struct
 
 void M_PushMenu(m_drawfunc_t draw, m_keyfunc_t key);
 void M_PopMenu(void);
+char* Default_MenuKey(menuframework_s* menu, int key);
+qboolean Field_Key(menufield_s* field, int key);
 void M_UpdateOrigMode(void); // H2
 float M_GetMenuAlpha(void); // H2
 int M_GetMenuLabelX(int text_width); // H2
 int M_GetMenuOffsetY(const menuframework_s* menu); // H2
 void Menu_AddItem(menuframework_s* menu, void* item);
+qboolean Menu_SelectItem(menuframework_s* menu);
+void Menu_SlideItem(menuframework_s* menu, int dir);
 void Menu_AdjustCursor(menuframework_s* menu, int dir);
 void Menu_Center(menuframework_s* menu);
 void Menu_Draw(const menuframework_s* menu);

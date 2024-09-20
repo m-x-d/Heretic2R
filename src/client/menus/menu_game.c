@@ -171,10 +171,10 @@ static void Game_MenuDraw(void)
 	Menu_Draw(&s_game_menu);
 }
 
-static const char* Game_MenuKey(int key)
+// Q2 counterpart
+static const char* Game_MenuKey(const int key)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	return Default_MenuKey(&s_game_menu, key);
 }
 
 // Q2 counterpart

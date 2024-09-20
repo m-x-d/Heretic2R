@@ -223,6 +223,125 @@ void M_PopMenu(void)
 	NOT_IMPLEMENTED
 }
 
+char* Default_MenuKey(menuframework_s* menu, const int key)
+{
+	if (cls.m_menustate != 2)
+		return NULL;
+
+	if (menu != NULL)
+	{
+		menucommon_s* item = Menu_ItemAtCursor(menu);
+		if (item != NULL && item->type == MTYPE_FIELD && Field_Key((menufield_s*)item, key))
+			return NULL;
+	}
+
+	switch (key)
+	{
+		case K_TAB:
+		case K_DOWNARROW:
+		case K_KP_DOWNARROW:
+			if (menu != NULL)
+			{
+				menu->cursor++;
+				Menu_AdjustCursor(menu, 1);
+				return SND_MENU2;
+			}
+			break;
+
+		case K_ENTER:
+		case K_KP_ENTER:
+		case K_MOUSE1:
+		case K_MOUSE2:
+		case K_MOUSE3:
+		case K_JOY1:
+		case K_JOY2:
+		case K_JOY3:
+		case K_JOY4:
+		case K_AUX1:
+		case K_AUX2:
+		case K_AUX3:
+		case K_AUX4:
+		case K_AUX5:
+		case K_AUX6:
+		case K_AUX7:
+		case K_AUX8:
+		case K_AUX9:
+		case K_AUX10:
+		case K_AUX11:
+		case K_AUX12:
+		case K_AUX13:
+		case K_AUX14:
+		case K_AUX15:
+		case K_AUX16:
+		case K_AUX17:
+		case K_AUX18:
+		case K_AUX19:
+		case K_AUX20:
+		case K_AUX21:
+		case K_AUX22:
+		case K_AUX23:
+		case K_AUX24:
+		case K_AUX25:
+		case K_AUX26:
+		case K_AUX27:
+		case K_AUX28:
+		case K_AUX29:
+		case K_AUX30:
+		case K_AUX31:
+		case K_AUX32:
+			if (menu != NULL && Menu_SelectItem(menu))
+			{
+				const menucommon_s* item = Menu_ItemAtCursor(menu);
+				if (item->flags & QMF_SELECT_SOUND)
+					return SND_MENU1;
+			}
+			break;
+
+		case K_ESCAPE:
+			M_PopMenu();
+			return SND_MENU3;
+
+		case K_UPARROW:
+		case K_KP_UPARROW:
+			if (menu != NULL)
+			{
+				menu->cursor--;
+				Menu_AdjustCursor(menu, -1);
+				return SND_MENU2;
+			}
+			break;
+
+		case K_LEFTARROW:
+		case K_KP_LEFTARROW:
+			if (menu != NULL)
+			{
+				Menu_SlideItem(menu, -1);
+				return SND_MENU4;
+			}
+			break;
+
+		case K_RIGHTARROW:
+		case K_KP_RIGHTARROW:
+			if (menu != NULL)
+			{
+				Menu_SlideItem(menu, 1);
+				return SND_MENU4;
+			}
+			break;
+
+		default:
+			break;
+	}
+
+	return NULL;
+}
+
+qboolean Field_Key(menufield_s* field, int key)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
 void M_ForceMenuOff(void)
 {
 	m_layers[0].draw = NULL;
@@ -480,6 +599,17 @@ void Menu_AddItem(menuframework_s* menu, void* item)
 		((menucommon_s*)menu->items[menu->nitems])->parent = menu;
 		menu->nitems++;
 	}
+}
+
+qboolean Menu_SelectItem(menuframework_s* menu)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
+void Menu_SlideItem(menuframework_s* menu, int dir)
+{
+	NOT_IMPLEMENTED
 }
 
 // This function takes the given menu, the direction, and attempts to adjust
