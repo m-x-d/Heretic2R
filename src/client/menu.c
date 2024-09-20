@@ -619,9 +619,36 @@ void Menu_AddItem(menuframework_s* menu, void* item)
 	}
 }
 
-qboolean Menu_SelectItem(menuframework_s* menu)
+static qboolean Field_DoEnter(menufield_s* field)
 {
 	NOT_IMPLEMENTED
+	return false;
+}
+
+static void Action_DoEnter(menuaction_s* action)
+{
+	NOT_IMPLEMENTED
+}
+
+qboolean Menu_SelectItem(const menuframework_s* menu)
+{
+	menucommon_s* item = Menu_ItemAtCursor(menu);
+	if (item != NULL)
+	{
+		switch (item->type)
+		{
+			case MTYPE_FIELD:
+				return Field_DoEnter((menufield_s*)item);
+
+			case MTYPE_ACTION:
+				Action_DoEnter((menuaction_s*)item);
+				return true;
+
+			default:
+				break;
+		}
+	}
+
 	return false;
 }
 

@@ -197,7 +197,7 @@ float M_GetMenuAlpha(void); // H2
 int M_GetMenuLabelX(int text_width); // H2
 int M_GetMenuOffsetY(const menuframework_s* menu); // H2
 void Menu_AddItem(menuframework_s* menu, void* item);
-qboolean Menu_SelectItem(menuframework_s* menu);
+qboolean Menu_SelectItem(const menuframework_s* menu);
 void Menu_SlideItem(menuframework_s* menu, int dir);
 void Menu_AdjustCursor(menuframework_s* menu, int dir);
 void Menu_Center(menuframework_s* menu);
