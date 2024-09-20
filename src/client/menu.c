@@ -464,7 +464,12 @@ int M_GetMenuLabelX(const int text_width) // H2
 
 void Menu_AddItem(menuframework_s* menu, void* item)
 {
-	NOT_IMPLEMENTED
+	if (menu->nitems < MAXMENUITEMS)
+	{
+		menu->items[menu->nitems] = item;
+		((menucommon_s*)menu->items[menu->nitems])->parent = menu;
+		menu->nitems++;
+	}
 }
 
 void Menu_Center(menuframework_s* menu)

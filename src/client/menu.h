@@ -8,6 +8,7 @@
 
 #include "q_shared.h"
 
+#define MAXMENUITEMS	32 // Q2: 64
 #define MENU_CENTER_X	(DEF_WIDTH / 2) //mxd
 
 extern cvar_t* vid_mode;
@@ -106,7 +107,7 @@ typedef struct menuframework_t
 	int cursor;
 	int width;
 	int nitems;
-	struct menucommon_s* items[32]; // Q2: 64
+	struct menucommon_s* items[MAXMENUITEMS];
 	const char* statusbar;
 	void (*cursordraw)(struct menuframework_s* m);
 } menuframework_s;
