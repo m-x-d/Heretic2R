@@ -229,9 +229,30 @@ void Con_Print(const char* txt)
 
 #pragma region ========================== DRAWING ==========================
 
+// The input line scrolls horizontally if typing goes beyond the right edge.
 static void Con_DrawInput(void)
 {
-	NOT_IMPLEMENTED
+	if (cls.key_dest == key_menu || (cls.key_dest != key_console && cls.state == ca_active))
+		return; // Don't draw anything (always draw if not active).
+
+	char* text = key_lines[edit_line];
+
+	// Add the cursor frame.
+	text[key_linepos] = (char)(10 + ((cls.realtime >> 8) & 1));
+
+	// Fill out remainder with spaces.
+	for (int i = key_linepos + 1; i < con.linewidth; i++)
+		text[i] = ' ';
+
+	// Pre-step if horizontally scrolling.
+	if (key_linepos >= con.linewidth)
+		text += 1 + key_linepos - con.linewidth;
+
+	// Draw it.
+	DrawString(8, con.vislines - 16, text, TextPalette[P_WHITE], con.linewidth); // H2
+
+	// Remove cursor.
+	key_lines[edit_line][key_linepos] = 0;
 }
 
 void Con_DrawNotify(void)
