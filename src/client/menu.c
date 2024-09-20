@@ -457,9 +457,18 @@ int M_GetMenuLabelX(const int text_width) // H2
 	return x + 16;
 }
 
-void Menu_DrawString(int x, int y, char* name, float alpha, qboolean selected)
+void Menu_DrawString(const int x, const int y, const char* name, const float alpha, const qboolean selected)
 {
-	NOT_IMPLEMENTED
+	if (selected)
+	{
+		re.DrawBigFont(x, y, name, alpha * 0.2f);
+		re.DrawBigFont(x + 1, y - 1, name, alpha * 0.5f);
+		re.DrawBigFont(x + 2, y - 2, name, alpha);
+	}
+	else
+	{
+		re.DrawBigFont(x, y, name, alpha * 0.6f);
+	}
 }
 
 static float MenuAlpha(const int menutime) // H2
