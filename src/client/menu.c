@@ -6,6 +6,7 @@
 
 #include "client.h"
 #include "sound.h"
+#include "vid_dll.h"
 #include "menu.h"
 
 #include "menus/menu_actionkeys.h"
@@ -134,6 +135,7 @@ typedef struct
 menulayer_t	m_layers[MAX_MENU_DEPTH];
 static int m_menudepth;
 static uint m_menu_side; // H2 (0 - left, 1 - right)?
+static float quick_menus_old_value; // H2
 
 static void PrecacheGenericMenuItemsText(void) // H2
 {
@@ -152,7 +154,15 @@ static void PrecacheGenericMenuItemsText(void) // H2
 
 static void UpdateVidModeVars(void) // H2
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("m_origmode", vid_mode->value);
+
+	if (Q_stricmp(vid_ref->string, "gl") == 0 && vid_mode->value < vid_menu_mode->value)
+	{
+		Cvar_SetValue("vid_mode", vid_menu_mode->value);
+		quick_menus_old_value = quick_menus->value;
+		if (quick_menus->value < 1.0f)
+			Cvar_Set("quick_menus", "1.0");
+	}
 }
 
 static void PushMenu(m_drawfunc_t draw, m_keyfunc_t key) // M_PushMenu() in Q2
