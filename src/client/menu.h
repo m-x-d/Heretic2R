@@ -86,6 +86,14 @@ extern cvar_t* m_dmlist;
 extern cvar_t* m_cooplist;
 extern cvar_t* m_origmode;
 
+// H2. Generic menu item labels texts.
+extern char m_text_no[MAX_QPATH];
+extern char m_text_yes[MAX_QPATH];
+extern char m_text_off[MAX_QPATH];
+extern char m_text_on[MAX_QPATH];
+extern char m_text_low[MAX_QPATH];
+extern char m_text_high[MAX_QPATH];
+
 typedef void (*m_drawfunc_t)(void); //mxd
 typedef const char* (*m_keyfunc_t)(int key); //mxd
 

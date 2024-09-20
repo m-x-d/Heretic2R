@@ -109,6 +109,14 @@ cvar_t* m_dmlist;
 cvar_t* m_cooplist;
 cvar_t* m_origmode;
 
+// H2. Generic menu item labels texts.
+char m_text_no[MAX_QPATH];
+char m_text_yes[MAX_QPATH];
+char m_text_off[MAX_QPATH];
+char m_text_on[MAX_QPATH];
+char m_text_low[MAX_QPATH];
+char m_text_high[MAX_QPATH];
+
 static qboolean m_entersound; // Play after drawing a frame, so caching won't disrupt the sound. //TODO: doesn't seem to be related to playing sounds. Rename?
 
 m_drawfunc_t m_drawfunc;
@@ -127,12 +135,22 @@ menulayer_t	m_layers[MAX_MENU_DEPTH];
 static int m_menudepth;
 static uint m_menu_side; // H2 (0 - left, 1 - right)?
 
-static void UpdateItemTexts(void)
+static void PrecacheGenericMenuItemsText(void) // H2
 {
-	NOT_IMPLEMENTED
+	Com_sprintf(m_text_no, sizeof(m_text_no), "\x02%s", m_generic_no->string);
+	Com_sprintf(m_text_yes, sizeof(m_text_yes), "\x02%s", m_generic_yes->string);
+	Com_sprintf(m_text_off, sizeof(m_text_off), "\x02%s", m_generic_off->string);
+	Com_sprintf(m_text_on, sizeof(m_text_on), "\x02%s", m_generic_on->string);
+	Com_sprintf(m_text_low, sizeof(m_text_low), "\x02%s", m_generic_low->string);
+	Com_sprintf(m_text_high, sizeof(m_text_high), "\x02%s", m_generic_high->string);
+
+	if (Q_stricmp(snd_dll->string, "eaxsnd") == 0 && SNDEAX_SetEnvironment != NULL)
+		SNDEAX_SetEnvironment(0);
+
+	Cvar_Set("menus_active", "1");
 }
 
-static void UpdateVidModeVars(void)
+static void UpdateVidModeVars(void) // H2
 {
 	NOT_IMPLEMENTED
 }
@@ -159,7 +177,7 @@ void M_PushMenu(const m_drawfunc_t draw, const m_keyfunc_t key) // H2
 		if (m_menudepth == 0)
 		{
 			cls.m_menustate = 5;
-			UpdateItemTexts();
+			PrecacheGenericMenuItemsText();
 			UpdateVidModeVars();
 		}
 		else
