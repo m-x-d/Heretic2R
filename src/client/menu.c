@@ -122,7 +122,7 @@ static qboolean m_entersound; // Play after drawing a frame, so caching won't di
 
 m_drawfunc_t m_drawfunc;
 m_keyfunc_t m_keyfunc;
-m_keyfunc_t m_keyfunc2; // H2
+m_keyfunc_t m_keyfunc2; // H2 //TODO: better name
 
 #define MAX_MENU_DEPTH	8
 
@@ -584,7 +584,12 @@ void M_Draw(void)
 	}
 }
 
-void M_Keydown(int key)
+void M_Keydown(const int key)
 {
-	NOT_IMPLEMENTED
+	if (m_keyfunc2 != NULL)
+	{
+		const char* sound_name = m_keyfunc2(key);
+		if (sound_name != NULL)
+			S_StartLocalSound(sound_name);
+	}
 }
