@@ -6,9 +6,7 @@
 
 #pragma once
 
-#include "q_Typedef.h" //mxd
-
-#define	MIN_GAMMA	0.1			// These also need to be defined in gl_local.h
+#define MIN_GAMMA	0.1			// These also need to be defined in gl_local.h
 #define MAX_GAMMA	4.0
 
 #define DEF_WIDTH	640
