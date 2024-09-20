@@ -221,14 +221,14 @@ static void IN_AttackUp(void)
 	NOT_IMPLEMENTED
 }
 
-static void IN_DefendDown(void)
+static void IN_DefendDown(void) // H2
 {
 	NOT_IMPLEMENTED
 }
 
-static void IN_DefendUp(void)
+static void IN_DefendUp(void) // H2
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_defend);
 }
 
 static void IN_ActionDown(void)

@@ -474,7 +474,14 @@ void Menu_AddItem(menuframework_s* menu, void* item)
 
 void Menu_Center(menuframework_s* menu)
 {
-	NOT_IMPLEMENTED
+	int width = 0;
+	for (int i = 0; i < menu->nitems; i++)
+		width = max(width, ((menucommon_s*)menu->items[i])->width);
+
+	menu->width = width;
+
+	const int height = ((menucommon_s*)menu->items[menu->nitems - 1])->y + 10;
+	menu->y = (DEF_HEIGHT - height) / 2;
 }
 
 void Menu_DrawString(const int x, const int y, const char* name, const float alpha, const qboolean selected)
