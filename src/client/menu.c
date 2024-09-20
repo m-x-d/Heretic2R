@@ -584,7 +584,10 @@ void M_Init(void)
 
 void M_UpdateOrigMode(void) // H2
 {
-	NOT_IMPLEMENTED
+	if ((int)vid_mode->value != (int)m_origmode->value)
+		Cvar_SetValue("vid_mode", m_origmode->value);
+
+	Cvar_SetValue("quick_menus", quick_menus_old_value);
 }
 
 float M_GetMenuAlpha(void) // H2
