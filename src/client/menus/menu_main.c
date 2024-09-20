@@ -42,14 +42,14 @@ static void M_Main_Draw(void)
 
 	// Draw menu title.
 	Com_sprintf(name, sizeof(name), "\x03%s", m_banner_main->string);
-	re.DrawBigFont(M_GetMenuOffsetX(re.BF_Strlen(name)), 96, name, cls.m_menualpha);
+	re.DrawBigFont(M_GetMenuLabelX(re.BF_Strlen(name)), 96, name, cls.m_menualpha);
 
 	// Draw menu items.
 	int oy = 128;
 	for (int i = 0; i < NUM_MENU_ITEMS; i++, oy += 32)
 	{
 		Com_sprintf(name, sizeof(name), "\x02%s", (*menu_labels[i])->string);
-		Menu_DrawString(M_GetMenuOffsetX(re.BF_Strlen(name)), oy, name, cls.m_menualpha, i == m_main_cursor);
+		Menu_DrawString(M_GetMenuLabelX(re.BF_Strlen(name)), oy, name, cls.m_menualpha, i == m_main_cursor);
 	}
 }
 

@@ -448,10 +448,13 @@ void M_UpdateOrigMode(void) // H2
 	NOT_IMPLEMENTED
 }
 
-int M_GetMenuOffsetX(int ox) // H2
+int M_GetMenuLabelX(const int text_width) // H2
 {
-	NOT_IMPLEMENTED
-	return 0;
+	const int x = (MENU_CENTER_X - text_width) / 2 + (int)(m_menu_side & 1) * MENU_CENTER_X;
+	if ((m_menu_side & 1) != 0)
+		return x - 16;
+
+	return x + 16;
 }
 
 void Menu_DrawString(int x, int y, char* name, float alpha, qboolean selected)

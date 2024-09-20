@@ -8,6 +8,8 @@
 
 #include "q_shared.h"
 
+#define MENU_CENTER_X	(DEF_WIDTH / 2) //mxd
+
 extern cvar_t* vid_mode;
 extern cvar_t* vid_menu_mode;
 
@@ -132,5 +134,5 @@ typedef struct
 
 void M_PushMenu(m_drawfunc_t draw, m_keyfunc_t key);
 void M_UpdateOrigMode(void); // H2
-int M_GetMenuOffsetX(int ox); // H2
+int M_GetMenuLabelX(int text_width); // H2
 void Menu_DrawString(int x, int y, char* name, float alpha, qboolean selected);
