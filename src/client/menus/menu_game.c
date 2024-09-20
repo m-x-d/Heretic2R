@@ -28,24 +28,41 @@ static menuaction_s s_load_game_action;
 static menuaction_s s_save_game_action;
 static menuaction_s s_credits_action;
 
+static void StartGame(char* mapname)
+{
+	// Disable updates and start the cinematic going.
+	cl.servercount = -1;
+	M_ForceMenuOff();
+	M_UpdateOrigMode();
+	Cvar_SetValue("deathmatch", 0);
+	Cvar_SetValue("coop", 0);
+
+	Cbuf_AddText(va("loading ; killserver ; wait ; deathmatch 0 ; maxclients 1 ; %s\n", mapname));
+	cls.key_dest = key_game;
+}
+
 static void TutorialGameFunc(void* data)
 {
-	NOT_IMPLEMENTED
+	Cvar_ForceSet("skill", "0");
+	StartGame("tutorial");
 }
 
 static void EasyGameFunc(void* data)
 {
-	NOT_IMPLEMENTED
+	Cvar_ForceSet("skill", "0");
+	StartGame("newgame");
 }
 
 static void MediumGameFunc(void* data)
 {
-	NOT_IMPLEMENTED
+	Cvar_ForceSet("skill", "1");
+	StartGame("newgame");
 }
 
 static void HardGameFunc(void* data)
 {
-	NOT_IMPLEMENTED
+	Cvar_ForceSet("skill", "3"); //mxd. Hard is skill 2 in Q2.
+	StartGame("newgame");
 }
 
 static void LoadGameFunc(void* data)
