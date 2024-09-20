@@ -14,7 +14,26 @@ cvar_t* m_item_medium;
 cvar_t* m_item_hard;
 cvar_t* m_item_nightmare;
 
-void M_Menu_Game_f(void)
+static void Game_MenuInit(void)
 {
 	NOT_IMPLEMENTED
+}
+
+static void Game_MenuDraw(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static const char* Game_MenuKey(int key)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
+// Q2 counterpart
+void M_Menu_Game_f(void)
+{
+	Game_MenuInit();
+	M_PushMenu(Game_MenuDraw, Game_MenuKey);
+	//m_game_cursor = 1; //mxd. Unused
 }
