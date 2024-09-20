@@ -132,3 +132,5 @@ typedef struct
 
 void M_PushMenu(m_drawfunc_t draw, m_keyfunc_t key);
 void M_UpdateOrigMode(void); // H2
+int M_GetMenuOffsetX(int ox); // H2
+void Menu_DrawString(int x, int y, char* name, float alpha, qboolean selected);

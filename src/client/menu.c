@@ -448,7 +448,18 @@ void M_UpdateOrigMode(void) // H2
 	NOT_IMPLEMENTED
 }
 
-static float GetMenuAlpha(int menutime)
+int M_GetMenuOffsetX(int ox) // H2
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+void Menu_DrawString(int x, int y, char* name, float alpha, qboolean selected)
+{
+	NOT_IMPLEMENTED
+}
+
+static float GetMenuAlpha(int menutime) // H2
 {
 	NOT_IMPLEMENTED
 	return 0;
