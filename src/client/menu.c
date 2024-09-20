@@ -220,7 +220,22 @@ void M_PushMenu(const m_drawfunc_t draw, const m_keyfunc_t key) // H2
 
 void M_PopMenu(void)
 {
-	NOT_IMPLEMENTED
+	if (m_menudepth < 1)
+		Com_Error(ERR_FATAL, "M_PopMenu: depth < 1");
+
+	m_menudepth--;
+	if (m_menudepth > 0)
+	{
+		m_drawfunc = m_layers[m_menudepth].draw;
+		m_keyfunc = m_layers[m_menudepth].key;
+	}
+	else
+	{
+		m_drawfunc = NULL;
+		m_keyfunc = NULL;
+	}
+
+	cls.m_menustate = 3;
 }
 
 char* Default_MenuKey(menuframework_s* menu, const int key)
