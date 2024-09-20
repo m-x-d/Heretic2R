@@ -518,9 +518,75 @@ void Menu_Center(menuframework_s* menu)
 	menu->y = (DEF_HEIGHT - height) / 2;
 }
 
-void Menu_Draw(menuframework_s* menu)
+static void Slider_Draw(menuslider_s* slider, qboolean selected)
 {
 	NOT_IMPLEMENTED
+}
+
+static void Field_Draw(menufield_s* field, qboolean selected)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Action_Draw(menuaction_s* action, qboolean selected)
+{
+	NOT_IMPLEMENTED
+}
+
+static void InputKey_Draw(menuinputkey_s* key, qboolean selected)
+{
+	NOT_IMPLEMENTED
+}
+
+static void PlayerSkin_Draw(menucommon_s* item)
+{
+	NOT_IMPLEMENTED
+}
+
+static void SpinControl_Draw(menulist_s* list, qboolean selected)
+{
+	NOT_IMPLEMENTED
+}
+
+void Menu_Draw(const menuframework_s* menu)
+{
+	// Draw contents.
+	for (int i = 0; i < menu->nitems; i++)
+	{
+		menucommon_s* item = (menucommon_s*)menu->items[i];
+
+		switch (item->type)
+		{
+			case MTYPE_SLIDER:
+				Slider_Draw((menuslider_s*)item, i == menu->cursor);
+				break;
+
+			case MTYPE_FIELD:
+				Field_Draw((menufield_s*)item, i == menu->cursor);
+				break;
+
+			case MTYPE_ACTION:
+				Action_Draw((menuaction_s*)item, i == menu->cursor);
+				break;
+
+			case MTYPE_INPUT_KEY:
+				InputKey_Draw((menuinputkey_s*)item, i == menu->cursor);
+				break;
+
+			case MTYPE_PLAYER_SKIN:
+				PlayerSkin_Draw(item);
+				SpinControl_Draw((menulist_s*)item, i == menu->cursor);
+				break;
+
+			case MTYPE_SPINCONTROL:
+				SpinControl_Draw((menulist_s*)item, i == menu->cursor);
+				break;
+
+			default: //mxd. Added default case.
+				Sys_Error("Unexpected menu item type %i", item->type);
+				break;
+		}
+	}
 }
 
 void Menu_DrawString(const int x, const int y, const char* name, const float alpha, const qboolean selected)

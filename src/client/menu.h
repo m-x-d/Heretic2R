@@ -158,6 +158,30 @@ typedef struct
 	menucommon_s generic;
 } menuaction_s;
 
+typedef struct
+{
+	menucommon_s generic;
+	float minvalue;
+	float maxvalue;
+	float curvalue;
+	float range;
+} menuslider_s;
+
+typedef struct
+{
+	menucommon_s generic;
+	char buffer[80];
+	int cursor;
+	int length;
+	int visible_length;
+	int visible_offset;
+} menufield_s;
+
+typedef struct
+{
+	menucommon_s generic;
+} menuinputkey_s;
+
 void M_PushMenu(m_drawfunc_t draw, m_keyfunc_t key);
 void M_PopMenu(void);
 void M_UpdateOrigMode(void); // H2
@@ -166,6 +190,6 @@ int M_GetMenuOffsetY(const menuframework_s* menu); // H2
 void Menu_AddItem(menuframework_s* menu, void* item);
 void Menu_AdjustCursor(menuframework_s* menu, int dir);
 void Menu_Center(menuframework_s* menu);
-void Menu_Draw(menuframework_s* menu);
+void Menu_Draw(const menuframework_s* menu);
 void Menu_DrawString(int x, int y, const char* name, float alpha, qboolean selected);
 menucommon_s* Menu_ItemAtCursor(const menuframework_s* menu);
