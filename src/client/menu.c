@@ -462,6 +462,16 @@ int M_GetMenuLabelX(const int text_width) // H2
 	return x + 16;
 }
 
+void Menu_AddItem(menuframework_s* menu, void* item)
+{
+	NOT_IMPLEMENTED
+}
+
+void Menu_Center(menuframework_s* menu)
+{
+	NOT_IMPLEMENTED
+}
+
 void Menu_DrawString(const int x, const int y, const char* name, const float alpha, const qboolean selected)
 {
 	if (selected)

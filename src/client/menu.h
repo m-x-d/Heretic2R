@@ -111,6 +111,26 @@ typedef struct menuframework_t
 	void (*cursordraw)(struct menuframework_s* m);
 } menuframework_s;
 
+enum menuitem_type_e
+{
+	MTYPE_SLIDER,
+	MTYPE_FIELD,
+	MTYPE_ACTION,
+	MTYPE_SPINCONTROL,
+	MTYPE_INPUT_KEY,
+	MTYPE_PLAYER_SKIN
+};
+
+enum menuitem_flags_e
+{
+	QMF_LEFT_JUSTIFY	= 1,
+	QMF_GRAYED			= 2,
+	QMF_NUMBERSONLY		= 4,
+	QMF_SINGLELINE		= 8,
+	QMF_MULTILINE_MAYBE	= 16, //TODO: check name
+	QMF_SELECT_SOUND	= 32
+};
+
 typedef struct
 {
 	int type;
@@ -132,8 +152,15 @@ typedef struct
 	const char** itemnames;
 } menulist_s;
 
+typedef struct
+{
+	menucommon_s generic;
+} menuaction_s;
+
 void M_PushMenu(m_drawfunc_t draw, m_keyfunc_t key);
 void M_PopMenu(void);
 void M_UpdateOrigMode(void); // H2
 int M_GetMenuLabelX(int text_width); // H2
+void Menu_AddItem(menuframework_s* menu, void* item);
+void Menu_Center(menuframework_s* menu);
 void Menu_DrawString(int x, int y, const char* name, float alpha, qboolean selected);
