@@ -462,6 +462,11 @@ int M_GetMenuLabelX(const int text_width) // H2
 	return x + 16;
 }
 
+int M_GetMenuOffsetY(const menuframework_s* menu) // H2
+{
+	return menu->y - 24;
+}
+
 void Menu_AddItem(menuframework_s* menu, void* item)
 {
 	if (menu->nitems < MAXMENUITEMS)
@@ -470,6 +475,11 @@ void Menu_AddItem(menuframework_s* menu, void* item)
 		((menucommon_s*)menu->items[menu->nitems])->parent = menu;
 		menu->nitems++;
 	}
+}
+
+void Menu_AdjustCursor(menuframework_s* menu, int dir)
+{
+	NOT_IMPLEMENTED
 }
 
 void Menu_Center(menuframework_s* menu)
@@ -482,6 +492,11 @@ void Menu_Center(menuframework_s* menu)
 
 	const int height = ((menucommon_s*)menu->items[menu->nitems - 1])->y + 10;
 	menu->y = (DEF_HEIGHT - height) / 2;
+}
+
+void Menu_Draw(menuframework_s* menu)
+{
+	NOT_IMPLEMENTED
 }
 
 void Menu_DrawString(const int x, const int y, const char* name, const float alpha, const qboolean selected)
