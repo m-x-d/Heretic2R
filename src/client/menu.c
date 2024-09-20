@@ -619,15 +619,23 @@ void Menu_AddItem(menuframework_s* menu, void* item)
 	}
 }
 
+// Q2 counterpart
 static qboolean Field_DoEnter(menufield_s* field)
 {
-	NOT_IMPLEMENTED
+	if (field->generic.callback != NULL)
+	{
+		field->generic.callback(field);
+		return true;
+	}
+
 	return false;
 }
 
+// Q2 counterpart
 static void Action_DoEnter(menuaction_s* action)
 {
-	NOT_IMPLEMENTED
+	if (action->generic.callback != NULL)
+		action->generic.callback(action);
 }
 
 qboolean Menu_SelectItem(const menuframework_s* menu)
