@@ -133,6 +133,7 @@ typedef struct
 } menulist_s;
 
 void M_PushMenu(m_drawfunc_t draw, m_keyfunc_t key);
+void M_PopMenu(void);
 void M_UpdateOrigMode(void); // H2
 int M_GetMenuLabelX(int text_width); // H2
 void Menu_DrawString(int x, int y, const char* name, float alpha, qboolean selected);

@@ -218,6 +218,11 @@ void M_PushMenu(const m_drawfunc_t draw, const m_keyfunc_t key) // H2
 	}
 }
 
+void M_PopMenu(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void M_ForceMenuOff(void)
 {
 	m_layers[0].draw = NULL;

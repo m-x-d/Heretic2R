@@ -53,10 +53,72 @@ static void M_Main_Draw(void)
 	}
 }
 
-static const char* M_Main_Key(int key)
+static const char* M_Main_Key(const int key)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+#define MAIN_ITEMS	6
+
+	if (cls.m_menustate != 2)
+		return NULL;
+
+	switch (key)
+	{
+		case K_ENTER:
+		case K_KP_ENTER:
+			switch (m_main_cursor)
+			{
+				case 0:
+					M_Menu_Game_f();
+					break;
+
+				case 1:
+					M_Menu_Multiplayer_f();
+					break;
+
+				case 2:
+					M_Menu_Options_f();
+					break;
+
+				case 3:
+					M_Menu_Video_f();
+					break;
+
+				case 4:
+					M_Menu_Sound_f();
+					break;
+
+				case 5:
+					M_Menu_Info_f();
+					break;
+
+				case 6:
+					M_Menu_Quit_f();
+					break;
+
+				default: //mxd. Added default case.
+					Sys_Error("Unexpected main menu index %i", m_main_cursor);
+					break;
+			}
+			return "misc/menu1.wav";
+
+		case K_ESCAPE:
+			M_PopMenu();
+			return "misc/menu3.wav";
+
+		case K_UPARROW:
+		case K_KP_UPARROW:
+			if (--m_main_cursor < 0)
+				m_main_cursor = MAIN_ITEMS;
+			return "misc/menu2.wav";
+
+		case K_DOWNARROW:
+		case K_KP_DOWNARROW:
+			if (++m_main_cursor > MAIN_ITEMS)
+				m_main_cursor = 0;
+			return "misc/menu2.wav";
+
+		default:
+			return NULL;
+	}
 }
 
 void M_Menu_Main_f(void)
