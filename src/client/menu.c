@@ -537,9 +537,12 @@ void Menu_DrawString(const int x, const int y, const char* name, const float alp
 	}
 }
 
-menucommon_s* Menu_ItemAtCursor(menuframework_s* menu)
+// Q2 counterpart
+menucommon_s* Menu_ItemAtCursor(const menuframework_s* menu)
 {
-	NOT_IMPLEMENTED
+	if (menu->cursor >= 0 && menu->cursor < menu->nitems)
+		return (menucommon_s*)menu->items[menu->cursor];
+
 	return NULL;
 }
 
