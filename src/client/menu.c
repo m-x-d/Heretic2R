@@ -124,7 +124,7 @@ m_drawfunc_t m_drawfunc;
 m_keyfunc_t m_keyfunc;
 m_keyfunc_t m_keyfunc2; // H2
 
-#define MAX_MENU_DEPTH	9 // Q2: 8
+#define MAX_MENU_DEPTH	8
 
 typedef struct
 {
@@ -132,7 +132,7 @@ typedef struct
 	m_keyfunc_t key;
 } menulayer_t;
 
-menulayer_t	m_layers[MAX_MENU_DEPTH];
+menulayer_t	m_layers[MAX_MENU_DEPTH + 1]; // Q2: MAX_MENU_DEPTH
 static int m_menudepth;
 static uint m_menu_side; // H2 (0 - left, 1 - right)?
 static float quick_menus_old_value; // H2
@@ -165,9 +165,27 @@ static void UpdateVidModeVars(void) // H2
 	}
 }
 
-static void PushMenu(m_drawfunc_t draw, m_keyfunc_t key) // M_PushMenu() in Q2
+// Similar to M_PushMenu() in Q2.
+static void PushMenu(const m_drawfunc_t draw, const m_keyfunc_t key) 
 {
-	NOT_IMPLEMENTED
+	int depth;
+
+	if (Cvar_VariableValue("maxclients") == 1.0f && Com_ServerState())
+		Cvar_Set("paused", "1");
+
+	for (depth = 0; depth < m_menudepth; depth++)
+		if (m_layers[depth + 1].draw == draw && m_layers[depth + 1].key == key)
+			m_menudepth = depth;
+
+	if (depth == m_menudepth)
+	{
+		if (m_menudepth >= MAX_MENU_DEPTH)
+			Com_Error(ERR_FATAL, "M_PushMenu: MAX_MENU_DEPTH");
+
+		m_layers[m_menudepth + 1].draw = draw;
+		m_layers[m_menudepth + 1].key = key;
+		m_menudepth++;
+	}
 }
 
 void M_PushMenu(const m_drawfunc_t draw, const m_keyfunc_t key) // H2

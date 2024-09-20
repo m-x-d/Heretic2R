@@ -86,7 +86,7 @@ extern cvar_t* m_dmlist;
 extern cvar_t* m_cooplist;
 extern cvar_t* m_origmode;
 
-// H2. Generic menu item labels texts.
+// H2. Generic menu item label texts.
 extern char m_text_no[MAX_QPATH];
 extern char m_text_yes[MAX_QPATH];
 extern char m_text_off[MAX_QPATH];
