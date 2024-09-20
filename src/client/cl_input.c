@@ -62,6 +62,44 @@ static kbutton_t in_inventory; // H2
 static kbutton_t in_quickturn; // H2
 static kbutton_t in_autoaim; // H2
 
+// Q2 counterpart
+static void KeyUp(kbutton_t* b)
+{
+	const char* c = Cmd_Argv(1);
+
+	if (c[0] == 0)
+	{
+		// Typed manually at the console, assume for unsticking, so clear all.
+		b->down[0] = 0;
+		b->down[1] = 0;
+		b->state = 4; // Impulse up
+
+		return;
+	}
+
+	const int k = Q_atoi(c);
+
+	if (b->down[0] == k)
+		b->down[0] = 0;
+	else if (b->down[1] == k)
+		b->down[1] = 0;
+	else
+		return; // Key up without corresponding down (menu pass through).
+
+	if (b->down[0] || b->down[1] || !(b->state & 1))
+		return; // Some other key is still holding it down or still up (this should not happen).
+
+	// Save timestamp.
+	const uint uptime = Q_atoi(Cmd_Argv(2));
+	if (uptime > 0)
+		b->msec += uptime - b->downtime;
+	else
+		b->msec += 10;
+
+	b->state &= ~1; // Now up.
+	b->state |= 4; // Impulse up.
+}
+
 static void IN_UpDown(void)
 {
 	NOT_IMPLEMENTED
@@ -107,9 +145,10 @@ static void IN_ForwardDown(void)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
 static void IN_ForwardUp(void)
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_forward);
 }
 
 static void IN_BackDown(void)
@@ -262,14 +301,14 @@ static void IN_CommandUp(void)
 	NOT_IMPLEMENTED
 }
 
-static void IN_QuickturnDown(void)
+static void IN_QuickturnDown(void) // H2
 {
 	NOT_IMPLEMENTED
 }
 
-static void IN_QuickturnUp(void)
+static void IN_QuickturnUp(void) // H2
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_quickturn);
 }
 
 static void IN_InventoryDown(void)
