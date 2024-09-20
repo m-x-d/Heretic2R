@@ -4,9 +4,12 @@
 // Copyright 1998 Raven Software
 //
 
+#include <windows.h>
 #include "client.h"
 #include "menu_joinserver.h"
 #include "menu_addressbook.h"
+#include "cl_strings.h"
+#include "sound.h"
 
 cvar_t* m_banner_join;
 cvar_t* m_item_refresh;
@@ -20,6 +23,8 @@ static menuaction_s s_joinserver_address_book_action;
 static menuaction_s s_joinserver_search_action;
 static menuaction_s s_joinserver_server_actions[MAX_LOCAL_SERVERS];
 
+static int m_num_servers;
+
 // User-readable information.
 static char local_server_names[MAX_LOCAL_SERVERS][80];
 
@@ -31,7 +36,21 @@ static void AddressBookFunc(void* data)
 
 static void SearchLocalGames(void)
 {
-	NOT_IMPLEMENTED
+	m_num_servers = 0;
+
+	for (int i = 0; i < MAX_LOCAL_SERVERS; i++)
+		strcpy_s(local_server_names[i], sizeof(local_server_names[i]), NO_SERVER_STRING); //mxd. strcpy -> strcpy_s
+
+	M_DrawTextBox(8, 72, 36, 3);
+	M_Print(32, 80, GM_CH_SERVERS, TextPalette[P_WHITE]);
+	S_StopAllSounds_Sounding();
+
+	// The text box won't show up unless we do a buffer swap.
+	re.EndFrame();
+	Sleep(500); // H2
+
+	// Send out info packets.
+	CL_PingServers_f();
 }
 
 // Q2 counterpart

@@ -939,6 +939,16 @@ void M_Draw(void)
 	}
 }
 
+void M_DrawTextBox(int x, int y, int width, int lines)
+{
+	NOT_IMPLEMENTED
+}
+
+void M_Print(int cx, int cy, short msg_index, paletteRGBA_t color)
+{
+	NOT_IMPLEMENTED
+}
+
 void M_Keydown(const int key)
 {
 	if (m_keyfunc2 != NULL)
