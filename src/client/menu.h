@@ -168,3 +168,4 @@ void Menu_AdjustCursor(menuframework_s* menu, int dir);
 void Menu_Center(menuframework_s* menu);
 void Menu_Draw(menuframework_s* menu);
 void Menu_DrawString(int x, int y, const char* name, float alpha, qboolean selected);
+menucommon_s* Menu_ItemAtCursor(menuframework_s* menu);

@@ -477,9 +477,33 @@ void Menu_AddItem(menuframework_s* menu, void* item)
 	}
 }
 
-void Menu_AdjustCursor(menuframework_s* menu, int dir)
+// This function takes the given menu, the direction, and attempts to adjust
+// the menu's cursor so that it's at the next available slot.
+void Menu_AdjustCursor(menuframework_s* menu, const int dir)
 {
-	NOT_IMPLEMENTED
+	// See if it's in a valid spot.
+	if (menu->cursor >= 0 && menu->cursor < menu->nitems && Menu_ItemAtCursor(menu) != NULL)
+		return;
+
+	// It's not in a valid spot, so crawl in the direction indicated until we find a valid spot.
+	if (dir == 1)
+	{
+		while (Menu_ItemAtCursor(menu) == NULL)
+		{
+			menu->cursor += dir;
+			if (menu->cursor >= menu->nitems)
+				menu->cursor = 0;
+		}
+	}
+	else
+	{
+		while (Menu_ItemAtCursor(menu) == NULL)
+		{
+			menu->cursor += dir;
+			if (menu->cursor < 0)
+				menu->cursor = menu->nitems - 1;
+		}
+	}
 }
 
 void Menu_Center(menuframework_s* menu)
@@ -511,6 +535,12 @@ void Menu_DrawString(const int x, const int y, const char* name, const float alp
 	{
 		re.DrawBigFont(x, y, name, alpha * 0.6f);
 	}
+}
+
+menucommon_s* Menu_ItemAtCursor(menuframework_s* menu)
+{
+	NOT_IMPLEMENTED
+	return NULL;
 }
 
 static float MenuAlpha(const int menutime) // H2
