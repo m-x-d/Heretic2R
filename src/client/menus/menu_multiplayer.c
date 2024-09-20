@@ -115,10 +115,9 @@ static void Multiplayer_MenuDraw(void)
 	Menu_Draw(&s_multiplayer_menu);
 }
 
-static const char* Multiplayer_MenuKey(int key)
+static const char* Multiplayer_MenuKey(const int key)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	return Default_MenuKey(&s_multiplayer_menu, key);
 }
 
 // Q2 counterpart
