@@ -698,7 +698,7 @@ void Key_Event(int key, const qboolean down, const uint time)
 				return;
 
 			default:
-				Com_Error(0, "Bad cls.key_dest");
+				Com_Error(ERR_FATAL, "Bad cls.key_dest");
 				return;
 		}
 	}
