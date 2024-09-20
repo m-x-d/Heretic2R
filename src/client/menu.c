@@ -459,10 +459,10 @@ void Menu_DrawString(int x, int y, char* name, float alpha, qboolean selected)
 	NOT_IMPLEMENTED
 }
 
-static float GetMenuAlpha(int menutime) // H2
+static float MenuAlpha(const int menutime) // H2
 {
-	NOT_IMPLEMENTED
-	return 0;
+	const float alpha = (float)(Sys_Milliseconds() - menutime) / 250.0f;
+	return min(alpha, 1.0f);
 }
 
 void M_Draw(void)
@@ -488,7 +488,7 @@ void M_Draw(void)
 			break;
 
 		case 1: // MENU_OPENING?
-			cls.m_menualpha = GetMenuAlpha(cls.startmenu);
+			cls.m_menualpha = MenuAlpha(cls.startmenu);
 			m_layers[0].draw();
 			if (cls.m_menualpha == 1.0f || quick_menus->value > 1.0f)
 				cls.m_menustate = 2;
@@ -507,7 +507,7 @@ void M_Draw(void)
 			break;
 
 		case 4:
-			cls.m_menualpha = 1.0f - GetMenuAlpha(cls.startmenu);
+			cls.m_menualpha = 1.0f - MenuAlpha(cls.startmenu);
 			m_layers[0].draw();
 
 			if (cls.m_menualpha == 0.0f || quick_menus->value > 1.0f)
@@ -548,7 +548,7 @@ void M_Draw(void)
 			break;
 
 		case 7:
-			cls.m_menuscale = GetMenuAlpha(cls.startmenuzoom);
+			cls.m_menuscale = MenuAlpha(cls.startmenuzoom);
 			m_layers[0].draw();
 
 			if (cls.m_menuscale == 1.0f)
@@ -556,7 +556,7 @@ void M_Draw(void)
 			break;
 
 		case 8: // MENU_CLOSING?
-			cls.m_menuscale = 1.0f - GetMenuAlpha(cls.startmenuzoom);
+			cls.m_menuscale = 1.0f - MenuAlpha(cls.startmenuzoom);
 			m_layers[0].draw();
 
 			if (cls.m_menuscale == 0.0f)
