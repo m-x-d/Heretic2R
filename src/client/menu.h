@@ -128,7 +128,7 @@ enum menuitem_flags_e
 	QMF_GRAYED			= 2,
 	QMF_NUMBERSONLY		= 4,
 	QMF_SINGLELINE		= 8,
-	QMF_MULTILINE_MAYBE	= 16, //TODO: check name
+	QMF_MULTILINE		= 16,
 	QMF_SELECT_SOUND	= 32
 };
 
@@ -185,6 +185,7 @@ typedef struct
 void M_PushMenu(m_drawfunc_t draw, m_keyfunc_t key);
 void M_PopMenu(void);
 void M_UpdateOrigMode(void); // H2
+float M_GetMenuAlpha(void); // H2
 int M_GetMenuLabelX(int text_width); // H2
 int M_GetMenuOffsetY(const menuframework_s* menu); // H2
 void Menu_AddItem(menuframework_s* menu, void* item);

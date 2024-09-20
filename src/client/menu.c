@@ -453,6 +453,11 @@ void M_UpdateOrigMode(void) // H2
 	NOT_IMPLEMENTED
 }
 
+float M_GetMenuAlpha(void) // H2
+{
+	return cls.m_menualpha;
+}
+
 int M_GetMenuLabelX(const int text_width) // H2
 {
 	const int x = (MENU_CENTER_X - text_width) / 2 + (int)(m_menu_side & 1) * MENU_CENTER_X;
@@ -528,9 +533,35 @@ static void Field_Draw(menufield_s* field, qboolean selected)
 	NOT_IMPLEMENTED
 }
 
-static void Action_Draw(menuaction_s* action, qboolean selected)
+static void Action_Draw(const menuaction_s* action, const qboolean selected)
 {
-	NOT_IMPLEMENTED
+	int x;
+	char name[MAX_QPATH];
+
+	const float alpha = M_GetMenuAlpha();
+	const int y = action->generic.y + action->generic.parent->y;
+
+	if (action->generic.flags & QMF_MULTILINE && strchr(action->generic.name, '\n') != NULL)
+	{
+		// Draw left part
+		strcpy_s(name, sizeof(name), action->generic.name); //mxd. strcpy -> strcpy_s
+		*strchr(name, '\n') = 0;
+		x = M_GetMenuLabelX(re.BF_Strlen(name));
+		Menu_DrawString(x, y, name, alpha, selected);
+		m_menu_side ^= 1;
+
+		// Draw right part
+		strcpy_s(name, sizeof(name), strchr(action->generic.name, '\n') + 1); //mxd. strcpy -> strcpy_s
+		x = M_GetMenuLabelX(re.BF_Strlen(name));
+		Menu_DrawString(x, y, name, alpha, selected);
+		m_menu_side ^= 1;
+	}
+	else
+	{
+		x = M_GetMenuLabelX(action->generic.width);
+		strcpy_s(name, sizeof(name), action->generic.name); //mxd. strcpy -> strcpy_s
+		Menu_DrawString(x, y, name, alpha, selected);
+	}
 }
 
 static void InputKey_Draw(menuinputkey_s* key, qboolean selected)
