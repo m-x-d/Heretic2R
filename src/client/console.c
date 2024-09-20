@@ -12,9 +12,10 @@ static cvar_t* con_notifytime;
 static cvar_t* con_alpha; // New in H2
 static cvar_t* nextserver; // New in H2
 
-void DrawString(int x, int y, char* s, uint color, int maxlen)
+void DrawString(int x, const int y, const char* s, const paletteRGBA_t color, const int maxlen)
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < maxlen && *s != 0; i++, s++, x += 8)
+		re.DrawChar(x, y, *s, color);
 }
 
 // Q2 counterpart
@@ -293,7 +294,7 @@ void Con_DrawConsole(float frac)
 	// Draw version
 	char version[MAX_QPATH];
 	Com_sprintf(version, sizeof(version), "Heretic II: %s", VERSIONDISP);
-	DrawString(viddef.width - ((int)strlen(version) * 8 + 8), lines - 12, version, TextPalette[P_VERSION].c, -1);
+	DrawString(viddef.width - ((int)strlen(version) * 8 + 8), lines - 12, version, TextPalette[P_VERSION], -1);
 
 	// Draw the text
 	con.vislines = lines;
@@ -306,7 +307,7 @@ void Con_DrawConsole(float frac)
 	if (con.display != con.current)
 	{
 		// Draw arrows to show the buffer is backscrolled
-		DrawString(8, y, backscroll_arrows, TextPalette[P_WHITE].c, con.linewidth);
+		DrawString(8, y, backscroll_arrows, TextPalette[P_WHITE], con.linewidth);
 
 		y -= 8;
 		rows--;
@@ -318,7 +319,7 @@ void Con_DrawConsole(float frac)
 		if (row < 0 || con.current - row >= con.totallines)
 			break; // Past scrollback wrap point
 
-		DrawString(8, y, &con.text[(row % con.totallines) * con.linewidth], con.color[row % con.totallines].c, con.linewidth);
+		DrawString(8, y, &con.text[(row % con.totallines) * con.linewidth], con.color[row % con.totallines], con.linewidth);
 	}
 
 	// Draw the input prompt, user text, and cursor if desired

@@ -583,7 +583,7 @@ static void SCR_ExecuteLayoutString(char* s)
 			if (index < 0 || index >= MAX_CONFIGSTRINGS)
 				Com_Error(ERR_DROP, "Bad stat_string index");
 
-			DrawString(x, y, cl.configstrings[index], TextPalette[P_WHITE].c, -1);
+			DrawString(x, y, cl.configstrings[index], TextPalette[P_WHITE], -1);
 		}
 		else if (strcmp(token, "hstring") == 0) // H2
 		{
@@ -592,7 +592,7 @@ static void SCR_ExecuteLayoutString(char* s)
 			const int pal_index = Q_atoi(COM_Parse(&s));
 			const char* str = COM_Parse(&s);
 
-			DrawString(x, y, str, TextPalette[pal_index].c, -1);
+			DrawString(x, y, str, TextPalette[pal_index], -1);
 		}
 		else if (strcmp(token, "string") == 0)
 		{
@@ -601,7 +601,7 @@ static void SCR_ExecuteLayoutString(char* s)
 			const int pal_index = Q_atoi(COM_Parse(&s));
 			const char* str = COM_Parse(&s);
 
-			DrawString(x, y, str, TextPalette[pal_index].c, -1);
+			DrawString(x, y, str, TextPalette[pal_index], -1);
 		}
 		else if (strcmp(token, "if") == 0)
 		{
@@ -710,7 +710,7 @@ static void SCR_DrawGameMessage(void) // H2
 
 		const int x = (viddef.width - line_len * 8) / 2;
 		SCR_AddDirtyPoint(x, y);
-		DrawString(x, y, s, game_message_color.c, line_len);
+		DrawString(x, y, s, game_message_color, line_len);
 		SCR_AddDirtyPoint(x + line_len * 8, y + 8);
 	}
 }

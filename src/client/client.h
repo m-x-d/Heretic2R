@@ -516,7 +516,7 @@ extern int camera_timer; //mxd
 extern netadr_t net_from;
 extern sizebuf_t net_message;
 
-void DrawString(int x, int y, char* s, uint color, int maxlen);
+void DrawString(int x, int y, const char* s, paletteRGBA_t color, int maxlen);
 qboolean CL_CheckOrDownloadFile(char* filename);
 
 extern uint net_transmit_size; //mxd
