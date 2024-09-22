@@ -88,7 +88,7 @@ void SCR_PlayCinematic(const char* name)
 
 	cin_rate = Cvar_Get("cin_rate", "15.0", 0); // H2
 
-	//CDAudio_Stop(); //mxd. Skip CDAudio logic. //mxd. Already done in SCR_BeginLoadingPlaque()!
+	//CDAudio_Stop(); //mxd. Already done in SCR_BeginLoadingPlaque()!
 	if (sound_library != NULL)
 		S_Shutdown();
 

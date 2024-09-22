@@ -947,7 +947,7 @@ void CL_Frame(const int msec)
 
 	// Update audio.
 	S_Update(cl.refdef.vieworg, cl.v_forward, cl.v_right, cl.v_up);
-	// CDAudio_Update(); //mxd. Skip CDAudio logic.
+	CDAudio_Update();
 
 	// Advance local effects for next frame.
 	if (cl.frame.valid && !(int)cl_paused->value && !(int)cl_freezeworld->value) // H2
@@ -959,7 +959,7 @@ void CL_Frame(const int msec)
 	}
 
 	SCR_RunCinematic();
-	//CDAudio_RestartTrackIfNecessary(); //mxd. Skip CDAudio logic.
+	CDAudio_RestartTrackIfNecessary(); // H2
 
 	cls.framecount++;
 
@@ -1083,7 +1083,7 @@ void CL_Init(void)
 	SCR_Init();
 
 	// Missing: cls.disable_screen = true;
-	//CDAudio_Init(); //mxd. Skip CDAudio logic.
+	CDAudio_Init();
 	CL_InitLocal();
 	IN_Init();
 
@@ -1130,7 +1130,7 @@ void CL_Shutdown(void)
 	P_Freelib();
 	SMK_Shutdown();
 	ClearGameMessages();
-	//CDAudio_Shutdown(); //mxd. Skip CDAudio logic
+	CDAudio_Shutdown();
 	S_Shutdown();
 	IN_DeactivateMouse();
 	VID_Shutdown();

@@ -249,6 +249,9 @@
     <ClCompile Include="..\client\cl_effects.c">
       <Filter>client</Filter>
     </ClCompile>
+    <ClCompile Include="..\client\cl_music.c">
+      <Filter>client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -472,6 +475,9 @@
     </ClInclude>
     <ClInclude Include="..\qcommon\tokens.h">
       <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\cl_music.h">
+      <Filter>client</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

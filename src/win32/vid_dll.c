@@ -239,7 +239,7 @@ static void AppActivate(const BOOL fActive, const BOOL minimize)
 
 	// Minimize/restore mouse-capture on demand
 	IN_Activate(ActiveApp);
-	//CDAudio_Activate(ActiveApp); //mxd. Skip CDAudio logic.
+	CDAudio_Activate(ActiveApp);
 
 	if (sound_library != NULL) // H2: new check
 		S_Activate(ActiveApp);
@@ -270,8 +270,7 @@ static LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			const int key = ((short)HIWORD(wParam) > 0 ? K_MWHEELUP : K_MWHEELDOWN);
 			Key_Event(key, true, sys_msg_time);
 			Key_Event(key, false, sys_msg_time);
-		}
-		break;
+		} break;
 
 		case WM_HOTKEY:
 			return 0;
@@ -306,8 +305,7 @@ static LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 				re.AppActivate(fActive != WA_INACTIVE);
 
 			cls.disable_screen = (float)(fActive == WA_INACTIVE); // New in H2
-		}
-		break;
+		} break;
 
 		case WM_MOVE:
 			if ((int)vid_fullscreen->value == 0)
@@ -351,8 +349,7 @@ static LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 				temp |= 4;
 
 			IN_MouseEvent(temp);
-		}
-		break;
+		} break;
 
 		case WM_SYSCOMMAND:
 			if (wParam == SC_SCREENSAVE)

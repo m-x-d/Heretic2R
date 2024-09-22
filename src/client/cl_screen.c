@@ -9,7 +9,7 @@
 #include "Vector.h"
 #include "menus/menu_worldmap.h"
 
-float scr_con_current; // Aproaches scr_conlines at scr_conspeed.
+float scr_con_current; // Approaches scr_conlines at scr_conspeed.
 
 qboolean scr_initialized; // Ready to draw
 
@@ -200,7 +200,7 @@ void SCR_BeginLoadingPlaque(void)
 {
 	S_StopAllSounds_Sounding();
 	cl.sound_prepped = false; // Don't play ambients
-	//CDAudio_Stop(); //mxd. Skip CDAudio logic.
+	CDAudio_Stop();
 
 	scr_draw_loading_plaque = true; // H2
 

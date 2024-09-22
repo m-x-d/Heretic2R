@@ -16,6 +16,7 @@
     <ClCompile Include="..\client\cl_input.c" />
     <ClCompile Include="..\client\cl_inventory.c" />
     <ClCompile Include="..\client\cl_main.c" />
+    <ClCompile Include="..\client\cl_music.c" />
     <ClCompile Include="..\client\cl_parse.c" />
     <ClCompile Include="..\client\cl_pred.c" />
     <ClCompile Include="..\client\cl_screen.c" />
@@ -88,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\client\client.h" />
+    <ClInclude Include="..\client\cl_music.h" />
     <ClInclude Include="..\client\cl_skeletons.h" />
     <ClInclude Include="..\client\console.h" />
     <ClInclude Include="..\client\input.h" />

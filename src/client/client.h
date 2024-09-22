@@ -20,7 +20,7 @@
 #include "input.h"
 #include "keys.h"
 #include "console.h"
-//#include "cdaudio.h" //mxd. Disabled
+#include "cl_music.h" //mxd. Was "cdaudio.h" in H2
 #include "q_ClientServer.h"
 #include "Player.h"
 #include "LevelMaps.h"

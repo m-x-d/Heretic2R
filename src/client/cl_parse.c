@@ -205,8 +205,8 @@ static void CL_ParseConfigString(void)
 	// Change CD track?
 	if (i == CS_CDTRACK)
 	{
-		//if (cl.refresh_prepped) //mxd. Skip CDAudio logic.
-			//CDAudio_Play(Q_atoi(cl.configstrings[CS_CDTRACK]), true);
+		if (cl.refresh_prepped)
+			CDAudio_Play(Q_atoi(cl.configstrings[CS_CDTRACK]), true);
 
 		return;
 	}
