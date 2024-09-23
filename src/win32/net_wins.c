@@ -49,7 +49,52 @@ static WSADATA winsockdata;
 
 static void NetadrToSockadr(const netadr_t* a, struct sockaddr* s)
 {
-	NOT_IMPLEMENTED
+	memset(s, 0, sizeof(*s));
+
+	switch (a->type)
+	{
+		case NA_BROADCAST:
+		{
+			struct sockaddr_in* s_in = (struct sockaddr_in*)s;
+			s_in->sin_family = AF_INET;
+			s_in->sin_port = a->port;
+			s_in->sin_addr.s_addr = INADDR_BROADCAST;
+		} break;
+
+		case NA_IP:
+		{
+			struct sockaddr_in* s_in = (struct sockaddr_in*)s;
+			s_in->sin_family = AF_INET;
+			s_in->sin_addr.s_addr = *(int*)&a->ip;
+			s_in->sin_port = a->port;
+		} break;
+
+		case NA_IPX:
+		{
+			struct sockaddr_ipx* s_ipx = (struct sockaddr_ipx*)s;
+			s_ipx->sa_family = AF_IPX;
+
+			if ((int)ipxfix->value) // H2
+				s_ipx->sa_netnum[0] = 0;
+			else
+				memcpy(s_ipx->sa_netnum, &a->ipx[0], 4);
+
+			memcpy(s_ipx->sa_nodenum, &a->ipx[4], 6);
+			s_ipx->sa_socket = a->port;
+		} break;
+
+		case NA_BROADCAST_IPX:
+		{
+			struct sockaddr_ipx* s_ipx = (struct sockaddr_ipx*)s;
+			s_ipx->sa_family = AF_IPX;
+			memset(s_ipx->sa_netnum, 0, 4);
+			memset(s_ipx->sa_nodenum, 0xff, 6);
+			s_ipx->sa_socket = a->port;
+		} break;
+
+		default:
+			break;
+	}
 }
 
 static void SockadrToNetadr(struct sockaddr* s, netadr_t* a)
