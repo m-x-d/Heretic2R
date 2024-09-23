@@ -66,10 +66,21 @@ static void AddressBook_MenuDraw(void)
 	Menu_Draw(&s_addressbook_menu);
 }
 
-static const char* AddressBook_MenuKey(int key)
+// Q2 counterpart
+static const char* AddressBook_MenuKey(const int key)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	// Save entered addresses?
+	if (key == K_ESCAPE)
+	{
+		for (int i = 0; i < NUM_ADDRESSBOOK_ENTRIES; i++)
+		{
+			char buffer[20];
+			Com_sprintf(buffer, sizeof(buffer), "adr%d", i);
+			Cvar_Set(buffer, s_addressbook_fields[i].buffer);
+		}
+	}
+
+	return Default_MenuKey(&s_addressbook_menu, key);
 }
 
 // Q2 counterpart
