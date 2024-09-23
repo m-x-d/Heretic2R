@@ -939,9 +939,58 @@ void M_Draw(void)
 	}
 }
 
-void M_DrawTextBox(int x, int y, int width, int lines)
+// Draws one solid graphics character
+// cx and cy are in 320 * 240 coordinates, and will be centered on higher res screens.
+static void M_DrawCharacter(const int cx, const int cy, const int num, const paletteRGBA_t color)
 {
-	NOT_IMPLEMENTED
+	re.DrawChar(cx + (viddef.width - 320) / 2, cy + (viddef.height - 240) / 2, num, color);
+}
+
+void M_DrawTextBox(const int x, const int y, const int width, const int lines)
+{
+	static paletteRGBA_t c_white = { .c = 0xffffffff };
+
+	// Draw left side
+	int cx = x;
+	int cy = y;
+	M_DrawCharacter(cx, cy, 18, c_white);
+
+	for (int i = 0; i < lines; i++)
+	{
+		cy += 8;
+		M_DrawCharacter(cx, cy, 21, c_white);
+	}
+
+	M_DrawCharacter(cx, cy + 8, 24, c_white);
+
+	// Draw middle
+	cx += 8;
+	for (int i = 0; i < width; i++)
+	{
+		cy = y;
+		M_DrawCharacter(cx, cy, 19, c_white);
+
+		for (int n = 0; n < lines; n++)
+		{
+			cy += 8;
+			M_DrawCharacter(cx, cy, 22, c_white);
+		}
+
+		M_DrawCharacter(cx, cy + 8, 25, c_white);
+		cx += 8;
+	}
+
+	// Draw right side
+	cy = y;
+	M_DrawCharacter(cx, cy, 20, c_white);
+
+	for (int i = 0; i < lines; i++)
+	{
+		cy += 8;
+		M_DrawCharacter(cx, cy, 23, c_white);
+	}
+
+	M_DrawCharacter(cx, cy + 8, 26, c_white);
 }
 
 void M_Print(int cx, int cy, short msg_index, paletteRGBA_t color)
