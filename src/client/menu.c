@@ -993,9 +993,27 @@ void M_DrawTextBox(const int x, const int y, const int width, const int lines)
 	M_DrawCharacter(cx, cy + 8, 26, c_white);
 }
 
-void M_Print(int cx, int cy, short msg_index, paletteRGBA_t color)
+void M_Print(const int cx, const int cy, const int msg_index, const paletteRGBA_t color)
 {
-	NOT_IMPLEMENTED
+	const char* str = CL_GetGameString(msg_index);
+	int x = cx;
+	int y = cy;
+
+	while (*str != 0)
+	{
+		if (*str == '\n')
+		{
+			x = cx;
+			y += 8;
+		}
+		else
+		{
+			M_DrawCharacter(x, y, *str, color);
+			x += 8;
+		}
+
+		str++;
+	}
 }
 
 void M_Keydown(const int key)

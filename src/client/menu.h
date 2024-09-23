@@ -197,7 +197,7 @@ float M_GetMenuAlpha(void); // H2
 int M_GetMenuLabelX(int text_width); // H2
 int M_GetMenuOffsetY(const menuframework_s* menu); // H2
 void M_DrawTextBox(int x, int y, int width, int lines);
-void M_Print(int cx, int cy, short msg_index, paletteRGBA_t color);
+void M_Print(int cx, int cy, int msg_index, paletteRGBA_t color);
 
 void Menu_AddItem(menuframework_s* menu, void* item);
 qboolean Menu_SelectItem(const menuframework_s* menu);
