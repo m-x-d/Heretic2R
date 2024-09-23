@@ -232,9 +232,55 @@ static void CL_FreezeWorld_f(void)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
 void CL_PingServers_f(void)
 {
-	NOT_IMPLEMENTED
+	netadr_t adr;
+	char name[32];
+
+	NET_Config(true); // Allow remote
+
+	// Send a broadcast packet.
+	Com_Printf("pinging broadcast...\n");
+
+	const cvar_t* noudp = Cvar_Get("noudp", "0", CVAR_NOSET);
+	if (!(int)noudp->value)
+	{
+		adr.type = NA_BROADCAST;
+		adr.port = BigShort(PORT_SERVER);
+		Netchan_OutOfBandPrint(NS_CLIENT, adr, va("info %i", PROTOCOL_VERSION));
+	}
+
+	const cvar_t* noipx = Cvar_Get("noipx", "0", CVAR_NOSET);
+	if (!(int)noipx->value)
+	{
+		adr.type = NA_BROADCAST_IPX;
+		adr.port = BigShort(PORT_SERVER);
+		Netchan_OutOfBandPrint(NS_CLIENT, adr, va("info %i", PROTOCOL_VERSION));
+	}
+
+	// Send a packet to each address book entry.
+	for (int i = 0; i < 16; i++)
+	{
+		Com_sprintf(name, sizeof(name), "adr%i", i);
+
+		char* adrstring = Cvar_VariableString(name);
+		if (adrstring == NULL || adrstring[0] == 0)
+			continue;
+
+		Com_Printf("pinging %s...\n", adrstring);
+
+		if (!NET_StringToAdr(adrstring, &adr))
+		{
+			Com_Printf("Bad address: %s\n", adrstring);
+			continue;
+		}
+
+		if (!adr.port)
+			adr.port = BigShort(PORT_SERVER);
+
+		Netchan_OutOfBandPrint(NS_CLIENT, adr, va("info %i", PROTOCOL_VERSION));
+	}
 }
 
 static void CL_Userinfo_f(void)
