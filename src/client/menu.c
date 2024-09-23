@@ -712,9 +712,47 @@ static void Slider_Draw(menuslider_s* slider, qboolean selected)
 	NOT_IMPLEMENTED
 }
 
-static void Field_Draw(menufield_s* field, qboolean selected)
+static void Field_Draw(const menufield_s* field, const qboolean selected)
 {
-	NOT_IMPLEMENTED
+	char tempbuffer[128];
+
+	const float alpha = M_GetMenuAlpha();
+	const paletteRGBA_t color = { .a = (byte)Q_ftol(alpha * 255.0f), .r = 0xff, .g = 0xff, .b = 0xff };
+	int oy = field->generic.y + field->generic.parent->y;
+
+	if (field->generic.name != NULL)
+	{
+		const int name_x = M_GetMenuLabelX(field->generic.width);
+		Menu_DrawString(name_x, oy, field->generic.name, alpha, selected);
+		oy += 20;
+	}
+
+	const int label_x = M_GetMenuLabelX(field->visible_length * 8 * DEF_WIDTH / viddef.width);
+	const int ox = label_x * viddef.width / DEF_WIDTH;
+	oy = (oy - 8) * viddef.height / DEF_HEIGHT;
+
+	strncpy_s(tempbuffer, sizeof(tempbuffer), field->buffer + field->visible_offset, field->visible_length); //mxd. strncpy -> strncpy_s
+
+	re.DrawChar(ox - 8, oy - 4, 18, color);
+	re.DrawChar(ox - 8, oy + 4, 24, color);
+	re.DrawChar(ox + field->visible_length * 8, oy - 4, 20, color);
+	re.DrawChar(ox + field->visible_length * 8, oy + 4, 26, color);
+
+	int field_x = ox;
+	for (int i = 0; i < field->visible_length; i++, field_x += 8)
+	{
+		re.DrawChar(field_x, oy - 4, 19, color);
+		re.DrawChar(field_x, oy + 4, 25, color);
+	}
+
+	DrawString(ox, oy, tempbuffer, TextPalette[P_MENUFIELD], -1);
+
+	if ((menufield_s*)Menu_ItemAtCursor(field->generic.parent) == field)
+	{
+		const int offset = (field->visible_offset != 0 ? field->visible_length : field->cursor);
+		const int ch = (Sys_Milliseconds() / 250 & 1 ? 11 : ' ');
+		re.DrawChar(ox + offset * 8, oy, ch, color);
+	}
 }
 
 static void Action_Draw(const menuaction_s* action, const qboolean selected)
