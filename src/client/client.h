@@ -541,11 +541,6 @@ extern refexport_t re; // Interface to refresh DLL.
 extern player_export_t playerExport; // Interface to player DLL.
 
 void CL_Init(void); //TODO: check redundant declaration
-char* CL_GetGameString(int i);
-char* CL_GetGameWav(int i);
-char* CL_GetLevelString(int i);
-char* CL_GetLevelWav(int i);
-void CL_LoadStrings(void);
 void CL_RequestNextDownload(void);
 
 void CL_Disconnect(void);
@@ -603,13 +598,6 @@ void CL_InitClientEffects(const char* dll_name);
 // cl_parse.c
 extern char* svc_strings[256];
 extern char client_string[128]; //mxd
-
-//mxd. H2 game messages
-extern char game_message[1024];
-extern int game_message_num_lines;
-extern paletteRGBA_t game_message_color;
-extern qboolean game_message_show_at_top;
-extern float game_message_dispay_time;
 
 void CL_ParseServerMessage(void);
 void CL_LoadClientinfo(clientinfo_t* ci, char* s, int index);

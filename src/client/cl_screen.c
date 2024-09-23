@@ -5,6 +5,7 @@
 //
 
 #include "client.h"
+#include "cl_messages.h"
 #include "sound.h"
 #include "Vector.h"
 #include "menus/menu_worldmap.h"

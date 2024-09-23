@@ -5,6 +5,7 @@
 //
 
 #include "client.h"
+#include "cl_messages.h"
 #include "sound.h"
 #include "tokens.h"
 
@@ -47,37 +48,6 @@ char* svc_strings[256] =
 };
 
 char client_string[128];
-
-// H2 game messages
-char game_message[1024];
-int game_message_num_lines;
-paletteRGBA_t game_message_color;
-qboolean game_message_show_at_top;
-float game_message_dispay_time;
-
-char* CL_GetGameString(int i) // H2
-{
-	NOT_IMPLEMENTED
-	return NULL;
-}
-
-char* CL_GetGameWav(int i) // H2
-{
-	NOT_IMPLEMENTED
-	return NULL;
-}
-
-char* CL_GetLevelString(int i) // H2
-{
-	NOT_IMPLEMENTED
-	return NULL;
-}
-
-char* CL_GetLevelWav(int i) // H2
-{
-	NOT_IMPLEMENTED
-	return NULL;
-}
 
 int COLOUR(cvar_t* cvar)
 {

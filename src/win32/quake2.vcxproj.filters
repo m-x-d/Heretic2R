@@ -252,6 +252,9 @@
     <ClCompile Include="..\client\cl_music.c">
       <Filter>client</Filter>
     </ClCompile>
+    <ClCompile Include="..\client\cl_messages.c">
+      <Filter>client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -477,6 +480,9 @@
       <Filter>qcommon</Filter>
     </ClInclude>
     <ClInclude Include="..\client\cl_music.h">
+      <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\cl_messages.h">
       <Filter>client</Filter>
     </ClInclude>
   </ItemGroup>
