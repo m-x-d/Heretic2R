@@ -12,10 +12,15 @@ static cvar_t* con_notifytime;
 static cvar_t* con_alpha; // New in H2
 static cvar_t* nextserver; // New in H2
 
-void DrawString(int x, const int y, const char* s, const paletteRGBA_t color, const int maxlen)
+void DrawString(int x, const int y, const char* s, const paletteRGBA_t color, int maxlen)
 {
-	for (int i = 0; i < maxlen && *s != 0; i++, s++, x += 8)
+	while(*s != 0 && maxlen != 0)
+	{
 		re.DrawChar(x, y, *s, color);
+		s++;
+		x += 8;
+		maxlen--;
+	}
 }
 
 // Q2 counterpart
