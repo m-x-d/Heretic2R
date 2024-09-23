@@ -100,49 +100,63 @@ static void KeyUp(kbutton_t* b)
 	b->state |= 4; // Impulse up.
 }
 
+static void KeyDown(kbutton_t* b)
+{
+	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart
 static void IN_UpDown(void)
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_up);
 }
 
+// Q2 counterpart
 static void IN_UpUp(void)
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_up);
 }
 
+// Q2 counterpart
 static void IN_DownDown(void)
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_down);
 }
 
+// Q2 counterpart
 static void IN_DownUp(void)
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_down);
 }
 
+// Q2 counterpart
 static void IN_LeftDown(void)
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_left);
 }
 
+// Q2 counterpart
 static void IN_LeftUp(void)
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_left);
 }
 
+// Q2 counterpart
 static void IN_RightDown(void)
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_right);
 }
 
+// Q2 counterpart
 static void IN_RightUp(void)
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_right);
 }
 
+// Q2 counterpart
 static void IN_ForwardDown(void)
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_forward);
 }
 
 // Q2 counterpart
@@ -151,79 +165,93 @@ static void IN_ForwardUp(void)
 	KeyUp(&in_forward);
 }
 
+// Q2 counterpart
 static void IN_BackDown(void)
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_back);
 }
 
+// Q2 counterpart
 static void IN_BackUp(void)
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_back);
 }
 
+// Q2 counterpart
 static void IN_LookupDown(void)
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_lookup);
 }
 
+// Q2 counterpart
 static void IN_LookupUp(void)
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_lookup);
 }
 
+// Q2 counterpart
 static void IN_LookdownDown(void)
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_lookdown);
 }
 
+// Q2 counterpart
 static void IN_LookdownUp(void)
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_lookdown);
 }
 
+// Q2 counterpart
 static void IN_StrafeDown(void)
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_strafe);
 }
 
+// Q2 counterpart
 static void IN_StrafeUp(void)
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_strafe);
 }
 
+// Q2 counterpart
 static void IN_MoveleftDown(void)
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_moveleft);
 }
 
+// Q2 counterpart
 static void IN_MoveleftUp(void)
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_moveleft);
 }
 
+// Q2 counterpart
 static void IN_MoverightDown(void)
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_moveright);
 }
 
+// Q2 counterpart
 static void IN_MoverightUp(void)
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_moveright);
 }
 
+// Q2 counterpart
 static void IN_AttackDown(void)
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_attack);
 }
 
+// Q2 counterpart
 static void IN_AttackUp(void)
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_attack);
 }
 
 static void IN_DefendDown(void) // H2
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_defend);
 }
 
 static void IN_DefendUp(void) // H2
@@ -231,79 +259,82 @@ static void IN_DefendUp(void) // H2
 	KeyUp(&in_defend);
 }
 
-static void IN_ActionDown(void)
+static void IN_ActionDown(void) // H2
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_action);
 }
 
-static void IN_ActionUp(void)
+static void IN_ActionUp(void) // H2
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_action);
 }
 
-static void IN_CreepDown(void)
+static void IN_CreepDown(void) // H2
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_creep);
 }
 
-static void IN_CreepUp(void)
+static void IN_CreepUp(void) // H2
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_creep);
 }
 
-static void IN_AutoaimDown(void)
+static void IN_AutoaimDown(void) // H2
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_autoaim);
 }
 
-static void IN_AutoaimUp(void)
+static void IN_AutoaimUp(void) // H2
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_autoaim);
 }
 
 static void IN_KLookDown(void)
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_klook);
 }
 
 static void IN_KLookUp(void)
 {
-	NOT_IMPLEMENTED
+	if (!(int)freelook->value && (int)lookspring->value) // H2
+		IN_CenterView();
+
+	KeyUp(&in_klook);
 }
 
-static void IN_SpeedDown(void)
+static void IN_SpeedDown(void) // H2
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_speed);
 }
 
-static void IN_SpeedUp(void)
+static void IN_SpeedUp(void) // H2
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_speed);
 }
 
-static void IN_LookaroundDown(void)
+static void IN_LookaroundDown(void) // H2
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_lookaround);
 }
 
-static void IN_LookaroundUp(void)
+static void IN_LookaroundUp(void) // H2
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_lookaround);
 }
 
-static void IN_CommandDown(void)
+static void IN_CommandDown(void) // H2
 {
-	NOT_IMPLEMENTED
+	command_down = true;
 }
 
-static void IN_CommandUp(void)
+static void IN_CommandUp(void) // H2
 {
-	NOT_IMPLEMENTED
+	command_down = false;
 }
 
 static void IN_QuickturnDown(void) // H2
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_quickturn);
 }
 
 static void IN_QuickturnUp(void) // H2
@@ -311,14 +342,14 @@ static void IN_QuickturnUp(void) // H2
 	KeyUp(&in_quickturn);
 }
 
-static void IN_InventoryDown(void)
+static void IN_InventoryDown(void) // H2
 {
-	NOT_IMPLEMENTED
+	KeyDown(&in_inventory);
 }
 
-static void IN_InventoryUp(void)
+static void IN_InventoryUp(void) // H2
 {
-	NOT_IMPLEMENTED
+	KeyUp(&in_inventory);
 }
 
 void IN_CenterView(void)
