@@ -373,10 +373,57 @@ void NET_SendPacket(const netsrc_t sock, const int length, const void* data, con
 	}
 }
 
-static int NET_IPSocket(char* net_interface, int port)
+// Q2 counterpart
+static int NET_IPSocket(char* net_interface, const int port)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	u_long arg = 1;
+	int optval = 1;
+
+	const SOCKET newsocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	if (newsocket == 0xffffffff)
+	{
+		if (WSAGetLastError() != WSAEAFNOSUPPORT)
+			Com_Printf("WARNING: UDP_OpenSocket: socket: %s\n", NET_ErrorString()); //mxd. No newline in Q2
+
+		return 0;
+	}
+
+	// Make it non-blocking.
+	if (ioctlsocket(newsocket, FIONBIO, &arg) == -1)
+	{
+		Com_Printf("WARNING: UDP_OpenSocket: ioctl FIONBIO: %s\n", NET_ErrorString());
+		return 0;
+	}
+
+	// Make it broadcast capable.
+	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, (char*)&optval, sizeof(optval)) == -1)
+	{
+		Com_Printf("WARNING: UDP_OpenSocket: setsockopt SO_BROADCAST: %s\n", NET_ErrorString());
+		return 0;
+	}
+
+	struct sockaddr_in address;
+	if (net_interface == NULL || net_interface[0] == 0 || Q_stricmp(net_interface, "localhost") == 0)
+		address.sin_addr.s_addr = INADDR_ANY;
+	else
+		NET_StringToSockaddr(net_interface, (struct sockaddr*)&address);
+
+	if (port == PORT_ANY)
+		address.sin_port = 0;
+	else
+		address.sin_port = htons((u_short)port);
+
+	address.sin_family = AF_INET;
+
+	if (bind(newsocket, (struct sockaddr*)&address, sizeof(address)) == -1)
+	{
+		Com_Printf("WARNING: UDP_OpenSocket: bind: %s\n", NET_ErrorString());
+		closesocket(newsocket);
+
+		return 0;
+	}
+
+	return (int)newsocket;
 }
 
 static void NET_OpenIP(void)
