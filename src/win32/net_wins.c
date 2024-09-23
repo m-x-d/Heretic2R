@@ -373,9 +373,52 @@ void NET_SendPacket(const netsrc_t sock, const int length, const void* data, con
 	}
 }
 
-static void NET_OpenIP(void)
+static int NET_IPSocket(char* net_interface, int port)
 {
 	NOT_IMPLEMENTED
+	return 0;
+}
+
+static void NET_OpenIP(void)
+{
+	const cvar_t* ip = Cvar_Get("ip", "localhost", CVAR_NOSET);
+	const qboolean is_dedicated = ((int)Cvar_VariableValue("dedicated") != 0);
+
+	if (ip_sockets[NS_SERVER] == 0)
+	{
+		int port = (int)Cvar_Get("ip_hostport", "0", CVAR_NOSET)->value;
+		if (port == 0)
+		{
+			port = (int)Cvar_Get("hostport", "0", CVAR_NOSET)->value;
+			if (port == 0)
+				port = (int)Cvar_Get("port", va("%i", PORT_SERVER), CVAR_NOSET)->value;
+		}
+
+		ip_sockets[NS_SERVER] = NET_IPSocket(ip->string, port);
+		if (is_dedicated && ip_sockets[NS_SERVER] == 0)
+			Com_Error(ERR_FATAL, "Couldn\'t allocate dedicated server IP port");
+	}
+
+	//mxd. Skip Gamespy IP port logic.
+
+	// Dedicated servers don't need client ports.
+	if (is_dedicated)
+		return;
+
+	if (ip_sockets[NS_CLIENT] == 0)
+	{
+		int port = (int)Cvar_Get("ip_clientport", "0", CVAR_NOSET)->value;
+		if (port == 0)
+		{
+			port = (int)Cvar_Get("clientport", va("%i", PORT_CLIENT), CVAR_NOSET)->value;
+			if (port == 0)
+				port = PORT_ANY;
+		}
+
+		ip_sockets[NS_CLIENT] = NET_IPSocket(ip->string, port);
+		if (ip_sockets[NS_CLIENT] == 0)
+			ip_sockets[NS_CLIENT] = NET_IPSocket(ip->string, PORT_ANY);
+	}
 }
 
 static void NET_OpenIPX(void)
