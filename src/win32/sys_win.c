@@ -252,6 +252,12 @@ void Sys_SendKeyEvents(void)
 	sys_frame_time = timeGetTime();	// FIXME: should this be at start?
 }
 
+char* Sys_GetClipboardData(void)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
+
 void Sys_AppActivate(void)
 {
 	NOT_IMPLEMENTED

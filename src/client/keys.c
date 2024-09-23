@@ -10,6 +10,7 @@
 
 char key_lines[32][MAXCMDLINE];
 int key_linepos;
+qboolean keydown[256];
 int anykeydown;
 
 int edit_line = 0;
@@ -22,7 +23,6 @@ static char* commandbindings[256];	// New in H2
 static qboolean consolekeys[256];	// If true, can't be rebound while in console
 static qboolean menubound[256];		// If true, can't be rebound while in menu
 static int keyshift[256];			// Key to map to if Shift held down in console
-static qboolean keydown[256];
 
 typedef struct
 {

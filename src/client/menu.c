@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include <ctype.h>
 #include "client.h"
 #include "cl_messages.h"
 #include "sound.h"
@@ -354,8 +355,133 @@ char* Default_MenuKey(menuframework_s* menu, const int key)
 
 qboolean Field_Key(menufield_s* field, int key)
 {
-	NOT_IMPLEMENTED
-	return false;
+	switch (key)
+	{
+		case K_KP_HOME:
+			key = '7';
+			break;
+
+		case K_KP_UPARROW:
+			key = '8';
+			break;
+
+		case K_KP_PGUP:
+			key = '9';
+			break;
+
+		case K_KP_LEFTARROW:
+			key = '4';
+			break;
+
+		case K_KP_5:
+			key = '5';
+			break;
+
+		case K_KP_RIGHTARROW:
+			key = '6';
+			break;
+
+		case K_KP_END:
+			key = '1';
+			break;
+
+		case K_KP_DOWNARROW:
+			key = '2';
+			break;
+
+		case K_KP_PGDN:
+			key = '3';
+			break;
+
+		case K_KP_INS:
+			key = '0';
+			break;
+
+		case K_KP_DEL:
+			key = '.';
+			break;
+
+		case K_KP_SLASH:
+			key = K_SLASH;
+			break;
+
+		case K_KP_MINUS:
+			key = '-';
+			break;
+
+		case K_KP_PLUS:
+			key = '+';
+			break;
+
+		default:
+			if (key > 127)
+				return false;
+			break;
+	}
+
+	// Support pasting from the clipboard.
+	if ((toupper(key) == 'V' && keydown[K_CTRL]) ||	((key == K_INS || key == K_KP_INS) && keydown[K_SHIFT]))
+	{
+		char* cbd = Sys_GetClipboardData();
+
+		if (cbd != NULL)
+		{
+			strtok(cbd, "\n\r\b");
+			strncpy_s(field->buffer, sizeof(field->buffer), cbd, field->length - 1); //mxd. strncpy -> strncpy_s
+
+			field->cursor = (int)strlen(field->buffer);
+			field->visible_offset = max(0, field->cursor - field->visible_length);
+
+			free(cbd);
+		}
+
+		return true;
+	}
+
+	switch (key)
+	{
+		case K_TAB:
+		case K_ENTER:
+		case K_ESCAPE:
+		case K_KP_ENTER:
+			return false;
+
+		case K_BACKSPACE:
+		case K_LEFTARROW:
+		case K_KP_LEFTARROW:
+			if (field->cursor > 0)
+			{
+				field->cursor--;
+				field->buffer[field->cursor] = 0;
+				if (field->visible_offset > 0)
+					field->visible_offset--;
+			}
+			break;
+
+		case K_RIGHTARROW: // H2
+			if (field->cursor < (int)strlen(field->buffer))
+				field->cursor++;
+			break;
+
+		case K_DEL:
+		case K_KP_DEL:
+			break;
+
+		default:
+			if (!isdigit(key) && (field->generic.flags & QMF_NUMBERSONLY))
+				return false;
+
+			if (field->cursor < field->length - 1) // Q2: if (field->cursor < field->length)
+			{
+				field->buffer[field->cursor++] = (char)key;
+				field->buffer[field->cursor] = 0;
+				if (field->visible_length < field->cursor)
+					field->visible_offset++;
+			}
+			break;
+	}
+
+	return true;
 }
 
 void M_ForceMenuOff(void)
