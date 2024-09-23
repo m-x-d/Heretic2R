@@ -248,7 +248,7 @@ void CL_PingServers_f(void)
 	{
 		adr.type = NA_BROADCAST;
 		adr.port = BigShort(PORT_SERVER);
-		Netchan_OutOfBandPrint(NS_CLIENT, adr, va("info %i", PROTOCOL_VERSION));
+		Netchan_OutOfBandPrint(NS_CLIENT, &adr, va("info %i", PROTOCOL_VERSION));
 	}
 
 	const cvar_t* noipx = Cvar_Get("noipx", "0", CVAR_NOSET);
@@ -256,7 +256,7 @@ void CL_PingServers_f(void)
 	{
 		adr.type = NA_BROADCAST_IPX;
 		adr.port = BigShort(PORT_SERVER);
-		Netchan_OutOfBandPrint(NS_CLIENT, adr, va("info %i", PROTOCOL_VERSION));
+		Netchan_OutOfBandPrint(NS_CLIENT, &adr, va("info %i", PROTOCOL_VERSION));
 	}
 
 	// Send a packet to each address book entry.
@@ -279,7 +279,7 @@ void CL_PingServers_f(void)
 		if (!adr.port)
 			adr.port = BigShort(PORT_SERVER);
 
-		Netchan_OutOfBandPrint(NS_CLIENT, adr, va("info %i", PROTOCOL_VERSION));
+		Netchan_OutOfBandPrint(NS_CLIENT, &adr, va("info %i", PROTOCOL_VERSION));
 	}
 }
 
@@ -372,7 +372,7 @@ static void CL_SendConnectPacket(void)
 		const int port = (int)Cvar_VariableValue("qport");
 		userinfo_modified = false;
 
-		Netchan_OutOfBandPrint(NS_CLIENT, adr, "connect %i %i %i \"%s\"\n", PROTOCOL_VERSION, port, cls.challenge, Cvar_Userinfo());
+		Netchan_OutOfBandPrint(NS_CLIENT, &adr, "connect %i %i %i \"%s\"\n", PROTOCOL_VERSION, port, cls.challenge, Cvar_Userinfo());
 	}
 	else
 	{
@@ -452,7 +452,7 @@ static void CL_CheckForResend(void)
 	cls.connect_time = (float)cls.realtime; // For retransmit requests
 
 	Com_Printf("Connecting to %s...\n", cls.servername);
-	Netchan_OutOfBandPrint(NS_CLIENT, adr, "getchallenge\n");
+	Netchan_OutOfBandPrint(NS_CLIENT, &adr, "getchallenge\n");
 }
 
 static void CL_Connect_f(void)
@@ -543,7 +543,7 @@ static void CL_ConnectionlessPacket(void)
 	}
 	else if (strcmp(c, "ping") == 0) // Ping from somewhere.
 	{
-		Netchan_OutOfBandPrint(NS_CLIENT, net_from, "ack");
+		Netchan_OutOfBandPrint(NS_CLIENT, &net_from, "ack");
 	}
 	else if (strcmp(c, "challenge") == 0) // Challenge from the server we are connecting to.
 	{
@@ -552,7 +552,7 @@ static void CL_ConnectionlessPacket(void)
 	}
 	else if (strcmp(c, "echo") == 0) // Echo request from server.
 	{
-		Netchan_OutOfBandPrint(NS_CLIENT, net_from, "%s", Cmd_Argv(1));
+		Netchan_OutOfBandPrint(NS_CLIENT, &net_from, "%s", Cmd_Argv(1));
 	}
 	else
 	{

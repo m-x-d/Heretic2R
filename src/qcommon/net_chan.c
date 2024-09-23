@@ -75,7 +75,7 @@ void Netchan_Init(void)
 
 // Q2 counterpart
 // Sends an out-of-band datagram.
-static void Netchan_OutOfBand(const int net_socket, const netadr_t adr, const int length, const byte* data)
+static void Netchan_OutOfBand(const int net_socket, const netadr_t* adr, const int length, const byte* data) //mxd. Changed 'adr' type to netadr_t*
 {
 	sizebuf_t send;
 	byte send_buf[MAX_MSGLEN];
@@ -92,7 +92,7 @@ static void Netchan_OutOfBand(const int net_socket, const netadr_t adr, const in
 
 // Q2 counterpart
 // Sends a text message in an out-of-band datagram.
-void Netchan_OutOfBandPrint(const int net_socket, const netadr_t adr, char* format, ...)
+void Netchan_OutOfBandPrint(const int net_socket, const netadr_t* adr, char* format, ...)
 {
 	static char string[MAX_MSGLEN - 4]; //mxd. Keep 4 bytes for out of band marker
 	va_list argptr;
@@ -191,7 +191,7 @@ int Netchan_Transmit(netchan_t* chan, const int length, const byte* data) // H2:
 		Com_Printf("Netchan_Transmit: dumped unreliable\n");
 
 	// Send the datagram.
-	NET_SendPacket(chan->sock, send.cursize, send.data, chan->remote_address);
+	NET_SendPacket(chan->sock, send.cursize, send.data, &chan->remote_address);
 
 	if ((int)showpackets->value)
 	{

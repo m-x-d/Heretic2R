@@ -46,7 +46,7 @@ static cvar_t* ipxfix; // New in H2
 
 static WSADATA winsockdata;
 
-static void NetadrToSockadr(netadr_t* a, struct sockaddr* s)
+static void NetadrToSockadr(const netadr_t* a, struct sockaddr* s)
 {
 	NOT_IMPLEMENTED
 }
@@ -316,7 +316,7 @@ qboolean NET_GetPacket(const netsrc_t sock, netadr_t* n_from, sizebuf_t* n_messa
 	return false;
 }
 
-void NET_SendPacket(const netsrc_t sock, const int length, const void* data, netadr_t to)
+void NET_SendPacket(const netsrc_t sock, const int length, const void* data, const netadr_t* to)
 {
 	struct sockaddr addr;
 	int net_socket;
@@ -325,7 +325,7 @@ void NET_SendPacket(const netsrc_t sock, const int length, const void* data, net
 	if (net_sendrate->value > 0.0f && net_sendrate->value < 1.0f && net_sendrate->value < flrand(0.0f, 1.0f))
 		return;
 
-	switch (to.type)
+	switch (to->type)
 	{
 		case NA_LOOPBACK:
 			NET_SendLoopPacket(sock, length, data);
@@ -349,7 +349,7 @@ void NET_SendPacket(const netsrc_t sock, const int length, const void* data, net
 	if (net_socket == 0)
 		return;
 
-	NetadrToSockadr(&to, &addr);
+	NetadrToSockadr(to, &addr);
 
 	if (sendto(net_socket, data, length, 0, &addr, sizeof(addr)) == -1)
 	{
@@ -360,14 +360,14 @@ void NET_SendPacket(const netsrc_t sock, const int length, const void* data, net
 			return;
 
 		// Some PPP links don't allow broadcasts.
-		if (err == WSAEADDRNOTAVAIL && (to.type == NA_BROADCAST || to.type == NA_BROADCAST_IPX))
+		if (err == WSAEADDRNOTAVAIL && (to->type == NA_BROADCAST || to->type == NA_BROADCAST_IPX))
 			return;
 
 		// Let dedicated servers continue after errors.
 		if ((int)dedicated->value)
 			Com_Printf("NET_SendPacket ERROR: %s\n", NET_ErrorString());
 		else if (err == WSAEADDRNOTAVAIL)
-			Com_DPrintf("NET_SendPacket Warning: %s : %s\n", NET_ErrorString(), NET_AdrToString(&to));
+			Com_DPrintf("NET_SendPacket Warning: %s : %s\n", NET_ErrorString(), NET_AdrToString(to));
 		else
 			Com_Error(ERR_DROP, "NET_SendPacket ERROR: %s\n", NET_ErrorString());
 	}

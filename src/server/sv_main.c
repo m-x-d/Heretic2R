@@ -129,7 +129,7 @@ static void SVC_DirectConnect(void)
 	const int version = Q_atoi(Cmd_Argv(1));
 	if (version != PROTOCOL_VERSION)
 	{
-		Netchan_OutOfBandPrint(NS_SERVER, *adr, "print\nServer is version %d.\n", PROTOCOL_VERSION); // Q2 uses VERSION macro here.
+		Netchan_OutOfBandPrint(NS_SERVER, adr, "print\nServer is version %d.\n", PROTOCOL_VERSION); // Q2 uses VERSION macro here.
 		Com_DPrintf("	rejected connect from version %i\n", version);
 
 		return;
@@ -147,7 +147,7 @@ static void SVC_DirectConnect(void)
 	if (sv.attractloop && !NET_IsLocalAddress(adr))
 	{
 		Com_Printf("Remote connect in attract loop.  Ignored.\n");
-		Netchan_OutOfBandPrint(NS_SERVER, *adr, "print\nConnection refused.\n");
+		Netchan_OutOfBandPrint(NS_SERVER, adr, "print\nConnection refused.\n");
 
 		return;
 	}
@@ -166,7 +166,7 @@ static void SVC_DirectConnect(void)
 			{
 				if (challenge != svs.challenges[ci].challenge)
 				{
-					Netchan_OutOfBandPrint(NS_SERVER, *adr, "print\nBad challenge.\n");
+					Netchan_OutOfBandPrint(NS_SERVER, adr, "print\nBad challenge.\n");
 					return;
 				}
 
@@ -176,7 +176,7 @@ static void SVC_DirectConnect(void)
 
 		if (ci == MAX_CHALLENGES)
 		{
-			Netchan_OutOfBandPrint(NS_SERVER, *adr, "print\nNo challenge for address.\n");
+			Netchan_OutOfBandPrint(NS_SERVER, adr, "print\nNo challenge for address.\n");
 			return;
 		}
 	}
@@ -221,7 +221,7 @@ static void SVC_DirectConnect(void)
 
 		if (newcl == NULL)
 		{
-			Netchan_OutOfBandPrint(NS_SERVER, *adr, "print\nServer is full.\n");
+			Netchan_OutOfBandPrint(NS_SERVER, adr, "print\nServer is full.\n");
 			Com_DPrintf("Rejected a connection.\n");
 
 			return;
@@ -247,7 +247,7 @@ static void SVC_DirectConnect(void)
 		SV_UserinfoChanged(newcl);
 
 		// Send the connect packet to the client.
-		Netchan_OutOfBandPrint(NS_SERVER, *adr, "client_connect");
+		Netchan_OutOfBandPrint(NS_SERVER, adr, "client_connect");
 		Netchan_Setup(NS_SERVER, &newcl->netchan, adr, qport);
 		newcl->state = cs_connected;
 		SV_RemoveEdictFromPersistantEffectsArray(newcl->edict); // H2
@@ -263,7 +263,7 @@ static void SVC_DirectConnect(void)
 	else
 	{
 		//mxd. Missing: if (*Info_ValueForKey (userinfo, "rejmsg")) Q2 logic.
-		Netchan_OutOfBandPrint(NS_SERVER, *adr, "print\nConnection refused.\n");
+		Netchan_OutOfBandPrint(NS_SERVER, adr, "print\nConnection refused.\n");
 		Com_DPrintf("Game rejected a connection.\n");
 	}
 }
@@ -510,7 +510,7 @@ static void Master_Heartbeat(void)
 		if (master_adr[i].port)
 		{
 			Com_Printf("Sending heartbeat to %s\n", NET_AdrToString(&master_adr[i]));
-			Netchan_OutOfBandPrint(NS_SERVER, master_adr[i], "heartbeat\n%s", string);
+			Netchan_OutOfBandPrint(NS_SERVER, &master_adr[i], "heartbeat\n%s", string);
 		}
 	}
 
@@ -531,7 +531,7 @@ static void Master_Shutdown(void)
 			if (i > 0)
 				Com_Printf("Sending heartbeat to %s\n", NET_AdrToString(&master_adr[i]));
 
-			Netchan_OutOfBandPrint(NS_SERVER, master_adr[i], "shutdown");
+			Netchan_OutOfBandPrint(NS_SERVER, &master_adr[i], "shutdown");
 		}
 	}
 }
