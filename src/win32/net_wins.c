@@ -5,6 +5,7 @@
 //
 
 #include <winsock.h>
+#include <wsipx.h>
 #include "qcommon.h"
 #include "Random.h"
 
@@ -468,10 +469,53 @@ static void NET_OpenIP(void)
 	}
 }
 
-static int NET_IPXSocket(int port)
+// Q2 counterpart
+static int NET_IPXSocket(const int port)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	u_long arg = 1;
+
+	const SOCKET newsocket = socket(PF_IPX, SOCK_DGRAM, NSPROTO_IPX);
+	if (newsocket == 0xffffffff)
+	{
+		if (WSAGetLastError() != WSAEAFNOSUPPORT)
+			Com_Printf("WARNING: IPX_Socket: socket: %s\n", NET_ErrorString());
+
+		return 0;
+	}
+
+	// Make it non-blocking.
+	if (ioctlsocket(newsocket, FIONBIO, &arg) == -1)
+	{
+		Com_Printf("WARNING: IPX_Socket: ioctl FIONBIO: %s\n", NET_ErrorString());
+		return 0;
+	}
+
+	// Make it broadcast capable.
+	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, (char*)&arg, sizeof(arg)) == -1)
+	{
+		Com_Printf("WARNING: IPX_Socket: setsockopt SO_BROADCAST: %s\n", NET_ErrorString());
+		return 0;
+	}
+
+	struct sockaddr_ipx	address;
+	address.sa_family = AF_IPX;
+	memset(address.sa_netnum, 0, 4);
+	memset(address.sa_nodenum, 0, 6);
+
+	if (port == PORT_ANY)
+		address.sa_socket = 0;
+	else
+		address.sa_socket = htons((u_short)port);
+
+	if (bind(newsocket, (struct sockaddr*)&address, sizeof(address)) == -1)
+	{
+		Com_Printf("WARNING: IPX_Socket: bind: %s\n", NET_ErrorString());
+		closesocket(newsocket);
+
+		return 0;
+	}
+
+	return (int)newsocket;
 }
 
 static void NET_OpenIPX(void)
