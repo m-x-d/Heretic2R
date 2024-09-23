@@ -28,6 +28,9 @@ static int m_num_servers;
 // User-readable information.
 static char local_server_names[MAX_LOCAL_SERVERS][80];
 
+// Network address.
+static netadr_t local_server_netadr[MAX_LOCAL_SERVERS];
+
 // Q2 counterpart
 static void AddressBookFunc(void* data)
 {
@@ -59,9 +62,19 @@ static void SearchLocalGamesFunc(void* data)
 	SearchLocalGames();
 }
 
-static void JoinServerFunc(void* data)
+static void JoinServerFunc(void* self)
 {
-	NOT_IMPLEMENTED
+	char buffer[128];
+
+	const int index = (menuaction_s*)self - s_joinserver_server_actions;
+	if (index >= m_num_servers || Q_stricmp(local_server_names[index], NO_SERVER_STRING) == 0)
+		return;
+
+	S_StopAllSounds_Sounding(); // H2
+	Com_sprintf(buffer, sizeof(buffer), "connect %s\n", NET_AdrToString(&local_server_netadr[index]));
+	Cbuf_AddText(buffer);
+	M_ForceMenuOff();
+	M_UpdateOrigMode(); // H2
 }
 
 void JoinServer_MenuInit(void)
