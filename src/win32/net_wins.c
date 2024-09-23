@@ -468,9 +468,49 @@ static void NET_OpenIP(void)
 	}
 }
 
-static void NET_OpenIPX(void)
+static int NET_IPXSocket(int port)
 {
 	NOT_IMPLEMENTED
+	return 0;
+}
+
+static void NET_OpenIPX(void)
+{
+	const qboolean is_dedicated = ((int)Cvar_VariableValue("dedicated") != 0);
+
+	if (ipx_sockets[NS_SERVER] == 0)
+	{
+		int port = (int)Cvar_Get("ipx_hostport", "0", CVAR_NOSET)->value;
+		if (port == 0)
+		{
+			port = (int)Cvar_Get("hostport", "0", CVAR_NOSET)->value;
+			if (port == 0)
+				port = (int)Cvar_Get("port", va("%i", PORT_SERVER), CVAR_NOSET)->value;
+		}
+
+		ipx_sockets[NS_SERVER] = NET_IPXSocket(port);
+	}
+
+	//mxd. Skip Gamespy IPX port logic.
+
+	// Dedicated servers don't need client ports.
+	if (is_dedicated)
+		return;
+
+	if (ipx_sockets[NS_CLIENT] == 0)
+	{
+		int port = (int)Cvar_Get("ipx_clientport", "0", CVAR_NOSET)->value;
+		if (port == 0)
+		{
+			port = (int)Cvar_Get("clientport", va("%i", PORT_CLIENT), CVAR_NOSET)->value;
+			if (port == 0)
+				port = PORT_ANY;
+		}
+
+		ipx_sockets[NS_CLIENT] = NET_IPXSocket(port);
+		if (ipx_sockets[NS_CLIENT] == 0)
+			ipx_sockets[NS_CLIENT] = NET_IPXSocket(PORT_ANY);
+	}
 }
 
 // A single player game will only use the loopback code
