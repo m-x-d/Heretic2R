@@ -85,7 +85,10 @@ static void SplitMessages(char* src, GameMessage_t* dst, const int src_len)
 
 char* CL_GetGameString(const int i)
 {
-	NOT_IMPLEMENTED
+	const int index = i & 8191;
+	if (index <= MAX_MESSAGES)
+		return game_messages[index].message;
+
 	return NULL;
 }
 
