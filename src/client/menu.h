@@ -201,7 +201,7 @@ void M_Print(int cx, int cy, int msg_index, paletteRGBA_t color);
 
 void Menu_AddItem(menuframework_s* menu, void* item);
 qboolean Menu_SelectItem(const menuframework_s* menu);
-void Menu_SlideItem(menuframework_s* menu, int dir);
+void Menu_SlideItem(const menuframework_s* menu, int dir);
 void Menu_AdjustCursor(menuframework_s* menu, int dir);
 void Menu_Center(menuframework_s* menu);
 void Menu_Draw(const menuframework_s* menu);

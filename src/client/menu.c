@@ -787,9 +787,36 @@ qboolean Menu_SelectItem(const menuframework_s* menu)
 	return false;
 }
 
-void Menu_SlideItem(menuframework_s* menu, int dir)
+static void Slider_DoSlide(menuslider_s* slider, int dir)
 {
 	NOT_IMPLEMENTED
+}
+
+static void SpinControl_DoSlide(menulist_s* spin_ctrl, int dir)
+{
+	NOT_IMPLEMENTED
+}
+
+void Menu_SlideItem(const menuframework_s* menu, const int dir)
+{
+	menucommon_s* item = Menu_ItemAtCursor(menu);
+	if (item == NULL)
+		return;
+
+	switch (item->type)
+	{
+		case MTYPE_SLIDER:
+			Slider_DoSlide((menuslider_s*)item, dir);
+			break;
+
+		case MTYPE_SPINCONTROL:
+		case MTYPE_PLAYER_SKIN: // H2
+			SpinControl_DoSlide((menulist_s*)item, dir);
+			break;
+
+		default:
+			break;
+	}
 }
 
 // This function takes the given menu, the direction, and attempts to adjust
