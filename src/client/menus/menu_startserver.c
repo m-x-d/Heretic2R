@@ -98,9 +98,11 @@ static void RulesChangeFunc(void* self)
 		strcpy_s(s_maxclients_field.buffer, sizeof(s_maxclients_field.buffer), "4");
 }
 
+// Q2 counterpart
 static void DMOptionsFunc(void* self)
 {
-	NOT_IMPLEMENTED
+	if (s_rules_box.curvalue != 1) //mxd. Don't show when coop.
+		M_Menu_DMOptions_f();
 }
 
 static void StartServerActionFunc(void* self)
