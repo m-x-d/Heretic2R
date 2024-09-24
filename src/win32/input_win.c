@@ -40,14 +40,19 @@ static qboolean mouseparmsvalid;
 static int window_center_x;
 static int window_center_y;
 
+// Q2 counterpart
 static void IN_MLookDown(void)
 {
-	NOT_IMPLEMENTED
+	mlooking = true;
 }
 
+// Q2 counterpart
 static void IN_MLookUp(void)
 {
-	NOT_IMPLEMENTED
+	mlooking = false;
+
+	if (!(int)freelook->value && (int)lookspring->value)
+		IN_CenterView();
 }
 
 static void IN_InitMouse(void)
