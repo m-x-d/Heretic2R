@@ -39,7 +39,45 @@ void Con_ClearNotify(void)
 
 void Con_ToggleConsole_f(void)
 {
-	NOT_IMPLEMENTED
+	if (cl.frame.playerstate.cinematicfreeze) // H2
+	{
+		cls.esc_cinematic = 1;
+		return;
+	}
+
+	if (cl.cinematictime > 0 || scr_draw_loading_plaque) // H2
+		return;
+
+	SCR_EndLoadingPlaque(); // Get rid of loading plaque.
+
+	if (cl.attractloop)
+	{
+		Cbuf_AddText("killserver\n");
+		return;
+	}
+
+	if (cls.state == ca_disconnected && cls.key_dest != key_menu) // H2
+	{
+		Cbuf_AddText("menu_main\n");
+		return;
+	}
+
+	Key_ClearTyping();
+	Con_ClearNotify();
+
+	if (cls.key_dest == key_console)
+	{
+		M_ForceMenuOff();
+		Cvar_Set("paused", "0");
+	}
+	else
+	{
+		M_ForceMenuOff();
+		cls.key_dest = key_console;
+
+		if (Q_ftol(Cvar_VariableValue("maxclients")) == 1 && Com_ServerState())
+			Cvar_Set("paused", "1");
+	}
 }
 
 void Con_ToggleChat_f(void)
