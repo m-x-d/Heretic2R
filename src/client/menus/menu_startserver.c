@@ -299,7 +299,7 @@ static qboolean StartServer_MenuInit(void)
 
 static void StartServer_MenuDraw(void)
 {
-	char name[64];
+	char name[MAX_QPATH];
 
 	// Draw menu BG.
 	re.BookDrawPic(0, 0, "book/back/b_conback8.bk", cls.m_menuscale);
