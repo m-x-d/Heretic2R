@@ -156,7 +156,7 @@ typedef struct
 {
 	menucommon_s generic;
 	int curvalue;
-	const char** itemnames;
+	char** itemnames;
 } menulist_s;
 
 typedef struct
