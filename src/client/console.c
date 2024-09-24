@@ -342,8 +342,6 @@ void Con_DrawConsole(float frac)
 	if (lines < 1)
 		return;
 
-	lines = (viddef.height * lines) / DEF_HEIGHT;
-
 	if (cls.state == ca_active)
 		frac = con_alpha->value;
 	else
@@ -351,7 +349,8 @@ void Con_DrawConsole(float frac)
 
 	// Draw the background
 	re.DrawStretchPic(0, lines - DEF_HEIGHT, DEF_WIDTH, DEF_HEIGHT, "misc/conback.m8", frac, true);
-	
+
+	lines = (viddef.height * lines) / DEF_HEIGHT;
 	SCR_AddDirtyPoint(0, 0);
 	SCR_AddDirtyPoint(viddef.width - 1, lines - 1);
 
