@@ -31,12 +31,58 @@ static menufield_s s_hostname_field;
 static menuaction_s s_startserver_dmoptions_action;
 static menuaction_s s_startserver_start_action;
 
-static char** mapnames;
+#define NUM_MAPNAMES	128
+static char* mapnames[NUM_MAPNAMES];
 
-static int LoadMapList(qboolean is_coop)
+//mxd. Returns the number of map names loaded.
+static int LoadMapnames(const qboolean is_coop)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	static char mapnames_buffer[NUM_MAPNAMES][MAX_QPATH];
+
+	char* buffer;
+	FILE* file;
+	char map_name[MAX_TOKEN_CHARS];
+	char map_title[MAX_TOKEN_CHARS];
+
+	const cvar_t* cv_maplist = (is_coop ? m_cooplist : m_dmlist);
+
+	for (int i = 0; i < NUM_MAPNAMES; i++)
+		mapnames[i] = mapnames_buffer[i];
+
+	if (FS_LoadFile(va("%s.lst", cv_maplist->string), (void**)&buffer) == -1)
+	{
+		Com_Error(ERR_DROP, "*************************\n\t\t\t\t\t\t\t Could not open %s.lst\n\t\t\t\t\t\t\t *************************\n",
+			cv_maplist->string);
+	}
+
+	int num_maps = 0;
+	char* s = buffer;
+
+	while (s != NULL)
+	{
+		strcpy_s(map_name, sizeof(map_name), COM_Parse(&s)); //mxd. strcpy -> strcpy_s
+		strcpy_s(map_title, sizeof(map_title), COM_Parse(&s)); //mxd. strcpy -> strcpy_s
+
+		if (!strlen(map_name) || !strlen(map_title))
+			continue;
+
+		FS_FOpenFile(va("maps/%s.bsp", map_name), &file);
+		if (file != NULL)
+		{
+			FS_FCloseFile(file);
+			Com_sprintf(mapnames_buffer[num_maps], sizeof(mapnames_buffer[num_maps]), "%s\n%s", map_title, map_name);
+			num_maps++;
+		}
+		else
+		{
+			Com_Printf("WARNING : Could not find map %s.bsp\n", map_name);
+		}
+	}
+
+	mapnames[num_maps] = NULL;
+	FS_FreeFile(buffer);
+
+	return num_maps;
 }
 
 static void RulesChangeFunc(void* self)
@@ -74,7 +120,7 @@ static qboolean StartServer_MenuInit(void)
 		0
 	};
 
-	if (LoadMapList(Cvar_VariableValue("coop")) == 0)
+	if (LoadMapnames(Cvar_VariableValue("coop")) == 0)
 		return false;
 
 	Com_sprintf(name_deathmatch, sizeof(name_deathmatch), "\x02%s", m_item_deathmatch->string);
