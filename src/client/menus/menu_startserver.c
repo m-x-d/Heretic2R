@@ -266,10 +266,12 @@ static void StartServer_MenuDraw(void)
 	Menu_Draw(&s_startserver_menu);
 }
 
-static const char* StartServer_MenuKey(int key)
+static const char* StartServer_MenuKey(const int key)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	if (cls.m_menustate != 2)
+		return NULL;
+
+	return Default_MenuKey(&s_startserver_menu, key);
 }
 
 void M_Menu_StartServer_f(void)
