@@ -949,9 +949,52 @@ static void PlayerSkin_Draw(menucommon_s* item)
 	NOT_IMPLEMENTED
 }
 
-static void SpinControl_Draw(menulist_s* list, qboolean selected)
+static void SpinControl_Draw(const menulist_s* list, const qboolean selected)
 {
-	NOT_IMPLEMENTED
+	int x;
+	char buffer[MAX_QPATH];
+
+	const float alpha = M_GetMenuAlpha();
+	int y = list->generic.y + list->generic.parent->y;
+
+	// Draw as single line?
+	if ((list->generic.flags & QMF_SINGLELINE) != 0)
+	{
+		Com_sprintf(buffer, sizeof(buffer), "%s : %s", list->generic.name, list->itemnames[list->curvalue]);
+		x = M_GetMenuLabelX(re.BF_Strlen(buffer));
+		Menu_DrawString(x, y, buffer, alpha, selected);
+
+		return;
+	}
+
+	// Draw name?
+	if (list->generic.name != NULL)
+	{
+		strcpy_s(buffer, sizeof(buffer), list->generic.name);
+		x = M_GetMenuLabelX(list->generic.width);
+		Menu_DrawString(x, y, buffer, alpha, selected);
+		y += 20;
+	}
+
+	strcpy_s(buffer, sizeof(buffer), list->itemnames[list->curvalue]);
+	char* newline = strchr(buffer, '\n');
+
+	// Draw value on 2 lines?
+	if (newline != NULL)
+	{
+		*newline = 0;
+		x = M_GetMenuLabelX(re.BF_Strlen(buffer));
+		Menu_DrawString(x, y, buffer, alpha, selected);
+
+		newline++;
+		x = M_GetMenuLabelX(re.BF_Strlen(newline));
+		Menu_DrawString(x, y + 20, newline, alpha, selected);
+	}
+	else // Draw value on single line
+	{
+		x = M_GetMenuLabelX(re.BF_Strlen(buffer));
+		Menu_DrawString(x, y, buffer, alpha, selected);
+	}
 }
 
 void Menu_Draw(const menuframework_s* menu)
