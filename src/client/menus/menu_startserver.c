@@ -107,7 +107,57 @@ static void DMOptionsFunc(void* self)
 
 static void StartServerActionFunc(void* self)
 {
-	NOT_IMPLEMENTED
+	char startmap[1024];
+	strcpy_s(startmap, sizeof(startmap), strchr(mapnames[s_startmap_list.curvalue], '\n') + 1); //mxd. strcpy -> strcpy_s
+
+	const int maxclients = Q_atoi(s_maxclients_field.buffer);
+	const int timelimit = Q_atoi(s_timelimit_field.buffer);
+	const int fraglimit = Q_atoi(s_fraglimit_field.buffer);
+
+	Cvar_SetValue("maxclients", (float)max(0, maxclients));
+	Cvar_SetValue("timelimit", (float)max(0, timelimit));
+	Cvar_SetValue("fraglimit", (float)max(0, fraglimit));
+	Cvar_Set("hostname", s_hostname_field.buffer);
+	Cvar_SetValue("deathmatch", (float)(s_rules_box.curvalue == 0)); // H2
+	Cvar_SetValue("coop", (float)(s_rules_box.curvalue == 1)); // H2
+	Cvar_SetValue("paused", 0); // H2
+
+	char* spot = NULL;
+
+	if (s_rules_box.curvalue == 1) //mxd. When coop.
+	{
+		if (Q_stricmp(startmap, "dmireswamp") == 0)
+			spot = "sspalace";
+		else if (Q_stricmp(startmap, "andhealer") == 0)
+			spot = "dmireswamp";
+		else if (Q_stricmp(startmap, "kellcaves") == 0)
+			spot = "andhealer";
+		else if (Q_stricmp(startmap, "canyon") == 0)
+			spot = "kellcaves";
+		else if (Q_stricmp(startmap, "hive1") == 0)
+			spot = "canyon";
+		else if (Q_stricmp(startmap, "oglemine1") == 0)
+			spot = "hivepriestess";
+		else if (Q_stricmp(startmap, "dungeon") == 0)
+			spot = "oglemine2";
+		else if (Q_stricmp(startmap, "cloudhub") == 0)
+			spot = "dungeon";
+	}
+
+	if (spot != NULL)
+	{
+		if (Com_ServerState())
+			Cbuf_AddText("disconnect\n");
+
+		Cbuf_AddText(va("gamemap \"*%s$%s\"\n", startmap, spot));
+	}
+	else
+	{
+		Cbuf_AddText(va("map %s\n", startmap));
+	}
+
+	M_ForceMenuOff();
+	M_UpdateOrigMode();
 }
 
 static qboolean StartServer_MenuInit(void)
