@@ -43,7 +43,7 @@ static menulist_s s_teamplay_box;
 static menulist_s s_friendlyfire_box;
 static menulist_s s_allow_dismemberment_box;
 
-static void DMFlagCallback(const void* self)
+static void DMFlagCallback(void* self)
 {
 	uint bit = 0;
 	int remove_flag = 0;
@@ -173,7 +173,7 @@ static void DMOptions_MenuInit(void)
 	s_weapons_stay_box.generic.width = re.BF_Strlen(name_weaponsstay);
 	s_weapons_stay_box.generic.flags = QMF_SINGLELINE;
 	s_weapons_stay_box.generic.callback = DMFlagCallback;
-	s_weapons_stay_box.curvalue = (dm_flags & DF_WEAPONS_STAY);
+	s_weapons_stay_box.curvalue = ((dm_flags & DF_WEAPONS_STAY) != 0);
 	s_weapons_stay_box.itemnames = yes_no_names;
 
 	Com_sprintf(name_allowpowerup, sizeof(name_allowpowerup), "\x02%s", m_item_allowpowerup->string);
@@ -195,7 +195,7 @@ static void DMOptions_MenuInit(void)
 	s_shrines_box.generic.width = re.BF_Strlen(name_shrinechaos);
 	s_shrines_box.generic.flags = QMF_SINGLELINE;
 	s_shrines_box.generic.callback = DMFlagCallback;
-	s_shrines_box.curvalue = (dm_flags & DF_SHRINE_CHAOS);
+	s_shrines_box.curvalue = ((dm_flags & DF_SHRINE_CHAOS) != 0);
 	s_shrines_box.itemnames = yes_no_names;
 
 	Com_sprintf(name_allowhealth, sizeof(name_allowhealth), "\x02%s", m_item_allowhealth->string);
@@ -217,7 +217,7 @@ static void DMOptions_MenuInit(void)
 	s_offensive_spell_box.generic.width = re.BF_Strlen(name_offensive_spell);
 	s_offensive_spell_box.generic.flags = QMF_SINGLELINE;
 	s_offensive_spell_box.generic.callback = DMFlagCallback;
-	s_offensive_spell_box.curvalue = (dm_flags & DF_NO_OFFENSIVE_SPELL);
+	s_offensive_spell_box.curvalue = ((dm_flags & DF_NO_OFFENSIVE_SPELL) != 0);
 	s_offensive_spell_box.itemnames = yes_no_names;
 
 	Com_sprintf(name_defensive_spell, sizeof(name_defensive_spell), "\x02%s", m_item_defensive_spell->string);
@@ -239,7 +239,7 @@ static void DMOptions_MenuInit(void)
 	s_infinitemana_box.generic.width = re.BF_Strlen(name_infinitemana);
 	s_infinitemana_box.generic.flags = QMF_SINGLELINE;
 	s_infinitemana_box.generic.callback = DMFlagCallback;
-	s_infinitemana_box.curvalue = (dm_flags & DF_INFINITE_MANA);
+	s_infinitemana_box.curvalue = ((dm_flags & DF_INFINITE_MANA) != 0);
 	s_infinitemana_box.itemnames = yes_no_names;
 
 	Com_sprintf(name_nonames, sizeof(name_nonames), "\x02%s", m_item_nonames->string);
@@ -250,7 +250,7 @@ static void DMOptions_MenuInit(void)
 	s_nonames_box.generic.width = re.BF_Strlen(name_nonames);
 	s_nonames_box.generic.flags = QMF_SINGLELINE;
 	s_nonames_box.generic.callback = DMFlagCallback;
-	s_nonames_box.curvalue = (dm_flags & DF_NONAMES);
+	s_nonames_box.curvalue = ((dm_flags & DF_NONAMES) != 0);
 	s_nonames_box.itemnames = yes_no_names;
 
 	Com_sprintf(name_forcerespawn, sizeof(name_forcerespawn), "\x02%s", m_item_forcerespawn->string);
@@ -261,7 +261,7 @@ static void DMOptions_MenuInit(void)
 	s_force_respawn_box.generic.width = re.BF_Strlen(name_forcerespawn);
 	s_force_respawn_box.generic.flags = QMF_SINGLELINE;
 	s_force_respawn_box.generic.callback = DMFlagCallback;
-	s_force_respawn_box.curvalue = (dm_flags & DF_FORCE_RESPAWN);
+	s_force_respawn_box.curvalue = ((dm_flags & DF_FORCE_RESPAWN) != 0);
 	s_force_respawn_box.itemnames = yes_no_names;
 
 	Com_sprintf(name_allowexit, sizeof(name_allowexit), "\x02%s", m_item_allowexit->string);
@@ -272,7 +272,7 @@ static void DMOptions_MenuInit(void)
 	s_allow_exit_box.generic.width = re.BF_Strlen(name_allowexit);
 	s_allow_exit_box.generic.flags = QMF_SINGLELINE;
 	s_allow_exit_box.generic.callback = DMFlagCallback;
-	s_allow_exit_box.curvalue = (dm_flags & DF_ALLOW_EXIT);
+	s_allow_exit_box.curvalue = ((dm_flags & DF_ALLOW_EXIT) != 0);
 	s_allow_exit_box.itemnames = yes_no_names;
 
 	Com_sprintf(name_samemap, sizeof(name_samemap), "\x02%s", m_item_samemap->string);
@@ -283,7 +283,7 @@ static void DMOptions_MenuInit(void)
 	s_samelevel_box.generic.width = re.BF_Strlen(name_samemap);
 	s_samelevel_box.generic.flags = QMF_SINGLELINE;
 	s_samelevel_box.generic.callback = DMFlagCallback;
-	s_samelevel_box.curvalue = (dm_flags & DF_SAME_LEVEL);
+	s_samelevel_box.curvalue = ((dm_flags & DF_SAME_LEVEL) != 0);
 	s_samelevel_box.itemnames = yes_no_names;
 
 	Com_sprintf(name_leader, sizeof(name_leader), "\x02%s", m_item_leader->string);
@@ -294,7 +294,7 @@ static void DMOptions_MenuInit(void)
 	s_show_leader_box.generic.width = re.BF_Strlen(name_leader);
 	s_show_leader_box.generic.flags = QMF_SINGLELINE;
 	s_show_leader_box.generic.callback = DMFlagCallback;
-	s_show_leader_box.curvalue = (dm_flags & DF_SHOW_LEADER);
+	s_show_leader_box.curvalue = ((dm_flags & DF_SHOW_LEADER) != 0);
 	s_show_leader_box.itemnames = yes_no_names;
 
 	Com_sprintf(name_teamplay, sizeof(name_teamplay), "\x02%s", m_item_teamplay->string);
@@ -315,7 +315,7 @@ static void DMOptions_MenuInit(void)
 	s_friendlyfire_box.generic.width = re.BF_Strlen(name_friendlyfire);
 	s_friendlyfire_box.generic.flags = QMF_SINGLELINE;
 	s_friendlyfire_box.generic.callback = DMFlagCallback;
-	s_friendlyfire_box.curvalue = (dm_flags & DF_HURT_FRIENDS);
+	s_friendlyfire_box.curvalue = ((dm_flags & DF_HURT_FRIENDS) != 0);
 	s_friendlyfire_box.itemnames = yes_no_names;
 
 	Com_sprintf(name_dismember, sizeof(name_dismember), "\x02%s", m_item_dismember->string);
@@ -326,28 +326,27 @@ static void DMOptions_MenuInit(void)
 	s_allow_dismemberment_box.generic.width = re.BF_Strlen(name_dismember);
 	s_allow_dismemberment_box.generic.flags = QMF_SINGLELINE;
 	s_allow_dismemberment_box.generic.callback = DMFlagCallback;
-	s_allow_dismemberment_box.curvalue = (dm_flags & DF_DISMEMBER);
+	s_allow_dismemberment_box.curvalue = ((dm_flags & DF_DISMEMBER) != 0);
 	s_allow_dismemberment_box.itemnames = yes_no_names;
 
-	Menu_AddItem(&s_dmoptions_menu, &s_weapons_stay_box.generic);
-	Menu_AddItem(&s_dmoptions_menu, &s_powerups_box.generic);
-	Menu_AddItem(&s_dmoptions_menu, &s_shrines_box.generic);
-	Menu_AddItem(&s_dmoptions_menu, &s_health_box.generic);
-	Menu_AddItem(&s_dmoptions_menu, &s_offensive_spell_box.generic);
-	Menu_AddItem(&s_dmoptions_menu, &s_defensive_spell_box.generic);
-	Menu_AddItem(&s_dmoptions_menu, &s_infinitemana_box.generic);
-	Menu_AddItem(&s_dmoptions_menu, &s_nonames_box.generic);
-	Menu_AddItem(&s_dmoptions_menu, &s_force_respawn_box.generic);
-	Menu_AddItem(&s_dmoptions_menu, &s_allow_exit_box.generic);
-	Menu_AddItem(&s_dmoptions_menu, &s_samelevel_box.generic);
-	Menu_AddItem(&s_dmoptions_menu, &s_show_leader_box.generic);
-	Menu_AddItem(&s_dmoptions_menu, &s_teamplay_box.generic);
-	Menu_AddItem(&s_dmoptions_menu, &s_friendlyfire_box.generic);
-	Menu_AddItem(&s_dmoptions_menu, &s_allow_dismemberment_box.generic);
+	Menu_AddItem(&s_dmoptions_menu, &s_weapons_stay_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_powerups_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_shrines_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_health_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_offensive_spell_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_defensive_spell_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_infinitemana_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_nonames_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_force_respawn_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_allow_exit_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_samelevel_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_show_leader_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_teamplay_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_friendlyfire_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_allow_dismemberment_box);
 
 	Menu_Center(&s_dmoptions_menu);
-
-	DMFlagCallback(NULL);
+	//DMFlagCallback(NULL); //mxd. Does not set anything.
 }
 
 static void DMOptions_MenuDraw(void)
