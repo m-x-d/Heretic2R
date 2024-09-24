@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include <ctype.h>
 #include "client.h"
 
 // Key up events are sent even if in console mode
@@ -14,6 +15,7 @@ qboolean keydown[256];
 int anykeydown;
 
 int edit_line = 0;
+static int history_line = 0;
 
 char* keybindings[256];
 char* keybindings_double[256];
@@ -23,6 +25,8 @@ static char* commandbindings[256];	// New in H2
 static qboolean consolekeys[256];	// If true, can't be rebound while in console
 static qboolean menubound[256];		// If true, can't be rebound while in menu
 static int keyshift[256];			// Key to map to if Shift held down in console
+
+static qboolean con_have_clipboard_data; // H2
 
 typedef struct
 {
@@ -135,10 +139,228 @@ keyname_t keynames[] =
 	{ NULL,	0 }
 };
 
-static void Key_Console(int key)
+#pragma region ========================== LINE TYPING INTO THE CONSOLE ==========================
+
+static void CompleteCommand(void)
 {
 	NOT_IMPLEMENTED
 }
+
+// Interactive line editing and console scrollback.
+static void Key_Console(int key)
+{
+	switch (key)
+	{
+		case K_KP_HOME:
+			key = '7';
+			break;
+
+		case K_KP_UPARROW:
+			key = '8';
+			break;
+
+		case K_KP_PGUP:
+			key = '9';
+			break;
+
+		case K_KP_LEFTARROW:
+			key = '4';
+			break;
+
+		case K_KP_5:
+			key = '5';
+			break;
+
+		case K_KP_RIGHTARROW:
+			key = '6';
+			break;
+
+		case K_KP_END:
+			key = '1';
+			break;
+
+		case K_KP_DOWNARROW:
+			key = '2';
+			break;
+
+		case K_KP_PGDN:
+			key = '3';
+			break;
+
+		case K_KP_INS:
+			key = '0';
+			break;
+
+		case K_KP_DEL:
+			key = '.';
+			break;
+
+		case K_KP_SLASH:
+			key = K_SLASH;
+			break;
+
+		case K_KP_MINUS:
+			key = '-';
+			break;
+
+		case K_KP_PLUS:
+			key = '+';
+			break;
+
+		default:
+			break;
+	}
+
+	// Command completion.
+	if (key == K_TAB)
+	{
+		CompleteCommand();
+		return;
+	}
+
+	con_have_clipboard_data = false; // H2
+
+	// Support pasting from the clipboard.
+	if ((toupper(key) == 'V' && keydown[K_CTRL]) || ((key == K_INS || key == K_KP_INS) && keydown[K_SHIFT]))
+	{
+		char* cbd = Sys_GetClipboardData();
+		if (cbd != NULL)
+		{
+			strtok(cbd, "\n\r\b");
+
+			int len = (int)strlen(cbd);
+			if (key_linepos + len >= MAXCMDLINE)
+				len = MAXCMDLINE - key_linepos;
+
+			if (len > 0)
+			{
+				cbd[len] = 0;
+				strcat_s(key_lines[edit_line], sizeof(key_lines[edit_line]), cbd); //mxd. strcat -> strcat_s
+				key_linepos += len;
+			}
+
+			free(cbd);
+		}
+
+		return;
+	}
+
+	// Ctrl-L to clear.
+	if (key == 'l' && keydown[K_CTRL])
+	{
+		Cbuf_AddText("clear\n");
+		return;
+	}
+
+	if (key == K_ENTER || key == K_KP_ENTER)
+	{
+		// Backslash text are commands, else chat.
+		if (key_lines[edit_line][1] == '\\' || key_lines[edit_line][1] == '/')
+			Cbuf_AddText(key_lines[edit_line] + 2); // Skip the '>'.
+		else
+			Cbuf_AddText(key_lines[edit_line] + 1); // Valid command.
+
+		Cbuf_AddText("\n");
+		Com_Printf("%s\n", key_lines[edit_line]);
+
+		edit_line = (edit_line + 1) & 31;
+		history_line = edit_line;
+		key_lines[edit_line][0] = '>'; // ']' in Q2
+		key_linepos = 1;
+
+		if (cls.state == ca_disconnected)
+			SCR_UpdateScreen(); // Force an update, because the command may take some time
+
+		return;
+	}
+
+	//TODO: Can't have K_KP_LEFTARROW here. Already remapped to K_4 above...
+	if (key == K_BACKSPACE || key == K_LEFTARROW || key == K_KP_LEFTARROW || (key == 'h' && keydown[K_CTRL]))
+	{
+		if (key_linepos > 1)
+			key_linepos--;
+
+		return;
+	}
+
+	if (key == K_UPARROW || key == K_KP_UPARROW || (key == 'p' && keydown[K_CTRL]))
+	{
+		do
+		{
+			history_line = (history_line - 1) & 31;
+		} while (history_line != edit_line && key_lines[history_line][1] == 0);
+
+		if (history_line == edit_line)
+			history_line = (edit_line + 1) & 31;
+
+		strcpy_s(key_lines[edit_line], sizeof(key_lines[edit_line]), key_lines[history_line]); //mxd. strcpy -> strcpy_s
+		key_linepos = (int)strlen(key_lines[edit_line]);
+
+		return;
+	}
+
+	if (key == K_DOWNARROW || key == K_KP_DOWNARROW || (key == 'n' && keydown[K_CTRL]))
+	{
+		if (history_line == edit_line)
+			return;
+
+		do
+		{
+			history_line = (history_line + 1) & 31;
+		} while (history_line != edit_line && key_lines[history_line][1] == 0);
+
+		if (history_line == edit_line)
+		{
+			key_lines[edit_line][0] = '>'; // ']' in Q2
+			key_linepos = 1;
+		}
+		else
+		{
+			strcpy_s(key_lines[edit_line], sizeof(key_lines[edit_line]), key_lines[history_line]); //mxd. strcpy -> strcpy_s
+			key_linepos = (int)strlen(key_lines[edit_line]);
+		}
+
+		return;
+	}
+
+	if (key == K_PGUP || key == K_KP_PGUP)
+	{
+		con.display -= 2;
+		return;
+	}
+
+	if (key == K_PGDN || key == K_KP_PGDN)
+	{
+		con.display += 2;
+		con.display = min(con.display, con.current);
+
+		return;
+	}
+
+	if (key == K_HOME || key == K_KP_HOME)
+	{
+		con.display = con.current - con.totallines + 10;
+		return;
+	}
+
+	if (key == K_END || key == K_KP_END)
+	{
+		con.display = con.current;
+		return;
+	}
+
+	if (key < 32 || key > 127)
+		return;	// Non printable.
+
+	if (key_linepos < MAXCMDLINE - 1)
+	{
+		key_lines[edit_line][key_linepos] = (char)key;
+		key_linepos++;
+		key_lines[edit_line][key_linepos] = 0;
+	}
+}
+
+#pragma endregion
 
 static void Key_Message(int key)
 {
