@@ -115,8 +115,8 @@ void JoinServer_MenuInit(void)
 		item->generic.callback = JoinServerFunc;
 	}
 
-	Menu_AddItem(&s_joinserver_menu, &s_joinserver_address_book_action.generic);
-	Menu_AddItem(&s_joinserver_menu, &s_joinserver_search_action.generic);
+	Menu_AddItem(&s_joinserver_menu, &s_joinserver_address_book_action);
+	Menu_AddItem(&s_joinserver_menu, &s_joinserver_search_action);
 
 	for (int i = 0; i < MAX_LOCAL_SERVERS; i++)
 		Menu_AddItem(&s_joinserver_menu, &s_joinserver_server_actions[i]);

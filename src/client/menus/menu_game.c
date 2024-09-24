@@ -155,13 +155,13 @@ static void Game_MenuInit(void)
 	s_credits_action.generic.width = re.BF_Strlen(name_credits);
 	s_credits_action.generic.callback = CreditsGameFunc;
 
-	Menu_AddItem(&s_game_menu, &s_tutorial_action.generic);
-	Menu_AddItem(&s_game_menu, &s_easy_game_action.generic);
-	Menu_AddItem(&s_game_menu, &s_medium_game_action.generic);
-	Menu_AddItem(&s_game_menu, &s_hard_game_action.generic);
-	Menu_AddItem(&s_game_menu, &s_load_game_action.generic);
-	Menu_AddItem(&s_game_menu, &s_save_game_action.generic);
-	Menu_AddItem(&s_game_menu, &s_credits_action.generic);
+	Menu_AddItem(&s_game_menu, &s_tutorial_action);
+	Menu_AddItem(&s_game_menu, &s_easy_game_action);
+	Menu_AddItem(&s_game_menu, &s_medium_game_action);
+	Menu_AddItem(&s_game_menu, &s_hard_game_action);
+	Menu_AddItem(&s_game_menu, &s_load_game_action);
+	Menu_AddItem(&s_game_menu, &s_save_game_action);
+	Menu_AddItem(&s_game_menu, &s_credits_action);
 
 	Menu_Center(&s_game_menu);
 }

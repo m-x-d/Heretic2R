@@ -85,10 +85,10 @@ static void Multiplayer_MenuInit(void)
 	s_download_setup_action.generic.width = re.BF_Strlen(name_download);
 	s_download_setup_action.generic.callback = DownloadOptionsFunc;
 
-	Menu_AddItem(&s_multiplayer_menu, &s_join_network_server_action.generic);
-	Menu_AddItem(&s_multiplayer_menu, &s_start_network_server_action.generic);
-	Menu_AddItem(&s_multiplayer_menu, &s_player_setup_action.generic);
-	Menu_AddItem(&s_multiplayer_menu, &s_download_setup_action.generic);
+	Menu_AddItem(&s_multiplayer_menu, &s_join_network_server_action);
+	Menu_AddItem(&s_multiplayer_menu, &s_start_network_server_action);
+	Menu_AddItem(&s_multiplayer_menu, &s_player_setup_action);
+	Menu_AddItem(&s_multiplayer_menu, &s_download_setup_action);
 
 	Menu_Center(&s_multiplayer_menu);
 }
