@@ -247,7 +247,23 @@ static qboolean StartServer_MenuInit(void)
 
 static void StartServer_MenuDraw(void)
 {
-	NOT_IMPLEMENTED
+	char name[64];
+
+	// Draw menu BG.
+	re.BookDrawPic(0, 0, "book/back/b_conback8.bk", cls.m_menuscale);
+
+	if (cls.m_menualpha == 0.0f)
+		return;
+
+	// Draw menu title.
+	Com_sprintf(name, sizeof(name), "\x03%s", m_banner_startserver->string);
+	const int x = M_GetMenuLabelX(re.BF_Strlen(name));
+	const int y = M_GetMenuOffsetY(&s_startserver_menu);
+	re.DrawBigFont(x, y, name, cls.m_menualpha);
+
+	// Draw menu items.
+	s_startserver_menu.x = M_GetMenuLabelX(s_startserver_menu.width);
+	Menu_Draw(&s_startserver_menu);
 }
 
 static const char* StartServer_MenuKey(int key)
