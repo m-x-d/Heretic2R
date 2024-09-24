@@ -43,9 +43,103 @@ static menulist_s s_teamplay_box;
 static menulist_s s_friendlyfire_box;
 static menulist_s s_allow_dismemberment_box;
 
-static void DMFlagCallback(void* self)
+static void DMFlagCallback(const void* self)
 {
-	NOT_IMPLEMENTED
+	uint bit = 0;
+	int remove_flag = 0;
+	uint flags = Q_ftol(Cvar_VariableValue("dmflags"));
+	const menulist_s* f = self;
+
+	if (f == &s_teamplay_box)
+	{
+		remove_flag = f->curvalue;
+		if (f->curvalue == 1)
+			flags |= DF_SKINTEAMS;
+		else if (f->curvalue == 2)
+			flags |= DF_MODELTEAMS;
+		else
+			flags &= ~(DF_SKINTEAMS | DF_MODELTEAMS);
+	}
+	else if (f == &s_friendlyfire_box)
+	{
+		bit = DF_HURT_FRIENDS;
+		remove_flag = 0;
+	}
+	else if (f == &s_weapons_stay_box)
+	{
+		bit = DF_WEAPONS_STAY;
+		remove_flag = 0;
+	}
+	else if (f == &s_allow_exit_box)
+	{
+		bit = DF_ALLOW_EXIT;
+		remove_flag = 0;
+	}
+	else if (f == &s_powerups_box)
+	{
+		bit = DF_NO_SHRINE;
+		remove_flag = 1;
+	}
+	else if (f == &s_health_box)
+	{
+		bit = DF_NO_HEALTH;
+		remove_flag = 1;
+	}
+	else if (f == &s_shrines_box)
+	{
+		bit = DF_SHRINE_CHAOS;
+		remove_flag = 0;
+	}
+	else if (f == &s_samelevel_box)
+	{
+		bit = DF_SAME_LEVEL;
+		remove_flag = 0;
+	}
+	else if (f == &s_force_respawn_box)
+	{
+		bit = DF_FORCE_RESPAWN;
+		remove_flag = 0;
+	}
+	else if (f == &s_infinitemana_box)
+	{
+		bit = DF_INFINITE_MANA;
+		remove_flag = 0;
+	}
+	else if (f == &s_show_leader_box)
+	{
+		bit = DF_SHOW_LEADER;
+		remove_flag = 0;
+	}
+	else if (f == &s_offensive_spell_box)
+	{
+		bit = DF_NO_OFFENSIVE_SPELL;
+		remove_flag = 0;
+	}
+	else if (f == &s_defensive_spell_box)
+	{
+		bit = DF_NO_DEFENSIVE_SPELL;
+		remove_flag = 1;
+	}
+	else if (f == &s_allow_dismemberment_box)
+	{
+		bit = DF_DISMEMBER;
+		remove_flag = 0;
+	}
+	else if (f == &s_nonames_box)
+	{
+		bit = DF_NONAMES;
+		remove_flag = 0;
+	}
+
+	if (f != NULL && f != &s_teamplay_box)
+	{
+		if (f->curvalue == remove_flag)
+			flags &= ~bit;
+		else
+			flags |= bit;
+	}
+
+	Cvar_SetValue("dmflags", (float)flags);
 }
 
 static void DMOptions_MenuInit(void)
