@@ -120,6 +120,8 @@ char m_text_on[MAX_QPATH];
 char m_text_low[MAX_QPATH];
 char m_text_high[MAX_QPATH];
 
+char* yes_no_names[] = { "no", "yes", 0 };
+
 static qboolean m_entersound; // Play after drawing a frame, so caching won't disrupt the sound. //TODO: doesn't seem to be related to playing sounds. Rename?
 
 m_drawfunc_t m_drawfunc;

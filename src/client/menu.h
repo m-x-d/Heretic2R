@@ -103,6 +103,8 @@ extern char m_text_on[MAX_QPATH];
 extern char m_text_low[MAX_QPATH];
 extern char m_text_high[MAX_QPATH];
 
+extern char* yes_no_names[];
+
 typedef void (*m_drawfunc_t)(void); //mxd
 typedef const char* (*m_keyfunc_t)(int key); //mxd
 
