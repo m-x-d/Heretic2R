@@ -87,7 +87,15 @@ static int LoadMapnames(const qboolean is_coop)
 
 static void RulesChangeFunc(void* self)
 {
-	NOT_IMPLEMENTED
+	// When no maps, flip game mode.
+	if (LoadMapnames(s_rules_box.curvalue) == 0)
+		s_rules_box.curvalue ^= 1;
+
+	s_startmap_list.curvalue = 0;
+
+	// When coop, limit max players to 4.
+	if (s_rules_box.curvalue == 1 && Q_atoi(s_maxclients_field.buffer) > 4)
+		strcpy_s(s_maxclients_field.buffer, sizeof(s_maxclients_field.buffer), "4");
 }
 
 static void DMOptionsFunc(void* self)
