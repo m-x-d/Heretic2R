@@ -307,6 +307,14 @@ static void DMOptions_MenuInit(void)
 	s_teamplay_box.generic.callback = DMFlagCallback;
 	s_teamplay_box.itemnames = teamplay_names;
 
+	//BUGFIX: mxd. Set s_teamplay_box value.
+	if (dm_flags & DF_SKINTEAMS)
+		s_teamplay_box.curvalue = 1;
+	else if (dm_flags & DF_MODELTEAMS)
+		s_teamplay_box.curvalue = 2;
+	else
+		s_teamplay_box.curvalue = 0;
+
 	Com_sprintf(name_friendlyfire, sizeof(name_friendlyfire), "\x02%s", m_item_friendlyfire->string);
 	s_friendlyfire_box.generic.type = MTYPE_SPINCONTROL;
 	s_friendlyfire_box.generic.x = 0;
