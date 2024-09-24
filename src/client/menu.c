@@ -792,9 +792,18 @@ static void Slider_DoSlide(menuslider_s* slider, int dir)
 	NOT_IMPLEMENTED
 }
 
-static void SpinControl_DoSlide(menulist_s* spin_ctrl, int dir)
+// Q2 counterpart
+static void SpinControl_DoSlide(menulist_s* spin_ctrl, const int dir)
 {
-	NOT_IMPLEMENTED
+	spin_ctrl->curvalue += dir;
+
+	if (spin_ctrl->curvalue < 0)
+		spin_ctrl->curvalue = 0;
+	else if (spin_ctrl->itemnames[spin_ctrl->curvalue] == NULL)
+		spin_ctrl->curvalue--;
+
+	if (spin_ctrl->generic.callback != NULL)
+		spin_ctrl->generic.callback(spin_ctrl);
 }
 
 void Menu_SlideItem(const menuframework_s* menu, const int dir)
