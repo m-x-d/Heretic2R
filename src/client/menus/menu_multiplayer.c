@@ -60,7 +60,7 @@ static void Multiplayer_MenuInit(void)
 
 	Com_sprintf(name_startserver, sizeof(name_startserver), "\x02%s", m_banner_startserver->string);
 	s_start_network_server_action.generic.type = MTYPE_ACTION;
-	s_start_network_server_action.generic.flags = QMF_LEFT_JUSTIFY;
+	s_start_network_server_action.generic.flags = QMF_LEFT_JUSTIFY | QMF_SELECT_SOUND; //BUGFIX: mxd. QMF_SELECT_SOUND was missing in original logic.
 	s_start_network_server_action.generic.x = 0;
 	s_start_network_server_action.generic.y = 20;
 	s_start_network_server_action.generic.name = name_startserver;
