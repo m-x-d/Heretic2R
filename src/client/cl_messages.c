@@ -123,5 +123,15 @@ void CL_LoadStrings(void)
 
 void CL_ClearGameMessages(void)
 {
-	NOT_IMPLEMENTED
+	if (game_messages_text != NULL)
+	{
+		Z_Free(game_messages_text); //BUGFIX: mxd. Was not zfreed in original logic.
+		game_messages_text = NULL;
+	}
+
+	if (level_messages_text != NULL)
+	{
+		Z_Free(level_messages_text); //BUGFIX: mxd. Was not zfreed in original logic.
+		level_messages_text = NULL;
+	}
 }
