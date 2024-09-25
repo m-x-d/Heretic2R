@@ -449,9 +449,15 @@ static void VID_NewWindow(const int width, const int height)
 	cl.force_refdef = true; // Can't use a paused refdef
 }
 
+// Q2 counterpart
 static void VID_FreeReflib(void)
 {
-	NOT_IMPLEMENTED
+	if (!FreeLibrary(reflib_library))
+		Com_Error(ERR_FATAL, "Reflib FreeLibrary failed");
+
+	memset(&re, 0, sizeof(re));
+	reflib_library = NULL;
+	reflib_active = false;
 }
 
 static qboolean VID_LoadRefresh(const char* name)
@@ -626,7 +632,12 @@ void VID_Init(void)
 	VID_CheckChanges();
 }
 
+// Q2 counterpart
 void VID_Shutdown(void)
 {
-	NOT_IMPLEMENTED
+	if (reflib_active)
+	{
+		re.Shutdown();
+		VID_FreeReflib();
+	}
 }
