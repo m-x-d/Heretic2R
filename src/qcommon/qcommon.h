@@ -517,7 +517,7 @@ void Cvar_GetLatchedVars(void);
 qboolean Cvar_Command(void);
 
 // Appends lines containing "set variable value" for all variables with the archive flag set to true.
-void Cvar_WriteVariables(char* path);
+void Cvar_WriteVariables(const char* path);
 
 void Cvar_Init(void);
 

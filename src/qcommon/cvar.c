@@ -287,9 +287,23 @@ static void Cvar_Set_f(void)
 	}
 }
 
-void Cvar_WriteVariables(char* path)
+// Q2 counterpart
+// Appends lines containing "set variable value" for all variables with the CVAR_ARCHIVE flag set to true.
+void Cvar_WriteVariables(const char* path)
 {
-	NOT_IMPLEMENTED
+	char buffer[1024];
+
+	FILE* f = fopen(path, "a");
+	for (const cvar_t* var = cvar_vars; var != NULL; var = var->next)
+	{
+		if (var->flags & CVAR_ARCHIVE)
+		{
+			Com_sprintf(buffer, sizeof(buffer), "set %s \"%s\"\n", var->name, var->string);
+			fprintf(f, "%s", buffer);
+		}
+	}
+
+	fclose(f);
 }
 
 static void Cvar_List_f(void)
