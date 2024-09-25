@@ -53,12 +53,12 @@ static void DMFlagCallback(void* self)
 	if (f == &s_teamplay_box)
 	{
 		remove_flag = f->curvalue;
+		flags &= ~(DF_SKINTEAMS | DF_MODELTEAMS);
+
 		if (f->curvalue == 1)
 			flags |= DF_SKINTEAMS;
 		else if (f->curvalue == 2)
 			flags |= DF_MODELTEAMS;
-		else
-			flags &= ~(DF_SKINTEAMS | DF_MODELTEAMS);
 	}
 	else if (f == &s_friendlyfire_box)
 	{
