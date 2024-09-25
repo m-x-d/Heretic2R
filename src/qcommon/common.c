@@ -139,9 +139,19 @@ void Com_Error(int code, const char* fmt, ...)
 	NOT_IMPLEMENTED
 }
 
+// Both client and server can use this, and it will do the appropriate things.
 void Com_Quit(void)
 {
-	NOT_IMPLEMENTED
+	SV_Shutdown("Server quit\n", false);
+	// Missing: CL_Shutdown ();
+
+	if (logfile != NULL)
+	{
+		fclose(logfile);
+		logfile = NULL;
+	}
+
+	Sys_Quit();
 }
 
 int Com_ServerState(void)

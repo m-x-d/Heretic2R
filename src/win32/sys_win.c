@@ -44,7 +44,7 @@ void Sys_Error(const char* error, ...)
 
 	MessageBox(NULL, text, "Error", MB_OK);
 
-	// Shut down QHOST hooks if necessary
+	// Shut down QHOST hooks if necessary.
 	DeinitConProc();
 
 	exit(1);
@@ -52,7 +52,17 @@ void Sys_Error(const char* error, ...)
 
 void Sys_Quit(void)
 {
-	NOT_IMPLEMENTED
+	timeEndPeriod(1);
+	CL_Shutdown();
+	// Missing: CloseHandle (qwclsemaphore);
+
+	if (dedicated != NULL && (int)dedicated->value)
+		FreeConsole();
+
+	// Shut down QHOST hooks if necessary.
+	DeinitConProc();
+
+	exit(0);
 }
 
 #pragma endregion
