@@ -471,6 +471,7 @@ extern cvar_t* EAX_preset;
 extern cvar_t* EAX_default;
 extern cvar_t* cl_cinematicfreeze;
 extern cvar_t* cl_fx_dll; //mxd
+extern cvar_t* playerdir; //mxd
 extern cvar_t* shownames;
 extern cvar_t* name; //mxd
 extern cvar_t* autoweapon;

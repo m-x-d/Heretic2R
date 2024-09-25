@@ -13,13 +13,21 @@ cvar_t* m_item_name;
 cvar_t* m_item_skin;
 cvar_t* m_item_shownames;
 
-#define MAX_SKINS	128
+typedef struct
+{
+	char directory[MAX_OSPATH];
+	char psex[MAX_QPATH]; // male/female
+} playermodelinfo_s;
 
-static char* skin_names[MAX_SKINS];
-static int num_player_skins;
+#define MAX_PLAYER_CATEGORIES	32
+#define MAX_PLAYER_MODELS		128
+
+static int s_numplayermodels;
+static int s_current_skin_index;
+static qboolean current_skin_exists;
+static char* skin_names[MAX_PLAYER_MODELS];
 static cvar_t* skin;
 static cvar_t* skin_temp;
-static qboolean current_skin_exists;
 
 static menuframework_s s_player_config_menu;
 
@@ -37,10 +45,104 @@ static void ShowNamesFunc(void* self)
 	NOT_IMPLEMENTED
 }
 
+//TODO: this returns 8 categories instead of 2!
+static int ScanModelCategories(playermodelinfo_s* info) // H2
+{
+	char findname[MAX_OSPATH];
+
+	int num_categories = 0;
+	char* path = FS_NextPath(NULL);
+
+	while (path != NULL)
+	{
+		Com_sprintf(findname, sizeof(findname), "%s/%s/*.", path, playerdir->string);
+		const char* subdir = Sys_FindFirst(findname, SFF_SUBDIR, SFF_HIDDEN | SFF_SYSTEM);
+
+		while (subdir != NULL)
+		{
+			if (num_categories >= MAX_PLAYER_CATEGORIES)
+				break;
+
+			Com_sprintf(info->directory, sizeof(info->directory), "%s/%s", path, playerdir->string);
+			const int len = (int)strlen(info->directory);
+			strcpy_s(info->psex, sizeof(info->psex), &subdir[len + 1]); //mxd. strcpy -> strcpy_s
+			subdir = Sys_FindNext(SFF_SUBDIR, SFF_HIDDEN | SFF_SYSTEM);
+
+			num_categories++;
+			info++;
+		}
+
+		Sys_FindClose();
+		path = FS_NextPath(path);
+	}
+
+	return num_categories;
+}
+
+static void ScanPlayerSkins(playermodelinfo_s* info) // H2
+{
+	static char skin_names_array[MAX_PLAYER_MODELS][MAX_OSPATH];
+
+	char path[MAX_OSPATH];
+	char skin_name[MAX_OSPATH];
+	char skin_path[MAX_OSPATH];
+	char skin_icon_path[MAX_OSPATH];
+	int icon_w;
+	int icon_h;
+	int skin_w;
+	int skin_h;
+
+	Com_sprintf(path, sizeof(path), "%s/%s/*_i.m8", info->directory, info->psex);
+	const char* skin_file = Sys_FindFirst(path, 0, 0);
+
+	while (skin_file != NULL)
+	{
+		if (s_numplayermodels >= MAX_PLAYER_MODELS)
+			break;
+
+		strcpy_s(skin_name, sizeof(skin_name), &skin_file[strlen(info->directory) + 1]); //mxd. strcpy -> strcpy_s
+		skin_name[strlen(skin_name) - 5] = 0; // Drop the '_i.m8' part.
+		Com_sprintf(skin_path, sizeof(skin_path), "%s/%s.m8", playerdir->string, skin_name);
+		Com_sprintf(skin_icon_path, sizeof(skin_icon_path), "%s/%s_i.m8", playerdir->string, skin_name);
+
+		re.DrawGetPicSize(&skin_w, &skin_h, skin_path);
+		re.DrawGetPicSize(&icon_w, &icon_h, skin_icon_path);
+
+		if (skin_w == 256 && skin_h == 256 && icon_w > 0 && icon_h > 0)
+		{
+			skin_names[s_numplayermodels] = skin_names_array[s_numplayermodels];
+			strcpy_s(skin_names_array[s_numplayermodels], sizeof(skin_names_array[s_numplayermodels]), skin_name); //mxd. strcpy -> strcpy_s
+
+			if (Q_stricmp(skin->string, skin_name) == 0)
+			{
+				s_current_skin_index = s_numplayermodels;
+				current_skin_exists = true;
+			}
+
+			s_numplayermodels++;
+		}
+
+		skin_file = Sys_FindNext(0, 0);
+	}
+
+	Sys_FindClose();
+	skin_names[s_numplayermodels] = NULL;
+}
+
+//mxd. Returns the number of models loaded.
 static int PlayerConfig_ScanDirectories(void)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	playermodelinfo_s infos[MAX_PLAYER_CATEGORIES];
+
+	s_numplayermodels = 0;
+	s_current_skin_index = 0;
+	current_skin_exists = false;
+
+	const int num_categories = ScanModelCategories(infos);
+	for (int i = 0; i < num_categories; i++)
+		ScanPlayerSkins(&infos[i]);
+
+	return s_numplayermodels;
 }
 
 static qboolean PlayerConfig_MenuInit(void)
@@ -78,7 +180,7 @@ static qboolean PlayerConfig_MenuInit(void)
 	s_player_skin_box.generic.name = name_skin;
 	s_player_skin_box.generic.width = re.BF_Strlen(name_skin);
 	s_player_skin_box.generic.callback = SkinNameFunc;
-	s_player_skin_box.curvalue = num_player_skins;
+	s_player_skin_box.curvalue = s_current_skin_index;
 	s_player_skin_box.itemnames = skin_names;
 
 	Com_sprintf(name_shownames, sizeof(name_shownames), "\x02%s", m_item_shownames->string);
