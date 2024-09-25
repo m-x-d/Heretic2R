@@ -37,9 +37,12 @@ void Sys_Error(const char* error, ...)
 	vsprintf_s(text, sizeof(text), error, argptr); //mxd. vsprintf -> vsprintf_s
 	va_end(argptr);
 
+	//BUGFIX: mxd. CL_Shutdown() calls Z_FreeTags(0), which frees all cvars and dereferences all pointers to them...
+	const qboolean is_dedicated = (dedicated != NULL && (int)dedicated->value);
+
 	CL_Shutdown();
 
-	if (dedicated != NULL && (int)dedicated->value) // H2
+	if (is_dedicated) // H2
 		FreeConsole();
 
 	MessageBox(NULL, text, "Error", MB_OK);
@@ -53,10 +56,14 @@ void Sys_Error(const char* error, ...)
 void Sys_Quit(void)
 {
 	timeEndPeriod(1);
+
+	//BUGFIX: mxd. CL_Shutdown() calls Z_FreeTags(0), which frees all cvars and dereferences all pointers to them...
+	const qboolean is_dedicated = (dedicated != NULL && (int)dedicated->value);
+
 	CL_Shutdown();
 	// Missing: CloseHandle (qwclsemaphore);
 
-	if (dedicated != NULL && (int)dedicated->value)
+	if (is_dedicated)
 		FreeConsole();
 
 	// Shut down QHOST hooks if necessary.
