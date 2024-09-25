@@ -385,10 +385,29 @@ static int Key_StringToKeynum(const char* str)
 	return -1;
 }
 
-char* Key_KeynumToString(int keynum)
+// Returns a string (either a single ascii char, or a K_* name) for the given keynum.
+// FIXME: handle quote special (general escape sequence ?).
+char* Key_KeynumToString(const int keynum)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	static char tinystr[2];
+
+	if (keynum == -1)
+		return "<KEY NOT FOUND>";
+
+	if (keynum > 32 && keynum < 127 && keynum != ';') // H2: extra ';' check.
+	{
+		// Printable ascii.
+		tinystr[0] = (char)keynum;
+		tinystr[1] = '\0';
+
+		return tinystr;
+	}
+
+	for (const keyname_t* kn = keynames; kn->name != NULL; kn++)
+		if (keynum == kn->keynum)
+			return kn->name;
+
+	return "<UNKNOWN KEYNUM>";
 }
 
 // Q2 counterpart
@@ -506,14 +525,21 @@ static void Key_Bind_f(void)
 	Key_SetBinding(b, cmd);
 }
 
+// Q2 counterpart
+// Writes lines containing "bind key value".
 void Key_WriteBindings(FILE* f)
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < 256; i++)
+		if (keybindings[i] != NULL && keybindings[i][0] != 0)
+			fprintf(f, "bind %s \"%s\"\n", Key_KeynumToString(i), keybindings[i]);
 }
 
+// Writes lines containing "bind_double key value".
 void Key_WriteBindings_Double(FILE* f)
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < 256; i++)
+		if (keybindings_double[i] != NULL && keybindings_double[i][0] != 0)
+			fprintf(f, "bind_double %s \"%s\"\n", Key_KeynumToString(i), keybindings_double[i]);
 }
 
 static void Key_Bindlist_f(void)
