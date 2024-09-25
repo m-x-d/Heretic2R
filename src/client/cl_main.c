@@ -105,7 +105,6 @@ static cvar_t* sc_framerate;
 
 // userinfo
 static cvar_t* info_password;
-static cvar_t* name;
 static cvar_t* skin;
 static cvar_t* skindir;
 static cvar_t* playerdir;
@@ -113,6 +112,7 @@ static cvar_t* rate;
 static cvar_t* msg;
 static cvar_t* fov;
 
+cvar_t* name;
 cvar_t* autoweapon;
 cvar_t* colour_obituary;
 cvar_t* colour_chat;
