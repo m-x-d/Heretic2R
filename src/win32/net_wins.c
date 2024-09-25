@@ -655,7 +655,9 @@ void NET_Init(void)
 	net_shownet = Cvar_Get("net_shownet", "0", 0);
 }
 
+// Q2 counterpart
 void NET_Shutdown(void)
 {
-	NOT_IMPLEMENTED
+	NET_Config(false); // Close sockets.
+	WSACleanup();
 }
