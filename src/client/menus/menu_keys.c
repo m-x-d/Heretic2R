@@ -89,6 +89,16 @@ qboolean bind_grab;
 menuframework_s s_keys_menu;
 static menuinputkey_s s_keys_items[14];
 
+static void UnbindCommand(char* command)
+{
+	NOT_IMPLEMENTED
+}
+
+static void KeyBindingFunc(void* self)
+{
+	NOT_IMPLEMENTED
+}
+
 void Keys_MenuInit(void)
 {
 	static char key_labels[NUM_BINDS][MAX_QPATH];
@@ -116,10 +126,42 @@ void Keys_MenuInit(void)
 	Menu_Center(&s_keys_menu);
 }
 
-const char* Keys_MenuKey(int key)
+const char* Keys_MenuKey(const int key)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	char cmd[1024];
+
+	menuinputkey_s* item = (menuinputkey_s*)Menu_ItemAtCursor(&s_keys_menu);
+	const int bind_index = item->generic.localdata[0] + keys_category_offset;
+
+	if (bind_grab)
+	{
+		if (key != K_ESCAPE && key != '`')
+		{
+			const char* format = (use_doublebind ? "bind_double \"%s\" \"%s\"\n" : "bind \"%s\" \"%s\"\n"); // H2
+			Com_sprintf(cmd, sizeof(cmd), format, Key_KeynumToString(key), bindnames[bind_index].command);
+			Cbuf_InsertText(cmd);
+		}
+
+		bind_grab = false;
+		return NULL;
+	}
+
+	switch (key)
+	{
+		case K_ENTER:
+		case K_KP_ENTER:
+			KeyBindingFunc(item);
+			return NULL;
+
+		case K_BACKSPACE:
+		case K_DEL:
+		case K_KP_DEL:
+			UnbindCommand(bindnames[bind_index].command);
+			return NULL;
+
+		default:
+			return Default_MenuKey(&s_keys_menu, key);
+	}
 }
 
 void M_FindKeysForCommand(const int command_index, int* twokeys)
