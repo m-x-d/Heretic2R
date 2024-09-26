@@ -109,7 +109,6 @@ extern char m_text_high[MAX_QPATH];
 
 extern char* yes_no_names[];
 
-extern qboolean bind_grab;
 extern uint m_menu_side;
 
 typedef void (*m_drawfunc_t)(void); //mxd
@@ -207,7 +206,6 @@ int M_GetMenuLabelX(int text_width); // H2
 int M_GetMenuOffsetY(const menuframework_s* menu); // H2
 void M_DrawTextBox(int x, int y, int width, int lines);
 void M_Print(int cx, int cy, int msg_index, paletteRGBA_t color);
-void M_FindKeysForCommand(int action_index, int* twokeys);
 
 void Menu_AddItem(menuframework_s* menu, void* item);
 qboolean Menu_SelectItem(const menuframework_s* menu);

@@ -23,6 +23,7 @@
 #include "menus/menu_help.h"
 #include "menus/menu_info.h"
 #include "menus/menu_joinserver.h"
+#include "menus/menu_keys.h"
 #include "menus/menu_loadcfg.h"
 #include "menus/menu_loadgame.h"
 #include "menus/menu_main.h"
@@ -136,7 +137,6 @@ typedef struct
 	m_keyfunc_t key;
 } menulayer_t;
 
-qboolean bind_grab;
 uint m_menu_side; // H2 (0 - left, 1 - right)?
 static menulayer_t m_layers[MAX_MENU_DEPTH + 1]; // Q2: MAX_MENU_DEPTH
 static int m_menudepth;
@@ -966,7 +966,7 @@ static void InputKey_Draw(const menuinputkey_s* key, const qboolean selected) //
 	Menu_DrawString(x, y, key_label, alpha, selected);
 	m_menu_side ^= 1;
 
-	// Draw keybind name(s) (eg. "LMB")
+	// Draw keybind name(s) (eg. "Mouse1")
 	M_FindKeysForCommand(key->generic.localdata[0], keys);
 
 	if (keys[0] == -1)
@@ -1302,9 +1302,4 @@ void M_Keydown(const int key)
 		if (sound_name != NULL)
 			S_StartLocalSound(sound_name);
 	}
-}
-
-void M_FindKeysForCommand(int action_index, int* twokeys)
-{
-	NOT_IMPLEMENTED
 }

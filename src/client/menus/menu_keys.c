@@ -15,7 +15,7 @@
 
 typedef struct
 {
-	char* action;
+	char* command;
 	cvar_t** label;
 } BindData_s;
 
@@ -84,6 +84,7 @@ static BindData_s bindnames[NUM_BINDS] =
 int keys_count;
 int keys_category_offset;
 qboolean use_doublebind;
+qboolean bind_grab;
 
 menuframework_s s_keys_menu;
 static menuinputkey_s s_keys_items[14];
@@ -119,4 +120,25 @@ const char* Keys_MenuKey(int key)
 {
 	NOT_IMPLEMENTED
 	return NULL;
+}
+
+void M_FindKeysForCommand(const int command_index, int* twokeys)
+{
+	const char* command = bindnames[keys_category_offset + command_index].command;
+	const int len = (int)strlen(command);
+	int count = 0;
+
+	for (int i = 0; i < 256; i++)
+	{
+		const char* b = (use_doublebind ? keybindings_double[i] : keybindings[i]);
+
+		if (b != NULL && strncmp(b, command, len) == 0)
+		{
+			twokeys[count] = i;
+			count++;
+
+			if (count == 2)
+				break;
+		}
+	}
 }
