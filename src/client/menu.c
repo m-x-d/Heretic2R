@@ -790,9 +790,14 @@ qboolean Menu_SelectItem(const menuframework_s* menu)
 	return false;
 }
 
-static void Slider_DoSlide(menuslider_s* slider, int dir)
+// Q2 counterpart
+static void Slider_DoSlide(menuslider_s* slider, const int dir)
 {
-	NOT_IMPLEMENTED
+	slider->curvalue += (float)dir;
+	slider->curvalue = Clamp(slider->curvalue, slider->minvalue, slider->maxvalue);
+
+	if (slider->generic.callback != NULL)
+		slider->generic.callback(slider);
 }
 
 // Q2 counterpart
