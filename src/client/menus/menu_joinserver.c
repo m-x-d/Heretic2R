@@ -127,7 +127,7 @@ void JoinServer_MenuInit(void)
 
 static void JoinServer_MenuDraw(void)
 {
-	char name[MAX_QPATH];
+	char title[MAX_QPATH];
 
 	// Draw menu BG.
 	re.BookDrawPic(0, 0, "book/back/b_conback8.bk", cls.m_menuscale);
@@ -136,10 +136,10 @@ static void JoinServer_MenuDraw(void)
 		return;
 
 	// Draw menu title.
-	Com_sprintf(name, sizeof(name), "\x03%s", m_banner_join->string);
-	const int x = M_GetMenuLabelX(re.BF_Strlen(name));
+	Com_sprintf(title, sizeof(title), "\x03%s", m_banner_join->string);
+	const int x = M_GetMenuLabelX(re.BF_Strlen(title));
 	const int y = M_GetMenuOffsetY(&s_joinserver_menu);
-	re.DrawBigFont(x, y, name, cls.m_menualpha);
+	re.DrawBigFont(x, y, title, cls.m_menualpha);
 
 	// Update server name items width.
 	for (int i = 0; i < MAX_LOCAL_SERVERS; i++)
