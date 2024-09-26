@@ -23,24 +23,27 @@ static menuslider_s s_options_mousespeedx_slider;
 static menuslider_s s_options_mousespeedy_slider;
 static menulist_s s_mouseinvert_box;
 
-static void FreeLookFunc(void* self) // H2
+static void FreeLookFunc(void* self)
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("freelook", (float)s_options_freelook_box.curvalue);
+
+	if (Cvar_VariableValue("freelook") != 0.0f) // H2
+		Cvar_SetValue("cl_camera_combat", 0);
 }
 
 static void MouseSpeedXFunc(void* self) // H2
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("mouse_sensitivity_x", s_options_mousespeedx_slider.curvalue * 0.25f);
 }
 
 static void MouseSpeedYFunc(void* self) // H2
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("mouse_sensitivity_y", s_options_mousespeedy_slider.curvalue * 0.25f);
 }
 
 static void MouseInvertFunc(void* self) // H2
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("m_pitch", -m_pitch->value);
 }
 
 static void MouseCfg_SetValues(void) // H2
