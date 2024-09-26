@@ -89,14 +89,36 @@ qboolean bind_grab;
 menuframework_s s_keys_menu;
 static menuinputkey_s s_keys_items[14];
 
-static void UnbindCommand(char* command)
+// Q2: M_UnbindCommand
+static void UnbindCommand(const char* command)
 {
-	NOT_IMPLEMENTED
+	const int len = re.BF_Strlen(command); // H2
+
+	for (int i = 0; i < 256; i++)
+	{
+		const char* b = (use_doublebind ? keybindings_double[i] : keybindings[i]); // H2
+
+		if (b != NULL && strncmp(b, command, len) == 0)
+		{
+			if (use_doublebind)
+				Key_SetDoubleBinding(i, "");
+			else
+				Key_SetBinding(i, "");
+		}
+	}
 }
 
-static void KeyBindingFunc(void* self)
+static void KeyBindingFunc(const void* self)
 {
-	NOT_IMPLEMENTED
+	int keys[2];
+
+	const menuinputkey_s* key = self;
+	M_FindKeysForCommand(key->generic.localdata[0], keys);
+
+	if (keys[1] != -1)
+		UnbindCommand(bindnames[key->generic.localdata[0] + keys_category_offset].command);
+
+	bind_grab = true;
 }
 
 void Keys_MenuInit(void)
@@ -130,7 +152,7 @@ const char* Keys_MenuKey(const int key)
 {
 	char cmd[1024];
 
-	menuinputkey_s* item = (menuinputkey_s*)Menu_ItemAtCursor(&s_keys_menu);
+	const menuinputkey_s* item = (menuinputkey_s*)Menu_ItemAtCursor(&s_keys_menu);
 	const int bind_index = item->generic.localdata[0] + keys_category_offset;
 
 	if (bind_grab)
@@ -166,6 +188,9 @@ const char* Keys_MenuKey(const int key)
 
 void M_FindKeysForCommand(const int command_index, int* twokeys)
 {
+	twokeys[0] = -1;
+	twokeys[1] = -1;
+
 	const char* command = bindnames[keys_category_offset + command_index].command;
 	const int len = (int)strlen(command);
 	int count = 0;
