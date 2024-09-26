@@ -470,9 +470,41 @@ static void CL_Rcon_f(void)
 	NOT_IMPLEMENTED
 }
 
-void CL_SaveConfig_f(void)
+void CL_SaveConfig_f(void) // H2
 {
-	NOT_IMPLEMENTED
+	char cfg_name[MAX_QPATH];
+	FILE* f;
+
+	if (cls.state == ca_uninitialized)
+		return;
+
+	if (name == NULL || strlen(name->string) == 0)
+	{
+		Com_Printf("ERROR: Set the name variable as the filename to save.\n");
+		return;
+	}
+
+	Com_sprintf(cfg_name, sizeof(cfg_name), "%s/config/%s.cfg", FS_Gamedir(), name->string);
+	FS_CreatePath(cfg_name);
+
+	if (!fopen_s(&f, cfg_name, "w")) //mxd. fopen -> fopen_s
+	{
+		Com_Printf("Couldn\'t write %s.\n", cfg_name);
+		return;
+	}
+
+	fprintf(f, "// Custom saved config from Heretic 2\n\n");
+	fprintf(f, "echo Executing custom saved config from Heretic 2\n\n");
+	fprintf(f, "unbindall\n\n");
+
+	Key_WriteBindings(f);
+	Key_WriteBindings_Double(f);
+
+	fprintf(f, "\necho ** Done **\n");
+	fclose(f);
+
+	Cvar_WriteVariables(cfg_name);
+	Com_Printf("Saved personal config file to %s ok.\n", cfg_name);
 }
 
 static void CL_Setenv_f(void)
