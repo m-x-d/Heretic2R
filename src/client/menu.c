@@ -136,9 +136,9 @@ typedef struct
 	m_keyfunc_t key;
 } menulayer_t;
 
-menulayer_t	m_layers[MAX_MENU_DEPTH + 1]; // Q2: MAX_MENU_DEPTH
+uint m_menu_side; // H2 (0 - left, 1 - right)?
+static menulayer_t m_layers[MAX_MENU_DEPTH + 1]; // Q2: MAX_MENU_DEPTH
 static int m_menudepth;
-static uint m_menu_side; // H2 (0 - left, 1 - right)?
 static float quick_menus_old_value; // H2
 
 static void PrecacheGenericMenuItemsText(void) // H2
