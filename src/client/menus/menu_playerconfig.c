@@ -35,14 +35,14 @@ static menufield_s s_player_name_field;
 static menulist_s s_player_skin_box;
 static menulist_s s_shownames_box;
 
-static void SkinNameFunc(void* self)
+static void SkinNameFunc(void* self) // H2
 {
-	NOT_IMPLEMENTED
+	Cvar_Set("skin_temp", skin_names[s_player_skin_box.curvalue]);
 }
 
-static void ShowNamesFunc(void* self)
+static void ShowNamesFunc(void* self) // H2
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("shownames", (float)s_shownames_box.curvalue);
 }
 
 //TODO: this returns 8 categories instead of 2!
