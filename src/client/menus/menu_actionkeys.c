@@ -5,10 +5,21 @@
 //
 
 #include "menu_actionkeys.h"
+#include "menu_keys.h"
 
 cvar_t* m_banner_action_keys;
 
-void M_Menu_ActionKeys_f(void)
+static void ActionKeys_MenuDraw(void)
 {
 	NOT_IMPLEMENTED
+}
+
+void M_Menu_ActionKeys_f(void) // H2
+{
+	keys_count = 13;
+	keys_category_offset = 0;
+	use_doublebind = false;
+
+	Keys_MenuInit();
+	M_PushMenu(ActionKeys_MenuDraw, Keys_MenuKey);
 }

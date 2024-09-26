@@ -255,6 +255,9 @@
     <ClCompile Include="..\client\cl_messages.c">
       <Filter>client</Filter>
     </ClCompile>
+    <ClCompile Include="..\client\menus\menu_keys.c">
+      <Filter>client\menus</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -484,6 +487,9 @@
     </ClInclude>
     <ClInclude Include="..\client\cl_messages.h">
       <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\menus\menu_keys.h">
+      <Filter>client\menus</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

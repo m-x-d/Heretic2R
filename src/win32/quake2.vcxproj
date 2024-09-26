@@ -42,6 +42,7 @@
     <ClCompile Include="..\client\menus\menu_help.c" />
     <ClCompile Include="..\client\menus\menu_info.c" />
     <ClCompile Include="..\client\menus\menu_joinserver.c" />
+    <ClCompile Include="..\client\menus\menu_keys.c" />
     <ClCompile Include="..\client\menus\menu_loadcfg.c" />
     <ClCompile Include="..\client\menus\menu_loadgame.c" />
     <ClCompile Include="..\client\menus\menu_main.c" />
@@ -113,6 +114,7 @@
     <ClInclude Include="..\client\menus\menu_help.h" />
     <ClInclude Include="..\client\menus\menu_info.h" />
     <ClInclude Include="..\client\menus\menu_joinserver.h" />
+    <ClInclude Include="..\client\menus\menu_keys.h" />
     <ClInclude Include="..\client\menus\menu_loadcfg.h" />
     <ClInclude Include="..\client\menus\menu_loadgame.h" />
     <ClInclude Include="..\client\menus\menu_main.h" />
