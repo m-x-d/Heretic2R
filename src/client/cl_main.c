@@ -470,7 +470,7 @@ static void CL_Rcon_f(void)
 	NOT_IMPLEMENTED
 }
 
-static void CL_SaveConfig_f(void)
+void CL_SaveConfig_f(void)
 {
 	NOT_IMPLEMENTED
 }

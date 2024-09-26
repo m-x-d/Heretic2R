@@ -434,11 +434,12 @@ extern cvar_t* mouse_sensitivity_y;
 
 extern cvar_t* doubletap_speed;
 
-extern cvar_t* allow_download;
-extern cvar_t* allow_download_maps;
-extern cvar_t* allow_download_players;
-extern cvar_t* allow_download_models;
-extern cvar_t* allow_download_sounds;
+//mxd. Already declared in qcommon.h
+//extern cvar_t* allow_download;
+//extern cvar_t* allow_download_maps;
+//extern cvar_t* allow_download_players;
+//extern cvar_t* allow_download_models;
+//extern cvar_t* allow_download_sounds;
 
 extern cvar_t* m_pitch;
 extern cvar_t* m_yaw;
@@ -471,9 +472,7 @@ extern cvar_t* EAX_preset;
 extern cvar_t* EAX_default;
 extern cvar_t* cl_cinematicfreeze;
 extern cvar_t* cl_fx_dll; //mxd
-extern cvar_t* playerdir; //mxd
 extern cvar_t* shownames;
-extern cvar_t* name; //mxd
 extern cvar_t* autoweapon;
 extern cvar_t* cl_showcaptions;
 extern cvar_t* cl_doautoaim; //mxd

@@ -20,6 +20,10 @@
 extern cvar_t* vid_mode;
 extern cvar_t* vid_menu_mode;
 
+// Cvars shared between client and menu logic.
+extern cvar_t* playerdir;
+extern cvar_t* name;
+
 extern cvar_t* m_item_defaults;
 extern cvar_t* m_item_driver;
 extern cvar_t* m_item_vidmode;
@@ -209,3 +213,6 @@ void Menu_Center(menuframework_s* menu);
 void Menu_Draw(const menuframework_s* menu);
 void Menu_DrawString(int x, int y, const char* name, float alpha, qboolean selected);
 menucommon_s* Menu_ItemAtCursor(const menuframework_s* menu);
+
+// Functions shared between client and menu logic.
+void CL_SaveConfig_f(void);
