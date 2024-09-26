@@ -23,27 +23,27 @@ static menuslider_s s_options_mousespeedx_slider;
 static menuslider_s s_options_mousespeedy_slider;
 static menulist_s s_mouseinvert_box;
 
-static void FreeLookFunc(void* self)
+static void FreeLookFunc(void* self) // H2
 {
 	NOT_IMPLEMENTED
 }
 
-static void MouseSpeedXFunc(void* self)
+static void MouseSpeedXFunc(void* self) // H2
 {
 	NOT_IMPLEMENTED
 }
 
-static void MouseSpeedYFunc(void* self)
+static void MouseSpeedYFunc(void* self) // H2
 {
 	NOT_IMPLEMENTED
 }
 
-static void MouseInvertFunc(void* self)
+static void MouseInvertFunc(void* self) // H2
 {
 	NOT_IMPLEMENTED
 }
 
-static void MouseCfg_SetValues(void)
+static void MouseCfg_SetValues(void) // H2
 {
 	Cvar_SetValue("mouse_sensitivity_x", Clamp(mouse_sensitivity_x->value, 1, 25));
 	Cvar_SetValue("mouse_sensitivity_y", Clamp(mouse_sensitivity_y->value, 1, 25));
@@ -57,7 +57,7 @@ static void MouseCfg_SetValues(void)
 	s_options_freelook_box.curvalue = Q_ftol(freelook->value);
 }
 
-static void MouseCfg_MenuInit(void)
+static void MouseCfg_MenuInit(void) // H2
 {
 	static char name_freelook[MAX_QPATH];
 	static char name_mousespeedx[MAX_QPATH];
@@ -116,15 +116,31 @@ static void MouseCfg_MenuInit(void)
 	Menu_Center(&s_mousecfg_menu);
 }
 
-static void MouseCfg_MenuDraw(void)
+static void MouseCfg_MenuDraw(void) // H2
 {
-	NOT_IMPLEMENTED
+	char title[MAX_QPATH];
+
+	// Draw menu BG.
+	re.BookDrawPic(0, 0, "book/back/b_conback8.bk", cls.m_menuscale);
+
+	if (cls.m_menualpha == 0.0f)
+		return;
+
+	// Draw menu title.
+	Com_sprintf(title, sizeof(title), "\x03%s", m_banner_mousecfg->string);
+	const int x = M_GetMenuLabelX(re.BF_Strlen(title));
+	const int y = M_GetMenuOffsetY(&s_mousecfg_menu);
+	re.DrawBigFont(x, y, title, cls.m_menualpha);
+
+	// Draw menu items.
+	s_mousecfg_menu.x = M_GetMenuLabelX(s_mousecfg_menu.width);
+	Menu_AdjustCursor(&s_mousecfg_menu, 1);
+	Menu_Draw(&s_mousecfg_menu);
 }
 
-static const char* MouseCfg_MenuKey(int key)
+static const char* MouseCfg_MenuKey(const int key) // H2
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	return Default_MenuKey(&s_mousecfg_menu, key);
 }
 
 void M_Menu_MouseCfg_f(void) // H2
