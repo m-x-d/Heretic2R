@@ -136,6 +136,7 @@ typedef struct
 	m_keyfunc_t key;
 } menulayer_t;
 
+qboolean bind_grab;
 uint m_menu_side; // H2 (0 - left, 1 - right)?
 static menulayer_t m_layers[MAX_MENU_DEPTH + 1]; // Q2: MAX_MENU_DEPTH
 static int m_menudepth;
@@ -950,9 +951,37 @@ static void Action_Draw(const menuaction_s* action, const qboolean selected)
 	}
 }
 
-static void InputKey_Draw(menuinputkey_s* key, qboolean selected)
+static void InputKey_Draw(const menuinputkey_s* key, const qboolean selected) // H2
 {
-	NOT_IMPLEMENTED
+	char key_label[MAX_QPATH];
+	char key_name[MAX_QPATH];
+	int keys[2];
+
+	// Draw key label (eg. "Attack")
+	Com_sprintf(key_label, sizeof(key_label), "%s", key->generic.name);
+
+	float alpha = M_GetMenuAlpha();
+	int x = M_GetMenuLabelX(re.BF_Strlen(key_label));
+	const int y = key->generic.y + key->generic.parent->y;
+	Menu_DrawString(x, y, key_label, alpha, selected);
+	m_menu_side ^= 1;
+
+	// Draw keybind name(s) (eg. "LMB")
+	M_FindKeysForCommand(key->generic.localdata[0], keys);
+
+	if (keys[0] == -1)
+		Com_sprintf(key_name, sizeof(key_name), "???");
+	else if (keys[1] == -1)
+		Com_sprintf(key_name, sizeof(key_name), "%s", Key_KeynumToString(keys[0]));
+	else
+		Com_sprintf(key_name, sizeof(key_name), "%s or %s", Key_KeynumToString(keys[0]), Key_KeynumToString(keys[1]));
+	
+	if (bind_grab && selected)
+		alpha = fabsf(cosf((float)Sys_Milliseconds() * 0.005f));
+
+	x = M_GetMenuLabelX(re.BF_Strlen(key_name));
+	Menu_DrawString(x, y, key_name, alpha, selected);
+	m_menu_side ^= 1;
 }
 
 static void PlayerSkin_Draw(const menucommon_s* item) // H2
@@ -1273,4 +1302,9 @@ void M_Keydown(const int key)
 		if (sound_name != NULL)
 			S_StartLocalSound(sound_name);
 	}
+}
+
+void M_FindKeysForCommand(int action_index, int* twokeys)
+{
+	NOT_IMPLEMENTED
 }
