@@ -19,12 +19,12 @@ static menulist_s s_options_cameracombat_box;
 
 static void CameraDampFactorFunc(void* self) // H2
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("cl_camera_dampfactor", s_options_cameradamp_slider.curvalue * 0.01f);
 }
 
 static void CameraCombatFunc(void* self) // H2
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("cl_camera_combat", (float)s_options_cameracombat_box.curvalue);
 }
 
 static void CameraCfg_SetValues(void) // H2
@@ -89,10 +89,9 @@ static void CameraCfg_MenuDraw(void) // H2
 	Menu_Draw(&s_cameracfg_menu);
 }
 
-static const char* CameraCfg_MenuKey(int key) // H2
+static const char* CameraCfg_MenuKey(const int key) // H2
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	return Default_MenuKey(&s_cameracfg_menu, key);
 }
 
 void M_Menu_CameraCfg_f(void) // H2
