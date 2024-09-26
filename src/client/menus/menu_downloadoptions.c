@@ -23,9 +23,21 @@ static menulist_s s_allow_download_players_box;
 static menulist_s s_allow_download_models_box;
 static menulist_s s_allow_download_sounds_box;
 
-static void DownloadCallback(void* self)
+// Q2 counterpart
+static void DownloadCallback(const void* self)
 {
-	NOT_IMPLEMENTED
+	const menulist_s* f = self;
+
+	if (f == &s_allow_download_box)
+		Cvar_SetValue("allow_download", (float)f->curvalue);
+	else if (f == &s_allow_download_maps_box)
+		Cvar_SetValue("allow_download_maps", (float)f->curvalue);
+	else if (f == &s_allow_download_models_box)
+		Cvar_SetValue("allow_download_models", (float)f->curvalue);
+	else if (f == &s_allow_download_players_box)
+		Cvar_SetValue("allow_download_players", (float)f->curvalue);
+	else if (f == &s_allow_download_sounds_box)
+		Cvar_SetValue("allow_download_sounds", (float)f->curvalue);
 }
 
 static void DownloadOptions_SetValues(void) // H2
