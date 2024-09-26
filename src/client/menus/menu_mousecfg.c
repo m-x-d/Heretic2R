@@ -4,9 +4,8 @@
 // Copyright 1998 Raven Software
 //
 
-#include "menu_mousecfg.h"
-
 #include "client.h"
+#include "menu_mousecfg.h"
 
 cvar_t* m_banner_mousecfg;
 
