@@ -872,9 +872,41 @@ void Menu_Center(menuframework_s* menu)
 	menu->y = (DEF_HEIGHT - height) / 2;
 }
 
-static void Slider_Draw(menuslider_s* slider, qboolean selected)
+static void Slider_Draw(menuslider_s* slider, const qboolean selected)
 {
-	NOT_IMPLEMENTED
+#define SLIDER_RANGE 10
+
+	char item_name[64];
+
+	const float alpha = M_GetMenuAlpha();
+	const paletteRGBA_t color = { .a = (byte)Q_ftol(alpha * 255), .r = 0xff, .g = 0xff, .b = 0xff};
+
+	// Draw slider name.
+	int x = M_GetMenuLabelX(slider->generic.width);
+	int y = slider->generic.y + slider->generic.parent->y;
+	strcpy_s(item_name, sizeof(item_name), slider->generic.name); //mxd. strcpy -> strcpy_s
+	Menu_DrawString(x, y, item_name, alpha, selected);
+
+	// Update range.
+	slider->range = (slider->curvalue - slider->minvalue) / (slider->maxvalue - slider->minvalue);
+	slider->range = Clamp(slider->range, 0, 1);
+
+	// Draw BG left.
+	x = M_GetMenuLabelX(8 * SLIDER_RANGE * DEF_WIDTH / viddef.width);
+	x = x * viddef.width / DEF_WIDTH;
+	y = (y + 10) * viddef.height / DEF_HEIGHT;
+	re.DrawChar(x - 8, y, 15, color);
+
+	// Draw BG mid.
+	int ox = x;
+	for (int i = 0; i < SLIDER_RANGE; i++, ox += 8)
+		re.DrawChar(ox, y, 1, color);
+
+	// Draw BG right.
+	re.DrawChar(x + 8 * SLIDER_RANGE, y, 2, color);
+
+	// Draw slider value.
+	re.DrawChar(x + Q_ftol(slider->range * 8 * (SLIDER_RANGE - 1)), y, 3, color);
 }
 
 static void Field_Draw(const menufield_s* field, const qboolean selected)
