@@ -440,7 +440,7 @@ void Qcommon_Init(int argc, char** argv)
 	hideconprint = Cvar_Get("hideconprint", "0", 0);
 	player_dll = Cvar_Get("player_dll", "Player", 0);
 
-	char* s = va("%s:  %s %s %s", VERSIONFULL, CPUSTRING, __DATE__, BUILDSTRING);
+	const char* s = va("%s:  %s %s %s", VERSIONFULL, CPUSTRING, __DATE__, BUILDSTRING);
 	Cvar_Get("version", s, CVAR_SERVERINFO | CVAR_NOSET);
 
 	// Q2: allow_download_ cvars inited in SV_Init()
