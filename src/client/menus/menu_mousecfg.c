@@ -43,9 +43,18 @@ static void MouseInvertFunc(void* self)
 	NOT_IMPLEMENTED
 }
 
-static void MouseCfgSetMenuItemValues(void)
+static void MouseCfg_SetValues(void)
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("mouse_sensitivity_x", Clamp(mouse_sensitivity_x->value, 1, 25));
+	Cvar_SetValue("mouse_sensitivity_y", Clamp(mouse_sensitivity_y->value, 1, 25));
+
+	s_options_mousespeedx_slider.curvalue = mouse_sensitivity_x->value * 4.0f;
+	s_options_mousespeedy_slider.curvalue = mouse_sensitivity_y->value * 4.0f;
+
+	s_mouseinvert_box.curvalue = (int)(m_pitch->value < 0.0f);
+
+	Cvar_SetValue("freelook", Clamp(freelook->value, 0, 1));
+	s_options_freelook_box.curvalue = Q_ftol(freelook->value);
 }
 
 static void MouseCfg_MenuInit(void)
@@ -97,7 +106,7 @@ static void MouseCfg_MenuInit(void)
 	s_mouseinvert_box.generic.callback = MouseInvertFunc;
 	s_mouseinvert_box.itemnames = yes_no_names;
 
-	MouseCfgSetMenuItemValues();
+	MouseCfg_SetValues();
 
 	Menu_AddItem(&s_mousecfg_menu, &s_options_freelook_box);
 	Menu_AddItem(&s_mousecfg_menu, &s_options_mousespeedx_slider);
