@@ -389,18 +389,21 @@ static int Key_StringToKeynum(const char* str)
 // FIXME: handle quote special (general escape sequence ?).
 char* Key_KeynumToString(const int keynum)
 {
-	static char tinystr[2];
+	static char tinystr[2][2]; //mxd. Allow 2 sequential calls without overriding the first value...
+	static int tinystr_index = 0; //mxd
 
 	if (keynum == -1)
 		return "<KEY NOT FOUND>";
 
 	if (keynum > 32 && keynum < 127 && keynum != ';') // H2: extra ';' check.
 	{
-		// Printable ascii.
-		tinystr[0] = (char)keynum;
-		tinystr[1] = '\0';
+		tinystr_index = !tinystr_index; //mxd
 
-		return tinystr;
+		// Printable ascii.
+		tinystr[tinystr_index][0] = (char)keynum;
+		tinystr[tinystr_index][1] = '\0';
+
+		return tinystr[tinystr_index];
 	}
 
 	for (const keyname_t* kn = keynames; kn->name != NULL; kn++)
