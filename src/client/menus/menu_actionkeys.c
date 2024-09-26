@@ -22,7 +22,7 @@ static void ActionKeys_MenuDraw(void) // H2
 
 	// Draw menu title.
 	m_menu_side = 0;
-	   Com_sprintf(name, sizeof(name), "\x03%s", m_banner_action_keys->string);
+	Com_sprintf(name, sizeof(name), "\x03%s", m_banner_action_keys->string);
 	const int x = M_GetMenuLabelX(re.BF_Strlen(name));
 	const int y = M_GetMenuOffsetY(&s_keys_menu);
 	re.DrawBigFont(x, y, name, cls.m_menualpha);
