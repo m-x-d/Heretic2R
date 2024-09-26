@@ -224,10 +224,32 @@ static void PlayerConfig_MenuDraw(void)
 	Menu_Draw(&s_player_config_menu);
 }
 
-static const char* PlayerConfig_MenuKey(int key)
+static const char* PlayerConfig_MenuKey(const int key)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	if (cls.m_menustate != 2)
+		return NULL;
+
+	switch (key)
+	{
+		case K_ENTER:
+		case K_KP_ENTER:
+			Cvar_Set("skin", skin_names[s_player_skin_box.curvalue]);
+			M_PopMenu();
+			// Intentional fallthrough.
+
+		case K_ESCAPE:
+			if (!Menu_SelectItem(&s_player_config_menu))
+			{
+				Cvar_Set("name", s_player_name_field.buffer);
+				Cvar_Set("skin", skin_names[s_player_skin_box.curvalue]);
+			}
+			break;
+
+		default:
+			break;
+	}
+
+	return Default_MenuKey(&s_player_config_menu, key);
 }
 
 void M_Menu_PlayerConfig_f(void)
