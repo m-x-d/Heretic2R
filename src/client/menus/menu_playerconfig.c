@@ -205,7 +205,23 @@ static qboolean PlayerConfig_MenuInit(void)
 
 static void PlayerConfig_MenuDraw(void)
 {
-	NOT_IMPLEMENTED
+	char name[MAX_QPATH];
+
+	// Draw menu BG.
+	re.BookDrawPic(0, 0, "book/back/b_conback8.bk", cls.m_menuscale);
+
+	if (cls.m_menualpha == 0.0f)
+		return;
+
+	// Draw menu title.
+	Com_sprintf(name, sizeof(name), "\x03%s", m_banner_pconfig->string);
+	const int x = M_GetMenuLabelX(re.BF_Strlen(name));
+	const int y = M_GetMenuOffsetY(&s_player_config_menu);
+	re.DrawBigFont(x, y, name, cls.m_menualpha);
+
+	// Draw menu items.
+	s_player_config_menu.x = M_GetMenuLabelX(s_player_config_menu.width);
+	Menu_Draw(&s_player_config_menu);
 }
 
 static const char* PlayerConfig_MenuKey(int key)
