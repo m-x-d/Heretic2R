@@ -13,5 +13,6 @@ extern cvar_t* m_banner_pconfig;
 extern cvar_t* m_item_name;
 extern cvar_t* m_item_skin;
 extern cvar_t* m_item_shownames;
+extern cvar_t* skin_temp;
 
 void M_Menu_PlayerConfig_f(void);

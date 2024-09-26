@@ -12,6 +12,7 @@ cvar_t* m_banner_pconfig;
 cvar_t* m_item_name;
 cvar_t* m_item_skin;
 cvar_t* m_item_shownames;
+cvar_t* skin_temp;
 
 typedef struct
 {
@@ -27,7 +28,6 @@ static int s_current_skin_index;
 static qboolean current_skin_exists;
 static char* skin_names[MAX_PLAYER_MODELS];
 static cvar_t* skin;
-static cvar_t* skin_temp;
 
 static menuframework_s s_player_config_menu;
 

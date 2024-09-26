@@ -955,9 +955,12 @@ static void InputKey_Draw(menuinputkey_s* key, qboolean selected)
 	NOT_IMPLEMENTED
 }
 
-static void PlayerSkin_Draw(menucommon_s* item)
+static void PlayerSkin_Draw(const menucommon_s* item) // H2
 {
-	NOT_IMPLEMENTED
+	char skin_path[MAX_QPATH];
+
+	Com_sprintf(skin_path, sizeof(skin_path), "/%s/%s_i.m8", playerdir->string, skin_temp->string);
+	re.DrawStretchPic(M_GetMenuLabelX(64), item->y + item->parent->y - 160, 64, 128, skin_path, cls.m_menualpha, true);
 }
 
 static void SpinControl_Draw(const menulist_s* list, const qboolean selected)
