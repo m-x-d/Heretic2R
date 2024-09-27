@@ -27,6 +27,9 @@ extern cvar_t* name;
 // Cvars shared between vid_dll and menu logic.
 extern cvar_t* win_noalttab;
 
+// Cvars shared between input and menu logic.
+extern cvar_t* in_joystick;
+
 extern cvar_t* m_item_defaults;
 extern cvar_t* m_item_driver;
 extern cvar_t* m_item_vidmode;

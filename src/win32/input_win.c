@@ -13,7 +13,7 @@ static qboolean in_appactive;
 static cvar_t* v_centermove;
 static cvar_t* v_centerspeed;
 
-cvar_t* in_mouse;
+static cvar_t* in_mouse;
 cvar_t* in_joystick;
 
 #pragma region ========================== MOUSE CONTROL ==========================

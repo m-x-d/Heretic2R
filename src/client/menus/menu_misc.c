@@ -92,7 +92,23 @@ static void ConsoleFunc(void* self)
 
 static void Misc_SetValues(void)
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("cl_run", Clamp(cl_run->value, 0, 1));
+	s_options_alwaysrun_box.curvalue = Q_ftol(cl_run->value);
+
+	Cvar_SetValue("lookspring", Clamp(lookspring->value, 0, 1));
+	s_options_lookspring_box.curvalue = Q_ftol(lookspring->value);
+
+	Cvar_SetValue("crosshair", Clamp(crosshair->value, 0, 3));
+	s_options_crosshair_box.curvalue = Q_ftol(crosshair->value);
+
+	Cvar_SetValue("cl_doautoaim", Clamp(cl_doautoaim->value, 0, 1));
+	s_options_autotarget_box.curvalue = Q_ftol(cl_doautoaim->value);
+
+	Cvar_SetValue("in_joystick", Clamp(in_joystick->value, 0, 1));
+	s_options_joystick_box.curvalue = Q_ftol(in_joystick->value);
+
+	Cvar_SetValue("win_noalttab", Clamp(win_noalttab->value, 0, 1)); //mxd. Added value clamping.
+	s_options_noalttab_box.curvalue = Q_ftol(win_noalttab->value);
 }
 
 static void Misc_MenuInit(void) // H2
