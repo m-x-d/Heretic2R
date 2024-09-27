@@ -15,4 +15,8 @@ extern cvar_t* m_item_skin;
 extern cvar_t* m_item_shownames;
 extern cvar_t* skin_temp;
 
+// Cvars shared between client and menu_playerconfig logic.
+extern cvar_t* name;
+extern cvar_t* playerdir;
+
 void M_Menu_PlayerConfig_f(void);

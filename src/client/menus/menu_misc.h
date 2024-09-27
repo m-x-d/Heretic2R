@@ -21,5 +21,13 @@ extern cvar_t* m_item_yawspeed;
 extern cvar_t* m_item_console;
 extern cvar_t* m_item_autoweapon;
 
+// Cvars shared between vid_dll and menu_misc logic.
+extern cvar_t* win_noalttab;
+
+// Cvars shared between input and menu_misc logic.
+extern cvar_t* in_joystick;
+
 void M_Menu_Misc_f(void);
+
+// Functions shared between vid_dll and menu_misc logic.
 void Key_ClearTyping(void);
