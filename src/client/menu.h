@@ -24,6 +24,9 @@ extern cvar_t* vid_menu_mode;
 extern cvar_t* playerdir;
 extern cvar_t* name;
 
+// Cvars shared between vid_dll and menu logic.
+extern cvar_t* win_noalttab;
+
 extern cvar_t* m_item_defaults;
 extern cvar_t* m_item_driver;
 extern cvar_t* m_item_vidmode;

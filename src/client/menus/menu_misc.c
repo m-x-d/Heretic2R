@@ -6,6 +6,7 @@
 
 #include "client.h"
 #include "menu_misc.h"
+#include "menu_mousecfg.h"
 
 cvar_t* m_banner_misc;
 
@@ -22,9 +23,270 @@ cvar_t* m_item_autoweapon;
 
 static menuframework_s s_misc_menu;
 
-static void Misc_MenuInit(void) // H2
+static menulist_s s_options_crosshair_box;
+static menulist_s s_options_alwaysrun_box;
+static menulist_s s_options_autotarget_box;
+static menulist_s s_options_autoweapon_box;
+static menulist_s s_options_captions_box;
+static menulist_s s_options_lookspring_box;
+static menulist_s s_options_noalttab_box;
+static menulist_s s_options_joystick_box;
+static menuslider_s s_options_yawspeed_slider;
+static menulist_s s_options_violence_box;
+static menuaction_s s_options_console_action;
+
+static void CrosshairFunc(void* self)
 {
 	NOT_IMPLEMENTED
+}
+
+static void AlwaysRunFunc(void* self)
+{
+	NOT_IMPLEMENTED
+}
+
+static void AutoTargetFunc(void* self)
+{
+	NOT_IMPLEMENTED
+}
+
+static void AutoWeaponFunc(void* self)
+{
+	NOT_IMPLEMENTED
+}
+
+static void ShowCaptionsFunc(void* self)
+{
+	NOT_IMPLEMENTED
+}
+
+static void LookspringFunc(void* self)
+{
+	NOT_IMPLEMENTED
+}
+
+static void NoAltTabFunc(void* self)
+{
+	NOT_IMPLEMENTED
+}
+
+static void JoystickFunc(void* self)
+{
+	NOT_IMPLEMENTED
+}
+
+static void YawSpeedFunc(void* self)
+{
+	NOT_IMPLEMENTED
+}
+
+static void ViolenceFunc(void* self)
+{
+	NOT_IMPLEMENTED
+}
+
+static void ConsoleFunc(void* self)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Misc_SetValues(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void Misc_MenuInit(void) // H2
+{
+#define NUM_CROSSHAIRS		4
+#define NUM_VIOLENCE_LEVELS	4
+
+	static char crosshair_names[NUM_CROSSHAIRS][MAX_QPATH];
+	static char* crosshair_refs[NUM_CROSSHAIRS + 1];
+
+	static char violence_names[NUM_VIOLENCE_LEVELS][MAX_QPATH];
+	static char* violence_refs[NUM_VIOLENCE_LEVELS + 1];
+
+	static char name_crosshair[MAX_QPATH];
+	static char name_alwaysrun[MAX_QPATH];
+	static char name_autotarget[MAX_QPATH];
+	static char name_autoweapon[MAX_QPATH];
+	static char name_caption[MAX_QPATH];
+	static char name_lookspring[MAX_QPATH];
+	static char name_noalttab[MAX_QPATH];
+	static char name_joystick[MAX_QPATH];
+	static char name_yawspeed[MAX_QPATH];
+	static char name_violence[MAX_QPATH];
+	static char name_console[MAX_QPATH];
+
+	cvar_t* cvar;
+	char cvar_name[64];
+
+	// Init crosshair labels.
+	for (int i = 0; i < NUM_CROSSHAIRS; i++)
+	{
+		crosshair_refs[i] = crosshair_names[i];
+		Com_sprintf(cvar_name, sizeof(cvar_name), "m_generic_crosshair%d", i);
+		cvar = Cvar_Get(cvar_name, "", 0);
+		strcpy_s(crosshair_names[i], sizeof(crosshair_names[i]), cvar->string);
+	}
+
+	crosshair_refs[NUM_CROSSHAIRS] = NULL;
+
+	// Init violence level labels.
+	for (int i = 0; i < NUM_VIOLENCE_LEVELS; i++)
+	{
+		violence_refs[i] = violence_names[i];
+		Com_sprintf(cvar_name, sizeof(cvar_name), "m_generic_violence%d", i);
+		cvar = Cvar_Get(cvar_name, "", 0);
+		strcpy_s(violence_names[i], sizeof(violence_names[i]), cvar->string);
+	}
+
+	violence_refs[NUM_VIOLENCE_LEVELS] = NULL;
+
+	// Clamp blood level.
+	Cvar_SetValue("blood_level", Clamp(Cvar_VariableValue("blood_level"), 0, 3));
+
+	s_misc_menu.nitems = 0;
+	win_noalttab = Cvar_Get("win_noalttab", "0", CVAR_ARCHIVE);
+
+	Com_sprintf(name_crosshair, sizeof(name_crosshair), "\x02%s", m_item_crosshair->string);
+	s_options_crosshair_box.generic.type = MTYPE_SPINCONTROL;
+	s_options_crosshair_box.generic.x = 0;
+	s_options_crosshair_box.generic.y = 0;
+	s_options_crosshair_box.generic.name = name_crosshair;
+	s_options_crosshair_box.generic.width = re.BF_Strlen(name_crosshair);
+	s_options_crosshair_box.generic.flags = QMF_SINGLELINE;
+	s_options_crosshair_box.generic.callback = CrosshairFunc;
+	s_options_crosshair_box.itemnames = crosshair_refs;
+
+	Com_sprintf(name_alwaysrun, sizeof(name_alwaysrun), "\x02%s", m_item_alwaysrun->string);
+	s_options_alwaysrun_box.generic.type = MTYPE_SPINCONTROL;
+	s_options_alwaysrun_box.generic.x = 0;
+	s_options_alwaysrun_box.generic.y = 20;
+	s_options_alwaysrun_box.generic.name = name_alwaysrun;
+	s_options_alwaysrun_box.generic.width = re.BF_Strlen(name_alwaysrun);
+	s_options_alwaysrun_box.generic.flags = QMF_SINGLELINE;
+	s_options_alwaysrun_box.generic.callback = AlwaysRunFunc;
+	s_options_alwaysrun_box.itemnames = yes_no_names;
+
+	Com_sprintf(name_autotarget, sizeof(name_autotarget), "\x02%s", m_item_autotarget->string);
+	s_options_autotarget_box.generic.type = MTYPE_SPINCONTROL;
+	s_options_autotarget_box.generic.x = 0;
+	s_options_autotarget_box.generic.y = 40;
+	s_options_autotarget_box.generic.name = name_autotarget;
+	s_options_autotarget_box.generic.width = re.BF_Strlen(name_autotarget);
+	s_options_autotarget_box.generic.flags = QMF_SINGLELINE;
+	s_options_autotarget_box.generic.callback = AutoTargetFunc;
+	s_options_autotarget_box.itemnames = yes_no_names;
+
+	Com_sprintf(name_autoweapon, sizeof(name_autoweapon), "\x02%s", m_item_autoweapon->string);
+	s_options_autoweapon_box.generic.type = MTYPE_SPINCONTROL;
+	s_options_autoweapon_box.generic.x = 0;
+	s_options_autoweapon_box.generic.y = 60;
+	s_options_autoweapon_box.generic.name = name_autoweapon;
+	s_options_autoweapon_box.generic.width = re.BF_Strlen(name_autoweapon);
+	s_options_autoweapon_box.generic.flags = QMF_SINGLELINE;
+	s_options_autoweapon_box.generic.callback = AutoWeaponFunc;
+	s_options_autoweapon_box.itemnames = yes_no_names;
+	s_options_autoweapon_box.curvalue = (int)(autoweapon->value != 0.0f);
+
+	Com_sprintf(name_caption, sizeof(name_caption), "\x02%s", m_item_caption->string);
+	s_options_captions_box.generic.type = MTYPE_SPINCONTROL;
+	s_options_captions_box.generic.x = 0;
+	s_options_captions_box.generic.y = 80;
+	s_options_captions_box.generic.name = name_caption;
+	s_options_captions_box.generic.width = re.BF_Strlen(name_caption);
+	s_options_captions_box.generic.flags = QMF_SINGLELINE;
+	s_options_captions_box.generic.callback = ShowCaptionsFunc;
+	s_options_captions_box.curvalue = (int)(Cvar_VariableValue("cl_showcaptions") != 0.0f); //mxd. Original logic just sets curvalue to cl_showcaptions value.
+	s_options_captions_box.itemnames = yes_no_names;
+
+	Com_sprintf(name_lookspring, sizeof(name_lookspring), "\x02%s", m_item_lookspring->string);
+	s_options_lookspring_box.generic.type = MTYPE_SPINCONTROL;
+	s_options_lookspring_box.generic.x = 0;
+	s_options_lookspring_box.generic.y = 100;
+	s_options_lookspring_box.generic.name = name_lookspring;
+	s_options_lookspring_box.generic.width = re.BF_Strlen(name_lookspring);
+	s_options_lookspring_box.generic.flags = QMF_SINGLELINE;
+	s_options_lookspring_box.generic.callback = LookspringFunc;
+	s_options_lookspring_box.itemnames = yes_no_names;
+
+	int item_index = 6;
+	const qboolean show_noalttab_item = (Q_stricmp(Cvar_VariableString("vid_ref"), "gl") != 0 || Cvar_VariableValue("vid_fullscreen") == 0.0f);
+
+	if (show_noalttab_item)
+	{
+		//mxd. Disabled in Q2
+		Com_sprintf(name_noalttab, sizeof(name_noalttab), "\x02%s", m_item_noalttab->string);
+		s_options_noalttab_box.generic.type = MTYPE_SPINCONTROL;
+		s_options_noalttab_box.generic.x = 0;
+		s_options_noalttab_box.generic.y = 120;
+		s_options_noalttab_box.generic.name = name_noalttab;
+		s_options_noalttab_box.generic.width = re.BF_Strlen(name_noalttab);
+		s_options_noalttab_box.generic.flags = QMF_SINGLELINE;
+		s_options_noalttab_box.generic.callback = NoAltTabFunc;
+		s_options_noalttab_box.itemnames = yes_no_names;
+
+		item_index = 7;
+	}
+
+	Com_sprintf(name_joystick, sizeof(name_joystick), "\x02%s", m_item_joystick->string);
+	s_options_joystick_box.generic.y = item_index * 20;
+	s_options_joystick_box.generic.type = MTYPE_SPINCONTROL;
+	s_options_joystick_box.generic.x = 0;
+	s_options_joystick_box.generic.name = name_joystick;
+	s_options_joystick_box.generic.width = re.BF_Strlen(name_joystick);
+	s_options_joystick_box.generic.flags = QMF_SINGLELINE;
+	s_options_joystick_box.generic.callback = JoystickFunc;
+	s_options_joystick_box.itemnames = yes_no_names;
+
+	Com_sprintf(name_yawspeed, sizeof(name_yawspeed), "\x02%s", m_item_yawspeed->string);
+	s_options_yawspeed_slider.generic.y = (item_index + 1) * 20;
+	s_options_yawspeed_slider.generic.type = MTYPE_SLIDER;
+	s_options_yawspeed_slider.generic.x = 0;
+	s_options_yawspeed_slider.generic.name = name_yawspeed;
+	s_options_yawspeed_slider.generic.width = re.BF_Strlen(name_yawspeed);
+	s_options_yawspeed_slider.minvalue = 0.0f;
+	s_options_yawspeed_slider.maxvalue = 20.0f;
+	s_options_yawspeed_slider.curvalue = cl_yawspeed->value / 15.0f;
+	s_options_yawspeed_slider.generic.callback = YawSpeedFunc;
+
+	Com_sprintf(name_violence, sizeof(name_violence), "\x02%s", m_item_violence->string);
+	s_options_violence_box.generic.y = (item_index + 3) * 20;
+	s_options_violence_box.generic.type = MTYPE_SPINCONTROL;
+	s_options_violence_box.generic.x = 0;
+	s_options_violence_box.generic.name = name_violence;
+	s_options_violence_box.generic.width = re.BF_Strlen(name_violence);
+	s_options_violence_box.generic.flags = 0;
+	s_options_violence_box.generic.callback = ViolenceFunc;
+	s_options_violence_box.curvalue = Q_ftol(Cvar_VariableValue("blood_level"));
+	s_options_violence_box.itemnames = violence_refs;
+
+	Com_sprintf(name_console, sizeof(name_console), "\x02%s", m_item_console->string);
+	s_options_console_action.generic.type = MTYPE_ACTION;
+	s_options_console_action.generic.y = (item_index + 18 + (item_index + 3) * 4) * 4;
+	s_options_console_action.generic.x = 0;
+	s_options_console_action.generic.name = name_console;
+	s_options_console_action.generic.width = re.BF_Strlen(name_console);
+	s_options_console_action.generic.callback = ConsoleFunc;
+
+	Menu_AddItem(&s_misc_menu, &s_options_crosshair_box);
+	Menu_AddItem(&s_misc_menu, &s_options_alwaysrun_box);
+	Menu_AddItem(&s_misc_menu, &s_options_autotarget_box);
+	Menu_AddItem(&s_misc_menu, &s_options_autoweapon_box);
+	Menu_AddItem(&s_misc_menu, &s_options_captions_box);
+	Menu_AddItem(&s_misc_menu, &s_options_lookspring_box);
+
+	if (show_noalttab_item)
+		Menu_AddItem(&s_misc_menu, &s_options_noalttab_box);
+
+	Menu_AddItem(&s_misc_menu, &s_options_joystick_box.generic);
+	Menu_AddItem(&s_misc_menu, &s_options_yawspeed_slider.generic);
+	Menu_AddItem(&s_misc_menu, &s_options_violence_box.generic);
+	Menu_AddItem(&s_misc_menu, &s_options_console_action.generic);
+
+	Misc_SetValues();
+	Menu_Center(&s_misc_menu);
 }
 
 static void Misc_MenuDraw(void) // H2

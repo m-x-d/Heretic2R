@@ -16,7 +16,7 @@
 // Structure containing functions exported from refresh DLL
 refexport_t re;
 
-static cvar_t* win_noalttab;
+cvar_t* win_noalttab;
 static qboolean s_alttab_disabled;
 
 // Console variables that we need to access from this module
