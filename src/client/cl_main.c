@@ -76,7 +76,7 @@ cvar_t* cl_lightlevel;
 
 // New in H2:
 cvar_t* shownames;
-static cvar_t* r_detail;
+cvar_t* r_detail;
 static cvar_t* compass;
 cvar_t* cl_showcaptions;
 cvar_t* cl_doautoaim;

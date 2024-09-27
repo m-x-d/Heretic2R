@@ -11,6 +11,10 @@
 #define MAXMENUITEMS	32 // Q2: 64
 #define MENU_CENTER_X	(DEF_WIDTH / 2) //mxd
 
+// New in H2:
+#define NUM_DRIVERNAMES			16
+#define MAX_DRIVERNAME_LENGTH	20
+
 //mxd. Menu sounds
 #define SND_MENU1	"misc/menu1.wav"
 #define SND_MENU2	"misc/menu2.wav"

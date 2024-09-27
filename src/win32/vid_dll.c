@@ -12,6 +12,7 @@
 #include "sound.h"
 #include "menu.h"
 #include "sys_win.h"
+#include "menus/menu_video.h"
 
 // Structure containing functions exported from refresh DLL
 refexport_t re;

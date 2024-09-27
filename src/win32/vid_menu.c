@@ -17,19 +17,15 @@ cvar_t* m_item_contrast;
 cvar_t* m_item_detail;
 cvar_t* m_item_fullscreen;
 
-static int s_current_menu_index;
+int s_current_menu_index;
 
 static menulist_s s_ref_list[2];
-
-// New in H2:
-#define NUM_DRIVERNAMES			16
-#define MAX_DRIVERNAME_LENGTH	20
 
 static cvar_t* gl_driver;
 
 static int gl_drivers_count;
 static char gl_drivernames[NUM_DRIVERNAMES - 2][MAX_DRIVERNAME_LENGTH];
-static char* gl_drivername_labels[NUM_DRIVERNAMES];
+char* gl_drivername_labels[NUM_DRIVERNAMES];
 
 static void VID_MenuSetDetail(const int detail)
 {
@@ -143,9 +139,4 @@ void VID_PreMenuInit(void)
 
 	const float detail = Cvar_VariableValue("r_detail");
 	VID_MenuSetDetail((int)detail);
-}
-
-void VID_MenuInit(void)
-{
-	NOT_IMPLEMENTED
 }
