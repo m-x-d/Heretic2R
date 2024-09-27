@@ -35,62 +35,81 @@ static menuslider_s s_options_yawspeed_slider;
 static menulist_s s_options_violence_box;
 static menuaction_s s_options_console_action;
 
+// Q2 counterpart
 static void CrosshairFunc(void* self)
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("crosshair", (float)s_options_crosshair_box.curvalue);
 }
 
+// Q2 counterpart
 static void AlwaysRunFunc(void* self)
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("cl_run", (float)s_options_alwaysrun_box.curvalue);
 }
 
-static void AutoTargetFunc(void* self)
+static void AutoTargetFunc(void* self) // H2
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("cl_doautoaim", (float)s_options_autotarget_box.curvalue);
 }
 
-static void AutoWeaponFunc(void* self)
+static void AutoWeaponFunc(void* self) // H2
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("autoweapon", (float)s_options_autoweapon_box.curvalue);
 }
 
-static void ShowCaptionsFunc(void* self)
+static void ShowCaptionsFunc(void* self) // H2
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("cl_showcaptions", (float)s_options_captions_box.curvalue);
 }
 
+// Q2 counterpart
 static void LookspringFunc(void* self)
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("lookspring", (int)(lookspring->value == 0.0f));
 }
 
+// Q2 counterpart
 static void NoAltTabFunc(void* self)
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("win_noalttab", (float)s_options_noalttab_box.curvalue);
 }
 
+// Q2 counterpart
 static void JoystickFunc(void* self)
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("in_joystick", (float)s_options_joystick_box.curvalue);
 }
 
-static void YawSpeedFunc(void* self)
+static void YawSpeedFunc(void* self) // H2
 {
-	NOT_IMPLEMENTED
+	const menuslider_s* s = self;
+	Cvar_SetValue("cl_yawspeed", s->curvalue * 15.0f);
 }
 
-static void ViolenceFunc(void* self)
+static void ViolenceFunc(void* self) // H2
 {
-	NOT_IMPLEMENTED
+	const menulist_s* l = self;
+	Cvar_SetValue("blood_level", (float)l->curvalue);
 }
 
+// Q2 counterpart
 static void ConsoleFunc(void* self)
 {
-	NOT_IMPLEMENTED
+	// The proper way to do this is probably to have ToggleConsole_f accept a parameter.
+	if (cl.attractloop)
+	{
+		Cbuf_AddText("killserver\n");
+		return;
+	}
+
+	Key_ClearTyping();
+	Con_ClearNotify();
+
+	M_ForceMenuOff();
+	cls.key_dest = key_console;
 }
 
-static void Misc_SetValues(void)
+static void Misc_SetValues(void) // H2
 {
 	Cvar_SetValue("cl_run", Clamp(cl_run->value, 0, 1));
 	s_options_alwaysrun_box.curvalue = Q_ftol(cl_run->value);
@@ -135,7 +154,7 @@ static void Misc_MenuInit(void) // H2
 	static char name_console[MAX_QPATH];
 
 	cvar_t* cvar;
-	char cvar_name[64];
+	char cvar_name[MAX_QPATH];
 
 	// Init crosshair labels.
 	for (int i = 0; i < NUM_CROSSHAIRS; i++)

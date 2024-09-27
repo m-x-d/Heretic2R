@@ -22,3 +22,4 @@ extern cvar_t* m_item_console;
 extern cvar_t* m_item_autoweapon;
 
 void M_Menu_Misc_f(void);
+void Key_ClearTyping(void);

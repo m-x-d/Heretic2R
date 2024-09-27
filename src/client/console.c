@@ -24,7 +24,7 @@ void DrawString(int x, const int y, const char* s, const paletteRGBA_t color, in
 }
 
 // Q2 counterpart
-static void Key_ClearTyping(void)
+void Key_ClearTyping(void)
 {
 	key_lines[edit_line][1] = '\0'; // Clear any typing
 	key_linepos = 1;
