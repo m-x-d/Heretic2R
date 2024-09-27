@@ -37,32 +37,77 @@ static menulist_s s_fs_box[2];
 
 static void DriverCallback(void* self)
 {
-	NOT_IMPLEMENTED
+	s_ref_list[!s_current_menu_index].curvalue = s_ref_list[s_current_menu_index].curvalue;
+
+	if (s_ref_list[s_current_menu_index].curvalue == 0)
+	{
+		s_current_menu = &s_software_menu;
+		s_current_menu_index = SOFTWARE_MENU;
+		s_detail_slider[SOFTWARE_MENU].curvalue = 1.0f; // H2
+		s_mode_list[SOFTWARE_MENU].curvalue = 0; // H2
+	}
+	else
+	{
+		s_current_menu = &s_opengl_menu;
+		s_current_menu_index = OPENGL_MENU;
+		s_detail_slider[OPENGL_MENU].curvalue = 2.0f; // H2
+	}
 }
 
+// Q2 counterpart
 static void ScreenSizeCallback(void* self)
 {
-	NOT_IMPLEMENTED
+	const menuslider_s* slider = (menuslider_s*)self;
+	Cvar_SetValue("viewsize", slider->curvalue * 10.0f);
 }
 
-static void GammaCallback(void* self)
+static void GammaCallback(void* self) // H2
 {
-	NOT_IMPLEMENTED
+	const menuslider_s* slider = (menuslider_s*)self;
+
+	if (s_current_menu_index == SOFTWARE_MENU)
+		s_gamma_slider[OPENGL_MENU].curvalue = s_gamma_slider[SOFTWARE_MENU].curvalue;
+	else
+		s_gamma_slider[SOFTWARE_MENU].curvalue = s_gamma_slider[OPENGL_MENU].curvalue;
+
+	Cvar_SetValue("vid_gamma", (16.0f - slider->curvalue) / 16.0f);
 }
 
 static void BrightnessCallback(void* self)
 {
-	NOT_IMPLEMENTED
+	const menuslider_s* slider = (menuslider_s*)self;
+
+	if (s_current_menu_index == SOFTWARE_MENU)
+		s_brightness_slider[OPENGL_MENU].curvalue = s_brightness_slider[SOFTWARE_MENU].curvalue;
+	else
+		s_brightness_slider[SOFTWARE_MENU].curvalue = s_brightness_slider[OPENGL_MENU].curvalue;
+
+	Cvar_SetValue("vid_brightness", slider->curvalue / 16.0f);
 }
 
-static void ContrastCallback(void* self)
+static void ContrastCallback(void* self) // H2
 {
-	NOT_IMPLEMENTED
+	const menuslider_s* slider = (menuslider_s*)self;
+
+	if (s_current_menu_index == SOFTWARE_MENU)
+		s_contrast_slider[OPENGL_MENU].curvalue = s_contrast_slider[SOFTWARE_MENU].curvalue;
+	else
+		s_contrast_slider[SOFTWARE_MENU].curvalue = s_contrast_slider[OPENGL_MENU].curvalue;
+
+	Cvar_SetValue("vid_contrast", slider->curvalue / 16.0f);
 }
 
-static void DetailCallback(void* self)
+static void DetailCallback(void* self) // H2
 {
-	NOT_IMPLEMENTED
+	const menuslider_s* slider = (menuslider_s*)self;
+
+	if (s_current_menu_index == SOFTWARE_MENU)
+		s_detail_slider[OPENGL_MENU].curvalue = s_detail_slider[SOFTWARE_MENU].curvalue;
+	else
+		s_detail_slider[SOFTWARE_MENU].curvalue = s_detail_slider[OPENGL_MENU].curvalue;
+
+	Cvar_SetValue("r_detail", slider->curvalue);
+	VID_MenuSetDetail(Q_ftol(slider->curvalue));
 }
 
 static void ApplyChanges(void)

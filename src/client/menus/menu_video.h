@@ -21,3 +21,4 @@ void M_Menu_Video_f(void);
 
 // Functions shared between vid_dll and menu_video logic.
 void VID_MenuInit(void);
+void VID_MenuSetDetail(int detail);

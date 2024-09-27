@@ -27,7 +27,7 @@ static int gl_drivers_count;
 static char gl_drivernames[NUM_DRIVERNAMES - 2][MAX_DRIVERNAME_LENGTH];
 char* gl_drivername_labels[NUM_DRIVERNAMES];
 
-static void VID_MenuSetDetail(const int detail)
+void VID_MenuSetDetail(const int detail)
 {
 	switch (detail)
 	{
