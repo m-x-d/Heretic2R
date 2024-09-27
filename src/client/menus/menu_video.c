@@ -112,7 +112,83 @@ static void DetailCallback(void* self) // H2
 
 static void ApplyChanges(void)
 {
-	NOT_IMPLEMENTED
+	if (Cvar_VariableValue("gl_picmip") != m_picmip || Cvar_VariableValue("gl_skinmip") != m_skinmip)
+		vid_restart_required = true;
+
+	// Make values consistent.
+	s_fs_box[!s_current_menu_index].curvalue = s_fs_box[s_current_menu_index].curvalue;
+	s_brightness_slider[!s_current_menu_index].curvalue = s_brightness_slider[s_current_menu_index].curvalue;
+	s_ref_list[!s_current_menu_index].curvalue = s_ref_list[s_current_menu_index].curvalue;
+
+	if ((int)vid_fullscreen->value != s_fs_box[s_current_menu_index].curvalue)
+	{
+		Cvar_SetValue("vid_fullscreen", (float)s_ref_list[s_current_menu_index].curvalue);
+
+		if (s_fs_box[s_current_menu_index].curvalue != 0)
+		{
+			Cvar_SetValue("vid_xpos", 0);
+			Cvar_SetValue("vid_ypos", 0);
+		}
+
+		vid_restart_required = true;
+	}
+
+	//mxd. Disabled
+	/*if ((int)gl_ext_palettedtexture->value != s_paletted_texture_box.curvalue)
+	{
+		Cvar_SetValue("gl_ext_palettedtexture", (float)s_paletted_texture_box.curvalue);
+		vid_restart_required = true;
+	}*/
+
+	if (s_ref_list[s_current_menu_index].curvalue == SOFTWARE_MENU)
+	{
+		Cvar_SetValue("vid_gamma", (16.0f - s_gamma_slider[SOFTWARE_MENU].curvalue) / 16.0f);
+		Cvar_SetValue("vid_brightness", s_brightness_slider[SOFTWARE_MENU].curvalue / 16.0f);
+		Cvar_SetValue("vid_contrast", s_contrast_slider[SOFTWARE_MENU].curvalue / 16.0f);
+
+		if ((int)m_origmode->value != s_mode_list[SOFTWARE_MENU].curvalue)
+		{
+			Cvar_SetValue("m_origmode", (float)s_mode_list[SOFTWARE_MENU].curvalue);
+			vid_restart_required = true;
+		}
+
+		if (Q_stricmp(vid_ref->string, "gl") != 0)
+		{
+			Cvar_Set("vid_ref", "soft"); //mxd. Was "gl" in H2 1.07.
+			vid_restart_required = true;
+		}
+	}
+	else
+	{
+		Cvar_SetValue("vid_gamma", (16.0f - s_gamma_slider[OPENGL_MENU].curvalue) / 16.0f);
+		Cvar_SetValue("vid_brightness", s_brightness_slider[OPENGL_MENU].curvalue / 16.0f);
+		Cvar_SetValue("vid_contrast", s_contrast_slider[OPENGL_MENU].curvalue / 16.0f);
+
+		if ((int)m_origmode->value != s_mode_list[OPENGL_MENU].curvalue)
+		{
+			Cvar_SetValue("m_origmode", (float)s_mode_list[OPENGL_MENU].curvalue);
+			Cvar_SetValue("vid_mode", (float)s_mode_list[OPENGL_MENU].curvalue);
+			vid_restart_required = true;
+		}
+
+		//mxd. Skip extra opengl drivers selection logic.
+		if (Q_stricmp(vid_ref->string, "gl") == 0)
+		{
+			Cvar_Set("vid_ref", "gl");
+			Cvar_Set("gl_driver", "opengl32");
+			vid_restart_required = true;
+		}
+	}
+
+	if (Cvar_VariableValue("vid_gamma") != m_gamma ||
+		Cvar_VariableValue("vid_brightness") != m_brightness ||
+		Cvar_VariableValue("vid_contrast") != m_contrast)
+	{
+		vid_restart_required = true;
+	}
+
+	M_ForceMenuOff();
+	M_UpdateOrigMode(); // H2
 }
 
 void VID_MenuInit(void)
