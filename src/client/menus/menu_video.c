@@ -5,9 +5,9 @@
 //
 
 #include "client.h"
-#include "menu_video.h"
-
+#include "sound.h"
 #include "vid_dll.h"
+#include "menu_video.h"
 
 #define SOFTWARE_MENU	0
 #define OPENGL_MENU		1
@@ -21,7 +21,7 @@ static float m_detail;
 static float m_picmip;
 static float m_skinmip;
 
-static menuframework_s* s_vid_menu;
+static menuframework_s* s_current_menu;
 static menuframework_s s_opengl_menu;
 static menuframework_s s_software_menu;
 
@@ -61,6 +61,11 @@ static void ContrastCallback(void* self)
 }
 
 static void DetailCallback(void* self)
+{
+	NOT_IMPLEMENTED
+}
+
+static void ApplyChanges(void)
 {
 	NOT_IMPLEMENTED
 }
@@ -238,7 +243,7 @@ static void VID_MenuDraw(void)
 	char title[MAX_QPATH];
 
 	// Set pointer to current menu.
-	s_vid_menu = (s_current_menu_index ? &s_opengl_menu : &s_software_menu);
+	s_current_menu = (s_current_menu_index ? &s_opengl_menu : &s_software_menu);
 
 	// Draw menu BG.
 	re.BookDrawPic(0, 0, "book/back/b_conback8.bk", cls.m_menuscale);
@@ -249,18 +254,60 @@ static void VID_MenuDraw(void)
 	// Draw menu title.
 	Com_sprintf(title, sizeof(title), "\x03%s", m_banner_video->string);
 	const int x = M_GetMenuLabelX(re.BF_Strlen(title));
-	const int y = M_GetMenuOffsetY(s_vid_menu);
+	const int y = M_GetMenuOffsetY(s_current_menu);
 	re.DrawBigFont(x, y, title, cls.m_menualpha);
 
 	s_software_menu.x = M_GetMenuLabelX(s_software_menu.width);
 	s_opengl_menu.x = M_GetMenuLabelX(s_opengl_menu.width);
-	Menu_AdjustCursor(s_vid_menu, 1);
-	Menu_Draw(s_vid_menu);
+	Menu_AdjustCursor(s_current_menu, 1);
+	Menu_Draw(s_current_menu);
 }
 
-static const char* VID_MenuKey(int key)
+static const char* VID_MenuKey(const int key)
 {
-	NOT_IMPLEMENTED
+	if (cls.m_menustate != 2)
+		return NULL;
+
+	switch (key)
+	{
+		case K_ENTER:
+		case K_KP_ENTER:
+		case K_ESCAPE:
+			if (!Menu_SelectItem(s_current_menu))
+			{
+				S_StopAllSounds_Sounding();
+				ApplyChanges();
+			}
+			break;
+
+		case K_UPARROW:
+		case K_KP_UPARROW:
+			s_current_menu->cursor--;
+			Menu_AdjustCursor(s_current_menu, -1);
+			return SND_MENU2;
+
+		case K_DOWNARROW:
+		case K_KP_DOWNARROW:
+			s_current_menu->cursor++;
+			Menu_AdjustCursor(s_current_menu, 1);
+			return SND_MENU2;
+
+		case K_LEFTARROW:
+		case K_KP_LEFTARROW:
+			S_StopAllSounds_Sounding();
+			Menu_SlideItem(s_current_menu, -1);
+			break;
+
+		case K_RIGHTARROW:
+		case K_KP_RIGHTARROW:
+			S_StopAllSounds_Sounding();
+			Menu_SlideItem(s_current_menu, 1);
+			break;
+
+		default:
+			break;
+	}
+
 	return NULL;
 }
 
