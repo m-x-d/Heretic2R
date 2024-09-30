@@ -9,5 +9,6 @@
 #include "menu.h"
 
 extern cvar_t* m_banner_load;
+extern menuframework_s s_loadgame_menu;
 
 void M_Menu_Loadgame_f(void);

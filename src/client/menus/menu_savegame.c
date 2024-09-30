@@ -8,6 +8,8 @@
 
 cvar_t* m_banner_save;
 
+menuframework_s s_savegame_menu;
+
 void M_Menu_Savegame_f(void)
 {
 	NOT_IMPLEMENTED

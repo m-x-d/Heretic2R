@@ -10,7 +10,7 @@
 
 // Delete save/<XXX>/
 //mxd. Same as Q2 version, except FS_Gamedir() -> FS_Userdir() change.
-static void SV_WipeSavegame(char* savename)
+void SV_WipeSavegame(char* savename)
 {
 	char name[MAX_OSPATH];
 

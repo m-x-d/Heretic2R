@@ -8,8 +8,11 @@
 
 #include "q_shared.h"
 
+#define MENU_EMPTY		"<*****>"
+
 #define MAXMENUITEMS	32 // Q2: 64
 #define MENU_CENTER_X	(DEF_WIDTH / 2) //mxd
+#define MAX_SAVEGAMES	8 // Q2: 15
 
 //mxd. Menu sounds
 #define SND_MENU1	"misc/menu1.wav"
