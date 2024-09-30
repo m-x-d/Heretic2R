@@ -198,6 +198,7 @@ typedef struct
 void M_PushMenu(m_drawfunc_t draw, m_keyfunc_t key);
 void M_PopMenu(void);
 char* Default_MenuKey(menuframework_s* menu, int key);
+const char* Generic_MenuKey(int key);
 qboolean Field_Key(menufield_s* field, int key);
 void M_UpdateOrigMode(void); // H2
 float M_GetMenuAlpha(void); // H2

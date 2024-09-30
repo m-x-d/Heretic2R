@@ -4,16 +4,81 @@
 // Copyright 1998 Raven Software
 //
 
+#include "client.h"
+#include "clfx_dll.h"
 #include "menu_worldmap.h"
 
 cvar_t* m_banner_worldmap;
 
-void M_WorldMap_Draw(void)
+static qboolean HaveWorldMap(void) // H2
 {
-	NOT_IMPLEMENTED
+	if (!fxapi_initialized)
+		return false;
+
+	const int level_num = Q_atoi(cl.configstrings[CS_LEVEL_NUMBER]);
+	if (level_num < 2)
+		return false;
+
+	const int map_index = fxe.GetLMIMax();
+	if (map_index < level_num)
+	{
+		Com_DPrintf("Error : Invalid map index\n");
+		return false;
+	}
+
+	return true;
 }
 
-void M_Menu_World_Map_f(void)
+void M_WorldMap_Draw(void) // H2
 {
-	NOT_IMPLEMENTED
+	if (!HaveWorldMap())
+	{
+		re.BookDrawPic(0, 0, "book/back/b_worldmap.bk", cls.m_menuscale);
+		return;
+	}
+
+	level_map_info_t* map_infos = fxe.GetLMI();
+	const int level_num = Q_atoi(cl.configstrings[CS_LEVEL_NUMBER]) & 255;
+	const level_map_info_t* info = &map_infos[level_num];
+
+	if (info->world_map != NULL)
+		re.BookDrawPic(0, 0, info->world_map, cls.m_menuscale);
+
+	if (cls.m_menualpha == 0.0f || (info->flags & LMI_NODRAW) != 0)
+		return;
+
+	// Draw old maps progress.
+	if (level_num > 2)
+	{
+		level_map_info_t* dot_info = &map_infos[2];
+		for (int i = 0; i < level_num - 2; i++, dot_info++)
+		{
+			if (dot_info->flags & LMI_PROGRESS)
+			{
+				int* dot_coords = dot_info->dot_coords;
+				for (int c = 0; c < dot_info->count; c++, dot_coords += 2)
+					re.DrawStretchPic(dot_coords[0] - 4, dot_coords[1] - 4, 8, 8, "misc/dot.m32", cls.m_menualpha, true);
+			}
+
+			if (dot_info->flags & LMI_DRAW)
+				re.DrawStretchPic(dot_info->x - 8, dot_info->y - 8, 16, 16, "misc/bigdot.m32", cls.m_menualpha, true);
+		}
+	}
+
+	// Draw current map progress.
+	if (info->flags & LMI_PROGRESS)
+	{
+		const int progress = cl.frame.playerstate.map_percentage * info->count / 100;
+		int* dot_coords = info->dot_coords;
+		for (int i = 0; i < progress; i++, dot_coords += 2)
+			re.DrawStretchPic(dot_coords[0] - 4, dot_coords[1] - 4, 8, 8, "misc/dot.m32", cls.m_menualpha, true);
+	}
+
+	if (info->flags & LMI_DRAW)
+		re.DrawStretchPic(info->x - 8, info->y - 8, 16, 16, "misc/bigdot.m32", cls.m_menualpha, true);
+}
+
+void M_Menu_World_Map_f(void) // H2
+{
+	M_PushMenu(M_WorldMap_Draw, Generic_MenuKey);
 }

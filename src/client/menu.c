@@ -356,6 +356,14 @@ char* Default_MenuKey(menuframework_s* menu, const int key)
 	return NULL;
 }
 
+const char* Generic_MenuKey(const int key) // H2
+{
+	if (cls.m_menustate == 2 && key != 0)
+		M_PopMenu();
+
+	return NULL;
+}
+
 qboolean Field_Key(menufield_s* field, int key)
 {
 	switch (key)
