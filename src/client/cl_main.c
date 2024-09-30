@@ -339,9 +339,11 @@ static void CL_ListIgnore_f(void)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
 void CL_Quit_f(void)
 {
-	NOT_IMPLEMENTED
+	CL_Disconnect();
+	Com_Quit();
 }
 
 // Q2 counterpart
