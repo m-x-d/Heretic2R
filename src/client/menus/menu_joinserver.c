@@ -15,7 +15,6 @@ cvar_t* m_banner_join;
 cvar_t* m_item_refresh;
 
 #define MAX_LOCAL_SERVERS	8
-#define NO_SERVER_STRING	"<*****>"
 
 static menuframework_s s_joinserver_menu;
 
@@ -42,7 +41,7 @@ static void SearchLocalGames(void)
 	m_num_servers = 0;
 
 	for (int i = 0; i < MAX_LOCAL_SERVERS; i++)
-		strcpy_s(local_server_names[i], sizeof(local_server_names[i]), NO_SERVER_STRING); //mxd. strcpy -> strcpy_s
+		strcpy_s(local_server_names[i], sizeof(local_server_names[i]), MENU_EMPTY); //mxd. strcpy -> strcpy_s
 
 	M_DrawTextBox(8, 72, 36, 3);
 	M_Print(32, 80, GM_CH_SERVERS, TextPalette[P_WHITE]);
@@ -67,7 +66,7 @@ static void JoinServerFunc(void* self)
 	char buffer[128];
 
 	const int index = (menuaction_s*)self - s_joinserver_server_actions;
-	if (index >= m_num_servers || Q_stricmp(local_server_names[index], NO_SERVER_STRING) == 0)
+	if (index >= m_num_servers || Q_stricmp(local_server_names[index], MENU_EMPTY) == 0)
 		return;
 
 	S_StopAllSounds_Sounding(); // H2
@@ -106,7 +105,7 @@ void JoinServer_MenuInit(void)
 	{
 		menuaction_s* item = &s_joinserver_server_actions[i];
 		item->generic.type = MTYPE_ACTION;
-		strcpy_s(local_server_names[i], sizeof(local_server_names[i]), NO_SERVER_STRING);
+		strcpy_s(local_server_names[i], sizeof(local_server_names[i]), MENU_EMPTY);
 		item->generic.name = local_server_names[i];
 		item->generic.width = re.BF_Strlen(local_server_names[i]);
 		item->generic.flags = QMF_LEFT_JUSTIFY | QMF_MULTILINE | QMF_SELECT_SOUND;
