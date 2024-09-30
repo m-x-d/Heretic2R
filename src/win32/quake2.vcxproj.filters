@@ -96,9 +96,6 @@
     <ClCompile Include="..\client\cl_view.c">
       <Filter>client</Filter>
     </ClCompile>
-    <ClCompile Include="vid_menu.c">
-      <Filter>win32</Filter>
-    </ClCompile>
     <ClCompile Include="..\client\cl_skeletons.c">
       <Filter>client</Filter>
     </ClCompile>

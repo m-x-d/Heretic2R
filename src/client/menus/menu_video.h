@@ -8,10 +8,6 @@
 
 #include "menu.h"
 
-// Variables shared between vid_menu and menu_video logic.
-extern int s_current_menu_index;
-extern char* gl_drivername_labels[NUM_DRIVERNAMES];
-
 extern cvar_t* m_banner_video;
 
 // Cvars shared between client and menu_video logic.

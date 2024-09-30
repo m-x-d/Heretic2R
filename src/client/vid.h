@@ -35,6 +35,6 @@ void VID_Shutdown(void);
 void VID_CheckChanges(void);
 
 //void VID_MenuInit(void); //mxd. Moved to menu_video.h
-void VID_PreMenuInit(void);
+//void VID_PreMenuInit(void); //mxd. Moved to vid_dll.h
 //void VID_MenuDraw(void); //mxd. No longer needed.
 //const char* VID_MenuKey(int); //mxd. No longer needed.

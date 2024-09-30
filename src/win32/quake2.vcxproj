@@ -87,7 +87,6 @@
     <ClCompile Include="snd_dll.c" />
     <ClCompile Include="sys_win.c" />
     <ClCompile Include="vid_dll.c" />
-    <ClCompile Include="vid_menu.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\client\client.h" />
