@@ -130,7 +130,7 @@ static void Game_MenuInit(void)
 
 	Com_sprintf(name_load, sizeof(name_load), "\x02%s", m_banner_load->string);
 	s_load_game_action.generic.type = MTYPE_ACTION;
-	s_load_game_action.generic.flags = QMF_LEFT_JUSTIFY;
+	s_load_game_action.generic.flags = QMF_LEFT_JUSTIFY | QMF_SELECT_SOUND; //mxd. Added QMF_SELECT_SOUND flag.
 	s_load_game_action.generic.x = 0;
 	s_load_game_action.generic.y = 120;
 	s_load_game_action.generic.name = name_load;
@@ -139,7 +139,7 @@ static void Game_MenuInit(void)
 
 	Com_sprintf(name_save, sizeof(name_save), "\x02%s", m_banner_save->string);
 	s_save_game_action.generic.type = MTYPE_ACTION;
-	s_save_game_action.generic.flags = QMF_LEFT_JUSTIFY;
+	s_save_game_action.generic.flags = QMF_LEFT_JUSTIFY | QMF_SELECT_SOUND; //mxd. Added QMF_SELECT_SOUND flag.
 	s_save_game_action.generic.x = 0;
 	s_save_game_action.generic.y = 140;
 	s_save_game_action.generic.name = name_save;
