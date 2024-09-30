@@ -6,15 +6,15 @@
 
 #include "client.h"
 #include "server.h"
+#include "menu_saveload.h"
 #include "menu_loadgame.h"
-#include "menu_savegame.h"
 
 cvar_t* m_banner_load;
 
 menuframework_s s_loadgame_menu;
 static menuaction_s s_loadgame_actions[MAX_SAVEGAMES];
 
-static char m_savestrings[MAX_SAVEGAMES][64];
+char m_savestrings[MAX_SAVEGAMES][64];
 static qboolean m_savevalid[MAX_SAVEGAMES];
 
 static void CheckSavegameDir(char* savedir)
@@ -48,7 +48,7 @@ static void CheckSavegameDir(char* savedir)
 	}
 }
 
-static void Create_Savestrings(void)
+void Create_Savestrings(void)
 {
 	char file_name[MAX_OSPATH];
 	FILE* f;
