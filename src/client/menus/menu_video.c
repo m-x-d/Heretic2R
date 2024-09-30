@@ -172,7 +172,7 @@ static void ApplyChanges(void)
 			vid_restart_required = true;
 		}
 
-		if (Q_stricmp(vid_ref->string, "gl") != 0)
+		if (Q_stricmp(vid_ref->string, "soft") != 0)
 		{
 			Cvar_Set("vid_ref", "soft"); //mxd. Was "gl" in H2 1.07.
 			vid_restart_required = true;
@@ -192,7 +192,7 @@ static void ApplyChanges(void)
 		}
 
 		//mxd. Skip extra opengl drivers selection logic.
-		if (Q_stricmp(vid_ref->string, "gl") == 0)
+		if (Q_stricmp(vid_ref->string, "gl") != 0)
 		{
 			Cvar_Set("vid_ref", "gl");
 			Cvar_Set("gl_driver", "opengl32");
@@ -207,6 +207,7 @@ static void ApplyChanges(void)
 		vid_restart_required = true;
 	}
 
+	//TODO: don't drop to console when vid restart is not needed.
 	M_ForceMenuOff();
 	M_UpdateOrigMode(); // H2
 }
@@ -297,16 +298,14 @@ void VID_PreMenuInit(void)
 	if (scr_viewsize == NULL)
 		scr_viewsize = Cvar_Get("viewsize", "100", CVAR_ARCHIVE);
 
-	if (Q_stricmp(vid_ref->string, "gl") == 0)
+	if (Q_stricmp(vid_ref->string, "soft") == 0)
 	{
-		//TODO: this initializes 'Software' menu, so above check should be inverted?
 		s_current_menu_index = SOFTWARE_MENU;
 		s_ref_list[0].curvalue = 0;
 		s_ref_list[1].curvalue = 0;
 	}
-	else
+	else //mxd. Original code does 'Q_stricmp(vid_ref->string, "gl") == 0' check here.
 	{
-		//TODO: original code does 'Q_stricmp(vid_ref->string, "gl") == 0' check here again, so below code is never called. 
 		s_current_menu_index = OPENGL_MENU;
 		s_ref_list[1].curvalue = 1;
 
