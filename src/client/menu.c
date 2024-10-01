@@ -137,7 +137,7 @@ typedef struct
 	m_keyfunc_t key;
 } menulayer_t;
 
-uint m_menu_side; // H2 (0 - left, 1 - right)?
+uint m_menu_side; // H2 (0 - right, 1 - left)
 static menulayer_t m_layers[MAX_MENU_DEPTH + 1]; // Q2: MAX_MENU_DEPTH
 static int m_menudepth;
 static float quick_menus_old_value; // H2

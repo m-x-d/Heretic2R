@@ -13,6 +13,7 @@
 
 cvar_t* m_item_helpscreen;
 
+//TODO: is drawn incorrectly when m_menu_side == 1 (eg. when invoked from Main menu). 
 static void Help_MenuDraw(void) // H2
 {
 	// Draw menu BG.

@@ -86,27 +86,36 @@ static void SplitMessages(char* src, GameMessage_t* dst, const int src_len)
 char* CL_GetGameString(const int i)
 {
 	const int index = i & 8191;
-	if (index <= MAX_MESSAGES)
+	if (index < MAX_MESSAGES) //mxd. '<= MAX_MESSAGES' in original logic.
 		return game_messages[index].message;
 
 	return NULL;
 }
 
-char* CL_GetGameWav(int i)
+char* CL_GetGameWav(const int i)
 {
-	NOT_IMPLEMENTED
+	const int index = i & 8191;
+	if (index < MAX_MESSAGES) //mxd. '<= MAX_MESSAGES' in original logic.
+		return game_messages[index].sound_name;
+
 	return NULL;
 }
 
-char* CL_GetLevelString(int i)
+char* CL_GetLevelString(const int i)
 {
-	NOT_IMPLEMENTED
+	const int index = i & 8191;
+	if (index < MAX_MESSAGES) //mxd. '<= MAX_MESSAGES' in original logic.
+		return level_messages[index].message;
+
 	return NULL;
 }
 
-char* CL_GetLevelWav(int i)
+char* CL_GetLevelWav(const int i)
 {
-	NOT_IMPLEMENTED
+	const int index = i & 8191;
+	if (index < MAX_MESSAGES) //mxd. '<= MAX_MESSAGES' in original logic.
+		return level_messages[index].sound_name;
+
 	return NULL;
 }
 
