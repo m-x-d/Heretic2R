@@ -64,10 +64,10 @@ extern int numnodes;
 extern cnode_t map_nodes[MAX_MAP_NODES + 6]; // Extra for box hull
 // 524336 bytes
 
-extern int numleafs; // Allow leaf funcs to be called without a map
+//extern int numleafs; // Allow leaf funcs to be called without a map
 extern cleaf_t map_leafs[MAX_MAP_LEAFS]; // 1048576 bytes
 extern int emptyleaf;
-extern int solidleaf;
+//extern int solidleaf; //mxd. Unused
 
 extern int numleafbrushes;
 extern ushort map_leafbrushes[MAX_MAP_LEAFBRUSHES]; // 131072 bytes

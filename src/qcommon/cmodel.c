@@ -11,10 +11,13 @@ char map_name[MAX_QPATH];
 
 int numplanes;
 int numnodes;
-int numleafs = 1; // Allow leaf funcs to be called without a map
 
 int numtexinfo;
 csurface_t map_surfaces[MAX_MAP_TEXINFO];
+
+static int numleafs = 1; // Allow leaf funcs to be called without a map.
+cleaf_t map_leafs[MAX_MAP_LEAFS];
+int emptyleaf;
 
 int numcmodels;
 cmodel_t map_cmodels[MAX_MAP_MODELS];
@@ -54,7 +57,7 @@ static void CMod_LoadSurfaces(const lump_t* l)
 	if (count < 1)
 		Com_Error(ERR_DROP, "Map with no surfaces");
 
-	if (count >= MAX_MAP_TEXINFO) //mxd. '>' in Q2 and original version.
+	if (count >= MAX_MAP_TEXINFO) //mxd. '>' in Q2 and original logic.
 		Com_Error(ERR_DROP, "Map has too many surfaces");
 
 	numtexinfo = count;
@@ -68,9 +71,56 @@ static void CMod_LoadSurfaces(const lump_t* l)
 	}
 }
 
-static void CMod_LoadLeafs(lump_t* l)
+// Q2 counterpart
+static void CMod_LoadLeafs(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	dleaf_t* in = (void*)(cmod_base + l->fileofs);
+
+	if (l->filelen % sizeof(*in) != 0)
+		Com_Error(ERR_DROP, "MOD_LoadBmodel: funny lump size");
+
+	const int count = l->filelen / (int)sizeof(*in);
+
+	if (count < 1)
+		Com_Error(ERR_DROP, "Map with no leafs");
+
+	// Need to save space for box planes.
+	if (count >= MAX_MAP_PLANES) //mxd. '>' in Q2 and original logic.
+		Com_Error(ERR_DROP, "Map has too many planes");
+
+	cleaf_t* out = map_leafs;
+	numclusters = 0;
+	numleafs = count;
+
+	for (int i = 0; i < count; i++, in++, out++)
+	{
+		out->contents = in->contents;
+		out->cluster = in->cluster;
+		out->area = in->area;
+		out->firstleafbrush = in->firstleafbrush;
+		out->numleafbrushes = in->numleafbrushes;
+
+		if (out->cluster >= numclusters)
+			numclusters = out->cluster + 1;
+	}
+
+	if (map_leafs[0].contents != CONTENTS_SOLID)
+		Com_Error(ERR_DROP, "Map leaf 0 is not CONTENTS_SOLID");
+
+	//solidleaf = 0; //mxd. Unused
+	emptyleaf = -1;
+
+	for (int i = 1; i < numleafs; i++)
+	{
+		if (map_leafs[i].contents == 0)
+		{
+			emptyleaf = i;
+			break;
+		}
+	}
+
+	if (emptyleaf == -1)
+		Com_Error(ERR_DROP, "Map does not have an empty leaf");
 }
 
 static void CMod_LoadLeafBrushes(lump_t* l)
@@ -169,7 +219,10 @@ cmodel_t* CM_LoadMap(const char* name, const qboolean clientload, uint* checksum
 	// Load the file.
 	const int length = FS_LoadFile(name, (void**)&buf);
 	if (buf == NULL)
+	{
 		Com_Error(ERR_DROP, "Couldn`t load %s", name);
+		return NULL; //mxd. Added to prevent false-positive code analysis warning.
+	}
 
 	last_checksum = Com_BlockChecksum(buf, length);
 	*checksum = last_checksum;
