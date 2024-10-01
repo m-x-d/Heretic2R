@@ -1140,6 +1140,11 @@ void Menu_DrawString(const int x, const int y, const char* name, const float alp
 	}
 }
 
+void Menu_DrawMessage(char* message, int line_length) // H2
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart
 menucommon_s* Menu_ItemAtCursor(const menuframework_s* menu)
 {

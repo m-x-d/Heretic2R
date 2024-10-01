@@ -214,4 +214,5 @@ void Menu_AdjustCursor(menuframework_s* menu, int dir);
 void Menu_Center(menuframework_s* menu);
 void Menu_Draw(const menuframework_s* menu);
 void Menu_DrawString(int x, int y, const char* name, float alpha, qboolean selected);
+void Menu_DrawMessage(char* message, int line_length); // H2
 menucommon_s* Menu_ItemAtCursor(const menuframework_s* menu);
