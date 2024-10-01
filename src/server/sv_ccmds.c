@@ -249,9 +249,15 @@ static void SV_Loadgame_f(void)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
+// Kick everyone off, possibly in preparation for a new game.
 static void SV_KillServer_f(void)
 {
-	NOT_IMPLEMENTED
+	if (svs.initialized)
+	{
+		SV_Shutdown("Server was killed.\n", false);
+		NET_Config(false); // Close network sockets.
+	}
 }
 
 static void SV_ServerCommand_f(void)
