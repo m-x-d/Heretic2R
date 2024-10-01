@@ -371,9 +371,13 @@ static void Cmd_Alias_f(void)
 	a->value = CopyString(cmd);
 }
 
+// Q2 counterpart
+// Causes execution of the remainder of the command buffer to be delayed until next frame.
+// This allows commands like:
+// bind g "impulse 5 ; +attack ; wait ; -attack ; impulse 2"
 static void Cmd_Wait_f(void)
 {
-	NOT_IMPLEMENTED
+	cmd_wait = true;
 }
 
 // New in H2
