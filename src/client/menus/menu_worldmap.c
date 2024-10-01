@@ -28,7 +28,7 @@ static qboolean HaveWorldMap(void) // H2
 	return true;
 }
 
-void M_WorldMap_Draw(void) // H2
+void M_WorldMap_MenuDraw(void) // H2
 {
 	if (!HaveWorldMap())
 	{
@@ -79,5 +79,5 @@ void M_WorldMap_Draw(void) // H2
 
 void M_Menu_World_Map_f(void) // H2
 {
-	M_PushMenu(M_WorldMap_Draw, Generic_MenuKey);
+	M_PushMenu(M_WorldMap_MenuDraw, Generic_MenuKey);
 }

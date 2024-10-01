@@ -297,7 +297,7 @@ static void SCR_DrawLoading(void)
 	cls.m_menuscale = 1.0f;
 	cls.m_menualpha = 1.0f;
 
-	M_WorldMap_Draw();
+	M_WorldMap_MenuDraw();
 
 	cls.m_menuscale = 0.0f;
 	cls.m_menualpha = 0.0f;

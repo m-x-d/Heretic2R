@@ -59,7 +59,7 @@ static void CityMap_DefaultDraw(void) // H2
 		Menu_DrawObjectives(message, viddef.width * 18 / DEF_WIDTH + 8);
 }
 
-static void CityMap_Draw(void) // H2
+static void CityMap_MenuDraw(void) // H2
 {
 	if (HaveCityMap())
 	{
@@ -78,5 +78,5 @@ static void CityMap_Draw(void) // H2
 
 void M_Menu_City_Map_f(void) // H2
 {
-	M_PushMenu(CityMap_Draw, Generic_MenuKey);
+	M_PushMenu(CityMap_MenuDraw, Generic_MenuKey);
 }
