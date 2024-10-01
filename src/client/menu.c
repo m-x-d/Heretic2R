@@ -1140,32 +1140,79 @@ void Menu_DrawString(const int x, const int y, const char* name, const float alp
 	}
 }
 
-static int SplitLines(char* dst, char* src, int line_length) // H2
+static char* FindNewline(char* start, char* end)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	if (start < end)
+	{
+		char* s = start;
+		while (s++ < end)
+		{
+			if (*s == '\n')
+				return s;
+		}
+	}
+	else
+	{
+		char* e = end;
+		while (e-- >= start)
+		{
+			if (strchr("$% \n", *e) != NULL)
+				return e;
+		}
+	}
+
+	return NULL;
 }
 
-static int GetLineLength(char* text) // H2
+//mxd. Added 'dst_size' arg.
+static int SplitLines(char* dst, const int dst_size, const char* src, const int line_length) // H2
 {
-	NOT_IMPLEMENTED
-	return 0;
+	int src_len = (int)strlen(src);
+	strcpy_s(dst, dst_size, src);
+	int num_lines = 1;
+
+	if (src_len < line_length)
+		return num_lines;
+
+	do
+	{
+		char* cur_end = &dst[min(line_length, src_len)];
+		char* newline = FindNewline(dst, cur_end);
+
+		src_len += dst - newline;
+		dst = newline;
+		*dst = 0;
+		num_lines++;
+	} while (src_len >= line_length);
+
+	return num_lines;
 }
 
-void Menu_DrawObjectives(char* message, const int max_line_length) // H2
+static int GetLineLength(const char* text) // H2
+{
+	int len = 0;
+	while (*text != 0 && *text != '\n')
+	{
+		text++;
+		len++;
+	}
+
+	return len;
+}
+
+void Menu_DrawObjectives(const char* message, const int max_line_length) // H2
 {
 	char buffer[1024];
 
 	int color_index = P_OBJ_NORMAL;
-	const int num_lines = SplitLines(buffer, message, max_line_length);
+	const int num_lines = SplitLines(buffer, sizeof(buffer), message, max_line_length);
 	int y = viddef.height * 80 / DEF_HEIGHT;
 	char* s = buffer;
 
 	for (int i = 0; i < num_lines; i++, s++, y += 8)
 	{
 		const int len = GetLineLength(s);
-		int x = M_GetMenuLabelX(len * 8 * DEF_WIDTH / viddef.width);
-		x *= viddef.width / DEF_WIDTH;
+		int x = M_GetMenuLabelX(len * 8 * DEF_WIDTH / viddef.width) * viddef.width / DEF_WIDTH;
 
 		for (int j = 0; j < len; j++, s++, x += 8)
 		{
@@ -1187,6 +1234,15 @@ void Menu_DrawObjectives(char* message, const int max_line_length) // H2
 			}
 		}
 	}
+}
+
+void Menu_DrawTitle(const cvar_t* title) // H2
+{
+	char buffer[MAX_QPATH];
+
+	Com_sprintf(buffer, sizeof(buffer), "\x03%s", title->string);
+	const int x = M_GetMenuLabelX(re.BF_Strlen(buffer));
+	re.DrawBigFont(x, 60, buffer, cls.m_menualpha);
 }
 
 // Q2 counterpart
