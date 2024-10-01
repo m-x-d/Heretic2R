@@ -1140,9 +1140,53 @@ void Menu_DrawString(const int x, const int y, const char* name, const float alp
 	}
 }
 
-void Menu_DrawMessage(char* message, int line_length) // H2
+static int SplitLines(char* dst, char* src, int line_length) // H2
 {
 	NOT_IMPLEMENTED
+	return 0;
+}
+
+static int GetLineLength(char* text) // H2
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+void Menu_DrawObjectives(char* message, const int max_line_length) // H2
+{
+	char buffer[1024];
+
+	int color_index = P_OBJ_NORMAL;
+	const int num_lines = SplitLines(buffer, message, max_line_length);
+	int y = viddef.height * 80 / DEF_HEIGHT;
+	char* s = buffer;
+
+	for (int i = 0; i < num_lines; i++, s++, y += 8)
+	{
+		const int len = GetLineLength(s);
+		int x = M_GetMenuLabelX(len * 8 * DEF_WIDTH / viddef.width);
+		x *= viddef.width / DEF_WIDTH;
+
+		for (int j = 0; j < len; j++, s++, x += 8)
+		{
+			switch (*s)
+			{
+				case '$':
+					color_index = P_OBJ_BOLD;
+					break;
+
+				case '%':
+					color_index = P_OBJ_NORMAL;
+					break;
+
+				default:
+					paletteRGBA_t color = TextPalette[color_index];
+					color.a = (byte)Q_ftol(cls.m_menualpha * 255);
+					re.DrawChar(x, y, *s, color);
+					break;
+			}
+		}
+	}
 }
 
 // Q2 counterpart
