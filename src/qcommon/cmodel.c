@@ -13,6 +13,9 @@ int numplanes;
 int numnodes;
 int numleafs = 1; // Allow leaf funcs to be called without a map
 
+int numtexinfo;
+csurface_t map_surfaces[MAX_MAP_TEXINFO];
+
 int numcmodels;
 cmodel_t map_cmodels[MAX_MAP_MODELS];
 
@@ -39,9 +42,30 @@ static void CM_InitBoxHull(void)
 	NOT_IMPLEMENTED
 }
 
-static void CMod_LoadSurfaces(lump_t* l)
+static void CMod_LoadSurfaces(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	texinfo_t* in = (void*)(cmod_base + l->fileofs);
+
+	if (l->filelen % sizeof(*in) != 0)
+		Com_Error(ERR_DROP, "MOD_LoadBmodel: funny lump size");
+
+	const int count = l->filelen / (int)sizeof(*in);
+
+	if (count < 1)
+		Com_Error(ERR_DROP, "Map with no surfaces");
+
+	if (count >= MAX_MAP_TEXINFO) //mxd. '>' in Q2 and original version.
+		Com_Error(ERR_DROP, "Map has too many surfaces");
+
+	numtexinfo = count;
+	csurface_t* out = map_surfaces; // Q2: mapsurface_t.
+
+	for (int i = 0; i < count; i++, in++, out++)
+	{
+		strncpy_s(out->name, sizeof(out->name), in->texture, sizeof(out->name) - 1); //mxd. strncpy -> strncpy_s
+		out->flags = in->flags;
+		out->value = in->value;
+	}
 }
 
 static void CMod_LoadLeafs(lump_t* l)
