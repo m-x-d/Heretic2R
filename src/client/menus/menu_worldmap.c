@@ -19,8 +19,7 @@ static qboolean HaveWorldMap(void) // H2
 	if (level_num < 2)
 		return false;
 
-	const int map_index = fxe.GetLMIMax();
-	if (map_index < level_num)
+	if (level_num >= fxe.GetLMIMax()) //mxd. '>' in original logic.
 	{
 		Com_DPrintf("Error : Invalid map index\n");
 		return false;
@@ -38,7 +37,7 @@ void M_WorldMap_Draw(void) // H2
 	}
 
 	level_map_info_t* map_infos = fxe.GetLMI();
-	const int level_num = Q_atoi(cl.configstrings[CS_LEVEL_NUMBER]) & 255;
+	const int level_num = Q_atoi(cl.configstrings[CS_LEVEL_NUMBER]);
 	const level_map_info_t* info = &map_infos[level_num];
 
 	if (info->world_map != NULL)
