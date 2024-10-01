@@ -66,6 +66,7 @@
     <ClCompile Include="..\qcommon\common.c" />
     <ClCompile Include="..\qcommon\cvar.c" />
     <ClCompile Include="..\qcommon\files.c" />
+    <ClCompile Include="..\qcommon\md4.c" />
     <ClCompile Include="..\qcommon\netmsg_read.c" />
     <ClCompile Include="..\qcommon\netmsg_write.c" />
     <ClCompile Include="..\qcommon\net_chan.c" />

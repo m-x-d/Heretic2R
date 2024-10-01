@@ -125,7 +125,7 @@ extern qboolean trace_ispoint; // Optimized case
 
 #include "cmodel.h"
 
-void CM_InitBoxHull(void);
+//void CM_InitBoxHull(void); //mxd. Not needed
 int CM_BoxLeafnums_headnode(vec3_t mins, vec3_t maxs, int* list, int listsize, int headnode, int* topnode);
 void CM_TestInLeaf(int leafnum);
 void CM_RecursiveHullCheck(int num, float p1f, float p2f, vec3_t p1, vec3_t p2);

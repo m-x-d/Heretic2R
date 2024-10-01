@@ -32,9 +32,79 @@ int c_pointcontents;
 int c_traces;
 int c_brush_traces;
 
+static byte* cmod_base;
+
+static void CM_InitBoxHull(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void CMod_LoadSurfaces(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void CMod_LoadLeafs(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void CMod_LoadLeafBrushes(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void CMod_LoadPlanes(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void CMod_LoadBrushes(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void CMod_LoadBrushSides(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void CMod_LoadSubmodels(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void CMod_LoadNodes(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void CMod_LoadAreas(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void CMod_LoadAreaPortals(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void CMod_LoadVisibility(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+static void CMod_LoadEntityString(lump_t* l)
+{
+	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart
+// Loads in the map and all submodels.
 cmodel_t* CM_LoadMap(const char* name, const qboolean clientload, uint* checksum)
 {
 	static uint last_checksum;
+	uint* buf;
 
 	map_noareas = Cvar_Get("map_noareas", "0", 0);
 
@@ -72,8 +142,44 @@ cmodel_t* CM_LoadMap(const char* name, const qboolean clientload, uint* checksum
 		return &map_cmodels[0];
 	}
 
-	NOT_IMPLEMENTED
-	return NULL;
+	// Load the file.
+	const int length = FS_LoadFile(name, (void**)&buf);
+	if (buf == NULL)
+		Com_Error(ERR_DROP, "Couldn`t load %s", name);
+
+	last_checksum = Com_BlockChecksum(buf, length);
+	*checksum = last_checksum;
+
+	dheader_t header = *(dheader_t*)buf;
+
+	if (header.version != BSPVERSION)
+		Com_Error(ERR_DROP, "CMod_LoadBrushModel: %s has wrong version number (%i should be %i)", name, header.version, BSPVERSION);
+
+	cmod_base = (byte*)buf;
+
+	// Load into heap.
+	CMod_LoadSurfaces(&header.lumps[LUMP_TEXINFO]);
+	CMod_LoadLeafs(&header.lumps[LUMP_LEAFS]);
+	CMod_LoadLeafBrushes(&header.lumps[LUMP_LEAFBRUSHES]);
+	CMod_LoadPlanes(&header.lumps[LUMP_PLANES]);
+	CMod_LoadBrushes(&header.lumps[LUMP_BRUSHES]);
+	CMod_LoadBrushSides(&header.lumps[LUMP_BRUSHSIDES]);
+	CMod_LoadSubmodels(&header.lumps[LUMP_MODELS]);
+	CMod_LoadNodes(&header.lumps[LUMP_NODES]);
+	CMod_LoadAreas(&header.lumps[LUMP_AREAS]);
+	CMod_LoadAreaPortals(&header.lumps[LUMP_AREAPORTALS]);
+	CMod_LoadVisibility(&header.lumps[LUMP_VISIBILITY]);
+	CMod_LoadEntityString(&header.lumps[LUMP_ENTITIES]);
+
+	FS_FreeFile(buf);
+	CM_InitBoxHull();
+
+	memset(portalopen, 0, sizeof(portalopen));
+	FloodAreaConnections();
+
+	strcpy_s(map_name, sizeof(map_name), name);
+
+	return &map_cmodels[0];
 }
 
 cmodel_t* CM_InlineModel(char* name)
