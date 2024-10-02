@@ -28,6 +28,9 @@ ushort map_leafbrushes[MAX_MAP_LEAFBRUSHES];
 int numcmodels;
 cmodel_t map_cmodels[MAX_MAP_MODELS];
 
+int numbrushes;
+cbrush_t map_brushes[MAX_MAP_BRUSHES];
+
 int numvisibility;
 
 int numentitychars;
@@ -55,7 +58,7 @@ static void CMod_LoadSurfaces(const lump_t* l)
 {
 	texinfo_t* in = (void*)(cmod_base + l->fileofs);
 
-	if (l->filelen % sizeof(*in) != 0)
+	if (l->filelen % sizeof(*in))
 		Com_Error(ERR_DROP, "MOD_LoadBmodel: funny lump size");
 
 	const int count = l->filelen / (int)sizeof(*in);
@@ -82,7 +85,7 @@ static void CMod_LoadLeafs(const lump_t* l)
 {
 	dleaf_t* in = (void*)(cmod_base + l->fileofs);
 
-	if (l->filelen % sizeof(*in) != 0)
+	if (l->filelen % sizeof(*in))
 		Com_Error(ERR_DROP, "MOD_LoadBmodel: funny lump size");
 
 	const int count = l->filelen / (int)sizeof(*in);
@@ -189,9 +192,28 @@ static void CMod_LoadPlanes(const lump_t* l)
 	}
 }
 
-static void CMod_LoadBrushes(lump_t* l)
+// Q2 counterpart
+static void CMod_LoadBrushes(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	dbrush_t* in = (void*)(cmod_base + l->fileofs);
+
+	if (l->filelen % sizeof(*in))
+		Com_Error(ERR_DROP, "MOD_LoadBmodel: funny lump size");
+
+	const int count = l->filelen / (int)sizeof(*in);
+
+	if (count >= MAX_MAP_BRUSHES) //mxd. '>' in Q2 and original logic.
+		Com_Error(ERR_DROP, "Map has too many brushes");
+
+	cbrush_t* out = map_brushes;
+	numbrushes = count;
+
+	for (int i = 0; i < count; i++, out++, in++)
+	{
+		out->firstbrushside = in->firstside;
+		out->numsides = in->numsides;
+		out->contents = in->contents;
+	}
 }
 
 static void CMod_LoadBrushSides(lump_t* l)
