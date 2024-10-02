@@ -15,6 +15,9 @@ int numnodes;
 int numtexinfo;
 csurface_t map_surfaces[MAX_MAP_TEXINFO];
 
+int numplanes;
+cplane_t map_planes[MAX_MAP_PLANES + 6]; // Extra for box hull
+
 static int numleafs = 1; // Allow leaf funcs to be called without a map.
 cleaf_t map_leafs[MAX_MAP_LEAFS];
 int emptyleaf;
@@ -150,9 +153,40 @@ static void CMod_LoadLeafBrushes(const lump_t* l)
 		*out = *in;
 }
 
-static void CMod_LoadPlanes(lump_t* l)
+// Q2 counterpart
+static void CMod_LoadPlanes(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	dplane_t* in = (void*)(cmod_base + l->fileofs);
+
+	if (l->filelen % sizeof(*in))
+		Com_Error(ERR_DROP, "MOD_LoadBmodel: funny lump size");
+
+	const int count = l->filelen / (int)sizeof(*in);
+
+	if (count < 1)
+		Com_Error(ERR_DROP, "Map with no planes");
+
+	// Need to save space for box planes.
+	if (count >= MAX_MAP_PLANES) //mxd. '>' in Q2 and original logic.
+		Com_Error(ERR_DROP, "Map has too many planes");
+
+	cplane_t* out = map_planes;
+	numplanes = count;
+
+	for (int i = 0; i < count; i++, in++, out++)
+	{
+		byte bits = 0;
+		for (int j = 0; j < 3; j++)
+		{
+			out->normal[j] = in->normal[j];
+			if (out->normal[j] < 0)
+				bits |= 1 << j;
+		}
+
+		out->dist = in->dist;
+		out->type = (byte)in->type;
+		out->signbits = bits;
+	}
 }
 
 static void CMod_LoadBrushes(lump_t* l)
