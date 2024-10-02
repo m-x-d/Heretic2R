@@ -37,7 +37,7 @@ typedef struct
 	char name[MAX_QPATH]; // Map or cinematic name
 	struct cmodel_s* models[MAX_MODELS];
 
-	char configstrings[MAX_CONFIGSTRINGS][MAX_QPATH];
+	char configstrings[MAX_CONFIGSTRINGS][512]; //mxd. Increased string size from MAX_QPATH, so CS_STATUSBAR can fit into single slot.
 	entity_state_t baselines[MAX_EDICTS];
 
 	// The multicast buffer is used to send a message to a set of clients.
