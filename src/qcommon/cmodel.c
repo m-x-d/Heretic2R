@@ -364,20 +364,24 @@ static void CMod_LoadAreaPortals(const lump_t* l)
 	}
 }
 
-// Q2 counterpart
 static void CMod_LoadVisibility(const lump_t* l)
 {
 	numvisibility = l->filelen;
 
 	if (l->filelen >= MAX_MAP_VISIBILITY) //mxd. '>' in Q2 and original logic.
-		Com_Error(ERR_DROP, "Map has too large visibility lump");
+		Com_Error(ERR_DROP, "Map has too large visibility lump (size %i greater than max %i)", l->filelen, MAX_MAP_VISIBILITY); // H2: more detailed error message.
 
 	memcpy(map_visibility, cmod_base + l->fileofs, l->filelen);
 }
 
-static void CMod_LoadEntityString(lump_t* l)
+static void CMod_LoadEntityString(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	numentitychars = l->filelen;
+
+	if (l->filelen >= MAX_MAP_ENTSTRING) //mxd. '>' in Q2 and original logic.
+		Com_Error(ERR_DROP, "Map has too large entity lump");
+
+	memcpy(map_entitystring, cmod_base + l->fileofs, l->filelen);
 }
 
 // Q2 counterpart
