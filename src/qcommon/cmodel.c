@@ -530,10 +530,18 @@ cmodel_t* CM_LoadMap(const char* name, const qboolean clientload, uint* checksum
 	return &map_cmodels[0];
 }
 
-cmodel_t* CM_InlineModel(char* name)
+// Q2 counterpart
+cmodel_t* CM_InlineModel(const char* name)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	if (name == NULL || *name != '*')
+		Com_Error(ERR_DROP, "CM_InlineModel: bad name");
+
+	const int num = Q_atoi(name + 1);
+
+	if (num < 1 || num >= numcmodels)
+		Com_Error(ERR_DROP, "CM_InlineModel: bad number");
+
+	return &map_cmodels[num];
 }
 
 // Q2 counterpart
