@@ -19,6 +19,9 @@ static int numleafs = 1; // Allow leaf funcs to be called without a map.
 cleaf_t map_leafs[MAX_MAP_LEAFS];
 int emptyleaf;
 
+int numleafbrushes;
+ushort map_leafbrushes[MAX_MAP_LEAFBRUSHES];
+
 int numcmodels;
 cmodel_t map_cmodels[MAX_MAP_MODELS];
 
@@ -123,9 +126,28 @@ static void CMod_LoadLeafs(const lump_t* l)
 		Com_Error(ERR_DROP, "Map does not have an empty leaf");
 }
 
-static void CMod_LoadLeafBrushes(lump_t* l)
+// Q2 counterpart
+static void CMod_LoadLeafBrushes(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	ushort* in = (void*)(cmod_base + l->fileofs);
+
+	if (l->filelen % sizeof(*in))
+		Com_Error(ERR_DROP, "MOD_LoadBmodel: funny lump size");
+
+	const int count = l->filelen / (int)sizeof(*in);
+
+	if (count < 1)
+		Com_Error(ERR_DROP, "Map with no planes");
+
+	// Need to save space for box planes.
+	if (count >= MAX_MAP_LEAFBRUSHES) //mxd. '>' in Q2 and original logic.
+		Com_Error(ERR_DROP, "Map has too many leafbrushes");
+
+	ushort* out = map_leafbrushes;
+	numleafbrushes = count;
+
+	for (int i = 0; i < count; i++, in++, out++)
+		*out = *in;
 }
 
 static void CMod_LoadPlanes(lump_t* l)
