@@ -42,6 +42,8 @@ int numentitychars;
 char map_entitystring[MAX_MAP_ENTSTRING];
 
 int numareas = 1;
+carea_t map_areas[MAX_MAP_AREAS];
+
 int numclusters = 1;
 
 qboolean portalopen[MAX_MAP_AREAPORTALS];
@@ -309,9 +311,29 @@ static void CMod_LoadNodes(const lump_t* l)
 	}
 }
 
-static void CMod_LoadAreas(lump_t* l)
+// Q2 counterpart
+static void CMod_LoadAreas(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	darea_t* in = (void*)(cmod_base + l->fileofs);
+
+	if (l->filelen % sizeof(*in))
+		Com_Error(ERR_DROP, "MOD_LoadBmodel: funny lump size");
+
+	const int count = l->filelen / (int)sizeof(*in);
+
+	if (count >= MAX_MAP_AREAS) //mxd. '>' in Q2 and original logic.
+		Com_Error(ERR_DROP, "Map has too many areas");
+
+	carea_t* out = map_areas;
+	numareas = count;
+
+	for (int i = 0; i < count; i++, in++, out++)
+	{
+		out->numareaportals = in->numareaportals;
+		out->firstareaportal = in->firstareaportal;
+		out->floodvalid = 0;
+		out->floodnum = 0;
+	}
 }
 
 static void CMod_LoadAreaPortals(lump_t* l)
