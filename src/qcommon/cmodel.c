@@ -12,6 +12,9 @@ char map_name[MAX_QPATH];
 int numplanes;
 int numnodes;
 
+int numbrushsides;
+cbrushside_t map_brushsides[MAX_MAP_BRUSHSIDES];
+
 int numtexinfo;
 csurface_t map_surfaces[MAX_MAP_TEXINFO];
 
@@ -216,9 +219,32 @@ static void CMod_LoadBrushes(const lump_t* l)
 	}
 }
 
-static void CMod_LoadBrushSides(lump_t* l)
+// Q2 counterpart
+static void CMod_LoadBrushSides(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	dbrushside_t* in = (void*)(cmod_base + l->fileofs);
+
+	if (l->filelen % sizeof(*in))
+		Com_Error(ERR_DROP, "MOD_LoadBmodel: funny lump size");
+
+	const int count = l->filelen / (int)sizeof(*in);
+
+	// Need to save space for box planes.
+	if (count >= MAX_MAP_BRUSHSIDES) //mxd. '>' in Q2 and original logic.
+		Com_Error(ERR_DROP, "Map has too many planes");
+
+	cbrushside_t* out = map_brushsides;
+	numbrushsides = count;
+
+	for (int i = 0; i < count; i++, in++, out++)
+	{
+		out->plane = &map_planes[in->planenum];
+
+		if (in->texinfo >= numtexinfo)
+			Com_Error(ERR_DROP, "Bad brushside texinfo");
+
+		out->surface = &map_surfaces[in->texinfo];
+	}
 }
 
 static void CMod_LoadSubmodels(lump_t* l)
