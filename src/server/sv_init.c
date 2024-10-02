@@ -12,10 +12,63 @@
 server_static_t svs; // Persistent server info
 server_t sv; // Local server
 
-static int SV_FindIndex(char* name, int start, int max, qboolean create)
+static void FixResourceName(char* src_name, char* dest_name, int cstr_type) // H2
 {
 	NOT_IMPLEMENTED
-	return 0;
+}
+
+static int SV_FindIndex(char* name, const int start, const int max, const qboolean create)
+{
+	char fixed_name[MAX_QPATH]; // H2
+	int index;
+
+	if (name == NULL || *name == 0)
+		return 0;
+
+	FixResourceName(name, fixed_name, start); // H2
+
+	for (index = 1; index < max && sv.configstrings[start + index][0] != 0; index++)
+		if (strcmp(sv.configstrings[start + index], fixed_name) == 0) // H2: name -> fixed_name
+			return index;
+
+	if (!create)
+		return 0;
+
+	if (index == max)
+	{
+		switch (start) // H2: extra error messages.
+		{
+			case CS_MODELS:
+				Com_Error(ERR_DROP, "*Index: overflow (CS_MODELS)");
+				break;
+
+			case CS_SOUNDS:
+				Com_Error(ERR_DROP, "*Index: overflow (CS_SOUNDS)");
+				break;
+
+			case CS_IMAGES:
+				Com_Error(ERR_DROP, "*Index: overflow (CS_IMAGES)");
+				break;
+
+			default:
+				Com_Error(ERR_DROP, "*Index: overflow");
+				break;
+		}
+	}
+
+	strncpy_s(sv.configstrings[start + index], sizeof(sv.configstrings[start + index]), fixed_name, sizeof(fixed_name)); //mxd. strncpy -> strncpy_s
+
+	if (sv.state != ss_loading)
+	{
+		// Send the update to everyone.
+		SZ_Clear(&sv.multicast);
+		MSG_WriteByte(&sv.multicast, svc_configstring);
+		MSG_WriteShort(&sv.multicast, start + index);
+		MSG_WriteString(&sv.multicast, fixed_name); // H2: name -> fixed_name
+		SV_Multicast(vec3_origin, MULTICAST_ALL_R);
+	}
+
+	return index;
 }
 
 int SV_ModelIndex(char* name)
