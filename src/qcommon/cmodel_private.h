@@ -93,7 +93,7 @@ extern dareaportal_t map_areaportals[MAX_MAP_AREAPORTALS]; // 8192 bytes
 
 extern int numclusters;
 
-extern csurface_t nullsurface;
+//extern csurface_t nullsurface; //mxd. Disabled
 
 extern int floodvalid;
 
@@ -101,10 +101,11 @@ extern qboolean portalopen[MAX_MAP_AREAPORTALS]; // 4096 bytes
 
 extern cvar_t* map_noareas;
 
-extern cplane_t* box_planes;
-extern int box_headnode;
-extern cbrush_t* box_brush;
-extern cleaf_t* box_leaf;
+//mxd. Disabled
+//extern cplane_t* box_planes;
+//extern int box_headnode;
+//extern cbrush_t* box_brush;
+//extern cleaf_t* box_leaf;
 
 extern int leaf_count;
 extern int leaf_maxcount;

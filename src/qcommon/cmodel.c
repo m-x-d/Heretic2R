@@ -6,6 +6,7 @@
 
 #include "cmodel.h"
 #include "cmodel_private.h"
+#include "Vector.h"
 
 char map_name[MAX_QPATH];
 
@@ -61,9 +62,68 @@ int c_brush_traces;
 
 static byte* cmod_base;
 
+static cplane_t* box_planes;
+static int box_headnode;
+static csurface_t nullsurface; // Q2: mapsurface_t
+
+// Q2 counterpart
+// Set up the planes and nodes so that the six floats of a bounding box
+// can just be stored out and get a proper clipping hull structure.
 static void CM_InitBoxHull(void)
 {
-	NOT_IMPLEMENTED
+	box_headnode = numnodes;
+	box_planes = &map_planes[numplanes];
+
+	if (numnodes + 6 > MAX_MAP_NODES || numbrushes + 1 > MAX_MAP_BRUSHES || numleafbrushes + 1 > MAX_MAP_LEAFBRUSHES ||
+		numbrushsides + 6 > MAX_MAP_BRUSHSIDES || numplanes + 12 > MAX_MAP_PLANES)
+	{
+		Com_Error(ERR_DROP, "Not enough room for box tree");
+	}
+
+	cbrush_t* box_brush = &map_brushes[numbrushes]; //mxd. Made 'box_brush' local.
+	box_brush->numsides = 6;
+	box_brush->firstbrushside = numbrushsides;
+	box_brush->contents = CONTENTS_MONSTER;
+
+	cleaf_t* box_leaf = &map_leafs[numleafs]; //mxd. Made 'box_leaf' local.
+	box_leaf->contents = CONTENTS_MONSTER;
+	box_leaf->firstleafbrush = (ushort)numleafbrushes;
+	box_leaf->numleafbrushes = 1;
+
+	map_leafbrushes[numleafbrushes] = (ushort)numbrushes;
+
+	for (int i = 0; i < 6; i++)
+	{
+		const int side = i & 1;
+
+		// Brush sides.
+		cbrushside_t* s = &map_brushsides[numbrushsides + i];
+		s->plane = map_planes + (numplanes + i * 2 + side);
+		s->surface = &nullsurface;
+
+		// Nodes.
+		cnode_t* c = &map_nodes[box_headnode + i];
+		c->plane = map_planes + (numplanes + i * 2);
+		c->children[side] = -1 - emptyleaf;
+
+		if (i != 5)
+			c->children[side ^ 1] = box_headnode + i + 1;
+		else
+			c->children[side ^ 1] = -1 - numleafs;
+
+		// Planes.
+		cplane_t* p = &box_planes[i * 2];
+		p->type = (byte)(i >> 1);
+		p->signbits = 0;
+		VectorClear(p->normal);
+		p->normal[i >> 1] = 1;
+
+		p = &box_planes[i * 2 + 1];
+		p->type = (byte)(3 + (i >> 1));
+		p->signbits = 0;
+		VectorClear(p->normal);
+		p->normal[i >> 1] = -1;
+	}
 }
 
 static void CMod_LoadSurfaces(const lump_t* l)
