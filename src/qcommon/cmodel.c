@@ -9,9 +9,6 @@
 
 char map_name[MAX_QPATH];
 
-int numplanes;
-int numnodes;
-
 int numbrushsides;
 cbrushside_t map_brushsides[MAX_MAP_BRUSHSIDES];
 
@@ -20,6 +17,11 @@ csurface_t map_surfaces[MAX_MAP_TEXINFO];
 
 int numplanes;
 cplane_t map_planes[MAX_MAP_PLANES + 6]; // Extra for box hull
+
+int numplanes;
+
+int numnodes;
+cnode_t map_nodes[MAX_MAP_NODES + 6]; // Extra for box hull
 
 static int numleafs = 1; // Allow leaf funcs to be called without a map.
 cleaf_t map_leafs[MAX_MAP_LEAFS];
@@ -280,9 +282,31 @@ static void CMod_LoadSubmodels(const lump_t* l)
 	}
 }
 
-static void CMod_LoadNodes(lump_t* l)
+// Q2 counterpart
+static void CMod_LoadNodes(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	dnode_t* in = (void*)(cmod_base + l->fileofs);
+
+	if (l->filelen % sizeof(*in))
+		Com_Error(ERR_DROP, "MOD_LoadBmodel: funny lump size");
+
+	const int count = l->filelen / (int)sizeof(*in);
+
+	if (count < 1)
+		Com_Error(ERR_DROP, "Map has no nodes");
+
+	if (count >= MAX_MAP_NODES) //mxd. '>' in Q2 and original logic.
+		Com_Error(ERR_DROP, "Map has too many nodes");
+
+	cnode_t* out = map_nodes;
+	numnodes = count;
+
+	for (int i = 0; i < count; i++, out++, in++)
+	{
+		out->plane = &map_planes[in->planenum];
+		for (int j = 0; j < 2; j++)
+			out->children[j] = in->children[j];
+	}
 }
 
 static void CMod_LoadAreas(lump_t* l)
