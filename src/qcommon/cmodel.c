@@ -37,6 +37,8 @@ int numbrushes;
 cbrush_t map_brushes[MAX_MAP_BRUSHES];
 
 int numvisibility;
+byte map_visibility[MAX_MAP_VISIBILITY];
+dvis_t* map_vis = (dvis_t*)map_visibility;
 
 int numentitychars;
 char map_entitystring[MAX_MAP_ENTSTRING];
@@ -362,9 +364,15 @@ static void CMod_LoadAreaPortals(const lump_t* l)
 	}
 }
 
-static void CMod_LoadVisibility(lump_t* l)
+// Q2 counterpart
+static void CMod_LoadVisibility(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	numvisibility = l->filelen;
+
+	if (l->filelen >= MAX_MAP_VISIBILITY) //mxd. '>' in Q2 and original logic.
+		Com_Error(ERR_DROP, "Map has too large visibility lump");
+
+	memcpy(map_visibility, cmod_base + l->fileofs, l->filelen);
 }
 
 static void CMod_LoadEntityString(lump_t* l)
