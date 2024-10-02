@@ -247,9 +247,37 @@ static void CMod_LoadBrushSides(const lump_t* l)
 	}
 }
 
-static void CMod_LoadSubmodels(lump_t* l)
+// Q2 counterpart
+static void CMod_LoadSubmodels(const lump_t* l)
 {
-	NOT_IMPLEMENTED
+	dmodel_t* in = (void*)(cmod_base + l->fileofs);
+
+	if (l->filelen % sizeof(*in))
+		Com_Error(ERR_DROP, "MOD_LoadBmodel: funny lump size");
+
+	const int count = l->filelen / (int)sizeof(*in);
+
+	if (count < 1)
+		Com_Error(ERR_DROP, "Map with no models");
+
+	if (count >= MAX_MAP_MODELS) //mxd. '>' in Q2 and original logic.
+		Com_Error(ERR_DROP, "Map has too many models");
+
+	numcmodels = count;
+	cmodel_t* out = map_cmodels;
+
+	for (int i = 0; i < count; i++, in++, out++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			// Spread the mins / maxs by a pixel.
+			out->mins[j] = in->mins[j] - 1;
+			out->maxs[j] = in->maxs[j] + 1;
+			out->origin[j] = in->origin[j];
+		}
+
+		out->headnode = in->headnode;
+	}
 }
 
 static void CMod_LoadNodes(lump_t* l)
