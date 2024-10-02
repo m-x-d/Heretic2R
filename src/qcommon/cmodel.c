@@ -66,8 +66,6 @@ static cplane_t* box_planes;
 static int box_headnode;
 static csurface_t nullsurface; // Q2: mapsurface_t
 
-static int floodvalid;
-
 // Q2 counterpart
 // Set up the planes and nodes so that the six floats of a bounding box
 // can just be stored out and get a proper clipping hull structure.
@@ -500,7 +498,7 @@ cmodel_t* CM_LoadMap(const char* name, const qboolean clientload, uint* checksum
 	last_checksum = Com_BlockChecksum(buf, length);
 	*checksum = last_checksum;
 
-	dheader_t header = *(dheader_t*)buf;
+	const dheader_t header = *(dheader_t*)buf;
 
 	if (header.version != BSPVERSION)
 		Com_Error(ERR_DROP, "CMod_LoadBrushModel: %s has wrong version number (%i should be %i)", name, header.version, BSPVERSION);
@@ -583,7 +581,7 @@ byte* CM_ClusterPHS(int cluster)
 #pragma region ========================== AREAPORTALS ==========================
 
 // Q2 counterpart
-static void FloodArea_r(carea_t* area, const int floodnum)
+static void FloodArea_r(carea_t* area, const int floodnum, const int floodvalid) //mxd. Added 'floodvalid' arg.
 {
 	if (area->floodvalid == floodvalid)
 	{
@@ -598,13 +596,15 @@ static void FloodArea_r(carea_t* area, const int floodnum)
 		dareaportal_t* p = &map_areaportals[area->firstareaportal];
 		for (int i = 0; i < area->numareaportals; i++, p++)
 			if (portalopen[p->portalnum])
-				FloodArea_r(&map_areas[p->otherarea], floodnum);
+				FloodArea_r(&map_areas[p->otherarea], floodnum, floodvalid);
 	}
 }
 
 // Q2 counterpart
 void FloodAreaConnections(void)
 {
+	static int floodvalid; //mxd. Made local static
+
 	// All current floods are now invalid.
 	floodvalid++;
 	int floodnum = 0;
@@ -617,7 +617,7 @@ void FloodAreaConnections(void)
 		if (area->floodvalid != floodvalid)
 		{
 			floodnum++;
-			FloodArea_r(area, floodnum);
+			FloodArea_r(area, floodnum, floodvalid);
 		}
 	}
 }
