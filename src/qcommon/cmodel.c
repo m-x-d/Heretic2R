@@ -66,6 +66,8 @@ static cplane_t* box_planes;
 static int box_headnode;
 static csurface_t nullsurface; // Q2: mapsurface_t
 
+static int floodvalid;
+
 // Q2 counterpart
 // Set up the planes and nodes so that the six floats of a bounding box
 // can just be stored out and get a proper clipping hull structure.
@@ -578,9 +580,46 @@ byte* CM_ClusterPHS(int cluster)
 	return NULL;
 }
 
+#pragma region ========================== AREAPORTALS ==========================
+
+// Q2 counterpart
+static void FloodArea_r(carea_t* area, const int floodnum)
+{
+	if (area->floodvalid == floodvalid)
+	{
+		if (area->floodnum != floodnum)
+			Com_Error(ERR_DROP, "FloodArea_r: reflooded");
+	}
+	else
+	{
+		area->floodnum = floodnum;
+		area->floodvalid = floodvalid;
+
+		dareaportal_t* p = &map_areaportals[area->firstareaportal];
+		for (int i = 0; i < area->numareaportals; i++, p++)
+			if (portalopen[p->portalnum])
+				FloodArea_r(&map_areas[p->otherarea], floodnum);
+	}
+}
+
+// Q2 counterpart
 void FloodAreaConnections(void)
 {
-	NOT_IMPLEMENTED
+	// All current floods are now invalid.
+	floodvalid++;
+	int floodnum = 0;
+
+	// Area 0 is not used.
+	for (int i = 1; i < numareas; i++)
+	{
+		carea_t* area = &map_areas[i];
+
+		if (area->floodvalid != floodvalid)
+		{
+			floodnum++;
+			FloodArea_r(area, floodnum);
+		}
+	}
 }
 
 void CM_SetAreaPortalState(int portalnum, qboolean open)
@@ -593,3 +632,5 @@ qboolean CM_AreasConnected(int area1, int area2)
 	NOT_IMPLEMENTED
 	return false;
 }
+
+#pragma endregion

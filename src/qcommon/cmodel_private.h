@@ -95,7 +95,7 @@ extern int numclusters;
 
 //extern csurface_t nullsurface; //mxd. Disabled
 
-extern int floodvalid;
+//extern int floodvalid; //mxd. Disabled
 
 extern qboolean portalopen[MAX_MAP_AREAPORTALS]; // 4096 bytes
 
