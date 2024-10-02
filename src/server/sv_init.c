@@ -6,10 +6,17 @@
 
 #include "server.h"
 #include "sv_effects.h"
+#include "cmodel.h"
 #include "Vector.h"
 
 server_static_t svs; // Persistent server info
 server_t sv; // Local server
+
+static int SV_FindIndex(char* name, int start, int max, qboolean create)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
 
 int SV_ModelIndex(char* name)
 {
@@ -19,8 +26,10 @@ int SV_ModelIndex(char* name)
 
 int SV_SoundIndex(char* name)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	if (name[0] != 0) // H2: extra sanity check.
+		return SV_FindIndex(name, CS_SOUNDS, MAX_SOUNDS, true);
+
+	return -1;
 }
 
 int SV_ImageIndex(char* name)
