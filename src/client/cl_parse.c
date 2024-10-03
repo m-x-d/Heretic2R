@@ -6,6 +6,7 @@
 
 #include "client.h"
 #include "cl_messages.h"
+#include "cmodel.h"
 #include "sound.h"
 #include "tokens.h"
 
