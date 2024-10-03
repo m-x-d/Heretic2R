@@ -20,3 +20,13 @@
 #define TOKEN_M_MODELS		254
 #define TOKEN_M_MONSTERS	253
 #define TOKEN_M_OBJECTS		252
+
+//mxd. Data types to simplify tokens handling.
+typedef struct
+{
+	char type;
+	char* path;
+} PackInfo_t;
+
+extern PackInfo_t sound_pack_infos[];
+extern PackInfo_t model_pack_infos[];

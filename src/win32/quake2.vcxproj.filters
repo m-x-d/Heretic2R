@@ -258,6 +258,9 @@
     <ClCompile Include="..\qcommon\md4.c">
       <Filter>qcommon</Filter>
     </ClCompile>
+    <ClCompile Include="..\qcommon\tokens.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">

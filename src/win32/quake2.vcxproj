@@ -72,6 +72,7 @@
     <ClCompile Include="..\qcommon\net_chan.c" />
     <ClCompile Include="..\qcommon\pmove.c" />
     <ClCompile Include="..\qcommon\p_dll.c" />
+    <ClCompile Include="..\qcommon\tokens.c" />
     <ClCompile Include="..\server\sv_ccmds.c" />
     <ClCompile Include="..\server\sv_effects.c" />
     <ClCompile Include="..\server\sv_game.c" />

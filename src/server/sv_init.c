@@ -7,28 +7,72 @@
 #include "server.h"
 #include "sv_effects.h"
 #include "cmodel.h"
+#include "tokens.h"
 #include "Vector.h"
 
 server_static_t svs; // Persistent server info
 server_t sv; // Local server
 
-static void FixResourceName(char* src_name, char* dest_name, int cstr_type) // H2
+static qboolean TryPackResourceName(char* dest_name, const int dest_size, const PackInfo_t* info) //mxd
 {
-	NOT_IMPLEMENTED
+	const uint path_len = strlen(info->path);
+
+	if (strncmp(info->path, dest_name, path_len) == 0)
+	{
+		const uint len = strlen(dest_name);
+		dest_name[0] = info->type;
+		memmove_s(&dest_name[1], dest_size - 1, &dest_name[path_len + 1], len - path_len);
+
+		return true;
+	}
+
+	return false;
 }
 
-static int SV_FindIndex(char* name, const int start, const int max, const qboolean create)
+//mxd. Added 'dest_size' arg. Rewritten to avoid copious amounts of code repetition...
+static void PackResourceName(const char* src_name, char* dest_name, const int dest_size, const int cstr_type) // H2
 {
-	char fixed_name[MAX_QPATH]; // H2
+	strcpy_s(dest_name, dest_size, src_name); //mxd. strcpy -> strcpy_s
+
+	if (cstr_type == CS_SOUNDS)
+	{
+		const uint len = strlen(dest_name);
+
+		dest_name[len - 4] = TOKEN_S_AMBIENT;
+		dest_name[len - 3] = 0;
+
+		for (const PackInfo_t* info = sound_pack_infos; info->type != 0; info++)
+			if (TryPackResourceName(dest_name, dest_size, info))
+				break;
+	}
+	else if (cstr_type == CS_MODELS)
+	{
+		const uint len = strlen(dest_name);
+
+		if (strcmp("/tris.fm", &dest_name[len - 8]) == 0)
+		{
+			dest_name[len - 8] = TOKEN_M_MODELS;
+			dest_name[len - 7] = 0;
+		}
+
+		for (const PackInfo_t* info = model_pack_infos; info->type != 0; info++)
+			if (TryPackResourceName(dest_name, dest_size, info))
+				break;
+	}
+}
+
+static int SV_FindIndex(const char* name, const int start, const int max, const qboolean create)
+{
+	char short_name[MAX_QPATH]; // H2
 	int index;
 
 	if (name == NULL || *name == 0)
 		return 0;
 
-	FixResourceName(name, fixed_name, start); // H2
+	PackResourceName(name, short_name, sizeof(short_name), start); // H2
 
 	for (index = 1; index < max && sv.configstrings[start + index][0] != 0; index++)
-		if (strcmp(sv.configstrings[start + index], fixed_name) == 0) // H2: name -> fixed_name
+		if (strcmp(sv.configstrings[start + index], short_name) == 0) // H2: name -> short_name
 			return index;
 
 	if (!create)
@@ -56,7 +100,7 @@ static int SV_FindIndex(char* name, const int start, const int max, const qboole
 		}
 	}
 
-	strncpy_s(sv.configstrings[start + index], sizeof(sv.configstrings[start + index]), fixed_name, sizeof(fixed_name)); //mxd. strncpy -> strncpy_s
+	strncpy_s(sv.configstrings[start + index], sizeof(sv.configstrings[start + index]), short_name, sizeof(short_name)); // H2: name -> short_name //mxd. strncpy -> strncpy_s
 
 	if (sv.state != ss_loading)
 	{
@@ -64,7 +108,7 @@ static int SV_FindIndex(char* name, const int start, const int max, const qboole
 		SZ_Clear(&sv.multicast);
 		MSG_WriteByte(&sv.multicast, svc_configstring);
 		MSG_WriteShort(&sv.multicast, start + index);
-		MSG_WriteString(&sv.multicast, fixed_name); // H2: name -> fixed_name
+		MSG_WriteString(&sv.multicast, short_name); // H2: name -> short_name
 		SV_Multicast(vec3_origin, MULTICAST_ALL_R);
 	}
 
