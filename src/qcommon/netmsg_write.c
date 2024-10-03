@@ -47,9 +47,12 @@ void MSG_WriteString(sizebuf_t* sb, const char* s)
 		SZ_Write(sb, "", 1);
 }
 
+// Q2 counterpart
 void MSG_WritePos(sizebuf_t* sb, vec3_t pos)
 {
-	NOT_IMPLEMENTED
+	MSG_WriteShort(sb, (int)(pos[0] * 8.0f));
+	MSG_WriteShort(sb, (int)(pos[1] * 8.0f));
+	MSG_WriteShort(sb, (int)(pos[2] * 8.0f));
 }
 
 void MSG_WriteDeltaUsercmd(sizebuf_t* sb, usercmd_t* from, usercmd_t* cmd)
