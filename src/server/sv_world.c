@@ -31,14 +31,20 @@ static void ClearLink(link_t* l)
 	l->prev = l;
 }
 
-static void RemoveLink(link_t* l)
+// Q2 counterpart
+static void RemoveLink(const link_t* l)
 {
-	NOT_IMPLEMENTED
+	l->next->prev = l->prev;
+	l->prev->next = l->next;
 }
 
+// Q2 counterpart
 static void InsertLinkBefore(link_t* l, link_t* before)
 {
-	NOT_IMPLEMENTED
+	l->next = before;
+	l->prev = before->prev;
+	l->prev->next = l;
+	l->next->prev = l;
 }
 
 // Q2 counterpart
