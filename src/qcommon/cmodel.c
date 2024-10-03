@@ -568,6 +568,12 @@ int CM_PointLeafnum(const vec3_t p)
 	return 0;
 }
 
+int CM_BoxLeafnums(vec3_t mins, vec3_t maxs, int* list, int listsize, int* topnode)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
 // Q2 counterpart
 char* CM_EntityString(void)
 {

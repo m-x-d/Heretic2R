@@ -691,7 +691,7 @@ byte* CM_ClusterPHS(int cluster);
 int CM_PointLeafnum(const vec3_t p);
 
 // Call with topnode set to the headnode, returns with topnode set to the first node that splits the box.
-int CM_BoxLeafnums(vec3_t mins, vec3_t maxs, int* list, int listsize, int* topnode);
+//int CM_BoxLeafnums(vec3_t mins, vec3_t maxs, int* list, int listsize, int* topnode); //mxd. Disabled
 
 int CM_LeafContents(int leafnum);
 int CM_LeafCluster(int leafnum);
