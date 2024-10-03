@@ -47,7 +47,17 @@ void MSG_WriteString(sizebuf_t* sb, const char* s)
 		SZ_Write(sb, "", 1);
 }
 
-void MSG_WriteDeltaUsercmd(sizebuf_t* buf, usercmd_t* from, usercmd_t* cmd)
+void MSG_WritePos(sizebuf_t* sb, vec3_t pos)
+{
+	NOT_IMPLEMENTED
+}
+
+void MSG_WriteDeltaUsercmd(sizebuf_t* sb, usercmd_t* from, usercmd_t* cmd)
+{
+	NOT_IMPLEMENTED
+}
+
+void ParseEffectToSizeBuf(sizebuf_t* sb, char* format, va_list marker) // H2
 {
 	NOT_IMPLEMENTED
 }

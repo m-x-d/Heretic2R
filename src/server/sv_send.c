@@ -236,7 +236,7 @@ void SV_SendClientMessages(const qboolean send_client_data)
 		if (effect->fx_num == 0 && effect->numEffects != 0 && effect->send_mask == send_mask)
 		{
 			memset(effect, 0, sizeof(PerEffectsBuffer_t));
-			per_effects_buffers_size--;
+			num_persistant_effects--;
 		}
 	}
 }

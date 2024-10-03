@@ -267,7 +267,7 @@ static void SV_SpawnServer(char* server, char* spawnpoint, const server_state_t 
 	// Clear physics interaction links.
 	SV_ClearWorld();
 
-	per_effects_buffers_size = 0; // H2
+	num_persistant_effects = 0; // H2
 	memset(persistant_effects_array, 0, sizeof(persistant_effects_array)); // H2
 
 	for (int i = 1; i < CM_NumInlineModels(); i++)
