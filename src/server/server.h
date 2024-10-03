@@ -185,9 +185,9 @@ void SV_InitOperatorCommands(void);
 void SV_WipeSavegame(char* savename);
 
 // sv_init.c
-int SV_ModelIndex(char* name);
-int SV_SoundIndex(char* name);
-int SV_ImageIndex(char* name);
+int SV_ModelIndex(const char* name);
+int SV_SoundIndex(const char* name);
+int SV_ImageIndex(const char* name);
 void SV_ModelRemove(char* name); // H2
 void SV_SoundRemove(char* name); // H2
 void SV_Map(qboolean attractloop, const char* levelstring, qboolean loadgame);

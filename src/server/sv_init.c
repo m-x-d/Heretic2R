@@ -115,13 +115,13 @@ static int SV_FindIndex(const char* name, const int start, const int max, const 
 	return index;
 }
 
-int SV_ModelIndex(char* name)
+// Q2 counterpart
+int SV_ModelIndex(const char* name)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	return SV_FindIndex(name, CS_MODELS, MAX_MODELS, true);
 }
 
-int SV_SoundIndex(char* name)
+int SV_SoundIndex(const char* name)
 {
 	if (name[0] != 0) // H2: extra sanity check.
 		return SV_FindIndex(name, CS_SOUNDS, MAX_SOUNDS, true);
@@ -129,10 +129,10 @@ int SV_SoundIndex(char* name)
 	return -1;
 }
 
-int SV_ImageIndex(char* name)
+// Q2 counterpart
+int SV_ImageIndex(const char* name)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	return SV_FindIndex(name, CS_IMAGES, MAX_IMAGES, true);
 }
 
 void SV_ModelRemove(char* name)
