@@ -5,6 +5,8 @@
 //
 
 #include "client.h"
+#include "anorms.h"
+#include "Vector.h"
 
 // Q2 counterpart
 void MSG_WriteChar(sizebuf_t* sb, const int c)
@@ -116,9 +118,30 @@ void ParseEffectToSizeBuf(sizebuf_t* sb, const char* format, va_list marker) // 
 	}
 }
 
-void MSG_WriteDir(sizebuf_t* sb, vec3_t vector)
+void MSG_WriteDir(sizebuf_t* sb, vec3_t dir)
 {
-	NOT_IMPLEMENTED
+	if (dir == NULL)
+	{
+		Com_DPrintf("ERROR : NULL direction passed into MSG_WriteDir\n"); // H2
+		MSG_WriteByte(sb, 0);
+
+		return;
+	}
+
+	float bestd = 0.0f;
+	int best = 0;
+
+	for (int i = 0; i < NUMVERTEXNORMALS; i++)
+	{
+		const float d = DotProduct(dir, bytedirs[i]);
+		if (d > bestd)
+		{
+			bestd = d;
+			best = i;
+		}
+	}
+
+	MSG_WriteByte(sb, best);
 }
 
 void MSG_WriteDirMag(sizebuf_t* sb, vec3_t dir)

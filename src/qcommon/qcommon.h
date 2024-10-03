@@ -73,7 +73,7 @@ void MSG_WriteDeltaUsercmd(sizebuf_t* sb, struct usercmd_s* from, struct usercmd
 void ParseEffectToSizeBuf(sizebuf_t* sb, const char* format, va_list marker);
 void MSG_WriteEntityHeaderBits(sizebuf_t* msg, byte* bf, byte* bfNonZero);
 void MSG_WriteDeltaEntity(struct entity_state_s* from, struct entity_state_s* to, sizebuf_t* msg, qboolean force);
-void MSG_WriteDir(sizebuf_t* sb, vec3_t vector);
+void MSG_WriteDir(sizebuf_t* sb, vec3_t dir);
 void MSG_WriteDirMag(sizebuf_t* sb, vec3_t dir);
 void MSG_WriteYawPitch(sizebuf_t* sb, vec3_t vector);
 void MSG_WriteShortYawPitch(sizebuf_t* sb, vec3_t vector);
