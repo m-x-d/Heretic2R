@@ -162,13 +162,13 @@ typedef struct
 
 	// New names can only be added during spawning but existing names can be looked up at any time.
 	void (*cleanlevel)(void);
-	int (*modelindex)(char* name);
+	int (*modelindex)(const char* name);
 	void (*modelremove)(char* name);
-	int (*soundindex)(char* name);
+	int (*soundindex)(const char* name);
 	void (*soundremove)(char* name);
-	int (*imageindex)(char* name);
+	int (*imageindex)(const char* name);
 
-	void (*setmodel)(edict_t* ent, char* name);
+	void (*setmodel)(edict_t* ent, const char* name);
 
 	// Collision detection.
 	void (*trace)(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t* passent, int contentmask, trace_t* tr);

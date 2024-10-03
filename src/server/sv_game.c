@@ -5,10 +5,12 @@
 //
 
 #include "server.h"
+#include "cmodel.h"
 #include "dll_io.h"
 #include "ResourceManager.h"
 #include "screen.h"
 #include "sv_effects.h"
+#include "Vector.h"
 
 game_export_t* ge;
 
@@ -77,9 +79,22 @@ static void PF_error(char* fmt, ...)
 	NOT_IMPLEMENTED
 }
 
-static void PF_setmodel(edict_t* ent, char* name)
+// Also sets mins and maxs for inline bmodels.
+static void PF_setmodel(edict_t* ent, const char* name)
 {
-	NOT_IMPLEMENTED
+	if (name == NULL)
+		Com_Error(ERR_DROP, "PF_setmodel: NULL");
+
+	ent->s.modelindex = (byte)SV_ModelIndex(name);
+
+	// If it is an inline model, get the size information for it.
+	if (*name == '*')
+	{
+		const cmodel_t* mod = CM_InlineModel(name);
+		VectorCopy(mod->mins, ent->mins);
+		VectorCopy(mod->maxs, ent->maxs);
+		// H2: missing SV_LinkEdict(ent);
+	}
 }
 
 // Q2 counterpart
