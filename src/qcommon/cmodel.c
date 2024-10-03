@@ -558,16 +558,22 @@ int CM_NumInlineModels(void)
 	return numcmodels;
 }
 
-int CM_LeafCluster(int leafnum)
+// Q2 counterpart
+int CM_LeafCluster(const int leafnum)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	if (leafnum < 0 || leafnum >= numleafs)
+		Com_Error(ERR_DROP, "CM_LeafCluster: bad number");
+
+	return map_leafs[leafnum].cluster;
 }
 
-int CM_LeafArea(int leafnum)
+// Q2 counterpart
+int CM_LeafArea(const int leafnum)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	if (leafnum < 0 || leafnum >= numleafs)
+		Com_Error(ERR_DROP, "CM_LeafArea: bad number");
+
+	return map_leafs[leafnum].area;
 }
 
 int CM_PointLeafnum(const vec3_t p)
