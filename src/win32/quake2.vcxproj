@@ -60,6 +60,7 @@
     <ClCompile Include="..\client\menus\menu_startserver.c" />
     <ClCompile Include="..\client\menus\menu_video.c" />
     <ClCompile Include="..\client\menus\menu_worldmap.c" />
+    <ClCompile Include="..\game\q_shared.c" />
     <ClCompile Include="..\qcommon\anorms.c" />
     <ClCompile Include="..\qcommon\cmd.c" />
     <ClCompile Include="..\qcommon\cmodel.c" />

@@ -60,6 +60,14 @@ int c_pointcontents;
 int c_traces;
 int c_brush_traces;
 
+//mxd. Used by CM_BoxLeafnums logic.
+int leaf_count;
+int leaf_maxcount;
+int* leaf_list;
+float* leaf_mins;
+float* leaf_maxs;
+int leaf_topnode;
+
 static byte* cmod_base;
 
 static cplane_t* box_planes;
@@ -568,10 +576,69 @@ int CM_PointLeafnum(const vec3_t p)
 	return 0;
 }
 
-int CM_BoxLeafnums(vec3_t mins, vec3_t maxs, int* list, int listsize, int* topnode)
+// Q2 counterpart
+static void CM_BoxLeafnums_r(int nodenum)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	while (true)
+	{
+		if (nodenum < 0)
+		{
+			if (leaf_count < leaf_maxcount)
+			{
+				leaf_list[leaf_count] = -1 - nodenum;
+				leaf_count++;
+			}
+
+			return;
+		}
+
+		const cnode_t* node = &map_nodes[nodenum];
+		const int side = BoxOnPlaneSide(leaf_mins, leaf_maxs, (struct cplane_s*)node->plane); //mxd. BoxOnPlaneSide call instead of BOX_ON_PLANE_SIDE macro.
+
+		if (side == 1)
+		{
+			nodenum = node->children[0];
+		}
+		else if (side == 2)
+		{
+			nodenum = node->children[1];
+		}
+		else
+		{
+			// Go down both sides.
+			if (leaf_topnode == -1)
+				leaf_topnode = nodenum;
+
+			CM_BoxLeafnums_r(node->children[0]);
+			nodenum = node->children[1];
+		}
+	}
+}
+
+// Q2 counterpart
+int	CM_BoxLeafnums_headnode(vec3_t mins, vec3_t maxs, int* list, const int listsize, int headnode, int* topnode)
+{
+	leaf_list = list;
+	leaf_count = 0;
+	leaf_maxcount = listsize;
+	leaf_mins = mins;
+	leaf_maxs = maxs;
+
+	leaf_topnode = -1;
+
+	CM_BoxLeafnums_r(headnode);
+
+	if (topnode != NULL)
+		*topnode = leaf_topnode;
+
+	return leaf_count;
+}
+
+// Q2 counterpart
+// Fills in a list of all the leafs touched.
+int CM_BoxLeafnums(vec3_t mins, vec3_t maxs, int* list, const int listsize, int* topnode)
+{
+	return CM_BoxLeafnums_headnode(mins, maxs, list, listsize, map_cmodels[0].headnode, topnode);
 }
 
 // Q2 counterpart

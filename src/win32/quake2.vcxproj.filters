@@ -261,6 +261,9 @@
     <ClCompile Include="..\qcommon\tokens.c">
       <Filter>qcommon</Filter>
     </ClCompile>
+    <ClCompile Include="..\game\q_shared.c">
+      <Filter>game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
