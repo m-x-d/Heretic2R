@@ -592,10 +592,39 @@ int CM_LeafArea(const int leafnum)
 	return map_leafs[leafnum].area;
 }
 
+// Q2 counterpart
+static int CM_PointLeafnum_r(const vec3_t p, int num)
+{
+	float dist;
+
+	while (num >= 0)
+	{
+		const cnode_t* node = &map_nodes[num];
+		const cplane_t* plane = node->plane;
+
+		if (plane->type < 3)
+			dist = p[plane->type] - plane->dist;
+		else
+			dist = DotProduct(plane->normal, p) - plane->dist;
+
+		if (dist < 0)
+			num = node->children[1];
+		else
+			num = node->children[0];
+	}
+
+	c_pointcontents++; // Optimize counter.
+
+	return -1 - num;
+}
+
+// Q2 counterpart
 int CM_PointLeafnum(const vec3_t p)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	if (numplanes > 0)
+		return CM_PointLeafnum_r(p, 0);
+
+	return 0; // Sound logic may call this without map loaded.
 }
 
 // Q2 counterpart
@@ -681,10 +710,16 @@ byte* CM_ClusterPHS(int cluster)
 	return NULL;
 }
 
-int CM_PointContents(vec3_t p, int headnode)
+// Q2 counterpart
+int CM_PointContents(vec3_t p, const int headnode)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	if (numnodes > 0)
+	{
+		const int l = CM_PointLeafnum_r(p, headnode);
+		return map_leafs[l].contents;
+	}
+
+	return 0; // Map not loaded.
 }
 
 int CM_TransformedPointContents(vec3_t p, int headnode, vec3_t origin, const vec3_t angles)
