@@ -11,6 +11,9 @@
 #define AREA_DEPTH	4
 #define AREA_NODES	32
 
+#define STRUCT_FROM_LINK(l,t,m)		((t *)((byte *)(l) - (int)&(((t *)0)->m)))
+#define EDICT_FROM_AREA(l)			STRUCT_FROM_LINK(l,edict_t,area)
+
 typedef struct areanode_s
 {
 	int axis; // -1 = leaf node
@@ -20,8 +23,16 @@ typedef struct areanode_s
 	link_t solid_edicts;
 } areanode_t;
 
-areanode_t sv_areanodes[AREA_NODES];
-int sv_numareanodes;
+static areanode_t sv_areanodes[AREA_NODES];
+static int sv_numareanodes;
+
+//mxd. Used by SV_AreaEdicts logic.
+static float* area_mins;
+static float* area_maxs;
+static edict_t** area_list;
+static int area_count;
+static int area_maxcount;
+static int area_type;
 
 typedef struct
 {
@@ -300,10 +311,61 @@ void SV_LinkEdict(edict_t* ent)
 		InsertLinkBefore(&ent->area, &node->solid_edicts);
 }
 
-int SV_AreaEdicts(vec3_t mins, vec3_t maxs, edict_t** list, int maxcount, int areatype)
+// Q2 counterpart
+static void SV_AreaEdicts_r(areanode_t* node)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	link_t* start;
+
+	// Touch linked edicts.
+	if (area_type == AREA_SOLID)
+		start = &node->solid_edicts;
+	else
+		start = &node->trigger_edicts;
+
+	for (link_t* l = start->next; l != start; l = l->next)
+	{
+		edict_t* check = EDICT_FROM_AREA(l);
+
+		if (check->solid == SOLID_NOT)
+			continue; // Deactivated
+
+		if (check->absmin[0] > area_maxs[0] || check->absmin[1] > area_maxs[1] || check->absmin[2] > area_maxs[2] || 
+			check->absmax[0] < area_mins[0] || check->absmax[1] < area_mins[1] || check->absmax[2] < area_mins[2])
+			continue; // Not touching
+
+		if (area_count == area_maxcount)
+		{
+			Com_Printf("SV_AreaEdicts: MAXCOUNT\n");
+			return;
+		}
+
+		area_list[area_count] = check;
+		area_count++;
+	}
+
+	if (node->axis == -1)
+		return; // Terminal node.
+
+	// Recurse down both sides.
+	if (area_maxs[node->axis] > node->dist)
+		SV_AreaEdicts_r(node->children[0]);
+
+	if (area_mins[node->axis] < node->dist)
+		SV_AreaEdicts_r(node->children[1]);
+}
+
+// Q2 counterpart
+int SV_AreaEdicts(vec3_t mins, vec3_t maxs, edict_t** list, const int maxcount, const int areatype)
+{
+	area_mins = mins;
+	area_maxs = maxs;
+	area_list = list;
+	area_count = 0;
+	area_maxcount = maxcount;
+	area_type = areatype;
+	SV_AreaEdicts_r(sv_areanodes);
+
+	return area_count;
 }
 
 int SV_FindEntitiesInBounds(vec3_t mins, vec3_t maxs, SinglyLinkedList_t* list, int areatype)
