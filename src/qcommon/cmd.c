@@ -15,17 +15,17 @@ typedef struct cmdalias_s
 	char* value;
 } cmdalias_t;
 
-cmdalias_t* cmd_alias;
-
-qboolean cmd_wait;
+static cmdalias_t* cmd_alias;
+static qboolean cmd_wait;
 
 #define ALIAS_LOOP_COUNT	16
-int alias_count; // For detecting runaway loops
+static int alias_count; // For detecting runaway loops
 
 #pragma region ========================== COMMAND BUFFER ==========================
 
-sizebuf_t cmd_text;
-byte cmd_text_buf[8192];
+static sizebuf_t cmd_text;
+static byte cmd_text_buf[8192];
+static byte defer_text_buf[8192];
 
 // Q2 counterpart
 void Cbuf_Init(void)
@@ -76,9 +76,12 @@ void Cbuf_InsertText(const char* text)
 	}
 }
 
+// Q2 counterpart
 void Cbuf_CopyToDefer(void)
 {
-	NOT_IMPLEMENTED
+	memcpy(defer_text_buf, cmd_text_buf, cmd_text.cursize);
+	defer_text_buf[cmd_text.cursize] = 0;
+	cmd_text.cursize = 0;
 }
 
 void Cbuf_ExecuteText(int exec_when, char* text)
