@@ -29,7 +29,7 @@ int CM_PointContents(vec3_t p, int headnode);
 int CM_TransformedPointContents(const vec3_t p, int headnode, const vec3_t origin, const vec3_t angles);
 
 void CM_BoxTrace(const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, int headnode, uint brushmask, trace_t* return_trace);
-void CM_TransformedBoxTrace(vec3_t start, vec3_t end, const vec3_t mins, const vec3_t maxs, int headnode, uint brushmask, vec3_t origin, const vec3_t angles, trace_t* return_trace);
+void CM_TransformedBoxTrace(const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, int headnode, uint brushmask, const vec3_t origin, const vec3_t angles, trace_t* return_trace);
 
 byte* CM_ClusterPVS(int cluster);
 byte* CM_ClusterPHS(int cluster);

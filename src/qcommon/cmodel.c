@@ -1094,9 +1094,101 @@ void CM_BoxTrace(const vec3_t start, const vec3_t end, const vec3_t mins, const 
 	}
 }
 
-void CM_TransformedBoxTrace(vec3_t start, vec3_t end, const vec3_t mins, const vec3_t maxs, int headnode, uint brushmask, vec3_t origin, const vec3_t angles, trace_t* return_trace)
+static qboolean UnknownTraceFunc1(matrix3_t* m, int* int_arr, int arr_len, float* dir)
 {
 	NOT_IMPLEMENTED
+	return false;
+}
+
+static void UnknownTraceFunc2(matrix3_t* m, int* unused_arr, vec3_t* normal, int axis_arr_len)
+{
+	NOT_IMPLEMENTED
+}
+
+// Handles offsetting and rotation of the end points for moving and rotating entities.
+void CM_TransformedBoxTrace(const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, const int headnode, const uint brushmask, const vec3_t origin, const vec3_t angles, trace_t* return_trace)
+{
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	vec3_t start_l;
+	vec3_t end_l;
+	vec3_t mins_l;
+	vec3_t maxs_l;
+	vec3_t diff;
+	vec3_t temp;
+	matrix3_t m;
+	int int_arr[3];
+	float unused;
+
+	// Subtract origin offset.
+	VectorSubtract(start, origin, start_l);
+	VectorSubtract(end, origin, end_l);
+
+	// Rotate start and end into the models frame of reference.
+	if (headnode != box_headnode && Vec3NotZero(angles))
+	{
+		AngleVectors(angles, forward, right, up);
+
+		VectorCopy(start_l, temp);
+		start_l[0] = DotProduct(temp, forward);
+		start_l[1] = -DotProduct(temp, right);
+		start_l[2] = DotProduct(temp, up);
+
+		VectorCopy(end_l, temp);
+		end_l[0] = DotProduct(temp, forward);
+		end_l[1] = -DotProduct(temp, right);
+		end_l[2] = DotProduct(temp, up);
+
+		for (int i = 0; i < 8; i++) // H2 //TODO: I've definitely seen similar logic somewhere in this project. But where?..
+		{
+			temp[0] = ((i & 1) != 0 ? mins[0] : maxs[0]);
+			temp[1] = ((i & 2) != 0 ? mins[1] : maxs[1]);
+			temp[2] = ((i & 4) != 0 ? mins[2] : maxs[2]);
+
+			diff[0] = DotProduct(temp, forward);
+			diff[1] = -DotProduct(temp, right);
+			diff[2] = DotProduct(temp, up);
+
+			if (i == 0)
+			{
+				VectorCopy(diff, mins_l);
+				VectorCopy(diff, maxs_l);
+			}
+			else
+			{
+				for (int c = 0; c < 3; c++)
+				{
+					mins_l[c] = min(mins_l[c], diff[c]);
+					maxs_l[c] = max(maxs_l[c], diff[c]);
+				}
+			}
+		}
+
+		CM_BoxTrace(start_l, end_l, mins_l, maxs_l, headnode, brushmask, return_trace);
+
+		for (int i = 0; i < 3; i++)
+		{
+			m[0][i] = forward[i];
+			m[1][i] = -right[i];
+			m[2][i] = up[i];
+		}
+
+		if (UnknownTraceFunc1(&m, int_arr, 3, &unused))
+			UnknownTraceFunc2(&m, int_arr, &return_trace->plane.normal, 3);
+		else
+			VectorClear(return_trace->plane.normal);
+
+		if (return_trace->fraction != 1.0f)
+			return_trace->fraction *= 0.99f;
+	}
+	else
+	{
+		CM_BoxTrace(start_l, end_l, mins, maxs, headnode, brushmask, return_trace);
+	}
+
+	for (int i = 0; i < 3; i++)
+		return_trace->endpos[i] = start[i] + return_trace->fraction * (end[i] - start[i]);
 }
 
 #pragma region ========================== AREAPORTALS ==========================
