@@ -54,9 +54,72 @@ void SV_ReadLevelFile(void)
 	NOT_IMPLEMENTED
 }
 
-static void SV_WriteServerFile(qboolean autosave)
+static void SV_WriteServerFile(const qboolean autosave)
 {
-	NOT_IMPLEMENTED
+	FILE* f;
+	struct tm newtime;
+	time_t aclock;
+	char comment[64]; // Q2: [32]
+	char name[MAX_OSPATH];
+	char string[128];
+
+	Com_sprintf(name, sizeof(name), "%s/save/current/server.ssv", FS_Userdir()); // Q2: FS_Gamedir
+
+	if (fopen_s(&f, name, "wb") != 0) //mxd. fopen -> fopen_s
+	{
+		Com_Printf("Couldn't write %s\n", name);
+		return;
+	}
+
+	// Write the comment field.
+	memset(comment, 0, sizeof(comment));
+
+	if (!autosave)
+	{
+		time(&aclock);
+		localtime_s(&newtime, &aclock); //mxd. localtime -> localtime_s
+
+		Com_sprintf(comment, sizeof(comment), "%2i:%i%i %2i/%2i\n",
+			newtime.tm_hour, newtime.tm_min / 10, newtime.tm_min % 10, newtime.tm_mon + 1, newtime.tm_mday);
+
+		strncat_s(comment, sizeof(comment), sv.configstrings[CS_NAME], sizeof(comment) - 1 - strlen(comment));
+	}
+	else
+	{
+		Com_sprintf(comment, sizeof(comment), "ENTERING\n%s", sv.configstrings[CS_NAME]);
+	}
+
+	// Write the mapcmd.
+	fwrite(comment, 1, sizeof(comment), f);
+	fwrite(svs.mapcmd, 1, sizeof(svs.mapcmd), f);
+
+	// Write all CVAR_LATCH cvars. These will be things like coop, skill, deathmatch, etc.
+	for (const cvar_t* var = cvar_vars; var != NULL; var = var->next)
+	{
+		if (!(var->flags & CVAR_LATCH))
+			continue;
+
+		if (strlen(var->name) >= sizeof(name) - 1 || strlen(var->string) >= sizeof(string) - 1)
+		{
+			Com_Printf("Cvar too long: %s = %s\n", var->name, var->string);
+			continue;
+		}
+
+		memset(name, 0, sizeof(name));
+		memset(string, 0, sizeof(string));
+
+		strcpy_s(name, sizeof(name), var->name); //mxd. strcpy -> strcpy_s
+		strcpy_s(string, sizeof(string), var->string); //mxd. strcpy -> strcpy_s
+
+		fwrite(name, 1u, sizeof(name), f);
+		fwrite(string, 1u, sizeof(string), f);
+	}
+
+	fclose(f);
+
+	// Write game state.
+	Com_sprintf(name, sizeof(name), "%s/save/current/game.ssv", FS_Userdir()); // Q2: FS_Gamedir
+	ge->WriteGame(name, autosave);
 }
 
 #pragma endregion
