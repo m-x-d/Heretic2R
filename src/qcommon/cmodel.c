@@ -999,7 +999,7 @@ void CM_BoxTrace(const vec3_t start, const vec3_t end, const vec3_t mins, const 
 	}
 }
 
-void CM_TransformedBoxTrace(vec3_t start, vec3_t end, vec3_t mins, vec3_t maxs, int headnode, uint brushmask, vec3_t origin, vec3_t angles, trace_t* return_trace)
+void CM_TransformedBoxTrace(vec3_t start, vec3_t end, const vec3_t mins, const vec3_t maxs, int headnode, uint brushmask, vec3_t origin, const vec3_t angles, trace_t* return_trace)
 {
 	NOT_IMPLEMENTED
 }
