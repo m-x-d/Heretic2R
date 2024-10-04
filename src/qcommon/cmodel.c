@@ -681,6 +681,18 @@ byte* CM_ClusterPHS(int cluster)
 	return NULL;
 }
 
+int CM_PointContents(vec3_t p, int headnode)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+int CM_TransformedPointContents(vec3_t p, int headnode, vec3_t origin, const vec3_t angles)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
 static void CM_ClipBoxToBrush(const vec3_t mins, const vec3_t maxs, const vec3_t p1, const vec3_t p2, trace_t* trace, const cbrush_t* brush)
 {
 	float dist;

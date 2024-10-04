@@ -679,8 +679,8 @@ char* CM_EntityString(void);
 int CM_HeadnodeForBox(vec3_t mins, vec3_t maxs);
 
 // Returns an ORed contents mask
-int CM_PointContents(vec3_t p, int headnode);
-int CM_TransformedPointContents(vec3_t p, int headnode, vec3_t origin, vec3_t angles);
+//int CM_PointContents(vec3_t p, int headnode); //mxd. Disabled
+//int CM_TransformedPointContents(vec3_t p, int headnode, vec3_t origin, vec3_t angles); //mxd. Disabled
 
 //void CM_BoxTrace(vec3_t start, vec3_t end, vec3_t mins, vec3_t maxs, int headnode, int brushmask, trace_t* return_trace); //mxd. Included in cmodel.h
 //void CM_TransformedBoxTrace(vec3_t start, vec3_t end, vec3_t mins, vec3_t maxs, int headnode, int brushmask, vec3_t origin, vec3_t angles, trace_t* return_trace);

@@ -374,16 +374,35 @@ int SV_FindEntitiesInBounds(vec3_t mins, vec3_t maxs, SinglyLinkedList_t* list, 
 	return 0;
 }
 
-int SV_PointContents(vec3_t p)
+static int SV_HullForEntity(edict_t* ent)
 {
 	NOT_IMPLEMENTED
 	return 0;
 }
 
-static int SV_HullForEntity(edict_t* ent)
+int SV_PointContents(vec3_t p)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	edict_t* touchlist[MAX_EDICTS];
+
+	// Get base contents from world.
+	int contents = CM_PointContents(p, sv.models[1]->headnode);
+
+	// Or in contents from all the other entities.
+	const int num = SV_AreaEdicts(p, p, touchlist, MAX_EDICTS, AREA_SOLID);
+
+	for (int i = 0; i < num; i++)
+	{
+		edict_t* hit = touchlist[i];
+
+		// Might intersect, so do an exact clip.
+		const int headnode = SV_HullForEntity(hit);
+		const float* angles = (hit->solid == SOLID_BSP ? hit->s.angles : vec3_origin);
+
+		// H2: Unlike Q2, actually uses 'angles' var.
+		contents |= CM_TransformedPointContents(p, headnode, hit->s.origin, angles);
+	}
+
+	return contents;
 }
 
 static void SV_ClipMoveToEntities(moveclip_t* clip)
