@@ -238,7 +238,7 @@ int SV_PointContents(vec3_t p);
 // If the entire move stays in a solid volume, trace.startsolid and trace.allsolid will be set, and trace.fraction will be 0.
 // If the starting point is in a solid, it will be allowed to move out to an open area.
 // passedict is explicitly excluded from clipping checks (normally NULL).
-void SV_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t* passent, int contentmask, trace_t* tr); // H2: different definition
+void SV_Trace(vec3_t start, const vec3_t mins, const vec3_t maxs, vec3_t end, edict_t* passent, uint contentmask, trace_t* tr); // H2: different definition
 
 // New in H2
 void SV_TraceBoundingForm(struct FormMove_s* formMove);

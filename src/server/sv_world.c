@@ -23,6 +23,25 @@ typedef struct areanode_s
 areanode_t sv_areanodes[AREA_NODES];
 int sv_numareanodes;
 
+typedef struct
+{
+	vec3_t boxmins; // Enclose the test object along entire move.
+	vec3_t boxmaxs;
+
+	const float* mins; // Size of the moving object.
+	const float* maxs;
+
+	vec3_t mins2; // Size when clipping against monsters.
+	vec3_t maxs2;
+
+	float* start;
+	float* end;
+
+	trace_t* trace; // Q2: trace_t
+	edict_t* passedict;
+	uint contentmask; //mxd. int -> uint
+} moveclip_t;
+
 // Q2 counterpart
 // ClearLink is used for new headnodes.
 static void ClearLink(link_t* l)
@@ -299,9 +318,55 @@ int SV_PointContents(vec3_t p)
 	return 0;
 }
 
-void SV_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t* passent, int contentmask, trace_t* tr)
+static void SV_ClipMoveToEntities(moveclip_t* clip)
 {
 	NOT_IMPLEMENTED
+}
+
+
+static void SV_TraceBounds(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, vec3_t boxmins, vec3_t boxmaxs)
+{
+	NOT_IMPLEMENTED
+}
+
+// Moves the given mins/maxs volume through the world from start to end.
+// Passedict and edicts owned by passedict are explicitly not checked.
+void SV_Trace(vec3_t start, const vec3_t mins, const vec3_t maxs, vec3_t end, edict_t* passent, const uint contentmask, trace_t* tr)
+{
+	moveclip_t clip;
+
+	if (mins == NULL)
+		mins = vec3_origin;
+
+	if (maxs == NULL)
+		maxs = vec3_origin;
+
+	// Clip to world
+	CM_BoxTrace(start, end, mins, maxs, 0, (contentmask & ~CONTENTS_WORLD_ONLY), tr);
+
+	tr->architecture = 1; // H2
+	tr->ent = ge->edicts;
+
+	// H2: New 'contentmask' check.
+	if ((contentmask & CONTENTS_WORLD_ONLY) == 0)
+	{
+		clip.trace = tr;
+		clip.contentmask = contentmask;
+		clip.start = start;
+		clip.end = end;
+		clip.mins = mins;
+		clip.maxs = maxs;
+		clip.passedict = passent;
+
+		VectorCopy(mins, clip.mins2);
+		VectorCopy(maxs, clip.maxs2);
+	
+		// Create the bounding box of the entire move.
+		SV_TraceBounds(start, clip.mins2, clip.maxs2, end, clip.boxmins, clip.boxmaxs);
+
+		// Clip to other solid entities.
+		SV_ClipMoveToEntities(&clip);
+	}
 }
 
 void SV_TraceBoundingForm(FormMove_t* formMove)

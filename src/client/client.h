@@ -623,7 +623,7 @@ void M_Keydown(int key);
 void M_Draw(void);
 void M_Menu_Main_f(void);
 void M_ForceMenuOff(void);
-void MenuUnsetMode(void);
+//void MenuUnsetMode(void); //mxd. Disabled
 void M_AddToServerList(netadr_t adr, char* info);
 
 // cl_inv.c
