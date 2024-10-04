@@ -681,9 +681,43 @@ byte* CM_ClusterPHS(int cluster)
 	return NULL;
 }
 
-static void CM_TraceToLeaf(int leafnum)
+static void CM_ClipBoxToBrush(vec3_t mins, vec3_t maxs, vec3_t p1, vec3_t p2, trace_t* trace, cbrush_t* brush)
 {
 	NOT_IMPLEMENTED
+}
+
+static void CM_TraceToLeaf(const int leafnum)
+{
+	const cleaf_t* leaf = &map_leafs[leafnum];
+	const qboolean check_camerablock = ((trace_contents & CONTENTS_CAMERABLOCK) != 0); // H2
+
+	if (!(leaf->contents & trace_contents))
+		return;
+
+	if (check_camerablock && (leaf->contents & CONTENTS_CAMERANOBLOCK)) // H2
+		return;
+
+	// Trace line against all brushes in the leaf.
+	for (int k = 0; k < leaf->numleafbrushes; k++)
+	{
+		const int brushnum = map_leafbrushes[leaf->firstleafbrush + k];
+		cbrush_t* b = &map_brushes[brushnum];
+
+		if (b->checkcount == checkcount)
+			continue; // Already checked this brush in another leaf.
+
+		b->checkcount = checkcount;
+
+		if (!(b->contents & trace_contents))
+			continue;
+
+		if (check_camerablock && (b->contents & CONTENTS_CAMERANOBLOCK)) // H2
+			continue;
+
+		CM_ClipBoxToBrush(trace_mins, trace_maxs, trace_start, trace_end, trace_trace, b);
+		if (trace_trace->fraction == 0.0f)
+			return;
+	}
 }
 
 static void CM_TestInLeaf(int leafnum)
