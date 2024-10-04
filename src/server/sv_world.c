@@ -323,10 +323,22 @@ static void SV_ClipMoveToEntities(moveclip_t* clip)
 	NOT_IMPLEMENTED
 }
 
-
+// Q2 counterpart
 static void SV_TraceBounds(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, vec3_t boxmins, vec3_t boxmaxs)
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < 3; i++)
+	{
+		if (end[i] > start[i])
+		{
+			boxmins[i] = start[i] + mins[i] - 1;
+			boxmaxs[i] = end[i] + maxs[i] + 1;
+		}
+		else
+		{
+			boxmins[i] = end[i] + mins[i] - 1;
+			boxmaxs[i] = start[i] + maxs[i] + 1;
+		}
+	}
 }
 
 // Moves the given mins/maxs volume through the world from start to end.
