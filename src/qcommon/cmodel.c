@@ -747,10 +747,33 @@ int CM_PointContents(vec3_t p, const int headnode)
 	return 0; // Map not loaded.
 }
 
-int CM_TransformedPointContents(vec3_t p, int headnode, vec3_t origin, const vec3_t angles)
+// Q2 counterpart
+// Handles offsetting and rotation of the end points for moving and rotating entities.
+int CM_TransformedPointContents(const vec3_t p, const int headnode, const vec3_t origin, const vec3_t angles)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	vec3_t p_l;
+	vec3_t temp;
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+
+	// Subtract origin offset.
+	VectorSubtract(p, origin, p_l);
+
+	// Rotate start and end into the models frame of reference.
+	if (headnode != box_headnode && Vec3NotZero(angles))
+	{
+		AngleVectors(angles, forward, right, up);
+
+		VectorCopy(p_l, temp);
+		p_l[0] = DotProduct(temp, forward);
+		p_l[1] = -DotProduct(temp, right);
+		p_l[2] = DotProduct(temp, up);
+	}
+
+	const int l = CM_PointLeafnum_r(p_l, headnode);
+
+	return map_leafs[l].contents;
 }
 
 static void CM_ClipBoxToBrush(const vec3_t mins, const vec3_t maxs, const vec3_t p1, const vec3_t p2, trace_t* trace, const cbrush_t* brush)
