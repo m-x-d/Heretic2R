@@ -63,6 +63,8 @@ int c_traces;
 int c_brush_traces;
 
 //mxd. Used by CM_BoxLeafnums logic.
+#define DIST_EPSILON	0.03125f // 1/32 epsilon to keep floating point happy
+
 static int leaf_count;
 static int leaf_maxcount;
 static int* leaf_list;
@@ -679,14 +681,117 @@ byte* CM_ClusterPHS(int cluster)
 	return NULL;
 }
 
+static void CM_TraceToLeaf(int leafnum)
+{
+	NOT_IMPLEMENTED
+}
+
 static void CM_TestInLeaf(int leafnum)
 {
 	NOT_IMPLEMENTED
 }
 
-static void CM_RecursiveHullCheck(int num, float p1f, float p2f, vec3_t p1, vec3_t p2)
+// Q2 counterpart
+static void CM_RecursiveHullCheck(const int num, const float p1f, const float p2f, const vec3_t p1, const vec3_t p2)
 {
-	NOT_IMPLEMENTED
+	float t1;
+	float t2;
+	float offset;
+	float frac;
+	float frac2;
+	float idist;
+	vec3_t mid;
+	int side;
+
+	if (trace_trace->fraction <= p1f)
+		return; // Already hit something nearer
+
+	// If < 0, we are in a leaf node
+	if (num < 0)
+	{
+		CM_TraceToLeaf(-1 - num);
+		return;
+	}
+
+	// Find the point distances to the separating plane and the offset for the size of the box.
+	const cnode_t* node = map_nodes + num;
+	const cplane_t* plane = node->plane;
+
+	if (plane->type < 3)
+	{
+		t1 = p1[plane->type] - plane->dist;
+		t2 = p2[plane->type] - plane->dist;
+		offset = trace_extents[plane->type];
+	}
+	else
+	{
+		t1 = DotProduct(plane->normal, p1) - plane->dist;
+		t2 = DotProduct(plane->normal, p2) - plane->dist;
+
+		if (trace_ispoint)
+		{
+			offset = 0.0f;
+		}
+		else
+		{
+			offset = fabsf(trace_extents[0] * plane->normal[0]) +
+					 fabsf(trace_extents[1] * plane->normal[1]) +
+					 fabsf(trace_extents[2] * plane->normal[2]);
+		}
+	}
+
+	// See which sides we need to consider.
+	if (t1 >= offset && t2 >= offset)
+	{
+		CM_RecursiveHullCheck(node->children[0], p1f, p2f, p1, p2);
+		return;
+	}
+
+	if (t1 < -offset && t2 < -offset)
+	{
+		CM_RecursiveHullCheck(node->children[1], p1f, p2f, p1, p2);
+		return;
+	}
+
+	// Put the crosspoint DIST_EPSILON pixels on the near side.
+	if (t1 < t2)
+	{
+		idist = 1.0f / (t1 - t2);
+		side = 1;
+		frac2 = (t1 + offset + DIST_EPSILON) * idist;
+		frac = (t1 - offset + DIST_EPSILON) * idist;
+	}
+	else if (t1 > t2)
+	{
+		idist = 1.0f / (t1 - t2);
+		side = 0;
+		frac2 = (t1 - offset - DIST_EPSILON) * idist;
+		frac = (t1 + offset + DIST_EPSILON) * idist;
+	}
+	else
+	{
+		side = 0;
+		frac = 1;
+		frac2 = 0;
+	}
+
+	// Move up to the node.
+	frac = Clamp(frac, 0.0f, 1.0f);
+
+	float midf = p1f + (p2f - p1f) * frac;
+	for (int i = 0; i < 3; i++)
+		mid[i] = p1[i] + frac * (p2[i] - p1[i]);
+
+	CM_RecursiveHullCheck(node->children[side], p1f, midf, p1, mid);
+
+	// Go past the node.
+	frac2 = Clamp(frac2, 0.0f, 1.0f);
+
+	midf = p1f + (p2f - p1f) * frac2;
+	for (int i = 0; i < 3; i++)
+		mid[i] = p1[i] + frac2 * (p2[i] - p1[i]);
+
+	CM_RecursiveHullCheck(node->children[side ^ 1], midf, p2f, mid, p2);
 }
 
 void CM_BoxTrace(const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, const int headnode, const uint brushmask, trace_t* return_trace)
