@@ -592,6 +592,12 @@ int CM_LeafArea(const int leafnum)
 	return map_leafs[leafnum].area;
 }
 
+int CM_HeadnodeForBox(const vec3_t mins, const vec3_t maxs)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
 // Q2 counterpart
 static int CM_PointLeafnum_r(const vec3_t p, int num)
 {

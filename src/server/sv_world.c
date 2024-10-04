@@ -374,10 +374,26 @@ int SV_FindEntitiesInBounds(vec3_t mins, vec3_t maxs, SinglyLinkedList_t* list, 
 	return 0;
 }
 
-static int SV_HullForEntity(edict_t* ent)
+// Q2 counterpart
+// Returns a headnode that can be used for testing or clipping an object of mins / maxs size.
+// Offset is filled in to contain the adjustment that must be added to the testing object's origin
+// to get a point to use with the returned hull.
+static int SV_HullForEntity(const edict_t* ent)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	// Decide which clipping hull to use, based on the size.
+	if (ent->solid == SOLID_BSP)
+	{
+		// Explicit hulls in the BSP model.
+		const cmodel_t* model = sv.models[ent->s.modelindex];
+
+		if (model == NULL)
+			Com_Error(ERR_FATAL, "MOVETYPE_PUSH with a non bsp model");
+
+		return model->headnode;
+	}
+
+	// Create a temp hull from bounding box sizes.
+	return CM_HeadnodeForBox(ent->mins, ent->maxs);
 }
 
 int SV_PointContents(vec3_t p)

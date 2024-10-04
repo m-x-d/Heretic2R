@@ -676,7 +676,7 @@ int CM_NumInlineModels(void);
 char* CM_EntityString(void);
 
 // Creates a clipping hull for an arbitrary box
-int CM_HeadnodeForBox(vec3_t mins, vec3_t maxs);
+//int CM_HeadnodeForBox(vec3_t mins, vec3_t maxs); //mxd. Disabled
 
 // Returns an ORed contents mask
 //int CM_PointContents(vec3_t p, int headnode); //mxd. Disabled
