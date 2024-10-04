@@ -681,9 +681,103 @@ byte* CM_ClusterPHS(int cluster)
 	return NULL;
 }
 
-static void CM_ClipBoxToBrush(vec3_t mins, vec3_t maxs, vec3_t p1, vec3_t p2, trace_t* trace, cbrush_t* brush)
+static void CM_ClipBoxToBrush(const vec3_t mins, const vec3_t maxs, const vec3_t p1, const vec3_t p2, trace_t* trace, const cbrush_t* brush)
 {
-	NOT_IMPLEMENTED
+	float dist;
+	vec3_t ofs;
+
+	if (brush->numsides == 0)
+		return;
+
+	c_brush_traces++;
+
+	float enterfrac = -1.0f;
+	float leavefrac = 1.0f;
+	const cplane_t* clipplane = NULL;
+
+	qboolean getout = false;
+	qboolean startout = false;
+	const cbrushside_t* leadside = NULL;
+
+	for (int i = 0; i < brush->numsides; i++)
+	{
+		const cbrushside_t* side = &map_brushsides[brush->firstbrushside + i];
+		const cplane_t* plane = side->plane;
+
+		// FIXME: special case for axial.
+		if (!trace_ispoint)
+		{
+			// General box case.
+			// Push the plane out appropriately for mins/maxs.
+			// FIXME: use signbits into 8 way lookup for each mins/maxs.
+			for (int j = 0; j < 3; j++)
+			{
+				if (plane->normal[j] < 0)
+					ofs[j] = maxs[j];
+				else
+					ofs[j] = mins[j];
+			}
+
+			dist = DotProduct(ofs, plane->normal);
+			dist = plane->dist - dist;
+		}
+		else
+		{
+			// Special point case.
+			dist = plane->dist;
+		}
+
+		const float d1 = DotProduct(p1, plane->normal) - dist;
+		const float d2 = DotProduct(p2, plane->normal) - dist;
+
+		if (d2 > 0)
+			getout = true; // Endpoint is not in solid.
+
+		if (d1 > 0)
+			startout = true;
+
+		// If completely in front of face, no intersection.
+		if (d1 > 0 && d2 >= d1)
+			return;
+
+		if (d1 <= 0 && d2 <= 0)
+			continue;
+
+		// Crosses face.
+		if (d1 > d2)
+		{
+			// Enter.
+			const float f = (d1 - DIST_EPSILON) / (d1 - d2);
+			if (f > enterfrac)
+			{
+				enterfrac = f;
+				clipplane = plane;
+				leadside = side;
+			}
+		}
+		else
+		{
+			// Leave.
+			const float f = (d1 + DIST_EPSILON) / (d1 - d2);
+			if (f < leavefrac)
+				leavefrac = f;
+		}
+	}
+
+	if (!startout)
+	{
+		// Original point was inside brush.
+		trace->startsolid = true;
+		if (!getout)
+			trace->allsolid = true;
+	}
+	else if (enterfrac < leavefrac && enterfrac > -1.0f && enterfrac < trace->fraction)
+	{
+		trace->fraction = max(0, enterfrac);
+		trace->plane = *clipplane;
+		trace->surface = leadside->surface; // H2
+		trace->contents = brush->contents;
+	}
 }
 
 static void CM_TraceToLeaf(const int leafnum)
