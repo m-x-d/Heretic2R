@@ -500,5 +500,8 @@
     <ClInclude Include="..\client\menus\menu_saveload.h">
       <Filter>client\menus</Filter>
     </ClInclude>
+    <ClInclude Include="..\qcommon\Vector.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

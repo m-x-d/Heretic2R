@@ -161,6 +161,7 @@
     <ClInclude Include="..\qcommon\q_Typedef.h" />
     <ClInclude Include="..\qcommon\ResourceManager.h" />
     <ClInclude Include="..\qcommon\tokens.h" />
+    <ClInclude Include="..\qcommon\Vector.h" />
     <ClInclude Include="..\server\server.h" />
     <ClInclude Include="..\server\sv_effects.h" />
     <ClInclude Include="clfx_dll.h" />

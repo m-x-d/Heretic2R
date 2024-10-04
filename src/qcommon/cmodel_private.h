@@ -46,7 +46,7 @@ typedef struct
 	int floodvalid;
 } carea_t;
 
-extern int checkcount;
+//extern int checkcount; //mxd. Not needed.
 
 extern char map_name[MAX_QPATH];
 
@@ -107,14 +107,16 @@ extern cvar_t* map_noareas;
 //extern cbrush_t* box_brush;
 //extern cleaf_t* box_leaf;
 
-extern int leaf_count;
+//mxd. Disabled
+/*extern int leaf_count;
 extern int leaf_maxcount;
 extern int* leaf_list;
 extern float* leaf_mins;
 extern float* leaf_maxs;
-extern int leaf_topnode;
+extern int leaf_topnode;*/
 
-extern vec3_t trace_start;
+//mxd. Disabled
+/*extern vec3_t trace_start;
 extern vec3_t trace_end;
 extern vec3_t trace_mins;
 extern vec3_t trace_maxs;
@@ -122,12 +124,12 @@ extern vec3_t trace_extents;
 
 extern trace_t* trace_trace;
 extern int trace_contents;
-extern qboolean trace_ispoint; // Optimized case
+extern qboolean trace_ispoint;*/ // Optimized case
 
 #include "cmodel.h"
 
 //void CM_InitBoxHull(void); //mxd. Not needed
 int CM_BoxLeafnums_headnode(vec3_t mins, vec3_t maxs, int* list, int listsize, int headnode, int* topnode);
-void CM_TestInLeaf(int leafnum);
-void CM_RecursiveHullCheck(int num, float p1f, float p2f, vec3_t p1, vec3_t p2);
+//void CM_TestInLeaf(int leafnum); //mxd. Not needed
+//void CM_RecursiveHullCheck(int num, float p1f, float p2f, vec3_t p1, vec3_t p2); //mxd. Not needed
 void FloodAreaConnections(void);

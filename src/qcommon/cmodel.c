@@ -8,6 +8,8 @@
 #include "cmodel_private.h"
 #include "Vector.h"
 
+static int checkcount;
+
 char map_name[MAX_QPATH];
 
 int numbrushsides;
@@ -61,13 +63,25 @@ int c_traces;
 int c_brush_traces;
 
 //mxd. Used by CM_BoxLeafnums logic.
-int leaf_count;
-int leaf_maxcount;
-int* leaf_list;
-float* leaf_mins;
-float* leaf_maxs;
-int leaf_topnode;
+static int leaf_count;
+static int leaf_maxcount;
+static int* leaf_list;
+static float* leaf_mins;
+static float* leaf_maxs;
+static int leaf_topnode;
 
+//mxd. Used by SV_Trace logic.
+static vec3_t trace_start;
+static vec3_t trace_end;
+static vec3_t trace_mins;
+static vec3_t trace_maxs;
+static vec3_t trace_extents;
+
+static trace_t* trace_trace;
+static uint trace_contents; //mxd. int -> uint
+static qboolean trace_ispoint;
+
+//mxd. Used by CM_LoadMap logic.
 static byte* cmod_base;
 
 static cplane_t* box_planes;
@@ -622,7 +636,7 @@ static void CM_BoxLeafnums_r(int nodenum)
 }
 
 // Q2 counterpart
-int	CM_BoxLeafnums_headnode(vec3_t mins, vec3_t maxs, int* list, const int listsize, int headnode, int* topnode)
+int CM_BoxLeafnums_headnode(vec3_t mins, vec3_t maxs, int* list, const int listsize, const int headnode, int* topnode)
 {
 	leaf_list = list;
 	leaf_count = 0;
@@ -665,9 +679,91 @@ byte* CM_ClusterPHS(int cluster)
 	return NULL;
 }
 
-void CM_BoxTrace(vec3_t start, vec3_t end, const vec3_t mins, const vec3_t maxs, int headnode, uint brushmask, trace_t* return_trace)
+static void CM_TestInLeaf(int leafnum)
 {
 	NOT_IMPLEMENTED
+}
+
+static void CM_RecursiveHullCheck(int num, float p1f, float p2f, vec3_t p1, vec3_t p2)
+{
+	NOT_IMPLEMENTED
+}
+
+void CM_BoxTrace(const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, const int headnode, const uint brushmask, trace_t* return_trace)
+{
+	checkcount++; // For multi-check avoidance.
+	c_traces++; // For statistics, may be zeroed.
+
+	trace_contents = brushmask;
+	VectorCopy(start, trace_start);
+	VectorCopy(end, trace_end);
+	VectorCopy(mins, trace_mins);
+	VectorCopy(maxs, trace_maxs);
+
+	// Fill in a default trace.
+	trace_trace = return_trace;
+	memset(trace_trace, 0, sizeof(*trace_trace));
+	trace_trace->fraction = 1.0f;
+	trace_trace->surface = &nullsurface; // H2
+
+	if (numnodes == 0) // Map not loaded.
+		return;
+
+	// Check for position test special case.
+	if (start[0] == end[0] && start[1] == end[1] && start[2] == end[2])
+	{
+		int leafs[1024];
+		vec3_t c1;
+		vec3_t c2;
+		
+		for (int i = 0; i < 3; i++)
+		{
+			c1[i] = start[i] + mins[i] - 1.0f;
+			c2[i] = start[i] + maxs[i] + 1.0f;
+		}
+
+		int topnode;
+		const int num_leafs = CM_BoxLeafnums_headnode(c1, c2, leafs, 1024, headnode, &topnode);
+
+		for (int i = 0; i < num_leafs; i++)
+		{
+			CM_TestInLeaf(leafs[i]);
+			if (trace_trace->allsolid)
+				break;
+		}
+
+		VectorCopy(start, trace_trace->endpos);
+
+		return;
+	}
+
+	// Check for point special case.
+	if (Vec3IsZero(mins) && Vec3IsZero(maxs))
+	{
+		trace_ispoint = true;
+		VectorClear(trace_extents);
+	}
+	else
+	{
+		trace_ispoint = false;
+
+		for (int i = 0; i < 3; i++)
+			trace_extents[i] = max(-mins[i], maxs[i]);
+	}
+
+	// General sweeping through world.
+	CM_RecursiveHullCheck(headnode, 0.0f, 1.0f, trace_start, trace_end);
+	//trace_trace_p = trace_trace;
+
+	if (trace_trace->fraction == 1.0f)
+	{
+		VectorCopy(end, trace_trace->endpos);
+	}
+	else
+	{
+		for (int i = 0; i < 3; i++)
+			trace_trace->endpos[i] = start[i] + trace_trace->fraction * (end[i] - start[i]);
+	}
 }
 
 void CM_TransformedBoxTrace(vec3_t start, vec3_t end, vec3_t mins, vec3_t maxs, int headnode, uint brushmask, vec3_t origin, vec3_t angles, trace_t* return_trace)
