@@ -509,7 +509,8 @@ GAME_DECLSPEC extern entity_state_t cl_parse_entities[MAX_PARSE_ENTITIES];
 
 extern qboolean ignored_players[MAX_CLIENTS]; //mxd
 
-#define ENTITY_FX_BUF_BLOCK_SIZE 256
+#define NUM_ENTITY_HEADER_BITS		5 //mxd
+#define ENTITY_FX_BUF_BLOCK_SIZE	256
 
 extern struct ResourceManager_s cl_FXBufMngr;
 extern int camera_timer; //mxd

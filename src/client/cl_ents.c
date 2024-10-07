@@ -47,10 +47,23 @@ void CL_ClearSkeletalEntities(void) // H2
 	memset(joint_nodes, 0, sizeof(joint_nodes));
 }
 
+// Returns the entity number and the header bits.
 int CL_ParseEntityBits(byte* bf, byte* bfNonZero)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	bfNonZero[0] = (byte)MSG_ReadByte(&net_message);
+
+	for (int i = 0; i < NUM_ENTITY_HEADER_BITS; i++)
+	{
+		if (GetB(bfNonZero, i))
+			bf[i] = (byte)MSG_ReadByte(&net_message);
+		else
+			bf[i] = 0;
+	}
+
+	if (GetB(bf, U_NUMBER16))
+		return MSG_ReadShort(&net_message);
+
+	return MSG_ReadByte(&net_message);
 }
 
 void CL_ParseDelta(entity_state_t* from, entity_state_t* to, int number, byte* bf)
