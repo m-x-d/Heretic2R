@@ -72,9 +72,10 @@ void MSG_WriteString(sizebuf_t* sb, const char* s)
 		SZ_Write(sb, "", 1);
 }
 
-void MSG_WriteCoord(sizebuf_t* sb, float f)
+// Q2 counterpart
+void MSG_WriteCoord(sizebuf_t* sb, const float f)
 {
-	NOT_IMPLEMENTED
+	MSG_WriteShort(sb, (int)(f * 8.0f));
 }
 
 // Q2 counterpart
@@ -85,9 +86,10 @@ void MSG_WritePos(sizebuf_t* sb, vec3_t pos)
 	MSG_WriteShort(sb, (int)(pos[2] * 8.0f));
 }
 
-void MSG_WriteAngle(sizebuf_t* sb, float f)
+// Q2 counterpart
+void MSG_WriteAngle(sizebuf_t* sb, const float f)
 {
-	NOT_IMPLEMENTED
+	MSG_WriteByte(sb, (int)(f * 256.0f / 360.0f) & 255);
 }
 
 void MSG_WriteDeltaUsercmd(sizebuf_t* sb, usercmd_t* from, usercmd_t* cmd)
