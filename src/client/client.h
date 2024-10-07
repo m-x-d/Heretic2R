@@ -293,7 +293,7 @@ typedef struct
 
 GAME_DECLSPEC extern client_static_t cls;
 
-#define FX_API_VERSION	1
+#define FX_API_VERSION	3 // 1 in H2. //TODO: looks like client effects library uses API_VERSION form ref.h... Change to FX_API_VERSION after adding client effects code?
 
 // These are the data and functions exported by the client fx module
 typedef struct
@@ -351,15 +351,15 @@ typedef struct
 	float* EffectEventIdTimeArray;
 	EffectsBuffer_t* clientPredEffects;
 
-	void (*Sys_Error)(int err_level, char* str, ...);
-	void (*Com_Error)(int code, char* fmt, ...);
-	void (*Con_Printf)(int print_level, char* str, ...);
+	void (*Sys_Error)(int err_level, const char* fmt, ...);
+	void (*Com_Error)(int code, const char* fmt, ...);
+	void (*Con_Printf)(int print_level, const char* fmt, ...);
 
-	cvar_t* (*Cvar_Get)(char* name, char* value, int flags);
-	cvar_t* (*Cvar_Set)(char* name, char* value);
-	void (*Cvar_SetValue)(char* name, float value);
-	float (*Cvar_VariableValue)(char* var_name);
-	char* (*Cvar_VariableString)(char* var_name);
+	cvar_t* (*Cvar_Get)(const char* name, const char* value, int flags);
+	cvar_t* (*Cvar_Set)(const char* name, const char* value);
+	void (*Cvar_SetValue)(const char* name, float value);
+	float (*Cvar_VariableValue)(const char* var_name);
+	char* (*Cvar_VariableString)(const char* var_name);
 
 	// Allow the screen flash to be controlled from within the client effect DLL rather than going through the server.
 	// This means we get 60 hz (hopefully) screen flashing, rather than 10 hz.
@@ -372,9 +372,9 @@ typedef struct
 
 	void (*S_StartSound)(vec3_t origin, int entnum, int entchannel, struct sfx_s* sfx, float fvol, int attenuation, float timeofs);
 	struct sfx_s* (*S_RegisterSound)(char* name);
-	struct model_s* (*RegisterModel)(char* name);
+	struct model_s* (*RegisterModel)(const char* name);
 
-	int (*GetEffect)(centity_t* ent, int flags, char* format, ...);
+	int (*GetEffect)(centity_t* ent, int flags, const char* format, ...);
 
 	void* (*TagMalloc)(int size, int tag);
 	void (*TagFree)(void* block);
@@ -528,6 +528,7 @@ void CL_ParseFrame(void);
 
 void CL_AddEntities(void); //mxd
 void CL_ClearSkeletalEntities(void); //mxd
+void CL_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int brushmask, int flags, trace_t* t); //mxd
 
 void CL_PrepRefresh(void);
 void CL_RegisterSounds(void);
@@ -594,7 +595,11 @@ void CL_Stop_f(void);
 void CL_Record_f(void);
 
 // cl_effects.c //mxd
+extern entity_t* PlayerEntPtr;
+extern float cam_transparency;
+
 void CL_InitClientEffects(const char* dll_name);
+void CL_UnloadClientEffects(void);
 
 // cl_parse.c
 extern char* svc_strings[256];

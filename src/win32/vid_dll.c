@@ -123,7 +123,7 @@ static void WIN_SetAltTabState(const qboolean disable)
 #define MAXPRINTMSG	4096
 
 // Q2 counterpart
-static void VID_Printf(const int print_level, char* fmt, ...)
+void VID_Printf(const int print_level, const char* fmt, ...)
 {
 	va_list argptr;
 	char msg[MAXPRINTMSG];
@@ -150,7 +150,7 @@ static void VID_Printf(const int print_level, char* fmt, ...)
 	}
 }
 
-static void VID_Error(int err_level, char* fmt, ...)
+void VID_Error(int err_level, const char* fmt, ...)
 {
 	NOT_IMPLEMENTED
 }
@@ -386,28 +386,6 @@ static LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 #pragma endregion
 
-#pragma region ========================== H2 SCREEN FLASH ==========================
-
-void Activate_Screen_Flash(int color)
-{
-	NOT_IMPLEMENTED
-}
-
-// Screen flash unset
-void Deactivate_Screen_Flash(void)
-{
-	NOT_IMPLEMENTED
-}
-
-// Return screen flash value
-int Is_Screen_Flashing(void)
-{
-	NOT_IMPLEMENTED
-	return 0;
-}
-
-#pragma endregion
-
 static void VID_Restart_f(void)
 {
 	NOT_IMPLEMENTED
@@ -505,7 +483,7 @@ static qboolean VID_LoadRefresh(const char* name)
 	ri.skeletalJoints = skeletal_joints;
 	ri.jointNodes = joint_nodes;
 
-	GetRefAPI_t GetRefAPI = (void*)GetProcAddress(reflib_library, "GetRefAPI");
+	const GetRefAPI_t GetRefAPI = (void*)GetProcAddress(reflib_library, "GetRefAPI");
 	if (GetRefAPI == NULL)
 		Com_Error(ERR_FATAL, "GetProcAddress failed on %s", name);
 

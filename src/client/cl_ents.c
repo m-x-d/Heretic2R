@@ -61,3 +61,8 @@ void CL_GetEntitySoundOrigin(int ent, vec3_t org)
 {
 	NOT_IMPLEMENTED
 }
+
+void CL_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int brushmask, int flags, trace_t* t)
+{
+	NOT_IMPLEMENTED
+}

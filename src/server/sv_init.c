@@ -512,5 +512,5 @@ void SV_Map(const qboolean attractloop, const char* levelstring, const qboolean 
 	}
 
 	SV_BroadcastCommand("reconnect\n");
-	CL_ClearScreenShake(); // H2
+	Reset_Screen_Shake(); // H2
 }

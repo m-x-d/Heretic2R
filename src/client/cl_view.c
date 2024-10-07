@@ -155,10 +155,41 @@ void V_Init(void)
 	crosshair = Cvar_Get("crosshair", "0", CVAR_ARCHIVE);
 }
 
-void CL_ClearScreenShake(void) // H2
+#pragma region ========================== H2 SCREEN FLASH ==========================
+
+void Activate_Screen_Flash(int color)
+{
+	NOT_IMPLEMENTED
+}
+
+// Screen flash unset
+void Deactivate_Screen_Flash(void)
+{
+	NOT_IMPLEMENTED
+}
+
+// Return screen flash value
+int Is_Screen_Flashing(void)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+#pragma endregion
+
+#pragma region ========================== H2 SCREEN SHAKE ==========================
+
+void Activate_Screen_Shake(float intensity, float duration, float current_time, int flags)
+{
+	NOT_IMPLEMENTED
+}
+
+void Reset_Screen_Shake(void)
 {
 	screen_shake_duration = 0.0f;
 	screen_shake_intensity_max = 0.0f;
 	screen_shake_endtime = -1.0f;
 	screen_shake_flags = 0;
 }
+
+#pragma endregion

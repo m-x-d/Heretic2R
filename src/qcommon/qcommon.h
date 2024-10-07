@@ -545,7 +545,7 @@ void Activate_Screen_Shake(float intensity, float duration, float current_time, 
 // Reset screen shake
 void Reset_Screen_Shake(void);
 
-qboolean Get_Crosshair(vec3_t origin, byte* type);
+//qboolean Get_Crosshair(vec3_t origin, byte* type); //mxd. Not needed
 
 // Called by the camera code to determine our camera offset
 void Perform_Screen_Shake(vec3_t, float current_time); //TODO: vec3_t name?
@@ -828,7 +828,6 @@ void CL_Init(void);
 void CL_Drop(void);
 void CL_Shutdown(void);
 void CL_Frame(int msec);
-void CL_ClearScreenShake(void); // H2
 void SCR_BeginLoadingPlaque(void);
 
 void SV_Init(void);
