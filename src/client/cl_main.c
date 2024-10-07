@@ -217,9 +217,21 @@ void Cmd_ForwardToServer(void)
 	}
 }
 
+// Q2 counterpart
 static void CL_ForwardToServer_f(void)
 {
-	NOT_IMPLEMENTED
+	if (cls.state != ca_connected && cls.state != ca_active)
+	{
+		Com_Printf("Can\'t \"%s\", not connected\n", Cmd_Argv(0));
+		return;
+	}
+
+	// Don't forward the first argument.
+	if (Cmd_Argc() > 1)
+	{
+		MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
+		SZ_Print(&cls.netchan.message, Cmd_Args());
+	}
 }
 
 static void CL_Pause_f(void)
