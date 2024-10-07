@@ -65,7 +65,7 @@ static void ShowCaptionsFunc(void* self) // H2
 // Q2 counterpart
 static void LookspringFunc(void* self)
 {
-	Cvar_SetValue("lookspring", (int)(lookspring->value == 0.0f));
+	Cvar_SetValue("lookspring", (float)(lookspring->value == 0.0f));
 }
 
 // Q2 counterpart
