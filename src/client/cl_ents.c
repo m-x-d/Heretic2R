@@ -47,6 +47,17 @@ void CL_ClearSkeletalEntities(void) // H2
 	memset(joint_nodes, 0, sizeof(joint_nodes));
 }
 
+int CL_ParseEntityBits(byte* bf, byte* bfNonZero)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+void CL_ParseDelta(entity_state_t* from, entity_state_t* to, int number, byte* bf)
+{
+	NOT_IMPLEMENTED
+}
+
 void CL_ParseFrame(void)
 {
 	NOT_IMPLEMENTED

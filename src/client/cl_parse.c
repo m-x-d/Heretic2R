@@ -145,7 +145,20 @@ static void CL_ParseServerData(void)
 
 static void CL_ParseBaseline(void)
 {
-	NOT_IMPLEMENTED
+	byte total;
+	byte bits[5];
+	entity_state_t nullstate;
+
+	memset(bits, 0, sizeof(bits)); // H2
+	memset(&nullstate, 0, sizeof(nullstate));
+
+	total = 0; // H2
+	nullstate.skeletalType = -1; // H2
+	nullstate.rootJoint = -1; // H2
+	nullstate.swapFrame = -1; // H2
+
+	const int newnum = CL_ParseEntityBits(bits, &total);
+	CL_ParseDelta(&nullstate, &cl_entities[newnum].baseline, newnum, bits);
 }
 
 void CL_ParseClientinfo(int player)
