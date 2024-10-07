@@ -489,7 +489,7 @@ void CL_SaveConfig_f(void) // H2
 	Com_sprintf(cfg_name, sizeof(cfg_name), "%s/config/%s.cfg", FS_Gamedir(), name->string);
 	FS_CreatePath(cfg_name);
 
-	if (!fopen_s(&f, cfg_name, "w")) //mxd. fopen -> fopen_s
+	if (fopen_s(&f, cfg_name, "w") != 0) //mxd. fopen -> fopen_s
 	{
 		Com_Printf("Couldn\'t write %s.\n", cfg_name);
 		return;
