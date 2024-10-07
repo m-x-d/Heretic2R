@@ -115,7 +115,47 @@ static void SV_Configstrings_f(void)
 
 static void SV_Baselines_f(void)
 {
-	NOT_IMPLEMENTED
+	entity_state_t nullstate;
+
+	Com_DPrintf("Baselines() from %s\n", sv_client->name);
+
+	if (sv_client->state != cs_connected)
+	{
+		Com_Printf("baselines not valid -- already spawned\n");
+		return;
+	}
+
+	// Handle the case of a level changing while a client was connecting.
+	if (Q_atoi(Cmd_Argv(1)) != svs.spawncount)
+	{
+		Com_Printf("SV_Baselines_f from different level\n");
+		SV_New_f();
+
+		return;
+	}
+
+	memset(&nullstate, 0, sizeof(nullstate));
+	int start = Q_atoi(Cmd_Argv(2));
+
+	// Write a packet full of data.
+	while (sv_client->netchan.message.cursize < MAX_MSGLEN / 2 && start < MAX_EDICTS)
+	{
+		entity_state_t* base = &sv.baselines[start];
+		if (base->modelindex != 0 || base->sound != 0 || base->effects != 0)
+		{
+			MSG_WriteByte(&sv_client->netchan.message, svc_spawnbaseline);
+			MSG_WriteDeltaEntity(&nullstate, base, &sv_client->netchan.message, true); // H2: different function definition.
+		}
+
+		start++;
+	}
+
+	// Send next command
+	MSG_WriteByte(&sv_client->netchan.message, svc_stufftext);
+	if (start == MAX_EDICTS)
+		MSG_WriteString(&sv_client->netchan.message, va("precache %i\n", svs.spawncount));
+	else
+		MSG_WriteString(&sv_client->netchan.message, va("cmd baselines %i %i\n", svs.spawncount, start));
 }
 
 static void SV_Begin_f(void)

@@ -118,6 +118,11 @@ void ParseEffectToSizeBuf(sizebuf_t* sb, const char* format, va_list marker) // 
 	}
 }
 
+void MSG_WriteDeltaEntity(entity_state_t* from, entity_state_t* to, sizebuf_t* msg, qboolean force)
+{
+	NOT_IMPLEMENTED
+}
+
 void MSG_WriteDir(sizebuf_t* sb, vec3_t dir)
 {
 	if (dir == NULL)
