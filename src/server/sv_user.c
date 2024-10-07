@@ -70,9 +70,47 @@ static void SV_New_f(void)
 	sv_client->coop_state = cst_default; // H2
 }
 
+// Q2 counterpart
 static void SV_Configstrings_f(void)
 {
-	NOT_IMPLEMENTED
+	Com_DPrintf("Configstrings() from %s\n", sv_client->name);
+
+	if (sv_client->state != cs_connected)
+	{
+		Com_Printf("configstrings not valid -- allready spawned\n");
+		return;
+	}
+
+	// Handle the case of a level changing while a client was connecting.
+	if (Q_atoi(Cmd_Argv(1)) != svs.spawncount)
+	{
+		Com_Printf("SV_Configstrings_f from different level\n");
+		SV_New_f();
+
+		return;
+	}
+
+	int start = Q_atoi(Cmd_Argv(2));
+
+	// Write a packet full of data.
+	while (sv_client->netchan.message.cursize < MAX_MSGLEN / 2 && start < MAX_CONFIGSTRINGS)
+	{
+		if (sv.configstrings[start][0] != 0)
+		{
+			MSG_WriteByte(&sv_client->netchan.message, svc_configstring);
+			MSG_WriteShort(&sv_client->netchan.message, start);
+			MSG_WriteString(&sv_client->netchan.message, sv.configstrings[start]);
+		}
+
+		start++;
+	}
+
+	// Send next command.
+	MSG_WriteByte(&sv_client->netchan.message, svc_stufftext);
+	if (start == MAX_CONFIGSTRINGS)
+		MSG_WriteString(&sv_client->netchan.message, va("cmd baselines %i 0\n", svs.spawncount));
+	else
+		MSG_WriteString(&sv_client->netchan.message, va("cmd configstrings %i %i\n", svs.spawncount, start));
 }
 
 static void SV_Baselines_f(void)
