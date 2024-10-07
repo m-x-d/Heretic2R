@@ -182,7 +182,7 @@ void SV_PrepWorldFrame(void);
 // sv_ccmds.c
 void SV_ReadLevelFile(void);
 void SV_InitOperatorCommands(void);
-void SV_WipeSavegame(char* savename);
+void SV_WipeSavegame(const char* savename);
 
 // sv_init.c
 int SV_ModelIndex(const char* name);
