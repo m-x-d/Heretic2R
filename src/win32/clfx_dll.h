@@ -10,6 +10,7 @@
 #include "client.h"
 
 extern client_fx_import_t fxi;
+extern GetfxAPI_t GetfxAPI;
 extern HINSTANCE clfx_library;
 extern qboolean fxapi_initialized;
 

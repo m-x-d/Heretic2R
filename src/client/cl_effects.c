@@ -95,10 +95,10 @@ void CL_InitClientEffects(const char* dll_name)
 	fxi.Trace = CL_Trace;
 	fxi.InCameraPVS = InCameraPVS;
 
-	const GetfxAPI_t* GetfxAPI = (GetfxAPI_t*)GetProcAddress(clfx_library, "GetfxAPI");
+	GetfxAPI = (void*)GetProcAddress(clfx_library, "GetfxAPI");
 	if (GetfxAPI == NULL)
 		Com_Error(ERR_FATAL, "GetProcAddress failed on %s", dll_name);
- 
+
 	CLFX_Init();
 	fxe.Init();
 
