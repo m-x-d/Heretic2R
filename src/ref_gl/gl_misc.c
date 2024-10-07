@@ -28,8 +28,7 @@ void GL_ScreenShot_f(void)
 		picname[7] = (char)(i % 10 + '0');
 		Com_sprintf(filename, sizeof(filename), "%s/scrnshot/%s", ri.FS_Userdir(), picname); // H2: FS_Gamedir -> FS_Userdir
 
-		fopen_s(&f, filename, "rb"); //mxd. fopen -> fopen_s
-		if (f == NULL)
+		if (fopen_s(&f, filename, "rb") != 0) //mxd. fopen -> fopen_s
 			break;
 
 		fclose(f);
@@ -75,8 +74,7 @@ void GL_ScreenShot_f(void)
 	}
 
 	uint written_size = 0;
-	fopen_s(&f, filename, "wb"); //mxd. fopen -> fopen_s
-	if (f != NULL)
+	if (fopen_s(&f, filename, "wb") == 0) //mxd. fopen -> fopen_s
 	{
 		written_size = fwrite(buffer, 1, tga_size, f);
 		fclose(f);
