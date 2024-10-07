@@ -176,7 +176,7 @@ typedef struct
 	char gamedir[MAX_QPATH];
 	int playernum;
 
-	char configstrings[MAX_CONFIGSTRINGS][MAX_QPATH];
+	char configstrings[MAX_CONFIGSTRINGS][512]; //mxd. Increased string size from MAX_QPATH, so CS_STATUSBAR can fit into single slot.
 
 	// Locally derived information from server state
 
