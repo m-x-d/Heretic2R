@@ -146,9 +146,21 @@ void ParseEffectToSizeBuf(sizebuf_t* sb, const char* format, va_list marker) // 
 	}
 }
 
-void MSG_WriteEntityHeaderBits(sizebuf_t* msg, byte* bf, byte* bfNonZero)
+#define NUM_HEADER_BITS	5
+
+void MSG_WriteEntityHeaderBits(sizebuf_t* msg, const byte* bf, byte* bfNonZero)
 {
-	NOT_IMPLEMENTED
+	bfNonZero[0] = 0;
+
+	for (int i = 0; i < NUM_HEADER_BITS; i++)
+		if (bf[i] != 0)
+			SetB(bfNonZero, i);
+
+	MSG_WriteByte(msg, bfNonZero[0]);
+
+	for (int i = 0; i < NUM_HEADER_BITS; i++)
+		if (GetB(bfNonZero, i))
+			MSG_WriteByte(msg, bf[i]);
 }
 
 static void MSG_WriteEffects(sizebuf_t* sb, const EffectsBuffer_t* fxBuf)
@@ -165,9 +177,7 @@ static void MSG_WriteJoints(sizebuf_t* sb, int joint_index)
 // Can delta from either a baseline or a previous packet_entity.
 void MSG_WriteDeltaEntity(const entity_state_t* from, const entity_state_t* to, sizebuf_t* msg, const qboolean force)
 {
-#define NUM_BITS	5
-
-	byte bits[NUM_BITS];
+	byte bits[NUM_HEADER_BITS];
 
 	if (to->number == 0)
 		Com_Error(ERR_FATAL, "Unset entity number");
@@ -342,18 +352,19 @@ void MSG_WriteDeltaEntity(const entity_state_t* from, const entity_state_t* to, 
 		UnsetB(bits, U_NUMBER16);
 
 		int index;
-		for (index = 0; index < NUM_BITS; index++)
+		for (index = 0; index < NUM_HEADER_BITS; index++)
 			if (bits[index] != 0)
 				break;
 
-		if (index == NUM_BITS)
+		if (index == NUM_HEADER_BITS)
 			return; // Nothing to send!
 
 		if (to->number >= 256)
 			SetB(bits, U_NUMBER16);
 	}
-  
-	MSG_WriteEntityHeaderBits(msg, bits, (byte*)&to);
+
+	byte unused[NUM_HEADER_BITS];
+	MSG_WriteEntityHeaderBits(msg, bits, unused);
 
 	if (GetB(bits, U_NUMBER16))
 		MSG_WriteShort(msg, to->number);
