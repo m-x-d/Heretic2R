@@ -19,11 +19,6 @@ static float screen_shake_intensity_max;
 static float screen_shake_endtime;
 static int screen_shake_flags;
 
-void CL_UpdateProgressbar(int section, int value) // H2
-{
-	NOT_IMPLEMENTED
-}
-
 static void RegisterModels(void) // H2
 {
 	NOT_IMPLEMENTED
@@ -44,7 +39,7 @@ void CL_PrepRefresh(void)
 	SCR_AddDirtyPoint(0, 0);
 	SCR_AddDirtyPoint(viddef.width - 1, viddef.height - 1);
 
-	CL_UpdateProgressbar(0, 1); // H2
+	SCR_UpdateProgressbar(0, 1); // H2
 	strcpy_s(mapname, sizeof(mapname), cl.configstrings[CS_MODELS + 1] + 5); // Skip "maps/". //mxd. strcpy -> strcpy_s
 	mapname[strlen(mapname) - 4] = 0; // Cut off ".bsp".
 
@@ -54,11 +49,11 @@ void CL_PrepRefresh(void)
 	Com_Printf("                                     \r");
 	Com_Printf("pics\r");
 
-	CL_UpdateProgressbar(0, 2); // H2
+	SCR_UpdateProgressbar(0, 2); // H2
 	Com_Printf("                                     \r");
 	RegisterModels();
 
-	CL_UpdateProgressbar(0, 3); // H2
+	SCR_UpdateProgressbar(0, 3); // H2
 
 	for (int i = 0; i < MAX_MODELS && cl.configstrings[CS_MODELS + i][0] != 0; i++)
 	{
@@ -82,7 +77,7 @@ void CL_PrepRefresh(void)
 	}
 
 	Com_Printf("images\r");
-	CL_UpdateProgressbar(0, 4); // H2
+	SCR_UpdateProgressbar(0, 4); // H2
 
 	for (int i = 1; i < MAX_IMAGES && cl.configstrings[CS_IMAGES + i][0]; i++)
 	{
@@ -90,7 +85,7 @@ void CL_PrepRefresh(void)
 		Sys_SendKeyEvents(); // Pump message loop.
 	}
 
-	CL_UpdateProgressbar(0, 5); // H2
+	SCR_UpdateProgressbar(0, 5); // H2
 	Com_Printf("                                     \r");
 
 	for (int i = 0; i < MAX_CLIENTS; i++)

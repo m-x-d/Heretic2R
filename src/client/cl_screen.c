@@ -16,7 +16,7 @@ qboolean scr_initialized; // Ready to draw
 
 qboolean scr_draw_loading_plaque; // H2
 static qboolean scr_draw_loading; // int in Q2
-static int scr_progressbar_offset_x; // H2
+static int scr_progressbar_width; // H2
 
 vrect_t scr_vrect; // Position of render window on screen
 
@@ -210,7 +210,7 @@ void SCR_BeginLoadingPlaque(void)
 		if (cl.cinematictime == 0)
 			scr_draw_loading = true;
 
-		scr_progressbar_offset_x = 0; // H2
+		scr_progressbar_width = 0; // H2
 
 		SCR_UpdateScreen();
 		cls.disable_screen = 1; // Q2: Sys_Milliseconds()
@@ -224,6 +224,16 @@ void SCR_EndLoadingPlaque(void)
 	scr_draw_loading_plaque = false; // H2
 	scr_draw_loading = false; // H2
 	Con_ClearNotify();
+}
+
+//mxd. Original version looks broken and seems to work only because first arg is always 0... 
+void SCR_UpdateProgressbar(int unused, const int section) // H2
+{
+#define NUM_PROGRESSBAR_SECTIONS	6
+
+	const int w = ClampI(section, 0, NUM_PROGRESSBAR_SECTIONS);
+	scr_progressbar_width = (w << NUM_PROGRESSBAR_SECTIONS) / NUM_PROGRESSBAR_SECTIONS;
+	SCR_UpdateScreen();
 }
 
 void SCR_Init(void)
@@ -314,7 +324,7 @@ static void SCR_DrawLoading(void)
 
 	// Draw progressbar.
 	re.DrawStretchPic(49, 432, 70, 16, "icons/breath2.m8", 1.0f, true);
-	re.DrawStretchPic(52, 432, scr_progressbar_offset_x, 16, "icons/breath.m8", 1.0f, true);
+	re.DrawStretchPic(52, 432, scr_progressbar_width, 16, "icons/breath.m8", 1.0f, true);
 }
 
 // Q2 counterpart

@@ -19,6 +19,7 @@ void SCR_CaptionPrint(char* str);
 void SCR_ObituaryPrint(char* str, byte client1, byte client2, uint colour);
 void SCR_BeginLoadingPlaque(void);
 void SCR_EndLoadingPlaque(void);
+void SCR_UpdateProgressbar(int unused, int section); //mxd
 
 void SCR_DebugGraph(float value, int color); //mxd. Re-added
 
