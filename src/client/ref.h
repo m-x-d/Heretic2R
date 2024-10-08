@@ -192,9 +192,9 @@ typedef struct
 	// an implicit "pics/" prepended to the name. (a pic name that starts with a
 	// slash will not use the "pics/" prefix or the ".pcx" postfix)
 	void (*BeginRegistration)(char* map);
-	struct model_s* (*RegisterModel)(char* name);
-	struct image_s* (*RegisterSkin)(char* name, qboolean* retval);
-	struct image_s* (*RegisterPic)(char* name);
+	struct model_s* (*RegisterModel)(const char* name);
+	struct image_s* (*RegisterSkin)(const char* name, qboolean* retval);
+	struct image_s* (*RegisterPic)(const char* name);
 	void (*SetSky)(const char* name, float rotate, const vec3_t axis);
 	void (*EndRegistration)(void);
 

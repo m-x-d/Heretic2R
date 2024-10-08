@@ -12,6 +12,7 @@
 extern entity_t* PlayerEntPtr;
 extern float cam_transparency;
 extern ResourceManager_t fx_buffer_manager;
+extern qboolean precache_models;
 
 void CL_InitClientEffects(const char* dll_name);
 void CL_UnloadClientEffects(void);

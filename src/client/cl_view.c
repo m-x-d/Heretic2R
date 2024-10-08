@@ -5,6 +5,7 @@
 //
 
 #include "client.h"
+#include "cl_effects.h"
 #include "cmodel.h"
 #include "Vector.h"
 
@@ -21,7 +22,9 @@ static int screen_shake_flags;
 
 static void RegisterModels(void) // H2
 {
-	NOT_IMPLEMENTED
+	precache_models = true;
+	fxe.RegisterModels();
+	precache_models = false;
 }
 
 // Call before entering a new level, or after changing dlls.
@@ -51,7 +54,7 @@ void CL_PrepRefresh(void)
 
 	SCR_UpdateProgressbar(0, 2); // H2
 	Com_Printf("                                     \r");
-	RegisterModels();
+	RegisterModels(); // H2
 
 	SCR_UpdateProgressbar(0, 3); // H2
 

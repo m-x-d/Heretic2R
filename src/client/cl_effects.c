@@ -15,6 +15,7 @@
 entity_t* PlayerEntPtr;
 float cam_transparency;
 ResourceManager_t fx_buffer_manager;
+qboolean precache_models;
 
 static float effect_event_id_time_array[128];
 static EffectsBuffer_t client_prediction_effects;
@@ -34,8 +35,10 @@ static qboolean InCameraPVS(vec3_t pos)
 
 static struct model_s* RegisterModel(const char* name)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	if (!precache_models)
+		Sys_Error("Client fx model not precached");
+
+	return re.RegisterModel(name);
 }
 
 static int GetEffect(centity_t* ent, int flags, const char* format, ...)
