@@ -600,7 +600,7 @@ extern char* svc_strings[256];
 extern char client_string[128]; //mxd
 
 void CL_ParseServerMessage(void);
-void CL_LoadClientinfo(clientinfo_t* ci, char* s, int index);
+void CL_LoadClientinfo(clientinfo_t* ci, const char* s, int index);
 void SHOWNET(char* s);
 void CL_ParseClientinfo(int player);
 int COLOUR(cvar_t* cvar);

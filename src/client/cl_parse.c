@@ -162,14 +162,150 @@ static void CL_ParseBaseline(void)
 	CL_ParseDelta(&nullstate, &cl_entities[newnum].baseline, newnum, bits);
 }
 
-void CL_LoadClientinfo(clientinfo_t* ci, char* s, int index)
+void CL_LoadClientinfo(clientinfo_t* ci, const char* s, const int index)
 {
-	NOT_IMPLEMENTED
+	static struct model_s* player_models[34];
+
+	qboolean skin_registered;
+	char skin_name[MAX_QPATH];
+	char model_name[MAX_QPATH];
+	char model_filename[MAX_QPATH];
+	char skin_filename[MAX_QPATH];
+	
+	// Isolate the player's name.
+	strncpy_s(ci->name, sizeof(ci->name), s, sizeof(ci->name));
+	ci->name[sizeof(ci->name) - 1] = 0;
+
+	char* t = strstr(s, "\\");
+	if (t != NULL)
+	{
+		ci->name[t - s] = 0;
+		s = t + 1;
+	}
+
+	if ((int)cl_noskins->value || *s == 0)
+	{
+		Com_sprintf(model_filename, sizeof(model_filename), "players/male/tris.fm");
+		Com_sprintf(skin_filename, sizeof(skin_filename), "players/male/Corvus.m8");
+		sprintf_s(skin_name, sizeof(skin_name), "Corvus"); //mxd. sprintf -> sprintf_s // Q2: Com_sprintf
+		sprintf_s(model_name, sizeof(model_name), "male"); //mxd. sprintf -> sprintf_s // Q2: Com_sprintf
+
+		player_models[index] = re.RegisterModel(model_filename);
+		ci->model = &player_models[index];
+
+		ci->skin[0] = re.RegisterSkin(skin_filename, &skin_registered);
+
+		if (skin_registered)
+		{
+			ci->skin[SKIN_DAMAGED] = re.RegisterSkin("players/male/CorvusDmg.m8", &skin_registered);
+			if (!skin_registered)
+				ci->skin[SKIN_DAMAGED] = ci->skin[0];
+
+			ci->skin[SKIN_REFLECTION] = re.RegisterSkin("players/male/reflect.m8", &skin_registered);
+			if (!skin_registered)
+				ci->skin[SKIN_REFLECTION] = ci->skin[0];
+		}
+		else
+		{
+			ci->skin[0] = NULL;
+			ci->skin[SKIN_DAMAGED] = NULL;
+			ci->skin[SKIN_REFLECTION] = NULL;
+		}
+	}
+	else
+	{
+		// Isolate the model name.
+		strcpy_s(model_name, sizeof(model_name), s);
+
+		// Isolate the skin name.
+		t = strstr(model_name, "/");
+		if (t == NULL)
+			t = strstr(model_name, "\\");
+
+		if (t != NULL)
+		{
+			*t = 0;
+			strcpy_s(skin_name, sizeof(skin_name), &s[strlen(model_name) + 1]); //mxd. strcpy -> strcpy_s
+		}
+		else
+		{
+			strcpy_s(model_name, sizeof(model_name), "male"); //mxd. strcpy -> strcpy_s
+			strcpy_s(skin_name, sizeof(skin_name), s); //mxd. strcpy -> strcpy_s
+		}
+
+		// Model file.
+		Com_sprintf(model_filename, sizeof(model_filename), "players/%s/tris.fm", model_name);
+
+		player_models[index] = re.RegisterModel(model_filename);
+		ci->model = &player_models[index];
+
+		if (*ci->model == NULL)
+		{
+			strcpy_s(model_name, sizeof(model_name), "male"); //mxd. strcpy -> strcpy_s
+			Com_sprintf(model_filename, sizeof(model_filename), "players/male/tris.fm");
+
+			player_models[index] = re.RegisterModel(model_filename);
+			ci->model = &player_models[index];
+
+			strcpy_s(skin_name, sizeof(skin_name), "Corvus");
+		}
+
+		// Skin file.
+		Com_sprintf(skin_filename, sizeof(skin_filename), "players/%s/%s.m8", model_name, skin_name);
+		ci->skin[0] = re.RegisterSkin(skin_filename, &skin_registered);
+
+		if (!skin_registered)
+		{
+			// Try with default skin.
+			if (Q_stricmp(model_name, "male") == 0) // When male
+			{
+				Com_DPrintf("Loading of model '%s' with skin '%s' failed.  Trying skin '%s'\n", model_name, skin_name, "Corvus");
+				strcpy_s(skin_name, sizeof(skin_name), "Corvus"); //mxd. strcpy -> strcpy_s
+			}
+			else if (Q_stricmp(model_name, "female") == 0) // When female
+			{
+				Com_DPrintf("Loading of model '%s' with skin '%s' failed.  Trying skin '%s'\n", model_name, skin_name, "Kiera");
+				strcpy_s(skin_name, sizeof(skin_name), "Kiera"); //mxd. strcpy -> strcpy_s
+			}
+			else // When?
+			{
+				Com_DPrintf("Loading of model '%s' with skin '%s' failed.  Trying skin '%s'\n", model_name, skin_name, "skin");
+				strcpy_s(skin_name, sizeof(skin_name), "skin"); //mxd. strcpy -> strcpy_s
+			}
+
+			Com_sprintf(skin_filename, sizeof(skin_filename), "players/%s/%s.m8", model_name, skin_name);
+			ci->skin[0] = re.RegisterSkin(skin_filename, &skin_registered);
+		}
+
+		char buffer[MAX_QPATH];
+
+		Com_sprintf(buffer, sizeof(buffer), "players/%s/%sDmg.m8", model_name, skin_name);
+		ci->skin[SKIN_DAMAGED] = re.RegisterSkin(buffer, &skin_registered);
+		if (!skin_registered)
+			ci->skin[SKIN_DAMAGED] = ci->skin[0];
+
+		Com_sprintf(buffer, sizeof(buffer), "players/%s/reflect.m8", model_name);
+		ci->skin[SKIN_REFLECTION] = re.RegisterSkin(buffer, &skin_registered);
+		if (!skin_registered)
+			ci->skin[SKIN_REFLECTION] = ci->skin[0];
+	}
+
+	strcpy_s(ci->model_name, sizeof(ci->model_name), model_name); //mxd. strcpy -> strcpy_s
+	strcpy_s(ci->skin_name, sizeof(ci->skin_name), skin_name); //mxd. strcpy -> strcpy_s
+
+	// Must have loaded all data types to be valid.
+	if (ci->skin[0] == NULL || ci->model == NULL)
+	{
+		ci->skin[0] = NULL;
+		ci->model = NULL;
+	}
 }
 
-void CL_ParseClientinfo(int player)
+// Load the skin and model for a client.
+void CL_ParseClientinfo(const int player)
 {
-	NOT_IMPLEMENTED
+	CL_LoadClientinfo(&cl.clientinfo[player], cl.configstrings[player + CS_PLAYERSKINS], player);
+	SCR_UpdateProgressbar(0, 6); // H2
 }
 
 static void CL_ParseConfigString(void)
