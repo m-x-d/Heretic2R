@@ -56,11 +56,6 @@ cvar_t* r_farclipdist;
 
 qboolean is_local_client; // H2
 
-void SV_UnloadClientEffects(void)
-{
-	NOT_IMPLEMENTED
-}
-
 static void SV_SendWelcomeMessage(const char* msg) // H2
 {
 	if (msg != NULL && *msg != 0)

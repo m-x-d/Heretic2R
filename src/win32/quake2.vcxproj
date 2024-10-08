@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\client\client.h" />
+    <ClInclude Include="..\client\cl_effects.h" />
     <ClInclude Include="..\client\cl_messages.h" />
     <ClInclude Include="..\client\cl_music.h" />
     <ClInclude Include="..\client\cl_skeletons.h" />

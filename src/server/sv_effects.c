@@ -65,7 +65,7 @@ int SV_CreatePersistantEffect(const entity_state_t* ent, const int type, int fla
 	PerEffectsBuffer_t* fx = &persistant_effects_array[fx_index];
 
 	fx->freeBlock = 0;
-	fx->bufSize = 192;
+	fx->bufSize = ENTITY_FX_BUF_SIZE;
 	fx->numEffects = 1;
 	fx->fx_num = type;
 	fx->demo_send_mask = -1;

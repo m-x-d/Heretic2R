@@ -7,6 +7,7 @@
 #include <setjmp.h>
 #include "client.h"
 #include "clfx_dll.h"
+#include "cl_effects.h"
 #include "cl_messages.h"
 #include "cl_skeletons.h"
 #include "ResourceManager.h"
@@ -1123,7 +1124,7 @@ void CL_Shutdown(void)
 	CL_WriteConfiguration();
 
 	if (fxapi_initialized)
-		SV_UnloadClientEffects();
+		CL_UnloadClientEffects();
 
 	P_Freelib();
 	SMK_Shutdown();

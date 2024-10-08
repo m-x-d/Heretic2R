@@ -833,6 +833,5 @@ void SCR_BeginLoadingPlaque(void);
 void SV_Init(void);
 void SV_Shutdown(const char* finalmsg, qboolean reconnect);
 void SV_Frame(int msec);
-void SV_UnloadClientEffects(void); // H2
 
 #pragma endregion

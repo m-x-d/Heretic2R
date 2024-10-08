@@ -524,7 +524,7 @@ qboolean CL_CheckOrDownloadFile(char* filename);
 extern uint net_transmit_size; //mxd
 void CL_AddNetgraph(void);
 int CL_ParseEntityBits(byte* bf, byte* bfNonZero);
-void CL_ParseDelta(entity_state_t* from, entity_state_t* to, int number, byte* bf);
+void CL_ParseDelta(const entity_state_t* from, entity_state_t* to, int number, const byte* bits);
 void CL_ParseFrame(void);
 
 void CL_AddEntities(void); //mxd
@@ -594,13 +594,6 @@ void CL_ParseDemoClientEffects(void);
 void CL_WriteDemoMessage(void);
 void CL_Stop_f(void);
 void CL_Record_f(void);
-
-// cl_effects.c //mxd
-extern entity_t* PlayerEntPtr;
-extern float cam_transparency;
-
-void CL_InitClientEffects(const char* dll_name);
-void CL_UnloadClientEffects(void);
 
 // cl_parse.c
 extern char* svc_strings[256];

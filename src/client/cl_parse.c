@@ -5,6 +5,7 @@
 //
 
 #include "client.h"
+#include "cl_effects.h"
 #include "cl_messages.h"
 #include "cmodel.h"
 #include "sound.h"

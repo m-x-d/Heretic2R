@@ -5,6 +5,7 @@
 //
 
 #include "client.h"
+#include "cl_effects.h"
 #include "clfx_dll.h"
 #include "dll_io.h"
 #include "ResourceManager.h"
@@ -13,10 +14,10 @@
 
 entity_t* PlayerEntPtr;
 float cam_transparency;
+ResourceManager_t fx_buffer_manager;
 
 static float effect_event_id_time_array[128];
 static EffectsBuffer_t client_prediction_effects;
-static ResourceManager_t fx_buffer_manager;
 static int cl_effectpredict;
 
 static qboolean Get_Crosshair(vec3_t origin, byte* type)
