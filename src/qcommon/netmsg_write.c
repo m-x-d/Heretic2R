@@ -492,7 +492,7 @@ void MSG_WriteDeltaEntity(const entity_state_t* from, const entity_state_t* to, 
 				MSG_WriteByte(msg, to->fmnodeinfo[i].frame & 255);
 
 			if (fm_flags & U_FM_FRAME16)
-				MSG_WriteShort(msg, to->fmnodeinfo[i].frame >> 8);
+				MSG_WriteByte(msg, to->fmnodeinfo[i].frame >> 8);
 
 			if (fm_flags & U_FM_COLOR_R)
 				MSG_WriteByte(msg, to->fmnodeinfo[i].color.r);
