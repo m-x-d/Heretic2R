@@ -10,6 +10,7 @@
 #include "cl_effects.h"
 #include "cl_messages.h"
 #include "cl_skeletons.h"
+#include "cmodel.h"
 #include "ResourceManager.h"
 #include "sound.h"
 #include "Vector.h"
@@ -130,6 +131,13 @@ centity_t cl_entities[MAX_NETWORKABLE_EDICTS]; //mxd. MAX_EDICTS in Q2
 entity_state_t cl_parse_entities[MAX_PARSE_ENTITIES];
 
 qboolean ignored_players[MAX_CLIENTS];
+
+static int precache_check; // For autodownload of precache items.
+static int precache_spawncount;
+static int precache_tex;
+static int precache_model_skin;
+
+static byte* precache_model; // Used for skin checking in alias models.
 
 void CL_WriteDemoMessage(void)
 {
@@ -527,9 +535,48 @@ static void CL_Setenv_f(void)
 	NOT_IMPLEMENTED
 }
 
-static void CL_Precache_f(void)
+void CL_RequestNextDownload(void)
 {
 	NOT_IMPLEMENTED
+}
+
+// The server will send this command right before allowing the client into the server.
+static void CL_Precache_f(void)
+{
+	precache_spawncount = Q_atoi(Cmd_Argv(1)); // H2
+
+	if (Cmd_Argc() < 2 || strcmp(cls.servername, "localhost") == 0 || game_downloadable_type->value == 0.0f || Cvar_VariableValue("server_machine") != 0.0f) // H2: extra checks
+	{
+		cls.disable_screen = 1;
+
+		uint map_checksum; // For detecting cheater maps.
+		CM_LoadMap(cl.configstrings[CS_MODELS + 1], true, &map_checksum);
+
+		if (map_checksum != (uint)Q_atoi(cl.configstrings[CS_MAPCHECKSUM])) // H2
+			Com_Error(ERR_DROP, "Local map version differs from server: %i != '%s'\n", map_checksum, cl.configstrings[CS_MAPCHECKSUM]);
+
+		if (cl.configstrings[CS_MODELS + 1][0] != 0) // H2
+		{
+			CL_RegisterSounds();
+			memset(&skeletal_joints, 0, sizeof(skeletal_joints));
+			memset(&joint_nodes, 0, sizeof(joint_nodes));
+			CL_PrepRefresh();
+
+			if (precache_spawncount != -1)
+			{
+				MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
+				MSG_WriteString(&cls.netchan.message, va("begin %i\n", precache_spawncount));
+			}
+		}
+
+		return;
+	}
+
+	precache_check = CS_MODELS;
+	precache_model = NULL;
+	precache_model_skin = 0;
+
+	CL_RequestNextDownload();
 }
 
 static void CL_Config_f(void)
