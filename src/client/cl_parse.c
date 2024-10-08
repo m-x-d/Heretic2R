@@ -162,6 +162,11 @@ static void CL_ParseBaseline(void)
 	CL_ParseDelta(&nullstate, &cl_entities[newnum].baseline, newnum, bits);
 }
 
+void CL_LoadClientinfo(clientinfo_t* ci, char* s, int index)
+{
+	NOT_IMPLEMENTED
+}
+
 void CL_ParseClientinfo(int player)
 {
 	NOT_IMPLEMENTED

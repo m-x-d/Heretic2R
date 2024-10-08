@@ -531,6 +531,7 @@ void CL_AddEntities(void); //mxd
 void CL_ClearSkeletalEntities(void); //mxd
 void CL_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int brushmask, int flags, trace_t* t); //mxd
 
+void CL_UpdateProgressbar(int section, int value); //mxd
 void CL_PrepRefresh(void);
 void CL_RegisterSounds(void);
 
