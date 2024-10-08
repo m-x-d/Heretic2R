@@ -136,7 +136,7 @@ typedef struct mleaf_s
 
 	float minmaxs[6]; // For bounding box culling
 
-	struct mnode_t* parent;
+	struct mnode_s* parent;
 
 	// Leaf specific
 	int cluster;
