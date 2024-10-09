@@ -147,6 +147,7 @@
     <ClInclude Include="..\game\g_NewSystem.h" />
     <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="..\Player\Player.h" />
+    <ClInclude Include="..\Player\p_main.h" />
     <ClInclude Include="..\Player\p_types.h" />
     <ClInclude Include="..\qcommon\anorms.h" />
     <ClInclude Include="..\qcommon\cl_strings.h" />

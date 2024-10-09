@@ -506,5 +506,8 @@
     <ClInclude Include="..\client\cl_effects.h">
       <Filter>client</Filter>
     </ClInclude>
+    <ClInclude Include="..\Player\p_main.h">
+      <Filter>Player</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -256,8 +256,8 @@ typedef struct
 	// Offenses and defenses.
 	gitem_t* weapon;
 	gitem_t* lastweapon;
-	gitem_t* defence;
-	gitem_t* lastdefence;
+	gitem_t* defence; //mxd. Named 'defense' in player_state_t //TODO: rename to match?
+	gitem_t* lastdefence; //mxd. Named 'lastdefense' in player_state_t //TODO: rename to match?
 	gitem_t* newweapon;
 
 	// For calculating total unit score in co-op games.
