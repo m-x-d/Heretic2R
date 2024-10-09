@@ -596,6 +596,8 @@ void CL_Stop_f(void);
 void CL_Record_f(void);
 
 // cl_parse.c
+#define MAX_PLAYER_MODELS	32 //mxd
+
 extern char* svc_strings[256];
 extern char client_string[128]; //mxd
 

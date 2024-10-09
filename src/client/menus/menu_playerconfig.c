@@ -20,13 +20,12 @@ typedef struct
 	char psex[MAX_QPATH]; // male/female
 } playermodelinfo_s;
 
-#define MAX_PLAYER_CATEGORIES	32
-#define MAX_PLAYER_MODELS		128
+#define MAX_PLAYER_SKINS	128
 
-static int s_numplayermodels;
+static int s_num_player_skins;
 static int s_current_skin_index;
 static qboolean current_skin_exists;
-static char* skin_names[MAX_PLAYER_MODELS];
+static char* skin_names[MAX_PLAYER_SKINS];
 static cvar_t* skin;
 
 static menuframework_s s_player_config_menu;
@@ -46,11 +45,11 @@ static void ShowNamesFunc(void* self) // H2
 }
 
 //TODO: this returns 8 categories instead of 2!
-static int ScanModelCategories(playermodelinfo_s* info) // H2
+static int ScanPlayerModels(playermodelinfo_s* info) // H2
 {
 	char findname[MAX_OSPATH];
 
-	int num_categories = 0;
+	int num_models = 0;
 	char* path = FS_NextPath(NULL);
 
 	while (path != NULL)
@@ -60,7 +59,7 @@ static int ScanModelCategories(playermodelinfo_s* info) // H2
 
 		while (subdir != NULL)
 		{
-			if (num_categories >= MAX_PLAYER_CATEGORIES)
+			if (num_models >= MAX_PLAYER_MODELS)
 				break;
 
 			Com_sprintf(info->directory, sizeof(info->directory), "%s/%s", path, playerdir->string);
@@ -68,7 +67,7 @@ static int ScanModelCategories(playermodelinfo_s* info) // H2
 			strcpy_s(info->psex, sizeof(info->psex), &subdir[len + 1]); //mxd. strcpy -> strcpy_s
 			subdir = Sys_FindNext(SFF_SUBDIR, SFF_HIDDEN | SFF_SYSTEM);
 
-			num_categories++;
+			num_models++;
 			info++;
 		}
 
@@ -76,12 +75,12 @@ static int ScanModelCategories(playermodelinfo_s* info) // H2
 		path = FS_NextPath(path);
 	}
 
-	return num_categories;
+	return num_models;
 }
 
 static void ScanPlayerSkins(playermodelinfo_s* info) // H2
 {
-	static char skin_names_array[MAX_PLAYER_MODELS][MAX_OSPATH];
+	static char skin_names_array[MAX_PLAYER_SKINS][MAX_OSPATH];
 
 	char path[MAX_OSPATH];
 	char skin_name[MAX_OSPATH];
@@ -97,7 +96,7 @@ static void ScanPlayerSkins(playermodelinfo_s* info) // H2
 
 	while (skin_file != NULL)
 	{
-		if (s_numplayermodels >= MAX_PLAYER_MODELS)
+		if (s_num_player_skins >= MAX_PLAYER_SKINS)
 			break;
 
 		strcpy_s(skin_name, sizeof(skin_name), &skin_file[strlen(info->directory) + 1]); //mxd. strcpy -> strcpy_s
@@ -110,39 +109,39 @@ static void ScanPlayerSkins(playermodelinfo_s* info) // H2
 
 		if (skin_w == 256 && skin_h == 256 && icon_w > 0 && icon_h > 0)
 		{
-			skin_names[s_numplayermodels] = skin_names_array[s_numplayermodels];
-			strcpy_s(skin_names_array[s_numplayermodels], sizeof(skin_names_array[s_numplayermodels]), skin_name); //mxd. strcpy -> strcpy_s
+			skin_names[s_num_player_skins] = skin_names_array[s_num_player_skins];
+			strcpy_s(skin_names_array[s_num_player_skins], sizeof(skin_names_array[s_num_player_skins]), skin_name); //mxd. strcpy -> strcpy_s
 
 			if (Q_stricmp(skin->string, skin_name) == 0)
 			{
-				s_current_skin_index = s_numplayermodels;
+				s_current_skin_index = s_num_player_skins;
 				current_skin_exists = true;
 			}
 
-			s_numplayermodels++;
+			s_num_player_skins++;
 		}
 
 		skin_file = Sys_FindNext(0, 0);
 	}
 
 	Sys_FindClose();
-	skin_names[s_numplayermodels] = NULL;
+	skin_names[s_num_player_skins] = NULL;
 }
 
-//mxd. Returns the number of models loaded.
+//mxd. Returns the number of skins loaded.
 static int PlayerConfig_ScanDirectories(void)
 {
-	playermodelinfo_s infos[MAX_PLAYER_CATEGORIES];
+	playermodelinfo_s infos[MAX_PLAYER_MODELS];
 
-	s_numplayermodels = 0;
+	s_num_player_skins = 0;
 	s_current_skin_index = 0;
 	current_skin_exists = false;
 
-	const int num_categories = ScanModelCategories(infos);
-	for (int i = 0; i < num_categories; i++)
+	const int num_models = ScanPlayerModels(infos);
+	for (int i = 0; i < num_models; i++)
 		ScanPlayerSkins(&infos[i]);
 
-	return s_numplayermodels;
+	return s_num_player_skins;
 }
 
 static qboolean PlayerConfig_MenuInit(void)
