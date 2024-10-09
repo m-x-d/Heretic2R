@@ -635,6 +635,7 @@ void CL_DrawInventory(void);
 
 // cl_pred.c
 void CL_PredictMovement(void);
+void CL_StorePredictInfo(void); //mxd
 void CL_ClipMoveToEntities(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, trace_t* tr);
 
 // cl_view.c

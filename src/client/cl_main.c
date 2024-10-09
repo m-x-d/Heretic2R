@@ -890,15 +890,6 @@ static void CL_WriteConfiguration(void)
 	Cvar_WriteVariables(path);
 }
 
-static void CL_StorePredictInfo(void) // H2
-{
-	//mxd. Skip when unable to render //TODO: more reliable way to check we are ingame (sv.state does this)?
-	if (!cl.refresh_prepped)
-		return;
-
-	NOT_IMPLEMENTED
-}
-
 static void CL_StorePlayerInventoryInfo(void) // H2
 {
 	for (int i = 0; i < cl.frame.playerstate.NoOfItems; i++)

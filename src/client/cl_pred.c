@@ -15,6 +15,9 @@ static int pred_renderfx = 0;
 static int pred_skinnum = 0;
 static float pred_playerLerp = 0.0f;
 
+static int pred_pm_flags;
+static int pred_pm_w_flags;
+
 static int pred_currFrame = 0;
 static int pred_prevFrame = 0;
 
@@ -435,4 +438,31 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 	{
 		viewoffset_changed = true;
 	}
+}
+
+void CL_StorePredictInfo(void) // H2
+{
+	VectorCopy(cl.predicted_origin, cl_entities[cl.playernum + 1].origin);
+
+	cl.predictinfo.currFrame = pred_currFrame;
+	cl.predictinfo.currSwapFrame = pred_currSwapFrame;
+	cl.predictinfo.prevFrame = pred_prevFrame;
+	cl.predictinfo.prevSwapFrame = pred_prevSwapFrame;
+
+	if (cl.playerinfo.deadflag == 0)
+	{
+		VectorCopy(pred_currAngles, cl.predictinfo.currAngles);
+		VectorCopy(pred_prevAngles, cl.predictinfo.prevAngles);
+	}
+
+	cl.predictinfo.effects = pred_effects;
+	cl.predictinfo.playerLerp = pred_playerLerp;
+	cl.predictinfo.clientnum = pred_clientnum;
+	cl.predictinfo.renderfx = pred_renderfx;
+	cl.predictinfo.skinnum = pred_skinnum;
+
+	memcpy(cl.predictinfo.fmnodeinfo, cl.playerinfo.fmnodeinfo, sizeof(cl.predictinfo.fmnodeinfo));
+
+	pred_pm_flags = cl.playerinfo.pm_flags;
+	pred_pm_w_flags = cl.playerinfo.pm_w_flags;
 }
