@@ -514,6 +514,7 @@ extern qboolean ignored_players[MAX_CLIENTS]; //mxd
 
 extern struct ResourceManager_s cl_FXBufMngr;
 extern int camera_timer; //mxd
+extern qboolean viewoffset_changed; //mxd
 
 extern netadr_t net_from;
 extern sizebuf_t net_message;

@@ -12,6 +12,7 @@
 
 ResourceManager_t cl_FXBufMngr;
 int camera_timer; // H2
+qboolean viewoffset_changed; // H2
 
 static void DeallocateLERPedReference(void* data) // H2
 {
