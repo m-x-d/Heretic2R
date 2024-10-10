@@ -11,9 +11,51 @@
 
 static byte fatpvs[MAX_MAP_LEAFS / 8];
 
-void SV_WriteFrameToClient(client_t* client, sizebuf_t* msg)
+static void SV_EmitPacketEntities(client_frame_t* from, client_frame_t* to, sizebuf_t* msg, uint ent_id) // H2: extra 'ent_id' arg.
 {
 	NOT_IMPLEMENTED
+}
+
+static void SV_WritePlayerstateToClient(client_frame_t* from, client_frame_t* to, sizebuf_t* msg)
+{
+	NOT_IMPLEMENTED
+}
+
+void SV_WriteFrameToClient(client_t* client, sizebuf_t* msg)
+{
+	client_frame_t* oldframe;
+	int lastframe;
+
+	// This is the frame we are creating.
+	client_frame_t* frame = &client->frames[sv.framenum & UPDATE_MASK];
+
+	// Client is asking for a retransmit, or client hasn't gotten a good message through in a long time.
+	if (client->lastframe <= 0 || sv.framenum - client->lastframe >= (UPDATE_BACKUP - 3))
+	{
+		oldframe = NULL;
+		lastframe = -1;
+	}
+	else
+	{
+		// We have a valid message to delta from.
+		oldframe = &client->frames[client->lastframe & UPDATE_MASK];
+		lastframe = client->lastframe;
+	}
+
+	MSG_WriteByte(msg, svc_frame);
+	MSG_WriteLong(msg, sv.framenum);
+	MSG_WriteLong(msg, lastframe); // What we are delta'ing from.
+
+	// Send over the areabits.
+	MSG_WriteByte(msg, frame->areabytes);
+	SZ_Write(msg, frame->areabits, frame->areabytes);
+
+	// Delta-encode the playerstate.
+	SV_WritePlayerstateToClient(oldframe, frame, msg);
+
+	// Delta-encode the entities.
+	const int ent_id = 1 << ((client->edict->s.number - 1) & 31); // H2
+	SV_EmitPacketEntities(oldframe, frame, msg, ent_id);
 }
 
 // Q2 counterpart
