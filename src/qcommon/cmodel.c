@@ -569,6 +569,12 @@ cmodel_t* CM_InlineModel(const char* name)
 }
 
 // Q2 counterpart
+int CM_NumClusters(void)
+{
+	return numclusters;
+}
+
+// Q2 counterpart
 int CM_NumInlineModels(void)
 {
 	return numcmodels;

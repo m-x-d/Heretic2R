@@ -16,9 +16,49 @@ void SV_WriteFrameToClient(client_t* client, sizebuf_t* msg)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
+// The client will interpolate the view position, so we can't use a single PVS point.
 static void SV_FatPVS(vec3_t org)
 {
-	NOT_IMPLEMENTED
+	int leafs[64];
+	vec3_t mins;
+	vec3_t maxs;
+
+	for (int i = 0; i < 3; i++)
+	{
+		mins[i] = org[i] - 8;
+		maxs[i] = org[i] + 8;
+	}
+
+	const int count = CM_BoxLeafnums(mins, maxs, leafs, 64, NULL);
+	if (count < 1)
+		Com_Error(ERR_FATAL, "SV_FatPVS: count < 1");
+
+	const int longs = (CM_NumClusters() + 31) >> 5;
+
+	// Convert leafs to clusters.
+	for (int i = 0; i < count; i++)
+		leafs[i] = CM_LeafCluster(leafs[i]);
+
+	memcpy(fatpvs, CM_ClusterPVS(leafs[0]), longs << 2);
+
+	// Or in all the other leaf bits
+	for (int i = 1; i < count; i++)
+	{
+		int j;
+
+		for (j = 0; j < i; j++)
+			if (leafs[i] == leafs[j])
+				break;
+
+		if (j != i)
+			continue; // Already have the cluster we want
+
+		byte* src = CM_ClusterPVS(leafs[i]);
+
+		for (j = 0; j < longs; j++)
+			((long*)fatpvs)[j] |= ((long*)src)[j];
+	}
 }
 
 // Add entity to the circular client_entities array.
