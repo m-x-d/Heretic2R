@@ -16,9 +16,9 @@ static void SV_EmitPacketEntities(client_frame_t* from, client_frame_t* to, size
 	NOT_IMPLEMENTED
 }
 
-static void SV_WritePlayerstateToClient(client_frame_t* from, client_frame_t* to, sizebuf_t* msg)
+static void SV_WritePlayerstateToClient(const client_frame_t* from, const client_frame_t* to, sizebuf_t* msg)
 {
-	player_state_t* ops;
+	const player_state_t* ops;
 	player_state_t dummy;
 	byte buffer[PLAYER_DEL_BYTES];
 
@@ -40,10 +40,10 @@ static void SV_WritePlayerstateToClient(client_frame_t* from, client_frame_t* to
 	if (ps->pmove.pm_type != ops->pmove.pm_type)
 		SetB(buffer, PS_M_TYPE);
 
-	if (to->ps.pmove.origin[0] != ops->pmove.origin[0] || to->ps.pmove.origin[1] != ops->pmove.origin[1])
+	if (ps->pmove.origin[0] != ops->pmove.origin[0] || ps->pmove.origin[1] != ops->pmove.origin[1])
 		SetB(buffer, PS_M_ORIGIN_XY);
 
-	if (to->ps.pmove.origin[2] != ops->pmove.origin[2])
+	if (ps->pmove.origin[2] != ops->pmove.origin[2])
 		SetB(buffer, PS_M_ORIGIN_Z);
 
 	if (ps->pmove.velocity[0] != ops->pmove.velocity[0] || ps->pmove.velocity[1] != ops->pmove.velocity[1])
@@ -599,10 +599,10 @@ static void SV_WritePlayerstateToClient(client_frame_t* from, client_frame_t* to
 		MSG_WriteByte(msg, ps->advancedstaff);
 
 	if (GetB(buffer, PS_CINEMATIC))
-		MSG_WriteByte(msg, to->ps.cinematicfreeze);
+		MSG_WriteByte(msg, ps->cinematicfreeze);
 
 	if (GetB(buffer, PS_PIV))
-		MSG_WriteLong(msg, to->ps.PIV);
+		MSG_WriteLong(msg, ps->PIV);
 }
 
 void SV_WriteFrameToClient(client_t* client, sizebuf_t* msg)
