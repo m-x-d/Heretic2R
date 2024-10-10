@@ -84,9 +84,11 @@ void Cbuf_CopyToDefer(void)
 	cmd_text.cursize = 0;
 }
 
+// Q2 counterpart
 void Cbuf_InsertFromDefer(void)
 {
-	NOT_IMPLEMENTED
+	Cbuf_InsertText((char*)defer_text_buf);
+	defer_text_buf[0] = 0;
 }
 
 void Cbuf_ExecuteText(int exec_when, char* text)
