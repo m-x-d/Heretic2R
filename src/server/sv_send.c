@@ -145,9 +145,24 @@ static void SV_DemoCompleted(void)
 	NOT_IMPLEMENTED
 }
 
+// Returns true if the client is over its current bandwidth estimation and should not be sent another packet.
 static qboolean SV_RateDrop(client_t* c)
 {
-	NOT_IMPLEMENTED
+	// Never drop over the loopback.
+	if (c->netchan.remote_address.type == NA_LOOPBACK)
+		return false;
+
+	int total = 0;
+	for (int i = 0; i < RATE_MESSAGES; i++)
+		total += c->message_size[i];
+
+	if (total > c->rate)
+	{
+		// H2: missing c->surpressCount++;
+		c->message_size[sv.framenum % RATE_MESSAGES] = 0;
+		return true;
+	}
+
 	return false;
 }
 
