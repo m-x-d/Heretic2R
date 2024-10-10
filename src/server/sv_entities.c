@@ -9,7 +9,7 @@
 #include "EffectFlags.h"
 #include "Vector.h"
 
-static byte fatpvs[8192];
+static byte fatpvs[MAX_MAP_LEAFS / 8];
 
 void SV_WriteFrameToClient(client_t* client, sizebuf_t* msg)
 {

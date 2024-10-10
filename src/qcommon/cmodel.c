@@ -729,16 +729,63 @@ char* CM_EntityString(void)
 	return map_entitystring;
 }
 
-byte* CM_ClusterPVS(int cluster)
+static void CM_DecompressVis(const byte* in, byte* out)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	const int row = (numclusters + 7) >> 3;
+	byte* out_p = out;
+
+	// No vis info, so make all visible.
+	if (in == NULL || numvisibility == 0)
+	{
+		memset(out, 0xff, row); // H2
+		return;
+	}
+
+	do
+	{
+		if (*in)
+		{
+			*out_p++ = *in++;
+			continue;
+		}
+
+		int c = in[1];
+		in += 2;
+
+		if (out_p - out + c > row)
+		{
+			c = row - (out_p - out);
+			Com_DPrintf("warning: Vis decompression overrun\n");
+		}
+
+		memset(out, 0, c); // H2
+	} while (out_p - out < row);
 }
 
-byte* CM_ClusterPHS(int cluster)
+// Q2 counterpart
+byte* CM_ClusterPVS(const int cluster)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	static byte	pvsrow[MAX_MAP_LEAFS / 8]; //mxd. Made local static.
+
+	if (cluster == -1)
+		memset(pvsrow, 0, (numclusters + 7) >> 3);
+	else
+		CM_DecompressVis(map_visibility + map_vis->bitofs[cluster][DVIS_PVS], pvsrow);
+
+	return pvsrow;
+}
+
+// Q2 counterpart
+byte* CM_ClusterPHS(const int cluster)
+{
+	static byte	phsrow[MAX_MAP_LEAFS / 8]; //mxd. Made local static.
+
+	if (cluster == -1)
+		memset(phsrow, 0, (numclusters + 7) >> 3);
+	else
+		CM_DecompressVis(map_visibility + map_vis->bitofs[cluster][DVIS_PHS], phsrow);
+
+	return phsrow;
 }
 
 // Q2 counterpart
