@@ -700,8 +700,8 @@ int CM_LeafArea(int leafnum);
 void CM_SetAreaPortalState(int portalnum, qboolean open);
 qboolean CM_AreasConnected(int area1, int area2);
 
-int CM_WriteAreaBits(byte* buffer, int area);
-qboolean CM_HeadnodeVisible(int headnode, byte* visbits);
+//int CM_WriteAreaBits(byte* buffer, int area); //mxd. Disabled
+//qboolean CM_HeadnodeVisible(int headnode, byte* visbits); //mxd. Disabled
 
 void CM_WritePortalState(FILE* f);
 void CM_ReadPortalState(FILE* f);

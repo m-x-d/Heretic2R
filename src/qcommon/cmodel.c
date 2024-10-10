@@ -1246,4 +1246,16 @@ qboolean CM_AreasConnected(int area1, int area2)
 	return false;
 }
 
+int CM_WriteAreaBits(byte* buffer, int area)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+qboolean CM_HeadnodeVisible(int nodenum, byte* visbits)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
 #pragma endregion
