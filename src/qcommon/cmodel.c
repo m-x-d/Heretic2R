@@ -1246,10 +1246,29 @@ qboolean CM_AreasConnected(int area1, int area2)
 	return false;
 }
 
-int CM_WriteAreaBits(byte* buffer, int area)
+// Q2 counterpart
+// Writes a length byte followed by a bit vector of all the areas that area in the same flood as the area parameter.
+// This is used by the client refreshes to cull visibility.
+int CM_WriteAreaBits(byte* buffer, const int area)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	const int bytes = (numareas + 7) >> 3;
+
+	if ((int)map_noareas->value)
+	{
+		// For debugging, send everything.
+		memset(buffer, 255, bytes);
+	}
+	else
+	{
+		memset(buffer, 0, bytes);
+
+		const int floodnum = map_areas[area].floodnum;
+		for (int i = 0; i < numareas; i++)
+			if (area == 0 || map_areas[i].floodnum == floodnum)
+				buffer[i >> 3] |= 1 << (i & 7);
+	}
+
+	return bytes;
 }
 
 qboolean CM_HeadnodeVisible(int nodenum, byte* visbits)
