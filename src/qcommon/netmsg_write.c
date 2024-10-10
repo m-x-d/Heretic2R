@@ -92,6 +92,11 @@ void MSG_WriteAngle(sizebuf_t* sb, const float f)
 	MSG_WriteByte(sb, (int)(f * 256.0f / 360.0f) & 255);
 }
 
+void MSG_WriteAngle16(sizebuf_t* sb, float f)
+{
+	NOT_IMPLEMENTED
+}
+
 void MSG_WriteDeltaUsercmd(sizebuf_t* sb, usercmd_t* from, usercmd_t* cmd)
 {
 	NOT_IMPLEMENTED
