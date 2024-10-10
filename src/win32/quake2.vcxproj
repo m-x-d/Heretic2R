@@ -76,6 +76,7 @@
     <ClCompile Include="..\qcommon\tokens.c" />
     <ClCompile Include="..\server\sv_ccmds.c" />
     <ClCompile Include="..\server\sv_effects.c" />
+    <ClCompile Include="..\server\sv_entities.c" />
     <ClCompile Include="..\server\sv_game.c" />
     <ClCompile Include="..\server\sv_init.c" />
     <ClCompile Include="..\server\sv_main.c" />

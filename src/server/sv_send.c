@@ -134,10 +134,44 @@ void SV_StartSound(vec3_t origin, edict_t* entity, int channel,	int soundindex, 
 
 #pragma region ========================== FRAME UPDATES ==========================
 
-qboolean SV_SendClientDatagram(client_t* client, qboolean send_client_data)
+qboolean SV_SendClientDatagram(client_t* client, const qboolean send_client_data)
 {
-	NOT_IMPLEMENTED
-	return false;
+	byte msg_buf[MAX_MSGLEN];
+	sizebuf_t msg;
+
+	SZ_Init(&msg, msg_buf, sizeof(msg_buf));
+	msg.allowoverflow = true;
+
+	if (send_client_data) // H2: new check.
+	{
+		SV_BuildClientFrame(client);
+		SV_WriteFrameToClient(client, &msg); // Send over all the relevant entity_state_t and the player_state_t.
+		SV_SendClientEffects(client); // H2
+	}
+
+	// Copy the accumulated multicast datagram for this client out to the message.
+	// It is necessary for this to be after the WriteEntities, so that entity references will be current.
+	if (client->datagram.overflowed)
+		Com_Printf("WARNING: datagram overflowed for %s\n", client->name);
+	else
+		SZ_Write(&msg, client->datagram.data, client->datagram.cursize);
+
+	SZ_Clear(&client->datagram);
+
+	if (msg.overflowed)
+	{
+		// Must have room left for the packet header.
+		Com_Printf("WARNING: msg overflowed for %s\n", client->name);
+		SZ_Clear(&msg);
+	}
+
+	// Send the datagram. // H2: extra return value.
+	net_transmit_size = Netchan_Transmit(&client->netchan, msg.cursize, msg.data);
+
+	// Record the size for rate estimation.
+	client->message_size[sv.framenum % RATE_MESSAGES] = msg.cursize;
+
+	return true;
 }
 
 static void SV_DemoCompleted(void)

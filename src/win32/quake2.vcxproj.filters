@@ -264,6 +264,9 @@
     <ClCompile Include="..\game\q_shared.c">
       <Filter>game</Filter>
     </ClCompile>
+    <ClCompile Include="..\server\sv_entities.c">
+      <Filter>server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">

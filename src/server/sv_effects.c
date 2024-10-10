@@ -136,3 +136,8 @@ void SV_ClearPersistantEffectBuffersArray(void)
 	num_persistant_effects = 0;
 	memset(persistant_effects_array, 0, sizeof(persistant_effects_array));
 }
+
+void SV_SendClientEffects(client_t* client)
+{
+	NOT_IMPLEMENTED
+}

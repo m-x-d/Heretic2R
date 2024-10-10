@@ -184,6 +184,10 @@ void SV_ReadLevelFile(void);
 void SV_InitOperatorCommands(void);
 void SV_WipeSavegame(const char* savename);
 
+// sv_entities.c
+void SV_WriteFrameToClient(client_t* client, sizebuf_t* msg);
+void SV_BuildClientFrame(client_t* client);
+
 // sv_init.c
 int SV_ModelIndex(const char* name);
 int SV_SoundIndex(const char* name);

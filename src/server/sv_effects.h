@@ -28,3 +28,4 @@ void SV_RemoveEdictFromPersistantEffectsArray(const edict_t* ed);
 void SV_UpdatePersistantEffectsDemoMask(client_t* cl);
 void SV_ClearPersistantEffects(void);
 void SV_ClearPersistantEffectBuffersArray(void);
+void SV_SendClientEffects(client_t* client);
