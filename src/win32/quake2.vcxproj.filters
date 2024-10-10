@@ -72,7 +72,7 @@
     <ClCompile Include="clfx_dll.c">
       <Filter>win32</Filter>
     </ClCompile>
-    <ClCompile Include="..\client\cl_ents.c">
+    <ClCompile Include="..\client\cl_entities.c">
       <Filter>client</Filter>
     </ClCompile>
     <ClCompile Include="snd_dll.c">
@@ -228,7 +228,7 @@
     <ClCompile Include="..\server\sv_user.c">
       <Filter>server</Filter>
     </ClCompile>
-    <ClCompile Include="..\client\cl_pred.c">
+    <ClCompile Include="..\client\cl_prediction.c">
       <Filter>client</Filter>
     </ClCompile>
     <ClCompile Include="..\client\cl_inventory.c">

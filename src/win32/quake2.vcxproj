@@ -12,14 +12,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\client\cl_effects.c" />
-    <ClCompile Include="..\client\cl_ents.c" />
+    <ClCompile Include="..\client\cl_entities.c" />
     <ClCompile Include="..\client\cl_input.c" />
     <ClCompile Include="..\client\cl_inventory.c" />
     <ClCompile Include="..\client\cl_main.c" />
     <ClCompile Include="..\client\cl_messages.c" />
     <ClCompile Include="..\client\cl_music.c" />
     <ClCompile Include="..\client\cl_parse.c" />
-    <ClCompile Include="..\client\cl_pred.c" />
+    <ClCompile Include="..\client\cl_prediction.c" />
     <ClCompile Include="..\client\cl_screen.c" />
     <ClCompile Include="..\client\cl_skeletons.c" />
     <ClCompile Include="..\client\cl_smk.c" />

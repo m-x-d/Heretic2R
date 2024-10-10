@@ -1,5 +1,5 @@
 //
-// cl_ents.c -- Entity parsing and management.
+// cl_entities.c -- Entity parsing and management.
 //
 // Copyright 1998 Raven Software
 //

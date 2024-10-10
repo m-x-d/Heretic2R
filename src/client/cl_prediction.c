@@ -1,5 +1,5 @@
 //
-// cl_pred.c
+// cl_prediction.c
 //
 // Copyright 1998 Raven Software
 //
