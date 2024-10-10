@@ -1293,10 +1293,16 @@ void CM_SetAreaPortalState(int portalnum, qboolean open)
 	NOT_IMPLEMENTED
 }
 
-qboolean CM_AreasConnected(int area1, int area2)
+// Q2 counterpart
+qboolean CM_AreasConnected(const int area1, const int area2)
 {
-	NOT_IMPLEMENTED
-	return false;
+	if ((int)map_noareas->value)
+		return true;
+
+	if (area1 > numareas || area2 > numareas)
+		Com_Error(ERR_DROP, "area > numareas");
+
+	return map_areas[area1].floodnum == map_areas[area2].floodnum;
 }
 
 // Q2 counterpart
