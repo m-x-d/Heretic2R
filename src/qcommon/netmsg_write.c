@@ -58,9 +58,9 @@ void MSG_WriteLong(sizebuf_t* sb, const int c)
 	buf[3] = (byte)(c >> 24);
 }
 
-void MSG_WriteFloat(sizebuf_t* sb, float f)
+void MSG_WriteFloat(sizebuf_t* sb, const float f)
 {
-	NOT_IMPLEMENTED
+	SZ_Write(sb, &f, 4); // H2: no endian conversion.
 }
 
 // Q2 counterpart
@@ -92,9 +92,10 @@ void MSG_WriteAngle(sizebuf_t* sb, const float f)
 	MSG_WriteByte(sb, (int)(f * 256.0f / 360.0f) & 255);
 }
 
-void MSG_WriteAngle16(sizebuf_t* sb, float f)
+// Q2 counterpart
+void MSG_WriteAngle16(sizebuf_t* sb, const float f)
 {
-	NOT_IMPLEMENTED
+	MSG_WriteShort(sb, ANGLE2SHORT(f));
 }
 
 void MSG_WriteDeltaUsercmd(sizebuf_t* sb, usercmd_t* from, usercmd_t* cmd)
