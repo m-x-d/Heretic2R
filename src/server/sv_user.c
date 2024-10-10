@@ -6,6 +6,7 @@
 
 #include "server.h"
 #include "client.h"
+#include "cl_strings.h"
 #include "sv_effects.h"
 
 edict_t* sv_player;
@@ -160,7 +161,69 @@ static void SV_Baselines_f(void)
 
 static void SV_Begin_f(void)
 {
-	NOT_IMPLEMENTED
+	Com_DPrintf("Begin() from %s\n", sv_client->name);
+
+	// Handle the case of a level changing while a client was connecting.
+	const int client = Q_atoi(Cmd_Argv(1));
+	if (client != svs.spawncount && client != -1) // H2: extra '-1' check
+	{
+		Com_Printf("SV_Begin_f from different level sever %i, client %i\n", svs.spawncount, client);
+		SV_New_f();
+
+		return;
+	}
+
+	if (Cvar_VariableValue("coop") != 0.0f) // H2
+	{
+		if (Cvar_VariableValue("sv_cinematicfreeze") != 0.0f)
+		{
+			if (sv_client->coop_state != cst_cinematic_freeze)
+			{
+				sv_client->coop_state = cst_cinematic_freeze;
+
+				if ((int)dedicated->value)
+				{
+					char buffer[128];
+					sprintf_s(buffer, sizeof(buffer), "Client: '%s' is waiting for cinematic currently in progress to end.\n", sv_client->name); //mxd. sprintf -> sprintf_s
+					Com_Printf("%s", buffer);
+				}
+
+				SV_ClientPrintf(sv_client, 2, GM_COOPWAITCIN);
+			}
+
+			MSG_WriteByte(&sv_client->netchan.message, svc_stufftext);
+			MSG_WriteString(&sv_client->netchan.message, va("cmd begin %i\n", svs.spawncount));
+
+			return;
+		}
+
+		if (Cvar_VariableValue("sv_cooptimeout") != 0.0f)
+		{
+			if (sv_client->coop_state != cst_coop_timeout)
+			{
+				sv_client->coop_state = cst_coop_timeout;
+				SV_ClientPrintf(sv_client, 2, GM_COOPTIMEOUT);
+			}
+
+			int c = 0;
+			for (; c < (int)maxclients->value; c++)
+				if (svs.clients[c].coop_state < cst_coop_timeout)
+					break;
+
+			if (c < (int)maxclients->value && sv.time < (uint)Cvar_VariableValue("sv_cooptimeout") * 1000)
+			{
+				MSG_WriteByte(&sv_client->netchan.message, svc_stufftext);
+				MSG_WriteString(&sv_client->netchan.message, va("cmd begin %i\n", svs.spawncount));
+
+				return;
+			}
+		}
+	}
+
+	sv_client->state = cs_spawned;
+	ge->ClientBegin(sv_player); // Call the game begin function.
+
+	Cbuf_InsertFromDefer();
 }
 
 void SV_Nextserver(void)

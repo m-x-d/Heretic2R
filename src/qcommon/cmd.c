@@ -84,6 +84,11 @@ void Cbuf_CopyToDefer(void)
 	cmd_text.cursize = 0;
 }
 
+void Cbuf_InsertFromDefer(void)
+{
+	NOT_IMPLEMENTED
+}
+
 void Cbuf_ExecuteText(int exec_when, char* text)
 {
 	NOT_IMPLEMENTED

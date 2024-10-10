@@ -10,6 +10,11 @@
 
 uint net_transmit_size; // H2
 
+void SV_ClientPrintf(client_t* cl, int level, int message_id) // H2: different definition.
+{
+	NOT_IMPLEMENTED
+}
+
 void SV_BroadcastPrintf(int level, char* fmt, ...)
 {
 	NOT_IMPLEMENTED

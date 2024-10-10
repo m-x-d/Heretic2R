@@ -198,6 +198,7 @@ void SV_InitGameProgs(void);
 void SV_ShutdownGameProgs(void);
 
 // sv_send.c
+void SV_ClientPrintf(client_t* cl, int level, int message_id);
 void SV_BroadcastPrintf(int level, char* fmt, ...);
 void SV_BroadcastCaption(int printlevel, short stringid);
 void SV_BroadcastObituary(int printlevel, short stringid, short client1, short client2);
