@@ -30,11 +30,15 @@ static int mouse_y;
 static int old_mouse_x;
 static int old_mouse_y;
 
+static int old_x;
+static int old_y;
+
 static qboolean mouseactive; // False when not focus app
 
 static qboolean restore_spi;
 static qboolean mouseinitialized;
 static int originalmouseparms[3] = { 0, 0, 1 };
+static int newmouseparms[3] = { 0, 0, 1 };
 static qboolean mouseparmsvalid;
 
 static int window_center_x;
@@ -64,9 +68,50 @@ static void IN_InitMouse(void)
 	Cmd_AddCommand("-mlook", IN_MLookUp);
 }
 
+// Q2 counterpart
+// Called when the window gains focus or changes in some way.
 static void IN_ActivateMouse(void)
 {
-	NOT_IMPLEMENTED
+	if (!mouseinitialized)
+		return;
+
+	if ((int)in_mouse->value == 0)
+	{
+		mouseactive = false;
+		return;
+	}
+
+	if (mouseactive)
+		return;
+
+	mouseactive = true;
+
+	if (mouseparmsvalid)
+		restore_spi = SystemParametersInfo(SPI_SETMOUSE, 0, newmouseparms, 0);
+
+	const int width = GetSystemMetrics(SM_CXSCREEN);
+	const int height = GetSystemMetrics(SM_CYSCREEN);
+
+	RECT window_rect; //mxd. Made local.
+	GetWindowRect(cl_hwnd, &window_rect);
+
+	window_rect.left = max(0, window_rect.left);
+	window_rect.top = max(0, window_rect.top);
+	window_rect.right = min(width - 1, window_rect.right);
+	window_rect.bottom = min(height - 1, window_rect.bottom);
+
+	window_center_x = (window_rect.right + window_rect.left) / 2;
+	window_center_y = (window_rect.top + window_rect.bottom) / 2;
+
+	SetCursorPos(window_center_x, window_center_y);
+
+	old_x = window_center_x;
+	old_y = window_center_y;
+
+	SetCapture(cl_hwnd);
+	ClipCursor(&window_rect);
+
+	while (ShowCursor(FALSE) > -1) { }
 }
 
 // Called when the window loses focus.
