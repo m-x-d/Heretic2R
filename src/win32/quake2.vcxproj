@@ -156,6 +156,7 @@
     <ClInclude Include="..\qcommon\cmodel.h" />
     <ClInclude Include="..\qcommon\cmodel_private.h" />
     <ClInclude Include="..\qcommon\EffectFlags.h" />
+    <ClInclude Include="..\qcommon\FX.h" />
     <ClInclude Include="..\qcommon\H2Common.h" />
     <ClInclude Include="..\qcommon\Heretic2.h" />
     <ClInclude Include="..\qcommon\LevelMaps.h" />

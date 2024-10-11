@@ -8,6 +8,8 @@
 #include "cl_effects.h"
 #include "clfx_dll.h"
 #include "dll_io.h"
+#include "EffectFlags.h"
+#include "FX.h"
 #include "ResourceManager.h"
 #include "sound.h"
 #include "vid_dll.h"
@@ -41,10 +43,91 @@ static struct model_s* RegisterModel(const char* name)
 	return re.RegisterModel(name);
 }
 
-static int GetEffect(centity_t* ent, int flags, const char* format, ...)
+static int GetEffect(centity_t* ent, const int flags, const char* format, ...)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	va_list argptr;
+	EffectsBuffer_t* fx_buf;
+	sizebuf_t* msg;
+	sizebuf_t sb;
+
+	if (format == NULL)
+		Com_Error(ERR_DROP, "CL_ReadEffect: null format string");
+
+	if (ent != NULL && !(flags & (FX_EXPLOSION1 | FX_LINKEDBLOOD)))
+	{
+		if (cl_effectpredict)
+			fx_buf = &client_prediction_effects;
+		else
+			fx_buf = &ent->current.clientEffects;
+
+		memset(&sb, 0, sizeof(sb));
+		sb.data = fx_buf->buf;
+		sb.maxsize = fx_buf->bufSize;
+		sb.readcount = fx_buf->freeBlock;
+		sb.cursize = sb.maxsize;
+
+		msg = &sb;
+	}
+	else
+	{
+		fx_buf = NULL; //mxd
+		msg = &net_message;
+	}
+
+	int num_params = 0;
+
+	va_start(argptr, format);
+	for (const char* s = format; *s != 0; s++, num_params++)
+	{
+		switch (*s)
+		{
+			case 'b':
+				*va_arg(argptr, byte*) = (byte)MSG_ReadByte(msg);
+				break;
+
+			case 's':
+				*va_arg(argptr, short*) = (short)MSG_ReadShort(msg);
+				break;
+
+			case 'i':
+				*va_arg(argptr, int*) = MSG_ReadLong(msg);
+				break;
+
+			case 'f':
+				*va_arg(argptr, float*) = MSG_ReadFloat(msg);
+				break;
+
+			case 'p':
+			case 'v':
+				MSG_ReadPos(msg, *va_arg(argptr, vec3_t*));
+				break;
+
+			case 'd':
+				MSG_ReadDir(msg, *va_arg(argptr, vec3_t*));
+				break;
+
+			case 'u':
+				MSG_ReadDirMag(msg, *va_arg(argptr, vec3_t*));
+				break;
+
+			case 'x':
+				MSG_ReadYawPitch(msg, *va_arg(argptr, vec3_t*));
+				break;
+
+			case 't':
+				MSG_ReadShortYawPitch(msg, *va_arg(argptr, vec3_t*));
+				break;
+
+			default:
+				return 0;
+		}
+	}
+	va_end(argptr);
+
+	if (ent != NULL && !(flags & (FX_EXPLOSION1 | FX_LINKEDBLOOD)))
+		fx_buf->freeBlock = msg->readcount;
+
+	return num_params;
 }
 
 void CL_UnloadClientEffects(void)
