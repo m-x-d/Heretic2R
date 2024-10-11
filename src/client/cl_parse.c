@@ -504,7 +504,9 @@ static void ChangeCDTrack(void) // H2
 
 static void ParseFramenum(void) // H2
 {
-	NOT_IMPLEMENTED
+	cl.frame.serverframe = MSG_ReadLong(&net_message);
+	cl.frame.servertime = cl.frame.serverframe * 100;
+	cl.time = cl.frame.serverframe * 100;
 }
 
 static void StartParsingDemoClientEffect(void) // H2
