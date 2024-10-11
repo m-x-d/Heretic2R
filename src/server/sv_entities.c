@@ -5,15 +5,137 @@
 //
 
 #include "server.h"
+#include "client.h"
 #include "cmodel.h"
 #include "EffectFlags.h"
 #include "Vector.h"
 
 static byte fatpvs[MAX_MAP_LEAFS / 8];
 
-static void SV_EmitPacketEntities(client_frame_t* from, client_frame_t* to, sizebuf_t* msg, uint ent_id) // H2: extra 'ent_id' arg.
+// Writes a delta update of an entity_state_t list to the message.
+static void SV_EmitPacketEntities(const client_frame_t* from, const client_frame_t* to, sizebuf_t* msg, const uint ent_id) // H2: extra 'ent_id' arg.
 {
-	NOT_IMPLEMENTED
+	entity_state_t* newent;
+	entity_state_t* oldent;
+	int newnum;
+	int oldnum;
+
+	MSG_WriteByte(msg, svc_packetentities);
+
+	const int from_num_entities = (from != NULL ? from->num_entities : 0);
+	int newindex = 0;
+	int oldindex = 0;
+
+	while (newindex < to->num_entities || oldindex < from_num_entities)
+	{
+		if (newindex < to->num_entities)
+		{
+			newent = &svs.client_entities[(to->first_entity + newindex) % svs.num_client_entities];
+			newnum = newent->number;
+		}
+		else
+		{
+			newent = NULL; //mxd
+			newnum = 9999;
+		}
+
+		if (oldindex < from_num_entities)
+		{
+			oldent = &svs.client_entities[(from->first_entity + oldindex) % svs.num_client_entities];
+			oldnum = oldent->number;
+		}
+		else
+		{
+			oldent = NULL; //mxd
+			oldnum = 9999;
+		}
+
+		const edict_t* ent = EDICT_NUM(newnum);
+
+		if (newnum == oldnum)
+		{
+			if (ent->client_sent & ent_id && ent->just_deleted) // H2
+			{
+				// Remove old entity.
+				byte header;
+				byte header_bits[NUM_ENTITY_HEADER_BITS] = { 0 };
+
+				SetB(header_bits, U_REMOVE);
+				if (oldnum > 255)
+					SetB(header_bits, U_NUMBER16);
+
+				SetB(header_bits, U_ENT_FREED);
+				MSG_WriteEntityHeaderBits(msg, header_bits, &header);
+
+				if (GetB(header_bits, U_NUMBER16))
+					MSG_WriteShort(msg, oldnum);
+				else
+					MSG_WriteByte(msg, oldnum);
+			}
+			else
+			{
+				// Delta update from old position.
+				// Because the force param is false, this will not result in any bytes being emitted if the entity has not changed at all.
+				// Note that players are always 'newentities', this always updates their oldorigin and prevents warping.
+				MSG_WriteDeltaEntity(oldent, newent, msg, false);
+			}
+
+			oldindex++;
+			newindex++;
+		}
+		else if (newnum < oldnum)
+		{
+			if (ent->client_sent & ent_id && ent->just_deleted) // H2
+			{
+				// Remove new entity.
+				byte header;
+				byte header_bits[NUM_ENTITY_HEADER_BITS] = { 0 };
+
+				SetB(header_bits, U_REMOVE);
+				if (newnum > 255)
+					SetB(header_bits, U_NUMBER16);
+
+				SetB(header_bits, U_ENT_FREED);
+				MSG_WriteEntityHeaderBits(msg, header_bits, &header);
+
+				if (GetB(header_bits, U_NUMBER16))
+					MSG_WriteShort(msg, newnum);
+				else
+					MSG_WriteByte(msg, newnum);
+			}
+			else
+			{
+				// This is a new entity, send it from the baseline.
+				MSG_WriteDeltaEntity(&sv.baselines[newnum], newent, msg, true);
+			}
+
+			newindex++;
+		}
+		else // newnum > oldnum
+		{
+			if (ent->just_deleted) // H2
+			{
+				// The old entity isn't present in the new message.
+				byte header;
+				byte header_bits[NUM_ENTITY_HEADER_BITS] = { 0 };
+
+				SetB(header_bits, U_REMOVE);
+				if (oldnum > 255)
+					SetB(header_bits, U_NUMBER16);
+
+				MSG_WriteEntityHeaderBits(msg, header_bits, &header);
+
+				if (GetB(header_bits, U_NUMBER16))
+					MSG_WriteShort(msg, oldnum);
+				else
+					MSG_WriteByte(msg, oldnum);
+			}
+
+			oldindex++;
+		}
+	}
+
+	MSG_WriteShort(msg, 0);	// End of packetentities.
 }
 
 static void SV_WritePlayerstateToClient(const client_frame_t* from, const client_frame_t* to, sizebuf_t* msg)
