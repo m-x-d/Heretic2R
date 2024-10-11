@@ -9,6 +9,8 @@
 #include "server.h"
 #include "ResourceManager.h"
 
+extern qboolean send_fx_framenum;
+
 extern ResourceManager_t sv_FXBufMngr;
 extern ResourceManager_t EffectsBufferMngr;
 
@@ -28,4 +30,4 @@ void SV_RemoveEdictFromPersistantEffectsArray(const edict_t* ed);
 void SV_UpdatePersistantEffectsDemoMask(client_t* cl);
 void SV_ClearPersistantEffects(void);
 void SV_ClearPersistantEffectBuffersArray(void);
-void SV_SendClientEffects(client_t* client);
+void SV_SendClientEffects(client_t* cl);

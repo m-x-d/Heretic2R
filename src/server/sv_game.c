@@ -161,7 +161,7 @@ static void PF_WriteAngle(float f)
 	NOT_IMPLEMENTED
 }
 
-static qboolean PF_inPVS(vec3_t p1, vec3_t p2)
+qboolean PF_inPVS(vec3_t p1, vec3_t p2)
 {
 	NOT_IMPLEMENTED
 	return false;

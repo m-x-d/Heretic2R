@@ -162,12 +162,14 @@ extern server_t sv; // Local server
 
 extern cvar_t* sv_paused;
 extern cvar_t* maxclients;
+extern cvar_t* r_farclipdist; // H2
 
 extern cvar_t* sv_cooptimeout;
 extern cvar_t* sv_cinematicfreeze;
 extern cvar_t* sv_welcome_mess; // H2
 extern cvar_t* sv_freezeworldset; // H2
 extern cvar_t* sv_noreload;
+extern cvar_t* sv_pers_fx_send_cut_off; // H2
 
 extern client_t* sv_client;
 extern edict_t* sv_player;
@@ -200,6 +202,7 @@ void SV_Map(qboolean attractloop, const char* levelstring, qboolean loadgame);
 extern game_export_t* ge;
 void SV_InitGameProgs(void);
 void SV_ShutdownGameProgs(void);
+qboolean PF_inPVS(vec3_t p1, vec3_t p2);
 
 // sv_send.c
 void SV_ClientPrintf(client_t* cl, int level, int message_id);
