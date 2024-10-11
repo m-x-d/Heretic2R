@@ -5,8 +5,11 @@
 //
 
 #include "client.h"
+#include "server.h"
 #include "anorms.h"
+#include "ArrayedList.h"
 #include "Vector.h"
+#include "g_Skeleton.h"
 
 void SetB(byte* buf, const int bit)
 {
@@ -169,14 +172,72 @@ void MSG_WriteEntityHeaderBits(sizebuf_t* msg, const byte* bf, byte* bfNonZero)
 			MSG_WriteByte(msg, bf[i]);
 }
 
-static void MSG_WriteEffects(sizebuf_t* sb, const EffectsBuffer_t* fxBuf)
+static void MSG_WriteEffects(sizebuf_t* sb, const EffectsBuffer_t* fxBuf) // H2
 {
 	NOT_IMPLEMENTED
 }
 
-static void MSG_WriteJoints(sizebuf_t* sb, int joint_index)
+static float ClampAngleRad(const float angle) // H2
 {
-	NOT_IMPLEMENTED
+	float result = fmodf(angle, ANGLE_360);
+
+	if (result >= ANGLE_180)
+		result -= ANGLE_360;
+
+	if (result <= -ANGLE_180)
+		result += ANGLE_360;
+
+	return result;
+}
+
+static void MSG_WriteJoints(sizebuf_t* sb, const int joint_index) // H2
+{
+#define RAD_TO_BYTEANGLE (161.7014176816138f) //mxd. == 254 / ANGLE_90? Why 254?..
+
+	const G_SkeletalJoint_t* joint = &ge->skeletalJoints[joint_index];
+
+	// Write child joints first.
+	int child = joint->children;
+	while (child != -1)
+	{
+		MSG_WriteJoints(sb, ge->jointNodes[child].data);
+		child = ge->jointNodes[child].next;
+	}
+
+	// Check for changes.
+	int flags = 0;
+	int axis[3] = { 0, 0, 0 };
+
+	for (int i = 0; i < 3; i++)
+	{
+		if (joint->changed[i])
+		{
+			flags |= 1 << i;
+
+			if (joint->angVels[i] > 0.0f)
+				axis[i] = 1;
+			else if (joint->angVels[i] < 0.0f)
+				axis[i] = 2;
+		}
+	}
+
+	// No changes...
+	if (flags == 0)
+		return;
+
+	// Write changes.
+	MSG_WriteByte(sb, flags | (axis[PITCH] + (axis[YAW] + axis[ROLL] * 3) * 3) * 8);
+	MSG_WriteByte(sb, joint_index);
+
+	for (int i = 0; i < 3; i++)
+	{
+		if (joint->changed[i])
+		{
+			const float angle = ClampAngleRad(joint->destAngles[i]);
+			const int byteangle = ClampI(Q_ftol(angle * RAD_TO_BYTEANGLE + 128.0f), 0, 255);
+			MSG_WriteByte(sb, byteangle);
+		}
+	}
 }
 
 // Writes part of a packetentities message.

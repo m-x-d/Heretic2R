@@ -146,6 +146,7 @@
     <ClInclude Include="..\game\g_BoundingForm.h" />
     <ClInclude Include="..\game\g_itemstats.h" />
     <ClInclude Include="..\game\g_NewSystem.h" />
+    <ClInclude Include="..\game\g_Skeleton.h" />
     <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="..\Player\Player.h" />
     <ClInclude Include="..\Player\p_main.h" />

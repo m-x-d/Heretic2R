@@ -512,5 +512,8 @@
     <ClInclude Include="..\Player\p_main.h">
       <Filter>Player</Filter>
     </ClInclude>
+    <ClInclude Include="..\game\g_Skeleton.h">
+      <Filter>game</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
