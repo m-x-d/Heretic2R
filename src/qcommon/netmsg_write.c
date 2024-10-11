@@ -156,13 +156,13 @@ void ParseEffectToSizeBuf(sizebuf_t* sb, const char* format, va_list marker) // 
 
 void MSG_WriteEntityHeaderBits(sizebuf_t* msg, const byte* bf, byte* bfNonZero)
 {
-	bfNonZero[0] = 0;
+	*bfNonZero = 0;
 
 	for (int i = 0; i < NUM_ENTITY_HEADER_BITS; i++)
 		if (bf[i] != 0)
 			SetB(bfNonZero, i);
 
-	MSG_WriteByte(msg, bfNonZero[0]);
+	MSG_WriteByte(msg, *bfNonZero);
 
 	for (int i = 0; i < NUM_ENTITY_HEADER_BITS; i++)
 		if (GetB(bfNonZero, i))
