@@ -88,23 +88,7 @@ int numNodesInSkeleton[] =
 	2,	// CORVUS
 };
 
-void CreateRavenSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int root);
-void CreateBoxSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int root);
-void CreateBeetleSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex);
-void CreateElfLordSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex);
-void CreatePlagueElfSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex);
-
-CreateSkeleton_t SkeletonCreators[NUM_SKELETONS] =
-{
-	CreateRavenSkel,
-	CreateBoxSkel,
-	CreateBeetleSkel,
-	CreateElfLordSkel,
-	CreatePlagueElfSkel,
-	CreatePlagueElfSkel, // Corvus has the same structure as the Plague Elf
-};
-
-void CreateRavenSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex)
+static void CreateRavenSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex)
 {
 	char* root = (char*)skeletalJoints + rootIndex * jointSize;
 
@@ -128,14 +112,14 @@ void CreateRavenSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jo
 	jointNodes[nodeIndex].next = ARRAYEDLISTNODE_NULL;
 }
 
-void CreateBoxSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex)
+static void CreateBoxSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex)
 {
 	char* root = (char*)skeletalJoints + rootIndex * jointSize;
 	int* children = (int*)(root + RAVEN_HEAD * jointSize);
 	*children = ARRAYEDLISTNODE_NULL;
 }
 
-void CreateBeetleSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex)
+static void CreateBeetleSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex)
 {
 	char* root = (char*)skeletalJoints + rootIndex * jointSize;
 
@@ -151,7 +135,7 @@ void CreateBeetleSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* j
 	jointNodes[nodeIndex].next = ARRAYEDLISTNODE_NULL;
 }
 
-void CreateElfLordSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex)
+static void CreateElfLordSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex)
 {
 	char* root = (char*)skeletalJoints + rootIndex * jointSize;
 
@@ -167,7 +151,7 @@ void CreateElfLordSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* 
 	jointNodes[nodeIndex].next = ARRAYEDLISTNODE_NULL;
 }
 
-void CreatePlagueElfSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex)
+static void CreatePlagueElfSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t* jointNodes, int rootIndex)
 {
 	char* root = (char*)skeletalJoints + rootIndex * jointSize;
 
@@ -190,3 +174,13 @@ void CreatePlagueElfSkel(void* skeletalJoints, uint jointSize, ArrayedListNode_t
 	jointNodes[nodeIndex].data = rootIndex + PLAGUE_ELF_UPPERBACK;
 	jointNodes[nodeIndex].next = ARRAYEDLISTNODE_NULL;
 }
+
+CreateSkeleton_t SkeletonCreators[NUM_SKELETONS] =
+{
+	CreateRavenSkel,
+	CreateBoxSkel,
+	CreateBeetleSkel,
+	CreateElfLordSkel,
+	CreatePlagueElfSkel,
+	CreatePlagueElfSkel, // Corvus has the same structure as the Plague Elf
+};
