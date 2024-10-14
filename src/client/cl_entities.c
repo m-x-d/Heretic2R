@@ -18,10 +18,22 @@ ResourceManager_t cl_FXBufMngr;
 int camera_timer; // H2
 qboolean viewoffset_changed; // H2
 
-static LERPedReferences_t* AllocateLERPedReference(int ref_type)
+//TODO: ref_type can potentially be in 0 .. 3 range. Why only joint_id_types[0] is defined?
+static LERPedReferences_t* AllocateLERPedReference(const int ref_type)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	static int joint_ids[] = { 1, 1, -1, -1, 1, 1, 1 };
+	static int* joint_id_types[] = { joint_ids, NULL, NULL, NULL };
+
+	LERPedReferences_t* ref = ResMngr_AllocateResource(&cl_FXBufMngr, sizeof(LERPedReferences_t));
+
+	ref->refType = ref_type;
+	ref->jointIDs = joint_id_types[ref_type];
+	ref->lastUpdate = -2.0f;
+
+	memset(ref->references, 0, sizeof(ref->references));
+	memset(ref->oldReferences, 0, sizeof(ref->oldReferences));
+
+	return ref;
 }
 
 static void DeallocateLERPedReference(void* data) // H2
