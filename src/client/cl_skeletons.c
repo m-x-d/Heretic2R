@@ -20,6 +20,16 @@ void SK_ClearJoints(int joint_index)
 	NOT_IMPLEMENTED
 }
 
+void SK_SetJointAngles(playerinfo_t* playerinfo)
+{
+	NOT_IMPLEMENTED
+}
+
+void SK_ResetJointAngles(playerinfo_t* playerinfo)
+{
+	NOT_IMPLEMENTED
+}
+
 void SK_CreateSkeleton(const int structure, const int root_index)
 {
 	if (skeletal_joints[root_index].inUse)

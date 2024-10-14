@@ -130,6 +130,17 @@ static int GetEffect(centity_t* ent, const int flags, const char* format, ...)
 	return num_params;
 }
 
+int CL_CreateEffect(byte EventId, void* owner, ushort type, int flags, vec3_t position, char* format, ...)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+void CL_RemoveEffects(byte EventId, void* owner, int fx)
+{
+	NOT_IMPLEMENTED
+}
+
 void CL_UnloadClientEffects(void)
 {
 	NOT_IMPLEMENTED
