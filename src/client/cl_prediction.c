@@ -9,14 +9,14 @@
 #include "p_main.h"
 #include "Vector.h"
 
+int pred_pm_flags;
+int pred_pm_w_flags;
+
 static int pred_effects = 0;
 static int pred_clientnum = 0;
 static int pred_renderfx = 0;
 static int pred_skinnum = 0;
 static float pred_playerLerp = 0.0f;
-
-static int pred_pm_flags;
-static int pred_pm_w_flags;
 
 static int pred_currFrame = 0;
 static int pred_prevFrame = 0;

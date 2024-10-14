@@ -618,6 +618,9 @@ void V_Init(void);
 void V_RenderView(float stereo_separation);
 
 // cl_pred.c
+extern int pred_pm_flags; //mxd
+extern int pred_pm_w_flags; //mxd
+
 void CL_InitPrediction(void);
 void CL_PredictMove(void);
 void CL_CheckPredictionError(void);

@@ -10,6 +10,7 @@
 #include "Angles.h"
 #include "ResourceManager.h"
 #include "sound.h"
+#include "Vector.h"
 
 ResourceManager_t cl_FXBufMngr;
 int camera_timer; // H2
@@ -327,10 +328,337 @@ static void CL_ParsePacketEntities(frame_t* oldframe, frame_t* newframe)
 	NOT_IMPLEMENTED
 }
 
-static qboolean CL_ParsePlayerstate(frame_t* oldframe, frame_t* newframe)
+//mxd. Written by SV_WritePlayerstateToClient().
+static qboolean CL_ParsePlayerstate(const frame_t* oldframe, frame_t* newframe)
 {
-	NOT_IMPLEMENTED
-	return false;
+	byte nonzero_bits[PLAYER_DELNZ_BYTES];
+	byte flags[PLAYER_DEL_BYTES];
+
+	player_state_t* state = &newframe->playerstate;
+
+	// Clear to old value before delta parsing.
+	if (oldframe != NULL)
+		memcpy(state, &oldframe->playerstate, sizeof(player_state_t));
+	else
+		memset(state, 0, sizeof(player_state_t));
+
+	for (int i = 0; i < PLAYER_DELNZ_BYTES; i++)
+		nonzero_bits[i] = (byte)MSG_ReadByte(&net_message);
+
+	for (int i = 0; i < PLAYER_DEL_BYTES; i++)
+	{
+		if (GetB(nonzero_bits, i))
+			flags[i] = (byte)MSG_ReadByte(&net_message);
+		else
+			flags[i] = 0;
+	}
+
+	// Parse the pmove_state_t.
+	if (GetB(flags, PS_M_TYPE))
+		state->pmove.pm_type = MSG_ReadByte(&net_message);
+
+	if (cl.attractloop)
+		state->pmove.pm_type = PM_FREEZE;
+
+	if (GetB(flags, PS_M_ORIGIN_XY))
+	{
+		state->pmove.origin[0] = (short)MSG_ReadShort(&net_message);
+		state->pmove.origin[1] = (short)MSG_ReadShort(&net_message);
+	}
+
+	if (GetB(flags, PS_M_ORIGIN_Z))
+		state->pmove.origin[2] = (short)MSG_ReadShort(&net_message);
+
+	if (GetB(flags, PS_M_VELOCITY_XY))
+	{
+		state->pmove.velocity[0] = (short)MSG_ReadShort(&net_message);
+		state->pmove.velocity[1] = (short)MSG_ReadShort(&net_message);
+	}
+
+	if (GetB(flags, PS_M_VELOCITY_Z))
+		state->pmove.velocity[2] = (short)MSG_ReadShort(&net_message);
+
+	if (GetB(flags, PS_M_TIME))
+		state->pmove.pm_time = (byte)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_M_FLAGS))
+	{
+		state->pmove.pm_flags = (byte)MSG_ReadByte(&net_message);
+		pred_pm_flags = state->pmove.pm_flags;
+	}
+
+	if (GetB(flags, PS_W_FLAGS))
+	{
+		state->pmove.w_flags = (byte)MSG_ReadByte(&net_message);
+		pred_pm_w_flags = state->pmove.w_flags;
+	}
+
+	if (GetB(flags, PS_M_GRAVITY))
+		state->pmove.gravity = (short)MSG_ReadShort(&net_message);
+
+	if (GetB(flags, PS_M_DELTA_ANGLES))
+		for (int i = 0; i < 3; i++)
+			state->pmove.delta_angles[i] = (short)MSG_ReadShort(&net_message);
+
+	if (GetB(flags, PS_M_CAMERA_DELTA_ANGLES))
+		for (int i = 0; i < 3; i++)
+			state->pmove.camera_delta_angles[i] = (short)MSG_ReadShort(&net_message);
+
+	if (GetB(flags, PS_VIEWANGLES))
+		for (int i = 0; i < 3; i++)
+			state->viewangles[i] = MSG_ReadAngle16(&net_message);
+
+	if (GetB(flags, PS_REMOTE_VIEWANGLES))
+		for (int i = 0; i < 3; i++)
+			state->remote_viewangles[i] = MSG_ReadAngle16(&net_message);
+
+	if (GetB(flags, PS_REMOTE_VIEWORIGIN))
+		for (int i = 0; i < 3; i++)
+			state->remote_vieworigin[i] = (float)MSG_ReadShort(&net_message);
+
+	if (GetB(flags, PS_REMOTE_ID))
+		state->remote_id = MSG_ReadLong(&net_message);
+
+	if (GetB(flags, PS_VIEWHEIGHT))
+		state->viewheight = (short)MSG_ReadShort(&net_message);
+
+	if (GetB(flags, PS_OFFSETANGLES))
+	{
+		for (int i = 0; i < 3; i++)
+			state->offsetangles[i] = MSG_ReadAngle16(&net_message);
+	}
+	else
+	{
+		VectorClear(state->offsetangles);
+		VectorClear(cl.playerinfo.offsetangles);
+	}
+
+	if (GetB(flags, PS_FOV))
+		state->fov = (float)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_RDFLAGS))
+		state->rdflags = MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_AUTOTARGETENTITY))
+		state->AutotargetEntityNum = MSG_ReadShort(&net_message);
+
+	if (GetB(flags, PS_MAP_PERCENTAGE))
+		state->map_percentage = (byte)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_FOG_DENSITY))
+		state->fog_density = MSG_ReadFloat(&net_message);
+
+	if (GetB(flags, PS_MISSION1))
+		state->mission_num1 = (short)MSG_ReadShort(&net_message);
+
+	if (GetB(flags, PS_MISSION2))
+		state->mission_num2 = (short)MSG_ReadShort(&net_message);
+
+	for (int i = 0; i < MAX_STATS; i++)
+		if (GetB(flags, PS_STAT_BIT_0 + i))
+			state->stats[i] = (short)MSG_ReadShort(&net_message);
+
+	if (GetB(flags, PS_MINSMAXS))
+	{
+		for (int i = 0; i < 3; i++)
+			state->mins[i] = (float)MSG_ReadShort(&net_message) * 0.125f;
+
+		for (int i = 0; i < 3; i++)
+			state->maxs[i] = (float)MSG_ReadShort(&net_message) * 0.125f;
+	}
+
+	if (GetB(flags, PS_INVENTORY))
+	{
+		state->NoOfItems = (byte)MSG_ReadByte(&net_message);
+
+		for (int i = 0; i < state->NoOfItems; i++)
+		{
+			state->inventory_changes[i] = (byte)MSG_ReadByte(&net_message);
+			state->inventory_remaining[i] = (byte)MSG_ReadByte(&net_message);
+		}
+	}
+
+	if (GetB(flags, PS_GROUNDBITS_NNGE))
+		state->NonNullgroundentity = (byte)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_GROUNDPLANE_INFO1) && GetB(flags, PS_GROUNDPLANE_INFO2))
+	{
+		for (int i = 0; i < 3; i++)
+			state->GroundPlane.normal[i] = MSG_ReadFloat(&net_message);
+	}
+	else if (GetB(flags, PS_GROUNDPLANE_INFO1))
+	{
+		VectorClear(state->GroundPlane.normal);
+	}
+	else
+	{
+		VectorSet(state->GroundPlane.normal, 0, 0, 1);
+	}
+
+	if (GetB(flags, PS_GROUNDBITS_GC))
+		state->GroundContents = (MSG_ReadByte(&net_message) << 16);
+
+	if (GetB(flags, PS_GROUNDBITS_SURFFLAGS))
+		state->GroundSurface.flags = MSG_ReadLong(&net_message);
+
+	if (GetB(flags, PS_WATERTYPE))
+		state->watertype = MSG_ReadLong(&net_message);
+
+	if (GetB(flags, PS_WATERLEVEL))
+		state->waterlevel = MSG_ReadLong(&net_message);
+
+	if (GetB(flags, PS_WATERHEIGHT))
+		state->waterheight = MSG_ReadFloat(&net_message);
+
+	if (GetB(flags, PS_GRABLOC0))
+		state->grabloc[0] = MSG_ReadFloat(&net_message);
+
+	if (GetB(flags, PS_GRABLOC1))
+		state->grabloc[1] = MSG_ReadFloat(&net_message);
+
+	if (GetB(flags, PS_GRABLOC2))
+		state->grabloc[2] = MSG_ReadFloat(&net_message);
+
+	if (GetB(flags, PS_GRABANGLE))
+		state->grabangle = MSG_ReadFloat(&net_message);
+
+	if (GetB(flags, PS_FWDVEL))
+		state->fwdvel = MSG_ReadFloat(&net_message);
+
+	if (GetB(flags, PS_SIDEVEL))
+		state->sidevel = MSG_ReadFloat(&net_message);
+
+	if (GetB(flags, PS_UPVEL))
+		state->upvel = MSG_ReadFloat(&net_message);
+
+	if (GetB(flags, PS_FLAGS))
+		state->flags = MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_EDICTFLAGS))
+		state->edictflags = MSG_ReadLong(&net_message);
+
+	if (GetB(flags, PS_OLDVELOCITY_Z))
+		state->oldvelocity_z = MSG_ReadFloat(&net_message);
+
+	if (GetB(flags, PS_UPPERSEQ))
+		state->upperseq = MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_LOWERSEQ))
+		state->lowerseq = MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_FRAMEINFO1) && GetB(flags, PS_FRAMEINFO2))
+	{
+		state->lowerframe = MSG_ReadShort(&net_message);
+		state->upperframe = MSG_ReadShort(&net_message);
+	}
+	else if (GetB(flags, PS_FRAMEINFO1))
+	{
+		state->lowerframe = MSG_ReadShort(&net_message);
+		state->upperframe = state->lowerframe;
+	}
+
+	if (GetB(flags, PS_UPPERIDLE))
+		state->upperidle = (byte)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_LOWERIDLE))
+		state->loweridle = (byte)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_UPPERMOVE_INDEX))
+		state->uppermove_index = MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_LOWERMOVE_INDEX))
+		state->lowermove_index = MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_WEAPON))
+		state->weapon = (byte)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_DEFENSE))
+		state->defense = (byte)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_LASTWEAPON))
+		state->lastweapon = (byte)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_LASTDEFENSE))
+		state->lastdefense = (byte)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_WEAPONREADY))
+		state->weaponready = MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_SWITCHTOWEAPON))
+		state->switchtoweapon = MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_NEWWEAPON))
+		state->newweapon = (byte)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_WEAP_AMMO_INDEX))
+		state->weap_ammo_index = MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_DEF_AMMO_INDEX))
+		state->def_ammo_index = MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_WEAPONCHARGE))
+		state->weaponcharge = (byte)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_ARMORTYPE))
+		state->armortype = MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_BOWTYPE))
+		state->bowtype = (byte)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_STAFFLEVEL))
+		state->stafflevel = (byte)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_HELLTYPE))
+		state->helltype = (byte)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_METEORCOUNT))
+		state->meteor_count = (byte)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_HANDFXTYPE))
+		state->handfxtype = (byte)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_PLAGUELEVEL))
+		state->plaguelevel = (byte)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_SKINTYPE))
+		state->skintype = (short)MSG_ReadShort(&net_message);
+
+	if (GetB(flags, PS_ALTPARTS))
+		state->altparts = MSG_ReadLong(&net_message);
+
+	if (GetB(flags, PS_DEADFLAG))
+		state->deadflag = MSG_ReadLong(&net_message);
+
+	if (GetB(flags, PS_IDEAL_YAW))
+		state->ideal_yaw = MSG_ReadFloat(&net_message);
+
+	state->leveltime = MSG_ReadFloat(&net_message);
+
+	if (GetB(flags, PS_IDLETIME))
+		state->idletime = MSG_ReadFloat(&net_message);
+
+	if (GetB(flags, PS_POWERUP_TIMER))
+		state->powerup_timer = MSG_ReadFloat(&net_message);
+
+	if (GetB(flags, PS_QUICKTURN_RATE))
+		state->quickturn_rate = MSG_ReadFloat(&net_message);
+
+	if (GetB(flags, PS_DMFLAGS))
+		state->dmflags = MSG_ReadLong(&net_message);
+
+	if (GetB(flags, PS_ADVANCEDSTAFF))
+		state->advancedstaff = (byte)MSG_ReadByte(&net_message);
+
+	if (GetB(flags, PS_CINEMATIC))
+	{
+		state->cinematicfreeze = (byte)MSG_ReadByte(&net_message);
+		Cvar_Set("cl_cinematicfreeze", (state->cinematicfreeze ? "1" : "0"));
+	}
+
+	if (GetB(flags, PS_PIV))
+		state->PIV = MSG_ReadLong(&net_message);
+
+	return (GetB(flags, PS_OFFSETANGLES) != 0);
 }
 
 void CL_ParseFrame(void)
@@ -397,7 +725,7 @@ void CL_ParseFrame(void)
 	cmd = MSG_ReadByte(&net_message);
 	SHOWNET(svc_strings[cmd]);
 
-	if (cmd != svc_playerinfo)
+	if (cmd != svc_packetentities)
 		Com_Error(ERR_DROP, "CL_ParseFrame: not packetentities");
 
 	CL_ParsePacketEntities(old, &cl.frame);
