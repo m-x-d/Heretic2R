@@ -103,7 +103,7 @@ void Draw_Char(const int x, const int y, int c, const paletteRGBA_t color)
 	qglDisable(GL_BLEND);
 }
 
-image_t* Draw_FindPic(char* name)
+image_t* Draw_FindPic(const char* name)
 {
 	if (name[0] != '/' && name[0] != '\\')
 	{

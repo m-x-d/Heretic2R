@@ -200,7 +200,7 @@ typedef struct
 
 	int (*GetReferencedID)(const struct model_s* model);
 
-	int (*RenderFrame)(refdef_t* fd);
+	int (*RenderFrame)(const refdef_t* fd);
 
 	void (*DrawGetPicSize)(int* w, int* h, char* name);
 	void (*DrawPic)(int x, int y, char* name, float alpha);

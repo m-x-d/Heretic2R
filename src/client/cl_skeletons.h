@@ -10,16 +10,6 @@
 #include "ArrayedList.h"
 #include "Skeletons.h"
 
-typedef struct CL_SkeletalJoint_s
-{
-	int children; // Must be the first field
-	vec3_t destAngles;
-	vec3_t angVels;
-	vec3_t angles;
-	ArrayedListNode_t* nodeArray;
-	qboolean inUse;
-} CL_SkeletalJoint_t;
-
 extern CL_SkeletalJoint_t skeletal_joints[MAX_ARRAYED_SKELETAL_JOINTS];
 extern ArrayedListNode_t joint_nodes[MAX_ARRAYED_JOINT_NODES];
 

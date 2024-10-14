@@ -86,6 +86,16 @@ enum
 #define MAX_JOINTS_PER_SKELETON			8	// Arbitrary small number
 #define MAX_JOINT_NODES_PER_SKELETON	(MAX_JOINTS_PER_SKELETON - 1)
 
+typedef struct CL_SkeletalJoint_s //mxd
+{
+	int children; // Must be the first field
+	vec3_t destAngles;
+	vec3_t angVels;
+	vec3_t angles;
+	qboolean changed;
+	qboolean inUse;
+} CL_SkeletalJoint_t;
+
 extern char* skeletonRootNames[];
 extern int skeletonRNameOffsets[];
 extern char* skeletonJointNames[];

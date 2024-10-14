@@ -270,6 +270,9 @@
     <ClCompile Include="..\client\cl_player.c">
       <Filter>client</Filter>
     </ClCompile>
+    <ClCompile Include="..\qcommon\Skeletons.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -519,6 +522,9 @@
       <Filter>game</Filter>
     </ClInclude>
     <ClInclude Include="..\qcommon\FX.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Skeletons.h">
       <Filter>qcommon</Filter>
     </ClInclude>
   </ItemGroup>

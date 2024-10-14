@@ -54,15 +54,6 @@ typedef struct glxy_s
 	int baseline;
 } glxy_t;
 
-// New in H2. Size: 48 bytes. Contents are guessed (except for 'children' and 'angles' props).
-typedef struct CL_SkeletalJoint_s
-{
-	int children;
-	byte unknown1[22]; //TODO
-	vec3_t angles;
-	byte unknown2[8]; //TODO
-} CL_SkeletalJoint_t;
-
 #define TEXNUM_LIGHTMAPS	1024
 #define TEXNUM_IMAGES		1153
 
@@ -217,7 +208,7 @@ void Draw_Render(int x, int y, int w, int h, const image_t* image, float alpha);
 void Draw_Pic(int x, int y, char* name, float alpha);
 void Draw_StretchPic(int x, int y, int w, int h, char* name, float alpha, qboolean scale);
 void Draw_Char(int x, int y, int c, paletteRGBA_t color);
-image_t* Draw_FindPic(char* name); // Q2: not in gl_local.h
+image_t* Draw_FindPic(const char* name); // Q2: not in gl_local.h
 void Draw_TileClear(int x, int y, int w, int h, char* pic);
 void Draw_Fill(int x, int y, int w, int h, byte r, byte g, byte b);
 void Draw_FadeScreen(paletteRGBA_t color);
@@ -248,7 +239,7 @@ void GL_TextureMode(char* string);
 void GL_SetFilter(const image_t* image); // New in H2
 void GL_ImageList_f(void);
 void GL_UploadPaletted(int level, const byte* data, const palette_t* palette, int width, int height); // New in H2
-image_t* GL_FindImage(char* name, imagetype_t type);
+image_t* GL_FindImage(const char* name, imagetype_t type);
 void GL_FreeImageNoHash(image_t* image); // New in H2
 void GL_FreeUnusedImages(void);
 void GL_GammaAffect(void); // New in H2
@@ -301,7 +292,7 @@ void TransformVector(const vec3_t v, vec3_t out); // New in H2
 
 // gl_model.c (Mod_XX function declarations are in gl_model.h)
 extern int registration_sequence;
-struct model_s* R_RegisterModel(char* name);
+struct model_s* R_RegisterModel(const char* name);
 
 // gl_sky.c
 void R_AddSkySurface(const msurface_t* fa);

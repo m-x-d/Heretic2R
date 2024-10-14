@@ -1291,7 +1291,7 @@ int R_RenderFrame(const refdef_t* fd)
 
 // Referenced by GetRefAPI only:
 void R_BeginRegistration(char* model);
-struct image_s* R_RegisterSkin(char* name, qboolean* retval);
+struct image_s* R_RegisterSkin(const char* name, qboolean* retval);
 void R_SetSky(const char* name, float rotate, const vec3_t axis);
 void R_EndRegistration(void);
 

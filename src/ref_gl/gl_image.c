@@ -386,7 +386,7 @@ static void GL_Upload8M(miptex_t* mt, const image_t* image)
 }
 
 // Actually loads .M8 image.
-static image_t* GL_LoadWal(char* name, const imagetype_t type)
+static image_t* GL_LoadWal(const char* name, const imagetype_t type)
 {
 	miptex_t* mt;
 	ri.FS_LoadFile(name, (void**)&mt);
@@ -488,7 +488,7 @@ static void GL_Upload32M(miptex32_t* mt, const image_t* img)
 }
 
 // New in H2. Loads .M32 image.
-static image_t* GL_LoadWal32(char* name, const imagetype_t type)
+static image_t* GL_LoadWal32(const char* name, const imagetype_t type)
 {
 	miptex32_t* mt;
 
@@ -538,7 +538,7 @@ static image_t* GL_LoadWal32(char* name, const imagetype_t type)
 #pragma endregion
 
 // Now with name hashing. When no texture found, returns r_notexture instead of NULL
-image_t* GL_FindImage(char* name, const imagetype_t type)
+image_t* GL_FindImage(const char* name, const imagetype_t type)
 {
 	//mxd. Skipping new gl_lostfocus_broken logic
 	//if (disablerendering && gl_lostfocus_broken->value)
@@ -597,7 +597,7 @@ image_t* GL_FindImage(char* name, const imagetype_t type)
 }
 
 // H2: new 'retval' arg.
-struct image_s* R_RegisterSkin(char* name, qboolean* retval)
+struct image_s* R_RegisterSkin(const char* name, qboolean* retval)
 {
 	image_t* img = GL_FindImage(name, it_skin);
 	if (retval != NULL)

@@ -813,7 +813,7 @@ void R_BeginRegistration(char* model)
 	GL_FreeUnusedImages(); // New in H2
 }
 
-struct model_s* R_RegisterModel(char* name)
+struct model_s* R_RegisterModel(const char* name)
 {
 	char img_name[MAX_OSPATH];
 
