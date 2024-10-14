@@ -20,7 +20,15 @@ void SK_ClearJoints(int joint_index)
 	NOT_IMPLEMENTED
 }
 
-void SK_CreateSkeleton(int structure, int root_index)
+void SK_CreateSkeleton(const int structure, const int root_index)
 {
-	NOT_IMPLEMENTED
+	if (skeletal_joints[root_index].inUse)
+		return;
+
+	SkeletonCreators[structure](skeletal_joints, sizeof(skeletal_joints[0]), joint_nodes, root_index);
+
+	for (int i = 0; i < numJointsInSkeleton[structure]; i++)
+		skeletal_joints[root_index + i].changed = true;
+
+	skeletal_joints[root_index].inUse = true;
 }
