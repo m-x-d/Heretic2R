@@ -336,9 +336,105 @@ static void ClearSkeletonJoints(int joint_index) // H2
 	NOT_IMPLEMENTED
 }
 
-static void CL_DeltaEntity(frame_t* frame, int newnum, entity_state_t* old, byte* bits)
+// Parses deltas from the given base and adds the resulting entity to the current frame.
+static void CL_DeltaEntity(frame_t* frame, const int newnum, const entity_state_t* old, const byte* bits)
 {
-	NOT_IMPLEMENTED
+	centity_t* ent = &cl_entities[newnum];
+	entity_state_t* state = &cl_parse_entities[cl.parse_entities & (MAX_PARSE_ENTITIES - 1)];
+	cl.parse_entities++;
+	frame->num_entities++;
+
+	CL_ParseDelta(old, state, newnum, bits);
+
+	if ((ent->flags & 1) && ent->prev.usageCount != state->usageCount) // H2
+	{
+		fxe.RemoveClientEffects(ent);
+
+		if (ent->prev.rootJoint != -1)
+		{
+			ClearSkeletonJoints(ent->prev.rootJoint);
+			ent->baseline.rootJoint = -1;
+			ent->current.rootJoint = -1;
+			ent->prev.rootJoint = -1;
+		}
+
+		if (ent->referenceInfo != NULL)
+		{
+			DeallocateLERPedReference(ent->referenceInfo);
+			ent->referenceInfo = NULL;
+		}
+	}
+
+	// Some data changes will force no lerping.
+	if (GetB(bits, U_OLDORIGIN))
+		ent->serverframe = -99;
+
+	if (GetB(bits, U_MODEL)) // H2
+	{
+		struct model_s* model;
+
+		if (ent->current.effects & EF_PLAYER)
+		{
+			if (cl.clientinfo[ent->current.number].model != NULL)
+				model = *cl.clientinfo[ent->current.number].model;
+			else
+				model = *cl.baseclientinfo.model;
+		}
+		else
+		{
+			model = cl.model_draw[ent->current.modelindex];
+		}
+
+		if (ent->referenceInfo != NULL)
+		{
+			DeallocateLERPedReference(ent->referenceInfo);
+			ent->referenceInfo = NULL;
+		}
+
+		if (model != NULL)
+		{
+			const int id = re.GetReferencedID(model);
+			if (id != -1)
+				ent->referenceInfo = AllocateLERPedReference(id);
+		}
+	}
+
+	if (ent->serverframe != cl.frame.serverframe - 1)
+	{
+		// Duplicate the current state so lerping doesn't hurt anything.
+		ent->prev = *state;
+		VectorCopy(state->old_origin, ent->lerp_origin);
+	}
+	else
+	{
+		// Shuffle the last state to previous.
+		ent->prev = ent->current;
+	}
+
+	ent->serverframe = cl.frame.serverframe;
+
+	if (ent->current.clientEffects.buf != NULL)
+	{
+		ent->prev.clientEffects.buf = ent->current.clientEffects.buf;
+		ent->prev.clientEffects.numEffects = ent->current.clientEffects.numEffects;
+		ent->prev.clientEffects.freeBlock = ent->current.clientEffects.freeBlock;
+		ent->prev.clientEffects.bufSize = ent->current.clientEffects.bufSize;
+	}
+
+	ent->current = *state;
+
+	if (ent->prev.clientEffects.buf != NULL)
+	{
+		ent->current.clientEffects.buf = ent->prev.clientEffects.buf;
+		ent->current.clientEffects.freeBlock = ent->prev.clientEffects.freeBlock;
+		ent->current.clientEffects.numEffects = ent->prev.clientEffects.numEffects;
+		ent->current.clientEffects.bufSize = ent->prev.clientEffects.bufSize;
+
+		ent->prev.clientEffects.buf = NULL;
+		ent->prev.clientEffects.numEffects = 0;
+		ent->prev.clientEffects.freeBlock = 0;
+		ent->prev.clientEffects.bufSize = 0;
+	}
 }
 
 // An svc_packetentities has just been parsed, deal with the rest of the data stream.
