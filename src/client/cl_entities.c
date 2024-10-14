@@ -7,6 +7,7 @@
 #include "client.h"
 #include "cl_effects.h"
 #include "cl_skeletons.h"
+#include "Angles.h"
 #include "ResourceManager.h"
 #include "sound.h"
 
@@ -321,9 +322,114 @@ void CL_ParseDelta(const entity_state_t* from, entity_state_t* to, const int num
 		to->usageCount = (byte)MSG_ReadByte(&net_message);
 }
 
-void CL_ParseFrame(void)
+static void CL_ParsePacketEntities(frame_t* oldframe, frame_t* newframe)
 {
 	NOT_IMPLEMENTED
+}
+
+static qboolean CL_ParsePlayerstate(frame_t* oldframe, frame_t* newframe)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
+void CL_ParseFrame(void)
+{
+	frame_t* old;
+
+	memset(&cl.frame, 0, sizeof(cl.frame));
+
+	cl.frame.serverframe = MSG_ReadLong(&net_message);
+	cl.frame.deltaframe = MSG_ReadLong(&net_message);
+	cl.frame.servertime = cl.frame.serverframe * 100;
+
+	// H2: missing: BIG HACK to let old demos continue to work
+	if ((int)cl_shownet->value == 3)
+		Com_Printf("   frame:%i  delta:%i\n", cl.frame.serverframe, cl.frame.deltaframe);
+
+	// If the frame is delta compressed from data that we no longer have available,
+	// we must suck up the rest of the frame, but not use it, then ask for a non-compressed message.
+	if (cl.frame.deltaframe <= 0)
+	{
+		cl.frame.valid = true; // Uncompressed frame.
+		cls.demowaiting = false; // We can start recording now.
+		old = NULL;
+	}
+	else
+	{
+		old = &cl.frames[cl.frame.deltaframe & UPDATE_MASK];
+		if (!old->valid)
+			Com_Printf("Delta from invalid frame (not supposed to happen!).\n"); // Should never happen.
+
+		if (old->serverframe != cl.frame.deltaframe)
+		{
+			// The frame that the server did the delta from is too old, so we can't reconstruct it properly.
+			Com_Printf("Delta frame too old.\n"); 
+		}
+		else if (cl.parse_entities - old->parse_entities > MAX_PARSE_ENTITIES - 128)
+		{
+			Com_Printf("Delta parse_entities too old.\n");
+		}
+		else
+		{
+			// Valid delta parse.
+			cl.frame.valid = true; 
+		}
+	}
+
+	// Clamp time.
+	cl.time = ClampI(cl.time, cl.frame.servertime - 100, cl.frame.servertime);
+
+	// Read areabits.
+	const int len = MSG_ReadByte(&net_message);
+	MSG_ReadData(&net_message, cl.frame.areabits, len);
+
+	// Read playerinfo.
+	int cmd = MSG_ReadByte(&net_message);
+	SHOWNET(svc_strings[cmd]);
+
+	if (cmd != svc_playerinfo)
+		Com_Error(ERR_DROP, "CL_ParseFrame: not playerinfo");
+
+	viewoffset_changed = CL_ParsePlayerstate(old, &cl.frame); // H2: extra return from CL_ParsePlayerstate.
+
+	// Read packet entities.
+	cmd = MSG_ReadByte(&net_message);
+	SHOWNET(svc_strings[cmd]);
+
+	if (cmd != svc_playerinfo)
+		Com_Error(ERR_DROP, "CL_ParseFrame: not packetentities");
+
+	CL_ParsePacketEntities(old, &cl.frame);
+
+	// Save the frame off in the backup array for later delta comparisons.
+	cl.frames[cl.frame.serverframe & UPDATE_MASK] = cl.frame;
+
+	if (cl.frame.valid)
+	{
+		// Getting a valid frame message ends the connection process.
+		if (cls.state != ca_active)
+		{
+			cls.state = ca_active;
+			cl.force_refdef = true;
+
+			for (int i = 0; i < 3; i++)
+			{
+				cl.predicted_origin[i] = (float)cl.frame.playerstate.pmove.origin[i] * 0.125f;
+				cl.predicted_angles[i] = cl.frame.playerstate.viewangles[i];
+				cl.viewangles[i] = (float)cl.frame.playerstate.pmove.camera_delta_angles[i] * SHORT_TO_ANGLE; // H2
+			}
+
+			if (cl.refresh_prepped && cls.disable_servercount != cl.servercount)
+				SCR_EndLoadingPlaque(); // Get rid of loading plaque.
+
+			CL_ResetPlayerInfo(); // H2
+			Reset_Screen_Shake(); // H2
+		}
+
+		cl.sound_prepped = true; // Can start mixing ambient sounds.
+		CL_CheckPredictionError();
+	}
 }
 
 void CL_AddEntities(void)

@@ -27,6 +27,11 @@ static int pred_prevSwapFrame = 0;
 static vec3_t pred_currAngles = { 0 };
 static vec3_t pred_prevAngles = { 0 };
 
+void CL_CheckPredictionError(void)
+{
+	NOT_IMPLEMENTED
+}
+
 static void CL_PMTrace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, trace_t* tr)
 {
 	NOT_IMPLEMENTED

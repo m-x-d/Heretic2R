@@ -267,6 +267,9 @@
     <ClCompile Include="..\server\sv_entities.c">
       <Filter>server</Filter>
     </ClCompile>
+    <ClCompile Include="..\client\cl_player.c">
+      <Filter>client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">

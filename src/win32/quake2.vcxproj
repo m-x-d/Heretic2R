@@ -19,6 +19,7 @@
     <ClCompile Include="..\client\cl_messages.c" />
     <ClCompile Include="..\client\cl_music.c" />
     <ClCompile Include="..\client\cl_parse.c" />
+    <ClCompile Include="..\client\cl_player.c" />
     <ClCompile Include="..\client\cl_prediction.c" />
     <ClCompile Include="..\client\cl_screen.c" />
     <ClCompile Include="..\client\cl_skeletons.c" />

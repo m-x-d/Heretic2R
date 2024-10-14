@@ -608,6 +608,9 @@ void SHOWNET(char* s);
 void CL_ParseClientinfo(int player);
 int COLOUR(cvar_t* cvar);
 
+// cl_player.c
+void CL_ResetPlayerInfo(void);
+
 // cl_view.c
 extern int frame_index; //mxd
 
