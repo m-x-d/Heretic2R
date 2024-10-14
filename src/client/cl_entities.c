@@ -78,11 +78,6 @@ int CL_ParseEntityBits(byte* bf, byte* bfNonZero)
 	return MSG_ReadByte(&net_message);
 }
 
-static void CL_ParseSkeletonDelta(sizebuf_t* sb, entity_state_t* state) // H2
-{
-	NOT_IMPLEMENTED
-}
-
 // Can go from either a baseline or a previous packet_entity.
 void CL_ParseDelta(const entity_state_t* from, entity_state_t* to, const int number, const byte* bits)
 {
@@ -299,7 +294,7 @@ void CL_ParseDelta(const entity_state_t* from, entity_state_t* to, const int num
 	}
 
 	if (GetB(bits, U_JOINTED))
-		CL_ParseSkeletonDelta(&net_message, to);
+		MSG_ReadJoints(&net_message, to);
 
 	if (GetB(bits, U_SWAPFRAME))
 	{
@@ -331,11 +326,6 @@ void CL_ParseDelta(const entity_state_t* from, entity_state_t* to, const int num
 		to->usageCount = (byte)MSG_ReadByte(&net_message);
 }
 
-static void ClearSkeletonJoints(int joint_index) // H2
-{
-	NOT_IMPLEMENTED
-}
-
 // Parses deltas from the given base and adds the resulting entity to the current frame.
 static void CL_DeltaEntity(frame_t* frame, const int newnum, const entity_state_t* old, const byte* bits)
 {
@@ -352,7 +342,7 @@ static void CL_DeltaEntity(frame_t* frame, const int newnum, const entity_state_
 
 		if (ent->prev.rootJoint != -1)
 		{
-			ClearSkeletonJoints(ent->prev.rootJoint);
+			SK_ClearJoints(ent->prev.rootJoint);
 			ent->baseline.rootJoint = -1;
 			ent->current.rootJoint = -1;
 			ent->prev.rootJoint = -1;
@@ -518,7 +508,7 @@ static void CL_ParsePacketEntities(const frame_t* oldframe, frame_t* newframe)
 
 				if (ent->prev.rootJoint != -1)
 				{
-					ClearSkeletonJoints(ent->prev.rootJoint);
+					SK_ClearJoints(ent->prev.rootJoint);
 					ent->baseline.rootJoint = -1;
 					ent->current.rootJoint = -1;
 					ent->prev.rootJoint = -1;

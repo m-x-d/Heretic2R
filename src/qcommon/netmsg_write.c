@@ -190,10 +190,9 @@ static float ClampAngleRad(const float angle) // H2
 	return result;
 }
 
+//mxd. Parsed by MSG_ReadJoints().
 static void MSG_WriteJoints(sizebuf_t* sb, const int joint_index) // H2
 {
-#define RAD_TO_BYTEANGLE (161.7014176816138f) //mxd. == 254 / ANGLE_90? Why 254?..
-
 	const G_SkeletalJoint_t* joint = &ge->skeletalJoints[joint_index];
 
 	// Write child joints first.

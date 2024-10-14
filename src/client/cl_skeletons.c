@@ -14,3 +14,13 @@ void SK_UpdateSkeletons(void)
 {
 	NOT_IMPLEMENTED
 }
+
+void SK_ClearJoints(int joint_index)
+{
+	NOT_IMPLEMENTED
+}
+
+void SK_CreateSkeleton(int structure, int root_index)
+{
+	NOT_IMPLEMENTED
+}

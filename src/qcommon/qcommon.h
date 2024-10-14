@@ -100,7 +100,7 @@ void MSG_ReadYawPitch(sizebuf_t* sb, vec3_t dir);
 void MSG_ReadShortYawPitch(sizebuf_t* sb, vec3_t dir);
 
 void MSG_ReadData(sizebuf_t* sb, void* data, int size);
-void MSG_ReadJoints(sizebuf_t* sb, entity_state_t* ent); //TODO: no implementation? unused?
+void MSG_ReadJoints(sizebuf_t* sb, entity_state_t* ent);
 void MSG_ReadEffects(sizebuf_t* sb, EffectsBuffer_t* fxBuf);
 
 //TODO: debug stuff from original version. Remove?
