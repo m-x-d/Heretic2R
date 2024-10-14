@@ -8,6 +8,8 @@
 #include "cl_effects.h"
 #include "cl_skeletons.h"
 #include "Angles.h"
+#include "EffectFlags.h"
+#include "Reference.h"
 #include "ResourceManager.h"
 #include "sound.h"
 #include "Vector.h"
@@ -15,6 +17,12 @@
 ResourceManager_t cl_FXBufMngr;
 int camera_timer; // H2
 qboolean viewoffset_changed; // H2
+
+static LERPedReferences_t* AllocateLERPedReference(int ref_type)
+{
+	NOT_IMPLEMENTED
+	return NULL;
+}
 
 static void DeallocateLERPedReference(void* data) // H2
 {
@@ -323,9 +331,204 @@ void CL_ParseDelta(const entity_state_t* from, entity_state_t* to, const int num
 		to->usageCount = (byte)MSG_ReadByte(&net_message);
 }
 
-static void CL_ParsePacketEntities(frame_t* oldframe, frame_t* newframe)
+static void ClearSkeletonJoints(int joint_index) // H2
 {
 	NOT_IMPLEMENTED
+}
+
+static void CL_DeltaEntity(frame_t* frame, int newnum, entity_state_t* old, byte* bits)
+{
+	NOT_IMPLEMENTED
+}
+
+// An svc_packetentities has just been parsed, deal with the rest of the data stream.
+//mxd. Written by SV_EmitPacketEntities().
+static void CL_ParsePacketEntities(const frame_t* oldframe, frame_t* newframe)
+{
+	struct model_s* model;
+	byte bits[NUM_ENTITY_HEADER_BITS];
+	entity_state_t* oldstate;
+	int oldnum;
+
+	newframe->parse_entities = cl.parse_entities;
+	newframe->num_entities = 0;
+
+	memset(bits, 0, sizeof(bits));
+
+	// Delta from the entities present in oldframe.
+	int oldindex = 0;
+	byte unused = 0;
+
+	if (oldframe == NULL || oldframe->num_entities <= 0)
+	{
+		oldnum = 99999;
+		oldstate = NULL; //mxd
+	}
+	else
+	{
+		oldstate = &cl_parse_entities[oldframe->parse_entities & (MAX_PARSE_ENTITIES - 1)];
+		oldnum = oldstate->number;
+	}
+
+	while (true)
+	{
+		const int newnum = CL_ParseEntityBits(bits, &unused);
+
+		if (newnum  >= MAX_EDICTS)
+			Com_Error(ERR_DROP, "CL_ParsePacketEntities: bad number:%i", newnum);
+
+		if (net_message.readcount > net_message.cursize)
+			Com_Error(ERR_DROP, "CL_ParsePacketEntities: end of message");
+
+		if (newnum == 0)
+			break;
+
+		while (oldnum < newnum)
+		{
+			// One or more entities from the old packet are unchanged.
+			if ((int)cl_shownet->value == 3)
+				Com_Printf("   unchanged: %i\n", oldnum);
+
+			if ((cl_entities[oldnum].flags & 1) && !(cl_entities[oldnum].flags & 2)) // H2. Extra flags checks //TODO: what are those flags?
+				CL_DeltaEntity(newframe, oldnum, oldstate, NULL);
+
+			oldindex++;
+
+			if (oldindex >= oldframe->num_entities)
+			{
+				oldnum = 99999;
+			}
+			else
+			{
+				oldstate = &cl_parse_entities[(oldframe->parse_entities + oldindex) & (MAX_PARSE_ENTITIES - 1)];
+				oldnum = oldstate->number;
+			}
+		}
+
+		centity_t* ent = &cl_entities[newnum];
+
+		if (GetB(bits, U_REMOVE))
+		{
+			// The entity present in oldframe is not in the current frame.
+			if ((int)cl_shownet->value == 3)
+				Com_Printf("   remove: %i\n", newnum);
+
+			ent->flags |= 2; // H2
+
+			if (GetB(bits, U_ENT_FREED)) // H2
+			{
+				ent->flags &= ~1;
+				fxe.RemoveClientEffects(ent);
+
+				if (ent->prev.rootJoint != -1)
+				{
+					ClearSkeletonJoints(ent->prev.rootJoint);
+					ent->baseline.rootJoint = -1;
+					ent->current.rootJoint = -1;
+					ent->prev.rootJoint = -1;
+				}
+
+				if (ent->referenceInfo != NULL)
+				{
+					DeallocateLERPedReference(ent->referenceInfo);
+					ent->referenceInfo = NULL;
+				}
+			}
+
+			if (oldnum == newnum)
+			{
+				oldindex++;
+
+				if (oldindex >= oldframe->num_entities)
+				{
+					oldnum = 99999;
+				}
+				else
+				{
+					oldstate = &cl_parse_entities[(oldframe->parse_entities + oldindex) & (MAX_PARSE_ENTITIES - 1)];
+					oldnum = oldstate->number;
+				}
+			}
+
+			continue;
+		}
+
+		if (oldnum == newnum)
+		{
+			// Delta from previous state.
+			if ((int)cl_shownet->value == 3)
+				Com_Printf("   delta: %i\n", newnum);
+
+			CL_DeltaEntity(newframe, newnum, oldstate, bits);
+			ent->flags &= ~2; // H2
+			oldindex++;
+
+			if (oldindex >= oldframe->num_entities)
+			{
+				oldnum = 99999;
+			}
+			else
+			{
+				oldstate = &cl_parse_entities[(oldframe->parse_entities + oldindex) & (MAX_PARSE_ENTITIES - 1)];
+				oldnum = oldstate->number;
+			}
+		}
+		else if (newnum < oldnum)
+		{
+			// Delta from baseline.
+			if ((int)cl_shownet->value == 3)
+				Com_Printf("   baseline: %i\n", newnum);
+
+			CL_DeltaEntity(newframe, newnum, &ent->baseline, bits);
+			ent->flags &= ~2; // H2
+
+			if (ent->current.effects & EF_PLAYER) // H2
+			{
+				if (cl.clientinfo[ent->current.number].model != NULL)
+					model = *cl.clientinfo[ent->current.number].model;
+				else
+					model = *cl.baseclientinfo.model;
+			}
+			else
+			{
+				model = cl.model_draw[ent->current.modelindex];
+			}
+
+			ent->flags |= 1; // H2
+
+			if (ent->referenceInfo != NULL) // H2
+			{
+				DeallocateLERPedReference(ent->referenceInfo);
+				ent->referenceInfo = NULL;
+			}
+
+			if (model != NULL) // H2
+			{
+				const int id = re.GetReferencedID(model);
+				if (id != -1)
+					ent->referenceInfo = AllocateLERPedReference(id);
+			}
+		}
+	}
+
+	// Any remaining entities in the old frame are copied over.
+	while (oldnum != 99999)
+	{
+		// One or more entities from the old packet are unchanged.
+		if ((int)cl_shownet->value == 3)
+			Com_Printf("   unchanged: %i\n", oldnum);
+
+		if ((cl_entities[oldnum].flags & 1) && !(cl_entities[oldnum].flags & 2)) // H2. Extra flags checks //TODO: what are those flags?
+			CL_DeltaEntity(newframe, oldnum, oldstate, NULL);
+
+		oldindex++;
+
+		if (oldindex >= oldframe->num_entities)
+			break;
+
+		oldstate = &cl_parse_entities[(oldframe->parse_entities + oldindex) & (MAX_PARSE_ENTITIES - 1)];
+		oldnum = oldstate->number;
+	}
 }
 
 //mxd. Written by SV_WritePlayerstateToClient().

@@ -13,6 +13,7 @@
 static byte fatpvs[MAX_MAP_LEAFS / 8];
 
 // Writes a delta update of an entity_state_t list to the message.
+//mxd. Parsed by CL_ParsePacketEntities().
 static void SV_EmitPacketEntities(const client_frame_t* from, const client_frame_t* to, sizebuf_t* msg, const uint ent_id) // H2: extra 'ent_id' arg.
 {
 	entity_state_t* newent;
@@ -135,7 +136,7 @@ static void SV_EmitPacketEntities(const client_frame_t* from, const client_frame
 		}
 	}
 
-	MSG_WriteShort(msg, 0);	// End of packetentities.
+	MSG_WriteShort(msg, 0); // End of packetentities.
 }
 
 //mxd. Parsed by CL_ParsePlayerstate().
