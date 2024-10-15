@@ -73,6 +73,8 @@ static float* leaf_maxs;
 static int leaf_topnode;
 
 //mxd. Used by SV_Trace logic.
+qboolean trace_check_water;
+
 static vec3_t trace_start;
 static vec3_t trace_end;
 static vec3_t trace_mins;

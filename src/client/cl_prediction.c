@@ -5,12 +5,14 @@
 //
 
 #include "client.h"
+#include "cmodel.h"
 #include "EffectFlags.h"
 #include "p_main.h"
 #include "Vector.h"
 
 int pred_pm_flags;
 int pred_pm_w_flags;
+qboolean pred_crosshair;
 
 static int pred_effects = 0;
 static int pred_clientnum = 0;
@@ -65,9 +67,46 @@ void CL_CheckPredictionError(void)
 	}
 }
 
-static void CL_PMTrace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, trace_t* tr)
+void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* tr)
 {
 	NOT_IMPLEMENTED
+}
+
+static void CL_PMTrace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* tr)
+{
+	// Check against world.
+	if (mins == NULL && maxs == NULL)
+	{
+		mins = vec3_origin;
+		maxs = vec3_origin;
+
+		CM_BoxTrace(start, end, mins, maxs, 0, MASK_PLAYERSOLID | MASK_WATER, tr);
+		trace_check_water = true;
+	}
+	else
+	{
+		if (mins == NULL)
+			mins = vec3_origin;
+
+		if (maxs == NULL)
+			maxs = vec3_origin;
+
+		CM_BoxTrace(start, end, mins, maxs, 0, MASK_PLAYERSOLID, tr);
+		trace_check_water = false;
+	}
+
+	if (tr->fraction < 1.0f)
+		tr->ent = (struct edict_s*)(-1); // Q2: 1
+
+	if (!tr->startsolid && !tr->allsolid)
+	{
+		// Check all other solid models.
+		pred_crosshair = true;
+		CL_ClipMoveToEntities(start, mins, maxs, end, tr);
+		pred_crosshair = false;
+
+		trace_check_water = false;
+	}
 }
 
 int CL_PMpointcontents(vec3_t point)

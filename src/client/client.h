@@ -620,6 +620,7 @@ void V_RenderView(float stereo_separation);
 // cl_pred.c
 extern int pred_pm_flags; //mxd
 extern int pred_pm_w_flags; //mxd
+extern qboolean pred_crosshair; //mxd
 
 void CL_InitPrediction(void);
 void CL_PredictMove(void);
@@ -643,7 +644,7 @@ void CL_DrawInventory(void);
 int CL_PMpointcontents(vec3_t point); //mxd
 void CL_PredictMovement(void);
 void CL_StorePredictInfo(void); //mxd
-void CL_ClipMoveToEntities(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, trace_t* tr);
+void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* tr);
 
 // cl_view.c
 void Grab_EAX_Environment_type(void);

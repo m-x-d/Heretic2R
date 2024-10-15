@@ -8,8 +8,8 @@
 
 #include "qcommon.h"
 
-// cmodel.c
 //mxd. Moved from cmodel_private.h, because they're also used by Qcommon_frame().
+extern qboolean trace_check_water;
 extern int c_pointcontents;
 extern int c_traces;
 extern int c_brush_traces;
