@@ -7,6 +7,7 @@
 #include <float.h>
 #include <setjmp.h>
 
+#include "anorms.h"
 #include "cmodel.h"
 #include "console.h"
 #include "qcommon.h"
@@ -376,11 +377,22 @@ void* Z_Malloc(const int size)
 
 #pragma endregion
 
-//mxd. Named 'COM_BlockSequenceCRCByte' in Q2
-byte COM_BlockSequenceCheckByte(byte* base, int length, int sequence)
+// For proxy protecting.
+byte COM_BlockSequenceCheckByte(const byte* base, int length, const int sequence)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	byte chkb[64];
+
+	const byte* p = (byte*)bytedirs + (sequence % sizeof(bytedirs));
+
+	length = min(60, length);
+	memcpy(chkb, base, length);
+
+	chkb[length + 0] = (byte)(p[0] ^ (byte)sequence);
+	chkb[length + 1] = p[1];
+	chkb[length + 2] = (byte)(p[2] ^ (byte)(sequence >> 8));
+	chkb[length + 3] = p[3];
+
+	return (byte)Com_BlockChecksum(chkb, length + 4);
 }
 
 static void Com_Error_f(void)

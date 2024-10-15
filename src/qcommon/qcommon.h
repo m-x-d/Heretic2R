@@ -767,7 +767,7 @@ int Com_ServerState(void);
 void Com_SetServerState(int state);
 
 uint Com_BlockChecksum(void* buffer, int length);
-byte COM_BlockSequenceCheckByte(byte* base, int length, int sequence);
+byte COM_BlockSequenceCheckByte(const byte* base, int length, int sequence);
 
 extern cvar_t* developer;
 extern cvar_t* dedicated;
