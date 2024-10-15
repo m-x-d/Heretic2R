@@ -79,8 +79,21 @@ static void PM_CheckJump(void)
 
 static qboolean PM_GoodPosition(void)
 {
-	NOT_IMPLEMENTED
-	return false;
+	static trace_t trace;
+	vec3_t origin;
+
+	for (int i = 0; i < 3; i++)
+		origin[i] = (float)pml.short_origin[i] * 0.125f;
+
+	pm->trace(origin, pm->mins, pm->maxs, origin, &trace);
+
+	if (trace.startsolid)
+		return false;
+
+	if (trace.allsolid)
+		Com_Printf("Bad assumption in PM_GoodPosition\n"); //mxd. 'assumptoin' in original version.
+
+	return true;
 }
 
 static void PM_SnapPosition(void)
