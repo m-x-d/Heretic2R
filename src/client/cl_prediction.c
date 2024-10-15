@@ -47,6 +47,7 @@ void CL_CheckPredictionError(void)
 	for (int i = 0; i < 3; i++)
 		delta[i] = cl.frame.playerstate.pmove.origin[i] - cl.predicted_origins[frame][i];
 
+	// Save the prediction error for interpolation.
 	const int len = abs(delta[0]) + abs(delta[1]) + abs(delta[2]);
 	if (len > 640) // 80 world units
 	{

@@ -101,9 +101,111 @@ void MSG_WriteAngle16(sizebuf_t* sb, const float f)
 	MSG_WriteShort(sb, ANGLE2SHORT(f));
 }
 
-void MSG_WriteDeltaUsercmd(sizebuf_t* sb, usercmd_t* from, usercmd_t* cmd)
+void MSG_WriteDeltaUsercmd(sizebuf_t* sb, const usercmd_t* from, const usercmd_t* cmd)
 {
-	NOT_IMPLEMENTED
+	// Send the movement message.
+	int bits = 0;
+
+	if (cmd->angles[0] != from->angles[0])
+		bits |= CM_ANGLE1;
+
+	if (cmd->angles[1] != from->angles[1])
+		bits |= CM_ANGLE2;
+
+	if (cmd->angles[2] != from->angles[2])
+		bits |= CM_ANGLE3;
+
+	if (cmd->aimangles[0] != from->aimangles[0])
+		bits |= CM_AIMANGLE1;
+
+	if (cmd->aimangles[1] != from->aimangles[1])
+		bits |= CM_AIMANGLE2;
+
+	if (cmd->aimangles[2] != from->aimangles[2])
+		bits |= CM_AIMANGLE3;
+
+	if (cmd->camera_vieworigin[0] != from->camera_vieworigin[0])
+		bits |= CM_CAMERAVIEWORIGIN1;
+
+	if (cmd->camera_vieworigin[1] != from->camera_vieworigin[1])
+		bits |= CM_CAMERAVIEWORIGIN2;
+
+	if (cmd->camera_vieworigin[2] != from->camera_vieworigin[2])
+		bits |= CM_CAMERAVIEWORIGIN3;
+
+	if (cmd->camera_viewangles[0] != from->camera_viewangles[0])
+		bits |= CM_CAMERAVIEWANGLES1;
+
+	if (cmd->camera_viewangles[1] != from->camera_viewangles[1])
+		bits |= CM_CAMERAVIEWANGLES2;
+
+	if (cmd->camera_viewangles[2] != from->camera_viewangles[2])
+		bits |= CM_CAMERAVIEWANGLES3;
+
+	if (cmd->forwardmove != from->forwardmove)
+		bits |= CM_FORWARD;
+
+	if (cmd->sidemove != from->sidemove)
+		bits |= CM_SIDE;
+
+	if (cmd->upmove != from->upmove)
+		bits |= CM_UP;
+
+	if (cmd->buttons != from->buttons)
+		bits |= CM_BUTTONS;
+
+	MSG_WriteShort(sb, bits); // Q2: MSG_WriteByte
+
+	if (bits & CM_ANGLE1)
+		MSG_WriteShort(sb, cmd->angles[0]);
+
+	if (bits & CM_ANGLE2)
+		MSG_WriteShort(sb, cmd->angles[1]);
+
+	if (bits & CM_ANGLE3)
+		MSG_WriteShort(sb, cmd->angles[2]);
+
+	if (bits & CM_AIMANGLE1)
+		MSG_WriteShort(sb, cmd->aimangles[0]);
+
+	if (bits & CM_AIMANGLE2)
+		MSG_WriteShort(sb, cmd->aimangles[1]);
+
+	if (bits & CM_AIMANGLE3)
+		MSG_WriteShort(sb, cmd->aimangles[2]);
+
+	if (bits & CM_CAMERAVIEWORIGIN1)
+		MSG_WriteShort(sb, cmd->camera_vieworigin[0]);
+
+	if (bits & CM_CAMERAVIEWORIGIN2)
+		MSG_WriteShort(sb, cmd->camera_vieworigin[1]);
+
+	if (bits & CM_CAMERAVIEWORIGIN3)
+		MSG_WriteShort(sb, cmd->camera_vieworigin[2]);
+
+	if (bits & CM_CAMERAVIEWANGLES1)
+		MSG_WriteShort(sb, cmd->camera_viewangles[0]);
+
+	if (bits & CM_CAMERAVIEWANGLES2)
+		MSG_WriteShort(sb, cmd->camera_viewangles[1]);
+
+	if (bits & CM_CAMERAVIEWANGLES3)
+		MSG_WriteShort(sb, cmd->camera_viewangles[2]);
+
+	if (bits & CM_FORWARD)
+		MSG_WriteShort(sb, cmd->forwardmove);
+
+	if (bits & CM_SIDE)
+		MSG_WriteShort(sb, cmd->sidemove);
+
+	if (bits & CM_UP)
+		MSG_WriteShort(sb, cmd->upmove);
+
+	if (bits & CM_BUTTONS)
+		MSG_WriteShort(sb, cmd->buttons);
+
+	MSG_WriteByte(sb, cmd->msec);
+	MSG_WriteByte(sb, cmd->lightlevel);
 }
 
 void ParseEffectToSizeBuf(sizebuf_t* sb, const char* format, va_list marker) // H2

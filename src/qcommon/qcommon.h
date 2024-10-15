@@ -69,7 +69,7 @@ void MSG_WriteCoord(sizebuf_t* sb, float f);
 void MSG_WritePos(sizebuf_t* sb, vec3_t pos);
 void MSG_WriteAngle(sizebuf_t* sb, float f);
 void MSG_WriteAngle16(sizebuf_t* sb, float f);
-void MSG_WriteDeltaUsercmd(sizebuf_t* sb, struct usercmd_s* from, struct usercmd_s* cmd);
+void MSG_WriteDeltaUsercmd(sizebuf_t* sb, const struct usercmd_s* from, const struct usercmd_s* cmd);
 void ParseEffectToSizeBuf(sizebuf_t* sb, const char* format, va_list marker);
 void MSG_WriteEntityHeaderBits(sizebuf_t* msg, const byte* bf, byte* bfNonZero);
 void MSG_WriteDeltaEntity(const struct entity_state_s* from, const struct entity_state_s* to, sizebuf_t* msg, qboolean force);
