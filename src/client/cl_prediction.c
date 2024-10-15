@@ -29,7 +29,39 @@ static vec3_t pred_prevAngles = { 0 };
 
 void CL_CheckPredictionError(void)
 {
-	NOT_IMPLEMENTED
+	int delta[3];
+
+	if ((int)cl_predict->value == 0) // H2: no PMF_NO_PREDICTION check.
+		return;
+
+	// Calculate the last usercmd_t we sent that the server has processed.
+	const int frame = cls.netchan.incoming_acknowledged & (CMD_BACKUP - 1);
+
+	if (cl.frame.playerstate.frame != pred_currFrame) // H2
+		pred_prevFrame = pred_currFrame;
+
+	if (cl.frame.playerstate.swapFrame != pred_currSwapFrame) // H2
+		pred_prevSwapFrame = pred_currSwapFrame;
+
+	// Compare what the server returned with what we had predicted it to be
+	for (int i = 0; i < 3; i++)
+		delta[i] = cl.frame.playerstate.pmove.origin[i] - cl.predicted_origins[frame][i];
+
+	const int len = abs(delta[0]) + abs(delta[1]) + abs(delta[2]);
+	if (len > 640) // 80 world units
+	{
+		// A teleport or something.
+		VectorClear(cl.prediction_error);
+	}
+	else
+	{
+		if ((int)cl_showmiss->value && (delta[0] != 0 || delta[1] != 0 || delta[2] != 0))
+			Com_Printf("prediction miss on %i: %i\n", cl.frame.serverframe, delta[0] + delta[1] + delta[2]);
+
+		// Save for error interpolation.
+		for (int i = 0; i < 3; i++)
+			cl.prediction_error[i] = (float)delta[i] * 0.125f;
+	}
 }
 
 static void CL_PMTrace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, trace_t* tr)

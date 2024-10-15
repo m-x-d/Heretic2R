@@ -31,7 +31,7 @@ static void EmptyPlayerAction3(playerinfo_t* playerinfo, qboolean* val) { }
 void CL_ResetPlayerInfo(void)
 {
 	cl.playerinfo.isclient = true;
-	cl.playerinfo.Highestleveltime = -10000000000000000000000000000000.0f;
+	cl.playerinfo.Highestleveltime = -10000000000000000000000000000000.0f; //TODO: is this exact value checked anywhere? Replace with FLT_MIN?
 	cl.playerinfo.CL_Sound = CL_Sound;
 	cl.playerinfo.CL_Trace = CL_Trace;
 	cl.playerinfo.CL_CreateEffect = CL_CreateEffect;
