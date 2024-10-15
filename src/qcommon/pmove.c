@@ -89,7 +89,24 @@ static void PM_InitialSnapPosition(void)
 
 static void PM_ClampAngles(void)
 {
-	NOT_IMPLEMENTED
+	if (pm->s.pm_flags & PMF_TIME_TELEPORT)
+	{
+		pm->viewangles[YAW] = SHORT2ANGLE(pm->cmd.angles[YAW] + pm->s.delta_angles[YAW]);
+		pm->viewangles[PITCH] = 0.0f;
+		pm->viewangles[ROLL] = 0.0f;
+	}
+	else
+	{
+		// Circularly clamp the angles with deltas.
+		for (int i = 0; i < 3; i++)
+			pm->viewangles[i] = SHORT2ANGLE(pm->s.delta_angles[i] + pm->cmd.angles[i]);
+
+		// Don't let the player look up or down more than 90 degrees.
+		if (pm->viewangles[PITCH] > 89.0f && pm->viewangles[PITCH] < 180.0f)
+			pm->viewangles[PITCH] = 89.0f;
+		else if (pm->viewangles[PITCH] < 271.0f && pm->viewangles[PITCH] >= 180.0f)
+			pm->viewangles[PITCH] = 271.0f;
+	}
 }
 
 static void PM_UpdateOriginAndVelocity(void)
