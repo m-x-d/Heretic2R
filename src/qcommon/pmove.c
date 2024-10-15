@@ -77,6 +77,12 @@ static void PM_CheckJump(void)
 	NOT_IMPLEMENTED
 }
 
+static qboolean PM_GoodPosition(void)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
 static void PM_SnapPosition(void)
 {
 	NOT_IMPLEMENTED
@@ -84,7 +90,37 @@ static void PM_SnapPosition(void)
 
 static void PM_InitialSnapPosition(void)
 {
-	NOT_IMPLEMENTED
+	static short offset[3] = { 0, 1, -1 }; // Q2: { 0, -1, 1 }
+	short base[3];
+
+	for (int i = 0; i < 3; i++)
+		base[i] = pml.short_origin[i]; // Q2: pm->s.origin (here and below).
+
+	for (int z = 0; z < 3; z++)
+	{
+		pml.short_origin[2] = (short)(base[2] + offset[z]);
+
+		for (int y = 0; y < 3; y++)
+		{
+			pml.short_origin[1] = (short)(base[1] + offset[y]);
+
+			for (int x = 0; x < 3; x++)
+			{
+				pml.short_origin[0] = (short)(base[0] + offset[x]);
+
+				if (PM_GoodPosition())
+				{
+					for (int i = 0; i < 3; i++)
+					{
+						pml.origin[i] = (float)pml.short_origin[i] * 0.125f;
+						pml.previous_origin[i] = pml.short_origin[i];
+					}
+
+					return;
+				}
+			}
+		}
+	}
 }
 
 static void PM_ClampAngles(void)
