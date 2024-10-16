@@ -930,9 +930,38 @@ static void CM_ClipBoxToBrush(const vec3_t mins, const vec3_t maxs, const vec3_t
 	}
 }
 
-static void CM_TestBoxInBrush(vec3_t mins, vec3_t maxs, vec3_t p1, trace_t* trace, cbrush_t* brush)
+// Q2 counterpart
+static void CM_TestBoxInBrush(vec3_t mins, vec3_t maxs, vec3_t p1, trace_t* trace, const cbrush_t* brush)
 {
-	NOT_IMPLEMENTED
+	vec3_t ofs;
+
+	for (int i = 0; i < brush->numsides; i++)
+	{
+		const cbrushside_t* side = &map_brushsides[brush->firstbrushside + i];
+		const cplane_t* plane = side->plane;
+
+		// Push the plane out appropriately for mins/maxs.
+		for (int j = 0; j < 3; j++)
+		{
+			if (plane->normal[j] < 0)
+				ofs[j] = maxs[j];
+			else
+				ofs[j] = mins[j];
+		}
+
+		const float dist = plane->dist - DotProduct(ofs, plane->normal);
+		const float d1 = DotProduct(p1, plane->normal) - dist;
+
+		// If completely in front of face, no intersection.
+		if (d1 > 0.0f)
+			return;
+	}
+
+	// Inside this brush.
+	trace->startsolid = true;
+	trace->allsolid = true;
+	trace->fraction = 0.0f;
+	trace->contents = brush->contents;
 }
 
 static void CM_TraceToLeaf(const int leafnum)
