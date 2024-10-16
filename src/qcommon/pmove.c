@@ -74,7 +74,11 @@ static void PM_CatagorizePosition(void)
 
 static void PM_CheckJump(void)
 {
-	NOT_IMPLEMENTED
+	if (!(pm->s.pm_flags & PMF_TIME_LAND) && pm->cmd.upmove > 9)
+	{
+		pm->groundentity = NULL;
+		pml.velocity[2] = 280.0f;
+	}
 }
 
 static qboolean PM_GoodPosition(void)
