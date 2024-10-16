@@ -13,6 +13,7 @@
 int pred_pm_flags;
 int pred_pm_w_flags;
 qboolean pred_crosshair;
+qboolean pred_camerablock;
 
 static int pred_effects = 0;
 static int pred_clientnum = 0;
@@ -69,7 +70,118 @@ void CL_CheckPredictionError(void)
 
 void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* tr)
 {
-	NOT_IMPLEMENTED
+	int headnode;
+	const float* angles;
+	vec3_t bmins;
+	vec3_t bmaxs;
+	vec3_t mb_mins;
+	vec3_t mb_maxs;
+	
+	if (mins == NULL) // H2
+		mins = vec3_origin;
+
+	if (maxs == NULL) // H2
+		maxs = vec3_origin;
+
+	for (int i = 0; i < 3; i++) // H2
+	{
+		mb_mins[i] = mins[i] + min(start[i], end[i]) - 1.0f;
+		mb_maxs[i] = maxs[i] + max(start[i], end[i]) + 1.0f;
+	}
+
+	for (int i = 0; i < cl.frame.num_entities; i++)
+	{
+		const int num = (cl.frame.parse_entities + i) & (MAX_PARSE_ENTITIES - 1);
+		entity_state_t* ent = &cl_parse_entities[num];
+
+		if (!ent->solid)
+			continue;
+
+		if (pred_crosshair) // H2
+		{
+			if (pred_camerablock && ent->effects & EF_CAMERA_NO_CLIP)
+				continue;
+		}
+		else if (ent->number == cl.playernum + 1)
+		{
+			continue;
+		}
+
+		if (ent->solid == 31)
+		{
+			// Special value for bmodel.
+			const cmodel_t* cmodel = cl.model_clip[ent->modelindex];
+			if (cmodel == NULL)
+				continue;
+
+			// H2: check if inside move box...
+			float max_size = 0.0f;
+			for (int c = 0; c < 3; c++)
+				max_size = max(cmodel->maxs[c] - cmodel->mins[c], max_size);
+
+			max_size *= 1.75f;
+
+			qboolean in_movebox = true;
+			for (int c = 0; c < 3; c++)
+			{
+				if(cmodel->mins[c] + ent->origin[c] - max_size > mb_maxs[c] || cmodel->maxs[c] + ent->origin[c] + max_size < mb_mins[c])
+				{
+					in_movebox = false;
+					break;
+				}
+			}
+
+			if (!in_movebox)
+				continue;
+
+			headnode = cmodel->headnode;
+			angles = ent->angles;
+		}
+		else
+		{
+			// Encoded bbox.
+			const float x =  8.0f * (float)(ent->solid & 31);
+			const float zd = 8.0f * (float)((ent->solid >> 5) & 31);
+			const float zu = 8.0f * (float)((ent->solid >> 10) & 63) - 32;
+
+			bmins[0] = -x;
+			bmaxs[0] = x;
+			bmins[1] = -x;
+			bmaxs[1] = x;
+			bmins[2] = -zd;
+			bmaxs[2] = zu;
+
+			// H2: check if inside move box...
+			qboolean in_movebox = true;
+			for (int c = 0; c < 3; c++)
+			{
+				if (ent->origin[c] + bmins[c] > mb_maxs[c] || ent->origin[c] + bmaxs[c] < mb_mins[c])
+				{
+					in_movebox = false;
+					break;
+				}
+			}
+			
+			if (!in_movebox)
+				continue;
+
+			headnode = CM_HeadnodeForBox(bmins, bmaxs);
+			angles = vec3_origin; // Boxes don't rotate.
+		}
+
+		int brushmask = MASK_PLAYERSOLID;
+		if (trace_check_water)
+			brushmask |= CONTENTS_WATER;
+
+		trace_t trace;
+		CM_TransformedBoxTrace(start, end, mins, maxs, headnode, brushmask, ent->origin, angles, &trace);
+
+		if (trace.fraction <= tr->fraction)
+		{
+			*tr = trace;
+			tr->ent = (struct edict_s*)ent;
+		}
+	}
 }
 
 static void CL_PMTrace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* tr)

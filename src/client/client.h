@@ -621,6 +621,7 @@ void V_RenderView(float stereo_separation);
 extern int pred_pm_flags; //mxd
 extern int pred_pm_w_flags; //mxd
 extern qboolean pred_crosshair; //mxd
+extern qboolean pred_camerablock; //mxd
 
 void CL_InitPrediction(void);
 void CL_PredictMove(void);
