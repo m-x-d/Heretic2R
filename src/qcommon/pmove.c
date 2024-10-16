@@ -5,6 +5,7 @@
 //
 
 #include "qcommon.h"
+#include "q_Physics.h"
 #include "Vector.h"
 
 // All of the locals will be zeroed before each pmove, just to make sure
@@ -37,6 +38,28 @@ typedef struct
 static pmove_t* pm;
 static pml_t pml;
 
+static float ClampVelocity(vec3_t velocity, vec3_t* out_vel_normal, qboolean run_shrine, qboolean high_max)
+{
+	NOT_IMPLEMENTED
+	return 0;
+}
+
+static qboolean CheckCollision(float aimangle)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
+static void PM_StepSlideMove(void)
+{
+	NOT_IMPLEMENTED
+}
+
+static void PM_AddCurrents(vec3_t wishvel)
+{
+	NOT_IMPLEMENTED
+}
+
 static void PM_TryMove(void) // H2
 {
 	NOT_IMPLEMENTED
@@ -44,7 +67,61 @@ static void PM_TryMove(void) // H2
 
 static void PM_AirMove(void)
 {
-	NOT_IMPLEMENTED
+	vec3_t wishvel;
+
+	qboolean run_shrine = false;
+	qboolean high_max = false;
+	float fdmove = pm->cmd.forwardmove;
+	const float smove = pm->cmd.sidemove;
+
+	pml.gravity = pm->s.gravity; // H2
+
+	if (!pm->high_max) // H2
+	{
+		if (pm->run_shrine && fdmove > 0.0f)
+		{
+			fdmove *= 1.65f;
+			run_shrine = true;
+		}
+	}
+	else
+	{
+		high_max = true;
+	}
+
+	VectorNormalize(pml.forward);
+	VectorNormalize(pml.right);
+
+	for (int i = 0; i < 2; i++)
+		wishvel[i] = pml.forward[i] * fdmove + pml.right[i] * smove;
+	wishvel[2] = 0.0f;
+
+	PM_AddCurrents(wishvel);
+
+	if (pml.knockbackfactor > 0.0f) // H2
+		pml.max_velocity *= (1.0f - pml.knockbackfactor);
+
+	for (int i = 0; i < 3; i++)
+		wishvel[i] += pml.velocity[i] * pml.knockbackfactor;
+
+	vec3_t unused;
+	const float maxspeed = ClampVelocity(wishvel, &unused, run_shrine, high_max);
+
+	if (pm->groundentity != NULL)
+	{
+		// Walking on ground.
+		if (maxspeed == 0.0f && pml.groundplane.normal[2] >= GROUND_NORMAL && pml.groundplane.normal[2] >= pml.gravity / (pml.max_velocity + pml.gravity))
+		{
+			VectorClear(pml.velocity);
+			CheckCollision((float)pm->cmd.aimangles[YAW] * SHORT_TO_ANGLE * ANGLE_TO_RAD);
+
+			return;
+		}
+
+		VectorCopy(wishvel, pml.velocity);
+	}
+
+	PM_StepSlideMove();
 }
 
 static void PM_TryWaterMove(void) // H2
