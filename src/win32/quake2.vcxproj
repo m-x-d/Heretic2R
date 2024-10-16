@@ -165,6 +165,7 @@
     <ClInclude Include="..\qcommon\qcommon.h" />
     <ClInclude Include="..\qcommon\qfiles.h" />
     <ClInclude Include="..\qcommon\q_ClientServer.h" />
+    <ClInclude Include="..\qcommon\q_Physics.h" />
     <ClInclude Include="..\qcommon\q_Typedef.h" />
     <ClInclude Include="..\qcommon\ResourceManager.h" />
     <ClInclude Include="..\qcommon\Skeletons.h" />

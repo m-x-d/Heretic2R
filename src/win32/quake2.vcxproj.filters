@@ -527,5 +527,8 @@
     <ClInclude Include="..\qcommon\Skeletons.h">
       <Filter>qcommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\qcommon\q_Physics.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

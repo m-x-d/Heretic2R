@@ -38,6 +38,9 @@ typedef struct
 static pmove_t* pm;
 static pml_t pml;
 
+// Movement parameters.
+#define PM_WATERSPEED	400
+
 static float ClampVelocity(vec3_t velocity, vec3_t* out_vel_normal, qboolean run_shrine, qboolean high_max)
 {
 	NOT_IMPLEMENTED
@@ -57,7 +60,60 @@ static void PM_StepSlideMove(void)
 
 static void PM_AddCurrents(vec3_t wishvel)
 {
-	NOT_IMPLEMENTED
+	// H2: don't account for ladders.
+
+	// Add water currents.
+	if (pm->watertype & MASK_CURRENT)
+	{
+		vec3_t v = { 0 };
+
+		if (pm->watertype & CONTENTS_CURRENT_0)
+			v[0] += 1.0f;
+
+		if (pm->watertype & CONTENTS_CURRENT_90)
+			v[1] += 1.0f;
+
+		if (pm->watertype & CONTENTS_CURRENT_180)
+			v[0] -= 1.0f;
+
+		if (pm->watertype & CONTENTS_CURRENT_270)
+			v[1] -= 1.0f;
+
+		if (pm->watertype & CONTENTS_CURRENT_UP)
+			v[2] += 1.0f;
+
+		if (pm->watertype & CONTENTS_CURRENT_DOWN)
+			v[2] -= 1.0f;
+
+		float s = PM_WATERSPEED;
+		if (pm->waterlevel == 1 && pm->groundentity != NULL)
+			s /= 2;
+
+		VectorMA(wishvel, s, v, wishvel);
+	}
+
+	// Add conveyor belt velocities.
+	if (pm->groundentity != NULL && (pml.groundcontents & MASK_CURRENT))
+	{
+		vec3_t v = { 0 };
+
+		if (pml.groundcontents & CONTENTS_CURRENT_0)
+			v[0] += 1.0f;
+
+		if (pml.groundcontents & CONTENTS_CURRENT_90)
+			v[1] += 1.0f;
+
+		if (pml.groundcontents & CONTENTS_CURRENT_180)
+			v[0] -= 1.0f;
+
+		if (pml.groundcontents & CONTENTS_CURRENT_270)
+			v[1] -= 1.0f;
+
+		if (pml.groundcontents & (CONTENTS_CURRENT_UP | CONTENTS_CURRENT_DOWN)) // H2
+			Com_Printf("CONTENTS_CURRENT_UP or CONTENTS_CURRENT_DOWN not supported on groundcontents (conveyor belts)\n");
+
+		VectorMA(wishvel, 100.0f, v, wishvel);
+	}
 }
 
 static void PM_TryMove(void) // H2
