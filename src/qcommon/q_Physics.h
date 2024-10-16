@@ -8,7 +8,7 @@
 
 #include "H2Common.h"
 #include "q_Typedef.h"
-#include "q_Shared.h"	// for trace_t
+#include "q_shared.h" // For trace_t.
 
 #define ELASTICITY_NONE				0.0f
 #define ELASTICITY_SLIDE			1.0001f
@@ -20,10 +20,10 @@
 #define GROUND_NORMAL				0.7f
 
 #define GRAVITY						675.0f
-#define GRAVITY_STRING				"675.0"		// To set cvars with
+#define GRAVITY_STRING				"675.0" // To set cvars with
 
 #define	FRICTION					1600.0f
-#define FRICTION_STRING				"1600.0"	// To set cvars with
+#define FRICTION_STRING				"1600.0" // To set cvars with
 
 #define	STOP_EPSILON				0.1
 
@@ -51,21 +51,14 @@ typedef struct FormMove_s
 	int resultFlags;	// Will eventually be filled in by physics
 } FormMove_t;
 
-
-//************************************************************************
 // Physics Process Flags
-//************************************************************************
 
 // Indicates the function is being only for informational purposes.
 // The entities position will not be modified and it will not be linked.
 // This currently only works with DiscreteMove_Step.
 #define PPF_INFO_GRAB			0x00000001
 
-
-//************************************************************************
 // Physics Result Flags
-//************************************************************************
-
 #define PRF_COLLISION			0x00000001	// Indicates there was a collision
 #define PRF_EXPANSION_BLOCKED	0x00000002	// Indicates an expansion was blocked
 
