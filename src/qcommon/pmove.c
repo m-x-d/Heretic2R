@@ -39,12 +39,24 @@ static pmove_t* pm;
 static pml_t pml;
 
 // Movement parameters.
-#define PM_WATERSPEED	400
+#define PM_WATERSPEED	400.0f
+#define PM_MAXSPEED		300.0f
 
-static float ClampVelocity(vec3_t velocity, vec3_t* out_vel_normal, qboolean run_shrine, qboolean high_max)
+static float ClampVelocity(vec3_t vel, vec3_t vel_normal, const qboolean run_shrine, const qboolean high_max)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	float max_speed = PM_MAXSPEED;
+	if (high_max || run_shrine)
+		max_speed *= 2.0f;
+
+	const float speed = VectorNormalize2(vel, vel_normal);
+
+	if (speed > max_speed)
+	{
+		VectorScale(vel_normal, max_speed, vel);
+		return max_speed;
+	}
+
+	return speed;
 }
 
 static qboolean CheckCollision(float aimangle)
@@ -161,7 +173,7 @@ static void PM_AirMove(void)
 		wishvel[i] += pml.velocity[i] * pml.knockbackfactor;
 
 	vec3_t unused;
-	const float maxspeed = ClampVelocity(wishvel, &unused, run_shrine, high_max);
+	const float maxspeed = ClampVelocity(wishvel, unused, run_shrine, high_max);
 
 	if (pm->groundentity != NULL)
 	{
