@@ -551,7 +551,7 @@ typedef struct
 	float knockbackfactor;
 
 	// Callbacks to test the world.
-	void (*trace)(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, trace_t* trace);
+	void (*trace)(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* trace);
 	int (*pointcontents)(vec3_t point);
 
 	struct edict_s* self;

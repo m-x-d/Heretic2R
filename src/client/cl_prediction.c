@@ -184,6 +184,7 @@ void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t m
 	}
 }
 
+//mxd. Can set tr->ent to -1!
 static void CL_PMTrace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* tr)
 {
 	// Check against world.

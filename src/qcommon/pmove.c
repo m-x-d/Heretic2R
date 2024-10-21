@@ -5,6 +5,7 @@
 //
 
 #include "qcommon.h"
+#include "game.h"
 #include "q_Physics.h"
 #include "Vector.h"
 
@@ -42,6 +43,10 @@ static pml_t pml;
 #define PM_WATERSPEED	400.0f
 #define PM_MAXSPEED		300.0f
 
+#define	STEPSIZE		18.0f
+#define MIN_STEP_NORMAL	0.7f // Can't step up onto very steep slopes.
+#define MAX_CLIP_PLANES	5
+
 static float ClampVelocity(vec3_t vel, vec3_t vel_normal, const qboolean run_shrine, const qboolean high_max)
 {
 	float max_speed = PM_MAXSPEED;
@@ -65,9 +70,418 @@ static qboolean CheckCollision(float aimangle)
 	return false;
 }
 
-static void PM_StepSlideMove(void)
+static qboolean PM_CanMoveToPos(float offset_z, float frametime, trace_t* tr)
 {
 	NOT_IMPLEMENTED
+	return false;
+}
+
+// Each intersection will try to step over the obstruction instead of sliding along it.
+static void PM_StepSlideMove(void)
+{
+	static vec3_t planes[MAX_CLIP_PLANES];
+
+	vec3_t primal_velocity;
+	vec3_t plane_normal;
+	vec3_t dir;
+	vec3_t cross;
+	vec3_t vel;
+	vec3_t bounce_vel;
+	trace_t trace;
+
+	float pml_max_velocity = pml.max_velocity;
+	float pml_gravity = pml.gravity;
+	float time_left = pml.frametime;
+
+	float scaled_vel = 0.0f;
+	float inv_scaled_vel = 0.0f;
+
+	if (pm->groundentity == NULL)
+		pml.groundplane.normal[2] = 0.0f;
+
+	VectorCopy(pml.velocity, primal_velocity);
+	VectorCopy(pml.groundplane.normal, plane_normal);
+
+	int numplanes = 0;
+	int cur_plane = 0;
+	int prev_plane = -1;
+
+	for (int bumpcount = 0; bumpcount < 4; bumpcount++)
+	{
+		qboolean do_bounce = false;
+		qboolean is_bouncing = false;
+
+		VectorScale(pml.velocity, time_left, vel);
+
+		float time_left_sq = time_left * time_left;
+
+		qboolean skip_groundentity_check = false; //TODO: better name
+
+		if (pml.groundplane.normal[2] != 0.0f)
+		{
+			float vel_amount;
+			qboolean check_bounce = true;
+
+			if (Vec3IsZero(pml.velocity))
+			{
+				if (pml.groundplane.normal[2] >= MIN_STEP_NORMAL && pml.groundplane.normal[2] >= pml_gravity / (pml_max_velocity + pml_gravity) && bumpcount > 0)
+					return;
+
+				//mxd. Get plane_normal perpendicular. 'cross' is parallel to plane(?).
+				cross[0] = plane_normal[0] * plane_normal[2];
+				cross[1] = plane_normal[1] * plane_normal[2];
+				cross[2] = -(plane_normal[0] * plane_normal[0]) - (plane_normal[1] * plane_normal[1]);
+				VectorNormalize(cross);
+
+				if (DotProduct(cross, plane_normal) < -0.0005f)
+				{
+					VectorMA(pml.origin, 0.5f, planes[cur_plane], pml.origin);
+					prev_plane = cur_plane;
+				}
+
+				vel_amount = 0.0f;
+			}
+			else
+			{
+				vel_amount = VectorNormalize2(vel, dir);
+
+				const float d = DotProduct(dir, plane_normal);
+				if (d < -0.05f || d >= 0.05f)
+					check_bounce = false;
+			}
+
+			if (check_bounce)
+			{
+				do_bounce = true; //mxd. Change movement direction because of bouncing this frame(?)
+				is_bouncing = true; //mxd. Currently bouncing upwards(?)
+
+				//mxd. Get plane_normal perpendicular. 'cross' is parallel to plane(?).
+				cross[0] = plane_normal[0] * plane_normal[2];
+				cross[1] = plane_normal[1] * plane_normal[2];
+				cross[2] = -(plane_normal[0] * plane_normal[0]) - plane_normal[1] * plane_normal[1];
+				VectorNormalize(cross);
+
+				scaled_vel = pml.groundplane.normal[2] * pml_max_velocity;
+
+				if (pml.groundplane.normal[2] >= MIN_STEP_NORMAL || pm->waterlevel != 0)
+				{
+					inv_scaled_vel = -scaled_vel;
+				}
+				else
+				{
+					inv_scaled_vel = -scaled_vel * 0.1f;
+
+					pm->s.c_flags |= PC_SLIDING;
+					pml.velocity[2] = min(-40.0f, pml.velocity[2]);
+				}
+
+				float dist = inv_scaled_vel * time_left_sq * 0.5f + vel_amount;
+
+				if (dist < 0.0f)
+				{
+					dist = 0.0f;
+					inv_scaled_vel = 0.0f;
+				}
+
+				if (DotProduct(cross, plane_normal) < -0.0005f)
+				{
+					VectorMA(pml.origin, 0.5f, planes[cur_plane], pml.origin);
+					prev_plane = cur_plane;
+				}
+
+				if (pml.groundplane.normal[2] >= MIN_STEP_NORMAL || pm->waterlevel != 0)
+				{
+					scaled_vel = (1.0f - pml.groundplane.normal[2]) * pml_gravity - scaled_vel;
+				}
+				else
+				{
+					scaled_vel = (1.0f - pml.groundplane.normal[2]) * pml_gravity - pml.groundplane.normal[2] * pml_max_velocity * 0.1f;
+					pm->s.c_flags |= PC_SLIDING;
+				}
+
+				scaled_vel = max(0.0f, scaled_vel);
+				time_left_sq *= scaled_vel * 0.5f;
+
+				for (int i = 0; i < 3; i++)
+					vel[i] = cross[i] * time_left_sq + dir[i] * dist;
+
+				if (scaled_vel + inv_scaled_vel + dist != 0.0f)
+				{
+					skip_groundentity_check = true;
+				}
+				else
+				{
+					trace.fraction = 0.0f;
+					break;
+				}
+			}
+		}
+
+		if (!skip_groundentity_check && pm->groundentity == NULL)
+			vel[2] -= time_left_sq * pml_gravity * 0.5f;
+
+		vec3_t end;
+		VectorAdd(pml.origin, vel, end);
+		pm->trace(pml.origin, pm->mins, pm->maxs, end, &trace);
+
+		if (!trace.startsolid)
+		{
+LAB_NotSolid:
+			if (trace.allsolid)
+			{
+				// Entity is trapped in another solid.
+				VectorClear(pml.velocity);
+				pml.origin[2] += 20.0f;
+
+				return;
+			}
+
+			const float time_step = time_left * trace.fraction;
+
+			if (trace.fraction > 0.0f)
+			{
+				// Actually covered some distance.
+				VectorCopy(trace.endpos, pml.origin);
+
+				if (do_bounce)
+				{
+					float dist = VectorNormalize2(pml.velocity, dir);
+					dist += time_step * inv_scaled_vel;
+
+					float scaler = time_step * scaled_vel;
+
+					for (int i = 0; i < 3; i++)
+						pml.velocity[i] = cross[i] * scaler + dir[i] * dist;
+				}
+				else
+				{
+					pml.velocity[2] -= time_step * pml_gravity;
+				}
+
+				if (trace.fraction == 1.0f)
+					break; // Moved the entire distance.
+
+				numplanes = 0;
+				prev_plane = -1;
+
+				VectorCopy(pml.velocity, primal_velocity);
+			}
+			else if (Vec3IsZero(pml.velocity) && pml.groundplane.normal[2] >= pml_gravity / (pml_max_velocity + pml_gravity))
+			{
+				break;
+			}
+
+			if (pml.server && trace.ent != NULL && trace.ent->isBlocking != NULL)
+			{
+				trace_t tr = trace;
+
+				tr.ent = pm->self;
+				VectorInverse(tr.plane.normal);
+				trace.ent->isBlocking(trace.ent, &tr);
+			}
+
+			// Save entity for contact.
+			if (pm->numtouch < MAXTOUCH && trace.ent != NULL)
+			{
+				pm->touchents[pm->numtouch] = trace.ent;
+				pm->numtouch++;
+			}
+
+			time_left -= time_step;
+
+			if (trace.plane.normal[2] <= MIN_STEP_NORMAL)
+			{
+				qboolean have_trace_ent = (pml.server && (trace.ent->solid == SOLID_BSP || trace.ent->solid == SOLID_BBOX)) || (!pml.server && trace.ent != NULL); //mxd
+				if (have_trace_ent && PM_CanMoveToPos(STEPSIZE, time_left, &trace))
+					break;
+			}
+
+			if (pm->groundentity == NULL || pml.groundplane.normal[2] <= MIN_STEP_NORMAL || trace.plane.normal[2] > MIN_STEP_NORMAL)
+			{
+				VectorCopy(trace.plane.normal, pml.groundplane.normal);
+				VectorCopy(trace.plane.normal, plane_normal);
+
+				qboolean have_trace_ent = (pml.server && (trace.ent->solid == SOLID_BSP || trace.ent->solid == SOLID_BBOX)) || (!pml.server && trace.ent != NULL); //mxd
+				if (have_trace_ent && trace.plane.normal[2] > 0.0f)
+				{
+					pm->groundentity = trace.ent;
+				}
+				else
+				{
+					pm->groundentity = NULL;
+					trace.plane.normal[2] = max(0.0f, trace.plane.normal[2]);
+				}
+
+				if (numplanes > 4)
+					break;
+
+				if (numplanes == 0 || !VectorCompare(trace.plane.normal, planes[numplanes - 1]))
+				{
+					VectorCopy(trace.plane.normal, planes[numplanes]);
+					numplanes++;
+				}
+
+				prev_plane = numplanes - 1;
+
+				VectorMA(pml.origin, 0.5f, planes[prev_plane], pml.origin);
+			}
+			else
+			{
+				vec3_t v;
+				VectorSet(v, trace.plane.normal[0], trace.plane.normal[1], 0.0f);
+				VectorNormalize(v);
+
+				if (numplanes == 0 || !VectorCompare(v, planes[numplanes - 1]))
+				{
+					VectorCopy(v, planes[numplanes]);
+					numplanes++;
+				}
+			}
+
+			// Modify original_velocity so it parallels all of the clip planes.
+			for (cur_plane = 0; cur_plane < numplanes; cur_plane++)
+			{
+				BounceVelocity(primal_velocity, planes[cur_plane], bounce_vel, ELASTICITY_SLIDE);
+
+				const float bounce_amount = VectorNormalize2(bounce_vel, dir);
+
+				if (fabsf(bounce_amount) < 0.0005f)
+				{
+					if (planes[cur_plane][2] > 0.0f)
+					{
+						//mxd. Get plane perpendicular. 'vel_normal' is parallel to plane(?). Opposite direction to previous 2 cases!
+						dir[0] = -(planes[cur_plane][2] * planes[cur_plane][0]);
+						dir[1] = -(planes[cur_plane][1] * planes[cur_plane][2]);
+						dir[2] = planes[cur_plane][1] * planes[cur_plane][1] + planes[cur_plane][0] * planes[cur_plane][0];
+
+						VectorNormalize(dir);
+					}
+					else
+					{
+						dir[2] = -1.0f;
+					}
+				}
+
+				const float d = DotProduct(dir, planes[cur_plane]);
+
+				if (d < -0.0005f)
+				{
+					VectorMA(pml.origin, 0.5f, planes[cur_plane], pml.origin);
+					prev_plane = cur_plane;
+				}
+
+				is_bouncing = false;
+
+				if (planes[cur_plane][2] > 0.0f && d >= -0.01f && fabsf(d) < 0.01f)
+					is_bouncing = true;
+
+				int j;
+				for (j = 0; j < numplanes; j++)
+					if (j != cur_plane && DotProduct(bounce_vel, planes[j]) <= 0.0f)
+						break; // Not ok.
+
+				if (j == numplanes)
+					break;
+			}
+
+			// Go along the crease.
+			if (numplanes != 2)
+			{
+				if (cur_plane == numplanes)
+				{
+					VectorClear(pml.velocity);
+					return;
+				}
+
+				VectorCopy(bounce_vel, pml.velocity);
+			}
+			else
+			{
+				CrossProduct(planes[0], planes[1], dir);
+
+				if (DotProduct(dir, pml.velocity) < 0.0f)
+					VectorInverse(dir);
+
+				dir[2] += 0.1f;
+				VectorNormalize(dir);
+
+				VectorAdd(planes[0], planes[1], plane_normal);
+				VectorNormalize(plane_normal);
+
+				if (pm->groundentity != NULL && dir[2] > MIN_STEP_NORMAL)
+				{
+					trace.fraction = 0.0f;
+					break;
+				}
+
+				float d = DotProduct(dir, pml.velocity);
+				d = max(0.0f, d);
+
+				if (dir[2] <= 0.0f)
+					is_bouncing = true;
+
+				VectorScale(dir, d, pml.velocity);
+			}
+
+			float dist = VectorNormalize2(pml.velocity, dir);
+
+			if (is_bouncing)
+			{
+				dist += (-((1.0f - dir[2]) * pml_max_velocity) - dir[2] * pml_gravity) * time_left;
+				bounce_vel[2] = dir[2] * dist;
+			}
+			else
+			{
+				bounce_vel[2] = dir[2] * dist - pml_gravity * time_left;
+			}
+
+			bounce_vel[1] = dir[1] * dist;
+			bounce_vel[0] = dir[0] * dist;
+		}
+		else
+		{
+			if (prev_plane == -1)
+			{
+				vec3_t mins;
+				vec3_t maxs;
+
+				VectorCopy(pm->mins, mins);
+				VectorCopy(pm->maxs, maxs);
+
+				for (int offset = 1; ; offset++)
+				{
+					if (maxs[0] - (float)offset < mins[0] + (float)offset)
+					{
+						VectorClear(pml.velocity);
+						return;
+					}
+
+					VectorInc(mins);
+					VectorDec(maxs);
+
+					pm->trace(pml.origin, mins, maxs, pml.origin, &trace);
+
+					if (!trace.startsolid)
+						break;
+				}
+
+				VectorCopy(pm->mins, pm->intentMins);
+				VectorCopy(pm->maxs, pm->intentMaxs);
+				VectorCopy(mins, pm->mins);
+				VectorCopy(maxs, pm->maxs);
+
+				goto LAB_NotSolid;
+			}
+
+			for (int i = 0; i < 3; i++)
+				pml.origin[i] -= planes[prev_plane][i] * 0.5f;
+		}
+	}
+
+	if (trace.fraction < 1.0f)
+		VectorClear(pml.velocity);
+
+	CheckCollision((float)pm->cmd.aimangles[1] * SHORT_TO_ANGLE * ANGLE_TO_RAD);
 }
 
 static void PM_AddCurrents(vec3_t wishvel)
@@ -178,7 +592,7 @@ static void PM_AirMove(void)
 	if (pm->groundentity != NULL)
 	{
 		// Walking on ground.
-		if (maxspeed == 0.0f && pml.groundplane.normal[2] >= GROUND_NORMAL && pml.groundplane.normal[2] >= pml.gravity / (pml.max_velocity + pml.gravity))
+		if (maxspeed == 0.0f && pml.groundplane.normal[2] >= MIN_STEP_NORMAL && pml.groundplane.normal[2] >= pml.gravity / (pml.max_velocity + pml.gravity))
 		{
 			VectorClear(pml.velocity);
 			CheckCollision((float)pm->cmd.aimangles[YAW] * SHORT_TO_ANGLE * ANGLE_TO_RAD);
