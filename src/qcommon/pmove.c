@@ -825,9 +825,47 @@ static void PM_UpdateOriginAndVelocity(void)
 	NOT_IMPLEMENTED
 }
 
-static void PM_UpdateWaterLevel(void)
+static void PM_UpdateWaterLevel(void) // H2. Part of PM_CatagorizePosition() logic in Q2.
 {
-	NOT_IMPLEMENTED
+	trace_t trace;
+
+	vec3_t bottom_pos;
+	bottom_pos[0] = pml.origin[0];
+	bottom_pos[1] = pml.origin[1];
+	bottom_pos[2] = pml.origin[2] + pm->mins[2] + 1.0f;
+
+	int contents = pm->pointcontents(bottom_pos);
+	if (!(contents & MASK_WATER)) // Not submerged.
+	{
+		pm->watertype = 0;
+		pm->waterlevel = 0;
+		pm->waterheight = pm->mins[2];
+
+		return;
+	}
+
+	pm->watertype = contents;
+	pm->waterlevel = 1;
+
+	vec3_t top_pos;
+	top_pos[0] = bottom_pos[0];
+	top_pos[1] = bottom_pos[1];
+	top_pos[2] = pml.origin[2] + pm->maxs[2];
+
+	contents = pm->pointcontents(top_pos);
+	if (!(contents & MASK_WATER)) // Partially submerged.
+	{
+		pm->trace(top_pos, NULL, NULL, bottom_pos, &trace);
+		pm->waterheight = trace.endpos[2] - pml.origin[2];
+
+		if (trace.fraction < 1.0f && pml.desired_water_height < pm->waterheight)
+			pm->waterlevel = 2;
+	}
+	else // Fully submerged
+	{
+		pm->waterlevel = 3;
+		pm->waterheight = pm->maxs[2];
+	}
 }
 
 // Can be called by either the server or the client.
