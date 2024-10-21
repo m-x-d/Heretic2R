@@ -628,7 +628,106 @@ static void PM_LavaMove(void) // H2
 
 static void PM_CatagorizePosition(void)
 {
-	NOT_IMPLEMENTED
+	vec3_t mins;
+	vec3_t maxs;
+	vec3_t point;
+	trace_t trace;
+
+	if (pml.velocity[2] > 100.0f || pm->waterlevel > 1) // H2
+	{
+		pm->s.pm_flags &= ~PMF_ON_GROUND;
+		pm->groundentity = NULL;
+
+		return;
+	}
+
+	// See if standing on something solid.
+	VectorSet(point, pml.origin[0], pml.origin[1], pml.origin[2] - 1.0f);
+	VectorCopy(pm->mins, mins);
+	VectorCopy(pm->maxs, maxs);
+
+	const qboolean big_maxs = (maxs[0] >= 2.0f);
+
+	if (big_maxs)
+	{
+		mins[0] += 1.0f;
+		mins[1] += 1.0f;
+		maxs[0] -= 1.0f;
+		maxs[1] -= 1.0f;
+		point[2] -= 1.0f;
+	}
+
+	// If the player hull point one unit down is solid, the player is on ground.
+	pm->trace(pml.origin, mins, maxs, point, &trace);
+
+	pml.groundplane = trace.plane;
+	pml.groundcontents = trace.contents;
+	pml.groundsurface = trace.surface;
+
+	if (trace.ent == NULL || (trace.plane.normal[2] < MIN_STEP_NORMAL && !trace.startsolid))
+	{
+		if (pml.server)
+		{
+			if (big_maxs)
+			{
+				point[2] += 1.0f;
+
+				pm->trace(pml.origin, pm->mins, pm->maxs, point, &trace);
+
+				if ((trace.ent != NULL && trace.plane.normal[2] >= MIN_STEP_NORMAL) || trace.startsolid)
+				{
+					VectorCopy(mins, pm->mins);
+					VectorCopy(maxs, pm->maxs);
+				}
+
+				pm->groundentity = NULL;
+				pm->s.pm_flags &= ~PMF_ON_GROUND;
+			}
+		}
+		else
+		{
+			vec3_t start;
+			VectorSet(start, pml.origin[0], pml.origin[1], pml.origin[2] + 0.14f);
+			point[2] += 0.14f;
+
+			pm->trace(start, mins, maxs, point, &trace);
+
+			pml.groundplane = trace.plane;
+			pml.groundsurface = trace.surface;
+			pml.groundcontents = trace.contents;
+
+			pm->groundentity = NULL;
+			pm->s.pm_flags &= ~PMF_ON_GROUND;
+		}
+	}
+	else
+	{
+		pm->groundentity = trace.ent;
+
+		if (!(pm->s.pm_flags & PMF_ON_GROUND))
+		{
+			// Just hit the ground.
+			pm->s.pm_flags |= PMF_ON_GROUND;
+
+			// Don't do landing time if we were just going down a slope.
+			if (pml.velocity[2] < -200.0f)
+			{
+				pm->s.pm_flags |= PMF_TIME_LAND;
+
+				// Don't allow another jump for a little while.
+				if (pml.velocity[2] >= -400.0f) //TODO: this check is inverted in Q2. Bug?
+					pm->s.pm_time = 25;
+				else
+					pm->s.pm_time = 18;
+			}
+		}
+	}
+
+	if (pm->numtouch < MAXTOUCH && trace.ent != NULL)
+	{
+		pm->touchents[pm->numtouch] = trace.ent;
+		pm->numtouch++;
+	}
 }
 
 static void PM_CheckJump(void)
