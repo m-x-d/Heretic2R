@@ -1061,9 +1061,31 @@ void CL_ParseFrame(void)
 	}
 }
 
-void CL_AddEntities(void)
+static void CL_CalcViewValues(void)
 {
 	NOT_IMPLEMENTED
+}
+
+// Emits all entities, particles, and lights to the refresh.
+void CL_AddEntities(void)
+{
+	if (cls.state != ca_active)
+		return;
+
+	if (cl.time > cl.frame.servertime)
+		cl.lerpfrac = 1.0f;
+	else if (cl.time < cl.frame.servertime - 100)
+		cl.lerpfrac = 0.0f;
+	else
+		cl.lerpfrac = 1.0f - (float)(cl.frame.servertime - cl.time) * 0.01f;
+
+	if ((int)cl_timedemo->value)
+		cl.lerpfrac = 1.0f;
+
+	fxe.AddPacketEntities(&cl.frame);
+	fxe.AddEffects((qboolean)cl_freezeworld->value);
+
+	CL_CalcViewValues();
 }
 
 void CL_GetEntitySoundOrigin(int ent, vec3_t org)
