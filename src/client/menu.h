@@ -23,6 +23,8 @@
 extern cvar_t* vid_mode;
 extern cvar_t* vid_menu_mode;
 
+extern cvar_t* menus_active;
+
 extern cvar_t* m_item_defaults;
 extern cvar_t* m_item_driver;
 extern cvar_t* m_item_vidmode;

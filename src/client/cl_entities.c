@@ -9,6 +9,7 @@
 #include "cl_skeletons.h"
 #include "Angles.h"
 #include "EffectFlags.h"
+#include "menu.h"
 #include "Reference.h"
 #include "ResourceManager.h"
 #include "sound.h"
@@ -17,6 +18,8 @@
 ResourceManager_t cl_FXBufMngr;
 int camera_timer; // H2
 qboolean viewoffset_changed; // H2
+
+static vec3_t look_angles;
 
 //TODO: ref_type can potentially be in 0 .. 3 range. Why only joint_id_types[0] is defined?
 static LERPedReferences_t* AllocateLERPedReference(const int ref_type)
@@ -1061,9 +1064,187 @@ void CL_ParseFrame(void)
 	}
 }
 
-static void CL_CalcViewValues(void)
+static void CL_UpdateWallDistances(void)
 {
 	NOT_IMPLEMENTED
+}
+
+static void CL_UpdateCameraOrientation(float lerp, qboolean interpolate)
+{
+	NOT_IMPLEMENTED
+}
+
+// Sets cl.refdef view values.
+static void CL_CalcViewValues(void)
+{
+	static vec3_t viewoffset;
+	static vec3_t old_viewoffset;
+	static vec3_t old_lookangles;
+	static float frame_delta;
+
+	const float lerp = cl.lerpfrac;
+	const player_state_t* ps = &cl.frame.playerstate;
+
+	const int frame = (cl.frame.serverframe - 1) & UPDATE_MASK;
+	frame_t* oldframe = &cl.frames[frame];
+	qboolean no_cam_lerp = false;
+
+	if (oldframe->serverframe != cl.frame.serverframe - 1 || !oldframe->valid)
+		oldframe = &cl.frame; // Previous frame was dropped or invalid.
+
+	// See if the player entity was teleported this frame. //mxd. Original H2 logic doesn't seem to do abs() here. A bug?
+	if (abs(oldframe->playerstate.pmove.origin[0] - ps->pmove.origin[0]) > 256 * 8 ||
+		abs(oldframe->playerstate.pmove.origin[1] - ps->pmove.origin[1]) > 256 * 8 ||
+		abs(oldframe->playerstate.pmove.origin[2] - ps->pmove.origin[2]) > 256 * 8)
+	{
+		// Don't interpolate.
+		oldframe = &cl.frame;
+		no_cam_lerp = true;
+	}
+
+	player_state_t* ops = &oldframe->playerstate;
+
+	// Calculate the origin.
+	if (ps->remote_id < 0 && ps->pmove.pm_type != PM_INTERMISSION)
+	{
+		if ((int)cl_predict->value)
+		{
+			VectorCopy(cl.predicted_origin, PlayerEntPtr->origin);
+		}
+		else
+		{
+			for (int c = 0; c < 3; c++)
+				PlayerEntPtr->origin[c] = ((float)ops->pmove.origin[c] + (float)(ps->pmove.origin[c] - ops->pmove.origin[c]) * lerp) * 0.125f;
+		}
+
+		VectorCopy(PlayerEntPtr->origin, PlayerEntPtr->oldorigin);
+	}
+
+	if (viewoffset_changed)
+	{
+		if ((int)cl_predict->value)
+			VectorSubtract(cl.playerinfo.offsetangles, ps->offsetangles, viewoffset);
+		else
+			VectorSubtract(ps->offsetangles, ops->offsetangles, viewoffset);
+
+		for (int i = 0; i < 3; i++)
+		{
+			if (viewoffset[i] != old_viewoffset[i])
+			{
+				cl.inputangles[i] += viewoffset[i];
+				cl.viewangles[i] += viewoffset[i];
+			}
+		}
+
+		VectorCopy(viewoffset, old_viewoffset);
+		viewoffset_changed = false;
+	}
+
+	if (ps->pmove.pm_type == PM_INTERMISSION)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			cl.refdef.vieworg[i] = (float)ps->pmove.origin[i] * 0.125f;
+			cl.refdef.viewangles[i] = ps->viewangles[i];
+		}
+	}
+	else
+	{
+		if (ps->pmove.pm_type == PM_FREEZE)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				cl.predicted_angles[i] = LerpAngle(ops->viewangles[i], ps->viewangles[i], lerp);
+				look_angles[i] = cl.predicted_angles[i];
+			}
+		}
+		else
+		{
+			VectorCopy(look_angles, old_lookangles);
+
+			if (in_lookaround.state & 1)
+			{
+				for (int i = 0; i < 3; i++)
+					look_angles[i] = cl.lookangles[i] + (float)ps->pmove.delta_angles[i] * SHORT_TO_ANGLE;
+			}
+			else
+			{
+				VectorCopy(cl.predicted_angles, look_angles);
+			}
+		}
+		
+		if (ps->remote_id < 0) // When not looking through a remote camera.
+		{
+			const float cam_lerp = (float)ops->viewheight + (float)(ps->viewheight - ops->viewheight) * lerp;
+
+			if (no_cam_lerp)
+			{
+				CL_UpdateCameraOrientation(cam_lerp, true);
+			}
+			else
+			{
+				frame_delta += cls.frametime * cl_maxfps->value;
+				const int num_frames = (int)roundf(frame_delta);
+
+				for (int i = 0; i < num_frames; i++)
+					CL_UpdateCameraOrientation(cam_lerp, false);
+
+				frame_delta -= (float)num_frames;
+			}
+		}
+		else
+		{
+			if (ps->remote_id != ops->remote_id)
+			{
+				ops->remote_id = ps->remote_id;
+
+				VectorCopy(ps->remote_vieworigin, ops->remote_vieworigin);
+				VectorCopy(ps->remote_viewangles, ops->remote_viewangles);
+			}
+
+			// Just use interpolated values.
+			for (int i = 0; i < 3; i++)
+			{
+				cl.refdef.vieworg[i] = (ops->remote_vieworigin[i] + (ps->remote_vieworigin[i] - ops->remote_vieworigin[i]) * lerp) * 0.125f;
+				cl.refdef.viewangles[i] = LerpAngle(ops->remote_viewangles[i], ps->remote_viewangles[i], lerp);
+			}
+		}
+	}
+
+	AngleVectors(cl.refdef.viewangles, cl.v_forward, cl.v_right, cl.v_up);
+
+	VectorCopy(cl.refdef.viewangles, cl.camera_viewangles);
+	VectorCopy(cl.refdef.vieworg, cl.camera_vieworigin);
+
+	// H2: Update EAX preset.
+	if (CL_PMpointcontents(cl.camera_vieworigin) & CONTENTS_WATER)
+	{
+		if (cl_camera_under_surface->value != 1.0f && Q_stricmp(snd_dll->string, "eaxsnd") == 0 && !(int)menus_active->value && SNDEAX_SetEnvironment != NULL)
+		{
+			Cvar_SetValue("EAX_preset", 44.0f);
+			SNDEAX_SetEnvironment(EAX_ENVIRONMENT_UNDERWATER);
+		}
+
+		cl_camera_under_surface->value = 1.0f;
+	}
+	else
+	{
+		if (Q_stricmp(snd_dll->string, "eaxsnd") == 0 && !(int)menus_active->value && SNDEAX_SetEnvironment != NULL)
+		{
+			CL_UpdateWallDistances();
+			SNDEAX_SetEnvironment((int)EAX_preset->value);
+		}
+
+		cl_camera_under_surface->value = 0.0f;
+	}
+
+	// H2: Apply screen shake.
+	vec3_t shake;
+	Perform_Screen_Shake(shake, (float)cl.time);
+	VectorAdd(cl.refdef.vieworg, shake, cl.refdef.vieworg);
+
+	// Interpolate field of view.
+	cl.refdef.fov_x = ops->fov + (ps->fov - ops->fov) * lerp;
 }
 
 // Emits all entities, particles, and lights to the refresh.

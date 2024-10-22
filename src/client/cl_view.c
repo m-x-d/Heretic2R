@@ -293,6 +293,11 @@ void Activate_Screen_Shake(float intensity, float duration, float current_time, 
 	NOT_IMPLEMENTED
 }
 
+void Perform_Screen_Shake(vec3_t out, float current_time)
+{
+	NOT_IMPLEMENTED
+}
+
 void Reset_Screen_Shake(void)
 {
 	screen_shake_duration = 0.0f;
