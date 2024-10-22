@@ -5,6 +5,7 @@
 //
 
 #include "cl_skeletons.h"
+#include "Angles.h"
 
 CL_SkeletalJoint_t skeletal_joints[MAX_ARRAYED_SKELETAL_JOINTS];
 ArrayedListNode_t joint_nodes[MAX_ARRAYED_JOINT_NODES];
@@ -20,9 +21,51 @@ void SK_ClearJoints(int joint_index)
 	NOT_IMPLEMENTED
 }
 
-void SK_SetJointAngles(playerinfo_t* playerinfo)
+//mxd. Similar to SetJointAngVel() in game/g_Skeletons.c.
+static qboolean SetJointAngVel(const int joint_index, const int angleIndex, const float destAngle, const float angSpeed)
 {
-	NOT_IMPLEMENTED
+	const CL_SkeletalJoint_t* joint = &skeletal_joints[joint_index];
+
+	if (destAngle < joint->destAngles[angleIndex])
+	{
+		skeletal_joints[joint_index].destAngles[angleIndex] = destAngle;
+		skeletal_joints[joint_index].angVels[angleIndex] = -angSpeed;
+		return true;
+	}
+
+	if (destAngle > joint->destAngles[angleIndex])
+	{
+		skeletal_joints[joint_index].destAngles[angleIndex] = destAngle;
+		skeletal_joints[joint_index].angVels[angleIndex] = angSpeed;
+		return true;
+	}
+
+	return false;
+}
+
+// Set the player model's joint angles.
+//mxd. Similar to G_SetJointAngles() in game/p_funcs.c.
+void SK_SetJointAngles(const playerinfo_t* playerinfo)
+{
+	const centity_t* self = playerinfo->self;
+
+	SetJointAngVel(self->current.rootJoint + CORVUS_HEAD, PITCH, playerinfo->targetjointangles[PITCH], ANGLE_45);
+	SetJointAngVel(self->current.rootJoint + CORVUS_HEAD, ROLL,  playerinfo->targetjointangles[YAW],   ANGLE_45);
+
+	if (!playerinfo->headjointonly)
+	{
+		SetJointAngVel(self->current.rootJoint + CORVUS_UPPERBACK, PITCH, playerinfo->targetjointangles[PITCH], ANGLE_45);
+		SetJointAngVel(self->current.rootJoint + CORVUS_LOWERBACK, PITCH, playerinfo->targetjointangles[PITCH], ANGLE_45);
+		SetJointAngVel(self->current.rootJoint + CORVUS_UPPERBACK, ROLL,  playerinfo->targetjointangles[YAW],   ANGLE_45);
+		SetJointAngVel(self->current.rootJoint + CORVUS_LOWERBACK, ROLL,  playerinfo->targetjointangles[YAW],   ANGLE_45);
+	}
+	else
+	{
+		SetJointAngVel(self->current.rootJoint + CORVUS_UPPERBACK, PITCH, 0, ANGLE_45);
+		SetJointAngVel(self->current.rootJoint + CORVUS_LOWERBACK, PITCH, 0, ANGLE_45);
+		SetJointAngVel(self->current.rootJoint + CORVUS_UPPERBACK, ROLL,  0, ANGLE_45);
+		SetJointAngVel(self->current.rootJoint + CORVUS_LOWERBACK, ROLL,  0, ANGLE_45);
+	}
 }
 
 void SK_ResetJointAngles(playerinfo_t* playerinfo)

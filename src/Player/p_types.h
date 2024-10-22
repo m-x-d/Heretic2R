@@ -509,7 +509,7 @@ typedef struct playerinfo_s
 
 	// Common client & server (game) function callbacks.
 	int (*PointContents)(vec3_t point);
-	void (*SetJointAngles)(playerinfo_t* playerinfo);
+	void (*SetJointAngles)(const playerinfo_t* playerinfo);
 	void (*ResetJointAngles)(playerinfo_t* playerinfo);
 	void (*PlayerActionSwordAttack)(playerinfo_t* playerinfo, int value);
 	void (*PlayerActionSpellFireball)(playerinfo_t* playerinfo);
