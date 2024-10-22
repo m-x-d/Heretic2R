@@ -758,9 +758,55 @@ static qboolean PM_GoodPosition(void)
 	return true;
 }
 
+// On exit, the origin will have a value that is pre-quantized to the 0.125
+// precision of the network channel and in a valid position.
 static void PM_SnapPosition(void)
 {
-	NOT_IMPLEMENTED
+	// Try all single bits first.
+	static int jitterbits[] = { 0, 4, 1, 2, 3, 5, 6, 7 };
+	short sign[3];
+	short base[3];
+
+	// Snap velocity to eights.
+	for (int i = 0; i < 3; i++)
+		pm->s.velocity[i] = (short)(pml.velocity[i] * 8.0f);
+
+	for (int i = 0; i < 3; i++)
+	{
+		if (pml.origin[i] >= 0.0f)
+			sign[i] = 1;
+		else
+			sign[i] = -1;
+
+		pml.short_origin[i] = (short)(pml.origin[i] * 8.0f);
+
+		if (FloatIsZeroEpsilon((float)pml.short_origin[i] * 0.125f - pml.origin[i]))
+			sign[i] = 0;
+	}
+
+	VectorCopy_Macro(pml.short_origin, base);
+
+	// Try all combinations
+	for (int j = 0; j < 8; j++)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			pml.short_origin[i] = base[i];
+
+			if (jitterbits[j] & (1 << i))
+				pml.short_origin[i] += sign[i];
+		}
+
+		if (PM_GoodPosition())
+		{
+			VectorCopy_Macro(pml.short_origin, pm->s.origin);
+			return;
+		}
+	}
+
+	// Go back to the last position.
+	for (int i = 0; i < 3; i++)
+		pm->s.origin[i] = (short)pml.previous_origin[i];
 }
 
 static void PM_InitialSnapPosition(void)
@@ -768,8 +814,7 @@ static void PM_InitialSnapPosition(void)
 	static short offset[3] = { 0, 1, -1 }; // Q2: { 0, -1, 1 }
 	short base[3];
 
-	for (int i = 0; i < 3; i++)
-		base[i] = pml.short_origin[i]; // Q2: pm->s.origin (here and below).
+	VectorCopy_Macro(pml.short_origin, base); // Q2: pm->s.origin (here and below).
 
 	for (int z = 0; z < 3; z++)
 	{

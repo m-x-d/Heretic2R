@@ -93,9 +93,8 @@
 #define SQRT2				1.414213562
 #define TIME_EPSILON		0.01
 
-//TODO: remove?
-//#define VectorCopy_Macro(a,b)			(b[0]=a[0],b[1]=a[1],b[2]=a[2])
-//#define VectorSubtract_Macro(a,b,c)		(c[0]=a[0]-b[0],c[1]=a[1]-b[1],c[2]=a[2]-b[2])
+#define VectorCopy_Macro(a,b)			(b[0]=a[0],b[1]=a[1],b[2]=a[2])
+//#define VectorSubtract_Macro(a,b,c)		(c[0]=a[0]-b[0],c[1]=a[1]-b[1],c[2]=a[2]-b[2]) //TODO: remove?
 
 H2COMMON_API int Q_log2(int val);
 
