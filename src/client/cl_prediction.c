@@ -222,10 +222,26 @@ static void CL_PMTrace(const vec3_t start, const vec3_t mins, const vec3_t maxs,
 	}
 }
 
+// Q2 counterpart
 int CL_PMpointcontents(vec3_t point)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	int contents = CM_PointContents(point, 0);
+
+	for (int i = 0; i < cl.frame.num_entities; i++)
+	{
+		const int num = (cl.frame.parse_entities + i) & (MAX_PARSE_ENTITIES - 1);
+		const entity_state_t* ent = &cl_parse_entities[num];
+
+		if (ent->solid != 31) // Special value for bmodel.
+			continue;
+
+		const cmodel_t* cmodel = cl.model_clip[ent->modelindex];
+
+		if (cmodel != NULL)
+			contents |= CM_TransformedPointContents(point, cmodel->headnode, ent->origin, ent->angles);
+	}
+
+	return contents;
 }
 
 // Sets cl.predicted_origin and cl.predicted_angles
