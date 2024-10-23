@@ -530,5 +530,11 @@
     <ClInclude Include="..\qcommon\q_Physics.h">
       <Filter>qcommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\game\g_playstats.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Random.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

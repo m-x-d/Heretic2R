@@ -7,6 +7,8 @@
 #include "client.h"
 #include "cl_effects.h"
 #include "cmodel.h"
+#include "g_playstats.h"
+#include "Random.h"
 #include "Vector.h"
 
 cvar_t* crosshair;
@@ -16,6 +18,7 @@ int frame_index; // H2
 
 // H2 screen shake
 static float screen_shake_duration;
+static float screen_shake_intensity_min;
 static float screen_shake_intensity_max;
 static float screen_shake_endtime;
 static int screen_shake_flags;
@@ -288,14 +291,38 @@ int Is_Screen_Flashing(void)
 
 #pragma region ========================== H2 SCREEN SHAKE ==========================
 
-void Activate_Screen_Shake(float intensity, float duration, float current_time, int flags)
+void Activate_Screen_Shake(const float intensity, const float duration, const float current_time, const int flags)
 {
-	NOT_IMPLEMENTED
+	screen_shake_intensity_min = intensity;
+	screen_shake_intensity_max = intensity;
+	screen_shake_duration = duration;
+	screen_shake_flags = flags;
+	screen_shake_endtime = duration + current_time;
 }
 
-void Perform_Screen_Shake(vec3_t out, float current_time)
+void Perform_Screen_Shake(vec3_t out, const float current_time)
 {
-	NOT_IMPLEMENTED
+	VectorClear(out);
+
+	if (current_time > screen_shake_endtime)
+	{
+		screen_shake_intensity_max = 0.0f;
+		return;
+	}
+
+	if (screen_shake_intensity_max == 0.0f)
+		return;
+
+	screen_shake_intensity_max = (screen_shake_endtime - current_time) / screen_shake_duration * screen_shake_intensity_min;
+
+	if (screen_shake_flags & SHAKE_LATERAL)
+		out[PITCH] = (float)irand((int)-screen_shake_intensity_max, (int)screen_shake_intensity_max);
+
+	if (screen_shake_flags & SHAKE_VERTICAL)
+		out[ROLL] = (float)irand((int)-screen_shake_intensity_max, (int)screen_shake_intensity_max);
+
+	if (screen_shake_flags & SHAKE_DEPTH)
+		out[YAW] = (float)irand((int)-screen_shake_intensity_max, (int)screen_shake_intensity_max);
 }
 
 void Reset_Screen_Shake(void)

@@ -148,6 +148,7 @@
     <ClInclude Include="..\game\g_BoundingForm.h" />
     <ClInclude Include="..\game\g_itemstats.h" />
     <ClInclude Include="..\game\g_NewSystem.h" />
+    <ClInclude Include="..\game\g_playstats.h" />
     <ClInclude Include="..\game\g_Skeleton.h" />
     <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="..\Player\Player.h" />
@@ -167,6 +168,7 @@
     <ClInclude Include="..\qcommon\q_ClientServer.h" />
     <ClInclude Include="..\qcommon\q_Physics.h" />
     <ClInclude Include="..\qcommon\q_Typedef.h" />
+    <ClInclude Include="..\qcommon\Random.h" />
     <ClInclude Include="..\qcommon\ResourceManager.h" />
     <ClInclude Include="..\qcommon\Skeletons.h" />
     <ClInclude Include="..\qcommon\tokens.h" />
