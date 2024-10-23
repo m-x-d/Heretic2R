@@ -1070,9 +1070,30 @@ static void CL_UpdateWallDistances(void) // H2
 	NOT_IMPLEMENTED
 }
 
-static void CL_SetViewangles(vec3_t src_angles, vec3_t viewangles) // H2
+// Q2 counterpart
+static void vectoangles2(vec3_t value1, vec3_t angles)
 {
-	NOT_IMPLEMENTED
+	if (value1[0] != 0.0f || value1[1] != 0.0f)
+	{
+		float yaw = atan2f(value1[1], value1[0]) * RAD_TO_ANGLE;
+		if (yaw < 0.0f)
+			yaw += 360.0f;
+
+		const float forward = sqrtf(value1[0] * value1[0] + value1[1] * value1[1]);
+		float pitch = atan2f(value1[2], forward) * RAD_TO_ANGLE;
+		if (pitch < 0.0f)
+			pitch += 360.0f;
+
+		VectorSet(angles, -pitch, yaw, 0.0f);
+	}
+	else if (value1[2] > 0.0f)
+	{
+		VectorSet(angles , -90.0f, 0.0f, 0.0f);
+	}
+	else
+	{
+		VectorSet(angles, -270.0f, 0.0f, 0.0f);
+	}
 }
 
 static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpolate) // H2
@@ -1358,7 +1379,7 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 	VectorSubtract(end, end_2, viewangles);
 	VectorNormalize(viewangles);
 
-	CL_SetViewangles(viewangles, cl.refdef.viewangles);
+	vectoangles2(viewangles, cl.refdef.viewangles);
 
 	VectorCopy(end_2, cl.refdef.vieworg);
 
