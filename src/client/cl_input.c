@@ -51,7 +51,7 @@ static kbutton_t in_moveleft;
 static kbutton_t in_moveright;
 
 static kbutton_t in_up;
-static kbutton_t in_down;
+kbutton_t in_down;
 
 static kbutton_t in_attack;
 static kbutton_t in_defend; // H2

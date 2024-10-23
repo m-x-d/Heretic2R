@@ -1064,14 +1064,317 @@ void CL_ParseFrame(void)
 	}
 }
 
-static void CL_UpdateWallDistances(void)
+static void CL_UpdateWallDistances(void) // H2
 {
 	NOT_IMPLEMENTED
 }
 
-static void CL_UpdateCameraOrientation(float lerp, qboolean interpolate)
+static void CL_SetViewangles(vec3_t src_angles, vec3_t viewangles) // H2
 {
 	NOT_IMPLEMENTED
+}
+
+static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpolate) // H2
+{
+#define MAX_CAMERA_TIMER	500
+#define MASK_CAMERA			(CONTENTS_SOLID | CONTENTS_ILLUSIONARY | CONTENTS_CAMERABLOCK)
+
+	static int cam_mode;
+	static qboolean cam_timer_reset;
+	static vec3_t old_vieworg;
+	static vec3_t old_viewangles;
+	static vec3_t prev_start;
+	static vec3_t prev_prev_start;
+	static vec3_t prev_end;
+	static vec3_t prev_prev_end;
+	static vec3_t start_lerped;
+	static vec3_t end_lerped;
+
+	int water_flags;
+	int waterlevel;
+	float fwd_offset;
+	vec3_t start;
+	vec3_t end;
+	vec3_t end_2;
+	vec3_t end_3;
+	vec3_t mins;
+	vec3_t maxs;
+	vec3_t mins_2;
+	vec3_t maxs_2;
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	trace_t trace;
+
+	if (cls.state != ca_active)
+		return;
+
+	VectorSet(mins, -1.0f, -1.0f, -1.0f);
+	VectorSet(maxs, 1.0f, 1.0f, 1.0f);
+	VectorSet(mins_2, -3.0f, -3.0f, -3.0f);
+	VectorSet(maxs_2, 3.0f, 3.0f, 3.0f);
+
+	if ((int)cl_predict->value)
+	{
+		water_flags = cl.playerinfo.pm_w_flags;
+		waterlevel = cl.playerinfo.waterlevel;
+	}
+	else
+	{
+		water_flags = cl.frame.playerstate.pmove.w_flags;
+		waterlevel = cl.frame.playerstate.waterlevel;
+	}
+
+	if ((int)cl_camera_fpmode->value)
+	{
+		fwd_offset = cl_camera_fpheight->value;
+		cam_transparency = cl_camera_fptrans->value;
+	}
+	else
+	{
+		fwd_offset = cl_camera_fpoffs->value + 16.0f;
+		cam_transparency = cl_playertrans->value;
+	}
+
+	AngleVectors(look_angles, forward, right, up);
+	const int prev_cam_mode = cam_mode;
+
+	if (water_flags != 0)
+	{
+		if (water_flags & (WF_SURFACE | WF_DIVE | WF_DIVING))
+		{
+			VectorCopy(PlayerEntPtr->origin, start);
+			start[2] += 100.0f;
+
+			VectorCopy(PlayerEntPtr->origin, end);
+			end[2] -= 100.0f;
+
+			CL_Trace(start, mins, maxs, end, MASK_WATER | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
+
+			if (trace.fraction != 1.0f)
+			{
+				const float scaler = fwd_offset + lerp - 9.5f;
+
+				start[0] = PlayerEntPtr->origin[0];
+				start[1] = PlayerEntPtr->origin[1];
+				start[2] = trace.endpos[2];
+
+				end[0] = up[0] * scaler + PlayerEntPtr->origin[0];
+				end[1] = up[1] * scaler + PlayerEntPtr->origin[1];
+				end[2] = up[2] * scaler + trace.endpos[2];
+
+				cam_mode = 2;
+			}
+		}
+		else
+		{
+			fwd_offset += lerp;
+
+			VectorMA(PlayerEntPtr->origin, fwd_offset, forward, end);
+			VectorCopy(PlayerEntPtr->origin, start);
+
+			cam_mode = 1;
+		}
+	}
+	else
+	{
+		fwd_offset += lerp;
+		VectorMA(PlayerEntPtr->origin, fwd_offset, up, end);
+
+		CL_Trace(PlayerEntPtr->origin, mins_2, maxs_2, end, MASK_CAMERA, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
+
+		if (trace.fraction != 1.0f)
+			VectorCopy(trace.endpos, end);
+
+		end[2] -= 4.0f;
+
+		if ((CL_PMpointcontents(end) & MASK_WATER) == 0)
+		{
+			VectorMA(PlayerEntPtr->origin, fwd_offset, up, end);
+			VectorCopy(PlayerEntPtr->origin, start);
+
+			cam_mode = 0;
+		}
+		else
+		{
+			VectorCopy(PlayerEntPtr->origin, start);
+			start[2] += 100.0f;
+
+			VectorCopy(PlayerEntPtr->origin, end);
+			end[2] -= 100.0f;
+
+			CL_Trace(start, mins, maxs, end, MASK_WATER | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
+
+			if (trace.fraction != 1.0f)
+			{
+				start[0] = PlayerEntPtr->origin[0];
+				start[1] = PlayerEntPtr->origin[1];
+				start[2] = (trace.endpos[2] - end[2]) + trace.endpos[2] + 4.0f;
+
+				end[0] = up[0] * fwd_offset + PlayerEntPtr->origin[0];
+				end[1] = up[1] * fwd_offset + PlayerEntPtr->origin[1];
+				end[2] = up[2] * fwd_offset + start[2];
+
+				trace.endpos[2] = start[2];
+
+				cam_mode = 3;
+			}
+		}
+	}
+
+	if (prev_cam_mode != cam_mode)
+	{
+		if (!cam_timer_reset)
+		{
+			camera_timer = 0;
+			cam_timer_reset = true;
+		}
+
+		VectorCopy(prev_start, prev_prev_start);
+		VectorCopy(prev_end, prev_prev_end);
+	}
+
+	if (cam_timer_reset)
+	{
+		if (camera_timer > MAX_CAMERA_TIMER)
+		{
+			cam_timer_reset = false;
+		}
+		else
+		{
+			VectorCopy(end, prev_end);
+			VectorCopy(start, prev_start);
+
+			const float scaler = (float)camera_timer / (float)MAX_CAMERA_TIMER;
+			for (int i = 0; i < 3; i++)
+			{
+				end_lerped[i] = prev_prev_end[i] + (prev_end[i] - prev_prev_end[i]) * scaler;
+				start_lerped[i] = prev_prev_start[i] + (prev_start[i] - prev_prev_start[i]) * scaler;
+			}
+
+			VectorCopy(end_lerped, end);
+			VectorCopy(start_lerped, start);
+		}
+	}
+	else
+	{
+		VectorCopy(end, prev_end);
+		VectorCopy(start, prev_start);
+	}
+
+	CL_Trace(start, mins_2, maxs_2, end, MASK_CAMERA, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
+
+	if (trace.fraction != 1.0f)
+		VectorCopy(trace.endpos, end);
+
+	float viewdist;
+	if ((int)cl_camera_fpmode->value)
+		viewdist = -cl_camera_fpdist->value;
+	else
+		viewdist = -cl_camera_viewdist->value;
+
+	VectorMA(end, viewdist, forward, end_2);
+
+	if ((water_flags & WF_SWIMFREE) && (CL_PMpointcontents(end) & MASK_WATER))
+	{
+		CL_Trace(end_2, mins, maxs, end, MASK_WATER | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
+
+		if (!trace.startsolid && trace.fraction != 1.0f)
+		{
+			for (int i = 0; i < 3; i++)
+				end_2[i] += (trace.endpos[i] - end[i]) * 0.9f;
+		}
+	}
+
+	if (!(int)cl_camera_clipdamp->value)
+		VectorCopy(end_2, end_3);
+
+	if (!interpolate)
+	{
+		float damp_factor = 0.0f;
+
+		if ((int)cl_camera_fpmode->value)
+		{
+			damp_factor = 1.0f;
+		}
+		else if (cl_camera_dampfactor->value != 0.0f)
+		{
+			damp_factor = fabsf(look_angles[PITCH]);
+			damp_factor = min(89.0f, damp_factor);
+			damp_factor /= 89.0f;
+
+			damp_factor = (1.0f - cl_camera_dampfactor->value) * damp_factor * damp_factor * damp_factor + cl_camera_dampfactor->value;
+		}
+
+		for (int i = 0; i < 3; i++)
+			end_2[i] = old_vieworg[i] + (end_2[i] - old_vieworg[i]) * damp_factor;
+	}
+
+	CL_Trace(end, mins, maxs, end_2, MASK_CAMERA, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
+
+	if (trace.fraction != 1.0f)
+	{
+		if (cl_camera_clipdamp->value == 1.0f)
+		{
+			VectorCopy(trace.endpos, end_2);
+		}
+		else
+		{
+			VectorCopy(end_3, end_2);
+
+			CL_Trace(end, mins, maxs, end_3, MASK_CAMERA, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
+
+			if (trace.fraction != 1.0f)
+				VectorCopy(trace.endpos, end_2);
+		}
+	}
+
+	if (waterlevel == 0 || (water_flags & ~WF_SWIMFREE) != 0 || (water_flags == 0 && in_down.state == 0))
+	{
+		const float roll_scaler = 1.0f - fabsf(look_angles[PITCH] / 89.0f);
+
+		vec3_t v;
+		v[0] = mins[0];
+		v[1] = mins[1];
+		v[2] = -1.0f - roll_scaler * 2.0f;
+
+		CL_Trace(end, v, maxs, end_2, MASK_WATER | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
+
+		if (trace.fraction != 1.0f)
+			VectorCopy(trace.endpos, end_2);
+	}
+
+	vec3_t diff;
+	VectorSubtract(end, end_2, diff);
+
+	if (cl_camera_viewmax->value < VectorLength(diff))
+	{
+		VectorNormalize(diff);
+		VectorMA(end, -cl_camera_viewmax->value, diff, end_2);
+	}
+
+	vec3_t viewangles;
+	VectorSubtract(end, end_2, viewangles);
+	VectorNormalize(viewangles);
+
+	CL_SetViewangles(viewangles, cl.refdef.viewangles);
+
+	VectorCopy(end_2, cl.refdef.vieworg);
+
+	if ((int)cl_camera_freeze->value)
+	{
+		VectorCopy(old_viewangles, cl.refdef.viewangles);
+		VectorCopy(old_vieworg, cl.refdef.vieworg);
+	}
+
+	VectorCopy(cl.refdef.viewangles, old_viewangles);
+	VectorCopy(cl.refdef.vieworg, old_vieworg);
+
+	vec3_t shake_amount;
+	Perform_Screen_Shake(shake_amount, (float)cl.time);
+	VectorAdd(cl.refdef.vieworg, shake_amount, cl.refdef.vieworg);
+
+	VectorCopy(PlayerEntPtr->origin, cl.refdef.clientmodelorg);
 }
 
 // Sets cl.refdef view values.

@@ -569,6 +569,7 @@ extern kbutton_t in_klook;
 extern kbutton_t in_strafe;
 extern kbutton_t in_speed;
 extern kbutton_t in_lookaround;
+extern kbutton_t in_down; //mxd
 
 extern qboolean in_do_autoaim; //mxd
 extern qboolean command_down; //mxd
