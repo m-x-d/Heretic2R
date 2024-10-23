@@ -135,10 +135,16 @@ void CL_PrepRefresh(void)
 	CDAudio_Play(Q_atoi(cl.configstrings[CS_CDTRACK]), true);
 }
 
-static float CalcFov(float fov_x, float width, float height)
+// Q2 counterpart
+static float CalcFov(const float fov_x, const float width, const float height)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	if (fov_x < 1.0f || fov_x > 179.0f)
+		Com_Error(ERR_DROP, "Bad fov: %f", (double)fov_x);
+
+	const float x = width / tanf(fov_x / 360.0f * M_PI);
+	const float a = atanf(height / x) * 360.0f / M_PI;
+
+	return a;
 }
 
 //mxd. Defined in cl_scrn.c in Q2.

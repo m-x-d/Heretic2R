@@ -154,6 +154,7 @@
     <ClInclude Include="..\Player\Player.h" />
     <ClInclude Include="..\Player\p_main.h" />
     <ClInclude Include="..\Player\p_types.h" />
+    <ClInclude Include="..\qcommon\Angles.h" />
     <ClInclude Include="..\qcommon\anorms.h" />
     <ClInclude Include="..\qcommon\cl_strings.h" />
     <ClInclude Include="..\qcommon\cmodel.h" />

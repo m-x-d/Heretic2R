@@ -88,7 +88,7 @@
 #define PRINT_ALERT			2		
 
 #ifndef M_PI
-	#define M_PI			3.14159265358979323846	// matches value in gcc v2 math.h
+	#define M_PI			3.14159265358979323846f	// matches value in gcc v2 math.h
 #endif
 #define SQRT2				1.414213562
 #define TIME_EPSILON		0.01

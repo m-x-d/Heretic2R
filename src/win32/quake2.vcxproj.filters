@@ -536,5 +536,8 @@
     <ClInclude Include="..\qcommon\Random.h">
       <Filter>qcommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\qcommon\Angles.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
