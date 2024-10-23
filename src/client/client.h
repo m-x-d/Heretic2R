@@ -380,7 +380,7 @@ typedef struct
 	void (*TagFree)(void* block);
 	void (*FreeTags)(int tag);
 
-	void (*Trace)(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int brushmask, int flags, trace_t* t);
+	void (*Trace)(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int brushmask, int flags, trace_t* t);
 	qboolean (*InCameraPVS)(vec3_t point);
 
 	int (*GetReferencedID)(const struct model_s* model);
@@ -530,7 +530,7 @@ void CL_ParseFrame(void);
 
 void CL_AddEntities(void); //mxd
 void CL_ClearSkeletalEntities(void); //mxd
-void CL_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int brushmask, int flags, trace_t* t); //mxd
+void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int brushmask, int flags, trace_t* t); //mxd
 
 void CL_PrepRefresh(void);
 void CL_RegisterSounds(void);

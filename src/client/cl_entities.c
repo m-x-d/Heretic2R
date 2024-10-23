@@ -8,6 +8,7 @@
 #include "cl_effects.h"
 #include "cl_skeletons.h"
 #include "Angles.h"
+#include "cmodel.h"
 #include "EffectFlags.h"
 #include "menu.h"
 #include "Reference.h"
@@ -1577,7 +1578,45 @@ void CL_GetEntitySoundOrigin(int ent, vec3_t org)
 	NOT_IMPLEMENTED
 }
 
-void CL_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int brushmask, int flags, trace_t* t)
+void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const int brushmask, const int flags, trace_t* t) // H2
 {
-	NOT_IMPLEMENTED
+	t->ent = NULL;
+
+	if (mins == NULL)
+		mins = vec3_origin;
+
+	if (maxs == NULL)
+		maxs = vec3_origin;
+
+	if (flags & CONTENTS_DETAIL)
+	{
+		CM_BoxTrace(start, end, mins, maxs, 0, brushmask, t);
+
+		if (t->fraction < 1.0f)
+			t->ent = (struct edict_s*)(-1);
+
+		if (t->startsolid || t->allsolid)
+			return;
+	}
+	else
+	{
+		memset(t, 0, sizeof(trace_t));
+	}
+
+	if (flags & CONTENTS_TRANSLUCENT)
+	{
+		if (brushmask & CONTENTS_CAMERABLOCK)
+			pred_camerablock = true;
+
+		if (brushmask & CONTENTS_WATER)
+			trace_check_water = true;
+
+		CL_ClipMoveToEntities(start, mins, maxs, end, t);
+
+		if (brushmask & CONTENTS_CAMERABLOCK)
+			pred_camerablock = false;
+
+		if (brushmask & CONTENTS_WATER)
+			trace_check_water = false;
+	}
 }
