@@ -51,6 +51,12 @@ typedef struct
 
 static dirty_t scr_dirty;
 
+typedef struct
+{
+	char* filename;
+	int width;
+} HudNumInfo_t; // H2
+
 #pragma region ========================== BAR GRAPHS ==========================
 
 // A new packet was just parsed.
@@ -464,9 +470,72 @@ static void DrawAClientBlock(int x, int y, char* str)
 	NOT_IMPLEMENTED
 }
 
-static void DrawHudNum(int x, int y, int width, int value, qboolean is_red)
+static int GetMenuNumsIndex(const char c, const qboolean is_red) // H2
 {
-	NOT_IMPLEMENTED
+	if (c == '-')
+		return 20;
+
+	const int offset = (is_red ? 10 : 0);
+	return c + offset - '0';
+}
+
+static void DrawHudNum(const int x, const int y, int width, const int value, const qboolean is_red)
+{
+	static HudNumInfo_t menu_nums[] =
+	{
+		{ "menu/num_0.m32",		8 },
+		{ "menu/num_1.m32",		8 },
+		{ "menu/num_2.m32",		8 },
+		{ "menu/num_3.m32",		8 },
+		{ "menu/num_4.m32",		8 },
+		{ "menu/num_5.m32",		8 },
+		{ "menu/num_6.m32",		8 },
+		{ "menu/num_7.m32",		8 },
+		{ "menu/num_8.m32",		8 },
+		{ "menu/num_9.m32",		8 },
+
+		{ "menu/num_red0.m32",	8 },
+		{ "menu/num_red1.m32",	8 },
+		{ "menu/num_red2.m32",	8 },
+		{ "menu/num_red3.m32",	8 },
+		{ "menu/num_red4.m32",	8 },
+		{ "menu/num_red5.m32",	8 },
+		{ "menu/num_red6.m32",	8 },
+		{ "menu/num_red7.m32",	8 },
+		{ "menu/num_red8.m32",	8 },
+		{ "menu/num_red9.m32",	8 },
+
+		{ "menu/num_neg.m32",	8 }
+	};
+
+	if (width <= 0)
+		return;
+
+	width = min(3, width);
+
+	char num[16];
+	Com_sprintf(num, sizeof(num), "%i", value);
+
+	const int len = min(width, (int)strlen(num));
+	int draw_width = 0;
+
+	for (int i = 0; i < len; i++)
+	{
+		const int num_index = GetMenuNumsIndex(num[i], is_red);
+		draw_width += menu_nums[num_index].width;
+	}
+
+	int ox = x - 30 + (width * 19 - draw_width);
+
+	SCR_AddDirtyPoint(ox, y + 16);
+	SCR_AddDirtyPoint(ox + draw_width, y + 24);
+
+	for (int i = 0; i < len; i++)
+	{
+		const int num_index = GetMenuNumsIndex(num[i], is_red);
+		re.DrawPic(ox, y + 16, menu_nums[num_index].filename, 1.0f);
+		ox += menu_nums[num_index].width;
+	}
 }
 
 static void DrawBar(const int x, const int y, int width, const int height, const int stat_index) // H2
