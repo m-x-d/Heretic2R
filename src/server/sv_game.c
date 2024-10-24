@@ -16,9 +16,25 @@ game_export_t* ge;
 
 static HINSTANCE game_library; // Defined in sys_win.c in Q2
 
-static void PF_Unicast(edict_t* ent, qboolean reliable)
+// Q2 counterpart
+// Sends the contents of the mutlicast buffer to a single client.
+static void PF_Unicast(const edict_t* ent, const qboolean reliable)
 {
-	NOT_IMPLEMENTED
+	if (ent == NULL)
+		return;
+
+	const int p = NUM_FOR_EDICT(ent);
+	if (p < 1 || p > (int)maxclients->value)
+		return;
+
+	client_t* client = &svs.clients[p - 1];
+
+	if (reliable)
+		SZ_Write(&client->netchan.message, sv.multicast.data, sv.multicast.cursize);
+	else
+		SZ_Write(&client->datagram, sv.multicast.data, sv.multicast.cursize);
+
+	SZ_Clear(&sv.multicast);
 }
 
 // Debug print to server console
@@ -54,9 +70,15 @@ static void PF_gamemsg_centerprintf(edict_t* ent, short msg)
 	NOT_IMPLEMENTED
 }
 
-static void PF_levelmsg_centerprintf(edict_t* ent, short msg)
+static void PF_levelmsg_centerprintf(const edict_t* ent, const short msg) // H2
 {
-	NOT_IMPLEMENTED
+	const int p = NUM_FOR_EDICT(ent);
+	if (p < 1 || p >(int)maxclients->value)
+		return;
+
+	MSG_WriteByte(&sv.multicast, svc_levelmsg_centerprint);
+	MSG_WriteShort(&sv.multicast, msg);
+	PF_Unicast(ent, true);
 }
 
 static void PF_captionprintf(edict_t* ent, short msg)
