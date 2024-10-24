@@ -607,7 +607,7 @@ void CL_ParseServerMessage(void);
 void CL_LoadClientinfo(clientinfo_t* ci, const char* s, int index);
 void SHOWNET(char* s);
 void CL_ParseClientinfo(int player);
-int COLOUR(cvar_t* cvar);
+int COLOUR(const cvar_t* cvar);
 
 // cl_player.c
 void CL_ResetPlayerInfo(void);

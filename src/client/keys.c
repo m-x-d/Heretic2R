@@ -21,6 +21,10 @@ char* keybindings[256];
 char* keybindings_double[256];
 int key_repeats[256]; // if > 1, it is auto-repeating
 
+char chat_buffer[MAXCMDLINE];
+int chat_bufferlen;
+qboolean chat_team;
+
 static char* commandbindings[256];	// New in H2
 static qboolean consolekeys[256];	// If true, can't be rebound while in console
 static qboolean menubound[256];		// If true, can't be rebound while in menu

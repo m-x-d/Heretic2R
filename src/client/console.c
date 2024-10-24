@@ -298,9 +298,58 @@ static void Con_DrawInput(void)
 	key_lines[edit_line][key_linepos] = 0;
 }
 
+// Draws the last few lines of output transparently over the game top.
 void Con_DrawNotify(void)
 {
-	NOT_IMPLEMENTED
+	int y = 0;
+
+	for (int i = con.current - NUM_CON_TIMES + 1; i <= con.current; i++)
+	{
+		if (i < 0)
+			continue;
+
+		const int time = Q_ftol(con.times[i % NUM_CON_TIMES]);
+
+		if (time > 0 && cls.realtime - time <= (int)(con_notifytime->value * 1000))
+		{
+			const int line_index = (i % con.totallines);
+			DrawString(8, y, &con.text[line_index * con.linewidth], con.color[line_index], con.linewidth);
+			y += 8;
+		}
+	}
+
+	if (cls.key_dest == key_message)
+	{
+		char* s = chat_buffer;
+		const cvar_t* cv_colour = (chat_team ? colour_teamchat : colour_chat);
+		const char* prompt = (chat_team ? "say_team:" : "say:");
+		const int max_line_width = viddef.width / 8 - (chat_team ? 12 : 6);
+		const int x = (chat_team ? 88 : 40);
+
+		// Draw prompt.
+		const paletteRGBA_t colour = TextPalette[COLOUR(cv_colour)];
+		DrawString(8, y, prompt, colour, -1);
+
+		if (chat_bufferlen > max_line_width)
+			s = &chat_buffer[chat_bufferlen - max_line_width];
+
+		const int len = (int)strlen(s);
+
+		s[len] = (char)(10 + ((cls.realtime / 256) & 1)); // Alternate between conchar 10 (empty) and 11 (text input cursor).
+		s[len + 1] = 0;
+
+		// Draw chat message.
+		DrawString(x, y, s, colour, -1);
+
+		s[len] = 0;
+		y += 8;
+	}
+
+	if (y > 0)
+	{
+		SCR_AddDirtyPoint(0, 0);
+		SCR_AddDirtyPoint(viddef.width - 1, y);
+	}
 }
 
 static qboolean ShouldDrawConsole(void) // H2

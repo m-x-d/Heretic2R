@@ -51,10 +51,9 @@ char* svc_strings[256] =
 
 char client_string[128];
 
-int COLOUR(cvar_t* cvar)
+int COLOUR(const cvar_t* cvar)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	return Q_ftol(roundf(cvar->value)) % 32;
 }
 
 static void PrintGameMessage(const char* msg, PalIdx_t color_index)
