@@ -425,9 +425,28 @@ static void SCR_TileClear(void)
 	}
 }
 
-static void DrawPic(int x, int y, char* str, qboolean use_alpha)
+static void DrawPic(const int x, const int y, char* str, const qboolean use_alpha) // H2
 {
-	NOT_IMPLEMENTED
+	const int img_data = cl.frame.playerstate.stats[Q_atoi(COM_Parse(&str))];
+
+	if (img_data == 0)
+		return;
+
+	const qboolean img_no_alpha = (img_data & 0x8000);
+	const int img_index = (img_data & 0x7fff);
+
+	float alpha = 1.0f;
+	if (use_alpha && !img_no_alpha)
+		alpha = 0.5f;
+
+	const char* img_name = cl.configstrings[CS_IMAGES + img_index];
+
+	if (*img_name != 0)
+	{
+		SCR_AddDirtyPoint(x, y);
+		SCR_AddDirtyPoint(x + 31, y + 31);
+		re.DrawPic(x, y, img_name, alpha);
+	}
 }
 
 static void DrawTeamBlock(int x, int y, char* str)
