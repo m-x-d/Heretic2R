@@ -16,6 +16,9 @@ static cvar_t* cl_stats;
 
 int frame_index; // H2
 
+// H2 screen flash
+static int screen_flash_color;
+
 // H2 screen shake
 static float screen_shake_duration;
 static float screen_shake_intensity_min;
@@ -271,22 +274,22 @@ void V_Init(void)
 
 #pragma region ========================== H2 SCREEN FLASH ==========================
 
-void Activate_Screen_Flash(int color)
+void Activate_Screen_Flash(const int color)
 {
-	NOT_IMPLEMENTED
+	if ((int)Cvar_VariableValue("flash_screen"))
+		screen_flash_color = color;
 }
 
 // Screen flash unset
 void Deactivate_Screen_Flash(void)
 {
-	NOT_IMPLEMENTED
+	screen_flash_color = 0;
 }
 
 // Return screen flash value
 int Is_Screen_Flashing(void)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	return screen_flash_color;
 }
 
 #pragma endregion
