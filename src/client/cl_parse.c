@@ -56,9 +56,74 @@ int COLOUR(const cvar_t* cvar)
 	return Q_ftol(roundf(cvar->value)) % 32;
 }
 
-static void PrintGameMessage(const char* msg, PalIdx_t color_index)
+static void PrintGameMessage(const char* msg, const PalIdx_t color_index) // H2
 {
-	NOT_IMPLEMENTED
+#define MAX_LINE_LENGTH	60
+
+	char line[MAX_LINE_LENGTH + 4];
+
+	if (msg == NULL)
+		return;
+
+	strncpy_s(game_message, sizeof(game_message), msg, sizeof(game_message) - 1); //mxd. strncpy -> strncpy_s
+	game_message_dispay_time = scr_centertime->value;
+	game_message_num_lines = 1;
+	game_message_color = TextPalette[color_index];
+
+	// Calculate display time and number of lines.
+	int num_chars = 0;
+	const char* s = msg;
+	while (*s != 0)
+	{
+		num_chars++;
+
+		if (*s == '\n')
+		{
+			game_message_dispay_time += 0.8f;
+			game_message_num_lines++;
+		}
+		else if ((int)(scr_centertime->value * 10.0f) < num_chars)
+		{
+			game_message_dispay_time += 0.2f;
+		}
+
+		s++;
+	}
+
+	Com_Printf("\n");
+
+	// Print message line by line.
+	s = msg;
+	while (true)
+	{
+		int line_len;
+		for (line_len = 0; line_len < MAX_LINE_LENGTH; line_len++)
+			if (s[line_len] == 0 || s[line_len] == '\n')
+				break;
+
+		// Calculate padding to center string. 
+		const int padding = max(0, (MAX_LINE_LENGTH - line_len) / 2);
+		if (padding > 0)
+			memset(line, ' ', padding);
+
+		if (line_len > 0)
+			memcpy(&line[padding], s, line_len);
+
+		line[line_len + padding] = '\n';
+		line[line_len + padding + 1] = 0;
+		Com_ColourPrintf(color_index, "%s", line);
+
+		// Skip to next line.
+		s += line_len;
+
+		if (*s == 0)
+			break;
+
+		s++;
+	}
+
+	Com_Printf("\n\n");
+	Con_ClearNotify();
 }
 
 static void PrintObituary(const char* text, byte client1, byte client2, PalIdx_t color_index)
