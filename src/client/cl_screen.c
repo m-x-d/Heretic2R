@@ -450,9 +450,43 @@ static void DrawHudNum(int x, int y, int width, int value, qboolean is_red)
 	NOT_IMPLEMENTED
 }
 
-static void DrawBar(int x, int y, int width, int height, int stat_index)
+static void DrawBar(const int x, const int y, int width, const int height, const int stat_index) // H2
 {
-	NOT_IMPLEMENTED
+	const short bar_index = cl.frame.playerstate.stats[stat_index];
+	const short bg_index = cl.frame.playerstate.stats[stat_index + 1];
+	short scaler = cl.frame.playerstate.stats[stat_index + 2];
+
+	SCR_AddDirtyPoint(x, y - 3);
+	SCR_AddDirtyPoint(x + width, y + height + 3);
+
+	const char* bar_name = cl.configstrings[CS_IMAGES + bar_index];
+	const char* bg_name = cl.configstrings[CS_IMAGES + bg_index];
+
+	if (*bar_name == 0)
+		return;
+
+	if (scaler < 0)
+	{
+		scaler *= -1;
+		width *= 2;
+	}
+
+	if (width < height)
+	{
+		if (*bg_name != 0)
+			re.DrawStretchPic(x, y - 3, width, height + 6, bg_name, 1.0f, false);
+
+		const int offset = Q_ftol((float)height - (float)(height * scaler) * 0.01f);
+		re.DrawStretchPic(x, y + offset, width, height - offset, bar_name, 1.0f, false);
+	}
+	else
+	{
+		if (*bg_name != 0)
+			re.DrawStretchPic(x - 3, y, width + 6, height, bg_name, 1.0f, false);
+
+		const int offset = Q_ftol((float)width - (float)(width * scaler) * 0.01f);
+		re.DrawStretchPic(x, y, width - offset, height, bar_name, 1.0f, false);
+	}
 }
 
 static void SCR_ExecuteLayoutString(char* s)
