@@ -148,16 +148,12 @@ static float CalcFov(const float fov_x, const float width, const float height)
 }
 
 //mxd. Defined in cl_scrn.c in Q2.
-static int entitycmpfnc(const entity_t** a, const entity_t** b)
+static int entitycmpfnc(const void* a, const void* b)
 {
-	NOT_IMPLEMENTED
-	return 0;
-}
+	entity_t** e1 = (entity_t**)a;
+	entity_t** e2 = (entity_t**)b;
 
-static int alphaentitycmpfnc(const entity_t** a, const entity_t** b)
-{
-	NOT_IMPLEMENTED
-	return 0;
+	return (int)roundf((*e1)->depth - (*e2)->depth);
 }
 
 static void ClearRenderStats(void)
@@ -250,7 +246,7 @@ void V_RenderView(const float stereo_separation)
 	
 	// Sort entities for better cache locality
 	qsort(cls.r_entities, cls.r_numentities, sizeof(cls.r_entities[0]), entitycmpfnc);
-	qsort(cl.refdef.alpha_entities, cl.refdef.num_alpha_entities, sizeof(cl.refdef.alpha_entities[0]), alphaentitycmpfnc); // H2
+	qsort(cl.refdef.alpha_entities, cl.refdef.num_alpha_entities, sizeof(cl.refdef.alpha_entities[0]), entitycmpfnc); // H2
 
 	frame_index = re.RenderFrame(&cl.refdef);
 
