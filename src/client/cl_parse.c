@@ -58,9 +58,7 @@ int COLOUR(const cvar_t* cvar)
 
 static void PrintGameMessage(const char* msg, const PalIdx_t color_index) // H2
 {
-#define MAX_LINE_LENGTH	60
-
-	char line[MAX_LINE_LENGTH + 4];
+	char line[MAX_MESSAGE_LINE_LENGTH + 4];
 
 	if (msg == NULL)
 		return;
@@ -97,12 +95,12 @@ static void PrintGameMessage(const char* msg, const PalIdx_t color_index) // H2
 	while (true)
 	{
 		int line_len;
-		for (line_len = 0; line_len < MAX_LINE_LENGTH; line_len++)
+		for (line_len = 0; line_len < MAX_MESSAGE_LINE_LENGTH; line_len++)
 			if (s[line_len] == 0 || s[line_len] == '\n')
 				break;
 
 		// Calculate padding to center string. 
-		const int padding = max(0, (MAX_LINE_LENGTH - line_len) / 2);
+		const int padding = max(0, (MAX_MESSAGE_LINE_LENGTH - line_len) / 2);
 		if (padding > 0)
 			memset(line, ' ', padding);
 

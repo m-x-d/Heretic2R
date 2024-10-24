@@ -8,7 +8,8 @@
 
 #include "q_Typedef.h"
 
-#define MAX_MESSAGES	1000
+#define MAX_MESSAGES			1000
+#define MAX_MESSAGE_LINE_LENGTH	60
 
 typedef struct GameMessage_s
 {

@@ -818,8 +818,6 @@ static void SCR_DrawCinematicBorders(void) // H2
 
 static void SCR_DrawGameMessage(void) // H2
 {
-	int line_len;
-
 	game_message_dispay_time -= cls.frametime;
 
 	if (game_message_dispay_time <= 0.0f)
@@ -832,19 +830,27 @@ static void SCR_DrawGameMessage(void) // H2
 	const float scaler = (game_message_show_at_top ? 0.9f : 0.4f);
 	int y = (int)((float)viddef.height * scaler) - (game_message_num_lines / 2) * 8;
 
-	for (char* s = game_message; *s != 0; s += line_len, y += 8)
+	const char* s = game_message;
+	while (true)
 	{
-		for (line_len = 0; line_len < 60; line_len++)
-		{
-			const char c = s[line_len];
-			if (c == 0 || c == '\n')
+		int line_len;
+		for (line_len = 0; line_len < MAX_MESSAGE_LINE_LENGTH; line_len++)
+			if (s[line_len] == 0 || s[line_len] == '\n')
 				break;
-		}
 
 		const int x = (viddef.width - line_len * 8) / 2;
 		SCR_AddDirtyPoint(x, y);
 		DrawString(x, y, s, game_message_color, line_len);
 		SCR_AddDirtyPoint(x + line_len * 8, y + 8);
+
+		// Skip to next line.
+		s += line_len;
+
+		if (*s == 0)
+			break;
+
+		s++;
+		y += 8;
 	}
 }
 
