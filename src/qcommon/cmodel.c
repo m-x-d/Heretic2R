@@ -1395,10 +1395,27 @@ int CM_WriteAreaBits(byte* buffer, const int area)
 	return bytes;
 }
 
-qboolean CM_HeadnodeVisible(int nodenum, byte* visbits)
+// Q2 counterpart
+// Returns true if any leaf under headnode has a cluster that is potentially visible.
+qboolean CM_HeadnodeVisible(const int headnode, byte* visbits)
 {
-	NOT_IMPLEMENTED
-	return false;
+	if (headnode < 0)
+	{
+		const int leafnum = -1 - headnode;
+		const int cluster = map_leafs[leafnum].cluster;
+
+		if (cluster == -1)
+			return false;
+
+		// Check for door-connected areas.
+		return (visbits[cluster >> 3] & (1 << (cluster & 7)));
+	}
+
+	const cnode_t* node = &map_nodes[headnode];
+	if (CM_HeadnodeVisible(node->children[0], visbits))
+		return true;
+
+	return CM_HeadnodeVisible(node->children[1], visbits);
 }
 
 #pragma endregion
