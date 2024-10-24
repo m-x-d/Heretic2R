@@ -38,7 +38,7 @@ void ShutdownFonts(void)
 	}
 }
 
-image_t* Draw_FindPicFilter(char* name);
+image_t* Draw_FindPicFilter(const char* name);
 
 void Draw_InitLocal(void)
 {
@@ -117,7 +117,7 @@ image_t* Draw_FindPic(const char* name)
 }
 
 // New in H2
-image_t* Draw_FindPicFilter(char* name)
+image_t* Draw_FindPicFilter(const char* name)
 {
 	if (name[0] != '/' && name[0] != '\\')
 	{
@@ -130,7 +130,7 @@ image_t* Draw_FindPicFilter(char* name)
 	return GL_FindImage(name + 1, it_sky);
 }
 
-void Draw_GetPicSize(int* w, int* h, char* name)
+void Draw_GetPicSize(int* w, int* h, const char* name)
 {
 	const image_t* image = GL_FindImage(name, it_pic);
 
@@ -180,7 +180,7 @@ void Draw_Render(const int x, const int y, const int w, const int h, const image
 		qglEnable(GL_ALPHA_TEST);
 }
 
-void Draw_StretchPic(int x, int y, int w, int h, char* name, const float alpha, const qboolean scale)
+void Draw_StretchPic(int x, int y, int w, int h, const char* name, const float alpha, const qboolean scale)
 {
 	const image_t* image = Draw_FindPicFilter(name);
 
@@ -198,14 +198,14 @@ void Draw_StretchPic(int x, int y, int w, int h, char* name, const float alpha, 
 	Draw_Render(x, y, w, h, image, alpha);
 }
 
-void Draw_Pic(const int x, const int y, char* name, const float alpha)
+void Draw_Pic(const int x, const int y, const char* name, const float alpha)
 {
 	const image_t* pic = Draw_FindPic(name);
 	Draw_Render(x, y, pic->width, pic->height, pic, alpha);
 }
 
 //mxd. Used in SCR_TileClear frame border drawing logic. //TODO: remove?
-void Draw_TileClear(const int x, const int y, const int w, const int h, char* pic)
+void Draw_TileClear(const int x, const int y, const int w, const int h, const char* pic)
 {
 	const image_t* image = Draw_FindPic(pic);
 

@@ -203,13 +203,13 @@ extern glxy_t* font2; // New in H2
 extern qboolean gl_alphatest_broken; // Hew in H2 //TODO: remove?
 
 void Draw_InitLocal(void);
-void Draw_GetPicSize(int* w, int* h, char* name);
+void Draw_GetPicSize(int* w, int* h, const char* name);
 void Draw_Render(int x, int y, int w, int h, const image_t* image, float alpha); // New in H2
-void Draw_Pic(int x, int y, char* name, float alpha);
-void Draw_StretchPic(int x, int y, int w, int h, char* name, float alpha, qboolean scale);
+void Draw_Pic(int x, int y, const char* name, float alpha);
+void Draw_StretchPic(int x, int y, int w, int h, const char* name, float alpha, qboolean scale);
 void Draw_Char(int x, int y, int c, paletteRGBA_t color);
 image_t* Draw_FindPic(const char* name); // Q2: not in gl_local.h
-void Draw_TileClear(int x, int y, int w, int h, char* pic);
+void Draw_TileClear(int x, int y, int w, int h, const char* pic);
 void Draw_Fill(int x, int y, int w, int h, byte r, byte g, byte b);
 void Draw_FadeScreen(paletteRGBA_t color);
 void ShutdownFonts(void); // New in H2
@@ -217,7 +217,7 @@ void ShutdownFonts(void); // New in H2
 // gl_draw_book.c
 int BF_Strlen(const char* text); // New in H2
 void Draw_BigFont(int x, int y, const char* text, float alpha); // New in H2
-void Draw_BookPic(int w, int h, char* name, float scale); // New in H2
+void Draw_BookPic(int w, int h, const char* name, float scale); // New in H2
 
 // gl_image.c
 #define GL_TEX_SOLID_FORMAT 3 //mxd. gl_tex_solid_format var in Q2

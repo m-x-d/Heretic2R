@@ -191,7 +191,7 @@ typedef struct
 	// are flood filled to eliminate mip map edge errors, and pics have
 	// an implicit "pics/" prepended to the name. (a pic name that starts with a
 	// slash will not use the "pics/" prefix or the ".pcx" postfix)
-	void (*BeginRegistration)(char* map);
+	void (*BeginRegistration)(const char* map);
 	struct model_s* (*RegisterModel)(const char* name);
 	struct image_s* (*RegisterSkin)(const char* name, qboolean* retval);
 	struct image_s* (*RegisterPic)(const char* name);
@@ -202,22 +202,22 @@ typedef struct
 
 	int (*RenderFrame)(const refdef_t* fd);
 
-	void (*DrawGetPicSize)(int* w, int* h, char* name);
-	void (*DrawPic)(int x, int y, char* name, float alpha);
-	void (*DrawStretchPic)(int x, int y, int w, int h, char* name, float alpha, qboolean scale);
+	void (*DrawGetPicSize)(int* w, int* h, const char* name);
+	void (*DrawPic)(int x, int y, const char* name, float alpha);
+	void (*DrawStretchPic)(int x, int y, int w, int h, const char* name, float alpha, qboolean scale);
 	void (*DrawChar)(int x, int y, int c, paletteRGBA_t color);
-	void (*DrawTileClear)(int x, int y, int w, int h, char* name);
+	void (*DrawTileClear)(int x, int y, int w, int h, const char* name);
 	void (*DrawFill)(int x, int y, int w, int h, byte r, byte g, byte b);
 	void (*DrawFadeScreen)(paletteRGBA_t color);
 	void (*DrawBigFont)(int x, int y, const char* text, float alpha);
 	int (*BF_Strlen)(const char* text);
-	void (*BookDrawPic)(int w, int h, char* name, float scale);
+	void (*BookDrawPic)(int w, int h, const char* name, float scale);
 
 	// Draw images for cinematic rendering (which can have a different palette). Note that calls
 	void (*DrawInitCinematic)(int w, int h, char* overlay, char* backdrop);
 	void (*DrawCloseCinematic)(void);
 	void (*DrawCinematic)(int cols, int rows, const byte* data, const paletteRGB_t* palette, float alpha);
-	void (*Draw_Name)(vec3_t origin, char* name, paletteRGBA_t color);
+	void (*Draw_Name)(const vec3_t origin, const char* name, paletteRGBA_t color);
 
 	// Video mode and refresh state management entry points
 	void (*BeginFrame)(float camera_separation);

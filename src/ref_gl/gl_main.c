@@ -1290,7 +1290,7 @@ int R_RenderFrame(const refdef_t* fd)
 }
 
 // Referenced by GetRefAPI only:
-void R_BeginRegistration(char* model);
+void R_BeginRegistration(const char* model);
 struct image_s* R_RegisterSkin(const char* name, qboolean* retval);
 void R_SetSky(const char* name, float rotate, const vec3_t axis);
 void R_EndRegistration(void);
@@ -1302,7 +1302,7 @@ void Draw_Cinematic(int cols, int rows, const byte* data, const paletteRGB_t* pa
 void Draw_Name(const vec3_t origin, const char* name, paletteRGBA_t color);
 int FindSurface(vec3_t start, vec3_t end, struct Surface_s* surface);
 
-refexport_t GetRefAPI(refimport_t rimp)
+refexport_t GetRefAPI(const refimport_t rimp)
 {
 	refexport_t re;
 

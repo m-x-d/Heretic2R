@@ -159,7 +159,7 @@ int BF_Strlen(const char* text)
 }
 
 //TODO: w and h args are ignored
-void Draw_BookPic(const int w, const int h, char* name, const float scale)
+void Draw_BookPic(const int w, const int h, const char* name, const float scale)
 {
 	int i;
 	bookframe_t* bframe;

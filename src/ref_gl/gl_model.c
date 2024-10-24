@@ -793,7 +793,7 @@ static model_t* Mod_ForName(const char* name, const qboolean crash)
 	return mod;
 }
 
-void R_BeginRegistration(char* model)
+void R_BeginRegistration(const char* model)
 {
 	char fullname[MAX_QPATH];
 
