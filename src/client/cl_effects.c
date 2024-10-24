@@ -29,9 +29,18 @@ static qboolean Get_Crosshair(vec3_t origin, byte* type)
 	return false;
 }
 
-static qboolean InCameraPVS(vec3_t pos)
+static qboolean InCameraPVS(vec3_t pos) // H2
 {
-	NOT_IMPLEMENTED
+	const int leafnum = CM_PointLeafnum(pos);
+	const int area = CM_LeafArea(leafnum);
+
+	if (cl.refdef.areabits == NULL)
+		return true;
+
+	// Check for door-connected areas.
+	if (cl.refdef.areabits[area >> 3] & (1 << (area & 7)))
+		return true;
+
 	return false;
 }
 
