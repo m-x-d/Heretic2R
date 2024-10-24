@@ -13,7 +13,27 @@ ArrayedListNode_t joint_nodes[MAX_ARRAYED_JOINT_NODES];
 //mxd. Similar to UpdateSkeletons() in game/g_Skeletons.c
 void SK_UpdateSkeletons(void)
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < MAX_ARRAYED_SKELETAL_JOINTS; i++)
+	{
+		CL_SkeletalJoint_t* joint = &skeletal_joints[i];
+
+		if (!joint->changed)
+			continue;
+
+		for (int j = 0; j < 3; j++)
+		{
+			if (joint->angles[j] == joint->destAngles[j])
+				continue;
+
+			joint->angles[j] += joint->angVels[j] * cls.frametime;
+
+			if ((joint->angVels[j] < 0.0f && joint->angles[j] < joint->destAngles[j]) ||
+				(joint->angVels[j] > 0.0f && joint->angles[j] > joint->destAngles[j]))
+			{
+				joint->angles[j] = joint->destAngles[j];
+			}
+		}
+	}
 }
 
 void SK_ClearJoints(int joint_index)
