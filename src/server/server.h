@@ -171,6 +171,8 @@ extern cvar_t* sv_freezeworldset; // H2
 extern cvar_t* sv_noreload;
 extern cvar_t* sv_pers_fx_send_cut_off; // H2
 
+extern cvar_t* sv_enforcetime;
+
 extern client_t* sv_client;
 extern edict_t* sv_player;
 

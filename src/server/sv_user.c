@@ -318,9 +318,24 @@ static void SV_ExecuteUserCommand(char* s)
 
 #pragma region ========================== USER CMD EXECUTION ==========================
 
-static void SV_ClientThink(client_t* cl, usercmd_t* cmd)
+static void SV_ClientThink(client_t* client, usercmd_t* cmd)
 {
-	NOT_IMPLEMENTED
+	client->commandMsec -= cmd->msec;
+
+	if (client->commandMsec < 0 && (int)sv_enforcetime->value)
+	{
+		Com_DPrintf("commandMsec underflow from %s\n", client->name);
+		return;
+	}
+
+	if ((int)sv_cinematicfreeze->value && (cmd->buttons & BUTTON_ACTION)) // H2
+	{
+		Cvar_Set("sv_cinematicfreeze", "1");
+		Cvar_Set("sv_jumpcinematic", "2");
+	}
+
+	if ((int)sv_cinematicfreeze->value == 0) // H2: new 'sv_cinematicfreeze' check
+		ge->ClientThink(client->edict, cmd);
 }
 
 // The current net_message is parsed for the given client.
@@ -391,7 +406,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 				}
 
 				// If the checksum fails, ignore the rest of the packet.
-				byte* base = net_message.data + checksum_index + 1;
+				const byte* base = net_message.data + checksum_index + 1;
 				const int length = net_message.readcount - checksum_index - 1;
 				const int sequence = cl->netchan.incoming_sequence;
 				const byte calculatedChecksum = COM_BlockSequenceCheckByte(base, length, sequence);
