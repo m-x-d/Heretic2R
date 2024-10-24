@@ -64,9 +64,30 @@ static float ClampVelocity(vec3_t vel, vec3_t vel_normal, const qboolean run_shr
 	return speed;
 }
 
-static qboolean CheckCollision(float aimangle)
+static qboolean CheckCollision(const float aimangle)
 {
-	NOT_IMPLEMENTED
+	vec3_t end;
+	trace_t tr;
+
+	end[0] = pml.origin[0] + cosf(aimangle) * 2;
+	end[1] = pml.origin[1] + sinf(aimangle) * 2;
+	end[2] = pml.origin[2];
+
+	pm->trace(pml.origin, pm->mins, pm->maxs, end, &tr);
+
+	if (tr.fraction < 1.0f && tr.architecture && tr.plane.normal[2] > -0.34f && tr.plane.normal[2] < 0.8f)
+	{
+		vec3_t aim_dir;
+		VectorSubtract(end, pml.origin, aim_dir);
+		VectorNormalize(aim_dir);
+
+		if (tr.plane.normal[0] * aim_dir[0] + tr.plane.normal[1] * aim_dir[1] < -0.5f)
+		{
+			pm->s.c_flags |= PC_COLLISION;
+			return true;
+		}
+	}
+
 	return false;
 }
 
