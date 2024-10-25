@@ -94,9 +94,8 @@ void SV_Multicast(const vec3_t origin, const multicast_t to)
 			break;
 
 		default:
-			mask = NULL;
 			Com_Error(ERR_FATAL, "SV_Multicast: bad to: %i", to);
-			break;
+			return;
 	}
 
 	// Send the data to all relevant clients.
@@ -128,9 +127,92 @@ void SV_Multicast(const vec3_t origin, const multicast_t to)
 	SZ_Clear(&sv.multicast);
 }
 
-static void SV_MulticastSound(vec3_t origin, multicast_t to, int multicast_cursize)
+static void SV_MulticastSound(const vec3_t origin, const multicast_t to, const int multicast_cursize) // H2
 {
-	NOT_IMPLEMENTED
+	byte* mask;
+
+	qboolean reliable = false;
+	int area1 = 0;
+
+	if (to != MULTICAST_ALL_R && to != MULTICAST_ALL)
+	{
+		const int leafnum = CM_PointLeafnum(origin);
+		area1 = CM_LeafArea(leafnum);
+	}
+
+	switch (to)
+	{
+		case MULTICAST_ALL_R:
+			reliable = true;
+		// Intentional fallthrough.
+		case MULTICAST_ALL:
+			sv.multicast.data[multicast_cursize] |= 4;
+			mask = NULL;
+			break;
+
+		case MULTICAST_PHS_R:
+			reliable = true;
+		// Intentional fallthrough.
+		case MULTICAST_PHS:
+		{
+			const int leafnum = CM_PointLeafnum(origin);
+			area1 = CM_LeafArea(leafnum);
+			const int cluster = CM_LeafCluster(leafnum);
+			mask = CM_ClusterPHS(cluster);
+		} break;
+
+		case MULTICAST_PVS_R:
+			reliable = true;
+		// Intentional fallthrough.
+		case MULTICAST_PVS:
+		{
+			const int leafnum = CM_PointLeafnum(origin);
+			area1 = CM_LeafArea(leafnum);
+			const int cluster = CM_LeafCluster(leafnum);
+			mask = CM_ClusterPVS(cluster);
+		} break;
+
+		default:
+			Com_Error(ERR_FATAL, "SV_Multicast: bad to: %i", to);
+			return;
+	}
+
+	// Send the data to all relevant clients.
+	client_t* client = svs.clients;
+	for (int i = 0; i < (int)maxclients->value; i++, client++)
+	{
+		if (client->state == cs_free || client->state == cs_zombie || (client->state != cs_spawned && !reliable))
+			continue;
+
+		if (mask != NULL)
+		{
+			const int leafnum = CM_PointLeafnum(client->edict->s.origin);
+			const int cluster = CM_LeafCluster(leafnum);
+			const int area2 = CM_LeafArea(cluster);
+
+			if (!CM_AreasConnected(area1, area2))
+				continue;
+
+			if (!(mask[cluster >> 3] & (1 << (cluster & 7))))
+				continue;
+		}
+
+		if (!(sv.multicast.data[multicast_cursize] & 4) && (to == MULTICAST_PHS || to == MULTICAST_PHS_R) && !PF_inPVS(client->edict->s.origin, origin))
+			sv.multicast.data[multicast_cursize] |= 4;
+
+		int send_size;
+		if (sv.multicast.data[multicast_cursize] & 4)
+			send_size = sv.multicast.cursize;
+		else
+			send_size = sv.multicast.cursize - 6;
+
+		if (reliable)
+			SZ_Write(&client->netchan.message, sv.multicast.data, send_size);
+		else
+			SZ_Write(&client->datagram, sv.multicast.data, send_size);
+	}
+
+	SZ_Clear(&sv.multicast);
 }
 
 void SV_StartSound(vec3_t origin, edict_t* entity, int channel,	int soundindex, float volume, float attenuation, float timeofs)
