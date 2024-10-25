@@ -7,11 +7,19 @@
 #include "client.h"
 #include "cl_effects.h"
 #include "cl_skeletons.h"
+#include "snd_loc.h"
+#include "sound.h"
 #include "Vector.h"
 
-static void CL_Sound(byte EventId, vec3_t origin, int channel, char* soundname, float fvol, int attenuation, float timeofs)
+static void CL_Sound(const byte EventId, vec3_t origin, const int channel, char* soundname, const float fvol, const int attenuation, const float timeofs) // H2
 {
-	NOT_IMPLEMENTED
+	if (!cl.playerinfo.ishistory)
+	{
+		sfx_t* snd = S_FindName(soundname, true);
+		S_StartSound(origin, cl.playernum + 1, channel, snd, fvol, attenuation, timeofs);
+
+		sound_event_id_time_array[EventId] = cl.playerinfo.Highestleveltime;
+	}
 }
 
 static int CL_Irand(const playerinfo_t* playerinfo, const int min, const int max)

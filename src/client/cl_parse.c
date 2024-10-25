@@ -51,6 +51,8 @@ char* svc_strings[256] =
 
 char client_string[128];
 
+float sound_event_id_time_array[127];
+
 int COLOUR(const cvar_t* cvar)
 {
 	return Q_ftol(roundf(cvar->value)) % 32;
