@@ -8,10 +8,11 @@
 #include "cl_effects.h"
 #include "clfx_dll.h"
 #include "dll_io.h"
-#include "EffectFlags.h"
 #include "FX.h"
+#include "g_items.h"
 #include "ResourceManager.h"
 #include "sound.h"
+#include "Vector.h"
 #include "vid_dll.h"
 
 entity_t* PlayerEntPtr;
@@ -25,8 +26,86 @@ static int cl_effectpredict;
 
 static qboolean Get_Crosshair(vec3_t origin, byte* type)
 {
-	NOT_IMPLEMENTED
-	return false;
+	vec3_t start;
+	vec3_t end;
+	vec3_t angles;
+	vec3_t forward;
+	vec3_t right;
+	vec3_t mins;
+	vec3_t maxs;
+	trace_t trace;
+
+	if (crosshair == NULL || !(int)crosshair->value || cl.time < 1001 || PlayerEntPtr == NULL || (int)cl_cinematicfreeze->value)
+		return false;
+
+	VectorClear(mins);
+	VectorClear(maxs);
+
+	for (int i = 0; i < 3; i++)
+		angles[i] = cl.viewangles[i] + (float)cl.frame.playerstate.pmove.delta_angles[i] * SHORT_TO_ANGLE;
+
+	AngleVectors(angles, forward, right, NULL);
+
+	VectorCopy(PlayerEntPtr->origin, start);
+	start[2] += cl.playerinfo.viewheight;
+
+	const uint weapon = cl.frame.playerstate.weapon;
+
+	switch (weapon)
+	{
+		case ITEM_WEAPON_HELLSTAFF:
+			start[2] += 20.0f;
+			VectorMA(start, 12.0f, right, start);
+			break;
+
+		case ITEM_WEAPON_MAGICMISSILE:
+			start[2] += 14.0f;
+			VectorMA(start, 4.0f, right, start);
+			break;
+
+		case ITEM_WEAPON_REDRAINBOW:
+			start[2] += 18.0f;
+			for (int i = 0; i < 3; i++)
+				start[i] -= right[i] * 4.0f;
+			break;
+
+		case ITEM_WEAPON_SPHEREOFANNIHILATION:
+		case ITEM_WEAPON_MACEBALLS:
+			start[2] += 22.0f;
+			VectorMA(start, 4.0f, right, start);
+			break;
+		
+		case 9: //TODO: either we are using incorrect enum for other cases, or this one is for non-existing weapon...
+			start[2] += 21.0f;
+			for (int i = 0; i < 3; i++)
+				start[i] -= right[i] * 2.0f;
+			break;
+
+		default:
+			start[2] += 18.0f;
+			break;
+	}
+
+	float fwd_offset = 256.0f;
+	if (in_do_autoaim && cl.frame.playerstate.AutotargetEntityNum > 0 && 
+		weapon != 9 && weapon != ITEM_WEAPON_REDRAINBOW && weapon != ITEM_WEAPON_PHOENIXBOW)
+	{
+		const centity_t* target_ent = &cl_entities[cl.frame.playerstate.AutotargetEntityNum];
+		VectorSubtract(target_ent->origin, start, forward);
+		fwd_offset = VectorNormalize(forward);
+	}
+
+	VectorMA(start, fwd_offset, forward, end);
+
+	pred_crosshair = true;
+	CL_Trace(start, mins, maxs, end, MASK_SHOT | CONTENTS_ILLUSIONARY | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
+	pred_crosshair = false;
+
+	// Store results.
+	VectorCopy(trace.endpos, origin);
+	*type = (byte)Q_ftol(crosshair->value - 1);
+
+	return true;
 }
 
 static qboolean InCameraPVS(vec3_t pos) // H2
