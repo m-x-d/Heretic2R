@@ -8,8 +8,10 @@
 #include "cl_effects.h"
 #include "cl_messages.h"
 #include "cmodel.h"
+#include "snd_loc.h"
 #include "sound.h"
 #include "tokens.h"
+#include "Vector.h"
 
 char* svc_strings[256] =
 {
@@ -562,9 +564,86 @@ static void CL_ParseConfigString(void)
 
 #pragma region ========================== ACTION MESSAGES ==========================
 
+//mxd. Written by SV_StartSound() / SV_StartEventSound().
 static void CL_ParseStartSoundPacket(void)
 {
-	NOT_IMPLEMENTED
+	int channel;
+	int ent;
+	float attenuation;
+	float volume;
+	float ofs;
+	float* pos;
+	vec3_t pos_v;
+	int event_id;
+	float leveltime;
+
+	const int flags = MSG_ReadByte(&net_message);
+	const int sound_num = MSG_ReadShort(&net_message); // Q2: MSG_ReadByte
+
+	const qboolean have_prediction_info = (flags & SND_PRED_INFO); // H2
+	if (have_prediction_info)
+	{
+		event_id = MSG_ReadByte(&net_message);
+		leveltime = MSG_ReadFloat(&net_message);
+	}
+	else
+	{
+		event_id = 0;
+		leveltime = 0.0f;
+	}
+
+	if (flags & SND_VOLUME)
+		volume = (float)MSG_ReadByte(&net_message) / 255.0f;
+	else
+		volume = 1.0f;
+
+	if (flags & SND_ATTENUATION)
+		attenuation = (float)MSG_ReadByte(&net_message);
+	else
+		attenuation = 1.0f;
+
+	if (flags & SND_OFFSET)
+		ofs = (float)MSG_ReadByte(&net_message) / 1000.0f;
+	else
+		ofs = 0.0f;
+
+	if (flags & SND_ENT)
+	{
+		// Entity-relative.
+		channel = MSG_ReadShort(&net_message);
+		ent = channel >> 3;
+
+		if (ent > MAX_EDICTS)
+			Com_Error(ERR_DROP, "CL_ParseStartSoundPacket: ent = %i", ent);
+
+		channel &= 7;
+	}
+	else
+	{
+		channel = 0;
+		ent = 0;
+	}
+
+	if (flags & SND_POS) // Positioned in space.
+	{
+		MSG_ReadPos(&net_message, pos_v);
+		pos = pos_v;
+	}
+	else // Use entity number.
+	{
+		pos = NULL;
+	}
+
+	sfx_t* sfx = cl.sound_precache[sound_num];
+
+	if (sfx == NULL)
+		return;
+
+	if (!(int)cl_predict->value || !have_prediction_info || sound_event_id_time_array[event_id] > leveltime || sound_event_id_time_array[event_id] == 0.0f)
+		S_StartSound(pos, ent, channel, sfx, volume, Q_ftol(attenuation), ofs);
+
+	if (have_prediction_info && sound_event_id_time_array[event_id] <= leveltime) // H2
+		sound_event_id_time_array[event_id] = 0.0f;
 }
 
 // Q2 counterpart
