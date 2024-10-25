@@ -849,7 +849,7 @@ static void SCR_DrawGameMessage(void) // H2
 		if (*s == 0)
 			break;
 
-		s++;
+		s++; // Skip newline char.
 		y += 8;
 	}
 }

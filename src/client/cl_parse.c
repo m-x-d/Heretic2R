@@ -90,7 +90,7 @@ static void PrintGameMessage(const char* msg, const PalIdx_t color_index) // H2
 
 	Com_Printf("\n");
 
-	// Print message line by line.
+	// Print message to console.
 	s = msg;
 	while (true)
 	{
@@ -117,7 +117,7 @@ static void PrintGameMessage(const char* msg, const PalIdx_t color_index) // H2
 		if (*s == 0)
 			break;
 
-		s++;
+		s++; // Skip newline char.
 	}
 
 	Com_Printf("\n\n");
