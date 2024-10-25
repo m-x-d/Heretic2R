@@ -129,7 +129,19 @@ static void PF_Configstring(const int index, const char* val)
 		val = "";
 
 	// Change the string in sv
-	strcpy_s(sv.configstrings[index], sizeof(sv.configstrings[index]), val);
+	if (index >= CS_STATUSBAR && index < CS_MAXCLIENTS)
+	{
+		//mxd. Statusbar layout string takes several configstring slots (this is by design)...
+		const uint len = strlen(val) + 1; // Count trailing zero
+		if (len > (CS_MAXCLIENTS - index) * sizeof(sv.configstrings[0]))
+			Com_Error(ERR_DROP, "configstring: too big statusbar layout string (%i at index %i)\n", len, index);
+		else
+			memcpy(sv.configstrings[index], val, len);
+	}
+	else
+	{
+		strcpy_s(sv.configstrings[index], sizeof(sv.configstrings[index]), val);
+	}
 
 	if (sv.state != ss_loading)
 	{

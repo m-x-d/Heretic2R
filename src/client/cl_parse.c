@@ -381,7 +381,20 @@ static void CL_ParseConfigString(void)
 		Com_Error(ERR_DROP, "configstring > MAX_CONFIGSTRINGS");
 
 	const char* s = MSG_ReadString(&net_message);
-	strcpy_s(cl.configstrings[i], sizeof(cl.configstrings[i]), s); //mxd. strcpy -> strcpy_s
+
+	if (i >= CS_STATUSBAR && i < CS_MAXCLIENTS)
+	{
+		//mxd. Statusbar layout string takes several configstring slots (this is by design)...
+		const uint len = strlen(s) + 1; // Count trailing zero
+		if (len > (CS_MAXCLIENTS - i) * sizeof(cl.configstrings[0]))
+			Com_Error(ERR_DROP, "configstring: too big statusbar layout string (%i at index %i)\n", len, i);
+		else
+			memcpy(cl.configstrings[i], s, len);
+	}
+	else
+	{
+		strcpy_s(cl.configstrings[i], sizeof(cl.configstrings[i]), s); //mxd. strcpy -> strcpy_s
+	}
 
 	// Set lightstyle?
 	if (i >= CS_LIGHTS && i < CS_LIGHTS + MAX_LIGHTSTYLES)
