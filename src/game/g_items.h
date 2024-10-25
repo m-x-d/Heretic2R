@@ -1,20 +1,19 @@
-#ifndef G_ITEMS_H
-#define G_ITEMS_H
+//
+// g_items.h
+//
+// Copyright 1998 Raven Software
+//
 
-// ************************************************************************************************
-// itemhealth_t
-// ------
-// ************************************************************************************************
+#pragma once
+
+// Health pickups.
 typedef enum
 {
 	ITEM_HEALTH1,
 	ITEM_HEALTH2
 } itemhealth_t;
 
-// ************************************************************************************************
-// itemweapon_t
-// ------
-// ************************************************************************************************
+// Weapons.
 typedef enum
 {
 	ITEM_WEAPON_SWORDSTAFF,
@@ -28,10 +27,7 @@ typedef enum
 	ITEM_WEAPON_FIREWALL,
 } itemweapon_t;
 
-// ************************************************************************************************
-// itemdefense_t
-// ------
-// ************************************************************************************************
+// Defense spells.
 typedef enum
 {
 	ITEM_DEFENSE_REPULSION,
@@ -43,10 +39,7 @@ typedef enum
 	ITEM_DEFENSE_POWERUP,
 } itemdefense_t;
 
-// ************************************************************************************************
-// itemammo_t
-// ------
-// ************************************************************************************************
+// Mana pickups.
 typedef enum
 {
 	ITEM_AMMO_MANA_DEFENSIVE_HALF,
@@ -59,5 +52,3 @@ typedef enum
 	ITEM_AMMO_REDRAIN,
 	ITEM_AMMO_PHOENIX,
 } itemammo_t;
-
-#endif

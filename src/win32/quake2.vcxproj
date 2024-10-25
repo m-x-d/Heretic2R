@@ -146,6 +146,7 @@
     <ClInclude Include="..\client\vid.h" />
     <ClInclude Include="..\game\game.h" />
     <ClInclude Include="..\game\g_BoundingForm.h" />
+    <ClInclude Include="..\game\g_items.h" />
     <ClInclude Include="..\game\g_itemstats.h" />
     <ClInclude Include="..\game\g_NewSystem.h" />
     <ClInclude Include="..\game\g_playstats.h" />

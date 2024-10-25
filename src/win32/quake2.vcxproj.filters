@@ -539,5 +539,8 @@
     <ClInclude Include="..\qcommon\Angles.h">
       <Filter>qcommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\game\g_items.h">
+      <Filter>game</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
