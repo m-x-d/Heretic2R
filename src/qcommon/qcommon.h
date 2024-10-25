@@ -320,8 +320,8 @@ enum clc_ops_e
 #define SND_OFFSET				(1 << 4) // A byte, msec offset from frame start
 #define SND_PRED_INFO			(1 << 5) // A byte and a float.
 
-#define DEFAULT_SOUND_PACKET_VOLUME			1.0
-#define DEFAULT_SOUND_PACKET_ATTENUATION	1.0
+#define DEFAULT_SOUND_PACKET_VOLUME			1.0f
+#define DEFAULT_SOUND_PACKET_ATTENUATION	1.0f
 
 // entity_state_t communication delta flags. For every 8 bits of PLAYER_DEL_BYTES, a bit of PLAYER_DEL_NZBYTES is required.
 #define ENT_DEL_BYTES		(5)

@@ -212,9 +212,15 @@ static void PF_StartSound(edict_t* entity, int channel, int sound_num, float vol
 	NOT_IMPLEMENTED
 }
 
-static void PF_SoundEvent(byte EventId, float leveltime, edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs)
+static void PF_SoundEvent(const byte EventId, const float leveltime, edict_t* ent, const int channel, const int soundindex, const float volume, const float attenuation, const float timeofs) // H2
 {
-	NOT_IMPLEMENTED
+	if (ent == NULL || soundindex == -1)
+		return;
+
+	if (volume > 1.0f)
+		SV_StartEventSound(EventId, leveltime, ent->s.origin, ent, channel, soundindex, 1.0f, attenuation, timeofs);
+	else
+		SV_StartEventSound(EventId, leveltime, NULL, ent, channel, soundindex, volume, attenuation, timeofs);
 }
 
 static void ChangeCDtrack(edict_t* ent, int track, int loop)

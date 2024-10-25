@@ -7,6 +7,7 @@
 #include "server.h"
 #include "sv_effects.h"
 #include "cl_strings.h"
+#include "Vector.h"
 
 uint net_transmit_size; // H2
 
@@ -127,9 +128,120 @@ void SV_Multicast(const vec3_t origin, const multicast_t to)
 	SZ_Clear(&sv.multicast);
 }
 
+static void SV_MulticastSound(vec3_t origin, multicast_t to, int multicast_cursize)
+{
+	NOT_IMPLEMENTED
+}
+
 void SV_StartSound(vec3_t origin, edict_t* entity, int channel,	int soundindex, float volume, float attenuation, float timeofs)
 {
 	NOT_IMPLEMENTED
+}
+
+// If channel & 8, the sound will be sent to everyone, not just things in the PHS.
+void SV_StartEventSound(const byte EventId, const float leveltime, vec3_t origin, edict_t* entity, int channel, const int soundindex, const float volume, const float attenuation, const float timeofs) // H2
+{
+	vec3_t origin_v;
+	qboolean use_phs;
+
+	if (volume < 0.0f || volume > 1.0f)
+		Com_Error(ERR_FATAL, "SV_StartSound: volume = %f", (double)volume);
+
+	if (attenuation < 0.0f || attenuation > 4.0f)
+		Com_Error(ERR_FATAL, "SV_StartSound: attenuation = %f", (double)attenuation);
+
+	if (timeofs < 0.0f || timeofs > 0.255f)
+		Com_Error(ERR_FATAL, "SV_StartSound: timeofs = %f", (double)timeofs);
+
+	if (channel & 8) // No PHS flag.
+	{
+		use_phs = false;
+		channel &= 7;
+	}
+	else
+	{
+		use_phs = true;
+	}
+
+	int flags = 0;
+
+	if (volume != DEFAULT_SOUND_PACKET_VOLUME)
+		flags |= SND_VOLUME;
+
+	if (attenuation != DEFAULT_SOUND_PACKET_ATTENUATION)
+		flags |= SND_ATTENUATION;
+
+	// The client doesn't know that bmodels have weird origins. The origin can also be explicitly set.
+	if ((entity->svflags & SVF_NOCLIENT) || entity->solid == SOLID_BSP || origin != NULL)
+		flags |= SND_POS;
+
+	// Always send the entity number for channel overrides.
+	flags |= SND_ENT;
+
+	if (timeofs != 0.0f)
+		flags |= SND_OFFSET;
+
+	if (EventId != 0) // H2
+		flags |= SND_PRED_INFO;
+
+	// Use the entity origin unless it is a bmodel or explicitly specified.
+	if (origin == NULL)
+	{
+		origin = origin_v;
+
+		if (entity->solid == SOLID_BSP)
+		{
+			for (int i = 0; i < 3; i++)
+				origin_v[i] = entity->s.origin[i] + 0.5f * (entity->mins[i] + entity->maxs[i]);
+		}
+		else
+		{
+			VectorCopy(entity->s.origin, origin_v);
+		}
+	}
+
+	MSG_WriteByte(&sv.multicast, svc_sound);
+	MSG_WriteByte(&sv.multicast, flags);
+	MSG_WriteShort(&sv.multicast, soundindex);
+
+	if (flags & SND_PRED_INFO) // H2
+	{
+		MSG_WriteByte(&sv.multicast, EventId);
+		MSG_WriteFloat(&sv.multicast, leveltime);
+	}
+
+	if (flags & SND_VOLUME)
+		MSG_WriteByte(&sv.multicast, Q_ftol(volume * 255.0f));
+
+	if (flags & SND_ATTENUATION)
+		MSG_WriteByte(&sv.multicast, Q_ftol(attenuation)); // Q2: attenuation * 64
+
+	if (flags & SND_OFFSET)
+		MSG_WriteByte(&sv.multicast, Q_ftol(timeofs * 1000.0f));
+
+	if (flags & SND_ENT)
+	{
+		const int sendchan = (NUM_FOR_EDICT(entity) << 3) | (channel & 7);
+		MSG_WriteShort(&sv.multicast, sendchan);
+	}
+
+	// H2: missing SND_POS flag check
+	MSG_WritePos(&sv.multicast, origin);
+
+	if (channel & CHAN_RELIABLE)
+	{
+		if (use_phs && attenuation != 0.0f)
+			SV_MulticastSound(origin, MULTICAST_PHS_R, sv.multicast.cursize);
+		else
+			SV_MulticastSound(origin, MULTICAST_ALL_R, sv.multicast.cursize);
+	}
+	else
+	{
+		if (use_phs && attenuation != 0.0f)
+			SV_MulticastSound(origin, MULTICAST_PHS, sv.multicast.cursize);
+		else
+			SV_MulticastSound(origin, MULTICAST_ALL, sv.multicast.cursize);
+	}
 }
 
 #pragma region ========================== FRAME UPDATES ==========================
