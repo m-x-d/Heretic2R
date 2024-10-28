@@ -231,7 +231,12 @@ void CL_RemoveEffects(byte EventId, void* owner, int fx)
 
 void CL_UnloadClientEffects(void)
 {
-	NOT_IMPLEMENTED
+	fxe.ShutDown();
+	ResMngr_Des(&fx_buffer_manager);
+	Sys_UnloadGameDll("Client Effects", &clfx_library);
+	memset(&fxe, 0, sizeof(fxe));
+
+	fxapi_initialized = false;
 }
 
 void CL_InitClientEffects(const char* dll_name)
