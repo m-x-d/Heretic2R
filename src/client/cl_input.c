@@ -100,9 +100,45 @@ static void KeyUp(kbutton_t* b)
 	b->state |= 4; // Impulse up.
 }
 
+// Q2 counterpart
 static void KeyDown(kbutton_t* b)
 {
-	NOT_IMPLEMENTED
+	int k;
+
+	const char* c = Cmd_Argv(1);
+	if (c[0])
+		k = Q_atoi(c);
+	else
+		k = -1; // Typed manually at the console for continuous down.
+
+	if (k == b->down[0] || k == b->down[1])
+		return; // Repeating key.
+
+	if (!b->down[0])
+	{
+		b->down[0] = k;
+	}
+	else if (!b->down[1])
+	{
+		b->down[1] = k;
+	}
+	else
+	{
+		Com_Printf("Three keys down for a button!\n");
+		return;
+	}
+
+	if (b->state & 1)
+		return; // Still down.
+
+	// Save timestamp.
+	c = Cmd_Argv(2);
+	b->downtime = Q_atoi(c);
+
+	if (b->downtime == 0)
+		b->downtime = sys_frame_time - 100;
+
+	b->state |= 1 + 2; // Down + impulse down.
 }
 
 // Q2 counterpart
