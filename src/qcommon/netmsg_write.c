@@ -274,9 +274,21 @@ void MSG_WriteEntityHeaderBits(sizebuf_t* msg, const byte* bf, byte* bfNonZero)
 			MSG_WriteByte(msg, bf[i]);
 }
 
-static void MSG_WriteEffects(sizebuf_t* sb, const EffectsBuffer_t* fxBuf) // H2
+static void MSG_WriteEffects(sizebuf_t* sb, EffectsBuffer_t* fxBuf) // H2
 {
-	NOT_IMPLEMENTED
+	if (fxBuf->freeBlock < 256)
+	{
+		MSG_WriteByte(sb, fxBuf->numEffects);
+		MSG_WriteByte(sb, fxBuf->freeBlock);
+	}
+	else
+	{
+		fxBuf->numEffects |= 128;
+		MSG_WriteByte(sb, fxBuf->numEffects);
+		MSG_WriteShort(sb, fxBuf->freeBlock);
+	}
+
+	SZ_Write(sb, fxBuf->buf, fxBuf->freeBlock);
 }
 
 static float ClampAngleRad(const float angle) // H2
@@ -343,7 +355,7 @@ static void MSG_WriteJoints(sizebuf_t* sb, const int joint_index) // H2
 
 // Writes part of a packetentities message.
 // Can delta from either a baseline or a previous packet_entity.
-void MSG_WriteDeltaEntity(const entity_state_t* from, const entity_state_t* to, sizebuf_t* msg, const qboolean force)
+void MSG_WriteDeltaEntity(const entity_state_t* from, entity_state_t* to, sizebuf_t* msg, const qboolean force)
 {
 	byte bits[NUM_ENTITY_HEADER_BITS];
 
