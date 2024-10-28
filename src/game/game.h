@@ -171,7 +171,7 @@ typedef struct
 	void (*setmodel)(edict_t* ent, const char* name);
 
 	// Collision detection.
-	void (*trace)(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t* passent, uint contentmask, trace_t* tr);
+	void (*trace)(vec3_t start, const vec3_t mins, const vec3_t maxs, vec3_t end, edict_t* passent, uint contentmask, trace_t* tr);
 	int (*pointcontents)(vec3_t point);
 
 	// Potentially visible / invisible set routines.
@@ -195,8 +195,8 @@ typedef struct
 	qboolean (*CheckDistances)(vec3_t origin, float dist);
 
 	// Network messaging services.
-	void (*multicast)(vec3_t origin, multicast_t to);
-	void (*unicast)(edict_t* ent, qboolean reliable);
+	void (*multicast)(const vec3_t origin, multicast_t to);
+	void (*unicast)(const edict_t* ent, qboolean reliable);
 	void (*WriteChar)(int c);
 	void (*WriteByte)(int c);
 	void (*WriteShort)(int c);

@@ -215,10 +215,109 @@ static void SV_MulticastSound(const vec3_t origin, const multicast_t to, const i
 	SZ_Clear(&sv.multicast);
 }
 
+// Each entity can have eight independent sound sources, like voice, weapon, feet, etc.
+// If channel & 8, the sound will be sent to everyone, not just things in the PHS.
+// FIXME: if entity isn't in PHS, they must be forced to be sent or have the origin explicitly sent.
+// Channel 0 is an auto-allocate channel, the others override anything already running on that entity / channel pair.
+// An attenuation of 0 will play full volume everywhere in the level.
+// Larger attenuations will drop off (max 4 attenuation).
+// Timeofs can range from 0.0 to 0.1 to cause sounds to be started later in the frame than they normally would.
+// If origin is NULL, the origin is determined from the entity origin or the midpoint of the entity box for bmodels.
 //mxd. Parsed by CL_ParseStartSoundPacket().
-void SV_StartSound(vec3_t origin, edict_t* entity, int channel,	int soundindex, float volume, float attenuation, float timeofs)
+void SV_StartSound(vec3_t origin, const edict_t* ent, int channel, const int soundindex, const float volume, const float attenuation, const float timeofs)
 {
-	NOT_IMPLEMENTED
+	vec3_t origin_v;
+	qboolean use_phs;
+
+	if (volume < 0.0f || volume > 1.0f)
+		Com_Error(ERR_FATAL, "SV_StartSound: volume = %f", (double)volume);
+
+	if (attenuation < 0.0f || attenuation > 4.0f)
+		Com_Error(ERR_FATAL, "SV_StartSound: attenuation = %f", (double)attenuation);
+
+	if (timeofs < 0.0f || timeofs > 0.255f)
+		Com_Error(ERR_FATAL, "SV_StartSound: timeofs = %f", (double)timeofs);
+
+	if (channel & 8) // No PHS flag.
+	{
+		use_phs = false;
+		channel &= 7;
+	}
+	else
+	{
+		use_phs = true;
+	}
+
+	int flags = 0;
+
+	if (volume != DEFAULT_SOUND_PACKET_VOLUME)
+		flags |= SND_VOLUME;
+
+	if (attenuation != DEFAULT_SOUND_PACKET_ATTENUATION)
+		flags |= SND_ATTENUATION;
+
+	// The client doesn't know that bmodels have weird origins. The origin can also be explicitly set.
+	if ((ent->svflags & SVF_NOCLIENT) || ent->solid == SOLID_BSP || origin != NULL)
+		flags |= SND_POS;
+
+	// Always send the entity number for channel overrides.
+	flags |= SND_ENT;
+
+	if (timeofs != 0.0f)
+		flags |= SND_OFFSET;
+
+	// Use the entity origin unless it is a bmodel or explicitly specified.
+	if (origin == NULL)
+	{
+		origin = origin_v;
+
+		if (ent->solid == SOLID_BSP)
+		{
+			for (int i = 0; i < 3; i++)
+				origin_v[i] = ent->s.origin[i] + 0.5f * (ent->mins[i] + ent->maxs[i]);
+		}
+		else
+		{
+			VectorCopy(ent->s.origin, origin_v);
+		}
+	}
+
+	MSG_WriteByte(&sv.multicast, svc_sound);
+	MSG_WriteByte(&sv.multicast, flags);
+	MSG_WriteShort(&sv.multicast, soundindex);
+
+	if (flags & SND_VOLUME)
+		MSG_WriteByte(&sv.multicast, Q_ftol(volume * 255.0f));
+
+	if (flags & SND_ATTENUATION)
+		MSG_WriteByte(&sv.multicast, Q_ftol(attenuation)); // Q2: attenuation * 64
+
+	if (flags & SND_OFFSET)
+		MSG_WriteByte(&sv.multicast, Q_ftol(timeofs * 1000.0f));
+
+	if (flags & SND_ENT)
+	{
+		const int sendchan = (NUM_FOR_EDICT(ent) << 3) | (channel & 7);
+		MSG_WriteShort(&sv.multicast, sendchan);
+	}
+
+	// H2: missing SND_POS flag check.
+	MSG_WritePos(&sv.multicast, origin);
+
+	if (channel & CHAN_RELIABLE)
+	{
+		if (use_phs && attenuation != 0.0f)
+			SV_MulticastSound(origin, MULTICAST_PHS_R, sv.multicast.cursize);
+		else
+			SV_MulticastSound(origin, MULTICAST_ALL_R, sv.multicast.cursize);
+	}
+	else
+	{
+		if (use_phs && attenuation != 0.0f)
+			SV_MulticastSound(origin, MULTICAST_PHS, sv.multicast.cursize);
+		else
+			SV_MulticastSound(origin, MULTICAST_ALL, sv.multicast.cursize);
+	}
 }
 
 //mxd. Parsed by CL_ParseStartSoundPacket().
