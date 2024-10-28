@@ -42,7 +42,7 @@ static LERPedReferences_t* AllocateLERPedReference(const int ref_type)
 
 static void DeallocateLERPedReference(void* data) // H2
 {
-	NOT_IMPLEMENTED
+	ResMngr_DeallocateResource(&cl_FXBufMngr, data, sizeof(LERPedReferences_t));
 }
 
 void CL_ClearSkeletalEntities(void) // H2
