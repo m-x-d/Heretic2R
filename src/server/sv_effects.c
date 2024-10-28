@@ -19,6 +19,7 @@ PerEffectsBuffer_t persistant_effects_array[MAX_PERSISTANT_EFFECTS];
 int effects_buffer_index;
 int effects_buffer_offset;
 
+static byte clfx_buffer[4096];
 static EffectsBuffer_t effects_buffers_arr[256];
 static vec3_t BroadcastEffectPositions_arr[256];
 static qboolean broadcast_effect_infos_used[256];
@@ -33,9 +34,97 @@ void SV_RemoveEffects(entity_state_t* ent, int type)
 	NOT_IMPLEMENTED
 }
 
-void SV_CreateEffectEvent(byte EventId, entity_state_t* ent, int type, int flags, vec3_t origin, char* format, ...)
+void SV_CreateEffectEvent(const byte EventId, entity_state_t* ent, const int type, int flags, const vec3_t origin, const char* format, ...)
 {
-	NOT_IMPLEMENTED
+	EffectsBuffer_t* clfx;
+	int ent_num;
+	int length;
+	sizebuf_t sb;
+
+	const qboolean broadcast = (flags & (CEF_BROADCAST | CEF_MULTICAST));
+
+	if (broadcast)
+		ent_num = (ent != NULL ? ent->number : 0);
+	else
+		ent_num = -1;
+
+	if (ent != NULL && !broadcast)
+	{
+		clfx = &ent->clientEffects;
+
+		if (clfx->buf == NULL)
+		{
+			clfx->buf = (byte*)ResMngr_AllocateResource(&sv_FXBufMngr, ENTITY_FX_BUF_SIZE);
+			clfx->bufSize = ENTITY_FX_BUF_SIZE;
+			clfx->numEffects = 0;
+		}
+
+		length = clfx->bufSize - clfx->freeBlock;
+	}
+	else
+	{
+		clfx = &effects_buffers_arr[effects_buffer_index];
+		clfx->buf = clfx_buffer;
+		clfx->freeBlock = effects_buffer_offset;
+
+		length = (int)sizeof(clfx_buffer) - effects_buffer_offset;
+	}
+
+	SZ_Init(&sb, &clfx->buf[clfx->freeBlock], length);
+
+	if (flags != 0)
+	{
+		MSG_WriteShort(&sb, type);
+		MSG_WriteByte(&sb, EventId);
+
+		if (broadcast && ent_num > 255)
+			flags |= CEF_ENTNUM16;
+
+		MSG_WriteByte(&sb, flags);
+
+		if (broadcast && ent_num > -1)
+		{
+			if (ent_num > 255)
+				MSG_WriteShort(&sb, ent_num);
+			else
+				MSG_WriteByte(&sb, ent_num);
+		}
+	}
+	else
+	{
+		MSG_WriteShort(&sb, type);
+	}
+
+	broadcast_effect_infos_used[effects_buffer_index] = broadcast;
+
+	if (!(flags & CEF_OWNERS_ORIGIN))
+		MSG_WritePos(&sb, origin);
+
+	if (format != NULL)
+	{
+		va_list argptr;
+
+		va_start(argptr, format);
+		ParseEffectToSizeBuf(&sb, format, argptr);
+		va_end(argptr);
+	}
+
+	if (ent != NULL)
+	{
+		clfx->freeBlock += sb.cursize;
+		clfx->numEffects++;
+	}
+	else
+	{
+		clfx->numEffects = 1;
+		clfx->bufSize = sb.cursize;
+
+		if (!(flags & CEF_BROADCAST))
+			VectorCopy(origin, BroadcastEffectPositions_arr[effects_buffer_index]);
+
+		effects_buffer_offset += sb.cursize;
+		effects_buffer_index++;
+	}
 }
 
 void SV_RemoveEffectsEvent(byte EventId, entity_state_t* ent, int type)
