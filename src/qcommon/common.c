@@ -8,6 +8,7 @@
 #include <setjmp.h>
 
 #include "anorms.h"
+#include "client.h"
 #include "cmodel.h"
 #include "console.h"
 #include "qcommon.h"
@@ -135,9 +136,52 @@ void Com_DPrintf(const char* fmt, ...)
 	}
 }
 
-void Com_Error(int code, const char* fmt, ...)
+// Both client and server can use this, and it will do the appropriate things.
+void Com_Error(const int code, const char* fmt, ...)
 {
-	NOT_IMPLEMENTED
+	va_list argptr;
+	static char msg[MAXPRINTMSG];
+	static qboolean recursive;
+
+	if (recursive)
+	{
+		Sys_Error("recursive error after: %s", msg);
+		return;
+	}
+
+	recursive = true;
+
+	va_start(argptr, fmt);
+	vsprintf_s(msg, sizeof(msg), fmt, argptr); //mxd. vsprintf -> vsprintf_s
+	va_end(argptr);
+
+	switch (code)
+	{
+	case ERR_DISCONNECT:
+		CL_Disconnect_f(); // H2
+		break;
+
+	case ERR_DROP:
+		Com_Printf("*********************************\nERROR: %s\n****************************** ***\n", msg);
+		SV_Shutdown(va("Server crashed: %s\n", msg), false);
+		CL_Drop();
+		recursive = false;
+		longjmp(abortframe, -1);
+		break;
+
+	default:
+		SV_Shutdown(va("Server fatal crashed: %s\n", msg), false);
+		CL_Shutdown();
+		break;
+	}
+
+	if (logfile != NULL)
+	{
+		fclose(logfile);
+		logfile = NULL;
+	}
+
+	Sys_Error("%s", msg);
 }
 
 // Both client and server can use this, and it will do the appropriate things.
