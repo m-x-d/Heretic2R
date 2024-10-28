@@ -301,7 +301,7 @@ void SV_StartSound(vec3_t origin, const edict_t* ent, int channel, const int sou
 		MSG_WriteShort(&sv.multicast, sendchan);
 	}
 
-	// H2: missing SND_POS flag check.
+	// H2: no SND_POS flag check.
 	MSG_WritePos(&sv.multicast, origin);
 
 	if (channel & CHAN_RELIABLE)
@@ -322,7 +322,7 @@ void SV_StartSound(vec3_t origin, const edict_t* ent, int channel, const int sou
 
 //mxd. Parsed by CL_ParseStartSoundPacket().
 // If channel & 8, the sound will be sent to everyone, not just things in the PHS.
-void SV_StartEventSound(const byte EventId, const float leveltime, vec3_t origin, edict_t* entity, int channel, const int soundindex, const float volume, const float attenuation, const float timeofs) // H2
+void SV_StartEventSound(const byte EventId, const float leveltime, vec3_t origin, const edict_t* ent, int channel, const int soundindex, const float volume, const float attenuation, const float timeofs) // H2
 {
 	vec3_t origin_v;
 	qboolean use_phs;
@@ -355,7 +355,7 @@ void SV_StartEventSound(const byte EventId, const float leveltime, vec3_t origin
 		flags |= SND_ATTENUATION;
 
 	// The client doesn't know that bmodels have weird origins. The origin can also be explicitly set.
-	if ((entity->svflags & SVF_NOCLIENT) || entity->solid == SOLID_BSP || origin != NULL)
+	if ((ent->svflags & SVF_NOCLIENT) || ent->solid == SOLID_BSP || origin != NULL)
 		flags |= SND_POS;
 
 	// Always send the entity number for channel overrides.
@@ -372,14 +372,14 @@ void SV_StartEventSound(const byte EventId, const float leveltime, vec3_t origin
 	{
 		origin = origin_v;
 
-		if (entity->solid == SOLID_BSP)
+		if (ent->solid == SOLID_BSP)
 		{
 			for (int i = 0; i < 3; i++)
-				origin_v[i] = entity->s.origin[i] + 0.5f * (entity->mins[i] + entity->maxs[i]);
+				origin_v[i] = ent->s.origin[i] + 0.5f * (ent->mins[i] + ent->maxs[i]);
 		}
 		else
 		{
-			VectorCopy(entity->s.origin, origin_v);
+			VectorCopy(ent->s.origin, origin_v);
 		}
 	}
 
@@ -404,11 +404,11 @@ void SV_StartEventSound(const byte EventId, const float leveltime, vec3_t origin
 
 	if (flags & SND_ENT)
 	{
-		const int sendchan = (NUM_FOR_EDICT(entity) << 3) | (channel & 7);
+		const int sendchan = (NUM_FOR_EDICT(ent) << 3) | (channel & 7);
 		MSG_WriteShort(&sv.multicast, sendchan);
 	}
 
-	// H2: missing SND_POS flag check
+	// H2: no SND_POS flag check.
 	MSG_WritePos(&sv.multicast, origin);
 
 	if (channel & CHAN_RELIABLE)
