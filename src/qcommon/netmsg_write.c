@@ -82,7 +82,7 @@ void MSG_WriteCoord(sizebuf_t* sb, const float f)
 }
 
 // Q2 counterpart
-void MSG_WritePos(sizebuf_t* sb, vec3_t pos)
+void MSG_WritePos(sizebuf_t* sb, const vec3_t pos)
 {
 	MSG_WriteShort(sb, (int)(pos[0] * 8.0f));
 	MSG_WriteShort(sb, (int)(pos[1] * 8.0f));
