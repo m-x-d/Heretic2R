@@ -188,7 +188,7 @@ static void SV_MulticastSound(const vec3_t origin, const multicast_t to, const i
 		{
 			const int leafnum = CM_PointLeafnum(client->edict->s.origin);
 			const int cluster = CM_LeafCluster(leafnum);
-			const int area2 = CM_LeafArea(cluster);
+			const int area2 = CM_LeafArea(leafnum);
 
 			if (!CM_AreasConnected(area1, area2))
 				continue;
