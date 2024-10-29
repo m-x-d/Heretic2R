@@ -132,7 +132,7 @@ int FS_FOpenFile(const char* filename, FILE** file)
 		if (filepath[i] == '\\')
 			filepath[i] = '/';
 
-	for (int i = len - 1; i >= 0 && filepath[i] != ' '; i--)
+	for (int i = len - 1; i >= 0 && filepath[i] == ' '; i--)
 		filepath[i] = '\0';
 
 	// Check for links first
@@ -178,7 +178,7 @@ int FS_FOpenFile(const char* filename, FILE** file)
 			do
 			{
 				const int index = (start + end) / 2;
-				const int cmp = Q_stricmp(filename, pak->files[index].name);
+				const int cmp = Q_stricmp(filepath, pak->files[index].name);
 
 				if (cmp == 0)
 				{
