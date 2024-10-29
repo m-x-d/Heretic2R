@@ -433,7 +433,7 @@ static void CL_ParseConfigString(void)
 		strcpy_s(buffer1, sizeof(buffer1), cl.configstrings[i]); //mxd. strcpy -> strcpy_s
 		strcpy_s(buffer2, sizeof(buffer2), cl.configstrings[i]); //mxd. strcpy -> strcpy_s
 
-		switch (buffer2[0])
+		switch ((byte)buffer2[0])
 		{
 			case TOKEN_M_OBJECTS:
 				buffer2[0] = '/';
@@ -454,8 +454,8 @@ static void CL_ParseConfigString(void)
 				break;
 		}
 
-		char* c = &buffer2[strlen(buffer1) - 1];
-		if (*c == -2)
+		char* c = &buffer1[strlen(buffer1) - 1];
+		if ((byte)*c == TOKEN_M_MODELS)
 		{
 			*c = 0;
 			sprintf_s(cl.configstrings[i], sizeof(cl.configstrings[i]), "%s/tris.fm", buffer1); //mxd. sprintf -> sprintf_s
@@ -484,7 +484,7 @@ static void CL_ParseConfigString(void)
 		strcpy_s(buffer1, sizeof(buffer1), cl.configstrings[i]);
 		strcpy_s(buffer2, sizeof(buffer2), cl.configstrings[i]);
 
-		switch (buffer2[0])
+		switch ((byte)buffer2[0])
 		{
 			case TOKEN_S_ITEMS:
 				buffer2[0] = '/';
@@ -530,8 +530,8 @@ static void CL_ParseConfigString(void)
 				break;
 		}
 
-		char* c = &buffer2[strlen(buffer1) - 1];
-		if (*c == -2)
+		char* c = &buffer1[strlen(buffer1) - 1];
+		if ((byte)*c == TOKEN_S_AMBIENT)
 		{
 			*c = 0;
 			sprintf_s(cl.configstrings[i], sizeof(cl.configstrings[i]), "%s.wav", buffer1); //mxd. sprintf -> sprintf_s
