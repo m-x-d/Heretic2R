@@ -319,9 +319,14 @@ static void Cmd_Exec_f(void)
 		Com_Printf("Unable to exec %s\n", Cmd_Argv(1));
 }
 
+// Q2 counterpart
+// Just prints the rest of the line to the console.
 static void Cmd_Echo_f(void)
 {
-	NOT_IMPLEMENTED
+	for (int i = 1; i < Cmd_Argc(); i++)
+		Com_Printf("%s ", Cmd_Argv(i));
+
+	Com_Printf("\n");
 }
 
 // Q2 counterpart
