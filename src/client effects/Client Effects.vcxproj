@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Ambient Effects.c" />
+    <ClCompile Include="ce_DefaultMessageHandler.c" />
+    <ClCompile Include="ce_DLight.c" />
+    <ClCompile Include="ce_Message.c" />
+    <ClCompile Include="Client Effects.c" />
+    <ClCompile Include="Client Entities.c" />
+    <ClCompile Include="cl_fx.c" />
+    <ClCompile Include="Decal.c" />
+    <ClCompile Include="Font1.c" />
+    <ClCompile Include="Font2.c" />
+    <ClCompile Include="fx_AmmoPickup.c" />
+    <ClCompile Include="fx_animate.c" />
+    <ClCompile Include="fx_assassin.c" />
+    <ClCompile Include="fx_blood.c" />
+    <ClCompile Include="fx_BlueRing.c" />
+    <ClCompile Include="fx_bubbler.c" />
+    <ClCompile Include="fx_crosshair.c" />
+    <ClCompile Include="fx_cwatcher.c" />
+    <ClCompile Include="fx_debris.c" />
+    <ClCompile Include="fx_DefensePickup.c" />
+    <ClCompile Include="fx_Dripper.c" />
+    <ClCompile Include="fx_dust.c" />
+    <ClCompile Include="fx_dustpuff.c" />
+    <ClCompile Include="fx_fire.c" />
+    <ClCompile Include="fx_firehands.c" />
+    <ClCompile Include="fx_flamethrow.c" />
+    <ClCompile Include="fx_flyingfist.c" />
+    <ClCompile Include="fx_Fountain.c" />
+    <ClCompile Include="fx_halo.c" />
+    <ClCompile Include="fx_HealthPickup.c" />
+    <ClCompile Include="fx_HellStaff.c" />
+    <ClCompile Include="fx_hitpuff.c" />
+    <ClCompile Include="fx_hpproj.c" />
+    <ClCompile Include="fx_insectstaff.c" />
+    <ClCompile Include="fx_lensflare.c" />
+    <ClCompile Include="fx_lightning.c" />
+    <ClCompile Include="fx_Maceball.c" />
+    <ClCompile Include="fx_magicmissile.c" />
+    <ClCompile Include="fx_meteorbarrier.c" />
+    <ClCompile Include="fx_mist.c" />
+    <ClCompile Include="fx_mork.c" />
+    <ClCompile Include="fx_Morph.c" />
+    <ClCompile Include="fx_objects.c" />
+    <ClCompile Include="fx_pespell.c" />
+    <ClCompile Include="fx_Phoenix.c" />
+    <ClCompile Include="fx_pickup.c" />
+    <ClCompile Include="fx_pickuppuzzle.c" />
+    <ClCompile Include="fx_PlagueMist.c" />
+    <ClCompile Include="fx_PlagueMistExplode.c" />
+    <ClCompile Include="fx_portal.c" />
+    <ClCompile Include="fx_quake.c" />
+    <ClCompile Include="fx_RedRain.c" />
+    <ClCompile Include="fx_redrainglow.c" />
+    <ClCompile Include="fx_remotecamera.c" />
+    <ClCompile Include="fx_Ripples.c" />
+    <ClCompile Include="fx_rope.c" />
+    <ClCompile Include="fx_scorchmark.c" />
+    <ClCompile Include="fx_shadow.c" />
+    <ClCompile Include="fx_Shield.c" />
+    <ClCompile Include="fx_shrine.c" />
+    <ClCompile Include="fx_smoke.c" />
+    <ClCompile Include="fx_sound.c" />
+    <ClCompile Include="fx_sparks.c" />
+    <ClCompile Include="fx_spellchange.c" />
+    <ClCompile Include="fx_spellhands.c" />
+    <ClCompile Include="fx_sphereofannihlation.c" />
+    <ClCompile Include="fx_spoo.c" />
+    <ClCompile Include="fx_ssarrow.c" />
+    <ClCompile Include="fx_ssithra.c" />
+    <ClCompile Include="fx_staff.c" />
+    <ClCompile Include="fx_tbeast.c" />
+    <ClCompile Include="fx_teleport.c" />
+    <ClCompile Include="fx_tome.c" />
+    <ClCompile Include="fx_tornado.c" />
+    <ClCompile Include="fx_Wall.c" />
+    <ClCompile Include="fx_waterentrysplash.c" />
+    <ClCompile Include="fx_waterwake.c" />
+    <ClCompile Include="fx_WeaponPickup.c" />
+    <ClCompile Include="Generic Character Effects.c" />
+    <ClCompile Include="Generic Weapon Effects.c" />
+    <ClCompile Include="Item Effects.c" />
+    <ClCompile Include="LevelMaps.c" />
+    <ClCompile Include="LightStyles.c" />
+    <ClCompile Include="Main.c" />
+    <ClCompile Include="Monster Weapon Effects.c" />
+    <ClCompile Include="Particle.c" />
+    <ClCompile Include="Player Effects.c" />
+    <ClCompile Include="TestEffect.c" />
+    <ClCompile Include="Utilities.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ambient effects.h" />
+    <ClInclude Include="ce_DefaultMessageHandler.h" />
+    <ClInclude Include="ce_DLight.h" />
+    <ClInclude Include="ce_Message.h" />
+    <ClInclude Include="Client Effects.h" />
+    <ClInclude Include="Client Entities.h" />
+    <ClInclude Include="Decal.h" />
+    <ClInclude Include="fx_debris.h" />
+    <ClInclude Include="fx_dustpuff.h" />
+    <ClInclude Include="Particle.h" />
+    <ClInclude Include="Utilities.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <SccProjectName />
+    <SccLocalPath />
+    <ProjectGuid>{AA334748-A73C-4B14-BA76-01975A87E594}</ProjectGuid>
+    <ProjectName>Client Effects</ProjectName>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\..\build\base\</OutDir>
+    <IntDir>.\debug\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\..\build\base\</OutDir>
+    <IntDir>.\release\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\debug\</AssemblerListingLocation>
+      <ObjectFileName>.\debug\</ObjectFileName>
+      <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>..\qcommon;..\game;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\debug\Client Effects.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\debug\Client Effects.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <LinkDLL>true</LinkDLL>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>..\..\build\base\Client Effects.dll</OutputFile>
+      <ImportLibrary>$(SolutionDir)..\lib\$(TargetName).lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <Optimization>MaxSpeed</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\release\</AssemblerListingLocation>
+      <ObjectFileName>.\release\</ObjectFileName>
+      <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>..\qcommon;..\game;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\..\release\Client Effects.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\release\Client Effects.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <LinkDLL>true</LinkDLL>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>..\..\build\base\Client Effects.dll</OutputFile>
+      <ImportLibrary>$(SolutionDir)..\lib\$(TargetName).lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
