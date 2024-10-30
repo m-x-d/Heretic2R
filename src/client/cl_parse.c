@@ -578,7 +578,7 @@ static void CL_ParseStartSoundPacket(void)
 	float leveltime;
 
 	const int flags = MSG_ReadByte(&net_message);
-	const int sound_num = MSG_ReadShort(&net_message); // Q2: MSG_ReadByte
+	const int soundindex = MSG_ReadShort(&net_message); // Q2: MSG_ReadByte
 
 	const qboolean have_prediction_info = (flags & SND_PRED_INFO); // H2
 	if (have_prediction_info)
@@ -634,7 +634,7 @@ static void CL_ParseStartSoundPacket(void)
 		pos = NULL;
 	}
 
-	sfx_t* sfx = cl.sound_precache[sound_num];
+	sfx_t* sfx = cl.sound_precache[soundindex];
 
 	if (sfx == NULL)
 		return;
@@ -649,7 +649,7 @@ static void CL_ParseStartSoundPacket(void)
 // Q2 counterpart
 void SHOWNET(char* s)
 {
-	if (cl_shownet->value >= 2.0f)
+	if ((int)cl_shownet->value >= 2)
 		Com_Printf("%3i:%s\n", net_message.readcount - 1, s);
 }
 
