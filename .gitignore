@@ -1,12 +1,16 @@
 /build/**
 /lib/*.exp
 /lib/*.lib
-/src/launcher/*.aps
 /src/.vs
+/src/client effects/debug
+/src/client effects/release
 /src/H2Common/debug
 /src/H2Common/release
+/src/launcher/*.aps
 /src/launcher/debug
+/src/launcher/release
 /src/ref_gl/debug
 /src/ref_gl/release
 /src/win32/debug
+/src/win32/release
 *.user
