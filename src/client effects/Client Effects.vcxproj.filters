@@ -4,6 +4,9 @@
     <Filter Include="src">
       <UniqueIdentifier>{62cbdb59-d84e-49ea-9ed4-0ec7a699f323}</UniqueIdentifier>
     </Filter>
+    <Filter Include="qcommon">
+      <UniqueIdentifier>{fa24de97-ef58-425b-95bc-bca7e4dbabd6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Ambient Effects.c">
@@ -18,16 +21,10 @@
     <ClCompile Include="ce_Message.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="cl_fx.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="Client Effects.c">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="Client Entities.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="Decal.c">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="Font1.c">
@@ -273,6 +270,9 @@
     <ClCompile Include="Utilities.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\qcommon\Message.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ambient effects.h">
@@ -293,9 +293,6 @@
     <ClInclude Include="Client Entities.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="Decal.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="fx_debris.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -307,6 +304,9 @@
     </ClInclude>
     <ClInclude Include="Utilities.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Message.h">
+      <Filter>qcommon</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

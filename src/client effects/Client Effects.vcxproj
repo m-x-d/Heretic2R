@@ -11,14 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\qcommon\Message.c" />
     <ClCompile Include="Ambient Effects.c" />
     <ClCompile Include="ce_DefaultMessageHandler.c" />
     <ClCompile Include="ce_DLight.c" />
     <ClCompile Include="ce_Message.c" />
     <ClCompile Include="Client Effects.c" />
     <ClCompile Include="Client Entities.c" />
-    <ClCompile Include="cl_fx.c" />
-    <ClCompile Include="Decal.c" />
     <ClCompile Include="Font1.c" />
     <ClCompile Include="Font2.c" />
     <ClCompile Include="fx_AmmoPickup.c" />
@@ -102,13 +101,13 @@
     <ClCompile Include="Utilities.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\qcommon\Message.h" />
     <ClInclude Include="ambient effects.h" />
     <ClInclude Include="ce_DefaultMessageHandler.h" />
     <ClInclude Include="ce_DLight.h" />
     <ClInclude Include="ce_Message.h" />
     <ClInclude Include="Client Effects.h" />
     <ClInclude Include="Client Entities.h" />
-    <ClInclude Include="Decal.h" />
     <ClInclude Include="fx_debris.h" />
     <ClInclude Include="fx_dustpuff.h" />
     <ClInclude Include="Particle.h" />
@@ -163,7 +162,7 @@
       <AssemblerListingLocation>.\debug\</AssemblerListingLocation>
       <ObjectFileName>.\debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\qcommon;..\game;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\client;..\qcommon;..\game;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Midl>
@@ -188,6 +187,7 @@
       <SubSystem>Windows</SubSystem>
       <OutputFile>..\..\build\base\Client Effects.dll</OutputFile>
       <ImportLibrary>$(SolutionDir)..\lib\$(TargetName).lib</ImportLibrary>
+      <ModuleDefinitionFile>.\Client Effects.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -202,7 +202,7 @@
       <AssemblerListingLocation>.\release\</AssemblerListingLocation>
       <ObjectFileName>.\release\</ObjectFileName>
       <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\qcommon;..\game;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\client;..\qcommon;..\game;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Midl>
@@ -227,6 +227,7 @@
       <SubSystem>Windows</SubSystem>
       <OutputFile>..\..\build\base\Client Effects.dll</OutputFile>
       <ImportLibrary>$(SolutionDir)..\lib\$(TargetName).lib</ImportLibrary>
+      <ModuleDefinitionFile>.\Client Effects.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
