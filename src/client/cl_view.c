@@ -64,7 +64,7 @@ void CL_PrepRefresh(void)
 
 	SCR_UpdateProgressbar(0, 3); // H2
 
-	for (int i = 0; i < MAX_MODELS && cl.configstrings[CS_MODELS + i][0] != 0; i++)
+	for (int i = 1; i < MAX_MODELS && cl.configstrings[CS_MODELS + i][0] != 0; i++)
 	{
 		strcpy_s(name, sizeof(name), cl.configstrings[CS_MODELS + i]); //mxd. strcpy -> strcpy_s
 		name[37] = 0; // Never go beyond one line.
