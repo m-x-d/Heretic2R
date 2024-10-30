@@ -301,8 +301,8 @@ void SV_StartSound(vec3_t origin, const edict_t* ent, int channel, const int sou
 		MSG_WriteShort(&sv.multicast, sendchan);
 	}
 
-	// H2: no SND_POS flag check.
-	MSG_WritePos(&sv.multicast, origin);
+	if (flags & SND_POS) //mxd. There's NO SND_POS check in original logic! How the hell did that work?..
+		MSG_WritePos(&sv.multicast, origin);
 
 	if (channel & CHAN_RELIABLE)
 	{
@@ -408,8 +408,8 @@ void SV_StartEventSound(const byte EventId, const float leveltime, vec3_t origin
 		MSG_WriteShort(&sv.multicast, sendchan);
 	}
 
-	// H2: no SND_POS flag check.
-	MSG_WritePos(&sv.multicast, origin);
+	if (flags & SND_POS) //mxd. There's NO SND_POS check in original logic! How the hell did that work?..
+		MSG_WritePos(&sv.multicast, origin);
 
 	if (channel & CHAN_RELIABLE)
 	{
