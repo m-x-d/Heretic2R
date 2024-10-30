@@ -17,7 +17,7 @@
 #include "Reference.h"
 #include "q_Sprite.h"
 #include "q_Surface.h"
-#include "PrimitiveDisplayHack.h"
+//#include "PrimitiveDisplayHack.h"
 #include "g_playstats.h"
 
 #include <limits.h>

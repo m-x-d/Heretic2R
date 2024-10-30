@@ -327,6 +327,8 @@ void MSG_ReadEffects(sizebuf_t* sb, EffectsBuffer_t* fxBuf)
 	fxBuf->bufSize += len;
 }
 
+#if _HERETIC2_ //mxd. Avoid referencing unneeded stuff in Client Effects...
+
 // Written by MSG_WriteJoints().
 void MSG_ReadJoints(sizebuf_t* sb, entity_state_t* ent)
 {
@@ -388,3 +390,5 @@ void MSG_ReadJoints(sizebuf_t* sb, entity_state_t* ent)
 		}
 	}
 }
+
+#endif

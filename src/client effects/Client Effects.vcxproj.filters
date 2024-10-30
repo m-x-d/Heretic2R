@@ -7,6 +7,9 @@
     <Filter Include="qcommon">
       <UniqueIdentifier>{fa24de97-ef58-425b-95bc-bca7e4dbabd6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Effects">
+      <UniqueIdentifier>{8009a782-9fdc-4271-b351-7b4371aecec0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Ambient Effects.c">
@@ -33,210 +36,6 @@
     <ClCompile Include="Font2.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="fx_AmmoPickup.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_animate.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_assassin.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_blood.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_BlueRing.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_bubbler.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_crosshair.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_cwatcher.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_debris.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_DefensePickup.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_Dripper.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_dust.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_dustpuff.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_fire.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_firehands.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_flamethrow.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_flyingfist.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_Fountain.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_halo.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_HealthPickup.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_HellStaff.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_hitpuff.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_hpproj.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_insectstaff.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_lensflare.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_lightning.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_Maceball.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_magicmissile.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_meteorbarrier.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_mist.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_mork.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_Morph.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_objects.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_pespell.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_Phoenix.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_pickup.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_pickuppuzzle.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_PlagueMist.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_PlagueMistExplode.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_portal.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_quake.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_RedRain.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_redrainglow.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_remotecamera.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_Ripples.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_rope.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_scorchmark.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_shadow.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_Shield.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_shrine.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_smoke.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_sound.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_sparks.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_spellchange.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_spellhands.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_sphereofannihlation.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_spoo.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_ssarrow.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_ssithra.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_staff.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_tbeast.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_teleport.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_tome.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_tornado.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_Wall.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_waterentrysplash.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_waterwake.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_WeaponPickup.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="Generic Character Effects.c">
       <Filter>src</Filter>
     </ClCompile>
@@ -255,9 +54,6 @@
     <ClCompile Include="Main.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="Monster Weapon Effects.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="Particle.c">
       <Filter>src</Filter>
     </ClCompile>
@@ -271,6 +67,216 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\qcommon\Message.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_AmmoPickup.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_animate.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_assassin.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_blood.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_BlueRing.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_bubbler.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_crosshair.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_cwatcher.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_debris.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_DefensePickup.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_Dripper.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_dust.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_dustpuff.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_fire.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_firehands.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_flamethrow.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_flyingfist.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_Fountain.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_halo.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_HealthPickup.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_HellStaff.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_hitpuff.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_hpproj.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_insectstaff.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_lensflare.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_lightning.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_Maceball.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_magicmissile.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_meteorbarrier.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_mist.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_mork.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_Morph.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_objects.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_pespell.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_Phoenix.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_pickup.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_pickuppuzzle.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_PlagueMist.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_PlagueMistExplode.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_portal.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_quake.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_RedRain.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_redrainglow.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_remotecamera.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_Ripples.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_rope.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_scorchmark.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_shadow.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_Shield.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_shrine.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_smoke.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_sound.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_sparks.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_spellchange.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_spellhands.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_sphereofannihlation.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_spoo.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_ssarrow.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_ssithra.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_staff.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_tbeast.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_teleport.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_tome.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_tornado.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_Wall.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_waterentrysplash.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_waterwake.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_WeaponPickup.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\netmsg_read.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\anorms.c">
       <Filter>qcommon</Filter>
     </ClCompile>
   </ItemGroup>
@@ -293,12 +299,6 @@
     <ClInclude Include="Client Entities.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="fx_debris.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="fx_dustpuff.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="Particle.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -306,6 +306,21 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\qcommon\Message.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\items.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="fx_debris.h">
+      <Filter>src\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="fx_dustpuff.h">
+      <Filter>src\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Vector.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\anorms.h">
       <Filter>qcommon</Filter>
     </ClInclude>
   </ItemGroup>

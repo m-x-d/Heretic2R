@@ -26,7 +26,8 @@
 
 
 ///// IMPORTANT !!! THIS IS THE STRING THAT DETERMINES IF YOU CAN JOIN A SERVER	- IE YOU HAVE THE RIGHT CLIENT EFFECTS DLL
-char	*client_string = {"Heretic II v1.06"};
+//char	*client_string = {"Heretic II v1.06"};
+char client_string[128] = "Heretic II v1.06"; //mxd
 
 client_fx_import_t fxi;
 

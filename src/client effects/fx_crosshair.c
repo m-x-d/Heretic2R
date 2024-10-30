@@ -7,7 +7,7 @@
 #include "ce_DLight.h"
 #include "random.h"
 #include "Utilities.h"
-#include "timing.h"
+//#include "timing.h"
 
 #define CROSSHAIR_THINKTIME	20
 

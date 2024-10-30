@@ -44,6 +44,8 @@ void WaterSplash(centity_t *owner, int type, int flags, vec3_t origin)
 	DoWaterSplash(effect, color, cnt);
 }
 
+#if 0 //TODO: unused. Implement? Use Q2 fly logic as reference?
+
 #define FLY_EFFECT_THINK_TIME 100 // creates new flies every 0.1 sec
 
 // This needs work. . .
@@ -160,3 +162,5 @@ void FlyEffect(centity_t *owner, int type, int flags, vec3_t origin)
 
 	AddEffect(owner, effect);
 }
+
+#endif
