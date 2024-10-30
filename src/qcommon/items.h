@@ -1,3 +1,11 @@
+//
+// items.h
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
+
 typedef enum
 {
 	ITEM_TOWNKEY,
@@ -22,4 +30,3 @@ typedef enum
 	ITEM_TAVERNKEY,
 	ITEM_TOTAL
 } Items_t;
-
