@@ -51,11 +51,11 @@ static void SV_EmitPacketEntities(const client_frame_t* from, const client_frame
 			oldnum = 9999;
 		}
 
-		const edict_t* ent = EDICT_NUM(newnum);
-
 		if (newnum == oldnum)
 		{
-			if (ent->client_sent & ent_id && ent->just_deleted) // H2
+			const edict_t* ent = EDICT_NUM(newnum);
+
+			if ((ent->client_sent & ent_id) && ent->just_deleted) // H2
 			{
 				// Remove old entity.
 				byte header;
@@ -86,7 +86,9 @@ static void SV_EmitPacketEntities(const client_frame_t* from, const client_frame
 		}
 		else if (newnum < oldnum)
 		{
-			if (ent->client_sent & ent_id && ent->just_deleted) // H2
+			const edict_t* ent = EDICT_NUM(newnum);
+
+			if ((ent->client_sent & ent_id) && ent->just_deleted) // H2
 			{
 				// Remove new entity.
 				byte header;
@@ -114,6 +116,8 @@ static void SV_EmitPacketEntities(const client_frame_t* from, const client_frame
 		}
 		else // newnum > oldnum
 		{
+			const edict_t* ent = EDICT_NUM(oldnum);
+
 			if (ent->just_deleted) // H2
 			{
 				// The old entity isn't present in the new message.
