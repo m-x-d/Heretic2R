@@ -8,19 +8,19 @@
 #include "gl_fmodel.h"
 #include "Vector.h"
 
-model_t* loadmodel;
-int modfilelen;
+int registration_sequence;
 
-byte mod_novis[MAX_MAP_LEAFS / 8];
+model_t* loadmodel;
+static int modfilelen;
+
+static byte mod_novis[MAX_MAP_LEAFS / 8];
 
 #define MAX_MOD_KNOWN 512
-model_t mod_known[MAX_MOD_KNOWN];
-int mod_numknown;
+static model_t mod_known[MAX_MOD_KNOWN];
+static int mod_numknown;
 
-// The inline * models from the current map are kept seperate
-model_t mod_inline[MAX_MOD_KNOWN];
-
-int registration_sequence;
+// The inline ('*1', '*2', ...) models from the current map are kept separate.
+static model_t mod_inline[MAX_MOD_KNOWN];
 
 // Q2 counterpart
 mleaf_t* Mod_PointInLeaf(vec3_t p, const model_t* model)
@@ -51,7 +51,7 @@ static byte* Mod_DecompressVis(const byte* in, const model_t* model)
 	if (in == NULL)
 	{
 		// No vis info, so make all visible
-		memset(decompressed, 0xFF, row); // H2: memset instead of manual assign
+		memset(decompressed, 0xff, row); // H2: memset instead of manual assign
 		return decompressed;
 	}
 
