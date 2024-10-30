@@ -497,7 +497,7 @@ static int AlphaSurfComp(const AlphaSurfaceSortInfo_t* info1, const AlphaSurface
 	return (int)((info2->depth - info1->depth) * 1000.0f);
 }
 
-// New in H2 //TODO: logic identical to for loop logic in R_DrawEntitiesOnList (except for 1-st warning message). Move to gl_rmain as R_DrawEntity and replace said logic?
+// New in H2 //TODO: logic identical to for loop logic in R_DrawEntitiesOnList(). Move to gl_rmain as R_DrawEntity and replace said logic?
 static void R_DrawAlphaEntity(entity_t* ent)
 {
 	currententity = ent;
@@ -505,7 +505,7 @@ static void R_DrawAlphaEntity(entity_t* ent)
 	if (!(int)r_drawentities->value)
 		return;
 
-	if (currententity->model == NULL)
+	if (ent->model == NULL)
 	{
 		Com_DPrintf("Attempt to draw NULL alpha model\n");
 		R_DrawNullModel();
@@ -513,7 +513,7 @@ static void R_DrawAlphaEntity(entity_t* ent)
 		return;
 	}
 
-	if (ent->model == NULL)
+	if (*ent->model == NULL)
 	{
 		R_DrawNullModel();
 		return;
