@@ -941,12 +941,12 @@ void CL_SendCmd(void)
 	else
 		MSG_WriteLong(&buf, cl.frame.serverframe);
 
-	usercmd_t nullcmd = { 0 };
+	const usercmd_t nullcmd = { 0 };
 
 	// Send this and the previous cmds in the message, so if the last packet was dropped, it can be recovered.
 	cmd = &cl.cmds[(cls.netchan.outgoing_sequence - 2) & (CMD_BACKUP - 1)];
 	MSG_WriteDeltaUsercmd(&buf, &nullcmd, cmd);
-	usercmd_t* oldcmd = cmd;
+	const usercmd_t* oldcmd = cmd;
 
 	cmd = &cl.cmds[(cls.netchan.outgoing_sequence - 1) & (CMD_BACKUP - 1)];
 	MSG_WriteDeltaUsercmd(&buf, oldcmd, cmd);
