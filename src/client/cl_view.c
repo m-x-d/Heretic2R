@@ -117,7 +117,7 @@ void CL_PrepRefresh(void)
 	SCR_UpdateScreen();
 
 	const float rotate = (float)strtod(cl.configstrings[CS_SKYROTATE], NULL); //mxd. atof -> strtod
-	sscanf(cl.configstrings[CS_SKYAXIS], "%f %f %f", &axis[0], &axis[1], &axis[2]);
+	sscanf_s(cl.configstrings[CS_SKYAXIS], "%f %f %f", &axis[0], &axis[1], &axis[2]); //mxd. sscanf -> sscanf_s
 	re.SetSky(cl.configstrings[CS_SKY], rotate, axis);
 	Com_Printf("                                     \r");
 

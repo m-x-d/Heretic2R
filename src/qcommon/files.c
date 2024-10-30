@@ -133,7 +133,7 @@ int FS_FOpenFile(const char* filename, FILE** file)
 			filepath[i] = '/';
 
 	for (int i = len - 1; i >= 0 && filepath[i] == ' '; i--)
-		filepath[i] = '\0';
+		filepath[i] = 0;
 
 	// Check for links first
 	for (const filelink_t* link = fs_links; link != NULL; link = link->next)

@@ -754,7 +754,7 @@ static model_t* Mod_ForName(const char* name, const qboolean crash)
 		if (strstr(name, "players/") || strstr(name, "models/player/"))
 			datasize = 0x400000;
 
-		loadmodel->extradata = Hunk_Begin(datasize);
+		mod->extradata = Hunk_Begin(datasize);
 		Mod_LoadFlexModel(mod, buf, modfilelen);
 	}
 	else
@@ -767,17 +767,17 @@ static model_t* Mod_ForName(const char* name, const qboolean crash)
 			// Missing: case IDALIASHEADER
 
 			case IDSPRITEHEADER:
-				loadmodel->extradata = Hunk_Begin(0x10000);
+				mod->extradata = Hunk_Begin(0x10000);
 				Mod_LoadSpriteModel(mod, buf);
 				break;
 
 			case IDBOOKHEADER: // New in H2
-				loadmodel->extradata = Hunk_Begin(0x10000);
+				mod->extradata = Hunk_Begin(0x10000);
 				Mod_LoadBookModel(mod, buf);
 				break;
 
 			case IDBSPHEADER:
-				loadmodel->extradata = Hunk_Begin(0x1000000);
+				mod->extradata = Hunk_Begin(0x1000000);
 				Mod_LoadBrushModel(mod, buf);
 				break;
 
@@ -787,7 +787,7 @@ static model_t* Mod_ForName(const char* name, const qboolean crash)
 		}
 	}
 
-	loadmodel->extradatasize = Hunk_End();
+	mod->extradatasize = Hunk_End();
 	ri.FS_FreeFile(buf);
 
 	return mod;
@@ -839,8 +839,7 @@ struct model_s* R_RegisterModel(const char* name)
 				Com_sprintf(img_name, sizeof(img_name), "Sprites/%s", sprout->frames[i].name); // H2: extra "Sprites/" prefix
 				mod->skins[i] = GL_FindImage(img_name, it_sprite);
 			}
-		}
-			break;
+		} break;
 
 		case mod_fmdl: // H2
 			Mod_RegisterFlexModel(mod);
@@ -855,8 +854,7 @@ struct model_s* R_RegisterModel(const char* name)
 				Com_sprintf(img_name, sizeof(img_name), "Book/%s", bframe->name);
 				mod->skins[i] = GL_FindImage(img_name, it_pic);
 			}
-		}
-			break;
+		} break;
 
 		default:
 			Sys_Error("R_RegisterModel %s failed\n", name);
