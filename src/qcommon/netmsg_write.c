@@ -543,8 +543,8 @@ void MSG_WriteDeltaEntity(const entity_state_t* from, entity_state_t* to, sizebu
 			SetB(bits, U_NUMBER16);
 	}
 
-	byte unused[NUM_ENTITY_HEADER_BITS];
-	MSG_WriteEntityHeaderBits(msg, bits, unused);
+	byte header;
+	MSG_WriteEntityHeaderBits(msg, bits, &header);
 
 	if (GetB(bits, U_NUMBER16))
 		MSG_WriteShort(msg, to->number);
