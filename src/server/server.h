@@ -204,7 +204,7 @@ void SV_Map(qboolean attractloop, const char* levelstring, qboolean loadgame);
 extern game_export_t* ge;
 void SV_InitGameProgs(void);
 void SV_ShutdownGameProgs(void);
-qboolean PF_inPVS(vec3_t p1, vec3_t p2);
+qboolean PF_inPVS(const vec3_t p1, const vec3_t p2);
 
 // sv_send.c
 void SV_ClientPrintf(client_t* cl, int level, int message_id);

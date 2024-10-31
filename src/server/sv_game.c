@@ -195,16 +195,42 @@ static void PF_WriteAngle(float f)
 	NOT_IMPLEMENTED
 }
 
-qboolean PF_inPVS(vec3_t p1, vec3_t p2)
+// Q2 counterpart
+// Also checks portalareas so that doors block sight.
+qboolean PF_inPVS(const vec3_t p1, const vec3_t p2)
 {
-	NOT_IMPLEMENTED
-	return false;
+	int leafnum = CM_PointLeafnum(p1);
+	int cluster = CM_LeafCluster(leafnum);
+	const int area1 = CM_LeafArea(leafnum);
+	const byte* mask = CM_ClusterPVS(cluster); //mxd. The only difference between this and PF_inPHS().
+
+	leafnum = CM_PointLeafnum(p2);
+	cluster = CM_LeafCluster(leafnum);
+	const int area2 = CM_LeafArea(leafnum);
+
+	if (mask != NULL && !(mask[cluster >> 3] & (1 << (cluster & 7))))
+		return false; // More than one bounce away.
+
+	return CM_AreasConnected(area1, area2); // A door blocks sight?
 }
 
-static qboolean PF_inPHS(vec3_t p1, vec3_t p2)
+// Q2 counterpart
+// Also checks portalareas so that doors block sight.
+static qboolean PF_inPHS(const vec3_t p1, const vec3_t p2)
 {
-	NOT_IMPLEMENTED
-	return false;
+	int leafnum = CM_PointLeafnum(p1);
+	int cluster = CM_LeafCluster(leafnum);
+	const int area1 = CM_LeafArea(leafnum);
+	const byte* mask = CM_ClusterPHS(cluster); //mxd. The only difference between this and PF_inPVS().
+
+	leafnum = CM_PointLeafnum(p2);
+	cluster = CM_LeafCluster(leafnum);
+	const int area2 = CM_LeafArea(leafnum);
+
+	if (mask != NULL && !(mask[cluster >> 3] & (1 << (cluster & 7))))
+		return false; // More than one bounce away.
+	
+	return CM_AreasConnected(area1, area2); // A door blocks sight?
 }
 
 static void PF_StartSound(edict_t* ent, const int channel, const int soundindex, const float volume, const float attenuation, const float timeofs)
