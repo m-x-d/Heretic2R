@@ -19,7 +19,7 @@
 
 #define EF_PLAYER				0x00000020	// Safe flag, never changes. Is a player/client.
 
-#define	EF_NODRAW_ALWAYS_SEND	0x00000040	// Prevents invisible (i.e. modelindex = 0) entities from being culled by the server
+#define EF_NODRAW_ALWAYS_SEND	0x00000040	// Prevents invisible (i.e. modelindex = 0) entities from being culled by the server
 											// when it builds frames to send to the client.
 
 #define EF_MARCUS_FLAG1			0x00000080	// Used for toggling various client effects.
@@ -37,12 +37,12 @@
 #define EF_DISABLE_EXTRA_FX		0x00008000	// Remove effects that are not owned by an entity with this flag, but need this info.
 											// This should be set when something dies and needs the effects to reflect this.
 
-#define EF_MACE_ROTATE			0x00010000  // Make the mace ball model rotate around its axes - save network traffic.
-#define EF_CLIENT_DEAD			0x00020000  // This client on the server is dead. Easiest way to get this flag to CFX.
+#define EF_MACE_ROTATE			0x00010000	// Make the mace ball model rotate around its axes - save network traffic.
+#define EF_CLIENT_DEAD			0x00020000	// This client on the server is dead. Easiest way to get this flag to CFX.
 #define EF_POWERUP_ENABLED		0x00040000	// Tells the client effects that corvus powerup is enabled
 #define EF_SPEED_ACTIVE			0x00080000	// Tells the client effects that corvus speedup is enabled
 #define EF_HIGH_MAX				0x00100000	// Tells the client effects that corvus speedup is enabled
-#define EF_LIGHT_ENABLED		0x00200000  // Tells the client effects that corvus' personal torch is activated.
+#define EF_LIGHT_ENABLED		0x00200000	// Tells the client effects that corvus' personal torch is activated.
 
 #define EF_CHICKEN				0x00400000	// The flag that tells the system that the player is a chicken, and not corvus.
 #define EF_ANIM_ALL				0x00800000	// Automatically cycle through all frames at 2hz
@@ -52,7 +52,7 @@
 // Flags specified when a client-effect is created; don't even think about expanding this beyond 1 byte!
 // This is 'cos only the first byte is sent across the net (and only a flag is actually set).
 
-#define CEF_OWNERS_ORIGIN		0x00000001  // Use the owner's origin only, with no additional displacment.
+#define CEF_OWNERS_ORIGIN		0x00000001	// Use the owner's origin only, with no additional displacment.
 #define CEF_BROADCAST			0x00000002	// Sent to all clients.
 #define CEF_ENTNUM16			0x00000004	// Index is a short.
 #define CEF_MULTICAST			0x00000008	// Places the effect into the world buffer instead of the owner's buffer
@@ -75,7 +75,7 @@
 
 #define CEF_PULSE_ALPHA			0x00200000	// Particle/fx d_alpha: when hits 1.0 alpha, reverse and start fading out.
 #define CEF_ABSOLUTE_PARTS		0x00400000	// Particle origins represent absolute positions.
-#define	CEF_ADDITIVE_PARTS		0x00800000	// Particles are additively transparent (temporary)
+#define CEF_ADDITIVE_PARTS		0x00800000	// Particles are additively transparent (temporary)
 
 #define CEF_DROPPED				0x01000000	// Entity was dropped from the view due to an excessive number of entities in the view.
 #define CEF_NOMOVE				0x02000000	// Velocity and acceleration are not applied to origin in update.
@@ -98,4 +98,5 @@
 
 #define CEF_CLIP_TO_ALL			(CEF_CLIP_TO_WORLD | CEF_CLIP_TO_ENTITIES)
 
-#define	EFFECT_PRED_INFO		0x4000
+#define EFFECT_PRED_INFO		0x4000
+#define EFFECT_FLAGS			0x8000 //mxd

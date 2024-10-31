@@ -141,7 +141,9 @@ static int GetEffect(centity_t* ent, const int flags, const char* format, ...)
 	if (format == NULL)
 		Com_Error(ERR_DROP, "CL_ReadEffect: null format string");
 
-	if (ent != NULL && !(flags & (FX_EXPLOSION1 | FX_LINKEDBLOOD)))
+	const qboolean broadcast = (flags & (CEF_BROADCAST | CEF_MULTICAST));
+
+	if (ent != NULL && !broadcast)
 	{
 		if (cl_effectpredict)
 			fx_buf = &client_prediction_effects;
@@ -212,16 +214,57 @@ static int GetEffect(centity_t* ent, const int flags, const char* format, ...)
 	}
 	va_end(argptr);
 
-	if (ent != NULL && !(flags & (FX_EXPLOSION1 | FX_LINKEDBLOOD)))
+	if (ent != NULL && !broadcast)
 		fx_buf->freeBlock = msg->readcount;
 
 	return num_params;
 }
 
-int CL_CreateEffect(byte EventId, void* owner, ushort type, int flags, vec3_t position, char* format, ...)
+//mxd. Also written by SV_CreateEffectEvent(). Parsed by ParseEffects() in ClientEffects/Main.c
+int CL_CreateEffect(const byte EventId, const void* owner, const ushort type, const int flags, const vec3_t position, const char* format, ...)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	sizebuf_t sb;
+
+	if (cl.playerinfo.ishistory || !cl.playerinfo.pers.connected || owner == NULL)
+		return 0;
+
+	if (client_prediction_effects.buf == NULL)
+	{
+		client_prediction_effects.buf = (byte*)ResMngr_AllocateResource(&fx_buffer_manager, ENTITY_FX_BUF_SIZE);
+		client_prediction_effects.bufSize = ENTITY_FX_BUF_SIZE;
+		client_prediction_effects.numEffects = 0;
+	}
+
+	SZ_Init(&sb, &client_prediction_effects.buf[client_prediction_effects.freeBlock], client_prediction_effects.bufSize - client_prediction_effects.freeBlock);
+
+	if (flags != 0)
+	{
+		MSG_WriteShort(&sb, type | EFFECT_FLAGS);
+		MSG_WriteByte(&sb, flags);
+	}
+	else
+	{
+		MSG_WriteShort(&sb, type);
+	}
+
+	if (!(flags & CEF_OWNERS_ORIGIN))
+		MSG_WritePos(&sb, position);
+
+	if (format != NULL)
+	{
+		va_list argptr;
+
+		va_start(argptr, format);
+		ParseEffectToSizeBuf(&sb, format, argptr);
+		va_end(argptr);
+
+		effect_event_id_time_array[EventId] = cl.playerinfo.Highestleveltime;
+	}
+
+	client_prediction_effects.freeBlock += sb.cursize;
+	client_prediction_effects.numEffects++;
+
+	return sb.cursize;
 }
 
 void CL_RemoveEffects(byte EventId, void* owner, int fx)
