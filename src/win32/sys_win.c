@@ -75,6 +75,7 @@ void Sys_Quit(void)
 //mxd. Print to Visual Studio console.
 void Sys_IDEPrintf(const char* fmt, ...)
 {
+#if _DEBUG
 	va_list argptr;
 	char msg[1024];
 
@@ -83,6 +84,7 @@ void Sys_IDEPrintf(const char* fmt, ...)
 	va_end(argptr);
 
 	OutputDebugString(msg);
+#endif
 }
 
 #pragma endregion
