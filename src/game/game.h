@@ -148,7 +148,7 @@ typedef struct
 	// Sound playing routines.
 	void (*sound)(edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
 	void (*soundevent)(byte EventId, float leveltime, edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
-	void (*positioned_sound)(vec3_t origin, edict_t* ent, int channel, int soundinedex, float volume, float attenuation, float timeofs);
+	void (*positioned_sound)(vec3_t origin, const edict_t* ent, int channel, int soundinedex, float volume, float attenuation, float timeofs);
 
 	// Config strings hold all the index strings, the lightstyles and misc data, like the sky definition and cdtrack.
 	// All of the current configstrings are sent to clients when they connect and changes are sent to all connected clients.
@@ -175,8 +175,8 @@ typedef struct
 	int (*pointcontents)(vec3_t point);
 
 	// Potentially visible / invisible set routines.
-	qboolean (*inPVS)(vec3_t p1, vec3_t p2);
-	qboolean (*inPHS)(vec3_t p1, vec3_t p2);
+	qboolean (*inPVS)(const vec3_t p1, const vec3_t p2);
+	qboolean (*inPHS)(const vec3_t p1, const vec3_t p2);
 	void (*SetAreaPortalState)(int portalnum, qboolean open);
 	qboolean (*AreasConnected)(int area1, int area2);
 
@@ -206,15 +206,15 @@ typedef struct
 	void (*WritePosition)(vec3_t pos);	// Some fractional bits.
 	void (*WriteDir)(vec3_t pos);		// Single byte encoded, very coarse.
 	void (*WriteAngle)(float f);
-	void (*CreateEffect)(entity_state_t* ent, int type, int flags, vec3_t origin, char* format, ...);
+	void (*CreateEffect)(entity_state_t* ent, int type, int flags, const vec3_t origin, const char* format, ...);
 	void (*RemoveEffects)(entity_state_t* ent, int type);
-	void (*CreateEffectEvent)(byte EventId, entity_state_t* ent, int type, int flags, vec3_t origin, char* format, ...);
+	void (*CreateEffectEvent)(byte EventId, entity_state_t* ent, int type, int flags, const vec3_t origin, const char* format, ...);
 	void (*RemoveEffectsEvent)(byte EventId, entity_state_t* ent, int type);
-	int (*CreatePersistantEffect)(entity_state_t* ent, int type, int flags, vec3_t origin, char* format, ...);
+	int (*CreatePersistantEffect)(const entity_state_t* ent, int type, int flags, const vec3_t origin, const char* format, ...);
 
 	// Removes the effect from the server's persistent effect list. The effect is not removed on the client.
 	// This should be done by removing the effects from the owning entity or freeing.
-	qboolean(*RemovePersistantEffect) (int toRemove, int call_from);	
+	qboolean(*RemovePersistantEffect) (int toRemove, int call_from);
 
 	// Managed memory allocation.
 	void* (*TagMalloc)(int size, int tag);
