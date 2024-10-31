@@ -91,10 +91,57 @@ static qboolean CheckCollision(const float aimangle)
 	return false;
 }
 
-static qboolean PM_CanMoveToPos(float offset_z, float frametime, trace_t* tr)
+static qboolean PM_CanMoveToPos(const float offset_z, const float frametime, trace_t* tr) // H2
 {
-	NOT_IMPLEMENTED
-	return false;
+	vec3_t start;
+	vec3_t end;
+	trace_t trace;
+
+	vec3_t vel;
+	VectorScale(pml.velocity, frametime, vel);
+
+	if (vhlen(vel, vec3_origin) < 0.01f)
+		return false;
+
+	VectorCopy(pml.origin, start);
+	VectorCopy(pml.origin, end);
+	end[2] += offset_z + max(0.0f, vel[2]);
+
+	pm->trace(start, pm->mins, pm->maxs, end, &trace);
+
+	if (trace.startsolid || trace.allsolid || trace.endpos[2] < pml.origin[2] + 1.0f)
+		return false;
+
+	VectorCopy(trace.endpos, start);
+	VectorCopy(trace.endpos, end);
+	end[0] += vel[0];
+	end[1] += vel[1];
+
+	pm->trace(start, pm->mins, pm->maxs, end, &trace);
+
+	if (trace.startsolid || trace.allsolid || trace.fraction == 0.0f)
+		return false;
+
+	const float prev_fraction = trace.fraction;
+
+	VectorCopy(trace.endpos, start);
+	VectorCopy(trace.endpos, end);
+	end[2] = pml.origin[2] + min(0.0f, vel[2]);
+
+	pm->trace(start, pm->mins, pm->maxs, end, &trace);
+
+	if (trace.startsolid || trace.allsolid)
+		return false;
+
+	if ((prev_fraction < 1.0f && trace.endpos[2] <= pml.origin[2] + 0.01f) || 
+		(trace.fraction < 1.0f && trace.plane.normal[2] <= MIN_STEP_NORMAL))
+		return false;
+
+	trace.fraction = prev_fraction;
+	memcpy(tr, &trace, sizeof(trace_t));
+	VectorCopy(trace.endpos, pml.origin);
+
+	return true;
 }
 
 // Each intersection will try to step over the obstruction instead of sliding along it.
