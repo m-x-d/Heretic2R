@@ -594,10 +594,10 @@ void SV_SendClientMessages(const qboolean send_client_data)
 	}
 
 	// H2: clear all client effects.
-	effects_buffer_index = 0;
-	effects_buffer_offset = 0;
+	num_effects_buffers = 0;
+	clfx_buffer_offset = 0;
 
-	PerEffectsBuffer_t* effect = persistant_effects_array;
+	PerEffectsBuffer_t* effect = persistant_effects;
 	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++, effect++)
 	{
 		if (effect->fx_num == 0 && effect->numEffects != 0 && effect->send_mask == send_mask)

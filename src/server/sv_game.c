@@ -378,7 +378,7 @@ void SV_InitGameProgs(void)
 	import.Sys_LoadGameDll = Sys_LoadGameDll; //TODO: this breaks Windows logic separation.
 	import.Sys_UnloadGameDll = Sys_UnloadGameDll; //TODO: this breaks Windows logic separation.
 	import.ClearPersistantEffects = SV_ClearPersistantEffects;
-	import.Persistant_Effects_Array = persistant_effects_array;
+	import.Persistant_Effects_Array = persistant_effects;
 
 	//TODO: this breaks Windows logic separation.
 	DWORD checksum;
@@ -398,8 +398,8 @@ void SV_InitGameProgs(void)
 	ResMngr_Con(&sv_FXBufMngr, ENTITY_FX_BUF_SIZE, ENTITY_FX_BUF_BLOCK_SIZE);
 	ResMngr_Con(&EffectsBufferMngr, sizeof(EffectsBuffer_t), 12);
 
-	effects_buffer_index = 0;
-	effects_buffer_offset = 0;
+	num_effects_buffers = 0;
+	clfx_buffer_offset = 0;
 	is_local_client = false;
 
 	ge->Init();

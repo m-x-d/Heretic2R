@@ -14,15 +14,15 @@ ResourceManager_t sv_FXBufMngr;
 ResourceManager_t EffectsBufferMngr;
 
 int num_persistant_effects;
-PerEffectsBuffer_t persistant_effects_array[MAX_PERSISTANT_EFFECTS];
+PerEffectsBuffer_t persistant_effects[MAX_PERSISTANT_EFFECTS];
 
-int effects_buffer_index;
-int effects_buffer_offset;
-
+int clfx_buffer_offset;
 static byte clfx_buffer[4096];
-static EffectsBuffer_t effects_buffers_arr[256];
-static vec3_t BroadcastEffectPositions_arr[256];
-static qboolean broadcast_effect_infos_used[256];
+
+int num_effects_buffers;
+static EffectsBuffer_t effects_buffers[256];
+static vec3_t effects_positions[256];
+static qboolean is_broadcast_effect[256];
 
 void SV_CreateEffect(entity_state_t* ent, const int type, int flags, const vec3_t origin, const char* format, ...)
 {
@@ -60,11 +60,11 @@ void SV_CreateEffect(entity_state_t* ent, const int type, int flags, const vec3_
 	}
 	else
 	{
-		clfx = &effects_buffers_arr[effects_buffer_index];
+		clfx = &effects_buffers[num_effects_buffers];
 		clfx->buf = clfx_buffer;
-		clfx->freeBlock = effects_buffer_offset;
+		clfx->freeBlock = clfx_buffer_offset;
 
-		length = (int)sizeof(clfx_buffer) - effects_buffer_offset;
+		length = (int)sizeof(clfx_buffer) - clfx_buffer_offset;
 	}
 
 	SZ_Init(&sb, &clfx->buf[clfx->freeBlock], length);
@@ -91,7 +91,7 @@ void SV_CreateEffect(entity_state_t* ent, const int type, int flags, const vec3_
 		MSG_WriteShort(&sb, type);
 	}
 
-	broadcast_effect_infos_used[effects_buffer_index] = broadcast;
+	is_broadcast_effect[num_effects_buffers] = broadcast;
 
 	if (!(flags & CEF_OWNERS_ORIGIN))
 		MSG_WritePos(&sb, origin);
@@ -116,10 +116,10 @@ void SV_CreateEffect(entity_state_t* ent, const int type, int flags, const vec3_
 		clfx->bufSize = sb.cursize;
 
 		if (!(flags & CEF_BROADCAST))
-			VectorCopy(origin, BroadcastEffectPositions_arr[effects_buffer_index]);
+			VectorCopy(origin, effects_positions[num_effects_buffers]);
 
-		effects_buffer_offset += sb.cursize;
-		effects_buffer_index++;
+		clfx_buffer_offset += sb.cursize;
+		num_effects_buffers++;
 	}
 }
 
@@ -158,11 +158,11 @@ void SV_CreateEffectEvent(const byte EventId, entity_state_t* ent, const int typ
 	}
 	else
 	{
-		clfx = &effects_buffers_arr[effects_buffer_index];
+		clfx = &effects_buffers[num_effects_buffers];
 		clfx->buf = clfx_buffer;
-		clfx->freeBlock = effects_buffer_offset;
+		clfx->freeBlock = clfx_buffer_offset;
 
-		length = (int)sizeof(clfx_buffer) - effects_buffer_offset;
+		length = (int)sizeof(clfx_buffer) - clfx_buffer_offset;
 	}
 
 	SZ_Init(&sb, &clfx->buf[clfx->freeBlock], length);
@@ -190,7 +190,7 @@ void SV_CreateEffectEvent(const byte EventId, entity_state_t* ent, const int typ
 		MSG_WriteShort(&sb, type);
 	}
 
-	broadcast_effect_infos_used[effects_buffer_index] = broadcast;
+	is_broadcast_effect[num_effects_buffers] = broadcast;
 
 	if (!(flags & CEF_OWNERS_ORIGIN))
 		MSG_WritePos(&sb, origin);
@@ -215,10 +215,10 @@ void SV_CreateEffectEvent(const byte EventId, entity_state_t* ent, const int typ
 		clfx->bufSize = sb.cursize;
 
 		if (!(flags & CEF_BROADCAST))
-			VectorCopy(origin, BroadcastEffectPositions_arr[effects_buffer_index]);
+			VectorCopy(origin, effects_positions[num_effects_buffers]);
 
-		effects_buffer_offset += sb.cursize;
-		effects_buffer_index++;
+		clfx_buffer_offset += sb.cursize;
+		num_effects_buffers++;
 	}
 }
 
@@ -242,7 +242,7 @@ int SV_CreatePersistantEffect(const entity_state_t* ent, const int type, int fla
 
 	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++)
 	{
-		if (persistant_effects_array[i].numEffects == 0)
+		if (persistant_effects[i].numEffects == 0)
 		{
 			fx_index = i;
 			break;
@@ -253,15 +253,15 @@ int SV_CreatePersistantEffect(const entity_state_t* ent, const int type, int fla
 		return -1;
 
 	// Init effect.
-	PerEffectsBuffer_t* fx = &persistant_effects_array[fx_index];
+	PerEffectsBuffer_t* pfx = &persistant_effects[fx_index];
 
-	fx->freeBlock = 0;
-	fx->bufSize = ENTITY_FX_BUF_SIZE;
-	fx->numEffects = 1;
-	fx->fx_num = type;
-	fx->demo_send_mask = -1;
-	fx->send_mask = 0;
-	SZ_Init(&sb, fx->buf, sizeof(fx->buf));
+	pfx->freeBlock = 0;
+	pfx->bufSize = ENTITY_FX_BUF_SIZE;
+	pfx->numEffects = 1;
+	pfx->fx_num = type;
+	pfx->demo_send_mask = -1;
+	pfx->send_mask = 0;
+	SZ_Init(&sb, pfx->buf, sizeof(pfx->buf));
 
 	// Transmit effect.
 	MSG_WriteShort(&sb, type | EFFECT_FLAGS);
@@ -291,7 +291,7 @@ int SV_CreatePersistantEffect(const entity_state_t* ent, const int type, int fla
 		va_end(argptr);
 	}
 
-	fx->bufSize = sb.cursize;
+	pfx->bufSize = sb.cursize;
 	num_persistant_effects++;
 
 	return fx_index + 1; //mxd. 1-based, because fx type 0 is FX_REMOVE_EFFECTS?
@@ -308,7 +308,7 @@ void SV_RemoveEdictFromPersistantEffectsArray(const edict_t* ed)
 	// Remove edict from send_mask of all persistant_effects...
 	const int bit = ~EDICT_MASK(ed);
 	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++)
-		persistant_effects_array[i].send_mask &= bit;
+		persistant_effects[i].send_mask &= bit;
 }
 
 void SV_UpdatePersistantEffectsDemoMask(client_t* cl)
@@ -325,7 +325,7 @@ void SV_ClearPersistantEffectBuffersArray(void)
 {
 	SV_PrepWorldFrame();
 	num_persistant_effects = 0;
-	memset(persistant_effects_array, 0, sizeof(persistant_effects_array));
+	memset(persistant_effects, 0, sizeof(persistant_effects));
 }
 
 void SV_SendClientEffects(client_t* cl)
@@ -350,7 +350,7 @@ void SV_SendClientEffects(client_t* cl)
 	int sent_demo_effects_count = 0;
 	int send_demo_buffer_offset = 0;
 
-	if (effects_buffer_index > 0)
+	if (num_effects_buffers > 0)
 	{
 		const float fov = cosf(cl->frames[sv.framenum & UPDATE_MASK].ps.fov * FOV_SCALER);
 
@@ -370,26 +370,26 @@ void SV_SendClientEffects(client_t* cl)
 		for (int i = 0; i < 3; i++)
 			delta[i] = cam_vieworg[i] - direction[i] * 200.0f;
 
-		for (int i = 0; i < effects_buffer_index; i++)
+		for (int i = 0; i < num_effects_buffers; i++)
 		{
 			int send_index = 1;
 
-			if (!broadcast_effect_infos_used[i])
+			if (!is_broadcast_effect[i])
 			{
 				vec3_t fx_delta;
-				VectorSubtract(BroadcastEffectPositions_arr[i], delta, fx_delta);
+				VectorSubtract(effects_positions[i], delta, fx_delta);
 				const float dist = VectorNormalize(fx_delta);
 
 				if (dist <= r_farclipdist->value && 
 					(dist < 1000.0f || fov <= DotProduct(direction, fx_delta)) && 
-					PF_inPVS(cam_vieworg, BroadcastEffectPositions_arr[i]))
+					PF_inPVS(cam_vieworg, effects_positions[i]))
 				{
 					send_index = 0;
 				}
 			}
 
 			buffer_indices[send_index][send_count[send_index]] = i;
-			send_sizes[send_index] += effects_buffers_arr[i].bufSize;
+			send_sizes[send_index] += effects_buffers[i].bufSize;
 			send_count[send_index]++;
 		}
 	}
@@ -402,37 +402,37 @@ void SV_SendClientEffects(client_t* cl)
 	}
 
 	const int send_mask = EDICT_MASK(cl->edict);
-	PerEffectsBuffer_t* pfx_buf = &persistant_effects_array[0];
+	PerEffectsBuffer_t* pfx = &persistant_effects[0];
 
 	const int send_size = cl->netchan.message.cursize + send_sizes[1]; // send_size2
-	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++, pfx_buf++)
+	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++, pfx++)
 	{
-		if (pfx_buf->numEffects == 0)
+		if (pfx->numEffects == 0)
 			continue;
 
-		if ((send_mask & pfx_buf->send_mask) == 0)
+		if ((send_mask & pfx->send_mask) == 0)
 		{
 			if ((int)sv_pers_fx_send_cut_off->value <= send_size + send_buffer_offset + send_demo_buffer_offset)
 				break;
 
-			memcpy(&fx_send_buffer[send_buffer_offset], pfx_buf->buf, pfx_buf->bufSize);
+			memcpy(&fx_send_buffer[send_buffer_offset], pfx->buf, pfx->bufSize);
 
-			pfx_buf->send_mask |= send_mask;
-			send_buffer_offset += pfx_buf->bufSize;
+			pfx->send_mask |= send_mask;
+			send_buffer_offset += pfx->bufSize;
 			sent_effects_count++;
 
 			send_effects = true;
 		}
 
-		if ((send_mask & pfx_buf->demo_send_mask) == 0)
+		if ((send_mask & pfx->demo_send_mask) == 0)
 		{
 			if ((int)sv_pers_fx_send_cut_off->value <= send_size + send_buffer_offset + send_demo_buffer_offset)
 				break;
 
-			memcpy(&fx_demo_send_buffer[send_demo_buffer_offset], pfx_buf->buf, pfx_buf->bufSize);
+			memcpy(&fx_demo_send_buffer[send_demo_buffer_offset], pfx->buf, pfx->bufSize);
 
-			pfx_buf->demo_send_mask |= send_mask;
-			send_demo_buffer_offset += pfx_buf->bufSize;
+			pfx->demo_send_mask |= send_mask;
+			send_demo_buffer_offset += pfx->bufSize;
 			sent_demo_effects_count++;
 
 			send_demo_effects = true;
@@ -480,8 +480,8 @@ void SV_SendClientEffects(client_t* cl)
 		for (int i = 0; i < send_count[1]; i++)
 		{
 			const int fx_index = buffer_indices[1][i];
-			const int buf_offset = effects_buffers_arr[fx_index].freeBlock;
-			SZ_Write(msg, &effects_buffers_arr[fx_index].buf[buf_offset], effects_buffers_arr[fx_index].bufSize);
+			const int buf_offset = effects_buffers[fx_index].freeBlock;
+			SZ_Write(msg, &effects_buffers[fx_index].buf[buf_offset], effects_buffers[fx_index].bufSize);
 		}
 	}
 
@@ -493,8 +493,8 @@ void SV_SendClientEffects(client_t* cl)
 		for (int i = 0; i < send_count[0]; i++)
 		{
 			const int fx_index = buffer_indices[0][i];
-			const int buf_offset = effects_buffers_arr[fx_index].freeBlock;
-			SZ_Write(&cl->datagram, &effects_buffers_arr[fx_index].buf[buf_offset], effects_buffers_arr[fx_index].bufSize);
+			const int buf_offset = effects_buffers[fx_index].freeBlock;
+			SZ_Write(&cl->datagram, &effects_buffers[fx_index].buf[buf_offset], effects_buffers[fx_index].bufSize);
 		}
 	}
 }
