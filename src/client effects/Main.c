@@ -415,7 +415,7 @@ ParseClientEffects
 */
 
 // Insert the logic in this could use a good cleaning. . .
-
+//mxd. Written by SV_CreateEffectEvent() / SV_CreatePersistantEffect().
 void ParseEffects(centity_t *owner)
 {
 	int				i, index;
@@ -502,9 +502,9 @@ void ParseEffects(centity_t *owner)
 #if 0
 		Cvar_Set("cfxpl", MSG_ReadString(msg_read));
 #endif
-		if(effect & 0x8000)
+		if(effect & EFFECT_FLAGS) //mxd. Use EFFECT_FLAGS define.
 		{
-			effect &= ~0x8000;
+			effect &= ~EFFECT_FLAGS;
 
 			flags = MSG_ReadByte(msg_read);
 		}
