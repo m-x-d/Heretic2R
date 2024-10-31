@@ -34,6 +34,7 @@ void SV_RemoveEffects(entity_state_t* ent, int type)
 	NOT_IMPLEMENTED
 }
 
+//mxd. Parsed by ParseEffects() in ClientEffects/Main.c
 void SV_CreateEffectEvent(const byte EventId, entity_state_t* ent, const int type, int flags, const vec3_t origin, const char* format, ...)
 {
 	EffectsBuffer_t* clfx;
@@ -74,7 +75,7 @@ void SV_CreateEffectEvent(const byte EventId, entity_state_t* ent, const int typ
 
 	if (flags != 0)
 	{
-		MSG_WriteShort(&sb, type);
+		MSG_WriteShort(&sb, type | EFFECT_PRED_INFO | EFFECT_FLAGS);
 		MSG_WriteByte(&sb, EventId);
 
 		if (broadcast && ent_num > 255)
@@ -169,15 +170,15 @@ int SV_CreatePersistantEffect(const entity_state_t* ent, const int type, int fla
 	SZ_Init(&sb, fx->buf, sizeof(fx->buf));
 
 	// Transmit effect.
-	MSG_WriteShort(&sb, type | 0x8000);
+	MSG_WriteShort(&sb, type | EFFECT_FLAGS);
 
 	const int ent_num = (ent != NULL ? ent->number : 0);
-	if ((flags & (CEF_BROADCAST | CEF_MULTICAST)) != 0 && ent_num > 255)
+	if ((flags & (CEF_BROADCAST | CEF_MULTICAST)) && ent_num > 255)
 		flags |= CEF_ENTNUM16;
 
 	MSG_WriteByte(&sb, flags);
 
-	if ((flags & CEF_BROADCAST) != 0 && ent_num >= 0)
+	if ((flags & CEF_BROADCAST) && ent_num >= 0)
 	{
 		if (ent_num > 255)
 			MSG_WriteShort(&sb, ent_num);
@@ -185,7 +186,7 @@ int SV_CreatePersistantEffect(const entity_state_t* ent, const int type, int fla
 			MSG_WriteByte(&sb, ent_num);
 	}
 
-	if ((flags & CEF_OWNERS_ORIGIN) == 0)
+	if (!(flags & CEF_OWNERS_ORIGIN))
 		MSG_WritePos(&sb, origin);
 
 	if (format != NULL)
