@@ -88,9 +88,19 @@ void SK_SetJointAngles(const playerinfo_t* playerinfo)
 	}
 }
 
-void SK_ResetJointAngles(playerinfo_t* playerinfo)
+// Reset the player model's joint angles.
+//mxd. Similar to G_ResetJointAngles() in game/p_funcs.c.
+void SK_ResetJointAngles(const playerinfo_t* playerinfo)
 {
-	NOT_IMPLEMENTED
+	const centity_t* self = playerinfo->self;
+
+	SetJointAngVel(self->current.rootJoint + CORVUS_HEAD,		PITCH, 0.0f, ANGLE_45);
+	SetJointAngVel(self->current.rootJoint + CORVUS_UPPERBACK,	PITCH, 0.0f, ANGLE_45);
+	SetJointAngVel(self->current.rootJoint + CORVUS_LOWERBACK,	PITCH, 0.0f, ANGLE_45);
+
+	SetJointAngVel(self->current.rootJoint + CORVUS_HEAD,		ROLL, 0.0f, ANGLE_45);
+	SetJointAngVel(self->current.rootJoint + CORVUS_UPPERBACK,	ROLL, 0.0f, ANGLE_45);
+	SetJointAngVel(self->current.rootJoint + CORVUS_LOWERBACK,	ROLL, 0.0f, ANGLE_45);
 }
 
 void SK_CreateSkeleton(const int structure, const int root_index)
