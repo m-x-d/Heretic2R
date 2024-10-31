@@ -267,8 +267,8 @@ void MSG_ReadShortYawPitch(sizebuf_t* sb, vec3_t dir)
 	angles[1] = (float)MSG_ReadShort(sb) * (1.0f / 8.0f);
 	angles[2] = 0;
 
-	angles[YAW] = angles[YAW] * ANGLE_TO_RAD;
-	angles[PITCH] = angles[PITCH] * ANGLE_TO_RAD;
+	angles[YAW] *= ANGLE_TO_RAD;
+	angles[PITCH] *= ANGLE_TO_RAD;
 	DirFromAngles(angles, dir);
 }
 

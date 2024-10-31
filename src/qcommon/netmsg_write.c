@@ -766,7 +766,20 @@ void MSG_WriteYawPitch(sizebuf_t* sb, vec3_t vector)
 	NOT_IMPLEMENTED
 }
 
-void MSG_WriteShortYawPitch(sizebuf_t* sb, vec3_t vector)
+void MSG_WriteShortYawPitch(sizebuf_t* sb, const vec3_t vector) // H2
 {
-	NOT_IMPLEMENTED
+	if (vector != NULL)
+	{
+		vec3_t angles;
+		vectoangles(vector, angles);
+
+		MSG_WriteShort(sb, (int)(angles[0] * 8.0f));
+		MSG_WriteShort(sb, (int)(angles[1] * 8.0f));
+	}
+	else
+	{
+		Com_DPrintf("ERROR, null direction passed into MSG_WriteShortYawPitch");
+		MSG_WriteShort(sb, 0);
+		MSG_WriteShort(sb, 0);
+	}
 }

@@ -76,7 +76,7 @@ void MSG_WriteDeltaEntity(const struct entity_state_s* from, struct entity_state
 void MSG_WriteDir(sizebuf_t* sb, vec3_t dir);
 void MSG_WriteDirMag(sizebuf_t* sb, vec3_t dir);
 void MSG_WriteYawPitch(sizebuf_t* sb, vec3_t vector);
-void MSG_WriteShortYawPitch(sizebuf_t* sb, vec3_t vector);
+void MSG_WriteShortYawPitch(sizebuf_t* sb, const vec3_t vector);
 
 void MSG_BeginReading(sizebuf_t* sb);
 
