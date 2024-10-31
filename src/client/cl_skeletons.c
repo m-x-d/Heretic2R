@@ -36,9 +36,19 @@ void SK_UpdateSkeletons(void)
 	}
 }
 
-void SK_ClearJoints(int joint_index)
+void SK_ClearJoints(const int joint_index)
 {
-	NOT_IMPLEMENTED
+	int child = skeletal_joints[joint_index].children;
+
+	while (child != -1)
+	{
+		SK_ClearJoints(joint_nodes[child].data);
+		joint_nodes[child].inUse = 0;
+		child = joint_nodes[child].next;
+	}
+
+	skeletal_joints[joint_index].changed = false;
+	skeletal_joints[joint_index].inUse = false;
 }
 
 //mxd. Similar to SetJointAngVel() in game/g_Skeletons.c.
