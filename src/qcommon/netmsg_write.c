@@ -283,7 +283,7 @@ static void MSG_WriteEffects(sizebuf_t* sb, EffectsBuffer_t* fxBuf) // H2
 	}
 	else
 	{
-		fxBuf->numEffects |= 128;
+		fxBuf->numEffects |= 0x80;
 		MSG_WriteByte(sb, fxBuf->numEffects);
 		MSG_WriteShort(sb, fxBuf->freeBlock);
 	}
@@ -355,6 +355,7 @@ static void MSG_WriteJoints(sizebuf_t* sb, const int joint_index) // H2
 
 // Writes part of a packetentities message.
 // Can delta from either a baseline or a previous packet_entity.
+//mxd. Parsed by CL_ParseDelta().
 void MSG_WriteDeltaEntity(const entity_state_t* from, entity_state_t* to, sizebuf_t* msg, const qboolean force)
 {
 	byte bits[NUM_ENTITY_HEADER_BITS];

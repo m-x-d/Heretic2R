@@ -95,6 +95,7 @@ int CL_ParseEntityBits(byte* bf, byte* bfNonZero)
 }
 
 // Can go from either a baseline or a previous packet_entity.
+//mxd. Written by MSG_WriteDeltaEntity().
 void CL_ParseDelta(const entity_state_t* from, entity_state_t* to, const int number, const byte* bits)
 {
 	// Set everything to the state we are delta'ing from
@@ -293,7 +294,7 @@ void CL_ParseDelta(const entity_state_t* from, entity_state_t* to, const int num
 		{
 			fx_buf->buf = (byte*)ResMngr_AllocateResource(&fx_buffer_manager, ENTITY_FX_BUF_SIZE);
 			fx_buf->numEffects = 0;
-			fx_buf->bufSize = 0;
+			fx_buf->bufSize = 0; //mxd. Increased by MSG_ReadEffects().
 			fx_buf->freeBlock = 0;
 		}
 
