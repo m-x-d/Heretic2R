@@ -26,9 +26,27 @@ void SV_BroadcastCaption(int printlevel, short stringid)
 	NOT_IMPLEMENTED
 }
 
-void SV_BroadcastObituary(int printlevel, short stringid, short client1, short client2)
+void SV_BroadcastObituary(const int printlevel, const short stringid, const short client1, const short client2) // H2
 {
-	NOT_IMPLEMENTED
+	if ((int)dedicated->value)
+	{
+		char* name1 = (client1 > 0 ? svs.clients[client1 - 1].name : "no one");
+		char* name2 = (client2 > 0 ? svs.clients[client2 - 1].name : "no one");
+
+		Com_Printf("Client Obituary #%d: %s and %s\n", stringid, name1, name2);
+	}
+
+	client_t* cl = svs.clients;
+	for (int i = 0; i < (int)maxclients->value; i++, cl++)
+	{
+		if (cl->state != cs_spawned || printlevel < cl->messagelevel)
+			continue;
+
+		MSG_WriteByte(&cl->netchan.message, svc_obituary);
+		MSG_WriteShort(&cl->netchan.message, stringid | (printlevel << 13));
+		MSG_WriteByte(&cl->netchan.message, client1);
+		MSG_WriteByte(&cl->netchan.message, client2);
+	}
 }
 
 // Q2 counterpart
