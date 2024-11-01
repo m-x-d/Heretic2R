@@ -6,6 +6,7 @@
 
 #include "sv_effects.h"
 #include "EffectFlags.h"
+#include "FX.h"
 #include "Vector.h"
 
 qboolean send_fx_framenum;
@@ -123,9 +124,9 @@ void SV_CreateEffect(entity_state_t* ent, const int type, int flags, const vec3_
 	}
 }
 
-void SV_RemoveEffects(entity_state_t* ent, int type)
+void SV_RemoveEffects(entity_state_t* ent, const int type)
 {
-	NOT_IMPLEMENTED
+	SV_CreateEffect(ent, FX_REMOVE_EFFECTS, CEF_OWNERS_ORIGIN | CEF_BROADCAST, NULL, "s", type);
 }
 
 //mxd. Parsed by ParseEffects() in ClientEffects/Main.c
@@ -222,9 +223,9 @@ void SV_CreateEffectEvent(const byte EventId, entity_state_t* ent, const int typ
 	}
 }
 
-void SV_RemoveEffectsEvent(byte EventId, entity_state_t* ent, int type)
+void SV_RemoveEffectsEvent(const byte EventId, entity_state_t* ent, const int type)
 {
-	NOT_IMPLEMENTED
+	SV_CreateEffectEvent(EventId, ent, FX_REMOVE_EFFECTS, CEF_OWNERS_ORIGIN | CEF_BROADCAST, NULL, "s", type);
 }
 
 int SV_CreatePersistantEffect(const entity_state_t* ent, const int type, int flags, const vec3_t origin, const char* format, ...)
