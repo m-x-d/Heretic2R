@@ -610,9 +610,103 @@ static void PM_AddCurrents(vec3_t wishvel)
 	}
 }
 
-static void PM_TryMove(void) // H2
+//mxd. Return value is unused.
+static qboolean PM_TryMove(void) // H2
 {
-	NOT_IMPLEMENTED
+	int axis;
+	float sign;
+	float* v1;
+	float* v2;
+	vec3_t start;
+	vec3_t end;
+	vec3_t mins;
+	vec3_t maxs;
+	vec3_t intent_mins;
+	vec3_t intent_maxs;
+	trace_t trace;
+
+	VectorCopy(pm->intentMins, intent_mins);
+	VectorCopy(pm->intentMaxs, intent_maxs);
+	VectorCopy(pm->mins, mins);
+	VectorCopy(pm->maxs, maxs);
+	VectorCopy(pml.origin, start);
+
+	for (int i = 0; i < 6; i++)
+	{
+		if (i & 1)
+		{
+			if (i & 4)
+				axis = 2;
+			else if (i & 2)
+				axis = 0;
+			else
+				axis = 1;
+
+			v1 = maxs;
+			v2 = intent_maxs;
+			sign = 1.0f;
+		}
+		else
+		{
+			if (i & 4)
+				axis = 2;
+			else if (i & 2)
+				axis = 1;
+			else
+				axis = 0;
+
+			v1 = mins;
+			v2 = intent_mins;
+			sign = -1.0f;
+		}
+
+		float diff = v2[axis] - v1[axis];
+
+		if (diff * sign > 0.0f)
+		{
+			VectorCopy(start, end);
+
+			if (i == 4 && pm->groundentity != NULL)
+			{
+				trace.fraction = 0.0f;
+			}
+			else
+			{
+				end[axis] += diff;
+
+				pm->trace(start, mins, maxs, end, &trace);
+
+				if (trace.startsolid || trace.allsolid)
+					return false;
+			}
+
+			if (trace.fraction < 1.0f)
+			{
+				diff *= (1.0f - trace.fraction);
+				end[axis] = start[axis] - diff;
+
+				pm->trace(start, mins, maxs, end, &trace);
+
+				if (trace.fraction != 1.0f)
+					return false;
+
+				start[axis] -= diff;
+			}
+		}
+
+		v1[axis] = v2[axis];
+	}
+
+	pm->trace(start, intent_mins, intent_maxs, start, &trace);
+
+	if (trace.startsolid)
+		return false;
+
+	VectorCopy(start, pml.origin);
+	VectorCopy(intent_mins, pm->mins);
+	VectorCopy(intent_maxs, pm->maxs);
+
+	return true;
 }
 
 static void PM_AirMove(void)
