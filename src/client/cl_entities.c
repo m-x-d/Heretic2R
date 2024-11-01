@@ -1595,9 +1595,16 @@ void CL_AddEntities(void)
 	CL_CalcViewValues();
 }
 
-void CL_GetEntitySoundOrigin(int ent, vec3_t org)
+// Q2 counterpart
+// Called to get the sound spatialization origin.
+void CL_GetEntitySoundOrigin(const int ent, vec3_t org)
 {
-	NOT_IMPLEMENTED
+	if (ent >= 0 && ent < MAX_EDICTS)
+		VectorCopy(cl_entities[ent].lerp_origin, org);
+	else
+		Com_Error(ERR_DROP, "CL_GetEntitySoundOrigin: bad ent");
+
+	// FIXME: bmodel issues...
 }
 
 void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const int brushmask, const int flags, trace_t* t) // H2
