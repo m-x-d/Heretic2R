@@ -901,12 +901,11 @@ void Key_Event(int key, const qboolean down, const uint time)
 		{
 			if (!command_down || menu_keys_pressed_state[key])
 			{
-				if (!is_doubletap_key)
-				{
+				if (is_doubletap_key)
 					kb = keybindings_double[key];
-					if (kb == NULL || Q_stricmp(kb, "") == 0)
-						kb = keybindings[key];
-				}
+
+				if (!is_doubletap_key || kb == NULL || Q_stricmp(kb, "") == 0)
+					kb = keybindings[key];
 			}
 			else
 			{
@@ -980,10 +979,12 @@ void Key_Event(int key, const qboolean down, const uint time)
 		else
 			menu_keys_pressed_state[key] = false;
 	}
-	else if (!is_doubletap_key)
+	else
 	{
-		kb = keybindings_double[key];
-		if (kb == NULL || Q_stricmp(kb, "") == 0)
+		if (is_doubletap_key)
+			kb = keybindings_double[key];
+
+		if (!is_doubletap_key || kb == NULL || Q_stricmp(kb, "") == 0)
 			kb = keybindings[key];
 	}
 
