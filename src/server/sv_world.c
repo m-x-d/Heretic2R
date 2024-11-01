@@ -34,6 +34,9 @@ static int area_count;
 static int area_maxcount;
 static int area_type;
 
+//mxd. Used by SV_FindEntitiesInBounds logic.
+static SinglyLinkedList_t* edicts_list;
+
 typedef struct
 {
 	vec3_t boxmins; // Enclose the test object along entire move.
@@ -368,10 +371,61 @@ int SV_AreaEdicts(vec3_t mins, vec3_t maxs, edict_t** list, const int maxcount, 
 	return area_count;
 }
 
-int SV_FindEntitiesInBounds(vec3_t mins, vec3_t maxs, SinglyLinkedList_t* list, int areatype)
+//mxd. Similar to SV_AreaEdicts_r().
+static void SV_FindEntitiesInBounds_r(areanode_t* node)
 {
-	NOT_IMPLEMENTED
-	return 0;
+	link_t* start;
+
+	// Touch linked edicts.
+	if (area_type == AREA_SOLID)
+		start = &node->solid_edicts;
+	else
+		start = &node->trigger_edicts;
+
+	for (link_t* l = start->next; l != start; l = l->next)
+	{
+		edict_t* check = EDICT_FROM_AREA(l);
+
+		if (check->solid == SOLID_NOT)
+			continue; // Deactivated
+
+		if (check->absmin[0] > area_maxs[0] || check->absmin[1] > area_maxs[1] || check->absmin[2] > area_maxs[2] ||
+			check->absmax[0] < area_mins[0] || check->absmax[1] < area_mins[1] || check->absmax[2] < area_mins[2])
+			continue; // Not touching
+
+		if (area_count >= MAX_NETWORKABLE_EDICTS)
+		{
+			Com_Printf("SV_AreaEdicts: area_count >= MAX_NETWORKABLE_EDICTS\n");
+			return;
+		}
+
+		GenericUnion4_t temp;
+		temp.t_edict_p = check;
+		SLList_Push(edicts_list, temp);
+		area_count++;
+	}
+
+	if (node->axis == -1)
+		return; // Terminal node.
+
+	// Recurse down both sides.
+	if (area_maxs[node->axis] > node->dist)
+		SV_AreaEdicts_r(node->children[0]);
+
+	if (area_mins[node->axis] < node->dist)
+		SV_AreaEdicts_r(node->children[1]);
+}
+
+int SV_FindEntitiesInBounds(vec3_t mins, vec3_t maxs, SinglyLinkedList_t* list, const int areatype) // H2
+{
+	area_mins = mins;
+	area_maxs = maxs;
+	edicts_list = list;
+	area_count = 0;
+	area_type = areatype;
+	SV_FindEntitiesInBounds_r(sv_areanodes);
+
+	return area_count;
 }
 
 // Q2 counterpart
