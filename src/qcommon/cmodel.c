@@ -745,7 +745,7 @@ static void CM_DecompressVis(const byte* in, byte* out)
 
 	do
 	{
-		if (*in)
+		if (*in != 0)
 		{
 			*out_p++ = *in++;
 			continue;
@@ -760,7 +760,8 @@ static void CM_DecompressVis(const byte* in, byte* out)
 			Com_DPrintf("warning: Vis decompression overrun\n");
 		}
 
-		memset(out, 0, c); // H2
+		memset(out_p, 0, c); // H2
+		out_p += c;
 	} while (out_p - out < row);
 }
 
