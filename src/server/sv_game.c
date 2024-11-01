@@ -65,15 +65,21 @@ static void PF_centerprintf(edict_t* ent, char* fmt, ...)
 	NOT_IMPLEMENTED
 }
 
-static void PF_gamemsg_centerprintf(edict_t* ent, short msg)
+static void PF_gamemsg_centerprintf(const edict_t* ent, const short msg) // H2
 {
-	NOT_IMPLEMENTED
+	const int p = NUM_FOR_EDICT(ent);
+	if (p < 1 || p > (int)maxclients->value)
+		return;
+
+	MSG_WriteByte(&sv.multicast, svc_gamemsg_centerprint);
+	MSG_WriteShort(&sv.multicast, msg);
+	PF_Unicast(ent, true);
 }
 
 static void PF_levelmsg_centerprintf(const edict_t* ent, const short msg) // H2
 {
 	const int p = NUM_FOR_EDICT(ent);
-	if (p < 1 || p >(int)maxclients->value)
+	if (p < 1 || p > (int)maxclients->value)
 		return;
 
 	MSG_WriteByte(&sv.multicast, svc_levelmsg_centerprint);
