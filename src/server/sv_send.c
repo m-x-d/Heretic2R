@@ -145,7 +145,7 @@ void SV_Multicast(const vec3_t origin, const multicast_t to)
 	SZ_Clear(&sv.multicast);
 }
 
-static void SV_MulticastSound(const vec3_t origin, const multicast_t to, const int multicast_cursize) // H2
+static void SV_MulticastSound(const vec3_t origin, const multicast_t to, const int message_start) // H2
 {
 	byte* mask;
 
@@ -164,7 +164,7 @@ static void SV_MulticastSound(const vec3_t origin, const multicast_t to, const i
 			reliable = true;
 		// Intentional fallthrough.
 		case MULTICAST_ALL:
-			sv.multicast.data[multicast_cursize] |= 4;
+			sv.multicast.data[message_start] |= SND_POS;
 			mask = NULL;
 			break;
 
@@ -174,8 +174,8 @@ static void SV_MulticastSound(const vec3_t origin, const multicast_t to, const i
 		case MULTICAST_PHS:
 		{
 			const int leafnum = CM_PointLeafnum(origin);
-			area1 = CM_LeafArea(leafnum);
 			const int cluster = CM_LeafCluster(leafnum);
+			area1 = CM_LeafArea(leafnum);
 			mask = CM_ClusterPHS(cluster);
 		} break;
 
@@ -185,8 +185,8 @@ static void SV_MulticastSound(const vec3_t origin, const multicast_t to, const i
 		case MULTICAST_PVS:
 		{
 			const int leafnum = CM_PointLeafnum(origin);
-			area1 = CM_LeafArea(leafnum);
 			const int cluster = CM_LeafCluster(leafnum);
+			area1 = CM_LeafArea(leafnum);
 			mask = CM_ClusterPVS(cluster);
 		} break;
 
@@ -215,14 +215,15 @@ static void SV_MulticastSound(const vec3_t origin, const multicast_t to, const i
 				continue;
 		}
 
-		if (!(sv.multicast.data[multicast_cursize] & 4) && (to == MULTICAST_PHS || to == MULTICAST_PHS_R) && !PF_inPVS(client->edict->s.origin, origin))
-			sv.multicast.data[multicast_cursize] |= 4;
+		// Add position flag or skip position info. //TODO: Why is it done here?..
+		if (!(sv.multicast.data[message_start] & SND_POS) && (to == MULTICAST_PHS || to == MULTICAST_PHS_R) && !PF_inPVS(client->edict->s.origin, origin))
+			sv.multicast.data[message_start] |= SND_POS;
 
 		int send_size;
-		if (sv.multicast.data[multicast_cursize] & 4)
+		if (sv.multicast.data[message_start] & SND_POS)
 			send_size = sv.multicast.cursize;
 		else
-			send_size = sv.multicast.cursize - 6;
+			send_size = sv.multicast.cursize - 6; // Skip position info (last 3 shorts).
 
 		if (reliable)
 			SZ_Write(&client->netchan.message, sv.multicast.data, send_size);
@@ -301,6 +302,8 @@ void SV_StartSound(vec3_t origin, const edict_t* ent, int channel, const int sou
 	}
 
 	MSG_WriteByte(&sv.multicast, svc_sound);
+
+	const int msg_start = sv.multicast.cursize;
 	MSG_WriteByte(&sv.multicast, flags);
 	MSG_WriteShort(&sv.multicast, soundindex);
 
@@ -319,22 +322,21 @@ void SV_StartSound(vec3_t origin, const edict_t* ent, int channel, const int sou
 		MSG_WriteShort(&sv.multicast, sendchan);
 	}
 
-	if (flags & SND_POS) //mxd. There's NO SND_POS check in original logic! How the hell did that work?..
-		MSG_WritePos(&sv.multicast, origin);
+	MSG_WritePos(&sv.multicast, origin); // H2: SND_POS flag is added in SV_MulticastSound().
 
 	if (channel & CHAN_RELIABLE)
 	{
 		if (use_phs && attenuation != 0.0f)
-			SV_MulticastSound(origin, MULTICAST_PHS_R, sv.multicast.cursize);
+			SV_MulticastSound(origin, MULTICAST_PHS_R, msg_start);
 		else
-			SV_MulticastSound(origin, MULTICAST_ALL_R, sv.multicast.cursize);
+			SV_MulticastSound(origin, MULTICAST_ALL_R, msg_start);
 	}
 	else
 	{
 		if (use_phs && attenuation != 0.0f)
-			SV_MulticastSound(origin, MULTICAST_PHS, sv.multicast.cursize);
+			SV_MulticastSound(origin, MULTICAST_PHS, msg_start);
 		else
-			SV_MulticastSound(origin, MULTICAST_ALL, sv.multicast.cursize);
+			SV_MulticastSound(origin, MULTICAST_ALL, msg_start);
 	}
 }
 
@@ -402,6 +404,8 @@ void SV_StartEventSound(const byte EventId, const float leveltime, vec3_t origin
 	}
 
 	MSG_WriteByte(&sv.multicast, svc_sound);
+
+	const int msg_start = sv.multicast.cursize;
 	MSG_WriteByte(&sv.multicast, flags);
 	MSG_WriteShort(&sv.multicast, soundindex);
 
@@ -426,22 +430,21 @@ void SV_StartEventSound(const byte EventId, const float leveltime, vec3_t origin
 		MSG_WriteShort(&sv.multicast, sendchan);
 	}
 
-	if (flags & SND_POS) //mxd. There's NO SND_POS check in original logic! How the hell did that work?..
-		MSG_WritePos(&sv.multicast, origin);
+	MSG_WritePos(&sv.multicast, origin); // H2: SND_POS flag is added in SV_MulticastSound().
 
 	if (channel & CHAN_RELIABLE)
 	{
 		if (use_phs && attenuation != 0.0f)
-			SV_MulticastSound(origin, MULTICAST_PHS_R, sv.multicast.cursize);
+			SV_MulticastSound(origin, MULTICAST_PHS_R, msg_start);
 		else
-			SV_MulticastSound(origin, MULTICAST_ALL_R, sv.multicast.cursize);
+			SV_MulticastSound(origin, MULTICAST_ALL_R, msg_start);
 	}
 	else
 	{
 		if (use_phs && attenuation != 0.0f)
-			SV_MulticastSound(origin, MULTICAST_PHS, sv.multicast.cursize);
+			SV_MulticastSound(origin, MULTICAST_PHS, msg_start);
 		else
-			SV_MulticastSound(origin, MULTICAST_ALL, sv.multicast.cursize);
+			SV_MulticastSound(origin, MULTICAST_ALL, msg_start);
 	}
 }
 
