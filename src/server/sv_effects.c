@@ -298,9 +298,51 @@ int SV_CreatePersistantEffect(const entity_state_t* ent, const int type, int fla
 	return fx_index + 1; //mxd. 1-based, because fx type 0 is FX_REMOVE_EFFECTS?
 }
 
-qboolean SV_RemovePersistantEffect(int toRemove, int call_from)
+qboolean SV_RemovePersistantEffect(const int toRemove, const int call_from)
 {
-	NOT_IMPLEMENTED
+	static char* fx_types[] =
+	{
+		"REMOVE SHIELD",
+		"REMOVE TELEPORT PAD",
+		"REMOVE METEORS",
+		"REMOVE LEADER",
+		"REMOVE LEADER ON DEATH",
+		"REMOVE LEADER ON DISCONNECT",
+		"REMOVE SHRINE BALLS",
+		"REMOVE FIRE",
+		"REMOVE WATER",
+		"REMOVE FISH BUBBLES",
+		"REMOVE ENTITY REMOVE",
+		"REMOVE LIGHT",
+		"REMOVE SMOKE",
+		"REMOVE PRIESTESS",
+		"REMOVE PLAYER DIE",
+		"REMOVE PORTAL",
+	};
+
+	const int fx_index = toRemove - 1;
+	if (fx_index < 0 || fx_index >= MAX_PERSISTANT_EFFECTS) //mxd. Added upper bound check.
+	{
+		Com_DPrintf("WARNING: Trying to remove a persistent effect of %i\n", fx_index);
+		return false;
+	}
+
+	PerEffectsBuffer_t* fx = &persistant_effects[fx_index];
+	if (fx->numEffects > 0)
+	{
+		memset(fx->buf, 0, sizeof(fx->buf));
+		fx->bufSize = 0;
+		fx->demo_send_mask = 0;
+		fx->freeBlock = 0;
+		fx->numEffects = 0;
+		fx->send_mask = call_from;
+		num_persistant_effects--;
+
+		return true;
+	}
+
+	Com_DPrintf("WARNING: Persistent effect not found! Call from %s, last deleted by %s, last effect number %i\n", fx_types[call_from], fx->send_mask, fx->fx_num);
+
 	return false;
 }
 
