@@ -237,6 +237,8 @@ void CL_LoadClientinfo(clientinfo_t* ci, const char* s, const int index)
 	char model_name[MAX_QPATH];
 	char model_filename[MAX_QPATH];
 	char skin_filename[MAX_QPATH];
+
+	assert(index >= 0 && index <= MAX_PLAYER_MODELS); //mxd. Added sanity check.
 	
 	// Isolate the player's name.
 	strncpy_s(ci->name, sizeof(ci->name), s, sizeof(ci->name));
