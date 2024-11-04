@@ -110,7 +110,7 @@ void CL_PrepRefresh(void)
 	}
 
 	SCR_UpdateScreen();
-	CL_LoadClientinfo(&cl.baseclientinfo, "unnamed\\male/Corvus", MAX_CLIENTS);
+	CL_LoadClientinfo(&cl.baseclientinfo, "unnamed\\male/Corvus", MAX_PLAYER_MODELS);
 
 	// Set sky textures and speed.
 	Com_Printf("sky\r");

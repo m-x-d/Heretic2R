@@ -230,7 +230,7 @@ static void CL_ParseBaseline(void)
 
 void CL_LoadClientinfo(clientinfo_t* ci, const char* s, const int index)
 {
-	static struct model_s* player_models[MAX_PLAYER_MODELS];
+	static struct model_s* player_models[MAX_PLAYER_MODELS + 1]; //mxd. player_models[MAX_CLIENTS] is the single-player model?
 
 	qboolean skin_registered;
 	char skin_name[MAX_QPATH];
