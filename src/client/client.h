@@ -55,7 +55,7 @@ typedef struct
 	entity_state_t* s1;			// Pointer to the corresponding entity_state_t in cl_parse_entities.
 
 	int serverframe;	// If not current, this ent isn't in the frame.
-	int flags;			// What freaking flags go in here??!?!
+	int flags;			// CF_XXX flags for the client side entity to know if its been deleted on the server.
 
 	vec3_t lerp_origin;	// Previous interpolated origin
 	vec3_t origin;		// Current interpolated origin
@@ -64,7 +64,7 @@ typedef struct
 
 	struct entity_s* entity;			// So client fx can play with its owners entity.
 	struct client_entity_s* effects;	// Client effects, only has meaning within the Client Effects DLL.
-	
+
 	struct LERPedReferences_s* referenceInfo;
 } centity_t;
 

@@ -164,7 +164,7 @@ void SV_LinkEdict(edict_t* ent)
 	VectorSubtract(ent->maxs, ent->mins, ent->size);
 
 	// Encode the size into the entity_state for client prediction.
-	if (ent->solid == SOLID_BBOX && (ent->svflags & SVF_DEADMONSTER) == 0)
+	if (ent->solid == SOLID_BBOX && !(ent->svflags & SVF_DEADMONSTER))
 	{
 		// Assume that x/y are equal and symmetric.
 		const int i = ClampI((int)(ent->maxs[0] / 8), 1, 31);

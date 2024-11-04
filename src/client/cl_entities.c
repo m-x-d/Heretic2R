@@ -353,7 +353,7 @@ static void CL_DeltaEntity(frame_t* frame, const int newnum, const entity_state_
 
 	CL_ParseDelta(old, state, newnum, bits);
 
-	if ((ent->flags & 1) && ent->prev.usageCount != state->usageCount) // H2
+	if ((ent->flags & CF_INUSE) && ent->prev.usageCount != state->usageCount) // H2
 	{
 		fxe.RemoveClientEffects(ent);
 
@@ -477,7 +477,7 @@ static void CL_ParsePacketEntities(const frame_t* oldframe, frame_t* newframe)
 	{
 		const int newnum = CL_ParseEntityBits(bits, &unused);
 
-		if (newnum  >= MAX_EDICTS)
+		if (newnum >= MAX_EDICTS)
 			Com_Error(ERR_DROP, "CL_ParsePacketEntities: bad number:%i", newnum);
 
 		if (net_message.readcount > net_message.cursize)
@@ -492,7 +492,7 @@ static void CL_ParsePacketEntities(const frame_t* oldframe, frame_t* newframe)
 			if ((int)cl_shownet->value == 3)
 				Com_Printf("   unchanged: %i\n", oldnum);
 
-			if ((cl_entities[oldnum].flags & 1) && !(cl_entities[oldnum].flags & 2)) // H2. Extra flags checks //TODO: what are those flags?
+			if ((cl_entities[oldnum].flags & CF_INUSE) && !(cl_entities[oldnum].flags & CF_SERVER_CULLED)) // H2. Extra flags checks
 				CL_DeltaEntity(newframe, oldnum, oldstate, NULL);
 
 			oldindex++;
@@ -516,11 +516,11 @@ static void CL_ParsePacketEntities(const frame_t* oldframe, frame_t* newframe)
 			if ((int)cl_shownet->value == 3)
 				Com_Printf("   remove: %i\n", newnum);
 
-			ent->flags |= 2; // H2
+			ent->flags |= CF_SERVER_CULLED; // H2
 
 			if (GetB(bits, U_ENT_FREED)) // H2
 			{
-				ent->flags &= ~1;
+				ent->flags &= ~CF_INUSE;
 				fxe.RemoveClientEffects(ent);
 
 				if (ent->prev.rootJoint != -1)
@@ -563,7 +563,7 @@ static void CL_ParsePacketEntities(const frame_t* oldframe, frame_t* newframe)
 				Com_Printf("   delta: %i\n", newnum);
 
 			CL_DeltaEntity(newframe, newnum, oldstate, bits);
-			ent->flags &= ~2; // H2
+			ent->flags &= ~CF_SERVER_CULLED; // H2
 			oldindex++;
 
 			if (oldindex >= oldframe->num_entities)
@@ -583,7 +583,9 @@ static void CL_ParsePacketEntities(const frame_t* oldframe, frame_t* newframe)
 				Com_Printf("   baseline: %i\n", newnum);
 
 			CL_DeltaEntity(newframe, newnum, &ent->baseline, bits);
-			ent->flags &= ~2; // H2
+
+			ent->flags &= ~CF_SERVER_CULLED; // H2
+			ent->flags |= CF_INUSE; // H2
 
 			if (ent->current.effects & EF_PLAYER) // H2
 			{
@@ -596,8 +598,6 @@ static void CL_ParsePacketEntities(const frame_t* oldframe, frame_t* newframe)
 			{
 				model = cl.model_draw[ent->current.modelindex];
 			}
-
-			ent->flags |= 1; // H2
 
 			if (ent->referenceInfo != NULL) // H2
 			{
@@ -621,7 +621,7 @@ static void CL_ParsePacketEntities(const frame_t* oldframe, frame_t* newframe)
 		if ((int)cl_shownet->value == 3)
 			Com_Printf("   unchanged: %i\n", oldnum);
 
-		if ((cl_entities[oldnum].flags & 1) && !(cl_entities[oldnum].flags & 2)) // H2. Extra flags checks //TODO: what are those flags?
+		if ((cl_entities[oldnum].flags & CF_INUSE) && !(cl_entities[oldnum].flags & CF_SERVER_CULLED)) // H2. Extra flags checks
 			CL_DeltaEntity(newframe, oldnum, oldstate, NULL);
 
 		oldindex++;
