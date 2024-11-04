@@ -584,9 +584,92 @@ void SV_Trace(vec3_t start, const vec3_t mins, const vec3_t maxs, vec3_t end, ed
 	}
 }
 
-void SV_TraceBoundingForm(FormMove_t* formMove)
+//mxd. Very similar to SV_ClipMoveToEntities().
+static void SV_FindCosestEntity(moveclip_t* clip) // H2
 {
-	NOT_IMPLEMENTED
+	edict_t* touchlist[MAX_EDICTS];
+	trace_t trace;
+
+	const int num = SV_AreaEdicts(clip->boxmins, clip->boxmaxs, touchlist, MAX_EDICTS, AREA_SOLID);
+
+	// Be careful, it is possible to have an entity in this list removed before we get to it (killtriggered).
+	for (int i = 0; i < num; i++)
+	{
+		edict_t* touch = touchlist[i];
+
+		if (touch->solid == SOLID_NOT || touch == clip->passedict)
+			continue;
+
+		if (clip->trace->allsolid)
+			return;
+
+		// Don't clip against own missiles or owner.
+		if (clip->passedict != NULL)
+		{
+			if (clip->passedict == touch->owner || clip->passedict->owner == touch)
+				continue;
+
+			if (clip->passedict->owner != NULL && touch->owner != NULL && clip->passedict->owner == touch->owner) // Extra check not present in SV_ClipMoveToEntities
+				continue;
+		}
+
+		if (!(clip->contentmask & CONTENTS_DEADMONSTER) && touch->svflags & SVF_DEADMONSTER)
+			continue;
+
+		// Might intersect, so do an exact clip.
+		const int headnode = SV_HullForEntity(touch);
+		const float* angles = touch->s.angles;
+
+		if (touch->solid != SOLID_BSP)
+			angles = vec3_origin; // Boxes don't rotate.
+
+		if (touch->svflags & SVF_MONSTER)
+			CM_TransformedBoxTrace(clip->start, clip->end, clip->mins2, clip->maxs2, headnode, clip->contentmask, touch->s.origin, angles, &trace);
+		else
+			CM_TransformedBoxTrace(clip->start, clip->end, clip->mins, clip->maxs, headnode, clip->contentmask, touch->s.origin, angles, &trace);
+
+		if (trace.startsolid || trace.allsolid || trace.fraction < clip->trace->fraction)
+		{
+			trace.ent = touch;
+
+			// H2: copy to clip->trace.
+			const qboolean startsolid = clip->trace->startsolid;
+			memcpy(clip->trace, &trace, sizeof(trace));
+			if (startsolid)
+				clip->trace->startsolid = true;
+		}
+	}
+}
+
+void SV_TraceBoundingForm(FormMove_t* formMove) // H2
+{
+	vec3_t start;
+	vec3_t end;
+	
+	VectorCopy(formMove->start, start);
+	VectorCopy(formMove->end, end);
+
+	moveclip_t clip;
+	clip.trace = &formMove->trace;
+ 
+	CM_BoxTrace(start, end, formMove->mins, formMove->maxs, 0, formMove->clipMask, clip.trace);
+
+	if (clip.trace->fraction == 0.0f)
+		return;
+
+	clip.trace->ent = ge->edicts;
+	clip.passedict = (edict_t*)formMove->passEntity;
+	clip.contentmask = formMove->clipMask;
+	clip.start = start;
+	clip.end = end;
+	clip.mins = formMove->mins;
+	clip.maxs = formMove->maxs;
+
+	VectorCopy(formMove->mins, clip.mins2);
+	VectorCopy(formMove->maxs, clip.maxs2);
+  
+	SV_TraceBounds(start, clip.mins2, clip.maxs2, end, clip.boxmins, clip.boxmaxs);
+	SV_FindCosestEntity(&clip);
 }
 
 qboolean SV_ResizeBoundingForm(edict_t* self, FormMove_t* formMove)
