@@ -15,7 +15,7 @@ extern ResourceManager_t fx_buffer_manager;
 extern qboolean precache_models;
 
 int CL_CreateEffect(byte EventId, const void* owner, ushort type, int flags, const vec3_t position, const char* format, ...);
-void CL_RemoveEffects(byte EventId, void* owner, int fx);
+void CL_RemoveEffects(byte EventId, const void* owner, int fx);
 
 void CL_InitClientEffects(const char* dll_name);
 void CL_UnloadClientEffects(void);

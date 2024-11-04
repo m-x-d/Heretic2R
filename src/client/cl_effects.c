@@ -9,6 +9,7 @@
 #include "clfx_dll.h"
 #include "dll_io.h"
 #include "FX.h"
+#include "game.h"
 #include "g_items.h"
 #include "ResourceManager.h"
 #include "sound.h"
@@ -267,9 +268,10 @@ int CL_CreateEffect(const byte EventId, const void* owner, const ushort type, co
 	return sb.cursize;
 }
 
-void CL_RemoveEffects(byte EventId, void* owner, int fx)
+void CL_RemoveEffects(const byte EventId, const void* owner, const int fx)
 {
-	NOT_IMPLEMENTED
+	if (owner != NULL)
+		CL_CreateEffect(EventId, ((const edict_t*)owner)->client, FX_REMOVE_EFFECTS, CEF_OWNERS_ORIGIN, NULL, "s", fx);
 }
 
 void CL_UnloadClientEffects(void)

@@ -467,8 +467,8 @@ typedef struct playerinfo_s
 	// Client side function callbacks (approximating functionality of server function callbacks).
 	void (*CL_Sound)(byte EventId, vec3_t origin, int channel, char* soundname, float fvol, int attenuation, float timeofs);
 	void (*CL_Trace)(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int brushmask, int flags, trace_t* trace);
-	int (*CL_CreateEffect)(byte EventId, void* owner, ushort type, int flags, vec3_t position, char* format, ...);
-	void (*CL_RemoveEffects)(byte EventId, void* owner, int fx);
+	int (*CL_CreateEffect)(byte EventId, const void* owner, ushort type, int flags, const vec3_t position, const char* format, ...);
+	void (*CL_RemoveEffects)(byte EventId, const void* owner, int fx);
 	
 	// Server (game) function callbacks (approximating functionality of client-side function callbacks).
 	void (*G_L_Sound)(edict_t* entity, int sound_num);
