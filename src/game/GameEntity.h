@@ -1,6 +1,8 @@
 #include "g_local.h"
 
-typedef struct sv_entity_s
+//TODO: remove?
+
+/*typedef struct sv_entity_s
 {
 	entity_state_t	s;
 	struct gclient_s	*client;	// NULL if not a player
@@ -26,15 +28,15 @@ typedef struct sv_entity_s
 	solid_t		solid;
 	int			clipmask;
 	struct sv_entity_s *owner;
-} sv_entity_t;
+} sv_entity_t;*/
 
-typedef struct g_PolyInfo_s
+/*typedef struct g_PolyInfo_s
 {
 	char		*message;			// text printed to con for door, polys, triggers, etc.
 
-} g_PolyInfo_t;
+} g_PolyInfo_t;*/
 
-typedef struct g_PhysicsInfo_s
+/*typedef struct g_PhysicsInfo_s
 {
 	int			movetype;			// used by physics, set on everything
 
@@ -42,7 +44,7 @@ typedef struct g_PhysicsInfo_s
 
 	vec3_t		velocity;
 	vec3_t		avelocity;
-} g_PhysicsInfo_t;
+} g_PhysicsInfo_t;*/
 
 #if 0
 typedef struct g_PlayerInfo_s
@@ -62,7 +64,7 @@ typedef struct g_ItemInfo_s
 } g_ItemInfo_t;
 #endif
 
-typedef struct GameEntity_s
+/*typedef struct GameEntity_s
 {
 	MsgQueue_t	msgQ;
 	G_MessageHandler_t msgHandler;
@@ -85,4 +87,4 @@ typedef struct GameEntity_s
 
 	char		*classname;
 
-} GameEntity_t;
+} GameEntity_t;*/

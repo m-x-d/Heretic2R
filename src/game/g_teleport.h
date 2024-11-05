@@ -1,6 +1,7 @@
 #ifndef _G_TELEPORT_H_
 #define _G_TELEPORT_H_
 
+//TODO: rename to spl_teleport.h?
 #include "g_local.h"
 
 // TELEPORT defines

@@ -1,7 +1,7 @@
 #include "g_local.h"
 #include "g_Skeletons.h"
 #include "ArrayedList.h"
-#include "PrimitiveDisplayHack.h"
+//#include "PrimitiveDisplayHack.h"
 #include "q_Physics.h"
 #include "q_shared.h"
 

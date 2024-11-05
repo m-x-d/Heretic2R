@@ -1,10 +1,12 @@
+//TODO: remove?
+
 //
 // g_BoundingForm.h
 //
 // Copyright 1998 Raven Software
 //
 
-#pragma once
+/*#pragma once
 
 #include "q_Typedef.h"
 
@@ -18,4 +20,4 @@ enum Box_BoundingForm_Sides_e
 	BOX_BOUNDINGFORM_SIDE_BOTTOM,
 	BOX_BOUNDINGFORM_SIDE_TOP,
 	NUM_BOX_BOUNDINGFORM_SIDES
-} Box_BoundingForm_Sides_t;
+} Box_BoundingForm_Sides_t;*/

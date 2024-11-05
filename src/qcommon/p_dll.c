@@ -5,7 +5,11 @@
 //
 
 #include <windows.h>
-#include "dll_io.h" //mxd
+#ifdef _GAME_DLL
+	#include "g_local.h" //mxd
+#else
+	#include "dll_io.h" //mxd
+#endif
 #include "player.h"
 #include "qcommon.h"
 

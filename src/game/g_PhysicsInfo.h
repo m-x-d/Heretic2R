@@ -1,3 +1,5 @@
+//TODO: remove?
+
 #ifndef G_PHYSICSINFO_H
 #define G_PHYSICSINFO_H
 

@@ -8,7 +8,7 @@
 #include "p_chicken.h"
 #include "p_funcs.h"
 #include "Angles.h"
-#include "compfmod.h"
+//#include "compfmod.h"
 #include "FX.h"
 #include "vector.h"
 #include "random.h"

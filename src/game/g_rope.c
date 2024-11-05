@@ -5,7 +5,7 @@
 #include "g_local.h"
 #include "vector.h"
 #include "random.h"
-#include "timing.h" // for time based sway
+//#include "timing.h" // for time based sway
 #include "p_main.h"
 #include "p_anims.h"
 #include "fx.h"

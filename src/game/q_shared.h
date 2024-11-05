@@ -190,8 +190,16 @@ H2COMMON_API void Set_Com_Printf(void (*toSet)(const char* fmt, ...));
 #pragma region ========================== SYSTEM SPECIFIC ==========================
 
 struct cplane_s;
+
+#ifdef __cplusplus //mxd. Needed, so code in game/ds.cpp could build...
+extern "C"
+{
+#endif
 extern H2COMMON_API const vec3_t vec3_origin;
 extern H2COMMON_API const vec3_t vec3_up;
+#ifdef __cplusplus
+}
+#endif
 
 extern int curtime; // Time returned by last Sys_Milliseconds
 
@@ -218,7 +226,16 @@ void Sys_FindClose(void);
 
 // This is only here so the functions in q_shared.c and q_shwin.c can link //TODO: mxd. Check if still true
 GAME_DECLSPEC void Sys_Error(const char* error, ...);
+
+#ifdef __cplusplus //mxd. Needed, so code in game/ds.cpp could build...
+extern "C"
+{
+#endif
 GAME_DECLSPEC void Com_Printf(const char* fmt, ...);
+#ifdef __cplusplus
+}
+#endif
+
 GAME_DECLSPEC void Com_ColourPrintf(PalIdx_t colour, const char* fmt, ...);
 
 #pragma endregion

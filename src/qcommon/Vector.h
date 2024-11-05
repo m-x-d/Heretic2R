@@ -14,6 +14,11 @@
 #include "Angles.h"
 #include "q_shared.h"
 
+#ifdef __cplusplus //mxd. Needed, so code in game/ds.cpp could build...
+extern "C"
+{
+#endif
+
 #define FLOAT_ZERO_EPSILON 0.0005f
 
 H2COMMON_API void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, float degrees);
@@ -61,6 +66,7 @@ H2COMMON_API void VectorScale(const vec3_t in, float scale, vec3_t out);
 H2COMMON_API void VectorRadiansToDegrees(const vec3_t in, vec3_t out);
 H2COMMON_API void VectorDegreesToRadians(const vec3_t in, vec3_t out);
 H2COMMON_API void VectorScaleByVector(const vec3_t in, const vec3_t scale, vec3_t out);
+H2COMMON_API float VectorSeparationSquared(const vec3_t va, const vec3_t vb);
 
 H2COMMON_API void Vec3SubtractAssign(const vec3_t value, vec3_t subFrom);
 H2COMMON_API void Vec3AddAssign(const vec3_t value, vec3_t addTo);
@@ -71,3 +77,7 @@ H2COMMON_API qboolean FloatIsZero(float f, float epsilon);
 H2COMMON_API qboolean Vec3EqualsEpsilon(const vec3_t v1, const vec3_t v2);
 H2COMMON_API qboolean Vec3IsZero(const vec3_t vec);
 H2COMMON_API qboolean Vec3NotZero(const vec3_t vec);
+
+#ifdef __cplusplus
+}
+#endif

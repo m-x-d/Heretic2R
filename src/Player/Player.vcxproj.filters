@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{16d7b31a-6d81-4a8a-83da-8a72ee012da8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="p_actions.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="p_anim_branch.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="p_anim_data.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="p_animactor.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="p_anims.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="p_chicken.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="p_chicken_anim.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="p_ctrl.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="p_items.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="p_main.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="p_weapon.c">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="p_actions.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="p_anim_branch.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="p_anim_data.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="p_animactor.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="p_anims.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="p_chicken.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="p_ctrl.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="p_items.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="p_main.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="p_newmove.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="p_types.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="p_weapon.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

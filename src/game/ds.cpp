@@ -20,23 +20,20 @@ template<class T> size_t tRead(T *ptr,FILE *FH,int n=1)
 }
 
 
+//TODO: remove _HERETIC2_ define? Not used by quake2.dll.
 
-
-
-#ifdef _HERETIC2_
+//#ifdef _HERETIC2_
 extern "C"
 {
-#endif
+//#endif
 	extern void Use_Multi(edict_t *self, edict_t *other, edict_t *activator);
 	extern void c_swapplayer(edict_t *Self,edict_t *Cinematic);
 	extern void remove_non_cinematic_entites(edict_t *owner);
 	extern void reinstate_non_cinematic_entites(edict_t *owner);
 	extern cvar_t 	*Cvar_Set (char *var_name, char *value);
-
-
-#ifdef _HERETIC2_
+//#ifdef _HERETIC2_
 }
-#endif
+//#endif
 
 #ifdef _HERETIC2_
 int msg_animtype  [NUM_MESSAGES] =

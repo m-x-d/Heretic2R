@@ -4,6 +4,8 @@
 #include "q_Typedef.h"
 #include "g_local.h"
 
+//TODO: seems unused. Remove?
+
 #define VE_FLAG1 			0x00000001	 	// place holder
 
 /*-------------------------------------------------------------------------

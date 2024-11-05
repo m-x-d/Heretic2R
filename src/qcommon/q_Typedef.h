@@ -23,7 +23,12 @@ typedef	int	fixed8_t;		//TODO: unused?
 typedef	int	fixed16_t;		//TODO: unused?
 
 typedef unsigned char 		byte;
-typedef enum {false, true}	qboolean;
+
+#ifndef __cplusplus //mxd. Needed, so code in game/ds.cpp could build...
+	typedef enum { false, true } qboolean;
+#else
+	typedef int qboolean;
+#endif
 
 typedef struct edict_s edict_t;
 

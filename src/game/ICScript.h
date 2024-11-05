@@ -1,7 +1,7 @@
 #ifndef ICSCRIPT_H
 #define ICSCRIPT_H
 
-typedef int qboolean;
+//typedef int qboolean;
 
 typedef struct ICScript_s
 {
