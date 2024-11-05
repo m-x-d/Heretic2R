@@ -378,7 +378,7 @@ static void Z_Stats_f(void)
 // Q2 counterpart
 void Z_FreeTags(const int tag)
 {
-	zhead_t* next;
+	zhead_t* next = NULL;
 
 	for (zhead_t* z = z_chain.next; z != &z_chain; z = next)
 	{
