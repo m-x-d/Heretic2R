@@ -75,9 +75,29 @@ static void SV_SendWelcomeMessage(const char* msg) // H2
 	}
 }
 
+// Q2 counterpart
+// Called when the player is totally leaving the server, either willingly or unwillingly.
+// This is NOT called if the entire server is quitting or crashing.
 void SV_DropClient(client_t* drop)
 {
-	NOT_IMPLEMENTED
+	// Add the disconnect.
+	MSG_WriteByte(&drop->netchan.message, svc_disconnect);
+
+	if (drop->state == cs_spawned)
+	{
+		// Call the game function for removing a client.
+		// This will remove the body, among other things.
+		ge->ClientDisconnect(drop->edict);
+	}
+
+	if (drop->download != NULL)
+	{
+		FS_FreeFile(drop->download);
+		drop->download = NULL;
+	}
+
+	drop->state = cs_zombie; // Become free in a few seconds.
+	drop->name[0] = 0;
 }
 
 #pragma region ========================== CONNECTIONLESS COMMANDS ==========================
