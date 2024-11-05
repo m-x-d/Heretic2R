@@ -4,11 +4,15 @@
 /src/.vs
 /src/client effects/debug
 /src/client effects/release
+/src/game/debug
+/src/game/release
 /src/H2Common/debug
 /src/H2Common/release
 /src/launcher/*.aps
 /src/launcher/debug
 /src/launcher/release
+/src/Player/debug
+/src/Player/release
 /src/ref_gl/debug
 /src/ref_gl/release
 /src/win32/debug
