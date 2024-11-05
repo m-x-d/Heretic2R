@@ -108,9 +108,40 @@ static void SVC_Info(void)
 	NOT_IMPLEMENTED
 }
 
+// Returns a challenge number that can be used in a subsequent client_connect command.
+// We do this to prevent denial of service attacks that flood the server with invalid connection IPs.
+// With a challenge, they must give a valid IP address.
 static void SVC_GetChallenge(void)
 {
-	NOT_IMPLEMENTED
+	int i;
+
+	int oldest = 0;
+	int oldest_time = 0x7fffffff;
+
+	// See if we already have a challenge for this ip.
+	for (i = 0; i < MAX_CHALLENGES; i++)
+	{
+		if (NET_CompareBaseAdr(&net_from, &svs.challenges[i].adr))
+			break;
+
+		if (svs.challenges[i].time < oldest_time)
+		{
+			oldest_time = svs.challenges[i].time;
+			oldest = i;
+		}
+	}
+
+	if (i == MAX_CHALLENGES)
+	{
+		// Overwrite the oldest.
+		svs.challenges[oldest].challenge = rand() ^ (rand() << 16); // Q2: rand() & 0x7fff;
+		svs.challenges[oldest].adr = net_from;
+		svs.challenges[oldest].time = curtime;
+		i = oldest;
+	}
+
+	// Send it back.
+	Netchan_OutOfBandPrint(NS_SERVER, &net_from, "challenge %i", svs.challenges[i].challenge);
 }
 
 // A connection request that did not come from the master.
