@@ -243,9 +243,14 @@ static void CL_ForwardToServer_f(void)
 	}
 }
 
+// Q2 counterpart
 static void CL_Pause_f(void)
 {
-	NOT_IMPLEMENTED
+	// Never pause in multiplayer.
+	if (Cvar_VariableValue("maxclients") > 1 || !Com_ServerState())
+		Cvar_SetValue("paused", 0.0f);
+	else
+		Cvar_SetValue("paused", (cl_paused->value != 0.0f ? 0.0f : 1.0f));
 }
 
 static void CL_FreezeWorld_f(void)
