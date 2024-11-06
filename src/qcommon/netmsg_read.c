@@ -263,8 +263,8 @@ void MSG_ReadShortYawPitch(sizebuf_t* sb, vec3_t dir)
 	if (sb->readcount + 4 > sb->cursize)
 		assert(0);
 
-	angles[0] = (float)MSG_ReadShort(sb) * (1.0f / 8.0f);
-	angles[1] = (float)MSG_ReadShort(sb) * (1.0f / 8.0f);
+	angles[0] = (float)MSG_ReadShort(sb) / 8.0f;
+	angles[1] = (float)MSG_ReadShort(sb) / 8.0f;
 	angles[2] = 0;
 
 	angles[YAW] *= ANGLE_TO_RAD;

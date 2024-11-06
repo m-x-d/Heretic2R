@@ -219,11 +219,11 @@ void ParseEffectToSizeBuf(sizebuf_t* sb, const char* format, va_list marker) // 
 				break;
 
 			case 'd':
-				MSG_WriteDir(sb, va_arg(marker, vec3_t));
+				MSG_WriteDir(sb, *va_arg(marker, vec3_t*));
 				break;
 
 			case 'f':
-				MSG_WriteFloat(sb, va_arg(marker, float)); //TODO: or double?
+				MSG_WriteFloat(sb, va_arg(marker, float));
 				break;
 
 			case 'i':
@@ -232,7 +232,7 @@ void ParseEffectToSizeBuf(sizebuf_t* sb, const char* format, va_list marker) // 
 
 			case 'p':
 			case 'v':
-				MSG_WritePos(sb, va_arg(marker, vec3_t));
+				MSG_WritePos(sb, *va_arg(marker, vec3_t*));
 				break;
 
 			case 's':
@@ -240,15 +240,15 @@ void ParseEffectToSizeBuf(sizebuf_t* sb, const char* format, va_list marker) // 
 				break;
 
 			case 't':
-				MSG_WriteShortYawPitch(sb, va_arg(marker, vec3_t));
+				MSG_WriteShortYawPitch(sb, *va_arg(marker, vec3_t*));
 				break;
 
 			case 'u':
-				MSG_WriteDirMag(sb, va_arg(marker, vec3_t));
+				MSG_WriteDirMag(sb, *va_arg(marker, vec3_t*));
 				break;
 
 			case 'x':
-				MSG_WriteYawPitch(sb, va_arg(marker, vec3_t));
+				MSG_WriteYawPitch(sb, *va_arg(marker, vec3_t*));
 				break;
 
 			default:
