@@ -118,7 +118,7 @@ static void SV_EmitPacketEntities(const client_frame_t* from, const client_frame
 		{
 			const edict_t* ent = EDICT_NUM(oldnum);
 
-			if (ent->just_deleted) // H2
+			if (ent->inuse) // H2
 			{
 				// The old entity isn't present in the new message.
 				byte header;
@@ -739,7 +739,7 @@ void SV_WriteFrameToClient(client_t* client, sizebuf_t* msg)
 	int lastframe;
 
 	// This is the frame we are creating.
-	client_frame_t* frame = &client->frames[sv.framenum & UPDATE_MASK];
+	const client_frame_t* frame = &client->frames[sv.framenum & UPDATE_MASK];
 
 	// Client is asking for a retransmit, or client hasn't gotten a good message through in a long time.
 	if (client->lastframe <= 0 || sv.framenum - client->lastframe >= (UPDATE_BACKUP - 3))
@@ -885,14 +885,14 @@ void SV_BuildClientFrame(client_t* client)
 	{
 		edict_t* ent = EDICT_NUM(e);
 
-		if (ent->just_deleted && (ent->client_sent & ent_id) != 0)
+		if ((ent->client_sent & ent_id) && ent->just_deleted)
 		{
 			AddClientEntity(client, frame, ent, e); //mxd
 			continue;
 		}
 
 		// Ignore ents without visible models.
-		if (ent->svflags & SVF_NOCLIENT || !ent->inuse) // H2: new !ent->inuse check
+		if ((ent->svflags & SVF_NOCLIENT) || !ent->inuse) // H2: new !ent->inuse check
 			continue;
 
 		if (ent->svflags & SVF_ALWAYS_SEND) // H2
