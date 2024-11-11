@@ -97,9 +97,9 @@ void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t m
 		if (!ent->solid)
 			continue;
 
-		if (pred_crosshair) // H2
+		if (!pred_crosshair) // H2
 		{
-			if (pred_camerablock && ent->effects & EF_CAMERA_NO_CLIP)
+			if (pred_camerablock && (ent->effects & EF_CAMERA_NO_CLIP))
 				continue;
 		}
 		else if (ent->number == cl.playernum + 1)
@@ -124,7 +124,7 @@ void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t m
 			qboolean in_movebox = true;
 			for (int c = 0; c < 3; c++)
 			{
-				if(cmodel->mins[c] + ent->origin[c] - max_size > mb_maxs[c] || cmodel->maxs[c] + ent->origin[c] + max_size < mb_mins[c])
+				if (cmodel->mins[c] + ent->origin[c] - max_size > mb_maxs[c] || cmodel->maxs[c] + ent->origin[c] + max_size < mb_mins[c])
 				{
 					in_movebox = false;
 					break;
