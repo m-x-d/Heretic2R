@@ -189,9 +189,6 @@
     <ClCompile Include="g_utils.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="g_weapon.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="q_shared.c">
       <Filter>src</Filter>
     </ClCompile>
@@ -597,6 +594,9 @@
     <ClCompile Include="m_tcheckrik_spells.c">
       <Filter>src\Monsters\Tcheckrik</Filter>
     </ClCompile>
+    <ClCompile Include="g_weapon.c">
+      <Filter>src\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="decals.h">
@@ -657,9 +657,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="g_volume_effect.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="g_weapon.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="game.h">
@@ -984,6 +981,9 @@
       <Filter>src\Monsters\Tcheckrik</Filter>
     </ClInclude>
     <ClInclude Include="m_player.h">
+      <Filter>src\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="g_weapon.h">
       <Filter>src\Player</Filter>
     </ClInclude>
   </ItemGroup>

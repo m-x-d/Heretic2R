@@ -1075,7 +1075,7 @@ edict_t *oldfindradius (edict_t *from, vec3_t org, float rad)
 // So when we link the entity (for rendering, etc) we set 
 // SOLID_NOT so certain things don't happen.
 // ========================================
-void G_LinkMissile(edict_t *self)
+void G_LinkMissile(edict_t *self) //TODO: mxd. Non-functional? Replace with gi.linkentity(self)?
 {
     int oldsolid;
 	

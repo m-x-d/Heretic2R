@@ -1,5 +1,5 @@
 //
-// g_weapon.h
+// g_weapon.h //TODO: mxd. Rename to p_weapon.h ?
 //
 // Heretic II
 // Copyright 1998 Raven Software

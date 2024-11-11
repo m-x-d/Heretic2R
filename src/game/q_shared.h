@@ -159,7 +159,7 @@ H2COMMON_API void COM_DefaultExtension(char* path, const char* extension);
 
 H2COMMON_API char* COM_Parse(char** data_p);
 H2COMMON_API void Com_sprintf(char* dest, int size, const char* fmt, ...);
-H2COMMON_API void Com_PageInMemory(const byte *buffer, int size);
+H2COMMON_API void Com_PageInMemory(const byte *buffer, int size); //TODO: unused. Remove?
 
 
 H2COMMON_API short BigShort(short l);

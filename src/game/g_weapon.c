@@ -1,4 +1,4 @@
-// g_weapon.c - generic weapon handling code for all player weapons
+// g_weapon.c - generic weapon handling code for all player weapons //TODO: mxd. Rename to p_weapon.c ?
 
 //#include "p_types.h"
 #include "player.h"
