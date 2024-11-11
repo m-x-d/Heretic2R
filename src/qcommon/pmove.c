@@ -79,6 +79,8 @@ static qboolean CheckCollision(const float aimangle)
 	{
 		vec3_t aim_dir;
 		VectorSubtract(end, pml.origin, aim_dir);
+		aim_dir[2] = 0.0f;
+
 		VectorNormalize(aim_dir);
 
 		if (tr.plane.normal[0] * aim_dir[0] + tr.plane.normal[1] * aim_dir[1] < -0.5f)
