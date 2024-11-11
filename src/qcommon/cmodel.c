@@ -936,6 +936,9 @@ static void CM_TestBoxInBrush(vec3_t mins, vec3_t maxs, vec3_t p1, trace_t* trac
 {
 	vec3_t ofs;
 
+	if (brush->numsides == 0)
+		return;
+
 	for (int i = 0; i < brush->numsides; i++)
 	{
 		const cbrushside_t* side = &map_brushsides[brush->firstbrushside + i];
