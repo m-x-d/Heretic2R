@@ -71,9 +71,6 @@
     <ClInclude Include="p_main.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="p_newmove.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="p_types.h">
       <Filter>src</Filter>
     </ClInclude>

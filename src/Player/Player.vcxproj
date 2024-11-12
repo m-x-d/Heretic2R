@@ -35,7 +35,6 @@
     <ClInclude Include="p_ctrl.h" />
     <ClInclude Include="p_items.h" />
     <ClInclude Include="p_main.h" />
-    <ClInclude Include="p_newmove.h" />
     <ClInclude Include="p_types.h" />
     <ClInclude Include="p_weapon.h" />
   </ItemGroup>
