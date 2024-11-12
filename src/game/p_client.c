@@ -2,7 +2,6 @@
 #include "g_DefaultMessageHandler.h"
 #include "g_Skeletons.h"
 #include "m_player.h"
-#include "P_NewMove.h"
 #include "p_main.h"
 #include "p_ctrl.h"
 #include "p_chicken.h"
