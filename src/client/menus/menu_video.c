@@ -55,7 +55,7 @@ static char* gl_drivername_labels[NUM_DRIVERNAMES];
 
 #pragma region ========================== MENU ITEM CALLBACKS ==========================
 
-static void DriverCallback(void* self)
+static void RendererCallback(void* self)
 {
 	s_ref_list[!s_current_menu_index].curvalue = s_ref_list[s_current_menu_index].curvalue;
 
@@ -390,7 +390,7 @@ void VID_MenuInit(void)
 		s_ref_list[i].generic.y = 0;
 		s_ref_list[i].generic.name = name_driver;
 		s_ref_list[i].generic.width = re.BF_Strlen(name_driver);
-		s_ref_list[i].generic.callback = DriverCallback;
+		s_ref_list[i].generic.callback = RendererCallback;
 		s_ref_list[i].itemnames = gl_drivername_labels;
 
 		s_mode_list[i].generic.type = MTYPE_SPINCONTROL;
