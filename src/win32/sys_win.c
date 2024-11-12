@@ -72,21 +72,6 @@ void Sys_Quit(void)
 	exit(0);
 }
 
-//mxd. Print to Visual Studio console.
-void Sys_IDEPrintf(const char* fmt, ...)
-{
-#if _DEBUG
-	va_list argptr;
-	char msg[1024];
-
-	va_start(argptr, fmt);
-	vsprintf_s(msg, sizeof(msg), fmt, argptr);
-	va_end(argptr);
-
-	OutputDebugString(msg);
-#endif
-}
-
 #pragma endregion
 
 #pragma region ========================== DLL HANDLING ==========================

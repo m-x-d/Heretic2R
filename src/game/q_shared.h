@@ -23,6 +23,7 @@
 #include "H2Common.h"
 #include "Heretic2.h"
 #include "q_Typedef.h"
+#include "Debug.h" //mxd
 //#include "player.h" //TODO: initially commented out. Remove?
 
 //TODO: remove?
@@ -55,9 +56,6 @@
 /*#ifndef NULL
 #define NULL ((void *)0)
 #endif*/
-
-//mxd. Development aid //TODO: remove
-#define NOT_IMPLEMENTED		assert(!("Not implemented!"));
 
 // Angle indexes
 #define PITCH				0		// up / down

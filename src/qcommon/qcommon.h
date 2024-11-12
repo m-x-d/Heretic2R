@@ -814,7 +814,6 @@ char* Sys_ConsoleInput(void);
 void Sys_ConsoleOutput(const char* string);
 void Sys_SendKeyEvents(void);
 GAME_DECLSPEC void Sys_Error(const char* error, ...); //TODO: check redundant declaration...
-GAME_DECLSPEC void Sys_IDEPrintf(const char* fmt, ...); //mxd
 void Sys_Quit(void);
 char* Sys_GetClipboardData(void);
 void Sys_CopyProtect(void); //TODO: remove
