@@ -98,9 +98,9 @@ static qboolean Get_Crosshair(vec3_t origin, byte* type)
 
 	VectorMA(start, fwd_offset, forward, end);
 
-	pred_crosshair = true;
+	trace_ignore_player = true;
 	CL_Trace(start, mins, maxs, end, MASK_SHOT | CONTENTS_ILLUSIONARY | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
-	pred_crosshair = false;
+	trace_ignore_player = false;
 
 	// Store results.
 	VectorCopy(trace.endpos, origin);

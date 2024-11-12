@@ -12,8 +12,8 @@
 
 int pred_pm_flags;
 int pred_pm_w_flags;
-qboolean pred_crosshair;
-qboolean trace_check_camerablock;
+qboolean trace_ignore_player;
+qboolean trace_ignore_camera;
 
 static int pred_effects = 0;
 static int pred_clientnum = 0;
@@ -97,15 +97,11 @@ void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t m
 		if (!ent->solid)
 			continue;
 
-		if (!pred_crosshair) // H2
-		{
-			if (trace_check_camerablock && (ent->effects & EF_CAMERA_NO_CLIP))
-				continue;
-		}
-		else if (ent->number == cl.playernum + 1)
-		{
+		if (trace_ignore_player && (ent->number == cl.playernum + 1)) // H2: extra trace_ignore_player check.
 			continue;
-		}
+
+		if (trace_ignore_camera && (ent->effects & EF_CAMERA_NO_CLIP)) // H2
+			continue;
 
 		if (ent->solid == 31)
 		{
@@ -214,9 +210,9 @@ static void CL_PMTrace(const vec3_t start, const vec3_t mins, const vec3_t maxs,
 	if (!tr->startsolid && !tr->allsolid)
 	{
 		// Check all other solid models.
-		pred_crosshair = true;
+		trace_ignore_player = true;
 		CL_ClipMoveToEntities(start, mins, maxs, end, tr);
-		pred_crosshair = false;
+		trace_ignore_player = false;
 
 		trace_check_water = false;
 	}

@@ -1635,7 +1635,7 @@ void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 	if (flags & CONTENTS_TRANSLUCENT)
 	{
 		if (brushmask & CONTENTS_CAMERABLOCK)
-			trace_check_camerablock = true;
+			trace_ignore_camera = true;
 
 		if (brushmask & CONTENTS_WATER)
 			trace_check_water = true;
@@ -1643,7 +1643,7 @@ void CL_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 		CL_ClipMoveToEntities(start, mins, maxs, end, t);
 
 		if (brushmask & CONTENTS_CAMERABLOCK)
-			trace_check_camerablock = false;
+			trace_ignore_camera = false;
 
 		if (brushmask & CONTENTS_WATER)
 			trace_check_water = false;
