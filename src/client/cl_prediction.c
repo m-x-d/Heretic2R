@@ -13,7 +13,7 @@
 int pred_pm_flags;
 int pred_pm_w_flags;
 qboolean pred_crosshair;
-qboolean pred_camerablock;
+qboolean trace_check_camerablock;
 
 static int pred_effects = 0;
 static int pred_clientnum = 0;
@@ -99,7 +99,7 @@ void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t m
 
 		if (!pred_crosshair) // H2
 		{
-			if (pred_camerablock && (ent->effects & EF_CAMERA_NO_CLIP))
+			if (trace_check_camerablock && (ent->effects & EF_CAMERA_NO_CLIP))
 				continue;
 		}
 		else if (ent->number == cl.playernum + 1)
