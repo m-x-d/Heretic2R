@@ -629,6 +629,88 @@ void Cmd_RemoveCommand(char* cmd_name)
 }
 
 // Q2 counterpart
+// Attempts to match a partial command for automatic command line completion. Returns NULL if nothing fits.
+const char* Cmd_CompleteCommand(const char* partial)
+{
+	const int len = (int)strlen(partial);
+
+	if (len == 0)
+		return NULL;
+
+	// Check for exact match.
+	for (const cmd_function_t* cmd = cmd_functions; cmd != NULL; cmd = cmd->next)
+		if (strcmp(partial, cmd->name) == 0)
+			return cmd->name;
+
+	for (const cmdalias_t* a = cmd_alias; a != NULL; a = a->next)
+		if (strcmp(partial, a->name) == 0)
+			return a->name;
+
+	// Check for partial match.
+	for (const cmd_function_t* cmd = cmd_functions; cmd != NULL; cmd = cmd->next)
+		if (strncmp(partial, cmd->name, len) == 0)
+			return cmd->name;
+
+	for (const cmdalias_t* a = cmd_alias; a != NULL; a = a->next)
+		if (strncmp(partial, a->name, len) == 0)
+			return a->name;
+
+	return NULL;
+}
+
+// Similar to above, but returns the next value after last.
+const char* Cmd_CompleteCommandNext(const char* partial, const char* last) // H2
+{
+	if (last == NULL)
+		return Cmd_CompleteCommand(partial);
+
+	const int len = (int)strlen(partial);
+
+	if (len == 0)
+		return NULL;
+
+	// Find previous function match...
+	const cmd_function_t* prev_cmd;
+	for (prev_cmd = cmd_functions; prev_cmd != NULL; prev_cmd = prev_cmd->next)
+		if (strncmp(last, prev_cmd->name, len) == 0)
+			break;
+
+	if (prev_cmd != NULL)
+	{
+		// Check for next exact match.
+		for (const cmd_function_t* cmd = prev_cmd->next; cmd != NULL; cmd = cmd->next)
+			if (strcmp(partial, cmd->name) == 0)
+				return cmd->name;
+
+		// Check for next partial match.
+		for (const cmd_function_t* cmd = prev_cmd->next; cmd != NULL; cmd = cmd->next)
+			if (strncmp(partial, cmd->name, len) == 0)
+				return cmd->name;
+	}
+
+	// Find previous alias match...
+	const cmdalias_t* prev_a;
+	for (prev_a = cmd_alias; prev_a != NULL; prev_a = prev_a->next)
+		if (strcmp(last, prev_a->name) == 0)
+			break;
+
+	if (prev_a != NULL) //mxd. Added wrap-around logic.
+	{
+		// Check for next exact match.
+		for (const cmdalias_t* a = prev_a->next; a != NULL; a = a->next)
+			if (strcmp(partial, a->name) == 0)
+				return a->name;
+
+		// Check for next partial match.
+		for (const cmdalias_t* a = prev_a->next; a != NULL; a = a->next)
+			if (strncmp(partial, a->name, len) == 0)
+				return a->name;
+	}
+
+	return NULL;
+}
+
+// Q2 counterpart
 // A complete command line has been parsed, so try to execute it.
 // FIXME: lookupnoadd the token to speed search?
 void Cmd_ExecuteString(char* text)

@@ -442,10 +442,10 @@ GAME_DECLSPEC void Cmd_RemoveCommand(char* cmd_name);
 qboolean Cmd_Exists(char* cmd_name);
 
 // Attempts to match a partial command for automatic command line completion. Returns NULL if nothing fits.
-char* Cmd_CompleteCommand(char* partial);
+const char* Cmd_CompleteCommand(const char* partial);
 
 // Similar to above, but returns the next value after last
-char* Cmd_CompleteCommandNext(char* partial, char* last);
+const char* Cmd_CompleteCommandNext(const char* partial, const char* last);
 
 // The functions that execute commands get their parameters with these functions.
 // Cmd_Argv () will return an empty string, not a NULL if arg > argc, so string operations are always safe.
@@ -504,10 +504,10 @@ float Cvar_VariableValue(const char* var_name);
 char* Cvar_VariableString(const char* var_name);
 
 // Attempts to match a partial variable name for command line completion returns NULL if nothing fits.
-char* Cvar_CompleteVariable(char* partial);
+const char* Cvar_CompleteVariable(const char* partial);
 
 // Similar to above, except that it goes to next match if any.
-char* Cvar_CompleteVariableNext(char* partial, char* last);
+const char* Cvar_CompleteVariableNext(const char* partial, const char* last);
 
 // Any CVAR_LATCHED variables that have been set will now take effect
 void Cvar_GetLatchedVars(void);

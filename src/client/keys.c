@@ -30,7 +30,7 @@ static qboolean consolekeys[256];	// If true, can't be rebound while in console
 static qboolean menubound[256];		// If true, can't be rebound while in menu
 static int keyshift[256];			// Key to map to if Shift held down in console
 
-static qboolean con_have_clipboard_data; // H2
+static qboolean con_have_previous_command; // H2
 
 typedef struct
 {
@@ -147,7 +147,74 @@ keyname_t keynames[] =
 
 static void CompleteCommand(void)
 {
-	NOT_IMPLEMENTED
+	static qboolean is_command;
+	static char buffer[256];
+	static char buffer_last[256];
+
+	const char* cmd;
+
+	char* s = &key_lines[edit_line][1];
+	if (*s == '\\' || *s == '/')
+		s++;
+
+	if (con_have_previous_command) // H2
+	{
+		if (is_command)
+		{
+			cmd = Cmd_CompleteCommandNext(buffer, buffer_last);
+			if (cmd == NULL)
+			{
+				is_command = false;
+				cmd = Cvar_CompleteVariableNext(buffer, 0);
+
+				if (cmd == NULL)
+				{
+					is_command = true;
+					cmd = Cmd_CompleteCommandNext(buffer, 0);
+				}
+			}
+		}
+		else
+		{
+			cmd = Cvar_CompleteVariableNext(buffer, buffer_last);
+			if (cmd == NULL)
+			{
+				is_command = true;
+				cmd = Cmd_CompleteCommandNext(buffer, 0);
+
+				if (cmd == NULL)
+				{
+					is_command = false;
+					cmd = Cvar_CompleteVariableNext(buffer, 0);
+				}
+			}
+		}
+	}
+	else
+	{
+		strcpy_s(buffer, sizeof(buffer), s); //mxd. strcpy -> strcpy_s
+		is_command = true;
+		cmd = Cmd_CompleteCommand(s);
+
+		if (cmd == NULL)
+		{
+			is_command = false;
+			cmd = Cvar_CompleteVariable(s);
+		}
+	}
+
+	if (cmd != NULL)
+	{
+		key_lines[edit_line][1] = '/';
+		strcpy_s(key_lines[edit_line] + 2, sizeof(key_lines[edit_line]) - 2, cmd); //mxd. strcpy -> strcpy_s
+		key_linepos = (int)strlen(cmd) + 2;
+		key_lines[edit_line][key_linepos] = ' ';
+		key_linepos++;
+		key_lines[edit_line][key_linepos] = 0;
+
+		strcpy_s(buffer_last, sizeof(buffer_last), cmd); //mxd. strcpy -> strcpy_s
+		con_have_previous_command = true;
+	}
 }
 
 // Interactive line editing and console scrollback.
@@ -222,7 +289,7 @@ static void Key_Console(int key)
 		return;
 	}
 
-	con_have_clipboard_data = false; // H2
+	con_have_previous_command = false; // H2
 
 	// Support pasting from the clipboard.
 	if ((toupper(key) == 'V' && keydown[K_CTRL]) || ((key == K_INS || key == K_KP_INS) && keydown[K_SHIFT]))

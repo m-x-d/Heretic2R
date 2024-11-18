@@ -44,6 +44,60 @@ char* Cvar_VariableString(const char* var_name)
 	return (var != NULL ? var->string : "");
 }
 
+// Attempts to match a partial variable name for command line completion. Returns NULL if nothing fits.
+const char* Cvar_CompleteVariable(const char* partial)
+{
+	const int len = (int)strlen(partial);
+
+	if (len == 0)
+		return NULL;
+
+	// Check for exact match.
+	for (const cvar_t* cvar = cvar_vars; cvar != NULL; cvar = cvar->next)
+		if (strcmp(partial, cvar->name) == 0)
+			return cvar->name;
+
+	// Check for partial match.
+	for (const cvar_t* cvar = cvar_vars; cvar != NULL; cvar = cvar->next)
+		if (strncmp(partial, cvar->name, len) == 0)
+			return cvar->name;
+
+	return NULL;
+}
+
+// Similar to above, except that it goes to next match, if any.
+const char* Cvar_CompleteVariableNext(const char* partial, const char* last) // H2
+{
+	if (last == NULL)
+		return Cvar_CompleteVariable(partial);
+
+	const int len = (int)strlen(partial);
+
+	if (len == 0)
+		return NULL;
+
+	// Find previous match...
+	const cvar_t* prev;
+	for (prev = cvar_vars; prev != NULL; prev = prev->next)
+		if (strcmp(last, prev->name) == 0)
+			break;
+
+	if (prev != NULL)
+	{
+		// Check for next exact match.
+		for (const cvar_t* cvar = prev->next; cvar != NULL; cvar = cvar->next)
+			if (strcmp(partial, cvar->name) == 0)
+				return cvar->name;
+
+		// Check for next partial match.
+		for (const cvar_t* cvar = prev->next; cvar != NULL; cvar = cvar->next)
+			if (strncmp(partial, cvar->name, len) == 0)
+				return cvar->name;
+	}
+
+	return NULL;
+}
+
 // Q2 counterpart
 // If the variable already exists, the value will not be set.
 // The flags will be or 'ed in if the variable exists.
