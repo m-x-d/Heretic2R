@@ -651,13 +651,13 @@ void SV_TraceBoundingForm(FormMove_t* formMove) // H2
 
 	moveclip_t clip;
 	clip.trace = &formMove->trace;
- 
+
 	CM_BoxTrace(start, end, formMove->mins, formMove->maxs, 0, formMove->clipMask, clip.trace);
+	formMove->trace.ent = ge->edicts;
 
 	if (clip.trace->fraction == 0.0f)
 		return;
 
-	clip.trace->ent = ge->edicts;
 	clip.passedict = (edict_t*)formMove->passEntity;
 	clip.contentmask = formMove->clipMask;
 	clip.start = start;
@@ -667,7 +667,7 @@ void SV_TraceBoundingForm(FormMove_t* formMove) // H2
 
 	VectorCopy(formMove->mins, clip.mins2);
 	VectorCopy(formMove->maxs, clip.maxs2);
-  
+
 	SV_TraceBounds(start, clip.mins2, clip.maxs2, end, clip.boxmins, clip.boxmaxs);
 	SV_FindCosestEntity(&clip);
 }
