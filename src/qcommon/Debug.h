@@ -13,7 +13,7 @@
 #define NOT_IMPLEMENTED		assert(!("Not implemented!"));
 
 // Print to Visual Studio console.
-__inline void __cdecl IDEPrintf(const char* fmt, ...)
+__inline void IDEPrintf(const char* fmt, ...)
 {
 #if _DEBUG
 	va_list argptr;
@@ -23,6 +23,7 @@ __inline void __cdecl IDEPrintf(const char* fmt, ...)
 	vsprintf_s(msg, sizeof(msg), fmt, argptr);
 	va_end(argptr);
 
+	strcat_s(msg, sizeof(msg), "\n");
 	OutputDebugString(msg);
 #endif
 }
