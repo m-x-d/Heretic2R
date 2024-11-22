@@ -7,10 +7,10 @@
 #include "Random.h"
 #include <stdlib.h>
 
-//mxd. Not a part of original H2 logic. Borrowed from Q2 source for simplicity's sake... Returns a value in [0.0 .. 1.0] range
+//mxd. Not a part of original H2 logic. Borrowed from Q2 source for simplicity's sake... Returns a value in [0.0 .. 1.0) range.
 static float frand(void)
 {
-	return (rand() & 32767) * (1.0f / 32767);
+	return (rand() & 32767) * (1.0f / 32768); //mxd. H2's flrand never rolls max!
 }
 
 H2COMMON_API float flrand(const float min, const float max)
