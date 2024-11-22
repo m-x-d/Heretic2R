@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include <float.h>
 #include "cmodel.h"
 #include "cmodel_private.h"
 #include "Vector.h"
@@ -1216,15 +1217,119 @@ void CM_BoxTrace(const vec3_t start, const vec3_t end, const vec3_t mins, const 
 	}
 }
 
-static qboolean UnknownTraceFunc1(matrix3_t* m, int* int_arr, int arr_len, float* dir)
+//TODO: mxd. What the heck does this do?..
+static qboolean ShouldAdjustNormal(matrix3_t m, int* axis_arr)
 {
-	NOT_IMPLEMENTED
-	return false;
+	vec3_t scaler;
+
+	for (int i = 0; i < 3; i++)
+	{
+		float max = 0.0f;
+
+		for (int c = 0; c < 3; c++)
+			max = max(max, fabsf(m[i][c]));
+
+		if (max < FLT_EPSILON) //mxd. < 1e-15f in original version.
+			return false;
+
+		scaler[i] = 1.0f / max;
+	}
+
+	int axis = 0;
+
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < i; j++)
+			for (int k = 0; k < j; k++)
+				m[j][i] -= m[j][k] * m[k][i];
+
+		float max = 0.0f;
+
+		for (int j = i; j < 3; j++)
+		{
+			for (int k = 0; k < i; k++)
+				m[j][i] -= m[j][k] * m[k][i];
+
+			const float cur_max = fabsf(m[j][i]) * scaler[j];
+			if (max <= cur_max)
+			{
+				max = cur_max;
+				axis = j;
+			}
+		}
+
+		if (i != axis)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				const float val = m[axis][j];
+				m[axis][j] = m[i][j];
+				m[i][j] = val;
+			}
+
+			scaler[axis] = scaler[i];
+		}
+
+		axis_arr[i] = axis;
+
+		if (fabsf(m[i][i]) < FLT_EPSILON) //mxd. < 1e-15f in original version.
+			return false;
+
+		for (int j = 0; j < 3 - (i + 1); j++)
+			m[i + j + 1][i] *= 1.0f / m[i][i];
+	}
+
+	return true;
 }
 
-static void UnknownTraceFunc2(matrix3_t* m, int* unused_arr, vec3_t* normal, int axis_arr_len)
+//TODO: mxd. What the heck does this do?..
+static void AdjustNormal(const matrix3_t m, const int* axis_arr, vec3_t normal)
 {
-	NOT_IMPLEMENTED
+	int tgt_axis = -1;
+
+	for (int i = 0; i < 3; i++)
+	{
+		const int axis = axis_arr[i];
+		float val = normal[axis];
+
+		normal[axis] = normal[i];
+
+		if (tgt_axis < 0)
+		{
+			if (val != 0.0f)
+				tgt_axis = i;
+		}
+		else if (tgt_axis < i)
+		{
+			for (int c = 0; c < i - tgt_axis; c++)
+			{
+				const float v1 = normal[tgt_axis + c];
+				const float v2 = m[i][tgt_axis + c];
+
+				val -= v1 * v2;
+			}
+		}
+
+		normal[i] = val;
+	}
+
+	for (int i = 2; i > -1; i--)
+	{
+		float val = normal[i];
+
+		if (i < 2)
+		{
+			for (int c = 0; c < 3 - (i + 1); c++)
+			{
+				const float v1 = m[i][i + c + 1];
+				const float v2 = normal[i + c + 1];
+
+				val -= v1 * v2;
+			}
+		}
+
+		normal[i] = val / m[i][i];
+	}
 }
 
 // Handles offsetting and rotation of the end points for moving and rotating entities.
@@ -1239,9 +1344,6 @@ void CM_TransformedBoxTrace(const vec3_t start, const vec3_t end, const vec3_t m
 	vec3_t maxs_l;
 	vec3_t diff;
 	vec3_t temp;
-	matrix3_t m;
-	int int_arr[3];
-	float unused;
 
 	// Subtract origin offset.
 	VectorSubtract(start, origin, start_l);
@@ -1289,6 +1391,7 @@ void CM_TransformedBoxTrace(const vec3_t start, const vec3_t end, const vec3_t m
 
 		CM_BoxTrace(start_l, end_l, mins_l, maxs_l, headnode, brushmask, return_trace);
 
+		matrix3_t m;
 		for (int i = 0; i < 3; i++)
 		{
 			m[0][i] = forward[i];
@@ -1296,8 +1399,9 @@ void CM_TransformedBoxTrace(const vec3_t start, const vec3_t end, const vec3_t m
 			m[2][i] = up[i];
 		}
 
-		if (UnknownTraceFunc1(&m, int_arr, 3, &unused))
-			UnknownTraceFunc2(&m, int_arr, &return_trace->plane.normal, 3);
+		int axis_arr[3];
+		if (ShouldAdjustNormal(m, axis_arr))
+			AdjustNormal(m, axis_arr, return_trace->plane.normal);
 		else
 			VectorClear(return_trace->plane.normal);
 
