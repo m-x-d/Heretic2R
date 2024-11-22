@@ -756,9 +756,34 @@ void MSG_WriteDir(sizebuf_t* sb, vec3_t dir)
 	MSG_WriteByte(sb, best);
 }
 
-void MSG_WriteDirMag(sizebuf_t* sb, vec3_t dir)
+void MSG_WriteDirMag(sizebuf_t* sb, vec3_t dir) // H2
 {
-	NOT_IMPLEMENTED
+	if (dir == NULL)
+	{
+		Com_DPrintf("ERROR : NULL direction passed into MSG_WriteDirMag\n"); // H2
+		MSG_WriteByte(sb, 0);
+		MSG_WriteByte(sb, 0);
+
+		return;
+	}
+
+	float bestd = 0.0f;
+	int best = 0;
+
+	for (int i = 0; i < NUMVERTEXNORMALS; i++)
+	{
+		const float d = DotProduct(dir, bytedirs[i]);
+		if (d > bestd)
+		{
+			bestd = d;
+			best = i;
+		}
+	}
+
+	MSG_WriteByte(sb, best);
+
+	const float mag = Clamp(VectorLength(dir) * 0.1f, 1.0f, 255.0f);
+	MSG_WriteByte(sb, Q_ftol(mag));
 }
 
 void MSG_WriteYawPitch(sizebuf_t* sb, vec3_t vector)
