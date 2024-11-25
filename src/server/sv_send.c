@@ -21,9 +21,17 @@ void SV_BroadcastPrintf(int level, char* fmt, ...)
 	NOT_IMPLEMENTED
 }
 
-void SV_BroadcastCaption(int printlevel, short stringid)
+void SV_BroadcastCaption(const int printlevel, const short stringid) // H2
 {
-	NOT_IMPLEMENTED
+	client_t* cl = svs.clients;
+	for (int i = 0; i < (int)maxclients->value; i++, cl++)
+	{
+		if (cl->state != cs_spawned || printlevel < cl->messagelevel)
+			continue;
+
+		MSG_WriteByte(&cl->netchan.message, svc_captionprint);
+		MSG_WriteShort(&cl->netchan.message, stringid);
+	}
 }
 
 void SV_BroadcastObituary(const int printlevel, const short stringid, const short client1, const short client2) // H2
