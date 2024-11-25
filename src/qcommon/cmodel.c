@@ -1153,7 +1153,7 @@ void CM_BoxTrace(const vec3_t start, const vec3_t end, const vec3_t mins, const 
 
 	// Fill in a default trace.
 	trace_trace = return_trace;
-	memset(trace_trace, 0, sizeof(*trace_trace));
+	memset(trace_trace, 0, sizeof(*trace_trace)); //mxd. When return_trace start or end were used as start/end, this will zero them as well!
 	trace_trace->fraction = 1.0f;
 	trace_trace->surface = &nullsurface; // H2
 
@@ -1161,7 +1161,7 @@ void CM_BoxTrace(const vec3_t start, const vec3_t end, const vec3_t mins, const 
 		return;
 
 	// Check for position test special case.
-	if (start[0] == end[0] && start[1] == end[1] && start[2] == end[2])
+	if (VectorCompare(trace_start, trace_end))
 	{
 		int leafs[1024];
 		vec3_t c1;
@@ -1169,8 +1169,8 @@ void CM_BoxTrace(const vec3_t start, const vec3_t end, const vec3_t mins, const 
 		
 		for (int i = 0; i < 3; i++)
 		{
-			c1[i] = start[i] + mins[i] - 1.0f;
-			c2[i] = start[i] + maxs[i] + 1.0f;
+			c1[i] = trace_start[i] + mins[i] - 1.0f;
+			c2[i] = trace_start[i] + maxs[i] + 1.0f;
 		}
 
 		int topnode;
@@ -1183,7 +1183,7 @@ void CM_BoxTrace(const vec3_t start, const vec3_t end, const vec3_t mins, const 
 				break;
 		}
 
-		VectorCopy(start, trace_trace->endpos);
+		VectorCopy(trace_start, trace_trace->endpos);
 
 		return;
 	}
@@ -1204,16 +1204,15 @@ void CM_BoxTrace(const vec3_t start, const vec3_t end, const vec3_t mins, const 
 
 	// General sweeping through world.
 	CM_RecursiveHullCheck(headnode, 0.0f, 1.0f, trace_start, trace_end);
-	//trace_trace_p = trace_trace;
 
 	if (trace_trace->fraction == 1.0f)
 	{
-		VectorCopy(end, trace_trace->endpos);
+		VectorCopy(trace_end, trace_trace->endpos);
 	}
 	else
 	{
 		for (int i = 0; i < 3; i++)
-			trace_trace->endpos[i] = start[i] + trace_trace->fraction * (end[i] - start[i]);
+			trace_trace->endpos[i] = trace_start[i] + trace_trace->fraction * (trace_end[i] - trace_start[i]);
 	}
 }
 
