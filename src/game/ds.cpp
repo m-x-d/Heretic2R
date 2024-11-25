@@ -4,6 +4,9 @@
 #include <windows.h>
 #include "ds.h"
 
+//TODO: mxd. Remove _HERETIC2_ define? Not used by quake2.dll.
+#define _HERETIC2_
+
 #define SCRIPT_SAVE_VERSION 2
 
 List<Variable *>	GlobalVariables;
@@ -19,21 +22,18 @@ template<class T> size_t tRead(T *ptr,FILE *FH,int n=1)
 	return fread(ptr,n,sizeof(T),FH);
 }
 
-
-//TODO: remove _HERETIC2_ define? Not used by quake2.dll.
-
-//#ifdef _HERETIC2_
+#ifdef _HERETIC2_
 extern "C"
 {
-//#endif
+#endif
 	extern void Use_Multi(edict_t *self, edict_t *other, edict_t *activator);
 	extern void c_swapplayer(edict_t *Self,edict_t *Cinematic);
 	extern void remove_non_cinematic_entites(edict_t *owner);
 	extern void reinstate_non_cinematic_entites(edict_t *owner);
 	extern cvar_t 	*Cvar_Set (char *var_name, char *value);
-//#ifdef _HERETIC2_
+#ifdef _HERETIC2_
 }
-//#endif
+#endif
 
 #ifdef _HERETIC2_
 int msg_animtype  [NUM_MESSAGES] =
@@ -104,17 +104,17 @@ int msg_animtype  [NUM_MESSAGES] =
 	MSG_C_ATTACK5, 
 };
 
-#define MAX_CINESNDS 255
+#define MAX_CINESNDS 255 //TODO: unused?
 
-typedef struct CinematicSound_s
+typedef struct CinematicSound_s //TODO: unused?
 {
 	edict_t *ent;
 	int channel;
 } CinematicSound_t;
 
-CinematicSound_t CinematicSound[MAX_CINESNDS];
+CinematicSound_t CinematicSound[MAX_CINESNDS]; //TODO: unused?
 
-int CinematicSound_cnt;	// Count of the current # of sounds executed
+int CinematicSound_cnt;	// Count of the current # of sounds executed //TODO: unused?
 
 #endif
 
@@ -4363,3 +4363,4 @@ bool CScript::NewParameter(Variable *Which)
 
 //==========================================================================
 
+#undef _HERETIC2_ //TODO: mxd. Remove?
