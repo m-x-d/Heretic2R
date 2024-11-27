@@ -107,7 +107,7 @@ field_t fields[] = {
 	{"parm9", STOFS(parms[8]), F_LSTRING, FFL_SPAWNTEMP},
 	{"parm10", STOFS(parms[9]), F_LSTRING, FFL_SPAWNTEMP},
 
-	{ NULL, 0, F_INT, 0 }, //mxd. Add terminator field.
+	{ NULL, 0, F_INT, 0 }, //mxd. Added terminator field.
 };
 
 // -------- just for savegames ----------

@@ -266,7 +266,7 @@ static void SV_WritePlayerstateToClient(const client_frame_t* from, const client
 			SetB(flags, PS_GROUNDPLANE_INFO2);
 	}
 
-	if ((ops->GroundContents ^ ps->GroundContents) & MASK_CURRENT)
+	if ((ps->GroundContents & MASK_CURRENT) != (ops->GroundContents & MASK_CURRENT))
 		SetB(flags, PS_GROUNDBITS_GC);
 
 	if (ps->GroundSurface.flags != ops->GroundSurface.flags)
