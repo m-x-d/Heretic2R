@@ -240,11 +240,9 @@ int CL_PMpointcontents(vec3_t point)
 	return contents;
 }
 
-// Sets cl.predicted_origin and cl.predicted_angles
+// Sets cl.predicted_origin and cl.predicted_angles.
 void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function...
 {
-	static int cmd_time_delta = 0;
-	static int old_cmd_time_delta = 0;
 	static pmove_state_t old_pmove_state = { 0 };
 	static short old_cmd_angles[3] = { 0, 0, 0 };
 
@@ -408,9 +406,8 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 	VectorSet(cl.playerinfo.oldvelocity, 0, 0, cl.frame.playerstate.oldvelocity_z);
 
 	old_pmove_state = pm.s;
-	old_cmd_time_delta = 0;
-	cmd_time_delta = 0;
 
+	int cmd_time_delta = 0;
 	int frame = 0;
 
 	// Run frames.
@@ -538,12 +535,12 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 		}
 
 		cl.playerinfo.oldbuttons = cl.playerinfo.buttons;
+		cl.playerinfo.buttons = pm.cmd.buttons;
 		cl.playerinfo.remember_buttons |= pm.cmd.buttons;
 		cl.playerinfo.latched_buttons |= ~cl.playerinfo.buttons & pm.cmd.buttons;
 
 		int oldframe = (frame - 1) & (CMD_BACKUP - 1);
 		cmd_time_delta += (cl.cmd_time[frame] - cl.cmd_time[oldframe]);
-		old_cmd_time_delta = cmd_time_delta;
 
 		if (cmd_time_delta > 100)
 		{
@@ -554,8 +551,6 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 			pm.cmd.sidemove = cl.cmds[frame].sidemove;
 			pm.cmd.upmove = cl.cmds[frame].upmove;
 
-			old_cmd_time_delta = cmd_time_delta;
-			cl.playerinfo.buttons = pm.cmd.buttons;
 			cl.playerinfo.pcmd = pm.cmd;
 
 			for (int i = 0; i < 3; i++)
@@ -602,8 +597,8 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 		}
 	}
 
-	pred_playerLerp = (float)old_cmd_time_delta * 0.01f;
-	float backlerp = 1.0f - pred_playerLerp;
+	pred_playerLerp = (float)cmd_time_delta / 100.0f;
+	const float backlerp = 1.0f - pred_playerLerp;
 	vec3_t delta;
 
 	for (int i = 0; i < 3; i++)
