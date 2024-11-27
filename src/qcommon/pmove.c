@@ -40,8 +40,11 @@ static pmove_t* pm;
 static pml_t pml;
 
 // Movement parameters.
-#define PM_WATERSPEED	400.0f
+#define PM_STOPSPEED	100.0f
 #define PM_MAXSPEED		300.0f
+#define PM_ACCELERATE	10.0f
+#define PM_FRICTION		6.0f
+#define PM_WATERSPEED	400.0f
 
 #define	STEPSIZE		18.0f
 #define MIN_STEP_NORMAL	0.7f // Can't step up onto very steep slopes.
@@ -770,14 +773,35 @@ static void PM_AirMove(void)
 	PM_StepSlideMove();
 }
 
-static void PM_TryWaterMove(void) // H2
+// Handles water/slime/lava friction.
+static void PM_Friction(void)
 {
-	NOT_IMPLEMENTED
-}
+	const float speed = VectorLength(pml.velocity);
 
-static void PM_WaterSink(void) // H2
-{
-	NOT_IMPLEMENTED
+	if (speed < 1.0f)
+	{
+		pml.velocity[0] = 0.0f;
+		pml.velocity[1] = 0.0f;
+
+		return;
+	}
+
+	float drop = 0.0f;
+
+	// Apply ground friction?
+	if (pm->groundentity != NULL && pml.groundsurface != NULL && !(pml.groundsurface->flags & SURF_SLICK))
+		drop = max(PM_STOPSPEED, speed) * pml.frametime * PM_FRICTION;
+
+	// Apply water friction?
+	if (pm->waterlevel > 0)
+	{
+		const float waterfriction = (pm->watertype & (CONTENTS_SLIME | CONTENTS_LAVA) ? 0.5f : 0.75f);
+		drop += speed * waterfriction * (float)pm->waterlevel * pml.frametime;
+	}
+
+	// Scale the velocity.
+	const float newspeed = max(0.0f, speed - drop) / speed;
+	VectorScale(pml.velocity, newspeed, pml.velocity);
 }
 
 static void PM_SlimeMove(void) // H2
@@ -788,6 +812,90 @@ static void PM_SlimeMove(void) // H2
 static void PM_LavaMove(void) // H2
 {
 	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart.
+// Handles user intended acceleration.
+static void PM_Accelerate(vec3_t wishdir, const float wishspeed, const float accel) //mxd. Used only by PM_WaterMove() in H2.
+{
+	const float currentspeed = DotProduct(pml.velocity, wishdir);
+	const float addspeed = wishspeed - currentspeed;
+
+	if (addspeed <= 0.0f)
+		return;
+
+	float accelspeed = accel * pml.frametime * wishspeed;
+	accelspeed = min(addspeed, accelspeed);
+
+	for (int i = 0; i < 3; i++)
+		pml.velocity[i] += accelspeed * wishdir[i];
+}
+
+static qboolean PM_WaterMove(const float scaler)
+{
+	vec3_t wishvel;
+	vec3_t wishdir;
+
+	qboolean run_shrine = false;
+	pml.gravity = 0.0f;
+
+	PM_Friction();
+
+	float forwardmove = pm->cmd.forwardmove;
+	const float sidemove = pm->cmd.sidemove;
+
+	if (pm->run_shrine && forwardmove > 0.0f)
+	{
+		forwardmove *= 1.65f;
+		run_shrine = true;
+	}
+
+	// User intentions.
+	for (int i = 0; i < 3; i++)
+		wishvel[i] = pml.forward[i] * forwardmove + pml.right[i] * sidemove;
+
+	PM_AddCurrents(wishvel);
+
+	const float wishspeed = ClampVelocity(wishvel, wishdir, run_shrine, false);
+	PM_Accelerate(wishdir, wishspeed * scaler, PM_ACCELERATE);
+
+	if (pm->groundentity == NULL)
+		return false;
+
+	if (wishspeed * scaler == 0.0f && pml.groundplane.normal[2] >= MIN_STEP_NORMAL && pml.groundplane.normal[2] >= pml.gravity / (pml.max_velocity + pml.gravity))
+	{
+		VectorClear(pml.velocity);
+		return true;
+	}
+	else
+	{
+		VectorCopy(wishvel, pml.velocity);
+		return false;
+	}
+}
+
+static void PM_TryUnderwaterMove(void) // H2
+{
+	NOT_IMPLEMENTED
+}
+
+// Swim on water surface or walk while in water.
+static void PM_TryWaterMove(void) // H2
+{
+	if (PM_WaterMove(0.5f))
+		return;
+
+	if (pm->s.w_flags & WF_SINK)
+	{
+		pm->s.w_flags &= ~WF_SINK;
+	}
+	else
+	{
+		pml.velocity[2] = (pm->waterheight - pml.desired_water_height) / pml.frametime;
+		pml.velocity[2] += sinf((float)Sys_Milliseconds() / 150.0f) * 8.0f;
+	}
+
+	PM_StepSlideMove();
 }
 
 static void PM_CatagorizePosition(void)
@@ -1193,7 +1301,7 @@ void Pmove(pmove_t* pmove, const qboolean server)
 		}
 		else if (pm->waterlevel == 1)
 		{
-			PM_WaterSink();
+			PM_TryWaterMove();
 		}
 		else if (pm->waterlevel == 2)
 		{
@@ -1202,19 +1310,19 @@ void Pmove(pmove_t* pmove, const qboolean server)
 				if (!(pm->s.w_flags & WF_DIVING))
 					pm->s.w_flags |= WF_DIVE;
 
-				PM_TryWaterMove();
+				PM_TryUnderwaterMove();
 			}
 			else
 			{
 				pm->s.w_flags |= WF_SURFACE;
 				pm->s.w_flags &= ~WF_DIVE;
-				PM_WaterSink();
+				PM_TryWaterMove();
 			}
 		}
 		else // m->waterlevel == 3
 		{
 			pm->s.w_flags = WF_SWIMFREE;
-			PM_TryWaterMove();
+			PM_TryUnderwaterMove();
 		}
 	}
 
