@@ -370,9 +370,59 @@ static void SV_UnsetDMFlags_f(void)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart.
 static void SV_Savegame_f(void)
 {
-	NOT_IMPLEMENTED
+	if (sv.state != ss_game)
+	{
+		Com_Printf("You must be in a game to save.\n");
+		return;
+	}
+
+	if (Cmd_Argc() != 2)
+	{
+		Com_Printf("USAGE: savegame <directory>\n");
+		return;
+	}
+
+	if ((int)Cvar_VariableValue("deathmatch"))
+	{
+		Com_Printf("Can't savegame in a deathmatch\n");
+		return;
+	}
+
+	if (strcmp(Cmd_Argv(1), "current") == 0)
+	{
+		Com_Printf("Can't save to 'current'\n");
+		return;
+	}
+
+	if (maxclients->value == 1.0f && svs.clients[0].edict->client->ps.stats[STAT_HEALTH] <= 0)
+	{
+		Com_Printf("Can't savegame while dead!\n");
+		return;
+	}
+
+	const char* dir = Cmd_Argv(1);
+	if (strstr(dir, "..") || strstr(dir, "/") || strstr(dir, "\\"))
+	{
+		Com_Printf("Bad savedir.\n");
+		return; //mxd. Missing in Q2.
+	}
+
+	Com_Printf("Saving game...\n");
+
+	// Archive current level, including all client edicts.
+	// When the level is reloaded, they will be shells awaiting a connecting client.
+	SV_WriteLevelFile();
+
+	// Save server state.
+	SV_WriteServerFile(false);
+
+	// Copy it off.
+	SV_CopySaveGame("current", dir);
+
+	Com_Printf("Done.\n");
 }
 
 static void SV_Loadgame_f(void)
