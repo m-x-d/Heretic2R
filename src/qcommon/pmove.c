@@ -804,14 +804,50 @@ static void PM_Friction(void)
 	VectorScale(pml.velocity, newspeed, pml.velocity);
 }
 
+//mxd. Simplified version of PM_WaterMove().
+static void PM_LavaAndSlimeMove(const float scaler)
+{
+	vec3_t wishvel;
+	vec3_t wishdir;
+
+	qboolean run_shrine = false;
+	pml.gravity = 0.0f;
+
+	PM_Friction();
+
+	float forwardmove = pm->cmd.forwardmove;
+	const float sidemove = pm->cmd.sidemove;
+
+	if (pm->run_shrine && forwardmove > 0.0f)
+	{
+		forwardmove *= 1.65f;
+		run_shrine = true;
+	}
+
+	// User intentions.
+	for (int i = 0; i < 3; i++)
+		wishvel[i] = pml.forward[i] * forwardmove + pml.right[i] * sidemove;
+
+	PM_AddCurrents(wishvel);
+
+	VectorScale(wishvel, scaler, wishvel);
+	ClampVelocity(wishvel, wishdir, run_shrine, false);
+
+	VectorCopy(wishvel, pml.velocity);
+}
+
 static void PM_SlimeMove(void) // H2
 {
-	NOT_IMPLEMENTED
+	PM_LavaAndSlimeMove(0.35f);
+	pml.velocity[2] = -12.0f;
+	PM_StepSlideMove();
 }
 
 static void PM_LavaMove(void) // H2
 {
-	NOT_IMPLEMENTED
+	PM_LavaAndSlimeMove(0.45f);
+	pml.velocity[2] = Clamp(pml.velocity[2], -64.0f, -32.0f);
+	PM_StepSlideMove();
 }
 
 // Q2 counterpart.
