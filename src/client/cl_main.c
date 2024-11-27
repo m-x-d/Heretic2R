@@ -1016,7 +1016,7 @@ void CL_Frame(const int msec)
 			return;
 
 		// Framerate is too high.
-		if (extratime < (int)(1000.0f / cl_maxfps->value))
+		if ((float)extratime < 1000.0f / cl_maxfps->value)
 			return;
 	}
 
