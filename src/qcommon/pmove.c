@@ -876,7 +876,10 @@ static qboolean PM_WaterMove(const float scaler)
 
 static void PM_TryUnderwaterMove(void) // H2
 {
-	NOT_IMPLEMENTED
+	if (PM_WaterMove(0.5f))
+		return;
+
+	PM_StepSlideMove();
 }
 
 // Swim on water surface or walk while in water.
