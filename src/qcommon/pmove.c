@@ -206,7 +206,7 @@ static void PM_StepSlideMove(void)
 				cross[2] = -(plane_normal[0] * plane_normal[0]) - (plane_normal[1] * plane_normal[1]);
 				VectorNormalize(cross);
 
-				if (DotProduct(cross, plane_normal) < -0.0005f)
+				if (DotProduct(cross, plane_normal) < -FLOAT_ZERO_EPSILON)
 				{
 					VectorMA(pml.origin, 0.5f, planes[cur_plane], pml.origin);
 					prev_plane = cur_plane;
@@ -256,7 +256,7 @@ static void PM_StepSlideMove(void)
 					inv_scaled_vel = 0.0f;
 				}
 
-				if (DotProduct(cross, plane_normal) < -0.0005f)
+				if (DotProduct(cross, plane_normal) < -FLOAT_ZERO_EPSILON)
 				{
 					VectorMA(pml.origin, 0.5f, planes[cur_plane], pml.origin);
 					prev_plane = cur_plane;
@@ -418,7 +418,7 @@ LAB_NotSolid:
 
 				const float bounce_amount = VectorNormalize2(bounce_vel, dir);
 
-				if (fabsf(bounce_amount) < 0.0005f)
+				if (fabsf(bounce_amount) < FLOAT_ZERO_EPSILON)
 				{
 					if (planes[cur_plane][2] > 0.0f)
 					{
@@ -437,7 +437,7 @@ LAB_NotSolid:
 
 				const float d = DotProduct(dir, planes[cur_plane]);
 
-				if (d < -0.0005f)
+				if (d < -FLOAT_ZERO_EPSILON)
 				{
 					VectorMA(pml.origin, 0.5f, planes[cur_plane], pml.origin);
 					prev_plane = cur_plane;
@@ -1248,8 +1248,8 @@ void Pmove(pmove_t* pmove, const qboolean server)
 		// Convert origin and velocity to float values.
 		for (int i = 0; i < 3; i++)
 		{
-			pml.origin[i] = (float)pm->s.origin[i] * 0.125f;
-			pml.velocity[i] = (float)pm->s.velocity[i] * 0.125f;
+			pml.origin[i] = (float)pm->s.origin[i] / 8.0f;
+			pml.velocity[i] = (float)pm->s.velocity[i] / 8.0f;
 			pml.previous_origin[i] = pm->s.origin[i];
 			pml.short_origin[i] = pm->s.origin[i];
 		}
@@ -1261,7 +1261,7 @@ void Pmove(pmove_t* pmove, const qboolean server)
 	pml.groundcontents = pm->GroundContents;
 	pml.max_velocity = (pm->waterlevel < 2 ? 1600.0f : 200.0f);
 	pml.knockbackfactor = pm->knockbackfactor;
-	pml.frametime = (float)pm->cmd.msec * 0.001f;
+	pml.frametime = (float)pm->cmd.msec / 1000.0f;
 
 	PM_ClampAngles();
 
@@ -1376,7 +1376,7 @@ void Pmove(pmove_t* pmove, const qboolean server)
 
 	for (int i = 0; i < 3; i++)
 	{
-		if (fabsf(mins_diff[i]) >= 0.0005f || fabsf(maxs_diff[i]) >= 0.0005f)
+		if (fabsf(mins_diff[i]) >= FLOAT_ZERO_EPSILON || fabsf(maxs_diff[i]) >= FLOAT_ZERO_EPSILON)
 		{
 			PM_TryMove();
 			break;
