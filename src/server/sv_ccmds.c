@@ -5,6 +5,7 @@
 //
 
 #include "server.h"
+#include "cl_strings.h"
 #include "cmodel.h"
 #include "sv_effects.h"
 
@@ -299,14 +300,43 @@ static void SV_ReadServerFile(void)
 #pragma region ========================== OPERATOR CONSOLE ONLY COMMANDS ==========================
 // These commands can only be entered from stdin or by a remote operator datagram
 
+// Q2 counterpart
 static void SV_Heartbeat_f(void)
 {
-	NOT_IMPLEMENTED
+	svs.last_heartbeat = -9999999;
 }
 
-static void SV_Kick_f(void)
+static qboolean SV_SetPlayer(void)
 {
 	NOT_IMPLEMENTED
+	return false;
+}
+
+// Kick a user off of the server.
+static void SV_Kick_f(void)
+{
+	if (!svs.initialized)
+	{
+		Com_Printf("No server running.\n");
+		return;
+	}
+
+	if (Cmd_Argc() != 2)
+	{
+		Com_Printf("Usage: kick <userid>\n");
+		return;
+	}
+
+	if (!SV_SetPlayer())
+		return;
+
+	SV_BroadcastObituary(PRINT_HIGH, GM_WASKICKED, sv_client->edict->s.number, 0); // H2
+
+	// Print directly, because the dropped client won't get the SV_BroadcastObituary message.
+	SV_ClientPrintf(sv_client, PRINT_HIGH, GM_KICKED); // H2
+	SV_DropClient(sv_client);
+
+	sv_client->lastmessage = svs.realtime; // In case there is a funny zombie.
 }
 
 static void SV_Status_f(void)
