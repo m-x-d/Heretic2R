@@ -52,7 +52,7 @@ static void SV_CopyFile(char* src, char* dst) //mxd. CopyFile in Q2. Renamed to 
 	if (fopen_s(&f1, src, "rb") != 0) //mxd. fopen -> fopen_s
 		return;
 
-	if (fopen_s(&f2, src, "wb") != 0) //mxd. fopen -> fopen_s
+	if (fopen_s(&f2, dst, "wb") != 0) //mxd. fopen -> fopen_s
 	{
 		fclose(f1);
 		return;
