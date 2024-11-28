@@ -88,9 +88,12 @@ static void SV_CopySaveGame(const char* src, const char* dst)
 	Com_sprintf(name2, sizeof(name2), "%s/save/%s/game.ssv", FS_Userdir(), dst); // H2: FS_Gamedir() -> FS_Userdir()
 	SV_CopyFile(name, name2);
 
+	// Get savedir length.
 	Com_sprintf(name, sizeof(name), "%s/save/%s/", FS_Userdir(), src); // H2: FS_Gamedir() -> FS_Userdir()
-	Com_sprintf(name, sizeof(name), "%s/save/%s/*.sav", FS_Userdir(), src); // H2: FS_Gamedir() -> FS_Userdir()
 	const int len = (int)strlen(name);
+
+	// Create search wildcard.
+	Com_sprintf(name, sizeof(name), "%s/save/%s/*.sav", FS_Userdir(), src); // H2: FS_Gamedir() -> FS_Userdir()
 
 	char* found = Sys_FindFirst(name, 0, 0);
 	while (found != NULL)
