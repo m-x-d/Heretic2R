@@ -156,7 +156,36 @@ static void SV_WriteLevelFile(void)
 
 void SV_ReadLevelFile(void)
 {
-	NOT_IMPLEMENTED
+	char name[MAX_OSPATH];
+	char temp[MAX_OSPATH];
+	FILE* f;
+
+	// H2: strip directory path from sv.name... Checks for '/' and '\\' separators.
+	strcpy_s(temp, sizeof(temp), sv.name);
+
+	//mxd. Rewritten the logic...
+	const char* c = max(strrchr(temp, '/'), strrchr(temp, '\\'));
+	if (c != NULL)
+	{
+		const int pos = (c - temp);
+		memmove_s(temp, sizeof(temp), c + 1, strlen(temp) - pos);
+		temp[pos] = 0;
+	}
+
+	Com_sprintf(name, sizeof(name), "%s/save/current/%s.sv2", FS_Userdir(), temp); // H2: FS_Gamedir() -> FS_Userdir()
+
+	if (fopen_s(&f, name, "rb") != 0) //mxd. fopen -> fopen_s
+	{
+		Com_Printf("Failed to open %s\n", name);
+		return;
+	}
+
+	FS_Read(sv.configstrings, sizeof(sv.configstrings), f);
+	CM_ReadPortalState(f);
+	fclose(f);
+
+	Com_sprintf(name, sizeof(name), "%s/save/current/%s.sav", FS_Userdir(), temp); // H2: FS_Gamedir() -> FS_Userdir()
+	ge->ReadLevel(name);
 }
 
 static void SV_WriteServerFile(const qboolean autosave)
