@@ -384,7 +384,61 @@ static void SV_Kick_f(void)
 
 static void SV_Status_f(void)
 {
-	NOT_IMPLEMENTED
+	if (svs.clients == NULL)
+	{
+		Com_Printf("No server running.\n");
+		return;
+	}
+
+	Com_Printf("map              : %s\n\n", sv.name); // Single '\n' in Q2.
+	Com_Printf("num score ping name            lastmsg address               qport  rate \n"); // H2: +rate.
+	Com_Printf("--- ----- ---- --------------- ------- --------------------- ------ -----\n");
+
+	client_t* cl = svs.clients;
+	for (int i = 0; i < (int)maxclients->value; i++, cl++)
+	{
+		if (cl->state == cs_free)
+			continue;
+
+		Com_Printf("%3i ", i);
+		Com_Printf("%5i ", cl->edict->client->ps.stats[STAT_FRAGS]);
+
+		switch (cl->state)
+		{
+			case cs_connected:
+				Com_Printf("CNCT ");
+				break;
+
+			case cs_zombie:
+				Com_Printf("ZMBI ");
+				break;
+
+			default:
+				Com_Printf("%4i ", min(9999, cl->ping));
+				break;
+		}
+
+		Com_Printf("%s", cl->name);
+
+		int len = 16 - (int)strlen(cl->name);
+		for (int j = 0; j < len; j++)
+			Com_Printf(" ");
+
+		Com_Printf("%7i ", svs.realtime - cl->lastmessage);
+
+		char* addr = NET_AdrToString(&cl->netchan.remote_address);
+		Com_Printf("%s", addr);
+
+		len = 22 - (int)strlen(addr);
+		for (int j = 0; j < len; j++)
+			Com_Printf(" ");
+
+		Com_Printf("%5i  ", cl->netchan.qport);
+		Com_Printf("%5i", cl->rate); // H2
+		Com_Printf("\n");
+	}
+
+	Com_Printf("\n");
 }
 
 static void SV_Serverinfo_f(void)
