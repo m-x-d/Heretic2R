@@ -37,7 +37,7 @@ static void SaveGame_MenuInit(void)
 		s_savegame_actions[i].generic.y = y;
 		s_savegame_actions[i].generic.width = re.BF_Strlen(m_savestrings[i + 1]);
 		s_savegame_actions[i].generic.flags = QMF_LEFT_JUSTIFY | QMF_MULTILINE | QMF_SELECT_SOUND;
-		s_savegame_actions[i].generic.localdata[0] = i;
+		s_savegame_actions[i].generic.localdata[0] = i + 1;
 		s_savegame_actions[i].generic.callback = SaveGameCallback;
 
 		Menu_AddItem(&s_savegame_menu, &s_savegame_actions[i]);
