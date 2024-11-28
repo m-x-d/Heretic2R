@@ -256,6 +256,44 @@ static void SV_WriteServerFile(const qboolean autosave)
 	ge->WriteGame(name, autosave);
 }
 
+static void SV_ReadServerFile(void)
+{
+	FILE* f;
+	char name[MAX_OSPATH];
+	char comment[64]; // Q2: [32]
+	char mapcmd[MAX_TOKEN_CHARS];
+
+	Com_sprintf(name, sizeof(name), "%s/save/current/server.ssv", FS_Userdir()); // H2: FS_Gamedir -> FS_Userdir.
+	if (fopen_s(&f, name, "rb") != 0)
+	{
+		Com_Printf("Couldn\'t read %s\n", name);
+		return;
+	}
+
+	// Read the comment field and mapcmd.
+	FS_Read(comment, sizeof(comment), f);
+	FS_Read(mapcmd, sizeof(mapcmd), f);
+
+	// Read all CVAR_LATCH cvars. These will be things like coop, skill, deathmatch, etc.
+	while (fread(name, 1, sizeof(name), f))
+	{
+		char value[128];
+		FS_Read(value, sizeof(value), f);
+		Com_DPrintf("Set %s = %s\n", name, value);
+		Cvar_ForceSet(name, value);
+	}
+
+	fclose(f);
+
+	// Start a new game fresh with new cvars.
+	SV_InitGame();
+
+	strcpy_s(svs.mapcmd, sizeof(svs.mapcmd), mapcmd); //mxd. strcpy -> strcpy_s
+
+	Com_sprintf(name, sizeof(name), "%s/save/current/game.ssv", FS_Userdir()); // H2: FS_Gamedir -> FS_Userdir.
+	ge->ReadGame(name);
+}
+
 #pragma endregion
 
 #pragma region ========================== OPERATOR CONSOLE ONLY COMMANDS ==========================
@@ -489,44 +527,6 @@ static void SV_Savegame_f(void)
 	SV_CopySaveGame("current", dir);
 
 	Com_Printf("Done.\n");
-}
-
-static void SV_ReadServerFile(void)
-{
-	FILE* f;
-	char name[MAX_OSPATH];
-	char comment[64]; // Q2: 32
-	char mapcmd[MAX_TOKEN_CHARS];
-
-	Com_sprintf(name, sizeof(name), "%s/save/current/server.ssv", FS_Userdir()); // H2: FS_Gamedir -> FS_Userdir.
-	if (fopen_s(&f, name, "rb") != 0)
-	{
-		Com_Printf("Couldn\'t read %s\n", name);
-		return;
-	}
-
-	// Read the comment field and mapcmd.
-	FS_Read(comment, sizeof(comment), f);
-	FS_Read(mapcmd, sizeof(mapcmd), f);
-
-	// Read all CVAR_LATCH cvars. These will be things like coop, skill, deathmatch, etc.
-	while (fread(name, 1, sizeof(name), f))
-	{
-		char value[128];
-		FS_Read(value, sizeof(value), f);
-		Com_DPrintf("Set %s = %s\n", name, value);
-		Cvar_ForceSet(name, value);
-	}
-
-	fclose(f);
-
-	// Start a new game fresh with new cvars.
-	SV_InitGame();
-
-	strcpy_s(svs.mapcmd, sizeof(svs.mapcmd), mapcmd); //mxd. strcpy -> strcpy_s
-
-	Com_sprintf(name, sizeof(name), "%s/save/current/game.ssv", FS_Userdir()); // H2: FS_Gamedir -> FS_Userdir.
-	ge->ReadGame(name);
 }
 
 static void SV_Loadgame_f(void)
