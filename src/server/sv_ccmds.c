@@ -660,9 +660,38 @@ static void SV_ConSay_f(void)
 			SV_ClientPrintf(cl, PRINT_CHAT, "%s\n", text);
 }
 
-static void SV_ListDMFlags_f(void)
+static void SV_ListDMFlags_f(void) // H2
 {
-	NOT_IMPLEMENTED
+	char* state[16];
+
+	uint flags = Q_ftol(dmflags->value);
+	for (int i = 16; i > 0; i--)
+	{
+		state[i - 1] = ((flags & 1) ? "on " : "off");
+		flags >>= 1;
+	}
+
+	Com_Printf("\nDeathmatch flags are :"
+			"\nDF  Flag          Current    Definition of flag"
+			"\nnum name          value"
+			"\n1)  Weapons stay  %s : on = Weapons remain after being picked up"
+			"\n2)  No Shrines    %s : on = No shrines active in the level"
+			"\n3)  No Names      %s : on = No names are visible to anyone on the level"
+			"\n4)  Allow Health  %s : on = Health is NOT spawned in the level"
+			"\n5)  Show Leader   %s : on = Current Frag leader(s) has yellow orb indicator"
+			"\n6)  Chaos Shrines %s : on = All Shrines are Chaos Shrines"
+			"\n7)  Same Level    %s : on = When level over - respawn on same level"
+			"\n8)  Force Respawn %s : on = Instant respawn of players on dying"
+			"\n9)  Team Skins    %s : on = Team play enabled, teams differentiated by skins"
+			"\n10) Team Models   %s : on = Team play enabled, teams differentiated by model"
+			"\n11) Allow Exit    %s : on = Exit triggers available on level"
+			"\n12) Infinite Mana %s : on = Mana never decreases"
+			"\n13) Friendly Fire %s : on = Can damage other teammates in coop or deathmatch"
+			"\n14) Blade only    %s : on = No weapons spawned - no flying fist either"
+			"\n15) Defensive     %s : on = No defensive weapons spawned"
+			"\n16) Dismemberment %s : on = Dismemberment\n\n",
+		state[0], state[1], state[2],  state[3],  state[4],  state[5],  state[6],  state[7], 
+		state[8], state[9], state[10], state[11], state[12], state[13], state[14], state[15]);
 }
 
 static void SV_SetDMFlags_f(void)

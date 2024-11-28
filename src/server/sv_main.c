@@ -19,7 +19,7 @@ cvar_t* sv_paused;
 static cvar_t* rcon_password; // Password for remote server commands
 
 // New in H2:
-static cvar_t* dmflags;
+cvar_t* dmflags;
 static cvar_t* advancedstaff; //TODO: unused?
 static cvar_t* blood_level; //TODO: unused?
 

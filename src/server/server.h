@@ -161,6 +161,7 @@ extern server_static_t svs; // Persistent server info
 extern server_t sv; // Local server
 
 extern cvar_t* sv_paused;
+extern cvar_t* dmflags; // H2
 extern cvar_t* maxclients;
 extern cvar_t* r_farclipdist; // H2
 
