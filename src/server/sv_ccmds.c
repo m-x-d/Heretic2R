@@ -6,6 +6,7 @@
 
 #include "server.h"
 #include "cmodel.h"
+#include "sv_effects.h"
 
 #pragma region ========================== SAVEGAME FILES ==========================
 
@@ -443,7 +444,7 @@ static void SV_Savegame_f(void)
 	if (strstr(dir, "..") || strstr(dir, "/") || strstr(dir, "\\"))
 	{
 		Com_Printf("Bad savedir.\n");
-		return; //mxd. Missing in Q2.
+		return; //mxd. Missing even in YQ2.
 	}
 
 	Com_Printf("Saving game...\n");
@@ -461,9 +462,84 @@ static void SV_Savegame_f(void)
 	Com_Printf("Done.\n");
 }
 
+static void SV_ReadServerFile(void)
+{
+	FILE* f;
+	char name[MAX_OSPATH];
+	char comment[64]; // Q2: 32
+	char mapcmd[MAX_TOKEN_CHARS];
+
+	Com_sprintf(name, sizeof(name), "%s/save/current/server.ssv", FS_Userdir()); // H2: FS_Gamedir -> FS_Userdir.
+	if (fopen_s(&f, name, "rb") != 0)
+	{
+		Com_Printf("Couldn\'t read %s\n", name);
+		return;
+	}
+
+	// Read the comment field and mapcmd.
+	FS_Read(comment, sizeof(comment), f);
+	FS_Read(mapcmd, sizeof(mapcmd), f);
+
+	// Read all CVAR_LATCH cvars. These will be things like coop, skill, deathmatch, etc.
+	while (fread(name, 1, sizeof(name), f))
+	{
+		char value[128];
+		FS_Read(value, sizeof(value), f);
+		Com_DPrintf("Set %s = %s\n", name, value);
+		Cvar_ForceSet(name, value);
+	}
+
+	fclose(f);
+
+	// Start a new game fresh with new cvars.
+	SV_InitGame();
+
+	strcpy_s(svs.mapcmd, sizeof(svs.mapcmd), mapcmd); //mxd. strcpy -> strcpy_s
+
+	Com_sprintf(name, sizeof(name), "%s/save/current/game.ssv", FS_Userdir()); // H2: FS_Gamedir -> FS_Userdir.
+	ge->ReadGame(name);
+}
+
 static void SV_Loadgame_f(void)
 {
-	NOT_IMPLEMENTED
+	char name[MAX_OSPATH];
+	FILE* f;
+
+	svs.have_current_save = false; // H2
+
+	if (Cmd_Argc() != 2)
+	{
+		Com_Printf("USAGE: load <directory>\n");
+		return;
+	}
+
+	Com_Printf("Loading game...\n");
+
+	char* dir = Cmd_Argv(1);
+	if (strstr(dir, "..") || strstr(dir, "/") || strstr(dir, "\\"))
+	{
+		Com_Printf("Bad savedir.\n");
+		return; //mxd. Missing even in YQ2.
+	}
+
+	// Make sure the server.ssv file exists.
+	Com_sprintf(name, sizeof(name), "%s/save/%s/server.ssv", FS_Userdir(), dir); // H2: FS_Gamedir -> FS_Userdir.
+
+	if (fopen_s(&f, name, "rb") != 0) //mxd. fopen -> fopen_s
+	{
+		Com_Printf("No such savegame: %s\n", name);
+		return;
+	}
+	fclose(f);
+
+	SV_CopySaveGame(dir, "current");
+	SV_ReadServerFile();
+
+	// Go to the map.
+	sv.state = ss_dead; // Don't save current level when changing.
+	SV_Map(false, svs.mapcmd, true);
+
+	send_fx_framenum = true; // H2
 }
 
 // Q2 counterpart

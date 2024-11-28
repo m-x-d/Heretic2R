@@ -198,6 +198,7 @@ int SV_SoundIndex(const char* name);
 int SV_ImageIndex(const char* name);
 void SV_ModelRemove(char* name); // H2
 void SV_SoundRemove(char* name); // H2
+void SV_InitGame(void);
 void SV_Map(qboolean attractloop, const char* levelstring, qboolean loadgame);
 
 // sv_game.c

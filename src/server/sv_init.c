@@ -326,8 +326,8 @@ static void SV_SpawnServer(char* server, char* spawnpoint, const server_state_t 
 	Com_ColourPrintf(P_HEADER, "-------------------------------------\n"); // Q2: Com_Printf
 }
 
-// A brand new game has been started
-static void SV_InitGame(void)
+// A brand new game has been started.
+void SV_InitGame(void)
 {
 	if (svs.initialized)
 		SV_Shutdown("Server restarted\n", true); // Cause any connected clients to reconnect
