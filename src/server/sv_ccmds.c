@@ -306,9 +306,52 @@ static void SV_Heartbeat_f(void)
 	svs.last_heartbeat = -9999999;
 }
 
+// Q2 counterpart
+// Sets sv_client and sv_player to the player with idnum Cmd_Argv(1).
 static qboolean SV_SetPlayer(void)
 {
-	NOT_IMPLEMENTED
+	if (Cmd_Argc() < 2)
+		return false;
+
+	char* s = Cmd_Argv(1);
+
+	// Numeric values are just slot numbers.
+	if (s[0] >= '0' && s[0] <= '9')
+	{
+		const int idnum = Q_atoi(s);
+
+		if (idnum < 0 || idnum >= (int)maxclients->value)
+		{
+			Com_Printf("Bad client slot: %i\n", idnum);
+			return false;
+		}
+
+		sv_client = &svs.clients[idnum];
+		sv_player = sv_client->edict;
+
+		if (sv_client->state == cs_free)
+		{
+			Com_Printf("Client %i is not active\n", idnum);
+			return false;
+		}
+
+		return true;
+	}
+
+	// Check for a name match.
+	client_t* cl = svs.clients;
+	for (int i = 0; i < (int)maxclients->value; i++, cl++)
+	{
+		if (cl->state != cs_free && strcmp(cl->name, s) == 0)
+		{
+			sv_client = cl;
+			sv_player = sv_client->edict;
+
+			return true;
+		}
+	}
+
+	Com_Printf("Userid %s is not on the server\n", s);
 	return false;
 }
 
