@@ -361,7 +361,12 @@ void SV_UpdatePersistantEffectsDemoMask(client_t* cl)
 
 void SV_ClearPersistantEffects(void)
 {
-	NOT_IMPLEMENTED
+	PerEffectsBuffer_t* fx = &persistant_effects[0];
+	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++, fx++)
+	{
+		fx->send_mask = 0;
+		fx->demo_send_mask = -1;
+	}
 }
 
 void SV_ClearPersistantEffectBuffersArray(void)
