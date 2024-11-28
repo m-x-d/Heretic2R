@@ -553,9 +553,14 @@ static void SV_KillServer_f(void)
 	}
 }
 
+// Q2 counterpart
+// Let the game dll handle a command.
 static void SV_ServerCommand_f(void)
 {
-	NOT_IMPLEMENTED
+	if (ge != NULL)
+		ge->ServerCommand();
+	else
+		Com_Printf("No game loaded.\n");
 }
 
 #pragma endregion
