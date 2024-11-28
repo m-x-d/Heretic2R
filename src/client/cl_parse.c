@@ -128,9 +128,53 @@ static void PrintGameMessage(const char* msg, const PalIdx_t color_index) // H2
 	Con_ClearNotify();
 }
 
-static void PrintObituary(const char* text, byte client1, byte client2, PalIdx_t color_index)
+//mxd. Added 'dest_size' arg.
+static void GetObituaryString(char* dest, const int dest_size, const char* src, const byte client1, const byte client2) // H2
 {
-	NOT_IMPLEMENTED
+	char* name1 = (client1 > 0 ? cl.clientinfo[client1 - 1].name : NULL);
+	char* name2 = (client2 > 0 ? cl.clientinfo[client2 - 1].name : NULL);
+
+	char* pos1 = (client1 > 0 ? strstr(src, "%1") : NULL);
+	char* pos2 = (client2 > 0 ? strstr(src, "%2") : NULL);
+
+	if (pos1 != NULL)
+		pos1[1] = 's';
+
+	if (pos2 != NULL)
+		pos2[1] = 's';
+
+	if (pos1 != NULL && pos2 != NULL)
+	{
+		if (pos1 >= pos2)
+			Com_sprintf(dest, dest_size, src, name2, name1);
+		else
+			Com_sprintf(dest, dest_size, src, name1, name2);
+	}
+	else if (pos1 != NULL)
+	{
+		Com_sprintf(dest, dest_size, src, name1);
+	}
+	else if (pos2 != NULL)
+	{
+		Com_sprintf(dest, dest_size, src, name2);
+	}
+	else // pos1 == NULL && pos2 == NULL
+	{
+		strcpy_s(dest, dest_size, src);
+	}
+}
+
+static void PrintObituary(const char* text, const byte client1, const byte client2, const PalIdx_t color_index) // H2
+{
+	char message[256];
+	char temp[256];
+
+	strcpy_s(message, sizeof(message), "Invalid obituary\n");
+	strcpy_s(temp, sizeof(temp), text);
+
+	GetObituaryString(message, sizeof(message), temp, client1, client2);
+	strcat_s(message, sizeof(message), "\n");
+	Com_ColourPrintf(color_index, message);
 }
 
 void CL_RegisterSounds(void)
