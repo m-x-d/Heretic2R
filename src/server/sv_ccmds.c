@@ -449,9 +449,22 @@ static void SV_Serverinfo_f(void)
 	Info_Print(Cvar_Serverinfo());
 }
 
+// Q2 counterpart
+// Examine all a users info strings.
 static void SV_DumpUser_f(void)
 {
-	NOT_IMPLEMENTED
+	if (Cmd_Argc() != 2)
+	{
+		Com_Printf("Usage: dumpuser <userid>\n"); //mxd. Fixed usage info text.
+		return;
+	}
+
+	if (!SV_SetPlayer())
+		return;
+
+	Com_Printf("userinfo\n");
+	Com_Printf("--------\n");
+	Info_Print(sv_client->userinfo);
 }
 
 // Saves the state of the map just being exited and goes to a new map.
@@ -622,9 +635,29 @@ static void SV_SetMaster_f(void)
 	svs.last_heartbeat = -9999999;
 }
 
+// Q2 counterpart
 static void SV_ConSay_f(void)
 {
-	NOT_IMPLEMENTED
+	char text[1024];
+
+	if (Cmd_Argc() < 2)
+		return;
+
+	strcpy_s(text, sizeof(text), "console: "); //mxd. strcpy -> strcpy_s
+
+	char* p = Cmd_Args();
+	if (*p == '"')
+	{
+		p++;
+		p[strlen(p) - 1] = 0;
+	}
+
+	strcat_s(text, sizeof(text), p); //mxd. strcat -> strcat_s
+
+	client_t* cl = svs.clients;
+	for (int j = 0; j < (int)maxclients->value; j++, cl++)
+		if (cl->state == cs_spawned)
+			SV_ClientPrintf(cl, PRINT_CHAT, "%s\n", text);
 }
 
 static void SV_ListDMFlags_f(void)

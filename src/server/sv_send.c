@@ -20,6 +20,43 @@ void SV_ClientGameMessage(client_t* cl, const int printlevel, const int message_
 	}
 }
 
+// Sends text across to be displayed if the level passes.
+void SV_ClientPrintf(client_t* cl, const int printlevel, const char* fmt, ...)
+{
+	va_list argptr;
+	char string[1024];
+
+	if (cl->state != cs_spawned || printlevel < cl->messagelevel) // H2: extra cl->state check.
+		return;
+
+	va_start(argptr, fmt);
+	vsprintf_s(string, sizeof(string), fmt, argptr); //mxd. vsprintf -> vsprintf_s
+	va_end(argptr);
+
+	MSG_WriteByte(&cl->netchan.message, svc_print);
+	MSG_WriteByte(&cl->netchan.message, printlevel);
+	MSG_WriteString(&cl->netchan.message, string);
+}
+
+// Sends colored text across to be displayed.
+void SV_ClientColorPrintf(client_t* cl, const int printlevel, const byte color, const char* fmt, ...) // H2
+{
+	va_list argptr;
+	char string[1024];
+
+	if (cl->state != cs_spawned)
+		return;
+
+	va_start(argptr, fmt);
+	vsprintf_s(string, sizeof(string), fmt, argptr); //mxd. vsprintf -> vsprintf_s
+	va_end(argptr);
+
+	MSG_WriteByte(&cl->netchan.message, svc_nameprint);
+	MSG_WriteByte(&cl->netchan.message, printlevel);
+	MSG_WriteByte(&cl->netchan.message, color);
+	MSG_WriteString(&cl->netchan.message, string);
+}
+
 void SV_BroadcastPrintf(int level, char* fmt, ...)
 {
 	NOT_IMPLEMENTED
