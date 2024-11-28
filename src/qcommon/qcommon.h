@@ -122,7 +122,7 @@ void COM_Init(void);
 char* CopyString(const char* in);
 
 
-void Info_Print(char* s);
+void Info_Print(const char* s);
 
 void CRC_Init(ushort* crcvalue);
 void CRC_ProcessByte(ushort* crcvalue, byte data);

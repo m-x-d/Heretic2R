@@ -337,6 +337,54 @@ char* CopyString(const char* in)
 	return out;
 }
 
+// Q2 counterpart
+void Info_Print(const char* s)
+{
+	char key[512];
+	char value[512];
+
+	if (*s == '\\')
+		s++;
+
+	while (*s != 0)
+	{
+		char* o = key;
+		while (*s != 0 && *s != '\\')
+			*o++ = *s++;
+
+		const int l = o - key;
+		if (l < 20)
+		{
+			memset(o, ' ', 20 - l);
+			key[20] = 0;
+		}
+		else
+		{
+			*o = 0;
+		}
+
+		Com_Printf("%s", key);
+
+		if (*s == 0)
+		{
+			Com_Printf("MISSING VALUE\n");
+			return;
+		}
+
+		o = value;
+		s++;
+		while (*s != 0 && *s != '\\')
+			*o++ = *s++;
+
+		*o = 0;
+
+		if (*s != 0)
+			s++;
+
+		Com_Printf("%s\n", value);
+	}
+}
+
 #pragma region ========================== ZONE MEMORY ALLOCATION ==========================
 
 #define Z_MAGIC		0x1d1d

@@ -380,9 +380,17 @@ static char* Cvar_BitInfo(const int bit)
 }
 
 // Q2 counterpart
+// Returns an info string containing all the CVAR_USERINFO cvars.
 char* Cvar_Userinfo(void)
 {
 	return Cvar_BitInfo(CVAR_USERINFO);
+}
+
+// Q2 counterpart
+// Returns an info string containing all the CVAR_SERVERINFO cvars.
+char* Cvar_Serverinfo(void)
+{
+	return Cvar_BitInfo(CVAR_SERVERINFO);
 }
 
 // Q2 counterpart

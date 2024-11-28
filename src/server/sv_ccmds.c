@@ -441,9 +441,12 @@ static void SV_Status_f(void)
 	Com_Printf("\n");
 }
 
+// Q2 counterpart
+// Examine or change the serverinfo string.
 static void SV_Serverinfo_f(void)
 {
-	NOT_IMPLEMENTED
+	Com_Printf("Server info settings:\n");
+	Info_Print(Cvar_Serverinfo());
 }
 
 static void SV_DumpUser_f(void)
