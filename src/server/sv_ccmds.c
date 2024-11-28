@@ -376,7 +376,7 @@ static void SV_Kick_f(void)
 	SV_BroadcastObituary(PRINT_HIGH, GM_WASKICKED, sv_client->edict->s.number, 0); // H2
 
 	// Print directly, because the dropped client won't get the SV_BroadcastObituary message.
-	SV_ClientPrintf(sv_client, PRINT_HIGH, GM_KICKED); // H2
+	SV_ClientGameMessage(sv_client, PRINT_HIGH, GM_KICKED); // H2
 	SV_DropClient(sv_client);
 
 	sv_client->lastmessage = svs.realtime; // In case there is a funny zombie.

@@ -188,7 +188,7 @@ static void SV_Begin_f(void)
 					Com_Printf("%s", buffer);
 				}
 
-				SV_ClientPrintf(sv_client, 2, GM_COOPWAITCIN);
+				SV_ClientGameMessage(sv_client, 2, GM_COOPWAITCIN);
 			}
 
 			MSG_WriteByte(&sv_client->netchan.message, svc_stufftext);
@@ -202,7 +202,7 @@ static void SV_Begin_f(void)
 			if (sv_client->coop_state != cst_coop_timeout)
 			{
 				sv_client->coop_state = cst_coop_timeout;
-				SV_ClientPrintf(sv_client, 2, GM_COOPTIMEOUT);
+				SV_ClientGameMessage(sv_client, 2, GM_COOPTIMEOUT);
 			}
 
 			int c = 0;

@@ -11,9 +11,13 @@
 
 uint net_transmit_size; // H2
 
-void SV_ClientPrintf(client_t* cl, int level, int message_id) // H2: different definition.
+void SV_ClientGameMessage(client_t* cl, const int printlevel, const int message_id) // H2
 {
-	NOT_IMPLEMENTED
+	if (cl->messagelevel <= printlevel)
+	{
+		MSG_WriteByte(&cl->netchan.message, svc_gamemsg_print);
+		MSG_WriteShort(&cl->netchan.message, printlevel << 13 | message_id);
+	}
 }
 
 void SV_BroadcastPrintf(int level, char* fmt, ...)
