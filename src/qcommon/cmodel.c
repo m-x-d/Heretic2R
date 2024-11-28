@@ -1502,6 +1502,16 @@ int CM_WriteAreaBits(byte* buffer, const int area)
 	return bytes;
 }
 
+void CM_WritePortalState(FILE* f)
+{
+	NOT_IMPLEMENTED
+}
+
+void CM_ReadPortalState(FILE* f)
+{
+	NOT_IMPLEMENTED
+}
+
 // Q2 counterpart
 // Returns true if any leaf under headnode has a cluster that is potentially visible.
 qboolean CM_HeadnodeVisible(const int headnode, byte* visbits)

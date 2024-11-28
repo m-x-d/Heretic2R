@@ -693,7 +693,7 @@ int CM_PointLeafnum(const vec3_t p);
 // Call with topnode set to the headnode, returns with topnode set to the first node that splits the box.
 //int CM_BoxLeafnums(vec3_t mins, vec3_t maxs, int* list, int listsize, int* topnode); //mxd. Disabled
 
-int CM_LeafContents(int leafnum);
+//int CM_LeafContents(int leafnum); //mxd. Unused
 int CM_LeafCluster(int leafnum);
 int CM_LeafArea(int leafnum);
 
@@ -703,8 +703,8 @@ qboolean CM_AreasConnected(int area1, int area2);
 //int CM_WriteAreaBits(byte* buffer, int area); //mxd. Disabled
 //qboolean CM_HeadnodeVisible(int headnode, byte* visbits); //mxd. Disabled
 
-void CM_WritePortalState(FILE* f);
-void CM_ReadPortalState(FILE* f);
+//void CM_WritePortalState(FILE* f); //mxd. Disabled
+//void CM_ReadPortalState(FILE* f); //mxd. Disabled
 
 #pragma endregion
 

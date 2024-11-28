@@ -5,6 +5,7 @@
 //
 
 #include "server.h"
+#include "cmodel.h"
 
 #pragma region ========================== SAVEGAME FILES ==========================
 
@@ -40,7 +41,7 @@ void SV_WipeSavegame(const char* savename)
 }
 
 // Q2 counterpart
-static void SV_CopyFile(char* src, char* dst) //mxd. CopyFile in Q2. Renamed to avoid collision with CopyFile deined in winbase.h (cause H2 game.h includes <windows.h>)
+static void SV_CopyFile(char* src, char* dst) //mxd. CopyFile in Q2. Renamed to avoid collision with CopyFile defined in winbase.h (cause H2 game.h includes <windows.h>)
 {
 	static byte buffer[65536]; //mxd. Made static
 	FILE* f1;
@@ -114,7 +115,39 @@ static void SV_CopySaveGame(const char* src, const char* dst)
 
 static void SV_WriteLevelFile(void)
 {
-	NOT_IMPLEMENTED
+	char name[MAX_OSPATH];
+	char temp[MAX_OSPATH];
+	FILE* f;
+
+	// H2: strip directory path from sv.name... Checks for '/' and '\\' separators.
+	strcpy_s(temp, sizeof(temp), sv.name); //mxd. strcpy -> strcpy_s
+
+	//mxd. Rewritten the logic...
+	const char* c = max(strrchr(temp, '/'), strrchr(temp, '\\'));
+	if (c != NULL)
+	{
+		const int pos = (c - temp);
+		memmove_s(temp, sizeof(temp), c + 1, strlen(temp) - pos);
+		temp[pos] = 0;
+	}
+
+	Com_sprintf(name, sizeof(name), "%s/save/current/%s.sv2", FS_Userdir(), temp); // H2: FS_Gamedir() -> FS_Userdir()
+
+	// H2. Create savegame folder.
+	FS_CreatePath(name);
+
+	if (fopen_s(&f, name, "wb") != 0) //mxd. fopen -> fopen_s
+	{
+		Com_Printf("Failed to open %s\n", name);
+		return;
+	}
+
+	fwrite(sv.configstrings, sizeof(sv.configstrings), 1, f);
+	CM_WritePortalState(f);
+	fclose(f);
+
+	Com_sprintf(name, sizeof(name), "%s/save/current/%s.sav", FS_Userdir(), temp); // H2: FS_Gamedir() -> FS_Userdir()
+	ge->WriteLevel(name);
 }
 
 void SV_ReadLevelFile(void)
