@@ -1502,14 +1502,19 @@ int CM_WriteAreaBits(byte* buffer, const int area)
 	return bytes;
 }
 
+// Q2 counterpart
+// Writes the portal state to a savegame file.
 void CM_WritePortalState(FILE* f)
 {
-	NOT_IMPLEMENTED
+	fwrite(portalopen, sizeof(portalopen), 1, f);
 }
 
+// Q2 counterpart
+// Reads the portal state from a savegame file and recalculates the area connections.
 void CM_ReadPortalState(FILE* f)
 {
-	NOT_IMPLEMENTED
+	FS_Read(portalopen, sizeof(portalopen), f);
+	FloodAreaConnections();
 }
 
 // Q2 counterpart
