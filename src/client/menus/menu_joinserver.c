@@ -161,3 +161,22 @@ void M_Menu_JoinServer_f(void)
 	JoinServer_MenuInit();
 	M_PushMenu(JoinServer_MenuDraw, JoinServer_MenuKey);
 }
+
+// Q2 counterpart
+void M_AddToServerList(const netadr_t* adr, const char* info)
+{
+	if (m_num_servers == MAX_LOCAL_SERVERS)
+		return;
+
+	while (*info == ' ')
+		info++;
+
+	// Ignore if duplicated.
+	for (int i = 0; i < m_num_servers; i++)
+		if (strcmp(info, local_server_names[i]) == 0)
+			return;
+
+	local_server_netadr[m_num_servers] = *adr;
+	strncpy_s(local_server_names[m_num_servers], sizeof(local_server_names[0]), info, sizeof(local_server_names[0]) - 1); //mxd. strncpy -> strncpy_s
+	m_num_servers++;
+}

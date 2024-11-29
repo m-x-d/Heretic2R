@@ -772,14 +772,14 @@ static void CL_Precache_f(void)
 	CL_RequestNextDownload();
 }
 
-static void CL_Config_f(void)
-{
-	NOT_IMPLEMENTED
-}
-
+// Q2 counterpart
+// Handle a reply from a ping.
 static void CL_ParseStatusMessage(void)
 {
-	NOT_IMPLEMENTED
+	char* s = MSG_ReadString(&net_message);
+
+	Com_Printf("%s\n", s);
+	M_AddToServerList(&net_from, s);
 }
 
 // Q2 counterpart
@@ -1032,7 +1032,7 @@ static void CL_InitLocal(void)
 	Cmd_AddCommand("savecfg", CL_SaveConfig_f);
 	Cmd_AddCommand("setenv", CL_Setenv_f);
 	Cmd_AddCommand("precache", CL_Precache_f);
-	Cmd_AddCommand("config", CL_Config_f);
+	//Cmd_AddCommand("config", CL_Config_f); // Skip GameSpy config logic.
 
 	// Forward to server commands
 	Cmd_AddCommand("kill", NULL);
