@@ -329,9 +329,19 @@ void CL_Snd_Restart_f(void)
 	CL_RegisterSounds();
 }
 
+// Just sent as a hint to the client that they should drop to full console.
 static void CL_Changing_f(void)
 {
-	NOT_IMPLEMENTED
+	// If we are downloading, we don't change! This so we don't suddenly stop downloading a map.
+	if (cls.download != NULL)
+		return;
+
+	if (cls.demorecording) // H2
+		CL_Stop_f();
+
+	cls.state = ca_connected; // Not active anymore, but not disconnected.
+	SCR_BeginLoadingPlaque();
+	Com_Printf("\nChanging map...\n");
 }
 
 void CL_OnServerDisconnected(void) // H2
