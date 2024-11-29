@@ -573,9 +573,27 @@ static void CL_CheckForResend(void)
 	Netchan_OutOfBandPrint(NS_CLIENT, &adr, "getchallenge\n");
 }
 
+// Q2 counterpart
 static void CL_Connect_f(void)
 {
-	NOT_IMPLEMENTED
+	if (Cmd_Argc() != 2)
+	{
+		Com_Printf("Usage: connect <server>\n");
+		return;
+	}
+
+	if (Com_ServerState())
+		SV_Shutdown(va("Server quit\n", msg), false); // If running a local server, kill it and reissue.
+	else
+		CL_Disconnect();
+
+	const char* server = Cmd_Argv(1);
+	NET_Config(true); // Allow remote
+	CL_Disconnect();
+
+	cls.state = ca_connecting;
+	strncpy_s(cls.servername, sizeof(cls.servername), server, sizeof(cls.servername) - 1); //mxd. strncpy -> strncpy_s
+	cls.connect_time = -99999; // CL_CheckForResend() will fire immediately.
 }
 
 static void CL_Reconnect_f(void)
