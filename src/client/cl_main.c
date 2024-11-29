@@ -366,14 +366,69 @@ void CL_Stop_f(void)
 	NOT_IMPLEMENTED
 }
 
-static void CL_Ignore_f(void)
+static void IgnoreClient(const char* player_id, const qboolean ignore)
 {
-	NOT_IMPLEMENTED
+	int idnum = -1;
+
+	if (player_id[0] >= '0' && player_id[0] <= '9')
+	{
+		// Numeric values are just slot numbers.
+		idnum = Q_atoi(player_id);
+
+		if (idnum < 0 || idnum >= MAX_CLIENTS)
+		{
+			Com_Printf("Bad client slot: %i\n", idnum);
+			return;
+		}
+
+		if (!cl.configstrings[CS_PLAYERSKINS + idnum][0])
+		{
+			Com_Printf("Client %i is not active\n", idnum);
+			return;
+		}
+	}
+	else
+	{
+		// Check for a name match.
+		for (int i = 0; i < CS_WELCOME - CS_PLAYERSKINS; i++)
+		{
+			if (cl.configstrings[CS_PLAYERSKINS + i][0] != 0 && Q_stricmp(cl.clientinfo[i].name, player_id) == 0)
+			{
+				idnum = i;
+				break;
+			}
+		}
+
+		if (idnum == -1)
+		{
+			Com_Printf("Userid %s is not on the server\n", player_id);
+			return;
+		}
+	}
+
+	// Update ignore state.
+	ignored_players[idnum] = ignore;
+
+	if (ignore)
+		Com_Printf("Client %i named %s is now ignored\n", idnum, cl.clientinfo[idnum].name);
+	else
+		Com_Printf("Client %i named %s is now free to message you\n", idnum, cl.clientinfo[idnum].name);
+}
+
+static void CL_Ignore_f(void) // H2
+{
+	if (Cmd_Argc() == 2)
+		IgnoreClient(Cmd_Argv(1), true);
+	else
+		Com_Printf("Usage : ignore <client name> or <client id number>\n");
 }
 
 static void CL_Unignore_f(void)
 {
-	NOT_IMPLEMENTED
+	if (Cmd_Argc() == 2)
+		IgnoreClient(Cmd_Argv(1), false);
+	else
+		Com_Printf("Usage : unignore <client name> or <client id number>\n");
 }
 
 static void CL_ListIgnore_f(void)
