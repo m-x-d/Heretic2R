@@ -725,7 +725,7 @@ void CL_SaveConfig_f(void) // H2
 
 static void CL_Setenv_f(void)
 {
-	NOT_IMPLEMENTED
+	Com_Printf("setenv command not implemented\n"); //TODO: implement? What can it be used for?
 }
 
 void CL_RequestNextDownload(void)
