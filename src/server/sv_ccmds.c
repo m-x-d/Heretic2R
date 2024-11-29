@@ -665,9 +665,9 @@ static void SV_ListDMFlags_f(void) // H2
 	char* state[16];
 
 	uint flags = Q_ftol(dmflags->value);
-	for (int i = 16; i > 0; i--)
+	for (int i = 0; i < 16; i++)
 	{
-		state[i - 1] = ((flags & 1) ? "on " : "off");
+		state[i] = ((flags & 1) ? "on " : "off");
 		flags >>= 1;
 	}
 
@@ -693,9 +693,24 @@ static void SV_ListDMFlags_f(void) // H2
 	Com_Printf("\n16) Dismemberment %s : on = Dismemberment\n\n", state[c]);
 }
 
-static void SV_SetDMFlags_f(void)
+static void SV_SetDMFlags_f(void) // H2
 {
-	NOT_IMPLEMENTED
+	if (Cmd_Argc() == 1)
+	{
+		Com_Printf("Usage :\nset_df_flags x y z where x, y and z are numbers of deathmatch flags to be set\n");
+		return; //mxd
+	}
+
+	uint flags = 0;
+	for (int i = 1; i < Cmd_Argc(); i++)
+	{
+		const int flag_num = Q_atoi(Cmd_Argv(i));
+		if (flag_num > 0 && flag_num < 17)
+			flags |= 1 << (flag_num - 1);
+	}
+
+	dmflags->value = (float)(Q_ftol(dmflags->value) | flags);
+	SV_ListDMFlags_f();
 }
 
 static void SV_UnsetDMFlags_f(void)
