@@ -589,7 +589,7 @@ static void SV_Map_f(void)
 
 static void SV_DemoMap_f(void)
 {
-	NOT_IMPLEMENTED
+	Com_Printf("Demo playback not implemented\n"); //TODO: implement demo logic?
 }
 
 // Specify a list of master servers.

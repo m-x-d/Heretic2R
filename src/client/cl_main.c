@@ -358,12 +358,12 @@ void CL_Disconnect_f(void)
 
 void CL_Record_f(void)
 {
-	NOT_IMPLEMENTED
+	Com_Printf("Demo recording not implemented\n"); //TODO: implement demo logic?
 }
 
 void CL_Stop_f(void)
 {
-	NOT_IMPLEMENTED
+	Com_Printf("Demo recording not implemented\n"); //TODO: implement demo logic?
 }
 
 static void IgnoreClient(const char* player_id, const qboolean ignore)
