@@ -631,9 +631,59 @@ static void CL_Reconnect_f(void)
 	}
 }
 
+// Send the rest of the command line over as an unconnected command.
 static void CL_Rcon_f(void)
 {
-	NOT_IMPLEMENTED
+	char message[1024];
+	netadr_t to;
+
+	if (rcon_client_password->string == NULL || strlen(rcon_client_password->string) == 0) // H2: extra strlen check.
+	{
+		Com_Printf("You must set 'rcon_password' before\nissuing an rcon command.\n");
+		return;
+	}
+
+	message[0] = (char)255;
+	message[1] = (char)255;
+	message[2] = (char)255;
+	message[3] = (char)255;
+	message[4] = 0;
+
+	NET_Config(true); // Allow remote
+
+	strcat_s(message, sizeof(message), "rcon ");
+	strcat_s(message, sizeof(message), rcon_client_password->string);
+	strcat_s(message, sizeof(message), " ");
+
+	for (int i = 1; i < Cmd_Argc(); i++)
+	{
+		strcat_s(message, sizeof(message), Cmd_Argv(i));
+		strcat_s(message, sizeof(message), " ");
+	}
+
+	if (cls.state >= ca_connected)
+	{
+		to = cls.netchan.remote_address;
+	}
+	else
+	{
+		if (strlen(rcon_address->string) == 0)
+		{
+			Com_Printf("You must either be connected,\nor set the 'rcon_address' cvar\nto issue rcon commands\n");
+			return;
+		}
+
+		if (!NET_StringToAdr(rcon_address->string, &to)) //mxd. Added sanity check.
+		{
+			Com_Printf("Invalid rcon address '%s'\n", rcon_address->string);
+			return;
+		}
+
+		if (to.port == 0)
+			to.port = BigShort(PORT_SERVER);
+	}
+
+	NET_SendPacket(NS_CLIENT, (int)strlen(message) + 1, message, &to);
 }
 
 void CL_SaveConfig_f(void) // H2
