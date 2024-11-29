@@ -313,9 +313,11 @@ void CL_PingServers_f(void)
 	}
 }
 
+// Q2 counterpart
 static void CL_Userinfo_f(void)
 {
-	NOT_IMPLEMENTED
+	Com_Printf("User info settings:\n");
+	Info_Print(Cvar_Userinfo());
 }
 
 // Q2 counterpart
