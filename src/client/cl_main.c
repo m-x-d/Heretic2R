@@ -253,9 +253,13 @@ static void CL_Pause_f(void)
 		Cvar_SetValue("paused", (cl_paused->value != 0.0f ? 0.0f : 1.0f));
 }
 
-static void CL_FreezeWorld_f(void)
+static void CL_FreezeWorld_f(void) // H2
 {
-	NOT_IMPLEMENTED
+	// Never freeze world in multiplayer.
+	if (Cvar_VariableValue("maxclients") > 1 || !Com_ServerState())
+		Cvar_SetValue("freezeworldset", 0.0f);
+	else
+		Cvar_SetValue("freezeworldset", (cl_freezeworld->value != 0.0f ? 0.0f : 1.0f));
 }
 
 // Q2 counterpart
