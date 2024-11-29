@@ -596,9 +596,39 @@ static void CL_Connect_f(void)
 	cls.connect_time = -99999; // CL_CheckForResend() will fire immediately.
 }
 
+// The server is changing levels.
 static void CL_Reconnect_f(void)
 {
-	NOT_IMPLEMENTED
+	// If we are downloading, we don't change! This so we don't suddenly stop downloading a map.
+	if (cls.download != NULL)
+		return;
+
+	if (cls.state == ca_connected)
+	{
+		S_StopAllSounds_Sounding(); // H2
+		CL_ClearSkeletalEntities(); // H2
+
+		Com_Printf("reconnecting...\n");
+		cls.state = ca_connected;
+
+		MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
+		MSG_WriteString(&cls.netchan.message, "new");
+	}
+	else if (cls.servername[0] != 0)
+	{
+		if (cls.state >= ca_connected)
+		{
+			CL_Disconnect();
+			cls.connect_time = (float)(cls.realtime - 1500);
+		}
+		else
+		{
+			cls.connect_time = -99999.0f; // Fire immediately.
+		}
+
+		Com_Printf("reconnecting...\n");
+		cls.state = ca_connecting;
+	}
 }
 
 static void CL_Rcon_f(void)
