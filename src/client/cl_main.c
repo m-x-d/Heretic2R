@@ -390,7 +390,7 @@ static void IgnoreClient(const char* player_id, const qboolean ignore)
 	else
 	{
 		// Check for a name match.
-		for (int i = 0; i < CS_WELCOME - CS_PLAYERSKINS; i++)
+		for (int i = 0; i < MAX_CLIENTS; i++)
 		{
 			if (cl.configstrings[CS_PLAYERSKINS + i][0] != 0 && Q_stricmp(cl.clientinfo[i].name, player_id) == 0)
 			{
@@ -431,9 +431,28 @@ static void CL_Unignore_f(void)
 		Com_Printf("Usage : unignore <client name> or <client id number>\n");
 }
 
-static void CL_ListIgnore_f(void)
+static void CL_ListIgnore_f(void) // H2
 {
-	NOT_IMPLEMENTED
+	qboolean have_ignored_clients = false;
+
+	for (int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if (!ignored_players[i])
+			continue;
+
+		if (cl.configstrings[CS_PLAYERSKINS + i][0])
+		{
+			Com_Printf("Client id %i named %s is ignored.\n", i, cl.clientinfo[i].name);
+			have_ignored_clients = true;
+		}
+		else
+		{
+			ignored_players[i] = false;
+		}
+	}
+
+	if (!have_ignored_clients)
+		Com_Printf("No one is Ignored\n");
 }
 
 // Q2 counterpart
