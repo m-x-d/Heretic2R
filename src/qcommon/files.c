@@ -407,9 +407,49 @@ void FS_ExecAutoexec(void)
 	Sys_FindClose();
 }
 
+// Q2 counterpart
+// Creates a filelink_t.
 static void FS_Link_f(void)
 {
-	NOT_IMPLEMENTED
+	if (Cmd_Argc() != 3)
+	{
+		Com_Printf("USAGE: link <from> <to>\n");
+		return;
+	}
+
+	// See if the link already exists.
+	filelink_t** prev = &fs_links;
+	for (filelink_t* l = fs_links; l != NULL; l = l->next)
+	{
+		if (strcmp(l->from, Cmd_Argv(1)) == 0)
+		{
+			Z_Free(l->to);
+
+			if (strlen(Cmd_Argv(2)) > 0)
+			{
+				l->to = CopyString(Cmd_Argv(2));
+			}
+			else
+			{
+				// Delete it.
+				*prev = l->next;
+				Z_Free(l->from);
+				Z_Free(l);
+			}
+
+			return;
+		}
+
+		prev = &l->next;
+	}
+
+	// Create a new link.
+	filelink_t* l = Z_Malloc(sizeof(*l));
+	l->next = fs_links;
+	fs_links = l;
+	l->from = CopyString(Cmd_Argv(1));
+	l->fromlength = (int)strlen(l->from);
+	l->to = CopyString(Cmd_Argv(2));
 }
 
 // Q2 counterpart
