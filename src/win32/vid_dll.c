@@ -435,9 +435,17 @@ static qboolean VID_GetModeInfo(int* width, int* height, const int mode)
 	return false;
 }
 
-static void VID_UpdateWindowPosAndSize(int x, int y, int width, int height)
+static void VID_UpdateWindowPosAndSize(const int x, const int y, const int width, const int height) // H2: extra 'width' and 'height' args. //mxd. Actually use 'x' and 'y' args.
 {
-	NOT_IMPLEMENTED
+	RECT r = { 0, 0, width, height };
+
+	const int style = GetWindowLong(cl_hwnd, GWL_STYLE);
+	AdjustWindowRect(&r, style, FALSE);
+
+	const int w = r.right - r.left;
+	const int h = r.bottom - r.top;
+
+	MoveWindow(cl_hwnd, x, y, w, h, TRUE);
 }
 
 // Q2 counterpart
