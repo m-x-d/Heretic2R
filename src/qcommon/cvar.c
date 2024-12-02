@@ -360,9 +360,38 @@ void Cvar_WriteVariables(const char* path)
 	fclose(f);
 }
 
+// Q2 counterpart
 static void Cvar_List_f(void)
 {
-	NOT_IMPLEMENTED
+	int i = 0;
+	for (const cvar_t* var = cvar_vars; var != NULL; var = var->next, i++)
+	{
+		if (var->flags & CVAR_ARCHIVE)
+			Com_Printf("*");
+		else
+			Com_Printf(" ");
+
+		if (var->flags & CVAR_USERINFO)
+			Com_Printf("U");
+		else
+			Com_Printf(" ");
+
+		if (var->flags & CVAR_SERVERINFO)
+			Com_Printf("S");
+		else
+			Com_Printf(" ");
+
+		if (var->flags & CVAR_NOSET)
+			Com_Printf("-");
+		else if (var->flags & CVAR_LATCH)
+			Com_Printf("L");
+		else
+			Com_Printf(" ");
+
+		Com_Printf(" %s \"%s\"\n", var->name, var->string);
+	}
+
+	Com_Printf("%i cvars\n", i);
 }
 
 // Q2 counterpart
