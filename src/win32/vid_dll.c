@@ -394,14 +394,17 @@ static LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 #pragma endregion
 
+// Console command to restart the video mode and refresh DLL.
 static void VID_Restart_f(void)
 {
-	NOT_IMPLEMENTED
+	vid_restart_required = true; // H2
 }
 
+// Q2 counterpart
 static void VID_Front_f(void)
 {
-	NOT_IMPLEMENTED
+	SetWindowLong(cl_hwnd, GWL_EXSTYLE, WS_EX_TOPMOST);
+	SetForegroundWindow(cl_hwnd);
 }
 
 static void VID_ShowModes_f(void) // H2
