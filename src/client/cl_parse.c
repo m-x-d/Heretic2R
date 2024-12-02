@@ -177,9 +177,62 @@ static void PrintObituary(const char* text, const byte client1, const byte clien
 	Com_ColourPrintf(color_index, message);
 }
 
+// Q2 counterpart
+static void CL_DownloadFileName(char* dest, const int destlen, char* fn)
+{
+	if (strncmp(fn, "players", 7) == 0)
+		Com_sprintf(dest, destlen, "%s/%s", BASEDIRNAME, fn);
+	else
+		Com_sprintf(dest, destlen, "%s/%s", FS_Gamedir(), fn);
+}
+
+// Q2 counterpart
+// Returns true if the file exists, otherwise attempts to start a download from the server.
 qboolean CL_CheckOrDownloadFile(const char* filename)
 {
-	NOT_IMPLEMENTED
+	FILE* fp;
+	char name[MAX_OSPATH];
+
+	if (strstr(filename, ".."))
+	{
+		Com_Printf("Refusing to download a path with ..\n");
+		return true;
+	}
+
+	if (FS_LoadFile(filename, NULL) != -1)
+		return true; // It exists, no need to download.
+
+	strcpy_s(cls.downloadname, sizeof(cls.downloadname), filename); //mxd. strcpy -> strcpy_s
+
+	// Download to a temp name, and only rename when done, so if interrupted a runt file won't be left.
+	COM_StripExtension(cls.downloadname, cls.downloadtempname);
+	strcat_s(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp"); //mxd. strcat -> strcat_s
+
+	// Check to see if we already have a tmp for this file, if so, try to resume.
+	CL_DownloadFileName(name, sizeof(name), cls.downloadtempname);
+
+	if (fopen_s(&fp, name, "r+b") == 0) //mxd. fopen -> fopen_s
+	{
+		// Download file exists.
+		fseek(fp, 0, SEEK_END);
+		const int len = ftell(fp);
+
+		cls.download = fp;
+
+		// Give the server an offset to start the download.
+		Com_Printf("Resuming %s\n", cls.downloadname);
+		MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
+		MSG_WriteString(&cls.netchan.message, va("download %s %i", cls.downloadname, len));
+	}
+	else
+	{
+		Com_Printf("Downloading %s\n", cls.downloadname);
+		MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
+		MSG_WriteString(&cls.netchan.message, va("download %s", cls.downloadname));
+	}
+
+	cls.downloadnumber++;
+
 	return false;
 }
 
