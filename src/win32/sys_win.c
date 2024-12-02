@@ -269,10 +269,28 @@ void Sys_SendKeyEvents(void)
 	sys_frame_time = timeGetTime();	// FIXME: should this be at start?
 }
 
+// Q2 counterpart
 char* Sys_GetClipboardData(void)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	if (!OpenClipboard(NULL))
+		return NULL;
+
+	const HANDLE cdh = GetClipboardData(CF_TEXT);
+	if (cdh == NULL)
+		return NULL;
+
+	const char* cliptext = GlobalLock(cdh);
+	if (cliptext == NULL)
+		return NULL;
+
+	const uint size = GlobalSize(cdh) + 1;
+	char* data = malloc(size);
+	strcpy_s(data, size, cliptext); //mxd. strcpy -> strcpy_s
+
+	GlobalUnlock(cdh);
+	CloseClipboard();
+
+	return data;
 }
 
 void Sys_AppActivate(void)
