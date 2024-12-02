@@ -150,9 +150,17 @@ void VID_Printf(const int print_level, const char* fmt, ...)
 	}
 }
 
-void VID_Error(int err_level, const char* fmt, ...)
+// Q2 counterpart
+void VID_Error(const int err_level, const char* fmt, ...)
 {
-	NOT_IMPLEMENTED
+	va_list argptr;
+	char msg[MAXPRINTMSG];
+
+	va_start(argptr, fmt);
+	vsprintf_s(msg, sizeof(msg), fmt, argptr);
+	va_end(argptr);
+
+	Com_Error(err_level, "%s", msg);
 }
 
 #pragma endregion
