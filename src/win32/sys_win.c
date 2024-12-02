@@ -8,7 +8,6 @@
 #include <VersionHelpers.h> //mxd
 #include "qcommon.h"
 #include "q_shared.h"
-#include "conproc.h"
 #include "sys_win.h" //mxd
 
 qboolean ActiveApp;
@@ -47,9 +46,7 @@ void Sys_Error(const char* error, ...)
 
 	MessageBox(NULL, text, "Error", MB_OK);
 
-	// Shut down QHOST hooks if necessary.
-	DeinitConProc();
-
+	//mxd. Skip QHOST logic.
 	exit(1);
 }
 
@@ -66,9 +63,7 @@ void Sys_Quit(void)
 	if (is_dedicated)
 		FreeConsole();
 
-	// Shut down QHOST hooks if necessary.
-	DeinitConProc();
-
+	//mxd. Skip QHOST logic.
 	exit(0);
 }
 
@@ -152,8 +147,7 @@ void Sys_Init(void)
 		hinput = GetStdHandle(STD_INPUT_HANDLE);
 		houtput = GetStdHandle(STD_OUTPUT_HANDLE);
 
-		// Let QHOST hook in
-		InitConProc(argc, argv);
+		//mxd. Skip QHOST logic.
 	}
 }
 

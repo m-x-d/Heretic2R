@@ -86,7 +86,6 @@
     <ClCompile Include="..\server\sv_user.c" />
     <ClCompile Include="..\server\sv_world.c" />
     <ClCompile Include="clfx_dll.c" />
-    <ClCompile Include="conproc.c" />
     <ClCompile Include="input_win.c" />
     <ClCompile Include="net_wins.c" />
     <ClCompile Include="q_shwin.c" />
@@ -180,7 +179,6 @@
     <ClInclude Include="..\server\server.h" />
     <ClInclude Include="..\server\sv_effects.h" />
     <ClInclude Include="clfx_dll.h" />
-    <ClInclude Include="conproc.h" />
     <ClInclude Include="dll_io.h" />
     <ClInclude Include="Quake2Main.h" />
     <ClInclude Include="snd_dll.h" />
