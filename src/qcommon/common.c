@@ -418,15 +418,16 @@ void Z_Free(void* ptr)
 	free(z);
 }
 
+// Q2 counterpart
 static void Z_Stats_f(void)
 {
-	NOT_IMPLEMENTED
+	Com_Printf("Zone memory : %i bytes in %i blocks\n", z_bytes, z_count);
 }
 
 // Q2 counterpart
 void Z_FreeTags(const int tag)
 {
-	zhead_t* next = NULL;
+	zhead_t* next;
 
 	for (zhead_t* z = z_chain.next; z != &z_chain; z = next)
 	{
