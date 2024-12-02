@@ -99,7 +99,33 @@ static void NetadrToSockadr(const netadr_t* a, struct sockaddr* s)
 
 static void SockadrToNetadr(struct sockaddr* s, netadr_t* a)
 {
-	NOT_IMPLEMENTED
+	switch (s->sa_family)
+	{
+		case AF_INET:
+		{
+			const struct sockaddr_in* s_in = (struct sockaddr_in*)s;
+			a->type = NA_IP;
+			memcpy(a->ip, &s_in->sin_addr.s_addr, sizeof(s_in->sin_addr.s_addr));
+			a->port = s_in->sin_port;
+		} break;
+
+		case AF_IPX:
+		{
+			const struct sockaddr_ipx* s_ipx = (struct sockaddr_ipx*)s;
+			a->type = NA_IPX;
+
+			if ((int)ipxfix->value) // H2
+				memset(&a->ipx[0], 0, 4);
+			else
+				memcpy(&a->ipx[0], s_ipx->sa_netnum, sizeof(s_ipx->sa_netnum));
+
+			memcpy(&a->ipx[4], s_ipx->sa_nodenum, sizeof(s_ipx->sa_nodenum));
+			a->port = s_ipx->sa_socket;
+		} break;
+		
+		default:
+			break;
+	}
 }
 
 // Q2 counterpart
