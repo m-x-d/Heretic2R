@@ -293,9 +293,11 @@ char* Sys_GetClipboardData(void)
 	return data;
 }
 
+// Q2 counterpart
 void Sys_AppActivate(void)
 {
-	NOT_IMPLEMENTED
+	ShowWindow(cl_hwnd, SW_RESTORE);
+	SetForegroundWindow(cl_hwnd);
 }
 
 // Q2 counterpart
