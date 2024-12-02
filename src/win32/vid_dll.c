@@ -404,9 +404,18 @@ static void VID_Front_f(void)
 	NOT_IMPLEMENTED
 }
 
-static void VID_ShowModes_f(void)
+static void VID_ShowModes_f(void) // H2
 {
-	NOT_IMPLEMENTED
+	Com_Printf("-------- Video Modes --------\n");
+
+	for (uint i = 0; i < VID_NUM_MODES; i++)
+		Com_Printf("%s\n", vid_modes[i].description);
+
+	Com_Printf("-----------------------------\n");
+	Com_Printf("Gamma      : %f\n", (double)vid_gamma->value);
+	Com_Printf("Brightness : %f\n", (double)vid_brightness->value);
+	Com_Printf("Contrast   : %f\n", (double)vid_contrast->value);
+	Com_Printf("-----------------------------\n");
 }
 
 // Q2 counterpart
