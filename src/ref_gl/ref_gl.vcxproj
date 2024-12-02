@@ -44,6 +44,7 @@
     <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="..\qcommon\anorms.h" />
     <ClInclude Include="..\qcommon\ArrayedList.h" />
+    <ClInclude Include="..\qcommon\FlexModel.h" />
     <ClInclude Include="..\qcommon\Placement.h" />
     <ClInclude Include="..\qcommon\qcommon.h" />
     <ClInclude Include="..\qcommon\qfiles.h" />

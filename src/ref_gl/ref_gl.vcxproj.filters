@@ -167,6 +167,9 @@
     <ClInclude Include="..\qcommon\anorms.h">
       <Filter>qcommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\qcommon\FlexModel.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

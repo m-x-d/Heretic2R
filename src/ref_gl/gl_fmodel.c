@@ -59,7 +59,7 @@ static qboolean fmLoadSkin(model_t* model, const int version, const int datasize
 	if (version != FM_SKIN_VER)
 		ri.Sys_Error(ERR_DROP, "invalid SKIN version for block %s: %d != %d\n", FM_SKIN_NAME, FM_SKIN_VER, version);
 
-	const int skin_names_size = fmodel->header.num_skins * MAX_QPATH;
+	const int skin_names_size = fmodel->header.num_skins * MAX_SKINNAME;
 	if (skin_names_size != datasize)
 	{
 		ri.Con_Printf(PRINT_ALL, "skin sizes do not match: %d != %d\n", datasize, skin_names_size);
@@ -71,7 +71,7 @@ static qboolean fmLoadSkin(model_t* model, const int version, const int datasize
 
 	// Precache skins...
 	char* skin_name = fmodel->skin_names;
-	for (int i = 0; i < fmodel->header.num_skins; i++, skin_name += MAX_QPATH)
+	for (int i = 0; i < fmodel->header.num_skins; i++, skin_name += MAX_SKINNAME)
 		model->skins[i] = GL_FindImage(skin_name, it_skin);
 
 	return true;
@@ -319,16 +319,6 @@ static qboolean fmLoadReferences(model_t* model, const int version, const int da
 
 	return true;
 }
-
-//mxd. FlexModel on-disk block header. Named 'header_t' and stored in qcommon\flex.h in Heretic II Toolkit v1.06.
-#define FMDL_BLOCK_IDENT_SIZE 32
-
-typedef struct
-{
-	char ident[FMDL_BLOCK_IDENT_SIZE];
-	int version;
-	int size;
-} fmdl_blockheader_t;
 
 // FlexModel block loaders
 typedef struct
