@@ -545,5 +545,8 @@
     <ClInclude Include="..\qcommon\Debug.h">
       <Filter>qcommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\qcommon\FlexModel.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

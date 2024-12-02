@@ -53,9 +53,6 @@ extern char map_name[MAX_QPATH];
 extern int numbrushsides;
 extern cbrushside_t map_brushsides[MAX_MAP_BRUSHSIDES]; // 524288 bytes
 
-extern int numtexinfo;
-extern csurface_t map_surfaces[MAX_MAP_TEXINFO]; // 65536 bytes
-
 extern int numplanes;
 extern cplane_t map_planes[MAX_MAP_PLANES + 6]; // Extra for box hull
 // 1310840 bytes

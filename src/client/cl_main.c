@@ -14,6 +14,7 @@
 #include "ResourceManager.h"
 #include "sound.h"
 #include "Vector.h"
+#include "FlexModel.h"
 
 //TODO: used only in CL_InitLocal(). Can be removed?
 static cvar_t* adr0;
@@ -730,7 +731,271 @@ static void CL_Setenv_f(void)
 
 void CL_RequestNextDownload(void)
 {
-	NOT_IMPLEMENTED
+#define PLAYER_MULT	5
+
+// ENV_CNT is map load, ENV_CNT + 1 is first env map.
+#define ENV_CNT		(CS_PLAYERSKINS + MAX_CLIENTS * PLAYER_MULT)
+#define TEXTURE_CNT	(ENV_CNT + 7) // Q2: ENV_CNT + 13
+
+	typedef struct //mxd. Part of on-disk fmodel structure...
+	{
+		fmdl_blockheader_t block_header;
+		fmheader_t header;
+		fmdl_blockheader_t block_skins;
+		char skins[1][MAX_SKINNAME]; // Variable-sized.
+	} dfmdl_t;
+
+	static const char* env_suf[] = { "rt", "bk", "lf", "ft", "up", "dn" };
+	char fn[MAX_OSPATH];
+
+	if (cls.state != ca_connected)
+		return;
+
+	if (!(int)allow_download->value && precache_check < ENV_CNT)
+		precache_check = ENV_CNT;
+
+	if (precache_check == CS_MODELS) // Confirm map.
+	{
+		precache_check += 2; // 0 isn't used.
+
+		if ((int)allow_download_maps->value && !CL_CheckOrDownloadFile(cl.configstrings[CS_MODELS + 1]))
+			return; // Started a download.
+	}
+
+	if (precache_check < CS_MODELS + MAX_MODELS) // H2: no 'precache_check >= CS_MODELS' check.
+	{
+		if ((int)allow_download_models->value)
+		{
+			for (; (precache_check < CS_MODELS + MAX_MODELS && cl.configstrings[precache_check][0]); precache_check++)
+			{
+				if (cl.configstrings[precache_check][0] == '*' || cl.configstrings[precache_check][0] == '#')
+					continue;
+
+				if (precache_model_skin == 0)
+				{
+					precache_model_skin = 1;
+
+					if (!CL_CheckOrDownloadFile(cl.configstrings[precache_check]))
+						return; // Started a download
+				}
+
+				// Checking for skins in the model.
+				if (precache_model == NULL)
+					FS_LoadFile(cl.configstrings[precache_check], (void**)&precache_model);
+
+				if (precache_model != NULL)
+				{
+					const dfmdl_t* fmdl = (dfmdl_t*)precache_model;
+
+					for (; precache_model_skin - 1 < fmdl->header.num_skins; precache_model_skin++)
+						if (!CL_CheckOrDownloadFile(fmdl->skins[precache_model_skin - 1]))
+							return; // Started a download.
+
+					FS_FreeFile(precache_model);
+					precache_model = NULL;
+				}
+
+				precache_model_skin = 0;
+			}
+		}
+
+		precache_check = CS_SOUNDS;
+	}
+
+	if (precache_check < CS_SOUNDS + MAX_SOUNDS) // H2: no 'precache_check >= CS_SOUNDS' check.
+	{
+		if ((int)allow_download_sounds->value)
+		{
+			if (precache_check == CS_SOUNDS)
+				precache_check++; // Zero is blank.
+
+			for (; precache_check < CS_SOUNDS + MAX_SOUNDS && cl.configstrings[precache_check][0] != 0; precache_check++)
+			{
+				if (cl.configstrings[precache_check][0] == '*')
+					continue;
+
+				Com_sprintf(fn, sizeof(fn), "sound/%s", cl.configstrings[precache_check]);
+
+				if (!CL_CheckOrDownloadFile(fn))
+					return; // Started a download.
+			}
+		}
+
+		precache_check = CS_IMAGES;
+	}
+
+	if (precache_check < CS_IMAGES + MAX_IMAGES)
+	{
+		if (precache_check == CS_IMAGES)
+			precache_check++; // Zero is blank.
+
+		for (; precache_check < CS_IMAGES + MAX_IMAGES && cl.configstrings[precache_check][0] != 0; precache_check++)
+		{
+			Com_sprintf(fn, sizeof(fn), "pics/%s", cl.configstrings[precache_check]); // Q2: "pics/%s.pcx"
+
+			if (!CL_CheckOrDownloadFile(fn))
+				return; // Started a download.
+		}
+
+		precache_check = CS_PLAYERSKINS;
+	}
+
+	if (precache_check < ENV_CNT)
+	{
+		while (precache_check < ENV_CNT)
+		{
+			const int i = (precache_check - CS_PLAYERSKINS) / PLAYER_MULT;
+			int n = (precache_check - CS_PLAYERSKINS) % PLAYER_MULT;
+
+			if (cl.configstrings[CS_PLAYERSKINS + i][0] == 0)
+			{
+				precache_check = CS_PLAYERSKINS + (i + 1) * PLAYER_MULT;
+				continue;
+			}
+
+			char* p = strchr(cl.configstrings[CS_PLAYERSKINS + i], '\\');
+			if (p != NULL)
+				p++;
+			else
+				p = cl.configstrings[CS_PLAYERSKINS + i];
+
+			char model_name[MAX_QPATH];
+			strcpy_s(model_name, sizeof(model_name), p);
+
+			p = strchr(model_name, '/');
+			if (p == NULL)
+				p = strchr(model_name, '\\');
+
+			char skin_name[MAX_QPATH];
+			if (p != NULL)
+			{
+				strcpy_s(skin_name, sizeof(skin_name), p + 1);
+				*p = 0;
+			}
+			else
+			{
+				strcpy_s(skin_name, sizeof(skin_name), model_name); // H2
+				strcpy_s(model_name, sizeof(model_name), "male"); // H2
+			}
+
+			if (n++ == 0) // H2. Skin.
+			{
+				Com_sprintf(fn, sizeof(fn), "players/%s/%s.m8", model_name, skin_name);
+				if (!CL_CheckOrDownloadFile(fn))
+				{
+					precache_check++;
+					return; // Started a download.
+				}
+			}
+
+			if (n++ == 1) // H2. Model icon.
+			{
+				Com_sprintf(fn, sizeof(fn), "players/%s/%s_i.m8", model_name, skin_name);
+				if (!CL_CheckOrDownloadFile(fn))
+				{
+					precache_check++;
+					return; // Started a download.
+				}
+			}
+
+			if (n++ == 2) // H2. Damaged skin.
+			{
+				Com_sprintf(fn, sizeof(fn), "players/%s/%sDmg.m8", model_name, skin_name);
+				if (!CL_CheckOrDownloadFile(fn))
+				{
+					precache_check++;
+					return; // Started a download.
+				}
+			}
+
+			if (n++ == 3) // H2. Reflect texture.
+			{
+				Com_sprintf(fn, sizeof(fn), "players/%s/reflect.m8", model_name);
+				if (!CL_CheckOrDownloadFile(fn))
+				{
+					precache_check++;
+					return; // Started a download.
+				}
+			}
+
+			if (n == 4) // H2. Model.
+			{
+				Com_sprintf(fn, sizeof(fn), "players/%s/tris.fm", model_name);
+				if (!CL_CheckOrDownloadFile(fn))
+				{
+					precache_check++;
+					return; // Started a download.
+				}
+			}
+
+			// Move on to the next model.
+			precache_check = CS_PLAYERSKINS + (i + 1) * PLAYER_MULT;
+		}
+
+		// Precache phase completed.
+		precache_check = ENV_CNT;
+	}
+
+	if (precache_check == ENV_CNT)
+	{
+		precache_check++;
+
+		uint map_checksum; // For detecting cheater maps.
+		CM_LoadMap(cl.configstrings[CS_MODELS + 1], true, &map_checksum);
+
+		const uint cs_checksum = Q_atoi(cl.configstrings[CS_MAPCHECKSUM]);
+		if (map_checksum != cs_checksum)
+		{
+			Com_Error(ERR_DROP, "Local map version differs from server: %i != %i\n", map_checksum, cs_checksum);
+			return;
+		}
+	}
+
+	if (precache_check < TEXTURE_CNT)
+	{
+		if ((int)allow_download->value && (int)allow_download_maps->value)
+		{
+			for (int i = 0; precache_check < TEXTURE_CNT; i++, precache_check++)
+			{
+				Com_sprintf(fn, sizeof(fn), "pics/skies/%s%s.m8", cl.configstrings[CS_SKY], env_suf[i]);
+				if (!CL_CheckOrDownloadFile(fn))
+					return; // Started a download.
+			}
+		}
+
+		precache_check = TEXTURE_CNT;
+	}
+
+	if (precache_check == TEXTURE_CNT)
+	{
+		precache_check++;
+		precache_tex = 0;
+	}
+
+	// Confirm existence of textures, download any that don't exist.
+	if (precache_check == TEXTURE_CNT + 1)
+	{
+		if ((int)allow_download->value && (int)allow_download_maps->value)
+		{
+			for (; precache_tex < numtexinfo; precache_tex++)
+			{
+				Com_sprintf(fn, sizeof(fn), "textures/%s.m8", map_surfaces[precache_tex].name); //mxd. sprintf -> Com_sprintf
+				if (!CL_CheckOrDownloadFile(fn))
+					return; // Started a download.
+			}
+		}
+
+		precache_check = TEXTURE_CNT + 999;
+	}
+
+	memset(skeletal_joints, 0, sizeof(skeletal_joints)); // H2
+	memset(joint_nodes, 0, sizeof(joint_nodes)); // H2
+
+	CL_RegisterSounds();
+	CL_PrepRefresh();
+
+	MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
+	MSG_WriteString(&cls.netchan.message, va("begin %i\n", precache_spawncount));
 }
 
 // The server will send this command right before allowing the client into the server.
@@ -761,15 +1026,15 @@ static void CL_Precache_f(void)
 				MSG_WriteString(&cls.netchan.message, va("begin %i\n", precache_spawncount));
 			}
 		}
-
-		return;
 	}
+	else
+	{
+		precache_check = CS_MODELS;
+		precache_model = NULL;
+		precache_model_skin = 0;
 
-	precache_check = CS_MODELS;
-	precache_model = NULL;
-	precache_model_skin = 0;
-
-	CL_RequestNextDownload();
+		CL_RequestNextDownload();
+	}
 }
 
 // Q2 counterpart
@@ -1032,7 +1297,7 @@ static void CL_InitLocal(void)
 	Cmd_AddCommand("savecfg", CL_SaveConfig_f);
 	Cmd_AddCommand("setenv", CL_Setenv_f);
 	Cmd_AddCommand("precache", CL_Precache_f);
-	//Cmd_AddCommand("config", CL_Config_f); // Skip GameSpy config logic.
+	//Cmd_AddCommand("config", CL_Config_f); //mxd. Skip GameSpy config logic.
 
 	// Forward to server commands
 	Cmd_AddCommand("kill", NULL);

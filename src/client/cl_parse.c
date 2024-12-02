@@ -177,6 +177,12 @@ static void PrintObituary(const char* text, const byte client1, const byte clien
 	Com_ColourPrintf(color_index, message);
 }
 
+qboolean CL_CheckOrDownloadFile(const char* filename)
+{
+	NOT_IMPLEMENTED
+	return false;
+}
+
 void CL_RegisterSounds(void)
 {
 	S_BeginRegistration();

@@ -516,11 +516,11 @@ extern struct ResourceManager_s cl_FXBufMngr;
 extern int camera_timer; //mxd
 extern qboolean viewoffset_changed; //mxd
 
-extern netadr_t net_from;
-extern sizebuf_t net_message;
+//extern netadr_t net_from; //mxd. Disabled
+//extern sizebuf_t net_message; //mxd. Disabled
 
 void DrawString(int x, int y, const char* s, paletteRGBA_t color, int maxlen);
-qboolean CL_CheckOrDownloadFile(char* filename);
+qboolean CL_CheckOrDownloadFile(const char* filename);
 
 extern uint net_transmit_size; //mxd
 void CL_AddNetgraph(void);

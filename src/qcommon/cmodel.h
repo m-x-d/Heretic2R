@@ -7,12 +7,17 @@
 #pragma once
 
 #include "qcommon.h"
+#include "qfiles.h"
 
 //mxd. Moved from cmodel_private.h, because they're also used by Qcommon_frame().
 extern qboolean trace_check_water;
 extern int c_pointcontents;
 extern int c_traces;
 extern int c_brush_traces;
+
+//mxd. Moved from cmodel_private.h, because they're also used by CL_RequestNextDownload().
+extern int numtexinfo;
+extern csurface_t map_surfaces[MAX_MAP_TEXINFO]; // 65536 bytes
 
 cmodel_t* CM_LoadMap(const char* name, qboolean clientload, uint* checksum);
 cmodel_t* CM_InlineModel(const char* name); // *1, *2, etc
