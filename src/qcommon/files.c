@@ -412,9 +412,24 @@ static void FS_Link_f(void)
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
 static void FS_Path_f(void)
 {
-	NOT_IMPLEMENTED
+	Com_Printf("Current search path:\n");
+	for (const searchpath_t* s = fs_searchpaths; s != NULL; s = s->next)
+	{
+		if (s == fs_base_searchpaths)
+			Com_Printf("----------\n");
+
+		if (s->pack != NULL)
+			Com_Printf("%s (%i files)\n", s->pack->filename, s->pack->numfiles);
+		else
+			Com_Printf("%s\n", s->filename);
+	}
+
+	Com_Printf("\nLinks:\n");
+	for (const filelink_t* l = fs_links; l != NULL; l = l->next)
+		Com_Printf("%s : %s\n", l->from, l->to);
 }
 
 // Q2 counterpart
