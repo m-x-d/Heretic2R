@@ -173,10 +173,75 @@ qboolean NET_CompareBaseAdr(const netadr_t* a, const netadr_t* b)
 	}
 }
 
-static qboolean NET_StringToSockaddr(char* s, struct sockaddr* sadr)
+// Q2 counterpart
+static qboolean NET_StringToSockaddr(const char* s, struct sockaddr* sadr)
 {
-	NOT_IMPLEMENTED
-	return false;
+#define DO(src,dest)	\
+	copy[0] = s[src];	\
+	copy[1] = s[src + 1];	\
+	sscanf (copy, "%x", &val);	\
+	((struct sockaddr_ipx *)sadr)->dest = val
+
+	int val;
+	char copy[128];
+
+	memset(sadr, 0, sizeof(*sadr));
+
+	if (strlen(s) >= 23 && s[8] == ':' && s[21] == ':') // Check for an IPX address.
+	{
+		struct sockaddr_ipx* sa_ipx = (struct sockaddr_ipx*)sadr;
+
+		sa_ipx->sa_family = AF_IPX;
+		copy[2] = 0;
+		DO(0, sa_netnum[0]);
+		DO(2, sa_netnum[1]);
+		DO(4, sa_netnum[2]);
+		DO(6, sa_netnum[3]);
+		DO(9, sa_nodenum[0]);
+		DO(11, sa_nodenum[1]);
+		DO(13, sa_nodenum[2]);
+		DO(15, sa_nodenum[3]);
+		DO(17, sa_nodenum[4]);
+		DO(19, sa_nodenum[5]);
+		sscanf(&s[22], "%u", &val);
+		sa_ipx->sa_socket = htons((ushort)val);
+	}
+	else
+	{
+		struct sockaddr_in* sa_in = (struct sockaddr_in*)sadr;
+
+		sa_in->sin_family = AF_INET;
+		sa_in->sin_port = 0;
+
+		strcpy_s(copy, sizeof(copy), s); //mxd. strcpy -> strcpy_s
+
+		// Strip off a trailing :port if present.
+		for (char* colon = copy; *colon != 0; colon++)
+		{
+			if (*colon == ':')
+			{
+				*colon = 0;
+				sa_in->sin_port = htons((ushort)Q_atoi(colon + 1));
+			}
+		}
+
+		if (copy[0] >= '0' && copy[0] <= '9')
+		{
+			sa_in->sin_addr.S_un.S_addr = inet_addr(copy);
+		}
+		else
+		{
+			const struct hostent* h = gethostbyname(copy);
+			if (h == NULL)
+				return false;
+
+			sa_in->sin_addr.S_un.S_addr = *(int*)h->h_addr_list[0];
+		}
+	}
+
+	return true;
+
+#undef DO
 }
 
 // Q2 counterpart
