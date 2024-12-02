@@ -488,9 +488,11 @@ byte COM_BlockSequenceCheckByte(const byte* base, int length, const int sequence
 	return (byte)Com_BlockChecksum(chkb, length + 4);
 }
 
+// Q2 counterpart
+// Just throw a fatal error to test error shutdown procedures.
 static void Com_Error_f(void)
 {
-	NOT_IMPLEMENTED
+	Com_Error(ERR_FATAL, "%s", Cmd_Argv(1));
 }
 
 void Qcommon_Init(int argc, char** argv)
