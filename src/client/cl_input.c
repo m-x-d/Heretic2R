@@ -390,7 +390,9 @@ static void IN_InventoryUp(void) // H2
 
 void IN_CenterView(void)
 {
-	NOT_IMPLEMENTED
+	const float angle = -SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[0]);
+	cl.inputangles[0] = angle;
+	cl.viewangles[0] = angle;
 }
 
 void CL_InitInput(void)
