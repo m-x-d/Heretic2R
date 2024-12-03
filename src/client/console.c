@@ -82,7 +82,23 @@ void Con_ToggleConsole_f(void)
 
 void Con_ToggleChat_f(void)
 {
-	NOT_IMPLEMENTED
+	Key_ClearTyping();
+
+	if (cls.key_dest == key_console)
+	{
+		if (cls.state == ca_active)
+		{
+			M_ForceMenuOff();
+			Key_ClearStates(); // H2
+			cls.key_dest = key_game;
+		}
+	}
+	else
+	{
+		cls.key_dest = key_console;
+	}
+
+	Con_ClearNotify();
 }
 
 void Con_MessageMode_f(void)
