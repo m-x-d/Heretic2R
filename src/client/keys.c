@@ -674,20 +674,12 @@ void Key_WriteBindings_Double(FILE* f)
 			fprintf(f, "bind_double %s \"%s\"\n", Key_KeynumToString(i), keybindings_double[i]);
 }
 
-// Q2 counterpart //mxd. Added double-binds print-out.
+// Q2 counterpart
 static void Key_Bindlist_f(void)
 {
-	Com_Printf("Key binds:\n"); //mxd
-
 	for (int i = 0; i < 256; i++)
 		if (keybindings[i] != NULL && keybindings[i][0] != 0)
 			Com_Printf("%s \"%s\"\n", Key_KeynumToString(i), keybindings[i]);
-
-	Com_Printf("\nKey double-binds:\n"); //mxd
-
-	for (int i = 0; i < 256; i++)
-		if (keybindings_double[i] != NULL && keybindings_double[i][0] != 0)
-			Com_Printf("%s \"%s\"\n", Key_KeynumToString(i), keybindings_double[i]);
 }
 
 //mxd. Very similar to Key_Unbind_f().
@@ -750,9 +742,12 @@ static void Key_BindDouble_f(void)
 	Key_SetDoubleBinding(b, cmd);
 }
 
-static void Key_DoubleBindList_f(void)
+//mxd. Very similar to Key_BindList_f().
+static void Key_DoubleBindList_f(void) // H2
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < 256; i++)
+		if (keybindings_double[i] != NULL && keybindings_double[i][0] != 0)
+			Com_Printf("%s \"%s\"\n", Key_KeynumToString(i), keybindings_double[i]);
 }
 
 static void Key_UnbindCommand_f(void)
