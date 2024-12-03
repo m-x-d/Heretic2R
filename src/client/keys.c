@@ -818,9 +818,12 @@ static void Key_BindCommand_f(void)
 	Key_SetCommandBinding(b, cmd);
 }
 
+//mxd. Very similar to Key_Bindlist_f().
 static void Key_CommandsList_f(void)
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < 256; i++)
+		if (commandbindings[i] != NULL && commandbindings[i][0] != 0)
+			Com_Printf("%s \"%s\"\n", Key_KeynumToString(i), commandbindings[i]);
 }
 
 void Key_Init(void)
