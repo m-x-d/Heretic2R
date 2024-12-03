@@ -142,9 +142,43 @@ static void SCR_CalcVrect(void)
 	scr_vrect.y = (viddef.height - scr_vrect.height) / 2;
 }
 
+// Q2 counterpart
 static void SCR_TimeRefresh_f(void)
 {
-	NOT_IMPLEMENTED
+	if (cls.state != ca_active)
+		return;
+
+	const int start = Sys_Milliseconds();
+
+	if (Cmd_Argc() == 2)
+	{
+		// Run without page flipping.
+		re.BeginFrame(0.0f);
+
+		for (int i = 0; i < 128; i++)
+		{
+			cl.refdef.viewangles[1] = (float)i / 128.0f * 360.0f;
+			re.RenderFrame(&cl.refdef);
+		}
+
+		re.EndFrame();
+	}
+	else
+	{
+		// Run with page flipping.
+		for (int i = 0; i < 128; i++)
+		{
+			cl.refdef.viewangles[1] = (float)i / 128.0f * 360.0f;
+
+			re.BeginFrame(0.0f);
+			re.RenderFrame(&cl.refdef);
+			re.EndFrame();
+		}
+	}
+
+	const int stop = Sys_Milliseconds();
+	const float time = (float)(stop - start) / 1000.0f;
+	Com_Printf("%f seconds (%f fps)\n", time, 128.0f / time);
 }
 
 static void SCR_Loading_f(void)
