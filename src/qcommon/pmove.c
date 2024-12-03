@@ -1176,9 +1176,25 @@ static void PM_ClampAngles(void)
 	}
 }
 
-static void PM_UpdateOriginAndVelocity(void)
+static void PM_SpectatorMove(void) // H2
 {
-	NOT_IMPLEMENTED
+	const float upmove = (float)pm->cmd.upmove * 4.0f;
+	const float forwardmove = (float)pm->cmd.forwardmove * 4.0f;
+	const float sidemove = (float)pm->cmd.sidemove * 4.0f;
+
+	VectorNormalize(pml.forward);
+	VectorNormalize(pml.right);
+
+	vec3_t vel;
+	vel[0] = pml.forward[0] * forwardmove + pml.right[0] * sidemove;
+	vel[1] = pml.forward[1] * forwardmove + pml.right[1] * sidemove;
+	vel[2] = pml.forward[2] * forwardmove + upmove;
+
+	vec3_t unused;
+	ClampVelocity(vel, unused, pm->run_shrine, false);
+
+	VectorCopy(vel, pml.velocity);
+	VectorMA(pml.origin, pml.frametime, vel, pml.origin);
 }
 
 static void PM_UpdateWaterLevel(void) // H2. Part of PM_CatagorizePosition() logic in Q2.
@@ -1273,7 +1289,7 @@ void Pmove(pmove_t* pmove, const qboolean server)
 			aimangles[i] = (float)pm->cmd.aimangles[i] * SHORT_TO_ANGLE;
 
 		AngleVectors(aimangles, pml.forward, pml.right, pml.up);
-		PM_UpdateOriginAndVelocity();
+		PM_SpectatorMove();
 
 		for (int i = 0; i < 3; i++)
 		{
