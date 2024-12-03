@@ -50,12 +50,32 @@ static void PF_dprintf(char* fmt, ...)
 	Com_DPrintf("%s", msg); // Q2: Com_Printf
 }
 
-static void PF_cprintf(edict_t* ent, int level, char* fmt, ...)
+// Q2 counterpart
+// Print to a single client.
+static void PF_cprintf(const edict_t* ent, const int level, const char* fmt, ...)
 {
-	NOT_IMPLEMENTED
+	char msg[1024];
+	va_list argptr;
+	int n;
+
+	if (ent != NULL)
+	{
+		n = NUM_FOR_EDICT(ent);
+		if (n < 1 || n > (int)maxclients->value)
+			Com_Error(ERR_DROP, "cprintf to a non-client");
+	}
+
+	va_start(argptr, fmt);
+	vsprintf_s(msg, sizeof(msg), fmt, argptr); //mxd. vsprintf -> vsprintf_s
+	va_end(argptr);
+
+	if (ent != NULL)
+		SV_ClientPrintf(&svs.clients[n - 1], level, "%s", msg);
+	else
+		Com_Printf("%s", msg);
 }
 
-static void PF_clprintf(edict_t* ent, edict_t* from, const int color, char* fmt, ...) // H2
+static void PF_clprintf(const edict_t* ent, const edict_t* from, const int color, const char* fmt, ...) // H2
 {
 	char msg[1024];
 	va_list argptr;
