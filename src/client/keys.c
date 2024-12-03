@@ -768,9 +768,12 @@ static void Key_UnbindCommand_f(void) // H2
 		Com_Printf("\"%s\" isn't a valid key\n", key);
 }
 
+//mxd. Similar to Key_Unbindall_f().
 static void Key_UnbindallCommands_f(void)
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < 256; i++)
+		if (commandbindings[i] != NULL)
+			Key_SetCommandBinding(i, "");
 }
 
 // Very similar to Key_Bind_f
