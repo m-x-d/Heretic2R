@@ -186,19 +186,46 @@ static void SCR_Loading_f(void)
 	SCR_BeginLoadingPlaque();
 }
 
-static void SCR_SizeUp_f(void)
+static void SCR_SizeUp_f(void) //TODO: remove?
 {
 	NOT_IMPLEMENTED
 }
 
-static void SCR_SizeDown_f(void)
+static void SCR_SizeDown_f(void) //TODO: remove?
 {
 	NOT_IMPLEMENTED
 }
 
+// Q2 counterpart
+// Set a specific sky and rotation speed.
 static void SCR_Sky_f(void)
 {
-	NOT_IMPLEMENTED
+	float rotate;
+	vec3_t axis;
+
+	if (Cmd_Argc() < 2)
+	{
+		Com_Printf("Usage: sky <basename> <rotate> <axis x y z>\n");
+		return;
+	}
+
+	if (Cmd_Argc() > 2)
+		rotate = (float)strtod(Cmd_Argv(2), NULL); //mxd. atof -> strtod
+	else
+		rotate = 0.0f;
+
+	if (Cmd_Argc() == 6)
+	{
+		axis[0] = (float)strtod(Cmd_Argv(3), NULL); //mxd. atof -> strtod
+		axis[1] = (float)strtod(Cmd_Argv(4), NULL); //mxd. atof -> strtod
+		axis[2] = (float)strtod(Cmd_Argv(5), NULL); //mxd. atof -> strtod
+	}
+	else
+	{
+		VectorSet(axis, 0, 0, 1);
+	}
+
+	re.SetSky(Cmd_Argv(1), rotate, axis);
 }
 
 static void SCR_GammaUp_f(void)
