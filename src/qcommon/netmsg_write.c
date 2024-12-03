@@ -786,9 +786,22 @@ void MSG_WriteDirMag(sizebuf_t* sb, vec3_t dir) // H2
 	MSG_WriteByte(sb, Q_ftol(mag));
 }
 
-void MSG_WriteYawPitch(sizebuf_t* sb, vec3_t vector)
+void MSG_WriteYawPitch(sizebuf_t* sb, vec3_t vector) // H2
 {
-	NOT_IMPLEMENTED
+	if (vector != NULL)
+	{
+		vec3_t angles;
+		vectoangles(vector, angles);
+
+		MSG_WriteByte(sb, (int)((angles[YAW]  + 180.0f) * (255.0f / 180.0f)));
+		MSG_WriteByte(sb, (int)((angles[PITCH] + 90.0f) * (255.0f / 360.0f)));
+	}
+	else
+	{
+		Com_DPrintf("ERROR, null direction passed into MSG_WriteYawPitch\n");
+		MSG_WriteByte(sb, 0);
+		MSG_WriteByte(sb, 0);
+	}
 }
 
 void MSG_WriteShortYawPitch(sizebuf_t* sb, const vec3_t vector) // H2
@@ -803,7 +816,7 @@ void MSG_WriteShortYawPitch(sizebuf_t* sb, const vec3_t vector) // H2
 	}
 	else
 	{
-		Com_DPrintf("ERROR, null direction passed into MSG_WriteShortYawPitch");
+		Com_DPrintf("ERROR, null direction passed into MSG_WriteShortYawPitch\n");
 		MSG_WriteShort(sb, 0);
 		MSG_WriteShort(sb, 0);
 	}
