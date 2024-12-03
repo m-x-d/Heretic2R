@@ -175,9 +175,21 @@ static void Con_Dump_f(void)
 	fclose(f);
 }
 
-static void Con_Chars_f(void)
+static void Con_Chars_f(void) // H2
 {
-	NOT_IMPLEMENTED
+	char chars[33];
+
+	// Print 7 lines, 32 chars per line (224 chars in total).
+	char c = ' ';
+
+	for (int line = 0; line < 7; line++)
+	{
+		for (int i = 0; i < 32; i++, c++)
+			chars[i] = c;
+
+		chars[32] = 0;
+		Com_Printf(":%s\n", chars);
+	}
 }
 
 // If the line width has changed, reformat the buffer.
