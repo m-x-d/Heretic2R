@@ -88,7 +88,8 @@ static void SaveConfigFunc(void* self) // H2
 
 static void ControlsResetToDefaultsFunc(void* self)
 {
-	NOT_IMPLEMENTED
+	Cbuf_AddText("exec default.cfg\n");
+	Cbuf_Execute();
 }
 
 static void Options_MenuInit(void)
