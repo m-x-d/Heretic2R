@@ -121,12 +121,61 @@ void Con_Clear_f(void)
 	memset(con.color, 0xff, sizeof(con.color)); // H2
 }
 
-void Con_Dump_f(void)
+// Save the console contents out to a file.
+static void Con_Dump_f(void)
 {
-	NOT_IMPLEMENTED
+	int l;
+	int x;
+	FILE* f;
+	char buffer[1024];
+	char name[MAX_OSPATH];
+
+	if (Cmd_Argc() != 2)
+	{
+		Com_Printf("usage: condump <filename>\n");
+		return;
+	}
+
+	Com_sprintf(name, sizeof(name), "%s/%s.txt", FS_Userdir(), Cmd_Argv(1)); // H2: FS_Gamedir -> FS_Userdir
+	Com_Printf("Dumped console text to %s.\n", name);
+	FS_CreatePath(name);
+
+	if (fopen_s(&f, name, "w") != 0) //mxd. fopen -> fopen_s
+	{
+		Com_Printf("ERROR: couldn't open.\n");
+		return;
+	}
+
+	// Skip empty lines.
+	for (l = con.current - con.totallines + 1; l <= con.current; l++)
+	{
+		const char* line = con.text + (l % con.totallines) * con.linewidth;
+
+		for (x = 0; x < con.linewidth; x++)
+			if (line[x] != ' ')
+				break;
+
+		if (x != con.linewidth)
+			break;
+	}
+
+	// Write the remaining lines.
+	buffer[con.linewidth] = 0;
+	for (; l <= con.current; l++)
+	{
+		const char* line = con.text + (l % con.totallines) * con.linewidth;
+		strncpy_s(buffer, sizeof(buffer), line, con.linewidth); //mxd. strncpy -> strncpy_s
+
+		for (int c = con.linewidth - 1; c >= 0 && buffer[c] == ' '; c--)
+			buffer[c] = 0;
+
+		fprintf(f, "%s\n", buffer);
+	}
+
+	fclose(f);
 }
 
-void Con_Chars_f(void)
+static void Con_Chars_f(void)
 {
 	NOT_IMPLEMENTED
 }
