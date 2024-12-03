@@ -565,9 +565,34 @@ static void DrawClientBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' a
 	DrawString(ox + 32, oy + 24, va("Time:  %i", time), TextPalette[P_FRAGS], -1);
 }
 
-static void DrawAClientBlock(int x, int y, char* str)
+static void DrawAClientBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' args are ignored.
 {
-	NOT_IMPLEMENTED
+	char buffer[80];
+
+	int ox = Q_atoi(COM_Parse(&str));
+	ox += viddef.width / 2 - 160;
+
+	int oy = Q_atoi(COM_Parse(&str));
+	oy += viddef.height / 2 - 120;
+
+	SCR_AddDirtyPoint(ox, oy);
+	SCR_AddDirtyPoint(ox + 159, oy + 31);
+
+	const int pal_index = Q_atoi(COM_Parse(&str));
+	const int client = Q_atoi(COM_Parse(&str));
+
+	if (client < 0 || client >= MAX_CLIENTS)
+	{
+		Com_Error(ERR_DROP, "client >= MAX_CLIENTS");
+		return;
+	}
+
+	const int score = Q_atoi(COM_Parse(&str));
+	const int ping = Q_atoi(COM_Parse(&str));
+	const int time = Q_atoi(COM_Parse(&str));
+
+	sprintf_s(buffer, sizeof(buffer), "%-12.12s    %3d   %3d   %3d", cl.clientinfo[client].name, score, ping, time); //mxd. sprintf -> sprintf_s
+	DrawString(ox, oy, buffer, TextPalette[pal_index], -1);
 }
 
 static int GetMenuNumsIndex(const char c, const qboolean is_red) // H2
@@ -745,9 +770,9 @@ static void SCR_ExecuteLayoutString(char* s)
 			// Draw a deathmatch client block.
 			DrawClientBlock(x, y, s);
 		}
-		else if (strcmp(token, "aclient") == 0) // H2
+		else if (strcmp(token, "aclient") == 0) // H2 //TODO: never used?
 		{
-			// Draw a ??? client block.
+			// Draw a coop client block (?).
 			DrawAClientBlock(x, y, s);
 		}
 		else if (strcmp(token, "picn") == 0)
