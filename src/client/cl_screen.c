@@ -534,9 +534,35 @@ static void DrawTeamBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' arg
 	DrawString(ox, oy + 8, va("Score %i", score), TextPalette[P_WHITE], -1);
 }
 
-static void DrawClientBlock(int x, int y, char* str)
+static void DrawClientBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' args are ignored.
 {
-	NOT_IMPLEMENTED
+	int ox = Q_atoi(COM_Parse(&str));
+	ox += viddef.width / 2 - 160;
+
+	int oy = Q_atoi(COM_Parse(&str));
+	oy += viddef.height / 2 - 120;
+
+	SCR_AddDirtyPoint(ox, oy);
+	SCR_AddDirtyPoint(ox + 159, oy + 31);
+
+	const int client = Q_atoi(COM_Parse(&str));
+
+	if (client < 0 || client >= MAX_CLIENTS)
+	{
+		Com_Error(ERR_DROP, "client >= MAX_CLIENTS");
+		return;
+	}
+
+	const int score = Q_atoi(COM_Parse(&str));
+	const int ping = Q_atoi(COM_Parse(&str));
+	const int time = Q_atoi(COM_Parse(&str));
+
+	DrawString(ox + 32, oy, cl.clientinfo[client].name, TextPalette[P_FRAGNAME], -1);
+
+	DrawString(ox + 32, oy + 8, "Score: ", TextPalette[P_FRAGS], -1);
+	DrawString(ox + 88, oy + 8,  va("%i", score), TextPalette[P_ALTFRAGS], -1);
+	DrawString(ox + 32, oy + 16, va("Ping:  %i", ping), TextPalette[P_FRAGS], -1);
+	DrawString(ox + 32, oy + 24, va("Time:  %i", time), TextPalette[P_FRAGS], -1);
 }
 
 static void DrawAClientBlock(int x, int y, char* str)
