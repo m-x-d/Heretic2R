@@ -433,9 +433,47 @@ static void Key_Console(int key)
 
 #pragma endregion
 
-static void Key_Message(int key)
+// Q2 counterpart
+static void Key_Message(const int key)
 {
-	NOT_IMPLEMENTED
+	if (key == K_ENTER || key == K_KP_ENTER)
+	{
+		Cbuf_AddText((chat_team ? "say_team \"" : "say \""));
+		Cbuf_AddText(chat_buffer);
+		Cbuf_AddText("\"\n");
+
+		cls.key_dest = key_game;
+		chat_bufferlen = 0;
+		chat_buffer[0] = 0;
+
+		return;
+	}
+
+	if (key == K_ESCAPE)
+	{
+		cls.key_dest = key_game;
+		chat_bufferlen = 0;
+		chat_buffer[0] = 0;
+
+		return;
+	}
+
+	if (key < 32 || key > 127)
+		return;	// Non-printable.
+
+	if (key == K_BACKSPACE)
+	{
+		if (chat_bufferlen > 0)
+			chat_buffer[--chat_bufferlen] = 0;
+
+		return;
+	}
+
+	if (chat_bufferlen < (int)sizeof(chat_buffer) - 1)
+	{
+		chat_buffer[chat_bufferlen++] = (char)key;
+		chat_buffer[chat_bufferlen] = 0;
+	}
 }
 
 // Q2 counterpart
