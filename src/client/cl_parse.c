@@ -255,9 +255,90 @@ void CL_RegisterSounds(void)
 	S_EndRegistration();
 }
 
+// A download message has been received from the server.
 static void CL_ParseDownload(void)
 {
-	NOT_IMPLEMENTED
+	// Read the data.
+	const int size = MSG_ReadShort(&net_message);
+	int percent = MSG_ReadByte(&net_message);
+
+	if (size == -1)
+	{
+		Com_Printf("Server does not have this file.\n");
+
+		if (cls.download != NULL)
+		{
+			// If here, we tried to resume a file but the server said no.
+			fclose(cls.download);
+			cls.download = NULL;
+		}
+
+		CL_RequestNextDownload();
+		return;
+	}
+
+	// Open the file if not opened yet.
+	if (cls.download == NULL)
+	{
+		char name[MAX_OSPATH];
+		CL_DownloadFileName(name, sizeof(name), cls.downloadtempname);
+		FS_CreatePath(name);
+
+		if (fopen_s(&cls.download, name, "wb") != 0)
+		{
+			net_message.readcount += size;
+			Com_Printf("Failed to open %s\n", cls.downloadtempname);
+			CL_RequestNextDownload();
+
+			return;
+		}
+	}
+
+	fwrite(net_message.data + net_message.readcount, 1, size, cls.download);
+	net_message.readcount += size;
+
+	if (percent != 100)
+	{
+		// #if 0-ed in Q2
+		Com_Printf(".");
+		percent = percent / 10 * 10;
+
+		if (percent != cls.downloadpercent)
+		{
+			cls.downloadpercent = percent;
+			Com_Printf("\r                                                           ");
+			Com_Printf("\r%i%%", cls.downloadpercent);
+
+			SCR_UpdateScreen();
+		}
+
+		MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
+		SZ_Print(&cls.netchan.message, "nextdl");
+
+		return;
+	}
+
+	// Download finished.
+	Com_Printf("\r100%%                                                           \n");
+	SCR_UpdateScreen();
+
+	fclose(cls.download);
+
+	// Rename the temp file to it's final name.
+	char new_name[MAX_OSPATH];
+	char old_name[MAX_OSPATH];
+
+	CL_DownloadFileName(old_name, sizeof(old_name), cls.downloadtempname);
+	CL_DownloadFileName(new_name, sizeof(new_name), cls.downloadname);
+
+	if (rename(old_name, new_name) != 0)
+		Com_Printf("failed to rename.\n");
+
+	cls.download = NULL;
+	cls.downloadpercent = 0;
+
+	// Get another file if needed.
+	CL_RequestNextDownload();
 }
 
 #pragma region ========================== SERVER CONNECTING MESSAGES ==========================
@@ -819,7 +900,7 @@ void CL_ParseServerMessage(void)
 				strncpy_s(cl.layout, sizeof(cl.layout), layout, sizeof(cl.layout) - 1); //mxd. strncpy -> strncpy_s
 			} break;
 
-			case svc_inventory:
+			case svc_inventory: //TODO: never sent. Remove?
 				CL_ParseInventory();
 				break;
 

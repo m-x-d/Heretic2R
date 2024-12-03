@@ -6,7 +6,7 @@
 
 #include "client.h"
 
-void CL_ParseInventory(void)
+void CL_ParseInventory(void) //TODO: unused
 {
 	NOT_IMPLEMENTED
 }
