@@ -117,7 +117,8 @@ void Con_MessageMode2_f(void)
 
 void Con_Clear_f(void)
 {
-	NOT_IMPLEMENTED
+	memset(con.text, ' ', CON_TEXTSIZE);
+	memset(con.color, 0xff, sizeof(con.color)); // H2
 }
 
 void Con_Dump_f(void)
