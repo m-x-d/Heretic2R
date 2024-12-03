@@ -604,7 +604,7 @@ void Cmd_AddCommand(const char* cmd_name, const xcommand_t function)
 }
 
 // Q2 counterpart
-void Cmd_RemoveCommand(char* cmd_name)
+void Cmd_RemoveCommand(const char* cmd_name)
 {
 	cmd_function_t** back = &cmd_functions;
 	while (true)

@@ -436,7 +436,7 @@ void Cmd_Init(void);
 // If function is NULL, the command will be forwarded to the server as a clc_stringcmd instead of executed locally.
 GAME_DECLSPEC void Cmd_AddCommand(const char* cmd_name, xcommand_t function);
 
-GAME_DECLSPEC void Cmd_RemoveCommand(char* cmd_name);
+GAME_DECLSPEC void Cmd_RemoveCommand(const char* cmd_name);
 
 // Used by the cvar code to check for cvar / command name overlap
 qboolean Cmd_Exists(char* cmd_name);

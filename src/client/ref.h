@@ -238,17 +238,17 @@ typedef struct
 	struct CL_SkeletalJoint_s* skeletalJoints;
 	struct ArrayedListNode_s* jointNodes;
 
-	void (*Sys_Error)(int err_level, char* fmt, ...);
+	void (*Sys_Error)(int err_level, const char* fmt, ...);
 	void (*Com_Error)(int code, const char* fmt, ...);
-	void (*Con_Printf)(int print_level, char* fmt, ...);
+	void (*Con_Printf)(int print_level, const char* fmt, ...);
 
 	cvar_t* (*Cvar_Get)(const char* name, const char* value, int flags);
-	cvar_t* (*Cvar_FullSet)(char* name, char* value, int flags);
-	cvar_t* (*Cvar_Set)(char* name, char* value);
-	void (*Cvar_SetValue)(char* name, float value);
+	cvar_t* (*Cvar_FullSet)(const char* name, const char* value, int flags);
+	cvar_t* (*Cvar_Set)(const char* name, const char* value);
+	void (*Cvar_SetValue)(const char* name, float value);
 
 	void (*Cmd_AddCommand)(const char* name, void (*cmd)(void));
-	void (*Cmd_RemoveCommand)(char* name);
+	void (*Cmd_RemoveCommand)(const char* name);
 	int (*Cmd_Argc)(void);
 	char* (*Cmd_Argv)(int i);
 	void (*Cmd_ExecuteText)(int exec_when, char* text);

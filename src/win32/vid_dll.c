@@ -497,7 +497,7 @@ static qboolean VID_LoadRefresh(const char* name)
 	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
 	ri.Cmd_Argc = Cmd_Argc;
 	ri.Cmd_Argv = Cmd_Argv;
-	ri.Cmd_ExecuteText = Cbuf_ExecuteText;
+	ri.Cmd_ExecuteText = Cbuf_ExecuteText; //TODO: unused?
 	ri.FS_LoadFile = FS_LoadFile;
 	ri.FS_FreeFile = FS_FreeFile;
 	ri.FS_Gamedir = FS_Gamedir;
