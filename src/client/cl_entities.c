@@ -1068,7 +1068,73 @@ void CL_ParseFrame(void)
 
 static void CL_UpdateWallDistances(void) // H2
 {
-	NOT_IMPLEMENTED
+#define NUM_WALL_CHECKS	(sizeof(cl.wall_dist) / sizeof(cl.wall_dist[0]))
+
+	static int eax_presets[7][4] = // [world preset][sound preset]
+	{
+		{ EAX_ENVIRONMENT_GENERIC,		EAX_ENVIRONMENT_ROOM,		EAX_ENVIRONMENT_HALLWAY,		EAX_ENVIRONMENT_ALLEY }, // EAX_GENERIC
+		{ EAX_ENVIRONMENT_QUARRY,		EAX_ENVIRONMENT_CAVE,		EAX_ENVIRONMENT_STONECORRIDOR,	EAX_ENVIRONMENT_ALLEY }, // EAX_ALL_STONE
+		{ EAX_ENVIRONMENT_ARENA,		EAX_ENVIRONMENT_LIVINGROOM,	EAX_ENVIRONMENT_HALLWAY,		EAX_ENVIRONMENT_ALLEY }, // EAX_ARENA
+		{ EAX_ENVIRONMENT_CITY,			EAX_ENVIRONMENT_ROOM,		EAX_ENVIRONMENT_SEWERPIPE,		EAX_ENVIRONMENT_ALLEY }, // EAX_CITY_AND_SEWERS
+		{ EAX_ENVIRONMENT_CITY,			EAX_ENVIRONMENT_STONEROOM,	EAX_ENVIRONMENT_STONECORRIDOR,	EAX_ENVIRONMENT_ALLEY }, // EAX_CITY_AND_ALLEYS
+		{ EAX_ENVIRONMENT_FOREST,		EAX_ENVIRONMENT_ROOM,		EAX_ENVIRONMENT_HALLWAY,		EAX_ENVIRONMENT_ALLEY }, // EAX_FOREST
+		{ EAX_ENVIRONMENT_PSYCHOTIC,	EAX_ENVIRONMENT_PSYCHOTIC,	EAX_ENVIRONMENT_PSYCHOTIC,		EAX_ENVIRONMENT_PSYCHOTIC }, // EAX_PSYCHOTIC
+	};
+
+	vec3_t start;
+	vec3_t end;
+	trace_t tr;
+
+	VectorCopy(PlayerEntPtr->origin, start);
+	VectorCopy(PlayerEntPtr->origin, end);
+
+	switch (cl.wall_check)
+	{
+		case 0:
+			end[2] += 800.0f;
+			break;
+
+		case 1:
+			end[0] += 800.0f;
+			end[2] += 100.0f;
+			break;
+
+		case 2:
+			end[1] -= 800.0f;
+			end[2] += 100.0f;
+			break;
+
+		case 3:
+			end[1] += 800.0f;
+			end[2] += 100.0f;
+			break;
+
+		case 4:
+			end[0] -= 800.0f;
+			end[2] += 100.0f;
+			break;
+
+		default:
+			return;
+	}
+
+	CL_Trace(start, NULL, NULL, end, MASK_PLAYERSOLID | CONTENTS_WORLD_ONLY, CONTENTS_DETAIL, &tr);
+	Vec3SubtractAssign(start, tr.endpos);
+	cl.wall_dist[cl.wall_check] = VectorLength(tr.endpos);
+
+	int sound_preset;
+	if (cl.wall_dist[1] + cl.wall_dist[3] < 250.0f || cl.wall_dist[2] + cl.wall_dist[4] < 250.0f)
+		sound_preset = 1;
+	else
+		sound_preset = 0;
+
+	if (cl.wall_dist[0] <= 790.0f)
+		sound_preset += 2;
+
+	const int world_preset = Q_ftol(EAX_default->value);
+
+	Cvar_SetValue("EAX_preset", (float)eax_presets[world_preset][sound_preset]);
+	cl.wall_check = (cl.wall_check + 1) % NUM_WALL_CHECKS;
 }
 
 // Q2 counterpart
