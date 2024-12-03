@@ -605,7 +605,14 @@ static void Key_Unbind_f(void)
 
 static void Key_Unbindall_f(void)
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < 256; i++)
+	{
+		if (keybindings[i] != NULL)
+			Key_SetBinding(i, "");
+
+		if (keybindings_double[i] != NULL) // H2
+			Key_SetDoubleBinding(i, "");
+	}
 }
 
 // Q2 counterpart
