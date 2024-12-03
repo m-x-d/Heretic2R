@@ -519,9 +519,19 @@ static void DrawPic(const int x, const int y, char* str, const qboolean use_alph
 	}
 }
 
-static void DrawTeamBlock(int x, int y, char* str)
+static void DrawTeamBlock(int x, int y, char* str) // H2 //TODO: 'x' and 'y' args are ignored.
 {
-	NOT_IMPLEMENTED
+	int ox = Q_atoi(COM_Parse(&str));
+	ox += viddef.width / 2 - 128;
+
+	int oy = Q_atoi(COM_Parse(&str));
+	oy += viddef.height / 2 - 120;
+
+	const int score = Q_atoi(COM_Parse(&str));
+	const char* team = COM_Parse(&str);
+
+	DrawString(ox, oy, va("Team %s ", team), TextPalette[P_TEAM], -1);
+	DrawString(ox, oy + 8, va("Score %i", score), TextPalette[P_WHITE], -1);
 }
 
 static void DrawClientBlock(int x, int y, char* str)
