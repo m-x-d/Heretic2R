@@ -690,9 +690,22 @@ static void Key_Bindlist_f(void)
 			Com_Printf("%s \"%s\"\n", Key_KeynumToString(i), keybindings_double[i]);
 }
 
-static void Key_UnbindDouble_f(void)
+//mxd. Very similar to Key_Unbind_f().
+static void Key_UnbindDouble_f(void) // H2
 {
-	NOT_IMPLEMENTED
+	if (Cmd_Argc() != 2)
+	{
+		Com_Printf("unbind_double <key> : remove commands from a double tapped key\n");
+		return;
+	}
+
+	const char* key = Cmd_Argv(1);
+	const int b = Key_StringToKeynum(key);
+
+	if (b != -1)
+		Key_SetDoubleBinding(b, "");
+	else
+		Com_Printf("\"%s\" isn't a valid key\n", key);
 }
 
 // Very similar to Key_Bind_f
