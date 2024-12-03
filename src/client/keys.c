@@ -585,9 +585,22 @@ static void Key_SetCommandBinding(const int keynum, const char* binding)
 	commandbindings[keynum] = new;
 }
 
+// Q2 counterpart
 static void Key_Unbind_f(void)
 {
-	NOT_IMPLEMENTED
+	if (Cmd_Argc() != 2)
+	{
+		Com_Printf("unbind <key> : remove commands from a key\n");
+		return;
+	}
+
+	const char* key = Cmd_Argv(1);
+	const int b = Key_StringToKeynum(key);
+
+	if (b != -1)
+		Key_SetBinding(b, "");
+	else
+		Com_Printf("\"%s\" isn't a valid key\n", key);
 }
 
 static void Key_Unbindall_f(void)
