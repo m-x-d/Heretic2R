@@ -1460,9 +1460,14 @@ void FloodAreaConnections(void)
 	}
 }
 
-void CM_SetAreaPortalState(int portalnum, qboolean open)
+// Q2 counterpart
+void CM_SetAreaPortalState(const int portalnum, const qboolean open)
 {
-	NOT_IMPLEMENTED
+	if (portalnum > numareaportals)
+		Com_Error(ERR_DROP, "areaportal > numareaportals");
+
+	portalopen[portalnum] = open;
+	FloodAreaConnections();
 }
 
 // Q2 counterpart
