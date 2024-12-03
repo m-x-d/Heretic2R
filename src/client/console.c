@@ -101,14 +101,18 @@ void Con_ToggleChat_f(void)
 	Con_ClearNotify();
 }
 
+// Q2 counterpart
 void Con_MessageMode_f(void)
 {
-	NOT_IMPLEMENTED
+	chat_team = false;
+	cls.key_dest = key_message;
 }
 
+// Q2 counterpart
 void Con_MessageMode2_f(void)
 {
-	NOT_IMPLEMENTED
+	chat_team = true;
+	cls.key_dest = key_message;
 }
 
 void Con_Clear_f(void)
