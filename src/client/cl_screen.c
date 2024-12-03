@@ -8,6 +8,7 @@
 #include "cl_messages.h"
 #include "sound.h"
 #include "Vector.h"
+#include "vid_dll.h"
 #include "menus/menu_worldmap.h"
 
 float scr_con_current; // Approaches scr_conlines at scr_conspeed.
@@ -228,14 +229,16 @@ static void SCR_Sky_f(void)
 	re.SetSky(Cmd_Argv(1), rotate, axis);
 }
 
-static void SCR_GammaUp_f(void)
+static void SCR_GammaUp_f(void) // H2. Actually decreases brightness.
 {
-	NOT_IMPLEMENTED
+	if (vid_gamma->value < 4.0f)
+		Cvar_SetValue("vid_gamma", vid_gamma->value + 0.1f);
 }
 
-static void SCR_GammaDown_f(void)
+static void SCR_GammaDown_f(void) // H2. Actually increases brightness.
 {
-	NOT_IMPLEMENTED
+	if (vid_gamma->value > 0.1f)
+		Cvar_SetValue("vid_gamma", vid_gamma->value - 0.1f);
 }
 
 static void SCR_DrawConsole(void)
