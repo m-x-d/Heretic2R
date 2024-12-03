@@ -234,11 +234,6 @@ qboolean Cbuf_AddLateCommands(void)
 
 #pragma region ========================== SCRIPT COMMANDS =========================
 
-static void Cmd_List_f(void)
-{
-	NOT_IMPLEMENTED
-}
-
 // Part of Cmd_Exec_f in Q2
 static void AddTextToCommandBuffer(const char* f, const int len)
 {
@@ -755,6 +750,16 @@ void Cmd_ExecuteString(char* text)
 
 	// Send it as a server command if we are connected
 	Cmd_ForwardToServer();
+}
+
+// Q2 counterpart
+static void Cmd_List_f(void)
+{
+	int cmd_count = 0;
+	for (const cmd_function_t* cmd = cmd_functions; cmd != NULL; cmd = cmd->next, cmd_count++)
+		Com_Printf("%s\n", cmd->name);
+
+	Com_Printf("%i commands\n", cmd_count);
 }
 
 void Cmd_Init(void)
