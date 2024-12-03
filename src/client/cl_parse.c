@@ -841,7 +841,10 @@ void SHOWNET(char* s)
 
 static void ChangeCDTrack(void) // H2
 {
-	NOT_IMPLEMENTED
+	const int track = MSG_ReadByte(&net_message);
+	const int looping = MSG_ReadByte(&net_message);
+
+	CDAudio_Play(track, looping);
 }
 
 static void ParseFramenum(void) // H2
