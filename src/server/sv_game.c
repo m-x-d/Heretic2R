@@ -151,7 +151,7 @@ static void PF_captionprintf(const edict_t* ent, const short msg) // H2
 	PF_Unicast(ent, true);
 }
 
-static void PF_msgvar_centerprintf(edict_t* ent, const short msg, const int vari)
+static void PF_msgvar_centerprintf(const edict_t* ent, const short msg, const int vari) // H2
 {
 	const int n = NUM_FOR_EDICT(ent);
 	if (n < 1 || n > (int)maxclients->value)
@@ -163,9 +163,16 @@ static void PF_msgvar_centerprintf(edict_t* ent, const short msg, const int vari
 	PF_Unicast(ent, true);
 }
 
-static void PF_msgdual_centerprintf(edict_t* ent, short msg1, short msg2)
+static void PF_msgdual_centerprintf(const edict_t* ent, const short msg1, const short msg2) // H2
 {
-	NOT_IMPLEMENTED
+	const int n = NUM_FOR_EDICT(ent);
+	if (n < 1 || n > (int)maxclients->value)
+		return;
+
+	MSG_WriteByte(&sv.multicast, svc_gamemsgdual_centerprint);
+	MSG_WriteShort(&sv.multicast, msg1);
+	MSG_WriteShort(&sv.multicast, msg2);
+	PF_Unicast(ent, true);
 }
 
 static void PF_error(char* fmt, ...)
