@@ -140,9 +140,15 @@ static void PF_levelmsg_centerprintf(const edict_t* ent, const short msg) // H2
 	PF_Unicast(ent, true);
 }
 
-static void PF_captionprintf(edict_t* ent, short msg)
+static void PF_captionprintf(const edict_t* ent, const short msg) // H2
 {
-	NOT_IMPLEMENTED
+	const int p = NUM_FOR_EDICT(ent);
+	if (p < 1 || p > (int)maxclients->value)
+		return;
+
+	MSG_WriteByte(&sv.multicast, svc_captionprint);
+	MSG_WriteShort(&sv.multicast, msg);
+	PF_Unicast(ent, true);
 }
 
 static void PF_msgvar_centerprintf(edict_t* ent, short msg, int vari)
