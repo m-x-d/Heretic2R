@@ -175,9 +175,18 @@ static void PF_msgdual_centerprintf(const edict_t* ent, const short msg1, const 
 	PF_Unicast(ent, true);
 }
 
-static void PF_error(char* fmt, ...)
+// Q2 counterpart
+// Abort the server with a game error
+static void PF_error(const char* fmt, ...)
 {
-	NOT_IMPLEMENTED
+	char msg[1024];
+	va_list argptr;
+
+	va_start(argptr, fmt);
+	vsprintf_s(msg, sizeof(msg), fmt, argptr); //mxd. vsprintf -> vsprintf_s
+	va_end(argptr);
+
+	Com_Error(ERR_DROP, "Game Error: %s", msg);
 }
 
 // Also sets mins and maxs for inline bmodels.
