@@ -151,9 +151,16 @@ static void PF_captionprintf(const edict_t* ent, const short msg) // H2
 	PF_Unicast(ent, true);
 }
 
-static void PF_msgvar_centerprintf(edict_t* ent, short msg, int vari)
+static void PF_msgvar_centerprintf(edict_t* ent, const short msg, const int vari)
 {
-	NOT_IMPLEMENTED
+	const int n = NUM_FOR_EDICT(ent);
+	if (n < 1 || n > (int)maxclients->value)
+		return;
+
+	MSG_WriteByte(&sv.multicast, svc_gamemsgvar_centerprint);
+	MSG_WriteShort(&sv.multicast, msg);
+	MSG_WriteLong(&sv.multicast, vari);
+	PF_Unicast(ent, true);
 }
 
 static void PF_msgdual_centerprintf(edict_t* ent, short msg1, short msg2)
