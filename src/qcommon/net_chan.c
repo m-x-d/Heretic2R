@@ -92,7 +92,7 @@ static void Netchan_OutOfBand(const int net_socket, const netadr_t* adr, const i
 
 // Q2 counterpart
 // Sends a text message in an out-of-band datagram.
-void Netchan_OutOfBandPrint(const int net_socket, const netadr_t* adr, char* format, ...)
+void Netchan_OutOfBandPrint(const int net_socket, const netadr_t* adr, const char* format, ...)
 {
 	static char string[MAX_MSGLEN - 4]; //mxd. Keep 4 bytes for out of band marker
 	va_list argptr;

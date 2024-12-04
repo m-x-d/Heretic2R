@@ -656,7 +656,7 @@ void Netchan_Setup(netsrc_t sock, netchan_t* chan, const netadr_t* adr, int port
 qboolean Netchan_NeedReliable(const netchan_t* chan);
 int Netchan_Transmit(netchan_t* chan, int length, const byte* data); // Q2: void return type.
 //void Netchan_OutOfBand(int net_socket, netadr_t adr, int length, byte* data); //mxd. Made static
-void Netchan_OutOfBandPrint(int net_socket, const netadr_t* adr, char* format, ...); //mxd. Changed 'adr' arg type to netadr_t*.
+void Netchan_OutOfBandPrint(int net_socket, const netadr_t* adr, const char* format, ...); //mxd. Changed 'adr' arg type to netadr_t*.
 qboolean Netchan_Process(netchan_t* chan, sizebuf_t* msg);
 
 qboolean Netchan_CanReliable(netchan_t* chan);

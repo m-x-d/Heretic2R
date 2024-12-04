@@ -150,9 +150,24 @@ static void SVC_Ack(void)
 	Com_Printf("Ping acknowledge from %s\n", NET_AdrToString(&net_from));
 }
 
-static void SV_FlushRedirect(int sv_redirected, char* outputbuf)
+// Q2 counterpart
+static void SV_FlushRedirect(const int sv_redirected, char* outputbuf)
 {
-	NOT_IMPLEMENTED
+	switch (sv_redirected)
+	{
+		case RD_PACKET:
+			Netchan_OutOfBandPrint(NS_SERVER, &net_from, "print\n%s", outputbuf);
+			break;
+
+		case RD_CLIENT:
+			MSG_WriteByte(&sv_client->netchan.message, svc_print);
+			MSG_WriteByte(&sv_client->netchan.message, PRINT_HIGH);
+			MSG_WriteString(&sv_client->netchan.message, outputbuf);
+			break;
+
+		case RD_NONE:
+			break;
+	}
 }
 
 //mxd. Uses logic #if 0-ed in Q2. //TODO: use Q2 logic instead?
