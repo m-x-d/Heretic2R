@@ -213,7 +213,7 @@ qboolean PF_inPVS(const vec3_t p1, const vec3_t p2);
 void SV_ClientGameMessage(client_t* cl, int printlevel, int message_id); // H2
 void SV_ClientPrintf(client_t* cl, int printlevel, const char* fmt, ...);
 void SV_ClientColorPrintf(client_t* cl, int printlevel, byte color, const char* fmt, ...); // H2
-void SV_BroadcastPrintf(int level, const char* fmt, ...);
+void SV_BroadcastPrintf(int printlevel, const char* fmt, ...);
 void SV_BroadcastCaption(int printlevel, short stringid);
 void SV_BroadcastObituary(int printlevel, short stringid, short client1, short client2);
 void SV_BroadcastCommand(char* fmt, ...);

@@ -57,9 +57,30 @@ void SV_ClientColorPrintf(client_t* cl, const int printlevel, const byte color, 
 	MSG_WriteString(&cl->netchan.message, string);
 }
 
-void SV_BroadcastPrintf(int level, const char* fmt, ...)
+// Sends text to all active clients.
+void SV_BroadcastPrintf(const int printlevel, const char* fmt, ...)
 {
-	NOT_IMPLEMENTED
+	va_list argptr;
+	char string[2048];
+
+	va_start(argptr, fmt);
+	vsprintf_s(string, sizeof(string), fmt, argptr); //mxd. vsprintf -> vsprintf_s
+	va_end(argptr);
+
+	// Echo to console
+	if ((int)dedicated->value)
+		Com_Printf("%s", string); // H2: missing 'mask off high bits' logic.
+
+	client_t* cl = svs.clients;
+	for (int i = 0; i < (int)maxclients->value; i++, cl++)
+	{
+		if (printlevel < cl->messagelevel || cl->state != cs_spawned)
+			continue;
+
+		MSG_WriteByte(&cl->netchan.message, svc_print);
+		MSG_WriteByte(&cl->netchan.message, printlevel);
+		MSG_WriteString(&cl->netchan.message, string);
+	}
 }
 
 void SV_BroadcastCaption(const int printlevel, const short stringid) // H2
