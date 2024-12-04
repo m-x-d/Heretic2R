@@ -718,6 +718,7 @@ void Pmove(pmove_t* pmove, qboolean server);
 #pragma region ========================== FILESYSTEM ==========================
 
 extern cvar_t * fs_gamedirvar; //mxd
+extern qboolean file_from_pak; //mxd
 
 void FS_InitFilesystem(void);
 char* FS_GetPath(const char* name); // H2

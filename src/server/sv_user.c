@@ -263,14 +263,84 @@ static void SV_ShowServerinfo_f(void)
 	Info_Print(Cvar_Serverinfo());
 }
 
-static void SV_BeginDownload_f(void)
-{
-	NOT_IMPLEMENTED
-}
-
+// Q2 counterpart
 static void SV_NextDownload_f(void)
 {
-	NOT_IMPLEMENTED
+	if (sv_client->download == NULL)
+		return;
+
+	const int r = min(sv_client->downloadsize - sv_client->downloadcount, 1024);
+
+	MSG_WriteByte(&sv_client->netchan.message, svc_download);
+	MSG_WriteShort(&sv_client->netchan.message, r);
+	sv_client->downloadcount += r;
+
+	const int size = max(sv_client->downloadsize, 1);
+	const int percent = sv_client->downloadcount * 100 / size;
+
+	MSG_WriteByte(&sv_client->netchan.message, percent);
+	SZ_Write(&sv_client->netchan.message, sv_client->download + sv_client->downloadcount - r, r);
+
+	// Download finished?
+	if (sv_client->downloadcount == sv_client->downloadsize)
+	{
+		FS_FreeFile(sv_client->download);
+		sv_client->download = NULL;
+	}
+}
+
+// Q2 counterpart
+static void SV_BeginDownload_f(void)
+{
+	char* name = Cmd_Argv(1);
+	const int offset = (Cmd_Argc() > 2 ? Q_atoi(Cmd_Argv(2)) : 0); // Downloaded offset.
+
+	// Validate download path.
+	if (strstr(name, "..") != NULL || !(int)allow_download->value
+		|| *name == '.' // Leading dot is no good.
+		|| *name == '/' // Leading slash bad as well, must be in subdir.
+		|| (strncmp(name, "players/", 8) == 0 && !(int)allow_download_players->value) //mxd. Fixed strncmp length.
+		|| (strncmp(name, "models/", 7) == 0 && !(int)allow_download_models->value) //mxd. Fixed strncmp length.
+		|| (strncmp(name, "sound/", 6) == 0 && !(int)allow_download_sounds->value)
+		|| (strncmp(name, "maps/", 5) == 0 && !(int)allow_download_maps->value) //mxd. Fixed strncmp length.
+		|| strstr(name, "/") == NULL) // MUST be in a subdirectory.
+	{
+		MSG_WriteByte(&sv_client->netchan.message, svc_download);
+		MSG_WriteShort(&sv_client->netchan.message, -1);
+		MSG_WriteByte(&sv_client->netchan.message, 0);
+
+		return;
+	}
+
+	if (sv_client->download != NULL)
+		FS_FreeFile(sv_client->download);
+
+	sv_client->downloadsize = FS_LoadFile(name, (void**)&sv_client->download);
+	sv_client->downloadcount = offset;
+
+	if (offset > sv_client->downloadsize)
+		sv_client->downloadcount = sv_client->downloadsize;
+
+	// Special check for maps, if it came from a pak file, don't allow download.
+	if (file_from_pak && strncmp(name, "maps/", 5) == 0 && sv_client->download != NULL) //mxd. 'file_from_pak' value is updated by FS_LoadFile.
+	{
+		FS_FreeFile(sv_client->download);
+		sv_client->download = NULL;
+	}
+
+	if (sv_client->download == NULL)
+	{
+		Com_DPrintf("Couldn't download %s to %s\n", name, sv_client->name);
+
+		MSG_WriteByte(&sv_client->netchan.message, svc_download);
+		MSG_WriteShort(&sv_client->netchan.message, -1);
+		MSG_WriteByte(&sv_client->netchan.message, 0);
+	}
+	else
+	{
+		SV_NextDownload_f();
+		Com_DPrintf("Downloading %s to %s\n", name, sv_client->name);
+	}
 }
 
 #pragma endregion
