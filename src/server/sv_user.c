@@ -249,14 +249,18 @@ static void SV_Nextserver_f(void)
 		SV_Nextserver();
 }
 
+// Q2 counterpart
+// The client is going to disconnect, so remove the connection immediately.
 static void SV_Disconnect_f(void)
 {
-	NOT_IMPLEMENTED
+	SV_DropClient(sv_client);
 }
 
+// Q2 counterpart
+// Dumps the serverinfo info string.
 static void SV_ShowServerinfo_f(void)
 {
-	NOT_IMPLEMENTED
+	Info_Print(Cvar_Serverinfo());
 }
 
 static void SV_BeginDownload_f(void)
