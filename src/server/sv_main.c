@@ -133,11 +133,6 @@ static char* SV_StatusString(void)
 	return status;
 }
 
-static void SVC_Ping(void)
-{
-	NOT_IMPLEMENTED
-}
-
 static void SVC_Ack(void)
 {
 	NOT_IMPLEMENTED
@@ -151,6 +146,13 @@ static void SVC_Status(void)
 static void SVC_Info(void)
 {
 	NOT_IMPLEMENTED
+}
+
+// Q2 counterpart
+// Just responds with an acknowledgement.
+static void SVC_Ping(void)
+{
+	Netchan_OutOfBandPrint(NS_SERVER, &net_from, "ack");
 }
 
 // Returns a challenge number that can be used in a subsequent client_connect command.
