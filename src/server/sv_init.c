@@ -464,7 +464,7 @@ static void SetNextserver(char* levelstring)
 }
 
 //mxd. Sys_CopyProtect() logic skipped.
-qboolean SV_ValidateMapFilename(char* level)
+qboolean SV_ValidateMapFilename(const char* level)
 {
 	char mappath[MAX_QPATH];
 

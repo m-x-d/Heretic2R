@@ -401,9 +401,56 @@ static void SVC_DirectConnect(void)
 	}
 }
 
+// Q2 counterpart
+static qboolean Rcon_Validate(void)
+{
+	const char* pwd = rcon_password->string;
+	return strlen(pwd) > 0 && (strcmp(Cmd_Argv(1), pwd) == 0);
+}
+
+// A client issued an rcon command. Shift down the remaining args. Redirect all printfs.
 static void SVC_RemoteCommand(void)
 {
-	NOT_IMPLEMENTED
+	char remaining[1024];
+
+	const qboolean rcon_valid = Rcon_Validate();
+	const char* format = (rcon_valid ? "Rcon from %s:\n%s\n" : "Bad rcon from %s:\n%s\n");
+	Com_Printf(format, NET_AdrToString(&net_from), net_message.data + 4);
+
+	Com_BeginRedirect(RD_PACKET, sv_outputbuf, SV_OUTPUTBUF_LENGTH, SV_FlushRedirect);
+
+	if (!rcon_valid)
+	{
+		Com_Printf("Bad rcon_password.\n");
+		Com_EndRedirect();
+
+		return;
+	}
+
+	// H2. Check map name.
+	if (Q_stricmp(Cmd_Argv(2), "map") == 0)
+	{
+		if (!SV_ValidateMapFilename(Cmd_Argv(3)))
+		{
+			Com_Printf("Bad map name.\n");
+			Com_EndRedirect();
+
+			return;
+		}
+
+		Com_DPrintf("Map validated ok.\n");
+	}
+
+	remaining[0] = 0;
+
+	for (int i = 2; i < Cmd_Argc(); i++)
+	{
+		strcat_s(remaining, sizeof(remaining), Cmd_Argv(i)); //mxd. strcat -> strcat_s
+		strcat_s(remaining, sizeof(remaining), " "); //mxd. strcat -> strcat_s
+	}
+
+	Cmd_ExecuteString(remaining);
+	Com_EndRedirect();
 }
 
 // Q2 counterpart
