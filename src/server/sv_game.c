@@ -10,6 +10,7 @@
 #include "ResourceManager.h"
 #include "screen.h"
 #include "sv_effects.h"
+#include "tokens.h"
 #include "Vector.h"
 
 game_export_t* ge;
@@ -369,9 +370,18 @@ static void PF_ChangeCDtrack(const edict_t* ent, const int track, const int loop
 	MSG_WriteByte(sb, loop);
 }
 
-static void CleanLevel(void)
+static void CleanLevel(void) // H2
 {
-	NOT_IMPLEMENTED
+	for (int i = 1; i < MAX_SOUNDS; i++)
+	{
+		char* s = sv.configstrings[CS_SOUNDS + i];
+
+		if (*s != 0 && *s != (char)TOKEN_S_PLAYER && *s != (char)TOKEN_S_MISC && *s != (char)TOKEN_S_WEAPONS && *s != (char)TOKEN_S_ITEMS)
+			*s = 0;
+	}
+
+	for (int i = 1; i < MAX_MODELS; i++)
+		sv.configstrings[CS_MODELS + i][0] = 0;
 }
 
 // Called when either the entire server is being killed, or it is changing to a different game directory.
@@ -432,7 +442,7 @@ void SV_InitGameProgs(void)
 	import.ResizeBoundingForm = SV_ResizeBoundingForm;
 	import.GetContentsAtPoint = SV_GetContentsAtPoint;
 	import.CheckDistances = SV_CheckDistances;
-	import.cleanlevel = CleanLevel;
+	import.cleanlevel = CleanLevel; //TODO: unused
 
 	import.modelindex = SV_ModelIndex;
 	import.modelremove = SV_ModelRemove;
