@@ -187,14 +187,16 @@ static void SCR_Loading_f(void)
 	SCR_BeginLoadingPlaque();
 }
 
+// Q2 counterpart
 static void SCR_SizeUp_f(void) //TODO: remove?
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("viewsize", scr_viewsize->value + 10.0f);
 }
 
+// Q2 counterpart
 static void SCR_SizeDown_f(void) //TODO: remove?
 {
-	NOT_IMPLEMENTED
+	Cvar_SetValue("viewsize", scr_viewsize->value - 10.0f);
 }
 
 // Q2 counterpart
