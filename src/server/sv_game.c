@@ -98,9 +98,24 @@ static void PF_clprintf(const edict_t* ent, const edict_t* from, const int color
 		Com_Printf("%s", msg);
 }
 
+// Q2 counterpart
+// centerprint to a single client.
 static void PF_centerprintf(edict_t* ent, char* fmt, ...)
 {
-	NOT_IMPLEMENTED
+	char msg[1024];
+	va_list argptr;
+
+	const int n = NUM_FOR_EDICT(ent);
+	if (n < 1 || n > (int)maxclients->value)
+		return;
+
+	va_start(argptr, fmt);
+	vsprintf_s(msg, sizeof(msg), fmt, argptr); //mxd. vsprintf -> vsprintf_s
+	va_end(argptr);
+
+	MSG_WriteByte(&sv.multicast, svc_centerprint);
+	MSG_WriteString(&sv.multicast, msg);
+	PF_Unicast(ent, true);
 }
 
 static void PF_gamemsg_centerprintf(const edict_t* ent, const short msg) // H2
