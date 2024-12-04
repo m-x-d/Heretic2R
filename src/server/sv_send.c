@@ -57,7 +57,7 @@ void SV_ClientColorPrintf(client_t* cl, const int printlevel, const byte color, 
 	MSG_WriteString(&cl->netchan.message, string);
 }
 
-void SV_BroadcastPrintf(int level, char* fmt, ...)
+void SV_BroadcastPrintf(int level, const char* fmt, ...)
 {
 	NOT_IMPLEMENTED
 }
@@ -499,7 +499,7 @@ void SV_StartEventSound(const byte EventId, const float leveltime, vec3_t origin
 
 #pragma region ========================== FRAME UPDATES ==========================
 
-qboolean SV_SendClientDatagram(client_t* client, const qboolean send_client_data)
+static qboolean SV_SendClientDatagram(client_t* client, const qboolean send_client_data)
 {
 	byte msg_buf[MAX_MSGLEN];
 	sizebuf_t msg;

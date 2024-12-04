@@ -132,18 +132,18 @@ struct edict_s
 typedef struct
 {
 	// Special message printing routines.
-	void (*bprintf)(int printlevel, char* fmt, ...);
+	void (*bprintf)(int printlevel, const char* fmt, ...);
 	void (*bcaption)(int printlevel, short stringid);
 	void (*Obituary)(int printlevel, short stringid, short client1, short client2);
-	void (*dprintf)(char* fmt, ...);
-	void (*cprintf)(edict_t* ent, int printlevel, char* fmt, ...);
-	void (*clprintf)(edict_t* ent, edict_t* from, int color, char* fmt, ...);
-	void (*centerprintf)(edict_t* ent, char* fmt, ...);
-	void (*gamemsg_centerprintf)(edict_t* ent, short msg);
-	void (*levelmsg_centerprintf)(edict_t* ent, short msg);
-	void (*msgvar_centerprintf)(edict_t* ent, short msg, int vari);
-	void (*msgdual_centerprintf)(edict_t* ent, short msg1, short msg2);
-	void (*captionprintf)(edict_t* ent, short msg);
+	void (*dprintf)(const char* fmt, ...);
+	void (*cprintf)(const edict_t* ent, int printlevel, const char* fmt, ...);
+	void (*clprintf)(const edict_t* ent, const edict_t* from, int color, const char* fmt, ...);
+	void (*centerprintf)(const edict_t* ent, const char* fmt, ...);
+	void (*gamemsg_centerprintf)(const edict_t* ent, short msg);
+	void (*levelmsg_centerprintf)(const edict_t* ent, short msg);
+	void (*msgvar_centerprintf)(const edict_t* ent, short msg, int vari);
+	void (*msgdual_centerprintf)(const edict_t* ent, short msg1, short msg2);
+	void (*captionprintf)(const edict_t* ent, short msg);
 
 	// Sound playing routines.
 	void (*sound)(edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
@@ -155,7 +155,7 @@ typedef struct
 	void (*configstring)(int num, const char* string);
 
 	//	Error, bailout routine.
-	void (*error)(char* fmt, ...);
+	void (*error)(const char* fmt, ...);
 
 	// Routine that sends over new CD track
 	void (*changeCDtrack)(edict_t* ent, int track, int loop);

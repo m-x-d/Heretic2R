@@ -38,7 +38,7 @@ static void PF_Unicast(const edict_t* ent, const qboolean reliable)
 }
 
 // Debug print to server console
-static void PF_dprintf(char* fmt, ...)
+static void PF_dprintf(const char* fmt, ...)
 {
 	char msg[1024];
 	va_list argptr;
@@ -100,7 +100,7 @@ static void PF_clprintf(const edict_t* ent, const edict_t* from, const int color
 
 // Q2 counterpart
 // centerprint to a single client.
-static void PF_centerprintf(edict_t* ent, char* fmt, ...)
+static void PF_centerprintf(const edict_t* ent, const char* fmt, ...)
 {
 	char msg[1024];
 	va_list argptr;
