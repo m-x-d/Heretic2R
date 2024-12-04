@@ -23,11 +23,11 @@ static void PF_Unicast(const edict_t* ent, const qboolean reliable)
 	if (ent == NULL)
 		return;
 
-	const int p = NUM_FOR_EDICT(ent);
-	if (p < 1 || p > (int)maxclients->value)
+	const int n = NUM_FOR_EDICT(ent);
+	if (n < 1 || n > (int)maxclients->value)
 		return;
 
-	client_t* client = &svs.clients[p - 1];
+	client_t* client = &svs.clients[n - 1];
 
 	if (reliable)
 		SZ_Write(&client->netchan.message, sv.multicast.data, sv.multicast.cursize);
@@ -120,8 +120,8 @@ static void PF_centerprintf(edict_t* ent, char* fmt, ...)
 
 static void PF_gamemsg_centerprintf(const edict_t* ent, const short msg) // H2
 {
-	const int p = NUM_FOR_EDICT(ent);
-	if (p < 1 || p > (int)maxclients->value)
+	const int n = NUM_FOR_EDICT(ent);
+	if (n < 1 || n > (int)maxclients->value)
 		return;
 
 	MSG_WriteByte(&sv.multicast, svc_gamemsg_centerprint);
@@ -131,8 +131,8 @@ static void PF_gamemsg_centerprintf(const edict_t* ent, const short msg) // H2
 
 static void PF_levelmsg_centerprintf(const edict_t* ent, const short msg) // H2
 {
-	const int p = NUM_FOR_EDICT(ent);
-	if (p < 1 || p > (int)maxclients->value)
+	const int n = NUM_FOR_EDICT(ent);
+	if (n < 1 || n > (int)maxclients->value)
 		return;
 
 	MSG_WriteByte(&sv.multicast, svc_levelmsg_centerprint);
@@ -142,8 +142,8 @@ static void PF_levelmsg_centerprintf(const edict_t* ent, const short msg) // H2
 
 static void PF_captionprintf(const edict_t* ent, const short msg) // H2
 {
-	const int p = NUM_FOR_EDICT(ent);
-	if (p < 1 || p > (int)maxclients->value)
+	const int n = NUM_FOR_EDICT(ent);
+	if (n < 1 || n > (int)maxclients->value)
 		return;
 
 	MSG_WriteByte(&sv.multicast, svc_captionprint);
