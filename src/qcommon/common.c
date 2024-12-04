@@ -51,14 +51,29 @@ static char* rd_buffer;
 static int rd_buffersize;
 static void	(*rd_flush)(int target, char* buffer);
 
-void Com_BeginRedirect(int target, char* buffer, int buffersize, void (*flush)(int, char*))
+// Q2 counterpart
+void Com_BeginRedirect(const int target, char* buffer, const int buffersize, void (*flush)(int, char*))
 {
-	NOT_IMPLEMENTED
+	if (target == 0 || buffer == NULL || buffersize == 0 || flush == NULL)
+		return;
+
+	rd_target = target;
+	rd_buffer = buffer;
+	rd_buffersize = buffersize;
+	rd_flush = flush;
+
+	*rd_buffer = 0;
 }
 
+// Q2 counterpart
 void Com_EndRedirect(void)
 {
-	NOT_IMPLEMENTED
+	rd_flush(rd_target, rd_buffer);
+
+	rd_target = 0;
+	rd_buffer = NULL;
+	rd_buffersize = 0;
+	rd_flush = NULL;
 }
 
 // Both client and server can use this, and it will output to the appropriate place.
