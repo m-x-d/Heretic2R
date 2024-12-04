@@ -179,9 +179,33 @@ static void SVC_Status(void)
 	Com_EndRedirect();
 }
 
+// Responds with short info for broadcast scans.
+// The second parameter should be the current protocol version number.
 static void SVC_Info(void)
 {
-	NOT_IMPLEMENTED
+	char string[64];
+
+	if (maxclients->value == 1.0f)
+		return; // Ignore in single player.
+
+	const int version = Q_atoi(Cmd_Argv(1));
+
+	if (version != PROTOCOL_VERSION)
+	{
+		Com_sprintf(string, sizeof(string), "%s: wrong version\n", hostname->string);
+	}
+	else
+	{
+		int count = 0;
+		for (int i = 0; i < (int)maxclients->value; i++)
+			if (svs.clients[i].state >= cs_connected)
+				count++;
+
+		hostname->string[44] = 0; // H2
+		Com_sprintf(string, sizeof(string), "%16s\n%8s %2i/%2i\n", hostname->string, sv.name, count, (int)maxclients->value); // H2: different format string.
+	}
+
+	Netchan_OutOfBandPrint(NS_SERVER, &net_from, "info\n%s", string);
 }
 
 // Q2 counterpart
