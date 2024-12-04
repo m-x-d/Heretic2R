@@ -381,9 +381,48 @@ char* FS_Gamedir(void)
 	return fs_gamedir;
 }
 
-void FS_SetGamedir(char* dir)
+// Q2 counterpart
+// Sets the gamedir and path to a different directory.
+void FS_SetGamedir(const char* dir)
 {
-	NOT_IMPLEMENTED
+	if (strstr(dir, "..") || strstr(dir, "/") || strstr(dir, "\\") || strstr(dir, ":"))
+	{
+		Com_Printf("Gamedir should be a single filename, not a path\n");
+		return;
+	}
+
+	// Free up any current game dir info.
+	while (fs_searchpaths != fs_base_searchpaths)
+	{
+		if (fs_searchpaths->pack != NULL)
+		{
+			fclose(fs_searchpaths->pack->handle);
+			Z_Free(fs_searchpaths->pack->files);
+			Z_Free(fs_searchpaths->pack);
+		}
+
+		searchpath_t* next = fs_searchpaths->next;
+		Z_Free(fs_searchpaths);
+		fs_searchpaths = next;
+	}
+
+	// Flush all data, so it will be forced to reload.
+	if (dedicated != NULL && !(int)dedicated->value)
+		Cbuf_AddText("vid_restart\nsnd_restart\n");
+
+	Com_sprintf(fs_gamedir, sizeof(fs_gamedir), "%s/%s", fs_basedir->string, dir);
+
+	if (strcmp(dir, BASEDIRNAME) == 0 || *dir == 0)
+	{
+		Cvar_FullSet("gamedir", "", CVAR_SERVERINFO | CVAR_NOSET);
+		Cvar_FullSet("game", "", CVAR_LATCH | CVAR_SERVERINFO);
+	}
+	else
+	{
+		Cvar_FullSet("gamedir", dir, CVAR_SERVERINFO | CVAR_NOSET);
+		//mxd. Skip fs_cddir logic.
+		FS_AddGameDirectory(va("%s/%s", fs_basedir->string, dir));
+	}
 }
 
 char* FS_Userdir(void)
