@@ -351,9 +351,22 @@ static void PF_SoundEvent(const byte EventId, const float leveltime, edict_t* en
 		SV_StartEventSound(EventId, leveltime, NULL, ent, channel, soundindex, volume, attenuation, timeofs);
 }
 
-static void ChangeCDtrack(edict_t* ent, int track, int loop)
+static void PF_ChangeCDtrack(const edict_t* ent, const int track, const int loop) // H2
 {
-	NOT_IMPLEMENTED
+	if (ent == NULL)
+		return;
+
+	const int n = NUM_FOR_EDICT(ent);
+	if (n < 1 || n >(int)maxclients->value)
+		Com_Error(ERR_DROP, "changeCDtrack to a non-client");
+
+	//mxd. Was done in a separate function in original version.
+	client_t* cl = &svs.clients[n - 1];
+	sizebuf_t* sb = &cl->netchan.message;
+
+	MSG_WriteByte(sb, svc_changeCDtrack);
+	MSG_WriteByte(sb, track);
+	MSG_WriteByte(sb, loop);
 }
 
 static void CleanLevel(void)
@@ -403,7 +416,7 @@ void SV_InitGameProgs(void)
 	import.msgvar_centerprintf = PF_msgvar_centerprintf;
 	import.msgdual_centerprintf = PF_msgdual_centerprintf;
 	import.error = PF_error;
-	import.changeCDtrack = ChangeCDtrack;
+	import.changeCDtrack = PF_ChangeCDtrack;
 
 	import.linkentity = SV_LinkEdict;
 	import.unlinkentity = SV_UnlinkEdict;

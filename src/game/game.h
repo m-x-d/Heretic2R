@@ -158,7 +158,7 @@ typedef struct
 	void (*error)(const char* fmt, ...);
 
 	// Routine that sends over new CD track
-	void (*changeCDtrack)(edict_t* ent, int track, int loop);
+	void (*changeCDtrack)(const edict_t* ent, int track, int loop);
 
 	// New names can only be added during spawning but existing names can be looked up at any time.
 	void (*cleanlevel)(void);
