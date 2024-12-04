@@ -51,6 +51,16 @@ static char* rd_buffer;
 static int rd_buffersize;
 static void	(*rd_flush)(int target, char* buffer);
 
+void Com_BeginRedirect(int target, char* buffer, int buffersize, void (*flush)(int, char*))
+{
+	NOT_IMPLEMENTED
+}
+
+void Com_EndRedirect(void)
+{
+	NOT_IMPLEMENTED
+}
+
 // Both client and server can use this, and it will output to the appropriate place.
 void Com_Printf(const char* fmt, ...)
 {

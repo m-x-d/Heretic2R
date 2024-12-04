@@ -757,7 +757,7 @@ void FS_CreatePath(char* path);
 #define PRINT_ALL		0
 #define PRINT_DEVELOPER	1 // Only print when "developer 1"
 
-void Com_BeginRedirect(int target, char* buffer, int buffersize, void* flush);
+void Com_BeginRedirect(int target, char* buffer, int buffersize, void (*flush)(int, char*));
 void Com_EndRedirect(void);
 GAME_DECLSPEC void Com_Printf(const char* fmt, ...); //TODO: check redundant declaration...
 GAME_DECLSPEC void Com_DPrintf(const char* fmt, ...);

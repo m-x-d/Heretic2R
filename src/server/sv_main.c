@@ -56,6 +56,17 @@ cvar_t* r_farclipdist;
 
 qboolean is_local_client; // H2
 
+//mxd. Defined in server.h in Q2.
+typedef enum
+{
+	RD_NONE,
+	RD_CLIENT,
+	RD_PACKET
+} redirect_t;
+
+#define SV_OUTPUTBUF_LENGTH	(MAX_MSGLEN - 16)
+static char sv_outputbuf[SV_OUTPUTBUF_LENGTH];
+
 static void SV_SendWelcomeMessage(const char* msg) // H2
 {
 	if (msg != NULL && *msg != 0)
@@ -139,9 +150,18 @@ static void SVC_Ack(void)
 	Com_Printf("Ping acknowledge from %s\n", NET_AdrToString(&net_from));
 }
 
-static void SVC_Status(void)
+static void SV_FlushRedirect(int sv_redirected, char* outputbuf)
 {
 	NOT_IMPLEMENTED
+}
+
+//mxd. Uses logic #if 0-ed in Q2. //TODO: use Q2 logic instead?
+// Responds with all the info that qplug or qspy can see.
+static void SVC_Status(void)
+{
+	Com_BeginRedirect(RD_PACKET, sv_outputbuf, sizeof(sv_outputbuf), SV_FlushRedirect);
+	Com_Printf(SV_StatusString());
+	Com_EndRedirect();
 }
 
 static void SVC_Info(void)
