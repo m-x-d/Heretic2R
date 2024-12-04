@@ -102,10 +102,35 @@ void SV_DropClient(client_t* drop)
 
 #pragma region ========================== CONNECTIONLESS COMMANDS ==========================
 
+// Q2 counterpart
+// Builds the string that is sent as heartbeats and status replies.
 static char* SV_StatusString(void)
 {
-	NOT_IMPLEMENTED
-	return NULL;
+	static char	status[MAX_MSGLEN - 16];
+
+	strcpy_s(status, sizeof(status), Cvar_Serverinfo()); //mxd. strcpy -> strcpy_s
+	strcat_s(status, sizeof(status), "\n"); //mxd. strcat -> strcat_s
+	uint status_len = strlen(status);
+
+	for (int i = 0; i < (int)maxclients->value; i++)
+	{
+		client_t* client = &svs.clients[i];
+
+		if (client->state == cs_connected || client->state == cs_spawned)
+		{
+			char player[1024];
+			Com_sprintf(player, sizeof(player), "%i %i \"%s\"\n", client->edict->client->ps.stats[STAT_FRAGS], client->ping, client->name);
+			const uint player_len = strlen(player);
+
+			if (status_len + player_len >= sizeof(status))
+				break; // Can't hold any more
+
+			strcpy_s(status + status_len, sizeof(status) - status_len - 1, player); //mxd. strcpy -> strcpy_s
+			status_len += player_len;
+		}
+	}
+
+	return status;
 }
 
 static void SVC_Ping(void)
