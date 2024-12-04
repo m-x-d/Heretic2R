@@ -133,9 +133,10 @@ static char* SV_StatusString(void)
 	return status;
 }
 
+// Q2 counterpart
 static void SVC_Ack(void)
 {
-	NOT_IMPLEMENTED
+	Com_Printf("Ping acknowledge from %s\n", NET_AdrToString(&net_from));
 }
 
 static void SVC_Status(void)
