@@ -163,9 +163,9 @@ typedef struct
 	// New names can only be added during spawning but existing names can be looked up at any time.
 	void (*cleanlevel)(void);
 	int (*modelindex)(const char* name);
-	void (*modelremove)(char* name);
+	void (*modelremove)(const char* name);
 	int (*soundindex)(const char* name);
-	void (*soundremove)(char* name);
+	void (*soundremove)(const char* name);
 	int (*imageindex)(const char* name);
 
 	void (*setmodel)(edict_t* ent, const char* name);

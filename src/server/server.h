@@ -197,8 +197,8 @@ void SV_BuildClientFrame(client_t* client);
 int SV_ModelIndex(const char* name);
 int SV_SoundIndex(const char* name);
 int SV_ImageIndex(const char* name);
-void SV_ModelRemove(char* name); // H2
-void SV_SoundRemove(char* name); // H2
+void SV_ModelRemove(const char* name); // H2
+void SV_SoundRemove(const char* name); // H2
 void SV_InitGame(void);
 void SV_Map(qboolean attractloop, const char* levelstring, qboolean loadgame);
 

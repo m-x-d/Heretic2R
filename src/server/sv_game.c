@@ -445,7 +445,7 @@ void SV_InitGameProgs(void)
 	import.cleanlevel = CleanLevel; //TODO: unused
 
 	import.modelindex = SV_ModelIndex;
-	import.modelremove = SV_ModelRemove;
+	import.modelremove = SV_ModelRemove; //TODO: unused
 	import.soundindex = SV_SoundIndex;
 	import.soundremove = SV_SoundRemove;
 	import.imageindex = SV_ImageIndex;

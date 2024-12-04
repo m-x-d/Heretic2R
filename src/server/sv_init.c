@@ -135,14 +135,47 @@ int SV_ImageIndex(const char* name)
 	return SV_FindIndex(name, CS_IMAGES, MAX_IMAGES, true);
 }
 
-void SV_ModelRemove(char* name)
+static void SV_RemoveIndex(const char* name, const int start, const int max) // H2
 {
-	NOT_IMPLEMENTED
+	char short_name[200];
+
+	if (name == NULL || *name == 0)
+		return;
+
+	PackResourceName(name, short_name, sizeof(short_name), start);
+
+	int index;
+	const int size = start + max;
+
+	for (index = start + 1; index < size; index++)
+	{
+		if (strcmp(sv.configstrings[index], short_name) == 0)
+		{
+			sv.configstrings[index][0] = 0;
+			break;
+		}
+	}
+
+	if (index == size || sv.state == ss_loading)
+		return;
+
+	SZ_Clear(&sv.multicast);
+	MSG_WriteByte(&sv.multicast, svc_configstring);
+	MSG_WriteShort(&sv.multicast, index);
+	MSG_WriteString(&sv.multicast, sv.configstrings[index]);
+	SV_Multicast(vec3_origin, MULTICAST_ALL_R);
 }
 
-void SV_SoundRemove(char* name)
+void SV_ModelRemove(const char* name) // H2
 {
-	NOT_IMPLEMENTED
+	if (*name != 0)
+		SV_RemoveIndex(name, CS_MODELS, MAX_MODELS);
+}
+
+void SV_SoundRemove(const char* name) // H2
+{
+	if (*name != 0)
+		SV_RemoveIndex(name, CS_SOUNDS, MAX_SOUNDS);
 }
 
 // Q2 counterpart
