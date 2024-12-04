@@ -243,44 +243,52 @@ static void PF_Configstring(const int index, const char* val)
 	}
 }
 
-static void PF_WriteByte(int c)
+// Q2 counterpart
+static void PF_WriteByte(const int c)
 {
-	NOT_IMPLEMENTED
+	MSG_WriteByte(&sv.multicast, c);
 }
 
-static void PF_WriteShort(int c)
+// Q2 counterpart
+static void PF_WriteShort(const int c)
 {
-	NOT_IMPLEMENTED
+	MSG_WriteShort(&sv.multicast, c);
 }
 
-static void PF_WriteLong(int c)
+// Q2 counterpart
+static void PF_WriteLong(const int c)
 {
-	NOT_IMPLEMENTED
+	MSG_WriteLong(&sv.multicast, c);
 }
 
-static void PF_WriteFloat(float f)
+// Q2 counterpart
+static void PF_WriteFloat(const float f)
 {
-	NOT_IMPLEMENTED
+	MSG_WriteFloat(&sv.multicast, f);
 }
 
-static void PF_WriteString(char* s)
+// Q2 counterpart
+static void PF_WriteString(const char* s)
 {
-	NOT_IMPLEMENTED
+	MSG_WriteString(&sv.multicast, s);
 }
 
-static void PF_WritePos(vec3_t pos)
+// Q2 counterpart
+static void PF_WritePos(const vec3_t pos)
 {
-	NOT_IMPLEMENTED
+	MSG_WritePos(&sv.multicast, pos);
 }
 
-static void PF_WriteDir(vec3_t dir)
+// Q2 counterpart
+static void PF_WriteDir(const vec3_t dir)
 {
-	NOT_IMPLEMENTED
+	MSG_WriteDir(&sv.multicast, dir);
 }
 
-static void PF_WriteAngle(float f)
+// Q2 counterpart
+static void PF_WriteAngle(const float f)
 {
-	NOT_IMPLEMENTED
+	MSG_WriteAngle(&sv.multicast, f);
 }
 
 // Q2 counterpart
@@ -424,15 +432,15 @@ void SV_InitGameProgs(void)
 	import.soundevent = PF_SoundEvent;
 	import.positioned_sound = SV_StartSound;
 
-	import.WriteChar = PF_WriteByte; // PF_WriteChar in Q2
+	import.WriteChar = PF_WriteByte; // PF_WriteChar in Q2 //TODO: unused
 	import.WriteByte = PF_WriteByte;
-	import.WriteShort = PF_WriteShort;
-	import.WriteLong = PF_WriteLong;
-	import.WriteFloat = PF_WriteFloat;
+	import.WriteShort = PF_WriteShort; //TODO: unused
+	import.WriteLong = PF_WriteLong; //TODO: unused
+	import.WriteFloat = PF_WriteFloat; //TODO: unused
 	import.WriteString = PF_WriteString;
-	import.WritePosition = PF_WritePos;
-	import.WriteDir = PF_WriteDir;
-	import.WriteAngle = PF_WriteAngle;
+	import.WritePosition = PF_WritePos; //TODO: unused
+	import.WriteDir = PF_WriteDir; //TODO: unused
+	import.WriteAngle = PF_WriteAngle; //TODO: unused
 
 	import.CreateEffect = SV_CreateEffect;
 	import.RemoveEffects = SV_RemoveEffects;

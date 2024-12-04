@@ -730,7 +730,7 @@ void MSG_WriteDeltaEntity(const entity_state_t* from, entity_state_t* to, sizebu
 		MSG_WriteByte(msg, to->usageCount);
 }
 
-void MSG_WriteDir(sizebuf_t* sb, vec3_t dir)
+void MSG_WriteDir(sizebuf_t* sb, const vec3_t dir)
 {
 	if (dir == NULL)
 	{
@@ -756,7 +756,7 @@ void MSG_WriteDir(sizebuf_t* sb, vec3_t dir)
 	MSG_WriteByte(sb, best);
 }
 
-void MSG_WriteDirMag(sizebuf_t* sb, vec3_t dir) // H2
+void MSG_WriteDirMag(sizebuf_t* sb, const vec3_t dir) // H2
 {
 	if (dir == NULL)
 	{
@@ -786,7 +786,7 @@ void MSG_WriteDirMag(sizebuf_t* sb, vec3_t dir) // H2
 	MSG_WriteByte(sb, Q_ftol(mag));
 }
 
-void MSG_WriteYawPitch(sizebuf_t* sb, vec3_t vector) // H2
+void MSG_WriteYawPitch(sizebuf_t* sb, const vec3_t vector) // H2
 {
 	if (vector != NULL)
 	{
