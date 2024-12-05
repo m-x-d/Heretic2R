@@ -140,9 +140,16 @@ static int precache_model_skin;
 
 static byte* precache_model; // Used for skin checking in alias models.
 
+// Dumps the current net message, prefixed by the length.
 void CL_WriteDemoMessage(void)
 {
-	NOT_IMPLEMENTED
+	// The first 8 bytes are just packet sequencing stuff.
+	const int len = net_message.cursize - 8;
+	uint num = fwrite(&len, 4, 1, cls.demofile);
+	cls.demosavingok &= (num > 0); // H2
+
+	num = fwrite(net_message.data + 8, len, 1, cls.demofile);
+	cls.demosavingok &= (num > 0); // H2
 }
 
 void CL_ClearState(void)
