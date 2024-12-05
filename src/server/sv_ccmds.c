@@ -590,23 +590,18 @@ static void SV_Map_f(void)
 // Puts the server in demo mode on a specific map.
 static void SV_DemoMap_f(void)
 {
+	char name[200];
+
 	svs.have_current_save = false;
 
-	const char* name = Cmd_Argv(1);
+	strcpy_s(name, sizeof(name), Cmd_Argv(1)); //mxd. strcpy -> strcpy_s
 	const int len = (int)strlen(name);
 
-	if (len > 4 && Q_stricmp(&name[len - 4], ".hd2") == 0)
-	{
-		SV_Map(true, name, false);
-	}
-	else
-	{
-		char demo_name[200];
-		strcpy_s(demo_name, sizeof(demo_name), name); //mxd. strcpy -> strcpy_s
-		strcat_s(demo_name, sizeof(demo_name), ".hd2"); //mxd. strcat -> strcat_s
+	// Append demo file extension?
+	if (len < 5 || Q_stricmp(&name[len - 4], ".hd2") != 0)
+		strcat_s(name, sizeof(name), ".hd2"); //mxd. strcat -> strcat_s
 
-		SV_Map(true, demo_name, false);
-	}
+	SV_Map(true, name, false);
 }
 
 // Specify a list of master servers.
