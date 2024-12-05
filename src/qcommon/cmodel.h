@@ -30,7 +30,7 @@ char* CM_EntityString(void);
 int CM_HeadnodeForBox(const vec3_t mins, const vec3_t maxs);
 
 // Returns an ORed contents mask
-int CM_PointContents(vec3_t p, int headnode);
+int CM_PointContents(const vec3_t p, int headnode);
 int CM_TransformedPointContents(const vec3_t p, int headnode, const vec3_t origin, const vec3_t angles);
 
 void CM_BoxTrace(const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, int headnode, uint brushmask, trace_t* return_trace);

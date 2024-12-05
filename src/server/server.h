@@ -263,7 +263,7 @@ void SV_TraceBoundingForm(struct FormMove_s* formMove);
 qboolean SV_ResizeBoundingForm(edict_t* self, struct FormMove_s* formMove);
 
 // New in H2
-int SV_GetContentsAtPoint(vec3_t point);
+int SV_GetContentsAtPoint(const vec3_t point);
 
 // New in H2
 qboolean SV_CheckDistances(vec3_t origin, float dist);

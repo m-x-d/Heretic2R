@@ -462,7 +462,7 @@ int SV_PointContents(vec3_t p)
 
 	for (int i = 0; i < num; i++)
 	{
-		edict_t* hit = touchlist[i];
+		const edict_t* hit = touchlist[i];
 
 		// Might intersect, so do an exact clip.
 		const int headnode = SV_HullForEntity(hit);
@@ -783,10 +783,29 @@ qboolean SV_ResizeBoundingForm(edict_t* self, FormMove_t* formMove) // H2
 	return true;
 }
 
-int SV_GetContentsAtPoint(vec3_t point)
+int SV_GetContentsAtPoint(const vec3_t point) // H2
 {
-	NOT_IMPLEMENTED
-	return 0;
+	vec3_t mins;
+	vec3_t maxs;
+	SinglyLinkedList_t list;
+
+	int contents = CM_PointContents(point, sv.models[1]->headnode);
+
+	VectorCopy(point, mins);
+	VectorCopy(mins, maxs);
+
+	SLList_DefaultCon(&list);
+	SV_FindEntitiesInBounds(mins, maxs, &list, AREA_SOLID);
+  
+	while (!SLList_IsEmpty(&list))
+	{
+		const edict_t* ent = SLList_Pop(&list).t_edict_p;
+		contents |= CM_TransformedPointContents(point, SV_HullForEntity(ent), ent->s.origin, ent->s.angles);
+	}
+
+	SLList_Des(&list);
+
+	return contents;
 }
 
 qboolean SV_CheckDistances(vec3_t origin, float dist)

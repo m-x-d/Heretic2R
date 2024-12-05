@@ -793,7 +793,7 @@ byte* CM_ClusterPHS(const int cluster)
 }
 
 // Q2 counterpart
-int CM_PointContents(vec3_t p, const int headnode)
+int CM_PointContents(const vec3_t p, const int headnode)
 {
 	if (numnodes > 0)
 	{
