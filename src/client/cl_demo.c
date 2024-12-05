@@ -101,7 +101,7 @@ void CL_Record_f(void)
 	{
 		entity_state_t* ent = &cl_entities[i].baseline;
 
-		if (ent->modelindex == 0 || (ent->effects & (EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS)) == 0)
+		if (ent->modelindex == 0 && (ent->effects & (EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS)) == 0)
 			continue;
 
 		if (buf.cursize + 64 > buf.maxsize)
