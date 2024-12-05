@@ -266,4 +266,4 @@ qboolean SV_ResizeBoundingForm(edict_t* self, struct FormMove_s* formMove);
 int SV_GetContentsAtPoint(const vec3_t point);
 
 // New in H2
-qboolean SV_CheckDistances(vec3_t origin, float dist);
+qboolean SV_CheckDistances(const vec3_t origin, float dist);

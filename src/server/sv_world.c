@@ -808,8 +808,20 @@ int SV_GetContentsAtPoint(const vec3_t point) // H2
 	return contents;
 }
 
-qboolean SV_CheckDistances(vec3_t origin, float dist)
+qboolean SV_CheckDistances(const vec3_t origin, const float dist) // H2
 {
-	NOT_IMPLEMENTED
+	client_t* cl = svs.clients;
+	for (int i = 0; i < (int)maxclients->value; i++, cl++)
+	{
+		if (cl->state != cs_spawned)
+			continue;
+
+		vec3_t diff;
+		VectorSubtract(origin, cl->edict->s.origin, diff);
+
+		if (VectorLength(diff) < dist)
+			return true;
+	}
+
 	return false;
 }

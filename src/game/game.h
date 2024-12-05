@@ -191,8 +191,8 @@ typedef struct
 	int (*FindEntitiesInBounds)(vec3_t mins, vec3_t maxs, struct SinglyLinkedList_s* list, int areatype);
 	void (*TraceBoundingForm)(struct FormMove_s* formMove);
 	qboolean (*ResizeBoundingForm)(edict_t* self, struct FormMove_s* formMove);
-	int (*GetContentsAtPoint)(vec3_t point);
-	qboolean (*CheckDistances)(vec3_t origin, float dist);
+	int (*GetContentsAtPoint)(const vec3_t point);
+	qboolean (*CheckDistances)(const vec3_t origin, float dist);
 
 	// Network messaging services.
 	void (*multicast)(const vec3_t origin, multicast_t to);
