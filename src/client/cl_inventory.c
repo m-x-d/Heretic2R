@@ -8,5 +8,6 @@
 
 void CL_ParseInventory(void) //TODO: unused
 {
-	NOT_IMPLEMENTED
+	for (int i = 0; i < MAX_ITEMS; i++)
+		cl.playerinfo.pers.inventory.Items[i] = MSG_ReadShort(&net_message);
 }

@@ -165,7 +165,7 @@ typedef struct
 	// Transient data from server
 
 	char layout[1024]; // General 2D overlay
-	int inventory[MAX_ITEMS];
+	int inventory[MAX_ITEMS]; //TODO: unused?
 
 	int cinematictime;
 
