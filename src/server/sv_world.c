@@ -672,10 +672,115 @@ void SV_TraceBoundingForm(FormMove_t* formMove) // H2
 	SV_FindCosestEntity(&clip);
 }
 
-qboolean SV_ResizeBoundingForm(edict_t* self, FormMove_t* formMove)
+qboolean SV_ResizeBoundingForm(edict_t* self, FormMove_t* formMove) // H2
 {
-	NOT_IMPLEMENTED
-	return false;
+	FormMove_t form;
+	vec3_t start;
+	vec3_t end;
+	vec3_t intent_mins;
+	vec3_t intent_maxs;
+	vec3_t* v_src;
+	vec3_t* v_dst;
+	int axis;
+	float sign;
+
+	VectorCopy(self->intentMins, intent_mins);
+	VectorCopy(self->intentMaxs, intent_maxs);
+	VectorCopy(self->mins, form.mins);
+	VectorCopy(self->maxs, form.maxs);
+	VectorCopy(self->s.origin, start);
+
+	form.passEntity = self;
+	form.clipMask = self->clipmask;
+	form.start = start;
+	form.end = end;
+
+	for (int i = 0; i < 6; i++)
+	{
+		if (i & 1)
+		{
+			v_src = &form.maxs;
+			v_dst = &intent_maxs;
+
+			if (i & 4)
+				axis = 2;
+			else if (i & 2)
+				axis = 0;
+			else
+				axis = 1;
+
+			sign = 1.0f;
+		}
+		else
+		{
+			v_src = &form.mins;
+			v_dst = &intent_mins;
+
+			if (i & 4)
+				axis = 2;
+			else if (i & 2)
+				axis = 1;
+			else
+				axis = 0;
+
+			sign = -1.0f;
+		}
+
+		float offset = *v_dst[axis] - *v_src[axis];
+
+		if (offset * sign > 0.0f)
+		{
+			VectorCopy(start, end);
+
+			if (i == 4 && self->groundentity != NULL)
+			{
+				form.trace.fraction = 0.0f;
+			}
+			else
+			{
+				end[axis] += offset;
+				SV_TraceBoundingForm(&form);
+
+				if (form.trace.startsolid || form.trace.allsolid)
+				{
+					if (form.trace.allsolid)
+						Com_Printf("self %d, trace allsolid in Box_BoundingForm_Resize\n", self->s.number);
+					else if (form.trace.startsolid)
+						Com_Printf("self %d, trace startsolid in Box_BoundingForm_Resize\n", self->s.number);
+
+					memcpy(&formMove->trace, &form.trace, sizeof(trace_t));
+					return false;
+				}
+			}
+
+			if (form.trace.fraction < 1.0f)
+			{
+				offset = (1.0f - form.trace.fraction) * offset;
+				end[axis] = start[axis] - offset;
+
+				SV_TraceBoundingForm(&form);
+
+				if (form.trace.fraction != 1.0f)
+				{
+					memcpy(&formMove->trace, &form.trace, sizeof(trace_t));
+					return false;
+				}
+
+				start[axis] -= offset;
+			}
+		}
+
+		*v_src[axis] = *v_dst[axis];
+	}
+
+	VectorCopy(start, self->s.origin);
+	VectorCopy(intent_mins, self->mins);
+	VectorCopy(intent_maxs, self->maxs);
+
+	SV_LinkEdict(self);
+	memcpy(&formMove->trace, &form.trace, sizeof(trace_t));
+
+	return true;
 }
 
 int SV_GetContentsAtPoint(vec3_t point)
