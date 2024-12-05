@@ -390,12 +390,6 @@ static void Cmd_Wait_f(void)
 	cmd_wait = true;
 }
 
-// New in H2
-static void Cmd_CpuID_f(void)
-{
-	NOT_IMPLEMENTED
-}
-
 #pragma endregion
 
 #pragma region ========================== COMMAND EXECUTION =======================
@@ -770,7 +764,7 @@ void Cmd_Init(void)
 	Cmd_AddCommand("echo", Cmd_Echo_f);
 	Cmd_AddCommand("alias", Cmd_Alias_f);
 	Cmd_AddCommand("wait", Cmd_Wait_f);
-	Cmd_AddCommand("cpuid", Cmd_CpuID_f); // New in H2
+	//Cmd_AddCommand("cpuid", Cmd_CpuID_f); // New in H2
 }
 
 #pragma endregion
