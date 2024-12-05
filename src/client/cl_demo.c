@@ -133,7 +133,26 @@ void CL_Record_f(void)
 	// The rest of the demo file will be individual frames.
 }
 
+// Stop recording a demo.
 void CL_Stop_f(void)
 {
-	Com_Printf("Demo recording not implemented\n"); //TODO: implement demo logic?
+	if (!cls.demorecording)
+	{
+		Com_Printf("Not recording a demo.\n");
+		return;
+	}
+
+	// Finish up.
+	const int len = -1;
+	const uint num = fwrite(&len, 4, 1, cls.demofile);
+	cls.demosavingok &= (num > 0); // H2
+
+	if (!cls.demosavingok) // H2
+		Com_Printf("Error writing demo file.\n");
+
+	fclose(cls.demofile);
+	cls.demofile = NULL;
+	cls.demorecording = false;
+
+	Com_Printf("Stopped demo.\n");
 }
