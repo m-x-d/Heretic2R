@@ -592,7 +592,7 @@ void IN_CenterView(void);
 char* Key_KeynumToString(int keynum);
 
 // cl_demo.c
-void CL_ParseDemoClientEffects(void);
+//void CL_ParseDemoClientEffects(void); //mxd. Made static
 void CL_WriteDemoMessage(void);
 void CL_Stop_f(void);
 void CL_Record_f(void);

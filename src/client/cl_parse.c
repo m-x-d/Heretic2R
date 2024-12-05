@@ -854,9 +854,11 @@ static void ParseFramenum(void) // H2
 	cl.time = cl.frame.serverframe * 100;
 }
 
-static void StartParsingDemoClientEffect(void) // H2
+static void CL_ParseDemoClientEffects(void) // H2
 {
-	NOT_IMPLEMENTED
+	net_message.data[net_message.readcount - 1] = svc_special_client_effect;
+	const int size = MSG_ReadShort(&net_message);
+	net_message.readcount += size;
 }
 
 void CL_ParseServerMessage(void)
@@ -1094,7 +1096,7 @@ void CL_ParseServerMessage(void)
 				break;
 
 			case svc_demo_client_effect: // H2
-				StartParsingDemoClientEffect();
+				CL_ParseDemoClientEffects();
 				break;
 
 			case svc_special_client_effect: // H2
