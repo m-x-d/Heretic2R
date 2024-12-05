@@ -536,7 +536,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 				if (cl->state == cs_zombie)
 					return; // Disconnect command.
 
-				SV_UpdatePersistantEffectsDemoMask(cl);
+				SV_RemoveDemoEdictFromPersistantEffectsArray(cl);
 				break;
 
 			default:
