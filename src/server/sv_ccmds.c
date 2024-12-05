@@ -587,9 +587,26 @@ static void SV_Map_f(void)
 	}
 }
 
+// Puts the server in demo mode on a specific map.
 static void SV_DemoMap_f(void)
 {
-	Com_Printf("Demo playback not implemented\n"); //TODO: implement demo logic?
+	svs.have_current_save = false;
+
+	const char* name = Cmd_Argv(1);
+	const int len = (int)strlen(name);
+
+	if (len > 4 && Q_stricmp(&name[len - 4], ".hd2") == 0)
+	{
+		SV_Map(true, name, false);
+	}
+	else
+	{
+		char demo_name[200];
+		strcpy_s(demo_name, sizeof(demo_name), name); //mxd. strcpy -> strcpy_s
+		strcat_s(demo_name, sizeof(demo_name), ".hd2"); //mxd. strcat -> strcat_s
+
+		SV_Map(true, demo_name, false);
+	}
 }
 
 // Specify a list of master servers.
