@@ -13,9 +13,16 @@ edict_t* sv_player;
 
 #pragma region ========================== USER STRINGCMD EXECUTION ==========================
 
+// Q2 counterpart
 static void SV_BeginDemoserver(void)
 {
-	NOT_IMPLEMENTED
+	char name[MAX_OSPATH];
+
+	Com_sprintf(name, sizeof(name), "demos/%s", sv.name);
+	FS_FOpenFile(name, &sv.demofile);
+
+	if (sv.demofile == NULL)
+		Com_Error(ERR_DROP, "Couldn't open %s\n", name);
 }
 
 // Sends the first message from the server to a connected client.
