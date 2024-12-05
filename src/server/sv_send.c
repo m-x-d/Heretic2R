@@ -560,9 +560,16 @@ static qboolean SV_SendClientDatagram(client_t* client, const qboolean send_clie
 	return true;
 }
 
+// Q2 counterpart
 static void SV_DemoCompleted(void)
 {
-	NOT_IMPLEMENTED
+	if (sv.demofile != NULL)
+	{
+		fclose(sv.demofile);
+		sv.demofile = NULL;
+	}
+
+	SV_Nextserver();
 }
 
 // Returns true if the client is over its current bandwidth estimation and should not be sent another packet.
