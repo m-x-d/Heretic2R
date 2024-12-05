@@ -270,6 +270,9 @@
     <ClCompile Include="..\qcommon\Skeletons.c">
       <Filter>qcommon</Filter>
     </ClCompile>
+    <ClCompile Include="..\client\cl_demo.c">
+      <Filter>client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">

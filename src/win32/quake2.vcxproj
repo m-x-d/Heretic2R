@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\client\cl_demo.c" />
     <ClCompile Include="..\client\cl_effects.c" />
     <ClCompile Include="..\client\cl_entities.c" />
     <ClCompile Include="..\client\cl_input.c" />
