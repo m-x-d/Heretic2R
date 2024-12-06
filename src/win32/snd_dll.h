@@ -8,4 +8,4 @@
 
 #include <windows.h>
 
-HINSTANCE sound_library;
+extern HINSTANCE sound_library;
