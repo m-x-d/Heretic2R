@@ -15,6 +15,7 @@
 #include "sound.h"
 #include "Vector.h"
 #include "FlexModel.h"
+#include "Reference.h"
 
 //TODO: used only in CL_InitLocal(). Can be removed?
 static cvar_t* adr0;
@@ -70,14 +71,14 @@ cvar_t* m_side;
 cvar_t* cl_shownet;
 cvar_t* cl_showmiss;
 cvar_t* cl_showclamp;
-cvar_t* cl_timeout;
+static cvar_t* cl_timeout;
 cvar_t* cl_paused;
 cvar_t* cl_freezeworld;
 cvar_t* cl_timedemo;
 cvar_t* cl_no_middle_text;
 cvar_t* cl_lightlevel;
 
-// New in H2:
+// H2:
 cvar_t* shownames;
 cvar_t* r_detail;
 static cvar_t* compass;
@@ -1224,10 +1225,10 @@ static void CL_InitLocal(void)
 	rcon_address = Cvar_Get("rcon_address", "", 0);
 	cl_lightlevel = Cvar_Get("r_lightlevel", "0", 0);
 
-	// New in H2:
+	// H2:
 	shownames = Cvar_Get("shownames", "0", CVAR_ARCHIVE);
 	r_detail = Cvar_Get("r_detail", "3", CVAR_ARCHIVE);
-	compass = Cvar_Get("compass", "0", CVAR_ARCHIVE);
+	compass = Cvar_Get("compass", "0", CVAR_ARCHIVE); //TODO: used only by ClientEffects. Remove?
 	game_downloadable_type = Cvar_Get("downloadable_game", "0", 0); //TODO: eh? Set again below
 	cl_showcaptions = Cvar_Get("cl_showcaptions", "1", 0);
 	cl_doautoaim = Cvar_Get("cl_doautoaim", "0.0", CVAR_ARCHIVE);
@@ -1274,7 +1275,7 @@ static void CL_InitLocal(void)
 	Cmd_AddCommand("cmd", CL_ForwardToServer_f);
 	Cmd_AddCommand("pause", CL_Pause_f);
 
-	// New in H2:
+	// H2:
 	Cmd_AddCommand("freezeworld", CL_FreezeWorld_f);
 	Cmd_AddCommand("pingservers", CL_PingServers_f);
 	Cmd_AddCommand("userinfo", CL_Userinfo_f);
@@ -1305,7 +1306,7 @@ static void CL_InitLocal(void)
 	Cmd_AddCommand("weapnext", NULL);
 	Cmd_AddCommand("weapprev", NULL);
 
-	// New in H2:
+	// H2:
 	Cmd_AddCommand("spawn", NULL);
 	Cmd_AddCommand("nextmonsterframe", NULL);
 	Cmd_AddCommand("crazymonsters", NULL);
@@ -1559,7 +1560,7 @@ void CL_Init(void)
 	if ((int)dedicated->value)
 		return; // Nothing running on the client
 
-	ResMngr_Con(&cl_FXBufMngr, 1292, 8); // New in H2 (was a separate function there)
+	ResMngr_Con(&cl_FXBufMngr, LERPEDREF_SIZE, LERPEDREF_BLOCK_SIZE); // H2 //mxd. Was a separate function in original version.
 
 	// All archived variables will now be loaded
 	Con_Init();
@@ -1582,7 +1583,7 @@ void CL_Init(void)
 	FS_ExecAutoexec();
 	Cbuf_Execute();
 
-	// New in H2:
+	// H2:
 	Cbuf_AddText("exec menus.cfg\n");
 	Cbuf_AddText("exec user.cfg\n");
 	Cbuf_Execute();

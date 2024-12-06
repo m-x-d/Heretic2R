@@ -28,7 +28,7 @@ static LERPedReferences_t* AllocateLERPedReference(const int ref_type)
 	static int joint_ids[] = { 1, 1, -1, -1, 1, 1, 1 };
 	static int* joint_id_types[] = { joint_ids, NULL, NULL, NULL };
 
-	LERPedReferences_t* ref = ResMngr_AllocateResource(&cl_FXBufMngr, sizeof(LERPedReferences_t));
+	LERPedReferences_t* ref = ResMngr_AllocateResource(&cl_FXBufMngr, LERPEDREF_SIZE);
 
 	ref->refType = ref_type;
 	ref->jointIDs = joint_id_types[ref_type];
@@ -42,7 +42,7 @@ static LERPedReferences_t* AllocateLERPedReference(const int ref_type)
 
 static void DeallocateLERPedReference(void* data) // H2
 {
-	ResMngr_DeallocateResource(&cl_FXBufMngr, data, sizeof(LERPedReferences_t));
+	ResMngr_DeallocateResource(&cl_FXBufMngr, data, LERPEDREF_SIZE);
 }
 
 void CL_ClearSkeletalEntities(void) // H2

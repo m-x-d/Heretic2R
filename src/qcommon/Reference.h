@@ -8,8 +8,10 @@
 
 #include "Placement.h"
 
-#define MAX_REFPOINTS		16
-#define REF_MINCULLTIME		1.0f //mxd. double -> float
+#define MAX_REFPOINTS			16
+#define REF_MINCULLTIME			1.0f //mxd. double -> float
+#define LERPEDREF_SIZE			1292 //mxd. == sizeof(LERPedReferences_t)
+#define LERPEDREF_BLOCK_SIZE	8 //mxd
 
 typedef struct Reference_s
 {
@@ -91,9 +93,7 @@ enum
 #define CORVUS_MASK			(CORVUS_LIMBS_MASK | CORVUS_WEAPON_MASK)
 
 #define INSECT_MASK			((1 << INSECT_STAFF) | (1 << INSECT_SWORD) | (1 << INSECT_SPEAR) | (1 << INSECT_RIGHTFOOT) | (1 << INSECT_LEFTFOOT))
-
 #define PRIESTESS_MASK		((1 << PRIESTESS_BACK) | (1 << PRIESTESS_STAFF) | (1 << PRIESTESS_LHAND) | (1 << PRIESTESS_RHAND) | (1 << PRIESTESS_RFOOT) | (1 << PRIESTESS_LFOOT))
-
 #define MORK_MASK			((1 << MORK_STAFFREF) | (1 << MORK_RFOOTREF) | (1 << MORK_LFOOTREF) | (1 << MORK_RHANDREF) | (1 << MORK_LHANDREF) | (1 << MORK_LEYEREF) | (1 << MORK_REYEREF))
 
 extern char* referenceRootNames[];

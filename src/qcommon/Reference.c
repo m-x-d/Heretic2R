@@ -75,7 +75,7 @@ static ResourceManager_t ReferenceMngr;
 
 void InitReferenceMngr(void)
 {
-	ResMngr_Con(&ReferenceMngr, sizeof(LERPedReferences_t), 8);
+	ResMngr_Con(&ReferenceMngr, sizeof(LERPedReferences_t), LERPEDREF_BLOCK_SIZE);
 }
 
 void ReleaseReferenceMngr(void)
