@@ -400,6 +400,13 @@ void SV_ShutdownGameProgs(void)
 	}
 }
 
+//mxd. game_import_t.DebugGraph -> SCR_DebugGraph adapter. Original logic directly calls SCR_DebugGraph.
+static void SV_DebugGraph(const float value, const byte r, const byte g, const byte b)
+{
+	const paletteRGBA_t color = { .r = r, .g = g, .b = b, .a = 0xff };
+	SCR_DebugGraph(value, color.c);
+}
+
 // Init the game subsystem for a new map
 void SV_InitGameProgs(void)
 {
@@ -489,7 +496,7 @@ void SV_InitGameProgs(void)
 	import.args = Cmd_Args;
 	import.AddCommandString = Cbuf_AddText;
 
-	import.DebugGraph = SCR_DebugGraph; //TODO: check definition mismatch...
+	import.DebugGraph = SV_DebugGraph;
 	import.SetAreaPortalState = CM_SetAreaPortalState;
 	import.AreasConnected = CM_AreasConnected;
 

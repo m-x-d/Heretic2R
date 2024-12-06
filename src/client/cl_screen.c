@@ -78,7 +78,7 @@ typedef struct
 static int current;
 static graphsamp_t values[256]; // Q2: 1024
 
-void SCR_DebugGraph(const float value, const int color)
+void SCR_DebugGraph(const float value, const uint color)
 {
 	paletteRGBA_t pc;
 	pc.c = color;
