@@ -314,7 +314,7 @@ void GL_ImageList_f(void)
 #pragma region ========================== .M8 LOADING ==========================
 
 //mxd. Somewhat similar to Q2's GL_Upload8()
-void GL_UploadPaletted(const int level, const byte* data, const palette_t* palette, const int width, const int height) // H2
+void GL_UploadPaletted(const int level, const byte* data, const paletteRGB_t* palette, const int width, const int height) // H2
 {
 	paletteRGBA_t trans[256 * 256];
 
@@ -328,7 +328,7 @@ void GL_UploadPaletted(const int level, const byte* data, const palette_t* palet
 
 	for (uint i = 0; i < size; i++)
 	{
-		const palette_t* src_p = palette + data[i];
+		const paletteRGB_t* src_p = palette + data[i];
 		paletteRGBA_t* dst_p = &trans[i];
 
 		// Copy rgb components
@@ -341,11 +341,11 @@ void GL_UploadPaletted(const int level, const byte* data, const palette_t* palet
 	qglTexImage2D(GL_TEXTURE_2D, level, GL_TEX_SOLID_FORMAT, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
 }
 
-static void GrabPalette(palette_t* src, palette_t* dst) // H2
+static void GrabPalette(paletteRGB_t* src, paletteRGB_t* dst) // H2
 {
 	int i;
-	palette_t* src_p;
-	palette_t* dst_p;
+	paletteRGB_t* src_p;
+	paletteRGB_t* dst_p;
 
 	for (i = 0, src_p = src, dst_p = dst; i < PAL_SIZE; i++, src_p++, dst_p++)
 	{
@@ -410,7 +410,7 @@ static image_t* GL_LoadWal(const char* name, const imagetype_t type)
 		return NULL;
 	}
 
-	palette_t* palette = malloc(768);
+	paletteRGB_t* palette = malloc(768);
 	GrabPalette(mt->palette, palette);
 
 	image_t* image = GL_GetFreeImage();

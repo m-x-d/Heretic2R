@@ -39,7 +39,7 @@ typedef struct image_s //mxd. Changed in H2. Original size: 104 bytes
 	byte has_alpha;
 	byte num_frames;
 	//byte pad[2];
-	struct palette_s* palette;			// .M8 palette
+	struct paletteRGB_s* palette;		// .M8 palette
 } image_t;
 
 // H2. Font character definition struct
@@ -238,7 +238,7 @@ void GL_MBindImage(GLenum target, const image_t* image); // H2
 void GL_TextureMode(char* string);
 void GL_SetFilter(const image_t* image); // H2
 void GL_ImageList_f(void);
-void GL_UploadPaletted(int level, const byte* data, const palette_t* palette, int width, int height); // H2
+void GL_UploadPaletted(int level, const byte* data, const paletteRGB_t* palette, int width, int height); // H2
 image_t* GL_FindImage(const char* name, imagetype_t type);
 void GL_FreeImageNoHash(image_t* image); // H2
 void GL_FreeUnusedImages(void);

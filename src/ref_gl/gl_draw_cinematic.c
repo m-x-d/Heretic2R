@@ -20,7 +20,7 @@ typedef struct
 static CinematicTile_t cinematic_tiles[MAX_CINEMATIC_TILES];
 static int num_cinematic_tiles;
 
-static palette_t cinematic_palette[256];
+static paletteRGB_t cinematic_palette[256];
 
 static int GetCoords(int size, int* offsets)
 {

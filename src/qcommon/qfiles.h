@@ -91,13 +91,6 @@ typedef struct
 
 #pragma region ========================== .M8 texture file format ==========================
 
-typedef struct palette_s //TODO: replace with paletteRGB_t?
-{
-	byte r;
-	byte g;
-	byte b;
-} palette_t;
-
 #define MIP_VERSION		2
 #define PAL_SIZE		256
 #define	MIPLEVELS		16
@@ -110,7 +103,7 @@ typedef struct miptex_s
 	uint height[MIPLEVELS];
 	uint offsets[MIPLEVELS];	// Four mip maps stored
 	char animname[32];			// Next frame in animation chain
-	palette_t palette[PAL_SIZE];
+	paletteRGB_t palette[PAL_SIZE];
 	int flags;
 	int contents;
 	int value;
