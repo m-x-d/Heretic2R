@@ -18,7 +18,7 @@ int fmdl_num_xyz;
 float framelerp; //mxd. Named 'fl' in original .dll
 float framelerp_inv;
 
-vec3_t s_lerped[MAX_VERTS];
+vec3_t s_lerped[MAX_FM_VERTS];
 
 static ModelSkeleton_t cur_skeleton;
 static M_SkeletalJoint_t fmdl_cur_skeleton_joints[MAX_JOINTS_PER_SKELETON];

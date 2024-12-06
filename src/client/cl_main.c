@@ -740,7 +740,7 @@ void CL_RequestNextDownload(void)
 		fmdl_blockheader_t block_header;
 		fmheader_t header;
 		fmdl_blockheader_t block_skins;
-		char skins[1][MAX_SKINNAME]; // Variable-sized.
+		char skins[1][MAX_FRAMENAME]; // Variable-sized.
 	} dfmdl_t;
 
 	static const char* env_suf[] = { "rt", "bk", "lf", "ft", "up", "dn" };

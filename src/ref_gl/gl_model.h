@@ -222,7 +222,7 @@ typedef struct model_s
 	byte* lightdata;
 
 	// For models and skins
-	image_t* skins[MAX_MD2SKINS];
+	image_t* skins[MAX_FRAMES];
 
 	int extradatasize;
 	void* extradata;

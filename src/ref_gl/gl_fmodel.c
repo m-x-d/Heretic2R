@@ -59,7 +59,7 @@ static qboolean fmLoadSkin(model_t* model, const int version, const int datasize
 	if (version != FM_SKIN_VER)
 		ri.Sys_Error(ERR_DROP, "invalid SKIN version for block %s: %d != %d\n", FM_SKIN_NAME, FM_SKIN_VER, version);
 
-	const int skin_names_size = fmodel->header.num_skins * MAX_SKINNAME;
+	const int skin_names_size = fmodel->header.num_skins * MAX_FRAMENAME;
 	if (skin_names_size != datasize)
 	{
 		ri.Con_Printf(PRINT_ALL, "skin sizes do not match: %d != %d\n", datasize, skin_names_size);
@@ -71,7 +71,7 @@ static qboolean fmLoadSkin(model_t* model, const int version, const int datasize
 
 	// Precache skins...
 	char* skin_name = fmodel->skin_names;
-	for (int i = 0; i < fmodel->header.num_skins; i++, skin_name += MAX_SKINNAME)
+	for (int i = 0; i < fmodel->header.num_skins; i++, skin_name += MAX_FRAMENAME)
 		model->skins[i] = GL_FindImage(skin_name, it_skin);
 
 	return true;
@@ -511,7 +511,7 @@ static image_t* GetSkin(void)
 	if (currententity->skin != NULL)
 		return currententity->skin;
 
-	const int skinnum = (currententity->skinnum < MAX_MD2SKINS ? currententity->skinnum : 0);
+	const int skinnum = (currententity->skinnum < MAX_FRAMES ? currententity->skinnum : 0);
 	if (currentmodel->skins[skinnum] != NULL)
 		return currentmodel->skins[skinnum];
 
@@ -558,7 +558,7 @@ static void GL_DrawFlexFrameLerp(void)
 {
 	int i;
 	fmnodeinfo_t* nodeinfo;
-	static vec3_t normals_array[MAX_VERTS]; //mxd. Made static
+	static vec3_t normals_array[MAX_FM_VERTS]; //mxd. Made static
 
 	const qboolean draw_reflection = (currententity->flags & RF_REFLECTION); //mxd. Skipped gl_envmap_broken check
 	const image_t* skin = GetSkin();

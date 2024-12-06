@@ -10,46 +10,13 @@
 #include "FlexModel.h" //mxd
 #include "ref.h" //mxd
 
-//typedef unsigned char 		byte;
-//typedef int	qboolean;
-//typedef float vec3_t[3];
-
 #define	MAX_FM_TRIANGLES	2048
 #define MAX_FM_VERTS		2048
 #define MAX_FM_FRAMES		2048
-#define MAX_FM_SKINS		64
-#define	MAX_FM_SKINNAME		64
-#define MAX_FM_MESH_NODES	16 // Also defined in game/qshared.h
+//#define MAX_FM_MESH_NODES	16 //mxd. Defined in game/qshared.h
 
-
-#define DTRIVERTX_V0		0
-#define DTRIVERTX_V1		1
-#define DTRIVERTX_V2		2
-#define DTRIVERTX_LNI		3
-#define DTRIVERTX_SIZE		4
-
-#define SKINPAGE_WIDTH		640
+//#define SKINPAGE_WIDTH		640
 #define SKINPAGE_HEIGHT		480
-
-#define ENCODED_WIDTH_X		92
-#define ENCODED_WIDTH_Y		475
-#define ENCODED_HEIGHT_X	128
-#define ENCODED_HEIGHT_Y	475
-
-#define SCALE_ADJUST_FACTOR 0.96
-
-#define INFO_HEIGHT		5
-#define INFO_Y			(SKINPAGE_HEIGHT - INFO_HEIGHT)
-
-//extern byte* BasePalette;
-//extern byte* BasePixels;
-//extern byte* TransPixels;
-//extern int		BaseWidth, BaseHeight, TransWidth, TransHeight;
-//extern int ScaleWidth, ScaleHeight;
-
-//int ExtractNumber(byte *pic, int x, int y);
-//void DrawTextChar(int x, int y, char *text);
-//void DrawLine(int x1, int y1, int x2, int y2);
 
 // Skin Header
 #define FM_SKIN_NAME	"skin"
@@ -158,9 +125,6 @@ typedef struct
 	float bmax[3];
 	float* complerp;
 } fmgroup_t;
-
-#define MAX_COMP_DOF	25
-#define FRAME_NAME_LEN	16
 
 typedef struct fmdl_s
 {

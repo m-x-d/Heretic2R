@@ -24,6 +24,6 @@ extern float framelerp;
 extern float framelerp_inv;
 extern SkeletonFrameLerpInfo_t sfl_cur_skel;
 
-extern vec3_t s_lerped[MAX_VERTS];
+extern vec3_t s_lerped[MAX_FM_VERTS];
 
 void FrameLerp(void);

@@ -434,13 +434,6 @@ extern cvar_t* mouse_sensitivity_y;
 
 extern cvar_t* doubletap_speed;
 
-//mxd. Already declared in qcommon.h
-//extern cvar_t* allow_download;
-//extern cvar_t* allow_download_maps;
-//extern cvar_t* allow_download_players;
-//extern cvar_t* allow_download_models;
-//extern cvar_t* allow_download_sounds;
-
 extern cvar_t* m_pitch;
 extern cvar_t* m_yaw;
 extern cvar_t* m_forward;
@@ -510,19 +503,16 @@ GAME_DECLSPEC extern entity_state_t cl_parse_entities[MAX_PARSE_ENTITIES];
 extern qboolean ignored_players[MAX_CLIENTS]; //mxd
 
 #define NUM_ENTITY_HEADER_BITS		5 //mxd
-#define ENTITY_FX_BUF_BLOCK_SIZE	256
 
 extern struct ResourceManager_s cl_FXBufMngr;
 extern int camera_timer; //mxd
 extern qboolean viewoffset_changed; //mxd
 
-//extern netadr_t net_from; //mxd. Disabled
-//extern sizebuf_t net_message; //mxd. Disabled
-
 void DrawString(int x, int y, const char* s, paletteRGBA_t color, int maxlen);
 qboolean CL_CheckOrDownloadFile(const char* filename);
 
 extern uint net_transmit_size; //mxd
+
 void CL_AddNetgraph(void);
 int CL_ParseEntityBits(byte* bf, byte* bfNonZero);
 void CL_ParseDelta(const entity_state_t* from, entity_state_t* to, int number, const byte* bits);
@@ -537,23 +527,17 @@ void CL_RegisterSounds(void);
 
 void CL_Quit_f(void);
 
-void IN_Accumulate(void);
-void CL_ParseLayout(void);
-
 // cl_main.c
 extern refexport_t re; // Interface to refresh DLL.
 extern player_export_t playerExport; // Interface to player DLL.
 
-void CL_Init(void); //TODO: check redundant declaration
 void CL_RequestNextDownload(void);
 
 void CL_Disconnect(void);
 void CL_Disconnect_f(void);
 void CL_OnServerDisconnected(void); //mxd
-void CL_GetChallengePacket(void);
 void CL_PingServers_f(void);
 void CL_Snd_Restart_f(void);
-void CL_Snd_Restart_f_nocfx(void);
 
 // cl_input.c
 typedef struct
@@ -564,7 +548,6 @@ typedef struct
 	int state;
 } kbutton_t;
 
-extern kbutton_t in_mlook;
 extern kbutton_t in_klook;
 extern kbutton_t in_strafe;
 extern kbutton_t in_speed;
@@ -576,23 +559,15 @@ extern qboolean command_down; //mxd
 
 void CL_InitInput(void);
 void CL_SendCmd(void);
-void CL_SendMove(usercmd_t* cmd);
-
 void CL_ClearState(void);
-
 void CL_ReadPackets(void);
-
-int  CL_ReadFromServer(void);
-void CL_WriteToServer(usercmd_t* cmd);
 void CL_BaseMove(usercmd_t* cmd);
 
 void IN_CenterView(void);
 
-//float CL_KeyState(kbutton_t* key); //mxd. Made static
 char* Key_KeynumToString(int keynum);
 
 // cl_demo.c
-//void CL_ParseDemoClientEffects(void); //mxd. Made static
 void CL_WriteDemoMessage(void);
 void CL_Stop_f(void);
 void CL_Record_f(void);
@@ -625,8 +600,6 @@ extern int pred_pm_w_flags; //mxd
 extern qboolean trace_ignore_player; //mxd
 extern qboolean trace_ignore_camera; //mxd
 
-void CL_InitPrediction(void);
-void CL_PredictMove(void);
 void CL_CheckPredictionError(void);
 
 // menus
@@ -635,22 +608,16 @@ void M_Keydown(int key);
 void M_Draw(void);
 void M_Menu_Main_f(void);
 void M_ForceMenuOff(void);
-//void MenuUnsetMode(void); //mxd. Disabled
 void M_AddToServerList(const netadr_t* adr, const char* info);
 
 // cl_inv.c
 void CL_ParseInventory(void);
-void CL_KeyInventory(int key);
-void CL_DrawInventory(void);
 
 // cl_pred.c
 int CL_PMpointcontents(vec3_t point); //mxd
 void CL_PredictMovement(void);
 void CL_StorePredictInfo(void); //mxd
 void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* tr);
-
-// cl_view.c
-void Grab_EAX_Environment_type(void);
 
 // sys_win.c //mxd
 extern uint sys_frame_time;

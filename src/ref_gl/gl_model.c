@@ -121,8 +121,8 @@ static void Mod_LoadBookModel(model_t* mod, const void* buffer) // H2
 	if (book_in->bheader.version != BOOK_VERSION)
 		Sys_Error("%s has wrong version number (%i should be %i)", mod->name, book_in->bheader.version, BOOK_VERSION);
 
-	if (book_in->bheader.num_segments > MAX_MD2SKINS)
-		Sys_Error("%s has too many frames (%i > %i)", mod->name, book_in->bheader.num_segments, MAX_MD2SKINS);
+	if (book_in->bheader.num_segments > MAX_FRAMES)
+		Sys_Error("%s has too many frames (%i > %i)", mod->name, book_in->bheader.num_segments, MAX_FRAMES);
 
 	// Copy everything
 	memcpy(book_out, book_in, book_in->bheader.num_segments * sizeof(bookframe_t) + sizeof(bookheader_t));
@@ -672,8 +672,8 @@ static void Mod_LoadSpriteModel(model_t* mod, const void* buffer)
 	if (sprout->version != SPRITE_VERSION)
 		ri.Sys_Error(ERR_DROP, "%s has wrong version number (%i should be %i)", mod->name, sprout->version, SPRITE_VERSION);
 
-	if (sprout->numframes > MAX_MD2SKINS)
-		ri.Sys_Error(ERR_DROP, "%s has too many frames (%i > %i)", mod->name, sprout->numframes, MAX_MD2SKINS);
+	if (sprout->numframes > MAX_FRAMES)
+		ri.Sys_Error(ERR_DROP, "%s has too many frames (%i > %i)", mod->name, sprout->numframes, MAX_FRAMES);
 
 	// Byte swap everything
 	for (int i = 0; i < sprout->numframes; i++)
@@ -682,7 +682,7 @@ static void Mod_LoadSpriteModel(model_t* mod, const void* buffer)
 		sprout->frames[i].height = LittleLong(sprin->frames[i].height);
 		sprout->frames[i].origin_x = LittleLong(sprin->frames[i].origin_x);
 		sprout->frames[i].origin_y = LittleLong(sprin->frames[i].origin_y);
-		memcpy(sprout->frames[i].name, sprin->frames[i].name, MAX_SKINNAME);
+		memcpy(sprout->frames[i].name, sprin->frames[i].name, MAX_FRAMENAME);
 
 		Com_sprintf(sprite_name, sizeof(sprite_name), "Sprites/%s", sprout->frames->name); // H2
 		mod->skins[i] = GL_FindImage(sprite_name, it_sprite);

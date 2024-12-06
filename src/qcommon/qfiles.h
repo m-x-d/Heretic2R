@@ -8,6 +8,9 @@
 
 #include "q_Typedef.h" //mxd
 
+#define MAX_FRAMES		64
+#define MAX_FRAMENAME	64
+
 #pragma region ========================== .PAK ==========================
 
 // The .pak files are just a linear collapse of a directory tree
@@ -27,151 +30,7 @@ typedef struct
 	int dirlen;
 } dpackheader_t;
 
-#define MAX_FILES_IN_PACK	6144
-
-#pragma endregion
-
-#pragma region ========================== .PCX ==========================
-
-// PCX files are used for as many images as possible
-//TODO: unused. Remove?
-typedef struct
-{
-	char manufacturer;
-	char version;
-	char encoding;
-	char bits_per_pixel;
-	ushort xmin;
-	ushort ymin;
-	ushort xmax;
-	ushort ymax;
-	ushort hres;
-	ushort vres;
-	byte palette[48];
-	char reserved;
-	char color_planes;
-	ushort bytes_per_line;
-	ushort palette_type;
-	char filler[58];
-	byte data; // Unbounded
-} pcx_t;
-
-#pragma endregion
-
-#pragma region ========================== .MD2 ==========================
-
-//TODO: unused?
-// .MD2 compressed triangle model file format
-#define IDCOMPRESSEDALIASHEADER	(('2' << 24) + ('C' << 16) + ('D' << 8) + 'I')
-
-// .MD2 compressed triangle model file format
-#define IDJOINTEDALIASHEADER	(('2' << 24) + ('J' << 16) + ('D' << 8) + 'I')
-
-// .MD2 triangle model file format
-#define IDALIASHEADER			(('2' << 24) + ('P' << 16) + ('D' << 8) + 'I')
-#define ALIAS_VERSION	8
-
-#define MAX_TRIANGLES	4096
-#define MAX_VERTS		2048
-#define MAX_FRAMES		512
-#define MAX_MD2SKINS	64	//mxd. 32 in Q2
-#define MAX_SKINNAME	64
-
-typedef struct
-{
-	short s;
-	short t;
-} dstvert_t;
-
-typedef struct 
-{
-	short index_xyz[3];
-	short index_st[3];
-} dtriangle_t;
-
-typedef struct
-{
-	union
-	{
-		struct
-		{
-			byte v[3]; // Scaled byte to fit in frame mins/maxs
-			byte lightnormalindex;
-		};
-
-		int vert;
-	};
-} dtrivertx_t;
-
-#define DTRIVERTX_V0   0
-#define DTRIVERTX_V1   1
-#define DTRIVERTX_V2   2
-#define DTRIVERTX_LNI  3
-#define DTRIVERTX_SIZE 4
-
-typedef struct
-{
-	float scale[3];			// Multiply byte verts by this...
-	float translate[3];		// ...then add this
-	char name[16];			// Frame name from grabbing.
-	dtrivertx_t verts[1];	// Variable sized.
-} daliasframe_t;
-
-
-// The glcmd format:
-// A positive integer starts a tristrip command, followed by that many vertex structures.
-// A negative integer starts a trifan command, followed by -x vertexes.
-// A zero indicates the end of the command list.
-// A vertex consists of a floating point s, a floating point t, and an integer vertex index.
-
-typedef struct
-{
-	int ident;
-	int version;
-
-	int skinwidth;
-	int skinheight;
-	int framesize;	// Byte size of each frame
-
-	int num_skins;
-	int num_xyz;
-	int num_st;		// Greater than num_xyz for seams
-	int num_tris;
-	int num_glcmds;	// dwords in strip/fan command list
-	int num_frames;
-
-	int ofs_skins;	// Each skin is a MAX_SKINNAME string
-	int ofs_st;		// Byte offset from start for stverts
-	int ofs_tris;	// Offset for dtriangles
-	int ofs_frames;	// Offset for first frame
-	int ofs_glcmds;	
-	int ofs_end;	// End of file
-} dmdl_t;
-
-// Compressed model
-typedef struct dcompmdl_s
-{
-	dmdl_t header;
-	short CompressedFrameSize;
-	short UniqueVerts;
-	short* remap;
-	float* translate;
-	float* scale;	// Multiply byte verts by this
-	char* mat;
-	char* frames;
-	char* base;
-	float* ctranslate;
-	float* cscale;	
-	char data[1];	// Variable sized.
-} dcompmdl_t;
-
-typedef struct 
-{
-	dcompmdl_t compModInfo;
-	int rootCluster;
-	int skeletalType;
-	struct ModelSkeleton_s* skeletons;
-} JointedModel_t;
+#define MAX_FILES_IN_PACK	6144 // Q2: 4096
 
 #pragma endregion
 
@@ -186,7 +45,7 @@ typedef struct bookframe_s
 	int y;
 	int w;
 	int h;
-	char name[MAX_SKINNAME]; // Name of gfx file
+	char name[MAX_FRAMENAME]; // Name of gfx file
 } bookframe_t;
 
 typedef struct bookheader_s
@@ -201,7 +60,7 @@ typedef struct bookheader_s
 typedef struct book_s
 {
 	bookheader_t bheader;
-	bookframe_t	bframes[MAX_MD2SKINS];
+	bookframe_t	bframes[MAX_FRAMES];
 } book_t;
 
 #pragma endregion
@@ -217,7 +76,7 @@ typedef struct
 	int height;
 	int origin_x; // Raster coordinates inside pic
 	int origin_y;
-	char name[MAX_SKINNAME]; // Name of pcx file
+	char name[MAX_FRAMENAME]; // Name of .sp2 file
 } dsprframe_t;
 
 typedef struct
@@ -225,24 +84,18 @@ typedef struct
 	int ident;
 	int version;
 	int numframes;
-	dsprframe_t frames[1]; // Variable sized
+	dsprframe_t frames[1]; // Variable sized (up to MAX_FRAMES)
 } dsprite_t;
 
 #pragma endregion
 
 #pragma region ========================== .M8 texture file format ==========================
 
-typedef struct palette_s
+typedef struct palette_s //TODO: replace with paletteRGB_t?
 {
-	union
-	{
-		struct
-		{
-			byte r;
-			byte g;
-			byte b;
-		};
-	};
+	byte r;
+	byte g;
+	byte b;
 } palette_t;
 
 #define MIP_VERSION		2
@@ -464,6 +317,7 @@ typedef struct
 } dedge_t;
 
 #define MAXLIGHTMAPS	4
+
 typedef struct
 {
 	ushort planenum;
@@ -507,9 +361,6 @@ typedef struct
 	int numsides;
 	int contents;
 } dbrush_t;
-
-#define ANGLE_UP	-1
-#define ANGLE_DOWN	-2
 
 // The visibility lump consists of a header with a count, then byte offsets for the PVS and PHS of each cluster,
 // then the raw compressed bit vectors.
