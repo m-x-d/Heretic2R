@@ -271,7 +271,7 @@ char* NET_AdrToString(const netadr_t* a)
 
 // Q2 counterpart
 // Input string examples: 'localhost', 'idnewt', 'idnewt:28000', '192.246.40.70', '192.246.40.70:28000'
-qboolean NET_StringToAdr(char* s, netadr_t* a)
+qboolean NET_StringToAdr(const char* s, netadr_t* a)
 {
 	struct sockaddr sadr;
 

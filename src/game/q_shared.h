@@ -222,7 +222,6 @@ char* Sys_FindFirst(const char* path, uint musthave, uint canthave);
 char* Sys_FindNext(uint musthave, uint canthave);
 void Sys_FindClose(void);
 
-// This is only here so the functions in q_shared.c and q_shwin.c can link //TODO: mxd. Check if still true
 GAME_DECLSPEC void Sys_Error(const char* error, ...);
 
 #ifdef __cplusplus //mxd. Needed, so code in game/ds.cpp could build...
@@ -263,6 +262,8 @@ typedef struct cvar_s
 
 #endif // CVAR
 
+// Creates the variable if it doesn't exist, or returns the existing one if it exists.
+// The value will not be changed, but flags will be ORed in that allows variables to be unarchived without needing bitflags.
 GAME_DECLSPEC cvar_t* Cvar_Get(const char* var_name, const char* var_value, int flags);
 
 #pragma endregion
@@ -271,10 +272,9 @@ GAME_DECLSPEC cvar_t* Cvar_Get(const char* var_name, const char* var_value, int 
 
 typedef struct paletteRGB_s
 {
-	struct //TODO: Why this inner struct?
-	{
-		byte r,g,b;
-	};
+	byte r;
+	byte g;
+	byte b;
 } paletteRGB_t;
 
 #pragma endregion

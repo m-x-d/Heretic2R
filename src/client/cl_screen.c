@@ -297,7 +297,7 @@ void SCR_EndLoadingPlaque(void)
 	Con_ClearNotify();
 }
 
-//mxd. Original version looks broken and seems to work only because first arg is always 0... 
+//mxd. Original version looks broken and seems to work only because first arg is always 0... //TODO: remove unused arg?
 void SCR_UpdateProgressbar(int unused, const int section) // H2
 {
 #define NUM_PROGRESSBAR_SECTIONS	6

@@ -103,31 +103,13 @@ void MSG_ReadData(sizebuf_t* sb, void* data, int size);
 void MSG_ReadJoints(sizebuf_t* sb, entity_state_t* ent);
 void MSG_ReadEffects(sizebuf_t* sb, EffectsBuffer_t* fxBuf);
 
-//TODO: debug stuff from original version. Remove?
-//extern qboolean bigendien;
-//extern int sz_line;
-//extern char* sz_filename;
-
-//#define set_sz_data	sz_filename = __FILE__; sz_line = __LINE__; 
-
 int	COM_Argc(void);
 char* COM_Argv(int arg); // Range and null checked
 void COM_ClearArgv(int arg);
 int COM_CheckParm(const char* parm);
-void COM_AddParm(char* parm);
-
-void COM_Init(void);
-//void COM_InitArgv(int argc, char** argv); //mxd. Not needed
 
 char* CopyString(const char* in);
-
-
 void Info_Print(const char* s);
-
-void CRC_Init(ushort* crcvalue);
-void CRC_ProcessByte(ushort* crcvalue, byte data);
-ushort CRC_Value(ushort crcvalue);
-int CRC_Block(byte* start, int count);
 
 #pragma region ========================== PROTOCOL ==========================
 
@@ -191,8 +173,8 @@ enum clc_ops_e
 {
 	clc_bad,
 	clc_nop,
-	clc_move,		// [[usercmd_t]
-	clc_userinfo,	// [[userinfo string]
+	clc_move,		// [usercmd_t]
+	clc_userinfo,	// [string] userinfo
 	clc_stringcmd,	// [string] message
 	clc_startdemo	// Start a demo - please send me all persistent effects
 };
@@ -438,9 +420,6 @@ GAME_DECLSPEC void Cmd_AddCommand(const char* cmd_name, xcommand_t function);
 
 GAME_DECLSPEC void Cmd_RemoveCommand(const char* cmd_name);
 
-// Used by the cvar code to check for cvar / command name overlap
-qboolean Cmd_Exists(char* cmd_name);
-
 // Attempts to match a partial command for automatic command line completion. Returns NULL if nothing fits.
 const char* Cmd_CompleteCommand(const char* partial);
 
@@ -480,11 +459,7 @@ void Cmd_ForwardToServer(void);
 
 extern cvar_t* cvar_vars;
 
-float ClampCvar(float min, float max, float value);
-
-// Creates the variable if it doesn't exist, or returns the existing one if it exists.
-// The value will not be changed, but flags will be ORed in that allows variables to be unarchived without needing bitflags.
-GAME_DECLSPEC cvar_t* Cvar_Get(const char* var_name, const char* var_value, int flags); //TODO: check redundant declaration...
+//mxd. Cvar_Get() defined in q_shared.h
 
 // Will create the variable if it doesn't exist
 GAME_DECLSPEC cvar_t* Cvar_Set(const char* var_name, const char* value);
@@ -530,30 +505,28 @@ char* Cvar_Serverinfo(void);
 // This is set each time a CVAR_USERINFO variable is changed so that the client knows to send it to the server.
 extern qboolean userinfo_modified;
 
-// Screen flash set
+// Screen flash set.
 void Activate_Screen_Flash(int color);
 
-// Screen flash unset
+// Screen flash unset.
 void Deactivate_Screen_Flash(void);
 
-// Return screen flash value
+// Return screen flash value.
 int Is_Screen_Flashing(void);
 
-// Set up screen shaking
+// Set up screen shaking.
 void Activate_Screen_Shake(float intensity, float duration, float current_time, int flags);
 
-// Reset screen shake
+// Reset screen shake.
 void Reset_Screen_Shake(void);
 
-//qboolean Get_Crosshair(vec3_t origin, byte* type); //mxd. Not needed
-
-// Called by the camera code to determine our camera offset
-void Perform_Screen_Shake(vec3_t, float current_time); //TODO: vec3_t name?
+// Called by the camera code to determine our camera offset.
+void Perform_Screen_Shake(vec3_t out, float current_time);
 
 #pragma endregion
 
 #pragma region ========================== NET ==========================
-// Quake's interface to the networking layer
+// Quake's interface to the networking layer.
 
 #define	PORT_ANY	-1
 
@@ -577,8 +550,6 @@ typedef enum
 	NS_GAMESPY //TODO: remove
 } netsrc_t;
 
-extern int gamespy_port; //TODO: remove
-
 // H2: net debugging settings.
 extern cvar_t* net_sendrate;
 extern cvar_t* net_receiverate;
@@ -594,8 +565,6 @@ typedef struct
 
 void NET_Init(void);
 void NET_Shutdown(void);
-void NET_TotalShutdown(void);
-
 void NET_Config(qboolean multiplayer);
 
 qboolean NET_GetPacket(netsrc_t sock, netadr_t* n_from, sizebuf_t* n_message);
@@ -605,12 +574,9 @@ qboolean NET_CompareAdr(const netadr_t* a, const netadr_t* b); //mxd. Changed ar
 qboolean NET_CompareBaseAdr(const netadr_t* a, const netadr_t* b); //mxd. Changed args type to netadr_t*.
 qboolean NET_IsLocalAddress(const netadr_t* a); //mxd. Changed arg type to netadr_t*.
 char* NET_AdrToString(const netadr_t* a); //mxd. Changed arg type to netadr_t*.
-qboolean NET_StringToAdr(char* s, netadr_t* a);
+qboolean NET_StringToAdr(const char* s, netadr_t* a);
 
 //============================================================================
-
-#define OLD_AVG		0.99 // total = oldtotal * OLD_AVG + new * (1 - OLD_AVG)
-#define MAX_LATENT	32
 
 typedef struct
 {
@@ -655,56 +621,27 @@ void Netchan_Setup(netsrc_t sock, netchan_t* chan, const netadr_t* adr, int port
 
 qboolean Netchan_NeedReliable(const netchan_t* chan);
 int Netchan_Transmit(netchan_t* chan, int length, const byte* data); // Q2: void return type.
-//void Netchan_OutOfBand(int net_socket, netadr_t adr, int length, byte* data); //mxd. Made static
 void Netchan_OutOfBandPrint(int net_socket, const netadr_t* adr, const char* format, ...); //mxd. Changed 'adr' arg type to netadr_t*.
 qboolean Netchan_Process(netchan_t* chan, sizebuf_t* msg);
-
-qboolean Netchan_CanReliable(netchan_t* chan);
 
 #pragma endregion
 
 #pragma region ========================== CMODEL ==========================
 
-//#include "../qcommon/qfiles.h" //mxd. Disabled
-
-//mxd. Included in cmodel.h
-//cmodel_t* CM_LoadMap(const char* name, qboolean clientload, uint* checksum);
-//cmodel_t* CM_InlineModel(const char* name); // *1, *2, etc
-
 int CM_NumClusters(void);
 int CM_NumInlineModels(void);
 char* CM_EntityString(void);
-
-// Creates a clipping hull for an arbitrary box
-//int CM_HeadnodeForBox(vec3_t mins, vec3_t maxs); //mxd. Disabled
-
-// Returns an ORed contents mask
-//int CM_PointContents(vec3_t p, int headnode); //mxd. Disabled
-//int CM_TransformedPointContents(vec3_t p, int headnode, vec3_t origin, vec3_t angles); //mxd. Disabled
-
-//void CM_BoxTrace(vec3_t start, vec3_t end, vec3_t mins, vec3_t maxs, int headnode, int brushmask, trace_t* return_trace); //mxd. Included in cmodel.h
-//void CM_TransformedBoxTrace(vec3_t start, vec3_t end, vec3_t mins, vec3_t maxs, int headnode, int brushmask, vec3_t origin, vec3_t angles, trace_t* return_trace);
 
 byte* CM_ClusterPVS(int cluster);
 byte* CM_ClusterPHS(int cluster);
 
 int CM_PointLeafnum(const vec3_t p);
 
-// Call with topnode set to the headnode, returns with topnode set to the first node that splits the box.
-//int CM_BoxLeafnums(vec3_t mins, vec3_t maxs, int* list, int listsize, int* topnode); //mxd. Disabled
-
-//int CM_LeafContents(int leafnum); //mxd. Unused
 int CM_LeafCluster(int leafnum);
 int CM_LeafArea(int leafnum);
 
 void CM_SetAreaPortalState(int portalnum, qboolean open);
 qboolean CM_AreasConnected(int area1, int area2);
-
-//int CM_WriteAreaBits(byte* buffer, int area); //mxd. Disabled
-//qboolean CM_HeadnodeVisible(int headnode, byte* visbits); //mxd. Disabled
-
-//void CM_WritePortalState(FILE* f); //mxd. Disabled
-//void CM_ReadPortalState(FILE* f); //mxd. Disabled
 
 #pragma endregion
 
@@ -751,16 +688,16 @@ void FS_CreatePath(char* path);
 #define ERR_DROP		1 // Print to console and disconnect from game
 #define ERR_QUIT		2 // Not an error, just a normal exit
 
-#define EXEC_NOW		0 // Don't return until completed
-#define EXEC_INSERT		1 // Insert at current position, but don't run yet
-#define EXEC_APPEND		2 // Add to end of the command buffer
+//mxd. Used by (non-implemented) Cbuf_ExecuteText().
+//#define EXEC_NOW		0 // Don't return until completed
+//#define EXEC_INSERT		1 // Insert at current position, but don't run yet
+//#define EXEC_APPEND		2 // Add to end of the command buffer
 
 #define PRINT_ALL		0
 #define PRINT_DEVELOPER	1 // Only print when "developer 1"
 
 void Com_BeginRedirect(int target, char* buffer, int buffersize, void (*flush)(int, char*));
 void Com_EndRedirect(void);
-GAME_DECLSPEC void Com_Printf(const char* fmt, ...); //TODO: check redundant declaration...
 GAME_DECLSPEC void Com_DPrintf(const char* fmt, ...);
 GAME_DECLSPEC void Com_Error(int code, const char* fmt, ...);
 void Com_Quit(void);
@@ -784,14 +721,6 @@ extern cvar_t* allow_download_sounds;
 
 extern FILE* log_stats_file;
 
-// host_speeds times //TODO: remove?
-/*#ifdef _DEVEL
-extern	__int64	time_before_game;
-extern	__int64	time_after_game;
-extern	__int64	time_before_ref;
-extern	__int64	time_after_ref;
-#endif	// _DEVEL*/
-
 GAME_DECLSPEC void Z_Free(void* ptr);
 GAME_DECLSPEC void* Z_Malloc(int size); // Returns 0 filled memory
 void* Z_TagMalloc(int size, int tag);
@@ -805,19 +734,13 @@ void Qcommon_Frame(int msec);
 #pragma region ========================== NON-PORTABLE SYSTEM SERVICES ==========================
 
 void Sys_Init(void);
-
 void Sys_AppActivate(void);
-
-void Sys_UnloadGame(void);
-void* Sys_GetGameAPI(void* parms); // Loads the game dll and calls the api init function.
 
 char* Sys_ConsoleInput(void);
 void Sys_ConsoleOutput(const char* string);
 void Sys_SendKeyEvents(void);
-GAME_DECLSPEC void Sys_Error(const char* error, ...); //TODO: check redundant declaration...
 void Sys_Quit(void);
 char* Sys_GetClipboardData(void);
-void Sys_CopyProtect(void); //TODO: remove
 
 #pragma endregion
 

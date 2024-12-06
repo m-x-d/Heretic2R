@@ -60,7 +60,7 @@ int COLOUR(const cvar_t* cvar)
 	return Q_ftol(roundf(cvar->value)) % 32;
 }
 
-static void PrintGameMessage(const char* msg, const PalIdx_t color_index) // H2
+static void CenterPrint(const char* msg, const PalIdx_t color_index) // H2
 {
 	char line[MAX_MESSAGE_LINE_LENGTH + 4];
 
@@ -164,7 +164,7 @@ static void GetObituaryString(char* dest, const int dest_size, const char* src, 
 	}
 }
 
-static void PrintObituary(const char* text, const byte client1, const byte client2, const PalIdx_t color_index) // H2
+static void ObituaryPrint(const char* text, const byte client1, const byte client2, const PalIdx_t color_index) // H2
 {
 	char message[256];
 	char temp[256];
@@ -988,7 +988,7 @@ void CL_ParseServerMessage(void)
 				break;
 
 			case svc_centerprint:
-				PrintGameMessage(MSG_ReadString(&net_message), P_WHITE); // H2
+				CenterPrint(MSG_ReadString(&net_message), P_WHITE); // H2
 				break;
 
 			case svc_gamemsg_centerprint: // H2
@@ -997,7 +997,7 @@ void CL_ParseServerMessage(void)
 				const int msg_index = MSG_ReadShort(&net_message);
 				const char* msg = CL_GetGameString(msg_index);
 				if (msg != NULL && !(int)cl_no_middle_text->value)
-					PrintGameMessage(msg, COLOUR(colour_game));
+					CenterPrint(msg, COLOUR(colour_game));
 
 				const char* sound = CL_GetGameWav(msg_index);
 				if (sound != NULL)
@@ -1014,7 +1014,7 @@ void CL_ParseServerMessage(void)
 				{
 					const char* msg = CL_GetGameString(msg_index);
 					Com_sprintf(buffer, sizeof(buffer), msg, msg_val);
-					PrintGameMessage(buffer, COLOUR(colour_level));
+					CenterPrint(buffer, COLOUR(colour_level));
 				}
 
 				const char* sound = CL_GetGameWav(msg_index);
@@ -1028,7 +1028,7 @@ void CL_ParseServerMessage(void)
 				const int msg_index = MSG_ReadShort(&net_message);
 				const char* msg = CL_GetLevelString(msg_index);
 				if (msg != NULL)
-					PrintGameMessage(msg, COLOUR(colour_level));
+					CenterPrint(msg, COLOUR(colour_level));
 
 				const char* sound = CL_GetLevelWav(msg_index);
 				if (sound != NULL)
@@ -1043,7 +1043,7 @@ void CL_ParseServerMessage(void)
 				{
 					const char* msg = CL_GetLevelString(msg_index);
 					if (msg != NULL)
-						PrintGameMessage(msg, P_CAPTION);
+						CenterPrint(msg, P_CAPTION);
 				}
 
 				const char* sound = CL_GetLevelWav(msg_index);
@@ -1057,7 +1057,7 @@ void CL_ParseServerMessage(void)
 				if ((byte)msg_index == 132 && cl.configstrings[CS_WELCOME][0] != -2)
 				{
 					game_message_show_at_top = false;
-					PrintGameMessage(cl.configstrings[CS_WELCOME], COLOUR(colour_game));
+					CenterPrint(cl.configstrings[CS_WELCOME], COLOUR(colour_game));
 					cl.configstrings[CS_WELCOME][0] = -2;
 				}
 
@@ -1066,7 +1066,7 @@ void CL_ParseServerMessage(void)
 
 				const char* msg = CL_GetGameString(msg_index);
 				if (msg != NULL)
-					PrintObituary(msg, client1, client2, COLOUR(colour_obituary));
+					ObituaryPrint(msg, client1, client2, COLOUR(colour_obituary));
 
 				const char* sound = CL_GetGameWav(msg_index);
 				if (sound != NULL)
@@ -1117,7 +1117,7 @@ void CL_ParseServerMessage(void)
 					strcpy_s(buffer, sizeof(buffer), msg1); //mxd. strcpy -> strcpy_s
 					strcat_s(buffer, sizeof(buffer), msg2); //mxd. strcat -> strcat_s
 					if (!(int)cl_no_middle_text->value)
-						PrintGameMessage(buffer, COLOUR(colour_game));
+						CenterPrint(buffer, COLOUR(colour_game));
 				}
 
 				const char* sound = CL_GetGameWav(msg_index1); //mxd. Done twice in original logic
