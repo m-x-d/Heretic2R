@@ -17,7 +17,7 @@ extern ResourceManager_t res_mgr;
 
 H2COMMON_API void SLList_DefaultCon(SinglyLinkedList_t* this_ptr)
 {
-	SinglyLinkedListNode_t* node = ResMngr_AllocateResource(&res_mgr, 8);
+	SinglyLinkedListNode_t* node = ResMngr_AllocateResource(&res_mgr, SLL_NODE_SIZE);
 	node->next = NULL;
 
 	this_ptr->rearSentinel = node;
@@ -32,12 +32,12 @@ H2COMMON_API void SLList_Des(SinglyLinkedList_t* this_ptr)
 	while (node != this_ptr->rearSentinel)
 	{
 		SinglyLinkedListNode_t* next = node->next;
-		ResMngr_DeallocateResource(&res_mgr, node, 8);
+		ResMngr_DeallocateResource(&res_mgr, node, SLL_NODE_SIZE);
 		node = next;
 	}
 
 	this_ptr->current = this_ptr->rearSentinel;
-	ResMngr_DeallocateResource(&res_mgr, this_ptr->rearSentinel, 8);
+	ResMngr_DeallocateResource(&res_mgr, this_ptr->rearSentinel, SLL_NODE_SIZE);
 }
 
 H2COMMON_API qboolean SLList_AtEnd(const SinglyLinkedList_t* this_ptr)
@@ -75,7 +75,7 @@ H2COMMON_API GenericUnion4_t SLList_Front(SinglyLinkedList_t* this_ptr)
 	return this_ptr->current->data;
 }
 
-H2COMMON_API GenericUnion4_t SLList_ReplaceCurrent(const SinglyLinkedList_t* this_ptr, GenericUnion4_t to_replace)
+H2COMMON_API GenericUnion4_t SLList_ReplaceCurrent(const SinglyLinkedList_t* this_ptr, const GenericUnion4_t to_replace)
 {
 	const GenericUnion4_t val = this_ptr->current->data;
 	this_ptr->current->data = to_replace;
@@ -85,14 +85,14 @@ H2COMMON_API GenericUnion4_t SLList_ReplaceCurrent(const SinglyLinkedList_t* thi
 
 H2COMMON_API void SLList_PushEmpty(SinglyLinkedList_t* this_ptr)
 {
-	SinglyLinkedListNode_t* node = ResMngr_AllocateResource(&res_mgr, 8);
+	SinglyLinkedListNode_t* node = ResMngr_AllocateResource(&res_mgr, SLL_NODE_SIZE);
 	node->next = this_ptr->front;
 	this_ptr->front = node;
 }
 
-H2COMMON_API void SLList_Push(SinglyLinkedList_t* this_ptr, GenericUnion4_t to_insert)
+H2COMMON_API void SLList_Push(SinglyLinkedList_t* this_ptr, const GenericUnion4_t to_insert)
 {
-	SinglyLinkedListNode_t* node = ResMngr_AllocateResource(&res_mgr, 8);
+	SinglyLinkedListNode_t* node = ResMngr_AllocateResource(&res_mgr, SLL_NODE_SIZE);
 	node->data = to_insert;
 	node->next = this_ptr->front;
 	this_ptr->front = node;
@@ -108,7 +108,7 @@ H2COMMON_API GenericUnion4_t SLList_Pop(SinglyLinkedList_t* this_ptr)
 		this_ptr->current = next;
 
 	const GenericUnion4_t val = front->data;
-	ResMngr_DeallocateResource(&res_mgr, front, 8);
+	ResMngr_DeallocateResource(&res_mgr, front, SLL_NODE_SIZE);
 
 	return val;
 }
@@ -119,7 +119,7 @@ H2COMMON_API void SLList_Chop(SinglyLinkedList_t* this_ptr)
 	while (next != this_ptr->rearSentinel)
 	{
 		SinglyLinkedListNode_t* next_next = next->next;
-		ResMngr_DeallocateResource(&res_mgr, next, 8);
+		ResMngr_DeallocateResource(&res_mgr, next, SLL_NODE_SIZE);
 		next = next_next;
 	}
  
@@ -128,7 +128,7 @@ H2COMMON_API void SLList_Chop(SinglyLinkedList_t* this_ptr)
 
 H2COMMON_API void SLList_InsertAfter(const SinglyLinkedList_t* this_ptr, const GenericUnion4_t to_insert)
 {
-	SinglyLinkedListNode_t* node = ResMngr_AllocateResource(&res_mgr, 8);
+	SinglyLinkedListNode_t* node = ResMngr_AllocateResource(&res_mgr, SLL_NODE_SIZE);
 	node->data = to_insert;
 	node->next = this_ptr->current->next;
 	this_ptr->current->next = node;

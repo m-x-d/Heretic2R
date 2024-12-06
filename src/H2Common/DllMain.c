@@ -6,6 +6,7 @@
 
 #include <windows.h>
 #include "ResourceManager.h"
+#include "SinglyLinkedList.h"
 
 ResourceManager_t res_mgr;
 
@@ -14,7 +15,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 	switch (fdwReason)
 	{
 		case DLL_PROCESS_ATTACH:
-			ResMngr_Con(&res_mgr, 8, 256);
+			ResMngr_Con(&res_mgr, SLL_NODE_SIZE, SLL_NODE_BLOCK_SIZE);
 			break;
 
 		case DLL_PROCESS_DETACH:
