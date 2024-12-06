@@ -157,7 +157,7 @@ static int console_textlen;
 // Q2 counterpart
 char* Sys_ConsoleInput(void)
 {
-	INPUT_RECORD recs[1024];
+	INPUT_RECORD rec; //mxd. Was recs[1024]
 	DWORD dummy;
 	DWORD numread;
 	DWORD numevents;
@@ -173,15 +173,15 @@ char* Sys_ConsoleInput(void)
 		if (numevents < 1)
 			break;
 
-		if (!ReadConsoleInput(hinput, recs, 1, &numread))
+		if (!ReadConsoleInput(hinput, &rec, 1, &numread))
 			Sys_Error("Error reading console input");
 
 		if (numread != 1)
 			Sys_Error("Couldn't read console input");
 
-		if (recs[0].EventType == KEY_EVENT && !recs[0].Event.KeyEvent.bKeyDown)
+		if (rec.EventType == KEY_EVENT && !rec.Event.KeyEvent.bKeyDown)
 		{
-			char ch = recs[0].Event.KeyEvent.uChar.AsciiChar;
+			char ch = rec.Event.KeyEvent.uChar.AsciiChar;
 
 			switch (ch)
 			{
