@@ -9,12 +9,12 @@
 console_t con;
 
 static cvar_t* con_notifytime;
-static cvar_t* con_alpha; // New in H2
-static cvar_t* nextserver; // New in H2
+static cvar_t* con_alpha; // H2
+static cvar_t* nextserver; // H2
 
 void DrawString(int x, const int y, const char* s, const paletteRGBA_t color, int maxlen)
 {
-	while(*s != 0 && maxlen != 0)
+	while (*s != 0 && maxlen != 0)
 	{
 		re.DrawChar(x, y, *s, color);
 		s++;
@@ -262,8 +262,8 @@ void Con_Init(void)
 
 	// Register our commands
 	con_notifytime = Cvar_Get("con_notifytime", "3", 0);
-	con_alpha = Cvar_Get("con_alpha", "0.5", CVAR_ARCHIVE); // New in H2
-	nextserver = Cvar_Get("nextserver", "", 0); // New in H2
+	con_alpha = Cvar_Get("con_alpha", "0.5", CVAR_ARCHIVE); // H2
+	nextserver = Cvar_Get("nextserver", "", 0); // H2
 
 	Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);
 	Cmd_AddCommand("togglechat", Con_ToggleChat_f);
@@ -271,7 +271,7 @@ void Con_Init(void)
 	Cmd_AddCommand("messagemode2", Con_MessageMode2_f);
 	Cmd_AddCommand("clear", Con_Clear_f);
 	Cmd_AddCommand("condump", Con_Dump_f);
-	Cmd_AddCommand("conchars", Con_Chars_f); // New in H2
+	Cmd_AddCommand("conchars", Con_Chars_f); // H2
 
 	con.initialized = true;
 }

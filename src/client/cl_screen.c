@@ -13,7 +13,7 @@
 
 float scr_con_current; // Approaches scr_conlines at scr_conspeed.
 
-qboolean scr_initialized; // Ready to draw
+static qboolean scr_initialized; // Ready to draw
 
 qboolean scr_draw_loading_plaque; // H2
 static qboolean scr_draw_loading; // int in Q2
@@ -23,22 +23,21 @@ vrect_t scr_vrect; // Position of render window on screen
 
 cvar_t* scr_viewsize;
 cvar_t* scr_centertime;
-cvar_t* scr_showturtle;
-cvar_t* scr_showpause;
-cvar_t* scr_printspeed;
+static cvar_t* scr_showturtle;
+static cvar_t* scr_showpause;
+static cvar_t* scr_printspeed;
 
-cvar_t* scr_netgraph;
-cvar_t* scr_timegraph;
-cvar_t* scr_debuggraph;
-cvar_t* scr_graphheight;
-cvar_t* scr_graphscale;
-cvar_t* scr_graphshift;
+static cvar_t* scr_netgraph;
+static cvar_t* scr_timegraph;
+static cvar_t* scr_debuggraph;
+static cvar_t* scr_graphheight;
+static cvar_t* scr_graphscale;
 static cvar_t* scr_drawall;
 
-// New in H2:
-cvar_t* scr_statbar;
-cvar_t* scr_item_paused;
-cvar_t* scr_item_loading;
+// H2:
+static cvar_t* scr_statbar;
+static cvar_t* scr_item_paused;
+static cvar_t* scr_item_loading;
 cvar_t* r_fog;
 cvar_t* r_fog_density;
 
@@ -322,7 +321,7 @@ void SCR_Init(void)
 	scr_graphscale = Cvar_Get("scr_graphscale", "1", 0);
 	scr_drawall = Cvar_Get("scr_drawall", "0", 0);
 
-	// New in H2:
+	// H2:
 	scr_statbar = Cvar_Get("scr_statbar", "1", 0);
 	scr_item_paused = Cvar_Get("scr_item_paused", "Paused", 0);
 	scr_item_loading = Cvar_Get("scr_item_loading", "Loading", 0);

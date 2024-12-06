@@ -7,7 +7,7 @@
 #include "../ref_gl/gl_local.h"
 #include "glw_win.h"
 
-#define WINDOW_CLASS_NAME "Heretic II R" // 'Heretic 2' in H2
+#define WINDOW_CLASS_NAME "Heretic II R" // H2: 'Heretic 2'
 
 glwstate_t glw_state;
 
@@ -376,5 +376,5 @@ void GLimp_AppActivate(const qboolean active)
 		ShowWindow(glw_state.hWnd, SW_MINIMIZE);
 	}
 	
-	disablerendering = !active; // New in H2
+	disablerendering = !active; // H2
 }

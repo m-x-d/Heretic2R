@@ -114,7 +114,7 @@
 #define K_MWHEELUP		240
 
 extern char* keybindings[256];
-extern char* keybindings_double[256]; // New in H2
+extern char* keybindings_double[256]; // H2
 extern int key_repeats[256];
 
 extern qboolean keydown[256]; //mxd
@@ -136,4 +136,3 @@ void Key_WriteBindings_Double(FILE* f); // H2
 void Key_SetBinding(int keynum, const char* binding);
 void Key_SetDoubleBinding(int keynum, const char* binding); // H2
 void Key_ClearStates(void);
-int Key_GetKey(void);

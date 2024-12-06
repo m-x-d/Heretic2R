@@ -96,8 +96,7 @@ void Draw_InitCinematic(const int w, const int h, char* overlay, char* backdrop)
 	num_cinematic_tiles = ChopImage(w, h);
 }
 
-// New in H2
-void Draw_CloseCinematic(void)
+void Draw_CloseCinematic(void) // H2
 {
 	int i;
 	CinematicTile_t* tile;

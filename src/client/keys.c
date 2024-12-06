@@ -25,7 +25,7 @@ char chat_buffer[MAXCMDLINE];
 int chat_bufferlen;
 qboolean chat_team;
 
-static char* commandbindings[256];	// New in H2
+static char* commandbindings[256]; // H2
 static qboolean consolekeys[256];	// If true, can't be rebound while in console
 static qboolean menubound[256];		// If true, can't be rebound while in menu
 static int keyshift[256];			// Key to map to if Shift held down in console
@@ -131,7 +131,7 @@ keyname_t keynames[] =
 	{ "Kp_Slash",	K_KP_SLASH },
 	{ "Kp_Minus",	K_KP_MINUS },
 	{ "Kp_Plus",	K_KP_PLUS },
-	{ "Kp_NumLock",	K_KP_NUMLOCK }, // New in H2
+	{ "Kp_NumLock",	K_KP_NUMLOCK }, // H2
 
 	{ "MWheelUp",	K_MWHEELUP },
 	{ "MWheelDown",	K_MWHEELDOWN },
@@ -912,7 +912,7 @@ void Key_Init(void)
 	Cmd_AddCommand("unbindall", Key_Unbindall_f);
 	Cmd_AddCommand("bindlist", Key_Bindlist_f);
 
-	// New in H2:
+	// H2:
 	Cmd_AddCommand("bind_double", Key_BindDouble_f);
 	Cmd_AddCommand("unbind_double", Key_UnbindDouble_f);
 	Cmd_AddCommand("bindlist_double", Key_DoubleBindList_f);

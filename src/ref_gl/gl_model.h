@@ -157,8 +157,8 @@ typedef enum
 	mod_sprite,
 	mod_alias,	//TODO: unused in H2.Remove?
 	mod_unknown,//TODO: unused in H2.Remove?
-	mod_fmdl,	// New in H2
-	mod_book	// New in H2
+	mod_fmdl,	// H2
+	mod_book	// H2
 } modtype_t;
 
 typedef struct model_s

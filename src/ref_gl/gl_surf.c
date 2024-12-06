@@ -17,13 +17,13 @@ static msurface_t* r_alpha_surfaces;
 #define BLOCK_HEIGHT			128
 
 #define MAX_LIGHTMAPS			128
-#define MAX_TALLWALL_LIGHTMAPS	512 // New in H2
+#define MAX_TALLWALL_LIGHTMAPS	512 // H2
 
 int c_visible_lightmaps;
 int c_visible_textures;
 
 static int r_visframecount; // Bumped when going to a new PVS // Q2: defined in gl_rmain.c //mxd. Moved here & made static
-static int num_sorted_multitextures; // New in H2
+static int num_sorted_multitextures; // H2
 
 #define GL_LIGHTMAP_FORMAT		GL_RGBA
 
@@ -33,8 +33,8 @@ typedef struct
 	int current_lightmap_texture;
 
 	msurface_t* lightmap_surfaces[MAX_LIGHTMAPS];
-	msurface_t* tallwall_lightmap_surfaces[MAX_TALLWALL_LIGHTMAPS]; // New in H2
-	int tallwall_lightmaptexturenum; // New in H2
+	msurface_t* tallwall_lightmap_surfaces[MAX_TALLWALL_LIGHTMAPS]; // H2
+	int tallwall_lightmaptexturenum; // H2
 
 	int allocated[BLOCK_WIDTH];
 
@@ -402,12 +402,8 @@ static void R_RenderBrushPoly(msurface_t* fa)
 	}
 }
 
-// New in H2
-static void R_RenderFlatShadedBrushPoly(msurface_t* fa)
+static void R_RenderFlatShadedBrushPoly(msurface_t* fa) // H2
 {
-	int i;
-	float* v;
-
 	c_brush_polys++;
 
 	// Use fa->polys pointer as random, but constant color...
@@ -417,7 +413,8 @@ static void R_RenderFlatShadedBrushPoly(msurface_t* fa)
 
 	qglBegin(GL_POLYGON);
 
-	for (i = 0, v = fa->polys->verts[0]; i < fa->polys->numverts; i++, v += VERTEXSIZE)
+	float* v = fa->polys->verts[0];
+	for (int i = 0; i < fa->polys->numverts; i++, v += VERTEXSIZE)
 		qglVertex3fv(v);
 
 	qglEnd();
@@ -491,14 +488,13 @@ typedef struct
 	float depth;
 } AlphaSurfaceSortInfo_t;
 
-// New in H2
-static int AlphaSurfComp(const AlphaSurfaceSortInfo_t* info1, const AlphaSurfaceSortInfo_t* info2)
+static int AlphaSurfComp(const AlphaSurfaceSortInfo_t* info1, const AlphaSurfaceSortInfo_t* info2) // H2
 {
 	return (int)((info2->depth - info1->depth) * 1000.0f);
 }
 
-// New in H2 //TODO: logic identical to for loop logic in R_DrawEntitiesOnList(). Move to gl_rmain as R_DrawEntity and replace said logic?
-static void R_DrawAlphaEntity(entity_t* ent)
+//TODO: logic identical to for loop logic in R_DrawEntitiesOnList(). Move to gl_rmain as R_DrawEntity and replace said logic?
+static void R_DrawAlphaEntity(entity_t* ent) // H2
 {
 	currententity = ent;
 
@@ -545,8 +541,7 @@ static void R_DrawAlphaEntity(entity_t* ent)
 	}
 }
 
-// New in H2
-static void R_DrawAlphaSurface(const msurface_t* surf)
+static void R_DrawAlphaSurface(const msurface_t* surf) // H2
 {
 	qglEnable(GL_ALPHA_TEST);
 	qglAlphaFunc(GL_GREATER, 0.05f);
@@ -1138,9 +1133,9 @@ void R_DrawWorld(void)
 	}
 
 	memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
-	gl_lms.tallwall_lightmaptexturenum = 0; // New in H2
+	gl_lms.tallwall_lightmaptexturenum = 0; // H2
 	R_ClearSkyBox();
-	num_sorted_multitextures = 0; // New in H2
+	num_sorted_multitextures = 0; // H2
 
 	// H2: new r_fullbright and gl_drawflat cvar checks
 	if (!(int)r_fullbright->value && !(int)gl_drawflat->value && qglMultiTexCoord2fARB != NULL)

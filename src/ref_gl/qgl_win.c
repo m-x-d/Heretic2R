@@ -387,7 +387,7 @@ void (APIENTRY* qglPointParameterfvEXT)(GLenum param, const GLfloat* value);
 //void (APIENTRY* qglColorTableEXT)(int, int, int, int, int, const void*);
 //void (APIENTRY* qglSelectTextureSGIS)(GLenum);
 //void (APIENTRY* qglMTexCoord2fSGIS)(GLenum, GLfloat, GLfloat);
-void (APIENTRY* qglMultiTexCoord2fARB)(GLenum target, GLfloat s, GLfloat t); // New in H2
+void (APIENTRY* qglMultiTexCoord2fARB)(GLenum target, GLfloat s, GLfloat t); // H2
 void (APIENTRY* qglActiveTextureARB)(GLenum);
 
 static void (APIENTRY* dllAccum)(GLenum op, GLfloat value);

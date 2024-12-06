@@ -43,7 +43,7 @@ static int ipx_sockets[NUM_SOCKETS]; // 2 in Q2
 static cvar_t* net_shownet;
 static cvar_t* noudp;
 static cvar_t* noipx;
-static cvar_t* ipxfix; // New in H2
+static cvar_t* ipxfix; // H2
 
 static WSADATA winsockdata;
 
@@ -558,7 +558,7 @@ void NET_SendPacket(const netsrc_t sock, const int length, const void* data, con
 }
 
 // Q2 counterpart
-static int NET_IPSocket(char* net_interface, const int port)
+static int NET_IPSocket(const char* net_interface, const int port)
 {
 	u_long arg = 1;
 	int optval = 1;
@@ -788,7 +788,7 @@ void NET_Init(void)
 
 	noudp = Cvar_Get("noudp", "0", CVAR_NOSET);
 	noipx = Cvar_Get("noipx", "0", CVAR_NOSET);
-	ipxfix = Cvar_Get("ipxfix", "1", 0); // New in H2
+	ipxfix = Cvar_Get("ipxfix", "1", 0); // H2
 
 	net_shownet = Cvar_Get("net_shownet", "0", 0);
 }

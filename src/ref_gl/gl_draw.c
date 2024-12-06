@@ -16,8 +16,7 @@ glxy_t* font2;
 
 qboolean gl_alphatest_broken;
 
-// New in H2
-void InitFonts(void)
+static void InitFonts(void) // H2
 {
 	ri.FS_LoadFile("pics/misc/font1.fnt", (void**)&font1);
 	ri.FS_LoadFile("pics/misc/font2.fnt", (void**)&font2);
@@ -116,8 +115,7 @@ image_t* Draw_FindPic(const char* name)
 	return GL_FindImage(name + 1, it_pic);
 }
 
-// New in H2
-image_t* Draw_FindPicFilter(const char* name)
+image_t* Draw_FindPicFilter(const char* name) // H2
 {
 	if (name[0] != '/' && name[0] != '\\')
 	{
@@ -291,7 +289,6 @@ void Draw_FadeScreen(const paletteRGBA_t color)
 	qglDisable(GL_BLEND);
 }
 
-//TODO: is this used?
 void Draw_Name(const vec3_t origin, const char* name, const paletteRGBA_t color)
 {
 	vec3_t diff;
@@ -309,7 +306,7 @@ void Draw_Name(const vec3_t origin, const char* name, const paletteRGBA_t color)
 	const float scaler = center_x / screen_pos[2] * 1.28f;
 
 	int x = (int)(center_x + screen_pos[0] * scaler) - len * 4;
-	int y = (int)(center_y - screen_pos[1] * scaler);
+	const int y = (int)(center_y - screen_pos[1] * scaler);
 
 	if (x < 0 || y < 0 || x + len * 8 > r_newrefdef.width || y + 8 > r_newrefdef.height)
 		return;

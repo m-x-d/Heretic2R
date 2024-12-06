@@ -11,9 +11,9 @@ int numgltextures;
 
 #define NUM_HASHED_GLTEXTURES	256
 
-image_t* gltextures_hashed[NUM_HASHED_GLTEXTURES]; // New in H2
-qboolean disablerendering; // New in H2
-qboolean uploaded_paletted; // New in H2 //TODO: used only by qglColorTableEXT logic? Remove?
+static image_t* gltextures_hashed[NUM_HASHED_GLTEXTURES]; // H2
+qboolean disablerendering; // H2
+static qboolean uploaded_paletted; // H2 //TODO: was used only by qglColorTableEXT logic? Remove?
 
 static byte gammatable[256];
 
@@ -313,8 +313,8 @@ void GL_ImageList_f(void)
 
 #pragma region ========================== .M8 LOADING ==========================
 
-// New in H2. Somewhat similar to Q2's GL_Upload8()
-void GL_UploadPaletted(const int level, const byte* data, const palette_t* palette, const int width, const int height)
+//mxd. Somewhat similar to Q2's GL_Upload8()
+void GL_UploadPaletted(const int level, const byte* data, const palette_t* palette, const int width, const int height) // H2
 {
 	paletteRGBA_t trans[256 * 256];
 
@@ -341,8 +341,7 @@ void GL_UploadPaletted(const int level, const byte* data, const palette_t* palet
 	qglTexImage2D(GL_TEXTURE_2D, level, GL_TEX_SOLID_FORMAT, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
 }
 
-// New in H2
-static void GrabPalette(palette_t* src, palette_t* dst)
+static void GrabPalette(palette_t* src, palette_t* dst) // H2
 {
 	int i;
 	palette_t* src_p;
@@ -356,8 +355,7 @@ static void GrabPalette(palette_t* src, palette_t* dst)
 	}
 }
 
-// New in H2
-static int GL_GetMipLevel8(const miptex_t* mt, const imagetype_t type)
+static int GL_GetMipLevel8(const miptex_t* mt, const imagetype_t type) // H2
 {
 	int mip = (int)(type == it_skin ? gl_skinmip->value : gl_picmip->value);
 	mip = ClampI(mip, 0, MIPLEVELS - 1);
@@ -367,8 +365,7 @@ static int GL_GetMipLevel8(const miptex_t* mt, const imagetype_t type)
 	return mip;
 }
 
-// New in H2
-static void GL_Upload8M(miptex_t* mt, const image_t* image)
+static void GL_Upload8M(miptex_t* mt, const image_t* image) // H2
 {
 	uploaded_paletted = false;
 
@@ -438,8 +435,7 @@ static image_t* GL_LoadWal(const char* name, const imagetype_t type)
 
 #pragma region ========================== .M32 LOADING ==========================
 
-// New in H2
-static void GL_ApplyGamma32(miptex32_t* mt)
+static void GL_ApplyGamma32(miptex32_t* mt) // H2
 {
 	for (int mip = 0; mip < MIPLEVELS - 1; mip++) //TODO: last mip level is skipped. Unintentional?
 	{
@@ -458,8 +454,8 @@ static void GL_ApplyGamma32(miptex32_t* mt)
 	}
 }
 
-// New in H2. Same logic as in GL_GetMipLevel8(), but for miptex32_t...
-static int GL_GetMipLevel32(const miptex32_t* mt, const imagetype_t type)
+//mxd. Same logic as in GL_GetMipLevel8(), but for miptex32_t...
+static int GL_GetMipLevel32(const miptex32_t* mt, const imagetype_t type) // H2
 {
 	int mip = (int)(type == it_skin ? gl_skinmip->value : gl_picmip->value);
 	mip = ClampI(mip, 0, MIPLEVELS - 1);
@@ -469,8 +465,7 @@ static int GL_GetMipLevel32(const miptex32_t* mt, const imagetype_t type)
 	return mip;
 }
 
-// New in H2
-static void GL_Upload32M(miptex32_t* mt, const image_t* img)
+static void GL_Upload32M(miptex32_t* mt, const image_t* img) // H2
 {
 	uploaded_paletted = false;
 
@@ -487,8 +482,8 @@ static void GL_Upload32M(miptex32_t* mt, const image_t* img)
 	GL_SetFilter(img);
 }
 
-// New in H2. Loads .M32 image.
-static image_t* GL_LoadWal32(const char* name, const imagetype_t type)
+//mxd. Loads .M32 image.
+static image_t* GL_LoadWal32(const char* name, const imagetype_t type) // H2
 {
 	miptex32_t* mt;
 
@@ -606,8 +601,7 @@ struct image_s* R_RegisterSkin(const char* name, qboolean* retval)
 	return img;
 }
 
-// New in H2
-static void GL_FreeImage(image_t* image)
+static void GL_FreeImage(image_t* image) // H2
 {
 	image_t* img;
 	image_t** tgt;
@@ -676,13 +670,12 @@ void GL_FreeUnusedImages(void)
 	}
 }
 
-// New in H2
-static void GL_RefreshImage(image_t* image)
+static void GL_RefreshImage(image_t* image) // H2
 {
 	qglDeleteTextures(1, (GLuint*)&image->texnum);
 
 	const uint len = strlen(image->name);
-	if (strcmp(image->name + len - 3, ".m8") == 0)
+	if (strcmp(&image->name[len - 3], ".m8") == 0)
 	{
 		miptex_t* mt;
 		ri.FS_LoadFile(image->name, (void**)&mt);
@@ -693,7 +686,7 @@ static void GL_RefreshImage(image_t* image)
 
 		ri.FS_FreeFile(mt);
 	}
-	else if (strcmp(image->name + len - 4, ".m32") == 0)
+	else if (strcmp(&image->name[len - 4], ".m32") == 0)
 	{
 		miptex32_t* mt;
 		ri.FS_LoadFile(image->name, (void**)&mt);

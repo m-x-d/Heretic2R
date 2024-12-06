@@ -205,6 +205,7 @@ void SV_Map(qboolean attractloop, const char* levelstring, qboolean loadgame);
 
 // sv_game.c
 extern game_export_t* ge;
+
 void SV_InitGameProgs(void);
 void SV_ShutdownGameProgs(void);
 qboolean PF_inPVS(const vec3_t p1, const vec3_t p2);
@@ -227,43 +228,14 @@ void SV_Nextserver(void);
 void SV_ExecuteClientMessage(client_t* cl);
 
 // sv_world.c
-// Called after the world model has been loaded, before linking any entities.
 void SV_ClearWorld(void);
-
-// Needs to be called any time an entity changes origin, mins, maxs, or solid. Automatically unlinks if needed.
-// sets ent->v.absmin and ent->v.absmax.
-// sets ent->leafnums[] for pvs determination even if the entity is not solid.
 void SV_LinkEdict(edict_t* ent);
-
-// Call before removing an entity, and before trying to move one, so it doesn't clip against itself.
 void SV_UnlinkEdict(edict_t* ent);
-
-// Fills in a table of edict pointers with edicts that have bounding boxes that intersect the given area.
-// It is possible for a non-axial bmodel to be returned that doesn't actually intersect the area on an exact test.
-// returns the number of pointers filled in.
 int SV_AreaEdicts(vec3_t mins, vec3_t maxs, edict_t** list, int maxcount, int areatype);
-
-// New in H2
-int SV_FindEntitiesInBounds(vec3_t mins, vec3_t maxs, struct SinglyLinkedList_s* list, int areatype);
-
-// Returns the CONTENTS_* value from the world at the given point.
-// Quake 2 extends this to also check entities, to allow moving liquids.
+int SV_FindEntitiesInBounds(vec3_t mins, vec3_t maxs, struct SinglyLinkedList_s* list, int areatype); // H2
 int SV_PointContents(vec3_t p);
-
-// mins and maxs are relative.
-// If the entire move stays in a solid volume, trace.startsolid and trace.allsolid will be set, and trace.fraction will be 0.
-// If the starting point is in a solid, it will be allowed to move out to an open area.
-// passedict is explicitly excluded from clipping checks (normally NULL).
 void SV_Trace(vec3_t start, const vec3_t mins, const vec3_t maxs, vec3_t end, edict_t* passent, uint contentmask, trace_t* tr); // H2: different definition
-
-// New in H2
-void SV_TraceBoundingForm(struct FormMove_s* formMove);
-
-// New in H2
-qboolean SV_ResizeBoundingForm(edict_t* self, struct FormMove_s* formMove);
-
-// New in H2
-int SV_GetContentsAtPoint(const vec3_t point);
-
-// New in H2
-qboolean SV_CheckDistances(const vec3_t origin, float dist);
+void SV_TraceBoundingForm(struct FormMove_s* formMove); // H2
+qboolean SV_ResizeBoundingForm(edict_t* self, struct FormMove_s* formMove); // H2
+int SV_GetContentsAtPoint(const vec3_t point); // H2
+qboolean SV_CheckDistances(const vec3_t origin, float dist); // H2

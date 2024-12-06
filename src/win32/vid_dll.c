@@ -22,11 +22,11 @@ static qboolean s_alttab_disabled;
 
 // Console variables that we need to access from this module
 cvar_t* vid_gamma;
-cvar_t* vid_brightness; // New in H2
-cvar_t* vid_contrast; // New in H2
-cvar_t* vid_ref;	// Name of Refresh DLL loaded
-cvar_t* vid_xpos;	// X coordinate of window position
-cvar_t* vid_ypos;	// Y coordinate of window position
+cvar_t* vid_brightness; // H2
+cvar_t* vid_contrast; // H2
+cvar_t* vid_ref;			// Name of Refresh DLL loaded
+static cvar_t* vid_xpos;	// X coordinate of window position
+static cvar_t* vid_ypos;	// Y coordinate of window position
 cvar_t* vid_fullscreen;
 cvar_t* vid_mode;
 
@@ -37,7 +37,7 @@ static qboolean reflib_active = false;
 
 HWND cl_hwnd; // Main window handle for life of program
 
-qboolean vid_restart_required; // New in H2
+qboolean vid_restart_required; // H2
 
 #define VID_NUM_MODES	(sizeof(vid_modes) / sizeof(vid_modes[0]))
 
@@ -313,7 +313,7 @@ static LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			if (reflib_active)
 				re.AppActivate(fActive != WA_INACTIVE);
 
-			cls.disable_screen = (float)(fActive == WA_INACTIVE); // New in H2
+			cls.disable_screen = (float)(fActive == WA_INACTIVE); // H2
 		} break;
 
 		case WM_MOVE:
@@ -613,7 +613,7 @@ void VID_CheckChanges(void)
 
 void VID_Init(void)
 {
-	vid_restart_required = true; // New in H2
+	vid_restart_required = true; // H2
 
 	// Create the video variables so we know how to start the graphics drivers
 	vid_ref = Cvar_Get("vid_ref", "gl", CVAR_ARCHIVE);
@@ -621,19 +621,18 @@ void VID_Init(void)
 	vid_ypos = Cvar_Get("vid_ypos", "0", CVAR_ARCHIVE);
 	vid_fullscreen = Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
 	vid_gamma = Cvar_Get("vid_gamma", "0.5", CVAR_ARCHIVE);
-	vid_brightness = Cvar_Get("vid_brightness", "0.5", CVAR_ARCHIVE); // New in H2
-	vid_contrast = Cvar_Get("vid_contrast", "0.5", CVAR_ARCHIVE); // New in H2
+	vid_brightness = Cvar_Get("vid_brightness", "0.5", CVAR_ARCHIVE); // H2
+	vid_contrast = Cvar_Get("vid_contrast", "0.5", CVAR_ARCHIVE); // H2
 	win_noalttab = Cvar_Get("win_noalttab", "0", CVAR_ARCHIVE);
 
 	// Add some console commands that we want to handle
 	Cmd_AddCommand("vid_restart", VID_Restart_f);
 	Cmd_AddCommand("vid_front", VID_Front_f);
-	Cmd_AddCommand("vid_showmodes", VID_ShowModes_f); // New in H2
+	Cmd_AddCommand("vid_showmodes", VID_ShowModes_f); // H2
 
 	//mxd. Skip 'Disable the 3Dfx splash screen' logic.
 
-	// New in H2
-	VID_PreMenuInit();
+	VID_PreMenuInit(); // H2
 
 	// Start the graphics mode and load refresh DLL
 	VID_CheckChanges();

@@ -139,7 +139,7 @@ void SndDll_Init(void)
 	if (S_StopAllSounds == NULL)
 		Sys_Error("GetProcAddress failed on %s", snd_dll->string);
 
-	// New in H2:
+	// H2:
 	S_StopAllSounds_Sounding = (void*)GetProcAddress(sound_library, "S_StopAllSounds_Sounding");
 	if (S_StopAllSounds_Sounding == NULL)
 		Sys_Error("GetProcAddress failed on %s", snd_dll->string);
@@ -168,7 +168,7 @@ void SndDll_Init(void)
 	if (S_FindName == NULL)
 		Sys_Error("GetProcAddress failed on %s", snd_dll->string);
 
-	// New in H2:
+	// H2:
 #ifdef __A3D_GEOM
 	S_A3D_ExportRenderGeom = GetProcAddress(sound_library, "S_A3D_ExportRenderGeom");
 	if (S_A3D_ExportRenderGeom != NULL)
@@ -177,11 +177,8 @@ void SndDll_Init(void)
 		re.A3D_RenderGeometry = NULL;
 #endif
 
-	// New in H2:
-	SNDEAX_SetEnvironment = (void*)GetProcAddress(sound_library, "SNDEAX_SetEnvironment");
-
-	// New in H2 (unused?): 
-	SNDEAX_SetEnvironmentLevel = (void*)GetProcAddress(sound_library, "SNDEAX_SetEnvironmentLevel");
+	SNDEAX_SetEnvironment = (void*)GetProcAddress(sound_library, "SNDEAX_SetEnvironment"); // H2
+	SNDEAX_SetEnvironmentLevel = (void*)GetProcAddress(sound_library, "SNDEAX_SetEnvironmentLevel"); // H2 //TODO: unused?
 
 	fxi.S_StartSound = S_StartSound;
 	fxi.S_RegisterSound = S_RegisterSound;

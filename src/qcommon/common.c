@@ -19,8 +19,8 @@
 #define MAXPRINTMSG		4096
 #define MAX_NUM_ARGVS	50
 
-int com_argc;
-char* com_argv[MAX_NUM_ARGVS + 1];
+static int com_argc;
+static char* com_argv[MAX_NUM_ARGVS + 1];
 
 jmp_buf abortframe; // An ERR_DROP occured, exit the entire frame.
 
@@ -29,20 +29,20 @@ FILE* log_stats_file;
 cvar_t* host_speeds; //TODO: unused. Remove?
 cvar_t* log_stats;
 cvar_t* developer;
-cvar_t* timescale;
-cvar_t* fixedtime;
-cvar_t* logfile_active;	// 1 = buffer log, 2 = flush after each print
-cvar_t* showtrace;
+static cvar_t* timescale;
+static cvar_t* fixedtime;
+static cvar_t* logfile_active;	// 1 = buffer log, 2 = flush after each print
+static cvar_t* showtrace;
 cvar_t* dedicated;
 
-// New in H2:
-cvar_t* fpu_precision;
-cvar_t* hideconprint;
+// H2:
+static cvar_t* fpu_precision;
+static cvar_t* hideconprint;
 cvar_t* player_dll;
 
-FILE* logfile;
+static FILE* logfile;
 
-int server_state;
+static int server_state;
 
 #pragma region ========================== CLIENT / SERVER INTERACTIONS ====================
 
@@ -520,7 +520,7 @@ static void Com_Error_f(void)
 	Com_Error(ERR_FATAL, "%s", Cmd_Argv(1));
 }
 
-void Qcommon_Init(int argc, char** argv)
+void Qcommon_Init(const int argc, char** argv)
 {
 	if (setjmp(abortframe))
 		Sys_Error("Error during initialization");
@@ -545,7 +545,7 @@ void Qcommon_Init(int argc, char** argv)
 	Cbuf_Execute();
 
 	FS_InitFilesystem();
-	SndDll_Init(); // New in H2
+	SndDll_Init(); // H2
 
 	Cbuf_AddText("exec default.cfg\n");
 	Cbuf_AddText("exec config.cfg\n");
@@ -566,7 +566,7 @@ void Qcommon_Init(int argc, char** argv)
 	showtrace = Cvar_Get("showtrace", "0", 0);
 	dedicated = Cvar_Get("dedicated", "0", CVAR_NOSET);
 
-	// New in H2:
+	// H2:
 	fpu_precision = Cvar_Get("fpu_precision", "1", 0);
 	//sys_copyfail = Cvar_Get("sys_copyfail", "You must have the Heretic II CD in the drive to play.", 0); //mxd. Relevant logic skipped
 	hideconprint = Cvar_Get("hideconprint", "0", 0);

@@ -4,6 +4,8 @@
 // Copyright 1998 Raven Software
 //
 
+#pragma region ========================== NETWORK PACKET INFO ==========================
+
 /*
 packet header
 -------------
@@ -43,13 +45,15 @@ If there is no information that needs to be transferred on a given frame, such a
 then a packet only needs to be delivered if there is something in the unacknowledged reliable.
 */
 
+#pragma endregion
+
 #include "qcommon.h"
 
 static cvar_t* showpackets;
 static cvar_t* showdrop;
 static cvar_t* qport;
 
-// New in H2:
+// H2:
 cvar_t* net_sendrate;
 cvar_t* net_receiverate;
 cvar_t* net_latency;
@@ -67,7 +71,7 @@ void Netchan_Init(void)
 	showdrop = Cvar_Get("showdrop", "0", 0);
 	qport = Cvar_Get("qport", va("%i", port), CVAR_NOSET);
 
-	// New in H2:
+	// H2:
 	net_sendrate = Cvar_Get("net_sendrate", "1", 0);
 	net_receiverate = Cvar_Get("net_receiverate", "1", 0);
 	net_latency = Cvar_Get("net_latency", "0", 0);

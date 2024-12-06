@@ -109,8 +109,7 @@ void Mod_Init(void)
 	memset(mod_novis, 0xff, sizeof(mod_novis));
 }
 
-// New in H2 //TODO: byteswapping?
-static void Mod_LoadBookModel(model_t* mod, const void* buffer)
+static void Mod_LoadBookModel(model_t* mod, const void* buffer) // H2
 {
 	int i;
 	bookframe_t* frame;
@@ -405,7 +404,7 @@ static void Mod_LoadFaces(const lump_t* l)
 		{
 			out->flags |= SURF_DRAWTURB;
 
-			if (out->texinfo->flags & SURF_UNDULATE) // New in H2
+			if (out->texinfo->flags & SURF_UNDULATE) // H2
 				out->flags |= SURF_UNDULATE;
 
 			for (int i = 0; i < 2; i++)
@@ -484,7 +483,7 @@ static void Mod_LoadLeafs(const lump_t* l)
 	loadmodel->leafs = out;
 	loadmodel->numleafs = count;
 
-	const float offset = ((int)gl_noartifacts->value ? 32.0f : 0.0f); // New in H2
+	const float offset = ((int)gl_noartifacts->value ? 32.0f : 0.0f); // H2
 
 	for (int i = 0; i < count; i++, in++, out++)
 	{
@@ -526,7 +525,7 @@ static void Mod_LoadNodes(const lump_t* l)
 	loadmodel->nodes = out;
 	loadmodel->numnodes = count;
 
-	const float offset = ((int)gl_noartifacts->value ? 32.0f : 0.0f); // New in H2
+	const float offset = ((int)gl_noartifacts->value ? 32.0f : 0.0f); // H2
 
 	for (int i = 0; i < count; i++, in++, out++)
 	{
@@ -659,11 +658,11 @@ static void Mod_LoadBrushModel(model_t* mod, void* buffer)
 
 #pragma endregion
 
-static void Mod_LoadSpriteModel(model_t* mod, void* buffer)
+static void Mod_LoadSpriteModel(model_t* mod, const void* buffer)
 {
-	char sprite_name[MAX_OSPATH]; // New in H2
+	char sprite_name[MAX_OSPATH]; // H2
 
-	dsprite_t* sprin = buffer;
+	const dsprite_t* sprin = buffer;
 	dsprite_t* sprout = Hunk_Alloc(modfilelen);
 
 	sprout->ident = LittleLong(sprin->ident);
@@ -685,7 +684,7 @@ static void Mod_LoadSpriteModel(model_t* mod, void* buffer)
 		sprout->frames[i].origin_y = LittleLong(sprin->frames[i].origin_y);
 		memcpy(sprout->frames[i].name, sprin->frames[i].name, MAX_SKINNAME);
 
-		Com_sprintf(sprite_name, sizeof(sprite_name), "Sprites/%s", sprout->frames->name); // New in H2
+		Com_sprintf(sprite_name, sizeof(sprite_name), "Sprites/%s", sprout->frames->name); // H2
 		mod->skins[i] = GL_FindImage(sprite_name, it_sprite);
 	}
 
@@ -771,7 +770,7 @@ static model_t* Mod_ForName(const char* name, const qboolean crash)
 				Mod_LoadSpriteModel(mod, buf);
 				break;
 
-			case IDBOOKHEADER: // New in H2
+			case IDBOOKHEADER: // H2
 				mod->extradata = Hunk_Begin(0x10000);
 				Mod_LoadBookModel(mod, buf);
 				break;
@@ -810,7 +809,7 @@ void R_BeginRegistration(const char* model)
 	r_worldmodel = Mod_ForName(fullname, true);
 	r_viewcluster = -1;
 
-	GL_FreeUnusedImages(); // New in H2
+	GL_FreeUnusedImages(); // H2
 }
 
 struct model_s* R_RegisterModel(const char* name)

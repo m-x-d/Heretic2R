@@ -22,7 +22,7 @@
 
 char fs_gamedir[MAX_OSPATH];
 cvar_t* fs_basedir;
-cvar_t* fs_userdir; // New in H2
+cvar_t* fs_userdir; // H2
 cvar_t* fs_gamedirvar;
 
 typedef struct
@@ -539,7 +539,7 @@ void FS_InitFilesystem(void)
 	Cmd_AddCommand("link", FS_Link_f);
 	//Missing in H2: Cmd_AddCommand("dir", FS_Dir_f);
 
-	int arg_index = COM_CheckParm("-pakfirst"); // New in H2
+	int arg_index = COM_CheckParm("-pakfirst"); // H2
 	if (arg_index > 0)
 		Cvar_SetValue("pakfirst", 1.0f);
 	else
@@ -547,7 +547,7 @@ void FS_InitFilesystem(void)
 
 	// basedir <path>
 	// Allows the game to run from outside the data tree
-	arg_index = COM_CheckParm("-basedir"); // New in H2
+	arg_index = COM_CheckParm("-basedir"); // H2
 	if (arg_index > 0)
 	{
 		fs_basedir = Cvar_Get("basedir", COM_Argv(arg_index + 1), CVAR_NOSET);
@@ -574,7 +574,7 @@ void FS_InitFilesystem(void)
 	fs_base_searchpaths = fs_searchpaths;
 
 	// Check for game override
-	arg_index = COM_CheckParm("-game"); // New in H2
+	arg_index = COM_CheckParm("-game"); // H2
 	if (arg_index > 0)
 		fs_gamedirvar = Cvar_Get("game", COM_Argv(arg_index + 1), CVAR_LATCH | CVAR_SERVERINFO);
 	else
@@ -583,7 +583,7 @@ void FS_InitFilesystem(void)
 	if (fs_gamedirvar->string[0])
 		FS_SetGamedir(fs_gamedirvar->string);
 
-	// New in H2: set user directory
+	// H2: set user directory
 	arg_index = COM_CheckParm("-userdir");
 	if (arg_index > 0)
 	{

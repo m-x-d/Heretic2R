@@ -20,8 +20,8 @@ uint sys_msg_time;
 uint sys_frame_time;
 
 #define MAX_NUM_ARGVS	128
-int argc;
-char* argv[MAX_NUM_ARGVS];
+static int argc;
+static char* argv[MAX_NUM_ARGVS];
 
 HINSTANCE global_hInstance;
 
@@ -132,7 +132,7 @@ void Sys_UnloadGameDll(const char* name, HINSTANCE* hinst)
 
 void Sys_Init(void)
 {
-	Set_Com_Printf(Com_Printf); // New in H2
+	Set_Com_Printf(Com_Printf); // H2
 	timeBeginPeriod(1);
 
 	//mxd. Skip ancient OS versions checks.

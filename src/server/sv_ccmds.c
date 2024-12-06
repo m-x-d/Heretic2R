@@ -882,10 +882,9 @@ void SV_InitOperatorCommands(void)
 	if ((int)dedicated->value)
 		Cmd_AddCommand("say", SV_ConSay_f);
 
-	// New in H2:
-	Cmd_AddCommand("list_dmflags", SV_ListDMFlags_f);
-	Cmd_AddCommand("set_dmflags", SV_SetDMFlags_f);
-	Cmd_AddCommand("unset_dmflags", SV_UnsetDMFlags_f);
+	Cmd_AddCommand("list_dmflags", SV_ListDMFlags_f); // H2
+	Cmd_AddCommand("set_dmflags", SV_SetDMFlags_f); // H2
+	Cmd_AddCommand("unset_dmflags", SV_UnsetDMFlags_f); // H2
 
 	Cmd_AddCommand("save", SV_Savegame_f);
 	Cmd_AddCommand("load", SV_Loadgame_f);

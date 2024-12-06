@@ -127,6 +127,7 @@ static areanode_t* SV_CreateAreaNode(const int depth, vec3_t mins, vec3_t maxs)
 }
 
 // Q2 counterpart
+// Called after the world model has been loaded, before linking any entities.
 void SV_ClearWorld(void)
 {
 	memset(sv_areanodes, 0, sizeof(sv_areanodes));
@@ -135,6 +136,7 @@ void SV_ClearWorld(void)
 }
 
 // Q2 counterpart
+// Call before removing an entity, and before trying to move one, so it doesn't clip against itself.
 void SV_UnlinkEdict(edict_t* ent)
 {
 	if (ent->area.prev != NULL)
@@ -146,6 +148,9 @@ void SV_UnlinkEdict(edict_t* ent)
 }
 
 // Q2 counterpart (except for extra 1.75 scaler in 'expand for rotation' block).
+// Needs to be called any time an entity changes origin, mins, maxs, or solid. Automatically unlinks if needed.
+// sets ent->v.absmin and ent->v.absmax.
+// sets ent->leafnums[] for pvs determination even if the entity is not solid.
 void SV_LinkEdict(edict_t* ent)
 {
 #define MAX_TOTAL_ENT_LEAFS	128
@@ -358,6 +363,9 @@ static void SV_AreaEdicts_r(areanode_t* node)
 }
 
 // Q2 counterpart
+// Fills in a table of edict pointers with edicts that have bounding boxes that intersect the given area.
+// It is possible for a non-axial bmodel to be returned that doesn't actually intersect the area on an exact test.
+// Returns the number of pointers filled in.
 int SV_AreaEdicts(vec3_t mins, vec3_t maxs, edict_t** list, const int maxcount, const int areatype)
 {
 	area_mins = mins;
@@ -450,6 +458,8 @@ static int SV_HullForEntity(const edict_t* ent)
 	return CM_HeadnodeForBox(ent->mins, ent->maxs);
 }
 
+// Returns the CONTENTS_* value from the world at the given point.
+// Quake 2 extends this to also check entities, to allow moving liquids.
 int SV_PointContents(vec3_t p)
 {
 	edict_t* touchlist[MAX_EDICTS];
@@ -544,8 +554,10 @@ static void SV_TraceBounds(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, v
 	}
 }
 
-// Moves the given mins/maxs volume through the world from start to end.
-// Passedict and edicts owned by passedict are explicitly not checked.
+// Moves the given mins/maxs volume through the world from start to end. mins and maxs are relative.
+// If the entire move stays in a solid volume, trace.startsolid and trace.allsolid will be set, and trace.fraction will be 0.
+// If the starting point is in a solid, it will be allowed to move out to an open area.
+// passedict is explicitly excluded from clipping checks (normally NULL).
 void SV_Trace(vec3_t start, const vec3_t mins, const vec3_t maxs, vec3_t end, edict_t* passent, const uint contentmask, trace_t* tr)
 {
 	moveclip_t clip;

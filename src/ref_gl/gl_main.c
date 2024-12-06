@@ -531,7 +531,7 @@ static void R_SetFrustum(void)
 
 	for (int i = 0; i < 4; i++)
 	{
-		// New in H2:
+		// H2:
 		const float frustum_dist = VectorLength(frustum[i].normal);
 		if (frustum_dist <= 0.999999f)
 			Com_Printf("Frustum normal dist %f < 1.0\n", (double)frustum_dist);
@@ -661,13 +661,12 @@ static void R_SetupGL(void)
 		qglEnable(GL_DEPTH_TEST);
 	}
 
-	// New in H2 (never triggered: qboolean DoDrawBackPoly is never set)
+	// H2 (never triggered: qboolean DoDrawBackPoly is never set)
 	//if (DoDrawBackPoly)
 		//GL_DrawBackPoly();
 }
 
-// New in H2
-static void GL_Fog(void)
+static void GL_Fog(void) // H2
 {
 	static GLint fog_modes[] = { GL_LINEAR, GL_EXP, GL_EXP2 };
 
@@ -700,8 +699,7 @@ static void GL_Fog(void)
 	qglColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-// New in H2
-static void GL_WaterFog(void)
+static void GL_WaterFog(void) // H2
 {
 	static GLint fog_modes[] = { GL_LINEAR, GL_EXP, GL_EXP2 };
 
@@ -1084,7 +1082,7 @@ qboolean R_Init(void* hinstance, void* hWnd)
 
 void R_Shutdown(void)
 {
-	ShutdownFonts(); // New in H2
+	ShutdownFonts(); // H2
 
 	ri.Cmd_RemoveCommand("modellist");
 	ri.Cmd_RemoveCommand("screenshot");
@@ -1220,7 +1218,7 @@ static void R_RenderView(const refdef_t* fd)
 	if ((int)r_speeds->value)
 		Com_Printf("%4i wpoly %4i epoly %i tex %i lmaps\n", c_brush_polys, c_alias_polys, c_visible_textures, c_visible_lightmaps); // H2: ri.Con_Printf -> Com_Printf
 
-	if ((int)gl_reporthash->value) // New in H2
+	if ((int)gl_reporthash->value) // H2
 		GL_DisplayHashTable();
 }
 

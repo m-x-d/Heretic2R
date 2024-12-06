@@ -385,7 +385,7 @@ typedef struct
 
 	int (*GetReferencedID)(const struct model_s* model);
 
-	int (*FindSurface)(vec3_t start, vec3_t end, struct Surface_s* surface);
+	int (*FindSurface)(vec3_t start, vec3_t end, struct Surface_s* surface); //TODO: unused
 } client_fx_import_t;
 
 

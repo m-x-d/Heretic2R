@@ -18,13 +18,12 @@ cvar_t* sv_paused;
 
 static cvar_t* rcon_password; // Password for remote server commands
 
-// New in H2:
-cvar_t* dmflags;
-static cvar_t* advancedstaff; //TODO: unused?
-static cvar_t* blood_level; //TODO: unused?
+cvar_t* dmflags; // H2
+static cvar_t* advancedstaff; // H2 //TODO: unused?
+static cvar_t* blood_level; // H2 //TODO: unused?
 
-cvar_t* timeout; // Seconds without any message
-cvar_t* zombietime; // Seconds to sink messages after disconnect
+static cvar_t* timeout; // Seconds without any message
+static cvar_t* zombietime; // Seconds to sink messages after disconnect
 
 cvar_t* allow_download;
 cvar_t* allow_download_players;
@@ -33,24 +32,24 @@ cvar_t* allow_download_sounds;
 cvar_t* allow_download_maps;
 
 cvar_t* maxclients; // FIXME: rename to sv_maxclients
-cvar_t* sv_showclamp;
+static cvar_t* sv_showclamp;
 
-cvar_t* hostname;
-cvar_t* public_server; // Should heartbeats be sent
+static cvar_t* hostname;
+static cvar_t* public_server; // Should heartbeats be sent
 
-cvar_t* sv_reconnect_limit; // Minimum seconds between connect messages
+static cvar_t* sv_reconnect_limit; // Minimum seconds between connect messages
 
-// New in H2:
+// H2:
 cvar_t* sv_welcome_mess;
 cvar_t* sv_freezeworldset;
 cvar_t* sv_enforcetime;
 cvar_t* sv_noreload;
 cvar_t* sv_pers_fx_send_cut_off;
-cvar_t* sv_noclientfx;
+static cvar_t* sv_noclientfx;
 cvar_t* sv_cinematicfreeze;
 cvar_t* sv_jumpcinematic;
 cvar_t* sv_cooptimeout;
-cvar_t* sv_loopcoop;
+static cvar_t* sv_loopcoop;
 
 cvar_t* r_farclipdist;
 
@@ -793,13 +792,13 @@ void SV_Init(void)
 	Cvar_Get("deathmatch", "0", CVAR_LATCH);
 	Cvar_Get("coop", "0", CVAR_LATCH);
 	dmflags = Cvar_Get("dmflags", va("%i", DF_DISMEMBER), CVAR_SERVERINFO); // H2: different dmflags
-	advancedstaff = Cvar_Get("advancedstaff", "1", CVAR_ARCHIVE | CVAR_SERVERINFO); // New in H2
+	advancedstaff = Cvar_Get("advancedstaff", "1", CVAR_ARCHIVE | CVAR_SERVERINFO); // H2
 	Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
 	Cvar_Get("timelimit", "0", CVAR_SERVERINFO);
 	Cvar_Get("cheats", "0", CVAR_SERVERINFO | CVAR_LATCH);
 	Cvar_Get("protocol", va("%i", PROTOCOL_VERSION), CVAR_SERVERINFO | CVAR_NOSET);
 
-	// New in H2:
+	// H2:
 	Cvar_Get("flood_msgs", "4", 0);
 	Cvar_Get("flood_persecond", "4", 0);
 	Cvar_Get("flood_waitdelay", "10", 0);
@@ -815,7 +814,7 @@ void SV_Init(void)
 	sv_paused = Cvar_Get("paused", "0", 0);
 	sv_noreload = Cvar_Get("sv_noreload", "0", 0);
 
-	// New in H2:
+	// H2:
 	sv_welcome_mess = Cvar_Get("welcome_mess", "Welcome to Heretic II", 0);
 	sv_freezeworldset = Cvar_Get("freezeworldset", "0", 0);
 	sv_enforcetime = Cvar_Get("sv_enforcetime", "0", 0);

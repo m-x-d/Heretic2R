@@ -66,7 +66,7 @@ void Cbuf_InsertText(const char* text)
 
 	// Add the entire text of the file
 	Cbuf_AddText(text);
-	Cbuf_AddText("\n"); // New in H2
+	Cbuf_AddText("\n"); // H2
 
 	// Add the copied off data
 	if (templen > 0)
@@ -764,7 +764,7 @@ void Cmd_Init(void)
 	Cmd_AddCommand("echo", Cmd_Echo_f);
 	Cmd_AddCommand("alias", Cmd_Alias_f);
 	Cmd_AddCommand("wait", Cmd_Wait_f);
-	//Cmd_AddCommand("cpuid", Cmd_CpuID_f); // New in H2
+	//Cmd_AddCommand("cpuid", Cmd_CpuID_f); // H2
 }
 
 #pragma endregion
