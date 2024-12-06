@@ -5,7 +5,6 @@
 //
 
 #include "Message.h"
-#include "SinglyLinkedList.h"
 
 void QueueMessage(MsgQueue_t* this_ptr, void* msg)
 {
@@ -151,40 +150,47 @@ int GetParms(SinglyLinkedList_t* this_ptr, const char* format, va_list marker)
 		switch (format[count])
 		{
 			case 'b':
+			{
 				byte* b = va_arg(marker, byte*);
 				*b = SLList_PostIncrement(this_ptr).t_byte;
-				break;
+			} break;
 
 			case 's':
+			{
 				short* s = va_arg(marker, short*);
 				*s = SLList_PostIncrement(this_ptr).t_short;
-				break;
+			} break;
 
 			case 'i':
+			{
 				int* i = va_arg(marker, int*);
 				*i = SLList_PostIncrement(this_ptr).t_int;
-				break;
+			} break;
 
 			case 'f':
+			{
 				float* f = va_arg(marker, float*);
 				*f = SLList_PostIncrement(this_ptr).t_float;
-				break;
+			} break;
 
 			case 'v':
+			{
 				float* v = va_arg(marker, float*);
 				v = SLList_PostIncrement(this_ptr).t_float_p;
-				break;
+			} break;
 
 			case 'e': // A pointer is a pointer is a pointer.
 			case 'g':
+			{
 				void** g = va_arg(marker, void**);
 				*g = SLList_PostIncrement(this_ptr).t_void_p;
-				break;
+			} break;
 
 			case 'c':
+			{
 				paletteRGBA_t* c = va_arg(marker, paletteRGBA_t*);
 				*c = SLList_PostIncrement(this_ptr).t_RGBA;
-				break;
+			} break;
 
 			default:
 				assert(0);
