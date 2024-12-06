@@ -403,6 +403,9 @@ void SV_ShutdownGameProgs(void)
 // Init the game subsystem for a new map
 void SV_InitGameProgs(void)
 {
+#define FX_BUF_SIZE			16 //mxd. == sizeof(EffectsBuffer_t)
+#define FX_BUF_BLOCK_SIZE	12 //mxd
+
 	game_import_t import;
 	game_export_t* (*GetGameAPI)(game_import_t* gi);
 	
@@ -515,7 +518,7 @@ void SV_InitGameProgs(void)
 	}
 
 	ResMngr_Con(&sv_FXBufMngr, ENTITY_FX_BUF_SIZE, ENTITY_FX_BUF_BLOCK_SIZE);
-	ResMngr_Con(&EffectsBufferMngr, sizeof(EffectsBuffer_t), 12);
+	ResMngr_Con(&EffectsBufferMngr, FX_BUF_SIZE, FX_BUF_BLOCK_SIZE);
 
 	num_effects_buffers = 0;
 	clfx_buffer_offset = 0;
