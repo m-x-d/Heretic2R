@@ -7,6 +7,7 @@
 #include "server.h"
 #include "sv_effects.h"
 #include "cmodel.h"
+#include "screen.h"
 #include "tokens.h"
 #include "Vector.h"
 

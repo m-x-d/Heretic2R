@@ -829,7 +829,6 @@ void CL_Init(void);
 void CL_Drop(void);
 void CL_Shutdown(void);
 void CL_Frame(int msec);
-void SCR_BeginLoadingPlaque(void);
 
 void SV_Init(void);
 void SV_Shutdown(const char* finalmsg, qboolean reconnect);

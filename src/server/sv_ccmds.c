@@ -7,6 +7,7 @@
 #include "server.h"
 #include "cl_strings.h"
 #include "cmodel.h"
+#include "screen.h"
 #include "sv_effects.h"
 
 #pragma region ========================== SAVEGAME FILES ==========================
