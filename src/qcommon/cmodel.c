@@ -11,53 +11,53 @@
 
 static int checkcount;
 
-char map_name[MAX_QPATH];
+static char map_name[MAX_QPATH];
 
-int numbrushsides;
-cbrushside_t map_brushsides[MAX_MAP_BRUSHSIDES];
+static int numbrushsides;
+static cbrushside_t map_brushsides[MAX_MAP_BRUSHSIDES]; // 524288 bytes
 
 int numtexinfo;
 csurface_t map_surfaces[MAX_MAP_TEXINFO];
 
-int numplanes;
-cplane_t map_planes[MAX_MAP_PLANES + 6]; // Extra for box hull
+static int numplanes;
+static cplane_t map_planes[MAX_MAP_PLANES + 6]; // Extra for box hull. 1310840 bytes
 
-int numplanes;
+static int numplanes;
 
-int numnodes;
-cnode_t map_nodes[MAX_MAP_NODES + 6]; // Extra for box hull
+static int numnodes;
+static cnode_t map_nodes[MAX_MAP_NODES + 6]; // Extra for box hull. 524336 bytes
 
 static int numleafs = 1; // Allow leaf funcs to be called without a map.
-cleaf_t map_leafs[MAX_MAP_LEAFS];
-int emptyleaf;
+static cleaf_t map_leafs[MAX_MAP_LEAFS]; // 1048576 bytes
+static int emptyleaf;
 
-int numleafbrushes;
-ushort map_leafbrushes[MAX_MAP_LEAFBRUSHES];
+static int numleafbrushes;
+static ushort map_leafbrushes[MAX_MAP_LEAFBRUSHES]; // 131072 bytes
 
-int numcmodels;
-cmodel_t map_cmodels[MAX_MAP_MODELS];
+static int numcmodels;
+static cmodel_t map_cmodels[MAX_MAP_MODELS]; // 40960 bytes
 
-int numbrushes;
-cbrush_t map_brushes[MAX_MAP_BRUSHES];
+static int numbrushes;
+static cbrush_t map_brushes[MAX_MAP_BRUSHES]; // 163840 bytes
 
-int numvisibility;
-byte map_visibility[MAX_MAP_VISIBILITY];
-dvis_t* map_vis = (dvis_t*)map_visibility;
+static int numvisibility;
+static byte map_visibility[MAX_MAP_VISIBILITY]; // 1048576 bytes
+static dvis_t* map_vis = (dvis_t*)map_visibility;
 
-int numentitychars;
-char map_entitystring[MAX_MAP_ENTSTRING];
+static int numentitychars;
+static char map_entitystring[MAX_MAP_ENTSTRING]; // 262144 bytes
 
-int numareas = 1;
-carea_t map_areas[MAX_MAP_AREAS];
+static int numareas = 1;
+static carea_t map_areas[MAX_MAP_AREAS]; // 4096 bytes
 
-int numareaportals;
-dareaportal_t map_areaportals[MAX_MAP_AREAPORTALS];
+static int numareaportals;
+static dareaportal_t map_areaportals[MAX_MAP_AREAPORTALS]; // 8192 bytes
 
-int numclusters = 1;
+static int numclusters = 1;
 
-qboolean portalopen[MAX_MAP_AREAPORTALS];
+static qboolean portalopen[MAX_MAP_AREAPORTALS]; // 4096 bytes
 
-cvar_t* map_noareas;
+static cvar_t* map_noareas;
 
 int c_pointcontents;
 int c_traces;
@@ -701,7 +701,7 @@ static void CM_BoxLeafnums_r(int nodenum)
 }
 
 // Q2 counterpart
-int CM_BoxLeafnums_headnode(vec3_t mins, vec3_t maxs, int* list, const int listsize, const int headnode, int* topnode)
+static int CM_BoxLeafnums_headnode(vec3_t mins, vec3_t maxs, int* list, const int listsize, const int headnode, int* topnode)
 {
 	leaf_list = list;
 	leaf_count = 0;

@@ -7,6 +7,7 @@
 #include "client.h"
 #include "cl_effects.h"
 #include "clfx_dll.h"
+#include "cmodel.h"
 #include "dll_io.h"
 #include "FX.h"
 #include "game.h"

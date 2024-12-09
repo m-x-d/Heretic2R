@@ -5,6 +5,7 @@
 //
 
 #include "server.h"
+#include "cmodel.h"
 #include "sv_effects.h"
 #include "cl_strings.h"
 #include "Vector.h"

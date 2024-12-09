@@ -626,25 +626,6 @@ qboolean Netchan_Process(netchan_t* chan, sizebuf_t* msg);
 
 #pragma endregion
 
-#pragma region ========================== CMODEL ==========================
-
-int CM_NumClusters(void);
-int CM_NumInlineModels(void);
-char* CM_EntityString(void);
-
-byte* CM_ClusterPVS(int cluster);
-byte* CM_ClusterPHS(int cluster);
-
-int CM_PointLeafnum(const vec3_t p);
-
-int CM_LeafCluster(int leafnum);
-int CM_LeafArea(int leafnum);
-
-void CM_SetAreaPortalState(int portalnum, qboolean open);
-qboolean CM_AreasConnected(int area1, int area2);
-
-#pragma endregion
-
 #pragma region ========================== PLAYER MOVEMENT CODE ==========================
 
 // Common between server and client so prediction matches

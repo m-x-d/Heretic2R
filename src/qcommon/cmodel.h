@@ -44,7 +44,6 @@ int CM_PointLeafnum(const vec3_t p);
 // Call with topnode set to the headnode, returns with topnode set to the first node that splits the box.
 int CM_BoxLeafnums(vec3_t mins, vec3_t maxs, int* list, int listsize, int* topnode);
 
-int CM_LeafContents(int leafnum);
 int CM_LeafCluster(int leafnum);
 int CM_LeafArea(int leafnum);
 
@@ -56,6 +55,3 @@ qboolean CM_HeadnodeVisible(int headnode, byte* visbits);
 
 void CM_WritePortalState(FILE* f);
 void CM_ReadPortalState(FILE* f);
-
-// cmodel2.c
-trace_t	CM_Box_Trace(vec3_t start, vec3_t end, vec3_t mins, vec3_t maxs, int headnode, int brushmask);
