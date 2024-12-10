@@ -20,7 +20,7 @@ int numtexinfo;
 csurface_t map_surfaces[MAX_MAP_TEXINFO];
 
 static int numplanes;
-static cplane_t map_planes[MAX_MAP_PLANES + 6]; // Extra for box hull. 1310840 bytes
+static cplane_t map_planes[MAX_MAP_PLANES + 12]; // Extra for box hull. 1310840 bytes //BUGFIX: MAX_MAP_PLANES + 6 in both Q2 and H2.
 
 static int numplanes;
 
