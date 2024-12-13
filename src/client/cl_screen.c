@@ -1073,6 +1073,8 @@ void SCR_UpdateScreen(void)
 
 			M_Draw();
 		}
+
+		DBG_DrawMessages(); //mxd.
 	}
 
 	re.EndFrame();

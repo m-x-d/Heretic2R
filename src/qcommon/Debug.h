@@ -6,24 +6,13 @@
 
 #pragma once
 
-#if _DEBUG
-	#include <windows.h>
-#endif
+#include "q_Typedef.h"
 
 #define NOT_IMPLEMENTED		assert(!("Not implemented!"));
 
-// Print to Visual Studio console.
-__inline void IDEPrintf(const char* fmt, ...)
-{
-#if _DEBUG
-	va_list argptr;
-	char msg[1024];
+char* pv(const vec3_t v); // vtos() from g_utils.c, basically...
+char* psv(const short* v);
 
-	va_start(argptr, fmt);
-	vsprintf_s(msg, sizeof(msg), fmt, argptr);
-	va_end(argptr);
-
-	strcat_s(msg, sizeof(msg), "\n");
-	OutputDebugString(msg);
-#endif
-}
+void DBG_IDEPrint(const char* fmt, ...);
+void DBG_HudPrint(int slot, const char* label, const char* fmt, ...);
+void DBG_DrawMessages(void);
