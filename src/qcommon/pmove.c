@@ -162,8 +162,6 @@ static void PM_StepSlideMove(void)
 	vec3_t bounce_vel;
 	trace_t trace;
 
-	float pml_max_velocity = pml.max_velocity;
-	float pml_gravity = pml.gravity;
 	float time_left = pml.frametime;
 
 	float scaled_vel = 0.0f;
@@ -197,7 +195,7 @@ static void PM_StepSlideMove(void)
 
 			if (Vec3IsZero(pml.velocity))
 			{
-				if (pml.groundplane.normal[2] >= MIN_STEP_NORMAL && pml.groundplane.normal[2] >= pml_gravity / (pml_max_velocity + pml_gravity) && bumpcount > 0)
+				if (pml.groundplane.normal[2] >= MIN_STEP_NORMAL && pml.groundplane.normal[2] >= pml.gravity / (pml.max_velocity + pml.gravity) && bumpcount > 0)
 					return;
 
 				//mxd. Get plane_normal perpendicular. 'cross' is parallel to plane(?).
@@ -234,9 +232,9 @@ static void PM_StepSlideMove(void)
 				cross[2] = -(plane_normal[0] * plane_normal[0]) - plane_normal[1] * plane_normal[1];
 				VectorNormalize(cross);
 
-				scaled_vel = pml.groundplane.normal[2] * pml_max_velocity;
+				scaled_vel = pml.groundplane.normal[2] * pml.max_velocity;
 
-				if (pml.groundplane.normal[2] >= MIN_STEP_NORMAL || pm->waterlevel != 0)
+				if (pml.groundplane.normal[2] >= MIN_STEP_NORMAL || pm->waterlevel > 0)
 				{
 					inv_scaled_vel = -scaled_vel;
 				}
@@ -264,11 +262,11 @@ static void PM_StepSlideMove(void)
 
 				if (pml.groundplane.normal[2] >= MIN_STEP_NORMAL || pm->waterlevel != 0)
 				{
-					scaled_vel = (1.0f - pml.groundplane.normal[2]) * pml_gravity - scaled_vel;
+					scaled_vel = (1.0f - pml.groundplane.normal[2]) * pml.gravity - scaled_vel;
 				}
 				else
 				{
-					scaled_vel = (1.0f - pml.groundplane.normal[2]) * pml_gravity - pml.groundplane.normal[2] * pml_max_velocity * 0.1f;
+					scaled_vel = (1.0f - pml.groundplane.normal[2]) * pml.gravity - pml.groundplane.normal[2] * pml.max_velocity * 0.1f;
 					pm->s.c_flags |= PC_SLIDING;
 				}
 
@@ -291,7 +289,7 @@ static void PM_StepSlideMove(void)
 		}
 
 		if (!skip_groundentity_check && pm->groundentity == NULL)
-			vel[2] -= time_left_sq * pml_gravity * 0.5f;
+			vel[2] -= time_left_sq * pml.gravity * 0.5f;
 
 		vec3_t end;
 		VectorAdd(pml.origin, vel, end);
@@ -328,7 +326,7 @@ LAB_NotSolid:
 				}
 				else
 				{
-					pml.velocity[2] -= time_step * pml_gravity;
+					pml.velocity[2] -= time_step * pml.gravity;
 				}
 
 				if (trace.fraction == 1.0f)
@@ -339,7 +337,7 @@ LAB_NotSolid:
 
 				VectorCopy(pml.velocity, primal_velocity);
 			}
-			else if (Vec3IsZero(pml.velocity) && pml.groundplane.normal[2] >= pml_gravity / (pml_max_velocity + pml_gravity))
+			else if (Vec3IsZero(pml.velocity) && pml.groundplane.normal[2] >= pml.gravity / (pml.max_velocity + pml.gravity))
 			{
 				break;
 			}
@@ -382,7 +380,9 @@ LAB_NotSolid:
 				else
 				{
 					pm->groundentity = NULL;
-					trace.plane.normal[2] = max(0.0f, trace.plane.normal[2]);
+
+					if (trace.plane.normal[2] < 0.0f)
+						pml.groundplane.normal[2] = 0.0f;
 				}
 
 				if (numplanes > 4)
@@ -393,10 +393,11 @@ LAB_NotSolid:
 					VectorCopy(trace.plane.normal, planes[numplanes]);
 					numplanes++;
 				}
-
-				prev_plane = numplanes - 1;
-
-				VectorMA(pml.origin, 0.5f, planes[prev_plane], pml.origin);
+				else
+				{
+					prev_plane = numplanes - 1;
+					VectorMA(pml.origin, 0.5f, planes[prev_plane], pml.origin);
+				}
 			}
 			else
 			{
@@ -500,12 +501,12 @@ LAB_NotSolid:
 
 			if (is_bouncing)
 			{
-				dist += (-((1.0f - dir[2]) * pml_max_velocity) - dir[2] * pml_gravity) * time_left;
+				dist += (-((1.0f - dir[2]) * pml.max_velocity) - dir[2] * pml.gravity) * time_left;
 				bounce_vel[2] = dir[2] * dist;
 			}
 			else
 			{
-				bounce_vel[2] = dir[2] * dist - pml_gravity * time_left;
+				bounce_vel[2] = dir[2] * dist - pml.gravity * time_left;
 			}
 
 			bounce_vel[1] = dir[1] * dist;
@@ -521,29 +522,29 @@ LAB_NotSolid:
 				VectorCopy(pm->mins, mins);
 				VectorCopy(pm->maxs, maxs);
 
-				for (int offset = 1; ; offset++)
+				int offset = 1;
+				while (maxs[0] - (float)offset >= mins[0] + (float)offset)
 				{
-					if (maxs[0] - (float)offset < mins[0] + (float)offset)
-					{
-						VectorClear(pml.velocity);
-						return;
-					}
-
 					VectorInc(mins);
 					VectorDec(maxs);
 
 					pm->trace(pml.origin, mins, maxs, pml.origin, &trace);
 
 					if (!trace.startsolid)
-						break;
+					{
+						VectorCopy(pm->mins, pm->intentMins);
+						VectorCopy(pm->maxs, pm->intentMaxs);
+						VectorCopy(mins, pm->mins);
+						VectorCopy(maxs, pm->maxs);
+
+						goto LAB_NotSolid;
+					}
+
+					offset++;
 				}
 
-				VectorCopy(pm->mins, pm->intentMins);
-				VectorCopy(pm->maxs, pm->intentMaxs);
-				VectorCopy(mins, pm->mins);
-				VectorCopy(maxs, pm->maxs);
-
-				goto LAB_NotSolid;
+				VectorClear(pml.velocity);
+				return;
 			}
 
 			for (int i = 0; i < 3; i++)
@@ -554,7 +555,7 @@ LAB_NotSolid:
 	if (trace.fraction < 1.0f)
 		VectorClear(pml.velocity);
 
-	CheckCollision((float)pm->cmd.aimangles[1] * SHORT_TO_ANGLE * ANGLE_TO_RAD);
+	CheckCollision((float)pm->cmd.aimangles[YAW] * SHORT_TO_ANGLE * ANGLE_TO_RAD);
 }
 
 static void PM_AddCurrents(vec3_t wishvel)
@@ -718,24 +719,16 @@ static void PM_AirMove(void)
 {
 	vec3_t wishvel;
 
-	qboolean run_shrine = false;
-	qboolean high_max = false;
+	qboolean run_shrine = false; // H2
 	float fdmove = pm->cmd.forwardmove;
 	const float smove = pm->cmd.sidemove;
 
 	pml.gravity = pm->s.gravity; // H2
 
-	if (!pm->high_max) // H2
+	if (!pm->high_max && pm->run_shrine && fdmove > 0.0f) // H2
 	{
-		if (pm->run_shrine && fdmove > 0.0f)
-		{
-			fdmove *= 1.65f;
-			run_shrine = true;
-		}
-	}
-	else
-	{
-		high_max = true;
+		fdmove *= 1.65f;
+		run_shrine = true;
 	}
 
 	VectorNormalize(pml.forward);
@@ -754,7 +747,7 @@ static void PM_AirMove(void)
 		wishvel[i] += pml.velocity[i] * pml.knockbackfactor;
 
 	vec3_t unused;
-	const float maxspeed = ClampVelocity(wishvel, unused, run_shrine, high_max);
+	const float maxspeed = ClampVelocity(wishvel, unused, run_shrine, pm->high_max);
 
 	if (pm->groundentity != NULL)
 	{
@@ -985,15 +978,14 @@ static void PM_CatagorizePosition(void)
 
 				pm->trace(pml.origin, pm->mins, pm->maxs, point, &trace);
 
-				if ((trace.ent != NULL && trace.plane.normal[2] >= MIN_STEP_NORMAL) || trace.startsolid)
+				if ((trace.ent != NULL && trace.plane.normal[2] >= MIN_STEP_NORMAL) || trace.startsolid) // TODO: this check is grouped differently. A bug?
 				{
 					VectorCopy(mins, pm->mins);
 					VectorCopy(maxs, pm->maxs);
 				}
-
-				pm->groundentity = NULL;
-				pm->s.pm_flags &= ~PMF_ON_GROUND;
 			}
+
+			trace.ent = NULL; //mxd. Explicitly unset ent to clear pm->groundentity and PMF_ON_GROUND flag.
 		}
 		else
 		{
@@ -1006,12 +998,10 @@ static void PM_CatagorizePosition(void)
 			pml.groundplane = trace.plane;
 			pml.groundsurface = trace.surface;
 			pml.groundcontents = trace.contents;
-
-			pm->groundentity = NULL;
-			pm->s.pm_flags &= ~PMF_ON_GROUND;
 		}
 	}
-	else
+
+	if (trace.ent != NULL && (trace.plane.normal[2] >= MIN_STEP_NORMAL || trace.startsolid))
 	{
 		pm->groundentity = trace.ent;
 
@@ -1032,6 +1022,11 @@ static void PM_CatagorizePosition(void)
 					pm->s.pm_time = 18;
 			}
 		}
+	}
+	else
+	{
+		pm->groundentity = NULL;
+		pm->s.pm_flags &= ~PMF_ON_GROUND;
 	}
 
 	if (pm->numtouch < MAXTOUCH && trace.ent != NULL)
@@ -1056,7 +1051,7 @@ static qboolean PM_GoodPosition(void)
 	vec3_t origin;
 
 	for (int i = 0; i < 3; i++)
-		origin[i] = (float)pml.short_origin[i] * 0.125f;
+		origin[i] = (float)pml.short_origin[i] / 8.0f;
 
 	pm->trace(origin, pm->mins, pm->maxs, origin, &trace);
 
@@ -1074,7 +1069,7 @@ static qboolean PM_GoodPosition(void)
 static void PM_SnapPosition(void)
 {
 	// Try all single bits first.
-	static int jitterbits[] = { 0, 4, 1, 2, 3, 5, 6, 7 };
+	static uint jitterbits[] = { 0, 4, 1, 2, 3, 5, 6, 7 };
 	short sign[3];
 	short base[3];
 
@@ -1091,7 +1086,7 @@ static void PM_SnapPosition(void)
 
 		pml.short_origin[i] = (short)(pml.origin[i] * 8.0f);
 
-		if (FloatIsZeroEpsilon((float)pml.short_origin[i] * 0.125f - pml.origin[i]))
+		if (FloatIsZeroEpsilon((float)pml.short_origin[i] / 8.0f - pml.origin[i])) // H2: FloatIsZeroEpsilon() instead of direct comparison.
 			sign[i] = 0;
 	}
 
@@ -1100,17 +1095,15 @@ static void PM_SnapPosition(void)
 	// Try all combinations
 	for (int j = 0; j < 8; j++)
 	{
-		for (int i = 0; i < 3; i++)
-		{
-			pml.short_origin[i] = base[i];
+		VectorCopy_Macro(base, pml.short_origin);
 
+		for (int i = 0; i < 3; i++)
 			if (jitterbits[j] & (1 << i))
 				pml.short_origin[i] += sign[i];
-		}
 
 		if (PM_GoodPosition())
 		{
-			VectorCopy_Macro(pml.short_origin, pm->s.origin);
+			VectorCopy_Macro(pml.short_origin, pm->s.origin); // H2
 			return;
 		}
 	}
@@ -1143,7 +1136,7 @@ static void PM_InitialSnapPosition(void)
 				{
 					for (int i = 0; i < 3; i++)
 					{
-						pml.origin[i] = (float)pml.short_origin[i] * 0.125f;
+						pml.origin[i] = (float)pml.short_origin[i] / 8.0f;
 						pml.previous_origin[i] = pml.short_origin[i];
 					}
 
@@ -1244,7 +1237,7 @@ static void PM_UpdateWaterLevel(void) // H2. Part of PM_CatagorizePosition() log
 void Pmove(pmove_t* pmove, const qboolean server)
 {
 	pm = pmove;
-	pmove->s.c_flags &= ~(PC_COLLISION | PC_SLIDING); // H2
+	pm->s.c_flags &= ~(PC_COLLISION | PC_SLIDING); // H2
 
 	// Clear results.
 	pm->numtouch = 0;
@@ -1254,7 +1247,7 @@ void Pmove(pmove_t* pmove, const qboolean server)
 	memset(&pml, 0, sizeof(pml));
 	pml.server = server;
 
-	if (server) // H2
+	if (pml.server) // H2
 	{
 		VectorCopy(pm->origin, pml.origin);
 		VectorCopy(pm->velocity, pml.velocity);
@@ -1407,18 +1400,19 @@ void Pmove(pmove_t* pmove, const qboolean server)
 	pm->GroundPlane = pml.groundplane;
 	pm->GroundContents = pml.groundcontents;
 
-	if (!pml.server)
+	if (pml.server)
+	{
+		VectorCopy(pml.origin, pm->origin);
+		VectorCopy(pml.velocity, pm->velocity);
+
+		for (int i = 0; i < 3; i++)
+		{
+			pm->s.velocity[i] = (short)(pml.velocity[i] * 8.0f);
+			pm->s.origin[i] = (short)(pml.origin[i] * 8.0f);
+		}
+	}
+	else
 	{
 		PM_SnapPosition();
-		return;
-	}
-
-	VectorCopy(pml.origin, pm->origin);
-	VectorCopy(pml.velocity, pm->velocity);
-
-	for (int i = 0; i < 3; i++)
-	{
-		pm->s.velocity[i] = (short)(pml.velocity[i] * 8.0f);
-		pm->s.origin[i] = (short)(pml.origin[i] * 8.0f);
 	}
 }
