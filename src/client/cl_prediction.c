@@ -72,8 +72,6 @@ void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t m
 {
 	int headnode;
 	const float* angles;
-	vec3_t bmins;
-	vec3_t bmaxs;
 	vec3_t mb_mins;
 	vec3_t mb_maxs;
 	
@@ -83,7 +81,8 @@ void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t m
 	if (maxs == NULL) // H2
 		maxs = vec3_origin;
 
-	for (int i = 0; i < 3; i++) // H2
+	// H2. Setup movebox.
+	for (int i = 0; i < 3; i++)
 	{
 		mb_mins[i] = mins[i] + min(start[i], end[i]) - 1.0f;
 		mb_maxs[i] = maxs[i] + max(start[i], end[i]) + 1.0f;
@@ -140,12 +139,8 @@ void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t m
 			const float zd = 8.0f * (float)((ent->solid >> 5) & 31);
 			const float zu = 8.0f * (float)((ent->solid >> 10) & 63) - 32;
 
-			bmins[0] = -x;
-			bmaxs[0] = x;
-			bmins[1] = -x;
-			bmaxs[1] = x;
-			bmins[2] = -zd;
-			bmaxs[2] = zu;
+			const vec3_t bmins = { -x, -x, -zd };
+			const vec3_t bmaxs = {  x,  x,  zu };
 
 			// H2: check if inside move box...
 			qboolean in_movebox = true;
@@ -180,7 +175,7 @@ void CL_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t m
 	}
 }
 
-//mxd. Can set tr->ent to -1!
+//mxd. Sets tr->ent to -1 when the world was hit.
 static void CL_PMTrace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* tr)
 {
 	// Check against world.
@@ -205,7 +200,7 @@ static void CL_PMTrace(const vec3_t start, const vec3_t mins, const vec3_t maxs,
 	}
 
 	if (tr->fraction < 1.0f)
-		tr->ent = (struct edict_s*)(-1); // Q2: 1
+		tr->ent = (struct edict_s*)(-1); // Hit the world. // Q2: 1
 
 	if (!tr->startsolid && !tr->allsolid)
 	{
@@ -286,8 +281,8 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 
 	for (int i = 0; i < 3; i++)
 	{
-		cl.playerinfo.origin[i] = (float)pm.s.origin[i] * 0.125f;
-		cl.playerinfo.velocity[i] = (float)pm.s.velocity[i] * 0.125f;
+		cl.playerinfo.origin[i] = (float)pm.s.origin[i] / 8.0f;
+		cl.playerinfo.velocity[i] = (float)pm.s.velocity[i] / 8.0f;
 	}
 
 	VectorCopy(cl.frame.playerstate.mins, pm.mins);
@@ -488,8 +483,8 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 
 		for (int i = 0; i < 3; i++)
 		{
-			cl.playerinfo.origin[i] = (float)pm.s.origin[i] * 0.125f;
-			cl.playerinfo.velocity[i] = (float)pm.s.velocity[i] * 0.125f;
+			cl.playerinfo.origin[i] = (float)pm.s.origin[i] / 8.0f;
+			cl.playerinfo.velocity[i] = (float)pm.s.velocity[i] / 8.0f;
 		}
 
 		VectorCopy(pm.intentMins, cl.playerinfo.mins);

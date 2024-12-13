@@ -1471,7 +1471,7 @@ void CL_Frame(const int msec)
 			return;
 	}
 
-	// let the mouse activate or deactivate.
+	// Let the mouse activate or deactivate.
 	IN_Frame();
 
 	// Decide the simulation time.

@@ -96,7 +96,8 @@ struct edict_s
 	int num_clusters; // If -1, use headnode instead.
 	int clusternums[MAX_ENT_CLUSTERS];
 	int headnode; // Unused if num_clusters is -1.
-	int areanum,areanum2;
+	int areanum;
+	int areanum2;
 
 	int svflags;
 
