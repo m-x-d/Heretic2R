@@ -45,11 +45,11 @@ typedef struct
 	const float* mins; // Size of the moving object.
 	const float* maxs;
 
-	vec3_t mins2; // Size when clipping against monsters.
+	vec3_t mins2; // Size when clipping against monsters. //TODO: always the same values as mins/maxs? Remove?
 	vec3_t maxs2;
 
-	float* start;
-	float* end;
+	const float* start;
+	const float* end;
 
 	trace_t* trace; // Q2: trace_t
 	edict_t* passedict;
@@ -537,7 +537,7 @@ static void SV_ClipMoveToEntities(moveclip_t* clip)
 }
 
 // Q2 counterpart
-static void SV_TraceBounds(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, vec3_t boxmins, vec3_t boxmaxs)
+static void SV_TraceBounds(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, vec3_t boxmins, vec3_t boxmaxs)
 {
 	for (int i = 0; i < 3; i++)
 	{
@@ -577,6 +577,8 @@ void SV_Trace(vec3_t start, const vec3_t mins, const vec3_t maxs, vec3_t end, ed
 	// H2: New 'contentmask' check.
 	if ((contentmask & CONTENTS_WORLD_ONLY) == 0)
 	{
+		//mxd. Original logic makes copies of start/end vectors and assigns those to clip.start/clip.end.
+		//mxd. Not needed, because clip.start/clip.end are never modified.
 		clip.trace = tr;
 		clip.contentmask = contentmask;
 		clip.start = start;
