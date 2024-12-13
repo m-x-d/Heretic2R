@@ -1168,7 +1168,15 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 #define MAX_CAMERA_TIMER	500
 #define MASK_CAMERA			(CONTENTS_SOLID | CONTENTS_ILLUSIONARY | CONTENTS_CAMERABLOCK)
 
-	static int cam_mode; //TODO: convert to enum
+	typedef enum
+	{
+		CM_DEFAULT,			// When on land.
+		CM_DIVE,			// When swimming underwater.
+		CM_SWIM,			// When swimming on water surface.
+		CM_LIQUID_DEATH,	// When died in lava/slime (but not in water).
+	} cam_mode_e;
+
+	static cam_mode_e cam_mode;
 	static qboolean cam_timer_reset;
 	static vec3_t old_vieworg;
 	static vec3_t old_viewangles;
@@ -1226,7 +1234,7 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 	}
 
 	AngleVectors(look_angles, forward, right, up);
-	const int prev_cam_mode = cam_mode;
+	const cam_mode_e prev_cam_mode = cam_mode;
 
 	if (water_flags != 0)
 	{
@@ -1253,7 +1261,7 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 				end[1] = up[1] * scaler + PlayerEntPtr->origin[1];
 				end[2] = up[2] * scaler + trace.endpos[2];
 
-				cam_mode = 2;
+				cam_mode = CM_SWIM;
 			}
 		}
 		else
@@ -1263,7 +1271,7 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 			VectorMA(PlayerEntPtr->origin, fwd_offset, forward, end);
 			VectorCopy(PlayerEntPtr->origin, start);
 
-			cam_mode = 1;
+			cam_mode = CM_DIVE;
 		}
 	}
 	else
@@ -1283,7 +1291,7 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 			VectorMA(PlayerEntPtr->origin, fwd_offset, up, end);
 			VectorCopy(PlayerEntPtr->origin, start);
 
-			cam_mode = 0;
+			cam_mode = CM_DEFAULT;
 		}
 		else
 		{
@@ -1308,7 +1316,7 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 
 				trace.endpos[2] = start[2];
 
-				cam_mode = 3;
+				cam_mode = CM_LIQUID_DEATH;
 			}
 		}
 	}
