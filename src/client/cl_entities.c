@@ -1168,7 +1168,7 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 #define MAX_CAMERA_TIMER	500
 #define MASK_CAMERA			(CONTENTS_SOLID | CONTENTS_ILLUSIONARY | CONTENTS_CAMERABLOCK)
 
-	static int cam_mode;
+	static int cam_mode; //TODO: convert to enum
 	static qboolean cam_timer_reset;
 	static vec3_t old_vieworg;
 	static vec3_t old_viewangles;
@@ -1235,10 +1235,11 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 			VectorCopy(PlayerEntPtr->origin, start);
 			start[2] += 100.0f;
 
-			VectorCopy(PlayerEntPtr->origin, end);
-			end[2] -= 100.0f;
+			vec3_t tmp_end;
+			VectorCopy(PlayerEntPtr->origin, tmp_end);
+			tmp_end[2] -= 100.0f;
 
-			CL_Trace(start, mins, maxs, end, MASK_WATER | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
+			CL_Trace(start, mins, maxs, tmp_end, MASK_WATER | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
 
 			if (trace.fraction != 1.0f)
 			{
@@ -1289,16 +1290,17 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 			VectorCopy(PlayerEntPtr->origin, start);
 			start[2] += 100.0f;
 
-			VectorCopy(PlayerEntPtr->origin, end);
-			end[2] -= 100.0f;
+			vec3_t tmp_end;
+			VectorCopy(PlayerEntPtr->origin, tmp_end);
+			tmp_end[2] -= 100.0f;
 
-			CL_Trace(start, mins, maxs, end, MASK_WATER | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
+			CL_Trace(start, mins, maxs, tmp_end, MASK_WATER | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
 
 			if (trace.fraction != 1.0f)
 			{
 				start[0] = PlayerEntPtr->origin[0];
 				start[1] = PlayerEntPtr->origin[1];
-				start[2] = (trace.endpos[2] - end[2]) + trace.endpos[2] + 4.0f;
+				start[2] = trace.endpos[2] * 2 - end[2] + 4.0f;
 
 				end[0] = up[0] * fwd_offset + PlayerEntPtr->origin[0];
 				end[1] = up[1] * fwd_offset + PlayerEntPtr->origin[1];
@@ -1369,10 +1371,8 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 		CL_Trace(end_2, mins, maxs, end, MASK_WATER | CONTENTS_CAMERABLOCK, CONTENTS_DETAIL | CONTENTS_TRANSLUCENT, &trace);
 
 		if (!trace.startsolid && trace.fraction != 1.0f)
-		{
 			for (int i = 0; i < 3; i++)
-				end_2[i] += (trace.endpos[i] - end[i]) * 0.9f;
-		}
+				end_2[i] = end[i] + (trace.endpos[i] - end[i]) * 0.9f;
 	}
 
 	if (!(int)cl_camera_clipdamp->value)
@@ -1442,6 +1442,7 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 		VectorMA(end, -cl_camera_viewmax->value, diff, end_2);
 	}
 
+	// Copy calculated angles to refdef.
 	vec3_t viewangles;
 	VectorSubtract(end, end_2, viewangles);
 	VectorNormalize(viewangles);
@@ -1455,10 +1456,13 @@ static void CL_UpdateCameraOrientation(const float lerp, const qboolean interpol
 		VectorCopy(old_viewangles, cl.refdef.viewangles);
 		VectorCopy(old_vieworg, cl.refdef.vieworg);
 	}
+	else
+	{
+		VectorCopy(cl.refdef.viewangles, old_viewangles);
+		VectorCopy(cl.refdef.vieworg, old_vieworg);
+	}
 
-	VectorCopy(cl.refdef.viewangles, old_viewangles);
-	VectorCopy(cl.refdef.vieworg, old_vieworg);
-
+	// Apply screen shake.
 	vec3_t shake_amount;
 	Perform_Screen_Shake(shake_amount, (float)cl.time);
 	VectorAdd(cl.refdef.vieworg, shake_amount, cl.refdef.vieworg);
