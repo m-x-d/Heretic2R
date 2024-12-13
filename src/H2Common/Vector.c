@@ -237,7 +237,7 @@ H2COMMON_API void AnglesFromDirAndUp(vec3_t direction, vec3_t up, vec3_t angles)
 	Matrix3MultByMatrix3(m1, m2, m3);
 	Matrix3MultByVec3(m3, up, v_up);
 	v_up[0] = 0.0f;
-	Vec3Normalize(v_up);
+	VectorNormalize(v_up);
 
 	angles[2] = -(atan2f(v_up[2], v_up[1]) - ANGLE_90);
 }

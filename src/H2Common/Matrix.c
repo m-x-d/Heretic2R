@@ -144,7 +144,7 @@ H2COMMON_API double Matricies3FromDirAndUp(const vec3_t direction, const vec3_t 
 
 	Matrix3MultByVec3(m_pitchyaw, up, v_rotated_up);
 	v_rotated_up[0] = 0.0f;
-	Vec3Normalize(v_rotated_up);
+	VectorNormalize(v_rotated_up);
 
 	memset(m_tmp, 0, sizeof(matrix3_t));
 	m_tmp[0][0] = 1.0f;
