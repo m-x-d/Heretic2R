@@ -33,7 +33,7 @@ typedef struct
 	float desired_water_height; // H2
 
 	vec3_t previous_origin;
-	short short_origin[3]; // H2 //TODO: better name?
+	short snapped_origin[3]; // H2
 } pml_t;
 
 static pmove_t* pm;
@@ -1051,7 +1051,7 @@ static qboolean PM_GoodPosition(void)
 	vec3_t origin;
 
 	for (int i = 0; i < 3; i++)
-		origin[i] = (float)pml.short_origin[i] / 8.0f;
+		origin[i] = (float)pml.snapped_origin[i] / 8.0f;
 
 	pm->trace(origin, pm->mins, pm->maxs, origin, &trace);
 
@@ -1084,26 +1084,26 @@ static void PM_SnapPosition(void)
 		else
 			sign[i] = -1;
 
-		pml.short_origin[i] = (short)(pml.origin[i] * 8.0f);
+		pml.snapped_origin[i] = (short)(pml.origin[i] * 8.0f);
 
-		if (FloatIsZeroEpsilon((float)pml.short_origin[i] / 8.0f - pml.origin[i])) // H2: FloatIsZeroEpsilon() instead of direct comparison.
+		if (FloatIsZeroEpsilon((float)pml.snapped_origin[i] / 8.0f - pml.origin[i])) // H2: FloatIsZeroEpsilon() instead of direct comparison.
 			sign[i] = 0;
 	}
 
-	VectorCopy_Macro(pml.short_origin, base);
+	VectorCopy_Macro(pml.snapped_origin, base);
 
 	// Try all combinations
 	for (int j = 0; j < 8; j++)
 	{
-		VectorCopy_Macro(base, pml.short_origin);
+		VectorCopy_Macro(base, pml.snapped_origin);
 
 		for (int i = 0; i < 3; i++)
 			if (jitterbits[j] & (1 << i))
-				pml.short_origin[i] += sign[i];
+				pml.snapped_origin[i] += sign[i];
 
 		if (PM_GoodPosition())
 		{
-			VectorCopy_Macro(pml.short_origin, pm->s.origin); // H2
+			VectorCopy_Macro(pml.snapped_origin, pm->s.origin); // H2
 			return;
 		}
 	}
@@ -1118,26 +1118,26 @@ static void PM_InitialSnapPosition(void)
 	static short offset[3] = { 0, 1, -1 }; // Q2: { 0, -1, 1 }
 	short base[3];
 
-	VectorCopy_Macro(pml.short_origin, base); // Q2: pm->s.origin (here and below).
+	VectorCopy_Macro(pml.snapped_origin, base); // Q2: pm->s.origin (here and below).
 
 	for (int z = 0; z < 3; z++)
 	{
-		pml.short_origin[2] = (short)(base[2] + offset[z]);
+		pml.snapped_origin[2] = (short)(base[2] + offset[z]);
 
 		for (int y = 0; y < 3; y++)
 		{
-			pml.short_origin[1] = (short)(base[1] + offset[y]);
+			pml.snapped_origin[1] = (short)(base[1] + offset[y]);
 
 			for (int x = 0; x < 3; x++)
 			{
-				pml.short_origin[0] = (short)(base[0] + offset[x]);
+				pml.snapped_origin[0] = (short)(base[0] + offset[x]);
 
 				if (PM_GoodPosition())
 				{
 					for (int i = 0; i < 3; i++)
 					{
-						pml.origin[i] = (float)pml.short_origin[i] / 8.0f;
-						pml.previous_origin[i] = pml.short_origin[i];
+						pml.origin[i] = (float)pml.snapped_origin[i] / 8.0f;
+						pml.previous_origin[i] = pml.snapped_origin[i];
 					}
 
 					return;
@@ -1259,8 +1259,8 @@ void Pmove(pmove_t* pmove, const qboolean server)
 		{
 			pml.origin[i] = (float)pm->s.origin[i] / 8.0f;
 			pml.velocity[i] = (float)pm->s.velocity[i] / 8.0f;
-			pml.previous_origin[i] = pm->s.origin[i];
-			pml.short_origin[i] = pm->s.origin[i];
+			pml.previous_origin[i] = pm->s.origin[i]; // H2
+			pml.snapped_origin[i] = pm->s.origin[i]; // H2
 		}
 	}
 
@@ -1286,8 +1286,8 @@ void Pmove(pmove_t* pmove, const qboolean server)
 
 		for (int i = 0; i < 3; i++)
 		{
-			pml.short_origin[i] = (short)(pml.origin[i] * 8.0f);
-			pm->s.origin[i] = pml.short_origin[i];
+			pml.snapped_origin[i] = (short)(pml.origin[i] * 8.0f);
+			pm->s.origin[i] = pml.snapped_origin[i];
 			pm->origin[i] = pml.origin[i];
 		}
 
