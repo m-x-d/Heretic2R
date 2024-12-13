@@ -281,9 +281,10 @@ H2COMMON_API float VectorNormalize2(const vec3_t v, vec3_t out)
 	return length;
 }
 
+// out = veca + vecb * scale;
 H2COMMON_API void VectorMA(const vec3_t veca, const float scale, const vec3_t vecb, vec3_t out)
 {
-	assert(out != vec3_origin); //TODO: why this check?..
+	assert(out != vec3_origin);
 
 	out[0] = veca[0] + scale * vecb[0];
 	out[1] = veca[1] + scale * vecb[1];
@@ -350,7 +351,7 @@ H2COMMON_API void VectorRandomAdd(const vec3_t origin, const vec3_t random_amoun
 
 H2COMMON_API void VectorSubtract(const vec3_t veca, const vec3_t vecb, vec3_t out)
 {
-	assert(out != vec3_origin); //TODO: why this check?..
+	assert(out != vec3_origin);
 
 	out[0] = veca[0] - vecb[0];
 	out[1] = veca[1] - vecb[1];
@@ -359,7 +360,7 @@ H2COMMON_API void VectorSubtract(const vec3_t veca, const vec3_t vecb, vec3_t ou
 
 H2COMMON_API void VectorAdd(const vec3_t veca, const vec3_t vecb, vec3_t out)
 {
-	assert(out != vec3_origin); //TODO: why this check?..
+	assert(out != vec3_origin);
 
 	out[0] = veca[0] + vecb[0];
 	out[1] = veca[1] + vecb[1];
@@ -428,7 +429,7 @@ H2COMMON_API float DotProduct(const vec3_t v1, const vec3_t v2)
 
 H2COMMON_API void VectorDec(vec3_t v)
 {
-	assert(v != vec3_origin); //TODO: why this check?..
+	assert(v != vec3_origin);
 
 	v[0] -= 1.0f;
 	v[1] -= 1.0f;
@@ -437,7 +438,7 @@ H2COMMON_API void VectorDec(vec3_t v)
 
 H2COMMON_API void VectorInc(vec3_t v)
 {
-	assert(v != vec3_origin); //TODO: why this check?..
+	assert(v != vec3_origin);
 
 	v[0] += 1.0f;
 	v[1] += 1.0f;
@@ -446,7 +447,7 @@ H2COMMON_API void VectorInc(vec3_t v)
 
 H2COMMON_API void VectorClear(vec3_t v)
 {
-	assert(v != vec3_origin); //TODO: why this check?..
+	assert(v != vec3_origin);
 
 	v[0] = 0.0f;
 	v[1] = 0.0f;
@@ -455,7 +456,7 @@ H2COMMON_API void VectorClear(vec3_t v)
 
 H2COMMON_API void VectorSet(vec3_t v, const float x, const float y, const float z)
 {
-	assert(v != vec3_origin); //TODO: why this check?..
+	assert(v != vec3_origin);
 
 	v[0] = x;
 	v[1] = y;
@@ -464,7 +465,7 @@ H2COMMON_API void VectorSet(vec3_t v, const float x, const float y, const float 
 
 H2COMMON_API void VectorCopy(const vec3_t in, vec3_t out)
 {
-	assert(out != vec3_origin); //TODO: why this check?..
+	assert(out != vec3_origin);
 
 	out[0] = in[0];
 	out[1] = in[1];
@@ -482,16 +483,17 @@ H2COMMON_API void VectorInverse(vec3_t v)
 
 H2COMMON_API void VectorNegate(const vec3_t in, vec3_t out)
 {
-	assert(out != vec3_origin); //TODO: why this check?..
+	assert(out != vec3_origin);
 
 	out[0] = -in[0];
 	out[1] = -in[1];
 	out[2] = -in[2];
 }
 
+// out = in * scale
 H2COMMON_API void VectorScale(const vec3_t in, const float scale, vec3_t out)
 {
-	assert(out != vec3_origin); //TODO: why this check?..
+	assert(out != vec3_origin);
 
 	out[0] = in[0] * scale;
 	out[1] = in[1] * scale;
@@ -500,7 +502,7 @@ H2COMMON_API void VectorScale(const vec3_t in, const float scale, vec3_t out)
 
 H2COMMON_API void VectorRadiansToDegrees(const vec3_t in, vec3_t out)
 {
-	assert(out != vec3_origin); //TODO: why this check?..
+	assert(out != vec3_origin);
 
 	out[0] = in[0] * RAD_TO_ANGLE;
 	out[1] = in[1] * RAD_TO_ANGLE;
@@ -509,7 +511,7 @@ H2COMMON_API void VectorRadiansToDegrees(const vec3_t in, vec3_t out)
 
 H2COMMON_API void VectorDegreesToRadians(const vec3_t in, vec3_t out)
 {
-	assert(out != vec3_origin); //TODO: why this check?..
+	assert(out != vec3_origin);
 
 	out[0] = in[0] * ANGLE_TO_RAD;
 	out[1] = in[1] * ANGLE_TO_RAD;
