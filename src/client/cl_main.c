@@ -1242,7 +1242,7 @@ static void CL_InitLocal(void)
 	cl_camera_viewmin = Cvar_Get("cl_camera_viewmin", "70.0", 0);
 	cl_camera_viewmax = Cvar_Get("cl_camera_viewmax", "200.0", 0);
 	cl_camera_fpmode = Cvar_Get("cl_camera_fpmode", "0", CVAR_ARCHIVE);
-	cl_camera_fptrans = Cvar_Get("cl_camera_fptrans", "0", CVAR_ARCHIVE);
+	cl_camera_fptrans = Cvar_Get("cl_camera_fptrans", "0.3", CVAR_ARCHIVE); // H2_1.07: "0.3" -> "0".
 	cl_camera_fpdist = Cvar_Get("cl_camera_fpdist", "16.0", CVAR_ARCHIVE);
 	cl_camera_fpheight = Cvar_Get("cl_camera_fpheight", "0.0", CVAR_ARCHIVE);
 	cl_playertrans = Cvar_Get("cl_playertrans", "1.0", CVAR_ARCHIVE);
