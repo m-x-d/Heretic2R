@@ -262,7 +262,7 @@ void Con_Init(void)
 
 	// Register our commands
 	con_notifytime = Cvar_Get("con_notifytime", "3", 0);
-	con_alpha = Cvar_Get("con_alpha", "0.5", CVAR_ARCHIVE); // H2
+	con_alpha = Cvar_Get("con_alpha", "0.7", CVAR_ARCHIVE); // H2_1.07: "0.7" -> "0.5".
 	nextserver = Cvar_Get("nextserver", "", 0); // H2
 
 	Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);
