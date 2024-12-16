@@ -1259,7 +1259,7 @@ static void CL_InitLocal(void)
 	skin = Cvar_Get("skin", "Corvus", CVAR_ARCHIVE | CVAR_USERINFO);
 	skindir = Cvar_Get("skindir", "players", CVAR_ARCHIVE);
 	playerdir = Cvar_Get("playerdir", "players", CVAR_ARCHIVE);
-	rate = Cvar_Get("rate", "25000", CVAR_ARCHIVE | CVAR_USERINFO);
+	rate = Cvar_Get("rate", "2800", CVAR_ARCHIVE | CVAR_USERINFO); // H2_1.07: "2800" -> "25000".
 	msg = Cvar_Get("msg", "1", CVAR_ARCHIVE | CVAR_USERINFO);
 	fov = Cvar_Get("fov", "90", CVAR_ARCHIVE | CVAR_USERINFO);
 	autoweapon = Cvar_Get("autoweapon", "1", CVAR_ARCHIVE | CVAR_USERINFO);
