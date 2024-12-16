@@ -172,9 +172,9 @@ static void ApplyChanges(void)
 			vid_restart_required = true;
 		}
 
-		if (Q_stricmp(vid_ref->string, "soft") != 0)
+		if (Q_stricmp(vid_ref->string, "soft") != 0) // H2_1.07: "soft" -> "gl"
 		{
-			Cvar_Set("vid_ref", "soft"); //mxd. Was "gl" in H2 1.07.
+			Cvar_Set("vid_ref", "soft"); // H2_1.07: "soft" -> "gl"
 			vid_restart_required = true;
 		}
 	}
@@ -282,7 +282,7 @@ void VID_PreMenuInit(void)
 
 	if (vid_mode == NULL)
 	{
-		if (Q_stricmp(vid_ref->string, "gl") == 0)
+		if (Q_stricmp(vid_ref->string, "soft") == 0) // H2_1.07: "soft" -> "gl"
 			vid_mode = Cvar_Get("vid_mode", "0", 0);
 		else
 			vid_mode = Cvar_Get("vid_mode", "3", 0);

@@ -574,16 +574,16 @@ void VID_CheckChanges(void)
 
 		Cvar_SetValue("win_ignore_destroy", true); // H2
 
-		if (Q_stricmp(vid_ref->string, "gl") == 0 && (int)vid_fullscreen->value) // H2
+		if (Q_stricmp(vid_ref->string, "soft") == 0 && (int)vid_fullscreen->value) // H2_1.07: "soft" -> "gl"
 			Cvar_SetValue("win_noalttab", false);
 
 		Com_sprintf(name, sizeof(name), "ref_%s.dll", vid_ref->string);
 		if (!VID_LoadRefresh(name))
 		{
-			if (strcmp(vid_ref->string, "gl") == 0) // Q2: strcmp(vid_ref->string, "soft") //TODO: H2 never switches to software mode?
+			if (strcmp(vid_ref->string, "soft") == 0) // H2_1.07: "soft" -> "gl"
 				Com_Error(ERR_FATAL, "Couldn't fall back to software refresh!");
 
-			Cvar_Set("vid_ref", "gl");
+			Cvar_Set("vid_ref", "soft"); // H2_1.07: "soft" -> "gl"
 
 			vid_restart_required = true; // H2
 
@@ -616,7 +616,7 @@ void VID_Init(void)
 	vid_restart_required = true; // H2
 
 	// Create the video variables so we know how to start the graphics drivers
-	vid_ref = Cvar_Get("vid_ref", "gl", CVAR_ARCHIVE);
+	vid_ref = Cvar_Get("vid_ref", "gl", CVAR_ARCHIVE); // H2_1.07: "soft" -> "gl"
 	vid_xpos = Cvar_Get("vid_xpos", "0", CVAR_ARCHIVE);
 	vid_ypos = Cvar_Get("vid_ypos", "0", CVAR_ARCHIVE);
 	vid_fullscreen = Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);

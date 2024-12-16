@@ -161,7 +161,7 @@ static void UpdateVidModeVars(void) // H2
 {
 	Cvar_SetValue("m_origmode", vid_mode->value);
 
-	if (Q_stricmp(vid_ref->string, "gl") == 0 && vid_mode->value < vid_menu_mode->value)
+	if (Q_stricmp(vid_ref->string, "soft") == 0 && vid_mode->value < vid_menu_mode->value) // H2_v1.07: "soft" -> "gl".
 	{
 		Cvar_SetValue("vid_mode", vid_menu_mode->value);
 		quick_menus_old_value = quick_menus->value;

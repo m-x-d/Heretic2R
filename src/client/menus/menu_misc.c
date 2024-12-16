@@ -247,7 +247,7 @@ static void Misc_MenuInit(void) // H2
 	s_options_lookspring_box.itemnames = yes_no_names;
 
 	int item_index = 6;
-	const qboolean show_noalttab_item = (Q_stricmp(Cvar_VariableString("vid_ref"), "gl") != 0 || Cvar_VariableValue("vid_fullscreen") == 0.0f);
+	const qboolean show_noalttab_item = (Q_stricmp(Cvar_VariableString("vid_ref"), "soft") != 0 || Cvar_VariableValue("vid_fullscreen") == 0.0f); // H2_1.07: "soft" -> "gl".
 
 	if (show_noalttab_item)
 	{
