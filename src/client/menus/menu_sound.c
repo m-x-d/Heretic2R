@@ -40,13 +40,13 @@ void UpdateSoundQualityFunc(void* self)
 	if (s_options_quality_list.curvalue == 0)
 	{
 		restart_sound = (Cvar_VariableValue("s_loadas8bit") == 0.0f);
-		Cvar_SetValue("s_khz", 22.0f);
+		Cvar_SetValue("s_khz", 22.0f); // H2_1.07: 11.0f -> 22.0f.
 		Cvar_SetValue("s_loadas8bit", 1);
 	}
 	else
 	{
 		restart_sound = (Cvar_VariableValue("s_loadas8bit") != 0.0f);
-		Cvar_SetValue("s_khz", 44.0f);
+		Cvar_SetValue("s_khz", 44.0f); // H2_1.07: 22.0f -> 44.0f.
 		Cvar_SetValue("s_loadas8bit", 0);
 	}
 
