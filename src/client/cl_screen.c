@@ -318,7 +318,7 @@ void SCR_Init(void)
 	scr_timegraph = Cvar_Get("scr_timegraph", "0", 0);
 	scr_debuggraph = Cvar_Get("scr_debuggraph", "0", 0);
 	scr_graphheight = Cvar_Get("scr_graphheight", "112", 0);
-	scr_graphscale = Cvar_Get("scr_graphscale", "1", 0);
+	scr_graphscale = Cvar_Get("scr_graphscale", "0.2", 0); // H2_1.07: "0.2" -> "1".
 	scr_drawall = Cvar_Get("scr_drawall", "0", 0);
 
 	// H2:

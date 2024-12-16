@@ -1192,7 +1192,7 @@ static void CL_InitLocal(void)
 	cl_predict_remote = Cvar_Get("cl_predict_remote", "1", 0); // H2
 	cl_predict_lag = Cvar_Get("cl_predict_lag", "0.0", 0); // H2
 	cl_minfps = Cvar_Get("cl_minfps", "5", 0); // Commented out in Q2
-	cl_maxfps = Cvar_Get("cl_maxfps", "60", 0);
+	cl_maxfps = Cvar_Get("cl_maxfps", "60", 0); // H2_1.07: "30" -> "60".
 
 	cl_frametime = Cvar_Get("cl_frametime", "0.0", 0);
 	cl_yawspeed = Cvar_Get("cl_yawspeed", "70", CVAR_ARCHIVE);
@@ -1227,14 +1227,14 @@ static void CL_InitLocal(void)
 
 	// H2:
 	shownames = Cvar_Get("shownames", "0", CVAR_ARCHIVE);
-	r_detail = Cvar_Get("r_detail", "3", CVAR_ARCHIVE);
+	r_detail = Cvar_Get("r_detail", "3.0", CVAR_ARCHIVE); // H2_1.07: "2.0" -> "3".
 	compass = Cvar_Get("compass", "0", CVAR_ARCHIVE); //TODO: used only by ClientEffects. Remove?
 	game_downloadable_type = Cvar_Get("downloadable_game", "0", 0); //TODO: eh? Set again below
 	cl_showcaptions = Cvar_Get("cl_showcaptions", "1", 0);
 	cl_doautoaim = Cvar_Get("cl_doautoaim", "0.0", CVAR_ARCHIVE);
 	cl_camera_combat = Cvar_Get("cl_camera_combat", "0.0", 0);
 	cl_camera_clipdamp = Cvar_Get("cl_camera_clipdamp", "1.0", 0);
-	cl_camera_dampfactor = Cvar_Get("cl_camera_dampfactor", "1", CVAR_ARCHIVE);
+	cl_camera_dampfactor = Cvar_Get("cl_camera_dampfactor", "1.0", CVAR_ARCHIVE); // H2_1.07: "0.2" -> "1.0".
 	cl_camera_fpoffs = Cvar_Get("cl_camera_fpoffs", "0.0", 0);
 	cl_camera_freeze = Cvar_Get("cl_camera_freeze", "0.0", 0);
 	cl_camera_under_surface = Cvar_Get("cl_camera_under_surface", "0.0", 0);
