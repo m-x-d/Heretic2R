@@ -1264,11 +1264,11 @@ static void CL_InitLocal(void)
 	fov = Cvar_Get("fov", "75", CVAR_ARCHIVE | CVAR_USERINFO); // H2_1.07: "75" -> "90".
 	autoweapon = Cvar_Get("autoweapon", "1", CVAR_ARCHIVE | CVAR_USERINFO);
 	colour_obituary = Cvar_Get("colour_obituary", "20", CVAR_ARCHIVE);
-	colour_chat = Cvar_Get("colour_chat", "20", CVAR_ARCHIVE);
-	colour_names = Cvar_Get("colour_names", "20", CVAR_ARCHIVE);
-	colour_teamchat = Cvar_Get("colour_teamchat", "20", CVAR_ARCHIVE);
-	colour_level = Cvar_Get("colour_level", "20", CVAR_ARCHIVE);
-	colour_game = Cvar_Get("colour_game", "20", CVAR_ARCHIVE);
+	colour_chat = Cvar_Get("colour_chat", "22", CVAR_ARCHIVE); // H2_1.07: "22" -> "20".
+	colour_names = Cvar_Get("colour_names", "7", CVAR_ARCHIVE); // H2_1.07: "7" -> "20".
+	colour_teamchat = Cvar_Get("colour_teamchat", "23", CVAR_ARCHIVE); // H2_1.07: "23" -> "20".
+	colour_level = Cvar_Get("colour_level", "16", CVAR_ARCHIVE); // H2_1.07: "16" -> "20".
+	colour_game = Cvar_Get("colour_game", "17", CVAR_ARCHIVE); // H2_1.07: "17" -> "20".
 	game_downloadable_type = Cvar_Get("game_downloadable_type", "0", 0);
 
 	// Register our commands
