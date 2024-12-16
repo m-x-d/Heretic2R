@@ -14,7 +14,7 @@
 #include "ref.h"
 #include "qgl.h"
 
-#define REF_VERSION	"GL 2.1" //mxd. GL 0.01 in Q2
+#define REF_VERSION	"GL 2.0" // H2_1.07: "GL 2.1"; Q2: "GL 0.01".
 
 typedef enum //mxd. Changed in H2
 {
@@ -235,7 +235,7 @@ void GL_Bind(int texnum);
 void GL_BindImage(const image_t* image); // H2
 void GL_MBind(GLenum target, int texnum);
 void GL_MBindImage(GLenum target, const image_t* image); // H2
-void GL_TextureMode(char* string);
+void GL_TextureMode(const char* string);
 void GL_SetFilter(const image_t* image); // H2
 void GL_ImageList_f(void);
 void GL_UploadPaletted(int level, const byte* data, const paletteRGB_t* palette, int width, int height); // H2

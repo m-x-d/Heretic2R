@@ -220,16 +220,11 @@ void HandleTrans(const entity_t* e)
 	{
 		qglEnable(GL_ALPHA_TEST);
 		qglAlphaFunc(GL_GREATER, 0.05f);
+		qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		if (e->flags & RF_TRANS_GHOST)
-		{
-			qglBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
-		}
-		else
-		{
-			qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		// H2_1.07: qglBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR) when RF_TRANS_GHOST flag is set.
+		if (!(e->flags & RF_TRANS_GHOST))
 			qglColor4ub(e->color.r, e->color.g, e->color.b, e->color.a);
-		}
 	}
 
 	qglEnable(GL_BLEND);
@@ -244,7 +239,7 @@ void CleanupTrans(const entity_t* e)
 		if ((int)r_fog->value || (int)cl_camera_under_surface->value) //mxd. Removed gl_fog_broken cvar check
 			qglEnable(GL_FOG);
 
-		qglBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
+		qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR.
 	}
 	else
 	{
@@ -861,8 +856,8 @@ void R_Register(void)
 	// NEW:
 	gl_drawflat = Cvar_Get("gl_drawflat", "0", 0);
 	gl_devel1 = Cvar_Get("gl_devel1", "0", 0);
-	gl_trans33 = Cvar_Get("gl_trans33", "1", 0);
-	gl_trans66 = Cvar_Get("gl_trans66", "1", 0);
+	gl_trans33 = Cvar_Get("gl_trans33", "0.33", 0); // H2_1.07: 0.33 -> 1
+	gl_trans66 = Cvar_Get("gl_trans66", "0.66", 0); // H2_1.07: 0.66 -> 1
 	gl_picmip = Cvar_Get("gl_picmip", "0", CVAR_ARCHIVE);
 	gl_skinmip = Cvar_Get("gl_skinmip", "0", CVAR_ARCHIVE);
 	gl_bookalpha = Cvar_Get("gl_bookalpha", "1.0", 0);
@@ -1002,7 +997,7 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	gl_config.version_string = (const char*)(*qglGetString)(GL_VERSION);
 	Com_Printf("GL_VERSION: %s\n", gl_config.version_string);
 	gl_config.extensions_string = (const char*)(*qglGetString)(GL_EXTENSIONS);
-	//Com_Printf("GL_EXT: hidden\n", gl_config.extensions_string); //mxd. Modern extensions_string is longer than Com_Printf can handle...
+	//Com_Printf("GL_EXTENSIONS: %s\n", gl_config.extensions_string); // H2_1.07: "GL_EXT: hidden\n" //mxd. Modern extensions_string is longer than Com_Printf can handle...
 
 	//mxd. Skip copious amounts of ancient videocard checks, assume everything works...
 	gl_config.renderer = GL_RENDERER_DEFAULT;

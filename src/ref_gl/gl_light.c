@@ -48,7 +48,7 @@ void R_RenderDlights(void)
 	int i;
 	dlight_t* l;
 
-	if ((int)gl_flashblend->value) //TODO: H2 check is opposite to Q2 check! A bug?
+	if (!(int)gl_flashblend->value) // H2_1.07: the check is inverted.
 		return;
 
 	r_dlightframecount = r_framecount + 1; // Because the count hasn't advanced yet for this frame
@@ -65,7 +65,7 @@ void R_RenderDlights(void)
 	qglColor3f(1.0f, 1.0f, 1.0f);
 	qglDisable(GL_BLEND);
 	qglEnable(GL_TEXTURE_2D);
-	qglBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR); // Q2: GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
+	qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR
 	qglDepthMask(GL_TRUE);
 }
 

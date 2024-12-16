@@ -77,7 +77,7 @@ void Draw_Char(const int x, const int y, int c, const paletteRGBA_t color)
 	qglEnable(GL_ALPHA_TEST);
 	qglEnable(GL_BLEND);
 	qglColor4ub(color.r, color.g, color.b, color.a);
-	qglBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
+	qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR 
 	qglAlphaFunc(GL_GREATER, 0.05f);
 
 	GL_TexEnv(GL_MODULATE);
@@ -264,7 +264,7 @@ void Draw_FadeScreen(const paletteRGBA_t color)
 	qglEnable(GL_BLEND);
 	qglEnable(GL_ALPHA_TEST);
 	qglDisable(GL_TEXTURE_2D);
-	qglBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
+	qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR
 	qglAlphaFunc(GL_GREATER, 0.05f);
 	qglColor4ubv(color.c_array); //mxd. qglColor4ub -> qglColor4ubv
 

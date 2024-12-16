@@ -184,7 +184,7 @@ glmode_t modes[] =
 
 #define NUM_GL_MODES ((int)(sizeof(modes) / sizeof(glmode_t))) //mxd. Added int cast
 
-void GL_TextureMode(char* string)
+void GL_TextureMode(const char* string)
 {
 	int i;
 
@@ -209,10 +209,8 @@ void GL_TextureMode(char* string)
 		{
 			GL_BindImage(glt); // Q2: GL_Bind(glt->texnum)
 
-			//mxd. Decompiled code passes 0x84fe instead of GL_TEXTURE_MIN_FILTER and GL_TEXTURE_MAG_FILTER, which doesn't seem to be a known GL parameter...
-			//mxd. ...but Loki Linux release uses GL_TEXTURE_MIN_FILTER and GL_TEXTURE_MAG_FILTER, just like Q2
-			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min); //mxd. Q2/H2: qglTexParameterf
-			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max); //mxd. Q2/H2: qglTexParameterf
+			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min); // H2_1.07: GL_TEXTURE_MIN_FILTER -> 0x84fe //mxd. Q2/H2: qglTexParameterf
+			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max); // H2_1.07: GL_TEXTURE_MAG_FILTER -> 0x84fe //mxd. Q2/H2: qglTexParameterf
 		}
 	}
 }
@@ -223,13 +221,13 @@ void GL_SetFilter(const image_t* image)
 	switch (image->type)
 	{
 		case it_pic:
-			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // H2_1.07: GL_LINEAR 
+			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); // H2_1.07: GL_LINEAR
 			break;
 
 		case it_sky:
-			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_max);
-			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_max); // H2_1.07: GL_TEXTURE_MIN_FILTER -> 0x84fe
+			qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max); // H2_1.07: GL_TEXTURE_MAG_FILTER -> 0x84fe
 			break;
 
 		default:

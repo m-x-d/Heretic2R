@@ -264,7 +264,7 @@ static void R_BlendLightmaps(void)
 
 	// Restore state
 	qglDisable(GL_BLEND);
-	qglBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
+	qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR.
 	qglDepthMask(GL_TRUE);
 }
 
@@ -545,7 +545,7 @@ static void R_DrawAlphaSurface(const msurface_t* surf) // H2
 {
 	qglEnable(GL_ALPHA_TEST);
 	qglAlphaFunc(GL_GREATER, 0.05f);
-	qglBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
+	qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // H2_1.07: GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR
 	qglLoadMatrixf(r_world_matrix);
 	qglEnable(GL_BLEND);
 	GL_TexEnv(GL_MODULATE);
