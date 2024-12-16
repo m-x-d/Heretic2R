@@ -1251,7 +1251,7 @@ static void CL_InitLocal(void)
 	quake_amount = Cvar_Get("quake_amount", "0.0", 0);
 	cl_fx_dll = Cvar_Get("cl_fx_dll", "Client Effects", 0);
 	cl_cinematicfreeze = Cvar_Get("cl_cinematicfreeze", "0", 0);
-	sc_framerate = Cvar_Get("sc_framerate", "60", CVAR_ARCHIVE);
+	sc_framerate = Cvar_Get("sc_framerate", "20", CVAR_ARCHIVE); // H2_1.07: "20" -> "60".
 
 	// userinfo
 	info_password = Cvar_Get("password", "", CVAR_USERINFO);
