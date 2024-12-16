@@ -1261,7 +1261,7 @@ static void CL_InitLocal(void)
 	playerdir = Cvar_Get("playerdir", "players", CVAR_ARCHIVE);
 	rate = Cvar_Get("rate", "2800", CVAR_ARCHIVE | CVAR_USERINFO); // H2_1.07: "2800" -> "25000".
 	msg = Cvar_Get("msg", "1", CVAR_ARCHIVE | CVAR_USERINFO);
-	fov = Cvar_Get("fov", "90", CVAR_ARCHIVE | CVAR_USERINFO);
+	fov = Cvar_Get("fov", "75", CVAR_ARCHIVE | CVAR_USERINFO); // H2_1.07: "75" -> "90".
 	autoweapon = Cvar_Get("autoweapon", "1", CVAR_ARCHIVE | CVAR_USERINFO);
 	colour_obituary = Cvar_Get("colour_obituary", "20", CVAR_ARCHIVE);
 	colour_chat = Cvar_Get("colour_chat", "20", CVAR_ARCHIVE);
