@@ -663,7 +663,7 @@ static char* raven_credits[] =
 	"",
 	"",
 	"",
-	"Heretic II(tm) (C)2012 RAVEN Software, Inc.",
+	"Heretic II(tm) (C)1998 RAVEN Software, Inc.", // H2_1.07: "(C)2012"
 	"All Rights Reserved.	Distributed by",
 	"Activision, Inc. under license.",
 	"Heretic II (tm), the RAVEN Software name,",
