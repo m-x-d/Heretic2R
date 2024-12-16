@@ -1625,7 +1625,7 @@ static void CL_CalcViewValues(void)
 	{
 		if (cl_camera_under_surface->value != 1.0f && Q_stricmp(snd_dll->string, "eaxsnd") == 0 && !(int)menus_active->value && SNDEAX_SetEnvironment != NULL)
 		{
-			Cvar_SetValue("EAX_preset", 22); // H2_1.07: 22 -> 44.
+			Cvar_SetValue("EAX_preset", EAX_ENVIRONMENT_UNDERWATER); // H2_1.07: 22 -> 44.
 			SNDEAX_SetEnvironment(EAX_ENVIRONMENT_UNDERWATER);
 		}
 

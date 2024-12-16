@@ -861,7 +861,7 @@ typedef struct
 	int flags;					// PLAYER_FLAG_XXX.
 	int edictflags;				// FL_XXX.
 
-	float oldvelocity_z;		// Player edict's oldvelocity.
+	float oldvelocity_z;		// Player edict's oldvelocity. //TODO: unused?
 
 	// Animation sequencing state.
 	int upperseq;
