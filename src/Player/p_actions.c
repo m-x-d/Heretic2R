@@ -311,11 +311,7 @@ void PlayerActionHandFXStart(playerinfo_t* playerinfo, const float value)
 	}
 }
 
-/*-----------------------------------------------
-	PlayerActionSphereTrailEnd
------------------------------------------------*/
-
-void PlayerActionSphereTrailEnd(playerinfo_t *playerinfo, float value)
+void PlayerActionSphereTrailEnd(playerinfo_t* playerinfo, float value)
 {
 	// The sphere hand trails must be manually shut off.
 	playerinfo->effects &= ~EF_TRAILS_ENABLED;
