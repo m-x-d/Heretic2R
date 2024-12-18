@@ -397,65 +397,35 @@ void PlayerActionSpellSphereRelease(playerinfo_t* playerinfo, const float value)
 	}
 }
 
-/*-----------------------------------------------
-	PlayerActionSpellBigBall
------------------------------------------------*/
-
-void PlayerActionSpellBigBall(playerinfo_t *playerinfo, float value)
+void PlayerActionSpellBigBall(playerinfo_t* playerinfo, float value)
 {
 	playerinfo->PlayerActionSpellBigBall(playerinfo);
 }
 
-/*-----------------------------------------------
-	PlayerActionSpellFirewall
------------------------------------------------*/
-
-void PlayerActionSpellFirewall(playerinfo_t *playerinfo, float value)
+void PlayerActionSpellFirewall(playerinfo_t* playerinfo, float value)
 {
 	playerinfo->PlayerActionSpellFirewall(playerinfo);
 }
 
-/*-----------------------------------------------
-	PlayerActionSpellFirewall
------------------------------------------------*/
-
-void PlayerActionRedRainBowAttack(playerinfo_t *playerinfo, float value)
+void PlayerActionRedRainBowAttack(playerinfo_t* playerinfo, float value)
 {
-	if (Weapon_CurrentShotsLeft(playerinfo) <= 0)
-		return;		// Outta ammo
-
-	playerinfo->PlayerActionRedRainBowAttack(playerinfo);
+	if (Weapon_CurrentShotsLeft(playerinfo) > 0)
+		playerinfo->PlayerActionRedRainBowAttack(playerinfo);
 }
 
-/*-----------------------------------------------
-	PlayerActionPhoenixBowAttack
------------------------------------------------*/
-
-void PlayerActionPhoenixBowAttack(playerinfo_t *playerinfo, float value)
+void PlayerActionPhoenixBowAttack(playerinfo_t* playerinfo, float value)
 {
-	if (Weapon_CurrentShotsLeft(playerinfo) <= 0)
-		return;		// Outta ammo
-
-	playerinfo->PlayerActionPhoenixBowAttack(playerinfo);
+	if (Weapon_CurrentShotsLeft(playerinfo) > 0)
+		playerinfo->PlayerActionPhoenixBowAttack(playerinfo);
 }
 
-/*-----------------------------------------------
-	PlayerActionHellstaffAttack
------------------------------------------------*/
-
-void PlayerActionHellstaffAttack(playerinfo_t *playerinfo, float value)
+void PlayerActionHellstaffAttack(playerinfo_t* playerinfo, float value)
 {
-	if (Weapon_CurrentShotsLeft(playerinfo) <= 0)
-		return;		// Outta ammo
-	playerinfo->PlayerActionHellstaffAttack(playerinfo);
+	if (Weapon_CurrentShotsLeft(playerinfo) > 0)
+		playerinfo->PlayerActionHellstaffAttack(playerinfo);
 }
 
-/*-----------------------------------------------
-	PlayerActionSpellDefensive
------------------------------------------------*/
-void PlayerActionSpellDefensive(playerinfo_t *playerinfo, float value)
-{
-}
+void PlayerActionSpellDefensive(playerinfo_t* playerinfo, float value) { }
 
 /*-----------------------------------------------
 	PlayerActionSpellChange
