@@ -317,29 +317,17 @@ void PlayerActionSphereTrailEnd(playerinfo_t* playerinfo, float value)
 	playerinfo->effects &= ~EF_TRAILS_ENABLED;
 }
 
-/*-----------------------------------------------
-	PlayerActionSwordAttack
------------------------------------------------*/
-
-void PlayerActionSwordAttack(playerinfo_t *playerinfo, float value)
+void PlayerActionSwordAttack(playerinfo_t* playerinfo, const float value)
 {
-	playerinfo->PlayerActionSwordAttack(playerinfo,(int)value);
+	playerinfo->PlayerActionSwordAttack(playerinfo, (int)value);
 }
 
-/*-----------------------------------------------
-	PlayerActionSpellFireball
------------------------------------------------*/
-
-void PlayerActionSpellFireball(playerinfo_t *playerinfo, float value)
+void PlayerActionSpellFireball(playerinfo_t* playerinfo, float value)
 {
 	playerinfo->PlayerActionSpellFireball(playerinfo);
 }
 
-/*-----------------------------------------------
-	PlayerActionSpellBlast
------------------------------------------------*/
-
-void PlayerActionSpellBlast(playerinfo_t *playerinfo, float value)
+void PlayerActionSpellBlast(playerinfo_t* playerinfo, float value)
 {
 	playerinfo->PlayerActionSpellBlast(playerinfo);
 }
