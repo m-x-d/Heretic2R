@@ -60,53 +60,35 @@ void PlayerActionCheckBranchRunningStrafe(playerinfo_t* playerinfo)
 		PlayerAnimSetLowerSeq(playerinfo, seq);
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckStrafe
------------------------------------------------*/
-
-void PlayerActionCheckStrafe ( playerinfo_t *playerinfo )
+void PlayerActionCheckStrafe(playerinfo_t* playerinfo)
 {
-	//Check forward advancement
+	// Check forward advancement.
 	if (playerinfo->seqcmd[ACMDL_FWD])
 	{
 		if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-		{
 			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSTRAFE_LEFT);
-			return;
-		}
 		else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-		{
 			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSTRAFE_RIGHT);
-			return;
-		}
 		else
-		{
 			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WALKF);
-			return;
-		}
+
+		return;
 	}
-	
-	//Check backward advancement
+
+	// Check backward advancement.
 	if (playerinfo->seqcmd[ACMDL_BACK])
 	{
 		if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-		{
 			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSTRAFEB_LEFT);
-			return;
-		}
 		else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-		{
 			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSTRAFEB_RIGHT);
-			return;
-		}
 		else
-		{
 			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WALKB);
-			return;
-		}
+
+		return;
 	}
 
-	//Check for a jump
+	// Check for a jump.
 	if (playerinfo->seqcmd[ACMDL_JUMP])
 	{
 		if (playerinfo->seqcmd[ACMDL_STRAFE_L])
@@ -114,14 +96,15 @@ void PlayerActionCheckStrafe ( playerinfo_t *playerinfo )
 			PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPLEFT_SGO);
 			return;
 		}
-		else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
+
+		if (playerinfo->seqcmd[ACMDL_STRAFE_R])
 		{
 			PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPRIGHT_SGO);
 			return;
 		}
 	}
 
-	//Check for crouching
+	// Check for crouching.
 	if (playerinfo->seqcmd[ACMDL_CROUCH])
 	{
 		if (playerinfo->seqcmd[ACMDL_STRAFE_L])
@@ -129,65 +112,42 @@ void PlayerActionCheckStrafe ( playerinfo_t *playerinfo )
 			PlayerAnimSetLowerSeq(playerinfo, ASEQ_ROLL_L);
 			return;
 		}
-		else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
+
+		if (playerinfo->seqcmd[ACMDL_STRAFE_R])
 		{
 			PlayerAnimSetLowerSeq(playerinfo, ASEQ_ROLL_R);
 			return;
 		}
 	}
-	
-	//Check for change in strafe direction
-	if ( playerinfo->seqcmd[ACMDL_STRAFE_L] && playerinfo->lowerseq != ASEQ_STRAFEL)
+
+	// Check for change in strafe direction.
+	if (playerinfo->seqcmd[ACMDL_STRAFE_L] && playerinfo->lowerseq != ASEQ_STRAFEL)
 	{
 		PlayerAnimSetLowerSeq(playerinfo, ASEQ_STRAFEL);
 		return;
 	}
 
-	if ( playerinfo->seqcmd[ACMDL_STRAFE_R] && playerinfo->lowerseq != ASEQ_STRAFER)
+	if (playerinfo->seqcmd[ACMDL_STRAFE_R] && playerinfo->lowerseq != ASEQ_STRAFER)
 	{
 		PlayerAnimSetLowerSeq(playerinfo, ASEQ_STRAFER);
 		return;
 	}
 
-	if ( !(playerinfo->seqcmd[ACMDL_STRAFE_L]) && !(playerinfo->seqcmd[ACMDL_STRAFE_R]) ) 
-	{//We're just trying to go forward
-
-		//FORWARD
-
-		if (playerinfo->seqcmd[ACMDL_CREEP_F])
-		{
+	// We're just trying to go forward.
+	if (!playerinfo->seqcmd[ACMDL_STRAFE_L] && !playerinfo->seqcmd[ACMDL_STRAFE_R])
+	{
+		if (playerinfo->seqcmd[ACMDL_CREEP_F])				// FORWARD
 			PlayerAnimSetLowerSeq(playerinfo, ASEQ_CREEPF);
-			return;
-		}
-
-		if (playerinfo->seqcmd[ACMDL_WALK_F])
-		{
+		else if (playerinfo->seqcmd[ACMDL_WALK_F])
 			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WALKF_GO);
-			return;
-		}
-		
-		if (playerinfo->seqcmd[ACMDL_RUN_F])
-		{
+		else if (playerinfo->seqcmd[ACMDL_RUN_F])
 			PlayerAnimSetLowerSeq(playerinfo, ASEQ_RUNF_GO);
-			return;
-		}
-		
-		//BACKWARD
-
-		if (playerinfo->seqcmd[ACMDL_CREEP_B])
-		{
+		else if (playerinfo->seqcmd[ACMDL_CREEP_B])			// BACKWARD
 			PlayerAnimSetLowerSeq(playerinfo, ASEQ_CREEPB);
-			return;
-		}
-
-		if (playerinfo->seqcmd[ACMDL_BACK])
-		{
+		else if (playerinfo->seqcmd[ACMDL_BACK])
 			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WALKB);
-			return;
-		}
-		
-		PlayerAnimSetLowerSeq(playerinfo, SeqCtrl[playerinfo->lowerseq].ceaseseq);
-		return;
+		else
+			PlayerAnimSetLowerSeq(playerinfo, SeqCtrl[playerinfo->lowerseq].ceaseseq);
 	}
 }
 
