@@ -157,59 +157,52 @@ void PlayerActionCheckVaultKick(playerinfo_t* playerinfo)
 		playerinfo->G_PlayerVaultKick(playerinfo);
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckCreepMoveForward
------------------------------------------------*/
-
-qboolean PlayerActionCheckCreepMoveForward( playerinfo_t *playerinfo )
+static qboolean PlayerActionCheckCreepMoveForward(const playerinfo_t* playerinfo)
 {
-	vec3_t		startpos, endpos, vf, ang, mins;
-	trace_t		trace;
+	vec3_t startpos;
+	vec3_t vf;
+	vec3_t ang;
+	vec3_t mins;
+	trace_t trace;
 
-	//Scan out and down from the player
+	// Scan out and down from the player.
 	VectorCopy(playerinfo->origin, startpos);
-	
-	//Ignore the pitch of the player, we only want the yaw
+
+	// Ignore the pitch of the player, we only want the yaw.
 	VectorSet(ang, 0, playerinfo->angles[YAW], 0);
 	AngleVectors(ang, vf, NULL, NULL);
-	
-	//Trace ahead about one step
+
+	// Trace ahead about one step.
 	VectorMA(playerinfo->origin, CREEP_STEPDIST, vf, startpos);
 
-	//Account for stepheight
+	// Account for stepheight.
 	VectorCopy(playerinfo->mins, mins);
 	mins[2] += CREEP_MAXFALL;
 
-	//Trace forward to see if the path is clear
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(playerinfo->origin,mins,playerinfo->maxs,startpos,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&trace);
+	// Trace forward to see if the path is clear.
+	if (playerinfo->isclient)
+		playerinfo->CL_Trace(playerinfo->origin, mins, playerinfo->maxs, startpos, MASK_PLAYERSOLID, CEF_CLIP_TO_WORLD, &trace);
 	else
-		playerinfo->G_Trace(playerinfo->origin, mins, playerinfo->maxs, startpos, playerinfo->self, MASK_PLAYERSOLID,&trace);
-	
-	//If it is...
-	if (trace.fraction == 1)
+		playerinfo->G_Trace(playerinfo->origin, mins, playerinfo->maxs, startpos, playerinfo->self, MASK_PLAYERSOLID, &trace);
+
+	// If it is...
+	if (trace.fraction == 1.0f)
 	{
-		//Move the endpoint down the maximum amount
+		// Move the endpoint down the maximum amount.
+		vec3_t endpos;
 		VectorCopy(startpos, endpos);
-		endpos[2] += (playerinfo->mins[2] - CREEP_MAXFALL);
+		endpos[2] += playerinfo->mins[2] - CREEP_MAXFALL;
 
-		//Trace down
-		if(playerinfo->isclient)
-			playerinfo->CL_Trace(startpos,mins,playerinfo->maxs,endpos,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&trace);
+		// Trace down.
+		if (playerinfo->isclient)
+			playerinfo->CL_Trace(startpos, mins, playerinfo->maxs, endpos, MASK_PLAYERSOLID, CEF_CLIP_TO_WORLD, &trace);
 		else
-			playerinfo->G_Trace(startpos, mins, playerinfo->maxs, endpos, playerinfo->self, MASK_PLAYERSOLID,&trace);
+			playerinfo->G_Trace(startpos, mins, playerinfo->maxs, endpos, playerinfo->self, MASK_PLAYERSOLID, &trace);
 
-		if (trace.fraction == 1 || (trace.startsolid || trace.allsolid))
-		{
-			return false;
-		}
-	}
-	else
-	{
-		return false;
+		return (trace.fraction < 1.0f && !trace.startsolid && !trace.allsolid);
 	}
 
-	return true;
+	return false;
 }
 
 /*-----------------------------------------------

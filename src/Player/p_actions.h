@@ -121,7 +121,6 @@ PLAYER_API void PlaySigh(playerinfo_t* playerinfo, float dist);
 PLAYER_API void SpawnDustPuff(playerinfo_t* playerinfo, float dist);
 
 qboolean PlayerActionCheckCreepMoveBack(playerinfo_t* playerinfo);
-qboolean PlayerActionCheckCreepMoveForward(playerinfo_t* playerinfo);
 
 void PlayerSwimMoveFunc(playerinfo_t* playerinfo, float fwd, float right, float up);
 
