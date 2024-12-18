@@ -216,39 +216,19 @@ void PlayerActionSetCrouchHeight(playerinfo_t* playerinfo)
 	playerinfo->maxs[2] = 4;
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckUncrouchToFinishSeq
------------------------------------------------*/
-qboolean CheckUncrouch(playerinfo_t *playerinfo);
-void PlayerActionCheckUncrouchToFinishSeq(playerinfo_t *playerinfo)
+void PlayerActionCheckUncrouchToFinishSeq(playerinfo_t* playerinfo)
 {
-	int	sequence;
-
-	if(CheckUncrouch(playerinfo))
+	if (CheckUncrouch(playerinfo))
 	{
 		playerinfo->maxs[2] = 25;
-		return;//ok to finish sequence
+		return; // Ok to finish sequence.
 	}
 
-//	PlayerActionSetCrouchHeight(playerinfo);
+	const int seq = (playerinfo->upperseq != ASEQ_NONE ? playerinfo->upperseq : playerinfo->lowerseq);
+	const int lower_seq = ((seq == ASEQ_FORWARD_FLIP_L || seq == ASEQ_FORWARD_FLIP_R) ? ASEQ_ROLL_FROM_FFLIP : ASEQ_CROUCH); // Choose a proper sequence to go into.
 
-	if(playerinfo->upperseq == ASEQ_NONE)
-		sequence = playerinfo->lowerseq;
-	else
-		sequence = playerinfo->upperseq;
-	
-	switch(sequence)
-	{//choose a proper sequence to go into
-	case ASEQ_FORWARD_FLIP_L:
-	case ASEQ_FORWARD_FLIP_R:
-		PlayerAnimSetUpperSeq(playerinfo, ASEQ_NONE);
-		PlayerAnimSetLowerSeq(playerinfo, ASEQ_ROLL_FROM_FFLIP);		
-		break;
-	default:
-		PlayerAnimSetUpperSeq(playerinfo, ASEQ_NONE);
-		PlayerAnimSetLowerSeq(playerinfo, ASEQ_CROUCH);		
-		break;
-	}
+	PlayerAnimSetUpperSeq(playerinfo, ASEQ_NONE);
+	PlayerAnimSetLowerSeq(playerinfo, lower_seq);
 }
 
 /*-----------------------------------------------

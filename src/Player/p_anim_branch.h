@@ -42,6 +42,9 @@ int BranchCheckAmmo(playerinfo_t *playerinfo);
 int BranchCheckHellAmmo(playerinfo_t *playerinfo);
 int BranchCheckMana(playerinfo_t *playerinfo);
 
+//mxd. Utility
+extern qboolean CheckUncrouch(playerinfo_t* playerinfo);
+
 PLAYER_API qboolean BranchCheckDismemberAction(playerinfo_t *playerinfo, int weapon);
 
 #endif // _P_ANIM_BRANCH2_H_
