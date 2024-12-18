@@ -211,11 +211,7 @@ static qboolean PlayerActionCheckCreepMoveBack(const playerinfo_t *playerinfo)
 	return CheckCreepMove(playerinfo, -CREEP_STEPDIST);
 }
 
-/*-----------------------------------------------
-	PlayerActionSetCrouchHeight
------------------------------------------------*/
-
-void PlayerActionSetCrouchHeight( playerinfo_t *playerinfo )
+void PlayerActionSetCrouchHeight(playerinfo_t* playerinfo)
 {
 	playerinfo->maxs[2] = 4;
 }
