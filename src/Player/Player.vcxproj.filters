@@ -42,6 +42,9 @@
     <ClCompile Include="p_weapon.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="p_utility.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="p_actions.h">
@@ -78,6 +81,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="p_utility.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

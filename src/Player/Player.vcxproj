@@ -22,6 +22,7 @@
     <ClCompile Include="p_ctrl.c" />
     <ClCompile Include="p_items.c" />
     <ClCompile Include="p_main.c" />
+    <ClCompile Include="p_utility.c" />
     <ClCompile Include="p_weapon.c" />
   </ItemGroup>
   <ItemGroup>
@@ -36,6 +37,7 @@
     <ClInclude Include="p_items.h" />
     <ClInclude Include="p_main.h" />
     <ClInclude Include="p_types.h" />
+    <ClInclude Include="p_utility.h" />
     <ClInclude Include="p_weapon.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
