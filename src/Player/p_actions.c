@@ -237,33 +237,29 @@ void PlayerActionSetQTEndTime(playerinfo_t* playerinfo, float QTEndTime)
 	playerinfo->quickturn_rate = -360.0f;
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckDoubleJump
------------------------------------------------*/
-
-void PlayerActionCheckDoubleJump( playerinfo_t *playerinfo )
+void PlayerActionCheckDoubleJump(playerinfo_t* playerinfo)
 {
 	//FIXME: Debounce!!!
-	//Check to see if the player is still pressing jump, and is not trying to fire or grab a ledge (action)
-	if ( playerinfo->seqcmd[ACMDL_JUMP] && (!(playerinfo->seqcmd[ACMDU_ATTACK])) && (!(playerinfo->seqcmd[ACMDL_ACTION])))
+	// Check to see if the player is still pressing jump, and is not trying to fire or grab a ledge (action).
+	if (playerinfo->seqcmd[ACMDL_JUMP] && !playerinfo->seqcmd[ACMDU_ATTACK] && !playerinfo->seqcmd[ACMDL_ACTION])
 	{
-		switch(playerinfo->lowerseq)
+		switch (playerinfo->lowerseq)
 		{
-		case ASEQ_JUMPFWD:
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_FORWARD_FLIP_L_GO);
-			break;
-		
-		case ASEQ_JUMPBACK:
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPFLIPBACK);
-			break;
+			case ASEQ_JUMPFWD:
+				PlayerAnimSetLowerSeq(playerinfo, ASEQ_FORWARD_FLIP_L_GO);
+				break;
 
-		case ASEQ_JUMPLEFT:
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPFLIPLEFT);
-			break;
+			case ASEQ_JUMPBACK:
+				PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPFLIPBACK);
+				break;
 
-		case ASEQ_JUMPRIGHT:
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPFLIPRIGHT);
-			break;
+			case ASEQ_JUMPLEFT:
+				PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPFLIPLEFT);
+				break;
+
+			case ASEQ_JUMPRIGHT:
+				PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPFLIPRIGHT);
+				break;
 		}
 	}
 }
