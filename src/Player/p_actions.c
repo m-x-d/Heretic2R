@@ -157,7 +157,8 @@ void PlayerActionCheckVaultKick(playerinfo_t* playerinfo)
 		playerinfo->G_PlayerVaultKick(playerinfo);
 }
 
-static qboolean PlayerActionCheckCreepMoveForward(const playerinfo_t* playerinfo)
+//mxd. Added to reduce code duplication.
+static qboolean CheckCreepMove(const playerinfo_t* playerinfo, const float creep_stepdist)
 {
 	vec3_t startpos;
 	vec3_t vf;
@@ -173,7 +174,7 @@ static qboolean PlayerActionCheckCreepMoveForward(const playerinfo_t* playerinfo
 	AngleVectors(ang, vf, NULL, NULL);
 
 	// Trace ahead about one step.
-	VectorMA(playerinfo->origin, CREEP_STEPDIST, vf, startpos);
+	VectorMA(playerinfo->origin, creep_stepdist, vf, startpos);
 
 	// Account for stepheight.
 	VectorCopy(playerinfo->mins, mins);
@@ -205,59 +206,14 @@ static qboolean PlayerActionCheckCreepMoveForward(const playerinfo_t* playerinfo
 	return false;
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckCreepMoveBack
------------------------------------------------*/
-
-qboolean PlayerActionCheckCreepMoveBack( playerinfo_t *playerinfo )
+static qboolean PlayerActionCheckCreepMoveForward(const playerinfo_t* playerinfo)
 {
-	vec3_t		startpos, endpos, vf, ang, mins;
-	trace_t		trace;
+	return CheckCreepMove(playerinfo, CREEP_STEPDIST);
+}
 
-	//Scan out and down from the player
-	VectorCopy(playerinfo->origin, startpos);
-	
-	//Ignore the pitch of the player, we only want the yaw
-	VectorSet(ang, 0, playerinfo->angles[YAW], 0);
-	AngleVectors(ang, vf, NULL, NULL);
-	
-	//Trace ahead about one step
-	VectorMA(playerinfo->origin, -CREEP_STEPDIST, vf, startpos);
-
-	//Account for stepheight
-	VectorCopy(playerinfo->mins, mins);
-	mins[2] += CREEP_MAXFALL;
-
-	//Trace forward to see if the path is clear
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(playerinfo->origin,mins,playerinfo->maxs,startpos,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&trace);
-	else
-		playerinfo->G_Trace(playerinfo->origin, mins, playerinfo->maxs, startpos, playerinfo->self, MASK_PLAYERSOLID,&trace);
-	
-	//If it is...
-	if (trace.fraction == 1)
-	{
-		//Move the endpoint down the maximum amount
-		VectorCopy(startpos, endpos);
-		endpos[2] += (playerinfo->mins[2] - CREEP_MAXFALL);
-
-		//Trace down
-		if(playerinfo->isclient)
-			playerinfo->CL_Trace(startpos,mins,playerinfo->maxs,endpos,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&trace);
-		else
-			playerinfo->G_Trace(startpos, mins, playerinfo->maxs, endpos, playerinfo->self, MASK_PLAYERSOLID,&trace);
-
-		if (trace.fraction == 1 || (trace.startsolid || trace.allsolid))
-		{
-			return false;
-		}
-	}
-	else
-	{
-		return false;
-	}
-
-	return true;
+static qboolean PlayerActionCheckCreepMoveBack(const playerinfo_t *playerinfo)
+{
+	return CheckCreepMove(playerinfo, -CREEP_STEPDIST);
 }
 
 /*-----------------------------------------------
