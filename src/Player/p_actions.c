@@ -17,6 +17,7 @@
 #include "g_playstats.h"
 #include "p_anim_branch.h" //mxd
 #include "p_anim_data.h"
+#include "p_utility.h" //mxd
 #include "q_shared.h"
 
 #define AIRMOVE_AMOUNT		48
@@ -181,10 +182,7 @@ static qboolean CheckCreepMove(const playerinfo_t* playerinfo, const float creep
 	mins[2] += CREEP_MAXFALL;
 
 	// Trace forward to see if the path is clear.
-	if (playerinfo->isclient)
-		playerinfo->CL_Trace(playerinfo->origin, mins, playerinfo->maxs, startpos, MASK_PLAYERSOLID, CEF_CLIP_TO_WORLD, &trace);
-	else
-		playerinfo->G_Trace(playerinfo->origin, mins, playerinfo->maxs, startpos, playerinfo->self, MASK_PLAYERSOLID, &trace);
+	P_Trace(playerinfo, playerinfo->origin, mins, playerinfo->maxs, startpos, &trace);
 
 	// If it is...
 	if (trace.fraction == 1.0f)
@@ -195,10 +193,7 @@ static qboolean CheckCreepMove(const playerinfo_t* playerinfo, const float creep
 		endpos[2] += playerinfo->mins[2] - CREEP_MAXFALL;
 
 		// Trace down.
-		if (playerinfo->isclient)
-			playerinfo->CL_Trace(startpos, mins, playerinfo->maxs, endpos, MASK_PLAYERSOLID, CEF_CLIP_TO_WORLD, &trace);
-		else
-			playerinfo->G_Trace(startpos, mins, playerinfo->maxs, endpos, playerinfo->self, MASK_PLAYERSOLID, &trace);
+		P_Trace(playerinfo, startpos, mins, playerinfo->maxs, endpos, &trace);
 
 		return (trace.fraction < 1.0f && !trace.startsolid && !trace.allsolid);
 	}
