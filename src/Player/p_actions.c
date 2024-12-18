@@ -477,16 +477,8 @@ void PlayerActionSpellChange(playerinfo_t* playerinfo, float value)
 			break;
 	}
 
-	if (playerinfo->isclient)
-	{
-		playerinfo->CL_Sound(SND_PRED_ID0, playerinfo->origin, CHAN_WEAPON, "Weapons/SpellChange.wav", 1.0f, ATTN_NORM, 0);
-		playerinfo->CL_CreateEffect(EFFECT_PRED_ID1, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", right, color);
-	}
-	else
-	{
-		playerinfo->G_Sound(SND_PRED_ID0, playerinfo->leveltime, playerinfo->self, CHAN_WEAPON, playerinfo->G_SoundIndex("Weapons/SpellChange.wav"), 1.0f, ATTN_NORM, 0);
-		playerinfo->G_CreateEffect(EFFECT_PRED_ID1, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", right, color);
-	}
+	P_Sound(playerinfo, SND_PRED_ID0, CHAN_WEAPON, "Weapons/SpellChange.wav", 1.0f);
+	P_CreateEffect(playerinfo, EFFECT_PRED_ID1, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", right, color);
 }
 
 /*-----------------------------------------------
