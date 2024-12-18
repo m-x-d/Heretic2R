@@ -349,17 +349,13 @@ void PlayerActionSpellArray(playerinfo_t* playerinfo, const float value)
 	playerinfo->PlayerActionSpellArray(playerinfo, missile_pos);
 }
 
-/*-----------------------------------------------
-	PlayerActionSpellSphereCreate
------------------------------------------------*/
-
-void PlayerActionSpellSphereCreate(playerinfo_t *playerinfo, float value)
+void PlayerActionSpellSphereCreate(playerinfo_t* playerinfo, float value)
 {
 	PlayerSetHandFX(playerinfo, HANDFX_SPHERE, -1);
-	
-	playerinfo->chargingspell=true;
+
+	playerinfo->chargingspell = true;
 	playerinfo->weaponcharge = 1;
-	playerinfo->PlayerActionSpellSphereCreate(playerinfo,&playerinfo->chargingspell);
+	playerinfo->PlayerActionSpellSphereCreate(playerinfo, &playerinfo->chargingspell);
 }
 
 /*-----------------------------------------------
