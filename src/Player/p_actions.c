@@ -15,6 +15,7 @@
 #include "Random.h"
 #include "Vector.h"
 #include "g_playstats.h"
+#include "p_anim_branch.h" //mxd
 #include "p_anim_data.h"
 #include "q_shared.h"
 
@@ -51,20 +52,12 @@ static float CL_NormaliseAngle(float angle)
 	return angle;
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckBranchRunning
------------------------------------------------*/
-
-void PlayerActionCheckBranchRunningStrafe ( playerinfo_t *playerinfo )
+void PlayerActionCheckBranchRunningStrafe(playerinfo_t* playerinfo)
 {
-	int BranchLwrRunningStrafe(playerinfo_t *playerinfo);
-	
-	int ret;
+	const int seq = BranchLwrRunningStrafe(playerinfo);
 
-	ret = BranchLwrRunningStrafe(playerinfo);
-
-	if (ret)
-		PlayerAnimSetLowerSeq(playerinfo, ret);
+	if (seq != ASEQ_NONE)
+		PlayerAnimSetLowerSeq(playerinfo, seq);
 }
 
 /*-----------------------------------------------
