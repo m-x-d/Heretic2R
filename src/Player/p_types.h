@@ -576,7 +576,7 @@ typedef struct playerinfo_s
 	vec3_t LastWatersplashPos; // Not used on client.
 	vec3_t oldvelocity;
 	qboolean chargingspell;
-	float quickturn_rate;
+	float quickturn_rate;		// Rotational velocity (degrees/second).
 
 	// From edict_t.
 	vec3_t origin;

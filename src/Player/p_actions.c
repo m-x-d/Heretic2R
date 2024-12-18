@@ -22,7 +22,6 @@
 
 #define AIRMOVE_AMOUNT		48
 #define AIRMOVE_THRESHOLD	64
-#define QUICKTURN_RATE		(-360.0f)	// Rotational velocity (degrees/second).
 
 vec3_t handmins = { -2.0f, -2.0f, 0.0f };
 vec3_t handmaxs = {  2.0f,  2.0f, 2.0f };
@@ -231,22 +230,11 @@ void PlayerActionCheckUncrouchToFinishSeq(playerinfo_t* playerinfo)
 	PlayerAnimSetLowerSeq(playerinfo, lower_seq);
 }
 
-/*-----------------------------------------------
-	PlayerActionTurn180
------------------------------------------------*/
+void PlayerActionTurn180(playerinfo_t* playerinfo) { }
 
-void PlayerActionTurn180( playerinfo_t *playerinfo )
+void PlayerActionSetQTEndTime(playerinfo_t* playerinfo, float QTEndTime)
 {
-}
-
-// ************************************************************************************************
-// PlayerActionSetQTEndTime
-// ------------------------
-// ************************************************************************************************
-
-void PlayerActionSetQTEndTime(playerinfo_t *playerinfo,float QTEndTime)
-{
-	playerinfo->quickturn_rate=QUICKTURN_RATE;
+	playerinfo->quickturn_rate = -360.0f;
 }
 
 /*-----------------------------------------------
