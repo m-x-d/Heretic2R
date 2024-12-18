@@ -48,7 +48,6 @@ void PlayerActionSwimSound(playerinfo_t* playerinfo, float value);
 void PlayerActionClimbWallSound(playerinfo_t* playerinfo, float value);
 void PlayerActionClimbFinishSound(playerinfo_t* playerinfo, float value);
 
-void PlayerActionBreath(playerinfo_t* playerinfo, float value);
 void PlayerActionFootstep(playerinfo_t* playerinfo, float value);
 void PlayerActionSwim(playerinfo_t* playerinfo, float value);
 void PlayerActionPullup(playerinfo_t* playerinfo, float value);

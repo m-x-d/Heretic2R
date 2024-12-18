@@ -291,31 +291,23 @@ void PlayerActionCheckBowRefire(playerinfo_t* playerinfo)
 	}
 }
 
-/*-----------------------------------------------
-	PlayerActionBreath
------------------------------------------------*/
-
-void PlayerActionBreath(playerinfo_t *playerinfo, float value)
+void PlayerActionHandFXStart(playerinfo_t* playerinfo, const float value)
 {
-}
+	const int handfx_type = (int)value; //mxd
 
-/*-----------------------------------------------
-	PlayerActionHandFXStart
------------------------------------------------*/
-
-void PlayerActionHandFXStart(playerinfo_t *playerinfo, float value)
-{
-	switch((int)value)
+	switch (handfx_type)
 	{
-	case HANDFX_FIREBALL:
-		PlayerSetHandFX(playerinfo,(int)value, 4);
-		break;
-	case HANDFX_MISSILE:
-		PlayerSetHandFX(playerinfo,(int)value, 6);
-		break;
-	case HANDFX_FIREWALL:
-		PlayerSetHandFX(playerinfo,(int)value, 10);
-		break;
+		case HANDFX_FIREBALL:
+			PlayerSetHandFX(playerinfo, handfx_type, 4);
+			break;
+
+		case HANDFX_MISSILE:
+			PlayerSetHandFX(playerinfo, handfx_type, 6);
+			break;
+
+		case HANDFX_FIREWALL:
+			PlayerSetHandFX(playerinfo, handfx_type, 10);
+			break;
 	}
 }
 
