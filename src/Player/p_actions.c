@@ -1,40 +1,31 @@
 //
 // p_actions.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
-#include <windows.h>
-
-#include "player.h"
+#include "Player.h"
 #include "p_types.h"
 #include "p_actions.h"
 #include "p_main.h"
 #include "p_weapon.h"
-#include "p_weapon.h"
 #include "g_items.h"
-#include "surfaceprops.h"
-#include "m_player.h"
-#include "fx.h"
-#include "random.h"
-#include "reference.h"
-#include "vector.h"
+#include "SurfaceProps.h"
+#include "FX.h"
+#include "Random.h"
+#include "Vector.h"
 #include "g_playstats.h"
 #include "p_anim_data.h"
 #include "q_shared.h"
 
 #define AIRMOVE_AMOUNT		48
 #define AIRMOVE_THRESHOLD	64
-#define	QUICKTURN_RATE		(-360.0)	// Rotational velocity (degrees/second).
+#define QUICKTURN_RATE		(-360.0f)	// Rotational velocity (degrees/second).
 
-qboolean BranchCheckDismemberAction(playerinfo_t *playerinfo, int weapon);
+vec3_t handmins = { -2.0f, -2.0f, 0.0f };
+vec3_t handmaxs = {  2.0f,  2.0f, 2.0f };
 
-
-vec3_t	handmins = {-2.0, -2.0, 0},
-		handmaxs = {2.0, 2.0, 2.0};
-
-int		traillength[TRAIL_MAX] =
+int traillength[TRAIL_MAX] =
 {
 	7,		//	TRAIL_SPIN1,
 	6,		//	TRAIL_SPIN2,
@@ -46,29 +37,18 @@ int		traillength[TRAIL_MAX] =
 	6,		//	TRAIL_COUNTERRIGHT,
 };
 
-
-/*-----------------------------------------------
-	CL_NormaliseAngle
------------------------------------------------*/
-
-float CL_NormaliseAngle(float Angle)
+static float CL_NormaliseAngle(float angle)
 {
-	int Count;
+	const int count = (int)(angle / 360.0f);
 
-	Count=(int)(Angle/360.0);
-		
-	Angle=Angle-(Count*360.0);
+	angle -= (float)count * 360.0f;
 
-	if(Angle>180.0)
-	{
-		Angle+=-360.0;
-	}
-	else if(Angle<-180.0)
-	{
-		Angle+=360.0;
-	}
+	if (angle > 180.0f)
+		angle -= 360.0f;
+	else if (angle < -180.0f)
+		angle += 360.0f;
 
-	return(Angle);
+	return angle;
 }
 
 /*-----------------------------------------------
