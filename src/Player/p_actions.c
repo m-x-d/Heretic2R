@@ -358,20 +358,15 @@ void PlayerActionSpellSphereCreate(playerinfo_t* playerinfo, float value)
 	playerinfo->PlayerActionSpellSphereCreate(playerinfo, &playerinfo->chargingspell);
 }
 
-/*-----------------------------------------------
-	PlayerActionSpellSphereCharge
------------------------------------------------*/
-
-void PlayerActionSpellSphereCharge(playerinfo_t *playerinfo, float value)
+void PlayerActionSpellSphereCharge(playerinfo_t* playerinfo, const float value)
 {
-	// Drain mana while charging. If mana depleted, then the branch will set to launch the thing.
+	const int shots_left = Weapon_CurrentShotsLeft(playerinfo); //mxd
 
-	if(playerinfo->seqcmd[ACMDU_ATTACK] && 
-			(playerinfo->weaponcharge < SPHERE_MAX_MANA_CHARGE) && 
-			((Weapon_CurrentShotsLeft(playerinfo)) || 
-					(playerinfo->pers.inventory.Items[playerinfo->weap_ammo_index] >= SPHERE_MANA_PER_CHARGE)))
+	// Drain mana while charging. If mana depleted, then the branch will set to launch the thing.
+	if (playerinfo->seqcmd[ACMDU_ATTACK] && playerinfo->weaponcharge < SPHERE_MAX_MANA_CHARGE &&
+		(shots_left > 0 || playerinfo->pers.inventory.Items[playerinfo->weap_ammo_index] >= SPHERE_MANA_PER_CHARGE))
 	{
-		if (!(playerinfo->dmflags & DF_INFINITE_MANA))
+		if (!(playerinfo->dmflags & DF_INFINITE_MANA)) //TODO: mxd. Shouldn't weaponcharge still be increased without taking mana when DF_INFINITE_MANA is set?
 		{
 			playerinfo->pers.inventory.Items[playerinfo->weap_ammo_index] -= SPHERE_MANA_PER_CHARGE;
 			playerinfo->weaponcharge++;
@@ -380,22 +375,15 @@ void PlayerActionSpellSphereCharge(playerinfo_t *playerinfo, float value)
 		}
 	}
 
-	if ((!Weapon_CurrentShotsLeft(playerinfo) && value != 4.0) || !(playerinfo->seqcmd[ACMDU_ATTACK]))
-	{	// If we are out of ammo, or if we have let go of the button, then fire.
-		switch((int)value)
+	if (!playerinfo->seqcmd[ACMDU_ATTACK] || (shots_left == 0 && value != 4.0f))
+	{
+		// If we are out of ammo, or if we have let go of the button, then fire.
+		switch ((int)value)
 		{
-		case 1:
-			PlayerAnimSetUpperSeq(playerinfo, ASEQ_WSPHERE_FIRE1);		
-			break;
-		case 2:
-			PlayerAnimSetUpperSeq(playerinfo, ASEQ_WSPHERE_FIRE2);
-			break;
-		case 3:
-			PlayerAnimSetUpperSeq(playerinfo, ASEQ_WSPHERE_FIRE3);
-			break;
-		case 4:
-			PlayerAnimSetUpperSeq(playerinfo, ASEQ_WSPHERE_FIRE4);
-			break;
+			case 1: PlayerAnimSetUpperSeq(playerinfo, ASEQ_WSPHERE_FIRE1); break;
+			case 2: PlayerAnimSetUpperSeq(playerinfo, ASEQ_WSPHERE_FIRE2); break;
+			case 3: PlayerAnimSetUpperSeq(playerinfo, ASEQ_WSPHERE_FIRE3); break;
+			case 4: PlayerAnimSetUpperSeq(playerinfo, ASEQ_WSPHERE_FIRE4); break;
 		}
 	}
 }
