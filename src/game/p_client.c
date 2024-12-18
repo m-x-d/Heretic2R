@@ -20,6 +20,7 @@
 #include "g_itemstats.h"
 #include "cl_strings.h"
 #include "p_actions.h"
+#include "p_anims.h" //mxd
 #include "p_anim_branch.h"
 #include "qcommon.h"
 
