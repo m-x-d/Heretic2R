@@ -8,7 +8,6 @@
 
 #include "q_shared.h"
 #include "q_clientserver.h"
-#include "g_itemstats.h"
 
 // Forward define 'playerinfo_t' for use in 'panimframe_t' and 'panimmove_t'.
 typedef struct playerinfo_s playerinfo_t;
@@ -55,7 +54,6 @@ typedef struct
 	float spell_protection;
 } gitem_armor_t;
 
-// weaponready_e
 // Indicates what actual weapon model the player has readied.
 enum weaponready_e
 {
@@ -68,7 +66,6 @@ enum weaponready_e
 	WEAPON_READY_MAX
 };
 
-// armortype_e
 // Indicates what actual armor the player is wearing.
 enum armortype_e
 {
@@ -77,7 +74,6 @@ enum armortype_e
 	ARMOR_TYPE_GOLD
 };
 
-// bowtype_e
 // Indicates what actual bow the player has currently on his back.
 enum bowtype_e
 {
@@ -86,7 +82,6 @@ enum bowtype_e
 	BOW_TYPE_PHOENIX
 };
 
-// stafftype_e
 // Indicates what powerup level of the staff the player has.
 enum stafftype_e
 {
@@ -97,8 +92,7 @@ enum stafftype_e
 	STAFF_LEVEL_MAX
 };
 
-// helltype_e
-// Indicates what powerup level of the staff the player has.
+// Indicates what powerup level of the hellstaff the player has.
 enum helltype_e
 {
 	HELL_TYPE_NONE,
@@ -106,34 +100,20 @@ enum helltype_e
 	HELL_TYPE_POWER
 };
 
-typedef enum
+typedef enum //TODO: values never checked. Move to Items_t enum?
 {
 	MODEL_HEALTH1,
 	MODEL_HEALTH2,
-	AMMO_BULLETS,
-	AMMO_SHELLS,
-	AMMO_ROCKETS,
-	AMMO_GRENADES,
-	AMMO_CELLS,
-	AMMO_SLUGS
 } ammo_t;
 
 #define PICKUP_MIN  0, 0, 0
 #define PICKUP_MAX  0, 0, 0
 
-// PNOISE_XXX
-// Noise types for 'PlayerNoise'.
-#define PNOISE_SELF		0
-#define PNOISE_WEAPON	1
-#define PNOISE_IMPACT	2
-
-
-// IT_XXX
 // Held in 'gitem_t'->flags.
-#define	IT_WEAPON		1 // Use makes active weapon
-#define	IT_AMMO			2
-#define IT_ARMOR		4
-#define IT_STAY_COOP	8
+#define IT_WEAPON		1 // Use makes active weapon
+#define IT_AMMO			2
+#define IT_ARMOR		4 //TODO: used, but never set?
+//#define IT_STAY_COOP	8 //mxd. Unused.
 #define IT_PUZZLE		16
 #define IT_DEFENSE		32
 #define IT_OFFENSE		64
@@ -173,7 +153,7 @@ typedef struct gitem_s
 	char* ammo; // For weapons
 	int flags; // IT_XXX.
 
-	void* info;
+	void* info; //TODO: unused?
 	int tag;
 
 	char* icon;
@@ -200,7 +180,6 @@ typedef struct gitem_s
 	#define ITEM_INDEX(x) P_GetItemIndex(x)
 #endif	// PLAYER_DLL
 
-// inventory_t
 // Holds the players inventory.
 typedef struct inventory_s
 {
@@ -208,14 +187,13 @@ typedef struct inventory_s
 	float Timer[MAX_ITEMS]; // Timer (if this item requires one).
 } inventory_t;
 
-// client_persistant_t
 // Client data that stays across multiple level loads.
-typedef struct
+typedef struct client_persistant_s
 {
 	// User info.
 	char userinfo[MAX_INFO_STRING];
 	char netname[16];
-	char sounddir[MAX_QPATH];
+	char sounddir[MAX_QPATH]; //TODO: unused?
 	int autoweapon;
 
 	// A loadgame will leave valid entities that just don't have a connection yet.
@@ -288,7 +266,6 @@ typedef struct
 
 #define FL_CHICKEN (FL_AVERAGE_CHICKEN | FL_SUPER_CHICKEN)
 
-// movetype_t
 // 'edict_t'->movetype values.
 typedef enum physicsType_e
 {
