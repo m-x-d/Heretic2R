@@ -388,23 +388,11 @@ void PlayerActionSpellSphereCharge(playerinfo_t* playerinfo, const float value)
 	}
 }
 
-/*-----------------------------------------------
-	PlayerActionSpellSphereRelease
------------------------------------------------*/
-
-void PlayerActionSpellSphereRelease(playerinfo_t *playerinfo, float value)
+void PlayerActionSpellSphereRelease(playerinfo_t* playerinfo, const float value)
 {
-	if(value==1.0)
+	if (value != 1.0f || !playerinfo->seqcmd[ACMDU_ATTACK])
 	{
-		if(playerinfo->seqcmd[ACMDU_ATTACK]==false)
-		{
-			playerinfo->chargingspell=false;
-			playerinfo->weaponcharge = 0;
-		}
-	}
-	else
-	{
-		playerinfo->chargingspell=false;
+		playerinfo->chargingspell = false;
 		playerinfo->weaponcharge = 0;
 	}
 }
