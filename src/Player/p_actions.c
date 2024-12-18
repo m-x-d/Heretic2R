@@ -230,7 +230,7 @@ void PlayerActionCheckUncrouchToFinishSeq(playerinfo_t* playerinfo)
 	PlayerAnimSetLowerSeq(playerinfo, lower_seq);
 }
 
-void PlayerActionTurn180(playerinfo_t* playerinfo) { }
+void PlayerActionTurn180(playerinfo_t* playerinfo) { } //TODO: remove?
 
 void PlayerActionSetQTEndTime(playerinfo_t* playerinfo, float QTEndTime)
 {
@@ -425,25 +425,19 @@ void PlayerActionHellstaffAttack(playerinfo_t* playerinfo, float value)
 		playerinfo->PlayerActionHellstaffAttack(playerinfo);
 }
 
-void PlayerActionSpellDefensive(playerinfo_t* playerinfo, float value) { }
+void PlayerActionSpellDefensive(playerinfo_t* playerinfo, float value) { } //TODO: remove?
 
-/*-----------------------------------------------
-	PlayerActionSpellChange
------------------------------------------------*/
-
-void PlayerActionSpellChange(playerinfo_t *playerinfo, float value)
+void PlayerActionSpellChange(playerinfo_t* playerinfo, float value)
 {
-	vec3_t	forward, right, spawnpoint;
-	int		color;
+	vec3_t forward;
+	vec3_t right;
+	vec3_t spawnpoint;
+	int color;
 
 	assert(playerinfo);
 
-	if (playerinfo->edictflags & FL_CHICKEN)
-	{
-		// Don't allow us to muck about with spells if we are a chicken.
-
+	if (playerinfo->edictflags & FL_CHICKEN) // Don't allow us to muck about with spells if we are a chicken.
 		return;
-	}
 
 	assert(playerinfo->pers.newweapon);
 
@@ -451,63 +445,47 @@ void PlayerActionSpellChange(playerinfo_t *playerinfo, float value)
 	playerinfo->pers.newweapon = NULL;
 
 	// Do some fancy effect.
-
 	AngleVectors(playerinfo->angles, forward, right, NULL);
-	VectorMA(playerinfo->origin, -2.0, forward, spawnpoint);
-	VectorMA(spawnpoint, -7, right, spawnpoint);
-	spawnpoint[2] += playerinfo->viewheight - 16.0;
+	VectorMA(playerinfo->origin, -2.0f, forward, spawnpoint);
+	VectorMA(spawnpoint, -7.0f, right, spawnpoint);
+	spawnpoint[2] += playerinfo->viewheight - 16.0f;
 
-	switch(playerinfo->pers.weapon->tag)
+	switch (playerinfo->pers.weapon->tag)
 	{
 		case ITEM_WEAPON_FLYINGFIST:
-			color=1;
+			color = 1;
 			break;
 
 		case ITEM_WEAPON_MAGICMISSILE:
-			color=2;
+			color = 2;
 			break;
-		
+
 		case ITEM_WEAPON_SPHEREOFANNIHILATION:
-			color=3;
+			color = 3;
 			break;
-		
+
 		case ITEM_WEAPON_MACEBALLS:
-			color=4;
+			color = 4;
 			break;
-		
+
 		case ITEM_WEAPON_FIREWALL:
-			color=5;
+			color = 5;
 			break;
-		
+
 		default:
-			color=0;
+			color = 0;
 			break;
 	}
 
-	if(playerinfo->isclient)
+	if (playerinfo->isclient)
 	{
-		playerinfo->CL_Sound(SND_PRED_ID0,
-							 playerinfo->origin,
-							 CHAN_WEAPON,
-							 "Weapons/SpellChange.wav",
-							 1.0,
-							 ATTN_NORM,
-							 0);
-
-		playerinfo->CL_CreateEffect(EFFECT_PRED_ID1,NULL,FX_SPELL_CHANGE,0,spawnpoint,"db",right,color);
+		playerinfo->CL_Sound(SND_PRED_ID0, playerinfo->origin, CHAN_WEAPON, "Weapons/SpellChange.wav", 1.0f, ATTN_NORM, 0);
+		playerinfo->CL_CreateEffect(EFFECT_PRED_ID1, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", right, color);
 	}
 	else
 	{
-		playerinfo->G_Sound(SND_PRED_ID0,
-							playerinfo->leveltime,
-							playerinfo->self,
-							CHAN_WEAPON,
-							playerinfo->G_SoundIndex("Weapons/SpellChange.wav"),
-							1.0,
-							ATTN_NORM,
-							0);
-
-		playerinfo->G_CreateEffect(EFFECT_PRED_ID1,NULL,FX_SPELL_CHANGE,0,spawnpoint,"db",right,color);
+		playerinfo->G_Sound(SND_PRED_ID0, playerinfo->leveltime, playerinfo->self, CHAN_WEAPON, playerinfo->G_SoundIndex("Weapons/SpellChange.wav"), 1.0f, ATTN_NORM, 0);
+		playerinfo->G_CreateEffect(EFFECT_PRED_ID1, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", right, color);
 	}
 }
 
