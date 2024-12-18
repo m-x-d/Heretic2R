@@ -64,7 +64,7 @@ void InitPlayerinfo(edict_t *ent)
 {
 	// Client side function callbacks (approximating functionality of server function callbacks).
 
-	ent->client->playerinfo.CL_Sound=NULL;	
+	ent->client->playerinfo.CL_Sound=NULL;
 	ent->client->playerinfo.CL_Trace=NULL;
 	ent->client->playerinfo.CL_CreateEffect=NULL;
 
@@ -78,8 +78,8 @@ void InitPlayerinfo(edict_t *ent)
 
 	// Server (game) function callbacks that have no client side equivalent.
 
-	ent->client->playerinfo.G_SoundIndex=gi.soundindex;	
-	ent->client->playerinfo.G_SoundRemove=gi.soundremove;	
+	ent->client->playerinfo.G_SoundIndex=gi.soundindex;
+	ent->client->playerinfo.G_SoundRemove=gi.soundremove;
 	ent->client->playerinfo.G_UseTargets=G_UseTargets;
 	ent->client->playerinfo.G_GetEntityStatePtr=G_GetEntityStatePtr;
 	ent->client->playerinfo.G_BranchLwrClimbing=G_BranchLwrClimbing;
@@ -89,7 +89,7 @@ void InitPlayerinfo(edict_t *ent)
 	ent->client->playerinfo.G_PlayerActionCheckPuzzleGrab=G_PlayerActionCheckPuzzleGrab;
 	ent->client->playerinfo.G_PlayerActionTakePuzzle=G_PlayerActionTakePuzzle;
 	ent->client->playerinfo.G_PlayerActionCheckPushPull_Ent=G_PlayerActionCheckPushPull_Ent;
-	ent->client->playerinfo.G_PlayerActionMoveItem=G_PlayerActionMoveItem;
+	ent->client->playerinfo.G_PlayerActionMoveItem=G_PlayerActionMoveItem; //TODO: unused!
 	ent->client->playerinfo.G_PlayerActionCheckPushButton=G_PlayerActionCheckPushButton;
 	ent->client->playerinfo.G_PlayerActionPushButton=G_PlayerActionPushButton;
 	ent->client->playerinfo.G_PlayerActionCheckPushLever=G_PlayerActionCheckPushLever;
