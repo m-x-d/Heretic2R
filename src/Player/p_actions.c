@@ -332,24 +332,21 @@ void PlayerActionSpellBlast(playerinfo_t* playerinfo, float value)
 	playerinfo->PlayerActionSpellBlast(playerinfo);
 }
 
-/*-----------------------------------------------
-	PlayerActionSpellArray
------------------------------------------------*/
-
-void PlayerActionSpellArray(playerinfo_t *playerinfo, float value)
+void PlayerActionSpellArray(playerinfo_t* playerinfo, const float value)
 {
-	int shotsleft;
+	const int shots_left = Weapon_CurrentShotsLeft(playerinfo);
+	const int missile_pos = (int)value; //mxd
 
-	shotsleft=Weapon_CurrentShotsLeft(playerinfo);
+	if (shots_left <= 0)
+		return; // Outta ammo
 
-	if (shotsleft <= 0)
-		return;		// Outta ammo
-	else if (value==2.0 && shotsleft <= 3)
-		return;		// Three or less shots, use only the inner three projectiles
-	else if (value==1.0 && shotsleft <= 1)
-		return;		// Only one shot, use the center projectile slot.
+	if (missile_pos == 2 && shots_left <= 3)
+		return; // Three or less shots, use only the inner three projectiles.
 
-	playerinfo->PlayerActionSpellArray(playerinfo,(int)value);
+	if (missile_pos == 1 && shots_left <= 1)
+		return; // Only one shot, use the center projectile slot.
+
+	playerinfo->PlayerActionSpellArray(playerinfo, missile_pos);
 }
 
 /*-----------------------------------------------
