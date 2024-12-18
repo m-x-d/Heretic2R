@@ -14,49 +14,6 @@
 
 #include "p_types.h"
 
-// Movement rates
-#define IN_MOVE_CREEP_MIN	16
-#define IN_MOVE_CREEP		32
-#define IN_MOVE_WALK_MIN	48
-#define IN_MOVE_WALK		64
-#define IN_MOVE_RUN_MIN		80
-#define IN_MOVE_RUN			96
-
-#define IN_MOVE_THRESHOLD	IN_MOVE_CREEP_MIN
-
-#define BUTTON_WALK			0
-
-enum movefwd_e
-{
-	MOVE_BACK_RUN,
-	MOVE_BACK_WALK,
-	MOVE_BACK_CREEP,
-	MOVE_FWD_NONE,
-	MOVE_FWD_CREEP,
-	MOVE_FWD_WALK,
-	MOVE_FWD_RUN,
-	MOVE_FWD_MAX
-};
-
-enum moveright_e
-{
-	MOVE_LEFT_RUN,
-	MOVE_LEFT_WALK,
-	MOVE_LEFT_CREEP,
-	MOVE_RIGHT_NONE,
-	MOVE_RIGHT_CREEP,
-	MOVE_RIGHT_WALK,
-	MOVE_RIGHT_RUN,
-	MOVE_RIGHT_MAX
-};
-
-enum moveplus_e
-{
-	MOVE_NORM,
-	MOVE_NOFWD,
-	MOVE_NOSIDE,
-};
-
 #define DEFAULT_PLAYER_LIB "Player"
 
 typedef struct
@@ -67,8 +24,8 @@ typedef struct
 	gitem_t* p_itemlist;
 } player_export_t;
 
-void P_Freelib(void);
-uint P_Load(char* name);
+extern void P_Freelib(void);
+extern uint P_Load(char* name);
 
 #ifdef PLAYER_DLL
 	PLAYER_API void P_Init(void);
