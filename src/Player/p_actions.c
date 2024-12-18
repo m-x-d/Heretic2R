@@ -151,13 +151,9 @@ void PlayerActionCheckStrafe(playerinfo_t* playerinfo)
 	}
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckVaultKick
------------------------------------------------*/
-
-void PlayerActionCheckVaultKick ( playerinfo_t *playerinfo )
+void PlayerActionCheckVaultKick(playerinfo_t* playerinfo)
 {
-	if(!playerinfo->isclient)
+	if (!playerinfo->isclient)
 		playerinfo->G_PlayerVaultKick(playerinfo);
 }
 
