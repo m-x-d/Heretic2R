@@ -264,39 +264,31 @@ void PlayerActionCheckDoubleJump(playerinfo_t* playerinfo)
 	}
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckBowRefire
------------------------------------------------*/
 // This is called during the hold ready bow sequence, so that we may interrupt it if necessary.
-void PlayerActionCheckBowRefire( playerinfo_t *playerinfo )
+void PlayerActionCheckBowRefire(playerinfo_t* playerinfo)
 {
-	if(playerinfo->switchtoweapon!=playerinfo->pers.weaponready||playerinfo->pers.newweapon)
-	{	// Switching weapons is one reason to end the bow refire waiting.
-		if (playerinfo->pers.weapon->tag == ITEM_WEAPON_REDRAINBOW)
-		{
-			PlayerAnimSetUpperSeq(playerinfo, ASEQ_WRRBOW_END);
-		}
-		else if (playerinfo->pers.weapon->tag == ITEM_WEAPON_PHOENIXBOW)
-		{
-			PlayerAnimSetUpperSeq(playerinfo, ASEQ_WPHBOW_END);
-		}
-	}
+	const int num_shots = Weapon_CurrentShotsLeft(playerinfo); //mxd
 
-	if(playerinfo->seqcmd[ACMDU_ATTACK]  && !(playerinfo->edictflags & FL_CHICKEN) && Weapon_CurrentShotsLeft(playerinfo))	// Not a chicken
-	{	// Shooting is the other!
+	if (playerinfo->seqcmd[ACMDU_ATTACK] && num_shots > 0 && !(playerinfo->edictflags & FL_CHICKEN)) // Not a chicken
+	{
+		// Shooting is one reason to end the bow refire waiting.
 		if (playerinfo->pers.weapon->tag == ITEM_WEAPON_REDRAINBOW)
-		{
 			PlayerAnimSetUpperSeq(playerinfo, ASEQ_WRRBOW_DRAW);
-		}
 		else if (playerinfo->pers.weapon->tag == ITEM_WEAPON_PHOENIXBOW)
-		{
 			PlayerAnimSetUpperSeq(playerinfo, ASEQ_WPHBOW_DRAW);
-		}
 	}
-	else
-	if (!playerinfo->isclient&&!(Weapon_CurrentShotsLeft(playerinfo)))
+	else if (playerinfo->switchtoweapon != playerinfo->pers.weaponready || playerinfo->pers.newweapon != NULL)
+	{
+		// Switching weapons is the other!
+		if (playerinfo->pers.weapon->tag == ITEM_WEAPON_REDRAINBOW)
+			PlayerAnimSetUpperSeq(playerinfo, ASEQ_WRRBOW_END);
+		else if (playerinfo->pers.weapon->tag == ITEM_WEAPON_PHOENIXBOW)
+			PlayerAnimSetUpperSeq(playerinfo, ASEQ_WPHBOW_END);
+	}
+	else if (!playerinfo->isclient && num_shots == 0)
+	{
 		playerinfo->G_WeapNext(playerinfo->self);
-		
+	}
 }
 
 /*-----------------------------------------------
