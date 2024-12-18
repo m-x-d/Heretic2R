@@ -100,12 +100,6 @@ enum helltype_e
 	HELL_TYPE_POWER
 };
 
-typedef enum //TODO: values never checked. Move to Items_t enum?
-{
-	MODEL_HEALTH1,
-	MODEL_HEALTH2,
-} ammo_t;
-
 #define PICKUP_MIN  0, 0, 0
 #define PICKUP_MAX  0, 0, 0
 

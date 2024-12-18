@@ -717,7 +717,7 @@ static gitem_t itemlist[]=
 		NULL,										// Ammo (char *)              
 		IT_HEALTH | EF_ALWAYS_ADD_EFFECTS, 			// flags                      
 		NULL,										// void * ?                   
-		MODEL_HEALTH1,								// tag ?
+		ITEM_HEALTH1,								// tag ? //mxd. MODEL_HEALTH1 in original logic.
 		NULL,										// Icon name (char *)         
 	},
 
@@ -743,7 +743,7 @@ static gitem_t itemlist[]=
 		NULL,										// Ammo (char *)              
 		IT_HEALTH | EF_ALWAYS_ADD_EFFECTS, 			// flags                      
 		NULL,										// void * ?                   
-		MODEL_HEALTH2,								// tag ?                      
+		ITEM_HEALTH2,								// tag ? //mxd. MODEL_HEALTH2 in original logic.
 		NULL,								// Icon name (char *)         
 	},
 
