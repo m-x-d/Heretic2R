@@ -1565,10 +1565,14 @@ void PlayerActionVaultSound(const playerinfo_t* info, float value)
 	}
 }
 
-void PlayerActionJump(playerinfo_t* info, const float value)
+//mxd. Added to reduce code repetition.
+static qboolean CanJump(const playerinfo_t* info)
 {
 	if (info->waterlevel > 1) // Don't jump while under water.
-		return;
+		return false;
+
+	if (info->groundentity != NULL)
+		return true;
 
 	vec3_t endpos;
 	VectorCopy(info->origin, endpos);
@@ -1577,46 +1581,19 @@ void PlayerActionJump(playerinfo_t* info, const float value)
 	trace_t trace;
 	P_Trace(info, info->origin, info->mins, info->maxs, endpos, &trace);
 
-	if (info->groundentity != NULL || trace.fraction < 0.2f)
+	return trace.fraction < 0.2f;
+}
+
+void PlayerActionJump(playerinfo_t* info, const float value)
+{
+ 	if (CanJump(info))
 		info->upvel = value * 10.0f;
 }
 
-/*-----------------------------------------------
-	PlayerActionJumpBack
------------------------------------------------*/
-
-void PlayerActionJumpBack(playerinfo_t *playerinfo, float value)
+void PlayerActionJumpBack(playerinfo_t* info, float value) //TODO: actually change and use value (currently 250)?
 {
-	trace_t		trace;
-	vec3_t		endpos;
-
-	VectorCopy(playerinfo->origin, endpos);
-	endpos[2] += (playerinfo->mins[2] - 2);
-
-	if(playerinfo->isclient)
-	{
-		playerinfo->CL_Trace(playerinfo->origin,
-							 playerinfo->mins,
-							 playerinfo->maxs,
-							 endpos,
-							 CEF_CLIP_TO_WORLD,
-							 MASK_PLAYERSOLID,
-							 &trace);
-	}
-	else
-	{
-		playerinfo->G_Trace(playerinfo->origin,
-								  playerinfo->mins,
-								  playerinfo->maxs,
-								  endpos,
-								  playerinfo->self,
-								  MASK_PLAYERSOLID,&trace);
-	}
-
-	if ((playerinfo->groundentity || trace.fraction < 0.2) && playerinfo->waterlevel < 2)
-	{
-		playerinfo->upvel = 150;
-	}
+	if (CanJump(info))
+		info->upvel = 150.0f;
 }
 
 /*-----------------------------------------------

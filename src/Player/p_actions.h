@@ -77,7 +77,7 @@ void PlayerPullupHeight(playerinfo_t* playerinfo, float height, float endseq, fl
 
 void PlayerActionFlipForward(playerinfo_t* playerinfo, float value);
 void PlayerActionJump(playerinfo_t* info, float value);
-void PlayerActionJumpBack(playerinfo_t* playerinfo, float value);
+void PlayerActionJumpBack(playerinfo_t* info, float value);
 void PlayerActionPushAway(playerinfo_t* info, float value);
 void PlayerActionShrineEffect(playerinfo_t* playerinfo, float value);
 
