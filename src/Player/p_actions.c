@@ -1618,48 +1618,20 @@ void PlayerMoveFunc(playerinfo_t* info, const float fwd, const float right, cons
 	info->upvel = up;
 }
 
-/*-----------------------------------------------
-	PlayerSwimMoveFunc
------------------------------------------------*/
+void PlayerSwimMoveFunc(playerinfo_t* info, const float fwd, const float right, const float up)
+{
+	PlayerMoveFunc(info, fwd, right, up);
 
-void PlayerSwimMoveFunc(playerinfo_t *playerinfo, float fwd, float right, float up)
-{	
-	// Feeds velocity into the character as a thrust value, like player control (no effect if in the air).
-	playerinfo->fwdvel = fwd;
-	playerinfo->sidevel = right;
-	playerinfo->upvel = up;
-
-	if ( playerinfo->seqcmd[ACMDL_STRAFE_L] )
-	{
-		if (fwd > 0.0)
-			playerinfo->sidevel -= (fwd / 1.25);
-		else
-			playerinfo->sidevel += (fwd / 1.25);
-	}
-	else if ( playerinfo->seqcmd[ACMDL_STRAFE_R] )
-	{
-		if (fwd > 0.0)
-			playerinfo->sidevel += (fwd / 1.25);
-		else
-			playerinfo->sidevel -= (fwd / 1.25);
-	}
+	if (info->seqcmd[ACMDL_STRAFE_L])
+		info->sidevel -= (Q_fabs(fwd) / 1.25f);
+	else if (info->seqcmd[ACMDL_STRAFE_R])
+		info->sidevel += (Q_fabs(fwd) / 1.25f);
 }
 
-/*-----------------------------------------------
-	PlayerMoveUpperFunc
------------------------------------------------*/
-
-void PlayerMoveUpperFunc(playerinfo_t *playerinfo, float fwd, float right, float up)
-{	
-	// Feeds velocity into the character as a thrust value, like player control (not effect if in
-	// the air).
-
-	if (playerinfo->loweridle == false)
-		return;
-
-	playerinfo->fwdvel = fwd;
-	playerinfo->sidevel = right;
-	playerinfo->upvel = up;
+void PlayerMoveUpperFunc(playerinfo_t* info, const float fwd, const float right, const float up)
+{
+	if (info->loweridle)
+		PlayerMoveFunc(info, fwd, right, up);
 }
 
 /*-----------------------------------------------

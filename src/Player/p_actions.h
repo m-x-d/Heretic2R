@@ -70,7 +70,7 @@ qboolean PlayerActionUsePuzzle(playerinfo_t* info);
 
 void PlayerMoveFunc(playerinfo_t* info, float fwd, float right, float up);
 void PlayerClimbingMoveFunc(playerinfo_t* info, float height, float var2, float var3);
-void PlayerMoveUpperFunc(playerinfo_t* playerinfo, float fwd, float right, float up);
+void PlayerMoveUpperFunc(playerinfo_t* info, float fwd, float right, float up);
 void PlayerMoveForce(playerinfo_t* playerinfo, float fwd, float right, float up);
 void PlayerMoveALittle(playerinfo_t* playerinfo, float fwd, float right, float up);
 void PlayerPullupHeight(playerinfo_t* playerinfo, float height, float endseq, float nopushdown);
@@ -113,7 +113,7 @@ PLAYER_API void PlayScratch(playerinfo_t* playerinfo, float dist);
 PLAYER_API void PlaySigh(playerinfo_t* playerinfo, float dist);
 PLAYER_API void SpawnDustPuff(playerinfo_t* playerinfo, float dist);
 
-void PlayerSwimMoveFunc(playerinfo_t* playerinfo, float fwd, float right, float up);
+void PlayerSwimMoveFunc(playerinfo_t* info, float fwd, float right, float up);
 
 void PlayerActionClimbStartSound(playerinfo_t* playerinfo, float value);
 void PlayerPlaySlide(playerinfo_t* playerinfo);
