@@ -652,133 +652,34 @@ void PlayerActionStartStaffGlow(const playerinfo_t* info, const float value)
 	P_CreateEffect(info, EFFECT_PRED_ID7, info->self, FX_STAFF_CREATE, flags, NULL, ""); //mxd
 }
 
-/*-----------------------------------------------
-	PlayerActionEndStaffGlow
------------------------------------------------*/
-
-void PlayerActionEndStaffGlow(playerinfo_t *playerinfo, float value)
+void PlayerActionEndStaffGlow(const playerinfo_t* info, const float value)
 {
 	int flags = CEF_OWNERS_ORIGIN;
+	const int ready_weapon = (int)value; //mxd
 
+	if (ready_weapon == WEAPON_READY_HELLSTAFF)
+		flags |= CEF_FLAG6;
 
-	if(playerinfo->isclient)
+	if (info->pers.stafflevel == STAFF_LEVEL_BASIC || ready_weapon == WEAPON_READY_HELLSTAFF)
 	{
-		if (value == WEAPON_READY_HELLSTAFF)
-			flags |= CEF_FLAG6;
-
-		if(playerinfo->pers.stafflevel == STAFF_LEVEL_BASIC || value == WEAPON_READY_HELLSTAFF)
-		{
-			playerinfo->CL_Sound(SND_PRED_ID9,
-							playerinfo->self,
-							CHAN_WEAPON,
-							"weapons/Staff Unready.wav",
-							1.0,
-							ATTN_NORM,
-							0);
-		}
-		else if(playerinfo->pers.stafflevel == STAFF_LEVEL_POWER1)//blue
-		{
-			flags |= CEF_FLAG7;
-
-			playerinfo->CL_Sound(SND_PRED_ID10,
-							playerinfo->self,
-							CHAN_WEAPON,
-							"weapons/Staff2Unready.wav",
-							1.0,
-							ATTN_NORM,
-							0);
-		}
-		else if(playerinfo->pers.stafflevel == STAFF_LEVEL_POWER2)//flame
-		{
-			flags |= CEF_FLAG8;
-
-			playerinfo->CL_Sound(SND_PRED_ID11,
-							playerinfo->self,
-							CHAN_WEAPON,
-							"weapons/Staff3Unready.wav",
-							1.0,
-							ATTN_NORM,
-							0);
-		}
-		else
-		{
-			playerinfo->CL_Sound(SND_PRED_ID12,
-							playerinfo->self,
-							CHAN_WEAPON,
-							"weapons/Staff Unready.wav",
-							1.0,
-							ATTN_NORM,
-							0);
-		}
-
-		playerinfo->CL_CreateEffect(EFFECT_PRED_ID8,
-									playerinfo->self,
-									FX_STAFF_REMOVE,
-									flags,
-									NULL,
-									"");
+		P_Sound(info, SND_PRED_ID9, CHAN_WEAPON, "weapons/Staff Unready.wav", 1.0f); //mxd
+	}
+	else if (info->pers.stafflevel == STAFF_LEVEL_POWER1) // Blue
+	{
+		flags |= CEF_FLAG7;
+		P_Sound(info, SND_PRED_ID10, CHAN_WEAPON, "weapons/Staff2Unready.wav", 1.0f); //mxd
+	}
+	else if (info->pers.stafflevel == STAFF_LEVEL_POWER2) // Flame
+	{
+		flags |= CEF_FLAG8;
+		P_Sound(info, SND_PRED_ID11, CHAN_WEAPON, "weapons/Staff3Unready.wav", 1.0f); //mxd
 	}
 	else
 	{
-		if (value == WEAPON_READY_HELLSTAFF)
-			flags |= CEF_FLAG6;
-
-		if(playerinfo->pers.stafflevel == STAFF_LEVEL_BASIC || value == WEAPON_READY_HELLSTAFF)
-		{
-			playerinfo->G_Sound(SND_PRED_ID9,
-								playerinfo->leveltime,
-								playerinfo->self,
-								CHAN_WEAPON,
-								playerinfo->G_SoundIndex("weapons/Staff Unready.wav"),
-								1.0,
-								ATTN_NORM,
-								0);
-		}
-		else if(playerinfo->pers.stafflevel == STAFF_LEVEL_POWER1)//blue
-		{
-			flags |= CEF_FLAG7;
-
-			playerinfo->G_Sound(SND_PRED_ID10,
-								playerinfo->leveltime,
-								playerinfo->self,
-								CHAN_WEAPON,
-								playerinfo->G_SoundIndex("weapons/Staff2Unready.wav"),
-								1.0,
-								ATTN_NORM,
-								0);
-		}
-		else if(playerinfo->pers.stafflevel == STAFF_LEVEL_POWER2)//flame
-		{
-			flags |= CEF_FLAG8;
-
-			playerinfo->G_Sound(SND_PRED_ID11,
-								playerinfo->leveltime,
-								playerinfo->self,
-								CHAN_WEAPON,
-								playerinfo->G_SoundIndex("weapons/Staff3Unready.wav"),
-								1.0,
-								ATTN_NORM,
-								0);
-		}
-		else
-		{
-			playerinfo->G_Sound(SND_PRED_ID12,
-								playerinfo->leveltime,	
-								playerinfo->self,
-								CHAN_WEAPON,
-								playerinfo->G_SoundIndex("weapons/Staff Unready.wav"),
-								1.0,
-								ATTN_NORM,
-								0);
-		}
-
-		playerinfo->G_CreateEffect(EFFECT_PRED_ID8,
-								   playerinfo->G_GetEntityStatePtr((edict_t *)playerinfo->self),
-								   FX_STAFF_REMOVE,
-								   flags,
-								   NULL,
-								   "");
+		P_Sound(info, SND_PRED_ID12, CHAN_WEAPON, "weapons/Staff Unready.wav", 1.0f); //mxd
 	}
+
+	P_CreateEffect(info, EFFECT_PRED_ID8, info->self, FX_STAFF_REMOVE, flags, NULL, ""); //mxd
 }
 
 /*-----------------------------------------------
