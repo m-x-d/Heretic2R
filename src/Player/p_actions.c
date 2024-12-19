@@ -812,59 +812,35 @@ void PlayerActionSwimIdleSound(const playerinfo_t* info, float value)
 	P_Sound(info, SND_PRED_ID15, CHAN_VOICE, "player/swim idle.wav", 0.4f); //mxd
 }
 
-/*-----------------------------------------------
-	PlayerActionSwimSound
------------------------------------------------*/
-
-void PlayerActionSwimSound(playerinfo_t *playerinfo, float value)
+void PlayerActionSwimSound(const playerinfo_t* info, const float value)
 {
-	char *name;
+	char* name;
+	const int snd_type = (int)value; //mxd
 
-	switch ( (int) value)
+	switch (snd_type)
 	{
-	case SOUND_SWIM_FORWARD:
-		name = "player/breaststroke.wav";
-		break;
+		case SOUND_SWIM_FORWARD:
+			name = "player/breaststroke.wav";
+			break;
 
-	case SOUND_SWIM_BACK:
-		name = "player/Swim Backward.wav";
-		break;
+		case SOUND_SWIM_BACK:
+			name = "player/Swim Backward.wav";
+			break;
 
-	case SOUND_SWIM_SIDE:
-		name = (irand(0,1)) ? "player/SwimFreestyle1.wav" : "player/SwimFreestyle2.wav";
-		break;
+		case SOUND_SWIM_SIDE:
+			name = va("player/SwimFreestyle%i.wav", irand(1, 2));
+			break;
 
-	case SOUND_SWIM_UNDER:
-		name = "player/swimunder.wav";
-		break;
+		case SOUND_SWIM_UNDER:
+			name = "player/swimunder.wav";
+			break;
 
-	default :
-		assert(0);
-		name = "player/breatstroke.wav";
-		break;
+		default:
+			assert(0);
+			return;
 	}
 
-	if(playerinfo->isclient)
-	{
-		playerinfo->CL_Sound(SND_PRED_ID16,
-							 playerinfo->origin,
-							 CHAN_AUTO,
-							 name,
-							 0.6,
-							 ATTN_NORM,
-							 0);
-	}
-	else
-	{
-  		playerinfo->G_Sound(SND_PRED_ID16,
-							playerinfo->leveltime,
-							playerinfo->self,
-							CHAN_AUTO,
-							playerinfo->G_SoundIndex(name),
-							0.6,
-							ATTN_NORM,
-							0);
-	}
+	P_Sound(info, SND_PRED_ID16, CHAN_AUTO, name, 0.6f); //mxd
 }
 
 /*-----------------------------------------------
