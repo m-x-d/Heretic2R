@@ -117,7 +117,7 @@ void PlayerActionClimbStartSound(playerinfo_t* playerinfo, float value);
 void PlayerPlaySlide(playerinfo_t* playerinfo);
 
 void PlayerActionCheckCreep(playerinfo_t* info);
-void PlayerActionCheckCreepUnStrafe(playerinfo_t* playerinfo);
+void PlayerActionCheckCreepUnStrafe(playerinfo_t* info);
 
 void PlayerActionCheckCreepBack(playerinfo_t* playerinfo);
 void PlayerActionCheckCreepBackUnStrafe(playerinfo_t* playerinfo);

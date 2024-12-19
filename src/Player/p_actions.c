@@ -2116,108 +2116,75 @@ void PlayerActionCheckCreep(playerinfo_t* info)
 		PlayerAnimSetLowerSeq(info, SeqCtrl[info->lowerseq].ceaseseq);
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckCreepUnStrafe
------------------------------------------------*/
-
-void PlayerActionCheckCreepUnStrafe( playerinfo_t *playerinfo )
+void PlayerActionCheckCreepUnStrafe(playerinfo_t* info)
 {
-	//Player has started running
-	if (playerinfo->buttons & BUTTON_RUN)	
+	const qboolean is_running = (info->buttons & BUTTON_RUN); //mxd
+	const qboolean is_creeping = (info->buttons & BUTTON_CREEP); //mxd
+	int seq = 0; //mxd
+
+	// Player has started running.
+	if (is_running)
 	{
-		if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_RSTRAFE_LEFT);
-			return;
-		}
-		else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_RSTRAFE_RIGHT);
-			return;
-		}
+		if (info->seqcmd[ACMDL_STRAFE_L])
+			seq = ASEQ_RSTRAFE_LEFT;
+		else if (info->seqcmd[ACMDL_STRAFE_R])
+			seq = ASEQ_RSTRAFE_RIGHT;
 	}
-	else if (!(playerinfo->buttons & BUTTON_CREEP))
+	else if (!is_creeping)
 	{
-		if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSTRAFE_LEFT);
-			return;
-		}
-		else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSTRAFE_RIGHT);
-			return;
-		}
+		if (info->seqcmd[ACMDL_STRAFE_L])
+			seq = ASEQ_WSTRAFE_LEFT;
+		else if (info->seqcmd[ACMDL_STRAFE_R])
+			seq = ASEQ_WSTRAFE_RIGHT;
 	}
 
-	//Still pressing the same way and still strafing
-	if (playerinfo->seqcmd[ACMDL_FWD] && playerinfo->seqcmd[ACMDL_STRAFE_L] && playerinfo->lowerseq == ASEQ_CSTRAFE_LEFT)
+	if (seq != 0)
 	{
-		//Account for coincidental action
-		PlayerActionCheckCreep(playerinfo);
+		PlayerAnimSetLowerSeq(info, seq);
 		return;
 	}
 
-	if (playerinfo->seqcmd[ACMDL_FWD] && playerinfo->seqcmd[ACMDL_STRAFE_R] && playerinfo->lowerseq == ASEQ_CSTRAFE_RIGHT)
+	// Still pressing the same way and still strafing.
+	if (info->seqcmd[ACMDL_FWD])
 	{
-		//Account for coincidental action
-		PlayerActionCheckCreep(playerinfo);
-		return;
-	}
-
-	//Stopped moving forward, has gone to a side strafe
-	if (!playerinfo->seqcmd[ACMDL_FWD])
-	{
-		//Check for a transfer to a run
-		if (playerinfo->buttons & BUTTON_RUN)
+		if ((info->seqcmd[ACMDL_STRAFE_L] && info->lowerseq == ASEQ_CSTRAFE_LEFT) ||
+			(info->seqcmd[ACMDL_STRAFE_R] && info->lowerseq == ASEQ_CSTRAFE_RIGHT))
 		{
-			if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-			{
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_DASH_LEFT_GO);
-				return;
-			}
-			else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-			{
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_DASH_RIGHT_GO);
-				return;
-			}
-		}
-		else
-		{
-			if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-			{
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_STRAFEL);
-				return;
-			}
-			else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-			{
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_STRAFER);
-				return;
-			}
+			// Account for coincidental action.
+			PlayerActionCheckCreep(info);
+			return;
 		}
 	}
 
-	//Have we reversed directions of the strafe?
-	if (playerinfo->seqcmd[ACMDL_STRAFE_R] && playerinfo->lowerseq == ASEQ_CSTRAFE_LEFT)
+	// Stopped moving forward, has gone to a side strafe.
+	if (!info->seqcmd[ACMDL_FWD])
 	{
-		playerinfo->lowerseq = ASEQ_CSTRAFE_RIGHT;
-		playerinfo->lowermove = PlayerSeqData[playerinfo->lowerseq].move;
-		playerinfo->lowerframeptr = playerinfo->lowermove->frame + playerinfo->lowerframe;
-		
+		if (info->seqcmd[ACMDL_STRAFE_L])
+			seq = (is_running ? ASEQ_DASH_LEFT_GO : ASEQ_STRAFEL); // Check for a transfer to a run.
+		else if (info->seqcmd[ACMDL_STRAFE_R])
+			seq = (is_running ? ASEQ_DASH_RIGHT_GO : ASEQ_STRAFER); // Check for a transfer to a run.
+
+		if (seq != 0)
+		{
+			PlayerAnimSetLowerSeq(info, seq);
+			return;
+		}
+	}
+
+	// Have we reversed directions of the strafe?
+	if (info->seqcmd[ACMDL_STRAFE_R] && info->lowerseq == ASEQ_CSTRAFE_LEFT)
+		seq = ASEQ_CSTRAFE_RIGHT;
+	else if (info->seqcmd[ACMDL_STRAFE_L] && info->lowerseq == ASEQ_CSTRAFE_RIGHT)
+		seq = ASEQ_CSTRAFE_LEFT;
+
+	if (seq != 0)
+	{
+		SetLowerSeq(info, seq); //mxd
 		return;
 	}
 
-	if (playerinfo->seqcmd[ACMDL_STRAFE_L] && playerinfo->lowerseq == ASEQ_CSTRAFE_RIGHT)
-	{
-		playerinfo->lowerseq = ASEQ_CSTRAFE_LEFT;
-		playerinfo->lowermove = PlayerSeqData[playerinfo->lowerseq].move;
-		playerinfo->lowerframeptr = playerinfo->lowermove->frame + playerinfo->lowerframe;
-		
-		return;
-	}
-
-	//We're doing something else, so run a normal function to determine it
-	PlayerActionCheckCreep(playerinfo);
+	// We're doing something else, so run a normal function to determine it.
+	PlayerActionCheckCreep(info);
 }
 
 /*-----------------------------------------------
