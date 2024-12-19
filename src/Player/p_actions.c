@@ -722,27 +722,12 @@ void PlayerActionStaffTrailStart(playerinfo_t* info, const float value) //mxd. O
 	}
 }
 
-/*-----------------------------------------------
-	PlayerActionRedRainBowTrailStart
------------------------------------------------*/
-
-void PlayerActionRedRainBowTrailStart(playerinfo_t *playerinfo, float value)
+void PlayerActionRedRainBowTrailStart(playerinfo_t* info, float value)
 {
 	// Add a trail effect to the red-rain bow.
-
-	if (playerinfo->powerup_timer > playerinfo->leveltime)
-	{	// Power up the Arrow FX
-		PlayerSetHandFX(playerinfo, HANDFX_POWERREDRAIN, -1);
-	}
-	else
-	{
-		PlayerSetHandFX(playerinfo, HANDFX_REDRAIN, -1);
-	}
-
-	if(!playerinfo->isclient)
-	{
-		playerinfo->G_L_Sound(playerinfo->self,playerinfo->G_SoundIndex("weapons/bowReady.wav"));
-	}
+	const int fx_type = (info->powerup_timer > info->leveltime ? HANDFX_POWERREDRAIN : HANDFX_REDRAIN); // Power up the Arrow FX?
+	PlayerSetHandFX(info, fx_type, -1);
+	P_LocalSound(info, "weapons/bowReady.wav"); //mxd
 }
 
 /*-----------------------------------------------

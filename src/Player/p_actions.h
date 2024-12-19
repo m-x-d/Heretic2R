@@ -35,8 +35,8 @@ void PlayerActionPhoenixBowAttack(playerinfo_t* info, float value);
 void PlayerActionHellstaffAttack(playerinfo_t* info, float value);
 void PlayerActionSpellDefensive(playerinfo_t* info, float value);
 
-void PlayerActionStaffTrailStart(playerinfo_t* playerinfo, float value);
-void PlayerActionRedRainBowTrailStart(playerinfo_t* playerinfo, float value);
+void PlayerActionStaffTrailStart(playerinfo_t* info, float value);
+void PlayerActionRedRainBowTrailStart(playerinfo_t* info, float value);
 void PlayerActionPhoenixBowTrailStart(playerinfo_t* playerinfo, float value);
 void PlayerActionBowTrailEnd(playerinfo_t* playerinfo, float value);
 void PlayerActionStartStaffGlow(const playerinfo_t* info, float value);
