@@ -1565,38 +1565,20 @@ void PlayerActionVaultSound(const playerinfo_t* info, float value)
 	}
 }
 
-/*-----------------------------------------------
-	PlayerActionJump
------------------------------------------------*/
-
-void PlayerActionJump(playerinfo_t *playerinfo, float value)
+void PlayerActionJump(playerinfo_t* info, const float value)
 {
-	trace_t		trace;
-	vec3_t		endpos;
+	if (info->waterlevel > 1) // Don't jump while under water.
+		return;
 
-	VectorCopy(playerinfo->origin, endpos);
-	endpos[2] += (playerinfo->mins[2] - 2);
+	vec3_t endpos;
+	VectorCopy(info->origin, endpos);
+	endpos[2] += (info->mins[2] - 2.0f);
 
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(playerinfo->origin,
-							 playerinfo->mins,
-							 playerinfo->maxs,
-							 endpos,
-							 CEF_CLIP_TO_WORLD,
-							 MASK_PLAYERSOLID,
-							 &trace);
-	else
-		playerinfo->G_Trace(playerinfo->origin,
-								  playerinfo->mins,
-								  playerinfo->maxs,
-								  endpos,
-								  playerinfo->self,
-								  MASK_PLAYERSOLID,&trace);
+	trace_t trace;
+	P_Trace(info, info->origin, info->mins, info->maxs, endpos, &trace);
 
-	if ((playerinfo->groundentity || trace.fraction < 0.2) && playerinfo->waterlevel < 2)
-	{
-		playerinfo->upvel = value*10;
-	}
+	if (info->groundentity != NULL || trace.fraction < 0.2f)
+		info->upvel = value * 10.0f;
 }
 
 /*-----------------------------------------------

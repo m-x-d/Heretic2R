@@ -76,7 +76,7 @@ void PlayerMoveALittle(playerinfo_t* playerinfo, float fwd, float right, float u
 void PlayerPullupHeight(playerinfo_t* playerinfo, float height, float endseq, float nopushdown);
 
 void PlayerActionFlipForward(playerinfo_t* playerinfo, float value);
-void PlayerActionJump(playerinfo_t* playerinfo, float value);
+void PlayerActionJump(playerinfo_t* info, float value);
 void PlayerActionJumpBack(playerinfo_t* playerinfo, float value);
 void PlayerActionPushAway(playerinfo_t* info, float value);
 void PlayerActionShrineEffect(playerinfo_t* playerinfo, float value);
