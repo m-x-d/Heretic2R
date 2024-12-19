@@ -14,6 +14,6 @@ void P_Sound(const playerinfo_t* info, byte EventId, int channel, const char* so
 //mxd. GROSS HACKS, because one can't just pass optional args from one function to another in C...
 #define P_CreateEffect(info, EventId, owner, type, flags, origin, format, ...) \
 	if (info->isclient) \
-		info->CL_CreateEffect(EventId, owner, (ushort)type, flags, origin, format, __VA_ARGS__); \
+		info->CL_CreateEffect(EventId, owner, (ushort)type, flags, origin, format, ##__VA_ARGS__); \
 	else \
-		info->G_CreateEffect(EventId, (owner != NULL ? info->G_GetEntityStatePtr((edict_t *)owner) : NULL), type, flags, origin, format, __VA_ARGS__)
+		info->G_CreateEffect(EventId, (owner != NULL ? info->G_GetEntityStatePtr((edict_t *)owner) : NULL), type, flags, origin, format, ##__VA_ARGS__)
