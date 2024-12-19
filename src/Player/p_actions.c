@@ -1554,30 +1554,6 @@ qboolean PlayerActionCheckRopeGrab(playerinfo_t* info, const float stomp_org)
 }
 
 /*-----------------------------------------------
-	PlayerActionSplashFeet
------------------------------------------------*/
-
-void PlayerActionSplashFeet(playerinfo_t *playerinfo, float value)
-{
-}
-
-/*-----------------------------------------------
-	PlayerActionBowSound
------------------------------------------------*/
-
-void PlayerActionBowSound(playerinfo_t *playerinfo, float value)
-{
-}
-
-/*-----------------------------------------------
-	PlayerActionIdleSound
------------------------------------------------*/
-
-void PlayerActionIdleSound(playerinfo_t *playerinfo, float value)
-{
-}
-
-/*-----------------------------------------------
 	PlayerActionVaultSound
 -----------------------------------------------*/
 
