@@ -1924,29 +1924,10 @@ PLAYER_API void PlayScratch(const playerinfo_t* info, float dist)
 	P_Sound(info, SND_PRED_ID25, CHAN_BODY, "player/scratch.wav", 1.0f); //mxd
 }
 
-/*-----------------------------------------------
-	SpawnDustPuff
------------------------------------------------*/
-
-PLAYER_API void SpawnDustPuff(playerinfo_t *playerinfo, float dist)
+PLAYER_API void SpawnDustPuff(playerinfo_t* info, float dist)
 {
-	if(playerinfo->waterlevel==0)
-	{
-		if(!playerinfo->isclient)
-			playerinfo->G_CreateEffect(EFFECT_PRED_ID10,
-									   playerinfo->G_GetEntityStatePtr(playerinfo->self),
-									   FX_DUST_PUFF,
-									   CEF_OWNERS_ORIGIN,
-									   playerinfo->origin,
-									   "");
-		else
-			playerinfo->CL_CreateEffect(EFFECT_PRED_ID10,
-										playerinfo->self,
-										FX_DUST_PUFF,
-										CEF_OWNERS_ORIGIN,
-										playerinfo->origin,
-										"");
-	}
+	if (info->waterlevel == 0)
+		P_CreateEffect(info, EFFECT_PRED_ID10, info->self, FX_DUST_PUFF, CEF_OWNERS_ORIGIN, info->origin, ""); //mxd
 }
 
 /*-----------------------------------------------
