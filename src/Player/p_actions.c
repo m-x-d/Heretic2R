@@ -1904,119 +1904,24 @@ void PlayerActionCheckRopeMove(playerinfo_t* info, float foo)
 		info->G_PlayerActionCheckRopeMove(info);
 }
 
-/*-----------------------------------------------
-	PlayFly
------------------------------------------------*/
-
-PLAYER_API void PlayFly(playerinfo_t *playerinfo, float dist)
+PLAYER_API void PlayFly(const playerinfo_t* info, float dist)
 {
-	if(playerinfo->isclient)
-	{
-		playerinfo->CL_Sound(SND_PRED_ID22,
-							 playerinfo->origin,
-							 CHAN_BODY,
-							 "player/idle buzz.wav",
-							 1.0,
-							 ATTN_NORM,
-							 0);
-	}
-	else
-	{
-		playerinfo->G_Sound(SND_PRED_ID22,
-							playerinfo->leveltime,
-							playerinfo->self,
-							CHAN_BODY,
-							playerinfo->G_SoundIndex("player/idle buzz.wav"),
-							1.0,
-							ATTN_NORM,
-							0);
-	}
+	P_Sound(info, SND_PRED_ID22, CHAN_BODY, "player/idle buzz.wav", 1.0f); //mxd
 }
 
-/*-----------------------------------------------
-	PlaySlap
------------------------------------------------*/
-
-PLAYER_API void PlaySlap(playerinfo_t *playerinfo, float dist)
+PLAYER_API void PlaySlap(const playerinfo_t* info, float dist)
 {
-	if(playerinfo->isclient)
-	{
-		playerinfo->CL_Sound(SND_PRED_ID23,
-							 playerinfo->origin,
-							 CHAN_BODY,
-							 "player/idle slap.wav",
-							 1.0,
-							 ATTN_NORM,
-							 0);
-	}
-	else
-	{
-		playerinfo->G_Sound(SND_PRED_ID23,
-							playerinfo->leveltime,	
-							playerinfo->self,
-							CHAN_BODY,
-							playerinfo->G_SoundIndex("player/idle slap.wav"),
-							1.0,
-							ATTN_NORM,
-							0);
-	}
+	P_Sound(info, SND_PRED_ID23, CHAN_BODY, "player/idle slap.wav", 1.0f); //mxd
 }
 
-/*-----------------------------------------------
-	PlaySigh
------------------------------------------------*/
-
-PLAYER_API void PlaySigh(playerinfo_t *playerinfo, float dist)
+PLAYER_API void PlaySigh(const playerinfo_t* info, float dist)
 {
-	if(playerinfo->isclient)
-	{
-		playerinfo->CL_Sound(SND_PRED_ID24,
-							 playerinfo->origin,
-							 CHAN_BODY,
-							 "*phew.wav",
-							 0.75,
-							 ATTN_NORM,
-							 0);
-	}
-	else
-	{
-		playerinfo->G_Sound(SND_PRED_ID24,
-							playerinfo->leveltime,
-							playerinfo->self,
-							CHAN_BODY,
-							playerinfo->G_SoundIndex("*phew.wav"),
-							0.75,
-							ATTN_NORM,
-							0);
-	}
+	P_Sound(info, SND_PRED_ID24, CHAN_BODY, "*phew.wav", 0.75f); //mxd
 }
-/*-----------------------------------------------
-	PlayScratch
------------------------------------------------*/
 
-PLAYER_API void PlayScratch(playerinfo_t *playerinfo, float dist)
+PLAYER_API void PlayScratch(const playerinfo_t* info, float dist)
 {
-	if(playerinfo->isclient)
-	{
-		playerinfo->CL_Sound(SND_PRED_ID25,
-							 playerinfo->origin,
-							 CHAN_BODY,
-							 "player/scratch.wav",
-							 1.0,
-							 ATTN_NORM,
-							 0);
-	}
-	else
-	{
-		playerinfo->G_Sound(SND_PRED_ID25,
-							playerinfo->leveltime,
-							playerinfo->self,
-							CHAN_BODY,
-							playerinfo->G_SoundIndex("player/scratch.wav"),
-							1.0,
-							ATTN_NORM,
-							0);
-	}
+	P_Sound(info, SND_PRED_ID25, CHAN_BODY, "player/scratch.wav", 1.0f); //mxd
 }
 
 /*-----------------------------------------------

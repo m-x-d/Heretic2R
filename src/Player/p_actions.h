@@ -103,10 +103,10 @@ void PlayerJumpNudge(playerinfo_t* info, float fwd, float right, float up);
 
 void PlayerActionCheckBranchRunningStrafe(playerinfo_t* info);
 
-PLAYER_API void PlayFly(playerinfo_t* playerinfo, float dist);
-PLAYER_API void PlaySlap(playerinfo_t* playerinfo, float dist);
-PLAYER_API void PlayScratch(playerinfo_t* playerinfo, float dist);
-PLAYER_API void PlaySigh(playerinfo_t* playerinfo, float dist);
+PLAYER_API void PlayFly(const playerinfo_t* info, float dist);
+PLAYER_API void PlaySlap(const playerinfo_t* info, float dist);
+PLAYER_API void PlayScratch(const playerinfo_t* info, float dist);
+PLAYER_API void PlaySigh(const playerinfo_t* info, float dist);
 PLAYER_API void SpawnDustPuff(playerinfo_t* playerinfo, float dist);
 
 void PlayerSwimMoveFunc(playerinfo_t* info, float fwd, float right, float up);
