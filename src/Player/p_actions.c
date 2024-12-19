@@ -853,47 +853,18 @@ void PlayerActionClimbFinishSound(const playerinfo_t* info, float value)
 	P_Sound(info, SND_PRED_ID19, CHAN_VOICE, "player/pullup 2.wav", 1.0f); //mxd
 }
 
-/*-----------------------------------------------
-	PlayerActionSwim
------------------------------------------------*/
-
-void PlayerActionSwim(playerinfo_t *playerinfo, float value)
+void PlayerActionSwim(const playerinfo_t* info, const float value)
 {
-	vec3_t	Origin,
-			Dir;
+	if (value != 1.0f)
+		return;
 
-	if(value==1.0)
-	{
-		VectorCopy(playerinfo->origin,Origin);
-		Origin[2]+=playerinfo->waterheight;
+	vec3_t origin;
+	VectorCopy(info->origin, origin);
+	origin[2] += info->waterheight;
 
-		// Fixme: Need to determine the actual water surface normal - if we have any sloping water?
-
-		Dir[0]=0.0;
-		Dir[1]=0.0;
-		Dir[2]=1.0;
-
-		//
-
-		if(!playerinfo->isclient)
-			playerinfo->G_CreateEffect(EFFECT_PRED_ID9,
-									   NULL,
-									   FX_WATER_ENTRYSPLASH,
-									   0,
-									   Origin,
-									   "bd",
-									   32,
-									   Dir);
-		else
-			playerinfo->CL_CreateEffect(EFFECT_PRED_ID9,
-										NULL,
-										FX_WATER_ENTRYSPLASH,
-										0,
-										Origin,
-										"bd",
-										32,
-										Dir);
-	}
+	// Fixme: Need to determine the actual water surface normal - if we have any sloping water?
+	vec3_t dir = { 0.0f, 0.0f, 1.0f };
+	P_CreateEffect(info, EFFECT_PRED_ID9, NULL, FX_WATER_ENTRYSPLASH, 0, origin, "bd", 32, dir);
 }
 
 /*-----------------------------------------------
