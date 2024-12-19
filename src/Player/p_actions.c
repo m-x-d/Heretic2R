@@ -1930,213 +1930,179 @@ PLAYER_API void SpawnDustPuff(playerinfo_t* info, float dist)
 		P_CreateEffect(info, EFFECT_PRED_ID10, info->self, FX_DUST_PUFF, CEF_OWNERS_ORIGIN, info->origin, ""); //mxd
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckCreep
------------------------------------------------*/
-
-void PlayerActionCheckCreep( playerinfo_t *playerinfo )
+void PlayerActionCheckCreep(playerinfo_t* info)
 {
-	int	curseq = playerinfo->lowerseq;
+	const int curseq = info->lowerseq;
 
-	//Check for an autovault (only occurs if upper half of body is idle!)
-	if ( (playerinfo->flags & PLAYER_FLAG_COLLISION) &&  (playerinfo->upperidle) && (playerinfo->seqcmd[ACMDL_FWD]) )
+	// Check for an autovault (only occurs if upper half of body is idle!).
+	if ((info->flags & PLAYER_FLAG_COLLISION) && info->upperidle && info->seqcmd[ACMDL_FWD])
 	{
-		PlayerActionCheckVault(playerinfo, 0);
-		
-		if (curseq == ASEQ_VAULT_LOW)
-		{
-			PlayerAnimSetLowerSeq(playerinfo,  ASEQ_VAULT_LOW);
-			return;
-		}
+		PlayerActionCheckVault(info, 0);
 
-		if (curseq == ASEQ_PULLUP_HALFWALL)
+		if (curseq == ASEQ_VAULT_LOW || curseq == ASEQ_PULLUP_HALFWALL)
 		{
-			PlayerAnimSetLowerSeq(playerinfo,  ASEQ_PULLUP_HALFWALL);
+			PlayerAnimSetLowerSeq(info, curseq);
 			return;
 		}
 	}
 
-	//Check for a jump	[High probability]
-	if (playerinfo->seqcmd[ACMDL_JUMP])
+	// Check for a jump [High probability]. Slime causes skipping, so no jumping in it!
+	if (info->seqcmd[ACMDL_JUMP] && !(info->watertype & (CONTENTS_SLIME | CONTENTS_LAVA)))
 	{
-		//Slime causes skipping, so no jumping in it!
-		if (!(playerinfo->watertype & (CONTENTS_SLIME|CONTENTS_LAVA)))
+		if (info->seqcmd[ACMDL_FWD])
 		{
-			if (playerinfo->seqcmd[ACMDL_FWD])
-			{
-				PlayerAnimSetLowerSeq(playerinfo,  ASEQ_JUMPFWD_SGO);
-				return;
-			}
-			else if (playerinfo->seqcmd[ACMDL_BACK])
-			{
-				PlayerAnimSetLowerSeq(playerinfo,  ASEQ_JUMPBACK_SGO);
-				return;
-			}
-			if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-			{
-				PlayerAnimSetLowerSeq(playerinfo,  ASEQ_JUMPLEFT_SGO);
-				return;
-			}
-			else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-			{
-				PlayerAnimSetLowerSeq(playerinfo,  ASEQ_JUMPRIGHT_SGO);
-				return;
-			}
+			PlayerAnimSetLowerSeq(info, ASEQ_JUMPFWD_SGO);
+			return;
+		}
+
+		if (info->seqcmd[ACMDL_BACK])
+		{
+			PlayerAnimSetLowerSeq(info, ASEQ_JUMPBACK_SGO);
+			return;
+		}
+
+		if (info->seqcmd[ACMDL_STRAFE_L])
+		{
+			PlayerAnimSetLowerSeq(info, ASEQ_JUMPLEFT_SGO);
+			return;
+		}
+
+		if (info->seqcmd[ACMDL_STRAFE_R])
+		{
+			PlayerAnimSetLowerSeq(info, ASEQ_JUMPRIGHT_SGO);
+			return;
 		}
 	}
-	
-	//Check for a transition to a creeping strafe		[High probability]
-	if ( playerinfo->seqcmd[ACMDL_CREEP_F] && playerinfo->seqcmd[ACMDL_STRAFE_L] && curseq != ASEQ_CSTRAFE_LEFT)
+
+	// Check for a transition to a creeping strafe [High probability].
+	if (info->seqcmd[ACMDL_CREEP_F] && info->seqcmd[ACMDL_STRAFE_L] && curseq != ASEQ_CSTRAFE_LEFT)
 	{
-		playerinfo->lowerseq = ASEQ_CSTRAFE_LEFT;
-		playerinfo->lowermove = PlayerSeqData[playerinfo->lowerseq].move;
-		playerinfo->lowerframeptr = playerinfo->lowermove->frame + playerinfo->lowerframe;
-	
-		return;
-	}
-	 
-	if ( playerinfo->seqcmd[ACMDL_CREEP_F] && playerinfo->seqcmd[ACMDL_STRAFE_R] && curseq != ASEQ_CSTRAFE_RIGHT)
-	{
-		playerinfo->lowerseq = ASEQ_CSTRAFE_RIGHT;
-		playerinfo->lowermove = PlayerSeqData[playerinfo->lowerseq].move;
-		playerinfo->lowerframeptr = playerinfo->lowermove->frame + playerinfo->lowerframe;
-	
-		return;
-	}
-	
-	//Check for a transition to a creeping strafe		[High probability]
-	if ( playerinfo->seqcmd[ACMDL_CREEP_B] && playerinfo->seqcmd[ACMDL_STRAFE_L] && curseq != ASEQ_CSTRAFEB_LEFT)
-	{
-		playerinfo->lowerseq = ASEQ_CSTRAFEB_LEFT;
-		playerinfo->lowermove = PlayerSeqData[playerinfo->lowerseq].move;
-		playerinfo->lowerframeptr = playerinfo->lowermove->frame + playerinfo->lowerframe;
-	
-		return;
-	}
-	 
-	if ( playerinfo->seqcmd[ACMDL_CREEP_B] && playerinfo->seqcmd[ACMDL_STRAFE_R] && curseq != ASEQ_CSTRAFEB_RIGHT)
-	{
-		playerinfo->lowerseq = ASEQ_CSTRAFEB_RIGHT;
-		playerinfo->lowermove = PlayerSeqData[playerinfo->lowerseq].move;
-		playerinfo->lowerframeptr = playerinfo->lowermove->frame + playerinfo->lowerframe;
-	
+		info->lowerseq = ASEQ_CSTRAFE_LEFT;
+		info->lowermove = PlayerSeqData[info->lowerseq].move;
+		info->lowerframeptr = info->lowermove->frame + info->lowerframe;
+
 		return;
 	}
 
-	//Check for a sudden transition to a walk	[Low probability]
-	if (playerinfo->seqcmd[ACMDL_WALK_F])
+	if (info->seqcmd[ACMDL_CREEP_F] && info->seqcmd[ACMDL_STRAFE_R] && curseq != ASEQ_CSTRAFE_RIGHT)
 	{
-		PlayerAnimSetLowerSeq(playerinfo,  ASEQ_WALKF);
+		info->lowerseq = ASEQ_CSTRAFE_RIGHT;
+		info->lowermove = PlayerSeqData[info->lowerseq].move;
+		info->lowerframeptr = info->lowermove->frame + info->lowerframe;
+
 		return;
 	}
 
-	//Check for a sudden transition to a run	[Low probability]
-	if (playerinfo->seqcmd[ACMDL_RUN_F])
+	// Check for a transition to a creeping strafe [High probability].
+	if (info->seqcmd[ACMDL_CREEP_B] && info->seqcmd[ACMDL_STRAFE_L] && curseq != ASEQ_CSTRAFEB_LEFT)
 	{
-		PlayerAnimSetLowerSeq(playerinfo,  ASEQ_RUNF);
+		info->lowerseq = ASEQ_CSTRAFEB_LEFT;
+		info->lowermove = PlayerSeqData[info->lowerseq].move;
+		info->lowerframeptr = info->lowermove->frame + info->lowerframe;
+
 		return;
 	}
 
-	//Check for a crouch	[Low probability]
-	if (playerinfo->seqcmd[ACMDL_CROUCH])
+	if (info->seqcmd[ACMDL_CREEP_B] && info->seqcmd[ACMDL_STRAFE_R] && curseq != ASEQ_CSTRAFEB_RIGHT)
 	{
-		if (playerinfo->seqcmd[ACMDL_BACK])
-		{
-			PlayerAnimSetLowerSeq(playerinfo,  ASEQ_CROUCH_WALK_B);
-			return;
-		}
-		else if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-		{
-			PlayerAnimSetLowerSeq(playerinfo,  ASEQ_CROUCH_WALK_L);
-			return;
-		}
-		else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-		{
-			PlayerAnimSetLowerSeq(playerinfo,  ASEQ_CROUCH_WALK_R);
-			return;
-		}
-		else if (playerinfo->seqcmd[ACMDL_BACK])
-		{
-			PlayerAnimSetLowerSeq(playerinfo,  ASEQ_CROUCH_WALK_F);
-			return;
-		}
+		info->lowerseq = ASEQ_CSTRAFEB_RIGHT;
+		info->lowermove = PlayerSeqData[info->lowerseq].move;
+		info->lowerframeptr = info->lowermove->frame + info->lowerframe;
+
+		return;
+	}
+
+	// Check for a sudden transition to a walk [Low probability].
+	if (info->seqcmd[ACMDL_WALK_F])
+	{
+		PlayerAnimSetLowerSeq(info, ASEQ_WALKF);
+		return;
+	}
+
+	// Check for a sudden transition to a run [Low probability].
+	if (info->seqcmd[ACMDL_RUN_F])
+	{
+		PlayerAnimSetLowerSeq(info, ASEQ_RUNF);
+		return;
+	}
+
+	// Check for a crouch [Low probability].
+	if (info->seqcmd[ACMDL_CROUCH])
+	{
+		if (info->seqcmd[ACMDL_BACK])
+			PlayerAnimSetLowerSeq(info, ASEQ_CROUCH_WALK_B);
+		else if (info->seqcmd[ACMDL_STRAFE_L])
+			PlayerAnimSetLowerSeq(info, ASEQ_CROUCH_WALK_L);
+		else if (info->seqcmd[ACMDL_STRAFE_R])
+			PlayerAnimSetLowerSeq(info, ASEQ_CROUCH_WALK_R);
+		else if (info->seqcmd[ACMDL_BACK])
+			PlayerAnimSetLowerSeq(info, ASEQ_CROUCH_WALK_F);
 		else
-		{
-			PlayerAnimSetLowerSeq(playerinfo,  ASEQ_CROUCH_GO);
-			return;
-		}
-	}
+			PlayerAnimSetLowerSeq(info, ASEQ_CROUCH_GO);
 
-	//Handle an action key press	[Low probability]
-	if (playerinfo->seqcmd[ACMDL_ACTION])
-	{
-		//Climb a rope?
-		if ( (playerinfo->targetEnt) && (PlayerActionCheckRopeGrab(playerinfo, 0)) )
-		{
-			playerinfo->flags |= PLAYER_FLAG_ONROPE;
-			
-			if(playerinfo->isclient)
-				playerinfo->CL_Sound(SND_PRED_ID26, playerinfo->origin, CHAN_VOICE, "player/ropegrab.wav", 0.75, ATTN_NORM, 0 );
-			else
-				playerinfo->G_Sound(SND_PRED_ID26, playerinfo->leveltime,playerinfo->self, CHAN_VOICE, playerinfo->G_SoundIndex("player/ropegrab.wav"), 0.75, ATTN_NORM, 0 );
-
-			//We're on the rope
-			PlayerAnimSetLowerSeq(playerinfo,  ASEQ_CLIMB_ON);
-			return;
-		}
-	}
-
-	//Check for a quickturn		[Low probability]
-	if (playerinfo->seqcmd[ACMDL_QUICKTURN])
-	{
-		PlayerAnimSetLowerSeq(playerinfo,  ASEQ_TURN180);
 		return;
 	}
 
-	//If we're pressing forward, and nothing else is happening, then we're walking forward
-	if ( (playerinfo->seqcmd[ACMDL_CREEP_F]) && (!playerinfo->seqcmd[ACMDL_STRAFE_L]) && (!playerinfo->seqcmd[ACMDL_STRAFE_R]) )
+	// Handle an action key press [Low probability].
+	if (info->seqcmd[ACMDL_ACTION])
 	{
-		if (curseq != ASEQ_CREEPF)
+		// Climb a rope?
+		if (info->targetEnt != NULL && PlayerActionCheckRopeGrab(info, 0))
 		{
-			if (PlayerActionCheckCreepMoveForward(playerinfo))
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_CREEPF);
-			else
-				PlayerAnimSetLowerSeq(playerinfo, SeqCtrl[playerinfo->lowerseq].ceaseseq);
+			info->flags |= PLAYER_FLAG_ONROPE;
+			P_Sound(info, SND_PRED_ID26, CHAN_VOICE, "player/ropegrab.wav", 0.75f);
+			PlayerAnimSetLowerSeq(info, ASEQ_CLIMB_ON); // We're on the rope
 
-			return;
-		}
-		else if (!(PlayerActionCheckCreepMoveForward(playerinfo)))
-		{
-			PlayerAnimSetLowerSeq(playerinfo, SeqCtrl[playerinfo->lowerseq].ceaseseq);
 			return;
 		}
 	}
 
-	//If we're pressing backward, and nothing else is happening, then we're walking backward
-	if ( (playerinfo->seqcmd[ACMDL_CREEP_B]) && (!playerinfo->seqcmd[ACMDL_STRAFE_L]) && (!playerinfo->seqcmd[ACMDL_STRAFE_R]) )
+	// Check for a quickturn [Low probability].
+	if (info->seqcmd[ACMDL_QUICKTURN])
 	{
-		if (curseq != ASEQ_CREEPB)
-		{
-			if (PlayerActionCheckCreepMoveBack(playerinfo))
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_CREEPB);
-			else
-				PlayerAnimSetLowerSeq(playerinfo, SeqCtrl[playerinfo->lowerseq].ceaseseq);
-
-			return;
-		}
-		else if (!(PlayerActionCheckCreepMoveBack(playerinfo)))
-		{
-			PlayerAnimSetLowerSeq(playerinfo, SeqCtrl[playerinfo->lowerseq].ceaseseq);
-			return;
-		}
-	}
-	
-	//All else has failed... did we just let go of everthing?
-	if (!playerinfo->seqcmd[ACMDL_FWD] && !playerinfo->seqcmd[ACMDL_BACK])
-	{
-		PlayerAnimSetLowerSeq(playerinfo, SeqCtrl[playerinfo->lowerseq].ceaseseq);
+		PlayerAnimSetLowerSeq(info, ASEQ_TURN180);
 		return;
 	}
+
+	// If we're pressing forward, and nothing else is happening, then we're walking forward.
+	if (info->seqcmd[ACMDL_CREEP_F] && !info->seqcmd[ACMDL_STRAFE_L] && !info->seqcmd[ACMDL_STRAFE_R])
+	{
+		const qboolean can_move = PlayerActionCheckCreepMoveForward(info); //mxd
+
+		if (curseq != ASEQ_CREEPF && can_move)
+		{
+			PlayerAnimSetLowerSeq(info, ASEQ_CREEPF);
+			return;
+		}
+
+		if (!can_move)
+		{
+			PlayerAnimSetLowerSeq(info, SeqCtrl[info->lowerseq].ceaseseq);
+			return;
+		}
+	}
+
+	// If we're pressing backward, and nothing else is happening, then we're walking backward.
+	if (info->seqcmd[ACMDL_CREEP_B] && !info->seqcmd[ACMDL_STRAFE_L] && !info->seqcmd[ACMDL_STRAFE_R])
+	{
+		const qboolean can_move = PlayerActionCheckCreepMoveBack(info); //mxd
+
+		if (curseq != ASEQ_CREEPB && can_move)
+		{
+			PlayerAnimSetLowerSeq(info, ASEQ_CREEPB);
+			return;
+		}
+
+		if (!can_move)
+		{
+			PlayerAnimSetLowerSeq(info, SeqCtrl[info->lowerseq].ceaseseq);
+			return;
+		}
+	}
+
+	// All else has failed... did we just let go of everything?
+	if (!info->seqcmd[ACMDL_FWD] && !info->seqcmd[ACMDL_BACK])
+		PlayerAnimSetLowerSeq(info, SeqCtrl[info->lowerseq].ceaseseq);
 }
 
 /*-----------------------------------------------

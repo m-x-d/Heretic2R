@@ -114,7 +114,7 @@ void PlayerSwimMoveFunc(playerinfo_t* info, float fwd, float right, float up);
 void PlayerActionClimbStartSound(playerinfo_t* playerinfo, float value);
 void PlayerPlaySlide(playerinfo_t* playerinfo);
 
-void PlayerActionCheckCreep(playerinfo_t* playerinfo);
+void PlayerActionCheckCreep(playerinfo_t* info);
 void PlayerActionCheckCreepUnStrafe(playerinfo_t* playerinfo);
 
 void PlayerActionCheckCreepBack(playerinfo_t* playerinfo);
