@@ -1553,44 +1553,15 @@ qboolean PlayerActionCheckRopeGrab(playerinfo_t* info, const float stomp_org)
 	return false;
 }
 
-/*-----------------------------------------------
-	PlayerActionVaultSound
------------------------------------------------*/
-
-void PlayerActionVaultSound(playerinfo_t *playerinfo, float value)
+void PlayerActionVaultSound(const playerinfo_t* info, float value)
 {
-	char VaultSound[64];
-	char *Material=NULL;
+	const char* material = GetClientGroundSurfaceMaterialName(info);
 
-	Material=GetClientGroundSurfaceMaterialName(playerinfo);
-
-	if(!Material)
-		return;
-
-	strcpy(VaultSound,"player/");
-	strcat(VaultSound, Material);
-	strcat(VaultSound,"vault.wav");
-
-	if(playerinfo->isclient)
+	if (material != NULL)
 	{
-		playerinfo->CL_Sound(SND_PRED_ID21,
-							 playerinfo->origin,
-							 CHAN_WEAPON,
-							 VaultSound,
-							 1.0,
-							 ATTN_NORM,					 
-							 0);
-	}
-	else
-	{
-		playerinfo->G_Sound(SND_PRED_ID21,
-							playerinfo->leveltime,
-							playerinfo->self,
-							CHAN_WEAPON,
-							playerinfo->G_SoundIndex(VaultSound),
-							1.0,
-							ATTN_NORM,
-							0);
+		char vault_sound[64];
+		strcpy_s(vault_sound, sizeof(vault_sound), va("player/%svault.wav", material));
+		P_Sound(info, SND_PRED_ID21, CHAN_WEAPON, vault_sound, 1.0f);
 	}
 }
 
