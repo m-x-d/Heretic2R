@@ -1144,12 +1144,10 @@ qboolean PlayerActionCheckJumpGrab(playerinfo_t* info, float value)
 	// --The plane must be at least wide enough at the point of intersection for the whole player.
 
 	// Skip it if we're not on the ground.
-
 	if (info->groundentity == NULL)
 		return false;
 
 	// First we need to "move" the player as high as we possibly can.
-
 	vec3_t endpoint;
 	VectorCopy(info->origin, endpoint);
 	endpoint[2] += GRAB_JUMP_HEIGHT;
@@ -1174,7 +1172,6 @@ qboolean PlayerActionCheckJumpGrab(playerinfo_t* info, float value)
 
 	// Now we want to cast some rays. If the two rays moving from the player's hands at "grab" width
 	// successfully clear any surface, then at least his hands are free enough to make the grab.
-
 	vec3_t forward;
 	vec3_t right;
 	const vec3_t player_facing = { 0.0f, info->angles[YAW], 0.0f };
@@ -1277,7 +1274,6 @@ qboolean PlayerActionCheckJumpGrab(playerinfo_t* info, float value)
 		return false;
 
 	// Now check the angle.  It should be pretty much opposite the player's yaw.
-
 	vec3_t planedir;
 	vectoangles(grabtrace.plane.normal, planedir);
 
@@ -1292,83 +1288,64 @@ qboolean PlayerActionCheckJumpGrab(playerinfo_t* info, float value)
 	return true;
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckPushPull
------------------------------------------------*/
-
-#define PUSH_HAND_WIDTH	16
-#define PUSH_HAND_HEIGHT	0
-#define PUSH_HAND_HORZONE	48
-#define VAULT_HAND_VERTZONE 48
-#define VAULT_HEIGHT_CHECK	(-16)
-
-qboolean PlayerActionCheckPushPull(playerinfo_t *playerinfo)
+qboolean PlayerActionCheckPushPull(playerinfo_t* info)
 {
-	if(!playerinfo->isclient)
-	{
-		vec3_t player_facing;
-		vec3_t forward, right;
-		vec3_t righthand, lefthand, endpoint;
-		trace_t grabtrace;
-		vec3_t planedir;
-		float yaw;
-		void *holdent;
+#define PUSH_HAND_WIDTH		16
+#define PUSH_HAND_HORZONE	48
 
-		assert(playerinfo);
+	trace_t grabtrace;
+	vec3_t endpoint;
 
- 		VectorCopy(playerinfo->angles,player_facing);
-		player_facing[PITCH]=player_facing[ROLL]=0;
-		AngleVectors(player_facing, forward, right, NULL);
+	if (info->isclient) // Client does nothing.
+		return false;
 
-		VectorMA(playerinfo->origin, PUSH_HAND_WIDTH, right, righthand);
-		righthand[2] += PUSH_HAND_HEIGHT;
-		VectorMA(righthand, PUSH_HAND_HORZONE, forward, endpoint);
-		
-		playerinfo->G_Trace(righthand,handmins,handmaxs,endpoint,playerinfo->self,MASK_PLAYERSOLID,&grabtrace);
+	assert(info);
 
-		if ((grabtrace.fraction == 1) || (!grabtrace.ent))
-			return false;
+	vec3_t forward;
+	vec3_t right;
+	const vec3_t player_facing = { 0.0f, info->angles[YAW], 0.0f};
+	AngleVectors(player_facing, forward, right, NULL);
 
-		if(!(playerinfo->G_PlayerActionCheckPushPull_Ent((void*)grabtrace.ent)))
-			return(false);
+	// Check right hand.
+	vec3_t righthand;
+	VectorMA(info->origin, PUSH_HAND_WIDTH, right, righthand);
+	VectorMA(righthand, PUSH_HAND_HORZONE, forward, endpoint);
 
-		holdent = (void *)grabtrace.ent;
+	info->G_Trace(righthand, handmins, handmaxs, endpoint, info->self, MASK_PLAYERSOLID, &grabtrace);
 
-		VectorMA(playerinfo->origin, -PUSH_HAND_WIDTH, right, lefthand);
-		lefthand[2] += PUSH_HAND_HEIGHT;
-		VectorMA(lefthand, PUSH_HAND_HORZONE, forward, endpoint);
+	if (grabtrace.fraction == 1.0f || grabtrace.ent == NULL)
+		return false;
 
-		playerinfo->G_Trace(lefthand,handmins,handmaxs,endpoint,playerinfo->self,MASK_PLAYERSOLID,&grabtrace);
+	if (!info->G_PlayerActionCheckPushPull_Ent((void*)grabtrace.ent))
+		return false;
 
-		VectorCopy(grabtrace.endpos, lefthand);			
+	const void* holdent = (void*)grabtrace.ent;
 
-		if ((grabtrace.fraction == 1.0) ||  (grabtrace.ent != holdent))
-		{	
-			// Left hand is not near to pushable object.
+	// Check left hand.
+	vec3_t lefthand;
+	VectorMA(info->origin, -PUSH_HAND_WIDTH, right, lefthand);
+	VectorMA(lefthand, PUSH_HAND_HORZONE, forward, endpoint);
 
-			return(false);
-		}
+	info->G_Trace(lefthand, handmins, handmaxs, endpoint, info->self, MASK_PLAYERSOLID, &grabtrace);
 
-		// Parallel to each other?
+	VectorCopy(grabtrace.endpos, lefthand);
 
-		vectoangles(grabtrace.plane.normal, planedir);
-		yaw = planedir[YAW] - playerinfo->angles[YAW];
-		yaw = anglemod(yaw) - 180.0;
-		if (yaw > 30.0 || yaw < -30.0)
-		{	// 
-			return false;
-		}
+	// Left hand is not near to pushable object.
+	if (grabtrace.fraction == 1.0f || grabtrace.ent != holdent)
+		return false;
 
-     	playerinfo->target_ent = grabtrace.ent;
+	// Parallel to each other?
+	vec3_t planedir;
+	vectoangles(grabtrace.plane.normal, planedir);
+	const float yaw = anglemod(planedir[YAW] - info->angles[YAW]) - 180.0f;
 
-		return (true);
-	}
-	else
-	{
-		// Client does nothing.
+	// Bad angle. No pushing allowed.
+	if (yaw > 30.0f || yaw < -30.0f)
+		return false;
 
-		return(false);
-	}
+	info->target_ent = grabtrace.ent;
+
+	return true;
 }
 
 /*-----------------------------------------------

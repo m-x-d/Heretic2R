@@ -64,7 +64,7 @@ void PlayerActionTakePuzzle(playerinfo_t* playerinfo, float value);
 void PlayerActionMoveItem(playerinfo_t* playerinfo, float distance);
 
 qboolean PlayerActionCheckPuzzleGrab(playerinfo_t* info);
-qboolean PlayerActionCheckPushPull(playerinfo_t* playerinfo);
+qboolean PlayerActionCheckPushPull(playerinfo_t* info);
 qboolean PlayerActionCheckPushButton(playerinfo_t* playerinfo);
 qboolean PlayerActionCheckPushLever(playerinfo_t* playerinfo);
 qboolean PlayerActionCheckRopeGrab(playerinfo_t* playerinfo, float stomp_org);
