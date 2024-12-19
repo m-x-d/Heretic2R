@@ -532,232 +532,93 @@ void PlayerActionArrowChange(playerinfo_t* info, float value)
 	P_CreateEffect(info, EFFECT_PRED_ID2, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", spawndir, color);
 }
 
-/*-----------------------------------------------
-	PlayerActionWeaponChange
------------------------------------------------*/
-
-// By default changes weapon to the weapon indicated by switchtoweapon. If a value is passed, then
-// instead it will simply change the appearance, not the actual weapon.
-
-void PlayerActionWeaponChange(playerinfo_t *playerinfo, float value)
+// By default changes weapon to the weapon indicated by switchtoweapon.
+// If a value is passed, then instead it will simply change the appearance, not the actual weapon.
+void PlayerActionWeaponChange(playerinfo_t* info, const float value)
 {
-	gitem_t *weapon;
-	vec3_t	spawnpoint, forward, right;
-	int		holdweapon;
+	vec3_t spawndir;
+	vec3_t spawnpoint;
 
-	assert(playerinfo);
+	assert(info);
 
-	if (playerinfo->edictflags & FL_CHICKEN)
-	{
-		// Don't allow us to muck about with spells if we are a chicken.
-
+	if (info->edictflags & FL_CHICKEN) // Don't allow us to muck about with spells if we are a chicken.
 		return;
-	}
 
-	if (value)
+	if (value != 0.0f)
 	{
-		// Don't REALLY change the weaponready, since the value indicates a cosmetic weapon change only (the real change is later)
-		holdweapon = playerinfo->pers.weaponready;
+		// Don't REALLY change the weaponready, since the value indicates a cosmetic weapon change only (the real change is later).
+		const int holdweapon = info->pers.weaponready;
 
-		playerinfo->pers.weaponready = value;
- 		PlayerUpdateModelAttributes(playerinfo);
+		info->pers.weaponready = (int)value;
+		PlayerUpdateModelAttributes(info);
 
-		playerinfo->pers.weaponready = holdweapon;
+		info->pers.weaponready = holdweapon;
 	}
 	else
 	{
-		assert(playerinfo->pers.newweapon);
-		Weapon_Ready(playerinfo, playerinfo->pers.newweapon);
-		playerinfo->pers.weaponready = playerinfo->switchtoweapon;
-		PlayerUpdateModelAttributes(playerinfo);
-		playerinfo->pers.newweapon = NULL;
+		assert(info->pers.newweapon);
+		Weapon_Ready(info, info->pers.newweapon);
+
+		info->pers.weaponready = info->switchtoweapon;
+		PlayerUpdateModelAttributes(info);
+
+		info->pers.newweapon = NULL;
 	}
-	
-	if (playerinfo->leveltime > 1.0)
-	{	
-		// Weapon Changing effects.
 
-		switch(playerinfo->pers.weaponready)
-		{
+	if (info->leveltime <= 1.0f)
+		return;
+
+	// Weapon Changing effects.
+	switch (info->pers.weaponready)
+	{
 		case WEAPON_READY_SWORDSTAFF:
-
-			if(!playerinfo->isclient)
-			{
-				playerinfo->G_CreateEffect(EFFECT_PRED_ID3,
-										   playerinfo->G_GetEntityStatePtr((edict_t *)playerinfo->self),
-										   FX_STAFF_CREATEPOOF,
-										   CEF_OWNERS_ORIGIN,
-										   NULL,
-										   "");
-			}
-			else
-				playerinfo->CL_CreateEffect(EFFECT_PRED_ID3,
-											playerinfo->self,
-											FX_STAFF_CREATEPOOF,
-										    CEF_OWNERS_ORIGIN,
-										    NULL,
-										    "");
+			P_CreateEffect(info, EFFECT_PRED_ID3, info->self, FX_STAFF_CREATEPOOF, CEF_OWNERS_ORIGIN, NULL, "");
 			break;
 
 		case WEAPON_READY_HELLSTAFF:
-
-			if(!playerinfo->isclient)
-				playerinfo->G_CreateEffect(EFFECT_PRED_ID4,
-										   playerinfo->G_GetEntityStatePtr((edict_t *)playerinfo->self),
-										   FX_STAFF_CREATEPOOF,
-										   CEF_OWNERS_ORIGIN|CEF_FLAG6,
-										   NULL,
-										   "");
-			else
-				playerinfo->CL_CreateEffect(EFFECT_PRED_ID4,
-											playerinfo->self,
-											FX_STAFF_CREATEPOOF,
-											CEF_OWNERS_ORIGIN|CEF_FLAG6,
-											NULL,
-											"");
-
+			P_CreateEffect(info, EFFECT_PRED_ID4, info->self, FX_STAFF_CREATEPOOF, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "");
 			break;
 
 		case WEAPON_READY_BOW:
-			
 			// Make sure we have the right bow color
-			
-			weapon = playerinfo->pers.weapon;
-			
-			if (weapon)
-			{	
-				// There is a weapon.
+			if (info->pers.weapon == NULL)
+				return;
 
-				if (weapon->tag == ITEM_WEAPON_REDRAINBOW)
-				{	
-					// Make sure we have the redrain visible.
+			// There is a weapon.
+			if (info->pers.weapon->tag == ITEM_WEAPON_REDRAINBOW)
+			{
+				// Make sure we have the redrain visible.
+				if (info->pers.bowtype == BOW_TYPE_PHOENIX)
+				{
+					// Uh oh, change the phoenix into a red rain.
+					info->pers.bowtype = BOW_TYPE_REDRAIN;
+					PlayerUpdateModelAttributes(info);
 
-					if (playerinfo->pers.bowtype == BOW_TYPE_PHOENIX)
-					{	
-						// Uh oh, change the phoenix into a red rain.
-
-						playerinfo->pers.bowtype = BOW_TYPE_REDRAIN;
-						PlayerUpdateModelAttributes(playerinfo);
-
-						if(playerinfo->isclient)
-						{
-							playerinfo->CL_Sound(SND_PRED_ID2,
-												 playerinfo->origin,
-												 CHAN_WEAPON,
-												 "Weapons/SpellChange.wav",
-												 1.0,
-												 ATTN_NORM,
-												 0);
-						}
-						else
-						{
-							playerinfo->G_Sound(SND_PRED_ID2,
-												playerinfo->leveltime,
-												playerinfo->self,
-												CHAN_WEAPON,
-												playerinfo->G_SoundIndex("Weapons/SpellChange.wav"),
-												1.0,
-												ATTN_NORM,
-												0);
-						}
-
-						// Do some fancy effect.
-
-						AngleVectors(playerinfo->angles, forward, right, NULL);
-						VectorMA(playerinfo->origin, -2.0, forward, spawnpoint);
-						VectorMA(spawnpoint, -7, right, spawnpoint);
-						spawnpoint[2] += playerinfo->viewheight - 16.0;
-
-						if(!playerinfo->isclient)
-							playerinfo->G_CreateEffect(EFFECT_PRED_ID5,
-													   NULL,
-													   FX_SPELL_CHANGE,
-													   0,
-													   spawnpoint,
-													   "db",
-													   right,
-													   6);
-						else
-							playerinfo->CL_CreateEffect(EFFECT_PRED_ID5,
-														NULL,
-														FX_SPELL_CHANGE,
-														0,
-														spawnpoint,
-														"db",
-														right,
-														6);
-					}
-				}
-				else if (weapon->tag == ITEM_WEAPON_PHOENIXBOW)
-				{	
-					// Make sure we have the phoenix visible.
-
-					if (playerinfo->pers.bowtype == BOW_TYPE_REDRAIN)
-					{	
-						// Uh oh, change the red rain to a phoenix.
-
-						playerinfo->pers.bowtype = BOW_TYPE_PHOENIX;
-						PlayerUpdateModelAttributes(playerinfo);
-
-						if(playerinfo->isclient)
-						{
-							playerinfo->CL_Sound(SND_PRED_ID3,
-												 playerinfo->origin,
-												 CHAN_WEAPON,
-												 "Weapons/SpellChange.wav",
-												 1.0,
-												 ATTN_NORM,
-												 0);
-						}
-						else
-						{
-							playerinfo->G_Sound(SND_PRED_ID3,
-												playerinfo->leveltime,
-												playerinfo->self,
-												CHAN_WEAPON,
-												playerinfo->G_SoundIndex("Weapons/SpellChange.wav"),
-												1.0,
-												ATTN_NORM,
-												0);
-						}
-
-						// Do some fancy effect.
-
-						AngleVectors(playerinfo->angles, forward, right, NULL);
-						VectorMA(playerinfo->origin, -2.0, forward, spawnpoint);
-						VectorMA(spawnpoint, -7, right, spawnpoint);
-						spawnpoint[2] += playerinfo->viewheight - 16.0;
-
-						if(!playerinfo->isclient)
-							playerinfo->G_CreateEffect(EFFECT_PRED_ID6,
-													   NULL,
-													   FX_SPELL_CHANGE,
-													   0,
-													   spawnpoint,
-													   "db",
-													   right,
-													   7);
-						else
-							playerinfo->CL_CreateEffect(EFFECT_PRED_ID6,
-														NULL,
-														FX_SPELL_CHANGE,
-														0,
-														spawnpoint,
-														"db",
-														right,
-														7);
-					}
+					// Do some fancy effect.
+					SetupSpawnPoint(info, spawnpoint, spawndir); //mxd
+					P_Sound(info, SND_PRED_ID2, CHAN_WEAPON, "Weapons/SpellChange.wav", 1.0f); //mxd
+					P_CreateEffect(info, EFFECT_PRED_ID5, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", spawndir, 6); //mxd
 				}
 			}
-			
+			else if (info->pers.weapon->tag == ITEM_WEAPON_PHOENIXBOW)
+			{
+				// Make sure we have the phoenix visible.
+				if (info->pers.bowtype == BOW_TYPE_REDRAIN)
+				{
+					// Uh oh, change the red rain to a phoenix.
+					info->pers.bowtype = BOW_TYPE_PHOENIX;
+					PlayerUpdateModelAttributes(info);
+
+					// Do some fancy effect.
+					SetupSpawnPoint(info, spawnpoint, spawndir); //mxd
+					P_Sound(info, SND_PRED_ID3, CHAN_WEAPON, "Weapons/SpellChange.wav", 1.0f); //mxd
+					P_CreateEffect(info, EFFECT_PRED_ID6, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", spawndir, 7); //mxd
+				}
+			}
 			break;
 
-		default:
-			
-			// No nothing.
-
+		default: // No nothing.
 			break;
-		}
 	}
 }
 
