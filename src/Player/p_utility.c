@@ -25,3 +25,10 @@ void P_Sound(const playerinfo_t* info, const byte EventId, const int channel, co
 	else
 		info->G_Sound(EventId, info->leveltime, info->self, channel, info->G_SoundIndex(soundname), fvol, ATTN_NORM, 0);
 }
+
+//mxd. 'entity' arg is always the same in Player.dll, so...
+void P_LocalSound(const playerinfo_t* info, const char* soundname)
+{
+	if (!info->isclient)
+		info->G_L_Sound(info->self, info->G_SoundIndex(soundname));
+}
