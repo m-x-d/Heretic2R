@@ -622,128 +622,34 @@ void PlayerActionWeaponChange(playerinfo_t* info, const float value)
 	}
 }
 
-/*-----------------------------------------------
-	PlayerActionStartStaffGlow
------------------------------------------------*/
-
-void PlayerActionStartStaffGlow(playerinfo_t *playerinfo, float value)
+void PlayerActionStartStaffGlow(const playerinfo_t* info, const float value)
 {
 	int flags = CEF_OWNERS_ORIGIN;
+	const int ready_weapon = (int)value; //mxd
 
-	if(playerinfo->isclient)
+	if (ready_weapon == WEAPON_READY_HELLSTAFF)
+		flags |= CEF_FLAG6;
+
+	if (info->pers.stafflevel == STAFF_LEVEL_BASIC || ready_weapon == WEAPON_READY_HELLSTAFF)
 	{
-		if (value == WEAPON_READY_HELLSTAFF)
-			flags |= CEF_FLAG6;
-
-		if(playerinfo->pers.stafflevel == STAFF_LEVEL_BASIC || value == WEAPON_READY_HELLSTAFF)
-		{
-			playerinfo->CL_Sound(SND_PRED_ID5,
-								 playerinfo->self,
-								 CHAN_WEAPON,
-								 "weapons/Staff Ready.wav",
-								 1.0,
-								 ATTN_NORM,
-								 0);
-		}
-		else if(playerinfo->pers.stafflevel == STAFF_LEVEL_POWER1)//blue
-		{
-			flags |= CEF_FLAG7;
-
-			playerinfo->CL_Sound(SND_PRED_ID6,
-								 playerinfo->self,
-								 CHAN_WEAPON,
-								 "weapons/Staff2Ready.wav",
-								 1.0,
-								 ATTN_NORM,
-								 0);
-		}
-		else if(playerinfo->pers.stafflevel == STAFF_LEVEL_POWER2)//flame
-		{
-			flags |= CEF_FLAG8;
-
-			playerinfo->CL_Sound(SND_PRED_ID7,
-								 playerinfo->self,
-								 CHAN_WEAPON,
-								 "weapons/Staff3Ready.wav",
-								 1.0,
-								 ATTN_NORM,
-								 0);
-		}
-		else
-			playerinfo->CL_Sound(SND_PRED_ID8,
-								 playerinfo->self,
-								 CHAN_WEAPON,
-								 "weapons/Staff Ready.wav",
-								 1.0,
-								 ATTN_NORM,
-								 0);
-
-		playerinfo->CL_CreateEffect(EFFECT_PRED_ID7,
-									playerinfo->self,
-									FX_STAFF_CREATE,
-									flags,
-									NULL,
-									"");
+		P_Sound(info, SND_PRED_ID5, CHAN_WEAPON, "weapons/Staff Ready.wav", 1.0f); //mxd
+	}
+	else if (info->pers.stafflevel == STAFF_LEVEL_POWER1) // Blue
+	{
+		flags |= CEF_FLAG7;
+		P_Sound(info, SND_PRED_ID6, CHAN_WEAPON, "weapons/Staff2Ready.wav", 1.0f); //mxd
+	}
+	else if (info->pers.stafflevel == STAFF_LEVEL_POWER2) // Flame
+	{
+		flags |= CEF_FLAG8;
+		P_Sound(info, SND_PRED_ID7, CHAN_WEAPON, "weapons/Staff3Ready.wav", 1.0f); //mxd
 	}
 	else
 	{
-		if (value == WEAPON_READY_HELLSTAFF)
-			flags |= CEF_FLAG6;
-	
-		if(playerinfo->pers.stafflevel == STAFF_LEVEL_BASIC || value == WEAPON_READY_HELLSTAFF)
-		{
-			playerinfo->G_Sound(SND_PRED_ID5,
-								playerinfo->leveltime,
-								playerinfo->self,
-								CHAN_WEAPON,
-								playerinfo->G_SoundIndex("weapons/Staff Ready.wav"),
-								1.0,
-								ATTN_NORM,
-								0);
-		}
-		else if(playerinfo->pers.stafflevel == STAFF_LEVEL_POWER1)//blue
-		{
-			flags |= CEF_FLAG7;
-
-			playerinfo->G_Sound(SND_PRED_ID6,
-								playerinfo->leveltime,
-								playerinfo->self,
-								CHAN_WEAPON,
-								playerinfo->G_SoundIndex("weapons/Staff2Ready.wav"),
-								1.0,
-								ATTN_NORM,
-								0);
-		}
-		else if(playerinfo->pers.stafflevel == STAFF_LEVEL_POWER2)//flame
-		{
-			flags |= CEF_FLAG8;
-
-			playerinfo->G_Sound(SND_PRED_ID7,
-								playerinfo->leveltime,
-								playerinfo->self,
-								CHAN_WEAPON,
-								playerinfo->G_SoundIndex("weapons/Staff3Ready.wav"),
-								1.0,
-								ATTN_NORM,
-								0);
-		}
-		else
-			playerinfo->G_Sound(SND_PRED_ID8,
-								playerinfo->leveltime,
-								playerinfo->self,
-								CHAN_WEAPON,
-								playerinfo->G_SoundIndex("weapons/Staff Ready.wav"),
-								1.0,
-								ATTN_NORM,
-								0);
-
-		playerinfo->G_CreateEffect(EFFECT_PRED_ID7,
-								   playerinfo->self,
-								   FX_STAFF_CREATE,
-								   flags,
-								   NULL,
-								   "");
+		P_Sound(info, SND_PRED_ID8, CHAN_WEAPON, "weapons/Staff Ready.wav", 1.0f); //mxd
 	}
+
+	P_CreateEffect(info, EFFECT_PRED_ID7, info->self, FX_STAFF_CREATE, flags, NULL, ""); //mxd
 }
 
 /*-----------------------------------------------

@@ -39,7 +39,7 @@ void PlayerActionSwordTrailStart(playerinfo_t* playerinfo, float value);
 void PlayerActionRedRainBowTrailStart(playerinfo_t* playerinfo, float value);
 void PlayerActionPhoenixBowTrailStart(playerinfo_t* playerinfo, float value);
 void PlayerActionBowTrailEnd(playerinfo_t* playerinfo, float value);
-void PlayerActionStartStaffGlow(playerinfo_t* playerinfo, float value);
+void PlayerActionStartStaffGlow(const playerinfo_t* info, float value);
 void PlayerActionEndStaffGlow(playerinfo_t* playerinfo, float value);
 
 qboolean PlayerActionCheckVault(playerinfo_t* playerinfo, float value);
