@@ -743,21 +743,18 @@ void PlayerActionBowTrailEnd(playerinfo_t* info, float value)
 	info->effects &= ~EF_TRAILS_ENABLED;
 }
 
-/*-----------------------------------------------
-	PlayerActionFootstep
------------------------------------------------*/
-
-void PlayerActionFootstep(playerinfo_t *playerinfo, float value)
+void PlayerActionFootstep(const playerinfo_t* info, const float value)
 {
-	char	WalkSound[128];
-	int		basestep, absstep;
-	int		channel;
+	char walk_sound[128];
+	int basestep;
+	int channel;
 
-	//If we're not on the ground, skip all the rest
-	if ( (value==STEP_ROLL) && (!playerinfo->groundentity) )
+	const int absstep = (int)value;
+
+	// If we're not on the ground, skip all the rest.
+	if (absstep == STEP_ROLL && info->groundentity == NULL)
 		return;
 
-	absstep = (int)value;
 	if (absstep >= STEP_OFFSET)
 	{
 		basestep = absstep - STEP_OFFSET;
@@ -769,93 +766,45 @@ void PlayerActionFootstep(playerinfo_t *playerinfo, float value)
 		channel = CHAN_FOOTSTEP2;
 	}
 
-	if(!basestep)
+	if (basestep == 0)
 		return;
 
-	if (playerinfo->waterlevel)
+	if (info->waterlevel > 0)
 	{
-		if (basestep != STEP_RUN)			// Not running
-		{
-			if (irand(0,1))
-				strcpy(WalkSound,"player/waterwalk1.wav");
-			else
-				strcpy(WalkSound,"player/waterwalk2.wav");
-		}
-		else
-		{
-			if (irand(0,1))
-				strcpy(WalkSound,"player/waterrun1.wav");
-			else
-				strcpy(WalkSound,"player/waterrun2.wav");
-		}
+		const char* snd_name = (basestep == STEP_RUN ? "waterrun" : "waterwalk");
+		strcat_s(walk_sound, sizeof(walk_sound), va("player/%s%i.wav", snd_name, irand(1, 2)));
 	}
 	else
 	{
-		char	*material;
+		const char* material = GetClientGroundSurfaceMaterialName(info);
 
-		material=GetClientGroundSurfaceMaterialName(playerinfo);
-
-		if (!material)
+		if (material == NULL)
 			return;
 
-		strcpy(WalkSound,"player/");
-		strcat(WalkSound, material);
+		strcpy_s(walk_sound, sizeof(walk_sound), "player/");
+		strcat_s(walk_sound, sizeof(walk_sound), material);
 
 		switch (basestep)
 		{
-		case STEP_CREEP:		// Creep
-			
-			if(irand(0,1))
-				strcat(WalkSound,"shuffle1.wav");
-			else
-				strcat(WalkSound,"shuffle2.wav");
-			break;
+			case STEP_CREEP: // Creep
+				strcat_s(walk_sound, sizeof(walk_sound), va("shuffle%i.wav", irand(1, 2)));
+				break;
 
-		case STEP_WALK:		// Walk
-			
-			if(irand(0,1))
-				strcat(WalkSound,"walk1.wav");
-			else
-				strcat(WalkSound,"walk2.wav");
-			break;
+			case STEP_WALK: // Walk
+				strcat_s(walk_sound, sizeof(walk_sound), va("walk%i.wav", irand(1, 2)));
+				break;
 
-		case STEP_RUN:		// Run
-			
-			if(irand(0,1))
-				strcat(WalkSound,"run1.wav");
-			else
-				strcat(WalkSound,"run2.wav");
-			break;
+			case STEP_RUN: // Run
+				strcat_s(walk_sound, sizeof(walk_sound), va("run%i.wav", irand(1, 2)));
+				break;
 
-		case STEP_ROLL:		// Roll
-			
-			strcat(WalkSound,"roll.wav");
-			break;
-
+			case STEP_ROLL: // Roll
+				strcat_s(walk_sound, sizeof(walk_sound), "roll.wav");
+				break;
 		}
 	}
 
-	if(playerinfo->isclient)
-	{
-		playerinfo->CL_Sound(SND_PRED_ID14,
-							 playerinfo->origin,
-							 channel,
-							 WalkSound,
-							 0.75,
-							 ATTN_NORM,
-							 0);
-	}
-	else
-	{
-  		playerinfo->G_Sound(SND_PRED_ID14,
-							playerinfo->leveltime,
-							playerinfo->self,
-							channel,
-							playerinfo->G_SoundIndex(WalkSound),
-							0.75,
-							ATTN_NORM,
-							0);
-	}
+	P_Sound(info, SND_PRED_ID14, channel, walk_sound, 0.75f); //mxd
 }
 
 /*-----------------------------------------------

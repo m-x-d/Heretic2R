@@ -48,7 +48,7 @@ void PlayerActionSwimSound(playerinfo_t* playerinfo, float value);
 void PlayerActionClimbWallSound(playerinfo_t* playerinfo, float value);
 void PlayerActionClimbFinishSound(playerinfo_t* playerinfo, float value);
 
-void PlayerActionFootstep(playerinfo_t* playerinfo, float value);
+void PlayerActionFootstep(const playerinfo_t* info, float value);
 void PlayerActionSwim(playerinfo_t* playerinfo, float value);
 void PlayerActionPullup(playerinfo_t* playerinfo, float value);
 void PlayerActionSkidSmoke(playerinfo_t* playerinfo, float value);
