@@ -181,7 +181,7 @@ static qboolean CheckCreepMove(const playerinfo_t* info, const float creep_stepd
 	mins[2] += CREEP_MAXFALL;
 
 	// Trace forward to see if the path is clear.
-	P_Trace(info, info->origin, mins, info->maxs, startpos, &trace);
+	P_Trace(info, info->origin, mins, info->maxs, startpos, &trace); //mxd
 
 	// If it is...
 	if (trace.fraction == 1.0f)
@@ -192,7 +192,7 @@ static qboolean CheckCreepMove(const playerinfo_t* info, const float creep_stepd
 		endpos[2] += info->mins[2] - CREEP_MAXFALL;
 
 		// Trace down.
-		P_Trace(info, startpos, mins, info->maxs, endpos, &trace);
+		P_Trace(info, startpos, mins, info->maxs, endpos, &trace); //mxd
 
 		return (trace.fraction < 1.0f && !trace.startsolid && !trace.allsolid);
 	}
@@ -485,8 +485,8 @@ void PlayerActionSpellChange(playerinfo_t* info, float value)
 			break;
 	}
 
-	P_Sound(info, SND_PRED_ID0, CHAN_WEAPON, "Weapons/SpellChange.wav", 1.0f);
-	P_CreateEffect(info, EFFECT_PRED_ID1, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", spawndir, color);
+	P_Sound(info, SND_PRED_ID0, CHAN_WEAPON, "Weapons/SpellChange.wav", 1.0f); //mxd
+	P_CreateEffect(info, EFFECT_PRED_ID1, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", spawndir, color); //mxd
 }
 
 //TODO: currently, this is only used when switching from a bow to another bow (ASEQ_BOW2BOW). Also use when switching to bow from a spell/weapon?
@@ -528,8 +528,8 @@ void PlayerActionArrowChange(playerinfo_t* info, float value)
 
 	PlayerUpdateModelAttributes(info);
 
-	P_Sound(info, SND_PRED_ID1, CHAN_WEAPON, "Weapons/SpellChange.wav", 1.0f);
-	P_CreateEffect(info, EFFECT_PRED_ID2, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", spawndir, color);
+	P_Sound(info, SND_PRED_ID1, CHAN_WEAPON, "Weapons/SpellChange.wav", 1.0f); //mxd
+	P_CreateEffect(info, EFFECT_PRED_ID2, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", spawndir, color); //mxd
 }
 
 // By default changes weapon to the weapon indicated by switchtoweapon.
@@ -572,11 +572,11 @@ void PlayerActionWeaponChange(playerinfo_t* info, const float value)
 	switch (info->pers.weaponready)
 	{
 		case WEAPON_READY_SWORDSTAFF:
-			P_CreateEffect(info, EFFECT_PRED_ID3, info->self, FX_STAFF_CREATEPOOF, CEF_OWNERS_ORIGIN, NULL, "");
+			P_CreateEffect(info, EFFECT_PRED_ID3, info->self, FX_STAFF_CREATEPOOF, CEF_OWNERS_ORIGIN, NULL, ""); //mxd
 			break;
 
 		case WEAPON_READY_HELLSTAFF:
-			P_CreateEffect(info, EFFECT_PRED_ID4, info->self, FX_STAFF_CREATEPOOF, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "");
+			P_CreateEffect(info, EFFECT_PRED_ID4, info->self, FX_STAFF_CREATEPOOF, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, ""); //mxd
 			break;
 
 		case WEAPON_READY_BOW:
