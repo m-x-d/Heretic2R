@@ -103,6 +103,8 @@ void PlayerJumpNudge(playerinfo_t* info, float fwd, float right, float up);
 
 void PlayerActionCheckBranchRunningStrafe(playerinfo_t* info);
 
+PLAYER_API void PlayerReleaseRope(playerinfo_t* info);
+PLAYER_API void KnockDownPlayer(playerinfo_t* info);
 PLAYER_API void PlayFly(const playerinfo_t* info, float dist);
 PLAYER_API void PlaySlap(const playerinfo_t* info, float dist);
 PLAYER_API void PlayScratch(const playerinfo_t* info, float dist);

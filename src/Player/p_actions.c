@@ -1904,6 +1904,21 @@ void PlayerActionCheckRopeMove(playerinfo_t* info, float foo)
 		info->G_PlayerActionCheckRopeMove(info);
 }
 
+PLAYER_API void PlayerReleaseRope(playerinfo_t* info)
+{
+	assert(info);
+	info->flags &= ~PLAYER_FLAG_ONROPE;
+}
+
+PLAYER_API void KnockDownPlayer(playerinfo_t* info)
+{
+	assert(info);
+
+	// Chicken cannot be knocked down
+	if (!(info->flags & (EF_CHICKEN | PLAYER_FLAG_KNOCKDOWN)))
+		info->flags |= PLAYER_FLAG_KNOCKDOWN;
+}
+
 PLAYER_API void PlayFly(const playerinfo_t* info, float dist)
 {
 	P_Sound(info, SND_PRED_ID22, CHAN_BODY, "player/idle buzz.wav", 1.0f); //mxd
