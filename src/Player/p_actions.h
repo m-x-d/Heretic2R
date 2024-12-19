@@ -68,8 +68,8 @@ qboolean PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org);
 
 qboolean PlayerActionUsePuzzle(playerinfo_t* info);
 
-void PlayerMoveFunc(playerinfo_t* playerinfo, float fwd, float right, float up);
-void PlayerClimbingMoveFunc(playerinfo_t* playerinfo, float height, float var2, float var3);
+void PlayerMoveFunc(playerinfo_t* info, float fwd, float right, float up);
+void PlayerClimbingMoveFunc(playerinfo_t* info, float height, float var2, float var3);
 void PlayerMoveUpperFunc(playerinfo_t* playerinfo, float fwd, float right, float up);
 void PlayerMoveForce(playerinfo_t* playerinfo, float fwd, float right, float up);
 void PlayerMoveALittle(playerinfo_t* playerinfo, float fwd, float right, float up);

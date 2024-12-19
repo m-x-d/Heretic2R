@@ -1602,30 +1602,20 @@ void PlayerActionFlip(playerinfo_t* info, const float value)
 	info->velocity[2] += value;
 }
 
-/*-----------------------------------------------
-	PlayerClimbingMoveFunc
------------------------------------------------*/
-
-void PlayerClimbingMoveFunc(playerinfo_t *playerinfo, float height, float var2, float var3)
+void PlayerClimbingMoveFunc(playerinfo_t* info, const float height, const float var2, const float var3)
 {
-	assert(playerinfo);
-	
-	if(!playerinfo->isclient)
-		playerinfo->G_PlayerClimbingMoveFunc(playerinfo,height,var2,var3);
+	assert(info);
+
+	if (!info->isclient)
+		info->G_PlayerClimbingMoveFunc(info, height, var2, var3);
 }
 
-/*-----------------------------------------------
-	PlayerMoveFunc
------------------------------------------------*/
-
-void PlayerMoveFunc(playerinfo_t *playerinfo, float fwd, float right, float up)
-{	
-	// Feeds velocity into the character as a thrust value, like player control (no effect if in
-	// the air).
-
-	playerinfo->fwdvel = fwd;
-	playerinfo->sidevel = right;
-	playerinfo->upvel = up;
+void PlayerMoveFunc(playerinfo_t* info, const float fwd, const float right, const float up)
+{
+	// Feeds velocity into the character as a thrust value, like player control (no effect if in the air).
+	info->fwdvel = fwd;
+	info->sidevel = right;
+	info->upvel = up;
 }
 
 /*-----------------------------------------------
