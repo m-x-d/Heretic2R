@@ -59,7 +59,7 @@ void PlayerActionIdleSound(playerinfo_t* playerinfo, float value);
 void PlayerActionPushButton(playerinfo_t* playerinfo, float value);
 void PlayerActionPushLever(playerinfo_t* playerinfo, float value);
 void PlayerActionVaultSound(playerinfo_t* playerinfo, float value);
-void PlayerActionBowReadySound(playerinfo_t* playerinfo, float value);
+void PlayerActionBowReadySound(const playerinfo_t* info, float value);
 void PlayerActionTakePuzzle(playerinfo_t* playerinfo, float value);
 void PlayerActionMoveItem(playerinfo_t* playerinfo, float distance);
 

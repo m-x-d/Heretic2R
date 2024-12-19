@@ -1105,33 +1105,9 @@ void PlayerActionCheckFallingGrab(playerinfo_t* info, const float value)
 		PlayerActionCheckGrab(info, value);
 }
 
-/*-----------------------------------------------
-	PlayerActionBowReadySound
------------------------------------------------*/
-
-void PlayerActionBowReadySound(playerinfo_t *playerinfo, float value)
+void PlayerActionBowReadySound(const playerinfo_t* info, float value)
 {
-	if(playerinfo->isclient)
-	{
-		playerinfo->CL_Sound(SND_PRED_ID20,
-							 playerinfo->origin,
-							 CHAN_WEAPON,
-							 "weapons/bowdraw2.Wav",
-							 1.0,
-							 ATTN_NORM,
-							 0);
-	}
-	else
-	{
-		playerinfo->G_Sound(SND_PRED_ID20,
-							playerinfo->leveltime,
-							playerinfo->self,
-							CHAN_WEAPON,
-							playerinfo->G_SoundIndex("weapons/bowdraw2.Wav"),
-							1.0,
-							ATTN_NORM,
-							0);
-	}
+	P_Sound(info, SND_PRED_ID20, CHAN_WEAPON, "weapons/bowdraw2.wav", 1.0f);
 }
 
 /*-----------------------------------------------
