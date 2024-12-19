@@ -2289,7 +2289,7 @@ panimmove_t player_move_bow2bow = {7, player_frames_bow2bow, PlayerAnimUpperUpda
 //----------------------------------------------------------------------------
 panimframe_t player_frames_staffatkspin [] = 
 {
-	FRAME_newspin1, PlayerMoveFunc, 200*UNJH_VALUE, 0, 0, PlayerActionSwordTrailStart, TRAIL_SPIN1, NULL,
+	FRAME_newspin1, PlayerMoveFunc, 200*UNJH_VALUE, 0, 0, PlayerActionStaffTrailStart, TRAIL_SPIN1, NULL,
 	FRAME_newspin2, PlayerMoveFunc, 175*UNJH_VALUE, 0, 0, NULL, 0, NULL,
 	FRAME_newspin3, PlayerMoveFunc, 175*UNJH_VALUE, 0, 0, NULL, 0, NULL,
 	FRAME_newspin4, PlayerMoveFunc, 175*UNJH_VALUE, 0, 0, NULL, 0, NULL,
@@ -2302,7 +2302,7 @@ panimmove_t player_move_staffatkspin = {8, player_frames_staffatkspin, PlayerAni
 
 panimframe_t player_frames_staffatkspin2 [] = 
 {
-	FRAME_spining1, PlayerMoveFunc, 200*UNJH_VALUE, 0, 0, PlayerActionSwordTrailStart, TRAIL_SPIN2, NULL,
+	FRAME_spining1, PlayerMoveFunc, 200*UNJH_VALUE, 0, 0, PlayerActionStaffTrailStart, TRAIL_SPIN2, NULL,
 	FRAME_spining2, PlayerMoveFunc, 175*UNJH_VALUE, 0, 0, NULL, 0, NULL,
 	FRAME_spining3, PlayerMoveFunc, 175*UNJH_VALUE, 0, 0, NULL, 0, NULL,
 	FRAME_spining4, PlayerMoveFunc, 175*UNJH_VALUE, 0, 0, PlayerActionSwordAttack, 13, NULL,
@@ -2342,7 +2342,7 @@ panimmove_t player_move_staffspinblockedleft = {6, player_frames_staffspinblocke
 
 panimframe_t player_frames_staffatkstand1 [] = 
 {
-	FRAME_swipeA1, NULL, 0, 0, 0, PlayerActionSwordTrailStart, TRAIL_STAND, NULL,
+	FRAME_swipeA1, NULL, 0, 0, 0, PlayerActionStaffTrailStart, TRAIL_STAND, NULL,
 	FRAME_swipeA3, NULL, 0, 0, 0, PlayerActionSwordAttack, 1, NULL,
 	FRAME_swipeA5, NULL, 0, 0, 0, PlayerActionSwordAttack, 2, NULL,
 	FRAME_swipeA6, NULL, 0, 0, 0, PlayerActionSwordAttack, 3, NULL,
@@ -2361,7 +2361,7 @@ panimmove_t player_move_staffatkstand2 = {2, player_frames_staffatkstand2, Playe
 
 panimframe_t player_frames_staffatkstep2 [] = 
 {
-	FRAME_swipeB2, PlayerMoveUpperFunc, 30*UNJH_VALUE, 0, 0, PlayerActionSwordTrailStart, TRAIL_STEP, NULL,
+	FRAME_swipeB2, PlayerMoveUpperFunc, 30*UNJH_VALUE, 0, 0, PlayerActionStaffTrailStart, TRAIL_STEP, NULL,
 	FRAME_swipeB4, PlayerMoveUpperFunc, 91*UNJH_VALUE, 0, 0, PlayerActionSwordAttack, 5, NULL,
 	FRAME_swipeB5, PlayerMoveUpperFunc, 37*UNJH_VALUE, 0, 0, PlayerActionSwordAttack, 6, NULL,
 	FRAME_swipeB6, PlayerMoveUpperFunc, 27*UNJH_VALUE, 0, 0, PlayerActionSwordAttack, 7, NULL,
@@ -2376,7 +2376,7 @@ panimmove_t player_move_staffatkstep2 = {9, player_frames_staffatkstep2, PlayerA
 panimframe_t player_frames_staffatkstep [] = 
 {
 	FRAME_swipeB1, NULL, 0, 0, 0, NULL, 0, NULL,
-	FRAME_swipeB2, PlayerMoveUpperFunc, 30*UNJH_VALUE, 0, 0, PlayerActionSwordTrailStart, TRAIL_STEP, NULL,
+	FRAME_swipeB2, PlayerMoveUpperFunc, 30*UNJH_VALUE, 0, 0, PlayerActionStaffTrailStart, TRAIL_STEP, NULL,
 	FRAME_swipeB4, PlayerMoveUpperFunc, 91*UNJH_VALUE, 0, 0, PlayerActionSwordAttack, 5, NULL,
 	FRAME_swipeB5, PlayerMoveUpperFunc, 37*UNJH_VALUE, 0, 0, PlayerActionSwordAttack, 6, NULL,
 	FRAME_swipeB6, PlayerMoveUpperFunc, 27*UNJH_VALUE, 0, 0, PlayerActionSwordAttack, 7, NULL,
@@ -2390,7 +2390,7 @@ panimmove_t player_move_staffatkstep = {10, player_frames_staffatkstep, PlayerAn
 		
 panimframe_t player_frames_staffatkback [] =
 {
-	FRAME_roundbck1, NULL, 0, 0, 0, PlayerActionSwordTrailStart, TRAIL_BACK, NULL,
+	FRAME_roundbck1, NULL, 0, 0, 0, PlayerActionStaffTrailStart, TRAIL_BACK, NULL,
 	FRAME_roundbck2, NULL, 0, 0, 0, PlayerActionSwordAttack, 17, NULL,
 	FRAME_roundbck3, NULL, 0, 0, 0, PlayerActionSwordAttack, 18, NULL,
 	FRAME_roundbck4, NULL, 0, 0, 0, PlayerActionSwordAttack, 19, NULL,
@@ -2404,7 +2404,7 @@ panimmove_t player_move_staffatkback = {8, player_frames_staffatkback, PlayerAni
 // Stab downward
 panimframe_t player_frames_staffdownstab [] =
 {
-	FRAME_spikedwn1, NULL, 0, 0, 0, PlayerActionSwordTrailStart, TRAIL_STAB, NULL,
+	FRAME_spikedwn1, NULL, 0, 0, 0, PlayerActionStaffTrailStart, TRAIL_STAB, NULL,
 	FRAME_spikedwn2, NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_spikedwn3, NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_spikedwn4, NULL, 0, 0, 0, NULL, 0, NULL,
@@ -2440,7 +2440,7 @@ panimmove_t player_move_staffpullout = {11, player_frames_staffpullout, PlayerAn
 // Stab downward
 panimframe_t player_frames_stafflowerdownstab [] =
 {
-	FRAME_spikedwn1, NULL, 0, 0, 0, PlayerActionSwordTrailStart, TRAIL_STAB, NULL,
+	FRAME_spikedwn1, NULL, 0, 0, 0, PlayerActionStaffTrailStart, TRAIL_STAB, NULL,
 	FRAME_spikedwn2, NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_spikedwn3, NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_spikedwn4, NULL, 0, 0, 0, NULL, 0, NULL,
@@ -2486,7 +2486,7 @@ panimmove_t player_move_staffblockleft2 = {1, player_frames_staffblockleft2, Pla
 // Block on left and attack
 panimframe_t player_frames_staffblockleftatk [] =
 {
-	FRAME_swipeB2, PlayerMoveUpperFunc, 30*UNJH_VALUE, 0, 0, PlayerActionSwordTrailStart, TRAIL_COUNTERLEFT, NULL,
+	FRAME_swipeB2, PlayerMoveUpperFunc, 30*UNJH_VALUE, 0, 0, PlayerActionStaffTrailStart, TRAIL_COUNTERLEFT, NULL,
 	FRAME_swipeB4, PlayerMoveUpperFunc, 91*UNJH_VALUE, 0, 0, PlayerActionSwordAttack, 5, NULL,
 	FRAME_swipeB5, PlayerMoveUpperFunc, 37*UNJH_VALUE, 0, 0, PlayerActionSwordAttack, 6, NULL,
 	FRAME_swipeB6, PlayerMoveUpperFunc, 27*UNJH_VALUE, 0, 0, PlayerActionSwordAttack, 7, NULL,
@@ -2515,7 +2515,7 @@ panimmove_t player_move_staffblockright2 = {1, player_frames_staffblockright2, P
 // Block on right and attack
 panimframe_t player_frames_staffblockrightatk [] =
 {
-	FRAME_swipeA2, PlayerMoveUpperFunc, 30*UNJH_VALUE, 0, 0, PlayerActionSwordTrailStart, TRAIL_COUNTERRIGHT, NULL,
+	FRAME_swipeA2, PlayerMoveUpperFunc, 30*UNJH_VALUE, 0, 0, PlayerActionStaffTrailStart, TRAIL_COUNTERRIGHT, NULL,
 	FRAME_swipeA3, PlayerMoveUpperFunc, 91*UNJH_VALUE, 0, 0, PlayerActionSwordAttack, 1, NULL,
 	FRAME_swipeA5, PlayerMoveUpperFunc, 37*UNJH_VALUE, 0, 0, PlayerActionSwordAttack, 2, NULL,
 	FRAME_swipeA6, PlayerMoveUpperFunc, 27*UNJH_VALUE, 0, 0, PlayerActionSwordAttack, 3, NULL,

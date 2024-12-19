@@ -26,18 +26,6 @@
 static vec3_t handmins = { -2.0f, -2.0f, 0.0f };
 static vec3_t handmaxs = {  2.0f,  2.0f, 2.0f };
 
-static int traillength[TRAIL_MAX] =
-{
-	7,		//	TRAIL_SPIN1,
-	6,		//	TRAIL_SPIN2,
-	7,		//	TRAIL_STAND,
-	6,		//	TRAIL_STEP,
-	4,		//	TRAIL_BACK,
-	8,		//	TRAIL_STAB,
-	6,		//	TRAIL_COUNTERLEFT,
-	6,		//	TRAIL_COUNTERRIGHT,
-};
-
 static float CL_NormaliseAngle(float angle)
 {
 	const int count = (int)(angle / 360.0f);
@@ -682,59 +670,55 @@ void PlayerActionEndStaffGlow(const playerinfo_t* info, const float value)
 	P_CreateEffect(info, EFFECT_PRED_ID8, info->self, FX_STAFF_REMOVE, flags, NULL, ""); //mxd
 }
 
-static void PlayerActionStaffTrailSound(const playerinfo_t* info, const char* name) //mxd. Originally named 'PlayerActionSwordTrailSound'
+static void PlayerActionStaffTrailSound(const playerinfo_t* info, const char* name) //mxd. Originally named 'PlayerActionSwordTrailSound'.
 {
 	P_Sound(info, SND_PRED_ID13, CHAN_WEAPON, name, 1.0f); //mxd
 }
 
-void PlayerActionSwordTrailStart(playerinfo_t *playerinfo, float value)
+void PlayerActionStaffTrailStart(playerinfo_t* info, const float value) //mxd. Originally named 'PlayerActionSwordTrailStart'.
 {
-	int powerlevel;
-	int	length;
-	qboolean spin;
+	static int traillength[TRAIL_MAX] = //mxd. Made local static.
+	{
+		7,	//	TRAIL_SPIN1,
+		6,	//	TRAIL_SPIN2,
+		7,	//	TRAIL_STAND,
+		6,	//	TRAIL_STEP,
+		4,	//	TRAIL_BACK,
+		8,	//	TRAIL_STAB,
+		6,	//	TRAIL_COUNTERLEFT,
+		6,	//	TRAIL_COUNTERRIGHT,
+	};
+
+	const int trail_type = (int)value; //mxd
 
 	// Add a trail effect to the staff.
-	if (playerinfo->powerup_timer > playerinfo->leveltime)
-		powerlevel = playerinfo->pers.stafflevel + 1;
-	else 
-		powerlevel = playerinfo->pers.stafflevel;
+	int powerlevel = info->pers.stafflevel;
+	if (info->powerup_timer > info->leveltime)
+		powerlevel++;
 
-	if (powerlevel >= STAFF_LEVEL_MAX)
-		powerlevel = STAFF_LEVEL_MAX-1;
+	powerlevel = min(powerlevel, STAFF_LEVEL_MAX - 1);
 
-	assert((int)value >= 0 && (int)value < TRAIL_MAX);
-	length = traillength[(int)value];
+	assert(trail_type >= 0 && trail_type < TRAIL_MAX);
+	const int length = traillength[trail_type];
 
-	PlayerSetHandFX(playerinfo, HANDFX_STAFF1 + powerlevel - 1, length);
+	PlayerSetHandFX(info, HANDFX_STAFF1 + powerlevel - 1, length);
 
-	spin = ((int)value == TRAIL_SPIN1 || (int)value == TRAIL_SPIN2 || (int)value == TRAIL_STAB);
+	const qboolean spin = (trail_type == TRAIL_SPIN1 || trail_type == TRAIL_SPIN2 || trail_type == TRAIL_STAB);
+	const char* sound_type = (spin ? "stafftwirl" : "staffswing"); //mxd
 
 	switch (powerlevel)
 	{
-	//Normal Staff
-	case STAFF_LEVEL_BASIC:
-		if (!spin)
-			PlayerActionStaffTrailSound(playerinfo, "weapons/staffswing.wav");
-		else
-			PlayerActionStaffTrailSound(playerinfo, "weapons/stafftwirl.wav");
-		break;
+		case STAFF_LEVEL_BASIC: // Normal Staff
+			PlayerActionStaffTrailSound(info, va("weapons/%s.wav", sound_type));
+			break;
 
-	// Energy staff
-	case STAFF_LEVEL_POWER1:
-		if (!spin)
-			PlayerActionStaffTrailSound(playerinfo, "weapons/staffswing_2.wav");
-		else
-			PlayerActionStaffTrailSound(playerinfo, "weapons/stafftwirl_2.wav");
-		break;
+		case STAFF_LEVEL_POWER1: // Energy staff
+			PlayerActionStaffTrailSound(info, va("weapons/%s_2.wav", sound_type));
+			break;
 
-	// Fire Staff
-	case STAFF_LEVEL_POWER2:
-		if (!spin)
-			PlayerActionStaffTrailSound(playerinfo, "weapons/staffswing_3.wav");
-		else
-			PlayerActionStaffTrailSound(playerinfo, "weapons/stafftwirl_3.wav");
-		break;
-
+		case STAFF_LEVEL_POWER2: // Fire Staff
+			PlayerActionStaffTrailSound(info, va("weapons/%s_3.wav", sound_type));
+			break;
 	}
 }
 
