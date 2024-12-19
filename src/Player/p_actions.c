@@ -1110,40 +1110,20 @@ void PlayerActionBowReadySound(const playerinfo_t* info, float value)
 	P_Sound(info, SND_PRED_ID20, CHAN_WEAPON, "weapons/bowdraw2.wav", 1.0f);
 }
 
-/*-----------------------------------------------
-	PlayerActionUsePuzzle
------------------------------------------------*/
-
-qboolean PlayerActionUsePuzzle(playerinfo_t *playerinfo)
+qboolean PlayerActionUsePuzzle(playerinfo_t* info)
 {
-	if(!playerinfo->isclient)
-	{	
-		return(playerinfo->G_PlayerActionUsePuzzle(playerinfo));
-	}
-	else
-	{
-		// Client does nothing.
+	if (!info->isclient)
+		return info->G_PlayerActionUsePuzzle(info);
 
-		return(false);
-	}
+	return false; // Client does nothing.
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckPuzzleGrab
------------------------------------------------*/
-
-qboolean PlayerActionCheckPuzzleGrab(playerinfo_t *playerinfo)
+qboolean PlayerActionCheckPuzzleGrab(playerinfo_t* info)
 {
-	if(!playerinfo->isclient)
-	{
-		return(playerinfo->G_PlayerActionCheckPuzzleGrab(playerinfo));
-	}
-	else
-	{
-		// Client does nothing.
+	if (!info->isclient)
+		return info->G_PlayerActionCheckPuzzleGrab(info);
 
-		return(false);
-	}
+	return false; // Client does nothing.
 }
 
 /*-----------------------------------------------

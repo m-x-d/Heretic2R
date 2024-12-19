@@ -63,13 +63,13 @@ void PlayerActionBowReadySound(const playerinfo_t* info, float value);
 void PlayerActionTakePuzzle(playerinfo_t* playerinfo, float value);
 void PlayerActionMoveItem(playerinfo_t* playerinfo, float distance);
 
-qboolean PlayerActionCheckPuzzleGrab(playerinfo_t* playerinfo);
+qboolean PlayerActionCheckPuzzleGrab(playerinfo_t* info);
 qboolean PlayerActionCheckPushPull(playerinfo_t* playerinfo);
 qboolean PlayerActionCheckPushButton(playerinfo_t* playerinfo);
 qboolean PlayerActionCheckPushLever(playerinfo_t* playerinfo);
 qboolean PlayerActionCheckRopeGrab(playerinfo_t* playerinfo, float stomp_org);
 
-qboolean PlayerActionUsePuzzle(playerinfo_t* playerinfo);
+qboolean PlayerActionUsePuzzle(playerinfo_t* info);
 
 void PlayerMoveFunc(playerinfo_t* playerinfo, float fwd, float right, float up);
 void PlayerClimbingMoveFunc(playerinfo_t* playerinfo, float height, float var2, float var3);
