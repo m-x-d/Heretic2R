@@ -42,7 +42,7 @@ void PlayerActionBowTrailEnd(playerinfo_t* info, float value);
 void PlayerActionStartStaffGlow(const playerinfo_t* info, float value);
 void PlayerActionEndStaffGlow(const playerinfo_t* info, float value);
 
-qboolean PlayerActionCheckVault(playerinfo_t* playerinfo, float value);
+qboolean PlayerActionCheckVault(playerinfo_t* info, float value);
 void PlayerActionSwimIdleSound(const playerinfo_t* info, float value);
 void PlayerActionSwimSound(const playerinfo_t* info, float value);
 void PlayerActionClimbWallSound(const playerinfo_t* info, float value);

@@ -1022,7 +1022,6 @@ static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust)
 	vec3_t lastcheck_end;
 	VectorAdd(lastcheck_start, forward, lastcheck_end);
 
-	//TODO: should the other checks above check against PLAYERSOLID too? To include clip brushes?
 	trace_t lasttrace;
 	P_Trace(info, lastcheck_start, info->mins, info->maxs, lastcheck_end, &lasttrace); //mxd
 
@@ -1348,244 +1347,174 @@ qboolean PlayerActionCheckPushPull(playerinfo_t* info)
 	return true;
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckVault
------------------------------------------------*/
-
+qboolean PlayerActionCheckVault(playerinfo_t* info, float value)
+{
 #define VAULT_HAND_WIDTH	4
 #define VAULT_HAND_HEIGHT	32
 #define VAULT_HAND_VERTZONE 48
 #define VAULT_HAND_HORZONE	24
-#define VAULT_HEIGHT_CHECK	(-16)
 
-qboolean PlayerActionCheckVault(playerinfo_t *playerinfo, float value)
-{
-	qboolean	swingable = false;
-	trace_t grabtrace;
-	trace_t lasttrace;
-	trace_t swingtrace;
-	vec3_t	mins, maxs, vf;
-	vec3_t	forward, right;
-	vec3_t	start, end;
-	vec3_t	grabloc, planedir;
-	vec3_t	righthand, lefthand, endpoint;
-	vec3_t	player_facing;
-	vec3_t	vaultcheckmins, vaultcheckmaxs;
-	vec3_t	lastcheck_start, lastcheck_end;
-	float yaw, grabfraction;
-
-	assert(playerinfo);
+	assert(info);
 
 	// Check in front of the player, and decide if there is a suitable wall here.
-
-	VectorCopy(playerinfo->angles,player_facing);
-	player_facing[PITCH]=player_facing[ROLL]=0;
+	vec3_t forward;
+	vec3_t right;
+	const vec3_t player_facing = { 0.0f, info->angles[YAW], 0.0f};
 	AngleVectors(player_facing, forward, right, NULL);
 
-	VectorCopy(playerinfo->mins,vaultcheckmins);
-	VectorCopy(playerinfo->maxs,vaultcheckmaxs);
-	vaultcheckmins[2]+=18;//don't try to vault stairs, man
+	vec3_t vaultcheckmins;
+	vec3_t vaultcheckmaxs;
+	VectorCopy(info->mins, vaultcheckmins);
+	VectorCopy(info->maxs, vaultcheckmaxs);
+	vaultcheckmins[2] += 18.0f; // Don't try to vault stairs.
 
-	VectorCopy(playerinfo->origin, start);
-//	start[2] += VAULT_HEIGHT_CHECK;//waist - 16
+	vec3_t start;
+	VectorCopy(info->origin, start);
+
+	vec3_t end;
 	VectorMA(start, VAULT_HAND_HORZONE, forward, end);
 
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(start,vaultcheckmins,vaultcheckmaxs,end,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&grabtrace);
-	else
-		playerinfo->G_Trace(start,vaultcheckmins,vaultcheckmaxs,end,playerinfo->self,MASK_PLAYERSOLID,&grabtrace);
+	trace_t grabtrace;
+	P_Trace(info, start, vaultcheckmins, vaultcheckmaxs, end, &grabtrace); //mxd
 
-	if (grabtrace.fraction == 1.0)
-	{	
-		// Nothing in front of us.
-		return(false);
-	}
-
-	if (!(grabtrace.contents & MASK_SOLID))
-	{	// body stopped, but not on a grabbable surface.
-		return(false);
-	}
+	// Body stopped, but not on a grabbable surface.
+	if (grabtrace.fraction == 1.0f || !(grabtrace.contents & MASK_SOLID))
+		return false;
 
 	// Sloped surfaces are not grabbable. Question: sloped away or towards?
-	
-	if (grabtrace.plane.normal[2] > .3)
-	{
-		return(false);
-	}
+	if (grabtrace.plane.normal[2] > 0.3f)
+		return false;
 
-	if(grabtrace.ent&&!playerinfo->isclient)
-	{
-		if(playerinfo->G_EntIsAButton(grabtrace.ent))
-		{
-			return(false);
-		}
-	}
-	// Now check the angle.  It should be pretty much opposite the player's yaw.
+	// Don't grab buttons.
+	if (grabtrace.ent != NULL && !info->isclient && info->G_EntIsAButton(grabtrace.ent))
+		return false;
 
+	// Now check the angle. It should be pretty much opposite the player's yaw.
+	vec3_t planedir;
 	vectoangles(grabtrace.plane.normal, planedir);
-	playerinfo->grabangle = planedir[YAW] - 180.0;
-	playerinfo->grabangle = anglemod(playerinfo->grabangle);
-	yaw = planedir[YAW] - playerinfo->angles[YAW];
-	yaw = anglemod(yaw) - 180.0;
-	if (yaw > 30.0 || yaw < -30.0)
-	{	
-		// Bad angle. Player should bounce.
-		return(false);
-	}
+	info->grabangle = anglemod(planedir[YAW] - 180.0f);
 
+	const float yaw = anglemod(planedir[YAW] - info->angles[YAW]) - 180.0f;
+
+	// Bad angle. Player should bounce.
+	if (yaw > 30.0f || yaw < -30.0f)
+		return false;
+
+	vec3_t grabloc;
 	VectorCopy(grabtrace.endpos, grabloc);
 
-	// Now we want to cast some rays.  If the two rays moving from the player's hands at "grab"
-	// width successfully clear any surface, then at least his hands are free enough to make the
-	// grab.
+	// Now we want to cast some rays. If the two rays moving from the player's hands at "grab" width
+	// successfully clear any surface, then at least his hands are free enough to make the grab.
 
-	VectorMA(playerinfo->origin, VAULT_HAND_WIDTH, right, righthand);
+	// Check right hand position.
+	vec3_t righthand;
+	VectorMA(info->origin, VAULT_HAND_WIDTH, right, righthand);
 	righthand[2] += VAULT_HAND_HEIGHT;
+
+	vec3_t endpoint;
 	VectorMA(righthand, VAULT_HAND_HORZONE, forward, endpoint);
-	
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(righthand,handmins,handmaxs,endpoint,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&grabtrace);
-	else
-		playerinfo->G_Trace(righthand,handmins,handmaxs,endpoint,playerinfo->self,MASK_PLAYERSOLID,&grabtrace);
+
+	P_Trace(info, righthand, handmins, handmaxs, endpoint, &grabtrace); //mxd
+
+	// Right hand is not clear.
+	if (grabtrace.fraction != 1.0f || grabtrace.startsolid || grabtrace.allsolid)
+		return false;
 
 	VectorCopy(grabtrace.endpos, righthand);
-	if (grabtrace.fraction != 1.0 || grabtrace.startsolid || grabtrace.allsolid)
-	{	
-		// Right hand is not clear.
-		return(false);
-	}
 
-	VectorMA(playerinfo->origin, -VAULT_HAND_WIDTH, right, lefthand);
+	// Check left hand position.
+	vec3_t lefthand;
+	VectorMA(info->origin, -VAULT_HAND_WIDTH, right, lefthand);
 	lefthand[2] += VAULT_HAND_HEIGHT;
+
 	VectorMA(lefthand, VAULT_HAND_HORZONE, forward, endpoint);
 
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(lefthand,handmins,handmaxs,endpoint,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&grabtrace);
-	else
-		playerinfo->G_Trace(lefthand,handmins,handmaxs,endpoint,playerinfo->self,MASK_PLAYERSOLID,&grabtrace);
+	P_Trace(info, lefthand, handmins, handmaxs, endpoint, &grabtrace); //mxd
 
-	VectorCopy(grabtrace.endpos, lefthand);			
-	if (grabtrace.fraction != 1.0 || grabtrace.startsolid || grabtrace.allsolid)
-	{	
-		// Left hand is not clear.
-		return(false);
-	}
+	// Left hand is not clear.
+	if (grabtrace.fraction != 1.0f || grabtrace.startsolid || grabtrace.allsolid)
+		return false;
 
-	// If the clear rays from the player's hands, traced down, should hit a legal (almost level)
-	// surface within a certain distance, then a grab is possible! First we must figure out how low
-	// to look. If the player is going down, then check his intended speed over the next .1 sec.
+	VectorCopy(grabtrace.endpos, lefthand);
 
+	// If the clear rays from the player's hands, traced down, should hit a legal (almost level) surface
+	// within a certain distance, then a grab is possible! First we must figure out how low to look.
+	// If the player is going down, then check his intended speed over the next .1 sec.
+
+	// Check right hand position.
 	VectorCopy(righthand, endpoint);
 	endpoint[2] -= VAULT_HAND_VERTZONE;
-	
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(righthand,handmins,handmaxs,endpoint,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&grabtrace);
-	else
-		playerinfo->G_Trace(righthand,handmins,handmaxs,endpoint,playerinfo->self,MASK_PLAYERSOLID,&grabtrace);
+
+	P_Trace(info, righthand, handmins, handmaxs, endpoint, &grabtrace); //mxd
+
+	// Right hand did not connect with a flat surface.
+	if (grabtrace.fraction == 1.0f || grabtrace.plane.normal[2] < 0.8f || grabtrace.startsolid || grabtrace.allsolid)
+		return false;
+
+	// Right hand stopped, but not on a grabbable surface.
+	if (!(grabtrace.contents & MASK_SOLID))
+		return false;
 
 	VectorCopy(grabtrace.endpos, righthand);
-	if (grabtrace.fraction == 1.0 || grabtrace.plane.normal[2] < .8 || grabtrace.startsolid || grabtrace.allsolid)
-	{	
-		// Right hand did not connect with a flat surface.
-		return(false);
-	}
 
-	if (!(grabtrace.contents & MASK_SOLID))
-	{	// hand stopped, but not on a grabbable surface.
-		return(false);
-	}
-
+	// Check left hand position.
 	VectorCopy(lefthand, endpoint);
 	endpoint[2] -= VAULT_HAND_VERTZONE;
 
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(lefthand,handmins,handmaxs,endpoint,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&grabtrace);
-	else
-		playerinfo->G_Trace(lefthand,handmins,handmaxs,endpoint,playerinfo->self,MASK_PLAYERSOLID,&grabtrace);
+	P_Trace(info, lefthand, handmins, handmaxs, endpoint, &grabtrace); //mxd
+
+	// Left hand did not connect with a flat surface.
+	if (grabtrace.fraction == 1.0f || grabtrace.plane.normal[2] < 0.8f || grabtrace.startsolid || grabtrace.allsolid)
+		return false;
+
+	// Left hand stopped, but not on a grabbable surface.
+	if (!(grabtrace.contents & MASK_SOLID))
+		return false;
 
 	VectorCopy(grabtrace.endpos, lefthand);
-	if (grabtrace.fraction == 1.0 || grabtrace.plane.normal[2] < .8 || grabtrace.startsolid || grabtrace.allsolid)
-	{	
-		// Left hand did not connect with a flat surface.
-		return(false);
-	}
-
-	if (!(grabtrace.contents & MASK_SOLID))
-	{	// hand stopped, but not on a grabbable surface.
-		return(false);
-	}
 
 	// The fit check doesn't work when you are in muck, so check if you are.
-	if (!(playerinfo->watertype & (CONTENTS_SLIME|CONTENTS_LAVA)))
+	if (!(info->watertype & (CONTENTS_SLIME | CONTENTS_LAVA)))
 	{
-		//one more check, make sure we can fit in there! -- 
-		//so we don't start climbing then fall back down- annoying
-		//get the z height
-		VectorCopy(playerinfo->origin, lastcheck_start);
-		if(lefthand[2] > righthand[2])
-			lastcheck_start[2] = lefthand[2] - playerinfo->mins[2];
-		else
-			lastcheck_start[2] = righthand[2] - playerinfo->mins[2];
+		// One more check, make sure we can fit in there, so we don't start climbing then fall back down.
 
-		VectorMA(lastcheck_start, 1, forward, lastcheck_end);
+		// Get the z height.
+		vec3_t lastcheck_start;
+		VectorCopy(info->origin, lastcheck_start);
+		lastcheck_start[2] = max(lefthand[2], righthand[2]) - info->mins[2];
 
-		//HEY- should the other checks above check against PLAYERSOLID too?  to include clip brushes?
-		if(playerinfo->isclient)
-			playerinfo->CL_Trace(lastcheck_start, playerinfo->mins, playerinfo->maxs, lastcheck_end, MASK_PLAYERSOLID, CEF_CLIP_TO_WORLD, &lasttrace);
-		else
-			playerinfo->G_Trace(lastcheck_start, playerinfo->mins, playerinfo->maxs, lastcheck_end, playerinfo->self, MASK_PLAYERSOLID,&lasttrace);
+		vec3_t lastcheck_end;
+		VectorAdd(lastcheck_start, forward, lastcheck_end);
 
-		if(lasttrace.fraction < 1.0 || lasttrace.startsolid || lasttrace.allsolid)
-		{
-			return (false);
-		}
+		trace_t lasttrace;
+		P_Trace(info, lastcheck_start, info->mins, info->maxs, lastcheck_end, &lasttrace); //mxd
+
+		if (lasttrace.fraction < 1.0f || lasttrace.startsolid || lasttrace.allsolid)
+			return false;
 	}
 
-	
-	grabfraction = grabtrace.fraction;
+	//mxd. Removed unused overhanging swing vault check logic.
 
-	//Now see if the surface is eligible for a overhanging swing vault
-	//Trace from about the player's waist to his feet to determine this
-	VectorCopy(playerinfo->mins, mins);
-	VectorCopy(playerinfo->maxs, maxs);
-	maxs[2] -= 48;
-
-	AngleVectors(playerinfo->angles, vf, NULL, NULL);
-	VectorMA(playerinfo->origin, 32, vf, endpoint);
-
-	if (playerinfo->isclient)
-		playerinfo->CL_Trace(playerinfo->origin,mins,maxs,endpoint,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&swingtrace);
-	else
-		playerinfo->G_Trace(playerinfo->origin,mins,maxs,endpoint,playerinfo->self,MASK_PLAYERSOLID,&swingtrace);
-	
-	//Did we hit a wall underneath?
-	if (swingtrace.fraction == 1.0f && (!swingtrace.startsolid || !swingtrace.allsolid))
-		swingable = true;
-	
 	// Save the intended grab location (the endpoint).
-	playerinfo->grabloc[0] = ((lefthand[0] + righthand[0]) / 2.0);
-	playerinfo->grabloc[1] = ((lefthand[1] + righthand[1]) / 2.0);
-	
-	if (lefthand[2] > righthand[2])
-		playerinfo->grabloc[2] = lefthand[2];
-	else
-		playerinfo->grabloc[2] = righthand[2];
+	info->grabloc[0] = (lefthand[0] + righthand[0]) / 2.0f;
+	info->grabloc[1] = (lefthand[1] + righthand[1]) / 2.0f;
+	info->grabloc[2] = max(lefthand[2], righthand[2]);
 
-	if (grabfraction < 0.5)
+	if (grabtrace.fraction < 0.5f)
 	{
-		if ( (playerinfo->flags & PLAYER_FLAG_NO_LARM) && (playerinfo->flags & PLAYER_FLAG_NO_RARM) )
-			return false;//can't do half pull up with no arms
+		if ((info->flags & PLAYER_FLAG_NO_LARM) && (info->flags & PLAYER_FLAG_NO_RARM))
+			return false; // Can't do half pull up with no arms.
 
 		// This is strange, but the VAULT_LOW is actually a high wall vault.
-		PlayerAnimSetVault(playerinfo, ASEQ_VAULT_LOW);
+		PlayerAnimSetVault(info, ASEQ_VAULT_LOW);
 	}
 	else
 	{
-		// ...and PULLUP_HALFWALL is just a hop.  SO I moved the arm check to the high wall vault.
-		PlayerAnimSetVault(playerinfo, ASEQ_PULLUP_HALFWALL);
+		// ...and PULLUP_HALFWALL is just a hop, so I moved the arm check to the high wall vault.
+		PlayerAnimSetVault(info, ASEQ_PULLUP_HALFWALL);
 	}
 
-	return(true);
+	return true;
 }
 
 /*-----------------------------------------------
