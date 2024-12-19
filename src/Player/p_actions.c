@@ -1930,6 +1930,14 @@ PLAYER_API void SpawnDustPuff(playerinfo_t* info, float dist)
 		P_CreateEffect(info, EFFECT_PRED_ID10, info->self, FX_DUST_PUFF, CEF_OWNERS_ORIGIN, info->origin, ""); //mxd
 }
 
+//mxd. Added to reduce code repetition...
+static void SetLowerSeq(playerinfo_t* info, const int seq)
+{
+	info->lowerseq = seq;
+	info->lowermove = PlayerSeqData[info->lowerseq].move;
+	info->lowerframeptr = info->lowermove->frame + info->lowerframe;
+}
+
 void PlayerActionCheckCreep(playerinfo_t* info)
 {
 	const int curseq = info->lowerseq;
@@ -1977,38 +1985,26 @@ void PlayerActionCheckCreep(playerinfo_t* info)
 	// Check for a transition to a creeping strafe [High probability].
 	if (info->seqcmd[ACMDL_CREEP_F] && info->seqcmd[ACMDL_STRAFE_L] && curseq != ASEQ_CSTRAFE_LEFT)
 	{
-		info->lowerseq = ASEQ_CSTRAFE_LEFT;
-		info->lowermove = PlayerSeqData[info->lowerseq].move;
-		info->lowerframeptr = info->lowermove->frame + info->lowerframe;
-
+		SetLowerSeq(info, ASEQ_CSTRAFE_LEFT); //mxd
 		return;
 	}
 
 	if (info->seqcmd[ACMDL_CREEP_F] && info->seqcmd[ACMDL_STRAFE_R] && curseq != ASEQ_CSTRAFE_RIGHT)
 	{
-		info->lowerseq = ASEQ_CSTRAFE_RIGHT;
-		info->lowermove = PlayerSeqData[info->lowerseq].move;
-		info->lowerframeptr = info->lowermove->frame + info->lowerframe;
-
+		SetLowerSeq(info, ASEQ_CSTRAFE_RIGHT); //mxd
 		return;
 	}
 
 	// Check for a transition to a creeping strafe [High probability].
 	if (info->seqcmd[ACMDL_CREEP_B] && info->seqcmd[ACMDL_STRAFE_L] && curseq != ASEQ_CSTRAFEB_LEFT)
 	{
-		info->lowerseq = ASEQ_CSTRAFEB_LEFT;
-		info->lowermove = PlayerSeqData[info->lowerseq].move;
-		info->lowerframeptr = info->lowermove->frame + info->lowerframe;
-
+		SetLowerSeq(info, ASEQ_CSTRAFEB_LEFT); //mxd
 		return;
 	}
 
 	if (info->seqcmd[ACMDL_CREEP_B] && info->seqcmd[ACMDL_STRAFE_R] && curseq != ASEQ_CSTRAFEB_RIGHT)
 	{
-		info->lowerseq = ASEQ_CSTRAFEB_RIGHT;
-		info->lowermove = PlayerSeqData[info->lowerseq].move;
-		info->lowerframeptr = info->lowermove->frame + info->lowerframe;
-
+		SetLowerSeq(info, ASEQ_CSTRAFEB_RIGHT); //mxd
 		return;
 	}
 
