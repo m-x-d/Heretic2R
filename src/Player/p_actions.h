@@ -51,7 +51,7 @@ void PlayerActionClimbFinishSound(const playerinfo_t* info, float value);
 void PlayerActionFootstep(const playerinfo_t* info, float value);
 void PlayerActionSwim(const playerinfo_t* info, float value);
 void PlayerActionCheckGrab(playerinfo_t* info, float value);
-void PlayerActionCheckFallingGrab(playerinfo_t* playerinfo, float value);
+void PlayerActionCheckFallingGrab(playerinfo_t* info, float value);
 qboolean PlayerActionCheckJumpGrab(playerinfo_t* playerinfo, float value);
 void PlayerActionSplashFeet(playerinfo_t* playerinfo, float value);
 void PlayerActionBowSound(playerinfo_t* playerinfo, float value);

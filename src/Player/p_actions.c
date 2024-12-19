@@ -1099,12 +1099,10 @@ void PlayerActionCheckGrab(playerinfo_t* info, float value)
 	}
 }
 
-void PlayerActionCheckFallingGrab(playerinfo_t *playerinfo, float value)
+void PlayerActionCheckFallingGrab(playerinfo_t* info, const float value)
 {
-	if (!playerinfo->seqcmd[ACMDL_FWD] && !playerinfo->seqcmd[ACMDL_JUMP] && !playerinfo->seqcmd[ACMDL_ACTION])
-		return;
-
-	PlayerActionCheckGrab(playerinfo, value);
+	if (info->seqcmd[ACMDL_FWD] || info->seqcmd[ACMDL_JUMP] || info->seqcmd[ACMDL_ACTION])
+		PlayerActionCheckGrab(info, value);
 }
 
 /*-----------------------------------------------
