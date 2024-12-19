@@ -427,11 +427,21 @@ void PlayerActionHellstaffAttack(playerinfo_t* info, float value)
 
 void PlayerActionSpellDefensive(playerinfo_t* info, float value) { } //TODO: remove?
 
+//mxd. Added to reduce code repetition...
+static void SetupSpawnPoint(const playerinfo_t* info, vec3_t spawnpoint, vec3_t spawndir)
+{
+	vec3_t forward;
+
+	AngleVectors(info->angles, forward, spawndir, NULL);
+	VectorMA(info->origin, -2.0f, forward, spawnpoint);
+	VectorMA(spawnpoint, -7.0f, spawndir, spawnpoint);
+	spawnpoint[2] += info->viewheight - 16.0f;
+}
+
 //TODO: currently, this is only used when switching from a spell to another spell (ASEQ_HAND2HAND). Also use when switching to spell from a weapon?
 void PlayerActionSpellChange(playerinfo_t* info, float value)
 {
-	vec3_t forward;
-	vec3_t right;
+	vec3_t spawndir;
 	vec3_t spawnpoint;
 	int color;
 
@@ -446,10 +456,7 @@ void PlayerActionSpellChange(playerinfo_t* info, float value)
 	info->pers.newweapon = NULL;
 
 	// Do some fancy effect.
-	AngleVectors(info->angles, forward, right, NULL);
-	VectorMA(info->origin, -2.0f, forward, spawnpoint);
-	VectorMA(spawnpoint, -7.0f, right, spawnpoint);
-	spawnpoint[2] += info->viewheight - 16.0f;
+	SetupSpawnPoint(info, spawnpoint, spawndir);
 
 	switch (info->pers.weapon->tag)
 	{
@@ -479,13 +486,13 @@ void PlayerActionSpellChange(playerinfo_t* info, float value)
 	}
 
 	P_Sound(info, SND_PRED_ID0, CHAN_WEAPON, "Weapons/SpellChange.wav", 1.0f);
-	P_CreateEffect(info, EFFECT_PRED_ID1, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", right, color);
+	P_CreateEffect(info, EFFECT_PRED_ID1, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", spawndir, color);
 }
 
+//TODO: currently, this is only used when switching from a bow to another bow (ASEQ_BOW2BOW). Also use when switching to bow from a spell/weapon?
 void PlayerActionArrowChange(playerinfo_t* info, float value)
 {
-	vec3_t forward;
-	vec3_t right;
+	vec3_t spawndir;
 	vec3_t spawnpoint;
 	int color;
 
@@ -499,16 +506,12 @@ void PlayerActionArrowChange(playerinfo_t* info, float value)
 	Weapon_Ready(info, info->pers.newweapon);
 	info->pers.newweapon = NULL;
 
-	// Do some fancy effect.
-	AngleVectors(info->angles, forward, right, NULL);
-	VectorMA(info->origin, -2.0f, forward, spawnpoint);
-	VectorMA(spawnpoint, -7.0f, right, spawnpoint);
-	spawnpoint[2] += info->viewheight - 16.0f;
-
 	const gitem_t* weapon = info->pers.weapon;
-
 	if (weapon == NULL) //mxd. Don't trigger sound / effects when no weapon.
 		return;
+
+	// Do some fancy effect.
+	SetupSpawnPoint(info, spawnpoint, spawndir); //mxd
 
 	if (weapon->tag == ITEM_WEAPON_PHOENIXBOW)
 	{
@@ -526,7 +529,7 @@ void PlayerActionArrowChange(playerinfo_t* info, float value)
 	PlayerUpdateModelAttributes(info);
 
 	P_Sound(info, SND_PRED_ID1, CHAN_WEAPON, "Weapons/SpellChange.wav", 1.0f);
-	P_CreateEffect(info, EFFECT_PRED_ID2, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", right, color);
+	P_CreateEffect(info, EFFECT_PRED_ID2, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", spawndir, color);
 }
 
 /*-----------------------------------------------
