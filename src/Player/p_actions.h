@@ -46,7 +46,7 @@ qboolean PlayerActionCheckVault(playerinfo_t* playerinfo, float value);
 void PlayerActionSwimIdleSound(const playerinfo_t* info, float value);
 void PlayerActionSwimSound(const playerinfo_t* info, float value);
 void PlayerActionClimbWallSound(const playerinfo_t* info, float value);
-void PlayerActionClimbFinishSound(playerinfo_t* playerinfo, float value);
+void PlayerActionClimbFinishSound(const playerinfo_t* info, float value);
 
 void PlayerActionFootstep(const playerinfo_t* info, float value);
 void PlayerActionSwim(playerinfo_t* playerinfo, float value);

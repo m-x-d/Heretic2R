@@ -848,33 +848,9 @@ void PlayerActionClimbWallSound(const playerinfo_t* info, float value)
 	P_Sound(info, SND_PRED_ID18, CHAN_VOICE, "player/pullup 1.wav", 1.0f); //mxd
 }
 
-/*-----------------------------------------------
-	PlayerActionClimbFinishSound
------------------------------------------------*/
-
-void PlayerActionClimbFinishSound(playerinfo_t *playerinfo, float value)
+void PlayerActionClimbFinishSound(const playerinfo_t* info, float value)
 {
-	if(playerinfo->isclient)
-	{
-		playerinfo->CL_Sound(SND_PRED_ID19,
-							 playerinfo->origin,
-							 CHAN_VOICE,
-							 "player/pullup 2.wav",
-							 1.0,
-							 ATTN_NORM,
-							 0);
-	}
-	else
-	{
-		playerinfo->G_Sound(SND_PRED_ID19,
-							playerinfo->leveltime,
-							playerinfo->self,
-							CHAN_VOICE,
-							playerinfo->G_SoundIndex("player/pullup 2.wav"),
-							1.0,
-							ATTN_NORM,
-							0);
-	}
+	P_Sound(info, SND_PRED_ID19, CHAN_VOICE, "player/pullup 2.wav", 1.0f); //mxd
 }
 
 /*-----------------------------------------------
