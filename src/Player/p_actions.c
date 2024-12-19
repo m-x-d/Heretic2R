@@ -1126,24 +1126,13 @@ qboolean PlayerActionCheckPuzzleGrab(playerinfo_t* info)
 	return false; // Client does nothing.
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckJumpGrab
------------------------------------------------*/
-
+qboolean PlayerActionCheckJumpGrab(playerinfo_t* info, float value)
+{
 #define GRAB_JUMP_HORZONE	32
 #define GRAB_JUMP_HEIGHT	80
 
-qboolean PlayerActionCheckJumpGrab(playerinfo_t *playerinfo, float value)
-{//FIXME: make like others
-	vec3_t planedir;
-	vec3_t forward, right;
-	vec3_t playermin, playermax;
-	trace_t grabtrace;
-	vec3_t righthand, lefthand, endpoint;
-	vec3_t player_facing;
-	float yaw, handheight;
-
-	assert(playerinfo);
+	//FIXME: make like others
+	assert(info);
 
 	// Check for grabbability.
 	// Criteria:
@@ -1155,186 +1144,152 @@ qboolean PlayerActionCheckJumpGrab(playerinfo_t *playerinfo, float value)
 	// --The plane must be at least wide enough at the point of intersection for the whole player.
 
 	// Skip it if we're not on the ground.
-	
-	if (playerinfo->groundentity == NULL)
-		return(false);
+
+	if (info->groundentity == NULL)
+		return false;
 
 	// First we need to "move" the player as high as we possibly can.
 
-	VectorCopy(playerinfo->origin, endpoint);
+	vec3_t endpoint;
+	VectorCopy(info->origin, endpoint);
 	endpoint[2] += GRAB_JUMP_HEIGHT;
-	VectorCopy(playerinfo->mins, playermin);
-	VectorCopy(playerinfo->maxs, playermax);
-	
+
+	vec3_t playermin;
+	vec3_t playermax;
+	VectorCopy(info->mins, playermin);
+	VectorCopy(info->maxs, playermax);
+
 	// We need to take the player limits and extend them up to 83 in height (where the hands are).
-
 	playermax[2] = GRAB_HAND_HEIGHT;
-	
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(playerinfo->origin,playermin,playermax,endpoint,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&grabtrace);
-	else			
-		playerinfo->G_Trace(playerinfo->origin,playermin,playermax,endpoint,playerinfo->self,MASK_PLAYERSOLID,&grabtrace);
 
+	trace_t grabtrace;
+	P_Trace(info, info->origin, playermin, playermax, endpoint, &grabtrace); //mxd
+
+	// There's no room to jump.
 	if (grabtrace.startsolid || grabtrace.allsolid)
-	{	// There's no room to jump.
-		return(false);
-	}
+		return false;
 
 	// Handheight is set to the maximum the hands can go above the current player's height.
-	
-	handheight = grabtrace.endpos[2] + GRAB_HAND_HEIGHT;
+	const float handheight = grabtrace.endpos[2] + GRAB_HAND_HEIGHT;
 
-	// Now we want to cast some rays.  If the two rays moving from the player's hands at "grab"
-	// width successfully clear any surface, then at least his hands are free enough to make the
-	// grab.
+	// Now we want to cast some rays. If the two rays moving from the player's hands at "grab" width
+	// successfully clear any surface, then at least his hands are free enough to make the grab.
 
-	VectorCopy(playerinfo->angles,player_facing);
-	player_facing[PITCH]=player_facing[ROLL]=0;
+	vec3_t forward;
+	vec3_t right;
+	const vec3_t player_facing = { 0.0f, info->angles[YAW], 0.0f };
 	AngleVectors(player_facing, forward, right, NULL);
-	VectorMA(playerinfo->origin, GRAB_HAND_WIDTH, right, righthand);
+
+	// Check right hand position.
+	vec3_t righthand;
+	VectorMA(info->origin, GRAB_HAND_WIDTH, right, righthand);
 	righthand[2] = handheight;
+
 	VectorMA(righthand, GRAB_JUMP_HORZONE, forward, endpoint);
 
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(righthand,handmins,handmaxs,endpoint,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&grabtrace);
-	else
-		playerinfo->G_Trace(righthand,handmins,handmaxs,endpoint,playerinfo->self,MASK_PLAYERSOLID,&grabtrace);
+	P_Trace(info, righthand, handmins, handmaxs, endpoint, &grabtrace); //mxd
+
+	if (grabtrace.fraction != 1.0f) // Right hand is not clear.
+		return false;
 
 	VectorCopy(grabtrace.endpos, righthand);
-	if (grabtrace.fraction != 1.0)
-	{	// Right hand is not clear.
-		return false;
-	}
 
-	VectorMA(playerinfo->origin, -GRAB_HAND_WIDTH, right, lefthand);
+	// Check left hand position.
+	vec3_t lefthand;
+	VectorMA(info->origin, -GRAB_HAND_WIDTH, right, lefthand);
 	lefthand[2] = handheight;
+
 	VectorMA(lefthand, GRAB_JUMP_HORZONE, forward, endpoint);
-	
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(lefthand,handmins,handmaxs,endpoint,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&grabtrace);
-	else
-		playerinfo->G_Trace(lefthand,handmins,handmaxs,endpoint,playerinfo->self,MASK_PLAYERSOLID,&grabtrace);
 
-	VectorCopy(grabtrace.endpos, lefthand);			
-	if (grabtrace.fraction != 1.0)
-	{	// Left hand is not clear.
+	P_Trace(info, lefthand, handmins, handmaxs, endpoint, &grabtrace); //mxd
+
+	// Left hand is not clear.
+	if (grabtrace.fraction != 1.0f)
 		return false;
-	}
 
+	VectorCopy(grabtrace.endpos, lefthand);
 
 	// If the clear rays from the player's hands, traced down, should hit a legal (almost level)
 	// surface within a certain distance, then a grab is possible!
 
+	// Check right hand position.
 	VectorCopy(righthand, endpoint);
-	endpoint[2] = playerinfo->origin[2] + GRAB_HAND_HEIGHT;
-	
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(righthand,handmins,handmaxs,endpoint,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&grabtrace);
-	else
-		playerinfo->G_Trace(righthand,handmins,handmaxs,endpoint,playerinfo->self,MASK_PLAYERSOLID,&grabtrace);
+	endpoint[2] = info->origin[2] + GRAB_HAND_HEIGHT;
+
+	P_Trace(info, righthand, handmins, handmaxs, endpoint, &grabtrace); //mxd
+
+	// Right hand did not connect with a flat surface.
+	if (grabtrace.fraction == 1.0f || grabtrace.plane.normal[2] < 0.5f)
+		return false;
+
+	// Right hand stopped, but not on a grabbable surface.
+	if (!(grabtrace.contents & MASK_SOLID))
+		return false;
 
 	VectorCopy(grabtrace.endpos, righthand);
-	if (grabtrace.fraction == 1.0 || grabtrace.plane.normal[2] < .5)
-	{	// Right hand did not connect with a flat surface.
-		return false;
-	}
 
-	if (!(grabtrace.contents & MASK_SOLID))
-	{	// hand stopped, but not on a grabbable surface.
-		return(false);
-	}
-
+	// Check left hand position.
 	VectorCopy(lefthand, endpoint);
-	endpoint[2] = playerinfo->origin[2] + GRAB_HAND_HEIGHT;
-	
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(lefthand,handmins,handmaxs,endpoint,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&grabtrace);
-	else
-		playerinfo->G_Trace(lefthand,handmins,handmaxs,endpoint,playerinfo->self,MASK_PLAYERSOLID,&grabtrace);
+	endpoint[2] = info->origin[2] + GRAB_HAND_HEIGHT;
+
+	P_Trace(info, lefthand, handmins, handmaxs, endpoint, &grabtrace); //mxd
+
+	// Left hand did not connect with a flat surface.
+	if (grabtrace.fraction == 1.0f || grabtrace.plane.normal[2] < 0.5f)
+		return false;
+
+	// Left hand stopped, but not on a grabbable surface.
+	if (!(grabtrace.contents & MASK_SOLID))
+		return false;
 
 	VectorCopy(grabtrace.endpos, lefthand);
-	if (grabtrace.fraction == 1.0 || grabtrace.plane.normal[2] < .5)
-	{	// Left hand did not connect with a flat surface.
-		return false;
-	}
 
-	if (!(grabtrace.contents & MASK_SOLID))
-	{	// hand stopped, but not on a grabbable surface.
-		return(false);
-	}
+	// Now, finally, if we try tracing the player blocking forward a tad, we should be hitting an obstruction.
+	VectorCopy(info->mins, playermin);
+	VectorCopy(info->maxs, playermax);
 
-
-	// Now, finally, if we try tracing the player blocking forward a tad, we should be hitting
-	// an obstruction.
-	VectorCopy(playerinfo->mins, playermin);
-	VectorCopy(playerinfo->maxs, playermax);
-	
 	// We need to take the player limits and extend them up to 83 in height.
-
 	playermax[2] = GRAB_HAND_HEIGHT;
 
-	VectorMA(playerinfo->origin, GRAB_JUMP_HORZONE, forward, endpoint);
-	
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(playerinfo->origin,NULL,NULL,endpoint,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&grabtrace);
-	else		
-		playerinfo->G_Trace(playerinfo->origin,NULL,NULL,endpoint,playerinfo->self,MASK_PLAYERSOLID,&grabtrace);
+	VectorMA(info->origin, GRAB_JUMP_HORZONE, forward, endpoint);
+
+	P_Trace(info, info->origin, NULL, NULL, endpoint, &grabtrace); //mxd
 
 	// Now, if the player is grabbing an overhang, this will not hit anything.
-
-	if (grabtrace.fraction >= 1.0)
-	{	
+	if (grabtrace.fraction == 1.0f)
+	{
 		// Hit nothing, so do some more checks, by stretching the player up to the outcropping.
-		
-		// Bottom at the origin
-		
-		playermin[2] = 0.0;
+
+		// Bottom at the origin.
+		playermin[2] = 0.0f;
 
 		// Stretch all the way up to where the grab is made.
+		playermax[2] = (lefthand[2] + righthand[2]) * 0.5f - info->origin[2];
 
-		playermax[2] = (lefthand[2]+righthand[2])*0.5 - playerinfo->origin[2];
+		P_Trace(info, info->origin, playermin, playermax, endpoint, &grabtrace); //mxd
 
-		if(playerinfo->isclient)
-			playerinfo->CL_Trace(playerinfo->origin,playermin,playermax,endpoint,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&grabtrace);
-		else
-			playerinfo->G_Trace(playerinfo->origin,playermin,playermax,endpoint,playerinfo->self,MASK_PLAYERSOLID,&grabtrace);
-
-		if (grabtrace.fraction >= 1.0)
-		{
+		if (grabtrace.fraction == 1.0f)
 			return false;
-		}
 	}
 
-	// Sloped away surfaces are not grabbable.
-
-	if (grabtrace.startsolid || grabtrace.plane.normal[2] > 0)
-	{
+	// Player stopped, but not on a grabbable surface.
+	if (!(grabtrace.contents & MASK_SOLID) || grabtrace.startsolid || grabtrace.plane.normal[2] > 0.0f)
 		return false;
-	}
-
-	if (!(grabtrace.contents & MASK_SOLID))
-	{	// player stopped, but not on a grabbable surface.
-		return(false);
-	}
 
 	// Now check the angle.  It should be pretty much opposite the player's yaw.
 
+	vec3_t planedir;
 	vectoangles(grabtrace.plane.normal, planedir);
 
-	playerinfo->grabangle = planedir[YAW] - 180.0;
-	playerinfo->grabangle = anglemod(playerinfo->grabangle);
-	yaw = planedir[YAW] - playerinfo->angles[YAW];
-	yaw = anglemod(yaw) - 180.0;
-	if (yaw > 30.0 || yaw < -30.0)
-	{	
-		// Bad angle. Player should bounce.
+	info->grabangle = anglemod(planedir[YAW] - 180.0f);
+	const float yaw = anglemod(planedir[YAW] - info->angles[YAW]) - 180.0f;
 
+	// Bad angle. Player should bounce.
+	if (yaw > 30.0f || yaw < -30.0f)
 		return false;
-	}
 
 	// Now that we feel we have a viable jump, let's jump!
-	
-	return(true);
+	return true;
 }
 
 /*-----------------------------------------------
