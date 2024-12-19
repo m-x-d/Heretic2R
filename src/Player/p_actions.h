@@ -82,7 +82,7 @@ void PlayerActionShrineEffect(playerinfo_t* info, float value);
 void PlayerActionCheckRunUnStrafe(playerinfo_t* playerinfo);
 
 void PlayerActionCheckDoubleJump(playerinfo_t* info);
-void PlayerMoveAdd(playerinfo_t* playerinfo);
+void PlayerMoveAdd(playerinfo_t* info);
 void PlayerActionFlip(playerinfo_t* info, float value);
 void PlayerActionTurn180(playerinfo_t* info);
 void PlayerActionSetQTEndTime(playerinfo_t* info, float QTEndTime);

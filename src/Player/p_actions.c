@@ -1858,55 +1858,42 @@ void PlayerActionShrineEffect(playerinfo_t* info, float value)
 		info->G_PlayerActionShrineEffect(info);
 }
 
-/*-----------------------------------------------
-	PlayerMoveAdd
------------------------------------------------*/
-
-void PlayerMoveAdd(playerinfo_t *playerinfo)
+void PlayerMoveAdd(playerinfo_t* info)
 {
-	vec3_t	vf, vr, dir;
-	float	mag, fmove, rmove;
+#define AIRMOVE_AMOUNT		48
+#define AIRMOVE_THRESHOLD	64
 
-	//If we're not nudging, then just return (this probably doesn't save us too much time...)
-	if ( (!playerinfo->seqcmd[ACMDL_FWD]) && (!playerinfo->seqcmd[ACMDL_BACK]) && (!playerinfo->seqcmd[ACMDL_STRAFE_L]) && (!playerinfo->seqcmd[ACMDL_STRAFE_R]) )
+	vec3_t vf;
+	vec3_t vr;
+	vec3_t dir;
+
+	// If we're not nudging, then just return (this probably doesn't save us too much time...)
+	if (!info->seqcmd[ACMDL_FWD] && !info->seqcmd[ACMDL_BACK] && !info->seqcmd[ACMDL_STRAFE_L] && !info->seqcmd[ACMDL_STRAFE_R])
 		return;
 
-	//Setup the information
-	AngleVectors(playerinfo->angles, vf, vr, NULL);
-	VectorCopy(playerinfo->velocity, dir);
-	mag = VectorNormalize(dir);
-	
-	fmove = (DotProduct(dir, vf) * mag);
-	rmove = (DotProduct(dir, vr) * mag);
+	// Setup the information.
+	AngleVectors(info->angles, vf, vr, NULL);
+	VectorCopy(info->velocity, dir);
+	const float mag = VectorNormalize(dir);
 
-	//Check and apply the nudges
+	const float fmove = (DotProduct(dir, vf) * mag);
+	const float rmove = (DotProduct(dir, vr) * mag);
 
-	if (playerinfo->seqcmd[ACMDL_FWD])
-	{
-		if ( fmove < AIRMOVE_THRESHOLD )
-			VectorMA(playerinfo->velocity, AIRMOVE_AMOUNT, vf, playerinfo->velocity);
-	}
+	// Check and apply the nudges.
+	if (info->seqcmd[ACMDL_FWD] && fmove < AIRMOVE_THRESHOLD)
+		VectorMA(info->velocity, AIRMOVE_AMOUNT, vf, info->velocity);
 
-	if (playerinfo->seqcmd[ACMDL_BACK])
-	{
-		if ( fmove > -AIRMOVE_THRESHOLD )
-			VectorMA(playerinfo->velocity, -AIRMOVE_AMOUNT, vf, playerinfo->velocity);
-	}
+	if (info->seqcmd[ACMDL_BACK] && fmove > -AIRMOVE_THRESHOLD)
+		VectorMA(info->velocity, -AIRMOVE_AMOUNT, vf, info->velocity);
 
-	if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-	{
-		if ( rmove > -AIRMOVE_THRESHOLD )
-			VectorMA(playerinfo->velocity, -AIRMOVE_AMOUNT, vr, playerinfo->velocity);
-	}
+	if (info->seqcmd[ACMDL_STRAFE_L] && rmove > -AIRMOVE_THRESHOLD)
+		VectorMA(info->velocity, -AIRMOVE_AMOUNT, vr, info->velocity);
 
-	if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-	{
-		if ( rmove < AIRMOVE_THRESHOLD )
-			VectorMA(playerinfo->velocity,  AIRMOVE_AMOUNT, vr, playerinfo->velocity);
-	}
+	if (info->seqcmd[ACMDL_STRAFE_R] && rmove < AIRMOVE_THRESHOLD)
+		VectorMA(info->velocity, AIRMOVE_AMOUNT, vr, info->velocity);
 
-	//Use the velocity to move the player
-	playerinfo->flags |= PLAYER_FLAG_USE_ENT_POS;
+	// Use the velocity to move the player.
+	info->flags |= PLAYER_FLAG_USE_ENT_POS;
 }
 
 /*-----------------------------------------------
