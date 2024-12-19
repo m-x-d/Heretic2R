@@ -1818,79 +1818,44 @@ void PlayerPullupHeight(playerinfo_t* info, const float height, const float ends
 	}
 }
 
-
-/*-----------------------------------------------
-	PlayerActionCheckPushButton
------------------------------------------------*/
-
-qboolean PlayerActionCheckPushButton(playerinfo_t *playerinfo)
+qboolean PlayerActionCheckPushButton(playerinfo_t* info)
 {
-	if(!playerinfo->isclient)
-		return(playerinfo->G_PlayerActionCheckPushButton(playerinfo));
-	else
-		return(false);
+	if (!info->isclient)
+		return info->G_PlayerActionCheckPushButton(info);
+
+	return false;
 }
 
-/*-----------------------------------------------
-	PlayerActionPushButton
------------------------------------------------*/
-
-void PlayerActionPushButton(playerinfo_t *playerinfo, float value)
+void PlayerActionPushButton(playerinfo_t* info, float value)
 {
-	if(!playerinfo->isclient)
-		playerinfo->G_PlayerActionPushButton(playerinfo);
+	if (!info->isclient)
+		info->G_PlayerActionPushButton(info);
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckPushLever
------------------------------------------------*/
-
-qboolean PlayerActionCheckPushLever(playerinfo_t *playerinfo)
+qboolean PlayerActionCheckPushLever(playerinfo_t* info)
 {
-	if(!playerinfo->isclient)
-		return(playerinfo->G_PlayerActionCheckPushLever(playerinfo));
-	else
-		return(false);
+	if (!info->isclient)
+		return info->G_PlayerActionCheckPushLever(info);
+
+	return false;
 }
 
-/*-----------------------------------------------
-	PlayerActionPushLever
------------------------------------------------*/
-
-void PlayerActionPushLever(playerinfo_t *playerinfo, float value)
+void PlayerActionPushLever(playerinfo_t* info, float value)
 {
-	if(!playerinfo->isclient)
-		playerinfo->G_PlayerActionPushLever(playerinfo);
+	if (!info->isclient)
+		info->G_PlayerActionPushLever(info);
 }
 
-/*-----------------------------------------------
-	PlayerActionTakePuzzle
------------------------------------------------*/
-
-void PlayerActionTakePuzzle(playerinfo_t *playerinfo, float value)
+void PlayerActionTakePuzzle(playerinfo_t* info, float value)
 {
-	if(!playerinfo->isclient)
-		playerinfo->G_PlayerActionTakePuzzle(playerinfo);
+	if (!info->isclient)
+		info->G_PlayerActionTakePuzzle(info);
 }
 
-/*-----------------------------------------------
-	PlayerActionMoveItem
------------------------------------------------*/
-
-void PlayerActionMoveItem(playerinfo_t *playerinfo, float distance)
+void PlayerActionShrineEffect(playerinfo_t* info, float value)
 {
-	if(!playerinfo->isclient)
-		playerinfo->G_PlayerActionMoveItem(playerinfo,distance);
-}
-
-/*-----------------------------------------------
-	PlayerActionShrineEffect
------------------------------------------------*/
-
-void PlayerActionShrineEffect(playerinfo_t *playerinfo, float value)
-{
-	if(!playerinfo->isclient)
-		playerinfo->G_PlayerActionShrineEffect(playerinfo);
+	if (!info->isclient)
+		info->G_PlayerActionShrineEffect(info);
 }
 
 /*-----------------------------------------------

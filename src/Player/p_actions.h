@@ -53,17 +53,16 @@ void PlayerActionSwim(const playerinfo_t* info, float value);
 void PlayerActionCheckGrab(playerinfo_t* info, float value);
 void PlayerActionCheckFallingGrab(playerinfo_t* info, float value);
 qboolean PlayerActionCheckJumpGrab(playerinfo_t* info, float value);
-void PlayerActionPushButton(playerinfo_t* playerinfo, float value);
-void PlayerActionPushLever(playerinfo_t* playerinfo, float value);
+void PlayerActionPushButton(playerinfo_t* info, float value);
+void PlayerActionPushLever(playerinfo_t* info, float value);
 void PlayerActionVaultSound(const playerinfo_t* info, float value);
 void PlayerActionBowReadySound(const playerinfo_t* info, float value);
-void PlayerActionTakePuzzle(playerinfo_t* playerinfo, float value);
-void PlayerActionMoveItem(playerinfo_t* playerinfo, float distance);
+void PlayerActionTakePuzzle(playerinfo_t* info, float value);
 
 qboolean PlayerActionCheckPuzzleGrab(playerinfo_t* info);
 qboolean PlayerActionCheckPushPull(playerinfo_t* info);
-qboolean PlayerActionCheckPushButton(playerinfo_t* playerinfo);
-qboolean PlayerActionCheckPushLever(playerinfo_t* playerinfo);
+qboolean PlayerActionCheckPushButton(playerinfo_t* info);
+qboolean PlayerActionCheckPushLever(playerinfo_t* info);
 qboolean PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org);
 
 qboolean PlayerActionUsePuzzle(playerinfo_t* info);
@@ -78,7 +77,7 @@ void PlayerPullupHeight(playerinfo_t* info, float height, float endseq, float no
 void PlayerActionJump(playerinfo_t* info, float value);
 void PlayerActionJumpBack(playerinfo_t* info, float value);
 void PlayerActionPushAway(playerinfo_t* info, float value);
-void PlayerActionShrineEffect(playerinfo_t* playerinfo, float value);
+void PlayerActionShrineEffect(playerinfo_t* info, float value);
 
 void PlayerActionCheckRunUnStrafe(playerinfo_t* playerinfo);
 
