@@ -91,7 +91,7 @@ void PlayerActionCheckVaultKick(playerinfo_t* info);
 
 void PlayerActionDrownFloatUp(playerinfo_t* playerinfo);
 
-void PlayerJumpMoveForce(playerinfo_t* playerinfo, float fwd, float right, float up);
+void PlayerJumpMoveForce(playerinfo_t* info, float fwd, float right, float up);
 void PlayerActionCheckDive(playerinfo_t* playerinfo);
 
 void PlayerActionCheckBowRefire(playerinfo_t* info);

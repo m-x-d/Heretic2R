@@ -1649,52 +1649,42 @@ void PlayerMoveForce(playerinfo_t* info, const float fwd, const float right, con
 	info->velocity[2] += up;
 }
 
-/*-----------------------------------------------
-	PlayerJumpMoveForce
------------------------------------------------*/
+void PlayerJumpMoveForce(playerinfo_t* info, float fwd, const float right, const float up)
+{
+	// For things like jumps and the like, where the velocity is demanded, not a suggestion.
+	vec3_t fwdv;
+	vec3_t rightv;
+	vec3_t angles;
 
-void PlayerJumpMoveForce(playerinfo_t *playerinfo, float fwd, float right, float up)
-{	
-	//For things like jumps and the like, where the velocity is demanded, not a suggestion.
-	//NOTENOTE: Same as PlayerMoveForce, but uses where the player is looking (torso)
-
-	vec3_t fwdv, rightv, angles;
-	
-	VectorCopy(playerinfo->aimangles, angles);
-	angles[PITCH] = 0;
+	//INFO: Same as PlayerMoveForce, but uses where the player is looking (torso).
+	VectorCopy(info->aimangles, angles);
+	angles[PITCH] = 0.0f;
 
 	AngleVectors(angles, fwdv, rightv, NULL);
 
-	// speed up leap should need be.
-	if (playerinfo->effects & EF_SPEED_ACTIVE)
-		fwd *=RUN_MULT;
+	// Speedup powerup active?
+	if (info->effects & EF_SPEED_ACTIVE)
+		fwd *= RUN_MULT;
 
-	VectorScale(fwdv, fwd, playerinfo->velocity);
+	VectorScale(fwdv, fwd, info->velocity);
 
-	//Check to see if we should bother
-	if(right)
-		VectorMA(playerinfo->velocity, right, rightv, playerinfo->velocity);
+	// Check to see if we should bother.
+	if (right != 0.0f)
+		VectorMA(info->velocity, right, rightv, info->velocity);
 
-	// If the player is strafing, move the player in that direction (diagonal jump)
-	if (fwd != 0)
-	{	// DON'T do this during a normal side jump.
-		if (playerinfo->seqcmd[ACMDL_STRAFE_R] && !playerinfo->seqcmd[ACMDL_STRAFE_L])
-		{
-			if (playerinfo->buttons & BUTTON_RUN)
-				VectorMA(playerinfo->velocity, 260, rightv, playerinfo->velocity);
-			else
-				VectorMA(playerinfo->velocity, 140, rightv, playerinfo->velocity);
-		}
-		else if (playerinfo->seqcmd[ACMDL_STRAFE_L] && !playerinfo->seqcmd[ACMDL_STRAFE_R])
-		{
-			if (playerinfo->buttons & BUTTON_RUN)
-				VectorMA(playerinfo->velocity, -260, rightv, playerinfo->velocity);
-			else
-				VectorMA(playerinfo->velocity, -140, rightv, playerinfo->velocity);
-		}
+	// If the player is strafing, move the player in that direction (diagonal jump).
+	if (fwd != 0.0f)
+	{
+		const float scale = ((info->buttons & BUTTON_RUN) ? 260.0f : 140.0f);
+
+		// DON'T do this during a normal side jump.
+		if (info->seqcmd[ACMDL_STRAFE_R] && !info->seqcmd[ACMDL_STRAFE_L])
+			VectorMA(info->velocity, scale, rightv, info->velocity);
+		else if (info->seqcmd[ACMDL_STRAFE_L] && !info->seqcmd[ACMDL_STRAFE_R])
+			VectorMA(info->velocity, -scale, rightv, info->velocity);
 	}
 
-	playerinfo->velocity[2] += up;
+	info->velocity[2] += up;
 }
 
 /*-----------------------------------------------
