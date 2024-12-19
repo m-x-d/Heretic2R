@@ -88,10 +88,9 @@ void PlayerActionTurn180(playerinfo_t* info);
 void PlayerActionSetQTEndTime(playerinfo_t* info, float QTEndTime);
 void PlayerActionCheckVaultKick(playerinfo_t* info);
 
-void PlayerActionDrownFloatUp(playerinfo_t* playerinfo);
+void PlayerActionDrownFloatUp(playerinfo_t* info);
 
 void PlayerJumpMoveForce(playerinfo_t* info, float fwd, float right, float up);
-void PlayerActionCheckDive(playerinfo_t* playerinfo);
 
 void PlayerActionCheckBowRefire(playerinfo_t* info);
 void PlayerActionCheckRopeMove(playerinfo_t* playerinfo, float foo);

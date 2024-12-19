@@ -1896,31 +1896,7 @@ void PlayerMoveAdd(playerinfo_t* info)
 	info->flags |= PLAYER_FLAG_USE_ENT_POS;
 }
 
-/*-----------------------------------------------
-	PlayerActionDrownFloatUp
------------------------------------------------*/
-
-#define ANGLE_RECOVER_AMOUNT	2	//Degrees per tenth of a second
-
-void PlayerActionDrownFloatUp( playerinfo_t *playerinfo )
-{
-}
-
-/*-----------------------------------------------
-	PlayerActionCheckDive
------------------------------------------------*/
-
-void PlayerActionCheckDive( playerinfo_t *playerinfo )
-{
-	if (playerinfo->pm_w_flags & WF_DIVE)
-	{
-		playerinfo->flags&=~PLAYER_FLAG_DIVE;
-		playerinfo->pm_w_flags |= WF_DIVING;
-		playerinfo->pm_w_flags &= ~(WF_SURFACE|WF_DIVE);
-
-		PlayerAnimSetLowerSeq(playerinfo, ASEQ_DIVE);
-	}
-}
+void PlayerActionDrownFloatUp(playerinfo_t* info) { } //TODO: remove?
 
 /*-----------------------------------------------
 	PlayerActionCheckRopeMove
