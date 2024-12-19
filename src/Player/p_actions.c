@@ -682,33 +682,9 @@ void PlayerActionEndStaffGlow(const playerinfo_t* info, const float value)
 	P_CreateEffect(info, EFFECT_PRED_ID8, info->self, FX_STAFF_REMOVE, flags, NULL, ""); //mxd
 }
 
-/*-----------------------------------------------
-	PlayerActionSwordTrailStart
------------------------------------------------*/
-
-void PlayerActionSwordTrailSound(playerinfo_t *playerinfo, char *name)
+static void PlayerActionStaffTrailSound(const playerinfo_t* info, const char* name) //mxd. Originally named 'PlayerActionSwordTrailSound'
 {
-	if(playerinfo->isclient)
-	{
-		playerinfo->CL_Sound(SND_PRED_ID13,
-							 playerinfo->origin,
-							 CHAN_WEAPON,
-							 name,
-							 1.0,
-							 ATTN_NORM,
-							 0);
-	}
-	else
-	{
-		playerinfo->G_Sound(SND_PRED_ID13,
-							playerinfo->leveltime,
-							playerinfo->self,
-							CHAN_WEAPON,
-							playerinfo->G_SoundIndex(name),
-							1.0,
-							ATTN_NORM,
-							0);
-	}
+	P_Sound(info, SND_PRED_ID13, CHAN_WEAPON, name, 1.0f); //mxd
 }
 
 void PlayerActionSwordTrailStart(playerinfo_t *playerinfo, float value)
@@ -738,25 +714,25 @@ void PlayerActionSwordTrailStart(playerinfo_t *playerinfo, float value)
 	//Normal Staff
 	case STAFF_LEVEL_BASIC:
 		if (!spin)
-			PlayerActionSwordTrailSound(playerinfo, "weapons/staffswing.wav");
+			PlayerActionStaffTrailSound(playerinfo, "weapons/staffswing.wav");
 		else
-			PlayerActionSwordTrailSound(playerinfo, "weapons/stafftwirl.wav");
+			PlayerActionStaffTrailSound(playerinfo, "weapons/stafftwirl.wav");
 		break;
 
 	// Energy staff
 	case STAFF_LEVEL_POWER1:
 		if (!spin)
-			PlayerActionSwordTrailSound(playerinfo, "weapons/staffswing_2.wav");
+			PlayerActionStaffTrailSound(playerinfo, "weapons/staffswing_2.wav");
 		else
-			PlayerActionSwordTrailSound(playerinfo, "weapons/stafftwirl_2.wav");
+			PlayerActionStaffTrailSound(playerinfo, "weapons/stafftwirl_2.wav");
 		break;
 
 	// Fire Staff
 	case STAFF_LEVEL_POWER2:
 		if (!spin)
-			PlayerActionSwordTrailSound(playerinfo, "weapons/staffswing_3.wav");
+			PlayerActionStaffTrailSound(playerinfo, "weapons/staffswing_3.wav");
 		else
-			PlayerActionSwordTrailSound(playerinfo, "weapons/stafftwirl_3.wav");
+			PlayerActionStaffTrailSound(playerinfo, "weapons/stafftwirl_3.wav");
 		break;
 
 	}
