@@ -1730,27 +1730,21 @@ void PlayerJumpNudge(playerinfo_t* info, const float fwd, const float right, con
 	info->flags |= PLAYER_FLAG_USE_ENT_POS;
 }
 
-/*-----------------------------------------------
-	PlayerMoveALittle
------------------------------------------------*/
-
-void PlayerMoveALittle(playerinfo_t *playerinfo, float fwd, float right, float up)
+void PlayerMoveALittle(playerinfo_t* info, const float fwd, float right, float up)
 {
+	float scaler;
+
+	if (info->seqcmd[ACMDL_FWD] || info->seqcmd[ACMDL_ACTION])
+		scaler = fwd;
+	else if (info->seqcmd[ACMDL_BACK])
+		scaler = -fwd;
+	else
+		return;
 
 	vec3_t fwdv;
-
-	if (playerinfo->seqcmd[ACMDL_FWD] || playerinfo->seqcmd[ACMDL_ACTION])
-	{
-		playerinfo->flags |= PLAYER_FLAG_USE_ENT_POS;
-		AngleVectors(playerinfo->angles, fwdv, NULL, NULL);
-		VectorMA(playerinfo->velocity, fwd, fwdv, playerinfo->velocity);
-	}
-	else if (playerinfo->seqcmd[ACMDL_BACK])
-	{
-		playerinfo->flags |= PLAYER_FLAG_USE_ENT_POS;
-		AngleVectors(playerinfo->angles, fwdv, NULL, NULL);
-		VectorMA(playerinfo->velocity, -fwd, fwdv, playerinfo->velocity);
-	}
+	info->flags |= PLAYER_FLAG_USE_ENT_POS;
+	AngleVectors(info->angles, fwdv, NULL, NULL);
+	VectorMA(info->velocity, scaler, fwdv, info->velocity);
 }
 
 /*-----------------------------------------------
