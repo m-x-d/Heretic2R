@@ -1747,136 +1747,73 @@ void PlayerMoveALittle(playerinfo_t* info, const float fwd, float right, float u
 	VectorMA(info->velocity, scaler, fwdv, info->velocity);
 }
 
-/*-----------------------------------------------
-	PlayerPullupHeight
------------------------------------------------*/
-
-void PlayerPullupHeight(playerinfo_t *playerinfo, float height, float endseq, float nopushdown)
+void PlayerPullupHeight(playerinfo_t* info, const float height, const float endseq, float nopushdown)
 {
-	trace_t		trace;
-	vec3_t		endpoint, vf, savepos;
-	vec3_t		playermin, playermax;
-	float		x, y, diff;
-	
-	assert(playerinfo);
+	trace_t trace;
+	vec3_t endpoint;
 
-	if (endseq > 0)
+	assert(info);
+
+	if (endseq > 0.0f)
 	{
 		// End Sequence.
+		VectorCopy(info->grabloc, endpoint);
+		endpoint[2] -= info->mins[2] + 2.0f;
 
-		VectorCopy(playerinfo->grabloc,endpoint);
-		endpoint[2] -= playerinfo->mins[2] + 2;
+		P_Trace(info, info->origin, info->mins, info->maxs, endpoint, &trace); //mxd
+		VectorCopy(trace.endpos, info->origin);
 
-		if(playerinfo->isclient)
-			playerinfo->CL_Trace(playerinfo->origin,
-								 playerinfo->mins,
-								 playerinfo->maxs,
-								 endpoint,
-								 MASK_PLAYERSOLID,
-								 CEF_CLIP_TO_WORLD,
-								 &trace);
+		if (info->seqcmd[ACMDL_WALK_F])
+			PlayerAnimSetLowerSeq(info, ASEQ_WALKF);
+		else if (info->seqcmd[ACMDL_RUN_F])
+			PlayerAnimSetLowerSeq(info, ASEQ_RUNF);
+		else if (info->seqcmd[ACMDL_JUMP])
+			PlayerAnimSetLowerSeq(info, ASEQ_JUMPSTD_GO);
 		else
-			playerinfo->G_Trace(playerinfo->origin,
-									  playerinfo->mins,
-									  playerinfo->maxs,
-									  endpoint,
-									  playerinfo->self,
-									  MASK_PLAYERSOLID,&trace);
-
-		VectorCopy(trace.endpos, playerinfo->origin);
-
-		if (playerinfo->seqcmd[ACMDL_WALK_F])
-		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WALKF);
-			return;
-		}
-		else if (playerinfo->seqcmd[ACMDL_RUN_F])
-		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_RUNF);
-			return;
-		}
-		else if (playerinfo->seqcmd[ACMDL_JUMP])
-		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPSTD_GO);
-			return;
-		}
-		else
-		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WALKF_GO);
-			return;
-		}
+			PlayerAnimSetLowerSeq(info, ASEQ_WALKF_GO);
 	}
-	else
+	else if (info->grabloc[2] - height > info->origin[2])
 	{
-		if (playerinfo->grabloc[2] - height > playerinfo->origin[2])
+		VectorCopy(info->origin, endpoint);
+		endpoint[2] = info->grabloc[2] - height;
+
+		vec3_t playermin;
+		vec3_t playermax;
+		VectorCopy(info->mins, playermin);
+		VectorCopy(info->maxs, playermax);
+
+		P_Trace(info, info->origin, playermin, playermax, endpoint, &trace); //mxd
+
+		if (trace.fraction < 1.0f)
 		{
-			VectorCopy(playerinfo->origin, endpoint);
-			endpoint[2] = playerinfo->grabloc[2] - height;
+			// We bumped into something so drop down.
+			PlayerAnimSetLowerSeq(info, ASEQ_FALL);
+			return;
+		}
 
-			VectorCopy(playerinfo->mins, playermin);
-			VectorCopy(playerinfo->maxs, playermax);
+		vec3_t savepos;
+		VectorCopy(trace.endpos, savepos);
 
-			if(playerinfo->isclient)
-				playerinfo->CL_Trace(playerinfo->origin,
-									 playermin,
-									 playermax,
-									 endpoint,
-									 MASK_PLAYERSOLID,
-									 CEF_CLIP_TO_WORLD,
-									 &trace);
-			else
-				playerinfo->G_Trace(playerinfo->origin,
-										  playermin,
-										  playermax,
-										  endpoint,
-										  playerinfo->self,
-										  MASK_PLAYERSOLID,&trace);
+		vec3_t vf;
+		AngleVectors(info->angles, vf, NULL, NULL);
+		VectorMA(trace.endpos, 32.0f, vf, endpoint);
 
-			if (trace.fraction < 1.0)
-			{	
-				// We bumped into something so drop down.
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_FALL);
-			}
-			else
-			{
-				VectorCopy(trace.endpos, savepos);
-				AngleVectors(playerinfo->angles, vf, NULL, NULL);
-				VectorMA(trace.endpos, 32, vf, endpoint);
-				//playermin[2] -= 2;
+		// Move to the correct distance away from the wall.
+		P_Trace(info, trace.endpos, playermin, playermax, endpoint, &trace); //mxd
 
-				//Move to the correct distance away from the wall
-				if(playerinfo->isclient)
-					playerinfo->CL_Trace(trace.endpos,
-										 playermin,
-										 playermax,
-										 endpoint,
-										 MASK_PLAYERSOLID,
-										 CEF_CLIP_TO_WORLD,
-										 &trace);
-				else
-					playerinfo->G_Trace(trace.endpos,
-											  playermin,
-											  playermax,
-											  endpoint,
-											  playerinfo->self,
-											  MASK_PLAYERSOLID,&trace);
+		if (trace.fraction < 1.0f)
+		{
+			const float x = Q_fabs(trace.plane.normal[0]);
+			const float y = Q_fabs(trace.plane.normal[1]);
+			const float diff = Q_fabs(x - y); // 0 to 1
 
-				if (trace.fraction < 1)
-				{
-					x = fabs(trace.plane.normal[0]);
-					y = fabs(trace.plane.normal[1]);
-
-					diff = fabs(x-y); // 0 to 1
-
-					VectorMA(trace.endpos, (4 * diff), trace.plane.normal, trace.endpos);
-					VectorCopy(trace.endpos, playerinfo->origin);
-				}
-				else
-				{
-					//Restore the old origin
-					VectorCopy(savepos, playerinfo->origin);
-				}
-			}
+			VectorMA(trace.endpos, diff * 4.0f, trace.plane.normal, trace.endpos);
+			VectorCopy(trace.endpos, info->origin);
+		}
+		else
+		{
+			// Restore the old origin.
+			VectorCopy(savepos, info->origin);
 		}
 	}
 }

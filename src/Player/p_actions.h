@@ -73,7 +73,7 @@ void PlayerClimbingMoveFunc(playerinfo_t* info, float height, float var2, float 
 void PlayerMoveUpperFunc(playerinfo_t* info, float fwd, float right, float up);
 void PlayerMoveForce(playerinfo_t* info, float fwd, float right, float up);
 void PlayerMoveALittle(playerinfo_t* info, float fwd, float right, float up);
-void PlayerPullupHeight(playerinfo_t* playerinfo, float height, float endseq, float nopushdown);
+void PlayerPullupHeight(playerinfo_t* info, float height, float endseq, float nopushdown);
 
 void PlayerActionJump(playerinfo_t* info, float value);
 void PlayerActionJumpBack(playerinfo_t* info, float value);
