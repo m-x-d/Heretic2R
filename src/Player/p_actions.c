@@ -1517,72 +1517,31 @@ qboolean PlayerActionCheckVault(playerinfo_t* info, float value)
 	return true;
 }
 
-/*-----------------------------------------------
-	PlayerActionPushAway
------------------------------------------------*/
-
-// NOTE: Currently we only push away the width of the player. This will cause problems for
-// non-orthogonal grabbing surfaces. --Pat
-
+// NOTE: Currently we only push away the width of the player.
+// This will cause problems for non-orthogonal grabbing surfaces.
+void PlayerActionPushAway(playerinfo_t* info, float value)
+{
 #define PLAYER_BLOCKING_DIST 17
 
-void PlayerActionPushAway(playerinfo_t *playerinfo, float value)
-{	
 	// We're letting go from a grab position.
-
 	trace_t trace;
-	vec3_t endpos, pushdir;
+	vec3_t endpos;
+	vec3_t pushdir;
 
 	// Check in front of the player for the wall position.
+	AngleVectors(info->angles, pushdir, NULL, NULL);
+	VectorMA(info->origin, PLAYER_BLOCKING_DIST, pushdir, endpos);
 
-	AngleVectors(playerinfo->angles, pushdir, NULL, NULL);
-	VectorMA(playerinfo->origin, PLAYER_BLOCKING_DIST, pushdir, endpos);
-	
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(playerinfo->origin,
-							 NULL,
-							 NULL,
-							 endpos,
-							 CEF_CLIP_TO_WORLD,
-							 MASK_PLAYERSOLID,
-							 &trace);
-	else
-		playerinfo->G_Trace(playerinfo->origin,
-								  NULL,
-								  NULL,
-								  endpos,
-								  playerinfo->self,
-								  MASK_PLAYERSOLID,&trace);
-	
+	P_Trace(info, info->origin, NULL, NULL, endpos, &trace); //mxd
+
 	// Now push in the opposite direction for a new location.
-
 	VectorMA(trace.endpos, -PLAYER_BLOCKING_DIST, pushdir, endpos);
 
 	// Try placing the entity in the new location.
+	P_Trace(info, endpos, info->mins, info->maxs, endpos, &trace); //mxd
 
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(endpos,
-							 playerinfo->mins,
-							 playerinfo->maxs,
-							 endpos,
-							 MASK_PLAYERSOLID,
-							 CEF_CLIP_TO_WORLD,
-							 &trace);
-	else
-		playerinfo->G_Trace(endpos,
-								  playerinfo->mins,
-								  playerinfo->maxs,
-								  endpos,
-								  playerinfo->self,
-								  MASK_PLAYERSOLID,&trace);
-
-	// If it didn't work, panic!
-//		if (trace.startsolid || trace.allsolid)
-//			gi.dprintf("PlayerActionPushAway Failed!!!!\n");
-
-	// NOTENOTE: Put it there anyway for now.
-
-	VectorCopy(trace.endpos, playerinfo->origin);
+	//TODO: but what if tracing failed (trace.startsolid || trace.allsolid)?
+	VectorCopy(trace.endpos, info->origin);
 }
 
 /*-----------------------------------------------
