@@ -867,28 +867,10 @@ void PlayerActionSwim(const playerinfo_t* info, const float value)
 	P_CreateEffect(info, EFFECT_PRED_ID9, NULL, FX_WATER_ENTRYSPLASH, 0, origin, "bd", 32, dir);
 }
 
-/*-----------------------------------------------
-	PlayerActionPullup
------------------------------------------------*/
-
-void PlayerActionPullup(playerinfo_t *playerinfo, float value)
-{
-}
-
-/*-----------------------------------------------
-	PlayerActionSkidSmoke
------------------------------------------------*/
-
-void PlayerActionSkidSmoke(playerinfo_t *playerinfo, float value)
-{
-}
-
-#define	MIN_STEP_NORMAL		0.7		// can't step up onto very steep slopes
 #define GRAB_HAND_HEIGHT	41
 #define GRAB_HAND_WIDTH		8
 #define GRAB_HAND_HORZONE	22
 #define GRAB_HAND_VERTZONE	15
-#define HOLD_HAND_HEIGHT	41
 
 /*-----------------------------------------------
 	PlayerActionCheckGrab_
