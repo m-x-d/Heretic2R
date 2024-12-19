@@ -1544,23 +1544,13 @@ void PlayerActionPushAway(playerinfo_t* info, float value)
 	VectorCopy(trace.endpos, info->origin);
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckRopeGrab
------------------------------------------------*/
-
-qboolean PlayerActionCheckRopeGrab(playerinfo_t *playerinfo, float stomp_org)
+qboolean PlayerActionCheckRopeGrab(playerinfo_t* info, const float stomp_org)
 {
-	if(!playerinfo->isclient)
-	{	// Check dismemberment before game side rope check.
-		if (playerinfo->flags & PLAYER_FLAG_NO_LARM || playerinfo->flags & PLAYER_FLAG_NO_RARM)
-			return(false);
-		else
-			return(playerinfo->G_PlayerActionCheckRopeGrab(playerinfo,stomp_org));
-	}
-	else
-	{
-		return(false);
-	}
+	// Check dismemberment before game side rope check.
+	if (!info->isclient && !(info->flags & PLAYER_FLAG_NO_LARM) && !(info->flags & PLAYER_FLAG_NO_RARM))
+		return info->G_PlayerActionCheckRopeGrab(info, stomp_org);
+
+	return false;
 }
 
 /*-----------------------------------------------

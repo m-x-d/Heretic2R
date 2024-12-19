@@ -67,7 +67,7 @@ qboolean PlayerActionCheckPuzzleGrab(playerinfo_t* info);
 qboolean PlayerActionCheckPushPull(playerinfo_t* info);
 qboolean PlayerActionCheckPushButton(playerinfo_t* playerinfo);
 qboolean PlayerActionCheckPushLever(playerinfo_t* playerinfo);
-qboolean PlayerActionCheckRopeGrab(playerinfo_t* playerinfo, float stomp_org);
+qboolean PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org);
 
 qboolean PlayerActionUsePuzzle(playerinfo_t* info);
 
