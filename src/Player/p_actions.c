@@ -1068,77 +1068,33 @@ static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust)
 	return GT_NONE;
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckGrab
------------------------------------------------*/
-
-void PlayerActionCheckGrab(playerinfo_t *playerinfo, float value)
+void PlayerActionCheckGrab(playerinfo_t* info, float value)
 {
-	int		i, type, maxcheck;
-	float	v_adjust;
+	static float v_adjusts[] = { GRAB_HAND_HEIGHT - 58, GRAB_HAND_HEIGHT - 29, GRAB_HAND_HEIGHT }; //mxd. Height adjusts for each height zone.
 
-	if (!playerinfo->upperidle)
+	if (!info->upperidle)
 		return;
 
-	if (!(playerinfo->flags & PLAYER_FLAG_NO_LARM) && !(playerinfo->flags & PLAYER_FLAG_NO_RARM))
-		maxcheck = 3;//all checks ok
-	else if ( ((playerinfo->flags & PLAYER_FLAG_NO_LARM) && (playerinfo->flags & PLAYER_FLAG_NO_RARM)) || (!playerinfo->upperidle) )
-		maxcheck = 1;//only check ankle height
+	int maxcheck;
+	if (!(info->flags & PLAYER_FLAG_NO_LARM) && !(info->flags & PLAYER_FLAG_NO_RARM))
+		maxcheck = 3; // All checks ok.
+	else if (!info->upperidle || ((info->flags & PLAYER_FLAG_NO_LARM) && (info->flags & PLAYER_FLAG_NO_RARM)))
+		maxcheck = 1; // Only check ankle height.
 	else
-		maxcheck = 2;//up to waist height
+		maxcheck = 2; // Up to waist height.
 
-	for(i=0;i<maxcheck;i++)
+	for (int check = 0; check < maxcheck; check++)
 	{
 		// Check 3 height zones for 3 results.
-		
-		switch(i)
+		const grabtype_e type = GetGrabType(info, v_adjusts[check]);
+		if (type != GT_NONE)
 		{
-			case 0:
-				v_adjust = GRAB_HAND_HEIGHT - 58;
-				
-				break;
-			
-			case 1:
-				v_adjust = GRAB_HAND_HEIGHT - 29;
+			if (check < 2)
+				PlayerAnimSetVault(info, ASEQ_PULLUP_HALFWALL);
+			else
+				PlayerAnimSetVault(info, (type == GT_SWING ? ASEQ_OVERHANG : ASEQ_PULLUP_WALL));
 
-				break;
-			
-			case 2:
-				v_adjust = GRAB_HAND_HEIGHT;
-				
-				break;
-			
-			default:
-				v_adjust = GRAB_HAND_HEIGHT;
-				
-				break;
-		}
-
-		if((type=GetGrabType(playerinfo,v_adjust)))
-		{
-			switch(i)
-			{
-				case 2:
-					if (type==2)
-						PlayerAnimSetVault(playerinfo, ASEQ_OVERHANG);
-					else
-						PlayerAnimSetVault(playerinfo, ASEQ_PULLUP_WALL);
-					
-					return;
-
-					break;
-
-				case 0:
-				case 1:
-					PlayerAnimSetVault(playerinfo, ASEQ_PULLUP_HALFWALL);//
-					return;
-
-					break;
-
-				default:
-					
-					break;
-			}
+			return;
 		}
 	}
 }
