@@ -1596,24 +1596,10 @@ void PlayerActionJumpBack(playerinfo_t* info, float value) //TODO: actually chan
 		info->upvel = 150.0f;
 }
 
-/*-----------------------------------------------
-	PlayerActionFlipForward
------------------------------------------------*/
-
-void PlayerActionFlipForward(playerinfo_t *playerinfo, float value)
+void PlayerActionFlip(playerinfo_t* info, const float value)
 {
-	playerinfo->flags |= PLAYER_FLAG_USE_ENT_POS;
-	playerinfo->velocity[2] += value;
-}
-
-/*-----------------------------------------------
-	PlayerActionFlip
------------------------------------------------*/
-
-void PlayerActionFlip(playerinfo_t *playerinfo, float value)
-{
-	playerinfo->flags |= PLAYER_FLAG_USE_ENT_POS;
-	playerinfo->velocity[2] += value;
+	info->flags |= PLAYER_FLAG_USE_ENT_POS;
+	info->velocity[2] += value;
 }
 
 /*-----------------------------------------------

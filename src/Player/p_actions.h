@@ -75,7 +75,6 @@ void PlayerMoveForce(playerinfo_t* playerinfo, float fwd, float right, float up)
 void PlayerMoveALittle(playerinfo_t* playerinfo, float fwd, float right, float up);
 void PlayerPullupHeight(playerinfo_t* playerinfo, float height, float endseq, float nopushdown);
 
-void PlayerActionFlipForward(playerinfo_t* playerinfo, float value);
 void PlayerActionJump(playerinfo_t* info, float value);
 void PlayerActionJumpBack(playerinfo_t* info, float value);
 void PlayerActionPushAway(playerinfo_t* info, float value);
@@ -85,7 +84,7 @@ void PlayerActionCheckRunUnStrafe(playerinfo_t* playerinfo);
 
 void PlayerActionCheckDoubleJump(playerinfo_t* info);
 void PlayerMoveAdd(playerinfo_t* playerinfo);
-void PlayerActionFlip(playerinfo_t* playerinfo, float value);
+void PlayerActionFlip(playerinfo_t* info, float value);
 void PlayerActionTurn180(playerinfo_t* info);
 void PlayerActionSetQTEndTime(playerinfo_t* info, float QTEndTime);
 void PlayerActionCheckVaultKick(playerinfo_t* info);
