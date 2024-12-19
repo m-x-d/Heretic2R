@@ -843,62 +843,9 @@ void PlayerActionSwimSound(const playerinfo_t* info, const float value)
 	P_Sound(info, SND_PRED_ID16, CHAN_AUTO, name, 0.6f); //mxd
 }
 
-/*-----------------------------------------------
-	PlayerActionSwimBackSound
------------------------------------------------*/
-
-void PlayerActionSwimBackSound(playerinfo_t *playerinfo, float value)
+void PlayerActionClimbWallSound(const playerinfo_t* info, float value)
 {
-	if(playerinfo->isclient)
-	{
-		playerinfo->CL_Sound(SND_PRED_ID17,
-							 playerinfo->origin,
-							 CHAN_VOICE,
-							 "swim backward.wav",
-							 0.6,
-							 ATTN_NORM,
-							 0);
-	}
-	else
-	{
-		playerinfo->G_Sound(SND_PRED_ID17,
-							playerinfo->leveltime,
-							playerinfo->self,
-							CHAN_VOICE,
-							playerinfo->G_SoundIndex("swim backward.wav"),
-							0.6,
-							ATTN_NORM,
-							0);
-	}
-}
-
-/*-----------------------------------------------
-	PlayerActionClimbWallSound
------------------------------------------------*/
-
-void PlayerActionClimbWallSound(playerinfo_t *playerinfo, float value)
-{
-	if(playerinfo->isclient)
-	{
-		playerinfo->CL_Sound(SND_PRED_ID18,
-							 playerinfo->origin,
-							 CHAN_VOICE,
-							 "player/pullup 1.wav",
-							 1.0,
-							 ATTN_NORM,
-							 0);
-	}
-	else
-	{
-		playerinfo->G_Sound(SND_PRED_ID18,
-							playerinfo->leveltime,
-							playerinfo->self,
-							CHAN_VOICE,
-							playerinfo->G_SoundIndex("player/pullup 1.wav"),
-							1.0,
-							ATTN_NORM,
-							0);
-	}
+	P_Sound(info, SND_PRED_ID18, CHAN_VOICE, "player/pullup 1.wav", 1.0f); //mxd
 }
 
 /*-----------------------------------------------
