@@ -730,27 +730,12 @@ void PlayerActionRedRainBowTrailStart(playerinfo_t* info, float value)
 	P_LocalSound(info, "weapons/bowReady.wav"); //mxd
 }
 
-/*-----------------------------------------------
-	PlayerActionPhoenixBowTrailStart
------------------------------------------------*/
-
-void PlayerActionPhoenixBowTrailStart(playerinfo_t *playerinfo, float value)
+void PlayerActionPhoenixBowTrailStart(playerinfo_t* info, float value)
 {
 	// Add a trail effect to the phoenix bow.
-
-	if (playerinfo->powerup_timer > playerinfo->leveltime)
-	{	// Power up the Arrow FX
-		PlayerSetHandFX(playerinfo, HANDFX_POWERPHOENIX, -1);
-	}
-	else
-	{
-		PlayerSetHandFX(playerinfo, HANDFX_PHOENIX, -1);
-	}
-
-	if(!playerinfo->isclient)
-	{
-		playerinfo->G_L_Sound(playerinfo->self,playerinfo->G_SoundIndex("weapons/PhoenixReady.wav"));
-	}
+	const int fx_type = (info->powerup_timer > info->leveltime ? HANDFX_POWERPHOENIX : HANDFX_PHOENIX); // Power up the Arrow FX?
+	PlayerSetHandFX(info, fx_type, -1);
+	P_LocalSound(info, "weapons/PhoenixReady.wav"); //mxd
 }
 
 /*-----------------------------------------------
