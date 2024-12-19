@@ -1898,42 +1898,10 @@ void PlayerMoveAdd(playerinfo_t* info)
 
 void PlayerActionDrownFloatUp(playerinfo_t* info) { } //TODO: remove?
 
-/*-----------------------------------------------
-	PlayerActionCheckRopeMove
------------------------------------------------*/
-
-void PlayerActionCheckRopeMove( playerinfo_t *playerinfo, float foo )
+void PlayerActionCheckRopeMove(playerinfo_t* info, float foo)
 {
-	if (!playerinfo->isclient)
-		playerinfo->G_PlayerActionCheckRopeMove(playerinfo);
-	else
-		return;
-}
-
-/*-----------------------------------------------
-	PlayerReleaseRope
------------------------------------------------*/
-
-PLAYER_API void PlayerReleaseRope(playerinfo_t *playerinfo)
-{
-	assert(playerinfo);
-	playerinfo->flags &= ~PLAYER_FLAG_ONROPE;
-}
-
-/*-----------------------------------------------
-	PlayerReleaseRope
------------------------------------------------*/
-
-PLAYER_API void KnockDownPlayer(playerinfo_t *playerinfo)
-{
-	assert(playerinfo);
-
-	//Chicken cannot be knocked down
-	if (playerinfo->flags & EF_CHICKEN)
-		return;
-
-	if(!(playerinfo->flags&PLAYER_FLAG_KNOCKDOWN))
-		playerinfo->flags|=PLAYER_FLAG_KNOCKDOWN;
+	if (!info->isclient)
+		info->G_PlayerActionCheckRopeMove(info);
 }
 
 /*-----------------------------------------------

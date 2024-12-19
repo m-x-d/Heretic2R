@@ -93,7 +93,7 @@ void PlayerActionDrownFloatUp(playerinfo_t* info);
 void PlayerJumpMoveForce(playerinfo_t* info, float fwd, float right, float up);
 
 void PlayerActionCheckBowRefire(playerinfo_t* info);
-void PlayerActionCheckRopeMove(playerinfo_t* playerinfo, float foo);
+void PlayerActionCheckRopeMove(playerinfo_t* info, float foo);
 
 void PlayerActionSetCrouchHeight(playerinfo_t* info);
 void PlayerActionCheckUncrouchToFinishSeq(playerinfo_t* info);
@@ -103,8 +103,6 @@ void PlayerJumpNudge(playerinfo_t* info, float fwd, float right, float up);
 
 void PlayerActionCheckBranchRunningStrafe(playerinfo_t* info);
 
-PLAYER_API void PlayerReleaseRope(playerinfo_t* playerinfo);
-PLAYER_API void KnockDownPlayer(playerinfo_t* playerinfo);
 PLAYER_API void PlayFly(playerinfo_t* playerinfo, float dist);
 PLAYER_API void PlaySlap(playerinfo_t* playerinfo, float dist);
 PLAYER_API void PlayScratch(playerinfo_t* playerinfo, float dist);
