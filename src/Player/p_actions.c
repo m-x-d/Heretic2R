@@ -807,33 +807,9 @@ void PlayerActionFootstep(const playerinfo_t* info, const float value)
 	P_Sound(info, SND_PRED_ID14, channel, walk_sound, 0.75f); //mxd
 }
 
-/*-----------------------------------------------
-	PlayerActionSwimIdleSound
------------------------------------------------*/
-
-void PlayerActionSwimIdleSound(playerinfo_t *playerinfo, float value)
+void PlayerActionSwimIdleSound(const playerinfo_t* info, float value)
 {
-	if(playerinfo->isclient)
-	{
-		playerinfo->CL_Sound(SND_PRED_ID15,
-							 playerinfo->origin,
-							 CHAN_VOICE,
-							 "player/swim idle.wav",
-							 0.4,
-							 ATTN_NORM,
-							 0);
-	}
-	else
-	{
-	  	playerinfo->G_Sound(SND_PRED_ID15,
-							playerinfo->leveltime,
-							playerinfo->self,
-							CHAN_VOICE,
-							playerinfo->G_SoundIndex("player/swim idle.wav"),
-							0.4,
-							ATTN_NORM,
-							0);
-	}
+	P_Sound(info, SND_PRED_ID15, CHAN_VOICE, "player/swim idle.wav", 0.4f); //mxd
 }
 
 /*-----------------------------------------------
