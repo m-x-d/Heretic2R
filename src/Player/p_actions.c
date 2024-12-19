@@ -23,10 +23,10 @@
 #define AIRMOVE_AMOUNT		48
 #define AIRMOVE_THRESHOLD	64
 
-vec3_t handmins = { -2.0f, -2.0f, 0.0f };
-vec3_t handmaxs = {  2.0f,  2.0f, 2.0f };
+static vec3_t handmins = { -2.0f, -2.0f, 0.0f };
+static vec3_t handmaxs = {  2.0f,  2.0f, 2.0f };
 
-int traillength[TRAIL_MAX] =
+static int traillength[TRAIL_MAX] =
 {
 	7,		//	TRAIL_SPIN1,
 	6,		//	TRAIL_SPIN2,
@@ -52,113 +52,113 @@ static float CL_NormaliseAngle(float angle)
 	return angle;
 }
 
-void PlayerActionCheckBranchRunningStrafe(playerinfo_t* playerinfo)
+void PlayerActionCheckBranchRunningStrafe(playerinfo_t* info)
 {
-	const int seq = BranchLwrRunningStrafe(playerinfo);
+	const int seq = BranchLwrRunningStrafe(info);
 
 	if (seq != ASEQ_NONE)
-		PlayerAnimSetLowerSeq(playerinfo, seq);
+		PlayerAnimSetLowerSeq(info, seq);
 }
 
-void PlayerActionCheckStrafe(playerinfo_t* playerinfo)
+void PlayerActionCheckStrafe(playerinfo_t* info)
 {
 	// Check forward advancement.
-	if (playerinfo->seqcmd[ACMDL_FWD])
+	if (info->seqcmd[ACMDL_FWD])
 	{
-		if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSTRAFE_LEFT);
-		else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSTRAFE_RIGHT);
+		if (info->seqcmd[ACMDL_STRAFE_L])
+			PlayerAnimSetLowerSeq(info, ASEQ_WSTRAFE_LEFT);
+		else if (info->seqcmd[ACMDL_STRAFE_R])
+			PlayerAnimSetLowerSeq(info, ASEQ_WSTRAFE_RIGHT);
 		else
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WALKF);
+			PlayerAnimSetLowerSeq(info, ASEQ_WALKF);
 
 		return;
 	}
 
 	// Check backward advancement.
-	if (playerinfo->seqcmd[ACMDL_BACK])
+	if (info->seqcmd[ACMDL_BACK])
 	{
-		if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSTRAFEB_LEFT);
-		else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSTRAFEB_RIGHT);
+		if (info->seqcmd[ACMDL_STRAFE_L])
+			PlayerAnimSetLowerSeq(info, ASEQ_WSTRAFEB_LEFT);
+		else if (info->seqcmd[ACMDL_STRAFE_R])
+			PlayerAnimSetLowerSeq(info, ASEQ_WSTRAFEB_RIGHT);
 		else
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WALKB);
+			PlayerAnimSetLowerSeq(info, ASEQ_WALKB);
 
 		return;
 	}
 
 	// Check for a jump.
-	if (playerinfo->seqcmd[ACMDL_JUMP])
+	if (info->seqcmd[ACMDL_JUMP])
 	{
-		if (playerinfo->seqcmd[ACMDL_STRAFE_L])
+		if (info->seqcmd[ACMDL_STRAFE_L])
 		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPLEFT_SGO);
+			PlayerAnimSetLowerSeq(info, ASEQ_JUMPLEFT_SGO);
 			return;
 		}
 
-		if (playerinfo->seqcmd[ACMDL_STRAFE_R])
+		if (info->seqcmd[ACMDL_STRAFE_R])
 		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPRIGHT_SGO);
+			PlayerAnimSetLowerSeq(info, ASEQ_JUMPRIGHT_SGO);
 			return;
 		}
 	}
 
 	// Check for crouching.
-	if (playerinfo->seqcmd[ACMDL_CROUCH])
+	if (info->seqcmd[ACMDL_CROUCH])
 	{
-		if (playerinfo->seqcmd[ACMDL_STRAFE_L])
+		if (info->seqcmd[ACMDL_STRAFE_L])
 		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_ROLL_L);
+			PlayerAnimSetLowerSeq(info, ASEQ_ROLL_L);
 			return;
 		}
 
-		if (playerinfo->seqcmd[ACMDL_STRAFE_R])
+		if (info->seqcmd[ACMDL_STRAFE_R])
 		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_ROLL_R);
+			PlayerAnimSetLowerSeq(info, ASEQ_ROLL_R);
 			return;
 		}
 	}
 
 	// Check for change in strafe direction.
-	if (playerinfo->seqcmd[ACMDL_STRAFE_L] && playerinfo->lowerseq != ASEQ_STRAFEL)
+	if (info->seqcmd[ACMDL_STRAFE_L] && info->lowerseq != ASEQ_STRAFEL)
 	{
-		PlayerAnimSetLowerSeq(playerinfo, ASEQ_STRAFEL);
+		PlayerAnimSetLowerSeq(info, ASEQ_STRAFEL);
 		return;
 	}
 
-	if (playerinfo->seqcmd[ACMDL_STRAFE_R] && playerinfo->lowerseq != ASEQ_STRAFER)
+	if (info->seqcmd[ACMDL_STRAFE_R] && info->lowerseq != ASEQ_STRAFER)
 	{
-		PlayerAnimSetLowerSeq(playerinfo, ASEQ_STRAFER);
+		PlayerAnimSetLowerSeq(info, ASEQ_STRAFER);
 		return;
 	}
 
 	// We're just trying to go forward.
-	if (!playerinfo->seqcmd[ACMDL_STRAFE_L] && !playerinfo->seqcmd[ACMDL_STRAFE_R])
+	if (!info->seqcmd[ACMDL_STRAFE_L] && !info->seqcmd[ACMDL_STRAFE_R])
 	{
-		if (playerinfo->seqcmd[ACMDL_CREEP_F])				// FORWARD
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_CREEPF);
-		else if (playerinfo->seqcmd[ACMDL_WALK_F])
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WALKF_GO);
-		else if (playerinfo->seqcmd[ACMDL_RUN_F])
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_RUNF_GO);
-		else if (playerinfo->seqcmd[ACMDL_CREEP_B])			// BACKWARD
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_CREEPB);
-		else if (playerinfo->seqcmd[ACMDL_BACK])
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WALKB);
+		if (info->seqcmd[ACMDL_CREEP_F])				// FORWARD
+			PlayerAnimSetLowerSeq(info, ASEQ_CREEPF);
+		else if (info->seqcmd[ACMDL_WALK_F])
+			PlayerAnimSetLowerSeq(info, ASEQ_WALKF_GO);
+		else if (info->seqcmd[ACMDL_RUN_F])
+			PlayerAnimSetLowerSeq(info, ASEQ_RUNF_GO);
+		else if (info->seqcmd[ACMDL_CREEP_B])			// BACKWARD
+			PlayerAnimSetLowerSeq(info, ASEQ_CREEPB);
+		else if (info->seqcmd[ACMDL_BACK])
+			PlayerAnimSetLowerSeq(info, ASEQ_WALKB);
 		else
-			PlayerAnimSetLowerSeq(playerinfo, SeqCtrl[playerinfo->lowerseq].ceaseseq);
+			PlayerAnimSetLowerSeq(info, SeqCtrl[info->lowerseq].ceaseseq);
 	}
 }
 
-void PlayerActionCheckVaultKick(playerinfo_t* playerinfo)
+void PlayerActionCheckVaultKick(playerinfo_t* info)
 {
-	if (!playerinfo->isclient)
-		playerinfo->G_PlayerVaultKick(playerinfo);
+	if (!info->isclient)
+		info->G_PlayerVaultKick(info);
 }
 
 //mxd. Added to reduce code duplication.
-static qboolean CheckCreepMove(const playerinfo_t* playerinfo, const float creep_stepdist)
+static qboolean CheckCreepMove(const playerinfo_t* info, const float creep_stepdist)
 {
 	vec3_t startpos;
 	vec3_t vf;
@@ -167,21 +167,21 @@ static qboolean CheckCreepMove(const playerinfo_t* playerinfo, const float creep
 	trace_t trace;
 
 	// Scan out and down from the player.
-	VectorCopy(playerinfo->origin, startpos);
+	VectorCopy(info->origin, startpos);
 
 	// Ignore the pitch of the player, we only want the yaw.
-	VectorSet(ang, 0, playerinfo->angles[YAW], 0);
+	VectorSet(ang, 0, info->angles[YAW], 0);
 	AngleVectors(ang, vf, NULL, NULL);
 
 	// Trace ahead about one step.
-	VectorMA(playerinfo->origin, creep_stepdist, vf, startpos);
+	VectorMA(info->origin, creep_stepdist, vf, startpos);
 
 	// Account for stepheight.
-	VectorCopy(playerinfo->mins, mins);
+	VectorCopy(info->mins, mins);
 	mins[2] += CREEP_MAXFALL;
 
 	// Trace forward to see if the path is clear.
-	P_Trace(playerinfo, playerinfo->origin, mins, playerinfo->maxs, startpos, &trace);
+	P_Trace(info, info->origin, mins, info->maxs, startpos, &trace);
 
 	// If it is...
 	if (trace.fraction == 1.0f)
@@ -189,10 +189,10 @@ static qboolean CheckCreepMove(const playerinfo_t* playerinfo, const float creep
 		// Move the endpoint down the maximum amount.
 		vec3_t endpos;
 		VectorCopy(startpos, endpos);
-		endpos[2] += playerinfo->mins[2] - CREEP_MAXFALL;
+		endpos[2] += info->mins[2] - CREEP_MAXFALL;
 
 		// Trace down.
-		P_Trace(playerinfo, startpos, mins, playerinfo->maxs, endpos, &trace);
+		P_Trace(info, startpos, mins, info->maxs, endpos, &trace);
 
 		return (trace.fraction < 1.0f && !trace.startsolid && !trace.allsolid);
 	}
@@ -200,141 +200,141 @@ static qboolean CheckCreepMove(const playerinfo_t* playerinfo, const float creep
 	return false;
 }
 
-static qboolean PlayerActionCheckCreepMoveForward(const playerinfo_t* playerinfo)
+static qboolean PlayerActionCheckCreepMoveForward(const playerinfo_t* info)
 {
-	return CheckCreepMove(playerinfo, CREEP_STEPDIST);
+	return CheckCreepMove(info, CREEP_STEPDIST);
 }
 
-static qboolean PlayerActionCheckCreepMoveBack(const playerinfo_t *playerinfo)
+static qboolean PlayerActionCheckCreepMoveBack(const playerinfo_t *info)
 {
-	return CheckCreepMove(playerinfo, -CREEP_STEPDIST);
+	return CheckCreepMove(info, -CREEP_STEPDIST);
 }
 
-void PlayerActionSetCrouchHeight(playerinfo_t* playerinfo)
+void PlayerActionSetCrouchHeight(playerinfo_t* info)
 {
-	playerinfo->maxs[2] = 4;
+	info->maxs[2] = 4;
 }
 
-void PlayerActionCheckUncrouchToFinishSeq(playerinfo_t* playerinfo)
+void PlayerActionCheckUncrouchToFinishSeq(playerinfo_t* info)
 {
-	if (CheckUncrouch(playerinfo))
+	if (CheckUncrouch(info))
 	{
-		playerinfo->maxs[2] = 25;
+		info->maxs[2] = 25;
 		return; // Ok to finish sequence.
 	}
 
-	const int seq = (playerinfo->upperseq != ASEQ_NONE ? playerinfo->upperseq : playerinfo->lowerseq);
+	const int seq = (info->upperseq != ASEQ_NONE ? info->upperseq : info->lowerseq);
 	const int lower_seq = ((seq == ASEQ_FORWARD_FLIP_L || seq == ASEQ_FORWARD_FLIP_R) ? ASEQ_ROLL_FROM_FFLIP : ASEQ_CROUCH); // Choose a proper sequence to go into.
 
-	PlayerAnimSetUpperSeq(playerinfo, ASEQ_NONE);
-	PlayerAnimSetLowerSeq(playerinfo, lower_seq);
+	PlayerAnimSetUpperSeq(info, ASEQ_NONE);
+	PlayerAnimSetLowerSeq(info, lower_seq);
 }
 
-void PlayerActionTurn180(playerinfo_t* playerinfo) { } //TODO: remove?
+void PlayerActionTurn180(playerinfo_t* info) { } //TODO: remove?
 
-void PlayerActionSetQTEndTime(playerinfo_t* playerinfo, float QTEndTime)
+void PlayerActionSetQTEndTime(playerinfo_t* info, float QTEndTime)
 {
-	playerinfo->quickturn_rate = -360.0f;
+	info->quickturn_rate = -360.0f;
 }
 
-void PlayerActionCheckDoubleJump(playerinfo_t* playerinfo)
+void PlayerActionCheckDoubleJump(playerinfo_t* info)
 {
 	//FIXME: Debounce!!!
 	// Check to see if the player is still pressing jump, and is not trying to fire or grab a ledge (action).
-	if (playerinfo->seqcmd[ACMDL_JUMP] && !playerinfo->seqcmd[ACMDU_ATTACK] && !playerinfo->seqcmd[ACMDL_ACTION])
+	if (info->seqcmd[ACMDL_JUMP] && !info->seqcmd[ACMDU_ATTACK] && !info->seqcmd[ACMDL_ACTION])
 	{
-		switch (playerinfo->lowerseq)
+		switch (info->lowerseq)
 		{
 			case ASEQ_JUMPFWD:
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_FORWARD_FLIP_L_GO);
+				PlayerAnimSetLowerSeq(info, ASEQ_FORWARD_FLIP_L_GO);
 				break;
 
 			case ASEQ_JUMPBACK:
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPFLIPBACK);
+				PlayerAnimSetLowerSeq(info, ASEQ_JUMPFLIPBACK);
 				break;
 
 			case ASEQ_JUMPLEFT:
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPFLIPLEFT);
+				PlayerAnimSetLowerSeq(info, ASEQ_JUMPFLIPLEFT);
 				break;
 
 			case ASEQ_JUMPRIGHT:
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPFLIPRIGHT);
+				PlayerAnimSetLowerSeq(info, ASEQ_JUMPFLIPRIGHT);
 				break;
 		}
 	}
 }
 
 // This is called during the hold ready bow sequence, so that we may interrupt it if necessary.
-void PlayerActionCheckBowRefire(playerinfo_t* playerinfo)
+void PlayerActionCheckBowRefire(playerinfo_t* info)
 {
-	const int num_shots = Weapon_CurrentShotsLeft(playerinfo); //mxd
+	const int num_shots = Weapon_CurrentShotsLeft(info); //mxd
 
-	if (playerinfo->seqcmd[ACMDU_ATTACK] && num_shots > 0 && !(playerinfo->edictflags & FL_CHICKEN)) // Not a chicken
+	if (info->seqcmd[ACMDU_ATTACK] && num_shots > 0 && !(info->edictflags & FL_CHICKEN)) // Not a chicken
 	{
 		// Shooting is one reason to end the bow refire waiting.
-		if (playerinfo->pers.weapon->tag == ITEM_WEAPON_REDRAINBOW)
-			PlayerAnimSetUpperSeq(playerinfo, ASEQ_WRRBOW_DRAW);
-		else if (playerinfo->pers.weapon->tag == ITEM_WEAPON_PHOENIXBOW)
-			PlayerAnimSetUpperSeq(playerinfo, ASEQ_WPHBOW_DRAW);
+		if (info->pers.weapon->tag == ITEM_WEAPON_REDRAINBOW)
+			PlayerAnimSetUpperSeq(info, ASEQ_WRRBOW_DRAW);
+		else if (info->pers.weapon->tag == ITEM_WEAPON_PHOENIXBOW)
+			PlayerAnimSetUpperSeq(info, ASEQ_WPHBOW_DRAW);
 	}
-	else if (playerinfo->switchtoweapon != playerinfo->pers.weaponready || playerinfo->pers.newweapon != NULL)
+	else if (info->switchtoweapon != info->pers.weaponready || info->pers.newweapon != NULL)
 	{
 		// Switching weapons is the other!
-		if (playerinfo->pers.weapon->tag == ITEM_WEAPON_REDRAINBOW)
-			PlayerAnimSetUpperSeq(playerinfo, ASEQ_WRRBOW_END);
-		else if (playerinfo->pers.weapon->tag == ITEM_WEAPON_PHOENIXBOW)
-			PlayerAnimSetUpperSeq(playerinfo, ASEQ_WPHBOW_END);
+		if (info->pers.weapon->tag == ITEM_WEAPON_REDRAINBOW)
+			PlayerAnimSetUpperSeq(info, ASEQ_WRRBOW_END);
+		else if (info->pers.weapon->tag == ITEM_WEAPON_PHOENIXBOW)
+			PlayerAnimSetUpperSeq(info, ASEQ_WPHBOW_END);
 	}
-	else if (!playerinfo->isclient && num_shots == 0)
+	else if (!info->isclient && num_shots == 0)
 	{
-		playerinfo->G_WeapNext(playerinfo->self);
+		info->G_WeapNext(info->self);
 	}
 }
 
-void PlayerActionHandFXStart(playerinfo_t* playerinfo, const float value)
+void PlayerActionHandFXStart(playerinfo_t* info, const float value)
 {
 	const int handfx_type = (int)value; //mxd
 
 	switch (handfx_type)
 	{
 		case HANDFX_FIREBALL:
-			PlayerSetHandFX(playerinfo, handfx_type, 4);
+			PlayerSetHandFX(info, handfx_type, 4);
 			break;
 
 		case HANDFX_MISSILE:
-			PlayerSetHandFX(playerinfo, handfx_type, 6);
+			PlayerSetHandFX(info, handfx_type, 6);
 			break;
 
 		case HANDFX_FIREWALL:
-			PlayerSetHandFX(playerinfo, handfx_type, 10);
+			PlayerSetHandFX(info, handfx_type, 10);
 			break;
 	}
 }
 
-void PlayerActionSphereTrailEnd(playerinfo_t* playerinfo, float value)
+void PlayerActionSphereTrailEnd(playerinfo_t* info, float value)
 {
 	// The sphere hand trails must be manually shut off.
-	playerinfo->effects &= ~EF_TRAILS_ENABLED;
+	info->effects &= ~EF_TRAILS_ENABLED;
 }
 
-void PlayerActionSwordAttack(playerinfo_t* playerinfo, const float value)
+void PlayerActionSwordAttack(playerinfo_t* info, const float value)
 {
-	playerinfo->PlayerActionSwordAttack(playerinfo, (int)value);
+	info->PlayerActionSwordAttack(info, (int)value);
 }
 
-void PlayerActionSpellFireball(playerinfo_t* playerinfo, float value)
+void PlayerActionSpellFireball(playerinfo_t* info, float value)
 {
-	playerinfo->PlayerActionSpellFireball(playerinfo);
+	info->PlayerActionSpellFireball(info);
 }
 
-void PlayerActionSpellBlast(playerinfo_t* playerinfo, float value)
+void PlayerActionSpellBlast(playerinfo_t* info, float value)
 {
-	playerinfo->PlayerActionSpellBlast(playerinfo);
+	info->PlayerActionSpellBlast(info);
 }
 
-void PlayerActionSpellArray(playerinfo_t* playerinfo, const float value)
+void PlayerActionSpellArray(playerinfo_t* info, const float value)
 {
-	const int shots_left = Weapon_CurrentShotsLeft(playerinfo);
+	const int shots_left = Weapon_CurrentShotsLeft(info);
 	const int missile_pos = (int)value; //mxd
 
 	if (shots_left <= 0)
@@ -346,112 +346,112 @@ void PlayerActionSpellArray(playerinfo_t* playerinfo, const float value)
 	if (missile_pos == 1 && shots_left <= 1)
 		return; // Only one shot, use the center projectile slot.
 
-	playerinfo->PlayerActionSpellArray(playerinfo, missile_pos);
+	info->PlayerActionSpellArray(info, missile_pos);
 }
 
-void PlayerActionSpellSphereCreate(playerinfo_t* playerinfo, float value)
+void PlayerActionSpellSphereCreate(playerinfo_t* info, float value)
 {
-	PlayerSetHandFX(playerinfo, HANDFX_SPHERE, -1);
+	PlayerSetHandFX(info, HANDFX_SPHERE, -1);
 
-	playerinfo->chargingspell = true;
-	playerinfo->weaponcharge = 1;
-	playerinfo->PlayerActionSpellSphereCreate(playerinfo, &playerinfo->chargingspell);
+	info->chargingspell = true;
+	info->weaponcharge = 1;
+	info->PlayerActionSpellSphereCreate(info, &info->chargingspell);
 }
 
-void PlayerActionSpellSphereCharge(playerinfo_t* playerinfo, const float value)
+void PlayerActionSpellSphereCharge(playerinfo_t* info, const float value)
 {
-	const int shots_left = Weapon_CurrentShotsLeft(playerinfo); //mxd
+	const int shots_left = Weapon_CurrentShotsLeft(info); //mxd
 
 	// Drain mana while charging. If mana depleted, then the branch will set to launch the thing.
-	if (playerinfo->seqcmd[ACMDU_ATTACK] && playerinfo->weaponcharge < SPHERE_MAX_MANA_CHARGE &&
-		(shots_left > 0 || playerinfo->pers.inventory.Items[playerinfo->weap_ammo_index] >= SPHERE_MANA_PER_CHARGE))
+	if (info->seqcmd[ACMDU_ATTACK] && info->weaponcharge < SPHERE_MAX_MANA_CHARGE &&
+		(shots_left > 0 || info->pers.inventory.Items[info->weap_ammo_index] >= SPHERE_MANA_PER_CHARGE))
 	{
-		if (!(playerinfo->dmflags & DF_INFINITE_MANA)) //TODO: mxd. Shouldn't weaponcharge still be increased without taking mana when DF_INFINITE_MANA is set?
+		if (!(info->dmflags & DF_INFINITE_MANA)) //TODO: mxd. Shouldn't weaponcharge still be increased without taking mana when DF_INFINITE_MANA is set?
 		{
-			playerinfo->pers.inventory.Items[playerinfo->weap_ammo_index] -= SPHERE_MANA_PER_CHARGE;
-			playerinfo->weaponcharge++;
+			info->pers.inventory.Items[info->weap_ammo_index] -= SPHERE_MANA_PER_CHARGE;
+			info->weaponcharge++;
 
 			return;
 		}
 	}
 
-	if (!playerinfo->seqcmd[ACMDU_ATTACK] || (shots_left == 0 && value != 4.0f))
+	if (!info->seqcmd[ACMDU_ATTACK] || (shots_left == 0 && value != 4.0f))
 	{
 		// If we are out of ammo, or if we have let go of the button, then fire.
 		switch ((int)value)
 		{
-			case 1: PlayerAnimSetUpperSeq(playerinfo, ASEQ_WSPHERE_FIRE1); break;
-			case 2: PlayerAnimSetUpperSeq(playerinfo, ASEQ_WSPHERE_FIRE2); break;
-			case 3: PlayerAnimSetUpperSeq(playerinfo, ASEQ_WSPHERE_FIRE3); break;
-			case 4: PlayerAnimSetUpperSeq(playerinfo, ASEQ_WSPHERE_FIRE4); break;
+			case 1: PlayerAnimSetUpperSeq(info, ASEQ_WSPHERE_FIRE1); break;
+			case 2: PlayerAnimSetUpperSeq(info, ASEQ_WSPHERE_FIRE2); break;
+			case 3: PlayerAnimSetUpperSeq(info, ASEQ_WSPHERE_FIRE3); break;
+			case 4: PlayerAnimSetUpperSeq(info, ASEQ_WSPHERE_FIRE4); break;
 		}
 	}
 }
 
-void PlayerActionSpellSphereRelease(playerinfo_t* playerinfo, const float value)
+void PlayerActionSpellSphereRelease(playerinfo_t* info, const float value)
 {
-	if (value != 1.0f || !playerinfo->seqcmd[ACMDU_ATTACK])
+	if (value != 1.0f || !info->seqcmd[ACMDU_ATTACK])
 	{
-		playerinfo->chargingspell = false;
-		playerinfo->weaponcharge = 0;
+		info->chargingspell = false;
+		info->weaponcharge = 0;
 	}
 }
 
-void PlayerActionSpellBigBall(playerinfo_t* playerinfo, float value)
+void PlayerActionSpellBigBall(playerinfo_t* info, float value)
 {
-	playerinfo->PlayerActionSpellBigBall(playerinfo);
+	info->PlayerActionSpellBigBall(info);
 }
 
-void PlayerActionSpellFirewall(playerinfo_t* playerinfo, float value)
+void PlayerActionSpellFirewall(playerinfo_t* info, float value)
 {
-	playerinfo->PlayerActionSpellFirewall(playerinfo);
+	info->PlayerActionSpellFirewall(info);
 }
 
-void PlayerActionRedRainBowAttack(playerinfo_t* playerinfo, float value)
+void PlayerActionRedRainBowAttack(playerinfo_t* info, float value)
 {
-	if (Weapon_CurrentShotsLeft(playerinfo) > 0)
-		playerinfo->PlayerActionRedRainBowAttack(playerinfo);
+	if (Weapon_CurrentShotsLeft(info) > 0)
+		info->PlayerActionRedRainBowAttack(info);
 }
 
-void PlayerActionPhoenixBowAttack(playerinfo_t* playerinfo, float value)
+void PlayerActionPhoenixBowAttack(playerinfo_t* info, float value)
 {
-	if (Weapon_CurrentShotsLeft(playerinfo) > 0)
-		playerinfo->PlayerActionPhoenixBowAttack(playerinfo);
+	if (Weapon_CurrentShotsLeft(info) > 0)
+		info->PlayerActionPhoenixBowAttack(info);
 }
 
-void PlayerActionHellstaffAttack(playerinfo_t* playerinfo, float value)
+void PlayerActionHellstaffAttack(playerinfo_t* info, float value)
 {
-	if (Weapon_CurrentShotsLeft(playerinfo) > 0)
-		playerinfo->PlayerActionHellstaffAttack(playerinfo);
+	if (Weapon_CurrentShotsLeft(info) > 0)
+		info->PlayerActionHellstaffAttack(info);
 }
 
-void PlayerActionSpellDefensive(playerinfo_t* playerinfo, float value) { } //TODO: remove?
+void PlayerActionSpellDefensive(playerinfo_t* info, float value) { } //TODO: remove?
 
 //TODO: currently, this is only used when switching from a spell to another spell (ASEQ_HAND2HAND). Also use when switching to spell from a weapon?
-void PlayerActionSpellChange(playerinfo_t* playerinfo, float value)
+void PlayerActionSpellChange(playerinfo_t* info, float value)
 {
 	vec3_t forward;
 	vec3_t right;
 	vec3_t spawnpoint;
 	int color;
 
-	assert(playerinfo);
+	assert(info);
 
-	if (playerinfo->edictflags & FL_CHICKEN) // Don't allow us to muck about with spells if we are a chicken.
+	if (info->edictflags & FL_CHICKEN) // Don't allow us to muck about with spells if we are a chicken.
 		return;
 
-	assert(playerinfo->pers.newweapon);
+	assert(info->pers.newweapon);
 
-	Weapon_Ready(playerinfo, playerinfo->pers.newweapon);
-	playerinfo->pers.newweapon = NULL;
+	Weapon_Ready(info, info->pers.newweapon);
+	info->pers.newweapon = NULL;
 
 	// Do some fancy effect.
-	AngleVectors(playerinfo->angles, forward, right, NULL);
-	VectorMA(playerinfo->origin, -2.0f, forward, spawnpoint);
+	AngleVectors(info->angles, forward, right, NULL);
+	VectorMA(info->origin, -2.0f, forward, spawnpoint);
 	VectorMA(spawnpoint, -7.0f, right, spawnpoint);
-	spawnpoint[2] += playerinfo->viewheight - 16.0f;
+	spawnpoint[2] += info->viewheight - 16.0f;
 
-	switch (playerinfo->pers.weapon->tag)
+	switch (info->pers.weapon->tag)
 	{
 		case ITEM_WEAPON_FLYINGFIST:
 			color = 1;
@@ -478,8 +478,8 @@ void PlayerActionSpellChange(playerinfo_t* playerinfo, float value)
 			break;
 	}
 
-	P_Sound(playerinfo, SND_PRED_ID0, CHAN_WEAPON, "Weapons/SpellChange.wav", 1.0f);
-	P_CreateEffect(playerinfo, EFFECT_PRED_ID1, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", right, color);
+	P_Sound(info, SND_PRED_ID0, CHAN_WEAPON, "Weapons/SpellChange.wav", 1.0f);
+	P_CreateEffect(info, EFFECT_PRED_ID1, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", right, color);
 }
 
 void PlayerActionArrowChange(playerinfo_t* info, float value)
