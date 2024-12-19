@@ -427,6 +427,7 @@ void PlayerActionHellstaffAttack(playerinfo_t* playerinfo, float value)
 
 void PlayerActionSpellDefensive(playerinfo_t* playerinfo, float value) { } //TODO: remove?
 
+//TODO: currently, this is only used when switching from a spell to another spell (ASEQ_HAND2HAND). Also use when switching to spell from a weapon?
 void PlayerActionSpellChange(playerinfo_t* playerinfo, float value)
 {
 	vec3_t forward;
@@ -481,84 +482,51 @@ void PlayerActionSpellChange(playerinfo_t* playerinfo, float value)
 	P_CreateEffect(playerinfo, EFFECT_PRED_ID1, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", right, color);
 }
 
-/*-----------------------------------------------
-	PlayerActionArrowChange
------------------------------------------------*/
-
-void PlayerActionArrowChange(playerinfo_t *playerinfo, float value)
+void PlayerActionArrowChange(playerinfo_t* info, float value)
 {
-	vec3_t forward, right, spawnpoint;
-	gitem_t *weapon;
-	int color=0;
+	vec3_t forward;
+	vec3_t right;
+	vec3_t spawnpoint;
+	int color;
 
-	assert(playerinfo);
-	
-	if(playerinfo->edictflags & FL_CHICKEN)
-	{
-		// Don't allow us to muck about with arrows if we are a chicken.
+	assert(info);
 
+	if (info->edictflags & FL_CHICKEN) // Don't allow us to muck about with arrows if we are a chicken.
 		return;
-	}
 
-	assert(playerinfo->pers.newweapon);
-	
-	Weapon_Ready(playerinfo, playerinfo->pers.newweapon);
-	playerinfo->pers.newweapon = NULL;
+	assert(info->pers.newweapon);
+
+	Weapon_Ready(info, info->pers.newweapon);
+	info->pers.newweapon = NULL;
 
 	// Do some fancy effect.
-	
-	AngleVectors(playerinfo->angles, forward, right, NULL);
-	VectorMA(playerinfo->origin, -2.0, forward, spawnpoint);
-	VectorMA(spawnpoint, -7, right, spawnpoint);
-	spawnpoint[2] += playerinfo->viewheight - 16.0;
+	AngleVectors(info->angles, forward, right, NULL);
+	VectorMA(info->origin, -2.0f, forward, spawnpoint);
+	VectorMA(spawnpoint, -7.0f, right, spawnpoint);
+	spawnpoint[2] += info->viewheight - 16.0f;
 
-	weapon = playerinfo->pers.weapon;
-	
-	if (weapon)
+	const gitem_t* weapon = info->pers.weapon;
+
+	if (weapon == NULL) //mxd. Don't trigger sound / effects when no weapon.
+		return;
+
+	if (weapon->tag == ITEM_WEAPON_PHOENIXBOW)
 	{
-		if (weapon->tag == ITEM_WEAPON_PHOENIXBOW)
-		{	
-			// Set the bow type to phoenix.
-
-			playerinfo->pers.bowtype = BOW_TYPE_PHOENIX;
-			color=6;
-		}
-		else
-		{
-			// Set the bow type to red-rain.
-
-			playerinfo->pers.bowtype = BOW_TYPE_REDRAIN;
-			color=7;
-		}
-
-		PlayerUpdateModelAttributes(playerinfo);
-	}
-
-	if(playerinfo->isclient)
-	{
-		playerinfo->CL_Sound(SND_PRED_ID1,
-							 playerinfo->origin,
-							 CHAN_WEAPON,
-							 "Weapons/SpellChange.wav",
-							 1.0,
-							 ATTN_NORM,
-							 0);
-
-		playerinfo->CL_CreateEffect(EFFECT_PRED_ID2,NULL,FX_SPELL_CHANGE,0,spawnpoint,"db",right,color);
+		// Set the bow type to phoenix.
+		info->pers.bowtype = BOW_TYPE_PHOENIX;
+		color = 6;
 	}
 	else
 	{
-		playerinfo->G_Sound(SND_PRED_ID1,
-							playerinfo->leveltime,
-							playerinfo->self,
-							CHAN_WEAPON,
-							playerinfo->G_SoundIndex("Weapons/SpellChange.wav"),
-							1.0,
-							ATTN_NORM,
-							0);
-
-		playerinfo->G_CreateEffect(EFFECT_PRED_ID2,NULL,FX_SPELL_CHANGE,0,spawnpoint,"db",right,color);
+		// Set the bow type to red-rain.
+		info->pers.bowtype = BOW_TYPE_REDRAIN;
+		color = 7;
 	}
+
+	PlayerUpdateModelAttributes(info);
+
+	P_Sound(info, SND_PRED_ID1, CHAN_WEAPON, "Weapons/SpellChange.wav", 1.0f);
+	P_CreateEffect(info, EFFECT_PRED_ID2, NULL, FX_SPELL_CHANGE, 0, spawnpoint, "db", right, color);
 }
 
 /*-----------------------------------------------

@@ -19,7 +19,7 @@ void PlayerActionSphereTrailEnd(playerinfo_t* playerinfo, float value);
 
 void PlayerActionSpellChange(playerinfo_t* playerinfo, float value);
 void PlayerActionWeaponChange(playerinfo_t* playerinfo, float value);
-void PlayerActionArrowChange(playerinfo_t* playerinfo, float value);
+void PlayerActionArrowChange(playerinfo_t* info, float value);
 
 void PlayerActionSwordAttack(playerinfo_t* playerinfo, float value);
 void PlayerActionSpellFireball(playerinfo_t* playerinfo, float value);
