@@ -738,13 +738,9 @@ void PlayerActionPhoenixBowTrailStart(playerinfo_t* info, float value)
 	P_LocalSound(info, "weapons/PhoenixReady.wav"); //mxd
 }
 
-/*-----------------------------------------------
-	PlayerActionBowTrailEnd
------------------------------------------------*/
-
-void PlayerActionBowTrailEnd(playerinfo_t *playerinfo, float value)
+void PlayerActionBowTrailEnd(playerinfo_t* info, float value)
 {
-	playerinfo->effects &= ~EF_TRAILS_ENABLED;
+	info->effects &= ~EF_TRAILS_ENABLED;
 }
 
 /*-----------------------------------------------
