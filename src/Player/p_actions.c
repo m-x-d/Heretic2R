@@ -1687,52 +1687,47 @@ void PlayerJumpMoveForce(playerinfo_t* info, float fwd, const float right, const
 	info->velocity[2] += up;
 }
 
-/*-----------------------------------------------
-	PlayerJumpNudge
------------------------------------------------*/
-
-void PlayerJumpNudge(playerinfo_t *playerinfo, float fwd, float right, float up)
+void PlayerJumpNudge(playerinfo_t* info, const float fwd, const float right, const float up)
 {
-	vec3_t vf, vr, vu;
+	vec3_t vf;
+	vec3_t vr;
+	vec3_t vu;
 	vec3_t vel;
-	float ff,fr,fu, df, dr, du;
-	
-	AngleVectors(playerinfo->angles, vf, vr, vu);
 
-	VectorCopy(playerinfo->velocity, vel);
+	AngleVectors(info->angles, vf, vr, vu);
+
+	VectorCopy(info->velocity, vel);
 	VectorNormalize(vel);
 
-	//Get the dot products of the main directions
-	df = DotProduct(vf, vel);
-	dr = DotProduct(vr, vel);
-	du = DotProduct(vu, vel);
+	// Get the dot products of the main directions
+	const float df = DotProduct(vf, vel);
+	const float dr = DotProduct(vr, vel);
+	const float du = DotProduct(vu, vel);
 
-	//Forward fraction of the velocity
-	VectorScale(playerinfo->velocity, df, vel);
-	ff = VectorLength(vel);
+	// Forward fraction of the velocity.
+	VectorScale(info->velocity, df, vel);
+	const float ff = VectorLength(vel);
 
-	//Right fraction of the velocity
-	VectorScale(playerinfo->velocity, dr, vel);
-	fr = VectorLength(vel);
+	// Right fraction of the velocity.
+	VectorScale(info->velocity, dr, vel);
+	const float fr = VectorLength(vel);
 
-	//Up fraction of the velocity
-	VectorScale(playerinfo->velocity, du, vel);
-	fu = VectorLength(vel);
+	// Up fraction of the velocity.
+	VectorScale(info->velocity, du, vel);
+	const float fu = VectorLength(vel);
 
-	//If we're under the minimum, set the velocity to that minimum
-	if ( Q_fabs(ff) < Q_fabs(fwd) )
-		VectorMA(playerinfo->velocity, fwd, vf, playerinfo->velocity);
+	// If we're under the minimum, set the velocity to that minimum.
+	if (Q_fabs(ff) < Q_fabs(fwd))
+		VectorMA(info->velocity, fwd, vf, info->velocity);
 
-	//If we're under the minimum, set the velocity to that minimum
-	if ( Q_fabs(fr) < Q_fabs(right) )
-		VectorMA(playerinfo->velocity, right, vr, playerinfo->velocity);
+	if (Q_fabs(fr) < Q_fabs(right))
+		VectorMA(info->velocity, right, vr, info->velocity);
 
-	//If we're under the minimum, set the velocity to that minimum
-	if ( Q_fabs(fu) < Q_fabs(up) )
-		VectorMA(playerinfo->velocity, up, vu, playerinfo->velocity);
+	if (Q_fabs(fu) < Q_fabs(up))
+		VectorMA(info->velocity, up, vu, info->velocity);
 
-	//Cause the player to use this velocity
-	playerinfo->flags |= PLAYER_FLAG_USE_ENT_POS;
+	// Cause the player to use this velocity.
+	info->flags |= PLAYER_FLAG_USE_ENT_POS;
 }
 
 /*-----------------------------------------------

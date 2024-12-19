@@ -101,7 +101,7 @@ void PlayerActionSetCrouchHeight(playerinfo_t* info);
 void PlayerActionCheckUncrouchToFinishSeq(playerinfo_t* info);
 void PlayerActionCheckStrafe(playerinfo_t* info);
 
-void PlayerJumpNudge(playerinfo_t* playerinfo, float fwd, float right, float up);
+void PlayerJumpNudge(playerinfo_t* info, float fwd, float right, float up);
 
 void PlayerActionCheckBranchRunningStrafe(playerinfo_t* info);
 
