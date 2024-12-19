@@ -1634,24 +1634,19 @@ void PlayerMoveUpperFunc(playerinfo_t* info, const float fwd, const float right,
 		PlayerMoveFunc(info, fwd, right, up);
 }
 
-/*-----------------------------------------------
-	PlayerMoveForce
------------------------------------------------*/
-
-void PlayerMoveForce(playerinfo_t *playerinfo, float fwd, float right, float up)
-{	
+void PlayerMoveForce(playerinfo_t* info, const float fwd, const float right, const float up)
+{
 	// For things like jumps and the like, where the velocity is demanded, not a suggestion.
+	vec3_t fwdv;
+	vec3_t rightv;
 
-	vec3_t fwdv, rightv;
-	
-	AngleVectors(playerinfo->angles, fwdv, rightv, NULL);
-	
-	VectorScale(fwdv, fwd, playerinfo->velocity);
+	AngleVectors(info->angles, fwdv, rightv, NULL);
+	VectorScale(fwdv, fwd, info->velocity);
 
-	if(right != 0)
-		VectorMA(playerinfo->velocity, right, rightv, playerinfo->velocity);
+	if (right != 0.0f)
+		VectorMA(info->velocity, right, rightv, info->velocity);
 
-	playerinfo->velocity[2] += up;
+	info->velocity[2] += up;
 }
 
 /*-----------------------------------------------
