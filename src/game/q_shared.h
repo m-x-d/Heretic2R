@@ -380,11 +380,11 @@ typedef struct
 #define SURF_TRANS66		0x20
 #define SURF_FLOWING		0x40		// Scroll towards angle.
 #define SURF_NODRAW			0x80		// Don't bother referencing the texture.
-#define SURF_TALL_WALL		0x00000400	// Face doesn't get broken up as normal.
-#define SURF_ALPHA_TEXTURE	0x00000800	// Texture has alpha in it, and should show through in bsp process
-#define SURF_ANIMSPEED		0x00001000	// Value will hold the anim speed in fps
-#define SURF_UNDULATE		0x00002000	// Rock surface up and down...
-#define SURF_QUAKE			0x00004000	// Rock surface up and down when quake value on
+#define SURF_TALL_WALL		0x400		// Face doesn't get broken up as normal.
+#define SURF_ALPHA_TEXTURE	0x800		// Texture has alpha in it, and should show through in bsp process.
+#define SURF_ANIMSPEED		0x1000		// Value will hold the anim speed in fps.
+#define SURF_UNDULATE		0x2000		// Rock surface up and down...
+#define SURF_QUAKE			0x4000		// Rock surface up and down when quake value on.
 
 //mxd. Helper define to check for non-lightmapped surfaces.
 #define SURF_FULLBRIGHT		(SURF_SKY | SURF_TRANS33 | SURF_TRANS66 | SURF_WARP | SURF_TALL_WALL) // H2: extra SURF_TALL_WALL flag
