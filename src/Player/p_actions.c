@@ -2579,250 +2579,175 @@ void PlayerActionCheckWalkBackUnStrafe(playerinfo_t* info)
 
 #pragma endregion
 
+#pragma region ========================== RUN ==========================
 
-
-
-
-
-/*
-
-	Run
-
-*/
-
-
-
-
-
-
-
-
-/*-----------------------------------------------
-	PlayerActionCheckRun
------------------------------------------------*/
-
-void PlayerActionCheckRun(playerinfo_t *playerinfo)
+void PlayerActionCheckRun(playerinfo_t* info)
 {
-	int	curseq = playerinfo->lowerseq;
+	const qboolean is_running = (info->buttons & BUTTON_RUN); //mxd
+	const int curseq = info->lowerseq;
 
-	//Check for an upper sequence interruption due to a staff attack
-	if ((	playerinfo->seqcmd[ACMDU_ATTACK] && 
-			playerinfo->seqcmd[ACMDL_RUN_F]) &&  
-			(playerinfo->pers.weaponready == WEAPON_READY_SWORDSTAFF) && 
-			(!(playerinfo->flags & PLAYER_FLAG_NO_RARM)) &&
-			!(playerinfo->edictflags & FL_CHICKEN))	
+	// Check for an upper sequence interruption due to a staff attack.
+	if (info->seqcmd[ACMDU_ATTACK] && info->seqcmd[ACMDL_RUN_F] && info->pers.weaponready == WEAPON_READY_SWORDSTAFF &&
+		!(info->flags & PLAYER_FLAG_NO_RARM) && !(info->edictflags & FL_CHICKEN))
 	{
-		if (playerinfo->advancedstaff)
+		int spin_seq;
+
+		if (info->advancedstaff)
+			spin_seq = ((info->seqcmd[ACMDL_STRAFE_L] || info->seqcmd[ACMDL_STRAFE_R]) ? ASEQ_WSWORD_SPIN2 : ASEQ_WSWORD_SPIN);
+		else // Not advanced staff
+			spin_seq = (info->irand(info, 0, 1) ? ASEQ_WSWORD_SPIN2 : ASEQ_WSWORD_SPIN);
+
+		PlayerAnimSetLowerSeq(info, spin_seq);
+		return;
+	}
+
+	// Check for an autovault (only occurs if upper half of body is idle!).
+	if (info->seqcmd[ACMDL_FWD] && info->upperidle && (info->flags & PLAYER_FLAG_COLLISION))
+	{
+		PlayerActionCheckVault(info, 0.0f);
+
+		if (curseq == ASEQ_VAULT_LOW || curseq == ASEQ_PULLUP_HALFWALL)
 		{
-			if (playerinfo->seqcmd[ACMDL_STRAFE_L] || playerinfo->seqcmd[ACMDL_STRAFE_R])
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSWORD_SPIN2);
+			PlayerAnimSetLowerSeq(info, curseq);
+			return;
+		}
+	}
+
+	// Check for a transition to a walking or running strafe [High probability].
+	if (info->seqcmd[ACMDL_FWD] && info->seqcmd[ACMDL_STRAFE_L] && curseq != ASEQ_RSTRAFE_LEFT)
+	{
+		if (is_running)
+			SetLowerSeq(info, ASEQ_RSTRAFE_LEFT); //mxd
+		else
+			PlayerAnimSetLowerSeq(info, ASEQ_WSTRAFE_LEFT);
+
+		return;
+	}
+
+	// Check for a transition to a walking or running strafe [High probability].
+	if (info->seqcmd[ACMDL_FWD] && info->seqcmd[ACMDL_STRAFE_R] && curseq != ASEQ_RSTRAFE_RIGHT)
+	{
+		if (is_running)
+			SetLowerSeq(info, ASEQ_RSTRAFE_RIGHT); //mxd
+		else
+			PlayerAnimSetLowerSeq(info, ASEQ_WSTRAFE_RIGHT);
+
+		return;
+	}
+
+	// Check for a jump [High probability]. Slime causes skipping, so no jumping in it!
+	if (info->seqcmd[ACMDL_JUMP] && !(info->watertype & (CONTENTS_SLIME | CONTENTS_LAVA)))
+	{
+		int tgtseq = ASEQ_NONE; //mxd
+
+		if (info->seqcmd[ACMDL_FWD])
+		{
+			if (info->pers.weaponready == WEAPON_READY_SWORDSTAFF && !(info->flags & PLAYER_FLAG_NO_RARM))
+				tgtseq = ASEQ_POLEVAULT1_W;
 			else
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSWORD_SPIN);
+				tgtseq = ASEQ_JUMPFWD_WGO;
 		}
+		else if (info->seqcmd[ACMDL_BACK])
+		{
+			tgtseq = ASEQ_JUMPBACK_WGO;
+		}
+		else if (info->seqcmd[ACMDL_STRAFE_L])
+		{
+			tgtseq = ASEQ_JUMPLEFT_WGO;
+		}
+		else if (info->seqcmd[ACMDL_STRAFE_R])
+		{
+			tgtseq = ASEQ_JUMPRIGHT_WGO;
+		}
+
+		if (tgtseq != ASEQ_NONE)
+		{
+			PlayerAnimSetLowerSeq(info, tgtseq);
+			return;
+		}
+	}
+
+	// Check for a sudden transition to a walk [Low probability].
+	if (info->seqcmd[ACMDL_WALK_F])
+	{
+		PlayerAnimSetLowerSeq(info, ASEQ_WALKF);
+		return;
+	}
+
+	// Check for a crouch [Low probability].
+	if (info->seqcmd[ACMDL_CROUCH])
+	{
+		if (info->seqcmd[ACMDL_BACK])
+			PlayerAnimSetLowerSeq(info, ASEQ_ROLL_B);
+		else if (info->seqcmd[ACMDL_STRAFE_L])
+			PlayerAnimSetLowerSeq(info, ASEQ_ROLL_L);
+		else if (info->seqcmd[ACMDL_STRAFE_R])
+			PlayerAnimSetLowerSeq(info, ASEQ_ROLL_R);
 		else
-		{	// Not advanced staff
-			if (playerinfo->irand(playerinfo,0,1))
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSWORD_SPIN2);
-			else
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSWORD_SPIN);
-		}
+			PlayerAnimSetLowerSeq(info, ASEQ_ROLLDIVEF_W);
+
 		return;
 	}
 
-	//Check for an autovault (only occurs if upper half of body is idle!)
-	if ( (playerinfo->flags & PLAYER_FLAG_COLLISION) &&  (playerinfo->upperidle) && (playerinfo->seqcmd[ACMDL_FWD]) )
+	// Handle an action key press [Low probability].
+	if (info->seqcmd[ACMDL_ACTION])
 	{
-		PlayerActionCheckVault(playerinfo, 0);
-		
-		if (curseq == ASEQ_VAULT_LOW)
+		// Climb a rope?
+		if (info->targetEnt != NULL && PlayerActionCheckRopeGrab(info, 0.0f))
 		{
-			PlayerAnimSetLowerSeq(playerinfo,  ASEQ_VAULT_LOW);
+			info->flags |= PLAYER_FLAG_ONROPE;
+			P_Sound(info, SND_PRED_ID28, CHAN_VOICE, "player/ropegrab.wav", 0.75f); //mxd
+			PlayerAnimSetLowerSeq(info, ASEQ_CLIMB_ON); // We're on the rope.
+
 			return;
 		}
 
-		if (curseq == ASEQ_PULLUP_HALFWALL)
-		{
-			PlayerAnimSetLowerSeq(playerinfo,  ASEQ_PULLUP_HALFWALL);
-			return;
-		}
+		// Try and use a puzzle item.
+		PlayerActionUsePuzzle(info);
 	}
 
-	//Check for a transition to a walking or running strafe		[High probability]
-	if ( playerinfo->seqcmd[ACMDL_FWD] && playerinfo->seqcmd[ACMDL_STRAFE_L] && curseq != ASEQ_RSTRAFE_LEFT)
+	// Check for a quickturn [Low probability].
+	if (info->seqcmd[ACMDL_QUICKTURN])
 	{
-		if (playerinfo->buttons & BUTTON_RUN)
-		{
-			playerinfo->lowerseq = ASEQ_RSTRAFE_LEFT;
-			playerinfo->lowermove = PlayerSeqData[playerinfo->lowerseq].move;
-			playerinfo->lowerframeptr = playerinfo->lowermove->frame + playerinfo->lowerframe;
-		
-			return;
-		}
-		else
-		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSTRAFE_LEFT);
-			return;
-		}
-	}
-    
-	//Check for a transition to a walking or running strafe		[High probability]
-	if ( playerinfo->seqcmd[ACMDL_FWD] && playerinfo->seqcmd[ACMDL_STRAFE_R] && curseq != ASEQ_RSTRAFE_RIGHT)
-	{
-		if (playerinfo->buttons & BUTTON_RUN)
-		{
-			playerinfo->lowerseq = ASEQ_RSTRAFE_RIGHT;
-			playerinfo->lowermove = PlayerSeqData[playerinfo->lowerseq].move;
-			playerinfo->lowerframeptr = playerinfo->lowermove->frame + playerinfo->lowerframe;
-			
-			return;
-		}
-		else
-		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSTRAFE_RIGHT);
-			return;
-		}
-	}
-
-	//Check for a jump	[High probability]
-	if (playerinfo->seqcmd[ACMDL_JUMP])
-	{
-		//Slime causes skipping, so no jumping in it!
-		if (!(playerinfo->watertype & (CONTENTS_SLIME|CONTENTS_LAVA)))
-		{
-			if (playerinfo->seqcmd[ACMDL_FWD])
-			{
-				if (	(playerinfo->pers.weaponready == WEAPON_READY_SWORDSTAFF) &&
-						(!(playerinfo->flags & PLAYER_FLAG_NO_RARM)) )
-				{
-					PlayerAnimSetLowerSeq(playerinfo,  ASEQ_POLEVAULT1_W);
-					return;
-				}
-				else
-				{
-					PlayerAnimSetLowerSeq(playerinfo,  ASEQ_JUMPFWD_WGO);
-					return;
-				}
-			}
-			else if (playerinfo->seqcmd[ACMDL_BACK])
-			{
-				PlayerAnimSetLowerSeq(playerinfo,  ASEQ_JUMPBACK_WGO);
-				return;
-			}
-			if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-			{
-				PlayerAnimSetLowerSeq(playerinfo,  ASEQ_JUMPLEFT_WGO);
-				return;
-			}
-			else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-			{
-				PlayerAnimSetLowerSeq(playerinfo,  ASEQ_JUMPRIGHT_WGO);
-				return;
-			}
-		}
-	}
-    
-	//Check for a sudden transition to a walk	[Low probability]
-	if (playerinfo->seqcmd[ACMDL_WALK_F])
-	{
-		PlayerAnimSetLowerSeq(playerinfo,  ASEQ_WALKF);
+		PlayerAnimSetLowerSeq(info, ASEQ_TURN180);
 		return;
 	}
 
-	//Check for a crouch	[Low probability]
-	if (playerinfo->seqcmd[ACMDL_CROUCH])
+	// Check for a sudden transition to a creep [Low probability].
+	if (info->seqcmd[ACMDL_CREEP_F])
 	{
-		if (playerinfo->seqcmd[ACMDL_BACK])
-		{
-			PlayerAnimSetLowerSeq(playerinfo,  ASEQ_ROLL_B);
-			return;
-		}
-		else if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-		{
-			PlayerAnimSetLowerSeq(playerinfo,  ASEQ_ROLL_L);
-			return;
-		}
-		else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-		{
-			PlayerAnimSetLowerSeq(playerinfo,  ASEQ_ROLL_R);
-			return;
-		}
-		else	
-		{
-			PlayerAnimSetLowerSeq(playerinfo,  ASEQ_ROLLDIVEF_W);
-			return;
-		}
-	}
-	
-	//Handle an action key press	[Low probability]
-	if (playerinfo->seqcmd[ACMDL_ACTION])
-	{
-		//Climb a rope?
-		if ( (playerinfo->targetEnt) && (PlayerActionCheckRopeGrab(playerinfo,0)) )
-		{
-			playerinfo->flags |= PLAYER_FLAG_ONROPE;
-			
-			if(playerinfo->isclient)
-				playerinfo->CL_Sound(SND_PRED_ID28,	playerinfo->origin, CHAN_VOICE, "player/ropegrab.wav", 0.75, ATTN_NORM, 0);
-			else
-				playerinfo->G_Sound(SND_PRED_ID28, playerinfo->leveltime, playerinfo->self, CHAN_VOICE, playerinfo->G_SoundIndex("player/ropegrab.wav"), 0.75, ATTN_NORM, 0);
-
-			//We're on the rope
-			PlayerAnimSetLowerSeq(playerinfo,  ASEQ_CLIMB_ON);
-			return;
-		}
-
-		//Try and use a puzzle item
-		PlayerActionUsePuzzle(playerinfo);
-	}
-
-	//Check for a quickturn		[Low probability]
-	if (playerinfo->seqcmd[ACMDL_QUICKTURN])
-	{
-		PlayerAnimSetLowerSeq(playerinfo,  ASEQ_TURN180);
+		PlayerAnimSetLowerSeq(info, ASEQ_CREEPF);
 		return;
 	}
 
-	//Check for a sudden transition to a creep		[Low probability]
-	if (playerinfo->seqcmd[ACMDL_CREEP_F])
+	// If we're pressing forward, and nothing else is happening, then we're walking forward.
+	if (info->seqcmd[ACMDL_RUN_F] && curseq != ASEQ_RUNF && !info->seqcmd[ACMDL_STRAFE_L] && !info->seqcmd[ACMDL_STRAFE_R])
 	{
-		PlayerAnimSetLowerSeq(playerinfo,  ASEQ_CREEPF);
+		PlayerAnimSetLowerSeq(info, ASEQ_RUNF);
 		return;
 	}
 
-	//If we're pressing forward, and nothing else is happening, then we're walking forward
-	if ( (playerinfo->seqcmd[ACMDL_RUN_F]) && (!playerinfo->seqcmd[ACMDL_STRAFE_L]) && (!playerinfo->seqcmd[ACMDL_STRAFE_R]) )
+	// If we're pressing backward, and nothing else is happening, then we're walking backward.
+	if (info->seqcmd[ACMDL_BACK])
 	{
-		if (curseq != ASEQ_RUNF)
+		if (info->seqcmd[ACMDL_RUN_B])
 		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_RUNF);
-			return;
-		}
-	}
-
-	//If we're pressing backward, and nothing else is happening, then we're walking backward
-	if (playerinfo->seqcmd[ACMDL_BACK])
-	{
-		if (playerinfo->seqcmd[ACMDL_RUN_B])
-		{
-			if (!(playerinfo->seqcmd[ACMDU_ATTACK]) && playerinfo->upperidle)			
+			if (!info->seqcmd[ACMDU_ATTACK] && info->upperidle)
 			{
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPSPRINGBGO);
+				PlayerAnimSetLowerSeq(info, ASEQ_JUMPSPRINGBGO);
 				return;
 			}
 		}
 		else
 		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WALKB);
+			PlayerAnimSetLowerSeq(info, ASEQ_WALKB);
 			return;
 		}
 	}
 
-	//All else has failed... did we just let go of everthing?
-	if (!playerinfo->seqcmd[ACMDL_FWD] && !playerinfo->seqcmd[ACMDL_BACK])
-	{
-		PlayerAnimSetLowerSeq(playerinfo, SeqCtrl[playerinfo->lowerseq].ceaseseq);
-		return;
-	}
+	// All else has failed... did we just let go of everything?
+	if (!info->seqcmd[ACMDL_FWD] && !info->seqcmd[ACMDL_BACK])
+		PlayerAnimSetLowerSeq(info, SeqCtrl[info->lowerseq].ceaseseq);
 }
 
 /*-----------------------------------------------
@@ -2915,6 +2840,8 @@ void PlayerActionCheckRunUnStrafe(playerinfo_t *playerinfo)
 	//We're doing something else, so run a normal function to determine it
 	PlayerActionCheckRun(playerinfo);
 }
+
+#pragma endregion
 
 void PlayerActionClimbStartSound(playerinfo_t *playerinfo, float value)
 {
