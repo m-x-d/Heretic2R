@@ -60,7 +60,7 @@ enum seq_cmd_e
 // ---------
 // ************************************************************************************************
 
-enum seq_anim_e
+enum seq_anim_e //TODO: rename WSWORD to WSTAFF
 {
 	ASEQ_NONE,			
 	ASEQ_WSWORD_STD1,			
