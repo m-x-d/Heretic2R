@@ -2187,13 +2187,9 @@ void PlayerActionCheckCreepUnStrafe(playerinfo_t* info)
 	PlayerActionCheckCreep(info);
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckCreepBack
------------------------------------------------*/
-
-void PlayerActionCheckCreepBack( playerinfo_t *playerinfo )
+void PlayerActionCheckCreepBack(playerinfo_t* playerinfo) //TODO: replace with PlayerActionCheckCreep()?
 {
-	//We're doing something else, so run a normal function to determine it
+	// We're doing something else, so run a normal function to determine it.
 	PlayerActionCheckCreep(playerinfo);
 }
 
