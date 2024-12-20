@@ -130,4 +130,4 @@ void PlayerActionCheckWalkBackUnStrafe(playerinfo_t* info);
 
 void PlayerActionCheckRun(playerinfo_t* info);
 
-extern PLAYER_API void PlayerInterruptAction(playerinfo_t* playerinfo);
+extern PLAYER_API void PlayerInterruptAction(playerinfo_t* info);

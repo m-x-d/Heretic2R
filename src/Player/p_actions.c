@@ -15,6 +15,7 @@
 #include "Random.h"
 #include "Vector.h"
 #include "g_playstats.h"
+#include "p_animactor.h"
 #include "p_anim_branch.h" //mxd
 #include "p_anim_data.h"
 #include "p_utility.h" //mxd
@@ -2833,52 +2834,29 @@ void PlayerPlaySlide(const playerinfo_t *info)
 	P_Sound(info, SND_PRED_ID30, CHAN_VOICE, "player/slope.wav", 0.75f); //mxd
 }
 
-
-PLAYER_API void PlayerInterruptAction(playerinfo_t *playerinfo)
+PLAYER_API void PlayerInterruptAction(playerinfo_t* info)
 {
-	PLAYER_API void TurnOffPlayerEffects(playerinfo_t *playerinfo);
+	// Shut off player effects from weapons or the like.
+	TurnOffPlayerEffects(info);
 
-	//Shut off player effects from weapons or the like
-	TurnOffPlayerEffects(playerinfo);
+	// Remove weapon sounds from the player (technically looping weapons should do this for us, but better safe than annoyed).
+	P_Sound(info, SND_PRED_ID31, CHAN_WEAPON, "misc/null.wav", 1.0f); //mxd
 
-	//Remove weapon sounds from the player (technically looping weapons should do this for us, but better safe than annoyed)
-	if(playerinfo->isclient)
+	// Release any held weapons.
+	if (info->pers.weapon->tag == ITEM_WEAPON_REDRAINBOW && info->upperseq == ASEQ_WRRBOW_HOLD)
 	{
-		playerinfo->CL_Sound(SND_PRED_ID31,
-							 playerinfo->origin,
-							 CHAN_WEAPON,
-							 "misc/null.wav",
-							 1.0,
-							 ATTN_NORM,
-							 0);
+		info->PlayerActionRedRainBowAttack(info);
 	}
-	else
+	else if (info->pers.weapon->tag == ITEM_WEAPON_PHOENIXBOW && info->upperseq == ASEQ_WPHBOW_HOLD)
 	{
-		playerinfo->G_Sound(SND_PRED_ID31,
-							playerinfo->leveltime,	
-							playerinfo->self,
-							CHAN_WEAPON,
-							playerinfo->G_SoundIndex("misc/null.wav"),
-							1.0,
-							ATTN_NORM,
-							0);
+		info->PlayerActionPhoenixBowAttack(info);
+	}
+	else if (info->pers.weapon->tag == ITEM_WEAPON_SPHEREOFANNIHILATION && info->chargingspell)
+	{
+		info->chargingspell = false;
+		info->PlayerActionSpellSphereCreate(info, &info->chargingspell);
 	}
 
-	//Release any held weapons
-	if (playerinfo->pers.weapon->tag == ITEM_WEAPON_REDRAINBOW && playerinfo->upperseq == ASEQ_WRRBOW_HOLD)
-	{
-		playerinfo->PlayerActionRedRainBowAttack(playerinfo);
-	}
-	else if (playerinfo->pers.weapon->tag == ITEM_WEAPON_PHOENIXBOW && playerinfo->upperseq == ASEQ_WPHBOW_HOLD)
-	{
-		playerinfo->PlayerActionPhoenixBowAttack(playerinfo);
-	}
-	else if (playerinfo->pers.weapon->tag == ITEM_WEAPON_SPHEREOFANNIHILATION && playerinfo->chargingspell)
-	{
-		playerinfo->chargingspell=false;
-		playerinfo->PlayerActionSpellSphereCreate(playerinfo, &playerinfo->chargingspell);
-	}
-
-	//Clear out any pending animations
-	PlayerAnimSetUpperSeq(playerinfo, ASEQ_NONE);
+	// Clear out any pending animations.
+	PlayerAnimSetUpperSeq(info, ASEQ_NONE);
 }
