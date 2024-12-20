@@ -113,8 +113,8 @@ PLAYER_API void SpawnDustPuff(playerinfo_t* info, float dist);
 
 void PlayerSwimMoveFunc(playerinfo_t* info, float fwd, float right, float up);
 
-void PlayerActionClimbStartSound(playerinfo_t* playerinfo, float value);
-void PlayerPlaySlide(playerinfo_t* playerinfo);
+void PlayerActionClimbStartSound(const playerinfo_t* info, float value);
+void PlayerPlaySlide(const playerinfo_t* info);
 
 void PlayerActionCheckCreep(playerinfo_t* info);
 void PlayerActionCheckCreepUnStrafe(playerinfo_t* info);

@@ -2818,28 +2818,19 @@ void PlayerActionCheckRunUnStrafe(playerinfo_t* info)
 
 #pragma endregion
 
-void PlayerActionClimbStartSound(playerinfo_t *playerinfo, float value)
+void PlayerActionClimbStartSound(const playerinfo_t* info, float value)
 {
-	assert(playerinfo);
+	assert(info);
 
-	//1 in 5 chance of playing
-	if (irand(0,4))
-		return;
-
-	if(playerinfo->isclient)
-		playerinfo->CL_Sound(SND_PRED_ID29,playerinfo->origin, CHAN_VOICE, "*grab.wav", 0.75, ATTN_NORM, 0);
-	else
-		playerinfo->G_Sound(SND_PRED_ID29, playerinfo->leveltime, playerinfo->self, CHAN_VOICE, playerinfo->G_SoundIndex("*grab.wav"), 0.75, ATTN_NORM, 0);
+	// 1 in 5 chance of playing.
+	if (irand(0, 4) == 0)
+		P_Sound(info, SND_PRED_ID29, CHAN_VOICE, "*grab.wav", 0.75f); //mxd
 }
 
-void PlayerPlaySlide(playerinfo_t *playerinfo)
+void PlayerPlaySlide(const playerinfo_t *info)
 {
-	assert(playerinfo);
-
-	if(playerinfo->isclient)
-		playerinfo->CL_Sound(SND_PRED_ID30,playerinfo->origin, CHAN_VOICE, "player/slope.wav", 0.75, ATTN_NORM, 0);
-	else
-		playerinfo->G_Sound(SND_PRED_ID30, playerinfo->leveltime, playerinfo->self, CHAN_VOICE, playerinfo->G_SoundIndex("player/slope.wav"), 0.75, ATTN_NORM, 0);
+	assert(info);
+	P_Sound(info, SND_PRED_ID30, CHAN_VOICE, "player/slope.wav", 0.75f); //mxd
 }
 
 
