@@ -2750,95 +2750,70 @@ void PlayerActionCheckRun(playerinfo_t* info)
 		PlayerAnimSetLowerSeq(info, SeqCtrl[info->lowerseq].ceaseseq);
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckRunUnStrafe
------------------------------------------------*/
-
-void PlayerActionCheckRunUnStrafe(playerinfo_t *playerinfo)
+void PlayerActionCheckRunUnStrafe(playerinfo_t* info)
 {
-	//Player has stopped running
-	if (!(playerinfo->buttons & BUTTON_RUN))
+	const qboolean is_running = (info->buttons & BUTTON_RUN); //mxd
+
+	// Player has stopped running
+	if (!is_running)
 	{
-		if (playerinfo->seqcmd[ACMDL_STRAFE_L])
+		if (info->seqcmd[ACMDL_STRAFE_L])
 		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSTRAFE_LEFT);
+			PlayerAnimSetLowerSeq(info, ASEQ_WSTRAFE_LEFT);
 			return;
 		}
-		
-		if (playerinfo->seqcmd[ACMDL_STRAFE_R])
+
+		if (info->seqcmd[ACMDL_STRAFE_R])
 		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSTRAFE_RIGHT);
+			PlayerAnimSetLowerSeq(info, ASEQ_WSTRAFE_RIGHT);
 			return;
 		}
 	}
 
-	//Still pressing the same way and still 
-	if (playerinfo->seqcmd[ACMDL_FWD] && playerinfo->seqcmd[ACMDL_STRAFE_L] && playerinfo->lowerseq == ASEQ_RSTRAFE_LEFT)
+	// Still pressing the same way and still strafing.
+	if (info->seqcmd[ACMDL_FWD])
 	{
-		//Account for coincidental action
-		PlayerActionCheckRun(playerinfo);
-		return;
-	}
-
-	if (playerinfo->seqcmd[ACMDL_FWD] && playerinfo->seqcmd[ACMDL_STRAFE_R] && playerinfo->lowerseq == ASEQ_RSTRAFE_RIGHT)
-	{
-		//Account for coincidental action
-		PlayerActionCheckRun(playerinfo);
-		return;
-	}
-
-	//Stopped moving forward, has gone to a side strafe
-	if (!playerinfo->seqcmd[ACMDL_FWD])
-	{
-		if (playerinfo->buttons & BUTTON_RUN)
+		if ((info->seqcmd[ACMDL_STRAFE_L] && info->lowerseq == ASEQ_RSTRAFE_LEFT) ||
+			(info->seqcmd[ACMDL_STRAFE_R] && info->lowerseq == ASEQ_RSTRAFE_RIGHT))
 		{
-			if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-			{
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_DASH_LEFT);
-				return;
-			}
-			else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-			{
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_DASH_RIGHT);
-				return;
-			}
-		}
-		else
-		{
-			if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-			{
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_STRAFEL);
-				return;
-			}
-			else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-			{
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_STRAFER);
-				return;
-			}
+			// Account for coincidental action.
+			PlayerActionCheckRun(info);
+			return;
 		}
 	}
 
-	//Have we reversed directions of the strafe?
-	if (playerinfo->seqcmd[ACMDL_STRAFE_R] && playerinfo->lowerseq == ASEQ_RSTRAFE_LEFT)
+	// Stopped moving forward, has gone to a side strafe.
+	if (!info->seqcmd[ACMDL_FWD])
 	{
-		playerinfo->lowerseq = ASEQ_RSTRAFE_RIGHT;
-		playerinfo->lowermove = PlayerSeqData[playerinfo->lowerseq].move;
-		playerinfo->lowerframeptr = playerinfo->lowermove->frame + playerinfo->lowerframe;
-		
+		int tgtseq = ASEQ_NONE;
+
+		if (info->seqcmd[ACMDL_STRAFE_L])
+			tgtseq = (is_running ? ASEQ_DASH_LEFT : ASEQ_STRAFEL);
+		else if (info->seqcmd[ACMDL_STRAFE_R])
+			tgtseq = (is_running ? ASEQ_DASH_RIGHT : ASEQ_STRAFER);
+
+		if (tgtseq != ASEQ_NONE)
+		{
+			PlayerAnimSetLowerSeq(info, tgtseq);
+			return;
+		}
+	}
+
+	// Have we reversed directions of the strafe?
+	if (info->seqcmd[ACMDL_STRAFE_R] && info->lowerseq == ASEQ_RSTRAFE_LEFT)
+	{
+		SetLowerSeq(info, ASEQ_RSTRAFE_RIGHT); //mxd
 		return;
 	}
 
-	if (playerinfo->seqcmd[ACMDL_STRAFE_L] && playerinfo->lowerseq == ASEQ_RSTRAFE_RIGHT)
+	if (info->seqcmd[ACMDL_STRAFE_L] && info->lowerseq == ASEQ_RSTRAFE_RIGHT)
 	{
-		playerinfo->lowerseq = ASEQ_RSTRAFE_LEFT;
-		playerinfo->lowermove = PlayerSeqData[playerinfo->lowerseq].move;
-		playerinfo->lowerframeptr = playerinfo->lowermove->frame + playerinfo->lowerframe;
-		
+		SetLowerSeq(info, ASEQ_RSTRAFE_LEFT); //mxd
 		return;
 	}
 
-	//We're doing something else, so run a normal function to determine it
-	PlayerActionCheckRun(playerinfo);
+	// We're doing something else, so run a normal function to determine it.
+	PlayerActionCheckRun(info);
 }
 
 #pragma endregion

@@ -79,7 +79,7 @@ void PlayerActionJumpBack(playerinfo_t* info, float value);
 void PlayerActionPushAway(playerinfo_t* info, float value);
 void PlayerActionShrineEffect(playerinfo_t* info, float value);
 
-void PlayerActionCheckRunUnStrafe(playerinfo_t* playerinfo);
+void PlayerActionCheckRunUnStrafe(playerinfo_t* info);
 
 void PlayerActionCheckDoubleJump(playerinfo_t* info);
 void PlayerMoveAdd(playerinfo_t* info);
