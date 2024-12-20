@@ -122,7 +122,7 @@ void PlayerActionCheckCreepUnStrafe(playerinfo_t* info);
 void PlayerActionCheckCreepBack(playerinfo_t* info);
 void PlayerActionCheckCreepBackUnStrafe(playerinfo_t* info);
 
-void PlayerActionCheckWalk(playerinfo_t* playerinfo);
+void PlayerActionCheckWalk(playerinfo_t* info);
 void PlayerActionCheckWalkUnStrafe(playerinfo_t* playerinfo);
 
 void PlayerActionCheckWalkBack(playerinfo_t* playerinfo);
