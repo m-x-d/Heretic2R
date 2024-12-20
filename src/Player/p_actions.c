@@ -21,8 +21,8 @@
 #include "p_utility.h" //mxd
 #include "q_shared.h"
 
-static vec3_t handmins = { -2.0f, -2.0f, 0.0f };
-static vec3_t handmaxs = {  2.0f,  2.0f, 2.0f };
+static const vec3_t handmins = { -2.0f, -2.0f, 0.0f };
+static const vec3_t handmaxs = {  2.0f,  2.0f, 2.0f };
 
 static float CL_NormaliseAngle(float angle)
 {
