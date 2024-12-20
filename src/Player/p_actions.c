@@ -2528,69 +2528,53 @@ void PlayerActionCheckWalkBack(playerinfo_t* info)
 	PlayerActionCheckWalk(info);
 }
 
-/*-----------------------------------------------
-	PlayerActionCheckWalkBackUnStrafe
------------------------------------------------*/
-
-void PlayerActionCheckWalkBackUnStrafe(playerinfo_t *playerinfo)
+void PlayerActionCheckWalkBackUnStrafe(playerinfo_t* info)
 {
-	//Still pressing the same way and still 
-	if (playerinfo->seqcmd[ACMDL_BACK] && playerinfo->seqcmd[ACMDL_STRAFE_L] && playerinfo->lowerseq == ASEQ_WSTRAFEB_LEFT)
-	{
-		//Account for coincidental action
-		PlayerActionCheckWalk(playerinfo);
-		return;
-	}
+	const qboolean is_running = (info->buttons & BUTTON_RUN); //mxd
 
-	if (playerinfo->seqcmd[ACMDL_BACK] && playerinfo->seqcmd[ACMDL_STRAFE_R] && playerinfo->lowerseq == ASEQ_WSTRAFEB_RIGHT)
+	// Still pressing the same way and still strafing.
+	if (info->seqcmd[ACMDL_BACK])
 	{
-		//Account for coincidental action
-		PlayerActionCheckWalk(playerinfo);
-		return;
-	}
-
-	//Stopped moving forward, has gone to a side strafe
-	if (!playerinfo->seqcmd[ACMDL_BACK])
-	{
-		if (playerinfo->seqcmd[ACMDL_STRAFE_L])
+		if ((info->seqcmd[ACMDL_STRAFE_L] && info->lowerseq == ASEQ_WSTRAFEB_LEFT) ||
+			(info->seqcmd[ACMDL_STRAFE_R] && info->lowerseq == ASEQ_WSTRAFEB_RIGHT))
 		{
-			if (playerinfo->buttons & BUTTON_RUN)
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_DASH_LEFT_GO);
-			else
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_STRAFEL);
-			return;
-		}
-		else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-		{
-			if (playerinfo->buttons & BUTTON_RUN)
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_DASH_RIGHT_GO);
-			else
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_STRAFER);
+			// Account for coincidental action.
+			PlayerActionCheckWalk(info);
 			return;
 		}
 	}
 
-	//Have we reversed directions of the strafe?
-	if (playerinfo->seqcmd[ACMDL_STRAFE_R] && playerinfo->lowerseq == ASEQ_WSTRAFEB_LEFT)
+	// Stopped moving forward, has gone to a side strafe.
+	if (!info->seqcmd[ACMDL_BACK])
 	{
-		playerinfo->lowerseq = ASEQ_WSTRAFEB_RIGHT;
-		playerinfo->lowermove = PlayerSeqData[playerinfo->lowerseq].move;
-		playerinfo->lowerframeptr = playerinfo->lowermove->frame + playerinfo->lowerframe;
-		
+		if (info->seqcmd[ACMDL_STRAFE_L])
+		{
+			PlayerAnimSetLowerSeq(info, (is_running ? ASEQ_DASH_LEFT_GO : ASEQ_STRAFEL));
+			return;
+		}
+
+		if (info->seqcmd[ACMDL_STRAFE_R])
+		{
+			PlayerAnimSetLowerSeq(info, (is_running ? ASEQ_DASH_RIGHT_GO : ASEQ_STRAFER));
+			return;
+		}
+	}
+
+	// Have we reversed directions of the strafe?
+	if (info->seqcmd[ACMDL_STRAFE_R] && info->lowerseq == ASEQ_WSTRAFEB_LEFT)
+	{
+		SetLowerSeq(info, ASEQ_WSTRAFEB_RIGHT); //mxd
 		return;
 	}
 
-	if (playerinfo->seqcmd[ACMDL_STRAFE_L] && playerinfo->lowerseq == ASEQ_WSTRAFEB_RIGHT)
+	if (info->seqcmd[ACMDL_STRAFE_L] && info->lowerseq == ASEQ_WSTRAFEB_RIGHT)
 	{
-		playerinfo->lowerseq = ASEQ_WSTRAFEB_LEFT;
-		playerinfo->lowermove = PlayerSeqData[playerinfo->lowerseq].move;
-		playerinfo->lowerframeptr = playerinfo->lowermove->frame + playerinfo->lowerframe;
-		
+		SetLowerSeq(info, ASEQ_WSTRAFEB_LEFT); //mxd
 		return;
 	}
 
-	//We're doing something else, so run a normal function to determine it
-	PlayerActionCheckWalk(playerinfo);
+	// We're doing something else, so run a normal function to determine it.
+	PlayerActionCheckWalk(info);
 }
 
 #pragma endregion
