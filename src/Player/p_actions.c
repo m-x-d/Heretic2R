@@ -2496,68 +2496,36 @@ void PlayerActionCheckWalkUnStrafe(playerinfo_t* info)
 
 #pragma endregion
 
+#pragma region ========================== WALK BACK ==========================
 
-
-
-
-/*
-
-	Walk Back
-
-*/
-
-
-
-
-
-
-
-/*-----------------------------------------------
-	PlayerActionCheckWalkBack
------------------------------------------------*/
-
-void PlayerActionCheckWalkBack( playerinfo_t *playerinfo )
+void PlayerActionCheckWalkBack(playerinfo_t* info)
 {
-	//Check for a transition to a walking or running strafe		[High probability]
-	if ( playerinfo->seqcmd[ACMDL_BACK] && playerinfo->seqcmd[ACMDL_STRAFE_L] && playerinfo->lowerseq != ASEQ_WSTRAFEB_LEFT)
+	const qboolean is_running = (info->buttons & BUTTON_RUN); //mxd
+
+	// Check for a transition to a walking or running strafe [High probability].
+	if (info->seqcmd[ACMDL_BACK] && info->seqcmd[ACMDL_STRAFE_L] && info->lowerseq != ASEQ_WSTRAFEB_LEFT)
 	{
-		if (playerinfo->buttons & BUTTON_RUN)
-		{
-			//FIXME: There are no backwards run strafes!
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSTRAFEB_LEFT);
-			return;
-		}
+		if (is_running)
+			PlayerAnimSetLowerSeq(info, ASEQ_WSTRAFEB_LEFT); //FIXME: There are no backwards run strafes!
 		else
-		{
-			playerinfo->lowerseq = ASEQ_WSTRAFEB_LEFT;
-			playerinfo->lowermove = PlayerSeqData[playerinfo->lowerseq].move;
-			playerinfo->lowerframeptr = playerinfo->lowermove->frame + playerinfo->lowerframe;
-		
-			return;
-		}
+			SetLowerSeq(info, ASEQ_WSTRAFEB_LEFT); //mxd
+
+		return;
 	}
 
-	//Check for a transition to a walking or running strafe		[High probability]
-	if ( playerinfo->seqcmd[ACMDL_BACK] && playerinfo->seqcmd[ACMDL_STRAFE_R] && playerinfo->lowerseq != ASEQ_WSTRAFEB_RIGHT)
+	// Check for a transition to a walking or running strafe [High probability].
+	if (info->seqcmd[ACMDL_BACK] && info->seqcmd[ACMDL_STRAFE_R] && info->lowerseq != ASEQ_WSTRAFEB_RIGHT)
 	{
-		if (playerinfo->buttons & BUTTON_RUN)
-		{
-			//FIXME: There are no backwards run strafes!
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSTRAFEB_RIGHT);
-			return;
-		}
+		if (is_running)
+			PlayerAnimSetLowerSeq(info, ASEQ_WSTRAFEB_RIGHT); //FIXME: There are no backwards run strafes!
 		else
-		{
-			playerinfo->lowerseq = ASEQ_WSTRAFEB_RIGHT;
-			playerinfo->lowermove = PlayerSeqData[playerinfo->lowerseq].move;
-			playerinfo->lowerframeptr = playerinfo->lowermove->frame + playerinfo->lowerframe;
-			
-			return;
-		}
+			SetLowerSeq(info, ASEQ_WSTRAFEB_RIGHT); //mxd
+
+		return;
 	}
 
-	//We're doing something else, so run a normal function to determine it
-	PlayerActionCheckWalk(playerinfo);
+	// We're doing something else, so run a normal function to determine it.
+	PlayerActionCheckWalk(info);
 }
 
 /*-----------------------------------------------
@@ -2625,7 +2593,7 @@ void PlayerActionCheckWalkBackUnStrafe(playerinfo_t *playerinfo)
 	PlayerActionCheckWalk(playerinfo);
 }
 
-
+#pragma endregion
 
 
 
