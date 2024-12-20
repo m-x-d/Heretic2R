@@ -21,9 +21,6 @@
 #include "p_utility.h" //mxd
 #include "q_shared.h"
 
-#define AIRMOVE_AMOUNT		48
-#define AIRMOVE_THRESHOLD	64
-
 static vec3_t handmins = { -2.0f, -2.0f, 0.0f };
 static vec3_t handmaxs = {  2.0f,  2.0f, 2.0f };
 
