@@ -119,8 +119,8 @@ void PlayerPlaySlide(playerinfo_t* playerinfo);
 void PlayerActionCheckCreep(playerinfo_t* info);
 void PlayerActionCheckCreepUnStrafe(playerinfo_t* info);
 
-void PlayerActionCheckCreepBack(playerinfo_t* playerinfo);
-void PlayerActionCheckCreepBackUnStrafe(playerinfo_t* playerinfo);
+void PlayerActionCheckCreepBack(playerinfo_t* info);
+void PlayerActionCheckCreepBackUnStrafe(playerinfo_t* info);
 
 void PlayerActionCheckWalk(playerinfo_t* playerinfo);
 void PlayerActionCheckWalkUnStrafe(playerinfo_t* playerinfo);
