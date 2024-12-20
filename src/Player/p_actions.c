@@ -2120,7 +2120,7 @@ void PlayerActionCheckCreepUnStrafe(playerinfo_t* info)
 {
 	const qboolean is_running = (info->buttons & BUTTON_RUN); //mxd
 	const qboolean is_creeping = (info->buttons & BUTTON_CREEP); //mxd
-	int seq = 0; //mxd
+	int seq = ASEQ_NONE; //mxd
 
 	// Player has started running.
 	if (is_running)
@@ -2138,7 +2138,7 @@ void PlayerActionCheckCreepUnStrafe(playerinfo_t* info)
 			seq = ASEQ_WSTRAFE_RIGHT;
 	}
 
-	if (seq != 0)
+	if (seq != ASEQ_NONE)
 	{
 		PlayerAnimSetLowerSeq(info, seq);
 		return;
@@ -2164,7 +2164,7 @@ void PlayerActionCheckCreepUnStrafe(playerinfo_t* info)
 		else if (info->seqcmd[ACMDL_STRAFE_R])
 			seq = (is_running ? ASEQ_DASH_RIGHT_GO : ASEQ_STRAFER); // Check for a transfer to a run.
 
-		if (seq != 0)
+		if (seq != ASEQ_NONE)
 		{
 			PlayerAnimSetLowerSeq(info, seq);
 			return;
@@ -2177,7 +2177,7 @@ void PlayerActionCheckCreepUnStrafe(playerinfo_t* info)
 	else if (info->seqcmd[ACMDL_STRAFE_L] && info->lowerseq == ASEQ_CSTRAFE_RIGHT)
 		seq = ASEQ_CSTRAFE_LEFT;
 
-	if (seq != 0)
+	if (seq != ASEQ_NONE)
 	{
 		SetLowerSeq(info, seq); //mxd
 		return;
