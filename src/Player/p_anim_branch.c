@@ -237,100 +237,76 @@ int ChickenBranchLwrStanding(const playerinfo_t* info)
 	}
 }
 
-// This allows the chicken to interupt itself - if its idling.
-
-/*-----------------------------------------------
-	ChickenBranchidle
------------------------------------------------*/
-
-int ChickenBranchidle(playerinfo_t *playerinfo)
+// This allows the chicken to interrupt itself - if its idling.
+int ChickenBranchidle(playerinfo_t* info)
 {
-	// Do we need to attack ?
-	if (playerinfo->seqcmd[ACMDU_ATTACK])
+	// Do we need to attack?
+	if (info->seqcmd[ACMDU_ATTACK])
 	{
-		PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSWORD_SPIN);
-		return(ASEQ_WSWORD_SPIN);
+		PlayerAnimSetLowerSeq(info, ASEQ_WSWORD_SPIN);
+		return ASEQ_WSWORD_SPIN;
 	}
-	else if (playerinfo->seqcmd[ACMDL_WALK_F])
+
+	const qboolean do_jump = info->seqcmd[ACMDL_JUMP]; //mxd
+
+	if (info->seqcmd[ACMDL_WALK_F])
 	{
-		// We are walking forward... want to jump?
-		if (playerinfo->seqcmd[ACMDL_JUMP])
-		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPFWD_WGO);
-			return ASEQ_JUMPFWD_WGO;
-		}
-		else
-		{
-			// No, walk forward.
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WALKF_GO);
-			return ASEQ_WALKF_GO;
-		}
+		//mxd. Do forward-jump or walk forward.
+		const int seq = (do_jump ? ASEQ_JUMPFWD_WGO : ASEQ_WALKF_GO);
+		PlayerAnimSetLowerSeq(info, seq);
+
+		return seq;
 	}
-	else if (playerinfo->seqcmd[ACMDL_RUN_F])
+
+	if (info->seqcmd[ACMDL_RUN_F])
 	{
-		// 	We are running forward... want to jump?
-		if (playerinfo->seqcmd[ACMDL_JUMP])
-		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPFWD_RGO);
-			return ASEQ_JUMPFWD_RGO;
-		}
-		else
-		{
-			// No, run forward.
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_RUNF_GO);
-			return ASEQ_RUNF_GO;
-		}
+		//mxd. Do forward-jump or run forward.
+		const int seq = (do_jump ? ASEQ_JUMPFWD_RGO : ASEQ_RUNF_GO);
+		PlayerAnimSetLowerSeq(info, seq);
+
+		return seq;
 	}
-	else if (playerinfo->seqcmd[ACMDL_RUN_B])		
+
+	if (info->seqcmd[ACMDL_RUN_B])
 	{
-		// We are running backward... want to jump?
-		if (playerinfo->seqcmd[ACMDL_JUMP])
-		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPFLIPL);
-			return ASEQ_JUMPFLIPL;
-		}
-		else
-		{
-			// No, run backward
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSTRAFE_LEFT);
-			return ASEQ_WSTRAFE_LEFT;
-		}
+		//mxd. Do backward-jump or run backward.
+		const int seq = (do_jump ? ASEQ_JUMPFLIPL : ASEQ_WSTRAFE_LEFT);
+		PlayerAnimSetLowerSeq(info, seq);
+
+		return seq;
 	}
-	else if (playerinfo->seqcmd[ACMDL_BACK])
+
+	if (info->seqcmd[ACMDL_BACK])
 	{
-		// We are walking backward... want to jump?
-		if (playerinfo->seqcmd[ACMDL_JUMP])
-		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPBACK);
-			return ASEQ_JUMPBACK;
-		}
-		else
-		{
-			// No, walk backward.
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_WALKB);
-			return ASEQ_WALKB;
-		}
+		//mxd. Do backward-jump or walk backward.
+		const int seq = (do_jump ? ASEQ_JUMPBACK : ASEQ_WALKB);
+		PlayerAnimSetLowerSeq(info, seq);
+
+		return seq;
 	}
-	else if (playerinfo->seqcmd[ACMDL_STRAFE_L])
+
+	if (info->seqcmd[ACMDL_STRAFE_L])
 	{
 		// Strafing left.
-		PlayerAnimSetLowerSeq(playerinfo, ASEQ_STRAFEL);
+		PlayerAnimSetLowerSeq(info, ASEQ_STRAFEL);
 		return ASEQ_STRAFEL;
 	}
-	else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
+
+	if (info->seqcmd[ACMDL_STRAFE_R])
 	{
 		// Strafing right.
-		PlayerAnimSetLowerSeq(playerinfo, ASEQ_STRAFER);
+		PlayerAnimSetLowerSeq(info, ASEQ_STRAFER);
 		return ASEQ_STRAFER;
 	}
-	else if (playerinfo->seqcmd[ACMDL_JUMP])
+
+	if (info->seqcmd[ACMDL_JUMP])
 	{
 		// Jumping in place.
-		PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPUP);
+		PlayerAnimSetLowerSeq(info, ASEQ_JUMPUP);
 		return ASEQ_JUMPUP;
 	}
 
-	return(ASEQ_NONE);
+	return ASEQ_NONE;
 }
 
 #pragma endregion
