@@ -882,127 +882,95 @@ int BranchLwrRunningStrafe(playerinfo_t* info)
 	return ASEQ_NONE;
 }
 
-/*-----------------------------------------------
-	BranchLwrShortstep
------------------------------------------------*/
-
-int BranchLwrShortstep(playerinfo_t *playerinfo)
+int BranchLwrShortstep(playerinfo_t* info)
 {
-	assert(playerinfo);
+	const qboolean is_creeping = (info->buttons & BUTTON_CREEP); //mxd
+	const qboolean in_slime_or_lava = (info->watertype & (CONTENTS_SLIME | CONTENTS_LAVA)); //mxd
 
-	if (playerinfo->groundentity==NULL && playerinfo->waterlevel < 2 && !(playerinfo->watertype & (CONTENTS_SLIME|CONTENTS_LAVA)))
-	{
-		if (CheckFall(playerinfo))
-			return ASEQ_FALLWALK_GO;
-	}
+	assert(info);
 
-	if (playerinfo->seqcmd[ACMDL_ACTION])
+	if (info->groundentity == NULL && info->waterlevel < 2 && !in_slime_or_lava && CheckFall(info))
+		return ASEQ_FALLWALK_GO;
+
+	if (info->seqcmd[ACMDL_ACTION])
 	{
-		if ( (playerinfo->targetEnt) && (PlayerActionCheckRopeGrab(playerinfo,0)) ) //Climb a rope?
+		if (info->targetEnt != NULL && PlayerActionCheckRopeGrab(info, 0)) // Climb a rope?
 		{
-			playerinfo->flags |= PLAYER_FLAG_ONROPE;
-			
-			if(playerinfo->isclient)
-				playerinfo->CL_Sound(SND_PRED_ID36, playerinfo->origin, CHAN_VOICE, "player/ropegrab.wav", 0.75, ATTN_NORM, 0);
-			else
-				playerinfo->G_Sound(SND_PRED_ID36, playerinfo->leveltime, playerinfo->self, CHAN_VOICE, playerinfo->G_SoundIndex("player/ropegrab.wav"), 0.75, ATTN_NORM, 0);
+			info->flags |= PLAYER_FLAG_ONROPE;
+			P_Sound(info, SND_PRED_ID36, CHAN_VOICE, "player/ropegrab.wav", 0.75f); //mxd
 
 			return ASEQ_CLIMB_ON;
 		}
 
-		if ( (playerinfo->flags & PLAYER_FLAG_COLLISION) && (playerinfo->upperidle) && (PlayerActionCheckJumpGrab(playerinfo, 0)) )
+		if (info->upperidle && (info->flags & PLAYER_FLAG_COLLISION) && PlayerActionCheckJumpGrab(info, 0))
 			return ASEQ_JUMPSTD_GO;
 	}
 
-	if (playerinfo->seqcmd[ACMDL_JUMP])
+	if (info->seqcmd[ACMDL_JUMP] && !in_slime_or_lava)
 	{
-		if (!(playerinfo->watertype & (CONTENTS_SLIME|CONTENTS_LAVA)))
-		{
-			if (playerinfo->seqcmd[ACMDL_FWD])
-				return ASEQ_JUMPFWD_SGO;
-			
-			if (playerinfo->seqcmd[ACMDL_BACK])
-				return ASEQ_JUMPBACK_SGO;
-			
-			if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-				return ASEQ_JUMPLEFT_SGO;
-			
-			if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-				return ASEQ_JUMPRIGHT_SGO;
+		if (info->seqcmd[ACMDL_FWD])
+			return ASEQ_JUMPFWD_SGO;
 
-			return ASEQ_JUMPSTD_GO;
-		}
-	}
-	
-	//Check for a crouch
-	if (playerinfo->seqcmd[ACMDL_CROUCH])
-	{
-		if (playerinfo->buttons & BUTTON_CREEP)
-		{
-			if (playerinfo->seqcmd[ACMDL_FWD])
-				return ASEQ_CROUCH_WALK_F;
+		if (info->seqcmd[ACMDL_BACK])
+			return ASEQ_JUMPBACK_SGO;
 
-			if (playerinfo->seqcmd[ACMDL_BACK])
-				return ASEQ_CROUCH_WALK_B;
-			
-			if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-				return ASEQ_CROUCH_WALK_L;
-			
-			if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-				return ASEQ_CROUCH_WALK_R;
+		if (info->seqcmd[ACMDL_STRAFE_L])
+			return ASEQ_JUMPLEFT_SGO;
 
-			return ASEQ_CROUCH_GO;
-		}
-		else
-		{
-			if (playerinfo->seqcmd[ACMDL_FWD])
-				return ASEQ_ROLLDIVEF_W;
+		if (info->seqcmd[ACMDL_STRAFE_R])
+			return ASEQ_JUMPRIGHT_SGO;
 
-			if (playerinfo->seqcmd[ACMDL_BACK])
-				return ASEQ_ROLL_B;
-			
-			if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-				return ASEQ_ROLL_L;
-			
-			if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-				return ASEQ_ROLL_R;
-
-			return ASEQ_CROUCH_GO;
-		}
-	}
-	
-	//Check for walk strafing forward [HIGH PROBABILITY]
-	if ( playerinfo->seqcmd[ACMDL_CREEP_F] && playerinfo->seqcmd[ACMDL_STRAFE_L])
-	{
-		return ASEQ_CSTRAFE_LEFT;
-	}
-    
-	if ( playerinfo->seqcmd[ACMDL_CREEP_F] && playerinfo->seqcmd[ACMDL_STRAFE_R])
-	{
-		return ASEQ_CSTRAFE_RIGHT;
+		return ASEQ_JUMPSTD_GO;
 	}
 
-	//Check for walk strafing backward [HIGH PROBABILITY]
-	if ( playerinfo->seqcmd[ACMDL_CREEP_B] && playerinfo->seqcmd[ACMDL_STRAFE_L])
+	// Check for a crouch.
+	if (info->seqcmd[ACMDL_CROUCH])
 	{
-		return ASEQ_CSTRAFEB_LEFT;
-	}
-    
-	if ( playerinfo->seqcmd[ACMDL_CREEP_B] && playerinfo->seqcmd[ACMDL_STRAFE_R])
-	{
-		return ASEQ_CSTRAFEB_RIGHT;
+		if (info->seqcmd[ACMDL_FWD])
+			return (is_creeping ? ASEQ_CROUCH_WALK_F : ASEQ_ROLLDIVEF_W);
+
+		if (info->seqcmd[ACMDL_BACK])
+			return (is_creeping ? ASEQ_CROUCH_WALK_B : ASEQ_ROLL_B);
+
+		if (info->seqcmd[ACMDL_STRAFE_L])
+			return (is_creeping ? ASEQ_CROUCH_WALK_L : ASEQ_ROLL_L);
+
+		if (info->seqcmd[ACMDL_STRAFE_R])
+			return (is_creeping ? ASEQ_CROUCH_WALK_R : ASEQ_ROLL_R);
+
+		return ASEQ_CROUCH_GO;
 	}
 
-	if (playerinfo->seqcmd[ACMDL_WALK_F])
+	// Check for walk strafing forward [HIGH PROBABILITY].
+	if (info->seqcmd[ACMDL_CREEP_F])
+	{
+		if (info->seqcmd[ACMDL_STRAFE_L])
+			return ASEQ_CSTRAFE_LEFT;
+
+		if (info->seqcmd[ACMDL_STRAFE_R])
+			return ASEQ_CSTRAFE_RIGHT;
+	}
+
+	// Check for walk strafing backward [HIGH PROBABILITY].
+	if (info->seqcmd[ACMDL_CREEP_B])
+	{
+		if (info->seqcmd[ACMDL_STRAFE_L])
+			return ASEQ_CSTRAFEB_LEFT;
+
+		if (info->seqcmd[ACMDL_STRAFE_R])
+			return ASEQ_CSTRAFEB_RIGHT;
+	}
+
+	if (info->seqcmd[ACMDL_WALK_F])
 		return ASEQ_WALKF_GO;
-	
-	if (playerinfo->seqcmd[ACMDL_RUN_F])
+
+	if (info->seqcmd[ACMDL_RUN_F])
 		return ASEQ_RUNF_GO;
-	
-	if (playerinfo->seqcmd[ACMDL_CREEP_B])
+
+	if (info->seqcmd[ACMDL_CREEP_B])
 		return ASEQ_CREEPB;
 
-	if (playerinfo->seqcmd[ACMDL_BACK])
+	if (info->seqcmd[ACMDL_BACK])
 		return ASEQ_WALKB;
 
 	return ASEQ_NONE;
