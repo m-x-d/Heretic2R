@@ -1268,35 +1268,26 @@ static int BranchUprReadySwordStaff(playerinfo_t* info)
 	return ASEQ_NONE;
 }
 
-/*-----------------------------------------------
-	BranchUprReadyHellStaff
------------------------------------------------*/
-
-int BranchUprReadyHellStaff(playerinfo_t *playerinfo)
+static int BranchUprReadyHellStaff(playerinfo_t* info)
 {
-	//No arm, no shot
-	if (playerinfo->flags & PLAYER_FLAG_NO_RARM)
+	// No arm, no shot.
+	if (info->flags & PLAYER_FLAG_NO_RARM)
 		return ASEQ_NONE;
 
-	if(playerinfo->seqcmd[ACMDU_ATTACK]  && !(playerinfo->edictflags & FL_CHICKEN) && Weapon_CurrentShotsLeft(playerinfo))	// Not a chicken
+	if (info->seqcmd[ACMDU_ATTACK] && !(info->edictflags & FL_CHICKEN) && Weapon_CurrentShotsLeft(info) > 0) // Not a chicken.
 	{
-		playerinfo->idletime=playerinfo->leveltime;
-		
-		if (!strcmp(playerinfo->pers.weapon->classname, "item_weapon_hellstaff"))
-		{
-			// If powered up, use the alternate animation sequence.
-			if (playerinfo->powerup_timer > playerinfo->leveltime)
-				return playerinfo->pers.weapon->altanimseq;
-			else
-				return playerinfo->pers.weapon->playeranimseq;	
-		}
+		info->idletime = info->leveltime;
+
+		// If powered up, use the alternate animation sequence.
+		if (strcmp(info->pers.weapon->classname, "item_weapon_hellstaff") == 0) //TODO: check not needed?
+			return ((info->powerup_timer > info->leveltime) ? info->pers.weapon->altanimseq : info->pers.weapon->playeranimseq);
 	}
 	else
 	{
-		playerinfo->upperidle = true;
+		info->upperidle = true;
 	}
 
-	return(ASEQ_NONE);
+	return ASEQ_NONE;
 }
 
 /*-----------------------------------------------
