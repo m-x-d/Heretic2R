@@ -1,51 +1,40 @@
 //
-// p_anim_branch2.h
+// p_anim_branch.h
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
-#ifndef _P_ANIM_BRANCH2_H_
-#define _P_ANIM_BRANCH2_H_
+#pragma once
 
 // Chicken Branch.
-
-int ChickenBranchLwrStanding(playerinfo_t *playerinfo);
-int ChickenBranchidle(playerinfo_t *playerinfo);
+extern int ChickenBranchLwrStanding(const playerinfo_t *info);
+extern int ChickenBranchidle(playerinfo_t *info);
 
 // Player Lower Branch.
-
-int BranchLwrStanding(playerinfo_t *playerinfo);
-int BranchLwrStandingRun(playerinfo_t *playerinfo);
-int BranchLwrRunning(playerinfo_t *playerinfo);
-int BranchLwrWalking(playerinfo_t *playerinfo);
-int BranchLwrShortstep(playerinfo_t *playerinfo);
-int BranchLwrBackspring(playerinfo_t *playerinfo);
-int BranchLwrCrouching(playerinfo_t *playerinfo);
-int BranchLwrJumping(playerinfo_t *playerinfo);
-int BranchLwrSliding(playerinfo_t *playerinfo);
-int BranchLwrSurfaceSwim(playerinfo_t *playerinfo);
-int BranchLwrUnderwaterSwim(playerinfo_t *playerinfo);
-int BranchLwrHanging(playerinfo_t *playerinfo);
-int BranchLwrClimbing(playerinfo_t *playerinfo);
-int BranchLwrKnockDown(playerinfo_t *playerinfo);
-int BranchLwrRunningStrafe(playerinfo_t *playerinfo);
+extern int BranchLwrStanding(playerinfo_t *info);
+extern int BranchLwrStandingRun(playerinfo_t *info);
+extern int BranchLwrRunning(playerinfo_t *info);
+extern int BranchLwrWalking(playerinfo_t *info);
+extern int BranchLwrShortstep(playerinfo_t *info);
+extern int BranchLwrBackspring(playerinfo_t *info);
+extern int BranchLwrCrouching(playerinfo_t *info);
+extern int BranchLwrJumping(playerinfo_t *info);
+extern int BranchLwrSurfaceSwim(playerinfo_t *info);
+extern int BranchLwrUnderwaterSwim(playerinfo_t *info);
+extern int BranchLwrHanging(const playerinfo_t *info);
+extern int BranchLwrClimbing(playerinfo_t *info);
+extern int BranchLwrKnockDown(const playerinfo_t *info);
+extern int BranchLwrRunningStrafe(playerinfo_t *info);
 
 // Player Upper Branch.
-
-int BranchIdle(playerinfo_t *playerinfo);
-int BranchUprReady(playerinfo_t *playerinfo);
-int BranchUprRdySpell(playerinfo_t *playerinfo);
-int BranchUprRdyStaff(playerinfo_t *playerinfo);
-int BranchUprRdyBow(playerinfo_t *playerinfo);
-int BranchCheckAmmo(playerinfo_t *playerinfo);
-int BranchCheckHellAmmo(playerinfo_t *playerinfo);
-int BranchCheckMana(playerinfo_t *playerinfo);
+extern int BranchIdle(const playerinfo_t *info);
+extern int BranchUprReady(playerinfo_t *info);
+extern int BranchCheckAmmo(playerinfo_t *info);
+extern int BranchCheckHellAmmo(playerinfo_t *info);
+extern int BranchCheckMana(playerinfo_t *info);
 
 //mxd. Utility
-extern qboolean CheckFall(playerinfo_t* playerinfo);
-extern qboolean CheckUncrouch(playerinfo_t* playerinfo);
+extern qboolean CheckFall(const playerinfo_t* info);
+extern qboolean CheckUncrouch(const playerinfo_t* info);
 
-extern PLAYER_API qboolean BranchCheckDismemberAction(playerinfo_t *playerinfo, int weapon);
-
-#endif // _P_ANIM_BRANCH2_H_
+extern PLAYER_API qboolean BranchCheckDismemberAction(const playerinfo_t *info, int weapon);
