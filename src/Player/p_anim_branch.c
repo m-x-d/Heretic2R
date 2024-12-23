@@ -1151,73 +1151,42 @@ int BranchLwrSurfaceSwim(playerinfo_t* info)
 	return ASEQ_NONE;
 }
 
-/*-----------------------------------------------
-	BranchLwrUnderwaterSwim
------------------------------------------------*/
-
-int BranchLwrUnderwaterSwim(playerinfo_t *playerinfo)
+int BranchLwrUnderwaterSwim(playerinfo_t* info)
 {
-	gitem_t	*Weapon;
+	assert(info);
 
-	assert(playerinfo);
-
-	if ((playerinfo->pers.weaponready != WEAPON_READY_HANDS) && ((Weapon=FindItem("fball"))!=NULL))
+	if (info->pers.weaponready != WEAPON_READY_HANDS)
 	{
-		Weapon_EquipSpell(playerinfo, Weapon);
+		gitem_t* weapon = FindItem("fball");
+		if (weapon != NULL)
+			Weapon_EquipSpell(info, weapon);
 	}
 
-	if (playerinfo->seqcmd[ACMDL_ACTION])
+	if (info->seqcmd[ACMDL_ACTION])
 	{
-
-		//Try and use a puzzle piece
-		PlayerActionUsePuzzle(playerinfo);
-
-//		if (PlayerActionCheckPuzzleGrab(playerinfo)) 	// Are you near a puzzle piece? Then try to take it
-//		{
-  //			return ASEQ_TAKEPUZZLEUNDERWATER;
-	//	}
-
-	}
-	else if (playerinfo->seqcmd[ACMDL_FWD])
-	{
-		if (playerinfo->waterlevel <= 2)
-		{	
-			return ASEQ_SSWIM_RESURFACE;
-		}
-		
-		if ((playerinfo->lowerseq == ASEQ_USWIMF_GO) || (playerinfo->lowerseq == ASEQ_USWIMF)) 
-			return ASEQ_USWIMF;
-		else
-			return ASEQ_USWIMF_GO;
-	}
-	else if (playerinfo->seqcmd[ACMDL_BACK])
-	{
-		if ((playerinfo->lowerseq == ASEQ_USWIMB_GO) || (playerinfo->lowerseq == ASEQ_USWIMB)) 
-			return ASEQ_USWIMB;
-		else
-			return ASEQ_USWIMB_GO;
-	}
-	else if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-	{
-		if ((playerinfo->lowerseq == ASEQ_USWIML_GO) || (playerinfo->lowerseq == ASEQ_USWIML)) 
-			return ASEQ_USWIML;
-		else
-			return ASEQ_USWIML_GO;
-	}
-	else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-	{
-		if ((playerinfo->lowerseq == ASEQ_USWIMR_GO) || (playerinfo->lowerseq == ASEQ_USWIMR)) 
-			return ASEQ_USWIMR;
-		else
-			return ASEQ_USWIMR_GO;
-	}
-	else
-	{
-		if (playerinfo->waterlevel <= 2 && (playerinfo->lowerseq == ASEQ_USWIM_IDLE))
-			return ASEQ_SSWIM_IDLE;
-
+		PlayerActionUsePuzzle(info); // Try and use a puzzle piece.
 		return ASEQ_NONE;
 	}
+
+	if (info->seqcmd[ACMDL_FWD])
+	{
+		if (info->waterlevel <= 2)
+			return ASEQ_SSWIM_RESURFACE;
+
+		return ((info->lowerseq == ASEQ_USWIMF_GO || info->lowerseq == ASEQ_USWIMF) ? ASEQ_USWIMF : ASEQ_USWIMF_GO);
+	}
+
+	if (info->seqcmd[ACMDL_BACK])
+		return ((info->lowerseq == ASEQ_USWIMB_GO || info->lowerseq == ASEQ_USWIMB) ? ASEQ_USWIMB : ASEQ_USWIMB_GO);
+
+	if (info->seqcmd[ACMDL_STRAFE_L])
+		return ((info->lowerseq == ASEQ_USWIML_GO || info->lowerseq == ASEQ_USWIML) ? ASEQ_USWIML : ASEQ_USWIML_GO);
+
+	if (info->seqcmd[ACMDL_STRAFE_R])
+		return ((info->lowerseq == ASEQ_USWIMR_GO || info->lowerseq == ASEQ_USWIMR) ? ASEQ_USWIMR : ASEQ_USWIMR_GO);
+
+	if (info->waterlevel <= 2 && info->lowerseq == ASEQ_USWIM_IDLE)
+		return ASEQ_SSWIM_IDLE;
 
 	return ASEQ_NONE;
 }
