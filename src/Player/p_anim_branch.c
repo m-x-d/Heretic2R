@@ -1046,107 +1046,49 @@ int BranchLwrKnockDown(const playerinfo_t* info)
 	return (info->seqcmd[ACMDL_BACK] ? ASEQ_KNOCKDOWN_EVADE : ASEQ_KNOCKDOWN_GETUP);
 }
 
-/*-----------------------------------------------
-	BranchLwrCrouching
------------------------------------------------*/
-
-int BranchLwrCrouching(playerinfo_t *playerinfo)
+int BranchLwrCrouching(playerinfo_t* info)
 {
-	assert(playerinfo);
+	const qboolean is_creeping = (info->buttons & BUTTON_CREEP); //mxd
 
-	if (playerinfo->maxs[2] != 4)
-	{
-		playerinfo->maxs[2] = 4;
-	}
+	assert(info);
 
-	if (playerinfo->groundentity==NULL && playerinfo->waterlevel < 2)
-	{
-		if (CheckFall(playerinfo))
-			return ASEQ_CROUCH_END;
-	}
+	info->maxs[2] = 4.0f;
+
+	if (info->groundentity == NULL && info->waterlevel < 2 && CheckFall(info))
+		return ASEQ_CROUCH_END;
 
 	// See if we're ending the crouch.
-	if (!playerinfo->seqcmd[ACMDL_CROUCH] && !playerinfo->seqcmd[ACMDL_ROTATE_L] &&  !playerinfo->seqcmd[ACMDL_ROTATE_R])
+	if (!info->seqcmd[ACMDL_CROUCH] && !info->seqcmd[ACMDL_ROTATE_L] && !info->seqcmd[ACMDL_ROTATE_R])
 	{
-		if (!CheckUncrouch(playerinfo))
+		if (CheckUncrouch(info))
 		{
-			if (playerinfo->buttons & BUTTON_CREEP)
-			{
-				if (playerinfo->seqcmd[ACMDL_FWD])
-					return ASEQ_CROUCH_WALK_F;
-
-				if (playerinfo->seqcmd[ACMDL_BACK])
-					return ASEQ_CROUCH_WALK_B;
-
-				if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-					return ASEQ_CROUCH_WALK_L;
-
-				if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-					return ASEQ_CROUCH_WALK_R;
-			}
-
-			if (playerinfo->seqcmd[ACMDL_FWD])
-				return ASEQ_ROLLDIVEF_W;
-			
-			if (playerinfo->seqcmd[ACMDL_BACK])
-				return ASEQ_ROLL_B;
-			
-			if (playerinfo->seqcmd[ACMDL_ROTATE_L])
-				return ASEQ_CROUCH_PIVOTL;
-			
-			if (playerinfo->seqcmd[ACMDL_ROTATE_R])
-				return ASEQ_CROUCH_PIVOTR;
-			
-			if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-				return ASEQ_ROLL_R;
-			
-			if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-				return ASEQ_ROLL_L;
-			
-			return ASEQ_CROUCH;
+			info->maxs[2] = 25.0f;
+			return ASEQ_CROUCH_END;
 		}
-
-		playerinfo->maxs[2] = 25;
-
-		return ASEQ_CROUCH_END;
 	}
-
-	if (playerinfo->seqcmd[ACMDL_JUMP])
-		return ASEQ_JUMPSTD_GO;
-	
-	if (playerinfo->buttons & BUTTON_CREEP)
+	else if (info->seqcmd[ACMDL_JUMP]) // Skip jump check when can't un-crouch.
 	{
-		if (playerinfo->seqcmd[ACMDL_FWD])
-			return ASEQ_CROUCH_WALK_F;
-
-		if (playerinfo->seqcmd[ACMDL_BACK])
-			return ASEQ_CROUCH_WALK_B;
-
-		if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-			return ASEQ_CROUCH_WALK_L;
-
-		if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-			return ASEQ_CROUCH_WALK_R;
+		return ASEQ_JUMPSTD_GO;
 	}
 
-	if (playerinfo->seqcmd[ACMDL_FWD])
-		return ASEQ_ROLLDIVEF_W;
+	if (info->seqcmd[ACMDL_FWD])
+		return (is_creeping ? ASEQ_CROUCH_WALK_F : ASEQ_ROLLDIVEF_W);
 
-	if (playerinfo->seqcmd[ACMDL_BACK])
-		return ASEQ_ROLL_B;
-	
-	if (playerinfo->seqcmd[ACMDL_ROTATE_L])
+	if (info->seqcmd[ACMDL_BACK])
+		return (is_creeping ? ASEQ_CROUCH_WALK_B : ASEQ_ROLL_B);
+
+	if (info->seqcmd[ACMDL_STRAFE_L])
+		return (is_creeping ? ASEQ_CROUCH_WALK_L : ASEQ_ROLL_L);
+
+	if (info->seqcmd[ACMDL_STRAFE_R])
+		return (is_creeping ? ASEQ_CROUCH_WALK_R : ASEQ_ROLL_R);
+
+	if (info->seqcmd[ACMDL_ROTATE_L])
 		return ASEQ_CROUCH_PIVOTL;
-	
-	if (playerinfo->seqcmd[ACMDL_ROTATE_R])
+
+	if (info->seqcmd[ACMDL_ROTATE_R])
 		return ASEQ_CROUCH_PIVOTR;
-	
-	if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-		return ASEQ_ROLL_R;
-	
-	if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-		return ASEQ_ROLL_L;
-	
+
 	return ASEQ_CROUCH;
 }
 
