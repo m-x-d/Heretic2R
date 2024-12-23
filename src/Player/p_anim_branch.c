@@ -1377,107 +1377,58 @@ int BranchCheckMana(playerinfo_t* info)
 	return ASEQ_NONE;
 }
 
-
-/*-----------------------------------------------
-	BranchIdle
------------------------------------------------*/
-
-int BranchIdle(playerinfo_t *playerinfo)
+int BranchIdle(const playerinfo_t* info)
 {
-	assert(playerinfo);
-	
-	if(!playerinfo->sv_cinematicfreeze)
+	assert(info);
+
+	if (info->sv_cinematicfreeze != 0.0f)
+		return ASEQ_NONE;
+
+	// Run special cases if we're in the ready position.
+	if (info->lowerseq == ASEQ_IDLE_READY || info->lowerseq == ASEQ_IDLE_READY_GO ||
+		info->lowerseq == ASEQ_IDLE_LOOKL || info->lowerseq == ASEQ_IDLE_LOOKR)
 	{
-		//Run special cases if we're in the ready position
-		if (playerinfo->lowerseq == ASEQ_IDLE_READY_GO ||
-			playerinfo->lowerseq == ASEQ_IDLE_READY ||
-			playerinfo->lowerseq == ASEQ_IDLE_LOOKR ||
-			playerinfo->lowerseq == ASEQ_IDLE_LOOKL)
+		switch (info->irand(info, 0, 6))
 		{
-			switch(playerinfo->irand(playerinfo, 0, 6))
-			{
-			case 0:
-				return ASEQ_IDLE_LOOKR;
-				break;
-			case 1:
-				return ASEQ_IDLE_LOOKL;
-				break;
-			case 2:
-				return ASEQ_IDLE_READY_END;
-				break;
-			default:
-				return ASEQ_NONE;
-				break;
-			}
-		}
-		else if ((playerinfo->pers.weaponready == WEAPON_READY_BOW) || (playerinfo->isclient))
-		{	
-			// Because the bow doesn't look right in some idles.
-			switch(playerinfo->irand(playerinfo, 0, 10))
-			{
-				case 0:
-					return ASEQ_IDLE_WIPE_BROW;
-					break;
-				case 1:
-					if (playerinfo->irand(playerinfo, 0, 1) == 1)
-						return ASEQ_IDLE_SCRATCH_ASS;
-
-					break;
-				case 2:
-					return ASEQ_IDLE_LOOKBACK;
-					break;
-				default:
-					return ASEQ_IDLE_READY;
-					break;
-			}
-		}
-		else if ( (playerinfo->pers.weaponready == WEAPON_READY_SWORDSTAFF) || (playerinfo->pers.weaponready == WEAPON_READY_HELLSTAFF))
-		{
-			// Because the staff doesn't look right in some idles.
-			switch(playerinfo->irand(playerinfo, 0, 10))
-			{
-				case 0:
-					return ASEQ_IDLE_FLY1;
-					break;
-				case 1:
-					return ASEQ_IDLE_FLY2;
-					break;
-				case 2:
-					return ASEQ_IDLE_WIPE_BROW;
-					break;
-				default:
-					return ASEQ_IDLE_READY;
-					break;
-			}
-		}
-		else
-		{
-			switch(playerinfo->irand(playerinfo, 0, 10))
-			{
-				case 0:
-					return ASEQ_IDLE_FLY1;
-					break;
-				case 1:
-					return ASEQ_IDLE_FLY2;
-					break;
-				case 2:
-					if (playerinfo->irand(playerinfo, 0, 1) == 1)
-						return ASEQ_IDLE_SCRATCH_ASS;
-
-					break;
-				case 3:
-					return ASEQ_IDLE_LOOKBACK;
-					break;
-				case 4:
-					return ASEQ_IDLE_WIPE_BROW;
-					break;
-				default:
-					return ASEQ_IDLE_READY;
-					break;
-			}
+			case 0: return ASEQ_IDLE_LOOKR;
+			case 1: return ASEQ_IDLE_LOOKL;
+			case 2: return ASEQ_IDLE_READY_END;
+			default: return ASEQ_NONE;
 		}
 	}
 
-	return ASEQ_NONE;
-}
+	if (info->pers.weaponready == WEAPON_READY_BOW || info->isclient)
+	{
+		// Because the bow doesn't look right in some idles.
+		switch (info->irand(info, 0, 10))
+		{
+			case 0: return ASEQ_IDLE_WIPE_BROW;
+			case 1: return (info->irand(info, 0, 1) == 1 ? ASEQ_IDLE_SCRATCH_ASS : ASEQ_NONE); //TODO: shouldn't this return ASEQ_IDLE_READY instead of ASEQ_NONE?..
+			case 2: return ASEQ_IDLE_LOOKBACK;
+			default: return ASEQ_IDLE_READY;
+		}
+	}
 
+	if (info->pers.weaponready == WEAPON_READY_SWORDSTAFF || info->pers.weaponready == WEAPON_READY_HELLSTAFF)
+	{
+		// Because the staff doesn't look right in some idles.
+		switch (info->irand(info, 0, 10))
+		{
+			case 0: return ASEQ_IDLE_FLY1;
+			case 1: return ASEQ_IDLE_FLY2;
+			case 2: return ASEQ_IDLE_WIPE_BROW;
+			default: return ASEQ_IDLE_READY;
+		}
+	}
+
+	// Generic idle animations.
+	switch (info->irand(info, 0, 10))
+	{
+		case 0: return ASEQ_IDLE_FLY1;
+		case 1: return ASEQ_IDLE_FLY2;
+		case 2: return (info->irand(info, 0, 1) == 1 ? ASEQ_IDLE_SCRATCH_ASS : ASEQ_NONE); //TODO: shouldn't this return ASEQ_IDLE_READY instead of ASEQ_NONE?..
+		case 3: return ASEQ_IDLE_LOOKBACK;
+		case 4: return ASEQ_IDLE_WIPE_BROW;
+		default: return ASEQ_IDLE_READY;
+	}
+}
