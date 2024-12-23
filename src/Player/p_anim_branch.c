@@ -1309,28 +1309,18 @@ static int BranchUprReadyBow(playerinfo_t* info)
 	return ASEQ_NONE;
 }
 
-// if we are out of bow ammo, then switch us to the next weapon
-
-/*-----------------------------------------------
-	BranchCheckAmmo
------------------------------------------------*/
-
-int BranchCheckAmmo(playerinfo_t *playerinfo)
+// If we are out of bow ammo, then switch us to the next weapon.
+int BranchCheckAmmo(playerinfo_t* info)
 {
-	if (Weapon_CurrentShotsLeft(playerinfo) || playerinfo->isclient)		// The client prediction shouldn't test the weapon.
-		return(ASEQ_NONE);
+	if (info->isclient || Weapon_CurrentShotsLeft(info) > 0) // The client prediction shouldn't test the weapon.
+		return ASEQ_NONE;
 
-	playerinfo->G_WeapNext(playerinfo->self);
-	if (playerinfo->pers.weapon->tag == ITEM_WEAPON_REDRAINBOW)
-	{
-	   	PlayerAnimSetUpperSeq(playerinfo, ASEQ_WRRBOW_END);
-	   	return(ASEQ_WRRBOW_END);
-	}
-	else 
-	{
-		PlayerAnimSetUpperSeq(playerinfo, ASEQ_WPHBOW_END);
-	   	return(ASEQ_WPHBOW_END);
-	}
+	info->G_WeapNext(info->self);
+
+	const int seq = (info->pers.weapon->tag == ITEM_WEAPON_REDRAINBOW ? ASEQ_WRRBOW_END : ASEQ_WPHBOW_END); //mxd
+	PlayerAnimSetUpperSeq(info, seq);
+
+	return seq;
 }
 
 // if we are out of hellstaff ammo, then switch us to the next weapon
