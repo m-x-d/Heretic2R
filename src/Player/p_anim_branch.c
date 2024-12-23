@@ -1204,7 +1204,7 @@ static int BranchUprReadyHands(playerinfo_t* info)
 	if (!BranchCheckDismemberAction(info, info->pers.weapon->tag))
 		return ASEQ_NONE;
 
-	if (info->seqcmd[ACMDU_ATTACK] && !(info->edictflags & FL_CHICKEN))	// Not a chicken.
+	if (info->seqcmd[ACMDU_ATTACK])
 	{
 		info->idletime = info->leveltime;
 
@@ -1226,13 +1226,7 @@ static int BranchUprReadySwordStaff(playerinfo_t* info)
 	if (info->flags & PLAYER_FLAG_NO_RARM)
 		return ASEQ_NONE;
 
-	if (info->edictflags & FL_CHICKEN)
-	{
-		info->upperidle = true;
-		return ASEQ_NONE;
-	}
-
-	if (info->seqcmd[ACMDU_ATTACK])	// Not a chicken.
+	if (info->seqcmd[ACMDU_ATTACK])
 	{
 		if (strcmp(info->pers.weapon->classname, "Weapon_SwordStaff") == 0) //TODO: check not needed?
 		{
@@ -1274,7 +1268,7 @@ static int BranchUprReadyHellStaff(playerinfo_t* info)
 	if (info->flags & PLAYER_FLAG_NO_RARM)
 		return ASEQ_NONE;
 
-	if (info->seqcmd[ACMDU_ATTACK] && !(info->edictflags & FL_CHICKEN) && Weapon_CurrentShotsLeft(info) > 0) // Not a chicken.
+	if (info->seqcmd[ACMDU_ATTACK] && Weapon_CurrentShotsLeft(info) > 0)
 	{
 		info->idletime = info->leveltime;
 
@@ -1296,7 +1290,7 @@ static int BranchUprReadyBow(playerinfo_t* info)
 	if (info->flags & PLAYER_FLAG_NO_LARM || info->flags & PLAYER_FLAG_NO_RARM)
 		return ASEQ_NONE;
 
-	if (info->seqcmd[ACMDU_ATTACK] && !(info->edictflags & FL_CHICKEN) && Weapon_CurrentShotsLeft(info) > 0) // Not a chicken.
+	if (info->seqcmd[ACMDU_ATTACK] && Weapon_CurrentShotsLeft(info) > 0)
 	{
 		info->idletime = info->leveltime;
 
@@ -1339,15 +1333,18 @@ int BranchUprReady(playerinfo_t* info)
 {
 	assert(info);
 
-	if ((info->pers.newweapon || info->switchtoweapon != info->pers.weaponready) && !(info->edictflags & FL_CHICKEN))
+	//mxd. Do the chicken check here, not in BranchUprReadySwordStaff/BranchUprReadyHellStaff/BranchUprReadyBow/BranchUprReadyHands.
+	if (info->edictflags & FL_CHICKEN)
 	{
-		// Not a chicken, so switch weapons.
-		info->idletime = info->leveltime;
-
-		return PlayerAnimWeaponSwitch(info);
+		info->upperidle = true;
+		return ASEQ_NONE;
 	}
 
-	//TODO: perform chicken check here, not in BranchUprReadySwordStaff/BranchUprReadyHellStaff/BranchUprReadyBow/BranchUprReadyHands?
+	if (info->pers.newweapon != NULL || info->switchtoweapon != info->pers.weaponready)
+	{
+		info->idletime = info->leveltime;
+		return PlayerAnimWeaponSwitch(info);
+	}
 
 	switch (info->pers.weaponready)
 	{
