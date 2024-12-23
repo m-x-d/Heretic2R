@@ -311,237 +311,204 @@ int ChickenBranchidle(playerinfo_t* info)
 
 #pragma endregion
 
-/*-----------------------------------------------
-	BranchLwrStanding
------------------------------------------------*/
-
-int BranchLwrStanding(playerinfo_t *playerinfo)
+int BranchLwrStanding(playerinfo_t* info)
 {
-	int	checksloped = ASEQ_NONE;
-
-	if (playerinfo->deadflag)
-	{
-		//assert(0);
+	if (info->deadflag != DEAD_NO)
 		return ASEQ_NONE;
-	}
 
-	assert(playerinfo);
+	assert(info);
 
-	if (playerinfo->advancedstaff &&			// Special move
-			playerinfo->seqcmd[ACMDL_ACTION] && 
-			playerinfo->pers.weaponready == WEAPON_READY_SWORDSTAFF && 
-			playerinfo->seqcmd[ACMDU_ATTACK] &&
-			BranchCheckDismemberAction(playerinfo, ITEM_WEAPON_SWORDSTAFF))
+	// Special move.
+	if (info->advancedstaff && info->seqcmd[ACMDL_ACTION] && info->seqcmd[ACMDU_ATTACK] &&
+		info->pers.weaponready == WEAPON_READY_SWORDSTAFF && BranchCheckDismemberAction(info, ITEM_WEAPON_SWORDSTAFF))
 	{
 		return ASEQ_WSWORD_LOWERDOWNSTAB;
 	}
 
-	//Check to update the idles
-	if (playerinfo->lowerseq != ASEQ_STAND && playerinfo->lowerseq != ASEQ_IDLE_READY)
-		playerinfo->idletime = playerinfo->leveltime;
+	// Check to update the idles.
+	if (info->lowerseq != ASEQ_STAND && info->lowerseq != ASEQ_IDLE_READY)
+		info->idletime = info->leveltime;
 
-	//Check for a fall
-	if (playerinfo->groundentity==NULL && playerinfo->waterlevel < 2)
+	// Check for a fall.
+	if (info->groundentity == NULL && info->waterlevel < 2 && CheckFall(info))
+		return ASEQ_FALL;
+
+	// Check for a jump (but not while in lava or slime).
+	if (info->seqcmd[ACMDL_JUMP] && !(info->watertype & (CONTENTS_SLIME | CONTENTS_LAVA)))
 	{
-		if (CheckFall(playerinfo))
-			return ASEQ_FALL;
+		if (info->seqcmd[ACMDL_FWD])
+			return ASEQ_JUMPFWD_SGO;
+
+		if (info->seqcmd[ACMDL_BACK])
+			return ASEQ_JUMPBACK_SGO;
+
+		if (info->seqcmd[ACMDL_STRAFE_L])
+			return ASEQ_JUMPLEFT_SGO;
+
+		if (info->seqcmd[ACMDL_STRAFE_R])
+			return ASEQ_JUMPRIGHT_SGO;
+
+		return ASEQ_JUMPSTD_GO;
 	}
 
-	//Check for a jump
-	if (playerinfo->seqcmd[ACMDL_JUMP])
+	// Check for a crouch.
+	if (info->seqcmd[ACMDL_CROUCH])
 	{
-		if (!(playerinfo->watertype & (CONTENTS_SLIME|CONTENTS_LAVA)))
+		if (info->seqcmd[ACMDL_FWD])
 		{
-			if (playerinfo->seqcmd[ACMDL_FWD])
-				return ASEQ_JUMPFWD_SGO;
-			else if (playerinfo->seqcmd[ACMDL_BACK])
-				return ASEQ_JUMPBACK_SGO;
-			if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-				return ASEQ_JUMPLEFT_SGO;
-			else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-				return ASEQ_JUMPRIGHT_SGO;
-
-			return ASEQ_JUMPSTD_GO;
-		}
-	}
-
-	//Check for a crouch
-	if (playerinfo->seqcmd[ACMDL_CROUCH])
-	{
-		if (playerinfo->seqcmd[ACMDL_FWD])
-		{
-			playerinfo->maxs[2] = 4;
+			info->maxs[2] = 4.0f;
 			return ASEQ_ROLLDIVEF_W;
 		}
-		else if (playerinfo->seqcmd[ACMDL_BACK])
+
+		if (info->seqcmd[ACMDL_BACK])
 			return ASEQ_ROLL_B;
-		else if (playerinfo->seqcmd[ACMDL_STRAFE_L])
+
+		if (info->seqcmd[ACMDL_STRAFE_L])
 			return ASEQ_ROLL_L;
-		else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
+
+		if (info->seqcmd[ACMDL_STRAFE_R])
 			return ASEQ_ROLL_R;
 
 		return ASEQ_CROUCH_GO;
 	}
-	
-	//FORWARD 
 
-	//Check for a walk speed start
-	if (playerinfo->seqcmd[ACMDL_WALK_F])
+	// FORWARD
+
+	// Check for a walk speed start.
+	if (info->seqcmd[ACMDL_WALK_F])
 		return ASEQ_WALKF_GO;
-	
-	//Check for a run start
-	if (playerinfo->seqcmd[ACMDL_RUN_F])
+
+	// Check for a run start.
+	if (info->seqcmd[ACMDL_RUN_F])
 		return ASEQ_RUNF_GO;
-	
-	//Check for creep start
-	if (playerinfo->seqcmd[ACMDL_CREEP_F])
-	{
-		if (CheckCreep(playerinfo, 1))
-			return ASEQ_CREEPF;
-		else
-			return ASEQ_STAND;
-	}
 
-	
-	//BACKWARD 
+	// Check for creep start.
+	if (info->seqcmd[ACMDL_CREEP_F])
+		return (CheckCreep(info, 1) ? ASEQ_CREEPF : ASEQ_STAND);
 
-	//Check for a creepback
-	if (playerinfo->seqcmd[ACMDL_CREEP_B])
-	{
-		if (CheckCreep(playerinfo, -1))
-			return ASEQ_CREEPB;
-		else
-			return ASEQ_STAND;
-	}
+	// BACKWARD
 
-	//Check for a walk back
-	if (playerinfo->seqcmd[ACMDL_WALK_B])
+	// Check for a creepback.
+	if (info->seqcmd[ACMDL_CREEP_B])
+		return (CheckCreep(info, -1) ? ASEQ_CREEPB : ASEQ_STAND);
+
+	// Check for a walk back.
+	if (info->seqcmd[ACMDL_WALK_B])
 		return ASEQ_WALKB;
 
-	//Check for a backspring
-	if ( (playerinfo->seqcmd[ACMDL_RUN_B]) && ((!playerinfo->seqcmd[ACMDL_STRAFE_L]) && (!playerinfo->seqcmd[ACMDL_STRAFE_R])) )
+	// Check for a backspring.
+	if (info->seqcmd[ACMDL_RUN_B] && (!info->seqcmd[ACMDL_STRAFE_L] && !info->seqcmd[ACMDL_STRAFE_R]))
 	{
-		if (!(playerinfo->seqcmd[ACMDU_ATTACK]) && playerinfo->upperidle && !(playerinfo->dmflags))
+		if (!info->seqcmd[ACMDU_ATTACK] && info->upperidle && !info->dmflags)
 			return ASEQ_JUMPSPRINGBGO;
-		else
-			return ASEQ_WALKB;
-	}
-	
-	//STRAFES
 
-	//Check for a strafe left
-	if (playerinfo->seqcmd[ACMDL_STRAFE_L])
+		return ASEQ_WALKB;
+	}
+
+	// STRAFES
+
+	// Check for a strafe left.
+	if (info->seqcmd[ACMDL_STRAFE_L])
 	{
-		if (playerinfo->seqcmd[ACMDL_BACK])
+		if (info->seqcmd[ACMDL_BACK])
 			return ASEQ_WSTRAFEB_LEFT;
 
-		if (playerinfo->pcmd.buttons & BUTTON_RUN)
+		if (info->pcmd.buttons & BUTTON_RUN)
 			return ASEQ_DASH_LEFT_GO;
 
 		return ASEQ_STRAFEL;
 	}
-	
-	//Check for a strafe right
-	if (playerinfo->seqcmd[ACMDL_STRAFE_R])
+
+	// Check for a strafe right.
+	if (info->seqcmd[ACMDL_STRAFE_R])
 	{
-		if (playerinfo->seqcmd[ACMDL_BACK])
+		if (info->seqcmd[ACMDL_BACK])
 			return ASEQ_WSTRAFEB_RIGHT;
 
-		if (playerinfo->pcmd.buttons & BUTTON_RUN)
+		if (info->pcmd.buttons & BUTTON_RUN)
 			return ASEQ_DASH_RIGHT_GO;
 
 		return ASEQ_STRAFER;
 	}
 
-	//Check for action bein held
-	if (playerinfo->seqcmd[ACMDL_ACTION])
+	// Check for action being held.
+	if (info->seqcmd[ACMDL_ACTION])
 	{
-		if (playerinfo->upperidle && PlayerActionCheckPushLever (playerinfo))
+		if (info->upperidle && PlayerActionCheckPushLever(info))
 		{
-			playerinfo->target = NULL;
-			if (!(playerinfo->fmnodeinfo[MESH__BOWACTV].flags  & FMNI_NO_DRAW))
+			info->target = NULL;
+			if (!(info->fmnodeinfo[MESH__BOWACTV].flags & FMNI_NO_DRAW))
 				return ASEQ_PUSHLEVERRIGHT;
-			else
-				return ASEQ_PUSHLEVERLEFT;
+
+			return ASEQ_PUSHLEVERLEFT;
 		}
-		else if (playerinfo->upperidle && PlayerActionCheckPushButton (playerinfo))
+
+		if (info->upperidle && PlayerActionCheckPushButton(info))
 		{
-			playerinfo->target = NULL;
+			info->target = NULL;
 			return ASEQ_PUSHBUTTON_GO;
 		}
-		else if (PlayerActionCheckPuzzleGrab(playerinfo)) 	// Are you near a puzzle piece? Then try to take it
-		{
-			return ASEQ_TAKEPUZZLEPIECE;
-		}
-		else if (PlayerActionUsePuzzle(playerinfo)) 	// Trying to use a puzzle piece
-		{
-			return ASEQ_NONE;	// Need anim to use puzzle piece
-		}
-		else if ( (playerinfo->targetEnt) && (PlayerActionCheckRopeGrab(playerinfo,0)) ) //Climb a rope?
-		{
-			if(playerinfo->isclient)
-				playerinfo->CL_Sound(SND_PRED_ID32, playerinfo->origin, CHAN_VOICE, "player/ropegrab.wav", 0.75, ATTN_NORM, 0);
-			else
-				playerinfo->G_Sound(SND_PRED_ID32, playerinfo->leveltime, playerinfo->self, CHAN_VOICE, playerinfo->G_SoundIndex("player/ropegrab.wav"), 0.75, ATTN_NORM, 0);
 
+		if (PlayerActionCheckPuzzleGrab(info)) // Are you near a puzzle piece? Then try to take it
+			return ASEQ_TAKEPUZZLEPIECE;
+
+		if (PlayerActionUsePuzzle(info)) // Trying to use a puzzle piece
+			return ASEQ_NONE; // Need anim to use puzzle piece
+
+		if (info->targetEnt != NULL && PlayerActionCheckRopeGrab(info, 0)) // Climb a rope?
+		{
+			P_Sound(info, SND_PRED_ID32, CHAN_VOICE, "player/ropegrab.wav", 0.75f); //mxd
 			return ASEQ_CLIMB_ON;
 		}
-		else if (playerinfo->upperidle && PlayerActionCheckJumpGrab(playerinfo, 0))
-		{	
+
+		if (info->upperidle && PlayerActionCheckJumpGrab(info, 0))
 			return ASEQ_JUMPSTD_GO;
-		}
 	}
 
-	//Check for an autovault
-	if ( (playerinfo->flags & PLAYER_FLAG_COLLISION) &&  (playerinfo->upperidle) && (playerinfo->seqcmd[ACMDL_FWD]) )
+	// Check for an autovault.
+	if (info->seqcmd[ACMDL_FWD] && info->upperidle && (info->flags & PLAYER_FLAG_COLLISION))
 	{
-		PlayerActionCheckVault(playerinfo, 0);
+		PlayerActionCheckVault(info, 0);
 
-		if (playerinfo->lowerseq == ASEQ_VAULT_LOW)
-			return ASEQ_VAULT_LOW;
-
-		if (playerinfo->lowerseq == ASEQ_PULLUP_HALFWALL)
-			return ASEQ_PULLUP_HALFWALL;
+		if (info->lowerseq == ASEQ_VAULT_LOW || info->lowerseq == ASEQ_PULLUP_HALFWALL)
+			return info->lowerseq;
 	}
 
-	//Check for a quickturn
-	if (playerinfo->seqcmd[ACMDL_QUICKTURN])
+	// Check for a quickturn.
+	if (info->seqcmd[ACMDL_QUICKTURN])
 		return ASEQ_TURN180;
-	
-	//Check for a rotation left
-	if (playerinfo->seqcmd[ACMDL_ROTATE_L])
+
+	// Check for a rotation left.
+	if (info->seqcmd[ACMDL_ROTATE_L])
 	{
-		if (!(playerinfo->lowerseq >= ASEQ_PIVOTL_GO && playerinfo->lowerseq <= ASEQ_PIVOTL_END))
-		{
+		if (info->lowerseq < ASEQ_PIVOTL_GO || info->lowerseq > ASEQ_PIVOTL_END)
 			return ASEQ_PIVOTL_GO;
-		}
-		else
-			return ASEQ_NONE;
-	}
-	
-	//Check for a rotation right
-	if (playerinfo->seqcmd[ACMDL_ROTATE_R])
-	{	
-		if (!(playerinfo->lowerseq >= ASEQ_PIVOTR_GO && playerinfo->lowerseq <= ASEQ_PIVOTR_END))
-		{
-			return ASEQ_PIVOTR_GO;
-		}
-		else
-			return ASEQ_NONE;
+
+		return ASEQ_NONE;
 	}
 
-	//Check for a sloped stand 
-	if (playerinfo->isclient&&((playerinfo->lowerseq >= ASEQ_LSTAIR4 && playerinfo->lowerseq <= ASEQ_RSTAIR16)||playerinfo->lowerseq==ASEQ_STAND))
-		return playerinfo->lowerseq;
-	
-	checksloped = CheckSlopedStand(playerinfo);
-	
-	if(checksloped)
+	// Check for a rotation right.
+	if (info->seqcmd[ACMDL_ROTATE_R])
+	{
+		if (info->lowerseq < ASEQ_PIVOTR_GO || info->lowerseq > ASEQ_PIVOTR_END)
+			return ASEQ_PIVOTR_GO;
+
+		return ASEQ_NONE;
+	}
+
+	// Check for a sloped stand.
+	if (info->isclient && ((info->lowerseq >= ASEQ_LSTAIR4 && info->lowerseq <= ASEQ_RSTAIR16) || info->lowerseq == ASEQ_STAND))
+		return info->lowerseq;
+
+	const int checksloped = CheckSlopedStand(info);
+	if (checksloped != ASEQ_NONE)
 		return checksloped;
 
-	playerinfo->loweridle = true;
-	if (playerinfo->lowerseq >= ASEQ_LSTAIR4 && playerinfo->lowerseq <= ASEQ_RSTAIR16)
-		return ASEQ_STAND;	//if was standing on stairs, go to stand
+	info->loweridle = true;
+
+	// If was standing on stairs, go to stand.
+	if (info->lowerseq >= ASEQ_LSTAIR4 && info->lowerseq <= ASEQ_RSTAIR16)
+		return ASEQ_STAND;
 
 	return ASEQ_NONE;
 }
