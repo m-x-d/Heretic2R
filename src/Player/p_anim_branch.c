@@ -45,62 +45,46 @@ qboolean CheckUncrouch(const playerinfo_t* info)
 	return (trace.fraction == 1.0f && !trace.startsolid && !trace.allsolid);
 }
 
-/*-----------------------------------------------
-	CheckCreep
------------------------------------------------*/
-
-qboolean CheckCreep(playerinfo_t *playerinfo, int dir)
+static qboolean CheckCreep(const playerinfo_t* info, const int dir)
 {
-	trace_t checktrace;
-	vec3_t startpos,endpos, vf, ang, mins;
+	vec3_t vf;
 
-	//Scan out and down from the player
-	VectorCopy(playerinfo->origin, startpos);
-	
-	//Ignore the pitch of the player, we only want the yaw
-	VectorSet(ang, 0, playerinfo->angles[YAW], 0);
+	// Scan out and down from the player.
+	vec3_t startpos;
+	VectorCopy(info->origin, startpos);
+
+	// Ignore the pitch of the player, we only want the yaw.
+	const vec3_t ang = { 0.0f, info->angles[YAW], 0.0f };
 	AngleVectors(ang, vf, NULL, NULL);
-	
-	//Trace ahead about one step (dir is 1 for forward, -1 for back)
-	VectorMA(playerinfo->origin, dir*CREEP_STEPDIST, vf, startpos);
 
-	//Account for stepheight
-	VectorCopy(playerinfo->mins, mins);
+	// Trace ahead about one step (dir is 1 for forward, -1 for back).
+	VectorMA(info->origin, (float)(dir * CREEP_STEPDIST), vf, startpos);
+
+	// Account for stepheight.
+	vec3_t mins;
+	VectorCopy(info->mins, mins);
 	mins[2] += CREEP_MAXFALL;
 
-	//Trace forward to see if the path is clear
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(playerinfo->origin,mins,playerinfo->maxs,startpos,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&checktrace);
-	else
-		playerinfo->G_Trace(playerinfo->origin, mins, playerinfo->maxs, startpos, playerinfo->self, MASK_PLAYERSOLID,&checktrace);
-	
-	//If it is...
-	if (checktrace.fraction == 1)
+	// Trace forward to see if the path is clear.
+	trace_t trace;
+	P_Trace(info, info->origin, mins, info->maxs, startpos, &trace); //mxd
+
+	// If it is...
+	if (trace.fraction == 1.0f)
 	{
-		//Move the endpoint down the maximum amount
+		// Move the endpoint down the maximum amount.
+		vec3_t endpos;
 		VectorCopy(startpos, endpos);
-		endpos[2] += (playerinfo->mins[2] - CREEP_MAXFALL);
+		endpos[2] += info->mins[2] - CREEP_MAXFALL;
 
-		//Trace down
-		if(playerinfo->isclient)
-			playerinfo->CL_Trace(startpos,mins,playerinfo->maxs,endpos,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&checktrace);
-		else
-			playerinfo->G_Trace(startpos, mins, playerinfo->maxs, endpos, playerinfo->self, MASK_PLAYERSOLID,&checktrace);
+		// Trace down.
+		P_Trace(info, startpos, mins, info->maxs, endpos, &trace);
 
-		if (checktrace.fraction == 1 || (checktrace.startsolid || checktrace.allsolid))
-		{
-			//Creep would take us off a ledge
-			return false;		
-		}
-	}
-	else
-	{
-		//Creep would take us off a ledge
-		return false;
+		return (trace.fraction < 1.0f && !trace.startsolid && !trace.allsolid);
 	}
 
-	//Clear to creep
-	return true;
+	// Creep would take us off a ledge.
+	return false;
 }
 
 /*-----------------------------------------------
