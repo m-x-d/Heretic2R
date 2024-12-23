@@ -1191,16 +1191,9 @@ int BranchLwrUnderwaterSwim(playerinfo_t* info)
 	return ASEQ_NONE;
 }
 
-/*-----------------------------------------------
-	BranchLwrClimbing
------------------------------------------------*/
-
-int BranchLwrClimbing(playerinfo_t *playerinfo)
+int BranchLwrClimbing(playerinfo_t* info)
 {
-	if(!playerinfo->isclient)
-		return(playerinfo->G_BranchLwrClimbing(playerinfo));
-	else
-		return(ASEQ_NONE);
+	return (info->isclient ? ASEQ_NONE : info->G_BranchLwrClimbing(info));
 }
 
 
