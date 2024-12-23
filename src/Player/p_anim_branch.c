@@ -1013,30 +1013,29 @@ int BranchLwrBackspring(playerinfo_t* info)
 	return ASEQ_NONE;
 }
 
-/*-----------------------------------------------
-	BranchLwrJumping
------------------------------------------------*/
-
-int BranchLwrJumping(playerinfo_t *playerinfo)
+int BranchLwrJumping(playerinfo_t* info)
 {
-	assert(playerinfo);
+	assert(info);
 
-  	if (playerinfo->seqcmd[ACMDL_ACTION])
+	if (info->seqcmd[ACMDL_ACTION])
 	{
-		if ( (playerinfo->targetEnt) && (PlayerActionCheckRopeGrab(playerinfo,0)) ) //Climb a rope?
+		if (info->targetEnt != NULL && PlayerActionCheckRopeGrab(info, 0)) // Climb a rope?
 		{
-			playerinfo->flags |= PLAYER_FLAG_ONROPE;
+			info->flags |= PLAYER_FLAG_ONROPE;
 			return ASEQ_CLIMB_ON;
 		}
 	}
-	
-	if (playerinfo->seqcmd[ACMDL_FWD])
+
+	if (info->seqcmd[ACMDL_FWD])
 		return ASEQ_JUMPFWD_SGO;
-	else if (playerinfo->seqcmd[ACMDL_BACK])
+
+	if (info->seqcmd[ACMDL_BACK])
 		return ASEQ_JUMPBACK_SGO;
-	else if (playerinfo->seqcmd[ACMDL_STRAFE_L])
+
+	if (info->seqcmd[ACMDL_STRAFE_L])
 		return ASEQ_JUMPLEFT_SGO;
-	else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
+
+	if (info->seqcmd[ACMDL_STRAFE_R])
 		return ASEQ_JUMPRIGHT_SGO;
 
 	return ASEQ_NONE;
