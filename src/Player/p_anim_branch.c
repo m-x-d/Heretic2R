@@ -1192,22 +1192,6 @@ int BranchLwrUnderwaterSwim(playerinfo_t* info)
 }
 
 /*-----------------------------------------------
-	BranchLwrHanging
------------------------------------------------*/
-
-int BranchLwrHanging(playerinfo_t *playerinfo)
-{
-	assert(playerinfo);
-
-	if (playerinfo->seqcmd[ACMDL_FWD])
-		return(ASEQ_PULLUP_WALL);
-	else if (!playerinfo->seqcmd[ACMDL_ACTION] || playerinfo->seqcmd[ACMDL_JUMP])
-		return(ASEQ_FALLARMSUP);
-	else
-		return(ASEQ_NONE);
-}
-
-/*-----------------------------------------------
 	BranchLwrClimbing
 -----------------------------------------------*/
 
