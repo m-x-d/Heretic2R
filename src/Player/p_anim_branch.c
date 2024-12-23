@@ -156,49 +156,26 @@ static int CheckSlopedStand(const playerinfo_t* info) //TODO: it would be nice t
 	return ASEQ_LSTAIR16;
 }
 
-/*-----------------------------------------------
-	BranchCheckDismemberAction
------------------------------------------------*/
-
-PLAYER_API qboolean BranchCheckDismemberAction(playerinfo_t *playerinfo, int weapon)
+PLAYER_API qboolean BranchCheckDismemberAction(const playerinfo_t* info, const int weapon)
 {
-	//If these nodes are on, then any weapon selection is a valid one
-	if ( (!(playerinfo->flags & PLAYER_FLAG_NO_RARM)) && (!(playerinfo->flags & PLAYER_FLAG_NO_LARM)) )
-		return true;
+	const qboolean have_left_arm =  !(info->flags & PLAYER_FLAG_NO_LARM); //mxd
+	const qboolean have_right_arm = !(info->flags & PLAYER_FLAG_NO_RARM); //mxd
 
-	//No arm, no shot
-	if (weapon == ITEM_WEAPON_FLYINGFIST)
+	// No arm, no shot.
+	switch (weapon)
 	{
-		if (playerinfo->flags & PLAYER_FLAG_NO_RARM)
-			return false;
-	}
-	else if (weapon == ITEM_WEAPON_MAGICMISSILE || weapon == ITEM_WEAPON_MACEBALLS)
-	{
-		//Powered up is right arm, non-powered is left
-		if (playerinfo->powerup_timer > playerinfo->leveltime)
-		{
-			if (playerinfo->flags & PLAYER_FLAG_NO_RARM)
-				return false;
-		}
-		else
-		{
-			if (playerinfo->flags & PLAYER_FLAG_NO_LARM)
-				return false;
-		}
-	}
-	else if (weapon == ITEM_WEAPON_HELLSTAFF || weapon == ITEM_WEAPON_SWORDSTAFF)
-	{
-		if (playerinfo->flags & PLAYER_FLAG_NO_RARM)
-			return false;
-	}
-	else	//Any other weapon will need both hands
-	{
-		if (playerinfo->flags & PLAYER_FLAG_NO_LARM || playerinfo->flags & PLAYER_FLAG_NO_RARM)
-			return false;
-	}
+		case ITEM_WEAPON_FLYINGFIST:
+		case ITEM_WEAPON_HELLSTAFF:
+		case ITEM_WEAPON_SWORDSTAFF:
+			return have_right_arm;
 
-	//Player is able to complete the action
-	return true;
+		case ITEM_WEAPON_MAGICMISSILE:
+		case ITEM_WEAPON_MACEBALLS:
+			return (info->powerup_timer > info->leveltime ? have_right_arm : have_left_arm); // Powered up is right arm, non-powered is left.
+
+		default:
+			return (have_left_arm && have_right_arm); // Any other weapon will need both hands.
+	}
 }
 
 
