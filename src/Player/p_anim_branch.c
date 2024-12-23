@@ -178,81 +178,63 @@ PLAYER_API qboolean BranchCheckDismemberAction(const playerinfo_t* info, const i
 	}
 }
 
+#pragma region ========================== CHICKEN ANIMATION LOGIC ==========================
 
-/*-----------------------------------------------
-	ChickenBranchLwrStanding
------------------------------------------------*/
-
-int ChickenBranchLwrStanding(playerinfo_t *playerinfo)
+// Decide if we have just fallen off something, or we are falling down.
+int ChickenBranchLwrStanding(const playerinfo_t* info)
 {
-	int	temp;
-	int	checksloped = ASEQ_NONE;
+	assert(info);
 
-	assert(playerinfo);
-
-	// Decide if we have just fallen off something, or we are falling down.
-
-	//Since the chicken runs through this always, make sure we don't check for falling in the water!
-	if (playerinfo->groundentity==NULL && playerinfo->waterlevel < 2)
-	{
-		if (CheckFall(playerinfo))
-			return ASEQ_FALL;
-	}
+	// Since the chicken always runs through this, make sure we don't check for falling in the water!
+	if (info->groundentity == NULL && info->waterlevel < 2 && CheckFall(info))
+		return ASEQ_FALL;
 
 	// Decide what we should be doing now.
-	if (playerinfo->waterlevel >= 2)
+	if (info->waterlevel >= 2)
+		return (info->seqcmd[ACMDL_FWD] ? ASEQ_USWIMF_GO : ASEQ_NONE); //TODO: ASEQ_USWIMF_GO is unused, chicken can't move underwater (but can jump)... 
+
+	if (info->seqcmd[ACMDU_ATTACK])
+		return (info->seqcmd[ACMDL_FWD] ? ASEQ_RUNF : ASEQ_WSWORD_SPIN);
+
+	if (info->seqcmd[ACMDL_JUMP])
 	{
-		if (playerinfo->seqcmd[ACMDL_FWD])
-			return ASEQ_USWIMF_GO;
+		if (info->seqcmd[ACMDL_WALK_F])
+			return ASEQ_JUMPFWD_WGO;
+
+		if (info->seqcmd[ACMDL_RUN_F])
+			return ASEQ_JUMPFWD_RGO;
+
+		if (info->seqcmd[ACMDL_BACK] || info->seqcmd[ACMDL_RUN_B])
+			return ASEQ_JUMPBACK_SGO;
+
+		return ASEQ_JUMPUP;
 	}
-	else if(playerinfo->seqcmd[ACMDU_ATTACK])
-	{
-		if (playerinfo->seqcmd[ACMDL_FWD])
-			return(ASEQ_RUNF);
-		else
-			return(ASEQ_WSWORD_SPIN);
-	}
-	else if(playerinfo->seqcmd[ACMDL_JUMP])
-	{
-		if(playerinfo->seqcmd[ACMDL_WALK_F])
-			return(ASEQ_JUMPFWD_WGO);
-		else if (playerinfo->seqcmd[ACMDL_RUN_F])
-			return(ASEQ_JUMPFWD_RGO);
-		else if (playerinfo->seqcmd[ACMDL_BACK])
-			return(ASEQ_JUMPBACK_SGO);
-		else if (playerinfo->seqcmd[ACMDL_RUN_B])	
-			return(ASEQ_JUMPBACK_SGO);
-		else 
-			return ASEQ_JUMPUP;
-	}
-	else if (playerinfo->seqcmd[ACMDL_WALK_F])
+
+	if (info->seqcmd[ACMDL_WALK_F])
 		return ASEQ_WALKF_GO;
-	else if (playerinfo->seqcmd[ACMDL_RUN_F])
+
+	if (info->seqcmd[ACMDL_RUN_F])
 		return ASEQ_RUNF_GO;
-	else if (playerinfo->seqcmd[ACMDL_RUN_B])		
+
+	if (info->seqcmd[ACMDL_RUN_B])
 		return ASEQ_WSTRAFE_LEFT;
-	else if (playerinfo->seqcmd[ACMDL_BACK])
+
+	if (info->seqcmd[ACMDL_BACK])
 		return ASEQ_WALKB;
-	else if (playerinfo->seqcmd[ACMDL_STRAFE_L])
+
+	if (info->seqcmd[ACMDL_STRAFE_L])
 		return ASEQ_STRAFEL;
-	else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
+
+	if (info->seqcmd[ACMDL_STRAFE_R])
 		return ASEQ_STRAFER;
 
 	// If we've reached this point, we are still idling - so decide if which one we want to do.
-	
-// OK NOW?	if(!playerinfo->isclient)
+	switch (info->irand(info, 0, 5))
 	{
-		temp = (playerinfo->irand(playerinfo,0,5));
-		
-		if(!temp)
-			return ASEQ_IDLE_LOOKR;
-		
-		temp--;
-		
-		if(!temp)
-			return ASEQ_IDLE_LOOKL;
+		case 0: return ASEQ_IDLE_LOOKR;
+		case 1: return ASEQ_IDLE_LOOKL;
+		default: return ASEQ_NONE;
 	}
-	return(ASEQ_NONE);
 }
 
 // This allows the chicken to interupt itself - if its idling.
@@ -350,6 +332,8 @@ int ChickenBranchidle(playerinfo_t *playerinfo)
 
 	return(ASEQ_NONE);
 }
+
+#pragma endregion
 
 /*-----------------------------------------------
 	BranchLwrStanding
