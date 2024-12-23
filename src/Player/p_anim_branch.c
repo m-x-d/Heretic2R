@@ -582,7 +582,7 @@ int BranchLwrStandingRun(playerinfo_t* info)
 
 	info->loweridle = true;
 
-	if (info->lowerseq >= ASEQ_LSTAIR4 && info->lowerseq <= ASEQ_LSTAIR16) //TODO: shouldn't this also check for ASEQ_RSTAIR4 & ASEQ_RSTAIR16?
+	if (info->lowerseq >= ASEQ_LSTAIR4 && info->lowerseq <= ASEQ_RSTAIR16) //BUXFIX: '<= ASEQ_LSTAIR16' in original version.
 		return ASEQ_STAND; // If was standing on stairs, go to stand.
 
 	return ASEQ_NONE;
