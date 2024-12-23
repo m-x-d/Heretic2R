@@ -1,58 +1,36 @@
 //
 // p_anim_branch.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
-#include "player.h"
+#include "Player.h"
 #include "p_types.h"
 #include "p_actions.h"
 #include "p_anims.h"
 #include "g_items.h"
 #include "p_main.h"
 #include "p_weapon.h"
-#include "fx.h"
-#include "random.h"
-#include "vector.h"
-#include "g_physics.h"
-#include "p_anim_data.h"
+#include "FX.h" //TODO: remove
+#include "Vector.h"
 #include "m_player.h"
-#include "g_playstats.h"
+#include "p_utility.h" //mxd
 
+static const vec3_t footmins = { -1.0f, -1.0f, 0.0f };
+static const vec3_t footmaxs = { 1.0f,  1.0f, 1.0f };
+
+qboolean CheckFall(const playerinfo_t* info)
+{
 #define FALL_MINHEIGHT	34
 
-int BranchIdle(playerinfo_t *playerinfo);
-int CheckSlopedStand (playerinfo_t *playerinfo);
-
-vec3_t footmins = {-1.0, -1.0, 0};
-vec3_t footmaxs = {1.0, 1.0, 1.0};
-
-float SLIDEZPUSH = 48;
-float SLIDEXYPUSH = 128;
-
-/*-----------------------------------------------
-	CheckFall
------------------------------------------------*/
-
-qboolean CheckFall(playerinfo_t *playerinfo)
-{
-	trace_t checktrace;
 	vec3_t endpos;
-	int	checksloped = ASEQ_NONE;
-
-	VectorCopy(playerinfo->origin, endpos);
+	VectorCopy(info->origin, endpos);
 	endpos[2] -= FALL_MINHEIGHT;
 
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(playerinfo->origin,playerinfo->mins,playerinfo->maxs,endpos,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&checktrace);
-	else
-		playerinfo->G_Trace(playerinfo->origin, playerinfo->mins, playerinfo->maxs, endpos, playerinfo->self, MASK_PLAYERSOLID,&checktrace);
+	trace_t trace;
+	P_Trace(info, info->origin, info->mins, info->maxs, endpos, &trace); //mxd
 
-	if (checktrace.fraction >= 1)
-		return true;
-
-	return false;
+	return (trace.fraction == 1.0f); //TODO: '>= 1' in original version. Can trace.fraction be > 1?
 }
 
 /*-----------------------------------------------
