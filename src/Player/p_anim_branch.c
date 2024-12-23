@@ -1041,16 +1041,9 @@ int BranchLwrJumping(playerinfo_t* info)
 	return ASEQ_NONE;
 }
 
-/*-----------------------------------------------
-	BranchLwrKnockDown
------------------------------------------------*/
-
-int BranchLwrKnockDown(playerinfo_t *playerinfo)
+int BranchLwrKnockDown(const playerinfo_t* info)
 {
-	if (playerinfo->seqcmd[ACMDL_BACK])
-		return ASEQ_KNOCKDOWN_EVADE;
- 
-	return ASEQ_KNOCKDOWN_GETUP;
+	return (info->seqcmd[ACMDL_BACK] ? ASEQ_KNOCKDOWN_EVADE : ASEQ_KNOCKDOWN_GETUP);
 }
 
 /*-----------------------------------------------
