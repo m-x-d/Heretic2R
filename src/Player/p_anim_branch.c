@@ -1335,45 +1335,38 @@ int BranchCheckHellAmmo(playerinfo_t* info)
 	return ASEQ_WHELL_END;
 }
 
-
-/*-----------------------------------------------
-	BranchUprReady
------------------------------------------------*/
-
-int BranchUprReady(playerinfo_t *playerinfo)
+int BranchUprReady(playerinfo_t* info)
 {
-	assert(playerinfo);
+	assert(info);
 
-	if((playerinfo->switchtoweapon!=playerinfo->pers.weaponready||playerinfo->pers.newweapon)&&
-		!(playerinfo->edictflags&FL_CHICKEN))
+	if ((info->pers.newweapon || info->switchtoweapon != info->pers.weaponready) && !(info->edictflags & FL_CHICKEN))
 	{
 		// Not a chicken, so switch weapons.
-		playerinfo->idletime=playerinfo->leveltime;	
+		info->idletime = info->leveltime;
 
-		return(PlayerAnimWeaponSwitch(playerinfo));
+		return PlayerAnimWeaponSwitch(info);
 	}
 
-	switch(playerinfo->pers.weaponready)
+	//TODO: perform chicken check here, not in BranchUprReadySwordStaff/BranchUprReadyHellStaff/BranchUprReadyBow/BranchUprReadyHands?
+
+	switch (info->pers.weaponready)
 	{
 		case WEAPON_READY_SWORDSTAFF:
-			return BranchUprReadySwordStaff(playerinfo);
-			break;
-		case WEAPON_READY_HELLSTAFF:
-			return BranchUprReadyHellStaff(playerinfo);
-			break;
-		case WEAPON_READY_BOW:
-			return BranchUprReadyBow(playerinfo);
-			break;
-		case WEAPON_READY_HANDS:
-			return BranchUprReadyHands(playerinfo);
-			break;
-		default:		// In case Weapon_ready_none
-			playerinfo->pers.weaponready = WEAPON_READY_HANDS;
-			return BranchUprReadyHands(playerinfo);
-			break;
-	}
+			return BranchUprReadySwordStaff(info);
 
-	return(ASEQ_NONE);
+		case WEAPON_READY_HELLSTAFF:
+			return BranchUprReadyHellStaff(info);
+
+		case WEAPON_READY_BOW:
+			return BranchUprReadyBow(info);
+
+		case WEAPON_READY_HANDS:
+			return BranchUprReadyHands(info);
+
+		default: // In case of WEAPON_READY_NONE
+			info->pers.weaponready = WEAPON_READY_HANDS;
+			return BranchUprReadyHands(info);
+	}
 }
 
 // if we are out of offensive mana, then switch us to the next weapon
