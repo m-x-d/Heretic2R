@@ -976,45 +976,38 @@ int BranchLwrShortstep(playerinfo_t* info)
 	return ASEQ_NONE;
 }
 
-/*-----------------------------------------------
-	BranchLwrBackspring
------------------------------------------------*/
-
-int BranchLwrBackspring(playerinfo_t *playerinfo)
+int BranchLwrBackspring(playerinfo_t* info)
 {
-	assert(playerinfo);
+	assert(info);
 
-	if (playerinfo->groundentity==NULL && playerinfo->waterlevel < 2 && !(playerinfo->watertype & (CONTENTS_SLIME|CONTENTS_LAVA)))
-	{
-		if (CheckFall(playerinfo))
-			return ASEQ_FALLWALK_GO;
-	}
+	if (info->groundentity == NULL && info->waterlevel < 2 && !(info->watertype & (CONTENTS_SLIME | CONTENTS_LAVA)) && CheckFall(info))
+		return ASEQ_FALLWALK_GO;
 
-	if (playerinfo->seqcmd[ACMDL_JUMP])
+	if (info->seqcmd[ACMDL_JUMP])
 		return ASEQ_JUMPFLIPB;
-	else if (playerinfo->seqcmd[ACMDL_RUN_B])
+
+	if (info->seqcmd[ACMDL_RUN_B])
 	{
-		if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-		{
+		if (info->seqcmd[ACMDL_STRAFE_L])
 			return ASEQ_WSTRAFEB_LEFT;
-		}
-		else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-		{
+
+		if (info->seqcmd[ACMDL_STRAFE_R])
 			return ASEQ_WSTRAFEB_RIGHT;
-		}
-		else if (!(playerinfo->seqcmd[ACMDU_ATTACK]))
-		{
-			PlayerAnimSetUpperSeq(playerinfo, ASEQ_NONE);
-			return ASEQ_JUMPSPRINGB;
-		}
-		else
+
+		if (info->seqcmd[ACMDU_ATTACK])
 			return ASEQ_WALKB;
+
+		PlayerAnimSetUpperSeq(info, ASEQ_NONE);
+		return ASEQ_JUMPSPRINGB;
 	}
-	else if (playerinfo->seqcmd[ACMDL_WALK_B])
+
+	if (info->seqcmd[ACMDL_WALK_B])
 		return ASEQ_WALKB;
-	else if (playerinfo->seqcmd[ACMDL_CREEP_B])
+
+	if (info->seqcmd[ACMDL_CREEP_B])
 		return ASEQ_CREEPB;
-	else if (playerinfo->seqcmd[ACMDL_CROUCH])
+
+	if (info->seqcmd[ACMDL_CROUCH])
 		return ASEQ_CROUCH_GO;
 
 	return ASEQ_NONE;
