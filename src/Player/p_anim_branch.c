@@ -1092,103 +1092,61 @@ int BranchLwrCrouching(playerinfo_t* info)
 	return ASEQ_CROUCH;
 }
 
-/*-----------------------------------------------
-	BranchLwrSurfaceSwim
------------------------------------------------*/
-
-int BranchLwrSurfaceSwim(playerinfo_t *playerinfo)
+int BranchLwrSurfaceSwim(playerinfo_t* info)
 {
-	gitem_t		*Weapon;
+	assert(info);
 
-	assert(playerinfo);
-
-	if ((playerinfo->pers.weaponready != WEAPON_READY_HANDS) && ((Weapon=FindItem("fball"))!=NULL))
+	if (info->pers.weaponready != WEAPON_READY_HANDS)
 	{
-		Weapon_EquipSpell(playerinfo, Weapon);
+		gitem_t* weapon = FindItem("fball");
+		if (weapon != NULL)
+			Weapon_EquipSpell(info, weapon);
 	}
 
-	if (playerinfo->seqcmd[ACMDL_ACTION])
+	if (info->seqcmd[ACMDL_ACTION])
 	{
+		// Try and use a puzzle piece.
+		PlayerActionUsePuzzle(info);
+		PlayerActionCheckVault(info, 0);
 
-		//Try and use a puzzle piece
-		PlayerActionUsePuzzle(playerinfo);
-
-//		if (PlayerActionCheckPuzzleGrab(playerinfo)) 	// Are you near a puzzle piece? Then try to take it
-//		{
-  //			return ASEQ_TAKEPUZZLEUNDERWATER;
-	//	}
-
-		PlayerActionCheckVault(playerinfo, 0);
-
-		if (playerinfo->lowerseq == ASEQ_VAULT_LOW)
-			return ASEQ_VAULT_LOW;
-		
-		if (playerinfo->lowerseq == ASEQ_PULLUP_HALFWALL)
-			return ASEQ_PULLUP_HALFWALL;
-	}
-	//FIXME: Make this work!
-	/*	
-	else if (playerinfo->seqcmd[ACMDL_CROUCH])
-	{
-		PlayerAnimSetLowerSeq(playerinfo, ASEQ_DIVE);
-	}
-	*/
-	else if (playerinfo->seqcmd[ACMDL_FWD])
-	{
-		PlayerActionCheckVault(playerinfo, 0);
-		
-		if (playerinfo->lowerseq == ASEQ_VAULT_LOW)
-			return ASEQ_VAULT_LOW;
-		
-		if (playerinfo->lowerseq == ASEQ_PULLUP_HALFWALL)
-			return ASEQ_PULLUP_HALFWALL;
-
-		if (playerinfo->waterlevel > 2)
-		{	
-			return ASEQ_USWIMF_GO;
-		}
-		
-		if (playerinfo->seqcmd[ACMDL_RUN_F])
-		{
-			if ( (playerinfo->lowerseq == ASEQ_SSWIM_FAST_GO) || (playerinfo->lowerseq == ASEQ_SSWIM_FAST) )
-				return ASEQ_SSWIM_FAST;
-			else
-				return ASEQ_SSWIM_FAST_GO;
-		}
-
-		if ((playerinfo->lowerseq == ASEQ_SSWIMF_GO) || (playerinfo->lowerseq == ASEQ_SSWIMF)) 
-			return ASEQ_SSWIMF;
-		else
-			return ASEQ_SSWIMF_GO;
-	}
-	else if (playerinfo->seqcmd[ACMDL_BACK])
-	{
-		if ((playerinfo->lowerseq == ASEQ_SSWIMB_GO) || (playerinfo->lowerseq == ASEQ_SSWIMB)) 
-			return ASEQ_SSWIMB;
-		else
-			return ASEQ_SSWIMB_GO;
-	}
-	else if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-	{
-		if ((playerinfo->lowerseq == ASEQ_SSWIML_GO) || (playerinfo->lowerseq == ASEQ_SSWIML)) 
-			return ASEQ_SSWIML;
-		else
-			return ASEQ_SSWIML_GO;
-	}
-	else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-	{
-		if ((playerinfo->lowerseq == ASEQ_SSWIMR_GO) || (playerinfo->lowerseq == ASEQ_SSWIMR)) 
-			return ASEQ_SSWIMR;
-		else
-			return ASEQ_SSWIMR_GO;
-	}
-	else
-	{
-		if (playerinfo->waterlevel > 2 && (playerinfo->lowerseq == ASEQ_SSWIM_IDLE))
-			return ASEQ_USWIM_IDLE;
+		if (info->lowerseq == ASEQ_VAULT_LOW || info->lowerseq == ASEQ_PULLUP_HALFWALL)
+			return info->lowerseq;
 
 		return ASEQ_NONE;
 	}
+
+	if (info->seqcmd[ACMDL_FWD])
+	{
+		PlayerActionCheckVault(info, 0);
+
+		if (info->lowerseq == ASEQ_VAULT_LOW || info->lowerseq == ASEQ_PULLUP_HALFWALL)
+			return  info->lowerseq;
+
+		if (info->waterlevel > 2)
+			return ASEQ_USWIMF_GO;
+
+		if (info->seqcmd[ACMDL_RUN_F])
+		{
+			if (info->lowerseq == ASEQ_SSWIM_FAST_GO || info->lowerseq == ASEQ_SSWIM_FAST)
+				return ASEQ_SSWIM_FAST;
+
+			return ASEQ_SSWIM_FAST_GO;
+		}
+
+		return ((info->lowerseq == ASEQ_SSWIMF_GO || info->lowerseq == ASEQ_SSWIMF) ? ASEQ_SSWIMF : ASEQ_SSWIMF_GO);
+	}
+
+	if (info->seqcmd[ACMDL_BACK])
+		return ((info->lowerseq == ASEQ_SSWIMB_GO || info->lowerseq == ASEQ_SSWIMB) ? ASEQ_SSWIMB : ASEQ_SSWIMB_GO);
+
+	if (info->seqcmd[ACMDL_STRAFE_L])
+		return ((info->lowerseq == ASEQ_SSWIML_GO || info->lowerseq == ASEQ_SSWIML) ? ASEQ_SSWIML : ASEQ_SSWIML_GO);
+
+	if (info->seqcmd[ACMDL_STRAFE_R])
+		return ((info->lowerseq == ASEQ_SSWIMR_GO || info->lowerseq == ASEQ_SSWIMR) ? ASEQ_SSWIMR : ASEQ_SSWIMR_GO);
+
+	if (info->waterlevel > 2 && info->lowerseq == ASEQ_SSWIM_IDLE)
+		return ASEQ_USWIM_IDLE;
 
 	return ASEQ_NONE;
 }
