@@ -1366,15 +1366,15 @@ int BranchUprReady(playerinfo_t* info)
 	}
 }
 
-// if we are out of offensive mana, then switch us to the next weapon
-int BranchCheckMana(playerinfo_t *playerinfo)
+// If we are out of offensive mana, then switch us to the next weapon.
+int BranchCheckMana(playerinfo_t* info)
 {
-	if (Weapon_CurrentShotsLeft(playerinfo) || playerinfo->isclient)		// The client prediction shouldn't test the weapon.
-		return(BranchUprReady(playerinfo));
+	if (info->isclient || Weapon_CurrentShotsLeft(info) > 0) // The client prediction shouldn't test the weapon.
+		return BranchUprReady(info);
 
-	playerinfo->G_WeapNext(playerinfo->self);
+	info->G_WeapNext(info->self);
 
-   	return(ASEQ_NONE);
+	return ASEQ_NONE;
 }
 
 
