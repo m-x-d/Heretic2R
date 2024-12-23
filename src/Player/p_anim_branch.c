@@ -1220,66 +1220,52 @@ static int BranchUprReadyHands(playerinfo_t* info)
 	return ASEQ_NONE;
 }
 
-/*-----------------------------------------------
-	BranchUprReadySwordStaff
------------------------------------------------*/
-
-int BranchUprReadySwordStaff(playerinfo_t *playerinfo)
+static int BranchUprReadySwordStaff(playerinfo_t* info)
 {
-	//No arm, no shot
-	if (playerinfo->flags & PLAYER_FLAG_NO_RARM)
+	// No arm, no shot.
+	if (info->flags & PLAYER_FLAG_NO_RARM)
 		return ASEQ_NONE;
 
-	if (playerinfo->edictflags & FL_CHICKEN)
+	if (info->edictflags & FL_CHICKEN)
 	{
-		playerinfo->upperidle=true;
-		return(ASEQ_NONE);
+		info->upperidle = true;
+		return ASEQ_NONE;
 	}
 
-	if (playerinfo->seqcmd[ACMDU_ATTACK])	// Not a chicken
+	if (info->seqcmd[ACMDU_ATTACK])	// Not a chicken.
 	{
-		if (!strcmp(playerinfo->pers.weapon->classname, "Weapon_SwordStaff"))
+		if (strcmp(info->pers.weapon->classname, "Weapon_SwordStaff") == 0) //TODO: check not needed?
 		{
-			playerinfo->idletime=playerinfo->leveltime;
-			
-			 // Make sure we're not about to do a spinning attack.
-			if(playerinfo->seqcmd[ACMDL_RUN_F] && playerinfo->groundentity)
+			info->idletime = info->leveltime;
+
+			// Make sure we're not about to do a spinning attack.
+			if (info->seqcmd[ACMDL_RUN_F] && info->groundentity != NULL)
+				return ASEQ_NONE;
+
+			if (info->advancedstaff)
 			{
-				return(ASEQ_NONE);
+				if (info->seqcmd[ACMDL_ACTION] && info->seqcmd[ACMDL_BACK])
+					return ASEQ_WSWORD_BACK;
+
+				if (info->upperseq == ASEQ_WSWORD_STABHOLD)
+					return (info->seqcmd[ACMDU_ATTACK] ? ASEQ_WSWORD_STABHOLD : ASEQ_WSWORD_PULLOUT);
+
+				if (info->lowerseq == ASEQ_JUMPFWD && info->seqcmd[ACMDL_FWD])
+					return ASEQ_WSWORD_DOWNSTAB;
 			}
-			else if (playerinfo->advancedstaff && playerinfo->seqcmd[ACMDL_ACTION] && playerinfo->seqcmd[ACMDL_BACK])
-			{
-				return(ASEQ_WSWORD_BACK);
-			}
-			else if (playerinfo->advancedstaff && playerinfo->upperseq == ASEQ_WSWORD_STABHOLD)
-			{
-				if (playerinfo->seqcmd[ACMDU_ATTACK])
-					return ASEQ_WSWORD_STABHOLD;
-				else
-					return ASEQ_WSWORD_PULLOUT;
-			}
-			else if (playerinfo->advancedstaff && playerinfo->lowerseq == ASEQ_JUMPFWD && playerinfo->seqcmd[ACMDL_FWD])
-			{
-				return ASEQ_WSWORD_DOWNSTAB;
-			}
-			else if(!playerinfo->irand(playerinfo,0, 4))	
-			{
-				return(ASEQ_WSWORD_STEP);
-			}
-			else
-			{
-				return(ASEQ_WSWORD_STD1);	
-			}
+
+			return (info->irand(info, 0, 4) == 0 ? ASEQ_WSWORD_STEP : ASEQ_WSWORD_STD1);
 		}
 	}
 	else
 	{
-		if (!playerinfo->seqcmd[ACMDL_RUN_F])
-			playerinfo->block_timer = playerinfo->leveltime + 0.1;		// Auto blocking if not running
-		playerinfo->upperidle = true;
+		if (!info->seqcmd[ACMDL_RUN_F])
+			info->block_timer = info->leveltime + 0.1f; // Auto blocking if not running.
+
+		info->upperidle = true;
 	}
 
-	return(ASEQ_NONE);
+	return ASEQ_NONE;
 }
 
 /*-----------------------------------------------
