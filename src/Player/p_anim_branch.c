@@ -1323,20 +1323,16 @@ int BranchCheckBowAmmo(playerinfo_t* info) //mxd. Named 'BranchCheckAmmo' in ori
 	return seq;
 }
 
-// if we are out of hellstaff ammo, then switch us to the next weapon
-
-/*-----------------------------------------------
-	BranchCheckHellAmmo
------------------------------------------------*/
-
-int BranchCheckHellAmmo(playerinfo_t *playerinfo)
+// If we are out of hellstaff ammo, then switch us to the next weapon.
+int BranchCheckHellAmmo(playerinfo_t* info)
 {
-	if (Weapon_CurrentShotsLeft(playerinfo) || playerinfo->isclient)		// The client prediction shouldn't test the weapon.
-		return(ASEQ_NONE);
+	if (info->isclient || Weapon_CurrentShotsLeft(info) > 0) // The client prediction shouldn't test the weapon.
+		return ASEQ_NONE;
 
-	playerinfo->G_WeapNext(playerinfo->self);
-   	PlayerAnimSetUpperSeq(playerinfo, ASEQ_WHELL_END);
-   	return(ASEQ_WHELL_END);
+	info->G_WeapNext(info->self);
+	PlayerAnimSetUpperSeq(info, ASEQ_WHELL_END);
+
+	return ASEQ_WHELL_END;
 }
 
 
