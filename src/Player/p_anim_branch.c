@@ -33,30 +33,16 @@ qboolean CheckFall(const playerinfo_t* info)
 	return (trace.fraction == 1.0f); //TODO: '>= 1' in original version. Can trace.fraction be > 1?
 }
 
-/*-----------------------------------------------
-	CheckUncrouch
------------------------------------------------*/
-
-qboolean CheckUncrouch(playerinfo_t *playerinfo)
+qboolean CheckUncrouch(const playerinfo_t* info)
 {
+	vec3_t v;
+	VectorCopy(info->origin, v);
+	v[2] += 25.0f - info->maxs[2];
+
 	trace_t trace;
-	vec3_t	v;
+	P_Trace(info, info->origin, info->mins, info->maxs, v, &trace); //mxd
 
-	VectorCopy(playerinfo->origin,v);
-	v[2]+=25.0 - playerinfo->maxs[2];//was 25
-
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(playerinfo->origin, playerinfo->mins, playerinfo->maxs, v, MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&trace);
-	else
-		playerinfo->G_Trace(playerinfo->origin, playerinfo->mins, playerinfo->maxs, v, playerinfo->self, MASK_PLAYERSOLID,&trace);
-
-	if (trace.fraction < 1)
-		return(false);
-
-	if (trace.allsolid || trace.startsolid)
-		return(false);
-
-	return(true);
+	return (trace.fraction == 1.0f && !trace.startsolid && !trace.allsolid);
 }
 
 /*-----------------------------------------------
