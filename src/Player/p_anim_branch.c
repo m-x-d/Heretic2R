@@ -1310,7 +1310,7 @@ static int BranchUprReadyBow(playerinfo_t* info)
 }
 
 // If we are out of bow ammo, then switch us to the next weapon.
-int BranchCheckAmmo(playerinfo_t* info)
+int BranchCheckBowAmmo(playerinfo_t* info) //mxd. Named 'BranchCheckAmmo' in original version.
 {
 	if (info->isclient || Weapon_CurrentShotsLeft(info) > 0) // The client prediction shouldn't test the weapon.
 		return ASEQ_NONE;

@@ -28,7 +28,7 @@ extern int BranchLwrRunningStrafe(playerinfo_t *info);
 // Player Upper Branch.
 extern int BranchIdle(const playerinfo_t *info);
 extern int BranchUprReady(playerinfo_t *info);
-extern int BranchCheckAmmo(playerinfo_t *info);
+extern int BranchCheckBowAmmo(playerinfo_t *info);
 extern int BranchCheckHellAmmo(playerinfo_t *info);
 extern int BranchCheckMana(playerinfo_t *info);
 
