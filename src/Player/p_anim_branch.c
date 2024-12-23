@@ -1196,39 +1196,28 @@ int BranchLwrClimbing(playerinfo_t* info)
 	return (info->isclient ? ASEQ_NONE : info->G_BranchLwrClimbing(info));
 }
 
-
-/*-----------------------------------------------
-	BranchUprReadyHands
------------------------------------------------*/
-
-int BranchUprReadyHands(playerinfo_t *playerinfo)
+static int BranchUprReadyHands(playerinfo_t* info)
 {
-	assert(playerinfo);
-	
-	//See if we have the arm to do that magic
-	if (!BranchCheckDismemberAction(playerinfo, playerinfo->pers.weapon->tag))
+	assert(info);
+
+	// See if we have the arm to do that magic.
+	if (!BranchCheckDismemberAction(info, info->pers.weapon->tag))
 		return ASEQ_NONE;
 
-	if (playerinfo->seqcmd[ACMDU_ATTACK] && !(playerinfo->edictflags & FL_CHICKEN))	// Not a chicken
-	{ 
-		playerinfo->idletime=playerinfo->leveltime;
+	if (info->seqcmd[ACMDU_ATTACK] && !(info->edictflags & FL_CHICKEN))	// Not a chicken.
+	{
+		info->idletime = info->leveltime;
 
-		// Check Offensive mana.
-		if (playerinfo->pers.weapon->tag == ITEM_WEAPON_FLYINGFIST || Weapon_CurrentShotsLeft(playerinfo))
-		{	
-			// Fireballs have free mana, but if powered up, use the alternate animation sequence.
-			if (playerinfo->powerup_timer > playerinfo->leveltime)
-				return playerinfo->pers.weapon->altanimseq;
-			else
-				return playerinfo->pers.weapon->playeranimseq;
-		}
+		// Check Offensive mana. Fireballs have free mana, but if powered up, use the alternate animation sequence.
+		if (info->pers.weapon->tag == ITEM_WEAPON_FLYINGFIST || Weapon_CurrentShotsLeft(info) > 0)
+			return (info->powerup_timer > info->leveltime) ? info->pers.weapon->altanimseq : info->pers.weapon->playeranimseq;
 	}
 	else
 	{
-		playerinfo->upperidle = true;
+		info->upperidle = true;
 	}
 
-	return(ASEQ_NONE);
+	return ASEQ_NONE;
 }
 
 /*-----------------------------------------------
