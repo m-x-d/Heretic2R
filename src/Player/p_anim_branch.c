@@ -87,99 +87,73 @@ static qboolean CheckCreep(const playerinfo_t* info, const int dir)
 	return false;
 }
 
-/*-----------------------------------------------
-	CheckSlopedStand
------------------------------------------------*/
-
-int CheckSlopedStand (playerinfo_t *playerinfo)
+static int CheckSlopedStand(const playerinfo_t* info) //TODO: it would be nice to use inverse kinematics for this...
 {
-	trace_t		leftfoot, rightfoot;
-	vec3_t		lspotmax, lspotmin, rspotmax, rspotmin;
-	vec3_t		player_facing;
-	vec3_t		forward, right;
-	float		footdiff;
+	trace_t leftfoot;
+	trace_t rightfoot;
+	vec3_t lspotmax;
+	vec3_t lspotmin;
+	vec3_t rspotmax;
+	vec3_t rspotmin;
+	vec3_t forward;
+	vec3_t right;
 
-#if	0
-	// When this code is moved to the player dll
-	// the init code should grab a cl_predict cvar ptr
-	if(cl_predict->value)
-	{
-	 	return ASEQ_NONE;
-	}
-#endif
-
-	VectorCopy(playerinfo->angles, player_facing);
-	player_facing[PITCH] = player_facing[ROLL] = 0.0;
+	const vec3_t player_facing = { 0.0f, info->angles[YAW], 0.0f };
 	AngleVectors(player_facing, forward, right, NULL);
 
-	// Get player origin
-	VectorCopy(playerinfo->origin, lspotmax);
-	VectorCopy(playerinfo->origin, rspotmax);
+	// Get player origin.
+	VectorCopy(info->origin, lspotmax);
+	VectorCopy(info->origin, rspotmax);
 
-	// Magic number calc for foot placement
-	VectorMA(lspotmax, -9.8, right, lspotmax);
-	VectorMA(lspotmax, 7.2, forward, lspotmax);
+	// Magic number calc for foot placement.
+	VectorMA(lspotmax, -9.8f, right, lspotmax);
+	VectorMA(lspotmax, 7.2f, forward, lspotmax);
 
-	VectorMA(rspotmax, 10.5, right, rspotmax);
-	VectorMA(rspotmax, -2.6, forward, rspotmax);
+	VectorMA(rspotmax, 10.5f, right, rspotmax);
+	VectorMA(rspotmax, -2.6f, forward, rspotmax);
 
 	VectorCopy(lspotmax, lspotmin);
 	VectorCopy(rspotmax, rspotmin);
 
-	// Go half player height below player
-	lspotmin[2] += playerinfo->mins[2] * 2.0;
-	rspotmin[2] += playerinfo->mins[2] * 2.0;
+	// Go half player height below player.
+	lspotmin[2] += info->mins[2] * 2.0f;
+	rspotmin[2] += info->mins[2] * 2.0f;
 
-	if(playerinfo->isclient)
-	{
-		playerinfo->CL_Trace(lspotmax, footmins, footmaxs, lspotmin, MASK_PLAYERSOLID, CEF_CLIP_TO_WORLD, &leftfoot);
-	}
-	else
-	{
-		 playerinfo->G_Trace(lspotmax, footmins, footmaxs, lspotmin, playerinfo->self, MASK_PLAYERSOLID,&leftfoot);
-	}
-
-	if(playerinfo->isclient)
-	{
-		playerinfo->CL_Trace(rspotmax, footmins, footmaxs, rspotmin, MASK_PLAYERSOLID, CEF_CLIP_TO_WORLD, &rightfoot);		
-	}
-	else
-	{
-		playerinfo->G_Trace(rspotmax, footmins, footmaxs, rspotmin, playerinfo->self, MASK_PLAYERSOLID,&rightfoot);
-	}
-
-	if((rightfoot.fraction == 1.0) && !rightfoot.startsolid && !rightfoot.allsolid)
-	{
+	P_Trace(info, rspotmax, footmins, footmaxs, rspotmin, &rightfoot); //mxd
+	if (rightfoot.fraction == 1.0f && !rightfoot.startsolid && !rightfoot.allsolid)
 		return ASEQ_LSTAIR16;
-	}
-	else if((leftfoot.fraction == 1.0) && !leftfoot.startsolid && !leftfoot.allsolid)
-	{
+
+	P_Trace(info, lspotmax, footmins, footmaxs, lspotmin, &leftfoot); //mxd
+	if (leftfoot.fraction == 1.0f && !leftfoot.startsolid && !leftfoot.allsolid)
 		return ASEQ_RSTAIR16;
-	}
-	else
-	{
-		footdiff = rightfoot.endpos[2] - leftfoot.endpos[2];
 
-		if(footdiff >= 13.0)			//right foot 13 or more higher
-			return ASEQ_RSTAIR16;
-		else if(footdiff >= 9.0)		//right foot 9 or more higher
-			return ASEQ_RSTAIR12;
-		else if(footdiff >= 5.0)		//right foot 8 or more higher
-			return ASEQ_RSTAIR8;
-		else if(footdiff >= 2.0)		//right foot 2 or more higher
-			return ASEQ_RSTAIR4;
-		else if(footdiff >= -2.0)		//flat
-			return ASEQ_NONE;
-		else if(footdiff >= -5.0)		//left foot 4 or less higher
-			return ASEQ_LSTAIR4;
-		else if(footdiff >= -9.0)		//left foot 8 or less higher
-			return ASEQ_LSTAIR8;
-		else if(footdiff >= -13.0)		//left foot 12 or less higher
-			return ASEQ_LSTAIR12;
+	const float footdiff = rightfoot.endpos[2] - leftfoot.endpos[2];
 
-		return ASEQ_LSTAIR16;
-	}
-	return ASEQ_NONE;
+	if (footdiff >= 13.0f)		// Right foot 13 or more higher.
+		return ASEQ_RSTAIR16;
+
+	if (footdiff >= 9.0f)		// Right foot 9 or more higher.
+		return ASEQ_RSTAIR12;
+
+	if (footdiff >= 5.0f)		// Right foot 8 or more higher.
+		return ASEQ_RSTAIR8;
+
+	if (footdiff >= 2.0f)		// Right foot 2 or more higher.
+		return ASEQ_RSTAIR4;
+
+	if (footdiff >= -2.0f)		// Flat.
+		return ASEQ_NONE;
+
+	if (footdiff >= -5.0f)		// Left foot 4 or less higher.
+		return ASEQ_LSTAIR4;
+
+	if (footdiff >= -9.0f)		// Left foot 8 or less higher.
+		return ASEQ_LSTAIR8;
+
+	if (footdiff >= -13.0f)		// Left foot 12 or less higher.
+		return ASEQ_LSTAIR12;
+
+	return ASEQ_LSTAIR16;
 }
 
 /*-----------------------------------------------
