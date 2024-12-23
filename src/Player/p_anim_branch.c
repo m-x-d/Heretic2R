@@ -514,90 +514,77 @@ int BranchLwrStanding(playerinfo_t* info)
 }
 
 // I call this when I end a move and perhaps want to start running or otherwise moving immediately without delay, such as after a pullup.
-/*-----------------------------------------------
-	BranchLwrStandingRun
------------------------------------------------*/
-
-int BranchLwrStandingRun(playerinfo_t *playerinfo)
+int BranchLwrStandingRun(playerinfo_t* info)
 {
-	int	checksloped = false;
+	assert(info);
 
-	assert(playerinfo);
+	if (info->groundentity == NULL && info->waterlevel < 2 && CheckFall(info))
+		return ASEQ_FALL;
 
-	if (playerinfo->groundentity==NULL && playerinfo->waterlevel < 2)
+	if (info->seqcmd[ACMDL_FWD] && info->upperidle)
 	{
-		if (CheckFall(playerinfo))
-			return ASEQ_FALL;
+		PlayerActionCheckVault(info, 0);
+
+		if (info->lowerseq == ASEQ_VAULT_LOW || info->lowerseq == ASEQ_PULLUP_HALFWALL)
+			return info->lowerseq;
 	}
 
-	if ((playerinfo->seqcmd[ACMDL_FWD]) && playerinfo->upperidle)
-	{
-		PlayerActionCheckVault(playerinfo, 0);
-		if (playerinfo->lowerseq == ASEQ_VAULT_LOW)
-			return ASEQ_VAULT_LOW;
-
-		if (playerinfo->lowerseq == ASEQ_PULLUP_HALFWALL)
-			return ASEQ_PULLUP_HALFWALL;
-	}
-
-	if (playerinfo->seqcmd[ACMDL_JUMP])
+	if (info->seqcmd[ACMDL_JUMP])
 		return ASEQ_JUMPSTD_GO;
-	else if (playerinfo->seqcmd[ACMDL_CREEP_B])
+
+	if (info->seqcmd[ACMDL_CREEP_B])
 		return ASEQ_CREEPB;
-	else if (playerinfo->seqcmd[ACMDL_CROUCH])
+
+	if (info->seqcmd[ACMDL_CROUCH])
 	{
-		if (playerinfo->seqcmd[ACMDL_FWD])
+		if (info->seqcmd[ACMDL_FWD])
 			return ASEQ_ROLLDIVEF_W;
-		else if (playerinfo->seqcmd[ACMDL_BACK])
+
+		if (info->seqcmd[ACMDL_BACK])
 			return ASEQ_ROLL_B;
-		else if (playerinfo->seqcmd[ACMDL_STRAFE_L])
+
+		if (info->seqcmd[ACMDL_STRAFE_L])
 			return ASEQ_ROLL_L;
-		else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
+
+		if (info->seqcmd[ACMDL_STRAFE_R])
 			return ASEQ_ROLL_R;
 
 		return ASEQ_CROUCH_GO;
 	}
-	else if (playerinfo->seqcmd[ACMDL_WALK_F])
-		return ASEQ_WALKF;
-	else if (playerinfo->seqcmd[ACMDL_RUN_F])
-		return ASEQ_RUNF;
-	else if (playerinfo->seqcmd[ACMDL_CREEP_F])
-		return ASEQ_CREEPF;
-	/*else if (((playerinfo->seqcmd[ACMDL_WALK_B]) && (playerinfo->buttons & BUTTON_RUN)) &&
-			((!playerinfo->seqcmd[ACMDL_STRAFE_L]) && (!playerinfo->seqcmd[ACMDL_STRAFE_R])) )
-	{
-		if (!(playerinfo->seqcmd[ACMDU_ATTACK]) && playerinfo->upperidle)
-		{
-			return ASEQ_JUMPSPRINGBGO;
-		}
-	}*/
-	else if (playerinfo->seqcmd[ACMDL_BACK])
-		return ASEQ_WALKB;
-	else if (playerinfo->seqcmd[ACMDL_STRAFE_L])
-		return ASEQ_STRAFEL;
-	else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-		return ASEQ_STRAFER;
-	else if (playerinfo->seqcmd[ACMDL_ROTATE_L])
-	{
-		if (!(playerinfo->lowerseq >= ASEQ_PIVOTL_GO && playerinfo->lowerseq <= ASEQ_PIVOTL_END))
-			return ASEQ_PIVOTL_GO;
-	}
-	else if (playerinfo->seqcmd[ACMDL_ROTATE_R])
-	{
-		if (!(playerinfo->lowerseq >= ASEQ_PIVOTR_GO && playerinfo->lowerseq <= ASEQ_PIVOTR_END))
-			return ASEQ_PIVOTR_GO;
-	}
-	else
-	{
-		checksloped = CheckSlopedStand(playerinfo);
-		if(checksloped)
-			return checksloped;
 
-		playerinfo->loweridle = true;
-		if (playerinfo->lowerseq >= ASEQ_LSTAIR4 && playerinfo->lowerseq <= ASEQ_LSTAIR16)
-			return ASEQ_STAND;	//if was stainding on stairs, go to stand
-		return ASEQ_NONE;
-	}
+	if (info->seqcmd[ACMDL_WALK_F])
+		return ASEQ_WALKF;
+
+	if (info->seqcmd[ACMDL_RUN_F])
+		return ASEQ_RUNF;
+
+	if (info->seqcmd[ACMDL_CREEP_F])
+		return ASEQ_CREEPF;
+
+	if (info->seqcmd[ACMDL_BACK])
+		return ASEQ_WALKB;
+
+	if (info->seqcmd[ACMDL_STRAFE_L])
+		return ASEQ_STRAFEL;
+
+	if (info->seqcmd[ACMDL_STRAFE_R])
+		return ASEQ_STRAFER;
+
+	if (info->seqcmd[ACMDL_ROTATE_L])
+		return ((info->lowerseq < ASEQ_PIVOTL_GO || info->lowerseq > ASEQ_PIVOTL_END) ? ASEQ_PIVOTL_GO : ASEQ_NONE);
+
+	if (info->seqcmd[ACMDL_ROTATE_R])
+		return ((info->lowerseq < ASEQ_PIVOTR_GO || info->lowerseq > ASEQ_PIVOTR_END) ? ASEQ_PIVOTR_GO : ASEQ_NONE);
+
+	const int checksloped = CheckSlopedStand(info);
+	if (checksloped != ASEQ_NONE)
+		return checksloped;
+
+	info->loweridle = true;
+
+	if (info->lowerseq >= ASEQ_LSTAIR4 && info->lowerseq <= ASEQ_LSTAIR16) //TODO: shouldn't this also check for ASEQ_RSTAIR4 & ASEQ_RSTAIR16?
+		return ASEQ_STAND; // If was standing on stairs, go to stand.
+
 	return ASEQ_NONE;
 }
 
