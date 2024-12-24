@@ -160,195 +160,115 @@ PLAYER_API void TurnOffPlayerEffects(playerinfo_t* info)
 	info->pers.handfxtype = HANDFX_NONE;
 }
 
-PLAYER_API void AnimUpdateFrame(playerinfo_t *playerinfo)
+PLAYER_API void AnimUpdateFrame(playerinfo_t* info)
 {
-	panimmove_t	*move;
-	float		yaw_delta;
-
 	// Check for death.
-	if (playerinfo->deadflag==DEAD_DEAD)
+	if (info->deadflag == DEAD_DEAD)
 		return;
 
-	if ((playerinfo->flags & PLAYER_FLAG_KNOCKDOWN) && (!(playerinfo->deadflag)))
+	if ((info->flags & PLAYER_FLAG_KNOCKDOWN) && info->deadflag == DEAD_NO)
 	{
 		// We don't want to do this again next frame.
-		playerinfo->flags &= ~PLAYER_FLAG_KNOCKDOWN;
-		PlayerInterruptAction(playerinfo);
-		if (!(playerinfo->deadflag))
-		{	// Don't do it if dying.
-			PlayerAnimSetLowerSeq(playerinfo,ASEQ_KNOCKDOWN);
-		}
+		info->flags &= ~PLAYER_FLAG_KNOCKDOWN;
+		PlayerInterruptAction(info);
+
+		// Don't do it if dying.
+		if (info->deadflag == DEAD_NO) // TODO: check not needed, already checked above?
+			PlayerAnimSetLowerSeq(info, ASEQ_KNOCKDOWN);
+
 		return;
 	}
 
 	// Handle teleporting (and chicken morphing) only on game side.
-	if(!playerinfo->isclient)
+	if (!info->isclient && info->G_HandleTeleport(info))
+		return;
+
+	// Handle a dive request.
+	if (info->flags & PLAYER_FLAG_DIVE && (info->seqcmd[ACMDL_FWD] || info->seqcmd[ACMDL_CROUCH]))
 	{
-		if(playerinfo->G_HandleTeleport(playerinfo))
-			return;
+		info->flags &= ~PLAYER_FLAG_DIVE;
+		info->pm_w_flags |= WF_DIVING;
+		info->pm_w_flags &= ~(WF_SURFACE | WF_DIVE);
+
+		PlayerAnimSetLowerSeq(info, ASEQ_DIVE);
 	}
 
-	//Handle a dive request
-	if (playerinfo->flags & PLAYER_FLAG_DIVE && (playerinfo->seqcmd[ACMDL_FWD] || playerinfo->seqcmd[ACMDL_CROUCH]) )
-	{
-		playerinfo->flags&=~PLAYER_FLAG_DIVE;
-		playerinfo->pm_w_flags |= WF_DIVING;
-		playerinfo->pm_w_flags &= ~(WF_SURFACE|WF_DIVE);
+	edict_t* self = info->self; //mxd
 
-		PlayerAnimSetLowerSeq(playerinfo, ASEQ_DIVE);
-	}
-
-	//Auto grab a rope
-	if (playerinfo->flags & PLAYER_FLAG_RELEASEROPE)
+	// Auto grab a rope.
+	if (info->flags & PLAYER_FLAG_RELEASEROPE)
 	{
-		if (playerinfo->flags & PLAYER_FLAG_ONROPE)
+		if (info->flags & PLAYER_FLAG_ONROPE)
 		{
-			//Turn off the rope graphic immediately 
-			((edict_t *)playerinfo->self)->targetEnt->count = 0;
-			((edict_t *)playerinfo->self)->targetEnt->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
-			((edict_t *)playerinfo->self)->targetEnt->enemy = NULL;
-			((edict_t *)playerinfo->self)->targetEnt = NULL;
+			// Turn off the rope graphic immediately.
+			self->targetEnt->count = 0;
+			self->targetEnt->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
+			self->targetEnt->enemy = NULL;
+			self->targetEnt = NULL;
 
-			((edict_t *)playerinfo->self)->monsterinfo.jump_time = playerinfo->leveltime + 2;
-			playerinfo->flags &= ~PLAYER_FLAG_RELEASEROPE;
-			playerinfo->flags &= ~PLAYER_FLAG_ONROPE;
+			self->monsterinfo.jump_time = info->leveltime + 2.0f;
+			info->flags &= ~(PLAYER_FLAG_RELEASEROPE | PLAYER_FLAG_ONROPE);
 
-			if(!(playerinfo->edictflags & FL_CHICKEN))
-			{
-				if (((edict_t *)playerinfo->self)->health <= 0)
-				{
-					PlayerAnimSetLowerSeq(playerinfo, ASEQ_DEATH_A);
-				}
-				else
-				{
-					PlayerAnimSetLowerSeq(playerinfo, ASEQ_CLIMB_OFF);
-				}
-			}
+			if (!(info->edictflags & FL_CHICKEN))
+				PlayerAnimSetLowerSeq(info, (self->health <= 0 ? ASEQ_DEATH_A : ASEQ_CLIMB_OFF));
 		}
 		else
 		{
-			playerinfo->flags &= ~PLAYER_FLAG_RELEASEROPE;
+			info->flags &= ~PLAYER_FLAG_RELEASEROPE;
 		}
 	}
-	else if ( (!(playerinfo->flags & PLAYER_FLAG_ONROPE)) && 
-			  (!(playerinfo->flags & PLAYER_FLAG_RELEASEROPE)) && 
-				(playerinfo->targetEnt) && 
-			  (!(playerinfo->groundentity)) && 
-				(((edict_t *)playerinfo->self)->monsterinfo.jump_time < playerinfo->leveltime) &&
-				(PlayerActionCheckRopeGrab(playerinfo,0)) &&
-				(!(playerinfo->deadflag)) ) //Climb a rope?
+	else if (!(info->flags & PLAYER_FLAG_ONROPE) && !(info->flags & PLAYER_FLAG_RELEASEROPE) &&
+		info->targetEnt != NULL && info->groundentity == NULL && self->monsterinfo.jump_time < info->leveltime &&
+		PlayerActionCheckRopeGrab(info, 0) && info->deadflag == DEAD_NO) // Climb a rope?
 	{
-		((edict_t *)playerinfo->self)->monsterinfo.jump_time = playerinfo->leveltime + 4;
-		playerinfo->flags |= PLAYER_FLAG_ONROPE;
-		
-		if(playerinfo->isclient)
-		{
-			playerinfo->CL_Sound(SND_PRED_ID37,
-								 playerinfo->origin, 
-									CHAN_VOICE, 
-									"player/ropegrab.wav", 
-									0.75, 
-									ATTN_NORM, 
-									0);
-		}
-		else
-		{
-			playerinfo->G_Sound(SND_PRED_ID37,
-								playerinfo->leveltime,
-								playerinfo->self, 
-								CHAN_VOICE, 
-								playerinfo->G_SoundIndex("player/ropegrab.wav"), 
-								0.75, 
-								ATTN_NORM, 
-								0);
-		}
-		
-		PlayerAnimSetLowerSeq(playerinfo, ASEQ_CLIMB_ON);
+		self->monsterinfo.jump_time = info->leveltime + 4.0f;
+		info->flags |= PLAYER_FLAG_ONROPE;
+
+		P_Sound(info, SND_PRED_ID37, CHAN_VOICE, "player/ropegrab.wav", 0.75f); //mxd
+		PlayerAnimSetLowerSeq(info, ASEQ_CLIMB_ON);
 	}
 
 	// Think rate handled different on client.
+	if (!info->isclient)
+		info->nextthink = info->leveltime + 0.1f; // FRAMETIME
 
-	if(!playerinfo->isclient)
-		playerinfo->nextthink=playerinfo->leveltime+0.1;//FRAMETIME;
-	
-	if (!(playerinfo->edictflags & FL_CHICKEN) && (!(playerinfo->deadflag)))
+	if (!(info->edictflags & FL_CHICKEN) && info->deadflag == DEAD_NO)
 	{
-		//FIXME: Implement this with a debounce time
-		/*
-		if (!playerinfo->groundentity)
+		if (info->flags & PLAYER_FLAG_SLIDE)
 		{
-			if (playerinfo->velocity[2] < PLAYER_SCREAM_THRESHOLD)
+			// Make sure the player doesn't try to slide underwater
+			if (info->waterlevel < 2)
 			{
-				if(playerinfo->isclient)
-					playerinfo->CL_Sound(playerinfo->origin, CHAN_VOICE, "player/falldeath1.wav", 0.75, ATTN_NORM, 0);
-				else
-					playerinfo->G_Sound(playerinfo->self, CHAN_VOICE, playerinfo->G_SoundIndex("player/falldeath1.wav"), 0.75, ATTN_NORM, 0);
-			}
-		}
-		*/
-
-		if (playerinfo->flags & PLAYER_FLAG_SLIDE)
-		{
-			//Make sure the player doesn't try to slide underwater
-			if (playerinfo->waterlevel < 2)
-			{
-				if (playerinfo->flags & PLAYER_FLAG_COLLISION)
-				{// See if the player is in a jump.
-
-					switch(playerinfo->lowerseq)
+				// See if the player is in a jump.
+				if (info->flags & PLAYER_FLAG_COLLISION &&
+					(info->lowerseq == ASEQ_POLEVAULT1_W || info->lowerseq == ASEQ_POLEVAULT1_R || info->lowerseq == ASEQ_POLEVAULT2))
+				{
+					// Check for an autovault.
+					if (info->upperidle && info->seqcmd[ACMDL_BACK])
 					{
-						case ASEQ_POLEVAULT2:
-						case ASEQ_POLEVAULT1_W: 
-						case ASEQ_POLEVAULT1_R:
-						
-						// Check for an autovault.
+						// Otherwise do a backflip.
+						info->upvel += 225;
+						PlayerAnimSetLowerSeq(info, ASEQ_JUMPFLIPB);
+						P_Sound(info, SND_PRED_ID38, CHAN_VOICE, "*offwall.wav", 0.75f); //mxd
 
-						if (playerinfo->upperidle)
-						{
-							if (playerinfo->seqcmd[ACMDL_BACK])
-							{	
-								// Otherwise do a backflip.
-
-								playerinfo->upvel += 225;
-								PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPFLIPB);
-
-								if(playerinfo->isclient)
-									playerinfo->CL_Sound(SND_PRED_ID38,playerinfo->origin, CHAN_VOICE, "*offwall.wav", 0.75, ATTN_NORM, 0);
-								else
-									playerinfo->G_Sound(SND_PRED_ID38,playerinfo->leveltime,playerinfo->self, CHAN_VOICE, playerinfo->G_SoundIndex("*offwall.wav"), 0.75, ATTN_NORM, 0);
-								return;
-							}
-						}
-					
-						break;
+						return;
 					}
 				}
 
-				yaw_delta = (float) Q_fabs(playerinfo->ideal_yaw - playerinfo->angles[YAW]);
+				const float yaw_delta = Q_fabs(info->ideal_yaw - info->angles[YAW]);
+				const int slide_seq = (yaw_delta > 90.0f && yaw_delta < 270.0f ? ASEQ_SLIDE_BACKWARD : ASEQ_SLIDE_FORWARD); //mxd
 
-				if (yaw_delta < 270.0 && yaw_delta > 90.0)
-				{
-					if (playerinfo->lowerseq != ASEQ_SLIDE_BACKWARD) 
-					{
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_SLIDE_BACKWARD);
-					}
-				}
-				else if (playerinfo->lowerseq != ASEQ_SLIDE_FORWARD)
-				{
-					PlayerAnimSetLowerSeq(playerinfo, ASEQ_SLIDE_FORWARD);
-				}
+				if (info->lowerseq != slide_seq)
+					PlayerAnimSetLowerSeq(info, slide_seq);
 			}
 		}
-		else if (playerinfo->flags & PLAYER_FLAG_COLLISION)
-		{		
+		else if (info->flags & PLAYER_FLAG_COLLISION)
+		{
 			// See if the player is in a jump.
-
-			switch(playerinfo->lowerseq)
+			switch (info->lowerseq)
 			{
-				//
-
 				case ASEQ_POLEVAULT2:
-				case ASEQ_POLEVAULT1_W: 
+				case ASEQ_POLEVAULT1_W:
 				case ASEQ_POLEVAULT1_R:
 				case ASEQ_JUMPFWD_SGO:
 				case ASEQ_JUMPFWD_WGO:
@@ -356,37 +276,23 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t *playerinfo)
 				case ASEQ_JUMPFWD:
 				case ASEQ_FORWARD_FLIP_L:
 				case ASEQ_FORWARD_FLIP_R:
-				
-				// Check for an autovault.
-
-				if ( (playerinfo->waterlevel < 2) && (playerinfo->upperidle) )
-				{
-					if (PlayerActionCheckVault(playerinfo, 0))
+					// Check for an autovault.
+					if (info->upperidle && info->waterlevel < 2 && !PlayerActionCheckVault(info, 0))
 					{
-						;	// If successful, do nothing else.
+						if (info->seqcmd[ACMDL_BACK])
+						{
+							// Otherwise do a backflip.
+							info->upvel += 225;
+							PlayerAnimSetLowerSeq(info, ASEQ_JUMPFLIPB);
+							P_Sound(info, SND_PRED_ID39, CHAN_VOICE, "*offwall.wav", 0.75f); //mxd
+						}
+						else if (PlayerSeqData2[info->lowerseq].collideseq != ASEQ_NONE)
+						{
+							// Check to see what to play on a collision.
+							PlayerAnimSetLowerSeq(info, PlayerSeqData2[info->lowerseq].collideseq);
+						}
 					}
-					else if (playerinfo->seqcmd[ACMDL_BACK])
-					{	
-						// Otherwise do a backflip.
-
-						playerinfo->upvel += 225;
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPFLIPB);
-
-						if(playerinfo->isclient)
-							playerinfo->CL_Sound(SND_PRED_ID39,playerinfo->origin, CHAN_VOICE, "*offwall.wav", 0.75, ATTN_NORM, 0);
-						else
-							playerinfo->G_Sound(SND_PRED_ID39,playerinfo->leveltime,playerinfo->self, CHAN_VOICE, playerinfo->G_SoundIndex("*offwall.wav"), 0.75, ATTN_NORM, 0);
-					}
-					else if (PlayerSeqData2[playerinfo->lowerseq].collideseq != ASEQ_NONE)
-					{	
-						// Check to see what to play on a collision.
-						PlayerAnimSetLowerSeq(playerinfo, PlayerSeqData2[playerinfo->lowerseq].collideseq);
-					}
-				}
-				
-				break;
-
-				//
+					break;
 
 				case ASEQ_RUNF_GO:
 				case ASEQ_RUNF:
@@ -397,256 +303,182 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t *playerinfo)
 				case ASEQ_SSWIMF_END:
 				case ASEQ_SSWIM_FAST_GO:
 				case ASEQ_SSWIM_FAST:
-				
-				// Check for an autovault.
+					// Check for an autovault.
+					if (info->upperidle && info->waterlevel < 2)
+						PlayerActionCheckVault(info, 0);
+					break;
 
-				if (playerinfo->waterlevel < 2 && playerinfo->upperidle)
-				{
-					if (PlayerActionCheckVault(playerinfo, 0))
-					{
-						;	// If successful, do nothing else.
-					}
-	/*				else if (PlayerSeqData2[playerinfo->lowerseq].collideseq != ASEQ_NONE)
-					{	
-						// Check to see what to play on a collision.
-
-						PlayerAnimSetLowerSeq(playerinfo, PlayerSeqData2[playerinfo->lowerseq].collideseq);
-					}
-	*/				
-				}
-				break;
-			
 				default:
-			
-				// Check to see what to play on a collision.
-					
-				//if (PlayerSeqData2[playerinfo->lowerseq].collideseq != ASEQ_NONE)
-				//	PlayerAnimSetLowerSeq(playerinfo, PlayerSeqData2[playerinfo->lowerseq].collideseq);
-
-				break;
-			}			
+					break;
+			}
 		}
 	}
-	
+
 	// If we are a chicken, don't do this.
-
-	if (playerinfo->seqcmd[ACMDL_JUMP] && !(playerinfo->edictflags & FL_CHICKEN))
+	if (info->seqcmd[ACMDL_JUMP] && !(info->edictflags & FL_CHICKEN) && !(info->watertype & CONTENTS_SLIME))
 	{
-		if (!(playerinfo->watertype & CONTENTS_SLIME))
+		switch (info->lowerseq)
 		{
-			switch( playerinfo->lowerseq )
-   			{
-				//
-
-   				case ASEQ_RUNF_GO:
-   				case ASEQ_RUNF:
-   				case ASEQ_RUNF_END:
-
-   				PlayerAnimSetLowerSeq(playerinfo, BranchLwrRunning(playerinfo));
-   				
+			case ASEQ_RUNF_GO:
+			case ASEQ_RUNF:
+			case ASEQ_RUNF_END:
+				PlayerAnimSetLowerSeq(info, BranchLwrRunning(info));
 				break;
 
-				//
-
-   				case ASEQ_WALKF_GO:
-   				case ASEQ_WALKF:
-   				case ASEQ_WALKF_END:
-   				
-				PlayerAnimSetLowerSeq(playerinfo, BranchLwrWalking(playerinfo));
-
+			case ASEQ_WALKF_GO:
+			case ASEQ_WALKF:
+			case ASEQ_WALKF_END:
+				PlayerAnimSetLowerSeq(info, BranchLwrWalking(info));
 				break;
 
-				//
-
-   				case ASEQ_STAND:
-   				
-				PlayerAnimSetLowerSeq(playerinfo, BranchLwrStanding(playerinfo));
-   				
+			case ASEQ_STAND:
+				PlayerAnimSetLowerSeq(info, BranchLwrStanding(info));
 				break;
-   			}
 		}
 	}
 
-	// *************************
-	// ** Lower frame handler **
-	// *************************
+	///////////////////////////////////////////////// LOWER FRAME HANDLER /////////////////////////////////////////////////
 
-	move = playerinfo->lowermove;
+	const panimmove_t* move = info->lowermove;
 	assert(move);
 
-	if (playerinfo->lowerframe >= move->numframes-1)
+	if (info->lowerframe >= move->numframes - 1 && move->endfunc != NULL)
 	{
-		if (move->endfunc)
-		{
-			move->endfunc (playerinfo);
+		move->endfunc(info);
 
-			// Regrab move, endfunc is very likely to change it.
+		// Re-grab move, endfunc is very likely to change it.
+		move = info->lowermove;
+		assert(move);
 
-			move = playerinfo->lowermove;
-			assert(move);
-
-			// Check for death.
-
-			if(playerinfo->deadflag==DEAD_DEAD)
-				return;
-		}
+		// Check for death.
+		if (info->deadflag == DEAD_DEAD)
+			return;
 	}
 
-	if (playerinfo->lowerframeptr < move->frame || playerinfo->lowerframeptr >= move->frame + move->numframes)
+	if (info->lowerframeptr < move->frame || info->lowerframeptr >= move->frame + move->numframes)
 	{
-		playerinfo->lowerframeptr = move->frame;
-		playerinfo->lowerframe = 0;
+		info->lowerframeptr = move->frame;
+		info->lowerframe = 0;
 	}
 	else
-	{ 
-		playerinfo->lowerframe++;
-		if (playerinfo->lowerframe >= move->numframes)
+	{
+		info->lowerframe++;
+		if (info->lowerframe >= move->numframes)
 		{
-			playerinfo->lowerframe = 0;
-			playerinfo->lowerframeptr = move->frame;
+			info->lowerframe = 0;
+			info->lowerframeptr = move->frame;
 		}
 		else
 		{
-			playerinfo->lowerframeptr = move->frame + playerinfo->lowerframe;
+			info->lowerframeptr = move->frame + info->lowerframe;
 		}
 	}
-	playerinfo->frame = playerinfo->lowerframeptr->framenum;
-	
-	if (playerinfo->lowerframeptr->movefunc)
-	{
-		playerinfo->lowerframeptr->movefunc(playerinfo, 
-				playerinfo->lowerframeptr->var1, playerinfo->lowerframeptr->var2, playerinfo->lowerframeptr->var3);
-	}
-	if (playerinfo->lowerframeptr->actionfunc)
-	{
-		playerinfo->lowerframeptr->actionfunc(playerinfo, playerinfo->lowerframeptr->var4);
-	}
 
-	if (playerinfo->lowerframeptr->thinkfunc)
-		playerinfo->lowerframeptr->thinkfunc (playerinfo);
+	info->frame = info->lowerframeptr->framenum;
 
-	if (PlayerSeqData2[playerinfo->lowerseq].nosplit)
+	if (info->lowerframeptr->movefunc != NULL)
+		info->lowerframeptr->movefunc(info, info->lowerframeptr->var1, info->lowerframeptr->var2, info->lowerframeptr->var3);
+
+	if (info->lowerframeptr->actionfunc != NULL)
+		info->lowerframeptr->actionfunc(info, info->lowerframeptr->var4);
+
+	if (info->lowerframeptr->thinkfunc != NULL)
+		info->lowerframeptr->thinkfunc(info);
+
+	if (PlayerSeqData2[info->lowerseq].nosplit)
 	{
 		// Straighten out joints, i.e. no torso aiming.
+		info->ResetJointAngles(info);
+		info->swapFrame = info->frame;
 
-		playerinfo->ResetJointAngles(playerinfo);
-	
-		playerinfo->swapFrame = playerinfo->frame;
-		
 		return;
 	}
 
-	// *************************
-	// ** Upper frame handler **
-	// *************************
-	
-	if (playerinfo->upperidle)
-	{
-		PlayerAnimUpperIdle(playerinfo);
-	}
+	///////////////////////////////////////////////// UPPER FRAME HANDLER /////////////////////////////////////////////////
 
-	if (playerinfo->upperseq)
+	if (info->upperidle)
+		PlayerAnimUpperIdle(info);
+
+	if (info->upperseq > 0)
 	{
-		move = playerinfo->uppermove;
+		move = info->uppermove;
 		assert(move);
 
-		if (playerinfo->upperframe >= move->numframes-1)
+		if (info->upperframe >= move->numframes - 1 && move->endfunc != NULL)
 		{
-			if (move->endfunc)
-			{
-				move->endfunc (playerinfo);
+			move->endfunc(info);
 
-				// Regrab move, endfunc is very likely to change it.
+			// Re-grab move, endfunc is very likely to change it.
+			move = info->uppermove;
+			assert(move);
 
-				move = playerinfo->uppermove;
-				assert(move);
-
-				// Check for death.
-
-				if(playerinfo->deadflag==DEAD_DEAD)
-					return;
-			}
+			// Check for death.
+			if (info->deadflag == DEAD_DEAD)
+				return;
 		}
 
-		if (playerinfo->upperseq)
+		if (info->upperseq > 0)
 		{
-			if (playerinfo->upperframeptr < move->frame || playerinfo->upperframeptr >= move->frame + move->numframes)
+			if (info->upperframeptr < move->frame || info->upperframeptr >= move->frame + move->numframes)
 			{
-				playerinfo->upperframeptr = move->frame;
-				playerinfo->upperframe = 0;
+				info->upperframeptr = move->frame;
+				info->upperframe = 0;
 			}
 			else
 			{
-				playerinfo->upperframe++;
-				if (playerinfo->upperframe >= move->numframes)
+				info->upperframe++;
+
+				if (info->upperframe >= move->numframes)
 				{
-					playerinfo->upperframe = 0;
-					playerinfo->upperframeptr = move->frame;
+					info->upperframe = 0;
+					info->upperframeptr = move->frame;
 				}
 				else
 				{
-					playerinfo->upperframeptr = move->frame + playerinfo->upperframe;
+					info->upperframeptr = move->frame + info->upperframe;
 				}
 			}
-			playerinfo->swapFrame = playerinfo->upperframeptr->framenum;
-			
-			if (playerinfo->upperframeptr->movefunc)
-			{
-				playerinfo->upperframeptr->movefunc(playerinfo, 
-						playerinfo->upperframeptr->var1, playerinfo->upperframeptr->var2, playerinfo->upperframeptr->var3);
-			}
-			if (playerinfo->upperframeptr->actionfunc)
-			{
-				playerinfo->upperframeptr->actionfunc(playerinfo, playerinfo->upperframeptr->var4);
-			}
 
-			if (playerinfo->upperframeptr->thinkfunc)
-				playerinfo->upperframeptr->thinkfunc (playerinfo);
+			info->swapFrame = info->upperframeptr->framenum;
+
+			if (info->upperframeptr->movefunc != NULL)
+				info->upperframeptr->movefunc(info, info->upperframeptr->var1, info->upperframeptr->var2, info->upperframeptr->var3);
+
+			if (info->upperframeptr->actionfunc != NULL)
+				info->upperframeptr->actionfunc(info, info->upperframeptr->var4);
+
+			if (info->upperframeptr->thinkfunc != NULL)
+				info->upperframeptr->thinkfunc(info);
 
 			// Check if the lower frame is idle, if so, force ours.
+			if (info->loweridle && !(PlayerSeqData[info->upperseq].playerflags & PLAYER_FLAG_LEAVELOWER))
+				info->frame = info->swapFrame;
 
-			if((playerinfo->loweridle)&&(!(PlayerSeqData[playerinfo->upperseq].playerflags&PLAYER_FLAG_LEAVELOWER)))
-			{
-				playerinfo->frame = playerinfo->swapFrame;
-			}
-
-			if((PlayerSeqData2[playerinfo->upperseq].nosplit)&&(!(playerinfo->edictflags&FL_CHICKEN)))
+			if (PlayerSeqData2[info->upperseq].nosplit && !(info->edictflags & FL_CHICKEN))
 			{
 				// Straighten out joints, i.e. no torso aiming.
-
-				playerinfo->ResetJointAngles(playerinfo);
-
+				info->ResetJointAngles(info);
 				return;
 			}
 		}
 		else
 		{
-			playerinfo->swapFrame = playerinfo->frame;
+			info->swapFrame = info->frame;
 		}
 	}
 	else
 	{
-		playerinfo->swapFrame = playerinfo->frame;
+		info->swapFrame = info->frame;
 
-		if (PlayerSeqData2[playerinfo->lowerseq].nosplit)
-		{	
-			// No torso aiming.
-
-			return;
-		}
+		if (PlayerSeqData2[info->lowerseq].nosplit)
+			return; // No torso aiming.
 	}
 
 	// Handle torso twisting (but only when we are in Elven form).
-
-	if(!(playerinfo->edictflags&FL_CHICKEN))
+	if (!(info->edictflags & FL_CHICKEN))
 	{
-		// Calculate joint angle values.
-
-		CalcJointAngles(playerinfo);
-
-		// Now set joints in motion.
-
-		playerinfo->SetJointAngles(playerinfo);
+		CalcJointAngles(info); // Calculate joint angle values.
+		info->SetJointAngles(info); // Now set joints in motion.
 	}
 }
 
