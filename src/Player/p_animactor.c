@@ -1,51 +1,34 @@
 //
 // p_animactor.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
-#include "player.h"
-#include "p_types.h"
-#include "p_actions.h"
+#include "Player.h"
 #include "p_anim_data.h"
 #include "p_animactor.h"
-#include "p_anims.h"
 #include "p_anim_branch.h"
 #include "p_ctrl.h"
 #include "p_main.h"
-#include "angles.h"
+#include "p_utility.h" //mxd
 #include "g_teleport.h"
-#include "vector.h"
-#include "utilities.h"
-#include "fx.h"
+#include "Angles.h"
+#include "Vector.h"
+#include "FX.h"
 
-#define PLAYER_SCREAM_THRESHOLD	-600
-
-/*
-===============
-NormalizeAngle
-===============
-*/
-
-float NormalizeAngle(float angle)
-{	
+static float ClampAngle(float angle) //mxd. Originally named NormalizeAngle (function with the same name already defined in Utilities.c).
+{
 	// Returns the remainder.
+	angle = fmodf(angle, ANGLE_360);
 
-	angle = fmod(angle, ANGLE_360);
-	
 	// Makes the angle signed.
+	if (angle >= ANGLE_180)
+		return angle - ANGLE_360;
 
-	if(angle >= ANGLE_180)
-	{
-		angle -= ANGLE_360;
-	}
-	if(angle <= -ANGLE_180)
-	{
-		angle += ANGLE_360;
-	}
-	
-	return(angle);
+	if (angle <= -ANGLE_180)
+		return angle + ANGLE_360;
+
+	return angle;
 }
 
 // ************************************************************************************************
@@ -164,7 +147,7 @@ static void CalcJointAngles(playerinfo_t *playerinfo)
 
 			playerinfo->targetjointangles[PITCH] -= playerinfo->angles[PITCH];
 			playerinfo->targetjointangles[PITCH] *= ANGLE_TO_RAD;
-			playerinfo->targetjointangles[PITCH] = NormalizeAngle(playerinfo->targetjointangles[PITCH]);
+			playerinfo->targetjointangles[PITCH] = ClampAngle(playerinfo->targetjointangles[PITCH]);
 
 			if (playerinfo->targetjointangles[PITCH] > ANGLE_90) 
 				playerinfo->targetjointangles[PITCH] = ANGLE_90;
@@ -177,7 +160,7 @@ static void CalcJointAngles(playerinfo_t *playerinfo)
 
 			playerinfo->targetjointangles[YAW] -= playerinfo->angles[YAW];
 			playerinfo->targetjointangles[YAW] *= ANGLE_TO_RAD;
-			playerinfo->targetjointangles[YAW] = NormalizeAngle(playerinfo->targetjointangles[YAW]);
+			playerinfo->targetjointangles[YAW] = ClampAngle(playerinfo->targetjointangles[YAW]);
 
 			if (playerinfo->targetjointangles[YAW] > ANGLE_90) 
 				playerinfo->targetjointangles[YAW] = ANGLE_90;
