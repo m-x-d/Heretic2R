@@ -482,106 +482,49 @@ PLAYER_API void AnimUpdateFrame(playerinfo_t* info)
 	}
 }
 
-PLAYER_API void PlayerFallingDamage(playerinfo_t *playerinfo)
+PLAYER_API void PlayerFallingDamage(playerinfo_t* info)
 {
-	float		delta;
-	vec3_t		endpos;
-	
-	delta=playerinfo->velocity[2]-playerinfo->oldvelocity[2];//falling -200 to standstill 0 gives a delta of 200
+	float delta = info->velocity[2] - info->oldvelocity[2]; // Falling -200 to standstill 0 gives a delta of 200.
 
-	if(!playerinfo->groundentity)
+	if (info->groundentity == NULL) //TODO: this seems unnecessary. There are already waterlevel and PLAYER_FLAG_FALLING checks below. Also, there are no lava/slime materials or landing sounds...
 	{
-		// If we were falling, and we're now underwater, we should STOP FALLING, capiche?
-
-		VectorCopy(playerinfo->origin,endpos);
-		endpos[2]+=playerinfo->mins[2];
-
-		if((playerinfo->flags&PLAYER_FLAG_FALLING)&&
-		   (playerinfo->PointContents(endpos)&(CONTENTS_SLIME|CONTENTS_LAVA))&&
-		   (playerinfo->waterlevel==1))
+		if (info->flags & PLAYER_FLAG_FALLING)
 		{
-			PlayerIntLand(playerinfo,delta);
-		} 
-		else if((playerinfo->waterlevel==3)&&(playerinfo->flags&PLAYER_FLAG_FALLING))
-		{
-			// We were falling, and we're now underwater so we should STOP FALLING. Capiche?
+			vec3_t endpos;
+			VectorCopy(info->origin, endpos);
+			endpos[2] += info->mins[2];
 
-			PlayerIntLand(playerinfo,delta);
+			if (info->waterlevel == 3 || (info->waterlevel == 1 && (info->PointContents(endpos) & (CONTENTS_SLIME | CONTENTS_LAVA))))
+				PlayerIntLand(info, delta); // We were falling, and we're now underwater so we should STOP FALLING.
 		}
 
 		return;
 	}
 
-	if((playerinfo->flags&PLAYER_FLAG_FALLING)&&(playerinfo->waterlevel<=2))
-	{
-		PlayerIntLand(playerinfo,delta);
-	}
-
-	delta=delta*delta*0.0001;//it's now positive no matter what
-
 	// Never take falling damage if completely underwater.
-
-	if(playerinfo->waterlevel==3)
-		return;
-	if(playerinfo->waterlevel==2)
-		delta*=0.25;
-	if(playerinfo->waterlevel==1)
-		delta*=0.5;
-
-	if(playerinfo->seqcmd[ACMDL_CROUCH])
-		delta*=0.75;//rolling absorbs some
- 
-	if(delta<1.0)
+	if (info->waterlevel == 3)
 		return;
 
-	if(delta<15.0)
-	{
-		// Unimplemented.
+	if ((info->flags & PLAYER_FLAG_FALLING) && info->waterlevel <= 2)
+		PlayerIntLand(info, delta);
 
-		if(!playerinfo->isclient)
-			playerinfo->G_CreateEffect(EFFECT_PRED_ID11,
-									   playerinfo->G_GetEntityStatePtr(playerinfo->self),
-									   FX_FOOTSTEP,
-									   CEF_OWNERS_ORIGIN,
-									   playerinfo->origin,
-									   "");
-		else
-			playerinfo->CL_CreateEffect(EFFECT_PRED_ID11,
-										playerinfo->self,
-										FX_FOOTSTEP,
-										CEF_OWNERS_ORIGIN,
-										playerinfo->origin,
-										"");
+	delta *= delta * 0.0001f; // It's now positive no matter what.
 
+	if (info->waterlevel == 2)
+		delta *= 0.25f;
+	else if (info->waterlevel == 1)
+		delta *= 0.5f;
+
+	if (info->seqcmd[ACMDL_CROUCH])
+		delta *= 0.75f; // Rolling absorbs some falling damage.
+
+	if (delta < 1.0f)
 		return;
-	}
 
-	if(delta > 30.0)
-	{
-		// Apply damage to player entity if we are running server (game) side.
-
-		if(!playerinfo->isclient)
-			playerinfo->G_PlayerFallingDamage(playerinfo,delta);
-	}
-	else
-	{
-		// Unimplemented.
-
-		if(!playerinfo->isclient)
-			playerinfo->G_CreateEffect(EFFECT_PRED_ID12,
-									   playerinfo->G_GetEntityStatePtr(playerinfo->self),
-									   FX_FALLSHORT,
-									   CEF_OWNERS_ORIGIN,
-									   playerinfo->origin,
-									   "");
-		else
-			playerinfo->CL_CreateEffect(EFFECT_PRED_ID12,
-										playerinfo->self,
-										FX_FALLSHORT,
-										CEF_OWNERS_ORIGIN,
-										playerinfo->origin,
-										"");
-
-		return;
-	}
+	if (delta < 15.0f)
+		P_CreateEffect(info, EFFECT_PRED_ID11, info->self, FX_FOOTSTEP,  CEF_OWNERS_ORIGIN, info->origin, ""); //mxd
+	else if (delta <= 30.0f)
+		P_CreateEffect(info, EFFECT_PRED_ID12, info->self, FX_FALLSHORT, CEF_OWNERS_ORIGIN, info->origin, ""); //mxd
+	else if (!info->isclient) // Apply damage to player entity if we are running server (game) side.
+		info->G_PlayerFallingDamage(info, delta);
 }
