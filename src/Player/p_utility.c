@@ -1,7 +1,7 @@
 //
 // p_utility.c -- mxd. Utility functions to reduce code repetition...
 //
-// Copyright 1998 Raven Software
+// Copyright 2024 m-x-d
 //
 
 #include "Player.h"
@@ -31,4 +31,13 @@ void P_LocalSound(const playerinfo_t* info, const char* soundname)
 {
 	if (!info->isclient)
 		info->G_L_Sound(info->self, info->G_SoundIndex(soundname));
+}
+
+//mxd. 'owner' arg is always the same in Player.dll, so...
+void P_RemoveEffects(const playerinfo_t* info, const byte event_id, const int type)
+{
+	if (info->isclient)
+		info->CL_RemoveEffects(event_id, info->self, type);
+	else
+		info->G_RemoveEffects(event_id, info->G_GetEntityStatePtr(info->self), type);
 }
