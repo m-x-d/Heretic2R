@@ -120,90 +120,44 @@ static void CalcJointAngles(playerinfo_t* info)
 	info->targetjointangles[PITCH] /= 3.0f;
 }
 
-PLAYER_API void TurnOffPlayerEffects(playerinfo_t *playerinfo)
+PLAYER_API void TurnOffPlayerEffects(playerinfo_t* info)
 {
-	// Make sure all effects are removed.
+	if (info->effects != 0)
+	{
+		// Make sure all effects are removed.
+		switch (info->pers.handfxtype)
+		{
+			case HANDFX_FIREBALL:
+			case HANDFX_MISSILE:
+			case HANDFX_SPHERE:
+			case HANDFX_MACEBALL:
+				P_RemoveEffects(info, EFFECT_PRED_ID26, FX_SPELLHANDS); //mxd
+				break;
 
-	switch(playerinfo->pers.handfxtype)
-	{	
-		case HANDFX_FIREBALL:
-		case HANDFX_MISSILE:
-		case HANDFX_SPHERE:
-		case HANDFX_MACEBALL:
-			
-			if(playerinfo->effects)
-				if(!playerinfo->isclient)
-					playerinfo->G_RemoveEffects(EFFECT_PRED_ID26,
-												playerinfo->G_GetEntityStatePtr(playerinfo->self),
-												FX_SPELLHANDS);
-				else
-					playerinfo->CL_RemoveEffects(EFFECT_PRED_ID26,
-												 playerinfo->self,
-												 FX_SPELLHANDS);
-			
-			break;
+			case HANDFX_REDRAIN:
+			case HANDFX_POWERREDRAIN:
+				P_RemoveEffects(info, EFFECT_PRED_ID27, FX_WEAPON_REDRAINGLOW); //mxd
+				break;
 
-		case HANDFX_REDRAIN:
-		case HANDFX_POWERREDRAIN:
-			
-			if(playerinfo->effects)
-				if(!playerinfo->isclient)
-					playerinfo->G_RemoveEffects(EFFECT_PRED_ID27,
-												playerinfo->G_GetEntityStatePtr(playerinfo->self),
-												FX_WEAPON_REDRAINGLOW);
-				else
-					playerinfo->CL_RemoveEffects(EFFECT_PRED_ID27,
-												playerinfo->self,
-												FX_WEAPON_REDRAINGLOW);
-			
-			break;
+			case HANDFX_PHOENIX:
+			case HANDFX_POWERPHOENIX:
+			case HANDFX_FIREWALL:
+				P_RemoveEffects(info, EFFECT_PRED_ID28, FX_FIREHANDS); //mxd
+				break;
 
-		case HANDFX_PHOENIX:
-		case HANDFX_POWERPHOENIX:
-		case HANDFX_FIREWALL:
-			
-			if(playerinfo->effects)
-				if(!playerinfo->isclient)
-					playerinfo->G_RemoveEffects(EFFECT_PRED_ID28,
-												playerinfo->G_GetEntityStatePtr(playerinfo->self),
-												FX_FIREHANDS);
-				else
-					playerinfo->CL_RemoveEffects(EFFECT_PRED_ID28,
-												 playerinfo->self,
-												 FX_FIREHANDS);
-			
-			break;
+			case HANDFX_STAFF1:
+			case HANDFX_STAFF2:
+			case HANDFX_STAFF3:
+				P_RemoveEffects(info, EFFECT_PRED_ID29, FX_STAFF); //mxd
+				break;
 
-		case HANDFX_STAFF1:
-		case HANDFX_STAFF2:
-		case HANDFX_STAFF3:
-			
-			if(playerinfo->effects)
-			{
-				if(!playerinfo->isclient)
-					playerinfo->G_RemoveEffects(EFFECT_PRED_ID29,
-												playerinfo->G_GetEntityStatePtr(playerinfo->self),
-												FX_STAFF);
-				else
-					playerinfo->CL_RemoveEffects(EFFECT_PRED_ID29,
-												 playerinfo->self,
-												 FX_STAFF);
-
-				playerinfo->effects&=~EF_BLOOD_ENABLED;
-			}
-			
-			break;
-
-		case HANDFX_NONE:
-		
-		default:
-			
-			// Nothing to remove.
-
-			break;
+			case HANDFX_NONE:
+			default: // Nothing to remove.
+				break;
+		}
 	}
 
-	playerinfo->pers.handfxtype=HANDFX_NONE;
+	info->pers.handfxtype = HANDFX_NONE;
 }
 
 PLAYER_API void AnimUpdateFrame(playerinfo_t *playerinfo)
