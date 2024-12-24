@@ -31,145 +31,93 @@ static float ClampAngle(float angle) //mxd. Originally named NormalizeAngle (fun
 	return angle;
 }
 
-// ************************************************************************************************
-// CalcJointAngles
-// ----------------
-// ************************************************************************************************
-
-static void CalcJointAngles(playerinfo_t *playerinfo) 
+static void CalcJointAngles(playerinfo_t* info)
 {
-	vec3_t			targetvector;
-
-	// Adjust the player model's joint angles. The rules are:
+	// Adjust the player model's joint angles.
+	// The rules are:
 	// If there is a target to look at, the torso and head will shift to face the target.
 	// If the player is standing still, the torso will shift to face where the view is going.
 	// If there is a target to look at, the torso will shift to face the target instead.
 	// If the player is moving, only the head will shift, unless there is a target, in which case it will face it.
 
-	playerinfo->headjointonly=false;
+	info->headjointonly = false;
+	VectorClear(info->targetjointangles);
 
-	VectorClear(playerinfo->targetjointangles);
-
-	if(playerinfo->enemystate==NULL)
-	{	
-		// No target to be seen...
-
-		if(playerinfo->pm_w_flags)
-		{
-			// ...and we're swimming...
-			
-			// PITCH.
-
-			playerinfo->targetjointangles[PITCH]=-(playerinfo->aimangles[PITCH]-playerinfo->angles[PITCH])*ANGLE_TO_RAD;
-
-			if(playerinfo->targetjointangles[PITCH]>ANGLE_90) 
-				playerinfo->targetjointangles[PITCH]=ANGLE_90;
-			else if(playerinfo->targetjointangles[PITCH]<-ANGLE_90) 
-				playerinfo->targetjointangles[PITCH]=-ANGLE_90;
-
-			if(playerinfo->targetjointangles[PITCH]>=0) 
-				playerinfo->targetjointangles[PITCH]/=3.0;
-			else
-				playerinfo->targetjointangles[PITCH]/=1.5;
-
-			if(playerinfo->pm_w_flags&(WF_DIVING|WF_SWIMFREE))
-			{
-				// ...and we're below the surface, so just allow the head to PITCH. Of course,
-				// we need invert the angle too.
-				
-				playerinfo->headjointonly=true;
-
-				playerinfo->targetjointangles[PITCH]=-playerinfo->targetjointangles[PITCH];
-			}
-		}
-		else if(playerinfo->pm_flags&PMF_STANDSTILL)
-		{	
-			// ...and we're standing still with our feet on something solid, so allow head and torso
-			// to PITCH and YAW.
-						
-			// PITCH.
-
-			playerinfo->targetjointangles[PITCH]=-(playerinfo->aimangles[PITCH]-playerinfo->angles[PITCH])*ANGLE_TO_RAD;
-
-			if (playerinfo->targetjointangles[PITCH]>ANGLE_90) 
-				playerinfo->targetjointangles[PITCH]=ANGLE_90;
-			else if (playerinfo->targetjointangles[PITCH]<-ANGLE_90) 
-				playerinfo->targetjointangles[PITCH]=-ANGLE_90;
-			
-			playerinfo->targetjointangles[PITCH]/=3.0;
-			
-			// YAW.
-
-			playerinfo->targetjointangles[YAW]=((playerinfo->aimangles[YAW]-playerinfo->angles[YAW])*ANGLE_TO_RAD);
-
-			if(playerinfo->targetjointangles[YAW]<-ANGLE_180)
-				playerinfo->targetjointangles[YAW]+=ANGLE_360;
-			else if(playerinfo->targetjointangles[YAW]>ANGLE_180)
-				playerinfo->targetjointangles[YAW]-=ANGLE_360;
-
-			playerinfo->targetjointangles[YAW]/=3.0;
-		}
-		else
-		{	
-			// ...and we're moving - on land or flying or whatever.
-			
-			playerinfo->headjointonly=true;
-
-			// PITCH.
-
-			playerinfo->targetjointangles[PITCH]=-(playerinfo->aimangles[PITCH]-playerinfo->angles[PITCH])*ANGLE_TO_RAD;
-			
-			if (playerinfo->targetjointangles[PITCH]>ANGLE_90) 
-				playerinfo->targetjointangles[PITCH]=ANGLE_90;
-			else if (playerinfo->targetjointangles[PITCH]<-ANGLE_90) 
-				playerinfo->targetjointangles[PITCH]=-ANGLE_90;
-			
-			playerinfo->targetjointangles[PITCH]/=3.0;
-
-			// YAW.
-
-			playerinfo->targetjointangles[YAW]=0;
-		}
-	}
-	else 
+	// We have a target and we aren't swimming, so calculate angles to target.
+	if (info->enemystate != NULL && info->pm_w_flags == 0)
 	{
-		// We have a target...
+		vec3_t targetvector;
+		VectorCopy(info->enemystate->origin, targetvector);
+		VectorSubtract(targetvector, info->origin, targetvector);
+		vectoangles(targetvector, info->targetjointangles);
 
-		if(!playerinfo->pm_w_flags)
-		{
-			// ...and we aren't swimming, so calculate angles to target.
+		// PITCH.
+		info->targetjointangles[PITCH] -= info->angles[PITCH];
+		info->targetjointangles[PITCH] *= ANGLE_TO_RAD;
+		info->targetjointangles[PITCH] = ClampAngle(info->targetjointangles[PITCH]);
+		info->targetjointangles[PITCH] = Clamp(info->targetjointangles[PITCH], -ANGLE_90, ANGLE_90);
+		info->targetjointangles[PITCH] /= 3.0f;
 
-			VectorCopy(playerinfo->enemystate->origin,targetvector);
-			VectorSubtract(targetvector, playerinfo->origin, targetvector);
-			vectoangles(targetvector, playerinfo->targetjointangles);
+		// YAW.
+		info->targetjointangles[YAW] -= info->angles[YAW];
+		info->targetjointangles[YAW] *= ANGLE_TO_RAD;
+		info->targetjointangles[YAW] = ClampAngle(info->targetjointangles[YAW]);
+		info->targetjointangles[YAW] = Clamp(info->targetjointangles[YAW], -ANGLE_90, ANGLE_90);
+		info->targetjointangles[YAW] /= 3.0f;
 
-			// PITCH.
-
-			playerinfo->targetjointangles[PITCH] -= playerinfo->angles[PITCH];
-			playerinfo->targetjointangles[PITCH] *= ANGLE_TO_RAD;
-			playerinfo->targetjointangles[PITCH] = ClampAngle(playerinfo->targetjointangles[PITCH]);
-
-			if (playerinfo->targetjointangles[PITCH] > ANGLE_90) 
-				playerinfo->targetjointangles[PITCH] = ANGLE_90;
-			else if (playerinfo->targetjointangles[PITCH] < -ANGLE_90) 
-				playerinfo->targetjointangles[PITCH] = -ANGLE_90;
-
-			playerinfo->targetjointangles[PITCH] /= 3.0;
-
-			// YAW.
-
-			playerinfo->targetjointangles[YAW] -= playerinfo->angles[YAW];
-			playerinfo->targetjointangles[YAW] *= ANGLE_TO_RAD;
-			playerinfo->targetjointangles[YAW] = ClampAngle(playerinfo->targetjointangles[YAW]);
-
-			if (playerinfo->targetjointangles[YAW] > ANGLE_90) 
-				playerinfo->targetjointangles[YAW] = ANGLE_90;
-			else if (playerinfo->targetjointangles[YAW] < -ANGLE_90) 
-				playerinfo->targetjointangles[YAW] = -ANGLE_90;
-
-			playerinfo->targetjointangles[YAW] /= 3.0;
-		}
+		return;
 	}
+
+	// No target to be seen and we're swimming...
+	if (info->pm_w_flags != 0)
+	{
+		// PITCH.
+		info->targetjointangles[PITCH] = -(info->aimangles[PITCH] - info->angles[PITCH]) * ANGLE_TO_RAD;
+		info->targetjointangles[PITCH] = Clamp(info->targetjointangles[PITCH], -ANGLE_90, ANGLE_90);
+
+		if (info->targetjointangles[PITCH] >= 0.0f)
+			info->targetjointangles[PITCH] /= 3.0f;
+		else
+			info->targetjointangles[PITCH] /= 1.5f;
+
+		// ...and we're below the surface, so just allow the head to PITCH.
+		if (info->pm_w_flags & (WF_DIVING | WF_SWIMFREE))
+		{
+			info->headjointonly = true;
+			info->targetjointangles[PITCH] *= -1.0f; // Of course, we need invert the angle too.
+		}
+
+		return;
+	}
+
+	// No target to be seen and we're standing still with our feet on something solid, so allow head and torso to PITCH and YAW.
+	if (info->pm_flags & PMF_STANDSTILL)
+	{
+		// PITCH.
+		info->targetjointangles[PITCH] = -(info->aimangles[PITCH] - info->angles[PITCH]) * ANGLE_TO_RAD;
+		info->targetjointangles[PITCH] = Clamp(info->targetjointangles[PITCH], -ANGLE_90, ANGLE_90);
+		info->targetjointangles[PITCH] /= 3.0f;
+
+		// YAW.
+		info->targetjointangles[YAW] = (info->aimangles[YAW] - info->angles[YAW]) * ANGLE_TO_RAD;
+
+		if (info->targetjointangles[YAW] < -ANGLE_180)
+			info->targetjointangles[YAW] += ANGLE_360;
+		else if (info->targetjointangles[YAW] > ANGLE_180)
+			info->targetjointangles[YAW] -= ANGLE_360;
+
+		info->targetjointangles[YAW] /= 3.0f;
+
+		return;
+	}
+
+	// No target to be seen and we're moving - on land or flying or whatever.
+	info->headjointonly = true;
+
+	// PITCH.
+	info->targetjointangles[PITCH] = -(info->aimangles[PITCH] - info->angles[PITCH]) * ANGLE_TO_RAD;
+	info->targetjointangles[PITCH] = Clamp(info->targetjointangles[PITCH], -ANGLE_90, ANGLE_90);
+	info->targetjointangles[PITCH] /= 3.0f;
 }
 
 PLAYER_API void TurnOffPlayerEffects(playerinfo_t *playerinfo)
