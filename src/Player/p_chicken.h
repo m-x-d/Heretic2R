@@ -37,7 +37,7 @@ void PlayerChickenJump(playerinfo_t* info); //mxd. Returned int in original vers
 void PlayerChickenFlap(playerinfo_t* info);
 void PlayerChickenCheckFlap(playerinfo_t* info);
 
-void ChickenAssert(playerinfo_t* info); //TODO: rename to PlayerChickenAssert?
+void PlayerChickenAssert(playerinfo_t* info); //mxd. Named ChickenAssert in original version.
 void PlayerChickenCluck(const playerinfo_t* info, float force);
 
-void ChickenStepSound(const playerinfo_t* info, float value); //TODO: rename to PlayerChickenStepSound?
+void PlayerChickenStepSound(const playerinfo_t* info, float value); //mxd. Named ChickenStepSound in original version.

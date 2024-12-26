@@ -18,7 +18,7 @@
 // Should never be used.
 static panimframe_t chickenp_frames_dummy[] =
 {
-	FRAME_wait1, NULL, 0, 0, 0, NULL, 0, ChickenAssert,
+	FRAME_wait1, NULL, 0, 0, 0, NULL, 0, PlayerChickenAssert,
 };
 panimmove_t chickenp_move_dummy = { 1, chickenp_frames_dummy, PlayerAnimLowerUpdate };
 
@@ -99,10 +99,10 @@ static panimframe_t chickenp_frames_run[] =
 {
 	FRAME_run1, PlayerMoveFunc, PLAYER_RUN_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
 	FRAME_run2, PlayerMoveFunc, PLAYER_RUN_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
-	FRAME_run3, PlayerMoveFunc, PLAYER_RUN_SPEED, 0, 0, ChickenStepSound, 0, PlayerAnimLowerUpdate,
+	FRAME_run3, PlayerMoveFunc, PLAYER_RUN_SPEED, 0, 0, PlayerChickenStepSound, 0, PlayerAnimLowerUpdate,
 	FRAME_run4, PlayerMoveFunc, PLAYER_RUN_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
 	FRAME_run5, PlayerMoveFunc, PLAYER_RUN_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
-	FRAME_run6, PlayerMoveFunc, PLAYER_RUN_SPEED, 0, 0, ChickenStepSound, 0, PlayerAnimLowerUpdate,
+	FRAME_run6, PlayerMoveFunc, PLAYER_RUN_SPEED, 0, 0, PlayerChickenStepSound, 0, PlayerAnimLowerUpdate,
 };
 panimmove_t chickenp_move_run = { 6, chickenp_frames_run, PlayerAnimLowerUpdate };
 
@@ -111,11 +111,11 @@ static panimframe_t chickenp_frames_walk[] =
 {
 	FRAME_walk1, PlayerMoveFunc, PLAYER_WALK_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
 	FRAME_walk2, PlayerMoveFunc, PLAYER_WALK_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
-	FRAME_walk3, PlayerMoveFunc, PLAYER_WALK_SPEED, 0, 0, ChickenStepSound, 0, PlayerAnimLowerUpdate,
+	FRAME_walk3, PlayerMoveFunc, PLAYER_WALK_SPEED, 0, 0, PlayerChickenStepSound, 0, PlayerAnimLowerUpdate,
 	FRAME_walk4, PlayerMoveFunc, PLAYER_WALK_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
 	FRAME_walk5, PlayerMoveFunc, PLAYER_WALK_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
 	FRAME_walk6, PlayerMoveFunc, PLAYER_WALK_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
-	FRAME_walk7, PlayerMoveFunc, PLAYER_WALK_SPEED, 0, 0, ChickenStepSound, 0, PlayerAnimLowerUpdate,
+	FRAME_walk7, PlayerMoveFunc, PLAYER_WALK_SPEED, 0, 0, PlayerChickenStepSound, 0, PlayerAnimLowerUpdate,
 	FRAME_walk8, PlayerMoveFunc, PLAYER_WALK_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
 };
 panimmove_t chickenp_move_walk = { 8, chickenp_frames_walk, PlayerAnimLowerUpdate };
@@ -123,10 +123,10 @@ panimmove_t chickenp_move_walk = { 8, chickenp_frames_walk, PlayerAnimLowerUpdat
 // Chicken running backwards.
 static panimframe_t chickenp_frames_runb[] =
 {
-	FRAME_run6, PlayerMoveFunc, -PLAYER_RUN_SPEED, 0, 0, ChickenStepSound, 0, PlayerAnimLowerUpdate,
+	FRAME_run6, PlayerMoveFunc, -PLAYER_RUN_SPEED, 0, 0, PlayerChickenStepSound, 0, PlayerAnimLowerUpdate,
 	FRAME_run5, PlayerMoveFunc, -PLAYER_RUN_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
 	FRAME_run4, PlayerMoveFunc, -PLAYER_RUN_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
-	FRAME_run3, PlayerMoveFunc, -PLAYER_RUN_SPEED, 0, 0, ChickenStepSound, 0, PlayerAnimLowerUpdate,
+	FRAME_run3, PlayerMoveFunc, -PLAYER_RUN_SPEED, 0, 0, PlayerChickenStepSound, 0, PlayerAnimLowerUpdate,
 	FRAME_run2, PlayerMoveFunc, -PLAYER_RUN_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
 	FRAME_run1, PlayerMoveFunc, -PLAYER_RUN_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
 };
@@ -136,11 +136,11 @@ panimmove_t chickenp_move_runb = { 6, chickenp_frames_runb, PlayerAnimLowerUpdat
 static panimframe_t chickenp_frames_back[] =
 {
 	FRAME_walk8, PlayerMoveFunc, -PLAYER_WALK_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
-	FRAME_walk7, PlayerMoveFunc, -PLAYER_WALK_SPEED, 0, 0, ChickenStepSound, 0, PlayerAnimLowerUpdate,
+	FRAME_walk7, PlayerMoveFunc, -PLAYER_WALK_SPEED, 0, 0, PlayerChickenStepSound, 0, PlayerAnimLowerUpdate,
 	FRAME_walk6, PlayerMoveFunc, -PLAYER_WALK_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
 	FRAME_walk5, PlayerMoveFunc, -PLAYER_WALK_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
 	FRAME_walk4, PlayerMoveFunc, -PLAYER_WALK_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
-	FRAME_walk3, PlayerMoveFunc, -PLAYER_WALK_SPEED, 0, 0, ChickenStepSound, 0, PlayerAnimLowerUpdate,
+	FRAME_walk3, PlayerMoveFunc, -PLAYER_WALK_SPEED, 0, 0, PlayerChickenStepSound, 0, PlayerAnimLowerUpdate,
 	FRAME_walk2, PlayerMoveFunc, -PLAYER_WALK_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
 	FRAME_walk1, PlayerMoveFunc, -PLAYER_WALK_SPEED, 0, 0, NULL, 0, PlayerAnimLowerUpdate,
 };
@@ -151,10 +151,10 @@ static panimframe_t chickenp_frames_strafel[] =
 {
 	FRAME_run1, PlayerMoveFunc, 0, -PLAYER_STRAFE_SPEED, 0, NULL, 0, PlayerAnimLowerUpdate,
 	FRAME_run2, PlayerMoveFunc, 0, -PLAYER_STRAFE_SPEED, 0, NULL, 0, PlayerAnimLowerUpdate,
-	FRAME_run3, PlayerMoveFunc, 0, -PLAYER_STRAFE_SPEED, 0, ChickenStepSound, 0, PlayerAnimLowerUpdate,
+	FRAME_run3, PlayerMoveFunc, 0, -PLAYER_STRAFE_SPEED, 0, PlayerChickenStepSound, 0, PlayerAnimLowerUpdate,
 	FRAME_run4, PlayerMoveFunc, 0, -PLAYER_STRAFE_SPEED, 0, NULL, 0, PlayerAnimLowerUpdate,
 	FRAME_run5, PlayerMoveFunc, 0, -PLAYER_STRAFE_SPEED, 0, NULL, 0, PlayerAnimLowerUpdate,
-	FRAME_run6, PlayerMoveFunc, 0, -PLAYER_STRAFE_SPEED, 0, ChickenStepSound, 0, PlayerAnimLowerUpdate,
+	FRAME_run6, PlayerMoveFunc, 0, -PLAYER_STRAFE_SPEED, 0, PlayerChickenStepSound, 0, PlayerAnimLowerUpdate,
 };
 panimmove_t chickenp_move_strafel = { 6, chickenp_frames_strafel, PlayerAnimLowerUpdate };
 
@@ -163,10 +163,10 @@ static panimframe_t chickenp_frames_strafer[] =
 {
 	FRAME_run1, PlayerMoveFunc, 0, PLAYER_STRAFE_SPEED, 0, NULL, 0, PlayerAnimLowerUpdate,
 	FRAME_run2, PlayerMoveFunc, 0, PLAYER_STRAFE_SPEED, 0, NULL, 0, PlayerAnimLowerUpdate,
-	FRAME_run3, PlayerMoveFunc, 0, PLAYER_STRAFE_SPEED, 0, ChickenStepSound, 0, PlayerAnimLowerUpdate,
+	FRAME_run3, PlayerMoveFunc, 0, PLAYER_STRAFE_SPEED, 0, PlayerChickenStepSound, 0, PlayerAnimLowerUpdate,
 	FRAME_run4, PlayerMoveFunc, 0, PLAYER_STRAFE_SPEED, 0, NULL, 0, PlayerAnimLowerUpdate,
 	FRAME_run5, PlayerMoveFunc, 0, PLAYER_STRAFE_SPEED, 0, NULL, 0, PlayerAnimLowerUpdate,
-	FRAME_run6, PlayerMoveFunc, 0, PLAYER_STRAFE_SPEED, 0, ChickenStepSound, 0, PlayerAnimLowerUpdate,
+	FRAME_run6, PlayerMoveFunc, 0, PLAYER_STRAFE_SPEED, 0, PlayerChickenStepSound, 0, PlayerAnimLowerUpdate,
 };
 panimmove_t chickenp_move_strafer = { 6, chickenp_frames_strafer, PlayerAnimLowerUpdate };
 
@@ -237,10 +237,10 @@ static panimframe_t chickenp_frames_runattack[] =
 {
 	FRAME_rattack1, PlayerMoveFunc, PLAYER_RUN_SPEED, 0, 0, NULL, 0, PlayerChickenBite,
 	FRAME_rattack2, PlayerMoveFunc, PLAYER_RUN_SPEED, 0, 0, NULL, 0, NULL,
-	FRAME_rattack3, PlayerMoveFunc, PLAYER_RUN_SPEED, 0, 0, ChickenStepSound, 0, NULL,
+	FRAME_rattack3, PlayerMoveFunc, PLAYER_RUN_SPEED, 0, 0, PlayerChickenStepSound, 0, NULL,
 	FRAME_rattack4, PlayerMoveFunc, PLAYER_RUN_SPEED, 0, 0, NULL, 0, NULL,
 	FRAME_rattack5, PlayerMoveFunc, PLAYER_RUN_SPEED, 0, 0, NULL, 0, NULL,
-	FRAME_rattack6, PlayerMoveFunc, PLAYER_RUN_SPEED, 0, 0, ChickenStepSound, 0, NULL,
+	FRAME_rattack6, PlayerMoveFunc, PLAYER_RUN_SPEED, 0, 0, PlayerChickenStepSound, 0, NULL,
 };
 panimmove_t chickenp_move_runattack = { 6, chickenp_frames_runattack, PlayerAnimLowerUpdate };
 
