@@ -37,29 +37,18 @@ void PlayerChickenBite(playerinfo_t* info)
 		info->G_PlayerActionChickenBite(info);
 }
 
-// ***********************************************************************************************
-// PlayerChickenNoise
-// -------------------
-// ************************************************************************************************
-
-void PlayerChickenCluck(playerinfo_t *playerinfo, float force)
+//mxd
+static char* GetChickenType(const playerinfo_t* info)
 {
-	char *soundname;
+	return ((info->edictflags & FL_SUPER_CHICKEN) ? "superchicken" : "chicken");
+}
 
-	assert(playerinfo);
+void PlayerChickenCluck(const playerinfo_t* info, const float force)
+{
+	assert(info);
 
-	if ( (!force) && (irand(0,10)) )
-		return;
-
-	if (playerinfo->edictflags & FL_SUPER_CHICKEN)
-		soundname = (irand(0,1)) ? "monsters/superchicken/cluck1.wav" : "monsters/superchicken/cluck2.wav";
-	else
-		soundname = (irand(0,1)) ? "monsters/chicken/cluck1.wav" : "monsters/chicken/cluck2.wav";
-
-	if(playerinfo->isclient)
-		playerinfo->CL_Sound(SND_PRED_ID48,playerinfo->origin, CHAN_WEAPON, soundname, 1.0, ATTN_NORM, 0);
-	else
-		playerinfo->G_Sound(SND_PRED_ID48,playerinfo->leveltime,playerinfo->self, CHAN_WEAPON, playerinfo->G_SoundIndex(soundname), 1.0, ATTN_NORM, 0);
+	if (force != 0.0f || irand(0, 10) == 0)
+		P_Sound(info, SND_PRED_ID48, CHAN_WEAPON, va("monsters/%s/cluck%i.wav", GetChickenType(info), irand(1, 2)), 1.0f); //mxd
 }
 
 // ***********************************************************************************************
