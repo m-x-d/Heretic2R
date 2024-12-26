@@ -169,18 +169,14 @@ int PlayerAnimWeaponSwitch(playerinfo_t* info)
 	return newseq;
 }
 
-PLAYER_API void PlayerAnimUpperIdle(playerinfo_t *playerinfo)
+PLAYER_API void PlayerAnimUpperIdle(playerinfo_t* info)
 {
-	int ret;
+	const int ret = BranchUprReady(info);
 
-	if (ret = BranchUprReady(playerinfo))
-	{
-		PlayerAnimSetUpperSeq(playerinfo, ret);
+	if (ret != ASEQ_NONE)
+		PlayerAnimSetUpperSeq(info, ret);
 
-		assert(playerinfo->uppermove);
-	}
-
-	assert(playerinfo->uppermove);
+	assert(info->uppermove);
 }
 
 PLAYER_API void PlayerAnimLowerIdle(playerinfo_t *playerinfo)
