@@ -18,12 +18,10 @@ extern panimmove_t chickenp_move_walk;
 extern panimmove_t chickenp_move_run;
 extern panimmove_t chickenp_move_back;
 extern panimmove_t chickenp_move_runb;
-extern panimmove_t chickenp_move_bite; //TODO: unused
 extern panimmove_t chickenp_move_strafel;
 extern panimmove_t chickenp_move_strafer;
 extern panimmove_t chickenp_move_jump;
 extern panimmove_t chickenp_move_wjump;
-extern panimmove_t chickenp_move_wjumpb; //TODO: unused
 extern panimmove_t chickenp_move_rjump;
 extern panimmove_t chickenp_move_rjumpb;
 extern panimmove_t chickenp_move_jump_loop;
