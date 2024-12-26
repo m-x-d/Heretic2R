@@ -126,3 +126,5 @@ extern void PlayerActionCheckWalkBack(playerinfo_t* info);
 extern void PlayerActionCheckWalkBackUnStrafe(playerinfo_t* info);
 
 extern void PlayerActionCheckRun(playerinfo_t* info);
+
+extern void PlayerActionSetDead(playerinfo_t* info); //mxd

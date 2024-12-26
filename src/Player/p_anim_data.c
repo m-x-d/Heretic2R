@@ -4333,11 +4333,6 @@ panimmove_t player_move_fallrightend = { 10, player_frames_fallrightend, PlayerA
 
 #pragma region ========================== PLAYER DEATH ANIMATIONS ==========================
 
-static void PlayerSetDead(playerinfo_t* info) //TODO: move to p_actions.c
-{
-	info->deadflag = DEAD_DEAD;
-}
-
 static panimframe_t player_frames_death1[] =
 {
 	FRAME_deathA1,  NULL, 0, 0, 0, NULL, 0, NULL,
@@ -4353,7 +4348,7 @@ static panimframe_t player_frames_death1[] =
 	FRAME_deathA11, NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_deathA12, NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_deathA13, NULL, 0, 0, 0, NULL, 0, NULL,
-	FRAME_deathA14, NULL, 0, 0, 0, NULL, 0, PlayerSetDead,
+	FRAME_deathA14, NULL, 0, 0, 0, NULL, 0, PlayerActionSetDead,
 };
 panimmove_t player_move_death1 = { 14, player_frames_death1, PlayerAnimLowerUpdate };
 
@@ -4394,7 +4389,7 @@ static panimframe_t player_frames_death_b[] =
 	FRAME_burning32, NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_burning33, NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_burning34, NULL, 0, 0, 0, NULL, 0, NULL,
-	FRAME_burning35, NULL, 0, 0, 0, NULL, 0, PlayerSetDead,
+	FRAME_burning35, NULL, 0, 0, 0, NULL, 0, PlayerActionSetDead,
 };
 panimmove_t player_move_death_b = { 35, player_frames_death_b, PlayerAnimLowerUpdate };
 
@@ -4413,7 +4408,7 @@ static panimframe_t player_frames_death_fly_forward[] =
 	FRAME_faceplant19, NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_faceplant21, NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_faceplant23, NULL, 0, 0, 0, NULL, 0, NULL,
-	FRAME_faceplant24, NULL, 0, 0, 0, NULL, 0, PlayerSetDead,
+	FRAME_faceplant24, NULL, 0, 0, 0, NULL, 0, PlayerActionSetDead,
 };
 panimmove_t player_move_death_fly_forward = { 13, player_frames_death_fly_forward, PlayerAnimLowerUpdate };
 
@@ -4432,7 +4427,7 @@ static panimframe_t player_frames_death_fly_back[] =
 	FRAME_blowback19, NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_blowback21, NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_blowback23, NULL, 0, 0, 0, NULL, 0, NULL,
-	FRAME_blowback24, NULL, 0, 0, 0, NULL, 0, PlayerSetDead,
+	FRAME_blowback24, NULL, 0, 0, 0, NULL, 0, PlayerActionSetDead,
 };
 panimmove_t player_move_death_fly_back = { 13, player_frames_death_fly_back, PlayerAnimLowerUpdate };
 
@@ -4473,7 +4468,7 @@ static panimframe_t player_frames_death_choke[] =
 	FRAME_choking32, NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_choking33, NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_choking34, NULL, 0, 0, 0, NULL, 0, NULL,
-	FRAME_choking35, NULL, 0, 0, 0, NULL, 0, PlayerSetDead,
+	FRAME_choking35, NULL, 0, 0, 0, NULL, 0, PlayerActionSetDead,
 };
 panimmove_t player_move_death_choke = { 35, player_frames_death_choke, PlayerAnimLowerUpdate };
 
@@ -4523,7 +4518,7 @@ static panimframe_t player_frames_drown[] =
 	FRAME_drown37, NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_drown38, NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_drown39, NULL, 0, 0, 0, NULL, 0, NULL,
-	FRAME_drown40, NULL, 0, 0, 0, NULL, 0, PlayerSetDead,
+	FRAME_drown40, NULL, 0, 0, 0, NULL, 0, PlayerActionSetDead,
 };
 panimmove_t	player_move_drown = { 40, player_frames_drown, PlayerAnimLowerUpdate };
 

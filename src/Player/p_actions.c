@@ -2857,3 +2857,8 @@ PLAYER_API void PlayerInterruptAction(playerinfo_t* info)
 	// Clear out any pending animations.
 	PlayerAnimSetUpperSeq(info, ASEQ_NONE);
 }
+
+void PlayerActionSetDead(playerinfo_t* info) //mxd. Was PlayerSetDead() in p_anim_data.c in original version.
+{
+	info->deadflag = DEAD_DEAD;
+}
