@@ -179,125 +179,103 @@ PLAYER_API void PlayerAnimUpperIdle(playerinfo_t* info)
 	assert(info->uppermove);
 }
 
-PLAYER_API void PlayerAnimLowerIdle(playerinfo_t *playerinfo)
+PLAYER_API void PlayerAnimLowerIdle(playerinfo_t* info)
 {
-	int ret;
+	if (info->flags & PLAYER_FLAG_SURFSWIM)
+	{
+		const int ret = BranchLwrSurfaceSwim(info);
+		if (ret != ASEQ_NONE)
+			PlayerAnimSetLowerSeq(info, ret);
 
-	if (playerinfo->flags & PLAYER_FLAG_SURFSWIM)
-	{
-		if (ret = BranchLwrSurfaceSwim(playerinfo))
-		{
-			PlayerAnimSetLowerSeq(playerinfo, ret);
-		}
+		return;
 	}
-	else if (playerinfo->flags & PLAYER_FLAG_UNDERWATER)
-	{
-		if (ret = BranchLwrUnderwaterSwim(playerinfo))
-		{
-			PlayerAnimSetLowerSeq(playerinfo, ret);
-		}
-	}
-	else if (playerinfo->flags & PLAYER_FLAG_ONROPE)
-	{
-		if (ret = BranchLwrClimbing(playerinfo))
-		{
-			PlayerAnimSetLowerSeq(playerinfo, ret);
-		}
-	}
-	else if (ret = BranchLwrStanding(playerinfo))
-	{
-		PlayerAnimSetLowerSeq(playerinfo, ret);
-	}
-	else
-	{
-		if (playerinfo->leveltime - playerinfo->idletime > 15.0) 
-		{
-			if (playerinfo->lowerseq >= ASEQ_IDLE_READY_GO && playerinfo->lowerseq <= ASEQ_IDLE_LOOKR && playerinfo->lowerseq != ASEQ_IDLE_READY_END)
-			{
-				// Only certain idle should be called out of here.
 
-				switch(playerinfo->irand(playerinfo, 0, 3))
-				{
-					case 0:
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_IDLE_LOOKL);
-						break;
-					case 1:
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_IDLE_LOOKR);
-						break;
-					case 2:
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_IDLE_READY_END);
-						break;
-					default:
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_IDLE_READY);
-						break;
-				}
-			}
-			// if we are in a cinematic, always do this idle, since its silent
-			else
-			if (playerinfo->sv_cinematicfreeze)
-				PlayerAnimSetLowerSeq(playerinfo, ASEQ_IDLE_LOOKBACK);
-			else if ((playerinfo->pers.weaponready == WEAPON_READY_BOW) || (playerinfo->isclient))
-			{	
-				// Because the bow doesn't look right in some idles.
+	if (info->flags & PLAYER_FLAG_UNDERWATER)
+	{
+		const int ret = BranchLwrUnderwaterSwim(info);
+		if (ret != ASEQ_NONE)
+			PlayerAnimSetLowerSeq(info, ret);
 
-				switch(playerinfo->irand(playerinfo, 0, 2))
-				{
-					case 0:
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_IDLE_SCRATCH_ASS);
-						break;
-					case 1:
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_IDLE_LOOKBACK);
-						break;
-					default:
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_IDLE_READY_GO);
-						break;
-				}
-			}
-			else if ((playerinfo->pers.weaponready == WEAPON_READY_SWORDSTAFF))
-			{
-				// Because the staff doesn't look right in some idles.
+		return;
+	}
 
-				switch(playerinfo->irand(playerinfo, 0, 3))
-				{
-					case 0:
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_IDLE_FLY1);
-						break;
-					case 1:
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_IDLE_FLY2);
-						break;
-					case 2:
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_IDLE_WIPE_BROW);
-						break;
-					default:
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_IDLE_READY_GO);
-						break;
-				}
-			}
-			else
-			{
-				switch(playerinfo->irand(playerinfo, 0, 6))
-				{
-					case 0:
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_IDLE_FLY1);
-						break;
-					case 1:
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_IDLE_FLY2);
-						break;
-					case 2:
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_IDLE_SCRATCH_ASS);
-						break;
-					case 3:
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_IDLE_LOOKBACK);
-						break;
-					case 4:
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_IDLE_WIPE_BROW);
-						break;
-					default:
-						PlayerAnimSetLowerSeq(playerinfo, ASEQ_IDLE_READY_GO);
-						break;
-				}
-			}
+	if (info->flags & PLAYER_FLAG_ONROPE)
+	{
+		const int ret = BranchLwrClimbing(info);
+		if (ret != ASEQ_NONE)
+			PlayerAnimSetLowerSeq(info, ret);
+
+		return;
+	}
+
+	const int ret = BranchLwrStanding(info);
+	if (ret != ASEQ_NONE)
+	{
+		PlayerAnimSetLowerSeq(info, ret);
+		return;
+	}
+
+	// Not a time to be idling, yet.
+	if (info->leveltime - info->idletime <= 15.0f)
+		return;
+
+	if (info->lowerseq >= ASEQ_IDLE_READY_GO && info->lowerseq <= ASEQ_IDLE_LOOKR && info->lowerseq != ASEQ_IDLE_READY_END)
+	{
+		// Only certain idle should be called out of here.
+		switch (info->irand(info, 0, 3))
+		{
+			case 0:  PlayerAnimSetLowerSeq(info, ASEQ_IDLE_LOOKL); break;
+			case 1:  PlayerAnimSetLowerSeq(info, ASEQ_IDLE_LOOKR); break;
+			case 2:  PlayerAnimSetLowerSeq(info, ASEQ_IDLE_READY_END); break;
+			default: PlayerAnimSetLowerSeq(info, ASEQ_IDLE_READY); break;
 		}
+
+		return;
+	}
+
+	// If we are in a cinematic, always do this idle, since its silent.
+	if (info->sv_cinematicfreeze != 0.0f)
+	{
+		PlayerAnimSetLowerSeq(info, ASEQ_IDLE_LOOKBACK);
+		return;
+	}
+
+	// Because the bow doesn't look right in some idles.
+	if (info->pers.weaponready == WEAPON_READY_BOW || info->isclient) //TODO: why isclient check?..
+	{
+		switch (info->irand(info, 0, 2))
+		{
+			case 0:  PlayerAnimSetLowerSeq(info, ASEQ_IDLE_SCRATCH_ASS); break;
+			case 1:  PlayerAnimSetLowerSeq(info, ASEQ_IDLE_LOOKBACK); break;
+			default: PlayerAnimSetLowerSeq(info, ASEQ_IDLE_READY_GO); break;
+		}
+
+		return;
+	}
+
+	// Because the staff doesn't look right in some idles.
+	if (info->pers.weaponready == WEAPON_READY_SWORDSTAFF)
+	{
+		switch (info->irand(info, 0, 3))
+		{
+			case 0:  PlayerAnimSetLowerSeq(info, ASEQ_IDLE_FLY1); break;
+			case 1:  PlayerAnimSetLowerSeq(info, ASEQ_IDLE_FLY2); break;
+			case 2:  PlayerAnimSetLowerSeq(info, ASEQ_IDLE_WIPE_BROW); break;
+			default: PlayerAnimSetLowerSeq(info, ASEQ_IDLE_READY_GO); break;
+		}
+
+		return;
+	}
+
+	// Default idle animations.
+	switch (info->irand(info, 0, 6))
+	{
+		case 0:  PlayerAnimSetLowerSeq(info, ASEQ_IDLE_FLY1); break;
+		case 1:  PlayerAnimSetLowerSeq(info, ASEQ_IDLE_FLY2); break;
+		case 2:  PlayerAnimSetLowerSeq(info, ASEQ_IDLE_SCRATCH_ASS); break;
+		case 3:  PlayerAnimSetLowerSeq(info, ASEQ_IDLE_LOOKBACK); break;
+		case 4:  PlayerAnimSetLowerSeq(info, ASEQ_IDLE_WIPE_BROW); break;
+		default: PlayerAnimSetLowerSeq(info, ASEQ_IDLE_READY_GO); break;
 	}
 }
 
