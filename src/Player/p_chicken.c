@@ -38,36 +38,6 @@ void PlayerChickenBite(playerinfo_t* info)
 }
 
 // ***********************************************************************************************
-// PlayerChickenSqueal
-// -------------------
-// ************************************************************************************************
-
-void PlayerChickenSqueal(playerinfo_t *playerinfo)
-{
-	if(playerinfo->isclient)
-	{
-		playerinfo->CL_Sound(SND_PRED_ID47,
-							 playerinfo->origin,
-							 CHAN_WEAPON,
-							 "",
-							 1.0,
-							 ATTN_NORM,
-							 0);
-	}
-	else
-	{
-		playerinfo->G_Sound(SND_PRED_ID47,
-							playerinfo->leveltime,
-							playerinfo->self,
-							CHAN_WEAPON,
-							playerinfo->G_SoundIndex(""),
-							1.0,
-							ATTN_NORM,
-							0);
-	}
-}
-
-// ***********************************************************************************************
 // PlayerChickenNoise
 // -------------------
 // ************************************************************************************************
