@@ -19,3 +19,6 @@ extern void P_RemoveEffects(const playerinfo_t* info, byte event_id, int type);
 		info->CL_CreateEffect(event_id, owner, (ushort)type, flags, origin, format, ##__VA_ARGS__); \
 	else \
 		info->G_CreateEffect(event_id, (owner != NULL ? info->G_GetEntityStatePtr((edict_t *)owner) : NULL), type, flags, origin, format, ##__VA_ARGS__)
+
+extern float ClampAngleDeg(float angle);
+extern float ClampAngleRad(float angle);

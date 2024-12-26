@@ -6,6 +6,8 @@
 
 #include "Player.h"
 #include "p_utility.h"
+
+#include "Angles.h"
 #include "EffectFlags.h"
 
 //mxd. 'contantmask', 'flags' and 'passent' args are always the same in Player.dll, so...
@@ -40,4 +42,34 @@ void P_RemoveEffects(const playerinfo_t* info, const byte event_id, const int ty
 		info->CL_RemoveEffects(event_id, info->self, type);
 	else
 		info->G_RemoveEffects(event_id, info->G_GetEntityStatePtr(info->self), type);
+}
+
+float ClampAngleDeg(float angle) //mxd. Was CL_NormaliseAngle() in p_actions in original version.
+{
+	// Returns the remainder.
+	angle = fmodf(angle, 360.0f);
+
+	// Makes the angle signed.
+	if (angle > 180.0f)
+		return angle - 360.0f;
+
+	if (angle < -180.0f)
+		return angle + 360.0f;
+
+	return angle;
+}
+
+float ClampAngleRad(float angle) //mxd. Was NormalizeAngle() in p_animactor.c (function with the same name is already defined in Utilities.c).
+{
+	// Returns the remainder.
+	angle = fmodf(angle, ANGLE_360);
+
+	// Makes the angle signed.
+	if (angle >= ANGLE_180)
+		return angle - ANGLE_360;
+
+	if (angle <= -ANGLE_180)
+		return angle + ANGLE_360;
+
+	return angle;
 }

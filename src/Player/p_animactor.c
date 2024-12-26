@@ -16,21 +16,6 @@
 #include "Vector.h"
 #include "FX.h"
 
-static float ClampAngle(float angle) //mxd. Originally named NormalizeAngle (function with the same name already defined in Utilities.c).
-{
-	// Returns the remainder.
-	angle = fmodf(angle, ANGLE_360);
-
-	// Makes the angle signed.
-	if (angle >= ANGLE_180)
-		return angle - ANGLE_360;
-
-	if (angle <= -ANGLE_180)
-		return angle + ANGLE_360;
-
-	return angle;
-}
-
 static void CalcJointAngles(playerinfo_t* info)
 {
 	// Adjust the player model's joint angles.
@@ -52,16 +37,12 @@ static void CalcJointAngles(playerinfo_t* info)
 		vectoangles(targetvector, info->targetjointangles);
 
 		// PITCH.
-		info->targetjointangles[PITCH] -= info->angles[PITCH];
-		info->targetjointangles[PITCH] *= ANGLE_TO_RAD;
-		info->targetjointangles[PITCH] = ClampAngle(info->targetjointangles[PITCH]);
+		info->targetjointangles[PITCH] = ClampAngleDeg(info->targetjointangles[PITCH] - info->angles[PITCH]) * ANGLE_TO_RAD;
 		info->targetjointangles[PITCH] = Clamp(info->targetjointangles[PITCH], -ANGLE_90, ANGLE_90);
 		info->targetjointangles[PITCH] /= 3.0f;
 
 		// YAW.
-		info->targetjointangles[YAW] -= info->angles[YAW];
-		info->targetjointangles[YAW] *= ANGLE_TO_RAD;
-		info->targetjointangles[YAW] = ClampAngle(info->targetjointangles[YAW]);
+		info->targetjointangles[YAW] = ClampAngleDeg(info->targetjointangles[YAW] - info->angles[YAW]) * ANGLE_TO_RAD;
 		info->targetjointangles[YAW] = Clamp(info->targetjointangles[YAW], -ANGLE_90, ANGLE_90);
 		info->targetjointangles[YAW] /= 3.0f;
 

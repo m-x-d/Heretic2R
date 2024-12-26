@@ -24,20 +24,6 @@
 static const vec3_t handmins = { -2.0f, -2.0f, 0.0f };
 static const vec3_t handmaxs = {  2.0f,  2.0f, 2.0f };
 
-static float CL_NormaliseAngle(float angle)
-{
-	const int count = (int)(angle / 360.0f);
-
-	angle -= (float)count * 360.0f;
-
-	if (angle > 180.0f)
-		angle -= 360.0f;
-	else if (angle < -180.0f)
-		angle += 360.0f;
-
-	return angle;
-}
-
 void PlayerActionCheckBranchRunningStrafe(playerinfo_t* info)
 {
 	const int seq = BranchLwrRunningStrafe(info);
@@ -1056,7 +1042,7 @@ static grabtype_e GetGrabType(playerinfo_t* info, const float v_adjust)
 	if (grabtrace.fraction == 1.0f)
 	{
 		VectorCopy(endpoint, info->origin);
-		info->offsetangles[YAW] = -(CL_NormaliseAngle(info->angles[YAW]) - info->grabangle);
+		info->offsetangles[YAW] = -(ClampAngleDeg(info->angles[YAW]) - info->grabangle);
 		info->angles[YAW] = info->grabangle;
 
 		return (swingable ? GT_SWING : GT_GRAB);
