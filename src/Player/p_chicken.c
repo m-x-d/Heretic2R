@@ -1,65 +1,26 @@
-//==============================================================================
 //
 // p_chicken.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
+// Ported from m_chicken.c by Marcus Whitlock.
 //
-//
-//	AI :
-//
-//	STAND1		: Looking straight ahead
-//
-//  Ported from m_chicken.c by Marcus Whitlock
-//
-//==============================================================================
 
-#include "player.h"
-#include "g_Physics.h"
-#include "g_teleport.h"
-#include "g_Skeletons.h"
-#include "p_types.h"
+#include "Player.h"
+#include "p_main.h"
 #include "p_anims.h"
 #include "p_chicken.h"
-#include "fx.h"
-#include "random.h"
-#include "vector.h"
-#include "Utilities.h"
-#include "p_main.h"
+#include "p_utility.h" //mxd
+#include "FX.h"
+#include "Random.h"
+#include "Vector.h"
 
 #define CHICKEN_GLIDE			150
 #define CHICKEN_GLIDE_FORWARD	200
 
-void ChickenStepSound(playerinfo_t *playerinfo, float value)
+void ChickenStepSound(const playerinfo_t* info, float value)
 {
-	char *name;
-
-	if (playerinfo->edictflags & FL_SUPER_CHICKEN)
-	{
-		name = (irand(0,1)) ? "monsters/tbeast/step1.wav" : "monsters/tbeast/step2.wav";
-
-		if(playerinfo->isclient)
-		{
-			playerinfo->CL_Sound(SND_PRED_ID46,
-								 playerinfo->origin,
-								 CHAN_WEAPON,
-								 name,
-								 1.0,
-								 ATTN_NORM,
-								 0);
-		}
-		else
-		{
-			playerinfo->G_Sound(SND_PRED_ID46,
-								playerinfo->leveltime,
-								playerinfo->self,
-								CHAN_WEAPON,
-								playerinfo->G_SoundIndex(name),
-								1.0,
-								ATTN_NORM,
-								0);
-		}
-	}
+	if (info->edictflags & FL_SUPER_CHICKEN)
+		P_Sound(info, SND_PRED_ID46, CHAN_WEAPON, va("monsters/tbeast/step%i.wav", irand(1, 2)), 1.0f); //mxd
 }
 
 void ChickenAssert(playerinfo_t *playerinfo)
