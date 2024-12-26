@@ -5,41 +5,36 @@
 // Copyright 1998 Raven Software
 //
 
-#include "player.h"
+#include "Player.h"
 #include "p_types.h"
-#include "p_animactor.h"
 #include "p_anim_branch.h"
 #include "p_anim_data.h"
 #include "p_anims.h"
 #include "p_main.h"
-#include "g_Skeletons.h"
-#include "angles.h"
-#include "fx.h"
-#include "random.h"
-#include "vector.h"
-#include "effectflags.h"
+#include "Random.h"
+#include "Vector.h"
+#include "EffectFlags.h"
+#include "p_utility.h" //mxd
 
-PLAYER_API void PlayerAnimSetUpperSeq(playerinfo_t *playerinfo, int seq)
+PLAYER_API void PlayerAnimSetUpperSeq(playerinfo_t* info, const int seq)
 {
-	assert(playerinfo);
+	assert(info);
 
-	if (playerinfo->upperseq != seq)
-	{	
+	if (info->upperseq != seq)
+	{
 		// We don't set all the data up right because it's up to AnimUpdateFrame to do this.
-
-		playerinfo->upperseq = seq;
-		playerinfo->upperframe = -1;
-		playerinfo->upperidle = false;
+		info->upperseq = seq;
+		info->upperframe = -1;
+		info->upperidle = false;
 	}
 
-	playerinfo->uppermove = PlayerSeqData[seq].move;
-	
-	playerinfo->uppermove_index=seq;
+	info->uppermove = PlayerSeqData[seq].move;
+	info->uppermove_index = seq;
 
-	assert(playerinfo->uppermove);
+	assert(info->uppermove);
 
-	if (playerinfo->upperseq == ASEQ_NONE)
-		playerinfo->upperidle = true;
+	if (info->upperseq == ASEQ_NONE)
+		info->upperidle = true;
 }
 
 PLAYER_API void PlayerAnimSetLowerSeq(playerinfo_t *playerinfo, int seq)
