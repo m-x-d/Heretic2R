@@ -95,31 +95,30 @@ PLAYER_API void PlayerAnimSetLowerSeq(playerinfo_t* info, const int seq)
 	}
 }
 
-PLAYER_API void PlayerBasicAnimReset(playerinfo_t *playerinfo)
+PLAYER_API void PlayerBasicAnimReset(playerinfo_t* info)
 {
-	PlayerAnimSetLowerSeq(playerinfo, ASEQ_STAND);
-	playerinfo->lowerframeptr = playerinfo->lowermove->frame;
-	
-	PlayerAnimSetUpperSeq(playerinfo, ASEQ_NONE);
-	playerinfo->upperframeptr = playerinfo->uppermove->frame;
-		
-	playerinfo->effects|=EF_SWAPFRAME;
-	playerinfo->effects &= ~(EF_DISABLE_EXTRA_FX | EF_ON_FIRE | EF_TRAILS_ENABLED);
+	PlayerAnimSetLowerSeq(info, ASEQ_STAND);
+	info->lowerframeptr = info->lowermove->frame;
 
-	PlayerSetHandFX(playerinfo, HANDFX_NONE, -1);
+	PlayerAnimSetUpperSeq(info, ASEQ_NONE);
+	info->upperframeptr = info->uppermove->frame;
 
-	if (playerinfo->pers.weaponready == WEAPON_READY_NONE)		// Just in case we die with WEAPON_READY_NONE
-		playerinfo->pers.weaponready = WEAPON_READY_HANDS;
+	info->effects |= EF_SWAPFRAME;
+	info->effects &= ~(EF_DISABLE_EXTRA_FX | EF_ON_FIRE | EF_TRAILS_ENABLED);
 
-	playerinfo->switchtoweapon = playerinfo->pers.weaponready;
-	playerinfo->pers.newweapon = NULL;
+	PlayerSetHandFX(info, HANDFX_NONE, -1);
+
+	if (info->pers.weaponready == WEAPON_READY_NONE) // Just in case we die with WEAPON_READY_NONE
+		info->pers.weaponready = WEAPON_READY_HANDS;
+
+	info->switchtoweapon = info->pers.weaponready;
+	info->pers.newweapon = NULL;
 
 	// Straighten out joints, i.e. reset torso twisting.
-	
-	if(!(playerinfo->edictflags&FL_CHICKEN))
-		playerinfo->ResetJointAngles(playerinfo);
+	if (!(info->edictflags & FL_CHICKEN))
+		info->ResetJointAngles(info);
 
-	memset(playerinfo->seqcmd,0,ACMD_MAX*sizeof(int));
+	memset(info->seqcmd, 0, ACMD_MAX * sizeof(int));
 }
 
 PLAYER_API void PlayerAnimReset(playerinfo_t *playerinfo)
