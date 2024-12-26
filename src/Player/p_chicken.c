@@ -31,15 +31,10 @@ void ChickenAssert(playerinfo_t* info)
 	assert(0);
 }
 
-// ***********************************************************************************************
-// PlayerChickenBite
-// -----------------
-// ************************************************************************************************
-
-void PlayerChickenBite(playerinfo_t *playerinfo)
+void PlayerChickenBite(playerinfo_t* info)
 {
-	if(!playerinfo->isclient)
-		playerinfo->G_PlayerActionChickenBite(playerinfo);
+	if (!info->isclient)
+		info->G_PlayerActionChickenBite(info);
 }
 
 // ***********************************************************************************************
