@@ -14,9 +14,6 @@
 #include "Random.h"
 #include "Vector.h"
 
-#define CHICKEN_GLIDE			150
-#define CHICKEN_GLIDE_FORWARD	200
-
 void ChickenStepSound(const playerinfo_t* info, float value)
 {
 	if (info->edictflags & FL_SUPER_CHICKEN)
@@ -73,65 +70,34 @@ void PlayerChickenJump(playerinfo_t* info)
 		P_Sound(info, SND_PRED_ID49, CHAN_WEAPON, va("monsters/%s/jump%i.wav", GetChickenType(info), id), 1.0f); //mxd
 }
 
-void PlayerChickenCheckFlap ( playerinfo_t *playerinfo )
+//mxd. Added to reduce code repetition.
+static void FlapSetup(playerinfo_t* info, const byte event_id)
 {
-	vec3_t	vf;
+#define CHICKEN_GLIDE_UPWARDS	150.0f
+#define CHICKEN_GLIDE_FORWARD	200.0f
 
-	if (playerinfo->seqcmd[ACMDL_JUMP])
+	info->flags |= PLAYER_FLAG_USE_ENT_POS;
+
+	vec3_t vf;
+	AngleVectors(info->angles, vf, NULL, NULL);
+	vf[2] = 0;
+
+	VectorScale(vf, CHICKEN_GLIDE_FORWARD, info->velocity);
+	info->velocity[2] += CHICKEN_GLIDE_UPWARDS;
+
+	P_CreateEffect(info, event_id, info->self, FX_CHICKEN_EXPLODE, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, ""); //mxd
+}
+
+void PlayerChickenCheckFlap(playerinfo_t* info)
+{
+	if (info->seqcmd[ACMDL_JUMP])
 	{
-		playerinfo->flags |= PLAYER_FLAG_USE_ENT_POS;
-		
-		AngleVectors(playerinfo->angles, vf, NULL, NULL);
-		vf[2] = 0;
-
-		VectorScale(vf, CHICKEN_GLIDE_FORWARD, playerinfo->velocity);
-
-		playerinfo->velocity[2] += CHICKEN_GLIDE;
-
-		if(!playerinfo->isclient)
-			playerinfo->G_CreateEffect(EFFECT_PRED_ID13,
-									   playerinfo->G_GetEntityStatePtr((edict_t *)playerinfo->self),
-									   FX_CHICKEN_EXPLODE,
-									   CEF_OWNERS_ORIGIN | CEF_FLAG6,
-									   NULL,
-									   "");
-		else
-			playerinfo->CL_CreateEffect(EFFECT_PRED_ID13,
-										playerinfo->self,
-									    FX_CHICKEN_EXPLODE,
-									    CEF_OWNERS_ORIGIN | CEF_FLAG6,
-										NULL,
-										"");
-
-		PlayerAnimSetLowerSeq(playerinfo,ASEQ_JUMPFWD);
+		FlapSetup(info, EFFECT_PRED_ID13); //mxd
+		PlayerAnimSetLowerSeq(info, ASEQ_JUMPFWD);
 	}
 }
 
-void PlayerChickenFlap ( playerinfo_t *playerinfo )
+void PlayerChickenFlap(playerinfo_t* info)
 {
-	vec3_t	vf;
-
-	playerinfo->flags |= PLAYER_FLAG_USE_ENT_POS;
-	
-	AngleVectors(playerinfo->angles, vf, NULL, NULL);
-	vf[2] = 0;
-
-	VectorScale(vf, CHICKEN_GLIDE_FORWARD, playerinfo->velocity);
-
-	playerinfo->velocity[2] += CHICKEN_GLIDE;
-
-	if(!playerinfo->isclient)
-		playerinfo->G_CreateEffect(EFFECT_PRED_ID14,
-								   playerinfo->self,
-								   FX_CHICKEN_EXPLODE,
-								   CEF_OWNERS_ORIGIN | CEF_FLAG6,
-								   NULL,
-								   "");
-	else
-		playerinfo->CL_CreateEffect(EFFECT_PRED_ID14,
-									playerinfo->self,
-								    FX_CHICKEN_EXPLODE,
-								    CEF_OWNERS_ORIGIN | CEF_FLAG6,
-								    NULL,
-								    "");
+	FlapSetup(info, EFFECT_PRED_ID14); //mxd
 }
