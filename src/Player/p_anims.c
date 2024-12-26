@@ -344,21 +344,21 @@ PLAYER_API void PlayerAnimLowerUpdate(playerinfo_t* info)
 	PlayerAnimSetLowerSeq(info, newseq);
 }
 
-PLAYER_API void PlayerAnimSetVault(playerinfo_t *playerinfo, int seq)
+PLAYER_API void PlayerAnimSetVault(playerinfo_t* info, const int seq)
 {
-	assert(playerinfo);
+	assert(info);
 
-	PlayerAnimSetLowerSeq(playerinfo, seq);
-	playerinfo->fwdvel	= 0.0;
-	playerinfo->sidevel = 0.0;
-	playerinfo->upvel	= 0.0;
-	playerinfo->edictflags |= FL_FLY | FL_LOCKMOVE;
-	playerinfo->flags = PlayerSeqData[ASEQ_VAULT_LOW].playerflags | (playerinfo->flags & PLAYER_FLAG_PERSMASK);
-	playerinfo->pm_flags |= PMF_LOCKMOVE; 
-	VectorClear(playerinfo->velocity);
-	
-	if(playerinfo->waterlevel>1)
-		playerinfo->waterlevel = 1;
+	PlayerAnimSetLowerSeq(info, seq);
+
+	info->fwdvel = 0.0f;
+	info->sidevel = 0.0f;
+	info->upvel = 0.0f;
+	info->edictflags |= (FL_FLY | FL_LOCKMOVE);
+	info->flags = (int)(PlayerSeqData[ASEQ_VAULT_LOW].playerflags | (info->flags & PLAYER_FLAG_PERSMASK));
+	info->pm_flags |= PMF_LOCKMOVE;
+	VectorClear(info->velocity);
+
+	info->waterlevel = min(info->waterlevel, 1);
 }
 
 PLAYER_API void PlayerPlayPain(playerinfo_t *playerinfo, int type)
