@@ -151,41 +151,22 @@ PLAYER_API void PlayerAnimReset(playerinfo_t* info)
 	memset(info->seqcmd, 0, ACMD_MAX * sizeof(int));
 }
 
-int PlayerAnimWeaponSwitch(playerinfo_t *playerinfo)
+int PlayerAnimWeaponSwitch(playerinfo_t* info)
 {
-	qboolean BranchCheckDismemberAction(playerinfo_t *playerinfo, int weapon);
+	int newseq = ASEQ_NONE;
 
-	int newseq;
+	assert(info);
 
-	assert(playerinfo);
-	
 	// See if we have the arm to do that magic.
+	if (info->switchtoweapon != info->pers.weaponready && BranchCheckDismemberAction(info, info->switchtoweapon))
+		newseq = PlayerAnimWeaponSwitchSeq[info->pers.weaponready][info->switchtoweapon];
+	else if (info->pers.newweapon != NULL && BranchCheckDismemberAction(info, info->pers.newweapon->tag))
+		newseq = PlayerAnimWeaponSwitchSeq[info->pers.weaponready][info->pers.weaponready];
 
-	if (playerinfo->switchtoweapon != playerinfo->pers.weaponready)
-	{	
-		if (!BranchCheckDismemberAction(playerinfo, playerinfo->switchtoweapon))
-			return ASEQ_NONE;
+	if (newseq != ASEQ_NONE)
+		PlayerAnimSetUpperSeq(info, newseq);
 
-		newseq = PlayerAnimWeaponSwitchSeq[playerinfo->pers.weaponready][playerinfo->switchtoweapon];
-		if (newseq)
-		{
-			PlayerAnimSetUpperSeq(playerinfo, newseq);
-			return newseq;
-		}
-	}
-	else if (playerinfo->pers.newweapon)
-	{
-		if (!BranchCheckDismemberAction(playerinfo, playerinfo->pers.newweapon->tag))
-			return ASEQ_NONE;
-
-		newseq = PlayerAnimWeaponSwitchSeq[playerinfo->pers.weaponready][playerinfo->pers.weaponready];
-		if (newseq)
-		{
-			PlayerAnimSetUpperSeq(playerinfo, newseq);
-			return newseq;
-		}
-	}
-	return ASEQ_NONE;
+	return newseq;
 }
 
 PLAYER_API void PlayerAnimUpperIdle(playerinfo_t *playerinfo)
