@@ -51,97 +51,26 @@ void PlayerChickenCluck(const playerinfo_t* info, const float force)
 		P_Sound(info, SND_PRED_ID48, CHAN_WEAPON, va("monsters/%s/cluck%i.wav", GetChickenType(info), irand(1, 2)), 1.0f); //mxd
 }
 
-// ***********************************************************************************************
-// PlayerChickenJump
-// -----------------
-// ************************************************************************************************
-
-int PlayerChickenJump(playerinfo_t *playerinfo)
+void PlayerChickenJump(playerinfo_t* info)
 {
-	trace_t		trace;
-	vec3_t		endpos;
-	char		*soundname;
-	int			id;
-
-	VectorCopy(playerinfo->origin,endpos);
-	endpos[2]+=(playerinfo->mins[2]-2.0);
-
-	if(playerinfo->isclient)
+	if (info->waterlevel < 2)
 	{
-		playerinfo->CL_Trace(playerinfo->origin,
-							 playerinfo->mins,
-							 playerinfo->maxs,
-							 endpos,
-							 MASK_PLAYERSOLID,
-							 CEF_CLIP_TO_WORLD,
-							 &trace);
-	}
-	else
-	{
-		playerinfo->G_Trace(playerinfo->origin,
-								  playerinfo->mins,
-								  playerinfo->maxs,
-								  endpos,
-								  playerinfo->self,
-								  MASK_PLAYERSOLID,&trace);
+		vec3_t endpos;
+		VectorCopy(info->origin, endpos);
+		endpos[2] += (info->mins[2] - 2.0f);
+
+		trace_t trace;
+		P_Trace(info, info->origin, info->mins, info->maxs, endpos, &trace); //mxd
+
+		if (info->groundentity != NULL || trace.fraction < 0.2f)
+			info->upvel = 200;
 	}
 
-	if((playerinfo->groundentity||trace.fraction<0.2)&&playerinfo->waterlevel<2)
-		playerinfo->upvel=200;
+	PlayerAnimSetLowerSeq(info, ASEQ_FALL);
 
-	PlayerAnimSetLowerSeq(playerinfo,ASEQ_FALL);
-
-	id = irand(0,6);
-
-	if (playerinfo->edictflags & FL_SUPER_CHICKEN)
-	{
-		switch ( id )
-		{
-		case 0:
-			soundname = "monsters/superchicken/jump1.wav";
-			break;
-		
-		case 1:
-			soundname = "monsters/superchicken/jump2.wav";
-			break;
-		
-		case 2:
-			soundname = "monsters/superchicken/jump3.wav";
-			break;
-
-		default:
-			return ASEQ_FALL;
-			break;
-		}
-	}
-	else
-	{
-		switch ( id )
-		{
-		case 0:
-			soundname = "monsters/chicken/jump1.wav";
-			break;
-		
-		case 1:
-			soundname = "monsters/chicken/jump2.wav";
-			break;
-		
-		case 2:
-			soundname = "monsters/chicken/jump3.wav";
-			break;
-
-		default:
-			return ASEQ_FALL;
-			break;
-		}
-	}
-
-	if(playerinfo->isclient)
-		playerinfo->CL_Sound(SND_PRED_ID49,playerinfo->origin, CHAN_WEAPON, soundname, 1.0, ATTN_NORM, 0);
-	else
-		playerinfo->G_Sound(SND_PRED_ID49,playerinfo->leveltime,playerinfo->self, CHAN_WEAPON, playerinfo->G_SoundIndex(soundname), 1.0, ATTN_NORM, 0);
-	
-	return ASEQ_FALL;
+	const int id = irand(1, 7);
+	if (id < 4)
+		P_Sound(info, SND_PRED_ID49, CHAN_WEAPON, va("monsters/%s/jump%i.wav", GetChickenType(info), id), 1.0f); //mxd
 }
 
 void PlayerChickenCheckFlap ( playerinfo_t *playerinfo )

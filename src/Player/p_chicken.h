@@ -34,7 +34,7 @@ extern panimmove_t chickenp_move_swim_idle;
 extern panimmove_t chickenp_move_swim;
 
 void PlayerChickenBite(playerinfo_t* info);
-int PlayerChickenJump(playerinfo_t* info);
+void PlayerChickenJump(playerinfo_t* info); //mxd. Returned int in original version.
 
 void PlayerChickenFlap(playerinfo_t* info);
 void PlayerChickenCheckFlap(playerinfo_t* info);
