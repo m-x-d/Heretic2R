@@ -11,7 +11,6 @@
 #include "g_items.h"
 #include "p_main.h"
 #include "p_weapon.h"
-#include "FX.h" //TODO: remove
 #include "Vector.h"
 #include "m_player.h"
 #include "p_utility.h" //mxd
