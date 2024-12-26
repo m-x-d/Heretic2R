@@ -30,9 +30,6 @@
     <ClCompile Include="p_chicken_anim.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="p_ctrl.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="p_items.c">
       <Filter>src</Filter>
     </ClCompile>
@@ -63,9 +60,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="p_chicken.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="p_ctrl.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="p_items.h">

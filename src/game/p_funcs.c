@@ -6,7 +6,6 @@
 #include "p_funcs.h"
 #include "p_animactor.h"
 #include "p_anims.h"
-#include "p_ctrl.h"
 #include "p_funcs.h"
 #include "p_main.h"
 #include "p_weapon.h"

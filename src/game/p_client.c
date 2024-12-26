@@ -3,7 +3,6 @@
 #include "g_Skeletons.h"
 #include "m_player.h"
 #include "p_main.h"
-#include "p_ctrl.h"
 #include "p_chicken.h"
 #include "p_funcs.h"
 #include "Angles.h"

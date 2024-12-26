@@ -19,7 +19,6 @@
     <ClCompile Include="p_anim_data.c" />
     <ClCompile Include="p_chicken.c" />
     <ClCompile Include="p_chicken_anim.c" />
-    <ClCompile Include="p_ctrl.c" />
     <ClCompile Include="p_items.c" />
     <ClCompile Include="p_main.c" />
     <ClCompile Include="p_utility.c" />
@@ -33,7 +32,6 @@
     <ClInclude Include="p_anim_branch.h" />
     <ClInclude Include="p_anim_data.h" />
     <ClInclude Include="p_chicken.h" />
-    <ClInclude Include="p_ctrl.h" />
     <ClInclude Include="p_items.h" />
     <ClInclude Include="p_main.h" />
     <ClInclude Include="p_types.h" />
