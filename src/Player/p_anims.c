@@ -121,36 +121,34 @@ PLAYER_API void PlayerBasicAnimReset(playerinfo_t* info)
 	memset(info->seqcmd, 0, ACMD_MAX * sizeof(int));
 }
 
-PLAYER_API void PlayerAnimReset(playerinfo_t *playerinfo)
+PLAYER_API void PlayerAnimReset(playerinfo_t* info)
 {
-	PlayerAnimSetLowerSeq(playerinfo, ASEQ_STAND);
-	playerinfo->lowerframeptr = playerinfo->lowermove->frame;
-	
-	PlayerAnimSetUpperSeq(playerinfo, ASEQ_NONE);
-	playerinfo->upperframeptr = playerinfo->uppermove->frame;
+	PlayerAnimSetLowerSeq(info, ASEQ_STAND);
+	info->lowerframeptr = info->lowermove->frame;
 
-	playerinfo->pers.armortype = ARMOR_TYPE_NONE;
-	playerinfo->pers.bowtype = BOW_TYPE_NONE;
-	playerinfo->pers.stafflevel = STAFF_LEVEL_BASIC;
-	playerinfo->pers.helltype = HELL_TYPE_BASIC;
-	playerinfo->pers.altparts = 0;
-	playerinfo->pers.weaponready = WEAPON_READY_HANDS;
-	playerinfo->switchtoweapon = WEAPON_READY_HANDS;
-	playerinfo->pers.newweapon = NULL;
-	PlayerUpdateModelAttributes(playerinfo);
-	playerinfo->pers.handfxtype = HANDFX_NONE;
-	
-	PlayerSetHandFX(playerinfo, HANDFX_NONE, -1);
-		
-	playerinfo->effects|=EF_SWAPFRAME;
-	playerinfo->effects &= ~(EF_DISABLE_EXTRA_FX | EF_ON_FIRE | EF_TRAILS_ENABLED);
+	PlayerAnimSetUpperSeq(info, ASEQ_NONE);
+	info->upperframeptr = info->uppermove->frame;
+
+	info->pers.armortype = ARMOR_TYPE_NONE;
+	info->pers.bowtype = BOW_TYPE_NONE;
+	info->pers.stafflevel = STAFF_LEVEL_BASIC;
+	info->pers.helltype = HELL_TYPE_BASIC;
+	info->pers.altparts = 0;
+	info->pers.weaponready = WEAPON_READY_HANDS;
+	info->switchtoweapon = WEAPON_READY_HANDS;
+	info->pers.newweapon = NULL;
+	PlayerUpdateModelAttributes(info);
+
+	PlayerSetHandFX(info, HANDFX_NONE, -1);
+
+	info->effects |= EF_SWAPFRAME;
+	info->effects &= ~(EF_DISABLE_EXTRA_FX | EF_ON_FIRE | EF_TRAILS_ENABLED);
 
 	// Straighten out joints, i.e. no torso aiming.
+	if (!(info->edictflags & FL_CHICKEN))
+		info->ResetJointAngles(info);
 
-	if(!(playerinfo->edictflags&FL_CHICKEN))	
-		playerinfo->ResetJointAngles(playerinfo);
-
-	memset(playerinfo->seqcmd,0,ACMD_MAX*sizeof(int));
+	memset(info->seqcmd, 0, ACMD_MAX * sizeof(int));
 }
 
 int PlayerAnimWeaponSwitch(playerinfo_t *playerinfo)
