@@ -315,99 +315,33 @@ PLAYER_API void PlayerAnimUpperUpdate(playerinfo_t* info)
 	PlayerAnimSetUpperSeq(info, newseq);
 }
 
-PLAYER_API void PlayerAnimLowerUpdate(playerinfo_t *playerinfo)
+PLAYER_API void PlayerAnimLowerUpdate(playerinfo_t* info)
 {
-	seqctrl_t	*seqctrl;
-	paceldata_t *seqdata;
-	int newseq=ASEQ_NONE;
-
-	/*
-	// First check if the lower anim is locked by the upper anim.
-	if (PlayerSeqData2[playerinfo->upperseq].nosplit)
-	{
-		// A NONE sequence indicates that the sequence should just mimic the companion half's anim.
-		playerinfo->lowerseq = ASEQ_NONE;
-		playerinfo->loweridle = true;
-		return;
-	}
-	*/
 	// Init some values.
-	
-	playerinfo->loweridle = false;
+	info->loweridle = false;
 
 	// Grab the sequence ctrl struct.
-
-	if (playerinfo->edictflags & FL_CHICKEN)
-		seqctrl = &ChickenCtrl[playerinfo->lowerseq];
-	else
-		seqctrl = &SeqCtrl[playerinfo->lowerseq];
+	const seqctrl_t* seqctrl = ((info->edictflags & FL_CHICKEN) ? &ChickenCtrl[info->lowerseq] : &SeqCtrl[info->lowerseq]);
 
 	// Check for noclip, just to make things more robust.
+	if (info->movetype == PHYSICSTYPE_NOCLIP && info->lowerseq != ASEQ_STAND)
+		PlayerAnimSetLowerSeq(info, ASEQ_STAND);
 
-	if (playerinfo->movetype == PHYSICSTYPE_NOCLIP)
-	{
-		if (playerinfo->lowerseq != ASEQ_STAND)
-		{
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_STAND);
-		}
-	}
-
-	if (!newseq)	// That is if that waterseq transition wasn't necessary...
-	{
-		// First check the branch function. This evaluates "extra" command flags for a potential
-		// modification of the "simple" procedure.
-
-		if (seqctrl->branchfunc)
-		{
-			newseq = seqctrl->branchfunc(playerinfo);
-		}
-	}  
+	// First check the branch function. This evaluates "extra" command flags for a potential modification of the "simple" procedure.
+	int newseq = (seqctrl->branchfunc != NULL ? seqctrl->branchfunc(info) : ASEQ_NONE);
 
 	// If even after the special-case BranchFunc didn't indicate a new sequence...
-
-	if (!newseq)
-	{	
+	if (newseq == ASEQ_NONE)
+	{
 		// The seqctrl indicates the control flag that this sequence is dependent on.  
 		// We've defined a continue and terminate sequence depending on it.
-
-		if (seqctrl->command != ACMD_NONE)
-		{	
-			if (playerinfo->seqcmd[seqctrl->command])
-			{
-				newseq = seqctrl->continueseq;
-			}
-			else 
-			{
-				newseq = seqctrl->ceaseseq;
-			}
-		}
+		if (seqctrl->command != ACMD_NONE && info->seqcmd[seqctrl->command] != 0)
+			newseq = seqctrl->continueseq;
 		else
-		{
 			newseq = seqctrl->ceaseseq;
-		}
 	}
-	
-	// Get the pointer to the correct entry in the SeqData table.
 
-	if (playerinfo->edictflags & FL_CHICKEN)
-		seqdata = &PlayerChickenData[newseq];
-	else
-		seqdata = &PlayerSeqData[newseq];
-
-	// Now check for idles.  If the lower half has an idle, then the upper half is copied.
-/*	if (playerinfo->lowerseq == ASEQ_NONE)
-	{
-		if (playerinfo->upperseq == ASEQ_NONE)
-		{
-			playerinfo->upperseq = BranchIdle(self);
-			playerinfo->upperidle = true;
-		}
-		playerinfo->loweridle = true;
-		playerinfo->flags  = seqdata->playerflags | (playerinfo->flags & PLAYER_FLAG_PERSMASK);
-	}
-	*/
-
-	PlayerAnimSetLowerSeq(playerinfo, newseq);
+	PlayerAnimSetLowerSeq(info, newseq);
 }
 
 PLAYER_API void PlayerAnimSetVault(playerinfo_t *playerinfo, int seq)
