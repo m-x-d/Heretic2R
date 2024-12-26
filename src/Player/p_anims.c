@@ -279,71 +279,40 @@ PLAYER_API void PlayerAnimLowerIdle(playerinfo_t* info)
 	}
 }
 
-PLAYER_API void PlayerAnimUpperUpdate(playerinfo_t *playerinfo)
+PLAYER_API void PlayerAnimUpperUpdate(playerinfo_t* info)
 {
-	seqctrl_t *seqctrl;
-
-	int newseq=ASEQ_NONE;
-
-	/*
-	// first check if the lower anim forces the lower anim to lock in sync with it.
-	if (PlayerSeqData2[playerinfo->lowerseq].nosplit)
-	{
-		// A seq value of NONE indicates that it is not asserting a move, copy the companion half.
-		playerinfo->upperseq = ASEQ_NONE;
-		playerinfo->upperidle = true;
-		return;
-	}
-	*/
-
 	// Init some values.
-
-	playerinfo->upperidle = false;
+	info->upperidle = false;
 
 	// Grab the sequence ctrl struct.
+	const seqctrl_t* seqctrl = &SeqCtrl[info->upperseq];
 
-	seqctrl = &SeqCtrl[playerinfo->upperseq];
-
-	// First check the branch function. This evaluates "extra" command flags for a potential
-	// modification of the "simple" procedure.
-
-	if (seqctrl->branchfunc)
-	{
-		newseq = seqctrl->branchfunc(playerinfo);
-	}
+	// First check the branch function. This evaluates "extra" command flags for a potential modification of the "simple" procedure.
+	int newseq = (seqctrl->branchfunc != NULL ? seqctrl->branchfunc(info) : ASEQ_NONE);
 
 	if (newseq == ASEQ_NONE)
 	{
-		if (seqctrl->command != ACMD_NONE)
-		{
-			if (playerinfo->seqcmd[seqctrl->command])
-			{
-				newseq = seqctrl->continueseq;
-			}
-			else 
-			{
-				newseq = seqctrl->ceaseseq;
-			}
-		}
+		// The seqctrl indicates the control flag that this sequence is dependent on.  
+		// We've defined a continue and terminate sequence depending on it.
+		if (seqctrl->command != ACMD_NONE && info->seqcmd[seqctrl->command] != 0)
+			newseq = seqctrl->continueseq;
 		else
-		{
 			newseq = seqctrl->ceaseseq;
-		}
 	}
 
-	// Now check for idles.  If the upper half has an idle, then the upper half is copied.
-
-	if(newseq == ASEQ_NONE)
+	// Now check for idles. If the upper half has an idle, then the upper half is copied.
+	if (newseq == ASEQ_NONE)
 	{
-		if (playerinfo->lowerseq == ASEQ_NONE)
+		if (info->lowerseq == ASEQ_NONE)
 		{
-			newseq=BranchIdle(playerinfo);
-			playerinfo->loweridle = true;
+			newseq = BranchIdle(info);
+			info->loweridle = true;
 		}
-		playerinfo->upperidle = true;
+
+		info->upperidle = true;
 	}
 
-	PlayerAnimSetUpperSeq(playerinfo, newseq);
+	PlayerAnimSetUpperSeq(info, newseq);
 }
 
 PLAYER_API void PlayerAnimLowerUpdate(playerinfo_t *playerinfo)
