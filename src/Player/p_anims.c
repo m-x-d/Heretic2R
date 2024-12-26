@@ -361,80 +361,37 @@ PLAYER_API void PlayerAnimSetVault(playerinfo_t* info, const int seq)
 	info->waterlevel = min(info->waterlevel, 1);
 }
 
-PLAYER_API void PlayerPlayPain(playerinfo_t *playerinfo, int type)
+PLAYER_API void PlayerPlayPain(const playerinfo_t* info, const int type)
 {
-	int chance = irand(0,100);
+	// Chicken plays no pain sound.
+	if (info->edictflags & FL_CHICKEN)
+		return;
 
-	if(playerinfo->isclient)
+	const int chance = irand(0, 100);
+
+	switch (type)
 	{
-		if (!playerinfo->edictflags & FL_CHICKEN)
-		{	// Chicken plays no pain sound.
-			switch (type)
-			{
-				// Normal.
+		// Normal.
+		case 0:
+			if (chance < 50)
+				P_Sound(info, SND_PRED_ID40, CHAN_VOICE, "*pain1.wav", 1.0f); //mxd
+			else
+				P_Sound(info, SND_PRED_ID41, CHAN_VOICE, "*pain2.wav", 1.0f); //mxd
+			break;
 
-				case 0:
-					if(chance < 50)
-						playerinfo->CL_Sound(SND_PRED_ID40,playerinfo->origin, CHAN_VOICE, "*pain1.wav", 1.0,	ATTN_NORM, 0);
-					else
-						playerinfo->CL_Sound(SND_PRED_ID41,playerinfo->origin, CHAN_VOICE, "*pain2.wav", 1.0, ATTN_NORM, 0);
-					
-					break;
+		// Gas.
+		case 1:
+			if (chance < 33)
+				P_Sound(info, SND_PRED_ID42, CHAN_VOICE, "*cough1.wav", 1.0f); //mxd
+			else if (chance < 66)
+				P_Sound(info, SND_PRED_ID43, CHAN_VOICE, "*cough2.wav", 1.0f); //mxd
+			else
+				P_Sound(info, SND_PRED_ID44, CHAN_VOICE, "*cough3.wav", 1.0f); //mxd
+			break;
 
-				// Gas.
-
-				case 1:
-					if(chance < 33)
-						playerinfo->CL_Sound(SND_PRED_ID42,playerinfo->origin, CHAN_VOICE, "*cough1.wav", 1.0,	ATTN_NORM, 0);
-					else if (chance < 66)
-						playerinfo->CL_Sound(SND_PRED_ID43,playerinfo->origin, CHAN_VOICE, "*cough2.wav", 1.0, ATTN_NORM, 0);
-					else 
-						playerinfo->CL_Sound(SND_PRED_ID44,playerinfo->origin, CHAN_VOICE, "*cough3.wav", 1.0, ATTN_NORM, 0);
-
-					break;
-
-				// Small
-
-				case 2:
-					playerinfo->CL_Sound(SND_PRED_ID45,playerinfo->origin, CHAN_VOICE, "*ow.wav", 1.0, ATTN_NORM, 0);
-					break;
-			}
-		}
-	}
-	else
-	{
-		if (!playerinfo->edictflags & FL_CHICKEN)
-		{	// Chicken plays no pain sound.
-			switch (type)
-			{
-				// Normal.
-
-				case 0:
-					if(chance < 50)
-						playerinfo->G_Sound(SND_PRED_ID40,playerinfo->leveltime,playerinfo->self, CHAN_VOICE, playerinfo->G_SoundIndex("*pain1.wav"), 1.0, ATTN_NORM, 0);
-					else
-						playerinfo->G_Sound(SND_PRED_ID41,playerinfo->leveltime,playerinfo->self, CHAN_VOICE, playerinfo->G_SoundIndex("*pain2.wav"), 1.0, ATTN_NORM, 0);
-					
-					break;
-
-				// Gas.
-
-				case 1:
-					if(chance < 33)
-						playerinfo->G_Sound(SND_PRED_ID42,playerinfo->leveltime,playerinfo->self, CHAN_VOICE, playerinfo->G_SoundIndex("*cough1.wav"), 1.0, ATTN_NORM, 0);
-					else if (chance < 66)
-						playerinfo->G_Sound(SND_PRED_ID43,playerinfo->leveltime,playerinfo->self, CHAN_VOICE, playerinfo->G_SoundIndex("*cough2.wav"), 1.0, ATTN_NORM, 0);
-					else 
-						playerinfo->G_Sound(SND_PRED_ID44,playerinfo->leveltime,playerinfo->self, CHAN_VOICE, playerinfo->G_SoundIndex("*cough3.wav"), 1.0, ATTN_NORM, 0);
-
-					break;
-
-				// Small.
-
-				case 2:
-					playerinfo->G_Sound(SND_PRED_ID45,playerinfo->leveltime,playerinfo->self, CHAN_VOICE, playerinfo->G_SoundIndex("*ow.wav"), 1.0, ATTN_NORM, 0);
-					break;
-			}
-		}
+		// Small
+		case 2:
+			P_Sound(info, SND_PRED_ID45, CHAN_VOICE, "*ow.wav", 1.0f); //mxd
+			break;
 	}
 }
