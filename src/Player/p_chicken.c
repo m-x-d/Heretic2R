@@ -23,12 +23,11 @@ void ChickenStepSound(const playerinfo_t* info, float value)
 		P_Sound(info, SND_PRED_ID46, CHAN_WEAPON, va("monsters/tbeast/step%i.wav", irand(1, 2)), 1.0f); //mxd
 }
 
-void ChickenAssert(playerinfo_t *playerinfo)
+// This should never be called, if it is, a sequence has been selected that cannot be addressed by the chicken.
+void ChickenAssert(playerinfo_t* info)
 {
-	//This should never be called, if it is, a sequence has been selected that cannot be addressed by the chicken
-	PlayerAnimSetLowerSeq(playerinfo, ASEQ_STAND);
-	PlayerAnimSetUpperSeq(playerinfo, ASEQ_NONE);
-
+	PlayerAnimSetLowerSeq(info, ASEQ_STAND);
+	PlayerAnimSetUpperSeq(info, ASEQ_NONE);
 	assert(0);
 }
 
