@@ -37,66 +37,61 @@ PLAYER_API void PlayerAnimSetUpperSeq(playerinfo_t* info, const int seq)
 		info->upperidle = true;
 }
 
-PLAYER_API void PlayerAnimSetLowerSeq(playerinfo_t *playerinfo, int seq)
+PLAYER_API void PlayerAnimSetLowerSeq(playerinfo_t* info, const int seq)
 {
-	paceldata_t *seqdata;
+	paceldata_t* seqdata;
 
-	assert(playerinfo);
+	assert(info);
 
-	if (playerinfo->lowerseq != seq)
-	{	
+	if (info->lowerseq != seq)
+	{
 		// We don't set all the data up right because it's up to AnimUpdateFrame to do this.
-
-		playerinfo->lowerseq = seq;
-		playerinfo->lowerframe = -1;
-		playerinfo->loweridle = false;
+		info->lowerseq = seq;
+		info->lowerframe = -1;
+		info->loweridle = false;
 	}
 
-	if (playerinfo->edictflags & FL_CHICKEN)
-		playerinfo->lowermove = PlayerChickenData[seq].move;
+	if (info->edictflags & FL_CHICKEN)
+		info->lowermove = PlayerChickenData[seq].move;
 	else
-		playerinfo->lowermove = PlayerSeqData[seq].move;
+		info->lowermove = PlayerSeqData[seq].move;
 
-	assert(playerinfo->lowermove);
+	assert(info->lowermove);
 
-	playerinfo->lowermove_index=seq;
+	info->lowermove_index = seq;
 
 	// The lower two bytes of the player flags are stomped by the sequences' flags.
-
-	if (playerinfo->edictflags & FL_CHICKEN)
+	if (info->edictflags & FL_CHICKEN)
 	{
 		seqdata = &PlayerChickenData[seq];
 	}
 	else
 	{
 		seqdata = &PlayerSeqData[seq];
-		playerinfo->viewheight = PlayerSeqData2[seq].viewheight;
+		info->viewheight = (float)PlayerSeqData2[seq].viewheight;
 	}
 
-	playerinfo->flags = seqdata->playerflags | (playerinfo->flags & PLAYER_FLAG_PERSMASK);
+	info->flags = (int)(seqdata->playerflags | (info->flags & PLAYER_FLAG_PERSMASK));
 
 	// Set / reset flag that says I am flying..
-
 	if (seqdata->fly)
-		playerinfo->edictflags |= FL_FLY;
-	else 
-		playerinfo->edictflags &= ~FL_FLY;
+		info->edictflags |= FL_FLY;
+	else
+		info->edictflags &= ~FL_FLY;
 
 	// Set / reset flag that says I am standing still.
-
-	if (playerinfo->flags & PLAYER_FLAG_STAND)
-		playerinfo->pm_flags |= PMF_STANDSTILL;
+	if (info->flags & PLAYER_FLAG_STAND)
+		info->pm_flags |= PMF_STANDSTILL;
 	else
-		playerinfo->pm_flags &= ~PMF_STANDSTILL;
+		info->pm_flags &= ~PMF_STANDSTILL;
 
 	// Set / reset flag that says I am movelocked.
-
-	if(!playerinfo->isclient)
+	if (!info->isclient)
 	{
 		if (seqdata->lockmove)
-			playerinfo->pm_flags |= PMF_LOCKMOVE; 
+			info->pm_flags |= PMF_LOCKMOVE;
 		else
-			playerinfo->pm_flags &= ~PMF_LOCKMOVE;		
+			info->pm_flags &= ~PMF_LOCKMOVE;
 	}
 }
 
