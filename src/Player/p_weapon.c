@@ -76,45 +76,27 @@ PLAYER_API void Weapon_EquipSpell(playerinfo_t* info, gitem_t* weapon)
 	info->switchtoweapon = WEAPON_READY_HANDS;
 }
 
-// ************************************************************************************************
-// Weapon_EquipHellStaff
-// ---------------------
-// ************************************************************************************************
-
-PLAYER_API void Weapon_EquipHellStaff(playerinfo_t *playerinfo,gitem_t *Weapon)
+PLAYER_API void Weapon_EquipHellStaff(playerinfo_t* info, gitem_t* weapon)
 {
-	gitem_t	*AmmoItem;
-	int		AmmoIndex;
-	
-	assert(playerinfo);
+	assert(info);
 
-	// See if we're already using the hell-staff.
-	if(Weapon==playerinfo->pers.weapon)
-		return;
-	
-	// See if we're already switching...
-	if(playerinfo->pers.newweapon != NULL)
-		return;
-	
-	//Make sure we have an arm to do it
-	if (!BranchCheckDismemberAction(playerinfo, Weapon->tag))
+	// Only spells allowed when swimming...
+	if (info->pm_w_flags & WF_SURFACE || info->waterlevel >= 2)
 		return;
 
-	if (playerinfo->pm_w_flags & WF_SURFACE || playerinfo->waterlevel >= 2)
+	// See if we're already using the hell-staff. See if we're already switching weapons. Make sure we have an arm to use it.
+	if (weapon == info->pers.weapon || info->pers.newweapon != NULL || !BranchCheckDismemberAction(info, weapon->tag))
 		return;
 
-	// see if we actually have any ammo for it
-	AmmoItem=FindItem(Weapon->ammo);
-	AmmoIndex=ITEM_INDEX(AmmoItem);
-
-    if(!playerinfo->pers.inventory.Items[AmmoIndex])
+	// See if we actually have any ammo for it.
+	if (info->pers.inventory.Items[GetItemIndex(FindItem(weapon->ammo))] == 0)
 	{
-		playerinfo->G_gamemsg_centerprintf (playerinfo->self, GM_NOAMMO);
+		info->G_gamemsg_centerprintf(info->self, GM_NOAMMO);
 		return;
 	}
 
-	playerinfo->pers.newweapon = Weapon;
-	playerinfo->switchtoweapon = WEAPON_READY_HELLSTAFF;
+	info->pers.newweapon = weapon;
+	info->switchtoweapon = WEAPON_READY_HELLSTAFF;
 }
 
 // ************************************************************************************************
