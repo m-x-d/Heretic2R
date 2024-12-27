@@ -118,26 +118,21 @@ PLAYER_API void Weapon_EquipBow(playerinfo_t* info, gitem_t* weapon)
 	info->switchtoweapon = WEAPON_READY_BOW;
 }
 
-// ************************************************************************************************
-// Weapon_EquipArmor  - this is interesting - its never called from anywhere.
-// ---------------
-// ************************************************************************************************
-
-PLAYER_API void Weapon_EquipArmor(playerinfo_t *playerinfo,gitem_t *Weapon)
+//TODO: unused? If true, P_Weapon_EquipArmor() must be removed as well!
+PLAYER_API void Weapon_EquipArmor(playerinfo_t* info, gitem_t* weapon)
 {
-	assert(playerinfo);
+	assert(info);
 
 	// See if we're already using the armor.
-
-	if (playerinfo->pers.armortype)
+	if (info->pers.armortype)
 	{
-		playerinfo->pers.armortype = ARMOR_TYPE_NONE;
- 		PlayerUpdateModelAttributes(playerinfo);
+		info->pers.armortype = ARMOR_TYPE_NONE;
+		PlayerUpdateModelAttributes(info);
 	}
-	else 
+	else
 	{
-		playerinfo->pers.armortype = ARMOR_TYPE_SILVER;
- 		PlayerUpdateModelAttributes(playerinfo);
+		info->pers.armortype = ARMOR_TYPE_SILVER;
+		PlayerUpdateModelAttributes(info);
 	}
 }
 
