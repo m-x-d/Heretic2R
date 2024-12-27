@@ -32,32 +32,20 @@ PLAYER_API void Weapon_Ready(playerinfo_t* info, gitem_t* weapon)
 		info->weap_ammo_index = 0;
 }
 
-// ************************************************************************************************
-// Weapon_EquipSwordStaff
-// ----------------------
-// ************************************************************************************************
-
-PLAYER_API void Weapon_EquipSwordStaff(playerinfo_t *playerinfo,gitem_t *Weapon)
+PLAYER_API void Weapon_EquipSwordStaff(playerinfo_t* info, gitem_t* weapon)
 {
-	assert(playerinfo);
+	assert(info);
 
-	// See if we're already using the sword-staff.
-	if(Weapon==playerinfo->pers.weapon)
+	// Only spells allowed when swimming...
+	if (info->pm_w_flags & WF_SURFACE || info->waterlevel >= 2)
 		return;
 
-	// See if we're already switching...
-	if(playerinfo->pers.newweapon != NULL)
-		return;
-	
-	//Make sure we have an arm to do it
-	if (!BranchCheckDismemberAction(playerinfo, Weapon->tag))
+	// See if we're already using the sword-staff. See if we're already switching weapons. Make sure we have an arm to use it.
+	if (weapon == info->pers.weapon || info->pers.newweapon != NULL || !BranchCheckDismemberAction(info, weapon->tag))
 		return;
 
-	if (playerinfo->pm_w_flags & WF_SURFACE || playerinfo->waterlevel >= 2)
-		return;
-
-	playerinfo->pers.newweapon = Weapon;
-	playerinfo->switchtoweapon = WEAPON_READY_SWORDSTAFF;
+	info->pers.newweapon = weapon;
+	info->switchtoweapon = WEAPON_READY_SWORDSTAFF;
 }
 
 // ***********************************************************************************************
