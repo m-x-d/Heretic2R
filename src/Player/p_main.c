@@ -25,18 +25,10 @@ PLAYER_API void PlayerInit(playerinfo_t* info, const int complete_reset)
 	info->flags = PLAYER_FLAG_NONE;
 }
 
-PLAYER_API void PlayerClearEffects(playerinfo_t *playerinfo)
+// Remove all special effects from the player.
+PLAYER_API void PlayerClearEffects(const playerinfo_t* info)
 {
-	// Remove all special effects from the player.
-
-	if(!playerinfo->isclient)
-		playerinfo->G_RemoveEffects(EFFECT_PRED_ID30,
-									playerinfo->G_GetEntityStatePtr(playerinfo->self),
-									FX_REMOVE_EFFECTS);
-	else
-		playerinfo->CL_RemoveEffects(EFFECT_PRED_ID30,
-									 playerinfo->self,
-									 FX_REMOVE_EFFECTS);
+	P_RemoveEffects(info, EFFECT_PRED_ID30, FX_REMOVE_EFFECTS); //mxd
 }
 
 PLAYER_API void PlayerUpdateCmdFlags(playerinfo_t *playerinfo)
