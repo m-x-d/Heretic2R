@@ -136,35 +136,23 @@ PLAYER_API void Weapon_EquipArmor(playerinfo_t* info, gitem_t* weapon)
 	}
 }
 
-// ************************************************************************************************
-// Weapon_CurrentShotsLeft
-// -----------------------
 // Returns the number of shots that a weapon owner could make with the currently selected weapon,
 // in respect to the amount of ammo for that weapon that the player has in their inventory.
-// ************************************************************************************************
-
-PLAYER_API int Weapon_CurrentShotsLeft(playerinfo_t *playerinfo)
+PLAYER_API int Weapon_CurrentShotsLeft(const playerinfo_t* info)
 {
-	gitem_t	*Weapon,
-			*AmmoItem;
-	int		AmmoIndex;
+	const gitem_t* weapon = info->pers.weapon;
 
-	Weapon=playerinfo->pers.weapon;
-
-	// If the weapon uses ammo, return the number of shots left, else return -1 (e.g. Sword-staff).
-
-	if(Weapon->ammo&&(Weapon->quantity))
+	// If the weapon uses ammo, return the number of shots left, else return 0 (e.g. Sword-staff).
+	if (weapon->ammo != NULL && weapon->quantity > 0)
 	{
-		AmmoItem=FindItem(Weapon->ammo);
-		AmmoIndex=ITEM_INDEX(AmmoItem);
+		int quantity = weapon->quantity;
+		if (info->pers.weapon->tag == ITEM_WEAPON_MACEBALLS && info->powerup_timer > info->leveltime)
+			quantity *= 2; // Double consumption for powered mace.
 
-		if (playerinfo->pers.weapon->tag == ITEM_WEAPON_MACEBALLS && playerinfo->powerup_timer > playerinfo->leveltime)
-			return(playerinfo->pers.inventory.Items[AmmoIndex]/(Weapon->quantity*2.0));		// Double consumption for mace.
-		else
-			return(playerinfo->pers.inventory.Items[AmmoIndex]/Weapon->quantity);
+		return info->pers.inventory.Items[GetItemIndex(FindItem(weapon->ammo))] / quantity;
 	}
-	else
-		return(0);
+
+	return 0;
 }
 
 // ************************************************************************************************
