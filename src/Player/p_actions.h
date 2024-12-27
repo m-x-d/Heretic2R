@@ -14,6 +14,10 @@
 #define SOUND_SWIM_SIDE		2
 #define SOUND_SWIM_UNDER	3
 
+// Information for creep fall checking. //mxd. Originally defined in p_main.h
+#define CREEP_MAXFALL		18
+#define CREEP_STEPDIST		30
+
 extern PLAYER_API void PlayerReleaseRope(playerinfo_t* info);
 extern PLAYER_API void KnockDownPlayer(playerinfo_t* info);
 extern PLAYER_API void PlayFly(const playerinfo_t* info, float dist);

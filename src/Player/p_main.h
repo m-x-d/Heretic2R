@@ -50,7 +50,3 @@ extern PLAYER_API void PlayerUpdate(playerinfo_t *playerinfo);
 extern PLAYER_API void PlayerUpdateCmdFlags(playerinfo_t *playerinfo);
 extern PLAYER_API void PlayerUpdateModelAttributes(playerinfo_t *playerinfo);
 extern void PlayerSetHandFX(playerinfo_t *playerinfo, int handfxtype, int lifetime);
-
-// Information for creep fall checking.
-#define CREEP_MAXFALL	18
-#define CREEP_STEPDIST	30
