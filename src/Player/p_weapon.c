@@ -57,12 +57,8 @@ PLAYER_API void Weapon_EquipSpell(playerinfo_t* info, gitem_t* weapon)
 		if (info->pm_w_flags & WF_SURFACE || info->waterlevel >= 2)
 			return;
 
-	// See if we're already using this particular spell. See if we're already switching weapons.
-	if (weapon == info->pers.weapon || (info->pers.newweapon != NULL && info->switchtoweapon != WEAPON_READY_HANDS))
-		return;
-
-	// Make sure we have an arm to do it.
-	if (!BranchCheckDismemberAction(info, weapon->tag))
+	// See if we're already using this particular spell. See if we're already switching weapons. Make sure we have an arm to use it.
+	if (weapon == info->pers.weapon || (info->pers.newweapon != NULL && info->switchtoweapon != WEAPON_READY_HANDS) || !BranchCheckDismemberAction(info, weapon->tag))
 		return;
 
 	// If its anything other than the flying fist, see if we have mana for it.
@@ -99,50 +95,27 @@ PLAYER_API void Weapon_EquipHellStaff(playerinfo_t* info, gitem_t* weapon)
 	info->switchtoweapon = WEAPON_READY_HELLSTAFF;
 }
 
-// ************************************************************************************************
-// Weapon_EquipBow
-// ---------------
-// ************************************************************************************************
-
-PLAYER_API void Weapon_EquipBow(playerinfo_t *playerinfo,gitem_t *Weapon)
+PLAYER_API void Weapon_EquipBow(playerinfo_t* info, gitem_t* weapon)
 {
+	assert(info);
 
-	gitem_t	*AmmoItem;
-	int		AmmoIndex;
-
-	assert(playerinfo);
-
-	// See if we're already using the bow.
-	if(Weapon==playerinfo->pers.weapon)
+	// Only spells allowed when swimming...
+	if (info->pm_w_flags & WF_SURFACE || info->waterlevel >= 2)
 		return;
-	
-	// See if we're already switching...
-	if(playerinfo->pers.newweapon != NULL)
+
+	// See if we're already using the bow. See if we're already switching. Make sure we have an arm to use it.
+	if (weapon == info->pers.weapon || (info->pers.newweapon != NULL && info->switchtoweapon != WEAPON_READY_BOW) || !BranchCheckDismemberAction(info, weapon->tag))
+		return;
+
+	// See if we actually have any ammo for it.
+	if (info->pers.inventory.Items[GetItemIndex(FindItem(weapon->ammo))] == 0)
 	{
-		if (playerinfo->switchtoweapon != WEAPON_READY_BOW)
-			return;
-	}
-							   
-	//Make sure we have an arm to do it
-	if (!BranchCheckDismemberAction(playerinfo, Weapon->tag))
-		return;
-
-	if (playerinfo->pm_w_flags & WF_SURFACE || playerinfo->waterlevel >= 2)
-		return;
-
-	// see if we actually have any ammo for it
-	AmmoItem=FindItem(Weapon->ammo);
-	AmmoIndex=ITEM_INDEX(AmmoItem);
-
-    if(!playerinfo->pers.inventory.Items[AmmoIndex])
-	{
-		playerinfo->G_gamemsg_centerprintf (playerinfo->self, GM_NOAMMO);
+		info->G_gamemsg_centerprintf(info->self, GM_NOAMMO);
 		return;
 	}
 
-			   
-	playerinfo->pers.newweapon = Weapon;
-	playerinfo->switchtoweapon = WEAPON_READY_BOW;
+	info->pers.newweapon = weapon;
+	info->switchtoweapon = WEAPON_READY_BOW;
 }
 
 // ************************************************************************************************
