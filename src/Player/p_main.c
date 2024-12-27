@@ -449,313 +449,78 @@ PLAYER_API void PlayerUpdateModelAttributes(playerinfo_t* info)
 	}
 }
 
-void PlayerSetHandFX(playerinfo_t *playerinfo, int handfx, int lifetime)
+void PlayerSetHandFX(playerinfo_t* info, const int handfxtype, int lifetime)
 {
-	int powerlevel;
-/*	
-	// FIXME: This could be bad...
-	
-	if(playerinfo->handfxtype==handfx)
-	{	
-		// There should be nothing to do.
+	// To kill previous effects, we just Reset the EF_FLAG.
 
-		return;
-	}
-*/	
-	// Check currently in place effects.
+	// Start the appropriate hand effect:
+	// CEF_FLAG6 = 1 - do both left and right hand, else just do right hand.
+	// CEF_FLAG7 & 8 - spell color type: 0 - red, 1 - blue, 2 - green, 3 - yellow.
 
-/*	switch(playerinfo->pers.handfxtype)
-	{	
-		case HANDFX_FIREBALL:
-		case HANDFX_MISSILE:
-		case HANDFX_MACEBALL:
-		case HANDFX_FIREWALL:
-		case HANDFX_STAFF1:
-		case HANDFX_STAFF2:
-		case HANDFX_STAFF3:
-			// Do nothing, these effects end on their own anyway.
-			break;
-			
-		case HANDFX_SPHERE:
-			if(playerinfo->effects)
-				if(!playerinfo->isclient)
-					playerinfo->G_RemoveEffects(EFFECT_PRED_ID31,
-												playerinfo->G_GetEntityStatePtr(playerinfo->self),
-												FX_SPELLHANDS);
-				else
-					playerinfo->CL_RemoveEffects(EFFECT_PRED_ID31,
-												 playerinfo->self,
-												 FX_SPELLHANDS);
-			break;
+	info->effects &= ~EF_TRAILS_ENABLED;
+	info->pers.handfxtype = (byte)handfxtype;
 
-		case HANDFX_REDRAIN:
-		case HANDFX_POWERREDRAIN:
-			
-			if(playerinfo->effects)
-				if(!playerinfo->isclient)
-					playerinfo->G_RemoveEffects(EFFECT_PRED_ID32,
-												playerinfo->G_GetEntityStatePtr(playerinfo->self),
-												FX_WEAPON_REDRAINGLOW);
-				else
-					playerinfo->CL_RemoveEffects(EFFECT_PRED_ID32,
-												 playerinfo->self,
-												 FX_WEAPON_REDRAINGLOW);
-			break;
-		
-		case HANDFX_PHOENIX:
-		case HANDFX_POWERPHOENIX:
-		
-			if(playerinfo->effects)
-				if(!playerinfo->isclient)
-					playerinfo->G_RemoveEffects(EFFECT_PRED_ID33,
-												playerinfo->G_GetEntityStatePtr(playerinfo->self),
-												FX_FIREHANDS);
-				else
-					playerinfo->CL_RemoveEffects(EFFECT_PRED_ID33,
-												 playerinfo->self,
-												 FX_FIREHANDS);
-			break;
-		
-		case HANDFX_NONE:
-		default:
-
-			// Nothing to remove.
-		
-			break;
-	}
-*/
-
-	// To kill previous effects, we just Reset the EF_FLAG
-
-	// Now start the appropriate hand effect on the hand effect -
-	// CEF_FLAG6 = 1 = do both left and right hand, else just do right hand.
-	// CEF_FLAG7 & 8 = spell color type.
-	// 0 = red, 2 = green, 1 = blue 3 = yellow.
-
-	playerinfo->effects &= ~EF_TRAILS_ENABLED;
-	playerinfo->pers.handfxtype=handfx;
-
-	switch(handfx)
+	switch (handfxtype)
 	{
 		case HANDFX_FIREBALL:
 			// Red effect on the right throwing hand.
 			if (lifetime == 0)
-				lifetime = 4;		// .4 seconds is normal fireball throw time.
-			if(!playerinfo->isclient)
-				playerinfo->G_CreateEffect(EFFECT_PRED_ID16,
-										   playerinfo->G_GetEntityStatePtr(playerinfo->self),
-										   FX_SPELLHANDS,
-										   CEF_OWNERS_ORIGIN,
-										   NULL,
-										   "b",
-										   (byte)lifetime);
-			else
-				playerinfo->CL_CreateEffect(EFFECT_PRED_ID16,
-											playerinfo->self,
-										    FX_SPELLHANDS,
-										    CEF_OWNERS_ORIGIN,
-										    NULL,
-										    "b",
-										    (byte)lifetime);
+				lifetime = 4; // 0.4 seconds is normal fireball throw time.
+			P_CreateEffect(info, EFFECT_PRED_ID16, info->self, FX_SPELLHANDS, CEF_OWNERS_ORIGIN, NULL, "b", (byte)lifetime); //mxd
 			break;
 
 		case HANDFX_MISSILE:
 			// Green effect on the right throwing hand.
 			if (lifetime == 0)
-				lifetime = 6;		// .6 seconds is normal fireball throw time
-			if(!playerinfo->isclient)
-				playerinfo->G_CreateEffect(EFFECT_PRED_ID17,
-										   playerinfo->G_GetEntityStatePtr(playerinfo->self),
-										   FX_SPELLHANDS,
-										   CEF_OWNERS_ORIGIN|CEF_FLAG8,
-										   NULL,
-										   "b",
-										   (byte)lifetime);
-			else
-				playerinfo->CL_CreateEffect(EFFECT_PRED_ID17,
-											playerinfo->self,
-											FX_SPELLHANDS,
-											CEF_OWNERS_ORIGIN|CEF_FLAG8,
-											NULL,
-											"b",
-											(byte)lifetime);
+				lifetime = 6; // 0.6 seconds is normal fireball throw time.
+			P_CreateEffect(info, EFFECT_PRED_ID17, info->self, FX_SPELLHANDS, CEF_OWNERS_ORIGIN | CEF_FLAG8, NULL, "b", (byte)lifetime); //mxd
 			break;
-		
+
+		case HANDFX_SPHERE:
+			// Blue effect on both hands.
+			info->effects |= EF_TRAILS_ENABLED; // Set up for hand trails.
+			P_CreateEffect(info, EFFECT_PRED_ID18, info->self, FX_SPELLHANDS, CEF_OWNERS_ORIGIN | CEF_FLAG6 | CEF_FLAG7, NULL, "b", -1); //mxd
+			break;
+
 		case HANDFX_FIREWALL:
 			if (lifetime == 0)
-				lifetime = 11;		// 1.1 seconds is normal fireball throw time
-			if(!playerinfo->isclient)
-				playerinfo->G_CreateEffect(EFFECT_PRED_ID19,
-										   playerinfo->G_GetEntityStatePtr(playerinfo->self),
-										   FX_FIREHANDS,
-										   CEF_OWNERS_ORIGIN|CEF_FLAG6,
-										   NULL,
-										   "b",
-										   lifetime);
-			else
-				playerinfo->CL_CreateEffect(EFFECT_PRED_ID19,
-											playerinfo->self,
-											FX_FIREHANDS,
-											CEF_OWNERS_ORIGIN|CEF_FLAG6,
-											NULL,
-											"b",
-											lifetime);
+				lifetime = 11; // 1.1 seconds is normal fireball throw time.
+			P_CreateEffect(info, EFFECT_PRED_ID19, info->self, FX_FIREHANDS, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "b", (byte)lifetime); //mxd
 			break;
-		
+
 		case HANDFX_STAFF1:
 		case HANDFX_STAFF2:
 		case HANDFX_STAFF3:
-			playerinfo->effects &= ~EF_BLOOD_ENABLED;
+			info->effects &= ~EF_BLOOD_ENABLED;
 			// Add a trail effect to the staff.
-			if (playerinfo->powerup_timer > playerinfo->leveltime)
-				powerlevel = playerinfo->pers.stafflevel+1;
-			else
-				powerlevel = playerinfo->pers.stafflevel;
-
-			if (powerlevel >= STAFF_LEVEL_MAX)
-				powerlevel = STAFF_LEVEL_MAX-1;
-
-			if(!playerinfo->isclient)
-			{
-				playerinfo->G_CreateEffect(EFFECT_PRED_ID20,
-										   playerinfo->G_GetEntityStatePtr(playerinfo->self),
-										   FX_STAFF,
-										   CEF_OWNERS_ORIGIN,
-										   NULL,
-										   "bb",
-										   (byte)powerlevel,
-										   (byte)lifetime);
-			}
-			else
-			{
-				playerinfo->CL_CreateEffect(EFFECT_PRED_ID20,
-											playerinfo->self,
-											FX_STAFF,
-											CEF_OWNERS_ORIGIN,
-											NULL,
-											"bb",
-											(byte)powerlevel,
-											(byte)lifetime);
-			}
-			break;
-		
-		case HANDFX_SPHERE:
-			// Blue effect on both hands.
-			if (lifetime == 0)
-				lifetime = 8;
-			playerinfo->effects |= EF_TRAILS_ENABLED;		// Set up for hand trails
-			if(!playerinfo->isclient)
-				playerinfo->G_CreateEffect(EFFECT_PRED_ID18,
-										   playerinfo->G_GetEntityStatePtr(playerinfo->self),
-										   FX_SPELLHANDS,
-										   CEF_OWNERS_ORIGIN|CEF_FLAG6|CEF_FLAG7,
-										   NULL,
-										   "b",
-										   -1);
-			else
-				playerinfo->CL_CreateEffect(EFFECT_PRED_ID18,
-											playerinfo->self,
-											FX_SPELLHANDS,
-											CEF_OWNERS_ORIGIN|CEF_FLAG6|CEF_FLAG7,
-											NULL,
-											"b",
-											-1);
+			int powerlevel = info->pers.stafflevel + (info->powerup_timer > info->leveltime ? 1 : 0);
+			powerlevel = min(powerlevel, STAFF_LEVEL_MAX - 1);
+			P_CreateEffect(info, EFFECT_PRED_ID20, info->self, FX_STAFF, CEF_OWNERS_ORIGIN, NULL, "bb", (byte)powerlevel, (byte)lifetime); //mxd
 			break;
 
 		case HANDFX_REDRAIN:
-			playerinfo->effects |= EF_TRAILS_ENABLED;		// Set up for hand trails
-			if(!playerinfo->isclient)
-			{
-				playerinfo->G_CreateEffect(EFFECT_PRED_ID21,
-										   playerinfo->G_GetEntityStatePtr(playerinfo->self),
-										   FX_WEAPON_REDRAINGLOW,
-										   CEF_OWNERS_ORIGIN,
-										   NULL,
-										   "b",
-										   -1);
-			}
-			else
-			{
-				playerinfo->CL_CreateEffect(EFFECT_PRED_ID21,
-											playerinfo->self,
-											FX_WEAPON_REDRAINGLOW,
-											CEF_OWNERS_ORIGIN,
-											NULL,
-											"b",
-											-1);
-			}
+			info->effects |= EF_TRAILS_ENABLED; // Set up for hand trails.
+			P_CreateEffect(info, EFFECT_PRED_ID21, info->self, FX_WEAPON_REDRAINGLOW, CEF_OWNERS_ORIGIN, NULL, "b", -1); //mxd
 			break;
-		
+
 		case HANDFX_POWERREDRAIN:
-			playerinfo->effects |= EF_TRAILS_ENABLED;		// Set up for hand trails
-			if(!playerinfo->isclient)
-				playerinfo->G_CreateEffect(EFFECT_PRED_ID22,
-										   playerinfo->G_GetEntityStatePtr(playerinfo->self),
-										   FX_WEAPON_REDRAINGLOW,
-										   CEF_OWNERS_ORIGIN | CEF_FLAG6,
-										   NULL,
-										   "b",
-										   -1);
-			else
-				playerinfo->CL_CreateEffect(EFFECT_PRED_ID22,
-											playerinfo->self,
-										    FX_WEAPON_REDRAINGLOW,
-										    CEF_OWNERS_ORIGIN | CEF_FLAG6,
-										    NULL,
-										    "b",
-										    -1);
-			
+			info->effects |= EF_TRAILS_ENABLED; // Set up for hand trails.
+			P_CreateEffect(info, EFFECT_PRED_ID22, info->self, FX_WEAPON_REDRAINGLOW, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "b", -1); //mxd
 			break;
-		
+
 		case HANDFX_PHOENIX:
-			playerinfo->effects |= EF_TRAILS_ENABLED;		// Set up for hand trails
-			if(!playerinfo->isclient)
-				playerinfo->G_CreateEffect(EFFECT_PRED_ID23,
-										   playerinfo->G_GetEntityStatePtr(playerinfo->self),
-										   FX_FIREHANDS,
-										   CEF_OWNERS_ORIGIN,
-										   NULL,
-										   "b",
-										   -1);
-			else
-				playerinfo->CL_CreateEffect(EFFECT_PRED_ID23,
-											playerinfo->self,
-										    FX_FIREHANDS,
-										    CEF_OWNERS_ORIGIN,
-										    NULL,
-										    "b",
-										    -1);
+			info->effects |= EF_TRAILS_ENABLED; // Set up for hand trails.
+			P_CreateEffect(info, EFFECT_PRED_ID23, info->self, FX_FIREHANDS, CEF_OWNERS_ORIGIN, NULL, "b", -1); //mxd
 			break;
 
 		case HANDFX_POWERPHOENIX:
-			playerinfo->effects |= EF_TRAILS_ENABLED;		// Set up for hand trails
-			if(!playerinfo->isclient)
-				playerinfo->G_CreateEffect(EFFECT_PRED_ID24,
-										   playerinfo->G_GetEntityStatePtr(playerinfo->self),
-										   FX_FIREHANDS,
-										   CEF_OWNERS_ORIGIN,
-										   NULL,
-										   "b",
-										   -1);
-			else
-				playerinfo->CL_CreateEffect(EFFECT_PRED_ID24,
-											playerinfo->self,
-										    FX_FIREHANDS,
-										    CEF_OWNERS_ORIGIN,
-										    NULL,
-										    "b",
-										    -1);			
+			info->effects |= EF_TRAILS_ENABLED; // Set up for hand trails.
+			P_CreateEffect(info, EFFECT_PRED_ID24, info->self, FX_FIREHANDS, CEF_OWNERS_ORIGIN, NULL, "b", -1); //mxd
 			break;
 
-		case HANDFX_MACEBALL:
-			// Nothin' for these yet.
-			break;
-		
-		case HANDFX_NONE:
+		case HANDFX_MACEBALL: // Nothing for these yet.
+		case HANDFX_NONE: // Don't start anything.
 		default:
-		
-			// Don't start anything.
-		  
 			break;
 	}
 }
