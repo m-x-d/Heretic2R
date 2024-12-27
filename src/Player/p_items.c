@@ -1320,28 +1320,14 @@ PLAYER_API gitem_t* GetItemByIndex(const int index)
 	return NULL;
 }
 
-// ************************************************************************************************
-// FindItemByClassname
-// -------------------
-// ************************************************************************************************
-
-PLAYER_API gitem_t *FindItemByClassname(char *Classname)
+PLAYER_API gitem_t* FindItemByClassname(const char* classname)
 {
-	int		I;
-	gitem_t	*Item;
+	gitem_t* item = p_itemlist;
+	for (int i = 0; i < p_num_items; i++, item++)
+		if (item->classname != NULL && Q_stricmp(item->classname, classname) == 0)
+			return item;
 
-	Item=p_itemlist;
-
-	for(I=0;I<p_num_items;I++,Item++)
-	{
-		if(!Item->classname)
-			continue;
-
-		if(!Q_stricmp(Item->classname,Classname))
-			return(Item);
-	}
-
-	return(NULL);
+	return NULL;
 }
 
 // ************************************************************************************************
