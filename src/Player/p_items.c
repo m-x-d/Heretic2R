@@ -1295,17 +1295,11 @@ static gitem_t itemlist[] =
 
 #pragma endregion
 
-// ************************************************************************************************
-// InitItems
-// ---------
-// ************************************************************************************************
-
 PLAYER_API void InitItems(void)
 {
-	p_itemlist=itemlist;
-	p_num_items=(sizeof(itemlist)/sizeof(itemlist[0]))-1;
+	p_itemlist = itemlist;
+	p_num_items = (sizeof(itemlist) / sizeof(itemlist[0])) - 1; //mxd. Item index 0 means no item.
 }
-
 
 PLAYER_API	int GetItemIndex(gitem_t* x)
 {
