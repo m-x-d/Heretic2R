@@ -155,31 +155,15 @@ PLAYER_API int Weapon_CurrentShotsLeft(const playerinfo_t* info)
 	return 0;
 }
 
-// ************************************************************************************************
-// Defence_CurrentShotsLeft
-// -----------------------
-// Returns the number of shots that a weapon owner could make with the currently selected weapon,
-// in respect to the amount of ammo for that weapon that the player has in their inventory.
-// ************************************************************************************************
-
-PLAYER_API int Defence_CurrentShotsLeft(playerinfo_t *playerinfo, int intent)
+// Returns the number of uses that a defence owner could make with the currently selected defence,
+// in respect to the amount of ammo for that defence that the player has in their inventory.
+PLAYER_API int Defence_CurrentShotsLeft(const playerinfo_t* info, int intent) //TODO: 'intent' arg is unused.
 {
-	gitem_t	*Defence,
-			*ManaItem;
-	int		ManaIndex;
+	const gitem_t* defence = info->pers.defence;
 
-	Defence = playerinfo->pers.defence;
+	// If the defense uses ammo, return the number of uses left, else return 0. //TODO: are there any defense spells which don't use ammo?..
+	if (defence->ammo != NULL && defence->quantity > 0)
+		return info->pers.inventory.Items[GetItemIndex(FindItem(defence->ammo))] / defence->quantity;
 
-	// If the weapon uses ammo, return the number of shots left, else return -1 (e.g. Sword-staff).
-
-	if(Defence->ammo && Defence->quantity)
-	{
-		ManaItem = FindItem(Defence->ammo);
-		ManaIndex = ITEM_INDEX(ManaItem);
-
-		return(playerinfo->pers.inventory.Items[ManaIndex]/Defence->quantity);
-
-	}
-	else
-		return(0);
+	return 0;
 }
