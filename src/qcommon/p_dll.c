@@ -10,13 +10,13 @@
 #else
 	#include "dll_io.h" //mxd
 #endif
-#include "player.h"
+#include "Player.h"
 #include "qcommon.h"
 
 // Structure containing functions and data pointers exported from the player DLL.
 player_export_t	playerExport;
 
-// Handle to player DLL. 
+// Handle to player DLL.
 static HINSTANCE player_library = NULL;
 
 // Define pointers to all the .dll functions which other code will dynamically link with.
@@ -66,10 +66,10 @@ void (*P_Weapon_EquipArmor)(playerinfo_t* playerinfo, gitem_t* Weapon);
 int (*P_Weapon_CurrentShotsLeft)(playerinfo_t* playerinfo);
 int (*P_Defence_CurrentShotsLeft)(playerinfo_t* playerinfo, int intent);
 
-int (*P_GetItemIndex)(gitem_t* x);
+int (*P_GetItemIndex)(const gitem_t* item);
 gitem_t* (*P_GetItemByIndex)(int index);
-gitem_t* (*P_FindItemByClassname)(char* classname);
-gitem_t* (*P_FindItem)(char* pickupname);
+gitem_t* (*P_FindItemByClassname)(const char* classname);
+gitem_t* (*P_FindItem)(const char* pickup_name);
 void (*P_InitItems)(void);
 
 void P_Freelib(void)
