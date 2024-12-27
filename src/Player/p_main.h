@@ -44,9 +44,9 @@
 #define PLAYER_FLAG_KNOCKDOWN			0x08000000
 #define PLAYER_FLAG_RELEASEROPE			0x10000000
 
-extern PLAYER_API void PlayerInit(playerinfo_t *playerinfo, int complete_reset);
-extern PLAYER_API void PlayerClearEffects(playerinfo_t *playerinfo);
-extern PLAYER_API void PlayerUpdate(playerinfo_t *playerinfo);
-extern PLAYER_API void PlayerUpdateCmdFlags(playerinfo_t *playerinfo);
-extern PLAYER_API void PlayerUpdateModelAttributes(playerinfo_t *playerinfo);
-extern void PlayerSetHandFX(playerinfo_t *playerinfo, int handfxtype, int lifetime);
+extern PLAYER_API void PlayerInit(playerinfo_t *info, int complete_reset); //TODO: change complete_reset type to qboolean?
+extern PLAYER_API void PlayerClearEffects(const playerinfo_t *info);
+extern PLAYER_API void PlayerUpdate(playerinfo_t *info);
+extern PLAYER_API void PlayerUpdateCmdFlags(playerinfo_t *info);
+extern PLAYER_API void PlayerUpdateModelAttributes(playerinfo_t *info);
+extern void PlayerSetHandFX(playerinfo_t *info, int handfxtype, int lifetime);

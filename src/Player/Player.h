@@ -62,11 +62,11 @@ extern uint P_Load(char* name);
 
 	void (*P_PlayerIntLand)(playerinfo_t* playerinfo_t, float landspeed);
 
-	void (*P_PlayerInit)(playerinfo_t* playerinfo, int complete_reset);
-	void (*P_PlayerClearEffects)(playerinfo_t* playerinfo);
-	void (*P_PlayerUpdate)(playerinfo_t* playerinfo);
-	void (*P_PlayerUpdateCmdFlags)(playerinfo_t* playerinfo);
-	void (*P_PlayerUpdateModelAttributes)(playerinfo_t* playerinfo);
+	void (*P_PlayerInit)(playerinfo_t* info, int complete_reset);
+	void (*P_PlayerClearEffects)(const playerinfo_t* info);
+	void (*P_PlayerUpdate)(playerinfo_t* info);
+	void (*P_PlayerUpdateCmdFlags)(playerinfo_t* info);
+	void (*P_PlayerUpdateModelAttributes)(playerinfo_t* info);
 
 	void (*P_Weapon_Ready)(playerinfo_t* playerinfo, gitem_t* Weapon);
 	void (*P_Weapon_EquipSpell)(playerinfo_t* playerinfo, gitem_t* Weapon);
