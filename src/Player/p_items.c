@@ -1312,17 +1312,12 @@ PLAYER_API int GetItemIndex(const gitem_t* item)
 	return 0;
 }
 
-// ************************************************************************************************
-// GetItemByIndex
-// --------------
-// ************************************************************************************************
-
-PLAYER_API gitem_t *GetItemByIndex(int Index)
+PLAYER_API gitem_t* GetItemByIndex(const int index)
 {
-	if((Index==0)||(Index>=p_num_items))
-		return(NULL);
+	if (index > 0 && index < p_num_items)
+		return &p_itemlist[index];
 
-	return(&p_itemlist[Index]);
+	return NULL;
 }
 
 // ************************************************************************************************
