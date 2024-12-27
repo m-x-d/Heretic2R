@@ -1,36 +1,28 @@
 //
 // p_main.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
-#include "player.h"
-#include "p_animactor.h"
+#include "Player.h"
+#include "p_anim_branch.h"
 #include "p_anim_data.h"
 #include "p_anims.h"
 #include "p_main.h"
 #include "p_weapon.h"
-#include "p_types.h"
-#include "fx.h"
+#include "p_utility.h" //mxd
+#include "FX.h"
 #include "m_player.h"
-#include "reference.h"
-#include "vector.h"
+#include "Vector.h"
 
-//FIXME:  Include header
-
-qboolean BranchCheckDismemberAction(playerinfo_t *playerinfo, int weapon);
-
-void FMNodeUpdate(playerinfo_t *playerinfo,int weapon,int armor);
-
-PLAYER_API void PlayerInit(playerinfo_t *playerinfo, int complete_reset)
+PLAYER_API void PlayerInit(playerinfo_t* info, const int complete_reset)
 {
-	if(!complete_reset)
-		PlayerBasicAnimReset(playerinfo);
+	if (complete_reset)
+		PlayerAnimReset(info);
 	else
-		PlayerAnimReset(playerinfo);	
+		PlayerBasicAnimReset(info);
 
-	playerinfo->flags=PLAYER_FLAG_NONE;
+	info->flags = PLAYER_FLAG_NONE;
 }
 
 PLAYER_API void PlayerClearEffects(playerinfo_t *playerinfo)
