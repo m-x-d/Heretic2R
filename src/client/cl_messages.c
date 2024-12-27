@@ -5,6 +5,7 @@
 //
 
 #include "cl_messages.h"
+#include "cl_strings.h"
 #include "qcommon.h"
 
 char game_message[1024];
@@ -85,7 +86,7 @@ static void SplitMessages(char* src, GameMessage_t* dst, const int src_len)
 
 char* CL_GetGameString(const int i)
 {
-	const int index = i & 8191;
+	const int index = i & MESSAGE_MASK;
 	if (index < MAX_MESSAGES) //mxd. '<= MAX_MESSAGES' in original logic.
 		return game_messages[index].message;
 
@@ -94,7 +95,7 @@ char* CL_GetGameString(const int i)
 
 char* CL_GetGameWav(const int i)
 {
-	const int index = i & 8191;
+	const int index = i & MESSAGE_MASK;
 	if (index < MAX_MESSAGES) //mxd. '<= MAX_MESSAGES' in original logic.
 		return game_messages[index].sound_name;
 
@@ -103,7 +104,7 @@ char* CL_GetGameWav(const int i)
 
 char* CL_GetLevelString(const int i)
 {
-	const int index = i & 8191;
+	const int index = i & MESSAGE_MASK;
 	if (index < MAX_MESSAGES) //mxd. '<= MAX_MESSAGES' in original logic.
 		return level_messages[index].message;
 
@@ -112,7 +113,7 @@ char* CL_GetLevelString(const int i)
 
 char* CL_GetLevelWav(const int i)
 {
-	const int index = i & 8191;
+	const int index = i & MESSAGE_MASK;
 	if (index < MAX_MESSAGES) //mxd. '<= MAX_MESSAGES' in original logic.
 		return level_messages[index].sound_name;
 
