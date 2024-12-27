@@ -1301,13 +1301,15 @@ PLAYER_API void InitItems(void)
 	p_num_items = (sizeof(itemlist) / sizeof(itemlist[0])) - 1; //mxd. Item index 0 means no item.
 }
 
-PLAYER_API	int GetItemIndex(gitem_t* x)
+PLAYER_API int GetItemIndex(const gitem_t* item)
 {
-	if(!x) return(0);
+	if (item != NULL)
+	{
+		assert(item >= p_itemlist && item < p_itemlist + p_num_items);
+		return item - p_itemlist;
+	}
 
-	assert(x>=p_itemlist&&x<p_itemlist+p_num_items);
-	
-	return(x-p_itemlist);
+	return 0;
 }
 
 // ************************************************************************************************
