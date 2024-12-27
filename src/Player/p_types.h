@@ -157,18 +157,18 @@ typedef struct gitem_s
 	extern PLAYER_API gitem_t* p_itemlist;
 	extern PLAYER_API int p_num_items;
 
-	extern PLAYER_API int GetItemIndex(gitem_t* x);
+	extern PLAYER_API int GetItemIndex(const gitem_t* item);
 	extern PLAYER_API gitem_t* GetItemByIndex(int index);
-	extern PLAYER_API gitem_t* FindItemByClassname(char* classname);
-	extern PLAYER_API gitem_t* FindItem(char* pickupname);
+	extern PLAYER_API gitem_t* FindItemByClassname(const char* classname);
+	extern PLAYER_API gitem_t* FindItem(const char* pickup_name);
 	extern PLAYER_API void InitItems(void);
 
 	#define ITEM_INDEX(x) GetItemIndex(x)
 #else
-	extern int (*P_GetItemIndex)(gitem_t* x);
+	extern int (*P_GetItemIndex)(const gitem_t* item);
 	extern gitem_t* (*P_GetItemByIndex)(int index);
-	extern gitem_t* (*P_FindItemByClassname)(char* classname);
-	extern gitem_t* (*P_FindItem)(char* pickupname);
+	extern gitem_t* (*P_FindItemByClassname)(const char* classname);
+	extern gitem_t* (*P_FindItem)(const char* pickup_name);
 	extern void (*P_InitItems)(void);
 
 	#define ITEM_INDEX(x) P_GetItemIndex(x)

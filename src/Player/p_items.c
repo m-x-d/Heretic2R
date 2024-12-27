@@ -1330,26 +1330,12 @@ PLAYER_API gitem_t* FindItemByClassname(const char* classname)
 	return NULL;
 }
 
-// ************************************************************************************************
-// FindItem
-// --------
-// ************************************************************************************************
-
-PLAYER_API gitem_t *FindItem(char *PickupName)
+PLAYER_API gitem_t* FindItem(const char* pickup_name)
 {
-	int		I;
-	gitem_t	*Item;
+	gitem_t* item = p_itemlist;
+	for (int i = 0; i < p_num_items; i++, item++)
+		if (item->pickup_name != NULL && Q_stricmp(item->pickup_name, pickup_name) == 0)
+			return item;
 
-	Item=p_itemlist;
-
-	for(I=0;I<p_num_items;I++,Item++)
-	{
-		if(!Item->pickup_name)
-			continue;
-
-		if(!Q_stricmp(Item->pickup_name,PickupName))
-			return(Item);
-	}
-
-	return(NULL);
+	return NULL;
 }
