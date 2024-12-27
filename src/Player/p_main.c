@@ -50,7 +50,7 @@ PLAYER_API void PlayerUpdateCmdFlags(playerinfo_t* info)
 
 	// Look for the turn left / turn right buttons being pressed.
 	info->seqcmd[ACMDL_ROTATE_R] = (info->turncmd < -2 ? info->loweridle : false);
-	info->seqcmd[ACMDL_ROTATE_L] = (info->turncmd > 2 ? info->loweridle : false);
+	info->seqcmd[ACMDL_ROTATE_L] = (info->turncmd >  2 ? info->loweridle : false);
 
 	info->turncmd = 0;
 
@@ -96,33 +96,35 @@ PLAYER_API void PlayerUpdateCmdFlags(playerinfo_t* info)
 	info->upvel = 0;
 }
 
-int PlayerCheckSlide(playerinfo_t *playerinfo)
+//TODO: unfinished logic. Player can't slide.
+static int PlayerCheckSlide(const playerinfo_t* info)
 {
-	trace_t	trace;
-	vec3_t	vf, vr, vu;
-	vec3_t	startpos, endpos, mins, maxs;
-	float	dot;
+	/*trace_t trace;
+	vec3_t vf;
+	vec3_t vr;
+	vec3_t vu;
+	vec3_t startpos;
+	vec3_t endpos;
+	vec3_t mins;
+	vec3_t maxs;
+	float dot;
 
-	VectorCopy(playerinfo->origin, startpos);
-	VectorCopy(playerinfo->origin, endpos);
-	endpos[2] -= 32;
+	VectorCopy(info->origin, startpos);
+	VectorCopy(info->origin, endpos);
+	endpos[2] -= 32.0f;
 
-	VectorSet(mins, -4, -4, -4);
-	VectorSet(maxs,  4,  4,  4);
+	VectorSet(mins, -4.0f, -4.0f, -4.0f);
+	VectorSet(maxs,  4.0f,  4.0f,  4.0f);
 
-	AngleVectors(playerinfo->angles, vf, vr, vu);
+	AngleVectors(info->angles, vf, vr, vu);
+	P_Trace(info, startpos, mins, maxs, endpos, &trace); //mxd
 
-	if(playerinfo->isclient)
-		playerinfo->CL_Trace(startpos,mins,maxs,endpos,MASK_PLAYERSOLID,CEF_CLIP_TO_WORLD,&trace);
-	else
-		playerinfo->G_Trace(startpos,mins,maxs,endpos,playerinfo->self,MASK_PLAYERSOLID,&trace);
-	
-	if (trace.fraction < 1)
+	if (trace.fraction < 1.0f)
 	{
 		dot = DotProduct(vf, trace.plane.normal);
-	}
-	
-	return false;
+	}*/
+
+	return ASEQ_NONE;
 }
 
 PLAYER_API void PlayerUpdate(playerinfo_t *playerinfo)
