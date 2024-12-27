@@ -176,11 +176,7 @@ static gitem_t itemlist[] =
 		AMMO_USE_FIREWALL,						// Ammo type/ammo use per shot.
 		"Off-mana",								// Ammo name (char *).
 		IT_WEAPON | IT_OFFENSE,					// IT_XXX flags.
-#if DEMO_CODE
-		(void*)1,								// void* info (unused).
-#else
 		NULL,									// void* info (unused).
-#endif
 		ITEM_WEAPON_FIREWALL,					// Tag.
 		"icons/i_fwall.m8",						// Icon name (char *).
 	},
@@ -232,11 +228,7 @@ static gitem_t itemlist[] =
 		AMMO_USE_SPHERE,						// Ammo type/ammo use per shot.
 		"Off-mana",								// Ammo name (char *).
 		IT_WEAPON | IT_OFFENSE,					// IT_XXX flags.
-#if DEMO_CODE
-		(void*)1,								// void* info (unused).
-#else
 		NULL,									// void* info (unused).
-#endif
 		ITEM_WEAPON_SPHEREOFANNIHILATION,		// Tag.
 		"icons/i_sphere.m8",					// Icon name (char *).
 	},
@@ -262,11 +254,7 @@ static gitem_t itemlist[] =
 		AMMO_USE_MACEBALL,						// Ammo type/ammo use per shot.
 		"Off-mana",								// Ammo name (char *).
 		IT_WEAPON | IT_OFFENSE,					// IT_XXX flags.
-#if DEMO_CODE
-		(void*)1,								// void* info (unused).
-#else
 		NULL,									// void* info (unused).
-#endif
 		ITEM_WEAPON_MACEBALLS,					// Tag.
 		"icons/i_mace.m8",						// Icon name (char *).
 	},
@@ -348,11 +336,7 @@ static gitem_t itemlist[] =
 		MANA_USE_SHIELD,						// Ammo type/ammo use per shot.
 		"Def-mana",								// Ammo name (char *).
 		IT_DEFENSE,								// IT_XXX flags.
-#if DEMO_CODE
-		(void*)1,								// void* info (unused).
-#else
 		NULL,									// void* info (unused).
-#endif
 		ITEM_DEFENSE_SHIELD,					// Tag.
 		"icons/i_shield.m8",					// Icon name (char *).
 	},
@@ -430,11 +414,7 @@ static gitem_t itemlist[] =
 		MANA_USE_METEORS,						// Ammo type/ammo use per shot.
 		"Def-mana",								// Ammo name (char *).
 		IT_DEFENSE,								// IT_XXX flags.
-#if DEMO_CODE
-		(void*)1,								// void* info (unused).
-#else
 		NULL,									// void* info (unused).
-#endif
 		ITEM_DEFENSE_METEORBARRIER,				// Tag.
 		"icons/i_meteor.m8",					// Icon name (char *).
 	},
@@ -1280,11 +1260,7 @@ static gitem_t itemlist[] =
 		MANA_USE_TORNADO,						// Ammo type/ammo use per shot.
 		"Def-mana",								// Ammo name (char *).
 		IT_DEFENSE,								// IT_XXX flags.
-#if DEMO_CODE
-		(void*)1,								// void* info (unused).
-#else
 		NULL,									// void* info (unused).
-#endif
 		ITEM_DEFENSE_TORNADO,					// Tag.
 		"icons/i_tornado.m8",					// Icon name (char *).
 	},
