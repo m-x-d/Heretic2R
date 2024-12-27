@@ -31,158 +31,69 @@ PLAYER_API void PlayerClearEffects(const playerinfo_t* info)
 	P_RemoveEffects(info, EFFECT_PRED_ID30, FX_REMOVE_EFFECTS); //mxd
 }
 
-PLAYER_API void PlayerUpdateCmdFlags(playerinfo_t *playerinfo)
+PLAYER_API void PlayerUpdateCmdFlags(playerinfo_t* info)
 {
-	usercmd_t *pcmd;
-
-	pcmd=&(playerinfo->pcmd);
+	const usercmd_t* pcmd = &info->pcmd;
 
 	// Look for the attack button being pressed.
-
-	if (pcmd->buttons & BUTTON_ATTACK)
-	{
-		playerinfo->seqcmd[ACMDU_ATTACK] = true;
-	}
-	else
-	{
-		playerinfo->seqcmd[ACMDU_ATTACK] = false;
-	}
+	info->seqcmd[ACMDU_ATTACK] = (pcmd->buttons & BUTTON_ATTACK);
 
 	// Look for the action button being pressed.
-
-	if (pcmd->buttons & BUTTON_ACTION)
-	{
-		playerinfo->seqcmd[ACMDL_ACTION] = true;
-	}
-	else
-	{
-		playerinfo->seqcmd[ACMDL_ACTION] = false;
-	}
+	info->seqcmd[ACMDL_ACTION] = (pcmd->buttons & BUTTON_ACTION);
 
 	// Look for the quickturn button being pressed.
-
-	if (pcmd->buttons & BUTTON_QUICKTURN)
-	{
-		playerinfo->seqcmd[ACMDL_QUICKTURN] = true;
-	}
-	else
-	{
-		playerinfo->seqcmd[ACMDL_QUICKTURN] = false;
-	}
+	info->seqcmd[ACMDL_QUICKTURN] = (pcmd->buttons & BUTTON_QUICKTURN);
 
 	// Look for the jump / crouch buttons being pressed.
-
-	if (pcmd->upmove > 0)
-	{
-		playerinfo->seqcmd[ACMDL_JUMP] = true;
-		playerinfo->seqcmd[ACMDL_CROUCH] = false;
-	}
-	else if (pcmd->upmove < 0)
-	{
-		playerinfo->seqcmd[ACMDL_JUMP] = false;
-		playerinfo->seqcmd[ACMDL_CROUCH] = true;
-	}
-	else 
-	{
-		playerinfo->seqcmd[ACMDL_JUMP] = false;
-		playerinfo->seqcmd[ACMDL_CROUCH] = false;
-	}
+	info->seqcmd[ACMDL_JUMP] = (pcmd->upmove > 0);
+	info->seqcmd[ACMDL_CROUCH] = (pcmd->upmove < 0);
 
 	// Look for the turn left / turn right buttons being pressed.
+	info->seqcmd[ACMDL_ROTATE_R] = (info->turncmd < -2 ? info->loweridle : false);
+	info->seqcmd[ACMDL_ROTATE_L] = (info->turncmd > 2 ? info->loweridle : false);
 
-	if(Q_fabs(playerinfo->turncmd) > 2)
-	{
-		if (playerinfo->turncmd < -2)
-		{
-			if(playerinfo->loweridle)
-				playerinfo->seqcmd[ACMDL_ROTATE_R] = true;
-			else
-				playerinfo->seqcmd[ACMDL_ROTATE_R] = false;
-			playerinfo->seqcmd[ACMDL_ROTATE_L] = false;
-		}
-		else if (playerinfo->turncmd > 2)
-		{
-			if(playerinfo->loweridle)
-				playerinfo->seqcmd[ACMDL_ROTATE_L] = true;
-			else
-				playerinfo->seqcmd[ACMDL_ROTATE_L] = false;
-			playerinfo->seqcmd[ACMDL_ROTATE_R] = false;
-		}
-	}
-	else
-	{
-		playerinfo->seqcmd[ACMDL_ROTATE_R] = false;
-		playerinfo->seqcmd[ACMDL_ROTATE_L] = false;
-	}
-
-	playerinfo->turncmd = 0;
+	info->turncmd = 0;
 
 	// Look for the autoaim button being pressed.
-
-	if (pcmd->buttons & BUTTON_AUTOAIM)
-	{
-		playerinfo->autoaim = true;
-	}
-	else
-	{
-		playerinfo->autoaim = false;
-	}
+	info->autoaim = (pcmd->buttons & BUTTON_AUTOAIM);
 
 	// Clear out ALL forward/backward movement flags.
+	memset(&(info->seqcmd[ACMDL_CREEP_F]), 0, (ACMDL_BACK - ACMDL_CREEP_F + 1) * sizeof(int));
 
-	memset(&(playerinfo->seqcmd[ACMDL_CREEP_F]), 0, (ACMDL_BACK-ACMDL_CREEP_F+1)*sizeof(int));
-
-	// Look for forward/backpeddle buttons being pressed.
-
+	// Look for forward/backpedal buttons being pressed.
 	if (pcmd->forwardmove > 10)
 	{
-		playerinfo->seqcmd[ACMDL_FWD] = true;
+		info->seqcmd[ACMDL_FWD] = true;
+
 		if (pcmd->buttons & BUTTON_CREEP)
-			playerinfo->seqcmd[ACMDL_CREEP_F] = true;
+			info->seqcmd[ACMDL_CREEP_F] = true;
 		else if (pcmd->buttons & BUTTON_RUN)
-			playerinfo->seqcmd[ACMDL_RUN_F] = true;
+			info->seqcmd[ACMDL_RUN_F] = true;
 		else
-			playerinfo->seqcmd[ACMDL_WALK_F] = true;
+			info->seqcmd[ACMDL_WALK_F] = true;
 	}
 	else if (pcmd->forwardmove < -10)
 	{
-		playerinfo->seqcmd[ACMDL_BACK] = true;
+		info->seqcmd[ACMDL_BACK] = true;
+
 		if (pcmd->buttons & BUTTON_CREEP)
-			playerinfo->seqcmd[ACMDL_CREEP_B] = true;
+			info->seqcmd[ACMDL_CREEP_B] = true;
 		else if (pcmd->buttons & BUTTON_RUN)
-			playerinfo->seqcmd[ACMDL_RUN_B] = true;
+			info->seqcmd[ACMDL_RUN_B] = true;
 		else
-			playerinfo->seqcmd[ACMDL_WALK_B] = true;
-	}
-	else
-	{
-		// No movement.
+			info->seqcmd[ACMDL_WALK_B] = true;
 	}
 
-	if (pcmd->sidemove > 2)
-	{
-		playerinfo->seqcmd[ACMDL_STRAFE_R] = true;
-		playerinfo->seqcmd[ACMDL_STRAFE_L] = false;
-	}
-	else if (pcmd->sidemove < -2)
-	{
-		playerinfo->seqcmd[ACMDL_STRAFE_L] = true;
-		playerinfo->seqcmd[ACMDL_STRAFE_R] = false;
-	}
-	else
-	{
-		playerinfo->seqcmd[ACMDL_STRAFE_L] = false;
-		playerinfo->seqcmd[ACMDL_STRAFE_R] = false;
-	}
+	// Look for strafe buttons being pressed.
+	info->seqcmd[ACMDL_STRAFE_R] = (pcmd->sidemove > 2);
+	info->seqcmd[ACMDL_STRAFE_L] = (pcmd->sidemove < -2);
 
-	playerinfo->showpuzzleinventory = false;
-	if (pcmd->buttons & BUTTON_INVENTORY)
-	{
-		playerinfo->showpuzzleinventory = true;
-	}
-	playerinfo->fwdvel=0;
-	playerinfo->sidevel=0;
-	playerinfo->upvel=0;
+	// Look for Inventory button being pressed.
+	info->showpuzzleinventory = (pcmd->buttons & BUTTON_INVENTORY);
+
+	info->fwdvel = 0;
+	info->sidevel = 0;
+	info->upvel = 0;
 }
 
 int PlayerCheckSlide(playerinfo_t *playerinfo)
