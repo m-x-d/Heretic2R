@@ -1,51 +1,35 @@
 //
 // p_weapon.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
-#include "player.h"
-#include "p_types.h"
+#include "Player.h"
+#include "p_anim_branch.h"
 #include "p_main.h"
 #include "p_weapon.h"
 #include "g_items.h"
 #include "cl_strings.h"
 
-//FIXME:  Include header
-qboolean BranchCheckDismemberAction(playerinfo_t *playerinfo, int weapon);
-
-// ************************************************************************************************
-// Weapon_Ready
-// ------------
-// Make the specified weapon ready if the owner has enough ammo for it. Assumes that the owner does
-// actually have the weapon. Called by Cmd_InvUse_f() and other functions which do check the
-// availability first anyhow.
-// ************************************************************************************************
-
-PLAYER_API void Weapon_Ready(playerinfo_t *playerinfo, gitem_t *Weapon)
+// Make the specified weapon ready if the owner has enough ammo for it.
+// Assumes that the owner does actually have the weapon.
+// Called by Cmd_InvUse_f() and other functions which do check the availability first anyhow.
+PLAYER_API void Weapon_Ready(playerinfo_t* info, gitem_t* weapon)
 {
+	assert(weapon);
 
-//	gi.dprintf("Weapon=%s\n",Weapon->pickup_name);
-
-	assert(Weapon);
-
-	// See if we're already using the weapon.
-	if(Weapon==playerinfo->pers.weapon)
-		return;
-	
-	//Make sure we have an arm to do it
-	if (!BranchCheckDismemberAction(playerinfo, Weapon->tag))
+	// See if we're already using the weapon. Make sure we have an arm to use it.
+	if (weapon == info->pers.weapon || !BranchCheckDismemberAction(info, weapon->tag))
 		return;
 
 	// Change to this weapon and set the weapon owner's ammo_index to reflect this.
-	playerinfo->pers.lastweapon=playerinfo->pers.weapon;	
-	playerinfo->pers.weapon=Weapon;
+	info->pers.lastweapon = info->pers.weapon;
+	info->pers.weapon = weapon;
 
-	if(playerinfo->pers.weapon && playerinfo->pers.weapon->ammo)
-		playerinfo->weap_ammo_index = ITEM_INDEX(FindItem(playerinfo->pers.weapon->ammo));
+	if (info->pers.weapon != NULL && info->pers.weapon->ammo != NULL)
+		info->weap_ammo_index = GetItemIndex(FindItem(info->pers.weapon->ammo));
 	else
-		playerinfo->weap_ammo_index=0;
+		info->weap_ammo_index = 0;
 }
 
 // ************************************************************************************************
