@@ -48,49 +48,32 @@ PLAYER_API void Weapon_EquipSwordStaff(playerinfo_t* info, gitem_t* weapon)
 	info->switchtoweapon = WEAPON_READY_SWORDSTAFF;
 }
 
-// ***********************************************************************************************
-// Weapon_EquipSpell
-// -----------------
-// ************************************************************************************************
-
-PLAYER_API void Weapon_EquipSpell(playerinfo_t *playerinfo,gitem_t *Weapon)
+PLAYER_API void Weapon_EquipSpell(playerinfo_t* info, gitem_t* weapon)
 {
-	assert(playerinfo);
+	assert(info);
 
-	// See if we're already using this particular spell.
-	if(Weapon==playerinfo->pers.weapon)
-		return;
-	
-	// See if we're already switching...
-	if(playerinfo->pers.newweapon != NULL)
-	{
-		if (playerinfo->switchtoweapon != WEAPON_READY_HANDS)
+	// In blade-only DM, don't put away the staff and change weapons.
+	if (info->dmflags & DF_NO_OFFENSIVE_SPELL)
+		if (info->pm_w_flags & WF_SURFACE || info->waterlevel >= 2)
 			return;
-	}
+
+	// See if we're already using this particular spell. See if we're already switching weapons.
+	if (weapon == info->pers.weapon || (info->pers.newweapon != NULL && info->switchtoweapon != WEAPON_READY_HANDS))
+		return;
 
 	// Make sure we have an arm to do it.
-
-	if (!BranchCheckDismemberAction(playerinfo, Weapon->tag))
+	if (!BranchCheckDismemberAction(info, weapon->tag))
 		return;
 
-	// In blade only DM, don't put away the staff and change weapons.
-
-	if(playerinfo->dmflags&DF_NO_OFFENSIVE_SPELL)
-		if (playerinfo->pm_w_flags & WF_SURFACE || playerinfo->waterlevel >= 2)
-			return;
-
-	// if its anything other than the flying fist, see if we have mana for it.
-	if (Weapon->tag != ITEM_WEAPON_FLYINGFIST)
+	// If its anything other than the flying fist, see if we have mana for it.
+	if (weapon->tag != ITEM_WEAPON_FLYINGFIST && info->pers.inventory.Items[GetItemIndex(FindItem(weapon->ammo))] < weapon->quantity)
 	{
-		if (playerinfo->pers.inventory.Items[ITEM_INDEX(FindItem(Weapon->ammo))] < Weapon->quantity)
-		{
-			playerinfo->G_gamemsg_centerprintf (playerinfo->self, GM_NOMANA);
-			return;
-		}
+		info->G_gamemsg_centerprintf(info->self, GM_NOMANA);
+		return;
 	}
-	
-	playerinfo->pers.newweapon = Weapon;
-	playerinfo->switchtoweapon = WEAPON_READY_HANDS;
+
+	info->pers.newweapon = weapon;
+	info->switchtoweapon = WEAPON_READY_HANDS;
 }
 
 // ************************************************************************************************
