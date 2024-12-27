@@ -189,357 +189,263 @@ PLAYER_API void PlayerUpdate(playerinfo_t* info)
 	}
 }
 
-// This function should be called anytime the player's skin, armor, weapon, damaged parts, etc are changed.
-PLAYER_API void PlayerUpdateModelAttributes(playerinfo_t *playerinfo)
-{//FIXME: make sure to see if you HAVE the weapon node you turn off (dropped weapons)
-	int			i;
-	qboolean	ghost,inverttex;
+// This function should be called anytime the player's skin, armor, weapon, damaged parts, etc. are changed.
+PLAYER_API void PlayerUpdateModelAttributes(playerinfo_t* info)
+{
+	//FIXME: make sure to see if you HAVE the weapon node you turn off (dropped weapons)
+	assert(info);
 
-	assert(playerinfo);
-
-	// if we are chicken, we shouldn't be doing any of this stuff
-	if(playerinfo->edictflags & FL_CHICKEN)
+	// If we are chicken, we shouldn't be doing any of this stuff.
+	if (info->edictflags & FL_CHICKEN)
 		return;
 
 	// Start by setting all the attached weapon types.
-	// Check bow for existence and current ammo
+	// Check bow for existence and current ammo.
 	// Until later in this function, have the bow default to on the player's back if existent, gone if not.
 
 	// Since his left hand is not holding a bow as a default, turn it on.
-	playerinfo->fmnodeinfo[MESH__LHANDHI].flags |= FMNI_NO_DRAW;
-	playerinfo->fmnodeinfo[MESH__BOWACTV].flags |= FMNI_NO_DRAW;
+	info->fmnodeinfo[MESH__LHANDHI].flags |= FMNI_NO_DRAW;
+	info->fmnodeinfo[MESH__BOWACTV].flags |= FMNI_NO_DRAW;
 
-	switch(playerinfo->pers.bowtype)
+	switch (info->pers.bowtype)
 	{
 		case BOW_TYPE_REDRAIN:
-			
-			playerinfo->fmnodeinfo[MESH__BOFF].flags &= ~FMNI_NO_DRAW;
-
-			// No special texture.
-
-			playerinfo->pers.altparts &= ~((1<<MESH__BOWACTV) | (1<<MESH__BOFF));
-			
+			info->fmnodeinfo[MESH__BOFF].flags &= ~FMNI_NO_DRAW;
+			info->pers.altparts &= ~((1 << MESH__BOWACTV) | (1 << MESH__BOFF)); // No special texture.
 			break;
-		
+
 		case BOW_TYPE_PHOENIX:
-			
-			playerinfo->fmnodeinfo[MESH__BOFF].flags &= ~FMNI_NO_DRAW;
-			playerinfo->pers.altparts |= ((1<<MESH__BOWACTV) | (1<<MESH__BOFF));
-			
+			info->fmnodeinfo[MESH__BOFF].flags &= ~FMNI_NO_DRAW;
+			info->pers.altparts |= ((1 << MESH__BOWACTV) | (1 << MESH__BOFF));
 			break;
-		
-		case BOW_TYPE_NONE:	
+
+		case BOW_TYPE_NONE:
 		default:
-			
-			playerinfo->fmnodeinfo[MESH__BOFF].flags |= FMNI_NO_DRAW;
-			
+			info->fmnodeinfo[MESH__BOFF].flags |= FMNI_NO_DRAW;
 			break;
 	}
 
-
-	
 	// Check staff for powerup.
 	// Until later in this function, have the staff default to on the player's belt.
-	
-	playerinfo->fmnodeinfo[MESH__RHANDHI].flags |= FMNI_NO_DRAW;
-	playerinfo->fmnodeinfo[MESH__STAFACTV].flags |= FMNI_NO_DRAW;
-	playerinfo->fmnodeinfo[MESH__BLADSTF].flags |= FMNI_NO_DRAW;
-	
-	if (!(playerinfo->flags & PLAYER_FLAG_NO_LARM))
-		playerinfo->fmnodeinfo[MESH__STOFF].flags &= ~FMNI_NO_DRAW;
+	info->fmnodeinfo[MESH__RHANDHI].flags |= FMNI_NO_DRAW;
+	info->fmnodeinfo[MESH__STAFACTV].flags |= FMNI_NO_DRAW;
+	info->fmnodeinfo[MESH__BLADSTF].flags |= FMNI_NO_DRAW;
 
-	switch(playerinfo->pers.stafflevel)
-	{	
+	if (!(info->flags & PLAYER_FLAG_NO_LARM))
+		info->fmnodeinfo[MESH__STOFF].flags &= ~FMNI_NO_DRAW;
+
+	switch (info->pers.stafflevel)
+	{
 		case STAFF_LEVEL_POWER1:
 		case STAFF_LEVEL_POWER2:
-			
-			// Use alternate power texture...
-			
-			playerinfo->pers.altparts |= ((1<<MESH__STAFACTV) | (1<<MESH__BLADSTF) | (1<<MESH__STOFF));
-			
+			info->pers.altparts |= ((1 << MESH__STAFACTV) | (1 << MESH__BLADSTF) | (1 << MESH__STOFF)); // Use alternate power texture...
 			break;
-		
+
 		case STAFF_LEVEL_BASIC:
 		default:
-			
-			// No special texture
-			
-			playerinfo->pers.altparts &= ~((1<<MESH__STAFACTV) | (1<<MESH__BLADSTF) | (1<<MESH__STOFF));
-		
+			info->pers.altparts &= ~((1 << MESH__STAFACTV) | (1 << MESH__BLADSTF) | (1 << MESH__STOFF)); // No special texture
 			break;
 	}
 
 	// Check hellstaff for powerup.
 	// Assume the hellstaff is currently not readied.
+	info->fmnodeinfo[MESH__HELSTF].flags |= FMNI_NO_DRAW;
 
-	playerinfo->fmnodeinfo[MESH__HELSTF].flags |= FMNI_NO_DRAW;
-
-	switch(playerinfo->pers.helltype)
+	switch (info->pers.helltype)
 	{
 		case HELL_TYPE_POWER:
-			
-			// Use alternate power texutre...
-			
-			playerinfo->pers.altparts |= (1<<MESH__HELSTF);
-			
+			info->pers.altparts |= (1 << MESH__HELSTF); // Use alternate power texutre...
 			break;
 
 		case HELL_TYPE_BASIC:
-			
-			playerinfo->pers.altparts &= ~(1<<MESH__HELSTF);
-			
+			info->pers.altparts &= ~(1 << MESH__HELSTF);
 			break;
-		
+
 		case HELL_TYPE_NONE:
 		default:
-		
 			break;
 	}
-		
+
 	// Check if the player's a ghost.
-
-	if (playerinfo->ghost_timer > playerinfo->leveltime)
-	{	
-		// Set the ghost time.
-		
-		playerinfo->renderfx |= RF_TRANS_GHOST;
-		
-		ghost = true;
-
-	}
+	if (info->ghost_timer > info->leveltime)
+		info->renderfx |= RF_TRANS_GHOST;
 	else
-	{
-		playerinfo->renderfx &= ~RF_TRANS_GHOST;
-		
-		ghost = false;
-	}
-	
-	// Check armor and level...
+		info->renderfx &= ~RF_TRANS_GHOST;
 
-	switch(playerinfo->pers.armortype)
+	// Check armor and level...
+	switch (info->pers.armortype)
 	{
 		case ARMOR_TYPE_SILVER:
-			playerinfo->fmnodeinfo[MESH__ARMOR].flags &= ~FMNI_NO_DRAW;
-			playerinfo->pers.altparts &= ~(1<<MESH__ARMOR);
-			
+			info->fmnodeinfo[MESH__ARMOR].flags &= ~FMNI_NO_DRAW;
+			info->pers.altparts &= ~(1 << MESH__ARMOR);
 			break;
 
 		case ARMOR_TYPE_GOLD:
-			playerinfo->fmnodeinfo[MESH__ARMOR].flags |= FMNI_USE_SKIN;
-			playerinfo->fmnodeinfo[MESH__ARMOR].flags &= ~FMNI_NO_DRAW;
-			playerinfo->pers.altparts |= 1<<MESH__ARMOR;
-			if (playerinfo->skinnum & 0x01)	// If the main skinnum is odd, then opposite
-				playerinfo->fmnodeinfo[MESH__ARMOR].skin = playerinfo->skinnum;
-			else
-				playerinfo->fmnodeinfo[MESH__ARMOR].skin = playerinfo->skinnum+1;
-			
+			info->fmnodeinfo[MESH__ARMOR].flags |= FMNI_USE_SKIN;
+			info->fmnodeinfo[MESH__ARMOR].flags &= ~FMNI_NO_DRAW;
+			info->pers.altparts |= 1 << MESH__ARMOR;
+			info->fmnodeinfo[MESH__ARMOR].skin = info->skinnum + ((info->skinnum & 1) ? 0 : 1); // If the main skinnum is odd, then opposite.
 			break;
 
 		case ARMOR_TYPE_NONE:
 		default:
-			
-			playerinfo->fmnodeinfo[MESH__ARMOR].flags |= FMNI_NO_DRAW;
-			
+			info->fmnodeinfo[MESH__ARMOR].flags |= FMNI_NO_DRAW;
 			break;
 	}
-	
+
 	// First get the proper skin and set it.
 	// The reflection setting is very important to this.
-
-	if (playerinfo->reflect_timer > playerinfo->leveltime)
-	{	
+	if (info->reflect_timer > info->leveltime)
+	{
 		// We are reflective.
-		playerinfo->skinnum = SKIN_REFLECTION;
-		playerinfo->renderfx |= RF_REFLECTION;
-	 
+		info->skinnum = SKIN_REFLECTION;
+		info->renderfx |= RF_REFLECTION;
+
 		// No pain or power skins if alttex (metal texture).
 		// Also, make sure that the alternate skin is not used when the reflection map is on.
-
-		for (i=1; i<16; i++)
-		{
-			playerinfo->fmnodeinfo[i].flags &= ~FMNI_USE_SKIN;
-		}
+		for (int i = 1; i < 16; i++)
+			info->fmnodeinfo[i].flags &= ~FMNI_USE_SKIN;
 	}
 	else
 	{
-		playerinfo->renderfx &= ~RF_REFLECTION;
+		// We are not reflective.
+		info->renderfx &= ~RF_REFLECTION;
+		qboolean inverttex;
 
 		// Set normal skin texture.
 		// First check if the first "node" is damaged, because it is an exception to the rest.
-
-		if (playerinfo->pers.altparts & (1<<MESH_BASE2))
-		{	
+		if (info->pers.altparts & (1 << MESH_BASE2))
+		{
 			// The front of the body is damaged.
 			// This is a little weird, because the player's main skin is what defines the damage to the front chest node.
-			// Hence if the chest front is damaged, then the *default* skin becomes damaged, and all the *non* damaged skins are exlusions.
-			
-			//all the others will use this playerinfo->skinnum if damaged, playerinfo->skinnum - 1 if not
+			// Hence if the chest front is damaged, then the *default* skin becomes damaged, and all the *non* damaged skins are exclusions.
+
+			// All the others will use this playerinfo->skinnum if damaged, playerinfo->skinnum - 1 if not.
 			inverttex = true;
 
-			//set the main skin (and node 0) to damaged skin
-//			playerinfo->skinnum = (playerinfo->plaguelevel * DAMAGE_NUM_LEVELS) + 1;
-			// We now don't set the skinnum to the plague level...  It is up to the clientinfo to set up the right plague skin.
-			playerinfo->skinnum = 1;
+			// We now don't set the skinnum to the plague level... It is up to the clientinfo to set up the right plague skin.
+			info->skinnum = 1;
 		}
 		else
-		{	
+		{
 			// Set the normal skin level.
 
-			//all the others will use this playerinfo->skinnum + 1 if damaged, playerinfo->skinnum if not
+			// All the others will use this playerinfo->skinnum + 1 if damaged, playerinfo->skinnum if not.
 			inverttex = false;
 
-			//set the main skin (and node 0) to damaged skin
-//			playerinfo->skinnum = (playerinfo->plaguelevel * DAMAGE_NUM_LEVELS);
-			// We now don't set the skinnum to the plague level...  It is up to the clientinfo to set up the right plague skin.
-			playerinfo->skinnum = 0;
+			// We now don't set the skinnum to the plague level... It is up to the clientinfo to set up the right plague skin.
+			info->skinnum = 0;
 		}
 
-		//set node 0 to same skin as whole model
-		playerinfo->fmnodeinfo[MESH_BASE2].skin = playerinfo->skinnum;
+		// Set node 0 to same skin as whole model.
+		info->fmnodeinfo[MESH_BASE2].skin = info->skinnum;
 
-		// Set appropriate textures and pain skins.
-		// Fifteen other body parts.
-
-		for (i=1; i<16; i++)
+		// Set appropriate textures and pain skins for fifteen other body parts.
+		for (int i = 1; i < 16; i++)
 		{
-			if (playerinfo->pers.altparts & (1<<i))
+			if (info->pers.altparts & (1 << i))
 			{
 				// The part is damaged or powered.
-
 				if (!inverttex)
 				{
-					playerinfo->fmnodeinfo[i].flags |= FMNI_USE_SKIN;
-					playerinfo->fmnodeinfo[i].skin = playerinfo->skinnum + 1;
+					info->fmnodeinfo[i].flags |= FMNI_USE_SKIN;
+					info->fmnodeinfo[i].skin = info->skinnum + 1;
 				}
 				else
 				{
 					// The damaged skin is a default.
-
-					playerinfo->fmnodeinfo[i].flags &= ~FMNI_USE_SKIN;
+					info->fmnodeinfo[i].flags &= ~FMNI_USE_SKIN;
 				}
 			}
 			else
 			{
 				// The part is not damaged or powered.
-
 				if (!inverttex)
 				{
 					// The undamaged skin is a default.
-
-					playerinfo->fmnodeinfo[i].flags &= ~FMNI_USE_SKIN;
+					info->fmnodeinfo[i].flags &= ~FMNI_USE_SKIN;
 				}
 				else
 				{
-					playerinfo->fmnodeinfo[i].flags |= FMNI_USE_SKIN;
-					playerinfo->fmnodeinfo[i].skin = playerinfo->skinnum - 1;
+					info->fmnodeinfo[i].flags |= FMNI_USE_SKIN;
+					info->fmnodeinfo[i].skin = info->skinnum - 1;
 				}
 			}
 		}
 	}
 
-	//If the switch is valid
-	if (BranchCheckDismemberAction(playerinfo, playerinfo->pers.weapon->tag))
-	{//FIXME: doesn't allow for dropping of weapons
-		// Now turn on the appropriate weapon bits.
-		switch(playerinfo->pers.weaponready)
-		{
-			case WEAPON_READY_STAFFSTUB:
-				
-				// Staff in right hand.
-				if (!(playerinfo->flags & PLAYER_FLAG_NO_RARM))
-				{
-					playerinfo->fmnodeinfo[MESH__STOFF].flags |= FMNI_NO_DRAW;
-					playerinfo->fmnodeinfo[MESH__STAFACTV].flags &= ~FMNI_NO_DRAW;
-				}
-				
-				// Empty left hand.
-				if (!(playerinfo->flags & PLAYER_FLAG_NO_LARM))
-					playerinfo->fmnodeinfo[MESH__LHANDHI].flags &= ~FMNI_NO_DRAW;
-				
-				break;
-			
-			case WEAPON_READY_SWORDSTAFF:
-				
-				// Staff in right hand.
-				if (!(playerinfo->flags & PLAYER_FLAG_NO_RARM))
-				{
-					playerinfo->fmnodeinfo[MESH__STOFF].flags |= FMNI_NO_DRAW;
-					playerinfo->fmnodeinfo[MESH__BLADSTF].flags &= ~FMNI_NO_DRAW;
-					playerinfo->fmnodeinfo[MESH__STAFACTV].flags &= ~FMNI_NO_DRAW;
-				}
-				
-				// Empty left hand.
-				if (!(playerinfo->flags & PLAYER_FLAG_NO_LARM))
-					playerinfo->fmnodeinfo[MESH__LHANDHI].flags &= ~FMNI_NO_DRAW;
-/*
-				if (playerinfo->leveltime > 1.0)
-				{
-					if(!playerinfo->isclient)
-						playerinfo->G_CreateEffect(playerinfo->G_GetEntityStatePtr(playerinfo->self),
-												   FX_STAFF_CREATEPOOF,
-												   CEF_OWNERS_ORIGIN,
-												   NULL,
-												   "");
-				}
-*/
-				break;
+	// If the switch is valid.
+	if (!BranchCheckDismemberAction(info, info->pers.weapon->tag))
+		return;
 
-			case WEAPON_READY_HELLSTAFF:
-				
-				// Staff in right hand.
-				if (!(playerinfo->flags & PLAYER_FLAG_NO_RARM))
-				{
-					playerinfo->fmnodeinfo[MESH__STOFF].flags |= FMNI_NO_DRAW;
-					playerinfo->fmnodeinfo[MESH__HELSTF].flags &= ~FMNI_NO_DRAW;
-					playerinfo->fmnodeinfo[MESH__STAFACTV].flags &= ~FMNI_NO_DRAW;
-				}
-				
-				// Empty left hand.
-				if (!(playerinfo->flags & PLAYER_FLAG_NO_LARM))
-					playerinfo->fmnodeinfo[MESH__LHANDHI].flags &= ~FMNI_NO_DRAW;
-/*
-				if (playerinfo->leveltime > 1.0)
-				{
-					if(!playerinfo->isclient)
-						playerinfo->G_CreateEffect(playerinfo->G_GetEntityStatePtr(playerinfo->self),
-												   FX_STAFF_CREATEPOOF,
-												   CEF_OWNERS_ORIGIN|CEF_FLAG6,
-												   NULL,
-												   "");
-				}
-				*/
-				
-				break;
+	//FIXME: doesn't allow for dropping of weapons.
+	// Now turn on the appropriate weapon bits.
+	switch (info->pers.weaponready)
+	{
+		case WEAPON_READY_STAFFSTUB:
+			// Staff in right hand.
+			if (!(info->flags & PLAYER_FLAG_NO_RARM))
+			{
+				info->fmnodeinfo[MESH__STOFF].flags |= FMNI_NO_DRAW;
+				info->fmnodeinfo[MESH__STAFACTV].flags &= ~FMNI_NO_DRAW;
+			}
 
-			case WEAPON_READY_BOW:
-				
-				// Empty right hand.
-				if (!(playerinfo->flags & PLAYER_FLAG_NO_RARM))
-					playerinfo->fmnodeinfo[MESH__RHANDHI].flags &= ~FMNI_NO_DRAW;
-				
-				// Bow in left hand.
-				if (!(playerinfo->flags & PLAYER_FLAG_NO_LARM))
-				{
-					playerinfo->fmnodeinfo[MESH__BOFF].flags |= FMNI_NO_DRAW;
-					playerinfo->fmnodeinfo[MESH__BOWACTV].flags &= ~FMNI_NO_DRAW;
-				}
-				
-				break;
+			// Empty left hand.
+			if (!(info->flags & PLAYER_FLAG_NO_LARM))
+				info->fmnodeinfo[MESH__LHANDHI].flags &= ~FMNI_NO_DRAW;
+			break;
 
-			case WEAPON_READY_HANDS:
-			default:
-				
-				// Empty right hand.
-				if (!(playerinfo->flags & PLAYER_FLAG_NO_RARM))
-					playerinfo->fmnodeinfo[MESH__RHANDHI].flags &= ~FMNI_NO_DRAW;
-				
-				// Empty left hand.
-				if (!(playerinfo->flags & PLAYER_FLAG_NO_LARM))
-					playerinfo->fmnodeinfo[MESH__LHANDHI].flags &= ~FMNI_NO_DRAW;
-				
-				break;
-			
-		}
+		case WEAPON_READY_SWORDSTAFF:
+			// Staff in right hand.
+			if (!(info->flags & PLAYER_FLAG_NO_RARM))
+			{
+				info->fmnodeinfo[MESH__STOFF].flags |= FMNI_NO_DRAW;
+				info->fmnodeinfo[MESH__BLADSTF].flags &= ~FMNI_NO_DRAW;
+				info->fmnodeinfo[MESH__STAFACTV].flags &= ~FMNI_NO_DRAW;
+			}
+
+			// Empty left hand.
+			if (!(info->flags & PLAYER_FLAG_NO_LARM))
+				info->fmnodeinfo[MESH__LHANDHI].flags &= ~FMNI_NO_DRAW;
+			break;
+
+		case WEAPON_READY_HELLSTAFF:
+			// Staff in right hand.
+			if (!(info->flags & PLAYER_FLAG_NO_RARM))
+			{
+				info->fmnodeinfo[MESH__STOFF].flags |= FMNI_NO_DRAW;
+				info->fmnodeinfo[MESH__HELSTF].flags &= ~FMNI_NO_DRAW;
+				info->fmnodeinfo[MESH__STAFACTV].flags &= ~FMNI_NO_DRAW;
+			}
+
+			// Empty left hand.
+			if (!(info->flags & PLAYER_FLAG_NO_LARM))
+				info->fmnodeinfo[MESH__LHANDHI].flags &= ~FMNI_NO_DRAW;
+			break;
+
+		case WEAPON_READY_BOW:
+			// Empty right hand.
+			if (!(info->flags & PLAYER_FLAG_NO_RARM))
+				info->fmnodeinfo[MESH__RHANDHI].flags &= ~FMNI_NO_DRAW;
+
+			// Bow in left hand.
+			if (!(info->flags & PLAYER_FLAG_NO_LARM))
+			{
+				info->fmnodeinfo[MESH__BOFF].flags |= FMNI_NO_DRAW;
+				info->fmnodeinfo[MESH__BOWACTV].flags &= ~FMNI_NO_DRAW;
+			}
+			break;
+
+		case WEAPON_READY_HANDS:
+		default:
+			// Empty right hand.
+			if (!(info->flags & PLAYER_FLAG_NO_RARM))
+				info->fmnodeinfo[MESH__RHANDHI].flags &= ~FMNI_NO_DRAW;
+
+			// Empty left hand.
+			if (!(info->flags & PLAYER_FLAG_NO_LARM))
+				info->fmnodeinfo[MESH__LHANDHI].flags &= ~FMNI_NO_DRAW;
+			break;
 	}
 }
 
