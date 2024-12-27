@@ -127,104 +127,65 @@ static int PlayerCheckSlide(const playerinfo_t* info)
 	return ASEQ_NONE;
 }
 
-PLAYER_API void PlayerUpdate(playerinfo_t *playerinfo)
+PLAYER_API void PlayerUpdate(playerinfo_t* info)
 {
-	int		slideseq;
-	vec3_t	endpos;
-	
-	if (playerinfo->deadflag==DEAD_DEAD || playerinfo->deadflag==DEAD_DYING)
+	if (info->deadflag == DEAD_DEAD || info->deadflag == DEAD_DYING)
 		return;
 
-	if (playerinfo->groundentity == NULL)
+	if (info->groundentity == NULL)
 	{
-		if ((slideseq = PlayerCheckSlide(playerinfo)))
-		{
-			PlayerAnimSetLowerSeq(playerinfo, slideseq);
-		}
+		const int slideseq = PlayerCheckSlide(info);
+		if (slideseq != ASEQ_NONE)
+			PlayerAnimSetLowerSeq(info, slideseq);
 	}
 
-	VectorCopy(playerinfo->origin, endpos);
-	endpos[2] += playerinfo->mins[2];
-	
-	if ((playerinfo->PointContents(endpos) & (CONTENTS_SLIME|CONTENTS_LAVA))) 
+	vec3_t endpos;
+	VectorCopy(info->origin, endpos);
+	endpos[2] += info->mins[2];
+
+	if (!(info->PointContents(endpos) & (CONTENTS_SLIME | CONTENTS_LAVA)))
 	{
-	}
-	
-	// At the very first point, evaluate whether we are in a water or air sequence, and then
-	// whether the player is in water or air.
-
-	else if (PlayerSeqData[playerinfo->lowerseq].playerflags & PLAYER_FLAG_WATER)
-	{	
-		// Then we SHOULD be in water for this particular move.
-
-		if ((playerinfo->waterlevel > 2) && (PlayerSeqData2[playerinfo->lowerseq].waterseq == ASEQ_SSWIM_IDLE))
+		// At the very first point, evaluate whether we are in a water or air sequence, and then whether the player is in water or air.
+		if (info->waterlevel > 2 && PlayerSeqData2[info->lowerseq].waterseq == ASEQ_SSWIM_IDLE)
 		{
-			// We're completely under the water.
-
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_USWIM_IDLE);
+			// Switch from surface swimming to underwater swimming animation.
+			PlayerAnimSetLowerSeq(info, ASEQ_USWIM_IDLE);
 		}
-		else if (playerinfo->waterlevel < 1 || (playerinfo->waterlevel < 2 && playerinfo->groundentity))
-		{	
-			// If we are not in the water at all currently OR if our toes are in yet our feet are
-			// touching the ground then we abandon the water sequence. Waterseq here represents the
-			// proper sequence to go to when LEAVING water.
-		
-			//NOTENOTE: This is the offending code that killed the pullups out of water.  Here's a patch...
-
-			if (PlayerSeqData2[playerinfo->lowerseq].waterseq != ASEQ_NONE)
-				PlayerAnimSetLowerSeq(playerinfo, PlayerSeqData2[playerinfo->lowerseq].waterseq);
-		}
-	}
-	else
-	{	
-		// We should NOT be in water for this particular move.
-
-		if ((playerinfo->waterlevel > 2) && (PlayerSeqData2[playerinfo->lowerseq].waterseq == ASEQ_SSWIM_IDLE))
+		else if (PlayerSeqData2[info->lowerseq].waterseq != ASEQ_NONE)
 		{
-			// We're completely under the water.
+			const qboolean in_water = (PlayerSeqData[info->lowerseq].playerflags & PLAYER_FLAG_WATER); //mxd
 
-			PlayerAnimSetLowerSeq(playerinfo, ASEQ_USWIM_IDLE);
-		}
-		else if (playerinfo->waterlevel >= 2)
-		{	
-			// We're now in water, go to the appropriate water sequence. Waterseq here represents
-			// the proper sequence to go to when ENTERING water.
-			if (PlayerSeqData2[playerinfo->lowerseq].waterseq != ASEQ_NONE)
-				PlayerAnimSetLowerSeq(playerinfo, PlayerSeqData2[playerinfo->lowerseq].waterseq);
+			// Check if we are leaving or entering water.
+			const qboolean entering_water = (!in_water && info->waterlevel >= 2); //mxd
+			const qboolean leaving_water = (in_water && (info->waterlevel < 1 || (info->waterlevel < 2 && info->groundentity != NULL))); //mxd
+
+			// Waterseq here represents the proper sequence to go to when leaving or entering water.
+			if (entering_water || leaving_water)
+				PlayerAnimSetLowerSeq(info, PlayerSeqData2[info->lowerseq].waterseq);
 		}
 	}
 
-	if (playerinfo->remember_buttons & BUTTON_DEFEND)
+	if (info->remember_buttons & BUTTON_DEFEND)
 	{
-		// Not a chicken, so...
-
-		if(!playerinfo->isclient && playerinfo->pers.defence)
+		// Not a chicken, so... //TODO: but there are no chicken checks in sight?
+		if (!info->isclient && info->pers.defence != NULL)
 		{
-			if(Defence_CurrentShotsLeft(playerinfo, 0)>0)
-			{
-				playerinfo->PlayerActionSpellDefensive(playerinfo);
-			}
+			if (Defence_CurrentShotsLeft(info, 0) > 0)
+				info->PlayerActionSpellDefensive(info);
 			else
-			{
-				//Play a sound to tell the player they're out of mana
-				if(playerinfo->isclient)
-					playerinfo->CL_Sound(SND_PRED_ID50,playerinfo->origin, CHAN_VOICE, "*nomana.wav", 0.75, ATTN_NORM, 0);
-				else
-					playerinfo->G_Sound(SND_PRED_ID50,playerinfo->leveltime,playerinfo->self, CHAN_VOICE, playerinfo->G_SoundIndex("*nomana.wav"), 0.75, ATTN_NORM, 0);
-			}
+				P_Sound(info, SND_PRED_ID50, CHAN_VOICE, "*nomana.wav", 0.75f); //mxd // Play a sound to tell the player they're out of mana.
 		}
 
-		playerinfo->remember_buttons &= ~BUTTON_DEFEND;
+		info->remember_buttons &= ~BUTTON_DEFEND;
 	}
 
-	if(!playerinfo->isclient)
+	if (!info->isclient)
 	{
 		// Check to see if the lightning shield is engaged.
-
-		if (playerinfo->shield_timer > playerinfo->leveltime)
-			playerinfo->G_PlayerSpellShieldAttack(playerinfo);
+		if (info->shield_timer > info->leveltime)
+			info->G_PlayerSpellShieldAttack(info);
 		else
-			playerinfo->G_PlayerSpellStopShieldAttack(playerinfo);
+			info->G_PlayerSpellStopShieldAttack(info);
 	}
 }
 
