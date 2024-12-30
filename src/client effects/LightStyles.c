@@ -34,14 +34,9 @@ static void V_AddLightStyle(const int style, const float r, const float g, const
 	}
 }
 
-/*
-================
-CL_ClearLightStyles
-================
-*/
-void CL_ClearLightStyles (void)
+void CL_ClearLightStyles(void)
 {
-	memset (cl_lightstyle, 0, sizeof(cl_lightstyle));
+	memset(cl_lightstyle, 0, sizeof(cl_lightstyle));
 	lastofs = -1;
 }
 
