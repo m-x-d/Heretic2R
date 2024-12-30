@@ -53,66 +53,44 @@ qboolean fx_FreezeWorld=false;
 
 void CL_SetLightstyle(int i);
 
-void Init();
-void Clear();
-void ShutDown();
-void RegisterSounds();
-void AddEffects(qboolean freeze);
-void PostRenderUpdate();
-void PreRenderUpdate();
 struct level_map_info_s *GetLMI();
 int GetLMIMax();
 
-void AddServerEntities(frame_t *frame);
-void ParseEffects(centity_t *cent);
-void ClientStartClientEffect(centity_t *owner,unsigned short effect,int flags,int index,vec3_t position);
-static void RemoveEffectsFromCent(centity_t *cent);
-
-/*
-==============
-GetRefAPI
-
-==============
-*/
-client_fx_export_t GetfxAPI (client_fx_import_t import)
+void Clear()
 {
-	client_fx_export_t export;
+	void CL_ClearLightStyles();
+	int i;
+	centity_t* owner;
 
-	fxi = import;
+	if (clientEnts)
+	{
+		RemoveEffectList(&clientEnts);
+	}
 
-	export.api_version = API_VERSION;
+	for (i = 0, owner = fxi.server_entities; i < MAX_NETWORKABLE_EDICTS; ++i, ++owner)
+	{
+		if (owner->effects)
+		{
+			RemoveOwnedEffectList(owner);
+		}
 
-	export.Init = Init;
+		if (owner->current.clientEffects.buf)
+		{
+			ResMngr_DeallocateResource(fxi.FXBufMngr, owner->current.clientEffects.buf, sizeof(char[ENTITY_FX_BUF_SIZE]));
+			owner->current.clientEffects.buf = 0;
+		}
+	}
 
-	export.ShutDown = ShutDown;
+	CL_ClearLightStyles();
 
-	export.Clear=Clear;
-
-	export.RegisterSounds = RegisterSounds;
-	export.RegisterModels = RegisterModels;
-
-	// In the client code in the executable the following functions are called first.
-	export.AddPacketEntities = AddServerEntities;
-	
-	// Secondly....
-	export.AddEffects = AddEffects;
-	
-	// Thirdly (if any independent effects exist).
-	export.ParseClientEffects = ParseEffects;
-
-	// Lastly.
-	export.UpdateEffects = PostRenderUpdate;
-
-	export.SetLightstyle = CL_SetLightstyle;
-
-	export.GetLMI = GetLMI;
-	export.GetLMIMax = GetLMIMax;
-
-	export.RemoveClientEffects = RemoveEffectsFromCent;
-
-	export.client_string = clfx_string;
-
-	return export;
+	memset(&CircularList[0], 0, sizeof(CircularList));
+	if (r_detail->value == DETAIL_LOW)
+		total_circle_entries = 30;
+	else
+		if (r_detail->value == DETAIL_NORMAL)
+			total_circle_entries = 50;
+		else
+			total_circle_entries = MAX_ENTRIES_IN_CIRCLE_LIST;
 }
 
 void Init()
@@ -156,43 +134,6 @@ void Init()
 	crosshair = Cvar_Get ("crosshair", "0", CVAR_ARCHIVE);
 
 	Clear();
-}
-
-void Clear()
-{
-	void CL_ClearLightStyles();
-	int i;
-	centity_t *owner;
-
-	if(clientEnts)
-	{
-		RemoveEffectList(&clientEnts);
-	}
-
-	for(i = 0, owner = fxi.server_entities; i < MAX_NETWORKABLE_EDICTS; ++i, ++owner)
-	{
-		if(owner->effects)
-		{
-			RemoveOwnedEffectList(owner);
-		}
-
-		if(owner->current.clientEffects.buf)
-		{
-			ResMngr_DeallocateResource(fxi.FXBufMngr, owner->current.clientEffects.buf, sizeof(char[ENTITY_FX_BUF_SIZE]));
-			owner->current.clientEffects.buf=0;
-		}
-	}
-
-	CL_ClearLightStyles();
-
-	memset(&CircularList[0],0,sizeof(CircularList));
-	if (r_detail->value == DETAIL_LOW)
-		total_circle_entries = 30;
-	else
-	if (r_detail->value == DETAIL_NORMAL)
-		total_circle_entries = 50;
-	else
-		total_circle_entries = MAX_ENTRIES_IN_CIRCLE_LIST;
 }
 
 void ShutDown()
@@ -1004,4 +945,43 @@ void AddServerEntities(frame_t *frame)
 	}
 }
 
-// end
+client_fx_export_t GetfxAPI(client_fx_import_t import)
+{
+	client_fx_export_t export;
+
+	fxi = import;
+
+	export.api_version = API_VERSION;
+
+	export.Init = Init;
+
+	export.ShutDown = ShutDown;
+
+	export.Clear = Clear;
+
+	export.RegisterSounds = RegisterSounds;
+	export.RegisterModels = RegisterModels;
+
+	// In the client code in the executable the following functions are called first.
+	export.AddPacketEntities = AddServerEntities;
+
+	// Secondly....
+	export.AddEffects = AddEffects;
+
+	// Thirdly (if any independent effects exist).
+	export.ParseClientEffects = ParseEffects;
+
+	// Lastly.
+	export.UpdateEffects = PostRenderUpdate;
+
+	export.SetLightstyle = CL_SetLightstyle;
+
+	export.GetLMI = GetLMI;
+	export.GetLMIMax = GetLMIMax;
+
+	export.RemoveClientEffects = RemoveEffectsFromCent;
+
+	export.client_string = clfx_string;
+
+	return export;
+}
