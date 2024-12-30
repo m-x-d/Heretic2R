@@ -427,12 +427,10 @@ static void ParseEffects(centity_t* owner)
 	}
 }
 
-static void RemoveEffectsFromCent(centity_t *cent)
+static void RemoveEffectsFromCent(centity_t* cent)
 {
-	if(cent->effects)
-	{
+	if (cent->effects != NULL)
 		RemoveOwnedEffectList(cent);
-	}
 }
 
 /*
