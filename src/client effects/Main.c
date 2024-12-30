@@ -132,47 +132,26 @@ static void ShutDown(void)
 	ReleaseMsgMngr();
 }
 
-/*
-==============
-AddEffects
-
-==============
-*/
-void AddEffects(qboolean freeze)
+static void AddEffects(const qboolean freeze)
 {
-	void CL_AddLightStyles(void);
-
-	int i;
-	centity_t *owner;
 	int	num_free_inview = 0;
 
 	// If the world is frozen then the client effects, particularly the particles shouldn't update.
 	fx_FreezeWorld = freeze;
 
-	if(clientEnts)
-	{
+	if (clientEnts != NULL)
 		num_free_inview += AddEffectsToView(&clientEnts, NULL);
-	}
 
-	// Add all effects which are attatched to entities, that have no model.
-
-	for(i = 0, owner = fxi.server_entities; i < MAX_NETWORKABLE_EDICTS; ++i, ++owner)
-	{	
-		// gak, think something else need to be done... maybe a list of centities with effects.
-
-		if(owner->effects && (owner->current.effects & EF_ALWAYS_ADD_EFFECTS))
-		{
+	// Add all effects which are attached to entities, that have no model.
+	centity_t* owner = fxi.server_entities;
+	for (int i = 0; i < MAX_NETWORKABLE_EDICTS; i++, owner++)
+		if (owner->effects != NULL && (owner->current.effects & EF_ALWAYS_ADD_EFFECTS)) // Think something else need to be done... maybe a list of centities with effects.
 			num_owned_inview += AddEffectsToView(&owner->effects, owner);
-		}
-	}
 
 	CL_AddLightStyles();
 
-	if(fx_numinview->value)
-	{
-		Com_DPrintf("Active CE : free %d, owned %d. Particles : processed %d, rendered %d\n",
-					num_free_inview, num_owned_inview, numprocessedparticles, numrenderedparticles);
-	}
+	if ((int)fx_numinview->value)
+		Com_DPrintf("Active CE : free %d, owned %d. Particles : processed %d, rendered %d\n", num_free_inview, num_owned_inview, numprocessedparticles, numrenderedparticles);
 }
 
 /*
