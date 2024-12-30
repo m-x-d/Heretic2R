@@ -104,6 +104,7 @@
   <ItemGroup>
     <ClInclude Include="..\qcommon\anorms.h" />
     <ClInclude Include="..\qcommon\items.h" />
+    <ClInclude Include="..\qcommon\LevelMaps.h" />
     <ClInclude Include="..\qcommon\Message.h" />
     <ClInclude Include="..\qcommon\Vector.h" />
     <ClInclude Include="ambient effects.h" />
@@ -114,6 +115,7 @@
     <ClInclude Include="Client Entities.h" />
     <ClInclude Include="fx_debris.h" />
     <ClInclude Include="fx_dustpuff.h" />
+    <ClInclude Include="LightStyles.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>

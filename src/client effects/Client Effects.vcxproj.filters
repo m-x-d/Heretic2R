@@ -323,5 +323,11 @@
     <ClInclude Include="..\qcommon\anorms.h">
       <Filter>qcommon</Filter>
     </ClInclude>
+    <ClInclude Include="LightStyles.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\LevelMaps.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
