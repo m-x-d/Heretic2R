@@ -40,42 +40,27 @@ void CL_ClearLightStyles(void)
 	lastofs = -1;
 }
 
-/*
-================
-CL_RunLightStyles
-================
-*/
-void CL_RunLightStyles (void)
+void CL_RunLightStyles(void)
 {
-	int		ofs;
-	int		i;
-	clightstyle_t	*ls;
+	float value; //mxd
+	const int ofs = fxi.cl->time / 100;
 
-	ofs = fxi.cl->time / 100;
-
-	if(ofs == lastofs)
-	{
+	if (ofs == lastofs)
 		return;
-	}
 
 	lastofs = ofs;
 
-	for(i = 0, ls = cl_lightstyle; i < MAX_LIGHTSTYLES ; ++i, ++ls)
+	clightstyle_t* ls = cl_lightstyle;
+	for (int i = 0; i < MAX_LIGHTSTYLES; i++, ls++)
 	{
-		if (!ls->length)
-		{
-			ls->value[0] = ls->value[1] = ls->value[2] = 1.0;
-			continue;
-		}
-
-		if (ls->length == 1)
-		{
-			ls->value[0] = ls->value[1] = ls->value[2] = ls->map[0];
-		}
+		if (ls->length == 0)
+			value = 1.0f;
+		else if (ls->length == 1)
+			value = ls->map[0];
 		else
-		{
-			ls->value[0] = ls->value[1] = ls->value[2] = ls->map[ofs%ls->length];
-		}
+			value = ls->map[ofs % ls->length];
+
+		VectorSet(ls->value, value, value, value);
 	}
 }
 
