@@ -23,11 +23,8 @@
 #include "g_playstats.h"
 #include "qcommon.h"
 
-
-
-///// IMPORTANT !!! THIS IS THE STRING THAT DETERMINES IF YOU CAN JOIN A SERVER	- IE YOU HAVE THE RIGHT CLIENT EFFECTS DLL
-//char	*client_string = {"Heretic II v1.06"};
-char client_string[128] = "Heretic II v1.06"; //mxd
+// Important! This is the string that determines if you can join a server - ie you have the right Client Effects.dll.
+static char clfx_string[128] = "Heretic II v1.06"; //mxd. Renamed from client_string to avoid collisions with the var defined in client.h.
 
 client_fx_import_t fxi;
 
@@ -60,7 +57,6 @@ void Init();
 void Clear();
 void ShutDown();
 void RegisterSounds();
-qboolean RegisterModels(int idx);
 void AddEffects(qboolean freeze);
 void PostRenderUpdate();
 void PreRenderUpdate();
@@ -114,7 +110,7 @@ client_fx_export_t GetfxAPI (client_fx_import_t import)
 
 	export.RemoveClientEffects = RemoveEffectsFromCent;
 
-	export.client_string = client_string;
+	export.client_string = clfx_string;
 
 	return export;
 }
