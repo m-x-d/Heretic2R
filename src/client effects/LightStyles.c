@@ -1,22 +1,22 @@
+//
+// LightStyles.c -- Light styles management.
+//
+// Copyright 1998 Raven Software
+//
+
+#include "LightStyles.h" //mxd
 #include "Client Effects.h"
-
-/*
-==============================================================
-
-LIGHT STYLE MANAGEMENT
-
-==============================================================
-*/
+#include "Vector.h" //mxd
 
 typedef struct
 {
-	int		length;
-	float	value[3];
-	float	map[MAX_QPATH];
+	int length;
+	float value[3];
+	float map[MAX_QPATH];
 } clightstyle_t;
 
-clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
-int			lastofs;
+static clightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];
+static int lastofs;
 
 /*
 =====================
