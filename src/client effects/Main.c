@@ -176,112 +176,100 @@ static void PostRenderUpdate(void)
 		Com_DPrintf("Active CE : free %d, owned %d\n", num_free_active, num_owned_active);
 }
 
-int DummyEffectParams(centity_t *ent, int flags, int effect)
+static int DummyEffectParams(centity_t* ent, const int flags, const int effect)
 {
-	char			current;
-	int				count = 0;
-	vec3_t			v;
-	sizebuf_t		*msg_read;
-	sizebuf_t		tempBuf;
-	EffectsBuffer_t *fxBuf;
-	char			*format;
+	sizebuf_t* msg_read;
+	sizebuf_t temp_buf;
 
-	format=clientEffectSpawners[effect].formatString;
+	const char* format = clientEffectSpawners[effect].formatString;
 
-	if(!format)
-		return(0);
+	if (format == NULL)
+		return 0;
 
-//#if	_DEVEL
-#if 0
-	if(strcmp(format, fxi.Cvar_VariableString("cfxpl")))
+	EffectsBuffer_t* fx_buf = NULL;
+
+	if (ent != NULL && !(flags & (CEF_BROADCAST | CEF_MULTICAST)))
 	{
-		Com_DPrintf("Parameter mismatch !!!!!!!!!\n");
-		assert(0);
-	}
-#endif
-
-	if(ent && !(flags&(CEF_BROADCAST|CEF_MULTICAST)))
-	{
-		if(!(*fxi.cl_effectpredict))
-			fxBuf = &ent->current.clientEffects;
+		if (*fxi.cl_effectpredict == 0)
+			fx_buf = &ent->current.clientEffects;
 		else
-			fxBuf = fxi.clientPredEffects;
+			fx_buf = fxi.clientPredEffects;
 
-		msg_read = &tempBuf;
+		msg_read = &temp_buf;
 
-		memset (msg_read, 0, sizeof(*msg_read));
+		memset(msg_read, 0, sizeof(*msg_read));
 
-		msg_read->data = fxBuf->buf;
-		msg_read->cursize = msg_read->maxsize = fxBuf->bufSize;
-		msg_read->readcount = fxBuf->freeBlock;
+		msg_read->data = fx_buf->buf;
+		msg_read->cursize = fx_buf->bufSize;
+		msg_read->maxsize = fx_buf->bufSize;
+		msg_read->readcount = fx_buf->freeBlock;
 	}
 	else
 	{
 		msg_read = fxi.net_message;
 	}
 
-	assert(format);
-	assert(format[0]);
-
-	if(!format)
+	if (format == NULL)
 	{
 		Com_Error(ERR_DROP, "CL_ReadEffect: null format string");
 		return 0;
 	}
 
-	while(current = format[count])
+	int count = 0;
+
+	while (format[count] != 0)
 	{
-		switch(current)
+		vec3_t v;
+
+		switch (format[count])
 		{
-		case 'b':
-			MSG_ReadByte(msg_read);
-			break;
+			case 'b':
+				MSG_ReadByte(msg_read);
+				break;
 
-		case 's':
-			MSG_ReadShort(msg_read);
-			break;
+			case 's':
+				MSG_ReadShort(msg_read);
+				break;
 
-		case 'i':
-			MSG_ReadLong(msg_read);
-			break;
+			case 'i':
+				MSG_ReadLong(msg_read);
+				break;
 
-		case 'f':
-			MSG_ReadFloat(msg_read);
-			break;
+			case 'f':
+				MSG_ReadFloat(msg_read);
+				break;
 
-		case 'p':
-		case 'v':
-			MSG_ReadPos(msg_read, v);
-			break;
+			case 'p':
+			case 'v':
+				MSG_ReadPos(msg_read, v);
+				break;
 
-		case 'u':
-			MSG_ReadDirMag(msg_read, v);
-			break;
+			case 'u':
+				MSG_ReadDirMag(msg_read, v);
+				break;
 
-		case 'd':
-			MSG_ReadDir(msg_read, v);
-			break;
+			case 'd':
+				MSG_ReadDir(msg_read, v);
+				break;
 
-		case 'x':
-			MSG_ReadYawPitch(msg_read, v);
-			break;
+			case 'x':
+				MSG_ReadYawPitch(msg_read, v);
+				break;
 
-		case 't':
-			MSG_ReadShortYawPitch(msg_read, v);
-			break;
+			case 't':
+				MSG_ReadShortYawPitch(msg_read, v);
+				break;
 
-		default:
-			assert(0);
-			return 0;
+			default:
+				assert(0);
+				return 0;
 		}
 
-		++count;
+		count++;
 	}
 
-	if(ent && !(flags&(CEF_BROADCAST|CEF_MULTICAST)))
-	{
-		fxBuf->freeBlock = msg_read->readcount;
-	}
+	if (ent != NULL && !(flags & (CEF_BROADCAST | CEF_MULTICAST)))
+		fx_buf->freeBlock = msg_read->readcount;
 
 	return count;
 }
