@@ -64,28 +64,21 @@ void CL_RunLightStyles(void)
 	}
 }
 
-
-void CL_SetLightstyle (int i)
+void CL_SetLightstyle(const int index)
 {
-	char	*s;
-	int		j, k;
+	const char* s = fxi.cl->configstrings[index + CS_LIGHTS];
+	const int len = (int)strlen(s);
 
-	s = fxi.cl->configstrings[i+CS_LIGHTS];
-
-	j = strlen (s);
-
-	if (j >= MAX_QPATH)
+	if (len >= MAX_QPATH)
 	{
 		assert(0);
-		fxi.Com_Error (ERR_DROP, "svc_lightstyle length=%i", j);
+		fxi.Com_Error(ERR_DROP, "svc_lightstyle length=%i", len);
 	}
 
-	cl_lightstyle[i].length = j;
+	cl_lightstyle[index].length = len;
 
-	for (k=0 ; k<j ; k++)
-	{
-		cl_lightstyle[i].map[k] = (float)(s[k]-'a')/(float)('m'-'a');
-	}
+	for (int i = 0; i < len; i++)
+		cl_lightstyle[index].map[i] = (float)(s[i] - 'a') / (float)('m' - 'a');
 }
 
 /*
