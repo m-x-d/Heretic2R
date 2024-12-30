@@ -274,105 +274,79 @@ static int DummyEffectParams(centity_t* ent, const int flags, const int effect)
 	return count;
 }
 
-/*
-==============
-ParseClientEffects
-
-==============
-*/
-
-// Insert the logic in this could use a good cleaning. . .
+// Insert the logic in this could use a good cleaning...
 //mxd. Written by SV_CreateEffectEvent() / SV_CreatePersistantEffect().
-void ParseEffects(centity_t *owner)
+static void ParseEffects(centity_t* owner)
 {
-	int				i, index;
-	int				num,flags = 0;
-	unsigned		short effect;
-	vec3_t			position;
-	sizebuf_t		*msg_read;
-	sizebuf_t		tempBuf;
-	EffectsBuffer_t *fxBuf;
-	centity_t		*tempOwner;
-	int				last_effect = -1;
-	int				eventId;
-	qboolean		EffectIsFromServer;
+	int index;
+	int num;
+	int flags;
+	sizebuf_t* msg_read;
+	sizebuf_t tempBuf;
+	EffectsBuffer_t* fx_buf = NULL;
+	int last_effect = -1;
+	int event_id = 0;
 
-	tempOwner = owner;
+	centity_t* temp_owner = owner;
 
-	if(owner)
+	if (owner != NULL)
 	{
 		// Where do we pull the effect from?
-
-		if(!(*fxi.cl_effectpredict))
+		if (*fxi.cl_effectpredict == 0)
 		{
 			// Effects received as part of entity_state_t from server.
-
-			fxBuf = &owner->current.clientEffects;
+			fx_buf = &owner->current.clientEffects;
 		}
 		else
 		{
 			// Predicted effects are pulled from here...
+			fx_buf = fxi.clientPredEffects;
 
-			fxBuf=fxi.clientPredEffects;
-
-			// We are dealing with preicted effects, so reset freeblock for reading, as writing
+			// We are dealing with predicted effects, so reset freeblock for reading, as writing
 			// will have left it at the end of the written data.
-
-			fxBuf->freeBlock=0;
+			fx_buf->freeBlock = 0;
 		}
 
-		num = fxBuf->numEffects;
+		num = fx_buf->numEffects;
 
 		msg_read = &tempBuf;
-		memset (msg_read, 0, sizeof(*msg_read));
-		msg_read->data = fxBuf->buf;
-		msg_read->cursize = msg_read->maxsize = fxBuf->bufSize;
+		memset(msg_read, 0, sizeof(*msg_read));
+		msg_read->data = fx_buf->buf;
+		msg_read->cursize = msg_read->maxsize = fx_buf->bufSize;
 	}
 	else
 	{
 		msg_read = fxi.net_message;
-
 		num = MSG_ReadByte(msg_read);
 	}
 
-	assert(num >= 0);
-
-	if(num < 0)
+	if (num < 0)
 	{
 		fxi.Com_Error(ERR_DROP, "ParseClientEffects: number of effects < 0");
 		return;
 	}
 
-	for(i = 0; i < num; ++i)
+	for (int i = 0; i < num; i++)
 	{
-		EffectIsFromServer=false;
+		qboolean effect_is_from_server = false;
 
-		if(owner)
+		if (owner != NULL)
+			msg_read->readcount = fx_buf->freeBlock;
+
+		ushort effect = (ushort)MSG_ReadShort(msg_read);
+
+		if (effect & EFFECT_PRED_INFO)
 		{
-			msg_read->readcount = fxBuf->freeBlock;
+			// If EFFECT_PRED_INFO bit is set (only on effects sent by server, never on predicted effects),
+			// read a byte that uniquely identifies the client effect in the player code.
+			event_id = MSG_ReadByte(msg_read);
+			effect &= ~EFFECT_PRED_INFO;
+			effect_is_from_server = true;
 		}
 
-		effect = MSG_ReadShort(msg_read);
-
-		if(effect&EFFECT_PRED_INFO)
-		{
-			// EFFECT_PRED_INFO bit if set (only on effects sent by server, never on predicted
-			// effects) indicates we should read a byte that uniquely identifies the client effect
-			// int the player code.
-
-			eventId=MSG_ReadByte(msg_read);
-			effect&=~EFFECT_PRED_INFO;
-			EffectIsFromServer=true;
-		}
-
-//#if	_DEVEL
-#if 0
-		Cvar_Set("cfxpl", MSG_ReadString(msg_read));
-#endif
-		if(effect & EFFECT_FLAGS) //mxd. Use EFFECT_FLAGS define.
+		if (effect & EFFECT_FLAGS) //mxd. Use EFFECT_FLAGS define.
 		{
 			effect &= ~EFFECT_FLAGS;
-
 			flags = MSG_ReadByte(msg_read);
 		}
 		else
@@ -380,97 +354,76 @@ void ParseEffects(centity_t *owner)
 			flags = 0;
 		}
 
-		if(flags & (CEF_BROADCAST|CEF_MULTICAST))
+		if (flags & (CEF_BROADCAST | CEF_MULTICAST))
 		{
-			if(flags & CEF_ENTNUM16)
-			{
+			if (flags & CEF_ENTNUM16)
 				index = MSG_ReadShort(msg_read);
-			}
 			else
-			{
 				index = MSG_ReadByte(msg_read);
-			}
 
-			if(index)	// 0 should indicate the world
+			if (index != 0) // 0 should indicate the world.
 			{
-				assert(index > 0);
-				assert(index < MAX_NETWORKABLE_EDICTS);
-
-				tempOwner = fxi.server_entities + index;
+				assert(index > 0 && index < MAX_NETWORKABLE_EDICTS);
+				temp_owner = &fxi.server_entities[index];
 			}
 		}
 
-		if(flags & CEF_OWNERS_ORIGIN)
+		vec3_t position;
+		if (flags & CEF_OWNERS_ORIGIN)
 		{
-			if(tempOwner)
-			{
-				VectorCopy(tempOwner->origin, position);
-			}
+			if (temp_owner != NULL)
+				VectorCopy(temp_owner->origin, position);
 			else
-			{
-				position[0] = position[1] = position[2] = 0;
-			}
+				VectorClear(position);
 		}
 		else
 		{
 			MSG_ReadPos(msg_read, position);
 
-			if(tempOwner && !(flags & CEF_BROADCAST))
-			{
-				position[0] += tempOwner->origin[0];
-				position[1] += tempOwner->origin[1];
-				position[2] += tempOwner->origin[2];
-			}
+			if (temp_owner != NULL && !(flags & CEF_BROADCAST))
+				Vec3AddAssign(temp_owner->origin, position);
 		}
 
 		assert(effect < NUM_FX);
 
-		if(!(effect >= 0 && effect < NUM_FX))
+		if (effect < 0 || effect >= NUM_FX)
 		{
 			fxi.Com_Error(ERR_DROP, "ParseClientEffects: bad effect %d last effect %d", effect, last_effect);
 			return;
 		}
 
-		if(owner && !(flags & (CEF_BROADCAST|CEF_MULTICAST)))
-		{
-			fxBuf->freeBlock = msg_read->readcount;
-		}
+		if (owner != NULL && !(flags & (CEF_BROADCAST | CEF_MULTICAST)))
+			fx_buf->freeBlock = msg_read->readcount;
 
 		// Do we want to start this client-effect if client-prediction has already started it?
-
-		if((!(*fxi.cl_effectpredict))&&fxi.cl_predict->value&&EffectIsFromServer&&
-		   (fxi.EffectEventIdTimeArray[eventId]<=*fxi.leveltime)&&(fxi.EffectEventIdTimeArray[eventId]!=0.0))
+		if (*fxi.cl_effectpredict == 0 && (int)fxi.cl_predict->value && effect_is_from_server &&
+			fxi.EffectEventIdTimeArray[event_id] <= *fxi.leveltime && fxi.EffectEventIdTimeArray[event_id] != 0.0f)
 		{
 			// The client-effect has already been started by client-prediction, so just skip it.
-			
-			DummyEffectParams(owner,flags,effect);
-
-			goto SkipEffect;
+			DummyEffectParams(owner, flags, effect);
 		}
-
-		// Start the client-effect.
-
-		clientEffectSpawners[effect].SpawnCFX(tempOwner, effect, flags, position);
-
-SkipEffect:
-
-		if((EffectIsFromServer)&&(fxi.EffectEventIdTimeArray[eventId]<=*fxi.leveltime))
-			fxi.EffectEventIdTimeArray[eventId]=0.0;
-
-		if(flags & (CEF_BROADCAST|CEF_MULTICAST))
+		else
 		{
-			tempOwner = NULL;
+			// Start the client-effect.
+			clientEffectSpawners[effect].SpawnCFX(temp_owner, effect, flags, position);
 		}
+
+		if (effect_is_from_server && fxi.EffectEventIdTimeArray[event_id] <= *fxi.leveltime)
+			fxi.EffectEventIdTimeArray[event_id] = 0.0f;
+
+		if (flags & (CEF_BROADCAST | CEF_MULTICAST))
+			temp_owner = NULL;
+
 		last_effect = effect;
 	}
 
-	if(owner) // free the buffer allocated in CL_ParseDelta and passed onto owner->current
+	if (owner != NULL) // Free the buffer allocated in CL_ParseDelta and passed onto owner->current.
 	{
-		fxBuf->freeBlock = 0;
-		ResMngr_DeallocateResource(fxi.FXBufMngr, fxBuf->buf, sizeof(char[ENTITY_FX_BUF_SIZE]));
-		fxBuf->buf = NULL;
-		fxBuf->numEffects = 0;
-		fxBuf->bufSize = 0;
+		fx_buf->freeBlock = 0;
+		ResMngr_DeallocateResource(fxi.FXBufMngr, fx_buf->buf, ENTITY_FX_BUF_SIZE * sizeof(char));
+		fx_buf->buf = NULL;
+		fx_buf->numEffects = 0;
+		fx_buf->bufSize = 0;
 	}
 }
 
