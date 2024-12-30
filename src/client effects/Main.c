@@ -86,35 +86,27 @@ static void Clear(void)
 	}
 }
 
-void Init()
+static void Init(void)
 {
-	extern void (*classStaticsInits[NUM_CLASSIDS])();
-	void InitEntityMngr();
-	void InitFMNodeInfoMngr();
-
-	int i;
-
 	InitParticleMngrMngr();
 	InitFMNodeInfoMngr();
 	InitEntityMngr();
 	InitMsgMngr();
 	InitDLightMngr();
 
-	for(i = 0; i < NUM_CLASSIDS; ++i)
-	{
+	for (int i = 0; i < NUM_CLASSIDS; i++)
 		classStaticsInits[i]();
-	}
 
 	clientEnts = NULL;
 
-	cl_camera_under_surface = Cvar_Get( "cl_camera_under_surface", "0", 0 );
+	cl_camera_under_surface = Cvar_Get("cl_camera_under_surface", "0", 0);
 	r_farclipdist = Cvar_Get("r_farclipdist", FAR_CLIP_DIST, 0);
 	r_nearclipdist = Cvar_Get("r_nearclipdist", NEAR_CLIP_DIST, 0);
 	r_detail = Cvar_Get("r_detail", DETAIL_DEFAULT, CVAR_ARCHIVE);
 	fx_numinview = Cvar_Get("fx_numinview", "0", 0);
 	fx_numactive = Cvar_Get("fx_numactive", "0", 0);
 	clfx_gravity = Cvar_Get("clfx_gravity", GRAVITY_STRING, 0);
-	cl_timedemo = Cvar_Get("timedemo","0",0);
+	cl_timedemo = Cvar_Get("timedemo", "0", 0);
 	compass = Cvar_Get("compass", "0", CVAR_ARCHIVE);
 
 	fxTest1 = Cvar_Get("fxTest1", "0", 0);
@@ -123,8 +115,8 @@ void Init()
 	fxTest4 = Cvar_Get("fxTest4", "0", 0);
 
 	cl_lerpdist2 = Cvar_Get("cl_lerpdist2", "10000", 0);
-	vid_ref = Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
-	crosshair = Cvar_Get ("crosshair", "0", CVAR_ARCHIVE);
+	vid_ref = Cvar_Get("vid_ref", "soft", CVAR_ARCHIVE);
+	crosshair = Cvar_Get("crosshair", "0", CVAR_ARCHIVE);
 
 	Clear();
 }
