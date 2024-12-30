@@ -154,43 +154,26 @@ static void AddEffects(const qboolean freeze)
 		Com_DPrintf("Active CE : free %d, owned %d. Particles : processed %d, rendered %d\n", num_free_inview, num_owned_inview, numprocessedparticles, numrenderedparticles);
 }
 
-/*
-==============
-PostRenderUpdate
-
-==============
-*/
-void PostRenderUpdate(void)
+static void PostRenderUpdate(void)
 {
-	void CL_RunLightStyles(void);
-	
-	int i;
-	centity_t *owner;
 	int	num_free_active = 0;
 	int	num_owned_active = 0;
 
 	numprocessedparticles = 0;
 	numrenderedparticles = 0;
 
-	if(clientEnts)
-	{
+	if (clientEnts != NULL)
 		num_free_active += UpdateEffects(&clientEnts, NULL);
-	}
 
-	for(i = 0, owner = fxi.server_entities; i < MAX_NETWORKABLE_EDICTS; ++i, ++owner)	// gak, think something else need to be done
-	{											// maybe a list of centities with effects. . .
-		if(owner->effects)
-		{
+	centity_t* owner = fxi.server_entities;
+	for (int i = 0; i < MAX_NETWORKABLE_EDICTS; i++, owner++)
+		if (owner->effects != NULL) // Think something else need to be done... maybe a list of centities with effects.
 			num_owned_active += UpdateEffects(&owner->effects, owner);
-		}
-	}
 
 	CL_RunLightStyles();
 
-	if(fx_numactive->value)
-	{
+	if ((int)fx_numactive->value)
 		Com_DPrintf("Active CE : free %d, owned %d\n", num_free_active, num_owned_active);
-	}
 }
 
 int DummyEffectParams(centity_t *ent, int flags, int effect)
