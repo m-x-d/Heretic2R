@@ -58,3 +58,6 @@ typedef struct level_map_info_s
 	int count;
 	int* dot_coords;
 } level_map_info_t;
+
+extern level_map_info_t* GetLMI(void); //mxd
+extern int GetLMIMax(void); //mxd
