@@ -121,11 +121,8 @@ static void Init(void)
 	Clear();
 }
 
-void ShutDown()
+static void ShutDown(void)
 {
-	void ReleaseEntityMngr();
-	void ReleaseFMNodeInfoMngr();
-
 	Clear();
 
 	ReleaseParticleMngrMngr();
