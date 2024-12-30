@@ -48,41 +48,42 @@ qboolean fx_FreezeWorld = false;
 
 static int num_owned_inview;
 
-void Clear()
+static void Clear(void)
 {
-	void CL_ClearLightStyles();
-	int i;
-	centity_t* owner;
-
-	if (clientEnts)
-	{
+	if (clientEnts != NULL)
 		RemoveEffectList(&clientEnts);
-	}
 
-	for (i = 0, owner = fxi.server_entities; i < MAX_NETWORKABLE_EDICTS; ++i, ++owner)
+	centity_t* owner = fxi.server_entities;
+	for (int i = 0; i < MAX_NETWORKABLE_EDICTS; i++, owner++)
 	{
-		if (owner->effects)
-		{
+		if (owner->effects != NULL)
 			RemoveOwnedEffectList(owner);
-		}
 
-		if (owner->current.clientEffects.buf)
+		if (owner->current.clientEffects.buf != NULL)
 		{
-			ResMngr_DeallocateResource(fxi.FXBufMngr, owner->current.clientEffects.buf, sizeof(char[ENTITY_FX_BUF_SIZE]));
-			owner->current.clientEffects.buf = 0;
+			ResMngr_DeallocateResource(fxi.FXBufMngr, owner->current.clientEffects.buf, ENTITY_FX_BUF_SIZE * sizeof(char));
+			owner->current.clientEffects.buf = NULL;
 		}
 	}
 
 	CL_ClearLightStyles();
 
 	memset(&CircularList[0], 0, sizeof(CircularList));
-	if (r_detail->value == DETAIL_LOW)
-		total_circle_entries = 30;
-	else
-		if (r_detail->value == DETAIL_NORMAL)
+
+	switch ((int)r_detail->value)
+	{
+		case DETAIL_LOW:
+			total_circle_entries = 30;
+			break;
+
+		case DETAIL_NORMAL:
 			total_circle_entries = 50;
-		else
+			break;
+
+		default: // DETAIL_HIGH / DETAIL_UBERHIGH
 			total_circle_entries = MAX_ENTRIES_IN_CIRCLE_LIST;
+			break;
+	}
 }
 
 void Init()
