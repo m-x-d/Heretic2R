@@ -3,10 +3,6 @@
 //
 // Copyright 1998 Raven Software
 //
-// Heretic II
-//
-
-//#include <windows.h>	// Debug only.
 
 #include "Client Effects.h"
 #include "FX.h"
@@ -14,47 +10,43 @@
 #include "Client Entities.h"
 #include "Particle.h"
 #include "ce_DLight.h"
-#include "SinglyLinkedList.h"
 #include "ce_Message.h"
-#include "Angles.h"
 #include "Vector.h"
 #include "Skeletons.h"
 #include "q_Physics.h"
 #include "g_playstats.h"
-#include "qcommon.h"
+#include "LightStyles.h" //mxd
 
 // Important! This is the string that determines if you can join a server - ie you have the right Client Effects.dll.
 static char clfx_string[128] = "Heretic II v1.06"; //mxd. Renamed from client_string to avoid collisions with the var defined in client.h.
 
 client_fx_import_t fxi;
 
-cvar_t	*cl_camera_under_surface;
-cvar_t	*r_farclipdist;
-cvar_t	*r_nearclipdist;
-cvar_t	*r_detail;
-cvar_t	*fx_numinview;
-cvar_t	*fx_numactive;
-cvar_t	*clfx_gravity;
-cvar_t	*vid_ref;
-cvar_t	*fxTest1;
-cvar_t	*fxTest2;
-cvar_t	*fxTest3;
-cvar_t	*fxTest4;
-cvar_t  *cl_lerpdist2;
-cvar_t  *cl_timedemo;
-cvar_t	*crosshair;
-cvar_t	*compass;
+cvar_t* cl_camera_under_surface;
+cvar_t* r_farclipdist;
+cvar_t* r_nearclipdist;
+cvar_t* r_detail;
+cvar_t* clfx_gravity;
+cvar_t* vid_ref;
+cvar_t* fxTest1; //TODO: unused
+cvar_t* fxTest2; //TODO: unused
+cvar_t* fxTest3; //TODO: unused
+cvar_t* fxTest4; //TODO: unused
+cvar_t* cl_timedemo;
+cvar_t* crosshair;
+cvar_t* compass;
 
-int ref_soft;
-int	numprocessedparticles;
-int	numrenderedparticles;
+static cvar_t* fx_numinview;
+static cvar_t* fx_numactive;
+static cvar_t* cl_lerpdist2;
 
-qboolean fx_FreezeWorld=false;
+int ref_soft; //TODO: change type to qboolean?
+int numprocessedparticles;
+int numrenderedparticles;
 
-void CL_SetLightstyle(int i);
+qboolean fx_FreezeWorld = false;
 
-struct level_map_info_s *GetLMI();
-int GetLMIMax();
+static int num_owned_inview;
 
 void Clear()
 {
@@ -156,8 +148,6 @@ AddEffects
 
 ==============
 */
-static int	num_owned_inview;
-
 void AddEffects(qboolean freeze)
 {
 	void CL_AddLightStyles(void);
