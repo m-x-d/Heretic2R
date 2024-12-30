@@ -748,34 +748,27 @@ static void AddServerEntities(const frame_t* frame)
 	}
 }
 
-client_fx_export_t GetfxAPI(client_fx_import_t import)
+//mxd. Exported in Client Effects.def. Dynamically resolved in clfx.dll.c
+client_fx_export_t GetfxAPI(const client_fx_import_t import)
 {
 	client_fx_export_t export;
 
 	fxi = import;
 
 	export.api_version = API_VERSION;
+	export.client_string = clfx_string;
 
 	export.Init = Init;
-
 	export.ShutDown = ShutDown;
-
 	export.Clear = Clear;
 
 	export.RegisterSounds = RegisterSounds;
 	export.RegisterModels = RegisterModels;
 
-	// In the client code in the executable the following functions are called first.
-	export.AddPacketEntities = AddServerEntities;
-
-	// Secondly....
-	export.AddEffects = AddEffects;
-
-	// Thirdly (if any independent effects exist).
-	export.ParseClientEffects = ParseEffects;
-
-	// Lastly.
-	export.UpdateEffects = PostRenderUpdate;
+	export.AddPacketEntities = AddServerEntities;	// In the client code in the executable the following functions are called first.
+	export.AddEffects = AddEffects;					// Secondly...
+	export.ParseClientEffects = ParseEffects;		// Thirdly (if any independent effects exist).
+	export.UpdateEffects = PostRenderUpdate;		// Lastly.
 
 	export.SetLightstyle = CL_SetLightstyle;
 
@@ -783,8 +776,6 @@ client_fx_export_t GetfxAPI(client_fx_import_t import)
 	export.GetLMIMax = GetLMIMax;
 
 	export.RemoveClientEffects = RemoveEffectsFromCent;
-
-	export.client_string = clfx_string;
 
 	return export;
 }
