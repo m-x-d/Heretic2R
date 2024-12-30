@@ -81,19 +81,9 @@ void CL_SetLightstyle(const int index)
 		cl_lightstyle[index].map[i] = (float)(s[i] - 'a') / (float)('m' - 'a');
 }
 
-/*
-================
-CL_AddLightStyles
-================
-*/
-void CL_AddLightStyles (void)
+void CL_AddLightStyles(void)
 {
-	int		i;
-	clightstyle_t	*ls;
-
-	for (i=0,ls=cl_lightstyle ; i<MAX_LIGHTSTYLES ; i++, ls++)
-	{
-		V_AddLightStyle (i, ls->value[0], ls->value[1], ls->value[2]);
-	}
+	clightstyle_t* ls = cl_lightstyle;
+	for (int i = 0; i < MAX_LIGHTSTYLES; i++, ls++)
+		V_AddLightStyle(i, ls->value[0], ls->value[1], ls->value[2]);
 }
-
