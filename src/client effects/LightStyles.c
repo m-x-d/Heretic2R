@@ -18,35 +18,19 @@ typedef struct
 static clightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];
 static int lastofs;
 
-/*
-=====================
-V_AddLightStyle
-
-Uses:
-1 - 2 int comp
-1 OR
-4 offsets
-2 additions
-4 Assignments
-=====================
-*/
-void V_AddLightStyle (int style, float r, float g, float b)
+static void V_AddLightStyle(const int style, const float r, const float g, const float b)
 {
-	lightstyle_t	*ls;
-
 	if (style < 0 || style > MAX_LIGHTSTYLES)
 	{
 		assert(0);
-		Com_Error (ERR_DROP, "Bad light style %i", style);
+		Com_Error(ERR_DROP, "Bad light style %i", style);
 	}
 	else
 	{
-		ls = &fxi.cls->r_lightstyles[style];
+		lightstyle_t* ls = &fxi.cls->r_lightstyles[style];
 
-		ls->white = r+g+b;
-		ls->rgb[0] = r;
-		ls->rgb[1] = g;
-		ls->rgb[2] = b;
+		ls->white = r + g + b;
+		VectorSet(ls->rgb, r, g, b);
 	}
 }
 
