@@ -35,13 +35,18 @@ typedef struct ClientEffect_s
 
 extern ClientEffect_t clientEffectSpawners[];
 
+extern void (*classStaticsInits[NUM_CLASSIDS])(void); //mxd
+
 // Initialisers for ClassStatics used by client-effects.
 extern void InitDebrisStatics(void);
 
 extern float cl_turbsin[];
 
 // Client-effect functions.
+extern void RegisterSounds(void); //mxd
+extern void RegisterModels(void); //mxd
 extern void RemoveEffects(centity_t* owner, int type, int flags, vec3_t origin);
+
 extern void GenericExplosion1(centity_t* owner, int type, int flags, vec3_t origin);
 extern void GenericExplosion2(centity_t* owner, int type, int flags, vec3_t origin);
 extern void WaterSplash(centity_t* owner, int type, int flags, vec3_t origin);

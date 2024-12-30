@@ -150,8 +150,14 @@ typedef struct client_entity_s
 extern client_entity_t* clientEnts;
 extern CE_ClassStatics_t classStatics[NUM_CLASSIDS];
 
+extern void InitEntityMngr(void); //mxd
+extern void ReleaseEntityMngr(void); //mxd
 extern client_entity_t* ClientEntity_new(int type, int flags, vec3_t origin, vec3_t direction, int nextThinkTime);
+
+extern void InitFMNodeInfoMngr(void); //mxd
+extern void ReleaseFMNodeInfoMngr(void); //mxd
 extern fmnodeinfo_t* FMNodeInfo_new(void);
+
 extern void AddEffectToList(client_entity_t** root, client_entity_t* fx);
 extern void RemoveEffectList(client_entity_t** root);
 extern void RemoveOwnedEffectList(centity_t* owner);
