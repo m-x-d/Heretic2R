@@ -152,7 +152,7 @@ extern CE_ClassStatics_t ce_class_statics[NUM_CLASSIDS];
 
 extern void InitEntityMngr(void); //mxd
 extern void ReleaseEntityMngr(void); //mxd
-extern client_entity_t* ClientEntity_new(int type, int flags, vec3_t origin, vec3_t direction, int next_think_time);
+extern client_entity_t* ClientEntity_new(int type, int flags, const vec3_t origin, const vec3_t direction, int next_think_time);
 
 extern void InitFMNodeInfoMngr(void); //mxd
 extern void ReleaseFMNodeInfoMngr(void); //mxd

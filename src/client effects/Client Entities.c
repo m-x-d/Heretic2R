@@ -47,7 +47,7 @@ void ReleaseFMNodeInfoMngr(void)
 	ResMngr_Des(&fm_node_info_manager);
 }
 
-client_entity_t* ClientEntity_new(const int type, const int flags, vec3_t origin, vec3_t direction, const int next_think_time)
+client_entity_t* ClientEntity_new(const int type, const int flags, const vec3_t origin, const vec3_t direction, const int next_think_time)
 {
 	client_entity_t* new_ent = ResMngr_AllocateResource(&entity_manager, sizeof(*new_ent));
 
