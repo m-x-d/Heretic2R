@@ -144,15 +144,13 @@ void RemoveEffectFromList(client_entity_t** root, const centity_t* owner)
 	ClientEntity_delete(to_free, owner);
 }
 
-void RemoveEffectList(client_entity_t **root)
+void RemoveEffectList(client_entity_t** root)
 {
 	assert(root);
 	assert(*root);
 
-	while(*root)
-	{
+	while (*root != NULL)
 		RemoveEffectFromList(root, NULL);
-	}
 }
 
 void RemoveOwnedEffectList(centity_t *owner)
