@@ -47,7 +47,6 @@ extern void RemoveEffects(centity_t* owner, int type, int flags, vec3_t origin);
 
 extern void GenericExplosion1(centity_t* owner, int type, int flags, vec3_t origin);
 extern void GenericExplosion2(centity_t* owner, int type, int flags, vec3_t origin);
-extern void WaterSplash(centity_t* owner, int type, int flags, vec3_t origin);
 extern void GenericGibTrail(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXBlood(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXBloodTrail(centity_t* owner, int type, int flags, vec3_t origin);

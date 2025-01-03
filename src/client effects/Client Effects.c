@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include "Ambient Effects.h"
 #include "Client Effects.h"
 #include "Client Entities.h"
 #include "FX.h"
