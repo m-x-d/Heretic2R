@@ -3,63 +3,55 @@
 //
 // Copyright 1998 Raven Software
 //
-// Heretic II
-//
 
 #include "Client Entities.h"
 #include "Client Effects.h"
-#include "ResourceManager.h"
-#include "Particle.h"
-#include "FX.h"
-#include "Vector.h"
-#include "Matrix.h"
-#include "Angles.h"
-#include "ce_Message.h"
-#include "Utilities.h"
-#include "Reference.h"
 #include "ce_DLight.h"
 #include "q_Sprite.h"
 #include "g_playstats.h"
+#include "Reference.h"
+#include "ResourceManager.h"
+#include "Particle.h"
 #include "Skeletons.h"
+#include "Vector.h"
+#include "Utilities.h"
 
-extern int		numprocessedparticles;
-extern int		numrenderedparticles;
+client_entity_t* clientEnts = NULL;
 
-ResourceManager_t	EntityMngr;
+static ResourceManager_t entity_manager;
+static ResourceManager_t fm_node_info_manager;
+static vec3_t view_dir;
+static float view_fov;
 
 void InitEntityMngr()
 {
 #define ENTITY_BLOCK_SIZE 196
 
-	ResMngr_Con(&EntityMngr, sizeof(client_entity_t), ENTITY_BLOCK_SIZE);
+	ResMngr_Con(&entity_manager, sizeof(client_entity_t), ENTITY_BLOCK_SIZE);
 }
 
 void ReleaseEntityMngr()
 {
-	ResMngr_Des(&EntityMngr);
+	ResMngr_Des(&entity_manager);
 }
-
-ResourceManager_t FMNodeInfoMngr;
 
 void InitFMNodeInfoMngr()
 {
 #define FMNODEINFO_BLOCK_SIZE 16
 
-	ResMngr_Con(&FMNodeInfoMngr, sizeof(fmnodeinfo_t)*MAX_FM_MESH_NODES, FMNODEINFO_BLOCK_SIZE);
+	ResMngr_Con(&fm_node_info_manager, sizeof(fmnodeinfo_t)*MAX_FM_MESH_NODES, FMNODEINFO_BLOCK_SIZE);
 }
 
 void ReleaseFMNodeInfoMngr()
 {
-	ResMngr_Des(&FMNodeInfoMngr);
+	ResMngr_Des(&fm_node_info_manager);
 }
-
-client_entity_t *clientEnts = NULL;
 
 client_entity_t *ClientEntity_new(int type, int flags, vec3_t origin, vec3_t direction, int nextThinkTime)
 {
 	client_entity_t *newEnt;
 
-	newEnt = ResMngr_AllocateResource(&EntityMngr, sizeof(*newEnt));
+	newEnt = ResMngr_AllocateResource(&entity_manager, sizeof(*newEnt));
 
 	memset(newEnt, 0, sizeof(*newEnt));
 
@@ -139,7 +131,7 @@ void ClientEntity_delete(client_entity_t *toDelete, centity_t *owner)
 
 	if(toDelete->r.fmnodeinfo)
 	{
-		ResMngr_DeallocateResource(&FMNodeInfoMngr, toDelete->r.fmnodeinfo, sizeof(fmnodeinfo_t)*MAX_FM_MESH_NODES);	
+		ResMngr_DeallocateResource(&fm_node_info_manager, toDelete->r.fmnodeinfo, sizeof(fmnodeinfo_t)*MAX_FM_MESH_NODES);
 	}
 
 	if(owner && toDelete->refMask)
@@ -159,12 +151,12 @@ void ClientEntity_delete(client_entity_t *toDelete, centity_t *owner)
 
 	SLList_Des(&toDelete->msgQ.msgs);
 
-	ResMngr_DeallocateResource(&EntityMngr, toDelete, sizeof(*toDelete));	
+	ResMngr_DeallocateResource(&entity_manager, toDelete, sizeof(*toDelete));	
 }
 
 fmnodeinfo_t *FMNodeInfo_new()
 {
-	return ResMngr_AllocateResource(&FMNodeInfoMngr, sizeof(fmnodeinfo_t)*MAX_FM_MESH_NODES);
+	return ResMngr_AllocateResource(&fm_node_info_manager, sizeof(fmnodeinfo_t)*MAX_FM_MESH_NODES);
 }
 
 void AddEffectToList(client_entity_t **root, client_entity_t *fx)
@@ -238,9 +230,6 @@ void RemoveEffectTypeList(client_entity_t **root, FX_Type_t fx, centity_t *owner
 	}
 }
 
-vec3_t viewDir;
-float viewFOV;
-
 void PrepAddEffectsToView()
 {
 	refdef_t *refDef;
@@ -249,14 +238,14 @@ void PrepAddEffectsToView()
 
 	if(refDef->fov_x > refDef->fov_y)
 	{
-		viewFOV = cos(refDef->fov_x*0.5*ANGLE_TO_RAD*1.2);
+		view_fov = cos(refDef->fov_x*0.5*ANGLE_TO_RAD*1.2);
 	}
 	else
 	{
-		viewFOV = cos(refDef->fov_y*0.5*ANGLE_TO_RAD*1.2);
+		view_fov = cos(refDef->fov_y*0.5*ANGLE_TO_RAD*1.2);
 	}
 
-	AngleVectors (refDef->viewangles, viewDir, NULL, NULL);
+	AngleVectors (refDef->viewangles, view_dir, NULL, NULL);
 }
 
 int AddEffectsToView(client_entity_t **root, centity_t *owner)
@@ -300,7 +289,7 @@ int AddEffectsToView(client_entity_t **root, centity_t *owner)
 			{
 				continue;
 			}
-			dot = DotProduct(dir, viewDir);
+			dot = DotProduct(dir, view_dir);
 		}
 		else
 		{
@@ -315,7 +304,7 @@ int AddEffectsToView(client_entity_t **root, centity_t *owner)
 			{
 				if(ce_dlight->intensity > 0.0)
 				{
-					if((dot + (ce_dlight->intensity*ce_dlight->intensity)/(dist*300.0f)) > viewFOV) // 300.0 was determined by trial and error with intensities of 200 and 400
+					if((dot + (ce_dlight->intensity*ce_dlight->intensity)/(dist*300.0f)) > view_fov) // 300.0 was determined by trial and error with intensities of 200 and 400
 					{
 						dlight_t *dl;
 
@@ -334,7 +323,7 @@ int AddEffectsToView(client_entity_t **root, centity_t *owner)
 		}
 
 		// if no part of our radius is in the field of view or we aren't within the current PVS, cull us.
-		if(((dot + (current->radius/dist)) < viewFOV) || !(fxi.InCameraPVS(current->r.origin)) ||
+		if(((dot + (current->radius/dist)) < view_fov) || !(fxi.InCameraPVS(current->r.origin)) ||
 			// if we have an owner, and its server culled, and we want to check against it then do so
 			(owner && (owner->flags & CF_SERVER_CULLED) && (current->flags & CEF_CHECK_OWNER)))
 		{
