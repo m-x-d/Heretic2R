@@ -14,6 +14,7 @@
     <ClCompile Include="..\qcommon\anorms.c" />
     <ClCompile Include="..\qcommon\Message.c" />
     <ClCompile Include="..\qcommon\netmsg_read.c" />
+    <ClCompile Include="..\qcommon\turbsin.c" />
     <ClCompile Include="Ambient Effects.c" />
     <ClCompile Include="ce_DefaultMessageHandler.c" />
     <ClCompile Include="ce_DLight.c" />
@@ -106,6 +107,7 @@
     <ClInclude Include="..\qcommon\items.h" />
     <ClInclude Include="..\qcommon\LevelMaps.h" />
     <ClInclude Include="..\qcommon\Message.h" />
+    <ClInclude Include="..\qcommon\turbsin.h" />
     <ClInclude Include="..\qcommon\Vector.h" />
     <ClInclude Include="ambient effects.h" />
     <ClInclude Include="ce_DefaultMessageHandler.h" />

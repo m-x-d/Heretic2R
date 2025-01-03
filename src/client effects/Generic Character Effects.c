@@ -10,6 +10,7 @@
 #include "g_playstats.h"
 #include "Matrix.h"
 #include "Reference.h"
+#include "turbsin.h"
 
 extern void MakeBubble(vec3_t loc, client_entity_t *spawner);
 
@@ -348,8 +349,8 @@ void UpdateWaterParticles(client_entity_t *self)
 			continue;
 		}
 
-		addVal =  SINEAMT/128.0 * cl_turbsin[(int)((fxi.cl->time*0.001 + (self->origin[0] * 2.3 + p->origin[1])*.0015)*SINESCALE) & 255];
-		addVal += SINEAMT/256.0 * cl_turbsin[(int)((fxi.cl->time*0.002 + (self->origin[1] * 2.3 + p->origin[0])*.0015)*SINESCALE) & 255];
+		addVal =  SINEAMT/128.0 * turbsin[(int)((fxi.cl->time*0.001 + (self->origin[0] * 2.3 + p->origin[1])*.0015)*SINESCALE) & 255];
+		addVal += SINEAMT/256.0 * turbsin[(int)((fxi.cl->time*0.002 + (self->origin[1] * 2.3 + p->origin[0])*.0015)*SINESCALE) & 255];
 				
 		p->origin[2] += addVal;
 		p->duration = fxi.cl->time + 10000000;
@@ -520,8 +521,8 @@ int DirectionalUpdate (client_entity_t *self, centity_t *owner)
 
 	VectorAdd(owner->lerp_origin, self->startpos, self->r.origin);
 	
-	addVal =  SINEAMT/2.0 * cl_turbsin[(int)((fxi.cl->time*0.001 + (self->r.origin[0] * 2.3 + self->startpos[1])*.0015)*SINESCALE) & 255];
-	addVal += SINEAMT/4.0 * cl_turbsin[(int)((fxi.cl->time*0.002 + (self->r.origin[1] * 2.3 + self->startpos[0])*.0015)*SINESCALE) & 255];
+	addVal =  SINEAMT/2.0 * turbsin[(int)((fxi.cl->time*0.001 + (self->r.origin[0] * 2.3 + self->startpos[1])*.0015)*SINESCALE) & 255];
+	addVal += SINEAMT/4.0 * turbsin[(int)((fxi.cl->time*0.002 + (self->r.origin[1] * 2.3 + self->startpos[0])*.0015)*SINESCALE) & 255];
 			
 	self->r.origin[2] += addVal;
 

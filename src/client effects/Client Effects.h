@@ -40,8 +40,6 @@ extern void (*classStaticsInits[NUM_CLASSIDS])(void); //mxd
 // Initialisers for ClassStatics used by client-effects.
 extern void InitDebrisStatics(void);
 
-extern float cl_turbsin[];
-
 // Client-effect functions.
 extern void RegisterSounds(void); //mxd
 extern void RegisterModels(void); //mxd
