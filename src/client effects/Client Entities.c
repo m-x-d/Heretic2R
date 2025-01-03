@@ -191,117 +191,93 @@ void PrepAddEffectsToView(void)
 	AngleVectors(refdef->viewangles, view_dir, NULL, NULL);
 }
 
-int AddEffectsToView(client_entity_t **root, centity_t *owner)
+int AddEffectsToView(client_entity_t** root, centity_t* owner)
 {
-	client_entity_t *current;
-	vec3_t dir;
-	int	numFX = 0;
+	int	num_fx = 0;
 
-	cl_camera_under_surface = Cvar_Get( "cl_camera_under_surface", "0", 0 );
+	cl_camera_under_surface = Cvar_Get("cl_camera_under_surface", "0", 0);
 
 	assert(root);
 	assert(*root);
 
-	for(current = *root; current; current = current->next)
+	for (client_entity_t* current = *root; current != NULL; current = current->next)
 	{
 		float dot;
 		float dist;
 
 		current->flags |= CEF_CULLED;
-		// if we have a light, particles, a model, a potential routine that will change our think function, and we aren't disappeared, 
-		// determing if we should be culled or not.
-		if(current->dlight || current->p_root || current->r.model
-			|| (!(current->flags & (CEF_DISAPPEARED ))) || (current->flags & CEF_VIEWSTATUSCHANGED))
+
+		// If we have a light, particles, a model, a potential routine that will change our think function, and we aren't disappeared, 
+		// determine if we should be culled or not.
+		if (current->dlight != NULL || current->p_root != NULL || current->r.model != NULL || !(current->flags & CEF_DISAPPEARED) || (current->flags & CEF_VIEWSTATUSCHANGED))
 		{
-			// do this here since we do have an owner, and most probably we are tied to its origin, and we need that to do the proper culling routines
-			if(owner && current->AddToView)
-			{
+			// Do this here since we do have an owner, and most probably we are tied to its origin, and we need that to do the proper culling routines.
+			if (owner != NULL && current->AddToView != NULL)
 				current->AddToView(current, owner);
-			}
 
+			vec3_t dir;
 			VectorSubtract(current->r.origin, fxi.cl->refdef.vieworg, dir);
+			current->r.depth = VectorNormalize(dir);
+			dist = current->r.depth;
 
-			current->r.depth = dist = VectorNormalize(dir);
-
-			if(dist > r_farclipdist->value)
-			{
+			if (dist > r_farclipdist->value)
 				continue;
-			}
 
-			if(r_detail->value == DETAIL_LOW && dist < r_nearclipdist->value && !current->p_root && !current->dlight)//not a particle thing and not a dlight thing
-			{
+			if ((int)r_detail->value == DETAIL_LOW && dist < r_nearclipdist->value && current->p_root == NULL && current->dlight == NULL) // Not a particle thing and not a dlight thing.
 				continue;
-			}
+
 			dot = DotProduct(dir, view_dir);
 		}
 		else
 		{
-			continue;	// has nothing to add to view
+			continue; // Has nothing to add to view.
 		}
 
-		if(current->dlight)
+		if (current->dlight != NULL)
 		{
-			CE_DLight_t *ce_dlight = current->dlight;
+			const CE_DLight_t* ce_dlight = current->dlight;
 
-			if (fxi.cls->r_numdlights < MAX_DLIGHTS)
+			if (fxi.cls->r_numdlights < MAX_DLIGHTS && ce_dlight->intensity > 0.0f &&
+				dot + (ce_dlight->intensity * ce_dlight->intensity) / (dist * 300.0f) > view_fov) // 300.0 was determined by trial and error with intensities of 200 and 400.
 			{
-				if(ce_dlight->intensity > 0.0)
-				{
-					if((dot + (ce_dlight->intensity*ce_dlight->intensity)/(dist*300.0f)) > view_fov) // 300.0 was determined by trial and error with intensities of 200 and 400
-					{
-						dlight_t *dl;
+				dlight_t* dl = &fxi.cls->r_dlights[fxi.cls->r_numdlights++];
 
-						dl = &fxi.cls->r_dlights[fxi.cls->r_numdlights++];
-
-						VectorCopy (current->r.origin, dl->origin);
-
-						dl->intensity = ce_dlight->intensity;
-
-						dl->color.r = ce_dlight->color.r;
-						dl->color.g = ce_dlight->color.g;
-						dl->color.b = ce_dlight->color.b;
-					}
-				}
+				VectorCopy(current->r.origin, dl->origin);
+				dl->intensity = ce_dlight->intensity;
+				dl->color.r = ce_dlight->color.r;
+				dl->color.g = ce_dlight->color.g;
+				dl->color.b = ce_dlight->color.b;
 			}
 		}
 
-		// if no part of our radius is in the field of view or we aren't within the current PVS, cull us.
-		if(((dot + (current->radius/dist)) < view_fov) || !(fxi.InCameraPVS(current->r.origin)) ||
-			// if we have an owner, and its server culled, and we want to check against it then do so
-			(owner && (owner->flags & CF_SERVER_CULLED) && (current->flags & CEF_CHECK_OWNER)))
+		// If no part of our radius is in the field of view or we aren't within the current PVS, cull us.
+		if (dot + (current->radius / dist) < view_fov || !fxi.InCameraPVS(current->r.origin) ||
+			// If we have an owner, and its server culled, and we want to check against it then do so.
+			(owner != NULL && (owner->flags & CF_SERVER_CULLED) && (current->flags & CEF_CHECK_OWNER)))
 		{
 			continue;
 		}
 
-		// we do this here cos we don't have an owner - only do the update if we haven't already been culled.
-		if(!owner && current->AddToView)
-		{
+		// We do this here because we don't have an owner - only do the update if we haven't already been culled.
+		if (owner == NULL && current->AddToView != NULL)
 			current->AddToView(current, owner);
-		}
 
-		++numFX;
+		num_fx++;
 		current->flags &= ~CEF_CULLED;
 
-		if(current->p_root)	// add any particles
-		{
+		if (current->p_root != NULL) // Add any particles.
 			numrenderedparticles += AddParticlesToView(current);
-		}
 
-		if(!(current->flags & (CEF_NO_DRAW | CEF_DISAPPEARED)))
+		if (!(current->flags & (CEF_NO_DRAW | CEF_DISAPPEARED)))
 		{
-			if(current->alpha < 0)
-			{	// wacky all colors at minimum, but drawn at max instead for addative transparent sprites
-				current->alpha = 0.0F;
-			}
+			// Wacky all colors at minimum, but drawn at max instead for additive transparent sprites.
+			current->alpha = max(0.0f, current->alpha);
+			current->r.color.a = (byte)Q_ftol(current->alpha * 255.0f);
 
-			current->r.color.a = Q_ftol(current->alpha * 255.0);
-
-			if(current->r.color.a && (current->r.scale > 0.0))
+			if (current->r.color.a > 0 && current->r.scale > 0.0f)
 			{
-				if(!AddEntityToView(&current->r))
-				{
+				if (!AddEntityToView(&current->r))
 					current->flags |= CEF_DROPPED;
-				}
 			}
 			else
 			{
@@ -309,7 +285,8 @@ int AddEffectsToView(client_entity_t **root, centity_t *owner)
 			}
 		}
 	}
-	return numFX;
+
+	return num_fx;
 }
 
 void AddEffect(centity_t *owner, client_entity_t *fx)
