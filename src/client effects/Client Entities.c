@@ -307,85 +307,63 @@ void AddEffect(centity_t* owner, client_entity_t* fx)
 	fx->r.cl_scale = fx->r.scale;
 }
 
-#define NUM_TRACES 100		// I really, really hope we don't ever see more than this
-
-int UpdateEffects(client_entity_t **root, centity_t *owner)
+int UpdateEffects(client_entity_t** root, centity_t* owner)
 {
-	extern	int ParticleUpdateTime;
+#define NUM_TRACES	100 // I really, really hope we don't ever see more than this.
 
-	client_entity_t **prev;
-	client_entity_t *current;
-	entity_t		*r;
-	float			d_time = fxi.cls->frametime;
-	float			d_time2 = d_time * d_time * 0.5;
-	static trace_t	traces[NUM_TRACES];
-	static trace_t	traces2[NUM_TRACES];
-	static qboolean	useOtherTraces = false;
-	trace_t			*trace;
-	int				curTrace = 0;
-	int				numFX = 0;
-	int				curTime = fxi.cl->time;
+	static trace_t traces[NUM_TRACES];
+	static trace_t traces2[NUM_TRACES];
+	static qboolean use_other_traces = false;
+
+	client_entity_t** prev;
+	client_entity_t* current;
+
+	const float d_time = fxi.cls->frametime;
+	const float d_time2 = d_time * d_time * 0.5f;
+	int cur_trace = 0;
+	int num_fx = 0;
+	const int cur_time = fxi.cl->time;
 
 	assert(root);
 	assert(*root);
 
-	// If the world is frozen then add the particles, just don't update the world time.
-	// Always update the particle timer
+	// If the world is frozen then add the particles, just don't update the world time. Always update the particle timer.
 	if (!fx_FreezeWorld)
-	{
 		ParticleUpdateTime = fxi.cl->time;
-	}
 
-	if(!useOtherTraces)
+	trace_t* trace = (use_other_traces ? traces2 : traces);
+	use_other_traces = !use_other_traces;
+
+	for (prev = root, current = *root; current != NULL; current = current->next)
 	{
-		trace = traces;
-	}
-	else
-	{
-		trace = traces2;
-	}
+		num_fx++;
 
-	useOtherTraces = !useOtherTraces;
-
-	for(prev = root, current = *root; current; current = current->next)
-	{
-		numFX++;
-
-		if(current->msgHandler)
-		{
+		if (current->msgHandler != NULL)
 			ProcessMessages(current);
-		}
 
-		if(current->Update)
+		if (current->Update != NULL && current->nextThinkTime <= cur_time)
 		{
-			if(current->nextThinkTime <= curTime)
+			// Only think when not culled and not think culled.
+			if (!((current->flags & CEF_VIEWSTATUSCHANGED) && (current->flags & CEF_CULLED)) && !current->Update(current, owner))
 			{
-				// Only think when not culled and not think culled
-				if(!((current->flags & CEF_VIEWSTATUSCHANGED) && (current->flags & CEF_CULLED)))
-				{
-					if(!current->Update(current, owner))
-					{
-						RemoveEffectFromList(prev, owner);
-						// current = current->next is still valid in the for loop.
-						// a deallocated resource is guaranteed not to be changed until it is
-						// reallocated, when the mananger is not shared between threads
-						continue;
-					}
-				}
-				assert(current->updateTime > 16);
-				current->nextThinkTime = curTime + current->updateTime;
+				RemoveEffectFromList(prev, owner);
+
+				// current = current->next is still valid in the for loop.
+				// A deallocated resource is guaranteed not to be changed until it is reallocated,
+				// when the mananger is not shared between threads.
+				continue;
 			}
+
+			assert(current->updateTime > 16);
+			current->nextThinkTime = cur_time + current->updateTime;
 		}
 
-		r = &current->r;
+		entity_t* r = &current->r;
 
-		if(!(current->flags & (CEF_NO_DRAW|CEF_DISAPPEARED)))
+		if (!(current->flags & (CEF_NO_DRAW | CEF_DISAPPEARED)))
 		{
-			float d_size;
-
-			d_size = d_time * current->d_scale;
-
-			current->radius *= (1 + d_size/r->scale);
+			const float d_size = d_time * current->d_scale;
+			current->radius *= (1.0f + d_size / r->scale);
 
 			r->scale += d_size;
 
@@ -394,125 +372,115 @@ int UpdateEffects(client_entity_t **root, centity_t *owner)
 			{
 				// Either copy the scale to scale2, or use the d_scale2.
 				if (current->flags & CEF_USE_SCALE2)
-				{	// Use the second scale
-					d_size = d_time * current->d_scale2;
-					r->scale2 += d_size;
-				}
+					r->scale2 += d_time * current->d_scale2; // Use the second scale
 				else
-				{	// Otherwise the second scale is copied from the first.
-					r->scale2 = r->scale;
-				}
+					r->scale2 = r->scale; // Otherwise the second scale is copied from the first.
 			}
 
 			current->alpha += d_time * current->d_alpha;
-			
-			if (current->d_alpha > 0 && current->alpha >= 1.0)
+
+			if (current->d_alpha > 0.0f && current->alpha >= 1.0f)
 			{
-				current->alpha = 0.99;
+				current->alpha = 0.99f;
+
 				if (current->flags & CEF_PULSE_ALPHA)
-				{	// If these effects are increasing alpha, reverse and decrease with the PULSE_ALPHA flag.
-					current->d_alpha = -current->d_alpha;
-				}
+					current->d_alpha = -current->d_alpha; // If these effects are increasing alpha, reverse and decrease with the PULSE_ALPHA flag.
 				else
-				{
-					current->d_alpha = 0.0;
-				}
+					current->d_alpha = 0.0f;
 			}
 		}
 
-		if(current->dlight)
-		{
+		if (current->dlight != NULL)
 			current->dlight->intensity += (d_time * current->dlight->d_intensity);
-		}
-		if(current->p_root)
-		{
-			numprocessedparticles += UpdateParticles(current);
-		}
 
-		if(!(current->flags & CEF_NOMOVE))
+		if (current->p_root != NULL)
+			numprocessedparticles += UpdateParticles(current);
+
+		if (!(current->flags & CEF_NOMOVE) && (owner == NULL || (current->flags & CEF_DONT_LINK)))
 		{
-			if(!owner || (current->flags&CEF_DONT_LINK))
+			if (current->flags & CEF_CLIP_TO_WORLD)
 			{
-				if(current->flags & CEF_CLIP_TO_WORLD)
+				if (cur_trace < NUM_TRACES - 1) // Leave one at the end to continue checking collisions.
 				{
-					if(curTrace < NUM_TRACES - 1) // leave one at the end to continue checking collisions
+					if (Physics_MoveEnt(current, d_time, d_time2, trace))
 					{
-						if(Physics_MoveEnt(current, d_time, d_time2, trace))
-						{	// collided with something
-							++trace;
-							++curTrace;
-						}
+						// Collided with something.
+						trace++;
+						cur_trace++;
+					}
+				}
+				else
+				{
+					Com_DPrintf("Max Client Collisions exceeded by %d\n", cur_trace - (NUM_TRACES - 1));
+					cur_trace++;
+				}
+			}
+			else
+			{
+				if (current->r.spriteType != SPRITE_LINE)
+				{
+					// Update origin velocity based on acceleration.
+					for (int i = 0; i < 3; i++)
+					{
+						r->origin[i] += current->velocity[i] * d_time + current->acceleration[i] * d_time2;
+						current->velocity[i] += current->acceleration[i] * d_time;
+					}
+				}
+				else
+				{
+					// Update the startpos and endpos velocity, then worry about the entity origin.
+					vec3_t dpos;
+					vec3_t dvel;
+					vec3_t d2vel;
+
+					VectorScale(current->velocity, d_time, dpos);		// velocity * dt
+					VectorScale(current->acceleration, d_time, dvel);	// acceleration * dt
+					VectorScale(current->acceleration, d_time2, d2vel);	// acceleration * dt ^ 2
+
+					VectorAdd(r->startpos, dpos, r->startpos);
+					VectorAdd(r->startpos, d2vel, r->startpos); // Calculate change in startpos.
+					VectorAdd(current->velocity, dvel, current->velocity); // Calculate change in velocity.
+
+					// First, if we don't have auto origin flagged, we want to apply the velocity & such to the origin.
+					if (!(current->flags & CEF_AUTO_ORIGIN))
+					{
+						VectorAdd(r->origin, dpos, r->origin);
+						VectorAdd(r->origin, d2vel, r->origin); // Calculate change in origin. Sync with startpos.
+					}
+					// Else wait until the endpos is calculated, then update the origin.
+
+					// Now, check to see if the endpos should use the same information, or maintain its own velocity.
+					if (!(current->flags & CEF_USE_VELOCITY2))
+					{
+						VectorAdd(r->endpos, dpos, r->endpos);
+						VectorAdd(r->endpos, d2vel, r->endpos); // Calculate change in endpos.
 					}
 					else
 					{
-						Com_DPrintf("Max Client Collisions exceeded by %d\n", curTrace - (NUM_TRACES - 1));
-						++curTrace;
+						// Figure out totally separate changes.
+						VectorScale(current->velocity2, d_time, dpos);			// velocity2 * dt
+						VectorScale(current->acceleration2, d_time, dvel);		// acceleration2 * dt
+						VectorScale(current->acceleration2, d_time2, d2vel);	// acceleration2 * dt ^ 2
+
+						VectorAdd(r->endpos, dpos, r->endpos);
+						VectorAdd(r->endpos, d2vel, r->endpos); // Calculate change in endpos.
+						VectorAdd(current->velocity2, dvel, current->velocity2); // Calculate change in velocity2.
 					}
-				}
-				else
-				{
-					if (current->r.spriteType != SPRITE_LINE)
-					{	// Update origin velocity based on acceleration.
-						r->origin[0] += current->velocity[0] * d_time + current->acceleration[0] * d_time2;
-						r->origin[1] += current->velocity[1] * d_time + current->acceleration[1] * d_time2;
-						r->origin[2] += current->velocity[2] * d_time + current->acceleration[2] * d_time2;
 
-						current->velocity[0] += current->acceleration[0] * d_time;
-						current->velocity[1] += current->acceleration[1] * d_time;
-						current->velocity[2] += current->acceleration[2] * d_time;
-					}
-					else 
-					{	// Update the startpos and endpos velocity, then worry about the entity origin.
-						vec3_t	dpos, dvel, d2vel;
-
-						VectorScale(current->velocity, d_time, dpos);		// velocity*dt
-						VectorScale(current->acceleration, d_time, dvel);	// acceleration*dt
-						VectorScale(current->acceleration, d_time2, d2vel);	// acceleration*dt^2
-
-						VectorAdd(r->startpos, dpos, r->startpos);
-						VectorAdd(r->startpos, d2vel, r->startpos);					// Calculate change in startpos
-						VectorAdd(current->velocity, dvel, current->velocity);	// Calculate change in velocity
-
-						// First, if we don't have auto origin flagged, we want to apply the velocity & such to the origin.
-						if (!(current->flags & CEF_AUTO_ORIGIN))
-						{
-							VectorAdd(r->origin, dpos, r->origin);
-							VectorAdd(r->origin, d2vel, r->origin);		// Calculate change in origin.  Sync with startpos.
-						}
-						//	else wait until the endpos is calculated, then update the origin.
-
-						// Now, check to see if the endpos should use the same information, or maintain its own velocity.
-						if (!(current->flags & CEF_USE_VELOCITY2))
-						{
-							VectorAdd(r->endpos, dpos, r->endpos);
-							VectorAdd(r->endpos, d2vel, r->endpos);					// Calculate change in endpos
-						}
-						else
-						{	// Figure out totally seperate changes
-							VectorScale(current->velocity2, d_time, dpos);		// velocity2*dt
-							VectorScale(current->acceleration2, d_time, dvel);	// acceleration2*dt
-							VectorScale(current->acceleration2, d_time2, d2vel);	// acceleration2*dt^2
-
-							VectorAdd(r->endpos, dpos, r->endpos);
-							VectorAdd(r->endpos, d2vel, r->endpos);					// Calculate change in endpos
-							VectorAdd(current->velocity2, dvel, current->velocity2);	// Calculate change in velocity2
-						}
-
-						// Now, if the AUTOORIGIN flag was set, then we haven't updated the origin yet.  Do it now.
-						if (current->flags & CEF_AUTO_ORIGIN)
-						{
-							VectorAdd(r->startpos, r->endpos, r->origin);		// Get a midpoint by
-							VectorScale(r->origin, 0.5, r->origin);				// averaging out the startpos and endpos.
-						}
+					// Now, if the AUTOORIGIN flag was set, then we haven't updated the origin yet. Do it now.
+					if (current->flags & CEF_AUTO_ORIGIN)
+					{
+						VectorAdd(r->startpos, r->endpos, r->origin); // Get a midpoint by averaging out the startpos and endpos.
+						VectorScale(r->origin, 0.5f, r->origin);
 					}
 				}
 			}
 		}
 
-		prev = &(*prev)->next; 
+		prev = &(*prev)->next;
 	}
 
-	return numFX;
+	return num_fx;
 }
 
 qboolean AddEntityToView(entity_t *ent)
