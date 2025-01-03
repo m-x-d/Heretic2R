@@ -26,8 +26,7 @@ void ReleaseMsgMngr(void)
 
 void QPostMessage(client_entity_t* to, const CE_MsgID_t ID, char* format, ...)
 {
-	if (to->msgHandler == NULL)	//mxd. Isn't supposed to happen.
-		return;
+	assert(to->msgHandler); //mxd. Changed from check to assert.
 
 	CE_Message_t* msg = ResMngr_AllocateResource(&ce_messages_manager, sizeof(CE_Message_t));
 	SinglyLinkedList_t* parms = &msg->parms;
@@ -49,22 +48,16 @@ void QPostMessage(client_entity_t* to, const CE_MsgID_t ID, char* format, ...)
 	QueueMessage(&to->msgQ, msg);
 }
 
-int ParseMsgParms(CE_Message_t *this, char *format, ...)
+int ParseMsgParms(CE_Message_t* this, char* format, ...)
 {
-	SinglyLinkedList_t *parms;
-	va_list marker;
-	int args_filled;
-
 	assert(this);
 
-	parms = &this->parms;
-
+	SinglyLinkedList_t* parms = &this->parms;
 	SLList_Front(parms);
 
+	va_list marker;
 	va_start(marker, format);
-
-	args_filled = GetParms(parms, format, marker);
-
+	const int args_filled = GetParms(parms, format, marker);
 	va_end(marker);
 
 	return args_filled;
