@@ -23,26 +23,26 @@ static ResourceManager_t fm_node_info_manager;
 static vec3_t view_dir;
 static float view_fov;
 
-void InitEntityMngr()
+void InitEntityMngr(void)
 {
 #define ENTITY_BLOCK_SIZE 196
 
 	ResMngr_Con(&entity_manager, sizeof(client_entity_t), ENTITY_BLOCK_SIZE);
 }
 
-void ReleaseEntityMngr()
+void ReleaseEntityMngr(void)
 {
 	ResMngr_Des(&entity_manager);
 }
 
-void InitFMNodeInfoMngr()
+void InitFMNodeInfoMngr(void)
 {
 #define FMNODEINFO_BLOCK_SIZE 16
 
-	ResMngr_Con(&fm_node_info_manager, sizeof(fmnodeinfo_t)*MAX_FM_MESH_NODES, FMNODEINFO_BLOCK_SIZE);
+	ResMngr_Con(&fm_node_info_manager, sizeof(fmnodeinfo_t) * MAX_FM_MESH_NODES, FMNODEINFO_BLOCK_SIZE);
 }
 
-void ReleaseFMNodeInfoMngr()
+void ReleaseFMNodeInfoMngr(void)
 {
 	ResMngr_Des(&fm_node_info_manager);
 }
