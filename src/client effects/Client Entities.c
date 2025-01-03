@@ -473,40 +473,30 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 	return num_fx;
 }
 
-qboolean AddEntityToView(entity_t *ent)
+qboolean AddEntityToView(entity_t* ent)
 {
-	if (!ent->model || !*ent->model)
-	{
-		Com_DPrintf ("AddEntityToView: NULL Model\n");
-	}
-	if((ent->flags & RF_TRANS_ADD) && (ent->flags & RF_ALPHA_TEXTURE))
-	{
-		Com_DPrintf ("AddEntityToView: Cannot have additive alpha mapped image. UNSUPPORTED !!\n");
-	}
+	if (ent->model == NULL || *ent->model == NULL)
+		Com_DPrintf("AddEntityToView: NULL Model\n");
 
-	if((ent->flags & RF_TRANS_ANY) || (ent->color.a != 255))
+	if ((ent->flags & RF_TRANS_ADD) && (ent->flags & RF_ALPHA_TEXTURE))
+		Com_DPrintf("AddEntityToView: Cannot have additive alpha mapped image. UNSUPPORTED!!\n");
+
+	if ((ent->flags & RF_TRANS_ANY) || ent->color.a != 255)
 	{
-		if(fxi.cls->r_num_alpha_entities < MAX_ALPHA_ENTITIES)
+		if (fxi.cls->r_num_alpha_entities < MAX_ALPHA_ENTITIES)
 		{
 			fxi.cls->r_alpha_entities[fxi.cls->r_num_alpha_entities++] = ent;
-		}
-		else
-		{
-			return false;	
+			return true;
 		}
 	}
 	else
 	{
-		if(fxi.cls->r_numentities < MAX_ENTITIES)
+		if (fxi.cls->r_numentities < MAX_ENTITIES)
 		{
 			fxi.cls->r_entities[fxi.cls->r_numentities++] = ent;
-		}
-		else
-		{
-			return false;	
+			return true;
 		}
 	}
 
-	return true;
+	return false;
 }
-// end
