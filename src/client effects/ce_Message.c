@@ -12,14 +12,14 @@
 
 static ResourceManager_t ce_messages_manager;
 
-void InitMsgMngr()
+void InitMsgMngr(void)
 {
-	const int MESSAGE_BLOCK_SIZE = 256;
+#define MESSAGE_BLOCK_SIZE	256
 
 	ResMngr_Con(&ce_messages_manager, sizeof(CE_Message_t), MESSAGE_BLOCK_SIZE);
 }
 
-void ReleaseMsgMngr()
+void ReleaseMsgMngr(void)
 {
 	ResMngr_Des(&ce_messages_manager);
 }
