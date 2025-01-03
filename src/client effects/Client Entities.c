@@ -133,20 +133,15 @@ void AddEffectToList(client_entity_t** root, client_entity_t* fx)
 	*root = fx;
 }
 
-void RemoveEffectFromList(client_entity_t **root, centity_t *owner)
+void RemoveEffectFromList(client_entity_t** root, const centity_t* owner)
 {
-	client_entity_t *toFree;
-
 	assert(root);
 	assert(*root);
 
-	toFree = *root;
+	client_entity_t* to_free = *root;
+	*root = to_free->next;
 
-	assert(toFree);
-
-	*root = toFree->next;
-
-	ClientEntity_delete(toFree, owner);
+	ClientEntity_delete(to_free, owner);
 }
 
 void RemoveEffectList(client_entity_t **root)
