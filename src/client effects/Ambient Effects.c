@@ -1,46 +1,43 @@
+//
+// Ambient Effects.c
+//
+// Copyright 1998 Raven Software
+//
+
+#include "Ambient Effects.h"
 #include "Client Effects.h"
-#include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Vector.h"
-#include "random.h"
+#include "Random.h"
 
-void DoWaterSplash(client_entity_t *effect, paletteRGBA_t color, int count)
+void DoWaterSplash(client_entity_t* effect, const paletteRGBA_t color, int count)
 {
-	client_particle_t	*p;
-	int					i;
+	count = min(500, count);
 
-	if (count>500)
-		count=500;
-	for(i = 0; i < count; i++)
+	for (int i = 0; i < count; i++)
 	{
-		p = ClientParticle_new(PART_16x16_WATERDROP, color, 1000);
+		client_particle_t* p = ClientParticle_new(PART_16x16_WATERDROP, color, 1000);
 
 		p->d_alpha = 0;
-		p->d_scale = -1.0;
-		p->velocity[0] = flrand(-20.0F, 20.0F);
-		p->velocity[1] = flrand(-20.0F, 20.0F);
-		p->velocity[2] = flrand(20.0F, 30.0F);
+		p->d_scale = -1.0f;
+		p->velocity[0] = flrand(-20.0f, 20.0f);
+		p->velocity[1] = flrand(-20.0f, 20.0f);
+		p->velocity[2] = flrand(20.0f, 30.0f);
 
 		AddParticleToList(effect, p);
 	}
 }
 
-void WaterSplash(centity_t *owner, int type, int flags, vec3_t origin)
+void WaterSplash(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	int					cnt;
-	client_entity_t		*effect;
-	paletteRGBA_t		color;
-
+	int cnt;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPLASH].formatString, &cnt);
 
-	effect = ClientEntity_new(type, flags, origin, NULL, 500);
-	effect->flags |= CEF_NO_DRAW | CEF_NOMOVE; 
+	client_entity_t* effect = ClientEntity_new(type, flags, origin, NULL, 500);
+	effect->flags |= CEF_NO_DRAW | CEF_NOMOVE;
 
 	AddEffect(NULL, effect);
 
-	color.c = 0xffffffff;
+	const paletteRGBA_t color = { .c = 0xffffffff };
 	DoWaterSplash(effect, color, cnt);
 }
 
