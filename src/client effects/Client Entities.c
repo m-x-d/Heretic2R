@@ -47,74 +47,55 @@ void ReleaseFMNodeInfoMngr(void)
 	ResMngr_Des(&fm_node_info_manager);
 }
 
-client_entity_t *ClientEntity_new(int type, int flags, vec3_t origin, vec3_t direction, int nextThinkTime)
+client_entity_t* ClientEntity_new(const int type, const int flags, vec3_t origin, vec3_t direction, const int next_think_time)
 {
-	client_entity_t *newEnt;
+	client_entity_t* new_ent = ResMngr_AllocateResource(&entity_manager, sizeof(*new_ent));
 
-	newEnt = ResMngr_AllocateResource(&entity_manager, sizeof(*newEnt));
+	memset(new_ent, 0, sizeof(*new_ent));
 
-	memset(newEnt, 0, sizeof(*newEnt));
+	SLList_DefaultCon(&new_ent->msgQ.msgs);
 
-	SLList_DefaultCon(&newEnt->msgQ.msgs);
+	VectorCopy(origin, new_ent->r.origin);
+	VectorCopy(origin, new_ent->origin);
 
-	VectorCopy(origin, newEnt->r.origin);
-	VectorCopy(origin, newEnt->origin);
-
-	if(direction)
+	if (direction != NULL)
 	{
-		VectorCopy(direction, newEnt->direction);
+		VectorCopy(direction, new_ent->direction);
 
-		if(newEnt->direction[2] == 0)  
-		{	// vertical wall
-			newEnt->up[0] = 0;
-			newEnt->up[1] = 0;
-			newEnt->up[2] = 1;
-		}
-		else if(newEnt->direction[0] == 0 && newEnt->direction[1] == 0)
-		{	//ceiling, floor
-			newEnt->up[0] = 1;
-			newEnt->up[1] = 0;
-			newEnt->up[2] = 0;
-		}
+		if (new_ent->direction[2] == 0.0f)
+			VectorSet(new_ent->up, 0.0f, 0.0f, 1.0f); // Vertical wall.
+		else if (new_ent->direction[0] == 0.0f && new_ent->direction[1] == 0.0f)
+			VectorSet(new_ent->up, 1.0f, 0.0f, 0.0f); // Ceiling or floor.
 		else
-		{
-			PerpendicularVector(newEnt->up, newEnt->direction);
-		}
+			PerpendicularVector(new_ent->up, new_ent->direction);
 	}
 	else
 	{
-		newEnt->direction[0] = 1.0;
-		newEnt->direction[1] = 0.0;
-		newEnt->direction[2] = 0.0;
-
-		newEnt->up[0] = 0;
-		newEnt->up[1] = 0;
-		newEnt->up[2] = 1;
+		VectorSet(new_ent->direction, 1.0f, 0.0f, 0.0f);
+		VectorSet(new_ent->up, 0.0f, 0.0f, 1.0f);
 	}
 
-	// Currently either AnglesFromDirAndUp or PerpendicularVector isn't working properly
-	// This will need to be fixed at some point.
-	AnglesFromDirI(newEnt->direction, newEnt->r.angles);
-//	AnglesFromDirAndUp(newEnt->direction, newEnt->up, newEnt->r.angles);
+	//TODO: currently either AnglesFromDirAndUp or PerpendicularVector isn't working properly. This will need to be fixed at some point.
+	AnglesFromDirI(new_ent->direction, new_ent->r.angles);
 
-	newEnt->r.scale = 1.0F;
-	newEnt->r.color.c = 0xffffffff;
-	newEnt->alpha = 1.0F;
-	newEnt->radius = 1.0F;
-	newEnt->effectID = type;
+	new_ent->r.scale = 1.0f;
+	new_ent->r.color.c = 0xffffffff;
+	new_ent->alpha = 1.0f;
+	new_ent->radius = 1.0f;
+	new_ent->effectID = type;
 
-	newEnt->flags = flags | CEF_CULLED;		//added this cos we need to assume every client effect is culled before we do addeffectstoview for the first time
-											// to make sure the viewstatuschanged fires.
+	// Added this because we need to assume every client effect is culled before we do AddEffectsToView
+	// for the first time to make sure the ViewStatusChanged fires.
+	new_ent->flags = flags | CEF_CULLED;
 
-//	assert(nextThinkTime > 16);
-	newEnt->updateTime = nextThinkTime;
-	newEnt->nextThinkTime = fxi.cl->time + nextThinkTime;
-	newEnt->startTime = fxi.cl->time;
-	newEnt->Update = RemoveSelfAI;
-	newEnt->r.rootJoint = NULL_ROOT_JOINT;
+	new_ent->updateTime = next_think_time;
+	new_ent->nextThinkTime = fxi.cl->time + next_think_time;
+	new_ent->startTime = fxi.cl->time;
+	new_ent->Update = RemoveSelfAI;
+	new_ent->r.rootJoint = NULL_ROOT_JOINT;
+	new_ent->r.swapFrame = -1;
 
-	newEnt->r.swapFrame = -1;
-	return newEnt;
+	return new_ent;
 }
 
 void ClientEntity_delete(client_entity_t *toDelete, centity_t *owner)
