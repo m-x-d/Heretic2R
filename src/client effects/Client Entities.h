@@ -152,16 +152,17 @@ extern CE_ClassStatics_t ce_class_statics[NUM_CLASSIDS];
 
 extern void InitEntityMngr(void); //mxd
 extern void ReleaseEntityMngr(void); //mxd
-extern client_entity_t* ClientEntity_new(int type, int flags, vec3_t origin, vec3_t direction, int nextThinkTime);
+extern client_entity_t* ClientEntity_new(int type, int flags, vec3_t origin, vec3_t direction, int next_think_time);
 
 extern void InitFMNodeInfoMngr(void); //mxd
 extern void ReleaseFMNodeInfoMngr(void); //mxd
 extern fmnodeinfo_t* FMNodeInfo_new(void);
 
 extern void AddEffectToList(client_entity_t** root, client_entity_t* fx);
+extern void RemoveEffectFromList(client_entity_t** root, const centity_t* owner); //mxd
 extern void RemoveEffectList(client_entity_t** root);
 extern void RemoveOwnedEffectList(centity_t* owner);
-extern void RemoveEffectTypeList(client_entity_t** root, FX_Type_t fx, centity_t* owner);
+extern void RemoveEffectTypeList(client_entity_t** root, FX_Type_t fx, const centity_t* owner);
 extern void PrepAddEffectsToView(void);
 extern int AddEffectsToView(client_entity_t** root, centity_t* owner);
 extern void AddEffect(centity_t* owner, client_entity_t* fx);
