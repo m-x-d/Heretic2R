@@ -281,7 +281,7 @@ typedef struct paletteRGB_s
 
 #pragma region ========================== Additional info for flex models with mesh nodes ==========================
 
-#define MAX_FM_MESH_NODES	16 // Also defined in ref_gl/fmodel.h
+#define MAX_FM_MESH_NODES	16
 
 typedef struct
 {
@@ -292,12 +292,12 @@ typedef struct
 } fmnodeinfo_t;
 
 // Flags
-#define FMNI_USE_FRAME		(1<<0)
-#define FMNI_USE_COLOR		(1<<1)
-#define FMNI_USE_SKIN		(1<<2)
-#define FMNI_NO_LERP		(1<<3)
-#define FMNI_NO_DRAW		(1<<4)
-#define FMNI_USE_REFLECT	(1<<5)
+#define FMNI_USE_FRAME			0x1		//TODO: unused
+#define FMNI_USE_COLOR			0x2
+#define FMNI_USE_SKIN			0x4
+#define FMNI_NO_LERP			0x8		//TODO: unused
+#define FMNI_NO_DRAW			0x10
+#define FMNI_USE_REFLECT		0x20	//TODO: checked, but never set?
 
 #pragma endregion
 

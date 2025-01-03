@@ -13,7 +13,6 @@
 #define	MAX_FM_TRIANGLES	2048
 #define MAX_FM_VERTS		2048
 #define MAX_FM_FRAMES		2048
-//#define MAX_FM_MESH_NODES	16 //mxd. Defined in game/qshared.h
 
 //#define SKINPAGE_WIDTH		640
 #define SKINPAGE_HEIGHT		480
