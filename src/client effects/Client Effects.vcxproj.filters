@@ -30,12 +30,6 @@
     <ClCompile Include="Client Entities.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="Font1.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="Font2.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="Generic Character Effects.c">
       <Filter>src</Filter>
     </ClCompile>

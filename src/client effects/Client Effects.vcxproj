@@ -21,8 +21,6 @@
     <ClCompile Include="ce_Message.c" />
     <ClCompile Include="Client Effects.c" />
     <ClCompile Include="Client Entities.c" />
-    <ClCompile Include="Font1.c" />
-    <ClCompile Include="Font2.c" />
     <ClCompile Include="fx_AmmoPickup.c" />
     <ClCompile Include="fx_animate.c" />
     <ClCompile Include="fx_assassin.c" />
