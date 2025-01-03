@@ -35,7 +35,7 @@ typedef struct ClientEffect_s
 
 extern ClientEffect_t clientEffectSpawners[];
 
-extern void (*classStaticsInits[NUM_CLASSIDS])(void); //mxd
+extern void (*ce_class_statics_inits[NUM_CLASSIDS])(void); //mxd
 
 // Initialisers for ClassStatics used by client-effects.
 extern void InitDebrisStatics(void);

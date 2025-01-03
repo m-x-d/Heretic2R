@@ -154,9 +154,9 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ NULL,								NULL,					NULL		},	// FX_CROSSHAIR
 };	
 
-CE_ClassStatics_t classStatics[NUM_CLASSIDS];
+CE_ClassStatics_t ce_class_statics[NUM_CLASSIDS];
 
-void (*classStaticsInits[NUM_CLASSIDS])(void) = //TODO: rename or remove.
+void (*ce_class_statics_inits[NUM_CLASSIDS])(void) =
 {
 	InitDebrisStatics
 };

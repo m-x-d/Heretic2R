@@ -95,7 +95,7 @@ static void Init(void)
 	InitDLightMngr();
 
 	for (int i = 0; i < NUM_CLASSIDS; i++)
-		classStaticsInits[i]();
+		ce_class_statics_inits[i]();
 
 	clientEnts = NULL;
 
@@ -731,7 +731,6 @@ static void AddServerEntities(const frame_t* frame)
 			if (s1->modelindex > 0)
 			{
 				vec3_t dir;
-
 				VectorSubtract(ent->origin, fxi.cl->refdef.vieworg, dir);
 
 				ent->depth = VectorNormalize(dir);

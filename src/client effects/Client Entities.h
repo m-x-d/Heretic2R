@@ -11,11 +11,11 @@
 #include "ce_Message.h"
 #include "FX.h"
 
-typedef enum ClassID_e
+typedef enum CE_ClassID_e
 {
 	CID_DEBRIS = 0,
 	NUM_CLASSIDS
-} ClassID_t;
+} CE_ClassID_t;
 
 typedef struct CE_ClassStatics_s
 {
@@ -148,7 +148,7 @@ typedef struct client_entity_s
 } client_entity_t;
 
 extern client_entity_t* clientEnts;
-extern CE_ClassStatics_t classStatics[NUM_CLASSIDS];
+extern CE_ClassStatics_t ce_class_statics[NUM_CLASSIDS];
 
 extern void InitEntityMngr(void); //mxd
 extern void ReleaseEntityMngr(void); //mxd

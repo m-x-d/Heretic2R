@@ -167,7 +167,7 @@ float debrisElasticity[NUM_MAT] =
 
 void InitDebrisStatics()
 {
-	classStatics[CID_DEBRIS].msgReceivers[MSG_COLLISION] = FXDebris_Collision;
+	ce_class_statics[CID_DEBRIS].msgReceivers[MSG_COLLISION] = FXDebris_Collision;
 }
 
 void PreCacheDebris()
