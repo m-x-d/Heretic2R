@@ -180,27 +180,11 @@ void RemoveEffects(centity_t* owner, int type, const int flags, vec3_t origin)
 	RemoveEffectTypeList(&owner->effects, fx, owner);
 }
 
-// ***************************************************************************************
-// Client Sounds
-// ***************************************************************************************
-
-void RegisterSounds(void)
-{
-}
-
-// ***************************************************************************************
-// Client Models
-// ***************************************************************************************
+void RegisterSounds(void) {} //TODO: remove?
 
 void RegisterModels(void)
 {
-	int		i;
-
-	for(i = 0; i < NUM_FX; i++)
-	{
-		if(clientEffectSpawners[i].PrecacheCFX)
-		{
+	for (int i = 0; i < NUM_FX; i++)
+		if (clientEffectSpawners[i].PrecacheCFX != NULL)
 			clientEffectSpawners[i].PrecacheCFX();
-		}
-	}
 }
