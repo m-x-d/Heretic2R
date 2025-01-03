@@ -109,7 +109,7 @@
     <ClInclude Include="..\qcommon\Message.h" />
     <ClInclude Include="..\qcommon\turbsin.h" />
     <ClInclude Include="..\qcommon\Vector.h" />
-    <ClInclude Include="ambient effects.h" />
+    <ClInclude Include="Ambient Effects.h" />
     <ClInclude Include="ce_DefaultMessageHandler.h" />
     <ClInclude Include="ce_DLight.h" />
     <ClInclude Include="ce_Message.h" />

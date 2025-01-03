@@ -284,7 +284,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ambient effects.h">
+    <ClInclude Include="Ambient Effects.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="ce_DefaultMessageHandler.h">
