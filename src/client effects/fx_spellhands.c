@@ -18,30 +18,7 @@
 #include "Particle.h"
 #include "g_playstats.h"
 
-// ************************************************************************************************
-// SpellHandsTrails
-// ----------------
-// ************************************************************************************************
-
-typedef struct
-{
-	char	*SpriteName;
-	float	DeltaForward,
-			AnimSpeed,
-			Scale,
-			DScale;
-} trail_t;
-
-static trail_t SpellHandsTrails[NUM_SPELLHANDS]=
-{
-	{"sprites/spells/flyingfist.sp2",2.0,0.25,0.3,-1.25},
-	{"sprites/spells/spellhands_blue.sp2",1.5,0.25,0.4,-0.25},
-	{"sprites/spells/spark_ind.sp2",2.0,0.25,1.0,-1.25},
-};
-
-// --------------------------------------------------------------
-
-#define	NUM_HAND_MODELS	1
+#define NUM_HAND_MODELS	1
 
 struct model_s *hands_models[NUM_HAND_MODELS];
 

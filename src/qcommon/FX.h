@@ -188,18 +188,18 @@ enum
 // (e.g. different materials yield different debris chunks when an FX_DEBRI is created).
 typedef enum MaterialID_e
 {
-	MAT_STONE,			// 0
-	MAT_GREYSTONE,		// 1
-	MAT_CLOTH,			// 2
-	MAT_METAL,			// 3 
-	MAT_FLESH,			// 4
-	MAT_POTTERY,		// 5
-	MAT_GLASS,			// 6
-	MAT_LEAF,			// 7
-	MAT_WOOD,			// 8
-	MAT_BROWNSTONE,		// 9
-	MAT_NONE,			// 10
-	MAT_INSECT,			// 11
+	MAT_STONE,
+	MAT_GREYSTONE,
+	MAT_CLOTH,
+	MAT_METAL,
+	MAT_FLESH,
+	MAT_POTTERY,
+	MAT_GLASS,
+	MAT_LEAF,
+	MAT_WOOD,
+	MAT_BROWNSTONE,
+	MAT_NONE,
+	MAT_INSECT,
 
 	NUM_MAT
 } MaterialID_t;
@@ -211,58 +211,13 @@ typedef enum MaterialID_e
 #define SIF_INLAVA		32
 #define SIF_INMUCK		64
 
-// SPELLHANDS_XXX
-enum
-{
-	SPELLHANDS_RED = 0,
-	SPELLHANDS_BLUE,
-	SPELLHANDS_INDIGO,
-
-	NUM_SPELLHANDS
-};
-
-#define SPELLHANDS_SHIFT		16
-#define SPELLHANDS_MASK_COLOUR	0x00ff0000
-#define SPELLHANDS_MASK_REFPTS	0x0000ffff
-
-// All this crap below is to be pulled out at some point REAL soon.
-
-#define SERVER_SENT 1
-#define SERVER_DELETED 2
-
-/*enum //TODO: Q2 enum. Unused?
-{
-	SPLASH_UNKNOWN = 0,
-	SPLASH_SPARKS,
-	SPLASH_BLUE_WATER,
-	SPLASH_BROWN_WATER,
-	SPLASH_SLIME,
-	SPLASH_LAVA,
-	SPLASH_BLOOD,
-
-	NUM_SPLASHES
-};*/
-
-// Player Muzzle Flashes. //TODO: Q2 enum. Unused?
-/*enum
-{
-	PF_BLASTER = 0,
-	PF_HYPERBLASTER,
-	PF_LOGIN,
-	PF_LOGOUT,
-	PF_RESPAWN,
-};*/
-
-// Monster Muzzle Flashes. //TODO: Q2 enum. Unused?
-/*enum
-{
-	MF_ACTOR_MACHINEGUN_1
-};*/
+#define SERVER_SENT		1 //TODO: unused
+#define SERVER_DELETED	2
 
 // Persistent effect debugging.
 enum
 {
-	REMOVE_SHIELD = 0,
+	REMOVE_SHIELD,
 	REMOVE_TELEPORT_PAD,
 	REMOVE_METEOR,
 	REMOVE_LEADER,
