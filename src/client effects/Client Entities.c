@@ -182,22 +182,13 @@ void RemoveEffectTypeList(client_entity_t** root, const FX_Type_t fx, const cent
 	}
 }
 
-void PrepAddEffectsToView()
+void PrepAddEffectsToView(void)
 {
-	refdef_t *refDef;
+	const refdef_t* refdef = &fxi.cl->refdef;
+	const float fov = max(refdef->fov_x, refdef->fov_y);
 
-	refDef = &fxi.cl->refdef;
-
-	if(refDef->fov_x > refDef->fov_y)
-	{
-		view_fov = cos(refDef->fov_x*0.5*ANGLE_TO_RAD*1.2);
-	}
-	else
-	{
-		view_fov = cos(refDef->fov_y*0.5*ANGLE_TO_RAD*1.2);
-	}
-
-	AngleVectors (refDef->viewangles, view_dir, NULL, NULL);
+	view_fov = cosf(fov * 0.5f * ANGLE_TO_RAD * 1.2f);
+	AngleVectors(refdef->viewangles, view_dir, NULL, NULL);
 }
 
 int AddEffectsToView(client_entity_t **root, centity_t *owner)
