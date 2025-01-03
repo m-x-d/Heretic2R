@@ -311,12 +311,9 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 {
 #define NUM_TRACES	100 // I really, really hope we don't ever see more than this.
 
-	static trace_t traces[NUM_TRACES];
-	static trace_t traces2[NUM_TRACES];
-	static qboolean use_other_traces = false;
-
 	client_entity_t** prev;
 	client_entity_t* current;
+	trace_t trace;
 
 	const float d_time = fxi.cls->frametime;
 	const float d_time2 = d_time * d_time * 0.5f;
@@ -330,9 +327,6 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 	// If the world is frozen then add the particles, just don't update the world time. Always update the particle timer.
 	if (!fx_FreezeWorld)
 		ParticleUpdateTime = fxi.cl->time;
-
-	trace_t* trace = (use_other_traces ? traces2 : traces);
-	use_other_traces = !use_other_traces;
 
 	for (prev = root, current = *root; current != NULL; current = current->next)
 	{
@@ -402,12 +396,8 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 			{
 				if (cur_trace < NUM_TRACES - 1) // Leave one at the end to continue checking collisions.
 				{
-					if (Physics_MoveEnt(current, d_time, d_time2, trace))
-					{
-						// Collided with something.
-						trace++;
-						cur_trace++;
-					}
+					if (Physics_MoveEnt(current, d_time, d_time2, &trace))
+						cur_trace++; // Collided with something.
 				}
 				else
 				{
