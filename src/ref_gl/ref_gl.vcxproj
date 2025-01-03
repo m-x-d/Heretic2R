@@ -15,6 +15,7 @@
     <ClCompile Include="..\qcommon\anorms.c" />
     <ClCompile Include="..\qcommon\Reference.c" />
     <ClCompile Include="..\qcommon\Skeletons.c" />
+    <ClCompile Include="..\qcommon\turbsin.c" />
     <ClCompile Include="..\win32\glw_imp.c" />
     <ClCompile Include="..\win32\q_shwin.c" />
     <ClCompile Include="anormtab.c" />
@@ -52,6 +53,7 @@
     <ClInclude Include="..\qcommon\q_Surface.h" />
     <ClInclude Include="..\qcommon\Reference.h" />
     <ClInclude Include="..\qcommon\Skeletons.h" />
+    <ClInclude Include="..\qcommon\turbsin.h" />
     <ClInclude Include="..\win32\glw_win.h" />
     <ClInclude Include="anormtab.h" />
     <ClInclude Include="gl_fmodel.h" />

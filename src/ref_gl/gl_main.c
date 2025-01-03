@@ -8,6 +8,7 @@
 #include "gl_fmodel.h"
 #include "m_Reference.h"
 #include "q_Surface.h"
+#include "turbsin.h"
 #include "Vector.h"
 #include "vid.h"
 
@@ -952,10 +953,8 @@ qboolean R_SetMode(void)
 
 qboolean R_Init(void* hinstance, void* hWnd)
 {
-	extern float r_turbsin[256];
-
 	for (int j = 0; j < 256; j++)
-		r_turbsin[j] *= 0.5f;
+		turbsin[j] *= 0.5f;
 
 	Com_Printf("ref_gl version: "REF_VERSION"\n"); // ri.Con_Printf in Q2 (here and below)
 	R_Register();
