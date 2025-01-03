@@ -153,18 +153,15 @@ void RemoveEffectList(client_entity_t** root)
 		RemoveEffectFromList(root, NULL);
 }
 
-void RemoveOwnedEffectList(centity_t *owner)
+void RemoveOwnedEffectList(centity_t* owner)
 {
-	client_entity_t **root;
+	client_entity_t** root = &owner->effects;
 
-	root = &owner->effects;
 	assert(root);
 	assert(*root);
 
-	while(*root)
-	{
+	while (*root != NULL)
 		RemoveEffectFromList(root, owner);
-	}
 }
 
 // fx = type of effect to remove
