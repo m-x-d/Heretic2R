@@ -98,41 +98,26 @@ client_entity_t* ClientEntity_new(const int type, const int flags, vec3_t origin
 	return new_ent;
 }
 
-void ClientEntity_delete(client_entity_t *toDelete, centity_t *owner)
+static void ClientEntity_delete(client_entity_t* to_delete, const centity_t* owner)
 {
-	if(toDelete->p_root)
-	{
-		RemoveParticleList(&toDelete->p_root);
-	}
+	if (to_delete->p_root != NULL)
+		RemoveParticleList(&to_delete->p_root);
 
-	if(toDelete->dlight)
-	{
-		CE_DLight_delete(toDelete->dlight);
-	}
+	if (to_delete->dlight != NULL)
+		CE_DLight_delete(to_delete->dlight);
 
-	if(toDelete->r.fmnodeinfo)
-	{
-		ResMngr_DeallocateResource(&fm_node_info_manager, toDelete->r.fmnodeinfo, sizeof(fmnodeinfo_t)*MAX_FM_MESH_NODES);
-	}
+	if (to_delete->r.fmnodeinfo != NULL)
+		ResMngr_DeallocateResource(&fm_node_info_manager, to_delete->r.fmnodeinfo, sizeof(fmnodeinfo_t) * MAX_FM_MESH_NODES);
 
-	if(owner && toDelete->refMask)
-	{
-		DisableRefPoints(owner->referenceInfo, toDelete->refMask);
-	}
+	if (owner != NULL && to_delete->refMask != 0)
+		DisableRefPoints(owner->referenceInfo, to_delete->refMask);
 
-	if(toDelete->r.spriteType == SPRITE_VARIABLE)
-	{
-		if(toDelete->r.verts_p)
-		{
-			free(toDelete->r.verts_p);
-		}
-	}
+	if (to_delete->r.spriteType == SPRITE_VARIABLE && to_delete->r.verts_p != NULL)
+		free(to_delete->r.verts_p);
 
-	ClearMessageQueue(toDelete);
-
-	SLList_Des(&toDelete->msgQ.msgs);
-
-	ResMngr_DeallocateResource(&entity_manager, toDelete, sizeof(*toDelete));	
+	ClearMessageQueue(to_delete);
+	SLList_Des(&to_delete->msgQ.msgs);
+	ResMngr_DeallocateResource(&entity_manager, to_delete, sizeof(*to_delete));
 }
 
 fmnodeinfo_t *FMNodeInfo_new()
