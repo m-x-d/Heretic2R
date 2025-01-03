@@ -164,25 +164,21 @@ void RemoveOwnedEffectList(centity_t* owner)
 		RemoveEffectFromList(root, owner);
 }
 
-// fx = type of effect to remove
-//    = 0, remove all effects
-
-void RemoveEffectTypeList(client_entity_t **root, FX_Type_t fx, centity_t *owner)
+// fx = type of effect to remove; 0 - remove all effects.
+void RemoveEffectTypeList(client_entity_t** root, const FX_Type_t fx, const centity_t* owner)
 {
-	client_entity_t **prev;
-	client_entity_t *current;
+	client_entity_t** prev;
+	client_entity_t* current;
 
 	assert(root);
-//	assert(*root);		// FIXME:  This shouldn't fire, but it does.  The result is more or less harmless.
+	assert(*root); // FIXME: This shouldn't fire, but it does. The result is more or less harmless.
 
-	for(prev = root, current = *root; current; current = current->next)
+	for (prev = root, current = *root; current; current = current->next)
 	{
-		if(!fx || (current->effectID == fx))
-		{
+		if (fx == FX_REMOVE_EFFECTS || current->effectID == fx)
 			RemoveEffectFromList(prev, owner);
-			continue;
-		}
-		prev = &(*prev)->next; 
+		else
+			prev = &(*prev)->next;
 	}
 }
 
