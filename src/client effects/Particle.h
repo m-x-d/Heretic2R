@@ -160,6 +160,7 @@ void ReleaseParticleMngrMngr();
 
 // should make a Particle_new to get rid of this
 extern struct ResourceManager_s ParticleMngr;
+extern int ParticleUpdateTime; //mxd
 
 void AddParticleToList(struct client_entity_s *ce, client_particle_t *fx);
 void RemoveParticleList(client_particle_t **root);
