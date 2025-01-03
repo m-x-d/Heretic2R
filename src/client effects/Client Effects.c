@@ -170,13 +170,12 @@ void (*ce_class_statics_inits[NUM_CLASSIDS])(void) =
 
 void NullEffect(centity_t* owner, int type, int flags, vec3_t origin) {}
 
-void RemoveEffects(centity_t *owner, int type, int flags, vec3_t origin)
+void RemoveEffects(centity_t* owner, int type, const int flags, vec3_t origin)
 {
-	short		fx;
-
 	assert(owner);
-//	assert(owner->effects);		// FIXME:  This assert fires, but it should not.  We shouldn't be here anyway.
+	assert(owner->effects); // FIXME: This assert fires, but it should not. We shouldn't be here anyway.
 
+	short fx;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_REMOVE_EFFECTS].formatString, &fx);
 	RemoveEffectTypeList(&owner->effects, fx, owner);
 }
