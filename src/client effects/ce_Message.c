@@ -24,40 +24,29 @@ void ReleaseMsgMngr(void)
 	ResMngr_Des(&ce_messages_manager);
 }
 
-void QPostMessage(client_entity_t *to, CE_MsgID_t ID, char *format, ...)
+void QPostMessage(client_entity_t* to, const CE_MsgID_t ID, char* format, ...)
 {
-	CE_Message_t *newMsg;
-	qboolean append = false;
-	SinglyLinkedList_t *parms;
-	va_list marker;
-
-	if(!to->msgHandler)	// everything should really have one, but at this point everything
-						// doesn't so, the messages will never get popped of the queue
-						// so don't push them on in the first place
-	{
+	if (to->msgHandler == NULL)	//mxd. Isn't supposed to happen.
 		return;
-	}
 
-	newMsg = ResMngr_AllocateResource(&ce_messages_manager, sizeof(CE_Message_t));
+	CE_Message_t* msg = ResMngr_AllocateResource(&ce_messages_manager, sizeof(CE_Message_t));
+	SinglyLinkedList_t* parms = &msg->parms;
 
-	parms = &newMsg->parms;
+	SLList_DefaultCon(parms);
+	SLList_PushEmpty(parms); // Should make a constructor fo CE_Message_t.
 
-	// Fix Me !!!
-	SLList_DefaultCon(parms);  // whoops, need to port object manager to C
-	SLList_PushEmpty(parms);			// should make a constructor fo CE_Message_t too
+	msg->ID = ID;
 
-	newMsg->ID = ID;
-
-	if(format)
+	if (format != NULL)
 	{
+		va_list marker;
+
 		va_start(marker, format);
-
 		SetParms(parms, format, marker);
-
 		va_end(marker);
 	}
 
-	QueueMessage(&to->msgQ, newMsg);
+	QueueMessage(&to->msgQ, msg);
 }
 
 int ParseMsgParms(CE_Message_t *this, char *format, ...)
