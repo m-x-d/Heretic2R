@@ -120,9 +120,9 @@ static void ClientEntity_delete(client_entity_t* to_delete, const centity_t* own
 	ResMngr_DeallocateResource(&entity_manager, to_delete, sizeof(*to_delete));
 }
 
-fmnodeinfo_t *FMNodeInfo_new()
+fmnodeinfo_t* FMNodeInfo_new(void)
 {
-	return ResMngr_AllocateResource(&fm_node_info_manager, sizeof(fmnodeinfo_t)*MAX_FM_MESH_NODES);
+	return ResMngr_AllocateResource(&fm_node_info_manager, sizeof(fmnodeinfo_t) * MAX_FM_MESH_NODES);
 }
 
 void AddEffectToList(client_entity_t **root, client_entity_t *fx)
