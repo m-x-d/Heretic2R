@@ -63,32 +63,22 @@ int ParseMsgParms(CE_Message_t* this, char* format, ...)
 	return args_filled;
 }
 
-void ProcessMessages(client_entity_t *this)
+void ProcessMessages(client_entity_t* this)
 {
-	SinglyLinkedList_t *msgs;
-	SinglyLinkedList_t *parms;
-	CE_Message_t *msg;
-
 	assert(this->msgHandler);
 
-	msgs = &this->msgQ.msgs;
+	SinglyLinkedList_t* msgs = &this->msgQ.msgs;
 
-	while(!SLList_IsEmpty(msgs))
+	while (!SLList_IsEmpty(msgs))
 	{
-		msg = SLList_Pop(msgs).t_void_p;
+		CE_Message_t* msg = SLList_Pop(msgs).t_void_p;
+		SinglyLinkedList_t* parms = &msg->parms;
 
-		parms = &msg->parms;
-
-		if(!SLList_AtLast(parms) && !SLList_AtEnd(parms))
-		{
+		if (!SLList_AtLast(parms) && !SLList_AtEnd(parms))
 			SLList_Chop(parms);
-		}
 
-		this->msgHandler(this, msg);
-
-		// Fix Me !!!
-		SLList_Des(parms); // whoops, need to port object manager to C
-
+		this->msgHandler((struct client_entity_s*)this, msg);
+		SLList_Des(parms);
 		ResMngr_DeallocateResource(&ce_messages_manager, msg, sizeof(CE_Message_t));
 	}
 }
