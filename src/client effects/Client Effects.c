@@ -1,13 +1,18 @@
+//
+// Client Effects.c
+//
+// Copyright 1998 Raven Software
+//
+
 #include "Client Effects.h"
 #include "Client Entities.h"
 #include "FX.h"
 
-// NB. The assassin tport go is not precached
+#pragma region ========================== CLIENT EFFECT SPAWNERS ==========================
 
+// NB. The assassin tport go is not precached.
 ClientEffect_t clientEffectSpawners[NUM_FX] =
-{	
-	// ***NOTE*** We currently have 113 client effects, and we don't want to exceed 32768!  Ha!
-
+{
 	{ RemoveEffects,					NULL,					"s"			},
 	{ FXflametest,						NULL,					NULL		},
 	{ GenericExplosion1,				NULL,					NULL		},
@@ -26,8 +31,8 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ FXAmmoPickup,						PreCacheItemAmmo,		"b"			},
 	{ FXFlyingFist,						PreCacheFist,			"t"			},
 	{ FXFlyingFistExplode,				NULL,					"d"			},
-	{ FXBlueRing,						PreCacheBluering,		NULL		},				
-	{ FXMeteorBarrier,					PreCacheMeteor,			NULL		},	// see fx.h for an explanation of this
+	{ FXBlueRing,						PreCacheBluering,		NULL		},
+	{ FXMeteorBarrier,					PreCacheMeteor,			NULL		},	// See fx.h for an explanation of this.
 	{ FXMeteorBarrier,					PreCacheMeteor,			NULL		},
 	{ FXMeteorBarrier,					PreCacheMeteor,			NULL		},
 	{ FXMeteorBarrier,					PreCacheMeteor,			NULL		},
@@ -128,23 +133,23 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ FXBubble,							PreCacheBubbler,		NULL		},
 	{ FXTPortSmoke,						PreCacheTPortSmoke,		NULL		},	// FX_TPORTSMOKE - 117
 	{ FXWaterParticles,					PreCacheWaterParticles,	NULL		},	// FX_WATER_PARTICLES - 119
-	{ FXMEffects,						PreCacheMEffects,		"bv"		},	// FX_M_EFFECTS - 120 - all of Morcalavin's effects
-	{ FXHPStaff,						PreCacheHPStaff,		"bs"		},	// FX_HP_STAFF - 121 - staff effects for the high priestess
-	{ FXRandWaterBubble,				NULL,					NULL		},		 
+	{ FXMEffects,						PreCacheMEffects,		"bv"		},	// FX_M_EFFECTS - 120 - all of Morcalavin's effects.
+	{ FXHPStaff,						PreCacheHPStaff,		"bs"		},	// FX_HP_STAFF - 121 - staff effects for the high priestess.
+	{ FXRandWaterBubble,				NULL,					NULL		},
 	{ FXMagicPortal,					PreCachePortal,			"vbb"		},
 	{ FXTBEffects,						PreCacheTB,				"bv"		},	// FX_TB_EFFECTS - 124
 	{ FXTestBBox,						NULL,					"fff"		},
-	{ FXBodyPart,						NULL,					"ssbbb"		},	// FX_THROWWEAPON - uses body part, which just detects type for certain things - 126!!!
+	{ FXBodyPart,						NULL,					"ssbbb"		},	// FX_THROWWEAPON - 126 - uses body part, which just detects type for certain things.
 	{ FXSsithraArrow,					PrecacheSsithraArrow,	"bv"		},
 	{ FXPESpell,						PrecachePESpell,		"bv"		},
 	{ FXLightningHit,					PreCacheHitPuff,		"t"			},	// FX_LIGHTNING_HIT
-	{ NullEffect,						NULL,					NULL		},	// FX_FOOTSTEP,    //114// Unimplemented fx
-	{ NullEffect,						NULL,					NULL		},	// FX_FALLSHORT,   //115// Unimplemented fx
+	{ NullEffect,						NULL,					NULL		},	// FX_FOOTSTEP,    // Unimplemented fx
+	{ NullEffect,						NULL,					NULL		},	// FX_FALLSHORT,   // Unimplemented fx
 	{ FXStaffStrike,					PreCacheStaffHit,		"db"		},
 	{ FXCreateArmorHit,					PreCacheArmorHit,		"d"			},
 	{ FXBarrelExplode,					PreCacheObjects,		NULL,		},
 	{ FXCWatcherEffects,				PreCacheCWModels,		"bv"		},
-	{ FXCorpseRemove,					PreCacheCrosshair,		NULL		},	// naughty little hack here, crosshair has nothing to do with corpse removal
+	{ FXCorpseRemove,					PreCacheCrosshair,		NULL		},	// Naughty little hack here, crosshair has nothing to do with corpse removal.
 	{ FXLeader,							NULL,					NULL		},
 	{ FXTornado,						PreCacheTorn,			NULL		},
 	{ FXTornadoBall,					NULL,					NULL		},
@@ -152,7 +157,9 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ FXFeetTrail,						NULL,					NULL		},
 	{ FXGenericSparks,					PreCacheSparks,			"d"			},
 	{ NULL,								NULL,					NULL		},	// FX_CROSSHAIR
-};	
+};
+
+#pragma endregion
 
 CE_ClassStatics_t ce_class_statics[NUM_CLASSIDS];
 
@@ -161,9 +168,7 @@ void (*ce_class_statics_inits[NUM_CLASSIDS])(void) =
 	InitDebrisStatics
 };
 
-void NullEffect(centity_t *owner, int type, int flags, vec3_t origin)
-{
-}
+void NullEffect(centity_t* owner, int type, int flags, vec3_t origin) {}
 
 void RemoveEffects(centity_t *owner, int type, int flags, vec3_t origin)
 {
