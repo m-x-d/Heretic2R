@@ -289,22 +289,21 @@ int AddEffectsToView(client_entity_t** root, centity_t* owner)
 	return num_fx;
 }
 
-void AddEffect(centity_t *owner, client_entity_t *fx)
+void AddEffect(centity_t* owner, client_entity_t* fx)
 {
-	if(owner)
+	if (owner != NULL)
 	{
 		AddEffectToList(&owner->effects, fx);
-		if(owner->referenceInfo && fx->refMask)
-		{
+
+		if (owner->referenceInfo != NULL && fx->refMask != 0)
 			EnableRefPoints(owner->referenceInfo, fx->refMask);
-		}
 	}
 	else
 	{
 		AddEffectToList(&clientEnts, fx);
 	}
 
-	// copy up the scale on a model so it can be culled properly
+	// Copy up the scale on a model so it can be culled properly.
 	fx->r.cl_scale = fx->r.scale;
 }
 
