@@ -3,28 +3,25 @@
 //
 // Copyright 1998 Raven Software
 //
-// Heretic II
-//
 
 #include "ce_Message.h"
 #include "Message.h"
-
 #include "Client Entities.h"
 #include "ResourceManager.h"
 #include "SinglyLinkedList.h"
 
-static ResourceManager_t MsgMngr;
+static ResourceManager_t ce_messages_manager;
 
 void InitMsgMngr()
 {
 	const int MESSAGE_BLOCK_SIZE = 256;
 
-	ResMngr_Con(&MsgMngr, sizeof(CE_Message_t), MESSAGE_BLOCK_SIZE);
+	ResMngr_Con(&ce_messages_manager, sizeof(CE_Message_t), MESSAGE_BLOCK_SIZE);
 }
 
 void ReleaseMsgMngr()
 {
-	ResMngr_Des(&MsgMngr);
+	ResMngr_Des(&ce_messages_manager);
 }
 
 void QPostMessage(client_entity_t *to, CE_MsgID_t ID, char *format, ...)
@@ -41,7 +38,7 @@ void QPostMessage(client_entity_t *to, CE_MsgID_t ID, char *format, ...)
 		return;
 	}
 
-	newMsg = ResMngr_AllocateResource(&MsgMngr, sizeof(CE_Message_t));
+	newMsg = ResMngr_AllocateResource(&ce_messages_manager, sizeof(CE_Message_t));
 
 	parms = &newMsg->parms;
 
@@ -110,7 +107,7 @@ void ProcessMessages(client_entity_t *this)
 		// Fix Me !!!
 		SLList_Des(parms); // whoops, need to port object manager to C
 
-		ResMngr_DeallocateResource(&MsgMngr, msg, sizeof(CE_Message_t));
+		ResMngr_DeallocateResource(&ce_messages_manager, msg, sizeof(CE_Message_t));
 	}
 }
 
@@ -131,6 +128,6 @@ void ClearMessageQueue(client_entity_t *this)
 		// Fix Me !!!
 		SLList_Des(parms); // whoops, need to port object manager to C
 
-		ResMngr_DeallocateResource(&MsgMngr, msg, sizeof(CE_Message_t));
+		ResMngr_DeallocateResource(&ce_messages_manager, msg, sizeof(CE_Message_t));
 	}
 }
