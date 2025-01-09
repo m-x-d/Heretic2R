@@ -29,43 +29,28 @@ void PrecacheOgleHitPuff(void)
 
 void PreCacheWaterParticles(void) { } //TODO: remove?
 
-// -----------------------------------------------------------------------------------------
-
-#define PARTICLE_TRAIL_PUFF_TIME 1000 // puff's last for 1 sec
-
-qboolean ParticleTrailAI(client_entity_t *this, centity_t *owner)
+static qboolean ParticleTrailAI(const client_entity_t* this, const centity_t* owner)
 {
-	client_entity_t		*effect;
-	client_particle_t	*p;
-	int					i;
+#define PARTICLE_TRAIL_PUFF_TIME 1000 // Puffs last for 1 sec.
 
 	assert(owner);
 
-	effect = ClientEntity_new(FX_PUFF, CEF_NO_DRAW, owner->current.old_origin, NULL, PARTICLE_TRAIL_PUFF_TIME);
-	
-	effect->flags |= CEF_NO_DRAW;
+	client_entity_t* effect = ClientEntity_new(FX_PUFF, CEF_NO_DRAW, owner->current.old_origin, NULL, PARTICLE_TRAIL_PUFF_TIME);
 
-	for(i = 0; i < 40; i++)
+	for (int i = 0; i < 40; i++)
 	{
-		p = ClientParticle_new(PART_4x4_WHITE, this->color, PARTICLE_TRAIL_PUFF_TIME);
-		p->velocity[0] = flrand(-20.0F, 20.0F);
-		p->velocity[1] = flrand(-20.0F, 20.0F);
-		p->velocity[2] = flrand(30.0F, 80.0F);
+		client_particle_t* p = ClientParticle_new(PART_4x4_WHITE, this->color, PARTICLE_TRAIL_PUFF_TIME);
+		VectorSet(p->velocity, flrand(-20.0f, 20.0f), flrand(-20.0f, 20.0f), flrand(30.0f, 80.0f));
 		AddParticleToList(effect, p);
 	}
 
-	AddEffect(NULL, effect); // add the puff to the world
+	AddEffect(NULL, effect); // Add the puff to the world.
 
-	return true;// actual puff spawner only goes away when it owner has a 
-				// FX_REMOVE_EFFECTS sent on it
+	return true; // Actual puff spawner only goes away when it owner has a FX_REMOVE_EFFECTS sent on it.
 }
-
-void CL_DiminishingTrail (vec3_t start, vec3_t end, centity_t *old, qboolean gib);
 
 void GenericGibTrail(centity_t *owner, int type, int flags, vec3_t origin)
 {
-	qboolean ParticleTrailAI(client_entity_t *this, centity_t *owner);
-
 	client_entity_t *effect;
 
 	effect = ClientEntity_new(type, flags, origin, NULL, PARTICLE_TRAIL_THINK_TIME);
