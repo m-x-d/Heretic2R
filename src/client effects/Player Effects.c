@@ -1,19 +1,17 @@
+//
+// Player Effects.c
+//
+// Copyright 1998 Raven Software
+//
+
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Random.h"
 #include "Reference.h"
 #include "Utilities.h"
 #include "g_playstats.h"
-
-void FXCompass(centity_t *owner, int type, int flags, vec3_t origin);
+#include "q_Physics.h"
 
 qboolean PlayerFirstSeenInit(struct client_entity_s *self, centity_t *owner)
 {
-	void FXPlayerShadow(centity_t *owner, int type, int flags, vec3_t origin);
-
 	// Is the modelindex valid? E.g. when a player is dead, his modelindex is 0, hence his
 	// referenceInfo will be invailid.
 
