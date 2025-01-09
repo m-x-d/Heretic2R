@@ -462,56 +462,39 @@ void FXCorpseRemove(centity_t* owner, const int type, int flags, const vec3_t or
 	}
 }
 
-
-/*
-----------------------------------------
-
-Leader effect routines
-
-----------------------------------------
-*/
-
-#define LEADER_RAD		12
-#define TOTAL_LEADER_EFFECTS 30
-#define LEADER_EFFECTS_HEIGHT 30
-
-// create the two circles that ring the player
-static qboolean FXLeaderThink(struct client_entity_s *self, centity_t *owner)
+// Create the two circles that ring the player.
+static qboolean FXLeaderThink(struct client_entity_s* self, const centity_t* owner)
 {
-	client_particle_t	*ce;
-	paletteRGBA_t			color;
+#define LEADER_RAD				12
+#define TOTAL_LEADER_EFFECTS	30
 
-	if (!(--self->LifeTime))
-	{
+	if (--self->LifeTime == 0)
 		self->LifeTime = TOTAL_LEADER_EFFECTS;
-	}
 
-	// if we are ghosted, don't do the effect
-	if ((owner->current.renderfx & RF_TRANS_GHOST) || (owner->current.effects & EF_CLIENT_DEAD)) 
-		return(true);
+	// If we are ghosted or dead, don't do the effect.
+	if ((owner->current.renderfx & RF_TRANS_GHOST) || (owner->current.effects & EF_CLIENT_DEAD))
+		return true;
 
-   	// create the ring of particles that goes up
-   	color.c = 0x7fffffff;
+	const paletteRGBA_t color = { .c = 0x7fffffff };
 
-   	// figure out how many particles we are going to use
+	// Create the ring of particles that goes up.
+	client_particle_t* ce = ClientParticle_new(PART_16x16_SPARK_Y, color, 800);
+	ce->acceleration[2] = 0.0f;
+	VectorSet(ce->origin, LEADER_RAD * cosf(self->Scale), LEADER_RAD * sinf(self->Scale), 4.0f);
+	ce->scale = 8.0f;
+	AddParticleToList(self, ce);
 
-   	ce = ClientParticle_new(PART_16x16_SPARK_Y, color, 800);
-   	ce->acceleration[2] = 0.0; 
-   	VectorSet(ce->origin, LEADER_RAD * cos(self->Scale), LEADER_RAD * sin(self->Scale), 4);
-   	ce->scale = 8.0F;
-   	AddParticleToList(self, ce);
-   	// create the ring of particles that goes down
+	// Create the ring of particles that goes down.
+	ce = ClientParticle_new(PART_16x16_SPARK_Y, color, 800);
+	ce->acceleration[2] = 0.0f;
+	VectorSet(ce->origin, LEADER_RAD * cosf(self->Scale + 3.14f), LEADER_RAD * sinf(self->Scale + 3.14f), 4.0f);
+	ce->scale = 8.0f;
+	AddParticleToList(self, ce);
 
-   	ce = ClientParticle_new(PART_16x16_SPARK_Y, color, 800);
-   	ce->acceleration[2] = 0.0; 
-   	VectorSet(ce->origin, LEADER_RAD * cos(self->Scale+3.14), LEADER_RAD * sin(self->Scale+3.14), 4);
-   	ce->scale = 8.0F;
-   	AddParticleToList(self, ce);
+	// Move the rings up/down next frame.
+	self->Scale += 0.17f;
 
-	// move the rings up/down next frame
-	self->Scale += 0.17;
-
-	return(true);
+	return true;
 }
 
 // create the entity the flight loops are on
