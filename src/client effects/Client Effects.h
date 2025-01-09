@@ -177,7 +177,7 @@ extern void FXPESpell(centity_t* owner, int type, int flags, vec3_t org);
 extern void FXLightningHit(centity_t* owner, int type, int flags, vec3_t org);
 extern void NullEffect(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXStaffStrike(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXCreateArmorHit(centity_t* owner, int Type, int Flags, vec3_t Origin);
+extern void FXCreateArmorHit(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXBarrelExplode(centity_t* owner, int Type, int Flags, vec3_t Origin);
 extern void FXCWatcherEffects(centity_t* owner, int Type, int Flags, vec3_t Origin);
 extern void FXCorpseRemove(centity_t* owner, int type, int flags, const vec3_t origin);

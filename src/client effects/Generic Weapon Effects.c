@@ -19,50 +19,45 @@ void PreCacheArmorHit(void)
 	armorhit_models[0] = fxi.RegisterModel("sprites/fx/firestreak.sp2");
 }
 
-
-// we hit someone with armor - do a pretty effect
-// ripped off unashamedly from Josh's extremely cool streak effect. One of the coolest effects I've seen in a long time Josh. Good work Dude.
-void FXCreateArmorHit(centity_t *owner,int Type,int Flags,vec3_t Origin)
+// We hit someone with armor - do a pretty effect.
+// Ripped off unashamedly from Josh's extremely cool streak effect. One of the coolest effects I've seen in a long time Josh. Good work Dude.
+void FXCreateArmorHit(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	client_entity_t	*TrailEnt;
-	vec3_t			dir;
-	int				i;
+	vec3_t dir;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_ARMOR_HIT].formatString, &dir);
 
-	fxi.GetEffect(owner,Flags,clientEffectSpawners[FX_ARMOR_HIT].formatString, &dir);
+	flags &= ~CEF_NO_DRAW;
 
-   	//Spawn a hit explosion of lines
-   	i = GetScaledCount(6, 0.85);
+	// Spawn a hit explosion of lines.
+	const int count = GetScaledCount(6, 0.85f);
 
-   	while (i--)
-   	{
-   		TrailEnt=ClientEntity_new(Type, Flags & ~CEF_NO_DRAW, Origin, 0, 500);
+	for (int i = 0; i < count; i++)
+	{
+		client_entity_t* trail_fx = ClientEntity_new(type, flags, origin, NULL, 500);
 
-   		TrailEnt->r.model = armorhit_models;
-   		
-   		TrailEnt->r.spriteType = SPRITE_LINE;
+		trail_fx->r.model = armorhit_models;
+		trail_fx->r.spriteType = SPRITE_LINE;
 
-   		TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-   		TrailEnt->r.color.c = 0xFFFFFFFF;
-   		TrailEnt->r.scale = flrand(1.0, 2.5);
-   		TrailEnt->alpha = flrand(1.0, 0.75);
-   		TrailEnt->d_alpha = -2.0;
-   		TrailEnt->d_scale = -1.0;
+		trail_fx->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		trail_fx->r.scale = flrand(1.0f, 2.5f);
+		trail_fx->alpha = flrand(0.75f, 1.0f);
+		trail_fx->d_alpha = -2.0f;
+		trail_fx->d_scale = -1.0f;
 
-   		TrailEnt->r.color.r = irand(128, 255);
-   		TrailEnt->r.color.g = irand(64, 255);
-   		TrailEnt->r.color.b = irand(64, 255);
-   		TrailEnt->r.color.a = 64 + irand(16, 128);
+		trail_fx->r.color.r = (byte)irand(128, 255);
+		trail_fx->r.color.g = (byte)irand(64, 255);
+		trail_fx->r.color.b = (byte)irand(64, 255);
+		trail_fx->r.color.a = (byte)irand(16, 128) + 64;
 
-   		VectorRandomCopy(dir, TrailEnt->velocity, 1.0);
-   		
-   		VectorCopy(Origin, TrailEnt->r.endpos);
-   		VectorMA(TrailEnt->r.endpos, irand(6,8), TrailEnt->velocity, TrailEnt->r.startpos);
+		VectorRandomCopy(dir, trail_fx->velocity, 1.0f);
 
-   		VectorScale(TrailEnt->velocity, irand(50,100), TrailEnt->velocity);
+		VectorCopy(origin, trail_fx->r.endpos);
+		VectorMA(trail_fx->r.endpos, flrand(6.0f, 8.0f), trail_fx->velocity, trail_fx->r.startpos); //mxd. Was irand().
 
-   		AddEffect(NULL, TrailEnt);
+		VectorScale(trail_fx->velocity, flrand(50.0f, 100.0f), trail_fx->velocity); //mxd. Was irand().
+
+		AddEffect(NULL, trail_fx);
 	}
-
 }
 
 void CreateExplosionParticles(client_entity_t *this)
