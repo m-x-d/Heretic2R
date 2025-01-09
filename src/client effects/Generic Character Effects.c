@@ -76,118 +76,70 @@ static qboolean PebbleUpdate(struct client_entity_s* self, centity_t* owner)
 	return cur_time <= self->LifeTime;
 }
 
-//Slight variation on the normal puff
-void FXOgleHitPuff(centity_t *owner, int type, int flags, vec3_t origin)
+// Slight variation on the normal puff.
+void FXOgleHitPuff(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	client_entity_t		*effect;
-	vec3_t				dir, work;
-	byte				count;
-	int					i, chance ;
-	float speed;
-	
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_OGLE_HITPUFF].formatString, dir);			// normalized direction vector
+	vec3_t dir;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_OGLE_HITPUFF].formatString, dir); // Normalized direction vector.
 
-	speed = VectorNormalize(dir);
-	if(speed>1.0f)
-		count = irand(10,15);
-	else
-		count = irand(1,4);
+	const float speed = VectorNormalize(dir);
+	const int count = (speed > 1.0f ? irand(10, 15) : irand(1, 4));
 
-	for(i = 0; i < count; i++)
-	{//puff!
-		effect = ClientEntity_new(type, flags, origin, NULL, 500);
+	for (int i = 0; i < count; i++)
+	{
+		// Puff!
+		client_entity_t* puff = ClientEntity_new(type, flags, origin, NULL, 500);
 
-		effect->r.model = genfx_models;
-		effect->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		puff->r.model = &genfx_models[0];
+		puff->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
-		if(speed>1.0f)
-		{
-			VectorRandomCopy(dir, work, 0.5);
-			VectorScale(work, speed, effect->velocity);
-			effect->acceleration[2] = flrand(10.0, 50.0);  
-		}
+		vec3_t work;
+		VectorRandomCopy(dir, work, 0.5f);
+
+		if (speed > 1.0f)
+			VectorScale(work, speed, puff->velocity);
+		else if (flags & CEF_FLAG6)
+			VectorScale(work, flrand(8.0f, 12.0f), puff->velocity);
 		else
-		{
-			VectorRandomCopy(dir, work, 0.5);
-			
-			if (flags & CEF_FLAG6)
-			{
-				VectorScale(work, flrand(8.0, 12.0), effect->velocity);
-				effect->acceleration[2] = flrand(10.0, 50.0);  
-			}
-			else
-			{
-				VectorScale(work, 4.0, effect->velocity);
-				effect->acceleration[2] = flrand(10.0, 50.0);  
-			}
-		}
+			VectorScale(work, 4.0f, puff->velocity);
 
-		effect->alpha = 0.35;
-		if(speed>1)
-			effect->r.scale = flrand(0.3, 0.75);
-		else
-			effect->r.scale = 0.1;
-		effect->d_scale = 2.0;
-		effect->d_alpha = -2.0;
-		effect->color.c = 0xFFFFFFFF;
+		puff->acceleration[2] = flrand(10.0f, 50.0f);
+		puff->alpha = 0.35f;
+		puff->r.scale = (speed > 1.0f ? flrand(0.3f, 0.75f) : 0.1f);
+		puff->d_scale = 2.0f;
+		puff->d_alpha = -2.0f;
 
-		AddEffect(NULL, effect);	// add the effect as independent world effect
+		AddEffect(NULL, puff); // Add the effect as independent world effect.
 	}
 
-	for(i = 0; i < count; i++)
-	{//ROCK!
-		effect = ClientEntity_new(type, flags, origin, NULL, 50);
+	for (int i = 0; i < count; i++)
+	{
+		// Rock!
+		client_entity_t* rock = ClientEntity_new(type, flags, origin, NULL, 50);
 
-		chance = irand(0,3);
+		rock->r.model = &genfx_models[irand(1, 4)];
 
-		switch(chance)
-		{
-		case 0:
-			effect->r.model = genfx_models + 1;
-			break;
-		case 1:
-			effect->r.model = genfx_models + 2;
-			break;
-		case 2:
-			effect->r.model = genfx_models + 3;
-			break;
-		case 3:
-			effect->r.model = genfx_models + 4;
-			break;
-		}
+		vec3_t work;
+		VectorRandomCopy(dir, work, 0.5f);
+		VectorScale(work, (speed > 1.0f ? speed : flrand(8.0f, 16.0f)), rock->velocity);
 
-		if(speed>1.0f)
-		{
-			VectorRandomCopy(dir, work, 0.5);
-			VectorScale(work, speed, effect->velocity);
-		}
-		else
-		{
-			VectorRandomCopy(dir, work, 0.5);
-			VectorScale(work, flrand(8.0, 16.0), effect->velocity);
-		}
-		
 		if (flags & CEF_FLAG6 || speed > 1.0f)
-		{
-			effect->acceleration[0] += flrand(-75.0, 75.0);
-			effect->acceleration[1] += flrand(-75.0, 75.0);
-			effect->acceleration[2] = flrand(125.0, 250.0);
-		}
+			VectorSet(rock->acceleration, flrand(-75.0f, 75.0f), flrand(-75.0f, 75.0f), flrand(125.0f, 250.0f));
 		else
-			effect->acceleration[2] = flrand(-50.0, 50.0);
+			rock->acceleration[2] = flrand(-50.0f, 50.0f);
 
-		effect->Update = PebbleUpdate;
-		effect->alpha = 1.0;
-		if(speed>1)
-			effect->r.scale = flrand(0.8, 1.5) * speed/100;
+		rock->Update = PebbleUpdate;
+
+		if (speed > 1.0f)
+			rock->r.scale = flrand(0.8f, 1.5f) * speed / 100;
 		else
-			effect->r.scale = flrand(0.1, 0.25);
-		effect->d_scale = 0.0;
-		effect->d_alpha = 0.0;
-		effect->color.c = 0xFFFFFFFF;
-		effect->LifeTime = fxi.cl->time + 5000;
+			rock->r.scale = flrand(0.1f, 0.25f);
 
-		AddEffect(NULL, effect);	// add the effect as independent world effect
+		rock->d_scale = 0.0f;
+		rock->d_alpha = 0.0f;
+		rock->LifeTime = fxi.cl->time + 5000;
+
+		AddEffect(NULL, rock); // Add the effect as independent world effect.
 	}
 }
 
