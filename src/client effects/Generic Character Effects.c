@@ -284,37 +284,37 @@ static qboolean WaterParticleGeneratorUpdate(client_entity_t* self, centity_t* o
 	return true;
 }
 
-
-int wake_particle [6] =
+static void DoWake(client_entity_t* self, const centity_t* owner, const int refpt)
 {
-	PART_4x4_WHITE,
-	PART_8x8_BUBBLE,
-	PART_16x16_WATERDROP,
-	PART_32x32_WFALL,
-	PART_32x32_STEAM,
-	PART_32x32_BUBBLE
-};
+	static int wake_particle[6] =
+	{
+		PART_4x4_WHITE,
+		PART_8x8_BUBBLE,
+		PART_16x16_WATERDROP,
+		PART_32x32_WFALL,
+		PART_32x32_STEAM,
+		PART_32x32_BUBBLE
+	};
 
+	vec3_t org;
+	vec3_t handpt;
+	vec3_t right;
+	vec3_t diff;
+	vec3_t diff2;
+	matrix3_t rotation;
 
-void DoWake(client_entity_t *self, centity_t *owner, int refpt)
-{
-	vec3_t				org, handpt, right, diff, diff2;
-	client_particle_t	*p;
-	matrix3_t			rotation;
-	int					num_parts, i;
-	paletteRGBA_t		LightColor={200, 255, 255, 140};//RGBA
+	const paletteRGBA_t light_color = { .r = 200, .g = 255, .b = 255, .a = 140 };
 
-	VectorSubtract(owner->referenceInfo->references[refpt].placement.origin, 
-			owner->referenceInfo->oldReferences[refpt].placement.origin,
-			diff);
+	VectorSubtract(owner->referenceInfo->references[refpt].placement.origin, owner->referenceInfo->oldReferences[refpt].placement.origin, diff);
 	VectorSubtract(owner->origin, self->endpos, diff2);
 	VectorAdd(diff, diff2, diff);
-	num_parts = (int)(VectorLength(diff));
-	if (num_parts > 6)
-		num_parts = 6;
+
+	int num_parts = (int)(VectorLength(diff));
+	num_parts = min(6, num_parts);
 
 	// Let's take the origin and transform it to the proper coordinate offset from the owner's origin.
 	VectorCopy(owner->referenceInfo->references[refpt].placement.origin, org);
+
 	// Create a rotation matrix
 	Matrix3FromAngles(owner->lerp_angles, rotation);
 	Matrix3MultByVec3(rotation, org, handpt);
@@ -322,34 +322,31 @@ void DoWake(client_entity_t *self, centity_t *owner, int refpt)
 
 	AngleVectors(owner->lerp_angles, NULL, right, NULL);
 
-	for(i = 0; i < num_parts; i++)
+	for (int i = 0; i < num_parts; i++)
 	{
-		if(r_detail->value > DETAIL_LOW)
-			p = ClientParticle_new(wake_particle[irand(0, 5)], LightColor, irand(1000, 2000));
-		else
-			p = ClientParticle_new(wake_particle[irand(0, 5)]|PFL_SOFT_MASK, LightColor, irand(1000, 2000));
+		int type = wake_particle[irand(0, 5)];
+		if ((int)r_detail->value == DETAIL_LOW)
+			type |= PFL_SOFT_MASK;
 
-		VectorSet(p->origin, flrand(-4, 4), flrand(-4, 4), flrand(-4, 4));
+		client_particle_t* p = ClientParticle_new(type, light_color, irand(1000, 2000));
+
+		VectorSet(p->origin, flrand(-4.0f, 4.0f), flrand(-4.0f, 4.0f), flrand(-4.0f, 4.0f));
 		VectorAdd(handpt, p->origin, p->origin);
-		
-		p->scale = flrand(0.75, 1.5);
-		p->color.a = irand(100, 200);
 
-		VectorSet(p->velocity, flrand(-2, 2), flrand(-2, 2), flrand(-2.0, 2.0));
+		p->scale = flrand(0.75f, 1.5f);
+		p->color.a = (byte)irand(100, 200);
 
-		if (irand(0, 1))
-			VectorMA(p->velocity, flrand(-10, -2), right, p->velocity);
-		else
-			VectorMA(p->velocity, flrand(10, 2), right, p->velocity);
+		VectorSet(p->velocity, flrand(-2.0f, 2.0f), flrand(-2.0f, 2.0f), flrand(-2.0f, 2.0f));
 
-		p->acceleration[2] = 16;
-//		p->d_alpha = flrand(-3, -1);
-		p->d_scale = flrand(-0.15, -0.10);
+		const float sign = (irand(0, 1) ? -1.0f : 1.0f);
+		VectorMA(p->velocity, flrand(10, 2) * sign, right, p->velocity);
+
+		p->acceleration[2] = 16.0f;
+		p->d_scale = flrand(-0.15f, -0.1f);
 
 		AddParticleToList(self, p);
 	}
 }
-
 
 qboolean BubbleSpawner(client_entity_t *self, centity_t *owner)
 {
