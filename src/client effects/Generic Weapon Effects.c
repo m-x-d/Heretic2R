@@ -60,25 +60,18 @@ void FXCreateArmorHit(centity_t* owner, const int type, int flags, vec3_t origin
 	}
 }
 
-void CreateExplosionParticles(client_entity_t *this)
+static void CreateExplosionParticles(client_entity_t* this)
 {
 #define NUM_EXPLODE_PARTS	256
 #define EXP_RANGE			16.0f
 #define EXP_SPEED			192.0f
 
-	int					i, count;
-	client_particle_t	*p;
-	paletteRGBA_t		color;
+	const int count = GetScaledCount(NUM_EXPLODE_PARTS, 0.9f);
 
-	count = GetScaledCount(NUM_EXPLODE_PARTS, 0.9);
-	for(i = 0; i < count; i++)
+	for (int i = 0; i < count; i++)
 	{
-		color.r = irand(127, 255);
-		color.g = irand(127, 255);
-		color.b = 0;
-		color.a = 255;
-
-		p = ClientParticle_new(PART_4x4_WHITE, color, 500);
+		const paletteRGBA_t color = { .r = (byte)irand(127, 255), .g = (byte)irand(127, 255), .b = 0, .a = 255 };
+		client_particle_t* p = ClientParticle_new(PART_4x4_WHITE, color, 500);
 
 		VectorSet(p->origin, flrand(-EXP_RANGE, EXP_RANGE), flrand(-EXP_RANGE, EXP_RANGE), flrand(-EXP_RANGE, EXP_RANGE));
 		VectorSet(p->velocity, flrand(-EXP_SPEED, EXP_SPEED), flrand(-EXP_SPEED, EXP_SPEED), flrand(-EXP_SPEED, EXP_SPEED));
