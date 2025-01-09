@@ -62,22 +62,20 @@ void GenericGibTrail(centity_t* owner, const int type, const int flags, vec3_t o
 	ParticleTrailAI(effect, owner); // Think once right away, to spawn the first puff.
 }
 
-qboolean PebbleUpdate(struct client_entity_s *self, centity_t *owner)
+static qboolean PebbleUpdate(struct client_entity_s* self, centity_t* owner)
 {
-	int curTime = fxi.cl->time;
-	float d_time = (curTime - self->lastThinkTime) / 1000.0f;
+	const int cur_time = fxi.cl->time;
+	const float d_time = (float)(cur_time - self->lastThinkTime) / 1000.0f;
 
-	self->acceleration[2] -= 75;
-	self->r.angles[0] += ANGLE_360*d_time;
-	self->r.angles[1] += ANGLE_360*d_time;
-	
-	self->lastThinkTime = fxi.cl->time;
+	self->acceleration[2] -= 75.0f;
+	self->r.angles[0] += ANGLE_360 * d_time;
+	self->r.angles[1] += ANGLE_360 * d_time;
 
-	if (curTime > self->LifeTime)
-		return false;
+	self->lastThinkTime = cur_time;
 
-	return true;
+	return cur_time <= self->LifeTime;
 }
+
 //Slight variation on the normal puff
 void FXOgleHitPuff(centity_t *owner, int type, int flags, vec3_t origin)
 {
