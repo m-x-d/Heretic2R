@@ -35,25 +35,16 @@ static qboolean PlayerFirstSeenInit(struct client_entity_s* self, centity_t* own
 	return true;
 }
 
-void FXPlayerPersistant(centity_t *owner, int type, int flags, vec3_t origin)
+void FXPlayerPersistant(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	client_entity_t		*self;
-	vec_t				gravity;
-
-	// I believe that gravity is contained somewhere in the player/client sturcture already -JKH
-
-	gravity = 675.0;
-
 	flags |= CEF_NO_DRAW;
 
-	self = ClientEntity_new(type, flags, origin, NULL, 17);
-	
+	client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, 17);
+
 	self->Update = NULL;
 	self->AddToView = PlayerFirstSeenInit;
 
 	AddEffect(owner, self);
 
-	fxi.Cvar_SetValue("clfx_gravity", gravity);
+	fxi.Cvar_SetValue("clfx_gravity", GRAVITY); //TODO: already initialized in Init() (in Main.c). Why is it done again here?..
 }
-
-// end
