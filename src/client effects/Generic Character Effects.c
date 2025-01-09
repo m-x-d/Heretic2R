@@ -143,55 +143,48 @@ void FXOgleHitPuff(centity_t* owner, const int type, const int flags, const vec3
 	}
 }
 
-void FXGenericHitPuff(centity_t *owner, int type, int flags, vec3_t origin)
+void FXGenericHitPuff(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	client_entity_t		*effect;
-	vec3_t				dir, work;
-	byte				count;
-	int					i;
+	byte count;
+	vec3_t dir;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_HITPUFF].formatString, dir, &count); // Normalized direction vector.
+	count = min(40, count);
 
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_HITPUFF].formatString, dir, &count);			// normalized direction vector
-
-	if (count>40)
-		count=40;
-
-	for(i = 0; i < count; i++)
+	for (int i = 0; i < count; i++)
 	{
-		effect = ClientEntity_new(type, flags, origin, NULL, 500);
+		client_entity_t* fx = ClientEntity_new(type, flags, origin, NULL, 500);
 
-		effect->r.model = genfx_models;
+		fx->r.model = &genfx_models[0];
+		fx->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
-		effect->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		vec3_t work;
+		VectorRandomCopy(dir, work, 0.5f);
+		VectorScale(work, 50.0f, fx->velocity);
+		fx->acceleration[2] = -100.0f;
+		fx->alpha = 0.5f;
+		fx->r.scale = 0.1f;
+		fx->d_scale = 1.0f;
+		fx->d_alpha = -1.0f;
 
-		VectorRandomCopy(dir, work, 0.5);
-		VectorScale(work, 50.0, effect->velocity);
-		effect->acceleration[2] = -100.0;									  
-		effect->alpha = 0.5;
-		effect->r.scale = 0.1;
-		effect->d_scale = 1.0;
-		effect->d_alpha = -1.0;
-		effect->color.c = 0xFFFFFFFF;
-
-		AddEffect(NULL, effect);	// add the effect as independent world effect
+		AddEffect(NULL, fx); // Add the effect as independent world effect.
 	}
 
 	if (flags & CEF_FLAG6)
-	{	// High-intensity impact point.
-		effect = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 250);
-		
-		effect->r.model = genfx_models + 5;
-		effect->r.frame = 0;
-		effect->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		effect->r.scale = 0.4;
-		effect->alpha = .95;
-		effect->d_scale = -1.6;
-		effect->d_alpha = -3.0;			// Alpha goes up to 1, then down to zero.
-		effect->color.c = 0xc0ffffff;
-		effect->radius = 10.0;
-		effect->alpha = 0.8;
-		effect->r.origin[2] += 8.0;
+	{
+		// High-intensity impact point.
+		client_entity_t* impact = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 250);
 
-		AddEffect(NULL, effect);
+		impact->r.model = &genfx_models[5];
+		impact->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		impact->r.scale = 0.4f;
+		impact->d_scale = -1.6f;
+		impact->d_alpha = -3.0f; // Alpha goes up to 1, then down to zero.
+		impact->color.c = 0xc0ffffff;
+		impact->radius = 10.0f;
+		impact->alpha = 0.8f;
+		impact->r.origin[2] += 8.0f;
+
+		AddEffect(NULL, impact); // Add the effect as independent world effect.
 	}
 }
 
