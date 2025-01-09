@@ -348,35 +348,33 @@ static void DoWake(client_entity_t* self, const centity_t* owner, const int refp
 	}
 }
 
-qboolean BubbleSpawner(client_entity_t *self, centity_t *owner)
+static qboolean BubbleSpawner(client_entity_t* self, const centity_t* owner)
 {
-	vec3_t	org;
+	vec3_t org;
 
-	if(!cl_camera_under_surface->value)
-		return(true);
+	if (!(int)cl_camera_under_surface->value)
+		return true;
 
-	// Errr... what the hell, spawn some bubbles too.
-	VectorSet(org, flrand(-20.0, 20.0), flrand(-20.0 ,20.0), flrand(-20.0 ,20.0));
+	// Spawn some bubbles too.
+	VectorSet(org, flrand(-20.0f, 20.0f), flrand(-20.0f, 20.0f), flrand(-20.0f, 20.0f));
 	VectorAdd(org, owner->origin, org);
 	MakeBubble(org, self);
 
-
 	// Create a wake of bubbles!
-	// ----------------------------------------------------
-	// This tells if we are wasting our time, because the reference points are culled.
-	if (r_detail->value < DETAIL_HIGH || !RefPointsValid(owner))
-		return false;		// Remove the effect in this case.
+	if (r_detail->value >= DETAIL_HIGH && RefPointsValid(owner))
+	{
+		DoWake(self, owner, CORVUS_RIGHTHAND);
+		DoWake(self, owner, CORVUS_LEFTHAND);
+		DoWake(self, owner, CORVUS_RIGHTFOOT);
+		DoWake(self, owner, CORVUS_LEFTFOOT);
 
-	DoWake(self, owner, CORVUS_RIGHTHAND);
-	DoWake(self, owner, CORVUS_LEFTHAND);
-	DoWake(self, owner, CORVUS_RIGHTFOOT);
-	DoWake(self, owner, CORVUS_LEFTFOOT);
+		VectorCopy(owner->origin, self->endpos);
 
-	VectorCopy(owner->origin, self->endpos);
+		return true;
+	}
 
-	return(true);
+	return false; // Remove the effect.
 }
-
 
 void FXWaterParticles(centity_t *owner, int type, int flags, vec3_t origin)
 {			
