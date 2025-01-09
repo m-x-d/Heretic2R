@@ -91,17 +91,12 @@ void GenericExplosion1(centity_t* owner, const int type, const int flags, vec3_t
 	CreateExplosionParticles(effect);
 }
 
-void GenericExplosion2(centity_t *owner, int type, int flags, vec3_t origin)
+void GenericExplosion2(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t *effect;
-
-	effect = ClientEntity_new(type, flags, origin, NULL, 500);
+	client_entity_t* effect = ClientEntity_new(type, flags, origin, NULL, 500);
 
 	effect->flags |= CEF_NO_DRAW;
 
-	AddEffect(NULL, effect);	// add the effect as independent world effect
-
+	AddEffect(NULL, effect); // Add the effect as independent world effect.
 	CreateExplosionParticles(effect);
 }
-
-// end
