@@ -34,7 +34,7 @@ cvar_t* fxTest3; //TODO: unused
 cvar_t* fxTest4; //TODO: unused
 cvar_t* cl_timedemo;
 cvar_t* crosshair;
-cvar_t* compass;
+cvar_t* compass; //TODO: unused
 
 static cvar_t* fx_numinview;
 static cvar_t* fx_numactive;

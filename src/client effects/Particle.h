@@ -140,8 +140,7 @@ typedef struct client_particle_s
 
 // Additional particle flags
 #define PFL_PULSE_ALPHA	0x10000000	// If the alpha delta's to above 255, it "bounces" back down towards zero.
-#define PFL_SOFT_MASK	0x20000000	// For defining single point particles in software (unused in gl - here to stop
-									// people using this bit)
+#define PFL_SOFT_MASK	0x20000000	// For defining single point particles in software (unused in gl - here to stop people using this bit)
 #define PFL_ADDITIVE	0x40000000	// Particle is added to additive particle list
 #define PFL_NEARCULL	0x80000000	// Force near culling
 
