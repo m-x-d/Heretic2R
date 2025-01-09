@@ -49,23 +49,17 @@ static qboolean ParticleTrailAI(const client_entity_t* this, const centity_t* ow
 	return true; // Actual puff spawner only goes away when it owner has a FX_REMOVE_EFFECTS sent on it.
 }
 
-void GenericGibTrail(centity_t *owner, int type, int flags, vec3_t origin)
+void GenericGibTrail(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t *effect;
-
-	effect = ClientEntity_new(type, flags, origin, NULL, PARTICLE_TRAIL_THINK_TIME);
-	
-	effect->flags |= CEF_NO_DRAW;
-
-	effect->color.c = 0xFF2020FF;
-	
-	effect->Update = ParticleTrailAI;
-
 	assert(owner);
 
-	AddEffect(owner, effect);
+	client_entity_t* effect = ClientEntity_new(type, flags, origin, NULL, PARTICLE_TRAIL_THINK_TIME);
+	effect->flags |= CEF_NO_DRAW;
+	effect->color.c = 0xFF2020FF;
+	effect->Update = ParticleTrailAI;
 
-	ParticleTrailAI(effect, owner); // think once right away, to spawn the first puff
+	AddEffect(owner, effect);
+	ParticleTrailAI(effect, owner); // Think once right away, to spawn the first puff.
 }
 
 qboolean PebbleUpdate(struct client_entity_s *self, centity_t *owner)
