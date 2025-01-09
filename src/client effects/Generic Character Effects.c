@@ -587,49 +587,29 @@ static qboolean FXFeetTrailThink(struct client_entity_s* self, const centity_t* 
 	return true;
 }
 
-// ************************************************************************************************
-// FXFeetTrail
-// ------------
-// ************************************************************************************************
-
-void FXFeetTrail(centity_t *owner,int type,int flags,vec3_t origin)
+void FXFeetTrail(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	short			refpoints;
-	client_entity_t	*trail;
-	int				i;
-	int				flame_dur;
-
-	refpoints=(1 << CORVUS_LEFTFOOT) | (1 << CORVUS_RIGHTFOOT);
+	const short refpoints = (1 << CORVUS_LEFTFOOT) | (1 << CORVUS_RIGHTFOOT);
+	const int flame_dur = (r_detail->value > DETAIL_NORMAL ? 50 : 75); //TODO: why is it longer on lower detail settings?
 
 	VectorClear(origin);
 
-	if (r_detail->value > DETAIL_NORMAL)
-		flame_dur = 50;
-	else
-		flame_dur = 75;
-
 	// Add a fiery trail effect to the player's hands / feet etc.
-
-	for(i=0;i<16;i++)
+	for (int i = 0; i < 16; i++)
 	{
-		if(!(refpoints & (1 << i)))
+		if (!(refpoints & (1 << i)))
 			continue;
 
-		trail=ClientEntity_new(type,flags,origin,0,flame_dur);
+		client_entity_t* trail = ClientEntity_new(type, flags, origin, NULL, flame_dur);
 
 		VectorClear(trail->origin);
-		trail->Update=FXFeetTrailThink;
-		trail->flags|=CEF_NO_DRAW | CEF_OWNERS_ORIGIN | CEF_ABSOLUTE_PARTS;
+		trail->Update = FXFeetTrailThink;
+		trail->flags |= (int)(CEF_NO_DRAW | CEF_OWNERS_ORIGIN | CEF_ABSOLUTE_PARTS);
 		trail->radius = 40;
-		trail->AddToView = LinkedEntityUpdatePlacement;			
-		trail->refPoint = i;
-		trail->color.c = 0xe5007fff;
+		trail->AddToView = LinkedEntityUpdatePlacement;
+		trail->refPoint = (short)i;
+		trail->color.c = 0xe5007fff; //TODO: unused?
 
-		AddEffect(owner,trail);
+		AddEffect(owner, trail);
 	}
 }
-
-
-// end
-
-
