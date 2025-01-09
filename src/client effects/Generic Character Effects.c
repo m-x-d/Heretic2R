@@ -497,21 +497,19 @@ static qboolean FXLeaderThink(struct client_entity_s* self, const centity_t* own
 	return true;
 }
 
-// create the entity the flight loops are on
-void FXLeader(centity_t *owner, int type, int flags, vec3_t origin)
+// Create the entity the flight loops are on.
+void FXLeader(centity_t* owner, const int type, int flags, const vec3_t origin)
 {
-	client_entity_t		*glow;
-														  
-	glow = ClientEntity_new(type, flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS, origin, 0, 60);
+	flags |= (int)(CEF_NO_DRAW | CEF_ADDITIVE_PARTS);
+	client_entity_t* glow = ClientEntity_new(type, flags, origin, NULL, 60);
 
 	VectorClear(glow->origin);
 	glow->Update = FXLeaderThink;
 	glow->LifeTime = TOTAL_LEADER_EFFECTS;
 	glow->AddToView = LinkedEntityUpdatePlacement;
-	glow->Scale = 0;
-	
-	AddEffect(owner, glow);
+	glow->Scale = 0.0f;
 
+	AddEffect(owner, glow);
 }
 
 #define FOOTTRAIL_RADIUS	2.0
