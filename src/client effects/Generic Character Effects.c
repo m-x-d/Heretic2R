@@ -376,30 +376,30 @@ static qboolean BubbleSpawner(client_entity_t* self, const centity_t* owner)
 	return false; // Remove the effect.
 }
 
-void FXWaterParticles(centity_t *owner, int type, int flags, vec3_t origin)
-{			
-	client_entity_t *effect;
-
+void FXWaterParticles(centity_t* owner, const int type, int flags, const vec3_t origin)
+{
 	assert(owner);
 
+	flags |= CEF_NO_DRAW | CEF_ABSOLUTE_PARTS | CEF_OWNERS_ORIGIN | CEF_VIEWSTATUSCHANGED; //mxd
+
 	// Spawn static water particle handler
-	effect = ClientEntity_new(type, flags | CEF_NO_DRAW | CEF_ABSOLUTE_PARTS| CEF_OWNERS_ORIGIN | CEF_VIEWSTATUSCHANGED, origin, NULL, PARTICLE_TRAIL_THINK_TIME);
-	
-	effect->AddToView = LinkedEntityUpdatePlacement;
-	effect->radius = 100.0;
-	effect->Update = WaterParticleGeneratorUpdate;
+	client_entity_t* water_fx = ClientEntity_new(type, flags, origin, NULL, PARTICLE_TRAIL_THINK_TIME);
 
-	AddEffect(owner, effect);
+	water_fx->AddToView = LinkedEntityUpdatePlacement;
+	water_fx->radius = 100.0f;
+	water_fx->Update = WaterParticleGeneratorUpdate;
 
-	// Spawn bubble spawner
-	effect = ClientEntity_new(type, flags | CEF_NO_DRAW | CEF_ABSOLUTE_PARTS| CEF_OWNERS_ORIGIN | CEF_VIEWSTATUSCHANGED, origin, NULL, PARTICLE_TRAIL_THINK_TIME);
+	AddEffect(owner, water_fx);
 
-	effect->AddToView = LinkedEntityUpdatePlacement;
-	effect->radius = 100.0;
-	effect->Update = BubbleSpawner;
-	VectorCopy(owner->origin, effect->endpos);
+	// Spawn bubble spawner.
+	client_entity_t* bubble_fx = ClientEntity_new(type, flags, origin, NULL, PARTICLE_TRAIL_THINK_TIME);
 
-	AddEffect(owner, effect);
+	bubble_fx->AddToView = LinkedEntityUpdatePlacement;
+	bubble_fx->radius = 100.0f;
+	bubble_fx->Update = BubbleSpawner;
+	VectorCopy(owner->origin, bubble_fx->endpos);
+
+	AddEffect(owner, bubble_fx);
 }
 
 #define	NUM_FLAME_ITEMS		20
