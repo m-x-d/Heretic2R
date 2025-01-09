@@ -221,18 +221,15 @@ static void SetupWaterParticle(client_particle_t* p, const qboolean recycle)
 	VectorAdd(fxi.cl->refdef.vieworg, dist, p->origin);
 }
 
-void CreateWaterParticles(client_entity_t *self)
+static void CreateWaterParticles(client_entity_t* self)
 {
-	int					i;
-	client_particle_t	*p;
+	// Scale number of particles by detail level.
+	const int detail = (int)(WATER_DENSITY * r_detail->value);
 
-	// Scale number of particles by detail level
-	for(i = 0; i < (WATER_DENSITY * r_detail->value); i++)
+	for (int i = 0; i < detail; i++)
 	{
-		p = ClientParticle_new(PART_4x4_WHITE | PFL_SOFT_MASK, self->color, 1000000);
-		
+		client_particle_t* p = ClientParticle_new(PART_4x4_WHITE | PFL_SOFT_MASK, self->color, 1000000);
 		SetupWaterParticle(p, false);
-
 		AddParticleToList(self, p);
 	}
 }
