@@ -1,22 +1,23 @@
+//
+// Generic Character Effects.c
+//
+// Copyright 1998 Raven Software
+//
+
 #include "Client Effects.h"
 #include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
 #include "Random.h"
-#include "ce_Dlight.h"
 #include "Utilities.h"
 #include "g_playstats.h"
 #include "Matrix.h"
 #include "Reference.h"
 #include "turbsin.h"
 
-extern void MakeBubble(vec3_t loc, client_entity_t *spawner);
+static struct model_s* genfx_models[6];
 
-#define	NUM_GENFX_MODELS	6
-static struct model_s *genfx_models[NUM_GENFX_MODELS];
-void PrecacheOgleHitPuff()
+void PrecacheOgleHitPuff(void)
 {
 	genfx_models[0] = fxi.RegisterModel("sprites/fx/steam_add.sp2");
 	genfx_models[1] = fxi.RegisterModel("models/debris/stone/schunk1/tris.fm");
