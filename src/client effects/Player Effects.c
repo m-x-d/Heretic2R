@@ -10,38 +10,29 @@
 #include "g_playstats.h"
 #include "q_Physics.h"
 
-qboolean PlayerFirstSeenInit(struct client_entity_s *self, centity_t *owner)
+static qboolean PlayerFirstSeenInit(struct client_entity_s* self, centity_t* owner)
 {
-	// Is the modelindex valid? E.g. when a player is dead, his modelindex is 0, hence his
-	// referenceInfo will be invailid.
+	// Is the modelindex valid? E.g. when a player is dead, his modelindex is 0, hence his referenceInfo will be invalid.
+	if (owner->current.modelindex != 255)
+		return false;
 
-	if(owner->current.modelindex!=255)
-		return(false);
-	
 	// Enable all Corvus' reference points.
-
-	self->refMask |= CORVUS_MASK;	
-
+	self->refMask |= CORVUS_MASK;
 	EnableRefPoints(owner->referenceInfo, self->refMask);
 
 	self->AddToView = NULL;
 	self->Update = KeepSelfAI;
 
 	// Spawn the shadow.
-
-	if(r_detail->value >= DETAIL_NORMAL)
+	if (r_detail->value >= DETAIL_NORMAL)
 		FXPlayerShadow(owner, FX_SHADOW, CEF_OWNERS_ORIGIN, owner->origin);
 
-	if(r_detail->value > DETAIL_NORMAL)
+	if (r_detail->value > DETAIL_NORMAL)
 		FXWaterParticles(owner, FX_WATER_PARTICLES, 0, owner->origin);
-
-	//This is a cheap, silly effect that probably could look better and doesn't use the viewstatuschanged flag... urg...
-	//if(compass->value)
-	//	FXCompass(owner, FX_WATER_PARTICLES, 0, owner->origin);
 
 	FXCrosshair(owner, FX_CROSSHAIR, 0, owner->origin);
 
-	return(true);
+	return true;
 }
 
 void FXPlayerPersistant(centity_t *owner, int type, int flags, vec3_t origin)
