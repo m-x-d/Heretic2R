@@ -234,26 +234,24 @@ static void CreateWaterParticles(client_entity_t* self)
 	}
 }
 
-void UpdateWaterParticles(client_entity_t *self)
+static void UpdateWaterParticles(const client_entity_t* self)
 {
-	client_particle_t	*p;
-	vec3_t				part_dist;
-	float				addVal, dist;
-
-	for(p = self->p_root; p; p = p->next)
+	for (client_particle_t* p = self->p_root; p != NULL; p = p->next)
 	{
+		vec3_t part_dist;
 		VectorSubtract(p->origin, fxi.cl->refdef.vieworg, part_dist);
-		dist = VectorLengthSquared(part_dist);
-		if(dist >= WATERPARTICLE_CLIPDIST)
+		const float dist = VectorLengthSquared(part_dist);
+
+		if (dist >= WATERPARTICLE_CLIPDIST)
 		{
 			SetupWaterParticle(p, true);
 			continue;
 		}
 
-		addVal =  SINEAMT/128.0 * turbsin[(int)((fxi.cl->time*0.001 + (self->origin[0] * 2.3 + p->origin[1])*.0015)*SINESCALE) & 255];
-		addVal += SINEAMT/256.0 * turbsin[(int)((fxi.cl->time*0.002 + (self->origin[1] * 2.3 + p->origin[0])*.0015)*SINESCALE) & 255];
-				
-		p->origin[2] += addVal;
+		float add_val = SINEAMT / 128.0f * turbsin[(int)(((float)fxi.cl->time * 0.001f + (self->origin[0] * 2.3f + p->origin[1]) * 0.0015f) * SINESCALE) & 255];
+		add_val +=		SINEAMT / 256.0f * turbsin[(int)(((float)fxi.cl->time * 0.002f + (self->origin[1] * 2.3f + p->origin[0]) * 0.0015f) * SINESCALE) & 255];
+
+		p->origin[2] += add_val;
 		p->duration = fxi.cl->time + 10000000;
 	}
 }
