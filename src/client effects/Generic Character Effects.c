@@ -256,29 +256,32 @@ static void UpdateWaterParticles(const client_entity_t* self)
 	}
 }
 
-qboolean WaterParticleGeneratorUpdate(client_entity_t *self, centity_t *owner)
+static qboolean WaterParticleGeneratorUpdate(client_entity_t* self, centity_t* owner)
 {
 	static qboolean water_particles_spawned;
 
-	// Free up particles when we are not under water
-	if(!cl_camera_under_surface->value)
+	if ((int)cl_camera_under_surface->value)
 	{
-		if(water_particles_spawned)
+		// Create particles when we are under water.
+		if (!water_particles_spawned)
+		{
+			CreateWaterParticles(self);
+			water_particles_spawned = true;
+		}
+
+		UpdateWaterParticles(self);
+	}
+	else
+	{
+		// Free up particles when we are not under water.
+		if (water_particles_spawned)
 		{
 			FreeParticles(self);
 			water_particles_spawned = false;
 		}
 	}
-	else
-	{
-		if(!water_particles_spawned)
-		{
-			CreateWaterParticles(self);
-			water_particles_spawned = true;
-		}
-		UpdateWaterParticles(self);
-	}
- 	return(true);
+
+	return true;
 }
 
 
