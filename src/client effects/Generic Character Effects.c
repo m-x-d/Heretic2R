@@ -188,47 +188,36 @@ void FXGenericHitPuff(centity_t* owner, const int type, const int flags, const v
 	}
 }
 
-// -----------------------------------------
-
 #define SINEAMT					1
-#define SINESCALE				(256.0 / (2 * M_PI))
-#define WATER_DENSITY			150.0
-#define WATER_DIST				100.0
+#define SINESCALE				(256.0f / (2 * M_PI))
+#define WATER_DENSITY			150.0f
+#define WATER_DIST				100.0f
 #define WATERPARTICLE_CLIPDIST	(WATER_DIST * WATER_DIST)
 
-static qboolean water_particles_spawned;
-
-void SetupWaterParticle(client_particle_t *p, qboolean recycle)
+static void SetupWaterParticle(client_particle_t* p, const qboolean recycle)
 {
-	int		ishade;
-	float	shade;
-	vec3_t	dist;
+	const byte ishade = (byte)irand(50, 150);
+	p->color.r = ishade;
+	p->color.g = ishade;
+	p->color.b = ishade;
+	p->color.a = (byte)irand(75, 150);
 
-	ishade = irand(50, 150);
-	p->color.r = (byte)ishade;
-	p->color.g = (byte)ishade;
-	p->color.b = (byte)ishade;
-	p->color.a = irand(75, 150);
+	const float min_vel_z = (((float)ishade * 0.04f) - 3.1f) * 0.35f;
+	VectorSet(p->velocity, flrand(-1.0f, 1.0f), flrand(-1.0f, 1.0f), flrand(min_vel_z, 0.0f));
 
-	shade = ((ishade * 0.04) - 3.1) * 0.35;
+	p->acceleration[2] = 0.0f;
+	p->scale = flrand(0.3f, 0.7f);
 
-	p->velocity[0] = flrand(-1.0F, 1.0F);
-	p->velocity[1] = flrand(-1.0F, 1.0F);
-	p->velocity[2] = flrand(shade, 0.0);
+	vec3_t dist;
+	VectorSet(dist, flrand(-WATER_DIST, WATER_DIST), flrand(-WATER_DIST, WATER_DIST), flrand(-WATER_DIST, WATER_DIST));
 
-	p->acceleration[2] = 0;
-	p->scale = flrand(0.3, 0.7);
-
-	dist[0] = flrand(-WATER_DIST, WATER_DIST);
-	dist[1] = flrand(-WATER_DIST, WATER_DIST);
-	dist[2] = flrand(-WATER_DIST, WATER_DIST);
-
-	// If we are recycling, we want to respawn as far away as possible
-	if(recycle)
+	// If we are recycling, we want to respawn as far away as possible.
+	if (recycle)
 	{
 		VectorNormalize(dist);
 		Vec3ScaleAssign(WATER_DIST, dist);
 	}
+
 	VectorAdd(fxi.cl->refdef.vieworg, dist, p->origin);
 }
 
@@ -274,6 +263,8 @@ void UpdateWaterParticles(client_entity_t *self)
 
 qboolean WaterParticleGeneratorUpdate(client_entity_t *self, centity_t *owner)
 {
+	static qboolean water_particles_spawned;
+
 	// Free up particles when we are not under water
 	if(!cl_camera_under_surface->value)
 	{
