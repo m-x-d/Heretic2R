@@ -45,6 +45,8 @@ extern void RegisterSounds(void); //mxd
 extern void RegisterModels(void); //mxd
 extern void RemoveEffects(centity_t* owner, int type, int flags, vec3_t origin);
 
+extern void MakeBubble(vec3_t loc, client_entity_t* spawner); //mxd
+
 extern void GenericExplosion1(centity_t* owner, int type, int flags, vec3_t origin);
 extern void GenericExplosion2(centity_t* owner, int type, int flags, vec3_t origin);
 extern void GenericGibTrail(centity_t* owner, int type, int flags, vec3_t origin);
@@ -96,6 +98,7 @@ extern void FXScorchmark(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXDebris(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXFleshDebris(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXShadow(centity_t* Owner, int Type, int Flags, vec3_t Origin);
+extern void FXPlayerShadow(centity_t* owner, int type, int flags, vec3_t origin); //mxd
 extern void FXAnimate(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXFountain(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXWaterfallBase(centity_t* Owner, int Type, int Flags, vec3_t Origin);
@@ -121,7 +124,7 @@ extern void FXDustPuffOnGround(centity_t* Owner, int Type, int Flags, vec3_t Ori
 extern void FXFire(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXSound(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXPickup(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXGenericHitPuff(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXGenericHitPuff(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXDust(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXEnvSmoke(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXSpooSplat(centity_t* owner, int type, int flags, vec3_t origin);
@@ -150,13 +153,13 @@ extern void FXRope(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXFireHands(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXShrineBall(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXShrineBallExplode(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXOgleHitPuff(centity_t* Owner, int Type, int Flags, vec3_t Origin);
+extern void FXOgleHitPuff(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXHPMissile(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXIEffects(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXChickenExplode(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXTeleportPad(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXTPortSmoke(centity_t* Owner, int Type, int Flags, vec3_t Origin);
-extern void FXWaterParticles(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXWaterParticles(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXMEffects(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXFlamethrower(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXflametest(centity_t* Owner, int Type, int Flags, vec3_t Origin);
@@ -177,8 +180,8 @@ extern void FXStaffStrike(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXCreateArmorHit(centity_t* owner, int Type, int Flags, vec3_t Origin);
 extern void FXBarrelExplode(centity_t* owner, int Type, int Flags, vec3_t Origin);
 extern void FXCWatcherEffects(centity_t* owner, int Type, int Flags, vec3_t Origin);
-extern void FXCorpseRemove(centity_t* Owner, int Type, int Flags, vec3_t Origin);
-extern void FXLeader(centity_t* Owner, int Type, int Flags, vec3_t Origin);
+extern void FXCorpseRemove(centity_t* owner, int type, int flags, const vec3_t origin);
+extern void FXLeader(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXTornado(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXTornadoBall(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXTornadoBallExplode(centity_t* owner, int type, int flags, vec3_t origin);
