@@ -1,18 +1,18 @@
+//
+// Generic Weapon Effects.c
+//
+// Copyright 1998 Raven Software
+//
+
 #include "Client Effects.h"
 #include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
 #include "Random.h"
 #include "Utilities.h"
 #include "q_Sprite.h"
 
-#define NUM_EXPLODE_PARTS	256
-#define EXP_RANGE			16.0
-#define EXP_SPEED			192.0
-
-static struct model_s *armorhit_models[1];
+static struct model_s* armorhit_models[1];
 
 void PreCacheArmorHit(void)
 {
@@ -67,6 +67,10 @@ void FXCreateArmorHit(centity_t *owner,int Type,int Flags,vec3_t Origin)
 
 void CreateExplosionParticles(client_entity_t *this)
 {
+#define NUM_EXPLODE_PARTS	256
+#define EXP_RANGE			16.0f
+#define EXP_SPEED			192.0f
+
 	int					i, count;
 	client_particle_t	*p;
 	paletteRGBA_t		color;
