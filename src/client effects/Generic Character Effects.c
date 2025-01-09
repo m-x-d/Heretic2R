@@ -512,87 +512,79 @@ void FXLeader(centity_t* owner, const int type, int flags, const vec3_t origin)
 	AddEffect(owner, glow);
 }
 
-#define FOOTTRAIL_RADIUS	2.0
-#define FOOTTRAIL_SCALE	8.0
-#define FOOTTRAIL_ACCEL	20.0
-
-
-static qboolean FXFeetTrailThink(struct client_entity_s *self,centity_t *owner)
+static qboolean FXFeetTrailThink(struct client_entity_s* self, const centity_t* owner)
 {
+#define FOOTTRAIL_RADIUS	2.0f
+#define FOOTTRAIL_SCALE		8.0f
+#define FOOTTRAIL_ACCEL		20.0f
 
-	client_particle_t	*flame;
-	int					i;
-	vec3_t				firestart, origin;
-	matrix3_t			rotation;
-	int					hand_flame_dur;
-	paletteRGBA_t		color;
-	int					count;
-	vec3_t				curpos, diff;
-
-	// This tells if we are wasting our time, because the reference points are culled.
-	if (!RefPointsValid(owner))
-		return true; 
-
-	// if we are ghosted, don't do the effect
-	if ((owner->current.renderfx & RF_TRANS_GHOST) || (owner->current.effects & EF_CLIENT_DEAD)) 
-		return(true);
+	// If the reference points are culled, or we are ghosted or dead, don't do the effect.
+	if (!RefPointsValid(owner) || (owner->current.renderfx & RF_TRANS_GHOST) || (owner->current.effects & EF_CLIENT_DEAD))
+		return true;
 
 	if (!(owner->current.effects & EF_SPEED_ACTIVE))
 	{
-		self->Update=RemoveSelfAI;
+		self->Update = RemoveSelfAI;
 		self->updateTime = fxi.cl->time + 1500;
-		return true ;
+
+		return true;
 	}
 
 	// Let's take the origin and transform it to the proper coordinate offset from the owner's origin.
+	vec3_t firestart;
 	VectorCopy(owner->referenceInfo->references[self->refPoint].placement.origin, firestart);
+
 	// Create a rotation matrix
+	matrix3_t rotation;
 	Matrix3FromAngles(owner->lerp_angles, rotation);
+
+	vec3_t origin;
 	Matrix3MultByVec3(rotation, firestart, origin);
 	VectorAdd(origin, owner->origin, origin);
 
 	if (Vec3NotZero(self->origin))
 	{
-		
-		// create small particles
-		count = GetScaledCount(5, 0.5);
+		// Create small particles
+		const int count = GetScaledCount(5, 0.5f);
+
+		vec3_t diff;
 		VectorSubtract(self->origin, origin, diff);
-		Vec3ScaleAssign((1.0 / count), diff);
+		Vec3ScaleAssign(1.0f / (float)count, diff);
+
+		vec3_t curpos;
 		VectorClear(curpos);
 
+		int hand_flame_dur;
 		if (r_detail->value < DETAIL_NORMAL)
 			hand_flame_dur = 1500;
 		else
 			hand_flame_dur = 2000;
 
-		for(i = 0; i < count; i++)
-		{
-	  		color.c = 0xffffff40;
+		const paletteRGBA_t color = { .c = 0xffffff40 };
 
-			flame = ClientParticle_new(PART_32x32_STEAM, color, hand_flame_dur);
-			VectorSet(	flame->origin, 
-						flrand(-FOOTTRAIL_RADIUS, FOOTTRAIL_RADIUS), 
-						flrand(-FOOTTRAIL_RADIUS, FOOTTRAIL_RADIUS), 
-						flrand(-FOOTTRAIL_RADIUS, FOOTTRAIL_RADIUS));
+		for (int i = 0; i < count; i++)
+		{
+			client_particle_t* flame = ClientParticle_new(PART_32x32_STEAM, color, hand_flame_dur);
+
+			VectorSet(flame->origin, flrand(-FOOTTRAIL_RADIUS, FOOTTRAIL_RADIUS), flrand(-FOOTTRAIL_RADIUS, FOOTTRAIL_RADIUS), flrand(-FOOTTRAIL_RADIUS, FOOTTRAIL_RADIUS));
 			VectorAdd(flame->origin, self->origin, flame->origin);
 			VectorAdd(flame->origin, curpos, flame->origin);
-		
+
 			flame->scale = FOOTTRAIL_SCALE;
-			VectorSet(flame->velocity, flrand(-5.0, 5.0), flrand(-5, 5.0), flrand(5.0, 15.0));
+			VectorSet(flame->velocity, flrand(-5.0f, 5.0f), flrand(-5.0f, 5.0f), flrand(5.0f, 15.0f));
 			flame->acceleration[2] = FOOTTRAIL_ACCEL;
-			flame->d_scale = flrand(-10.0, -5.0);
-			flame->d_alpha = flrand(-200.0, -160.0);
-			flame->duration = (255.0 * 1000.0) / -flame->d_alpha;		// time taken to reach zero alpha
+			flame->d_scale = flrand(-10.0f, -5.0f);
+			flame->d_alpha = flrand(-200.0f, -160.0f);
+			flame->duration = (int)((255.0f * 1000.0f) / -flame->d_alpha); // Time needed to reach zero alpha.
 
 			AddParticleToList(self, flame);
 			Vec3SubtractAssign(diff, curpos);
 		}
 	}
-  
+
 	VectorCopy(origin, self->origin);
 
-	
-	return(true);
+	return true;
 }
 
 // ************************************************************************************************
