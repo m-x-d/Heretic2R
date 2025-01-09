@@ -402,74 +402,61 @@ void FXWaterParticles(centity_t* owner, const int type, int flags, const vec3_t 
 	AddEffect(owner, bubble_fx);
 }
 
+void FXCorpseRemove(centity_t* owner, const int type, int flags, const vec3_t origin)
+{
 #define	NUM_FLAME_ITEMS		20
 #define NUM_FLAME_PARTS		40
 #define FLAME_ABSVEL		120
 
-void FXCorpseRemove(centity_t *Owner, int Type, int Flags, vec3_t Origin)
-{
-	client_entity_t		*flameitem;
-	float				curAng, vel, vel1;
-	int					count, i;
-	client_particle_t	*p;
-	paletteRGBA_t		color;
+	int count = GetScaledCount(NUM_FLAME_ITEMS, 0.95f);
+	count = ClampI(count, 8, 20);
 
-	count = GetScaledCount(NUM_FLAME_ITEMS, 0.95);
-	// Bound this between 8 and 16 sprites.
-	if (count > 20)
-		count=20;
-	else if (count < 8)
-		count=8;
+	// Create main client entity.
+	flags |= CEF_NO_DRAW;
+	client_entity_t* flame_fx = ClientEntity_new(type, flags, origin, NULL, 600);
+	flame_fx->radius = 10.0f;
+	flame_fx->color.c = 0xffffffff;
+	AddEffect(NULL, flame_fx);
 
-	// create main client entity
-	flameitem = ClientEntity_new(Type, Flags | CEF_NO_DRAW , Origin, NULL, 600);
-	flameitem->radius = 10.0F;
-	flameitem->color.c = 0xffffffff;
-	AddEffect(NULL, flameitem);
+	// Are we destroying a rat?
+	const float vel1 = (float)((flags & CEF_FLAG6) ? FLAME_ABSVEL / 2 : FLAME_ABSVEL);
 
-	// are we destroying a rat ?
-	if (Flags & CEF_FLAG6)
-		vel1 = FLAME_ABSVEL/2;
-	else
-		vel1 = FLAME_ABSVEL;
-
-	// large particles
-	for(curAng = 0.0F; curAng < (M_PI * 2.0F); curAng += (M_PI * 2.0F) / count)
+	// Large particles.
+	float angle = 0.0f;
+	while (angle < ANGLE_360)
 	{
-		p = ClientParticle_new(PART_32x32_BLACKSMOKE, flameitem->color, 600);
+		client_particle_t* bp = ClientParticle_new(PART_32x32_BLACKSMOKE, flame_fx->color, 600);
 
-		p->scale = 16.0;
-		p->d_scale = -25.0;
+		bp->scale = 16.0f;
+		bp->d_scale = -25.0f;
 
-		VectorSet(p->velocity, vel1 * cos(curAng), vel1 * sin(curAng), 0);
-		VectorScale(p->velocity, -0.3, p->acceleration);
-//		p->type |= PFL_ADDITIVE;
+		VectorSet(bp->velocity, vel1 * cosf(angle), vel1 * sinf(angle), 0.0f);
+		VectorScale(bp->velocity, -0.3f, bp->acceleration);
 
-		AddParticleToList(flameitem, p);
+		AddParticleToList(flame_fx, bp);
 
+		angle += ANGLE_360 / (float)count;
 	}
 
-	color.c = 0xff4f4f4f;
-	count = GetScaledCount(NUM_FLAME_PARTS, 0.1);
-	// small particles
-	for (i=0;i<count;i++)
+	const paletteRGBA_t color = { .c = 0xff4f4f4f };
+	count = GetScaledCount(NUM_FLAME_PARTS, 0.1f);
+
+	// Small particles.
+	for (int i = 0; i < count; i++)
 	{
+		client_particle_t* sp = ClientParticle_new(PART_4x4_WHITE, color, 600);
 
-		p = ClientParticle_new(PART_4x4_WHITE, color, 600);
+		sp->scale = 1.0f;
+		sp->d_scale = -1.0f;
 
-		p->scale = 1.0;
-		p->d_scale = -1.0;
+		angle = flrand(0, ANGLE_360);
+		const float vel = flrand(vel1, vel1 * 2.5f);
+		VectorSet(sp->velocity, vel * cosf(angle), vel * sinf(angle), 0);
+		VectorScale(sp->velocity, -0.3f, sp->acceleration);
+		sp->type |= PFL_ADDITIVE | PFL_SOFT_MASK;
 
-		curAng =  flrand(0,(M_PI * 2.0F));
-		vel = flrand(vel1,vel1*2.5);
-		VectorSet(p->velocity, vel * cos(curAng), vel * sin(curAng), 0);
-		VectorScale(p->velocity, -0.3, p->acceleration);
-		p->type |= PFL_ADDITIVE | PFL_SOFT_MASK;
-
-		AddParticleToList(flameitem, p);
-
+		AddParticleToList(flame_fx, sp);
 	}
-
 }
 
 
