@@ -27,15 +27,7 @@ void PrecacheOgleHitPuff(void)
 	genfx_models[5] = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
 
-#define NUM_WATERPART_MODELS 1
-static struct model_s *WaterParticle_models[NUM_WATERPART_MODELS];
-#define NUM_COMPASS_MODELS 1
-static struct model_s *compass_models[NUM_COMPASS_MODELS];
-void PreCacheWaterParticles()
-{
-	WaterParticle_models[0] = fxi.RegisterModel("sprites/lens/flare3.sp2");
-	compass_models[0] = fxi.RegisterModel("sprites/fx/compass.sp2");
-}
+void PreCacheWaterParticles(void) { } //TODO: remove?
 
 // -----------------------------------------------------------------------------------------
 
