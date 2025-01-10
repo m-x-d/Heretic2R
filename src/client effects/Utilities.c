@@ -1,23 +1,25 @@
-#include "Utilities.h"
+//
+// Utilities.c
+//
+// Copyright 1998 Raven Software
+//
 
+#include "Utilities.h"
 #include "Client Effects.h"
-#include "FX.h"
-#include "random.h"
+#include "Random.h"
 #include "Matrix.h"
 #include "Vector.h"
 #include "Reference.h"
-#include "motion.h"
+#include "Motion.h"
 #include "Particle.h"
 #include "ce_DLight.h"
 #include "g_playstats.h"
-#include "Skeletons.h"
 
+// Setup for circular list.
+client_entity_t* CircularList[MAX_ENTRIES_IN_CIRCLE_LIST + 1];
+int total_circle_entries;
 
-// setup for circular list
-client_entity_t *CircularList[MAX_ENTRIES_IN_CIRCLE_LIST + 1];
-int				CurrentCirclePointer = 0;
-int				total_circle_entries;
-
+static int CurrentCirclePointer = 0;
 
 //------------------------------------------------------------------
 // Update funcs
