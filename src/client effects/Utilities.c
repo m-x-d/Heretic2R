@@ -466,10 +466,11 @@ int GetScaledCount(const int count, float refdepend) //TODO: remove 2-nd arg?
 	return Q_ftol(max(work, 1.0f));
 }
 
-void AdvanceParticle(client_particle_t *p, int ms)
+void AdvanceParticle(client_particle_t* p, const int ms)
 {
-	GetPositionOverTime(p->origin, p->velocity, p->acceleration, ms * 0.001, p->origin);
-	GetVelocityOverTime(p->velocity, p->acceleration, ms * 0.001, p->velocity);
+	const float time = (float)ms * 0.001f;
+	GetPositionOverTime(p->origin, p->velocity, p->acceleration, time, p->origin);
+	GetVelocityOverTime(p->velocity, p->acceleration, time, p->velocity);
 }
 
 // -----------------------------------------------------------------
