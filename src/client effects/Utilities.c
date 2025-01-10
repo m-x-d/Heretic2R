@@ -174,28 +174,32 @@ int GetFallTime(vec3_t origin, const float velocity, const float acceleration, c
 	return (int)(GetTimeToReachDistance(velocity, acceleration, trace->endpos[2] - origin[2])); // In ms.
 }
 
-// Returns false if no plane found b4 maxdist travelled, or non water plane hit
-// Returns true, the plane normal of plane hit and the distance to the plane if a plane hit
-
-int GetWaterNormal(vec3_t origin, float radius, float maxdist, vec3_t normal, vec_t *dist)
+// Returns false if no plane found before maxdist traveled, or non-water plane hit.
+// Returns true, the plane normal of plane hit and the distance to the plane if a plane hit.
+int GetWaterNormal(vec3_t origin, const float radius, const float maxdist, vec3_t normal, float* dist)
 {
-	vec3_t		mins, maxs, start, end;
-	trace_t		trace;
+	vec3_t mins;
+	vec3_t maxs;
+	vec3_t start;
+	vec3_t end;
+	trace_t trace;
 
-	VectorSet(mins, -radius, -radius, -1.0F);
-	VectorSet(maxs, radius, radius, 1.0F);
+	VectorSet(mins, -radius, -radius, -1.0f);
+	VectorSet(maxs, radius, radius, 1.0f);
 	VectorCopy(origin, end);
 	VectorCopy(origin, start);
 	start[2] += maxdist;
 	end[2] -= maxdist;
 
 	fxi.Trace(origin, mins, maxs, end, MASK_DRIP, CEF_CLIP_TO_WORLD, &trace);
-	if((trace.fraction == 1.0F) || (trace.contents & MASK_SOLID))
-		return(false);
+
+	if (trace.fraction == 1.0f || (trace.contents & MASK_SOLID))
+		return false;
 
 	VectorCopy(trace.plane.normal, normal);
 	*dist = (end[2] - origin[2]) * trace.fraction;
-	return(true);
+
+	return true;
 }
 
 void FXDoWaterEntrySplash(centity_t *Owner,int Type,int Flags,vec3_t Origin, byte SplashSize, vec3_t Dir);
