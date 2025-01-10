@@ -971,7 +971,7 @@ void Key_Event(int key, const qboolean down, const uint time)
 	qboolean is_doubletap_key = false;
 
 	// H2
-	if (cls.key_dest != key_menu && (int)(time - key_doubletap_delays[key]) < (int)doubletap_speed->value)
+	if (cls.key_dest != key_menu && time - key_doubletap_delays[key] < (uint)doubletap_speed->value)
 	{
 		key_doubletaps[key] = true;
 		is_doubletap_key = true;
