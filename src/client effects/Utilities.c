@@ -202,43 +202,31 @@ int GetWaterNormal(vec3_t origin, const float radius, const float maxdist, vec3_
 	return true;
 }
 
-void FXDoWaterEntrySplash(centity_t *Owner,int Type,int Flags,vec3_t Origin, byte SplashSize, vec3_t Dir);
-void FXWaterRipples(centity_t *Owner, int Type, int Flags, vec3_t Origin);
-void FXBubble(centity_t *Owner, int Type, int Flags, vec3_t Origin);
-void FireSparks(centity_t *owner, int type, int flags, vec3_t origin, vec3_t dir);
-void FXDarkSmoke(vec3_t origin, float scale, float range);
-qboolean FXDebris_Vanish(struct client_entity_s *self,centity_t *owner);
-qboolean FXDebris_Remove(struct client_entity_s *self,centity_t *owner);
-
-void FizzleEffect (client_entity_t *self, vec3_t surface_top, vec3_t normal)
+void FizzleEffect(const client_entity_t* self, vec3_t surface_top, vec3_t normal)
 {
 	vec3_t spot;
-	int	num_puffs, i;
 
-	if(self)
-	{
-		if(self->dlight)
-			self->dlight->intensity = 0;//lights out
-	}
-	if(irand(0, 3))
-	{
-		fxi.S_StartSound(surface_top, -1, CHAN_AUTO,
-			fxi.S_RegisterSound(va("ambient/lavadrop%c.wav", irand('1', '3'))), 1, ATTN_STATIC, 0);
-	}
+	if (self != NULL && self->dlight != NULL)
+		self->dlight->intensity = 0; // Lights out.
+
+	char* snd_name;
+	if (irand(0, 3))
+		snd_name = va("ambient/lavadrop%i.wav", irand(1, 3));
 	else
+		snd_name = "misc/lavaburn.wav";
+
+	fxi.S_StartSound(surface_top, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1, ATTN_STATIC, 0);
+
+	const int num_puffs = GetScaledCount(irand(2, 5), 0.3f);
+	for (int i = 0; i < num_puffs; i++)
 	{
-		fxi.S_StartSound(surface_top, -1, CHAN_AUTO,
-			fxi.S_RegisterSound("misc/lavaburn.wav"), 1, ATTN_STATIC, 0);
+		spot[0] = surface_top[0] + flrand(-3.0f, 3.0f);
+		spot[1] = surface_top[1] + flrand(-3.0f, 3.0f);
+		spot[2] = surface_top[2] + flrand(0.0f, 3.0f);
+
+		FXDarkSmoke(spot, flrand(0.2f, 0.5f), flrand(30.0f, 50.0f));
 	}
 
-	num_puffs = GetScaledCount(irand(2, 5), 0.3);
-	for(i = 0; i<num_puffs; i++)
-	{
-		spot[0] = surface_top[0] + flrand(-3, 3);
-		spot[1] = surface_top[1] + flrand(-3, 3);
-		spot[2] = surface_top[2] + flrand(0, 3);
-		FXDarkSmoke(spot, flrand(0.2, 0.5), flrand(30, 50));
-	}
 	FireSparks(NULL, FX_SPARKS, 0, surface_top, normal);
 }
 
