@@ -496,37 +496,35 @@ qboolean ReferencesInitialized(const centity_t* owner) //TODO: no longer needed?
 void EnableRefPoints(LERPedReferences_t* ref_info, int mask) { } //TODO: remove?
 void DisableRefPoints(LERPedReferences_t* ref_info, int mask) { } //TODO: remove?
 
-// add a blood splat or a scorchmark to the circular list - removing an entity thats next in the list if there is one
-void InsertInCircularList(client_entity_t *self)
+// Add a blood splat or a scorchmark to the circular list - removing an entity that's next in the list if there is one.
+void InsertInCircularList(client_entity_t* self)
 {
-    client_entity_t **root;
-	client_entity_t **prev;
-	client_entity_t *current;
+	client_entity_t** prev;
+	client_entity_t* current;
 
-	root = &clientEnts;
+	client_entity_t** root = &clientEnts;
 
-	// if we have an entry already - delete it
-	if(CircularList[CurrentCirclePointer])
+	// If we have an entry already - delete it.
+	if (CircularList[CurrentCirclePointer] != NULL)
 	{
-		// search for this client entities entry in the client entity list
-		for(prev = root, current = *root; current; current = current->next)
+		// Search for this client entities entry in the client entity list.
+		for (prev = root, current = *root; current != NULL; current = current->next)
 		{
-			if(current == CircularList[CurrentCirclePointer])
+			if (current == CircularList[CurrentCirclePointer])
 			{
-				RemoveEffectFromList(prev,NULL);
+				RemoveEffectFromList(prev, NULL);
 				break;
 			}
-			prev = &(*prev)->next; 
+
+			prev = &(*prev)->next;
 		}
 	}
-	// add in new one
+
+	// Add in new one.
 	CircularList[CurrentCirclePointer] = self;
 	CurrentCirclePointer++;
-	// delimit the pointer
+
+	// Delimit the pointer.
 	if (CurrentCirclePointer >= total_circle_entries)
 		CurrentCirclePointer = 0;
 }
-
-
-// -----------------------------------------------------------------
-// end
