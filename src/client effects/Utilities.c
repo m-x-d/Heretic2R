@@ -473,13 +473,10 @@ void AdvanceParticle(client_particle_t* p, const int ms)
 	GetVelocityOverTime(p->velocity, p->acceleration, time, p->velocity);
 }
 
-// -----------------------------------------------------------------
-// We don`t have access to "sv_gravity" so we keep a local client fx
-// copy. It is set to same default as on the server.
-		
-float GetGravity()
+// We don`t have access to "sv_gravity" so we keep a local client fx copy. It is set to same default as on the server.
+float GetGravity(void)
 {
-	return(-clfx_gravity->value);
+	return -clfx_gravity->value;
 }
 
 #pragma endregion
