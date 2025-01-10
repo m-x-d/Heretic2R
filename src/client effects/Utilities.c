@@ -115,17 +115,17 @@ qboolean ReferenceLinkedEntityUpdatePlacement(struct client_entity_s* self, cons
 
 #pragma endregion
 
-//------------------------------------------------------------------
-// Message Response Helper Funcs
-//------------------------------------------------------------------
+#pragma region ========================== Message response helper functions ==========================
 
-void BecomeStatic(client_entity_t *self)
+void BecomeStatic(client_entity_t* self)
 {
 	VectorClear(self->velocity);
 	VectorClear(self->acceleration);
 
 	self->flags &= ~CEF_CLIP_TO_WORLD;
 }
+
+#pragma endregion
 
 //------------------------------------------------------------------
 // Physics Funcs
