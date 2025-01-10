@@ -100,8 +100,8 @@ extern char* referenceRootNames[];
 extern int referenceRootNameOffsets[];
 extern int numReferences[];
 
-void EnableRefPoints(LERPedReferences_t* refInfo, int mask);
-void DisableRefPoints(LERPedReferences_t* refInfo, int mask);
+void EnableRefPoints(LERPedReferences_t* ref_info, int mask);
+void DisableRefPoints(LERPedReferences_t* ref_info, int mask);
 
 void InitReferenceMngr(void);
 void ReleaseReferenceMngr(void);

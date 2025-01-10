@@ -488,29 +488,13 @@ qboolean RefPointsValid(const centity_t* owner)
 	return (owner->referenceInfo != NULL && !(owner->current.renderfx & RF_IGNORE_REFS) && owner->referenceInfo->lastUpdate - (float)fxi.cl->time <= REF_MINCULLTIME);
 }
 
-// FIXME Obsolete
-qboolean ReferencesInitialized(centity_t *owner)
+qboolean ReferencesInitialized(const centity_t* owner) //TODO: no longer needed?
 {
-	if(!owner->referenceInfo)
-	{	// this probably shouldn't happen, if it does, let me know, JKH
-//		assert(0);
-		return false;
-	}
-
-	return true;
+	return (owner->referenceInfo != NULL);
 }
 
-// FIXME Obsolete
-void EnableRefPoints(LERPedReferences_t *refInfo, int mask)
-{
-//	assert(refInfo);
-}
-
-// FIXME Obsolete
-void DisableRefPoints(LERPedReferences_t *refInfo, int mask)
-{
-//	assert(refInfo);
-}
+void EnableRefPoints(LERPedReferences_t* ref_info, int mask) { } //TODO: remove?
+void DisableRefPoints(LERPedReferences_t* ref_info, int mask) { } //TODO: remove?
 
 // add a blood splat or a scorchmark to the circular list - removing an entity thats next in the list if there is one
 void InsertInCircularList(client_entity_t *self)
