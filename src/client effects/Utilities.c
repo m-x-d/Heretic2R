@@ -482,17 +482,11 @@ float GetGravity(void)
 #pragma endregion
 
 // Tells if we have not rendered this reference point for a while.
-qboolean RefPointsValid(centity_t *owner)
+qboolean RefPointsValid(const centity_t* owner)
 {
-	if (owner->referenceInfo==NULL || 
-			owner->current.renderfx & RF_IGNORE_REFS ||			// This one is necessary in case we're a chicken.
-			owner->referenceInfo->lastUpdate - fxi.cl->time > REF_MINCULLTIME)
-		return false;
-	else
-		return true;
+	// RF_IGNORE_REFS check is necessary in case we're a chicken.
+	return (owner->referenceInfo != NULL && !(owner->current.renderfx & RF_IGNORE_REFS) && owner->referenceInfo->lastUpdate - (float)fxi.cl->time <= REF_MINCULLTIME);
 }
-
-
 
 // FIXME Obsolete
 qboolean ReferencesInitialized(centity_t *owner)
