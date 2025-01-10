@@ -102,42 +102,15 @@ qboolean OffsetLinkedEntityUpdatePlacement(client_entity_t* current, const centi
 	return true;
 }
 
-qboolean ReferenceLinkedEntityUpdatePlacement(struct client_entity_s *self, centity_t *owner)
+qboolean ReferenceLinkedEntityUpdatePlacement(struct client_entity_s* self, const centity_t* owner)
 {
-	matrix3_t rotation;
-	vec3_t up, direction;
-	vec3_t up2, direction2;
-	vec3_t origin;
-
 	// This tells if we are wasting our time, because the reference points are culled.
 	if (!RefPointsValid(owner))
 		return true;
 
 	VectorCopy(owner->referenceInfo->references[self->refPoint].placement.origin, self->origin);
 
-	Matrix3FromAngles(owner->lerp_angles, rotation);
-
-	Matrix3MultByVec3(rotation, self->origin, origin);
-
-	if(self->r.flags & RF_FIXED)
-	{
-		VectorAdd(self->origin, self->direction, direction);
-		VectorAdd(self->origin, self->up, up);
-
-		Matrix3MultByVec3(rotation, direction, direction2);
-		Matrix3MultByVec3(rotation, up, up2);
-
-		Vec3SubtractAssign(origin, direction2);
-		Vec3SubtractAssign(origin, up2);
-
-		AnglesFromDirAndUp(direction2, up2, self->r.angles);
-	}
-
-	self->r.origin[0] = owner->origin[0] + origin[0];
-	self->r.origin[1] = owner->origin[1] + origin[1];
-	self->r.origin[2] = owner->origin[2] + origin[2];
-
-	return true;
+	return OffsetLinkedEntityUpdatePlacement(self, owner); //mxd
 }
 
 #pragma endregion
