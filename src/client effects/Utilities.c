@@ -447,38 +447,23 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 	return true;
 }
 
-// -----------------------------------------------------------------
-// Takes desired count and scales it by the desired frame rates
-// relationship with actual framerate
-// Second parameter is the impact of this effect on the renderer (0.0 - 1.0)
-// eg Huge transparent alpha mapped sprites should have a high refdepend.
-// Due to the limits of cyrix processors, we have no way of accurately
-// determining the time spent in the ref dll, so this feature is not
-// implemented yet.
-
-int GetScaledCount(int count, float refdepend)
+// Takes desired count and scales it by the desired frame rates relationship with actual framerate.
+int GetScaledCount(const int count, float refdepend) //TODO: remove 2-nd arg?
 {
-	float	work;
+	float work;
 
-	// if we are doing a time demo, we don't want scaleability
-	if (cl_timedemo->value)
-		work = count;
+	// If we are doing a time demo, we don't want scalability.
+	if ((int)cl_timedemo->value)
+		work = (float)count;
 	else
-		work = count * fxi.cls->framemodifier;
+		work = (float)count * fxi.cls->framemodifier;
 
-	if (r_detail->value == DETAIL_NORMAL)
-		work = work * 0.75;
-	else
-	if (r_detail->value == DETAIL_LOW)
-		work = work * 0.5;
+	if ((int)r_detail->value == DETAIL_NORMAL)
+		work *= 0.75f;
+	else if ((int)r_detail->value == DETAIL_LOW)
+		work *= 0.5f;
 
-	if(work < 1.0)
-	{
-		work = 1.0;
-	}
-
-
-	return(Q_ftol(work));
+	return Q_ftol(max(work, 1.0f));
 }
 
 void AdvanceParticle(client_particle_t *p, int ms)
