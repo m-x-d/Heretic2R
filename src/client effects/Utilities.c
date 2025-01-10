@@ -127,33 +127,34 @@ void BecomeStatic(client_entity_t* self)
 
 #pragma endregion
 
-//------------------------------------------------------------------
-// Physics Funcs
-//------------------------------------------------------------------
+#pragma region ========================== Physics functions ==========================
 
-// Returns whether solid world is there
-// Sets dist to distance to solid or maxdist if no solid
-// If maxdist < 0 - returns distance to floor
-// If maxdist > 0 - returns distance to ceiling
-
-int GetSolidDist(vec3_t origin, vec_t radius, float maxdist, vec_t *dist)
+// Returns whether solid world is there.
+// Sets dist to distance to solid or maxdist if no solid.
+// If maxdist < 0 returns distance to floor.
+// If maxdist > 0 returns distance to ceiling.
+int GetSolidDist(vec3_t origin, const float radius, const float maxdist, float* dist)
 {
-	vec3_t		mins, maxs, end;
-	trace_t		trace;
+	vec3_t mins;
+	vec3_t maxs;
+	vec3_t end;
+	trace_t trace;
 
-	VectorSet(mins, -radius, -radius, -1.0F);
-	VectorSet(maxs, radius, radius, 1.0F);
+	VectorSet(mins, -radius, -radius, -1.0f);
+	VectorSet(maxs, radius, radius, 1.0f);
 	VectorCopy(origin, end);
 	end[2] += maxdist;
+
 	fxi.Trace(origin, mins, maxs, end, MASK_DRIP, CEF_CLIP_TO_WORLD, &trace);
 
-	if(trace.fraction == 1.0F)
+	if (trace.fraction == 1.0f)
 	{
 		*dist = maxdist;
-		return(false);
+		return false;
 	}
+
 	*dist = trace.endpos[2] - origin[2];
-	return(true);
+	return true;
 }
 
 // Gets time for a ce to fall to the ground
@@ -510,7 +511,7 @@ float GetGravity()
 	return(-clfx_gravity->value);
 }
 
-// -----------------------------------------------------------------
+#pragma endregion
 
 // Tells if we have not rendered this reference point for a while.
 qboolean RefPointsValid(centity_t *owner)
