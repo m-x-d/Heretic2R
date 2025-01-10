@@ -68,20 +68,20 @@ static void Clear(void)
 
 	CL_ClearLightStyles();
 
-	memset(&CircularList[0], 0, sizeof(CircularList));
+	memset(&circular_list[0], 0, sizeof(circular_list));
 
 	switch ((int)r_detail->value)
 	{
 		case DETAIL_LOW:
-			total_circle_entries = 30;
+			circular_list_size = 30;
 			break;
 
 		case DETAIL_NORMAL:
-			total_circle_entries = 50;
+			circular_list_size = 50;
 			break;
 
 		default: // DETAIL_HIGH / DETAIL_UBERHIGH
-			total_circle_entries = MAX_ENTRIES_IN_CIRCLE_LIST;
+			circular_list_size = MAX_ENTRIES_IN_CIRCLE_LIST;
 			break;
 	}
 }

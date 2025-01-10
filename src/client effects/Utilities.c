@@ -16,10 +16,10 @@
 #include "g_playstats.h"
 
 // Setup for circular list.
-client_entity_t* CircularList[MAX_ENTRIES_IN_CIRCLE_LIST + 1];
-int total_circle_entries;
+client_entity_t* circular_list[MAX_ENTRIES_IN_CIRCLE_LIST + 1];
+int circular_list_size;
 
-static int CurrentCirclePointer = 0;
+static int circular_list_index = 0;
 
 #pragma region ========================== Update functions ==========================
 
@@ -505,12 +505,12 @@ void InsertInCircularList(client_entity_t* self)
 	client_entity_t** root = &clientEnts;
 
 	// If we have an entry already - delete it.
-	if (CircularList[CurrentCirclePointer] != NULL)
+	if (circular_list[circular_list_index] != NULL)
 	{
 		// Search for this client entities entry in the client entity list.
 		for (prev = root, current = *root; current != NULL; current = current->next)
 		{
-			if (current == CircularList[CurrentCirclePointer])
+			if (current == circular_list[circular_list_index])
 			{
 				RemoveEffectFromList(prev, NULL);
 				break;
@@ -521,10 +521,10 @@ void InsertInCircularList(client_entity_t* self)
 	}
 
 	// Add in new one.
-	CircularList[CurrentCirclePointer] = self;
-	CurrentCirclePointer++;
+	circular_list[circular_list_index] = self;
+	circular_list_index++;
 
 	// Delimit the pointer.
-	if (CurrentCirclePointer >= total_circle_entries)
-		CurrentCirclePointer = 0;
+	if (circular_list_index >= circular_list_size)
+		circular_list_index = 0;
 }
