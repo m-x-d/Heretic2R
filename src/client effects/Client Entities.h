@@ -168,8 +168,3 @@ extern int AddEffectsToView(client_entity_t** root, centity_t* owner);
 extern void AddEffect(centity_t* owner, client_entity_t* fx);
 extern int UpdateEffects(client_entity_t** root, centity_t* owner);
 extern qboolean AddEntityToView(entity_t* ent);
-extern void InsertInCircularList(client_entity_t* self);
-
-#define MAX_ENTRIES_IN_CIRCLE_LIST	70
-extern client_entity_t* circular_list[MAX_ENTRIES_IN_CIRCLE_LIST + 1];
-extern int circular_list_size;

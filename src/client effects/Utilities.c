@@ -16,9 +16,9 @@
 #include "g_playstats.h"
 
 // Setup for circular list.
-client_entity_t* circular_list[MAX_ENTRIES_IN_CIRCLE_LIST + 1];
-int circular_list_size;
-
+#define MAX_ENTRIES_IN_CIRCULAR_LIST	70
+static client_entity_t* circular_list[MAX_ENTRIES_IN_CIRCULAR_LIST + 1];
+static int circular_list_size;
 static int circular_list_index = 0;
 
 #pragma region ========================== Update functions ==========================
@@ -527,4 +527,24 @@ void InsertInCircularList(client_entity_t* self)
 	// Delimit the pointer.
 	if (circular_list_index >= circular_list_size)
 		circular_list_index = 0;
+}
+
+void ClearCircularList(void) //mxd
+{
+	memset(&circular_list[0], 0, sizeof(circular_list));
+
+	switch ((int)r_detail->value)
+	{
+		case DETAIL_LOW:
+			circular_list_size = 30;
+			break;
+
+		case DETAIL_NORMAL:
+			circular_list_size = 50;
+			break;
+
+		default: // DETAIL_HIGH / DETAIL_UBERHIGH
+			circular_list_size = MAX_ENTRIES_IN_CIRCULAR_LIST;
+			break;
+	}
 }
