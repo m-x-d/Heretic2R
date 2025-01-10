@@ -326,7 +326,7 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 
 	// If the world is frozen then add the particles, just don't update the world time. Always update the particle timer.
 	if (!fx_FreezeWorld)
-		ParticleUpdateTime = fxi.cl->time;
+		ParticleUpdateTime = cur_time;
 
 	for (prev = root, current = *root; current != NULL; current = current->next)
 	{
