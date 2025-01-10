@@ -276,6 +276,9 @@
     <ClCompile Include="..\qcommon\Debug.c">
       <Filter>qcommon</Filter>
     </ClCompile>
+    <ClCompile Include="..\qcommon\Reference.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\qcommon\qcommon.h">
@@ -546,6 +549,9 @@
       <Filter>qcommon</Filter>
     </ClInclude>
     <ClInclude Include="..\qcommon\FlexModel.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qcommon\Reference.h">
       <Filter>qcommon</Filter>
     </ClInclude>
   </ItemGroup>

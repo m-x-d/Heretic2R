@@ -22,17 +22,14 @@ qboolean viewoffset_changed; // H2
 
 static vec3_t look_angles;
 
-//TODO: ref_type can potentially be in 0 .. 3 range. Why only joint_id_types[0] is defined?
+//mxd. Very similar to LERPedReferences_new().
 static LERPedReferences_t* AllocateLERPedReference(const int ref_type)
 {
-	static int joint_ids[] = { 1, 1, -1, -1, 1, 1, 1 };
-	static int* joint_id_types[] = { joint_ids, NULL, NULL, NULL };
-
 	LERPedReferences_t* ref = ResMngr_AllocateResource(&cl_FXBufMngr, LERPEDREF_SIZE);
 
 	ref->refType = ref_type;
-	ref->jointIDs = joint_id_types[ref_type];
-	ref->lastUpdate = -2.0f;
+	ref->jointIDs = jointIDs[ref_type];
+	ref->lastUpdate = -(REF_MINCULLTIME * 2.0f);
 
 	memset(ref->references, 0, sizeof(ref->references));
 	memset(ref->oldReferences, 0, sizeof(ref->oldReferences));

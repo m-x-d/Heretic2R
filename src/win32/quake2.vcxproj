@@ -76,6 +76,7 @@
     <ClCompile Include="..\qcommon\net_chan.c" />
     <ClCompile Include="..\qcommon\pmove.c" />
     <ClCompile Include="..\qcommon\p_dll.c" />
+    <ClCompile Include="..\qcommon\Reference.c" />
     <ClCompile Include="..\qcommon\Skeletons.c" />
     <ClCompile Include="..\qcommon\tokens.c" />
     <ClCompile Include="..\server\sv_ccmds.c" />
@@ -174,6 +175,7 @@
     <ClInclude Include="..\qcommon\q_Physics.h" />
     <ClInclude Include="..\qcommon\q_Typedef.h" />
     <ClInclude Include="..\qcommon\Random.h" />
+    <ClInclude Include="..\qcommon\Reference.h" />
     <ClInclude Include="..\qcommon\ResourceManager.h" />
     <ClInclude Include="..\qcommon\Skeletons.h" />
     <ClInclude Include="..\qcommon\tokens.h" />

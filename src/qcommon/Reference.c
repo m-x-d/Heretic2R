@@ -55,7 +55,7 @@ int numReferences[NUM_REFERENCED] =
 	NUM_REFERENCES_MORK,
 };
 
-int corvusJointIDs[NUM_REFERENCES_CORVUS] =
+static int corvusJointIDs[NUM_REFERENCES_CORVUS] =
 {
 	CORVUS_UPPERBACK,
 	CORVUS_UPPERBACK,

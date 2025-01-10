@@ -99,6 +99,7 @@ enum
 extern char* referenceRootNames[];
 extern int referenceRootNameOffsets[];
 extern int numReferences[];
+extern int* jointIDs[NUM_REFERENCED]; //mxd
 
 void EnableRefPoints(LERPedReferences_t* ref_info, int mask);
 void DisableRefPoints(LERPedReferences_t* ref_info, int mask);
