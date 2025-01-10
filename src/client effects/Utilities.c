@@ -21,17 +21,16 @@ int total_circle_entries;
 
 static int CurrentCirclePointer = 0;
 
-//------------------------------------------------------------------
-// Update funcs
-//------------------------------------------------------------------
+#pragma region ========================== Update functions ==========================
 
-qboolean RemoveSelfAI(client_entity_t *this, centity_t *owner)
+qboolean RemoveSelfAI(client_entity_t* this, centity_t* owner)
 {
-	return(false);	// removed after one think (nextThinkTime is lifetime)
+	return false; // Removed after one think (nextThinkTime is lifetime).
 }
-qboolean KeepSelfAI(client_entity_t *this, centity_t *owner)
+
+qboolean KeepSelfAI(client_entity_t* this, centity_t* owner)
 {
-	return(true);	// Remain alive forever
+	return true; // Remain alive forever.
 }
 
 qboolean AttemptRemoveSelf(client_entity_t *self, centity_t *owner)
@@ -60,6 +59,8 @@ qboolean AttemptRemoveSelf(client_entity_t *self, centity_t *owner)
 
 	return true;
 }
+
+#pragma endregion
 
 //------------------------------------------------------------------
 // AddToView funcs
