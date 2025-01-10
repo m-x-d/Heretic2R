@@ -71,18 +71,19 @@ qboolean LinkedEntityUpdatePlacement(client_entity_t* current, const centity_t* 
 	return true;
 }
 
-qboolean OffsetLinkedEntityUpdatePlacement(client_entity_t *current, centity_t *owner)
+qboolean OffsetLinkedEntityUpdatePlacement(client_entity_t* current, const centity_t* owner)
 {
 	matrix3_t rotation;
-	vec3_t up, direction;
-	vec3_t up2, direction2;
+	vec3_t up;
+	vec3_t direction;
+	vec3_t up2;
+	vec3_t direction2;
 	vec3_t origin;
 
 	Matrix3FromAngles(owner->lerp_angles, rotation);
-
 	Matrix3MultByVec3(rotation, current->origin, origin);
 
-	if(current->r.flags & RF_FIXED)
+	if (current->r.flags & RF_FIXED)
 	{
 		VectorAdd(current->origin, current->direction, direction);
 		VectorAdd(current->origin, current->up, up);
@@ -96,9 +97,7 @@ qboolean OffsetLinkedEntityUpdatePlacement(client_entity_t *current, centity_t *
 		AnglesFromDirAndUp(direction2, up2, current->r.angles);
 	}
 
-	current->r.origin[0] = owner->origin[0] + origin[0];
-	current->r.origin[1] = owner->origin[1] + origin[1];
-	current->r.origin[2] = owner->origin[2] + origin[2];
+	VectorAdd(owner->origin, origin, current->r.origin);
 
 	return true;
 }
