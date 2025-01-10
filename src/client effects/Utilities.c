@@ -48,17 +48,16 @@ qboolean AttemptRemoveSelf(client_entity_t* self, centity_t* owner)
 
 #pragma endregion
 
-//------------------------------------------------------------------
-// AddToView funcs
-//------------------------------------------------------------------
+#pragma region ========================== AddToView functions ==========================
 
-qboolean LinkedEntityUpdatePlacement(client_entity_t *current, centity_t *owner)
+qboolean LinkedEntityUpdatePlacement(client_entity_t* current, const centity_t* owner)
 {
-	matrix3_t rotation;
-	vec3_t up, direction;
+	vec3_t up;
+	vec3_t direction;
 
-	if(current->r.flags & RF_FIXED)
+	if (current->r.flags & RF_FIXED)
 	{
+		matrix3_t rotation;
 		Matrix3FromAngles(owner->lerp_angles, rotation);
 
 		Matrix3MultByVec3(rotation, current->direction, direction);
@@ -67,9 +66,7 @@ qboolean LinkedEntityUpdatePlacement(client_entity_t *current, centity_t *owner)
 		AnglesFromDirAndUp(direction, up, current->r.angles);
 	}
 
-	current->r.origin[0] = owner->origin[0];
-	current->r.origin[1] = owner->origin[1];
-	current->r.origin[2] = owner->origin[2];
+	VectorCopy(owner->origin, current->r.origin);
 
 	return true;
 }
@@ -143,6 +140,8 @@ qboolean ReferenceLinkedEntityUpdatePlacement(struct client_entity_s *self, cent
 
 	return true;
 }
+
+#pragma endregion
 
 //------------------------------------------------------------------
 // Message Response Helper Funcs
