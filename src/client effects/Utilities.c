@@ -157,21 +157,21 @@ int GetSolidDist(vec3_t origin, const float radius, const float maxdist, float* 
 	return true;
 }
 
-// Gets time for a ce to fall to the ground
-
-int GetFallTime(vec3_t origin, vec_t veloc, vec_t accel, vec_t radius, float maxtime, trace_t *trace)
+// Gets time for a client_entity_t to fall to the ground.
+int GetFallTime(vec3_t origin, const float velocity, const float acceleration, const float radius, const float maxtime, trace_t* trace)
 {
-	vec3_t		mins, maxs, end;
-	float		time;
+	vec3_t mins;
+	vec3_t maxs;
+	vec3_t end;
 
-	VectorSet(mins, -radius, -radius, -1.0F);
-	VectorSet(maxs, radius, radius, 1.0F);
+	VectorSet(mins, -radius, -radius, -1.0f);
+	VectorSet(maxs, radius, radius, 1.0f);
 	VectorCopy(origin, end);
-	end[2] += (veloc * maxtime) + accel * (maxtime * maxtime) * 0.5;		// from s = ut + 0.5at^2
+	end[2] += (velocity * maxtime) + acceleration * (maxtime * maxtime) * 0.5f; // From s = ut + 0.5at^2
 
 	fxi.Trace(origin, mins, maxs, end, MASK_DRIP, CEF_CLIP_TO_WORLD, trace);
-	time = GetTimeToReachDistance(veloc, accel, trace->endpos[2] - origin[2]);
-	return(time);													// in ms
+
+	return (int)(GetTimeToReachDistance(velocity, acceleration, trace->endpos[2] - origin[2])); // In ms.
 }
 
 // Returns false if no plane found b4 maxdist travelled, or non water plane hit
