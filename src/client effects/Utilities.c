@@ -33,30 +33,16 @@ qboolean KeepSelfAI(client_entity_t* this, centity_t* owner)
 	return true; // Remain alive forever.
 }
 
-qboolean AttemptRemoveSelf(client_entity_t *self, centity_t *owner)
+qboolean AttemptRemoveSelf(client_entity_t* self, centity_t* owner)
 {
-	if(self->flags & (CEF_NO_DRAW|CEF_DISAPPEARED|CEF_DROPPED))
-	{
+	if (self->flags & (CEF_NO_DRAW | CEF_DISAPPEARED | CEF_DROPPED))
 		return false;
-	}
 
-	if(self->flags & CEF_CULLED)
-	{
-		if(self->r.depth > CFX_CULLING_DIST)
-		{
-			return false;
-		}
-	}
-	else
-	{
-		if(self->r.depth > r_farclipdist->value)
-		{
-			return false;
-		}		
-	}
+	const float max_dist = ((self->flags & CEF_CULLED) ? CFX_CULLING_DIST : r_farclipdist->value);
+	if (self->r.depth > max_dist)
+		return false;
 
 	self->updateTime = 400;
-
 	return true;
 }
 
