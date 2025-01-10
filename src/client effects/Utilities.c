@@ -230,228 +230,221 @@ void FizzleEffect(const client_entity_t* self, vec3_t surface_top, vec3_t normal
 	FireSparks(NULL, FX_SPARKS, 0, surface_top, normal);
 }
 
-qboolean Physics_MoveEnt(client_entity_t *self, float d_time, float d_time2, trace_t *trace)
+qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, trace_t* trace)
 {
-	vec3_t		end, move, attempt;
-	vec3_t		mins, maxs, dir, surface_top;
-	float		hit_angle;
-	int			material;
-	entity_t	*r = &self->r;
-	qboolean	do_effect = false;
+	vec3_t end;
+	vec3_t move;
+	vec3_t attempt;
+	vec3_t mins;
+	vec3_t maxs;
+	vec3_t dir;
+	vec3_t surface_top;
 
-	if(Vec3IsZero(self->velocity))
+	entity_t* r = &self->r;
+
+	if (Vec3IsZero(self->velocity) || Vec3IsZero(self->acceleration))
 		return false;
 
-	if(Vec3IsZero(self->acceleration))
-		return false;
-
-	//BTW, make more debris leave particle trails, like dust for wood, pebbles for rock, etc.
-	if(self->SpawnInfo&SIF_INWATER)
+	// Make more debris leave particle trails, like dust for wood, pebbles for rock, etc.
+	if (self->SpawnInfo & SIF_INWATER)
 	{
-		//leave several bubbles?
-		d_time*=0.5;
-		d_time2*=0.5;
+		// Leave several bubbles?
+		d_time *= 0.5f;
+		d_time2 *= 0.5f;
 	}
-	else if(self->SpawnInfo&SIF_INLAVA)
+	else if (self->SpawnInfo & SIF_INLAVA)
 	{
-		d_time*=0.01;
-		d_time2*=0.01;
+		d_time *= 0.01f;
+		d_time2 *= 0.01f;
 	}
-	else if(self->SpawnInfo&SIF_INMUCK)
+	else if (self->SpawnInfo & SIF_INMUCK)
 	{
-		//leave a ripple or two?
-		d_time*=0.05;
-		d_time2*=0.05;
+		// Leave a ripple or two?
+		d_time *= 0.05f;
+		d_time2 *= 0.05f;
 	}
 
-	attempt[0] = self->velocity[0] * d_time + self->acceleration[0] * d_time2;
-	attempt[1] = self->velocity[1] * d_time + self->acceleration[1] * d_time2;
-	attempt[2] = self->velocity[2] * d_time + self->acceleration[2] * d_time2;
+	for (int i = 0; i < 3; i++)
+		attempt[i] = self->velocity[i] * d_time + self->acceleration[i] * d_time2;
 
-	// may need an individual mins and maxs, probably want to put into an optional
-	// physics_info struct
-	mins[0] = mins[1] = mins[2] = -(maxs[0] = maxs[1] = maxs[2] = self->radius);
-
+	// May need an individual mins and maxs, probably want to put into an optional physics_info struct.
+	VectorSet(mins, -self->radius, -self->radius, -self->radius);
+	VectorSet(maxs, self->radius, self->radius, self->radius);
 	VectorAdd(r->origin, attempt, end);
 
-	fxi.Trace(r->origin, mins, maxs, end, MASK_SHOT|MASK_WATER, self->flags, trace);
+	fxi.Trace(r->origin, mins, maxs, end, MASK_SHOT | MASK_WATER, self->flags, trace);
 
-	if((trace->fraction < 1.0) && !trace->allsolid && !trace->startsolid && !Vec3IsZeroEpsilon(trace->plane.normal))
-	{
-		if(trace->surface->flags&SURF_SKY)
-		{//remove it
-			self->Update = FXDebris_Remove;
-			self->updateTime = fxi.cl->time + 0.1;
-			return false;
-		}
-
-		d_time *= trace->fraction;
-
-		VectorScale(attempt, d_time, move);
-
-		Vec3AddAssign(move, r->origin);
-
-		self->velocity[0] += self->acceleration[0] * d_time;
-		self->velocity[1] += self->acceleration[1] * d_time;
-		self->velocity[2] += self->acceleration[2] * d_time;
-
-		VectorCopy(attempt, dir);
-		VectorNormalize(dir);
-
-		VectorMA(r->origin, self->radius*0.5, dir, surface_top);
-
-		hit_angle = DotProduct(dir, trace->plane.normal);
-
-		if(r_detail->value < DETAIL_UBERHIGH || !irand(0, 1))
-			do_effect = true;
-
-		if(trace->contents & CONTENTS_WATER && !(self->SpawnInfo&SIF_INWATER))
-		{
-			if(self->flags&CEF_FLAG6)
-			{
-				self->flags &= ~CEF_FLAG6;
-				FizzleEffect(self, surface_top, trace->plane.normal);
-			}
-
-			self->SpawnInfo |= SIF_INWATER;//in water now, sink a little slower
-			//spawn ripples, splash
-			if(do_effect)
-			{
-				FXDoWaterEntrySplash(NULL, FX_WATER_ENTRYSPLASH, 0, surface_top, 64, trace->plane.normal);
-			}
-
-
-			if(flrand(-0.5, 0) < hit_angle)
-			{//splash sound
-				if(do_effect)
-				{
-					fxi.S_StartSound(r->origin, -1, CHAN_AUTO,
-							fxi.S_RegisterSound(va("misc/splish%c.wav", irand('2', '3'))), 1, ATTN_STATIC, 0);
-				}
-				QPostMessage(self, MSG_COLLISION, "g", trace);	// this will be processed next
-				return true;
-			}
-			
-			material = self->SpawnInfo & SIF_FLAG_MASK;
-			if(material!=MAT_WOOD)//wood floats, everything else can keep sinking
-			{//bubbles and blurp sound
-				if(do_effect)
-				{
-					FXBubble(NULL, FX_BUBBLE, 0, surface_top);
-					fxi.S_StartSound(r->origin, -1, CHAN_AUTO,
-							fxi.S_RegisterSound("misc/splish1.wav"), 1, ATTN_STATIC, 0);
-				}
-				fxi.Trace(trace->endpos, mins, maxs, end, MASK_SHOT, self->flags, trace);
-				if(trace->fraction < 1.0)
-				{
-					d_time *= trace->fraction;
-
-					VectorScale(attempt, d_time, move);
-
-					Vec3AddAssign(move, r->origin);
-
-					self->velocity[0] += self->acceleration[0] * d_time;
-					self->velocity[1] += self->acceleration[1] * d_time;
-					self->velocity[2] += self->acceleration[2] * d_time;
-				}
-				else
-				{
-					Vec3AddAssign(attempt, r->origin);
-
-					self->velocity[0] += self->acceleration[0] * d_time;
-					self->velocity[1] += self->acceleration[1] * d_time;
-					self->velocity[2] += self->acceleration[2] * d_time;
-				}
-			}
-			else//sit on surface
-			{//splash sound
-				if(do_effect)
-				{
-					fxi.S_StartSound(r->origin, -1, CHAN_AUTO,
-							fxi.S_RegisterSound(va("player/waterrun%c.wav", irand('1', '2'))), 1, ATTN_STATIC, 0);
-				}
-				VectorCopy(surface_top, r->origin);
-				VectorClear(self->velocity);
-				VectorClear(self->acceleration);
-				self->d_alpha = -0.2;
-				self->Update = FXDebris_Vanish;
-				self->updateTime = fxi.cl->time + 0.1;
-			}
-			return false;//no need to update trace counter if not sending collision
-		}
-		else if(trace->contents & CONTENTS_SLIME&& !(self->SpawnInfo&SIF_INMUCK))
-		{
-			if(self->flags&CEF_FLAG6)
-			{
-				self->flags &= ~CEF_FLAG6;
-				if(do_effect)
-				{
-					FizzleEffect(self, surface_top, trace->plane.normal);
-				}
-			}
-
-			self->SpawnInfo |= SIF_INMUCK;//in muck, sink really really slowly
-			//spawn ripples, splash
-			if(do_effect)
-			{
-				FXDoWaterEntrySplash(NULL, FX_WATER_ENTRYSPLASH, 0, surface_top, 64, trace->plane.normal);
-			}
-
-			if(flrand(-0.75, 0) < hit_angle)
-			{//splash sound
-				if(do_effect)
-				{
-					fxi.S_StartSound(r->origin, -1, CHAN_AUTO,
-						fxi.S_RegisterSound(va("player/waterrun%c.wav", irand('1', '2'))), 1, ATTN_STATIC, 0);
-				}
-				QPostMessage(self, MSG_COLLISION, "g", trace);	// this will be processed next
-				return true;
-			}
-
-			//bubbles and blurp sound
-			if(do_effect)
-			{
-				FXBubble(NULL, FX_BUBBLE, 0, surface_top);
-				fxi.S_StartSound(r->origin, -1, CHAN_AUTO,
-						fxi.S_RegisterSound("objects/submerge.wav"), 1, ATTN_STATIC, 0);
-			}
-			VectorCopy(surface_top, r->origin);
-			self->d_alpha = -0.01;
-			self->Update = FXDebris_Vanish;
-			self->updateTime = fxi.cl->time + 0.1;
-
-			return false;//no need to update trace counter if not sending collision
-		}
-		else if(trace->contents & CONTENTS_LAVA && !(self->SpawnInfo&SIF_INLAVA))
-		{
-			self->flags &= ~CEF_FLAG6;
-			self->SpawnInfo |= SIF_INLAVA;//in lava now, continue to burn
-			//smoke puffs and sizzle here
-			if(do_effect)
-			{
-				FizzleEffect(self, surface_top, trace->plane.normal);
-			}
-			VectorCopy(surface_top, r->origin);
-			self->d_scale = -0.2;
-			self->Update = FXDebris_Vanish;
-			self->updateTime = fxi.cl->time + 0.1;
-			return false;
-		}
-
-		QPostMessage(self, MSG_COLLISION, "g", trace);	// this will be processed next
-														// works just like a recursive call
-		return true;
-	}
-	else
+	if (trace->fraction == 1.0f || trace->allsolid || trace->startsolid || Vec3IsZeroEpsilon(trace->plane.normal))
 	{
 		Vec3AddAssign(attempt, r->origin);
 
-		self->velocity[0] += self->acceleration[0] * d_time;
-		self->velocity[1] += self->acceleration[1] * d_time;
-		self->velocity[2] += self->acceleration[2] * d_time;
+		for (int i = 0; i < 3; i++)
+			self->velocity[i] += self->acceleration[i] * d_time;
+
+		return false;
 	}
 
-	return false;
+	if (trace->surface->flags & SURF_SKY)
+	{
+		// Remove it.
+		self->Update = FXDebris_Remove;
+		self->updateTime = fxi.cl->time + 0.1f; //TODO: this makes no sense. updateTime is added to fxi.cl->time in UpdateEffects(). Should be just 1? 
+
+		return false;
+	}
+
+	d_time *= trace->fraction;
+
+	VectorScale(attempt, d_time, move);
+	Vec3AddAssign(move, r->origin);
+
+	for (int i = 0; i < 3; i++)
+		self->velocity[i] += self->acceleration[i] * d_time;
+
+	VectorCopy(attempt, dir);
+	VectorNormalize(dir);
+
+	VectorMA(r->origin, self->radius * 0.5f, dir, surface_top);
+
+	const float hit_angle = DotProduct(dir, trace->plane.normal);
+	const qboolean do_splash_effect = (r_detail->value < DETAIL_UBERHIGH || irand(0, 1)); //TODO: 'r_detail->value < DETAIL_UBERHIGH' check seems strange. Show 50% LESS often on uberhigh?..
+
+	// When in water.
+	if (trace->contents & CONTENTS_WATER && !(self->SpawnInfo & SIF_INWATER))
+	{
+		if (self->flags & CEF_FLAG6)
+		{
+			self->flags &= ~CEF_FLAG6;
+			FizzleEffect(self, surface_top, trace->plane.normal);
+		}
+
+		self->SpawnInfo |= SIF_INWATER; // In water now, sink a little slower.
+
+		// Spawn ripples, splash.
+		if (do_splash_effect)
+			FXDoWaterEntrySplash(NULL, FX_WATER_ENTRYSPLASH, 0, surface_top, 64, trace->plane.normal);
+
+		if (flrand(-0.5f, 0.0f) < hit_angle)
+		{
+			// Splash sound.
+			if (do_splash_effect)
+				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("misc/splish%i.wav", irand(2, 3))), 1, ATTN_STATIC, 0);
+
+			QPostMessage(self, MSG_COLLISION, "g", trace); // This will be processed next.
+
+			return true;
+		}
+
+		const int material = (self->SpawnInfo & SIF_FLAG_MASK);
+
+		if (material != MAT_WOOD) // Wood floats, everything else can keep sinking.
+		{
+			// Bubbles and blurp sound.
+			if (do_splash_effect)
+			{
+				FXBubble(NULL, FX_BUBBLE, 0, surface_top);
+				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/splish1.wav"), 1, ATTN_STATIC, 0);
+			}
+
+			fxi.Trace(trace->endpos, mins, maxs, end, MASK_SHOT, self->flags, trace);
+
+			if (trace->fraction < 1.0f)
+			{
+				d_time *= trace->fraction;
+
+				VectorScale(attempt, d_time, move);
+				Vec3AddAssign(move, r->origin);
+			}
+			else
+			{
+				Vec3AddAssign(attempt, r->origin);
+			}
+
+			for (int i = 0; i < 3; i++)
+				self->velocity[i] += self->acceleration[i] * d_time;
+		}
+		else // Sit on surface.
+		{
+			// Splash sound.
+			if (do_splash_effect)
+				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("player/waterrun%i.wav", irand(1, 2))), 1, ATTN_STATIC, 0);
+
+			VectorCopy(surface_top, r->origin);
+			VectorClear(self->velocity);
+			VectorClear(self->acceleration);
+			self->d_alpha = -0.2f;
+			self->Update = FXDebris_Vanish;
+			self->updateTime = fxi.cl->time + 0.1f; //TODO: this makes no sense. updateTime is added to fxi.cl->time in UpdateEffects(). Should be just 1? 
+		}
+
+		return false; // No need to update trace counter if not sending collision.
+	}
+
+	// When in slime
+	if (trace->contents & CONTENTS_SLIME && !(self->SpawnInfo & SIF_INMUCK))
+	{
+		if (self->flags & CEF_FLAG6)
+		{
+			self->flags &= ~CEF_FLAG6;
+
+			if (do_splash_effect) //TODO: no such check for water. Why?..
+				FizzleEffect(self, surface_top, trace->plane.normal);
+		}
+
+		self->SpawnInfo |= SIF_INMUCK; // In muck, sink really really slowly.
+
+		// Spawn ripples, splash.
+		if (do_splash_effect)
+			FXDoWaterEntrySplash(NULL, FX_WATER_ENTRYSPLASH, 0, surface_top, 64, trace->plane.normal);
+
+		if (flrand(-0.75f, 0) < hit_angle)
+		{
+			// Splash sound.
+			if (do_splash_effect)
+				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("player/waterrun%i.wav", irand(1, 2))), 1, ATTN_STATIC, 0);
+
+			QPostMessage(self, MSG_COLLISION, "g", trace); // This will be processed next.
+
+			return true;
+		}
+
+		// Bubbles and blurp sound.
+		if (do_splash_effect)
+		{
+			FXBubble(NULL, FX_BUBBLE, 0, surface_top);
+			fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound("objects/submerge.wav"), 1, ATTN_STATIC, 0);
+		}
+
+		VectorCopy(surface_top, r->origin);
+		self->d_alpha = -0.01f;
+		self->Update = FXDebris_Vanish;
+		self->updateTime = fxi.cl->time + 0.1f; //TODO: this makes no sense. updateTime is added to fxi.cl->time in UpdateEffects(). Should be just 1? 
+
+		return false; // No need to update trace counter if not sending collision.
+	}
+
+	// When in lava.
+	if (trace->contents & CONTENTS_LAVA && !(self->SpawnInfo & SIF_INLAVA))
+	{
+		self->flags &= ~CEF_FLAG6;
+		self->SpawnInfo |= SIF_INLAVA; // In lava now, continue to burn.
+
+		// Smoke puffs and sizzle here.
+		if (do_splash_effect)
+			FizzleEffect(self, surface_top, trace->plane.normal);
+
+		VectorCopy(surface_top, r->origin);
+		self->d_scale = -0.2f;
+		self->Update = FXDebris_Vanish;
+		self->updateTime = fxi.cl->time + 0.1f; //TODO: this makes no sense. updateTime is added to fxi.cl->time in UpdateEffects(). Should be just 1? 
+
+		return false;
+	}
+
+	QPostMessage(self, MSG_COLLISION, "g", trace); // This will be processed next.
+
+	// Works just like a recursive call.
+	return true;
 }
 
 // -----------------------------------------------------------------
