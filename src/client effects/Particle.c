@@ -240,24 +240,18 @@ void FreeParticles(client_entity_t* ce)
 	}
 }
 
-client_particle_t *ClientParticle_new(int type, paletteRGBA_t color, int duration)
+client_particle_t* ClientParticle_new(const int type, const paletteRGBA_t color, const int duration)
 {
-	client_particle_t	*p;
-
-	p = ResMngr_AllocateResource(&ParticleMngr, sizeof(client_particle_t));
+	client_particle_t* p = ResMngr_AllocateResource(&ParticleMngr, sizeof(client_particle_t));
 	memset(p, 0, sizeof(client_particle_t));
 
 	p->acceleration[2] = -PARTICLE_GRAVITY;
-
 	p->startTime = ParticleUpdateTime;
 	p->duration = duration;
-
 	p->type = type;
-	p->scale = 1.0F;
+	p->scale = 1.0f;
 	p->color = color;
+	p->d_alpha = -255.0f / (flrand(0.8f, 1.0f) * (float)duration / 1000.0f);
 
-	p->d_alpha = -255.0 / (flrand(0.8F, 1.0F) * duration * (1.0F / 1000.0F));
-	return(p);
+	return p;
 }
-
-// end
