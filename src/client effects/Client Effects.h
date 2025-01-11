@@ -176,7 +176,7 @@ extern void FXRandWaterBubble(centity_t* Owner, int Type, int Flags, vec3_t Orig
 extern void FXBubble(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXMagicPortal(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXTBEffects(centity_t* owner, int type, int flags, vec3_t org);
-extern void FXTestBBox(centity_t* Owner, int Type, int Flags, vec3_t Origin);
+extern void FXTestBBox(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXSsithraArrow(centity_t* owner, int type, int flags, vec3_t org);
 extern void FXPESpell(centity_t* owner, int type, int flags, vec3_t org);
 extern void FXLightningHit(centity_t* owner, int type, int flags, vec3_t org);
