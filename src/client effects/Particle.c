@@ -12,18 +12,18 @@
 #include "g_playstats.h"
 
 int ParticleUpdateTime = 0;
-static ResourceManager_t ParticleMngr;
+static ResourceManager_t particle_manager;
 
 void InitParticleMngrMngr(void) //TODO: rename to InitParticleMngr?
 {
 #define PARTICLE_BLOCK_SIZE 256
 
-	ResMngr_Con(&ParticleMngr, sizeof(client_particle_t), PARTICLE_BLOCK_SIZE);
+	ResMngr_Con(&particle_manager, sizeof(client_particle_t), PARTICLE_BLOCK_SIZE);
 }
 
 void ReleaseParticleMngrMngr(void) //TODO: rename to ReleaseParticleMngr?
 {
-	ResMngr_Des(&ParticleMngr);
+	ResMngr_Des(&particle_manager);
 }
 
 void AddParticleToList(client_entity_t* ce, client_particle_t* fx)
@@ -44,7 +44,7 @@ void RemoveParticleList(client_particle_t** root)
 	{
 		client_particle_t* to_free = next;
 		next = next->next;
-		ResMngr_DeallocateResource(&ParticleMngr, to_free, sizeof(*to_free));
+		ResMngr_DeallocateResource(&particle_manager, to_free, sizeof(*to_free));
 	}
 
 	*root = NULL;
@@ -213,7 +213,7 @@ int UpdateParticles(client_entity_t* ce)
 		if (d_msec > current->duration || alpha <= 0)
 		{
 			*prev = current->next;
-			ResMngr_DeallocateResource(&ParticleMngr, current, sizeof(*current));
+			ResMngr_DeallocateResource(&particle_manager, current, sizeof(*current));
 
 			// current = current->next is still valid in the for loop.
 			// A deallocated resource is guaranteed not to be changed until it is reallocated, when the manager is not shared between threads.
@@ -236,13 +236,13 @@ void FreeParticles(client_entity_t* ce)
 	for (prev = &ce->p_root, current = ce->p_root; current != NULL; current = current->next)
 	{
 		*prev = current->next;
-		ResMngr_DeallocateResource(&ParticleMngr, current, sizeof(*current));
+		ResMngr_DeallocateResource(&particle_manager, current, sizeof(*current));
 	}
 }
 
 client_particle_t* ClientParticle_new(const int type, const paletteRGBA_t color, const int duration)
 {
-	client_particle_t* p = ResMngr_AllocateResource(&ParticleMngr, sizeof(client_particle_t));
+	client_particle_t* p = ResMngr_AllocateResource(&particle_manager, sizeof(client_particle_t));
 	memset(p, 0, sizeof(client_particle_t));
 
 	p->acceleration[2] = -PARTICLE_GRAVITY;
