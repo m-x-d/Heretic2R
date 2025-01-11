@@ -1,7 +1,7 @@
 //
 // LevelMaps.c
 //
-// Copyright 2024 m-x-d
+// Copyright 1998 Raven Software
 //
 
 #include "client.h"
