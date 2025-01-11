@@ -70,19 +70,20 @@ static qboolean FXAnimateRandomGo(struct client_entity_s* self, centity_t* owner
 	return true;
 }
 
-void FXAnimate(centity_t *owner, int type, int flags, vec3_t origin)
+void FXAnimate(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t	*self;
-	byte			atype, scale, skinnum, anim;
+	byte anim;
+	byte scale;
+	byte skinnum;
 
-	self = ClientEntity_new(type, flags, origin, 0, 100);
+	client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, 100);
 
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_ANIMATE].formatString, &anim, &scale, &skinnum, self->r.angles);
 	VectorDegreesToRadians(self->r.angles, self->r.angles);
-	atype = anim & 0x7f;
+	const byte atype = anim & 0x7f;
 
 	self->r.model = &fx_anim_models[atype].model;
-	self->r.scale = scale * 0.02;
+	self->r.scale = (float)scale * 0.02f;
 	self->r.skinnum = skinnum;
 
 	self->alpha = fx_anim_models[atype].alpha;
@@ -90,27 +91,18 @@ void FXAnimate(centity_t *owner, int type, int flags, vec3_t origin)
 	self->NoOfAnimFrames = fx_anim_models[atype].numframes;
 	self->r.frame = fx_anim_models[atype].defaultframe;
 
-	if(anim & 0x80)
+	if (anim & 0x80)
 	{
-		// Animate (special animate for cocoon)
-		if(atype == FX_ANIM_COCOON)
-		{
-			self->Update = FXAnimateRandomGo;
-		}
-		else
-		{
-			self->Update = FXAnimateGo;
-		}
-
-		self->nextThinkTime=fxi.cl->time + irand(40, 1600);	// So they don't all start on frame 0 at the same time
-
+		// Animate (special animate for cocoon).
+		self->Update = ((atype == FX_ANIM_COCOON) ? FXAnimateRandomGo : FXAnimateGo);
+		self->nextThinkTime = fxi.cl->time + irand(40, 1600); // So they don't all start on frame 0 at the same time.
 	}
 	else
 	{
-		// Don`t animate and think less
+		// Don`t animate and think less.
 		self->Update = KeepSelfAI;
 		self->updateTime = 1000;
 	}
+
 	AddEffect(owner, self);
 }
-// end
