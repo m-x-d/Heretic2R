@@ -50,52 +50,52 @@ void RemoveParticleList(client_particle_t** root)
 	*root = NULL;
 }
 
-int AddParticlesToView(client_entity_t *ce)
+int AddParticlesToView(client_entity_t* ce)
 {
-	client_particle_t	*current;
-	client_particle_t	**prev;
-	float				d_time, d_time2;
-	int					d_msec;
-	int					alpha, ptype;
-	particle_t			*r;
-	qboolean			cull_parts;
-	int					part_info;
-	float				maxdepth2, mindepth2, depth;
-	int					numparticles;
-	float				yaw, pitch, radius;
+	client_particle_t* current;
+	client_particle_t** prev;
+	particle_t* r;
+	int part_info;
+	float yaw;
+	float pitch;
+	float radius;
+	float offset; //mxd
 
 	assert(ce->p_root);
 
-	numparticles = 0;
-	cull_parts = (r_detail->value == DETAIL_LOW);
-	maxdepth2 = r_farclipdist->value * r_farclipdist->value;  
-	mindepth2 = r_nearclipdist->value * r_nearclipdist->value;
+	int numparticles = 0;
+	const qboolean cull_particles = ((int)r_detail->value == DETAIL_LOW);
+	const float maxdepth2 = r_farclipdist->value * r_farclipdist->value;
+	const float mindepth2 = r_nearclipdist->value * r_nearclipdist->value;
 
-	for(prev = &ce->p_root, current = ce->p_root; current; current = current->next)
+	for (prev = &ce->p_root, current = ce->p_root; current != NULL; current = current->next)
 	{
-		ptype = current->type & PFL_FLAG_MASK;
+		const int ptype = (current->type & PFL_FLAG_MASK);
 
-		d_msec = ParticleUpdateTime - current->startTime;
-		d_time = d_msec * 0.001f;
-		alpha = (int)current->color.a + Q_ftol(d_time * current->d_alpha);
-		
+		const int d_msec = ParticleUpdateTime - current->startTime;
+		const float d_time = (float)d_msec * 0.001f;
+		int alpha = (int)current->color.a + Q_ftol(d_time * current->d_alpha);
+
+		// PULSE ALPHA means that once alpha is at max, reverse and head back down.
 		if (alpha > 255 && ((current->type & PFL_PULSE_ALPHA) || (ce->flags & CEF_PULSE_ALPHA)))
-		{	// PULSE ALPHA means that once alpha is at max, reverse and head back down.
-			alpha = 255 - (alpha - 255);	// A weird thing to do, but necessary because the alpha is 
-											// based off a dtime from the CREATION of the particle
+		{
+			// A weird thing to do, but necessary because the alpha is based off a dtime from the CREATION of the particle.
+			alpha = 255 - (alpha - 255);
 		}
-		//add to additive particle list
-		if((ce->flags & CEF_ADDITIVE_PARTS) || (current->type & PFL_ADDITIVE))
+
+		// Add to additive particle list.
+		if ((ce->flags & CEF_ADDITIVE_PARTS) || (current->type & PFL_ADDITIVE))
 		{
 			if (fxi.cls->r_anumparticles >= MAX_PARTICLES)
-				return(numparticles);
+				return numparticles;
+
 			r = &fxi.cls->r_aparticles[fxi.cls->r_anumparticles];
 			part_info = 1;
 		}
 		else
 		{
 			if (fxi.cls->r_numparticles >= MAX_PARTICLES)
-				return(numparticles);
+				return numparticles;
 
 			r = &fxi.cls->r_particles[fxi.cls->r_numparticles];
 			part_info = 2;
@@ -105,96 +105,87 @@ int AddParticlesToView(client_entity_t *ce)
 
 		r->type = current->type;
 		r->color.c = current->color.c;
-
-		if(alpha > 255)
-		{
-			r->color.a = 255;
-		}
-		else
-		{
-			r->color.a = alpha;
-		}
-
+		r->color.a = (byte)min(255, alpha);
 		r->scale = current->scale + (d_time * current->d_scale);
 
-		d_time2 = d_time * d_time * 0.5;
+		const float d_time2 = d_time * d_time * 0.5f;
 
 		if (ce->flags & CEF_ABSOLUTE_PARTS)
 		{
-			r->origin[0] = current->origin[0] + (current->velocity[0] * d_time) + (current->acceleration[0] * d_time2);
-			r->origin[1] = current->origin[1] + (current->velocity[1] * d_time) + (current->acceleration[1] * d_time2);
-			r->origin[2] = current->origin[2] + (current->velocity[2] * d_time) + (current->acceleration[2] * d_time2);
+			for (int i = 0; i < 3; i++)
+				r->origin[i] = current->origin[i] + (current->velocity[i] * d_time) + (current->acceleration[i] * d_time2);
 		}
 		else
 		{
-			switch(current->type & PFL_MOVE_MASK)
+			switch (current->type & PFL_MOVE_MASK)
 			{
-			case PFL_MOVE_SPHERE:
-				yaw = current->origin[SPH_YAW] + (current->velocity[SPH_YAW] * d_time) + (current->acceleration[SPH_YAW] * d_time2);
-				pitch = current->origin[SPH_PITCH] + (current->velocity[SPH_PITCH] * d_time) + (current->acceleration[SPH_YAW] * d_time2);
-				radius = current->origin[SPH_RADIUS] + (current->velocity[SPH_RADIUS] * d_time) + (current->acceleration[SPH_RADIUS] * d_time2);
-				r->origin[0] = ce->r.origin[0] + cos(yaw) * cos(pitch) * radius;
-				r->origin[1] = ce->r.origin[1] + sin(yaw) * cos(pitch) * radius;
-				r->origin[2] = ce->r.origin[2] + sin(pitch) * radius;
-				break;
-			case PFL_MOVE_CYL_X:
-				yaw = current->origin[CYL_YAW] + (current->velocity[CYL_YAW] * d_time) + (current->acceleration[CYL_YAW] * d_time2);
-				radius = current->origin[CYL_RADIUS] + (current->velocity[CYL_RADIUS] * d_time) + (current->acceleration[CYL_RADIUS] * d_time2);
-				r->origin[0] = ce->r.origin[0] + current->origin[CYL_Z] + (current->velocity[CYL_Z] * d_time) + (current->acceleration[CYL_Z] * d_time2);
-				r->origin[1] = ce->r.origin[1] + cos(yaw) * radius;
-				r->origin[2] = ce->r.origin[2] + sin(yaw) * radius;
-				break;
-			case PFL_MOVE_CYL_Y:
-				yaw = current->origin[CYL_YAW] + (current->velocity[CYL_YAW] * d_time) + (current->acceleration[CYL_YAW] * d_time2);
-				radius = current->origin[CYL_RADIUS] + (current->velocity[CYL_RADIUS] * d_time) + (current->acceleration[CYL_RADIUS] * d_time2);
-				r->origin[0] = ce->r.origin[0] + cos(yaw) * radius;
-				r->origin[1] = ce->r.origin[1] + current->origin[CYL_Z] + (current->velocity[CYL_Z] * d_time) + (current->acceleration[CYL_Z] * d_time2);
-				r->origin[2] = ce->r.origin[2] + sin(yaw) * radius;
-				break;
-			case PFL_MOVE_CYL_Z:
-				yaw = current->origin[CYL_YAW] + (current->velocity[CYL_YAW] * d_time) + (current->acceleration[CYL_YAW] * d_time2);
-				radius = current->origin[CYL_RADIUS] + (current->velocity[CYL_RADIUS] * d_time) + (current->acceleration[CYL_RADIUS] * d_time2);
-				r->origin[0] = ce->r.origin[0] + cos(yaw) * radius;
-				r->origin[1] = ce->r.origin[1] + sin(yaw) * radius;
-				r->origin[2] = ce->r.origin[2] + current->origin[CYL_Z] + (current->velocity[CYL_Z] * d_time) + (current->acceleration[CYL_Z] * d_time2);
-				break;
-			case PFL_MOVE_NORM:
-			default:
-				r->origin[0] = ce->r.origin[0] + current->origin[0] + (current->velocity[0] * d_time) + (current->acceleration[0] * d_time2);
-				r->origin[1] = ce->r.origin[1] + current->origin[1] + (current->velocity[1] * d_time) + (current->acceleration[1] * d_time2);
-				r->origin[2] = ce->r.origin[2] + current->origin[2] + (current->velocity[2] * d_time) + (current->acceleration[2] * d_time2);
-				break;
+				case PFL_MOVE_SPHERE:
+					yaw =    current->origin[SPH_YAW]    + (current->velocity[SPH_YAW]    * d_time) + (current->acceleration[SPH_YAW]    * d_time2);
+					pitch =  current->origin[SPH_PITCH]  + (current->velocity[SPH_PITCH]  * d_time) + (current->acceleration[SPH_YAW]    * d_time2); //TODO: should use acceleration[SPH_PITCH]?
+					radius = current->origin[SPH_RADIUS] + (current->velocity[SPH_RADIUS] * d_time) + (current->acceleration[SPH_RADIUS] * d_time2);
+					r->origin[0] = ce->r.origin[0] + cosf(yaw) * cosf(pitch) * radius;
+					r->origin[1] = ce->r.origin[1] + sinf(yaw) * cosf(pitch) * radius;
+					r->origin[2] = ce->r.origin[2] + sinf(pitch) * radius;
+					break;
+
+				case PFL_MOVE_CYL_X:
+					offset = current->origin[CYL_Z]      + (current->velocity[CYL_Z] * d_time)      + (current->acceleration[CYL_Z]      * d_time2);
+					yaw =    current->origin[CYL_YAW]    + (current->velocity[CYL_YAW] * d_time)    + (current->acceleration[CYL_YAW]    * d_time2);
+					radius = current->origin[CYL_RADIUS] + (current->velocity[CYL_RADIUS] * d_time) + (current->acceleration[CYL_RADIUS] * d_time2);
+					r->origin[0] = ce->r.origin[0] + offset;
+					r->origin[1] = ce->r.origin[1] + cosf(yaw) * radius;
+					r->origin[2] = ce->r.origin[2] + sinf(yaw) * radius;
+					break;
+
+				case PFL_MOVE_CYL_Y:
+					offset = current->origin[CYL_Z]      + (current->velocity[CYL_Z] * d_time)      + (current->acceleration[CYL_Z]      * d_time2);
+					yaw =    current->origin[CYL_YAW]    + (current->velocity[CYL_YAW] * d_time)    + (current->acceleration[CYL_YAW]    * d_time2);
+					radius = current->origin[CYL_RADIUS] + (current->velocity[CYL_RADIUS] * d_time) + (current->acceleration[CYL_RADIUS] * d_time2);
+					r->origin[0] = ce->r.origin[0] + cosf(yaw) * radius;
+					r->origin[1] = ce->r.origin[1] + offset;
+					r->origin[2] = ce->r.origin[2] + sinf(yaw) * radius;
+					break;
+
+				case PFL_MOVE_CYL_Z:
+					offset = current->origin[CYL_Z]      + (current->velocity[CYL_Z] * d_time)      + (current->acceleration[CYL_Z]      * d_time2);
+					yaw =    current->origin[CYL_YAW]    + (current->velocity[CYL_YAW] * d_time)    + (current->acceleration[CYL_YAW]    * d_time2);
+					radius = current->origin[CYL_RADIUS] + (current->velocity[CYL_RADIUS] * d_time) + (current->acceleration[CYL_RADIUS] * d_time2);
+					r->origin[0] = ce->r.origin[0] + cosf(yaw) * radius;
+					r->origin[1] = ce->r.origin[1] + sinf(yaw) * radius;
+					r->origin[2] = ce->r.origin[2] + offset;
+					break;
+
+				case PFL_MOVE_NORM:
+				default:
+					for (int i = 0; i < 3; i++)
+						r->origin[i] = ce->r.origin[i] + current->origin[i] + (current->velocity[i] * d_time) + (current->acceleration[i] * d_time2);
+					break;
 			}
 		}
 
-		if(cull_parts || (current->type & PFL_NEARCULL))
+		if (cull_particles || (current->type & PFL_NEARCULL))
 		{
-			depth = VectorSeparationSquared(r->origin, fxi.cl->refdef.vieworg);
-
-			if((depth > maxdepth2) || (depth < mindepth2))
-			{
+			const float depth = VectorSeparationSquared(r->origin, fxi.cl->refdef.vieworg);
+			if (depth > maxdepth2 || depth < mindepth2)
 				part_info = 0;
-			}
-				
 		}
-		switch(part_info)
+
+		switch (part_info)
 		{
-		case 0:
-			break;
-		case 1:
-			fxi.cls->r_anumparticles++;
-			break;
-		case 2:
-			fxi.cls->r_numparticles++;
-			break;
-		default:
-			assert(0);
-			break;
+			case 0: break;
+			case 1: fxi.cls->r_anumparticles++; break;
+			case 2: fxi.cls->r_numparticles++; break;
+
+			default:
+				assert(0);
+				break;
 		}
+
 		numparticles++;
 		prev = &(*prev)->next;
 	}
-	return(numparticles);
+
+	return numparticles;
 }
 
 int UpdateParticles(client_entity_t *ce)
