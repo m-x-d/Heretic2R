@@ -35,22 +35,16 @@ void AddParticleToList(client_entity_t* ce, client_particle_t* fx)
 	ce->p_root = fx;
 }
 
-void RemoveParticleList(client_particle_t **root)
+void RemoveParticleList(client_particle_t** root)
 {
-	client_particle_t *next;
-	client_particle_t *toFree;
-
 	assert(root);
 
-	next = *root;
-
-	while(next)
+	client_particle_t* next = *root;
+	while (next != NULL)
 	{
-		toFree = next;
-
+		client_particle_t* to_free = next;
 		next = next->next;
-
-		ResMngr_DeallocateResource(&ParticleMngr, toFree, sizeof(*toFree));
+		ResMngr_DeallocateResource(&ParticleMngr, to_free, sizeof(*to_free));
 	}
 
 	*root = NULL;
