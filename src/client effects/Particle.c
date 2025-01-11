@@ -3,69 +3,36 @@
 //
 // Copyright 1998 Raven Software
 //
-// Heretic II
-//
 
 #include "Particle.h"
 #include "Client Effects.h"
-#include "FX.h"
 #include "ResourceManager.h"
-#include "Client Entities.h"
 #include "Random.h"
 #include "Vector.h"
 #include "g_playstats.h"
 
-#define	MAX_PARTS_PER_CE	2048
+int ParticleUpdateTime = 0;
+static ResourceManager_t ParticleMngr;
 
-ResourceManager_t ParticleMngr;
-
-int ParticleUpdateTime=0;
-
-void InitParticleMngrMngr()
+void InitParticleMngrMngr(void) //TODO: rename to InitParticleMngr?
 {
 #define PARTICLE_BLOCK_SIZE 256
 
 	ResMngr_Con(&ParticleMngr, sizeof(client_particle_t), PARTICLE_BLOCK_SIZE);
 }
 
-void ReleaseParticleMngrMngr()
+void ReleaseParticleMngrMngr(void) //TODO: rename to ReleaseParticleMngr?
 {
 	ResMngr_Des(&ParticleMngr);
 }
 
-void AddParticleToList(client_entity_t *ce, client_particle_t *fx)
+void AddParticleToList(client_entity_t* ce, client_particle_t* fx)
 {
 	assert(ce);
 	assert(fx);
 
 	fx->next = ce->p_root;
 	ce->p_root = fx;
-
-#if	_DEBUG
-	// Check to see that a ce isn`t spawning particles
-	// while not in the view. This is a HUGE memory leak
-	// which is most likely responsible for the chug.
-
-	// INSTRUCTIONS TO FIX
-	// Find the client effect that called this spawn function (one level up in call stack)
-	// Either (a) tell the person who wrote the bugged code in the first place to correct it
-	// or (b) emulate the ViewStatusChanged functionality of the fire or the fountain (this is a 
-	// 5 minute fix at most)
-	{
-		int					i = 0;
-		client_particle_t	*p = ce->p_root;
-
-		while(p)
-		{
-			i++;
-			p = p->next;
-		}
-		if(i > MAX_PARTS_PER_CE)
-		{
-			Com_DPrintf("Memory leak due to lack of CEF_VIEWSTATUSCHANGED\n");
-		}
-	}
-#endif
 }
 
 void RemoveParticleList(client_particle_t **root)
