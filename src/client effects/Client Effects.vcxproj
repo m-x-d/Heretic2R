@@ -91,7 +91,6 @@
     <ClCompile Include="fx_WeaponPickup.c" />
     <ClCompile Include="Generic Character Effects.c" />
     <ClCompile Include="Generic Weapon Effects.c" />
-    <ClCompile Include="Item Effects.c" />
     <ClCompile Include="LevelMaps.c" />
     <ClCompile Include="LightStyles.c" />
     <ClCompile Include="Main.c" />

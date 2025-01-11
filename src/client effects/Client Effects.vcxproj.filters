@@ -36,9 +36,6 @@
     <ClCompile Include="Generic Weapon Effects.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="Item Effects.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="LevelMaps.c">
       <Filter>src</Filter>
     </ClCompile>
