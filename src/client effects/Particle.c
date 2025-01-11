@@ -188,60 +188,43 @@ int AddParticlesToView(client_entity_t* ce)
 	return numparticles;
 }
 
-int UpdateParticles(client_entity_t *ce)
+int UpdateParticles(client_entity_t* ce)
 {
-	client_particle_t	*current;
-	client_particle_t	**prev;
-	float				d_time;
-	int					d_msec;
-	int					alpha, ptype;
-	int					numparticles;
+	client_particle_t* current;
+	client_particle_t** prev;
 
 	assert(ce->p_root);
-	numparticles = 0;
 
-	for(prev = &ce->p_root, current = ce->p_root; current; current = current->next)
+	int numparticles = 0;
+
+	for (prev = &ce->p_root, current = ce->p_root; current != NULL; current = current->next)
 	{
-		ptype = current->type & PFL_FLAG_MASK;
+		const int d_msec = ParticleUpdateTime - current->startTime;
+		const float d_time = (float)d_msec * 0.001f;
+		int alpha = (int)current->color.a + Q_ftol(d_time * current->d_alpha);
 
-		d_msec = ParticleUpdateTime - current->startTime;
+		// PULSE ALPHA means that once alpha is at max, reverse and head back down.
+		if (alpha > 255 && ((ce->flags & CEF_PULSE_ALPHA) || (current->type & PFL_PULSE_ALPHA)))
+		{
+			// A weird thing to do, but necessary because the alpha is based off a dtime from the CREATION of the particle.
+			alpha = 255 - (alpha - 255);
+		}
 
-		if(d_msec > current->duration)
+		if (d_msec > current->duration || alpha <= 0)
 		{
 			*prev = current->next;
-
 			ResMngr_DeallocateResource(&ParticleMngr, current, sizeof(*current));
+
 			// current = current->next is still valid in the for loop.
-			// a deallocated resource is guaranteed not to be changed until it is
-			// reallocated, when the mananger is not shared between threads
-			continue;
-		}
-
-		d_time = d_msec * 0.001f;
-
-		alpha = (int)current->color.a + Q_ftol(d_time * current->d_alpha);
-		
-		if (alpha > 255 && ((ce->flags & CEF_PULSE_ALPHA) || (current->type & PFL_PULSE_ALPHA)))
-		{	// PULSE ALPHA means that once alpha is at max, reverse and head back down.
-			alpha = 255 - (alpha - 255);	// A weird thing to do, but necessary because the alpha is 
-											// based off a dtime from the CREATION of the particle
-		}
-		
-		if(alpha <= 0)
-		{ 
-			*prev = current->next;
-
-			ResMngr_DeallocateResource(&ParticleMngr, current, sizeof(*current));
-			// current = current->next is still valid in the for loop.
-			// a deallocated resource is guaranteed not to be changed until it is
-			// reallocated, when the mananger is not shared between threads
+			// A deallocated resource is guaranteed not to be changed until it is reallocated, when the manager is not shared between threads.
 			continue;
 		}
 
 		prev = &(*prev)->next;
 		numparticles++;
 	}
-	return(numparticles);
+
+	return numparticles;
 }
 
 // This frees all particles attached to the client entity
