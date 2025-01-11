@@ -1,42 +1,33 @@
 //
 // fx_AmmoPickup.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
-#include "ce_DefaultMessageHandler.h"
 #include "Client Effects.h"
-#include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
 #include "Random.h"
-#include "Utilities.h"
-#include "Angles.h"
 #include "g_items.h"
 
-#define BOB_HEIGHT		6.0
+#define BOB_HEIGHT		6.0f
 #define BOB_SPEED		ANGLE_10
-#define HEALTH_RADIUS	6.0
+#define MANA_RADIUS		6.0f
 
-#define	NUM_AMMO_MODELS	9
-static struct model_s *ammomodels[NUM_AMMO_MODELS];
-void PreCacheItemAmmo()
+static struct model_s* ammo_models[9];
+
+void PreCacheItemAmmo(void)
 {
-	ammomodels[0] = fxi.RegisterModel("models/items/mana/half/tris.fm");	// ITEM_AMMO_MANA_DEFENSIVE_HALF
-	ammomodels[1] = fxi.RegisterModel("models/items/mana/full/tris.fm");	// ITEM_AMMO_MANA_DEFENSIVE_FULL
-	ammomodels[2] = fxi.RegisterModel("models/items/mana/half/tris.fm");	// ITEM_AMMO_MANA_OFFENSIVE_HALF
-	ammomodels[3] = fxi.RegisterModel("models/items/mana/full/tris.fm");	// ITEM_AMMO_MANA_OFFENSIVE_FULL
-	ammomodels[4] = fxi.RegisterModel("models/items/mana/combo/tris.fm");		// ITEM_AMMO_MANA_COMBO_QUARTER
-	ammomodels[5] = fxi.RegisterModel("models/items/mana/combo/tris.fm");		// ITEM_AMMO_MANA_COMBO_HALF
-	ammomodels[6] = fxi.RegisterModel("models/items/ammo/hellstaff/tris.fm");		// ITEM_AMMO_HELLSTAFF
-	ammomodels[7] = fxi.RegisterModel("models/items/ammo/redrain/tris.fm");		// ITEM_AMMO_REDRAIN
-	ammomodels[8] = fxi.RegisterModel("models/items/ammo/phoenix/tris.fm");		// ITEM_AMMO_PHOENIX
+	ammo_models[0] = fxi.RegisterModel("models/items/mana/half/tris.fm");		// ITEM_AMMO_MANA_DEFENSIVE_HALF
+	ammo_models[1] = fxi.RegisterModel("models/items/mana/full/tris.fm");		// ITEM_AMMO_MANA_DEFENSIVE_FULL
+	ammo_models[2] = fxi.RegisterModel("models/items/mana/half/tris.fm");		// ITEM_AMMO_MANA_OFFENSIVE_HALF
+	ammo_models[3] = fxi.RegisterModel("models/items/mana/full/tris.fm");		// ITEM_AMMO_MANA_OFFENSIVE_FULL
+	ammo_models[4] = fxi.RegisterModel("models/items/mana/combo/tris.fm");		// ITEM_AMMO_MANA_COMBO_QUARTER
+	ammo_models[5] = fxi.RegisterModel("models/items/mana/combo/tris.fm");		// ITEM_AMMO_MANA_COMBO_HALF
+	ammo_models[6] = fxi.RegisterModel("models/items/ammo/hellstaff/tris.fm");	// ITEM_AMMO_HELLSTAFF
+	ammo_models[7] = fxi.RegisterModel("models/items/ammo/redrain/tris.fm");	// ITEM_AMMO_REDRAIN
+	ammo_models[8] = fxi.RegisterModel("models/items/ammo/phoenix/tris.fm");	// ITEM_AMMO_PHOENIX
 }
-
-// --------------------------------------------------------------
 
 static qboolean FXAmmoPickupThink(struct client_entity_s *self, centity_t *owner)
 {
@@ -91,7 +82,7 @@ static qboolean FXAmmoPickupThink(struct client_entity_s *self, centity_t *owner
 		color.a = 255;
 		p = ClientParticle_new(PART_4x4_WHITE | PFL_SOFT_MASK, color, 600);
 
-		VectorSet(p->origin, flrand(-HEALTH_RADIUS, HEALTH_RADIUS), flrand(-HEALTH_RADIUS, HEALTH_RADIUS), 0.0);
+		VectorSet(p->origin, flrand(-MANA_RADIUS, MANA_RADIUS), flrand(-MANA_RADIUS, MANA_RADIUS), 0.0);
 		VectorSet(p->velocity, 0.0, 0.0, flrand(20.0, 40.0));
 		p->acceleration[2] = 20.0;
 		AddParticleToList(self, p);
@@ -110,7 +101,7 @@ void FXAmmoPickup(centity_t *owner, int type, int flags, vec3_t origin)
 	ce = ClientEntity_new(type, flags | CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED, origin, NULL, 50);
 
 	VectorCopy(ce->r.origin, ce->origin);
-	ce->r.model = ammomodels + tag;
+	ce->r.model = ammo_models + tag;
 
 	if (tag==0)		// Blue stuff
 		ce->r.skinnum = 1;
