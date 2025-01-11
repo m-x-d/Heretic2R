@@ -38,13 +38,9 @@ static FXAnimModel_t fx_anim_models[NUM_FX_ANIM] =
 
 void PreCacheFXAnimate(void)
 {
-	int i;
-
-	for(i = 0; i < NUM_FX_ANIM; ++i)
-	{
-		if (fx_anim_models[i].ModelName)
+	for (int i = 0; i < NUM_FX_ANIM; i++)
+		if (fx_anim_models[i].ModelName != NULL)
 			fx_anim_models[i].model = fxi.RegisterModel(fx_anim_models[i].ModelName);
-	}
 }
 
 // -------------------------------------------------
