@@ -87,37 +87,33 @@ static qboolean FXAmmoPickupThink(struct client_entity_s* self, const centity_t*
 	return true;
 }
 
-void FXAmmoPickup(centity_t *owner, int type, int flags, vec3_t origin)
+void FXAmmoPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	client_entity_t		*ce;
-	byte				tag;
+	byte tag;
 
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_PICKUP_AMMO].formatString, &tag);
 
 	flags &= ~CEF_OWNERS_ORIGIN;
-	ce = ClientEntity_new(type, flags | CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED, origin, NULL, 50);
+	flags |= CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED;
+	client_entity_t* ce = ClientEntity_new(type, flags, origin, NULL, 50);
 
 	VectorCopy(ce->r.origin, ce->origin);
-	ce->r.model = ammo_models + tag;
+	ce->r.model = &ammo_models[tag];
 
-	if (tag==0)		// Blue stuff
-		ce->r.skinnum = 1;
-	if (tag==1)		// Blue stuff
+	if (tag == 0 || tag == 1) // Blue stuff.
 		ce->r.skinnum = 1;
 
 	ce->r.flags = RF_TRANSLUCENT | RF_GLOW;
 
-	if ((tag == ITEM_AMMO_MANA_COMBO_HALF) || (tag == ITEM_AMMO_MANA_DEFENSIVE_FULL) || 
-		(tag == ITEM_AMMO_MANA_OFFENSIVE_FULL))
-		ce->r.scale = 1.25;
+	if (tag == ITEM_AMMO_MANA_COMBO_HALF || tag == ITEM_AMMO_MANA_DEFENSIVE_FULL || tag == ITEM_AMMO_MANA_OFFENSIVE_FULL)
+		ce->r.scale = 1.25f;
 	else
-		ce->r.scale = 1.0;
-	ce->radius = 10.0;
-	ce->alpha = 0.8;
+		ce->r.scale = 1.0f;
+
+	ce->radius = 10.0f;
+	ce->alpha = 0.8f;
 	ce->Update = FXAmmoPickupThink;
 	ce->SpawnInfo = tag;
 
 	AddEffect(owner, ce);
 }
-
-// end
