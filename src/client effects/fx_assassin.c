@@ -12,57 +12,63 @@
 
 void PreCacheTPortSmoke(void) { } //TODO: remove?
 
-void FXTPortSmoke(centity_t *Owner, int Type, int Flags, vec3_t Origin)
+void FXTPortSmoke(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	int			numPuffs, i;
-	client_entity_t		*TPortSmoke;	
-	client_particle_t	*ce;
-	
-	TPortSmoke = ClientEntity_new(Type, Flags|CEF_NO_DRAW, Origin, NULL, 1650);
+	client_entity_t* smoke = ClientEntity_new(type, (uint)(flags | CEF_NO_DRAW), origin, NULL, 1650);
 
-	TPortSmoke->r.color.r = 255;
-	TPortSmoke->r.color.g = 255;
-	TPortSmoke->r.color.b = 255;
-	TPortSmoke->r.color.a = 128;
-	
-	TPortSmoke->radius = 10.0F;
+	smoke->r.color.r = 255;
+	smoke->r.color.g = 255;
+	smoke->r.color.b = 255;
+	smoke->r.color.a = 128;
+	smoke->radius = 10.0f;
 
-	AddEffect(NULL, TPortSmoke); 
+	AddEffect(NULL, smoke);
 
-	if (r_detail->value >= DETAIL_HIGH)
-		numPuffs = irand(20,30);
-	else
-	if (r_detail->value == DETAIL_NORMAL)
-		numPuffs = irand(10,20);
-	else
-		numPuffs = irand(8,13);
-	
-	fxi.S_StartSound(Origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/assassin/smoke.wav"), 1, ATTN_NORM, 0);
-	for (i = 0; i < numPuffs; i++)
+	const int detail = (int)r_detail->value; //mxd
+	int num_puffs;
+	int duration; //mxd
+	float scale_min; //mxd
+	float scale_max; //mxd
+
+	if (detail >= DETAIL_HIGH)
 	{
-		if (r_detail->value >= DETAIL_HIGH)
-			ce = ClientParticle_new(PART_32x32_BLACKSMOKE | PFL_NEARCULL, TPortSmoke->r.color, 1600);
-		else
-		if (r_detail->value == DETAIL_NORMAL)
-			ce = ClientParticle_new(PART_32x32_BLACKSMOKE | PFL_NEARCULL, TPortSmoke->r.color, 1500);
-		else
-			ce = ClientParticle_new(PART_32x32_BLACKSMOKE | PFL_NEARCULL, TPortSmoke->r.color, 1300);
+		num_puffs = irand(20, 30);
+		duration = 1600;
+		scale_min = 60.0f;
+		scale_max = 70.0f;
+	}
+	else if (detail == DETAIL_NORMAL)
+	{
+		num_puffs = irand(10, 20);
+		duration = 1500;
+		scale_min = 50.0f;
+		scale_max = 60.0f;
+	}
+	else
+	{
+		num_puffs = irand(8, 13);
+		duration = 1300;
+		scale_min = 30.0f;
+		scale_max = 45.0f;
+	}
+
+	fxi.S_StartSound(origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/assassin/smoke.wav"), 1.0f, ATTN_NORM, 0);
+
+	for (int i = 0; i < num_puffs; i++)
+	{
+		client_particle_t* ce = ClientParticle_new((int)(PART_32x32_BLACKSMOKE | PFL_NEARCULL), smoke->r.color, duration);
 
 		VectorClear(ce->origin);
-		ce->velocity[0] = flrand(-100.0F, 100.0F);
-		ce->velocity[1] = flrand(-100.0F, 100.0F);
-		ce->velocity[2] = flrand(50.0F, 250.0F);
 
-		VectorScale(ce->velocity, -1.23F, ce->acceleration);
-		if (r_detail->value >= DETAIL_HIGH)
-			ce->scale = flrand(60.0, 70.0);
-		else
-		if (r_detail->value == DETAIL_NORMAL)
-			ce->scale = flrand(50.0, 60.0);
-		else
-			ce->scale = flrand(30.0, 45.0);
-		ce->d_scale = -20.0F;
-		ce->d_alpha = -77;
-		AddParticleToList(TPortSmoke, ce);
+		ce->velocity[0] = flrand(-100.0f, 100.0f);
+		ce->velocity[1] = flrand(-100.0f, 100.0f);
+		ce->velocity[2] = flrand(50.0f, 250.0f);
+		VectorScale(ce->velocity, -1.23f, ce->acceleration);
+
+		ce->scale = flrand(scale_min, scale_max);
+		ce->d_scale = -20.0f;
+		ce->d_alpha = -77.0f;
+
+		AddParticleToList(smoke, ce);
 	}
 }
