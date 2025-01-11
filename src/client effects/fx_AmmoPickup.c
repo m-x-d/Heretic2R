@@ -29,65 +29,62 @@ void PreCacheItemAmmo(void)
 	ammo_models[8] = fxi.RegisterModel("models/items/ammo/phoenix/tris.fm");	// ITEM_AMMO_PHOENIX
 }
 
-static qboolean FXAmmoPickupThink(struct client_entity_s *self, centity_t *owner)
+static qboolean FXAmmoPickupThink(struct client_entity_s* self, const centity_t* owner)
 {
+	paletteRGBA_t color;
 
-	client_particle_t	*p;
-	paletteRGBA_t		color;
-	
-	// Rotate and bob
+	// Rotate and bob.
 	self->r.angles[YAW] += ANGLE_5;
 	VectorCopy(owner->current.origin, self->r.origin);
-	self->r.origin[2] += (cos(self->SpawnData) * BOB_HEIGHT); 
+	self->r.origin[2] += (cosf(self->SpawnData) * BOB_HEIGHT);
 	self->SpawnData += BOB_SPEED;
 
-	switch(self->SpawnInfo)
+	switch (self->SpawnInfo)
 	{
-
-	case 0:
-	case 1:
-		color.g = irand(50, 90);
-		color.b = irand(210, 255);
-		color.r = color.g;
-		break;
-
-	case 2:
-	case 3:
-		color.r = irand(50, 90);
-		color.g = irand(210, 255);
-		color.b = color.r;
-		break;
-
-	case 4:
-	case 5:
-		if (irand(0,1))
-		{
-			color.g = irand(50, 90);
-			color.b = irand(210, 255);
+		case 0:
+		case 1:
+			color.g = (byte)irand(50, 90);
+			color.b = (byte)irand(210, 255);
 			color.r = color.g;
-		}
-		else
-		{
-			color.r = irand(50, 90);
-			color.g = irand(210, 255);
+			break;
+
+		case 2:
+		case 3:
+			color.r = (byte)irand(50, 90);
+			color.g = (byte)irand(210, 255);
 			color.b = color.r;
-		}
-		break;
+			break;
 
+		case 4:
+		case 5:
+			if (irand(0, 1))
+			{
+				color.g = (byte)irand(50, 90);
+				color.b = (byte)irand(210, 255);
+				color.r = color.g;
+			}
+			else
+			{
+				color.r = (byte)irand(50, 90);
+				color.g = (byte)irand(210, 255);
+				color.b = color.r;
+			}
+			break;
+
+		default: //mxd
+			return true; // No particles for ITEM_AMMO_HELLSTAFF, ITEM_AMMO_REDRAIN and ITEM_AMMO_PHOENIX.
 	}
 
-	if (self->SpawnInfo < 6)
-	{
-		// spawn particles
-		color.a = 255;
-		p = ClientParticle_new(PART_4x4_WHITE | PFL_SOFT_MASK, color, 600);
+	// Spawn particles.
+	color.a = 255;
+	client_particle_t* p = ClientParticle_new(PART_4x4_WHITE | PFL_SOFT_MASK, color, 600);
 
-		VectorSet(p->origin, flrand(-MANA_RADIUS, MANA_RADIUS), flrand(-MANA_RADIUS, MANA_RADIUS), 0.0);
-		VectorSet(p->velocity, 0.0, 0.0, flrand(20.0, 40.0));
-		p->acceleration[2] = 20.0;
-		AddParticleToList(self, p);
-	}
-	return(true);
+	VectorSet(p->origin, flrand(-MANA_RADIUS, MANA_RADIUS), flrand(-MANA_RADIUS, MANA_RADIUS), 0.0f);
+	VectorSet(p->velocity, 0.0f, 0.0f, flrand(20.0f, 40.0f));
+	p->acceleration[2] = 20.0f;
+	AddParticleToList(self, p);
+
+	return true;
 }
 
 void FXAmmoPickup(centity_t *owner, int type, int flags, vec3_t origin)
