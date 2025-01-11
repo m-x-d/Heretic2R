@@ -73,7 +73,7 @@ static void Clear(void)
 
 static void Init(void)
 {
-	InitParticleMngrMngr();
+	InitParticleMngr();
 	InitFMNodeInfoMngr();
 	InitEntityMngr();
 	InitMsgMngr();
@@ -110,7 +110,7 @@ static void ShutDown(void)
 {
 	Clear();
 
-	ReleaseParticleMngrMngr();
+	ReleaseParticleMngr();
 	ReleaseEntityMngr();
 	ReleaseFMNodeInfoMngr();
 	ReleaseDLightMngr();

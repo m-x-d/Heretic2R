@@ -14,14 +14,14 @@
 int ParticleUpdateTime = 0;
 static ResourceManager_t particle_manager;
 
-void InitParticleMngrMngr(void) //TODO: rename to InitParticleMngr?
+void InitParticleMngr(void)
 {
 #define PARTICLE_BLOCK_SIZE 256
 
 	ResMngr_Con(&particle_manager, sizeof(client_particle_t), PARTICLE_BLOCK_SIZE);
 }
 
-void ReleaseParticleMngrMngr(void) //TODO: rename to ReleaseParticleMngr?
+void ReleaseParticleMngr(void)
 {
 	ResMngr_Des(&particle_manager);
 }

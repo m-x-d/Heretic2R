@@ -161,8 +161,8 @@ typedef struct client_particle_s
 
 extern int ParticleUpdateTime; //mxd
 
-extern void InitParticleMngrMngr(void);
-extern void ReleaseParticleMngrMngr(void);
+extern void InitParticleMngr(void);
+extern void ReleaseParticleMngr(void);
 
 extern void AddParticleToList(struct client_entity_s* ce, client_particle_t* fx);
 extern void RemoveParticleList(client_particle_t** root);
