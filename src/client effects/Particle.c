@@ -227,13 +227,13 @@ int UpdateParticles(client_entity_t* ce)
 	return numparticles;
 }
 
-// This frees all particles attached to the client entity
-void FreeParticles(client_entity_t *ce)
+// This frees all particles attached to the client entity.
+void FreeParticles(client_entity_t* ce)
 {
-	client_particle_t	*current;
-	client_particle_t	**prev;
-	
-	for(prev = &ce->p_root, current = ce->p_root; current; current = current->next)
+	client_particle_t* current;
+	client_particle_t** prev;
+
+	for (prev = &ce->p_root, current = ce->p_root; current != NULL; current = current->next)
 	{
 		*prev = current->next;
 		ResMngr_DeallocateResource(&ParticleMngr, current, sizeof(*current));
