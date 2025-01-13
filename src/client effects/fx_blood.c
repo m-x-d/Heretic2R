@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include "fx_blood.h" //mxd
 #include "fx_blood_local.h" //mxd
 #include "Client Effects.h"
 #include "Particle.h"
@@ -62,7 +63,8 @@ client_entity_t* DoBloodSplash(vec3_t loc, int amount, const qboolean yellow_blo
 
 		switch (size)
 		{
-			case 0:	// Tiny particles.
+			case 0: // Tiny particles.
+			{
 				for (int j = 0; j < 6; j++)
 				{
 					if (ref_soft)
@@ -83,9 +85,10 @@ client_entity_t* DoBloodSplash(vec3_t loc, int amount, const qboolean yellow_blo
 
 					AddParticleToList(splash, drop);
 				}
-				break;
+			} break;
 
-			case 1:	// Some larger globs.
+			case 1: // Some larger globs.
+			{
 				for (int j = 0; j < 3; j++)
 				{
 					if (ref_soft)
@@ -107,9 +110,10 @@ client_entity_t* DoBloodSplash(vec3_t loc, int amount, const qboolean yellow_blo
 
 					AddParticleToList(splash, drop);
 				}
-				break;
+			} break;
 
-			case 2:	// Some big blobs.
+			case 2: // Some big blobs.
+			{
 				for (int j = 0; j < 2; j++)
 				{
 					const int bpart = (yellow_blood ? PART_16x16_GREENBLOOD : PART_16x16_BLOOD);
@@ -122,9 +126,10 @@ client_entity_t* DoBloodSplash(vec3_t loc, int amount, const qboolean yellow_blo
 
 					AddParticleToList(splash, drop);
 				}
-				break;
+			} break;
 
-			case 3:	// A big splash.
+			case 3: // A big splash.
+			{
 				const int bpart = (yellow_blood ? PART_32x32_GREENBLOOD : PART_32x32_BLOOD);
 				drop = ClientParticle_new(bpart, pal_gl, 500);
 				VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(0, speed));
@@ -134,7 +139,7 @@ client_entity_t* DoBloodSplash(vec3_t loc, int amount, const qboolean yellow_blo
 				drop->d_alpha = flrand(-1024.0f, -512.0f);
 
 				AddParticleToList(splash, drop);
-				break;
+			} break;
 		}
 	}
 
@@ -164,7 +169,8 @@ void DoBloodTrail(client_entity_t* spawner, int amount)
 
 		switch (size)
 		{
-			case 0:	// Tiny particles.
+			case 0: // Tiny particles.
+			{
 				for (int j = 0; j < 3; j++)
 				{
 					if (ref_soft)
@@ -188,9 +194,10 @@ void DoBloodTrail(client_entity_t* spawner, int amount)
 
 					AddParticleToList(spawner, drop);
 				}
-				break;
+			} break;
 
-			case 1:	// Some larger globs.
+			case 1: // Some larger globs.
+			{
 				const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : PART_8x8_BLOOD); //mxd
 				drop = ClientParticle_new(bpart, pal_gl, 800);
 				VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed * 2.0f, speed * 4.0f));
@@ -203,7 +210,7 @@ void DoBloodTrail(client_entity_t* spawner, int amount)
 				drop->d_scale = -2.0f;
 
 				AddParticleToList(spawner, drop);
-				break;
+			} break;
 		}
 	}
 }
@@ -270,7 +277,8 @@ static qboolean BloodSplatSplashUpdate(client_entity_t* self, centity_t* owner)
 		self->SpawnInfo--;
 	}
 
-	fxi.S_StartSound(p->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("ambient/waterdrop%i.wav", irand(1, 3))), flrand(0.5f, 0.8f), ATTN_STATIC, 0);
+	if (p != NULL) //mxd. Added sanity check.
+		fxi.S_StartSound(p->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("ambient/waterdrop%i.wav", irand(1, 3))), flrand(0.5f, 0.8f), ATTN_STATIC, 0);
 
 	if (!irand(0, 2))
 		VectorSet(self->startpos, flrand(-1, 1), flrand(-1, 1), 0);

@@ -7,6 +7,5 @@
 #pragma once
 
 #include "Client Entities.h"
-#include "client.h"
 
 extern qboolean BloodSplatDripUpdate(client_entity_t* self, centity_t* owner);
