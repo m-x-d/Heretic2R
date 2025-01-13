@@ -88,30 +88,31 @@ static qboolean FXCWBeamUpdate(struct client_entity_s* self, const centity_t* ow
 	return true;
 }
 
-static qboolean FXCWBeamThink(struct client_entity_s *self, centity_t *owner)
+static qboolean FXCWBeamThink(struct client_entity_s* self, centity_t* owner)
 {
-	if (self->LifeTime < fxi.cl->time)
-		return false;
+	if (self->LifeTime >= fxi.cl->time)
+	{
+		self->r.scale = flrand(14.0f, 16.0f);
+		return true;
+	}
 
-	self->r.scale = flrand(14.0, 16.0);
-
-	return true;
+	return false;
 }
 
-static qboolean FXCWBeamThink2(struct client_entity_s *self, centity_t *owner)
+static qboolean FXCWBeamThink2(struct client_entity_s* self, centity_t* owner)
 {
-	if (self->LifeTime < fxi.cl->time)
-		return false;
+	if (self->LifeTime >= fxi.cl->time)
+	{
+		self->r.scale = flrand(1.5f, 2.0f);
+		return true;
+	}
 
-	self->r.scale = flrand(1.5, 2.0);
-
-	return true;
+	return false;
 }
 
-static qboolean FXCWStarThink(struct client_entity_s *self, centity_t *owner)
+static qboolean FXCWStarThink(struct client_entity_s* self, centity_t* owner)
 {
-	self->r.scale = flrand(0.3, 0.5);
-
+	self->r.scale = flrand(0.3f, 0.5f);
 	return true;
 }
 
