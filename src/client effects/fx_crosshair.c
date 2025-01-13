@@ -36,24 +36,15 @@ static qboolean FXDrawCrosshair(struct client_entity_s* crosshair_ent, centity_t
 	return true;
 }
 
-/*
-==============
-UpdateCrosshair
-
-==============
-*/
-void FXCrosshair(centity_t *owner, int type, int flags, vec3_t origin)
+void FXCrosshair(centity_t* owner, const int type, int flags, vec3_t origin)
 {
 #define CROSSHAIR_THINKTIME	20
 
-	client_entity_t		*xh;
+	flags |= CEF_NO_DRAW;
+	client_entity_t* xh = ClientEntity_new(type, flags, origin, NULL, CROSSHAIR_THINKTIME);
 
-	xh = ClientEntity_new(type, flags | CEF_NO_DRAW, origin, NULL, CROSSHAIR_THINKTIME);
-	
 	xh->r.model = &crosshair_model;
 	xh->Update = FXDrawCrosshair;
 
 	AddEffect(owner, xh);
 }
-
-// end
