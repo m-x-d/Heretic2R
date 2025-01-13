@@ -70,38 +70,36 @@ static qboolean FXBubblerParticleSpawner(client_entity_t* spawner, centity_t* ow
 	return true;
 }
 
-void FXBubbler(centity_t *Owner, int Type, int Flags, vec3_t Origin)
+void FXBubbler(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	client_entity_t		*self;
-	char				bubblespermin;
-
 	vec3_t dest;
-	float time;
-	float dist, dust;
 
-	GetSolidDist(Origin, 1.0, 1000, &dist);
+	float up;
+	GetSolidDist(origin, 1.0f, 1000, &up);
 
-	VectorCopy(Origin, dest);
-	dest[2] += dist;
+	VectorCopy(origin, dest);
+	dest[2] += up;
 
-	GetSolidDist(dest, 1.0, -1000, &dust);
+	float down;
+	GetSolidDist(dest, 1.0f, -1000, &down);
 
-	dist += dust;
+	up += down;
+	const float time = GetTimeToReachDistance(0, 100, fabsf(up));
 
-	time = GetTimeToReachDistance(0, 100, abs(dist));
-				
-	fxi.GetEffect(Owner, Flags, clientEffectSpawners[FX_BUBBLER].formatString, &bubblespermin );
+	char bubbles_per_min;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_BUBBLER].formatString, &bubbles_per_min);
 
-	Flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_VIEWSTATUSCHANGED |CEF_CHECK_OWNER;
-	self = ClientEntity_new(Type, Flags, Origin, NULL, 1000);
+	flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_VIEWSTATUSCHANGED | CEF_CHECK_OWNER;
+	client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, 1000);
 
-	self->SpawnDelay = (60 * 1000) / bubblespermin;
+	self->SpawnDelay = 60 * 1000 / bubbles_per_min;
 	self->Update = FXBubblerParticleSpawner;
-	
+
 	self->acceleration[2] = BUBBLE_ACCELERATION;
 	self->radius = BUBBLE_RADIUS;
 	self->SpawnData = time;
-	AddEffect(Owner, self); 
+
+	AddEffect(owner, self);
 }
 
 void FXBubble(centity_t *Owner, int Type, int Flags, vec3_t Origin)
