@@ -23,14 +23,14 @@ void PreCacheSplat(void)
 
 #define NUM_INSECT_BLOOD_PARTICLES	12
 
-int InsectBloodParticle [NUM_INSECT_BLOOD_PARTICLES] =
+static int insect_blood_particles[NUM_INSECT_BLOOD_PARTICLES] =
 {
-	PART_4x4_GREEN,         
-	PART_4x4_YELLOW,        
-	PART_8x8_GLOBBIT1,         
-	PART_8x8_GLOBBIT2,         
-	PART_16x16_MIST,       
-	PART_16x16_GLOB,      
+	PART_4x4_GREEN,
+	PART_4x4_YELLOW,
+	PART_8x8_GLOBBIT1,
+	PART_8x8_GLOBBIT2,
+	PART_16x16_MIST,
+	PART_16x16_GLOB,
 	PART_16x16_SPARK_G,
 	PART_16x16_SPARK_Y,
 	PART_32x32_GREENBLOOD,
@@ -186,14 +186,14 @@ void DoBloodTrail(client_entity_t *spawner, int amount)
 				if (ref_soft)
 				{
 					if(yellow_blood)
-						drop = ClientParticle_new(InsectBloodParticle[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] | PFL_SOFT_MASK, pal2, 800);
+						drop = ClientParticle_new(insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] | PFL_SOFT_MASK, pal2, 800);
 					else
 						drop = ClientParticle_new(PART_4x4_BLOOD1 | PFL_SOFT_MASK, pal2, 800);
 				}
 				else
 				{
 					if(yellow_blood)
-						drop = ClientParticle_new(InsectBloodParticle[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)], pal, 800);
+						drop = ClientParticle_new(insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)], pal, 800);
 					else
 						drop = ClientParticle_new(irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2), pal, 800);
 				}
@@ -209,7 +209,7 @@ void DoBloodTrail(client_entity_t *spawner, int amount)
 			break;
 		case 1:	// Some larger globs
 			if(yellow_blood)
-				drop = ClientParticle_new(InsectBloodParticle[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)], pal, 800);
+				drop = ClientParticle_new(insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)], pal, 800);
 			else
 				drop = ClientParticle_new(PART_8x8_BLOOD, pal, 800);
 			VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed*2.0, speed*4.0));
@@ -271,7 +271,7 @@ qboolean BloodSplatSplishUpdate (client_entity_t *self, centity_t *owner)
 		if (ref_soft)
 		{
 			if(yellow_blood)
-				bpart = InsectBloodParticle[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)];
+				bpart = insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)];
 			else
 				bpart = PART_4x4_BLOOD1;
 			p = ClientParticle_new(bpart|PFL_SOFT_MASK, color, 800);
@@ -279,7 +279,7 @@ qboolean BloodSplatSplishUpdate (client_entity_t *self, centity_t *owner)
 		else
 		{
 			if(yellow_blood)
-				bpart = InsectBloodParticle[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)];
+				bpart = insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)];
 			else
 				bpart = irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2);
 			p = ClientParticle_new(bpart, color, 800);
@@ -329,7 +329,7 @@ qboolean BloodSplatDripUpdate (client_entity_t *self, centity_t *owner)
 		if (ref_soft)
 		{
 			if(yellow_blood)
-				bpart = InsectBloodParticle[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)];
+				bpart = insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)];
 			else
 				bpart = PART_4x4_BLOOD1;
 			p = ClientParticle_new(bpart | PFL_SOFT_MASK, color, 1600);
@@ -337,7 +337,7 @@ qboolean BloodSplatDripUpdate (client_entity_t *self, centity_t *owner)
 		else
 		{
 			if(yellow_blood)
-				bpart = InsectBloodParticle[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)];
+				bpart = insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)];
 			else
 				bpart = irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2);
 			p = ClientParticle_new(bpart, color, 3200);
@@ -539,7 +539,7 @@ static qboolean LinkedBloodThink(client_entity_t *spawner, centity_t *owner)
 	for(i = 0; i < NUM_BLOOD_PARTS; i++)
 	{
 		if(yellow_blood)
-			bpart = InsectBloodParticle[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)];
+			bpart = insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)];
 		else
 			bpart = irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2);
 		p = ClientParticle_new(bpart, spawner->color, 800);
