@@ -39,113 +39,102 @@ static int insect_blood_particles[NUM_INSECT_BLOOD_PARTICLES] =
 	PART_4x4_GREENBLOOD2
 };
 
-client_entity_t *DoBloodSplash(vec3_t loc, int amount, qboolean yellow_blood)
+client_entity_t* DoBloodSplash(vec3_t loc, int amount, const qboolean yellow_blood)
 {
-	client_entity_t		*splash;
-	client_particle_t	*drop;
-	int					i, j;
-	paletteRGBA_t		pal;
-	paletteRGBA_t		pal2;
-	float				speed, grav;
-	int					size;
-	int					bpart;
+	client_particle_t* drop;
+	paletteRGBA_t pal_gl;
+	paletteRGBA_t pal_soft;
 
-	splash = ClientEntity_new(FX_BLOOD, CEF_NO_DRAW, loc, NULL, 1000);
+	client_entity_t* splash = ClientEntity_new(FX_BLOOD, CEF_NO_DRAW, loc, NULL, 1000);
 	AddEffect(NULL, splash);
 
-	speed = 16 + 4*amount;
-	grav = GetGravity()*0.5;
-	pal.c = 0xffffffff;
-	pal2.c = 0xff0000ff;
-	if (amount>500)
-		amount=500;
-	for (i=0; i<amount; i++)
+	const float speed = (float)amount * 4.0f + 16.0f;
+	const float gravity = GetGravity() * 0.5f;
+
+	pal_gl.c = 0xffffffff;
+	pal_soft.c = 0xff0000ff;
+
+	amount = min(500, amount);
+
+	for (int i = 0; i < amount; i++)
 	{
-		size = i&0x03;	// size=0-3
-		switch(size)
+		const int size = i & 3; // Size = 0-3.
+
+		switch (size)
 		{
-		case 0:	// Tiny particles.
-			for (j=0; j<6; j++)
-			{
-				if (ref_soft)
+			case 0:	// Tiny particles.
+				for (int j = 0; j < 6; j++)
 				{
-					if(yellow_blood)
-						bpart = PART_4x4_GREENBLOOD1;
+					if (ref_soft)
+					{
+						const int bpart = (yellow_blood ? PART_4x4_GREENBLOOD1 : PART_4x4_BLOOD1);
+						drop = ClientParticle_new(bpart | PFL_SOFT_MASK, pal_soft, 650);
+					}
 					else
-						bpart = PART_4x4_BLOOD1;
-					drop = ClientParticle_new(bpart | PFL_SOFT_MASK, pal2, 650);
+					{
+						const int bpart = (yellow_blood ? irand(PART_4x4_GREENBLOOD1, PART_4x4_GREENBLOOD2) : irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2));
+						drop = ClientParticle_new(bpart, pal_gl, 800);
+					}
+
+					VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed * 2.0f, speed * 4.0f));
+					drop->acceleration[2] = gravity;
+					drop->d_alpha = 0.0f;
+					drop->d_scale = -1.0f;
+
+					AddParticleToList(splash, drop);
 				}
-				else
+				break;
+
+			case 1:	// Some larger globs.
+				for (int j = 0; j < 3; j++)
 				{
-					if(yellow_blood)
-						bpart = irand(PART_4x4_GREENBLOOD1, PART_4x4_GREENBLOOD2);
+					if (ref_soft)
+					{
+						const int bpart = (yellow_blood ? PART_8x8_GLOBBIT1 : PART_8x8_BLOOD);
+						drop = ClientParticle_new(bpart | PFL_SOFT_MASK, pal_soft, 650);
+					}
 					else
-						bpart = irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2);
-					drop = ClientParticle_new(bpart, pal, 800);
+					{
+						const int bpart = (yellow_blood ? irand(PART_8x8_GLOBBIT1, PART_8x8_GLOBBIT2) : PART_8x8_BLOOD);
+						drop = ClientParticle_new(bpart, pal_gl, 800);
+					}
+
+					VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed * 2.0f, speed * 4.0f));
+					drop->scale = 2.0f;
+					drop->acceleration[2] = gravity;
+					drop->d_alpha = 0.0f;
+					drop->d_scale = -2.0f;
+
+					AddParticleToList(splash, drop);
 				}
-				VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed*2.0, speed*4.0));
-				drop->acceleration[2] = grav;
-				drop->d_alpha = 0.0;
-				drop->d_scale = -1.0;
+				break;
+
+			case 2:	// Some big blobs.
+				for (int j = 0; j < 2; j++)
+				{
+					const int bpart = (yellow_blood ? PART_16x16_GREENBLOOD : PART_16x16_BLOOD);
+					drop = ClientParticle_new(bpart, pal_gl, 1000);
+					VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed, speed * 2.0f));
+					drop->scale = 1.0f;
+					drop->acceleration[2] = gravity * 0.5f;
+					drop->d_scale = flrand(4.0f, 8.0f);
+					drop->d_alpha = flrand(-512.0f, -256.0f);
+
+					AddParticleToList(splash, drop);
+				}
+				break;
+
+			case 3:	// A big splash.
+				const int bpart = (yellow_blood ? PART_32x32_GREENBLOOD : PART_32x32_BLOOD);
+				drop = ClientParticle_new(bpart, pal_gl, 500);
+				VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(0, speed));
+				drop->scale = 4.0f;
+				drop->acceleration[2] = 0.0f;
+				drop->d_scale = flrand(48.0f, 64.0f);
+				drop->d_alpha = flrand(-1024.0f, -512.0f);
+
 				AddParticleToList(splash, drop);
-			}
-			break;
-		case 1:	// Some larger globs
-			for (j=0; j<3; j++)
-			{
-				if (ref_soft)
-				{
-					if(yellow_blood)
-						bpart = PART_8x8_GLOBBIT1;
-					else
-						bpart = PART_8x8_BLOOD;
-					drop = ClientParticle_new(bpart | PFL_SOFT_MASK, pal2, 650);
-				}
-				else
-				{
-					if(yellow_blood)
-						bpart = irand(PART_8x8_GLOBBIT1, PART_8x8_GLOBBIT2);
-					else
-						bpart = PART_8x8_BLOOD;
-					drop = ClientParticle_new(bpart, pal, 800);
-				}
-				VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed*2.0, speed*4.0));
-				drop->acceleration[2] = grav;
-				drop->d_alpha = 0.0;
-				drop->scale = 2.0;
-				drop->d_scale = -2.0;
-				AddParticleToList(splash, drop);
-			}
-			break;
-		case 2:	// Some big blobs
-			for (j=0; j<2; j++)
-			{
-				if(yellow_blood)
-					bpart = PART_16x16_GREENBLOOD;
-				else
-					bpart = PART_16x16_BLOOD;
-				drop = ClientParticle_new(bpart, pal, 1000);
-				VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed, speed*2.0));
-				drop->acceleration[2] = grav*0.5;
-				drop->d_alpha = flrand(-512.0, -256.0);
-				drop->scale = 1.0;
-				drop->d_scale = flrand(4.0, 8.0);
-				AddParticleToList(splash, drop);
-			}
-			break;
-		case 3:	// A big splash
-			if(yellow_blood)
-				bpart = PART_32x32_GREENBLOOD;
-			else
-				bpart = PART_32x32_BLOOD;
-			drop = ClientParticle_new(bpart, pal, 500);
-			VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(0, speed));
-			drop->scale = 4.0;
-			drop->acceleration[2] = 0.0;
-			drop->d_scale = flrand(48.0, 64.0);
-			drop->d_alpha = flrand(-1024.0, -512.0);
-			AddParticleToList(splash, drop);
-			break;
+				break;
 		}
 	}
 
