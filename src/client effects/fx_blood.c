@@ -236,56 +236,49 @@ static qboolean GetTruePlane(vec3_t origin, vec3_t direction) //TODO: unify with
 	return true;
 }
 
-qboolean BloodSplatSplishUpdate (client_entity_t *self, centity_t *owner)
+static qboolean BloodSplatSplashUpdate(client_entity_t* self, centity_t* owner)
 {
-	client_particle_t	*p;
-	paletteRGBA_t		color = {180, 140, 110, 160};
-	vec3_t				vel;
-	qboolean			yellow_blood = false;
-	int					bpart;
-
-	if(self->flags&CEF_FLAG8)
-		yellow_blood = true;
-
-	if (self->SpawnInfo>500)
+	if (self->SpawnInfo > 500)
 		return true;
-	while(self->SpawnInfo>0)
+
+	client_particle_t* p = NULL;
+	const qboolean yellow_blood = (self->flags & CEF_FLAG8);
+	const paletteRGBA_t color = { .r = 180, .g = 140, .b = 110, .a = 160 };
+
+	while (self->SpawnInfo > 0)
 	{
 		if (ref_soft)
 		{
-			if(yellow_blood)
-				bpart = insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)];
-			else
-				bpart = PART_4x4_BLOOD1;
-			p = ClientParticle_new(bpart|PFL_SOFT_MASK, color, 800);
+			const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : PART_4x4_BLOOD1);
+			p = ClientParticle_new(bpart | PFL_SOFT_MASK, color, 800);
 		}
 		else
 		{
-			if(yellow_blood)
-				bpart = insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)];
-			else
-				bpart = irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2);
+			const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2));
 			p = ClientParticle_new(bpart, color, 800);
 		}
-		p->acceleration[2] = GetGravity() * 0.2;
-		VectorRandomCopy(self->endpos2, vel, 10.0F);
-		VectorScale(vel, flrand(2, 5), p->velocity);
-		p->d_alpha = 0;
-		p->scale = flrand(0.4, 0.8);
+
+		vec3_t vel;
+		p->acceleration[2] = GetGravity() * 0.2f;
+		VectorRandomCopy(self->endpos2, vel, 10.0f);
+		VectorScale(vel, flrand(2.0f, 5.0f), p->velocity);
+		p->d_alpha = 0.0f;
+		p->scale = flrand(0.4f, 0.8f);
 		VectorAdd(self->startpos2, self->startpos, p->origin);
 		AddParticleToList(self, p);
+
 		self->SpawnInfo--;
 	}
-	fxi.S_StartSound(p->origin, -1, CHAN_AUTO,
-		fxi.S_RegisterSound(va("ambient/waterdrop%c.wav", irand('1', '3'))), flrand(0.5, 0.8), ATTN_STATIC, 0);
 
-	if(!irand(0, 2))
+	fxi.S_StartSound(p->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("ambient/waterdrop%i.wav", irand(1, 3))), flrand(0.5f, 0.8f), ATTN_STATIC, 0);
+
+	if (!irand(0, 2))
 		VectorSet(self->startpos, flrand(-1, 1), flrand(-1, 1), 0);
 
 	self->Update = BloodSplatDripUpdate;
 	self->updateTime = irand(400, 1600);
 
-	return (true);
+	return true;
 }
 
 qboolean BloodSplatDripUpdate (client_entity_t *self, centity_t *owner)
@@ -344,7 +337,7 @@ qboolean BloodSplatDripUpdate (client_entity_t *self, centity_t *owner)
 
 	if(self->SpawnInfo && driptime >= 17)
 	{//splash
-		self->Update = BloodSplatSplishUpdate;
+		self->Update = BloodSplatSplashUpdate;
 		self->updateTime = driptime;
 	}
 	else
