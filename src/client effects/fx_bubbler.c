@@ -45,32 +45,29 @@ static qboolean FXBubbleThink(client_entity_t* bubble, centity_t* owner)
 	return true;
 }
 
-static qboolean FXBubblerParticleSpawner(client_entity_t *spawner, centity_t *owner)
+static qboolean FXBubblerParticleSpawner(client_entity_t* spawner, centity_t* owner)
 {
-	client_entity_t		*bubble;
 	vec3_t origin;
-
 	VectorCopy(spawner->r.origin, origin);
 
-	origin[0] += flrand(0.0, 5.0);
-	origin[1] += flrand(0.0, 5.0);
-	origin[2] += flrand(0.0, 5.0);
+	origin[0] += flrand(0.0f, 5.0f);
+	origin[1] += flrand(0.0f, 5.0f);
+	origin[2] += flrand(0.0f, 5.0f);
 
 	spawner->updateTime = irand(spawner->SpawnDelay / 2, spawner->SpawnDelay * 2);
 
-	bubble = ClientEntity_new(-1, 0, origin, NULL, spawner->SpawnData);
+	client_entity_t* bubble = ClientEntity_new(-1, 0, origin, NULL, (int)spawner->SpawnData);
 
 	bubble->r.model = &bubble_model;
-	bubble->r.scale = flrand(0.10, 0.20);
+	bubble->r.scale = flrand(0.1f, 0.2f);
 	bubble->r.flags = RF_TRANSLUCENT;
-
-	bubble->radius = flrand(0.5, 1.5);
+	bubble->radius = flrand(0.5f, 1.5f);
 	VectorCopy(spawner->acceleration, bubble->acceleration);
 
 	bubble->Update = FXBubbleThink;
+	AddEffect(NULL, bubble);
 
-	AddEffect(NULL, bubble); 
-	return(true);
+	return true;
 }
 
 void FXBubbler(centity_t *Owner, int Type, int Flags, vec3_t Origin)
