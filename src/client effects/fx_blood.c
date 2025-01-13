@@ -402,14 +402,13 @@ void ThrowBlood(vec3_t origin, vec3_t tnormal, const qboolean dark, const qboole
 	}
 }
 
-void FXBloodTrail(centity_t *owner, int type, int flags, vec3_t origin)
+void FXBloodTrail(centity_t* owner, int type, const int flags, vec3_t origin)
 {
-	vec3_t			normal;
-	
+	vec3_t normal;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_BLOOD_TRAIL].formatString, &normal);
 
-	VectorMA(origin, 0.25, normal, origin);
-	ThrowBlood(origin, normal, flags&CEF_FLAG7, flags&CEF_FLAG6, true);
+	VectorMA(origin, 0.25f, normal, origin);
+	ThrowBlood(origin, normal, flags & CEF_FLAG7, flags & CEF_FLAG6, true);
 }
 
 // ClientEffect FX_BLOOD
