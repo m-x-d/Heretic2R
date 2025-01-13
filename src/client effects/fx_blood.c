@@ -476,52 +476,20 @@ static qboolean LinkedBloodThink(client_entity_t* spawner, const centity_t* owne
 	return true;
 }
 
-void FXLinkedBlood(centity_t *owner, int type, int flags, vec3_t origin)
+void FXLinkedBlood(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*spawner;
-	byte				refpointidx, life;
-	int					count, i;
-	int					lifetime = 0;
-
+	byte life;
+	byte refpointidx;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_LINKEDBLOOD].formatString, &life, &refpointidx);
-	lifetime = life * 50;
-	count = 1;
-	if(life > 1600)
-	{
-		count = (life - 1600) / 100;
-		life = 1600;
-		if(count > 10)				// Max out saftey check
-			count = 10; 
-	}
 
-	for(i = 0; i < count; i++)
-	{
-		spawner = ClientEntity_new(type, flags, origin, NULL, Q_ftol(fxi.cls->frametime * 2000.0));
+	client_entity_t* spawner = ClientEntity_new(type, flags, origin, NULL, Q_ftol(fxi.cls->frametime * 2000.0f));
 
-		spawner->LifeTime = life;
-		spawner->flags |= CEF_NO_DRAW;
-		spawner->color.c = 0xFFFFFFFF;
-		spawner->Update = LinkedBloodThink;
-		spawner->SpawnInfo = refpointidx;
-		spawner->AddToView = OffsetLinkedEntityUpdatePlacement;
+	spawner->LifeTime = life;
+	spawner->flags |= CEF_NO_DRAW;
+	spawner->color.c = 0xffffffff;
+	spawner->Update = LinkedBloodThink;
+	spawner->SpawnInfo = refpointidx;
+	spawner->AddToView = OffsetLinkedEntityUpdatePlacement;
 
-		AddEffect(owner, spawner);
-	}
+	AddEffect(owner, spawner);
 }
-
-/*
-void FXTrailBlood(centity_t *owner, int type, int flags, vec3_t origin)
-{
-	client_entity_t		*spawner;
-	byte				amount;
-	vec3_t				velocity;
-	qboolean			yellow_blood = false;
-
-	if(flags&CEF_FLAG8)
-		yellow_blood = true;
-
-	spawner = DoBloodSplash(origin, amount, yellow_blood);
-	VectorCopy(velocity, spawner->velocity);
-}
-*/
-// end
