@@ -1,33 +1,26 @@
 //
-// Heretic II
+// fx_bubbler.c
+//
 // Copyright 1998 Raven Software
 //
-// Created by JJS
 
-#include "Client Effects.h"
-#include "Client Entities.h"
-#include "ce_DefaultMessageHandler.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Vector.h"
-#include "random.h"
-#include "Utilities.h"
 #include "Ambient effects.h"
-#include "motion.h"
+#include "Client Effects.h"
+#include "Motion.h"
+#include "Particle.h"
+#include "Vector.h"
+#include "Random.h"
+#include "Utilities.h"
 
-#define	BUBBLE_MAX_DURATION	2.0F
-#define BUBBLE_RADIUS			2.0F
+#define BUBBLE_RADIUS			2.0f
 #define BUBBLE_NUM_SPLASHES		8
-#define BUBBLE_ACCELERATION		100
+#define BUBBLE_ACCELERATION		100.0f
 
-#define	NUM_BUBBLE_MODELS	1
+static struct model_s* bubble_model;
 
-static struct model_s *bubbler_models[NUM_BUBBLE_MODELS];
-
-void PreCacheBubbler()
+void PreCacheBubbler(void)
 {
-	bubbler_models[0] = fxi.RegisterModel("sprites/fx/bubble.sp2");
+	bubble_model = fxi.RegisterModel("sprites/fx/bubble.sp2");
 }
 
 // -----------------------------------------------------------------------------------------
@@ -72,7 +65,7 @@ static qboolean FXBubblerParticleSpawner(client_entity_t *spawner, centity_t *ow
 
 	bubble = ClientEntity_new(-1, 0, origin, NULL, spawner->SpawnData);
 
-	bubble->r.model = bubbler_models;
+	bubble->r.model = &bubble_model;
 	bubble->r.scale = flrand(0.10, 0.20);
 	bubble->r.flags = RF_TRANSLUCENT;
 
@@ -137,7 +130,7 @@ void FXBubble(centity_t *Owner, int Type, int Flags, vec3_t Origin)
 	time = GetTimeToReachDistance(0, BUBBLE_ACCELERATION, abs(up));
 	bubble = ClientEntity_new(FX_BUBBLE, Flags, Origin, NULL, time);
 
-	bubble->r.model = bubbler_models;
+	bubble->r.model = &bubble_model;
 	bubble->r.scale = flrand(0.025, 0.10);
 	bubble->r.flags = RF_TRANSLUCENT;
 	bubble->radius = BUBBLE_RADIUS*2;
