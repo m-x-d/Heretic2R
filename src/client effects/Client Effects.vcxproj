@@ -112,6 +112,7 @@
     <ClInclude Include="ce_Message.h" />
     <ClInclude Include="Client Effects.h" />
     <ClInclude Include="Client Entities.h" />
+    <ClInclude Include="fx_blood_local.h" />
     <ClInclude Include="fx_debris.h" />
     <ClInclude Include="fx_dustpuff.h" />
     <ClInclude Include="LightStyles.h" />

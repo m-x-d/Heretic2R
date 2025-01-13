@@ -41,7 +41,7 @@ static cvar_t* fx_numinview;
 static cvar_t* fx_numactive;
 static cvar_t* cl_lerpdist2;
 
-int ref_soft; //TODO: change type to qboolean?
+int ref_soft; //TODO: change type to qboolean? Barely used. Remove?..
 int numprocessedparticles;
 int numrenderedparticles;
 

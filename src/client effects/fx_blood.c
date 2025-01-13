@@ -1,34 +1,27 @@
 //
-// fx_staff.c
+// fx_blood.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
+#include "fx_blood_local.h" //mxd
 #include "Client Effects.h"
-#include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
 #include "Random.h"
 #include "Reference.h"
 #include "Utilities.h"
 #include "g_playstats.h"
 
-#define BLOOD_SPEED					40.0F
-#define NUM_BLOOD_SPURT_PARTS		20
-#define NUM_INSECT_BLOOD_PARTICLES	12
+static struct model_s* splat_models[2];
 
-extern int ref_soft;
-
-#define	NUM_BLOOD_MODELS	2
-static struct model_s *splat_models[NUM_BLOOD_MODELS];
-void PreCacheSplat()
+void PreCacheSplat(void)
 {
 	splat_models[0] = fxi.RegisterModel("sprites/fx/bsplat.sp2");
 	splat_models[1] = fxi.RegisterModel("sprites/fx/ysplat.sp2");
 }
+
+#define NUM_INSECT_BLOOD_PARTICLES	12
 
 int InsectBloodParticle [NUM_INSECT_BLOOD_PARTICLES] =
 {
@@ -260,7 +253,6 @@ static qboolean GetTruePlane(vec3_t origin, vec3_t direction)
 	return(false);
 }
 
-qboolean BloodSplatDripUpdate (client_entity_t *self, centity_t *owner);
 qboolean BloodSplatSplishUpdate (client_entity_t *self, centity_t *owner)
 {
 	client_particle_t	*p;
