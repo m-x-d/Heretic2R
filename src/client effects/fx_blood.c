@@ -342,78 +342,61 @@ qboolean BloodSplatDripUpdate(client_entity_t* self, centity_t* owner)
 	return true;
 }
 
-void ThrowBlood(vec3_t origin, vec3_t tnormal, qboolean dark, qboolean yellow, qboolean trueplane)
+void ThrowBlood(vec3_t origin, vec3_t tnormal, const qboolean dark, const qboolean yellow, const qboolean trueplane)
 {
-	client_entity_t		*bloodmark;
-	vec3_t				normal;
-	int					brightness;
+	vec3_t normal;
 
 	VectorCopy(tnormal, normal);
-	VectorScale(normal, -1, normal);
+	VectorScale(normal, -1.0f, normal);
 
-	if(trueplane || GetTruePlane(origin, normal))
+	if (trueplane || GetTruePlane(origin, normal))
 	{
-		bloodmark = ClientEntity_new(FX_BLOOD, CEF_NOMOVE, origin, tnormal, 1000);
+		client_entity_t* bloodmark = ClientEntity_new(FX_BLOOD, CEF_NOMOVE, origin, tnormal, 1000);
 
 		bloodmark->r.angles[ROLL] = flrand(0, ANGLE_360);
+		bloodmark->r.model = (yellow ? splat_models + 1 : splat_models);
+		bloodmark->r.flags = RF_FIXED | RF_ALPHA_TEXTURE;
+		bloodmark->r.frame = irand(0, 4);
 
-		if(yellow)
-			bloodmark->r.model = splat_models + 1;
-		else
-			bloodmark->r.model = splat_models;
-		bloodmark->r.flags = 0;
-		bloodmark->r.flags |= RF_FIXED | RF_ALPHA_TEXTURE;
-		bloodmark->r.frame = irand(0,4);
-
-		if(dark)		
-		{
-			brightness = irand(32, 72);
-			bloodmark->r.color.r = brightness;
-			bloodmark->r.color.g = brightness;
-			bloodmark->r.color.b = brightness;
-		}
-		else
-		{
-			brightness = irand(72, 128);
-			bloodmark->r.color.r = brightness;
-			bloodmark->r.color.g = brightness;
-			bloodmark->r.color.b = brightness;
-		}
+		const byte brightness = (byte)(dark ? irand(32, 72) : irand(72, 128));
+		bloodmark->r.color.r = brightness;
+		bloodmark->r.color.g = brightness;
+		bloodmark->r.color.b = brightness;
 		bloodmark->r.color.a = 255;
-		bloodmark->alpha = 1.0;
-		
-		bloodmark->radius = 10.0;
-		bloodmark->r.scale = flrand(0.2, 0.45);
 
-		if(tnormal[2] <= -0.7 && !irand(0, 2) && bloodmark->r.frame != 2 && bloodmark->r.frame != 4)
+		bloodmark->radius = 10.0f;
+		bloodmark->r.scale = flrand(0.2f, 0.45f);
+
+		if (tnormal[2] <= -0.7f && !irand(0, 2) && bloodmark->r.frame != 2 && bloodmark->r.frame != 4)
 		{
-			trace_t		extratrace;
-			vec3_t		endpos;
+			trace_t tr;
+			vec3_t endpos;
 
 			VectorMA(origin, 256, tnormal, endpos);
-			fxi.Trace(origin, vec3_origin, vec3_origin, endpos, MASK_DRIP, CEF_CLIP_TO_WORLD, &extratrace);
-			if(extratrace.fraction<1.0 && extratrace.fraction > 0.0625)//bewteen 16 and 256
+			fxi.Trace(origin, vec3_origin, vec3_origin, endpos, MASK_DRIP, CEF_CLIP_TO_WORLD, &tr);
+
+			if (tr.fraction < 1.0f && tr.fraction > 0.0625f && tr.plane.normal[2] >= 0.7f) // Between 16 and 256.
 			{
-				if(extratrace.plane.normal[2] >= 0.7)
-				{
-					bloodmark->radius = extratrace.fraction * 256;
-					VectorSubtract(extratrace.endpos, origin, bloodmark->startpos2);
-					VectorCopy(extratrace.plane.normal, bloodmark->endpos2);
-					ThrowBlood(extratrace.endpos, extratrace.plane.normal, dark, yellow, false);
-				}
+				bloodmark->radius = tr.fraction * 256.0f;
+				VectorSubtract(tr.endpos, origin, bloodmark->startpos2);
+				VectorCopy(tr.plane.normal, bloodmark->endpos2);
+
+				ThrowBlood(tr.endpos, tr.plane.normal, dark, yellow, false);
 			}
 
 			VectorClear(bloodmark->startpos);
 			bloodmark->LifeTime = 0;
-			if(yellow)
+
+			if (yellow)
 				bloodmark->flags |= CEF_FLAG8;
+
 			bloodmark->Update = BloodSplatDripUpdate;
 		}
 		else
 		{
 			bloodmark->Update = AttemptRemoveSelf;
 		}
-		
+
 		AddEffect(NULL, bloodmark);
 		InsertInCircularList(bloodmark);
 	}
