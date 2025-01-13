@@ -116,186 +116,161 @@ static qboolean FXCWStarThink(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-void FXCWatcherEffects(centity_t *owner, int type, int flags, vec3_t origin)
+void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*spawner;
-	paletteRGBA_t		light = { 160, 70, 240, 255 },
-						white_light = { 255, 255, 255, 255 };
+	const paletteRGBA_t light = { .r = 160, .g = 70, .b = 240, .a = 255 };
+	const paletteRGBA_t white_light = { .r = 255, .g = 255, .b = 255, .a = 255 };
 
-	vec3_t				vel;
-	byte				fxID;
-	int					i;
+	byte fx_id;
+	vec3_t vel;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_CWATCHER].formatString, &fx_id, &vel);
 
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_CWATCHER].formatString, &fxID, &vel);
-
-	switch (fxID)
+	switch (fx_id)
 	{
-	case CW_STAR:
-		
-		//Halo around the spark
-		spawner = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 17);
-		spawner->r.model = cwmodels + CWM_STAR_HALO;
-		spawner->radius = 400;
-		
-		spawner->r.frame = 0;
-		spawner->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		spawner->r.scale=0.8;
-		spawner->alpha=0.5;
-		spawner->d_alpha=0.0;
-		
-		spawner->Update = KeepSelfAI;
- 		spawner->AddToView = LinkedEntityUpdatePlacement;
-
-		AddEffect(owner, spawner);
-
-		//A bright star halo
-		spawner = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 17);
-		spawner->r.model = cwmodels + CWM_STAR_HALO;
-		spawner->radius = 400;
-		
-		spawner->r.frame = 1;
-		spawner->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD;
-		spawner->r.scale=0.5;
-		spawner->alpha=0.75;
-		spawner->d_alpha=0.0;
-		
-		spawner->dlight=CE_DLight_new(light,100.0f,0.0f);
-
-		spawner->Update = FXCWStarThink;
- 		spawner->AddToView = LinkedEntityUpdatePlacement;
-
-		AddEffect(owner, spawner);
-
-		break;
-		
-	case CW_STAR_HIT:
-
-		//A bright explosion
-
-		fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/elflord/impact.wav"), 0.5, ATTN_IDLE, 0);
-
-		i = GetScaledCount(4, 0.8);
-
-		while (i--)
+		case CW_STAR:
 		{
-			spawner = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 500);
-			spawner->r.model = cwmodels + CWM_STAR_HALO;
-			spawner->radius = 400;
-			
-			spawner->r.frame = 1;
-			spawner->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-			spawner->r.scale=flrand(0.5, 0.25);
-			spawner->alpha=0.75;
-			spawner->d_alpha=-2.0;
-			spawner->d_scale=-0.5;
+			// Halo around the spark.
+			client_entity_t* spark = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 17);
+			spark->r.model = &cwmodels[CWM_STAR_HALO];
+			spark->radius = 400.0f;
 
-			VectorRandomCopy(vel, spawner->velocity, 1.25);
-			VectorScale(spawner->velocity, flrand(100,200), spawner->velocity);
-			spawner->acceleration[2] = -128;
-			
-			AddEffect(NULL, spawner);
-		}
+			spark->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+			spark->r.scale = 0.8f;
+			spark->alpha = 0.5f;
 
-		i = GetScaledCount(2, 0.8);
+			spark->Update = KeepSelfAI;
+			spark->AddToView = LinkedEntityUpdatePlacement;
 
-		while (i--)
+			AddEffect(owner, spark);
+
+			// A bright star halo.
+			client_entity_t* halo = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 17);
+			halo->r.model = &cwmodels[CWM_STAR_HALO];
+			halo->radius = 400.0f;
+
+			halo->r.frame = 1;
+			halo->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD;
+			halo->r.scale = 0.5f;
+			halo->alpha = 0.75f;
+			halo->dlight = CE_DLight_new(light, 100.0f, 0.0f);
+
+			halo->Update = FXCWStarThink;
+			halo->AddToView = LinkedEntityUpdatePlacement;
+
+			AddEffect(owner, halo);
+		} break;
+
+		case CW_STAR_HIT: // A bright explosion.
 		{
-			spawner = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 1000);
-			spawner->r.model = cwmodels + CWM_STAR_TRAIL;
-			spawner->radius = 400;
-			
-			spawner->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-			spawner->flags |= CEF_USE_VELOCITY2;
+			fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("Monsters/elflord/impact.wav"), 0.5f, ATTN_IDLE, 0);
 
-			spawner->r.spriteType = SPRITE_LINE;
+			int count = GetScaledCount(4, 0.8f);
+			for (int i = 0; i < count; i++)
+			{
+				client_entity_t* halo = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 500);
+				halo->r.model = &cwmodels[CWM_STAR_HALO];
+				halo->radius = 400.0f;
 
-			spawner->r.scale=flrand(2.0, 1.5);
-			spawner->alpha=0.75;
-			spawner->d_alpha=-2.5;
-			spawner->d_scale=-4.0;
+				halo->r.frame = 1;
+				halo->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+				halo->r.scale = flrand(0.25f, 0.5f);
+				halo->alpha = 0.75f;
+				halo->d_alpha = -2.0f;
+				halo->d_scale = -0.5f;
 
-			VectorRandomCopy(vel, spawner->velocity2, 1.0);
-			VectorCopy(spawner->origin, spawner->r.startpos);
-			VectorMA(spawner->r.startpos, flrand(16,32), spawner->velocity2, spawner->r.endpos);
-			
-			VectorScale(spawner->velocity2, flrand(50,100), spawner->velocity2);
-			VectorClear(spawner->velocity);
-	
-			if (!i)
-				spawner->dlight=CE_DLight_new(light,200.0f,-400.0f);
+				VectorRandomCopy(vel, halo->velocity, 1.25f);
+				VectorScale(halo->velocity, flrand(100.0f, 200.0f), halo->velocity);
+				halo->acceleration[2] = -128.0f;
 
-			AddEffect(NULL, spawner);
-		}
+				AddEffect(NULL, halo);
+			}
 
-		break;
+			count = GetScaledCount(2, 0.8f);
+			for (int i = 0; i < count; i++)
+			{
+				client_entity_t* trail = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 1000);
+				trail->r.model = &cwmodels[CWM_STAR_TRAIL];
+				trail->radius = 400.0f;
 
-	case CW_BEAM:
-		spawner = ClientEntity_new(type, flags, origin, NULL, 17);
-		spawner->r.model = cwmodels + CWM_BEAM;
-		spawner->radius = 400;
-		
-		spawner->r.flags = RF_TRANS_ADD | RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA;
-		spawner->r.scale = 16;
-		spawner->r.color.c = 0xA0FFFFFF;
-		spawner->r.spriteType = SPRITE_LINE;
-		VectorCopy(vel, spawner->r.startpos);
-		VectorCopy(origin, spawner->r.endpos);
-		
-		spawner->LifeTime = fxi.cl->time + 3100;
+				trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+				trail->flags |= CEF_USE_VELOCITY2;
+				trail->r.spriteType = SPRITE_LINE;
+				trail->r.scale = flrand(2.0f, 1.5f);
+				trail->alpha = 0.75f;
+				trail->d_alpha = -2.5f;
+				trail->d_scale = -4.0f;
 
-		spawner->Update = FXCWBeamThink;
- 		spawner->AddToView = FXCWBeamUpdate;
+				VectorRandomCopy(vel, trail->velocity2, 1.0f);
+				VectorCopy(trail->origin, trail->r.startpos);
+				VectorMA(trail->r.startpos, flrand(16.0f, 32.0f), trail->velocity2, trail->r.endpos);
+				VectorScale(trail->velocity2, flrand(50.0f, 100.0f), trail->velocity2);
 
-		AddEffect(owner, spawner);
+				if (i == count - 1)
+					trail->dlight = CE_DLight_new(light, 200.0f, -400.0f);
 
-		//Spawn a halo to cover the flat end
-		spawner = ClientEntity_new(type, flags, origin, NULL, 17);
-		spawner->r.model = cwmodels + CWM_BEAM_HALO;
-		spawner->radius = 400;
-		
-		spawner->r.flags = RF_TRANS_ADD | RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST;
-		spawner->r.scale = 2.5;
-		spawner->r.color.c = 0xFFFFFFFF;
+				AddEffect(NULL, trail);
+			}
+		} break;
 
-		spawner->LifeTime = fxi.cl->time + 3100;
+		case CW_BEAM:
+		{
+			client_entity_t* beam = ClientEntity_new(type, flags, origin, NULL, 17);
+			beam->r.model = &cwmodels[CWM_BEAM];
+			beam->radius = 400.0f;
 
-		spawner->dlight=CE_DLight_new(white_light,200.0f,0.0f);
+			beam->r.flags = RF_TRANS_ADD | RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA;
+			beam->r.scale = 16.0f;
+			beam->r.color.c = 0xa0ffffff;
+			beam->r.spriteType = SPRITE_LINE;
+			VectorCopy(vel, beam->r.startpos);
+			VectorCopy(origin, beam->r.endpos);
+			beam->LifeTime = fxi.cl->time + 3100;
 
- 		spawner->Update = FXCWBeamThink2;
-		spawner->AddToView = LinkedEntityUpdatePlacement;
+			beam->Update = FXCWBeamThink;
+			beam->AddToView = FXCWBeamUpdate;
 
-		fxi.Activate_Screen_Shake(8, 4000, fxi.cl->time, SHAKE_ALL_DIR);
+			AddEffect(owner, beam);
 
-		AddEffect(owner, spawner);
+			// Spawn a halo to cover the flat end.
+			client_entity_t* halo = ClientEntity_new(type, flags, origin, NULL, 17);
+			halo->r.model = &cwmodels[CWM_BEAM_HALO];
+			halo->radius = 400.0f;
 
-		break;
+			halo->r.flags = RF_TRANS_ADD | RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST;
+			halo->r.scale = 2.5f;
+			halo->r.color.c = 0xffffffff;
+			halo->LifeTime = fxi.cl->time + 3100;
+			halo->dlight = CE_DLight_new(white_light, 200.0f, 0.0f);
 
-	case CW_BEAM_START:
+			halo->Update = FXCWBeamThink2;
+			halo->AddToView = LinkedEntityUpdatePlacement;
 
-		//Spawn a halo to cover the flat end
-		spawner = ClientEntity_new(type, flags, origin, NULL, 4000);
-		spawner->r.model = cwmodels + CWM_BEAM_HALO;
-		spawner->radius = 400;
-		
-		spawner->r.flags = RF_TRANS_ADD | RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST;
-		spawner->r.scale = 2.5;
-		spawner->r.color.c = 0xFFFFFFFF;
+			fxi.Activate_Screen_Shake(8.0f, 4000.0f, (float)fxi.cl->time, SHAKE_ALL_DIR);
 
-		spawner->dlight=CE_DLight_new(white_light,200.0f,0.0f);
+			AddEffect(owner, halo);
+		} break;
 
-		spawner->AddToView = LinkedEntityUpdatePlacement;
+		case CW_BEAM_START: // Spawn a halo to cover the flat end.
+		{
+			client_entity_t* beam = ClientEntity_new(type, flags, origin, NULL, 4000);
+			beam->r.model = &cwmodels[CWM_BEAM_HALO];
+			beam->radius = 400.0f;
 
-		spawner->LifeTime = fxi.cl->time + 3100;
+			beam->r.flags = RF_TRANS_ADD | RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST;
+			beam->r.scale = 2.5f;
+			beam->r.color.c = 0xffffffff;
+			beam->LifeTime = fxi.cl->time + 3100;
+			beam->dlight = CE_DLight_new(white_light, 200.0f, 0.0f);
 
-		fxi.Activate_Screen_Shake(8, 3000, fxi.cl->time, SHAKE_ALL_DIR);
+			beam->AddToView = LinkedEntityUpdatePlacement;
 
-		AddEffect(owner, spawner);
+			fxi.Activate_Screen_Shake(8.0f, 3000.0f, (float)fxi.cl->time, SHAKE_ALL_DIR);
 
-		break;
-		
-	default:
-		assert(0);
-		break;
+			AddEffect(owner, beam);
+		} break;
+
+		default:
+			assert(0);
+			break;
 	}
 }
-
