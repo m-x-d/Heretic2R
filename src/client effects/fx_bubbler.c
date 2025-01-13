@@ -23,32 +23,27 @@ void PreCacheBubbler(void)
 	bubble_model = fxi.RegisterModel("sprites/fx/bubble.sp2");
 }
 
-// -----------------------------------------------------------------------------------------
-
-qboolean FXBubbleThink(client_entity_t *bubble, centity_t *owner)
+static qboolean FXBubbleThink(client_entity_t* bubble, centity_t* owner)
 {
-	paletteRGBA_t		color;
-
 	// Delay the death of this entity by 500 ms.
 	bubble->updateTime = 500;
 	bubble->Update = RemoveSelfAI;
 	bubble->nextThinkTime = fxi.cl->time + 500;
 
-	bubble->d_scale = -2.0;
-	bubble->d_alpha = -8.0F;
-	bubble->velocity[2] = bubble->acceleration[2] = 0;
-	bubble->r.origin[2] += 1.0;
-	
-	color.c = 0xffffffff;
-	DoWaterSplash(bubble, color, BUBBLE_NUM_SPLASHES);
+	bubble->d_scale = -2.0f;
+	bubble->d_alpha = -8.0f;
+	bubble->velocity[2] = 0.0f;
+	bubble->acceleration[2] = 0.0f;
+	bubble->r.origin[2] += 1.0f;
 
+	const paletteRGBA_t color = { .c = 0xffffffff };
+	DoWaterSplash(bubble, color, BUBBLE_NUM_SPLASHES);
 	FXWaterRipples(NULL, FX_WATER_RIPPLES, 0, bubble->r.origin);
 
-	fxi.S_StartSound(bubble->r.origin, -1, CHAN_AUTO,
-			fxi.S_RegisterSound(va("ambient/waterdrop%c.wav", irand('1', '3'))), 1, ATTN_STATIC, 0);
-	return(true);
-}
+	fxi.S_StartSound(bubble->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("ambient/waterdrop%i.wav", irand(1, 3))), 1, ATTN_STATIC, 0);
 
+	return true;
+}
 
 static qboolean FXBubblerParticleSpawner(client_entity_t *spawner, centity_t *owner)
 {
