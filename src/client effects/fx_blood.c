@@ -432,61 +432,48 @@ void FXBlood(centity_t* owner, int type, const int flags, vec3_t origin)
 	VectorCopy(velocity, spawner->velocity);
 }
 
-// ------------------------------------------------------------------------------
-
-#define	NUM_BLOOD_PARTS		3
-
-static qboolean LinkedBloodThink(client_entity_t *spawner, centity_t *owner)
+static qboolean LinkedBloodThink(client_entity_t* spawner, const centity_t* owner)
 {
-	client_particle_t	*p;
-	client_entity_t		*ce;
-	vec3_t				org, vel;
-	int					i;
-	int					bpart;
-	qboolean			yellow_blood;
+#define NUM_BLOOD_PARTS		3
 
 	spawner->updateTime = irand(40, 60);
-
 	spawner->LifeTime -= 50;
-	if(spawner->LifeTime < 0)					// Effect finished
-		return(false);
 
-	if(spawner->LifeTime < 800)					// Effect needs to stay alive until particles die
-		return(true);
+	if (spawner->LifeTime < 0 || !RefPointsValid(owner)) // Effect finished or reference points are culled.
+		return false;
 
-	if(spawner->flags&CEF_FLAG8)//yellow
-		yellow_blood = true;
+	if (spawner->LifeTime < 800) // Effect needs to stay alive until particles die.
+		return true;
 
-	// This tells if we are wasting our time, because the reference points are culled.
-	if (!RefPointsValid(owner))
-		return false;		// Just end the effect.
+	const qboolean yellow_blood = (spawner->flags & CEF_FLAG8);
 
+	vec3_t org;
 	VectorGetOffsetOrigin(owner->referenceInfo->references[spawner->SpawnInfo].placement.origin, owner->current.origin, owner->current.angles[YAW], org);
-	ce = ClientEntity_new(-1, 0, org, NULL, 800);
+
+	client_entity_t* ce = ClientEntity_new(-1, 0, org, NULL, 800);
 	ce->flags |= CEF_NO_DRAW | CEF_NOMOVE;
-	ce->radius = 32.0;
+	ce->radius = 32.0f;
 	AddEffect(NULL, ce);
 
+	vec3_t vel;
 	VectorSubtract(org, spawner->origin, vel);
-	Vec3ScaleAssign(5.0, vel);
+	Vec3ScaleAssign(5.0f, vel);
 
-	for(i = 0; i < NUM_BLOOD_PARTS; i++)
+	for (int i = 0; i < NUM_BLOOD_PARTS; i++)
 	{
-		if(yellow_blood)
-			bpart = insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)];
-		else
-			bpart = irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2);
-		p = ClientParticle_new(bpart, spawner->color, 800);
-		Vec3AddAssign(vel, p->velocity);
+		const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2));
+		client_particle_t* p = ClientParticle_new(bpart, spawner->color, 800);
+		VectorCopy(vel, p->velocity);
 		p->acceleration[2] = GetGravity();
-		p->d_alpha = 0.0;
-		p->d_scale = -1.0;
+		p->d_alpha = 0.0f;
+		p->d_scale = -1.0f;
+
 		AddParticleToList(ce, p);
 	}
 
-	// Remember current origin for calc of velocity
+	// Remember current origin for calc of velocity.
 	VectorCopy(org, spawner->origin);
-	return(true);
+	return true;
 }
 
 void FXLinkedBlood(centity_t *owner, int type, int flags, vec3_t origin)
