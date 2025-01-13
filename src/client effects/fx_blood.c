@@ -281,74 +281,65 @@ static qboolean BloodSplatSplashUpdate(client_entity_t* self, centity_t* owner)
 	return true;
 }
 
-qboolean BloodSplatDripUpdate (client_entity_t *self, centity_t *owner)
+qboolean BloodSplatDripUpdate(client_entity_t* self, centity_t* owner)
 {
-	client_particle_t	*p;
-	paletteRGBA_t		color = {150, 140, 110, 160};
-	int					num_drips, i;
-	float				scale, grav_mod, driptime;
-	qboolean			yellow_blood = false;
-	int					bpart;
+	client_particle_t* p;
 
-	if(!AttemptRemoveSelf(self, owner))
-		return (false);
+	if (!AttemptRemoveSelf(self, owner))
+		return false;
 
-	if(self->flags&CEF_FLAG8)
-		yellow_blood = true;
+	const qboolean yellow_blood = (self->flags & CEF_FLAG8);
+	const paletteRGBA_t color = { .r = 150, .g = 140, .b = 110, .a = 160 };
 
-	//drip- fiXME: make p duration based on self->radius?
-	driptime = self->radius * 6;
-	scale = flrand(0.2, 0.4);
-	num_drips = irand(7, 15);
-	for(i = 0; i < num_drips; i++)
+	//TODO: make p duration based on self->radius?
+	const int drip_time = (int)(self->radius * 6);
+	const float scale = flrand(0.2f, 0.4f);
+	const int num_drips = irand(7, 15);
+
+	for (int i = 0; i < num_drips; i++)
 	{
 		if (ref_soft)
 		{
-			if(yellow_blood)
-				bpart = insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)];
-			else
-				bpart = PART_4x4_BLOOD1;
+			const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : PART_4x4_BLOOD1);
 			p = ClientParticle_new(bpart | PFL_SOFT_MASK, color, 1600);
 		}
 		else
 		{
-			if(yellow_blood)
-				bpart = insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)];
-			else
-				bpart = irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2);
+			const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2));
 			p = ClientParticle_new(bpart, color, 3200);
 		}
-		grav_mod = (0.4 + (i * 0.025));
+
+		const float grav_mod = 0.4f + (float)i * 0.025f;
 		p->acceleration[2] = GetGravity() * grav_mod;
 		p->d_alpha = 0;
-		p->scale = scale + (i * 0.08);
+		p->scale = scale + (float)i * 0.08f;
 		VectorCopy(self->startpos, p->origin);
 
-		AdvanceParticle(p, 7 * i);
-		
+		AdvanceParticle(p, i * 7);
 		AddParticleToList(self, p);
 
-		if(driptime >= 17)
+		if (drip_time >= 17)
 		{
-			p->duration = driptime * 3 * grav_mod;
+			p->duration = (int)((float)drip_time * 3.0f * grav_mod);
 			self->SpawnInfo++;
 		}
 	}
 
-	if(self->SpawnInfo && driptime >= 17)
-	{//splash
+	if (self->SpawnInfo && drip_time >= 17)
+	{
+		// Splash.
 		self->Update = BloodSplatSplashUpdate;
-		self->updateTime = driptime;
+		self->updateTime = drip_time;
 	}
 	else
 	{
-		if(!irand(0, 3))
-			VectorSet(self->startpos, flrand(-1, 1), flrand(-1, 1), 0);
+		if (!irand(0, 3))
+			VectorSet(self->startpos, flrand(-1.0f, 1.0f), flrand(-1.0f, 1.0f), 0);
 
 		self->updateTime = irand(400, 1600);
 	}
 
-	return (true);
+	return true;
 }
 
 void ThrowBlood(vec3_t origin, vec3_t tnormal, qboolean dark, qboolean yellow, qboolean trueplane)
