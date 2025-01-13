@@ -1,56 +1,45 @@
 //
 // fx_cwatcher.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
-#include "ce_DefaultMessageHandler.h"
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
 #include "Random.h"
 #include "Utilities.h"
-#include "Angles.h"
-#include "q_sprite.h"
+#include "q_Sprite.h"
 #include "ce_DLight.h"
 #include "g_playstats.h"
 
-enum
+enum cwatcher_model_index_e
 {
 	CWM_BEAM,
 	CWM_BEAM_HALO,
 	CWM_BEAM_LINE,
-	CWM_BEAM_SPARK,
 	CWM_STAR_HALO,
 	CWM_STAR_TRAIL,
-	CWM_STAR_SPARK,
-	NUM_CW_MODELS
-} cwatcher_model_index_t;
 
-enum
+	NUM_CW_MODELS
+};
+
+enum cwatcher_effect_id_e
 {
 	CW_STAR,
 	CW_STAR_HIT,
 	CW_BEAM,
-	CW_BEAM_START,
-	CW_METEOR,
-} cwatcher_effect_id_t;
+	CW_BEAM_START
+};
 
-static struct model_s *cwmodels[NUM_CW_MODELS];
+static struct model_s* cwmodels[NUM_CW_MODELS];
 
-void PreCacheCWModels()
+void PreCacheCWModels(void)
 {
 	cwmodels[CWM_BEAM] = fxi.RegisterModel("sprites/fx/segment_trail_wt.sp2");
-	cwmodels[CWM_BEAM_HALO]  = fxi.RegisterModel("sprites/fx/halo.sp2");
-	cwmodels[CWM_BEAM_LINE]  = fxi.RegisterModel("sprites/fx/bluestreak.sp2");
-	cwmodels[CWM_BEAM_SPARK]  = fxi.RegisterModel("sprites/fx/spark.sp2");
-	cwmodels[CWM_STAR_HALO]	 = fxi.RegisterModel("sprites/spells/halo_ind.sp2");
-	cwmodels[CWM_STAR_TRAIL] = fxi.RegisterModel("Sprites/spells/indigostreak.sp2");
-	cwmodels[CWM_STAR_SPARK] = fxi.RegisterModel("Sprites/spells/spark_ind.sp2");
+	cwmodels[CWM_BEAM_HALO] = fxi.RegisterModel("sprites/fx/halo.sp2");
+	cwmodels[CWM_BEAM_LINE] = fxi.RegisterModel("sprites/fx/bluestreak.sp2");
+	cwmodels[CWM_STAR_HALO] = fxi.RegisterModel("sprites/Spells/halo_ind.sp2");
+	cwmodels[CWM_STAR_TRAIL] = fxi.RegisterModel("sprites/Spells/indigostreak.sp2");
 }
 
 static qboolean FXCWBeamUpdate(struct client_entity_s *self, centity_t *owner)
