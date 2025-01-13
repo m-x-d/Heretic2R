@@ -411,39 +411,24 @@ void FXBloodTrail(centity_t* owner, int type, const int flags, vec3_t origin)
 	ThrowBlood(origin, normal, flags & CEF_FLAG7, flags & CEF_FLAG6, true);
 }
 
-// ClientEffect FX_BLOOD
-void FXBlood(centity_t *owner, int type, int flags, vec3_t origin)
+void FXBlood(centity_t* owner, int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*spawner;
-	byte				amount;
-	vec3_t				velocity;
-	qboolean			yellow_blood = false;
+	byte amount;
+	vec3_t velocity;
 
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_BLOOD].formatString, &velocity, &amount);
-	
-	if(flags&CEF_FLAG8)
-		yellow_blood = true;
 
-	// lets add level of detail here to the amount we pump out
-	switch((int)r_detail->value)
-	{
-	// half as much
-	case DETAIL_LOW:
-		amount = ((float)amount * 0.5);	 
-		break;
+	// Lets add level of detail here to the amount we pump out.
+	const int detail = (int)r_detail->value;
+	if (detail == DETAIL_LOW)
+		amount = (byte)((float)amount * 0.5f);
+	else if (detail == DETAIL_NORMAL)
+		amount = (byte)((float)amount * 0.75f);
 
-	// 3 quarters
-	case DETAIL_NORMAL:
-		amount = ((float)amount * 0.75);	 
-		break;
+	amount = max(1, amount);
 
-	default:
-		break;
-	}
-	if (!amount)
-		amount = 1;
-
-	spawner = DoBloodSplash(origin, amount, yellow_blood);
+	const qboolean yellow_blood = (flags & CEF_FLAG8);
+	client_entity_t* spawner = DoBloodSplash(origin, amount, yellow_blood);
 	VectorCopy(velocity, spawner->velocity);
 }
 
