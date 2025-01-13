@@ -145,19 +145,22 @@ void MakeBubble(vec3_t loc, client_entity_t* spawner)
 	AddParticleToList(spawner, bubble);
 }
 
-qboolean Create_Bubble(client_entity_t *self, centity_t *owner)
+static qboolean CreateBubble(client_entity_t* self, centity_t* owner)
 {
-	vec3_t	loc;
+	vec3_t loc;
 
-	// give us a random location
-	VectorSet(loc, flrand(-15,15), flrand(-15,15), flrand(-15,15));
-	VectorAdd(loc,self->r.origin,loc);
-	// create a bubble
+	// Give us a random location.
+	VectorSet(loc, flrand(-15.0f, 15.0f), flrand(-15.0f, 15.0f), flrand(-15.0f, 15.0f));
+	VectorAdd(loc, self->r.origin, loc);
+
+	// Create a bubble.
 	MakeBubble(loc, self);
-	// random time till next bubble
-	self->updateTime = irand(50,500);
-	// Never kill this
-  	return(true);
+
+	// Random time till next bubble.
+	self->updateTime = irand(50, 500);
+
+	// Never kill this.
+	return true;
 }
 
 // create a constant client effect attached to something in water that releases bubbles
@@ -166,7 +169,7 @@ void FXRandWaterBubble(centity_t *Owner, int Type, int Flags, vec3_t Origin)
 	client_entity_t		*self;
 
 	self = ClientEntity_new(Type, Flags | CEF_NO_DRAW | CEF_ABSOLUTE_PARTS | CEF_CHECK_OWNER , Origin, NULL, irand(50,500));
-	self->Update = Create_Bubble;
+	self->Update = CreateBubble;
 	self->AddToView = LinkedEntityUpdatePlacement;
 	self->radius = 20;
 	AddEffect(Owner, self); 
