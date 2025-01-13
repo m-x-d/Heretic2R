@@ -129,21 +129,18 @@ void FXBubble(centity_t* owner, int type, const int flags, vec3_t origin)
 	AddEffect(NULL, bubble);
 }
 
-void MakeBubble(vec3_t loc, client_entity_t *spawner)
+void MakeBubble(vec3_t loc, client_entity_t* spawner)
 {
-	client_particle_t	*bubble;
-	paletteRGBA_t	color;
-
-	color.c = 0xffffffff;
-	bubble = ClientParticle_new(PART_32x32_BUBBLE, color, 1000);
+	const paletteRGBA_t color = { .c = 0xffffffff };
+	client_particle_t* bubble = ClientParticle_new(PART_32x32_BUBBLE, color, 1000);
 
 	VectorCopy(loc, bubble->origin);
 	bubble->d_alpha = 0;
-	bubble->scale = flrand(0.5, 1.0);
+	bubble->scale = flrand(0.5f, 1.0f);
 	bubble->d_scale = -bubble->scale;
-	bubble->velocity[0] = flrand(-10.0F, 10.0F);
-	bubble->velocity[1] = flrand(-10.0F, 10.0F);
-	bubble->acceleration[2] = 100;
+	bubble->velocity[0] = flrand(-10.0f, 10.0f);
+	bubble->velocity[1] = flrand(-10.0f, 10.0f);
+	bubble->acceleration[2] = BUBBLE_ACCELERATION;
 
 	AddParticleToList(spawner, bubble);
 }
