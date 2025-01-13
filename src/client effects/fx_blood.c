@@ -141,76 +141,69 @@ client_entity_t* DoBloodSplash(vec3_t loc, int amount, const qboolean yellow_blo
 	return splash;
 }
 
-void DoBloodTrail(client_entity_t *spawner, int amount)
+void DoBloodTrail(client_entity_t* spawner, int amount)
 {
-	client_particle_t	*drop;
-	int					i, j;
-	paletteRGBA_t		pal;
-	paletteRGBA_t		pal2;
-	float				speed, grav, range;
-	int					size;
-	qboolean			yellow_blood = false;
+	client_particle_t* drop;
+	paletteRGBA_t pal_gl;
+	paletteRGBA_t pal_soft;
 
-	if((spawner->SpawnInfo&SIF_FLAG_MASK) == MAT_INSECT)//insect blood is yellow-green
-		yellow_blood = true;
+	const qboolean yellow_blood = ((spawner->SpawnInfo & SIF_FLAG_MASK) == MAT_INSECT); // Insect blood is yellow-green.
 
-	if(amount == -1)
-		speed = 0;
-	else
-		speed = 8 + 4*amount;
-	grav = GetGravity()*0.5;
-	range = (float)amount;
-	pal.c = 0xffffffff;
-	pal2.c = 0xff0000ff;
-	if (amount>500)
-		amount=500;
-	for (i=0; i<amount; i++)
+	const float speed = (amount == -1 ? 0.0f : (float)amount * 4.0f + 8.0f);
+	const float gravity = GetGravity() * 0.5f;
+	const float range = (float)amount;
+
+	pal_gl.c = 0xffffffff;
+	pal_soft.c = 0xff0000ff;
+
+	amount = min(500, amount);
+
+	for (int i = 0; i < amount; i++)
 	{
-		size = i&0x01;	// size=0-3
-		switch(size)
+		const int size = i & 1;	// Size = 0-1.
+
+		switch (size)
 		{
-		case 0:	// Tiny particles.
-			for (j=0; j<3; j++)
-			{
-				if (ref_soft)
+			case 0:	// Tiny particles.
+				for (int j = 0; j < 3; j++)
 				{
-					if(yellow_blood)
-						drop = ClientParticle_new(insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] | PFL_SOFT_MASK, pal2, 800);
+					if (ref_soft)
+					{
+						const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : PART_4x4_BLOOD1); //mxd
+						drop = ClientParticle_new(bpart | PFL_SOFT_MASK, pal_soft, 800);
+					}
 					else
-						drop = ClientParticle_new(PART_4x4_BLOOD1 | PFL_SOFT_MASK, pal2, 800);
+					{
+						const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2)); //mxd
+						drop = ClientParticle_new(bpart, pal_gl, 800);
+					}
+
+					VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed * 2.0f, speed * 4.0f));
+					VectorMA(drop->velocity, 0.5f, spawner->velocity, drop->velocity);
+					VectorSet(drop->origin, flrand(-range, range), flrand(-range, range), flrand(-range, range));
+					VectorAdd(drop->origin, spawner->r.origin, drop->origin);
+					drop->acceleration[2] = gravity;
+					drop->d_alpha = 0.0f;
+					drop->d_scale = -1.0f;
+
+					AddParticleToList(spawner, drop);
 				}
-				else
-				{
-					if(yellow_blood)
-						drop = ClientParticle_new(insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)], pal, 800);
-					else
-						drop = ClientParticle_new(irand(PART_4x4_BLOOD1, PART_4x4_BLOOD2), pal, 800);
-				}
-				VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed*2.0, speed*4.0));
-				VectorMA(drop->velocity, 0.5, spawner->velocity, drop->velocity);
+				break;
+
+			case 1:	// Some larger globs.
+				const int bpart = (yellow_blood ? insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)] : PART_8x8_BLOOD); //mxd
+				drop = ClientParticle_new(bpart, pal_gl, 800);
+				VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed * 2.0f, speed * 4.0f));
+				VectorMA(drop->velocity, 0.5f, spawner->velocity, drop->velocity);
 				VectorSet(drop->origin, flrand(-range, range), flrand(-range, range), flrand(-range, range));
 				VectorAdd(drop->origin, spawner->r.origin, drop->origin);
-				drop->acceleration[2] = grav;
-				drop->d_alpha = 0.0;
-				drop->d_scale = -1.0;
+				drop->acceleration[2] = gravity;
+				drop->d_alpha = 0.0f;
+				drop->scale = 2.0f;
+				drop->d_scale = -2.0f;
+
 				AddParticleToList(spawner, drop);
-			}
-			break;
-		case 1:	// Some larger globs
-			if(yellow_blood)
-				drop = ClientParticle_new(insect_blood_particles[irand(0, NUM_INSECT_BLOOD_PARTICLES - 1)], pal, 800);
-			else
-				drop = ClientParticle_new(PART_8x8_BLOOD, pal, 800);
-			VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed*2.0, speed*4.0));
-			VectorMA(drop->velocity, 0.5, spawner->velocity, drop->velocity);
-			VectorSet(drop->origin, flrand(-range, range), flrand(-range, range), flrand(-range, range));
-			VectorAdd(drop->origin, spawner->r.origin, drop->origin);
-			drop->acceleration[2] = grav;
-			drop->d_alpha = 0.0;
-			drop->scale = 2.0;
-			drop->d_scale = -2.0;
-			AddParticleToList(spawner, drop);
-			break;
+				break;
 		}
 	}
 }
