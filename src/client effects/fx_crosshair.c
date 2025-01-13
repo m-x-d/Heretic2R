@@ -13,37 +13,27 @@ void PreCacheCrosshair(void)
 	crosshair_model = fxi.RegisterModel("sprites/fx/crosshair.sp2");
 }
 
-static qboolean FXDrawCrosshair(struct client_entity_s *cross_hair, centity_t *owner)
+static qboolean FXDrawCrosshair(struct client_entity_s* crosshair_ent, centity_t* owner)
 {
-	float			alpha;
-	byte			type;
+	crosshair_ent->flags |= CEF_CULLED | CEF_DISAPPEARED;
 
-	cross_hair->flags |= CEF_CULLED | CEF_DISAPPEARED;
-
-	// Get new destination
-	if (fxi.Get_Crosshair(cross_hair->r.origin, &type))
+	// Get new destination.
+	byte type;
+	if (fxi.Get_Crosshair(crosshair_ent->r.origin, &type))
 	{
-		if (type > 2)
-			cross_hair->r.frame = 0;
-		else
-			cross_hair->r.frame = type;
+		crosshair_ent->r.frame = (type > 2 ? 0 : type);
+		crosshair_ent->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST;
 
-		cross_hair->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST;
-		
-		alpha = 0.5 + (Q_fabs(sin(fxi.cl->time / 800.0)) * 0.5);
+		float alpha = 0.5f + Q_fabs(sinf((float)fxi.cl->time / 800.0f)) * 0.5f;
+		alpha = Clamp(alpha, 0.0f, 1.0f) * 0.5f;
 
-		if (alpha > 1.0f)
-			alpha = 1.0f;
-		
-		if (alpha < 0.0f)
-			alpha = 0.0f;
+		crosshair_ent->alpha = alpha + 0.25f;
+		crosshair_ent->r.scale = alpha;
 
-		cross_hair->alpha = 0.25 + alpha * 0.5;
-		cross_hair->r.scale = alpha * 0.5;
-
-		cross_hair->flags &= ~(CEF_CULLED | CEF_DISAPPEARED | CEF_NO_DRAW);
+		crosshair_ent->flags &= ~(CEF_CULLED | CEF_DISAPPEARED | CEF_NO_DRAW);
 	}
-	return(true);
+
+	return true;
 }
 
 /*
