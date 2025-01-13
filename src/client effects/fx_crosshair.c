@@ -1,23 +1,16 @@
+//
+// fx_crosshair.c
+//
+// Copyright 1998 Raven Software
+//
+
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Vector.h"
-#include "ce_DLight.h"
-#include "random.h"
-#include "Utilities.h"
-//#include "timing.h"
 
-#define CROSSHAIR_THINKTIME	20
+static struct model_s* crosshair_model;
 
-#define	NUM_MODELS	1
-
-static struct model_s *crosshair_models[NUM_MODELS];
-
-void PreCacheCrosshair()
+void PreCacheCrosshair(void)
 {
-	crosshair_models[0] = fxi.RegisterModel("sprites/fx/crosshair.sp2");
+	crosshair_model = fxi.RegisterModel("sprites/fx/crosshair.sp2");
 }
 
 static qboolean FXDrawCrosshair(struct client_entity_s *cross_hair, centity_t *owner)
@@ -61,11 +54,13 @@ UpdateCrosshair
 */
 void FXCrosshair(centity_t *owner, int type, int flags, vec3_t origin)
 {
+#define CROSSHAIR_THINKTIME	20
+
 	client_entity_t		*xh;
 
 	xh = ClientEntity_new(type, flags | CEF_NO_DRAW, origin, NULL, CROSSHAIR_THINKTIME);
 	
-	xh->r.model = crosshair_models;
+	xh->r.model = &crosshair_model;
 	xh->Update = FXDrawCrosshair;
 
 	AddEffect(owner, xh);
