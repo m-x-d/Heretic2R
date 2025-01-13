@@ -102,35 +102,32 @@ void FXBubbler(centity_t* owner, const int type, int flags, vec3_t origin)
 	AddEffect(owner, self);
 }
 
-void FXBubble(centity_t *Owner, int Type, int Flags, vec3_t Origin)
+void FXBubble(centity_t* owner, int type, const int flags, vec3_t origin)
 {
-	int					time;
-	client_entity_t		*bubble;
-	float up, down;
-	vec3_t	dest;
+	float up;
+	GetSolidDist(origin, 1.0f, 1000, &up);
 
-	GetSolidDist(Origin, 1.0, 1000, &up);
-
-	VectorCopy(Origin, dest);
+	vec3_t dest;
+	VectorCopy(origin, dest);
 	dest[2] += up;
 
-	GetSolidDist(dest, 1.0, -1000, &down);
-	up += down;
+	float down;
+	GetSolidDist(dest, 1.0f, -1000, &down);
 
-	time = GetTimeToReachDistance(0, BUBBLE_ACCELERATION, abs(up));
-	bubble = ClientEntity_new(FX_BUBBLE, Flags, Origin, NULL, time);
+	up += down;
+	const int time = (int)(GetTimeToReachDistance(0, BUBBLE_ACCELERATION, fabsf(up)));
+
+	client_entity_t* bubble = ClientEntity_new(FX_BUBBLE, flags, origin, NULL, time);
 
 	bubble->r.model = &bubble_model;
-	bubble->r.scale = flrand(0.025, 0.10);
+	bubble->r.scale = flrand(0.025f, 0.1f);
 	bubble->r.flags = RF_TRANSLUCENT;
-	bubble->radius = BUBBLE_RADIUS*2;
+	bubble->radius = BUBBLE_RADIUS * 2;
 	bubble->acceleration[2] = BUBBLE_ACCELERATION;
-
 	bubble->Update = FXBubbleThink;
 
-	AddEffect(NULL, bubble); 
+	AddEffect(NULL, bubble);
 }
-
 
 void MakeBubble(vec3_t loc, client_entity_t *spawner)
 {
