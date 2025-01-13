@@ -163,19 +163,15 @@ static qboolean CreateBubble(client_entity_t* self, centity_t* owner)
 	return true;
 }
 
-// create a constant client effect attached to something in water that releases bubbles
-void FXRandWaterBubble(centity_t *Owner, int Type, int Flags, vec3_t Origin)
+// Create a constant client effect attached to something in water that releases bubbles.
+void FXRandWaterBubble(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	client_entity_t		*self;
+	flags |= CEF_NO_DRAW | CEF_ABSOLUTE_PARTS | CEF_CHECK_OWNER;
+	client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, irand(50, 500));
 
-	self = ClientEntity_new(Type, Flags | CEF_NO_DRAW | CEF_ABSOLUTE_PARTS | CEF_CHECK_OWNER , Origin, NULL, irand(50,500));
 	self->Update = CreateBubble;
 	self->AddToView = LinkedEntityUpdatePlacement;
 	self->radius = 20;
-	AddEffect(Owner, self); 
+
+	AddEffect(owner, self);
 }
-
-// end
-
-
-
