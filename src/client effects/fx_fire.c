@@ -1,34 +1,28 @@
 //
 // fx_fire.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
 #include "Random.h"
-#include "Reference.h"
 #include "Utilities.h"
-#include "ce_dlight.h"
+#include "ce_DLight.h"
 #include "g_playstats.h"
 
 #define FLARE_COUNT			16
-#define FLARE_SPEED			64.0
-#define FLARE_SPAWN_RADIUS	2.0
-#define FLARE_ACCEL			128.0
-#define FLARE_SCALE			32.0
+#define FLARE_SPEED			64.0f
+#define FLARE_SPAWN_RADIUS	2.0f
+#define FLARE_ACCEL			128.0f
+#define FLARE_SCALE			32.0f
 
 #define FLAME_COUNT			4
-#define FIRE_SPAWN_RADIUS	8.0
-#define FIRE_SCALE 			12.0
-#define FIRE_ENT_SCALE 		8.0
-#define FIRE_ACCEL			32.0
-
+#define FIRE_SPAWN_RADIUS	8.0f
+#define FIRE_SCALE 			12.0f
+#define FIRE_ENT_SCALE 		8.0f
+#define FIRE_ACCEL			32.0f
 
 #define	NUM_FLAREUP_MODELS	1
 
