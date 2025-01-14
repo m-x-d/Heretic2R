@@ -788,25 +788,26 @@ qboolean FXDebris_Vanish(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-static qboolean FXDebris_Update(struct client_entity_s *self,centity_t *owner)
+static qboolean FXDebris_Update(struct client_entity_s* self, centity_t* owner)
 {
-	int curTime = fxi.cl->time;
-	float d_time = (curTime - self->lastThinkTime) / 1000.0f;
+	const int cur_time = fxi.cl->time;
 
-	if ( curTime > self->LifeTime )
+	if (cur_time > self->LifeTime)
 	{
-		self->d_alpha = flrand(-0.05, -0.2);
+		self->d_alpha = flrand(-0.05f, -0.2f);
 		self->Update = FXDebris_Vanish;
-		return true;
 	}
+	else
+	{
+		const float d_time = (float)(cur_time - self->lastThinkTime) / 1000.0f;
 
-	self->r.angles[0] += ANGLE_360*d_time;
-	self->r.angles[1] += ANGLE_360*d_time;
-	
-	self->lastThinkTime = fxi.cl->time;
+		self->r.angles[0] += ANGLE_360 * d_time;
+		self->r.angles[1] += ANGLE_360 * d_time;
+		self->lastThinkTime = cur_time;
 
-	if(self->flags&CEF_FLAG6)//on fire- do a fire trail
-		DoFireTrail(self);
+		if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
+			DoFireTrail(self);
+	}
 
 	return true;
 }
