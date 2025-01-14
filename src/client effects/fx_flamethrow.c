@@ -1,26 +1,19 @@
-//														  
-// Heretic II
+//
+// fx_flamethrower.c
+//
 // Copyright 1998 Raven Software
 //
-// jweier
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "ce_DefaultMessageHandler.h"
+#include "fx_flamethrow.h" //mxd
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
 #include "Utilities.h"
-#include "random.h"
-#include "motion.h"
+#include "Random.h"
 #include "g_playstats.h"
 #include "ce_DLight.h"
 
-#define FLAME_COUNT			4
-#define FIRE_SPAWN_RADIUS	8.0
-#define FIRE_SCALE 			14.0
-#define FIRE_ACCEL			32.0
+#define FLAME_COUNT		4
 
 qboolean FXFlamethrower_trail(client_entity_t *self, centity_t *owner)
 {
@@ -49,7 +42,7 @@ qboolean FXFlamethrower_trail(client_entity_t *self, centity_t *owner)
 		flame->d_alpha = flrand(-600.0, -560.0);
 		flame->duration = (255.0 * 1000.0) / -flame->d_alpha;		// time taken to reach zero alpha
 	
-		radius = self->r.scale * FIRE_SPAWN_RADIUS;
+		//radius = self->r.scale * FIRE_SPAWN_RADIUS;
 		VectorCopy(self->direction, flame->velocity);
 		VectorSet(flame->origin, irand(-2,2), irand(-2,2), irand(-2,2));
 		VectorScale(flame->velocity, flrand(0.75, 1), flame->velocity);
@@ -113,7 +106,7 @@ static qboolean FXFlamethrower_steam_trail(client_entity_t *self, centity_t *own
 		flame->d_alpha = flrand(-200.0, -150.0);
 		flame->duration = (255.0 * 1000.0) / -flame->d_alpha;		// time taken to reach zero alpha
 	
-		radius = self->r.scale * FIRE_SPAWN_RADIUS;
+		//radius = self->r.scale * FIRE_SPAWN_RADIUS;
 		VectorCopy(self->direction, flame->velocity);
 		VectorSet(flame->origin, irand(-2,2), irand(-2,2), irand(-2,2));
 		VectorScale(flame->velocity, flrand(0.75, 1), flame->velocity);
