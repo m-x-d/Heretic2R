@@ -139,91 +139,82 @@ void FXFire(centity_t* owner, const int type, const int flags, vec3_t origin)
 	AddEffect(owner, spawner);
 }
 
-qboolean FXFireOnEntityThink(client_entity_t *spawner, centity_t *owner)
+static qboolean FXFireOnEntityThink(client_entity_t* spawner, const centity_t* owner)
 {
-	client_particle_t	*flame;
-	int					i, count, white;
-	float				radius;
-	paletteRGBA_t		color;
+	// For framerate-sensitive effect spawning.
+	int count = GetScaledCount(FLAME_COUNT, 0.9f);
+	count = min(FLAME_COUNT, count); // Don't go over flame count.
 
-	// For framerate-sensitive effect spawning
-	count = GetScaledCount(FLAME_COUNT, 0.9);
-	if (count>FLAME_COUNT)		// Don't go over flame count
-		count=FLAME_COUNT;		
 	VectorCopy(owner->origin, spawner->origin);
 	VectorCopy(owner->origin, spawner->r.origin);
 
-	if (!(owner->current.effects & EF_ON_FIRE) && (spawner->nextEventTime - fxi.cl->time >= 1000))
-	{	// Set up the fire to finish early.
+	if (!(owner->current.effects & EF_ON_FIRE) && spawner->nextEventTime - fxi.cl->time >= 1000)
+	{
+		// Set up the fire to finish early.
 		spawner->nextEventTime = fxi.cl->time + 999;
-		spawner->dlight->d_intensity = -200;
+		spawner->dlight->d_intensity = -200.0f;
 	}
 
-	if (spawner->nextEventTime - fxi.cl->time > 1000)		// Until 1 second before finish.
+	if (spawner->nextEventTime - fxi.cl->time > 1000) // Until 1 second before finish.
 	{
-		for(i = 0; i < count; i++)
+		for (int i = 0; i < count; i++)
 		{
-			if (!irand(0,15) && (r_detail->value >= DETAIL_NORMAL))		// no steam in software, its around too long and doesn't do enough for us
+			if (irand(0, 15) == 0 && r_detail->value >= DETAIL_NORMAL) // No steam in software, its around too long and doesn't do enough for us.
 			{
-				white = irand(8, 16);
+				const byte white = (byte)irand(8, 16);
+				const paletteRGBA_t color = { .r = white, .g = white, .b = white, .a = 168 };
 
-				color.r = color.g = color.b = white; 
-				color.a = 168;
+				client_particle_t* flame = ClientParticle_new((int)(PART_32x32_STEAM | PFL_NEARCULL), color, 2000);
 
-				flame = ClientParticle_new(PART_32x32_STEAM | PFL_NEARCULL, color, 2000);
-
-				radius = spawner->r.scale;
-				VectorSet(flame->origin, flrand(-radius, radius), flrand(-radius, radius), flrand(-0.25, 0.75) * spawner->r.scale);
+				const float radius = spawner->r.scale;
+				VectorSet(flame->origin, flrand(-radius, radius), flrand(-radius, radius), flrand(-0.25f, 0.75f) * spawner->r.scale);
 				VectorAdd(flame->origin, spawner->origin, flame->origin);
 
-				flame->scale = spawner->r.scale*2.0;
-				VectorSet(flame->velocity, flrand(-5.0, 5.0), flrand(-5, 5.0), flrand(15.0, 22.0));
-				flame->acceleration[2] = FIRE_ACCEL * spawner->r.scale;
-				flame->d_scale = flrand(15.0, 20.0);
-				flame->d_alpha = flrand(-100.0, -50.0);
-				flame->duration = (255.0 * 1000.0) / -flame->d_alpha;		// time taken to reach zero alpha
+				flame->scale = spawner->r.scale * 2.0f;
+				VectorSet(flame->velocity, flrand(-5.0f, 5.0f), flrand(-5.0f, 5.0f), flrand(15.0f, 22.0f));
+				flame->acceleration[2] = spawner->r.scale * FIRE_ACCEL;
+				flame->d_scale = flrand(15.0f, 20.0f);
+				flame->d_alpha = flrand(-100.0f, -50.0f);
+				flame->duration = (int)(255.0f * 1000.0f / -flame->d_alpha); // Time taken to reach zero alpha.
 
 				AddParticleToList(spawner, flame);
 			}
 			else
 			{
-				flame = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2) | PFL_NEARCULL, spawner->color, 1000);
+				client_particle_t* flame = ClientParticle_new((int)(irand(PART_32x32_FIRE0, PART_32x32_FIRE2) | PFL_NEARCULL), spawner->color, 1000);
 
-				radius = spawner->r.scale ;
-				VectorSet(flame->origin, flrand(-radius, radius), flrand(-radius, radius), flrand(-0.25, 0.75)*radius);
+				const float radius = spawner->r.scale;
+				VectorSet(flame->origin, flrand(-radius, radius), flrand(-radius, radius), flrand(-0.25f, 0.75f) * radius);
+
 				// If dead, then move the flame down a tad.
-				if(owner->current.effects&EF_DISABLE_EXTRA_FX)
-				{
+				if (owner->current.effects & EF_DISABLE_EXTRA_FX)
 					spawner->origin[2] -= radius;
-				}
+
 				VectorAdd(flame->origin, spawner->origin, flame->origin);
 
-				flame->scale = spawner->r.scale*2.0;
-				VectorSet(flame->velocity, flrand(-5.0, 5.0), flrand(-5, 5.0), flrand(32.0, 48.0));
-				flame->acceleration[2] = 2.0 * spawner->r.scale;
-				flame->d_scale = flrand(-20.0, -10.0);
-				flame->d_alpha = flrand(-400.0, -320.0);
-				flame->duration = (255.0 * 1000.0) / -flame->d_alpha;		// time taken to reach zero alpha
+				flame->scale = spawner->r.scale * 2.0f;
+				VectorSet(flame->velocity, flrand(-5.0f, 5.0f), flrand(-5.0f, 5.0f), flrand(32.0f, 48.0f));
+				flame->acceleration[2] = spawner->r.scale * 2.0f;
+				flame->d_scale = flrand(-20.0f, -10.0f);
+				flame->d_alpha = flrand(-400.0f, -320.0f);
+				flame->duration = (int)(255.0f * 1000.0f / -flame->d_alpha); // Time taken to reach zero alpha.
 
 				AddParticleToList(spawner, flame);
 			}
 		}
-		spawner->dlight->intensity = 150 + flrand(-8.0, 8.0);
 
-		return(true);
+		spawner->dlight->intensity = 150.0f + flrand(-8.0f, 8.0f);
+		return true;
 	}
-	else if (fxi.cl->time < spawner->nextEventTime)
-	{
-		spawner->dlight->intensity = (spawner->nextEventTime - fxi.cl->time)*0.3;
 
-		return(true);
-	}
-	else
+	if (fxi.cl->time < spawner->nextEventTime)
 	{
-		return(false);
+		spawner->dlight->intensity = (float)(spawner->nextEventTime - fxi.cl->time) * 0.3f;
+		return true;
 	}
+
+	return false;
 }
-
 
 qboolean FXFireOnEntity2Think(client_entity_t *spawner, centity_t *owner)
 {
