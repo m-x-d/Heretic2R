@@ -1,54 +1,36 @@
 //
 // fx_debris.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
-#include "ce_DefaultMessageHandler.h"
 #include "Client Effects.h"
-#include "Client Entities.h"
+#include "fx_debris.h"
+#include "fx_debris_local.h" //mxd
+#include "fx_blood.h" //mxd
+#include "fx_sparks.h" //mxd
+#include "ce_DefaultMessageHandler.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "FX_DustPuff.h"
-#include "Vector.h"
+#include "fx_dustpuff.h"
 #include "Utilities.h"
 #include "Angles.h"
-#include "random.h"
+#include "Random.h"
+#include "Vector.h"
 #include "q_Physics.h"
-#include "fx_debris.h"
 #include "ce_DLight.h"
 #include "g_playstats.h"
-#include "Vector.h"
 
-client_entity_t *FXDebris_Throw(vec3_t origin, int material, vec3_t dir, float ke,float scale, int flags, qboolean altskin);
-client_entity_t *DoBloodSplash(vec3_t loc, int amount, qboolean yellow_blood);
-void ThrowBlood(vec3_t origin, vec3_t tnormal, qboolean dark, qboolean yellow, qboolean trueplane);
-
-void DoBloodTrail(client_entity_t *spawner, int amount);
-void GenericSparks(centity_t *owner, int type, int flags, vec3_t origin, vec3_t dir);
-
-static void FXDebris_Collision(client_entity_t *self, CE_Message_t *msg);
-static void FXBodyPart_Throw(centity_t *owner, int BodyPart, vec3_t origin, float ke, int frame, int type, byte modelindex, int flags, centity_t *harpy);
-
-qboolean FXDebris_Vanish(struct client_entity_s *self,centity_t *owner);
-qboolean FXBodyPartAttachedUpdate(struct client_entity_s *self, centity_t *owner);
-
-extern int ref_soft;
-//------------------------------------------------------------------
-//	FX Debris base info
-//------------------------------------------------------------------
+#pragma region ========================== Debris base info ==========================
 
 typedef struct DebrisChunk
 {
-	char	*modelName;
-	int		skinNum;
-	struct model_s *model;
-	float	mass;
+	char* modelName;
+	int skinNum;
+	struct model_s* model;
+	float mass;
 } DebrisChunk_t;
 
-int debrisChunkOffsets[NUM_MAT+1]=
+static int debrisChunkOffsets[NUM_MAT + 1] =
 {
 	0,	// Stone.
 	4,	// Grey stone.
@@ -58,112 +40,109 @@ int debrisChunkOffsets[NUM_MAT+1]=
 	22,	// Pottery.
 	26,	// Glass.
 	31,	// Leaf.
-	34,	// Wood
-	38,	// Brown Stone
-	42,	// Nothing - just smoke
-	43,	// Insect chunks
-	51,	// one beyond
+	34,	// Wood.
+	38,	// Brown Stone.
+	42,	// Nothing - just smoke.
+	43,	// Insect chunks.
+
+	51	// Total debrisChunks count.
 };
 
-DebrisChunk_t debrisChunks[]=
+static DebrisChunk_t debrisChunks[] =
 {
+	// Stone.
+	{ "models/debris/stone/schunk1/tris.fm", 0, NULL, 3.0f },	// 0
+	{ "models/debris/stone/schunk2/tris.fm", 0, NULL, 3.0f },
+	{ "models/debris/stone/schunk3/tris.fm", 0, NULL, 3.0f },
+	{ "models/debris/stone/schunk4/tris.fm", 0, NULL, 3.0f },
+
 	// Grey stone.
-
-	{"models/debris/stone/schunk1/tris.fm", 0, NULL, 3.0},//0
-	{"models/debris/stone/schunk2/tris.fm", 0, NULL, 3.0},
-	{"models/debris/stone/schunk3/tris.fm", 0, NULL, 3.0},
-	{"models/debris/stone/schunk4/tris.fm", 0, NULL, 3.0},
-
-	// Grey stone.
-
-	{"models/debris/stone/schunk1/tris.fm", 0, NULL, 3.0},//4
-	{"models/debris/stone/schunk2/tris.fm", 0, NULL, 3.0},
-	{"models/debris/stone/schunk3/tris.fm", 0, NULL, 3.0},
-	{"models/debris/stone/schunk4/tris.fm", 0, NULL, 3.0},
+	{ "models/debris/stone/schunk1/tris.fm", 0, NULL, 3.0f },	// 4
+	{ "models/debris/stone/schunk2/tris.fm", 0, NULL, 3.0f },
+	{ "models/debris/stone/schunk3/tris.fm", 0, NULL, 3.0f },
+	{ "models/debris/stone/schunk4/tris.fm", 0, NULL, 3.0f },
 
 	// Cloth.
-	{"models/debris/pottery/pot1/tris.fm", 0, NULL, 0.2},//8
-	{"models/debris/pottery/pot1/tris.fm", 0, NULL, 0.2},
-	{"models/debris/pottery/pot1/tris.fm", 0, NULL, 0.3},
-	{"models/debris/pottery/pot1/tris.fm", 0, NULL, 0.4},
+	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 0.2f },	// 8
+	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 0.2f },
+	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 0.3f },
+	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 0.4f },
 
 	// Metal.
-
-	{"models/debris/metal/mchunk1/tris.fm", 0, NULL, 2.0},//12
-	{"models/debris/metal/mchunk2/tris.fm", 0, NULL, 3.0},
-	{"models/debris/metal/mchunk3/tris.fm", 0, NULL, 4.0},
-	{"models/debris/metal/mchunk4/tris.fm", 0, NULL, 5.0},
+	{ "models/debris/metal/mchunk1/tris.fm", 0, NULL, 2.0f },	// 12
+	{ "models/debris/metal/mchunk2/tris.fm", 0, NULL, 3.0f },
+	{ "models/debris/metal/mchunk3/tris.fm", 0, NULL, 4.0f },
+	{ "models/debris/metal/mchunk4/tris.fm", 0, NULL, 5.0f },
 
 	// Flesh.
-
-	{"models/debris/meat/chunk1/tris.fm", 0, NULL, 3.0},//16
-	{"models/debris/meat/chunk2/tris.fm", 0, NULL, 3.0},
-	{"models/debris/meat/chunk3/tris.fm", 0, NULL, 3.0},
-	{"models/debris/meat/chunk4/tris.fm", 0, NULL, 3.0},
-	{"models/debris/meat/chunk5/tris.fm", 0, NULL, 3.0},
-	{"models/debris/meat/chunk6/tris.fm", 0, NULL, 3.0},
+	{ "models/debris/meat/chunk1/tris.fm", 0, NULL, 3.0f },		// 16
+	{ "models/debris/meat/chunk2/tris.fm", 0, NULL, 3.0f },
+	{ "models/debris/meat/chunk3/tris.fm", 0, NULL, 3.0f },
+	{ "models/debris/meat/chunk4/tris.fm", 0, NULL, 3.0f },
+	{ "models/debris/meat/chunk5/tris.fm", 0, NULL, 3.0f },
+	{ "models/debris/meat/chunk6/tris.fm", 0, NULL, 3.0f },
 
 	// Pottery.
+	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f },	// 22
+	{ "models/debris/pottery/pot2/tris.fm", 0, NULL, 3.0f },
+	{ "models/debris/pottery/pot3/tris.fm", 0, NULL, 2.5f },
+	{ "models/debris/pottery/pot4/tris.fm", 0, NULL, 1.4f },
 
-	{"models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0},//22
-	{"models/debris/pottery/pot2/tris.fm", 0, NULL, 3.0},
-	{"models/debris/pottery/pot3/tris.fm", 0, NULL, 2.5},
-	{"models/debris/pottery/pot4/tris.fm", 0, NULL, 1.4},
-
-	// Glass - models need different skins
-	{"models/debris/wood/splinter1/tris.fm", 0, NULL, 1.8},//26
-	{"models/debris/wood/splinter2/tris.fm", 0, NULL, 2.0},
-	{"models/debris/wood/splinter3/tris.fm", 0, NULL, 1.9},
-	{"models/debris/wood/splinter4/tris.fm", 0, NULL, 1.6},
-	{"models/debris/wood/splinter1/tris.fm", 0, NULL, 1.8},
-
+	// Glass - models need different skins.
+	{ "models/debris/wood/splinter1/tris.fm", 0, NULL, 1.8f },	// 26
+	{ "models/debris/wood/splinter2/tris.fm", 0, NULL, 2.0f },
+	{ "models/debris/wood/splinter3/tris.fm", 0, NULL, 1.9f },
+	{ "models/debris/wood/splinter4/tris.fm", 0, NULL, 1.6f },
+	{ "models/debris/wood/splinter1/tris.fm", 0, NULL, 1.8f },
 
 	// Leaf - invalid debris type.
-	{"models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0},//31
-	{"models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0},
-	{"models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0},
+	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f },	// 31
+	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f },
+	{ "models/debris/pottery/pot1/tris.fm", 0, NULL, 2.0f },
 
 	// Wood chunks.
-	{"models/debris/wood/splinter1/tris.fm", 0, NULL, 1.8},//34
-	{"models/debris/wood/splinter2/tris.fm", 0, NULL, 2.0},
-	{"models/debris/wood/splinter3/tris.fm", 0, NULL, 1.9},
-	{"models/debris/wood/splinter4/tris.fm", 0, NULL, 1.6},
+	{ "models/debris/wood/splinter1/tris.fm", 0, NULL, 1.8f },	// 34
+	{ "models/debris/wood/splinter2/tris.fm", 0, NULL, 2.0f },
+	{ "models/debris/wood/splinter3/tris.fm", 0, NULL, 1.9f },
+	{ "models/debris/wood/splinter4/tris.fm", 0, NULL, 1.6f },
 
 	// Brown stone.
-	{"models/debris/stone/schunk1/tris.fm", 1, NULL, 3.0},//38
-	{"models/debris/stone/schunk2/tris.fm", 1, NULL, 3.0},
-	{"models/debris/stone/schunk3/tris.fm", 1, NULL, 3.0},
-	{"models/debris/stone/schunk4/tris.fm", 1, NULL, 3.0},
+	{ "models/debris/stone/schunk1/tris.fm", 1, NULL, 3.0f },	// 38
+	{ "models/debris/stone/schunk2/tris.fm", 1, NULL, 3.0f },
+	{ "models/debris/stone/schunk3/tris.fm", 1, NULL, 3.0f },
+	{ "models/debris/stone/schunk4/tris.fm", 1, NULL, 3.0f },
 
-	// Nothing - just smoke
-	{"models/debris/meat/chunk6/tris.fm", 0, NULL, 3.0},//42
+	// Nothing - just smoke.
+	{ "models/debris/meat/chunk6/tris.fm", 0, NULL, 3.0f },		// 42
 
-	//Insect Chunks - fixme, use diff skins for diff bugs...
-	{"models/debris/pottery/pot1/tris.fm", 2, NULL, 2.0},//43
-	{"models/debris/pottery/pot2/tris.fm", 2, NULL, 3.0},
-	{"models/debris/pottery/pot3/tris.fm", 2, NULL, 2.5},
-	{"models/debris/pottery/pot4/tris.fm", 2, NULL, 1.4},
-	{"models/debris/insect/chunk1/tris.fm", 0, NULL, 2.0},
-	{"models/debris/insect/chunk2/tris.fm", 0, NULL, 3.0},
-	{"models/debris/insect/chunk3/tris.fm", 0, NULL, 2.5},
-	{"models/debris/insect/chunk4/tris.fm", 0, NULL, 1.4},
+	// Insect Chunks - fixme, use diff skins for diff bugs...
+	{ "models/debris/pottery/pot1/tris.fm",  2, NULL, 2.0f },	// 43
+	{ "models/debris/pottery/pot2/tris.fm",  2, NULL, 3.0f },
+	{ "models/debris/pottery/pot3/tris.fm",  2, NULL, 2.5f },
+	{ "models/debris/pottery/pot4/tris.fm",  2, NULL, 1.4f },
+	{ "models/debris/insect/chunk1/tris.fm", 0, NULL, 2.0f },
+	{ "models/debris/insect/chunk2/tris.fm", 0, NULL, 3.0f },
+	{ "models/debris/insect/chunk3/tris.fm", 0, NULL, 2.5f },
+	{ "models/debris/insect/chunk4/tris.fm", 0, NULL, 1.4f },
 };
 
-float debrisElasticity[NUM_MAT] =
+static float debrisElasticity[NUM_MAT] =
 {
-	1.3,		// Stone
-	1.3,		// Grey Stone
-	1.1,		// Cloth
-	1.4,		// Metal
-	1.2,		// Flesh
-	1.3,		// Pottery
-	1.3,		// Glass
-	1.1,		// Leaf
-	1.5,		// Wood
-	1.3,		// Brown Stone
-	1.,			// Nothing - just smoke
-	1.3,		// Insect chunks
+	1.3f,	// Stone.
+	1.3f,	// Grey Stone.
+	1.1f,	// Cloth.
+	1.4f,	// Metal.
+	1.2f,	// Flesh.
+	1.3f,	// Pottery.
+	1.3f,	// Glass.
+	1.1f,	// Leaf.
+	1.5f,	// Wood.
+	1.3f,	// Brown Stone.
+	1.0f,	// Nothing - just smoke.
+	1.3f,	// Insect chunks.
 };
+
+#pragma endregion
 
 void InitDebrisStatics()
 {
@@ -303,7 +282,7 @@ void FXBodyPart_Spawn(centity_t *owner, int BodyPart, vec3_t origin, float ke, i
 	}
 }
 
-static void FXBodyPart_Throw(centity_t *owner, int BodyPart, vec3_t origin, float ke, int frame, int type, byte modelindex, int flags, centity_t *harpy)
+static void FXBodyPart_Throw(const centity_t *owner, int BodyPart, vec3_t origin, float ke, int frame, int type, byte modelindex, int flags, centity_t *harpy)
 {//FIXME: make sure parts have correct skins, even node 0!
 	int				index, whichnode, material, node_num;
 	client_entity_t	*debris;
@@ -443,7 +422,7 @@ static void FXBodyPart_Throw(centity_t *owner, int BodyPart, vec3_t origin, floa
 }
 
 
-qboolean FXBodyPartAttachedUpdate(struct client_entity_s *self, centity_t *owner)
+static qboolean FXBodyPartAttachedUpdate(struct client_entity_s *self, const centity_t *owner)
 {
 	VectorCopy(owner->lerp_origin, self->r.origin);
 	VectorSet(self->r.angles,
@@ -921,7 +900,7 @@ qboolean FXDebris_Vanish(struct client_entity_s *self,centity_t *owner)
 	return true;
 }
 
-qboolean FXDebris_Update(struct client_entity_s *self,centity_t *owner)
+static qboolean FXDebris_Update(struct client_entity_s *self,centity_t *owner)
 {
 	int curTime = fxi.cl->time;
 	float d_time = (curTime - self->lastThinkTime) / 1000.0f;
