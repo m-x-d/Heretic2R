@@ -8,4 +8,4 @@
 
 #include "Client Entities.h"
 
-extern qboolean BloodSplatDripUpdate(client_entity_t* self, centity_t* owner);
+static qboolean BloodSplatDripUpdate(client_entity_t* self, centity_t* owner);

@@ -289,7 +289,7 @@ static qboolean BloodSplatSplashUpdate(client_entity_t* self, centity_t* owner)
 	return true;
 }
 
-qboolean BloodSplatDripUpdate(client_entity_t* self, centity_t* owner)
+static qboolean BloodSplatDripUpdate(client_entity_t* self, centity_t* owner)
 {
 	client_particle_t* p;
 
