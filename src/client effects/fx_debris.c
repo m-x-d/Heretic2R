@@ -743,51 +743,46 @@ static void FXDebris_Collision(client_entity_t* self, CE_Message_t* msg)
 
 #pragma endregion
 
-//------------------------------------------------------------------
-//	FX Debris update
-//------------------------------------------------------------------
+#pragma region ========================== Debris update ==========================
 
-void FXDarkSmoke(vec3_t origin, float scale, float range);
-qboolean FXDebris_Remove(struct client_entity_s *self,centity_t *owner)
+qboolean FXDebris_Remove(struct client_entity_s* self, centity_t* owner)
 {
 	return false;
 }
 
-qboolean FXDebris_Vanish(struct client_entity_s *self,centity_t *owner)
+qboolean FXDebris_Vanish(struct client_entity_s* self, centity_t* owner)
 {
-	if(self->SpawnInfo&SIF_INLAVA)
-		FXDarkSmoke(self->r.origin, flrand(0.2, 0.5), flrand(30, 50));
+	if (self->SpawnInfo & SIF_INLAVA)
+		FXDarkSmoke(self->r.origin, flrand(0.2f, 0.5f), flrand(30.0f, 50.0f));
 
-	if ((self->alpha < 0.1f)||(self->r.scale < 0.1f))
+	if (self->alpha < 0.1f || self->r.scale < 0.1f)
 	{
-		if(self->flags&CEF_FLAG6)
-		{//let the smoke die out
+		if (self->flags & CEF_FLAG6)
+		{
+			// Let the smoke die out.
 			self->alpha = 0.0f;
 			self->r.scale = 0.0f;
 			self->Update = FXDebris_Remove;
 			self->updateTime = 1000;
+
 			return true;
 		}
-		else
-			return false;
+
+		return false;
 	}
 
-	if(self->flags&CEF_FLAG6 && !irand(0, 2))//on fire- do a fire trail
+	if (self->flags & CEF_FLAG6 && irand(0, 2) == 0) // On fire - do a fire trail.
 	{
-		if(irand(0, 0.3)>self->alpha)
+		if (irand(0, 0.3f) > self->alpha || irand(0, 0.3f) > self->r.scale) //TODO: should use flrand?
 		{
 			self->dlight = NULL;
 			self->flags &= ~CEF_FLAG6;
-			self->d_alpha = -0.01;
-		}
-		else if(irand(0, 0.3)>self->r.scale)
-		{
-			self->dlight = NULL;
- 			self->flags &= ~CEF_FLAG6;
-			self->d_scale = -0.01;
+			self->d_alpha = -0.01f;
 		}
 		else
-			DoFireTrail(self);//FIXME: make them just smoke when still?
+		{
+			DoFireTrail(self); //FIXME: make them just smoke when still?
+		}
 	}
 
 	return true;
@@ -847,3 +842,4 @@ qboolean FXFleshDebris_Update(struct client_entity_s *self,centity_t *owner)
 	return true;
 }
 
+#pragma endregion
