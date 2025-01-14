@@ -63,58 +63,35 @@ static qboolean FXFireHandsThink(struct client_entity_s* self, const centity_t* 
 	return true;
 }
 
-// ************************************************************************************************
-// FXFireHands
-// ------------
-// ************************************************************************************************
-
-void FXFireHands(centity_t *owner,int type,int flags,vec3_t origin)
+void FXFireHands(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	short			refpoints;
-	client_entity_t	*trail;
-	int				i;
-	int				flame_dur;
-	char			lifetime;
-
-	refpoints=0;
-
+	char lifetime;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_FIREHANDS].formatString, &lifetime);
 
+	short refpoints = (1 << CORVUS_LEFTHAND);
 	if (flags & CEF_FLAG6)
-		refpoints=(1 << CORVUS_LEFTHAND) | (1 << CORVUS_RIGHTHAND);
-	else
-		refpoints=(1 << CORVUS_LEFTHAND);
+		refpoints |= (1 << CORVUS_RIGHTHAND);
 
 	VectorClear(origin);
 
-	
-	if (r_detail->value > DETAIL_NORMAL)
-		flame_dur = 50;
-	else
-		flame_dur = 75;
+	const int flame_duration = (r_detail->value > DETAIL_NORMAL ? 50 : 75); //TODO: shouldn't the values be inverted?..
 
 	// Add a fiery trail effect to the player's hands / feet etc.
-
-	for(i=0;i<16;i++)
+	for (int i = 0; i < 16; i++)
 	{
-		if(!(refpoints & (1 << i)))
+		if (!(refpoints & (1 << i)))
 			continue;
 
-		trail=ClientEntity_new(type,flags,origin,0,flame_dur);
+		client_entity_t* trail = ClientEntity_new(type, flags, origin, 0, flame_duration);
 
-		trail->Update=FXFireHandsThink;
-		trail->flags|=CEF_NO_DRAW | CEF_OWNERS_ORIGIN | CEF_ADDITIVE_PARTS;
-		trail->radius = 128;
-		trail->AddToView = LinkedEntityUpdatePlacement;			
+		trail->Update = FXFireHandsThink;
+		trail->flags |= CEF_NO_DRAW | CEF_OWNERS_ORIGIN | CEF_ADDITIVE_PARTS;
+		trail->radius = 128.0f;
+		trail->AddToView = LinkedEntityUpdatePlacement;
 		trail->refPoint = i;
 		trail->color.c = 0xe5007fff;
+		trail->LifeTime = (lifetime > 0 ? fxi.cl->time + lifetime * 100 : -1);
 
-		if (lifetime > 0)
-			trail->LifeTime = fxi.cl->time + (lifetime * 100);
-		else
-			trail->LifeTime = -1;
-
-
-		AddEffect(owner,trail);
+		AddEffect(owner, trail);
 	}
 }
