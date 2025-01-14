@@ -576,43 +576,54 @@ void FXDebris(centity_t* owner, const int type, const int flags, vec3_t origin)
 	FXDebris_SpawnChunks(type, flags, origin, num, material, dir, ke, mins, scale, false);
 }
 
-void FXFleshDebris(centity_t *owner, int type, int flags, vec3_t origin)
+void FXFleshDebris(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	byte			num, material, size, mag;
-	vec3_t			dir, mins;
-	qboolean		altskin = false;
-	float			scale;
+	byte material;
+	byte size;
+	vec3_t mins;
+	byte mag;
 
-	if(flags&CEF_FLAG7)
-	{//male insect
+	qboolean altskin = false;
+
+	if (flags & CEF_FLAG7)
+	{
+		// Male insect.
 		material = MAT_INSECT;
 		flags &= ~CEF_FLAG7;
 		flags &= ~CEF_FLAG8;
 		altskin = true;
 	}
-	else if(flags&CEF_FLAG8)
-	{//normal insect
+	else if (flags & CEF_FLAG8)
+	{
+		// Normal insect.
 		material = MAT_INSECT;
 		flags &= ~CEF_FLAG8;
 	}
 	else
+	{
 		material = MAT_FLESH;
+	}
 
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_FLESH_DEBRIS].formatString, &size, mins, &mag);
 
-	VectorSet(dir, 0.0, 0.0, 1.0);
-	Vec3ScaleAssign(mag, mins);
-	if(r_detail->value < DETAIL_NORMAL)
-		num = ClampI(size, 1, 5);
-	else if(r_detail->value == DETAIL_NORMAL)
-		num = ClampI(size, 1, 12);
-	else if(r_detail->value == DETAIL_HIGH)
-		num = ClampI(size, 1, 16);
-	else
-		num = ClampI(size, 1, 24);
+	vec3_t dir;
+	VectorSet(dir, 0.0f, 0.0f, 1.0f);
 
-	scale = mag/24;
-	FXDebris_SpawnFleshChunks(type, flags, origin, num, material, dir, 80000.0, mins, scale, altskin);
+	Vec3ScaleAssign(mag, mins);
+
+	int num;
+	switch ((int)r_detail->value)
+	{
+		default:
+		case DETAIL_LOW:		num = ClampI(size, 1, 5);  break;
+		case DETAIL_NORMAL:		num = ClampI(size, 1, 12); break;
+		case DETAIL_HIGH:		num = ClampI(size, 1, 16); break;
+		case DETAIL_UBERHIGH:	num = ClampI(size, 1, 24); break;
+	}
+
+	const float scale = (float)mag / 24.0f;
+
+	FXDebris_SpawnFleshChunks(type, flags, origin, num, material, dir, 80000.0f, mins, scale, altskin);
 }
 
 #pragma endregion
