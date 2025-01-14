@@ -11,12 +11,13 @@
 
 #define BOB_HEIGHT					6.0f
 #define BOB_SPEED					ANGLE_10
+#define NUM_DEFENSE_PICKUPS			6 //mxd
 #define NUM_DEFENSE_PICKUP_SPARKS	4
 #define SPARK_TRAIL_DELAY			100
 #define SPARK_RADIUS				10.0f
-#define SPARK_OFFSET				6
 
-static struct model_s* defense_models[12];
+static struct model_s* defense_models[NUM_DEFENSE_PICKUPS];
+static struct model_s* defense_sparks[NUM_DEFENSE_PICKUPS]; //mxd
 
 void PreCacheItemDefense(void)
 {
@@ -27,12 +28,12 @@ void PreCacheItemDefense(void)
 	defense_models[4] = fxi.RegisterModel("models/items/defense/lightshield/tris.fm");		// ITEM_DEFENSE_SHIELD
 	defense_models[5] = fxi.RegisterModel("models/items/defense/tornado/tris.fm");			// ITEM_DEFENSE_TORNADO
 
-	defense_models[6] =  fxi.RegisterModel("sprites/spells/spark_cyan.sp2");				// Cyan spark.
-	defense_models[7] =  fxi.RegisterModel("sprites/spells/meteorbarrier.sp2");				// Meteor cloud.
-	defense_models[8] =  fxi.RegisterModel("sprites/spells/spark_green.sp2");				// Green spark.
-	defense_models[9] =  fxi.RegisterModel("sprites/spells/spark_red.sp2");					// Red spark.
-	defense_models[10] = fxi.RegisterModel("sprites/spells/spark_blue.sp2");				// Blue spark.
-	defense_models[11] = fxi.RegisterModel("sprites/spells/spark_blue.sp2");				// Also blue spark.
+	defense_sparks[0] = fxi.RegisterModel("sprites/spells/spark_cyan.sp2");					// Cyan spark.
+	defense_sparks[1] = fxi.RegisterModel("sprites/spells/meteorbarrier.sp2");				// Meteor cloud.
+	defense_sparks[2] = fxi.RegisterModel("sprites/spells/spark_green.sp2");				// Green spark.
+	defense_sparks[3] = fxi.RegisterModel("sprites/spells/spark_red.sp2");					// Red spark.
+	defense_sparks[4] = fxi.RegisterModel("sprites/spells/spark_blue.sp2");					// Blue spark.
+	defense_sparks[5] = fxi.RegisterModel("sprites/spells/spark_blue.sp2");					// Also blue spark.
 }
 
 static qboolean FXDefensePickupSparkThink(struct client_entity_s* shield, centity_t* owner) //mxd. FXEggSparkThink in original version.
@@ -72,7 +73,7 @@ void FXDefensePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 	byte tag;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_PICKUP_DEFENSE].formatString, &tag);
 
-	assert(tag < SPARK_OFFSET); //mxd. A check in original version.
+	assert(tag < NUM_DEFENSE_PICKUPS); //mxd. A check in original version.
 
 	flags &= ~CEF_OWNERS_ORIGIN;
 	flags |= CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED;
@@ -97,7 +98,7 @@ void FXDefensePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 		client_entity_t* spark = ClientEntity_new(type, flags, origin, 0, 50);
 		spark->flags |= CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS | CEF_VIEWSTATUSCHANGED;
 		spark->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		spark->r.model = &defense_models[tag + SPARK_OFFSET];
+		spark->r.model = &defense_sparks[tag];
 		spark->r.scale = (tag == ITEM_DEFENSE_METEORBARRIER ? 0.2f : 0.8f);
 		spark->radius = SPARK_RADIUS;
 		spark->color.c = 0xffffffff;

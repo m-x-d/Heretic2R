@@ -36,7 +36,7 @@ typedef enum
 	ITEM_DEFENSE_TELEPORT,
 	ITEM_DEFENSE_SHIELD,
 	ITEM_DEFENSE_TORNADO,
-	ITEM_DEFENSE_POWERUP,
+	ITEM_DEFENSE_POWERUP, //TODO: unused item. Rename to NUM_DEFENSE_PICKUPS and use in fx_DefensePickup.c instead of local define?
 } itemdefense_t;
 
 // Mana pickups.
