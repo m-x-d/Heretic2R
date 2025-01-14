@@ -125,7 +125,7 @@ extern void FXSpellChange(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXStaffCreate(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXStaffCreatePoof(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXStaffRemove(centity_t* Owner, int Type, int Flags, vec3_t Origin);
-extern void FXDustPuffOnGround(centity_t* Owner, int Type, int Flags, vec3_t Origin);
+extern void FXDustPuffOnGround(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXFire(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXSound(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXPickup(centity_t* owner, int type, int flags, vec3_t origin);

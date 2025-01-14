@@ -31,35 +31,24 @@ void CreateSinglePuff(vec3_t origin, const float scale)
 	AddEffect(NULL, ce);
 }
 
-void FXDustPuffOnGround(centity_t *owner, int type, int flags, vec3_t origin)
+void FXDustPuffOnGround(centity_t* owner, int type, int flags, vec3_t origin)
 {
-	int				numPuffs, i;
-	vec3_t			endpos;
-	trace_t			trace;
-	client_entity_t	*ce;
-
+	vec3_t endpos;
 	VectorCopy(origin, endpos);
-	endpos[2] -= 128.0;
+	endpos[2] -= 128.0f;
 
-	//Find out where the ground is
-	fxi.Trace(	origin, 
-				vec3_origin, 
-				vec3_origin, 
-				endpos, 
-				CONTENTS_SOLID, 
-				CEF_CLIP_TO_WORLD, 
-				&trace);
+	// Find out where the ground is.
+	trace_t trace;
+	fxi.Trace(origin, vec3_origin, vec3_origin, endpos, CONTENTS_SOLID, CEF_CLIP_TO_WORLD, &trace);
 
-	if (trace.fraction == 1.0)
-		return;
-
-	ce = ClientEntity_new(-1, CEF_NOMOVE | CEF_NO_DRAW, trace.endpos, NULL, 500);
-	numPuffs = irand(3,4);
-	for (i = 0; i < numPuffs; i++)
+	if (trace.fraction < 1.0f)
 	{
-		FXDustPuff(ce, 5.0F);
-	}
-	AddEffect(NULL, ce);
-}
+		client_entity_t* ce = ClientEntity_new(-1, CEF_NOMOVE | CEF_NO_DRAW, trace.endpos, NULL, 500);
 
-// end
+		const int num_puffs = irand(3, 4);
+		for (int i = 0; i < num_puffs; i++)
+			FXDustPuff(ce, 5.0f);
+
+		AddEffect(NULL, ce);
+	}
+}
