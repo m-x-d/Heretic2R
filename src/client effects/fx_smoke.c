@@ -8,6 +8,7 @@
 #include "Angles.h"
 #include "Client Entities.h"
 #include "Client Effects.h"
+#include "fx_smoke.h" //mxd
 #include "q_shared.h"
 #include "Vector.h"
 #include "EffectFlags.h"

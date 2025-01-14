@@ -335,5 +335,8 @@
     <ClInclude Include="fx_sparks.h">
       <Filter>src\Effects</Filter>
     </ClInclude>
+    <ClInclude Include="fx_smoke.h">
+      <Filter>src\Effects</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
