@@ -20,38 +20,36 @@ static qboolean FXDustLandThink(client_entity_t* dust, centity_t* owner)
 	return false;
 }
 
-static qboolean FXDustThink(client_entity_t *dust, centity_t *owner)
+static qboolean FXDustThink(client_entity_t* dust, centity_t* owner)
 {
-	vec3_t			holdorigin, dir;
-	trace_t			trace;
-	client_entity_t	*ce;
-	int				duration;
-
 	dust->LifeTime++;
-	if(dust->LifeTime > dust->SpawnDelay)
-	{
-		return(false);
-	}
+
+	if (dust->LifeTime > dust->SpawnDelay)
+		return false;
+
 	dust->updateTime = irand(dust->LifeTime * 17, dust->LifeTime * 50);
 
-	VectorCopy(dust->r.origin, holdorigin);
-	holdorigin[0] += flrand(0.0, dust->startpos[0]);
-	holdorigin[1] += flrand(0.0, dust->startpos[1]);
+	vec3_t hold_origin;
+	VectorCopy(dust->r.origin, hold_origin);
+	hold_origin[0] += flrand(0.0f, dust->startpos[0]);
+	hold_origin[1] += flrand(0.0f, dust->startpos[1]);
 
-	// Spawn a bit of smoke
-	FXSmoke(holdorigin, 3.0, 25.0);
+	// Spawn a bit of smoke.
+	FXSmoke(hold_origin, 3.0f, 25.0f);
 
-	// Spawn a rock chunk
-	VectorSet(dir, 0.0, 0.0, -1.0);
-	ce = FXDebris_Throw(holdorigin, MAT_STONE, dir, 20000.0, flrand(0.75, 2.4), 0, false);
+	// Spawn a rock chunk.
+	vec3_t dir = { 0.0f, 0.0f, -1.0f };
+	client_entity_t* rock = FXDebris_Throw(hold_origin, MAT_STONE, dir, 20000.0f, flrand(0.75f, 2.4f), 0, false);
 
-	// Create a cloud of dust when rock hits ground
-	duration = GetFallTime(ce->origin, ce->velocity[2], ce->acceleration[2], ce->radius, 3.0F, &trace);
-	ce = ClientEntity_new(-1, CEF_NO_DRAW | CEF_NOMOVE, trace.endpos, NULL, duration);
-	ce->Update = FXDustLandThink;
-	AddEffect(NULL, ce);
+	// Create a cloud of dust when rock hits ground.
+	trace_t trace;
+	const int duration = GetFallTime(rock->origin, rock->velocity[2], rock->acceleration[2], rock->radius, 3.0f, &trace);
 
-	return(true);
+	client_entity_t* dust_cloud = ClientEntity_new(-1, CEF_NO_DRAW | CEF_NOMOVE, trace.endpos, NULL, duration);
+	dust_cloud->Update = FXDustLandThink;
+	AddEffect(NULL, dust_cloud);
+
+	return true;
 }
 
 void FXDust(centity_t *owner, int type, int flags, vec3_t origin)
