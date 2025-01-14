@@ -238,99 +238,93 @@ static void FXBodyPart_Spawn(const centity_t* owner, const int body_part, vec3_t
 		DoBloodSplash(origin, 5, flags & CEF_FLAG8);
 }
 
-static void FXBodyPart_Throw(const centity_t *owner, int BodyPart, vec3_t origin, float ke, int frame, int type, byte modelindex, int flags, centity_t *harpy)
-{//FIXME: make sure parts have correct skins, even node 0!
-	int				index, whichnode, material, node_num;
-	client_entity_t	*debris;
-	vec3_t			start;
-	trace_t			trace;
-	vec3_t			dir = {0, 0, 1};
+static void FXBodyPart_Throw(const centity_t* owner, const int body_part, vec3_t origin, float ke, const int frame, const int type, const byte modelindex, int flags, centity_t* harpy)
+{
+	//FIXME: make sure parts have correct skins, even node 0!
+	client_entity_t* debris = ClientEntity_new(type, 0, origin, NULL, 17); //flags sent as 0
 
-	debris = ClientEntity_new(type, 0, origin, NULL, 17);//flags sent as 0
-
-	if(type == FX_THROWWEAPON)
-		material = MAT_METAL;//not elastic enough for effect?
+	int material;
+	if (type == FX_THROWWEAPON) // Not elastic enough for effect?
+		material = MAT_METAL;
+	else if (flags & CEF_FLAG8) // Insect material type.
+		material = MAT_INSECT;
 	else
-	{
-		if(flags&CEF_FLAG8)//insect material type
-			material = MAT_INSECT;
-		else
-			material = MAT_FLESH;
-	}
+		material = MAT_FLESH;
 
 	debris->SpawnInfo = material;
-	//FIXME: when do I run out of these?- ie, when is debris invalid?
-
-	debris->classID = CID_DEBRIS;
+	debris->classID = CID_DEBRIS; //FIXME: when do I run out of these? - ie, when is debris invalid?
 	debris->msgHandler = CE_DefaultMsgHandler;
-	if(modelindex == 255)//FIXME: these will tilt up and down with the player's torso!!!
-	{	// Player special model.
-		debris->r.model = fxi.cl->clientinfo[owner->baseline.number-1].model;
-		if (!debris->r.model)
+
+	if (modelindex == 255) //FIXME: these will tilt up and down with the player's torso!!!
+	{
+		// Player special model.
+		debris->r.model = fxi.cl->clientinfo[owner->baseline.number - 1].model;
+		if (debris->r.model == NULL)
 			debris->r.model = fxi.cl->baseclientinfo.model;
 	}
 	else
 	{
 		debris->r.model = &fxi.cl->model_draw[modelindex];
 	}
+
 	debris->r.fmnodeinfo = FMNodeInfo_new();
-	debris->r.frame = frame;//first frame should be parts frame of a flexmodel
-//need to copy base skin also
-	debris->r.skinnum = owner->current.skinnum;
-		
-	for(whichnode = 1, node_num = 0; whichnode<=16384; whichnode*=2)//bitwise
+	debris->r.frame = frame; // First frame should be parts frame of a flexmodel.
+	debris->r.skinnum = owner->current.skinnum; // Need to copy base skin also.
+
+	int node_num = 1;
+	for (int whichnode = 1; whichnode <= 16384; whichnode *= 2, node_num++) // bitwise
 	{
-		node_num++;
-		if(!((int)(BodyPart)&(int)(whichnode)))
+		if (body_part & whichnode)
 		{
-			debris->r.fmnodeinfo[node_num].flags |= FMNI_NO_DRAW;
+			debris->r.fmnodeinfo[node_num] = owner->current.fmnodeinfo[node_num]; // Copy skins and flags and colors.
+			debris->r.fmnodeinfo[node_num].flags &= ~FMNI_NO_DRAW;
 		}
 		else
 		{
-			debris->r.fmnodeinfo[node_num] = owner->current.fmnodeinfo[node_num];//copy skins and flags and colors
-			debris->r.fmnodeinfo[node_num].flags &= ~FMNI_NO_DRAW;
+			debris->r.fmnodeinfo[node_num].flags |= FMNI_NO_DRAW;
 		}
 	}
-	//turn off first node always?
-	if(modelindex != 255 || (modelindex == 255 && !(BodyPart & 1)))
+
+	// Turn off first node?
+	if (modelindex != 255 || (modelindex == 255 && !(body_part & 1)))
+	{
 		debris->r.fmnodeinfo[0].flags |= FMNI_NO_DRAW;
+	}
 	else
 	{
-		debris->r.fmnodeinfo[0] = owner->current.fmnodeinfo[0];//copy skins and flags and colors
+		debris->r.fmnodeinfo[0] = owner->current.fmnodeinfo[0]; // Copy skins and flags and colors.
 		debris->r.fmnodeinfo[0].flags &= ~FMNI_NO_DRAW;
 	}
 
 	debris->flags |= (CEF_CLIP_TO_WORLD | CEF_ABSOLUTE_PARTS);
-	index = irand(debris_chunk_offsets[material], debris_chunk_offsets[material + 1] - 1);
-	if(owner->entity)
-		debris->r.skinnum = owner->entity->skinnum;
-	else
-		debris->r.skinnum = 0;
+	debris->r.skinnum = (owner->entity != NULL ? owner->entity->skinnum : 0);
+	debris->radius = 2.0f;
 
-	debris->radius = 2.0;
-
-	if(harpy)//HACK: harpy took it!
+	if (harpy != NULL) //HACK: harpy took it!
 	{
 		debris->flags |= CEF_OWNERS_ORIGIN;
 		debris->Update = FXBodyPartAttachedUpdate;
 		debris->updateTime = 50;
 		AddEffect(harpy, debris);
+
 		return;
 	}
 
-	VectorRandomCopy(dir, debris->velocity, 0.5F);
-	
-	if(ke)
+	const vec3_t dir = { 0.0f, 0.0f, 1.0f };
+	VectorRandomCopy(dir, debris->velocity, 0.5f);
+
+	if (ke == 0.0f)
 	{
-		Vec3ScaleAssign(sqrt(ke/debris_chunks[index].mass), debris->velocity);
-		debris->color.c = 0xFFFFFFFF;
+		ke = flrand(10.0f, 100.0f) * 10000.0f;
+		debris->color.c = 0x00000000;
 	}
 	else
 	{
-		ke = irand(10, 100) * 10000.0f;
-		Vec3ScaleAssign(sqrt(ke/debris_chunks[index].mass), debris->velocity);
-		debris->color.c = 0x00000000;
+		debris->color.c = 0xffffffff;
 	}
+
+	const int chunk_index = irand(debris_chunk_offsets[material], debris_chunk_offsets[material + 1] - 1);
+	Vec3ScaleAssign(sqrtf(ke / debris_chunks[chunk_index].mass), debris->velocity);
 
 	debris->acceleration[2] = GetGravity();
 
@@ -341,42 +335,30 @@ static void FXBodyPart_Throw(const centity_t *owner, int BodyPart, vec3_t origin
 
 	debris->Update = FXBodyPart_Update;
 	debris->updateTime = 50;
-	
-	if(r_detail->value == DETAIL_UBERHIGH)
+
+	const int detail = (int)r_detail->value; //mxd
+	if (detail == DETAIL_UBERHIGH)
 		debris->LifeTime = fxi.cl->time + 10000;
-	else if(!r_detail->value)
+	else if (detail == DETAIL_LOW)
 		debris->LifeTime = fxi.cl->time + 1000;
 	else
 		debris->LifeTime = fxi.cl->time + 3000;
 
-	if(flags&CEF_FLAG6)//on fire- dynamic light
+	if ((flags & CEF_FLAG6) && !IsInWater(origin)) // On fire - add dynamic light.
 	{
-		// Not-very-perfect way of doing a pointcontents from the FX dll
-		VectorCopy(origin, start);
-		start[2] += 1;
-		fxi.Trace(start, vec3_origin, vec3_origin, origin, 0, 0, &trace);
-		if(trace.contents&MASK_WATER)
-		{//in water- no flames, pal!
-			flags &= ~CEF_FLAG6;
-		}
-		else
+		if (!ref_soft && detail == DETAIL_HIGH) //TODO: and uberhigh? 
 		{
-			if(!ref_soft && r_detail->value == DETAIL_HIGH)
-			{//uberhigh?
-				paletteRGBA_t	color;
+			const paletteRGBA_t color = { .c = 0xe5007fff };
 
-				debris->flags |= CEF_FLAG7;//don't spawn blood too, just flames
-				color.c = 0xe5007fff;
-				debris->dlight = CE_DLight_new(color, 50.0F, -5.0F);
-			}
-
-			debris->flags |= CEF_FLAG6;
+			debris->flags |= CEF_FLAG7; // Don't spawn blood too, just flames.
+			debris->dlight = CE_DLight_new(color, 50.0f, -5.0f);
 		}
+
+		debris->flags |= CEF_FLAG6;
 	}
 
-	AddEffect(NULL,debris);
+	AddEffect(NULL, debris);
 }
-
 
 static qboolean FXBodyPartAttachedUpdate(struct client_entity_s *self, const centity_t *owner)
 {
