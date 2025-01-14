@@ -192,6 +192,20 @@ static void DoFireTrail(client_entity_t* spawner)
 	}
 }
 
+//mxd. Added to reduce code duplication.
+static qboolean IsInWater(vec3_t origin)
+{
+	// Not-very-perfect way of doing a pointcontents from the FX dll.
+	vec3_t start;
+	VectorCopy(origin, start);
+	start[2] += 1.0f;
+
+	trace_t trace;
+	fxi.Trace(start, vec3_origin, vec3_origin, origin, 0, 0, &trace);
+
+	return (trace.contents & MASK_WATER);
+}
+
 //------------------------------------------------------------------
 //	FX Body Part spawn functions
 //------------------------------------------------------------------
