@@ -20,8 +20,8 @@
 
 #define FLAME_COUNT			4
 #define FIRE_SPAWN_RADIUS	8.0f
-#define FIRE_SCALE 			12.0f
-#define FIRE_ENT_SCALE 		8.0f
+#define FIRE_SCALE			12.0f
+#define FIRE_ENT_SCALE		8.0f
 #define FIRE_ACCEL			32.0f
 
 static struct model_s* flareup_model;
@@ -31,51 +31,42 @@ void PreCacheFlareup(void)
 	flareup_model = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
 
-void FXFlareup(centity_t *owner, int type, int flags, vec3_t origin)
+void FXFlareup(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*spawner;
-	client_particle_t	*flame;
-	float				radius;
-	int					i, count;
-
 	// Add a big ol' flash.
-	spawner = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS, origin, NULL, 500);
-	spawner->r.model = &flareup_model;		// The starry halo.
-	spawner->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	spawner->radius = 128.0;
+	client_entity_t* spawner = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS, origin, NULL, 500);
+	spawner->r.model = &flareup_model; // The starry halo.
+	spawner->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	spawner->radius = 128.0f;
 
-	spawner->r.scale = 1.0;
-	spawner->d_scale = -2.0;
-	spawner->alpha = 0.95;
-	spawner->d_alpha = -2.0;
+	spawner->d_scale = -2.0f;
+	spawner->alpha = 0.95f;
+	spawner->d_alpha = -2.0f;
 	spawner->color.c = 0xffffffff;
-	
+
 	AddEffect(NULL, spawner);
-	
-	count = GetScaledCount(FLARE_COUNT, 0.9);
-	for(i = 0; i < count; i++)
+
+	// Add fire particles.
+	const int count = GetScaledCount(FLARE_COUNT, 0.9f);
+	for (int i = 0; i < count; i++)
 	{
-		flame = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2) | PFL_NEARCULL, spawner->color, 1000);
+		const int p_type = irand(PART_32x32_FIRE0, PART_32x32_FIRE2); //mxd
+		client_particle_t* flame = ClientParticle_new((int)(p_type | PFL_NEARCULL), spawner->color, 1000);
 
-		radius = spawner->r.scale * FLARE_SPAWN_RADIUS;
-		VectorSet(flame->origin, flrand(-radius, radius), flrand(-radius, radius), flrand(-radius, -radius));
+		const float radius = spawner->r.scale * FLARE_SPAWN_RADIUS;
+		VectorRandomSet(flame->origin, radius); //mxd
 
-		flame->scale = FLARE_SCALE * spawner->r.scale;
-		VectorSet(flame->velocity, 
-						flrand(-FLARE_SPEED, FLARE_SPEED), 
-						flrand(-FLARE_SPEED, FLARE_SPEED), 
-						flrand(-FLARE_SPEED, FLARE_SPEED));
-		flame->acceleration[2] = FLARE_ACCEL * spawner->r.scale;
-		flame->d_scale = flrand(-20.0, -10.0);
-		flame->d_alpha = flrand(-320.0, -256.0);
-		
+		flame->scale = spawner->r.scale * FLARE_SCALE;
+		VectorRandomSet(flame->velocity, FLARE_SPEED); //mxd
+		flame->acceleration[2] = spawner->r.scale * FLARE_ACCEL;
+		flame->d_scale = flrand(-20.0f, -10.0f);
+		flame->d_alpha = flrand(-320.0f, -256.0f);
+
 		flame->type |= PFL_ADDITIVE;
 
 		AddParticleToList(spawner, flame);
 	}
 }
-
-
 
 qboolean FXFireThink(client_entity_t *spawner, centity_t *owner)
 {
