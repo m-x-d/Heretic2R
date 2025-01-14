@@ -145,30 +145,28 @@ static qboolean FXDripperParticleSpawner(client_entity_t* spawner, centity_t* ow
 	return true;
 }
 
-// Spawn a water drop spawner
-
-void FXDripper(centity_t *Owner, int Type, int Flags, vec3_t Origin)
+// Spawn a water drop spawner.
+void FXDripper(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	client_entity_t		*dripper;
-	byte				dripspermin, frame;
-	trace_t				trace;
+	byte drips_per_min;
+	byte frame;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_DRIPPER].formatString, &drips_per_min, &frame);
 
-	fxi.GetEffect(Owner, Flags, clientEffectSpawners[FX_DRIPPER].formatString, &dripspermin, &frame);
-
-	Flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_VIEWSTATUSCHANGED;
-	dripper = ClientEntity_new(Type, Flags, Origin, NULL, 1000);
+	flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_VIEWSTATUSCHANGED;
+	client_entity_t* dripper = ClientEntity_new(type, flags, origin, NULL, 1000);
 
 	dripper->r.frame = frame;
 
-	dripper->LifeTime = (60 * 1000) / dripspermin;
+	dripper->LifeTime = 60 * 1000 / drips_per_min;
 	dripper->Update = FXDripperParticleSpawner;
 
 	dripper->acceleration[2] = GetGravity();
 	dripper->radius = DRIP_RADIUS;
-	dripper->SpawnDelay = GetFallTime(Origin, 0, dripper->acceleration[2], DRIP_RADIUS, DRIP_MAX_DURATION, &trace);
-	dripper->SpawnData = trace.endpos[2] + 4.0F;
+
+	trace_t trace;
+	dripper->SpawnDelay = GetFallTime(origin, 0, dripper->acceleration[2], DRIP_RADIUS, DRIP_MAX_DURATION, &trace);
+	dripper->SpawnData = trace.endpos[2] + 4.0f;
 	dripper->SpawnInfo = trace.contents;
 
-	AddEffect(Owner, dripper); 
+	AddEffect(owner, dripper);
 }
-// end
