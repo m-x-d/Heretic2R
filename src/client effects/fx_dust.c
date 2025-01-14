@@ -1,54 +1,18 @@
 //
 // fx_dust.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-#include "Angles.h"
+
 #include "Client Entities.h"
 #include "Client Effects.h"
-#include "q_shared.h"
-#include "ce_DefaultMessageHandler.h"
-#include "EffectFlags.h"
-#include "q_Physics.h"
-#include "fx_debris.h"
-#include "random.h"
+#include "fx_debris.h" //mxd
+#include "fx_smoke.h" //mxd
+#include "Random.h"
 #include "Vector.h"
-#include "Particle.h"
 #include "Utilities.h"
-#include "fx.h"
 
-typedef struct RockChunk
-{
-	char	*modelName;
-	struct model_s *model;
-	float	mass;
-} RockChunk_t;
-
-static void FXDust_RockThrow(int type, int flags, vec3_t origin);
-static void FXDust_DustThrow(int type, int flags, vec3_t origin);
-void FXSmoke(vec3_t origin, float scale, float range);
-client_entity_t *FXDebris_Throw(vec3_t origin, int material, vec3_t dir, float ke,float scale, int flags);
-
-#define	NUM_ROCK_MODELS	4
-static struct model_s *rock_models[NUM_ROCK_MODELS];
-RockChunk_t RockChunks[]=
-{
-	{"models/debris/stone/schunk1/tris.fm", 0, 3.0},
-	{"models/debris/stone/schunk2/tris.fm", 0, 3.0},
-	{"models/debris/stone/schunk3/tris.fm", 0, 3.0},
-	{"models/debris/stone/schunk4/tris.fm", 0, 3.0},
-};
-
-void PreCacheRockchunks()
-{
-	int		i;
-
-	for(i = 0; i < NUM_ROCK_MODELS; i++)
-	{
-		rock_models[i] = fxi.RegisterModel(RockChunks[i].modelName);
-	}
-}
+void PreCacheRockchunks(void) { } //TODO: remove?
 
 //------------------------------------------------------------------
 //	FX Dust spawn functions
@@ -83,7 +47,7 @@ static qboolean FXDustThink(client_entity_t *dust, centity_t *owner)
 
 	// Spawn a rock chunk
 	VectorSet(dir, 0.0, 0.0, -1.0);
-	ce = FXDebris_Throw(holdorigin, MAT_STONE, dir, 20000.0, flrand(0.75, 2.4), 0);
+	ce = FXDebris_Throw(holdorigin, MAT_STONE, dir, 20000.0, flrand(0.75, 2.4), 0, false);
 
 	// Create a cloud of dust when rock hits ground
 	duration = GetFallTime(ce->origin, ce->velocity[2], ce->acceleration[2], ce->radius, 3.0F, &trace);
