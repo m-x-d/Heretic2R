@@ -30,7 +30,7 @@ typedef struct DebrisChunk
 	float mass;
 } DebrisChunk_t;
 
-static int debrisChunkOffsets[NUM_MAT + 1] =
+static int debris_chunk_offsets[NUM_MAT + 1] =
 {
 	0,	// Stone.
 	4,	// Grey stone.
@@ -45,10 +45,10 @@ static int debrisChunkOffsets[NUM_MAT + 1] =
 	42,	// Nothing - just smoke.
 	43,	// Insect chunks.
 
-	51	// Total debrisChunks count.
+	51	// Total debris_chunks count.
 };
 
-static DebrisChunk_t debrisChunks[] =
+static DebrisChunk_t debris_chunks[] =
 {
 	// Stone.
 	{ "models/debris/stone/schunk1/tris.fm", 0, NULL, 3.0f },	// 0
@@ -126,7 +126,7 @@ static DebrisChunk_t debrisChunks[] =
 	{ "models/debris/insect/chunk4/tris.fm", 0, NULL, 1.4f },
 };
 
-static float debrisElasticity[NUM_MAT] =
+static float debris_elasticity[NUM_MAT] =
 {
 	1.3f,	// Stone.
 	1.3f,	// Grey Stone.
@@ -155,10 +155,10 @@ void PreCacheDebris()
 
 	for(j = 0; j < NUM_MAT; ++j)
 	{
-		offset = debrisChunkOffsets[j+1];
-		for(i = debrisChunkOffsets[j]; i < offset; ++i)
+		offset = debris_chunk_offsets[j+1];
+		for(i = debris_chunk_offsets[j]; i < offset; ++i)
 		{
-			debrisChunks[i].model = fxi.RegisterModel(debrisChunks[i].modelName);
+			debris_chunks[i].model = fxi.RegisterModel(debris_chunks[i].modelName);
 		}
 	}
 }
@@ -345,7 +345,7 @@ static void FXBodyPart_Throw(const centity_t *owner, int BodyPart, vec3_t origin
 	}
 
 	debris->flags |= (CEF_CLIP_TO_WORLD | CEF_ABSOLUTE_PARTS);
-	index = irand(debrisChunkOffsets[material], debrisChunkOffsets[material + 1] - 1);
+	index = irand(debris_chunk_offsets[material], debris_chunk_offsets[material + 1] - 1);
 	if(owner->entity)
 		debris->r.skinnum = owner->entity->skinnum;
 	else
@@ -366,13 +366,13 @@ static void FXBodyPart_Throw(const centity_t *owner, int BodyPart, vec3_t origin
 	
 	if(ke)
 	{
-		Vec3ScaleAssign(sqrt(ke/debrisChunks[index].mass), debris->velocity);
+		Vec3ScaleAssign(sqrt(ke/debris_chunks[index].mass), debris->velocity);
 		debris->color.c = 0xFFFFFFFF;
 	}
 	else
 	{
 		ke = irand(10, 100) * 10000.0f;
-		Vec3ScaleAssign(sqrt(ke/debrisChunks[index].mass), debris->velocity);
+		Vec3ScaleAssign(sqrt(ke/debris_chunks[index].mass), debris->velocity);
 		debris->color.c = 0x00000000;
 	}
 
@@ -381,7 +381,7 @@ static void FXBodyPart_Throw(const centity_t *owner, int BodyPart, vec3_t origin
 	debris->r.angles[0] = flrand(-ANGLE_180, ANGLE_180);
 	debris->r.angles[1] = flrand(-ANGLE_90, ANGLE_90);
 
-	debris->elasticity = debrisElasticity[MAT_FLESH];
+	debris->elasticity = debris_elasticity[MAT_FLESH];
 
 	debris->Update = FXBodyPart_Update;
 	debris->updateTime = 50;
@@ -480,12 +480,12 @@ client_entity_t *FXDebris_Throw(vec3_t origin, int material, vec3_t dir, float k
 	debris = ClientEntity_new(-1, 0, origin, NULL, 50);
 	debris->SpawnInfo = material;
 
-	index = irand(debrisChunkOffsets[material], debrisChunkOffsets[material + 1] - 1);
+	index = irand(debris_chunk_offsets[material], debris_chunk_offsets[material + 1] - 1);
 
 	debris->classID = CID_DEBRIS;
 	debris->msgHandler = CE_DefaultMsgHandler;
 
-	debris->r.model = &debrisChunks[index].model;
+	debris->r.model = &debris_chunks[index].model;
 
 	debris->r.scale = scale;
 	debris->r.angles[0] = flrand(-ANGLE_180, ANGLE_180);
@@ -495,12 +495,12 @@ client_entity_t *FXDebris_Throw(vec3_t origin, int material, vec3_t dir, float k
 	debris->radius = 5.0;
 
 	VectorRandomCopy(dir, debris->velocity, 0.5F);
-	Vec3ScaleAssign(sqrt(ke / debrisChunks[index].mass), debris->velocity);
+	Vec3ScaleAssign(sqrt(ke / debris_chunks[index].mass), debris->velocity);
 
 	debris->acceleration[2] = GetGravity();
 
-	debris->elasticity = debrisElasticity[material];
-	debris->r.skinnum = debrisChunks[index].skinNum;
+	debris->elasticity = debris_elasticity[material];
+	debris->r.skinnum = debris_chunks[index].skinNum;
 	
 	if(material == MAT_FLESH||material == MAT_INSECT)	// Flesh need a different update for blood
 	{
