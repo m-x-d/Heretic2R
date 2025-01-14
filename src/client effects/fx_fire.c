@@ -119,24 +119,22 @@ static qboolean FXFireThink(client_entity_t* spawner, centity_t* owner)
 	return true;
 }
 
-void FXFire(centity_t *owner, int type, int flags, vec3_t origin)
+void FXFire(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*spawner;
-	byte				scale;
+	client_entity_t* spawner = ClientEntity_new(type, flags, origin, NULL, 17);
 
-	spawner = ClientEntity_new(type, flags, origin, NULL, 17);
-
+	byte scale;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_FIRE].formatString, &scale);
-	spawner->r.scale = scale / 32.0;
+	spawner->r.scale = (float)scale / 32.0f;
 
-	spawner->r.flags |= RF_FULLBRIGHT|RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA;
+	spawner->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 	spawner->flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED;
 	spawner->color.c = 0xe5007fff;
-	spawner->radius = 96.0;
+	spawner->radius = 96.0f;
 	spawner->Update = FXFireThink;
 
-	if(flags & CEF_FLAG6)
-		spawner->dlight = CE_DLight_new(spawner->color, 150.0F, 00.0F);
+	if (flags & CEF_FLAG6)
+		spawner->dlight = CE_DLight_new(spawner->color, 150.0f, 0.0f);
 
 	AddEffect(owner, spawner);
 }
