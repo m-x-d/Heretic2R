@@ -62,12 +62,9 @@ qboolean FXFlamethrower_trail(client_entity_t* self, centity_t* owner)
 	return true;
 }
 
-static qboolean FXFlamethrower_steam_trail(client_entity_t *self, centity_t *owner)
+static qboolean FXFlamethrower_steam_trail(client_entity_t* self, centity_t* owner)
 {
-	client_particle_t	*flame;
-	paletteRGBA_t		color;
-	float				radius;
-	int					count;
+	paletteRGBA_t color;
 
 	if (self->LifeTime < fxi.cl->time)
 	{
@@ -77,39 +74,38 @@ static qboolean FXFlamethrower_steam_trail(client_entity_t *self, centity_t *own
 		return true;
 	}
 
-	count = GetScaledCount(FLAME_COUNT, 0.9);
+	const int count = GetScaledCount(FLAME_COUNT, 0.9f);
 
-	while (count--)
+	for (int i = 0; i < count; i++)
 	{
 		if (self->flags & CEF_FLAG7)
 			color.c = 0x33777777;
 		else
-			color.c = 0x50FFFFFF;
-		
-		flame = ClientParticle_new(PART_32x32_STEAM, color, 2000);
+			color.c = 0x50ffffff;
 
-		flame->d_alpha = flrand(-200.0, -150.0);
-		flame->duration = (255.0 * 1000.0) / -flame->d_alpha;		// time taken to reach zero alpha
-	
-		//radius = self->r.scale * FIRE_SPAWN_RADIUS;
+		client_particle_t* flame = ClientParticle_new(PART_32x32_STEAM, color, 2000);
+
+		flame->d_alpha = flrand(-200.0f, -150.0f);
+		flame->duration = (int)(255.0f * 1000.0f / -flame->d_alpha); // Time taken to reach zero alpha.
+
 		VectorCopy(self->direction, flame->velocity);
-		VectorSet(flame->origin, irand(-2,2), irand(-2,2), irand(-2,2));
-		VectorScale(flame->velocity, flrand(0.75, 1), flame->velocity);
+		VectorSet(flame->origin, (float)(irand(-2, 2)), (float)(irand(-2, 2)), (float)(irand(-2, 2)));
+		VectorScale(flame->velocity, flrand(0.75f, 1.0f), flame->velocity);
 
 		if (self->flags & CEF_FLAG7)
 		{
-			flame->d_scale = flrand(20.0, 30.0);
-			flame->scale = flrand(2.0, 3.0);
-			VectorScale(flame->velocity, -0.1, flame->acceleration);
+			flame->d_scale = flrand(20.0f, 30.0f);
+			flame->scale = flrand(2.0f, 3.0f);
+			VectorScale(flame->velocity, -0.1f, flame->acceleration);
 		}
 		else
 		{
-			flame->d_scale = flrand(-10.0, -5.0);
-			flame->scale = flrand(14.0, 20.0);
+			flame->d_scale = flrand(-10.0f, -5.0f);
+			flame->scale = flrand(14.0f, 20.0f);
 		}
 
-		flame->velocity[2] += flrand(0, 32);
-		flame->acceleration[2] = 128;
+		flame->velocity[2] += flrand(0.0f, 32.0f);
+		flame->acceleration[2] = 128.0f;
 
 		AddParticleToList(self, flame);
 	}
