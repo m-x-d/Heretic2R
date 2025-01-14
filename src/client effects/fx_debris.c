@@ -144,45 +144,15 @@ static float debris_elasticity[NUM_MAT] =
 
 #pragma endregion
 
-void InitDebrisStatics()
+void InitDebrisStatics(void)
 {
 	ce_class_statics[CID_DEBRIS].msgReceivers[MSG_COLLISION] = FXDebris_Collision;
 }
 
-void PreCacheDebris()
+void PreCacheDebris(void)
 {
-	int i, j, offset;
-
-	for(j = 0; j < NUM_MAT; ++j)
-	{
-		offset = debris_chunk_offsets[j+1];
-		for(i = debris_chunk_offsets[j]; i < offset; ++i)
-		{
-			debris_chunks[i].model = fxi.RegisterModel(debris_chunks[i].modelName);
-		}
-	}
-}
-
-qboolean flame_out (struct client_particle_s *self, int crap)
-{
-	if((fxi.cl->time - self->startTime) < (self->duration/2))
-	{
-		if(!irand(0, 9))
-		{
-			self->type = irand(PART_16x16_FIRE1, PART_16x16_FIRE3);
-			self->type |= PFL_ADDITIVE;//whoo-hoo!  Additive particle!
-		}
-		return true;
-	}
-
-	self->scale += flrand(0.6, 0.8);
-	self->type = PART_16x16_MIST;//automatically removes additive drawing
-	self->color.r = 10;
-	self->color.g = 10;
-	self->color.b = 10;
-	self->color.a = 255;
-//	self->extraUpdate = NULL;
-	return true;
+	for (uint i = 0; i < sizeof(debris_chunks) / sizeof(debris_chunks[0]); i++)
+		debris_chunks[i].model = fxi.RegisterModel(debris_chunks[i].modelName);
 }
 
 void DoFireTrail (client_entity_t *spawner)
