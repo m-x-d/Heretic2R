@@ -155,58 +155,39 @@ void PreCacheDebris(void)
 		debris_chunks[i].model = fxi.RegisterModel(debris_chunks[i].modelName);
 }
 
-void DoFireTrail (client_entity_t *spawner)
+static void DoFireTrail(client_entity_t* spawner)
 {
-	client_particle_t	*flame;
-	int					i, material, count;
-	float				radius, master_scale;
-	paletteRGBA_t	color;
-	float				flame_duration;
-
-	if(spawner->flags&CEF_FLAG7 && spawner->dlight)
+	if (spawner->flags & CEF_FLAG7 && spawner->dlight != NULL && spawner->dlight->intensity <= 0.0f)
 	{
-		if(spawner->dlight->intensity<=0)
-		{//flame out
-			spawner->flags &= ~CEF_FLAG6;
-			return;
-		}
+		// Flame out.
+		spawner->flags &= ~CEF_FLAG6;
+		return;
 	}
 
-	color.c = 0xe5007fff;
+	const paletteRGBA_t color = { .c = 0xe5007fff };
+	const int material = (spawner->SpawnInfo & SIF_FLAG_MASK);
+	const qboolean is_flesh = (material == MAT_FLESH || material == MAT_INSECT || spawner->effectID == FX_BODYPART); //mxd
+	const float master_scale = spawner->r.scale * (is_flesh ? 3.33f : 1.0f);
+	const int flame_duration = (r_detail->value < DETAIL_NORMAL ? 700 : 1000);
+	const int count = GetScaledCount(irand(2, 5), 0.3f);
 
-	material = spawner->SpawnInfo & SIF_FLAG_MASK;
-	if(material == MAT_FLESH || material == MAT_INSECT || spawner->effectID == FX_BODYPART)
-		master_scale = spawner->r.scale * 3.33;
-	else	
-		master_scale = spawner->r.scale;
-
-	if (r_detail->value < DETAIL_NORMAL)
-		flame_duration = 700.0;
-	else
-		flame_duration = 1000.0;
-
-	count = GetScaledCount(irand(2, 5), 0.3);
-	for(i = 0; i < count; i++)
+	for (int i = 0; i < count; i++)
 	{
-		flame = ClientParticle_new(irand(PART_16x16_FIRE1, PART_16x16_FIRE3), color, flame_duration);
+		client_particle_t* flame = ClientParticle_new(irand(PART_16x16_FIRE1, PART_16x16_FIRE3), color, flame_duration);
 
-		radius = spawner->r.scale * 2.0;
-		VectorSet(flame->origin, flrand(-radius, radius), flrand(-radius, radius), flrand(-4.0F, -2.0F) * spawner->r.scale);
+		const float radius = spawner->r.scale * 2.0f;
+		VectorSet(flame->origin, flrand(-radius, radius), flrand(-radius, radius), flrand(-4.0f, -2.0f) * spawner->r.scale);
 		VectorAdd(flame->origin, spawner->r.origin, flame->origin);
 
 		flame->scale = master_scale;
-		VectorSet(flame->velocity, flrand(-1.0, 1.0), flrand(-1, 1.0), flrand(17.0, 20.0));
-		flame->acceleration[2] = 32.0 * spawner->r.scale;
-		flame->d_scale = flrand(-5.0, -2.5);
-		flame->d_alpha = flrand(-200.0, -160.0);
-
-//		flame->extraUpdate = flame_out;
-
-		flame->duration = (255.0 * flame_duration) / -flame->d_alpha;		// time taken to reach zero alpha
-
+		VectorSet(flame->velocity, flrand(-1.0f, 1.0f), flrand(-1.0f, 1.0f), flrand(17.0f, 20.0f));
+		flame->acceleration[2] = 32.0f * spawner->r.scale;
+		flame->d_scale = flrand(-5.0f, -2.5f);
+		flame->d_alpha = flrand(-200.0f, -160.0f);
+		flame->duration = (int)((255.0f * (float)flame_duration) / -flame->d_alpha); // Time taken to reach zero alpha.
 		flame->startTime = fxi.cl->time;
+		flame->type |= PFL_ADDITIVE;
 
-		flame->type |= PFL_ADDITIVE;//whoo-hoo!  Additive particle!
 		AddParticleToList(spawner, flame);
 	}
 }
