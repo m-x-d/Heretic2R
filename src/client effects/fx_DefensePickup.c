@@ -1,34 +1,23 @@
 //
 // fx_DefensePickup.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
-#include "ce_DefaultMessageHandler.h"
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
 #include "Random.h"
-#include "Utilities.h"
-#include "Angles.h"
-#include "ce_Dlight.h"
 #include "g_items.h"
 
-#define BOB_HEIGHT				6.0
-#define BOB_SPEED				ANGLE_10
-#define HEALTH_RADIUS			6.0
-#define NUM_DEF_PICKUP_SPARKS	4
-#define EGG_TRAIL_DELAY			100
-#define EGG_RADIUS				10.0
-#define	NUM_ITEMDEFENSE			12
-#define SPARK_OFFSET			6
-#define EGG_INTENSITY			255
+#define BOB_HEIGHT					6.0f
+#define BOB_SPEED					ANGLE_10
+#define NUM_DEFENSE_PICKUP_SPARKS	4
+#define SPARK_TRAIL_DELAY			100
+#define SPARK_RADIUS				10.0f
+#define SPARK_OFFSET				6
 
-static struct model_s *defense_models[NUM_ITEMDEFENSE];
+static struct model_s* defense_models[12];
+
 void PreCacheItemDefense()
 {	
 	defense_models[0] = fxi.RegisterModel("models/items/defense/repulsion/tris.fm");		// ITEM_DEFENSE_REPULSION
@@ -114,13 +103,13 @@ void FXDefensePickup(centity_t *owner, int type, int flags, vec3_t origin)
 		vec3_t			angvect;
 
 		// Add spinning electrical sparks
-		for(i=0; i<NUM_DEF_PICKUP_SPARKS; i++)
+		for(i=0; i<NUM_DEFENSE_PICKUP_SPARKS; i++)
 		{
 			shield=ClientEntity_new(type, flags, origin, 0, 50);
 			shield->flags |= CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS | CEF_VIEWSTATUSCHANGED;
 			shield->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 			shield->r.model = defense_models + SPARK_OFFSET + tag;
-			shield->radius = EGG_RADIUS;
+			shield->radius = SPARK_RADIUS;
 			shield->color.c = 0xffffffff;
 			shield->alpha = 0.1;
 			shield->d_alpha = 0.5;
@@ -154,7 +143,7 @@ void FXDefensePickup(centity_t *owner, int type, int flags, vec3_t origin)
 			else
 				shield->velocity2[PITCH] += 180.0;
 
-			shield->SpawnDelay = fxi.cl->time + EGG_TRAIL_DELAY;
+			shield->SpawnDelay = fxi.cl->time + SPARK_TRAIL_DELAY;
 			shield->lastThinkTime = fxi.cl->time;
 
 			AngleVectors(shield->direction, angvect, NULL, NULL);
