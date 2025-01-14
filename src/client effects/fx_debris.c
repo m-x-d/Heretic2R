@@ -377,28 +377,28 @@ static qboolean FXBodyPartAttachedUpdate(struct client_entity_s* self, const cen
 	return true;
 }
 
-qboolean FXBodyPart_Update(struct client_entity_s *self, centity_t *owner)
+static qboolean FXBodyPart_Update(struct client_entity_s* self, centity_t* owner)
 {
-	int curTime = fxi.cl->time;
-	float d_time = (curTime - self->lastThinkTime) / 1000.0f;
+	const int cur_time = fxi.cl->time;
+	const float d_time = (float)(cur_time - self->lastThinkTime) / 1000.0f;
 
-	if ( curTime > self->LifeTime )
+	if (cur_time > self->LifeTime)
 	{
-		self->d_alpha = flrand(-0.05, -0.2);
+		self->d_alpha = flrand(-0.05f, -0.2f);
 		self->Update = FXDebris_Vanish;
+
 		return true;
 	}
 
-	self->r.angles[0] += ANGLE_360*d_time;
-	self->r.angles[1] += ANGLE_360*d_time;
-	self->r.angles[2] += ANGLE_360*d_time;
-	
-	self->lastThinkTime = fxi.cl->time;
+	for (int i = 0; i < 3; i++)
+		self->r.angles[i] += d_time * ANGLE_360;
 
-	if((self->SpawnInfo&SIF_FLAG_MASK)==MAT_FLESH||(self->SpawnInfo&SIF_FLAG_MASK) == MAT_INSECT)
+	self->lastThinkTime = cur_time;
+
+	if ((self->SpawnInfo & SIF_FLAG_MASK) == MAT_FLESH || (self->SpawnInfo & SIF_FLAG_MASK) == MAT_INSECT)
 		DoBloodTrail(self, 6);
-	
-	if(self->flags&CEF_FLAG6)//on fire- do a fire trail
+
+	if (self->flags & CEF_FLAG6) // On fire - do a fire trail.
 		DoFireTrail(self);
 
 	return true;
