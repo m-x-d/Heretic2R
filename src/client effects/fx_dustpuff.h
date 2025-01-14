@@ -1,8 +1,11 @@
-#ifndef FX_DUSTPUFF_H
-#define FX_DUSTPUFFS_H
+//
+// fx_dustpuff.h
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
 
 #include "q_Typedef.h"
 
-void CreateSinglePuff(vec3_t origin, float scale);
-
-#endif // FX_DUSTPUFF_H
+extern void CreateSinglePuff(vec3_t origin, float scale);

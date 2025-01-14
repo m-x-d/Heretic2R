@@ -1,18 +1,14 @@
 //
-// Heretic II
+// fx_dustpuff.c
+//
 // Copyright 1998 Raven Software
 //
-// Created by JDW
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "ce_DefaultMessageHandler.h"
+#include "fx_dustpuff.h" //mxd
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
-#include "random.h"
-#include "Utilities.h"
+#include "Random.h"
 
 void FXDustPuff(client_entity_t *owner, float scale)
 {
