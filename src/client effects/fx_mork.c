@@ -12,6 +12,7 @@
 #include "FX.h"
 #include "Vector.h"
 #include "ce_DLight.h"
+#include "fx_flamethrow.h" //mxd
 #include "random.h"
 #include "q_Sprite.h"
 #include "Utilities.h"
@@ -2813,8 +2814,6 @@ void FXQuakeRing ( vec3_t origin )
 /*-----------------------------------------------
 	FXGroundAttack
 -----------------------------------------------*/
-
-extern qboolean FXFlamethrower_trail(client_entity_t *self, centity_t *owner);
 
 void FXGroundAttack( vec3_t origin )
 {
