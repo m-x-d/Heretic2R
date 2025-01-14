@@ -35,27 +35,26 @@ void PreCacheItemDefense(void)
 	defense_models[11] = fxi.RegisterModel("sprites/spells/spark_blue.sp2");				// Also blue spark.
 }
 
-static qboolean FXEggSparkThink(struct client_entity_s *shield,centity_t *owner)
+static qboolean FXDefensePickupSparkThink(struct client_entity_s* shield, centity_t* owner) //mxd. FXEggSparkThink in original version.
 {
-	vec3_t angvect;
-	vec3_t	origin = {0,0,0};
-
+	vec3_t origin;
 	VectorCopy(shield->origin, origin);
-	origin[2] = shield->origin[2] + (cos(shield->d_scale2) * BOB_HEIGHT); 
+	origin[2] = shield->origin[2] + cosf(shield->d_scale2) * BOB_HEIGHT;
+
 	shield->d_scale2 += BOB_SPEED;
-	
+
 	// Update the angle of the spark.
-	VectorMA(shield->direction, (float)(fxi.cl->time-shield->lastThinkTime)/1000.0, shield->velocity2, shield->direction);
+	VectorMA(shield->direction, (float)(fxi.cl->time - shield->lastThinkTime) / 1000.0f, shield->velocity2, shield->direction);
 
 	// Update the position of the spark.
+	vec3_t angvect;
 	AngleVectors(shield->direction, angvect, NULL, NULL);
 	VectorMA(origin, shield->radius, angvect, shield->r.origin);
 
 	shield->lastThinkTime = fxi.cl->time;
+
 	return true;
 }
-
-// --------------------------------------------------------------
 
 static qboolean FXDefensePickupThink(struct client_entity_s *self, centity_t *owner)
 {
@@ -124,7 +123,7 @@ void FXDefensePickup(centity_t *owner, int type, int flags, vec3_t origin)
 
 			shield->SpawnData = tag;
 			
-			shield->Update = FXEggSparkThink;
+			shield->Update = FXDefensePickupSparkThink;
 			VectorCopy(shield->r.origin, shield->origin);
 
 			VectorClear(shield->direction);
