@@ -14,7 +14,7 @@
 #endif
 
 // Print to Visual Studio console.
-void DBG_IDEPrint(const char* fmt, ...)
+GAME_DECLSPEC void DBG_IDEPrint(const char* fmt, ...)
 {
 #if _DEBUG
 	va_list argptr;
@@ -30,7 +30,7 @@ void DBG_IDEPrint(const char* fmt, ...)
 }
 
 // Print vector.
-char* pv(const vec3_t v)
+GAME_DECLSPEC char* pv(const vec3_t v)
 {
 	static char buf[8][128];
 	static int buf_index;
@@ -43,7 +43,7 @@ char* pv(const vec3_t v)
 }
 
 // Print short vector.
-char* psv(const short* v)
+GAME_DECLSPEC char* psv(const short* v)
 {
 	static char buf[8][128];
 	static int buf_index;
@@ -65,7 +65,7 @@ typedef struct
 
 static DebugHudMessage_t dbg_messages[NUM_DEBUG_MESSAGES];
 
-void DBG_HudPrint(const int slot, const char* label, const char* fmt, ...)
+GAME_DECLSPEC void DBG_HudPrint(const int slot, const char* label, const char* fmt, ...)
 {
 #if _DEBUG
 
