@@ -100,7 +100,7 @@ extern void FXWaterRipples(centity_t* Owner, int Type, int Flags, vec3_t Origin)
 extern void FXWaterWake(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXBubbler(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXScorchmark(centity_t* Owner, int Type, int Flags, vec3_t Origin);
-extern void FXDebris(centity_t* Owner, int Type, int Flags, vec3_t Origin);
+extern void FXDebris(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXFleshDebris(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXShadow(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXPlayerShadow(centity_t* owner, int type, int flags, vec3_t origin); //mxd

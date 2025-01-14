@@ -544,28 +544,34 @@ static void FXDebris_SpawnFleshChunks(int type, int flags, vec3_t origin, const 
 	}
 }
 
-void FXDebris(centity_t *owner, int type, int flags, vec3_t origin)
+void FXDebris(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	byte			num, material, size, mag;
-	vec3_t			dir, mins;
-	float			ke, scale;
+	byte size;
+	byte material;
+	vec3_t mins;
+	byte mag;
 
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_DEBRIS].formatString, &size, &material, mins, &mag);
 
-	scale = size * 10;
-	VectorSet(dir, 0.0, 0.0, 1.0);
-	Vec3ScaleAssign(mag, mins);
-	scale = sqrt(scale) * 0.08;
-	if(r_detail->value < DETAIL_NORMAL)
-		num = ClampI(size, 1, 5);
-	else if(r_detail->value == DETAIL_NORMAL)
-		num = ClampI(size, 1, 12);
-	else if(r_detail->value == DETAIL_HIGH)
-		num = ClampI(size, 1, 16);
-	else
-		num = ClampI(size, 1, 24);
+	vec3_t dir;
+	VectorSet(dir, 0.0f, 0.0f, 1.0f);
 
-	ke = 40000.0 + (size * 400.0);
+	Vec3ScaleAssign(mag, mins);
+
+	float scale = (float)size * 10.0f;
+	scale = sqrtf(scale) * 0.08f;
+
+	int num;
+	switch ((int)r_detail->value)
+	{
+		default:
+		case DETAIL_LOW:		num = ClampI(size, 1, 5);  break;
+		case DETAIL_NORMAL:		num = ClampI(size, 1, 12); break;
+		case DETAIL_HIGH:		num = ClampI(size, 1, 16); break;
+		case DETAIL_UBERHIGH:	num = ClampI(size, 1, 24); break;
+	}
+
+	const float ke = 40000.0f + ((float)size * 400.0f);
 
 	FXDebris_SpawnChunks(type, flags, origin, num, material, dir, ke, mins, scale, false);
 }
