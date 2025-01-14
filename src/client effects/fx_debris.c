@@ -406,55 +406,46 @@ static qboolean FXBodyPart_Update(struct client_entity_s* self, centity_t* owner
 
 #pragma endregion
 
-//------------------------------------------------------------------
-//	FX Debris spawn functions
-//	CEF_FLAG6 = on fire
-//  CEF_FLAG7 = male insect skin on mat_insect (CEF_FLAG7 cleared out and set if has dynamic light for fire)
-//  CEF_FLAG8 = use reflection skin
-//------------------------------------------------------------------
+#pragma region ========================== Debris spawn functions ==========================
 
-client_entity_t *FXDebris_Throw(vec3_t origin, int material, vec3_t dir, float ke, float scale, int flags, qboolean altskin)
+// CEF_FLAG6 = on fire.
+// CEF_FLAG7 = male insect skin on mat_insect (CEF_FLAG7 cleared out and set if has dynamic light for fire).
+// CEF_FLAG8 = use reflection skin.
+
+client_entity_t * FXDebris_Throw(vec3_t origin, const int material, vec3_t dir, const float ke, const float scale, const int flags, const qboolean altskin)
 {
-	int				index;
-	client_entity_t	*debris;
+	const int chunk_index = irand(debris_chunk_offsets[material], debris_chunk_offsets[material + 1] - 1);
 
-	debris = ClientEntity_new(-1, 0, origin, NULL, 50);
+	client_entity_t* debris = ClientEntity_new(-1, 0, origin, NULL, 50);
 	debris->SpawnInfo = material;
-
-	index = irand(debris_chunk_offsets[material], debris_chunk_offsets[material + 1] - 1);
-
 	debris->classID = CID_DEBRIS;
 	debris->msgHandler = CE_DefaultMsgHandler;
 
-	debris->r.model = &debris_chunks[index].model;
-
+	debris->r.model = &debris_chunks[chunk_index].model;
 	debris->r.scale = scale;
 	debris->r.angles[0] = flrand(-ANGLE_180, ANGLE_180);
 	debris->r.angles[1] = flrand(-ANGLE_90, ANGLE_90);
 
 	debris->flags |= CEF_CLIP_TO_WORLD | CEF_ABSOLUTE_PARTS;
-	debris->radius = 5.0;
+	debris->radius = 5.0f;
 
-	VectorRandomCopy(dir, debris->velocity, 0.5F);
-	Vec3ScaleAssign(sqrt(ke / debris_chunks[index].mass), debris->velocity);
+	VectorRandomCopy(dir, debris->velocity, 0.5f);
+	Vec3ScaleAssign(sqrtf(ke / debris_chunks[chunk_index].mass), debris->velocity);
 
 	debris->acceleration[2] = GetGravity();
 
 	debris->elasticity = debris_elasticity[material];
-	debris->r.skinnum = debris_chunks[index].skinNum;
-	
-	if(material == MAT_FLESH||material == MAT_INSECT)	// Flesh need a different update for blood
+	debris->r.skinnum = debris_chunks[chunk_index].skinNum;
+
+	if (material == MAT_FLESH || material == MAT_INSECT) // Flesh need a different update for blood.
 	{
 		debris->Update = FXFleshDebris_Update;
-		if(altskin)
-		{
-			if(index < 47)//using multiskinned pottery chunks
-				debris->r.skinnum = 1;//male
-		}
+		if (altskin && chunk_index < 47) // Using multi-skinned pottery chunks.
+			debris->r.skinnum = 1; // Male
 	}
 	else
 	{
-		if(material == MAT_GLASS)
+		if (material == MAT_GLASS)
 		{
 			debris->r.skinnum = 1;
 			debris->r.flags |= RF_TRANSLUCENT;
@@ -463,31 +454,28 @@ client_entity_t *FXDebris_Throw(vec3_t origin, int material, vec3_t dir, float k
 		debris->Update = FXDebris_Update;
 	}
 
-	//Debris lasts 10 seconds before it slowly goes away
+	// Debris lasts 10 seconds before it slowly goes away.
 	debris->LifeTime = fxi.cl->time + 1000;
 
-	if(flags&CEF_FLAG6)//on fire- dynamic light
+	if (flags & CEF_FLAG6) // On fire - add dynamic light.
 	{
-		if(flags&CEF_FLAG7)//high detail, non-ref_soft?
-		{//uberhigh?
-			paletteRGBA_t	color;
+		if (flags & CEF_FLAG7) // High detail, non-ref_soft?
+		{
+			const paletteRGBA_t color = { .c = 0xe5007fff };
 
-			debris->flags |= CEF_FLAG7;//spawn blood too, not just flames
-			color.c = 0xe5007fff;
-			debris->dlight = CE_DLight_new(color, 50.0F, -5.0F);
+			debris->flags |= CEF_FLAG7; // Spawn blood too, not just flames.
+			debris->dlight = CE_DLight_new(color, 50.0f, -5.0f);
 		}
 
 		debris->flags |= CEF_FLAG6;
 	}
-		
-	if(flags&CEF_FLAG8)//reflective
-	{
+
+	if (flags & CEF_FLAG8) // Reflective.
 		debris->r.flags |= RF_REFLECTION;
-	}
 
 	AddEffect(NULL, debris);
 
-	return(debris);
+	return debris;
 }
 
 // Flesh debris throws should be a separate effect
@@ -654,6 +642,8 @@ void FXFleshDebris(centity_t *owner, int type, int flags, vec3_t origin)
 	scale = mag/24;
 	FXDebris_SpawnFleshChunks(type, flags, origin, num, material, dir, 80000.0, mins, scale, altskin);
 }
+
+#pragma endregion
 
 //------------------------------------------------------------------
 //	FX Debris message receivers
