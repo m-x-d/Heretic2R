@@ -14,14 +14,10 @@
 
 void PreCacheRockchunks(void) { } //TODO: remove?
 
-//------------------------------------------------------------------
-//	FX Dust spawn functions
-//------------------------------------------------------------------
-
-static qboolean FXDustLandThink(client_entity_t *dust, centity_t *owner)
+static qboolean FXDustLandThink(client_entity_t* dust, centity_t* owner)
 {
-	FXSmoke(dust->r.origin, 1.0, 40.0);
-	return(false);
+	FXSmoke(dust->r.origin, 1.0f, 40.0f);
+	return false;
 }
 
 static qboolean FXDustThink(client_entity_t *dust, centity_t *owner)
