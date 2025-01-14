@@ -173,7 +173,7 @@ void RemoveEffectTypeList(client_entity_t** root, const FX_Type_t fx, const cent
 	assert(root);
 	assert(*root); // FIXME: This shouldn't fire, but it does. The result is more or less harmless.
 
-	for (prev = root, current = *root; current; current = current->next)
+	for (prev = root, current = *root; current != NULL; current = current->next)
 	{
 		if (fx == FX_REMOVE_EFFECTS || current->effectID == fx)
 			RemoveEffectFromList(prev, owner);
