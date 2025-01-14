@@ -113,29 +113,27 @@ static qboolean FXFlamethrower_steam_trail(client_entity_t* self, centity_t* own
 	return true;
 }
 
-// create the initial fire entity that we can attach all the particles to
-void FXFlamethrower(centity_t *owner, int type, int flags, vec3_t origin)
+// Create the initial fire entity that we can attach all the particles to.
+void FXFlamethrower(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	float			distance;
-	vec3_t			dir;
-	client_entity_t	*glow;
-
+	vec3_t dir;
+	float distance;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_FLAMETHROWER].formatString, &dir, &distance);
 
-	// create the dummy entity, so particles can be attached
-	glow = ClientEntity_new(type, (flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS) , origin, 0, 17);
-	
+	// Create the dummy entity, so particles can be attached.
+	client_entity_t* glow = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 17);
+
 	VectorScale(dir, distance, glow->direction);
-	glow->radius = 100;
+	glow->radius = 100.0f;
 	glow->LifeTime = fxi.cl->time + 1000;
-	
-	//Steam?
+
+	// Steam?
 	if (flags & CEF_FLAG6)
 	{
-		if(!(flags & CEF_FLAG7))
-			fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("objects/steamjet.wav"), 1, ATTN_NORM, 0);
-		else
+		if (flags & CEF_FLAG7)
 			glow->LifeTime = fxi.cl->time + 200;
+		else
+			fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("objects/steamjet.wav"), 1, ATTN_NORM, 0);
 
 		glow->Update = FXFlamethrower_steam_trail;
 	}
@@ -144,14 +142,9 @@ void FXFlamethrower(centity_t *owner, int type, int flags, vec3_t origin)
 		fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/flamethrow.wav"), 1, ATTN_NORM, 0);
 		glow->Update = FXFlamethrower_trail;
 	}
-	
+
 	AddEffect(NULL, glow);
 }
 
-
-
-							    
-// put out there just so we can make the real effect match this
-void FXflametest(centity_t *owner, int type, int flags, vec3_t origin)
-{
-}
+// Put out there just so we can make the real effect match this.
+void FXflametest(centity_t* owner, int type, int flags, vec3_t origin) { }
