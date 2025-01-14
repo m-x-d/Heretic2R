@@ -59,6 +59,7 @@ H2COMMON_API void VectorDec(vec3_t v);
 H2COMMON_API void VectorInc(vec3_t v);
 H2COMMON_API void VectorClear (vec3_t v);
 H2COMMON_API void VectorSet(vec3_t v, float x, float y, float z);
+H2COMMON_API void VectorRandomSet(vec3_t v, float rand_val); //mxd
 H2COMMON_API void VectorCopy(const vec3_t in, vec3_t out);
 H2COMMON_API void VectorInverse(vec3_t v);
 H2COMMON_API void VectorNegate(const vec3_t in, vec3_t out);

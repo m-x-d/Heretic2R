@@ -463,6 +463,15 @@ H2COMMON_API void VectorSet(vec3_t v, const float x, const float y, const float 
 	v[2] = z;
 }
 
+H2COMMON_API void VectorRandomSet(vec3_t v, const float rand_val) //mxd
+{
+	assert(v != vec3_origin);
+
+	v[0] = flrand(-rand_val, rand_val);
+	v[1] = flrand(-rand_val, rand_val);
+	v[2] = flrand(-rand_val, rand_val);
+}
+
 H2COMMON_API void VectorCopy(const vec3_t in, vec3_t out)
 {
 	assert(out != vec3_origin);
