@@ -1,5 +1,6 @@
 #include "Client Effects.h"
 #include "Client Entities.h"
+#include "fx_sparks.h" //mxd
 #include "FX.h"
 #include "Particle.h"
 #include "ResourceManager.h"
@@ -29,8 +30,6 @@ void PreCacheSparks()
 }
 
 // --------------------------------------------------------------
-
-void FireSparks(centity_t *owner, int type, int flags, vec3_t origin, vec3_t dir);
 
 void GenericSparks(centity_t *owner, int type, int flags, vec3_t origin, vec3_t dir)
 {
