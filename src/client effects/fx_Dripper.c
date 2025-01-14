@@ -1,34 +1,27 @@
 //
-// Heretic II
+// fx_Dripper.c
+//
 // Copyright 1998 Raven Software
 //
-// Created by JJS
 
-#include "Client Effects.h"
-#include "Client Entities.h"
-#include "ce_DefaultMessageHandler.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Vector.h"
-#include "random.h"
-#include "Utilities.h"
 #include "Ambient effects.h"
+#include "Client Effects.h"
+#include "Vector.h"
+#include "Random.h"
+#include "Utilities.h"
 
-#define	DRIP_MAX_DURATION	2.0F
-#define DRIP_RADIUS			2.0F
+#define	DRIP_MAX_DURATION	2.0f
+#define DRIP_RADIUS			2.0f
 #define DRIP_NUM_SPLASHES	8
 
-#define	NUM_DRIP_MODELS	3
-static struct model_s *drip_models[NUM_DRIP_MODELS];
-void PreCacheDripper()
+static struct model_s* drip_models[3];
+
+void PreCacheDripper(void)
 {
 	drip_models[0] = fxi.RegisterModel("sprites/fx/steamhalf.sp2");
 	drip_models[1] = fxi.RegisterModel("sprites/fx/steam.sp2");
 	drip_models[2] = fxi.RegisterModel("sprites/fx/waterdrop.sp2");
 }
-
-// -----------------------------------------------------------------------------------------
 
 qboolean FXDripThinkSolid(client_entity_t *drip, centity_t *owner)
 {
