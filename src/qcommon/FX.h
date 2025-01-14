@@ -185,7 +185,7 @@ enum
 
 // MaterialID_t
 // Id's for all the material types that we care about in the world
-// (e.g. different materials yield different debris chunks when an FX_DEBRI is created).
+// (e.g. different materials yield different debris chunks when an FX_DEBRIS is created).
 typedef enum MaterialID_e
 {
 	MAT_STONE,
