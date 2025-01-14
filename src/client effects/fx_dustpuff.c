@@ -10,19 +10,16 @@
 #include "Vector.h"
 #include "Random.h"
 
-void FXDustPuff(client_entity_t *owner, float scale)
+static void FXDustPuff(client_entity_t* owner, const float scale)
 {
-	client_particle_t	*puff;
-	paletteRGBA_t		color;
+	const paletteRGBA_t color = { .c = 0x80c0c0c0 };
+	client_particle_t* puff = ClientParticle_new(PART_32x32_STEAM, color, 500);
 
-	color.c = 0x80c0c0c0;
-	puff = ClientParticle_new(PART_32x32_STEAM, color, 500);
-
-	VectorSet(puff->velocity, flrand(-50.0F, 50.0F), flrand(-50.0F, 50.0F), flrand(0.0F, 25.0F));
-	VectorScale(puff->velocity, -1.23F, puff->acceleration);
+	VectorSet(puff->velocity, flrand(-50.0f, 50.0f), flrand(-50.0f, 50.0f), flrand(0.0f, 25.0f));
+	VectorScale(puff->velocity, -1.23f, puff->acceleration);
 	puff->scale = scale;
-	puff->d_scale = 10.0;
-	puff->d_alpha *= 0.5;
+	puff->d_scale = 10.0f;
+	puff->d_alpha *= 0.5f;
 
 	AddParticleToList(owner, puff);
 }
