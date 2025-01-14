@@ -24,12 +24,11 @@
 #define FIRE_ENT_SCALE 		8.0f
 #define FIRE_ACCEL			32.0f
 
-#define	NUM_FLAREUP_MODELS	1
+static struct model_s* flareup_model;
 
-static struct model_s *flareup_models[NUM_FLAREUP_MODELS];
-void PreCacheFlareup()
+void PreCacheFlareup(void)
 {
-	flareup_models[0] = fxi.RegisterModel("sprites/fx/halo.sp2");
+	flareup_model = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
 
 void FXFlareup(centity_t *owner, int type, int flags, vec3_t origin)
@@ -41,7 +40,7 @@ void FXFlareup(centity_t *owner, int type, int flags, vec3_t origin)
 
 	// Add a big ol' flash.
 	spawner = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS, origin, NULL, 500);
-	spawner->r.model = flareup_models ;		// The starry halo.
+	spawner->r.model = &flareup_model;		// The starry halo.
 	spawner->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 	spawner->radius = 128.0;
 
