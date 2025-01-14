@@ -206,31 +206,25 @@ static qboolean IsInWater(vec3_t origin)
 	return (trace.contents & MASK_WATER);
 }
 
-//------------------------------------------------------------------
-//	FX Body Part spawn functions
-//------------------------------------------------------------------
+#pragma region ========================== Body Part spawn functions ==========================
 
-void FXBodyPart(centity_t *owner,int type, int flags, vec3_t origin)
+void FXBodyPart(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	short			frame;
-	short			BodyPart;
-	byte			damage;
-	byte			modelindex, OwnerEntnum;
-	centity_t		*realowner;
-	float			ke;
+	short frame;
+	short body_part;
+	byte damage;
+	byte modelindex;
+	byte owner_entnum;
 
-	//increase count on owner so that can have multiple effects?
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_BODYPART].formatString, &frame, &BodyPart, &damage, &modelindex, &OwnerEntnum);
+	// Increase count on owner so that can have multiple effects?
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_BODYPART].formatString, &frame, &body_part, &damage, &modelindex, &owner_entnum);
 
-	realowner = &fxi.server_entities[OwnerEntnum];
-	
-	ke = damage * 10000.0f;
-	if(ke < 10000.0f)			
-	{
-		ke = 10000.0f;
-	}
+	const centity_t* realowner = &fxi.server_entities[owner_entnum];
 
-	FXBodyPart_Spawn(realowner, BodyPart, origin, ke, frame, type, modelindex, flags, owner);
+	float ke = (float)damage * 10000.0f;
+	ke = max(10000.0f, ke);
+
+	FXBodyPart_Spawn(realowner, body_part, origin, ke, frame, type, modelindex, flags, owner);
 }
 
 void FXBodyPart_Spawn(centity_t *owner, int BodyPart, vec3_t origin, float ke, int frame, int type, byte modelindex, int flags, centity_t *harpy)
@@ -430,6 +424,9 @@ qboolean FXBodyPart_Update(struct client_entity_s *self, centity_t *owner)
 
 	return true;
 }
+
+#pragma endregion
+
 //------------------------------------------------------------------
 //	FX Debris spawn functions
 //	CEF_FLAG6 = on fire
