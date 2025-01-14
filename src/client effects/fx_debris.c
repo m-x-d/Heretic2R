@@ -521,47 +521,28 @@ void FXDebris_SpawnChunks(int type, int flags, vec3_t origin, const int num, con
 	}
 }
 
-void FXDebris_SpawnFleshChunks(int type, int flags, vec3_t origin, int num, int material, vec3_t dir, float ke, vec3_t mins, float scale, qboolean altskin)
+static void FXDebris_SpawnFleshChunks(int type, int flags, vec3_t origin, const int num, const int material, vec3_t dir, const float ke, vec3_t mins, const float scale, const qboolean altskin) //TODO: remove unused 'type' arg?
 {
-	int					i;
-	vec3_t				holdorigin, start;
-	trace_t				trace;
-
-	if(flags&CEF_FLAG6)//onfire, check for highdetail, non-ref_soft
+	if (flags & CEF_FLAG6) // On fire, check for highdetail, non-ref_soft.
 	{
-		//Not-very-perfect way of doing a pointcontents from the FX dll
-		VectorCopy(origin, start);
-		start[2] += 1;
-		fxi.Trace(start, vec3_origin, vec3_origin, origin, 0, 0, &trace);
-		if(trace.contents&MASK_WATER)
-		{//in water- no flames, pal!
-			flags &= ~CEF_FLAG6;
-		}
-		else
-		{
-			if(!ref_soft && r_detail->value == DETAIL_HIGH)
-				flags|=CEF_FLAG7;//do dynamic light and blood trail
-		}
+		if (IsInWater(origin))
+			flags &= ~CEF_FLAG6; // In water - no flames, pal!
+		else if (!ref_soft && (int)r_detail->value == DETAIL_HIGH) //TODO: and uberhigh?
+			flags |= CEF_FLAG7; // Do dynamic light and blood trail.
 	}
 
-	for(i = 0; i < num; ++i)
+	for (int i = 0; i < num; i++)
 	{
+		vec3_t holdorigin;
 		VectorCopy(origin, holdorigin);
-		holdorigin[0] += flrand(-mins[0], mins[0]);
-		holdorigin[1] += flrand(-mins[1], mins[1]);
-		holdorigin[2] += flrand(-mins[2], mins[2]);
+
+		for (int c = 0; c < 3; c++)
+			holdorigin[c] += flrand(-mins[c], mins[c]);
+
 		FXDebris_Throw(holdorigin, material, dir, ke, scale, flags, altskin);
 		DoBloodSplash(holdorigin, 5, material == MAT_INSECT);
 	}
 }
-
-
-// num = number of chunks to spawn (dependent on size and mass)
-// material = type of chunk to explode
-// dir = direction of debris (currently always 0.0 0.0 1.0)
-// ke = kinetic energy (dependent of damage and number of chunks)
-// mins = mins field of edict (so debris is spawned at base)
-// scale = size of the spawned chunks (dependent on size)
 
 void FXDebris(centity_t *owner, int type, int flags, vec3_t origin)
 {
