@@ -23,35 +23,32 @@ void PreCacheDripper(void)
 	drip_models[2] = fxi.RegisterModel("sprites/fx/waterdrop.sp2");
 }
 
-qboolean FXDripThinkSolid(client_entity_t *drip, centity_t *owner)
+static qboolean FXDripThinkSolid(client_entity_t* drip, centity_t* owner)
 {
-	client_entity_t		*mist;
-	vec3_t				origin;
-	paletteRGBA_t		color;
-
+	vec3_t origin;
 	VectorCopy(drip->r.origin, origin);
 	origin[2] = drip->SpawnData;
 
-	mist = ClientEntity_new(-1, 0, origin, NULL, 500);
+	client_entity_t* mist = ClientEntity_new(-1, 0, origin, NULL, 500);
 
-	mist->r.model = drip_models;
-	mist->r.scale = 0.5F;
+	mist->r.model = &drip_models[0];
+	mist->r.scale = 0.5f;
 	mist->r.flags = RF_TRANSLUCENT;
 
-	mist->alpha = 0.4F;
-	mist->d_alpha = -0.8F;
+	mist->alpha = 0.4f;
+	mist->d_alpha = -0.8f;
 
-	color.c = 0xffffffff;
+	const paletteRGBA_t color = { .c = 0xffffffff };
 	DoWaterSplash(mist, color, DRIP_NUM_SPLASHES);
 
-	AddEffect(NULL, mist); 
+	AddEffect(NULL, mist);
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO,
-		fxi.S_RegisterSound(va("ambient/soliddrop%c.wav", irand('1', '3'))), 1, ATTN_STATIC, 0);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("ambient/soliddrop%i.wav", irand(1, 3))), 1, ATTN_STATIC, 0);
 
-	// FIXME : Returning false here doesn`t work
+	//FIXME: Returning false here doesn't work.
 	drip->Update = RemoveSelfAI;
-	return(true);
+
+	return true;
 }
 
 qboolean FXDripThinkWater(client_entity_t *drip, centity_t *owner)
