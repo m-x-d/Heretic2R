@@ -8,6 +8,8 @@
 
 #include "Client Entities.h"
 
+extern const paletteRGBA_t color_white; //mxd
+
 extern client_fx_import_t fxi;
 
 extern cvar_t* r_farclipdist;

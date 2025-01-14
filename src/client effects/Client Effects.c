@@ -162,6 +162,8 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 
 #pragma endregion
 
+const paletteRGBA_t color_white = { .c = 0xffffffff }; //mxd
+
 CE_ClassStatics_t ce_class_statics[NUM_CLASSIDS];
 
 void (*ce_class_statics_inits[NUM_CLASSIDS])(void) =
