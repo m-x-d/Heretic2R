@@ -67,89 +67,58 @@ static qboolean FXDefensePickupThink(struct client_entity_s* self, const centity
 	return true;
 }
 
-// Create effect FX_PICKUP_DEFENSE
-void FXDefensePickup(centity_t *owner, int type, int flags, vec3_t origin)
+void FXDefensePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	client_entity_t		*ce;
-	byte				tag;
-
+	byte tag;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_PICKUP_DEFENSE].formatString, &tag);
 
+	assert(tag < SPARK_OFFSET); //mxd. A check in original version.
+
 	flags &= ~CEF_OWNERS_ORIGIN;
-	ce = ClientEntity_new(type, flags | CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED, origin, NULL, 50);
+	flags |= CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED;
+	client_entity_t* ce = ClientEntity_new(type, flags, origin, NULL, 50);
 
 	VectorCopy(ce->r.origin, ce->origin);
 	ce->r.flags = RF_TRANSLUCENT | RF_GLOW;
-	ce->r.model = defense_models + tag;
-	ce->r.scale = 1.0;
+	ce->r.model = &defense_models[tag];
 
 	if (tag == ITEM_DEFENSE_TELEPORT)
-		ce->r.scale = 1.25;
+		ce->r.scale = 1.25f;
 
-	ce->radius = 10.0;
-	ce->alpha = 0.8;
+	ce->radius = 10.0f;
+	ce->alpha = 0.8f;
 	ce->Update = FXDefensePickupThink;
 
 	AddEffect(owner, ce);
 
-	// if we are looking at the polymorph egg, put a special effect around it
-	// stolen wholesale from Pats Shield Effect. Cheers Pat.
-	if (tag < SPARK_OFFSET)
+	// Add spinning electrical sparks.
+	for (int i = 0; i < NUM_DEFENSE_PICKUP_SPARKS; i++)
 	{
-		client_entity_t	*shield;
-		int				i;
-		vec3_t			angvect;
+		client_entity_t* spark = ClientEntity_new(type, flags, origin, 0, 50);
+		spark->flags |= CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS | CEF_VIEWSTATUSCHANGED;
+		spark->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		spark->r.model = &defense_models[tag + SPARK_OFFSET];
+		spark->r.scale = (tag == ITEM_DEFENSE_METEORBARRIER ? 0.2f : 0.8f);
+		spark->radius = SPARK_RADIUS;
+		spark->color.c = 0xffffffff;
+		spark->alpha = 0.1f;
+		spark->d_alpha = 0.5f;
+		spark->SpawnData = tag;
 
-		// Add spinning electrical sparks
-		for(i=0; i<NUM_DEFENSE_PICKUP_SPARKS; i++)
-		{
-			shield=ClientEntity_new(type, flags, origin, 0, 50);
-			shield->flags |= CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS | CEF_VIEWSTATUSCHANGED;
-			shield->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-			shield->r.model = defense_models + SPARK_OFFSET + tag;
-			shield->radius = SPARK_RADIUS;
-			shield->color.c = 0xffffffff;
-			shield->alpha = 0.1;
-			shield->d_alpha = 0.5;
-			if (tag == 1)
-			{
-				shield->r.scale = 0.2;
-			}
-			else
-			{
-				shield->r.scale = 0.8;
-			}
+		spark->Update = FXDefensePickupSparkThink;
+		VectorCopy(spark->r.origin, spark->origin);
 
-			shield->SpawnData = tag;
-			
-			shield->Update = FXDefensePickupSparkThink;
-			VectorCopy(shield->r.origin, shield->origin);
+		VectorClear(spark->direction);
+		spark->direction[YAW] =   flrand(0, 360.0f); // This angle is kept at a constant distance from org.
+		spark->direction[PITCH] = flrand(0, 360.0f);
 
-			VectorClear(shield->direction);
-			shield->direction[YAW] = flrand(0, 360.0);		// This angle is kept at a constant distance from org.
-			shield->direction[PITCH] = flrand(0, 360.0);
+		// Assure that the sparks are moving around at a pretty good clip.
+		spark->velocity2[YAW] =   flrand(0.0f, 360.0f) * Q_signf(flrand(-1.0f, 0.0f));
+		spark->velocity2[PITCH] = flrand(0.0f, 360.0f) * Q_signf(flrand(-1.0f, 0.0f)); // This is a velocity around the sphere.
 
-			shield->velocity2[YAW] = flrand(-180.0, 180.0);
-			if (shield->velocity2[YAW] < 0)			// Assure that the sparks are moving around at a pretty good clip.
-				shield->velocity2[YAW] -= 180.0;
-			else
-				shield->velocity2[YAW] += 180.0;
+		spark->SpawnDelay = fxi.cl->time + SPARK_TRAIL_DELAY;
+		spark->lastThinkTime = fxi.cl->time;
 
-			shield->velocity2[PITCH] = flrand(-180.0, 180.0);	// This is a velocity around the sphere.
-			if (shield->velocity2[PITCH] < 0)		// Assure that the sparks are moving around at a pretty good clip.
-				shield->velocity2[PITCH] -= 180.0;
-			else
-				shield->velocity2[PITCH] += 180.0;
-
-			shield->SpawnDelay = fxi.cl->time + SPARK_TRAIL_DELAY;
-			shield->lastThinkTime = fxi.cl->time;
-
-			AngleVectors(shield->direction, angvect, NULL, NULL);
-
-			AddEffect(owner, shield);
-		}
+		AddEffect(owner, spark);
 	}
-
 }
-
-// end
