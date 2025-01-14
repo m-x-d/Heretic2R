@@ -267,36 +267,35 @@ static qboolean FXFireOnEntity2Think(client_entity_t* spawner, const centity_t* 
 }
 
 //FIXME: have it constantly check a flag so it can go out if under water!
-void FXFireOnEntity(centity_t *owner, int type, int flags, vec3_t origin)
+//TODO: for skeletal entities, use refpoints to spawn fire instead of origin? 
+void FXFireOnEntity(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*spawner;
-	byte				scale;
-	byte				lifetime;
-	byte				style;
-
+	byte scale;
+	byte lifetime;
+	byte style;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_FIRE_ON_ENTITY].formatString, &scale, &lifetime, &style);
 
-	spawner = ClientEntity_new(type, flags, origin, NULL, 17);
+	client_entity_t* spawner = ClientEntity_new(type, flags, origin, NULL, 17);
 
-	spawner->r.scale = sqrt((float)scale)*0.5;
-	spawner->nextEventTime = fxi.cl->time + (100*(int)lifetime);		// How long to last.  Lifetime was in 10th secs.
+	spawner->r.scale = sqrtf(scale) * 0.5f;
+	spawner->nextEventTime = fxi.cl->time + (int)lifetime * 100; // How long to last. Lifetime was in 10th secs.
 
-	spawner->r.flags |= RF_FULLBRIGHT|RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA;
+	spawner->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 	spawner->flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS | CEF_CULLED | CEF_CHECK_OWNER;
-//	spawner->flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS | CEF_CULLED | CEF_VIEWSTATUSCHANGED;
 	spawner->color.c = 0xe5007fff;
-	spawner->radius = 128;
-	if (!style)//fire fades out- for things that catch fire
+	spawner->radius = 128.0f;
+
+	if (style == 0) // Fire fades out - for things that catch fire.
 	{
 		spawner->Update = FXFireOnEntityThink;
 	}
-	else//fire never goes away- for moving fire ents
+	else // Fire never goes away - for moving fire ents.
 	{
 		spawner->Update = FXFireOnEntity2Think;
-		spawner->nextEventTime = fxi.cl->time + 60000;//60 seconds max, just in case
+		spawner->nextEventTime = fxi.cl->time + 60000; // 60 seconds max, just in case.
 	}
-	spawner->dlight = CE_DLight_new(spawner->color, 150.0F, 00.0F);
+
+	spawner->dlight = CE_DLight_new(spawner->color, 150.0f, 0.0f);
 
 	AddEffect(owner, spawner);
 }
-// end
