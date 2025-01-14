@@ -95,6 +95,8 @@
 //#define VectorSubtract_Macro(a,b,c)		(c[0]=a[0]-b[0],c[1]=a[1]-b[1],c[2]=a[2]-b[2]) //TODO: remove?
 
 H2COMMON_API int Q_log2(int val);
+H2COMMON_API int Q_sign(int val); //mxd
+H2COMMON_API float Q_signf(float val); //mxd
 
 H2COMMON_API void ClearBounds(vec3_t mins, vec3_t maxs);
 H2COMMON_API void AddPointToBounds(const vec3_t v, vec3_t mins, vec3_t maxs);

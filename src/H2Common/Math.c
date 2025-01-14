@@ -127,3 +127,15 @@ H2COMMON_API int BoxOnPlaneSide2(const vec3_t emins, const vec3_t emaxs, const s
 
 	return sides;
 }
+
+//mxd
+H2COMMON_API int Q_sign(const int val)
+{
+	return val < 0 ? -1 : 1;
+}
+
+//mxd
+H2COMMON_API float Q_signf(const float val)
+{
+	return val < 0.0f ? -1.0f : 1.0f;
+}
