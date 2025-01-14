@@ -24,14 +24,13 @@ static void FXDustPuff(client_entity_t* owner, const float scale)
 	AddParticleToList(owner, puff);
 }
 
-void CreateSinglePuff(vec3_t origin, float scale)
+void CreateSinglePuff(vec3_t origin, const float scale)
 {
- 	client_entity_t	*ce;
-
-	ce = ClientEntity_new(-1, CEF_NOMOVE | CEF_NO_DRAW, origin, NULL, 500);
+	client_entity_t* ce = ClientEntity_new(-1, CEF_NOMOVE | CEF_NO_DRAW, origin, NULL, 500);
 	FXDustPuff(ce, scale);
 	AddEffect(NULL, ce);
 }
+
 void FXDustPuffOnGround(centity_t *owner, int type, int flags, vec3_t origin)
 {
 	int				numPuffs, i;
