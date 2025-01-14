@@ -478,61 +478,46 @@ client_entity_t * FXDebris_Throw(vec3_t origin, const int material, vec3_t dir, 
 	return debris;
 }
 
-// Flesh debris throws should be a separate effect
-// This would save quite a bit of code
-
-void FXDebris_SpawnChunks(int type, int flags, vec3_t origin, int num, int material, vec3_t dir, float ke, vec3_t mins, float scale, qboolean altskin)
+// Flesh debris throws should be a separate effect. This would save quite a bit of code.
+// num - number of chunks to spawn (dependent on size and mass).
+// material - type of chunk to explode.
+// dir - direction of debris (currently always 0.0 0.0 1.0).
+// ke - kinetic energy (dependent of damage and number of chunks).
+// mins - mins field of edict (so debris is spawned at base).
+// scale - size of the spawned chunks (dependent on size).
+void FXDebris_SpawnChunks(int type, int flags, vec3_t origin, const int num, const int material, vec3_t dir, const float ke, vec3_t mins, const float scale, const qboolean altskin) //TODO: remove unused 'type' arg?
 {
-	int					i;
-	vec3_t				holdorigin, start;
-	trace_t				trace;
-	
-	if(flags&CEF_FLAG6)//onfire, check for highdetail, non-ref_soft
+	if (flags & CEF_FLAG6) // On fire, check for highdetail, non-ref_soft.
 	{
-		//Not-very-perfect way of doing a pointcontents from the FX dll
-		VectorCopy(origin, start);
-		start[2] += 1;
-		fxi.Trace(start, vec3_origin, vec3_origin, origin, 0, 0, &trace);
-		if(trace.contents&MASK_WATER)
-		{//in water- no flames, pal!
-			flags &= ~CEF_FLAG6;
-		}
-		else
-		{
-			if(!ref_soft && r_detail->value == DETAIL_HIGH)
-				flags|=CEF_FLAG7;//do dynamic light and blood trail
-		}
+		if (IsInWater(origin))
+			flags &= ~CEF_FLAG6; // In water - no flames, pal!
+		else if (!ref_soft && (int)r_detail->value == DETAIL_HIGH) //TODO: and uberhigh?
+			flags |= CEF_FLAG7; // Do dynamic light and blood trail.
 	}
 
-	for(i = 0; i < num; ++i)
+	for (int i = 0; i < num; i++)
 	{
-		VectorCopy(origin, holdorigin);
-		holdorigin[0] += flrand(-mins[0], mins[0]);
-		holdorigin[1] += flrand(-mins[1], mins[1]);
-		holdorigin[2] += flrand(-mins[2], mins[2]);
+		vec3_t hold_origin;
+		VectorCopy(origin, hold_origin);
+
+		for (int c = 0; c < 3; c++)
+			hold_origin[c] += flrand(-mins[c], mins[c]);
 
 		if (material != MAT_NONE)
 		{
-			FXDebris_Throw(holdorigin, material, dir, ke, scale, flags, altskin);
+			FXDebris_Throw(hold_origin, material, dir, ke, scale, flags, altskin);
 
-			if(flags&CEF_FLAG6 && !irand(0, 3))//onfire
-			{//do a big flaming sparky thingy
-			}
-			if (material == MAT_FLESH)	// Flesh need a different update for blood
-			{
-				DoBloodSplash(holdorigin, 5, false);
-			}
+			if (material == MAT_FLESH) // Flesh need a different update for blood.
+				DoBloodSplash(hold_origin, 5, false);
 			else if (material == MAT_INSECT)
-			{
-				DoBloodSplash(holdorigin, 5, true);
-			}
-			else if(irand(0, 1))
-			{
-				CreateSinglePuff(holdorigin, 20.0);
-			}
+				DoBloodSplash(hold_origin, 5, true);
+			else if (irand(0, 1))
+				CreateSinglePuff(hold_origin, 20.0f);
 		}
-		else	// Nothing but smoke
-			CreateSinglePuff(holdorigin, 20.0);
+		else // Nothing but smoke.
+		{
+			CreateSinglePuff(hold_origin, 20.0f);
+		}
 	}
 }
 
