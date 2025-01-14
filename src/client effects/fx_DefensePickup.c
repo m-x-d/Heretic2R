@@ -56,16 +56,15 @@ static qboolean FXDefensePickupSparkThink(struct client_entity_s* shield, centit
 	return true;
 }
 
-static qboolean FXDefensePickupThink(struct client_entity_s *self, centity_t *owner)
+static qboolean FXDefensePickupThink(struct client_entity_s* self, const centity_t* owner)
 {
-
-	// Rotate and bob
+	// Rotate and bob.
 	self->r.angles[YAW] += ANGLE_5;
 	VectorCopy(owner->current.origin, self->r.origin);
-	self->r.origin[2] += (cos(self->SpawnData) * BOB_HEIGHT); 
+	self->r.origin[2] += cosf(self->SpawnData) * BOB_HEIGHT;
 	self->SpawnData += BOB_SPEED;
 
-	return(true);
+	return true;
 }
 
 // Create effect FX_PICKUP_DEFENSE
