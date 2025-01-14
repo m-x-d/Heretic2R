@@ -13,77 +13,54 @@
 #include "Reference.h"
 #include "g_playstats.h"
 
-#define HANDFIRE_NUM	1
 #define HANDFIRE_RADIUS	2.0f
 #define HANDFIRE_SCALE	8.0f
 #define HANDFIRE_ACCEL	32.0f
 
-static qboolean FXFireHandsThink(struct client_entity_s *self,centity_t *owner)
+static qboolean FXFireHandsThink(struct client_entity_s* self, const centity_t* owner)
 {
-
-	client_particle_t	*flame;
-	int					i;
-	vec3_t				firestart, origin;
-	matrix3_t			rotation;
-	int					hand_flame_dur;
-
-	// If we've timed out, stop the effect (allow for fading)
-	if (self->LifeTime > 0)
+	// If we've timed out, stop the effect (allow for fading). If we're not on a time limit, check the EF flag.
+	if ((self->LifeTime > 0 && self->LifeTime < fxi.cl->time) || !(owner->current.effects & EF_TRAILS_ENABLED))
 	{
-		if (self->LifeTime < fxi.cl->time)
-		{	// Lifetime is up
-			self->Update=RemoveSelfAI;
-			self->updateTime = fxi.cl->time + 500;
-			return true;
-		}
-	}
-	else 
-	{	// If we're not on a time limit, check the EF flag
-		if (!(owner->current.effects & EF_TRAILS_ENABLED))
-		{
-			self->Update=RemoveSelfAI;
-			self->updateTime = fxi.cl->time + 500;
-			return true;
-		}
+		self->Update = RemoveSelfAI;
+		self->updateTime = fxi.cl->time + 500;
+
+		return true;
 	}
 
 	// This tells if we are wasting our time, because the reference points are culled.
 	if (!RefPointsValid(owner))
-		return false;		// Remove the effect in this case.
+		return false; // Remove the effect in this case.
 
 	VectorCopy(owner->origin, self->r.origin);
 
 	// Let's take the origin and transform it to the proper coordinate offset from the owner's origin.
+	vec3_t firestart;
 	VectorCopy(owner->referenceInfo->references[self->refPoint].placement.origin, firestart);
+
 	// Create a rotation matrix
+	matrix3_t rotation;
 	Matrix3FromAngles(owner->lerp_angles, rotation);
+
+	vec3_t origin;
 	Matrix3MultByVec3(rotation, firestart, origin);
-	
-	if (r_detail->value < DETAIL_NORMAL)
-		hand_flame_dur = 1500;
-	else
-		hand_flame_dur = 2000;
 
-	for(i = 0; i < HANDFIRE_NUM; i++)
-	{
-		flame = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), self->color, hand_flame_dur);
-		VectorSet(	flame->origin, 
-					flrand(-HANDFIRE_RADIUS, HANDFIRE_RADIUS), 
-					flrand(-HANDFIRE_RADIUS, HANDFIRE_RADIUS), 
-					flrand(-HANDFIRE_RADIUS, HANDFIRE_RADIUS));
-		VectorAdd(flame->origin, origin, flame->origin);
-	
-		flame->scale = HANDFIRE_SCALE;
-		VectorSet(flame->velocity, flrand(-5.0, 5.0), flrand(-5, 5.0), flrand(15.0, 22.0));
-		flame->acceleration[2] = HANDFIRE_ACCEL;
-		flame->d_scale = flrand(-10.0, -5.0);
-		flame->d_alpha = flrand(-200.0, -160.0);
-		flame->duration = (255.0 * 1000.0) / -flame->d_alpha;		// time taken to reach zero alpha
+	const int flame_duration = (r_detail->value < DETAIL_NORMAL ? 1500 : 2000);
+	client_particle_t* flame = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), self->color, flame_duration);
 
-		AddParticleToList(self, flame);
-	}
-	
-	return(true);
+	VectorRandomSet(flame->origin, HANDFIRE_RADIUS); //mxd
+	VectorAdd(flame->origin, origin, flame->origin);
+
+	flame->scale = HANDFIRE_SCALE;
+	VectorSet(flame->velocity, flrand(-5.0f, 5.0f), flrand(-5.0f, 5.0f), flrand(15.0f, 22.0f));
+	flame->acceleration[2] = HANDFIRE_ACCEL;
+	flame->d_scale = flrand(-10.0f, -5.0f);
+	flame->d_alpha = flrand(-200.0f, -160.0f);
+	flame->duration = (int)((255.0f * 1000.0f) / -flame->d_alpha); // Time taken to reach zero alpha.
+
+	AddParticleToList(self, flame);
+
+	return true;
 }
 
 // ************************************************************************************************
