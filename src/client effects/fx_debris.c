@@ -628,141 +628,120 @@ void FXFleshDebris(centity_t* owner, const int type, int flags, vec3_t origin)
 
 #pragma endregion
 
-//------------------------------------------------------------------
-//	FX Debris message receivers
-//------------------------------------------------------------------
+#pragma region ========================== Debris message receivers ==========================
 
-static void FXDebris_Collision(client_entity_t *self, CE_Message_t *msg)
+static void FXDebris_Collision(client_entity_t* self, CE_Message_t* msg)
 {
-	trace_t		*trace;
-	float		d_time;
-	int			material;
-	qboolean	dark = false;
-	qboolean	yellow = false;
+	char* snd_name; //mxd
 
-	if(self->flags & CEF_CLIP_TO_WORLD)
+	if (!(self->flags & CEF_CLIP_TO_WORLD))
+		return;
+
+	trace_t* trace;
+	ParseMsgParms(msg, "g", &trace);
+
+	// Invalid trace or didn't hit the world?
+	if (trace->startsolid || trace->allsolid || Vec3IsZeroEpsilon(trace->plane.normal) || trace->ent != (struct edict_s*)-1)
+		return;
+
+	if (trace->contents & CONTENTS_SOLID)
 	{
-		ParseMsgParms(msg, "g", &trace);
+		// Hit a solid surface, make noise and leave any decals.
+		const int material = (self->SpawnInfo & SIF_FLAG_MASK); // Again, the SpawnInfo lower 2 bits are material types, >= 16 are flags - here we mask out those flags to get the actual materialtype.
 
-		if(trace->startsolid || trace->allsolid || Vec3IsZeroEpsilon(trace->plane.normal))
-			return;
-
-		// hit the world
-		if(trace->ent == (struct edict_s *)-1)
+		switch (material)
 		{
-			if(trace->contents&CONTENTS_SOLID)
-			{//hit a solid surface, make noise and leave any decals
-				material = self->SpawnInfo & SIF_FLAG_MASK;//again, the SpawnInfo lower 2 bits are material types, >=16 are flags- here we mask out those flags to get the actual materialtype
-				switch(material)
-				{//fixme: find out what surface this is hitting?
-					case MAT_METAL:
-						if(self->effectID == FX_THROWWEAPON && (!(irand(0,2))))
-						{
-							vec3_t	dir;
-
-							VectorSet(dir, 0.0, 0.0, 1.0);
-							GenericSparks(NULL, FX_SPARKS, 0, self->r.origin, dir);
-						
-							if(!irand(0,1))
-								fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/dropmetal.wav"), 1, ATTN_NORM, 0);
-							else
-								fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/dropmetal1.wav"), 1, ATTN_NORM, 0);
-						}
-						else
-							fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO,
-									fxi.S_RegisterSound(va("misc/drophvmtl%c.wav", irand('1', '3'))), 1, ATTN_STATIC, 0);
-
-						//need more hollow sounds for big metal
-						break;
-					
-					case MAT_WOOD:
-						if(!irand(0,6))
-						{
-							if(!irand(0,1))
-								fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/dropwood.wav"), 1, ATTN_STATIC, 0);
-							else
-								fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/dropwood1.wav"), 1, ATTN_STATIC, 0);
-						}
-						break;
-
-					case MAT_STONE:
-					case MAT_GREYSTONE:
-					case MAT_BROWNSTONE:
-						if(!irand(0,6))
-						{
-							if(!irand(0,2))
-								fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/dropthing.wav"), 1, ATTN_STATIC, 0);
-							else
-								fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO,
-										fxi.S_RegisterSound(va("misc/boulder%c.wav", irand('1', '2'))), 1, ATTN_STATIC, 0);
-						}
-						break;
-
-					case MAT_FLESH://maybe slide?  Wet sound?
-					case MAT_INSECT:
-						if(self->flags&CEF_FLAG6)
-							dark = true;
-						
-						if(material==MAT_INSECT)
-							yellow = true;
-
-						if(self->effectID == FX_BODYPART)
-						{
-							fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO,
-									fxi.S_RegisterSound(va("misc/fleshdrop%c.wav", irand('1', '3'))), 1, ATTN_STATIC, 0);
-							DoBloodSplash(self->r.origin, irand(1, 3), yellow);
-							if(!(self->SpawnInfo&SIF_INWATER))
-								ThrowBlood(self->r.origin, trace->plane.normal, dark, yellow, false);
-						}
-						else if (!irand(0,1))//50% to splat
-						{
-							fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO,
-									fxi.S_RegisterSound(va("misc/fleshdrop%c.wav", irand('1', '3'))), 1, ATTN_STATIC, 0);
-							if(!(self->SpawnInfo&SIF_INWATER))
-								ThrowBlood(self->r.origin, trace->plane.normal, dark, yellow, false);
-						}
-						break;
-					
-					case MAT_GLASS:
-						if(!irand(0,2))
-						{
-							fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO,
-									fxi.S_RegisterSound(va("misc/dropglass%c.wav", irand('1', '2'))), 1, ATTN_STATIC, 0);
-						}
-						break;
-
-					default:
-						break;
-				}
-			}
-			
-			if (trace->plane.normal[2] > GROUND_NORMAL)
-			{
-				// don't bounce if velocity is small
-				if(Q_fabs(self->velocity[2]) < 100.0f || VectorLength(self->velocity) < 100.0f || trace->fraction < 0.075)
+			//TODO: find out what surface this is hitting?
+			case MAT_METAL:
+				if (self->effectID == FX_THROWWEAPON && irand(0, 2) == 0)
 				{
-					// Set pitch so that chunks lie flat on ground
-					self->r.angles[PITCH] = ANGLE_90;
+					vec3_t dir;
+					VectorSet(dir, 0.0f, 0.0f, 1.0f);
+					GenericSparks(NULL, FX_SPARKS, 0, self->r.origin, dir);
 
-					BecomeStatic(self);			
-
-					self->d_alpha = flrand(-0.1, -0.25);
-					self->Update = FXDebris_Vanish;
-					return;
+					snd_name = (irand(0, 1) ? "misc/dropmetal1.wav" : "misc/dropmetal.wav");
+					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1, ATTN_NORM, 0);
 				}
-			}
+				else
+				{
+					snd_name = va("misc/drophvmtl%i.wav", irand(1, 3));
+					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1, ATTN_STATIC, 0);
+				}
+				// Need more hollow sounds for big metal.
+				break;
 
-			BounceVelocity(self->velocity, trace->plane.normal, self->velocity, self->elasticity);
+			case MAT_WOOD:
+				if (irand(0, 6) == 0)
+				{
+					snd_name = (irand(0, 1) ? "misc/dropwood1.wav" : "misc/dropwood.wav");
+					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1, ATTN_STATIC, 0);
+				}
+				break;
 
-			d_time = fxi.cls->frametime * trace->fraction;
-			// The game might crash with a zero movement. --Pat
-			if (d_time)
+			case MAT_STONE:
+			case MAT_GREYSTONE:
+			case MAT_BROWNSTONE:
+				if (irand(0, 6) == 0)
+				{
+					snd_name = (irand(0, 2) ? va("misc/boulder%i.wav", irand(1, 2)) : "misc/dropthing.wav");
+					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1, ATTN_STATIC, 0);
+				}
+				break;
+
+			case MAT_FLESH: // Maybe slide? Wet sound?
+			case MAT_INSECT:
 			{
-				Physics_MoveEnt(self, d_time, d_time * d_time * 0.5, trace);
-			}
+				const qboolean dark = (self->flags & CEF_FLAG6);
+				const qboolean yellow = (material == MAT_INSECT);
+
+				if (self->effectID == FX_BODYPART)
+					DoBloodSplash(self->r.origin, irand(1, 3), yellow);
+
+				if (self->effectID == FX_BODYPART || irand(0, 1))
+				{
+					snd_name = va("misc/fleshdrop%i.wav", irand(1, 3));
+					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1, ATTN_STATIC, 0);
+
+					if (!(self->SpawnInfo & SIF_INWATER))
+						ThrowBlood(self->r.origin, trace->plane.normal, dark, yellow, false);
+				}
+			} break;
+
+			case MAT_GLASS:
+				if (irand(0, 2) == 0)
+				{
+					snd_name = va("misc/dropglass%i.wav", irand(1, 2));
+					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1, ATTN_STATIC, 0);
+				}
+				break;
+
+			default:
+				break;
 		}
 	}
+
+	// Don't bounce if velocity is small.
+	if (trace->plane.normal[2] > GROUND_NORMAL && (Q_fabs(self->velocity[2]) < 100.0f || VectorLength(self->velocity) < 100.0f || trace->fraction < 0.075f))
+	{
+		// Set pitch so that chunks lie flat on ground.
+		self->r.angles[PITCH] = ANGLE_90;
+
+		BecomeStatic(self);
+
+		self->d_alpha = flrand(-0.1f, -0.25f);
+		self->Update = FXDebris_Vanish;
+
+		return;
+	}
+
+	BounceVelocity(self->velocity, trace->plane.normal, self->velocity, self->elasticity);
+
+	const float d_time = fxi.cls->frametime * trace->fraction;
+	if (d_time > 0.0f) // The game might crash with a zero movement. --Pat
+		Physics_MoveEnt(self, d_time, d_time * d_time * 0.5f, trace);
 }
+
+#pragma endregion
 
 //------------------------------------------------------------------
 //	FX Debris update
