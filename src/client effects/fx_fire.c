@@ -216,55 +216,54 @@ static qboolean FXFireOnEntityThink(client_entity_t* spawner, const centity_t* o
 	return false;
 }
 
-qboolean FXFireOnEntity2Think(client_entity_t *spawner, centity_t *owner)
+static qboolean FXFireOnEntity2Think(client_entity_t* spawner, const centity_t* owner)
 {
-	client_particle_t	*flame;
-	int					i, count;
-	float				radius;
-
-	//fixme: can miss the message that tells you to remove the effect
+	//FIXME: can miss the message that tells you to remove the effect.
 	if (fxi.cl->time > spawner->nextEventTime)
-		return (false);//just in case
-	else if (spawner->nextEventTime - fxi.cl->time < 1000)
-		return (true);	// Let the flames finish.
+		return false; // Just in case.
 
-	if (!(owner->current.effects & EF_ON_FIRE) && spawner->nextEventTime-fxi.cl->time >= 1000)
+	if (spawner->nextEventTime - fxi.cl->time < 1000)
+		return true; // Let the flames finish.
+
+	if (!(owner->current.effects & EF_ON_FIRE) && spawner->nextEventTime - fxi.cl->time >= 1000)
 	{
 		spawner->nextEventTime = fxi.cl->time + 999;
 		spawner->dlight->d_intensity = -200;
 	}
 
-	// For framerate-sensitive effect spawning
-	count = GetScaledCount(FLAME_COUNT, 0.9);
-	if (count>FLAME_COUNT)		// Don't go over flame count
-		count=FLAME_COUNT;		
+	// For framerate-sensitive effect spawning.
+	int count = GetScaledCount(FLAME_COUNT, 0.9f);
+	count = min(FLAME_COUNT, count); // Don't go over flame count.
+
 	VectorCopy(owner->origin, spawner->origin);
 	VectorCopy(owner->origin, spawner->r.origin);
-	for(i = 0; i < count; i++)
-	{
-		flame = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2) | PFL_NEARCULL, spawner->color, 1000);
 
-		radius = spawner->r.scale * FIRE_SPAWN_RADIUS;
+	for (int i = 0; i < count; i++)
+	{
+		client_particle_t* flame = ClientParticle_new((int)(irand(PART_32x32_FIRE0, PART_32x32_FIRE2) | PFL_NEARCULL), spawner->color, 1000);
+
+		const float radius = spawner->r.scale * FIRE_SPAWN_RADIUS;
 		VectorSet(flame->origin, flrand(-radius, radius), flrand(-radius, radius), flrand(-8.0F, 0.0F) * spawner->r.scale);
+
 		// If dead, then move the flame down a tad.
-		if(owner->current.effects&EF_DISABLE_EXTRA_FX)
-		{
+		if (owner->current.effects & EF_DISABLE_EXTRA_FX)
 			spawner->origin[2] -= radius;
-		}
+
 		VectorAdd(flame->origin, spawner->origin, flame->origin);
 
-		flame->scale = FIRE_ENT_SCALE * spawner->r.scale;
-		VectorSet(flame->velocity, flrand(-5.0, 5.0), flrand(-5, 5.0), flrand(15.0, 22.0));
-		flame->acceleration[2] = FIRE_ACCEL * spawner->r.scale;
-		flame->d_scale = flrand(-10.0, -5.0);
-		flame->d_alpha = flrand(-200.0, -160.0);
-		flame->duration = (255.0 * 1000.0) / -flame->d_alpha;		// time taken to reach zero alpha
+		flame->scale = spawner->r.scale * FIRE_ENT_SCALE;
+		VectorSet(flame->velocity, flrand(-5.0f, 5.0f), flrand(-5.0f, 5.0f), flrand(15.0f, 22.0f));
+		flame->acceleration[2] = spawner->r.scale * FIRE_ACCEL;
+		flame->d_scale = flrand(-10.0f, -5.0f);
+		flame->d_alpha = flrand(-200.0f, -160.0f);
+		flame->duration = (int)(255.0f * 1000.0f / -flame->d_alpha); // Time taken to reach zero alpha.
 
 		AddParticleToList(spawner, flame);
 	}
-	spawner->dlight->intensity = 150 + flrand(-8.0, 8.0);
-	return(true);
 
+	spawner->dlight->intensity = 150.0f + flrand(-8.0f, 8.0f);
+
+	return true;
 }
 
 //FIXME: have it constantly check a flag so it can go out if under water!
