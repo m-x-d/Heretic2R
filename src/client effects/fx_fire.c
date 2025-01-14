@@ -68,62 +68,55 @@ void FXFlareup(centity_t* owner, const int type, const int flags, vec3_t origin)
 	}
 }
 
-qboolean FXFireThink(client_entity_t *spawner, centity_t *owner)
+static qboolean FXFireThink(client_entity_t* spawner, centity_t* owner)
 {
-	client_particle_t	*flame;
-	paletteRGBA_t		color;
-	float				radius;
-	int					i, count, white;
+	int count = GetScaledCount(FLAME_COUNT, 0.9f);
+	count = min(FLAME_COUNT, count); // Don't go over flame count
 
-	count = GetScaledCount(FLAME_COUNT, 0.9);
-	if (count>FLAME_COUNT)		// Don't go over flame count
-		count=FLAME_COUNT;		
-	for(i = 0; i < count; i++)
+	for (int i = 0; i < count; i++)
 	{
-		if (!irand(0,15) && (r_detail->value >= DETAIL_NORMAL))		// no steam in software, its around too long and doesn't do enough for us
+		if (irand(0, 15) == 0 && r_detail->value >= DETAIL_NORMAL) // No steam in software, its around too long and doesn't do enough for us.
 		{
-			white = irand(50, 100);
+			const byte white = (byte)irand(50, 100);
+			const paletteRGBA_t color = { .r = white, .g = white, .b = white, .a = (byte)irand(100, 150) };
 
-			color.r = color.g = color.b = white; 
-			color.a = irand(100, 150);
+			client_particle_t* flame = ClientParticle_new((int)(PART_32x32_STEAM | PFL_NEARCULL), color, 2000);
 
-			flame = ClientParticle_new(PART_32x32_STEAM | PFL_NEARCULL, color, 2000);
+			const float radius = spawner->r.scale * FIRE_SPAWN_RADIUS;
+			VectorSet(flame->origin, flrand(-radius, radius), flrand(-radius, radius), spawner->r.scale * 8.0f);
 
-			radius = spawner->r.scale * FIRE_SPAWN_RADIUS;
-			VectorSet(flame->origin, flrand(-radius, radius), flrand(-radius, radius), 8 * spawner->r.scale);
-
-			flame->scale = (FIRE_SCALE * spawner->r.scale) / 2;
-			VectorSet(flame->velocity, flrand(-5.0, 5.0), flrand(-5, 5.0), flrand(15.0, 22.0));
-			flame->acceleration[2] = FIRE_ACCEL * spawner->r.scale;
-			flame->d_scale = flrand(15.0, 20.0);
-			flame->d_alpha = flrand(-100.0, -50.0);
-			flame->duration = (color.a * 1000.0) / -flame->d_alpha;		// time taken to reach zero alpha
+			flame->scale = spawner->r.scale * FIRE_SCALE / 2.0f;
+			VectorSet(flame->velocity, flrand(-5.0f, 5.0f), flrand(-5.0f, 5.0f), flrand(15.0f, 22.0f));
+			flame->acceleration[2] = spawner->r.scale * FIRE_ACCEL;
+			flame->d_scale = flrand(15.0f, 20.0f);
+			flame->d_alpha = flrand(-100.0f, -50.0f);
+			flame->duration = (int)((float)color.a * 1000.0f / -flame->d_alpha); // Time taken to reach zero alpha.
 
 			AddParticleToList(spawner, flame);
 		}
 		else
 		{
-			flame = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2) | PFL_NEARCULL, spawner->color, 2000);
+			client_particle_t* flame = ClientParticle_new((int)(irand(PART_32x32_FIRE0, PART_32x32_FIRE2) | PFL_NEARCULL), spawner->color, 2000);
 
-			radius = spawner->r.scale * FIRE_SPAWN_RADIUS;
-			VectorSet(flame->origin, flrand(-radius, radius), flrand(-radius, radius), flrand(-16.0F, -8.0F) * spawner->r.scale);
+			const float radius = spawner->r.scale * FIRE_SPAWN_RADIUS;
+			VectorSet(flame->origin, flrand(-radius, radius), flrand(-radius, radius), flrand(-16.0f, -8.0f) * spawner->r.scale);
 
-			flame->scale = FIRE_SCALE * spawner->r.scale;
-			VectorSet(flame->velocity, flrand(-5.0, 5.0), flrand(-5, 5.0), flrand(15.0, 22.0));
-			flame->acceleration[2] = FIRE_ACCEL * spawner->r.scale;
-			flame->d_scale = flrand(-10.0, -5.0);
-			flame->d_alpha = flrand(-200.0, -160.0);
-			flame->duration = (255.0 * 1000.0) / -flame->d_alpha;		// time taken to reach zero alpha
-			
+			flame->scale = spawner->r.scale * FIRE_SCALE;
+			VectorSet(flame->velocity, flrand(-5.0f, 5.0f), flrand(-5.0f, 5.0f), flrand(15.0f, 22.0f));
+			flame->acceleration[2] = spawner->r.scale * FIRE_ACCEL;
+			flame->d_scale = flrand(-10.0f, -5.0f);
+			flame->d_alpha = flrand(-200.0f, -160.0f);
+			flame->duration = (int)(255.0f * 1000.0f / -flame->d_alpha); // Time taken to reach zero alpha.
 			flame->type |= PFL_ADDITIVE;
 
 			AddParticleToList(spawner, flame);
 		}
 	}
-	if (spawner->dlight)
-		spawner->dlight->intensity = 150 + flrand(-8.0, 8.0);
 
-	return(true);
+	if (spawner->dlight != NULL)
+		spawner->dlight->intensity = 150.0f + flrand(-8.0f, 8.0f);
+
+	return true;
 }
 
 void FXFire(centity_t *owner, int type, int flags, vec3_t origin)
