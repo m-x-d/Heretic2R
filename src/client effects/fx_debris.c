@@ -227,18 +227,15 @@ void FXBodyPart(centity_t* owner, const int type, const int flags, vec3_t origin
 	FXBodyPart_Spawn(realowner, body_part, origin, ke, frame, type, modelindex, flags, owner);
 }
 
-void FXBodyPart_Spawn(centity_t *owner, int BodyPart, vec3_t origin, float ke, int frame, int type, byte modelindex, int flags, centity_t *harpy)
+static void FXBodyPart_Spawn(const centity_t* owner, const int body_part, vec3_t origin, const float ke, const int frame, const int type, const byte modelindex, const int flags, centity_t* harpy)
 {
-	vec3_t				spray_org;
+	FXBodyPart_Throw(owner, body_part, origin, ke, frame, type, modelindex, flags, harpy);
 
-	FXBodyPart_Throw(owner, BodyPart, origin, ke, frame, type, modelindex, flags, harpy);
-
+	vec3_t spray_org;
 	VectorAdd(origin, owner->origin, spray_org);
 
-	if(ke && type!=FX_THROWWEAPON)
-	{
-		DoBloodSplash(origin, 5, flags&CEF_FLAG8);
-	}
+	if (ke > 0.0f && type != FX_THROWWEAPON)
+		DoBloodSplash(origin, 5, flags & CEF_FLAG8);
 }
 
 static void FXBodyPart_Throw(const centity_t *owner, int BodyPart, vec3_t origin, float ke, int frame, int type, byte modelindex, int flags, centity_t *harpy)
