@@ -108,40 +108,41 @@ static qboolean FXDripThinkLava(client_entity_t* drip, centity_t* owner)
 	return true;
 }
 
-static qboolean FXDripperParticleSpawner(client_entity_t *spawner, centity_t *owner)
+static qboolean FXDripperParticleSpawner(client_entity_t* spawner, centity_t* owner)
 {
-	client_entity_t		*drip;
-
-	// Refresh time so it gets updated a random amount
+	// Refresh time so it gets updated a random amount.
 	spawner->updateTime = irand(spawner->LifeTime / 2, spawner->LifeTime * 2);
 
-	// Spawn a drip to fall
-	drip = ClientEntity_new(-1, 0, spawner->r.origin, NULL, spawner->SpawnDelay);
+	// Spawn a drip to fall.
+	client_entity_t* drip = ClientEntity_new(-1, 0, spawner->r.origin, NULL, spawner->SpawnDelay);
 
-	drip->r.model = drip_models + 2;
-	drip->r.scale = 0.1F;
+	drip->r.model = &drip_models[2];
+	drip->r.scale = 0.1f;
 	drip->r.flags = RF_TRANSLUCENT | RF_ALPHA_TEXTURE;
 	drip->r.frame = spawner->r.frame;
 
-	drip->radius = 2.0F;
+	drip->radius = 2.0f;
 	drip->SpawnData = spawner->SpawnData;
 	VectorCopy(spawner->acceleration, drip->acceleration);
 
-	switch(spawner->SpawnInfo & (CONTENTS_SOLID | CONTENTS_WATER | CONTENTS_LAVA))
+	switch (spawner->SpawnInfo & (CONTENTS_SOLID | CONTENTS_WATER | CONTENTS_LAVA))
 	{
 		case CONTENTS_WATER:
 			drip->Update = FXDripThinkWater;
-		break;
+			break;
+
 		case CONTENTS_LAVA:
 			drip->Update = FXDripThinkLava;
-		break;
+			break;
+
 		default:
 			drip->Update = FXDripThinkSolid;
-		break;
+			break;
 	}
 
-	AddEffect(NULL, drip); 
-	return(true);
+	AddEffect(NULL, drip);
+
+	return true;
 }
 
 // Spawn a water drop spawner
