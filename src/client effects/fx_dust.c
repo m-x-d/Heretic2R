@@ -52,21 +52,18 @@ static qboolean FXDustThink(client_entity_t* dust, centity_t* owner)
 	return true;
 }
 
-void FXDust(centity_t *owner, int type, int flags, vec3_t origin)
+void FXDust(centity_t* owner, int type, const int flags, vec3_t origin)
 {
-	byte  				num, mag;
-	vec3_t 				size;
-	client_entity_t		*ce;
-
+	byte num;
+	vec3_t size;
+	byte mag;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_DUST].formatString, &num, size, &mag);
 
-	ce = ClientEntity_new(-1, CEF_NOMOVE | CEF_NO_DRAW, origin, NULL, 100);
-	VectorScale(size, mag, ce->startpos);
-	ce->SpawnDelay = num;
-	ce->LifeTime = 0;
-	ce->Update = FXDustThink;
-	AddEffect(NULL, ce);
+	client_entity_t* dust = ClientEntity_new(-1, CEF_NOMOVE | CEF_NO_DRAW, origin, NULL, 100);
+	VectorScale(size, mag, dust->startpos);
+	dust->SpawnDelay = num;
+	dust->LifeTime = 0;
+	dust->Update = FXDustThink;
+
+	AddEffect(NULL, dust);
 }
-
-// end
-
