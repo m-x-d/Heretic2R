@@ -732,7 +732,7 @@ static void AddServerEntities(const frame_t* frame)
 	}
 }
 
-//mxd. Exported in Client Effects.def. Dynamically resolved in clfx.dll.c
+//mxd. Exported in Client Effects.def. Dynamically resolved in clfx_dll.c
 client_fx_export_t GetfxAPI(const client_fx_import_t import)
 {
 	client_fx_export_t export;

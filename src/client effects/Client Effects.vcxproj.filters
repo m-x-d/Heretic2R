@@ -10,11 +10,11 @@
     <Filter Include="src\Effects">
       <UniqueIdentifier>{8009a782-9fdc-4271-b351-7b4371aecec0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Generic Effects">
+      <UniqueIdentifier>{52bcf2bc-85f7-412f-9c13-f09052b8e30e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Ambient Effects.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="ce_DefaultMessageHandler.c">
       <Filter>src</Filter>
     </ClCompile>
@@ -24,16 +24,7 @@
     <ClCompile Include="ce_Message.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="Client Effects.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="Client Entities.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="Generic Character Effects.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="Generic Weapon Effects.c">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="LevelMaps.c">
@@ -46,12 +37,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="Particle.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="Player Effects.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="TestEffect.c">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="Utilities.c">
@@ -273,11 +258,26 @@
     <ClCompile Include="..\qcommon\turbsin.c">
       <Filter>qcommon</Filter>
     </ClCompile>
+    <ClCompile Include="Ambient Effects.c">
+      <Filter>src\Generic Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Client Effects.c">
+      <Filter>src\Generic Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Generic Character Effects.c">
+      <Filter>src\Generic Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Generic Weapon Effects.c">
+      <Filter>src\Generic Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Player Effects.c">
+      <Filter>src\Generic Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="TestEffect.c">
+      <Filter>src\Generic Effects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Ambient Effects.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="ce_DefaultMessageHandler.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -285,9 +285,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="ce_Message.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="Client Effects.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="Client Entities.h">
@@ -340,6 +337,12 @@
     </ClInclude>
     <ClInclude Include="fx_flamethrow.h">
       <Filter>src\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Ambient Effects.h">
+      <Filter>src\Generic Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Client Effects.h">
+      <Filter>src\Generic Effects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
