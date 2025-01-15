@@ -34,7 +34,7 @@
 #define FIREBALL_DAMAGE_MIN_POWER		30
 #define FIREBALL_DAMAGE_MAX_POWER		40
 #define FIREBALL_RADIUS					64.0	// Radius of damage for the powered up version.
-#define FLYING_FIST_SPEED				1000.0
+#define FLYING_FIST_SPEED				1000.0f
 
 // Hellstaff.
 #define HELLBOLT_DAMAGE_MIN				7

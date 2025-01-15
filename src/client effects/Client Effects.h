@@ -70,7 +70,7 @@ extern void FXDefensePickup(centity_t* owner, int type, int flags, vec3_t origin
 extern void FXPuzzlePickup(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXAmmoPickup(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXFlyingFist(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXFlyingFistExplode(centity_t* Owner, int Type, int Flags, vec3_t Origin);
+extern void FXFlyingFistExplode(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXBlueRing(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXMeteorBarrier(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXMeteorBarrierTravel(centity_t* owner, int type, int flags, vec3_t origin);

@@ -127,144 +127,114 @@ void FXFlyingFist(centity_t* owner, const int type, const int flags, vec3_t orig
 	AddEffect(owner, missile);
 }
 
-// ************************************************************************************************
-// FXFlyingFistExplode
-// ************************************************************************************************
-
-///////////////////////////////////////
-// From CreateEffect FX_WEAPON_FLYINGFISTEXPLODE
-///////////////////////////////////////
-void FXFlyingFistExplode(centity_t *owner,int type,int flags,vec3_t origin)
+void FXFlyingFistExplode(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	vec3_t			dir, mins;
-	client_entity_t	*SmokePuff;
-	int				i;
-	paletteRGBA_t	LightColor;
-	byte			powerup = 0, wimpy=0;
-	float			lightrad;
-	float			blastvel;
-	float			volume=1.0;
-	
+	int count;
+	paletteRGBA_t light_color;
+
+	float light_radius;
+	float blastvel;
+
+	vec3_t dir;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_FLYINGFISTEXPLODE].formatString, dir);
 
-	if(flags & CEF_FLAG6)
-	{
+	if (flags & CEF_FLAG6)
 		FXClientScorchmark(origin, dir);
-	}
 
-	if (flags&CEF_FLAG7)
+	const qboolean is_powered = (flags & CEF_FLAG7);
+	const qboolean is_wimpy = (flags & CEF_FLAG8);
+	const float volume = (is_wimpy ? 0.75f : 1.0f);
+
+	Vec3ScaleAssign(32.0f, dir);
+
+	if (is_powered)
 	{
-		powerup=1;
-	}
-
-	if (flags&CEF_FLAG8)
-	{
-		wimpy=1;
-		volume=0.75;
-	}
-
-//	fxi.GetEffect(owner, flags, "xb", dir, &powerup);
-	Vec3ScaleAssign(32.0, dir);
-
-	if(powerup)
-	{
-		i = GetScaledCount(irand(12, 16), 0.8);
-		LightColor.c = 0xff0000ff;
-		if (wimpy)
-			lightrad = 160;
-		else
-			lightrad = 200;
+		count = GetScaledCount(irand(12, 16), 0.8f);
+		light_color = color_red; //mxd
+		light_radius = (is_wimpy ? 160.0f : 200.0f);
 	}
 	else
 	{
-		i = GetScaledCount(irand(8, 12), 0.8);
-		LightColor.c = 0xff2040ff;
-		if (wimpy)
-			lightrad = 120;
-		else
-			lightrad = 150;
+		count = GetScaledCount(irand(8, 12), 0.8f);
+		light_color = color_orange; //mxd
+		light_radius = (is_wimpy ? 120.0f : 150.0f);
 	}
 
-	while(i--)
+	for (int i = 0; i < count; i++)
 	{
-		if (!i)
-			SmokePuff=ClientEntity_new(type,flags,origin,NULL,500);
-		else
-			SmokePuff=ClientEntity_new(type,flags,origin,NULL,1000);
+		const qboolean is_last_puff = (i == count - 1); //mxd
+		client_entity_t* smoke_puff = ClientEntity_new(type, flags, origin, NULL, (is_last_puff ? 500 : 1000));
 
-		SmokePuff->r.model = fist_models + 1;
-		if (powerup)
-		{	// Meteor impact!
-			SmokePuff->d_scale=-2.0;
-			blastvel = FIST_POWER_BLAST_VEL;
-			if (wimpy)
-			{
-				blastvel*=0.3;
-				SmokePuff->r.scale=flrand(0.8,1.4);
-			}
-			else
-			{
-				SmokePuff->r.scale=flrand(1.2,2.0);
-			}
+		smoke_puff->r.model = &fist_models[1];
+		smoke_puff->d_scale = -2.0f;
 
-			VectorRandomCopy(dir, SmokePuff->velocity, blastvel);
-			SmokePuff->velocity[2] += 100.0;
-			SmokePuff->acceleration[2] = -400.0;
-		}
-		else
-		{	// Non-powered up.
-			SmokePuff->d_scale=-2.0;
-			blastvel = FIST_BLAST_VEL;
-			if (wimpy)
-			{
-				blastvel*=0.5;
-				SmokePuff->r.scale=flrand(0.5,1.0);
-			}
-			else
-			{
-				SmokePuff->r.scale=flrand(0.8,1.6);
-			}
-
-			VectorRandomCopy(dir, SmokePuff->velocity, blastvel);
-			SmokePuff->acceleration[0] = flrand(-200, 200);
-			SmokePuff->acceleration[1] = flrand(-200, 200);
-			SmokePuff->acceleration[2] = flrand(-40, -60);
-		}
-
-		SmokePuff->r.flags |=RF_FULLBRIGHT|RF_TRANSLUCENT|RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		SmokePuff->r.frame=0;
-
-		SmokePuff->d_alpha= -0.4;
-			
-		SmokePuff->radius=20.0;
-
-		if(!i)
+		if (is_powered)
 		{
-			if (powerup)
+			// Meteor impact!
+			blastvel = FIST_POWER_BLAST_VEL;
+
+			if (is_wimpy)
 			{
-				fxi.S_StartSound(SmokePuff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/FireballPowerImpact.wav"), 
-						volume, ATTN_NORM, 0);
+				blastvel *= 0.3f;
+				smoke_puff->r.scale = flrand(0.8f, 1.4f);
 			}
 			else
 			{
-				fxi.S_StartSound(SmokePuff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/FlyingFistImpact.wav"), 
-						volume, ATTN_NORM, 0);
+				smoke_puff->r.scale = flrand(1.2f, 2.0f);
 			}
-			SmokePuff->dlight=CE_DLight_new(LightColor,lightrad, -50.0f);
-			VectorClear(SmokePuff->velocity);
-		}	
 
-		AddEffect(NULL,SmokePuff);
+			VectorRandomCopy(dir, smoke_puff->velocity, blastvel);
+			smoke_puff->velocity[2] += 100.0f;
+			smoke_puff->acceleration[2] = -400.0f;
+		}
+		else
+		{
+			// Non-powered up.
+			blastvel = FIST_BLAST_VEL;
+
+			if (is_wimpy)
+			{
+				blastvel *= 0.5f;
+				smoke_puff->r.scale = flrand(0.5f, 1.0f);
+			}
+			else
+			{
+				smoke_puff->r.scale = flrand(0.8f, 1.6f);
+			}
+
+			VectorRandomCopy(dir, smoke_puff->velocity, blastvel);
+			smoke_puff->acceleration[0] = flrand(-200.0f, 200.0f);
+			smoke_puff->acceleration[1] = flrand(-200.0f, 200.0f);
+			smoke_puff->acceleration[2] = flrand(-40.0f, -60.0f);
+		}
+
+		smoke_puff->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		smoke_puff->r.frame = 0;
+		smoke_puff->d_alpha = -0.4f;
+		smoke_puff->radius = 20.0f;
+
+		if (is_last_puff)
+		{
+			const char* snd_name = (is_powered ? "weapons/FireballPowerImpact.wav" : "weapons/FlyingFistImpact.wav"); //mxd
+			fxi.S_StartSound(smoke_puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound(snd_name), volume, ATTN_NORM, 0);
+
+			smoke_puff->dlight = CE_DLight_new(light_color, light_radius, -50.0f);
+			VectorClear(smoke_puff->velocity);
+		}
+
+		AddEffect(NULL, smoke_puff);
 	}
 
-	if (powerup)
-	{	// Meteor throws out chunks.
-		VectorSet(dir, 0.0, 0.0, 1.0);
-		VectorSet(mins, 2.0, 2.0, 2.0);	// because SpawnChunks needs a value for bounding box
+	if (is_powered)
+	{
+		vec3_t mins;
 
-		if (wimpy)	// No mana meteors are wimpy! - clear out cef_flag# stuff, means different stuff to debris
-			FXDebris_SpawnChunks(type, flags & ~(CEF_FLAG6|CEF_FLAG7|CEF_FLAG8), origin, 5, MAT_GREYSTONE, dir, 80000.0f, mins, 0.5, false);
-		else
-			FXDebris_SpawnChunks(type, flags & ~(CEF_FLAG6|CEF_FLAG7|CEF_FLAG8), origin, 5, MAT_GREYSTONE, dir, 80000.0f, mins, 1.0, false);
+		// Meteor throws out chunks.
+		VectorSet(dir, 0.0f, 0.0f, 1.0f);
+		VectorSet(mins, 2.0f, 2.0f, 2.0f);	// Because SpawnChunks needs a value for bounding box.
+
+		// No mana meteors are wimpy! - clear out cef_flag# stuff, means different stuff to debris.
+		const float chunk_scale = (is_wimpy ? 0.5f : 1.0f); //mxd
+		FXDebris_SpawnChunks(type, flags & ~(CEF_FLAG6 | CEF_FLAG7 | CEF_FLAG8), origin, 5, MAT_GREYSTONE, dir, 80000.0f, mins, chunk_scale, false);
 	}
 }
