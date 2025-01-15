@@ -162,7 +162,9 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 
 #pragma endregion
 
-const paletteRGBA_t color_white = { .c = 0xffffffff }; //mxd
+const paletteRGBA_t color_white =	{ .c = 0xffffffff }; //mxd
+const paletteRGBA_t color_red =		{ .c = 0xff0000ff }; //mxd
+const paletteRGBA_t color_orange =	{ .c = 0xff2040ff }; //mxd. Actually, nearly-red as well...
 
 CE_ClassStatics_t ce_class_statics[NUM_CLASSIDS];
 

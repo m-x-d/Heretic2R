@@ -9,6 +9,8 @@
 #include "Client Entities.h"
 
 extern const paletteRGBA_t color_white; //mxd
+extern const paletteRGBA_t color_red; //mxd
+extern const paletteRGBA_t color_orange; //mxd
 
 extern client_fx_import_t fxi;
 
