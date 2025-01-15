@@ -71,12 +71,13 @@ void FXWaterfallBase(centity_t* owner, const int type, int flags, vec3_t origin)
 	AddEffect(owner, wfb);
 }
 
-qboolean FXWaterDropEnd(client_entity_t *waterdrop, centity_t *owner)
+static qboolean FXWaterDropEnd(client_entity_t* waterdrop, centity_t* owner)
 {
-	CreateFountainSplash(waterdrop, 10.0, 10.0, 0);
+	CreateFountainSplash(waterdrop, 10.0f, 10.0f, 0.0f);
 	waterdrop->Update = RemoveSelfAI;
 	waterdrop->nextThinkTime = fxi.cl->time + 500;
-	return(true);
+
+	return true;
 }
 
 #define	FOUNTAIN_SCALE	80.0F
