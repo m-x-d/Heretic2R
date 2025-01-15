@@ -39,19 +39,16 @@ static void CreateFountainSplash(client_entity_t* owner, const float xspread, co
 	AddParticleToList(owner, mist);
 }
 
-#define NUM_SPLASHES	0.005
-
-static qboolean FXWaterfallBaseSpawner(client_entity_t *spawner, centity_t *owner)
+static qboolean FXWaterfallBaseSpawner(client_entity_t* spawner, const centity_t* owner)
 {
-	int		i, count;
+#define NUM_SPLASHES	0.005f
 
 	VectorCopy(owner->current.origin, spawner->r.origin);
-	count = GetScaledCount(Q_ftol(spawner->xscale * spawner->yscale * NUM_SPLASHES), 0.8);
-	for(i = 0; i < count; i++)
-	{
+	const int count = GetScaledCount(Q_ftol(spawner->xscale * spawner->yscale * NUM_SPLASHES), 0.8f);
+	for (int i = 0; i < count; i++)
 		CreateFountainSplash(spawner, spawner->xscale, spawner->yscale, spawner->yaw);
-	}
-	return(true);
+
+	return true;
 }
 
 void FXWaterfallBase(centity_t *owner, int type, int flags, vec3_t origin)
