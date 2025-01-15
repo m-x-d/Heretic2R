@@ -11,9 +11,9 @@
 
 extern H2COMMON_API qboolean HACK_Pitch_Adjust;
 
-H2COMMON_API void CreateRollMatrix(matrix3_t, float);
-H2COMMON_API void CreateYawMatrix(matrix3_t, float);
-H2COMMON_API void CreatePitchMatrix(matrix3_t, float);
+H2COMMON_API void CreateRollMatrix(matrix3_t m, float roll);
+H2COMMON_API void CreateYawMatrix(matrix3_t m, float yaw);
+H2COMMON_API void CreatePitchMatrix(matrix3_t m, float pitch);
 
 H2COMMON_API void R_ConcatTransforms(const float in1[3][4], const float in2[3][4], float out[3][4]);
 
