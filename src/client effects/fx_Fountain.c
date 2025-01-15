@@ -80,49 +80,50 @@ static qboolean FXWaterDropEnd(client_entity_t* waterdrop, centity_t* owner)
 	return true;
 }
 
-#define	FOUNTAIN_SCALE	80.0F
-#define NUM_FOUNT_PARTS	20
-
-static qboolean FXFountainParticleSpawner(client_entity_t *spawner, centity_t *owner)
+static qboolean FXFountainParticleSpawner(client_entity_t* spawner, centity_t* owner)
 {
-	client_particle_t	*drop;
-	client_entity_t		*splash;
-	vec3_t				origin;
-	vec3_t				velocity;
-	vec_t				accel;
-	int					i, time, count;
-	float				s;
+#define NUM_FOUNTAIN_PARTICLES	20
 
-	count = GetScaledCount(NUM_FOUNT_PARTS, 0.9);
-	for(i = 0; i < count; i++)
+	vec3_t origin;
+	vec3_t velocity;
+
+	client_particle_t* drop = NULL;
+	int time = 0;
+	const int count = GetScaledCount(NUM_FOUNTAIN_PARTICLES, 0.9f);
+
+	for (int i = 0; i < count; i++)
 	{
-		VectorSet(origin, flrand(-4.0F, 4.0F), flrand(-4.0F, 4.0F), flrand(-4.0F, 4.0F));
-		VectorRandomCopy(spawner->direction, velocity, 16.0F);
+		VectorRandomSet(origin, 4.0f);
+		VectorRandomCopy(spawner->direction, velocity, 16.0f);
 
-		accel = GetGravity();
-		s = spawner->SpawnData - origin[2];
-		time = GetTimeToReachDistance(velocity[2], accel, s);
+		const float accel = GetGravity();
+		const float dist = spawner->SpawnData - origin[2];
+		time = (int)(GetTimeToReachDistance(velocity[2], accel, dist));
 
-		drop = ClientParticle_new(PART_32x32_WFALL | PFL_NEARCULL, spawner->color, time);
+		drop = ClientParticle_new((int)(PART_32x32_WFALL | PFL_NEARCULL), spawner->color, time);
 
 		VectorCopy(origin, drop->origin);
 		VectorCopy(velocity, drop->velocity);
 		drop->acceleration[2] = accel;
-		drop->scale = 8.0F;
-		drop->d_scale = 16.0F;
-		drop->d_alpha *= 0.8;
-		drop->startTime += flrand(-50.0F, 0.0F);
+		drop->scale = 8.0f;
+		drop->d_scale = 16.0f;
+		drop->d_alpha *= 0.8f;
+		drop->startTime += irand(-50, 0); //mxd. flrand in original version.
 
-		AddParticleToList(spawner, drop); 
+		AddParticleToList(spawner, drop);
 	}
 
-	GetPositionOverTime(spawner->r.origin, velocity, drop->acceleration, time * 0.001, origin);
-	splash = ClientEntity_new(-1, 0, origin, NULL, time);
-	splash->Update = FXWaterDropEnd;
-	splash->flags = CEF_NOMOVE | CEF_NO_DRAW;
-	AddEffect(NULL, splash);
+	if (drop != NULL) //mxd. Added sanity check.
+	{
+		GetPositionOverTime(spawner->r.origin, velocity, drop->acceleration, (float)time * 0.001f, origin);
 
-	return(true);				// Never go away
+		client_entity_t* splash = ClientEntity_new(-1, 0, origin, NULL, time);
+		splash->Update = FXWaterDropEnd;
+		splash->flags = CEF_NOMOVE | CEF_NO_DRAW;
+		AddEffect(NULL, splash);
+	}
+
+	return true; // Never go away.
 }
 
 // Could send the 'v' as a 'ds' but we would lose some accuracy. As it
