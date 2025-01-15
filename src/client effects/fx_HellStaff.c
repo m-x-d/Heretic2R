@@ -26,39 +26,30 @@ void PreCacheHellstaff(void)
 	hell_models[1] = fxi.RegisterModel("sprites/fx/helllaser.sp2");
 }
 
-// --------------------------------------------------------------
-
-// ************************************************************************************************
-// FXHellbolt
-// ************************************************************************************************
-
-void FXHellbolt(centity_t *owner, int type, int flags, vec3_t origin)
+void FXHellbolt(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	vec3_t			vel;
-	client_entity_t	*hellbolt;	
-	paletteRGBA_t	lightcolor = {255, 128, 64, 255};
-
+	vec3_t vel;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_HELLBOLT].formatString, vel);
 
-	if (flags & CEF_FLAG6)
-		Vec3ScaleAssign(HELLBOLT_SPEED/2,vel);
-	else
-		Vec3ScaleAssign(HELLBOLT_SPEED,vel);
+	const float speed = HELLBOLT_SPEED * ((flags & CEF_FLAG6) ? 0.5f : 1.0f); //mxd
+	Vec3ScaleAssign(speed, vel);
 
-	hellbolt = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 10000);
-	
-	hellbolt->r.model = hell_models;
+	client_entity_t* hellbolt = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 10000);
+
+	hellbolt->r.model = &hell_models[0];
 	hellbolt->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 	hellbolt->r.frame = irand(0, 1);
 	vectoangles(vel, hellbolt->r.angles);
 	VectorCopy(vel, hellbolt->velocity);
 
-	hellbolt->r.scale = 0.5;
-	hellbolt->r.color = lightcolor;
-	hellbolt->d_alpha = 0.0;
-	hellbolt->radius = 10.0F;
+	const paletteRGBA_t light_color = { .r = 255, .g = 128, .b = 64, .a = 255 };
 
-	hellbolt->dlight = CE_DLight_new(lightcolor, 120.0f, 0.0f);
+	hellbolt->r.scale = 0.5f;
+	hellbolt->r.color = light_color;
+	hellbolt->d_alpha = 0.0f;
+	hellbolt->radius = 10.0f;
+	hellbolt->dlight = CE_DLight_new(light_color, 120.0f, 0.0f);
+
 	AddEffect(owner, hellbolt);
 }
 
