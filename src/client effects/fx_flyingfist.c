@@ -26,68 +26,60 @@ void PreCacheFist(void)
 	fist_models[2] = fxi.RegisterModel("models/spells/meteorbarrier/tris.fm");
 }
 
-// ************************************************************************************************
-// FXFlyingFistTrailThink
-// ************************************************************************************************
-
-static qboolean FXFlyingFistTrailThink(struct client_entity_s *self, centity_t *owner)
+static qboolean FXFlyingFistTrailThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_entity_t	*TrailEnt;
-	vec3_t			accel_dir;
-	int				i;
-	qboolean		wimpy=false;
-	float			trailscale=FIST_SCALE;
-
 	self->updateTime = 20;
 
-	if(self->SpawnInfo > 9)
+	if (self->SpawnInfo > 9)
 		self->SpawnInfo--;
 
-	i = GetScaledCount( irand(self->SpawnInfo >> 3, self->SpawnInfo >> 2), 0.8 );
+	qboolean is_wimpy = false;
+	float trailscale = FIST_SCALE;
+	int count = GetScaledCount(irand(self->SpawnInfo >> 3, self->SpawnInfo >> 2), 0.8f);
+
 	if (self->flags & CEF_FLAG8)
 	{
-		wimpy=true;
-		i /= 2.0;
+		is_wimpy = true;
 		trailscale = FIST_WIMPY_SCALE;
+		count /= 2;
 	}
 
-	while(i--)
+	for (int i = 0; i < count; i++)
 	{
-		TrailEnt = ClientEntity_new(FX_WEAPON_FLYINGFIST, 0, self->r.origin, NULL, 1000);
-		TrailEnt->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	
+		client_entity_t* trail_ent = ClientEntity_new(FX_WEAPON_FLYINGFIST, 0, self->r.origin, NULL, 1000);
+		trail_ent->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+
+		vec3_t accel_dir;
 		VectorCopy(self->velocity, accel_dir);
 		VectorNormalize(accel_dir);
 
 		if (self->flags & CEF_FLAG7)
 		{
-			TrailEnt->r.model = fist_models + 1;
-			TrailEnt->r.scale = 3.0 * (trailscale + flrand(0.0, 0.05));
-			VectorRandomCopy(self->r.origin, TrailEnt->r.origin, flrand(-8.0, 8.0));
-			VectorScale(accel_dir, flrand(-100.0, -400.0), TrailEnt->velocity);
+			trail_ent->r.model = &fist_models[1];
+			trail_ent->r.scale = 3.0f * (trailscale + flrand(0.0f, 0.05f));
+			VectorRandomCopy(self->r.origin, trail_ent->r.origin, flrand(-8.0f, 8.0f));
+			VectorScale(accel_dir, flrand(-100.0f, -400.0f), trail_ent->velocity);
 		}
 		else
 		{
-			TrailEnt->r.model = fist_models;
-			TrailEnt->r.scale = trailscale + flrand(0.0, 0.05);
-			VectorRandomCopy(self->r.origin, TrailEnt->r.origin, flrand(-5.0, 5.0));
-			VectorScale(accel_dir, flrand(-50.0, -400.0), TrailEnt->velocity);
+			trail_ent->r.model = &fist_models[0];
+			trail_ent->r.scale = trailscale + flrand(0.0f, 0.05f);
+			VectorRandomCopy(self->r.origin, trail_ent->r.origin, flrand(-5.0f, 5.0f));
+			VectorScale(accel_dir, flrand(-50.0f, -400.0f), trail_ent->velocity);
 		}
 
-		if (wimpy)
-		{	// Wimpy shot, because no mana.
-			VectorScale(TrailEnt->velocity, 0.5, TrailEnt->velocity);
-		}
+		if (is_wimpy) // Wimpy shot, because no mana.
+			VectorScale(trail_ent->velocity, 0.5f, trail_ent->velocity);
 
-		TrailEnt->d_alpha = flrand(-1.5, -2.0);
-		TrailEnt->d_scale = flrand(-1.0, -1.25);
-		TrailEnt->updateTime = (TrailEnt->alpha * 1000.0) / -TrailEnt->d_scale;
-		TrailEnt->radius = 20.0;
-		
-		AddEffect(NULL,TrailEnt);
+		trail_ent->d_alpha = flrand(-1.5f, -2.0f);
+		trail_ent->d_scale = flrand(-1.0f, -1.25f);
+		trail_ent->updateTime = (int)(trail_ent->alpha * 1000.0f / -trail_ent->d_scale);
+		trail_ent->radius = 20.0f;
+
+		AddEffect(NULL, trail_ent);
 	}
 
-	return(true);
+	return true;
 }
 
 // ************************************************************************************************
