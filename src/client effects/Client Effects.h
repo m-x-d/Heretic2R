@@ -119,7 +119,7 @@ extern void FXSpellHands(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXLensFlare(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXStaff(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXSpoo(centity_t* Owner, int Type, int Flags, vec3_t Origin);
-extern void FXHalo(centity_t* Owner, int Type, int Flags, vec3_t Origin);
+extern void FXHalo(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXRemoteCamera(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXHellbolt(centity_t* Owner, int Type, int Flags, vec3_t Origin);
 extern void FXHellboltExplode(centity_t* Owner, int Type, int Flags, vec3_t Origin);

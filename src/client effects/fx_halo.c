@@ -95,60 +95,50 @@ static qboolean FXHaloThink(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-// ************************************************************************************************
-// FXHalo
-// ************************************************************************************************
-
-void FXHalo(centity_t *Owner,int Type,int Flags,vec3_t Origin)
+void FXHalo(centity_t* owner, int type, int flags, vec3_t origin)
 {
-	client_entity_t	*halo;
-
-
-	// no halo's for normal or low details.. they are really expensive in traces.
-	if (r_detail->value <= DETAIL_NORMAL)
+	// No halo's for normal or low details. They are really expensive in traces.
+	if (r_detail->value <= DETAIL_NORMAL) //TODO: disable on DETAIL_LOW only?
 		return;
 
-	halo = ClientEntity_new(FX_HALO, Flags | CEF_NO_DRAW | CEF_VIEWSTATUSCHANGED, Origin, NULL, 100);
+	flags |= CEF_NO_DRAW | CEF_VIEWSTATUSCHANGED;
+	client_entity_t* halo = ClientEntity_new(FX_HALO, flags, origin, NULL, 100);
 
-	// decide which halo image to use
-	if (Flags & CEF_FLAG6)
-		halo->r.model = halo_models + 1;
-	else
-		halo->r.model = halo_models;
+	// Decide which halo image to use.
+	const int sprite_index = ((flags & CEF_FLAG6) ? 1 : 0);
+	halo->r.model = &halo_models[sprite_index];
 
-	halo->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST;
+	halo->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST;
 
-	// to figure out tint, we only want the top two bits of flags
-	Flags &= CEF_FLAG7 | CEF_FLAG8;
+	// To figure out tint, we only want the top two bits of flags.
+	flags &= (CEF_FLAG7 | CEF_FLAG8);
 
-	switch (Flags)
+	switch (flags)
 	{
-	case CEF_FLAG7:
-		halo->r.color.r = 90;
-		halo->r.color.g = 90;		
-		halo->r.color.b = 175;
-		break;
-	case CEF_FLAG8:
-		halo->r.color.r = 190;
-		halo->r.color.g = 180;		
-		halo->r.color.b = 16;
-		break;
-	case CEF_FLAG7|CEF_FLAG8:
-		halo->r.color.r = 255;
-		halo->r.color.g = 255;		
-		halo->r.color.b = 255;
-		break;
-	case 0:
-	default:
-		halo->r.color.r = 148;
-		halo->r.color.g = 132;		
-		halo->r.color.b = 82;
-		break;
+		case CEF_FLAG7: // Blue-ish halo.
+			halo->r.color.r = 90;
+			halo->r.color.g = 90;
+			halo->r.color.b = 175;
+			break;
+
+		case CEF_FLAG8: // Yellow halo.
+			halo->r.color.r = 190;
+			halo->r.color.g = 180;
+			halo->r.color.b = 16;
+			break;
+
+		case CEF_FLAG7 | CEF_FLAG8: // White halo. mxd. halo->r.color is already white.
+			break;
+
+		default: // Orange-brown-ish halo.
+			halo->r.color.r = 148;
+			halo->r.color.g = 132;
+			halo->r.color.b = 82;
+			break;
 	}
-	halo->alpha = 0.6;
+
+	halo->alpha = 0.6f;
 	halo->Update = FXHaloThink;
 
-	AddEffect(Owner, halo);
+	AddEffect(owner, halo);
 }
-
-// end
