@@ -1,29 +1,20 @@
 //
 // fx_halo.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
-#include "ce_DLight.h"
-#include "random.h"
-#include "Utilities.h"
 #include "g_playstats.h"
 
-#define NUM_HALO_MODELS		3
-static struct model_s *halo_models[NUM_HALO_MODELS];
+static struct model_s* halo_models[2];
 
-void PreCacheHalos()
+void PreCacheHalos(void)
 {
 	halo_models[0] = fxi.RegisterModel("sprites/lens/halo1.sp2");
 	halo_models[1] = fxi.RegisterModel("sprites/lens/halo2.sp2");
-	halo_models[2] = fxi.RegisterModel("sprites/lens/halo3.sp2");
+	//halo_models[2] = fxi.RegisterModel("sprites/lens/halo3.sp2"); //mxd. Unused
 }
 
 // ************************************************************************************************
