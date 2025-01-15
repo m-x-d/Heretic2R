@@ -1,38 +1,25 @@
 //
 // fx_hitpuff.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
+#include "Random.h"
 #include "Vector.h"
 #include "ce_DLight.h"
-#include "Angles.h"
-#include "Random.h"
-#include "Utilities.h"
-#include "q_sprite.h"
-#include "g_playstats.h"
 
-#define	NUM_HIT_MODELS	3
-static struct model_s *hit_models[NUM_HIT_MODELS];
-void PreCacheHitPuff()
+#define LIGHTNING_VEL		256.0f
+#define NUM_LIGHTNING_BITS	25
+
+static struct model_s* hit_model;
+
+void PreCacheHitPuff(void)
 {
-	hit_models[0] = fxi.RegisterModel("sprites/fx/halo.sp2");
-	hit_models[1] = fxi.RegisterModel("sprites/fx/bluestreak.sp2");
-	hit_models[2] = fxi.RegisterModel("sprites/fx/firestreak.sp2");
+	hit_model = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
 
-// --------------------------------------------------------------
-
-
-#define LIGHTNING_VEL	256.0
-
-#define NUM_LIGHTNING_BITS	25
 void FXLightningHit(centity_t *owner, int type, int flags, vec3_t origin)
 {
 	vec3_t			dir;
@@ -63,7 +50,7 @@ void FXLightningHit(centity_t *owner, int type, int flags, vec3_t origin)
 	}
 
 	blast = ClientEntity_new(-1, CEF_ADDITIVE_PARTS, origin, NULL, 500);
-	blast->r.model = hit_models;
+	blast->r.model = &hit_model;
 	blast->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT; // | 
 	blast->r.frame = 1;
 	blast->radius = 64.0;
