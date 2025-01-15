@@ -82,61 +82,50 @@ static qboolean FXFlyingFistTrailThink(struct client_entity_s* self, centity_t* 
 	return true;
 }
 
-// ************************************************************************************************
-// FXFlyingFist
-// ************************************************************************************************
-
-////////////////////////////////////
-// From CreateEffect FX_WEAPON_FLYINGFIST
-////////////////////////////////////
-void FXFlyingFist(centity_t *owner, int type, int flags, vec3_t origin)
+void FXFlyingFist(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	vec3_t			vel, dir;
-	client_entity_t	*missile;	
-	paletteRGBA_t	LightColor;
-	float			lightsize;
+	vec3_t dir;
+	paletteRGBA_t light_color;
+	float lightsize;
 
+	vec3_t vel;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_FLYINGFIST].formatString, vel);
-	if (flags & CEF_FLAG6)
-		Vec3ScaleAssign(FLYING_FIST_SPEED/2,vel);
-	else
-		Vec3ScaleAssign(FLYING_FIST_SPEED,vel);
 
-	missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
+	const float vel_scaler = FLYING_FIST_SPEED * (flags & CEF_FLAG6 ? 0.5f : 1.0f);
+	Vec3ScaleAssign(vel_scaler, vel);
+
+	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
 
 	if (flags & CEF_FLAG7)
-	{	// Powered up fireball.  Use a meteor model.
-		missile->r.model = fist_models + 2;
+	{
+		// Powered up fireball. Use a meteor model.
+		missile->r.model = &fist_models[2];
 		missile->r.skinnum = 1;
-		if (flags & CEF_FLAG8)		// Wimpy shot, because didn't have mana.
-			missile->r.scale = 1.0;
-		else
-			missile->r.scale = 1.5;
+		missile->r.scale = ((flags & CEF_FLAG8) ? 1.0f : 1.5f); // Wimpy shot?
 
-		LightColor.c = 0xff0000ff;		// Red light
-		lightsize = 160.0;
+		light_color = color_red; //mxd. Red light
+		lightsize = 160.0f;
 	}
 	else
-	{	// Just a normal fireball.
+	{
+		// Just a normal fireball.
 		missile->flags |= CEF_NO_DRAW;
-		LightColor.c = 0xff2040ff;		// Orange light
-		lightsize = 120.0;
+		light_color = color_orange; //mxd. Orange light
+		lightsize = 120.0f;
 	}
-	
+
 	VectorCopy(vel, missile->velocity);
 	VectorNormalize2(vel, dir);
 	AnglesFromDir(dir, missile->r.angles);
 
-	missile->radius = 128;
-	missile->dlight = CE_DLight_new(LightColor, lightsize, 0.0f);
+	missile->radius = 128.0f;
+	missile->dlight = CE_DLight_new(light_color, lightsize, 0.0f);
 	missile->Update = FXFlyingFistTrailThink;
 
 	missile->SpawnInfo = 32;
 
 	AddEffect(owner, missile);
 }
-
-
 
 // ************************************************************************************************
 // FXFlyingFistExplode
