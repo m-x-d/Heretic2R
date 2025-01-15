@@ -320,7 +320,7 @@ static void FXBodyPart_Throw(const centity_t* owner, const int body_part, vec3_t
 	}
 	else
 	{
-		debris->color.c = 0xffffffff;
+		debris->color = color_white; //mxd
 	}
 
 	const int chunk_index = irand(debris_chunk_offsets[material], debris_chunk_offsets[material + 1] - 1);
@@ -337,7 +337,7 @@ static void FXBodyPart_Throw(const centity_t* owner, const int body_part, vec3_t
 	debris->updateTime = 50;
 
 	const int detail = (int)r_detail->value; //mxd
-	if (detail == DETAIL_UBERHIGH)
+	if (detail == DETAIL_UBERHIGH) //TODO: add separate DETAIL_HIGH setting?
 		debris->LifeTime = fxi.cl->time + 10000;
 	else if (detail == DETAIL_LOW)
 		debris->LifeTime = fxi.cl->time + 1000;

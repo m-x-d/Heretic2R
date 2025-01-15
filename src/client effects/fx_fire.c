@@ -42,7 +42,7 @@ void FXFlareup(centity_t* owner, const int type, const int flags, vec3_t origin)
 	spawner->d_scale = -2.0f;
 	spawner->alpha = 0.95f;
 	spawner->d_alpha = -2.0f;
-	spawner->color.c = 0xffffffff;
+	spawner->color = color_white;
 
 	AddEffect(NULL, spawner);
 

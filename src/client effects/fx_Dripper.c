@@ -38,8 +38,7 @@ static qboolean FXDripThinkSolid(client_entity_t* drip, centity_t* owner)
 	mist->alpha = 0.4f;
 	mist->d_alpha = -0.8f;
 
-	const paletteRGBA_t color = { .c = 0xffffffff };
-	DoWaterSplash(mist, color, DRIP_NUM_SPLASHES);
+	DoWaterSplash(mist, color_white, DRIP_NUM_SPLASHES);
 
 	AddEffect(NULL, mist);
 
@@ -65,10 +64,10 @@ static qboolean FXDripThinkWater(client_entity_t* drip, centity_t* owner)
 
 	mist->d_scale = -2.0f;
 	mist->d_alpha = -8.0f;
+
 	AddEffect(NULL, mist);
 
-	const paletteRGBA_t color = { .c = 0xffffffff };
-	DoWaterSplash(mist, color, DRIP_NUM_SPLASHES);
+	DoWaterSplash(mist, color_white, DRIP_NUM_SPLASHES);
 	FXWaterRipples(NULL, FX_WATER_RIPPLES, 0, drip->r.origin);
 
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("ambient/waterdrop%i.wav", irand(1, 3))), 1, ATTN_STATIC, 0);

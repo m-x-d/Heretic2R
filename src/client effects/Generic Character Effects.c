@@ -108,7 +108,7 @@ void FXOgleHitPuff(centity_t* owner, const int type, const int flags, const vec3
 		puff->r.scale = (speed > 1.0f ? flrand(0.3f, 0.75f) : 0.1f);
 		puff->d_scale = 2.0f;
 		puff->d_alpha = -2.0f;
-		puff->color.c = 0xffffffff;
+		puff->color = color_white; //mxd
 
 		AddEffect(NULL, puff); // Add the effect as independent world effect.
 	}
@@ -138,7 +138,7 @@ void FXOgleHitPuff(centity_t* owner, const int type, const int flags, const vec3
 
 		rock->d_scale = 0.0f;
 		rock->d_alpha = 0.0f;
-		rock->color.c = 0xffffffff;
+		rock->color = color_white; //mxd
 		rock->LifeTime = fxi.cl->time + 5000;
 
 		AddEffect(NULL, rock); // Add the effect as independent world effect.
@@ -167,7 +167,7 @@ void FXGenericHitPuff(centity_t* owner, const int type, const int flags, const v
 		fx->r.scale = 0.1f;
 		fx->d_scale = 1.0f;
 		fx->d_alpha = -1.0f;
-		fx->color.c = 0xffffffff;
+		fx->color = color_white; //mxd
 
 		AddEffect(NULL, fx); // Add the effect as independent world effect.
 	}
@@ -418,7 +418,7 @@ void FXCorpseRemove(centity_t* owner, const int type, int flags, const vec3_t or
 	flags |= CEF_NO_DRAW;
 	client_entity_t* flame_fx = ClientEntity_new(type, flags, origin, NULL, 600);
 	flame_fx->radius = 10.0f;
-	flame_fx->color.c = 0xffffffff;
+	flame_fx->color = color_white; //mxd
 	AddEffect(NULL, flame_fx);
 
 	// Are we destroying a rat?

@@ -238,7 +238,7 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 
 			halo->r.flags = RF_TRANS_ADD | RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST;
 			halo->r.scale = 2.5f;
-			halo->r.color.c = 0xffffffff;
+			halo->r.color = color_white; //mxd
 			halo->LifeTime = fxi.cl->time + 3100;
 			halo->dlight = CE_DLight_new(white_light, 200.0f, 0.0f);
 
@@ -258,7 +258,7 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 
 			beam->r.flags = RF_TRANS_ADD | RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST;
 			beam->r.scale = 2.5f;
-			beam->r.color.c = 0xffffffff;
+			beam->r.color = color_white; //mxd
 			beam->LifeTime = fxi.cl->time + 3100;
 			beam->dlight = CE_DLight_new(white_light, 200.0f, 0.0f);
 

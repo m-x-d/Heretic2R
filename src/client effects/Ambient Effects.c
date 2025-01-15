@@ -37,8 +37,7 @@ void WaterSplash(centity_t* owner, const int type, const int flags, const vec3_t
 
 	AddEffect(NULL, effect);
 
-	const paletteRGBA_t color = { .c = 0xffffffff };
-	DoWaterSplash(effect, color, cnt);
+	DoWaterSplash(effect, color_white, cnt); //mxd. Use color_white.
 }
 
 #if 0 //TODO: unused. Implement? Use Q2 fly logic as reference?

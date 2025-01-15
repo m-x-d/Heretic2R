@@ -101,7 +101,7 @@ void FXDefensePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 		spark->r.model = &defense_sparks[tag];
 		spark->r.scale = (tag == ITEM_DEFENSE_METEORBARRIER ? 0.2f : 0.8f);
 		spark->radius = SPARK_RADIUS;
-		spark->color.c = 0xffffffff;
+		spark->color = color_white; //mxd
 		spark->alpha = 0.1f;
 		spark->d_alpha = 0.5f;
 		spark->SpawnData = tag;
