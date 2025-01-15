@@ -1,38 +1,25 @@
 //
-// fx_healthpickup.c
+// fx_HealthPickup.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
-#include "ce_DefaultMessageHandler.h"
 #include "Client Effects.h"
-#include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
 #include "Random.h"
-#include "Utilities.h"
-#include "Angles.h"
 
-#define BOB_HEIGHT		6.0
+#define BOB_HEIGHT		6.0f
 #define BOB_SPEED		ANGLE_10
-#define HEALTH_RADIUS	6.0
+#define HEALTH_RADIUS	6.0f
 
+static struct model_s* health_models[2];
 
-#define	NUM_HEALTH_MODELS	2
-#define HEALTH_SMALL 0
-#define HEALTH_BIG   1
-
-static struct model_s *health_models[NUM_HEALTH_MODELS];
-void PreCacheHealth()
+void PreCacheHealth(void)
 {
 	health_models[0] = fxi.RegisterModel("models/items/health/healthsmall/tris.fm");
 	health_models[1] = fxi.RegisterModel("models/items/health/healthbig/tris.fm");
 }
-
-// --------------------------------------------------------------
 
 static qboolean FXHealthPickupThink(struct client_entity_s *self, centity_t *owner)
 {
