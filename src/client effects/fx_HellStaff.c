@@ -53,38 +53,31 @@ void FXHellbolt(centity_t* owner, const int type, const int flags, vec3_t origin
 	AddEffect(owner, hellbolt);
 }
 
-// ************************************************************************************************
-// FXHellboltExplode
-// ---------------------
-// ************************************************************************************************
-
-void HellboltExplode(vec3_t loc, vec3_t vel)
+static void HellboltExplode(const vec3_t loc, const vec3_t vel)
 {
-	client_entity_t		*blast;
-	client_particle_t	*spark;
-	int				i;
-	paletteRGBA_t	lightcolor = {255, 96, 48, 255};
+	const paletteRGBA_t light_color = { .r = 255, .g = 96, .b = 48, .a = 255 };
 
-	blast = ClientEntity_new(-1, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, loc, NULL, 500);
-	blast->radius = 32.0;
-	fxi.S_StartSound(blast->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/HellHit.wav"), 1, ATTN_NORM, 0);
-	blast->dlight = CE_DLight_new(lightcolor, 150.0f, -200.0f);
-	VectorClear(blast->velocity);
+	client_entity_t* blast = ClientEntity_new(-1, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, loc, NULL, 500);
 
+	blast->radius = 32.0f;
+	blast->dlight = CE_DLight_new(light_color, 150.0f, -200.0f);
+
+	fxi.S_StartSound(blast->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/HellHit.wav"), 1.0f, ATTN_NORM, 0);
 	AddEffect(NULL, blast);
 
-	for(i = 0; i < NUM_HELLBOLT_EXPLODES; i++)
+	for (int i = 0; i < NUM_HELLBOLT_EXPLODES; i++)
 	{
-		spark = ClientParticle_new(PART_16x16_SPARK_R, lightcolor, 500);
+		client_particle_t* spark = ClientParticle_new(PART_16x16_SPARK_R, light_color, 500);
+
 		VectorRandomCopy(vel, spark->velocity, HELLBOLT_SPARK_VEL);
-		VectorSet(spark->acceleration, 0.0, 0.0, GetGravity() * 0.3);
-		spark->scale = flrand(12.0, 16.0);
-		spark->d_scale = -24.0;
-		spark->d_alpha = flrand(-640.0, -512.0);
+		VectorSet(spark->acceleration, 0.0f, 0.0f, GetGravity() * 0.3f);
+		spark->scale = flrand(12.0f, 16.0f);
+		spark->d_scale = -24.0f;
+		spark->d_alpha = flrand(-640.0f, -512.0f);
+
 		AddParticleToList(blast, spark);
 	}
 }
-
 
 void FXHellboltExplode(centity_t *owner, int type, int flags, vec3_t origin)
 {
