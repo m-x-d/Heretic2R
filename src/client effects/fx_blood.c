@@ -186,7 +186,7 @@ void DoBloodTrail(client_entity_t* spawner, int amount)
 
 					VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed * 2.0f, speed * 4.0f));
 					VectorMA(drop->velocity, 0.5f, spawner->velocity, drop->velocity);
-					VectorSet(drop->origin, flrand(-range, range), flrand(-range, range), flrand(-range, range));
+					VectorRandomSet(drop->origin, range); //mxd
 					VectorAdd(drop->origin, spawner->r.origin, drop->origin);
 					drop->acceleration[2] = gravity;
 					drop->d_alpha = 0.0f;
@@ -202,7 +202,7 @@ void DoBloodTrail(client_entity_t* spawner, int amount)
 				drop = ClientParticle_new(bpart, pal_gl, 800);
 				VectorSet(drop->velocity, flrand(-speed, speed), flrand(-speed, speed), flrand(speed * 2.0f, speed * 4.0f));
 				VectorMA(drop->velocity, 0.5f, spawner->velocity, drop->velocity);
-				VectorSet(drop->origin, flrand(-range, range), flrand(-range, range), flrand(-range, range));
+				VectorRandomSet(drop->origin, range); //mxd
 				VectorAdd(drop->origin, spawner->r.origin, drop->origin);
 				drop->acceleration[2] = gravity;
 				drop->d_alpha = 0.0f;

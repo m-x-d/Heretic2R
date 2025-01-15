@@ -150,7 +150,7 @@ static qboolean CreateBubble(client_entity_t* self, centity_t* owner)
 	vec3_t loc;
 
 	// Give us a random location.
-	VectorSet(loc, flrand(-15.0f, 15.0f), flrand(-15.0f, 15.0f), flrand(-15.0f, 15.0f));
+	VectorRandomSet(loc, 15.0f); //mxd
 	VectorAdd(loc, self->r.origin, loc);
 
 	// Create a bubble.

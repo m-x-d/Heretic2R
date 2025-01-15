@@ -73,8 +73,8 @@ static void CreateExplosionParticles(client_entity_t* this)
 		const paletteRGBA_t color = { .r = (byte)irand(127, 255), .g = (byte)irand(127, 255), .b = 0, .a = 255 };
 		client_particle_t* p = ClientParticle_new(PART_4x4_WHITE, color, 500);
 
-		VectorSet(p->origin, flrand(-EXP_RANGE, EXP_RANGE), flrand(-EXP_RANGE, EXP_RANGE), flrand(-EXP_RANGE, EXP_RANGE));
-		VectorSet(p->velocity, flrand(-EXP_SPEED, EXP_SPEED), flrand(-EXP_SPEED, EXP_SPEED), flrand(-EXP_SPEED, EXP_SPEED));
+		VectorRandomSet(p->origin, EXP_RANGE); //mxd
+		VectorRandomSet(p->velocity, EXP_SPEED); //mxd
 
 		AddParticleToList(this, p);
 	}

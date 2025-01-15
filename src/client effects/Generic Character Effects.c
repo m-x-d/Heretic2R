@@ -212,7 +212,7 @@ static void SetupWaterParticle(client_particle_t* p, const qboolean recycle)
 	p->scale = flrand(0.3f, 0.7f);
 
 	vec3_t dist;
-	VectorSet(dist, flrand(-WATER_DIST, WATER_DIST), flrand(-WATER_DIST, WATER_DIST), flrand(-WATER_DIST, WATER_DIST));
+	VectorRandomSet(dist, WATER_DIST); //mxd
 
 	// If we are recycling, we want to respawn as far away as possible.
 	if (recycle)
@@ -333,13 +333,13 @@ static void DoWake(client_entity_t* self, const centity_t* owner, const int refp
 
 		client_particle_t* p = ClientParticle_new(type, light_color, irand(1000, 2000));
 
-		VectorSet(p->origin, flrand(-4.0f, 4.0f), flrand(-4.0f, 4.0f), flrand(-4.0f, 4.0f));
+		VectorRandomSet(p->origin, 4.0f); //mxd
 		VectorAdd(handpt, p->origin, p->origin);
 
 		p->scale = flrand(0.75f, 1.5f);
 		p->color.a = (byte)irand(100, 200);
 
-		VectorSet(p->velocity, flrand(-2.0f, 2.0f), flrand(-2.0f, 2.0f), flrand(-2.0f, 2.0f));
+		VectorRandomSet(p->velocity, 2.0f); //mxd
 
 		const float sign = (irand(0, 1) ? -1.0f : 1.0f);
 		VectorMA(p->velocity, flrand(10, 2) * sign, right, p->velocity);
@@ -359,7 +359,7 @@ static qboolean BubbleSpawner(client_entity_t* self, const centity_t* owner)
 		return true;
 
 	// Spawn some bubbles too.
-	VectorSet(org, flrand(-20.0f, 20.0f), flrand(-20.0f, 20.0f), flrand(-20.0f, 20.0f));
+	VectorRandomSet(org, 20.0f); //mxd
 	VectorAdd(org, owner->origin, org);
 	MakeBubble(org, self);
 
@@ -566,7 +566,7 @@ static qboolean FXFeetTrailThink(struct client_entity_s* self, const centity_t* 
 		{
 			client_particle_t* flame = ClientParticle_new(PART_32x32_STEAM, color, hand_flame_dur);
 
-			VectorSet(flame->origin, flrand(-FOOTTRAIL_RADIUS, FOOTTRAIL_RADIUS), flrand(-FOOTTRAIL_RADIUS, FOOTTRAIL_RADIUS), flrand(-FOOTTRAIL_RADIUS, FOOTTRAIL_RADIUS));
+			VectorRandomSet(flame->origin, FOOTTRAIL_RADIUS); //mxd
 			VectorAdd(flame->origin, self->origin, flame->origin);
 			VectorAdd(flame->origin, curpos, flame->origin);
 
