@@ -243,7 +243,7 @@ static qboolean FXFireOnEntity2Think(client_entity_t* spawner, const centity_t* 
 		client_particle_t* flame = ClientParticle_new((int)(irand(PART_32x32_FIRE0, PART_32x32_FIRE2) | PFL_NEARCULL), spawner->color, 1000);
 
 		const float radius = spawner->r.scale * FIRE_SPAWN_RADIUS;
-		VectorSet(flame->origin, flrand(-radius, radius), flrand(-radius, radius), flrand(-8.0F, 0.0F) * spawner->r.scale);
+		VectorSet(flame->origin, flrand(-radius, radius), flrand(-radius, radius), flrand(-8.0f, 0.0f) * spawner->r.scale);
 
 		// If dead, then move the flame down a tad.
 		if (owner->current.effects & EF_DISABLE_EXTRA_FX)
