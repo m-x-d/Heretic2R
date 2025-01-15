@@ -1,17 +1,14 @@
-//														  
-// Heretic II
+//
+// fx_Fountain.c
+//
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "ce_DefaultMessageHandler.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
-#include "random.h"
-#include "motion.h"
+#include "Random.h"
+#include "Motion.h"
 #include "Utilities.h"
 #include "Matrix.h"
 #include "g_playstats.h"
