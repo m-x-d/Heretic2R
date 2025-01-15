@@ -21,40 +21,39 @@ void PreCacheHealth(void)
 	health_models[1] = fxi.RegisterModel("models/items/health/healthbig/tris.fm");
 }
 
-static qboolean FXHealthPickupThink(struct client_entity_s *self, centity_t *owner)
+static qboolean FXHealthPickupThink(struct client_entity_s* self, const centity_t* owner)
 {
-	client_particle_t	*p;
-	paletteRGBA_t		color;
+	paletteRGBA_t color;
 
-	// Rotate and bob
+	// Rotate and bob.
 	self->r.angles[YAW] += ANGLE_15;
 	VectorCopy(owner->current.origin, self->r.origin);
-	self->r.origin[2] += (cos(self->SpawnData) * BOB_HEIGHT); 
+	self->r.origin[2] += cosf(self->SpawnData) * BOB_HEIGHT;
 	self->SpawnData += BOB_SPEED;
 
-	// spawn particles
+	// Spawn particles.
 	if (self->flags & CEF_FLAG6)
 	{
-		color.g = irand(80, 120);
-		color.r = irand(210, 255);
+		color.g = (byte)irand(80, 120);
+		color.r = (byte)irand(210, 255);
 		color.b = color.r;
 	}
 	else
 	{
-		color.r = irand(80, 120);
-		color.b = irand(210, 255);
+		color.r = (byte)irand(80, 120);
+		color.b = (byte)irand(210, 255);
 		color.g = color.r;
 	}
 
 	color.a = 255;
-	p = ClientParticle_new(PART_4x4_WHITE | PFL_SOFT_MASK, color, 600);
+	client_particle_t* p = ClientParticle_new(PART_4x4_WHITE | PFL_SOFT_MASK, color, 600);
 
-	VectorSet(p->origin, flrand(-HEALTH_RADIUS, HEALTH_RADIUS), flrand(-HEALTH_RADIUS, HEALTH_RADIUS), 0.0);
-	VectorSet(p->velocity, 0.0, 0.0, flrand(20.0, 40.0));
-	p->acceleration[2] = 20.0;
+	VectorSet(p->origin, flrand(-HEALTH_RADIUS, HEALTH_RADIUS), flrand(-HEALTH_RADIUS, HEALTH_RADIUS), 0.0f);
+	VectorSet(p->velocity, 0.0f, 0.0f, flrand(20.0f, 40.0f));
+	p->acceleration[2] = 20.0f;
 	AddParticleToList(self, p);
 
-	return(true);
+	return true;
 }
 
 void FXHealthPickup(centity_t *owner, int type, int flags, vec3_t origin)
