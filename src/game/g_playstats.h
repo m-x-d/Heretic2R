@@ -42,7 +42,7 @@
 #define HELLLASER_DIST					1024.0
 #define HELLLASER_DAMAGE_MIN			11
 #define HELLLASER_DAMAGE_MAX			14
-#define HELLBOLT_SPEED					1000.0
+#define HELLBOLT_SPEED					1000.0f
 
 // Blast (Arc of Thunder).
 #define BLAST_DISTANCE					1000.0	// Max range of the blast.
