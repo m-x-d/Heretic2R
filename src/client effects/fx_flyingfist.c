@@ -1,35 +1,25 @@
 //
 // fx_flyingfist.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
 #include "ce_DLight.h"
-#include "random.h"
+#include "Random.h"
 #include "Utilities.h"
 #include "fx_debris.h"
 #include "g_playstats.h"
 
-#define FIST_DELTA_FORWARD	8.0
-#define FIST_DELTA_THETA	0.12
-#define	FIST_SPIRAL_RAD		0.75
-#define	FIST_SCALE			0.25
-#define	FIST_WIMPY_SCALE	0.15
-#define FIST_BLAST_VEL		64.0
-#define FIST_POWER_BLAST_VEL	200.0
+#define	FIST_SCALE				0.25f
+#define	FIST_WIMPY_SCALE		0.15f
+#define FIST_BLAST_VEL			64.0f
+#define FIST_POWER_BLAST_VEL	200.0f
 
-#define	NUM_FIST_MODELS		3
+static struct model_s* fist_models[3];
 
-static struct model_s *fist_models[NUM_FIST_MODELS];
-
-void PreCacheFist()
+void PreCacheFist(void)
 {
 	fist_models[0] = fxi.RegisterModel("Sprites/Spells/flyingfist.sp2");
 	fist_models[1] = fxi.RegisterModel("Sprites/Spells/spellhands_red.sp2");
