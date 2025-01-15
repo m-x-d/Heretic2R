@@ -92,43 +92,40 @@ void FXHellboltExplode(centity_t* owner, int type, const int flags, vec3_t origi
 	HellboltExplode(origin, dir);
 }
 
-void HellLaserBurn(vec3_t loc, vec3_t fwd, vec3_t right, vec3_t up)
+static void HellLaserBurn(vec3_t loc, vec3_t fwd, vec3_t right, vec3_t up)
 {
-	client_entity_t		*blast;
-	client_particle_t	*spark;
-	float				curangle, dangle;
-	int					i;
-	paletteRGBA_t		lightcolor = {255, 96, 48, 255}, color = {255, 255, 255, 255};
+	const paletteRGBA_t light_color = { .r = 255, .g = 96, .b = 48, .a = 255 };
 
-	blast = ClientEntity_new(-1, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, loc, NULL, 1000);
-	blast->radius = 32.0;
+	client_entity_t* blast = ClientEntity_new(-1, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, loc, NULL, 1000);
 
-	// We're not gonna put any sound on the laser impact.	
-//	fxi.S_StartSound(blast->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/HellLaserHit.wav"), 1, ATTN_NORM, 0);
-	blast->dlight = CE_DLight_new(lightcolor, 150.0f, -300.0f);
+	blast->radius = 32.0f;
+	blast->dlight = CE_DLight_new(light_color, 150.0f, -300.0f);
 	VectorClear(blast->velocity);
 
 	AddEffect(NULL, blast);
 
-	dangle = (2.0*M_PI/(float)HELLLASER_PARTS);
-	curangle = flrand(0.0, dangle);
-	VectorScale(fwd, -0.25*HELLLASER_SPEED, fwd);
+	const float delta_angle = ANGLE_360 / (float)HELLLASER_PARTS;
+	float cur_angle = flrand(0.0f, delta_angle);
+	VectorScale(fwd, -0.25f * HELLLASER_SPEED, fwd);
 	VectorScale(right, HELLLASER_SPEED, right);
 	VectorScale(up, HELLLASER_SPEED, up);
-	for(i = 0; i < HELLLASER_PARTS; i++)
+
+	for (int i = 0; i < HELLLASER_PARTS; i++)
 	{
-		spark = ClientParticle_new(PART_16x16_SPARK_R, color, 1000);
-		VectorMA(fwd, cos(curangle), right, spark->velocity);
-		VectorMA(spark->velocity, sin(curangle), up, spark->velocity);
-		spark->acceleration[2] = 64.0;
-		spark->scale = flrand(8.0, 24.0);
-		spark->d_scale = -12.0;
-		spark->d_alpha = flrand(-512.0, -256.0);
+		client_particle_t* spark = ClientParticle_new(PART_16x16_SPARK_R, color_white, 1000);
+
+		VectorMA(fwd, cosf(cur_angle), right, spark->velocity);
+		VectorMA(spark->velocity, sinf(cur_angle), up, spark->velocity);
+		spark->acceleration[2] = 64.0f;
+		spark->scale = flrand(8.0f, 24.0f);
+		spark->d_scale = -12.0f;
+		spark->d_alpha = flrand(-512.0f, -256.0f);
+
 		AddParticleToList(blast, spark);
-		curangle += dangle;
+
+		cur_angle += delta_angle;
 	}
 }
-
 
 // Create Effect FX_WEAPON_HELLSTAFF_POWER_BURN
 void FXHellstaffPowerBurn(centity_t *owner, int type, int flags, vec3_t origin)
