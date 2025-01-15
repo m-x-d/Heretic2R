@@ -79,20 +79,17 @@ static void HellboltExplode(const vec3_t loc, const vec3_t vel)
 	}
 }
 
-void FXHellboltExplode(centity_t *owner, int type, int flags, vec3_t origin)
+void FXHellboltExplode(centity_t* owner, int type, const int flags, vec3_t origin)
 {
-	vec3_t			Dir;
+	vec3_t dir;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_HELLBOLTEXPLODE].formatString, dir);
 
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_HELLBOLTEXPLODE].formatString, Dir);
+	Vec3ScaleAssign(32.0f, dir);
 
-	Vec3ScaleAssign(32.0, Dir);
+	if (flags & CEF_FLAG6)
+		FXClientScorchmark(origin, dir);
 
-	if(flags & CEF_FLAG6)
-	{
-		FXClientScorchmark(origin, Dir);
-	}
-
-	HellboltExplode(origin, Dir);
+	HellboltExplode(origin, dir);
 }
 
 void HellLaserBurn(vec3_t loc, vec3_t fwd, vec3_t right, vec3_t up)
