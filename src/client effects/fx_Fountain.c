@@ -126,31 +126,23 @@ static qboolean FXFountainParticleSpawner(client_entity_t* spawner, centity_t* o
 	return true; // Never go away.
 }
 
-// Could send the 'v' as a 'ds' but we would lose some accuracy. As it
-// is a persistant effect, it doesn`t matter too much
-
-void FXFountain(centity_t *Owner, int Type, int Flags, vec3_t Origin)
+// Could send the 'v' as a 'ds' but we would lose some accuracy. As it is a persistent effect, it doesn't matter too much.
+void FXFountain(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*fountain;
-	byte				frame;
-	short				drop;
+	const int next_think_time = (r_detail->value >= DETAIL_HIGH ? 50 : 90); //mxd
+	client_entity_t* fountain = ClientEntity_new(type, flags, origin, NULL, next_think_time);
 
-	if (r_detail->value >= DETAIL_HIGH)
-		fountain = ClientEntity_new(Type, Flags, Origin, NULL, 50);
-	else
-		fountain = ClientEntity_new(Type, Flags, Origin, NULL, 90);
-
-	fxi.GetEffect(Owner, Flags, clientEffectSpawners[FX_FOUNTAIN].formatString, &fountain->direction, &drop, &frame);
+	short drop;
+	byte frame;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_FOUNTAIN].formatString, &fountain->direction, &drop, &frame);
 
 	fountain->r.frame = frame;
 
-	fountain->SpawnData = drop * 0.125;
-	fountain->color.c = 0xffffffff;
-	fountain->radius = 128.0F + Q_fabs(fountain->SpawnData);
+	fountain->SpawnData = (float)drop * 0.125f;
+	fountain->color = color_white; //mxd
+	fountain->radius = 128.0f + Q_fabs(fountain->SpawnData);
 	fountain->Update = FXFountainParticleSpawner;
-	fountain->flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_VIEWSTATUSCHANGED;	// | CEF_ADDITIVE_PARTS;
+	fountain->flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_VIEWSTATUSCHANGED;
 
-	AddEffect(Owner, fountain); 
+	AddEffect(owner, fountain);
 }
-
-// end
