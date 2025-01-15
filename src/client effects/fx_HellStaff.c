@@ -1,34 +1,32 @@
 //
-// fx_hellstaff.c
+// fx_HellStaff.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
 #include "ce_DLight.h"
-#include "Angles.h"
 #include "Random.h"
 #include "Utilities.h"
 #include "q_sprite.h"
 #include "g_playstats.h"
 
-#define	NUM_HELL_MODELS	2
-static struct model_s *hell_models[NUM_HELL_MODELS];
-void PreCacheHellstaff()
+#define NUM_HELLBOLT_EXPLODES	8
+#define HELLBOLT_SPARK_VEL		64.0f
+#define HELLLASER_PARTS			9
+#define HELLLASER_SPEED			32.0f
+
+static struct model_s* hell_models[2];
+
+void PreCacheHellstaff(void)
 {
 	hell_models[0] = fxi.RegisterModel("sprites/spells/hellstafproj.sp2");
 	hell_models[1] = fxi.RegisterModel("sprites/fx/helllaser.sp2");
 }
 
 // --------------------------------------------------------------
-
-#define NUM_HELLBOLT_EXPLODES	8
 
 // ************************************************************************************************
 // FXHellbolt
@@ -69,7 +67,6 @@ void FXHellbolt(centity_t *owner, int type, int flags, vec3_t origin)
 // ---------------------
 // ************************************************************************************************
 
-#define HELLBOLT_SPARK_VEL	64
 void HellboltExplode(vec3_t loc, vec3_t vel)
 {
 	client_entity_t		*blast;
@@ -114,8 +111,6 @@ void FXHellboltExplode(centity_t *owner, int type, int flags, vec3_t origin)
 	HellboltExplode(origin, Dir);
 }
 
-#define HELLLASER_PARTS		9
-#define HELLLASER_SPEED		32.0
 void HellLaserBurn(vec3_t loc, vec3_t fwd, vec3_t right, vec3_t up)
 {
 	client_entity_t		*blast;
