@@ -13,38 +13,31 @@
 #include "Matrix.h"
 #include "g_playstats.h"
 
-void CreateFountainSplash(client_entity_t *owner, vec3_t origin, float xspread, float yspread, float angle)
+static void CreateFountainSplash(client_entity_t* owner, const float xspread, const float yspread, const float angle)
 {
-	client_particle_t	*mist;
-	vec3_t				work, off;
-	matrix3_t			mat;
-	paletteRGBA_t		color;
-
-	color.c = 0x40ffffff;
-
+	matrix3_t mat;
 	CreateYawMatrix(mat, angle);
-	work[0] = flrand(-xspread, xspread);
-	work[1] = flrand(-yspread, yspread);
-	work[2] = 0;
-	Matrix3MultByVec3(mat, work, off);
 
-	if (r_detail->value >= DETAIL_NORMAL)
-		mist = ClientParticle_new(PART_32x32_ALPHA_GLOBE, color, 500);
-	else
-		mist = ClientParticle_new(PART_32x32_ALPHA_GLOBE, color, 350);
+	vec3_t work;
+	VectorSet(work, flrand(-xspread, xspread), flrand(-yspread, yspread), 0.0f);
 
-	VectorCopy(off, mist->origin);
+	vec3_t offset;
+	Matrix3MultByVec3(mat, work, offset);
 
-	mist->scale = 30.0F;
-	mist->d_scale = 3.0;
-	mist->d_alpha *= 0.5;
-	mist->acceleration[2] = 0.0F;
-	VectorSet(mist->velocity, flrand(-64.0, 64.0), flrand(-64.0, 64.0), 0.0);
+	const paletteRGBA_t color = { .c = 0x40ffffff };
+	const int duration = (r_detail->value >= DETAIL_NORMAL ? 500 : 350); //mxd
+	client_particle_t* mist = ClientParticle_new(PART_32x32_ALPHA_GLOBE, color, duration);
+
+	VectorCopy(offset, mist->origin);
+
+	mist->scale = 30.0f;
+	mist->d_scale = 3.0f;
+	mist->d_alpha *= 0.5f;
+	mist->acceleration[2] = 0.0f;
+	VectorSet(mist->velocity, flrand(-64.0f, 64.0f), flrand(-64.0f, 64.0f), 0.0f);
 
 	AddParticleToList(owner, mist);
 }
-
-// -----------------------------------------------------------------------------------------
 
 #define NUM_SPLASHES	0.005
 
@@ -56,7 +49,7 @@ static qboolean FXWaterfallBaseSpawner(client_entity_t *spawner, centity_t *owne
 	count = GetScaledCount(Q_ftol(spawner->xscale * spawner->yscale * NUM_SPLASHES), 0.8);
 	for(i = 0; i < count; i++)
 	{
-		CreateFountainSplash(spawner, spawner->r.origin, spawner->xscale, spawner->yscale, spawner->yaw);
+		CreateFountainSplash(spawner, spawner->xscale, spawner->yscale, spawner->yaw);
 	}
 	return(true);
 }
@@ -84,7 +77,7 @@ void FXWaterfallBase(centity_t *owner, int type, int flags, vec3_t origin)
 
 qboolean FXWaterDropEnd(client_entity_t *waterdrop, centity_t *owner)
 {
-	CreateFountainSplash(waterdrop, waterdrop->r.origin, 10.0, 10.0, 0);
+	CreateFountainSplash(waterdrop, 10.0, 10.0, 0);
 	waterdrop->Update = RemoveSelfAI;
 	waterdrop->nextThinkTime = fxi.cl->time + 500;
 	return(true);
