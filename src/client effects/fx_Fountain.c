@@ -51,26 +51,25 @@ static qboolean FXWaterfallBaseSpawner(client_entity_t* spawner, const centity_t
 	return true;
 }
 
-void FXWaterfallBase(centity_t *owner, int type, int flags, vec3_t origin)
+void FXWaterfallBase(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	byte			xs, ys, yaw;
-	client_entity_t	*wfb;
+	byte xscale;
+	byte yscale;
+	byte yaw;
 
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WATERFALLBASE].formatString, &xs, &ys, &yaw);
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WATERFALLBASE].formatString, &xscale, &yscale, &yaw);
 
 	flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_VIEWSTATUSCHANGED;
-	wfb = ClientEntity_new(type, flags, origin, NULL, 100);
+	client_entity_t* wfb = ClientEntity_new(type, flags, origin, NULL, 100);
 
-	wfb->xscale = xs;
-	wfb->yscale = ys;
-	wfb->yaw = (yaw * ANGLE_360) / 256.0;
+	wfb->xscale = xscale;
+	wfb->yscale = yscale;
+	wfb->yaw = (float)yaw * ANGLE_360 / 256.0f;
 	wfb->radius = wfb->xscale + wfb->yscale;
 	wfb->Update = FXWaterfallBaseSpawner;
 
-	AddEffect(owner, wfb); 
+	AddEffect(owner, wfb);
 }
-
-// -----------------------------------------------------------------------------------------
 
 qboolean FXWaterDropEnd(client_entity_t *waterdrop, centity_t *owner)
 {
