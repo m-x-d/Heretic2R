@@ -17,118 +17,82 @@ void PreCacheHalos(void)
 	//halo_models[2] = fxi.RegisterModel("sprites/lens/halo3.sp2"); //mxd. Unused
 }
 
-// ************************************************************************************************
-// FXHaloThink
-// ************************************************************************************************
-
-static qboolean FXHaloThink(struct client_entity_s *self,centity_t *Owner)
+static qboolean FXHaloThink(struct client_entity_s* self, centity_t* owner)
 {
-	float			dot, dist, camdist;
-
-	vec3_t			mins = { 0, 0, 0}, 
-					maxs = { 0, 0, 0},
-					pos1, pos2,
-					ent_vec, light_vec, res_vec, org;
-	
-	trace_t			trace;
-	entity_state_t	*es;
-	
-	// Effect will be deleted if CEF_DISAPPEARED flag set
+	// Effect will be deleted if CEF_DISAPPEARED flag is set.
 	self->flags &= ~CEF_DISAPPEARED;
-	// Default to nodraw
+
+	// Default to nodraw.
 	self->flags |= CEF_NO_DRAW;
 
-	AngleVectors (fxi.cl->refdef.viewangles, pos1, NULL, NULL);
-	VectorSubtract (self->r.origin, fxi.cl->refdef.vieworg, pos2);
-	VectorNormalize (pos2);
-	
-	dot = DotProduct (pos1, pos2);
+	vec3_t cam_fwd;
+	AngleVectors(fxi.cl->refdef.viewangles, cam_fwd, NULL, NULL);
 
-	if (dot < 0.75)
-	{
+	vec3_t dir;
+	VectorSubtract(self->r.origin, fxi.cl->refdef.vieworg, dir);
+	const float cam_dist = VectorNormalize(dir);
+
+	if (cam_dist > 1024.0f || DotProduct(cam_fwd, dir) < 0.75f) // Too far from camera or outside of camera fov(?). //TODO: use actual camera fov?
 		return true;
-	}
 
-	VectorSubtract(self->r.origin, fxi.cl->refdef.vieworg, pos1);
-	dist = VectorNormalize(pos1);
+	// Determine visibility.
+	trace_t trace;
+	fxi.Trace(self->r.origin, vec3_origin, vec3_origin, fxi.cl->refdef.vieworg, (CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_DEADMONSTER), CEF_CLIP_TO_ALL, &trace);
 
-	if (dist > 1024)
+	if (trace.fraction < 1.0f) // Hit something.
 	{
-		return true;		
-	}
+		if (trace.ent == (struct edict_s*)-1) // Hit a brush.
+			return true;
 
-	//Determine Visibility
-	fxi.Trace(	self->r.origin, 
-				mins, 
-				maxs, 
-				fxi.cl->refdef.vieworg, 
-				(CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_DEADMONSTER), 
-				CEF_CLIP_TO_ALL, 
-				&trace);
+		// Hit a model.
+		const entity_state_t* es = (entity_state_t*)trace.ent;
 
-	if (trace.fraction < 1.0)	//Hit something
-	{	
-		if ((trace.ent != ((struct edict_s *)-1)))	//Model
+		// Not the player entity.
+		if (fxi.cl->playernum + 1 != es->number)
+			return true;
+
+		// Hit the player entity.
+		//TODO: this logic is strange.
+		// 1. Since halo is a purely visual effect, we shouldn't care about player entity position at all.
+		// 2. Reduce alpha increment steps (to 0.1 or 0.05?), decrement to much lower value (0.05?), don't immediately turn off halo when path between camera and halo is blocked.
+		vec3_t ent_pos;
+		VectorCopy(es->origin, ent_pos);
+		ent_pos[2] += 8.0f;
+
+		vec3_t light_dir; // Direction from halo to camera position.
+		VectorSubtract(fxi.cl->refdef.vieworg, self->r.origin, light_dir);
+		VectorNormalize(light_dir);
+
+		vec3_t halo_dir; // Direction from halo to player model.
+		VectorSubtract(self->r.origin, ent_pos, halo_dir);
+
+		vec3_t player_dir; // Direction from player to camera position.
+		VectorSubtract(fxi.cl->refdef.vieworg, ent_pos, player_dir);
+
+		const float player_dist = VectorNormalize(player_dir);
+		float dist = VectorNormalize(halo_dir);
+
+		vec3_t res_vec;
+		VectorMA(self->r.origin, dist, light_dir, res_vec);
+		VectorSubtract(ent_pos, res_vec, player_dir);
+
+		dist = VectorNormalize(player_dir);
+
+		if (dist < 10.0f + player_dist / 100.0f)
 		{
-			es = (entity_state_t *) trace.ent;
+			if (self->alpha > 0.25f)
+				self->alpha -= 0.25f;
 
-			if ((fxi.cl->playernum + 1) == es->number)
-			{
-				VectorCopy(es->origin, org);
-				org[2] += 8;
-
-				VectorSubtract(fxi.cl->refdef.vieworg, self->r.origin, light_vec);
-				VectorSubtract(self->r.origin, org, ent_vec);
-				VectorSubtract(fxi.cl->refdef.vieworg, org, pos1);
-
-				camdist = VectorNormalize(pos1);
-
-				dist = VectorNormalize(ent_vec);
-								
-				VectorNormalize(light_vec);
-				VectorMA(self->r.origin, dist, light_vec, res_vec);
-				VectorSubtract(org, res_vec, pos1);
-
-				dist = VectorNormalize(pos1);
-
-				if (dist < (10 + (camdist/100)))
-				{
-					if (self->alpha > 0.25)
-					{
-						self->alpha -= 0.25;
-						return true;
-					}
-					else
-					{
-						return true;
-					}
-				}
-				else
-				{
-				  	self->flags &= ~CEF_NO_DRAW;
-
-					if (self->alpha < 0.5)
-						self->alpha += 0.25;
-					return true;
-				}
-			}
-			else
-			{
-				return true;
-			}			
-		}
-		else	//Hit a brush
-		{
 			return true;
 		}
 	}
-			
+
 	self->flags &= ~CEF_NO_DRAW;
 
-	if (self->alpha < 0.5)
-		self->alpha += 0.25;
+	if (self->alpha < 0.5f)
+		self->alpha += 0.25f;
 
-	return (true);
+	return true;
 }
 
 // ************************************************************************************************
