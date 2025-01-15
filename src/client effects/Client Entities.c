@@ -79,7 +79,7 @@ client_entity_t* ClientEntity_new(const int type, const int flags, const vec3_t 
 	AnglesFromDirI(new_ent->direction, new_ent->r.angles);
 
 	new_ent->r.scale = 1.0f;
-	new_ent->r.color.c = 0xffffffff;
+	new_ent->r.color = color_white; //mxd
 	new_ent->alpha = 1.0f;
 	new_ent->radius = 1.0f;
 	new_ent->effectID = type;
