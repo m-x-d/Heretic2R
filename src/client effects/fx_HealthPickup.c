@@ -56,26 +56,23 @@ static qboolean FXHealthPickupThink(struct client_entity_s* self, const centity_
 	return true;
 }
 
-void FXHealthPickup(centity_t *owner, int type, int flags, vec3_t origin)
+void FXHealthPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	client_entity_t		*ce;
-
 	flags &= ~CEF_OWNERS_ORIGIN;
-	ce = ClientEntity_new(type, flags | CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED, origin, NULL, 50);
+	flags |= CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED;
+	client_entity_t* ce = ClientEntity_new(type, flags, origin, NULL, 50);
 
 	VectorCopy(ce->r.origin, ce->origin);
-	ce->r.model = health_models + ((flags & CEF_FLAG6) >> 5);
+	const int model_index = (flags & CEF_FLAG6) >> 5; // 0 - small, 1 - big.
+	ce->r.model = &health_models[model_index];
 	ce->r.flags = RF_GLOW | RF_TRANSLUCENT | RF_TRANS_ADD;
 
-	if ((flags & CEF_FLAG6) >> 5)	// Full health
-		ce->r.scale = 1;
-	else
-		ce->r.scale = 1.5;
-	ce->radius = 10.0;
-	ce->alpha = 0.8;
+	if (model_index == 0) // Bigger scale for Half Health.
+		ce->r.scale = 1.5f;
+
+	ce->radius = 10.0f;
+	ce->alpha = 0.8f;
 	ce->Update = FXHealthPickupThink;
 
 	AddEffect(owner, ce);
 }
-
-// end
