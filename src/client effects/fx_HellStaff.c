@@ -127,21 +127,22 @@ static void HellLaserBurn(vec3_t loc, vec3_t fwd, vec3_t right, vec3_t up)
 	}
 }
 
-// Create Effect FX_WEAPON_HELLSTAFF_POWER_BURN
-void FXHellstaffPowerBurn(centity_t *owner, int type, int flags, vec3_t origin)
+void FXHellstaffPowerBurn(centity_t* owner, int type, const int flags, vec3_t origin)
 {
-	vec3_t angles, fwd, right, up, dir;
-
-	VectorClear(angles);
+	vec3_t dir;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_HELLSTAFF_POWER_BURN].formatString, &dir);
-	vectoangles(dir, angles);
-	angles[PITCH] *= -1;// something's broken with angle signs somewhere ;(
 
+	vec3_t angles;
+	vectoangles(dir, angles);
+	angles[PITCH] *= -1.0f; // Something's broken with angle signs somewhere ;(
+
+	vec3_t fwd;
+	vec3_t right;
+	vec3_t up;
 	AngleVectors(angles, fwd, right, up);
 
 	HellLaserBurn(origin, fwd, right, up);
 }
-
 
 // CreateEffect FX_WEAPON_HELLSTAFF_POWER
 void FXHellstaffPower(centity_t *owner,int type,int flags, vec3_t origin)
