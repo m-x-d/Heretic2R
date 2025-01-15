@@ -144,86 +144,88 @@ void FXHellstaffPowerBurn(centity_t* owner, int type, const int flags, vec3_t or
 	HellLaserBurn(origin, fwd, right, up);
 }
 
-// CreateEffect FX_WEAPON_HELLSTAFF_POWER
-void FXHellstaffPower(centity_t *owner,int type,int flags, vec3_t origin)
+void FXHellstaffPower(centity_t* owner, int type, const int flags, vec3_t origin)
 {
-	vec3_t				endpos, curpos, dpos, angles;
-	vec3_t				fwd, right, up, dir;
-	client_entity_t		*beam, *beam2;
-	paletteRGBA_t		lightcolor={255,255,255,255};
-	int					i;
-	client_particle_t	*spark;
-	float				len;
-	int					count;
-	byte				blen;
+	vec3_t dir;
+	byte beam_length;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_HELLSTAFF_POWER].formatString, &dir, &beam_length);
 
-	VectorClear(angles);
-	fxi.GetEffect(owner,flags,clientEffectSpawners[FX_WEAPON_HELLSTAFF_POWER].formatString, &dir, &blen);
+	vec3_t angles;
 	vectoangles(dir, angles);
-	angles[PITCH] *= -1;// something's broken with angle signs somewhere ;(
-	len = (float)blen * 8.0;
+	angles[PITCH] *= -1.0f; // Something's broken with angle signs somewhere ;(
+
+	vec3_t fwd;
+	vec3_t right;
+	vec3_t up;
 	AngleVectors(angles, fwd, right, up);
 
+	vec3_t endpos;
+	const float len = (float)beam_length * 8.0f;
 	VectorMA(origin, len, fwd, endpos);
 
-	//make the line beam
-	beam = ClientEntity_new(-1, CEF_DONT_LINK | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS, origin, NULL, 333);
-	beam->r.model = hell_models + 1;
-	beam->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	beam->r.scale = flrand(6.0, 10.0);
-	beam->r.tile = len/flrand(40.0, 48.0);
-	beam->r.tileoffset = flrand(0.0, 1.0);
-	beam->radius = 40.0;
-	beam->alpha = 0.95;
-	beam->d_alpha = -3.0;
-	VectorCopy(origin, beam->r.startpos);
-	VectorCopy(endpos, beam->r.endpos); 
-	beam->r.spriteType = SPRITE_LINE;
-	AddEffect(NULL, beam); 
+	// Make the line beam.
+	client_entity_t* beam = ClientEntity_new(-1, CEF_DONT_LINK | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS, origin, NULL, 333);
 
-	//make the line beam halo
-	beam2 = ClientEntity_new(-1, CEF_DONT_LINK, origin, NULL, 500);
-	beam2->r.model = hell_models + 1;
+	beam->r.model = &hell_models[1];
+	beam->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	beam->r.scale = flrand(6.0f, 10.0f);
+	beam->r.tile = len / flrand(40.0f, 48.0f);
+	beam->r.tileoffset = flrand(0.0f, 1.0f);
+	beam->radius = 40.0f;
+	beam->alpha = 0.95f;
+	beam->d_alpha = -3.0f;
+	VectorCopy(origin, beam->r.startpos);
+	VectorCopy(endpos, beam->r.endpos);
+	beam->r.spriteType = SPRITE_LINE;
+
+	AddEffect(NULL, beam);
+
+	// Make the line beam halo.
+	client_entity_t* beam2 = ClientEntity_new(-1, CEF_DONT_LINK, origin, NULL, 500);
+
+	beam2->r.model = &hell_models[1];
 	beam2->r.frame = 1;
-	beam2->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	beam2->r.scale = beam->r.scale * 1.4;
+	beam2->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	beam2->r.scale = beam->r.scale * 1.4f;
 	beam2->r.tile = beam->r.tile;
 	beam2->r.tileoffset = beam->r.tileoffset;
-	beam2->radius = 40.0;
-	beam2->alpha = 0.95;
-	beam2->d_alpha = -4.0;
+	beam2->radius = 40.0f;
+	beam2->alpha = 0.95f;
+	beam2->d_alpha = -4.0f;
 	VectorCopy(origin, beam2->r.startpos);
 	VectorCopy(endpos, beam2->r.endpos);
 	beam2->r.spriteType = SPRITE_LINE;
-	AddEffect(NULL, beam2); 
 
-	count = GetScaledCount((int)(len/16.0), 0.3);
-	VectorScale(fwd, len/(float)count, dpos);
+	AddEffect(NULL, beam2);
 
-	VectorCopy(origin, curpos);
-	//make the particles along the beam.
-	for(i=0; i < count;i++)
+	vec3_t delta_pos;
+	const int count = GetScaledCount((int)(len / 16.0f), 0.3f);
+	VectorScale(fwd, len / (float)count, delta_pos);
+
+	vec3_t cur_pos;
+	VectorCopy(origin, cur_pos);
+
+	// Make the particles along the beam.
+	for (int i = 0; i < count; i++)
 	{
-		spark = ClientParticle_new(PART_16x16_SPARK_R, lightcolor, 500);
-		spark->scale=flrand(8.0, 12.0);
-		spark->d_scale = -2.0*spark->scale;
-		spark->acceleration[2] = 80.0;
-		VectorCopy(curpos, spark->origin);
-		VectorSet(spark->velocity, 
-				flrand(-HELLLASER_SPEED, HELLLASER_SPEED), 
-				flrand(-HELLLASER_SPEED, HELLLASER_SPEED), 
-				flrand(-HELLLASER_SPEED, HELLLASER_SPEED));
- 		AddParticleToList(beam, spark);
-		VectorAdd(curpos, dpos, curpos);
+		client_particle_t* spark = ClientParticle_new(PART_16x16_SPARK_R, color_white, 500);
+
+		spark->scale = flrand(8.0f, 12.0f);
+		spark->d_scale = -2.0f * spark->scale;
+		spark->acceleration[2] = 80.0f;
+		VectorCopy(cur_pos, spark->origin);
+		VectorRandomSet(spark->velocity, HELLLASER_SPEED); //mxd
+
+		AddParticleToList(beam, spark);
+		VectorAdd(cur_pos, delta_pos, cur_pos);
 	}
 
 	VectorSubtract(beam->r.endpos, beam->r.startpos, dir);
 	VectorNormalize(dir);
-	if	(flags & CEF_FLAG7)
+
+	if (flags & CEF_FLAG7)
 		FXClientScorchmark(beam->r.endpos, dir);
-	
-	if	(flags & CEF_FLAG6)
+
+	if (flags & CEF_FLAG6)
 		HellLaserBurn(endpos, fwd, right, up);
 }
-
-// end
