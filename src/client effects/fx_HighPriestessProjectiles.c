@@ -40,36 +40,31 @@ enum
 
 static struct model_s* hpproj_models[11];
 
-void PreCacheHPMissile()
+void PreCacheHPMissile(void)
 {
-	//Projectile head sprites
+	// Projectile head sprites.
 	hpproj_models[0] = fxi.RegisterModel("sprites/fx/hpproj1_1.sp2");
-	hpproj_models[1] = fxi.RegisterModel("sprites/fx/hpproj1_2.sp2");
-	
-	//Trail segments
+	hpproj_models[1] = fxi.RegisterModel("sprites/fx/hpproj1_2.sp2"); //TODO: unused?
+
+	// Trail segments.
 	hpproj_models[2] = fxi.RegisterModel("sprites/fx/segment_trail.sp2");
 	hpproj_models[6] = fxi.RegisterModel("sprites/fx/segment_trail_y.sp2");
 	hpproj_models[7] = fxi.RegisterModel("sprites/fx/segment_trail_wt.sp2");
 
-	//Halos
+	// Halos.
 	hpproj_models[3] = fxi.RegisterModel("sprites/fx/hp_halo.sp2");
 	hpproj_models[4] = fxi.RegisterModel("sprites/lens/halo1.sp2");
-	
-	//Light Bug model
+
+	// Light Bug model.
 	hpproj_models[5] = fxi.RegisterModel("models/objects/lights/bug/tris.fm");
 
-	//Rocks
+	// Rocks.
 	hpproj_models[8] = fxi.RegisterModel("models/debris/stone/schunk1/tris.fm");
 	hpproj_models[9] = fxi.RegisterModel("models/debris/stone/schunk2/tris.fm");
 
-	//Lightning bolts
+	// Lightning bolts.
 	hpproj_models[10] = fxi.RegisterModel("sprites/fx/hp_lightning.sp2");
 }
-
-/*
-	High Priestess Projectile Functions
-
-*/
 
 static qboolean FXHPTeleportLineThink(struct client_entity_s *self,centity_t *Owner)
 {
