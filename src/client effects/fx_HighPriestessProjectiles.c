@@ -442,7 +442,7 @@ void FXHPMissileCreateWarp(const int type, const vec3_t origin)
 	AddEffect(NULL, halo);
 }
 
-static qboolean PriestessLinkedEntityUpdatePlacement(struct client_entity_s *self, centity_t *owner)
+static qboolean PriestessLinkedEntityUpdatePlacement(struct client_entity_s* self, const centity_t* owner)
 {
 	LinkedEntityUpdatePlacement(self, owner);
 	VectorCopy(self->r.origin, self->r.startpos);
