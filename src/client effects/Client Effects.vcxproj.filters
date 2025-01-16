@@ -111,7 +111,7 @@
     <ClCompile Include="fx_hitpuff.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="fx_hpproj.c">
+    <ClCompile Include="fx_HighPriestessProjectiles.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
     <ClCompile Include="fx_insectstaff.c">
