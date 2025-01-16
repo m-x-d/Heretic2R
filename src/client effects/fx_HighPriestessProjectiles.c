@@ -277,14 +277,10 @@ static qboolean FXHPTrailThink3(struct client_entity_s* self, centity_t* owner)
 	return false;
 }
 
-/*-----------------------------------------------
-	FXHPBugThink
------------------------------------------------*/
-
-static qboolean FXHPBugThink(struct client_entity_s *self,centity_t *Owner)
+static qboolean FXHPBugThink(struct client_entity_s* self, centity_t* owner)
 {
-	self->r.scale = flrand(0.2, 0.4);
-	self->alpha = flrand(0.3, 0.5);
+	self->r.scale = flrand(0.2f, 0.4f);
+	self->alpha = flrand(0.3f, 0.5f);
 
 	return true;
 }
