@@ -66,100 +66,85 @@ void PreCacheHPMissile(void)
 	hpproj_models[10] = fxi.RegisterModel("sprites/fx/hp_lightning.sp2");
 }
 
-static qboolean FXHPTeleportLineThink(struct client_entity_s *self,centity_t *Owner)
+static qboolean FXHPTeleportLineThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_entity_t		*effect;
-	client_particle_t	*p;
-	int					i, color_ofs;
-	paletteRGBA_t		color = {255,255,255,255};
-
-	if (self->alpha <= 0.0)
+	if (self->alpha <= 0.0f)
 		return false;
 
-	self->r.endpos[2] += 32;
-	
-	if ((self->r.endpos[2] - self->r.startpos[2]) > PRIESTESS_TELEPORT_LINEHEIGHT)
+	self->r.endpos[2] += 32.0f;
+
+	if (self->r.endpos[2] - self->r.startpos[2] > PRIESTESS_TELEPORT_LINEHEIGHT)
 	{
-		if (self->SpawnInfo == 0.0)
-			fxi.Activate_Screen_Flash(0xffffffff);
+		if (self->SpawnInfo == 0)
+			fxi.Activate_Screen_Flash((int)color_white.c);
 
 		self->SpawnInfo = 1;
-		self->d_alpha = -1.0;
-		self->r.scale += 16;
+		self->d_alpha = -1.0f;
+		self->r.scale += 16.0f;
+
+		return true;
 	}
-	else
+
+	self->r.scale += 1.5f;
+
+	// Spawn some particles and some rock chunks.
+	const int num_particles = GetScaledCount(8, 0.7f);
+
+	for (int i = 0; i < num_particles; i++)
 	{
-		self->r.scale += 1.5;
+		client_particle_t* p = ClientParticle_new(PART_4x4_WHITE, color_white, 2500);
 
-		//Spawn some particles and some rock chunks
-
-		i =  GetScaledCount(8, 0.7);//irand(8,12);
-
-		while(i--)
+		// Chance to make them brown.
+		if (irand(0, 1))
 		{
-			p = ClientParticle_new(PART_4x4_WHITE, color, 2500);
-
-			//Chance to make them brown
-			if (irand(0,1))
-			{
-				color_ofs = irand(0, 64);
-				p->color.r = color_ofs;
-				p->color.g = color_ofs;
-				p->color.b = 0;
-				p->color.a = 255;
-			}
-			else
-			{
-				color_ofs = irand(32, 128);
-				p->color.r = p->color.g = p->color.b = color_ofs;
-				p->color.a = 255;
-			}
-
-			p->origin[0] += irand(-24,24);
-			p->origin[1] += irand(-24,24);
-			p->origin[2] -= 36;
-			
-			p->scale = flrand(0.25, 1.0);
-			
-			p->acceleration[0] = irand(-75,75);
-			p->acceleration[1] = irand(-75,75);
-			p->acceleration[2] = irand(400,500);
-
-			p->d_alpha = -2.0;
-			AddParticleToList(self, p);
+			const byte col = (byte)irand(0, 64);
+			COLOUR_SET(p->color, col, col, 0); //mxd
+		}
+		else
+		{
+			const byte col = (byte)irand(32, 128);
+			COLOUR_SET(p->color, col, col, col); //mxd
 		}
 
-		i = GetScaledCount(5, 0.7);//irand(4,6);
+		p->origin[0] += flrand(-24.0f, 24.0f); //mxd. irand() in original version. Why?
+		p->origin[1] += flrand(-24.0f, 24.0f); //mxd. irand() in original version. Why?
+		p->origin[2] -= 36;
 
-		while(i--)
-		{
-			effect=ClientEntity_new(  FX_HP_MISSILE,
-									  CEF_DONT_LINK,
-									  self->origin,
-									  NULL,
-									  1000);
+		p->scale = flrand(0.25f, 1.0f);
 
-			effect->r.model = hpproj_models + irand(8,9);
+		p->acceleration[0] = flrand(-75.0f, 75.0f); //mxd. irand() in original version. Why?
+		p->acceleration[1] = flrand(-75.0f, 75.0f); //mxd. irand() in original version. Why?
+		p->acceleration[2] = flrand(400.0f, 500.0f); //mxd. irand() in original version. Why?
 
-			effect->r.scale = flrand(0.1, 0.5);
+		p->d_alpha = -2.0f;
 
-			VectorCopy(self->r.origin, effect->r.origin);
-			effect->r.origin[0] += irand(-32,32);
-			effect->r.origin[1] += irand(-32,32);
-			effect->r.origin[2] -= 36;
+		AddParticleToList(self, p);
+	}
 
-			effect->velocity[2] = 1;
-			
-			effect->acceleration[0] = irand(-150, 150);
-			effect->acceleration[1] = irand(-150, 150);
-			effect->acceleration[2] = irand( 300, 600 - ( self->r.scale * 100) );
+	const int num_rocks = GetScaledCount(5, 0.7f);
 
-			effect->d_alpha = -0.25;
+	for (int i = 0; i < num_rocks; i++)
+	{
+		client_entity_t* rock = ClientEntity_new(FX_HP_MISSILE, CEF_DONT_LINK, self->origin, NULL, 1000);
 
-			effect->radius = 500;
+		rock->radius = 500.0f;
+		rock->r.model = &hpproj_models[irand(8, 9)];
+		rock->r.scale = flrand(0.1f, 0.5f);
 
-			AddEffect(NULL, effect);
-		}
+		VectorCopy(self->r.origin, rock->r.origin);
+		rock->r.origin[0] += flrand(-32.0f, 32.0f); //mxd. irand() in original version. Why?
+		rock->r.origin[1] += flrand(-32.0f, 32.0f); //mxd. irand() in original version. Why?
+		rock->r.origin[2] -= 36.0f;
+
+		rock->velocity[2] = 1.0f;
+
+		rock->acceleration[0] = flrand(-150.0f, 150.0f); //mxd. irand() in original version. Why?
+		rock->acceleration[1] = flrand(-150.0f, 150.0f); //mxd. irand() in original version. Why?
+		rock->acceleration[2] = flrand(300.0f, 600.0f - (self->r.scale * 100.0f)); //mxd. irand() in original version. Why?
+
+		rock->d_alpha = -0.25f;
+
+		AddEffect(NULL, rock);
 	}
 
 	return true;
