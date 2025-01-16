@@ -3122,7 +3122,7 @@ void FXMorkTrackingMissile ( centity_t *owner, vec3_t origin, vec3_t velocity )
 	client_entity_t	*Trail;
 	paletteRGBA_t	LightColor={0,0,255,255};
 
-	FXHPMissileCreateWarp(owner, FX_M_EFFECTS, 0, origin);
+	FXHPMissileCreateWarp(FX_M_EFFECTS, origin);
 
 	Trail = ClientEntity_new( FX_M_EFFECTS, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, origin, NULL, 20);
 

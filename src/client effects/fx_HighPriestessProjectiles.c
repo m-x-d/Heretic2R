@@ -427,25 +427,19 @@ static void FXHPBugExplode(struct client_entity_s* self, const centity_t* owner)
 	}
 }
 
-/*-----------------------------------------------
-	FXHPMissileCreateWarp
------------------------------------------------*/
-
-void FXHPMissileCreateWarp(centity_t *Owner,int Type,int Flags,vec3_t Origin)
+void FXHPMissileCreateWarp(const int type, const vec3_t origin)
 {
-	client_entity_t	*Trail;
+	client_entity_t* halo = ClientEntity_new(type, CEF_DONT_LINK, origin, NULL, 2000);
 
-	Trail = ClientEntity_new( Type, CEF_DONT_LINK, Origin, NULL, 2000);
+	halo->radius = 500.0f;
+	halo->r.model = &hpproj_models[3]; // Halo sprite.
+	halo->r.color.c = 0xffff5555;
+	halo->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	halo->r.scale = 0.1f;
+	halo->d_scale = 2.0f;
+	halo->d_alpha = -2.0f;
 
-	Trail->radius = 500;
-	Trail->r.model = hpproj_models + 3;
-	Trail->r.color.c = 0xffff5555;
-	Trail->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	Trail->r.scale = 0.1;
-	Trail->d_scale = 2.0;
-	Trail->d_alpha = -2.0;
-
-	AddEffect(NULL,Trail);
+	AddEffect(NULL, halo);
 }
 
 static qboolean PriestessLinkedEntityUpdatePlacement(struct client_entity_s *self, centity_t *owner)
@@ -480,7 +474,7 @@ void FXHPMissile(centity_t *Owner,int Type,int Flags,vec3_t Origin)
 	//Blue swirling, homing missiles
 	case HPMISSILE1:
 
-		FXHPMissileCreateWarp(Owner, Type, Flags, Origin);
+		FXHPMissileCreateWarp(Type, Origin);
 
 		Trail = ClientEntity_new( Type, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, Origin, NULL, 20);
 
@@ -505,7 +499,7 @@ void FXHPMissile(centity_t *Owner,int Type,int Flags,vec3_t Origin)
 	//Normal trails off projectiles
 	case HPMISSILE2:
 
-		FXHPMissileCreateWarp(Owner, Type, Flags, Origin);
+		FXHPMissileCreateWarp(Type, Origin);
 
 		Trail = ClientEntity_new( Type, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, Origin, NULL, 20);
 

@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "client.h"
 #include "q_Typedef.h"
 
-extern void FXHPMissileCreateWarp(centity_t* owner, const int type, int flags, const vec3_t origin);
+extern void FXHPMissileCreateWarp(int type, const vec3_t origin);
