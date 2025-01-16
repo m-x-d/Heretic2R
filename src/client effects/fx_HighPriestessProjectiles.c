@@ -401,48 +401,29 @@ static void FXHPMissileExplode(struct client_entity_s* self, const centity_t* ow
 	}
 }
 
-/*-----------------------------------------------
-	FXHPBugExplode
------------------------------------------------*/
-
-void FXHPBugExplode(struct client_entity_s *self,centity_t *Owner)
+static void FXHPBugExplode(struct client_entity_s* self, const centity_t* owner)
 {
-	vec3_t			dir;
-	client_entity_t	*SmokePuff;
-	int				i;
-	paletteRGBA_t	LightColor={255,64,32,255};
-	byte			powerup = 0;
-	
-	//Vec3ScaleAssign(32.0, dir);
-	VectorSet(dir, 1, 1, 1);
+	const vec3_t dir = { 1.0f, 1.0f, 1.0f };
+	const int count = GetScaledCount(irand(12, 16), 0.8f);
 
-	i = GetScaledCount(irand(12,16), 0.8);
-	
-	while(i--)
+	for (int i = 0; i < count; i++)
 	{
-		if (!i)
-			SmokePuff=ClientEntity_new(FX_HP_MISSILE,0,Owner->origin,NULL,500);
-		else
-			SmokePuff=ClientEntity_new(FX_HP_MISSILE,0,Owner->origin,NULL,1500);
-		
-		SmokePuff->r.model = hpproj_models;
-		SmokePuff->r.scale=flrand(0.5,1.0);
-		SmokePuff->d_scale=-2.0;
+		const int next_think_time = (i == count - 1 ? 500 : 1000); //mxd
+		client_entity_t* smoke_puff = ClientEntity_new(FX_HP_MISSILE, 0, owner->origin, NULL, next_think_time);
 
-		SmokePuff->r.flags |=RF_FULLBRIGHT|RF_TRANSLUCENT|RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		SmokePuff->r.frame = 0;
+		smoke_puff->r.model = &hpproj_models[0]; // Projectile head sprite.
+		smoke_puff->r.scale = flrand(0.5f, 1.0f);
+		smoke_puff->d_scale = -2.0f;
 
-		VectorRandomCopy(dir, SmokePuff->velocity, flrand(16.0, 64.0));
+		smoke_puff->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
-		SmokePuff->acceleration[0] = flrand(-200, 200);
-		SmokePuff->acceleration[1] = flrand(-200, 200);
-		SmokePuff->acceleration[2] = flrand(-60, -100);
+		VectorRandomCopy(dir, smoke_puff->velocity, flrand(16.0f, 64.0f));
+		VectorSet(smoke_puff->acceleration, flrand(-200.0f, 200.0f), flrand(-200.0f, 200.0f), flrand(-100.0f, -60.0f));
 
-		SmokePuff->d_alpha= -0.4;
-			
-		SmokePuff->radius=20.0;
+		smoke_puff->d_alpha = -0.4f;
+		smoke_puff->radius = 20.0f;
 
-		AddEffect(NULL,SmokePuff);
+		AddEffect(NULL, smoke_puff);
 	}
 }
 
