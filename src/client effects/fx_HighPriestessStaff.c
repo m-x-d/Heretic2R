@@ -53,14 +53,9 @@ static qboolean HPStaffTrailThink(const struct client_entity_s* self, centity_t*
 	return true;
 }
 
-/*-----------------------------------------------
-	PriestessFirstSeenInit
------------------------------------------------*/
-
-qboolean PriestessFirstSeenInit(struct client_entity_s* self, centity_t* owner)
+static qboolean PriestessFirstSeenInit(struct client_entity_s* self, centity_t* owner)
 {
 	self->refMask |= PRIESTESS_MASK;
-
 	EnableRefPoints(owner->referenceInfo, self->refMask);
 
 	self->AddToView = NULL;
