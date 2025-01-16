@@ -210,20 +210,11 @@ static qboolean FXHPMissileSpawnerThink2(const struct client_entity_s* self, cen
 	return true;
 }
 
-/*-----------------------------------------------
-	FXHPHaloDie
------------------------------------------------*/
-
-static qboolean FXHPHaloDie(struct client_entity_s *self,centity_t *Owner)
+static qboolean FXHPHaloDie(const struct client_entity_s* self, centity_t* owner)
 {
-	if (self->r.scale <= 0.0f)
-		return false;
-
-	if (self->alpha <= 0.0f)
-		return false;
-
-	return true;
+	return (self->r.scale > 0.0f && self->alpha > 0.0f);
 }
+
 /*-----------------------------------------------
 	FXHPMissileSpawnerThink3
 -----------------------------------------------*/
