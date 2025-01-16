@@ -150,17 +150,15 @@ static qboolean FXHPTeleportLineThink(struct client_entity_s* self, centity_t* o
 	return true;
 }
 
-static qboolean FXHPTeleportLineThink2(struct client_entity_s *self,centity_t *Owner)
+static qboolean FXHPTeleportLineThink2(struct client_entity_s* self, centity_t* owner)
 {
-	if (self->alpha <= 0.0f)
-		return false;
+	if (self->alpha > 0.0f && self->r.scale > 0.0f)
+	{
+		self->r.scale -= 4.0f;
+		return true;
+	}
 
-	if (self->r.scale <= 0.0f)
-		return false;
-
-	self->r.scale -= 4;
-
-	return true;
+	return false;
 }
 
 /*-----------------------------------------------
