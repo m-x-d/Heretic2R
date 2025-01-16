@@ -66,40 +66,29 @@ static qboolean PriestessFirstSeenInit(struct client_entity_s* self, centity_t* 
 	return true;
 }
 
-/*-----------------------------------------------
-	FXHPStaff
------------------------------------------------*/
-
-void FXHPStaff(centity_t* Owner, int Type, int Flags, vec3_t Origin)
+void FXHPStaff(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	client_entity_t* self;
-	short				entID;
-	byte				type;
+	byte fx_type;
+	short ent_id;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_HP_STAFF].formatString, &fx_type, &ent_id);
 
-	fxi.GetEffect(Owner, Flags, clientEffectSpawners[FX_HP_STAFF].formatString, &type, &entID);
-
-	switch (type)
+	switch (fx_type)
 	{
 		case HP_STAFF_INIT:
+			flags |= CEF_NO_DRAW | CEF_ABSOLUTE_PARTS;
+			client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, 17);
 
-			self = ClientEntity_new(Type, Flags | CEF_NO_DRAW | CEF_ABSOLUTE_PARTS, Origin, NULL, 17);
-
-			self->Update = NULL;
 			self->AddToView = PriestessFirstSeenInit;
 			self->Update = KeepSelfAI;
-			self->extra = (void*)(&fxi.server_entities[entID]);
+			self->extra = (void*)(&fxi.server_entities[ent_id]);
 
-			AddEffect(Owner, self);
+			AddEffect(owner, self);
 			break;
 
-		case HP_STAFF_TRAIL:
-
-			//Add trailing code here
+		case HP_STAFF_TRAIL: // Add trailing code here.
 			break;
 
-		default:
-
-			//Effect was passed with invalid effect modifier type
+		default: // Effect was passed with invalid effect modifier type.
 			assert(0);
 			break;
 	}
