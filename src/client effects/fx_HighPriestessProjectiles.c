@@ -450,419 +450,420 @@ static qboolean PriestessLinkedEntityUpdatePlacement(struct client_entity_s* sel
 	return true;
 }
 
-/*-----------------------------------------------
-	FXHPMissile
------------------------------------------------*/
+#pragma region ========================== Missile spawner functions (mxd -- split into separate functions from FXHPMissile()) ==========================
 
-void FXHPMissile(centity_t *Owner,int Type,int Flags,vec3_t Origin)
+static void SpawnHPMissile1(centity_t* owner, const int type, const vec3_t origin, const vec3_t velocity, const paletteRGBA_t light_color) //mxd
 {
-	client_entity_t	*Trail;
-	paletteRGBA_t	LightColor={0,0,255,255};
-	paletteRGBA_t	BugColor={229,250,88,255};
-	paletteRGBA_t	BrightColor={255,255,255,255};
-	vec3_t			vel, boltDir, boltAng, boltDest, oldPos, ang, huntdir;
-	float			boltDist, boltStep, width, alpha;
-	byte			effectType;
-	int				bends, i, bolts, j;
+	FXHPMissileCreateWarp(type, origin);
 
-	
-	fxi.GetEffect(Owner, Flags, clientEffectSpawners[FX_HP_MISSILE].formatString, &vel, &effectType);
+	client_entity_t* trail = ClientEntity_new(type, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, origin, NULL, 20);
 
-	switch ( effectType )
+	VectorCopy(velocity, trail->up);
+
+	trail->radius = 500.0f;
+	trail->r.model = &hpproj_models[3]; // Halo sprite.
+	trail->r.color.c = 0x00999999;
+	trail->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	trail->r.scale = 0.5f;
+	trail->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
+
+	trail->Update = FXHPMissileTrailThink;
+	trail->AddToView = PriestessLinkedEntityUpdatePlacement;
+
+	VectorCopy(origin, trail->startpos);
+
+	AddEffect(owner, trail);
+	FXHPMissileTrailThink(trail, owner);
+}
+
+static void SpawnHPMissile2(centity_t* owner, const int type, const vec3_t origin, const vec3_t velocity, const paletteRGBA_t light_color) //mxd
+{
+	FXHPMissileCreateWarp(type, origin);
+
+	client_entity_t* trail = ClientEntity_new(type, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, origin, NULL, 20);
+
+	VectorCopy(velocity, trail->up);
+
+	trail->radius = 500.0f;
+	trail->r.model = &hpproj_models[3]; // Halo sprite.
+	trail->r.color.c = 0x00999999;
+	trail->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	trail->r.scale = 0.45f;
+	trail->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
+
+	trail->Update = FXHPMissileTrailThink2;
+	trail->AddToView = PriestessLinkedEntityUpdatePlacement;
+
+	VectorCopy(owner->origin, trail->startpos);
+
+	AddEffect(owner, trail);
+	FXHPMissileTrailThink2(trail, owner);
+}
+
+static void SpawnHPMissile3(centity_t* owner, const int type, const vec3_t origin, vec3_t velocity, const paletteRGBA_t bug_color) //mxd
+{
+	client_entity_t* bug = ClientEntity_new(type, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, origin, NULL, 20);
+
+	bug->radius = 500.0f;
+	bug->r.model = &hpproj_models[5]; // Light bug model.
+
+	VectorNormalize(velocity);
+	AnglesFromDir(velocity, bug->r.angles);
+	bug->r.angles[PITCH] -= ANGLE_90;
+
+	bug->r.color.c = 0xff999999;
+	bug->r.scale = flrand(0.3f, 0.4f);
+	bug->dlight = CE_DLight_new(bug_color, 50.0f, 0.0f);
+
+	bug->AddToView = LinkedEntityUpdatePlacement;
+	bug->Update = FXHPMissileTrailThink3;
+
+	VectorCopy(owner->origin, bug->startpos);
+
+	AddEffect(owner, bug);
+	FXHPMissileTrailThink3(bug, owner);
+
+	// Create the halo to follow the bug.
+	client_entity_t* halo = ClientEntity_new(type, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, origin, NULL, 20);
+
+	halo->radius = 500.0f;
+	halo->r.model = &hpproj_models[4]; // Halo sprite.
+	halo->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	halo->r.scale = flrand(0.3f, 0.4f);
+	COLOUR_SET(halo->r.color, 229, 250, 88);
+	halo->alpha = 0.5f;
+
+	halo->AddToView = LinkedEntityUpdatePlacement;
+	halo->Update = FXHPBugThink;
+
+	VectorCopy(origin, halo->startpos);
+
+	AddEffect(owner, halo);
+	FXHPBugThink(halo, owner);
+}
+
+static void SpawnHPMissile4(const int type, const vec3_t origin, vec3_t velocity) //mxd
+{
+	vec3_t angle;
+	const int count = irand(5, 8);
+
+	for (int i = 0; i < count; i++)
 	{
-	
-	//Blue swirling, homing missiles
-	case HPMISSILE1:
+		client_entity_t* trail = ClientEntity_new(type, CEF_DONT_LINK, origin, NULL, 2000);
 
-		FXHPMissileCreateWarp(Type, Origin);
+		trail->radius = 500.0f;
+		trail->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		trail->r.model = &hpproj_models[7];
 
-		Trail = ClientEntity_new( Type, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, Origin, NULL, 20);
+		trail->r.spriteType = SPRITE_LINE;
+		trail->r.tile = 1.0f;
+		trail->r.scale = flrand(1.0f, 2.0f); //mxd. BUGFIX: 1. was irand(), 2. was set to 1.0 below in original logic...
 
-		VectorCopy(vel, Trail->up);
-		Trail->Update=FXHPMissileTrailThink;
-		Trail->dlight=CE_DLight_new(LightColor,150.0f,0.0f);
-		Trail->radius = 500;
-		Trail->r.model = hpproj_models + 3;
-		Trail->r.color.c = 0x00999999;
-		Trail->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		Trail->r.scale = 0.5;
-		Trail->AddToView = PriestessLinkedEntityUpdatePlacement;
+		angle[PITCH] = flrand(0.0f, 720.0f); //mxd. Was irand() in original logic.
+		angle[YAW] = flrand(0.0f, 720.0f); //mxd. Was irand() in original logic.
+		angle[ROLL] = flrand(0.0f, 720.0f); //mxd. Was irand() in original logic.
 
-		VectorCopy(Origin, Trail->startpos);
+		AngleVectors(angle, velocity, NULL, NULL);
+		VectorMA(origin, 512.0f, velocity, trail->r.endpos);
 
-		AddEffect(Owner,Trail);
+		VectorCopy(origin, trail->r.startpos);
+		VectorCopy(origin, trail->r.origin);
 
-		FXHPMissileTrailThink(Trail,Owner);
+		trail->d_alpha = -2.0f;
+		trail->d_scale = 0.0f;
 
-		break;
+		AddEffect(NULL, trail);
+	}
+}
 
-	//Normal trails off projectiles
-	case HPMISSILE2:
+static void SpawnHPMissile5(const int type, const vec3_t origin, vec3_t velocity) //mxd
+{
+	const int count = irand(2, 3);
 
-		FXHPMissileCreateWarp(Type, Origin);
+	for (int i = 0; i < count; i++)
+	{
+		// Find the number of bends in the bolt.
+		const int bends = irand(3, 6);
 
-		Trail = ClientEntity_new( Type, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, Origin, NULL, 20);
+		// Find the distance for each segment (totalDist/bends).
+		vec3_t bolt_dir;
+		VectorSubtract(velocity, origin, bolt_dir);
+		VectorNormalize(bolt_dir);
 
-		VectorCopy(vel, Trail->up);
-		Trail->Update=FXHPMissileTrailThink2;
-		Trail->dlight=CE_DLight_new(LightColor,150.0f,0.0f);
-		Trail->radius = 500;
-		Trail->r.model = hpproj_models + 3;
-		Trail->r.color.c = 0x00999999;
-		Trail->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		Trail->r.scale = 0.45;
-		Trail->AddToView = PriestessLinkedEntityUpdatePlacement;
+		// Get an offset angle from the goal direction.
+		vec3_t bolt_angle;
+		vectoangles(bolt_dir, bolt_angle);
 
-		VectorCopy(Owner->origin, Trail->startpos);
+		bolt_angle[PITCH] += flrand(-35.0f, 35.0f); //mxd. Was irand() in original logic.
+		bolt_angle[YAW] += flrand(-35.0f, 35.0f); //mxd. Was irand() in original logic.
 
-		AddEffect(Owner,Trail);
+		vec3_t bolt_dest;
+		VectorCopy(bolt_dir, bolt_dest);
+		AngleVectors(bolt_angle, bolt_dir, NULL, NULL);
 
-		FXHPMissileTrailThink2(Trail,Owner);
+		vec3_t old_pos;
+		VectorCopy(origin, old_pos);
 
-		break;
+		const float width = flrand(2.0f, 6.0f); //mxd. Was irand() in original logic.
+		const float alpha = flrand(-4.0f, -8.0f); //mxd. Was irand() in original logic.
 
-	//Light bugs/mines
-	case HPMISSILE3:
-
-		Trail = ClientEntity_new( Type, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, Origin, NULL, 20);
-
-		Trail->Update=FXHPMissileTrailThink3;
-				
-		Trail->dlight=CE_DLight_new(BugColor, 50.0f, 0.0f);
-		Trail->radius = 500;
-		Trail->r.model = hpproj_models + 5;
-		
-		VectorNormalize(vel);
-		
-		AnglesFromDir(vel, Trail->r.angles);
-		Trail->r.angles[PITCH] -= ANGLE_90;
-		
-		Trail->r.color.c = 0xFF999999;
-		Trail->r.scale = flrand(0.3, 0.4);
-		Trail->AddToView = LinkedEntityUpdatePlacement;
-
-		VectorCopy(Owner->origin, Trail->startpos);
-
-		AddEffect(Owner,Trail);
-
-		FXHPMissileTrailThink3(Trail,Owner);
-
-		//Create the halo to follow the bug
-		Trail = ClientEntity_new( Type, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, Origin, NULL, 20);
-
-		Trail->Update=FXHPBugThink;
-				
-		Trail->radius = 500;
-		Trail->r.model = hpproj_models + 4;
-		
-		Trail->r.color.r = 229;
-		Trail->r.color.g = 250;
-		Trail->r.color.b = 88;
-		Trail->r.color.a = 255;
-		
-		Trail->alpha = 0.5;
-
-		Trail->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		
-		Trail->r.scale = flrand(0.3, 0.4);
-		
-		Trail->AddToView = LinkedEntityUpdatePlacement;
-
-		VectorCopy(Origin, Trail->startpos);
-
-		AddEffect(Owner,Trail);
-
-		FXHPBugThink(Trail,Owner);
-
-		break;
-
-	//Light shafts coming from the priestess' staff
-	case HPMISSILE4:
-
-		i = irand(5,8);
-
-		while (i--)
+		for (int j = 1; j < bends + 1; j++)
 		{
-			Trail = ClientEntity_new( Type, CEF_DONT_LINK, Origin, NULL, 2000);
+			client_entity_t* bolt = ClientEntity_new(type, CEF_DONT_LINK, origin, NULL, 2000);
 
-			Trail->radius = 500;
-			Trail->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-			Trail->r.model = hpproj_models + 7;
-
-			Trail->r.spriteType = SPRITE_LINE;
-			Trail->r.tile = 1;
-			Trail->r.scale = irand(1.0, 2.0);
-			Trail->alpha = 1.0;
-			Trail->r.scale = 1.0;
-
-			ang[PITCH] = irand( 0, 720 );
-			ang[YAW]   = irand( 0, 720 );
-			ang[ROLL]  = irand( 0, 720 );
-
-			AngleVectors( ang, vel, NULL, NULL );
-			VectorMA( Origin, 512, vel, Trail->r.endpos );
-
-			VectorCopy( Origin, Trail->r.startpos );
-			VectorCopy( Origin, Trail->r.origin );
-			
-			Trail->d_alpha = -2.0;
-			Trail->d_scale = 0.0;
-
-			AddEffect(NULL,Trail);
-		}
-
-		break;
-
-	//The power bolts she shoots from her staff 
-	case HPMISSILE5:
-
-		bolts = irand(2,3);
-
-		for (j=0;j<bolts;j++)
-		{
-			//Find the number of bends in the bolt
-			bends = irand(3,6);
-
-			//Find the distance for each segment (totalDist/bends)
-			VectorSubtract(vel, Origin, boltDir);
-			boltDist = VectorNormalize(boltDir);
-
-			//Get an offset angle from the goal direction
-			vectoangles(boltDir, boltAng);
-
-			boltAng[PITCH]  += irand(-35, 35);
-			boltAng[YAW]	+= irand(-35, 35);
-
-			VectorCopy(boltDir, boltDest);
-			AngleVectors(boltAng, boltDir, NULL, NULL);
-
-			VectorCopy(Origin, oldPos);
-
-			width = irand(2.0, 6.0);
-			alpha = irand(-4.0, -8.0);
-
-			for (i = 1; i < bends + 1; i++)
+			if (j == 1) //BUGFIX: was if (!j) in original version (which never happens). //TODO: test this!
 			{
-				Trail = ClientEntity_new( Type, CEF_DONT_LINK, Origin, NULL, 2000);
-
-				if (!i)
-				{
-					VectorCopy(Origin, Trail->r.startpos);
-					VectorCopy(Origin, Trail->r.endpos);
-				}
-
-				Trail->radius = 500;
-				Trail->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-				Trail->r.model = hpproj_models + 10;
-
-				Trail->r.spriteType = SPRITE_LINE;
-				Trail->r.scale = width;
-				Trail->alpha = 1.0;
-				Trail->r.scale = 1.0;
-
-				VectorCopy(vel, Trail->r.origin);
-
-				if (i == bends)
-				{
-					VectorCopy(oldPos, Trail->r.startpos);					
-					VectorCopy(vel, Trail->r.endpos);
-					
-					Trail->r.endpos[2] += irand(-4, 4);
-				}
-				else
-				{
-					VectorSubtract(vel, oldPos, huntdir);
-					boltStep = VectorNormalize(huntdir);
-					boltStep /= ((bends+1) - i);
-
-					VectorScale(boltDir, (2.5/bends), boltDir);
-					VectorAdd(boltDir, huntdir, boltDir);
-
-					VectorNormalize(boltDir);
-								
-					VectorCopy(oldPos, Trail->r.startpos);
-					
-					Trail->r.tile = ceil(boltStep / 128);
-
-					VectorMA(Trail->r.startpos, boltStep, boltDir, Trail->r.endpos);
-					VectorCopy(Trail->r.endpos, oldPos);
-				}
-
-				Trail->d_alpha = alpha;
-				Trail->d_scale = 0.0;
-
-				AddEffect(NULL,Trail);
+				VectorCopy(origin, bolt->r.startpos);
+				VectorCopy(origin, bolt->r.endpos);
 			}
+
+			bolt->radius = 500.0f;
+			bolt->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+			bolt->r.model = &hpproj_models[10];
+
+			bolt->r.spriteType = SPRITE_LINE;
+			bolt->r.scale = width;
+
+			VectorCopy(velocity, bolt->r.origin);
+
+			if (j == bends)
+			{
+				VectorCopy(old_pos, bolt->r.startpos);
+				VectorCopy(velocity, bolt->r.endpos);
+
+				bolt->r.endpos[2] += flrand(-4.0f, 4.0f); //mxd. Was irand() in original logic.
+			}
+			else
+			{
+				vec3_t hunt_dir;
+				VectorSubtract(velocity, old_pos, hunt_dir);
+				float bolt_step = VectorNormalize(hunt_dir);
+				bolt_step /= (float)(bends + 1 - j);
+
+				VectorScale(bolt_dir, 2.5f / (float)bends, bolt_dir);
+				VectorAdd(bolt_dir, hunt_dir, bolt_dir);
+				VectorNormalize(bolt_dir);
+
+				VectorCopy(old_pos, bolt->r.startpos);
+
+				bolt->r.tile = ceilf(bolt_step / 128.0f);
+
+				VectorMA(bolt->r.startpos, bolt_step, bolt_dir, bolt->r.endpos);
+				VectorCopy(bolt->r.endpos, old_pos);
+			}
+
+			bolt->d_alpha = alpha;
+			bolt->d_scale = 0.0f;
+
+			AddEffect(NULL, bolt);
 		}
+	}
+}
 
-		break;
+static void SpawnHPMissile12Explode(const centity_t* owner, const int type, const vec3_t origin) //mxd
+{
+	client_entity_t* explosion = ClientEntity_new(type, CEF_NO_DRAW | CEF_DONT_LINK, origin, NULL, 2000);
+	AddEffect(NULL, explosion);
+	FXHPMissileExplode(explosion, owner);
+}
 
-	//Normal explosions
-	case HPMISSILE1_EXPLODE:
-	case HPMISSILE2_EXPLODE:
-		Trail = ClientEntity_new( Type, CEF_NO_DRAW | CEF_DONT_LINK, Origin, NULL, 2000);	
-		AddEffect(NULL, Trail);
-		FXHPMissileExplode(Trail,Owner);
-		break;
+static void SpawnHPMissile3Explode(const centity_t* owner, const int type, const vec3_t origin) //mxd
+{
+	client_entity_t* explosion = ClientEntity_new(type, CEF_NO_DRAW | CEF_DONT_LINK, origin, NULL, 2000);
+	AddEffect(NULL, explosion);
+	FXHPBugExplode(explosion, owner);
+}
 
-	//Light bug explosion
-	case HPMISSILE3_EXPLODE:
-		Trail = ClientEntity_new( Type, CEF_NO_DRAW | CEF_DONT_LINK, Origin, NULL, 2000);	
-		AddEffect(NULL, Trail);
-		FXHPBugExplode(Trail,Owner);
-		break;
+static void SpawnHPMissile12Light(const int type, const vec3_t origin, const paletteRGBA_t light_color) //mxd
+{
+	client_entity_t* light = ClientEntity_new(type, CEF_NO_DRAW | CEF_DONT_LINK, origin, NULL, 20);
 
-	//Light the eminates from her staff when casting effects
-	case HPMISSILE1_LIGHT:
-	case HPMISSILE2_LIGHT:
+	VectorCopy(origin, light->origin);
+	light->radius = 500.0f;
+	light->r.model = &hpproj_models[3]; // Halo sprite.
+	light->r.color = color_white;
+	light->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	light->LifeTime = fxi.cl->time + 4000;
+	light->dlight = CE_DLight_new(light_color, 200.0f, 0.0f);
+	light->Update = FXHPMissileSpawnerThink;
 
-		Trail = ClientEntity_new( Type, CEF_NO_DRAW | CEF_DONT_LINK, Origin, NULL, 20);
+	AddEffect(NULL, light);
+}
 
-		VectorCopy( Origin, Trail->origin );
-		Trail->Update=FXHPMissileSpawnerThink;
-		Trail->radius = 500;
-		Trail->r.model = hpproj_models + 3;
-		Trail->r.color.c = 0xFFFFFFFF;
-		Trail->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		Trail->dlight=CE_DLight_new(LightColor,200.0f,0.0f);
-		Trail->LifeTime = fxi.cl->time + 4000;
+static void SpawnHPMissile3Light(const int type, const vec3_t origin, const paletteRGBA_t bug_color) //mxd
+{
+	client_entity_t* light = ClientEntity_new(type, CEF_NO_DRAW | CEF_DONT_LINK, origin, NULL, 20);
 
-		AddEffect(NULL,Trail);
+	VectorCopy(origin, light->origin);
+	light->radius = 500.0f;
+	light->LifeTime = fxi.cl->time + 2000;
+	light->dlight = CE_DLight_new(bug_color, 10.0f, 0.0f);
+	light->Update = FXHPMissileSpawnerThink2;
 
-		break;
+	AddEffect(NULL, light);
+}
 
-	//Light the eminates from her staff when casting bugs
-	case HPMISSILE3_LIGHT:
+static void SpawnHPMissile4Light(const int type, const vec3_t origin) //mxd
+{
+	fxi.Activate_Screen_Flash((int)color_white.c);
 
-		Trail = ClientEntity_new( Type, CEF_NO_DRAW | CEF_DONT_LINK, Origin, NULL, 20);
+	// Create the large halo that scales up and fades out.
+	client_entity_t* halo = ClientEntity_new(type, CEF_DONT_LINK, origin, NULL, 4000);
 
-		VectorCopy( Origin, Trail->origin );
-		Trail->Update=FXHPMissileSpawnerThink2;
-		
-		Trail->radius = 500;
-		Trail->dlight=CE_DLight_new(BugColor,10.0f,0.0f);
-		Trail->LifeTime = fxi.cl->time + 2000;
+	VectorCopy(origin, halo->origin);
+	halo->radius = 500.0f;
+	halo->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	halo->r.model = &hpproj_models[4]; // Halo sprite.
+	halo->r.scale = 0.1f;
+	halo->d_alpha = -1.0f;
+	halo->d_scale = 4.0f;
+	halo->LifeTime = fxi.cl->time + 4000;
 
-		AddEffect(NULL,Trail);
+	AddEffect(NULL, halo);
 
-		break;
-	
-	//Light for the massive light attack
-	case HPMISSILE4_LIGHT:
+	// Create the sparkling center.
+	client_entity_t* spark = ClientEntity_new(type, CEF_DONT_LINK, origin, NULL, 20);
 
-		fxi.Activate_Screen_Flash(0xffffffff);
+	VectorCopy(origin, spark->origin);
+	spark->radius = 500.0f;
+	spark->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
-		//Create the large halo that scales up and fades out
-		Trail = ClientEntity_new( Type, CEF_DONT_LINK, Origin, NULL, 4000);
+	spark->r.model = &hpproj_models[4];
+	spark->r.scale = 0.1f;
+	spark->alpha = 0.1f;
+	spark->d_alpha = 0.5f;
+	spark->d_scale = 2.0f;
+	spark->LifeTime = fxi.cl->time + 4000;
+	spark->dlight = CE_DLight_new(color_white, 250.0f, 0.0f);
+	spark->Update = FXHPMissileSpawnerThink3;
 
-		VectorCopy( Origin, Trail->origin );
+	AddEffect(NULL, spark);
 
-		Trail->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		
-		Trail->r.model = hpproj_models + 4;
-		Trail->r.scale = 0.1;
-		Trail->alpha = 1.0;
-		Trail->d_alpha = -1.0;
-		Trail->d_scale = 4.0;
-		Trail->radius = 500;
-		Trail->LifeTime = fxi.cl->time + 4000;
+	// Shake the screen.
+	fxi.Activate_Screen_Shake(4.0f, 5500.0f, (float)fxi.cl->time, SHAKE_ALL_DIR);
+}
 
-		AddEffect(NULL,Trail);
+static void SpawnHPTeleportStart(const int type, const vec3_t origin) //mxd
+{
+	client_entity_t* trail = ClientEntity_new(type, CEF_DONT_LINK, origin, NULL, 20);
 
-		//Create the sparkling center
-		Trail = ClientEntity_new( Type, CEF_DONT_LINK, Origin, NULL, 20);
+	VectorCopy(origin, trail->origin);
+	trail->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
-		VectorCopy( Origin, Trail->origin );
+	trail->r.model = &hpproj_models[7]; // Trail segment sprite.
+	trail->r.spriteType = SPRITE_LINE;
+	trail->r.tile = 1.0f;
+	trail->r.scale = 2.0f;
 
-		Trail->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		Trail->Update=FXHPMissileSpawnerThink3;
-		
-		Trail->r.model = hpproj_models + 4;
-		Trail->r.scale = 0.1;
-		Trail->alpha = 0.1;
-		Trail->d_alpha = 0.5;
-		Trail->d_scale = 2.0;
-		Trail->radius = 500;
-		Trail->dlight=CE_DLight_new(BrightColor,250.0f,0.0f);
-		Trail->LifeTime = fxi.cl->time + 4000;
+	VectorCopy(origin, trail->r.startpos);
+	trail->r.startpos[2] -= 128.0f;
 
-		AddEffect(NULL,Trail);
+	VectorCopy(origin, trail->r.endpos);
+	trail->r.endpos[2] += 32.0f;
 
-		//Shake the screen
-		fxi.Activate_Screen_Shake(4, 5500, fxi.cl->time, SHAKE_ALL_DIR);
+	trail->d_alpha = 0.0f;
+	trail->d_scale = 0.0f;
+	trail->dlight = CE_DLight_new(color_white, 250.0f, 0.0f);
+	trail->Update = FXHPTeleportLineThink;
 
-		break;
+	AddEffect(NULL, trail);
+}
 
-		//Empty
-	case HPMISSILE5_LIGHT:
+static void SpawnHPTeleportEnd(const int type, const vec3_t origin) //mxd
+{
+	client_entity_t* trail = ClientEntity_new(type, CEF_DONT_LINK, origin, NULL, 20);
 
-		break;
+	VectorCopy(origin, trail->origin);
+	trail->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
-		//Starting effect for her teleport
-	case HPTELEPORT_START:
+	trail->r.model = &hpproj_models[7]; // Trail segment sprite.
+	trail->r.spriteType = SPRITE_LINE;
+	trail->r.tile = 1.0f;
+	trail->r.scale = 64.0f; //mxd. BUGFIX??? Was set to 1.0 below in original version.
 
-		Trail = ClientEntity_new( Type, CEF_DONT_LINK, Origin, NULL, 20);
+	VectorCopy(origin, trail->r.startpos);
+	trail->r.startpos[2] -= 128.0f;
 
-		VectorCopy( Origin, Trail->origin );
+	VectorCopy(origin, trail->r.endpos);
+	trail->r.endpos[2] += 512.0f;
 
-		Trail->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		Trail->Update=FXHPTeleportLineThink;
+	trail->d_alpha = -1.0f;
+	trail->d_scale = 0.0f;
+	trail->dlight = CE_DLight_new(color_white, 250.0f, 0.0f);
+	trail->Update = FXHPTeleportLineThink2;
 
-		Trail->r.model = hpproj_models + 7;			
-		Trail->r.spriteType = SPRITE_LINE;
-		Trail->r.tile = 1.0;
-		Trail->r.scale = 2;
-		Trail->alpha = 1.0;
-		Trail->r.scale = 1.0;
+	AddEffect(NULL, trail);
+}
 
-		VectorCopy( Origin, Trail->r.startpos );
-		Trail->r.startpos[2] -= 128;
-		
-		VectorCopy( Origin, Trail->r.endpos );
-		Trail->r.endpos[2] += 32;
-		
-		Trail->dlight=CE_DLight_new(BrightColor,250.0f,0.0f);
-		Trail->d_alpha = 0.0;
-		Trail->d_scale = 0.0;
+#pragma endregion
 
-		AddEffect(NULL,Trail);
+void FXHPMissile(centity_t* owner, const int type, const int flags, vec3_t origin)
+{
+	vec3_t velocity;
+	byte effect_type;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_HP_MISSILE].formatString, &velocity, &effect_type);
 
-		break;
+	const paletteRGBA_t	light_color = { .r = 0, .g = 0, .b = 255, .a = 255 };
+	const paletteRGBA_t	bug_color = { .r = 229, .g = 250, .b = 88, .a = 255 };
 
-		//Ending effect for her teleport
-		case HPTELEPORT_END:
-		
-		Trail = ClientEntity_new( Type, CEF_DONT_LINK, Origin, NULL, 20);
+	switch (effect_type)
+	{
+		case HPMISSILE1: // Blue swirling, homing missiles.
+			SpawnHPMissile1(owner, type, origin, velocity, light_color); //mxd
+			break;
 
-		VectorCopy( Origin, Trail->origin );
 
-		Trail->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		Trail->Update=FXHPTeleportLineThink2;
+		case HPMISSILE2: // Normal trails off projectiles.
+			SpawnHPMissile2(owner, type, origin, velocity, light_color); //mxd
+			break;
 
-		Trail->r.model = hpproj_models + 7;			
-		Trail->r.spriteType = SPRITE_LINE;
-		Trail->r.tile = 1.0;
-		Trail->r.scale = 64;
-		Trail->alpha = 1.0;
-		Trail->r.scale = 1.0;
+		case HPMISSILE3: // Light bugs/mines.
+			SpawnHPMissile3(owner, type, origin, velocity, bug_color); //mxd
+			break;
 
-		VectorCopy( Origin, Trail->r.startpos );
-		Trail->r.startpos[2] -= 128;
-		
-		VectorCopy( Origin, Trail->r.endpos );
-		Trail->r.endpos[2] += 512;
-		
-		Trail->dlight=CE_DLight_new(BrightColor,250.0f,0.0f);
-		Trail->d_alpha = -1.0;
-		Trail->d_scale = 0.0;
+		case HPMISSILE4: // Light shafts coming from the priestess' staff.
+			SpawnHPMissile4(type, origin, velocity); //mxd
+			break;
 
-		AddEffect(NULL,Trail);
+		case HPMISSILE5: // The power bolts she shoots from her staff.
+			SpawnHPMissile5(type, origin, velocity); //mxd
+			break;
 
-		break;
+		case HPMISSILE1_EXPLODE: // Normal explosions.
+		case HPMISSILE2_EXPLODE:
+			SpawnHPMissile12Explode(owner, type, origin); //mxd
+			break;
 
-	default:
+		case HPMISSILE3_EXPLODE: // Light bug explosion.
+			SpawnHPMissile3Explode(owner, type, origin); //mxd
+			break;
 
-		Com_DPrintf("ERROR FXHPMissile: No available effect processor! (EFFECT ID %d)\n", effectType);
-		break;
+		case HPMISSILE1_LIGHT: // Light the emanates from her staff when casting effects.
+		case HPMISSILE2_LIGHT:
+			SpawnHPMissile12Light(type, origin, light_color); //mxd
+			break;
+
+		case HPMISSILE3_LIGHT: // Light the emanates from her staff when casting bugs.
+			SpawnHPMissile3Light(type, origin, bug_color); //mxd
+			break;
+
+		case HPMISSILE4_LIGHT: // Light for the massive light attack.
+			SpawnHPMissile4Light(type, origin); //mxd
+			break;
+
+		case HPMISSILE5_LIGHT: // Empty
+			break;
+
+		case HPTELEPORT_START: // Starting effect for her teleport.
+			SpawnHPTeleportStart(type, origin); //mxd
+			break;
+
+		case HPTELEPORT_END: // Ending effect for her teleport.
+			SpawnHPTeleportEnd(type, origin); //mxd
+			break;
+
+		default:
+			Com_DPrintf("ERROR FXHPMissile: No available effect processor! (EFFECT ID %d)\n", effect_type);
+			break;
 	}
 }
