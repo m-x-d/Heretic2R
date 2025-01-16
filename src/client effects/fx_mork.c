@@ -13,6 +13,7 @@
 #include "Vector.h"
 #include "ce_DLight.h"
 #include "fx_flamethrow.h" //mxd
+#include "fx_HighPriestessProjectiles.h" //mxd
 #include "random.h"
 #include "q_Sprite.h"
 #include "Utilities.h"
@@ -3115,8 +3116,6 @@ static qboolean FXMMissileTrailThink(struct client_entity_s *self,centity_t *Own
 	
 	return true;
 }
-
-extern void FXHPMissileCreateWarp(centity_t *Owner,int Type,int Flags,vec3_t Origin);
 
 void FXMorkTrackingMissile ( centity_t *owner, vec3_t origin, vec3_t velocity )
 {
