@@ -10,27 +10,18 @@
 #include "Utilities.h"
 #include "Vector.h"
 
-#define	NUM_STAFF_MODELS	1
+static struct model_s* hpstaff_model;
 
-static struct model_s* hpstaff_models[NUM_STAFF_MODELS];
-
-void PreCacheHPStaff()
+void PreCacheHPStaff(void)
 {
-	//Staff Trail
-	hpstaff_models[0] = fxi.RegisterModel("sprites/fx/hpproj1_2.sp2");
+	hpstaff_model = fxi.RegisterModel("sprites/fx/hpproj1_2.sp2"); // Staff Trail.
 }
 
-/*
-
-	High Priestess Staff Effects
-
-*/
-
-enum
+enum HighPriestessStaff_e
 {
 	HP_STAFF_INIT,
 	HP_STAFF_TRAIL,
-} HighPriestessStaff_e;
+};
 
 /*-----------------------------------------------
 	FXHPStaff
@@ -49,7 +40,7 @@ qboolean HPStaffTrailThink(struct client_entity_s* self, centity_t* owner)
 
 	Trail->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
-	Trail->r.model = hpstaff_models;
+	Trail->r.model = &hpstaff_model;
 	Trail->r.scale = 0.75;
 	Trail->alpha = 0.5;
 	Trail->d_alpha = -2.0;
