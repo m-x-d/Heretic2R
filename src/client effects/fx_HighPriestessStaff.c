@@ -54,15 +54,6 @@ static qboolean HPStaffTrailThink(const struct client_entity_s* self, centity_t*
 }
 
 /*-----------------------------------------------
-	PriestessEffectStayAlive
------------------------------------------------*/
-
-qboolean PriestessEffectStayAlive(struct client_entity_s* self, centity_t* owner)
-{
-	return true;
-}
-
-/*-----------------------------------------------
 	PriestessFirstSeenInit
 -----------------------------------------------*/
 
@@ -100,12 +91,10 @@ void FXHPStaff(centity_t* Owner, int Type, int Flags, vec3_t Origin)
 
 			self->Update = NULL;
 			self->AddToView = PriestessFirstSeenInit;
-			self->Update = PriestessEffectStayAlive;
+			self->Update = KeepSelfAI;
 			self->extra = (void*)(&fxi.server_entities[entID]);
 
 			AddEffect(Owner, self);
-
-			PriestessEffectStayAlive(self, Owner);
 			break;
 
 		case HP_STAFF_TRAIL:
