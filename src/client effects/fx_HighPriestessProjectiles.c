@@ -161,44 +161,28 @@ static qboolean FXHPTeleportLineThink2(struct client_entity_s* self, centity_t* 
 	return false;
 }
 
-/*-----------------------------------------------
-	FXHPMissileSpawnerThink
------------------------------------------------*/
-
-static qboolean FXHPMissileSpawnerThink(struct client_entity_s *self,centity_t *Owner)
+static qboolean FXHPMissileSpawnerThink(const struct client_entity_s* self, centity_t* owner)
 {
-	client_entity_t	*TrailEnt;
-
 	if (self->LifeTime < fxi.cl->time)
 		return false;
 
-	TrailEnt=ClientEntity_new(FX_HP_MISSILE,
-							  CEF_DONT_LINK,
-							  self->origin,
-							  NULL,
-							  1000);
+	client_entity_t* trail = ClientEntity_new(FX_HP_MISSILE, CEF_DONT_LINK, self->origin, NULL, 1000);
 
-	TrailEnt->radius = 500;
+	trail->radius = 500.0f;
 
-	TrailEnt->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	TrailEnt->r.model = hpproj_models + 3;
+	trail->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	trail->r.model = &hpproj_models[3]; // Halo sprite.
+	trail->r.scale = 0.1f;
 
-	TrailEnt->r.color.c = 0xFFFFFFFF;
-	TrailEnt->alpha = 1.0;
-	TrailEnt->r.scale = 0.1;
+	trail->d_alpha = -2.5f;
+	trail->d_scale = 4.0f;
 
-	TrailEnt->d_alpha = -2.5;
-	TrailEnt->d_scale = 4.0;
-	
-	VectorCopy(self->origin, TrailEnt->origin);
-	
-	TrailEnt->velocity[0] = irand(-16, 16);
-	TrailEnt->velocity[1] = irand(-16, 16);
-	TrailEnt->velocity[2] = irand(-16, 16);
+	VectorCopy(self->origin, trail->origin);
+	VectorRandomSet(trail->velocity, 16.0f); //mxd. Set using irand() in original version. Why?
 
-	AddEffect(NULL,TrailEnt);
+	AddEffect(NULL, trail);
 
-	return true;	
+	return true;
 }
 
 /*-----------------------------------------------
