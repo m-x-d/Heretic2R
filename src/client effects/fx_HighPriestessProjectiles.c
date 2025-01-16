@@ -215,36 +215,33 @@ static qboolean FXHPHaloDie(const struct client_entity_s* self, centity_t* owner
 	return (self->r.scale > 0.0f && self->alpha > 0.0f);
 }
 
-/*-----------------------------------------------
-	FXHPMissileSpawnerThink3
------------------------------------------------*/
-
-static qboolean FXHPMissileSpawnerThink3(struct client_entity_s *self,centity_t *Owner)
+static qboolean FXHPMissileSpawnerThink3(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->LifeTime < fxi.cl->time)
 	{
 		self->Update = FXHPHaloDie;
-		self->d_scale = -2.0;
-		self->d_alpha = -1.0;
-		return true;
-	}
-	
-	if (self->d_scale == 0.0)
-	{
-		self->r.scale = flrand(1.75, 2.25);
+		self->d_scale = -2.0f;
+		self->d_alpha = -1.0f;
+
 		return true;
 	}
 
-	if (self->r.scale >= 2)
-		self->d_scale = 0.0;
-	
-	if (self->alpha > 0.5)
+	if (self->d_scale == 0.0f)
 	{
-		self->d_alpha = 0.0;
-		self->alpha = 0.5;
+		self->r.scale = flrand(1.75f, 2.25f);
+		return true;
 	}
 
-	return true;	
+	if (self->r.scale >= 2.0f)
+		self->d_scale = 0.0f;
+
+	if (self->alpha > 0.5f)
+	{
+		self->d_alpha = 0.0f;
+		self->alpha = 0.5f;
+	}
+
+	return true;
 }
 
 /*-----------------------------------------------
