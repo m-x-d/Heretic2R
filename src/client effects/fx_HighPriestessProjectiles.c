@@ -315,45 +315,33 @@ static qboolean FXHPMissileTrailThink(struct client_entity_s* self, const centit
 	return true;
 }
 
-/*-----------------------------------------------
-	FXHPMissileTrailThink2
------------------------------------------------*/
-
-static qboolean FXHPMissileTrailThink2(struct client_entity_s *self,centity_t *Owner)
+static qboolean FXHPMissileTrailThink2(struct client_entity_s* self, const centity_t* owner)
 {
-	client_entity_t	*TrailEnt;
+	self->r.scale = flrand(0.35f, 0.55f);
 
-	self->r.scale = flrand(0.35, 0.55);
+	client_entity_t* trail = ClientEntity_new(FX_HP_MISSILE, CEF_DONT_LINK, owner->origin, NULL, 17);
 
-	TrailEnt=ClientEntity_new(FX_HP_MISSILE,
-							  CEF_DONT_LINK,
-							  Owner->origin,
-							  NULL,
-							  17);
+	trail->radius = 500.0f;
 
-	TrailEnt->radius = 500;
+	VectorCopy(owner->origin, trail->origin);
 
-	VectorCopy( Owner->origin, TrailEnt->origin );
+	trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA;
+	trail->r.model = &hpproj_models[2]; // Segment trail sprite.
 
-	TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA;
-	TrailEnt->r.model = hpproj_models + 2;
+	trail->r.spriteType = SPRITE_LINE;
+	trail->r.tile = 1.0f;
+	trail->r.scale = 2.0f; //mxd. BUGFIX: set to 2.0, then set to 1.0 below in original version.
 
-	TrailEnt->r.spriteType = SPRITE_LINE;
-	TrailEnt->r.tile = 1;
-	TrailEnt->r.scale = 2;
-	TrailEnt->alpha = 1.0;
-	TrailEnt->r.scale = 1.0;
+	VectorCopy(self->startpos, trail->r.startpos);
+	VectorCopy(owner->origin, trail->r.endpos);
 
-	VectorCopy( self->startpos, TrailEnt->r.startpos );
-	VectorCopy( Owner->origin , TrailEnt->r.endpos );
+	trail->d_alpha = -4.0f;
+	trail->d_scale = 0.0f;
+	trail->Update = FXHPTrailThink2;
 
-	TrailEnt->d_alpha = -4.0;
-	TrailEnt->d_scale = 0.0;
-	TrailEnt->Update = FXHPTrailThink2;
-	
-	AddEffect(NULL,TrailEnt);
+	AddEffect(NULL, trail);
 
-	VectorCopy(Owner->origin, self->startpos);
+	VectorCopy(owner->origin, self->startpos);
 
 	return true;
 }
