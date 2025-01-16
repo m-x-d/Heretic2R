@@ -23,40 +23,32 @@ enum HighPriestessStaff_e
 	HP_STAFF_TRAIL,
 };
 
-/*-----------------------------------------------
-	FXHPStaff
------------------------------------------------*/
-
-qboolean HPStaffTrailThink(struct client_entity_s* self, centity_t* owner)
+static qboolean HPStaffTrailThink(const struct client_entity_s* self, centity_t* owner)
 {
-	client_entity_t* Trail;
-	matrix3_t		RotationMatrix;
+	const centity_t* actual_owner = (centity_t*)self->extra;
 
 	// This tells if we are wasting our time, because the reference points are culled.
-	if (!RefPointsValid((centity_t*)(self->extra)))
+	if (!RefPointsValid(actual_owner))
 		return true;
 
-	Trail = ClientEntity_new(FX_HP_STAFF, CEF_DONT_LINK, self->r.origin, NULL, 2000);
+	client_entity_t* trail = ClientEntity_new(FX_HP_STAFF, CEF_DONT_LINK, self->r.origin, NULL, 2000);
 
-	Trail->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	trail->radius = 500.0f;
+	trail->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	trail->r.model = &hpstaff_model;
+	trail->r.scale = 0.75f;
+	trail->alpha = 0.5f;
+	trail->d_alpha = -2.0f;
+	trail->d_scale = -2.0f;
 
-	Trail->r.model = &hpstaff_model;
-	Trail->r.scale = 0.75;
-	Trail->alpha = 0.5;
-	Trail->d_alpha = -2.0;
-	Trail->d_scale = -2.0;
-	Trail->radius = 500;
+	matrix3_t rotation;
+	Matrix3FromAngles(actual_owner->lerp_angles, rotation);
+	Matrix3MultByVec3(rotation, actual_owner->referenceInfo->references[PRIESTESS_STAFF].placement.origin, trail->r.origin);
 
-	Matrix3FromAngles(((centity_t*)(self->extra))->lerp_angles, RotationMatrix);
+	VectorAdd(actual_owner->origin, trail->r.origin, trail->r.origin);
+	trail->r.origin[2] -= 36.0f;
 
-	Matrix3MultByVec3(RotationMatrix,
-		((centity_t*)(self->extra))->referenceInfo->references[PRIESTESS_STAFF].placement.origin,
-		Trail->r.origin);
-
-	VectorAdd(((centity_t*)(self->extra))->origin, Trail->r.origin, Trail->r.origin);
-	Trail->r.origin[2] -= 36;
-
-	AddEffect(NULL, Trail);
+	AddEffect(NULL, trail);
 
 	return true;
 }
