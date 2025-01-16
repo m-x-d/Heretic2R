@@ -4,25 +4,20 @@
 // Copyright 1998 Raven Software
 //
 
+#include "fx_HighPriestessProjectiles.h" //mxd
 #include "Client Effects.h"
-#include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
-#include "ce_DLight.h"
-#include "random.h"
-#include "q_Sprite.h"
+#include "Random.h"
 #include "Utilities.h"
-#include "reference.h"
-#include "Matrix.h"
+#include "ce_DLight.h"
+#include "q_Sprite.h"
 #include "g_playstats.h"
 
-#define NUM_MISSILE_MODELS	11
+#define PRIESTESS_TELEPORT_LINEHEIGHT 764
 
-static struct model_s *hpproj_models[NUM_MISSILE_MODELS];
-
-enum {
+enum
+{
 	HPMISSILE1,
 	HPMISSILE2,
 	HPMISSILE3,
@@ -43,10 +38,7 @@ enum {
 	HPLIGHTNING_BOLT,
 };
 
-/*
-	Precaching Functions
-
-*/
+static struct model_s* hpproj_models[11];
 
 void PreCacheHPMissile()
 {
@@ -78,8 +70,6 @@ void PreCacheHPMissile()
 	High Priestess Projectile Functions
 
 */
-
-#define PRIESTESS_TELEPORT_LINEHEIGHT 764
 
 static qboolean FXHPTeleportLineThink(struct client_entity_s *self,centity_t *Owner)
 {

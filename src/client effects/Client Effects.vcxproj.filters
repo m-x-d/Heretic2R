@@ -347,5 +347,8 @@
     <ClInclude Include="Client Effects.h">
       <Filter>src\Generic Effects</Filter>
     </ClInclude>
+    <ClInclude Include="fx_HighPriestessProjectiles.h">
+      <Filter>src\Effects</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
