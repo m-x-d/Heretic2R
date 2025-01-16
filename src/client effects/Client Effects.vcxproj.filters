@@ -111,9 +111,6 @@
     <ClCompile Include="fx_hitpuff.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="fx_HighPriestessProjectiles.c">
-      <Filter>src\Effects</Filter>
-    </ClCompile>
     <ClCompile Include="fx_insectstaff.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
@@ -275,6 +272,12 @@
     </ClCompile>
     <ClCompile Include="TestEffect.c">
       <Filter>src\Generic Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_HighPriestessStaff.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_HighPriestessProjectiles.c">
+      <Filter>src\Effects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
