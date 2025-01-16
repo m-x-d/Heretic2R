@@ -244,46 +244,37 @@ static qboolean FXHPMissileSpawnerThink3(struct client_entity_s* self, centity_t
 	return true;
 }
 
-/*-----------------------------------------------
-	FXHPTrailThink
------------------------------------------------*/
-
-static qboolean FXHPTrailThink(struct client_entity_s *self,centity_t *Owner)
+static qboolean FXHPTrailThink(struct client_entity_s* self, centity_t* owner)
 {
-	if (self->alpha <= 0.1 || self->r.scale <= 0.0)
-		return false;
+	if (self->alpha > 0.1f && self->r.scale > 0.0f)
+	{
+		self->r.scale -= 0.1f;
+		return true;
+	}
 
-	self->r.scale -= 0.1;
-	
-	return true;
+	return false;
 }
 
-/*-----------------------------------------------
-	FXHPTrailThink2
------------------------------------------------*/
-
-static qboolean FXHPTrailThink2(struct client_entity_s *self,centity_t *Owner)
+static qboolean FXHPTrailThink2(struct client_entity_s* self, centity_t* owner)
 {
-	if (self->alpha <= 0.1 || self->r.scale <= 0.0)
-		return false;
+	if (self->alpha > 0.1f && self->r.scale > 0.0f)
+	{
+		self->r.scale -= 0.15f;
+		return true;
+	}
 
-	self->r.scale -= 0.15;
-
-	return true;
+	return false;
 }
 
-/*-----------------------------------------------
-	FXHPTrailThink3
------------------------------------------------*/
-
-static qboolean FXHPTrailThink3(struct client_entity_s *self,centity_t *Owner)
+static qboolean FXHPTrailThink3(struct client_entity_s* self, centity_t* owner)
 {
-	if (self->alpha <= 0.1 || self->r.scale <= 0.0)
-		return false;
+	if (self->alpha > 0.1f && self->r.scale > 0.0f)
+	{
+		self->r.scale -= 0.25f;
+		return true;
+	}
 
-	self->r.scale -= 0.25;
-
-	return true;
+	return false;
 }
 
 /*-----------------------------------------------
