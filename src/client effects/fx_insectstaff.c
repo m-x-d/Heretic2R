@@ -380,12 +380,10 @@ static qboolean InsectFirstSeenInit(struct client_entity_s* self, const centity_
 	return true;
 }
 
-void FXInsectReadyRefs (centity_t *owner,int type,int flags,vec3_t origin)
+static void FXInsectReadyRefs(centity_t* owner, const int type, int flags, const vec3_t origin)
 {
-	client_entity_t		*self;
-
 	flags |= CEF_NO_DRAW;
-	self = ClientEntity_new(type, flags, origin, NULL, 17);
+	client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, 17);
 
 	self->Update = NULL;
 	self->AddToView = InsectFirstSeenInit;
