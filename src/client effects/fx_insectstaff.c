@@ -122,31 +122,24 @@ static qboolean FXInsectStaffTrailThink(struct client_entity_s* self, const cent
 	return true;
 }
 
-// ************************************************************************************************
-// FXInsectStaff
-// ************************************************************************************************
-
-void FXInsectStaff(centity_t *owner,int type,int flags,vec3_t origin)
+static void FXInsectStaff(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t	*Trail;
-	paletteRGBA_t	LightColor={255,64,32,255};
+	const paletteRGBA_t light_color = { .r = 255,.g = 64,.b = 32,.a = 255 };
 
-	Trail=ClientEntity_new(type,flags,origin,NULL,17);
+	client_entity_t* trail = ClientEntity_new(type, flags, origin, NULL, 17);
 
-	Trail->r.model = &insect_model;
-	Trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD;
-	Trail->r.scale = flrand(0.8, 1.3);
-	Trail->d_alpha = 0.0f;
-	Trail->d_scale = 0.0f;
-	Trail->r.color.c = 0xffffffff;
-	Trail->radius = 20.0;
+	trail->r.model = &insect_model;
+	trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD;
+	trail->r.scale = flrand(0.8f, 1.3f);
+	trail->r.color = color_white;
+	trail->radius = 20.0f;
 
-	Trail->Update=FXInsectStaffTrailThink;
+	trail->Update = FXInsectStaffTrailThink;
 
-	if(r_detail->value > DETAIL_NORMAL)
-		Trail->dlight=CE_DLight_new(LightColor,150.0f,0.0f);
+	if (r_detail->value > DETAIL_NORMAL)
+		trail->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
 
-	AddEffect(owner,Trail);
+	AddEffect(owner, trail);
 }
 
 // ************************************************************************************************
