@@ -16,9 +16,6 @@ void FXTPortSmoke(centity_t* owner, const int type, const int flags, vec3_t orig
 {
 	client_entity_t* smoke = ClientEntity_new(type, (uint)(flags | CEF_NO_DRAW), origin, NULL, 1650);
 
-	smoke->r.color.r = 255;
-	smoke->r.color.g = 255;
-	smoke->r.color.b = 255;
 	smoke->r.color.a = 128;
 	smoke->radius = 10.0f;
 

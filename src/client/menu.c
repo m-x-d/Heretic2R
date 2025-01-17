@@ -892,7 +892,7 @@ static void Slider_Draw(menuslider_s* slider, const qboolean selected)
 	char item_name[64];
 
 	const float alpha = M_GetMenuAlpha();
-	const paletteRGBA_t color = { .a = (byte)Q_ftol(alpha * 255), .r = 0xff, .g = 0xff, .b = 0xff};
+	const paletteRGBA_t color = { .a = (byte)Q_ftol(alpha * 255.0f), .r = 0xff, .g = 0xff, .b = 0xff};
 
 	// Draw slider name.
 	int x = M_GetMenuLabelX(slider->generic.width);
