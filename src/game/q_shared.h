@@ -93,8 +93,12 @@
 
 #define VectorCopy_Macro(a,b)			(b[0]=a[0],b[1]=a[1],b[2]=a[2])
 //#define VectorSubtract_Macro(a,b,c)		(c[0]=a[0]-b[0],c[1]=a[1]-b[1],c[2]=a[2]-b[2]) //TODO: remove?
-#define COLOUR_SET(c, cr, cg, cb)		((c).r=(cr), (c).g=(cg), (c).b=(cb), (c).a=255) //mxd
-#define COLOUR_SETA(c, cr, cg, cb, ca)	((c).r=(cr), (c).g=(cg), (c).b=(cb), (c).a=(ca)) //mxd
+
+//mxd. paletteRGBA_t handling macros.
+#define COLOUR_SET(c, cr, cg, cb)		((c).r=(byte)(cr), (c).g=(byte)(cg), (c).b=(byte)(cb), (c).a=255)
+#define COLOUR_SETA(c, cr, cg, cb, ca)	((c).r=(byte)(cr), (c).g=(byte)(cg), (c).b=(byte)(cb), (c).a=(byte)(ca))
+#define COLOUR_COPY(src, dst)			((dst).r=(src).r, (dst).g=(src).g, (dst).b=(src).b)
+#define COLOUR_COPYA(src, dst)			((dst).r=(src).r, (dst).g=(src).g, (dst).b=(src).b, , (dst).a=(src).a)
 
 H2COMMON_API int Q_log2(int val);
 H2COMMON_API int Q_sign(int val); //mxd
