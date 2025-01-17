@@ -184,75 +184,53 @@ static qboolean FXGlobeOfOuchinessGlobeThink(struct client_entity_s* self, centi
 	return true;
 }
 
-// ****************************************************************************
-// FXGlobeOfOuchinessAuraThink -
-// ****************************************************************************
-
-static qboolean FXGlobeOfOuchinessAuraThink(struct client_entity_s *self,centity_t *owner)
+static qboolean FXGlobeOfOuchinessAuraThink(const struct client_entity_s* self, const centity_t* owner)
 {
-	vec3_t			TrailStart,Trail;
-	float			TrailLength,DeltaTrailLength;
-	vec3_t			Right,Up;
-	client_entity_t	*TrailEnt;
-	int i;
+	vec3_t trail_start;
+	VectorCopy(owner->origin, trail_start);
 
-	//
+	vec3_t trail_dir;
+	VectorSubtract(owner->lerp_origin, owner->origin, trail_dir);
 
-	VectorCopy(owner->origin,TrailStart);
-	VectorSubtract(owner->lerp_origin,owner->origin,Trail);
+	float trail_length = VectorNormalize(trail_dir);
+	if (trail_length < 0.001f)
+		trail_length += 2.0f;
 
-	if((TrailLength=VectorNormalize(Trail))<0.001)
+	vec3_t right;
+	PerpendicularVector(right, trail_dir);
+
+	vec3_t up;
+	CrossProduct(trail_dir, right, up);
+
+	VectorScale(trail_dir, FX_GLOBE_FLY_SPEED, trail_dir);
+
+	const int flags = (int)(self->flags & ~(CEF_OWNERS_ORIGIN | CEF_NO_DRAW));
+	const float base_scale = (r_detail->value < DETAIL_NORMAL) ? FX_SOFT_GLOBE_AURA_SCALE : FX_GLOBE_AURA_SCALE; //mxd
+	const float delta_scale = (r_detail->value < DETAIL_NORMAL) ? -1.0f : -0.5f; //mxd
+
+	for (int i = 0; i < 41; i++)
 	{
-		TrailLength+=2.0;
-	}
-	
-	//
-
-	PerpendicularVector(Right,Trail);
-	CrossProduct(Trail,Right,Up);
-
-	DeltaTrailLength=FX_GLOBE_FLY_SPEED;
-	VectorScale(Trail,FX_GLOBE_FLY_SPEED,Trail);
-
-	i=0;
-	while(TrailLength>0.0)
-	{
-		//
-		i++;
-		if (i>40)
+		if (trail_length <= 0.0f)
 			return true;
-		TrailEnt=ClientEntity_new(FX_I_EFFECTS,
-								  self->flags&~(CEF_OWNERS_ORIGIN|CEF_NO_DRAW),
-								  TrailStart,
-								  NULL,
-								  500);
 
-		TrailEnt->r.model = globe_models;
-		TrailEnt->r.flags=RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA;
-		if (r_detail->value < DETAIL_NORMAL)
-			TrailEnt->Scale=FX_SOFT_GLOBE_AURA_SCALE+flrand(0.0, 0.1);
-		else
-			TrailEnt->Scale=FX_GLOBE_AURA_SCALE+flrand(0.0, 0.1);
-		TrailEnt->color.r=irand(128, 180);
-		TrailEnt->color.g=irand(128, 180);
-		TrailEnt->color.b=irand(64, 80);
-		TrailEnt->alpha = 0.7;
-		TrailEnt->d_alpha = -1.0;
-		if (r_detail->value < DETAIL_NORMAL)
-			TrailEnt->d_scale = -1.0;
-		else
-			TrailEnt->d_scale = -0.5;
+		client_entity_t* trail = ClientEntity_new(FX_I_EFFECTS, flags, trail_start, NULL, 500);
 
-		TrailEnt->radius=70.0;
-				
-		AddEffect(NULL,TrailEnt);
+		trail->r.model = &globe_models[0];
+		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		trail->Scale = base_scale + flrand(0.0f, 0.1f); //TODO: supposed to set r.scale? Where is this used?
+		COLOUR_SET(trail->color, irand(128, 180), irand(128, 180), irand(64, 80)); //mxd. Use macro.
+		trail->alpha = 0.7f;
+		trail->d_alpha = -1.0f;
+		trail->d_scale = delta_scale;
+		trail->radius = 70.0f;
 
-		TrailLength-=DeltaTrailLength;
-		
-		VectorAdd(TrailStart,Trail,TrailStart);
+		AddEffect(NULL, trail);
+
+		VectorAdd(trail_start, trail_dir, trail_start);
+		trail_length -= FX_GLOBE_FLY_SPEED;
 	}
 
-	return(true);
+	return true;
 }
 
 // ****************************************************************************
