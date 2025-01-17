@@ -300,100 +300,60 @@ static qboolean FXGlobeOfOuchinessGlowballThink(struct client_entity_s* self, co
 	return false;
 }
 
-// ****************************************************************************
-// FXGlobeOfOuchinessGlowballSpawnerThink -
-// ****************************************************************************
-
-static qboolean FXGlobeOfOuchinessGlowballSpawnerThink(struct client_entity_s *self,centity_t *owner)
+static qboolean FXGlobeOfOuchinessGlowballSpawnerThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_entity_t	*Glowball;
-	vec3_t			Forward,Right,
-					Forward2,Right2,
-					Temp;
-	matrix3_t		RotationMatrix;
+	// 'self->extra' refers to the caster's centity_t.
+	const centity_t* caster = (centity_t*)self->extra;
 
 	// This tells if we are wasting our time, because the reference points are culled.
-	if (!RefPointsValid((centity_t *)(self->extra)))
+	if (!RefPointsValid(caster) || !(owner->current.effects & EF_MARCUS_FLAG1))
 		return true;
 
 	// If the spell is still building, create some swirling blue Glowballs.
+	const int flags = (int)(self->flags & ~(CEF_NO_DRAW | CEF_OWNERS_ORIGIN));
+	client_entity_t* glowball = ClientEntity_new(FX_I_EFFECTS, flags, caster->origin, NULL, 50);
 
-	if(owner->current.effects&EF_MARCUS_FLAG1)
-	{	
-		// 'self->extra' refers to the caster's centity_t.
+	self->flags |= CEF_DONT_LINK;
 
-		Glowball=ClientEntity_new(FX_I_EFFECTS,
-								  self->flags&~(CEF_NO_DRAW|CEF_OWNERS_ORIGIN),
-								  ((centity_t *)(self->extra))->origin,
-								  NULL,
-								  50);
+	vec3_t temp;
+	VectorCopy(owner->current.angles, temp);
+	VectorScale(temp, 180.0f / ANGLE_180, temp);
 
-		self->flags|=CEF_DONT_LINK;
-		
-		VectorCopy(((centity_t *)(self->extra))->current.angles,Temp);
-		VectorScale(Temp,180.0/M_PI,Temp);
-		AngleVectors(Temp,Forward,Right,NULL);
+	vec3_t owner_fwd;
+	AngleVectors(temp, owner_fwd, NULL, NULL);
 
-		VectorCopy(owner->current.angles,Temp);
-		VectorScale(Temp,180.0/M_PI,Temp);
-		AngleVectors(Temp,Forward2,Right2,NULL);
+	// Make me spawn from my caster's left / right hands (alternating).
+	matrix3_t rotation;
+	Matrix3FromAngles(caster->lerp_angles, rotation);
 
-		// Make me spawn from my caster's left / right hands (alternating).
+	const qboolean is_sword_fx = (self->color.g & 1); //mxd
+	const int ref_index = (is_sword_fx ? INSECT_SWORD : INSECT_STAFF); //mxd
+	Matrix3MultByVec3(rotation, caster->referenceInfo->references[ref_index].placement.origin, glowball->r.origin);
 
-		Matrix3FromAngles(((centity_t *)(self->extra))->lerp_angles,RotationMatrix);
+	VectorAdd(caster->origin, glowball->r.origin, glowball->r.origin);
 
-		if(!(self->color.g&1))
-		{
-			Matrix3MultByVec3(RotationMatrix,
-				((centity_t *)(self->extra))->referenceInfo->references[INSECT_STAFF].placement.origin,
-					  Glowball->r.origin);
-		}
-		else
-		{
-			Matrix3MultByVec3(RotationMatrix,
-				  ((centity_t *)(self->extra))->referenceInfo->references[INSECT_SWORD].placement.origin,
-					  Glowball->r.origin);
-		}
+	// Set my velocity.
+	glowball->velocity[0] = owner_fwd[0] * 175.0f + flrand(-25.0f, 25.0f) * (is_sword_fx ? -1.0f : 1.0f);
+	glowball->velocity[1] = owner_fwd[1] * 175.0f + flrand(-25.0f, 25.0f) * (is_sword_fx ? 1.0f : -1.0f);
+	glowball->velocity[2] = flrand(-200.0f, 100.0f);
 
-		VectorAdd(((centity_t *)(self->extra))->origin,Glowball->r.origin,Glowball->r.origin);
+	// Fill in the rest of my info.
+	glowball->r.model = &globe_models[2];
 
-		// Set my velocity and accelaration.
+	glowball->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD;
+	COLOUR_SET(glowball->r.color, irand(128, 180), irand(128, 180), irand(180, 255)); //mxd. Use macro.
+	glowball->color.r = 1;
+	glowball->radius = 20.0f;
 
-		Glowball->velocity[0]=Forward2[0]*175.0+flrand(-25.0, 25.0);
+	glowball->extra = (void*)owner;
+	glowball->Update = FXGlobeOfOuchinessGlowballThink;
 
-		if(self->color.g&1)
-			Glowball->velocity[0]=-Glowball->velocity[0];
+	AddEffect(owner, glowball);
+	FXGlobeOfOuchinessGlowballThink(glowball, owner);
 
-		Glowball->velocity[1]=Forward2[1]*175.0+flrand(-25.0, 25.0);
+	self->color.g++;
 
-		if(!(self->color.g&1))
-			Glowball->velocity[1]=-Glowball->velocity[1];
-		
-		Glowball->velocity[2]=flrand(-200.0, 100.0);
-
-		VectorClear(Glowball->acceleration);
-
-		// Fill in the rest of my info.
-		Glowball->r.model = globe_models + 2;
-
-		Glowball->r.flags=RF_TRANSLUCENT|RF_TRANS_ADD;
-		Glowball->r.color.r= irand(128, 180);
-		Glowball->r.color.g= irand(128, 180);
-		Glowball->r.color.b= irand(180, 255);
-		Glowball->color.r=1;
-		Glowball->radius=20.0;
-
-		Glowball->extra=(void *)owner;
-		Glowball->Update=FXGlobeOfOuchinessGlowballThink;
-
-		AddEffect(owner,Glowball);
-
-		FXGlobeOfOuchinessGlowballThink(Glowball,owner);
-
-		self->color.g++;
-	}
-
-	return(true);
+	return true;
 }
 
 // ****************************************************************************
