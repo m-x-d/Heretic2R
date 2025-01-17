@@ -369,14 +369,14 @@ static void FXInsectGlow(centity_t* owner, const int type, const int flags, vec3
 	AddEffect(owner, glowball_spawner);
 }
 
-qboolean InsectFirstSeenInit(struct client_entity_s *self, centity_t *owner)
+static qboolean InsectFirstSeenInit(struct client_entity_s* self, const centity_t* owner)
 {
-	self->refMask |= INSECT_MASK;	
-
+	self->refMask |= INSECT_MASK;
 	EnableRefPoints(owner->referenceInfo, self->refMask);
 
 	self->AddToView = NULL;
 	self->Update = KeepSelfAI;
+
 	return true;
 }
 
