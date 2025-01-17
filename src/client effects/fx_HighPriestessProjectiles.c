@@ -16,6 +16,7 @@
 
 #define PRIESTESS_TELEPORT_LINEHEIGHT 764
 
+//mxd. Mirrored in m_morcalavin.c. //TODO: most of these seem unused there!
 enum
 {
 	HPMISSILE1,

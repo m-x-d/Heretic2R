@@ -29,6 +29,7 @@ static ClassResourceInfo_t resInfo;
 void create_morcalavin_proj(edict_t *self,edict_t *proj);
 void BecomeDebris(edict_t *self);
 
+//mxd. Mirrored in fx_HighPriestessProjectiles.c.
 enum {
 	HPMISSILE1,
 	HPMISSILE2,
