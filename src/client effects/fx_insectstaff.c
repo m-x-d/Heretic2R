@@ -62,73 +62,63 @@ void PreCacheIEffects(void)
 	globe_models[4] = fxi.RegisterModel("sprites/fx/neon.sp2");
 }
 
-// ************************************************************************************************
-// FXInsectStaffTrailThink
-// ************************************************************************************************
-
-static qboolean FXInsectStaffTrailThink(struct client_entity_s *self,centity_t *owner)
+static qboolean FXInsectStaffTrailThink(struct client_entity_s* self, const centity_t* owner)
 {
-	vec3_t			TrailStart,Trail;
-	float			TrailLength,DeltaTrailLength;
-	vec3_t			Right,Up;
-	int				NoOfIntervals;
-	float			Theta,DeltaTheta;
-	client_entity_t	*TrailEnt;
+	vec3_t trail_start, trail;
 
-	VectorCopy(owner->origin,TrailStart);
-	VectorSubtract(owner->origin, self->origin, Trail);
+	VectorCopy(owner->origin, trail_start);
+	VectorSubtract(owner->origin, self->origin, trail);
 
-	self->r.scale = flrand(0.8, 1.3);
-	if((TrailLength=VectorNormalize(Trail))>0.05)
+	self->r.scale = flrand(0.8f, 1.3f);
+	float trail_length = VectorNormalize(trail);
+
+	if (trail_length > 0.05f)
 	{
-		PerpendicularVector(Right,Trail);
-		CrossProduct(Trail,Right,Up);
+		vec3_t right;
+		PerpendicularVector(right, trail);
 
-		DeltaTrailLength = FIST_DELTA_FORWARD;
-		VectorScale(Trail, FIST_DELTA_FORWARD, Trail);
+		vec3_t up;
+		CrossProduct(trail, right, up);
 
-		NoOfIntervals=(int)(TrailLength/DeltaTrailLength);
+		VectorScale(trail, FIST_DELTA_FORWARD, trail);
 
-		if(NoOfIntervals > 40)
-			return(false);
-		
-		Theta=fxi.cl->time*FIST_DELTA_THETA;
-		DeltaTheta=(fxi.cls->frametime*FIST_DELTA_THETA)/NoOfIntervals;
+		const int no_of_intervals = (int)(trail_length / FIST_DELTA_FORWARD);
+		if (no_of_intervals > 40)
+			return false;
 
-		while(TrailLength>0.0)
+		float theta = (float)fxi.cl->time * FIST_DELTA_THETA;
+		const float delta_theta = fxi.cls->frametime * FIST_DELTA_THETA / (float)no_of_intervals;
+		const int flags = (int)(self->flags & ~(CEF_OWNERS_ORIGIN | CEF_NO_DRAW)); //mxd
+
+		while (trail_length > 0.0f)
 		{
+			client_entity_t* trail_ent = ClientEntity_new(FX_I_EFFECTS, flags, trail_start, NULL, 1000);
 
-			TrailEnt=ClientEntity_new(FX_I_EFFECTS,
-									  self->flags&~(CEF_OWNERS_ORIGIN|CEF_NO_DRAW),
-									  TrailStart,
-									  NULL,
-									  1000);
+			trail_ent->r.model = &insect_model;
+			VectorMA(trail_start, FIST_SPIRAL_RAD * cosf(theta), right, trail_ent->r.origin);
+			VectorMA(trail_start, FIST_SPIRAL_RAD * sinf(theta), up, trail_ent->r.origin);
 
-			TrailEnt->r.model = &insect_model;
-			VectorMA(TrailStart,FIST_SPIRAL_RAD*cos(Theta),Right,TrailEnt->r.origin);
-			VectorMA(TrailStart,FIST_SPIRAL_RAD*sin(Theta),Up,TrailEnt->r.origin);
-			
-			TrailEnt->r.flags=RF_TRANSLUCENT|RF_TRANS_ADD;
-			
-			VectorRandomCopy(self->velocity, TrailEnt->velocity, flrand(0, 4));
+			trail_ent->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD;
 
-			TrailEnt->r.scale = FIST_SCALE+flrand(0.0, 0.05);
-			TrailEnt->d_alpha = flrand(-1.75, -2);
-			TrailEnt->d_scale = flrand(-0.75, -1.0);
-			TrailEnt->radius=20.0;
-			
-			AddEffect(NULL,TrailEnt);
+			VectorRandomCopy(self->velocity, trail_ent->velocity, flrand(0.0f, 4.0f));
 
-			TrailLength-=DeltaTrailLength;
-			
-			Theta+=DeltaTheta;
-			
-			VectorAdd(TrailStart,Trail,TrailStart);
+			trail_ent->r.scale = FIST_SCALE + flrand(0.0f, 0.05f);
+			trail_ent->d_alpha = flrand(-1.75f, -2.0f);
+			trail_ent->d_scale = flrand(-0.75f, -1.0f);
+			trail_ent->radius = 20.0f;
+
+			AddEffect(NULL, trail_ent);
+
+			trail_length -= FIST_DELTA_FORWARD;
+			theta += delta_theta;
+
+			VectorAdd(trail_start, trail, trail_start);
 		}
 	}
 
 	VectorCopy(owner->origin, self->origin);
-	VectorCopy(TrailStart, self->r.origin);
+	VectorCopy(trail_start, self->r.origin);
+
 	return true;
 }
 
