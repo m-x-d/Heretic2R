@@ -391,24 +391,6 @@ static void FXInsectReadyRefs(centity_t* owner, const int type, int flags, const
 	AddEffect(owner, self);
 }
 
-//HELLSTAFF
-
-// ************************************************************************************************
-// FXHellbolt
-// ************************************************************************************************
-
-static qboolean FXISpMslThink (struct client_entity_s *self, centity_t *owner)
-{
-	if(self->LifeTime < fxi.cl->time)
-		return (false);
-
-	self->r.frame++;
-	if(self->r.frame>2)
-		self->r.frame = 0;
-	
-	return (true);
-}
-
 void FXISpear(centity_t *owner, int type, int flags, vec3_t origin, vec3_t vel)
 {
 	client_entity_t	*hellbolt;	
