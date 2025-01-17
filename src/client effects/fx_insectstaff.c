@@ -391,25 +391,21 @@ static void FXInsectReadyRefs(centity_t* owner, const int type, int flags, const
 	AddEffect(owner, self);
 }
 
-void FXISpear(centity_t *owner, int type, int flags, vec3_t origin, vec3_t vel)
+static void FXInsectSpear(centity_t* owner, const int type, const int flags, const vec3_t origin, const vec3_t vel)
 {
-	client_entity_t	*hellbolt;	
-	paletteRGBA_t	LightColor = {255, 128, 64, 255};
+	const paletteRGBA_t light_color = { .r = 255, .g = 128, .b = 64, .a = 255 };
 
-	hellbolt = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 10000);
+	client_entity_t* hellbolt = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 10000);
 
-	hellbolt->r.model = spear_models;
+	hellbolt->r.model = &spear_models[0];
 	hellbolt->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-
-	hellbolt->r.scale = 1.0;
-	hellbolt->r.color = LightColor;
-	hellbolt->d_alpha = 0.0;
-	hellbolt->radius = 10.0F;
+	hellbolt->r.color = light_color;
+	hellbolt->radius = 10.0f;
 	VectorCopy(vel, hellbolt->velocity);
 	hellbolt->AddToView = LinkedEntityUpdatePlacement;
 
-	if(r_detail->value > DETAIL_NORMAL)
-		hellbolt->dlight = CE_DLight_new(LightColor, 150.0f, -300.0f);
+	if (r_detail->value > DETAIL_NORMAL)
+		hellbolt->dlight = CE_DLight_new(light_color, 150.0f, -300.0f);
 
 	AddEffect(owner, hellbolt);
 }
@@ -765,7 +761,7 @@ void FXIEffects(centity_t *owner,int type,int flags, vec3_t origin)
 			break;
 
 		case FX_I_SPEAR:
-			FXISpear(owner, type, flags, origin, vel);
+			FXInsectSpear(owner, type, flags, origin, vel);
 			break;
 		
 		case FX_I_SP_MSL_HIT:
