@@ -647,47 +647,25 @@ static qboolean FXInsectSwordTrailThink(struct client_entity_s* self, centity_t*
 	return true;
 }
 
-// ************************************************************************************************
-// FXStaff
-// ------------
-// ************************************************************************************************
-
-// This effect spawns 70+ client fx which will cause problems
-
-void FXISwordTrail(centity_t *owner,int type,int flags,vec3_t origin)
+// This effect spawns 70+ client fx which will cause problems.
+static void FXInsectSwordTrail(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	short			Refpoints;
-	client_entity_t	*trail;
-	int				I;
-
-	Refpoints=0;
-
-	Refpoints = (1<<INSECT_SWORD);
-
-	if(!ReferencesInitialized(owner))
-	{
+	if (!ReferencesInitialized(owner))
 		return;
-	}
 
-	for(I=0;I<16;I++)
-	{
-		if(!(Refpoints & (1 << I)))
-			continue;
+	client_entity_t* trail = ClientEntity_new(type, flags, origin, NULL, 17);
 
-		trail=ClientEntity_new(type,flags,origin,0,17);
+	trail->Update = FXInsectSwordTrailThink;
+	trail->flags |= CEF_NO_DRAW;
+	trail->NoOfAnimFrames = 1;
 
-		trail->Update = FXInsectSwordTrailThink;
-		trail->flags |= CEF_NO_DRAW;
-		trail->NoOfAnimFrames = I;
+	trail->color.c = 0x50285020;
+	trail->xscale = 0.175f;
 
-		trail->color.c = 0x50285020;
-		trail->xscale = .175;
+	trail->LifeTime = fxi.cl->time + 180;
+	trail->extra = (void*)owner;
 
-		trail->LifeTime = fxi.cl->time + 180;
-		trail->extra = (void *)owner;
-
-		AddEffect(owner,trail);
-	}
+	AddEffect(owner, trail);
 }
 
 /*==============================
@@ -707,7 +685,7 @@ void FXIEffects(centity_t *owner,int type,int flags, vec3_t origin)
 	switch (fx_index)
 	{
 		case FX_I_SWORD:
-			FXISwordTrail(owner, type, flags, origin);
+			FXInsectSwordTrail(owner, type, flags, origin);
 			break;
 
 		case FX_I_SPEAR:
