@@ -483,46 +483,39 @@ static void FXInsectSpear2(centity_t* owner, const int type, const vec3_t origin
 	AddEffect(owner, spark);
 }
 
-// ************************************************************************************************
-// FXISpMslHit
-// ---------------------
-// ************************************************************************************************
-
-void FXISpMslHit(centity_t *owner, int type, int flags, vec3_t origin, vec3_t Dir)
+static void FXInsectSpellMissileHit(const int type, const int flags, const vec3_t origin, vec3_t dir)
 {
-	client_entity_t	*smokepuff;
-	int				i;
-	paletteRGBA_t	lightcolor = {255, 96, 48, 255};
+	const paletteRGBA_t light_color = { .r = 255, .g = 96, .b = 48, .a = 255 };
 
-	if(flags & CEF_FLAG6)
+	if (flags & CEF_FLAG6)
+		FXClientScorchmark(origin, dir);
+
+	Vec3ScaleAssign(32.0f, dir);
+
+	for (int i = 0; i < NUM_SPEAR_EXPLODES; i++)
 	{
-		FXClientScorchmark(origin, Dir);
-	}
-	Vec3ScaleAssign(32.0, Dir);
+		client_entity_t* smoke_puff = ClientEntity_new(type, flags, origin, NULL, 500);
 
-	for(i = 0; i < NUM_SPEAR_EXPLODES; i++)
-	{
-		smokepuff = ClientEntity_new(type, flags, origin, NULL, 500);
+		smoke_puff->r.model = &spear_models[1]; // Flyingfist sprite.
+		smoke_puff->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		smoke_puff->r.scale = flrand(0.2f, 0.3f);
+		smoke_puff->r.color = light_color;
 
-		smokepuff->r.model = spear_models + 1;
-		smokepuff->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		smokepuff->r.scale = flrand(0.2, 0.3);
-		smokepuff->r.color = lightcolor;
+		VectorRandomCopy(dir, smoke_puff->velocity, 64.0f);
+		smoke_puff->acceleration[2] = GetGravity() * 0.3f;
 
-		VectorRandomCopy(Dir, smokepuff->velocity, 64);
-		VectorSet(smokepuff->acceleration, 0.0, 0.0, GetGravity() * 0.3);
- 
-		smokepuff->radius = 200.0;
-		smokepuff->d_scale = -0.5;
-		smokepuff->d_alpha = -2.0;
+		smoke_puff->radius = 200.0f;
+		smoke_puff->d_scale = -0.5f;
+		smoke_puff->d_alpha = -2.0f;
 
-		if(!i)
+		if (i == 0)
 		{
-			fxi.S_StartSound(smokepuff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/HellHit.wav"), 1, ATTN_NORM, 0);
-			smokepuff->dlight = CE_DLight_new(lightcolor, 150.0f, 0.0f);
-			VectorClear(smokepuff->velocity);
-		}	
-		AddEffect(NULL,smokepuff);
+			fxi.S_StartSound(smoke_puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/HellHit.wav"), 1.0f, ATTN_NORM, 0);
+			smoke_puff->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
+			VectorClear(smoke_puff->velocity);
+		}
+
+		AddEffect(NULL, smoke_puff);
 	}
 }
 
@@ -753,7 +746,7 @@ void FXIEffects(centity_t *owner,int type,int flags, vec3_t origin)
 			break;
 		
 		case FX_I_SP_MSL_HIT:
-			FXISpMslHit(owner, type, flags, origin, vel);
+			FXInsectSpellMissileHit(type, flags, origin, vel);
 			break;
 
 		case FX_I_GLOBE:
