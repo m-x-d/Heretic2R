@@ -447,45 +447,42 @@ static qboolean FXInsectSpear2Update(struct client_entity_s* self, const centity
 	return true;
 }
 
-void FXISpear2(centity_t *owner, int type, int flags, vec3_t origin)
+static void FXInsectSpear2(centity_t* owner, const int type, const vec3_t origin)
 {
-	client_entity_t	*hellbolt;	
-	paletteRGBA_t	LightColor = {255, 128, 255, 255};
+	const paletteRGBA_t light_color = { .r = 255, .g = 128, .b = 255, .a = 255 };
 
-	hellbolt = ClientEntity_new(type, CEF_OWNERS_ORIGIN | CEF_ABSOLUTE_PARTS, origin, NULL, 20);
+	// Setup halo.
+	client_entity_t* halo = ClientEntity_new(type, CEF_OWNERS_ORIGIN | CEF_ABSOLUTE_PARTS, origin, NULL, 20);
 
-	hellbolt->r.model = spear_models + 3;
-	hellbolt->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	halo->r.model = &spear_models[3]; // Halo sprite.
+	halo->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
-	hellbolt->r.color.c = 0xffffffff;
-	hellbolt->r.scale = flrand(0.2, 0.4);
-	hellbolt->d_alpha = 0.0;
-	hellbolt->radius = 10.0F;
-	hellbolt->AddToView = LinkedEntityUpdatePlacement;
-	VectorCopy(owner->current.origin, hellbolt->startpos2);
+	halo->r.scale = flrand(0.2f, 0.4f);
+	halo->radius = 10.0f;
+	VectorCopy(owner->current.origin, halo->startpos2);
 
-	if(r_detail->value > DETAIL_NORMAL)
-		hellbolt->dlight = CE_DLight_new(LightColor, 150.0f, -300.0f);
+	if (r_detail->value > DETAIL_NORMAL)
+		halo->dlight = CE_DLight_new(light_color, 150.0f, -300.0f);
 
-	hellbolt->Update = FXInsectSpear2Update;
+	halo->AddToView = LinkedEntityUpdatePlacement;
+	halo->Update = FXInsectSpear2Update;
 
-	AddEffect(owner, hellbolt);
+	AddEffect(owner, halo);
 
-//
-	hellbolt = ClientEntity_new(type, CEF_OWNERS_ORIGIN, origin, NULL, 10000);
+	// Setup spark.
+	client_entity_t* spark = ClientEntity_new(type, CEF_OWNERS_ORIGIN, origin, NULL, 10000);
 
-	hellbolt->r.model = spear_models + 2;
-	hellbolt->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	spark->r.model = &spear_models[2]; // Yellow spark sprite.
+	spark->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
-	hellbolt->r.color.c = 0x33ffffff;
-	hellbolt->r.scale = flrand(1, 2);
-	hellbolt->d_alpha = 0.0;
-	hellbolt->radius = 10.0F;
-	hellbolt->AddToView = LinkedEntityUpdatePlacement;
+	spark->r.color.c = 0x33ffffff;
+	spark->r.scale = flrand(1.0f, 2.0f);
+	spark->radius = 10.0f;
+	spark->AddToView = LinkedEntityUpdatePlacement;
 
-
-	AddEffect(owner, hellbolt);
+	AddEffect(owner, spark);
 }
+
 // ************************************************************************************************
 // FXISpMslHit
 // ---------------------
@@ -780,7 +777,7 @@ void FXIEffects(centity_t *owner,int type,int flags, vec3_t origin)
 			break;
 
 		case FX_I_SPEAR2:
-			FXISpear2(owner, type, flags, origin);
+			FXInsectSpear2(owner, type, origin);
 			break;
 
 		case FX_I_SP_MSL_HIT2:
