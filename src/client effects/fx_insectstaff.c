@@ -5,24 +5,24 @@
 //
 
 #include "Client Effects.h"
-#include "Particle.h"
-#include "Vector.h"
 #include "ce_DLight.h"
-#include "Random.h"
-#include "Utilities.h"
-#include "Reference.h"
-#include "Matrix.h"
 #include "g_playstats.h"
+#include "Matrix.h"
+#include "Particle.h"
+#include "Random.h"
+#include "Reference.h"
+#include "Utilities.h"
+#include "Vector.h"
 
-#define FIST_DELTA_FORWARD	8.0f
-#define FIST_DELTA_THETA	0.12f
-#define FIST_SPIRAL_RAD		0.75f
-#define FIST_SCALE			0.2f
+#define FIST_DELTA_FORWARD			8.0f
+#define FIST_DELTA_THETA			0.12f
+#define FIST_SPIRAL_RAD				0.75f
+#define FIST_SCALE					0.2f
 
-#define FX_GLOBE_FLY_SPEED				600.0f
-#define FX_SOFT_GLOBE_AURA_SCALE		0.6f
-#define FX_GLOBE_AURA_SCALE				0.8f
-#define NUM_SPEAR_EXPLODES				8
+#define FX_GLOBE_FLY_SPEED			600.0f
+#define FX_SOFT_GLOBE_AURA_SCALE	0.6f
+#define FX_GLOBE_AURA_SCALE			0.8f
+#define NUM_SPEAR_EXPLODES			8
 
 //mxd. Mirrored in m_tcheckirk.h
 enum
@@ -61,22 +61,6 @@ void PreCacheIEffects(void)
 	globe_models[3] = fxi.RegisterModel("models/spells/sphere/tris.fm");
 	globe_models[4] = fxi.RegisterModel("sprites/fx/neon.sp2");
 }
-
-static qboolean FXHellboltTrailElementThink(struct client_entity_s *self,centity_t *owner);
-static qboolean FXHellboltTrailThink(struct client_entity_s *self,centity_t *owner);
-static qboolean FXHellboltModelThink(struct client_entity_s *self,centity_t *owner);
-static qboolean FXHellboltSmokePuffThink(struct client_entity_s *self,centity_t *owner);
-
-// --------------------------------------------------------------
-
-
-static qboolean FXGlobeOfOuchinessSphereThink(struct client_entity_s *self,centity_t *owner);
-static qboolean FXGlobeOfOuchinessAuraElementThink(struct client_entity_s *self,centity_t *owner);
-static qboolean FXGlobeOfOuchinessAuraThink(struct client_entity_s *self,centity_t *owner);
-static qboolean FXGlobeOfOuchinessGlowballSparkThink(struct client_entity_s *self,centity_t *owner);
-static qboolean FXGlobeOfOuchinessGlowballThink(struct client_entity_s *self,centity_t *owner);
-static qboolean FXGlobeOfOuchinessGlowballSpawnerThink(struct client_entity_s *self,centity_t *owner);
-static qboolean FXGlobeOfOuchinessSmokePuffThink(struct client_entity_s *self,centity_t *owner);
 
 // ************************************************************************************************
 // FXInsectStaffTrailThink
