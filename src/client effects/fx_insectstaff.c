@@ -410,50 +410,41 @@ static void FXInsectSpear(centity_t* owner, const int type, const int flags, con
 	AddEffect(owner, hellbolt);
 }
 
-qboolean FXISpear2Update(struct client_entity_s *self, centity_t *owner)
+static qboolean FXInsectSpear2Update(struct client_entity_s* self, const centity_t* owner)
 {
-	paletteRGBA_t		LightColor = {255, 128, 255, 255};
-	client_particle_t	*spark;
-	int					i;
-	float				dist;
-	vec3_t				dir;
+	self->r.color.a = (byte)irand(128, 136);
+	self->r.scale = flrand(0.1f, 0.5f);
 
-	self->r.color.a = irand(128, 136);
-	self->r.scale = flrand(0.1, 0.5);
-
-	if(!VectorCompare(owner->lerp_origin, self->startpos2))
+	if (!VectorCompare(owner->lerp_origin, self->startpos2))
 		VectorCopy(owner->lerp_origin, self->startpos2);
 
+	vec3_t dir;
 	VectorSubtract(owner->lerp_origin, self->startpos2, dir);
-	dist = VectorNormalize(dir);
+	const float dist = VectorNormalize(dir);
 
-	for(i = 0; i < 10; i++)
+	for (int i = 0; i < 10; i++)
 	{
-		spark = ClientParticle_new(PART_16x16_SPARK_Y, self->r.color, 200);
+		client_particle_t* spark = ClientParticle_new(PART_16x16_SPARK_Y, self->r.color, 200);
 		spark->type |= PFL_ADDITIVE;
 
-		spark->acceleration[2] = 0.5;
-		
-		spark->scale = flrand(5, 6);
-		spark->d_scale = flrand(-13, -20);
-		
-		spark->color.r = irand(240, 255);
-		spark->color.g = irand(240, 255);
-		spark->color.b = irand(240, 255);
+		spark->acceleration[2] = 0.5f;
 
-		spark->color.a = irand(64, 196);
-		spark->d_alpha = -128;
+		spark->scale = flrand(5.0f, 6.0f);
+		spark->d_scale = flrand(-13.0f, -20.0f);
+
+		COLOUR_SETA(spark->color, irand(240, 255), irand(240, 255), irand(240, 255), irand(64, 196)); //mxd. Use macro.
+		spark->d_alpha = -128.0f;
 
 		VectorAdd(self->startpos2, spark->origin, spark->origin);
-		VectorMA(spark->origin, dist/i, dir, spark->origin);
-		spark->origin[0] += flrand(-2, 2);
-		spark->origin[1] += flrand(-2, 2);
-		spark->origin[2] += flrand(-2, 2);
+		VectorMA(spark->origin, dist / (float)i, dir, spark->origin);
+
+		for (int c = 0; c < 3; c++)
+			spark->origin[c] += flrand(-2.0f, 2.0f);
 
 		AddParticleToList(self, spark);
 	}
 
-	return (true);
+	return true;
 }
 
 void FXISpear2(centity_t *owner, int type, int flags, vec3_t origin)
@@ -476,7 +467,7 @@ void FXISpear2(centity_t *owner, int type, int flags, vec3_t origin)
 	if(r_detail->value > DETAIL_NORMAL)
 		hellbolt->dlight = CE_DLight_new(LightColor, 150.0f, -300.0f);
 
-	hellbolt->Update = FXISpear2Update;
+	hellbolt->Update = FXInsectSpear2Update;
 
 	AddEffect(owner, hellbolt);
 
