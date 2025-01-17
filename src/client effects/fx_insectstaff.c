@@ -233,52 +233,36 @@ static qboolean FXGlobeOfOuchinessAuraThink(const struct client_entity_s* self, 
 	return true;
 }
 
-// ****************************************************************************
-// FXGlobeOfOuchiness -
-// ****************************************************************************
-
-void FXInsectGlobe(centity_t *owner,int type,int flags,vec3_t origin, short CasterEntnum)
+static void FXInsectGlobe(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t	*GlobeThinker,
-					*AuraThinker;
-	paletteRGBA_t	LightColor={0,0,255,255};
-	int				caster_update;
+	const paletteRGBA_t light_color = { .r = 0,.g = 0,.b = 255,.a = 255 };
 
 	// Create a fiery blue aura around the globe.
+	const int caster_update = ((r_detail->value < DETAIL_NORMAL) ? 125 : 100);
+	client_entity_t* aura_thinker = ClientEntity_new(type, flags, origin, NULL, caster_update);
 
-	if (r_detail->value < DETAIL_NORMAL)
-		caster_update = 125;
-	else
-		caster_update = 100;
+	aura_thinker->flags |= CEF_NO_DRAW;
+	aura_thinker->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
+	aura_thinker->Update = FXGlobeOfOuchinessAuraThink;
+	aura_thinker->extra = owner; // The caster's centity_t.
 
-	AuraThinker=ClientEntity_new(type,flags,origin,NULL,caster_update);
-
-	AuraThinker->flags|=CEF_NO_DRAW;
-	AuraThinker->dlight=CE_DLight_new(LightColor,150.0,0.0);
-	AuraThinker->Update=FXGlobeOfOuchinessAuraThink;
-	AuraThinker->extra=owner;//(void *)(&fxi.server_entities[CasterEntnum]);// The caster's centity_t.
-
-	AddEffect(owner,AuraThinker);
-
-	FXGlobeOfOuchinessAuraThink(AuraThinker,owner);
+	AddEffect(owner, aura_thinker);
+	FXGlobeOfOuchinessAuraThink(aura_thinker, owner);
 
 	// Create the globe of ouchiness itself.
+	client_entity_t* globe_thinker = ClientEntity_new(type, flags, origin, NULL, 100);
 
-	GlobeThinker = ClientEntity_new(type, flags, origin, NULL, 100);
+	globe_thinker->r.model = &globe_models[1];
+	globe_thinker->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD;
+	globe_thinker->r.scale = flrand(0.15f, 0.2f);
 
-	GlobeThinker->r.model = globe_models + 1;
-	GlobeThinker->r.flags |= RF_TRANSLUCENT|RF_TRANS_ADD;
-	GlobeThinker->r.scale = flrand(0.15, 0.20);
+	COLOUR_SET(globe_thinker->r.color, irand(128, 180), irand(128, 180), irand(180, 255)); //mxd. Use macro.
 
-	GlobeThinker->r.color.r=irand(128, 180);
-	GlobeThinker->r.color.g=irand(128, 180);
-	GlobeThinker->r.color.b=irand(180, 255);
-	
-	GlobeThinker->radius = 70.0;
-	GlobeThinker->Update = FXGlobeOfOuchinessGlobeThink;
-	GlobeThinker->AddToView = LinkedEntityUpdatePlacement;
-	
-	AddEffect(owner, GlobeThinker);
+	globe_thinker->radius = 70.0f;
+	globe_thinker->AddToView = LinkedEntityUpdatePlacement;
+	globe_thinker->Update = FXGlobeOfOuchinessGlobeThink;
+
+	AddEffect(owner, globe_thinker);
 }
 
 // ****************************************************************************
@@ -883,7 +867,7 @@ void FXIEffects(centity_t *owner,int type,int flags, vec3_t origin)
 			break;
 
 		case FX_I_GLOBE:
-			FXInsectGlobe(owner, type, flags, origin, (short)(vel[0]));
+			FXInsectGlobe(owner, type, flags, origin);
 			break;
 
 		case FX_I_GLOW:
