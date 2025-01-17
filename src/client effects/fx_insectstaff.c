@@ -144,7 +144,7 @@ static void FXInsectStaff(centity_t* owner, const int type, const int flags, vec
 
 static void FXInsectStaffExplode(const int type, const int flags, vec3_t origin, vec3_t dir)
 {
-	const paletteRGBA_t	light_color = { .r = 255,.g = 64,.b = 32,.a = 255 };
+	const paletteRGBA_t light_color = { .r = 255,.g = 64,.b = 32,.a = 255 };
 
 	if (flags & CEF_FLAG6)
 		FXClientScorchmark(origin, dir);
@@ -178,15 +178,10 @@ static void FXInsectStaffExplode(const int type, const int flags, vec3_t origin,
 	}
 }
 
-// ****************************************************************************
-// FXGlobeOfOuchinessGlobeThink -
-// ****************************************************************************
-
-static qboolean FXGlobeOfOuchinessGlobeThink(struct client_entity_s *self,centity_t *owner)
+static qboolean FXGlobeOfOuchinessGlobeThink(struct client_entity_s* self, centity_t* owner)
 {
-	self->r.scale = flrand(0.35, 0.50);
-
-	return(true);
+	self->r.scale = flrand(0.35f, 0.5f);
+	return true;
 }
 
 // ****************************************************************************
