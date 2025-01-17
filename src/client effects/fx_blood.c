@@ -357,10 +357,7 @@ void ThrowBlood(vec3_t origin, vec3_t tnormal, const qboolean dark, const qboole
 		bloodmark->r.frame = irand(0, 4);
 
 		const byte brightness = (byte)(dark ? irand(32, 72) : irand(72, 128));
-		bloodmark->r.color.r = brightness;
-		bloodmark->r.color.g = brightness;
-		bloodmark->r.color.b = brightness;
-		bloodmark->r.color.a = 255;
+		COLOUR_SET(bloodmark->r.color, brightness, brightness, brightness); //mxd. Use macro.
 
 		bloodmark->radius = 10.0f;
 		bloodmark->r.scale = flrand(0.2f, 0.45f);

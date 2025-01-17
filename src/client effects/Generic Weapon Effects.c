@@ -12,11 +12,11 @@
 #include "Utilities.h"
 #include "q_Sprite.h"
 
-static struct model_s* armorhit_models[1];
+static struct model_s* armorhit_model;
 
 void PreCacheArmorHit(void)
 {
-	armorhit_models[0] = fxi.RegisterModel("sprites/fx/firestreak.sp2");
+	armorhit_model = fxi.RegisterModel("sprites/fx/firestreak.sp2");
 }
 
 // We hit someone with armor - do a pretty effect.
@@ -35,7 +35,7 @@ void FXCreateArmorHit(centity_t* owner, const int type, int flags, vec3_t origin
 	{
 		client_entity_t* trail_fx = ClientEntity_new(type, flags, origin, NULL, 500);
 
-		trail_fx->r.model = armorhit_models;
+		trail_fx->r.model = &armorhit_model;
 		trail_fx->r.spriteType = SPRITE_LINE;
 
 		trail_fx->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
@@ -43,11 +43,7 @@ void FXCreateArmorHit(centity_t* owner, const int type, int flags, vec3_t origin
 		trail_fx->alpha = flrand(0.75f, 1.0f);
 		trail_fx->d_alpha = -2.0f;
 		trail_fx->d_scale = -1.0f;
-
-		trail_fx->r.color.r = (byte)irand(128, 255);
-		trail_fx->r.color.g = (byte)irand(64, 255);
-		trail_fx->r.color.b = (byte)irand(64, 255);
-		trail_fx->r.color.a = (byte)irand(16, 128) + 64;
+		COLOUR_SETA(trail_fx->r.color, irand(128, 255), irand(64, 255), irand(64, 255), irand(16, 128) + 64); //mxd. Use macro.
 
 		VectorRandomCopy(dir, trail_fx->velocity, 1.0f);
 

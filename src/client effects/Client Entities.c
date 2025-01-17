@@ -244,9 +244,7 @@ int AddEffectsToView(client_entity_t** root, centity_t* owner)
 
 				VectorCopy(current->r.origin, dl->origin);
 				dl->intensity = ce_dlight->intensity;
-				dl->color.r = ce_dlight->color.r;
-				dl->color.g = ce_dlight->color.g;
-				dl->color.b = ce_dlight->color.b;
+				COLOUR_COPY(ce_dlight->color, dl->color); //mxd. Use macro.
 			}
 		}
 

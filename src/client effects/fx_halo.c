@@ -116,24 +116,18 @@ void FXHalo(centity_t* owner, int type, int flags, vec3_t origin)
 	switch (flags)
 	{
 		case CEF_FLAG7: // Blue-ish halo.
-			halo->r.color.r = 90;
-			halo->r.color.g = 90;
-			halo->r.color.b = 175;
+			COLOUR_SET(halo->r.color, 90, 90, 175); //mxd. Use macro.
 			break;
 
 		case CEF_FLAG8: // Yellow halo.
-			halo->r.color.r = 190;
-			halo->r.color.g = 180;
-			halo->r.color.b = 16;
+			COLOUR_SET(halo->r.color, 190, 180, 16); //mxd. Use macro.
 			break;
 
 		case CEF_FLAG7 | CEF_FLAG8: // White halo. mxd. halo->r.color is already white.
 			break;
 
 		default: // Orange-brown-ish halo.
-			halo->r.color.r = 148;
-			halo->r.color.g = 132;
-			halo->r.color.b = 82;
+			COLOUR_SET(halo->r.color, 148, 132, 82); //mxd. Use macro.
 			break;
 	}
 
