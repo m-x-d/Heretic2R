@@ -265,59 +265,39 @@ static void FXInsectGlobe(centity_t* owner, const int type, const int flags, vec
 	AddEffect(owner, globe_thinker);
 }
 
-// ****************************************************************************
-// FXGlobeOfOuchinessGlowballThink -
-// ****************************************************************************
-
-static qboolean FXGlobeOfOuchinessGlowballThink(struct client_entity_s *self,centity_t *owner)
+static qboolean FXGlobeOfOuchinessGlowballThink(struct client_entity_s* self, const centity_t* owner)
 {
-	client_entity_t	*Spark;
-
-	if((owner->current.effects&EF_MARCUS_FLAG1))
+	if (owner->current.effects & EF_MARCUS_FLAG1)
 		self->color.r++;
 
-	if(self->color.r>3)
+	if (self->color.r > 3)
 	{
 		// Create a trailing spark.
+		client_entity_t* spark = ClientEntity_new(FX_I_EFFECTS, self->flags & ~CEF_OWNERS_ORIGIN, self->r.origin, NULL, 500);
 
-		Spark=ClientEntity_new(FX_I_EFFECTS,
-							   self->flags&~(CEF_OWNERS_ORIGIN),
-							   self->r.origin,
-							   NULL,
-							   500);
-		
-		Spark->r.model = globe_models + 2;
-		Spark->r.flags|=RF_FULLBRIGHT|RF_TRANSLUCENT|RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		Spark->r.scale = FIST_SCALE+flrand(0.0, 0.05);
-		Spark->d_alpha = flrand(-1.75, -2);
-		Spark->d_scale = flrand(-0.75, -1.0);
-		Spark->radius=20.0;
+		spark->r.model = globe_models + 2;
+		spark->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		spark->r.scale = FIST_SCALE + flrand(0.0f, 0.05f);
+		spark->d_alpha = flrand(-1.75f, -2.0f);
+		spark->d_scale = flrand(-0.75f, -1.0f);
+		spark->radius = 20.0f;
 
-		AddEffect(NULL,Spark);
+		AddEffect(NULL, spark);
 	}
 
-	// 'self->extra' refers to the globe's centity_t.
-
-	if(self->color.r<16)
+	if (self->color.r < 16)
 	{
-		self->velocity[0]*=3.0;
-		self->velocity[0]+=6.0*(owner->origin[0]-self->r.origin[0]);
-		self->velocity[0]*=0.265;
+		for (int i = 0; i < 3; i++)
+		{
+			self->velocity[i] *= 3.0f;
+			self->velocity[i] += 6.0f * (owner->origin[i] - self->r.origin[i]);
+			self->velocity[i] *= 0.265f;
+		}
 
-		self->velocity[1]*=3.0;
-		self->velocity[1]+=6.0*(owner->origin[1]-self->r.origin[1]);
-		self->velocity[1]*=0.265;
-		
-		self->velocity[2]*=3.0;
-		self->velocity[2]+=6.0*(owner->origin[2]-self->r.origin[2]);
-		self->velocity[2]*=0.265;
+		return true;
+	}
 
-		return(true);
-	}
-	else
-	{	
-		return(false);
-	}
+	return false;
 }
 
 // ****************************************************************************
