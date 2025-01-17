@@ -191,6 +191,7 @@ void MG_InitMoods(edict_t *self);
 #define TC_SPL_GLOW		2
 #define TC_SPL_FIRE2	3
 
+//mxd. Mirrored in fx_insectstaff.c
 enum 
 {
 	FX_I_SWORD,

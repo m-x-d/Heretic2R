@@ -1,64 +1,31 @@
 //
+// fx_insectstaff.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
 #include "ce_DLight.h"
-#include "random.h"
+#include "Random.h"
 #include "Utilities.h"
 #include "Reference.h"
 #include "Matrix.h"
 #include "g_playstats.h"
 
-#define FIST_DELTA_FORWARD	8.0
-#define FIST_DELTA_THETA	0.12
-#define	FIST_SPIRAL_RAD		0.75
-#define	FIST_SCALE			0.20
+#define FIST_DELTA_FORWARD	8.0f
+#define FIST_DELTA_THETA	0.12f
+#define FIST_SPIRAL_RAD		0.75f
+#define FIST_SCALE			0.2f
 
-#define	NUM_FF_MODELS	1
-#define	NUM_GL_MODELS	5
-#define	NUM_SW_MODELS	1
-#define	NUM_SP_MODELS	4
-
-static struct model_s *globe_models[NUM_GL_MODELS];
-static struct model_s *ins_models[NUM_FF_MODELS];
-static struct model_s *sword_models[NUM_SW_MODELS];
-static struct model_s *spear_models[NUM_SP_MODELS];
-
-void PreCacheIEffects()
-{
-	ins_models[0] = fxi.RegisterModel("sprites/spells/spark_blue.sp2");//sprites/spells/bluball.sp2");
-	
-	sword_models[0] = fxi.RegisterModel("sprites/spells/patball.sp2");
-
-	spear_models[0] = fxi.RegisterModel("sprites/Spells/spark_red.sp2");
-	spear_models[1] = fxi.RegisterModel("sprites/Spells/flyingfist.sp2");
-	spear_models[2] = fxi.RegisterModel("sprites/Spells/spark_yellow.sp2");
-	spear_models[3] = fxi.RegisterModel("sprites/fx/halo.sp2");
-
-	globe_models[0] = fxi.RegisterModel("sprites/spells/shboom.sp2");
-	globe_models[1] = fxi.RegisterModel("sprites/fx/halo.sp2");
-	globe_models[2] = fxi.RegisterModel("Sprites/Spells/spark_blue.sp2");//"sprites/spells/glowball.sp2");
-	globe_models[3] = fxi.RegisterModel("models/spells/sphere/tris.fm");
-	globe_models[4] = fxi.RegisterModel("sprites/fx/neon.sp2");//bluball.sp2");//bluball.sp2");
-}
-
-// --------------------------------------------------------------
-
-#define FX_GLOBE_FLY_SPEED				600.0
-#define	FX_SOFT_GLOBE_AURA_SCALE		0.6
-#define	FX_GLOBE_AURA_SCALE				0.8
-#define FX_GLOBE_EXPLOSION_BASE_RADIUS	89.0
+#define FX_GLOBE_FLY_SPEED				600.0f
+#define FX_SOFT_GLOBE_AURA_SCALE		0.6f
+#define FX_GLOBE_AURA_SCALE				0.8f
 #define NUM_SPEAR_EXPLODES				8
 
-enum 
+//mxd. Mirrored in m_tcheckirk.h
+enum
 {
 	FX_I_SWORD,
 	FX_I_SPEAR,
@@ -71,6 +38,29 @@ enum
 	FX_I_SPEAR2,
 	FX_I_SP_MSL_HIT2
 };
+
+static struct model_s* insect_model;
+static struct model_s* sword_model;
+static struct model_s* globe_models[5];
+static struct model_s* spear_models[4];
+
+void PreCacheIEffects(void)
+{
+	insect_model = fxi.RegisterModel("sprites/spells/spark_blue.sp2");
+
+	sword_model = fxi.RegisterModel("sprites/spells/patball.sp2");
+
+	spear_models[0] = fxi.RegisterModel("sprites/Spells/spark_red.sp2");
+	spear_models[1] = fxi.RegisterModel("sprites/Spells/flyingfist.sp2");
+	spear_models[2] = fxi.RegisterModel("sprites/Spells/spark_yellow.sp2");
+	spear_models[3] = fxi.RegisterModel("sprites/fx/halo.sp2");
+
+	globe_models[0] = fxi.RegisterModel("sprites/spells/shboom.sp2");
+	globe_models[1] = fxi.RegisterModel("sprites/fx/halo.sp2");
+	globe_models[2] = fxi.RegisterModel("Sprites/Spells/spark_blue.sp2");
+	globe_models[3] = fxi.RegisterModel("models/spells/sphere/tris.fm");
+	globe_models[4] = fxi.RegisterModel("sprites/fx/neon.sp2");
+}
 
 static qboolean FXHellboltTrailElementThink(struct client_entity_s *self,centity_t *owner);
 static qboolean FXHellboltTrailThink(struct client_entity_s *self,centity_t *owner);
@@ -130,7 +120,7 @@ static qboolean FXInsectStaffTrailThink(struct client_entity_s *self,centity_t *
 									  NULL,
 									  1000);
 
-			TrailEnt->r.model = ins_models;
+			TrailEnt->r.model = &insect_model;
 			VectorMA(TrailStart,FIST_SPIRAL_RAD*cos(Theta),Right,TrailEnt->r.origin);
 			VectorMA(TrailStart,FIST_SPIRAL_RAD*sin(Theta),Up,TrailEnt->r.origin);
 			
@@ -169,7 +159,7 @@ void FXInsectStaff(centity_t *owner,int type,int flags,vec3_t origin)
 
 	Trail=ClientEntity_new(type,flags,origin,NULL,17);
 
-	Trail->r.model = ins_models;
+	Trail->r.model = &insect_model;
 	Trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD;
 	Trail->r.scale = flrand(0.8, 1.3);
 	Trail->d_alpha = 0.0f;
@@ -209,7 +199,7 @@ void FXInsectStaffExplode(centity_t *owner,int type,int flags,vec3_t origin, vec
 		else
 			SmokePuff=ClientEntity_new(type,flags,origin,NULL,1000);
 
-		SmokePuff->r.model = ins_models;
+		SmokePuff->r.model = &insect_model;
 		SmokePuff->r.flags |=RF_FULLBRIGHT|RF_TRANSLUCENT|RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 		SmokePuff->r.frame=0;
 
@@ -871,7 +861,7 @@ static qboolean FXISwordTrailThink(struct client_entity_s *self,centity_t *owner
 		VectorMA(last_org, incr, diff, newpoint);
 		TrailEnt=ClientEntity_new(FX_SPELLHANDS, self->flags & ~CEF_NO_DRAW, newpoint, 0, 100);
 		VectorCopy(newpoint, TrailEnt->origin);
-		TrailEnt->r.model = sword_models;
+		TrailEnt->r.model = &sword_model;
 		TrailEnt->alpha=.3;
 		TrailEnt->r.flags=RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA;
 		TrailEnt->r.frame=1;
