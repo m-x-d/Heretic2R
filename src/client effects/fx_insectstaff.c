@@ -583,82 +583,68 @@ static qboolean FXInsectStaffElementThink(struct client_entity_s* self, centity_
 	return true;
 }
 
-// ************************************************************************************************
-// FXStaffThink
-// -----------------
-// ************************************************************************************************
-
-static qboolean FXISwordTrailThink(struct client_entity_s *self,centity_t *owner)
+static qboolean FXInsectSwordTrailThink(struct client_entity_s* self, centity_t* owner)
 {
-	int				I;
-	int				NoOfIntervals;
-	client_entity_t	*TrailEnt;
-	vec3_t			diff, newpoint, last_org, current_org;
-	matrix3_t		RotationMatrix;
-	float			incr;
+	vec3_t last_org;
+	vec3_t current_org;
 
-	if(self->LifeTime < fxi.cl->time)
-		return (false);
+	if (self->LifeTime < fxi.cl->time || !RefPointsValid(owner))
+		return false;
 
-	// This tells if we are wasting our time, because the reference points are culled.
-	if (!RefPointsValid(owner))
-		return false;		// Remove the effect in this case.
+	self->updateTime = 17; // FIXME: with a next think time this effect does not look right.
 
-	self->updateTime = 17;		// FIXME : With a next think time this effect does not look right
+	// Extrapolate down length of sword from hand!
+	const centity_t* caster = (centity_t*)self->extra;
 
-	I=self->NoOfAnimFrames;
-
-	//extrapolate down length of sword from hand!
-	
-	Matrix3MultByVec3(RotationMatrix,
-		((centity_t *)(self->extra))->referenceInfo->references[INSECT_SWORD].placement.origin,
-			  current_org);
-
-	Matrix3MultByVec3(RotationMatrix,
-		((centity_t *)(self->extra))->referenceInfo->oldReferences[INSECT_SWORD].placement.origin,
-			  last_org);
+	matrix3_t rotation;
+	Matrix3MultByVec3(rotation, caster->referenceInfo->references[INSECT_SWORD].placement.origin, current_org);
+	Matrix3MultByVec3(rotation, caster->referenceInfo->oldReferences[INSECT_SWORD].placement.origin, last_org);
 
 	// If this reference point hasn't changed since the last frame, return.
-	VectorSubtract(	current_org, last_org, diff);
+	vec3_t diff;
+	VectorSubtract(current_org, last_org, diff);
 
-	if (Q_fabs(diff[0] + diff[1] + diff[2]) < .1)
-		return(true);
+	if (Q_fabs(diff[0] + diff[1] + diff[2]) < 0.1f)
+		return true;
 
-	NoOfIntervals=(int)(VectorLength(diff)*.5);
-	if(NoOfIntervals > 40)
-		return(false);
+	const int num_intervals = (int)(VectorLength(diff) * 0.5f);
+	if (num_intervals > 40)
+		return false;
 
-	incr = VectorNormalize(diff)/NoOfIntervals;
+	Matrix3FromAngles(caster->lerp_angles, rotation);
 
-	Matrix3FromAngles(((centity_t *)(self->extra))->lerp_angles, RotationMatrix);
+	const float increment = VectorNormalize(diff) / (float)num_intervals;
+	const int flags = (int)(self->flags & ~CEF_NO_DRAW); //mxd
 
-	while (NoOfIntervals >= 0)
+	for (int i = 0; i < num_intervals; i++)
 	{
-		VectorMA(last_org, incr, diff, newpoint);
-		TrailEnt=ClientEntity_new(FX_SPELLHANDS, self->flags & ~CEF_NO_DRAW, newpoint, 0, 100);
-		VectorCopy(newpoint, TrailEnt->origin);
-		TrailEnt->r.model = &sword_model;
-		TrailEnt->alpha=.3;
-		TrailEnt->r.flags=RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA;
-		TrailEnt->r.frame=1;
-		TrailEnt->d_scale=-0.25;
-		TrailEnt->d_alpha=-0.1;
-		TrailEnt->color.c=0x50000018;
-		TrailEnt->r.scale=self->xscale*2.0;
-		TrailEnt->startTime=fxi.cl->frame.servertime-100;
-		TrailEnt->AnimSpeed=0.20;
-		TrailEnt->NoOfAnimFrames=2;
-		TrailEnt->Update= FXInsectStaffElementThink;
-		TrailEnt->AddToView=OffsetLinkedEntityUpdatePlacement;			
-		AddEffect(owner,TrailEnt);
+		vec3_t pos;
+		VectorMA(last_org, increment, diff, pos);
 
-		FXInsectStaffElementThink(TrailEnt,owner);
-		
-		VectorCopy(newpoint, last_org);
-		NoOfIntervals--;
+		client_entity_t* trail_ent = ClientEntity_new(FX_SPELLHANDS, flags, pos, 0, 100);
+		VectorCopy(pos, trail_ent->origin);
+		trail_ent->r.model = &sword_model;
+		trail_ent->alpha = 0.3f;
+		trail_ent->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		trail_ent->r.frame = 1;
+		trail_ent->d_scale = -0.25f;
+		trail_ent->d_alpha = -0.1f;
+		trail_ent->color.c = 0x50000018;
+		trail_ent->r.scale = self->xscale * 2.0f;
+		trail_ent->startTime = fxi.cl->frame.servertime - 100;
+		trail_ent->AnimSpeed = 0.2f;
+		trail_ent->NoOfAnimFrames = 2;
+
+		trail_ent->Update = FXInsectStaffElementThink;
+		trail_ent->AddToView = OffsetLinkedEntityUpdatePlacement;
+
+		AddEffect(owner, trail_ent);
+		FXInsectStaffElementThink(trail_ent, owner);
+
+		VectorCopy(pos, last_org);
 	}
 
-	return(true);
+	return true;
 }
 
 // ************************************************************************************************
@@ -690,7 +676,7 @@ void FXISwordTrail(centity_t *owner,int type,int flags,vec3_t origin)
 
 		trail=ClientEntity_new(type,flags,origin,0,17);
 
-		trail->Update = FXISwordTrailThink;
+		trail->Update = FXInsectSwordTrailThink;
 		trail->flags |= CEF_NO_DRAW;
 		trail->NoOfAnimFrames = I;
 
