@@ -164,7 +164,7 @@ extern void FXShrineBall(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXShrineBallExplode(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXOgleHitPuff(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXHPMissile(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXIEffects(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXInsectEffects(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXChickenExplode(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXTeleportPad(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXTPortSmoke(centity_t* owner, int type, int flags, vec3_t origin);

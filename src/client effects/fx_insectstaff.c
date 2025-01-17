@@ -668,19 +668,11 @@ static void FXInsectSwordTrail(centity_t* owner, const int type, const int flags
 	AddEffect(owner, trail);
 }
 
-/*==============================
-
-  Insect Effects Handler
-
-  ==============================*/
-
-void FXIEffects(centity_t *owner,int type,int flags, vec3_t origin)
+void FXInsectEffects(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	paletteRGBA_t	LightColor={0,0,255,255};
-	vec3_t			vel;
-	byte			fx_index;
-	
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_I_EFFECTS].formatString, &fx_index, &vel);//fixme- make this 1 dir and 1 float
+	vec3_t vel;
+	byte fx_index;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_I_EFFECTS].formatString, &fx_index, &vel); //FIXME: make this 1 dir and 1 float.
 
 	switch (fx_index)
 	{
@@ -691,7 +683,7 @@ void FXIEffects(centity_t *owner,int type,int flags, vec3_t origin)
 		case FX_I_SPEAR:
 			FXInsectSpear(owner, type, flags, origin, vel);
 			break;
-		
+
 		case FX_I_SP_MSL_HIT:
 			FXInsectSpellMissileHit(type, flags, origin, vel);
 			break;
@@ -713,7 +705,7 @@ void FXIEffects(centity_t *owner,int type,int flags, vec3_t origin)
 			break;
 
 		case FX_I_RREFS:
-			FXInsectReadyRefs (owner, type, flags, origin);
+			FXInsectReadyRefs(owner, type, flags, origin);
 			break;
 
 		case FX_I_SPEAR2:
@@ -728,4 +720,3 @@ void FXIEffects(centity_t *owner,int type,int flags, vec3_t origin)
 			break;
 	}
 }
-

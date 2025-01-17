@@ -124,7 +124,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ FXShrineBallExplode,				NULL,					"db"		},
 	{ FXOgleHitPuff,					PrecacheOgleHitPuff,	"v"			},
 	{ FXHPMissile,						PreCacheHPMissile,		"vb"		},
-	{ FXIEffects,						PreCacheIEffects,		"bv"		},
+	{ FXInsectEffects,					PreCacheIEffects,		"bv"		},
 	{ FXChickenExplode,					NULL,					NULL		},
 	{ FXFlamethrower,					NULL,					"df"		},
 	{ FXTeleportPad,					NULL,					NULL		},	// 110 fx to here
