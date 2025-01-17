@@ -356,31 +356,17 @@ static qboolean FXGlobeOfOuchinessGlowballSpawnerThink(struct client_entity_s* s
 	return true;
 }
 
-// ****************************************************************************
-// FXGlobeOfOuchinessGlowballs -
-// ****************************************************************************
-
-void FXInsectGlow(centity_t *owner,int type,int flags,vec3_t origin, short CasterEntnum)
+static void FXInsectGlow(centity_t* owner, const int type, const int flags, vec3_t origin, const short caster_entnum)
 {
-	client_entity_t	*GlowballSpawner;
-	int				caster_update;
-
 	// Create a spawner that will create the glowballs.
+	const int caster_update = ((r_detail->value < DETAIL_NORMAL) ? 250 : 100);
+	client_entity_t* glowball_spawner = ClientEntity_new(type, flags, origin, NULL, caster_update);
 
-	if (r_detail->value < DETAIL_NORMAL)
-		caster_update = 250;
-	else
-		caster_update = 100;
+	glowball_spawner->flags |= CEF_NO_DRAW;
+	glowball_spawner->Update = FXGlobeOfOuchinessGlowballSpawnerThink;
+	glowball_spawner->extra = (void*)(&fxi.server_entities[caster_entnum]);
 
-	GlowballSpawner=ClientEntity_new(type,flags,origin,NULL,caster_update);
-
-	GlowballSpawner->flags|=CEF_NO_DRAW;
-	GlowballSpawner->color.g=0;
-	GlowballSpawner->Update=FXGlobeOfOuchinessGlowballSpawnerThink;
-	GlowballSpawner->extra=(void *)(&fxi.server_entities[CasterEntnum]);
-//	GlowballSpawner->extra=(void *)owner;
-
-	AddEffect(owner,GlowballSpawner);
+	AddEffect(owner, glowball_spawner);
 }
 
 qboolean InsectFirstSeenInit(struct client_entity_s *self, centity_t *owner)
