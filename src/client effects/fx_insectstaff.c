@@ -519,50 +519,49 @@ static void FXInsectSpellMissileHit(const int type, const int flags, const vec3_
 	}
 }
 
-void FXISpMslHit2(centity_t *owner, int type, int flags, vec3_t origin, vec3_t Dir)
+static void FXInsectSpellMissileHit2(const int type, const int flags, const vec3_t origin, vec3_t dir)
 {
-	client_entity_t	*smokepuff;
-	int				i;
+	Vec3ScaleAssign(32.0f, dir);
 
-	Vec3ScaleAssign(32.0, Dir);
-
-	for(i = 0; i < NUM_SPEAR_EXPLODES; i++)
+	for (int i = 0; i < NUM_SPEAR_EXPLODES; i++)
 	{
-		smokepuff = ClientEntity_new(type, flags, origin, NULL, 500);
+		client_entity_t* smoke_puff = ClientEntity_new(type, flags, origin, NULL, 500);
 
-		smokepuff->r.model = spear_models + 2;
-		smokepuff->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		smokepuff->r.scale = flrand(0.7, 1);
+		smoke_puff->r.model = &spear_models[2]; // Flyingfist sprite.
+		smoke_puff->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		smoke_puff->r.scale = flrand(0.7f, 1.0f);
 
-		VectorRandomCopy(Dir, smokepuff->velocity, 64);
-		VectorSet(smokepuff->acceleration, 0.0, 0.0, GetGravity() * 0.3);
- 
-		smokepuff->radius = 200.0;
-		smokepuff->d_scale = -0.7;
-		smokepuff->d_alpha = -2.0;
+		VectorRandomCopy(dir, smoke_puff->velocity, 64.0f);
+		smoke_puff->acceleration[2] = GetGravity() * 0.3f;
 
-		if(!i)
+		smoke_puff->radius = 200.0f;
+		smoke_puff->d_scale = -0.7f;
+		smoke_puff->d_alpha = -2.0f;
+
+		if (i == 0)
 		{
-			fxi.S_StartSound(smokepuff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/HellHit.wav"), 1, ATTN_NORM, 0);
-			VectorClear(smokepuff->velocity);
-		}	
-		AddEffect(NULL,smokepuff);
+			fxi.S_StartSound(smoke_puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/HellHit.wav"), 1.0f, ATTN_NORM, 0);
+			VectorClear(smoke_puff->velocity);
+		}
+
+		AddEffect(NULL, smoke_puff);
 	}
 
-	smokepuff = ClientEntity_new(type, CEF_OWNERS_ORIGIN, origin, NULL, 500);
+	client_entity_t* halo = ClientEntity_new(type, CEF_OWNERS_ORIGIN, origin, NULL, 500);
 
-	smokepuff->r.model = spear_models + 3;
-	smokepuff->r.frame = 1;
-	smokepuff->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	halo->r.model = &spear_models[3]; // Halo sprite
+	halo->r.frame = 1;
+	halo->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
-	smokepuff->r.color.c = 0x77ffffff;
-	smokepuff->r.scale = flrand(0.3, 0.5);
-	smokepuff->d_scale = 2;
-	smokepuff->d_alpha = -2;
-	smokepuff->radius = 10.0F;
+	halo->r.color.c = 0x77ffffff;
+	halo->r.scale = flrand(0.3f, 0.5f);
+	halo->d_scale = 2.0f;
+	halo->d_alpha = -2.0f;
+	halo->radius = 10.0f;
 
-	AddEffect(NULL, smokepuff);
+	AddEffect(NULL, halo);
 }
+
 //Insect reference points
 //	INSECT_STAFF,
 //	INSECT_SWORD,
@@ -774,7 +773,7 @@ void FXIEffects(centity_t *owner,int type,int flags, vec3_t origin)
 			break;
 
 		case FX_I_SP_MSL_HIT2:
-			FXISpMslHit2(owner, type, flags, origin, vel);
+			FXInsectSpellMissileHit2(type, flags, origin, vel);
 			break;
 
 		default:
