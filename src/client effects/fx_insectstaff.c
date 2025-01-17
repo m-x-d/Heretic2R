@@ -142,55 +142,41 @@ static void FXInsectStaff(centity_t* owner, const int type, const int flags, vec
 	AddEffect(owner, trail);
 }
 
-// ************************************************************************************************
-// FXInsectStaffExplode
-// ************************************************************************************************
-
-void FXInsectStaffExplode(centity_t *owner,int type,int flags,vec3_t origin, vec3_t Dir)
+static void FXInsectStaffExplode(const int type, const int flags, vec3_t origin, vec3_t dir)
 {
-	client_entity_t	*SmokePuff;
-	int				I;
-	paletteRGBA_t	LightColor={255,64,32,255};
+	const paletteRGBA_t	light_color = { .r = 255,.g = 64,.b = 32,.a = 255 };
 
-	if(flags & CEF_FLAG6)
-		FXClientScorchmark(origin, Dir);
+	if (flags & CEF_FLAG6)
+		FXClientScorchmark(origin, dir);
 
-	VectorScale(Dir,32.0,Dir);
+	VectorScale(dir, 32.0f, dir);
 
-	I = GetScaledCount(irand(8,12), 0.8);
+	const int count = GetScaledCount(irand(8, 12), 0.8f);
 
-	while(I--)
+	for (int i = 0; i < count; i++)
 	{
-		if (!I)
-			SmokePuff=ClientEntity_new(type,flags,origin,NULL,500);
+		const qboolean is_last_puff = (i == count - 1); //mxd
+		const int next_think_time = (is_last_puff ? 500 : 1000); //mxd
+
+		client_entity_t* smoke_puff = ClientEntity_new(type, flags, origin, NULL, next_think_time);
+
+		smoke_puff->r.model = &insect_model;
+		smoke_puff->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		smoke_puff->acceleration[2] = flrand(-40.0f, -60.0f);
+		smoke_puff->d_scale = flrand(-1.75f, -2.0f);
+		smoke_puff->d_alpha = -0.2f;
+		smoke_puff->radius = 20.0f;
+
+		if (is_last_puff)
+			smoke_puff->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
 		else
-			SmokePuff=ClientEntity_new(type,flags,origin,NULL,1000);
+			VectorRandomCopy(dir, smoke_puff->velocity, flrand(16.0f, 128.0f));
 
-		SmokePuff->r.model = &insect_model;
-		SmokePuff->r.flags |=RF_FULLBRIGHT|RF_TRANSLUCENT|RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		SmokePuff->r.frame=0;
+		smoke_puff->Scale = flrand(0.25f, 0.35f); //TODO: supposed to set r.scale? Where is this used?
 
-		VectorRandomCopy(Dir, SmokePuff->velocity, flrand(16.0, 128.0));
-
-		SmokePuff->acceleration[2] = flrand(-40, -60);
-
-		SmokePuff->d_scale=flrand(-1.75,-2);
-		SmokePuff->d_alpha=-0.2;
-			
-		SmokePuff->radius=20.0;
-
-		if(!I)
-		{
-			SmokePuff->dlight=CE_DLight_new(LightColor,150.0f,0.0f);
-			VectorClear(SmokePuff->velocity);
-		}	
-
-		SmokePuff->Scale=flrand(0.25, 0.35);
-
-		AddEffect(NULL,SmokePuff);
+		AddEffect(NULL, smoke_puff);
 	}
 }
-
 
 // ****************************************************************************
 // FXGlobeOfOuchinessGlobeThink -
@@ -936,7 +922,7 @@ void FXIEffects(centity_t *owner,int type,int flags, vec3_t origin)
 			break;
 
 		case FX_I_ST_MSL_HIT:
-			FXInsectStaffExplode(owner, type, flags, origin, vel);
+			FXInsectStaffExplode(type, flags, origin, vel);
 			break;
 
 		case FX_I_RREFS:
