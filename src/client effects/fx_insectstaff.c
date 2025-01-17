@@ -562,41 +562,25 @@ static void FXInsectSpellMissileHit2(const int type, const int flags, const vec3
 	AddEffect(NULL, halo);
 }
 
-//Insect reference points
-//	INSECT_STAFF,
-//	INSECT_SWORD,
-//	INSECT_SPEAR,
-//	INSECT_RIGHTFOOT,
-//	INSECT_LEFTFOOT,
-static qboolean FXStaffElementThink(struct client_entity_s *self,centity_t *owner)
+static qboolean FXInsectStaffElementThink(struct client_entity_s* self, centity_t* owner) //mxd. Renamed from FXStaffElementThink() to avoid collisions with function in fx_staff.c
 {
-	float	Frac,
-			Multiplier;
-	int		FrameNo;
+	float frac = (float)(fxi.cl->time - self->startTime) / 100.0f;
 
-	Frac=(fxi.cl->time-self->startTime)/100.0;
+	if (self->AnimSpeed > 0.0f)
+		frac *= self->AnimSpeed;
 
-	if(self->AnimSpeed>0.0)
-	{
-		Frac*=self->AnimSpeed;
-	}
+	const int frame_no = (int)(floorf(frac));
+	if (frame_no >= self->NoOfAnimFrames - 1)
+		return false;
 
-	if((FrameNo=floor(Frac))>=(self->NoOfAnimFrames-1))
-	{
-		return(false);
-	}
-	else
-	{
-		Multiplier=1.0-Frac/(self->NoOfAnimFrames-1);
+	const float multiplier = 1.0f - frac / (float)(self->NoOfAnimFrames - 1);
 
-		self->r.color.r=self->color.r*Multiplier;
-		self->r.color.b=self->color.g*Multiplier;
-		self->r.color.g=self->color.b*Multiplier;
-		
-		self->r.frame=FrameNo+1;
+	for (int i = 0; i < 3; i++)
+		self->r.color.c_array[i] = (byte)((float)self->color.r * multiplier);
 
-		return(true);
-	}
+	self->r.frame = frame_no + 1;
+
+	return true;
 }
 
 // ************************************************************************************************
@@ -664,11 +648,11 @@ static qboolean FXISwordTrailThink(struct client_entity_s *self,centity_t *owner
 		TrailEnt->startTime=fxi.cl->frame.servertime-100;
 		TrailEnt->AnimSpeed=0.20;
 		TrailEnt->NoOfAnimFrames=2;
-		TrailEnt->Update=FXStaffElementThink;
+		TrailEnt->Update= FXInsectStaffElementThink;
 		TrailEnt->AddToView=OffsetLinkedEntityUpdatePlacement;			
 		AddEffect(owner,TrailEnt);
 
-		FXStaffElementThink(TrailEnt,owner);
+		FXInsectStaffElementThink(TrailEnt,owner);
 		
 		VectorCopy(newpoint, last_org);
 		NoOfIntervals--;
