@@ -87,7 +87,7 @@ extern void FXBlast(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXRedRainMissile(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXRedRain(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXRedRainGlow(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXMaceball(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXMaceball(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXMaceballBounce(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXMaceballExplode(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXPhoenixMissile(centity_t* owner, int type, int flags, vec3_t origin);

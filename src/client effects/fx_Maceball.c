@@ -52,20 +52,18 @@ static qboolean FXMaceballThink(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-void FXMaceball(centity_t *owner, int type, int flags, vec3_t origin)
+void FXMaceball(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	client_entity_t		*glow;
+	client_entity_t* ball = ClientEntity_new(type, flags, origin, NULL, 100);
 
-	glow = ClientEntity_new(type, flags, origin, 0, 100);
+	ball->r.model = &mace_models[0]; // Maceball sprite.
+	ball->r.scale = BALL_RADIUS;
+	ball->d_scale = BALL_GROWTH;
+	ball->color.c = 0xff00ffff;
+	ball->dlight = CE_DLight_new(ball->color, 150.0f, 0.0f);
+	ball->Update = FXMaceballThink;
 
-	glow->r.model = mace_models;
-	glow->r.scale = BALL_RADIUS;
-	glow->d_scale = BALL_GROWTH;
-	glow->color.c = 0xff00ffff;
-	glow->dlight = CE_DLight_new(glow->color, 150.0F, 0.0F);
-	glow->Update = FXMaceballThink;
-	
-	AddEffect(owner, glow);
+	AddEffect(owner, ball);
 }
 
 // -----------------------------------------------------------------------------------------
