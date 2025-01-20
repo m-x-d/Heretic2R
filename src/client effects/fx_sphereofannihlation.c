@@ -50,8 +50,6 @@ static qboolean FXSphereOfAnnihilationGlowballThink(struct client_entity_s *Self
 static qboolean FXSphereOfAnnihilationGlowballSpawnerThink(struct client_entity_s *Self,centity_t *Owner);
 static qboolean FXSphereOfAnnihilationSmokePuffThink(struct client_entity_s *Self,centity_t *Owner);
 
-extern void FXClientLensFlare(centity_t *owner,int Type,int Flags,vec3_t Origin, int lifeTime, paletteRGBA_t *tint);
-
 
 // ****************************************************************************
 // FXSphereOfAnnihilationSphereThink -
