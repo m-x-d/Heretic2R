@@ -39,15 +39,17 @@ void PreCacheMaceball(void)
 	mace_models[6] = fxi.RegisterModel("sprites/spells/spark_green.sp2");
 }
 
-static qboolean FXMaceballThink(struct client_entity_s *self, centity_t *owner)
+#pragma region ========================== MACE BALL ==========================
+
+static qboolean FXMaceballThink(struct client_entity_s* self, centity_t* owner)
 {
-	self->dlight->intensity = 150.0 + (cos(fxi.cl->time * 0.01) * 20.0);
+	self->dlight->intensity = 150.0f + cosf((float)fxi.cl->time * 0.01f) * 20.0f;
 	self->r.angles[2] += ANGLE_30;
-	if(self->r.scale >= BALL_MAX_RADIUS)
-	{
-		self->d_scale = 0.0;
-	}
-	return(true);
+
+	if (self->r.scale >= BALL_MAX_RADIUS)
+		self->d_scale = 0.0f;
+
+	return true;
 }
 
 void FXMaceball(centity_t *owner, int type, int flags, vec3_t origin)
@@ -211,24 +213,9 @@ void FXMaceballExplode(centity_t *owner,int type,int flags,vec3_t origin)
 	FXDebris_SpawnChunks(type, flags & ~(CEF_FLAG6|CEF_FLAG7|CEF_FLAG8), origin, 5, MAT_METAL, dir, 80000.0f, mins, 1.5, false);
 }
 
+#pragma endregion
 
-
-// end
-
-
-
-
-
-
-// ************************************************************************************************
-// FXRipperBall
-// ************************************************************************************************
-
-
-// ************************************************************************************************
-// FXRipperExplode
-// ---------------------
-// ************************************************************************************************
+#pragma region ========================== RIPPER BALL ==========================
 
 static qboolean FXRipperExplodeLightThink(struct client_entity_s *self, centity_t *owner)
 {
@@ -457,5 +444,4 @@ void FXRipperExplode(centity_t *owner, int type, int flags, vec3_t origin)
 	
 }
 
-
-// end
+#pragma endregion
