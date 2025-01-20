@@ -80,28 +80,21 @@ static qboolean FXMeteorBarriertrailThink(struct client_entity_s* self, const ce
 	return true;
 }
 
-// Putting the angular velocity in here saves 3 bytes of net traffic
-// per meteor per server frame
-
-qboolean MeteorAddToView(client_entity_t *current, centity_t *owner)
+// Putting the angular velocity in here saves 3 bytes of net traffic per meteor per server frame.
+static qboolean MeteorAddToView(client_entity_t* current, const centity_t* owner)
 {
-	float	roll, yaw;
-	int		d_time;
-	float	Angle;
+	const float d_time = (float)(fxi.cl->time - current->startTime);
+	current->r.angles[ROLL] = d_time * 0.001f * METEOR_ROLL_SPEED;
+	current->r.angles[YAW] =  d_time * 0.001f * METEOR_YAW_SPEED;
 
-	d_time = fxi.cl->time - current->startTime;
-	roll = d_time * 0.001 * METEOR_ROLL_SPEED;
-	yaw = d_time * 0.001 * METEOR_YAW_SPEED;
-	current->r.angles[ROLL] = roll;
-	current->r.angles[YAW] = yaw;
-
-	Angle = ((fxi.cl->time * .1500) + (90.0 * current->SpawnData)) * ANGLE_TO_RAD;
-	current->r.origin[0] = cos(Angle) * 30.0;
-	current->r.origin[1] = sin(Angle) * 30.0;
-	current->r.origin[2] = cos(Angle / (M_PI / 5)) * 10.0;
+	const float angle = (((float)fxi.cl->time * 0.15f) + (current->SpawnData * 90.0f)) * ANGLE_TO_RAD;
+	current->r.origin[0] = cosf(angle) * 30.0f;
+	current->r.origin[1] = sinf(angle) * 30.0f;
+	current->r.origin[2] = cosf(angle / (M_PI / 5.0f)) * 10.0f;
 
 	VectorAdd(owner->origin, current->r.origin, current->r.origin);
-	return(true);
+
+	return true;
 }
 
 void FXMeteorBarrier(centity_t *owner, int type, int flags, vec3_t origin)
