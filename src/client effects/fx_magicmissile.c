@@ -132,60 +132,50 @@ void FXMagicMissile(centity_t* owner, const int type, const int flags, const vec
 	AddEffect(owner, missile);
 }
 
-// ************************************************************************************************
-// FXMagicMissileExplode
-// ************************************************************************************************
-
-void FXMagicMissileExplode(centity_t *owner, int type, int flags, vec3_t origin)
+void FXMagicMissileExplode(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	vec3_t			dir;
-	client_entity_t	*smokepuff;
-	int				i;
-	paletteRGBA_t	lightcolor = {0, 128, 128, 255};
+	const paletteRGBA_t light_color = { .r = 0, .g = 128, .b = 128, .a = 255 };
 
+	vec3_t dir;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_MAGICMISSILEEXPLODE].formatString, dir);
-	if(flags & CEF_FLAG6)
-	{
+
+	if (flags & CEF_FLAG6)
 		FXClientScorchmark(origin, dir);
-	}
-	Vec3ScaleAssign(32.0, dir);
 
-	for(i = 0; i < NUM_MISSILE_EXPLODE_PARTS; i++)
+	Vec3ScaleAssign(32.0f, dir);
+
+	for (int i = 0; i < NUM_MISSILE_EXPLODE_PARTS; i++)
 	{
-		smokepuff = ClientEntity_new(type, flags, origin, 0, 500);
+		client_entity_t* puff = ClientEntity_new(type, flags, origin, NULL, 500);
 
-		smokepuff->r.model = missile_models + 1;
-		smokepuff->r.scale = flrand(MISSILE_SCALE * 0.75, MISSILE_SCALE * 1.5);
-		smokepuff->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		puff->r.model = &missile_models[1]; // Indigo streak sprite.
+		puff->r.scale = flrand(MISSILE_SCALE * 0.75f, MISSILE_SCALE * 1.5f);
+		puff->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
-		VectorRandomCopy(dir, smokepuff->velocity, MISSILE_EXPLODE_SPEED);
-		smokepuff->acceleration[2] = GetGravity()*0.3;
+		VectorRandomCopy(dir, puff->velocity, MISSILE_EXPLODE_SPEED);
+		puff->acceleration[2] = GetGravity() * 0.3f;
 
-		smokepuff->d_scale = -1.0;
-		smokepuff->d_alpha = -2.0;
-		smokepuff->radius = 20.0;
+		puff->d_scale = -1.0f;
+		puff->d_alpha = -2.0f;
+		puff->radius = 20.0f;
 
-		AddEffect(NULL, smokepuff);
+		AddEffect(NULL, puff);
 	}
 
-	// Big flash
-	smokepuff = ClientEntity_new(type, flags, origin, 0, 500);
+	// Big flash.
+	client_entity_t* halo = ClientEntity_new(type, flags, origin, 0, 500);
 
-	smokepuff->r.model = missile_models;
-	smokepuff->r.frame = 0;
+	halo->r.model = &missile_models[0]; // Indigo halo sprite.
+	halo->r.scale = 2.0f;
+	halo->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	halo->d_scale = -6.0f;
+	halo->d_alpha = -2.0f;
+	halo->radius = 20.0f;
+	halo->dlight = CE_DLight_new(light_color, 150.0f, -50.0f);
 
-	smokepuff->r.scale = 2.0;
-	smokepuff->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	VectorScale(dir, 8.0f, halo->velocity);
 
-	VectorScale(dir, 8.0, smokepuff->velocity);
-
-	smokepuff->d_scale = -6.0;
-	smokepuff->d_alpha = -2.0;
-	smokepuff->radius = 20.0;
-
-	smokepuff->dlight = CE_DLight_new(lightcolor, 150.0, -50.0);
-
-	AddEffect(NULL, smokepuff);
+	AddEffect(NULL, halo);
 }
 
 // Create Effect FX_WEAPON_BLAST
