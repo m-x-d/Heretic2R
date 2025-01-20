@@ -199,19 +199,6 @@ void FXMaceballExplode(centity_t* owner, const int type, const int flags, vec3_t
 
 #pragma region ========================== RIPPER BALL ==========================
 
-static qboolean FXRipperExplodeLightThink(struct client_entity_s *self, centity_t *owner)
-{
-	if (fxi.cl->time > self->lastThinkTime)
-		return(false);
-	
-	if(self->dlight->intensity > 0.0F)
-		self->dlight->intensity -= 10.0F;
-
-	return(true);
-}
-
-
-
 static qboolean FXRipperExplodeBallThink(struct client_entity_s *self, centity_t *owner)
 {
 	client_entity_t *trail;
