@@ -178,91 +178,94 @@ void FXMagicMissileExplode(centity_t* owner, const int type, const int flags, ve
 	AddEffect(NULL, halo);
 }
 
-// Create Effect FX_WEAPON_BLAST
-void FXBlast(centity_t *owner, int type, int flags, vec3_t origin)
+void FXBlast(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	vec3_t endpos, curpos;
-	vec3_t unit, back;
-	int i, numpuffs;
-	client_entity_t *puff;
-	client_particle_t *spark;
-	paletteRGBA_t pal;
-	float length, scale;
-	short slength[BLAST_NUM_SHOTS], syaw, spitch;
-	int		shot;
-	vec3_t	angles;
-
-	assert(BLAST_NUM_SHOTS==5);
+	assert(BLAST_NUM_SHOTS == 5);
 
 	// Sends over the network 7 shorts and an origin.
-	// Note that this is a vast improvement over five seperate effects with a vector each (60 bytes+origins)
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_BLAST].formatString, &syaw, &spitch, &slength[0], &slength[1], &slength[2], &slength[3], &slength[4]);
+	// Note that this is a vast improvement over five separate effects with a vector each (60 bytes+origins).
+	short s_yaw;
+	short s_pitch;
+	short s_length[BLAST_NUM_SHOTS];
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_BLAST].formatString, &s_yaw, &s_pitch, 
+		&s_length[0], &s_length[1], &s_length[2], &s_length[3], &s_length[4]);
 
 	// Compress the angles into two shorts.
-	angles[YAW] = (float)syaw*(360.0/65536.0);
-	angles[PITCH] = (float)spitch*(360.0/65536.0);
-	angles[ROLL] = 0.0;
+	vec3_t angles;
+	angles[YAW] = (float)s_yaw * SHORT_TO_ANGLE;
+	angles[PITCH] = (float)s_pitch * SHORT_TO_ANGLE;
+	angles[ROLL] = 0.0f;
 
 	// Set up for array.
-	angles[YAW] -= BLAST_ANGLE_INC * (BLAST_NUM_SHOTS-1) * 0.5;
-	for (shot=0; shot<BLAST_NUM_SHOTS; shot++)
-	{
-		AngleVectors(angles, unit, NULL, NULL);
-		length = (float)slength[shot];
-		VectorMA(origin, length, unit, endpos);
+	angles[YAW] -= BLAST_ANGLE_INC * (BLAST_NUM_SHOTS - 1) * 0.5f;
 
-		numpuffs = (int)(length/BLAST_DIFF);
-		VectorCopy(origin, curpos);
+	for (int shot = 0; shot < BLAST_NUM_SHOTS; shot++)
+	{
+		vec3_t unit;
+		AngleVectors(angles, unit, NULL, NULL);
+		const float length = s_length[shot];
+
+		vec3_t end_pos;
+		VectorMA(origin, length, unit, end_pos);
+
+		int numpuffs = (int)(length / BLAST_DIFF);
+		numpuffs = min(40, numpuffs);
+
+		vec3_t cur_pos;
+		VectorCopy(origin, cur_pos);
 		VectorScale(unit, BLAST_DIFF, unit);
+
+		vec3_t back;
 		VectorScale(unit, BLAST_BACKSPEED, back);
-		scale = BLAST_SCALE;
-		if (numpuffs>40)
-			numpuffs=40;
-		for(i=0; i<=numpuffs; i++)
+
+		float scale = BLAST_SCALE;
+
+		for (int i = 0; i <= numpuffs; i++)
 		{
-			puff = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS, curpos, NULL, 750);
-			puff->r.model = missile_models + 1;
-			puff->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+			client_entity_t* puff = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS, cur_pos, NULL, 750);
+
+			puff->r.model = &missile_models[1]; // Indigo spark sprite.
+			puff->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 			puff->r.scale = scale;
-			puff->radius = 14.0;
-			puff->alpha = 0.95;
-//			puff->d_alpha = -1.0;
-			puff->d_scale = -1.4*scale;
-			VectorSet(puff->velocity, flrand(-8.0,8.0), flrand(-8.0,8.0), flrand(-8.0,8.0));
+			puff->radius = 14.0f;
+			puff->alpha = 0.95f;
+			puff->d_scale = -1.4f * scale;
+			VectorRandomSet(puff->velocity, 8.0f);
 			VectorAdd(puff->velocity, back, puff->velocity);
 			puff->acceleration[2] = BLAST_GRAVITY;
+
 			AddEffect(NULL, puff);
-			VectorAdd(curpos, unit, curpos);
-			scale+=0.1;
+			VectorAdd(cur_pos, unit, cur_pos);
+
+			scale += 0.1f;
 		}
 
-		// We added the line, now throw out the impact
+		// We added the line, now throw out the impact.
 		// Big flash first...
-		puff = ClientEntity_new(type, CEF_ADDITIVE_PARTS, endpos, NULL, 1000);
-		puff->r.model = missile_models;
-		puff->r.frame = 0;
-		puff->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		puff->r.scale = 1.0 + length * 0.001;		// Bigger when further out.
-		puff->alpha = 0.95;
-		puff->d_scale = -5.0;
-		puff->d_alpha = -1.0;
-		puff->radius = 16.0;
-		VectorCopy(back, puff->velocity);
+		client_entity_t* halo = ClientEntity_new(type, CEF_ADDITIVE_PARTS, end_pos, NULL, 1000);
+		halo->r.model = &missile_models[0]; // Indigo halo sprite.
+		halo->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		halo->r.scale = 1.0f + length * 0.001f; // Bigger when further out.
+		halo->alpha = 0.95f;
+		halo->d_scale = -5.0f;
+		halo->d_alpha = -1.0f;
+		halo->radius = 16.0f;
+		VectorCopy(back, halo->velocity);
 
-		AddEffect(NULL, puff);
+		AddEffect(NULL, halo);
 
-		pal.c = 0xffffffff;
-		for (i=0; i<9; i++)
+		for (int i = 0; i < 9; i++)
 		{
-			spark = ClientParticle_new(PART_16x16_SPARK_I, pal, 750);
-			VectorSet(spark->velocity, flrand(-64.0, 64.0), flrand(-64.0, 64.0), flrand(64.0, 128.0));
-			spark->acceleration[2] = -PARTICLE_GRAVITY*3.0;
-			spark->scale = 16.0;
-			spark->d_scale = -16.0*1.4;
-			AddParticleToList(puff, spark);
+			client_particle_t* spark = ClientParticle_new(PART_16x16_SPARK_I, color_white, 750);
+
+			VectorSet(spark->velocity, flrand(-64.0f, 64.0f), flrand(-64.0f, 64.0f), flrand(64.0f, 128.0f));
+			spark->acceleration[2] = -PARTICLE_GRAVITY * 3.0f;
+			spark->scale = 16.0f;
+			spark->d_scale = -16.0f * 1.4f;
+
+			AddParticleToList(halo, spark);
 		}
 
 		angles[YAW] += BLAST_ANGLE_INC;
 	}
 }
- 

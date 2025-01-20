@@ -81,7 +81,7 @@ extern void FXSphereOfAnnihilationGlowballs(centity_t* owner, int type, int flag
 extern void FXSphereOfAnnihilationExplode(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXSphereOfAnnihilationPower(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXSpherePlayerExplode(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXMagicMissile(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXMagicMissile(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXMagicMissileExplode(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXBlast(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXRedRainMissile(centity_t* owner, int type, int flags, vec3_t origin);

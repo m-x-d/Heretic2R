@@ -48,7 +48,7 @@
 #define BLAST_DISTANCE					1000.0	// Max range of the blast.
 #define BLAST_DMG_MIN					10
 #define BLAST_DMG_MAX					15
-#define BLAST_ANGLE_INC					3.5
+#define BLAST_ANGLE_INC					3.5f
 #define BLAST_NUM_SHOTS					5
 
 // Magic Missile array (powered up Arc).
@@ -56,7 +56,7 @@
 #define MAGICMISSILE_DAMAGE_MAX			40
 #define MAGICMISSILE_DAMAGE_RAD			20
 #define MAGICMISSILE_RADIUS				48
-#define MAGICMISSILE_SPEED				1500.0
+#define MAGICMISSILE_SPEED				1500.0f
 // #define MAGICMISSILE_DAMAGE_RADIUS		64
 
 // Red Rain Arrows.
