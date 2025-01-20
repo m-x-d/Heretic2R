@@ -231,185 +231,167 @@ static qboolean FXRipperExplodeBallThink(const struct client_entity_s* self, cen
 	return true;
 }
 
-// Create Effect FX_WEAPON_RIPPEREXPLODE
-void FXRipperExplode(centity_t *owner, int type, int flags, vec3_t origin)
+void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t	*ripper;	
-	paletteRGBA_t	color = {255, 255, 255, 255};
-	short			ballarray[8];
-	byte			byaw;
-	float			curyaw;
-	vec3_t			casterpos;
-	int				i, num;
-	float			length;
-	vec3_t			lastvel, diff, curpos;
-	client_entity_t	*flash, *ring;
-	client_particle_t *spark;
+	vec3_t caster_pos;
+	byte byte_yaw;
+	short ball_array[8];
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_RIPPEREXPLODE].formatString, caster_pos, &byte_yaw,
+		&ball_array[0], &ball_array[1], &ball_array[2], &ball_array[3], &ball_array[4], &ball_array[5], &ball_array[6], &ball_array[7]);
 
+	// Convert from a byte back to radians.
+	float cur_yaw = (float)byte_yaw * (ANGLE_360 / 256.0f);
 
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_RIPPEREXPLODE].formatString, 
-			casterpos, 
-			&byaw, 
-			&ballarray[0],
-			&ballarray[1],
-			&ballarray[2],
-			&ballarray[3],
-			&ballarray[4],
-			&ballarray[5],
-			&ballarray[6],
-			&ballarray[7]);
-
-	// Convert from a byte back to radians
-	curyaw = ((float)byaw)*((2*M_PI)/256.0);
-
-	//
-	// Throw out a bunch o' balls
-	//
-	for (i=0; i<RIPPER_BALLS; i++)
+	// Throw out a bunch o' balls.
+	for (int i = 0; i < RIPPER_BALLS; i++)
 	{
-		// Create the ball
-		ripper = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
+		// Create the ball.
+		client_entity_t* ripper = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
 
-		ripper->r.model = mace_models;
-		ripper->r.flags = RF_TRANSLUCENT;		// Use the alpha channel
+		ripper->r.model = &mace_models[0]; // Maceball sprite.
+		ripper->r.flags = RF_TRANSLUCENT; // Use the alpha channel.
 
-		// Set up the velocities
-		VectorSet(ripper->velocity, cos(curyaw), sin(curyaw), 0.0);
+		// Set up the velocities.
+		VectorSet(ripper->velocity, cosf(cur_yaw), sinf(cur_yaw), 0.0f);
 		VectorCopy(ripper->velocity, ripper->direction);
 		vectoangles(ripper->velocity, ripper->r.angles);
 		Vec3ScaleAssign(RIPPER_EXPLODE_SPEED, ripper->velocity);
 
 		// Set up the basic attributes
-		ripper->r.scale = 0.25;
-		ripper->r.color = color;
-		ripper->radius = 10.0F;
+		ripper->r.scale = 0.25f;
+		ripper->r.color = color_white;
+		ripper->radius = 10.0f;
 		ripper->Update = FXRipperExplodeBallThink;
 
 		// Add to the entity passed in, not the "owner".
-		assert(ballarray[i]);
-		AddEffect((centity_t *)(&fxi.server_entities[ballarray[i]]), ripper);
+		assert(ball_array[i]);
+		AddEffect(&fxi.server_entities[ball_array[i]], ripper);
 
-		curyaw += RIPPER_BALL_ANGLE;
+		cur_yaw += RIPPER_BALL_ANGLE;
 	}
 
-	//
-	// Draw the impact graphic
-	//
-	flash = ClientEntity_new(type, 0, origin, NULL, 50);
-	flash->r.model = mace_models + 1;
-	flash->r.frame = 1;
-	flash->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	flash->radius = 20.0;
+	// Draw the impact graphic.
+	client_entity_t* halo = ClientEntity_new(type, 0, origin, NULL, 50);
 
-	flash->r.scale = 0.75;
-	flash->d_scale = -1.0;
-	flash->d_alpha = -1.4;
-	fxi.S_StartSound(flash->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/RipperImpact.wav"), 1, ATTN_NORM, 0);
-	flash->dlight = CE_DLight_new(color, 150.0f, -100.0f);
-	flash->lastThinkTime = fxi.cl->time + 750;
-//	flash->Update = FXRipperExplodeLightThink;
+	halo->r.model = &mace_models[1]; // Halo sprite.
+	halo->r.frame = 1;
+	halo->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	halo->radius = 20.0f;
+	halo->r.scale = 0.75f;
+	halo->d_scale = -1.0f;
+	halo->d_alpha = -1.4f;
+	halo->dlight = CE_DLight_new(color_white, 150.0f, -100.0f);
+	halo->lastThinkTime = fxi.cl->time + 750;
 
-	AddEffect(NULL, flash);
+	fxi.S_StartSound(halo->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/RipperImpact.wav"), 1, ATTN_NORM, 0);
+
+	AddEffect(NULL, halo);
 
 	// Draw a circle of expanding lines.
-	curyaw = 0;
-	VectorSet(lastvel, RIPPER_RING_VEL, 0.0, 0.0);
-	for(i = 0; i < NUM_RIPPER_PUFFS; i++)
-	{
-		curyaw+=RIPPER_PUFF_ANGLE;
+	vec3_t last_vel;
+	VectorSet(last_vel, RIPPER_RING_VEL, 0.0f, 0.0f);
+	const int ring_flags = CEF_PULSE_ALPHA | CEF_USE_VELOCITY2 | CEF_AUTO_ORIGIN | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS; //mxd
+	cur_yaw = 0.0f;
 
-		ring = ClientEntity_new(type, CEF_PULSE_ALPHA | CEF_USE_VELOCITY2 | CEF_AUTO_ORIGIN | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS, 
-									origin, NULL, 750);
-		ring->r.model = mace_models + 2;
+	for (int i = 0; i < NUM_RIPPER_PUFFS; i++)
+	{
+		cur_yaw += RIPPER_PUFF_ANGLE;
+
+		client_entity_t* ring = ClientEntity_new(type, ring_flags, origin, NULL, 750);
+
+		ring->r.model = &mace_models[2]; // Neon-green sprite.
 		ring->r.frame = 1;
 		ring->r.spriteType = SPRITE_LINE;
-		ring->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		ring->radius = 64.0;
-		
+		ring->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		ring->radius = 64.0f;
+		ring->r.scale = 0.5f;
+		ring->d_scale = 32.0f;
+		ring->alpha = 0.1f;
+		ring->d_alpha = 3.0f;
+
 		// The startpos and startvel comes from the last velocity.
-		VectorCopy(lastvel, ring->velocity);
-		VectorScale(ring->velocity, -1.0, ring->acceleration);
-		VectorMA(origin, .01, ring->velocity, ring->r.startpos);	// Move the line out a bit to avoid a zero-length line.
+		VectorCopy(last_vel, ring->velocity);
+		VectorScale(ring->velocity, -1.0f, ring->acceleration);
+		VectorMA(origin, 0.01f, ring->velocity, ring->r.startpos); // Move the line out a bit to avoid a zero-length line.
 
 		// The endpos is calculated from the current angle.
-		VectorSet(ring->velocity2, RIPPER_RING_VEL*cos(curyaw), RIPPER_RING_VEL*sin(curyaw), 0.0);
-		VectorScale(ring->velocity2, -1.0, ring->acceleration2);
-		VectorMA(origin, .01, ring->velocity2, ring->r.endpos);	// Move the line out a bit to avoid a zero-length line.
+		VectorSet(ring->velocity2, RIPPER_RING_VEL * cosf(cur_yaw), RIPPER_RING_VEL * sinf(cur_yaw), 0.0f);
+		VectorScale(ring->velocity2, -1.0f, ring->acceleration2);
+		VectorMA(origin, 0.01f, ring->velocity2, ring->r.endpos); // Move the line out a bit to avoid a zero-length line.
 
 		// Finally, copy the last velocity we used.
-		VectorCopy(ring->velocity2, lastvel);
+		VectorCopy(ring->velocity2, last_vel);
 
 		// NOW apply the extra directional velocity.
-		VectorAdd(ring->velocity, flash->velocity, ring->velocity);
-		VectorAdd(ring->velocity2, flash->velocity, ring->velocity2);
-
-		ring->r.scale = .5;
-		ring->d_scale = 32.0;
-		ring->alpha = 0.1;
-		ring->d_alpha = 3.0;
+		VectorAdd(ring->velocity, halo->velocity, ring->velocity);
+		VectorAdd(ring->velocity2, halo->velocity, ring->velocity2);
 
 		AddEffect(NULL, ring);
 
 		// Now spawn a particle quick to save against the nasty joints (ugh).
-		spark = ClientParticle_new(PART_16x16_SPARK_G, color, 750);
+		client_particle_t* spark = ClientParticle_new(PART_16x16_SPARK_G, color_white, 750);
+
 		VectorCopy(ring->r.startpos, spark->origin);
 		VectorCopy(ring->velocity, spark->velocity);
 		VectorCopy(ring->acceleration, spark->acceleration);
-		spark->scale = 0.5;
-		spark->d_scale = 32.0;
+		spark->scale = 0.5f;
+		spark->d_scale = 32.0f;
 		spark->color.a = 1;
-		spark->d_alpha = 768.0;
+		spark->d_alpha = 768.0f;
 
 		AddParticleToList(ring, spark);
 	}
 
 	// Get the length for the firing streak.
-	VectorSubtract(origin, casterpos, diff);
-	length = VectorLength(diff);
+	vec3_t diff;
+	VectorSubtract(origin, caster_pos, diff);
+	const float length = VectorLength(diff);
 
-	if (length > 8.0)
+	if (length > 8.0f)
 	{
 		// Draw the streak from the caster to the impact point.
-		flash = ClientEntity_new(FX_WEAPON_RIPPEREXPLODE, CEF_AUTO_ORIGIN, casterpos, NULL, 500);
-		flash->r.model = mace_models + 4;
+		client_entity_t* flash = ClientEntity_new(FX_WEAPON_RIPPEREXPLODE, CEF_AUTO_ORIGIN, caster_pos, NULL, 500);
+
+		flash->r.model = &mace_models[4]; // Ballstreak sprite.
 		flash->r.spriteType = SPRITE_LINE;
-		flash->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		flash->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		flash->r.scale = 8.0f;
+		flash->d_scale = -8.0f;
+		flash->alpha = 0.5f;
+		flash->d_alpha = -1.0f;
 
-		VectorCopy(casterpos, flash->r.endpos);
+		VectorCopy(caster_pos, flash->r.endpos);
 		VectorCopy(origin, flash->r.startpos);
-		flash->radius = length*0.5;
-
-		flash->r.scale = 8.0;
-		flash->d_scale = -8.0;
-		flash->alpha = 0.5;
-		flash->d_alpha = -1.0;
+		flash->radius = length * 0.5f;
 
 		AddEffect(NULL, flash);
 
-		// Draw some flashy bits along the line for thickness
-		num = (int)(length/32.0);
-		VectorCopy(casterpos, curpos);
-		VectorScale(diff, 1/(float)num, diff);
-		if (num>40)
-			num=40;
-		for (i=0; i<num; i++)
-		{
-			flash = ClientEntity_new(FX_WEAPON_RIPPEREXPLODE, 0, curpos, NULL, 500);
-			flash->r.model = mace_models + 5;
-			flash->r.frame = 1;
-			flash->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		// Draw some flashy bits along the line for thickness.
+		int num = (int)(length / 32.0f);
 
-			flash->r.scale = .16;
-			flash->d_scale = -.16;
-			flash->alpha = 0.5;
-			flash->d_alpha = -1.0;
+		vec3_t cur_pos;
+		VectorCopy(caster_pos, cur_pos);
+		VectorScale(diff, 1.0f / (float)num, diff);
+
+		num = min(40, num);
+
+		for (int i = 0; i < num; i++)
+		{
+			flash = ClientEntity_new(FX_WEAPON_RIPPEREXPLODE, 0, cur_pos, NULL, 500);
+
+			flash->r.model = &mace_models[5]; // Patball sprite.
+			flash->r.frame = 1;
+			flash->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+			flash->r.scale = 0.16f;
+			flash->d_scale = -0.16f;
+			flash->alpha = 0.5f;
+			flash->d_alpha = -1.0f;
 
 			AddEffect(NULL, flash);
 
-			VectorAdd(curpos, diff, curpos);
+			VectorAdd(cur_pos, diff, cur_pos);
 		}
 	}
-	
 }
 
 #pragma endregion
