@@ -22,8 +22,8 @@
 
 #define BLAST_DIFF					40.0f
 #define BLAST_SCALE					0.3f
-#define BLAST_BACKSPEED				-1.5f
-#define BLAST_GRAVITY				-32.0f
+#define BLAST_BACKSPEED				(-1.5f)
+#define BLAST_GRAVITY				(-32.0f)
 
 static struct model_s* missile_models[3];
 
@@ -34,75 +34,49 @@ void PreCacheArray(void)
 	missile_models[2] = fxi.RegisterModel("Sprites/spells/indigostreak.sp2");
 }
 
-
-// ************************************************************************************************
-// FXMagicMissileTrailThink
-// ------------------------
-// ************************************************************************************************
-
-// These need to be converted to particles
-static qboolean FXMagicMissileTrailThink(struct client_entity_s *Self,centity_t *Owner)
+// These need to be converted to particles.
+static qboolean FXMagicMissileTrailThink(const struct client_entity_s* self, centity_t* owner)
 {
-	int				i;
-	client_entity_t	*trail;
-	vec3_t			NormVelocity;
+	vec3_t vel_normal;
+	VectorCopy(self->velocity, vel_normal);
+	VectorNormalize(vel_normal);
 
-	VectorCopy(Self->velocity,NormVelocity);
-	VectorNormalize(NormVelocity);
-
-//	count = GetScaledCount(ARRAY_TRAIL_COUNT, 0.8);
-//	for(i = 0; i < count; i++)
-	for (i=0; i<2; i++)	// Each cardinal direction
+	for (int i = 0; i < 2; i++)	// Each cardinal direction.
 	{
-		trail = ClientEntity_new(FX_WEAPON_MAGICMISSILE,
-								   0,
-								   Self->r.origin,
-								   NULL,
-    							   500);
+		client_entity_t* halo = ClientEntity_new(FX_WEAPON_MAGICMISSILE, 0, self->r.origin, NULL, 500);
 
-		// Self->up holds the direction to move in.
+		// self->up holds the direction to move in.
+		VectorMA(halo->r.origin, (float)(-i) * 3.0f - flrand(0.0f, 3.0f), vel_normal, halo->r.origin);
 
-		VectorMA(trail->r.origin, -i * 3.0 - flrand(0.0F, 3.0F), NormVelocity, trail->r.origin);
-		switch(i)
-		{
-		case 0:	// Up/right
-			VectorCopy(Self->up, trail->velocity);
-			break;
-		case 1:	// Down/left
-			VectorScale(Self->up, -1.0, trail->velocity);
-			break;
-		}
+		const float scaler = (i == 0 ? 1.0f : -1.0f); //mxd. 0: Up/right, 1: Down/left.
+		VectorScale(self->up, scaler, halo->velocity);
 
-		trail->r.model = missile_models;
-		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		trail->r.scale = flrand(MISSILE_TRAIL_SCALE, MISSILE_TRAIL_SCALE + 0.1);
-		trail->d_scale = -1.0;
-		trail->d_alpha = -2.0;
-		trail->radius = 20.0;
-		
-		AddEffect(NULL,trail);
+		halo->r.model = &missile_models[0]; // Indigo halo sprite.
+		halo->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		halo->r.scale = flrand(MISSILE_TRAIL_SCALE, MISSILE_TRAIL_SCALE + 0.1f);
+		halo->d_scale = -1.0f;
+		halo->d_alpha = -2.0f;
+		halo->radius = 20.0f;
+
+		AddEffect(NULL, halo);
 	}
 
-	trail = ClientEntity_new(FX_WEAPON_MAGICMISSILE, 
-								CEF_AUTO_ORIGIN | CEF_USE_VELOCITY2,
-								Self->r.origin, 
-								NULL, 
-								500);
+	client_entity_t* trail = ClientEntity_new(FX_WEAPON_MAGICMISSILE, CEF_AUTO_ORIGIN | CEF_USE_VELOCITY2, self->r.origin, NULL, 500);
 
-	trail->r.model = missile_models + 2;
+	trail->r.model = &missile_models[2]; // Indigo streak sprite.
 	trail->r.spriteType = SPRITE_LINE;
 	trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 	VectorCopy(trail->r.origin, trail->r.startpos);
-	VectorMA(trail->r.origin, -0.1, Self->velocity, trail->r.endpos);
-	VectorScale(Self->velocity, 0.9, trail->velocity);
-	VectorScale(Self->velocity, 0.5, trail->velocity2);
-	trail->r.scale = 12.0;
-	trail->d_scale = -24.0;
-	trail->d_alpha = -2.0;
+	VectorMA(trail->r.origin, -0.1f, self->velocity, trail->r.endpos);
+	VectorScale(self->velocity, 0.9f, trail->velocity);
+	VectorScale(self->velocity, 0.5f, trail->velocity2);
+	trail->r.scale = 12.0f;
+	trail->d_scale = -24.0f;
+	trail->d_alpha = -2.0f;
 
 	AddEffect(NULL, trail);
 
-	return(true);
+	return true;
 }
 
 // ************************************************************************************************
@@ -238,11 +212,6 @@ void FXMagicMissileExplode(centity_t *owner, int type, int flags, vec3_t origin)
 
 	AddEffect(NULL, smokepuff);
 }
-
-#define BLAST_DIFF 40.0
-#define BLAST_SCALE	0.3
-#define BLAST_BACKSPEED	-1.5
-#define BLAST_GRAVITY -32.0
 
 // Create Effect FX_WEAPON_BLAST
 void FXBlast(centity_t *owner, int type, int flags, vec3_t origin)
