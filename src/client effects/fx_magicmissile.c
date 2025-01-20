@@ -79,33 +79,15 @@ static qboolean FXMagicMissileTrailThink(const struct client_entity_s* self, cen
 	return true;
 }
 
-// ************************************************************************************************
-// FXMagicMissileModelThink1
-// -------------------------
-// ************************************************************************************************
-
-static qboolean FXMagicMissileModelThink2(struct client_entity_s* Self, centity_t* Owner);
-
-static qboolean FXMagicMissileModelThink1(struct client_entity_s *Self,centity_t *Owner)
+static qboolean FXMagicMissileModelThink(struct client_entity_s* self, centity_t* owner)
 {
-	Self->d_scale=0.0;
-	Self->r.scale = 0.8;
+	self->d_scale = 0.0f;
+	self->r.scale = 0.8f;
 
-	Self->Update=FXMagicMissileModelThink2;
+	self->Update = FXMagicMissileTrailThink;
+	FXMagicMissileTrailThink(self, owner);
 
-	FXMagicMissileTrailThink(Self,Owner);
-	return(true);
-}
-
-// ************************************************************************************************
-// FXMagicMissileModelThink2
-// -------------------------
-// ************************************************************************************************
-
-static qboolean FXMagicMissileModelThink2(struct client_entity_s *Self,centity_t *Owner)
-{
-	FXMagicMissileTrailThink(Self,Owner);
-	return(true);
+	return true;
 }
 
 // ************************************************************************************************
@@ -150,7 +132,7 @@ void FXMagicMissile(centity_t *Owner,int Type,int Flags,vec3_t Origin)
 	Missile->d_alpha=0.0;
 	Missile->d_scale=4.0;
 	Missile->dlight=CE_DLight_new(LightColor,150.0f,0.0f);
-	Missile->Update=FXMagicMissileModelThink1;
+	Missile->Update=FXMagicMissileModelThink;
 
 //	FXMagicMissileTrailThink(Self, Owner);
 
