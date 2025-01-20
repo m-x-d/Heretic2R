@@ -1,38 +1,37 @@
 //
 // fx_magicmissile.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
 #include "ce_DLight.h"
-#include "Angles.h"
 #include "Random.h"
 #include "q_Sprite.h"
 #include "Utilities.h"
 #include "g_playstats.h"
 
-static qboolean FXMagicMissileTrailElementThink(struct client_entity_s *Self,centity_t *Owner);
-static qboolean FXMagicMissileTrailThink(struct client_entity_s *Self,centity_t *Owner);
-static qboolean FXMagicMissileModelThink1(struct client_entity_s *Self,centity_t *Owner);
-static qboolean FXMagicMissileModelThink2(struct client_entity_s *Self,centity_t *Owner);
-static qboolean FXMagicMissileSmokePuffThink(struct client_entity_s *Self,centity_t *Owner);
+#define MISSILE_TRAIL_SCALE			0.3f
+#define MISSILE_TRAIL_SPEED			32.0f
 
-#define	NUM_MISSILE_MODELS	3
+#define NUM_MISSILE_EXPLODE_PARTS	12
+#define MISSILE_SCALE				1.0f
+#define MISSILE_EXPLODE_SPEED		200.0f
 
-static struct model_s *array_models[NUM_MISSILE_MODELS];
+#define BLAST_DIFF					40.0f
+#define BLAST_SCALE					0.3f
+#define BLAST_BACKSPEED				-1.5f
+#define BLAST_GRAVITY				-32.0f
 
-void PreCacheArray()
+static struct model_s* missile_models[3];
+
+void PreCacheArray(void)
 {
-	array_models[0] = fxi.RegisterModel("sprites/spells/halo_ind.sp2");
-	array_models[1] = fxi.RegisterModel("Sprites/spells/spark_ind.sp2");
-	array_models[2] = fxi.RegisterModel("Sprites/spells/indigostreak.sp2");
+	missile_models[0] = fxi.RegisterModel("sprites/spells/halo_ind.sp2");
+	missile_models[1] = fxi.RegisterModel("Sprites/spells/spark_ind.sp2");
+	missile_models[2] = fxi.RegisterModel("Sprites/spells/indigostreak.sp2");
 }
 
 
@@ -42,11 +41,6 @@ void PreCacheArray()
 // ************************************************************************************************
 
 // These need to be converted to particles
-
-#define ARRAY_TRAIL_SCALE	0.3
-#define ARRAY_TRAIL_COUNT	3
-#define TRAIL_SPEED			32.0
-
 static qboolean FXMagicMissileTrailThink(struct client_entity_s *Self,centity_t *Owner)
 {
 	int				i;
@@ -79,9 +73,9 @@ static qboolean FXMagicMissileTrailThink(struct client_entity_s *Self,centity_t 
 			break;
 		}
 
-		trail->r.model = array_models;
+		trail->r.model = missile_models;
 		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		trail->r.scale = flrand(ARRAY_TRAIL_SCALE, ARRAY_TRAIL_SCALE + 0.1);
+		trail->r.scale = flrand(MISSILE_TRAIL_SCALE, MISSILE_TRAIL_SCALE + 0.1);
 		trail->d_scale = -1.0;
 		trail->d_alpha = -2.0;
 		trail->radius = 20.0;
@@ -95,7 +89,7 @@ static qboolean FXMagicMissileTrailThink(struct client_entity_s *Self,centity_t 
 								NULL, 
 								500);
 
-	trail->r.model = array_models + 2;
+	trail->r.model = missile_models + 2;
 	trail->r.spriteType = SPRITE_LINE;
 	trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 	VectorCopy(trail->r.origin, trail->r.startpos);
@@ -115,6 +109,8 @@ static qboolean FXMagicMissileTrailThink(struct client_entity_s *Self,centity_t 
 // FXMagicMissileModelThink1
 // -------------------------
 // ************************************************************************************************
+
+static qboolean FXMagicMissileModelThink2(struct client_entity_s* Self, centity_t* Owner);
 
 static qboolean FXMagicMissileModelThink1(struct client_entity_s *Self,centity_t *Owner)
 {
@@ -162,7 +158,7 @@ void FXMagicMissile(centity_t *Owner,int Type,int Flags,vec3_t Origin)
 	// Add the magic-missile model.
 	Missile=ClientEntity_new(Type, Flags | CEF_DONT_LINK, Origin, NULL, 100);
 	
-	Missile->r.model = array_models;
+	Missile->r.model = missile_models;
 	Missile->r.frame = 1;
 	if (Flags & CEF_FLAG6)
 		VectorScale(fwd, MAGICMISSILE_SPEED/2, Missile->velocity);
@@ -172,7 +168,7 @@ void FXMagicMissile(centity_t *Owner,int Type,int Flags,vec3_t Origin)
 
 	// Set up the direction we want the trail to fly from the missile.
 	VectorMA(up, 2.0, right, Missile->up);
-	VectorScale(Missile->up, TRAIL_SPEED, Missile->up);
+	VectorScale(Missile->up, MISSILE_TRAIL_SPEED, Missile->up);
 
 	Missile->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD;
 	Missile->r.scale=0.4;
@@ -191,9 +187,6 @@ void FXMagicMissile(centity_t *Owner,int Type,int Flags,vec3_t Origin)
 // FXMagicMissileExplode
 // ************************************************************************************************
 
-#define NUM_ARRAY_EXPLODE_PARTS		12
-#define ARRAY_SCALE					1.0
-#define ARRAY_EXPLODE_SPEED			200
 void FXMagicMissileExplode(centity_t *owner, int type, int flags, vec3_t origin)
 {
 	vec3_t			dir;
@@ -208,15 +201,15 @@ void FXMagicMissileExplode(centity_t *owner, int type, int flags, vec3_t origin)
 	}
 	Vec3ScaleAssign(32.0, dir);
 
-	for(i = 0; i < NUM_ARRAY_EXPLODE_PARTS; i++)
+	for(i = 0; i < NUM_MISSILE_EXPLODE_PARTS; i++)
 	{
 		smokepuff = ClientEntity_new(type, flags, origin, 0, 500);
 
-		smokepuff->r.model = array_models + 1;
-		smokepuff->r.scale = flrand(ARRAY_SCALE * 0.75, ARRAY_SCALE * 1.5);
+		smokepuff->r.model = missile_models + 1;
+		smokepuff->r.scale = flrand(MISSILE_SCALE * 0.75, MISSILE_SCALE * 1.5);
 		smokepuff->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
-		VectorRandomCopy(dir, smokepuff->velocity, ARRAY_EXPLODE_SPEED);
+		VectorRandomCopy(dir, smokepuff->velocity, MISSILE_EXPLODE_SPEED);
 		smokepuff->acceleration[2] = GetGravity()*0.3;
 
 		smokepuff->d_scale = -1.0;
@@ -229,7 +222,7 @@ void FXMagicMissileExplode(centity_t *owner, int type, int flags, vec3_t origin)
 	// Big flash
 	smokepuff = ClientEntity_new(type, flags, origin, 0, 500);
 
-	smokepuff->r.model = array_models;
+	smokepuff->r.model = missile_models;
 	smokepuff->r.frame = 0;
 
 	smokepuff->r.scale = 2.0;
@@ -294,7 +287,7 @@ void FXBlast(centity_t *owner, int type, int flags, vec3_t origin)
 		for(i=0; i<=numpuffs; i++)
 		{
 			puff = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS, curpos, NULL, 750);
-			puff->r.model = array_models + 1;
+			puff->r.model = missile_models + 1;
 			puff->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 			puff->r.scale = scale;
 			puff->radius = 14.0;
@@ -312,7 +305,7 @@ void FXBlast(centity_t *owner, int type, int flags, vec3_t origin)
 		// We added the line, now throw out the impact
 		// Big flash first...
 		puff = ClientEntity_new(type, CEF_ADDITIVE_PARTS, endpos, NULL, 1000);
-		puff->r.model = array_models;
+		puff->r.model = missile_models;
 		puff->r.frame = 0;
 		puff->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 		puff->r.scale = 1.0 + length * 0.001;		// Bigger when further out.
