@@ -156,50 +156,43 @@ void FXMaceballBounce(centity_t* owner, const int type, const int flags, vec3_t 
 	}
 }
 
-// ****************************************************************************
-// FXMaceballExplode -
-// ****************************************************************************
-
-void FXMaceballExplode(centity_t *owner,int type,int flags,vec3_t origin)
+void FXMaceballExplode(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	vec3_t			dir;
-	client_entity_t	*explosion;
-	client_particle_t *spark;
-	int				i;
-	vec3_t			mins={BALL_RADIUS, BALL_RADIUS, BALL_RADIUS};
-
-	fxi.GetEffect(owner,flags,clientEffectSpawners[FX_WEAPON_MACEBALLEXPLODE].formatString,dir);
+	vec3_t dir;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_MACEBALLEXPLODE].formatString, dir);
 
 	// Create an expanding ball of gre.
-
-	explosion=ClientEntity_new(type,CEF_DONT_LINK|CEF_ADDITIVE_PARTS,origin,dir,750);
-	explosion->r.model = mace_models+3;
+	client_entity_t* explosion = ClientEntity_new(type, CEF_DONT_LINK | CEF_ADDITIVE_PARTS, origin, dir, 750);
+	explosion->r.model = &mace_models[3]; // Maceball model.
 	explosion->r.flags |= RF_TRANSLUCENT;
-	explosion->r.scale = 0.17;
-	explosion->d_scale = -0.17;
-	explosion->d_alpha = -1.4;
-	explosion->radius = 64.0;
-	VectorScale(dir, 8.0, explosion->velocity);
-	explosion->color.c=0xffffffff;
-	AddEffect(NULL,explosion);
+	explosion->r.scale = 0.17f;
+	explosion->d_scale = -0.17f;
+	explosion->d_alpha = -1.4f;
+	explosion->radius = 64.0f;
+	VectorScale(dir, 8.0f, explosion->velocity);
+	explosion->color = color_white;
+	AddEffect(NULL, explosion);
 
-	for (i=0; i<32; i++)
+	for (int i = 0; i < 32; i++)
 	{
-		spark = ClientParticle_new(PART_16x16_SPARK_G, explosion->color, 1000);
-		VectorSet(spark->velocity, 
-					flrand(-MACEBALL_EXPLOSION_VEL, MACEBALL_EXPLOSION_VEL),
-					flrand(-MACEBALL_EXPLOSION_VEL, MACEBALL_EXPLOSION_VEL),
-					flrand(0, MACEBALL_EXPLOSION_VEL));
-		spark->d_alpha = flrand(-320.0, -256.0);
-		spark->scale = 8.0;
-		spark->d_scale = flrand(-10.0, -8.0);
-		spark->acceleration[2] = -2.0*MACEBALL_SPARK_VEL;
+		client_particle_t* spark = ClientParticle_new(PART_16x16_SPARK_G, explosion->color, 1000);
+
+		VectorSet(spark->velocity,
+			flrand(-MACEBALL_EXPLOSION_VEL, MACEBALL_EXPLOSION_VEL),
+			flrand(-MACEBALL_EXPLOSION_VEL, MACEBALL_EXPLOSION_VEL),
+			flrand(0, MACEBALL_EXPLOSION_VEL));
+
+		spark->d_alpha = flrand(-320.0f, -256.0f);
+		spark->scale = 8.0f;
+		spark->d_scale = flrand(-10.0f, -8.0f);
+		spark->acceleration[2] = -2.0f * MACEBALL_SPARK_VEL;
 
 		AddParticleToList(explosion, spark);
-	}		
+	}
 
-	// Spawn some chunks too
-	FXDebris_SpawnChunks(type, flags & ~(CEF_FLAG6|CEF_FLAG7|CEF_FLAG8), origin, 5, MAT_METAL, dir, 80000.0f, mins, 1.5, false);
+	// Spawn some chunks too.
+	const vec3_t mins = { BALL_RADIUS, BALL_RADIUS, BALL_RADIUS };
+	FXDebris_SpawnChunks(type, flags & ~(CEF_FLAG6 | CEF_FLAG7 | CEF_FLAG8), origin, 5, MAT_METAL, dir, 80000.0f, mins, 1.5f, false);
 }
 
 #pragma endregion
