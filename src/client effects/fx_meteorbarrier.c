@@ -1,38 +1,31 @@
 //
 // fx_meteorbarrier.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
+#include "Random.h"
 #include "Vector.h"
-#include "ce_DLight.h"
-#include "random.h"
-#include "fx_debris.h"
 #include "Utilities.h"
+#include "ce_DLight.h"
+#include "fx_debris.h"
 #include "g_playstats.h"
 
-#define	NUM_METEOR_MODELS	1
-
-static struct model_s *meteor_models[NUM_METEOR_MODELS];
-
-void PreCacheMeteor()
-{
-	meteor_models[0] = fxi.RegisterModel("models/spells/meteorbarrier/tris.fm");
-}
-
-// -------------------------------------------------
-
 #define NUM_METEOR_CHUNKS		12
-#define METEOR_DELTA_FORWARD	6.0
-#define METEOR_TRAIL_ALPHA		0.8
-#define METEOR_ROLL_SPEED		13.0
-#define METEOR_YAW_SPEED		10.0
+#define METEOR_DELTA_FORWARD	6.0f
+#define METEOR_TRAIL_ALPHA		0.8f
+#define METEOR_ROLL_SPEED		13.0f
+#define METEOR_YAW_SPEED		10.0f
+
+static const paletteRGBA_t meteor_dlight_color = { .r = 63, .g = 255, .b = 77, .a = 255 }; //mxd
+static struct model_s* meteor_model;
+
+void PreCacheMeteor(void)
+{
+	meteor_model = fxi.RegisterModel("models/spells/meteorbarrier/tris.fm");
+}
 
 static qboolean FXMeteorBarriertrailThink(struct client_entity_s *self, centity_t *owner)
 {
@@ -120,7 +113,7 @@ void FXMeteorBarrier(centity_t *owner, int type, int flags, vec3_t origin)
 	trail = ClientEntity_new(type, flags|CEF_ABSOLUTE_PARTS|CEF_ADDITIVE_PARTS|CEF_VIEWSTATUSCHANGED, origin, 0, 50);
 
 	trail->Update = FXMeteorBarriertrailThink;
-	trail->r.model = meteor_models;
+	trail->r.model = &meteor_model;
 	trail->AddToView = MeteorAddToView;
 	trail->SpawnData = (flags & (CEF_FLAG6|CEF_FLAG7)) >> 5;
 	trail->radius = 10.0;
@@ -140,7 +133,7 @@ void FXMeteorBarrierTravel(centity_t *owner, int type, int flags, vec3_t origin)
 	trail = ClientEntity_new(type, flags|CEF_ABSOLUTE_PARTS|CEF_ADDITIVE_PARTS|CEF_VIEWSTATUSCHANGED, origin, 0, 50);
 
 	trail->Update = FXMeteorBarriertrailThink;
-	trail->r.model = meteor_models;
+	trail->r.model = &meteor_model;
 	trail->AddToView = LinkedEntityUpdatePlacement;
 	trail->radius = 10.0;
 	trail->r.color.c = -1;
