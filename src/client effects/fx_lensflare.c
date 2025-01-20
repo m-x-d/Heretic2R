@@ -23,265 +23,137 @@ void PreCacheFlare(void)
 	}
 }
 
-// FIXME: These need to interpolate their movement so as to not do snap position changes
-
-// ************************************************************************************************
-// FXFlareThink
-// ************************************************************************************************
-
-static qboolean FXFlareThink(struct client_entity_s *self,centity_t *owner)
+//mxd. Added to reduce code duplication. //TODO: the logic is kinda broken, at least for env_sun1 entity...
+static qboolean UpdateFlareOrigin(struct client_entity_s* self)
 {
-	float			dot, near_clip, dist;
+	// Determine visibility.
+	trace_t tr;
+	const int brushmask = CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_DEADMONSTER;
+	fxi.Trace(fxi.cl->refdef.vieworg, vec3_origin, vec3_origin, self->direction, brushmask, CEF_CLIP_TO_WORLD, &tr);
 
-	vec3_t			from, at, center, view_dir, light_dir, light, axis, dx, dy, tmp, t_axis, pos1, pos2;
-
-	vec3_t			mins = { 0, 0, 0}, 
-					maxs = { 0, 0, 0};
-	
-	trace_t			trace;
-
-	if ( ( self->LifeTime > 0 ) && ( self->LifeTime < fxi.cl->time ) )
-		return false;
-
-	//Determine Visibility
-	fxi.Trace(	fxi.cl->refdef.vieworg, 
-				mins, 
-				maxs, 
-				self->direction, 
-				(CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_DEADMONSTER), 
-				CEF_CLIP_TO_WORLD, 
-				&trace);
-	
-	if (trace.fraction < 1 && !(trace.surface->flags & SURF_SKY))
-	{	
-		self->flags |= CEF_NO_DRAW;
-		return true;
-	}
-	
-	if (self->up[1])
-	{
-		if (self->flags & CEF_NO_DRAW)
-			self->flags &= ~CEF_NO_DRAW;
-
-		AngleVectors (fxi.cl->refdef.viewangles, pos1, NULL, NULL);
-		VectorSubtract (self->direction, fxi.cl->refdef.vieworg, pos2);
-		VectorNormalize (pos2);
-		
-		dot = DotProduct (pos1, pos2);
-
-		if (dot < 0.75)
-		{
-			self->flags |= CEF_NO_DRAW;
-			return true;
-		}
-
-		self->alpha = self->up[2] - ((1 - dot) * 2);
-
-		if (self->alpha > 1)
-			self->alpha = 1;
-
-		if (self->alpha < 0.1)
-			self->alpha = 0.1;
-
-		VectorMA(fxi.cl->refdef.vieworg, 16, pos2, pos1);
-		VectorCopy(pos1, self->r.origin);
-		return true;
-	}
-	
-	AngleVectors (fxi.cl->refdef.viewangles, pos1, NULL, NULL);
-	VectorSubtract (self->direction, fxi.cl->refdef.vieworg, pos2);
-	VectorNormalize (pos2);
-	
-	dot = DotProduct (pos1, pos2);
-
-	if (dot < 0.75)
+	if (tr.fraction < 1.0f && !(tr.surface->flags & SURF_SKY))
 	{
 		self->flags |= CEF_NO_DRAW;
 		return true;
 	}
-		
+
+	vec3_t view_fwd;
+	AngleVectors(fxi.cl->refdef.viewangles, view_fwd, NULL, NULL);
+
+	vec3_t halo_dir;
+	VectorSubtract(self->direction, fxi.cl->refdef.vieworg, halo_dir);
+	VectorNormalize(halo_dir);
+
+	const float view_dot = DotProduct(view_fwd, halo_dir);
+
+	if (view_dot < 0.75f)
+	{
+		self->flags |= CEF_NO_DRAW;
+		return true;
+	}
+
 	if (self->flags & CEF_NO_DRAW)
 		self->flags &= ~CEF_NO_DRAW;
 
-	VectorCopy(self->direction, from);
-	VectorCopy(fxi.cl->refdef.vieworg, at);
+	if (self->up[1] != 0.0f) // Halo sprite.
+	{
+		self->alpha = self->up[2] - ((1.0f - view_dot) * 2.0f);
+		Clamp(self->alpha, 0.1f, 1.0f);
 
-	VectorSubtract(from, at, view_dir);
-	dist = VectorNormalize(view_dir);
-	
-	VectorMA(at, 250, view_dir, from);
+		VectorMA(fxi.cl->refdef.vieworg, 16.0f, halo_dir, self->r.origin);
 
-	VectorSubtract(from, at, view_dir);
-	dist = VectorNormalize(view_dir);
+		return true;
+	}
 
-	AngleVectors(fxi.cl->refdef.viewangles, light, NULL, NULL);
-	
-	VectorScale(light, dist, light);
-	VectorAdd(from, light, light);
-	
-	near_clip = 1.01f;
-	
+	// Lens flare sprite.
+	vec3_t view_dir;
+	VectorSubtract(self->direction, fxi.cl->refdef.vieworg, view_dir);
+	VectorNormalize(view_dir);
+
+	vec3_t view_offset;
+	VectorMA(fxi.cl->refdef.vieworg, 250.0f, view_dir, view_offset);
+
+	VectorSubtract(view_offset, fxi.cl->refdef.vieworg, view_dir);
+	const float view_dist = VectorNormalize(view_dir);
+
+	vec3_t fwd_offset;
+	VectorScale(view_fwd, view_dist, fwd_offset);
+
+	vec3_t light_offset;
+	VectorAdd(view_offset, fwd_offset, light_offset);
+
+	const float near_clip = 1.01f;
 	VectorScale(view_dir, near_clip, view_dir);
-	VectorAdd(from, view_dir, center);
 
-	VectorSubtract(light, from, light_dir);
+	vec3_t center;
+	VectorAdd(view_offset, view_dir, center);
+
+	vec3_t light_dir;
+	VectorSubtract(light_offset, view_offset, light_dir);
 	VectorNormalize(light_dir);
 
-	dot = (DotProduct(view_dir, light_dir));
+	const float light_dot = DotProduct(view_dir, light_dir);
+
+	vec3_t tmp;
 	VectorScale(light_dir, near_clip, tmp);
-	VectorScale(tmp, 1.0f / dot, tmp);
-	VectorAdd(tmp, from, light);
+	VectorScale(tmp, 1.0f / light_dot, tmp);
 
-	VectorSubtract(light, center, axis);
+	vec3_t light_pos;
+	VectorAdd(tmp, view_offset, light_pos);
 
+	vec3_t axis;
+	VectorSubtract(light_pos, center, axis);
+
+	vec3_t dx;
 	VectorCopy(axis, dx);
 	VectorNormalize(dx);
+
+	vec3_t dy;
 	CrossProduct(dx, view_dir, dy);
 
-	VectorScale(axis, self->up[0]*1000, t_axis);
+	vec3_t t_axis;
+	VectorScale(axis, self->up[0] * 1000.0f, t_axis);
 	VectorAdd(center, t_axis, self->r.origin);
-	return (true);
+
+	return true;
 }
 
-// ************************************************************************************************
-// FXFlareThinkAttached
-// ************************************************************************************************
-
-static qboolean FXFlareThinkAttached(struct client_entity_s *self,centity_t *owner)
+// FIXME: These need to interpolate their movement so as to not do snap position changes.
+static qboolean FXFlareThink(struct client_entity_s* self, centity_t* owner)
 {
-	float			dot, near_clip, dist;
-	float			lerp, oldtime, newtime;
+	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
+		return false;
 
-	vec3_t			from, at, center, view_dir, light_dir, light, axis, dx, dy, tmp, t_axis, pos1, pos2, vec_diff;
+	return UpdateFlareOrigin(self); //mxd
+}
 
-	vec3_t			mins = { 0, 0, 0}, 
-					maxs = { 0, 0, 0};
-	
-	trace_t			trace;
-	centity_t		*fake_owner = (centity_t *) self->extra;
+static qboolean FXFlareThinkAttached(struct client_entity_s* self, centity_t* owner)
+{
+	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
+		return false;
 
+	const centity_t* fake_owner = (centity_t*)self->extra;
+	if (fake_owner->current.effects & EF_DISABLE_EXTRA_FX)
+		return false;
 
-	if ( ( self->LifeTime > 0 ) && ( self->LifeTime < fxi.cl->time ) )
-		return (false);
-
-	if(fake_owner->current.effects & EF_DISABLE_EXTRA_FX)
-		return (false);
-
-//Interpolate- why am I only getting 2 frames of interpolation?
-	oldtime = self->lastThinkTime/100.0;
-	newtime = fxi.cl->time/100.0;
+	// Interpolate. Why am I only getting 2 frames of interpolation?
+	const float oldtime = (float)self->lastThinkTime / 100.0f;
+	const float newtime = (float)fxi.cl->time / 100.0f;
 
 	if ((int)oldtime < (int)newtime)
 	{
 		VectorCopy(self->endpos2, self->startpos2);
-		VectorCopy(fake_owner->current.origin, self->endpos2);//where I need to be
+		VectorCopy(fake_owner->current.origin, self->endpos2); // Where I need to be.
 		self->lastThinkTime = fxi.cl->time;
 	}
 
-	lerp = newtime - (int)newtime;
+	const float lerp = newtime - (int)newtime;
 
-	VectorSubtract(self->endpos2, self->startpos2, vec_diff);//diff between last updated spot and where to be
-	VectorMA(self->startpos2, lerp, vec_diff, self->direction);
+	vec3_t diff;
+	VectorSubtract(self->endpos2, self->startpos2, diff); // Diff between last updated spot and where to be.
+	VectorMA(self->startpos2, lerp, diff, self->direction);
 
-	//Determine Visibility
-	fxi.Trace(	fxi.cl->refdef.vieworg, 
-				mins, 
-				maxs, 
-				self->direction,
-				(CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_DEADMONSTER), 
-				CEF_CLIP_TO_WORLD, 
-				&trace);
-	
-	if (trace.fraction < 1 && !(trace.surface->flags & SURF_SKY))
-	{	
-		self->flags |= CEF_NO_DRAW;
-		return true;
-	}
-	
- 	if (self->up[1])
-	{
-		if (self->flags & CEF_NO_DRAW)
-			self->flags &= ~CEF_NO_DRAW;
-
-		AngleVectors (fxi.cl->refdef.viewangles, pos1, NULL, NULL);
-		VectorSubtract (self->direction, fxi.cl->refdef.vieworg, pos2);
-		VectorNormalize (pos2);
-		
-		dot = DotProduct (pos1, pos2);
-
-		if (dot < 0.75)
-		{
-			self->flags |= CEF_NO_DRAW;
-			return true;
-		}
-
-		self->alpha = self->up[2] - ((1 - dot) * 2);
-
-		if (self->alpha > 1)
-			self->alpha = 1;
-
-		if (self->alpha < 0.1)
-			self->alpha = 0.1;
-
-		VectorMA(fxi.cl->refdef.vieworg, 16, pos2, pos1);
-		VectorCopy(pos1, self->r.origin);
-		return true;
-	}
-	
-	AngleVectors (fxi.cl->refdef.viewangles, pos1, NULL, NULL);
-	VectorSubtract (self->direction, fxi.cl->refdef.vieworg, pos2);
-	VectorNormalize (pos2);
-	
-	dot = DotProduct (pos1, pos2);
-
-	if (dot < 0.75)
-	{
-		self->flags |= CEF_NO_DRAW;
-		return true;
-	}
-		
-	if (self->flags & CEF_NO_DRAW)
-		self->flags &= ~CEF_NO_DRAW;
-
-	VectorCopy(self->direction, from);
-	VectorCopy(fxi.cl->refdef.vieworg, at);
-
-	VectorSubtract(from, at, view_dir);
-	dist = VectorNormalize(view_dir);
-	
-	VectorMA(at, 250, view_dir, from);
-
-	VectorSubtract(from, at, view_dir);
-	dist = VectorNormalize(view_dir);
-
-	AngleVectors(fxi.cl->refdef.viewangles, light, NULL, NULL);
-	
-	VectorScale(light, dist, light);
-	VectorAdd(from, light, light);
-	
-	near_clip = 1.01f;
-	
-	VectorScale(view_dir, near_clip, view_dir);
-	VectorAdd(from, view_dir, center);
-
-	VectorSubtract(light, from, light_dir);
-	VectorNormalize(light_dir);
-
-	dot = (DotProduct(view_dir, light_dir));
-	VectorScale(light_dir, near_clip, tmp);
-	VectorScale(tmp, 1.0f / dot, tmp);
-	VectorAdd(tmp, from, light);
-
-	VectorSubtract(light, center, axis);
-
-	VectorCopy(axis, dx);
-	VectorNormalize(dx);
-	CrossProduct(dx, view_dir, dy);
-
-	VectorScale(axis, self->up[0]*1000, t_axis);
-	VectorAdd(center, t_axis, self->r.origin);
-	
-	return true;
+	return UpdateFlareOrigin(self); //mxd
 }
 
 // ************************************************************************************************
