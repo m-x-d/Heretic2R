@@ -1,34 +1,24 @@
 //
 // fx_lensflare.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
-#include "ce_DLight.h"
-#include "random.h"
-#include "Utilities.h"
 #include "g_playstats.h"
 
-#define	NUM_LENS_MODELS	7
+#define NUM_LENS_MODELS 7
+static struct model_s* flare_models[NUM_LENS_MODELS];
 
-static struct model_s *flare_models[NUM_LENS_MODELS];
-
-void PreCacheFlare()
+void PreCacheFlare(void)
 {
-	int		i;
-	char	model[128];
-
 	flare_models[0] = fxi.RegisterModel("sprites/lens/blind1.sp2");
-	for(i = 1; i < NUM_LENS_MODELS; i++)
+
+	for (int i = 1; i < NUM_LENS_MODELS; i++)
 	{
-		sprintf(model, "sprites/lens/flare%d.sp2", i);
+		char model[128];
+		sprintf_s(model, sizeof(model), "sprites/lens/flare%i.sp2", i); //mxd. sprintf -> sprintf_s.
 		flare_models[i] = fxi.RegisterModel(model);
 	}
 }
