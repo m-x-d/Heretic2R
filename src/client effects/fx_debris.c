@@ -193,7 +193,7 @@ static void DoFireTrail(client_entity_t* spawner)
 }
 
 //mxd. Added to reduce code duplication.
-static qboolean IsInWater(vec3_t origin)
+static qboolean IsInWater(const vec3_t origin)
 {
 	// Not-very-perfect way of doing a pointcontents from the FX dll.
 	vec3_t start;
@@ -412,7 +412,7 @@ static qboolean FXBodyPart_Update(struct client_entity_s* self, centity_t* owner
 // CEF_FLAG7 = male insect skin on mat_insect (CEF_FLAG7 cleared out and set if has dynamic light for fire).
 // CEF_FLAG8 = use reflection skin.
 
-client_entity_t * FXDebris_Throw(vec3_t origin, const int material, vec3_t dir, const float ke, const float scale, const int flags, const qboolean altskin)
+client_entity_t * FXDebris_Throw(vec3_t origin, const int material, const vec3_t dir, const float ke, const float scale, const int flags, const qboolean altskin)
 {
 	const int chunk_index = irand(debris_chunk_offsets[material], debris_chunk_offsets[material + 1] - 1);
 
@@ -485,7 +485,7 @@ client_entity_t * FXDebris_Throw(vec3_t origin, const int material, vec3_t dir, 
 // ke - kinetic energy (dependent of damage and number of chunks).
 // mins - mins field of edict (so debris is spawned at base).
 // scale - size of the spawned chunks (dependent on size).
-void FXDebris_SpawnChunks(int type, int flags, vec3_t origin, const int num, const int material, vec3_t dir, const float ke, vec3_t mins, const float scale, const qboolean altskin) //TODO: remove unused 'type' arg?
+void FXDebris_SpawnChunks(int type, int flags, const vec3_t origin, const int num, const int material, const vec3_t dir, const float ke, const vec3_t mins, const float scale, const qboolean altskin) //TODO: remove unused 'type' arg?
 {
 	if (flags & CEF_FLAG6) // On fire, check for highdetail, non-ref_soft.
 	{
