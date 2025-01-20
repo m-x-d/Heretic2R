@@ -1,35 +1,34 @@
 //
-// Heretic II
+// fx_Maceball.c
+//
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "ce_DefaultMessageHandler.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "angles.h"
 #include "Vector.h"
 #include "Random.h"
-#include "Utilities.h"
-#include "motion.h"
-#include "Reference.h"
 #include "ce_Dlight.h"
 #include "q_Sprite.h"
 #include "g_playstats.h"
 #include "fx_debris.h"
 
-#define BALL_RADIUS		0.15
-#define NUM_RIPPER_PUFFS	12
-#define RIPPER_PUFF_ANGLE	((360.0*ANGLE_TO_RAD)/(float)NUM_RIPPER_PUFFS)
-#define RIPPER_RING_VEL		96.0
-#define MACEBALL_RING_VEL	64.0
-#define MACEBALL_SPARK_VEL	128.0
+#define BALL_RADIUS				0.15f
+#define BALL_MAX_RADIUS			(BALL_RADIUS * 6.0f)
+#define BALL_GROWTH				0.05f
+#define BALL_BOUNCE_LIFETIME	500
 
-#define	NUM_MACE_MODELS		7
-static struct model_s *mace_models[NUM_MACE_MODELS];
-void PreCacheMaceball()
+#define NUM_RIPPER_PUFFS		12
+#define RIPPER_PUFF_ANGLE		(ANGLE_360 / (float)NUM_RIPPER_PUFFS)
+#define RIPPER_RING_VEL			96.0f
+
+#define MACEBALL_RING_VEL		64.0f
+#define MACEBALL_SPARK_VEL		128.0f
+#define MACEBALL_EXPLOSION_VEL	128.0f
+
+static struct model_s* mace_models[7];
+
+void PreCacheMaceball(void)
 {
 	mace_models[0] = fxi.RegisterModel("sprites/spells/maceball.sp2");
 	mace_models[1] = fxi.RegisterModel("sprites/fx/halo.sp2");
@@ -40,17 +39,11 @@ void PreCacheMaceball()
 	mace_models[6] = fxi.RegisterModel("sprites/spells/spark_green.sp2");
 }
 
-// --------------------------------------------------------------
-// Need to create some pretty effect here
-
-#define BALL_GROWTH		0.05
-#define BALL_MAX		(6.0 * BALL_RADIUS)
-
 static qboolean FXMaceballThink(struct client_entity_s *self, centity_t *owner)
 {
 	self->dlight->intensity = 150.0 + (cos(fxi.cl->time * 0.01) * 20.0);
 	self->r.angles[2] += ANGLE_30;
-	if(self->r.scale >= BALL_MAX)
+	if(self->r.scale >= BALL_MAX_RADIUS)
 	{
 		self->d_scale = 0.0;
 	}
@@ -75,10 +68,6 @@ void FXMaceball(centity_t *owner, int type, int flags, vec3_t origin)
 
 // -----------------------------------------------------------------------------------------
 
-#define NUM_BOUNCE_PARTS	8
-#define BOUNCE_LIFETIME		500
-#define BOUNCE_PART_SPEED	40.0
-
 void FXMaceballBounce(centity_t *owner, int type, int flags, vec3_t origin)
 {
 	client_entity_t		*ring, *hitfx;
@@ -96,7 +85,7 @@ void FXMaceballBounce(centity_t *owner, int type, int flags, vec3_t origin)
 	PerpendicularVector(up, norm);
 	CrossProduct(up, norm, right);
 
-	hitfx = ClientEntity_new(type, flags, origin, NULL, BOUNCE_LIFETIME);
+	hitfx = ClientEntity_new(type, flags, origin, NULL, BALL_BOUNCE_LIFETIME);
 	hitfx->r.flags |= RF_FULLBRIGHT|RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA;
 	hitfx->flags |= CEF_NO_DRAW | CEF_ADDITIVE_PARTS;
 	hitfx->radius = BALL_RADIUS;
@@ -180,7 +169,6 @@ void FXMaceballBounce(centity_t *owner, int type, int flags, vec3_t origin)
 // FXMaceballExplode -
 // ****************************************************************************
 
-#define MACEBALL_EXP_VEL	128.0
 void FXMaceballExplode(centity_t *owner,int type,int flags,vec3_t origin)
 {
 	vec3_t			dir;
@@ -208,9 +196,9 @@ void FXMaceballExplode(centity_t *owner,int type,int flags,vec3_t origin)
 	{
 		spark = ClientParticle_new(PART_16x16_SPARK_G, explosion->color, 1000);
 		VectorSet(spark->velocity, 
-					flrand(-MACEBALL_EXP_VEL, MACEBALL_EXP_VEL),
-					flrand(-MACEBALL_EXP_VEL, MACEBALL_EXP_VEL),
-					flrand(0, MACEBALL_EXP_VEL));
+					flrand(-MACEBALL_EXPLOSION_VEL, MACEBALL_EXPLOSION_VEL),
+					flrand(-MACEBALL_EXPLOSION_VEL, MACEBALL_EXPLOSION_VEL),
+					flrand(0, MACEBALL_EXPLOSION_VEL));
 		spark->d_alpha = flrand(-320.0, -256.0);
 		spark->scale = 8.0;
 		spark->d_scale = flrand(-10.0, -8.0);
