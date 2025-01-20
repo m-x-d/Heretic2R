@@ -116,7 +116,7 @@ extern void FXMist(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXPlagueMist(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXPlagueMistExplode(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXSpellHands(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXLensFlare(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXLensFlare(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXStaff(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXSpoo(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXHalo(centity_t* owner, int type, int flags, vec3_t origin);

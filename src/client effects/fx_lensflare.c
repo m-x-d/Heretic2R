@@ -156,255 +156,77 @@ static qboolean FXFlareThinkAttached(struct client_entity_s* self, centity_t* ow
 	return UpdateFlareOrigin(self); //mxd
 }
 
-// ************************************************************************************************
-// FXLensFlare
-// ************************************************************************************************
-
-float flare_loc[] = { 1.0, 0.7, 0.3, 0.1, 0.0, -0.2,
-					  1.0, 0.8, 0.6, 0.2, 0.0, -0.4 };
-
-float flare_scale[] = {2, 1.75, 1.5, 1.25, 1.5, 1.75, 2, 2 };
-
-void FXLensFlare(centity_t *owner,int Type,int Flags,vec3_t Origin)
+void FXLensFlare(centity_t* owner, int type, const int flags, const vec3_t origin)
 {
-	int					Count, I;
-	client_entity_t		*Explosion;
-	int					useOther;
-	float				alpha;
-	paletteRGBA_t		tint;
-	
-	Count = 7;
-	
-	fxi.GetEffect(owner, Flags, clientEffectSpawners[FX_LENSFLARE].formatString, &tint.r, &tint.g, &tint.b, &alpha);
+	static int sprite_indices[] = { 1, 2, 4, 3, 6, 3 }; //mxd //TODO: index 5 is unused.
+	static float flare1_pos[] = { 1.0f, 0.7f, 0.3f, 0.1f, 0.0f, -0.2f };
+	static float flare2_pos[] = { 1.0f, 0.8f, 0.6f, 0.2f, 0.0f, -0.4f }; //mxd. Split into 2 arrays.
+	static float flare_scale[] = { 2.0f, 1.75f, 1.5f, 1.25f, 1.5f, 1.75f, 2.0f, 2.0f };
 
-	// no lens flares in low detail
-	if(r_detail->value <= DETAIL_NORMAL)
+	float alpha;
+	paletteRGBA_t tint;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_LENSFLARE].formatString, &tint.r, &tint.g, &tint.b, &alpha);
+
+	// No lens flares in low detail.
+	if (r_detail->value <= DETAIL_NORMAL) //TODO: skip on DETAIL_LOW only (currently also skipped when DETAIL_NORMAL)?
 		return;
 
-	if (Flags & CEF_FLAG6)
-		useOther = 6;
-	else
-		useOther = 0;
+	for (int i = 0; i < NUM_LENS_MODELS; i++)
+	{
+		client_entity_t* flare = ClientEntity_new(FX_LENSFLARE, 0, origin, NULL, 17);
 
-	for(I=0;I<Count;I++)
-	{	
-		Explosion=ClientEntity_new(FX_LENSFLARE,
-								   0,
-								   Origin,
-								   NULL,
-								   17);
-		
-		VectorSet(Explosion->up, 0.0f, 0.0f, 0.0f);
+		COLOUR_COPY(tint, flare->r.color); //mxd. Use macro.
+		flare->alpha = alpha;
 
-	  	Explosion->r.color.r = tint.r;
-	  	Explosion->r.color.g = tint.g;
-	  	Explosion->r.color.b = tint.b;
-		Explosion->alpha=alpha;
-
-		switch (I)
+		if (i == NUM_LENS_MODELS - 1)
 		{
-			case 0:
-				Explosion->r.model = flare_models + 1;
-			break;
-			case 1:
-				Explosion->r.model = flare_models + 2;
-			break;
-			case 2:
-				Explosion->r.model = flare_models + 4;
-			break;
-			case 3:
-				Explosion->r.model = flare_models + 3;
-			break;
-			case 4:
-				Explosion->r.model = flare_models + 6;
-			break;
-			case 5:
-				Explosion->r.model = flare_models + 3;
-			break;
-			case 6:
-				Explosion->r.model = flare_models;
-				Explosion->up[1] = 1;
-				Explosion->up[2] = alpha;
-				if (Flags & CEF_FLAG8)
-				{
-					Explosion->r.color.r=255;
-					Explosion->r.color.g=255;
-					Explosion->r.color.b=255;
-				}
-			break;
-		}
+			flare->r.model = &flare_models[0]; // Halo sprite.
+			flare->up[1] = 1.0f;
+			flare->up[2] = alpha;
 
-		if (Flags & CEF_FLAG8)
-			Explosion->LifeTime = 4000 + fxi.cl->time;
-
-
-		Explosion->r.flags|=RF_FULLBRIGHT|RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA|RF_NODEPTHTEST;
-		Explosion->Scale=flare_scale[I];
-		Explosion->r.frame=0;
-		Explosion->d_scale=0.0;
-		Explosion->d_alpha=0.0;
-		Explosion->NoOfAnimFrames=1;
-		Explosion->Update=FXFlareThink;
-		VectorCopy(Origin, Explosion->direction);
-		
-		if (Flags & CEF_FLAG7)
-		{
-			Explosion->direction[0] *= 4;
-			Explosion->direction[1] *= 4;
-			Explosion->direction[2] *= 4;
-		}
-
-		VectorCopy(Origin, Explosion->origin);
-		Explosion->up[0] = flare_loc[I + useOther];
-
-		if (owner)
-		{
-/*			client_entity_t		*nullfx;
-			nullfx=ClientEntity_new(FX_LENSFLARE,
-									   CEF_NO_DRAW|CEF_OWNERS_ORIGIN,
-									   Origin,
-									   NULL,
-									   1000000);
-			nullfx->flags |= CEF_NO_DRAW;
-
-			AddEffect(owner, nullfx);*/
-
-			AddEffect(owner,Explosion);
-//			Explosion->AddToView = LinkedEntityUpdatePlacement;
-
-			Explosion->extra = (centity_t *) owner;
-			Explosion->Update=FXFlareThinkAttached;
-			Explosion->updateTime = 17;
-			FXFlareThinkAttached(Explosion,owner);
-
-			VectorCopy(Explosion->direction, Explosion->startpos2);
-			VectorCopy(Explosion->direction, Explosion->endpos2);
-			Explosion->lastThinkTime = fxi.cl->time;
+			if (flags & CEF_FLAG8)
+				COLOUR_SET(flare->r.color, 255, 255, 255);
 		}
 		else
 		{
-			AddEffect(NULL,Explosion);
-			FXFlareThink(Explosion,NULL);
-		}
-	}
-}
-
-
-void FXClientLensFlare(centity_t *owner,int Type,int Flags,vec3_t Origin, int lifeTime, paletteRGBA_t *tint)
-{
-	int					Count,I;
-	client_entity_t		*Explosion;
-	int					useOther;
-	
-	Count = 7;
-	
-	// no lens flares in low detail
-	if(r_detail->value <= DETAIL_NORMAL)
-		return;
-
-	if (Flags & CEF_FLAG6)
-		useOther = 6;
-	else
-		useOther = 0;
-
-	for(I=0;I<Count;I++)
-	{	
-		Explosion=ClientEntity_new(FX_LENSFLARE,
-								   0,
-								   Origin,
-								   NULL,
-								   20);
-		
-		VectorSet(Explosion->up, 0.0f, 0.0f, 0.0f);
-
-	  	Explosion->r.color.r = tint->r;
-	  	Explosion->r.color.g = tint->g;
-	  	Explosion->r.color.b = tint->b;
-		Explosion->alpha = (float)(tint->a)/255.0;
-
-		switch (I)
-		{
-			case 0:
-				Explosion->r.model = flare_models + 1;
-			break;
-			case 1:
-				Explosion->r.model = flare_models + 2;
-			break;
-			case 2:
-				Explosion->r.model = flare_models + 4;
-			break;
-			case 3:
-				Explosion->r.model = flare_models + 3;
-			break;
-			case 4:
-				Explosion->r.model = flare_models + 6;
-			break;
-			case 5:
-				Explosion->r.model = flare_models + 3;
-			break;
-			case 6:
-				Explosion->r.model = flare_models;
-				Explosion->up[1] = 1;
-				Explosion->up[2] = Explosion->alpha;
-				if (Flags & CEF_FLAG8)
-				{
-					Explosion->r.color.r=255;
-					Explosion->r.color.g=255;
-					Explosion->r.color.b=255;
-				}
-			break;
+			const int sprite_index = sprite_indices[i]; // Lens flare sprite.
+			flare->r.model = &flare_models[sprite_index];
 		}
 
-		if (lifeTime > 0)
-			Explosion->LifeTime = (lifeTime*1000)+fxi.cl->time;
+		if (flags & CEF_FLAG8)
+			flare->LifeTime = fxi.cl->time + 4000;
 
-		Explosion->r.flags|=RF_FULLBRIGHT|RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA|RF_NODEPTHTEST;
-		Explosion->Scale=flare_scale[I];
-		Explosion->r.frame=0;
-		Explosion->d_scale=0.0;
-		Explosion->d_alpha=0.0;
-		Explosion->NoOfAnimFrames=1;
-		Explosion->Update=FXFlareThink;
-		VectorCopy(Origin, Explosion->direction);
-		
-		if (Flags & CEF_FLAG7)
+		flare->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST;
+		flare->Scale = flare_scale[i];
+		flare->NoOfAnimFrames = 1;
+		flare->Update = FXFlareThink;
+		VectorCopy(origin, flare->direction);
+
+		if (flags & CEF_FLAG7)
+			Vec3ScaleAssign(4.0f, flare->direction);
+
+		VectorCopy(origin, flare->origin);
+		flare->up[0] = ((flags & CEF_FLAG6) ? flare2_pos[i] : flare1_pos[i]);
+
+		if (owner != NULL)
 		{
-			Explosion->direction[0] *= 4;
-			Explosion->direction[1] *= 4;
-			Explosion->direction[2] *= 4;
-		}
+			AddEffect(owner, flare);
 
-		VectorCopy(Origin, Explosion->origin);
-		Explosion->up[0] = flare_loc[I + useOther];
+			flare->extra = (centity_t*)owner;
+			flare->Update = FXFlareThinkAttached;
+			flare->updateTime = 17;
 
-		if (owner)
-		{
-/*			client_entity_t		*nullfx;
-			nullfx=ClientEntity_new(FX_LENSFLARE,
-									   CEF_NO_DRAW|CEF_OWNERS_ORIGIN,
-									   Origin,
-									   NULL,
-									   1000000);
-			nullfx->flags |= CEF_NO_DRAW;
+			FXFlareThinkAttached(flare, owner);
 
-			AddEffect(owner, nullfx);*/
+			VectorCopy(flare->direction, flare->startpos2);
+			VectorCopy(flare->direction, flare->endpos2);
 
-			AddEffect(owner,Explosion);
-//			Explosion->AddToView = LinkedEntityUpdatePlacement;
-
-			Explosion->extra = (centity_t *) owner;
-			Explosion->Update=FXFlareThinkAttached;
-			Explosion->updateTime = 17;
-			FXFlareThinkAttached(Explosion,owner);
-
-			VectorCopy(Explosion->direction, Explosion->startpos2);
-			VectorCopy(Explosion->direction, Explosion->endpos2);
-			Explosion->lastThinkTime = fxi.cl->time;
+			flare->lastThinkTime = fxi.cl->time;
 		}
 		else
 		{
-			AddEffect(NULL,Explosion);
-			FXFlareThink(Explosion,NULL);
+			AddEffect(NULL, flare);
+			FXFlareThink(flare, NULL);
 		}
 	}
 }
