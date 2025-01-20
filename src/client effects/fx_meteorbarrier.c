@@ -114,28 +114,21 @@ void FXMeteorBarrier(centity_t* owner, const int type, const int flags, const ve
 	AddEffect(owner, trail);
 }
 
-void FXMeteorBarrierTravel(centity_t *owner, int type, int flags, vec3_t origin)
+void FXMeteorBarrierTravel(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	client_entity_t	*trail;
-	paletteRGBA_t	lightcolor = {63, 255, 77, 255};
-
 	// Add a fiery trail effect.
-	trail = ClientEntity_new(type, flags|CEF_ABSOLUTE_PARTS|CEF_ADDITIVE_PARTS|CEF_VIEWSTATUSCHANGED, origin, 0, 50);
+	client_entity_t* trail = ClientEntity_new(type, flags | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS | CEF_VIEWSTATUSCHANGED, origin, NULL, 50);
 
-	trail->Update = FXMeteorBarriertrailThink;
 	trail->r.model = &meteor_model;
+	trail->radius = 10.0f;
 	trail->AddToView = LinkedEntityUpdatePlacement;
-	trail->radius = 10.0;
-	trail->r.color.c = -1;
+	trail->Update = FXMeteorBarriertrailThink;
+
 	if (r_detail->value >= DETAIL_NORMAL)
-		trail->dlight = CE_DLight_new(lightcolor, 150.0, 0.0);
+		trail->dlight = CE_DLight_new(meteor_dlight_color, 150.0f, 0.0f);
 
 	AddEffect(owner, trail);
 }
-
-
-
-// -------------------------------------------------------
 
 void FXMeteorBarrierExplode(centity_t *owner, int type, int flags, vec3_t origin)
 {
