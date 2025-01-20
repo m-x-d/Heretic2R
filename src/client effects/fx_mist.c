@@ -1,31 +1,22 @@
 //
-// Heretic II
+// fx_mist.c
+//
 // Copyright 1998 Raven Software
 //
-// Created by JJS
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "ce_DefaultMessageHandler.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Vector.h"
-#include "random.h"
-#include "Utilities.h"
+#include "Random.h"
 
-#define	MIST_ALPHA	0.6F
-#define MIST_FAR	512.0F
-#define MIST_NEAR	96.0F
+#define	MIST_ALPHA	0.6f
+#define MIST_FAR	512.0f
+#define MIST_NEAR	96.0f
 
-#define	NUM_MIST_MODELS	1
-static struct model_s *mist_models[NUM_MIST_MODELS];			   
-void PreCacheMist()
+static struct model_s* mist_model;
+
+void PreCacheMist(void)
 {
-	mist_models[0] = fxi.RegisterModel("sprites/fx/mist.sp2");
+	mist_model = fxi.RegisterModel("sprites/fx/mist.sp2");
 }
-
-// -----------------------------------------------------------------------------------------
 
 static qboolean FXMistThink(client_entity_t *mist, centity_t *owner)
 {
@@ -62,7 +53,7 @@ void FXMist(centity_t *owner, int type, int flags, vec3_t origin)
 
 	mist->SpawnData = scale * 0.1;
 	
-	mist->r.model = mist_models;
+	mist->r.model = &mist_model;
 	mist->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 	mist->r.scale = mist->SpawnData;
 
