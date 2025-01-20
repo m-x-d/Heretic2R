@@ -38,25 +38,23 @@ static qboolean FXMistThink(client_entity_t* mist, centity_t* owner)
 	return true;
 }
 
-void FXMist(centity_t *owner, int type, int flags, vec3_t origin)
+void FXMist(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	client_entity_t		*mist;
-	byte				scale;
+	byte b_scale;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_MIST].formatString, &b_scale);
 
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_MIST].formatString, &scale);
-	mist = ClientEntity_new(type, flags, origin, NULL, 100);
+	client_entity_t* mist = ClientEntity_new(type, flags, origin, NULL, 100);
 
-	mist->SpawnData = scale * 0.1;
-	
+	const float scale = (float)b_scale * 0.1f;
+	mist->SpawnData = scale;
+
 	mist->r.model = &mist_model;
-	mist->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	mist->r.scale = mist->SpawnData;
+	mist->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	mist->r.scale = scale;
 
 	mist->flags |= CEF_NOMOVE;
+	mist->alpha = 0.5f;
 	mist->Update = FXMistThink;
-	mist->radius = 1.0F;
-	mist->alpha = 0.5F;
 
-	AddEffect(NULL, mist); 
+	AddEffect(NULL, mist);
 }
-// end
