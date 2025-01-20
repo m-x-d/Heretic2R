@@ -18,29 +18,24 @@ void PreCacheMist(void)
 	mist_model = fxi.RegisterModel("sprites/fx/mist.sp2");
 }
 
-static qboolean FXMistThink(client_entity_t *mist, centity_t *owner)
+static qboolean FXMistThink(client_entity_t* mist, centity_t* owner)
 {
-	float	mod;
-
 	mist->flags &= ~CEF_DISAPPEARED;
 
-	mist->Scale += flrand(-0.05, 0.05) * mist->SpawnData;
-	mist->Scale = Clamp(mist->Scale, 0.6 * mist->SpawnData, 1.4 * mist->SpawnData);
-	mist->r.scale = Approach(mist->r.scale, mist->Scale, 0.003 * mist->SpawnData);
+	mist->Scale += flrand(-0.05f, 0.05f) * mist->SpawnData;
+	mist->Scale = Clamp(mist->Scale, mist->SpawnData * 0.6f, mist->SpawnData * 1.4f);
+	mist->r.scale = Approach(mist->r.scale, mist->Scale, mist->SpawnData * 0.003f);
 
-	mod = (mist->r.scale / mist->SpawnData) * MIST_ALPHA;
-	if(mist->r.depth > MIST_FAR)
-	{
+	const float mod = mist->r.scale / mist->SpawnData * MIST_ALPHA;
+
+	if (mist->r.depth > MIST_FAR)
 		mist->alpha = mod;
-		return(true);
-	}
-	if(mist->r.depth > MIST_NEAR)
-	{
-		mist->alpha = mod * (mist->r.depth - MIST_NEAR) * (1.0F / (MIST_FAR - MIST_NEAR));
-		return(true);
-	}
-	mist->alpha = 0.0F;
-	return(true);
+	else if (mist->r.depth > MIST_NEAR)
+		mist->alpha = mod * (mist->r.depth - MIST_NEAR) * (1.0f / (MIST_FAR - MIST_NEAR));
+	else
+		mist->alpha = 0.0f;
+
+	return true;
 }
 
 void FXMist(centity_t *owner, int type, int flags, vec3_t origin)
