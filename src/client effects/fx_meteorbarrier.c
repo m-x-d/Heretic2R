@@ -27,57 +27,57 @@ void PreCacheMeteor(void)
 	meteor_model = fxi.RegisterModel("models/spells/meteorbarrier/tris.fm");
 }
 
-static qboolean FXMeteorBarriertrailThink(struct client_entity_s *self, centity_t *owner)
+static qboolean FXMeteorBarriertrailThink(struct client_entity_s* self, const centity_t* owner)
 {
-	
-	vec3_t			org, delta;
-	float			length, alpha;
-	int				numtrails;
-	client_particle_t	*ce;
-
-	// we theoretically shouldn't need to do this.. Just in case.
+	// We theoretically shouldn't need to do this. Just in case.
 	if (!(owner->flags & CF_INUSE))
-		return(false);
+		return false;
 
-	// no trails in low detail mode
-	if (r_detail->value == DETAIL_LOW)
-		return(true);
+	// No trails in low detail mode.
+	if ((int)r_detail->value == DETAIL_LOW)
+		return true;
 
-	// Length of trail
+	// Length of trail.
+	vec3_t delta;
 	VectorSubtract(self->origin, self->r.origin, delta);
-	// Number of trails to render
-	if (r_detail->value >= DETAIL_HIGH)
-		length = VectorLength(delta) / (METEOR_DELTA_FORWARD);
-	else
-		length = VectorLength(delta) / (METEOR_DELTA_FORWARD * 1.5);
+
+	// Number of trails to render.
+	const float delta_scaler = (r_detail->value >= DETAIL_HIGH ? 1.0f : 1.5f);
+	const float length = VectorLength(delta) / (METEOR_DELTA_FORWARD * delta_scaler);
+
 	// Set start
+	vec3_t org;
 	VectorCopy(self->r.origin, org);
-	// Work out increment between trails
-	Vec3ScaleAssign(1.0 / length, delta);
-	// Work out number of bits
-	numtrails = Q_ftol(length);
-	alpha = METEOR_TRAIL_ALPHA;
+
+	// Work out increment between trails.
+	Vec3ScaleAssign(1.0f / length, delta);
+
+	// Work out number of bits.
+	int num_trails = Q_ftol(length);
+	num_trails = max(1, num_trails);
+	float alpha = METEOR_TRAIL_ALPHA;
 
 	VectorCopy(self->r.origin, self->origin);
 
-	if (numtrails>10)
+	if (num_trails > 10)
 		return true;
-	if (numtrails <= 0)
-		numtrails = 1;
-	while(numtrails-->0)
+
+	for (int i = 0; i < num_trails; i++)
 	{
-		ce = ClientParticle_new(PART_16x16_SPARK_G, self->r.color, 400);
-		ce->scale = 13;
-		ce->d_scale = -10.0;
-		ce->color.a = 255*alpha;
+		client_particle_t* ce = ClientParticle_new(PART_16x16_SPARK_G, self->r.color, 400);
+
+		ce->scale = 13.0f;
+		ce->d_scale = -10.0f;
+		ce->color.a = (byte)(alpha * 255.0f);
 		VectorCopy(org, ce->origin);
+
 		AddParticleToList(self, ce);
 
 		Vec3AddAssign(delta, org);
-		alpha *= 0.9;
+		alpha *= 0.9f;
 	}
-	return(true);
 
+	return true;
 }
 
 // Putting the angular velocity in here saves 3 bytes of net traffic
