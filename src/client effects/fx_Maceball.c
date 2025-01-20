@@ -199,38 +199,37 @@ void FXMaceballExplode(centity_t* owner, const int type, const int flags, vec3_t
 
 #pragma region ========================== RIPPER BALL ==========================
 
-static qboolean FXRipperExplodeBallThink(struct client_entity_s *self, centity_t *owner)
+static qboolean FXRipperExplodeBallThink(const struct client_entity_s* self, centity_t* owner)
 {
-	client_entity_t *trail;
-	vec3_t	diff, curpos;
-	float	scale;
-	int i;
+	vec3_t diff;
+	vec3_t curpos;
 
-	VectorScale(self->direction, -6, diff);
+	VectorScale(self->direction, -6.0f, diff);
 	VectorCopy(self->r.origin, curpos);
-	scale = 0.8;
-	for (i=0; i<4; i++)
+	float scale = 0.8f;
+
+	for (int i = 0; i < 4; i++)
 	{
-		trail = ClientEntity_new(FX_WEAPON_RIPPEREXPLODE, 0, curpos, NULL, 500);
-		trail->r.model = mace_models + 6;
+		client_entity_t* trail = ClientEntity_new(FX_WEAPON_RIPPEREXPLODE, 0, curpos, NULL, 500);
+
+		trail->r.model = &mace_models[6]; // Green spark sprite.
 		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 		VectorCopy(self->velocity, trail->velocity);
-		VectorScale(trail->velocity, -1.0, trail->acceleration);
+		VectorScale(trail->velocity, -1.0f, trail->acceleration);
 		trail->r.scale = scale;
 		trail->d_scale = -scale;
-		trail->alpha = 0.3;
-		trail->d_alpha = -0.6;
-		trail->radius = 10.0;
+		trail->alpha = 0.3f;
+		trail->d_alpha = -0.6f;
+		trail->radius = 10.0f;
 
 		AddEffect(NULL, trail);
 
 		VectorAdd(curpos, diff, curpos);
-		scale -= 0.12;
+		scale -= 0.12f;
 	}
 
-	return(true);
+	return true;
 }
-
 
 // Create Effect FX_WEAPON_RIPPEREXPLODE
 void FXRipperExplode(centity_t *owner, int type, int flags, vec3_t origin)
