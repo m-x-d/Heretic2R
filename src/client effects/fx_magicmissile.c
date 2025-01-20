@@ -90,53 +90,46 @@ static qboolean FXMagicMissileModelThink(struct client_entity_s* self, centity_t
 	return true;
 }
 
-// ************************************************************************************************
-// FXMagicMissile
-// --------------
-// ************************************************************************************************
-
-void FXMagicMissile(centity_t *Owner,int Type,int Flags,vec3_t Origin)
+void FXMagicMissile(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	vec3_t			ang;
-	client_entity_t	*Missile;	
-	paletteRGBA_t	LightColor={128,64,96,255};
-	vec3_t			fwd, up, right;
-	short			shortyaw, shortpitch;
+	const paletteRGBA_t	light_color = { .r = 128, .g = 64, .b = 96, .a = 255 };
 
-	fxi.GetEffect(Owner,Flags,clientEffectSpawners[FX_WEAPON_MAGICMISSILE].formatString, &shortyaw, &shortpitch);
+	short shortyaw;
+	short shortpitch;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_MAGICMISSILE].formatString, &shortyaw, &shortpitch);
 
-	ang[YAW]=(float)shortyaw * (360.0/65536.0);
-	ang[PITCH]=(float)shortpitch * (360.0/65536.0);
-	ang[ROLL]=0.0;
+	vec3_t angles;
+	angles[YAW] = (float)shortyaw * SHORT_TO_ANGLE;
+	angles[PITCH] = (float)shortpitch * SHORT_TO_ANGLE;
+	angles[ROLL] = 0.0f;
 
-	AngleVectors(ang, fwd, right, up);
+	vec3_t fwd;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(angles, fwd, right, up);
 
 	// Add the magic-missile model.
-	Missile=ClientEntity_new(Type, Flags | CEF_DONT_LINK, Origin, NULL, 100);
-	
-	Missile->r.model = missile_models;
-	Missile->r.frame = 1;
-	if (Flags & CEF_FLAG6)
-		VectorScale(fwd, MAGICMISSILE_SPEED/2, Missile->velocity);
-	else
-		VectorScale(fwd, MAGICMISSILE_SPEED, Missile->velocity);
-	VectorCopy(ang, Missile->r.angles);
+	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
+
+	missile->r.model = &missile_models[0]; // Star-like indigo halo sprite.
+	missile->r.frame = 1;
+
+	const float speed = MAGICMISSILE_SPEED * ((flags & CEF_FLAG6) ? 0.5f : 1.0f); //mxd
+	VectorScale(fwd, speed, missile->velocity);
+
+	VectorCopy(angles, missile->r.angles);
 
 	// Set up the direction we want the trail to fly from the missile.
-	VectorMA(up, 2.0, right, Missile->up);
-	VectorScale(Missile->up, MISSILE_TRAIL_SPEED, Missile->up);
+	VectorMA(up, 2.0f, right, missile->up);
+	VectorScale(missile->up, MISSILE_TRAIL_SPEED, missile->up);
 
-	Missile->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD;
-	Missile->r.scale=0.4;
-	Missile->alpha=1.0;
-	Missile->d_alpha=0.0;
-	Missile->d_scale=4.0;
-	Missile->dlight=CE_DLight_new(LightColor,150.0f,0.0f);
-	Missile->Update=FXMagicMissileModelThink;
+	missile->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD;
+	missile->r.scale = 0.4f;
+	missile->d_scale = 4.0f;
+	missile->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
+	missile->Update = FXMagicMissileModelThink;
 
-//	FXMagicMissileTrailThink(Self, Owner);
-
-	AddEffect(Owner, Missile);
+	AddEffect(owner, missile);
 }
 
 // ************************************************************************************************
