@@ -66,102 +66,93 @@ void FXMaceball(centity_t* owner, const int type, const int flags, const vec3_t 
 	AddEffect(owner, ball);
 }
 
-// -----------------------------------------------------------------------------------------
-
-void FXMaceballBounce(centity_t *owner, int type, int flags, vec3_t origin)
+void FXMaceballBounce(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*ring, *hitfx;
-	client_particle_t	*spark;
-	paletteRGBA_t		color;
-	int					i;
-	vec3_t				norm, up, right, lastvel;
-	float				curyaw;
+	vec3_t normal;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_MACEBALLBOUNCE].formatString, normal);
 
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_MACEBALLBOUNCE].formatString, norm);
+	// Take the normal and find two "axis" vectors that are in the plane the normal defines.
+	vec3_t up;
+	PerpendicularVector(up, normal);
 
-	color.c = 0xffffffff;
+	vec3_t right;
+	CrossProduct(up, normal, right);
 
-	// Take the normal and find two "axis" vectors that are in the plane the normal defines
-	PerpendicularVector(up, norm);
-	CrossProduct(up, norm, right);
+	client_entity_t* hit_fx = ClientEntity_new(type, flags, origin, NULL, BALL_BOUNCE_LIFETIME);
+	hit_fx->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	hit_fx->flags |= CEF_NO_DRAW | CEF_ADDITIVE_PARTS;
+	hit_fx->radius = BALL_RADIUS;
+	VectorScale(normal, MACEBALL_SPARK_VEL, hit_fx->velocity); // This velocity is used by the sparks.
+	AddEffect(NULL, hit_fx);
 
-	hitfx = ClientEntity_new(type, flags, origin, NULL, BALL_BOUNCE_LIFETIME);
-	hitfx->r.flags |= RF_FULLBRIGHT|RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA;
-	hitfx->flags |= CEF_NO_DRAW | CEF_ADDITIVE_PARTS;
-	hitfx->radius = BALL_RADIUS;
-	VectorScale(norm, MACEBALL_SPARK_VEL, hitfx->velocity);		// This velocity is used by the sparks.
-	AddEffect(NULL, hitfx);
-
-	VectorScale(norm, 8.0, norm);
-	color.c = 0xffffffff;
+	VectorScale(normal, 8.0f, normal);
 
 	// Draw a circle of expanding lines.
-	curyaw = 0;
-	VectorScale(right, MACEBALL_RING_VEL, lastvel);
-	for(i = 0; i < NUM_RIPPER_PUFFS; i++)
-	{
-		curyaw+=RIPPER_PUFF_ANGLE;
+	vec3_t last_vel;
+	VectorScale(right, MACEBALL_RING_VEL, last_vel);
+	const int ring_flags = CEF_PULSE_ALPHA | CEF_USE_VELOCITY2 | CEF_AUTO_ORIGIN | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS; //mxd
+	float cur_yaw = 0.0f;
 
-		ring = ClientEntity_new(type, CEF_PULSE_ALPHA | CEF_USE_VELOCITY2 | CEF_AUTO_ORIGIN | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS, 
-									origin, NULL, 500);
-		ring->r.model = mace_models + 2;
+	for (int i = 0; i < NUM_RIPPER_PUFFS; i++)
+	{
+		cur_yaw += RIPPER_PUFF_ANGLE;
+
+		client_entity_t* ring = ClientEntity_new(type, ring_flags, origin, NULL, 500);
+		ring->r.model = &mace_models[2]; // Neon-green sprite.
 		ring->r.frame = 1;
 		ring->r.spriteType = SPRITE_LINE;
-		ring->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		ring->radius = 64.0;
-		
+		ring->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		ring->radius = 64.0f;
+		ring->r.scale = 0.5f;
+		ring->d_scale = 16.0f;
+		ring->alpha = 0.1f;
+		ring->d_alpha = 4.0f;
+
 		// The startpos and startvel comes from the last velocity.
-		VectorCopy(lastvel, ring->velocity);
-		VectorScale(ring->velocity, -1.0, ring->acceleration);
-		VectorMA(origin, .01, ring->velocity, ring->r.startpos);	// Move the line out a bit to avoid a zero-length line.
+		VectorCopy(last_vel, ring->velocity);
+		VectorScale(ring->velocity, -1.0f, ring->acceleration);
+		VectorMA(origin, 0.01f, ring->velocity, ring->r.startpos); // Move the line out a bit to avoid a zero-length line.
 
-		VectorScale(up, RIPPER_RING_VEL*sin(curyaw), ring->velocity2);
-		VectorMA(ring->velocity2, MACEBALL_RING_VEL*cos(curyaw), right, ring->velocity2);
+		VectorScale(up, RIPPER_RING_VEL * sinf(cur_yaw), ring->velocity2);
+		VectorMA(ring->velocity2, MACEBALL_RING_VEL * cosf(cur_yaw), right, ring->velocity2);
 
-		VectorScale(ring->velocity2, -1.0, ring->acceleration2);
-		VectorMA(origin, .01, ring->velocity2, ring->r.endpos);	// Move the line out a bit to avoid a zero-length line.
+		VectorScale(ring->velocity2, -1.0f, ring->acceleration2);
+		VectorMA(origin, 0.01f, ring->velocity2, ring->r.endpos); // Move the line out a bit to avoid a zero-length line.
 
 		// Finally, copy the last velocity we used.
-		VectorCopy(ring->velocity2, lastvel);
+		VectorCopy(ring->velocity2, last_vel);
 
 		// NOW apply the extra directional velocity to force it slightly away from the surface.
-		VectorAdd(ring->velocity, norm, ring->velocity);
-		VectorAdd(ring->velocity2, norm, ring->velocity2);
-
-		ring->r.scale = .5;
-		ring->d_scale = 16.0;
-		ring->alpha = 0.1;
-		ring->d_alpha = 4.0;
+		VectorAdd(ring->velocity, normal, ring->velocity);
+		VectorAdd(ring->velocity2, normal, ring->velocity2);
 
 		AddEffect(NULL, ring);
 
 		// Now spawn a particle quick to save against the nasty joints (ugh).
-		spark = ClientParticle_new(PART_16x16_SPARK_G, color, 500);
-		VectorCopy(ring->r.startpos, spark->origin);
-		VectorCopy(ring->velocity, spark->velocity);
-		VectorCopy(ring->acceleration, spark->acceleration);
-		spark->scale = 0.5;
-		spark->d_scale = 16.0;
-		spark->color.a = 1;
-		spark->d_alpha = 1024.0;
+		client_particle_t* p = ClientParticle_new(PART_16x16_SPARK_G, color_white, 500);
+		VectorCopy(ring->r.startpos, p->origin);
+		VectorCopy(ring->velocity, p->velocity);
+		VectorCopy(ring->acceleration, p->acceleration);
+		p->scale = 0.5f;
+		p->d_scale = 16.0f;
+		p->color.a = 1;
+		p->d_alpha = 1024.0f;
 
-		AddParticleToList(ring, spark);
+		AddParticleToList(ring, p);
 	}
 
-	// Add a few sparks to the imapct
-	for (i=0; i<8; i++)
+	// Add a few sparks to the impact.
+	for (int i = 0; i < 8; i++)
 	{
-		spark = ClientParticle_new(PART_16x16_SPARK_G, color, 500);
-		VectorSet(spark->velocity, 
-					flrand(-MACEBALL_SPARK_VEL, MACEBALL_SPARK_VEL),
-					flrand(-MACEBALL_SPARK_VEL, MACEBALL_SPARK_VEL),
-					flrand(-MACEBALL_SPARK_VEL, MACEBALL_SPARK_VEL));
-		spark->d_alpha = flrand(-768.0, -512.0);
-		spark->scale = 4.0;
-		spark->d_scale = flrand(-10.0, -8.0);
-		spark->acceleration[2] = -2.0*MACEBALL_SPARK_VEL;
+		client_particle_t* spark = ClientParticle_new(PART_16x16_SPARK_G, color_white, 500);
 
-		AddParticleToList(hitfx, spark);
+		VectorRandomSet(spark->velocity, MACEBALL_SPARK_VEL);
+		spark->d_alpha = flrand(-768.0f, -512.0f);
+		spark->scale = 4.0f;
+		spark->d_scale = flrand(-10.0f, -8.0f);
+		spark->acceleration[2] = -2.0f * MACEBALL_SPARK_VEL;
+
+		AddParticleToList(hit_fx, spark);
 	}
 }
 
