@@ -1000,7 +1000,7 @@ static void FXGroundAttack(vec3_t origin)
 	AddEffect(NULL, spawner);
 }
 
-static qboolean beam_add_to_view(struct client_entity_s *self, centity_t *owner)
+static qboolean FXMorkBeam2_AddToView(struct client_entity_s* self, const centity_t* owner)
 {
 	LinkedEntityUpdatePlacement(self, owner);
 	VectorCopy(self->r.origin, self->r.endpos);
@@ -1028,7 +1028,7 @@ void FXMorkBeam2 ( centity_t *owner, vec3_t	startpos )
 	VectorCopy(owner->origin, fx->r.endpos);
 
 	fx->Update = KeepSelfAI;
-	fx->AddToView = beam_add_to_view;
+	fx->AddToView = FXMorkBeam2_AddToView;
 
 	AddEffect(owner, fx);
 }
