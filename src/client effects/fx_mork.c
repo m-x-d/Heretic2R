@@ -1215,14 +1215,13 @@ static void FXMorkTrackingMissile(centity_t* owner, const vec3_t origin)
 	FXMMissileTrailThink(trail, owner);
 }
 
-qboolean rubble_spin (client_entity_t *self, centity_t *owner)
+static qboolean RubbleUpdate(client_entity_t* self, centity_t* owner)
 {
 	if (self->LifeTime < fxi.cl->time)
 		return false;
-	
-	self->r.angles[YAW] += 0.1;
-	self->r.angles[PITCH] += 0.1;
-	self->r.angles[ROLL] += 0.1;
+
+	for (int i = 0; i < 3; i++)
+		self->r.angles[i] += 0.1f;
 
 	return true;
 }
@@ -1303,7 +1302,7 @@ qboolean mssithra_explosion_think (client_entity_t *self, centity_t *owner)
 				VectorScale(TrailEnt->velocity, irand(50,100), TrailEnt->velocity);
 				TrailEnt->acceleration[2] -= 256;
 
-				TrailEnt->Update = rubble_spin;
+				TrailEnt->Update = RubbleUpdate;
 				TrailEnt->LifeTime = fxi.cl->time + 2000;
 
 				AddEffect(NULL, TrailEnt);
