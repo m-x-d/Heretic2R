@@ -1493,12 +1493,12 @@ static void FXMSsithraArrowCharge(vec3_t startpos)
 	flash->dlight = CE_DLight_new(flash->r.color, 200.0f, -25.0f);
 }
 
-void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
+// Morcalavin's FX handler.
+void FXMEffects(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	vec3_t			vel;
-	byte			fx_index;
-	
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_M_EFFECTS].formatString, &fx_index, &vel);//fixme- make this 1 dir and 1 float
+	byte fx_index;
+	vec3_t vel;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_M_EFFECTS].formatString, &fx_index, &vel); //FIXME: make this 1 dir and 1 float.
 
 	switch (fx_index)
 	{
@@ -1507,35 +1507,35 @@ void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 			break;
 
 		case FX_M_BEAM:
-			FXMorkBeam(owner, type, org, vel); //mxd
+			FXMorkBeam(owner, type, origin, vel); //mxd
 			break;
 
 		case FX_IMP_FIRE:
-			FXImpFireball(owner, org, vel); //mxd
+			FXImpFireball(owner, origin, vel); //mxd
 			break;
-		
+
 		case FX_IMP_FBEXPL:
 			FXImpFireBallExplode(owner, vel);
 			break;
 
 		case FX_CW_STARS:
-			FXCWStars(owner, type, org);
+			FXCWStars(owner, type, origin);
 			break;
 
 		case FX_BUOY:
-			FXBuoy(owner, flags, org, (qboolean)vel[0]);
+			FXBuoy(owner, flags, origin, (qboolean)vel[0]);
 			break;
 
 		case FX_BUOY_PATH:
-			FXBuoyPath(org, vel);
+			FXBuoyPath(origin, vel);
 			break;
 
 		case FX_M_MOBLUR:
-			FXMMoBlur(owner, org, vel, false);
+			FXMMoBlur(owner, origin, vel, false);
 			break;
 
 		case FX_ASS_DAGGER:
-			FXAssassinDagger(owner, vel, org[0]);
+			FXAssassinDagger(owner, vel, origin[0]);
 			break;
 
 		case FX_UNDER_WATER_WAKE:
@@ -1559,19 +1559,18 @@ void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 			break;
 
 		case FX_MORK_MISSILE_HIT:
-			FXMorkMissileHit(org);
+			FXMorkMissileHit(origin);
 			break;
 
 		case FX_MORK_TRACKING_MISSILE:
-			FXMorkTrackingMissile(owner, org);
+			FXMorkTrackingMissile(owner, origin);
 			break;
 
 		case FX_MSSITHRA_EXPLODE:
 			if (flags & CEF_FLAG6)
-				FXMSsithraExplodeSmall(org);
+				FXMSsithraExplodeSmall(origin);
 			else
-				FXMSsithraExplode(org, vel);
-
+				FXMSsithraExplode(origin, vel);
 			break;
 
 		case FX_MSSITHRA_ARROW:
