@@ -1226,124 +1226,107 @@ static qboolean RubbleUpdate(client_entity_t* self, centity_t* owner)
 	return true;
 }
 
-qboolean mssithra_explosion_think (client_entity_t *self, centity_t *owner)
+static qboolean FXMSsithraExplosionThink(const client_entity_t* self, centity_t* owner)
 {
-	client_entity_t	*explosion, *TrailEnt;
-	paletteRGBA_t	color = {255,255,255,255};
-	vec3_t			dir;
-	int				i;	
-	int				white;
-
 	if (self->LifeTime < fxi.cl->time)
 		return false;
 
-	//Spawn a white core
-	explosion = ClientEntity_new( FX_M_EFFECTS, 0, self->origin, NULL, 1000);
-	explosion->r.model = mssithra_models + 5;
-	
-	explosion->r.flags |= RF_FULLBRIGHT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	explosion->r.scale = 0.1;
-	explosion->radius = 500;
-	explosion->r.color.c = 0xFFFFFFFF;
-	explosion->alpha = 0.75;
-	explosion->d_scale = 4.0;
-	explosion->d_alpha = -2.5;
-	
-	explosion->r.origin[0] += irand(-8,8);
-	explosion->r.origin[1] += irand(-8,8);
-	explosion->r.origin[2] += irand(-8,8);
-	
-	AddEffect(NULL, explosion);
+	// Spawn a white core.
+	client_entity_t* core = ClientEntity_new(FX_M_EFFECTS, 0, self->origin, NULL, 1000);
 
-	i = GetScaledCount(3, 0.85);
+	core->radius = 500.0f;
+	core->r.model = &mssithra_models[5]; // Halo sprite.
+	core->r.flags = RF_FULLBRIGHT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	core->r.scale = 0.1f;
+	core->alpha = 0.75f;
+	core->d_scale = 4.0f;
+	core->d_alpha = -2.5f;
 
-	//Spawn a small explosion sphere
-	while (i--)
+	for (int i = 0; i < 3; i++)
+		core->r.origin[i] += (float)(irand(-8, 8)); //TODO: why irand?
+
+	AddEffect(NULL, core);
+
+	int count = GetScaledCount(3, 0.85f);
+
+	// Spawn a small explosion sphere.
+	for (int i = 0; i < count; i++)
 	{
-		explosion = ClientEntity_new( FX_M_EFFECTS, 0, self->origin, NULL, 1000);
-		explosion->r.model = mssithra_models + irand(0, 1);
-		
-		explosion->r.flags |= RF_FULLBRIGHT;
-		explosion->r.scale = 0.1;
-		explosion->radius = 500;
-		explosion->r.color.c = 0xFFFFFFFF;
-		explosion->alpha = 0.75;
-		explosion->d_scale = 2.0;
-		explosion->d_alpha = -2.5;
-		
-		explosion->r.origin[0] += irand(-16,16);
-		explosion->r.origin[1] += irand(-16,16);
-		explosion->r.origin[2] += irand(-16,16);
+		client_entity_t* explosion = ClientEntity_new(FX_M_EFFECTS, 0, self->origin, NULL, 1000);
+
+		explosion->radius = 500.0f;
+		explosion->r.model = &mssithra_models[irand(0, 1)]; // Inner or outer explosion model.
+		explosion->r.flags = RF_FULLBRIGHT;
+		explosion->r.scale = 0.1f;
+		explosion->alpha = 0.75f;
+		explosion->d_scale = 2.0f;
+		explosion->d_alpha = -2.5f;
+
+		for (int c = 0; c < 3; c++)
+			explosion->r.origin[c] += (float)(irand(-16, 16)); //TODO: why irand?
 
 		AddEffect(NULL, explosion);
 	}
 
+	vec3_t dir;
 	VectorCopy(self->direction, dir);
 
-	if (irand(0,1))
+	if (irand(0, 1))
 	{
-		if (r_detail->value > 1)
+		if (r_detail->value < DETAIL_HIGH)
+			return true;
+
+		// Spawn an explosion of stone chunks.
+		count = GetScaledCount(2, 0.85f);
+
+		for (int i = 0; i < count; i++)
 		{
-			//Spawn an explosion of lines
-			i = GetScaledCount(2, 0.85);
+			client_entity_t* rubble = ClientEntity_new(FX_M_EFFECTS, 0, self->r.origin, 0, 17);
 
-			while (i--)
-			{
-				TrailEnt=ClientEntity_new(FX_M_EFFECTS, 0, self->r.origin, 0, 17);
+			rubble->r.model = &mssithra_models[irand(3, 4)]; // Stone chunk models.
 
-				TrailEnt->r.model = mssithra_models + irand(3,4);
-				
-				TrailEnt->r.flags |= RF_FULLBRIGHT;
-				TrailEnt->r.scale = flrand(0.5, 1.5);
-				TrailEnt->alpha = 1.0;
+			rubble->r.flags = RF_FULLBRIGHT; //TODO: why fullbright chunks?
+			rubble->r.scale = flrand(0.5f, 1.5f);
 
-				VectorRandomCopy(dir, TrailEnt->velocity, 1.25);
-				
-				VectorScale(TrailEnt->velocity, irand(50,100), TrailEnt->velocity);
-				TrailEnt->acceleration[2] -= 256;
+			VectorRandomCopy(dir, rubble->velocity, 1.25f);
 
-				TrailEnt->Update = RubbleUpdate;
-				TrailEnt->LifeTime = fxi.cl->time + 2000;
+			VectorScale(rubble->velocity, flrand(50.0f, 100.0f), rubble->velocity); //mxd. Was irand().
+			rubble->acceleration[2] -= 256.0f;
 
-				AddEffect(NULL, TrailEnt);
-			}
+			rubble->LifeTime = fxi.cl->time + 2000;
+			rubble->Update = RubbleUpdate;
+
+			AddEffect(NULL, rubble);
 		}
 	}
 	else
 	{
-		//Spawn an explosion of lines
-		i = GetScaledCount(2, 0.85);
+		// Spawn an explosion of lines.
+		count = GetScaledCount(2, 0.85f);
 
-		while (i--)
+		for (int i = 0; i < count; i++)
 		{
-			TrailEnt=ClientEntity_new(FX_M_EFFECTS, 0, self->r.origin, 0, 500);
+			client_entity_t* fire_streak = ClientEntity_new(FX_M_EFFECTS, 0, self->r.origin, 0, 500);
 
-			TrailEnt->r.model = mssithra_models + 2;
-			
-			TrailEnt->r.spriteType = SPRITE_LINE;
+			fire_streak->r.model = &mssithra_models[2]; // Firestreak sprite.
+			fire_streak->r.spriteType = SPRITE_LINE;
 
-			TrailEnt->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-			TrailEnt->r.color.c = 0xFFFFFFFF;
-			TrailEnt->r.scale = flrand(1.0, 2.5);
-			TrailEnt->alpha = 1.0;
-			TrailEnt->d_alpha = -1.0;
-			TrailEnt->d_scale = -1.0;
+			fire_streak->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+			fire_streak->r.scale = flrand(1.0f, 2.5f);
+			fire_streak->d_alpha = -1.0f;
+			fire_streak->d_scale = -1.0f;
 
-			white = irand(128, 255);
+			const int white = irand(128, 255);
+			COLOUR_SETA(fire_streak->r.color, white, white, irand(236, 255), irand(80, 192)); //mxd. Use macro.
 
-			TrailEnt->r.color.r = white;
-			TrailEnt->r.color.g = white;
-			TrailEnt->r.color.b = 128 + irand(108, 127);
-			TrailEnt->r.color.a = 64 + irand(16, 128);
+			VectorRandomCopy(dir, fire_streak->velocity, 1.25f);
 
-			VectorRandomCopy(dir, TrailEnt->velocity, 1.25);
-			
-			VectorCopy(self->r.origin, TrailEnt->r.endpos);
-			VectorMA(TrailEnt->r.endpos, irand(16, 32), TrailEnt->velocity, TrailEnt->r.startpos);
+			VectorCopy(self->r.origin, fire_streak->r.endpos);
+			VectorMA(fire_streak->r.endpos, flrand(16.0f, 32.0f), fire_streak->velocity, fire_streak->r.startpos); //mxd. Was irand().
 
-			VectorScale(TrailEnt->velocity, irand(50,150), TrailEnt->velocity);
+			VectorScale(fire_streak->velocity, flrand(50.0f, 150.0f), fire_streak->velocity); //mxd. Was irand().
 
-			AddEffect(NULL, TrailEnt);
+			AddEffect(NULL, fire_streak);
 		}
 	}
 
@@ -1356,7 +1339,7 @@ void FXMSsithraExplode( vec3_t origin, vec3_t dir )
 
 	//Create an explosion spawner
 	spawner = ClientEntity_new( FX_M_EFFECTS, CEF_NO_DRAW, origin, NULL, 20);
-	spawner->Update = mssithra_explosion_think;
+	spawner->Update = FXMSsithraExplosionThink;
 	spawner->color.c = 0xff00ffff;
 	spawner->dlight = CE_DLight_new(spawner->color, 100.0f,-50.0f);
 	spawner->LifeTime = fxi.cl->time + 250;
