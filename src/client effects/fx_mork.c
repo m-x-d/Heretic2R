@@ -1150,15 +1150,17 @@ static void FXMorkMissileHit(const vec3_t origin)
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/mork/ppexplode.wav"), 1.0f, ATTN_IDLE, 0);
 }
 
-static qboolean FXMTrailThink(struct client_entity_s *self,centity_t *Owner)
+static qboolean FXMTrailThink(struct client_entity_s* self, centity_t* owner)
 {
-	if (self->alpha <= 0.1 || self->r.scale <= 0.0)
-		return false;
+	if (self->alpha > 0.1f && self->r.scale > 0.0f)
+	{
+		self->r.scale -= 0.1f;
+		self->r.scale2 -= 0.1f;
 
-	self->r.scale -= 0.1;
-	self->r.scale2 -= 0.1;
-	
-	return true;
+		return true;
+	}
+
+	return false;
 }
 
 static qboolean FXMMissileTrailThink(struct client_entity_s *self,centity_t *Owner)
