@@ -834,24 +834,19 @@ static qboolean FXAssassinDaggerUpdate(struct client_entity_s* self, centity_t* 
 	return true;
 }
 
-void FXAssDagger(centity_t *owner, vec3_t vel, float avel)
+static void FXAssassinDagger(centity_t* owner, const vec3_t vel, const float avel)
 {
-	client_entity_t	*dagger;
+	client_entity_t* dagger = ClientEntity_new(FX_M_EFFECTS, CEF_DONT_LINK, owner->current.origin, NULL, 20);
 
-	dagger = ClientEntity_new(FX_M_EFFECTS, CEF_DONT_LINK, owner->current.origin, NULL, 20);
-
-//	vectoangles(vel, dagger->r.angles);
-//	VectorScale(dagger->r.angles, ANGLE_TO_RAD, dagger->r.angles);
 	VectorScale(owner->current.angles, ANGLE_TO_RAD, dagger->r.angles);
 	dagger->r.model = &assassin_dagger_model;
-	dagger->r.flags |= RF_FULLBRIGHT;
-	dagger->Update = FXAssassinDaggerUpdate;
+	dagger->r.flags = RF_FULLBRIGHT;
 	VectorCopy(vel, dagger->velocity);
-	dagger->velocity2[0] = (avel*ANGLE_TO_RAD);
+	dagger->velocity2[0] = avel * ANGLE_TO_RAD;
+	dagger->Update = FXAssassinDaggerUpdate;
 
 	AddEffect(owner, dagger);
 }
-
 
 int water_particle [6] =
 {
@@ -1636,7 +1631,7 @@ void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 			break;
 
 		case FX_ASS_DAGGER:
-			FXAssDagger(owner, vel, org[0]);
+			FXAssassinDagger(owner, vel, org[0]);
 			break;
 
 		case FX_UNDER_WATER_WAKE:
