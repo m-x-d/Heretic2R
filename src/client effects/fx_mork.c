@@ -848,59 +848,53 @@ static void FXAssassinDagger(centity_t* owner, const vec3_t vel, const float ave
 	AddEffect(owner, dagger);
 }
 
-int water_particle [6] =
+static qboolean FXUnderWaterWakeUpdate(struct client_entity_s* self, const centity_t* owner)
 {
-	PART_4x4_WHITE,
-	PART_8x8_BUBBLE,
-	PART_16x16_WATERDROP,
-	PART_32x32_WFALL,
-	PART_32x32_STEAM,
-	PART_32x32_BUBBLE
-};
-
-qboolean FXUnderWaterWakeUpdate (struct client_entity_s *self, centity_t *owner)
-{
-	client_particle_t	*p;
-	vec3_t				right;
-	int					num_parts, i;
-	paletteRGBA_t		LightColor={200, 255, 255, 140};//RGBA
-
-	VectorCopy(owner->lerp_origin, self->r.origin);
-	AngleVectors(owner->lerp_angles, NULL, right, NULL);
-
-	num_parts = irand(3, 7);
-	for(i = 0; i < num_parts; i++)
+	static int water_particles[6] = //mxd. Made local static.
 	{
-		if(r_detail->value > DETAIL_LOW)
-			p = ClientParticle_new(water_particle[irand(0, 5)], LightColor, irand(1000, 1500));
-		else
-			p = ClientParticle_new(water_particle[irand(0, 5)]|PFL_SOFT_MASK, LightColor, irand(1000, 1500));
+		PART_4x4_WHITE,
+		PART_8x8_BUBBLE,
+		PART_16x16_WATERDROP,
+		PART_32x32_WFALL,
+		PART_32x32_STEAM,
+		PART_32x32_BUBBLE
+	};
 
-		VectorSet(p->origin, flrand(-8, 8), flrand(-8, 8), flrand(-4, 4));
+	const paletteRGBA_t light_color = { .r = 200, .g = 255, .b = 255, .a = 140 };
+
+	vec3_t right;
+	AngleVectors(owner->lerp_angles, NULL, right, NULL);
+	VectorCopy(owner->lerp_origin, self->r.origin);
+
+	const int num_particles = irand(3, 7);
+
+	for (int i = 0; i < num_particles; i++)
+	{
+		int particle_type = water_particles[irand(0, 5)];
+		if ((int)r_detail->value == DETAIL_LOW)
+			particle_type |= PFL_SOFT_MASK;
+
+		client_particle_t* p = ClientParticle_new(particle_type, light_color, irand(1000, 1500));
+
+		VectorSet(p->origin, flrand(-8.0f, 8.0f), flrand(-8.0f, 8.0f), flrand(-4.0f, 4.0f));
 		VectorAdd(self->r.origin, p->origin, p->origin);
-		
-		p->scale = flrand(0.75, 1.5);
-		p->color.a = irand(100, 200);
 
-		VectorSet(p->velocity, flrand(-2, 2), flrand(-2, 2), flrand(-2.0, 2.0));
+		p->scale = flrand(0.75f, 1.5f);
+		p->color.a = (byte)irand(100, 200);
 
-		if (irand(0, 1))
-			VectorMA(p->velocity, flrand(-10, -2), right, p->velocity);
-		else
-			VectorMA(p->velocity, flrand(10, 2), right, p->velocity);
+		VectorRandomSet(p->velocity, 2.0f);
+		VectorMA(p->velocity, flrand(2.0f, 10.0f) * (float)(Q_sign(irand(-1, 0))), right, p->velocity);
 
-		p->acceleration[2] = 2;
-		p->d_alpha = flrand(-300, -200);
-		p->d_scale = flrand(-0.15, -0.10);
+		p->acceleration[2] = 2.0f;
+		p->d_alpha = flrand(-300.0f, -200.0f);
+		p->d_scale = flrand(-0.15f, -0.1f);
 
 		AddParticleToList(self, p);
 	}
 
 	self->LifeTime--;
-	if(self->LifeTime<=0)
-		return (false);
-	
-	return (true);
+
+	return (self->LifeTime > 0);
 }
 
 void FXUnderWaterWake (centity_t *owner)
