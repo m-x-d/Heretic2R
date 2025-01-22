@@ -1064,24 +1064,20 @@ static qboolean MorkMissileThink2(struct client_entity_s* self, centity_t* owner
 	return true;
 }
 
-static qboolean MorkMissileThink3(struct client_entity_s *self, centity_t *owner)
+static qboolean MorkMissileThink3(struct client_entity_s* self, centity_t* owner)
 {
-	if (self->alpha < 0.5)
-	{
-		self->alpha += 0.1;
-	}
+	if (self->alpha < 0.5f)
+		self->alpha += 0.1f;
 
-	if (self->r.scale < 1.0)
-	{
-		self->r.scale += 0.1;
-	}
+	if (self->r.scale < 1.0f)
+		self->r.scale += 0.1f;
 
 	if (self->SpawnInfo > irand(15, 20))
 	{
-		fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/elflord/weld.wav"), 0.5, ATTN_IDLE, 0);
-		self->SpawnInfo=0;
+		fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/elflord/weld.wav"), 0.5f, ATTN_IDLE, 0);
+		self->SpawnInfo = 0;
 	}
-	
+
 	self->SpawnInfo++;
 	return true;
 }
