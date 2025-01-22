@@ -557,26 +557,23 @@ static qboolean FXCWUpdate(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-void FXCWStars (centity_t *owner,int type, vec3_t vel)
+void FXCWStars(centity_t* owner, const int type, vec3_t vel)
 {
-	client_entity_t	*fx;
+	client_entity_t* fx = ClientEntity_new(type, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, owner->origin, NULL, 20);
 
-	fx = ClientEntity_new( type, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, owner->origin, NULL, 20);
-
-	fx->Update=FXCWUpdate;
-	fx->radius = 500;
+	fx->radius = 500.0f;
 	fx->r.model = &mork_projectile_core_model;
-	VectorCopy(vel, fx->direction);
-	fx->r.color.r = 10;
-	fx->r.color.g = 50;
-	fx->r.color.b = 255;
-	fx->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	fx->r.scale = 0.8;
-	fx->AddToView = LinkedEntityUpdatePlacement;
+	COLOUR_SET(fx->r.color, 10, 50, 255); //mxd. Use macro.
+	fx->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	fx->r.scale = 0.8f;
 
+	VectorCopy(vel, fx->direction);
 	VectorCopy(owner->origin, fx->startpos);
 
-	AddEffect(owner,fx);
+	fx->AddToView = LinkedEntityUpdatePlacement;
+	fx->Update = FXCWUpdate;
+
+	AddEffect(owner, fx);
 }
 
 #define BUOY_FX_END			PART_4x4_RED
