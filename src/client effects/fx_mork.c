@@ -132,43 +132,38 @@ static qboolean FXMorkTrailThink2(struct client_entity_s* self, centity_t* owner
 	return true;
 }
 
-void FXMorkMissileExplode(struct client_entity_s *self,centity_t *owner, vec3_t dir)
+//mxd. Added to reduce code duplication.
+static void AddGenericExplosion(const centity_t* owner, vec3_t dir, struct model_s* model)
 {
-	client_entity_t	*SmokePuff;
-	int				i;
-	paletteRGBA_t	LightColor={255,64,32,255};
-	byte			powerup = 0;
-	
-	Vec3ScaleAssign(32.0, dir);
+	Vec3ScaleAssign(32.0f, dir);
 
-	i = GetScaledCount(irand(12,16), 0.8);
-	
-	while(i--)
+	const int count = GetScaledCount(irand(12, 16), 0.8f);
+
+	for (int i = 0; i < count; i++)
 	{
-		if (!i)
-			SmokePuff=ClientEntity_new(FX_M_EFFECTS,0,owner->origin,NULL,500);
-		else
-			SmokePuff=ClientEntity_new(FX_M_EFFECTS,0,owner->origin,NULL,1500);
-		
-		SmokePuff->r.model = mork_projectile_models + 1;
-		SmokePuff->r.scale=flrand(0.5,1.0);
-		SmokePuff->d_scale=-2.0;
+		const int next_think_time = (i == count - 1 ? 500 : 1000); //mxd
+		client_entity_t* spark = ClientEntity_new(FX_M_EFFECTS, 0, owner->origin, NULL, next_think_time);
 
-		SmokePuff->r.flags |=RF_FULLBRIGHT|RF_TRANSLUCENT|RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		SmokePuff->r.frame = 0;
+		spark->r.model = &model; // Blue spark sprite.
+		spark->r.scale = flrand(0.5f, 1.0f);
+		spark->d_scale = -2.0f;
+		spark->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		spark->d_alpha = -0.4f;
+		spark->radius = 20.0f;
 
-		VectorRandomCopy(dir, SmokePuff->velocity, flrand(16.0, 64.0));
+		VectorRandomCopy(dir, spark->velocity, flrand(16.0f, 64.0f));
 
-		SmokePuff->acceleration[0] = flrand(-400, 400);
-		SmokePuff->acceleration[1] = flrand(-400, 400);
-		SmokePuff->acceleration[2] = flrand(-40, -60);
+		spark->acceleration[0] = flrand(-400.0f, 400.0f);
+		spark->acceleration[1] = flrand(-400.0f, 400.0f);
+		spark->acceleration[2] = flrand(-60.0f, -40.0f);
 
-		SmokePuff->d_alpha= -0.4;
-			
-		SmokePuff->radius=20.0;
-
-		AddEffect(NULL,SmokePuff);
+		AddEffect(NULL, spark);
 	}
+}
+
+static void FXMorkMissileExplode(const centity_t* owner, vec3_t dir)
+{
+	AddGenericExplosion(owner, dir, mork_projectile_models[1]); //mxd. Blue spark sprite.
 }
 
 #define M_LIGHTNING_WIDTH	6.0
@@ -362,43 +357,9 @@ static qboolean FXMorkBeam (struct client_entity_s *self,centity_t *owner)
 	return true;
 }
 
-void ImpFireBallExplode(struct client_entity_s *self,centity_t *owner, vec3_t dir)
+static void ImpFireBallExplode(const centity_t* owner, vec3_t dir)
 {
-	client_entity_t	*SmokePuff;
-	int				i;
-	paletteRGBA_t	LightColor={255,64,32,255};
-	byte			powerup = 0;
-	
-	Vec3ScaleAssign(32.0, dir);
-
-	i = GetScaledCount(irand(12,16), 0.8);
-	
-	while(i--)
-	{
-		if (!i)
-			SmokePuff=ClientEntity_new(FX_M_EFFECTS,0,owner->origin,NULL,500);
-		else
-			SmokePuff=ClientEntity_new(FX_M_EFFECTS,0,owner->origin,NULL,1500);
-		
-		SmokePuff->r.model = imp_models + 1;
-		SmokePuff->r.scale=flrand(0.5,1.0);
-		SmokePuff->d_scale=-2.0;
-
-		SmokePuff->r.flags |=RF_FULLBRIGHT|RF_TRANSLUCENT|RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		SmokePuff->r.frame = 0;
-
-		VectorRandomCopy(dir, SmokePuff->velocity, flrand(16.0, 64.0));
-
-		SmokePuff->acceleration[0] = flrand(-400, 400);
-		SmokePuff->acceleration[1] = flrand(-400, 400);
-		SmokePuff->acceleration[2] = flrand(-40, -60);
-
-		SmokePuff->d_alpha= -0.4;
-			
-		SmokePuff->radius=20.0;
-
-		AddEffect(NULL,SmokePuff);
-	}
+	AddGenericExplosion(owner, dir, imp_models[1]); //mxd. Fire spark sprite.
 }
 
 int ImpFireBallUpdate (struct client_entity_s *self, centity_t *owner)
@@ -1696,7 +1657,7 @@ void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 	switch (fx_index)
 	{
 		case FX_M_MISC_EXPLODE:
-			FXMorkMissileExplode(NULL, owner, vel);
+			FXMorkMissileExplode(owner, vel);
 			break;
 
 		case FX_M_BEAM:
@@ -1767,7 +1728,7 @@ void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 			break;
 		
 		case FX_IMP_FBEXPL:
-			ImpFireBallExplode(NULL, owner, vel);
+			ImpFireBallExplode(owner, vel);
 			break;
 
 		case FX_CW_STARS:
