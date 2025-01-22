@@ -399,6 +399,7 @@ extern struct MonsterShadow_s G_MonsterShadow[NUM_CLASSIDS];
 
 //MORCALAVIN EFFECTS
 
+//mxd. Mirrored in fx_mork.c
 enum {
 //offensive
 	FX_M_BEAM,
@@ -407,17 +408,17 @@ enum {
 //other
 	FX_IMP_FIRE,
 	FX_IMP_FBEXPL,
-	FX_CW_STARS,
+	FX_CW_STARS, //TODO: unused?
 	FX_BUOY,
 	FX_BUOY_PATH,
-	FX_M_MOBLUR,
+	FX_M_MOBLUR, //TODO: unused?
 	FX_ASS_DAGGER,
 	FX_UNDER_WATER_WAKE,
 
 //jweier
 	FX_QUAKE_RING,
 	FX_GROUND_ATTACK,
-	FX_MORK_BEAM,
+	FX_MORK_BEAM, //TODO: unused?
 	FX_MORK_MISSILE,
 	FX_MORK_MISSILE_HIT,
 	FX_MORK_TRACKING_MISSILE,

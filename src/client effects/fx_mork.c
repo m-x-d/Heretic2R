@@ -1,25 +1,52 @@
 //
-// fx_Mork.c
+// fx_mork.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Vector.h"
-#include "ce_DLight.h"
+#include "fx_mork.h" //mxd
 #include "fx_flamethrow.h" //mxd
 #include "fx_HighPriestessProjectiles.h" //mxd
-#include "random.h"
-#include "q_Sprite.h"
+#include "Particle.h"
+#include "Random.h"
+#include "Vector.h"
 #include "Utilities.h"
-#include "Reference.h"
-#include "Matrix.h"
+#include "ce_DLight.h"
+#include "q_Sprite.h"
 #include "g_playstats.h"
+
+//mxd. Mirrored in m_stats.h
+enum
+{
+	// Offensive
+	FX_M_BEAM,
+
+	// Impacts
+	FX_M_MISC_EXPLODE,
+
+	// Other
+	FX_IMP_FIRE,
+	FX_IMP_FBEXPL,
+	FX_CW_STARS, //TODO: unused?
+	FX_BUOY,
+	FX_BUOY_PATH,
+	FX_M_MOBLUR, //TODO: unused?
+	FX_ASS_DAGGER,
+	FX_UNDER_WATER_WAKE,
+
+	// jweier
+	FX_QUAKE_RING,
+	FX_GROUND_ATTACK,
+	FX_MORK_BEAM, //TODO: unused?
+	FX_MORK_MISSILE,
+	FX_MORK_MISSILE_HIT,
+	FX_MORK_TRACKING_MISSILE,
+
+	FX_MSSITHRA_EXPLODE,
+	FX_MSSITHRA_ARROW,
+	FX_MSSITHRA_ARROW_CHARGE,
+};
 
 #define	NUM_M_MISSILE_MODELS	4
 #define NUM_M_SHIELD_MODELS 3
@@ -86,34 +113,6 @@ void PreCacheMEffects()
 	mssithra_models[4] = fxi.RegisterModel("models/debris/stone/schunk2/tris.fm");
 	mssithra_models[5] = fxi.RegisterModel("sprites/lens/halo2.sp2");
 }
-
-enum {
-//offensive
-	FX_M_BEAM,
-//impacts
-	FX_M_MISC_EXPLODE,
-//other
-	FX_IMP_FIRE,
-	FX_IMP_FBEXPL,
-	FX_CW_STARS,
-	FX_BUOY,
-	FX_BUOY_PATH,
-	FX_M_MOBLUR,
-	FX_ASS_DAGGER,
-	FX_UNDER_WATER_WAKE,
-
-//jweier
-	FX_QUAKE_RING,
-	FX_GROUND_ATTACK,
-	FX_MORK_BEAM,
-	FX_MORK_MISSILE,
-	FX_MORK_MISSILE_HIT,
-	FX_MORK_TRACKING_MISSILE,
-
-	FX_MSSITHRA_EXPLODE,
-	FX_MSSITHRA_ARROW,
-	FX_MSSITHRA_ARROW_CHARGE,
-};
 
 static qboolean FXMorkTrailThink_old(struct client_entity_s *self,centity_t *owner)
 {

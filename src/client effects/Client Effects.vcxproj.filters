@@ -350,5 +350,8 @@
     <ClInclude Include="fx_HighPriestessProjectiles.h">
       <Filter>src\Effects</Filter>
     </ClInclude>
+    <ClInclude Include="fx_mork.h">
+      <Filter>src\Effects</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
