@@ -729,7 +729,7 @@ static void FXBuoy(centity_t* owner, const int flags, const vec3_t origin, const
 	}
 }
 
-qboolean FXPermanentUpdate (struct client_entity_s *self, centity_t *owner)
+static qboolean FXPermanentUpdate(struct client_entity_s* self, centity_t* owner)
 {
 	self->updateTime = 16384;
 	return true;
