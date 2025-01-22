@@ -735,40 +735,28 @@ static qboolean FXPermanentUpdate(struct client_entity_s* self, centity_t* owner
 	return true;
 }
 
-qboolean FXBuoyPathDelayedStart (struct client_entity_s *self, centity_t *owner)
+static qboolean FXBuoyPathDelayedStart(struct client_entity_s* self, centity_t* owner)
 {
-	client_entity_t	*TrailEnt;
-	vec3_t	v;
-	float dist;
+	client_entity_t* buoy = ClientEntity_new(FX_BUOY, CEF_DONT_LINK, self->origin, NULL, 16384);
 
-	TrailEnt=ClientEntity_new(FX_BUOY,
-							  CEF_DONT_LINK,
-							  self->origin,
-							  NULL,
-							  16384);
-	
-	TrailEnt->Update = FXPermanentUpdate;
-	TrailEnt->updateTime = 16384;
-	TrailEnt->radius = 500;
+	buoy->radius = 500.0f;
 
-	TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	TrailEnt->r.model = &buoy_model;
+	buoy->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	buoy->r.model = &buoy_model; //TODO: fully transparent sprite! Use segment_trail_wt.sp2 instead?
+	buoy->r.spriteType = SPRITE_LINE;
+	buoy->r.scale = 7.0f;
 
-	TrailEnt->r.spriteType = SPRITE_LINE;
-	TrailEnt->alpha = 1.0;
-	TrailEnt->r.scale = 7.0;
-
+	vec3_t v;
 	VectorSubtract(self->startpos, self->endpos, v);
-	dist = VectorLength(v);
-	if(VectorLength(v)<64)
-		TrailEnt->r.tile = 1;
-	else
-		TrailEnt->r.tile = 3;
+	buoy->r.tile = (VectorLength(v) < 64.0f ? 1.0f : 3.0f);
 
-	VectorCopy(self->startpos, TrailEnt->r.startpos);
-	VectorCopy(self->endpos, TrailEnt->r.endpos);
+	VectorCopy(self->startpos, buoy->r.startpos);
+	VectorCopy(self->endpos, buoy->r.endpos);
 
-	AddEffect(NULL, TrailEnt);
+	buoy->updateTime = 16384;
+	buoy->Update = FXPermanentUpdate;
+
+	AddEffect(NULL, buoy);
 
 	self->Update = RemoveSelfAI;
 	self->updateTime = 100;
