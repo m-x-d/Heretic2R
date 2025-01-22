@@ -48,56 +48,38 @@ enum
 	FX_MSSITHRA_ARROW_CHARGE,
 };
 
-#define	NUM_M_MISSILE_MODELS	4
-#define NUM_M_SHIELD_MODELS 3
-#define NUM_M_LIGHTNING_MODELS 3
-#define	NUM_M_PP_MODELS	6
-#define	NUM_IMP_MODELS	3
-#define NUM_CW_MODELS 2
-#define NUM_BUOY_MODELS 1
+static struct model_s* mork_projectile_models[4];
+static struct model_s* mork_lightning_models[3];
+static struct model_s* mork_projectile_core_model;
+static struct model_s* imp_models[2];
+static struct model_s* cw_model;
+static struct model_s* buoy_model;
+static struct model_s* mork_model;
+static struct model_s* assassin_dagger_model;
 
-static struct model_s *Morkproj_models[NUM_M_MISSILE_MODELS];
-static struct model_s *Morkshield_models[NUM_M_SHIELD_MODELS];
-static struct model_s *Morklightning_models[NUM_M_LIGHTNING_MODELS];
-static struct model_s *Morkpp_models[NUM_M_PP_MODELS];
-static struct model_s *Imp_models[NUM_IMP_MODELS];
-static struct model_s *CW_models[NUM_CW_MODELS];
-static struct model_s *buoy_models[NUM_BUOY_MODELS];
-static struct model_s *mork_model[1];
-static struct model_s *ass_dagger_model[1];
+static struct model_s* morc_models[6];
+static struct model_s* mssithra_models[6];
 
-static struct model_s *morc_models[6];
-static struct model_s *mssithra_models[6];
-
-void PreCacheMEffects()
+void PreCacheMEffects(void)
 {
-	Morkproj_models[0] = fxi.RegisterModel("sprites/fx/hpproj1_1.sp2");
-	Morkproj_models[1] = fxi.RegisterModel("sprites/fx/hpproj1_2.sp2");
-	Morkproj_models[2] = fxi.RegisterModel("sprites/fx/segment_trail_wt.sp2");
-	Morkproj_models[3] = fxi.RegisterModel("sprites/lens/halo2.sp2");
+	mork_projectile_models[0] = fxi.RegisterModel("sprites/fx/hpproj1_1.sp2"); //TODO: this one is unused?
+	mork_projectile_models[1] = fxi.RegisterModel("sprites/fx/hpproj1_2.sp2");
+	mork_projectile_models[2] = fxi.RegisterModel("sprites/fx/segment_trail_wt.sp2");
+	mork_projectile_models[3] = fxi.RegisterModel("sprites/lens/halo2.sp2");
 
-	Morklightning_models[0] = fxi.RegisterModel("sprites/fx/lightning.sp2");
-	Morklightning_models[1] = fxi.RegisterModel("sprites/fx/rlightning.sp2");
-	Morklightning_models[2] = fxi.RegisterModel("sprites/fx/neon.sp2");
+	mork_lightning_models[0] = fxi.RegisterModel("sprites/fx/lightning.sp2");
+	mork_lightning_models[1] = fxi.RegisterModel("sprites/fx/rlightning.sp2");
+	mork_lightning_models[2] = fxi.RegisterModel("sprites/fx/neon.sp2");
 
-	Morkpp_models[0] = fxi.RegisterModel("sprites/fx/steam.sp2");
-	Morkpp_models[1] = fxi.RegisterModel("models/spells/phoenixarrow/tris.fm");
-	Morkpp_models[2] = fxi.RegisterModel("sprites/fx/halo.sp2");
-	Morkpp_models[3] = fxi.RegisterModel("sprites/fx/core_b.sp2");//spells/phoenix.sp2");
-	Morkpp_models[4] = fxi.RegisterModel("models/fx/explosion/inner/tris.fm");
-	Morkpp_models[5] = fxi.RegisterModel("models/fx/explosion/outer/tris.fm");
+	mork_projectile_core_model = fxi.RegisterModel("sprites/fx/core_b.sp2");
 
-	Imp_models[0] = fxi.RegisterModel("sprites/fx/halo.sp2");
-	Imp_models[1] = fxi.RegisterModel("sprites/fx/fire.sp2");
-	Imp_models[2] = fxi.RegisterModel("sprites/fx/halo.sp2");
+	imp_models[0] = fxi.RegisterModel("sprites/fx/halo.sp2");
+	imp_models[1] = fxi.RegisterModel("sprites/fx/fire.sp2");
 
-	CW_models[0] = fxi.RegisterModel("sprites/spells/patball.sp2");
-	CW_models[1] = fxi.RegisterModel("sprites/fx/waterentryripple.sp2");
-
-	buoy_models[0] = fxi.RegisterModel("sprites/fx/segment_trail_buoy.sp2");
-
-	mork_model[0] = fxi.RegisterModel("models/monsters/morcalavin/tris.fm");
-	ass_dagger_model[0] = fxi.RegisterModel("models/monsters/assassin/dagger/tris.fm");
+	cw_model = fxi.RegisterModel("sprites/spells/patball.sp2");
+	buoy_model = fxi.RegisterModel("sprites/fx/segment_trail_buoy.sp2");
+	mork_model = fxi.RegisterModel("models/monsters/morcalavin/tris.fm");
+	assassin_dagger_model = fxi.RegisterModel("models/monsters/assassin/dagger/tris.fm");
 
 	morc_models[0] = fxi.RegisterModel("sprites/fx/neon.sp2");
 	morc_models[1] = fxi.RegisterModel("sprites/fx/lightning.sp2");
@@ -105,7 +87,7 @@ void PreCacheMEffects()
 	morc_models[3] = fxi.RegisterModel("sprites/fx/hp_halo.sp2");
 	morc_models[4] = fxi.RegisterModel("sprites/fx/morc_halo.sp2");
 	morc_models[5] = fxi.RegisterModel("sprites/fx/segment_trail.sp2");
-	
+
 	mssithra_models[0] = fxi.RegisterModel("models/fx/explosion/inner/tris.fm");
 	mssithra_models[1] = fxi.RegisterModel("models/fx/explosion/outer/tris.fm");
 	mssithra_models[2] = fxi.RegisterModel("sprites/fx/firestreak.sp2");
@@ -173,7 +155,7 @@ void FXMorkMissileExplode(struct client_entity_s *self,centity_t *owner, vec3_t 
 		else
 			SmokePuff=ClientEntity_new(FX_M_EFFECTS,0,owner->origin,NULL,1500);
 		
-		SmokePuff->r.model = Morkproj_models + 1;
+		SmokePuff->r.model = mork_projectile_models + 1;
 		SmokePuff->r.scale=flrand(0.5,1.0);
 		SmokePuff->d_scale=-2.0;
 
@@ -210,13 +192,13 @@ client_entity_t *MorkMakeLightningPiece(vec3_t start, vec3_t end, float radius, 
 	lightning = ClientEntity_new(-1, CEF_DONT_LINK, start, NULL, lifetime);
 	if(plasma)
 	{
-		lightning->r.model = Morklightning_models + 2;
+		lightning->r.model = mork_lightning_models + 2;
 		lightning->r.frame = 2;
 		lightning->alpha = 2.55;
 	}
 	else
 	{
-		lightning->r.model = Morklightning_models;
+		lightning->r.model = mork_lightning_models;
 		lightning->alpha = 0.95;
 	}
 	lightning->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
@@ -232,7 +214,7 @@ client_entity_t *MorkMakeLightningPiece(vec3_t start, vec3_t end, float radius, 
 		return(lightning);
 
 	lightning = ClientEntity_new(-1, CEF_DONT_LINK, start, NULL, lifetime * 2);
-	lightning->r.model = Morklightning_models + 1;
+	lightning->r.model = mork_lightning_models + 1;
 	lightning->r.frame = irand(0, 1);
 	lightning->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 	lightning->r.scale = M_LIGHTNING_WIDTH2;
@@ -284,7 +266,7 @@ static qboolean FXMorkBeam (struct client_entity_s *self,centity_t *owner)
 	VectorCopy( owner->origin, TrailEnt->origin );
 
 	TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA;
-	TrailEnt->r.model = Morkproj_models + 2;
+	TrailEnt->r.model = mork_projectile_models + 2;
 
 	TrailEnt->r.spriteType = SPRITE_LINE;
 	TrailEnt->r.tile = 1;
@@ -312,7 +294,7 @@ static qboolean FXMorkBeam (struct client_entity_s *self,centity_t *owner)
 	VectorCopy( owner->origin, TrailEnt->origin );
 
 	TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA;
-	TrailEnt->r.model = Morkproj_models + 2;
+	TrailEnt->r.model = mork_projectile_models + 2;
 
 	TrailEnt->r.spriteType = SPRITE_LINE;
 	TrailEnt->r.tile = 1;
@@ -403,7 +385,7 @@ void ImpFireBallExplode(struct client_entity_s *self,centity_t *owner, vec3_t di
 		else
 			SmokePuff=ClientEntity_new(FX_M_EFFECTS,0,owner->origin,NULL,1500);
 		
-		SmokePuff->r.model = Imp_models + 1;
+		SmokePuff->r.model = imp_models + 1;
 		SmokePuff->r.scale=flrand(0.5,1.0);
 		SmokePuff->d_scale=-2.0;
 
@@ -477,7 +459,7 @@ int ImpFireBallUpdate (struct client_entity_s *self, centity_t *owner)
 	VectorCopy( owner->origin, TrailEnt->origin );
 
 	TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA | RF_TRANS_ADD;
-	TrailEnt->r.model = Morkproj_models + 2;
+	TrailEnt->r.model = mork_projectile_models + 2;
 
 	TrailEnt->r.color.r = 180;
 	TrailEnt->r.color.g = 60;
@@ -557,7 +539,7 @@ int FXCWUpdate (struct client_entity_s *self, centity_t *owner)
 	TrailEnt->radius = 2000;
 
 	TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	TrailEnt->r.model = CW_models;
+	TrailEnt->r.model = &cw_model;
 
 	TrailEnt->r.spriteType = SPRITE_LINE;
 	TrailEnt->r.tile = 1;
@@ -585,12 +567,12 @@ int FXCWUpdate (struct client_entity_s *self, centity_t *owner)
 
 	if(ref_soft)
 	{
-		TrailEnt->r.model = CW_models;
+		TrailEnt->r.model = &cw_model;
 		TrailEnt->r.scale = flrand(1.0, 2.5);
 	}
 	else
 	{
-		TrailEnt->r.model = Morkproj_models + 2;
+		TrailEnt->r.model = mork_projectile_models + 2;
 		TrailEnt->flags |= CEF_USE_SCALE2;
 		TrailEnt->r.scale = 3.0;
 		TrailEnt->r.scale2 = 0.2;
@@ -634,7 +616,7 @@ int FXCWUpdate (struct client_entity_s *self, centity_t *owner)
 	return (true);
 }
 
-void FXCWStars (centity_t *owner,int type,int flags, vec3_t vel)
+void FXCWStars (centity_t *owner,int type, vec3_t vel)
 {
 	client_entity_t	*fx;
 
@@ -642,7 +624,7 @@ void FXCWStars (centity_t *owner,int type,int flags, vec3_t vel)
 
 	fx->Update=FXCWUpdate;
 	fx->radius = 500;
-	fx->r.model = Morkpp_models + 3;
+	fx->r.model = &mork_projectile_core_model;
 	VectorCopy(vel, fx->direction);
 	fx->r.color.r = 10;
 	fx->r.color.g = 50;
@@ -844,7 +826,7 @@ qboolean FXBuoyPathDelayedStart (struct client_entity_s *self, centity_t *owner)
 	TrailEnt->radius = 500;
 
 	TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	TrailEnt->r.model = buoy_models;
+	TrailEnt->r.model = &buoy_model;
 
 	TrailEnt->r.spriteType = SPRITE_LINE;
 	TrailEnt->alpha = 1.0;
@@ -905,7 +887,7 @@ void FXMMoBlur(centity_t *owner, vec3_t org, vec3_t angles, qboolean dagger)
 	{
 		blur = ClientEntity_new(FX_M_EFFECTS, 0, org, NULL, 20);//CEF_DONT_LINK
 		VectorCopy(angles, blur->r.angles);
-		blur->r.model = ass_dagger_model;
+		blur->r.model = &assassin_dagger_model;
 		blur->alpha = 0.75;
 		blur->r.scale = 0.9;
 
@@ -955,7 +937,7 @@ void FXAssDagger(centity_t *owner, vec3_t vel, float avel)
 //	vectoangles(vel, dagger->r.angles);
 //	VectorScale(dagger->r.angles, ANGLE_TO_RAD, dagger->r.angles);
 	VectorScale(owner->current.angles, ANGLE_TO_RAD, dagger->r.angles);
-	dagger->r.model = ass_dagger_model;
+	dagger->r.model = &assassin_dagger_model;
 	dagger->r.flags |= RF_FULLBRIGHT;
 	dagger->Update = FXAssDaggerUpdate;
 	VectorCopy(vel, dagger->velocity);
@@ -1156,7 +1138,7 @@ void FXMorkBeam2 ( centity_t *owner, vec3_t	startpos )
 	fx->r.spriteType = SPRITE_LINE;
 	
 	fx->radius = 1024;
-	fx->r.model = Morkproj_models + 2;
+	fx->r.model = mork_projectile_models + 2;
 	fx->r.scale = 8;
 	fx->alpha = 1.0;
 	fx->r.color.c = 0xFFFFFFFF;
@@ -1746,7 +1728,7 @@ void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 				VectorCopy(owner->current.origin, fx->r.origin);
 				fx->Update=FXMorkBeamCircle;
 				fx->radius = 500;
-				fx->r.model = Morkproj_models + 3;
+				fx->r.model = mork_projectile_models + 3;
 				fx->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 				fx->r.scale = 0.5;
 				fx->LifeTime = i * 120;
@@ -1764,7 +1746,7 @@ void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 			fx = ClientEntity_new(FX_SPARKS, CEF_OWNERS_ORIGIN | CEF_DONT_LINK|CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS, org, NULL, 20);
 
 			fx->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-			fx->r.model = Imp_models + 2;
+			fx->r.model = imp_models + 2;
 
 			vectoangles(vel, fx->r.angles);
 			
@@ -1794,7 +1776,7 @@ void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 			break;
 
 		case FX_CW_STARS:
-			FXCWStars(owner, type, flags, org);
+			FXCWStars(owner, type, org);
 			break;
 
 		case FX_BUOY:

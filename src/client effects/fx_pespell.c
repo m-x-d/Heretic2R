@@ -14,7 +14,7 @@
 #include "ce_DLight.h"
 #include "random.h"
 #include "Utilities.h"
-#include "fx_debris.h"
+#include "fx_mork.h" //mxd
 #include "g_playstats.h"
 
 #define SPELL_DELTA_FORWARD	8.0
@@ -504,7 +504,6 @@ void FXPESpell3Explode(centity_t *owner,int type,int flags,vec3_t origin, vec3_t
 //	FX_PE_SPELL effect handler
 //====================================================================
 
-void FXCWStars (centity_t *owner,int type,int flags, vec3_t vel);
 void FXPESpell(centity_t *owner, int type, int flags, vec3_t origin)
 {
 	byte			whicheffect = 0;
@@ -531,7 +530,7 @@ void FXPESpell(centity_t *owner, int type, int flags, vec3_t origin)
 			break;
 		
 		case FX_PE_MAKE_SPELL3:
-			FXCWStars(owner, type, flags, origin);
+			FXCWStars(owner, type, origin);
 			//FXPESpell3Go(owner, type, flags, origin, vel);
 			break;
 
