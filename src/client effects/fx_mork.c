@@ -897,15 +897,14 @@ static qboolean FXUnderWaterWakeUpdate(struct client_entity_s* self, const centi
 	return (self->LifeTime > 0);
 }
 
-void FXUnderWaterWake (centity_t *owner)
+static void FXUnderWaterWake(centity_t* owner)
 {
-	client_entity_t	*fx;
+	const int flags = CEF_OWNERS_ORIGIN | CEF_NO_DRAW | CEF_ABSOLUTE_PARTS; //mxd
+	client_entity_t* fx = ClientEntity_new(FX_M_EFFECTS, flags, owner->current.origin, NULL, 20);
 
-	fx = ClientEntity_new(FX_M_EFFECTS, CEF_OWNERS_ORIGIN|CEF_NO_DRAW|CEF_ABSOLUTE_PARTS, owner->current.origin, NULL, 20);
-
-	fx->Update=FXUnderWaterWakeUpdate;
-	fx->radius = 30;
+	fx->radius = 30.0f;
 	fx->LifeTime = 77;
+	fx->Update = FXUnderWaterWakeUpdate;
 
 	AddEffect(owner, fx);
 }
