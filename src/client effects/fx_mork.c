@@ -1026,19 +1026,18 @@ static void FXMorkBeam2(centity_t* owner, const vec3_t startpos)
 	AddEffect(owner, fx);
 }
 
-static qboolean missile_add_to_view(struct client_entity_s *self, centity_t *owner)
+static qboolean MorkMissileAddToView(struct client_entity_s* self, const centity_t* owner)
 {
 	LinkedEntityUpdatePlacement(self, owner);
 	VectorCopy(self->r.origin, self->r.startpos);
 
-	self->direction[0] += flrand(-1.0, 1.0);
-	self->direction[1] += flrand(-1.0, 1.0);
-	self->direction[2] += flrand(-1.0, 1.0);
+	for (int i = 0; i < 3; i++)
+		self->direction[i] += flrand(-1.0f, 1.0f);
 
 	VectorNormalize(self->direction);
-	VectorMA(self->r.startpos, irand(self->LifeTime/4, self->LifeTime), self->direction, self->r.endpos);
+	VectorMA(self->r.startpos, (float)(irand(self->LifeTime / 4, self->LifeTime)), self->direction, self->r.endpos);
 
-	self->r.scale = flrand(1.0, 2.0);
+	self->r.scale = flrand(1.0f, 2.0f);
 
 	return true;
 }
@@ -1126,7 +1125,7 @@ void FXMorkMissile ( centity_t *owner, vec3_t startpos )
 		VectorMA(startpos, irand(4, 16), fx->direction, fx->r.endpos);
 
 		fx->Update = MorkMissileThink1;
-		fx->AddToView = missile_add_to_view;
+		fx->AddToView = MorkMissileAddToView;
 
 		AddEffect(owner, fx);
 	}
