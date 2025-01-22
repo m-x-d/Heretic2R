@@ -1349,11 +1349,11 @@ static void FXMSsithraExplode(vec3_t origin, vec3_t dir)
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/mssithra/hit.wav"), 0.5f, ATTN_NORM, 0);
 }
 
-void FXMSsithraExplodeSmall( vec3_t origin, vec3_t dir )
+static void FXMSsithraExplodeSmall(const vec3_t origin)
 {
-	//Play correct sound here
+	//TODO: play correct sound here.
 	FireSparks(NULL, FX_SPARKS, 0, origin, vec3_up);
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/mssithra/hit.wav"), 0.5, ATTN_NORM, 0);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/mssithra/hit.wav"), 0.5f, ATTN_NORM, 0);
 }
 
 qboolean ArrowCheckFuse (client_entity_t *self, centity_t *owner)
@@ -1581,7 +1581,7 @@ void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 
 		case FX_MSSITHRA_EXPLODE:
 			if (flags & CEF_FLAG6)
-				FXMSsithraExplodeSmall(org, vel);
+				FXMSsithraExplodeSmall(org);
 			else
 				FXMSsithraExplode(org, vel);
 
