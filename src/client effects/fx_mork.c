@@ -1135,23 +1135,19 @@ static void FXMorkMissile(centity_t* owner, vec3_t startpos)
 	AddEffect(owner, core);
 }
 
-void FXMorkMissileHit ( vec3_t origin, vec3_t dir )
+static void FXMorkMissileHit(const vec3_t origin)
 {
-	client_entity_t	*fx;
-	paletteRGBA_t	LightColor={128,128,255,255};
-	
-	//The white core
-	fx = ClientEntity_new( FX_M_EFFECTS, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, origin, NULL, 2000);
-	fx->r.model = morc_models + 3;
-	fx->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT | RF_FULLBRIGHT | RF_NODEPTHTEST;
-	fx->r.scale = 1;
-	fx->alpha = 0.5;
-	fx->d_alpha = -1.0;
-	fx->d_scale = 16.0;
+	// The white core.
+	client_entity_t* core = ClientEntity_new(FX_M_EFFECTS, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, origin, NULL, 2000);
+	core->r.model = &morc_models[3];
+	core->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT | RF_FULLBRIGHT | RF_NODEPTHTEST;
+	core->alpha = 0.5f;
+	core->d_alpha = -1.0f;
+	core->d_scale = 16.0f;
 
-	AddEffect(NULL, fx);
+	AddEffect(NULL, core);
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/mork/ppexplode.wav"), 1.0, ATTN_IDLE, 0);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/mork/ppexplode.wav"), 1.0f, ATTN_IDLE, 0);
 }
 
 static qboolean FXMTrailThink(struct client_entity_s *self,centity_t *Owner)
@@ -1605,7 +1601,7 @@ void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 			break;
 
 		case FX_MORK_MISSILE_HIT:
-			FXMorkMissileHit(org, vel);
+			FXMorkMissileHit(org);
 			break;
 
 		case FX_MORK_TRACKING_MISSILE:
