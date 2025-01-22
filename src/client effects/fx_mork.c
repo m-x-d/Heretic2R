@@ -123,13 +123,12 @@ static qboolean FXCWTrailThink(struct client_entity_s* self, const centity_t* ow
 	return true;
 }
 
-static qboolean FXMorkTrailThink2(struct client_entity_s *self,centity_t *owner)
+static qboolean FXMorkTrailThink2(struct client_entity_s* self, centity_t* owner)
 {
-	if (self->alpha <= 0.1 || self->r.scale <= 0.0)
+	if (self->alpha <= 0.1f || self->r.scale <= 0.0f)
 		return false;
 
-	self->r.scale -= 0.15;
-	
+	self->r.scale -= 0.15f;
 	return true;
 }
 
