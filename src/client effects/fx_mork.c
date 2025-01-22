@@ -166,58 +166,52 @@ static void FXMorkMissileExplode(const centity_t* owner, vec3_t dir)
 	AddGenericExplosion(owner, dir, mork_projectile_models[1]); //mxd. Blue spark sprite.
 }
 
-#define M_LIGHTNING_WIDTH	6.0
-#define M_LIGHTNING_WIDTH2	8.0
-
-client_entity_t *MorkMakeLightningPiece(vec3_t start, vec3_t end, float radius, int lifetime, qboolean plasma)
+static client_entity_t* MorkMakeLightningPiece(const vec3_t start, const vec3_t end, const float radius, const int lifetime)
 {
-	client_entity_t *lightning;
-	vec3_t	vec;
-	float	dist, tile_num;
+#define M_LIGHTNING_WIDTH	6.0f
+#define M_LIGHTNING_WIDTH2	8.0f
 
-	VectorSubtract(end, start, vec);
-	dist = VectorNormalize(vec);
-	tile_num = dist/32;
+	vec3_t dir;
+	VectorSubtract(end, start, dir);
+	const float dist = VectorNormalize(dir);
+	const float tile_num = dist / 32.0f;
 
-	lightning = ClientEntity_new(-1, CEF_DONT_LINK, start, NULL, lifetime);
-	if(plasma)
-	{
-		lightning->r.model = mork_lightning_models + 2;
-		lightning->r.frame = 2;
-		lightning->alpha = 2.55;
-	}
-	else
-	{
-		lightning->r.model = mork_lightning_models;
-		lightning->alpha = 0.95;
-	}
-	lightning->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	lightning->r.scale = M_LIGHTNING_WIDTH;
-	lightning->r.tile = tile_num;
-	lightning->radius = radius;
-	lightning->d_alpha = -4.0;
-	VectorCopy(start, lightning->r.startpos);
-	VectorCopy(end, lightning->r.endpos);
-	lightning->r.spriteType = SPRITE_LINE;
-	AddEffect(NULL, lightning); 
-	if(plasma)
-		return(lightning);
+	// Blue lightning.
+	client_entity_t* lightning_b = ClientEntity_new(-1, CEF_DONT_LINK, start, NULL, lifetime);
 
-	lightning = ClientEntity_new(-1, CEF_DONT_LINK, start, NULL, lifetime * 2);
-	lightning->r.model = mork_lightning_models + 1;
-	lightning->r.frame = irand(0, 1);
-	lightning->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	lightning->r.scale = M_LIGHTNING_WIDTH2;
-	lightning->radius = radius;
-	lightning->r.tile = 1;
-	lightning->alpha = 0.5;
-	lightning->d_alpha = -1.250;
-	VectorCopy(start, lightning->r.startpos);
-	VectorCopy(end, lightning->r.endpos);
-	lightning->r.spriteType = SPRITE_LINE;
-	AddEffect(NULL, lightning); 
+	lightning_b->r.model = &mork_lightning_models[0]; // Blue lightning sprite.
+	lightning_b->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	lightning_b->r.scale = M_LIGHTNING_WIDTH;
+	lightning_b->r.tile = tile_num;
+	lightning_b->r.spriteType = SPRITE_LINE;
 
-	return(lightning);
+	lightning_b->radius = radius;
+	lightning_b->alpha = 0.95f;
+	lightning_b->d_alpha = -4.0f;
+	VectorCopy(start, lightning_b->r.startpos);
+	VectorCopy(end, lightning_b->r.endpos);
+
+	AddEffect(NULL, lightning_b);
+
+	// Red lightning.
+	client_entity_t* lightning_r = ClientEntity_new(-1, CEF_DONT_LINK, start, NULL, lifetime * 2);
+
+	lightning_r->r.model = &mork_lightning_models[1]; // Red lightning sprite.
+	lightning_r->r.frame = irand(0, 1);
+	lightning_r->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	lightning_r->r.scale = M_LIGHTNING_WIDTH2;
+	lightning_r->r.tile = 1.0f;
+	lightning_r->r.spriteType = SPRITE_LINE;
+
+	lightning_r->radius = radius;
+	lightning_r->alpha = 0.5f;
+	lightning_r->d_alpha = -1.25f;
+	VectorCopy(start, lightning_r->r.startpos);
+	VectorCopy(end, lightning_r->r.endpos);
+
+	AddEffect(NULL, lightning_r);
+
+	return lightning_r;
 }
 
 static qboolean FXMorkBeamCircle (struct client_entity_s *self,centity_t *owner)
@@ -230,7 +224,7 @@ static qboolean FXMorkBeamCircle (struct client_entity_s *self,centity_t *owner)
 	AngleVectors(angles, NULL, NULL, up);
 	VectorMA(owner->current.origin, 12, up, self->r.origin);
 	
-	MorkMakeLightningPiece(self->startpos, self->r.origin, 2000, 1000, false);
+	MorkMakeLightningPiece(self->startpos, self->r.origin, 2000, 1000);
 
 	VectorCopy(self->r.origin, self->startpos);
 
@@ -857,7 +851,7 @@ void FXMMoBlur(centity_t *owner, vec3_t org, vec3_t angles, qboolean dagger)
 			angles[PITCH] * -1 * ANGLE_TO_RAD,
 			angles[YAW] * ANGLE_TO_RAD,
 			angles[ROLL] * ANGLE_TO_RAD);
-		blur->r.model = mork_model;
+		blur->r.model = &mork_model;
 		blur->r.frame = owner->current.frame;
 		blur->d_alpha = -1.0;
 		blur->d_scale = -0.1;
