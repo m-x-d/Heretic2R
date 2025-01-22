@@ -1374,41 +1374,49 @@ static qboolean ArrowCheckFuse(client_entity_t* self, const centity_t* owner)
 	return true;
 }
 
-qboolean ArrowDrawTrail (client_entity_t *self, centity_t *owner)
+static qboolean ArrowDrawTrail(client_entity_t* self, const centity_t* owner)
 {
 	LinkedEntityUpdatePlacement(self, owner);
-	
+
 	VectorCopy(self->r.origin, self->r.startpos);
-	VectorMA(self->r.startpos, self->SpawnInfo, self->direction, self->r.endpos);
-	VectorMA(self->r.startpos, 8, self->direction, self->r.startpos);
+	VectorMA(self->r.startpos, (float)self->SpawnInfo, self->direction, self->r.endpos);
+	VectorMA(self->r.startpos, 8.0f, self->direction, self->r.startpos);
 
 	if (self->flags & CEF_FLAG6)
 	{
-		if (self->r.scale > 8.0)
-			self->r.scale = self->r.scale2 = flrand(8.0, 12.0);
+		if (self->r.scale > 8.0f)
+		{
+			self->r.scale = flrand(8.0f, 12.0f);
+			self->r.scale2 = self->r.scale;
+		}
 
 		if (self->SpawnInfo > -64)
-			self->SpawnInfo-=4;
+			self->SpawnInfo -= 4;
 
 		if (self->LifeTime > 10)
 		{
 			self->LifeTime = 0;
-			fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/pssithra/guntravel.wav"), 0.5, ATTN_NORM, 0);
+			fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/pssithra/guntravel.wav"), 0.5f, ATTN_NORM, 0);
 		}
 		else
+		{
 			self->LifeTime++;
+		}
 	}
 	else
 	{
-		if (self->r.scale > 4.0)
-			self->r.scale = self->r.scale2 = flrand(4.0, 6.0);
+		if (self->r.scale > 4.0f)
+		{
+			self->r.scale = flrand(4.0f, 6.0f);
+			self->r.scale2 = self->r.scale;
+		}
 
-		//Let the trail slowly extend
+		// Let the trail slowly extend.
 		if (self->SpawnInfo > -64)
-			self->SpawnInfo-=2;
+			self->SpawnInfo -= 2;
 	}
 
-	self->alpha = flrand(0.5, 1.0);
+	self->alpha = flrand(0.5f, 1.0f);
 
 	return true;
 }
