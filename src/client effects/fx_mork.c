@@ -820,16 +820,17 @@ static void FXMMoBlur(const centity_t* owner, const vec3_t origin, const vec3_t 
 	AddEffect(NULL, blur);
 }
 
-qboolean FXAssDaggerUpdate (struct client_entity_s *self, centity_t *owner)
+static qboolean FXAssassinDaggerUpdate(struct client_entity_s* self, centity_t* owner)
 {
-	if(++self->LifeTime == 4)
+	if (++self->LifeTime == 4)
 	{
-		fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("monsters/assassin/throw%c.wav", irand('1', '2'))), 0.5, ATTN_IDLE, 0);
+		fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("monsters/assassin/throw%i.wav", irand(1, 2))), 0.5f, ATTN_IDLE, 0);
 		self->LifeTime = 0;
 	}
-	
+
 	FXMMoBlur(NULL, self->r.origin, self->r.angles, true);
-	self->r.angles[PITCH] += self->velocity2[0];
+	self->r.angles[PITCH] += self->velocity2[PITCH];
+
 	return true;
 }
 
@@ -844,7 +845,7 @@ void FXAssDagger(centity_t *owner, vec3_t vel, float avel)
 	VectorScale(owner->current.angles, ANGLE_TO_RAD, dagger->r.angles);
 	dagger->r.model = &assassin_dagger_model;
 	dagger->r.flags |= RF_FULLBRIGHT;
-	dagger->Update = FXAssDaggerUpdate;
+	dagger->Update = FXAssassinDaggerUpdate;
 	VectorCopy(vel, dagger->velocity);
 	dagger->velocity2[0] = (avel*ANGLE_TO_RAD);
 
