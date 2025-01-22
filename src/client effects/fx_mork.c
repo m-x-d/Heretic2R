@@ -576,6 +576,8 @@ void FXCWStars(centity_t* owner, const int type, vec3_t vel)
 	AddEffect(owner, fx);
 }
 
+static qboolean FXBuoyUpdate(struct client_entity_s* self, const centity_t* owner)
+{
 #define BUOY_FX_END			PART_4x4_RED
 #define BUOY_FX_START		PART_4x4_GREEN
 #define BUOY_FX_JUMP_FROM	PART_4x4_CYAN
@@ -583,119 +585,110 @@ void FXCWStars(centity_t* owner, const int type, vec3_t vel)
 #define BUOY_FX_ACTIVATE	PART_4x4_MAGENTA
 #define BUOY_FX_ONEWAY		PART_4x4_WHITE
 
-int FXBuoyUpdate (struct client_entity_s *self, centity_t *owner)
-{
-	client_particle_t	*p;
-	int					num_parts, i;
-	paletteRGBA_t		LightColor={255,255,255,255};
-	vec3_t				offset, forward, angles;
-	int					type = (int)(self->acceleration2[2]);
+	int num_parts;
+	const int type = (int)(self->acceleration2[2]);
 
-	if(type == BUOY_FX_START || type == BUOY_FX_END)
-	{//these effects time out
-		if(self->LifeTime < fxi.cl->time)
-			return (false);
-	}
+	if ((type == BUOY_FX_START || type == BUOY_FX_END) && self->LifeTime < fxi.cl->time) // These effects time out.
+		return false;
 
-	if(owner)
+	if (owner != NULL)
 	{
-		if(!owner->current.frame)
-			return (false);
+		if (owner->current.frame == 0)
+			return false;
 
-		if(owner->current.frame > 5)
-			num_parts = 5;
-		else
-			num_parts = owner->current.frame;
+		num_parts = min(5, owner->current.frame);
 	}
 	else
-		num_parts = irand(1, 3);
-
-	for(i = 0; i < num_parts; i++)
 	{
-		p = ClientParticle_new(type, LightColor, 1000);
+		num_parts = irand(1, 3);
+	}
 
-		switch(type)
+	for (int i = 0; i < num_parts; i++)
+	{
+		client_particle_t* p = ClientParticle_new(type, color_white, 1000);
+
+		switch (type)
 		{
-		case BUOY_FX_END://red
-			if(irand(0,1))
-				offset[0] = flrand(4, 12);
-			else
-				offset[0] = flrand(-12, -4);
-			if(irand(0,1))
-				offset[1] = flrand(4, 12);
-			else
-				offset[1] = flrand(-12, -4);
-			offset[2] = 0;
-			VectorSet(p->origin, offset[0], offset[1], 0);
-			VectorSet(p->velocity, offset[0], offset[1], 0);
-			p->acceleration[2] = 0;
-			break;
+			case BUOY_FX_END: // Red.
+			{
+				const vec3_t offset =
+				{
+					flrand(4.0f, 12.0f) * (float)(Q_sign(irand(-1, 0))),
+					flrand(4.0f, 12.0f) * (float)(Q_sign(irand(-1, 0))),
+					0.0f
+				};
 
-		case BUOY_FX_START://green
-			VectorSet(p->origin, flrand(-2, 2), flrand(-2, 2), flrand(8, 16));
-			VectorSet(p->velocity, 0, 0, flrand(3.0, 7.0));
-			p->acceleration[2] = flrand(0.05, 2);
-			break;
+				VectorCopy(offset, p->origin);
+				VectorCopy(offset, p->velocity);
+				p->acceleration[2] = 0.0f;
+			} break;
 
-		case BUOY_FX_JUMP_FROM://cyan
-			if(irand(0,1))
-				offset[0] = flrand(4, 12);
-			else
-				offset[0] = flrand(-12, -4);
-			if(irand(0,1))
-				offset[1] = flrand(4, 12);
-			else
-				offset[1] = flrand(-12, -4);
-			offset[2] = 0;
-			VectorSet(p->origin, offset[0], offset[1], 0);
-			VectorSet(p->velocity, offset[0], offset[1], 1);
-			p->acceleration[2] = 2;
-			break;
+			case BUOY_FX_START: // Green.
+				VectorSet(p->origin, flrand(-2.0f, 2.0f), flrand(-2.0f, 2.0f), flrand(8.0f, 16.0f));
+				VectorSet(p->velocity, 0.0f, 0.0f, flrand(3.0f, 7.0f));
+				p->acceleration[2] = flrand(0.05f, 2.0f);
+				break;
 
-		case BUOY_FX_JUMP_TO://blue
-			if(irand(0, 1))
-				offset[0] = 8;
-			else
-				offset[0] = -8;
-			if(irand(0, 1))
-				offset[1] = 8;
-			else
-				offset[1] = -8;
-			offset[2] = -2;
-			
-			VectorSet(p->origin, offset[0], offset[1], offset[2]);
-			VectorSet(p->velocity, offset[0], offset[1], offset[2]);
-			p->acceleration[2] = -2;
-			break;
+			case BUOY_FX_JUMP_FROM: // Cyan.
+			{
+				const vec3_t offset =
+				{
+					flrand(4.0f, 12.0f) * (float)(Q_sign(irand(-1, 0))),
+					flrand(4.0f, 12.0f) * (float)(Q_sign(irand(-1, 0))),
+					0.0f
+				};
 
-		case BUOY_FX_ACTIVATE://magenta
-			VectorSet(angles, 0, self->yaw++, 0);
-			AngleVectors(angles, forward, NULL, NULL);
-			
-			VectorScale(forward, 8, p->origin);
-			p->origin[2] = 8;
-			VectorCopy(p->origin, p->velocity);
-			p->acceleration[2] = 0;
-			break;
+				VectorSet(p->origin, offset[0], offset[1], 0.0f);
+				VectorSet(p->velocity, offset[0], offset[1], 1.0f);
+				p->acceleration[2] = 2.0f;
+			} break;
 
-		case BUOY_FX_ONEWAY://white
-			VectorSet(p->origin, 0, 0, flrand(8, 16));
-			VectorSet(p->velocity, 0, 0, 7);
-			p->acceleration[2] = flrand(0.05, 2);
-			break;
+			case BUOY_FX_JUMP_TO: // Blue.
+			{
+				const vec3_t offset =
+				{
+					8.0f * (float)(Q_sign(irand(-1, 0))),
+					8.0f * (float)(Q_sign(irand(-1, 0))),
+					-2.0f
+				};
 
-		default:
-			assert(0);
-			break;
+				VectorCopy(offset, p->origin);
+				VectorCopy(offset, p->velocity);
+				p->acceleration[2] = -2.0f;
+			} break;
+
+			case BUOY_FX_ACTIVATE: // Magenta.
+			{
+				vec3_t angles;
+				VectorSet(angles, 0, self->yaw++, 0);
+
+				vec3_t forward;
+				AngleVectors(angles, forward, NULL, NULL);
+
+				VectorScale(forward, 8.0f, p->origin);
+				p->origin[2] = 8.0f;
+				VectorCopy(p->origin, p->velocity);
+				p->acceleration[2] = 0.0f;
+			} break;
+
+			case BUOY_FX_ONEWAY: // White.
+				VectorSet(p->origin, 0.0f, 0.0f, flrand(8.0f, 16.0f));
+				VectorSet(p->velocity, 0.0f, 0.0f, 7.0f);
+				p->acceleration[2] = flrand(0.05f, 2.0f);
+				break;
+
+			default:
+				assert(0);
+				break;
 		}
-		
-		p->scale = flrand(0.5, 1.0);
-		p->d_alpha = flrand(-200.0, -160.0);
-		p->duration = (255.0 * 1000.0) / -p->d_alpha;		// time taken to reach zero alpha
+
+		p->scale = flrand(0.5f, 1.0f);
+		p->d_alpha = flrand(-200.0f, -160.0f);
+		p->duration = (int)((255.0f * 1000.0f) / -p->d_alpha); // Time taken to reach zero alpha.
 
 		AddParticleToList(self, p);
 	}
-	
+
 	return true;
 }
 
