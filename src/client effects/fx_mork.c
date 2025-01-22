@@ -692,39 +692,39 @@ static qboolean FXBuoyUpdate(struct client_entity_s* self, const centity_t* owne
 	return true;
 }
 
-void FXBuoy (centity_t *owner, int flags, vec3_t org, float white)
+static void FXBuoy(centity_t* owner, const int flags, const vec3_t origin, const qboolean white)
 {
-	client_entity_t	*fx;
+	client_entity_t* fx;
 
-	if(owner)
+	if (owner != NULL)
 		fx = ClientEntity_new(FX_BUOY, CEF_OWNERS_ORIGIN, owner->current.origin, NULL, 50);
 	else
-		fx = ClientEntity_new(FX_BUOY, 0, org, NULL, 50);
+		fx = ClientEntity_new(FX_BUOY, 0, origin, NULL, 50);
 
-	if(white)
-		fx->acceleration2[2] = BUOY_FX_ONEWAY;//white
-	else if(flags&CEF_FLAG6)
-		fx->acceleration2[2] = BUOY_FX_START;//green
-	else if(flags&CEF_FLAG7)
-		fx->acceleration2[2] = BUOY_FX_JUMP_FROM;//cyan
-	else if(flags&CEF_FLAG8)
-		fx->acceleration2[2] = BUOY_FX_JUMP_TO;//blue - maybe 3 - yellow?
-	else if(flags&CEF_DONT_LINK)
-		fx->acceleration2[2] = BUOY_FX_ACTIVATE;//magenta
+	if (white)
+		fx->acceleration2[2] = BUOY_FX_ONEWAY; // White.
+	else if (flags & CEF_FLAG6)
+		fx->acceleration2[2] = BUOY_FX_START; // Green.
+	else if (flags & CEF_FLAG7)
+		fx->acceleration2[2] = BUOY_FX_JUMP_FROM; // Cyan.
+	else if (flags & CEF_FLAG8)
+		fx->acceleration2[2] = BUOY_FX_JUMP_TO; // Blue - maybe 3 - yellow?
+	else if (flags & CEF_DONT_LINK)
+		fx->acceleration2[2] = BUOY_FX_ACTIVATE; // Magenta.
 	else
-		fx->acceleration2[2] = BUOY_FX_END;//red
-//otherwise red
-	fx->flags |= CEF_NO_DRAW;
-	fx->Update=FXBuoyUpdate;
-	fx->LifeTime = fxi.cl->time + 10000;
+		fx->acceleration2[2] = BUOY_FX_END; // Red.
 
-	if(owner)
+	fx->flags |= CEF_NO_DRAW;
+	fx->LifeTime = fxi.cl->time + 10000;
+	fx->Update = FXBuoyUpdate;
+
+	if (owner != NULL)
 	{
 		AddEffect(owner, fx);
 	}
 	else
 	{
-		VectorCopy(org, fx->startpos);
+		VectorCopy(origin, fx->startpos);
 		AddEffect(NULL, fx);
 	}
 }
@@ -1649,7 +1649,7 @@ void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 			break;
 
 		case FX_BUOY:
-			FXBuoy(owner, flags, org, vel[0]);
+			FXBuoy(owner, flags, org, (qboolean)vel[0]);
 			break;
 
 		case FX_BUOY_PATH:
