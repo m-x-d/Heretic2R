@@ -1421,37 +1421,33 @@ static qboolean ArrowDrawTrail(client_entity_t* self, const centity_t* owner)
 	return true;
 }
 
-void FXMSsithraArrow( centity_t *owner, vec3_t velocity, qboolean super )
+static void FXMSsithraArrow(centity_t* owner, vec3_t velocity, const qboolean super)
 {
-	client_entity_t	*spawner;
+	// Create an explosion spawner.
+	client_entity_t* spawner = ClientEntity_new(FX_M_EFFECTS, CEF_OWNERS_ORIGIN, owner->current.origin, NULL, 20);
 
-	//Create an explosion spawner
-	spawner = ClientEntity_new( FX_M_EFFECTS, CEF_OWNERS_ORIGIN, owner->current.origin, NULL, 20);
-	spawner->r.model = mssithra_models + 2;
+	spawner->r.model = &mssithra_models[2]; // Firestreak sprite.
 	spawner->r.spriteType = SPRITE_LINE;
-	spawner->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	spawner->r.color.c = 0xFFFFFFFF;
-	spawner->r.scale = 1.0;
-	spawner->alpha = 1.0;
-	spawner->LifeTime = 0;
+	spawner->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
 	if (super)
 	{
 		spawner->flags |= CEF_FLAG6;
-		spawner->d_scale = spawner->d_scale2 = 16.0;
+		spawner->d_scale = 16.0f;
 	}
 	else
 	{
-		spawner->d_scale = spawner->d_scale2 = 8.0;
+		spawner->d_scale = 8.0f;
 	}
+
+	spawner->d_scale2 = spawner->d_scale;
 
 	VectorCopy(spawner->r.origin, spawner->r.startpos);
 	VectorNormalize2(velocity, spawner->direction);
-	VectorMA(spawner->r.startpos, -64, spawner->direction, spawner->r.endpos);
-	
-	spawner->Update = ArrowCheckFuse;
+	VectorMA(spawner->r.startpos, -64.0f, spawner->direction, spawner->r.endpos);
+
 	spawner->AddToView = ArrowDrawTrail;
-	spawner->SpawnInfo = 0;
+	spawner->Update = ArrowCheckFuse;
 
 	AddEffect(owner, spawner);
 }
