@@ -96,13 +96,12 @@ void PreCacheMEffects(void)
 	mssithra_models[5] = fxi.RegisterModel("sprites/lens/halo2.sp2");
 }
 
-static qboolean FXMorkTrailThink_old(struct client_entity_s *self,centity_t *owner)
+static qboolean FXMorkTrailThink_old(struct client_entity_s* self, centity_t* owner)
 {
-	if (self->alpha <= 0.1 || self->r.scale <= 0.0)
+	if (self->alpha <= 0.1f || self->r.scale <= 0.0f)
 		return false;
 
-	self->r.scale -= 0.1;
-	
+	self->r.scale -= 0.1f;
 	return true;
 }
 
