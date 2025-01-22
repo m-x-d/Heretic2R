@@ -356,78 +356,66 @@ static void FXImpFireBallExplode(const centity_t* owner, vec3_t dir)
 	AddGenericExplosion(owner, dir, imp_models[1]); //mxd. Fire spark sprite.
 }
 
-int ImpFireBallUpdate (struct client_entity_s *self, centity_t *owner)
+static qboolean FXImpFireballUpdate(struct client_entity_s* self, const centity_t* owner)
 {
-	client_particle_t	*p;
-	client_entity_t	*TrailEnt;
-	vec3_t				angles, fwd, right;
-	int					num_parts, i;
-	paletteRGBA_t		LightColor;
+	vec3_t angles;
+	VectorScale(self->r.angles, RAD_TO_ANGLE, angles);
 
-	VectorScale(self->r.angles, 180.0/M_PI, angles);
+	vec3_t fwd;
+	vec3_t right;
 	AngleVectors(angles, fwd, right, NULL);
 
-	LightColor.c = 0xe5007fff;
-	num_parts = irand(3, 7);
-	for(i = 0; i < num_parts; i++)
+	const paletteRGBA_t light_color = { .c = 0xe5007fff };
+	const int num_parts = irand(3, 7);
+
+	for (int i = 0; i < num_parts; i++)
 	{
-		p = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), LightColor, 1000);
-		VectorSet(p->origin, flrand(-4, 4), flrand(-4, 4), flrand(-4, 4));
+		client_particle_t* p = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), light_color, 1000);
+
+		VectorRandomSet(p->origin, 4.0f);
 		VectorAdd(self->r.origin, p->origin, p->origin);
-		p->scale = flrand(0.1, 0.5);
+		p->scale = flrand(0.1f, 0.5f);
 		p->type |= PFL_ADDITIVE;
 
-		VectorSet(p->velocity, flrand(-10, 10), flrand(-10, 10), flrand(-1.0, 1.0));
-		// Make the fire shoot out the back and to the side
-		VectorMA(p->velocity, flrand(-40, -10), fwd, p->velocity);
-		// Alternate left and right side of phoenix
-		if (i&0x01)
-			VectorMA(p->velocity, flrand(-10, -2), right, p->velocity);
-		else
-			VectorMA(p->velocity, flrand(10, 2), right, p->velocity);
-		p->acceleration[2] = flrand(2, 10);
-		p->d_scale = flrand(-15.0, -10.0);
-		p->d_alpha = flrand(-200.0, -160.0);
-		p->duration = (255.0 * 1000.0) / -p->d_alpha;		// time taken to reach zero alpha
+		VectorSet(p->velocity, flrand(-10.0f, 10.0f), flrand(-10.0f, 10.0f), flrand(-1.0f, 1.0f));
 
+		// Make the fire shoot out the back and to the side.
+		VectorMA(p->velocity, flrand(-40.0f, -10.0f), fwd, p->velocity);
+
+		// Alternate left and right side of phoenix.
+		const float sign = ((i & 1) ? -1.0f : 1.0f); //mxd
+		VectorMA(p->velocity, flrand(10, 2) * sign, right, p->velocity);
+
+		p->acceleration[2] = flrand(2.0f, 10.0f);
+		p->d_scale = flrand(-15.0f, -10.0f);
+		p->d_alpha = flrand(-200.0f, -160.0f);
+		p->duration = (int)((255.0f * 1000.0f) / -p->d_alpha); // Time taken to reach zero alpha.
 
 		AddParticleToList(self, p);
 	}
-	
-//trail	
 
-	self->r.scale = flrand(0.35, 0.65);
+	// Trail.	
+	self->r.scale = flrand(0.35f, 0.65f);
 
-	TrailEnt=ClientEntity_new(FX_M_EFFECTS,
-							  CEF_DONT_LINK,
-							  owner->origin,
-							  NULL,
-							  17);
+	client_entity_t* trail = ClientEntity_new(FX_M_EFFECTS, CEF_DONT_LINK, owner->origin, NULL, 17);
 
-	TrailEnt->radius = 2000;
+	trail->radius = 2000.0f;
+	VectorCopy(owner->origin, trail->origin);
 
-	VectorCopy( owner->origin, TrailEnt->origin );
+	trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA | RF_TRANS_ADD;
+	trail->r.model = &mork_projectile_models[2];
+	COLOUR_SET(trail->r.color, 180, 60, 0); //mxd. Use macro.
+	trail->r.spriteType = SPRITE_LINE;
+	trail->r.tile = 1.0f;
+	trail->r.scale = 3.0f;
 
-	TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA | RF_TRANS_ADD;
-	TrailEnt->r.model = mork_projectile_models + 2;
+	VectorCopy(self->startpos, trail->r.startpos);
+	VectorCopy(owner->origin, trail->r.endpos);
 
-	TrailEnt->r.color.r = 180;
-	TrailEnt->r.color.g = 60;
-	TrailEnt->r.color.b = 0;
-	TrailEnt->r.color.a = 255;
-	TrailEnt->r.spriteType = SPRITE_LINE;
-	TrailEnt->r.tile = 1;
-	TrailEnt->r.scale = 3.0;
+	trail->d_alpha = -4.0f;
+	trail->Update = FXMorkTrailThink2;
 
-	VectorCopy( self->startpos, TrailEnt->r.startpos );
-	VectorCopy( owner->origin , TrailEnt->r.endpos );
-
-	TrailEnt->d_alpha = -4.0;
-	TrailEnt->d_scale = 0.0;
-	TrailEnt->Update = FXMorkTrailThink2;
-	
-	AddEffect(NULL,TrailEnt);
-
+	AddEffect(NULL, trail);
 	VectorCopy(owner->origin, self->startpos);
 
 	return true;
@@ -1673,7 +1661,7 @@ void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 			fx->d_scale = 0.0f;
 			fx->r.color.c = 0xe5007fff;
 
-			fx->Update = ImpFireBallUpdate;
+			fx->Update = FXImpFireballUpdate;
 			fx->AddToView = LinkedEntityUpdatePlacement;
 
 			if(r_detail->value > DETAIL_NORMAL)
