@@ -983,25 +983,21 @@ static void FXQuakeRing(const vec3_t origin)
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("world/quakeshort.wav"), 1.0f, ATTN_NONE, 0);
 }
 
-void FXGroundAttack( vec3_t origin )
+static void FXGroundAttack(vec3_t origin)
 {
-	client_entity_t	*glow;
-	vec3_t			dir = {0,0,1};
+	origin[2] -= 16.0f;
 
-	origin[2] -= 16;
-	
-	// create the dummy entity, so particles can be attached
-	glow = ClientEntity_new(FX_M_EFFECTS, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, origin, 0, 17);
-	
-	VectorScale(dir, 50, glow->direction);
-	
-	glow->radius = 100;
-	glow->LifeTime = fxi.cl->time + 1000;
-	
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/flamethrow.wav"), 1, ATTN_NORM, 0);
-	glow->Update = FXFlamethrower_trail;
-	
-	AddEffect(NULL, glow);
+	// Create the dummy entity, so particles can be attached.
+	client_entity_t* spawner = ClientEntity_new(FX_M_EFFECTS, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, origin, NULL, 17);
+
+	spawner->radius = 100.0f;
+	spawner->LifeTime = fxi.cl->time + 1000;
+	VectorScale(vec3_up, 50.0f, spawner->direction);
+	spawner->Update = FXFlamethrower_trail;
+
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/flamethrow.wav"), 1.0f, ATTN_NORM, 0);
+
+	AddEffect(NULL, spawner);
 }
 
 static qboolean beam_update(struct client_entity_s *self, centity_t *owner) //TODO: remove
