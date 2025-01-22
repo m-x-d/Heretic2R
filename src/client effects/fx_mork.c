@@ -351,7 +351,7 @@ static void FXMorkBeam(centity_t* owner, const int type, const vec3_t origin, co
 	}
 }
 
-static void ImpFireBallExplode(const centity_t* owner, vec3_t dir)
+static void FXImpFireBallExplode(const centity_t* owner, vec3_t dir)
 {
 	AddGenericExplosion(owner, dir, imp_models[1]); //mxd. Fire spark sprite.
 }
@@ -1688,7 +1688,7 @@ void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 			break;
 		
 		case FX_IMP_FBEXPL:
-			ImpFireBallExplode(owner, vel);
+			FXImpFireBallExplode(owner, vel);
 			break;
 
 		case FX_CW_STARS:
