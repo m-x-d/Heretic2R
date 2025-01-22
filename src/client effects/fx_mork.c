@@ -764,26 +764,22 @@ static qboolean FXBuoyPathDelayedStart(struct client_entity_s* self, centity_t* 
 	return true;
 }
 
-void FXBuoyPath (vec3_t org, vec3_t vel)
+static void FXBuoyPath(const vec3_t start, const vec3_t end)
 {
-	client_entity_t	*fx;
-	vec3_t			origin;
+	vec3_t origin;
+	VectorAdd(start, end, origin);
+	Vec3ScaleAssign(0.5f, origin);
 
-	VectorAdd(org, vel, origin);
-	Vec3ScaleAssign(0.5, origin);
+	client_entity_t* fx = ClientEntity_new(FX_BUOY, CEF_DONT_LINK | CEF_NO_DRAW, origin, NULL, 100);
 
-	fx = ClientEntity_new(FX_BUOY, CEF_DONT_LINK | CEF_NO_DRAW, origin, NULL, 100);
-	
-	fx->flags |= CEF_NO_DRAW;
-	fx->Update=FXBuoyPathDelayedStart;
-	fx->radius = 100;
+	fx->radius = 100.0f;
+	fx->Update = FXBuoyPathDelayedStart;
 
-	VectorCopy(org, fx->startpos);
-	VectorCopy(vel, fx->endpos);
+	VectorCopy(start, fx->startpos);
+	VectorCopy(end, fx->endpos);
 
-	AddEffect(NULL,fx);
+	AddEffect(NULL, fx);
 }
-
 
 qboolean FXMMoBlurUpdate(struct client_entity_s *self, centity_t *owner)
 {
