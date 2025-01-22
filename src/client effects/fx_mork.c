@@ -1008,27 +1008,20 @@ static qboolean FXMorkBeam2_AddToView(struct client_entity_s* self, const centit
 	return true;
 }
 
-void FXMorkBeam2 ( centity_t *owner, vec3_t	startpos )
+static void FXMorkBeam2(centity_t* owner, const vec3_t startpos)
 {
-	client_entity_t	*fx;
-	paletteRGBA_t	LightColor={128,128,255,255};
-	//vec3_t			vel;
+	client_entity_t* fx = ClientEntity_new(FX_M_EFFECTS, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, owner->origin, NULL, 17);
 
-	fx = ClientEntity_new( FX_M_EFFECTS, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, owner->origin, NULL, 17);
-
+	fx->radius = 1024.0f;
+	fx->r.model = &mork_projectile_models[2];
 	fx->r.spriteType = SPRITE_LINE;
-	
-	fx->radius = 1024;
-	fx->r.model = mork_projectile_models + 2;
-	fx->r.scale = 8;
-	fx->alpha = 1.0;
-	fx->r.color.c = 0xFFFFFFFF;
+	fx->r.scale = 8.0f;
 
 	VectorCopy(startpos, fx->r.startpos);
 	VectorCopy(owner->origin, fx->r.endpos);
 
-	fx->Update = KeepSelfAI;
 	fx->AddToView = FXMorkBeam2_AddToView;
+	fx->Update = KeepSelfAI;
 
 	AddEffect(owner, fx);
 }
