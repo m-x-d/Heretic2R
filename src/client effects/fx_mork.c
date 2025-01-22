@@ -909,82 +909,78 @@ static void FXUnderWaterWake(centity_t* owner)
 	AddEffect(owner, fx);
 }
 
+static void FXQuakeRing(const vec3_t origin)
+{
 #define NUM_RIPPER_PUFFS	12
-#define RIPPER_PUFF_ANGLE	((360.0*ANGLE_TO_RAD)/(float)NUM_RIPPER_PUFFS)
-#define MACEBALL_RING_VEL	256.0
+#define RIPPER_PUFF_ANGLE	(ANGLE_360 / (float)NUM_RIPPER_PUFFS)
+#define MACEBALL_RING_VEL	256.0f
 #define NUM_RINGS			3
 
-void FXQuakeRing ( vec3_t origin )
-{
-	client_entity_t		*ring;
-	paletteRGBA_t		color;
-	int					i, j;
-	vec3_t				norm = {0,0,1};
-	vec3_t				up, right, lastvel;
-	float				curyaw;
-	float				ring_vel = MACEBALL_RING_VEL;
+	float ring_vel = MACEBALL_RING_VEL;
+	vec3_t normal = { 0.0f, 0.0f, 1.0f };
 
-	color.c = 0xffffffff;
+	// Take the normal and find two "axis" vectors that are in the plane the normal defines.
+	vec3_t up;
+	PerpendicularVector(up, normal);
 
-	// Take the normal and find two "axis" vectors that are in the plane the normal defines
-	PerpendicularVector(up, norm);
-	CrossProduct(up, norm, right);
+	vec3_t right;
+	CrossProduct(up, normal, right);
 
-	VectorScale(norm, 8.0, norm);
-	color.c = 0xffffffff;
+	VectorScale(normal, 8.0f, normal);
 
 	// Draw a circle of expanding lines.
-	for(j = 0; j < NUM_RINGS; j++)
+	for (int j = 0; j < NUM_RINGS; j++)
 	{
-		curyaw = 0;
+		float curyaw = 0.0f;
+
+		vec3_t lastvel;
 		VectorScale(right, ring_vel, lastvel);
 
-		for(i = 0; i < NUM_RIPPER_PUFFS; i++)
+		for (int i = 0; i < NUM_RIPPER_PUFFS; i++)
 		{
 			curyaw += RIPPER_PUFF_ANGLE;
 
-			ring = ClientEntity_new(FX_M_EFFECTS, CEF_USE_VELOCITY2 | CEF_AUTO_ORIGIN | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS, 
-										origin, NULL, 3000);
+			const int flags = CEF_USE_VELOCITY2 | CEF_AUTO_ORIGIN | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS;
+			client_entity_t* ring = ClientEntity_new(FX_M_EFFECTS, flags, origin, NULL, 3000);
 
-			ring->r.model = morc_models;
-			ring->r.frame = 0;
+			ring->radius = 256.0f;
+			ring->r.model = &morc_models[0];
 			ring->r.spriteType = SPRITE_LINE;
 			ring->r.frame = 1;
-			ring->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-			ring->radius = 256.0;
-			ring->r.tile = 1;
-			
+			ring->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+			ring->r.tile = 1.0f;
+
 			// The startpos and startvel comes from the last velocity.
 			VectorCopy(lastvel, ring->velocity);
-			VectorScale(ring->velocity, 1.0, ring->acceleration);
-			VectorMA(origin, .01, ring->velocity, ring->r.startpos);	// Move the line out a bit to avoid a zero-length line.
+			VectorCopy(ring->velocity, ring->acceleration);
+			VectorMA(origin, 0.01f, ring->velocity, ring->r.startpos); // Move the line out a bit to avoid a zero-length line.
 
-			VectorScale(up, ring_vel*sin(curyaw), ring->velocity2);
-			VectorMA(ring->velocity2, ring_vel*cos(curyaw), right, ring->velocity2);
+			VectorScale(up, ring_vel * sinf(curyaw), ring->velocity2);
+			VectorMA(ring->velocity2, ring_vel * cosf(curyaw), right, ring->velocity2);
 
-			VectorScale(ring->velocity2, 1.0, ring->acceleration2);
-			VectorMA(origin, .01, ring->velocity2, ring->r.endpos);	// Move the line out a bit to avoid a zero-length line.
+			VectorCopy(ring->velocity2, ring->acceleration2);
+			VectorMA(origin, 0.01f, ring->velocity2, ring->r.endpos); // Move the line out a bit to avoid a zero-length line.
 
 			// Finally, copy the last velocity we used.
 			VectorCopy(ring->velocity2, lastvel);
 
 			// NOW apply the extra directional velocity to force it slightly away from the surface.
-			VectorAdd(ring->velocity, norm, ring->velocity);
-			VectorAdd(ring->velocity2, norm, ring->velocity2);
+			VectorAdd(ring->velocity, normal, ring->velocity);
+			VectorAdd(ring->velocity2, normal, ring->velocity2);
 
-			ring->r.scale = 8.0;
-			ring->d_scale = 32.0;
-			ring->alpha = 0.75;
-			ring->d_alpha = -1.0;
+			ring->r.scale = 8.0f;
+			ring->d_scale = 32.0f;
+			ring->alpha = 0.75f;
+			ring->d_alpha = -1.0f;
 
 			AddEffect(NULL, ring);
 		}
 
-		ring_vel /= 2;
+		ring_vel /= 2.0f;
 	}
 
-	fxi.Activate_Screen_Shake(12, 1000, fxi.cl->time, SHAKE_ALL_DIR);
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("world/quakeshort.wav"), 1, ATTN_NONE, 0);
+	fxi.Activate_Screen_Shake(12.0f, 1000.0f, (float)fxi.cl->time, SHAKE_ALL_DIR);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("world/quakeshort.wav"), 1.0f, ATTN_NONE, 0);
 }
 
 void FXGroundAttack( vec3_t origin )
