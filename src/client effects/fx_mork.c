@@ -394,7 +394,7 @@ static qboolean FXImpFireballUpdate(struct client_entity_s* self, const centity_
 		AddParticleToList(self, p);
 	}
 
-	// Trail.	
+	// Trail.
 	self->r.scale = flrand(0.35f, 0.65f);
 
 	client_entity_t* trail = ClientEntity_new(FX_M_EFFECTS, CEF_DONT_LINK, owner->origin, NULL, 17);
@@ -419,6 +419,33 @@ static qboolean FXImpFireballUpdate(struct client_entity_s* self, const centity_
 	VectorCopy(owner->origin, self->startpos);
 
 	return true;
+}
+
+static void FXImpFireball(centity_t* owner, const vec3_t origin, const vec3_t vel) //mxd. Separated from FXMEffects().
+{
+	const int flags = CEF_OWNERS_ORIGIN | CEF_DONT_LINK | CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS;
+	client_entity_t* fx = ClientEntity_new(FX_SPARKS, flags, origin, NULL, 20);
+
+	fx->radius = 64.0f;
+	fx->r.model = &imp_models[0];
+	fx->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	fx->r.frame = 2;
+	fx->r.scale = 0.5f;
+	fx->r.color.c = 0xe5007fff;
+
+	vectoangles(vel, fx->r.angles);
+	VectorCopy(owner->origin, fx->startpos);
+
+	fx->Update = FXImpFireballUpdate;
+	fx->AddToView = LinkedEntityUpdatePlacement;
+
+	if (r_detail->value > DETAIL_NORMAL)
+	{
+		const paletteRGBA_t light_color = { .c = 0xff3333ff };
+		fx->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
+	}
+
+	AddEffect(owner, fx);
 }
 
 int star_particle [3] =
@@ -1628,11 +1655,8 @@ void FXMSsithraArrowCharge( vec3_t startpos )
 
 void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 {
-	client_entity_t	*fx;
-	paletteRGBA_t	LightColor={0,0,255,255};
 	vec3_t			vel;
 	byte			fx_index;
-	int				i;
 	
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_M_EFFECTS].formatString, &fx_index, &vel);//fixme- make this 1 dir and 1 float
 
@@ -1647,32 +1671,7 @@ void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 			break;
 
 		case FX_IMP_FIRE:
-			fx = ClientEntity_new(FX_SPARKS, CEF_OWNERS_ORIGIN | CEF_DONT_LINK|CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS, org, NULL, 20);
-
-			fx->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-			fx->r.model = imp_models + 2;
-
-			vectoangles(vel, fx->r.angles);
-			
-			fx->r.frame = 2;
-			fx->radius = 64;
-			fx->r.scale = 0.5;
-			fx->d_alpha = 0.0f;
-			fx->d_scale = 0.0f;
-			fx->r.color.c = 0xe5007fff;
-
-			fx->Update = FXImpFireballUpdate;
-			fx->AddToView = LinkedEntityUpdatePlacement;
-
-			if(r_detail->value > DETAIL_NORMAL)
-			{
-				LightColor.c = 0xff3333ff;
-				fx->dlight = CE_DLight_new(LightColor,150.0f,0.0f);
-			}
-
-			VectorCopy(owner->origin, fx->startpos);
-
-			AddEffect(owner,fx);
+			FXImpFireball(owner, org, vel); //mxd
 			break;
 		
 		case FX_IMP_FBEXPL:
