@@ -1452,63 +1452,45 @@ static void FXMSsithraArrow(centity_t* owner, vec3_t velocity, const qboolean su
 	AddEffect(owner, spawner);
 }
 
-void FXMSsithraArrowCharge( vec3_t startpos )
+static void FXMSsithraArrowCharge(vec3_t startpos)
 {
-	client_entity_t	*TrailEnt;
-	paletteRGBA_t	color = {255,128,255,255};
-	vec3_t			dir;
-	int				length;
-	int				i;
-	int				white;
+	const int count = GetScaledCount(6, 0.85f);
 
-	i = GetScaledCount(6, 0.85);
-
-	while (i--)
+	for (int i = 0; i < count; i++)
 	{
-		TrailEnt=ClientEntity_new(FX_M_EFFECTS, 0, startpos, 0, 500);
+		client_entity_t* firestreak = ClientEntity_new(FX_M_EFFECTS, 0, startpos, NULL, 500);
 
-		TrailEnt->r.model = mssithra_models + 2;
-		
-		TrailEnt->r.spriteType = SPRITE_LINE;
+		firestreak->r.model = &mssithra_models[2]; // Firestreak sprite.
+		firestreak->r.spriteType = SPRITE_LINE;
 
-		TrailEnt->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		TrailEnt->flags |= CEF_USE_VELOCITY2;
-		TrailEnt->r.color.c = 0xFFFFFFFF;
-		TrailEnt->r.scale = flrand(4.0, 6.0);
-		TrailEnt->alpha = 0.1;
-		TrailEnt->d_alpha = 0.25;
-		TrailEnt->d_scale = 0.0;
+		firestreak->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		firestreak->flags |= CEF_USE_VELOCITY2;
+		firestreak->r.scale = flrand(4.0f, 6.0f);
+		firestreak->alpha = 0.1f;
+		firestreak->d_alpha = 0.25f;
 
-		white = irand(128, 255);
+		const int white = irand(128, 255);
+		COLOUR_SETA(firestreak->r.color, white, white, irand(236, 255), irand(80, 192)); //mxd. Use macro.
 
-		TrailEnt->r.color.r = white;
-		TrailEnt->r.color.g = white;
-		TrailEnt->r.color.b = 128 + irand(108, 127);
-		TrailEnt->r.color.a = 64 + irand(16, 128);
+		VectorRandomCopy(vec3_up, firestreak->velocity2, 1.5f);
+		VectorCopy(startpos, firestreak->r.startpos);
 
-		VectorSet(dir, 0, 0, 1);
-		VectorRandomCopy(dir, TrailEnt->velocity2, 1.5);
-		
-		VectorCopy(startpos, TrailEnt->r.startpos);
-		length = irand(24, 32);
-		VectorMA(TrailEnt->r.startpos, length, TrailEnt->velocity2, TrailEnt->r.endpos);
+		const float length = flrand(24.0f, 32.0f); //mxd. Was int / irand().
+		VectorMA(firestreak->r.startpos, length, firestreak->velocity2, firestreak->r.endpos);
 
-		VectorScale(TrailEnt->velocity2, -(length*2), TrailEnt->velocity2);
-		VectorClear(TrailEnt->velocity);
+		VectorScale(firestreak->velocity2, -(length * 2.0f), firestreak->velocity2);
+		VectorClear(firestreak->velocity);
 
-		AddEffect(NULL, TrailEnt);	
+		AddEffect(NULL, firestreak);
 	}
 
-	TrailEnt=ClientEntity_new(FX_M_EFFECTS, 0, startpos, 0, 500);
+	//TODO: AddEffect() is not called on this one. Is that OK or MEMORY LEAK?..
+	client_entity_t* flash = ClientEntity_new(FX_M_EFFECTS, 0, startpos, NULL, 500);
 
-	white = irand(128, 255);
+	const int white = irand(128, 255);
+	COLOUR_SETA(flash->r.color, white, white, irand(236, 255), irand(80, 192)); //mxd. Use macro.
 
-	TrailEnt->r.color.r = white;
-	TrailEnt->r.color.g = white;
-	TrailEnt->r.color.b = 128 + irand(108, 127);
-	TrailEnt->r.color.a = 64 + irand(16, 128);
-
-	TrailEnt->dlight = CE_DLight_new(TrailEnt->r.color, 200, -25);
+	flash->dlight = CE_DLight_new(flash->r.color, 200.0f, -25.0f);
 }
 
 void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
