@@ -1193,29 +1193,26 @@ static qboolean FXMMissileTrailThink(struct client_entity_s* self, const centity
 	return true;
 }
 
-void FXMorkTrackingMissile ( centity_t *owner, vec3_t origin, vec3_t velocity )
+static void FXMorkTrackingMissile(centity_t* owner, const vec3_t origin)
 {
-	client_entity_t	*Trail;
-	paletteRGBA_t	LightColor={0,0,255,255};
+	const paletteRGBA_t light_color = { .r = 0,.g = 0,.b = 255,.a = 255 };
 
 	FXHPMissileCreateWarp(FX_M_EFFECTS, origin);
 
-	Trail = ClientEntity_new( FX_M_EFFECTS, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, origin, NULL, 20);
+	client_entity_t* trail = ClientEntity_new(FX_M_EFFECTS, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, origin, NULL, 20);
+	trail->radius = 500.0f;
+	trail->r.model = &morc_models[4]; // Morc halo sprite.
+	trail->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	trail->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
 
-	Trail->Update=FXMMissileTrailThink;
-	Trail->dlight=CE_DLight_new(LightColor,150.0f,0.0f);
-	Trail->radius = 500;
-	Trail->r.model = morc_models + 4;
-	Trail->r.color.c = 0xFFFFFFFF;
-	Trail->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	Trail->r.scale = 1.0;
-	Trail->AddToView = LinkedEntityUpdatePlacement;
+	VectorCopy(origin, trail->startpos);
 
-	VectorCopy(origin, Trail->startpos);
+	trail->AddToView = LinkedEntityUpdatePlacement;
+	trail->Update = FXMMissileTrailThink;
 
-	AddEffect(owner,Trail);
+	AddEffect(owner, trail);
 
-	FXMMissileTrailThink(Trail,owner);
+	FXMMissileTrailThink(trail, owner);
 }
 
 qboolean rubble_spin (client_entity_t *self, centity_t *owner)
@@ -1598,7 +1595,7 @@ void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 			break;
 
 		case FX_MORK_TRACKING_MISSILE:
-			FXMorkTrackingMissile(owner, org, vel);
+			FXMorkTrackingMissile(owner, org);
 			break;
 
 		case FX_MSSITHRA_EXPLODE:
