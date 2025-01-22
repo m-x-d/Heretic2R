@@ -311,6 +311,46 @@ static qboolean FXMorkBeamUpdate(struct client_entity_s* self, const centity_t* 
 	return true;
 }
 
+static void FXMorkBeam(centity_t* owner, const int type, const vec3_t origin, const vec3_t vel) //mxd. Separated from FXMEffects().
+{
+	const paletteRGBA_t light_color = { .r = 0, .g = 0, .b = 255, .a = 255 };
+
+	client_entity_t* beam = ClientEntity_new(type, CEF_NO_DRAW | CEF_OWNERS_ORIGIN | CEF_DONT_LINK, origin, NULL, 20);
+
+	beam->radius = 500.0f;
+	beam->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	beam->flags |= CEF_NO_DRAW;
+	VectorCopy(owner->current.origin, beam->r.origin);
+	beam->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
+
+	beam->AddToView = LinkedEntityUpdatePlacement;
+	beam->Update = FXMorkBeamUpdate;
+
+	VectorCopy(owner->origin, beam->startpos);
+
+	AddEffect(owner, beam);
+	FXMorkBeamUpdate(beam, owner);
+
+	for (int i = 0; i < 3; i++)
+	{
+		client_entity_t* trail = ClientEntity_new(type, 0, origin, NULL, 20);
+
+		trail->radius = 500.0f;
+		trail->r.model = &mork_projectile_models[3]; //TODO: segment_trail_wt is invisible!
+		trail->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		trail->r.scale = 0.5f;
+		trail->LifeTime = i * 120;
+		trail->Update = FXMorkBeamCircle;
+
+		VectorCopy(owner->current.origin, trail->r.origin);
+		VectorCopy(owner->origin, trail->startpos);
+		VectorCopy(vel, trail->r.angles);
+
+		AddEffect(owner, trail);
+		FXMorkBeamCircle(trail, owner);
+	}
+}
+
 static void ImpFireBallExplode(const centity_t* owner, vec3_t dir)
 {
 	AddGenericExplosion(owner, dir, imp_models[1]); //mxd. Fire spark sprite.
@@ -1615,41 +1655,7 @@ void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 			break;
 
 		case FX_M_BEAM:
-			fx = ClientEntity_new( type, CEF_NO_DRAW | CEF_OWNERS_ORIGIN | CEF_DONT_LINK, org, NULL, 20);
-
-			fx->flags |= CEF_NO_DRAW;
-			VectorCopy(owner->current.origin, fx->r.origin);
-			fx->Update=FXMorkBeamUpdate;
-			fx->dlight=CE_DLight_new(LightColor,150.0f,0.0f);
-			fx->radius = 500;
-			fx->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-			fx->AddToView = LinkedEntityUpdatePlacement;
-
-			VectorCopy(owner->origin, fx->startpos);
-
-			AddEffect(owner,fx);
-
-			FXMorkBeamUpdate(fx,owner);
-
-			for(i = 0; i<3; i++)
-			{
-				fx = ClientEntity_new( type, 0, org, NULL, 20);
-
-				VectorCopy(owner->current.origin, fx->r.origin);
-				fx->Update=FXMorkBeamCircle;
-				fx->radius = 500;
-				fx->r.model = mork_projectile_models + 3;
-				fx->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-				fx->r.scale = 0.5;
-				fx->LifeTime = i * 120;
-
-				VectorCopy(owner->origin, fx->startpos);
-				VectorCopy(vel, fx->r.angles);
-
-				AddEffect(owner,fx);
-
-				FXMorkBeamCircle(fx,owner);
-			}
+			FXMorkBeam(owner, type, org, vel); //mxd
 			break;
 
 		case FX_IMP_FIRE:
