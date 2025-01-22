@@ -1042,12 +1042,10 @@ static qboolean MorkMissileAddToView(struct client_entity_s* self, const centity
 	return true;
 }
 
-static qboolean MorkMissileThink1(struct client_entity_s *self, centity_t *owner)
+static qboolean MorkMissileThink1(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->LifeTime < 24)
-	{
 		self->LifeTime += 1;
-	}
 
 	return true;
 }
