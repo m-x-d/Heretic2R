@@ -231,121 +231,81 @@ static qboolean FXMorkBeamCircle(struct client_entity_s* self, const centity_t* 
 	return true;
 }
 
-static qboolean FXMorkBeam (struct client_entity_s *self,centity_t *owner)
+static qboolean FXMorkBeamUpdate(struct client_entity_s* self, const centity_t* owner)
 {
-	client_entity_t		*TrailEnt;
-	int					numparts, parttype;
-	client_particle_t	*spark;
-	int					i;
-	//VectorCopy(owner->origin, self->origin);
-//Make inner beam
-	TrailEnt=ClientEntity_new(FX_M_EFFECTS,
-							  CEF_DONT_LINK,
-							  owner->origin,
-							  NULL,
-							  17);
+	static int particle_types[] =
+	{
+		PART_4x4_WHITE,
+		PART_16x16_STAR,
+		PART_32x32_BUBBLE,
+		PART_16x16_SPARK_B,
+		PART_8x8_BLUE_CIRCLE
+	}; //mxd
 
-	TrailEnt->radius = 2000;
+	// Make inner beam.
+	client_entity_t* beam_inner = ClientEntity_new(FX_M_EFFECTS, CEF_DONT_LINK, owner->origin, NULL, 17);
 
-	VectorCopy( owner->origin, TrailEnt->origin );
+	beam_inner->radius = 2000.0f;
+	VectorCopy(owner->origin, beam_inner->origin);
 
-	TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA;
-	TrailEnt->r.model = mork_projectile_models + 2;
+	beam_inner->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA;
+	beam_inner->r.model = &mork_projectile_models[2];
+	beam_inner->r.spriteType = SPRITE_LINE;
+	beam_inner->r.tile = 1.0f;
+	beam_inner->alpha = 2.0f;
 
-	TrailEnt->r.spriteType = SPRITE_LINE;
-	TrailEnt->r.tile = 1;
-	TrailEnt->alpha = 2.0;
-	TrailEnt->r.scale = 1.0;
+	VectorCopy(self->startpos, beam_inner->r.startpos);
+	VectorCopy(owner->origin, beam_inner->r.endpos);
 
-	VectorCopy( self->startpos, TrailEnt->r.startpos );
-	VectorCopy( owner->origin , TrailEnt->r.endpos );
+	beam_inner->d_alpha = -1.0f;
+	beam_inner->d_scale = -0.1f;
+	beam_inner->Update = FXMorkTrailThink_old;
 
-	TrailEnt->d_alpha = -1.0;
-	TrailEnt->d_scale = -0.1;
-	TrailEnt->Update = FXMorkTrailThink_old;
-	
-	AddEffect(NULL,TrailEnt);
+	AddEffect(NULL, beam_inner);
 
-//make outer beam
-	TrailEnt=ClientEntity_new(FX_M_EFFECTS,
-							  CEF_DONT_LINK,
-							  owner->origin,
-							  NULL,
-							  17);
+	// Make outer beam.
+	client_entity_t* beam_outer = ClientEntity_new(FX_M_EFFECTS, CEF_DONT_LINK, owner->origin, NULL, 17);
 
-	TrailEnt->radius = 2000;
+	beam_outer->radius = 2000.0f;
+	VectorCopy(owner->origin, beam_outer->origin);
 
-	VectorCopy( owner->origin, TrailEnt->origin );
+	beam_outer->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA;
+	beam_outer->r.model = &mork_projectile_models[2];
+	beam_outer->r.spriteType = SPRITE_LINE;
+	beam_outer->r.tile = 1.0f;
+	beam_outer->r.scale = 16.0f;
+	beam_outer->r.scale = 4.0f;
+	COLOUR_SET(beam_outer->r.color, 100, 75, 250); //mxd. Use macro.
 
-	TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA;
-	TrailEnt->r.model = mork_projectile_models + 2;
+	VectorCopy(self->startpos, beam_outer->r.startpos);
+	VectorCopy(owner->origin, beam_outer->r.endpos);
 
-	TrailEnt->r.spriteType = SPRITE_LINE;
-	TrailEnt->r.tile = 1;
-	TrailEnt->r.scale = 16;
-	TrailEnt->alpha = 1.0;
-	TrailEnt->r.scale = 4.0;
-	TrailEnt->r.color.r = 100;
-	TrailEnt->r.color.g = 75;
-	TrailEnt->r.color.b = 250;
+	beam_outer->d_alpha = -0.6f;
+	beam_outer->d_scale = -0.5f;
+	beam_outer->Update = FXMorkTrailThink_old;
 
-	VectorCopy( self->startpos, TrailEnt->r.startpos );
-	VectorCopy( owner->origin , TrailEnt->r.endpos );
-
-	TrailEnt->d_alpha = -0.6;
-	TrailEnt->d_scale = -0.5;
-
-	TrailEnt->Update = FXMorkTrailThink_old;
-	
-	AddEffect(NULL,TrailEnt);
+	AddEffect(NULL, beam_outer);
 
 	VectorCopy(owner->origin, self->startpos);
 
-	numparts = floor(irand(6, 9)*self->r.scale);
-	if (numparts>500)
-		numparts=500;
-	for(i = 0; i < numparts; i++)
+	// Create particles.
+	int num_particles = (int)(floorf((float)(irand(6, 9)) * self->r.scale));
+	num_particles = min(500, num_particles);
+
+	for (int i = 0; i < num_particles; i++)
 	{
-		parttype = irand(0, 4);
-		switch(parttype)
-		{
-			case 0:
-				parttype = PART_4x4_WHITE;
-				break;
-			case 1:
-				parttype = PART_16x16_STAR;
-				break;
-			case 2:
-				parttype = PART_32x32_BUBBLE;
-				break;
-			case 3:
-				parttype = PART_16x16_SPARK_B;
-				break;
-			case 4:
-				parttype = PART_8x8_BLUE_CIRCLE;
-				break;
-			default:
-				parttype = PART_4x4_WHITE;
-				break;
-		}
+		const int particle_type = particle_types[irand(0, sizeof(particle_types) / sizeof(particle_types[0]) - 1)];
+		client_particle_t* spark = ClientParticle_new(particle_type, self->r.color, 20);
 
-		spark = ClientParticle_new(parttype, self->r.color, 20);
-		spark->scale = flrand(1, 2);
-		spark->d_scale = flrand(-1, -1.5);
-		spark->color.r = 255;
-		spark->color.g = 255;
-		spark->color.b = 255;
-		spark->color.a = irand(100, 200.0);
-		spark->d_alpha = flrand(-60.0, -42.0);
-		spark->duration = flrand(1500, 3000);
-		spark->acceleration[2] = flrand(10, 20);
-//		spark->extraUpdate = ParticleFadeToBlue;
+		spark->scale = flrand(1.0f, 2.0f);
+		spark->d_scale = flrand(-1.5f, -1.0f);
+		COLOUR_SETA(spark->color, 255, 255, 255, irand(100, 200)); //mxd. Use macro.
+		spark->d_alpha = flrand(-60.0f, -42.0f);
+		spark->duration = irand(1500, 3000);
+		spark->acceleration[2] = flrand(10.0f, 20.0f);
+		VectorRandomSet(spark->origin, 10.0f);
 
-		VectorSet(spark->origin, flrand(-10,10),
-									flrand(-10,10),
-									flrand(-10, 10));
-
-		AddParticleToList(TrailEnt, spark);
+		AddParticleToList(beam_inner, spark);
 	}
 
 	return true;
@@ -1659,7 +1619,7 @@ void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 
 			fx->flags |= CEF_NO_DRAW;
 			VectorCopy(owner->current.origin, fx->r.origin);
-			fx->Update=FXMorkBeam;
+			fx->Update=FXMorkBeamUpdate;
 			fx->dlight=CE_DLight_new(LightColor,150.0f,0.0f);
 			fx->radius = 500;
 			fx->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
@@ -1669,7 +1629,7 @@ void FXMEffects(centity_t *owner,int type,int flags, vec3_t org)
 
 			AddEffect(owner,fx);
 
-			FXMorkBeam(fx,owner);
+			FXMorkBeamUpdate(fx,owner);
 
 			for(i = 0; i<3; i++)
 			{
