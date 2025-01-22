@@ -1050,22 +1050,16 @@ static qboolean MorkMissileThink1(struct client_entity_s* self, centity_t* owner
 	return true;
 }
 
-static qboolean MorkMissileThink2(struct client_entity_s *self, centity_t *owner)
+static qboolean MorkMissileThink2(struct client_entity_s* self, centity_t* owner)
 {
-	if (self->alpha < 0.25)
-	{
-		self->alpha += 0.1;
-	}
+	if (self->alpha < 0.25f)
+		self->alpha += 0.1f;
 
-	if (self->r.scale < 3.0)
-	{
-		self->r.scale += 0.1;
-	}
+	if (self->r.scale < 3.0f)
+		self->r.scale += 0.1f;
 
 	if (self->dlight->intensity <= 200.0f)
-	{
 		self->dlight->intensity += 10.0f;
-	}
 
 	return true;
 }
