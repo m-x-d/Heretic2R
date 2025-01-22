@@ -1333,21 +1333,20 @@ static qboolean FXMSsithraExplosionThink(const client_entity_t* self, centity_t*
 	return true;
 }
 
-void FXMSsithraExplode( vec3_t origin, vec3_t dir )
+static void FXMSsithraExplode(vec3_t origin, vec3_t dir)
 {
-	client_entity_t	*spawner;
+	// Create an explosion spawner.
+	client_entity_t* spawner = ClientEntity_new(FX_M_EFFECTS, CEF_NO_DRAW, origin, NULL, 20);
 
-	//Create an explosion spawner
-	spawner = ClientEntity_new( FX_M_EFFECTS, CEF_NO_DRAW, origin, NULL, 20);
-	spawner->Update = FXMSsithraExplosionThink;
 	spawner->color.c = 0xff00ffff;
-	spawner->dlight = CE_DLight_new(spawner->color, 100.0f,-50.0f);
-	spawner->LifeTime = fxi.cl->time + 250;
+	spawner->dlight = CE_DLight_new(spawner->color, 100.0f, -50.0f);
 	VectorCopy(dir, spawner->direction);
+	spawner->LifeTime = fxi.cl->time + 250;
+	spawner->Update = FXMSsithraExplosionThink;
 
 	AddEffect(NULL, spawner);
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/mssithra/hit.wav"), 0.5, ATTN_NORM, 0);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/mssithra/hit.wav"), 0.5f, ATTN_NORM, 0);
 }
 
 void FXMSsithraExplodeSmall( vec3_t origin, vec3_t dir )
