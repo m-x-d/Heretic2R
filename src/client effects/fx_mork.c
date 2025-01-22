@@ -214,18 +214,18 @@ static client_entity_t* MorkMakeLightningPiece(const vec3_t start, const vec3_t 
 	return lightning_r;
 }
 
-static qboolean FXMorkBeamCircle (struct client_entity_s *self,centity_t *owner)
+static qboolean FXMorkBeamCircle(struct client_entity_s* self, const centity_t* owner)
 {
-	vec3_t	angles, up;
+	self->LifeTime += 54;
 
-	self->LifeTime+=54;
+	vec3_t angles;
+	VectorSet(angles, self->r.angles[PITCH], self->r.angles[YAW], anglemod((float)self->LifeTime));
 
-	VectorSet(angles, self->r.angles[PITCH], self->r.angles[YAW], anglemod(self->LifeTime));
+	vec3_t up;
 	AngleVectors(angles, NULL, NULL, up);
-	VectorMA(owner->current.origin, 12, up, self->r.origin);
-	
-	MorkMakeLightningPiece(self->startpos, self->r.origin, 2000, 1000);
+	VectorMA(owner->current.origin, 12.0f, up, self->r.origin);
 
+	MorkMakeLightningPiece(self->startpos, self->r.origin, 2000.0f, 1000);
 	VectorCopy(self->r.origin, self->startpos);
 
 	return true;
