@@ -1082,67 +1082,57 @@ static qboolean MorkMissileThink3(struct client_entity_s* self, centity_t* owner
 	return true;
 }
 
-void FXMorkMissile ( centity_t *owner, vec3_t startpos )
+static void FXMorkMissile(centity_t* owner, vec3_t startpos)
 {
-	client_entity_t	*fx;
-	paletteRGBA_t	LightColor={128,128,255,255};
-	int				i;
-	
-	i = GetScaledCount(8, 0.85);
+	const paletteRGBA_t light_color = { .r = 128, .g = 128,.b = 255, .a = 255 };
+	const int count = GetScaledCount(8, 0.85f);
 
-	while (i--)
+	for (int i = 0; i < count; i++)
 	{
-		fx = ClientEntity_new( FX_M_EFFECTS, CEF_OWNERS_ORIGIN, startpos, NULL, 17);
-	
+		client_entity_t* fx = ClientEntity_new(FX_M_EFFECTS, CEF_OWNERS_ORIGIN, startpos, NULL, 17);
+
 		fx->r.spriteType = SPRITE_LINE;
 		fx->r.flags |= RF_TRANS_ADD | RF_TRANSLUCENT | RF_FULLBRIGHT;
-		
-		fx->radius = 1024;
-		fx->r.model = morc_models + 1;
-		fx->r.scale = irand(0.1, 1);
-		fx->r.scale2 = 0.1;
-		fx->alpha = 1.0;
-		fx->r.color.c = 0xFFFFFFFF;
+
+		fx->radius = 1024.0f;
+		fx->r.model = &morc_models[1]; // Lightning sprite.
+		fx->r.scale = flrand(0.1f, 1.0f); //mxd. Was irand().
+		fx->r.scale2 = 0.1f;
 
 		VectorCopy(startpos, fx->r.startpos);
-		
-		fx->direction[0] = flrand(-1.0, 1.0);
-		fx->direction[1] = flrand(-1.0, 1.0);
-		fx->direction[2] = flrand(-1.0, 1.0);
+		VectorRandomSet(fx->direction, 1.0f);
+		VectorMA(startpos, flrand(4.0f, 16.0f), fx->direction, fx->r.endpos); //mxd. Was irand().
 
-		VectorMA(startpos, irand(4, 16), fx->direction, fx->r.endpos);
-
-		fx->Update = MorkMissileThink1;
 		fx->AddToView = MorkMissileAddToView;
+		fx->Update = MorkMissileThink1;
 
 		AddEffect(owner, fx);
 	}
 
-	//Light blue halo
-	fx = ClientEntity_new( FX_M_EFFECTS, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, startpos, NULL, 100);
-	fx->dlight = CE_DLight_new(LightColor,10.0f,0.0f);
-	fx->r.model = morc_models + 2;
-	fx->r.flags |= RF_TRANS_ADD | RF_TRANSLUCENT | RF_FULLBRIGHT;
-	fx->alpha = 0.1;
-	fx->r.scale = 0.1;
+	// Light-blue halo.
+	client_entity_t* halo = ClientEntity_new(FX_M_EFFECTS, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, startpos, NULL, 100);
+	halo->r.model = &morc_models[2];
+	halo->r.flags = RF_TRANS_ADD | RF_TRANSLUCENT | RF_FULLBRIGHT;
+	halo->alpha = 0.1f;
+	halo->r.scale = 0.1f;
+	halo->dlight = CE_DLight_new(light_color, 10.0f, 0.0f);
 
-	fx->Update = MorkMissileThink2;
-	fx->AddToView = LinkedEntityUpdatePlacement;
-	
-	AddEffect(owner, fx);
+	halo->AddToView = LinkedEntityUpdatePlacement;
+	halo->Update = MorkMissileThink2;
 
-	//The white core
-	fx = ClientEntity_new( FX_M_EFFECTS, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, startpos, NULL, 100);
-	fx->r.model = morc_models + 3;
-	fx->r.flags |= RF_TRANS_ADD | RF_TRANSLUCENT | RF_FULLBRIGHT;
-	fx->alpha = 0.1;
-	fx->r.scale = 0.1;
+	AddEffect(owner, halo);
 
-	fx->Update = MorkMissileThink3;
-	fx->AddToView = LinkedEntityUpdatePlacement;
-	
-	AddEffect(owner, fx);
+	// The white core.
+	client_entity_t* core = ClientEntity_new(FX_M_EFFECTS, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, startpos, NULL, 100);
+	core->r.model = &morc_models[3];
+	core->r.flags = RF_TRANS_ADD | RF_TRANSLUCENT | RF_FULLBRIGHT;
+	core->alpha = 0.1f;
+	core->r.scale = 0.1f;
 
+	core->AddToView = LinkedEntityUpdatePlacement;
+	core->Update = MorkMissileThink3;
+
+	AddEffect(owner, core);
 }
 
 void FXMorkMissileHit ( vec3_t origin, vec3_t dir )
