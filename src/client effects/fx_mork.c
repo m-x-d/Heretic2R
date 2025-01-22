@@ -448,137 +448,113 @@ static void FXImpFireball(centity_t* owner, const vec3_t origin, const vec3_t ve
 	AddEffect(owner, fx);
 }
 
-int star_particle [3] =
+static qboolean FXCWUpdate(struct client_entity_s* self, centity_t* owner)
 {
-	PART_16x16_STAR,
-	PART_16x16_SPARK_C,
-	PART_16x16_SPARK_B,
-};
+	static int star_particles[3] = { PART_16x16_STAR, PART_16x16_SPARK_C, PART_16x16_SPARK_B }; //mxd. Made local static.
 
-int FXCWUpdate (struct client_entity_s *self, centity_t *owner)
-{
-	client_particle_t	*p;
-	client_entity_t	*TrailEnt;
-	vec3_t				angles, fwd, right, vec;
-	int					num_parts, i;
-	paletteRGBA_t	LightColor={255,255,255,255};
+	client_entity_t* spawner = ClientEntity_new(FX_M_EFFECTS, CEF_NO_DRAW | CEF_ABSOLUTE_PARTS, self->r.origin, NULL, 500);
+	AddEffect(NULL, spawner);
 
-	client_entity_t	*placeholder;
-	placeholder = ClientEntity_new(FX_M_EFFECTS, CEF_NO_DRAW|CEF_ABSOLUTE_PARTS, self->r.origin, NULL, 500);
-	AddEffect(NULL, placeholder);
+	vec3_t angles;
+	VectorScale(self->r.angles, RAD_TO_ANGLE, angles);
 
-	VectorScale(self->r.angles, 180.0/M_PI, angles);
+	vec3_t fwd;
+	vec3_t right;
 	AngleVectors(angles, fwd, right, NULL);
 
-	num_parts = irand(3, 7);
-	for(i = 0; i < num_parts; i++)
+	const int num_particles = irand(3, 7);
+
+	for (int i = 0; i < num_particles; i++)
 	{
-		p = ClientParticle_new(star_particle[irand(0, 2)], LightColor, 2000);
-		VectorSet(p->origin, flrand(-4, 4), flrand(-4, 4), flrand(-4, 4));
+		client_particle_t* p = ClientParticle_new(star_particles[irand(0, 2)], color_white, 2000);
+
+		VectorRandomSet(p->origin, 4.0f); //mxd
 		VectorAdd(self->r.origin, p->origin, p->origin);
-		p->scale = flrand(2.5, 3.0);
+		p->scale = flrand(2.5f, 3.0f);
 
-		VectorSet(p->velocity, flrand(-10, 10), flrand(-10, 10), flrand(-1.0, 1.0));
-		VectorMA(p->velocity, flrand(-40, -10), fwd, p->velocity);
+		VectorSet(p->velocity, flrand(-10.0f, 10.0f), flrand(-10.0f, 10.0f), flrand(-1.0f, 1.0f));
+		VectorMA(p->velocity, flrand(-40.0f, -10.0f), fwd, p->velocity);
 
-		if (i&0x01)
-			VectorMA(p->velocity, flrand(-10, -2), right, p->velocity);
-		else
-			VectorMA(p->velocity, flrand(10, 2), right, p->velocity);
+		const float sign = ((i & 1) ? -1.0f : 1.0f); //mxd
+		VectorMA(p->velocity, flrand(10, 2) * sign, right, p->velocity);
 
-		p->acceleration[2] = 0;
-		p->d_scale = flrand(-0.15, -0.10);
-		p->duration = (p->scale * 1000.0) / -p->d_scale;		// time taken to reach zero scale
+		p->acceleration[2] = 0.0f;
+		p->d_scale = flrand(-0.15f, -0.1f);
+		p->duration = (int)((p->scale * 1000.0f) / -p->d_scale); // Time taken to reach zero scale.
 
-		AddParticleToList(placeholder, p);
+		AddParticleToList(spawner, p);
 	}
-	
-//trail	
 
-	TrailEnt=ClientEntity_new(FX_M_EFFECTS,
-							  CEF_DONT_LINK,
-							  owner->origin,
-							  NULL,
-							  17);
+	// Trail head.
+	client_entity_t* trail_head = ClientEntity_new(FX_M_EFFECTS, CEF_DONT_LINK, owner->origin, NULL, 17);
 
-	TrailEnt->radius = 2000;
+	trail_head->radius = 2000.0f;
+	trail_head->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	trail_head->r.model = &cw_model; // Patball sprite.
+	trail_head->r.spriteType = SPRITE_LINE;
+	trail_head->r.tile = 1.0f;
+	trail_head->r.scale = 3.0f;
 
-	TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	TrailEnt->r.model = &cw_model;
+	VectorCopy(self->startpos, trail_head->r.startpos);
+	VectorCopy(owner->current.origin, trail_head->r.endpos);
 
-	TrailEnt->r.spriteType = SPRITE_LINE;
-	TrailEnt->r.tile = 1;
-	TrailEnt->alpha = 1.0;
-	TrailEnt->r.scale = 3.0;
+	trail_head->d_alpha = -2.0f;
+	trail_head->Update = FXMorkTrailThink2;
 
-	VectorCopy( self->startpos, TrailEnt->r.startpos );
-	VectorCopy( owner->current.origin , TrailEnt->r.endpos );
+	AddEffect(NULL, trail_head);
 
-	TrailEnt->d_alpha = -2.0;
-	TrailEnt->d_scale = 0.0;
-	TrailEnt->Update = FXMorkTrailThink2;
+	// Line trail.
+	client_entity_t* trail = ClientEntity_new(FX_M_EFFECTS, CEF_OWNERS_ORIGIN | CEF_AUTO_ORIGIN | CEF_USE_VELOCITY2, owner->current.origin, NULL, 17);
 
-	AddEffect(NULL,TrailEnt);
+	trail->radius = 2000.0f;
 
-//===============================================	
-
-	TrailEnt=ClientEntity_new(FX_M_EFFECTS,
-							  CEF_OWNERS_ORIGIN|CEF_AUTO_ORIGIN|CEF_USE_VELOCITY2,
-							  owner->current.origin,
-							  NULL,
-							  17);
-
-	TrailEnt->radius = 2000;
-
-	if(ref_soft)
+	if (ref_soft)
 	{
-		TrailEnt->r.model = &cw_model;
-		TrailEnt->r.scale = flrand(1.0, 2.5);
+		trail->r.model = &cw_model; // Patball sprite.
+		trail->r.scale = flrand(1.0f, 2.5f);
 	}
 	else
 	{
-		TrailEnt->r.model = mork_projectile_models + 2;
-		TrailEnt->flags |= CEF_USE_SCALE2;
-		TrailEnt->r.scale = 3.0;
-		TrailEnt->r.scale2 = 0.2;
+		trail->r.model = &mork_projectile_models[2]; // White trail segment sprite.
+		trail->flags |= CEF_USE_SCALE2;
+		trail->r.scale = 3.0f;
+		trail->r.scale2 = 0.2f;
 	}
 
-	TrailEnt->r.spriteType = SPRITE_LINE;
+	trail->r.spriteType = SPRITE_LINE;
 
-	TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	TrailEnt->r.color.c = 0xFFFFaacc;
-	TrailEnt->alpha = flrand(1.0, 0.75);
-	TrailEnt->d_alpha = -1.0;
-	TrailEnt->d_scale = -0.1;//outer part does not scale down
+	trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	trail->r.color.c = 0xffffaacc;
+	trail->alpha = flrand(0.75f, 1.0f);
+	trail->d_alpha = -1.0f;
+	trail->d_scale = -0.1f; // Outer part does not scale down.
 
-	//angle
-	VectorSet(vec, flrand(0, 359), flrand(0, 359), flrand(0, 359));
-	VectorCopy(vec, TrailEnt->direction);
-	AngleVectors(vec, fwd, NULL, NULL);
-	
-	//length
-	TrailEnt->SpawnInfo = flrand(20, 70);
-	VectorCopy(owner->current.origin, TrailEnt->r.startpos);
-	VectorMA(owner->current.origin, TrailEnt->SpawnInfo, fwd, TrailEnt->r.endpos);
+	// Angle.
+	const vec3_t dir = { flrand(0.0f, 359.0f), flrand(0.0f, 359.0f), flrand(0.0f, 359.0f) };
+	VectorCopy(dir, trail->direction);
+	AngleVectors(dir, fwd, NULL, NULL);
 
-	//avelocity
-	VectorSet(TrailEnt->up, flrand(-10, 10), flrand(-10, 10), flrand(-10, 10));
+	// Length.
+	trail->SpawnInfo = irand(20, 70);
+	VectorCopy(owner->current.origin, trail->r.startpos);
+	VectorMA(owner->current.origin, (float)trail->SpawnInfo, fwd, trail->r.endpos);
 
-	//speed
-	VectorCopy(self->direction, TrailEnt->velocity);
-	VectorCopy(self->direction, TrailEnt->velocity2);
+	// Angular velocity.
+	VectorRandomSet(trail->up, 10.0f);
 
-	TrailEnt->Update = FXCWTrailThink;
-	
-	AddEffect(owner, TrailEnt);
+	// Speed.
+	VectorCopy(self->direction, trail->velocity);
+	VectorCopy(self->direction, trail->velocity2);
 
-//==============================================
+	trail->Update = FXCWTrailThink;
 
-	self->r.scale = flrand(0.65, 0.95);
+	AddEffect(owner, trail);
 
+	// Update self.
+	self->r.scale = flrand(0.65f, 0.95f);
 	VectorCopy(owner->current.origin, self->startpos);
 
-	return (true);
+	return true;
 }
 
 void FXCWStars (centity_t *owner,int type, vec3_t vel)
