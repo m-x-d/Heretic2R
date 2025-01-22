@@ -781,12 +781,9 @@ static void FXBuoyPath(const vec3_t start, const vec3_t end)
 	AddEffect(NULL, fx);
 }
 
-qboolean FXMMoBlurUpdate(struct client_entity_s *self, centity_t *owner)
+static qboolean FXMMoBlurUpdate(const struct client_entity_s* self, centity_t* owner)
 {
-	if (self->alpha <= 0.05f)
-		return false;
-
-	return true;
+	return self->alpha > 0.05f;
 }
 
 void FXMMoBlur(centity_t *owner, vec3_t org, vec3_t angles, qboolean dagger)
