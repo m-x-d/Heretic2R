@@ -786,40 +786,38 @@ static qboolean FXMMoBlurUpdate(const struct client_entity_s* self, centity_t* o
 	return self->alpha > 0.05f;
 }
 
-void FXMMoBlur(centity_t *owner, vec3_t org, vec3_t angles, qboolean dagger)
-{//r_detail 2 only?
-	client_entity_t	*blur;
+static void FXMMoBlur(const centity_t* owner, const vec3_t origin, const vec3_t angles, const qboolean dagger)
+{
+	client_entity_t* blur;
 
-	if(dagger)
+	if (dagger)
 	{
-		blur = ClientEntity_new(FX_M_EFFECTS, 0, org, NULL, 20);//CEF_DONT_LINK
+		blur = ClientEntity_new(FX_M_EFFECTS, 0, origin, NULL, 20);
+
 		VectorCopy(angles, blur->r.angles);
 		blur->r.model = &assassin_dagger_model;
-		blur->alpha = 0.75;
-		blur->r.scale = 0.9;
-
-		blur->d_alpha = -3.0;
-		blur->d_scale = -0.3;
+		blur->alpha = 0.75f;
+		blur->r.scale = 0.9f;
+		blur->d_alpha = -3.0f;
+		blur->d_scale = -0.3f;
 	}
 	else
 	{
-		blur = ClientEntity_new(FX_M_EFFECTS, 0, owner->current.origin, NULL, 20);//CEF_DONT_LINK
-		VectorSet(blur->r.angles,
-			angles[PITCH] * -1 * ANGLE_TO_RAD,
-			angles[YAW] * ANGLE_TO_RAD,
-			angles[ROLL] * ANGLE_TO_RAD);
+		blur = ClientEntity_new(FX_M_EFFECTS, 0, owner->current.origin, NULL, 20);
+
+		VectorSet(blur->r.angles, angles[0] * -ANGLE_TO_RAD, angles[1] * ANGLE_TO_RAD, angles[2] * ANGLE_TO_RAD);
 		blur->r.model = &mork_model;
 		blur->r.frame = owner->current.frame;
-		blur->d_alpha = -1.0;
-		blur->d_scale = -0.1;
-		blur->alpha = 1.0;
-		blur->r.scale = 1.0;
+		blur->d_alpha = -1.0f;
+		blur->d_scale = -0.1f;
 	}
+
 	blur->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA | RF_GLOW;
-	blur->r.scale = 1.0;
-	blur->Update = FXMMoBlurUpdate;
+	blur->r.scale = 1.0f;
 	blur->updateTime = 20;
-	AddEffect(NULL,blur);
+	blur->Update = FXMMoBlurUpdate;
+
+	AddEffect(NULL, blur);
 }
 
 qboolean FXAssDaggerUpdate (struct client_entity_s *self, centity_t *owner)
