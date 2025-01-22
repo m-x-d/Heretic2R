@@ -1163,42 +1163,33 @@ static qboolean FXMTrailThink(struct client_entity_s* self, centity_t* owner)
 	return false;
 }
 
-static qboolean FXMMissileTrailThink(struct client_entity_s *self,centity_t *Owner)
+static qboolean FXMMissileTrailThink(struct client_entity_s* self, const centity_t* owner)
 {
-	client_entity_t	*TrailEnt;
+	self->r.scale = flrand(0.35f, 0.65f);
 
-	self->r.scale = flrand(0.35, 0.65);
+	client_entity_t* trail_ent = ClientEntity_new(FX_M_EFFECTS, CEF_DONT_LINK, owner->lerp_origin, NULL, 17);
 
-	TrailEnt=ClientEntity_new(FX_M_EFFECTS,
-							  CEF_DONT_LINK,
-							  Owner->lerp_origin,
-							  NULL,
-							  17);
+	trail_ent->radius = 500.0f;
+	trail_ent->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA;
+	trail_ent->r.model = &morc_models[5]; // Blue segment trail sprite.
 
-	TrailEnt->radius = 500;
+	trail_ent->r.spriteType = SPRITE_LINE;
+	trail_ent->r.tile = 1.0f;
+	trail_ent->r.scale = 2.0f;
+	trail_ent->r.scale2 = 2.0f;
+	trail_ent->alpha = 0.5f;
 
-	VectorCopy( Owner->lerp_origin, TrailEnt->r.origin );
+	VectorCopy(owner->lerp_origin, trail_ent->r.origin);
+	VectorCopy(self->startpos, trail_ent->r.startpos);
+	VectorCopy(owner->lerp_origin, trail_ent->r.endpos);
 
-	TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA;
-	TrailEnt->r.model = morc_models + 5;
+	trail_ent->d_alpha = -2.5f;
+	trail_ent->Update = FXMTrailThink;
 
- 	TrailEnt->r.spriteType = SPRITE_LINE;
-	TrailEnt->r.tile = 1;
-	TrailEnt->r.scale = 2.0;
-	TrailEnt->r.scale2 = 2.0;
-	TrailEnt->alpha = 0.5;
+	AddEffect(NULL, trail_ent);
 
-	VectorCopy( self->startpos, TrailEnt->r.startpos );
-	VectorCopy( Owner->lerp_origin, TrailEnt->r.endpos );
+	VectorCopy(owner->lerp_origin, self->startpos);
 
-	TrailEnt->d_alpha = -2.5;
-	TrailEnt->d_scale = 0.0;
-	TrailEnt->Update = FXMTrailThink;
-	
-	AddEffect(NULL,TrailEnt);
-
-	VectorCopy(Owner->lerp_origin, self->startpos);
-	
 	return true;
 }
 
