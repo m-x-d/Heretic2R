@@ -1356,18 +1356,19 @@ static void FXMSsithraExplodeSmall(const vec3_t origin)
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/mssithra/hit.wav"), 0.5f, ATTN_NORM, 0);
 }
 
-qboolean ArrowCheckFuse (client_entity_t *self, centity_t *owner)
+static qboolean ArrowCheckFuse(client_entity_t* self, const centity_t* owner)
 {
-	if ( (owner->current.effects & EF_ALTCLIENTFX) || (owner->current.effects & EF_MARCUS_FLAG1) )
-	{//We've stopped moving and have imbedded ourself in a wall
-		if(!(self->flags & CEF_NO_DRAW))
+	if ((owner->current.effects & EF_ALTCLIENTFX) || (owner->current.effects & EF_MARCUS_FLAG1))
+	{
+		// We've stopped moving and have embedded ourself in a wall.
+		if (!(self->flags & CEF_NO_DRAW))
 		{
 			FireSparks(NULL, FX_SPARKS, 0, self->r.origin, vec3_up);
 			self->flags |= CEF_NO_DRAW;
 		}
 
-		if(irand(0, 1))
-			FXDarkSmoke(self->r.origin, flrand(0.2, 0.5), flrand(30, 50));
+		if (irand(0, 1))
+			FXDarkSmoke(self->r.origin, flrand(0.2f, 0.5f), flrand(30.0f, 50.0f));
 	}
 
 	return true;
