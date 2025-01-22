@@ -735,11 +735,6 @@ static qboolean FXPermanentUpdate(struct client_entity_s* self, centity_t* owner
 	return true;
 }
 
-qboolean FXRemoveUpdate(struct client_entity_s *self,centity_t *owner) //TODO: remove
-{
-	return false;
-}
-
 qboolean FXBuoyPathDelayedStart (struct client_entity_s *self, centity_t *owner)
 {
 	client_entity_t	*TrailEnt;
@@ -775,7 +770,7 @@ qboolean FXBuoyPathDelayedStart (struct client_entity_s *self, centity_t *owner)
 
 	AddEffect(NULL, TrailEnt);
 
-	self->Update = FXRemoveUpdate;
+	self->Update = RemoveSelfAI;
 	self->updateTime = 100;
 
 	return true;
