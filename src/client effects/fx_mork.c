@@ -105,26 +105,23 @@ static qboolean FXMorkTrailThink_old(struct client_entity_s* self, centity_t* ow
 	return true;
 }
 
-static qboolean FXCWTrailThink(struct client_entity_s *self,centity_t *owner)
+static qboolean FXCWTrailThink(struct client_entity_s* self, const centity_t* owner)
 {
-	vec3_t forward;
-	if (self->alpha <= 0.1 || self->r.scale <= 0.0)
+	if (self->alpha <= 0.1f || self->r.scale <= 0.0f)
 		return false;
 
-	self->r.scale -= 0.15;
-	
+	self->r.scale -= 0.15f;
+
 	VectorCopy(owner->lerp_origin, self->r.origin);
-
 	VectorCopy(self->r.origin, self->r.startpos);
-
 	Vec3AddAssign(self->up, self->direction);
 
+	vec3_t forward;
 	AngleVectors(self->direction, forward, NULL, NULL);
+	VectorMA(self->r.startpos, (float)self->SpawnInfo, forward, self->r.endpos);
 
-	VectorMA(self->r.startpos, self->SpawnInfo, forward, self->r.endpos);
 	return true;
 }
-
 
 static qboolean FXMorkTrailThink2(struct client_entity_s *self,centity_t *owner)
 {
