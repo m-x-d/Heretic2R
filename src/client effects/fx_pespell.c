@@ -36,45 +36,40 @@ void PrecachePESpell(void)
 	spell_models[4] = fxi.RegisterModel("Sprites/fx/core_b.sp2");
 }
 
-static qboolean FXPESpellTrailThink(struct client_entity_s *self, centity_t *owner)
+static qboolean FXPESpellTrailThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_entity_t	*TrailEnt;
-	vec3_t			accel_dir;
-	int				i;
-
 	self->updateTime = 20;
 
-	if(self->SpawnInfo > 9)
+	if (self->SpawnInfo > 9)
 		self->SpawnInfo--;
 
-	i = GetScaledCount( irand(self->SpawnInfo >> 3, self->SpawnInfo >> 2), 0.8 );
-	while(i--)
+	vec3_t accel_dir;
+	VectorCopy(self->velocity, accel_dir);
+	VectorNormalize(accel_dir);
+
+	const int count = GetScaledCount(irand(self->SpawnInfo >> 3, self->SpawnInfo >> 2), 0.8f);
+
+	for (int i = 0; i < count; i++)
 	{
-		TrailEnt = ClientEntity_new(FX_PE_SPELL, 0, self->r.origin, NULL, 1000);
-		TrailEnt->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	
-		VectorCopy(self->velocity, accel_dir);
-		VectorNormalize(accel_dir);
+		client_entity_t* trail = ClientEntity_new(FX_PE_SPELL, 0, self->r.origin, NULL, 1000);
 
-		TrailEnt->r.model = spell_models;
-		TrailEnt->r.scale = SPELL_SCALE + flrand(0.0, 0.05);
+		trail->radius = 20.0f;
+		trail->r.model = &spell_models[0]; // Flyingfist sprite.
+		trail->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		trail->r.scale = SPELL_SCALE + flrand(0.0f, 0.05f);
 
-		TrailEnt->r.color.r = irand(40, 60);
-		TrailEnt->r.color.g = irand(245, 255);
-		TrailEnt->r.color.b = irand(95, 105);
+		COLOUR_SET(trail->r.color, irand(40, 60), irand(245, 255), irand(95, 105)); //mxd. Use macro.
+		VectorRandomCopy(self->r.origin, trail->r.origin, flrand(-5.0f, 5.0f));
+		VectorScale(accel_dir, flrand(-400.0f, -50.0f), trail->velocity);
 
-		VectorRandomCopy(self->r.origin, TrailEnt->r.origin, flrand(-5.0, 5.0));
-		VectorScale(accel_dir, flrand(-50.0, -400.0), TrailEnt->velocity);
+		trail->d_alpha = flrand(-2.0f, -1.5f);
+		trail->d_scale = flrand(-1.25f, -1.0f);
+		trail->updateTime = (int)((trail->alpha * 1000.0f) / -trail->d_scale);
 
-		TrailEnt->d_alpha = flrand(-1.5, -2.0);
-		TrailEnt->d_scale = flrand(-1.0, -1.25);
-		TrailEnt->updateTime = (TrailEnt->alpha * 1000.0) / -TrailEnt->d_scale;
-		TrailEnt->radius = 20.0;
-		
-		AddEffect(NULL,TrailEnt);
+		AddEffect(NULL, trail);
 	}
 
-	return(true);
+	return true;
 }
 
 // ************************************************************************************************
