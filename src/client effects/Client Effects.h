@@ -92,9 +92,9 @@ extern void FXMaceballBounce(centity_t* owner, int type, int flags, vec3_t origi
 extern void FXMaceballExplode(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXPhoenixMissile(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXPhoenixExplode(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXMorphMissile(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXMorphMissile_initial(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXMorphExplode(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXMorphMissile(centity_t* owner, int type, int flags, const vec3_t origin);
+extern void FXMorphMissile_initial(centity_t* owner, int type, int flags, const vec3_t origin);
+extern void FXMorphExplode(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXFireWave(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXFireWaveWorm(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXFireBurst(centity_t* owner, int type, int flags, vec3_t origin);
@@ -165,7 +165,7 @@ extern void FXShrineBallExplode(centity_t* owner, int type, int flags, vec3_t or
 extern void FXOgleHitPuff(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXHPMissile(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXInsectEffects(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXChickenExplode(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXChickenExplode(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXTeleportPad(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXTPortSmoke(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXWaterParticles(centity_t* owner, int type, int flags, const vec3_t origin);

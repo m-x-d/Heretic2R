@@ -303,57 +303,57 @@ static qboolean FXFeatherThink(client_entity_t* self, centity_t* owner)
 	return true;
 }
 
-// make the feathers zip out of the carcess and float down
-void FXChickenExplode(centity_t *owner, int type, int flags, vec3_t origin)
+// Make the feathers zip out of the carcass and float down.
+void FXChickenExplode(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	client_entity_t		*feather;
-	int i;
-
-	//NOTENOTE: CEF_FLAG6 denotes we just want to spawn a couple feathers
+	//NOTE: CEF_FLAG6 denotes we just want to spawn a couple feathers
 	if (flags & CEF_FLAG6)
 	{
-		i = irand(1,2);
-		
-		while (i--)
+		const int count = irand(1, 2);
+
+		for (int i = 0; i < count; i++)
 		{
-			feather = ClientEntity_new(type, flags & ~CEF_OWNERS_ORIGIN , origin, NULL, 40);
-			feather->radius = 5.0F;
-			feather->r.model = morph_models + irand(2,3);
-			feather->r.flags= RF_TRANSLUCENT;
-			feather->Update = FXFeatherThink;
-			feather->acceleration[2] = irand(-85, -120);
-			VectorSet(feather->velocity, flrand(-100,100), flrand(-100,100), flrand(50,150));
-			feather->r.scale = flrand(0.5, 1.5);
+			client_entity_t* feather = ClientEntity_new(type, flags & ~CEF_OWNERS_ORIGIN, origin, NULL, 40);
+
+			feather->radius = 5.0f;
+			feather->r.model = &morph_models[irand(2, 3)]; // Feather models.
+			feather->r.flags = RF_TRANSLUCENT;
+
+			for (int c = 0; c < 3; c++)
+				feather->origin[c] += flrand(-8.0f, 8.0f);
+
+			feather->acceleration[2] = flrand(-120.0f, -85.0f); //mxd. Was irand().
+			VectorSet(feather->velocity, flrand(-100.0f, 100.0f), flrand(-100.0f, 100.0f), flrand(50.0f, 150.0f));
+
+			feather->r.scale = flrand(0.5f, 1.5f);
+			feather->yscale = flrand(0.05f, 0.2f);
+			feather->xscale = flrand(-0.2f, 0.2f);
 			feather->SpawnInfo = 170;
-			feather->yscale = flrand(0.05,0.2);
-			feather->xscale = flrand(-0.2,0.2);
-			
-			feather->origin[0] += flrand(-8.0F, 8.0F);
-			feather->origin[1] += flrand(-8.0F, 8.0F);
-			feather->origin[2] += flrand(-8.0F, 8.0F);
+			feather->Update = FXFeatherThink;
 
 			AddEffect(NULL, feather);
 		}
 	}
 	else
 	{
-		for (i=0; i<20; i++)
+		for (int i = 0; i < 20; i++)
 		{
-			feather = ClientEntity_new(type, flags & ~CEF_OWNERS_ORIGIN , origin, NULL, 40);
-			feather->radius = 5.0F;
-			feather->r.model = morph_models + irand(2,3);
-			feather->r.flags= RF_TRANSLUCENT;
-			feather->Update = FXFeatherThink;
-			feather->acceleration[2] = -85;
-			VectorSet(feather->velocity, flrand(-FEATHER_VEL, FEATHER_VEL), flrand(-FEATHER_VEL, FEATHER_VEL), flrand(80,140));
-			feather->r.scale = flrand(0.5, 2.5);
+			client_entity_t* feather = ClientEntity_new(type, flags & ~CEF_OWNERS_ORIGIN, origin, NULL, 40);
+
+			feather->radius = 5.0f;
+			feather->r.model = &morph_models[irand(2, 3)]; // Feather models.
+			feather->r.flags = RF_TRANSLUCENT;
+
+			feather->acceleration[2] = -85.0f;
+			VectorSet(feather->velocity, flrand(-FEATHER_VEL, FEATHER_VEL), flrand(-FEATHER_VEL, FEATHER_VEL), flrand(80.0f, 140.0f));
+			feather->r.scale = flrand(0.5f, 2.5f);
+
+			feather->yscale = flrand(0.1f, 0.3f);
+			feather->xscale = flrand(-0.3f, 0.3f);
 			feather->SpawnInfo = 170;
-			feather->yscale = flrand(0.1,0.3);
-			feather->xscale = flrand(-0.3,0.3);
+			feather->Update = FXFeatherThink;
+
 			AddEffect(NULL, feather);
 		}
 	}
 }
-
-
-// end
