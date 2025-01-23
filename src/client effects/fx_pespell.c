@@ -279,18 +279,14 @@ static void FXPESpell3Explode(const int type, const int flags, const vec3_t orig
 	}
 }
 
-//====================================================================
-//	FX_PE_SPELL effect handler
-//====================================================================
-
-void FXPESpell(centity_t *owner, int type, int flags, vec3_t origin)
+void FXPESpell(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	byte			whicheffect = 0;
-	vec3_t			vel;
+	byte fx_type = 0;
+	vec3_t vel;
 
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_PE_SPELL].formatString, &whicheffect, vel);
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_PE_SPELL].formatString, &fx_type, vel);
 
-	switch(whicheffect)
+	switch (fx_type)
 	{
 		case FX_PE_MAKE_SPELL:
 			FXPESpellGo(owner, type, flags, origin, vel);
@@ -307,10 +303,9 @@ void FXPESpell(centity_t *owner, int type, int flags, vec3_t origin)
 		case FX_PE_EXPLODE_SPELL2:
 			FXPESpell2Explode(type, flags, origin, vel);
 			break;
-		
+
 		case FX_PE_MAKE_SPELL3:
 			FXCWStars(owner, type, origin);
-			//FXPESpell3Go(owner, type, flags, origin, vel);
 			break;
 
 		case FX_PE_EXPLODE_SPELL3:
@@ -318,7 +313,7 @@ void FXPESpell(centity_t *owner, int type, int flags, vec3_t origin)
 			break;
 
 		default:
-			Com_Printf("Unknown effect type (%d) for FXSsithraArrow\n", whicheffect);
+			Com_Printf("Unknown effect type (%d) for FXPESpell\n", fx_type);
 			break;
 	}
 }
