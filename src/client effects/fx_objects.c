@@ -1,29 +1,21 @@
 //
 // fx_objects.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
+#include "fx_Phoenix.h" //mxd
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
+#include "Random.h"
 #include "Vector.h"
 #include "ce_DLight.h"
-#include "random.h"
-#include "Utilities.h"
-#include "fx_debris.h"
-#include "g_playstats.h"
-#include "fx_debris.h"
 
-#define BARREL_EXPLODE_SPEED	80.0
+#define BARREL_EXPLODE_SPEED	80.0f
 #define BARREL_EXPLODE_BALLS	3
 #define BARREL_EXPLODE_BITS		16
-#define BARREL_EXPLODE_GRAVITY	(-320.0)
-#define BARREL_EXPLODE_SCALE	14.0
-#define BARREL_RADIUS			24
+#define BARREL_EXPLODE_GRAVITY	(-320.0f)
+#define BARREL_EXPLODE_SCALE	14.0f
 
 #define	NUM_OBJECT_MODELS		2
 
@@ -35,16 +27,6 @@ void PreCacheObjects()
 	obj_models[1] = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
 
-extern qboolean FXPhoenixExplosionBallThink(client_entity_t *explosion, centity_t *owner);
-extern qboolean FXPhoenixExplosionSmallBallThink(client_entity_t *explosion, centity_t *owner);
-extern client_entity_t *CreatePhoenixSmallExplosion(vec3_t ballorigin);
-
-
-
-
-// ************************************************************************************************
-// FXBarrelExplode
-// ************************************************************************************************
 // Create Effect FX_BARREL_EXPLODE
 void FXBarrelExplode(centity_t *owner, int type, int flags, vec3_t origin)
 {
@@ -54,7 +36,7 @@ void FXBarrelExplode(centity_t *owner, int type, int flags, vec3_t origin)
 	client_particle_t	*spark;
 	int					i;
 	float				ballnum;
-	vec3_t				mins={BARREL_RADIUS, BARREL_RADIUS, BARREL_RADIUS};
+	//vec3_t				mins={BARREL_RADIUS, BARREL_RADIUS, BARREL_RADIUS};
 
 	// Create three smaller explosion spheres.
 	for (i=0; i < BARREL_EXPLODE_BALLS; i++)
