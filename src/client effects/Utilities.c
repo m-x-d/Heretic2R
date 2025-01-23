@@ -202,7 +202,7 @@ int GetWaterNormal(vec3_t origin, const float radius, const float maxdist, vec3_
 	return true;
 }
 
-void FizzleEffect(const client_entity_t* self, vec3_t surface_top, vec3_t normal)
+static void FizzleEffect(const client_entity_t* self, vec3_t surface_top, vec3_t normal)
 {
 	vec3_t spot;
 
