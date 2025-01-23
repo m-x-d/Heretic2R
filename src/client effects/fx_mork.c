@@ -557,7 +557,7 @@ static qboolean FXCWUpdate(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-void FXCWStars(centity_t* owner, const int type, vec3_t vel)
+void FXCWStars(centity_t* owner, const int type, const vec3_t vel)
 {
 	client_entity_t* fx = ClientEntity_new(type, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, owner->origin, NULL, 20);
 
