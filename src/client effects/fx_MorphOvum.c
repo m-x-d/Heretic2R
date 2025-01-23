@@ -1,5 +1,5 @@
 //
-// fx_Morph.c
+// fx_MorphOvum.c -- mxd. Named fx_Morph.c in original version.
 //
 // Copyright 1998 Raven Software
 //

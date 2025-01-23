@@ -53,7 +53,7 @@
     <ClCompile Include="fx_meteorbarrier.c" />
     <ClCompile Include="fx_mist.c" />
     <ClCompile Include="fx_mork.c" />
-    <ClCompile Include="fx_Morph.c" />
+    <ClCompile Include="fx_MorphOvum.c" />
     <ClCompile Include="fx_objects.c" />
     <ClCompile Include="fx_pespell.c" />
     <ClCompile Include="fx_Phoenix.c" />

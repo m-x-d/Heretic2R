@@ -135,7 +135,7 @@
     <ClCompile Include="fx_mork.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="fx_Morph.c">
+    <ClCompile Include="fx_MorphOvum.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
     <ClCompile Include="fx_objects.c">
