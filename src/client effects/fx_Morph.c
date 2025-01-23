@@ -1,32 +1,26 @@
 //
-// Heretic II
+// fx_Morph.c
+//
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "ce_DefaultMessageHandler.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "angles.h"
-#include "Vector.h"
 #include "Random.h"
+#include "Vector.h"
 #include "Utilities.h"
-#include "motion.h"
-#include "Reference.h"
 #include "ce_Dlight.h"
 #include "g_playstats.h"
 
-#define	SMALL_RAD	8
-#define	MORPH_GLOW_DUR	10
-#define MORPH_COL	0xff00ff00
-#define GLOW_INTENSITY 255
-#define FX_SPHERE_BASE_RADIUS	89.0
-#define FEATH_RAD 50
-#define FLOAT_TIME 15.0
-#define FLOAT_SLOW 3.14156/FLOAT_TIME
-#define MORPH_ANGLE_INC 6.283185 / NUM_OF_OVUMS
+#define MORPH_PARTICLE_VEL		8
+#define MORPH_COLOR				0xff00ff00
+#define MORPH_ARROW_SPEED		400.0f
+#define MORPH_GLOW_INTENSITY	255
+#define MORPH_ANGLE_INC			(ANGLE_360 / NUM_OF_OVUMS)
+
+#define FEATHER_VEL				50.0f
+#define FEATHER_FLOAT_TIME		15
+#define FEATHER_FLOAT_SLOW		(ANGLE_180 / (float)FEATHER_FLOAT_TIME)
 
 #define	NUM_MORPH_MODELS	4
 static struct model_s *morph_models[NUM_MORPH_MODELS];
@@ -39,9 +33,6 @@ void PreCacheMorph()
 }
 
 // -----------------------------------------------------------------------------------------
-
-#define	PART_OFF			5.0
-#define NUM_TRAIL_PARTS		6
 
 static qboolean FXMorphMissileThink(client_entity_t *missile, centity_t *owner)
 {
@@ -88,7 +79,7 @@ static qboolean FXMorphMissileThink(client_entity_t *missile, centity_t *owner)
 		ce = ClientParticle_new(PART_16x16_SPARK_G, color, dur);
 		ce->acceleration[2] = 0.0; 
 		// figure out our random velocity
-		VectorSet(ce->origin, flrand(-SMALL_RAD,SMALL_RAD), flrand(-SMALL_RAD,SMALL_RAD), flrand(-SMALL_RAD,SMALL_RAD) );
+		VectorSet(ce->origin, flrand(-MORPH_PARTICLE_VEL, MORPH_PARTICLE_VEL), flrand(-MORPH_PARTICLE_VEL, MORPH_PARTICLE_VEL), flrand(-MORPH_PARTICLE_VEL, MORPH_PARTICLE_VEL) );
 		// scale it and make it the origin
 		VectorScale(ce->origin, -1.0, ce->velocity);
 		VectorAdd(curpos, ce->origin, ce->origin);
@@ -107,8 +98,6 @@ static qboolean FXMorphMissileThink(client_entity_t *missile, centity_t *owner)
 	return(true);
 }
 
-#define ARROW_SPEED			400.0F
-
 // we reflected, create a new missile
 void FXMorphMissile(centity_t *owner, int type, int flags, vec3_t origin)
 {
@@ -126,16 +115,16 @@ void FXMorphMissile(centity_t *owner, int type, int flags, vec3_t origin)
 	// figure out where we are going
 	DirFromAngles(missile->r.angles, missile->velocity);
 	if (flags & CEF_FLAG6)
-		Vec3ScaleAssign(ARROW_SPEED/2, missile->velocity);
+		Vec3ScaleAssign(MORPH_ARROW_SPEED /2, missile->velocity);
 	else
-		Vec3ScaleAssign(ARROW_SPEED, missile->velocity);
+		Vec3ScaleAssign(MORPH_ARROW_SPEED, missile->velocity);
 
 	missile->r.model = morph_models + 1;
 	missile->r.scale = 3.0;
 	missile->r.angles[0] = -1.57;
 	missile->Update = FXMorphMissileThink;
 	missile->radius = 32.0F;
-	missile->color.c = MORPH_COL;
+	missile->color.c = MORPH_COLOR;
 	missile->dlight = CE_DLight_new(missile->color, 150.0F, 00.0F);
 	AddEffect(owner, missile);
 
@@ -171,14 +160,14 @@ void FXMorphMissile_initial(centity_t *owner, int type, int flags, vec3_t origin
 
 		// figure out where we are going
 		DirFromAngles(missile->r.angles, missile->velocity);
-		Vec3ScaleAssign(ARROW_SPEED, missile->velocity);
+		Vec3ScaleAssign(MORPH_ARROW_SPEED, missile->velocity);
 
 		missile->r.model = morph_models + 1;
 		missile->r.scale = 3.0;
 		missile->r.angles[0] = -1.57;
 		missile->Update = FXMorphMissileThink;
 		missile->radius = 32.0F;
-		missile->color.c = MORPH_COL;
+		missile->color.c = MORPH_COLOR;
 		missile->dlight = CE_DLight_new(missile->color, 110.0F, 00.0F);
 		AddEffect((centity_t *)(&fxi.server_entities[morpharray[i]]), missile);
 		yawf += MORPH_ANGLE_INC;
@@ -193,13 +182,13 @@ void FXMorphMissile_initial(centity_t *owner, int type, int flags, vec3_t origin
 
 		glow->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
-		glow->color.c = MORPH_COL;
-		glow->r.color.c = MORPH_COL;
-		glow->dlight = CE_DLight_new(glow->color, GLOW_INTENSITY, -GLOW_INTENSITY);
+		glow->color.c = MORPH_COLOR;
+		glow->r.color.c = MORPH_COLOR;
+		glow->dlight = CE_DLight_new(glow->color, MORPH_GLOW_INTENSITY, -MORPH_GLOW_INTENSITY);
  		glow->d_scale = 1.8;
  		glow->r.scale = 0.5;
 		glow->d_alpha = -1.0;
-		glow->SpawnInfo = MORPH_GLOW_DUR;
+		glow->SpawnInfo = MORPH_GLOW_INTENSITY;
 		
 		AddEffect(NULL, glow);
 	}
@@ -244,7 +233,7 @@ void FXMorphExplode(centity_t *owner, int type, int flags, vec3_t origin)
 
 	// create a light at the point of explosion
 	dlight = ClientEntity_new(-1, CEF_NO_DRAW | CEF_NOMOVE | CEF_ADDITIVE_PARTS, origin, NULL, dur);
-	color.c = MORPH_COL;
+	color.c = MORPH_COLOR;
 	dlight->dlight = CE_DLight_new(color, 110.0F, 100.0F);
 	AddEffect(NULL, dlight);
 	
@@ -294,12 +283,12 @@ static qboolean FXFeatherThink(client_entity_t *self, centity_t *owner)
 			// if its time, reverse the direction of the swing
 			if (!(--self->LifeTime))
 			{
-				self->LifeTime = FLOAT_TIME;
+				self->LifeTime = FEATHER_FLOAT_TIME;
 				self->xscale = -self->xscale;
 				self->yscale = -self->yscale;
 			}
 			// add in the feather swing to the origin
-			scale = sin(self->LifeTime * FLOAT_SLOW);
+			scale = sin(self->LifeTime * FEATHER_FLOAT_SLOW);
 			self->r.origin[0] += (self->xscale * scale);
 			self->r.origin[1] += (self->yscale * scale);
 			self->r.origin[2] += (1.4 * scale) - 0.7;
@@ -311,7 +300,7 @@ static qboolean FXFeatherThink(client_entity_t *self, centity_t *owner)
 			self->r.angles[PITCH] = 1.2;
 			self->yscale = flrand(-2.5,2.5);
 			self->xscale = flrand(-2.5,2.5);
-			self->LifeTime = FLOAT_TIME;
+			self->LifeTime = FEATHER_FLOAT_TIME;
 		}
 		else
 		{
@@ -384,7 +373,7 @@ void FXChickenExplode(centity_t *owner, int type, int flags, vec3_t origin)
 			feather->r.flags= RF_TRANSLUCENT;
 			feather->Update = FXFeatherThink;
 			feather->acceleration[2] = -85;
-			VectorSet(feather->velocity, flrand(-FEATH_RAD,FEATH_RAD), flrand(-FEATH_RAD,FEATH_RAD), flrand(80,140));
+			VectorSet(feather->velocity, flrand(-FEATHER_VEL, FEATHER_VEL), flrand(-FEATHER_VEL, FEATHER_VEL), flrand(80,140));
 			feather->r.scale = flrand(0.5, 2.5);
 			feather->SpawnInfo = 170;
 			feather->yscale = flrand(0.1,0.3);
