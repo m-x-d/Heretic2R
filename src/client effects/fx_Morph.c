@@ -22,17 +22,15 @@
 #define FEATHER_FLOAT_TIME		15
 #define FEATHER_FLOAT_SLOW		(ANGLE_180 / (float)FEATHER_FLOAT_TIME)
 
-#define	NUM_MORPH_MODELS	4
-static struct model_s *morph_models[NUM_MORPH_MODELS];
-void PreCacheMorph()
+static struct model_s* morph_models[4];
+
+void PreCacheMorph(void)
 {
 	morph_models[0] = fxi.RegisterModel("sprites/lens/halo1.sp2");
 	morph_models[1] = fxi.RegisterModel("models/objects/eggs/chickenegg/tris.fm");
 	morph_models[2] = fxi.RegisterModel("models/objects/feathers/feather1/tris.fm");
 	morph_models[3] = fxi.RegisterModel("models/objects/feathers/feather2/tris.fm");
 }
-
-// -----------------------------------------------------------------------------------------
 
 static qboolean FXMorphMissileThink(client_entity_t *missile, centity_t *owner)
 {
