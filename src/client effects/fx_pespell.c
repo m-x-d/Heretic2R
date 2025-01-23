@@ -1,40 +1,20 @@
 //
 // fx_pespell.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
+#include "Random.h"
 #include "Vector.h"
-#include "ce_DLight.h"
-#include "random.h"
 #include "Utilities.h"
+#include "ce_DLight.h"
 #include "fx_mork.h" //mxd
 #include "g_playstats.h"
 
-#define SPELL_DELTA_FORWARD	8.0
-#define SPELL_DELTA_THETA	0.12
-#define	SPELL_SPIRAL_RAD	0.75
-#define	SPELL_SCALE			0.25
+#define SPELL_SCALE		0.25f
 
-#define	NUM_SPELL_MODELS	5
-
-static struct model_s *spell_models[NUM_SPELL_MODELS];
-
-void PrecachePESpell()
-{
-	spell_models[0] = fxi.RegisterModel("Sprites/Spells/flyingfist.sp2");
-	spell_models[1] = fxi.RegisterModel("Sprites/Spells/spellhands_red.sp2");
-	spell_models[2] = fxi.RegisterModel("Sprites/Spells/halo_ind.sp2");
-	spell_models[3] = fxi.RegisterModel("Sprites/Spells/spark_ind.sp2");
-	spell_models[4] = fxi.RegisterModel("Sprites/fx/core_b.sp2");
-}
-
+//mxd. Mirrored in m_plagueElf.h.
 enum
 {
 	FX_PE_MAKE_SPELL,
@@ -44,9 +24,17 @@ enum
 	FX_PE_MAKE_SPELL3,
 	FX_PE_EXPLODE_SPELL3,
 };
-// ************************************************************************************************
-// FXPESpellTrailThink
-// ************************************************************************************************
+
+static struct model_s* spell_models[5];
+
+void PrecachePESpell(void)
+{
+	spell_models[0] = fxi.RegisterModel("Sprites/Spells/flyingfist.sp2");
+	spell_models[1] = fxi.RegisterModel("Sprites/Spells/spellhands_red.sp2");
+	spell_models[2] = fxi.RegisterModel("Sprites/Spells/halo_ind.sp2");
+	spell_models[3] = fxi.RegisterModel("Sprites/Spells/spark_ind.sp2");
+	spell_models[4] = fxi.RegisterModel("Sprites/fx/core_b.sp2");
+}
 
 static qboolean FXPESpellTrailThink(struct client_entity_s *self, centity_t *owner)
 {
