@@ -125,65 +125,58 @@ void FXMorphMissile(centity_t* owner, const int type, const int flags, const vec
 	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/OvumFire.wav"), 1, ATTN_NORM, 0);
 }
 
-// initial entry from server - create first object - this has the light on it - but no trail yet
-void FXMorphMissile_initial(centity_t *owner, int type, int flags, vec3_t origin)
+// Initial entry from server - create first object. This has the light on it, but no trail yet.
+void FXMorphMissile_initial(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	client_entity_t		*missile;
-	client_entity_t		*glow;
-	byte				yaw;
-	float				yawf;
-	short				morpharray[NUM_OF_OVUMS];
-	int					i;
+	// Get the initial yaw.
+	byte yaw;
+	short morph_array[NUM_OF_OVUMS];
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPELL_MORPHMISSILE_INITIAL].formatString, &yaw,
+		&morph_array[0], &morph_array[1], &morph_array[2], &morph_array[3], &morph_array[4], &morph_array[5]);
 
-	// get the initial Yaw
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPELL_MORPHMISSILE_INITIAL].formatString, 
-			&yaw, 
-			&morpharray[0],
-			&morpharray[1],
-			&morpharray[2],
-			&morpharray[3],
-			&morpharray[4],
-			&morpharray[5]);
+	float yaw_rad = (float)yaw * BYTEANGLE_TO_RAD; //mxd. Use macro.
 
-	yawf = (yaw /255.0) * 6.283185;
-	for (i = 0; i<NUM_OF_OVUMS;i++)
+	for (int i = 0; i < NUM_OF_OVUMS; i++)
 	{
-		// create the client effect with the light on it
-		missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
-		missile->r.angles[YAW] = yawf;
+		// Create the client effect with the light on it.
+		client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
+		missile->r.angles[YAW] = yaw_rad;
 
-		// figure out where we are going
+		// Figure out where we are going.
 		DirFromAngles(missile->r.angles, missile->velocity);
 		Vec3ScaleAssign(MORPH_ARROW_SPEED, missile->velocity);
 
-		missile->r.model = morph_models + 1;
-		missile->r.scale = 3.0;
-		missile->r.angles[0] = -1.57;
-		missile->Update = FXMorphMissileThink;
-		missile->radius = 32.0F;
-		missile->color.c = MORPH_COLOR;
-		missile->dlight = CE_DLight_new(missile->color, 110.0F, 00.0F);
-		AddEffect((centity_t *)(&fxi.server_entities[morpharray[i]]), missile);
-		yawf += MORPH_ANGLE_INC;
-	}
+		missile->radius = 32.0f;
+		missile->r.model = &morph_models[1]; // Egg model.
+		missile->r.scale = 3.0f;
+		missile->r.angles[PITCH] = -ANGLE_90;
 
-	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/OvumFire.wav"), 1, ATTN_NORM, 0);
+		missile->color.c = MORPH_COLOR;
+		missile->dlight = CE_DLight_new(missile->color, 110.0f, 0.0f);
+		missile->Update = FXMorphMissileThink;
+
+		AddEffect(&fxi.server_entities[morph_array[i]], missile);
+
+		yaw_rad += MORPH_ANGLE_INC;
+
+		if (i == 0)
+			fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/OvumFire.wav"), 1.0f, ATTN_NORM, 0);
+	}
 
 	if (r_detail->value >= DETAIL_HIGH)
 	{
-		glow = ClientEntity_new(type, flags, origin, 0, 800);
-		glow->r.model = morph_models;
+		client_entity_t* glow = ClientEntity_new(type, flags, origin, NULL, 800);
 
-		glow->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		glow->r.model = &morph_models[0]; // Halo1 sprite.
+		glow->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
 		glow->color.c = MORPH_COLOR;
 		glow->r.color.c = MORPH_COLOR;
+		glow->d_scale = 1.8f;
+		glow->r.scale = 0.5f;
+		glow->d_alpha = -1.0f;
 		glow->dlight = CE_DLight_new(glow->color, MORPH_GLOW_INTENSITY, -MORPH_GLOW_INTENSITY);
- 		glow->d_scale = 1.8;
- 		glow->r.scale = 0.5;
-		glow->d_alpha = -1.0;
-		glow->SpawnInfo = MORPH_GLOW_INTENSITY;
-		
+
 		AddEffect(NULL, glow);
 	}
 }
