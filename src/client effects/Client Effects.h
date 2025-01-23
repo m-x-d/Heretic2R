@@ -182,7 +182,7 @@ extern void FXMagicPortal(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXTBEffects(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXTestBBox(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXSsithraArrow(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXPESpell(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXPESpell(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXLightningHit(centity_t* owner, int type, int flags, vec3_t origin);
 extern void NullEffect(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXStaffStrike(centity_t* owner, int type, int flags, vec3_t origin);
