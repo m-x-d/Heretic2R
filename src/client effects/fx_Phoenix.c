@@ -3,8 +3,7 @@
 // Copyright 1998 Raven Software
 //
 
-#include "Client Effects.h"
-#include "Client Entities.h"
+#include "fx_Phoenix.h" //mxd
 #include "ce_DefaultMessageHandler.h"
 #include "Particle.h"
 #include "ResourceManager.h"
