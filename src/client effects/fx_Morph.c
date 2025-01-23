@@ -181,66 +181,59 @@ void FXMorphMissile_initial(centity_t* owner, const int type, const int flags, c
 	}
 }
 
-
-// -----------------------------------------------------------------------------------------
-
-// we hit a wall or an object
-#define SMOKE_SPEED 160
-void FXMorphExplode(centity_t *owner, int type, int flags, vec3_t origin)
+// We hit a wall or an object.
+void FXMorphExplode(centity_t* owner, int type, const int flags, const vec3_t origin)
 {
-	client_entity_t		*dlight;
-	paletteRGBA_t		color;
-	vec3_t				Dir;
-	client_particle_t	*ce;
-	int					i, count, dur;
-	float				max_rand;
+#define SMOKE_SPEED 160.0f
 
-	fxi.GetEffect(owner,flags,clientEffectSpawners[FX_SPELL_MORPHEXPLODE].formatString,Dir);
+	int duration;
+	float max_scale;
 
-	// make a bunch of small particles explode out the wall / object
-	VectorScale(Dir,SMOKE_SPEED,Dir);
-	count = GetScaledCount(40, 0.3);
+	vec3_t dir;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPELL_MORPHEXPLODE].formatString, dir);
 
-	if (r_detail->value >= DETAIL_HIGH)
+	// Make a bunch of small particles explode out the wall / object.
+	VectorScale(dir, SMOKE_SPEED, dir);
+	const int count = GetScaledCount(40, 0.3f);
+
+	if ((int)r_detail->value >= DETAIL_HIGH)
 	{
-		max_rand = 10.0;
-		dur = 600;
+		max_scale = 10.0f;
+		duration = 600;
+	}
+	else if ((int)r_detail->value == DETAIL_NORMAL)
+	{
+		max_scale = 8.0f;
+		duration = 500;
 	}
 	else
-	if (r_detail->value >= DETAIL_NORMAL)
 	{
-		max_rand = 8.0;
-		dur= 500;
-	}
-	else
-	{
-		max_rand = 7.0;
-		dur= 400;
+		max_scale = 7.0f;
+		duration = 400;
 	}
 
-	// create a light at the point of explosion
-	dlight = ClientEntity_new(-1, CEF_NO_DRAW | CEF_NOMOVE | CEF_ADDITIVE_PARTS, origin, NULL, dur);
-	color.c = MORPH_COLOR;
-	dlight->dlight = CE_DLight_new(color, 110.0F, 100.0F);
+	// Create a light at the point of explosion.
+	const int dlight_flags = CEF_NO_DRAW | CEF_NOMOVE | CEF_ADDITIVE_PARTS; //mxd
+	client_entity_t* dlight = ClientEntity_new(-1, dlight_flags, origin, NULL, duration);
+
+	paletteRGBA_t color = { .c = MORPH_COLOR };
+	dlight->dlight = CE_DLight_new(color, 110.0f, 100.0f); //TODO: make it fade-out?
+
 	AddEffect(NULL, dlight);
-	
-	for(i=0;i<count;i++)
+
+	for (int i = 0; i < count; i++)
 	{
-		color.g=irand(200, 255);
-		color.r=irand(25, 50);
-		color.b=color.r;
+		COLOUR_SET(color, irand(25, 50), irand(200, 255), color.r); //mxd. Use macro.
+		client_particle_t* ce = ClientParticle_new(PART_16x16_SPARK_G, color, duration);
 
-		ce = ClientParticle_new(PART_16x16_SPARK_G, color, dur);
+		VectorCopy(dir, ce->velocity);
 
-		VectorCopy(Dir,ce->velocity);
-		
-		ce->scale=flrand(3.0, max_rand);
+		for (int c = 0; c < 3; c++)
+			ce->velocity[c] += flrand(-SMOKE_SPEED, SMOKE_SPEED);
 
-		ce->velocity[0]+=flrand(-SMOKE_SPEED,SMOKE_SPEED);
-		ce->velocity[1]+=flrand(-SMOKE_SPEED,SMOKE_SPEED);
-		ce->velocity[2]+=flrand(-SMOKE_SPEED,SMOKE_SPEED);
+		ce->scale = flrand(3.0f, max_scale);
 
-	 	AddParticleToList(dlight, ce);
+		AddParticleToList(dlight, ce);
 	}
 }
 
