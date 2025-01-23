@@ -1,5 +1,5 @@
 //
-// fx_objects.c
+// fx_objects.c -- //TODO: Rename to fx_BarrelExplode?
 //
 // Copyright 1998 Raven Software
 //
@@ -17,8 +17,6 @@
 #define BARREL_EXPLODE_GRAVITY	(-320.0f)
 #define BARREL_EXPLODE_SCALE	14.0f
 
-#define	NUM_OBJECT_MODELS		2
-
 static struct model_s* obj_models[2];
 
 void PreCacheObjects(void)
@@ -28,80 +26,75 @@ void PreCacheObjects(void)
 }
 
 // Create Effect FX_BARREL_EXPLODE
-void FXBarrelExplode(centity_t *owner, int type, int flags, vec3_t origin)
+void FXBarrelExplode(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	client_entity_t		*explosion, *subexplosion;
-	paletteRGBA_t		color;
-	vec3_t				dir={0, 0, 1};
-	client_particle_t	*spark;
-	int					i;
-	float				ballnum;
-	//vec3_t				mins={BARREL_RADIUS, BARREL_RADIUS, BARREL_RADIUS};
-
 	// Create three smaller explosion spheres.
-	for (i=0; i < BARREL_EXPLODE_BALLS; i++)
+	for (int i = 0; i < BARREL_EXPLODE_BALLS; i++)
 	{
-		ballnum = i;
-		subexplosion = CreatePhoenixSmallExplosion(origin);
-		VectorSet(subexplosion->velocity, 
-						flrand(-BARREL_EXPLODE_SPEED, BARREL_EXPLODE_SPEED),
-						flrand(-BARREL_EXPLODE_SPEED, BARREL_EXPLODE_SPEED),
-						flrand(-BARREL_EXPLODE_SPEED, BARREL_EXPLODE_SPEED));
-		subexplosion->r.scale = 0.1;
-		subexplosion->d_scale = 3.0 + ballnum;
-		subexplosion->d_alpha = -1.5 - 0.5*ballnum;
+		const float ball_num = (float)i;
+		client_entity_t* sub_explosion = CreatePhoenixSmallExplosion(origin);
 
-		AddEffect(NULL, subexplosion);
+		VectorRandomSet(sub_explosion->velocity, BARREL_EXPLODE_SPEED);
+		sub_explosion->r.scale = 0.1f;
+		sub_explosion->d_scale = 3.0f + ball_num;
+		sub_explosion->d_alpha = -1.5f - ball_num * 0.5f;
+
+		AddEffect(NULL, sub_explosion);
 	}
 
 	// Create the main big explosion sphere.
-	explosion = ClientEntity_new(type, flags, origin, NULL, 17);
-	explosion->r.model = obj_models;
-	explosion->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;// | RF_FULLBRIGHT;
+	client_entity_t* explosion = ClientEntity_new(type, flags, origin, NULL, 17);
+
+	explosion->radius = 128.0f;
+	explosion->r.model = &obj_models[0]; // Explosion model.
+	explosion->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
 	explosion->flags |= CEF_ADDITIVE_PARTS | CEF_PULSE_ALPHA;
-	explosion->alpha = 0.1;
-	explosion->r.scale= 0.1;
-	explosion->d_alpha = 3.0;
-	explosion->d_scale=5.0;
-	explosion->radius=128;
+	explosion->alpha = 0.1f;
+	explosion->r.scale = 0.1f;
+	explosion->d_alpha = 3.0f;
+	explosion->d_scale = 5.0f;
 	explosion->startTime = fxi.cl->time;
 	explosion->lastThinkTime = fxi.cl->time;
-	explosion->velocity2[YAW] = flrand(-M_PI, M_PI);
-	explosion->velocity2[PITCH] = flrand(-M_PI, M_PI);
+	explosion->velocity2[YAW] = flrand(-ANGLE_180, ANGLE_180);
+	explosion->velocity2[PITCH] = flrand(-ANGLE_180, ANGLE_180);
 
-	color.c = 0xff00ffff;
-	explosion->dlight = CE_DLight_new(color, 150.0F, 0.0F);
+	const paletteRGBA_t color = { .c = 0xff00ffff };
+	explosion->dlight = CE_DLight_new(color, 150.0f, 0.0f);
 	explosion->Update = FXPhoenixExplosionBallThink;
 	AddEffect(NULL, explosion);
-	
+
 	// Add some glowing blast particles.
-	VectorScale(dir,BARREL_EXPLODE_SPEED,dir);
-	for(i = 0; i < BARREL_EXPLODE_BITS; i++)
+	vec3_t dir = { 0.0f, 0.0f, 1.0f };
+	VectorScale(dir, BARREL_EXPLODE_SPEED, dir);
+
+	for (int i = 0; i < BARREL_EXPLODE_BITS; i++)
 	{
-		spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color, 2000);
-		VectorSet(spark->velocity,	flrand(-BARREL_EXPLODE_SPEED, BARREL_EXPLODE_SPEED), 
-									flrand(-BARREL_EXPLODE_SPEED, BARREL_EXPLODE_SPEED), 
-									flrand(-BARREL_EXPLODE_SPEED, BARREL_EXPLODE_SPEED));
+		client_particle_t* spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color, 2000);
+
+		VectorRandomSet(spark->velocity, BARREL_EXPLODE_SPEED);
 		VectorAdd(spark->velocity, dir, spark->velocity);
 		spark->acceleration[2] = BARREL_EXPLODE_GRAVITY;
+
 		spark->scale = BARREL_EXPLODE_SCALE;
-		spark->d_scale = flrand(-20.0, -10.0);
-		spark->d_alpha = flrand(-400.0, -320.0);
-		spark->duration = (255.0 * 2000.0) / -spark->d_alpha;		// time taken to reach zero alpha
+		spark->d_scale = flrand(-20.0f, -10.0f);
+		spark->d_alpha = flrand(-400.0f, -320.0f);
+		spark->duration = (int)(255.0f * 2000.0f / -spark->d_alpha); // Time taken to reach zero alpha.
 
 		AddParticleToList(explosion, spark);
 	}
 
-	// ...and a big-ass flash
-	explosion = ClientEntity_new(-1, flags, origin, NULL, 250);
-	explosion->r.model = obj_models + 1;
-	explosion->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;// | RF_FULLBRIGHT;
-	explosion->r.frame = 1;
-	explosion->radius=128;
-	explosion->r.scale=2.0;
-	explosion->d_alpha=-4.0;
-	explosion->d_scale=-4.0;
-	AddEffect(NULL, explosion);
+	// ...and a big-ass flash.
+	client_entity_t* halo = ClientEntity_new(-1, flags, origin, NULL, 250);
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/PhoenixHit.wav"), 1, ATTN_NORM, 0);
+	halo->radius = 128.0f;
+	halo->r.model = &obj_models[1]; // Halo sprite.
+	halo->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	halo->r.frame = 1;
+	halo->r.scale = 2.0f;
+	halo->d_alpha = -4.0f;
+	halo->d_scale = -4.0f;
+
+	AddEffect(NULL, halo);
+
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/PhoenixHit.wav"), 1.0f, ATTN_NORM, 0);
 }
