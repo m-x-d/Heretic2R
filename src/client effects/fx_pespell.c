@@ -240,70 +240,42 @@ static void FXPESpell2Explode(const int type, const int flags, const vec3_t orig
 	}
 }
 
-// ************************************************************************************************
-// FXPESpell3Explode
-// ************************************************************************************************
-
-///////////////////////////////////////
-// From CreateEffect FX_WEAPON_PESPELLEXPLODE
-///////////////////////////////////////
-void FXPESpell3Explode(centity_t *owner,int type,int flags,vec3_t origin, vec3_t dir)
+static void FXPESpell3Explode(const int type, const int flags, const vec3_t origin, vec3_t dir)
 {
-	client_entity_t	*SmokePuff;
-	int				i;
-	paletteRGBA_t	LightColor;
-	byte			powerup = 0;
-	float			lightrad;
-	
-	if(flags & CEF_FLAG6)
-	{
+	if (flags & CEF_FLAG6)
 		FXClientScorchmark(origin, dir);
-	}
 
-	Vec3ScaleAssign(32.0, dir);
+	Vec3ScaleAssign(32.0f, dir);
 
-	i = GetScaledCount(irand(8, 12), 0.8);
-	LightColor.c = 0xffff6611;		// cyan
-	lightrad = 150;
+	const int count = GetScaledCount(irand(8, 12), 0.8f);
 
-	while(i--)
+	for (int i = 0; i < count; i++)
 	{
-		if (!i)
-			SmokePuff=ClientEntity_new(type,flags,origin,NULL,500);
-		else
-			SmokePuff=ClientEntity_new(type,flags,origin,NULL,1000);
+		const qboolean is_last_puff = (i == count - 1); //mxd
+		const int next_think_time = (is_last_puff ? 500 : 1000); //mxd
 
-		SmokePuff->r.model = spell_models + 4;
-		SmokePuff->r.scale=flrand(1.0, 1.8);
-		SmokePuff->d_scale=-2.0;
+		client_entity_t* puff = ClientEntity_new(type, flags, origin, NULL, next_think_time);
 
-		VectorRandomCopy(dir, SmokePuff->velocity, 64.0);
-		SmokePuff->acceleration[0] = flrand(-200, 200);
-		SmokePuff->acceleration[1] = flrand(-200, 200);
-		SmokePuff->acceleration[2] = flrand(-40, -60);
+		puff->radius = 20.0f;
+		puff->r.model = &spell_models[4]; // Blue core sprite.
+		puff->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		puff->r.scale = flrand(1.0f, 1.8f);
+		puff->d_scale = -2.0f;
+		puff->d_alpha = -0.4f;
 
-		SmokePuff->r.flags |=RF_FULLBRIGHT|RF_TRANSLUCENT|RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		/*
-		SmokePuff->r.color.g = irand(40, 60);
-		SmokePuff->r.color.r = irand(245, 255);
-		SmokePuff->r.color.b = irand(95, 105);
-		*/
+		VectorRandomCopy(dir, puff->velocity, 64.0f);
+		VectorSet(puff->acceleration, flrand(-200.0f, 200.0f), flrand(-200.0f, 200.0f), flrand(-60.0f, -40.0f));
 
-		SmokePuff->r.frame=0;
+		if (is_last_puff)
+		{
+			fxi.S_StartSound(puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell3hit.wav"), 1.0f, ATTN_NORM, 0);
 
-		SmokePuff->d_alpha= -0.4;
-			
-		SmokePuff->radius=20.0;
+			const paletteRGBA_t light_color = { .c = 0xffff6611 }; // Cyan light.
+			puff->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
+			VectorClear(puff->velocity);
+		}
 
-		if(!i)
-		{//precache this?
-			fxi.S_StartSound(SmokePuff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell3hit.wav"), 
-					1, ATTN_NORM, 0);
-			SmokePuff->dlight=CE_DLight_new(LightColor,lightrad,0.0f);
-			VectorClear(SmokePuff->velocity);
-		}	
-
-		AddEffect(NULL,SmokePuff);
+		AddEffect(NULL, puff);
 	}
 }
 
@@ -342,7 +314,7 @@ void FXPESpell(centity_t *owner, int type, int flags, vec3_t origin)
 			break;
 
 		case FX_PE_EXPLODE_SPELL3:
-			FXPESpell3Explode(owner, type, flags, origin, vel);
+			FXPESpell3Explode(type, flags, origin, vel);
 			break;
 
 		default:
