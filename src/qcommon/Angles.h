@@ -57,3 +57,6 @@
 
 //mxd. Used by skeletal joints logic.
 #define RAD_TO_BYTEANGLE (161.7014176816138f) //TODO: == 254 / ANGLE_90? Why 254?..
+
+//mxd
+#define BYTEANGLE_TO_RAD	(ANGLE_360 / 255.0f)
