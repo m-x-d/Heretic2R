@@ -72,44 +72,32 @@ static qboolean FXPESpellTrailThink(struct client_entity_s* self, centity_t* own
 	return true;
 }
 
-// ************************************************************************************************
-// FXPESpell
-// ************************************************************************************************
-
-////////////////////////////////////
-// From CreateEffect FX_WEAPON_PESPELL
-////////////////////////////////////
-void FXPESpellGo(centity_t *owner, int type, int flags, vec3_t origin, vec3_t vel)
+static void FXPESpellGo(centity_t* owner, const int type, const int flags, const vec3_t origin, const vec3_t vel)
 {
-	vec3_t			dir;
-	client_entity_t	*missile;	
-	paletteRGBA_t	LightColor;
-	float			lightsize;
+	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
 
-	missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
-
+	missile->radius = 128.0f;
 	missile->flags |= CEF_NO_DRAW;
-	LightColor.c = 0xff20a0ff;		// Orange light
-	lightsize = 120.0;
-	
+	missile->SpawnInfo = 32;
+
 	VectorCopy(vel, missile->velocity);
+
+	vec3_t dir;
 	VectorNormalize2(vel, dir);
 	AnglesFromDir(dir, missile->r.angles);
 
-	missile->radius = 128;
-	if(r_detail->value > DETAIL_NORMAL)
-		missile->dlight = CE_DLight_new(LightColor, lightsize, 0.0f);
-	missile->Update = FXPESpellTrailThink;
+	if (r_detail->value > DETAIL_NORMAL)
+	{
+		const paletteRGBA_t light_color = { .c = 0xff20a0ff }; // Orange light.
+		missile->dlight = CE_DLight_new(light_color, 120.0f, 0.0f);
+	}
 
-	missile->SpawnInfo = 32;
+	missile->Update = FXPESpellTrailThink;
 
 	AddEffect(owner, missile);
 
-	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell.wav"), 
-			1, ATTN_NORM, 0);
+	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell.wav"), 1.0f, ATTN_NORM, 0);
 }
-
-
 
 // ************************************************************************************************
 // FXPESpellExplode
