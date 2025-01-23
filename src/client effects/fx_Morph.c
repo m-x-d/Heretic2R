@@ -237,78 +237,70 @@ void FXMorphExplode(centity_t* owner, int type, const int flags, const vec3_t or
 	}
 }
 
-// make the feather float down
-static qboolean FXFeatherThink(client_entity_t *self, centity_t *owner)
+// Make the feather float down.
+static qboolean FXFeatherThink(client_entity_t* self, centity_t* owner)
 {
-	float scale;
-
-	if (!(--self->SpawnInfo))
-		return(false);
+	if (--self->SpawnInfo == 0)
+		return false;
 
 	if (self->SpawnInfo < 10)
-		self->alpha -= 0.1;
+		self->alpha -= 0.1f;
 
-	// is the feather on the way down ?
-	if (self->velocity[2] < 2)
+	// Is the feather on the way down?
+	if (self->velocity[2] < 2.0f)
 	{
-		// yes, set gravity much lower.
-		self->acceleration[2] = -1.0;
-		self->velocity[2] = -13;
-		// make the x and z motion much less each time
-		self->velocity[0] -= self->velocity[0] * 0.1;
-		self->velocity[1] -= self->velocity[1] * 0.1;
-		// has the feather already hit the horizontal ?
+		// Yes, set gravity much lower.
+		self->acceleration[2] = -1.0f;
+		self->velocity[2] = -13.0f;
+
+		// Make the x and z motion much less each time.
+		self->velocity[0] -= self->velocity[0] * 0.1f;
+		self->velocity[1] -= self->velocity[1] * 0.1f;
+
+		// Has the feather already hit the horizontal?
 		if (self->r.angles[PITCH] == 1.2f)
 		{
-			// if its time, reverse the direction of the swing
-			if (!(--self->LifeTime))
+			// If its time, reverse the direction of the swing.
+			if (--self->LifeTime == 0)
 			{
 				self->LifeTime = FEATHER_FLOAT_TIME;
 				self->xscale = -self->xscale;
 				self->yscale = -self->yscale;
 			}
-			// add in the feather swing to the origin
-			scale = sin(self->LifeTime * FEATHER_FLOAT_SLOW);
-			self->r.origin[0] += (self->xscale * scale);
-			self->r.origin[1] += (self->yscale * scale);
-			self->r.origin[2] += (1.4 * scale) - 0.7;
+
+			// Add in the feather swing to the origin.
+			const float scale = sinf((float)self->LifeTime * FEATHER_FLOAT_SLOW);
+
+			self->r.origin[0] += self->xscale * scale;
+			self->r.origin[1] += self->yscale * scale;
+			self->r.origin[2] += scale * 1.4f - 0.7f;
+
+			return true;
 		}
-		// wait till the feather hits the horizontal by itself
-		else
-		if ((self->r.angles[PITCH] < 1.3) && (self->r.angles[PITCH] > 1.1) )
+
+		// Wait till the feather hits the horizontal by itself.
+		if (self->r.angles[PITCH] < 1.3f && self->r.angles[PITCH] > 1.1f)
 		{
-			self->r.angles[PITCH] = 1.2;
-			self->yscale = flrand(-2.5,2.5);
-			self->xscale = flrand(-2.5,2.5);
+			self->r.angles[PITCH] = 1.2f;
+			self->yscale = flrand(-2.5f, 2.5f);
+			self->xscale = flrand(-2.5f, 2.5f);
 			self->LifeTime = FEATHER_FLOAT_TIME;
+
+			return true;
 		}
-		else
-		{
-			// not hit the horizontal yet, so keep it spinning
-			self->r.angles[YAW] += self->xscale;
-			self->r.angles[PITCH] += self->yscale;
-			// this is bogus, but has to be done if the above pitch check is going to work
-			if (self->r.angles[PITCH] < 0)
-				self->r.angles[PITCH] += 6.28;
-			else
-			if (self->r.angles[PITCH] > 6.28)
-				self->r.angles[PITCH] -= 6.28;
-		}
-		return(true);
 	}
-	else
-	{
-		// still on the way up, make the feather turn
-		self->r.angles[PITCH] += self->yscale;
-		self->r.angles[YAW] += self->xscale;
-		// this is bogus, but has to be done if the above pitch check is going to work
-		if (self->r.angles[PITCH] < 0)
-			self->r.angles[PITCH] += 6.28;
-		else
-		if (self->r.angles[PITCH] > 6.28)
-			self->r.angles[PITCH] -= 6.28;
-	}
-	return(true);
+
+	// Still on the way up or not hit the horizontal yet, so keep it spinning.
+	self->r.angles[PITCH] += self->yscale;
+	self->r.angles[YAW] += self->xscale;
+
+	// This is bogus, but has to be done if the above pitch check is going to work.
+	if (self->r.angles[PITCH] < 0.0f)
+		self->r.angles[PITCH] += ANGLE_360;
+	else if (self->r.angles[PITCH] > ANGLE_360)
+		self->r.angles[PITCH] -= ANGLE_360;
+
+	return true;
 }
 
 // make the feathers zip out of the carcess and float down
