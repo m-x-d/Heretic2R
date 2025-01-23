@@ -32,68 +32,63 @@ void PreCacheMorph(void)
 	morph_models[3] = fxi.RegisterModel("models/objects/feathers/feather2/tris.fm");
 }
 
-static qboolean FXMorphMissileThink(client_entity_t *missile, centity_t *owner)
+static qboolean FXMorphMissileThink(client_entity_t* missile, centity_t* owner)
 {
-	int					i;
-	client_particle_t	*ce;
-	vec3_t				scaled_vel;
-	client_entity_t	*trail;
-	int					count;
-	paletteRGBA_t	  	color;
-	vec3_t				diff, curpos;
-	int					dur;
+	// Create a new entity for these particles to attach to.
+	const int flags = (int)(missile->flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS); //mxd
+	client_entity_t* trail = ClientEntity_new(FX_SPELL_MORPHMISSILE, flags, missile->r.origin, NULL, 1000);
 
-	// create a new entity for these particles to attach to
-	trail = ClientEntity_new(FX_SPELL_MORPHMISSILE, missile->flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS, missile->r.origin, NULL, 1000);
-	// and give it no onwer, so its not deleted if the missile is
+	// And give it no owner, so its not deleted when the missile is.
 	AddEffect(NULL, trail);
 
-	// ensure we can see this stuff
-	color.c = 0xffffffff;
+	// Create small particles.
+	const int count = GetScaledCount(7, 0.5f);
 
-	// create small particles
-	count = GetScaledCount(7, 0.5);
+	vec3_t diff;
 	VectorSubtract(missile->r.origin, missile->origin, diff);
-	Vec3ScaleAssign((1.0 / count), diff);
-	VectorClear(curpos);
+	Vec3ScaleAssign(1.0f / (float)count, diff);
 
-	if (r_detail->value >= DETAIL_HIGH)
-	{
-		dur = 700;
-	}
+	vec3_t cur_pos;
+	VectorClear(cur_pos);
+
+	int duration;
+	if ((int)r_detail->value >= DETAIL_HIGH)
+		duration = 700;
+	else if ((int)r_detail->value == DETAIL_NORMAL)
+		duration = 600;
 	else
-	if (r_detail->value >= DETAIL_NORMAL)
-	{
-		dur= 600;
-	}
-	else
-	{
-		dur= 500;
-	}
+		duration = 500;
 
-
-	for (i=0; i<count; i++)
+	for (int i = 0; i < count; i++)
 	{
-		ce = ClientParticle_new(PART_16x16_SPARK_G, color, dur);
-		ce->acceleration[2] = 0.0; 
-		// figure out our random velocity
-		VectorSet(ce->origin, flrand(-MORPH_PARTICLE_VEL, MORPH_PARTICLE_VEL), flrand(-MORPH_PARTICLE_VEL, MORPH_PARTICLE_VEL), flrand(-MORPH_PARTICLE_VEL, MORPH_PARTICLE_VEL) );
-		// scale it and make it the origin
-		VectorScale(ce->origin, -1.0, ce->velocity);
-		VectorAdd(curpos, ce->origin, ce->origin);
-		// add a fraction of the missile velocity to this particle velocity
-		VectorScale(missile->velocity, 0.1, scaled_vel);
+		client_particle_t* ce = ClientParticle_new(PART_16x16_SPARK_G, color_white, duration);
+		ce->acceleration[2] = 0.0f;
+
+		// Figure out our random velocity.
+		VectorRandomSet(ce->origin, MORPH_PARTICLE_VEL);
+
+		// Scale it and make it the origin.
+		VectorScale(ce->origin, -1.0f, ce->velocity);
+		VectorAdd(cur_pos, ce->origin, ce->origin);
+
+		// Add a fraction of the missile velocity to this particle velocity.
+		vec3_t scaled_vel;
+		VectorScale(missile->velocity, 0.1f, scaled_vel);
 		VectorAdd(scaled_vel, ce->velocity, ce->velocity);
-		ce->scale = flrand(3, 6);
+
+		ce->scale = flrand(3.0f, 6.0f);
 		AddParticleToList(trail, ce);
-		Vec3SubtractAssign(diff, curpos);
+
+		Vec3SubtractAssign(diff, cur_pos);
 	}
 
-	// Remember for even spread of particles
+	// Remember for even spread of particles.
 	VectorCopy(missile->r.origin, missile->origin);
-	// rotate the missile
-	missile->r.angles[0] -= 0.7;
-	return(true);
+
+	// Rotate the missile.
+	missile->r.angles[0] -= 0.7f;
+
+	return true;
 }
 
 // we reflected, create a new missile
