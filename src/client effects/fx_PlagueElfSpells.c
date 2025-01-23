@@ -1,5 +1,5 @@
 //
-// fx_pespell.c
+// fx_PlagueElfSpells.c -- mxd. Named fx_pespell.c in original version.
 //
 // Copyright 1998 Raven Software
 //

@@ -55,10 +55,10 @@
     <ClCompile Include="fx_mork.c" />
     <ClCompile Include="fx_MorphOvum.c" />
     <ClCompile Include="fx_objects.c" />
-    <ClCompile Include="fx_pespell.c" />
     <ClCompile Include="fx_Phoenix.c" />
     <ClCompile Include="fx_pickup.c" />
     <ClCompile Include="fx_pickuppuzzle.c" />
+    <ClCompile Include="fx_PlagueElfSpells.c" />
     <ClCompile Include="fx_PlagueMist.c" />
     <ClCompile Include="fx_PlagueMistExplode.c" />
     <ClCompile Include="fx_portal.c" />
@@ -113,6 +113,7 @@
     <ClInclude Include="ce_Message.h" />
     <ClInclude Include="Client Effects.h" />
     <ClInclude Include="Client Entities.h" />
+    <ClInclude Include="fx_blood.h" />
     <ClInclude Include="fx_blood_local.h" />
     <ClInclude Include="fx_debris.h" />
     <ClInclude Include="fx_debris_local.h" />

@@ -45,6 +45,33 @@
     <ClCompile Include="..\qcommon\Message.c">
       <Filter>qcommon</Filter>
     </ClCompile>
+    <ClCompile Include="..\qcommon\netmsg_read.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\anorms.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\qcommon\turbsin.c">
+      <Filter>qcommon</Filter>
+    </ClCompile>
+    <ClCompile Include="Ambient Effects.c">
+      <Filter>src\Generic Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Client Effects.c">
+      <Filter>src\Generic Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Generic Character Effects.c">
+      <Filter>src\Generic Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Generic Weapon Effects.c">
+      <Filter>src\Generic Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Player Effects.c">
+      <Filter>src\Generic Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="TestEffect.c">
+      <Filter>src\Generic Effects</Filter>
+    </ClCompile>
     <ClCompile Include="fx_AmmoPickup.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
@@ -108,6 +135,12 @@
     <ClCompile Include="fx_HellStaff.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
+    <ClCompile Include="fx_HighPriestessProjectiles.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_HighPriestessStaff.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
     <ClCompile Include="fx_hitpuff.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
@@ -141,9 +174,6 @@
     <ClCompile Include="fx_objects.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="fx_pespell.c">
-      <Filter>src\Effects</Filter>
-    </ClCompile>
     <ClCompile Include="fx_Phoenix.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
@@ -151,6 +181,9 @@
       <Filter>src\Effects</Filter>
     </ClCompile>
     <ClCompile Include="fx_pickuppuzzle.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_PlagueElfSpells.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
     <ClCompile Include="fx_PlagueMist.c">
@@ -246,39 +279,6 @@
     <ClCompile Include="fx_WeaponPickup.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="..\qcommon\netmsg_read.c">
-      <Filter>qcommon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\qcommon\anorms.c">
-      <Filter>qcommon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\qcommon\turbsin.c">
-      <Filter>qcommon</Filter>
-    </ClCompile>
-    <ClCompile Include="Ambient Effects.c">
-      <Filter>src\Generic Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="Client Effects.c">
-      <Filter>src\Generic Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="Generic Character Effects.c">
-      <Filter>src\Generic Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="Generic Weapon Effects.c">
-      <Filter>src\Generic Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="Player Effects.c">
-      <Filter>src\Generic Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="TestEffect.c">
-      <Filter>src\Generic Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_HighPriestessStaff.c">
-      <Filter>src\Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_HighPriestessProjectiles.c">
-      <Filter>src\Effects</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ce_DefaultMessageHandler.h">
@@ -305,12 +305,6 @@
     <ClInclude Include="..\qcommon\items.h">
       <Filter>qcommon</Filter>
     </ClInclude>
-    <ClInclude Include="fx_debris.h">
-      <Filter>src\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="fx_dustpuff.h">
-      <Filter>src\Effects</Filter>
-    </ClInclude>
     <ClInclude Include="..\qcommon\Vector.h">
       <Filter>qcommon</Filter>
     </ClInclude>
@@ -326,26 +320,29 @@
     <ClInclude Include="..\qcommon\turbsin.h">
       <Filter>qcommon</Filter>
     </ClInclude>
-    <ClInclude Include="fx_blood_local.h">
-      <Filter>src\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="fx_debris_local.h">
-      <Filter>src\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="fx_sparks.h">
-      <Filter>src\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="fx_smoke.h">
-      <Filter>src\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="fx_flamethrow.h">
-      <Filter>src\Effects</Filter>
-    </ClInclude>
     <ClInclude Include="Ambient Effects.h">
       <Filter>src\Generic Effects</Filter>
     </ClInclude>
     <ClInclude Include="Client Effects.h">
       <Filter>src\Generic Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="fx_blood.h">
+      <Filter>src\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="fx_blood_local.h">
+      <Filter>src\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="fx_debris.h">
+      <Filter>src\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="fx_debris_local.h">
+      <Filter>src\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="fx_dustpuff.h">
+      <Filter>src\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="fx_flamethrow.h">
+      <Filter>src\Effects</Filter>
     </ClInclude>
     <ClInclude Include="fx_HighPriestessProjectiles.h">
       <Filter>src\Effects</Filter>
@@ -354,6 +351,12 @@
       <Filter>src\Effects</Filter>
     </ClInclude>
     <ClInclude Include="fx_Phoenix.h">
+      <Filter>src\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="fx_smoke.h">
+      <Filter>src\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="fx_sparks.h">
       <Filter>src\Effects</Filter>
     </ClInclude>
   </ItemGroup>
