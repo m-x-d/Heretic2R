@@ -91,34 +91,35 @@ static qboolean FXMorphMissileThink(client_entity_t* missile, centity_t* owner)
 	return true;
 }
 
-// we reflected, create a new missile
-void FXMorphMissile(centity_t *owner, int type, int flags, vec3_t origin)
+// We reflected, create a new missile.
+void FXMorphMissile(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	client_entity_t		*missile;
-	byte				blah,pitch;
+	byte yaw;
+	byte pitch;
 
-	// get the initial Yaw
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPELL_MORPHMISSILE].formatString, &blah,&pitch);
+	// Get the initial yaw.
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPELL_MORPHMISSILE].formatString, &yaw, &pitch);
 
-	// create the client effect with the light on it
-	missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
-	missile->r.angles[YAW] = (blah /255.0) * 6.283185;
-	missile->r.angles[PITCH] = (pitch /255.0) * 6.283185;
+	// Create the client effect with the light on it.
+	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
 
-	// figure out where we are going
+	missile->radius = 32.0f;
+	missile->r.angles[YAW] = (float)yaw * BYTEANGLE_TO_RAD; //mxd. Use macro.
+	missile->r.angles[PITCH] = (float)pitch * BYTEANGLE_TO_RAD; //mxd. Use macro.
+
+	// Figure out where we are going.
 	DirFromAngles(missile->r.angles, missile->velocity);
-	if (flags & CEF_FLAG6)
-		Vec3ScaleAssign(MORPH_ARROW_SPEED /2, missile->velocity);
-	else
-		Vec3ScaleAssign(MORPH_ARROW_SPEED, missile->velocity);
 
-	missile->r.model = morph_models + 1;
-	missile->r.scale = 3.0;
-	missile->r.angles[0] = -1.57;
-	missile->Update = FXMorphMissileThink;
-	missile->radius = 32.0F;
+	const float arrow_speed = MORPH_ARROW_SPEED * ((flags & CEF_FLAG6) ? 0.5f : 1.0f); //mxd
+	Vec3ScaleAssign(arrow_speed, missile->velocity);
+
+	missile->r.model = &morph_models[1]; // Egg model.
+	missile->r.scale = 3.0f;
+	missile->r.angles[PITCH] = -ANGLE_90; // Set the pitch AGAIN.
 	missile->color.c = MORPH_COLOR;
-	missile->dlight = CE_DLight_new(missile->color, 150.0F, 00.0F);
+	missile->dlight = CE_DLight_new(missile->color, 150.0f, 0.0f);
+	missile->Update = FXMorphMissileThink;
+
 	AddEffect(owner, missile);
 
 	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/OvumFire.wav"), 1, ATTN_NORM, 0);
