@@ -19,9 +19,9 @@
 
 #define	NUM_OBJECT_MODELS		2
 
-static struct model_s *obj_models[NUM_OBJECT_MODELS];
+static struct model_s* obj_models[2];
 
-void PreCacheObjects()
+void PreCacheObjects(void)
 {
 	obj_models[0] = fxi.RegisterModel("models/fx/explosion/outer/tris.fm");
 	obj_models[1] = fxi.RegisterModel("sprites/fx/halo.sp2");
