@@ -704,7 +704,7 @@ typedef struct
 #define ANGLE2SHORT(x)	((int)((x) * 65536 / 360) & 65535)
 #define SHORT2ANGLE(x)	((x) * (360.0f / 65536.0f))
 
-#define DEG2RAD(a) (((a) * M_PI) / 180.0F)
+#define DEG2RAD(a) (((a) * M_PI) / 180.0f)
 
 // Config strings are a general means of communication from the server to all connected clients.
 // Each config string can be at most MAX_QPATH characters.
