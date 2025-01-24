@@ -1,41 +1,32 @@
 //
-// Heretic II
+// fx_lightning.c
+//
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "ce_DefaultMessageHandler.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "angles.h"
-#include "Vector.h"
 #include "Random.h"
-#include "Utilities.h"
-#include "motion.h"
-#include "Reference.h"
-#include "ce_Dlight.h"
+#include "Vector.h"
 #include "q_Sprite.h"
 #include "g_playstats.h"
 
-#define LIGHTNING_WIDTH		6.0
-#define LIGHTNING_WIDTH_MULT	1.4
-#define LIGHTNING_POWER_WIDTH_MULT	2.0
-#define LIGHTNING_JOINT_SCALE	(1.0/12.0)
+#define LIGHTNING_WIDTH				6.0f
+#define LIGHTNING_WIDTH_MULT		1.4f
+#define LIGHTNING_POWER_WIDTH_MULT	2.0f
+#define LIGHTNING_JOINT_SCALE		(1.0f / 12.0f)
 
-#define LIGHTNING_TYPE_BLUE		0
-#define LIGHTNING_TYPE_RED		1
-#define LIGHTNING_TYPE_GREEN	2
-#define LIGHTNING_JOINT_OFFSET	3
+#define LIGHTNING_TYPE_BLUE			0
+#define LIGHTNING_TYPE_RED			1
+#define LIGHTNING_TYPE_GREEN		2
+#define LIGHTNING_JOINT_OFFSET		3
 
-#define MIN_LIGHTNING_PARTS		5
-#define MAX_LIGHTNING_SEGMENT	64.0
+#define MIN_LIGHTNING_PARTS			5
+#define MAX_LIGHTNING_SEGMENT		64.0f
 
-#define LIGHTNING_INTERVAL	100
-#define NUM_LIGHTNING_RINGBITS	12
-#define LIGHTNING_RING_VEL		320
-#define LIGHTNING_RING_UPVEL	32
+#define LIGHTNING_INTERVAL			100
+#define NUM_LIGHTNING_RINGBITS		12
+#define LIGHTNING_RING_VELOCITY		320.0f
 
 #define	NUM_LIGHTNING_MODELS	7
 static struct model_s *lightning_models[NUM_LIGHTNING_MODELS];
@@ -320,8 +311,8 @@ void FXPowerLightning(centity_t *Owner, int Type, int Flags, vec3_t Origin)
 		else
 			spark = ClientParticle_new(PART_16x16_SPARK_G, lightning->color, 1000);
 		VectorSet(spark->velocity, 
-					flrand(-LIGHTNING_RING_VEL,LIGHTNING_RING_VEL), 
-					flrand(-LIGHTNING_RING_VEL,LIGHTNING_RING_VEL), 
+					flrand(-LIGHTNING_RING_VELOCITY, LIGHTNING_RING_VELOCITY),
+					flrand(-LIGHTNING_RING_VELOCITY, LIGHTNING_RING_VELOCITY),
 					flrand(0,32));
 		VectorScale(spark->velocity, -1.0, spark->acceleration);
 		spark->scale = flrand(20.0, 32.0);
@@ -333,7 +324,7 @@ void FXPowerLightning(centity_t *Owner, int Type, int Flags, vec3_t Origin)
 	// Draw a circle of expanding lines.
 	curang = 0;
 	degreeinc = (360.0*ANGLE_TO_RAD)/(float)NUM_LIGHTNING_RINGBITS;
-	VectorSet(lastvel, LIGHTNING_RING_VEL, 0.0, 0.0);
+	VectorSet(lastvel, LIGHTNING_RING_VELOCITY, 0.0, 0.0);
 	VectorSet(upvel, 0, 0, 32.0);
 	for(i = 0; i < NUM_LIGHTNING_RINGBITS; i++)
 	{
@@ -354,7 +345,7 @@ void FXPowerLightning(centity_t *Owner, int Type, int Flags, vec3_t Origin)
 		VectorMA(target, .01, lightning->velocity, lightning->r.startpos);	// Move the line out a bit to avoid a zero-length line.
 
 		// The endpos is calculated from the current angle.
-		VectorSet(lightning->velocity2, LIGHTNING_RING_VEL*cos(curang), LIGHTNING_RING_VEL*sin(curang), 0.0);
+		VectorSet(lightning->velocity2, LIGHTNING_RING_VELOCITY *cos(curang), LIGHTNING_RING_VELOCITY *sin(curang), 0.0);
 		VectorScale(lightning->velocity2, -1.0, lightning->acceleration2);
 		VectorMA(target, .01, lightning->velocity2, lightning->r.endpos);	// Move the line out a bit to avoid a zero-length line.
 
