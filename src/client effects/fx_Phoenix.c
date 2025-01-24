@@ -210,27 +210,16 @@ static qboolean FXPhoenixExplosionSmallBallThink(client_entity_t* ball, centity_
 	return true;
 }
 
-// This is also exported for use in FXBarrelExplode/
-qboolean FXPhoenixExplosionBallThink(client_entity_t *explosion, centity_t *owner)
+// This is also exported for use in FXBarrelExplode.
+qboolean FXPhoenixExplosionBallThink(client_entity_t* ball, centity_t* owner)
 {
-	float velfactor;
+	if (!FXPhoenixExplosionSmallBallThink(ball, owner))
+		return false;
 
-	if (fxi.cl->time-explosion->startTime > EXPLODE_TIME_MAX)
-	{
-		return(false);
-	}
+	if (ball->dlight->intensity > 0.0f)
+		ball->dlight->intensity -= 5.0f;
 
-	velfactor = (fxi.cl->time - explosion->lastThinkTime) / 1000.0;
-	explosion->lastThinkTime = fxi.cl->time;
-
-	// Spin the ball of fire while it expands and fades.
-	explosion->r.angles[YAW] += explosion->velocity2[YAW] * velfactor;
-	explosion->r.angles[PITCH] += explosion->velocity2[PITCH] * velfactor;
-
-	if(explosion->dlight->intensity > 0.0F)
-		explosion->dlight->intensity -= 5.0F;
-	
-	return(true);
+	return true;
 }
 
 static qboolean FXPhoenixExplosionBirdThink(client_entity_t *bird, centity_t *owner)
