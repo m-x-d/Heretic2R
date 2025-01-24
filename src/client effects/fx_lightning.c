@@ -92,35 +92,6 @@ static client_entity_t* MakeLightningPiece(const int type, const float width, co
 	return spark;
 }
 
-// Occasional lightning bolt strikes inside
-void DoLightning(vec3_t groundpos, vec3_t airpos)
-{
-	vec3_t curpos, lastpos, top, bottom, refpoint, diffpos, rand;
-	float scale;
-	int i;
-
-	VectorSet(top, flrand(-RED_RAIN_RADIUS, RED_RAIN_RADIUS), flrand(-RED_RAIN_RADIUS, RED_RAIN_RADIUS), 0);
-	VectorAdd(airpos, top, top);
-	VectorSet(bottom, flrand(-RED_RAIN_RADIUS, RED_RAIN_RADIUS), flrand(-RED_RAIN_RADIUS, RED_RAIN_RADIUS), 0);
-	VectorAdd(groundpos, bottom, bottom);
-
-	VectorSubtract(top, bottom, diffpos);
-	VectorScale(diffpos, 0.2, diffpos);
-	scale = (airpos[2] - groundpos[2]) / 10.0;
-
-	VectorCopy(bottom, lastpos);
-	VectorCopy(bottom, refpoint);
-	for (i=0; i<5; i++)
-	{
-		VectorAdd(refpoint, diffpos, refpoint);
-		VectorSet(rand, flrand(-scale, scale), flrand(-scale, scale), flrand(-scale, scale));
-		VectorAdd(refpoint, rand, curpos);
-		MakeLightningPiece(LIGHTNING_TYPE_RED, LIGHTNING_WIDTH, curpos, lastpos, scale);
-		VectorCopy(curpos, lastpos);
-	}
-}
-
-
 // Directed lightning bolt
 void LightningBolt(int model, float width, vec3_t startpos, vec3_t endpos)
 {
