@@ -1,46 +1,36 @@
 //
-// Heretic II
+// fx_Phoenix.c
+//
 // Copyright 1998 Raven Software
 //
 
 #include "fx_Phoenix.h" //mxd
-#include "ce_DefaultMessageHandler.h"
+#include "fx_PhoenixLocal.h" //mxd
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "angles.h"
-#include "Vector.h"
 #include "Random.h"
+#include "Vector.h"
 #include "Utilities.h"
-#include "motion.h"
-#include "Reference.h"
 #include "ce_Dlight.h"
-#include "q_Sprite.h"
 #include "g_playstats.h"
 
-#define EXPLODE_SPEED		160.0
-#define EXPLODE_GRAVITY		(-320.0)
-#define EXPLODE_SCALE		14.0
-#define EXPLODE_NUM_BITS	32
-#define EXPLODE_BALL_SPEED	64.0
-#define EXPLODE_BALL_DELAY	5
+#define EXPLODE_SPEED			160.0f
+#define EXPLODE_GRAVITY			(-320.0f)
+#define EXPLODE_SCALE			14.0f
+#define EXPLODE_NUM_BITS		32
+#define EXPLODE_BALL_SPEED		64.0f
 #define EXPLODE_NUM_SMALLBALLS	3
-#define EXPLODE_LIFETIME	50
-#define EXPLODE_TIME_MAX	750
+#define EXPLODE_LIFETIME		50
+#define EXPLODE_TIME_MAX		750
 
-#define FIRETRAIL_PARTS		4
-#define FIRETRAIL_RADIUS	6.0
-#define FIRETRAIL_SPEED		16.0
-#define FIRETRAIL_SCALE		12.0
-#define FIRETRAIL_ACCEL		32.0
+#define FIRETRAIL_PARTS			4
+#define FIRETRAIL_RADIUS		6.0f
+#define FIRETRAIL_SPEED			16.0f
+#define FIRETRAIL_SCALE			12.0f
+#define FIRETRAIL_ACCEL			32.0f
 
-#define SMOKETRAIL_RADIUS	2.0
-#define SMOKETRAIL_SCALE	0.25
-#define SMOKETRAIL_ALPHA	0.5
-
-static qboolean FXPhoenixMissilePowerThink(client_entity_t *missile, centity_t *owner);
-void FXPhoenixExplodePower(centity_t *owner, int type, int flags, vec3_t origin, vec3_t dir);
-
+#define SMOKETRAIL_RADIUS		2.0f
+#define SMOKETRAIL_SCALE		0.25f
+#define SMOKETRAIL_ALPHA		0.5f
 
 #define	NUM_PHOEN_MODELS	6
 static struct model_s *phoen_models[NUM_PHOEN_MODELS];
