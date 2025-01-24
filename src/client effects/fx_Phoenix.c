@@ -195,7 +195,21 @@ void FXPhoenixMissile(centity_t* owner, const int type, const int flags, const v
 	AddEffect(owner, missile);
 }
 
-// -----------------------------------------------------------------------------------------
+static qboolean FXPhoenixExplosionSmallBallThink(client_entity_t* ball, centity_t* owner) //mxd. Moved above FXPhoenixExplosionBallThink.
+{
+	if (fxi.cl->time - ball->startTime > EXPLODE_TIME_MAX)
+		return false;
+
+	const float vel_factor = (float)(fxi.cl->time - ball->lastThinkTime) / 1000.0f;
+	ball->lastThinkTime = fxi.cl->time;
+
+	// Spin the ball of fire while it expands and fades.
+	ball->r.angles[YAW] += ball->velocity2[YAW] * vel_factor;
+	ball->r.angles[PITCH] += ball->velocity2[PITCH] * vel_factor;
+
+	return true;
+}
+
 // This is also exported for use in FXBarrelExplode/
 qboolean FXPhoenixExplosionBallThink(client_entity_t *explosion, centity_t *owner)
 {
@@ -216,26 +230,6 @@ qboolean FXPhoenixExplosionBallThink(client_entity_t *explosion, centity_t *owne
 	if(explosion->dlight->intensity > 0.0F)
 		explosion->dlight->intensity -= 5.0F;
 	
-	return(true);
-}
-
-// This is also exported for use in FXBarrelExplode/
-qboolean FXPhoenixExplosionSmallBallThink(client_entity_t *explosion, centity_t *owner)
-{
-	float velfactor;
-
-	if (fxi.cl->time-explosion->startTime > EXPLODE_TIME_MAX)
-	{
-		return(false);
-	}
-
-	velfactor = (fxi.cl->time - explosion->lastThinkTime) / 1000.0;
-	explosion->lastThinkTime = fxi.cl->time;
-
-	// Spin the ball of fire while it expands and fades.
-	explosion->r.angles[YAW] += explosion->velocity2[YAW] * velfactor;
-	explosion->r.angles[PITCH] += explosion->velocity2[PITCH] * velfactor;
-
 	return(true);
 }
 
