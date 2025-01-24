@@ -289,7 +289,7 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, const vec3_t 
 	if (flags & CEF_FLAG6)
 	{
 		// Powered-up version.
-		FXPhoenixExplodePower(owner, type, flags, origin, dir);
+		FXPhoenixExplodePower(type, flags, origin, dir);
 		return;
 	}
 
@@ -412,158 +412,117 @@ static qboolean FXPhoenixExplosionBirdThinkPower(client_entity_t* bird, centity_
 	return (bird->LifeTime > 0);
 }
 
-void FXPhoenixExplodePower(centity_t *owner, int type, int flags, vec3_t origin, vec3_t dir)
+static void FXPhoenixExplodePower(const int type, int flags, const vec3_t origin, const vec3_t dir)
 {
-	client_entity_t		*explosion, *subexplosion;
-	paletteRGBA_t		color;
-	client_particle_t	*spark;
-	int					i, j;
-	vec3_t				phOrg;
-	float				cosVal, sinVal;
-	trace_t				trace;
-	vec3_t				endPos;
-	vec3_t				minmax = {0, 0, 0};
-	int					numTrails;
-	int					numParts;
-	float				partHeight;
-	float				detail_scale;
+#define TRAIL_SCALER	(18.0f / 8.0f) //mxd
 
 	flags |= CEF_OWNERS_ORIGIN;
 
-	// This isn't actually used but we need something to anchor the particles to
 	// Create the main big explosion sphere.
-	explosion = ClientEntity_new(type, flags, origin, NULL, 17);
-	explosion->r.model = phoenix_models + 5;
-	explosion->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;// | RF_FULLBRIGHT;
+	client_entity_t* explosion = ClientEntity_new(type, flags, origin, NULL, 17);
+
+	explosion->radius = 128.0f;
+	explosion->r.model = &phoenix_models[5]; // Outer explosion model.
+	explosion->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
 	explosion->flags |= CEF_ADDITIVE_PARTS;
-	explosion->alpha = 1.0;
-	explosion->r.scale= .1;
-	explosion->d_alpha=-2.0/1.5;
-	explosion->radius=128;
-	explosion->LifeTime=EXPLODE_LIFETIME;
+	explosion->r.scale = 0.1f;
+	explosion->d_alpha = -2.0f / 1.5f;
+	explosion->LifeTime = EXPLODE_LIFETIME;
 
-	color.c = 0xff00ffff;
-	explosion->dlight = CE_DLight_new(color, 150.0F, 0.0F);
+	const paletteRGBA_t light_color = { .c = 0xff00ffff };
+	explosion->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
 	explosion->Update = FXPhoenixExplosionBallThink;
+
 	AddEffect(NULL, explosion);
-	color.c = 0xffffffff;
 
-	numTrails = GetScaledCount(PHOENIXPOWER_NUMTRAILS-4, 0.8) + 4;//4 is the minimum
-	numParts = GetScaledCount(PHOENIXPOWER_PARTS_PER_TRAIL - 4, .8) + 4;//ditto
+	const int num_trails = GetScaledCount(PHOENIXPOWER_NUMTRAILS - 4, 0.8f) + 4; // 4 is the minimum.
+	const int num_particles = GetScaledCount(PHOENIXPOWER_PARTS_PER_TRAIL - 4, 0.8f) + 4; // Ditto.
 
-	for(i = 0; i < numTrails; i++)
+	for (int i = 0; i < num_trails; i++)
 	{
-		cosVal = cos((float)i / (float)numTrails * (M_PI*2));
-		sinVal = sin((float)i / (float)numTrails * (M_PI*2));
+		const float angle = (float)i / (float)num_trails * ANGLE_360; //mxd
+		const float cos_val = cosf(angle);
+		const float sin_val = sinf(angle);
 
-		VectorCopy(origin, phOrg);
-		phOrg[0] += cosVal * PHOENIXPOWER_RADIUS;
-		phOrg[1] += sinVal * PHOENIXPOWER_RADIUS;
+		vec3_t phoenix_origin;
+		VectorCopy(origin, phoenix_origin);
+		phoenix_origin[0] += cos_val * PHOENIXPOWER_RADIUS;
+		phoenix_origin[1] += sin_val * PHOENIXPOWER_RADIUS;
 
-		VectorCopy(phOrg, endPos);
-		endPos[2] -= 64;
+		vec3_t end_pos;
+		VectorCopy(phoenix_origin, end_pos);
+		end_pos[2] -= 64.0f;
 
-		fxi.Trace(	phOrg, minmax, minmax, endPos, CONTENTS_SOLID, CEF_CLIP_TO_WORLD, &trace);
+		trace_t trace;
+		fxi.Trace(phoenix_origin, vec3_origin, vec3_origin, end_pos, CONTENTS_SOLID, CEF_CLIP_TO_WORLD, &trace);
 
-		if(trace.fraction > .99)
-		{	// Burst in the air, no ground found.
-			subexplosion = ClientEntity_new(-1, flags, phOrg, NULL, 1000);
-			subexplosion->r.model = phoenix_models + 2;
-			subexplosion->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;// | RF_FULLBRIGHT;
-			subexplosion->r.frame = 1;
-			subexplosion->radius=128;
-			subexplosion->r.scale=1.5;
-			subexplosion->d_alpha=-1.0;
-			AddEffect(NULL, subexplosion);
+		const qboolean hit_ground = (trace.fraction < 1.0f); //mxd
+		client_entity_t* halo = ClientEntity_new(-1, flags, (hit_ground ? trace.endpos : phoenix_origin), NULL, 1000);
 
-			for(j = 0; j < numParts; j++)
-			{
-				partHeight = (j * PHOENIXPOWER_PARTS_PER_TRAIL)/numParts;
+		halo->radius = 128.0f;
+		halo->r.model = &phoenix_models[2]; // Halo sprite.
+		halo->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+		halo->r.frame = 1;
+		halo->r.scale = 1.5f;
+		halo->d_alpha = -1.0f;
 
-				spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color, 1000);
-				spark->origin[0] = cosVal * 72;
-				spark->origin[1] = sinVal * 72;
-				// alternate up and down.
-				if (j&0x01)
-					spark->velocity[2] = partHeight * 15.0* (18.0/8.0) + flrand(0, 15);
-				else
-					spark->velocity[2] = -partHeight * 15.0* (18.0/8.0) + flrand(0, 15);
-				spark->scale = 32.0 - (partHeight * (18.0/8.0)/3);
-				spark->d_scale = -partHeight * (18.0/8.0);
-				spark->d_alpha = flrand(-400.0, -320.0)/1.3;
-				spark->duration = (255.0 * 2000.0) / -spark->d_alpha;		// time taken to reach zero alpha
+		AddEffect(NULL, halo);
 
-				AddParticleToList(explosion, spark);
-			}
-		}
-		else
+		for (int c = 0; c < num_particles; c++)
 		{
-			subexplosion = ClientEntity_new(-1, flags, trace.endpos, NULL, 1000);
-			subexplosion->r.model = phoenix_models + 2;
-			subexplosion->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;// | RF_FULLBRIGHT;
-			subexplosion->r.frame = 1;
-			subexplosion->radius=128;
-			subexplosion->r.scale=1.5;
-			subexplosion->d_alpha=-1.0;
-			AddEffect(NULL, subexplosion);
+			client_particle_t* spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color_white, 1000);
 
-			for(j = 0; j < numParts; j++)
-			{
-				partHeight = (j * PHOENIXPOWER_PARTS_PER_TRAIL)/numParts;
+			spark->origin[0] = cos_val * 72.0f;
+			spark->origin[1] = sin_val * 72.0f;
 
-				spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color, 1000);
-				spark->origin[0] = cosVal * 72;
-				spark->origin[1] = sinVal * 72;
-				spark->origin[2] = trace.endpos[2] - origin[2];
-				spark->velocity[2] = partHeight * 15.0* (18.0/8.0) + flrand(0, 15);
-				spark->scale = 32.0 - (partHeight * (18.0/8.0)/3);
-				spark->d_scale = -partHeight * (18.0/8.0);
-				spark->d_alpha = flrand(-400.0, -320.0)/1.3;
-				spark->duration = (255.0 * 2000.0) / -spark->d_alpha;		// time taken to reach zero alpha
+			const float particle_height = (float)(c * PHOENIXPOWER_PARTS_PER_TRAIL) / (float)num_particles;
 
-				AddParticleToList(explosion, spark);
-			}
+			// When burst in the air, alternate up and down.
+			const float side = (!hit_ground && !(c & 1) ? -1.0f : 1.0f); //mxd
+
+			spark->velocity[2] = particle_height * side * 15.0f * TRAIL_SCALER + flrand(0.0f, 15.0f);
+
+			spark->scale = 32.0f - particle_height * TRAIL_SCALER / 3.0f;
+			spark->d_scale = -particle_height * TRAIL_SCALER;
+			spark->d_alpha = flrand(-400.0f, -320.0f) / 1.3f;
+			spark->duration = (int)(255.0f * 2000.0f / -spark->d_alpha); // Time taken to reach zero alpha.
+
+			AddParticleToList(explosion, spark);
 		}
 	}
 
-	if (r_detail->value == DETAIL_LOW)
-		detail_scale = 1.5;
-	else
-		detail_scale = 2.0;
+	const float detail_scale = (((int)r_detail->value == DETAIL_LOW) ? 1.5f : 2.0f);
 
-	// ...and draw the phoenix rising from the explosion
-	explosion = ClientEntity_new(type, flags, origin, NULL, 100);
-	explosion->r.model = phoenix_models + 3;
-	explosion->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;// | RF_FULLBRIGHT;
-	explosion->r.frame = 0;
-	explosion->radius=128;
-	explosion->r.scale=1.0;
-	VectorScale(dir, 192.0, explosion->velocity);
-	explosion->acceleration[2] = 256.0;
-	explosion->alpha = 1.0;
-	explosion->d_alpha=-1.5;
-	explosion->d_scale=detail_scale;
-	explosion->LifeTime = 6;
-	explosion->Update = FXPhoenixExplosionBirdThinkPower;
-	AddEffect(NULL, explosion);
+	// ...and draw the phoenix rising from the explosion.
+	client_entity_t* phoenix_outer = ClientEntity_new(type, flags, origin, NULL, 100);
 
-	// inner phoenix
-	explosion = ClientEntity_new(type, flags, origin, NULL, 100);
-	explosion->r.model = phoenix_models + 3;
-	explosion->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;// | RF_FULLBRIGHT;
-	explosion->r.frame = 0;
-	explosion->radius=128;
-	explosion->r.scale=1.0;
-	VectorScale(dir, 192.0, explosion->velocity);
-	explosion->acceleration[2] = 256.0;
-	explosion->alpha = 1.0;
-	explosion->d_alpha= 0.0;
-	explosion->d_scale=-1.0/.6;
-	explosion->LifeTime = 6;
-	explosion->Update = FXPhoenixExplosionBirdThinkPower;
-	AddEffect(NULL, explosion);
+	phoenix_outer->radius = 128.0f;
+	phoenix_outer->r.model = &phoenix_models[3]; // Phoenix sprite.
+	phoenix_outer->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	VectorScale(dir, 192.0f, phoenix_outer->velocity);
+	phoenix_outer->acceleration[2] = 256.0f;
+	phoenix_outer->d_alpha = -1.5f;
+	phoenix_outer->d_scale = detail_scale;
+	phoenix_outer->LifeTime = 6;
+	phoenix_outer->Update = FXPhoenixExplosionBirdThinkPower;
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/PhoenixPowerHit.wav"), 1, ATTN_NORM, 0);
+	AddEffect(NULL, phoenix_outer);
+
+	// Inner phoenix.
+	client_entity_t* phoenix_inner = ClientEntity_new(type, flags, origin, NULL, 100);
+
+	phoenix_inner->radius = 128.0f;
+	phoenix_inner->r.model = &phoenix_models[3]; // Phoenix sprite.
+	phoenix_inner->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	VectorScale(dir, 192.0f, phoenix_inner->velocity);
+	phoenix_inner->acceleration[2] = 256.0f;
+	phoenix_inner->d_scale = -1.0f / 0.6f;
+	phoenix_inner->LifeTime = 6;
+	phoenix_inner->Update = FXPhoenixExplosionBirdThinkPower;
+
+	AddEffect(NULL, phoenix_inner);
+
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/PhoenixPowerHit.wav"), 1.0f, ATTN_NORM, 0);
 }
 
 static qboolean FXPhoenixMissilePowerThink(client_entity_t *missile, centity_t *owner)
