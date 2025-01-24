@@ -276,131 +276,126 @@ client_entity_t* CreatePhoenixSmallExplosion(const vec3_t ball_origin) //TODO: r
 	return sub_explosion;
 }
 
-//////////////////////////
-// From CreateEffect FX_WEAPON_PHOENIXEXPLODE
-//////////////////////////
-void FXPhoenixExplode(centity_t *owner, int type, int flags, vec3_t origin)
+void FXPhoenixExplode(centity_t* owner, const int type, int flags, const vec3_t origin)
 {
-	client_entity_t		*explosion, *subexplosion;
-	paletteRGBA_t		color;
-	vec3_t				dir, sdir;
-	client_particle_t	*spark;
-	int					i;
-	float				ballnum;
-	int					count, dur;
+	vec3_t dir;
+	vec3_t scorch_dir;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_PHOENIXEXPLODE].formatString, dir, scorch_dir);
 
-	fxi.GetEffect(owner,flags,clientEffectSpawners[FX_WEAPON_PHOENIXEXPLODE].formatString,dir,sdir);
+	// Make the scorch mark if we should.
+	if (flags & CEF_FLAG8)
+		FXClientScorchmark(origin, scorch_dir);
 
-	// make the scorch mark if we should
-	if(flags & CEF_FLAG8)
-		FXClientScorchmark(origin, sdir);
-
-	if(flags & CEF_FLAG6)
-	{	// powered up version
+	if (flags & CEF_FLAG6)
+	{
+		// Powered-up version.
 		FXPhoenixExplodePower(owner, type, flags, origin, dir);
 		return;
 	}
 
 	flags |= CEF_OWNERS_ORIGIN;
 
-	if(r_detail->value != DETAIL_LOW)
+	if (r_detail->value > DETAIL_LOW)
 	{
-		count =	EXPLODE_NUM_SMALLBALLS;
-		if(r_detail->value == DETAIL_NORMAL)
-			count =	EXPLODE_NUM_SMALLBALLS - 1;
+		const int count = ((r_detail->value > DETAIL_NORMAL) ? EXPLODE_NUM_SMALLBALLS : EXPLODE_NUM_SMALLBALLS - 1);
 
 		// Create three smaller explosion spheres.
-		for (i=0; i < count; i++)
+		for (int i = 0; i < count; i++)
 		{
-			ballnum = i;
-			subexplosion = CreatePhoenixSmallExplosion(origin);
-			VectorSet(subexplosion->velocity, 
-							flrand(-EXPLODE_BALL_SPEED, EXPLODE_BALL_SPEED) + (dir[0]*EXPLODE_BALL_SPEED),
-							flrand(-EXPLODE_BALL_SPEED, EXPLODE_BALL_SPEED) + (dir[1]*EXPLODE_BALL_SPEED),
-							flrand(-EXPLODE_BALL_SPEED, EXPLODE_BALL_SPEED) + (dir[2]*EXPLODE_BALL_SPEED));
-			subexplosion->r.scale = 0.1;
-			subexplosion->d_scale = 3.0 + ballnum;
-			subexplosion->d_alpha = -1.5 - 0.5*ballnum;
+			const float ball_num = (float)i;
+			client_entity_t* sub_explosion = CreatePhoenixSmallExplosion(origin);
 
-			AddEffect(NULL, subexplosion);
+			for (int c = 0; c < 3; c++)
+				sub_explosion->velocity[c] = flrand(-EXPLODE_BALL_SPEED, EXPLODE_BALL_SPEED) + (dir[c] * EXPLODE_BALL_SPEED);
+
+			sub_explosion->r.scale = 0.1f;
+			sub_explosion->d_scale = 3.0f + ball_num;
+			sub_explosion->d_alpha = -1.5f - ball_num * 0.5f;
+
+			AddEffect(NULL, sub_explosion);
 		}
 	}
 
 	// Create the main big explosion sphere.
-	explosion = ClientEntity_new(type, flags, origin, NULL, 17);
-	explosion->r.model = phoenix_models + 5;
-	explosion->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;// | RF_FULLBRIGHT;
+	client_entity_t* explosion = ClientEntity_new(type, flags, origin, NULL, 17);
+
+	explosion->radius = 128.0f;
+	explosion->r.model = &phoenix_models[5]; // Outer explosion model.
+	explosion->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
 	explosion->flags |= CEF_ADDITIVE_PARTS | CEF_PULSE_ALPHA;
-	explosion->alpha = 0.1;
-	explosion->r.scale= 0.1;
-	explosion->d_alpha = 3.0;
-	explosion->d_scale=5.0;
-	explosion->radius=128;
+	explosion->alpha = 0.1f;
+	explosion->r.scale = 0.1f;
+	explosion->d_alpha = 3.0f;
+	explosion->d_scale = 5.0f;
 	explosion->startTime = fxi.cl->time;
 	explosion->lastThinkTime = fxi.cl->time;
-	explosion->velocity2[YAW] = flrand(-M_PI, M_PI);
-	explosion->velocity2[PITCH] = flrand(-M_PI, M_PI);
+	explosion->velocity2[YAW] = flrand(-ANGLE_180, ANGLE_180);
+	explosion->velocity2[PITCH] = flrand(-ANGLE_180, ANGLE_180);
 
-	color.c = 0xff00ffff;
-	explosion->dlight = CE_DLight_new(color, 150.0F, 0.0F);
+	const paletteRGBA_t light_color = { .c = 0xff00ffff };
+	explosion->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
 	explosion->Update = FXPhoenixExplosionBallThink;
+
 	AddEffect(NULL, explosion);
-	
+
 	// Add some glowing blast particles.
-	VectorScale(dir,EXPLODE_SPEED,dir);
-	count = GetScaledCount(EXPLODE_NUM_BITS, 0.3);
-	for(i = 0; i < count; i++)
+	vec3_t vel;
+	VectorScale(vel, EXPLODE_SPEED, vel);
+	const int count = GetScaledCount(EXPLODE_NUM_BITS, 0.3f);
+
+	for (int i = 0; i < count; i++)
 	{
-		spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color, 2000);
-		VectorSet(spark->velocity,	flrand(-EXPLODE_SPEED, EXPLODE_SPEED), 
-									flrand(-EXPLODE_SPEED, EXPLODE_SPEED), 
-									flrand(-EXPLODE_SPEED, EXPLODE_SPEED));
-		VectorAdd(spark->velocity, dir, spark->velocity);
+		client_particle_t* spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), light_color, 2000);
+
+		VectorRandomSet(spark->velocity, EXPLODE_SPEED);
+		VectorAdd(spark->velocity, vel, spark->velocity);
 		spark->acceleration[2] = EXPLODE_GRAVITY;
 		spark->scale = EXPLODE_SCALE;
-		spark->d_scale = flrand(-20.0, -10.0);
-		spark->d_alpha = flrand(-400.0, -320.0);
-		spark->duration = (255.0 * 2000.0) / -spark->d_alpha;		// time taken to reach zero alpha
+		spark->d_scale = flrand(-20.0f, -10.0f);
+		spark->d_alpha = flrand(-400.0f, -320.0f);
+		spark->duration = (int)(255.0f * 2000.0f / -spark->d_alpha); // Time taken to reach zero alpha.
 
 		AddParticleToList(explosion, spark);
 	}
 
 	// ...and a big-ass flash
-	explosion = ClientEntity_new(-1, flags, origin, NULL, 250);
-	explosion->r.model = phoenix_models + 2;
-	explosion->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;// | RF_FULLBRIGHT;
-	explosion->r.frame = 1;
-	explosion->radius=128;
-	explosion->r.scale=1.5;
-	explosion->d_alpha=-4.0;
-	explosion->d_scale=-4.0;
-	AddEffect(NULL, explosion);
+	client_entity_t* flash = ClientEntity_new(-1, flags, origin, NULL, 250);
 
-	if(r_detail->value == DETAIL_LOW)
-		dur = 150;
+	flash->radius = 128.0f;
+	flash->r.model = &phoenix_models[2]; // Halo sprite.
+	flash->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	flash->r.frame = 1;
+	flash->r.scale = 1.5f;
+	flash->d_alpha = -4.0f;
+	flash->d_scale = -4.0f;
+
+	AddEffect(NULL, flash);
+
+	int duration;
+	if ((int)r_detail->value == DETAIL_LOW)
+		duration = 150;
+	else if ((int)r_detail->value == DETAIL_NORMAL)
+		duration = 125;
 	else
-	if(r_detail->value == DETAIL_NORMAL)
-		dur = 125;
-	else
-		dur = 100;
+		duration = 100;
 
 	// ...and draw the phoenix rising from the explosion
-	explosion = ClientEntity_new(type, flags, origin, NULL, dur);
-	explosion->r.model = phoenix_models + 3;
-	explosion->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;// | RF_FULLBRIGHT;
-	explosion->r.frame = 0;
-	explosion->radius=128;
-	explosion->r.scale=0.1;
-	VectorScale(dir, 0.25, explosion->velocity);
-	explosion->acceleration[2] = 64;
-	explosion->alpha = 1.0;
-	explosion->d_alpha=-1.0;
-	explosion->d_scale=1.25;
-	explosion->LifeTime = 10;
-	explosion->Update = FXPhoenixExplosionBirdThink;
-	AddEffect(NULL, explosion);
+	client_entity_t* phoenix = ClientEntity_new(type, flags, origin, NULL, duration);
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/PhoenixHit.wav"), 1, ATTN_NORM, 0);
+	phoenix->radius = 128.0f;
+	phoenix->r.model = &phoenix_models[3]; // Phoenix sprite.
+	phoenix->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	phoenix->r.scale = 0.1f;
+	VectorScale(vel, 0.25f, phoenix->velocity);
+	phoenix->acceleration[2] = 64.0f;
+	phoenix->d_alpha = -1.0f;
+	phoenix->d_scale = 1.25f;
+	phoenix->LifeTime = 10;
+	phoenix->Update = FXPhoenixExplosionBirdThink;
+
+	AddEffect(NULL, phoenix);
+
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/PhoenixHit.wav"), 1.0f, ATTN_NORM, 0);
 }
 
 #pragma endregion
