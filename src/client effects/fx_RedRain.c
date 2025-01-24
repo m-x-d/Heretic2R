@@ -195,78 +195,65 @@ static qboolean FXRedRainDropUpdate(client_entity_t* drop, centity_t* owner)
 	return false;
 }
 
-
-// Red Rain area
-
-// This constantly starts new drops up at the top.  It also spawns a splash, which is set to go off at the appropriate fall time
-static qboolean FXRedRainThink(client_entity_t *rain, centity_t *owner)
+// This constantly starts new drops up at the top. It also spawns a splash, which is set to go off at the appropriate fall time.
+static qboolean FXRedRainThink(client_entity_t* rain, const centity_t* owner)
 {
-	client_entity_t		*splash;
-	client_entity_t		*drop;
-	vec3_t				origin;		//, top;
-	int					j;
-	float				duration, radius, width;
-	trace_t				trace;
+	if (rain->nextEventTime <= fxi.cl->time)
+		return false; // In case we lose the packet that tells us to remove.
 
-	if(rain->nextEventTime <= fxi.cl->time)
-		return (false);//in case we lose the packet that tells us to remove
+	if (rain->SpawnData < 0.0f)
+		rain->SpawnData = min(0.0f, rain->SpawnData + 8.0f);
 
-	if (rain->SpawnInfo)
-	{	// Powered up rain
-		radius = POWER_RAIN_RADIUS;
-		width = POWER_RAIN_WIDTH;
-	}
-	else
-	{	// Unpowered
-		radius = RED_RAIN_RADIUS;
-		width = RED_RAIN_WIDTH;
-	}
+	if (owner->current.effects & EF_DISABLE_EXTRA_FX)
+		return true;
 
-	if (rain->SpawnData < 0.0)
+	const float radius = ((rain->SpawnInfo == 1) ? POWER_RAIN_RADIUS : RED_RAIN_RADIUS);
+	const float width = ((rain->SpawnInfo == 1) ? POWER_RAIN_WIDTH : RED_RAIN_WIDTH);
+
+	for (int i = 0; i < NUM_DROPS; i++)
 	{
-		rain->SpawnData += 8.0;
-		if (rain->SpawnData > 0.0)
-			rain->SpawnData = 0.0;
-	}
-
-	if(owner->current.effects&EF_DISABLE_EXTRA_FX)//rain->LifeTime < 1000)
-		return(true);
-
-	for(j = 0; j < NUM_DROPS; j++)
-	{
-		VectorSet(origin, 
-				flrand(-radius, radius), 
-				flrand(-radius, radius), 
-				rain->SpawnData + flrand(-8.0F, 8.0F));
+		vec3_t origin;
+		VectorSet(origin, flrand(-radius, radius), flrand(-radius, radius), rain->SpawnData + flrand(-8.0f, 8.0f));
 		VectorAdd(rain->origin, origin, origin);
-		duration = GetFallTime(origin, RAIN_INITIAL_VELOCITY, -PARTICLE_GRAVITY, DROP_RADIUS, 3.0F, &trace);
-		drop = ClientEntity_new(-1, CEF_DONT_LINK, origin, NULL, duration);
-		drop->r.model = rain_models + 3;
-		drop->r.frame = rain->SpawnInfo;
-		drop->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		drop->alpha = 0.75;
-		drop->SpawnInfo = rain->SpawnInfo;
-		drop->r.scale = width;
+
+		trace_t trace;
+		const int duration = GetFallTime(origin, RAIN_INITIAL_VELOCITY, -PARTICLE_GRAVITY, DROP_RADIUS, 3.0f, &trace);
+
+		client_entity_t* drop = ClientEntity_new(-1, CEF_DONT_LINK, origin, NULL, duration);
+
 		drop->radius = RAIN_HEIGHT;
+		drop->r.model = &rain_models[3]; // redraindrop sprite.
+		drop->r.frame = rain->SpawnInfo;
+		drop->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		drop->r.spriteType = SPRITE_LINE;
+		drop->r.scale = width;
+		drop->alpha = 0.75f;
+
 		VectorCopy(origin, drop->r.startpos);
 		VectorCopy(origin, drop->r.endpos);
 		drop->r.endpos[2] -= RAIN_HEIGHT;
 		drop->velocity[2] = RAIN_INITIAL_VELOCITY;
-		drop->r.spriteType = SPRITE_LINE;
+
+		drop->SpawnInfo = rain->SpawnInfo;
 		drop->SpawnData = origin[2]; // This allows the drop to remember its top position, so the top doesn't go higher than it.
 		drop->AddToView = FXRedRainDropUpdate;
-		AddEffect(NULL, drop); 
 
-		if((duration > 20) && (r_detail->value > DETAIL_LOW))
+		AddEffect(NULL, drop);
+
+		if (duration > 20 && r_detail->value > DETAIL_LOW)
 		{
-			origin[2] += GetDistanceOverTime(RAIN_INITIAL_VELOCITY, -PARTICLE_GRAVITY, (float)duration * 0.001F);
-			splash = ClientEntity_new(-1, CEF_NO_DRAW | CEF_NOMOVE, origin, NULL, duration);
-			splash->Update = FXRedRainSplashThink;
+			origin[2] += GetDistanceOverTime(RAIN_INITIAL_VELOCITY, -PARTICLE_GRAVITY, (float)duration * 0.001f);
+
+			client_entity_t* splash = ClientEntity_new(-1, CEF_NO_DRAW | CEF_NOMOVE, origin, NULL, duration);
+
 			splash->SpawnInfo = rain->SpawnInfo;
-			AddEffect(NULL, splash); 
+			splash->Update = FXRedRainSplashThink;
+
+			AddEffect(NULL, splash);
 		}
 	}
-	return(true);
+
+	return true;
 }
 
 // This is from creating the effect FX_RED_RAIN.
