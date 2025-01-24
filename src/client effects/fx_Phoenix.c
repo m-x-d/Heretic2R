@@ -161,49 +161,38 @@ static qboolean FXPhoenixMissileThink(client_entity_t* missile, centity_t* owner
 	return true;
 }
 
-///////////////////////////
-// From CreateEffect FX_WEAPON_PHOENIXMISSILE
-///////////////////////////
-void FXPhoenixMissile(centity_t *owner, int type, int flags, vec3_t origin)
+void FXPhoenixMissile(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	client_entity_t		*missile;
-	vec3_t				temp;
-
-	missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 25);
+	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 25);
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_PHOENIXMISSILE].formatString, missile->velocity);
 
-	if (flags & CEF_FLAG8)
-		Vec3ScaleAssign(PHOENIX_ARROW_SPEED/2,missile->velocity);
-	else
-		Vec3ScaleAssign(PHOENIX_ARROW_SPEED,missile->velocity);
+	const float velocity = PHOENIX_ARROW_SPEED * ((flags & CEF_FLAG8) ? 0.5f : 1.0f);
+	Vec3ScaleAssign(velocity, missile->velocity);
 
+	vec3_t dir;
+	VectorCopy(missile->velocity, dir);
+	VectorNormalize(dir);
+	AnglesFromDir(dir, missile->r.angles);
 
-	VectorCopy(missile->velocity, temp);
-	VectorNormalize(temp);
-	AnglesFromDir(temp, missile->r.angles);
-
-	missile->r.model = phoenix_models + 1;
+	missile->radius = 256.0f;
+	missile->r.model = &phoenix_models[1]; // Phoenix arrow model.
 	missile->flags |= CEF_ADDITIVE_PARTS;
-	missile->r.frame = 0;
-	missile->lastThinkTime = fxi.cl->time + (50*7);	// Time to play last frame.
-	missile->NoOfAnimFrames = 7;					// End on frame number 7.
-	missile->Scale = 1;								// Positive frame count
-	missile->r.scale= .8;							
-	if(flags & CEF_FLAG6)
-	{
-		missile->Update = FXPhoenixMissilePowerThink;
-	}
-	else
-	{
-		missile->Update = FXPhoenixMissileThink;
-	}
-	missile->radius = 256;
+	missile->lastThinkTime = fxi.cl->time + (50 * 7); // Time to play last frame.
+	missile->NoOfAnimFrames = 7; // End on frame number 7.
+	missile->Scale = 1.0f; // Positive frame count.
+	missile->r.scale = 0.8f;
 	missile->color.c = 0xff00ffff;
-	if (r_detail->value != DETAIL_LOW)
-		missile->dlight = CE_DLight_new(missile->color, 150.0F, 00.0F);
 	missile->LifeTime = 1000;
-	AddEffect(owner, missile);
 
+	if ((int)r_detail->value != DETAIL_LOW)
+		missile->dlight = CE_DLight_new(missile->color, 150.0f, 0.0f);
+
+	if (flags & CEF_FLAG6)
+		missile->Update = FXPhoenixMissilePowerThink;
+	else
+		missile->Update = FXPhoenixMissileThink;
+
+	AddEffect(owner, missile);
 }
 
 // -----------------------------------------------------------------------------------------
