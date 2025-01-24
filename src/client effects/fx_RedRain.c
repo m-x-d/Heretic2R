@@ -47,52 +47,50 @@ static qboolean FXRedRainDLightThink(const client_entity_t* dlight, centity_t* o
 }
 
 static qboolean RedRainExplosionThink(client_entity_t* explosion, centity_t* owner)
-{	// The explosion bit should be drawn to orbit the rain generation spot.
-	vec3_t targetpos, diffpos, dir, randomvect;
-	float	radius;
-
+{
+	// The explosion bit should be drawn to orbit the rain generation spot.
 	explosion->updateTime = 100;
 	explosion->LifeTime -= 100;
 
 	if (explosion->LifeTime > 1000)
-	{	// Vary intesity
-		explosion->alpha = 1.0 - explosion->r.scale * 0.1;
+	{
+		// Vary intensity.
+		explosion->alpha = 1.0f - explosion->r.scale * 0.1f;
 	}
 	else if (explosion->LifeTime == 1000)
-	{	// Fade them out
-		explosion->d_alpha = -0.5;
-		explosion->d_scale = -2.0;
+	{
+		// Fade them out.
+		explosion->d_alpha = -0.5f;
+		explosion->d_scale = -2.0f;
 	}
 	else if (explosion->LifeTime < 0)
-		return(false);
-
-	explosion->r.angles[YAW] += 20.0;
-
-	if (explosion->SpawnInfo)
-	{	// Powered up rain
-		radius = POWER_RAIN_RADIUS;
-	}
-	else
-	{	// Non-powered
-		radius = RED_RAIN_RADIUS;
+	{
+		return false;
 	}
 
+	explosion->r.angles[YAW] += 20.0f;
+
+	const float radius = ((explosion->SpawnInfo == 1) ? POWER_RAIN_RADIUS : RED_RAIN_RADIUS); //mxd
+
+	vec3_t dir;
 	AngleVectors(explosion->r.angles, dir, NULL, NULL);
-	VectorMA(explosion->direction, radius * 1.5, dir, targetpos);
-	VectorSet(randomvect,
-		flrand(-radius, radius),
-		flrand(-radius, radius),
-		flrand(-radius, radius));
-	VectorAdd(targetpos, randomvect, targetpos);
+
+	vec3_t target_pos;
+	VectorMA(explosion->direction, radius * 1.5f, dir, target_pos);
+
+	vec3_t random_vect;
+	VectorRandomSet(random_vect, radius);
+	VectorAdd(target_pos, random_vect, target_pos);
 
 	// This is the velocity it would need to reach the position in one second.
-	VectorSubtract(targetpos, explosion->r.origin, diffpos);
+	vec3_t diff_pos;
+	VectorSubtract(target_pos, explosion->r.origin, diff_pos);
 
 	// Average this velocity with the current one.
-	VectorAdd(explosion->velocity, diffpos, diffpos);
-	VectorScale(diffpos, 0.5, explosion->velocity);
+	VectorAdd(explosion->velocity, diff_pos, diff_pos);
+	VectorScale(diff_pos, 0.5f, explosion->velocity);
 
-	return(true);
+	return true;
 }
 
 // This is similar to the FXRedRainMissileExplode, except that the explosion needs knowledge of the rainfall height.
