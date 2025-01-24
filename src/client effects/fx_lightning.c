@@ -41,53 +41,55 @@ void PreCacheLightning(void)
 	lightning_models[6] = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
 
-// --------------------------------------------------------------
-
-client_entity_t *MakeLightningPiece(int type, float width, vec3_t start, vec3_t end, float radius)
+static client_entity_t* MakeLightningPiece(const int type, const float width, const vec3_t start, const vec3_t end, const float radius)
 {
-	client_entity_t *lightning;
+	// Lightning.
+	client_entity_t* lightning = ClientEntity_new(FX_LIGHTNING, CEF_DONT_LINK, start, NULL, 250);
 
-	lightning = ClientEntity_new(FX_LIGHTNING, CEF_DONT_LINK, start, NULL, 250);
-	lightning->r.model = lightning_models + type;
-	lightning->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	lightning->r.scale = width;
 	lightning->radius = radius;
-	lightning->alpha = 0.95;
-	lightning->d_alpha = -4.0;
-	VectorCopy(start, lightning->r.startpos);
-	VectorCopy(end, lightning->r.endpos);
- 	lightning->r.spriteType = SPRITE_LINE;
-	AddEffect(NULL, lightning); 
-
-	lightning = ClientEntity_new(FX_LIGHTNING, CEF_DONT_LINK, start, NULL, 400);
-	lightning->r.model = lightning_models + type;
-	lightning->r.frame = 1;
-	lightning->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	lightning->r.scale = width * LIGHTNING_WIDTH_MULT;
-	lightning->radius = radius;
-	lightning->alpha = 0.5;
-	lightning->d_alpha = -1.250;
-	VectorCopy(start, lightning->r.startpos);
-	VectorCopy(end, lightning->r.endpos);
+	lightning->r.model = &lightning_models[type];
+	lightning->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 	lightning->r.spriteType = SPRITE_LINE;
-	AddEffect(NULL, lightning); 
+	lightning->r.scale = width;
+	lightning->alpha = 0.95f;
+	lightning->d_alpha = -4.0f;
+	VectorCopy(start, lightning->r.startpos);
+	VectorCopy(end, lightning->r.endpos);
+
+	AddEffect(NULL, lightning);
+
+	// Halo around the lightning.
+	client_entity_t* halo = ClientEntity_new(FX_LIGHTNING, CEF_DONT_LINK, start, NULL, 400);
+
+	halo->radius = radius;
+	halo->r.model = &lightning_models[type];
+	halo->r.frame = 1;
+	halo->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	halo->r.spriteType = SPRITE_LINE;
+	halo->r.scale = width * LIGHTNING_WIDTH_MULT;
+	halo->alpha = 0.5f;
+	halo->d_alpha = -1.25f;
+	VectorCopy(start, halo->r.startpos);
+	VectorCopy(end, halo->r.endpos);
+
+	AddEffect(NULL, halo);
 
 	// Add a little ball at the joint (end)
+	client_entity_t* spark = ClientEntity_new(FX_LIGHTNING, CEF_DONT_LINK, start, NULL, 250);
 
-	lightning = ClientEntity_new(FX_LIGHTNING, CEF_DONT_LINK, start, NULL, 250);
-	lightning->r.model = lightning_models + type + LIGHTNING_JOINT_OFFSET;
-	lightning->r.frame = 0;
-	lightning->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	lightning->r.scale = width * LIGHTNING_JOINT_SCALE;
-	lightning->radius = radius;
-	lightning->alpha = 0.95;
-	lightning->d_alpha = -2.0;
-	lightning->d_scale = -2.0;
-	VectorCopy(start, lightning->r.startpos);
-	VectorCopy(end, lightning->r.endpos);
-	AddEffect(NULL, lightning); 
+	spark->radius = radius;
+	spark->r.model = &lightning_models[type + LIGHTNING_JOINT_OFFSET];
+	spark->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	spark->r.scale = width * LIGHTNING_JOINT_SCALE;
+	spark->alpha = 0.95f;
+	spark->d_alpha = -2.0f;
+	spark->d_scale = -2.0f;
+	VectorCopy(start, spark->r.startpos);
+	VectorCopy(end, spark->r.endpos);
 
-	return(lightning);
+	AddEffect(NULL, spark);
+
+	return spark;
 }
 
 // Occasional lightning bolt strikes inside
