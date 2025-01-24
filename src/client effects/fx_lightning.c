@@ -161,43 +161,42 @@ static qboolean FXLightningThink(const client_entity_t* thinker, centity_t* owne
 	return false;
 }
 
-// This is from creating the effect FX_LIGHTNING
-void FXLightning(centity_t *Owner, int Type, int Flags, vec3_t Origin)
+void FXLightning(centity_t* owner, int type, const int flags, const vec3_t origin)
 {
-	vec3_t				target, diffpos;
-	byte				width, duration;
-	client_entity_t		*lightning;
-		
-	fxi.GetEffect(Owner, Flags, clientEffectSpawners[FX_LIGHTNING].formatString, target, &width, &duration);
+	byte width;
+	byte duration;
+	vec3_t target;
 
-	if (duration > 1)	// duration is in 1/10 of a second
-	{	// Create a client effect to zap over time.
-		lightning = ClientEntity_new(FX_LIGHTNING, Flags | CEF_NO_DRAW, Origin, NULL, LIGHTNING_INTERVAL);
-		VectorSubtract(target, Origin, diffpos);
-		lightning->radius = VectorLength(diffpos)*0.5;
-		VectorCopy(Origin, lightning->r.startpos);
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_LIGHTNING].formatString, target, &width, &duration);
+
+	if (duration > 1) // Duration is in 1/10 of a second.
+	{
+		// Create a client effect to zap over time.
+		client_entity_t* lightning = ClientEntity_new(FX_LIGHTNING, (int)(flags | CEF_NO_DRAW), origin, NULL, LIGHTNING_INTERVAL);
+
+		vec3_t diff_pos;
+		VectorSubtract(target, origin, diff_pos);
+		lightning->radius = VectorLength(diff_pos) * 0.5f;
+		VectorCopy(origin, lightning->r.startpos);
 		VectorCopy(target, lightning->r.endpos);
 		lightning->lastThinkTime = fxi.cl->time;
-		lightning->LifeTime = ((int)duration)*100+250;
-		lightning->Update = FXLightningThink;
+		lightning->LifeTime = duration * 100 + 250;
+		lightning->SpawnInfo = ((flags & CEF_FLAG6) ? LIGHTNING_TYPE_RED : LIGHTNING_TYPE_BLUE);
 		lightning->xscale = (float)width;
-		if (Flags & CEF_FLAG6)
-			lightning->SpawnInfo = LIGHTNING_TYPE_RED;
-		else
-			lightning->SpawnInfo = LIGHTNING_TYPE_BLUE;
-		AddEffect(NULL, lightning); 
+		lightning->Update = FXLightningThink;
+
+		AddEffect(NULL, lightning);
 	}
-	
-	// If flagged, do red lightning.
-	if (Flags & CEF_FLAG6)
-		LightningBolt(LIGHTNING_TYPE_RED, (float)width, Origin, target);
-	else if (Flags & CEF_FLAG7)
-		LightningBolt(LIGHTNING_TYPE_GREEN, (float)width, Origin, target);	// powered up rain lightning
-	else 
-		LightningBolt(LIGHTNING_TYPE_BLUE, (float)width, Origin, target);	// Normal, blue lightning
 
+	int model = LIGHTNING_TYPE_BLUE;	// Normal, blue lightning
+
+	if (flags & CEF_FLAG6)
+		model = LIGHTNING_TYPE_RED;		// If flagged, do red lightning.
+	else if (flags & CEF_FLAG7)
+		model = LIGHTNING_TYPE_GREEN;	// Powered-up rain lightning.
+
+	LightningBolt(model, width, origin, target);
 }
-
 
 // This is from creating the effect FX_POWER_LIGHTNING
 void FXPowerLightning(centity_t *Owner, int Type, int Flags, vec3_t Origin)
