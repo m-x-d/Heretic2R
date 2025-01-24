@@ -94,83 +94,72 @@ static qboolean RedRainExplosionThink(client_entity_t* explosion, centity_t* own
 }
 
 // This is similar to the FXRedRainMissileExplode, except that the explosion needs knowledge of the rainfall height.
-void RedRainExplosion(vec3_t impactpos, vec3_t rainpos, int duration, qboolean powerup, centity_t* owner)
+static void RedRainExplosion(vec3_t impact_pos, vec3_t rain_pos, const int duration, const qboolean powerup, centity_t* owner)
 {
-	client_entity_t* explo;
-	client_entity_t* dlight;
-	vec3_t				org;
-	paletteRGBA_t		color;
-	int					i;
-	float				degreeinc;
-	int					count;
+	client_entity_t* dlight = ClientEntity_new(-1, CEF_NO_DRAW | CEF_NOMOVE, impact_pos, NULL, 100);
 
-	dlight = ClientEntity_new(-1, CEF_NO_DRAW | CEF_NOMOVE, impactpos, NULL, 100);
-	if (powerup)
-		color.c = 0xff0080ff;	// Orange when powered up
-	else
-		color.c = 0xff0000ff;	// Red when not.
-	dlight->dlight = CE_DLight_new(color, 150.0F, 0.0F);
+	const paletteRGBA_t light_color = { .c = (powerup ? 0xff0080ff : 0xff0000ff) }; // Orange when powered up, red when not.
+	dlight->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
 	dlight->Update = FXRedRainDLightThink;
+
 	AddEffect(NULL, dlight);
 
-	// always have at least 3 clouds
-	count = GetScaledCount(REDRAIN_EXPLODE_NUM, 0.3);
-	if (count < 3)
-		count = 3;
+	// Always have at least 3 clouds.
+	int count = GetScaledCount(REDRAIN_EXPLODE_NUM, 0.3f);
+	count = max(3, count);
 
-	degreeinc = (360.0) / (float)count;
-	for (i = 0; i < count; i++)
+	const float degree_inc = 360.0f / (float)count;
+
+	for (int i = 0; i < count; i++)
 	{
-		VectorRandomCopy(impactpos, org, RED_RAIN_RADIUS / 3.0);
-		explo = ClientEntity_new(FX_WEAPON_REDRAIN, CEF_DONT_LINK, org, NULL, 100);
+		vec3_t org;
+		VectorRandomCopy(impact_pos, org, RED_RAIN_RADIUS / 3.0f);
 
-		explo->r.model = rain_models + 2;
-		explo->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		explo->radius = 16.0F;
-		VectorSet(explo->velocity, flrand(-128.0, 128.0), flrand(-128.0, 128.0), flrand(-128.0, 0.0));
-		explo->r.angles[YAW] = (float)i * degreeinc;
-		VectorCopy(rainpos, explo->direction);
-		explo->alpha = 0.3;
-		explo->lastThinkTime = fxi.cl->time;
-		explo->LifeTime = duration;
-		explo->Update = RedRainExplosionThink;
+		client_entity_t* explosion = ClientEntity_new(FX_WEAPON_REDRAIN, CEF_DONT_LINK, org, NULL, 100);
+
+		explosion->radius = 16.0f;
+		explosion->r.model = &rain_models[2]; // rsteam sprite.
+		explosion->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		explosion->alpha = 0.3f;
+		explosion->lastThinkTime = fxi.cl->time;
+		explosion->LifeTime = duration;
+
 		if (powerup)
 		{
-			explo->SpawnInfo = 1;
-			explo->r.frame = 1;
-			explo->r.scale = 3;
+			explosion->SpawnInfo = 1;
+			explosion->r.frame = 1; // Green sprite.
+			explosion->r.scale = 3.0f;
 		}
 		else
 		{
-			explo->r.frame = 0;
-			explo->r.scale = 2.5;
+			explosion->r.frame = 0; // Red sprite.
+			explosion->r.scale = 2.5f;
 		}
 
-		AddEffect(owner, explo);
+		VectorSet(explosion->velocity, flrand(-128.0f, 128.0f), flrand(-128.0f, 128.0f), flrand(-128.0f, 0.0f));
+		explosion->r.angles[YAW] = (float)i * degree_inc;
+		VectorCopy(rain_pos, explosion->direction);
+
+		explosion->Update = RedRainExplosionThink;
+
+		AddEffect(owner, explosion);
 	}
 
 	// Add a big red flash at impact of course.
-	explo = ClientEntity_new(-1, 0, impactpos, NULL, 500);
-	if (powerup)
-	{	// Green flash
-		explo->r.model = rain_models + 4;
-	}
-	else
-	{	// Red flash
-		explo->r.model = rain_models;
-	}
-	explo->r.frame = 0;
-	explo->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	explo->radius = 16.0F;
-	explo->r.scale = 8.0F;
-	explo->d_scale = -16.0F;
-	explo->d_alpha = -2.0F;
-	AddEffect(NULL, explo);
+	client_entity_t* flash = ClientEntity_new(-1, 0, impact_pos, NULL, 500);
 
-	if (powerup)
-		fxi.S_StartSound(impactpos, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/RedRainPowerHit.wav"), 1, ATTN_NORM, 0);
-	else
-		fxi.S_StartSound(impactpos, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/RedRainHit.wav"), 1, ATTN_NORM, 0);
+	flash->r.model = &rain_models[powerup ? 4 : 0]; // spark_green sprite when powered, spark_red when not.
+	flash->r.frame = 0;
+	flash->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	flash->radius = 16.0f;
+	flash->r.scale = 8.0f;
+	flash->d_scale = -16.0f;
+	flash->d_alpha = -2.0f;
+
+	AddEffect(NULL, flash);
+
+	const char* snd_name = (powerup ? "weapons/RedRainPowerHit.wav" : "weapons/RedRainHit.wav"); //mxd
+	fxi.S_StartSound(impact_pos, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_NORM, 0);
 }
 
 // Things dropped by the red rain.
