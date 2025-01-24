@@ -39,14 +39,11 @@ void PreCacheRedrain(void)
 	rain_models[4] = fxi.RegisterModel("sprites/spells/spark_green.sp2");
 }
 
-// Thinker for the explosion, just fades the light
-static qboolean FXRedRainDLightThink(client_entity_t* dlight, centity_t* owner)
+// Thinker for the explosion, just fades the light.
+static qboolean FXRedRainDLightThink(const client_entity_t* dlight, centity_t* owner)
 {
-	dlight->dlight->intensity -= 10.0F;
-	if (dlight->dlight->intensity < 0.0F)
-		return(false);
-
-	return(true);
+	dlight->dlight->intensity -= 10.0f;
+	return dlight->dlight->intensity > 0.0f;
 }
 
 static qboolean RedRainExplosionThink(client_entity_t* explosion, centity_t* owner)
