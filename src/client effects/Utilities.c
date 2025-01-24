@@ -133,7 +133,7 @@ void BecomeStatic(client_entity_t* self)
 // Sets dist to distance to solid or maxdist if no solid.
 // If maxdist < 0 returns distance to floor.
 // If maxdist > 0 returns distance to ceiling.
-int GetSolidDist(vec3_t origin, const float radius, const float maxdist, float* dist)
+int GetSolidDist(const vec3_t origin, const float radius, const float maxdist, float* dist)
 {
 	vec3_t mins;
 	vec3_t maxs;
