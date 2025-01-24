@@ -65,20 +65,17 @@ static qboolean FXPlagueMistExplodeSpawn(client_entity_t* spawner, centity_t* ow
 	return true;
 }
 
-void FXPlagueMistExplode(centity_t *Owner, int Type, int Flags, vec3_t Origin)
+void FXPlagueMistExplode(centity_t* owner, const int type, int flags, const vec3_t origin)
 {
-	client_entity_t		*spawner;
-	byte				lifetime;
-	int					mist_life;
-	int					mist_think_time;
+	int mist_life;
+	int mist_think_time;
 
-	if (r_detail->value >= DETAIL_HIGH)
+	if ((int)r_detail->value >= DETAIL_HIGH)
 	{
 		mist_life = 50;
 		mist_think_time = 50;
 	}
-	else
-	if (r_detail->value == DETAIL_NORMAL)
+	else if ((int)r_detail->value == DETAIL_NORMAL)
 	{
 		mist_life = 38;
 		mist_think_time = 60;
@@ -89,17 +86,16 @@ void FXPlagueMistExplode(centity_t *Owner, int Type, int Flags, vec3_t Origin)
 		mist_think_time = 70;
 	}
 
-	Flags = (Flags & ~CEF_OWNERS_ORIGIN) | CEF_NOMOVE | CEF_NO_DRAW;
-	spawner = ClientEntity_new(Type, Flags, Origin, NULL, mist_think_time);
-	fxi.GetEffect(Owner, Flags, clientEffectSpawners[FX_PLAGUEMISTEXPLODE].formatString, &lifetime);
-	spawner->LifeTime = lifetime * mist_life;
-	spawner->radius = 20.0F;
-	spawner->Update = FXPlagueMistExplodeSpawn;
-	spawner->SpawnInfo = mist_life;
+	flags = (int)((flags & ~CEF_OWNERS_ORIGIN) | CEF_NOMOVE | CEF_NO_DRAW);
+	client_entity_t* spawner = ClientEntity_new(type, flags, origin, NULL, mist_think_time);
 
-	if(Owner)
-		AddEffect(Owner, spawner); 
-	else
-		AddEffect(NULL, spawner); 
+	byte lifetime;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_PLAGUEMISTEXPLODE].formatString, &lifetime);
+
+	spawner->radius = 20.0f;
+	spawner->SpawnInfo = mist_life;
+	spawner->LifeTime = lifetime * mist_life;
+	spawner->Update = FXPlagueMistExplodeSpawn;
+
+	AddEffect(owner, spawner);
 }
-// end
