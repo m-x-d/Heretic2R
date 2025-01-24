@@ -28,10 +28,9 @@
 // Mutant Ssithra arrow - uses red-rain arrow.
 #define MSSITHRA_FX_ARROW_SPEED		750.0f
 
-#define	NUM_REDRAIN_MODELS	5
+static struct model_s* rain_models[5];
 
-static struct model_s *rain_models[NUM_REDRAIN_MODELS];
-void PreCacheRedrain()
+void PreCacheRedrain(void)
 {
 	rain_models[0] = fxi.RegisterModel("sprites/spells/spark_red.sp2");
 	rain_models[1] = fxi.RegisterModel("models/spells/redrainarrow/tris.fm");
