@@ -58,34 +58,28 @@ static qboolean FXPuzzlePickupThink(struct client_entity_s* self, const centity_
 	return true;
 }
 
-void FXPuzzlePickup(centity_t *owner, int type, int flags, vec3_t origin)
+void FXPuzzlePickup(centity_t* owner, const int type, int flags, const vec3_t origin)
 {
-	client_entity_t		*ce;
-	byte				tag;
+	byte tag;
 	vec3_t angles;
-
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_PICKUP_PUZZLE].formatString, &tag,&angles);
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_PICKUP_PUZZLE].formatString, &tag, &angles);
 
 	flags &= ~CEF_OWNERS_ORIGIN;
-	ce = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 50);
-	VectorDegreesToRadians(angles, ce->r.angles);
+	client_entity_t* ce = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 50);
 
-	VectorCopy(ce->r.origin, ce->origin);
+	ce->radius = 10.0f;
 	ce->r.model = &puzzle_models[tag].model;
 	ce->r.flags = RF_TRANSLUCENT | RF_GLOW;
 	ce->r.scale = puzzle_models[tag].scale;
+	ce->alpha = 0.8f;
 
-	ce->radius = 10.0;
-	ce->alpha = 0.8;
+	if (tag == ITEM_TAVERNKEY || tag == ITEM_CANKEY)
+		ce->r.skinnum = 1;
+
+	VectorDegreesToRadians(angles, ce->r.angles);
+	VectorCopy(ce->r.origin, ce->origin);
+
 	ce->Update = FXPuzzlePickupThink;
-
-	if (tag == ITEM_TAVERNKEY)
-		ce->r.skinnum = 1;
-
-	else if (tag == ITEM_CANKEY)
-		ce->r.skinnum = 1;
 
 	AddEffect(owner, ce);
 }
-
-// end

@@ -67,7 +67,7 @@ extern void PlayerTeleportin(centity_t* owner, int type, int flags, vec3_t origi
 extern void FXHealthPickup(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXWeaponPickup(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXDefensePickup(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXPuzzlePickup(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXPuzzlePickup(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXAmmoPickup(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXFlyingFist(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXFlyingFistExplode(centity_t* owner, int type, int flags, vec3_t origin);
