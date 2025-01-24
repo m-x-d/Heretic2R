@@ -292,51 +292,40 @@ void FXRedRain(centity_t* owner, const int type, int flags, const vec3_t origin)
 	RedRainExplosion(origin, ceil_origin, duration, powerup, owner);
 }
 
-// Red Rain Missile
-
-
-
-// ---------------------------------------------------------------------------
-
-
 // The red rain projectile's trail of red sparks.
-static qboolean FXRedRainMissileThink(client_entity_t *missile, centity_t *owner)
+static qboolean FXRedRainMissileThink(client_entity_t* missile, centity_t* owner)
 {
-	int					i;
-	client_entity_t		*ce;
-	vec3_t				diff, curpos, org;
-
+	vec3_t diff;
 	VectorSubtract(missile->r.origin, missile->origin, diff);
-	Vec3ScaleAssign((1.0 / NUM_TRAIL_PARTICLES), diff);
-	VectorClear(curpos);
+	Vec3ScaleAssign(1.0f / NUM_TRAIL_PARTICLES, diff);
 
-	for(i = 0; i < NUM_TRAIL_PARTICLES; i++)
+	vec3_t cur_pos = { 0 };
+	const qboolean powerup = (missile->SpawnInfo == 1); //mxd
+
+	for (int i = 0; i < NUM_TRAIL_PARTICLES; i++)
 	{
-		VectorRandomCopy(missile->origin, org, PARTICLE_OFFSET);
-		Vec3AddAssign(curpos, org);
-		ce = ClientEntity_new(-1, 0, org, NULL, 500);
-		if (missile->SpawnInfo)	// Powered up
-		{
-			ce->r.model = rain_models+4;
-		}
-		else
-		{
-			ce->r.model = rain_models;
-		}
-		ce->r.scale = 1.0F;
-		ce->d_scale = 2.0F;
-		ce->r.frame = 0;
+		vec3_t origin;
+		VectorRandomCopy(missile->origin, origin, PARTICLE_OFFSET);
+		Vec3AddAssign(cur_pos, origin);
+
+		client_entity_t* ce = ClientEntity_new(-1, 0, origin, NULL, 500);
+
+		ce->radius = 16.0f;
+		ce->r.model = &rain_models[powerup ? 4 : 0]; // spark_green sprite when powered, spark_red when not.
 		ce->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		ce->radius = 16.0F;
-		ce->d_alpha = -2.2F;
+		ce->d_scale = 2.0f;
+		ce->d_alpha = -2.2f;
+
 		AddEffect(NULL, ce);
 
-		Vec3AddAssign(diff, curpos);
+		Vec3AddAssign(diff, cur_pos);
 	}
-	// Remember for even spread of particles
+
+	// Remember for even spread of particles.
 	VectorCopy(missile->r.origin, missile->origin);
-	return(true);
-}						 
+
+	return true;
+}
 
 // From creation of the effect FX_RED_RAIN_MISSILE
 void FXRedRainMissile(centity_t *Owner, int Type, int Flags, vec3_t Origin)
