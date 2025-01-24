@@ -1,29 +1,22 @@
 //
-// Heretic II
+// fx_portal.c
+//
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Random.h"
 #include "Vector.h"
-#include "string.h"
 #include "Utilities.h"
 #include "q_Sprite.h"
 #include "g_playstats.h"
 
-
-#define SINESCALE (256.0 / (2 * M_PI))
 #define NUM_PORTAL_PARTS	20
-#define PICTURE_RADIUS		55.0
-#define PORTAL_RADIUS		50.0
-#define	SCALE		0.01F
-#define DELTA_SCALE	1.0F
-#define MIN_PART_SCALE	1.0
-#define MAX_PART_SCALE	3.0
+#define PICTURE_RADIUS		55.0f
+#define PORTAL_RADIUS		50.0f
+#define MIN_PARTICLE_SCALE	1.0f
+#define MAX_PARTICLE_SCALE	3.0f
 
 #define	NUM_PORTAL_MODELS	3
 
@@ -98,7 +91,7 @@ qboolean FXMagicPortalThink(client_entity_t *self, centity_t *owner)
 
 		VectorScale(vel, flrand(0.0625, 0.125f), ce->velocity);
 		ce->acceleration[2] = flrand(2, 5);
-		ce->scale = flrand(MIN_PART_SCALE, MAX_PART_SCALE);
+		ce->scale = flrand(MIN_PARTICLE_SCALE, MAX_PARTICLE_SCALE);
 		ce->d_scale = -0.2F;
 		
 		if(!(self->flags & CEF_NO_DRAW))
