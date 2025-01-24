@@ -150,19 +150,16 @@ static void LightningBolt(const int model, const float width, const vec3_t start
 	MakeLightningPiece(model, width, end_pos, last_pos, variance);
 }
 
-static qboolean FXLightningThink(client_entity_t *thinker, centity_t *owner)
+static qboolean FXLightningThink(const client_entity_t* thinker, centity_t* owner)
 {
 	if (fxi.cl->time - thinker->lastThinkTime < thinker->LifeTime)
 	{
 		LightningBolt(thinker->SpawnInfo, thinker->xscale, thinker->r.startpos, thinker->r.endpos);
 		return true;
 	}
-	else
-	{
-		return false;
-	}
-}
 
+	return false;
+}
 
 // This is from creating the effect FX_LIGHTNING
 void FXLightning(centity_t *Owner, int Type, int Flags, vec3_t Origin)
