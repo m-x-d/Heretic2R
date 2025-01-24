@@ -132,7 +132,7 @@ extern void FXStaffRemove(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXDustPuffOnGround(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXFire(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXSound(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXPickup(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXPickup(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXGenericHitPuff(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXDust(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXEnvSmoke(centity_t* owner, int type, int flags, vec3_t origin);
