@@ -172,7 +172,7 @@ extern void FXWaterParticles(centity_t* owner, int type, int flags, const vec3_t
 extern void FXMEffects(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXFlamethrower(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXflametest(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXQuake(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXQuake(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXLightning(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXPowerLightning(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXHPStaff(centity_t* owner, int type, int flags, vec3_t origin);
