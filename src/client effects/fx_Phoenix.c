@@ -402,18 +402,14 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, const vec3_t 
 
 #pragma region ========================== POWERED PHOENIX EXPLOSION ==========================
 
-#define PHOENIXPOWER_NUMTRAILS 11
-#define PHOENIXPOWER_PARTS_PER_TRAIL 8
-#define PHOENIXPOWER_RADIUS 72.0
+#define PHOENIXPOWER_NUMTRAILS			11
+#define PHOENIXPOWER_PARTS_PER_TRAIL	8
+#define PHOENIXPOWER_RADIUS				72.0f
 
-static qboolean FXPhoenixExplosionBirdThinkPower(client_entity_t *bird, centity_t *owner)
+static qboolean FXPhoenixExplosionBirdThinkPower(client_entity_t* bird, centity_t* owner)
 {
 	bird->LifeTime--;
-	if (bird->LifeTime <= 0)
-	{
-		return(false);
-	}
-	return (true);
+	return (bird->LifeTime > 0);
 }
 
 void FXPhoenixExplodePower(centity_t *owner, int type, int flags, vec3_t origin, vec3_t dir)
