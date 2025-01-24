@@ -185,17 +185,14 @@ static qboolean FXRedRainSplashThink(const client_entity_t* splash, centity_t* o
 	return false;
 }
 
-
 // The drops need to update as they're added to the view, because velocity doesn't update the sprite line's start and endpoint.
-//static
-qboolean FXRedRainDropUpdate(client_entity_t *drop, centity_t *owner)
+static qboolean FXRedRainDropUpdate(client_entity_t* drop, centity_t* owner)
 {
-	drop->r.startpos[2] = drop->r.origin[2] + RAIN_HEIGHT;
-	if (drop->r.startpos[2] > drop->SpawnData)	// Make sure that the top of the drop doesn't go higher that the spawn height
-		drop->r.startpos[2] = drop->SpawnData;
+	// Make sure that the top of the drop doesn't go higher that the spawn height.
+	drop->r.startpos[2] = min(drop->SpawnData, drop->r.origin[2] + RAIN_HEIGHT);
 	drop->r.endpos[2] = drop->r.origin[2] - RAIN_HEIGHT;
 
-	return(false);
+	return false;
 }
 
 
