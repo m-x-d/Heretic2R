@@ -48,16 +48,14 @@ void PreCachePuzzleItems(void)
 		puzzle_models[i].model = fxi.RegisterModel(puzzle_models[i].model_name);
 }
 
-// --------------------------------------------------------------
-
-static qboolean FXPuzzlePickupThink(struct client_entity_s *self, centity_t *owner)
+static qboolean FXPuzzlePickupThink(struct client_entity_s* self, const centity_t* owner)
 {
-	// Rotate and bob
+	// Rotate and bob.
 	VectorCopy(owner->current.origin, self->r.origin);
-	self->r.origin[2] += (cos(self->SpawnData) * BOB_HEIGHT); 
+	self->r.origin[2] += cosf(self->SpawnData) * BOB_HEIGHT;
 	self->SpawnData += BOB_SPEED;
 
-	return(true);
+	return true;
 }
 
 void FXPuzzlePickup(centity_t *owner, int type, int flags, vec3_t origin)
