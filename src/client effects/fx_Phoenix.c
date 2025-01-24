@@ -525,83 +525,88 @@ static void FXPhoenixExplodePower(const int type, int flags, const vec3_t origin
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/PhoenixPowerHit.wav"), 1.0f, ATTN_NORM, 0);
 }
 
-static qboolean FXPhoenixMissilePowerThink(client_entity_t *missile, centity_t *owner)
+static qboolean FXPhoenixMissilePowerThink(client_entity_t* missile, centity_t* owner)
 {
-	int					i, dur;
-	client_particle_t	*flame;
-	client_entity_t		*smoke;
-	vec3_t				angles, fwd, right, smokeorigin;
-	paletteRGBA_t		LightColor={0xff, 0x7f, 0x00, 0xe5};
-	int					sideVal;
+	int duration;
 
-	if (r_detail->value == DETAIL_LOW)
-		dur = 1400;
+	if ((int)r_detail->value == DETAIL_LOW)
+		duration = 1400;
+	else if ((int)r_detail->value == DETAIL_NORMAL)
+		duration = 1700;
 	else
-	if (r_detail->value == DETAIL_NORMAL)
-		dur = 1700;
-	else
-		dur = 2000;
-	
-	// Here we want to shoot out flame to either side
-	VectorScale(missile->r.angles, 180.0/M_PI, angles);
+		duration = 2000;
+
+	// Here we want to shoot out flame to either side.
+	vec3_t angles;
+	VectorScale(missile->r.angles, RAD_TO_ANGLE, angles);
+
+	vec3_t fwd;
+	vec3_t right;
 	AngleVectors(angles, fwd, right, NULL);
-	VectorScale(fwd, -4.0*FIRETRAIL_SPEED, fwd);
+	VectorScale(fwd, -4.0f * FIRETRAIL_SPEED, fwd);
 	VectorScale(right, FIRETRAIL_SPEED, right);
 
-	sideVal = (missile->LifeTime&0x1) ? -1:1;
-	missile->LifeTime--;
-	// Throw smoke to each side, alternating.  
-	VectorSet(	smokeorigin, 
-				flrand(-SMOKETRAIL_RADIUS, SMOKETRAIL_RADIUS), 
-				flrand(-SMOKETRAIL_RADIUS, SMOKETRAIL_RADIUS), 
-				flrand(-SMOKETRAIL_RADIUS/2.0, SMOKETRAIL_RADIUS/2.0));
-	VectorAdd(	smokeorigin, missile->origin, smokeorigin);
-	smoke = ClientEntity_new(-1, CEF_DONT_LINK, smokeorigin, NULL, dur);
-	smoke->r.model = phoenix_models;
-	smoke->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	smoke->radius = 64.0F;
-	smoke->alpha = SMOKETRAIL_ALPHA;
-	smoke->r.scale = SMOKETRAIL_SCALE * 2.5;
-	smoke->velocity[0] = sideVal * right[0]*2.0;
-	smoke->velocity[1] = sideVal * right[1]*2.0;
-	smoke->velocity[2] = sideVal * right[2]*2.0;
-	smoke->d_scale = 2.0;		// Rate of change in scale
-	smoke->d_alpha = -1.0;
-	AddEffect(NULL, smoke);	// add the smoke as independent world smoke
-	smoke->flags |= CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS;
+	// Throw smoke to each side, alternating.
+	const float side = ((missile->LifeTime-- & 1) ? 1.0f : -1.0f); //mxd. 1.0 - right, -1.0 - left.
 
-	// Burn baby burn add fire to the tail.  Attach it to the smoke because it doesn't get out of the fx radius so quickly
-	for(i = 0; i < FIRETRAIL_PARTS; i++)
+	vec3_t smoke_origin;
+	VectorSet(smoke_origin,
+		flrand(-SMOKETRAIL_RADIUS, SMOKETRAIL_RADIUS),
+		flrand(-SMOKETRAIL_RADIUS, SMOKETRAIL_RADIUS),
+		flrand(-SMOKETRAIL_RADIUS / 2.0f, SMOKETRAIL_RADIUS / 2.0f));
+
+	VectorAdd(smoke_origin, missile->origin, smoke_origin);
+
+	client_entity_t* smoke = ClientEntity_new(-1, CEF_DONT_LINK, smoke_origin, NULL, duration);
+
+	smoke->radius = 64.0f;
+	smoke->r.model = &phoenix_models[0]; // steam_add sprite.
+	smoke->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	smoke->flags |= CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS;
+	smoke->alpha = SMOKETRAIL_ALPHA;
+	smoke->r.scale = SMOKETRAIL_SCALE * 2.5f;
+	VectorScale(right, 2.0f * side, smoke->velocity);
+	smoke->d_scale = 2.0f; // Rate of change in scale.
+	smoke->d_alpha = -1.0f;
+
+	AddEffect(NULL, smoke);	// add the smoke as independent world smoke
+
+	// Add fire to the tail. Attach it to the smoke because it doesn't get out of the fx radius so quickly.
+	const float trail_offset = FIRETRAIL_RADIUS / 3.0f; //mxd
+	const float trail_speed = FIRETRAIL_SPEED / 3.0f; //mxd
+
+	for (int i = 0; i < FIRETRAIL_PARTS; i++)
 	{
-		flame = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), LightColor, dur);
-		VectorSet(	flame->origin, 
-					flrand(-FIRETRAIL_RADIUS/3, FIRETRAIL_RADIUS/3), 
-					flrand(-FIRETRAIL_RADIUS/3, FIRETRAIL_RADIUS/3), 
-					flrand(-FIRETRAIL_RADIUS/3.0, FIRETRAIL_RADIUS/3.0));
-		VectorAdd(	missile->origin, flame->origin, flame->origin);
+		const paletteRGBA_t light_color = { .r = 0xff, .g = 0x7f, .b = 0x00, .a = 0xe5 };
+		client_particle_t* flame = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), light_color, duration);
+
+		VectorRandomSet(flame->origin, trail_offset);
+		VectorAdd(missile->origin, flame->origin, flame->origin);
 		flame->scale = FIRETRAIL_SCALE;
 
-		VectorSet(flame->velocity, 
-				flrand(-FIRETRAIL_SPEED/3, FIRETRAIL_SPEED/3), flrand(-FIRETRAIL_SPEED/3, FIRETRAIL_SPEED/3), flrand(-1.0, 1.0));
-		// Make the fire shoot out the back and to the side
+		VectorSet(flame->velocity, flrand(-trail_speed, trail_speed), flrand(-trail_speed, trail_speed), flrand(-1.0f, 1.0f));
+
+		// Make the fire shoot out the back and to the side.
 		VectorAdd(flame->velocity, fwd, flame->velocity);
+
 		// Alternate left and right side of phoenix
-		if (i&0x01)
+		if (i & 1)
 			VectorAdd(flame->velocity, right, flame->velocity);
 		else
 			VectorSubtract(flame->velocity, right, flame->velocity);
+
 		flame->acceleration[2] = FIRETRAIL_ACCEL;
-		flame->d_scale = flrand(-15.0, -10.0);
-		flame->d_alpha = flrand(-200.0, -160.0);
-		flame->duration = (255.0 * 1000.0) / -flame->d_alpha;		// time taken to reach zero alpha
+		flame->d_scale = flrand(-15.0f, -10.0f);
+		flame->d_alpha = flrand(-200.0f, -160.0f);
+		flame->duration = (int)(255.0f * 1000.0f / -flame->d_alpha); // Time taken to reach zero alpha.
 
 		AddParticleToList(smoke, flame);
 	}
 
-
-	// Remember for even spread of particles
+	// Remember for even spread of particles.
 	VectorCopy(missile->r.origin, missile->origin);
-	return(true);
+
+	return true;
 }
 
 #pragma endregion
