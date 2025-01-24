@@ -1,65 +1,51 @@
 //
 // fx_PuzzlePickup.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
-#include "ce_DefaultMessageHandler.h"
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
-#include "Random.h"
-#include "Utilities.h"
-#include "Angles.h"
 #include "items.h"
 
-#define BOB_HEIGHT			6.0
-#define BOB_SPEED			ANGLE_10
+#define BOB_HEIGHT	6.0f
+#define BOB_SPEED	ANGLE_10
 
 typedef struct PuzzleModel
 {
-	char	*modelName;
-	struct model_s *model;
-	float	scale;
+	char* model_name;
+	struct model_s* model;
+	float scale;
 } PuzzleModel_t;
 
-PuzzleModel_t PuzzleModels[]=
+static PuzzleModel_t puzzle_models[] =
 {
-	{"models/items/puzzles/townkey/tris.fm",		NULL, 1.5},		// ITEM_TOWNKEY
-	{"models/items/puzzles/cog/tris.fm",			NULL, 1},		// ITEM_COG
-	{"models/items/puzzles/shield/tris.fm",			NULL, 1.5},		// ITEM_SHIELD
-	{"models/items/puzzles/potion/tris.fm",			NULL, .5},		// ITEM_POTION
-	{"models/items/puzzles/plazajug/tris.fm",		NULL, 1},		// ITEM_CONT
-	{"models/items/puzzles/jugfull/tris.fm",		NULL, 1},		// ITEM_SLUMCONT
-	{"models/items/puzzles/crystalshard/tris.fm",	NULL, 1.75},	// ITEM_CRYSTAL
-	{"models/items/puzzles/hivekey/tris.fm",		NULL, 1},		// ITEM_CANKEY
-	{"models/items/puzzles/amulet/tris.fm",			NULL, 1.5},		// ITEM_AMULET
-	{"models/items/puzzles/spear/tris.fm",			NULL, 1},		// ITEM_SPEAR
-	{"models/items/puzzles/tcheckrikgem/tris.fm",	NULL, 1.5},		// ITEM_GEM
-	{"models/items/puzzles/wheel/tris.fm",			NULL, 1.75},	// ITEM_WHEEL
-	{"models/items/puzzles/oreunrefined/tris.fm",	NULL, .5},		// ITEM_ORE
-	{"models/items/puzzles/orerefined/tris.fm",		NULL, .5},		// ITEM_REF_ORE
-	{"models/items/puzzles/dungeonkey/tris.fm",		NULL, .5},		// ITEM_DUNKEY
-	{"models/items/puzzles/cloudkey/tris.fm",		NULL, 1.5},		// ITEM_CLOUDKEY
-	{"models/items/puzzles/hivekey/tris.fm",		NULL, 1},		// ITEM_HIVEKEY
-	{"models/items/puzzles/hiveidol/tris.fm",		NULL, 1},		// ITEM_HPSYM
-	{"models/items/puzzles/book/tris.fm",			NULL, 1},		// ITEM_TOME
-	{"models/items/puzzles/townkey/tris.fm",		NULL, 1.5},		// ITEM_TAVERNKEY
+	{ "models/items/puzzles/townkey/tris.fm",		NULL, 1.5f },	// ITEM_TOWNKEY
+	{ "models/items/puzzles/cog/tris.fm",			NULL, 1.0f },	// ITEM_COG
+	{ "models/items/puzzles/shield/tris.fm",		NULL, 1.5f },	// ITEM_SHIELD
+	{ "models/items/puzzles/potion/tris.fm",		NULL, 0.5f },	// ITEM_POTION
+	{ "models/items/puzzles/plazajug/tris.fm",		NULL, 1.0f },	// ITEM_CONT
+	{ "models/items/puzzles/jugfull/tris.fm",		NULL, 1.0f },	// ITEM_SLUMCONT
+	{ "models/items/puzzles/crystalshard/tris.fm",	NULL, 1.75f },	// ITEM_CRYSTAL
+	{ "models/items/puzzles/hivekey/tris.fm",		NULL, 1.0f },	// ITEM_CANKEY
+	{ "models/items/puzzles/amulet/tris.fm",		NULL, 1.5f },	// ITEM_AMULET
+	{ "models/items/puzzles/spear/tris.fm",			NULL, 1.0f },	// ITEM_SPEAR
+	{ "models/items/puzzles/tcheckrikgem/tris.fm",	NULL, 1.5f },	// ITEM_GEM
+	{ "models/items/puzzles/wheel/tris.fm",			NULL, 1.75f },	// ITEM_WHEEL
+	{ "models/items/puzzles/oreunrefined/tris.fm",	NULL, 0.5f },	// ITEM_ORE
+	{ "models/items/puzzles/orerefined/tris.fm",	NULL, 0.5f },	// ITEM_REF_ORE
+	{ "models/items/puzzles/dungeonkey/tris.fm",	NULL, 0.5f },	// ITEM_DUNKEY
+	{ "models/items/puzzles/cloudkey/tris.fm",		NULL, 1.5f },	// ITEM_CLOUDKEY
+	{ "models/items/puzzles/hivekey/tris.fm",		NULL, 1.0f },	// ITEM_HIVEKEY
+	{ "models/items/puzzles/hiveidol/tris.fm",		NULL, 1.0f },	// ITEM_HPSYM
+	{ "models/items/puzzles/book/tris.fm",			NULL, 1.0f },	// ITEM_TOME
+	{ "models/items/puzzles/townkey/tris.fm",		NULL, 1.5f },	// ITEM_TAVERNKEY
 };
 
-
-void PreCachePuzzleItems()
+void PreCachePuzzleItems(void)
 {
-	int i;
-
-	for(i = 0; i < ITEM_TOTAL; ++i)
-	{
-		PuzzleModels[i].model = fxi.RegisterModel(PuzzleModels[i].modelName);
-	}
+	for (int i = 0; i < ITEM_TOTAL; i++)
+		puzzle_models[i].model = fxi.RegisterModel(puzzle_models[i].model_name);
 }
 
 // --------------------------------------------------------------
@@ -87,9 +73,9 @@ void FXPuzzlePickup(centity_t *owner, int type, int flags, vec3_t origin)
 	VectorDegreesToRadians(angles, ce->r.angles);
 
 	VectorCopy(ce->r.origin, ce->origin);
-	ce->r.model = &PuzzleModels[tag].model;
+	ce->r.model = &puzzle_models[tag].model;
 	ce->r.flags = RF_TRANSLUCENT | RF_GLOW;
-	ce->r.scale = PuzzleModels[tag].scale;
+	ce->r.scale = puzzle_models[tag].scale;
 
 	ce->radius = 10.0;
 	ce->alpha = 0.8;
