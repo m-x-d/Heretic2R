@@ -67,32 +67,25 @@ static qboolean FXPlagueMistParticleSpawner(client_entity_t* spawner, centity_t*
 	return true;
 }
 
-void FXPlagueMist(centity_t *Owner, int Type, int Flags, vec3_t Origin)
+void FXPlagueMist(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	client_entity_t		*pm;
-	byte				lifetime;
-	int					mist_think_time;
+	int mist_think_time;
 
-	if (r_detail->value >= DETAIL_HIGH)
+	if ((int)r_detail->value >= DETAIL_HIGH)
 		mist_think_time = 100;
-	else
-	if (r_detail->value == DETAIL_NORMAL)
+	else if ((int)r_detail->value == DETAIL_NORMAL)
 		mist_think_time = 125;
 	else
 		mist_think_time = 150;
-	
-	pm = ClientEntity_new(Type, Flags, Origin, NULL, mist_think_time);
-	fxi.GetEffect(Owner, Flags, clientEffectSpawners[FX_PLAGUEMIST].formatString, pm->direction, &lifetime);
 
+	client_entity_t* pm = ClientEntity_new(type, flags, origin, NULL, mist_think_time);
+
+	byte lifetime;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_PLAGUEMIST].formatString, pm->direction, &lifetime);
+
+	pm->flags = CEF_NO_DRAW | CEF_NOMOVE;
 	pm->LifeTime = lifetime * 50;
 	pm->Update = FXPlagueMistParticleSpawner;
-	pm->flags |= CEF_NO_DRAW | CEF_NOMOVE;
 
-	if(Owner)
-		AddEffect(Owner, pm); 
-	else
-		AddEffect(NULL, pm); 
+	AddEffect(owner, pm);
 }
-
-// end
-
