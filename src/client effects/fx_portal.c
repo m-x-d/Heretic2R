@@ -18,27 +18,25 @@
 #define MIN_PARTICLE_SCALE	1.0f
 #define MAX_PARTICLE_SCALE	3.0f
 
-#define	NUM_PORTAL_MODELS	3
+static struct model_s* portal_models[3];
 
-static struct model_s *portal_models[NUM_PORTAL_MODELS];
-
-void PreCachePortal()
+void PreCachePortal(void)
 {
 	portal_models[0] = fxi.RegisterModel("sprites/fx/ripple_add.sp2");
 	portal_models[1] = fxi.RegisterModel("sprites/fx/portal1.sp2");
 	portal_models[2] = fxi.RegisterModel("sprites/spells/patball.sp2");
 }
 
-int RandomSparkTypes [9] =
+static int random_spark_types[9] =
 {
-	PART_4x4_WHITE,        
-	PART_4x4_BLUE,         
-	PART_4x4_BLUE2,       
-	PART_4x4_BLUE3,       
+	PART_4x4_WHITE,
+	PART_4x4_BLUE,
+	PART_4x4_BLUE2,
+	PART_4x4_BLUE3,
 	PART_8x8_BLUE_X,
 	PART_8x8_BLUE_CIRCLE,
-	PART_8x8_BLUE_DIAMOND,  
-	PART_16x16_STAR,       
+	PART_8x8_BLUE_DIAMOND,
+	PART_16x16_STAR,
 	PART_16x16_SPARK_B,
 };
 
@@ -86,7 +84,7 @@ qboolean FXMagicPortalThink(client_entity_t *self, centity_t *owner)
 		color.c = 0xffffffff;
 
 		part_type = irand(0, 8);
-		ce = ClientParticle_new(RandomSparkTypes[part_type], color, 3000);
+		ce = ClientParticle_new(random_spark_types[part_type], color, 3000);
 		VectorCopy(vel, ce->origin);
 
 		VectorScale(vel, flrand(0.0625, 0.125f), ce->velocity);
