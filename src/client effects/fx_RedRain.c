@@ -327,56 +327,47 @@ static qboolean FXRedRainMissileThink(client_entity_t* missile, centity_t* owner
 	return true;
 }
 
-// From creation of the effect FX_RED_RAIN_MISSILE
-void FXRedRainMissile(centity_t *Owner, int Type, int Flags, vec3_t Origin)
+void FXRedRainMissile(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	client_entity_t		*missile;
-	vec3_t				temp;
-	int					dur;
+	int duration;
 
-	if (r_detail->value == DETAIL_LOW)
-		dur = 150;
+	if ((int)r_detail->value == DETAIL_LOW)
+		duration = 150;
+	else if ((int)r_detail->value == DETAIL_NORMAL)
+		duration = 125;
 	else
-	if (r_detail->value == DETAIL_NORMAL)
-		dur = 125;
-	else
-		dur = 100;
+		duration = 100;
 
-	missile = ClientEntity_new(Type, Flags | CEF_DONT_LINK, Origin, NULL, dur);
-	fxi.GetEffect(Owner, Flags, clientEffectSpawners[FX_WEAPON_REDRAINMISSILE].formatString, missile->velocity);
+	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, duration);
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_REDRAINMISSILE].formatString, missile->velocity);
 
-	if (Flags & CEF_FLAG7)
-	{
-		if (Flags & CEF_FLAG8)
-			Vec3ScaleAssign(MSSITHRA_FX_ARROW_SPEED/2,missile->velocity);
-		else
-			Vec3ScaleAssign(MSSITHRA_FX_ARROW_SPEED,missile->velocity);
-	}
+	float arrow_speed = ((flags & CEF_FLAG7) ? MSSITHRA_FX_ARROW_SPEED : RED_ARROW_SPEED); //mxd
+	if (flags & CEF_FLAG8)
+		arrow_speed *= 0.5f;
 
-	else
-	{
-		if (Flags & CEF_FLAG8)
-			Vec3ScaleAssign(RED_ARROW_SPEED/2,missile->velocity);
-		else
-			Vec3ScaleAssign(RED_ARROW_SPEED,missile->velocity);
-	}
+	Vec3ScaleAssign(arrow_speed, missile->velocity);
 
+	vec3_t temp;
 	VectorCopy(missile->velocity, temp);
 	VectorNormalize(temp);
 	AnglesFromDir(temp, missile->r.angles);
 
-	missile->r.model = rain_models + 1;
-	missile->Update = FXRedRainMissileThink;
-	missile->radius = 32.0F;
-	if (Flags & CEF_FLAG6)
-	{	// Powered up rain
+	missile->radius = 32.0f;
+	missile->r.model = &rain_models[1]; // Red rain arrow model.
+
+	if (flags & CEF_FLAG6)
+	{
+		// Powered-up rain.
 		missile->SpawnInfo = 1;
-		missile->color.c = 0xff00ff80;	// green
+		missile->color.c = 0xff00ff80; // Green.
 	}
 	else
 	{
-		missile->color.c = 0xff0000ff;	// Red
+		missile->color.c = 0xff0000ff; // Red.
 	}
-	missile->dlight = CE_DLight_new(missile->color, 150.0F, 00.0F);
-	AddEffect(Owner, missile);
+
+	missile->dlight = CE_DLight_new(missile->color, 150.0f, 0.0f);
+	missile->Update = FXRedRainMissileThink;
+
+	AddEffect(owner, missile);
 }
