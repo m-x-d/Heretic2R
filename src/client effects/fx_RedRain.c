@@ -162,46 +162,27 @@ static void RedRainExplosion(vec3_t impact_pos, vec3_t rain_pos, const int durat
 	fxi.S_StartSound(impact_pos, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_NORM, 0);
 }
 
-// Things dropped by the red rain.
-
-// --------------------------------------------------------------
-
 // This is a delayed effect which creates a splash out of red sparks.
-//static
-qboolean FXRedRainSplashThink(client_entity_t *splash, centity_t *owner)
+static qboolean FXRedRainSplashThink(const client_entity_t* splash, centity_t* owner)
 {
-	client_entity_t		*mist;
-	client_particle_t	*spark;
-	int i;
-	paletteRGBA_t		pal;
-	int					sparktype;
-	float				grav;
-
-	mist = ClientEntity_new(-1, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, splash->r.origin, NULL, 500);
+	client_entity_t* mist = ClientEntity_new(-1, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, splash->r.origin, NULL, 500);
 	AddEffect(NULL, mist);
 
-	pal.c = 0xffffffff;
-	if (splash->SpawnInfo)
-	{	// Powered up rain
-		sparktype = PART_16x16_SPARK_G;
-		grav = PARTICLE_GRAVITY * 4.0;
-	}
-	else
-	{
-		sparktype = PART_16x16_SPARK_R;
-		grav = -PARTICLE_GRAVITY * 3.0;
-	}
+	const int sparktype = ((splash->SpawnInfo == 1) ? PART_16x16_SPARK_G : PART_16x16_SPARK_R); // Green spark when powered.
 
-	for (i=0; i<4; i++)
+	for (int i = 0; i < 4; i++)
 	{
-		spark = ClientParticle_new(sparktype, pal, 500);
-		VectorSet(spark->velocity, flrand(-48.0, 48.0), flrand(-48.0, 48.0), flrand(48.0, 96.0));
-		spark->acceleration[2] = -PARTICLE_GRAVITY*3.0;
-		spark->scale = 16.0;
-		spark->d_scale = -24.0;
+		client_particle_t* spark = ClientParticle_new(sparktype, color_white, 500);
+
+		VectorSet(spark->velocity, flrand(-48.0f, 48.0f), flrand(-48.0f, 48.0f), flrand(48.0f, 96.0f));
+		spark->acceleration[2] = -PARTICLE_GRAVITY * 3.0f;
+		spark->scale = 16.0f;
+		spark->d_scale = -24.0f;
+
 		AddParticleToList(mist, spark);
 	}
-	return(false);
+
+	return false;
 }
 
 
