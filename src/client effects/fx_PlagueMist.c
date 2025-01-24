@@ -12,63 +12,59 @@
 
 #define NUM_MIST_PARTS	7
 
-static qboolean FXPlagueMistParticleSpawner(client_entity_t *spawner, centity_t *owner)
+static qboolean FXPlagueMistParticleSpawner(client_entity_t* spawner, centity_t* owner)
 {
-	client_particle_t	*p;
-	paletteRGBA_t		color;
-	int					i;
-	int					count;
-	int					duration;
-	float				mist_scale, mist_d_scale;
+	int duration;
+	float mist_scale;
+	float mist_d_scale;
 
 	spawner->LifeTime -= 100;
-	if(spawner->LifeTime < 0)
-		return(false);
+	if (spawner->LifeTime < 0)
+		return false;
 
-	count = (spawner->LifeTime - 1600) / 150;
-	if(count > NUM_MIST_PARTS)
-		count = NUM_MIST_PARTS;
-	if(count < 1)
-		return(true);
+	int count = (spawner->LifeTime - 1600) / 150;
+	count = min(NUM_MIST_PARTS, count);
 
-	if (r_detail->value >= DETAIL_HIGH)
+	if (count < 1)
+		return true;
+
+	if ((int)r_detail->value >= DETAIL_HIGH)
 	{
 		duration = 1500;
-		mist_scale = 12.0;
-		mist_d_scale = 6.0;
+		mist_scale = 12.0f;
+		mist_d_scale = 6.0f;
 	}
-	else
-	if (r_detail->value == DETAIL_NORMAL)
+	else if ((int)r_detail->value == DETAIL_NORMAL)
 	{
 		duration = 1175;
-		mist_scale = 10.0;
-		mist_d_scale = 5.5;
+		mist_scale = 10.0f;
+		mist_d_scale = 5.5f;
 	}
 	else
 	{
 		duration = 900;
-		mist_scale = 8.0;
-		mist_d_scale = 5.0;
+		mist_scale = 8.0f;
+		mist_d_scale = 5.0f;
 	}
 
-
-	for(i = 0; i < count; i++)
+	for (int i = 0; i < count; i++)
 	{
-		color.r = irand(200, 255);
-		color.g = irand(200, 255);
-		color.b = irand(200, 255);
-		color.a = irand(200, 255);
+		paletteRGBA_t color;
+		COLOUR_SETA(color, irand(200, 255), irand(200, 255), irand(200, 255), irand(200, 255));
 
-		p = ClientParticle_new(PART_16x16_MIST | PFL_NEARCULL, color, duration);
-		VectorSet(p->origin, flrand(-2.0F, 2.0F), flrand(-2.0F, 2.0F), flrand(-2.0F, 2.0F));
-		VectorRandomCopy(spawner->direction, p->velocity, 20.0F);
-		VectorScale(spawner->direction, -1.0F, p->acceleration);
-		p->acceleration[2] += flrand(20.0F, 30.0F);
-		p->scale = flrand(mist_scale, mist_scale+3.0);
-		p->d_scale = flrand(mist_d_scale, mist_d_scale+3.0);
+		client_particle_t* p = ClientParticle_new((int)(PART_16x16_MIST | PFL_NEARCULL), color, duration);
+
+		VectorRandomSet(p->origin, 2.0f);
+		VectorRandomCopy(spawner->direction, p->velocity, 20.0f);
+		VectorScale(spawner->direction, -1.0f, p->acceleration);
+		p->acceleration[2] += flrand(20.0f, 30.0f);
+		p->scale = flrand(mist_scale, mist_scale + 3.0f);
+		p->d_scale = flrand(mist_d_scale, mist_d_scale + 3.0f);
+
 		AddParticleToList(spawner, p);
 	}
-	return(true);
+
+	return true;
 }
 
 void FXPlagueMist(centity_t *Owner, int Type, int Flags, vec3_t Origin)
