@@ -1,45 +1,34 @@
 //
-// Heretic II
+// fx_RedRain.c
+//
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "ce_DefaultMessageHandler.h"
+#include "Motion.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "angles.h"
-#include "Vector.h"
 #include "Random.h"
+#include "Vector.h"
 #include "Utilities.h"
-#include "motion.h"
-#include "Reference.h"
 #include "ce_Dlight.h"
 #include "q_Sprite.h"
 #include "g_playstats.h"
 
-#define MAX_REDRAINHEIGHT	200.0F
-#define RED_RAIN_RADIUS		60.0F
-#define POWER_RAIN_RADIUS	80.0F
-#define	DROP_RADIUS			2.0F
-#define RAIN_INIT_VEL		-600.0F
-#define NUM_SPLASH_PARTS	4
-#define NUM_TAIL_PARTS		4
-#define	NUM_DROPS			2
-#define MAX_FALL_DIST		1300		
-#define RAIN_HEIGHT			32.0	
-#define	PART_OFF			5.0
-#define NUM_TRAIL_PARTS		6
-#define	REDRAIN_EXPLODE_NUM	5
-#define RED_RAIN_DAMPFACTOR 0.5
-#define RED_RAIN_WIDTH		3.0
-#define POWER_RAIN_WIDTH	6.0
+#define DROP_RADIUS				2.0f
+#define RAIN_INITIAL_VELOCITY	(-600.0f)
+#define NUM_DROPS				2
+#define MAX_FALL_DISTANCE		1300
+#define RAIN_HEIGHT				32.0f
+#define PARTICLE_OFFSET			5.0f
+#define NUM_TRAIL_PARTICLES		6
+#define REDRAIN_EXPLODE_NUM		5
+#define RED_RAIN_WIDTH			3.0f
+#define POWER_RAIN_WIDTH		6.0f
+
+// Mutant Ssithra arrow - uses red-rain arrow.
+#define MSSITHRA_FX_ARROW_SPEED		750.0f
 
 #define	NUM_REDRAIN_MODELS	5
-
-// Mutant Ssithra arrow- uses red-rain arrow
-#define MSSITHRA_FX_ARROW_SPEED			750.0
 
 static struct model_s *rain_models[NUM_REDRAIN_MODELS];
 void PreCacheRedrain()
@@ -156,7 +145,7 @@ static qboolean FXRedRainThink(client_entity_t *rain, centity_t *owner)
 				flrand(-radius, radius), 
 				rain->SpawnData + flrand(-8.0F, 8.0F));
 		VectorAdd(rain->origin, origin, origin);
-		duration = GetFallTime(origin, RAIN_INIT_VEL, -PARTICLE_GRAVITY, DROP_RADIUS, 3.0F, &trace);
+		duration = GetFallTime(origin, RAIN_INITIAL_VELOCITY, -PARTICLE_GRAVITY, DROP_RADIUS, 3.0F, &trace);
 		drop = ClientEntity_new(-1, CEF_DONT_LINK, origin, NULL, duration);
 		drop->r.model = rain_models + 3;
 		drop->r.frame = rain->SpawnInfo;
@@ -168,7 +157,7 @@ static qboolean FXRedRainThink(client_entity_t *rain, centity_t *owner)
 		VectorCopy(origin, drop->r.startpos);
 		VectorCopy(origin, drop->r.endpos);
 		drop->r.endpos[2] -= RAIN_HEIGHT;
-		drop->velocity[2] = RAIN_INIT_VEL;
+		drop->velocity[2] = RAIN_INITIAL_VELOCITY;
 		drop->r.spriteType = SPRITE_LINE;
 		drop->SpawnData = origin[2]; // This allows the drop to remember its top position, so the top doesn't go higher than it.
 		drop->AddToView = FXRedRainDropUpdate;
@@ -176,7 +165,7 @@ static qboolean FXRedRainThink(client_entity_t *rain, centity_t *owner)
 
 		if((duration > 20) && (r_detail->value > DETAIL_LOW))
 		{
-			origin[2] += GetDistanceOverTime(RAIN_INIT_VEL, -PARTICLE_GRAVITY, (float)duration * 0.001F);
+			origin[2] += GetDistanceOverTime(RAIN_INITIAL_VELOCITY, -PARTICLE_GRAVITY, (float)duration * 0.001F);
 			splash = ClientEntity_new(-1, CEF_NO_DRAW | CEF_NOMOVE, origin, NULL, duration);
 			splash->Update = FXRedRainSplashThink;
 			splash->SpawnInfo = rain->SpawnInfo;
@@ -209,7 +198,7 @@ void FXRedRain(centity_t *Owner, int Type, int Flags, vec3_t Origin)
 	}
 	GetSolidDist(Origin, radius * 0.5, MAX_REDRAINHEIGHT, &ceiling);
 	ceil_org[2] += ceiling;
-	GetSolidDist(Origin, 1, -MAX_FALL_DIST, &floor);
+	GetSolidDist(Origin, 1, -MAX_FALL_DISTANCE, &floor);
 
 	Flags = (Flags | CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_VIEWSTATUSCHANGED) & ~CEF_OWNERS_ORIGIN;
 	spawner = ClientEntity_new(Type, Flags, ceil_org, NULL, 200);
@@ -245,12 +234,12 @@ static qboolean FXRedRainMissileThink(client_entity_t *missile, centity_t *owner
 	vec3_t				diff, curpos, org;
 
 	VectorSubtract(missile->r.origin, missile->origin, diff);
-	Vec3ScaleAssign((1.0 / NUM_TRAIL_PARTS), diff);
+	Vec3ScaleAssign((1.0 / NUM_TRAIL_PARTICLES), diff);
 	VectorClear(curpos);
 
-	for(i = 0; i < NUM_TRAIL_PARTS; i++)
+	for(i = 0; i < NUM_TRAIL_PARTICLES; i++)
 	{
-		VectorRandomCopy(missile->origin, org, PART_OFF);
+		VectorRandomCopy(missile->origin, org, PARTICLE_OFFSET);
 		Vec3AddAssign(curpos, org);
 		ce = ClientEntity_new(-1, 0, org, NULL, 500);
 		if (missile->SpawnInfo)	// Powered up
