@@ -222,42 +222,41 @@ qboolean FXPhoenixExplosionBallThink(client_entity_t* ball, centity_t* owner)
 	return true;
 }
 
-static qboolean FXPhoenixExplosionBirdThink(client_entity_t *bird, centity_t *owner)
+static qboolean FXPhoenixExplosionBirdThink(client_entity_t* bird, centity_t* owner)
 {
-	client_entity_t *newbird;
-	vec3_t	pos;
-	int		dur;
-
 	bird->LifeTime--;
+
 	if (bird->LifeTime <= 0)
-	{
-		return(false);
-	}
+		return false;
 
-	if(r_detail->value == DETAIL_LOW)
-		dur = 175;
+	int duration;
+	if ((int)r_detail->value == DETAIL_LOW)
+		duration = 175;
+	else if ((int)r_detail->value == DETAIL_NORMAL)
+		duration = 210;
 	else
-	if(r_detail->value == DETAIL_NORMAL)
-		dur = 210;
-	else
-		dur = 250;
+		duration = 250;
 
-	// Spawn another trail bird
-	VectorSet(pos, flrand(-8, 8), flrand(-8, 8), flrand(-8, 8));
+	// Spawn another trail bird.
+	vec3_t pos;
+	VectorRandomSet(pos, 8.0f);
 	VectorAdd(pos, bird->r.origin, pos);
-	newbird = ClientEntity_new(-1, bird->r.flags, pos, NULL, dur);
-	newbird->r.model = phoenix_models + 3;
-	newbird->r.frame = 1;
-	newbird->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;// | RF_FULLBRIGHT;
-	newbird->radius	= 128;
-	newbird->r.scale= bird->r.scale;
-	newbird->alpha	= bird->alpha;
-	newbird->d_alpha= -(newbird->alpha*4.0);
-	newbird->d_scale= 2.0;
-	VectorCopy(bird->velocity, newbird->velocity);
-	AddEffect(NULL, newbird);
 
-	return (true);
+	client_entity_t* new_bird = ClientEntity_new(-1, bird->r.flags, pos, NULL, duration);
+
+	new_bird->radius = 128.0f;
+	new_bird->r.model = &phoenix_models[3]; // Phoenix sprite.
+	new_bird->r.frame = 1;
+	new_bird->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	new_bird->r.scale = bird->r.scale;
+	new_bird->alpha = bird->alpha;
+	new_bird->d_alpha = -4.0f * bird->alpha;
+	new_bird->d_scale = 2.0f;
+	VectorCopy(bird->velocity, new_bird->velocity);
+
+	AddEffect(NULL, new_bird);
+
+	return true;
 }
 
 // This is also exported for use in FXBarrelExplode
