@@ -1,17 +1,13 @@
 //
-// Heretic II
+// fx_PlagueMistExplode.c
+//
 // Copyright 1998 Raven Software
 //
-// Created by JJS
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "ce_DefaultMessageHandler.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
+#include "Random.h"
 #include "Vector.h"
-#include "random.h"
 #include "g_playstats.h"
 
 #define NUM_MIST_EXPLODE_PARTS	7
