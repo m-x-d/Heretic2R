@@ -28,10 +28,9 @@
 #define NUM_LIGHTNING_RINGBITS		12
 #define LIGHTNING_RING_VELOCITY		320.0f
 
-#define	NUM_LIGHTNING_MODELS	7
-static struct model_s *lightning_models[NUM_LIGHTNING_MODELS];
+static struct model_s* lightning_models[7];
 
-void PreCacheLightning()
+void PreCacheLightning(void)
 {
 	lightning_models[LIGHTNING_TYPE_BLUE] = fxi.RegisterModel("sprites/fx/lightning.sp2");
 	lightning_models[LIGHTNING_TYPE_RED] = fxi.RegisterModel("sprites/fx/rlightning.sp2");
