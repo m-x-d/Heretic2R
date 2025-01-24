@@ -12,63 +12,57 @@
 
 #define NUM_MIST_EXPLODE_PARTS	7
 
-static qboolean FXPlagueMistExplodeSpawn(client_entity_t *spawner, centity_t *owner)
+static qboolean FXPlagueMistExplodeSpawn(client_entity_t* spawner, centity_t* owner)
 {
-	int					i, count;
-	client_particle_t	*p;
-	paletteRGBA_t		color;
-	int					duration;
-	float				mist_scale, mist_d_scale;
-
 	spawner->LifeTime -= spawner->SpawnInfo;
-	if(spawner->LifeTime < 0)
-		return(false);
+	if (spawner->LifeTime < 0)
+		return false;
 
-	count = (spawner->LifeTime - 1600) / 200;
-	if(count > NUM_MIST_EXPLODE_PARTS)
-		count = NUM_MIST_EXPLODE_PARTS;
-	if(count < 1)
-		return(true);
+	int count = (spawner->LifeTime - 1600) / 200;
+	count = min(NUM_MIST_EXPLODE_PARTS, count);
 
-	if (r_detail->value >= DETAIL_HIGH)
+	if (count < 1)
+		return true;
+
+	int duration;
+	float mist_scale;
+	float mist_d_scale;
+
+	if ((int)r_detail->value >= DETAIL_HIGH)
 	{
 		duration = 1500;
-		mist_scale = 10.0;
-		mist_d_scale = 6.0;
+		mist_scale = 10.0f;
+		mist_d_scale = 6.0f;
 	}
-	else
-	if (r_detail->value == DETAIL_NORMAL)
+	else if ((int)r_detail->value == DETAIL_NORMAL)
 	{
 		duration = 1250;
-		mist_scale = 9.0;
-		mist_d_scale = 5.5;
+		mist_scale = 9.0f;
+		mist_d_scale = 5.5f;
 	}
 	else
 	{
 		duration = 1000;
-		mist_scale = 8.0;
-		mist_d_scale = 5.0;
+		mist_scale = 8.0f;
+		mist_d_scale = 5.0f;
 	}
 
-	color.c = 0xffffffff;
-	for(i = 0; i < count; i++)
+	for (int i = 0; i < count; i++)
 	{
-		color.r = irand(140, 195);
-		color.g = irand(140, 195);
-		color.b = irand(140, 195);
-		color.a = irand(220, 255);
+		paletteRGBA_t color;
+		COLOUR_SETA(color, irand(140, 195), irand(140, 195), irand(140, 195), irand(220, 255)); //mxd. Use macro.
 
-		p = ClientParticle_new(PART_16x16_MIST | PFL_NEARCULL, color, duration);
-		p->velocity[0] = flrand(-75.0F, 75.0F);
-		p->velocity[1] = flrand(-75.0F, 75.0F);
-		p->velocity[2] = flrand(-10.0F, 75.0F);
-		VectorScale(p->velocity, -1.1F, p->acceleration);
+		client_particle_t* p = ClientParticle_new((int)(PART_16x16_MIST | PFL_NEARCULL), color, duration);
+
+		VectorSet(p->velocity, flrand(-75.0f, 75.0f), flrand(-75.0f, 75.0f), flrand(-10.0f, 75.0f));
+		VectorScale(p->velocity, -1.1f, p->acceleration);
 		p->scale = mist_scale;
 		p->d_scale = mist_d_scale;
+
 		AddParticleToList(spawner, p);
 	}
 
-	return(true);
+	return true;
 }
 
 void FXPlagueMistExplode(centity_t *Owner, int Type, int Flags, vec3_t Origin)
