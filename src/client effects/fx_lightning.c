@@ -198,193 +198,182 @@ void FXLightning(centity_t* owner, int type, const int flags, const vec3_t origi
 	LightningBolt(model, width, origin, target);
 }
 
-// This is from creating the effect FX_POWER_LIGHTNING
-void FXPowerLightning(centity_t *Owner, int Type, int Flags, vec3_t Origin)
+void FXPowerLightning(centity_t* owner, int type, const int flags, const vec3_t origin)
 {
-	vec3_t				target, diffpos;
-	byte				width;
-	client_entity_t		*lightning;
-	client_particle_t	*spark;
-	int					i;
-	float				length;
-	float				curang, degreeinc;	
-	vec3_t				lastvel, upvel;
-		
-	fxi.GetEffect(Owner, Flags, clientEffectSpawners[FX_POWER_LIGHTNING].formatString, target, &width);
+	vec3_t target;
+	byte b_width;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_POWER_LIGHTNING].formatString, target, &b_width);
 
-	VectorSubtract(target, Origin, diffpos);
-	length = VectorLength(diffpos);
+	const float width = b_width; //mxd
 
-	// Big ol' monster zapper
-	lightning = ClientEntity_new(FX_POWER_LIGHTNING, CEF_AUTO_ORIGIN, Origin, NULL, 750);
-	lightning->r.model = lightning_models + LIGHTNING_TYPE_GREEN;
-	lightning->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	lightning->r.scale = width;
-	lightning->d_scale = -0.5*width;
+	vec3_t diff_pos;
+	VectorSubtract(target, origin, diff_pos);
+	const float length = VectorLength(diff_pos);
+
+	// Big ol' monster zapper.
+	client_entity_t* lightning = ClientEntity_new(FX_POWER_LIGHTNING, CEF_AUTO_ORIGIN, origin, NULL, 750);
+
 	lightning->radius = length;
-	lightning->alpha = 0.95;
-	lightning->d_alpha = -1.5;
-	VectorCopy(Origin, lightning->r.startpos);
-	VectorCopy(target, lightning->r.endpos);
- 	lightning->r.spriteType = SPRITE_LINE;
-	AddEffect(NULL, lightning); 
-
-	// Halo around the lightning
-	lightning = ClientEntity_new(FX_POWER_LIGHTNING, CEF_AUTO_ORIGIN, Origin, NULL, 1000);
-	lightning->r.model = lightning_models + LIGHTNING_TYPE_GREEN;
-	lightning->r.frame = 1;
-	lightning->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	lightning->r.scale = width * LIGHTNING_POWER_WIDTH_MULT;
-	lightning->d_scale = -0.5*width;
-	lightning->radius = length;
-	lightning->alpha = 0.5;
-	lightning->d_alpha = -0.5;
-	VectorCopy(Origin, lightning->r.startpos);
-	VectorCopy(target, lightning->r.endpos);
+	lightning->r.model = &lightning_models[LIGHTNING_TYPE_GREEN];
+	lightning->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 	lightning->r.spriteType = SPRITE_LINE;
-	AddEffect(NULL, lightning); 
+	lightning->r.scale = width;
+	lightning->d_scale = -0.5f * width;
+	lightning->alpha = 0.95f;
+	lightning->d_alpha = -1.5f;
+	VectorCopy(origin, lightning->r.startpos);
+	VectorCopy(target, lightning->r.endpos);
+
+	AddEffect(NULL, lightning);
+
+	// Halo around the lightning.
+	client_entity_t* halo = ClientEntity_new(FX_POWER_LIGHTNING, CEF_AUTO_ORIGIN, origin, NULL, 1000);
+
+	halo->r.model = &lightning_models[LIGHTNING_TYPE_GREEN];
+	halo->r.frame = 1;
+	halo->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	halo->r.spriteType = SPRITE_LINE;
+	halo->r.scale = width * LIGHTNING_POWER_WIDTH_MULT;
+	halo->d_scale = -0.5f * width;
+	halo->radius = length;
+	halo->alpha = 0.5f;
+	halo->d_alpha = -0.5f;
+	VectorCopy(origin, halo->r.startpos);
+	VectorCopy(target, halo->r.endpos);
+
+	AddEffect(NULL, halo);
 
 	// Big ol' flash at source to cover up the flatness of the line's end.
-	lightning = ClientEntity_new(FX_POWER_LIGHTNING, CEF_ADDITIVE_PARTS, Origin, NULL, 750);
-	lightning->r.model = lightning_models + 6;		// The bright halo model
-	lightning->r.frame = 1;
-	lightning->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	lightning->r.scale = 0.75;
-	lightning->d_scale = 2.0;
-	lightning->radius = 128.0;
-	lightning->alpha = 0.95;
-	lightning->d_alpha = -1.333;
-	lightning->color.c = 0xffffffff;
-	AddEffect(NULL, lightning);
+	client_entity_t* start_flash = ClientEntity_new(FX_POWER_LIGHTNING, CEF_ADDITIVE_PARTS, origin, NULL, 750);
+
+	start_flash->r.model = &lightning_models[6]; // The bright halo sprite.
+	start_flash->r.frame = 1;
+	start_flash->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	start_flash->r.scale = 0.75f;
+	start_flash->d_scale = 2.0f;
+	start_flash->radius = 128.0f;
+	start_flash->alpha = 0.95f;
+	start_flash->d_alpha = -1.333f;
+
+	AddEffect(NULL, start_flash);
 
 	// Now add a bunch of sparks to the source too to add interest.
-	for(i=0; i<8; i++)
-	{	// Half green, half yellow particles
-		if (i&0x01)
-			spark = ClientParticle_new(PART_16x16_SPARK_Y, lightning->color, 1000);
-		else
-			spark = ClientParticle_new(PART_16x16_SPARK_G, lightning->color, 1000);
-		VectorSet(spark->velocity, flrand(-80,80), flrand(-80,80), flrand(-80,80));
-		VectorScale(spark->velocity, -1.0, spark->acceleration);
-		spark->scale = flrand(20.0, 32.0);
+	for (int i = 0; i < 8; i++)
+	{
+		// Half green, half yellow particles.
+		const int particle_type = ((i & 1) ? PART_16x16_SPARK_Y : PART_16x16_SPARK_G); //mxd
+		client_particle_t* spark = ClientParticle_new(particle_type, start_flash->color, 1000);
+
+		VectorRandomSet(spark->velocity, 80.0f);
+		VectorScale(spark->velocity, -1.0f, spark->acceleration);
+		spark->scale = flrand(20.0f, 32.0f);
 		spark->d_scale = -spark->scale;
-		spark->d_alpha = flrand(-384.0, -256);
-		AddParticleToList(lightning, spark);
+		spark->d_alpha = flrand(-384.0f, -256.0f);
+
+		AddParticleToList(start_flash, spark);
 	}
 
-	lightning = ClientEntity_new(FX_POWER_LIGHTNING, CEF_ADDITIVE_PARTS, target, NULL, 1000);
-	lightning->r.model = lightning_models + 6;		// The bright halo model
-	lightning->r.origin[2] += 8.0;
-	lightning->r.frame = 1;
-	lightning->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	lightning->r.scale = 2.0;
-	lightning->d_scale = -2.0;
-	lightning->radius = 128.0;
-	lightning->alpha = 0.95;
-	lightning->d_alpha = -1.333;
-	lightning->color.c = 0xffffffff;
-	AddEffect(NULL, lightning);
+	client_entity_t* end_flash = ClientEntity_new(FX_POWER_LIGHTNING, CEF_ADDITIVE_PARTS, target, NULL, 1000);
+
+	end_flash->radius = 128.0f;
+	end_flash->r.model = &lightning_models[6]; // The bright halo sprite.
+	end_flash->r.frame = 1;
+	end_flash->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	end_flash->r.scale = 2.0f;
+	end_flash->d_scale = -2.0f;
+	end_flash->alpha = 0.95f;
+	end_flash->d_alpha = -1.333f;
+	end_flash->r.origin[2] += 8.0f;
+
+	AddEffect(NULL, end_flash);
 
 	// And yet more sparks to the hit point too to add interest.
-	for(i=0; i<12; i++)
-	{	// Half green, half yellow particles
-		if (i&0x01)
-			spark = ClientParticle_new(PART_16x16_SPARK_Y, lightning->color, 1000);
-		else
-			spark = ClientParticle_new(PART_16x16_SPARK_G, lightning->color, 1000);
+	for (int i = 0; i < 12; i++)
+	{
+		// Half green, half yellow particles
+		const int particle_type = ((i & 1) ? PART_16x16_SPARK_Y : PART_16x16_SPARK_G); //mxd
+		client_particle_t* spark = ClientParticle_new(particle_type, end_flash->color, 1000);
+
 		VectorSet(spark->velocity, 
-					flrand(-LIGHTNING_RING_VELOCITY, LIGHTNING_RING_VELOCITY),
-					flrand(-LIGHTNING_RING_VELOCITY, LIGHTNING_RING_VELOCITY),
-					flrand(0,32));
-		VectorScale(spark->velocity, -1.0, spark->acceleration);
-		spark->scale = flrand(20.0, 32.0);
+			flrand(-LIGHTNING_RING_VELOCITY, LIGHTNING_RING_VELOCITY), 
+			flrand(-LIGHTNING_RING_VELOCITY, LIGHTNING_RING_VELOCITY), 
+			flrand(0.0f, 32.0f));
+
+		VectorScale(spark->velocity, -1.0f, spark->acceleration);
+		spark->scale = flrand(20.0f, 32.0f);
 		spark->d_scale = -spark->scale;
-		spark->d_alpha = flrand(-384.0, -256);
-		AddParticleToList(lightning, spark);
+		spark->d_alpha = flrand(-384.0f, -256.0f);
+
+		AddParticleToList(end_flash, spark);
 	}
 
 	// Draw a circle of expanding lines.
-	curang = 0;
-	degreeinc = (360.0*ANGLE_TO_RAD)/(float)NUM_LIGHTNING_RINGBITS;
-	VectorSet(lastvel, LIGHTNING_RING_VELOCITY, 0.0, 0.0);
-	VectorSet(upvel, 0, 0, 32.0);
-	for(i = 0; i < NUM_LIGHTNING_RINGBITS; i++)
+	float cur_angle = 0.0f;
+	const float degree_inc = ANGLE_360 / (float)NUM_LIGHTNING_RINGBITS;
+
+	vec3_t last_vel = { LIGHTNING_RING_VELOCITY, 0.0f, 0.0f };
+	const vec3_t up_vel = { 0.0f, 0.0f, 32.0f };
+	const int glow_flags = CEF_PULSE_ALPHA | CEF_USE_VELOCITY2 | CEF_AUTO_ORIGIN | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS; //mxd
+
+	for (int i = 0; i < NUM_LIGHTNING_RINGBITS; i++)
 	{
-		curang+=degreeinc;
+		cur_angle += degree_inc;
 
-		lightning = ClientEntity_new(FX_LIGHTNING, 
-						CEF_PULSE_ALPHA | CEF_USE_VELOCITY2 | CEF_AUTO_ORIGIN | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS, 
-						target, NULL, 750);
-		lightning->r.model = lightning_models + LIGHTNING_TYPE_GREEN;
-		lightning->r.frame = 1;		// Just use the halo
-		lightning->r.spriteType = SPRITE_LINE;
-		lightning->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		lightning->radius = 64.0;
-		
-		// The startpos and startvel comes from the last velocity.
-		VectorCopy(lastvel, lightning->velocity);
-		VectorScale(lightning->velocity, -1.0, lightning->acceleration);
-		VectorMA(target, .01, lightning->velocity, lightning->r.startpos);	// Move the line out a bit to avoid a zero-length line.
+		client_entity_t* glow = ClientEntity_new(FX_LIGHTNING, glow_flags, target, NULL, 750);
 
-		// The endpos is calculated from the current angle.
-		VectorSet(lightning->velocity2, LIGHTNING_RING_VELOCITY *cos(curang), LIGHTNING_RING_VELOCITY *sin(curang), 0.0);
-		VectorScale(lightning->velocity2, -1.0, lightning->acceleration2);
-		VectorMA(target, .01, lightning->velocity2, lightning->r.endpos);	// Move the line out a bit to avoid a zero-length line.
+		glow->radius = 64.0f;
+		glow->r.model = &lightning_models[LIGHTNING_TYPE_GREEN];
+		glow->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		glow->r.frame = 1; // Just use the halo.
+		glow->r.spriteType = SPRITE_LINE;
+		glow->r.scale = 0.5f;
+		glow->d_scale = 32.0f;
+		glow->alpha = 0.1f;
+		glow->d_alpha = 3.0f;
+
+		// The start_pos and start_vel comes from the last velocity.
+		VectorCopy(last_vel, glow->velocity);
+		VectorScale(glow->velocity, -1.0f, glow->acceleration);
+		VectorMA(target, 0.01f, glow->velocity, glow->r.startpos); // Move the line out a bit to avoid a zero-length line.
+
+		// The end_pos is calculated from the current angle.
+		VectorSet(glow->velocity2, LIGHTNING_RING_VELOCITY * cosf(cur_angle), LIGHTNING_RING_VELOCITY * sinf(cur_angle), 0.0f);
+		VectorScale(glow->velocity2, -1.0f, glow->acceleration2);
+		VectorMA(target, 0.01f, glow->velocity2, glow->r.endpos); // Move the line out a bit to avoid a zero-length line.
 
 		// Finally, copy the last velocity we used.
-		VectorCopy(lightning->velocity2, lastvel);
+		VectorCopy(glow->velocity2, last_vel);
 
-		// Now, add the additional velocity upwards
-		VectorAdd(lightning->velocity, upvel, lightning->velocity);
-		VectorAdd(lightning->velocity2, upvel, lightning->velocity2);
+		// Now, add the additional velocity upwards.
+		VectorAdd(glow->velocity, up_vel, glow->velocity);
+		VectorAdd(glow->velocity2, up_vel, glow->velocity2);
 
-		lightning->r.scale = .5;
-		lightning->d_scale = 32.0;
-		lightning->alpha = 0.1;
-		lightning->d_alpha = 3.0;
-		lightning->color.c = 0xffffffff;
-
-		AddEffect(NULL, lightning);
+		AddEffect(NULL, glow);
 
 		// Now spawn a particle quick to save against the nasty joints (ugh).
-		// Half green, half yellow particles
-		if (i&0x01)
-		{	
-			lightning->r.tile = 0.5;		// Alternate tiles
-			lightning->r.tileoffset = 0.5;
-			spark = ClientParticle_new(PART_16x16_SPARK_Y, lightning->color, 750);
-		}
-		else
-		{
-			lightning->r.tile = 0.5;		// Alternate tiles
-			lightning->r.tileoffset = 0.0;
-			spark = ClientParticle_new(PART_16x16_SPARK_G, lightning->color, 750);
-		}
-		VectorCopy(lightning->r.startpos, spark->origin);
-		VectorCopy(lightning->velocity, spark->velocity);
-		VectorCopy(lightning->acceleration, spark->acceleration);
-		spark->scale = 0.5;
-		spark->d_scale = 32.0;
-		spark->color.a = 1;
-		spark->d_alpha = 768.0;
+		glow->r.tile = 0.5f;
+		glow->r.tileoffset = ((i & 1) ? 0.5f : 0.0f); // Alternate tiles.
 
-		AddParticleToList(lightning, spark);
+		// Half green, half yellow particles.
+		const int particle_type = ((i & 1) ? PART_16x16_SPARK_Y : PART_16x16_SPARK_G); //mxd
+		client_particle_t* spark = ClientParticle_new(particle_type, glow->color, 750);
+
+		spark->scale = 0.5f;
+		spark->d_scale = 32.0f;
+		spark->color.a = 1;
+		spark->d_alpha = 768.0f;
+
+		VectorCopy(glow->r.startpos, spark->origin);
+		VectorCopy(glow->velocity, spark->velocity);
+		VectorCopy(glow->acceleration, spark->acceleration);
+
+		AddParticleToList(glow, spark);
 	}
 
-	// Now finally flash the screen
-	fxi.Activate_Screen_Flash(0x8080ffc0);
-	// make our screen shake a bit
-	// values are : a, b, c, d
-	// a = amount of maximum screen shake, in pixels
-	// b = duration of screen shake in milli seconds
-	// c = current time - in milli seconds - if this routine is called from the server, remember this
-	// d = dir of shake - see game_stats.h for definitions
-	fxi.Activate_Screen_Shake(4, 500, fxi.cl->time, SHAKE_ALL_DIR);
+	// Now finally flash and shake the screen.
+	fxi.Activate_Screen_Flash((int)0x8080ffc0);
+	fxi.Activate_Screen_Shake(4.0f, 500.0f, (float)fxi.cl->time, SHAKE_ALL_DIR);
 
-	if (Flags & CEF_FLAG8)	// Play sound flag
-		fxi.S_StartSound(target, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/LightningPower.wav"), 1, ATTN_NORM, 0);
+	if (flags & CEF_FLAG8) // "Play sound" flag.
+		fxi.S_StartSound(target, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/LightningPower.wav"), 1.0f, ATTN_NORM, 0);
 }
-
-
-
-// end
