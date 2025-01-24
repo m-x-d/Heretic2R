@@ -13,7 +13,6 @@
 #include "g_playstats.h"
 
 #define NUM_PORTAL_PARTS	20
-#define PICTURE_RADIUS		55.0f
 #define PORTAL_RADIUS		50.0f
 #define MIN_PARTICLE_SCALE	1.0f
 #define MAX_PARTICLE_SCALE	3.0f
@@ -23,7 +22,7 @@ static struct model_s* portal_models[3];
 void PreCachePortal(void)
 {
 	portal_models[0] = fxi.RegisterModel("sprites/fx/ripple_add.sp2");
-	portal_models[1] = fxi.RegisterModel("sprites/fx/portal1.sp2");
+	portal_models[1] = fxi.RegisterModel("sprites/fx/portal1.sp2"); //TODO: unused.
 	portal_models[2] = fxi.RegisterModel("sprites/spells/patball.sp2");
 }
 
@@ -173,78 +172,30 @@ static qboolean FXMagicPortalThink(client_entity_t* self, centity_t* owner)
 	return true;
 }
 
-// This is the persistant effect for the teleport pad
-void FXMagicPortal(centity_t *owner, int type, int flags, vec3_t origin)
+// This is the persistent effect for the teleport pad.
+void FXMagicPortal(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	client_entity_t		*portal;
-	vec3_t				dir, forward;
-	byte				color, duration;
-	qboolean			special = false;
-
+	vec3_t dir;
+	byte color;
+	byte duration;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_MAGIC_PORTAL].formatString, dir, &color, &duration);
 
+	vec3_t forward;
 	AngleVectors(dir, forward, NULL, NULL);
-	portal = ClientEntity_new(type, (flags) & ~CEF_NOMOVE , origin, forward, 110);
-	VectorScale(forward, -1, portal->direction);
-	portal->radius = 1000;
 
-	if(special)
-	{
-		portal->flags |= CEF_ADDITIVE_PARTS | CEF_VIEWSTATUSCHANGED;
-		portal->r.spriteType = SPRITE_DYNAMIC;
-		portal->r.flags |= RF_FIXED|RF_GLOW|RF_TRANSLUCENT|RF_TRANS_ADD_ALPHA|RF_TRANS_ADD;
-		portal->alpha = 0.75;
-		
-		if(1)
-		{
-			//top left
-			portal->r.verts[0][0] = -PICTURE_RADIUS;// + flrand(-2, 2);//x
-			portal->r.verts[0][1] = -PICTURE_RADIUS;// + flrand(-2, 2);//y
-			//top right
-			portal->r.verts[1][0] = PICTURE_RADIUS;// + flrand(-2, 2);//x
-			portal->r.verts[1][1] = -PICTURE_RADIUS;// + flrand(-2, 2);//y
-			//bottom left
-			portal->r.verts[2][0] = PICTURE_RADIUS;// + flrand(-2, 2);//x
-			portal->r.verts[2][1] = PICTURE_RADIUS;//+ flrand(-2, 2);//y
-			//bottom right
-			portal->r.verts[3][0] = -PICTURE_RADIUS;// + flrand(-2, 2);//x
-			portal->r.verts[3][1] = PICTURE_RADIUS;// + flrand(-2, 2);//y
-		}
+	client_entity_t* portal = ClientEntity_new(type, flags & ~CEF_NOMOVE, origin, forward, 110);
 
-		if(1)
-		{
-			//top left
-			portal->r.verts[0][2] = 0;//PORTALPIC_SIZE;// + flrand(-2, 2);//u
-			portal->r.verts[0][3] = 1;//-PORTALPIC_SIZE;// + flrand(-2, 2);//v
-			//top right
-			portal->r.verts[1][2] = 1;//PORTALPIC_SIZE;// + flrand(-2, 2);//u
-			portal->r.verts[1][3] = 1;//PORTALPIC_SIZE;// + flrand(-2, 2);//v
-			//bottom left
-			portal->r.verts[2][2] = 1;//-PORTALPIC_SIZE;// + flrand(-2, 2);//u
-			portal->r.verts[2][3] = 0;//PORTALPIC_SIZE;// + flrand(-2, 2);//v
-			//bottom right
-			portal->r.verts[3][2] = 0;//-PORTALPIC_SIZE;// + flrand(-2, 2);//u
-			portal->r.verts[3][3] = 0;//-PORTALPIC_SIZE;// + flrand(-2, 2);//v
-		}
-
-		portal->r.model = portal_models + 1;
-	}
-	else
-		portal->flags |= CEF_NO_DRAW;
-
-	VectorCopy(dir, portal->r.angles);
+	portal->radius = 1000.0f;
+	portal->flags |= CEF_NO_DRAW | CEF_PULSE_ALPHA;
 	portal->SpawnInfo = 2;
+
+	if (duration != 0)
+		portal->SpawnDelay = fxi.cl->time + duration * 1000; // Portal disappears after so many seconds (otherwise it stays indefinitely).
+
+	VectorScale(forward, -1.0f, portal->direction);
+	VectorCopy(dir, portal->r.angles);
+
 	portal->Update = FXMagicPortalThink;
 
-	portal->flags |= CEF_PULSE_ALPHA;
-
-	if (duration==0)
-	{	// Portal stays indefinitely
-		portal->SpawnDelay = 0;
-	}
-	else
-	{	// Portal disappears after so many seconds
-		portal->SpawnDelay = fxi.cl->time + ((int)duration * 1000);
-	}
 	AddEffect(owner, portal);
 }

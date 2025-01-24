@@ -114,7 +114,7 @@ extern void FXWaterfallBase(centity_t* owner, int type, int flags, vec3_t origin
 extern void FXDripper(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXMist(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXPlagueMist(centity_t* owner, int type, int flags, const vec3_t origin);
-extern void FXPlagueMistExplode(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXPlagueMistExplode(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXSpellHands(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXLensFlare(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXStaff(centity_t* owner, int type, int flags, vec3_t origin);
@@ -178,7 +178,7 @@ extern void FXPowerLightning(centity_t* owner, int type, int flags, vec3_t origi
 extern void FXHPStaff(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXRandWaterBubble(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXBubble(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXMagicPortal(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXMagicPortal(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXTBEffects(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXTestBBox(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXSsithraArrow(centity_t* owner, int type, int flags, vec3_t origin);
