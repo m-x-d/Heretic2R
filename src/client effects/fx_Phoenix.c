@@ -259,27 +259,22 @@ static qboolean FXPhoenixExplosionBirdThink(client_entity_t* bird, centity_t* ow
 	return true;
 }
 
-// This is also exported for use in FXBarrelExplode
-client_entity_t *CreatePhoenixSmallExplosion(vec3_t ballorigin)
+// This is also exported for use in FXBarrelExplode.
+client_entity_t* CreatePhoenixSmallExplosion(const vec3_t ball_origin) //TODO: rename to FXPhoenixCreateSmallExplosion?
 {
-	client_entity_t *subexplosion;
+	client_entity_t* sub_explosion = ClientEntity_new(FX_WEAPON_PHOENIXEXPLODE, CEF_BROADCAST, ball_origin, NULL, 17);
 
-	subexplosion = ClientEntity_new(FX_WEAPON_PHOENIXEXPLODE, CEF_BROADCAST, ballorigin, NULL, 17);
-	subexplosion->r.model = phoenix_models + 4;
-	subexplosion->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;// | RF_FULLBRIGHT;
-	subexplosion->alpha = 1.0;
-	subexplosion->r.scale = 1.0;
-	subexplosion->radius=128;
-	subexplosion->startTime = fxi.cl->time;
-	subexplosion->lastThinkTime = fxi.cl->time;
-	subexplosion->velocity2[YAW] = flrand(-M_PI, M_PI);
-	subexplosion->velocity2[PITCH] = flrand(-M_PI, M_PI);
-	subexplosion->Update = FXPhoenixExplosionSmallBallThink;
+	sub_explosion->radius = 128.0f;
+	sub_explosion->r.model = &phoenix_models[4]; // Inner explosion model.
+	sub_explosion->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	sub_explosion->startTime = fxi.cl->time;
+	sub_explosion->lastThinkTime = fxi.cl->time;
+	sub_explosion->velocity2[YAW] = flrand(-ANGLE_180, ANGLE_180);
+	sub_explosion->velocity2[PITCH] = flrand(-ANGLE_180, ANGLE_180);
+	sub_explosion->Update = FXPhoenixExplosionSmallBallThink;
 
-	return(subexplosion);
+	return sub_explosion;
 }
-
-
 
 //////////////////////////
 // From CreateEffect FX_WEAPON_PHOENIXEXPLODE
