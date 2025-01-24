@@ -92,49 +92,63 @@ static client_entity_t* MakeLightningPiece(const int type, const float width, co
 	return spark;
 }
 
-// Directed lightning bolt
-void LightningBolt(int model, float width, vec3_t startpos, vec3_t endpos)
+// Directed lightning bolt.
+static void LightningBolt(const int model, const float width, const vec3_t start_pos, const vec3_t end_pos)
 {
-	vec3_t curpos, lastpos, refpoint, diffpos, rand;
-	vec3_t fwd, right, up;
-	float segmult, length, variance;
-	int i, segments;
+	vec3_t diff_pos;
+	VectorSubtract(end_pos, start_pos, diff_pos);
+	const float length = VectorLength(diff_pos);
 
-	VectorSubtract(endpos, startpos, diffpos);
-	length = VectorLength(diffpos);
-	if (length < MIN_LIGHTNING_PARTS*MAX_LIGHTNING_SEGMENT)
+	int segments;
+	float seg_mult;
+
+	if (length < MIN_LIGHTNING_PARTS * MAX_LIGHTNING_SEGMENT)
 	{
 		segments = MIN_LIGHTNING_PARTS;
-		segmult = 1.0/(float)MIN_LIGHTNING_PARTS;
+		seg_mult = 1.0f / (float)MIN_LIGHTNING_PARTS;
 	}
 	else
 	{
-		segments = (int)(length / (float)MAX_LIGHTNING_SEGMENT);
-		segmult = 1.0/(float)segments;
+		segments = (int)(length / MAX_LIGHTNING_SEGMENT);
+		seg_mult = 1.0f / (float)segments;
 	}
-	VectorNormalize2(diffpos, fwd);
+
+	vec3_t fwd;
+	VectorNormalize2(diff_pos, fwd);
+
+	vec3_t up;
 	PerpendicularVector(up, fwd);
-	CrossProduct(up, fwd, right);
 
-	VectorScale(diffpos, segmult, diffpos);
-	variance = 0.4 * length*segmult;
+	vec3_t right;
+	CrossProduct(up, fwd, right); //TODO: can't fwd/up/right be initialized using AngleVectors() instead?
 
-	VectorCopy(startpos, lastpos);
-	VectorCopy(startpos, refpoint);
-	for (i=0; i<segments-1; i++)
+	VectorScale(diff_pos, seg_mult, diff_pos);
+	const float variance = length * seg_mult * 0.4f;
+
+	vec3_t last_pos;
+	VectorCopy(start_pos, last_pos);
+
+	vec3_t ref_point;
+	VectorCopy(start_pos, ref_point);
+
+	for (int i = 0; i < segments - 1; i++)
 	{
-		VectorAdd(refpoint, diffpos, refpoint);
+		VectorAdd(ref_point, diff_pos, ref_point);
+
+		vec3_t rand;
 		VectorScale(up, flrand(-variance, variance), rand);
 		VectorMA(rand, flrand(-variance, variance), right, rand);
-		VectorAdd(refpoint, rand, curpos);
-		MakeLightningPiece(model, width, curpos, lastpos, variance);
-		VectorCopy(curpos, lastpos);
+
+		vec3_t cur_pos;
+		VectorAdd(ref_point, rand, cur_pos);
+		MakeLightningPiece(model, width, cur_pos, last_pos, variance);
+
+		VectorCopy(cur_pos, last_pos);
 	}
 
-	// Draw the last point to the destination, no variance
-	MakeLightningPiece(model, width, endpos, lastpos, variance);
+	// Draw the last point to the destination, no variance.
+	MakeLightningPiece(model, width, end_pos, last_pos, variance);
 }
-
 
 static qboolean FXLightningThink(client_entity_t *thinker, centity_t *owner)
 {
