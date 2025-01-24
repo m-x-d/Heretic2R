@@ -257,47 +257,39 @@ static qboolean FXRedRainThink(client_entity_t* rain, const centity_t* owner)
 }
 
 // This is from creating the effect FX_RED_RAIN.
-void FXRedRain(centity_t *Owner, int Type, int Flags, vec3_t Origin)
+void FXRedRain(centity_t* owner, const int type, int flags, const vec3_t origin)
 {
-	client_entity_t		*spawner;
-	vec_t				ceiling;
-	vec_t				floor;
-	vec3_t				ceil_org;
-	float				radius;
-	qboolean			powerup;
+	vec3_t ceil_origin;
+	VectorCopy(origin, ceil_origin);
 
-	VectorCopy(Origin, ceil_org);
-	if (Flags & CEF_FLAG6)
-	{	// powered up
-		radius = POWER_RAIN_RADIUS;
-		powerup = true;
-	}
-	else
-	{	// unpowered
-		radius = RED_RAIN_RADIUS;
-		powerup = false;
-	}
-	GetSolidDist(Origin, radius * 0.5, MAX_REDRAINHEIGHT, &ceiling);
-	ceil_org[2] += ceiling;
-	GetSolidDist(Origin, 1, -MAX_FALL_DISTANCE, &floor);
+	const qboolean powerup = (flags & CEF_FLAG6); //mxd
+	const float radius = (powerup ? POWER_RAIN_RADIUS : RED_RAIN_RADIUS); //mxd
 
-	Flags = (Flags | CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_VIEWSTATUSCHANGED) & ~CEF_OWNERS_ORIGIN;
-	spawner = ClientEntity_new(Type, Flags, ceil_org, NULL, 200);
-	spawner->Update = FXRedRainThink;			// FXRedRainThink;
+	float ceiling;
+	GetSolidDist(origin, radius * 0.5f, MAX_REDRAINHEIGHT, &ceiling);
+	ceil_origin[2] += ceiling;
+
+	float floor;
+	GetSolidDist(origin, 1, -MAX_FALL_DISTANCE, &floor);
+
+	const int duration = ((int)RED_RAIN_DURATION + 1) * 1000; //mxd
+	flags = (int)(flags | CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_VIEWSTATUSCHANGED) & ~CEF_OWNERS_ORIGIN;
+	client_entity_t* spawner = ClientEntity_new(type, flags, ceil_origin, NULL, 200);
+
 	spawner->radius = radius + MAX_REDRAINHEIGHT + (ceiling - floor);
-
-	spawner->color.c = 0xffffffff;
-	spawner->nextEventTime = fxi.cl->time + (RED_RAIN_DURATION+1.0)*1000;//waits for EF_DISABLE from owner, but in case we miss the message, time out
+	spawner->color = color_white;
+	spawner->nextEventTime = fxi.cl->time + duration; // Waits for EF_DISABLE from owner, but in case we miss the message, time out.
 
 	// The rain should start at the impact height, then move up to the target height.
 	spawner->SpawnData = -ceiling;
-	if (powerup)
-		spawner->SpawnInfo = 1;
+	spawner->SpawnInfo = (powerup ? 1 : 0);
 
-	AddEffect(Owner, spawner); 
+	spawner->Update = FXRedRainThink;
+
+	AddEffect(owner, spawner);
 
 	// Pass the explosion point as well as the rain generation point.
-	RedRainExplosion(Origin, ceil_org, (RED_RAIN_DURATION+1.0)*1000, powerup, Owner);
+	RedRainExplosion(origin, ceil_origin, duration, powerup, owner);
 }
 
 // Red Rain Missile
