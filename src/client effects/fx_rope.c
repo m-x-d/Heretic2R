@@ -21,7 +21,7 @@ void PreCacheRope(void)
 	rope_models[3] = fxi.RegisterModel("sprites/fx/segment_tendril.sp2");
 }
 
-static qboolean RopeCheckToHide(struct client_entity_s* self, centity_t* owner)
+static qboolean RopeCheckToHide(struct client_entity_s* self, const centity_t* owner)
 {
 	// Get the entity.
 	const centity_t* grab = &fxi.server_entities[self->LifeTime];
@@ -37,37 +37,24 @@ static qboolean RopeCheckToHide(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-/*
-	
-  Attached Rope Segments
+#pragma region ========================== ATTACHED ROPE SEGMENTS ==========================
 
-*/
-
-
-
-/*-----------------------------------------------
-	FXRopeTopDrawAttached
------------------------------------------------*/
-
-static qboolean FXRopeTopDrawAttached(struct client_entity_s *self, centity_t *owner)
+static qboolean FXRopeTopDrawAttached(struct client_entity_s* self, const centity_t* owner)
 {
-	qboolean		ret;
-	vec3_t			vec;
-
-	ret = RopeCheckToHide(self, owner);
-	if (!ret)
+	if (!RopeCheckToHide(self, owner))
 	{
 		self->flags |= CEF_NO_DRAW;
-		return ret;
+		return false;
 	}
 
-	//Get our tile rate
+	// Get our tile rate.
+	vec3_t vec;
 	VectorSubtract(self->direction, owner->origin, vec);
-	self->r.tile = VectorLength(vec) / 64;
+	self->r.tile = VectorLength(vec) / ROPE_SEGMENT_LENGTH;
 
-	//This places us at the player's top most hand
-	VectorSet(self->r.endpos, owner->origin[0], owner->origin[1], owner->origin[2] + 32);
-	
+	// This places us at the player's top most hand.
+	VectorSet(self->r.endpos, owner->origin[0], owner->origin[1], owner->origin[2] + 32.0f);
+
 	return true;
 }
 
@@ -185,19 +172,9 @@ static qboolean FXRopeBottomDrawAttached(struct client_entity_s *self, centity_t
 	return true;
 }
 
+#pragma endregion
 
-
-/*
-
-  Unattached Rope Segments
-
-*/
-
-
-
-/*-----------------------------------------------
-	FXRopeTopDraw
------------------------------------------------*/
+#pragma region ========================== UNATTACHED ROPE SEGMENTS ==========================
 
 static qboolean FXRopeTopDraw(struct client_entity_s *self, centity_t *owner)
 {
@@ -255,18 +232,7 @@ static qboolean FXRopeTopDraw(struct client_entity_s *self, centity_t *owner)
   return true;
 }
 
-
-/*
-
-	FXROPE
-
-*/
-
-
-
-/*-----------------------------------------------
-	FXRope
------------------------------------------------*/
+#pragma endregion
 
 void FXRope(centity_t *owner,int Type,int Flags,vec3_t Origin)
 {
