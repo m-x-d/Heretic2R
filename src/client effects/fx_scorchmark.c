@@ -9,15 +9,12 @@
 #include "Utilities.h"
 #include "g_playstats.h"
 
-#define	NUM_SCORCH_MODELS	1
+static struct model_s* scorch_model;
 
-static struct model_s *scorch_models[NUM_SCORCH_MODELS];
-
-void PreCacheScorch()
+void PreCacheScorch(void)
 {
-	scorch_models[0] = fxi.RegisterModel("sprites/fx/scorchmark.sp2");
+	scorch_model = fxi.RegisterModel("sprites/fx/scorchmark.sp2");
 }
-
 
 static qboolean EndLessLoop(struct client_entity_s *self, centity_t *owner)
 {
@@ -67,7 +64,7 @@ void FXClientScorchmark(vec3_t origin, vec3_t dir)
 	{
 		scorchmark = ClientEntity_new(FX_SCORCHMARK, CEF_NOMOVE, origin, dir, 1000);
 
-		scorchmark->r.model = scorch_models;
+		scorchmark->r.model = &scorch_model;
 		scorchmark->r.flags |= RF_FIXED | RF_TRANSLUCENT;
 
 		scorchmark->radius = 10.0;
@@ -95,7 +92,7 @@ void FXScorchmark(centity_t *owner, int type, int flags, vec3_t origin)
 	{
 		scorchmark = ClientEntity_new(type, flags | CEF_NOMOVE, origin, dir, 1000);
 
-		scorchmark->r.model = scorch_models;
+		scorchmark->r.model = &scorch_model;
 		scorchmark->r.flags |= RF_FIXED | RF_TRANSLUCENT;
 
 		scorchmark->radius = 10.0;
