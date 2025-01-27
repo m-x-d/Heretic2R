@@ -79,87 +79,76 @@ static qboolean FXRopeMiddleDrawAttached(struct client_entity_s* self, const cen
 	return true;
 }
 
-/*-----------------------------------------------
-	FXRopeBottomDrawAttached
------------------------------------------------*/
-
-static qboolean FXRopeBottomDrawAttached(struct client_entity_s *self, centity_t *owner)
+static qboolean FXRopeBottomDrawAttached(struct client_entity_s* self, const centity_t* owner)
 {
-	centity_t		*end, *grab;
-	qboolean		ret;
-	vec3_t			diffpos2, vec, c_vec, c_down;
-	float			lerp, oldtime, newtime, dist, c_length;
-	int				i;
-
-	ret = RopeCheckToHide(self, owner);
-
-	if (!ret)
+	if (!RopeCheckToHide(self, owner))
 	{
 		self->flags |= CEF_NO_DRAW;
-		return ret;
+		return false;
 	}
 
-	//Setup our two entities to base positions on
-	grab = &fxi.server_entities[self->LifeTime];
-	end  = (centity_t *)self->extra;
+	// Setup our entity to base positions on.
+	const centity_t* end = (centity_t*)self->extra;
 
-	//Setup the start position for the line
-	VectorSet(self->r.startpos, owner->origin[0], owner->origin[1], owner->origin[2] + 8);
-	
+	// Setup the start position for the line.
+	VectorSet(self->r.startpos, owner->origin[0], owner->origin[1], owner->origin[2] + 8.0f);
+
 	// Find the lerp factor by determining where in the 1/10 of a second this frame lies.
-	oldtime = self->lastThinkTime / 100.0F;
-	newtime = fxi.cl->time / 100.0F;
+	const float old_time = (float)self->lastThinkTime / 100.0f;
+	const float new_time = (float)fxi.cl->time / 100.0f;
 
-	if ((int) oldtime < (int) newtime)
+	if ((int)old_time < (int)new_time)
 	{
 		// Adjust the start and endpos for a new interpolation interval.		
 		VectorCopy(self->endpos2, self->startpos2);
 		VectorCopy(end->current.origin, self->endpos2);
 	}
 
-	//Get the lerp increment
-	lerp = newtime - (int)newtime;
+	// Get the lerp increment.
+	const float lerp = new_time - floorf(new_time); //mxd. (int) -> floorf().
 
 	// Find the difference in position for lerping.
-	VectorSubtract(self->endpos2, self->startpos2, diffpos2);
+	vec3_t diff_pos2;
+	VectorSubtract(self->endpos2, self->startpos2, diff_pos2);
 
 	// Now apply the lerp value to get the new endpos.
-	VectorMA(self->startpos2, lerp, diffpos2, self->r.endpos);
+	VectorMA(self->startpos2, lerp, diff_pos2, self->r.endpos);
 
-	//Setup the vector to the current position to the goal position
+	// Setup the vector to the current position to the goal position.
+	vec3_t vec;
 	VectorSubtract(self->r.endpos, self->r.startpos, vec);
-	dist = VectorNormalize(vec);
+	const float dist = VectorNormalize(vec);
 
-	//FIXME:  This is constant and can be stored (trivial...)
-	//Find the number of segments, and their lengths
-	c_length = dist / ROPE_BOTTOM_SEGMENTS; //FIXME: Find the actual length with curving
-	
-	self->r.tile = c_length / 64.0F;
+	// Find the number of segments, and their lengths
+	const float c_length = dist / ROPE_BOTTOM_SEGMENTS; //FIXME: Find the actual length with curving
+	self->r.tile = c_length / ROPE_SEGMENT_LENGTH;
 
-	//Setup the endpos
-	VectorSet(self->r.endpos, owner->origin[0], owner->origin[1], owner->origin[2] + 8);
+	// Setup the endpos.
+	VectorSet(self->r.endpos, owner->origin[0], owner->origin[1], owner->origin[2] + 8.0f);
 
-	//Find the vector pointing down through the upper portion of the rope from the connect point of the rope to the player
+	// Find the vector pointing down through the upper portion of the rope from the connect point of the rope to the player.
+	vec3_t c_down;
 	VectorSubtract(self->direction, owner->origin, c_down);
 	VectorNormalize(c_down);
 
-	//Set through the curve till we find this segment's position in it
-	for (i=0; i <= (int) self->SpawnDelay; i++)
+	// Set through the curve till we find this segment's position in it.
+	for (int i = 0; i <= self->SpawnDelay; i++)
 	{
-		//Where the last segment ended is where the new one begins
+		// Where the last segment ended is where the new one begins.
 		VectorCopy(self->r.endpos, self->r.startpos);
-		
-		//Find the angle increment for this segment
-		VectorScale(c_down, (i / (ROPE_BOTTOM_SEGMENTS + 1)) / 2, c_vec);
-		
-		//Get the new vector
+
+		// Find the angle increment for this segment.
+		vec3_t c_vec;
+		VectorScale(c_down, (float)i / (ROPE_BOTTOM_SEGMENTS + 1.0f) / 2.0f, c_vec);
+
+		// Get the new vector.
 		VectorAdd(c_vec, vec, c_vec);
 
-		//Find where this segment will end
+		// Find where this segment will end.
 		VectorMA(self->r.startpos, c_length, c_vec, self->r.endpos);
 	}
-	
-	//Store for lerping
+
+	// Store for lerping.
 	self->lastThinkTime = fxi.cl->time;
 
 	return true;
