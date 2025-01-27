@@ -16,12 +16,6 @@ void PreCacheScorch(void)
 	scorch_model = fxi.RegisterModel("sprites/fx/scorchmark.sp2");
 }
 
-static qboolean EndLessLoop(struct client_entity_s *self, centity_t *owner)
-{
-	return(true);
-}
-
-
 // --------------------------------------------------------------
 // Find exact plane to decal the scorchmark to
 
@@ -70,7 +64,7 @@ void FXClientScorchmark(vec3_t origin, vec3_t dir)
 		scorchmark->radius = 10.0;
 		scorchmark->r.scale = 0.6;
 
-		scorchmark->Update = EndLessLoop;
+		scorchmark->Update = KeepSelfAI;
 		
 		AddEffect(NULL, scorchmark);
 		InsertInCircularList(scorchmark);
@@ -98,7 +92,7 @@ void FXScorchmark(centity_t *owner, int type, int flags, vec3_t origin)
 		scorchmark->radius = 10.0;
 		scorchmark->r.scale = 0.6;
 
-		scorchmark->Update = EndLessLoop;
+		scorchmark->Update = KeepSelfAI;
 		
 		AddEffect(NULL, scorchmark);
 		InsertInCircularList(scorchmark);
