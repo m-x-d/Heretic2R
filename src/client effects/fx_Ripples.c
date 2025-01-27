@@ -38,22 +38,20 @@ static qboolean FXRippleSpawnerThink(client_entity_t* spawner, centity_t* owner)
 	return true;
 }
 
-void FXWaterRipples(centity_t *Owner, int Type, int Flags, vec3_t Origin)
+void FXWaterRipples(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	client_entity_t		*spawner;
-	vec3_t				dir;
-	vec_t				dist;
+	vec3_t dir;
+	float dist;
 
-	if(GetWaterNormal(Origin, 1.0, 20.0F, dir, &dist))
+	if (GetWaterNormal(origin, 1.0f, 20.0f, dir, &dist))
 	{
-		Origin[2] += dist;
-		spawner = ClientEntity_new(Type, Flags, Origin, dir, 200);
+		const vec3_t pos = { origin[0], origin[1], origin[2] + dist };
+		client_entity_t* spawner = ClientEntity_new(type, flags, pos, dir, 200);
 
+		spawner->flags |= CEF_NO_DRAW | CEF_NOMOVE;
 		spawner->SpawnInfo = 3;
 		spawner->Update = FXRippleSpawnerThink;
-		spawner->flags |= CEF_NO_DRAW | CEF_NOMOVE;
 
-		AddEffect(NULL, spawner); 
+		AddEffect(NULL, spawner);
 	}
 }
-// end

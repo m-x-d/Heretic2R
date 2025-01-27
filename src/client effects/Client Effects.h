@@ -100,7 +100,7 @@ extern void FXFireWaveWorm(centity_t* owner, int type, int flags, vec3_t origin)
 extern void FXFireBurst(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXRipperExplode(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXWaterEntrySplash(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXWaterRipples(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXWaterRipples(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXWaterWake(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXBubbler(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXScorchmark(centity_t* owner, int type, int flags, vec3_t origin);
