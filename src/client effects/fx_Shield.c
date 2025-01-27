@@ -1,30 +1,19 @@
 //
-// fx_shield.c
+// fx_Shield.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
-
 #include "Client Effects.h"
-#include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Vector.h"
-#include "Matrix.h"
 #include "Random.h"
 #include "Utilities.h"
-#include "Reference.h"
-#include "ce_DLight.h"
+#include "Vector.h"
 #include "g_playstats.h"
 
 #define SHIELD_TRAIL_DELAY	100
-#define SHIELD_RADIUS		32.0
+#define SHIELD_RADIUS		32.0f
 #define NUM_SHIELD_SPARKS	16
-#define SHIELD_TRAIL_SPEED	32.0
-
-extern int	ref_soft;
 
 #define	NUM_SHIELD_MODELS	1
 static struct model_s *shield_models[NUM_SHIELD_MODELS];
