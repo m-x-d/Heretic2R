@@ -158,7 +158,7 @@ extern void FXShrineStaffEffect(centity_t* owner, int type, int flags, vec3_t or
 extern void FXShrineGhostEffect(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXShrineReflectEffect(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXShrinePowerUpEffect(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXRope(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXRope(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXFireHands(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXShrineBall(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXShrineBallExplode(centity_t* owner, int type, int flags, vec3_t origin);

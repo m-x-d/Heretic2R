@@ -212,165 +212,117 @@ static qboolean FXRopeTopDraw(struct client_entity_s* self, centity_t* owner)
 
 #pragma endregion
 
-void FXRope(centity_t *owner,int Type,int Flags,vec3_t Origin)
+void FXRope(centity_t* owner, int type, const int flags, const vec3_t origin)
 {
-	client_entity_t	*rope, *ropeb, *ropem;
-	centity_t		*grab, *end;
-	qboolean		attached;
-	vec3_t			top, vec, grab_pos, end_pos;
-	float			radius;
-	short			grab_id, end_id;
-	byte			model_type;
-	int				i;
-
+	short grab_id;
+	short end_id;
+	byte model_type;
+	vec3_t top;
+	vec3_t grab_pos;
+	vec3_t end_pos;
 	fxi.GetEffect(owner, CEF_BROADCAST, clientEffectSpawners[FX_ROPE].formatString, &grab_id, &end_id, &model_type, &top, &grab_pos, &end_pos);
 
-	//This is set if the effect should be attached to something
-	attached = (Flags & CEF_FLAG6);
+	// This is set if the effect should be attached to something.
+	const qboolean is_attached = (flags & CEF_FLAG6);
+	const float radius = (Q_fabs(grab_pos[2]) + Q_fabs(end_pos[2])) * 2.0f;
 
-	//Setup the entities
-	end  = &fxi.server_entities[end_id];
-	grab = &fxi.server_entities[grab_id];
-
-	//Create the rope piece that hangs from the top to the end of the rope, while the player is NOT on it	
-    
-	radius = (Q_fabs(grab_pos[2]) + Q_fabs(end_pos[2])) * 2;
-
-	if (!attached)
+	// Create the rope piece that hangs from the top to the end of the rope, while the player is NOT on it.
+	if (!is_attached)
 	{
-		rope=ClientEntity_new(  FX_ROPE,
-								0,
-								Origin,
-								NULL,
-								17);
+		client_entity_t* rope = ClientEntity_new(FX_ROPE, 0, origin, NULL, 17);
 
-		rope->r.model = rope_models + model_type;
-		
-		rope->r.scale = 3;
 		rope->radius = radius;
-
+		rope->r.model = &rope_models[model_type];
 		rope->r.spriteType = SPRITE_LINE;
-		rope->Update = FXRopeTopDraw;
-		rope->AddToView = FXRopeTopDraw;
+		rope->r.scale = 3.0f;
+		rope->lastThinkTime = fxi.cl->time;
 		
-		//End of the rope
-		rope->extra = (void *) &fxi.server_entities[end_id];
+		// End of the rope.
+		rope->extra = (void*)&fxi.server_entities[end_id];
 		rope->LifeTime = grab_id;
 
 		// Set up the end vector start and endpos, for linear interpolation.
 		VectorCopy(fxi.server_entities[end_id].current.origin, rope->startpos);
 		VectorCopy(rope->startpos, rope->endpos);
-
-		rope->lastThinkTime = fxi.cl->time;
-
 		VectorCopy(top, rope->direction);
-		
-		AddEffect(NULL, rope); 
+
+		rope->AddToView = FXRopeTopDraw;
+		rope->Update = FXRopeTopDraw;
+
+		AddEffect(NULL, rope);
 	}
-	else
+	else // Create the fake rope that is attached to the player.
 	{
-		//Create the fake rope that is attached to the player
+		// Top of the rope.
+		client_entity_t* rope_top = ClientEntity_new(FX_ROPE, CEF_OWNERS_ORIGIN, origin, NULL, 1000);
 
-		//--------------------
-		//
-		//	Top of the rope
+		rope_top->radius = radius;
+		rope_top->r.model = &rope_models[model_type];
+		rope_top->r.spriteType = SPRITE_LINE;
+		rope_top->r.scale = 3.0f;
+		rope_top->SpawnInfo = fxi.cl->time + 1000;
+		rope_top->LifeTime = grab_id;
 
-		rope=ClientEntity_new(  FX_ROPE,
-								CEF_OWNERS_ORIGIN,
-								Origin,
-								NULL,
-								1000);
+		VectorCopy(top, rope_top->direction);
+		VectorCopy(top, rope_top->r.startpos);
 
-		rope->r.model = rope_models + model_type;
-		
-		VectorCopy(top, rope->direction);	
-
-		rope->r.scale = 3;
-		rope->radius = radius;
-		VectorCopy(top, rope->r.startpos);
-
-		rope->r.spriteType = SPRITE_LINE;
-		rope->AddToView = FXRopeTopDrawAttached;
-		rope->Update = RopeCheckToHide;
-		
+		vec3_t vec;
 		VectorSubtract(owner->origin, end_pos, vec);
-		rope->r.tile = VectorLength(vec);
-		
-		rope->SpawnInfo = fxi.cl->time + 1000;
+		rope_top->r.tile = VectorLength(vec);
 
-		rope->LifeTime = grab_id;
+		rope_top->AddToView = FXRopeTopDrawAttached;
+		rope_top->Update = RopeCheckToHide;
 
-		AddEffect(owner, rope); 
+		AddEffect(owner, rope_top);
+		FXRopeTopDrawAttached(rope_top, owner);
 
-		FXRopeTopDrawAttached(rope, owner);
+		// Middle of the rope.
+		client_entity_t* rope_mid = ClientEntity_new(FX_ROPE, CEF_OWNERS_ORIGIN, origin, NULL, 1000);
 
-		//--------------------
-		//
-		//	Middle of the rope
+		rope_mid->radius = radius;
+		rope_mid->r.model = &rope_models[model_type];
+		rope_mid->r.spriteType = SPRITE_LINE;
+		rope_mid->r.scale = 3.0f;
+		rope_mid->r.tile = 1.0f;
+		rope_mid->LifeTime = grab_id;
+		rope_mid->SpawnInfo = fxi.cl->time + 1000;
 
-		ropem=ClientEntity_new( FX_ROPE,
-								CEF_OWNERS_ORIGIN,
-								Origin,
-								NULL,
-								1000);
+		rope_mid->AddToView = FXRopeMiddleDrawAttached;
+		rope_mid->Update = RopeCheckToHide;
 
-		ropem->r.model = rope_models + model_type;
-		
-		ropem->r.scale = 3;
-		ropem->radius = radius;
+		AddEffect(owner, rope_mid);
+		FXRopeMiddleDrawAttached(rope_mid, owner);
 
-		ropem->r.tile = 1;
-		ropem->r.spriteType = SPRITE_LINE;
-		ropem->AddToView = FXRopeMiddleDrawAttached;
-		ropem->Update = RopeCheckToHide;
-		ropem->LifeTime = grab_id;
-
-		ropem->SpawnInfo = fxi.cl->time + 1000;
-
-		AddEffect(owner, ropem); 
-
-		FXRopeMiddleDrawAttached(ropem, owner);
-
-		//--------------------
-		//
-		//	Bottom of the rope
-
-		for (i=0; i<(int)ROPE_BOTTOM_SEGMENTS; i++)
+		// Bottom of the rope.
+		for (int i = 0; i < (int)ROPE_BOTTOM_SEGMENTS; i++)
 		{
-			ropeb=ClientEntity_new( FX_ROPE,
-									CEF_OWNERS_ORIGIN,
-									Origin,
-									NULL,
-									1000);
+			client_entity_t* rope_bottom = ClientEntity_new(FX_ROPE, CEF_OWNERS_ORIGIN, origin, NULL, 1000);
 
-			ropeb->r.model = rope_models + model_type;
-			
-			ropeb->r.scale = 3;
-			ropeb->radius = radius;
+			rope_bottom->radius = radius;
+			rope_bottom->r.model = &rope_models[model_type];
+			rope_bottom->r.spriteType = SPRITE_LINE;
+			rope_bottom->r.scale = 3.0f;
+			rope_bottom->lastThinkTime = fxi.cl->time;
 
-			ropeb->r.spriteType = SPRITE_LINE;
-			ropeb->Update = RopeCheckToHide;
-			ropeb->AddToView = FXRopeBottomDrawAttached;
-			
-			//End of the ropeb
-			ropeb->extra = (void *) &fxi.server_entities[end_id];
-			ropeb->LifeTime = grab_id;
+			// End of the rope_bottom.
+			rope_bottom->extra = (void*)&fxi.server_entities[end_id];
+			rope_bottom->LifeTime = grab_id;
 
 			// Set up the end vector start and endpos, for linear interpolation.
-			VectorCopy(end_pos, ropeb->startpos2);
-			VectorCopy(ropeb->startpos2, ropeb->endpos2);
+			VectorCopy(end_pos, rope_bottom->startpos2);
+			VectorCopy(rope_bottom->startpos2, rope_bottom->endpos2);
 
-			//The segment number of this piece
-			ropeb->SpawnInfo = fxi.cl->time + 1000;
-			ropeb->SpawnDelay = (int) i;
+			// The segment number of this piece.
+			rope_bottom->SpawnInfo = fxi.cl->time + 1000;
+			rope_bottom->SpawnDelay = i;
 
-			ropeb->lastThinkTime = fxi.cl->time;
+			VectorCopy(top, rope_bottom->direction);
 
-			VectorCopy(top, ropeb->direction);	
-			
-			AddEffect(owner, ropeb); 
-	
-			FXRopeBottomDrawAttached(ropeb, owner);
+			rope_bottom->AddToView = FXRopeBottomDrawAttached;
+			rope_bottom->Update = RopeCheckToHide;
+
+			AddEffect(owner, rope_bottom);
+			FXRopeBottomDrawAttached(rope_bottom, owner);
 		}
 	}
 }
