@@ -158,60 +158,56 @@ static qboolean FXRopeBottomDrawAttached(struct client_entity_s* self, const cen
 
 #pragma region ========================== UNATTACHED ROPE SEGMENTS ==========================
 
-static qboolean FXRopeTopDraw(struct client_entity_s *self, centity_t *owner)
+static qboolean FXRopeTopDraw(struct client_entity_s* self, centity_t* owner)
 {
-	float			lerp, oldtime, newtime;
-	//float			c_segs;
-	vec3_t			diffpos;//, c_vec;
-	centity_t		*end, *grab;
+	const centity_t* end = (centity_t*)self->extra;
+	const centity_t* grab = &fxi.server_entities[self->LifeTime];
 
-	end  = (centity_t *)self->extra;
-	grab = &fxi.server_entities[self->LifeTime];
-
-	//If the rope entity has requested it, hide these segments
+	// If the rope entity has requested it, hide these segments.
 	if (grab->current.effects & EF_ALTCLIENTFX)
 	{
 		self->flags |= CEF_NO_DRAW;
 
 		VectorCopy(self->endpos, self->startpos);
 		VectorCopy(end->current.origin, self->endpos);
-		
+
 		return true;
 	}
 
-	//Make sure we're visible
+	// Make sure we're visible.
 	self->flags &= ~CEF_NO_DRAW;
 
 	VectorCopy(self->origin, self->r.startpos);
 	VectorCopy(end->current.origin, self->r.endpos);
 
 	// Find the linear interpolation factor by determining where in the 1/10 of a second this frame lies.
-	oldtime = self->lastThinkTime/100.0;
-	newtime = fxi.cl->time/100.0;
+	const float old_time = (float)self->lastThinkTime / 100.0f;
+	const float new_time = (float)fxi.cl->time / 100.0f;
 
-	if ((int)oldtime < (int)newtime)
-	{	// We have crossed the boundary between 1/10 second interval.
-		// Adjust the start and endpos for a new interpolation interval.
+	if ((int)old_time < (int)new_time)
+	{
+		// We have crossed the boundary between 1/10 second interval. Adjust the start and endpos for a new interpolation interval.
 		VectorCopy(self->endpos, self->startpos);
 		VectorCopy(end->current.origin, self->endpos);
 	}
 
-	lerp = newtime - (int)newtime;
+	const float lerp = new_time - floorf(new_time); //mxd. (int) -> floorf().
 
 	// Find the difference in position for lerping.
-	VectorSubtract(self->endpos, self->startpos, diffpos);
+	vec3_t diff_pos;
+	VectorSubtract(self->endpos, self->startpos, diff_pos);
 
 	// Now apply the lerp value to get the new endpos.
-	VectorMA(self->startpos, lerp, diffpos, self->r.endpos);
+	VectorMA(self->startpos, lerp, diff_pos, self->r.endpos);
 
-	//Get our tile rate
-	VectorSubtract(self->origin, self->r.endpos, diffpos);
-	self->r.tile = VectorLength(diffpos) / 64;
+	// Get our tile rate.
+	VectorSubtract(self->origin, self->r.endpos, diff_pos);
+	self->r.tile = VectorLength(diff_pos) / ROPE_SEGMENT_LENGTH;
 
-	//Store for lerping
+	// Store for lerping.
 	self->lastThinkTime = fxi.cl->time;
 
-  return true;
+	return true;
 }
 
 #pragma endregion
