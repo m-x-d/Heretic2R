@@ -15,11 +15,11 @@
 #define SHIELD_RADIUS		32.0f
 #define NUM_SHIELD_SPARKS	16
 
-#define	NUM_SHIELD_MODELS	1
-static struct model_s *shield_models[NUM_SHIELD_MODELS];
-void PreCacheShield()
+static struct model_s* shield_model;
+
+void PreCacheShield(void)
 {
-	shield_models[0] = fxi.RegisterModel("sprites/spells/spark_blue.sp2");
+	shield_model = fxi.RegisterModel("sprites/spells/spark_blue.sp2");
 }
 
 static qboolean FXShieldSparkThink(struct client_entity_s *shield,centity_t *owner)
@@ -102,7 +102,7 @@ void FXLightningShield(centity_t *owner,int type,int flags,vec3_t origin)
 		shield=ClientEntity_new(type, flags&(~CEF_OWNERS_ORIGIN), origin, 0, (int)SHIELD_DURATION*1000);
 		shield->flags |= CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS;
 		shield->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		shield->r.model = shield_models;
+		shield->r.model = &shield_model;
 		shield->radius = SHIELD_RADIUS;
 		shield->AddToView = FXShieldSparkThink;			
 		shield->color.c = 0xffffffff;
@@ -135,4 +135,3 @@ void FXLightningShield(centity_t *owner,int type,int flags,vec3_t origin)
 		AddEffect(owner, shield);
 	}
 }
-
