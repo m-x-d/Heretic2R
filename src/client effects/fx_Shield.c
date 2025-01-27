@@ -22,43 +22,38 @@ void PreCacheShield(void)
 	shield_model = fxi.RegisterModel("sprites/spells/spark_blue.sp2");
 }
 
-static qboolean FXShieldSparkThink(struct client_entity_s *shield,centity_t *owner)
+static qboolean FXShieldSparkThink(struct client_entity_s* shield, const centity_t* owner)
 {
-	vec3_t angvect;
-	client_particle_t *spark;
-	int		part;
-	paletteRGBA_t		color;
-
 	// Update the angle of the spark.
-	VectorMA(shield->direction, (float)(fxi.cl->time-shield->lastThinkTime)/1000.0, shield->velocity2, shield->direction);
+	VectorMA(shield->direction, (float)(fxi.cl->time - shield->lastThinkTime) / 1000.0f, shield->velocity2, shield->direction);
 
 	// Update the position of the spark.
-	AngleVectors(shield->direction, angvect, NULL, NULL);
-	VectorMA(owner->origin, shield->radius, angvect, shield->r.origin);
+	vec3_t direction;
+	AngleVectors(shield->direction, direction, NULL, NULL);
+	VectorMA(owner->origin, shield->radius, direction, shield->r.origin);
 
 	shield->lastThinkTime = fxi.cl->time;
 
-	// Leave a trail sometimes
+	// Leave a trail sometimes.
 	if (shield->SpawnDelay < fxi.cl->time)
 	{
-		part = PART_16x16_SPARK_B;
-		color.c = 0xffffffff;
-		// if we are in software, make the blue bits single point particles half the time
-		if (ref_soft)
+		int particle_type = PART_16x16_SPARK_B;
+		paletteRGBA_t color = { .c = 0xffffffff };
+
+		// If we are in software, make the blue bits single point particles half the time.
+		if (ref_soft && ++shield->SpawnInfo & 1)
 		{
-			shield->SpawnInfo++;
-			if (shield->SpawnInfo & 1)
-			{
-				part |= PFL_SOFT_MASK;
-				color.c = 0xffff0000;
-			}
+			particle_type |= PFL_SOFT_MASK;
+			color.c = 0xffff0000;
 		}
 
-		spark = ClientParticle_new(part, color, 500);
+		client_particle_t* spark = ClientParticle_new(particle_type, color, 500);
+
 		VectorCopy(shield->r.origin, spark->origin);
-		spark->scale = 6.0;
-		spark->d_scale = -10.0;
-		spark->acceleration[2] = 0.0;		// Don't fall due to gravity...
+		spark->scale = 6.0f;
+		spark->d_scale = -10.0f;
+		spark->acceleration[2] = 0.0f; // Don't fall due to gravity...
+
 		AddParticleToList(shield, spark);
 
 		// Do it again in 1/10 sec.
@@ -67,7 +62,6 @@ static qboolean FXShieldSparkThink(struct client_entity_s *shield,centity_t *own
 
 	return true;
 }
-
 
 static qboolean FXShieldTerminate(struct client_entity_s *shield, centity_t *owner)
 {
