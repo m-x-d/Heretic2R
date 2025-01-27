@@ -112,27 +112,25 @@ static qboolean FXShadowReferenceUpdate(struct client_entity_s* self, const cent
 	return true;
 }
 
-void FXShadow(centity_t *owner, int type, int flags, vec3_t origin)
+void FXShadow(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	client_entity_t		*self;
-	float				scale;
-
+	float scale;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SHADOW].formatString, &scale);
 
-	if(r_detail->value < DETAIL_UBERHIGH)
+	if (r_detail->value < DETAIL_UBERHIGH)
 		return;
 
-	// Create shadow under the player
-  	self = ClientEntity_new(type, flags, origin, NULL, INT_MAX);
-	self->nextThinkTime = INT_MAX;
-	self->r.model = &shadow_model;
-	self->r.flags |= RF_FULLBRIGHT|RF_TRANSLUCENT|RF_ALPHA_TEXTURE;
+	// Create shadow under the player.
+	client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, INT_MAX);
+
 	self->radius = SHADOW_CHECK_DIST;
+	self->r.model = &shadow_model;
+	self->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_ALPHA_TEXTURE;
 	self->r.scale = scale;
+	self->nextThinkTime = INT_MAX;
 	self->AddToView = FXShadowUpdate;
 
 	AddEffect(owner, self);
-	
 	FXShadowUpdate(self, owner);
 }
 
