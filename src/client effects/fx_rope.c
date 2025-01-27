@@ -8,23 +8,12 @@
 #include "Vector.h"
 #include "q_Sprite.h"
 
-#define	NUM_ROPE_MODELS			4
 #define ROPE_SEGMENT_LENGTH		64.0f
-#define ROPE_BOTTOM_SEGMENTS	8
+#define ROPE_BOTTOM_SEGMENTS	4.0f
 
-static struct model_s *rope_models[NUM_ROPE_MODELS];
+static struct model_s* rope_models[4];
 
-
-
-/*
-	
-  Precache function
-
-*/
-
-
-
-void PreCacheRope()
+void PreCacheRope(void)
 {
 	rope_models[0] = fxi.RegisterModel("sprites/fx/segment_rope.sp2");
 	rope_models[1] = fxi.RegisterModel("sprites/fx/segment_chain.sp2");
@@ -137,7 +126,7 @@ static qboolean FXRopeBottomDrawAttached(struct client_entity_s *self, centity_t
 	centity_t		*end, *grab;
 	qboolean		ret;
 	vec3_t			diffpos2, vec, c_vec, c_down;
-	float			lerp, oldtime, newtime, dist, c_segs, c_length;
+	float			lerp, oldtime, newtime, dist, c_length;
 	int				i;
 
 	ret = RopeCheckToHide(self, owner);
@@ -181,8 +170,7 @@ static qboolean FXRopeBottomDrawAttached(struct client_entity_s *self, centity_t
 
 	//FIXME:  This is constant and can be stored (trivial...)
 	//Find the number of segments, and their lengths
-	c_segs = ROPE_BOTTOM_SEGMENTS / 2;
-	c_length = dist / c_segs;		//FIXME: Find the actual length with curving
+	c_length = dist / ROPE_BOTTOM_SEGMENTS; //FIXME: Find the actual length with curving
 	
 	self->r.tile = c_length / 64.0F;
 
@@ -200,7 +188,7 @@ static qboolean FXRopeBottomDrawAttached(struct client_entity_s *self, centity_t
 		VectorCopy(self->r.endpos, self->r.startpos);
 		
 		//Find the angle increment for this segment
-		VectorScale(c_down, (i / (c_segs + 1)) / 2, c_vec);
+		VectorScale(c_down, (i / (ROPE_BOTTOM_SEGMENTS + 1)) / 2, c_vec);
 		
 		//Get the new vector
 		VectorAdd(c_vec, vec, c_vec);
@@ -421,7 +409,7 @@ void FXRope(centity_t *owner,int Type,int Flags,vec3_t Origin)
 		//
 		//	Bottom of the rope
 
-		for (i=0; i<ROPE_BOTTOM_SEGMENTS / 2; i++)
+		for (i=0; i<(int)ROPE_BOTTOM_SEGMENTS; i++)
 		{
 			ropeb=ClientEntity_new( FX_ROPE,
 									CEF_OWNERS_ORIGIN,
