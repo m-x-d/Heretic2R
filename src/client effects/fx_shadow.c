@@ -14,13 +14,11 @@
 #define SHADOW_CHECK_DIST		256.0f
 #define SHADOW_REF_CHECK_DIST	64.0f
 
-#define	NUM_SHADOW_MODELS	1
+static struct model_s* shadow_model;
 
-static struct model_s *shadow_models[NUM_SHADOW_MODELS];
-
-void PrecacheShadow()
+void PrecacheShadow(void)
 {
-	shadow_models[0] = fxi.RegisterModel("models/fx/shadow/tris.fm");
+	shadow_model = fxi.RegisterModel("models/fx/shadow/tris.fm");
 }
 
 static qboolean FXShadowUpdate(struct client_entity_s *self,centity_t *owner)
@@ -151,7 +149,7 @@ void FXShadow(centity_t *owner, int type, int flags, vec3_t origin)
 	// Create shadow under the player
   	self = ClientEntity_new(type, flags, origin, NULL, INT_MAX);
 	self->nextThinkTime = INT_MAX;
-	self->r.model = shadow_models;
+	self->r.model = &shadow_model;
 	self->r.flags |= RF_FULLBRIGHT|RF_TRANSLUCENT|RF_ALPHA_TEXTURE;
 	self->radius = SHADOW_CHECK_DIST;
 	self->r.scale = scale;
@@ -170,7 +168,7 @@ void FXPlayerShadow(centity_t *owner, int type, int flags, vec3_t origin)
 	// Create shadow under the player
   	self = ClientEntity_new(type, flags, origin, NULL, INT_MAX);
 	self->nextThinkTime = INT_MAX;
-	self->r.model = shadow_models;
+	self->r.model = &shadow_model;
 	self->r.flags |= RF_FULLBRIGHT|RF_TRANSLUCENT|RF_ALPHA_TEXTURE;
 	self->radius = SHADOW_CHECK_DIST;
 	self->r.scale = 1.0;
@@ -181,7 +179,7 @@ void FXPlayerShadow(centity_t *owner, int type, int flags, vec3_t origin)
 	// Create shadow under the left foot
   	self = ClientEntity_new(type, flags, origin, NULL, INT_MAX);
 	self->nextThinkTime = INT_MAX;
-	self->r.model = shadow_models;
+	self->r.model = &shadow_model;
 	self->r.flags |= RF_FULLBRIGHT|RF_TRANSLUCENT|RF_ALPHA_TEXTURE;
 	self->radius = SHADOW_CHECK_DIST;
 	self->refPoint = CORVUS_LEFTFOOT;
@@ -193,7 +191,7 @@ void FXPlayerShadow(centity_t *owner, int type, int flags, vec3_t origin)
 	// Create shadow under the right foot
   	self = ClientEntity_new(type, flags, origin, NULL, INT_MAX);
 	self->nextThinkTime = INT_MAX;
-	self->r.model = shadow_models;
+	self->r.model = &shadow_model;
 	self->r.flags |= RF_FULLBRIGHT|RF_TRANSLUCENT|RF_ALPHA_TEXTURE;
 	self->radius = SHADOW_CHECK_DIST;
 	self->refPoint = CORVUS_RIGHTFOOT;
@@ -202,5 +200,3 @@ void FXPlayerShadow(centity_t *owner, int type, int flags, vec3_t origin)
 	AddEffect(owner, self);
 	FXShadowUpdate(self, owner);
 }
-
-
