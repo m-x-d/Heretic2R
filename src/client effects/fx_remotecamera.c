@@ -8,13 +8,6 @@
 #include "Utilities.h"
 #include "Vector.h"
 
-static qboolean FXRemoteCameraThink(struct client_entity_s *Self,centity_t *Owner)
-{
-	
-
-	return(false);
-}
-
 void FXRemoteCamera(centity_t *Owner,int Type,int Flags,vec3_t Origin)
 {
 	short			TargetEntNum;
@@ -39,7 +32,7 @@ void FXRemoteCamera(centity_t *Owner,int Type,int Flags,vec3_t Origin)
 
 	VectorCopy(Owner->origin,fxi.cl->refdef.vieworg);
 
-	RemoteCamera->Update=FXRemoteCameraThink;
+	RemoteCamera->Update=RemoveSelfAI;
 	
 	AddEffect(NULL,RemoteCamera);
 }
