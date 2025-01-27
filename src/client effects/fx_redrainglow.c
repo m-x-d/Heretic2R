@@ -1,25 +1,20 @@
 //
-// Heretic II
+// fx_RedRainGlow.c
+//
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "ce_DefaultMessageHandler.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Vector.h"
 #include "Matrix.h"
-#include "random.h"
+#include "Particle.h"
+#include "Random.h"
+#include "Reference.h"
 #include "Utilities.h"
-#include "Ambient effects.h"
+#include "Vector.h"
 #include "ce_Dlight.h"
-#include "reference.h"
 #include "g_playstats.h"
 
-#define CLOUD_GEN_RAD	30.0
-
+#define CLOUD_GEN_RAD	30.0f
 
 // -------------------------------------------------------
 static qboolean FXRedRainGlowThink(struct client_entity_s *self, centity_t *owner)
