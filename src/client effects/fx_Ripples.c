@@ -10,11 +10,11 @@
 #define	SCALE		0.01F
 #define DELTA_SCALE	1.0F
 
-#define	NUM_RIPPLE_MODELS	1
-static struct model_s *ripple_models[NUM_RIPPLE_MODELS];
-void PreCacheRipples()
+static struct model_s* ripple_model;
+
+void PreCacheRipples(void)
 {
-	ripple_models[0] = fxi.RegisterModel("sprites/fx/waterentryripple.sp2");
+	ripple_model = fxi.RegisterModel("sprites/fx/waterentryripple.sp2");
 }
 
 // --------------------------------------------------------------
@@ -28,7 +28,7 @@ static qboolean FXRippleSpawner(client_entity_t *spawner, centity_t *owner)
 
 	ripple = ClientEntity_new(-1, 0, spawner->origin, spawner->direction, 1000);
 
- 	ripple->r.model = ripple_models;
+ 	ripple->r.model = &ripple_model;
 	ripple->r.flags |= RF_FIXED | RF_TRANSLUCENT | RF_ALPHA_TEXTURE;
 	ripple->r.scale = SCALE;
 	ripple->d_scale = DELTA_SCALE;
