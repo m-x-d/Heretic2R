@@ -1,15 +1,10 @@
 //
 // fx_scorchmark.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
 #include "Utilities.h"
 #include "g_playstats.h"
