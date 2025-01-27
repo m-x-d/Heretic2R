@@ -16,109 +16,91 @@
 
 #define CLOUD_GEN_RAD	30.0f
 
-// -------------------------------------------------------
-static qboolean FXRedRainGlowThink(struct client_entity_s *self, centity_t *owner)
+static qboolean FXRedRainGlowThink(struct client_entity_s* self, const centity_t* owner)
 {
-	client_particle_t	*spark;
-	vec3_t				vel, orgleft, orgright, atkvector;
-	int					i;
-	paletteRGBA_t		color;
-	matrix3_t			rotation;
-	int					sparktype;
-
-	// If we've timed out, stop the effect (allow for fading)
-	if (self->LifeTime > 0)
+	// If we've timed out, stop the effect (allow for fading). If we're not on a time limit, check the EF flag.
+	if ((self->LifeTime > 0 && self->LifeTime < fxi.cl->time) || !(owner->current.effects & EF_TRAILS_ENABLED))
 	{
-		if (self->LifeTime < fxi.cl->time)
-		{	// Lifetime is up
-			self->Update=RemoveSelfAI;
-			self->updateTime = fxi.cl->time + 500;
-			return true;
-		}
-	}
-	else 
-	{	// If we're not on a time limit, check the EF flag
-		if (!(owner->current.effects & EF_TRAILS_ENABLED))
-		{
-			self->Update=RemoveSelfAI;
-			self->updateTime = fxi.cl->time + 500;
-			return true;
-		}
+		self->Update = RemoveSelfAI;
+		self->updateTime = fxi.cl->time + 500;
+
+		return true;
 	}
 
 	// This tells if we are wasting our time, because the reference points are culled.
 	if (!RefPointsValid(owner))
 		return true;
 
-	// Reset update time to regular after game has been given enough time to gen lerp info
-	if (r_detail->value == DETAIL_LOW)
+	// Reset update time to regular after game has been given enough time to generate lerp info.
+	if ((int)r_detail->value == DETAIL_LOW)
 		self->updateTime = 200;
-	else
-	if (r_detail->value == DETAIL_NORMAL)
+	else if ((int)r_detail->value == DETAIL_NORMAL)
 		self->updateTime = 150;
 	else
 		self->updateTime = 100;
 
 	VectorCopy(owner->origin, self->r.origin);
 
-	// Create a rotation matrix
+	// Create a rotation matrix.
+	matrix3_t rotation;
 	Matrix3FromAngles(owner->lerp_angles, rotation);
+
 	// Let's take the origin and transform it to the proper coordinate offset from the owner's origin.
-	Matrix3MultByVec3(rotation, owner->referenceInfo->references[CORVUS_LEFTHAND].placement.origin, orgleft);
-	Matrix3MultByVec3(rotation, owner->referenceInfo->references[CORVUS_RIGHTHAND].placement.origin, orgright);
-	VectorSubtract(orgleft, orgright, atkvector);
-	if (self->dlight)
-		self->dlight->intensity = flrand(140.0, 160.0);
+	vec3_t org_left;
+	Matrix3MultByVec3(rotation, owner->referenceInfo->references[CORVUS_LEFTHAND].placement.origin, org_left);
 
-	if (self->SpawnInfo == 1)
-	{	// Powered up, fire sparks
-		sparktype = PART_16x16_SPARK_G;
-	}
-	else
-	{
-		sparktype = PART_16x16_SPARK_R;
-	}
+	vec3_t org_right;
+	Matrix3MultByVec3(rotation, owner->referenceInfo->references[CORVUS_RIGHTHAND].placement.origin, org_right);
 
-	color.c = 0xffffffff;
-	for(i = 0; i < 2; i++)
+	vec3_t attack_dir;
+	VectorSubtract(org_left, org_right, attack_dir);
+
+	if (self->dlight != NULL)
+		self->dlight->intensity = flrand(140.0f, 160.0f);
+
+	const int spark_type = ((self->SpawnInfo == 1) ? PART_16x16_SPARK_G : PART_16x16_SPARK_R); // Powered up, fire sparks when SpawnInfo = 1.
+
+	for (int i = 0; i < 2; i++)
 	{
-		// Calc spherical offset around left hand ref point
-		VectorSet(vel, flrand(-1.0, 1.0), flrand(-1.0, 1.0), flrand(-1.0, 1.0));
-		if(Vec3IsZero(vel))
-			vel[2] = 1.0;			// Safety in case flrand gens all zeros (VERY unlikely)
+		// Calculate spherical offset around left hand ref point.
+		vec3_t vel;
+		VectorRandomSet(vel, 1.0f);
+
+		if (Vec3IsZero(vel))
+			vel[2] = 1.0f; // Safety in case flrand gens all zeros (VERY unlikely).
+
 		VectorNormalize(vel);
 		VectorScale(vel, CLOUD_GEN_RAD, vel);
-		VectorSubtract(vel, atkvector, vel);
+		VectorSubtract(vel, attack_dir, vel);
 
-		spark = ClientParticle_new(sparktype, color, 500);
-		VectorAdd(vel, orgleft, spark->origin);
+		client_particle_t* spark = ClientParticle_new(spark_type, color_white, 500);
+		VectorAdd(vel, org_left, spark->origin);
 
-		VectorScale(vel, -0.125, spark->velocity);
-		VectorScale(vel, -6.0, spark->acceleration);
+		VectorScale(vel, -0.125f, spark->velocity);
+		VectorScale(vel, -6.0f, spark->acceleration);
 
-		spark->scale = 12.0F;
-		spark->d_scale = -16.0F;
+		spark->scale = 12.0f;
+		spark->d_scale = -16.0f;
 		spark->color.a = 4;
-		spark->d_alpha = 500.0F;
+		spark->d_alpha = 500.0f;
 		spark->duration = 500;
 
 		AddParticleToList(self, spark);
 	}
 
-	// Add the core to the effect
-	spark = ClientParticle_new(sparktype, color, 500);
-	VectorCopy(orgleft, spark->origin);
-	VectorSet(spark->velocity, flrand(-16.0, 16.0), flrand(-16.0, 16.0), flrand(-8.0, 24.0));
-	VectorMA(spark->velocity, -1.75, atkvector, spark->velocity);
-	spark->scale = 10.0F;
-	spark->d_scale = 10.0F;
-	spark->d_alpha = -500.0F;
+	// Add the core to the effect.
+	client_particle_t* core = ClientParticle_new(spark_type, color_white, 500);
+	VectorCopy(org_left, core->origin);
+	VectorSet(core->velocity, flrand(-16.0f, 16.0f), flrand(-16.0f, 16.0f), flrand(-8.0f, 24.0f));
+	VectorMA(core->velocity, -1.75f, attack_dir, core->velocity);
+	core->scale = 10.0f;
+	core->d_scale = 10.0f;
+	core->d_alpha = -500.0f;
 
-	AddParticleToList(self, spark);
+	AddParticleToList(self, core);
 
-	return(true);
+	return true;
 }
-
 
 void FXRedRainGlow(centity_t *owner, int type, int flags, vec3_t origin)
 {
