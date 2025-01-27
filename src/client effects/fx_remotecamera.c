@@ -8,31 +8,16 @@
 #include "Utilities.h"
 #include "Vector.h"
 
-void FXRemoteCamera(centity_t *Owner,int Type,int Flags,vec3_t Origin)
+void FXRemoteCamera(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	short			TargetEntNum;
-	centity_t		*TargetEnt;
-	vec3_t			Forward,
-					Angles;
-	client_entity_t	*RemoteCamera;
+	short target_ent_num;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_REMOTE_CAMERA].formatString, &target_ent_num); //TODO: target_ent_num is unused.
 
-	fxi.GetEffect(Owner,Flags,clientEffectSpawners[FX_REMOTE_CAMERA].formatString,&TargetEntNum);
+	client_entity_t* remote_camera = ClientEntity_new(type, flags | CEF_NOMOVE, origin, NULL, 5000);
 
-	TargetEnt=(&fxi.server_entities[TargetEntNum]);
+	remote_camera->radius = 10.0f;
+	VectorCopy(owner->origin, fxi.cl->refdef.vieworg);
+	remote_camera->Update = RemoveSelfAI;
 
-	VectorSubtract(Owner->origin,TargetEnt->origin,Forward);
-
-	VectorNormalize(Forward);
-
-	vectoangles(Forward,Angles);
-
-	RemoteCamera=ClientEntity_new(Type,Flags|CEF_NOMOVE,Origin,NULL,5000);
-
-	RemoteCamera->radius=10.0;
-
-	VectorCopy(Owner->origin,fxi.cl->refdef.vieworg);
-
-	RemoteCamera->Update=RemoveSelfAI;
-	
-	AddEffect(NULL,RemoteCamera);
+	AddEffect(NULL, remote_camera);
 }

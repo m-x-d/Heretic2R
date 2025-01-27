@@ -120,7 +120,7 @@ extern void FXLensFlare(centity_t* owner, int type, int flags, const vec3_t orig
 extern void FXStaff(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXSpoo(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXHalo(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXRemoteCamera(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXRemoteCamera(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXHellbolt(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXHellboltExplode(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXHellstaffPower(centity_t* owner, int type, int flags, vec3_t origin);
