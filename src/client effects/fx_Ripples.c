@@ -1,18 +1,11 @@
 //
-// Heretic II
+// fx_Ripples.c
+//
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "ce_DefaultMessageHandler.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Vector.h"
-#include "random.h"
 #include "Utilities.h"
-#include "Ambient effects.h"
 
 #define	SCALE		0.01F
 #define DELTA_SCALE	1.0F
