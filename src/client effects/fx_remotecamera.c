@@ -1,20 +1,12 @@
 //
 // fx_remotecamera.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "ce_DefaultMessageHandler.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Vector.h"
-#include "random.h"
-#include "motion.h"
 #include "Utilities.h"
+#include "Vector.h"
 
 static qboolean FXRemoteCameraThink(struct client_entity_s *Self,centity_t *Owner)
 {
