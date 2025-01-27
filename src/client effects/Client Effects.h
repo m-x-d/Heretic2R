@@ -106,8 +106,8 @@ extern void FXBubbler(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXScorchmark(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXDebris(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXFleshDebris(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXShadow(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXPlayerShadow(centity_t* owner, int type, int flags, vec3_t origin); //mxd
+extern void FXShadow(centity_t* owner, int type, int flags, const vec3_t origin);
+extern void FXPlayerShadow(centity_t* owner, int type, int flags, const vec3_t origin); //mxd
 extern void FXAnimate(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXFountain(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXWaterfallBase(centity_t* owner, int type, int flags, vec3_t origin);
