@@ -42,57 +42,37 @@ static qboolean GetTruePlane(vec3_t origin, vec3_t direction)
 	return false;
 }
 
+//mxd. Added to reduce code duplication.
+static void CreateScorchmark(vec3_t origin, vec3_t dir, const int type, const int flags)
+{
+	// No scorchmarks in low detail mode.
+	if ((int)r_detail->value == DETAIL_LOW)
+		return;
+
+	if (GetTruePlane(origin, dir))
+	{
+		client_entity_t* scorchmark = ClientEntity_new(type, flags, origin, dir, 1000);
+
+		scorchmark->radius = 10.0f;
+		scorchmark->r.model = &scorch_model;
+		scorchmark->r.flags = RF_FIXED | RF_TRANSLUCENT;
+		scorchmark->r.scale = 0.6f;
+		scorchmark->Update = KeepSelfAI;
+
+		AddEffect(NULL, scorchmark);
+		InsertInCircularList(scorchmark);
+	}
+}
+
 void FXClientScorchmark(vec3_t origin, vec3_t dir)
 {
-	client_entity_t	*scorchmark;
-
-	// no scorchmarks in low detail mode
-	if (r_detail->value == DETAIL_LOW)
-		return;
-	
-	if(GetTruePlane(origin, dir))
-	{
-		scorchmark = ClientEntity_new(FX_SCORCHMARK, CEF_NOMOVE, origin, dir, 1000);
-
-		scorchmark->r.model = &scorch_model;
-		scorchmark->r.flags |= RF_FIXED | RF_TRANSLUCENT;
-
-		scorchmark->radius = 10.0;
-		scorchmark->r.scale = 0.6;
-
-		scorchmark->Update = KeepSelfAI;
-		
-		AddEffect(NULL, scorchmark);
-		InsertInCircularList(scorchmark);
-	}
+	CreateScorchmark(origin, dir, FX_SCORCHMARK, CEF_NOMOVE); //mxd
 }
 
-void FXScorchmark(centity_t *owner, int type, int flags, vec3_t origin)
+void FXScorchmark(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	vec3_t			dir;
-	client_entity_t	*scorchmark;
-
+	vec3_t dir;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SCORCHMARK].formatString, dir);
 
-	// no scorchmarks in low detail mode
-	if (r_detail->value == DETAIL_LOW)
-		return;
-
-	if(GetTruePlane(origin, dir))
-	{
-		scorchmark = ClientEntity_new(type, flags | CEF_NOMOVE, origin, dir, 1000);
-
-		scorchmark->r.model = &scorch_model;
-		scorchmark->r.flags |= RF_FIXED | RF_TRANSLUCENT;
-
-		scorchmark->radius = 10.0;
-		scorchmark->r.scale = 0.6;
-
-		scorchmark->Update = KeepSelfAI;
-		
-		AddEffect(NULL, scorchmark);
-		InsertInCircularList(scorchmark);
-	}
+	CreateScorchmark(origin, dir, type, flags | CEF_NOMOVE); //mxd
 }
-
-// end
