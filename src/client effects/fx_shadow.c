@@ -21,52 +21,40 @@ void PrecacheShadow(void)
 	shadow_model = fxi.RegisterModel("models/fx/shadow/tris.fm");
 }
 
-static qboolean FXShadowUpdate(struct client_entity_s *self,centity_t *owner)
+static qboolean FXShadowUpdate(struct client_entity_s* self, const centity_t* owner)
 {
-	vec3_t startpos, endpos;
-	vec3_t minmax = {0, 0, 0};
-	trace_t trace;
-
 	VectorCopy(owner->origin, self->r.origin);
-	VectorCopy(owner->origin, startpos);
-		
-	startpos[2] += 4;
-	// Now trace from the startpos down
-	VectorCopy(startpos, endpos);
-	endpos[2] -= SHADOW_CHECK_DIST;
 
-	//Determine Visibility
-	fxi.Trace(	startpos, 
-				minmax, 
-				minmax, 
-				endpos, 
-				CONTENTS_SOLID, 
-				CEF_CLIP_TO_WORLD, 
-				&trace);
+	const vec3_t start_pos = { owner->origin[0], owner->origin[1], owner->origin[2] + 4.0f };
 
-	if (trace.startsolid || trace.fraction >= 1.0)
-	{	// no shadow, in something.
-		self->alpha = 0.01;
-		VectorCopy(endpos, self->r.origin);
+	// Now trace from the start_pos down.
+	const vec3_t end_pos = { start_pos[0], start_pos[1], start_pos[2] - SHADOW_CHECK_DIST };
+
+	// Determine visibility.
+	trace_t trace;
+	fxi.Trace(start_pos, vec3_origin, vec3_origin, end_pos, CONTENTS_SOLID, CEF_CLIP_TO_WORLD, &trace);
+
+	if (trace.startsolid || trace.fraction >= 1.0f)
+	{
+		// No shadow, in something.
+		self->alpha = 0.01f;
+		VectorCopy(end_pos, self->r.origin);
+
 		return true;
 	}
 
-	// Did hit the ground
-	self->alpha = (1.0 - trace.fraction) * 0.5 + 0.01;
-	// if we are in ref soft, bring us out a touch, since we are having z buffer problems
-	if (ref_soft)
-	{
-		// Raise the shadow slightly off the target wall
-		VectorMA(trace.endpos, 0.9, trace.plane.normal, self->r.origin);
-	}
-	else
-		VectorMA(trace.endpos, 0.2, trace.plane.normal, self->r.origin);
+	// Did hit the ground.
+	self->alpha = (1.0f - trace.fraction) * 0.5f + 0.01f;
+
+	// If we are in ref soft, bring us out a touch, since we are having z buffer problems.
+	const float offset = (ref_soft ? 0.9f : 0.2f); //mxd
+
+	// Raise the shadow slightly off the target wall.
+	VectorMA(trace.endpos, offset, trace.plane.normal, self->r.origin);
 	AnglesFromDirI(trace.plane.normal, self->r.angles);
 
 	return true;
 }
-
-
 
 static qboolean FXShadowReferenceUpdate(struct client_entity_s *self,centity_t *owner)
 {
