@@ -74,57 +74,47 @@ static qboolean FXShieldTerminate(struct client_entity_s* shield, centity_t* own
 	return true;
 }
 
-
-// ************************************************************************************************
-// FXLightningShield
-// ------------
-// ************************************************************************************************
-
-// CreateEffect FX_SPELL_LIGHTNINGSHIELD
-void FXLightningShield(centity_t *owner,int type,int flags,vec3_t origin)
+void FXLightningShield(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	client_entity_t	*shield;
-	int				i;
-	vec3_t			angvect;
-	int				count;
+	const int count = GetScaledCount(NUM_SHIELD_SPARKS, 0.5f);
 
-	count = GetScaledCount(NUM_SHIELD_SPARKS, 0.5);
-
-	// Add spinning electrical sparks
-	for(i=0; i<count; i++)
+	// Add spinning electrical sparks.
+	for (int i = 0; i < count; i++)
 	{
-		shield=ClientEntity_new(type, flags&(~CEF_OWNERS_ORIGIN), origin, 0, (int)SHIELD_DURATION*1000);
-		shield->flags |= CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS;
-		shield->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		shield->r.model = &shield_model;
+		client_entity_t* shield = ClientEntity_new(type, flags & (~CEF_OWNERS_ORIGIN), origin, NULL, SHIELD_DURATION * 1000);
+
 		shield->radius = SHIELD_RADIUS;
-		shield->AddToView = FXShieldSparkThink;			
-		shield->color.c = 0xffffffff;
-		shield->alpha = 0.1;
-		shield->d_alpha = 0.5;
-		shield->Update = FXShieldTerminate;
+		shield->flags |= CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS;
+		shield->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		shield->r.model = &shield_model;
+		shield->color = color_white;
+		shield->alpha = 0.1f;
+		shield->d_alpha = 0.5f;
 
-		VectorClear(shield->direction);
-		shield->direction[YAW] = flrand(0, 360.0);		// This angle is kept at a constant distance from org.
-		shield->direction[PITCH] = flrand(0, 360.0);
+		shield->direction[YAW] = flrand(0.0f, 360.0f); // This angle is kept at a constant distance from org.
+		shield->direction[PITCH] = flrand(0.0f, 360.0f);
 
-		shield->velocity2[YAW] = flrand(-180.0, 180.0);
-		if (shield->velocity2[YAW] < 0)			// Assure that the sparks are moving around at a pretty good clip.
-			shield->velocity2[YAW] -= 180.0;
+		shield->velocity2[YAW] = flrand(-180.0f, 180.0f);
+		if (shield->velocity2[YAW] < 0.0f) // Assure that the sparks are moving around at a pretty good clip.
+			shield->velocity2[YAW] -= 180.0f;
 		else
-			shield->velocity2[YAW] += 180.0;
+			shield->velocity2[YAW] += 180.0f;
 
-		shield->velocity2[PITCH] = flrand(-180.0, 180.0);	// This is a velocity around the sphere.
-		if (shield->velocity2[PITCH] < 0)		// Assure that the sparks are moving around at a pretty good clip.
-			shield->velocity2[PITCH] -= 180.0;
+		shield->velocity2[PITCH] = flrand(-180.0f, 180.0f); // This is a velocity around the sphere.
+		if (shield->velocity2[PITCH] < 0.0f) // Assure that the sparks are moving around at a pretty good clip.
+			shield->velocity2[PITCH] -= 180.0f;
 		else
-			shield->velocity2[PITCH] += 180.0;
+			shield->velocity2[PITCH] += 180.0f;
 
 		shield->lastThinkTime = fxi.cl->time;
 		shield->SpawnDelay = fxi.cl->time + SHIELD_TRAIL_DELAY;
 
-		AngleVectors(shield->direction, angvect, NULL, NULL);
-		VectorMA(owner->origin, shield->radius, angvect, shield->r.origin);
+		vec3_t direction;
+		AngleVectors(shield->direction, direction, NULL, NULL);
+		VectorMA(owner->origin, shield->radius, direction, shield->r.origin);
+
+		shield->AddToView = FXShieldSparkThink;
+		shield->Update = FXShieldTerminate;
 
 		AddEffect(owner, shield);
 	}

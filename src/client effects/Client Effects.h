@@ -75,7 +75,7 @@ extern void FXBlueRing(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXMeteorBarrier(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXMeteorBarrierTravel(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXMeteorBarrierExplode(centity_t* owner, int type, int flags, const vec3_t origin);
-extern void FXLightningShield(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXLightningShield(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXSphereOfAnnihilation(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXSphereOfAnnihilationGlowballs(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXSphereOfAnnihilationExplode(centity_t* owner, int type, int flags, vec3_t origin);
