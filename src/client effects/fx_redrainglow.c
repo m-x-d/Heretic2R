@@ -102,24 +102,20 @@ static qboolean FXRedRainGlowThink(struct client_entity_s* self, const centity_t
 	return true;
 }
 
-void FXRedRainGlow(centity_t *owner, int type, int flags, vec3_t origin)
+void FXRedRainGlow(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
-	client_entity_t		*glow;
-	vec3_t				org;
-	char				lifetime;
-
-	VectorClear(org);
-
+	char lifetime;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_REDRAINGLOW].formatString, &lifetime);
 
-	glow = ClientEntity_new(type, flags | CEF_NO_DRAW, org, 0, Q_ftol(fxi.cls->frametime * 2000.0));
-	glow->flags|=CEF_NO_DRAW | CEF_OWNERS_ORIGIN | CEF_ADDITIVE_PARTS;
+	client_entity_t* glow = ClientEntity_new(type, flags, vec3_origin, NULL, Q_ftol(fxi.cls->frametime * 2000.0f));
 
-	glow->Update = FXRedRainGlowThink;
-	glow->AddToView = LinkedEntityUpdatePlacement;			
-	glow->radius = 128;
+	glow->radius = 128.0f;
+	glow->flags |= CEF_NO_DRAW | CEF_OWNERS_ORIGIN | CEF_ADDITIVE_PARTS;
+	glow->LifeTime = ((lifetime > 0) ? fxi.cl->time + lifetime * 100 : -1);
+
 	if (flags & CEF_FLAG6)
-	{	// powered up, green-yellow glow.
+	{
+		// Powered-up, green-yellow glow.
 		glow->SpawnInfo = 1;
 		glow->color.c = 0xff00ff80;
 	}
@@ -127,16 +123,12 @@ void FXRedRainGlow(centity_t *owner, int type, int flags, vec3_t origin)
 	{
 		glow->color.c = 0xff0000ff;
 	}
-	if (r_detail->value != DETAIL_LOW)
-		glow->dlight = CE_DLight_new(glow->color, 150.0F, 0.0F);
-	
-  	if (lifetime > 0)
-  		glow->LifeTime = fxi.cl->time + (lifetime * 100);
-  	else
-  		glow->LifeTime = -1;
 
+	if ((int)r_detail->value > DETAIL_LOW)
+		glow->dlight = CE_DLight_new(glow->color, 150.0f, 0.0f);
+
+	glow->AddToView = LinkedEntityUpdatePlacement;
+	glow->Update = FXRedRainGlowThink;
 
 	AddEffect(owner, glow);
 }
-
-// end
