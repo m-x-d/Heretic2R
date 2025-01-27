@@ -1,23 +1,15 @@
 //
 // fx_rope.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-// Implemented by Josh Weier
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
-#include "ce_DLight.h"
-#include "random.h"
 #include "q_Sprite.h"
 
 #define	NUM_ROPE_MODELS			4
-#define ROPE_SEGMENT_LENGTH	    64
+#define ROPE_SEGMENT_LENGTH		64.0f
 #define ROPE_BOTTOM_SEGMENTS	8
 
 static struct model_s *rope_models[NUM_ROPE_MODELS];
