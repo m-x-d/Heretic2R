@@ -1,34 +1,18 @@
 //
 // fx_shadow.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Vector.h"
-#include "Angles.h"
-#include "Utilities.h"
 #include "Matrix.h"
 #include "Reference.h"
-#include "q_Sprite.h"
-#include "q_Surface.h"
-//#include "PrimitiveDisplayHack.h"
+#include "Utilities.h"
+#include "Vector.h"
 #include "g_playstats.h"
 
-#include <limits.h>
-
-#define SHADOW_CHECK_DIST 256.0
-#define SHADOW_REF_CHECK_DIST 64.0
-
-#define MAX_SHADOW_DIST 128
-#define SHADOW_HEIGHT 0.5
-
-extern int	ref_soft;
+#define SHADOW_CHECK_DIST		256.0f
+#define SHADOW_REF_CHECK_DIST	64.0f
 
 #define	NUM_SHADOW_MODELS	1
 
