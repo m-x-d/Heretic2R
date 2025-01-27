@@ -21,39 +21,21 @@ void PreCacheRope(void)
 	rope_models[3] = fxi.RegisterModel("sprites/fx/segment_tendril.sp2");
 }
 
-
-
-/*
-	
-  Helper function
-
-*/
-
-
-
-/*-----------------------------------------------
-	RopeCheckToHide
------------------------------------------------*/
-
-qboolean RopeCheckToHide(struct client_entity_s *self, centity_t *owner)
+static qboolean RopeCheckToHide(struct client_entity_s* self, centity_t* owner)
 {
-	centity_t	*grab;
+	// Get the entity.
+	const centity_t* grab = &fxi.server_entities[self->LifeTime];
 
-	//Get the entity
-	grab = &fxi.server_entities[self->LifeTime];
-	
-	//If the flag isn't set, then we're supposed to disappear
-	if ( (!(grab->current.effects & EF_ALTCLIENTFX)) && (self->SpawnInfo < fxi.cl->time) )
+	// If the flag isn't set, then we're supposed to disappear.
+	if (!(grab->current.effects & EF_ALTCLIENTFX) && self->SpawnInfo < fxi.cl->time)
 	{
-		//Clear this out and kill the effect
+		// Clear this out and kill the effect.
 		self->AddToView = NULL;
 		return false;
 	}
 
 	return true;
 }
-
-
 
 /*
 	
