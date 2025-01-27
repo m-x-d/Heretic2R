@@ -56,73 +56,61 @@ static qboolean FXShadowUpdate(struct client_entity_s* self, const centity_t* ow
 	return true;
 }
 
-static qboolean FXShadowReferenceUpdate(struct client_entity_s *self,centity_t *owner)
+static qboolean FXShadowReferenceUpdate(struct client_entity_s* self, const centity_t* owner)
 {
-	vec3_t startpos, endpos;
-	vec3_t minmax = {0, 0, 0};
-	trace_t trace;
-	int refpoint;
-	matrix3_t		rotmatrix;
-
 	// This tells if we are wasting our time, because the reference points are culled.
 	if (!RefPointsValid(owner))
-	{	// The foot shadows should not be visible when there are no ref points.
+	{
+		// The foot shadows should not be visible when there are no ref points.
 		VectorCopy(owner->origin, self->r.origin);
-		self->alpha = 0.01;
+		self->alpha = 0.01f;
+
 		return true;
 	}
 
 	VectorCopy(owner->origin, self->r.origin);
 
-	// take the startpoint from one of the reference points
-	refpoint = self->refPoint;
+	matrix3_t rotation;
+	Matrix3FromAngles(owner->lerp_angles, rotation);
 
-	Matrix3FromAngles(owner->lerp_angles,rotmatrix);
+	// Take the start_pos from one of the reference points.
+	vec3_t start_pos;
+	Matrix3MultByVec3(rotation, owner->referenceInfo->references[self->refPoint].placement.origin, start_pos);
 
-	Matrix3MultByVec3(rotmatrix, owner->referenceInfo->references[refpoint].placement.origin, startpos);
-	
 	// This may look weird, but by scaling the vector, I bring it closer to the center of the owner.  
-	VectorScale(startpos, 0.5, startpos);
-	VectorAdd(owner->origin, startpos, startpos);
-		
-	// Now trace fromt the startpos down
-	VectorCopy(startpos, endpos);
-	endpos[2] -= SHADOW_REF_CHECK_DIST;
+	VectorScale(start_pos, 0.5f, start_pos);
+	VectorAdd(owner->origin, start_pos, start_pos);
 
-	//Determine Visibility
-	fxi.Trace(	startpos, 
-				minmax, 
-				minmax, 
-				endpos, 
-				CONTENTS_SOLID, 
-				CEF_CLIP_TO_WORLD, 
-				&trace);
+	// Now trace from the start_pos down.
+	const vec3_t end_pos = { start_pos[0], start_pos[1], start_pos[2] - SHADOW_REF_CHECK_DIST };
 
-	if (trace.startsolid || trace.fraction >= 1.0)
-	{	// no shadow, in something.
-		self->alpha = 0.01;
-		VectorCopy(endpos, self->r.origin);
+	// Determine visibility.
+	trace_t trace;
+	fxi.Trace(start_pos, vec3_origin, vec3_origin, end_pos, CONTENTS_SOLID, CEF_CLIP_TO_WORLD, &trace);
+
+	if (trace.startsolid || trace.fraction >= 1.0f)
+	{
+		// No shadow, in something.
+		VectorCopy(end_pos, self->r.origin);
+		self->alpha = 0.01f;
+
 		return true;
 	}
 
-	// Did hit the ground
-	self->alpha = (1.0 - trace.fraction) * 0.8 + 0.01;
-	self->r.scale = (1.0 - trace.fraction) * 0.8;
-	if (ref_soft)
-	{
-		// Raise the shadow slightly off the target wall
-		VectorMA(trace.endpos, 0.9, trace.plane.normal, self->r.origin);
-	}
-	else
-		VectorMA(trace.endpos, 0.2, trace.plane.normal, self->r.origin);
+	// Did hit the ground.
+	const float scale = (1.0f - trace.fraction) * 0.8f; //mxd
+	self->alpha = scale + 0.01f;
+	self->r.scale = scale;
+
+	// If we are in ref soft, bring us out a touch, since we are having z buffer problems.
+	const float offset = (ref_soft ? 0.9f : 0.2f); //mxd
+
+	// Raise the shadow slightly off the target wall.
+	VectorMA(trace.endpos, offset, trace.plane.normal, self->r.origin);
 	AnglesFromDirI(trace.plane.normal, self->r.angles);
 
 	return true;
 }
-
-
-
-
 
 void FXShadow(centity_t *owner, int type, int flags, vec3_t origin)
 {
