@@ -58,30 +58,23 @@ static qboolean FXRopeTopDrawAttached(struct client_entity_s* self, const centit
 	return true;
 }
 
-/*-----------------------------------------------
-	FXRopeMiddleDrawAttached
------------------------------------------------*/
-
-static qboolean FXRopeMiddleDrawAttached(struct client_entity_s *self, centity_t *owner)
+static qboolean FXRopeMiddleDrawAttached(struct client_entity_s* self, const centity_t* owner)
 {
-	qboolean		ret;
-
-	ret = RopeCheckToHide(self, owner);
-	if (!ret)
+	if (!RopeCheckToHide(self, owner))
 	{
 		self->flags |= CEF_NO_DRAW;
-		return ret;
+		return false;
 	}
 
-	//These magic numbers place the rope at his hands
-	VectorSet(self->r.startpos, owner->origin[0], owner->origin[1], owner->origin[2] + 32);
-	VectorSet(self->r.endpos,   owner->origin[0], owner->origin[1], owner->origin[2] + 8);
+	// These magic numbers place the rope at his hands.
+	VectorSet(self->r.startpos, owner->origin[0], owner->origin[1], owner->origin[2] + 32.0f);
+	VectorSet(self->r.endpos, owner->origin[0], owner->origin[1], owner->origin[2] + 8.0f);
 
-	//Get the tile rate
-	self->r.tile = (float) 24.0F / 64.0F;
+	// Get the tile rate.
+	self->r.tile = 24.0f / ROPE_SEGMENT_LENGTH;
 
-	//Offset the sprite's tile so that there's no visible gap between the top section and the grab section (slight imprecision)
-	self->r.tileoffset = (float) (fmod((self->direction[2] - owner->origin[2]), 64.0F) / 64.0F);
+	// Offset the sprite's tile so that there's no visible gap between the top section and the grab section (slight imprecision).
+	self->r.tileoffset = fmodf(self->direction[2] - owner->origin[2], ROPE_SEGMENT_LENGTH) / ROPE_SEGMENT_LENGTH;
 
 	return true;
 }
