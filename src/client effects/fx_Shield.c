@@ -63,12 +63,12 @@ static qboolean FXShieldSparkThink(struct client_entity_s* shield, const centity
 	return true;
 }
 
-static qboolean FXShieldTerminate(struct client_entity_s *shield, centity_t *owner)
+static qboolean FXShieldTerminate(struct client_entity_s* shield, centity_t* owner)
 {
-	// Don't instantly delete yourself.  Don't accept any more updates and die out within a second.
-	shield->d_alpha = -1.2;						// Fade out.
-	shield->SpawnDelay = fxi.cl->time + 2000;	// No more particles.
-	shield->updateTime = 1000;	// Die in one second.
+	// Don't instantly delete yourself. Don't accept any more updates and die out within a second.
+	shield->d_alpha = -1.2f; // Fade out.
+	shield->SpawnDelay = fxi.cl->time + 2000; // No more particles.
+	shield->updateTime = 1000; // Die in one second.
 	shield->Update = RemoveSelfAI;
 
 	return true;
