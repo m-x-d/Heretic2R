@@ -126,81 +126,74 @@ static qboolean FireSparkSpawnerUpdate(client_entity_t* spawner, const centity_t
 	return true;
 }
 
-void FireSparks(centity_t *owner, int type, int flags, vec3_t origin, vec3_t dir)
+void FireSparks(centity_t* owner, const int type, int flags, const vec3_t origin, const vec3_t dir)
 {
-	client_entity_t		*effect;
-	client_particle_t	*flame;
-	vec3_t				work;
-	byte				count;
-	int					i;
-
-	if(owner && flags & CEF_FLAG8)
-	{//spawn a continuous thingy - fixme- dalay 100 so can get a valid origin?
+	if (owner && flags & CEF_FLAG8)
+	{
+		// Spawn a continuous thingy - fixme- delay 100 so can get a valid origin?
 		flags &= ~CEF_FLAG8;
-		effect = ClientEntity_new(type, flags | CEF_NO_DRAW, origin, NULL, 20);
+		client_entity_t* spark_spawner = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW), origin, NULL, 20);
 
-		effect->LifeTime = 1;
-		VectorCopy(origin, effect->startpos2);
-		VectorCopy(origin, effect->r.origin);
-		VectorCopy(dir, effect->direction);
-		effect->SpawnInfo = flags;
-		effect->Update = FireSparkSpawnerUpdate;
-		if(owner->current.effects & EF_MARCUS_FLAG1)
-			effect->SpawnInfo |= CEF_FLAG7;
-		
-		AddEffect(owner, effect);
+		VectorCopy(origin, spark_spawner->startpos2);
+		VectorCopy(origin, spark_spawner->r.origin);
+		VectorCopy(dir, spark_spawner->direction);
+
+		spark_spawner->LifeTime = 1;
+		spark_spawner->SpawnInfo = flags;
+
+		if (owner->current.effects & EF_MARCUS_FLAG1)
+			spark_spawner->SpawnInfo |= CEF_FLAG7;
+
+		spark_spawner->Update = FireSparkSpawnerUpdate;
+
+		AddEffect(owner, spark_spawner);
+
 		return;
 	}
 
 	if (flags & CEF_FLAG6)
-	{//sound
-		if(irand(0, 3))
-		{
-			fxi.S_StartSound(origin, -1, CHAN_AUTO,
-				fxi.S_RegisterSound(va("ambient/lavadrop%c.wav", irand('1', '3'))), 1, ATTN_NORM, 0);
-		}
-		else
-		{
-			fxi.S_StartSound(origin, -1, CHAN_AUTO,
-				fxi.S_RegisterSound("misc/lavaburn.wav"), 1, ATTN_NORM, 0);
-		}
+	{
+		// Sound.
+		const char* snd_name = (irand(0, 3) ? va("ambient/lavadrop%i.wav", irand(1, 3)) : "misc/lavaburn.wav"); //mxd
+		fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_NORM, 0.0f);
 	}
 
-	effect = ClientEntity_new(type, flags|CEF_ADDITIVE_PARTS, origin, NULL, 2000);
+	client_entity_t* effect = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS, origin, NULL, 2000);
+
 	effect->flags |= CEF_NO_DRAW | CEF_NOMOVE;
 	effect->color.c = 0xe5007fff;
 
-	count = irand(7, 13);
-	for(i = 0; i < count; i++)
+	for (int i = 0; i < irand(7, 13); i++)
 	{
-		flame = ClientParticle_new(irand(PART_16x16_FIRE1, PART_16x16_FIRE3), effect->color, 1000);
+		client_particle_t* flame = ClientParticle_new(irand(PART_16x16_FIRE1, PART_16x16_FIRE3), effect->color, 1000);
 
-		VectorRandomCopy(dir, work, 0.5);
+		vec3_t work;
+		VectorRandomCopy(dir, work, 0.5f);
 
-		if(flags&CEF_FLAG7)//fireball poofy effect
+		if (flags & CEF_FLAG7) // Fireball poof effect.
 		{
-			flame->scale = flrand(5, 10);
-			VectorScale(work, 20.0, flame->velocity);
-			flame->velocity[2] += 30;
-			flame->acceleration[2] = 2.0f;									  
+			flame->scale = flrand(5.0f, 10.0f);
+			VectorScale(work, 20.0f, flame->velocity);
+			flame->velocity[2] += 30.0f;
+			flame->acceleration[2] = 2.0f;
 
-			flame->d_scale = flrand(-10.0, -5.0);
+			flame->d_scale = flrand(-10.0f, -5.0f);
 			flame->d_alpha = -10.0f;
-			flame->duration = (flame->color.a * 1000.0) / -flame->d_alpha;		// time taken to reach zero alpha
+			flame->duration = (int)((float)flame->color.a * 1000.0f / -flame->d_alpha); // Time taken to reach zero alpha.
 		}
 		else
 		{
-			flame->scale = flrand(3, 5);
-			VectorScale(work, 50.0, flame->velocity);
-			flame->velocity[2] += 50;
-			flame->acceleration[2] = -200.0f;									  
+			flame->scale = flrand(3.0f, 5.0f);
+			VectorScale(work, 50.0f, flame->velocity);
+			flame->velocity[2] += 50.0f;
+			flame->acceleration[2] = -200.0f;
 
-			flame->d_scale = flrand(-2.0, -3.0);
+			flame->d_scale = flrand(-2.0f, -3.0f);
 			flame->d_alpha = 0.0f;
-			flame->duration = (flame->scale * 1000.0) / -flame->d_scale;		// time taken to reach zero alpha
+			flame->duration = (int)(flame->scale * 1000.0f / -flame->d_scale); // Time taken to reach zero alpha.
 		}
-		
-		flame->origin[2] -= 8;//HACK!!!!
+
+		flame->origin[2] -= 8.0f; //HACK!!!!
 
 		AddParticleToList(effect, flame);
 	}
@@ -208,9 +201,8 @@ void FireSparks(centity_t *owner, int type, int flags, vec3_t origin, vec3_t dir
 	if (flags & CEF_FLAG6)
 	{
 		effect->color.c = 0xFF80FFFF;
-		effect->dlight = CE_DLight_new(effect->color, 80.0F, -35.0F);
+		effect->dlight = CE_DLight_new(effect->color, 80.0f, -35.0f);
 	}
+
 	AddEffect(NULL, effect);
 }
-// end
-
