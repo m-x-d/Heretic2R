@@ -91,11 +91,10 @@ void GenericSparks(centity_t* owner, const int type, int flags, const vec3_t ori
 	AddEffect(NULL, dlight);
 }
 
-void FXGenericSparks(centity_t *owner, int type, int flags, vec3_t origin)
+void FXGenericSparks(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	vec3_t				dir;
-
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPARKS].formatString, dir );			// normalized direction vector
+	vec3_t dir;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPARKS].formatString, dir); // Normalized direction vector.
 	GenericSparks(owner, type, flags, origin, dir);
 }
 
