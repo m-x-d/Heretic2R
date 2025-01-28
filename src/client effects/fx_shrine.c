@@ -62,14 +62,9 @@
 #define POWERUP_RAD						6
 #define POWERUP_HEIGHT_ADD				((POWERUP_EFFECTS_HEIGHT - POWERUP_EFFECTS_START_HEIGHT) / (TOTAL_POWERUP_EFFECTS - 24))
 
-#define NUM_SHRINE_MODELS 2
-static struct model_s *shrine_models[NUM_SHRINE_MODELS];
+static struct model_s* shrine_models[2];
 
-/*
-Main Routines
-*/
-
-void PreCacheShrine()
+void PreCacheShrine(void)
 {
 	shrine_models[0] = fxi.RegisterModel("sprites/lens/halo1.sp2");
 	shrine_models[1] = fxi.RegisterModel("sprites/fx/halo.sp2");
