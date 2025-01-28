@@ -4,10 +4,11 @@
 // Copyright 1998 Raven Software
 //
 
-#include "Client Effects.h"
 #include "fx_mork.h" //mxd
 #include "fx_flamethrow.h" //mxd
 #include "fx_HighPriestessProjectiles.h" //mxd
+#include "fx_smoke.h" //mxd
+#include "fx_sparks.h" //mxd
 #include "Particle.h"
 #include "Random.h"
 #include "Vector.h"

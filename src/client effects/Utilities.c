@@ -15,6 +15,7 @@
 #include "ce_DLight.h"
 #include "fx_debris.h" //mxd
 #include "fx_smoke.h" //mxd
+#include "fx_sparks.h" //mxd
 #include "g_playstats.h"
 
 // Setup for circular list.
