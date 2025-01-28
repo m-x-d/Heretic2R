@@ -423,48 +423,40 @@ static void FXLightningSplit(struct client_entity_s* self, vec3_t org, vec3_t di
 	}
 }
 
-// create the lightning lines
-void FXCreateLightning(struct client_entity_s *self, centity_t *owner)
+// Create the lightning lines.
+static void FXCreateLightning(struct client_entity_s* self, const centity_t* owner)
 {
-	vec3_t					org;
-	vec3_t					dir;
-	int						lightning_count;
-	float						curAng;
-	extern int				ref_soft;
+	// Create the lightning lines.
+	const int lightning_count = (ref_soft ? 1 : irand(2, 3));
+	const float angle_increment = ANGLE_360 / (float)lightning_count; //mxd
 
-	// create the lightning lines
-	if (ref_soft)
-		lightning_count = 1;
-	else
-		lightning_count = irand(2,3);
-
-	for(curAng = 0.0F; curAng < (M_PI * 2.0F); curAng += (M_PI * 2.0F) / lightning_count )
+	float cur_angle = 0.0f;
+	while (cur_angle < ANGLE_360)
 	{
-		// setup the start of a lightning line
-		VectorSet(org, LIGHTNING_START * cos(curAng), LIGHTNING_START * sin(curAng),self->SpawnData);
-		// setup intital direction
-		VectorSet(dir, flrand(-LIGHTNING_MINIMUM,LIGHTNING_MINIMUM), flrand(-LIGHTNING_MINIMUM,LIGHTNING_MINIMUM) ,-0.5);
-		// create inital line of lightning
+		// Setup the start of a lightning line.
+		vec3_t org = { LIGHTNING_START * cosf(cur_angle), LIGHTNING_START * sinf(cur_angle), self->SpawnData };
+
+		// Setup initial direction.
+		vec3_t dir = { flrand(-LIGHTNING_MINIMUM, LIGHTNING_MINIMUM), flrand(-LIGHTNING_MINIMUM, LIGHTNING_MINIMUM), -0.5f };
+
+		// Create initial line of lightning.
 		FXLightningSplit(self, org, dir, 60, -30.0f);
+
+		cur_angle += angle_increment;
 	}
 
-	self->SpawnData -= 5;
+	self->SpawnData -= 5.0f;
 
-	// if the owner of the lightning is the main client then flash the screen
+	// If the owner of the lightning is the main client then flash the screen.
 	if (owner->current.number == fxi.cl->playernum + 1)
 	{
-		// give a quick screen flash
-		fxi.Activate_Screen_Flash(0x80ffd0c0);
-		// make our screen shake a bit
-		// values are : a, b, c, d
-		// a = amount of maximum screen shake, in pixels
-		// b = duration of screen shake in milli seconds
-		// c = current time - in milli seconds - if this routine is called from the server, remember this
-		// d = dir of shake - see game_stats.h for definitions
-		fxi.Activate_Screen_Shake(4,800, fxi.cl->time, SHAKE_ALL_DIR);
+		// Give a quick screen flash.
+		fxi.Activate_Screen_Flash((int)0x80ffd0c0);
+
+		// Make our screen shake a bit.
+		fxi.Activate_Screen_Shake(4.0f, 800.0f, (float)fxi.cl->time, SHAKE_ALL_DIR);
 	}
 }
-
 
 // make the lightning effect re-occur
 static qboolean FXShrineHealthThink(struct client_entity_s *self, centity_t *owner)
