@@ -66,38 +66,38 @@ static qboolean FXSmokeSpawner2(struct client_entity_s* self, centity_t* owner)
 	return false;
 }
 
-//------------------------------------------------------------------
-//	FX Smoke spawn function
-//------------------------------------------------------------------
-
-void FXEnvSmoke(centity_t *owner,int type,int flags,vec3_t origin)
+void FXEnvSmoke(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	client_entity_t	*self;
-	vec3_t	dir;
-	byte	scale;
-	byte	speed,wait,maxrange;
-
 	flags |= CEF_NO_DRAW | CEF_NOMOVE;
-	self = ClientEntity_new(type, flags, origin, NULL, 17);
+	client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, 17);
 
-	if(flags&CEF_FLAG6)
-	{//just a hiss and steam
-		FXSmoke(origin, flrand(0.5, 1.0), flrand(32, 64));
-		fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/fout.wav"), 1, ATTN_NORM, 0);
-		self->Update = FXSmokeSpawner2;
+	if (flags & CEF_FLAG6)
+	{
+		// Just a hiss and steam.
+		FXSmoke(origin, flrand(0.5f, 1.0f), flrand(32.0f, 64.0f));
+		fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/fout.wav"), 1.0f, ATTN_NORM, 0);
+
 		self->LifeTime = 33;
-		AddEffect(NULL, self); 
+		self->Update = FXSmokeSpawner2;
+
+		AddEffect(NULL, self);
 	}
 	else
 	{
-		fxi.GetEffect(owner,flags,clientEffectSpawners[FX_ENVSMOKE].formatString, &scale, &dir, &speed, &wait, &maxrange);
+		vec3_t dir;
+		byte scale;
+		byte speed;
+		byte wait;
+		byte maxrange;
+		fxi.GetEffect(owner, flags, clientEffectSpawners[FX_ENVSMOKE].formatString, &scale, &dir, &speed, &wait, &maxrange);
+
 		AnglesFromDir(dir, self->r.angles);
-		self->velocity[0] = speed * 10;
+		self->velocity[0] = (float)speed * 10.0f;
 		self->Scale = maxrange;
-		self->r.scale = 32.0 / scale;
+		self->r.scale = 32.0f / (float)scale;
 		self->updateTime = wait * 1000;
 		self->Update = FXSmokeSpawner;
-		AddEffect(owner, self); 
+
+		AddEffect(owner, self);
 	}
 }
-
