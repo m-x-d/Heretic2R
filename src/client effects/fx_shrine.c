@@ -619,67 +619,57 @@ void FXShrineGhostEffect(centity_t* owner, const int type, const int flags, vec3
 
 #pragma endregion
 
-/*
-----------------------------------------
+#pragma region ========================== SPEED EFFECT ROUTINES ==========================
 
-Speed effect routine
-
-----------------------------------------
-*/
-
-// create the two circles that ring the player
-static qboolean FXShrineSpeedThink(struct client_entity_s *self, centity_t *owner)
+// Create the two circles that ring the player.
+static qboolean FXShrineSpeedThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_particle_t	*ce;
-	int					count, i;
-	float					ang;
-	float					offset_ang;
-	vec3_t				angles;
-	paletteRGBA_t			color;
+	if (--self->SpawnInfo == 0)
+		return false;
 
-	if (!(--self->SpawnInfo))
+	// Figure out how many particles we are going to use.
+	const int count = GetScaledCount(NUM_OF_REFLECT_PARTS, 0.7f);
+	const float offset_angle = 6.28f / (float)count;
+	float angle = 0.0f;
+
+	for (int i = 0; i < count; i++)
 	{
-		return(false);		
-	}
 
-	color.c = 0xffffff;
-	color.a = 0xff;
+		client_particle_t* ce = ClientParticle_new(PART_32x32_STEAM, self->r.color, 380);
 
-	// figure out how many particles we are going to use
-	count = GetScaledCount(NUM_OF_REFLECT_PARTS, 0.7);
-	offset_ang = 6.28 / count;
-	ang = 0;
-	for (i=0; i< count; i++)
-	{
-		ce = ClientParticle_new(PART_32x32_STEAM, self->r.color, 380);
-		ce->acceleration[2] = 0.0; 
-		VectorSet(angles, ang, self->Scale, 0);
+		const vec3_t angles = { angle, self->Scale, 0.0f };
 		DirFromAngles(angles, ce->origin);
 		Vec3ScaleAssign(REFLECT_RAD, ce->origin);
-		ce->scale = 7.0F;
-		if (self->SpawnInfo <18)
-			ce->color.a = (self->SpawnInfo) * (255 / 18);
-		AddParticleToList(self, ce);
-		ang += offset_ang;;
-	}
-	self->Scale += 0.25;
+		ce->acceleration[2] = 0.0f;
+		ce->scale = 7.0f;
 
-	// put the sparkle on us
-	if(self->SpawnInfo > 10)
+		if (self->SpawnInfo < 18)
+			ce->color.a = (byte)(self->SpawnInfo * (255 / 18));
+
+		AddParticleToList(self, ce);
+
+		angle += offset_angle;
+	}
+
+	self->Scale += 0.25f;
+
+	// Put the sparkle on us.
+	if (self->SpawnInfo > 10)
 	{
-		count = irand(3,7);
-		for (i=0; i<count; i++)
+		for (int i = 0; i < irand(3, 7); i++)
 		{
-			ce = ClientParticle_new(PART_16x16_STAR, color, 280);
-			ce->acceleration[2] = 0.0; 
-			VectorSet(ce->origin, flrand(-FLIGHT_PLAY_RAD,FLIGHT_PLAY_RAD), flrand(-FLIGHT_PLAY_RAD,FLIGHT_PLAY_RAD), flrand(-30,30) );
-			ce->scale = 0.3;
-			ce->d_scale = flrand(40.0F, 60.0f);
+			client_particle_t* ce = ClientParticle_new(PART_16x16_STAR, color_white, 280);
+
+			ce->acceleration[2] = 0.0f;
+			VectorSet(ce->origin, flrand(-FLIGHT_PLAY_RAD, FLIGHT_PLAY_RAD), flrand(-FLIGHT_PLAY_RAD, FLIGHT_PLAY_RAD), flrand(-30.0f, 30.0f));
+			ce->scale = 0.3f;
+			ce->d_scale = flrand(40.0f, 60.0f);
+
 			AddParticleToList(self, ce);
 		}
 	}
 
-	return(true);
+	return true;
 }
 
 void FXShrineSpeedEffect(centity_t *owner, int type, int flags, vec3_t origin)
@@ -700,6 +690,7 @@ void FXShrineSpeedEffect(centity_t *owner, int type, int flags, vec3_t origin)
 	AddEffect(owner, glow);
 }
 
+#pragma endregion
 
 /*
 ----------------------------------------
