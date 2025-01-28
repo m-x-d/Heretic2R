@@ -549,22 +549,18 @@ static qboolean FXShrineReflectThink(struct client_entity_s* self, centity_t* ow
 	return true;
 }
 
-// create the entity the flight loops are on
-void FXShrineReflectEffect(centity_t *owner, int type, int flags, vec3_t origin)
+// Create the entity the flight loops are on.
+void FXShrineReflectEffect(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*glow;
-														  
-	glow = ClientEntity_new(type, flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS, origin, 0, 25);
+	client_entity_t* glow = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 25);
 
 	VectorClear(glow->origin);
-	glow->Update = FXShrineReflectThink;
 	glow->SpawnInfo = TOTAL_FLIGHT_EFFECTS;
-	glow->AddToView = LinkedEntityUpdatePlacement;
 	glow->SpawnData = FLIGHT_EFFECTS_START_HEIGHT;
-	glow->Scale = 0;
-	
-	AddEffect(owner, glow);
+	glow->AddToView = LinkedEntityUpdatePlacement;
+	glow->Update = FXShrineReflectThink;
 
+	AddEffect(owner, glow);
 }
 
 #pragma endregion
