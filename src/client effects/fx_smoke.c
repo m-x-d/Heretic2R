@@ -47,22 +47,23 @@ void FXSmoke(const vec3_t origin, const float scale, const float range)
 	SpawnSmoke(origin, scale, range, color_white.c); //mxd
 }
 
-static qboolean FXSmokeSpawner(struct client_entity_s *self, centity_t *owner)
+static qboolean FXSmokeSpawner(const struct client_entity_s* self, centity_t* owner)
 {
 	FXSmoke(self->r.origin, self->r.scale, self->Scale);
-	return(true);
+	return true;
 }
 
-static qboolean FXSmokeSpawner2(struct client_entity_s *self, centity_t *owner)
+static qboolean FXSmokeSpawner2(struct client_entity_s* self, centity_t* owner)
 {
-	if(self->LifeTime--)
+	if (self->LifeTime-- > 0)
 	{
-		FXSmoke(self->r.origin, flrand(0.5, 1.0), flrand(32, 64));
+		FXSmoke(self->r.origin, flrand(0.5f, 1.0f), flrand(32.0f, 64.0f));
 		self->updateTime = 30;
-		return(true);
+
+		return true;
 	}
-	else
-		return (false);
+
+	return false;
 }
 
 //------------------------------------------------------------------
