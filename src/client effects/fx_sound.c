@@ -10,21 +10,21 @@
 
 #define TAG_LEVEL	766 // Tags get cleared at each new level.
 
-typedef struct soundthinkinfo_s
+typedef struct sound_think_info_s
 {
 	int style;
-	float attenuation;
+	int attenuation; //mxd. float in original version.
 	float volume;
 	float wait;
-} soundthinkinfo_t;
+} sound_think_info_t;
 
 static qboolean FXSoundthink(struct client_entity_s *self, centity_t *owner)
 {
 	int chance;
-	soundthinkinfo_t *soundinfo;
+	sound_think_info_t*soundinfo;
 	char *soundname;
 
-	soundinfo = (soundthinkinfo_t *) self->extra;
+	soundinfo = (sound_think_info_t*) self->extra;
 	// flag if we are not doing a sound
 	soundname = NULL;
 
@@ -212,17 +212,17 @@ void FXSound(centity_t *owner,int type,int flags,vec3_t origin)
 {
 	client_entity_t	*self;
 	byte 					style, wait, attenuation,volume;
-	soundthinkinfo_t 	*soundinfo;
+	sound_think_info_t* soundinfo;
 
   	self = ClientEntity_new(type, flags|CEF_NO_DRAW|CEF_NOMOVE, origin, 
 		NULL, 20);
 	self->flags &= ~CEF_OWNERS_ORIGIN;
 
-	self->extra=fxi.TagMalloc(sizeof(soundthinkinfo_t),TAG_LEVEL);
+	self->extra=fxi.TagMalloc(sizeof(sound_think_info_t),TAG_LEVEL);
 
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SOUND].formatString, &style,&attenuation,&volume,&wait);
 
-	soundinfo = (soundthinkinfo_t *) self->extra;
+	soundinfo = (sound_think_info_t*) self->extra;
 	soundinfo->style = style;
 	soundinfo->attenuation = attenuation;
 	soundinfo->volume = volume/255.0;
@@ -232,4 +232,3 @@ void FXSound(centity_t *owner,int type,int flags,vec3_t origin)
 
 	AddEffect(owner, self);
 }
-
