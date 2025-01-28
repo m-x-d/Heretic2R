@@ -579,37 +579,31 @@ static qboolean FXShrineGlowThink(struct client_entity_s* self, centity_t* owner
 	return true;
 }
 
-// create the little glow bits..
-static qboolean FXShrineGhostThink(struct client_entity_s *self, centity_t *owner)
+// Create the little glow bits.
+static qboolean FXShrineGhostThink(struct client_entity_s* self, centity_t* owner)
 {
-	int					i;
-	client_entity_t		*glow;
-	vec3_t				origin;
+	if (--self->SpawnInfo == 0)
+		return false;
 
-	if (!(--self->SpawnInfo))
+	for (int i = 0; i < irand(3, 5); i++)
 	{
-		return(false);		
-	}
+		const vec3_t origin = { flrand(-20.0f, 20.0f), flrand(-20.0f, 20.0f), flrand(-30.0f, 40.0f) };
+		client_entity_t* glow = ClientEntity_new(FX_SHRINE_GHOST, CEF_OWNERS_ORIGIN, origin, NULL, 300);
 
-	for( i=0; i< irand(3,5); i++)
-	{
-		VectorSet(origin, flrand(-20, 20), flrand(-20,20), flrand(-30,40)); 
-
-		glow = ClientEntity_new(FX_SHRINE_GHOST, CEF_OWNERS_ORIGIN, origin, 0, 300);
-
-		glow->r.model = shrine_models;
-		glow->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		glow->r.model = &shrine_models[0];
+		glow->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 		glow->SpawnInfo = 2;
+		glow->d_scale = flrand(0.5f, 2.0f);
+		glow->r.scale = 0.1f;
+		glow->d_alpha = 1.0f;
+		glow->alpha = 0.1f;
 		glow->AddToView = OffsetLinkedEntityUpdatePlacement;
-	 	glow->d_scale = flrand(0.5, 2.0);
-	 	glow->r.scale = 0.1;
-		glow->d_alpha = 1.0;
-		glow->alpha = 0.1;
 		glow->Update = FXShrineGlowThink;
-		
+
 		AddEffect(owner, glow);
 	}
-	return(true);
+
+	return true;
 }
 
 // create the inital ghost controlling entity
