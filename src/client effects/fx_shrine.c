@@ -472,21 +472,21 @@ static qboolean FXShrineHealthThink(struct client_entity_s* self, const centity_
 	return true;
 }
 
-// create initial lightning line
-void FXShrineHealthEffect(centity_t *owner, int type, int flags, vec3_t origin)
+// Create initial lightning line.
+void FXShrineHealthEffect(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*glow;
-	// create the entity that the particles are attached to
-	glow = ClientEntity_new(type, flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS, origin, 0, LIGHTNING_DUR+20);
+	// Create the entity that the particles are attached to.
+	client_entity_t* glow = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, LIGHTNING_DUR + 20);
+
 	glow->SpawnInfo = TOTAL_HEALTH_EFFECTS;
+	glow->SpawnData = 70;
 	glow->AddToView = LinkedEntityUpdatePlacement;
 	glow->Update = FXShrineHealthThink;
-	glow->SpawnData = 70;
+
 	AddEffect(owner, glow);
 
-	// start off the lightning effect
+	// Start off the lightning effect.
 	FXCreateLightning(glow, owner);
-
 }
 
 #pragma endregion
