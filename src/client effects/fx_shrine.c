@@ -253,72 +253,48 @@ void FXShrineLightEffect(centity_t* owner, const int type, const int flags, vec3
 
 #pragma endregion
 
-/*
-----------------------------------------
+#pragma region ========================== STAFF POWERUP EFFECT ROUTINES ==========================
 
-Staff Powerup Routines
-
-----------------------------------------
-*/
-
-
-// create the two circles that ring the player
-static qboolean FXShrineStaffThink(struct client_entity_s *self, centity_t *owner)
+// Create the two circles that ring the player.
+static qboolean FXShrineStaffThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_particle_t	*ce;
-	vec3_t				vel;
-	int					count;
-	float					curAng;
-	float					new_y;
-	float					rad;
+	if (--self->SpawnInfo == 0)
+		return false;
 
-	if (!(--self->SpawnInfo))
+	const float radius = (float)(TOTAL_STAFF_EFFECTS - self->SpawnInfo) * (STAFF_RADIUS / (TOTAL_STAFF_EFFECTS - 8));
+
+	if (self->SpawnInfo > 8)
 	{
-		return(false);		
-	}
-	rad = ((TOTAL_STAFF_EFFECTS)-self->SpawnInfo) * (STAFF_RADIUS/(TOTAL_STAFF_EFFECTS-8));
+		// Figure out how many particles we are going to use.
+		const int count = GetScaledCount(self->SpawnDelay, 0.7f);
 
-	if (self->SpawnInfo >8)
-	{
-		// figure out how many particles we are going to use
-		count = GetScaledCount(self->SpawnDelay, 0.7);
-		// create the ring of particles that goes up
-		for(curAng = 0.0F; curAng < (M_PI * 2.0F); curAng += (M_PI * 2.0F) / count )
+		// Create rings of particles that goes up and down.
+		const float angle_step = ANGLE_360 / (float)count;
+
+		float cur_angle = 0.0f;
+		while (cur_angle < ANGLE_360)
 		{
+			for (int c = 0; c < 2; c++)
+			{
+				const float dir_z = (c == 0 ? 1.0f : -1.0f); //mxd
+				const vec3_t vel = { radius * cosf(cur_angle), radius * sinf(cur_angle), self->SpawnData * dir_z };
 
-			VectorSet(vel, rad * cos(curAng), rad * sin(curAng), self->SpawnData);
+				const int particle_type = ((self->flags & CEF_FLAG6) ? irand(PART_16x16_FIRE1, PART_16x16_FIRE3) : PART_16x16_SPARK_B);
+				client_particle_t* ce = ClientParticle_new(particle_type, self->r.color, self->LifeTime);
 
-			if(self->flags & CEF_FLAG6)
-				ce = ClientParticle_new(irand(PART_16x16_FIRE1, PART_16x16_FIRE3), self->r.color, self->LifeTime);
-			else
-				ce = ClientParticle_new(PART_16x16_SPARK_B, self->r.color, self->LifeTime);
+				VectorCopy(vel, ce->origin);
+				ce->acceleration[2] = 0.0f;
+				ce->color.a = 118;
+				ce->scale = 16.0f;
 
-			ce->acceleration[2] = 0.0; 
-			VectorCopy(vel, ce->origin);
-			ce->color.a = 118;
-			ce->scale = 16.0F;
-			AddParticleToList(self, ce);
-		}
-		// create the ring of particles that goes down
-		new_y = -self->SpawnData;
-		for(curAng = 0.0F; curAng < (M_PI * 2.0F); curAng += (M_PI * 2.0F) / count )
-		{
+				AddParticleToList(self, ce);
+			}
 
-			VectorSet(vel, rad * cos(curAng), rad * sin(curAng), new_y);
-
-			if(self->flags & CEF_FLAG6)
-				ce = ClientParticle_new(irand(PART_16x16_FIRE1, PART_16x16_FIRE3), self->r.color, self->LifeTime);
-			else
-				ce = ClientParticle_new(PART_16x16_SPARK_B, self->r.color, self->LifeTime);
-			ce->acceleration[2] = 0.0; 
-			VectorCopy(vel, ce->origin);
-			ce->color.a = 118;
-			ce->scale = 16.0F;
-			AddParticleToList(self, ce);
+			cur_angle += angle_step;
 		}
 	}
 
-	// update the particles colors
+	// Update the particles colors.
 	if (self->r.color.g > 0)
 		self->r.color.g += STAFF_GREEN_ADD;
 	else
@@ -329,10 +305,10 @@ static qboolean FXShrineStaffThink(struct client_entity_s *self, centity_t *owne
 	else
 		self->r.color.b = 0;
 
-	// move the rings up/down next frame
+	// Move the rings up/down next frame.
 	self->SpawnData += STAFF_HEIGHT_ADD;
 
-	return(true);
+	return true;
 }
 
 // start up the staff power up effect
