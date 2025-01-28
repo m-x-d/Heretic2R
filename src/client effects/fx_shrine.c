@@ -831,30 +831,29 @@ static qboolean FXShrineBallThink(struct client_entity_s* self, centity_t* owner
 	return true;
 }
 
-// create the floating ball in the middle of the shrine
-void FXShrineBall(centity_t *owner, int type, int flags, vec3_t origin)
+// Create the floating ball in the middle of the shrine.
+void FXShrineBall(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*glow;
-	vec3_t				offset;	
-	byte				shrinetype;
-	// go get the normalised direction of the shrine object
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SHRINE_BALL].formatString, &offset, &shrinetype);
+	// Get the normalized direction of the shrine object.
+	vec3_t offset;
+	byte shrine_type;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SHRINE_BALL].formatString, &offset, &shrine_type);
 
-	// don't put out effects for shrines that don't exist
-	if(shrinetype >= SHRINEBALL_MAX)
+	// Don't put out effects for shrines that don't exist.
+	if (shrine_type >= SHRINEBALL_MAX)
 		return;
 
-	// move our starting point out a bit
-	Vec3ScaleAssign(25,offset);
-	offset[2] = -10;
-	Vec3AddAssign(offset, origin); 
+	// Move our starting point out a bit.
+	Vec3ScaleAssign(25.0f, offset);
+	offset[2] = -10.0f;
+	Vec3AddAssign(offset, origin);
 
-	// create the dummy entity, so particles can be attached
-	// | CEF_ADDITIVE_PARTS
-	glow = ClientEntity_new(type, (flags | CEF_NO_DRAW | CEF_VIEWSTATUSCHANGED) & ~CEF_NOMOVE , origin, 0, 20);
-	glow->SpawnInfo = shrinetype;
+	// Create the dummy entity, so particles can be attached.
+	client_entity_t* glow = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_VIEWSTATUSCHANGED) & ~CEF_NOMOVE, origin, NULL, 20);
+
+	glow->radius = 100.0f;
+	glow->SpawnInfo = shrine_type;
 	glow->Update = FXShrineBallThink;
-	glow->radius = 100;
 
 	AddEffect(owner, glow);
 }
