@@ -19,84 +19,76 @@ void PreCacheSparks(void)
 	spark_models[1] = fxi.RegisterModel("sprites/fx/spark.sp2");
 }
 
-// --------------------------------------------------------------
-
-void GenericSparks(centity_t *owner, int type, int flags, vec3_t origin, vec3_t dir)
+void GenericSparks(centity_t* owner, const int type, int flags, const vec3_t origin, const vec3_t dir)
 {
-	client_entity_t		*effect;
-	vec3_t				work;
-	byte				count;
-	int					i;
-
-	if (flags & CEF_FLAG7)//fire sparks
+	if (flags & CEF_FLAG7) // Fire sparks.
 	{
 		flags &= ~CEF_FLAG7;
 		FireSparks(owner, type, flags, origin, dir);
+
 		return;
 	}
 
+	int count;
 	if (type == FX_BLOCK_SPARKS)
 		count = 8;
 	else if (flags & CEF_FLAG6)
 		count = 5;
 	else
-		count = irand(2,4);
+		count = irand(2, 4);
 
-	//Create spark balls
-	for(i = 0; i < count; i++)
+	// Create spark balls.
+	for (int i = 0; i < count; i++)
 	{
-		effect = ClientEntity_new(type, flags, origin, NULL, 1000);
+		client_entity_t* spark = ClientEntity_new(type, flags, origin, NULL, 1000);
 
-		effect->r.model = &spark_models[1];
-		effect->r.flags |= RF_TRANS_ADD | RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA;
+		spark->r.model = &spark_models[1]; // Blue spark sprite.
+		spark->r.flags = RF_TRANS_ADD | RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA;
 
-		VectorRandomCopy(dir, work, 0.5);
-		VectorScale(work, irand(100.0, 125.0), effect->velocity);
-		effect->acceleration[2] = flrand(-200.0, -100.0);
-		
-		if (type == FX_BLOCK_SPARKS)
-			effect->r.scale = 0.5;
-		else
-			effect->r.scale = 0.25;
+		vec3_t work;
+		VectorRandomCopy(dir, work, 0.5f);
+		VectorScale(work, flrand(100.0f, 125.0f), spark->velocity); //mxd. irand() in original logic.
+		spark->acceleration[2] = flrand(-200.0f, -100.0f);
+		spark->r.scale = ((type == FX_BLOCK_SPARKS) ? 0.5f : 0.25f);
+		spark->d_scale = flrand(-0.25f, -0.75f);
 
-		effect->d_scale = flrand(-0.25, -0.75);
-		effect->color.c = 0xFFFFFFFF;
-
-		AddEffect(NULL, effect);	// add the effect as independent world effect
+		AddEffect(NULL, spark); // Add the effect as independent world effect.
 	}
 
-	//Create spark streaks
-	for(i = 0; i < count; i++)
+	// Create spark streaks.
+	for (int i = 0; i < count; i++)
 	{
-		effect = ClientEntity_new(type, flags, origin, NULL, 1000);
+		client_entity_t* streak = ClientEntity_new(type, flags, origin, NULL, 1000);
 
-		effect->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		streak->r.model = &spark_models[0]; // Blue streak sprite.
+		streak->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		streak->r.spriteType = SPRITE_LINE;
+		streak->r.tile = 1.0f;
+		streak->r.scale = 2.0f;
+		streak->r.scale = flrand(0.5f, 1.0f);
 
-		effect->r.model = &spark_models[0];
-		effect->r.spriteType = SPRITE_LINE;
-		effect->r.tile = 1.0;
-		effect->r.scale = 2;
-		effect->alpha = 1.0;
-		effect->r.scale = flrand(0.5, 1.0);
+		vec3_t work;
+		VectorRandomCopy(dir, work, 0.5f);
+		VectorScale(work, flrand(100.0f, 125.0f), streak->velocity); //mxd. irand() in original logic.
 
-		VectorRandomCopy(dir, work, 0.5);
-		VectorScale(work, irand(100.0, 125.0), effect->velocity);
-		
-		VectorCopy(origin, effect->r.endpos);
-		VectorMA(effect->r.endpos, irand(8, 16), work, effect->r.startpos);
+		VectorCopy(origin, streak->r.endpos);
+		VectorMA(streak->r.endpos, flrand(8.0f, 16.0f), work, streak->r.startpos); //mxd. irand() in original logic.
 
-		effect->d_alpha = flrand(-2.0, -4.0);
-		effect->d_scale = flrand(-2.0, -4.0);
+		streak->d_alpha = flrand(-2.0f, -4.0f);
+		streak->d_scale = flrand(-2.0f, -4.0f);
 
-		AddEffect(NULL,effect);
+		AddEffect(NULL, streak);
 	}
 
-	VectorMA(origin, -8, dir, origin);
-	effect = ClientEntity_new(type, flags, origin, NULL, 800);
-	effect->flags |= CEF_NO_DRAW | CEF_NOMOVE;
-	effect->color.c = 0xFFFFFFFF;
-	effect->dlight = CE_DLight_new(effect->color, 80.0F, -35.0F);
-	AddEffect(NULL, effect);
+	vec3_t dlight_org; //mxd
+	VectorMA(origin, -8.0f, dir, dlight_org);
+
+	client_entity_t* dlight = ClientEntity_new(type, flags, dlight_org, NULL, 800);
+
+	dlight->flags |= CEF_NO_DRAW | CEF_NOMOVE;
+	dlight->dlight = CE_DLight_new(dlight->color, 80.0f, -35.0f);
+
+	AddEffect(NULL, dlight);
 }
 
 void FXGenericSparks(centity_t *owner, int type, int flags, vec3_t origin)
