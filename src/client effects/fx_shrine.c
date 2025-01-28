@@ -606,15 +606,14 @@ static qboolean FXShrineGhostThink(struct client_entity_s* self, centity_t* owne
 	return true;
 }
 
-// create the inital ghost controlling entity
-void FXShrineGhostEffect(centity_t *owner, int type, int flags, vec3_t origin)
+// Create the initial ghost controlling entity.
+void FXShrineGhostEffect(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*glow;
-	glow = ClientEntity_new(type, flags|CEF_NO_DRAW, origin, 0, 70);
+	client_entity_t* glow = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW), origin, NULL, 70);
 
 	glow->SpawnInfo = 20;
 	glow->Update = FXShrineGhostThink;
-	
+
 	AddEffect(owner, glow);
 }
 
