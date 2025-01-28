@@ -1,17 +1,15 @@
-#include "Client Effects.h"
-#include "Client Entities.h"
+//
+// fx_sparks.c
+//
+// Copyright 1998 Raven Software
+//
+
 #include "fx_sparks.h" //mxd
-#include "FX.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "Vector.h"
 #include "Random.h"
+#include "Vector.h"
 #include "ce_Dlight.h"
 #include "q_Sprite.h"
-#include "Utilities.h"
-#include "reference.h"
-#include "Matrix.h"
-#include "g_playstats.h"
 
 enum {
 	MODEL_SPARKSTREAK,

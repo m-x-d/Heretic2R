@@ -6,6 +6,6 @@
 
 #pragma once
 
-#include "q_Typedef.h"
+#include "Client Effects.h"
 
-extern void GenericSparks(centity_t* owner, int type, int flags, vec3_t origin, vec3_t dir);
+extern void GenericSparks(centity_t* owner, int type, int flags, const vec3_t origin, const vec3_t dir);
