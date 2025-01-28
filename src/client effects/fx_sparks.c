@@ -11,20 +11,12 @@
 #include "ce_Dlight.h"
 #include "q_Sprite.h"
 
-enum {
-	MODEL_SPARKSTREAK,
-	MODEL_SPARKFIRE,
-	MODEL_SPARK,
-	NUM_MODELS
-};
+static struct model_s* spark_models[2];
 
-static struct model_s *spark_models[NUM_MODELS];
-
-void PreCacheSparks()
+void PreCacheSparks(void)
 {
 	spark_models[0] = fxi.RegisterModel("sprites/fx/bluestreak.sp2");
-	spark_models[1] = fxi.RegisterModel("sprites/fx/fire.sp2");
-	spark_models[2] = fxi.RegisterModel("sprites/fx/spark.sp2");
+	spark_models[1] = fxi.RegisterModel("sprites/fx/spark.sp2");
 }
 
 // --------------------------------------------------------------
@@ -55,7 +47,7 @@ void GenericSparks(centity_t *owner, int type, int flags, vec3_t origin, vec3_t 
 	{
 		effect = ClientEntity_new(type, flags, origin, NULL, 1000);
 
-		effect->r.model = spark_models + MODEL_SPARK;
+		effect->r.model = &spark_models[1];
 		effect->r.flags |= RF_TRANS_ADD | RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA;
 
 		VectorRandomCopy(dir, work, 0.5);
@@ -80,7 +72,7 @@ void GenericSparks(centity_t *owner, int type, int flags, vec3_t origin, vec3_t 
 
 		effect->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
-		effect->r.model = spark_models + MODEL_SPARKSTREAK;	
+		effect->r.model = &spark_models[0];
 		effect->r.spriteType = SPRITE_LINE;
 		effect->r.tile = 1.0;
 		effect->r.scale = 2;
