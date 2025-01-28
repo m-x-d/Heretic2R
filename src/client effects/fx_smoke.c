@@ -11,12 +11,11 @@
 #include "Motion.h"
 #include "Utilities.h"
 
-#define	NUM_SMOKE_MODELS	1
-static struct model_s *smoke_models[NUM_SMOKE_MODELS];
+static struct model_s* smoke_model;
 
-void PreCacheSmoke()
+void PreCacheSmoke(void)
 {
-	smoke_models[0] = fxi.RegisterModel("sprites/fx/steam.sp2");
+	smoke_model = fxi.RegisterModel("sprites/fx/steam.sp2");
 }
 
 // --------------------------------------------------------------
@@ -28,7 +27,7 @@ void FXDarkSmoke(vec3_t origin, float scale, float range)
 
 	effect = ClientEntity_new(-1, RF_TRANSLUCENT, origin, NULL, 500);
 
-	effect->r.model = smoke_models;
+	effect->r.model = &smoke_model;
 	effect->r.scale = scale;
 	effect->r.color.c = 0xaa777777;
 
@@ -51,7 +50,7 @@ void FXSmoke(vec3_t origin, float scale, float range)
 
 	effect = ClientEntity_new(-1, RF_TRANSLUCENT, origin, NULL, 500);
 
-	effect->r.model = smoke_models;
+	effect->r.model = &smoke_model;
 	effect->r.scale = scale;
 	effect->r.color.c = 0xffffffff;
 
