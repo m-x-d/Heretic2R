@@ -129,56 +129,45 @@ void FXShrineManaEffect(centity_t* owner, const int type, const int flags, vec3_
 
 #pragma endregion
 
-/*
-----------------------------------------
+#pragma region ========================== ARMOR EFFECT ROUTINE ==========================
 
-Armor effect routine
-
-----------------------------------------
-*/
-
-
-static qboolean FXShrineArmorThink(struct client_entity_s *self, centity_t *owner)
+static qboolean FXShrineArmorThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_particle_t	*ce;
-	paletteRGBA_t		color;
-	vec3_t				vel, org;
-	int					i;
-	int					count;
+	if (--self->SpawnInfo == 0)
+		return false;
 
-	if (!(--self->SpawnInfo))
+	if (self->SpawnInfo < 5)
+		return true;
+
+	// Which type of particle do we use? Gold or Silver armor?
+	const int particle_type = ((self->flags & CEF_FLAG6) ? PART_16x16_ORANGE_PUFF : PART_16x16_BLUE_PUFF); //mxd
+	const int count = GetScaledCount(NUM_OF_ARMOR_PARTS, 0.7f);
+
+	for (int i = 0; i < count; i++)
 	{
-		return(false);		
+		// Calc spherical offset around left hand ref point.
+		vec3_t vel;
+		VectorRandomSet(vel, 1.0f);
+
+		if (Vec3IsZero(vel))
+			vel[2] = 1.0f; // Safety in case flrand gens all zeros (VERY unlikely). //BUGFIX: mxd. Original version sets unused vector instead.
+
+		VectorNormalize(vel);
+		VectorScale(vel, ARMOR_RAD, vel);
+
+		client_particle_t* ce = ClientParticle_new(particle_type, color_white, 500);
+
+		ce->scale = 30.0f;
+		ce->d_scale = -60.0f;
+		ce->color.a = 1;
+		ce->d_alpha = 400.0f;
+		ce->acceleration[2] = 0.0f;
+		VectorCopy(vel, ce->origin);
+
+		AddParticleToList(self, ce);
 	}
 
-	if (self->SpawnInfo >4)
-	{
-		count = GetScaledCount(NUM_OF_ARMOR_PARTS, 0.7);
-		for(i = 0; i < count; i++)
-		{
-			// Calc spherical offset around left hand ref point
-			VectorSet(vel, flrand(-1.0, 1.0), flrand(-1.0, 1.0), flrand(-1.0, 1.0));
-			if(Vec3IsZero(vel))
-				org[2] = 1.0;			// Safety in case flrand gens all zeros (VERY unlikely)
-			VectorNormalize(vel);
-			VectorScale(vel, ARMOR_RAD, vel);
-
-			color.c = 0xffffffff;	// The particle is blue
-			// which type of particle do we use ?  Gold or Silver armor ?
-			if (self->flags & CEF_FLAG6)
-				ce = ClientParticle_new(PART_16x16_ORANGE_PUFF, color, 500);
-			else
-				ce = ClientParticle_new(PART_16x16_BLUE_PUFF, color, 500);
-			ce->acceleration[2] = 0.0; 
-			VectorCopy(vel, ce->origin);
-			ce->scale = 30.0F;
-			ce->d_scale = -60.0F;
-			ce->color.a = 1;
-			ce->d_alpha = 400;
-			AddParticleToList(self, ce);
-		}
-	}
-	return(true);
+	return true;
 }
 
 void FXShrineArmorEffect(centity_t *owner, int type, int flags, vec3_t origin)
@@ -195,6 +184,8 @@ void FXShrineArmorEffect(centity_t *owner, int type, int flags, vec3_t origin)
 	AddEffect(owner, glow);
 
 }
+
+#pragma endregion
 
 /*
 ----------------------------------------
