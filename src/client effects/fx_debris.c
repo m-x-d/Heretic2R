@@ -18,6 +18,7 @@
 #include "Vector.h"
 #include "q_Physics.h"
 #include "ce_DLight.h"
+#include "fx_smoke.h"
 #include "g_playstats.h"
 
 #pragma region ========================== Debris base info ==========================
@@ -412,7 +413,7 @@ static qboolean FXBodyPart_Update(struct client_entity_s* self, centity_t* owner
 // CEF_FLAG7 = male insect skin on mat_insect (CEF_FLAG7 cleared out and set if has dynamic light for fire).
 // CEF_FLAG8 = use reflection skin.
 
-client_entity_t * FXDebris_Throw(vec3_t origin, const int material, const vec3_t dir, const float ke, const float scale, const int flags, const qboolean altskin)
+client_entity_t * FXDebris_Throw(const vec3_t origin, const int material, const vec3_t dir, const float ke, const float scale, const int flags, const qboolean altskin)
 {
 	const int chunk_index = irand(debris_chunk_offsets[material], debris_chunk_offsets[material + 1] - 1);
 

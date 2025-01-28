@@ -8,4 +8,5 @@
 
 #include "q_Typedef.h"
 
-extern void FXSmoke(vec3_t origin, float scale, float range);
+extern void FXSmoke(const vec3_t origin, float scale, float range);
+extern void FXDarkSmoke(const vec3_t origin, float scale, float range);

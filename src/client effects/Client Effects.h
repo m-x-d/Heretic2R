@@ -52,9 +52,6 @@ extern void RemoveEffects(centity_t* owner, int type, int flags, vec3_t origin);
 extern void MakeBubble(vec3_t loc, client_entity_t* spawner); //mxd
 extern void FXDoWaterEntrySplash(centity_t* owner, int type, int flags, vec3_t origin, byte splash_size, vec3_t dir); //mxd
 extern void FireSparks(centity_t* owner, int type, int flags, vec3_t origin, vec3_t dir); //mxd
-extern void FXDarkSmoke(vec3_t origin, float scale, float range); //mxd
-extern qboolean FXDebris_Vanish(struct client_entity_s* self, centity_t* owner); //mxd
-extern qboolean FXDebris_Remove(struct client_entity_s* self, centity_t* owner); //mxd
 
 extern void GenericExplosion1(centity_t* owner, int type, int flags, vec3_t origin);
 extern void GenericExplosion2(centity_t* owner, int type, int flags, vec3_t origin);

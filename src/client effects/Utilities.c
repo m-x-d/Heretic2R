@@ -13,6 +13,8 @@
 #include "Motion.h"
 #include "Particle.h"
 #include "ce_DLight.h"
+#include "fx_debris.h" //mxd
+#include "fx_smoke.h" //mxd
 #include "g_playstats.h"
 
 // Setup for circular list.
