@@ -93,55 +93,33 @@ static qboolean FXSpellHandsThink(struct client_entity_s* self, const centity_t*
 	return true;
 }
 
-// ************************************************************************************************
-// FXSpellHands
-// ------------
-// ************************************************************************************************
-
-void FXSpellHands(centity_t *Owner,int Type,int Flags,vec3_t Origin)
+void FXSpellHands(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	short			Refpoints;
-	client_entity_t	*Trail;
-	char			lifetime;
-	int				I;
-	int				cast_speed;
+	char lifetime;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPELLHANDS].formatString, &lifetime);
 
-	fxi.GetEffect(Owner, Flags, clientEffectSpawners[FX_SPELLHANDS].formatString, &lifetime);
-
-	if (Flags & CEF_FLAG6)
-		Refpoints=(1 << CORVUS_LEFTHAND) | (1 << CORVUS_RIGHTHAND);
-	else
-		Refpoints=(1 << CORVUS_RIGHTHAND);
+	short refpoints = (1 << CORVUS_RIGHTHAND);
+	if (flags & CEF_FLAG6)
+		refpoints |= (1 << CORVUS_LEFTHAND);
 
 	// Add a fiery trail effect to the player's hands / feet etc.
+	const int cast_speed = ((int)r_detail->value == DETAIL_LOW ? 75 : 50);
 
-	if (r_detail->value < DETAIL_NORMAL)
-		cast_speed = 75;
-	else
-		cast_speed = 50;
-
-	for(I=0;I<16;I++)
+	for (short p = 0; p < 16; p++)
 	{
-		if(!(Refpoints & (1 << I)))
+		if (!(refpoints & (1 << p)))
 			continue;
 
-		Trail=ClientEntity_new(Type,Flags|CEF_NO_DRAW|CEF_ADDITIVE_PARTS,Origin,0,cast_speed);
-		Trail->r.flags=RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA;
-		Trail->Update=FXSpellHandsThink;
-		Trail->SpawnInfo= ((Flags&(CEF_FLAG7|CEF_FLAG8)) >> 6);
-		Trail->AddToView = LinkedEntityUpdatePlacement;			
-		
-		if (lifetime > 0)
-			Trail->LifeTime = fxi.cl->time + (lifetime * 100);
-		else
-			Trail->LifeTime = -1;
+		client_entity_t* trail = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, cast_speed);
 
-		Trail->refPoint = I;
-		
-		// Hack: used as a counter.
-		Trail->AnimSpeed=0.0;
+		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		trail->SpawnInfo = (flags & (CEF_FLAG7 | CEF_FLAG8)) >> 6;
+		trail->LifeTime = ((lifetime > 0) ? fxi.cl->time + lifetime * 100 : -1);
+		trail->refPoint = p;
+		trail->AnimSpeed = 0.0f; // Hack: used as a counter.
+		trail->AddToView = LinkedEntityUpdatePlacement;
+		trail->Update = FXSpellHandsThink;
 
-		AddEffect(Owner,Trail);
+		AddEffect(owner, trail);
 	}
 }
-
