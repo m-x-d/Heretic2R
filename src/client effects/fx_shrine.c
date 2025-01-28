@@ -672,21 +672,17 @@ static qboolean FXShrineSpeedThink(struct client_entity_s* self, centity_t* owne
 	return true;
 }
 
-void FXShrineSpeedEffect(centity_t *owner, int type, int flags, vec3_t origin)
+void FXShrineSpeedEffect(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*glow;
-														  
-	glow = ClientEntity_new(type, flags | CEF_NO_DRAW, origin, 0, 30);
+	client_entity_t* glow = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW), origin, NULL, 30);
 
 	VectorClear(glow->origin);
-	glow->Update = FXShrineSpeedThink;
 	glow->SpawnInfo = TOTAL_REFLECT_EFFECTS;
-	glow->AddToView = LinkedEntityUpdatePlacement;
 	glow->SpawnData = REFLECT_EFFECTS_START_HEIGHT;
-	glow->r.color.c = 0x604040;
-	glow->r.color.a = 255;
-	glow->Scale = 0;
-	
+	glow->r.color.c = 0x604040ff;
+	glow->AddToView = LinkedEntityUpdatePlacement;
+	glow->Update = FXShrineSpeedThink;
+
 	AddEffect(owner, glow);
 }
 
