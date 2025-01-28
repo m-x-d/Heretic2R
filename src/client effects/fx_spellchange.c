@@ -13,21 +13,15 @@
 #define NUM_SPELL_BITS	12
 #define LIGHT_LIFETIME	1000
 
-// ************************************************************************************************
-// FXSpellChangePuffThink
-// ----------------------------
-// ************************************************************************************************
-
-qboolean FXSpellChangeLightThink(struct client_entity_s *self,centity_t *owner)
+static qboolean FXSpellChangeLightThink(const struct client_entity_s* self, centity_t* owner)
 {
-	if (fxi.cl->time - self->startTime > LIGHT_LIFETIME)
+	if (fxi.cl->time - self->startTime <= LIGHT_LIFETIME)
 	{
-		return(false);
+		self->dlight->intensity = 200.0f * (float)(LIGHT_LIFETIME - (fxi.cl->time - self->startTime)) / (float)LIGHT_LIFETIME;
+		return true;
 	}
 
-	self->dlight->intensity = 200.0 * (float)(LIGHT_LIFETIME - (fxi.cl->time - self->startTime)) / (float)LIGHT_LIFETIME;
-
-	return(true);
+	return false;
 }
 
 // ************************************************************************************************
