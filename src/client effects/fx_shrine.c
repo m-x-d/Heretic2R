@@ -129,7 +129,7 @@ void FXShrineManaEffect(centity_t* owner, const int type, const int flags, vec3_
 
 #pragma endregion
 
-#pragma region ========================== ARMOR EFFECT ROUTINE ==========================
+#pragma region ========================== ARMOR EFFECT ROUTINES ==========================
 
 static qboolean FXShrineArmorThink(struct client_entity_s* self, centity_t* owner)
 {
@@ -184,50 +184,39 @@ void FXShrineArmorEffect(centity_t* owner, const int type, const int flags, vec3
 
 #pragma endregion
 
-/*
-----------------------------------------
+#pragma region ========================== LUNGS EFFECT ROUTINES ==========================
 
-Lungs effect routines
-
-----------------------------------------
-*/
-
-static qboolean FXShrineLungsThink(struct client_entity_s *self, centity_t *owner)
+static qboolean FXShrineLungsThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_particle_t	*ce;
-	paletteRGBA_t		color;
-	vec3_t				vel;
-	int					i;
-	int					count;
+	if (--self->SpawnInfo == 0)
+		return false;
 
-	if (!(--self->SpawnInfo))
+	if (self->SpawnInfo < 11)
+		return true;
+
+	const paletteRGBA_t color = { .c = 0xffffff40 };
+	const int count = GetScaledCount(NUM_OF_LUNG_PARTS, 0.7f);
+
+	for (int i = 0; i < count; i++)
 	{
-		return(false);		
+		// Calc spherical offset around left hand ref point.
+		vec3_t vel;
+		VectorSet(vel, flrand(-1.0f, 1.0f), flrand(-1.0f, 1.0f), 0.01f);
+		VectorNormalize(vel);
+		VectorScale(vel, flrand(1.0f, LUNG_RAD), vel);
+		vel[2] = -30.0f;
+
+		client_particle_t* ce = ClientParticle_new(PART_32x32_STEAM, color, 450);
+
+		VectorCopy(vel, ce->origin);
+		ce->velocity[2] = flrand(10.0f, 40.0f);
+		ce->acceleration[2] = flrand(300.0f, 1000.0f);
+		ce->scale = 8.0f;
+
+		AddParticleToList(self, ce);
 	}
 
-	if (self->SpawnInfo >10)
-	{
-		count = GetScaledCount(NUM_OF_LUNG_PARTS, 0.7);
-		for(i = 0; i < count; i++)
-		{
-			// Calc spherical offset around left hand ref point
-			VectorSet(vel, flrand(-1.0, 1.0), flrand(-1.0, 1.0), 0.01);
-			VectorNormalize(vel);
-			VectorScale(vel, flrand(1.0,LUNG_RAD), vel);
-			vel[2] = -30.0;
-
-		  	color.c = 0xffffff40;
-
-			ce = ClientParticle_new(PART_32x32_STEAM, color, 450);
-
-			VectorCopy(vel, ce->origin);
-			VectorSet(ce->velocity, 0.0, 0.0, flrand(10.0, 40.0));
-			VectorSet(ce->acceleration, 0.0, 0.0, flrand(300.0, 1000.0));
-			ce->scale = 8.0F;
-			AddParticleToList(self, ce);
-		}
-	}
-	return(true);
+	return true;
 }
 
 void FXShrineLungsEffect(centity_t *owner, int type, int flags, vec3_t origin)
@@ -244,6 +233,8 @@ void FXShrineLungsEffect(centity_t *owner, int type, int flags, vec3_t origin)
 	AddEffect(owner, glow);
 
 }
+
+#pragma endregion
 
 /*
 ----------------------------------------
