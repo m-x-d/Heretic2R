@@ -1,22 +1,15 @@
 //
 // fx_smoke.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
-#include "Angles.h"
-#include "Client Entities.h"
-#include "Client Effects.h"
 #include "fx_smoke.h" //mxd
-#include "q_shared.h"
+#include "Client Effects.h"
 #include "Vector.h"
-#include "EffectFlags.h"
-#include "Particle.h"
 #include "Random.h"
 #include "Motion.h"
 #include "Utilities.h"
-#include "fx.h"
 
 #define	NUM_SMOKE_MODELS	1
 static struct model_s *smoke_models[NUM_SMOKE_MODELS];
