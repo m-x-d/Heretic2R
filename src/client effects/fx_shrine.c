@@ -348,109 +348,78 @@ void FXShrineStaffEffect(centity_t* owner, const int type, const int flags, vec3
 
 #pragma endregion
 
-/*
-----------------------------------------
+#pragma region ========================== HEALTH LIGHTNING ROUTINES ==========================
 
-Health Lightning routines
-
-----------------------------------------
-*/
-
-// recursively called to create the lightning effect
-void FXLightningSplit(struct client_entity_s *self, vec3_t org, vec3_t dir, int rand_chance, float stop_height)
+// Recursively called to create the lightning effect.
+static void FXLightningSplit(struct client_entity_s* self, vec3_t org, vec3_t dir, int rand_chance, const float stop_height)
 {
-	client_particle_t		*ce;
-	float						start_height;
-	vec3_t					dir2;
-	vec3_t					dir_effect;
-	paletteRGBA_t			color;
-	vec3_t					org2;
-	float						stop_height2;
-	int						lightning_part_duration;
+	vec3_t cur_org;
+	VectorCopy(org, cur_org);
 
-	VectorCopy(org, org2);
+	const qboolean small_split = (stop_height == 30.0f); //mxd
 
-	start_height = org[2];
-	color.c = 0xffffff;
+	// If we are the smaller split type, make our life longer, since we fade that much faster than the big particles.
+	const int lightning_part_duration = (small_split ? (int)((float)self->updateTime / 1.2f) : self->updateTime);
 
-	// create lightning particle
-	while (org2[2] > stop_height)
+	// Figure out what our scale and alpha should be based on whether its a small split or not.
+	const float particle_scale = (small_split ? 1.2f : 0.5f); //mxd
+	const byte particle_alpha = (small_split ? 255 : 108); //mxd
+
+	// Create lightning particle.
+	while (cur_org[2] > stop_height)
 	{
-		// if we are the smaller split type, make our life longer, since we fade that much faster than the big particles
-		if (stop_height != -30)
-			lightning_part_duration = self->updateTime ;
-		else
-			lightning_part_duration = self->updateTime / 1.2 ;
+		// Create the individual particle.
+		client_particle_t* ce = ClientParticle_new(PART_16x16_LIGHTNING, color_white, lightning_part_duration); //TODO: mxd. Original logic used 0xffffff (white with 0 alpha). Intentional or not?
 
-		// create the individual particle
-		ce = ClientParticle_new(PART_16x16_LIGHTNING, color, lightning_part_duration);
-		ce->acceleration[2] = 0.0; 
-		VectorCopy(org2, ce->origin);
+		ce->scale = particle_scale;
+		ce->color.a = particle_alpha;
+		ce->acceleration[2] = 0.0f;
+		VectorCopy(cur_org, ce->origin);
 
-		// figure out what our scale and alpaha should be based on whether its a small split or not
-		if (stop_height != -30)
-		{
-			ce->scale = 0.5;
-			ce->color.a = 108;
-		}
-		else
-		{
-			ce->scale = 1.2;
-			ce->color.a = 255;
-		}
 		AddParticleToList(self, ce);
 
-		// decide if we are splitting
-		if (!(irand(0,rand_chance)))
+		// Decide if we are splitting.
+		if (irand(0, rand_chance) == 0)
 		{
-			// decide a new direction for the two halves
+
+			// Decide a new direction for the two halves.
 			dir[1] = flrand(-LIGHTNING_SPLIT_RAD, LIGHTNING_SPLIT_RAD);
 			dir[0] = flrand(-LIGHTNING_SPLIT_RAD, LIGHTNING_SPLIT_RAD);
 
-			// create the new split
-			dir2[2] = dir[2];
-			dir2[1] = -dir[1];
-			dir2[0] = -dir[0];
+			// Create the new split.
+			vec3_t new_dir = { -dir[0], -dir[1], dir[2] };
 			rand_chance += 5;
 
-			// if we've split a fair few times already, don't again
+			// If we've split a fair few times already, don't again.
 			if (rand_chance > 125)
 				rand_chance = 100000;
 
-			// decide if this is a faint split or not
-			if (irand(0,5))
-				stop_height2 = org[2]-25;
-			else
-				stop_height2 = stop_height;
+			// Decide if this is a faint split or not.
+			const float new_stop_height = (irand(0, 5) ? org[2] - 25.0f : stop_height);
 
-			// create split
-			FXLightningSplit(self, org2, dir2, rand_chance, stop_height2);
+			// Create split.
+			FXLightningSplit(self, cur_org, new_dir, rand_chance, new_stop_height);
 		}
-		// update the direction we want to go in
-		else
+		else // Update the direction we want to go in.
 		{
-			// figure out values to add to dir
-			VectorSet(dir_effect, flrand(-LIGHTNING_MINIMUM,LIGHTNING_MINIMUM), flrand(-LIGHTNING_MINIMUM,LIGHTNING_MINIMUM) ,0);
+			// Figure out values to add to dir.
+			const vec3_t dir_effect = { flrand(-LIGHTNING_MINIMUM, LIGHTNING_MINIMUM), flrand(-LIGHTNING_MINIMUM, LIGHTNING_MINIMUM), 0.0f };
 
-			// add to direction
-			Vec3AddAssign(dir_effect,dir);
-			// cap direction
-			if (dir[1] > LIGHTNING_MAXIMUM)
-				dir[1] -= LIGHTNING_MINIMUM;
-			else
-			if (dir[1] < -LIGHTNING_MAXIMUM)
-				dir[1] += LIGHTNING_MINIMUM;
+			// Add to direction.
+			Vec3AddAssign(dir_effect, dir);
 
-			if (dir[0] > LIGHTNING_MAXIMUM)
-				dir[0] -= LIGHTNING_MINIMUM;
-			else
-			if (dir[0] < -LIGHTNING_MAXIMUM)
-				dir[0] += LIGHTNING_MINIMUM;
+			// Cap XY direction.
+			for (int i = 0; i < 2; i++)
+			{
+				if (dir[i] > LIGHTNING_MAXIMUM)
+					dir[i] -= LIGHTNING_MINIMUM;
+				else if (dir[i] < -LIGHTNING_MAXIMUM)
+					dir[i] += LIGHTNING_MINIMUM;
+			}
 		}
-		// update position
-		org2[2] += dir[2];
-		org2[1] += dir[1];
-		org2[0] += dir[0];
+
+		// Update position.
+		Vec3AddAssign(dir, cur_org);
 	}
 }
 
@@ -530,6 +499,8 @@ void FXShrineHealthEffect(centity_t *owner, int type, int flags, vec3_t origin)
 	FXCreateLightning(glow, owner);
 
 }
+
+#pragma endregion
 
 /*
 ----------------------------------------
