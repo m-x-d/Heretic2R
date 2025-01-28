@@ -1,24 +1,16 @@
 //
 // fx_spellchange.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Vector.h"
-#include "Matrix.h"
-#include "Random.h"
-#include "Utilities.h"
-#include "Reference.h"
-#include "ce_DLight.h"
 #include "Particle.h"
+#include "Random.h"
+#include "Vector.h"
+#include "ce_DLight.h"
 
-
-#define NUM_BITS		12
+#define NUM_SPELL_BITS	12
 #define LIGHT_LIFETIME	1000
 
 // ************************************************************************************************
@@ -103,7 +95,7 @@ void FXSpellChange(centity_t *Owner,int Type,int Flags,vec3_t Origin)
 
 	color.c = 0xFFFFFFFF;
 	// Attach some particles to it.
-	for(i=0;i<NUM_BITS;i++)
+	for(i=0;i<NUM_SPELL_BITS;i++)
 	{
 		spellbit = ClientParticle_new(part, color, 500);
 		VectorSet(spellbit->velocity, flrand(-32.0,32.0), flrand(-32.0,32.0), flrand(16.0,64.0));
