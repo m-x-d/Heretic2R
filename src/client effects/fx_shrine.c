@@ -565,25 +565,18 @@ void FXShrineReflectEffect(centity_t* owner, const int type, const int flags, ve
 
 #pragma endregion
 
-/*
-----------------------------------------
+#pragma region ========================== GHOSTING EFFECT ROUTINES ==========================
 
-Ghosting effect Routines
-
-----------------------------------------
-*/
-
-// make the glow go away
-static qboolean FXShrineGlowThink(struct client_entity_s *self, centity_t *owner)
+// Make the glow go away.
+static qboolean FXShrineGlowThink(struct client_entity_s* self, centity_t* owner)
 {
-	if (!(--self->SpawnInfo))
-	{
-		return(false);		
-	}
+	if (--self->SpawnInfo == 0)
+		return false;
 
-	self->d_alpha = -0.45;
- 	self->d_scale = -1.0;
-	return(true);
+	self->d_alpha = -0.45f;
+	self->d_scale = -1.0f;
+
+	return true;
 }
 
 // create the little glow bits..
@@ -630,6 +623,8 @@ void FXShrineGhostEffect(centity_t *owner, int type, int flags, vec3_t origin)
 	
 	AddEffect(owner, glow);
 }
+
+#pragma endregion
 
 /*
 ----------------------------------------
