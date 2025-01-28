@@ -11,8 +11,6 @@
 #include "Vector.h"
 #include "g_playstats.h"
 
-#define PLAYER_FADE_TIME  14
-
 #define MANA_RAD						100.0f
 #define MANA_HEIGHT						32.0f
 #define ARMOR_RAD						35.0f
@@ -67,26 +65,6 @@
 #define NUM_SHRINE_MODELS 2
 static struct model_s *shrine_models[NUM_SHRINE_MODELS];
 
-typedef struct
-{
-	int	red;
-	int	green;
-	int	blue;
-} tint_tab_t;
-
-tint_tab_t tint_tab[9] =
-{
-	{ 96, 255, 96 },
-	{ 96, 255, 255 },
-	{ 128, 128, 255 },
-	{ 96, 255, 255 },
-	{ 255, 255, 96 },
-	{ 255, 255, 255 },
-	{ 255, 96, 96 },
-	{ 255, 96, 96 },
-	{ 255, 96, 96 },
-};
-
 /*
 Main Routines
 */
@@ -97,67 +75,8 @@ void PreCacheShrine()
 	shrine_models[1] = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
 
-/*
-----------------------------------------
-
-Main Player routine  - make large player, and fade it into us
-
-----------------------------------------
-*/
-
-
-// kill the expanding player model when it fades away
-static qboolean shrine_player_update(struct client_entity_s *self, centity_t *owner)
-{
-	if (!(--self->SpawnInfo))
-	{
-		self->r.fmnodeinfo = NULL;
-		return(false);		
-	}
-
-	return(true);
-}
-
-// Create a model of the player, and have it expand and fade, with a tint
-void FXShrinePlayerEffect(centity_t *owner, int type, int flags, vec3_t origin)
-{
-	client_entity_t  	*shrine_fx;
-	byte					shrine_type;
-
-	// no longer used - causes really hard to find crashes.
-	return;
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SHRINE_PLAYER].formatString, &shrine_type);
-
-	// push the model slightly up,since we create the model at a larger scale than the original
-	origin[2] += 60.0;
-
-	// create the player shrine effect around the player to begin with
- 	shrine_fx = ClientEntity_new(type, flags, origin, NULL, 100);
-	shrine_fx->radius = 20.0F;
-	if (owner->current.effects & EF_CHICKEN)
-		shrine_fx->r.model = shrine_models + 1;
-	else
-		shrine_fx->r.model = shrine_models;
-	shrine_fx->d_scale = -1.2;
-	shrine_fx->r.scale = 3.0;
-	shrine_fx->velocity[2] = -35.5;
-	shrine_fx->r.flags = RF_TRANSLUCENT ;
-	shrine_fx->r.fmnodeinfo = &owner->current.fmnodeinfo[0];
-	shrine_fx->Update = shrine_player_update;
-	shrine_fx->SpawnInfo = PLAYER_FADE_TIME;
-	shrine_fx->d_alpha = 0.45;
-	shrine_fx->alpha = 0.05;
-	shrine_fx->r.frame = owner->current.frame;
-	shrine_fx->r.color.r = tint_tab[shrine_type].red;
-	shrine_fx->r.color.g = tint_tab[shrine_type].green;
-	shrine_fx->r.color.b = tint_tab[shrine_type].blue;
-	shrine_fx->AddToView = LinkedEntityUpdatePlacement;
-	VectorDegreesToRadians(&owner->current.angles[0],shrine_fx->r.angles);
-
-  	AddEffect(owner, shrine_fx);
-
-}
-
+// No longer used - causes really hard to find crashes.
+void FXShrinePlayerEffect(centity_t* owner, int type, int flags, const vec3_t origin) { } //TODO: remove?
 
 /*
 ----------------------------------------
