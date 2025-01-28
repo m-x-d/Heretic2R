@@ -491,85 +491,62 @@ void FXShrineHealthEffect(centity_t* owner, const int type, const int flags, vec
 
 #pragma endregion
 
-/*
-----------------------------------------
+#pragma region ========================== REFLECT EFFECT ROUTINES ==========================
 
-Reflect effect routines
-
-----------------------------------------
-*/
-
-// create the two circles that ring the player
-static qboolean FXShrineReflectThink(struct client_entity_s *self, centity_t *owner)
+// Create the two circles that ring the player.
+static qboolean FXShrineReflectThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_particle_t	*ce;
-	int					count, i;
-	float					new_y;
-	float					ang;
-	float					offset_ang;
-	paletteRGBA_t			color;
+	if (--self->SpawnInfo == 0)
+		return false;
 
-	if (!(--self->SpawnInfo))
+	// Create the ring of particles that goes up.
+	if (self->SpawnInfo > 24)
 	{
-		return(false);		
-	}
+		// Figure out how many particles we are going to use.
+		const int count = GetScaledCount(NUM_OF_FLIGHT_PARTS, 0.7f);
+		const float angle_offset = 6.28f / (float)count;
 
-	if (self->SpawnInfo >24)
-	{
-		// create the ring of particles that goes up
-		color.c = 0xffffff;
-		color.a = 0xff;
-
-		// figure out how many particles we are going to use
-		count = GetScaledCount(NUM_OF_FLIGHT_PARTS, 0.7);
-		offset_ang = 6.28 / count;
-		ang = self->Scale;
-		for (i=0; i< count; i++)
+		// Create the ring of particles that goes up and down.
+		float angle = self->Scale;
+		for (int i = 0; i < count; i++)
 		{
-			ang += offset_ang;;
+			angle += angle_offset;
 
-			ce = ClientParticle_new(PART_16x16_SPARK_B, color, 450);
-			ce->acceleration[2] = 0.0; 
-			VectorSet(ce->origin, FLIGHT_RAD * cos(ang), FLIGHT_RAD * sin(ang), self->SpawnData);
-			ce->scale = 16.0F;
-			AddParticleToList(self, ce);
-		}
-		// create the ring of particles that goes down
-		new_y = -self->SpawnData;
-
-		ang = self->Scale;
-		for (i=0; i< count; i++)
-		{
-			ang += offset_ang;;
-
-			ce = ClientParticle_new(PART_16x16_SPARK_B, color, 450);
-			ce->acceleration[2] = 0.0; 
-			VectorSet(ce->origin, FLIGHT_RAD * cos(ang), FLIGHT_RAD * sin(ang), new_y);
-			ce->scale = 16.0F;
-			AddParticleToList(self, ce);
-		}
-		// put the sparkle on us
-		if(self->SpawnInfo > 10)
-		{
-			count = irand(3,7);
-			for (i=0; i<count; i++)
+			for (int c = 0; c < 2; c++)
 			{
-				ce = ClientParticle_new(PART_16x16_STAR, color, 280);
-				ce->acceleration[2] = 0.0; 
-				VectorSet(ce->origin, flrand(-FLIGHT_PLAY_RAD,FLIGHT_PLAY_RAD), flrand(-FLIGHT_PLAY_RAD,FLIGHT_PLAY_RAD), flrand(-30,30) );
-				ce->scale = 0.3;
-				ce->d_scale = flrand(40.0F, 60.0f);
+				const float dir_z = (c == 0 ? 1.0f : -1.0f); //mxd
+				client_particle_t* ce = ClientParticle_new(PART_16x16_SPARK_B, color_white, 450);
+
+				ce->acceleration[2] = 0.0f;
+				VectorSet(ce->origin, FLIGHT_RAD * cosf(angle), FLIGHT_RAD * sinf(angle), self->SpawnData * dir_z);
+				ce->scale = 16.0f;
+
 				AddParticleToList(self, ce);
 			}
 		}
 
+		// Put the sparkle on us.
+		if (self->SpawnInfo > 10)
+		{
+			for (int i = 0; i < irand(3, 7); i++)
+			{
+				client_particle_t* ce = ClientParticle_new(PART_16x16_STAR, color_white, 280);
+
+				ce->acceleration[2] = 0.0f;
+				VectorSet(ce->origin, flrand(-FLIGHT_PLAY_RAD, FLIGHT_PLAY_RAD), flrand(-FLIGHT_PLAY_RAD, FLIGHT_PLAY_RAD), flrand(-30.0f, 30.0f));
+				ce->scale = 0.3f;
+				ce->d_scale = flrand(40.0f, 60.0f);
+
+				AddParticleToList(self, ce);
+			}
+		}
 	}
 
-	// move the rings up/down next frame
+	// Move the rings up/down next frame.
 	self->SpawnData += FLIGHT_HEIGHT_ADD;
-	self->Scale += 0.15;
+	self->Scale += 0.15f;
 
-	return(true);
+	return true;
 }
 
 // create the entity the flight loops are on
@@ -589,6 +566,8 @@ void FXShrineReflectEffect(centity_t *owner, int type, int flags, vec3_t origin)
 	AddEffect(owner, glow);
 
 }
+
+#pragma endregion
 
 /*
 ----------------------------------------
