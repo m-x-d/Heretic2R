@@ -144,27 +144,26 @@ static qboolean FXSoundThink(struct client_entity_s* self, const centity_t* owne
 	return true; // Keep everything around so we can shut them down when needed.
 }
 
-void FXSound(centity_t *owner,int type,int flags,vec3_t origin)
+void FXSound(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t	*self;
-	byte 					style, wait, attenuation,volume;
-	sound_think_info_t* soundinfo;
+	byte style;
+	byte attenuation;
+	byte volume;
+	byte wait;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SOUND].formatString, &style, &attenuation, &volume, &wait);
 
-  	self = ClientEntity_new(type, flags|CEF_NO_DRAW|CEF_NOMOVE, origin, 
-		NULL, 20);
+	client_entity_t* self = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_NOMOVE), origin, NULL, 20);
+
+	VectorCopy(origin, self->origin);
 	self->flags &= ~CEF_OWNERS_ORIGIN;
-
-	self->extra=fxi.TagMalloc(sizeof(sound_think_info_t),TAG_LEVEL);
-
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SOUND].formatString, &style,&attenuation,&volume,&wait);
-
-	soundinfo = (sound_think_info_t*) self->extra;
-	soundinfo->style = style;
-	soundinfo->attenuation = attenuation;
-	soundinfo->volume = volume/255.0;
-	soundinfo->wait = wait * 1000;
-	VectorCopy(origin,self->origin);
+	self->extra = fxi.TagMalloc(sizeof(sound_think_info_t), TAG_LEVEL);
 	self->Update = FXSoundThink;
+
+	sound_think_info_t* info = self->extra;
+	info->style = style;
+	info->attenuation = attenuation;
+	info->volume = (float)volume / 255.0f;
+	info->wait = (float)wait * 1000.0f;
 
 	AddEffect(owner, self);
 }
