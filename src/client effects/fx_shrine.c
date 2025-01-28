@@ -757,17 +757,11 @@ void FXShrinePowerUpEffect(centity_t* owner, const int type, const int flags, ve
 
 #pragma endregion
 
-/*
-----------------------------------------
-
-Persistant shrine ball effect
-
-----------------------------------------
-*/
+#pragma region ========================== PERSISTENT SHRINE BALL EFFECT ==========================
 
 enum
 {
-	SHRINEBALL_HEAL = 0,
+	SHRINEBALL_HEAL,
 	SHRINEBALL_MANA,
 	SHRINEBALL_LUNGS,
 	SHRINEBALL_LIGHT,
@@ -779,16 +773,15 @@ enum
 	SHRINEBALL_STAFF,
 	SHRINEBALL_GHOST,
 	SHRINEBALL_SPEED,
+
 	SHRINEBALL_MAX
 };
 
-
-
-static short ShrineParticle[12][2] =
+static short shrine_particles[12][2] =
 {
 	{	PART_16x16_SPARK_I,		PART_16x16_LIGHTNING	},	// SHRINEBALL_HEAL,
 	{	PART_16x16_SPARK_G,		PART_16x16_SPARK_B		},	// SHRINEBALL_MANA,
-	{	PART_16x16_WATERDROP,	PART_32x32_WFALL	},	// SHRINEBALL_LUNGS,
+	{	PART_16x16_WATERDROP,	PART_32x32_WFALL		},	// SHRINEBALL_LUNGS,
 	{	PART_4x4_WHITE,			PART_32x32_ALPHA_GLOBE	},	// SHRINEBALL_LIGHT,
 	{	PART_16x16_SPARK_G,		PART_16x16_SPARK_G		},	// SHRINEBALL_POWERUP,
 	{	PART_8x8_BLUE_DIAMOND,	PART_8x8_BLUE_X			},	// SHRINEBALL_ARMOR,
@@ -800,53 +793,42 @@ static short ShrineParticle[12][2] =
 	{	PART_32x32_STEAM,		PART_32x32_STEAM		},	// SHRINEBALL_SPEED,
 };
 
-
-// make the shrine glow ball effect shimmer, and give off steam
-static qboolean FXShrineBallThink(struct client_entity_s *self, centity_t *owner)
+// Make the shrine glow ball effect shimmer, and give off steam.
+static qboolean FXShrineBallThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_particle_t		*ce;
-	paletteRGBA_t			color;
-	int						part = 0;
-	vec3_t					rad, fwd;
-	int						i;
-	int						count;
+	int part;
+	const int count = GetScaledCount(BALL_PART_NUM, 0.4f);
 
-	count = GetScaledCount(BALL_PART_NUM, 0.4);
-
-	for (i=0; i<count; i++)
+	for (int i = 0; i < count; i++)
 	{
 		assert(self->SpawnInfo >= 0 && self->SpawnInfo < SHRINEBALL_MAX);
+
 		if (self->SpawnInfo == SHRINEBALL_RANDOM)
-		{
 			part = irand(PART_16x16_SPARK_B, PART_16x16_SPARK_Y);
-		}
 		else
-			part = ShrineParticle[self->SpawnInfo][irand(0,1)];
+			part = shrine_particles[self->SpawnInfo][irand(0, 1)];
 
-		if (part == PART_32x32_STEAM)
-	  		color.c = 0xffffff40;
-		else
-			color.c = 0xffffffff;
+		client_particle_t* ce = ClientParticle_new(part, color_white, 1000);
 
-		ce = ClientParticle_new(part, color, 1000);
-
-		if(part != PART_32x32_WFALL && part != PART_16x16_WATERDROP && part != PART_32x32_STEAM)
+		if (part != PART_32x32_WFALL && part != PART_16x16_WATERDROP && part != PART_32x32_STEAM)
 			ce->type |= PFL_ADDITIVE;
 
-		rad[PITCH] = flrand(0, 360.0);
-		rad[YAW] = flrand(0, 360.0);
-		rad[ROLL] = 0.0;
+		const vec3_t rad = { flrand(0.0f, 360.0f), flrand(0.0f, 360.0f), 0.0f };
+
+		vec3_t fwd;
 		AngleVectors(rad, fwd, NULL, NULL);
 		VectorScale(fwd, BALL_RAD, ce->velocity);
-		VectorScale(ce->velocity, -1.0, ce->acceleration);
+		VectorScale(ce->velocity, -1.0f, ce->acceleration);
 		ce->color.a = 245;
 		ce->scale = BALL_PART_SCALE;
-		ce->d_scale = -0.5*BALL_PART_SCALE;
+		ce->d_scale = -0.5f * BALL_PART_SCALE;
+
 		AddParticleToList(self, ce);
 	}
 
 	self->updateTime = 150;
-	return(true);
+
+	return true;
 }
 
 // create the floating ball in the middle of the shrine
@@ -876,6 +858,8 @@ void FXShrineBall(centity_t *owner, int type, int flags, vec3_t origin)
 
 	AddEffect(owner, glow);
 }
+
+#pragma endregion
 
 /*
 ----------------------------------------
@@ -926,7 +910,7 @@ void FXShrineBallExplode(centity_t *owner, int type, int flags, vec3_t origin)
 			part = irand(PART_16x16_SPARK_B, PART_16x16_SPARK_Y);
 		}
 		else 
-			part = ShrineParticle[shrinetype][irand(0,1)];
+			part = shrine_particles[shrinetype][irand(0,1)];
 
 		ce = ClientParticle_new(part, color, 1150);
 
