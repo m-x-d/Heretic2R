@@ -688,72 +688,59 @@ void FXShrineSpeedEffect(centity_t* owner, const int type, const int flags, vec3
 
 #pragma endregion
 
-/*
-----------------------------------------
+#pragma region ========================== WEAPONS POWER UP EFFECT ROUTINES ==========================
 
-Weapons Power Up effect routine
-
-----------------------------------------
-*/
-
-// create the two circles that ring the player
-static qboolean FXShrinePowerupThink(struct client_entity_s *self, centity_t *owner)
+// Create the two circles that ring the player.
+static qboolean FXShrinePowerupThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_particle_t	*ce;
-	int					count, i;
-	float					ang;
-	float					offset_ang;
-	paletteRGBA_t			color;
+	if (--self->SpawnInfo == 0)
+		return false;
 
-	if (!(--self->SpawnInfo))
+	if (self->SpawnInfo > 24)
 	{
-		return(false);		
-	}
+		// Create the ring of particles that goes up.
 
-	if (self->SpawnInfo >24)
-	{
-		// create the ring of particles that goes up
+		// Figure out how many particles we are going to use.
+		const int count = GetScaledCount(NUM_OF_POWERUP_PARTS, 0.7f);
+		const float offset_angle = 6.28f / (float)count;
+		float angle = 0.0f;
 
-		color.c = 0xffffff;
-		color.a = 0xff;
-
-		// figure out how many particles we are going to use
-		count = GetScaledCount(NUM_OF_POWERUP_PARTS, 0.7);
-		offset_ang = 6.28 / count;
-		ang = 0;
-		for (i=0; i< count; i++)
+		for (int i = 0; i < count; i++)
 		{
-			ce = ClientParticle_new(PART_16x16_SPARK_G, color, 350);
-			ce->acceleration[2] = 0.0; 
-			VectorSet(ce->origin, POWERUP_RAD * cos(ang), POWERUP_RAD * sin(ang), self->SpawnData);
-			ce->scale = 12.0F;
+			client_particle_t* ce = ClientParticle_new(PART_16x16_SPARK_G, color_white, 350);
+
+			VectorSet(ce->origin, POWERUP_RAD * cosf(angle), POWERUP_RAD * sinf(angle), self->SpawnData);
+			VectorScale(ce->origin, 25.0f, ce->velocity);
+			ce->velocity[2] = 0.0f;
+			ce->acceleration[2] = 0.0f;
+			ce->scale = 12.0f;
+
 			AddParticleToList(self, ce);
-			VectorScale(ce->origin, 25, ce->velocity);
-			ce->velocity[2] = 0;
-			ang += offset_ang;;
+
+			angle += offset_angle;
 		}
 
-		// put the sparkle on us
-		if(self->SpawnInfo > 10)
+		// Put the sparkle on us.
+		if (self->SpawnInfo > 10)
 		{
-			count = irand(3,7);
-			for (i=0; i<count; i++)
+			for (int i = 0; i < irand(3, 7); i++)
 			{
-				ce = ClientParticle_new(PART_16x16_STAR, color, 280);
-				ce->acceleration[2] = 0.0; 
-				VectorSet(ce->origin, flrand(-FLIGHT_PLAY_RAD,FLIGHT_PLAY_RAD), flrand(-FLIGHT_PLAY_RAD,FLIGHT_PLAY_RAD), flrand(-30,30) );
-				ce->scale = 0.3;
-				ce->d_scale = flrand(40.0F, 60.0f);
+				client_particle_t* ce = ClientParticle_new(PART_16x16_STAR, color_white, 280);
+
+				ce->acceleration[2] = 0.0f;
+				VectorSet(ce->origin, flrand(-FLIGHT_PLAY_RAD, FLIGHT_PLAY_RAD), flrand(-FLIGHT_PLAY_RAD, FLIGHT_PLAY_RAD), flrand(-30.0f, 30.0f));
+				ce->scale = 0.3f;
+				ce->d_scale = flrand(40.0f, 60.0f);
+
 				AddParticleToList(self, ce);
 			}
 		}
-
 	}
 
-	// move the rings up/down next frame
+	// Move the rings up/down next frame.
 	self->SpawnData += POWERUP_HEIGHT_ADD;
 
-	return(true);
+	return true;
 }
 
 void FXShrinePowerUpEffect(centity_t *owner, int type, int flags, vec3_t origin)
@@ -769,6 +756,8 @@ void FXShrinePowerUpEffect(centity_t *owner, int type, int flags, vec3_t origin)
 	
 	AddEffect(owner, glow);
 }
+
+#pragma endregion
 
 /*
 ----------------------------------------
