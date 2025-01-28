@@ -458,21 +458,18 @@ static void FXCreateLightning(struct client_entity_s* self, const centity_t* own
 	}
 }
 
-// make the lightning effect re-occur
-static qboolean FXShrineHealthThink(struct client_entity_s *self, centity_t *owner)
+// Make the lightning effect re-occur.
+static qboolean FXShrineHealthThink(struct client_entity_s* self, const centity_t* owner)
 {
+	if (--self->SpawnInfo == 0)
+		return false;
 
-	if (!(--self->SpawnInfo))
-	{
-		return(false);		
-	}
-
-	// create the lightning lines
+	// Create the lightning lines.
 	FXCreateLightning(self, owner);
 
-	self->updateTime = flrand(1, (TOTAL_HEALTH_EFFECTS - self->SpawnInfo)) * 100.0; 
+	self->updateTime = irand(1, TOTAL_HEALTH_EFFECTS - self->SpawnInfo) * 100;
 
-	return(true);
+	return true;
 }
 
 // create initial lightning line
