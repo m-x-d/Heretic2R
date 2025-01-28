@@ -1,18 +1,14 @@
 //
 // fx_sound.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
-#include "random.h"
-#define TAG_LEVEL 766 // tags get cleared at each new level
+#include "Random.h"
+
+#define TAG_LEVEL	766 // Tags get cleared at each new level.
 
 typedef struct soundthinkinfo_s
 {
