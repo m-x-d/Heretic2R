@@ -1,21 +1,16 @@
 //
 // fx_spellhands.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Vector.h"
 #include "Matrix.h"
-#include "Random.h"
-#include "Utilities.h"
-#include "Reference.h"
-#include "ce_DLight.h"
 #include "Particle.h"
+#include "Random.h"
+#include "Reference.h"
+#include "Utilities.h"
+#include "Vector.h"
 #include "g_playstats.h"
 
 #define NUM_HAND_MODELS	1
