@@ -311,19 +311,18 @@ static qboolean FXShrineStaffThink(struct client_entity_s* self, centity_t* owne
 	return true;
 }
 
-// start up the staff power up effect
-void FXShrineStaffEffect(centity_t *owner, int type, int flags, vec3_t origin)
+// Start up the staff power up effect.
+void FXShrineStaffEffect(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*glow;
-	int					line_count, particle_life;
-						 
-	if(r_detail->value >= DETAIL_HIGH)
+	int line_count;
+	int particle_life;
+
+	if ((int)r_detail->value >= DETAIL_HIGH)
 	{
 		line_count = NUM_OF_STAFF_PARTS;
 		particle_life = 2400;
 	}
-	else
-	if(r_detail->value >= DETAIL_NORMAL)
+	else if ((int)r_detail->value == DETAIL_NORMAL)
 	{
 		line_count = NUM_OF_STAFF_PARTS - 2;
 		particle_life = 1900;
@@ -333,19 +332,21 @@ void FXShrineStaffEffect(centity_t *owner, int type, int flags, vec3_t origin)
 		line_count = NUM_OF_STAFF_PARTS - 3;
 		particle_life = 1500;
 	}
-	glow = ClientEntity_new(type, flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS, origin, 0,50);
+
+	client_entity_t* glow = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 50);
 
 	VectorClear(glow->origin);
-	glow->Update = FXShrineStaffThink;
 	glow->SpawnInfo = TOTAL_STAFF_EFFECTS;
-	glow->AddToView = LinkedEntityUpdatePlacement;
 	glow->SpawnData = STAFF_EFFECTS_START_HEIGHT;
 	glow->SpawnDelay = line_count;
 	glow->LifeTime = particle_life;
-	
+	glow->AddToView = LinkedEntityUpdatePlacement;
+	glow->Update = FXShrineStaffThink;
+
 	AddEffect(owner, glow);
 }
 
+#pragma endregion
 
 /*
 ----------------------------------------
