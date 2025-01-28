@@ -233,32 +233,25 @@ void FXShrineLungsEffect(centity_t* owner, const int type, const int flags, vec3
 
 #pragma endregion
 
-/*
-----------------------------------------
+#pragma region ========================== LIGHT EFFECT ROUTINES ==========================
 
-Light effect routines
-
-----------------------------------------
-*/
-
-// create the light effect - a big old halo that fades away
-void FXShrineLightEffect(centity_t *owner, int type, int flags, vec3_t origin)
+// Create the light effect - a big old halo that fades away.
+void FXShrineLightEffect(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*glow;
-
-	glow = ClientEntity_new(type, flags, origin, 0, 2000);
+	client_entity_t* glow = ClientEntity_new(type, flags, origin, NULL, 2000);
 
 	VectorClear(glow->origin);
-	glow->r.model = shrine_models;
-	glow->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	glow->r.model = &shrine_models[0];
+	glow->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	glow->d_scale = 5.0f;
+	glow->r.scale = 0.1f;
+	glow->d_alpha = -0.45f;
 	glow->AddToView = LinkedEntityUpdatePlacement;
- 	glow->d_scale = 5.0;
- 	glow->r.scale = 0.1;
-	glow->d_alpha = -0.45;
-	glow->alpha = 1.0;
-	
+
 	AddEffect(owner, glow);
 }
+
+#pragma endregion
 
 /*
 ----------------------------------------
