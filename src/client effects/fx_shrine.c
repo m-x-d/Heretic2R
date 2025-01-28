@@ -71,7 +71,7 @@ void PreCacheShrine(void)
 }
 
 // No longer used - causes really hard to find crashes.
-void FXShrinePlayerEffect(centity_t* owner, int type, int flags, const vec3_t origin) { } //TODO: remove?
+void FXShrinePlayerEffect(centity_t* owner, int type, int flags, vec3_t origin) { } //TODO: remove?
 
 #pragma region ========================== MANA EFFECT ROUTINES ==========================
 
@@ -114,20 +114,17 @@ static qboolean FXShrineManaThink(struct client_entity_s* self, centity_t* owner
 	return true;
 }
 
-// make the mana effect go off
-void FXShrineManaEffect(centity_t *owner, int type, int flags, vec3_t origin)
+// Make the mana effect go off.
+void FXShrineManaEffect(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*glow;
+	client_entity_t* fx_spawner = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 100);
 
-	glow = ClientEntity_new(type, flags | CEF_NO_DRAW |CEF_ADDITIVE_PARTS, origin, 0, 100);
+	VectorClear(fx_spawner->origin);
+	fx_spawner->SpawnInfo = 17;
+	fx_spawner->AddToView = LinkedEntityUpdatePlacement;
+	fx_spawner->Update = FXShrineManaThink;
 
-	VectorClear(glow->origin);
-	glow->Update = FXShrineManaThink;
-	glow->SpawnInfo = 17;
-	glow->AddToView = LinkedEntityUpdatePlacement;
-	
-	AddEffect(owner, glow);
-
+	AddEffect(owner, fx_spawner);
 }
 
 #pragma endregion
