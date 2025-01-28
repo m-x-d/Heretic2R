@@ -147,7 +147,7 @@ extern void FXplayertorch(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXTomeOfPower(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXFireOnEntity(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXFlareup(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXShrinePlayerEffect(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXShrinePlayerEffect(centity_t* owner, int type, int flags, vec3_t origin); //TODO: unused
 extern void FXShrineManaEffect(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXShrineLungsEffect(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXShrineLightEffect(centity_t* owner, int type, int flags, vec3_t origin);

@@ -860,82 +860,69 @@ void FXShrineBall(centity_t* owner, const int type, const int flags, vec3_t orig
 
 #pragma endregion
 
-/*
-----------------------------------------
+#pragma region ========================== EXPLODING SHRINE BALL EFFECT ==========================
 
-Exploding shrine ball effect
-
-----------------------------------------
-*/
-
-// explode the ball in the middle of the shrine
-void FXShrineBallExplode(centity_t *owner, int type, int flags, vec3_t origin)
+// Explode the ball in the middle of the shrine.
+void FXShrineBallExplode(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_particle_t	*ce;
-	client_entity_t		*burst;
-	vec3_t				offset;	
-	int					i, count;
-	paletteRGBA_t		color;
-	byte				shrinetype;
-	int					part;
-	vec3_t				rad, fwd;
+	int part;
 
-	color.c = 0xffffffff;
+	// Get the normalized direction of the shrine object.
+	vec3_t offset;
+	byte shrine_type;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SHRINE_BALL_EXPLODE].formatString, &offset, &shrine_type);
 
-	// go get the normalised direction of the shrine object
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SHRINE_BALL_EXPLODE].formatString, &offset, &shrinetype);
+	// Move our starting point out a bit.
+	Vec3ScaleAssign(25.0f, offset);
+	offset[2] = -10.0f;
+	Vec3AddAssign(offset, origin);
 
-	// move our starting point out a bit
-	Vec3ScaleAssign(25,offset);
-	offset[2] = -10;
-	Vec3AddAssign(offset, origin); 
-
-	// create the dummy entity, so particles can be attached
-	burst = ClientEntity_new(type, (flags | CEF_NO_DRAW | CEF_CHECK_OWNER) & ~CEF_NOMOVE , origin, 0, 1200);
-	burst->radius = 100;
+	// Create the dummy entity, so particles can be attached.
+	client_entity_t* burst = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_CHECK_OWNER) & ~CEF_NOMOVE, origin, NULL, 1200);
+	burst->radius = 100.0f;
 	AddEffect(owner, burst);
 
-	assert(shrinetype >= 0 && shrinetype <= SHRINEBALL_MAX);
-	count = GetScaledCount(BALL_EX_PART_NUM, 0.4);
-	// create a bunch of exploding particles 
-	for (i=0; i< count; i++)
+	assert(shrine_type <= SHRINEBALL_MAX);
+
+	const int count = GetScaledCount(BALL_EX_PART_NUM, 0.4f);
+
+	// Create a bunch of exploding particles.
+	for (int i = 0; i < count; i++)
 	{
-		rad[PITCH] = flrand(0, 360.0);
-		rad[YAW] = flrand(0, 360.0);
-		rad[ROLL] = 0.0;
-
-		if (shrinetype == SHRINEBALL_RANDOM)
-		{
+		if (shrine_type == SHRINEBALL_RANDOM)
 			part = irand(PART_16x16_SPARK_B, PART_16x16_SPARK_Y);
-		}
-		else 
-			part = shrine_particles[shrinetype][irand(0,1)];
+		else
+			part = shrine_particles[shrine_type][irand(0, 1)];
 
-		ce = ClientParticle_new(part, color, 1150);
+		client_particle_t* ce = ClientParticle_new(part, color_white, 1150);
 
-		if(part != PART_32x32_WFALL && part != PART_16x16_WATERDROP)
+		if (part != PART_32x32_WFALL && part != PART_16x16_WATERDROP)
 			ce->type |= PFL_ADDITIVE;
-		
+
+		const vec3_t rad = { flrand(0.0f, 360.0f), flrand(0.0f, 360.0f), 0.0f };
+
+		vec3_t fwd;
 		AngleVectors(rad, fwd, NULL, NULL);
 		VectorScale(fwd, BALL_RAD, ce->velocity);
-		VectorScale(ce->velocity, -0.7, ce->acceleration);
+		VectorScale(ce->velocity, -0.7f, ce->acceleration);
 		ce->color.a = 245;
 		ce->scale = BALL_PART_SCALE;
-		ce->d_scale = -0.5*BALL_PART_SCALE;
+		ce->d_scale = -0.5f * BALL_PART_SCALE;
+
 		AddParticleToList(burst, ce);
 	}
 
 	// Add an additional flash as well.
-	// ...and a big-ass flash
-	burst = ClientEntity_new(-1, flags, origin, NULL, 250);
-	burst->r.model = shrine_models + 1;
-	burst->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;// | RF_FULLBRIGHT;
-	burst->r.frame = 1;
-	burst->radius=64;
-	burst->r.scale=1.0;
-	burst->d_alpha=-4.0;
-	burst->d_scale=-4.0;
-	AddEffect(NULL, burst);
+	client_entity_t* flash = ClientEntity_new(-1, flags, origin, NULL, 250);
+
+	flash->radius = 64.0f;
+	flash->r.model = &shrine_models[1];
+	flash->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	flash->r.frame = 1;
+	flash->d_alpha = -4.0f;
+	flash->d_scale = -4.0f;
+
+	AddEffect(NULL, flash);
 }
 
-
+#pragma endregion
