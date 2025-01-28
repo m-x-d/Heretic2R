@@ -18,52 +18,33 @@ void PreCacheSmoke(void)
 	smoke_model = fxi.RegisterModel("sprites/fx/steam.sp2");
 }
 
-// --------------------------------------------------------------
-
-void FXDarkSmoke(vec3_t origin, float scale, float range)
+//mxd. Added to reduce code duplication.
+static void SpawnSmoke(const vec3_t origin, const float scale, const float range, const uint color)
 {
-	client_entity_t		*effect;
-	int					duration;
+	const int duration = Q_ftol(GetTimeToReachDistance(50.0f, 0.0f, range));
+	client_entity_t* smoke = ClientEntity_new(-1, RF_TRANSLUCENT, origin, NULL, 500);
 
-	effect = ClientEntity_new(-1, RF_TRANSLUCENT, origin, NULL, 500);
+	smoke->r.model = &smoke_model;
+	smoke->r.scale = scale;
+	smoke->r.color.c = color;
+	VectorSet(smoke->velocity, flrand(-10.0f, 10.0f), flrand(-10.0f, 10.0f), 50.0f);
+	smoke->nextThinkTime = smoke->startTime + duration;
+	smoke->alpha = 0.5f;
+	smoke->d_alpha = -smoke->alpha * 1000.0f / (float)duration; // Rate of change in transparency.
+	smoke->d_scale = 1.0f; // Rate of change in scale.
+	smoke->Update = KeepSelfAI;
 
-	effect->r.model = &smoke_model;
-	effect->r.scale = scale;
-	effect->r.color.c = 0xaa777777;
-
-	duration = Q_ftol(GetTimeToReachDistance(50.0, 0.0, range));
-
-	VectorSet(effect->velocity, flrand(-10.0, 10.0), flrand(-10.0, 10.0), 50.0);
-	effect->nextThinkTime = effect->startTime + duration;
-	effect->alpha = 0.5;
-	effect->d_alpha = (-effect->alpha * 1000.0) / duration;		// Rate of change in transparency
-	effect->d_scale = 1.0;		// Rate of change in scale
-
-	effect->Update = KeepSelfAI;
-	AddEffect(NULL, effect);	// add the effect as independent world effect
+	AddEffect(NULL, smoke); // Add the effect as independent world effect.
 }
 
-void FXSmoke(vec3_t origin, float scale, float range)
+void FXDarkSmoke(const vec3_t origin, const float scale, const float range)
 {
-	client_entity_t		*effect;
-	int					duration;
+	SpawnSmoke(origin, scale, range, 0xaa777777); //mxd
+}
 
-	effect = ClientEntity_new(-1, RF_TRANSLUCENT, origin, NULL, 500);
-
-	effect->r.model = &smoke_model;
-	effect->r.scale = scale;
-	effect->r.color.c = 0xffffffff;
-
-	duration = Q_ftol(GetTimeToReachDistance(50.0, 0.0, range));
-
-	VectorSet(effect->velocity, flrand(-10.0, 10.0), flrand(-10.0, 10.0), 50.0);
-	effect->nextThinkTime = effect->startTime + duration;
-	effect->alpha = 0.5;
-	effect->d_alpha = (-effect->alpha * 1000.0) / duration;		// Rate of change in transparency
-	effect->d_scale = 1.0;		// Rate of change in scale
-
-	effect->Update = KeepSelfAI;
-	AddEffect(NULL, effect);	// add the effect as independent world effect
+void FXSmoke(const vec3_t origin, const float scale, const float range)
+{
+	SpawnSmoke(origin, scale, range, color_white.c); //mxd
 }
 
 static qboolean FXSmokeSpawner(struct client_entity_s *self, centity_t *owner)
