@@ -219,19 +219,16 @@ static qboolean FXShrineLungsThink(struct client_entity_s* self, centity_t* owne
 	return true;
 }
 
-void FXShrineLungsEffect(centity_t *owner, int type, int flags, vec3_t origin)
+void FXShrineLungsEffect(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*glow;
-														  
-	glow = ClientEntity_new(type, flags | CEF_NO_DRAW , origin, 0, 50);
+	client_entity_t* glow = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW), origin, NULL, 50);
 
 	VectorClear(glow->origin);
-	glow->Update = FXShrineLungsThink;
 	glow->SpawnInfo = 40;
 	glow->AddToView = LinkedEntityUpdatePlacement;
-	
-	AddEffect(owner, glow);
+	glow->Update = FXShrineLungsThink;
 
+	AddEffect(owner, glow);
 }
 
 #pragma endregion
