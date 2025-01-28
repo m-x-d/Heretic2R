@@ -743,17 +743,15 @@ static qboolean FXShrinePowerupThink(struct client_entity_s* self, centity_t* ow
 	return true;
 }
 
-void FXShrinePowerUpEffect(centity_t *owner, int type, int flags, vec3_t origin)
+void FXShrinePowerUpEffect(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*glow;
-														  
-	glow = ClientEntity_new(type, flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS, origin, 0, 75);
+	client_entity_t* glow = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 75);
 
-	glow->Update = FXShrinePowerupThink;
 	glow->SpawnInfo = TOTAL_POWERUP_EFFECTS;
-	glow->AddToView = LinkedEntityUpdatePlacement;
 	glow->SpawnData = POWERUP_EFFECTS_START_HEIGHT;
-	
+	glow->AddToView = LinkedEntityUpdatePlacement;
+	glow->Update = FXShrinePowerupThink;
+
 	AddEffect(owner, glow);
 }
 
