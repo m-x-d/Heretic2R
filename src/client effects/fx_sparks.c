@@ -98,26 +98,32 @@ void FXGenericSparks(centity_t* owner, const int type, const int flags, vec3_t o
 	GenericSparks(owner, type, flags, origin, dir);
 }
 
-qboolean FireSparkSpawnerUpdate(client_entity_t *spawner, centity_t *owner)
-{//fixme- wigs out on hivetrialpit when the sparkers hit ground and seperate?
-	vec3_t	diffvec, pos;
+static qboolean FireSparkSpawnerUpdate(client_entity_t* spawner, const centity_t* owner)
+{
+	//fixme- wigs out on hivetrialpit when the sparkers hit ground and separate?
+	vec3_t diff;
+	VectorSubtract(spawner->r.origin, spawner->startpos2, diff);
 
-	VectorSubtract(spawner->r.origin, spawner->startpos2, diffvec);
-	VectorMA(spawner->startpos2, (float)(spawner->LifeTime)/5, diffvec, pos);
+	vec3_t pos;
+	VectorMA(spawner->startpos2, (float)spawner->LifeTime / 5.0f, diff, pos);
 
 	spawner->LifeTime++;
-	
-	if(spawner->LifeTime >= 5)
+
+	if (spawner->LifeTime >= 5)
 	{
 		FireSparks(NULL, FX_SPARKS, spawner->SpawnInfo, pos, spawner->direction);
+
 		spawner->LifeTime = 1;
 		VectorCopy(spawner->r.origin, spawner->startpos2);
 	}
 	else
+	{
 		FireSparks(NULL, FX_SPARKS, 0, pos, spawner->direction);
+	}
 
 	VectorCopy(owner->lerp_origin, spawner->r.origin);
-	return (true);
+
+	return true;
 }
 
 void FireSparks(centity_t *owner, int type, int flags, vec3_t origin, vec3_t dir)
