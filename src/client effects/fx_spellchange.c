@@ -24,81 +24,80 @@ static qboolean FXSpellChangeLightThink(const struct client_entity_s* self, cent
 	return false;
 }
 
-// ************************************************************************************************
-// FXSpellChange
-// ---------------------
-// ************************************************************************************************
-
-void FXSpellChange(centity_t *Owner,int Type,int Flags,vec3_t Origin)
+void FXSpellChange(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	vec3_t			dir;
-	client_entity_t	*spellpuff;
-	client_particle_t *spellbit;
-	int				i;
-	int				spelltype=0;
-	paletteRGBA_t	color;
-	int				part;
+	paletteRGBA_t color;
+	int part;
 
-	fxi.GetEffect(Owner,Flags,clientEffectSpawners[FX_SPELL_CHANGE].formatString,dir,&spelltype);
+	vec3_t dir;
+	int spell_type = 0;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPELL_CHANGE].formatString, dir, &spell_type);
 
-	switch(spelltype)
+	switch (spell_type)
 	{
-	case 1:		// Red/fireball
-		color.c = 0xFF0000FF;
-		part = PART_16x16_SPARK_R;
-		break;
-	case 2:		// Indigo/Array
-		color.c = 0xFFFF0080;
-		part = PART_16x16_SPARK_I;
-		break;
-	case 3:		// Blue/Sphere
-		color.c = 0xFFFF0000;
-		part = PART_16x16_SPARK_B;
-		break;
-	case 4:		// Green/Mace ball
-		color.c = 0xFF00FF00	;
-		part = PART_16x16_SPARK_G;
-		break;
-	case 5:		// Yellow/Firewall
-		color.c = 0xFF0080FF;
-		part = PART_16x16_SPARK_Y;
-		break;
-	case 6:		// Big red/red rain bow
-		color.c = 0xFF0000FF;
-		part = PART_16x16_SPARK_R;
-		break;
-	case 7:		// Big yellow/Phoenix
-		color.c = 0xFF00FFFF;
-		part = PART_32x32_FIRE1;
-		break;
-	case 0:		// Default color--white
-	default:
-		color.c = 0x80FFFFFF;
-		part = PART_16x16_LIGHTNING;
-		break;
+		case 1: // Red / fireball.
+			color.c = 0xFF0000FF;
+			part = PART_16x16_SPARK_R;
+			break;
+
+		case 2: // Indigo / array.
+			color.c = 0xFFFF0080;
+			part = PART_16x16_SPARK_I;
+			break;
+
+		case 3: // Blue / sphere.
+			color.c = 0xFFFF0000;
+			part = PART_16x16_SPARK_B;
+			break;
+
+		case 4: // Green / mace ball.
+			color.c = 0xFF00FF00;
+			part = PART_16x16_SPARK_G;
+			break;
+
+		case 5: // Yellow / firewall.
+			color.c = 0xFF0080FF;
+			part = PART_16x16_SPARK_Y;
+			break;
+		case 6: // Big red / red rain bow.
+			color.c = 0xFF0000FF;
+			part = PART_16x16_SPARK_R;
+			break;
+
+		case 7: // Big yellow / phoenix.
+			color.c = 0xFF00FFFF;
+			part = PART_32x32_FIRE1;
+			break;
+
+		case 0: // Default color--white.
+		default:
+			color.c = 0x80FFFFFF;
+			part = PART_16x16_LIGHTNING;
+			break;
 	}
 
-	VectorScale(dir,-32.0,dir);
+	VectorScale(dir, -32.0f, dir);
 
-	// Create the new effect
-	spellpuff=ClientEntity_new(Type,Flags|CEF_OWNERS_ORIGIN|CEF_NO_DRAW|CEF_ADDITIVE_PARTS, Origin, NULL, 100);
-	spellpuff->dlight=CE_DLight_new(color,150.0f,0.0f);
-	spellpuff->startTime=fxi.cl->time;
-	spellpuff->radius=32.0;
-	spellpuff->Update=FXSpellChangeLightThink;
+	// Create the new effect.
+	client_entity_t* spell_puff = ClientEntity_new(type, (int)(flags | CEF_OWNERS_ORIGIN | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 100);
 
-	color.c = 0xFFFFFFFF;
+	spell_puff->radius = 32.0f;
+	spell_puff->dlight = CE_DLight_new(color, 150.0f, 0.0f);
+	spell_puff->startTime = fxi.cl->time;
+	spell_puff->Update = FXSpellChangeLightThink;
+
 	// Attach some particles to it.
-	for(i=0;i<NUM_SPELL_BITS;i++)
+	for (int i = 0; i < NUM_SPELL_BITS; i++)
 	{
-		spellbit = ClientParticle_new(part, color, 500);
-		VectorSet(spellbit->velocity, flrand(-32.0,32.0), flrand(-32.0,32.0), flrand(16.0,64.0));
-		VectorAdd(dir,spellbit->velocity, spellbit->velocity);
-		spellbit->d_scale=-2.0;
-		spellbit->scale = 6.0;
-		
-		AddParticleToList(spellpuff, spellbit);
+		client_particle_t* spell_bit = ClientParticle_new(part, color_white, 500);
+
+		VectorSet(spell_bit->velocity, flrand(-32.0f, 32.0f), flrand(-32.0f, 32.0f), flrand(16.0f, 64.0f));
+		VectorAdd(dir, spell_bit->velocity, spell_bit->velocity);
+		spell_bit->d_scale = -2.0f;
+		spell_bit->scale = 6.0f;
+
+		AddParticleToList(spell_puff, spell_bit);
 	}
 
-	AddEffect(Owner,spellpuff);
+	AddEffect(owner, spell_puff);
 }
