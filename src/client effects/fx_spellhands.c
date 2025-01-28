@@ -13,16 +13,7 @@
 #include "Vector.h"
 #include "g_playstats.h"
 
-#define NUM_HAND_MODELS	1
-
-struct model_s *hands_models[NUM_HAND_MODELS];
-
-void PreCacheHands()
-{
-}
-
-// --------------------------------------------------------------
-
+void PreCacheHands(void) { } //TODO: unused.
 
 static qboolean FXSpellHandsThink(struct client_entity_s *Self,centity_t *Owner)
 {
