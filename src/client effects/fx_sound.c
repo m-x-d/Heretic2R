@@ -18,194 +18,130 @@ typedef struct sound_think_info_s
 	float wait;
 } sound_think_info_t;
 
-static qboolean FXSoundthink(struct client_entity_s *self, centity_t *owner)
+static qboolean FXSoundThink(struct client_entity_s* self, const centity_t* owner)
 {
-	int chance;
-	sound_think_info_t*soundinfo;
-	char *soundname;
+	static cvar_t* cinematicfreeze = NULL; //mxd
 
-	soundinfo = (sound_think_info_t*) self->extra;
-	// flag if we are not doing a sound
-	soundname = NULL;
+	const sound_think_info_t* soundinfo = (sound_think_info_t*)self->extra;
 
-	// if we are in a cinematic, stop us making noises
-	// these are peripheral ambient noises
-   	if(!(Cvar_Get("cl_cinematicfreeze","0",0)->value))
-   	{
-		switch((int)(soundinfo->style))
-		{
-		case AS_SEAGULLS:
-   			chance = irand(0,2);
-   			if (chance < 1)
-   				soundname = "ambient/gull1.wav";
-   			else if (chance < 2 )
-   				soundname = "ambient/gull2.wav";
-   			else
-   				soundname = "ambient/gull3.wav";
-			break;
-		case AS_BIRDS:
-   			chance = irand(0,10);
-   			if (chance < 1)
-   				soundname = "ambient/bird1.wav";
-   			else if (chance < 2)
-   				soundname = "ambient/bird2.wav";
-   			else if (chance < 3)
-   				soundname = "ambient/bird3.wav";
-   			else if (chance < 4)
-   				soundname = "ambient/bird4.wav";
-   			else if (chance < 5)
-   				soundname = "ambient/bird5.wav";
-   			else if (chance < 6)
-   				soundname = "ambient/bird6.wav";
-   			else if (chance < 7)
-   				soundname = "ambient/bird7.wav";
-   			else if (chance < 8)
-   				soundname = "ambient/bird8.wav";
-   			else if (chance < 9)
-   				soundname = "ambient/bird9.wav";
-   			else
-   				soundname = "ambient/bird10.wav";
-			break;
-		case AS_CRICKETS:
-   			chance = irand(0,2);
-   			if (chance < 1)
-   				soundname = "ambient/cricket1.wav";
-   			else if (chance < 2)
-   				soundname = "ambient/cricket2.wav";
-   			else
-   				soundname = "ambient/cricket3.wav";
-			break;
-		case AS_FROGS:
-   			chance = irand(0,1);
-   			if (chance < 1)
-   				soundname = "ambient/frog.wav";
-   			else
-   				soundname = "ambient/frog2.wav";
-			break;
-		case AS_CRYING:
-   			chance = irand(0,3);
-   			if (chance < 1)
-   				soundname = "ambient/femcry1.wav";
-   			else if (chance < 2)
-   				soundname = "ambient/femcry2.wav";
-   			else if (chance < 3)
-   				soundname = "ambient/kidcry1.wav";
-   			else 
-   				soundname = "ambient/kidcry2.wav"; 
-			break;
-		case AS_MOSQUITOES:
-   			chance = irand(0,1);
-   			if (chance < 1)
-   				soundname = "ambient/insects1.wav";
-   			else
-   				soundname = "ambient/insects2.wav";
-			break;
-		case AS_BUBBLES:
-   			soundname = "ambient/bubbles.wav";
-			break;
-		case AS_BELL:
-   			soundname = "ambient/bell.wav";
-			break;
-		case AS_FOOTSTEPS:
-   			chance = irand(0,3);
-   			if (chance < 1)
-   				soundname = "ambient/runaway1.wav";
-   			else if (chance < 2)
-   				soundname = "ambient/runaway2.wav";
-   			else 
-   				soundname = "ambient/sewerrun.wav";
-			break;
-		case AS_MOANS:
-   			chance = irand(0,5);
-   			if (chance < 1)
-   				soundname = "ambient/moan1.wav";
-   			else if (chance < 2)
-   				soundname = "ambient/moan2.wav";
-   			else if (chance < 3)
-   				soundname = "ambient/scream1.wav";
-   			else if (chance < 4)
-   				soundname = "ambient/scream2.wav";
-   			else
-   				soundname = "ambient/coughing.wav";
-			break;
-		case AS_SEWERDRIPS:
-   			chance = irand(0,3);
-   			if (chance <1)
-   				soundname = "ambient/sewerdrop1.wav";
-   			else if (chance <2)
-   				soundname = "ambient/sewerdrop2.wav";
-   			else
-   				soundname = "ambient/sewerdrop3.wav";
-			break;
-		case AS_WATERDRIPS:
-   			chance = irand(0,3);
-   			if (chance <1)
-   				soundname = "ambient/waterdrop1.wav";
-   			else if (chance <2)
-   				soundname = "ambient/waterdrop2.wav";
-   			else
-   				soundname = "ambient/waterdrop3.wav";
-			break;
-		case AS_HEAVYDRIPS:
-   			chance = irand(0,3);
-   			if (chance <1)
-   				soundname = "ambient/soliddrop1.wav";
-   			else if (chance <2)
-   				soundname = "ambient/soliddrop2.wav";
-   			else
-   				soundname = "ambient/soliddrop3.wav";
-			break;
-		case AS_WINDCHIME:
-   			soundname = "ambient/windchimes.wav";
-			break;
-		case AS_BIRD1:
-   			soundname = "ambient/bird5.wav";
-			break;
-		case AS_BIRD2:
-   			soundname = "ambient/bird8.wav";
-			break;
-		case AS_GONG:
-   			soundname = "ambient/gong.wav";
-			break;
-		case AS_ROCKS:
-   			chance = irand(0,3);
-   			if (chance <1)
-   				soundname = "ambient/rocks1.wav";
-   			else if (chance <2)
-   				soundname = "ambient/rocks4.wav";
-   			else
-   				soundname = "ambient/rocks5.wav";
-			break;
-		case AS_CAVECREAK:
-   			chance = irand(0,3);
-   			if (chance <1)
-   				soundname = "ambient/cavecreak1.wav";
-   			else if (chance <2)
-   				soundname = "ambient/cavecreak1.wav";
-   			else
-   				soundname = "ambient/cavecreak1.wav";
-			break;
-		default:
-   			Com_DPrintf("ERROR:  invalid ambient sound type :%d at x:%f  y:%f  z:%f\n",soundinfo->style,
-   				self->origin[0],self->origin[1],self->origin[2]);
-			break;
-		}
-   	}
+	// Flag if we are not doing a sound.
+	char* soundname = NULL;
 
-	// if we have a sound to do, lets do it.
-	if (soundname)
+	// If we are in a cinematic, stop us making noises.
+	if (cinematicfreeze == NULL) //mxd. Resolve once, instead of on every call.
+		cinematicfreeze = Cvar_Get("cl_cinematicfreeze", "0", 0);
+
+	if ((int)cinematicfreeze->value == 0)
 	{
-		if (Vec3IsZero(self->origin))
-			fxi.S_StartSound(self->origin,owner->current.number, CHAN_WEAPON, fxi.S_RegisterSound(soundname),soundinfo->volume,0, 0);
-		else
-			fxi.S_StartSound(self->origin,owner->current.number, CHAN_WEAPON, fxi.S_RegisterSound(soundname),soundinfo->volume,soundinfo->attenuation, 0);
+		// These are peripheral ambient noises.
+		switch (soundinfo->style)
+		{
+			//mxd. In original logic, in all cases when multiple sounds are used, the last sound has 2x chance to be picked.
+			// Original programmer assumed that irand() never rolls max?
+
+			case AS_SEAGULLS:
+				soundname = va("ambient/gull%i.wav", irand(1, 3));
+				break;
+
+			case AS_BIRDS:
+				soundname = va("ambient/bird%i.wav", irand(1, 10));
+				break;
+
+			case AS_CRICKETS:
+				soundname = va("ambient/cricket%i.wav", irand(1, 3));
+				break;
+
+			case AS_FROGS:
+			{
+				static char* la_frogs[] = { "frog", "frog2" }; //mxd
+				soundname = va("ambient/%s.wav", la_frogs[irand(0, 1)]);
+			} break;
+
+			case AS_CRYING:
+			{
+				static char* cries[] = { "femcry1", "femcry2", "kidcry1", "kidcry2" }; //mxd
+				soundname = va("ambient/%s.wav", cries[irand(0, 3)]);
+			} break;
+
+			case AS_MOSQUITOES:
+				soundname = va("ambient/insects%i.wav", irand(1, 2));
+				break;
+
+			case AS_BUBBLES:
+				soundname = "ambient/bubbles.wav";
+				break;
+
+			case AS_BELL:
+				soundname = "ambient/bell.wav";
+				break;
+
+			case AS_FOOTSTEPS:
+			{
+				static char* footsteps[] = { "runaway1", "runaway2", "sewerrun" }; //mxd
+				soundname = va("ambient/%s.wav", footsteps[irand(0, 2)]);
+			} break;
+
+			case AS_MOANS:
+			{
+				static char* moans[] = { "moan1", "moan2", "scream1", "scream2", "coughing" }; //mxd
+				soundname = va("ambient/%s.wav", moans[irand(0, 4)]);
+			} break;
+
+			case AS_SEWERDRIPS:
+				soundname = va("ambient/sewerdrop%i.wav", irand(1, 3)); //mxd
+				break;
+
+			case AS_WATERDRIPS:
+				soundname = va("ambient/waterdrop%i.wav", irand(1, 3)); //mxd
+				break;
+
+			case AS_HEAVYDRIPS:
+				soundname = va("ambient/soliddrop%i.wav", irand(1, 3)); //mxd
+				break;
+
+			case AS_WINDCHIME:
+				soundname = "ambient/windchimes.wav";
+				break;
+
+			case AS_BIRD1:
+				soundname = "ambient/bird5.wav";
+				break;
+
+			case AS_BIRD2:
+				soundname = "ambient/bird8.wav";
+				break;
+
+			case AS_GONG:
+				soundname = "ambient/gong.wav";
+				break;
+
+			case AS_ROCKS:
+			{
+				static char* rocks[] = { "rocks1", "rocks4", "rocks5" }; //mxd
+				soundname = va("ambient/%s.wav", rocks[irand(0, 2)]);
+			} break;
+
+			case AS_CAVECREAK:
+				soundname = va("ambient/cavecreak%i.wav", irand(1, 3)); //BUGFIX: mxd. Original logic uses "cavecreak1" in all 3 cases.
+				break;
+
+			default:
+				Com_DPrintf("ERROR: invalid ambient sound type %d at %f %f %f\n", soundinfo->style, self->origin[0], self->origin[1], self->origin[2]);
+				break;
+		}
 	}
 
-	self->updateTime = soundinfo->wait * flrand(.5,1.5);
-	if (self->updateTime<17)
-		self->updateTime = 17;
+	// If we have a sound to do, lets do it.
+	if (soundname != NULL)
+	{
+		const int attenuation = (Vec3IsZero(self->origin) ? 0 : soundinfo->attenuation); //mxd
+		fxi.S_StartSound(self->origin, owner->current.number, CHAN_WEAPON, fxi.S_RegisterSound(soundname), soundinfo->volume, attenuation, 0.0f);
+	}
 
-	return(true);	// Keep everything around so we can shut them down when needed.
+	self->updateTime = (int)(soundinfo->wait * flrand(0.5f, 1.5f));
+	self->updateTime = max(17, self->updateTime);
+
+	return true; // Keep everything around so we can shut them down when needed.
 }
 
 void FXSound(centity_t *owner,int type,int flags,vec3_t origin)
@@ -228,7 +164,7 @@ void FXSound(centity_t *owner,int type,int flags,vec3_t origin)
 	soundinfo->volume = volume/255.0;
 	soundinfo->wait = wait * 1000;
 	VectorCopy(origin,self->origin);
-	self->Update = FXSoundthink;
+	self->Update = FXSoundThink;
 
 	AddEffect(owner, self);
 }
