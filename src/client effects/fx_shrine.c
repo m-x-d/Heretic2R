@@ -73,57 +73,45 @@ void PreCacheShrine(void)
 // No longer used - causes really hard to find crashes.
 void FXShrinePlayerEffect(centity_t* owner, int type, int flags, const vec3_t origin) { } //TODO: remove?
 
-/*
-----------------------------------------
+#pragma region ========================== MANA EFFECT ROUTINES ==========================
 
-Mana effect routine
-
-----------------------------------------
-*/
-
-static qboolean FXShrineManaThink(struct client_entity_s *self, centity_t *owner)
+static qboolean FXShrineManaThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_particle_t	*ce;
-	paletteRGBA_t		color;
-	vec3_t				vel, org;
-	int					i;
-	int					count;
+	if (--self->SpawnInfo == 0)
+		return false;
 
-	if (!(--self->SpawnInfo))
+	if (self->SpawnInfo < 5)
+		return true;
+
+	const int count = GetScaledCount(NUM_OF_MANA_PARTS, 0.7f);
+
+	for (int i = 0; i < count; i++)
 	{
-		return(false);		
+		// Calc spherical offset around left hand ref point.
+		vec3_t vel;
+		VectorRandomSet(vel, 1.0f);
+
+		if (Vec3IsZero(vel))
+			vel[2] = 1.0f; // Safety in case flrand gens all zeros (VERY unlikely). //BUGFIX: mxd. Original version sets unused vector instead.
+
+		VectorNormalize(vel);
+		VectorScale(vel, MANA_RAD, vel);
+
+		const int particle_type = ((i & 1) ? PART_16x16_SPARK_G : PART_16x16_SPARK_B); //mxd. Green or blue particles.
+		client_particle_t* ce = ClientParticle_new(particle_type, color_white, 500);
+
+		ce->scale = 20.0f;
+		ce->d_scale = -30.0f;
+		ce->color.a = 1;
+		ce->d_alpha = 400.0f;
+		VectorSet(ce->origin, vel[0], vel[1], vel[2] + MANA_HEIGHT);
+		VectorScale(vel, -0.125f, ce->velocity);
+		VectorScale(vel, -8.0f, ce->acceleration);
+
+		AddParticleToList(self, ce);
 	}
 
-	if (self->SpawnInfo >4)
-	{
-		count = GetScaledCount(NUM_OF_MANA_PARTS, 0.7);
-		for(i = 0; i < count; i++)
-		{
-			// Calc spherical offset around left hand ref point
-			VectorSet(vel, flrand(-1.0, 1.0), flrand(-1.0, 1.0), flrand(-1.0, 1.0));
-			if(Vec3IsZero(vel))
-				org[2] = 1.0;			// Safety in case flrand gens all zeros (VERY unlikely)
-			VectorNormalize(vel);
-			VectorScale(vel, MANA_RAD, vel);
-
-			color.c = 0xffffffff;
-			if (i&1)	// green parts
-				ce = ClientParticle_new(PART_16x16_SPARK_G, color, 500);
-			else		// blue parts
-				ce = ClientParticle_new(PART_16x16_SPARK_B, color, 500);
-			VectorCopy(vel, ce->origin);
-			ce->origin[2] += MANA_HEIGHT;
-
-			VectorScale(vel, -0.125, ce->velocity);
-			VectorScale(vel, -8.0, ce->acceleration);
-			ce->scale = 20.0F;
-			ce->d_scale = -30.0F;
-			ce->color.a = 1;
-			ce->d_alpha = 400;
-			AddParticleToList(self, ce);
-		}
-	}
-	return(true);
+	return true;
 }
 
 // make the mana effect go off
@@ -141,6 +129,8 @@ void FXShrineManaEffect(centity_t *owner, int type, int flags, vec3_t origin)
 	AddEffect(owner, glow);
 
 }
+
+#pragma endregion
 
 /*
 ----------------------------------------
