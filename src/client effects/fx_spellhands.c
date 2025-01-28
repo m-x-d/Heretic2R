@@ -7,7 +7,6 @@
 #include "Client Effects.h"
 #include "Matrix.h"
 #include "Particle.h"
-#include "Random.h"
 #include "Reference.h"
 #include "Utilities.h"
 #include "Vector.h"
@@ -15,98 +14,83 @@
 
 void PreCacheHands(void) { } //TODO: unused.
 
-static qboolean FXSpellHandsThink(struct client_entity_s *Self,centity_t *Owner)
+static qboolean FXSpellHandsThink(struct client_entity_s* self, const centity_t* owner)
 {
-	int				part_type;
-	vec3_t			Trailend,Trailstart;
-	vec3_t			Real_Trailend,Real_Trailstart;
-	vec3_t			TrailDelta;
-	float		   	TrailLength;
-
-	client_particle_t	*ce;
-	paletteRGBA_t		color;
-	matrix3_t			rotation;
-
-	// If we've timed out, stop the effect (allow for fading)
-	if (Self->LifeTime > 0)
+	// If we've timed out, stop the effect (allow for fading). If we're not on a time limit, check the EF flag.
+	if ((self->LifeTime > 0 && self->LifeTime < fxi.cl->time) || !(owner->current.effects & EF_TRAILS_ENABLED))
 	{
-		if (Self->LifeTime < fxi.cl->time)
-		{	// Lifetime is up
-			Self->Update=RemoveSelfAI;
-			Self->updateTime = fxi.cl->time + 500;
-			return true;
-		}
-	}
-	else 
-	{	// If we're not on a time limit, check the EF flag
-		if (!(Owner->current.effects & EF_TRAILS_ENABLED))
-		{
-			Self->Update=RemoveSelfAI;
-			Self->updateTime = fxi.cl->time + 500;
-			return true;
-		}
+		self->Update = RemoveSelfAI;
+		self->updateTime = fxi.cl->time + 500;
+
+		return true;
 	}
 
 	// This tells if we are wasting our time, because the reference points are culled.
-	if (!RefPointsValid(Owner))
+	if (!RefPointsValid(owner))
 		return true;
 
 	// Calculate the end position of the trail.
-	VectorCopy(Owner->referenceInfo->references[Self->refPoint].placement.origin,Trailend);
+	vec3_t trail_end;
+	VectorCopy(owner->referenceInfo->references[self->refPoint].placement.origin, trail_end);
 
-	// we now have trail start and trail end in
-	VectorCopy(Self->origin,Trailstart);
+	// We now have trail start and trail end in.
+	vec3_t trail_start;
+	VectorCopy(self->origin, trail_start);
 
-	// update where trail ends
-	VectorCopy(Trailend,Self->origin);
+	// Update where trail ends.
+	VectorCopy(trail_end, self->origin);
 
-	// Allow us adequate time to set up valid 'old' data because the reference points lag behind by
-	// a frame.
-	if((Self->AnimSpeed+=1.0)<2.0)
-		return(true);
+	// Allow us adequate time to set up valid 'old' data because the reference points lag behind by a frame.
+	self->AnimSpeed += 1.0f;
+	if (self->AnimSpeed < 2.0f)
+		return true;
 
-	// Create a rotation matrix
-	Matrix3FromAngles(Owner->lerp_angles, rotation);
-	// make the trail start and end a trail in real space
-	Matrix3MultByVec3(rotation, Trailstart, Real_Trailstart);
-	Matrix3MultByVec3(rotation, Trailend, Real_Trailend);
+	// Create a rotation matrix.
+	matrix3_t rotation;
+	Matrix3FromAngles(owner->lerp_angles, rotation);
 
-	// figure out the differences between them
-	VectorSubtract(Real_Trailend, Real_Trailstart, TrailDelta);
+	// Make the trail start and end a trail in real space.
+	vec3_t real_trail_start;
+	Matrix3MultByVec3(rotation, trail_start, real_trail_start);
 
-	// set the trail length
-	TrailLength = GetScaledCount(4, 0.75);
+	vec3_t real_trail_end;
+	Matrix3MultByVec3(rotation, trail_end, real_trail_end);
 
-	// scale that difference by the number of particles we are going to draw
-	Vec3ScaleAssign(1.0/TrailLength, TrailDelta);
+	// Figure out the differences between them.
+	vec3_t trail_delta;
+	VectorSubtract(real_trail_end, real_trail_start, trail_delta);
 
-	// decide which particle type to use
-	if (Self->SpawnInfo == 0)
+	// Set the trail length.
+	const int trail_length = GetScaledCount(4, 0.75f);
+
+	// Scale that difference by the number of particles we are going to draw.
+	Vec3ScaleAssign(1.0f / (float)trail_length, trail_delta);
+
+	// Decide which particle type to use.
+	int part_type;
+	if (self->SpawnInfo == 0)
 		part_type = PART_16x16_SPARK_R;
-	else
-	if (Self->SpawnInfo == 1)
+	else if (self->SpawnInfo == 1)
 		part_type = PART_16x16_SPARK_B;
 	else
 		part_type = PART_16x16_SPARK_I;
 
-	// ensure the particles are completely drawn
-   	color.c = 0xffffffff;
-
 	// Now draw the trail.
-	while(TrailLength-->0.0f)
+	for (int i = 0; i < trail_length; i++)
 	{
-		ce = ClientParticle_new(part_type, color, 400);
-		VectorCopy(Real_Trailstart,ce->origin);
-		ce->scale = 8.0F;
-		ce->acceleration[2] = 0.0f; 
-		VectorSet(ce->velocity, flrand(-8.0, 8.0), flrand(-8.0, 8.0), flrand(-8.0, 8.0));
+		client_particle_t* ce = ClientParticle_new(part_type, color_white, 400);
 
-		AddParticleToList(Self, ce);
+		VectorCopy(real_trail_start, ce->origin);
+		ce->scale = 8.0f;
+		ce->acceleration[2] = 0.0f;
+		VectorRandomSet(ce->velocity, 8.0f);
 
-		VectorAdd(Real_Trailstart,TrailDelta,Real_Trailstart);
+		AddParticleToList(self, ce);
+
+		VectorAdd(real_trail_start, trail_delta, real_trail_start);
 	}
 
-	return(true);
+	return true;
 }
 
 // ************************************************************************************************
