@@ -306,48 +306,28 @@ void FXSphereOfAnnihilationGlowballs(centity_t* owner, const int type, const int
 	AddEffect(owner, glowball_spawner);
 }
 
-// ****************************************************************************
-// FXSphereOfAnnihilationSphereExplodeThink -
-// ****************************************************************************
-
-static qboolean FXSphereOfAnnihilationSphereExplodeThink(struct client_entity_s *Self,centity_t *Owner)
+static qboolean FXSphereOfAnnihilationSphereExplodeThink(struct client_entity_s* self, centity_t* owner)
 {
-	float	Frac,
-			Multiplier;
-	int		FrameNo;
+	float frac = (float)(fxi.cl->time - self->startTime) / 100.0f;
+	if (self->AnimSpeed > 0.0f)
+		frac *= self->AnimSpeed;
 
-	Frac=(fxi.cl->time-Self->startTime)/100.0;
-	if(Self->AnimSpeed>0.0)
-	{
-		Frac*=Self->AnimSpeed;
-	}
+	if (floorf(frac) >= (float)(self->NoOfAnimFrames - 1))
+		return false;
 
-	if((FrameNo=floor(Frac))>=(Self->NoOfAnimFrames-1))
-	{
-		return(false);
-	}
-	else
-	{
-		// Spin the ball of blue fire whilst it expands and fades.
+	// Spin the ball of blue fire whilst it expands and fades.
+	self->r.angles[0] += FX_SPHERE_EXPLOSION_PITCH_INCREMENT;
+	self->r.angles[1] += FX_SPHERE_EXPLOSION_YAW_INCREMENT;
 
-		Self->r.angles[0]+=(M_PI/32.0);
+	self->radius = FX_SPHERE_EXPLOSION_BASE_RADIUS * self->r.scale;
+	self->dlight->intensity = self->radius / 0.7f;
 
-		Self->r.angles[1]+=(M_PI/27.0);
+	const float multiplier = 1.0f - frac / (float)(self->NoOfAnimFrames - 1);
+	const byte c = (byte)(multiplier * 255);
+	COLOUR_SET(self->dlight->color, c, c, c); //mxd. Use macro.
+	self->alpha = multiplier;
 
-		Self->radius=FX_SPHERE_EXPLOSION_BASE_RADIUS*Self->r.scale;
-		
-		Multiplier=1.0-Frac/(Self->NoOfAnimFrames-1);
-
-		Self->dlight->intensity=(Self->radius/0.7);
-
-		Self->dlight->color.r=255*Multiplier;
-		Self->dlight->color.g=255*Multiplier;
-		Self->dlight->color.b=255*Multiplier;
-
-		Self->alpha=Multiplier;
-		
-		return(true);
-	}
+	return true;
 }
 
 // ****************************************************************************
