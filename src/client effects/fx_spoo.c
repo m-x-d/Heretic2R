@@ -17,68 +17,33 @@ void PreCacheSpoo(void)
 	spoo_models[1] = fxi.RegisterModel("sprites/fx/spoo2.sp2");
 }
 
-// --------------------------------------------------------------
-
-// ************************************************************************************************
-// FXSpooTrailThink
-// ************************************************************************************************
-
-static qboolean FXSpooTrailThink(struct client_entity_s *self,centity_t *owner)
+static qboolean FXSpooTrailThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_entity_t	*TrailEnt;
-	//vec3_t			org, dir;
-	//float			len;
-	int				count;
-	
-	count = GetScaledCount(8, 0.85);
+	const int count = GetScaledCount(8, 0.85f);
 
-	/*
-	//Setup the common origin
-	VectorCopy(self->startpos, org);
-
-	//Get the direction 
-	VectorSubtract(owner->current.origin, self->startpos, dir);
-	len = VectorNormalize(dir);
-
-	//Get the offset increment
-	len /= count;
-
-	//Get the increment vector
-	VectorScale(dir, len, dir);
-	*/
-	
-	while (count--)
+	for (int i = 0; i < count; i++)
 	{
-		//VectorAdd(org, dir, org);
+		client_entity_t* trail = ClientEntity_new(FX_SPOO, (int)(self->flags & ~(CEF_OWNERS_ORIGIN | CEF_NO_DRAW)), owner->origin, NULL, 1000);
 
-		TrailEnt=ClientEntity_new(FX_SPOO,
-								  self->flags & ~(CEF_OWNERS_ORIGIN|CEF_NO_DRAW),
-								  owner->origin,
-								  NULL,
-								  1000);
+		trail->radius = 20.0f;
+		trail->r.model = &spoo_models[irand(0, 1)];
+		trail->r.flags = RF_TRANSLUCENT | RF_FULLBRIGHT;
+		trail->r.scale = 0.65f;
+		trail->d_scale = flrand(-4.0f, -3.5f);
+		trail->d_alpha = -2.0f;
+		trail->color = color_white;
 
-		TrailEnt->r.model = spoo_models + irand(0,1);
-		
-		TrailEnt->r.origin[0] += flrand(-3.0F, 3.0F);
-		TrailEnt->r.origin[1] += flrand(-3.0F, 3.0F);
-		TrailEnt->r.origin[2] += flrand(-3.0F, 3.0F);
+		for (int c = 0; c < 3; c++)
+			trail->r.origin[c] += flrand(-3.0f, 3.0f);
 
-		VectorSet(TrailEnt->velocity, flrand(-64.0F, 64.0F), flrand(-64.0F, 64.0F), -64.0F);
-		
-		TrailEnt->r.scale = 0.65;
-		TrailEnt->alpha = 1.0f;
-		TrailEnt->r.flags |= RF_TRANSLUCENT | RF_FULLBRIGHT;
-		TrailEnt->d_scale = flrand(-4.0, -3.5);
-		TrailEnt->d_alpha = -2.0f;
-		TrailEnt->color.c = 0xFFFFFFFF;
-		TrailEnt->radius=20.0;
+		VectorSet(trail->velocity, flrand(-64.0f, 64.0f), flrand(-64.0f, 64.0f), -64.0f);
 
-		AddEffect(NULL,TrailEnt);
+		AddEffect(NULL, trail);
 	}
 
 	VectorCopy(owner->current.origin, self->startpos);
 
-	return(true);
+	return true;
 }
 
 void FXSpoo(centity_t *owner,int type,int Flags,vec3_t origin)
