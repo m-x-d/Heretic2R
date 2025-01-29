@@ -29,10 +29,10 @@ enum
 	NUM_MODELS
 };
 
-static struct model_s *staff_models[NUM_MODELS];
-static struct model_s *staffhit_models[4];
+static struct model_s* staff_models[NUM_MODELS];
+static struct model_s* staffhit_models[4];
 
-void PreCacheStaffHit()
+void PreCacheStaffHit(void)
 {
 	staffhit_models[0] = fxi.RegisterModel("sprites/spells/patball.sp2");
 	staffhit_models[1] = fxi.RegisterModel("sprites/fx/halo.sp2");
@@ -40,7 +40,7 @@ void PreCacheStaffHit()
 	staffhit_models[3] = fxi.RegisterModel("sprites/fx/steam.sp2");
 }
 
-void PreCacheStaff()
+void PreCacheStaff(void)
 {
 	staff_models[0] = fxi.RegisterModel("sprites/spells/patball.sp2");
 	staff_models[1] = fxi.RegisterModel("sprites/fx/halo.sp2");
