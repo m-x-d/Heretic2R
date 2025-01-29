@@ -52,86 +52,56 @@ static qboolean FXSphereOfAnnihilationSphereThink(struct client_entity_s* self, 
 	return true;
 }
 
-// ****************************************************************************
-// FXSphereOfAnnihilationAuraThink -
-// ****************************************************************************
-
-static qboolean FXSphereOfAnnihilationAuraThink(struct client_entity_s *Self,centity_t *Owner)
+static qboolean FXSphereOfAnnihilationAuraThink(struct client_entity_s* self, centity_t* owner)
 {
-	vec3_t			TrailStart,Trail;
-	float			TrailLength,DeltaTrailLength;
-	vec3_t			Right,Up;
-	client_entity_t	*TrailEnt;
-	int				i;
-	int				dur;
+	// No aura trail on low level.
+	if ((int)r_detail->value == DETAIL_LOW)
+		return true;
 
-	//
-	// no aura trail on low level
-	if(r_detail->value == DETAIL_LOW)
-		return(true);
+	vec3_t trail_start;
+	VectorCopy(owner->origin, trail_start);
 
-	VectorCopy(Owner->origin,TrailStart);
-	VectorSubtract(Owner->lerp_origin,Owner->origin,Trail);
+	vec3_t trail_pos;
+	VectorSubtract(owner->lerp_origin, owner->origin, trail_pos);
 
-	// copy the real origin to the entity origin, so the light will follow us
-	VectorCopy(Self->r.origin, Self->origin);
+	// Copy the real origin to the entity origin, so the light will follow us.
+	VectorCopy(self->r.origin, self->origin);
 
-	if((TrailLength=VectorNormalize(Trail))<0.001)
+	float trail_length = VectorNormalize(trail_pos);
+	if (trail_length < 0.001f)
+		trail_length += 2.0f;
+
+	vec3_t right;
+	PerpendicularVector(right, trail_pos);
+
+	vec3_t up;
+	CrossProduct(trail_pos, right, up);
+
+	VectorScale(trail_pos, FX_SPHERE_FLY_SPEED, trail_pos);
+
+	const int duration = (((int)r_detail->value > DETAIL_NORMAL) ? 500 : 400);
+	const int flags = (int)(self->flags & ~(CEF_OWNERS_ORIGIN | CEF_NO_DRAW)); //mxd
+
+	for (int i = 0; i < 40 && trail_length > 0.0f; i++)
 	{
-		TrailLength+=2.0;
-	}
-	
-	PerpendicularVector(Right,Trail);
-	CrossProduct(Trail,Right,Up);
+		client_entity_t* trail = ClientEntity_new(FX_WEAPON_SPHERE, flags, trail_start, NULL, duration);
 
-	DeltaTrailLength=FX_SPHERE_FLY_SPEED;
-	VectorScale(Trail,FX_SPHERE_FLY_SPEED,Trail);
+		trail->radius = 70.0f;
+		trail->r.model = &sphere_models[0]; // shboom sprite.
+		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		trail->Scale = FX_SPHERE_AURA_SCALE + flrand(0.0f, 0.1f);
+		COLOUR_SET(trail->color, irand(128, 180), irand(128, 180), irand(64, 80)); //mxd. Use macro.
+		trail->alpha = 0.7f;
+		trail->d_alpha = -1.0f;
+		trail->d_scale = -0.5f;
 
-	if(r_detail->value == DETAIL_NORMAL)
-		dur = 400;
-	else
-		dur = 500;
+		AddEffect(NULL, trail);
 
-	i=0;
-	while(TrailLength>0.0)
-	{
-		i++;
-		if (i>=40)
-			break;
-		//
-
-		TrailEnt=ClientEntity_new(FX_WEAPON_SPHERE,
-								  Self->flags&~(CEF_OWNERS_ORIGIN|CEF_NO_DRAW),
-								  TrailStart,
-								  NULL,
-								  dur);
-
-		TrailEnt->r.model = sphere_models;
-		TrailEnt->r.flags=RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA;
-		if (r_detail->value < DETAIL_NORMAL)
-			TrailEnt->Scale=FX_SOFT_SPHERE_AURA_SCALE+flrand(0.0, 0.1);
-		else
-			TrailEnt->Scale=FX_SPHERE_AURA_SCALE+flrand(0.0, 0.1);
-		TrailEnt->color.r=irand(128, 180);
-		TrailEnt->color.g=irand(128, 180);
-		TrailEnt->color.b=irand(64, 80);
-		TrailEnt->alpha = 0.7;
-		TrailEnt->d_alpha = -1.0;
-		if (r_detail->value < DETAIL_NORMAL)
-			TrailEnt->d_scale = -1.0;
-		else
-			TrailEnt->d_scale = -0.5;
-
-		TrailEnt->radius=70.0;
-				
-		AddEffect(NULL,TrailEnt);
-
-		TrailLength-=DeltaTrailLength;
-		
-		VectorAdd(TrailStart,Trail,TrailStart);
+		trail_length -= FX_SPHERE_FLY_SPEED;
+		VectorAdd(trail_start, trail_pos, trail_start);
 	}
 
-	return(true);
+	return true;
 }
 
 // ****************************************************************************
