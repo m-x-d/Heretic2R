@@ -1,21 +1,17 @@
 //
-// Heretic II
+// fx_SsithraArrow.c
+//
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "ce_DefaultMessageHandler.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "angles.h"
-#include "Vector.h"
-#include "Random.h"
-#include "Utilities.h"
-#include "motion.h"
 #include "Reference.h"
+#include "Utilities.h"
+#include "Vector.h"
 #include "ce_Dlight.h"
+
+#define SSARROW_PARTICLE_OFFSET			5.0f
+#define SSARROW_NUM_TRAIL_PARICLES		6
 
 #define	NUM_SSARROW_MODELS	2
 static struct model_s *ssarrow_models[NUM_SSARROW_MODELS];
@@ -57,9 +53,6 @@ void FXSsithraArrowGlow(centity_t *owner, int type, int flags, vec3_t origin)
 
 // -----------------------------------------------------------------------------------------
 
-#define	PART_OFF			5.0
-#define NUM_TRAIL_PARTS		6
-
 static qboolean FXSsithraArrowMissileThink(client_entity_t *missile, centity_t *owner)
 {
 	int					i;
@@ -67,12 +60,12 @@ static qboolean FXSsithraArrowMissileThink(client_entity_t *missile, centity_t *
 	vec3_t				diff, curpos, org;
 
 	VectorSubtract(missile->r.origin, missile->origin, diff);
-	Vec3ScaleAssign((1.0 / NUM_TRAIL_PARTS), diff);
+	Vec3ScaleAssign((1.0 / SSARROW_NUM_TRAIL_PARICLES), diff);
 	VectorClear(curpos);
 
-	for(i = 0; i < NUM_TRAIL_PARTS; i++)
+	for(i = 0; i < SSARROW_NUM_TRAIL_PARICLES; i++)
 	{
-		VectorRandomCopy(missile->origin, org, PART_OFF);
+		VectorRandomCopy(missile->origin, org, SSARROW_PARTICLE_OFFSET);
 		Vec3AddAssign(curpos, org);
 		ce = ClientEntity_new(-1, 0, org, NULL, 500);
 		ce->r.model = ssarrow_models;		// Can be a particle now
