@@ -22,15 +22,13 @@ enum
 	FX_SS_EXPLODE_ARROW2
 };
 
-#define	NUM_ARROW_MODELS		3
+static struct model_s* arrow_models[3];
 
-static struct model_s *arrow_models[NUM_ARROW_MODELS];
-
-void PrecacheSsithraArrow()
+void PrecacheSsithraArrow(void)
 {
-	arrow_models[0] = fxi.RegisterModel("sprites/fx/steam.sp2");//unpowered trail
-	arrow_models[1] = fxi.RegisterModel("sprites/fx/fire.sp2");//powered trail
-	arrow_models[2] = fxi.RegisterModel("models/objects/projectiles/sitharrow/tris.fm");//projectile model
+	arrow_models[0] = fxi.RegisterModel("sprites/fx/steam.sp2"); // Unpowered trail.
+	arrow_models[1] = fxi.RegisterModel("sprites/fx/fire.sp2"); // Powered trail.
+	arrow_models[2] = fxi.RegisterModel("models/objects/projectiles/sitharrow/tris.fm"); // Projectile model.
 }
 
 // ************************************************************************************************
