@@ -77,28 +77,28 @@ static qboolean FXSsithraArrowMissileThink(client_entity_t* missile, centity_t* 
 	return true;
 }
 
-void FXSsithraArrowMissile(centity_t *owner, int type, int flags, vec3_t origin)
+void FXSsithraArrowMissile(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*missile;
-	vec3_t				temp;
-
-	missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
+	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
 	fxi.GetEffect(owner, flags, "v", missile->velocity);
 
-	VectorCopy(missile->velocity, temp);
-	VectorNormalize(temp);
-	AnglesFromDir(temp, missile->r.angles);
+	missile->radius = 32.0f;
+	missile->r.model = &ssarrow_models[1]; // sitharrow model.
+	missile->color.c = 0xff00ffff;
+	missile->dlight = CE_DLight_new(missile->color, 150.0f, 0.0f);
+
+	vec3_t dir;
+	VectorCopy(missile->velocity, dir);
+	VectorNormalize(dir);
+	AnglesFromDir(dir, missile->r.angles);
+
 	missile->r.angles[PITCH] -= ANGLE_90;
 	missile->r.angles[YAW] += ANGLE_90;
-
-	missile->r.model = ssarrow_models + 1;
 	missile->Update = FXSsithraArrowMissileThink;
-	missile->radius = 32.0F;
-	missile->color.c = 0xff00ffff;
-	missile->dlight = CE_DLight_new(missile->color, 150.0F, 00.0F);
+
 	AddEffect(owner, missile);
 
-	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/pssithra/arrow1.wav"), 1, ATTN_NORM, 0);
+	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/pssithra/arrow1.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
 // -----------------------------------------------------------------------------------------
