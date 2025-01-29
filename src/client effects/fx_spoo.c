@@ -46,20 +46,16 @@ static qboolean FXSpooTrailThink(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-void FXSpoo(centity_t *owner,int type,int Flags,vec3_t origin)
+void FXSpoo(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t	*Trail;
-	paletteRGBA_t	LightColor={255,153,77,255};
+	client_entity_t* trail = ClientEntity_new(type, flags, origin, NULL, 20);
 
-	Trail=ClientEntity_new(type,Flags,origin,NULL,20);
+	trail->flags |= CEF_NO_DRAW;
+	VectorCopy(origin, trail->startpos);
+	trail->Update = FXSpooTrailThink;
 
-	Trail->Update=FXSpooTrailThink;
-	Trail->flags|=CEF_NO_DRAW;
-	VectorCopy(origin, Trail->startpos);
-
-	AddEffect(owner,Trail);
-
-	FXSpooTrailThink(Trail,owner);
+	AddEffect(owner, trail);
+	FXSpooTrailThink(trail, owner);
 }
 
 void FXSpooSplat(centity_t *owner,int type,int Flags,vec3_t origin)
