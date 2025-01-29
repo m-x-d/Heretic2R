@@ -276,6 +276,9 @@
     <ClCompile Include="fx_WeaponPickup.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
+    <ClCompile Include="fx_StaffHit.c">
+      <Filter>src\Effects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ce_DefaultMessageHandler.h">
