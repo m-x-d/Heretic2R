@@ -77,8 +77,6 @@ void FXPuzzlePickup(centity_t* owner, const int type, int flags, const vec3_t or
 		ce->r.skinnum = 1;
 
 	VectorDegreesToRadians(angles, ce->r.angles);
-	VectorCopy(ce->r.origin, ce->origin);
-
 	ce->Update = FXPuzzlePickupThink;
 
 	AddEffect(owner, ce);
