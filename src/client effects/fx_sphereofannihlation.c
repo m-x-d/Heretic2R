@@ -104,52 +104,40 @@ static qboolean FXSphereOfAnnihilationAuraThink(struct client_entity_s* self, ce
 	return true;
 }
 
-// ****************************************************************************
-// FXSphereOfAnnihilation -
-// ****************************************************************************
-
-void FXSphereOfAnnihilation(centity_t *Owner,int Type,int Flags,vec3_t Origin)
+void FXSphereOfAnnihilation(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t	*SphereThinker,
-					*AuraThinker;
-	short			CasterEntnum;
-	paletteRGBA_t	LightColor={0,0,255,255};
-	int				caster_update;
-
-	fxi.GetEffect(Owner,Flags,clientEffectSpawners[FX_WEAPON_SPHERE].formatString,&CasterEntnum);
+	short caster_entnum;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_SPHERE].formatString, &caster_entnum);
 
 	// Create a fiery blue aura around the sphere.
+	const int caster_update = (((int)r_detail->value < DETAIL_NORMAL) ? 125 : 100); //mxd
+	client_entity_t* aura_thinker = ClientEntity_new(type, flags, origin, NULL, caster_update);
 
-	if (r_detail->value < DETAIL_NORMAL)
-		caster_update = 125;
-	else
-		caster_update = 100;
+	aura_thinker->flags |= CEF_NO_DRAW;
+	if (r_detail->value > DETAIL_LOW)
+	{
+		const paletteRGBA_t light_color = { .r = 0, .g = 0, .b = 255, .a = 255 };
+		aura_thinker->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
+	}
 
-	AuraThinker=ClientEntity_new(Type,Flags,Origin,NULL,caster_update);
+	aura_thinker->extra = (void*)(&fxi.server_entities[caster_entnum]); // The caster's centity_t.
+	aura_thinker->AddToView = LinkedEntityUpdatePlacement;
+	aura_thinker->Update = FXSphereOfAnnihilationAuraThink;
 
-	AuraThinker->flags|=CEF_NO_DRAW;
-	if (r_detail->value != DETAIL_LOW)
-		AuraThinker->dlight=CE_DLight_new(LightColor,150.0,0.0);
-	AuraThinker->Update=FXSphereOfAnnihilationAuraThink;
-	AuraThinker->extra=(void *)(&fxi.server_entities[CasterEntnum]);// The caster's centity_t.
-	AuraThinker->AddToView = LinkedEntityUpdatePlacement;
-
-	AddEffect(Owner,AuraThinker);
-
-	FXSphereOfAnnihilationAuraThink(AuraThinker,Owner);
+	AddEffect(owner, aura_thinker);
+	FXSphereOfAnnihilationAuraThink(aura_thinker, owner);
 
 	// Create the sphere of annihilation itself.
+	client_entity_t* sphere_thinker = ClientEntity_new(type, flags, origin, NULL, 100);
 
-	SphereThinker = ClientEntity_new(Type, Flags, Origin, NULL, 100);
+	sphere_thinker->radius = 70.0f;
+	sphere_thinker->r.model = &sphere_models[1]; // bluball sprite.
+	sphere_thinker->r.flags = RF_TRANSLUCENT;
+	sphere_thinker->r.scale = owner->current.scale;
+	sphere_thinker->AddToView = LinkedEntityUpdatePlacement;
+	sphere_thinker->Update = FXSphereOfAnnihilationSphereThink;
 
-	SphereThinker->r.model = sphere_models + 1;
-	SphereThinker->r.flags |= RF_TRANSLUCENT;
-	SphereThinker->r.scale = Owner->current.scale;
-	SphereThinker->radius = 70.0;
-	SphereThinker->Update = FXSphereOfAnnihilationSphereThink;
-	SphereThinker->AddToView = LinkedEntityUpdatePlacement;
-	
-	AddEffect(Owner, SphereThinker);
+	AddEffect(owner, sphere_thinker);
 }
 
 // ****************************************************************************
