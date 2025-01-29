@@ -1,19 +1,13 @@
 //
-// fx_flyingfist.c
+// fx_spoo.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
+#include "Random.h"
+#include "Utilities.h"
 #include "Vector.h"
-#include "ce_DLight.h"
-#include "random.h"
-#include "utilities.h"
 
 #define	NUM_SPOO_MODELS	2
 static struct model_s *spoo_models[NUM_SPOO_MODELS];
