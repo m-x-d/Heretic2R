@@ -191,40 +191,25 @@ void FXStaffStrike(centity_t* owner, int type, const int flags, vec3_t origin)
 	}
 }
 
-// ************************************************************************************************
-// FXStaffElementThink
-// ------------------------
-// ************************************************************************************************
-
-static qboolean FXStaffElementThink(struct client_entity_s *Self,centity_t *owner)
+static qboolean FXStaffElementThink(struct client_entity_s* self, centity_t* owner)
 {
-	float	Frac,
-			Multiplier;
-	int		FrameNo;
+	float frac = (float)(fxi.cl->time - self->startTime) / 100.0f;
 
-	Frac=(fxi.cl->time-Self->startTime)/100.0;
+	if (self->AnimSpeed > 0.0f)
+		frac *= self->AnimSpeed;
 
-	if(Self->AnimSpeed>0.0)
-	{
-		Frac*=Self->AnimSpeed;
-	}
+	const int frame_num = (int)(floorf(frac));
+	if (frame_num >= self->NoOfAnimFrames - 1)
+		return false;
 
-	if((FrameNo=floor(Frac))>=(Self->NoOfAnimFrames-1))
-	{
-		return(false);
-	}
-	else
-	{
-		Multiplier=1.0-Frac/(Self->NoOfAnimFrames-1);
+	self->r.frame = frame_num + 1;
 
-		Self->r.color.r=Self->color.r*Multiplier;
-		Self->r.color.b=Self->color.g*Multiplier;
-		Self->r.color.g=Self->color.b*Multiplier;
-		
-		Self->r.frame=FrameNo+1;
+	const float multiplier = 1.0f - frac / (float)(self->NoOfAnimFrames - 1);
+	self->r.color.r = (byte)((float)self->color.r * multiplier);
+	self->r.color.b = (byte)((float)self->color.g * multiplier);
+	self->r.color.g = (byte)((float)self->color.b * multiplier);
 
-		return(true);
-	}
+	return true;
 }
 
 // ************************************************************************************************
