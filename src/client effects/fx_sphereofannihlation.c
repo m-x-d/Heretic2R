@@ -140,71 +140,47 @@ void FXSphereOfAnnihilation(centity_t* owner, const int type, const int flags, v
 	AddEffect(owner, sphere_thinker);
 }
 
-// ****************************************************************************
-// FXSphereOfAnnihilationGlowballThink -
-// ****************************************************************************
-
-static qboolean FXSphereOfAnnihilationGlowballThink(struct client_entity_s *Self,centity_t *Owner)
+static qboolean FXSphereOfAnnihilationGlowballThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_entity_t	*Spark;
-	int			dur;
+	if (owner->current.effects & EF_MARCUS_FLAG1)
+		self->color.r++;
 
-	if((Owner->current.effects&EF_MARCUS_FLAG1))
-		Self->color.r++;
-
-	if(r_detail->value == DETAIL_LOW)
-		dur = 300;
+	int duration;
+	if ((int)r_detail->value == DETAIL_LOW)
+		duration = 300;
+	else if ((int)r_detail->value == DETAIL_NORMAL)
+		duration = 400;
 	else
-	if(r_detail->value == DETAIL_NORMAL)
-		dur = 400;
-	else
-		dur = 500;
+		duration = 500;
 
-
-	if(Self->color.r>3)
+	if (self->color.r > 3)
 	{
 		// Create a trailing spark.
+		client_entity_t* spark = ClientEntity_new(FX_WEAPON_SPHERE, self->flags & ~(CEF_OWNERS_ORIGIN), self->r.origin, NULL, duration);
 
-		Spark=ClientEntity_new(FX_WEAPON_SPHERE,
-							   Self->flags&~(CEF_OWNERS_ORIGIN),
-							   Self->r.origin,
-							   NULL,
-							   dur);
-		
-		Spark->r.model = sphere_models + 2;
-		Spark->r.flags=RF_TRANSLUCENT|RF_TRANS_ADD;
-		Spark->r.color.r=irand(128, 180);
-		Spark->r.color.g=irand(128, 180);
-		Spark->r.color.b=irand(180, 255);
-		Spark->Scale=flrand(0.8, 1.0);
-		Spark->radius=20.0;
-		Spark->d_scale = -1.5;
-		
-		AddEffect(NULL,Spark);
+		spark->radius = 20.0f;
+		spark->r.model = &sphere_models[2]; // glowball sprite.
+		spark->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD;
+		COLOUR_SET(spark->r.color, irand(128, 180), irand(128, 180), irand(180, 255)); //mxd. Use macro.
+		spark->Scale = flrand(0.8f, 1.0f);
+		spark->d_scale = -1.5f;
+
+		AddEffect(NULL, spark);
 	}
 
-	// 'Self->extra' refers to the sphere's centity_t.
-
-	if(Self->color.r<16)
+	if (self->color.r < 16)
 	{
-		Self->velocity[0]*=3.0;
-		Self->velocity[0]+=6.0*(Owner->origin[0]-Self->r.origin[0]);
-		Self->velocity[0]*=0.265;
+		for (int i = 0; i < 3; i++)
+		{
+			self->velocity[i] *= 3.0f;
+			self->velocity[i] += 6.0f * (owner->origin[i] - self->r.origin[i]);
+			self->velocity[i] *= 0.265f;
+		}
 
-		Self->velocity[1]*=3.0;
-		Self->velocity[1]+=6.0*(Owner->origin[1]-Self->r.origin[1]);
-		Self->velocity[1]*=0.265;
-		
-		Self->velocity[2]*=3.0;
-		Self->velocity[2]+=6.0*(Owner->origin[2]-Self->r.origin[2]);
-		Self->velocity[2]*=0.265;
+		return true;
+	}
 
-		return(true);
-	}
-	else
-	{	
-		return(false);
-	}
+	return false;
 }
 
 // ****************************************************************************
