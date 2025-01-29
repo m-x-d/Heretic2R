@@ -21,14 +21,10 @@ void PreCacheTB(void)
 	tb_dustpuff_model = fxi.RegisterModel("sprites/fx/steam_add.sp2");
 }
 
-static qboolean FXTBDustPuffThink(client_entity_t *DustPuff, centity_t *owner)
+static qboolean FXTBDustPuffThink(client_entity_t* puff, centity_t* owner)
 {
-	DustPuff->flags &= ~CEF_DISAPPEARED;
-	
-	if (DustPuff->alpha <= 0)
-		return false;
-	
-	return(true);
+	puff->flags &= ~CEF_DISAPPEARED;
+	return puff->alpha > 0.0f;
 }
 
 void FXTBDustPuff(int type, int flags, vec3_t origin,float inangle)
