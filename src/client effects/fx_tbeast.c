@@ -1,18 +1,12 @@
 //
-// Heretic II
+// fx_TrialBeast.c
+//
 // Copyright 1998 Raven Software
 //
-// Created by JDW
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "ce_DefaultMessageHandler.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
+#include "Random.h"
 #include "Vector.h"
-#include "random.h"
-#include "Utilities.h"
 
 enum
 {
@@ -20,12 +14,11 @@ enum
 	FX_TB_SNORT,
 };
 
+static struct model_s* tb_dustpuff_model;
 
-#define	NUM_BEAST_MODELS	1
-static struct model_s *tb_dustpuff_models[NUM_BEAST_MODELS];
 void PreCacheTB(void)
 {
-	tb_dustpuff_models[0] = fxi.RegisterModel("sprites/fx/steam_add.sp2");
+	tb_dustpuff_model = fxi.RegisterModel("sprites/fx/steam_add.sp2");
 }
 
 static qboolean FXTBDustPuffThink(client_entity_t *DustPuff, centity_t *owner)
@@ -46,7 +39,7 @@ void FXTBDustPuff(int type, int flags, vec3_t origin,float inangle)
 	VectorSet(angles, 0, inangle, 0);
 	DustPuff = ClientEntity_new(type, flags, origin, NULL, 100);
 
-	DustPuff->r.model = tb_dustpuff_models;
+	DustPuff->r.model = &tb_dustpuff_model;
 	DustPuff->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 	DustPuff->Update = FXTBDustPuffThink;
 	DustPuff->radius = 1.0F;
