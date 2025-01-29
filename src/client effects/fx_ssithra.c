@@ -163,57 +163,44 @@ static void FXSsithraArrowBoom(centity_t* owner, const int type, const int flags
 	}
 }
 
-void FXSsithraArrow2Boom(centity_t *owner,int type,int flags,vec3_t origin, vec3_t dir)
+static void FXSsithraArrow2Boom(centity_t* owner, const int type, const int flags, const vec3_t origin, vec3_t direction)
 {
-	vec3_t			mins;
-	client_entity_t	*SmokePuff;
-	int				i;
-	paletteRGBA_t	LightColor;
-	float			lightrad;
-	
-	Vec3ScaleAssign(32.0, dir);
+	Vec3ScaleAssign(32.0f, direction);
 
-	i = GetScaledCount(irand(12, 16), 0.8);
-	LightColor.c = 0xff0000ff;
-	lightrad = 200;
+	const int count = GetScaledCount(irand(12, 16), 0.8f);
 
-	while(i--)
+	for (int i = 0; i < count; i++)
 	{
-		if (!i)
-			SmokePuff=ClientEntity_new(type,flags,origin,NULL,500);
-		else
-			SmokePuff=ClientEntity_new(type,flags,origin,NULL,1000);
+		const qboolean is_last_puff = (i == count - 1); //mxd
+		const int next_think_time = (is_last_puff ? 500 : 1000); //mxd
 
-		SmokePuff->r.model = arrow_models + 1;
-		SmokePuff->r.scale=flrand(1.2,2.0);
-		SmokePuff->d_scale=-2.0;
+		client_entity_t* smoke_puff = ClientEntity_new(type, flags, origin, NULL, next_think_time);
 
-		VectorRandomCopy(dir, SmokePuff->velocity, 200);
-		SmokePuff->velocity[2] += 100.0;
-		SmokePuff->acceleration[2] = -400.0;
+		smoke_puff->radius = 20.0f;
+		smoke_puff->r.model = &arrow_models[1]; // fire sprite.
+		smoke_puff->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		smoke_puff->r.scale = flrand(1.2f, 2.0f);
+		smoke_puff->d_scale = -2.0f;
+		smoke_puff->d_alpha = -0.4f;
+		smoke_puff->acceleration[2] = -400.0f;
 
-		SmokePuff->r.flags |=RF_FULLBRIGHT|RF_TRANSLUCENT|RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		SmokePuff->r.frame=0;
-
-		SmokePuff->d_alpha= -0.4;
-			
-		SmokePuff->radius=20.0;
-
-		if(!i)
+		if (is_last_puff)
 		{
-			fxi.S_StartSound(SmokePuff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/FireballPowerImpact.wav"), 
-					1, ATTN_NORM, 0);
-			SmokePuff->dlight=CE_DLight_new(LightColor,lightrad,0.0f);
-			VectorClear(SmokePuff->velocity);
-		}	
+			fxi.S_StartSound(smoke_puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/FireballPowerImpact.wav"), 1.0f, ATTN_NORM, 0.0f);
+			smoke_puff->dlight = CE_DLight_new(color_red, 200.0f, 0.0f);
+		}
+		else
+		{
+			VectorRandomCopy(direction, smoke_puff->velocity, 200.0f);
+			smoke_puff->velocity[2] += 100.0f;
+		}
 
-		AddEffect(NULL,SmokePuff);
+		AddEffect(NULL, smoke_puff);
 	}
 
-	VectorSet(dir, 0.0, 0.0, 1.0);
-	VectorSet(mins, 2.0, 2.0, 2.0);	// because SpawnChunks needs a value for bounding box
-	//clear out cef_flag# stuff, means different stuff to debris
-	FXDebris_SpawnChunks(type, flags & ~(CEF_FLAG6|CEF_FLAG7|CEF_FLAG8), origin, 5, MAT_GREYSTONE, dir, 80000.0f, mins, 1.0, false);
+	// Clear out cef_flag# stuff, means different stuff to debris.
+	const vec3_t mins = { 2.0f, 2.0f, 2.0f }; // Because SpawnChunks needs a value for bounding box.
+	FXDebris_SpawnChunks(type, flags & ~(CEF_FLAG6 | CEF_FLAG7 | CEF_FLAG8), origin, 5, MAT_GREYSTONE, vec3_up, 80000.0f, mins, 1.0f, false);
 }
 
 void FXSsithraArrow(centity_t *owner, int type, int flags, vec3_t origin)
