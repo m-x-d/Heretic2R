@@ -58,43 +58,31 @@ void FXSpoo(centity_t* owner, const int type, const int flags, vec3_t origin)
 	FXSpooTrailThink(trail, owner);
 }
 
-void FXSpooSplat(centity_t *owner,int type,int Flags,vec3_t origin)
+void FXSpooSplat(centity_t* owner, int type, const int flags, vec3_t origin)
 {
-	client_entity_t	*TrailEnt;
-	vec3_t			dir;
-	int				count;
+	vec3_t dir;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPOO_SPLAT].formatString, &dir);
 
-	fxi.GetEffect(owner, Flags, clientEffectSpawners[FX_SPOO_SPLAT].formatString, &dir);
+	const int count = GetScaledCount(16, 0.85f);
 
-	count = GetScaledCount(16, 0.85);
-
-	while (count--)
+	for (int i = 0; i < count; i++)
 	{
-		TrailEnt=ClientEntity_new(FX_SPOO,
-								  0,
-								  origin,
-								  NULL,
-								  1000);
+		client_entity_t* trail = ClientEntity_new(FX_SPOO, 0, origin, NULL, 1000);
 
-		TrailEnt->r.model = spoo_models + irand(0,1);
-		
-		VectorRandomCopy(dir, TrailEnt->velocity, 16.0f);
-		VectorNormalize(TrailEnt->velocity);
-		VectorScale(TrailEnt->velocity, flrand(100.0f, 200.0f), TrailEnt->velocity);
+		trail->radius = 20.0f;
+		trail->r.model = &spoo_models[irand(0, 1)];
+		trail->r.flags = RF_TRANSLUCENT;
+		trail->r.scale = flrand(0.75f, 1.0f);
+		trail->d_scale = flrand(-1.25f, -1.0f);
+		trail->d_alpha = flrand(-1.0f, -0.5f);
+		trail->color.c = 0xa0ffffff;
 
-		VectorSet(TrailEnt->acceleration, 0, 0, -128);
-		
-		TrailEnt->r.scale = flrand(0.75, 1.0);
-		TrailEnt->alpha=1.0;
-		
-		TrailEnt->r.flags |= RF_TRANSLUCENT;
-		
-		TrailEnt->r.frame=0;
-		TrailEnt->d_scale=flrand( -1.25, -1.0);
-		TrailEnt->d_alpha=flrand(-1, -0.5);
-		TrailEnt->color.c = 0xA0FFFFFF;
-		TrailEnt->radius=20.0;
-	
-		AddEffect(NULL,TrailEnt);
+		VectorRandomCopy(dir, trail->velocity, 16.0f);
+		VectorNormalize(trail->velocity);
+		VectorScale(trail->velocity, flrand(100.0f, 200.0f), trail->velocity);
+
+		VectorSet(trail->acceleration, 0.0f, 0.0f, -128.0f);
+
+		AddEffect(NULL, trail);
 	}
 }
