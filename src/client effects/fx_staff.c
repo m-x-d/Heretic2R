@@ -647,46 +647,28 @@ static qboolean FXStaffCreateThink(struct client_entity_s* self, centity_t* owne
 	return self->NoOfAnimFrames > 0;
 }
 
-// ************************************************************************************************
-// FXStaffCreate
-// ------------
-// ************************************************************************************************
-
-// This effect spawns 80+ client fx which will cause problems
-
-void FXStaffCreate(centity_t *owner,int Type,int Flags,vec3_t Origin)
+void FXStaffCreate(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t *stafffx;
-	byte			fxtype;
-
 	// This tells if we are wasting our time, because the reference points are culled.
 	if (!RefPointsValid(owner))
-		return;				// Abandon the effect in this case.
+		return; // Abandon the effect in this case.
 
-	if (Flags & CEF_FLAG6)
-		fxtype = STAFF_TYPE_HELL;
-	else
-		fxtype = STAFF_TYPE_SWORD;
+	client_entity_t* staff_fx = ClientEntity_new(type, flags, origin, NULL, 17);
 
-	stafffx = ClientEntity_new(Type, Flags, Origin, 0, 17);
+	if (flags & CEF_FLAG7) // Blue.
+		staff_fx->classID = STAFF_TRAIL3;
+	else if (flags & CEF_FLAG8) // Flames.
+		staff_fx->classID = STAFF_TRAIL2;
+	else // Normal.
+		staff_fx->classID = STAFF_TRAIL;
 
-	if(Flags & CEF_FLAG7)//blue
-		stafffx->classID = STAFF_TRAIL3;
-	else if(Flags & CEF_FLAG8)//flames
-		stafffx->classID = STAFF_TRAIL2;
-	else//normal
-		stafffx->classID = STAFF_TRAIL;
+	staff_fx->flags |= CEF_NO_DRAW;
+	staff_fx->NoOfAnimFrames = 7;
+	staff_fx->refPoint = (short)((flags & CEF_FLAG6) ? STAFF_TYPE_HELL : STAFF_TYPE_SWORD);
+	staff_fx->Update = FXStaffCreateThink;
 
-	stafffx->Update = FXStaffCreateThink;
-	stafffx->flags |= CEF_NO_DRAW;
-	stafffx->NoOfAnimFrames=7;
-	stafffx->refPoint = fxtype;
-
-	AddEffect(owner, stafffx);
+	AddEffect(owner, staff_fx);
 }
-
-
-qboolean FXSpellChangePuffThink(struct client_entity_s *Self,centity_t *owner);
 
 // ************************************************************************************************
 // FXStaffCreatePoof
