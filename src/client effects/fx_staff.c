@@ -670,78 +670,45 @@ void FXStaffCreate(centity_t* owner, const int type, const int flags, vec3_t ori
 	AddEffect(owner, staff_fx);
 }
 
-// ************************************************************************************************
-// FXStaffCreatePoof
-// ------------
-// ************************************************************************************************
-
-void FXStaffCreatePoof(centity_t *owner,int Type,int Flags,vec3_t Origin)
+//mxd. Added to reduce code duplication.
+static void CreatePuff(centity_t* owner, const int flags, vec3_t origin)
 {
-	client_entity_t *stafffx;
-	vec3_t spawnpt;
-	paletteRGBA_t	LightColor;
+	client_entity_t* puff = ClientEntity_new(FX_SPELLHANDS, (int)(flags & ~CEF_NO_DRAW), origin, NULL, 100);
 
-	// This tells if we are wasting our time, because the reference points are culled.
-	if (!RefPointsValid(owner))
-		return;		// Remove the effect in this case.
+	puff->r.model = &staff_models[STAFF_HALO];
+	puff->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	puff->r.frame = 1;
+	puff->r.scale = 0.5f;
+	puff->d_scale = -0.3f;
+	puff->alpha = 0.75f;
+	puff->d_alpha = -0.2f;
+	puff->AnimSpeed = 0.2f;
+	puff->NoOfAnimFrames = 2;
+	puff->Update = FXStaffElementThink;
+	puff->AddToView = OffsetLinkedEntityUpdatePlacement;
 
-	if(Flags & CEF_FLAG6)
-	{
-		VectorCopy(owner->referenceInfo->references[CORVUS_HELL_HEAD].placement.origin, spawnpt);
-		LightColor.c = 0xff2020ff;
-	}
-	else
-	{
-		VectorCopy(owner->referenceInfo->references[CORVUS_BLADE].placement.origin, spawnpt);
-		LightColor.c = 0xffff5050;
-	}
-
-	stafffx=ClientEntity_new(FX_SPELLHANDS, Flags & ~CEF_NO_DRAW, spawnpt, 0, 100);
-	VectorCopy(spawnpt, stafffx->origin);
-	stafffx->r.model = staff_models + STAFF_HALO;
-	stafffx->alpha=.75;
-	stafffx->r.flags=RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA;
-	stafffx->r.frame=1;
-	stafffx->d_scale=-0.3;
-	stafffx->d_alpha=-0.2;
-	stafffx->color.r=255;
-	stafffx->color.g=255;
-	stafffx->color.b=255;
-	stafffx->r.scale=0.5;
-	stafffx->AnimSpeed=0.20;
-	stafffx->NoOfAnimFrames=2;
-	stafffx->Update=FXStaffElementThink;
-	stafffx->AddToView=OffsetLinkedEntityUpdatePlacement;			
-	AddEffect(owner,stafffx);
-	FXStaffElementThink(stafffx,owner);
-
-
-	if(!(Flags & CEF_FLAG6))	// Just for the sword staff
-	{
-		VectorCopy(owner->referenceInfo->references[CORVUS_STAFF].placement.origin, spawnpt);
-
-		stafffx=ClientEntity_new(FX_SPELLHANDS, Flags & ~CEF_NO_DRAW, spawnpt, 0, 100);
-		VectorCopy(spawnpt, stafffx->origin);
-		stafffx->r.model = staff_models + STAFF_HALO;
-		stafffx->alpha=.75;
-		stafffx->r.flags=RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA;
-		stafffx->r.frame=1;
-		stafffx->d_scale=-0.3;
-		stafffx->d_alpha=-0.2;
-		stafffx->color.r=255;
-		stafffx->color.g=255;
-		stafffx->color.b=255;
-		stafffx->r.scale=0.5;
-		stafffx->AnimSpeed=0.20;
-		stafffx->NoOfAnimFrames=2;
-		stafffx->Update=FXStaffElementThink;
-		stafffx->AddToView=OffsetLinkedEntityUpdatePlacement;			
-		AddEffect(owner,stafffx);
-		FXStaffElementThink(stafffx,owner);
-	}
+	AddEffect(owner, puff);
+	FXStaffElementThink(puff, owner);
 }
 
+void FXStaffCreatePoof(centity_t* owner, int type, const int flags, vec3_t origin)
+{
+	// This tells if we are wasting our time, because the reference points are culled.
+	if (!RefPointsValid(owner))
+		return; // Remove the effect in this case.
 
+	vec3_t spawn_pt;
+	const int ref_id = ((flags & CEF_FLAG6) ? CORVUS_HELL_HEAD : CORVUS_BLADE); //mxd
+	VectorCopy(owner->referenceInfo->references[ref_id].placement.origin, spawn_pt);
+	CreatePuff(owner, flags, spawn_pt); //mxd
+
+	if (!(flags & CEF_FLAG6)) // Just for the sword staff.
+	{
+		vec3_t halo_org;
+		VectorCopy(owner->referenceInfo->references[CORVUS_STAFF].placement.origin, halo_org);
+		CreatePuff(owner, flags, halo_org); //mxd
+	}
+}
 
 // ************************************************************************************************
 // FXStaffRemoveThink
