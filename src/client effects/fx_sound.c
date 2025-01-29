@@ -154,7 +154,6 @@ void FXSound(centity_t* owner, const int type, const int flags, vec3_t origin)
 
 	client_entity_t* self = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_NOMOVE), origin, NULL, 20);
 
-	VectorCopy(origin, self->origin);
 	self->flags &= ~CEF_OWNERS_ORIGIN;
 	self->extra = fxi.TagMalloc(sizeof(sound_think_info_t), TAG_LEVEL);
 	self->Update = FXSoundThink;
