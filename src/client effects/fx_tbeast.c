@@ -59,38 +59,12 @@ static void FXTBDustPuffOnGround(centity_t* owner, const int type, const int fla
 		FXTBDustPuff(type, flags, origin, (float)i * flrand(30.0f, 60.0f));
 }
 
-
-void FXTBSnort(centity_t *owner, int type, int flags, vec3_t origin)
+void FXTBEffects(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
+	byte fx_index;
+	vec3_t vel;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_TB_EFFECTS].formatString, &fx_index, &vel); //TODO: 'vel' arg is unused.
+
+	if (fx_index == FX_TB_PUFF)
+		FXTBDustPuffOnGround(owner, type, flags, origin);
 }
-
-/*===============================
-
- Trial Beast's FX handler
-
-  ===============================*/
-
-void FXTBEffects(centity_t *owner,int type,int flags, vec3_t org)
-{
-	paletteRGBA_t	LightColor={0,0,255,255};
-	vec3_t			vel;
-	byte			fx_index;
-	
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_TB_EFFECTS].formatString, &fx_index, &vel);//fixme- make this 1 dir and 1 float
-
-	switch (fx_index)
-	{
-		case FX_TB_PUFF:
-			FXTBDustPuffOnGround(owner, type, flags, org);
-			break;
-
-		case FX_TB_SNORT:
-			FXTBSnort(owner, type, flags, org);
-			break;
-
-		default:
-			break;
-	}
-}
-
-// end
