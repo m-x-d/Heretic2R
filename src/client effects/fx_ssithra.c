@@ -82,38 +82,23 @@ static qboolean FXSsithraArrowTrailThink(struct client_entity_s* self, centity_t
 	return true;
 }
 
-// ************************************************************************************************
-// FXSsithraArrow
-// ************************************************************************************************
-
-////////////////////////////////////
-// From CreateEffect FX_WEAPON_SSITHRAARROW
-////////////////////////////////////
-void FXDoSsithraArrow(centity_t *owner, int type, int flags, vec3_t origin, vec3_t vel)
+static void FXDoSsithraArrow(centity_t* owner, const int type, const int flags, const vec3_t origin, const vec3_t velocity)
 {
-	vec3_t			dir;
-	client_entity_t	*missile;	
-	paletteRGBA_t	LightColor;
-	float			lightsize;
+	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
 
-	missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
+	missile->radius = 128.0f;
+	missile->r.model = &arrow_models[2]; // sitharrow model.
+	missile->r.flags = RF_GLOW;
 
-	missile->r.flags |= RF_GLOW;
-	missile->r.model = arrow_models + 2;
-	missile->r.skinnum = 0;
-	missile->r.scale = 1.0;
-	LightColor.c = 0xff2040ff;		// Orange light
-	lightsize = 120.0;
-	
-	VectorCopy(vel, missile->velocity);
-	VectorNormalize2(vel, dir);
+	VectorCopy(velocity, missile->velocity);
+
+	vec3_t dir;
+	VectorNormalize2(velocity, dir);
 	AnglesFromDir(dir, missile->r.angles);
 
-	missile->radius = 128;
-	missile->dlight = CE_DLight_new(LightColor, lightsize, 0.0f);
-	missile->Update = FXSsithraArrowTrailThink;
-
+	missile->dlight = CE_DLight_new(color_orange, 120.0f, 0.0f);
 	missile->SpawnInfo = 32;
+	missile->Update = FXSsithraArrowTrailThink;
 
 	AddEffect(owner, missile);
 }
