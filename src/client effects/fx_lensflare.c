@@ -205,7 +205,6 @@ void FXLensFlare(centity_t* owner, int type, const int flags, const vec3_t origi
 		if (flags & CEF_FLAG7)
 			Vec3ScaleAssign(4.0f, flare->direction);
 
-		VectorCopy(origin, flare->origin);
 		flare->up[0] = ((flags & CEF_FLAG6) ? flare2_pos[i] : flare1_pos[i]);
 
 		if (owner != NULL)
