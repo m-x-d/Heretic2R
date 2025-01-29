@@ -27,30 +27,30 @@ static qboolean FXTBDustPuffThink(client_entity_t* puff, centity_t* owner)
 	return puff->alpha > 0.0f;
 }
 
-void FXTBDustPuff(int type, int flags, vec3_t origin,float inangle)
+static void FXTBDustPuff(const int type, const int flags, vec3_t origin, const float in_angle)
 {
-	client_entity_t		*DustPuff;	
-	vec3_t				angles, forward;
-	
-	VectorSet(angles, 0, inangle, 0);
-	DustPuff = ClientEntity_new(type, flags, origin, NULL, 100);
+	client_entity_t* puff = ClientEntity_new(type, flags, origin, NULL, 100);
 
-	DustPuff->r.model = &tb_dustpuff_model;
-	DustPuff->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	DustPuff->Update = FXTBDustPuffThink;
-	DustPuff->radius = 1.0F;
-	DustPuff->alpha = 0.5F;
+	puff->radius = 1.0f;
+	puff->r.model = &tb_dustpuff_model; // steam_add sprite.
+	puff->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	puff->r.scale = flrand(0.15f, 0.3f);
+	puff->d_scale = 0.75f;
+	puff->alpha = 0.5f;
+	puff->d_alpha = -1.0f;
+
+	vec3_t forward;
+	const vec3_t angles = { 0.0f, in_angle, 0.0f };
 	AngleVectors(angles, forward, NULL, NULL);
-	VectorScale(forward, flrand(30.0F, 100.0F), DustPuff->velocity);
-	DustPuff->velocity[2] = flrand(25.0F, 75.0F);
-	DustPuff->acceleration[2] = DustPuff->velocity[2] * -1.23F;
-	DustPuff->r.scale = flrand(0.15, 0.3);
-	DustPuff->d_scale = 0.75F;
-	DustPuff->d_alpha = -1.0F;
 
-	AddEffect(NULL, DustPuff); 
+	VectorScale(forward, flrand(30.0f, 100.0f), puff->velocity);
+	puff->velocity[2] = flrand(25.0f, 75.0f);
+	puff->acceleration[2] = puff->velocity[2] * -1.23f;
+
+	puff->Update = FXTBDustPuffThink;
+
+	AddEffect(NULL, puff);
 }
-
 
 void FXTBDustPuffOnGround(centity_t *owner, int type, int flags, vec3_t origin)
 {
