@@ -101,15 +101,10 @@ void FXSsithraArrowMissile(centity_t* owner, const int type, const int flags, ve
 	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/pssithra/arrow1.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
-// -----------------------------------------------------------------------------------------
-
-static qboolean FXSsithraArrowDLightThink(client_entity_t *dlight, centity_t *owner)
+static qboolean FXSsithraArrowDLightThink(client_entity_t* dlight, centity_t* owner)
 {
-	dlight->dlight->intensity -= 10.0F;
-	if(dlight->dlight->intensity < 0.0F)
-		return(false);
-
-	return(true);
+	dlight->dlight->intensity -= 10.0f;
+	return dlight->dlight->intensity > 0.0f;
 }
 
 void FXSsithraArrowExplode(centity_t *owner, int type, int flags, vec3_t origin)
