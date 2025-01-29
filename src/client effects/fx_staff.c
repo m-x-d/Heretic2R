@@ -710,135 +710,112 @@ void FXStaffCreatePoof(centity_t* owner, int type, const int flags, vec3_t origi
 	}
 }
 
-// ************************************************************************************************
-// FXStaffRemoveThink
-// -----------------
-// ************************************************************************************************
-
-static qboolean FXStaffRemoveThink(struct client_entity_s *Self,centity_t *owner)
+static qboolean FXStaffRemoveThink(struct client_entity_s* self, centity_t* owner)
 {
-	int				NoOfIntervals;
-	client_entity_t	*TrailEnt;
-	vec3_t			startpt, endpt;
-	vec3_t			diff, curpt;
-	int color;
+	vec3_t start_pt;
+	vec3_t end_pt;
 
-	Self->updateTime = 17;		// FIXME : With a next think time this effect does not look right
+	vec3_t trail_org;
+	uint color;
+
+	self->updateTime = 17; //FIXME: with a next think time this effect does not look right.
 
 	// This tells if we are wasting our time, because the reference points are culled.
 	if (!RefPointsValid(owner))
-		return false;		// Remove the effect in this case.
+		return false; // Remove the effect in this case.
 
 	// If this reference point hasn't changed since the last frame, return.
-	switch(Self->refPoint)
+	switch (self->refPoint)
 	{
-	case STAFF_TYPE_HELL:
-		VectorAdd(owner->referenceInfo->references[CORVUS_RIGHTHAND].placement.origin, owner->referenceInfo->references[CORVUS_STAFF].placement.origin, startpt);
-		VectorScale(startpt, 0.5, startpt);
-		VectorCopy(owner->referenceInfo->references[CORVUS_HELL_HEAD].placement.origin, endpt);
-		color = 0xff2020ff;
-		break;
-	case STAFF_TYPE_SWORD:
-	default:
-		VectorCopy(owner->referenceInfo->references[CORVUS_STAFF].placement.origin, startpt);
-		VectorCopy(owner->referenceInfo->references[CORVUS_BLADE].placement.origin, endpt);
-		color = 0xff20ff20;
-		break;
+		case STAFF_TYPE_HELL:
+			VectorAdd(owner->referenceInfo->references[CORVUS_RIGHTHAND].placement.origin, owner->referenceInfo->references[CORVUS_STAFF].placement.origin, start_pt);
+			VectorScale(start_pt, 0.5f, start_pt);
+			VectorCopy(owner->referenceInfo->references[CORVUS_HELL_HEAD].placement.origin, end_pt);
+			color = 0xff2020ff;
+			break;
+
+		case STAFF_TYPE_SWORD:
+		default:
+			VectorCopy(owner->referenceInfo->references[CORVUS_STAFF].placement.origin, start_pt);
+			VectorCopy(owner->referenceInfo->references[CORVUS_BLADE].placement.origin, end_pt);
+			color = 0xff20ff20;
+			break;
 	}
-		
-	VectorSubtract(endpt, startpt, diff);
-	NoOfIntervals=(int)(VectorLength(diff)*.5);
 
-	VectorScale(diff, 1.0/NoOfIntervals, diff);
-	VectorCopy(startpt, curpt);  // This rides on the assumption that the normal given is already a unit norm.
+	vec3_t diff;
+	VectorSubtract(end_pt, start_pt, diff);
 
-	if(NoOfIntervals > 40)
-		return(false);
+	const int num_of_intervals = (int)(VectorLength(diff) * 0.5f);
+	if (num_of_intervals > 40)
+		return false;
 
-	while (NoOfIntervals >= 0)
+	VectorScale(diff, 1.0f / (float)num_of_intervals, diff);
+	VectorCopy(start_pt, trail_org); // This rides on the assumption that the normal given is already a unit norm. //TODO: the normal given is NOT a unit norm!
+
+	for (int i = 0; i < num_of_intervals; i++)
 	{
-		TrailEnt=ClientEntity_new(FX_SPELLHANDS, Self->flags & ~CEF_NO_DRAW, curpt, 0, 100);
-		VectorCopy(curpt, TrailEnt->origin);
-		TrailEnt->r.model = staff_models + Self->classID;
-		TrailEnt->alpha=0.6 - (Self->NoOfAnimFrames*0.1);
-		TrailEnt->r.flags=RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA;
-		TrailEnt->AddToView=OffsetLinkedEntityUpdatePlacement;			
-		if(Self->classID == STAFF_TRAIL || Self->refPoint == STAFF_TYPE_HELL)
-		{
-			TrailEnt->r.frame=1;
-			TrailEnt->d_scale=-0.25;
-			TrailEnt->d_alpha=-0.1;
-			TrailEnt->color.c=color;
-			TrailEnt->r.scale=Self->NoOfAnimFrames*.05;
-			TrailEnt->AnimSpeed=0.20;
-			TrailEnt->NoOfAnimFrames=2;
-			TrailEnt->Update=FXStaffElementThink;
+		client_entity_t* trail = ClientEntity_new(FX_SPELLHANDS, (int)(self->flags & ~CEF_NO_DRAW), trail_org, NULL, 100);
 
-			AddEffect(owner,TrailEnt);
-			FXStaffElementThink(TrailEnt,owner);
+		trail->r.model = &staff_models[self->classID];
+		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		trail->alpha = 0.6f - (float)self->NoOfAnimFrames * 0.1f;
+		trail->AddToView = OffsetLinkedEntityUpdatePlacement;
+
+		if (self->classID == STAFF_TRAIL || self->refPoint == STAFF_TYPE_HELL)
+		{
+			trail->r.frame = 1;
+			trail->d_scale = -0.25f;
+			trail->d_alpha = -0.1f;
+			trail->color.c = color;
+			trail->r.scale = (float)self->NoOfAnimFrames * 0.05f;
+			trail->AnimSpeed = 0.2f;
+			trail->NoOfAnimFrames = 2;
+			trail->Update = FXStaffElementThink;
+
+			AddEffect(owner, trail);
+			FXStaffElementThink(trail, owner);
 		}
-		else if(Self->classID == STAFF_TRAIL2)
+		else if (self->classID == STAFF_TRAIL2)
 		{
-			TrailEnt->r.frame = 0;
+			trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+			trail->r.scale = flrand(0.1f, 0.2f);
+			trail->d_scale = flrand(-1.0f, -0.5f);
+			trail->d_alpha = -2.0f;
 
-			TrailEnt->r.flags=RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+			VectorSet(trail->velocity, flrand(-8.0f, 8.0f), flrand(-8.0f, 8.0f), flrand(64.0f, 128.0f)); //mxd. Original logic uses irand() here.
 
-			TrailEnt->r.scale = flrand(0.1, 0.2);
-			TrailEnt->d_scale = flrand(-0.5, -1.0);
+			for (int c = 0; c < 3; c++)
+				trail->origin[c] += flrand(-1.0f, 1.0f); //mxd. Original logic uses irand() here.
 
-			TrailEnt->velocity[0] = irand(-8, 8);
-			TrailEnt->velocity[1] = irand(-8, 8);
-			TrailEnt->velocity[2] += irand(64, 128);
-
-			TrailEnt->origin[0] += irand(-1, 1);
-			TrailEnt->origin[1] += irand(-1, 1);
-			TrailEnt->origin[2] += irand(-1, 1);
-
-			TrailEnt->alpha = 1.0;
-			TrailEnt->d_alpha = -2.0;
-
-			AddEffect(owner,TrailEnt);
+			AddEffect(owner, trail);
 		}
-		else if(Self->classID == STAFF_TRAIL3)
+		else if (self->classID == STAFF_TRAIL3)
 		{
-			TrailEnt->r.frame = 0;
+			trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD;
+			trail->r.scale = 0.2f;
+			trail->d_scale = -0.35f;
+			trail->alpha = 0.75f;
+			trail->d_alpha = -4.0f;
 
-			TrailEnt->r.flags=RF_TRANSLUCENT | RF_TRANS_ADD;
-
-			TrailEnt->r.scale = 0.2;
-			TrailEnt->d_scale = -0.35;
-
-			TrailEnt->alpha = 0.75;
-			TrailEnt->d_alpha = -4;
-			
 			if (owner->current.effects & EF_BLOOD_ENABLED)
 			{
-				TrailEnt->r.color.c = 0x50000018;
+				trail->r.color.c = 0x50000018;
 			}
 			else
 			{
-				int	white;
-
-				white = irand(128, 208);
-
-				TrailEnt->r.color.r = white;
-				TrailEnt->r.color.g = white;
-				TrailEnt->r.color.b = 128 + irand(108, 127);
-				TrailEnt->r.color.a = 64 + irand(16, 128);
+				const int c = irand(128, 208);
+				COLOUR_SETA(trail->r.color, c, c, irand(236, 255), irand(80, 192)); //mxd. Use macro.
 			}
 
-			AddEffect(owner,TrailEnt);
+			AddEffect(owner, trail);
 		}
 
-		//
-		VectorAdd(curpt, diff, curpt);
-		NoOfIntervals--;
+		VectorAdd(trail_org, diff, trail_org);
 	}
-	Self->NoOfAnimFrames+=1.0;
-	if (Self->NoOfAnimFrames > 5.0)
-		return(false);
-	else
-		return(true);
+
+	self->NoOfAnimFrames++;
+
+	return self->NoOfAnimFrames < 6;
 }
 
 // ************************************************************************************************
