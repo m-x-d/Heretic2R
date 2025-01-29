@@ -283,45 +283,27 @@ static qboolean FXSphereOfAnnihilationGlowballSpawnerThink(struct client_entity_
 	return true;
 }
 
-// ****************************************************************************
-// FXSphereOfAnnihilationGlowballs -
-// ****************************************************************************
-
-void FXSphereOfAnnihilationGlowballs(centity_t *Owner,int Type,int Flags,vec3_t Origin)
+void FXSphereOfAnnihilationGlowballs(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t	*GlowballSpawner;
-	short			CasterEntnum;
-	int				caster_update;
-
 	// Get the caster's centity_t.
-
-	fxi.GetEffect(Owner,Flags,clientEffectSpawners[FX_WEAPON_SPHEREGLOWBALLS].formatString,&CasterEntnum);
+	short caster_entnum;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_SPHEREGLOWBALLS].formatString, &caster_entnum);
 
 	// Create a spawner that will create the glowballs.
+	const int caster_update = (((int)r_detail->value >= DETAIL_NORMAL) ? 100 : 250); //mxd
+	client_entity_t* glowball_spawner = ClientEntity_new(type, flags | CEF_VIEWSTATUSCHANGED, origin, NULL, caster_update);
 
-	if ((r_detail->value >= DETAIL_NORMAL))
-		caster_update = 100;
-	else
-		caster_update = 250;
+	glowball_spawner->flags |= CEF_NO_DRAW;
+	glowball_spawner->color.g = 0;
+	glowball_spawner->SpawnInfo = !(flags & CEF_FLAG6);
 
-	GlowballSpawner = ClientEntity_new(Type, Flags | CEF_VIEWSTATUSCHANGED, Origin, NULL, caster_update);
+	if (caster_entnum > -1)
+		glowball_spawner->extra = (void*)&fxi.server_entities[caster_entnum];
 
-	GlowballSpawner->flags|=CEF_NO_DRAW;
-	GlowballSpawner->color.g=0;
-	GlowballSpawner->Update = FXSphereOfAnnihilationGlowballSpawnerThink;
-	GlowballSpawner->AddToView = LinkedEntityUpdatePlacement;
+	glowball_spawner->AddToView = LinkedEntityUpdatePlacement;
+	glowball_spawner->Update = FXSphereOfAnnihilationGlowballSpawnerThink;
 
-	if(Flags&CEF_FLAG6)
-		GlowballSpawner->SpawnInfo = false;
-	else
-		GlowballSpawner->SpawnInfo = true;
-
-	if (CasterEntnum == -1)
-		GlowballSpawner->extra=NULL;
-	else
-		GlowballSpawner->extra=(void *)(&fxi.server_entities[CasterEntnum]);
-
-	AddEffect(Owner,GlowballSpawner);
+	AddEffect(owner, glowball_spawner);
 }
 
 // ****************************************************************************
