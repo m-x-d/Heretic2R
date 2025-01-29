@@ -1,23 +1,27 @@
 //
 // fx_sphereofannihilation.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Vector.h"
 #include "Matrix.h"
-#include "ce_DLight.h"
+#include "Particle.h"
 #include "Random.h"
-#include "Utilities.h"
 #include "Reference.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "ce_DLight.h"
 #include "q_Sprite.h"
 #include "g_playstats.h"
+
+#define FX_SPHERE_FLY_SPEED					600.0f
+#define FX_SPHERE_AURA_SCALE				1.2f
+#define FX_SOFT_SPHERE_AURA_SCALE			0.9f
+#define FX_SPHERE_EXPLOSION_BASE_RADIUS		89.0f
+#define FX_SPHERE_EXPLOSION_SMOKE_SPEED		140.0f
+#define FX_SPHERE_EXPLOSION_PITCH_INCREMENT	(ANGLE_180 / 32.0f) //mxd
+#define FX_SPHERE_EXPLOSION_YAW_INCREMENT	(ANGLE_180 / 27.0f) //mxd
 
 #define	NUM_SPHERE_MODELS	8
 
@@ -34,22 +38,6 @@ void PreCacheSphere()
 	sphere_models[6] = fxi.RegisterModel("sprites/fx/haloblue.sp2");
 	sphere_models[7] = fxi.RegisterModel("sprites/spells/spark_blue.sp2");
 }
-
-// --------------------------------------------------------------
-
-#define FX_SPHERE_FLY_SPEED				600.0
-#define	FX_SOFT_SPHERE_AURA_SCALE			0.9
-#define	FX_SPHERE_AURA_SCALE			1.2
-#define FX_SPHERE_EXPLOSION_BASE_RADIUS	89.0
-
-static qboolean FXSphereOfAnnihilationSphereThink(struct client_entity_s *Self,centity_t *Owner);
-static qboolean FXSphereOfAnnihilationAuraElementThink(struct client_entity_s *Self,centity_t *Owner);
-static qboolean FXSphereOfAnnihilationAuraThink(struct client_entity_s *Self,centity_t *Owner);
-static qboolean FXSphereOfAnnihilationGlowballSparkThink(struct client_entity_s *Self,centity_t *Owner);
-static qboolean FXSphereOfAnnihilationGlowballThink(struct client_entity_s *Self,centity_t *Owner);
-static qboolean FXSphereOfAnnihilationGlowballSpawnerThink(struct client_entity_s *Self,centity_t *Owner);
-static qboolean FXSphereOfAnnihilationSmokePuffThink(struct client_entity_s *Self,centity_t *Owner);
-
 
 // ****************************************************************************
 // FXSphereOfAnnihilationSphereThink -
@@ -479,8 +467,6 @@ static qboolean FXSphereOfAnnihilationSphereExplodeThink(struct client_entity_s 
 	}
 }
 
-#define SMOKE_SPEED 140
-
 // ****************************************************************************
 // FXSphereOfAnnihilationExplode -
 // ****************************************************************************
@@ -517,7 +503,7 @@ void FXSphereOfAnnihilationExplode(centity_t *Owner, int Type, int Flags, vec3_t
 	FXSphereOfAnnihilationSphereExplodeThink(Explosion,NULL);
 	// Add some glowing blast particles.
 
-	VectorScale(Dir,SMOKE_SPEED,Dir);
+	VectorScale(Dir,FX_SPHERE_EXPLOSION_SMOKE_SPEED,Dir);
 
 	count = GetScaledCount(40, 0.3);
 
@@ -536,9 +522,9 @@ void FXSphereOfAnnihilationExplode(centity_t *Owner, int Type, int Flags, vec3_t
 		
 		ce->scale=flrand(16.0, 32.0);
 
-		ce->velocity[0]+=flrand(-SMOKE_SPEED,SMOKE_SPEED);
-		ce->velocity[1]+=flrand(-SMOKE_SPEED,SMOKE_SPEED);
-		ce->velocity[2]+=flrand(-SMOKE_SPEED,SMOKE_SPEED);
+		ce->velocity[0]+=flrand(-FX_SPHERE_EXPLOSION_SMOKE_SPEED,FX_SPHERE_EXPLOSION_SMOKE_SPEED);
+		ce->velocity[1]+=flrand(-FX_SPHERE_EXPLOSION_SMOKE_SPEED,FX_SPHERE_EXPLOSION_SMOKE_SPEED);
+		ce->velocity[2]+=flrand(-FX_SPHERE_EXPLOSION_SMOKE_SPEED,FX_SPHERE_EXPLOSION_SMOKE_SPEED);
 	 	AddParticleToList(Explosion, ce);
 
 	}
@@ -771,7 +757,7 @@ void FXSpherePlayerExplode(centity_t *Owner, int Type, int Flags, vec3_t Origin)
 	FXSpherePlayerExplodeThink(explosion,NULL);
 	// Add some glowing blast particles.
 
-	VectorScale(Dir,SMOKE_SPEED,Dir);
+	VectorScale(Dir,FX_SPHERE_EXPLOSION_SMOKE_SPEED,Dir);
 
 	count = GetScaledCount(40, 0.3);
 
