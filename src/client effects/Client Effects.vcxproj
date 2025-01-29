@@ -79,7 +79,6 @@
     <ClCompile Include="fx_spellhands.c" />
     <ClCompile Include="fx_sphereofannihlation.c" />
     <ClCompile Include="fx_spoo.c" />
-    <ClCompile Include="fx_ssarrow.c" />
     <ClCompile Include="fx_ssithra.c" />
     <ClCompile Include="fx_staff.c" />
     <ClCompile Include="fx_tbeast.c" />

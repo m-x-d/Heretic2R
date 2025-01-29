@@ -246,9 +246,6 @@
     <ClCompile Include="fx_spoo.c">
       <Filter>src\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="fx_ssarrow.c">
-      <Filter>src\Effects</Filter>
-    </ClCompile>
     <ClCompile Include="fx_ssithra.c">
       <Filter>src\Effects</Filter>
     </ClCompile>

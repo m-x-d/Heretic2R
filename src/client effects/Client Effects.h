@@ -137,8 +137,6 @@ extern void FXBodyPart(centity_t* owner, int type, int flags, vec3_t origin);
 extern void PlayerTeleportout(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXPlayerPersistant(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXSsithraArrowGlow(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXSsithraArrowMissile(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXSsithraArrowExplode(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXplayertorch(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXTomeOfPower(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXFireOnEntity(centity_t* owner, int type, int flags, vec3_t origin);
