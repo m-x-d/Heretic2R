@@ -1,23 +1,22 @@
 //
 // fx_staff.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Vector.h"
 #include "Matrix.h"
 #include "Random.h"
-#include "Utilities.h"
 #include "Reference.h"
+#include "Utilities.h"
+#include "Vector.h"
 #include "ce_DLight.h"
 #include "q_Sprite.h"
-#include "particle.h"
 #include "g_playstats.h"
+
+#define STAFF_LENGTH		27
+#define STAFF_TYPE_SWORD	3
+#define STAFF_TYPE_HELL		4
 
 enum 
 {
@@ -26,6 +25,7 @@ enum
 	STAFF_TRAIL2,
 	STAFF_TRAIL_SMOKE,
 	STAFF_TRAIL3,
+
 	NUM_MODELS
 };
 
@@ -50,12 +50,6 @@ void PreCacheStaff()
 }
 
 // --------------------------------------------------------------
-
-#define	SCALE			.2
-#define STAFF_LENGTH	27
-
-#define STAFF_TYPE_SWORD	3
-#define STAFF_TYPE_HELL		4
 
 // Just wanted to put a note in here to Josh. This is one of the coolest effects I've seen in a game in a long
 // time. You should be extremely proud of this. I for one am very impressed. Jake.
