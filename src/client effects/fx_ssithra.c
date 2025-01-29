@@ -203,14 +203,13 @@ static void FXSsithraArrow2Boom(centity_t* owner, const int type, const int flag
 	FXDebris_SpawnChunks(type, flags & ~(CEF_FLAG6 | CEF_FLAG7 | CEF_FLAG8), origin, 5, MAT_GREYSTONE, vec3_up, 80000.0f, mins, 1.0f, false);
 }
 
-void FXSsithraArrow(centity_t *owner, int type, int flags, vec3_t origin)
+void FXSsithraArrow(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	byte			whicheffect = 0;
-	vec3_t			vel;
+	byte effect = 0;
+	vec3_t vel;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SSITHRA_ARROW].formatString, &effect, vel);
 
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SSITHRA_ARROW].formatString, &whicheffect, vel);
-
-	switch(whicheffect)
+	switch (effect)
 	{
 		case FX_SS_MAKE_ARROW:
 			FXDoSsithraArrow(owner, type, flags, origin, vel);
@@ -229,7 +228,7 @@ void FXSsithraArrow(centity_t *owner, int type, int flags, vec3_t origin)
 			break;
 
 		default:
-			Com_Printf("Unknown effect type (%d) for FXSsithraArrow\n", whicheffect);
+			Com_DPrintf("Unknown effect type (%d) for FXSsithraArrow\n", effect); //mxd. Changed from Com_Printf().
 			break;
 	}
 }
