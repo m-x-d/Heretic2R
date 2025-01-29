@@ -471,32 +471,23 @@ void FXSphereOfAnnihilationPower(centity_t* owner, const int type, const int fla
 	}
 }
 
-// PLAYER SPHERE OF ANNIHILATION EXPLOSION
-
-// ****************************************************************************
-// FXSpherePlayerExplodeThink -
-// ****************************************************************************
-
-static qboolean FXSpherePlayerExplodeThink(struct client_entity_s *self,centity_t *Owner)
+static qboolean FXSpherePlayerExplodeThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (fxi.cl->time > self->nextEventTime)
 	{
-		self->d_alpha = -5.0;
-		self->dlight->d_intensity = -self->radius*2.0;
+		self->d_alpha = -5.0f;
+		self->dlight->d_intensity = -self->radius * 2.0f;
 
 		if (fxi.cl->time > self->nextEventTime + 1000)
-		{
 			return false;
-		}
 	}
 	else
 	{
-		self->dlight->intensity=(FX_SPHERE_EXPLOSION_BASE_RADIUS*self->r.scale*1.7);
+		self->dlight->intensity = FX_SPHERE_EXPLOSION_BASE_RADIUS * self->r.scale * 1.7f;
 	}
-		
-	return(true);
-}
 
+	return true;
+}
 
 static qboolean FXSpherePlayerExplodeAddToView(struct client_entity_s *self,centity_t *Owner)
 {
