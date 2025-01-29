@@ -489,16 +489,15 @@ static qboolean FXSpherePlayerExplodeThink(struct client_entity_s* self, centity
 	return true;
 }
 
-static qboolean FXSpherePlayerExplodeAddToView(struct client_entity_s *self,centity_t *Owner)
+static qboolean FXSpherePlayerExplodeAddToView(struct client_entity_s* self, centity_t* owner)
 {
-	self->r.angles[0]+=(M_PI/32.0)*(fxi.cl->time-self->lastThinkTime)/50.0;
-	self->r.angles[1]+=(M_PI/27.0)*(fxi.cl->time-self->lastThinkTime)/50.0;
+	self->r.angles[0] += FX_SPHERE_EXPLOSION_PITCH_INCREMENT * (float)(fxi.cl->time - self->lastThinkTime) / 50.0f;
+	self->r.angles[1] += FX_SPHERE_EXPLOSION_YAW_INCREMENT *   (float)(fxi.cl->time - self->lastThinkTime) / 50.0f;
 
 	self->lastThinkTime = fxi.cl->time;
-		
-	return(true);
-}
 
+	return true;
+}
 
 static qboolean FXSpherePlayerExplodeGlowballThink(client_entity_t *glowball,centity_t *owner)
 {
