@@ -621,8 +621,8 @@ static qboolean FXInsectSwordTrailThink(struct client_entity_s* self, centity_t*
 		vec3_t pos;
 		VectorMA(last_org, increment, diff, pos);
 
-		client_entity_t* trail_ent = ClientEntity_new(FX_SPELLHANDS, flags, pos, 0, 100);
-		VectorCopy(pos, trail_ent->origin);
+		client_entity_t* trail_ent = ClientEntity_new(FX_SPELLHANDS, flags, pos, NULL, 100);
+
 		trail_ent->r.model = &sword_model;
 		trail_ent->alpha = 0.3f;
 		trail_ent->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
