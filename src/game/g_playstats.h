@@ -128,7 +128,7 @@
 #define SPHERE_MAX_MANA_CHARGE			7		// For a total of 20 mana in a shot.
 #define SPHERE_MAX_CHARGES				(SPHERE_MAX_MANA_CHARGE * 2)	// 2 frames per charge.
 #define SPHERE_FLY_SPEED				600.0
-#define SPHERE_LASER_SPEED				320.0
+#define SPHERE_LASER_SPEED				320.0f
 
 // Ripper (Iron Doom).
 #define RIPPER_DAMAGE_MIN				40
