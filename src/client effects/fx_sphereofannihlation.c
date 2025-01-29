@@ -23,11 +23,9 @@
 #define FX_SPHERE_EXPLOSION_PITCH_INCREMENT	(ANGLE_180 / 32.0f) //mxd
 #define FX_SPHERE_EXPLOSION_YAW_INCREMENT	(ANGLE_180 / 27.0f) //mxd
 
-#define	NUM_SPHERE_MODELS	8
+static struct model_s* sphere_models[8];
 
-static struct model_s *sphere_models[NUM_SPHERE_MODELS];
-
-void PreCacheSphere()
+void PreCacheSphere(void)
 {
 	sphere_models[0] = fxi.RegisterModel("sprites/spells/shboom.sp2");
 	sphere_models[1] = fxi.RegisterModel("sprites/spells/bluball.sp2");
