@@ -37,24 +37,19 @@ void PreCacheSphere(void)
 	sphere_models[7] = fxi.RegisterModel("sprites/spells/spark_blue.sp2");
 }
 
-// ****************************************************************************
-// FXSphereOfAnnihilationSphereThink -
-// ****************************************************************************
-
-static qboolean FXSphereOfAnnihilationSphereThink(struct client_entity_s *Self,centity_t *Owner)
+static qboolean FXSphereOfAnnihilationSphereThink(struct client_entity_s* self, centity_t* owner)
 {
-	float		detail_scale;
-	if(r_detail->value == DETAIL_LOW)
-		detail_scale = 0.7;
+	float detail_scale;
+	if ((int)r_detail->value == DETAIL_LOW)
+		detail_scale = 0.7f;
+	else if ((int)r_detail->value == DETAIL_NORMAL)
+		detail_scale = 0.85f;
 	else
-	if(r_detail->value == DETAIL_NORMAL)
-		detail_scale = 0.85;
-	else
-		detail_scale = 1.0;
+		detail_scale = 1.0f;
 
-	Self->r.scale=Owner->current.scale * detail_scale;
+	self->r.scale = owner->current.scale * detail_scale;
 
-	return(true);
+	return true;
 }
 
 // ****************************************************************************
