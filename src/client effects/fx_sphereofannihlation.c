@@ -330,66 +330,46 @@ static qboolean FXSphereOfAnnihilationSphereExplodeThink(struct client_entity_s*
 	return true;
 }
 
-// ****************************************************************************
-// FXSphereOfAnnihilationExplode -
-// ****************************************************************************
-void FXSphereOfAnnihilationExplode(centity_t *Owner, int Type, int Flags, vec3_t Origin)
+void FXSphereOfAnnihilationExplode(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	vec3_t				Dir;
-	byte				Size;
-	client_entity_t		*Explosion;
-	paletteRGBA_t		LightColor={255,255,255,255};
-	int					I, count;
-	client_particle_t	*ce;
+	vec3_t dir;
+	byte size;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_SPHEREEXPLODE].formatString, dir, &size);
 
-	fxi.GetEffect(Owner,Flags,clientEffectSpawners[FX_WEAPON_SPHEREEXPLODE].formatString,Dir,&Size);
-	if(Flags & CEF_FLAG6)
-	{
-		FXClientScorchmark(Origin, Dir);
-	}
+	if (flags & CEF_FLAG6)
+		FXClientScorchmark(origin, dir);
+
 	// Create an expanding ball of blue fire.
-	Explosion=ClientEntity_new(Type,Flags | CEF_ADDITIVE_PARTS,Origin,NULL,50);
+	client_entity_t* explosion = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS, origin, NULL, 50);
 
-	Explosion->r.model = sphere_models + 3;
-	Explosion->r.flags=RF_FULLBRIGHT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	Explosion->r.scale=0.01;
-	Explosion->color.c=0xffffffff;
-	Explosion->d_scale=2.5;
-	Explosion->NoOfAnimFrames=(int)Size;
-	Explosion->AnimSpeed=1.0;
-	Explosion->radius=FX_SPHERE_EXPLOSION_BASE_RADIUS*Explosion->r.scale;
-	Explosion->dlight=CE_DLight_new(LightColor,Explosion->radius/0.7,0);	
-	Explosion->Update=FXSphereOfAnnihilationSphereExplodeThink;
-	
-	AddEffect(NULL,Explosion);
+	explosion->radius = FX_SPHERE_EXPLOSION_BASE_RADIUS * explosion->r.scale;
+	explosion->r.model = &sphere_models[3]; // Sphere model.
+	explosion->r.flags = RF_FULLBRIGHT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	explosion->r.scale = 0.01f;
+	explosion->d_scale = 2.5f;
+	explosion->NoOfAnimFrames = (int)size;
+	explosion->AnimSpeed = 1.0f;
+	explosion->dlight = CE_DLight_new(color_white, explosion->radius / 0.7f, 0.0f);
+	explosion->Update = FXSphereOfAnnihilationSphereExplodeThink;
 
-	FXSphereOfAnnihilationSphereExplodeThink(Explosion,NULL);
+	AddEffect(NULL, explosion);
+	FXSphereOfAnnihilationSphereExplodeThink(explosion, NULL);
+
 	// Add some glowing blast particles.
+	VectorScale(dir, FX_SPHERE_EXPLOSION_SMOKE_SPEED, dir);
+	const int count = GetScaledCount(40, 0.3f);
 
-	VectorScale(Dir,FX_SPHERE_EXPLOSION_SMOKE_SPEED,Dir);
-
-	count = GetScaledCount(40, 0.3);
-
-	for(I=0;I<count;I++)
+	for (int i = 0; i < count; i++)
 	{
+		client_particle_t* ce = ClientParticle_new(PART_16x16_SPARK_B, color_white, 600);
 
-		// No more tinting these particles.  It wasn't really worth it anyway
-/*		LightColor.r=irand(25, 50);
-		LightColor.g=irand(25, 50);
-		LightColor.b=irand(200, 255);
-		*/
+		VectorCopy(dir, ce->velocity);
+		ce->scale = flrand(16.0f, 32.0f);
 
-		ce = ClientParticle_new(PART_16x16_SPARK_B, LightColor, 600);
+		for (int c = 0; c < 3; c++)
+			ce->velocity[c] += flrand(-FX_SPHERE_EXPLOSION_SMOKE_SPEED, FX_SPHERE_EXPLOSION_SMOKE_SPEED);
 
-		VectorCopy(Dir,ce->velocity);
-		
-		ce->scale=flrand(16.0, 32.0);
-
-		ce->velocity[0]+=flrand(-FX_SPHERE_EXPLOSION_SMOKE_SPEED,FX_SPHERE_EXPLOSION_SMOKE_SPEED);
-		ce->velocity[1]+=flrand(-FX_SPHERE_EXPLOSION_SMOKE_SPEED,FX_SPHERE_EXPLOSION_SMOKE_SPEED);
-		ce->velocity[2]+=flrand(-FX_SPHERE_EXPLOSION_SMOKE_SPEED,FX_SPHERE_EXPLOSION_SMOKE_SPEED);
-	 	AddParticleToList(Explosion, ce);
-
+		AddParticleToList(explosion, ce);
 	}
 }
 
