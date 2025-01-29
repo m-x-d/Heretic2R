@@ -679,7 +679,6 @@ static void SpawnHPMissile12Light(const int type, const vec3_t origin, const pal
 {
 	client_entity_t* light = ClientEntity_new(type, CEF_NO_DRAW | CEF_DONT_LINK, origin, NULL, 20);
 
-	VectorCopy(origin, light->origin);
 	light->radius = 500.0f;
 	light->r.model = &hpproj_models[3]; // Halo sprite.
 	light->r.color = color_white;
@@ -695,7 +694,6 @@ static void SpawnHPMissile3Light(const int type, const vec3_t origin, const pale
 {
 	client_entity_t* light = ClientEntity_new(type, CEF_NO_DRAW | CEF_DONT_LINK, origin, NULL, 20);
 
-	VectorCopy(origin, light->origin);
 	light->radius = 500.0f;
 	light->LifeTime = fxi.cl->time + 2000;
 	light->dlight = CE_DLight_new(bug_color, 10.0f, 0.0f);
@@ -711,7 +709,6 @@ static void SpawnHPMissile4Light(const int type, const vec3_t origin) //mxd
 	// Create the large halo that scales up and fades out.
 	client_entity_t* halo = ClientEntity_new(type, CEF_DONT_LINK, origin, NULL, 4000);
 
-	VectorCopy(origin, halo->origin);
 	halo->radius = 500.0f;
 	halo->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 	halo->r.model = &hpproj_models[4]; // Halo sprite.
@@ -725,7 +722,6 @@ static void SpawnHPMissile4Light(const int type, const vec3_t origin) //mxd
 	// Create the sparkling center.
 	client_entity_t* spark = ClientEntity_new(type, CEF_DONT_LINK, origin, NULL, 20);
 
-	VectorCopy(origin, spark->origin);
 	spark->radius = 500.0f;
 	spark->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
@@ -748,9 +744,7 @@ static void SpawnHPTeleportStart(const int type, const vec3_t origin) //mxd
 {
 	client_entity_t* trail = ClientEntity_new(type, CEF_DONT_LINK, origin, NULL, 20);
 
-	VectorCopy(origin, trail->origin);
 	trail->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-
 	trail->r.model = &hpproj_models[7]; // Trail segment sprite.
 	trail->r.spriteType = SPRITE_LINE;
 	trail->r.tile = 1.0f;
@@ -774,9 +768,7 @@ static void SpawnHPTeleportEnd(const int type, const vec3_t origin) //mxd
 {
 	client_entity_t* trail = ClientEntity_new(type, CEF_DONT_LINK, origin, NULL, 20);
 
-	VectorCopy(origin, trail->origin);
 	trail->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-
 	trail->r.model = &hpproj_models[7]; // Trail segment sprite.
 	trail->r.spriteType = SPRITE_LINE;
 	trail->r.tile = 1.0f;
