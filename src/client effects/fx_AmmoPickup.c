@@ -97,23 +97,19 @@ void FXAmmoPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 	flags |= CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED;
 	client_entity_t* ce = ClientEntity_new(type, flags, origin, NULL, 50);
 
-	VectorCopy(ce->r.origin, ce->origin);
+	ce->radius = 10.0f;
 	ce->r.model = &ammo_models[tag];
-
-	if (tag == 0 || tag == 1) // Blue stuff.
-		ce->r.skinnum = 1;
-
 	ce->r.flags = RF_TRANSLUCENT | RF_GLOW;
+	ce->alpha = 0.8f;
+	ce->SpawnInfo = tag;
+
+	if (tag == ITEM_AMMO_MANA_DEFENSIVE_HALF || tag == ITEM_AMMO_MANA_DEFENSIVE_FULL) // Blue stuff.
+		ce->r.skinnum = 1;
 
 	if (tag == ITEM_AMMO_MANA_COMBO_HALF || tag == ITEM_AMMO_MANA_DEFENSIVE_FULL || tag == ITEM_AMMO_MANA_OFFENSIVE_FULL)
 		ce->r.scale = 1.25f;
-	else
-		ce->r.scale = 1.0f;
 
-	ce->radius = 10.0f;
-	ce->alpha = 0.8f;
 	ce->Update = FXAmmoPickupThink;
-	ce->SpawnInfo = tag;
 
 	AddEffect(owner, ce);
 }
