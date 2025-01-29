@@ -21,17 +21,13 @@ void PreCacheSsithraArrow(void)
 	ssarrow_models[1] = fxi.RegisterModel("models/objects/projectiles/sitharrow/tris.fm");
 }
 
-// --------------------------------------------------------------
-
-// Need to create some pretty effect here
-
-static qboolean FXSsithraArrowGlowThink(struct client_entity_s *self, centity_t *owner)
+static qboolean FXSsithraArrowGlowThink(struct client_entity_s* self, centity_t* owner)
 {
-	// Reset update time to regular after game has been given enough time to gen lerp info
+	// Reset update time to regular after game has been given enough time to gen lerp info.
 	self->updateTime = 100;
+	self->dlight->intensity = 150.0f + (cosf((float)fxi.cl->time * 0.01f) * 20.0f);
 
-	self->dlight->intensity = 150.0 + (cos(fxi.cl->time * 0.01) * 20.0);
-	return(true);
+	return true;
 }
 
 void FXSsithraArrowGlow(centity_t *owner, int type, int flags, vec3_t origin)
