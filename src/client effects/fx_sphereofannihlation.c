@@ -183,130 +183,104 @@ static qboolean FXSphereOfAnnihilationGlowballThink(struct client_entity_s* self
 	return false;
 }
 
-// ****************************************************************************
-// FXSphereOfAnnihilationGlowballSpawnerThink -
-// ****************************************************************************
-
-static qboolean FXSphereOfAnnihilationGlowballSpawnerThink(struct client_entity_s *Self,centity_t *Owner)
+static qboolean FXSphereOfAnnihilationGlowballSpawnerThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_entity_t	*Glowball;
-	centity_t		*controller;
-	vec3_t			Forward,Right,
-					Forward2,Right2,
-					Temp,
-					temp_origin;
-	matrix3_t		RotationMatrix;
+	// 'Self->extra' refers to the caster's centity_t.
+	const centity_t* controller = (centity_t*)self->extra;
 
 	// This tells if we are wasting our time, because the reference points are culled.
-	if (Self->extra && !RefPointsValid((centity_t *)(Self->extra)))	// Only if we were SUPPOSED to have refpoints.
+	if (controller != NULL && !RefPointsValid(controller)) // Only if we were SUPPOSED to have refpoints.
+		return true;
+
+	if ((owner->current.effects & EF_MARCUS_FLAG1) == 0)
 		return true;
 
 	// If the spell is still building, create some swirling blue Glowballs.
+	vec3_t temp_origin;
+	if (controller != NULL)
+		VectorCopy(controller->origin, temp_origin);
+	else
+		VectorCopy(self->r.origin, temp_origin);
 
-	if(Owner->current.effects&EF_MARCUS_FLAG1)
-	{	
-		// 'Self->extra' refers to the caster's centity_t.
+	client_entity_t* glowball = ClientEntity_new(FX_WEAPON_SPHEREGLOWBALLS, (int)(self->flags & ~(CEF_NO_DRAW | CEF_OWNERS_ORIGIN)), temp_origin, NULL, 50);
 
-		if (Self->extra)
-			VectorCopy(((centity_t *)(Self->extra))->origin, temp_origin);
-		else
-			VectorCopy(Self->r.origin, temp_origin);
+	glowball->flags |= CEF_DONT_LINK;
 
-		Glowball=ClientEntity_new(FX_WEAPON_SPHEREGLOWBALLS,
-								  Self->flags&~(CEF_NO_DRAW|CEF_OWNERS_ORIGIN),
-								  temp_origin,
-								  NULL,
-								  50);
+	// Make me spawn from my caster's left / right hands (alternating). Assuming we aren't a reflection type glowball.
+	if (controller != NULL)
+	{
+		vec3_t angles;
+		VectorCopy(controller->current.angles, angles);
+		VectorScale(angles, RAD_TO_ANGLE, angles);
 
-		Glowball->flags|=CEF_DONT_LINK;
-		
-		// Make me spawn from my caster's left / right hands (alternating).
-		// assuming we aren't a reflection type glowball
-		if (Self->extra)
+		vec3_t forward;
+		vec3_t right;
+		AngleVectors(angles, forward, right, NULL);
+
+		matrix3_t rotation;
+		Matrix3FromAngles(controller->lerp_angles, rotation);
+
+		if (self->SpawnInfo != 0)
 		{
-			controller = ((centity_t *)(Self->extra));
-			VectorCopy(controller->current.angles,Temp);
-			VectorScale(Temp,180.0/M_PI,Temp);
-			AngleVectors(Temp,Forward,Right,NULL);
-
-			Matrix3FromAngles(controller->lerp_angles,RotationMatrix);
-
-			if(Self->SpawnInfo)
-			{
-				if(!(Self->color.g&1))
-					Matrix3MultByVec3(RotationMatrix,
-									  controller->referenceInfo->references[CORVUS_LEFTHAND].placement.origin,
-									  Glowball->r.origin);
-				else
-					Matrix3MultByVec3(RotationMatrix,
-									  controller->referenceInfo->references[CORVUS_RIGHTHAND].placement.origin,
-									  Glowball->r.origin);
-			}
-			else
-			{
-				vec3_t fwd_ofs;
-
-				VectorScale(Forward, 16, fwd_ofs);//Hard-coded for Celestial Watcher(monster_elflord), 
-				Matrix3MultByVec3(RotationMatrix,
-								  fwd_ofs,
-								  Glowball->r.origin);
-			}
-
-			VectorAdd(controller->origin,Glowball->r.origin,Glowball->r.origin);
+			const int ref_point = ((self->color.g & 1) ? CORVUS_RIGHTHAND : CORVUS_LEFTHAND); //mxd
+			Matrix3MultByVec3(rotation, controller->referenceInfo->references[ref_point].placement.origin, glowball->r.origin);
 		}
 		else
 		{
-			VectorCopy(Self->r.angles,Temp);
-			VectorScale(Temp,180.0/M_PI,Temp);
-			AngleVectors(Temp,Forward,Right,NULL);
-
-
-			VectorSet(Glowball->r.origin,	flrand(-10.0, 10.0)+ Self->r.origin[0],
-											flrand(-10.0, 10.0)+ Self->r.origin[1],
-											flrand(-10.0, 10.0)+ Self->r.origin[2]);
+			vec3_t fwd_ofs;
+			VectorScale(forward, 16.0f, fwd_ofs); // Hard-coded for Celestial Watcher (monster_elflord). 
+			Matrix3MultByVec3(rotation, fwd_ofs, glowball->r.origin);
 		}
 
-	   	VectorCopy(Owner->current.angles,Temp);
-	   	VectorScale(Temp,180.0/M_PI,Temp);
-	   	AngleVectors(Temp,Forward2,Right2,NULL);
+		VectorAdd(controller->origin, glowball->r.origin, glowball->r.origin);
+	}
+	else
+	{
+		vec3_t angles;
+		VectorCopy(self->r.angles, angles);
+		VectorScale(angles, RAD_TO_ANGLE, angles);
 
+		vec3_t forward;
+		vec3_t right;
+		AngleVectors(angles, forward, right, NULL);
 
-		// Set my velocity and accelaration.
-
-		Glowball->velocity[0]=Forward2[0]*175.0+flrand(-25.0, 25.0);
-
-		if(Self->color.g&1)
-			Glowball->velocity[0]=-Glowball->velocity[0];
-
-		Glowball->velocity[1]=Forward2[1]*175.0+flrand(-25.0, 25.0);
-
-		if(!(Self->color.g&1))
-			Glowball->velocity[1]=-Glowball->velocity[1];
-		
-		Glowball->velocity[2]=flrand(-200.0, 100.0);
-
-		VectorClear(Glowball->acceleration);
-
-		// Fill in the rest of my info.
-		
-		Glowball->r.model = sphere_models + 2;
-		Glowball->r.flags=RF_TRANSLUCENT|RF_TRANS_ADD;
-		Glowball->r.color.r= irand(128, 180);
-		Glowball->r.color.g= irand(128, 180);
-		Glowball->r.color.b= irand(180, 255);
-		Glowball->color.r=1;
-		Glowball->radius=20.0;
-		Glowball->extra=(void *)Owner;
-		Glowball->Update=FXSphereOfAnnihilationGlowballThink;
-
-		AddEffect(Owner,Glowball);
-
-		FXSphereOfAnnihilationGlowballThink(Glowball,Owner);
-
-		Self->color.g++;
+		for (int i = 0; i < 3; i++)
+			glowball->r.origin[i] = self->r.origin[i] + flrand(-10.0f, 10.0f);
 	}
 
-	return(true);
+	vec3_t angles2;
+	VectorCopy(owner->current.angles, angles2);
+	VectorScale(angles2, RAD_TO_ANGLE, angles2);
+
+	vec3_t forward2;
+	vec3_t right2;
+	AngleVectors(angles2, forward2, right2, NULL);
+
+	// Set my velocity and acceleration.
+	glowball->velocity[0] = forward2[0] * 175.0f + flrand(-25.0f, 25.0f);
+	glowball->velocity[1] = forward2[1] * 175.0f + flrand(-25.0f, 25.0f);
+	glowball->velocity[2] = flrand(-200.0f, 100.0f);
+
+	const int axis = ((self->color.g & 1) ? 0 : 1); //mxd
+	glowball->velocity[axis] *= -1.0f;
+
+	VectorClear(glowball->acceleration);
+
+	// Fill in the rest of my info.
+	glowball->radius = 20.0f;
+	glowball->r.model = &sphere_models[2]; // glowball sprite.
+	glowball->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD;
+	COLOUR_SET(glowball->r.color, irand(128, 180), irand(128, 180), irand(180, 255)); //mxd. Use macro.
+	glowball->color.r = 1;
+	glowball->extra = (void*)owner;
+	glowball->Update = FXSphereOfAnnihilationGlowballThink;
+
+	AddEffect(owner, glowball);
+	FXSphereOfAnnihilationGlowballThink(glowball, owner);
+
+	self->color.g++;
+
+	return true;
 }
 
 // ****************************************************************************
