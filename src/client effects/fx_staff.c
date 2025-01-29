@@ -333,112 +333,85 @@ static qboolean FXStaffLevel2Think(struct client_entity_s* self, centity_t* owne
 	return true;
 }
 
-static qboolean FXStaffLevel3Think(struct client_entity_s *Self,centity_t *owner)
+static qboolean FXStaffLevel3Think(struct client_entity_s* self, centity_t* owner)
 {
-	int				I;
-	int				NoOfIntervals, white;
-	client_entity_t	*TrailEnt;
-	vec3_t			dpivot, curpivot;
-	vec3_t			dnormal, curnormal, adjnormal;
-	vec3_t			diff, newpoint;
-
-	// If we've timed out, stop the effect (allow for fading)
-	if ( (Self->LifeTime > 0) && (Self->LifeTime < fxi.cl->time) )
+	// If we've timed out, stop the effect (allow for fading).
+	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
 	{
-		Self->Update=RemoveSelfAI;
-		Self->updateTime = fxi.cl->time + 500;
+		self->Update = RemoveSelfAI;
+		self->updateTime = fxi.cl->time + 500;
+
 		return true;
 	}
 
 	// This tells if we are wasting our time, because the reference points are culled.
 	if (!RefPointsValid(owner))
-		return false;		// Remove the effect in this case.
-
-	I=Self->NoOfAnimFrames;
+		return false; // Remove the effect in this case.
 
 	// If this reference point hasn't changed since the last frame, return.
-	VectorSubtract(	owner->referenceInfo->references[I].placement.origin,
-					owner->referenceInfo->oldReferences[I].placement.origin,
-					diff);
+	vec3_t diff;
+	const int ref_index = self->NoOfAnimFrames;
+	VectorSubtract(owner->referenceInfo->references[ref_index].placement.origin, owner->referenceInfo->oldReferences[ref_index].placement.origin, diff);
 
-	if (Q_fabs(diff[0] + diff[1] + diff[2]) < .1)
-		return(true);
+	if (Q_fabs(diff[0] + diff[1] + diff[2]) < 0.1f)
+		return true;
 
-	NoOfIntervals=(int)(VectorLength(diff)*.5);
-	if(NoOfIntervals > 40)
-		return(false);
-	NoOfIntervals = GetScaledCount(NoOfIntervals, 1.0);
+	const int num_of_intervals = GetScaledCount((int)(VectorLength(diff) * 0.5f), 1.0f);
+	if (num_of_intervals > 40)
+		return false;
 
 	// Take the before and after points and try to draw an arc.
 
 	// Average out the two right hand positions to get a pivot point.
-	VectorCopy(owner->referenceInfo->oldReferences[CORVUS_RIGHTHAND].placement.origin, curpivot);
-	VectorSubtract(owner->referenceInfo->references[CORVUS_RIGHTHAND].placement.origin, curpivot, dpivot);
-	VectorScale(dpivot, 1.0/NoOfIntervals, dpivot);
+	vec3_t cur_pivot;
+	VectorCopy(owner->referenceInfo->oldReferences[CORVUS_RIGHTHAND].placement.origin, cur_pivot);
 
-	VectorCopy(owner->referenceInfo->oldReferences[I].placement.direction, curnormal);
-	VectorSubtract(owner->referenceInfo->references[I].placement.direction, curnormal, dnormal);
-	VectorScale(dnormal, 1.0/NoOfIntervals, dnormal);
-	VectorCopy(curnormal, adjnormal);  // This rides on the assumption that the normal given is already a unit norm.
+	vec3_t delta_pivot;
+	VectorSubtract(owner->referenceInfo->references[CORVUS_RIGHTHAND].placement.origin, cur_pivot, delta_pivot);
+	VectorScale(delta_pivot, 1.0f / (float)num_of_intervals, delta_pivot);
 
-	//FIXME: The above assumption isn't working!
-	VectorNormalize(adjnormal);
-	if(NoOfIntervals > 40)
-		return(false);
+	vec3_t cur_normal;
+	VectorCopy(owner->referenceInfo->oldReferences[ref_index].placement.direction, cur_normal);
 
-	while (NoOfIntervals >= 0)
+	vec3_t delta_normal;
+	VectorSubtract(owner->referenceInfo->references[ref_index].placement.direction, cur_normal, delta_normal);
+	VectorScale(delta_normal, 1.0f / (float)num_of_intervals, delta_normal);
+
+	vec3_t dir;
+	VectorCopy(cur_normal, dir);
+	VectorNormalize(dir);
+
+	for (int i = 0; i < num_of_intervals; i++)
 	{
-		VectorMA(curpivot, STAFF_LENGTH, adjnormal, newpoint);
-		
-		TrailEnt=ClientEntity_new(FX_SPELLHANDS, Self->flags & ~CEF_NO_DRAW, newpoint, 0, 500);
-		
-		VectorCopy(newpoint, TrailEnt->origin);
-		
-		TrailEnt->r.model = staff_models + STAFF_TRAIL3;
-		
-		TrailEnt->r.frame = 0;
+		vec3_t trail_org;
+		VectorMA(cur_pivot, STAFF_LENGTH, dir, trail_org);
 
-		TrailEnt->r.flags=RF_TRANSLUCENT | RF_TRANS_ADD;
+		client_entity_t* trail = ClientEntity_new(FX_SPELLHANDS, (int)(self->flags & ~CEF_NO_DRAW), trail_org, NULL, 500);
 
-		TrailEnt->r.scale = 0.3;
-		TrailEnt->d_scale = -0.75;
+		trail->r.model = &staff_models[STAFF_TRAIL3];
+		trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD;
+		trail->r.scale = 0.3f;
+		trail->d_scale = -0.75f;
+		trail->alpha = 0.75f;
+		trail->d_alpha = -4.0f;
 
-		TrailEnt->alpha = 0.75;
-		TrailEnt->d_alpha = -4;
-		
+		const int c = irand(128, 208);
 		if (owner->current.effects & EF_BLOOD_ENABLED)
-		{
-			white = irand(128, 208);
-
-			TrailEnt->r.color.r = 128 + irand(108, 127);
-			TrailEnt->r.color.g = white;
-			TrailEnt->r.color.b = white;
-			TrailEnt->r.color.a = 64 + irand(16, 128);
-		}
+			COLOUR_SETA(trail->r.color, irand(236, 255), c, c, irand(80, 192)); //mxd. Use macro.
 		else
-		{
-			white = irand(128, 208);
+			COLOUR_SETA(trail->r.color, c, c, irand(236, 255), irand(80, 192)); //mxd. Use macro.
 
-			TrailEnt->r.color.r = white;
-			TrailEnt->r.color.g = white;
-			TrailEnt->r.color.b = 128 + irand(108, 127);
-			TrailEnt->r.color.a = 64 + irand(16, 128);
-		}
+		// Attach a dynamic light to the last one.
+		if (i == num_of_intervals - 1 && r_detail->value >= DETAIL_NORMAL)
+			trail->dlight = CE_DLight_new(trail->r.color, 100.0f, -100.0f);
 
-		//Attach a dynamic light to the last one
-		if (NoOfIntervals==1 && (r_detail->value >= DETAIL_NORMAL))
-		{
-			TrailEnt->dlight = CE_DLight_new(TrailEnt->r.color, 100.0F, -100.0F);
-		}
+		trail->AddToView = OffsetLinkedEntityUpdatePlacement;
 
-		TrailEnt->AddToView=OffsetLinkedEntityUpdatePlacement;			
-		
-		AddEffect(owner,TrailEnt);
+		AddEffect(owner, trail);
 
-		VectorAdd(curpivot, dpivot, curpivot);
-		VectorAdd(curnormal, dnormal, curnormal);
-		VectorNormalize2(curnormal, adjnormal);
-		NoOfIntervals--;
+		VectorAdd(cur_pivot, delta_pivot, cur_pivot);
+		VectorAdd(cur_normal, delta_normal, cur_normal);
+		VectorNormalize2(cur_normal, dir);
 	}
 
 	return true;
