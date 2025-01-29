@@ -13,9 +13,9 @@
 #define SSARROW_PARTICLE_OFFSET			5.0f
 #define SSARROW_NUM_TRAIL_PARICLES		6
 
-#define	NUM_SSARROW_MODELS	2
-static struct model_s *ssarrow_models[NUM_SSARROW_MODELS];
-void PreCacheSsithraArrow()
+static struct model_s* ssarrow_models[2];
+
+void PreCacheSsithraArrow(void)
 {
 	ssarrow_models[0] = fxi.RegisterModel("sprites/fx/steampuff.sp2");
 	ssarrow_models[1] = fxi.RegisterModel("models/objects/projectiles/sitharrow/tris.fm");
