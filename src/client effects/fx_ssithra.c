@@ -126,64 +126,40 @@ static void FXDoSsithraArrow2(centity_t* owner, const int type, const int flags,
 	AddEffect(owner, missile);
 }
 
-// ************************************************************************************************
-// FXSsithraArrowExplode
-// ************************************************************************************************
-
-///////////////////////////////////////
-// From CreateEffect FX_WEAPON_SSITHRAARROWEXPLODE
-///////////////////////////////////////
-void FXSsithraArrowBoom(centity_t *owner,int type,int flags,vec3_t origin, vec3_t dir)
+static void FXSsithraArrowBoom(centity_t* owner, const int type, const int flags, const vec3_t origin, vec3_t direction)
 {
-	client_entity_t	*SmokePuff;
-	int				i;
-	paletteRGBA_t	LightColor;
-	float			lightrad;
-	
-	Vec3ScaleAssign(32.0, dir);
+	Vec3ScaleAssign(32.0f, direction);
 
-	i = GetScaledCount(irand(8, 12), 0.8);
-	LightColor.c = 0xff2040ff;
-	lightrad = 150;
+	const int count = GetScaledCount(irand(8, 12), 0.8f);
 
-	while(i--)
+	for (int i = 0; i < count; i++)
 	{
-		if (!i)
-			SmokePuff=ClientEntity_new(type,flags,origin,NULL,500);
-		else
-			SmokePuff=ClientEntity_new(type,flags,origin,NULL,1000);
+		const qboolean is_last_puff = (i == count - 1); //mxd
+		const int next_think_time = (is_last_puff ? 500 : 1000); //mxd
 
-		SmokePuff->r.model = arrow_models;
-		SmokePuff->r.scale=flrand(0.8,1.6);
-		SmokePuff->d_scale=-2.0;
+		client_entity_t* smoke_puff = ClientEntity_new(type, flags, origin, NULL, next_think_time);
 
-		VectorRandomCopy(dir, SmokePuff->velocity, 64.0);
-		SmokePuff->acceleration[0] = flrand(-200, 200);
-		SmokePuff->acceleration[1] = flrand(-200, 200);
-		SmokePuff->acceleration[2] = flrand(-40, -60);
+		smoke_puff->radius = 20.0f;
+		smoke_puff->r.model = &arrow_models[0]; // steam sprite.
+		smoke_puff->r.flags = RF_TRANSLUCENT; // Make this use tinting instead of darken?
+		smoke_puff->r.scale = flrand(0.8f, 1.6f);
+		smoke_puff->d_scale = -2.0f;
+		smoke_puff->d_alpha = -0.4f;
+		COLOUR_SETA(smoke_puff->r.color, 75, 50, 100, 100); //mxd. Use macro.
 
-		//make this use tinting instead of darken?
-		SmokePuff->r.flags |= RF_TRANSLUCENT;
-		SmokePuff->r.color.r = 75;
-		SmokePuff->r.color.g = 50;
-		SmokePuff->r.color.b = 100;
-		SmokePuff->r.color.a = 100;
+		VectorSet(smoke_puff->acceleration, flrand(-200.0f, 200.0f), flrand(-200.0f, 200.0f), flrand(-60.0f, -40.0f));
 
-		SmokePuff->r.frame=0;
-
-		SmokePuff->d_alpha= -0.4;
-			
-		SmokePuff->radius=20.0;
-
-		if(!i)
+		if (is_last_puff)
 		{
-			fxi.S_StartSound(SmokePuff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/SsithraArrowImpact.wav"), 
-					1, ATTN_NORM, 0);
-			SmokePuff->dlight=CE_DLight_new(LightColor,lightrad,0.0f);
-			VectorClear(SmokePuff->velocity);
-		}	
+			fxi.S_StartSound(smoke_puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/SsithraArrowImpact.wav"), 1.0f, ATTN_NORM, 0.0f);
+			smoke_puff->dlight = CE_DLight_new(color_orange, 150.0f, 0.0f);
+		}
+		else
+		{
+			VectorRandomCopy(direction, smoke_puff->velocity, 64.0f);
+		}
 
-		AddEffect(NULL,SmokePuff);
+		AddEffect(NULL, smoke_puff);
 	}
 }
 
