@@ -17,7 +17,6 @@
 
 #define FX_SPHERE_FLY_SPEED					600.0f
 #define FX_SPHERE_AURA_SCALE				1.2f
-#define FX_SOFT_SPHERE_AURA_SCALE			0.9f
 #define FX_SPHERE_EXPLOSION_BASE_RADIUS		89.0f
 #define FX_SPHERE_EXPLOSION_SMOKE_SPEED		140.0f
 #define FX_SPHERE_EXPLOSION_PITCH_INCREMENT	(ANGLE_180 / 32.0f) //mxd
@@ -373,123 +372,104 @@ void FXSphereOfAnnihilationExplode(centity_t* owner, const int type, const int f
 	}
 }
 
-void FXSphereOfAnnihilationPower(centity_t *Owner,int Type,int Flags,vec3_t Origin)
+void FXSphereOfAnnihilationPower(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	vec3_t				dir;
-	byte					size;
-	client_entity_t		*exp1, *beam;
-	paletteRGBA_t		LightColor={255,255,255,255};
-	int					i;
-	client_particle_t	*ce;
-	vec3_t				spot1;
-	vec3_t				tempSpot;
-	vec3_t				fwd, right, up;
-	vec3_t				ang;
-	byte				len2;
-	int					len;
-	int					count;
+	vec3_t dir;
+	byte b_size;
+	byte b_len;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_SPHEREPOWER].formatString, dir, &b_size, &b_len);
 
-	fxi.GetEffect(Owner,Flags,clientEffectSpawners[FX_WEAPON_SPHEREPOWER].formatString,dir,&size, &len2);
+	// If there is a cheaper way to get ACCURATE right and up, I'd be happy to see it...
+	vec3_t angles;
+	vectoangles(dir, angles);
+	angles[PITCH] *= -1.0f;// something's broken with angle signs somewhere ;(
 
-	len = len2*8;// shrunk down so range can be up to 2048
+	vec3_t fwd;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(angles, fwd, right, up);
 
-	// if there is a cheaper way to get ACCURATE right and up, I'd be happy to see it...
-	vectoangles(dir, ang);
-	ang[PITCH] *= -1;// something's broken with angle signs somewhere ;(
-	AngleVectors(ang, fwd, right, up);
+	// Only one beam.
+	vec3_t beam_start;
+	VectorCopy(origin, beam_start);
 
-	// Only one beam
-	VectorCopy(Origin, spot1);
+	// When CEF_FLAG8 is set, move to the left. Otherwise to the right.
+	const float vel_scaler = SPHERE_LASER_SPEED * ((flags & CEF_FLAG8) ? -0.4f : 0.4f); //mxd
+	const float acc_scaler = SPHERE_LASER_SPEED * ((flags & CEF_FLAG8) ? 1.0f : -1.0f); //mxd
 
-	// make the flares at the start
-	exp1 = ClientEntity_new(Type,Flags | CEF_ADDITIVE_PARTS, spot1, NULL, 500);
-	exp1->r.model = sphere_models + 6;
-	exp1->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
-	exp1->r.frame = 0;
-	exp1->radius=128;
-	exp1->d_alpha=-4.0;
-	exp1->r.scale=.25;
-	exp1->d_scale = -0.5;
-	if (Flags & CEF_FLAG8)
+	// Make the flares at the start.
+	client_entity_t* flare_start = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS, beam_start, NULL, 500);
+
+	flare_start->radius = 128.0f;
+	flare_start->r.model = &sphere_models[6]; // Blue halo sprite.
+	flare_start->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	flare_start->d_alpha = -4.0f;
+	flare_start->r.scale = 0.25f;
+	flare_start->d_scale = -0.5f;
+
+	VectorScale(right, vel_scaler, flare_start->velocity);
+	VectorScale(right, acc_scaler, flare_start->acceleration);
+
+	AddEffect(NULL, flare_start);
+
+	const float len = (float)b_len * 8.0f; // Shrunk down so range can be up to 2048.
+	const float size = b_size; //mxd
+
+	vec3_t beam_end;
+	VectorMA(beam_start, len, fwd, beam_end);
+
+	// Make the line beam down the side.
+	client_entity_t* beam = ClientEntity_new(-1, CEF_DONT_LINK, beam_start, NULL, 200);
+
+	beam->radius = 256.0f;
+	beam->r.model = &sphere_models[5]; // Glowbeam sprite.
+	beam->r.spriteType = SPRITE_LINE;
+	beam->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	beam->r.scale = (size - 3.0f) * 6.0f;
+	beam->alpha = 0.95f;
+	beam->d_alpha = -5.0f;
+	VectorCopy(beam_start, beam->r.startpos);
+	VectorCopy(beam_end, beam->r.endpos);
+
+	VectorScale(right, vel_scaler, beam->velocity);
+	VectorScale(right, acc_scaler, beam->acceleration);
+
+	AddEffect(NULL, beam);
+
+	const int count = GetScaledCount((int)(25.0f + size * 2.5f), 0.3f);
+
+	// Make the particles.
+	for (int i = 0; i < count; i++)
 	{
-		VectorScale(right, -0.4*SPHERE_LASER_SPEED, exp1->velocity);	// Move to the left
-		VectorScale(right, SPHERE_LASER_SPEED, exp1->acceleration);
-	}
-	else
-	{
-		VectorScale(right, 0.4*SPHERE_LASER_SPEED, exp1->velocity);		// Move to the right
-		VectorScale(right, -SPHERE_LASER_SPEED, exp1->acceleration);
-	}
-	AddEffect(NULL, exp1);
+		client_particle_t* ce = ClientParticle_new(PART_16x16_SPARK_B, color_white, 666);
 
-	VectorMA(spot1, len, fwd, tempSpot);
-	//make the line beam down the side
-	beam = ClientEntity_new(-1, CEF_DONT_LINK, spot1, NULL, 200);
-	beam->r.model = sphere_models + 5;
- 	beam->r.spriteType = SPRITE_LINE;
-	beam->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	beam->r.scale = (size-3) * 6;
-	beam->radius = 256;
-	beam->alpha = 0.95;
-	beam->d_alpha = -5.0;
-	VectorCopy(spot1, beam->r.startpos);
-	VectorCopy(tempSpot, beam->r.endpos);
-	if (Flags & CEF_FLAG8)
-	{
-		VectorScale(right, -0.4*SPHERE_LASER_SPEED, beam->velocity);	// Move to the left
-		VectorScale(right, SPHERE_LASER_SPEED, beam->acceleration);
-	}
-	else
-	{
-		VectorScale(right, 0.4*SPHERE_LASER_SPEED, beam->velocity);		// Move to the right
-		VectorScale(right, -SPHERE_LASER_SPEED, beam->acceleration);
-	}
-	AddEffect(NULL, beam); 
+		ce->scale = flrand(8.0f, 24.0f) + size * 2.0f;
+		ce->scale *= 0.4f;
+		ce->acceleration[2] = 0.0f;
+		ce->d_alpha = -768.0f;
+		VectorMA(ce->origin, flrand(0.0f, len), fwd, ce->origin);
+		VectorMA(ce->velocity, flrand(-15.0f, 15.0f), right, ce->velocity);
+		VectorMA(ce->velocity, flrand(-15.0f, 15.0f), up, ce->velocity);
+		VectorMA(ce->origin, flrand(-size * 0.4f, size * 0.4f), right, ce->origin);
+		VectorMA(ce->origin, flrand(-size * 0.4f, size * 0.4f), up, ce->origin);
 
-	count = GetScaledCount((int)(25 + size * 2.5), 0.3);
-
-	//make the particles
-	for(i=0; i < count;i++)
-	{
-		ce = ClientParticle_new(PART_16x16_SPARK_B, LightColor, 666);
-	
-		ce->scale=flrand(8, 24.0) + size*2;
-		ce->scale *=0.4;
-		ce->acceleration[2] = 0;
-		ce->d_alpha=-768.0;
-		VectorMA(ce->origin, flrand(0, len), fwd, ce->origin);
-		VectorMA(ce->velocity, flrand(-15, 15), right, ce->velocity);
-		VectorMA(ce->velocity, flrand(-15, 15), up, ce->velocity);
-		VectorMA(ce->origin, flrand(-size*.4, size*.4), right, ce->origin);
-		VectorMA(ce->origin, flrand(-size*.4, size*.4), up, ce->origin);
- 		AddParticleToList(exp1, ce);
-	}
-	if (Flags & CEF_FLAG6)
-	{
-		// make the flares at the end of the line
-		exp1 = ClientEntity_new(Type,Flags | CEF_ADDITIVE_PARTS, tempSpot, NULL, 500);
-		exp1->r.model = sphere_models + 6;
-		exp1->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
-		exp1->r.frame = 0;
-		exp1->radius=128;
-		exp1->r.scale= 1;
-		exp1->d_scale = 1;
-		exp1->d_alpha = -2.0;
-		AddEffect(NULL, exp1);
+		AddParticleToList(flare_start, ce);
 	}
 
-	// create a scorchmark if necessary
-//	VectorSubtract(beam->r.endpos, beam->r.startpos, dir);
-//	VectorNormalize(dir);
+	if (flags & CEF_FLAG6)
+	{
+		// Make the flare at the end of the line.
+		client_entity_t* flare_end = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS, beam_end, NULL, 500);
 
-	// Looks silly if it makes a burn
-//	if	(Flags & CEF_FLAG7)
-//		FXClientScorchmark(beam->r.endpos, dir);
+		flare_end->radius = 128.0f;
+		flare_end->r.model = &sphere_models[6]; // Blue halo sprite.
+		flare_end->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+		flare_end->d_scale = 1.0f;
+		flare_end->d_alpha = -2.0f;
 
+		AddEffect(NULL, flare_end);
+	}
 }
-
-
-
 
 // PLAYER SPHERE OF ANNIHILATION EXPLOSION
 
