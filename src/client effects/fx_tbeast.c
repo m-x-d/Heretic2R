@@ -53,14 +53,10 @@ static void FXTBDustPuff(const int type, const int flags, vec3_t origin, const f
 	AddEffect(NULL, puff);
 }
 
-void FXTBDustPuffOnGround(centity_t *owner, int type, int flags, vec3_t origin)
+static void FXTBDustPuffOnGround(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	int			i;
-	
-	for (i = 0; i < 8; i++)
-	{
-		FXTBDustPuff(type,flags,origin, i * flrand(30, 60));
-	}
+	for (int i = 0; i < 8; i++)
+		FXTBDustPuff(type, flags, origin, (float)i * flrand(30.0f, 60.0f));
 }
 
 
