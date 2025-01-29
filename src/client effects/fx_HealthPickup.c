@@ -62,16 +62,15 @@ void FXHealthPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 	flags |= CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED;
 	client_entity_t* ce = ClientEntity_new(type, flags, origin, NULL, 50);
 
-	VectorCopy(ce->r.origin, ce->origin);
+	ce->radius = 10.0f;
 	const int model_index = (flags & CEF_FLAG6) >> 5; // 0 - small, 1 - big.
 	ce->r.model = &health_models[model_index];
 	ce->r.flags = RF_GLOW | RF_TRANSLUCENT | RF_TRANS_ADD;
+	ce->alpha = 0.8f;
 
 	if (model_index == 0) // Bigger scale for Half Health.
 		ce->r.scale = 1.5f;
 
-	ce->radius = 10.0f;
-	ce->alpha = 0.8f;
 	ce->Update = FXHealthPickupThink;
 
 	AddEffect(owner, ce);
