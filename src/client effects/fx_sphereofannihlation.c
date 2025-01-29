@@ -516,17 +516,15 @@ static qboolean FXSpherePlayerExplodeGlowballThink(client_entity_t* glowball, ce
 	return true;
 }
 
-static qboolean FXSpherePlayerExplodeGlowballTerminate(client_entity_t *glowball, centity_t *owner)
+static qboolean FXSpherePlayerExplodeGlowballTerminate(client_entity_t* glowball, centity_t* owner)
 {
-	// Don't instantly delete yourself.  Don't accept any more updates and die out within a second.
-	glowball->d_alpha = -5.0;						// Fade out.
-	glowball->updateTime = 1000;	// Die in one second.
+	// Don't instantly delete yourself. Don't accept any more updates and die out within a second.
+	glowball->d_alpha = -5.0f; // Fade out.
+	glowball->updateTime = 1000; // Die in one second.
 	glowball->Update = RemoveSelfAI;
 
 	return true;
 }
-
-
 
 // ****************************************************************************
 // FXSphereOfAnnihilationExplode -
