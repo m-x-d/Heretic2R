@@ -1,25 +1,26 @@
 //
 // fx_ssithra.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
+#include "Random.h"
+#include "Utilities.h"
 #include "Vector.h"
 #include "ce_DLight.h"
-#include "random.h"
-#include "Utilities.h"
 #include "fx_debris.h"
 
-#define ARROW_DELTA_FORWARD	8.0
-#define ARROW_DELTA_THETA	0.12
-#define	ARROW_SPIRAL_RAD		0.75
-#define	ARROW_SCALE			0.25
+#define SSARROW_TRAIL_SCALE		0.25f
+
+//mxd. Mirrored in m_plagueSsithra.c.
+enum
+{
+	FX_SS_MAKE_ARROW,
+	FX_SS_MAKE_ARROW2,
+	FX_SS_EXPLODE_ARROW,
+	FX_SS_EXPLODE_ARROW2
+};
 
 #define	NUM_ARROW_MODELS		3
 
@@ -32,13 +33,6 @@ void PrecacheSsithraArrow()
 	arrow_models[2] = fxi.RegisterModel("models/objects/projectiles/sitharrow/tris.fm");//projectile model
 }
 
-enum 
-{
-	FX_SS_MAKE_ARROW,
-	FX_SS_MAKE_ARROW2,
-	FX_SS_EXPLODE_ARROW,
-	FX_SS_EXPLODE_ARROW2
-};
 // ************************************************************************************************
 // FXSsithraArrowTrailThink
 // ************************************************************************************************
@@ -68,7 +62,7 @@ static qboolean FXSsithraArrowTrailThink(struct client_entity_s *self, centity_t
 		{//powered
 			TrailEnt->r.flags |= (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 			TrailEnt->r.model = arrow_models + 1;
-			TrailEnt->r.scale = (ARROW_SCALE + flrand(0.0, 0.05));
+			TrailEnt->r.scale = (SSARROW_TRAIL_SCALE + flrand(0.0, 0.05));
 			VectorRandomCopy(self->r.origin, TrailEnt->r.origin, flrand(-8.0, 8.0));
 			VectorScale(accel_dir, flrand(-100.0, -400.0), TrailEnt->velocity);
 		}
@@ -81,7 +75,7 @@ static qboolean FXSsithraArrowTrailThink(struct client_entity_s *self, centity_t
 			TrailEnt->r.color.b = 100;
 			TrailEnt->r.color.a = 100;
 			TrailEnt->r.model = arrow_models;
-			TrailEnt->r.scale = ARROW_SCALE + flrand(-0.2, 0.2);
+			TrailEnt->r.scale = SSARROW_TRAIL_SCALE + flrand(-0.2, 0.2);
 			VectorRandomCopy(self->r.origin, TrailEnt->r.origin, flrand(-5.0, 5.0));
 			VectorScale(accel_dir, flrand(-50.0, -400.0), TrailEnt->velocity);
 		}

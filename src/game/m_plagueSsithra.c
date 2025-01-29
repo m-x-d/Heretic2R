@@ -29,6 +29,7 @@ qboolean visible_pos (edict_t *self, vec3_t spot2);
 void create_ssith_arrow(edict_t *Arrow);
 qboolean ssithraCheckInWater (edict_t *self);
 
+//mxd. Mirrored in fx_ssithra.c.
 enum 
 {
 	FX_SS_MAKE_ARROW,
