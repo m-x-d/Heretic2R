@@ -499,26 +499,22 @@ static qboolean FXSpherePlayerExplodeAddToView(struct client_entity_s* self, cen
 	return true;
 }
 
-static qboolean FXSpherePlayerExplodeGlowballThink(client_entity_t *glowball,centity_t *owner)
+static qboolean FXSpherePlayerExplodeGlowballThink(client_entity_t* glowball, centity_t* owner)
 {
-	vec3_t angvect;
-
 	// Update the angle of the spark.
-	VectorMA(glowball->direction, (float)(fxi.cl->time-glowball->lastThinkTime)/1000.0, glowball->velocity2, glowball->direction);
+	VectorMA(glowball->direction, (float)(fxi.cl->time - glowball->lastThinkTime) / 1000.0f, glowball->velocity2, glowball->direction);
 
-	glowball->radius = ((SPHERE_RADIUS_MAX-SPHERE_RADIUS_MIN) * 
-							((fxi.cl->time - glowball->SpawnDelay) / 100.0) / (SPHERE_MAX_CHARGES+2));
+	glowball->radius = (SPHERE_RADIUS_MAX - SPHERE_RADIUS_MIN) * ((float)(fxi.cl->time - glowball->SpawnDelay) / 100.0f) / (SPHERE_MAX_CHARGES + 2);
 
 	// Update the position of the spark.
-	AngleVectors(glowball->direction, angvect, NULL, NULL);
-
-	VectorMA(glowball->origin, glowball->radius, angvect, glowball->r.origin);
+	vec3_t dir;
+	AngleVectors(glowball->direction, dir, NULL, NULL);
+	VectorMA(glowball->origin, glowball->radius, dir, glowball->r.origin);
 
 	glowball->lastThinkTime = fxi.cl->time;
 
 	return true;
 }
-
 
 static qboolean FXSpherePlayerExplodeGlowballTerminate(client_entity_t *glowball, centity_t *owner)
 {
