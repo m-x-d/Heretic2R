@@ -9,9 +9,9 @@
 #include "Utilities.h"
 #include "Vector.h"
 
-#define	NUM_SPOO_MODELS	2
-static struct model_s *spoo_models[NUM_SPOO_MODELS];
-void PreCacheSpoo()
+static struct model_s* spoo_models[2];
+
+void PreCacheSpoo(void)
 {
 	spoo_models[0] = fxi.RegisterModel("sprites/fx/spoo.sp2");
 	spoo_models[1] = fxi.RegisterModel("sprites/fx/spoo2.sp2");
