@@ -43,37 +43,38 @@ void FXSsithraArrowGlow(centity_t* owner, const int type, const int flags, vec3_
 	AddEffect(owner, glow);
 }
 
-// -----------------------------------------------------------------------------------------
-
-static qboolean FXSsithraArrowMissileThink(client_entity_t *missile, centity_t *owner)
+static qboolean FXSsithraArrowMissileThink(client_entity_t* missile, centity_t* owner)
 {
-	int					i;
-	client_entity_t		*ce;
-	vec3_t				diff, curpos, org;
-
+	vec3_t diff;
 	VectorSubtract(missile->r.origin, missile->origin, diff);
-	Vec3ScaleAssign((1.0 / SSARROW_NUM_TRAIL_PARICLES), diff);
-	VectorClear(curpos);
+	Vec3ScaleAssign(1.0f / SSARROW_NUM_TRAIL_PARICLES, diff);
 
-	for(i = 0; i < SSARROW_NUM_TRAIL_PARICLES; i++)
+	vec3_t cur_pos = { 0 };
+
+	for (int i = 0; i < SSARROW_NUM_TRAIL_PARICLES; i++)
 	{
+		vec3_t org;
 		VectorRandomCopy(missile->origin, org, SSARROW_PARTICLE_OFFSET);
-		Vec3AddAssign(curpos, org);
-		ce = ClientEntity_new(-1, 0, org, NULL, 500);
-		ce->r.model = ssarrow_models;		// Can be a particle now
+		Vec3AddAssign(cur_pos, org);
+
+		client_entity_t* ce = ClientEntity_new(-1, 0, org, NULL, 500);
+
+		ce->radius = 16.0f;
+		ce->r.model = &ssarrow_models[0]; // steampuff sprite.
 		ce->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 		ce->r.color = missile->color;
-		ce->radius = 16.0F;
-		ce->r.scale = 0.1F;
-		ce->d_scale = 2.0F;
-		ce->d_alpha = -2.2F;
-		AddEffect(NULL, ce);
+		ce->r.scale = 0.1f;
+		ce->d_scale = 2.0f;
+		ce->d_alpha = -2.2f;
 
-		Vec3AddAssign(diff, curpos);
+		AddEffect(NULL, ce);
+		Vec3AddAssign(diff, cur_pos);
 	}
-	// Remember for even spread of particles
+
+	// Remember for even spread of particles.
 	VectorCopy(missile->r.origin, missile->origin);
-	return(true);
+
+	return true;
 }
 
 void FXSsithraArrowMissile(centity_t *owner, int type, int flags, vec3_t origin)
