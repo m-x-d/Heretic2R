@@ -495,74 +495,48 @@ static qboolean FXStaffThink(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-// ************************************************************************************************
-// FXStaff
-// ------------
-// ************************************************************************************************
-
-// This effect spawns 70+ client fx which will cause problems
-
-void FXStaff(centity_t *owner,int Type,int Flags,vec3_t Origin)
+void FXStaff(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	short			Refpoints;
-	client_entity_t	*trail;
-	int				I;
-	byte			powerlevel;
-	char			lifetime;
+	byte powerlevel;
+	char lifetime;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_STAFF].formatString, &powerlevel, &lifetime);
 
-	Refpoints=0;
-
-	fxi.GetEffect(owner,Flags,clientEffectSpawners[FX_STAFF].formatString, &powerlevel, &lifetime);
-	Refpoints = (1<<CORVUS_BLADE);
-
-	if(!ReferencesInitialized(owner))
-	{
+	if (!ReferencesInitialized(owner))
 		return;
-	}
 
-	// Add a fiery trail effect to the player's hands / feet etc.
-	for(I=0;I<16;I++)
+	// Add a fiery trail effect to the player's staff.
+	client_entity_t* trail = ClientEntity_new(type, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, origin, NULL, 17);
+
+	trail->flags |= CEF_NO_DRAW;
+	trail->NoOfAnimFrames = CORVUS_BLADE;
+	trail->SpawnData = powerlevel;
+	trail->LifeTime = ((lifetime > 0) ? fxi.cl->time + lifetime * 100 : (int)lifetime);
+
+	switch (powerlevel)
 	{
-		if(!(Refpoints & (1 << I)))
-			continue;
-
-		trail=ClientEntity_new(Type, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, Origin, 0, 17);
-
-		trail->flags |= CEF_NO_DRAW;
-		trail->NoOfAnimFrames = I;
-
-		switch(powerlevel)
-		{
-		case 1:		// Blue
+		case 1: // Blue.
 		default:
 			trail->Update = FXStaffThink;
 			trail->color.c = 0x02201010;
-			trail->xscale = .175;
+			trail->xscale = 0.175f;
 			break;
 
-		//NOTENOTE: These were swapped after the functions were created
-		case 2:		// Fire
+			//NOTE: These were swapped after the functions were created.
+		case 2: // Fire.
 			trail->Update = FXStaffLevel3Think;
-			trail->color.c = 0xffffffff;
-			trail->xscale = .200;
+			trail->color = color_white;
+			trail->xscale = 0.2f;
 			break;
 
-		case 3:		// Energy Blast
+		case 3: // Energy blast.
 		case 4:
 			trail->Update = FXStaffLevel2Think;
-			trail->color.c = 0xffffffff;
-			trail->xscale = .225;
+			trail->color = color_white;
+			trail->xscale = 0.225f;
 			break;
-		}
-		trail->SpawnData = powerlevel;
-
-		if (lifetime > 0)
-			trail->LifeTime = fxi.cl->time + (lifetime * 100);
-		else
-			trail->LifeTime = lifetime;
-
-		AddEffect(owner,trail);
 	}
+
+	AddEffect(owner, trail);
 }
 
 // ************************************************************************************************
