@@ -91,20 +91,15 @@ void FXLightningShield(centity_t* owner, const int type, const int flags, const 
 		shield->alpha = 0.1f;
 		shield->d_alpha = 0.5f;
 
-		shield->direction[YAW] = flrand(0.0f, 360.0f); // This angle is kept at a constant distance from org.
-		shield->direction[PITCH] = flrand(0.0f, 360.0f);
+		VectorClear(shield->direction);
 
-		shield->velocity2[YAW] = flrand(-180.0f, 180.0f);
-		if (shield->velocity2[YAW] < 0.0f) // Assure that the sparks are moving around at a pretty good clip.
-			shield->velocity2[YAW] -= 180.0f;
-		else
-			shield->velocity2[YAW] += 180.0f;
-
-		shield->velocity2[PITCH] = flrand(-180.0f, 180.0f); // This is a velocity around the sphere.
-		if (shield->velocity2[PITCH] < 0.0f) // Assure that the sparks are moving around at a pretty good clip.
-			shield->velocity2[PITCH] -= 180.0f;
-		else
-			shield->velocity2[PITCH] += 180.0f;
+		// This is a velocity around the sphere.
+		for (int c = 0; c < 2; c++)
+		{
+			shield->direction[c] = flrand(0.0f, 360.0f); // This angle is kept at a constant distance from org.
+			shield->velocity2[c] = flrand(-180.0f, 180.0f);
+			shield->velocity2[c] += 180.0f * Q_signf(shield->velocity2[c]); // Assure that the sparks are moving around at a pretty good clip.
+		}
 
 		shield->lastThinkTime = fxi.cl->time;
 		shield->SpawnDelay = fxi.cl->time + SHIELD_TRAIL_DELAY;
