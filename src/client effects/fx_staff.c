@@ -818,41 +818,24 @@ static qboolean FXStaffRemoveThink(struct client_entity_s* self, centity_t* owne
 	return self->NoOfAnimFrames < 6;
 }
 
-// ************************************************************************************************
-// FXStaffRemove
-// ------------
-// ************************************************************************************************
-
-// This effect spawns 150+ client fx which will cause problems
-
-void FXStaffRemove(centity_t *owner,int Type,int Flags,vec3_t Origin)
+void FXStaffRemove(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t *stafffx;
-	byte			fxtype;
-
-	if (Flags & CEF_FLAG6)
-		fxtype = STAFF_TYPE_HELL;
-	else
-		fxtype = STAFF_TYPE_SWORD;
-
-	if(!ReferencesInitialized(owner))
-	{
+	if (!ReferencesInitialized(owner))
 		return;
-	}
 
-	stafffx = ClientEntity_new(Type, Flags, Origin, 0, 17);
+	client_entity_t* staff_fx = ClientEntity_new(type, flags, origin, NULL, 17);
 
-	if(Flags & CEF_FLAG7)//blue
-		stafffx->classID = STAFF_TRAIL3;
-	else if(Flags & CEF_FLAG8)//flames
-		stafffx->classID = STAFF_TRAIL2;
-	else//normal
-		stafffx->classID = STAFF_TRAIL;
+	if (flags & CEF_FLAG7) // Blue.
+		staff_fx->classID = STAFF_TRAIL3;
+	else if (flags & CEF_FLAG8) // Flames.
+		staff_fx->classID = STAFF_TRAIL2;
+	else // Normal.
+		staff_fx->classID = STAFF_TRAIL;
 
-	stafffx->Update = FXStaffRemoveThink;
-	stafffx->flags |= CEF_NO_DRAW;
-	stafffx->NoOfAnimFrames=1;
-	stafffx->refPoint = fxtype;
+	staff_fx->flags |= CEF_NO_DRAW;
+	staff_fx->NoOfAnimFrames = 1;
+	staff_fx->refPoint = (short)((flags & CEF_FLAG6) ? STAFF_TYPE_HELL : STAFF_TYPE_SWORD);
+	staff_fx->Update = FXStaffRemoveThink;
 
-	AddEffect(owner, stafffx);
+	AddEffect(owner, staff_fx);
 }
