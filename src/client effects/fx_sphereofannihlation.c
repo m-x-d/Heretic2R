@@ -565,10 +565,8 @@ void FXSpherePlayerExplode(centity_t* owner, const int type, const int flags, ve
 		glowball->r.flags = RF_FULLBRIGHT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 		glowball->d_scale = 3.0f;
 		glowball->lastThinkTime = glowball->SpawnDelay = fxi.cl->time;
-		glowball->nextThinkTime = fxi.cl->time + ((explosion->SpawnInfo + 1) * 100);
+		glowball->nextThinkTime = fxi.cl->time + (explosion->SpawnInfo + 1) * 100;
 
-		VectorCopy(origin, glowball->origin);
-		VectorCopy(origin, glowball->r.origin);
 		VectorClear(glowball->direction);
 
 		// This is a velocity around the sphere.
