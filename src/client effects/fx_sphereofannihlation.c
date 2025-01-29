@@ -526,94 +526,74 @@ static qboolean FXSpherePlayerExplodeGlowballTerminate(client_entity_t* glowball
 	return true;
 }
 
-// ****************************************************************************
-// FXSphereOfAnnihilationExplode -
-// ****************************************************************************
-void FXSpherePlayerExplode(centity_t *Owner, int Type, int Flags, vec3_t Origin)
+void FXSpherePlayerExplode(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	vec3_t				Dir;
-	byte				Size;
-	client_entity_t		*explosion, *glowball;
-	paletteRGBA_t		LightColor={255,255,255,255}, haloColor={100,100,255,64};
-	int					I, count;
-	vec3_t				angvect;
-
-	fxi.GetEffect(Owner,Flags,clientEffectSpawners[FX_WEAPON_SPHEREPLAYEREXPLODE].formatString,Dir,&Size);
+	vec3_t dir;
+	byte size;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_SPHEREPLAYEREXPLODE].formatString, dir, &size);
 
 	// Create an expanding ball of blue fire.
-	explosion=ClientEntity_new(Type,Flags | CEF_ADDITIVE_PARTS,Origin,NULL,50);
+	client_entity_t* explosion = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS, origin, NULL, 50);
 
-	explosion->r.model = sphere_models + 3;
-	explosion->r.flags=RF_FULLBRIGHT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	explosion->r.scale=0.01;
-	explosion->color.c=0xffffffff;
-	explosion->alpha = 1.0;
-	explosion->d_alpha = 0.0;
-	explosion->d_scale=1.5;
-	explosion->SpawnInfo = (int)Size;
-	explosion->radius=SPHERE_RADIUS_MIN + ((SPHERE_RADIUS_MAX-SPHERE_RADIUS_MIN) / SPHERE_MAX_CHARGES * explosion->SpawnInfo);
-	explosion->dlight=CE_DLight_new(LightColor, explosion->radius/0.7 ,0);
-	explosion->AddToView=FXSpherePlayerExplodeAddToView;
-	explosion->Update=FXSpherePlayerExplodeThink;
-	explosion->updateTime = ((explosion->SpawnInfo+1)*100);
+	explosion->radius = SPHERE_RADIUS_MIN + ((float)(SPHERE_RADIUS_MAX - SPHERE_RADIUS_MIN) / SPHERE_MAX_CHARGES * (float)explosion->SpawnInfo);
+	explosion->r.model = &sphere_models[3]; // Sphere model.
+	explosion->r.flags = RF_FULLBRIGHT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	explosion->r.scale = 0.01f;
+	explosion->color = color_white;
+	explosion->d_scale = 1.5f;
+	explosion->SpawnInfo = (int)size;
+	explosion->updateTime = (size + 1) * 100;
 	explosion->nextEventTime = fxi.cl->time + explosion->updateTime;
 	explosion->lastThinkTime = fxi.cl->time;
-	
+	explosion->dlight = CE_DLight_new(color_white, explosion->radius / 0.7f, 0);
+	explosion->AddToView = FXSpherePlayerExplodeAddToView;
+	explosion->Update = FXSpherePlayerExplodeThink;
+
 	AddEffect(NULL, explosion);
+	FXSpherePlayerExplodeThink(explosion, NULL);
 
-	FXSpherePlayerExplodeThink(explosion,NULL);
 	// Add some glowing blast particles.
+	VectorScale(dir, FX_SPHERE_EXPLOSION_SMOKE_SPEED, dir);
 
-	VectorScale(Dir,FX_SPHERE_EXPLOSION_SMOKE_SPEED,Dir);
+	const int count = GetScaledCount(40, 0.3f);
 
-	count = GetScaledCount(40, 0.3);
-
-	for(I=0;I<count;I++)
+	for (int i = 0; i < count; i++)
 	{
-		glowball = ClientEntity_new(Type, Flags & (~CEF_OWNERS_ORIGIN), Origin, NULL, 5000);
-		glowball->r.model = sphere_models + 7;
+		client_entity_t* glowball = ClientEntity_new(type, flags & ~CEF_OWNERS_ORIGIN, origin, NULL, 5000);
+
+		glowball->r.model = &sphere_models[7]; // spark_blue sprite.
 		glowball->r.flags = RF_FULLBRIGHT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		glowball->AddToView = FXSpherePlayerExplodeGlowballThink;
-		glowball->alpha = 1.0;
-		glowball->d_alpha = 0.0;
-		glowball->r.scale = 1.0;
-		glowball->d_scale = 3.0;
-		glowball->Update = FXSpherePlayerExplodeGlowballTerminate;
+		glowball->d_scale = 3.0f;
 		glowball->lastThinkTime = glowball->SpawnDelay = fxi.cl->time;
-		glowball->nextThinkTime = fxi.cl->time + ((explosion->SpawnInfo+1)*100);
+		glowball->nextThinkTime = fxi.cl->time + ((explosion->SpawnInfo + 1) * 100);
 
+		VectorCopy(origin, glowball->origin);
+		VectorCopy(origin, glowball->r.origin);
 		VectorClear(glowball->direction);
-		glowball->direction[YAW] = flrand(0, 360.0);	// This angle is kept at a constant distance from org.
-		glowball->direction[PITCH] = flrand(0, 360.0);
 
-		glowball->velocity2[YAW] = flrand(-90.0, 90.0);
-		if (glowball->velocity2[YAW] < 0)				// Assure that the sparks are moving around at a pretty good clip.
-			glowball->velocity2[YAW] -= 90.0;
-		else
-			glowball->velocity2[YAW] += 90.0;
+		// This is a velocity around the sphere.
+		for (int c = 0; c < 2; c++)
+		{
+			glowball->direction[c] = flrand(0.0f, 360.0f); // This angle is kept at a constant distance from org.
+			glowball->velocity2[c] = flrand(-90.0f, 90.0f);
+			glowball->velocity2[c] += 90.0f * Q_signf(glowball->velocity2[c]); // Assure that the sparks are moving around at a pretty good clip.
+		}
 
-		glowball->velocity2[PITCH] = flrand(-90.0, 90.0);	// This is a velocity around the sphere.
-		if (glowball->velocity2[PITCH] < 0)		// Assure that the sparks are moving around at a pretty good clip.
-			glowball->velocity2[PITCH] -= 90.0;
-		else
-			glowball->velocity2[PITCH] += 90.0;
-
-		AngleVectors(glowball->direction, angvect, NULL, NULL);
-		VectorCopy(Origin, glowball->origin);
-		VectorCopy(Origin, glowball->r.origin);
+		glowball->AddToView = FXSpherePlayerExplodeGlowballThink;
+		glowball->Update = FXSpherePlayerExplodeGlowballTerminate;
 
 		AddEffect(NULL, glowball);
 	}
 
-	// Now make a big mutha flash
-	explosion = ClientEntity_new(Type, Flags, Origin, NULL, 250);
-	explosion->r.model = sphere_models + 4;		// hp_halo
-	explosion->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
-	explosion->r.frame = 1;
-	explosion->radius= 128;
-	explosion->d_alpha= -4.0;
-	explosion->r.scale= 1.0;
-	explosion->d_scale = -4.0;
+	// Now make a big flash.
+	client_entity_t* flash = ClientEntity_new(type, flags, origin, NULL, 250);
 
-	AddEffect(NULL, explosion);
+	flash->radius = 128.0f;
+	flash->r.model = &sphere_models[4]; // halo sprite.
+	flash->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	flash->r.frame = 1;
+	flash->d_alpha = -4.0f;
+	flash->d_scale = -4.0f;
+
+	AddEffect(NULL, flash);
 }
