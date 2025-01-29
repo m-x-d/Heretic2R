@@ -31,61 +31,55 @@ void PrecacheSsithraArrow(void)
 	arrow_models[2] = fxi.RegisterModel("models/objects/projectiles/sitharrow/tris.fm"); // Projectile model.
 }
 
-// ************************************************************************************************
-// FXSsithraArrowTrailThink
-// ************************************************************************************************
-
-static qboolean FXSsithraArrowTrailThink(struct client_entity_s *self, centity_t *owner)
+static qboolean FXSsithraArrowTrailThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_entity_t	*TrailEnt;
-	vec3_t			accel_dir;
-	int				i;
-
 	self->updateTime = 20;
-
 	self->r.angles[ROLL] += 10;
 
-	if(self->SpawnInfo > 9)
+	if (self->SpawnInfo > 9)
 		self->SpawnInfo--;
 
-	i = GetScaledCount( irand(self->SpawnInfo >> 3, self->SpawnInfo >> 2), 0.8 );
-	while(i--)
+	vec3_t trail_vel;
+	VectorCopy(self->velocity, trail_vel);
+	VectorNormalize(trail_vel);
+
+	const int count = GetScaledCount(irand(self->SpawnInfo >> 3, self->SpawnInfo >> 2), 0.8f);
+
+	for (int i = 0; i < count; i++)
 	{
-		TrailEnt = ClientEntity_new(FX_SSITHRA_ARROW, 0, self->r.origin, NULL, 1000);
-	
-		VectorCopy(self->velocity, accel_dir);
-		VectorNormalize(accel_dir);
+		client_entity_t* trail = ClientEntity_new(FX_SSITHRA_ARROW, 0, self->r.origin, NULL, 1000);
 
 		if (self->flags & CEF_FLAG7)
-		{//powered
-			TrailEnt->r.flags |= (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
-			TrailEnt->r.model = arrow_models + 1;
-			TrailEnt->r.scale = (SSARROW_TRAIL_SCALE + flrand(0.0, 0.05));
-			VectorRandomCopy(self->r.origin, TrailEnt->r.origin, flrand(-8.0, 8.0));
-			VectorScale(accel_dir, flrand(-100.0, -400.0), TrailEnt->velocity);
+		{
+			// Powered.
+			trail->r.model = &arrow_models[1]; // fire sprite.
+			trail->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+			trail->r.scale = SSARROW_TRAIL_SCALE + flrand(0.0f, 0.05f);
+
+			VectorRandomCopy(self->r.origin, trail->r.origin, flrand(-8.0f, 8.0f));
+			VectorScale(trail_vel, flrand(-400.0f, -100.0f), trail->velocity);
 		}
 		else
 		{
-			//make this use tinting instead of darken?
-			TrailEnt->r.flags |= RF_TRANSLUCENT;//darken
-			TrailEnt->r.color.r = 75;
-			TrailEnt->r.color.g = 50;
-			TrailEnt->r.color.b = 100;
-			TrailEnt->r.color.a = 100;
-			TrailEnt->r.model = arrow_models;
-			TrailEnt->r.scale = SSARROW_TRAIL_SCALE + flrand(-0.2, 0.2);
-			VectorRandomCopy(self->r.origin, TrailEnt->r.origin, flrand(-5.0, 5.0));
-			VectorScale(accel_dir, flrand(-50.0, -400.0), TrailEnt->velocity);
+			// Make this use tinting instead of darken?
+			trail->r.model = &arrow_models[0]; // steam sprite.
+			trail->r.flags = RF_TRANSLUCENT; // Darken.
+			trail->r.scale = SSARROW_TRAIL_SCALE + flrand(-0.2f, 0.2f);
+			COLOUR_SETA(trail->r.color, 75, 50, 100, 100); //mxd. Use macro.
+
+			VectorRandomCopy(self->r.origin, trail->r.origin, flrand(-5.0f, 5.0f));
+			VectorScale(trail_vel, flrand(-400.0f, -50.0f), trail->velocity);
 		}
-		TrailEnt->d_alpha = flrand(-1.5, -2.0);
-		TrailEnt->d_scale = flrand(-1.0, -1.25);
-		TrailEnt->updateTime = (TrailEnt->alpha * 1000.0) / -TrailEnt->d_scale;
-		TrailEnt->radius = 20.0;
-		
-		AddEffect(NULL,TrailEnt);
+
+		trail->d_alpha = flrand(-1.5f, -2.0f);
+		trail->d_scale = flrand(-1.0f, -1.25f);
+		trail->updateTime = (int)(trail->alpha * 1000.0f / -trail->d_scale);
+		trail->radius = 20.0f;
+
+		AddEffect(NULL, trail);
 	}
 
-	return(true);
+	return true;
 }
 
 // ************************************************************************************************
