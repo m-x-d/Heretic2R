@@ -49,178 +49,147 @@ void PreCacheStaff(void)
 	staff_models[4] = fxi.RegisterModel("sprites/fx/haloblue.sp2");
 }
 
-// --------------------------------------------------------------
-
-// Just wanted to put a note in here to Josh. This is one of the coolest effects I've seen in a game in a long
-// time. You should be extremely proud of this. I for one am very impressed. Jake.
-
-void FXStaffStrike(centity_t *owner,int Type,int Flags,vec3_t Origin)
+//mxd. Separated from FXStaffStrike().
+static void FXStaffStrikeLevel2(const int flags, const vec3_t origin, const vec3_t direction)
 {
-	client_entity_t	*TrailEnt;
-	vec3_t			dir;
-	byte			powerlevel;
-	int				i, white;
+	if (r_detail->value >= DETAIL_NORMAL)
+		fxi.Activate_Screen_Flash(0x30FFFFFF);
 
-	fxi.GetEffect(owner,Flags,clientEffectSpawners[FX_WEAPON_STAFF_STRIKE].formatString, &dir, &powerlevel);
+	// Spawn a bright flash at the core of the explosion.
+	client_entity_t* flash = ClientEntity_new(FX_WEAPON_STAFF_STRIKE, (int)(flags & ~CEF_NO_DRAW), origin, NULL, 1000);
 
-	switch( powerlevel)
+	flash->r.model = &staffhit_models[1]; // halo sprite.
+	flash->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	flash->r.scale = flrand(0.75f, 1.0f);
+	flash->alpha = 0.75f;
+	flash->d_alpha = -2.0f;
+	flash->d_scale = -2.0f;
+	flash->r.frame = 1;
+	flash->r.color.c = 0xFF888888;
+	flash->dlight = CE_DLight_new(flash->r.color, 150.0f, -100.0f);
+
+	AddEffect(NULL, flash);
+
+	// Spawn a hit explosion of lines.
+	const int count = GetScaledCount(64, 0.85f);
+
+	for (int i = 0; i < count; i++)
 	{
-	case 1:
-		break;
+		client_entity_t* streak = ClientEntity_new(FX_WEAPON_STAFF_STRIKE, (int)(flags & ~CEF_NO_DRAW), origin, NULL, 500);
 
-	case 3:
-		//Spawn a bright flash at the core of the explosion
-		TrailEnt=ClientEntity_new(FX_WEAPON_STAFF_STRIKE, Flags & ~CEF_NO_DRAW, Origin, 0, 1000);
+		streak->r.model = &staffhit_models[0]; // patball sprite.
+		streak->r.spriteType = SPRITE_LINE;
+		streak->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		streak->r.scale = flrand(1.0f, 2.5f);
+		streak->alpha = flrand(0.75f, 1.0f);
+		streak->d_alpha = -2.0f;
+		streak->d_scale = -1.0f;
 
-		TrailEnt->r.model = staffhit_models + 1;
-		
-		TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		TrailEnt->r.scale = flrand(0.75, 1.0);
-		TrailEnt->alpha = 0.75;
-		TrailEnt->d_alpha = -2.0;
-		TrailEnt->d_scale = -2.0;
-		TrailEnt->r.frame = 1;
+		const int c = irand(128, 255);
+		COLOUR_SETA(streak->r.color, c, c, irand(236, 255), irand(80, 192)); //mxd. Use macro.
 
-		white = irand(8, 16);
+		VectorRandomCopy(direction, streak->velocity, 1.25f);
 
-		TrailEnt->r.color.r = 128 + irand(108, 127);
-		TrailEnt->r.color.g = 64  + white;
-		TrailEnt->r.color.b = 16  + white;
-		TrailEnt->r.color.a = 64  + irand(16, 128);
+		VectorCopy(origin, streak->r.startpos);
+		VectorMA(streak->r.startpos, flrand(16.0f, 48.0f), streak->velocity, streak->r.endpos); //mxd. Original logic uses irand() here.
 
-		TrailEnt->dlight = CE_DLight_new(TrailEnt->r.color, 150.0F, -100.0F);
+		VectorScale(streak->velocity, flrand(200.0f, 300.0f), streak->velocity);
+		VectorSet(streak->acceleration, streak->velocity[0] * 0.1f, streak->velocity[1] * 0.1f, 0); //mxd. Original logic uses irand() here.
 
-		AddEffect(NULL, TrailEnt);
-
-		//Spawn an explosion of lines
-		i = GetScaledCount(16, 0.85);
-
-		while (i--)
-		{
-			TrailEnt=ClientEntity_new(FX_WEAPON_STAFF_STRIKE, Flags & ~CEF_NO_DRAW, Origin, 0, 500);
-
-			TrailEnt->r.model = staffhit_models + 2;
-			
-			TrailEnt->r.spriteType = SPRITE_LINE;
-
-			TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-			TrailEnt->r.color.c = 0xFFFFFFFF;
-			TrailEnt->r.scale = flrand(1.0, 2.5);
-			TrailEnt->alpha = 1.0;
-			TrailEnt->d_alpha = -1.0;
-			TrailEnt->d_scale = -1.0;
-
-			white = irand(128, 255);
-
-			TrailEnt->r.color.r = white;
-			TrailEnt->r.color.g = white;
-			TrailEnt->r.color.b = 128 + irand(108, 127);
-			TrailEnt->r.color.a = 64 + irand(16, 128);
-
-			VectorRandomCopy(dir, TrailEnt->velocity, 1.25);
-			
-			VectorCopy(Origin, TrailEnt->r.endpos);
-			VectorMA(TrailEnt->r.endpos, irand(8,16), TrailEnt->velocity, TrailEnt->r.startpos);
-
-			VectorScale(TrailEnt->velocity, irand(100,200), TrailEnt->velocity);
-
-			AddEffect(NULL, TrailEnt);
-		}
-
-		//Spawn smoke
-		i = GetScaledCount(4, 0.85);
-
-		while (i--)
-		{
-			TrailEnt=ClientEntity_new(FX_WEAPON_STAFF_STRIKE, Flags & ~CEF_NO_DRAW, Origin, 0, 1000);
-
-			TrailEnt->r.model = staffhit_models + 3;
-
-			TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-			TrailEnt->r.scale = flrand(0.25, 0.5);
-			TrailEnt->alpha = 0.9;
-			TrailEnt->d_alpha = -2.0;
-			TrailEnt->d_scale = 2.0;
-
-			white = irand(32, 64);
-
-			TrailEnt->r.color.r = TrailEnt->r.color.g = TrailEnt->r.color.b = white; 
-			TrailEnt->r.color.a = 128;
-
-			VectorRandomCopy(dir, TrailEnt->velocity, 1.25);
-			
-			VectorCopy(Origin, TrailEnt->r.endpos);
-			VectorMA(TrailEnt->r.endpos, irand(16,48), TrailEnt->velocity, TrailEnt->r.startpos);
-			
-			VectorScale(TrailEnt->velocity, irand(10,50), TrailEnt->velocity);
-			TrailEnt->velocity[2] += 64;
-
-			AddEffect(NULL, TrailEnt);
-		}
-
-		break;
-
-	case 2:
-		if (r_detail->value >= DETAIL_NORMAL)
-			fxi.Activate_Screen_Flash(0x30FFFFFF);
-
-		//Spawn a bright flash at the core of the explosion
-		TrailEnt=ClientEntity_new(FX_WEAPON_STAFF_STRIKE, Flags & ~CEF_NO_DRAW, Origin, 0, 1000);
-
-		TrailEnt->r.model = staffhit_models + 1;
-		
-		TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		TrailEnt->r.scale = flrand(0.75, 1.0);
-		TrailEnt->alpha = 0.75;
-		TrailEnt->d_alpha = -2.0;
-		TrailEnt->d_scale = -2.0;
-		TrailEnt->r.frame = 1;
-		TrailEnt->r.color.c = 0xFF888888;
-		
-		TrailEnt->dlight = CE_DLight_new(TrailEnt->r.color, 150.0F, -100.0F);
-
-		AddEffect(NULL, TrailEnt);
-
-		//Spawn a hit explosion of lines
-		i = GetScaledCount(64, 0.85);
-
-		while (i--)
-		{
-			TrailEnt=ClientEntity_new(FX_WEAPON_STAFF_STRIKE, Flags & ~CEF_NO_DRAW, Origin, 0, 500);
-
-			TrailEnt->r.model = staffhit_models;
-			
-			TrailEnt->r.spriteType = SPRITE_LINE;
-
-			TrailEnt->r.flags |= RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-			TrailEnt->r.color.c = 0xFFFFFFFF;
-			TrailEnt->r.scale = flrand(1.0, 2.5);
-			TrailEnt->alpha = flrand(1.0, 0.75);
-			TrailEnt->d_alpha = -2.0;
-			TrailEnt->d_scale = -1.0;
-
-			white = irand(128, 255);
-
-			TrailEnt->r.color.r = white;
-			TrailEnt->r.color.g = white;
-			TrailEnt->r.color.b = 128 + irand(108, 127);
-			TrailEnt->r.color.a = 64 + irand(16, 128);
-
-			VectorRandomCopy(dir, TrailEnt->velocity, 1.25);
-			
-			VectorCopy(Origin, TrailEnt->r.startpos);
-			VectorMA(TrailEnt->r.startpos, irand(16,48), TrailEnt->velocity, TrailEnt->r.endpos);
-
-			VectorScale(TrailEnt->velocity, irand(200,300), TrailEnt->velocity);
-			VectorSet(TrailEnt->acceleration, TrailEnt->velocity[0] * 0.1, TrailEnt->velocity[1] * 0.1, 0);
-
-			AddEffect(NULL, TrailEnt);
-		}
-
-		break;
+		AddEffect(NULL, streak);
 	}
 }
 
+//mxd. Separated from FXStaffStrike().
+static void FXStaffStrikeLevel3(const int flags, const vec3_t origin, const vec3_t direction)
+{
+	// Spawn a bright flash at the core of the explosion.
+	client_entity_t* flash = ClientEntity_new(FX_WEAPON_STAFF_STRIKE, (int)(flags & ~CEF_NO_DRAW), origin, NULL, 1000);
+
+	flash->r.model = &staffhit_models[1]; // Halo sprite.
+	flash->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	flash->r.scale = flrand(0.75f, 1.0f);
+	flash->alpha = 0.75f;
+	flash->d_alpha = -2.0f;
+	flash->d_scale = -2.0f;
+	flash->r.frame = 1;
+
+	const int white = irand(8, 16);
+	COLOUR_SETA(flash->r.color, irand(236, 255), 64 + white, 16 + white, irand(80, 192)); //mxd. Use macro.
+
+	flash->dlight = CE_DLight_new(flash->r.color, 150.0f, -100.0f);
+
+	AddEffect(NULL, flash);
+
+	// Spawn an explosion of lines.
+	const int streak_count = GetScaledCount(16, 0.85f);
+
+	for (int i = 0; i < streak_count; i++)
+	{
+		client_entity_t* streak = ClientEntity_new(FX_WEAPON_STAFF_STRIKE, (int)(flags & ~CEF_NO_DRAW), origin, NULL, 500);
+
+		streak->r.model = &staffhit_models[2]; // firestreak sprite.
+		streak->r.spriteType = SPRITE_LINE;
+		streak->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		streak->r.scale = flrand(1.0f, 2.5f);
+		streak->d_alpha = -1.0f;
+		streak->d_scale = -1.0f;
+
+		const int c = irand(128, 255);
+		COLOUR_SETA(streak->r.color, c, c, irand(236, 255), irand(80, 192)); //mxd. Use macro.
+
+		VectorRandomCopy(direction, streak->velocity, 1.25f);
+
+		VectorCopy(origin, streak->r.endpos);
+		VectorMA(streak->r.endpos, flrand(8.0f, 16.0f), streak->velocity, streak->r.startpos); //mxd. Original logic uses irand() here.
+
+		VectorScale(streak->velocity, flrand(100.0f, 200.0f), streak->velocity); //mxd. Original logic uses irand() here.
+
+		AddEffect(NULL, streak);
+	}
+
+	// Spawn smoke.
+	const int smoke_count = GetScaledCount(4, 0.85f);
+
+	for (int i = 0; i < smoke_count; i++)
+	{
+		client_entity_t* steam = ClientEntity_new(FX_WEAPON_STAFF_STRIKE, (int)(flags & ~CEF_NO_DRAW), origin, NULL, 1000);
+
+		steam->r.model = &staffhit_models[3]; // steam sprite.
+		steam->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		steam->r.scale = flrand(0.25f, 0.5f);
+		steam->alpha = 0.9f;
+		steam->d_alpha = -2.0f;
+		steam->d_scale = 2.0f;
+
+		const int c = irand(32, 64);
+		COLOUR_SETA(steam->r.color, c, c, c, 128); //mxd. Use macro.
+
+		VectorRandomCopy(direction, steam->velocity, 1.25f);
+
+		VectorCopy(origin, steam->r.endpos);
+		VectorMA(steam->r.endpos, flrand(16.0f, 48.0f), steam->velocity, steam->r.startpos); //mxd. Original logic uses irand() here.
+
+		VectorScale(steam->velocity, flrand(10.0f, 50.0f), steam->velocity); //mxd. Original logic uses irand() here.
+		steam->velocity[2] += 64.0f;
+
+		AddEffect(NULL, steam);
+	}
+}
+
+void FXStaffStrike(centity_t* owner, int type, const int flags, vec3_t origin)
+{
+	vec3_t dir;
+	byte power_level;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_STAFF_STRIKE].formatString, &dir, &power_level);
+
+	switch (power_level)
+	{
+		case 2: FXStaffStrikeLevel2(flags, origin, dir); break; //mxd
+		case 3: FXStaffStrikeLevel3(flags, origin, dir); break; //mxd
+		default: break;
+	}
+}
 
 // ************************************************************************************************
 // FXStaffElementThink
