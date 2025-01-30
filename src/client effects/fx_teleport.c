@@ -1,29 +1,25 @@
 //
-// Heretic II
+// fx_teleport.c
+//
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Random.h"
-#include "Vector.h"
-#include "string.h"
 #include "Utilities.h"
+#include "Vector.h"
 
-#define TELEPORT_RADIUS		400.0
-#define TELEPORT_RADIUS_IN	70.0
-#define ACCEL_SCALE			3.1
-#define ACCEL_SCALE_IN		12.0
+#define PARTICLE_VELOCITY_IN			400.0f
+#define PARTICLE_VELOCITY_OUT			70.0f
+#define PARTICLE_ACCELERATION_SCALE_IN	3.1f
+#define PARTICLE_ACCELERATION_SCALE_OUT	12.0f
 
-#define NUM_TELE_PARTS		250
+#define NUM_TELEPORT_FX_PARTICLES		250
+#define NUM_TELEPORT_PAD_PARTICLES		2
 
-#define NUM_OF_TELE_PARTS	2
-
-#define TELE_HEIGHT			10.0
-#define TELE_RAD	 		56.0
+#define TELEPORT_PAD_HEIGHT				10.0f
+#define TELEPORT_PAD_RADIUS	 			56.0f
 
 #define	NUM_TELEPORT_MODELS	2		  
 static struct model_s *tele_models[NUM_TELEPORT_MODELS];
@@ -81,7 +77,7 @@ void PlayerTeleportIn(centity_t *owner, int type, int flags, vec3_t origin)
 	particle_type = PART_4x4_WHITE | PFL_SOFT_MASK;
 
 	// spawn particles
-	count = GetScaledCount(NUM_TELE_PARTS, 0.3);
+	count = GetScaledCount(NUM_TELEPORT_FX_PARTICLES, 0.3);
 	for(i = 0; i < count; i++)
 	{
 		temp_col = irand(0, 255); 
@@ -92,8 +88,8 @@ void PlayerTeleportIn(centity_t *owner, int type, int flags, vec3_t origin)
 
 		VectorSet(angles, flrand(0, 6.28), flrand(0, 6.28), flrand(0, 6.28));
 		DirFromAngles(angles,p->velocity);
-		Vec3ScaleAssign(flrand(TELEPORT_RADIUS-30,TELEPORT_RADIUS), p->velocity);
-		VectorScale(p->velocity, -ACCEL_SCALE, p->acceleration);
+		Vec3ScaleAssign(flrand(PARTICLE_VELOCITY_IN-30, PARTICLE_VELOCITY_IN), p->velocity);
+		VectorScale(p->velocity, -PARTICLE_ACCELERATION_SCALE_IN, p->acceleration);
 
 		AddParticleToList(teleport_fx, p);
 	}
@@ -146,7 +142,7 @@ void PlayerTeleportOut(centity_t *owner, int type, int flags, vec3_t origin)
 	particle_type = PART_4x4_WHITE | PFL_SOFT_MASK;
 
 	// spawn particles
-	count = GetScaledCount(NUM_TELE_PARTS, 0.3);
+	count = GetScaledCount(NUM_TELEPORT_FX_PARTICLES, 0.3);
 	for(i = 0; i < count; i++)
 	{
 		temp_col = irand(0, 255); 
@@ -159,8 +155,8 @@ void PlayerTeleportOut(centity_t *owner, int type, int flags, vec3_t origin)
 		VectorSet(p->origin, 1.0,1.0,1.0);
 		VectorSet(angles, flrand(0, 6.28), flrand(0, 6.28), flrand(0, 6.28));
 		DirFromAngles(angles,p->origin);
-		Vec3ScaleAssign(flrand(TELEPORT_RADIUS_IN-10,TELEPORT_RADIUS_IN), p->origin);
-		VectorScale(p->origin, -ACCEL_SCALE_IN, p->acceleration);
+		Vec3ScaleAssign(flrand(PARTICLE_VELOCITY_OUT-10, PARTICLE_VELOCITY_OUT), p->origin);
+		VectorScale(p->origin, -PARTICLE_ACCELERATION_SCALE_OUT, p->acceleration);
 
 		AddParticleToList(teleport_fx, p);
 	}
@@ -175,7 +171,7 @@ static qboolean FXteleportPadThink(struct client_entity_s *self, centity_t *owne
 	int					i;
 	int					count;
 
-	count = GetScaledCount(NUM_OF_TELE_PARTS, 0.7);
+	count = GetScaledCount(NUM_TELEPORT_PAD_PARTICLES, 0.7);
 	for(i = 0; i < count; i++)
 	{
 		// Stuff gets sucked to the center
@@ -187,7 +183,7 @@ static qboolean FXteleportPadThink(struct client_entity_s *self, centity_t *owne
 		ce->scale = 16.0F;
 		ce->d_scale = -12.0F;
 
-		ce->origin[SPH_RADIUS] = TELE_RAD;
+		ce->origin[SPH_RADIUS] = TELEPORT_PAD_RADIUS;
 		ce->origin[SPH_YAW] = flrand(0, ANGLE_360);
 //		ce->origin[SPH_PITCH] = flrand(-ANGLE_90, 0);
 		ce->origin[SPH_PITCH] = -ANGLE_90;
@@ -195,7 +191,7 @@ static qboolean FXteleportPadThink(struct client_entity_s *self, centity_t *owne
 		ce->velocity[SPH_YAW] = flrand(-2.0*ANGLE_360, 2.0*ANGLE_360);
 		ce->velocity[SPH_PITCH] = ANGLE_180;
 
-		ce->acceleration[SPH_RADIUS] = -2.0*TELE_RAD;
+		ce->acceleration[SPH_RADIUS] = -2.0*TELEPORT_PAD_RADIUS;
 
 		AddParticleToList(self, ce);
 
@@ -208,13 +204,13 @@ static qboolean FXteleportPadThink(struct client_entity_s *self, centity_t *owne
 		ce->scale = 4.0F;
 		ce->d_scale = -4.0F;
 
-		ce->origin[CYL_RADIUS] = TELE_RAD*0.5;
-		ce->origin[CYL_Z] = -TELE_RAD;
+		ce->origin[CYL_RADIUS] = TELEPORT_PAD_RADIUS*0.5;
+		ce->origin[CYL_Z] = -TELEPORT_PAD_RADIUS;
 		ce->origin[CYL_YAW] = flrand(0, ANGLE_360);
 
-		ce->velocity[CYL_RADIUS] = TELE_RAD*0.5;
+		ce->velocity[CYL_RADIUS] = TELEPORT_PAD_RADIUS*0.5;
 
-		ce->acceleration[CYL_Z] = 5.0*TELE_RAD;
+		ce->acceleration[CYL_Z] = 5.0*TELEPORT_PAD_RADIUS;
 		ce->acceleration[CYL_YAW] = 2.0*ANGLE_360;
 
 		AddParticleToList(self, ce);
@@ -246,6 +242,6 @@ void FXTeleportPad(centity_t *owner, int type, int flags, vec3_t origin)
 	glow = ClientEntity_new(type,  flags, origin, 0, 110);
 	glow->Update = FXteleportPadThink;
 	glow->radius = 100;
-	glow->r.origin[2] += TELE_HEIGHT;
+	glow->r.origin[2] += TELEPORT_PAD_HEIGHT;
 	AddEffect(owner, glow);
 }
