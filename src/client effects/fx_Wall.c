@@ -12,19 +12,14 @@
 #include "ce_Dlight.h"
 #include "g_playstats.h"
 
-#define	NUM_WALL_MODELS	3
+static struct model_s* wall_models[3];
 
-static struct model_s *wall_models[NUM_WALL_MODELS];
-
-void PreCacheWall()
+void PreCacheWall(void)
 {
-	wall_models[0] = fxi.RegisterModel("sprites/spells/wflame.sp2");
+	wall_models[0] = fxi.RegisterModel("sprites/spells/wflame.sp2"); //TODO: wflame.m8 is missing from Htic2-0.pak!
 	wall_models[1] = fxi.RegisterModel("sprites/spells/wflame2.sp2");
 	wall_models[2] = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
-
-
-
 
 // *****************************************************************
 // The fire wall
