@@ -57,29 +57,28 @@ static qboolean TomeOfPowerAddToView(client_entity_t* tome, centity_t* owner)
 	return true;
 }
 
-// update the position of the Tome of power relative to its owner
-qboolean FXHomeTomeAddToView(client_entity_t *tome, centity_t *owner)
+// Update the position of the Tome of power relative to its owner.
+static qboolean TomeOfPowerFadeInAddToView(client_entity_t* tome, centity_t* owner)
 {
-	float	tome_orbit;
-	float difftime;
+	const float tome_orbit = (float)tome->SpawnInfo * TOME_INCOMING_ORBIT;
+	const float time = (float)fxi.cl->time; //mxd
 
-	tome_orbit = tome->SpawnInfo * TOME_INCOMING_ORBIT;
+	VectorSet(tome->r.origin,
+		cosf(time * TOME_ORBIT_SCALE) * tome_orbit,
+		sinf(time * TOME_ORBIT_SCALE) * tome_orbit,
+		(15.0f + sinf(time * 0.0015f) * 12.0f) * (float)tome->SpawnInfo / TIME_TO_FADE_TOME);
 
-	VectorSet(tome->r.origin, 
-				cos(fxi.cl->time*TOME_ORBIT_SCALE)*tome_orbit, 
-				sin(fxi.cl->time*TOME_ORBIT_SCALE)*tome_orbit, 
-				(15.0 + sin(fxi.cl->time*0.0015)*12.0)*tome->SpawnInfo/TIME_TO_FADE_TOME);
 	VectorAdd(owner->origin, tome->r.origin, tome->r.origin);
 	VectorCopy(tome->r.origin, tome->origin);
 
-	// Set up the last think time.
-	difftime = fxi.cl->time - tome->SpawnData;
-	tome->SpawnData = fxi.cl->time;
+	// Setup the last think time.
+	const float diff_time = time - tome->SpawnData;
+	tome->SpawnData = time;
 
 	// Rotate the book
-	tome->r.angles[YAW] += difftime*TOME_SPIN_FACTOR;
+	tome->r.angles[YAW] += diff_time * TOME_SPIN_FACTOR;
 
-	return(true);
+	return true;
 }
 
 // update that Tome of power, so that more sparkles zip out of it, and the light casts pulses
@@ -100,7 +99,7 @@ qboolean FXTomeThink(client_entity_t *tome, centity_t *owner)
 		tome->dlight->intensity = 150.0 + (cos(fxi.cl->time * 0.01) * 20.0);
 		if (!(owner->current.effects & EF_POWERUP_ENABLED))
 		{
-		 	tome->AddToView = FXHomeTomeAddToView;
+		 	tome->AddToView = TomeOfPowerFadeInAddToView;
 			tome->SpawnInfo = TIME_TO_FADE_TOME;
 			tome->d_alpha = -0.18;
 		}
