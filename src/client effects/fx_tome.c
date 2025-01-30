@@ -214,25 +214,20 @@ static qboolean PlayerTorchThink(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-// light that the player gives off when he has this powerup
-void FXPlayerTorch(centity_t *owner, int type, int flags, vec3_t origin)
+// Light that the player gives off when he has this powerup.
+void FXPlayerTorch(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*effect;
+	client_entity_t* effect = ClientEntity_new(type, flags, origin, NULL, 100);
 
-	effect = ClientEntity_new(type, flags, origin, NULL, 100);
- 	effect->r.model = &torch_model;
-	effect->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	effect->r.scale = .35;
-	effect->color.c = 0xffffff;
-	effect->dlight = CE_DLight_new(effect->color, 250.0F, 0.0F);
-	effect->Update = PlayerTorchThink;
+	effect->r.model = &torch_model;
+	effect->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	effect->r.scale = 0.35f;
+	effect->color = color_white; //mxd. 0xffffff in original version.
+	effect->SpawnData = (float)fxi.cl->time;
+	effect->alpha = 0.7f;
+	effect->dlight = CE_DLight_new(effect->color, 250.0f, 0.0f);
 	effect->AddToView = PlayerTorchAddToView;
-	effect->SpawnData = fxi.cl->time;
-	effect->alpha = 0.7;
-  	AddEffect(owner, effect);
-	effect->d_alpha = 0;
+	effect->Update = PlayerTorchThink;
 
+	AddEffect(owner, effect);
 }
-
-
-// end
