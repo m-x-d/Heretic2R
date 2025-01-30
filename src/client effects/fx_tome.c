@@ -25,12 +25,13 @@
 #define TORCH_INCOMING_ORBIT	(TORCH_ORBIT_DIST / TIME_TO_FADE_TORCH)
 #define AMOUNT_TO_FADE_TORCH	(255 / TIME_TO_FADE_TORCH)
 
-#define NUM_TORCH_MODELS	2
-static struct model_s *torch_models[NUM_TORCH_MODELS];
-void PreCacheTorch()
+static struct model_s* tome_model;
+static struct model_s* torch_model;
+
+void PreCacheTorch(void)
 {
-	torch_models[0] = fxi.RegisterModel("sprites/lens/halo1.sp2");
-	torch_models[1] = fxi.RegisterModel("models/Spells/book/tris.fm");
+	tome_model = fxi.RegisterModel("models/Spells/book/tris.fm");
+	torch_model = fxi.RegisterModel("sprites/lens/halo1.sp2");
 }
 
 // update the position of the Tome of power relative to its owner
@@ -132,7 +133,7 @@ void FXTomeOfPower(centity_t *owner, int type, int flags, vec3_t origin)
 	tome = ClientEntity_new(type, flags, origin, NULL, 100);
 
 	// Test model
- 	tome->r.model = torch_models + 1;
+ 	tome->r.model = &tome_model;
 	tome->r.flags |= RF_FULLBRIGHT|RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA;
 	tome->flags |= CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS;
 	tome->r.scale = 0.55;
@@ -230,7 +231,7 @@ void FXPlayerTorch(centity_t *owner, int type, int flags, vec3_t origin)
 	client_entity_t		*effect;
 
 	effect = ClientEntity_new(type, flags, origin, NULL, 100);
- 	effect->r.model = torch_models;
+ 	effect->r.model = &torch_model;
 	effect->r.flags |= RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 	effect->r.scale = .35;
 	effect->color.c = 0xffffff;
