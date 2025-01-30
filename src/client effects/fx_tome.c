@@ -34,26 +34,27 @@ void PreCacheTorch(void)
 	torch_model = fxi.RegisterModel("sprites/lens/halo1.sp2");
 }
 
-// update the position of the Tome of power relative to its owner
-qboolean FXROTTomeAddToView(client_entity_t *tome, centity_t *owner)
+// Update the position of the Tome of power relative to its owner.
+static qboolean TomeOfPowerAddToView(client_entity_t* tome, centity_t* owner)
 {
-	float difftime;
+	const float time = (float)fxi.cl->time; //mxd
 
-	VectorSet(tome->r.origin, 
-				cos(fxi.cl->time*TOME_ORBIT_SCALE)*TOME_ORBIT_DIST, 
-				sin(fxi.cl->time*TOME_ORBIT_SCALE)*TOME_ORBIT_DIST, 
-				(15.0 + sin(fxi.cl->time*0.0015)*12.0));
+	VectorSet(tome->r.origin,
+		cosf(time * TOME_ORBIT_SCALE) * TOME_ORBIT_DIST,
+		sinf(time * TOME_ORBIT_SCALE) * TOME_ORBIT_DIST,
+		15.0f + sinf(time * 0.0015f) * 12.0f);
+
 	VectorAdd(owner->origin, tome->r.origin, tome->r.origin);
 	VectorCopy(tome->r.origin, tome->origin);
 
-	// Set up the last think time.
-	difftime = fxi.cl->time - tome->SpawnData;
-	tome->SpawnData = fxi.cl->time;
+	// Setup the last think time.
+	const float diff_time = time - tome->SpawnData;
+	tome->SpawnData = time;
 
-	// Rotate the book
-	tome->r.angles[YAW] += difftime*TOME_SPIN_FACTOR;
+	// Rotate the book.
+	tome->r.angles[YAW] += diff_time * TOME_SPIN_FACTOR;
 
-	return(true);
+	return true;
 }
 
 // update the position of the Tome of power relative to its owner
@@ -140,7 +141,7 @@ void FXTomeOfPower(centity_t *owner, int type, int flags, vec3_t origin)
 	tome->color.c = 0xe5ff2020;
 	tome->radius = 128;
 	tome->Update = FXTomeThink;
-	tome->AddToView = FXROTTomeAddToView;
+	tome->AddToView = TomeOfPowerAddToView;
 	tome->dlight = CE_DLight_new(tome->color, 150.0F, 00.0F);
 	tome->SpawnData = fxi.cl->time;
 	tome->SpawnInfo = 0;
