@@ -1,19 +1,14 @@
 //
 // fx_waterwake.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
+#include "Random.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
-#include "angles.h"
 #include "g_playstats.h"
-#include "random.h"
 
 #define	NUM_WAKE_MODELS	2
 static struct model_s *wake_models[NUM_WAKE_MODELS];
