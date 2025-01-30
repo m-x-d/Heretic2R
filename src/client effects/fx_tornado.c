@@ -144,36 +144,31 @@ static qboolean TornadoThink(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-void FXTornado(centity_t *owner,int type,int flags,vec3_t origin)
+void FXTornado(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	client_entity_t		*glow;
-	paletteRGBA_t		color;
-	int					dur = 60;
-			
-	flags &= ~CEF_OWNERS_ORIGIN;
-
-	if (r_detail->value == DETAIL_NORMAL)
+	int dur;
+	if ((int)r_detail->value == DETAIL_LOW)
+		dur = 150;
+	else if ((int)r_detail->value == DETAIL_NORMAL)
 		dur = 100;
 	else
-	if (r_detail->value == DETAIL_LOW)
-		dur = 150;
+		dur = 60;
 
-	glow = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS | CEF_CHECK_OWNER | CEF_DONT_LINK | CEF_NO_DRAW, origin, 0, dur);
-	glow->Update = TornadoThink;
-	glow->radius = 50;
-	glow->LifeTime = 0;
+	flags &= ~CEF_OWNERS_ORIGIN;
+	flags |= CEF_ADDITIVE_PARTS | CEF_CHECK_OWNER | CEF_DONT_LINK | CEF_NO_DRAW;
+	client_entity_t* base = ClientEntity_new(type, flags, origin, NULL, dur);
 
-	color.c = 0xffff4444;
+	base->radius = 50.0f;
+	base->Update = TornadoThink;
 
 	if (r_detail->value >= DETAIL_HIGH)
-		glow->dlight = CE_DLight_new(color, 170.0F, 00.0F);
+	{
+		const paletteRGBA_t color = { .c = 0xffff4444 };
+		base->dlight = CE_DLight_new(color, 170.0f, 0.0f);
+	}
 
-	glow->r.flags=RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA;
-
-	AddEffect(owner, glow);
+	AddEffect(owner, base);
 }
-
-
 
 // explode the ball in the middle of the shrine
 void FXTornadoBallExplode(centity_t *owner, int type, int flags, vec3_t origin)
