@@ -164,31 +164,29 @@ static qboolean PlayerTorchAddToView(client_entity_t* tome, centity_t* owner)
 	return true;
 }
 
-// update the position of the Tome of power relative to its owner
-qboolean FXHomeTorchAddToView(client_entity_t *tome, centity_t *owner)
+// Update the position of the torch relative to its owner.
+static qboolean PlayerTorchFadeInAddToView(client_entity_t* tome, centity_t* owner)
 {
-	float	tome_orbit;
-	float difftime;
+	const float tome_orbit = (float)tome->SpawnInfo * TORCH_INCOMING_ORBIT;
+	const float time = (float)fxi.cl->time; //mxd
 
-	tome_orbit = tome->SpawnInfo * TORCH_INCOMING_ORBIT;
+	VectorSet(tome->r.origin,
+		cosf(time * TORCH_ORBIT_SCALE) * tome_orbit,
+		sinf(time * TORCH_ORBIT_SCALE) * tome_orbit,
+		(25.0f + sinf(time * 0.0015f) * 16.0f) * (float)tome->SpawnInfo / TIME_TO_FADE_TORCH);
 
-	VectorSet(tome->r.origin, 
-				cos(fxi.cl->time*TORCH_ORBIT_SCALE)*tome_orbit, 
-				sin(fxi.cl->time*TORCH_ORBIT_SCALE)*tome_orbit, 
-				(25.0 + sin(fxi.cl->time*0.0015)*16.0)*tome->SpawnInfo/TIME_TO_FADE_TORCH);
 	VectorAdd(owner->origin, tome->r.origin, tome->r.origin);
 	VectorCopy(tome->r.origin, tome->origin);
 
 	// Set up the last think time.
-	difftime = fxi.cl->time - tome->SpawnData;
-	tome->SpawnData = fxi.cl->time;
+	const float diff_time = time - tome->SpawnData;
+	tome->SpawnData = time;
 
-	// Rotate the book
-	tome->r.angles[YAW] += difftime*TOME_SPIN_FACTOR;
+	// Rotate the torch.
+	tome->r.angles[YAW] += diff_time * TOME_SPIN_FACTOR;
 
-	return(true);
+	return true;
 }
-
 
 // make the light follow us
 static FXplayertorch_think(struct client_entity_s *self,centity_t *owner)
@@ -199,7 +197,7 @@ static FXplayertorch_think(struct client_entity_s *self,centity_t *owner)
 	else
 	if (!(self->SpawnInfo))
 	{
-	 	self->AddToView = FXHomeTorchAddToView;
+	 	self->AddToView = PlayerTorchFadeInAddToView;
 		self->SpawnInfo = TIME_TO_FADE_TORCH;
 		self->d_alpha = -0.18;
 		return(true);
