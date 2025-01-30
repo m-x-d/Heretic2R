@@ -35,7 +35,7 @@ void PreCacheTeleport()
 
 // -----------------------------------------------------------------
 
-void PlayerTeleportin(centity_t *owner, int type, int flags, vec3_t origin)
+void PlayerTeleportIn(centity_t *owner, int type, int flags, vec3_t origin)
 {
 	client_entity_t  	*teleport_fx;
 	int 					i, temp_col;
@@ -100,7 +100,7 @@ void PlayerTeleportin(centity_t *owner, int type, int flags, vec3_t origin)
 }
 
 
-void PlayerTeleportout(centity_t *owner, int type, int flags, vec3_t origin)
+void PlayerTeleportOut(centity_t *owner, int type, int flags, vec3_t origin)
 {
 	client_entity_t  	*teleport_fx;
 	int 					i, temp_col;
