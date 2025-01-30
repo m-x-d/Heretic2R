@@ -81,72 +81,68 @@ void FXTornadoBall(centity_t* owner, const int type, const int flags, vec3_t ori
 	AddEffect(owner, glow);
 }
 
-static qboolean FXTornadoThink(struct client_entity_s *self,centity_t *owner)
+static qboolean TornadoThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_particle_t	*ce;
-	paletteRGBA_t		color;
-	int					part;
-	int					count, i;
-	float				scale;
-
-	// if the effect is dead, just return
+	// If the effect is dead, just return.
 	if (!(owner->current.effects & EF_SPEED_ACTIVE))
 	{
-		self->alpha -= 1;
-		return(true);
+		self->alpha -= 1.0f;
+		return true;
 	}
 
-	color.c = 0xc0ffffff;
+	const paletteRGBA_t color = { .c = 0xc0ffffff };
+	const int count = GetScaledCount(5, 0.8f);
 
-	count = GetScaledCount(5, 0.8);
+	for (int i = 0; i < count; i++)
+	{
+		int part;
+		float scale;
 
-  	for (i=0; i<count; i++)
-  	{
-  		if (irand(0,1))
+		if (irand(0, 1))
 		{
 			part = PART_16x16_SPARK_B;
-			scale = flrand(6.0, 8.0);
+			scale = flrand(6.0f, 8.0f);
 		}
-  		else
+		else
 		{
-  			part = PART_16x16_LIGHTNING;
-			scale = flrand(4.0, 5.0);
+			part = PART_16x16_LIGHTNING;
+			scale = flrand(4.0f, 5.0f);
 		}
 
-  		ce = ClientParticle_new(part| PFL_NEARCULL | PFL_MOVE_CYL_Z, color, 1750);
+		client_particle_t* ce = ClientParticle_new((int)(part | PFL_NEARCULL | PFL_MOVE_CYL_Z), color, 1750);
 
-  		ce->scale = scale;
-		ce->d_scale = (r_detail->value + 1) * 2;
-		if (r_detail->value == DETAIL_LOW)
-			ce->d_alpha = -220;
-		else if (r_detail->value == DETAIL_NORMAL)
-			ce->d_alpha = -200;
-		else if (r_detail->value > DETAIL_NORMAL)
-			ce->d_alpha = -180;
+		ce->scale = scale;
+		ce->d_scale = (r_detail->value + 1.0f) * 2.0f;
 
-		if (irand(0,1))
+		if ((int)r_detail->value == DETAIL_LOW)
+			ce->d_alpha = -220.0f;
+		else if ((int)r_detail->value == DETAIL_NORMAL)
+			ce->d_alpha = -200.0f;
+		else
+			ce->d_alpha = -180.0f;
+
+		if (irand(0, 1))
 		{
 			ce->type |= PFL_PULSE_ALPHA;
-			ce->d_alpha *= -2;
+			ce->d_alpha *= -2.0f;
 			ce->color.a = 1;
 		}
 
-		ce->origin[CYL_RADIUS] = 0.1*TORNADO_RADIUS;
-		ce->origin[CYL_YAW] = flrand(0, ANGLE_360);
-		ce->origin[CYL_Z] = 0;
+		ce->origin[CYL_RADIUS] = 0.1f * TORNADO_RADIUS;
+		ce->origin[CYL_YAW] = flrand(0.0f, ANGLE_360);
+		ce->origin[CYL_Z] = 0.0f;
 
 		ce->acceleration[CYL_RADIUS] = TORNADO_RADIUS;
-		ce->acceleration[CYL_YAW] = ANGLE_360*2.5;
-		ce->acceleration[CYL_Z] = flrand(TORNADO_RADIUS*1.5, TORNADO_RADIUS*1.75);
+		ce->acceleration[CYL_YAW] = ANGLE_360 * 2.5f;
+		ce->acceleration[CYL_Z] = flrand(TORNADO_RADIUS * 1.5f, TORNADO_RADIUS * 1.75f);
 
-  		AddParticleToList(self, ce);
-  	}
+		AddParticleToList(self, ce);
+	}
 
 	TornadoBallThink(self, owner);
 
-	return(true);
+	return true;
 }
-
 
 void FXTornado(centity_t *owner,int type,int flags,vec3_t origin)
 {
@@ -163,7 +159,7 @@ void FXTornado(centity_t *owner,int type,int flags,vec3_t origin)
 		dur = 150;
 
 	glow = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS | CEF_CHECK_OWNER | CEF_DONT_LINK | CEF_NO_DRAW, origin, 0, dur);
-	glow->Update = FXTornadoThink;
+	glow->Update = TornadoThink;
 	glow->radius = 50;
 	glow->LifeTime = 0;
 
