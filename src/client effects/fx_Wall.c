@@ -434,68 +434,66 @@ void FXFireWave(centity_t* owner, const int type, const int flags, vec3_t origin
 	AddEffect(owner, wall);
 }
 
-// Create Effect FX_WEAPON_FIREWAVEWORM
-void FXFireWaveWorm(centity_t *owner, int type, int flags, vec3_t origin)
+void FXFireWaveWorm(centity_t* owner, int type, const int flags, vec3_t origin)
 {
-	client_entity_t *worm;
-	vec3_t			fwd, spawnpt;
-	vec3_t			bottom, minmax={0,0,0};
-	trace_t			trace;
-	float			detailscale;
+	float detail_scale;
 
-	switch((int)(r_detail->value))
+	switch ((int)r_detail->value)
 	{
-	case DETAIL_LOW:
-		detailscale = 0.5;
-		break;
-	case DETAIL_HIGH:
-		detailscale = 0.9;
-		break;
-	case DETAIL_UBERHIGH:
-		detailscale = 1.0;
-		break;
-	case DETAIL_NORMAL:
-	default:
-		detailscale = 0.7;
-		break;
+		case DETAIL_LOW:
+			detail_scale = 0.5f;
+			break;
+
+		case DETAIL_NORMAL:
+		default:
+			detail_scale = 0.7f;
+			break;
+
+		case DETAIL_HIGH:
+			detail_scale = 0.9f;
+			break;
+
+		case DETAIL_UBERHIGH:
+			detail_scale = 1.0f;
+			break;
 	}
 
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_FIREWAVEWORM].formatString, fwd);		// Gets the movedir of the wall.
+	vec3_t dir;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_FIREWAVEWORM].formatString, dir); // Get the movedir of the wall.
 
 	// Trace back half a second and get the proper spawn location.
-	VectorMA(origin, -0.5*FIREWORM_LIFETIME*FIREWAVE_SPEED, fwd, spawnpt);
+	vec3_t spawn_pt;
+	VectorMA(origin, -0.5f * FIREWORM_LIFETIME * FIREWAVE_SPEED, dir, spawn_pt);
 
 	// Trace down a bit to look for a nice place to spawn stuff.
-	VectorCopy(spawnpt, bottom);
-	bottom[2] -= FIREWAVE_TRACEDOWN;
-	fxi.Trace(spawnpt, minmax, minmax, bottom, CONTENTS_SOLID, CEF_CLIP_TO_WORLD, &trace);
+	trace_t trace;
+	const vec3_t bottom = { spawn_pt[0], spawn_pt[1], spawn_pt[2] - FIREWAVE_TRACEDOWN };
+	fxi.Trace(spawn_pt, vec3_origin, vec3_origin, bottom, CONTENTS_SOLID, CEF_CLIP_TO_WORLD, &trace);
 
-	if(trace.fraction < .99)
-	{	// Hit the ground, smack it!!!
-		VectorCopy(trace.endpos, spawnpt);
-	}
+	if (trace.fraction < 0.99f)
+		VectorCopy(trace.endpos, spawn_pt); // Hit the ground.
 
-	worm = ClientEntity_new(FX_WEAPON_FIREWAVE, flags | CEF_ADDITIVE_PARTS, spawnpt, NULL, 75);
-	worm->r.model = wall_models+2;
+	client_entity_t* worm = ClientEntity_new(FX_WEAPON_FIREWAVE, flags | CEF_ADDITIVE_PARTS, spawn_pt, NULL, 75);
+
+	worm->radius = 64.0f;
+	worm->r.model = &wall_models[2]; // Halo sprite.
 	worm->r.frame = 2;
-	worm->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	worm->radius = 64.0;
+	worm->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	worm->r.scale = 1.5f * detail_scale;
 
-	VectorCopy(spawnpt, worm->startpos);
+	VectorCopy(spawn_pt, worm->startpos);
 	VectorCopy(origin, worm->endpos);
-	worm->alpha = 0.95;
-	worm->r.scale = 1.5*detailscale;
-	worm->Update = FireWormThink;
+	worm->alpha = 0.95f;
 	worm->color.c = 0xff0080ff;
-	worm->dlight = CE_DLight_new(worm->color, 128.0, 0.0);
-	VectorScale(fwd, FIREWAVE_SPEED, worm->velocity);
-	worm->velocity[2] += FIREWORM_INITIAL_VELOCITY;
-	worm->acceleration[2] = FIREWORM_ACCELERATION;
-
 	worm->SpawnInfo = 1;
 
-	AddEffect(NULL, worm);
+	VectorScale(dir, FIREWAVE_SPEED, worm->velocity);
+	worm->velocity[2] += FIREWORM_INITIAL_VELOCITY;
+	worm->acceleration[2] = FIREWORM_ACCELERATION;
+	worm->dlight = CE_DLight_new(worm->color, 128.0f, 0.0f);
+	worm->Update = FireWormThink;
 
+	AddEffect(NULL, worm);
 	FireWormThink(worm, NULL);
 }
 
