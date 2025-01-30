@@ -141,31 +141,28 @@ void FXTomeOfPower(centity_t* owner, const int type, const int flags, vec3_t ori
 	AddEffect(owner, tome);
 }
 
-
-/////////// TORCH STUFF
-
-// update the position of the Tome of power relative to its owner
-qboolean FXROTTorchAddToView(client_entity_t *tome, centity_t *owner)
+// Update the position of the torch relative to its owner.
+static qboolean PlayerTorchAddToView(client_entity_t* tome, centity_t* owner)
 {
-	float difftime;
+	const float time = (float)fxi.cl->time; //mxd
 
-	VectorSet(tome->r.origin, 
-				cos(fxi.cl->time*TORCH_ORBIT_SCALE)*TORCH_ORBIT_DIST, 
-				sin(fxi.cl->time*TORCH_ORBIT_SCALE)*TORCH_ORBIT_DIST, 
-				(25.0 + sin(fxi.cl->time*0.0015)*16.0));
+	VectorSet(tome->r.origin,
+		cosf(time * TORCH_ORBIT_SCALE) * TORCH_ORBIT_DIST,
+		sinf(time * TORCH_ORBIT_SCALE) * TORCH_ORBIT_DIST,
+		25.0f + sinf(time * 0.0015f) * 16.0f);
+
 	VectorAdd(owner->origin, tome->r.origin, tome->r.origin);
 	VectorCopy(tome->r.origin, tome->origin);
 
 	// Set up the last think time.
-	difftime = fxi.cl->time - tome->SpawnData;
-	tome->SpawnData = fxi.cl->time;
+	const float diff_time = time - tome->SpawnData;
+	tome->SpawnData = time;
 
-	// Rotate the book
-	tome->r.angles[YAW] += difftime*TOME_SPIN_FACTOR;
+	// Rotate the torch.
+	tome->r.angles[YAW] += diff_time * TOME_SPIN_FACTOR;
 
-	return(true);
+	return true;
 }
-
 
 // update the position of the Tome of power relative to its owner
 qboolean FXHomeTorchAddToView(client_entity_t *tome, centity_t *owner)
@@ -230,7 +227,7 @@ void FXPlayerTorch(centity_t *owner, int type, int flags, vec3_t origin)
 	effect->color.c = 0xffffff;
 	effect->dlight = CE_DLight_new(effect->color, 250.0F, 0.0F);
 	effect->Update = FXplayertorch_think;
-	effect->AddToView = FXROTTorchAddToView;
+	effect->AddToView = PlayerTorchAddToView;
 	effect->SpawnData = fxi.cl->time;
 	effect->alpha = 0.7;
   	AddEffect(owner, effect);
