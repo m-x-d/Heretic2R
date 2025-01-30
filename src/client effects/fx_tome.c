@@ -232,7 +232,7 @@ static FXplayertorch_think(struct client_entity_s *self,centity_t *owner)
 }
 
 // light that the player gives off when he has this powerup
-void FXplayertorch(centity_t *owner, int type, int flags, vec3_t origin)
+void FXPlayerTorch(centity_t *owner, int type, int flags, vec3_t origin)
 {
 	client_entity_t		*effect;
 

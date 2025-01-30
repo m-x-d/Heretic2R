@@ -103,7 +103,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ FXBodyPart,						NULL,					"ssbbb"		},
 	{ FXPlayerTeleportOut,				NULL,					NULL		},
 	{ FXPlayerPersistant,				NULL,					NULL		},
-	{ FXplayertorch,					PreCacheTorch,			NULL		},
+	{ FXPlayerTorch,					PreCacheTorch,			NULL		},
 	{ FXTomeOfPower,					NULL,					NULL		},
 	{ FXFireOnEntity,					NULL,					"bbb"		},
 	{ FXFlareup,						PreCacheFlareup,		NULL		},
