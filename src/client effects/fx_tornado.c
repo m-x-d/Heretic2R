@@ -27,49 +27,43 @@ void PreCacheTornado(void)
 	tornado_models[1] = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
 
-// make the tornade ball spark
-static qboolean FXTornadoBallThink(struct client_entity_s *self, centity_t *owner)
+// Make the tornado ball spark.
+static qboolean TornadoBallThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_particle_t		*ce;
-	paletteRGBA_t			color;
-	int						part = 0;
-	vec3_t					rad, fwd;
-	int						i;
-	int						count;
-
-	if ((owner->current.effects & EF_SPEED_ACTIVE))
+	if (owner->current.effects & EF_SPEED_ACTIVE)
 	{
-		if (!self->alpha)
-			return(false);
-		self->alpha -= 1;
-		return(true);
+		if (self->alpha == 0.0f)
+			return false;
+
+		self->alpha -= 1.0f;
+		return true;
 	}
 
-	color.c = 0xffffffff;
-	count = GetScaledCount(BALL_PARTICLES_COUNT, 0.4);
+	const int count = GetScaledCount(BALL_PARTICLES_COUNT, 0.4f);
 
-	for (i=0; i<count; i++)
+	for (int i = 0; i < count; i++)
 	{
-		if (irand(0,1))
-			part = PART_16x16_LIGHTNING;
-		else
-			part = PART_16x16_SPARK_B;
-		ce = ClientParticle_new(part, color, 1000);
-		ce->type |= PFL_ADDITIVE;
-		rad[PITCH] = flrand(180, 360.0);
-		rad[YAW] = flrand(0, 360.0);
-		rad[ROLL] = 0.0;
-		AngleVectors(rad, fwd, NULL, NULL);
-		VectorScale(fwd, BALL_RADIUS, ce->velocity);
-		VectorScale(ce->velocity, -1.0, ce->acceleration);
+		const int part = (irand(0, 1) ? PART_16x16_LIGHTNING : PART_16x16_SPARK_B);
+		client_particle_t* ce = ClientParticle_new(part | PFL_ADDITIVE, color_white, 1000);
+
 		ce->color.a = 245;
 		ce->scale = BALL_PARTICLE_SCALE;
-		ce->d_scale = -0.5*BALL_PARTICLE_SCALE;
+		ce->d_scale = -0.5f * BALL_PARTICLE_SCALE;
+
+		const vec3_t angles = { flrand(180.0f, 360.0f), flrand(0.0f, 360.0f), 0.0f };
+
+		vec3_t fwd;
+		AngleVectors(angles, fwd, NULL, NULL);
+		VectorScale(fwd, BALL_RADIUS, ce->velocity);
+
+		VectorScale(ce->velocity, -1.0f, ce->acceleration);
+
 		AddParticleToList(self, ce);
 	}
 
 	self->updateTime = 150;
-	return(true);
+
+	return true;
 }
 
 // create the ball that gets tossed out of Crovus when he casts the tornado spell
@@ -79,7 +73,7 @@ void FXTornadoBall(centity_t *owner, int type, int flags, vec3_t origin)
 
 	// create the dummy entity, so particles can be attached
 	glow = ClientEntity_new(type, (flags | CEF_VIEWSTATUSCHANGED) , origin, 0, 60);
-	glow->Update = FXTornadoBallThink;
+	glow->Update = TornadoBallThink;
 	glow->r.flags=RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA;
 	glow->radius = 50;
 	glow->LifeTime = fxi.cl->time + (TORN_DUR * 1000) + 200;
@@ -152,7 +146,7 @@ static qboolean FXTornadoThink(struct client_entity_s *self,centity_t *owner)
   		AddParticleToList(self, ce);
   	}
 
-	FXTornadoBallThink(self, owner);
+	TornadoBallThink(self, owner);
 
 	return(true);
 }
