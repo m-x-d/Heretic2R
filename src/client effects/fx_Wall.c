@@ -185,34 +185,33 @@ static void FireWaveImpact(const client_entity_t* wall)
 	}
 }
 
-static qboolean FXFireWaveThink(client_entity_t *wall, centity_t *owner)
+static qboolean FireWaveThink(client_entity_t* wall, centity_t* owner)
 {
-	client_entity_t *blast, *worm;
-	vec3_t			destpt,	spawnpt, spawnvel, bottom, minmax={0,0,0};
-	trace_t			trace;
-	qboolean		hitground=false;
-	int				i;
-	float			value, scale, detailscale;
+	float detail_scale;
 
-	switch((int)(r_detail->value))
+	switch ((int)r_detail->value)
 	{
-	case DETAIL_LOW:
-		detailscale = 0.5;
-		break;
-	case DETAIL_HIGH:
-		detailscale = 0.9;
-		break;
-	case DETAIL_UBERHIGH:
-		detailscale = 1.0;
-		break;
-	case DETAIL_NORMAL:
-	default:
-		detailscale = 0.7;
-		break;
+		case DETAIL_LOW:
+			detail_scale = 0.5f;
+			break;
+
+		case DETAIL_NORMAL:
+		default:
+			detail_scale = 0.7f;
+			break;
+
+		case DETAIL_HIGH:
+			detail_scale = 0.9f;
+			break;
+
+		case DETAIL_UBERHIGH:
+			detail_scale = 1.0f;
+			break;
 	}
 
 	if (owner->current.effects & EF_ALTCLIENTFX)
-	{	// Time for this wall to die.
+	{
+		// Time for this wall to die.
 		if (wall->SpawnInfo != 1)
 		{
 			// Wait one second before disappearing.
@@ -220,172 +219,189 @@ static qboolean FXFireWaveThink(client_entity_t *wall, centity_t *owner)
 			wall->lastThinkTime = fxi.cl->time + 1000;
 			wall->SpawnInfo = 1;
 			FireWaveImpact(wall);
+
 			return true;
 		}
-		else if (wall->lastThinkTime > fxi.cl->time)
-		{	// Still some time left to live...
-			wall->dlight->intensity -= 20.0;
+
+		if (wall->lastThinkTime > fxi.cl->time)
+		{
+			// Still some time left to live...
+			wall->dlight->intensity -= 20.0f;
 			return true;
 		}
-		else
-		{	// Time's up
-			return false;
-		}
+
+		// Time's up
+		return false;
 	}
 
-	// Update radius
-	wall->radius = FIREWAVE_RADIUS + (fxi.cl->time - wall->startTime)*(FIREWAVE_DRADIUS/1000.0);
-	if (wall->dlight->intensity < 250.0)
-		wall->dlight->intensity += 15.0;
+	// Update radius.
+	wall->radius = FIREWAVE_RADIUS + (float)(fxi.cl->time - wall->startTime) * (FIREWAVE_DRADIUS / 1000.0f);
 
-	// Add some blasty bits along a line
-	for (i=0; i<FIREWAVE_BLAST_NUM; i++)
-	{	// Spawn along the top line of the wall
-		VectorSet(spawnpt, flrand(-6.0,6.0), flrand(-6.0,6.0), flrand(-6.0,6.0));
-		switch(i)
+	if (wall->dlight->intensity < 250.0f)
+		wall->dlight->intensity += 15.0f;
+
+	// Add some blast bits along a line.
+	for (int i = 0; i < FIREWAVE_BLAST_NUM; i++)
+	{
+		float value;
+		float scale;
+		vec3_t spawn_vel;
+
+		// Spawn along the top line of the wall.
+		vec3_t spawn_pt;
+		VectorRandomSet(spawn_pt, 6.0f);
+
+		switch (i)
 		{
-		case 0:		// Throw blast left
-			value = flrand(0.2, 0.8);
-			VectorMA(spawnpt, -value*wall->radius, wall->right, spawnpt);
-			VectorSet(spawnvel, flrand(-16.0,16.0), flrand(-16.0,16.0), 0.0);
-			scale = 1-value;
-			break;
-		case 1:		// Throw blast right
-			value = flrand(0.2, 0.8);
-			VectorMA(spawnpt, value*wall->radius, wall->right, spawnpt);
-			VectorSet(spawnvel, flrand(-16.0,16.0), flrand(-16.0,16.0), 0.0);
-			scale = 1-value;
-			break;
-		case 2:		// Blast about at the center
-			spawnpt[2] -= flrand(0, 0.2)*FIREWAVE_DOWN;
-			scale = 0.8;
-			break;
-		case 3:
-		default:	// Throw blast down
-			VectorMA(spawnpt, flrand(-0.4,0.4)*wall->radius, wall->right, spawnpt);
-			spawnpt[2] -= flrand(0.3,0.6)*FIREWAVE_DOWN;
-			scale = 0.8;
-			break;
+			case 0: // Throw blast left.
+				value = flrand(0.2f, 0.8f);
+				VectorMA(spawn_pt, -value * wall->radius, wall->right, spawn_pt);
+				VectorSet(spawn_vel, flrand(-16.0f, 16.0f), flrand(-16.0f, 16.0f), 0.0f);
+				scale = 1.0f - value;
+				break;
+
+			case 1: // Throw blast right.
+				value = flrand(0.2f, 0.8f);
+				VectorMA(spawn_pt, value * wall->radius, wall->right, spawn_pt);
+				VectorSet(spawn_vel, flrand(-16.0f, 16.0f), flrand(-16.0f, 16.0f), 0.0f);
+				scale = 1.0f - value;
+				break;
+
+			case 2: // Blast about at the center.
+				spawn_pt[2] -= flrand(0.0f, 0.2f) * FIREWAVE_DOWN; //TODO: shouldn't this use FIREWAVE_UP?..
+				scale = 0.8f;
+				break;
+
+			case 3:
+			default: // Throw blast down.
+				VectorMA(spawn_pt, flrand(-0.4f, 0.4f) * wall->radius, wall->right, spawn_pt);
+				spawn_pt[2] -= flrand(0.3f, 0.6f) * FIREWAVE_DOWN; //TODO: shouldn't this use FIREWAVE_UP?..
+				scale = 0.8f;
+				break;
 		}
 
-		VectorAdd(spawnpt, wall->r.origin, spawnpt);
-		// vary a bit above or below the wall as well...
-		spawnpt[2] += FIREWAVE_UP;
+		VectorAdd(spawn_pt, wall->r.origin, spawn_pt);
+		spawn_pt[2] += FIREWAVE_UP; // Vary a bit above or below the wall as well...
 
-		blast = ClientEntity_new(FX_WEAPON_FIREWAVE, CEF_PULSE_ALPHA, spawnpt, NULL, 500);
-		blast->r.model = wall_models;
-		blast->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		blast->radius = 64.0;
+		client_entity_t* blast_top = ClientEntity_new(FX_WEAPON_FIREWAVE, CEF_PULSE_ALPHA, spawn_pt, NULL, 500);
 
-		VectorMA(spawnvel, flrand(0.1, 0.2), wall->velocity, blast->velocity);
-		blast->acceleration[2] += -300.0;
-		blast->alpha = 0.01;
-		blast->d_alpha = flrand(4.0, 5.0);
-		blast->r.scale = scale*detailscale;
-		blast->d_scale = scale*detailscale * flrand(-1.0, -1.5);
-		
-		AddEffect(NULL, blast);
+		blast_top->radius = 64.0f;
+		blast_top->r.model = &wall_models[0]; // wflame sprite.
+		blast_top->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+
+		VectorMA(spawn_vel, flrand(0.1f, 0.2f), wall->velocity, blast_top->velocity);
+		blast_top->acceleration[2] += -300.0f;
+		blast_top->alpha = 0.01f;
+		blast_top->d_alpha = flrand(4.0f, 5.0f);
+		blast_top->r.scale = scale * detail_scale;
+		blast_top->d_scale = scale * detail_scale * flrand(-1.5f, -1.0f);
+
+		AddEffect(NULL, blast_top);
 
 		// Spawn along the bottom line of the wall
-		VectorSet(spawnpt, flrand(-6.0,6.0), flrand(-6.0,6.0), flrand(-6.0,6.0));
-		switch(i)
+		VectorRandomSet(spawn_pt, 6.0f);
+
+		switch (i)
 		{
-		case 0:		// Throw blast left
-			value = flrand(0.2, 0.8);
-			VectorMA(spawnpt, -value*wall->radius, wall->right, spawnpt);
-			VectorSet(spawnvel, flrand(-16.0,16.0), flrand(-16.0,16.0), 0.0);
-			scale = 1-value;
-			break;
-		case 1:		// Throw blast right
-			value = flrand(0.2, 0.8);
-			VectorMA(spawnpt, value*wall->radius, wall->right, spawnpt);
-			VectorSet(spawnvel, flrand(-16.0,16.0), flrand(-16.0,16.0), 0.0);
-			scale = 1-value;
-			break;
-		case 2:		// Blast about at the center
-			spawnpt[2] += flrand(0, 0.2)*FIREWAVE_DOWN;
-			scale = 0.8;
-			break;
-		case 3:
-		default:	// Throw blast down
-			VectorMA(spawnpt, flrand(-0.4,0.4)*wall->radius, wall->right, spawnpt);
-			spawnpt[2] += flrand(0.3,0.6)*FIREWAVE_DOWN;
-			scale = 0.8;
-			break;
+			case 0: // Throw blast left.
+				value = flrand(0.2f, 0.8f);
+				VectorMA(spawn_pt, -value * wall->radius, wall->right, spawn_pt);
+				VectorSet(spawn_vel, flrand(-16.0f, 16.0f), flrand(-16.0f, 16.0f), 0.0f);
+				scale = 1.0f - value;
+				break;
+
+			case 1: // Throw blast right.
+				value = flrand(0.2f, 0.8f);
+				VectorMA(spawn_pt, value * wall->radius, wall->right, spawn_pt);
+				VectorSet(spawn_vel, flrand(-16.0f, 16.0f), flrand(-16.0f, 16.0f), 0.0f);
+				scale = 1.0f - value;
+				break;
+
+			case 2: // Blast about at the center.
+				spawn_pt[2] += flrand(0.0f, 0.2f) * FIREWAVE_DOWN;
+				scale = 0.8f;
+				break;
+
+			case 3:
+			default: // Throw blast down.
+				VectorMA(spawn_pt, flrand(-0.4f, 0.4f) * wall->radius, wall->right, spawn_pt);
+				spawn_pt[2] += flrand(0.3f, 0.6f) * FIREWAVE_DOWN;
+				scale = 0.8f;
+				break;
 		}
 
-		VectorAdd(spawnpt, wall->r.origin, spawnpt);
-		// vary a bit above or below the wall as well...
-		spawnpt[2] -= FIREWAVE_DOWN;
+		VectorAdd(spawn_pt, wall->r.origin, spawn_pt);
+		spawn_pt[2] -= FIREWAVE_DOWN; // Vary a bit above or below the wall as well...
 
-		blast = ClientEntity_new(FX_WEAPON_FIREWAVE, CEF_PULSE_ALPHA, spawnpt, NULL, 500);
-		blast->r.model = wall_models;
-		blast->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		blast->radius = 64.0;
+		client_entity_t* blast_bottom = ClientEntity_new(FX_WEAPON_FIREWAVE, CEF_PULSE_ALPHA, spawn_pt, NULL, 500);
 
-		VectorMA(spawnvel, flrand(0.1, 0.2), wall->velocity, blast->velocity);
-		blast->acceleration[2] += 300.0;
-		blast->alpha = 0.01;
-		blast->d_alpha = flrand(4.0, 5.0);
-		blast->r.scale = scale*detailscale;
-		blast->d_scale = scale*detailscale * flrand(-1.0, -1.5);
-		
-		AddEffect(NULL, blast);
+		blast_bottom->radius = 64.0f;
+		blast_bottom->r.model = &wall_models[0]; // wflame sprite.
+		blast_bottom->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+
+		VectorMA(spawn_vel, flrand(0.1f, 0.2f), wall->velocity, blast_bottom->velocity);
+		blast_bottom->acceleration[2] += 300.0f;
+		blast_bottom->alpha = 0.01f;
+		blast_bottom->d_alpha = flrand(4.0f, 5.0f);
+		blast_bottom->r.scale = scale * detail_scale;
+		blast_bottom->d_scale = scale * detail_scale * flrand(-1.5f, -1.0f);
+
+		AddEffect(NULL, blast_bottom);
 	}
 
 	if (fxi.cl->time >= wall->nextEventTime)
-	{	// Spawn a worm.
+	{
+		// Spawn a worm.
 
 		// Find a random spot somewhere to have a fire worm hit.
-		VectorMA(wall->r.origin, flrand(-1.0,1.0) * wall->radius, wall->right, destpt);
+		vec3_t dest_pt;
+		VectorMA(wall->r.origin, flrand(-1.0f, 1.0f) * wall->radius, wall->right, dest_pt);
 
 		// Trace back a little bit and spawn the fire worm there.
-		VectorMA(destpt, -0.5*FIREWORM_LIFETIME, wall->velocity, spawnpt);
+		vec3_t spawn_pt;
+		VectorMA(dest_pt, -0.5f * FIREWORM_LIFETIME, wall->velocity, spawn_pt);
 
 		// Trace down a bit to look for a nice place to spawn stuff.
-		VectorCopy(destpt, bottom);
+		vec3_t bottom;
+		VectorCopy(dest_pt, bottom);
 		bottom[2] -= FIREWAVE_TRACEDOWN;
-		fxi.Trace(destpt, minmax, minmax, bottom, CONTENTS_SOLID, CEF_CLIP_TO_WORLD, &trace);
 
-		if(trace.fraction < .99)
-		{	// Hit the ground, smack it!!!
-			VectorCopy(trace.endpos, destpt);
-			hitground = true;
-		}
+		trace_t trace;
+		fxi.Trace(dest_pt, vec3_origin, vec3_origin, bottom, CONTENTS_SOLID, CEF_CLIP_TO_WORLD, &trace);
 
-		worm = ClientEntity_new(FX_WEAPON_FIREWAVE, CEF_ADDITIVE_PARTS, spawnpt, NULL, 75);
-		worm->r.model = wall_models+2;
+		const qboolean hitground = (trace.fraction < 0.99f);
+		if (hitground)
+			VectorCopy(trace.endpos, dest_pt); // Hit the ground, smack it!!!
+
+		client_entity_t* worm = ClientEntity_new(FX_WEAPON_FIREWAVE, CEF_ADDITIVE_PARTS, spawn_pt, NULL, 75);
+
+		worm->radius = 64.0f;
+		worm->r.model = &wall_models[2]; // halo sprite.
 		worm->r.frame = 2;
-		worm->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		worm->radius = 64.0;
+		worm->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 
-		VectorCopy(spawnpt, worm->startpos);
-		VectorCopy(destpt, worm->endpos);
-		worm->alpha = 0.95;
+		VectorCopy(spawn_pt, worm->startpos);
+		VectorCopy(dest_pt, worm->endpos);
+		worm->alpha = 0.95f;
 
 		// New worm, but a small one.
-		worm->r.scale = 0.5*detailscale;
-
-		worm->Update = FireWormThink;
+		worm->r.scale = 0.5f * detail_scale;
 		worm->color.c = 0xff0080ff;
-		worm->dlight = CE_DLight_new(worm->color, 128.0, 0.0);
+		worm->dlight = CE_DLight_new(worm->color, 128.0f, 0.0f);
 		VectorCopy(wall->velocity, worm->velocity);
 		worm->velocity[2] += FIREWORM_INITIAL_VELOCITY;
 		worm->acceleration[2] = FIREWORM_ACCELERATION;
-
-		if (hitground)
-			worm->SpawnInfo = 1;
+		worm->SpawnInfo = (hitground ? 1 : 0);
+		worm->Update = FireWormThink;
 
 		AddEffect(NULL, worm);
-
 		FireWormThink(worm, NULL);
 
-		wall->nextEventTime = fxi.cl->time + (flrand(0.8,1.2)*FIREWAVE_WORM_TIME);
+		wall->nextEventTime = fxi.cl->time + (int)(flrand(0.8f, 1.2f) * FIREWAVE_WORM_TIME);
 	}
 
 	return true;
 }
-
 
 // Create Effect FX_WEAPON_FIREWAVE
 void FXFireWave(centity_t *owner, int type, int flags, vec3_t origin)
@@ -416,7 +432,7 @@ void FXFireWave(centity_t *owner, int type, int flags, vec3_t origin)
 		VectorMA(wall->velocity, FIREWAVE_DRADIUS, wall->right, wall->velocity);
 	}
 
-	wall->Update = FXFireWaveThink;
+	wall->Update = FireWaveThink;
 	wall->radius = FIREWAVE_RADIUS;
 	wall->color.c = 0xff00afff;
 	wall->dlight = CE_DLight_new(wall->color, 120.0F, 0.0F);
