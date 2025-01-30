@@ -21,53 +21,39 @@ void PreCacheWaterSplash(void)
 	water_models[1] = fxi.RegisterModel("sprites/fx/wfall.sp2");
 }
 
-// ************************************************************************************************
-// FXWaterEntryRippleThinkerThink
-// ------------------------------
-// ************************************************************************************************
-
-static qboolean FXWaterEntrySplashThinkerThink(struct client_entity_s *Self,centity_t *Owner)
+static qboolean WaterEntrySplashThinkerThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_entity_t	*EntryRipple;
-
 	// Have enough ripples been created yet? If not, create one, else free myself.
+	if (self->NoOfAnimFrames < 1)
+		return false;
 
-	if(Self->NoOfAnimFrames>0)
-	{ 
-		// Create a water entry ripple.
+	// Create a water entry ripple.
+	const int flags = (int)(self->flags & ~(CEF_OWNERS_ORIGIN | CEF_NO_DRAW)); //mxd
+	client_entity_t* ripple = ClientEntity_new(FX_WATER_ENTRYSPLASH, flags, self->origin, self->direction, 1200);
 
-		EntryRipple=ClientEntity_new(FX_WATER_ENTRYSPLASH,
-									 Self->flags&~(CEF_OWNERS_ORIGIN|CEF_NO_DRAW),
-									 Self->origin,
-									 Self->direction,
-									 1200);
+	ripple->r.model = &water_models[0]; // waterentryripple sprite.
+	ripple->r.flags = RF_FIXED | RF_TRANSLUCENT | RF_ALPHA_TEXTURE;
+	ripple->alpha = 0.6f;
+	ripple->d_alpha = self->d_alpha;
 
-		EntryRipple->r.model = water_models;
-		EntryRipple->r.frame=0;
-		EntryRipple->r.flags=RF_FIXED | RF_TRANSLUCENT | RF_ALPHA_TEXTURE;
-		EntryRipple->alpha=0.6;
-		EntryRipple->d_alpha=Self->d_alpha;
-
-		if (Self->flags & CEF_FLAG7)
-		{	// Random ripples.
-			EntryRipple->r.scale=0.1;
-			EntryRipple->d_scale=0.7;
-			EntryRipple->r.origin[0] += flrand(-6.0,6.0);
-			EntryRipple->r.origin[1] += flrand(-6.0,6.0);
-		}
-		else
-		{
-			EntryRipple->r.scale=WATER_SPLASH_SCALE;
-			EntryRipple->d_scale=1.0;
-		}
-		
-		AddEffect(NULL,EntryRipple);	
-		
-		Self->NoOfAnimFrames--;
-		return(true);
+	if (self->flags & CEF_FLAG7)
+	{
+		// Random ripples.
+		ripple->r.scale = 0.1f;
+		ripple->d_scale = 0.7f;
+		ripple->r.origin[0] += flrand(-6.0f, 6.0f);
+		ripple->r.origin[1] += flrand(-6.0f, 6.0f);
 	}
 	else
-		return(false);
+	{
+		ripple->r.scale = WATER_SPLASH_SCALE;
+		ripple->d_scale = 1.0f;
+	}
+
+	AddEffect(NULL, ripple);
+	self->NoOfAnimFrames--;
+
+	return true;
 }
 
 // ************************************************************************************************
@@ -148,7 +134,7 @@ void DoWaterEntrySplash(int Type,int Flags,vec3_t Origin, byte SplashSize, vec3_
 	
 	EntrySplashThinker->flags|=CEF_NO_DRAW;
 	EntrySplashThinker->NoOfAnimFrames=(int)NoOfRipples;
-	EntrySplashThinker->Update=FXWaterEntrySplashThinkerThink;
+	EntrySplashThinker->Update=WaterEntrySplashThinkerThink;
 	EntrySplashThinker->d_alpha=-0.8-(0.2-(0.2*((1.0/127.0)*(SplashSize&127))));
 
 	AddEffect(NULL,EntrySplashThinker);	
