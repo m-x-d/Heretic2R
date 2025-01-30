@@ -29,7 +29,7 @@
 
 static struct model_s *torn_models[NUM_TORN_MODELS];
 
-void PreCacheTorn()
+void PreCacheTornado()
 {
 	torn_models[0] = fxi.RegisterModel("Sprites/fx/haloblue.sp2");
 	torn_models[1] = fxi.RegisterModel("Sprites/Spells/flyingfist.sp2");

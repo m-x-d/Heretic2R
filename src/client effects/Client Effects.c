@@ -24,7 +24,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ FXBloodTrail,						PreCacheSplat,			"d"			},
 	{ FXLinkedBlood,					NULL,					"bb"		},
 	{ FXGenericSparks,					PreCacheSparks,			"d"			},
-	{ FXPlayerTeleportIn,					PreCacheTeleport,		NULL		},
+	{ FXPlayerTeleportIn,				PreCacheTeleport,		NULL		},
 	{ FXHealthPickup,					PreCacheHealth,			NULL		},
 	{ FXWeaponPickup,					PreCacheItemWeapons,	"b"			},
 	{ FXDefensePickup,					PreCacheItemDefense,	"b"			},
@@ -152,7 +152,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ FXCWatcherEffects,				PreCacheCWModels,		"bv"		},
 	{ FXCorpseRemove,					PreCacheCrosshair,		NULL		},	// Naughty little hack here, crosshair has nothing to do with corpse removal.
 	{ FXLeader,							NULL,					NULL		},
-	{ FXTornado,						PreCacheTorn,			NULL		},
+	{ FXTornado,						PreCacheTornado,		NULL		},
 	{ FXTornadoBall,					NULL,					NULL		},
 	{ FXTornadoBallExplode,				NULL,					NULL		},
 	{ FXFeetTrail,						NULL,					NULL		},

@@ -254,4 +254,4 @@ extern void PreCacheArmorHit(void);
 extern void PreCacheHitPuff(void);
 extern void PreCacheObjects(void);
 extern void PreCacheCWModels(void);
-extern void PreCacheTorn(void);
+extern void PreCacheTornado(void);
