@@ -122,25 +122,21 @@ static qboolean TomeOfPowerThink(client_entity_t* tome, centity_t* owner)
 	return true;
 }
 
-// original version of the tome of power. Casts a blue light etc
-void FXTomeOfPower(centity_t *owner, int type, int flags, vec3_t origin)
+// Original version of the tome of power. Casts a blue light etc.
+void FXTomeOfPower(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*tome;
+	client_entity_t* tome = ClientEntity_new(type, flags, origin, NULL, 100);
 
-	tome = ClientEntity_new(type, flags, origin, NULL, 100);
-
-	// Test model
- 	tome->r.model = &tome_model;
-	tome->r.flags |= RF_FULLBRIGHT|RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA;
+	tome->radius = 128.0f;
+	tome->r.model = &tome_model;
+	tome->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 	tome->flags |= CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS;
-	tome->r.scale = 0.55;
+	tome->r.scale = 0.55f;
 	tome->color.c = 0xe5ff2020;
-	tome->radius = 128;
-	tome->Update = TomeOfPowerThink;
+	tome->SpawnData = (float)fxi.cl->time;
+	tome->dlight = CE_DLight_new(tome->color, 150.0f, 0.0f);
 	tome->AddToView = TomeOfPowerAddToView;
-	tome->dlight = CE_DLight_new(tome->color, 150.0F, 00.0F);
-	tome->SpawnData = fxi.cl->time;
-	tome->SpawnInfo = 0;
+	tome->Update = TomeOfPowerThink;
 
 	AddEffect(owner, tome);
 }
