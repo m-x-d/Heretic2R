@@ -1,25 +1,16 @@
 //
-// Heretic II
+// fx_Wall.c
+//
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
-#include "ce_DefaultMessageHandler.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "angles.h"
-#include "Vector.h"
-#include "Matrix.h"
 #include "Random.h"
 #include "Utilities.h"
-#include "motion.h"
-#include "Reference.h"
+#include "Vector.h"
 #include "ce_Dlight.h"
-#include "q_Sprite.h"
 #include "g_playstats.h"
-
 
 #define	NUM_WALL_MODELS	3
 
