@@ -10,6 +10,9 @@
 #include "Random.h"
 #include "g_playstats.h"
 
+#define WATER_SPLASH_SCALE	0.3f
+#define WATER_SPLASH_RADIUS	20.0f
+
 static struct model_s* water_models[2];
 
 void PreCacheWaterSplash(void)
@@ -17,14 +20,6 @@ void PreCacheWaterSplash(void)
 	water_models[0] = fxi.RegisterModel("sprites/fx/waterentryripple.sp2");
 	water_models[1] = fxi.RegisterModel("sprites/fx/wfall.sp2");
 }
-
-// -----------------------------------------------------------------
-
-#define	SCALE 0.3
-#define SPLASH_RADIUS 20
-
-static qboolean FXWaterEntrySplashThinkerThink(struct client_entity_s *Self,centity_t *Owner);
-static void WaterEntryParticles(struct client_entity_s *Owner, float Radius, int NumParticles);
 
 // ************************************************************************************************
 // FXWaterEntryRippleThinkerThink
@@ -62,7 +57,7 @@ static qboolean FXWaterEntrySplashThinkerThink(struct client_entity_s *Self,cent
 		}
 		else
 		{
-			EntryRipple->r.scale=SCALE;
+			EntryRipple->r.scale=WATER_SPLASH_SCALE;
 			EntryRipple->d_scale=1.0;
 		}
 		
@@ -174,8 +169,8 @@ void DoWaterEntrySplash(int Type,int Flags,vec3_t Origin, byte SplashSize, vec3_
 			splash->d_alpha=-2.0;		
 			splash->d_scale=1.0;
 
-			splash->origin[0]=SPLASH_RADIUS*cos(Theta);
-			splash->origin[1]=SPLASH_RADIUS*sin(Theta);
+			splash->origin[0]=WATER_SPLASH_RADIUS*cos(Theta);
+			splash->origin[1]=WATER_SPLASH_RADIUS*sin(Theta);
 			splash->origin[2]=0.0;
 
 			splash->velocity[0]=flrand(4.0,6.0)*splash->origin[0];
@@ -201,8 +196,8 @@ void DoWaterEntrySplash(int Type,int Flags,vec3_t Origin, byte SplashSize, vec3_
 			splash->d_alpha=-1.0;		
 			splash->d_scale=-0.5;
 
-			splash->origin[0]=SPLASH_RADIUS*cos(Theta);
-			splash->origin[1]=SPLASH_RADIUS*sin(Theta);
+			splash->origin[0]=WATER_SPLASH_RADIUS*cos(Theta);
+			splash->origin[1]=WATER_SPLASH_RADIUS*sin(Theta);
 			splash->origin[2]=0.0;
 
 			splash->velocity[0]=flrand(1.0,2.0)*splash->origin[0];
@@ -221,7 +216,7 @@ void DoWaterEntrySplash(int Type,int Flags,vec3_t Origin, byte SplashSize, vec3_
 		splash=ClientEntity_new(FX_WATER_ENTRYSPLASH, Flags&(~CEF_OWNERS_ORIGIN), Origin, Dir, 1200);
 
 		splash->r.model = water_models;
-		splash->r.scale=SCALE*2.0;
+		splash->r.scale=WATER_SPLASH_SCALE*2.0;
 		splash->r.frame=0;
 		splash->r.flags |= RF_FIXED|RF_TRANSLUCENT|RF_ALPHA_TEXTURE;
 		splash->alpha=0.6;
@@ -240,7 +235,7 @@ void DoWaterEntrySplash(int Type,int Flags,vec3_t Origin, byte SplashSize, vec3_
 		splash=ClientEntity_new(FX_WATER_ENTRYSPLASH, Flags&(~CEF_OWNERS_ORIGIN), Origin, Dir, 1200);
 
 		splash->r.model = water_models;
-		splash->r.scale=SCALE;
+		splash->r.scale=WATER_SPLASH_SCALE;
 		splash->r.frame=0;
 		splash->r.flags |= RF_FIXED|RF_TRANSLUCENT|RF_ALPHA_TEXTURE;
 		splash->alpha=0.6;
