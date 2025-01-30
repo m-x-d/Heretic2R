@@ -10,9 +10,9 @@
 #include "Random.h"
 #include "g_playstats.h"
 
-#define	NUM_SPLASH_MODELS	2
-static struct model_s *water_models[NUM_SPLASH_MODELS];
-void PreCacheWaterSplash()
+static struct model_s* water_models[2];
+
+void PreCacheWaterSplash(void)
 {
 	water_models[0] = fxi.RegisterModel("sprites/fx/waterentryripple.sp2");
 	water_models[1] = fxi.RegisterModel("sprites/fx/wfall.sp2");
