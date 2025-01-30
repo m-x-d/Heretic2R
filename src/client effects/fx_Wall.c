@@ -33,145 +33,121 @@ void PreCacheWall(void)
 #define FIREWORM_BLAST_NUM			12
 #define FIREWORM_BLAST_RADIUS		32
 
-static qboolean FXFireWormThink(client_entity_t *worm, centity_t *owner)
+static qboolean FireWormThink(client_entity_t* worm, centity_t* owner)
 {
-	client_entity_t		*blast;
-	client_particle_t	*spark, *spark2;
-	vec3_t				diffpos;
-	float				dtime, dtime2;
-	float				anginc, ang;
-	int					i;
-	paletteRGBA_t		color;
+	const float delta_time = (float)(fxi.cl->time - worm->startTime) / FIREWORM_LIFETIME_MS;
+	const float worm_scale = FIREWORM_BLAST_VELOCITY * worm->r.scale; //mxd
 
-	dtime = (fxi.cl->time - worm->startTime)/FIREWORM_LIFETIME_MS;
-	dtime2 = dtime * dtime * 0.5;
-
-	color.c = 0xffffffff;
-
-	if (dtime > FIREWORM_LIFETIME)
-	{	// Impact at the centerpoint.
-		if (worm->SpawnInfo == 0 || dtime > FIREWORM_LIFETIME+FIREWORM_BLASTLIFE)
-		{	// Do nothing, wait for blast to expire.
+	if (delta_time > FIREWORM_LIFETIME)
+	{
+		// Impact at the centerpoint.
+		if (worm->SpawnInfo == 0 || delta_time > FIREWORM_LIFETIME + FIREWORM_BLASTLIFE)
+		{
+			// Do nothing, wait for blast to expire.
 			worm->nextThinkTime = fxi.cl->time + 500;
 			worm->Update = RemoveSelfAI;
+
 			return true;
 		}
-		else
+
+		client_entity_t* blast = ClientEntity_new(FX_WEAPON_FIREWAVE, CEF_ADDITIVE_PARTS, worm->endpos, NULL, 500);
+
+		blast->r.model = &wall_models[2]; // Halo sprite.
+		blast->r.frame = 2; // Circular halo for blast.
+		blast->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		blast->alpha = 0.95f;
+		blast->d_alpha = -0.5f;
+		blast->r.scale = 0.25f * worm->r.scale;
+		blast->d_scale = -3.0f * worm->r.scale;
+
+		const float vel_max = worm_scale * 0.25f; //mxd
+		VectorSet(blast->velocity, flrand(-vel_max, vel_max), flrand(-vel_max, vel_max), flrand(0.0f, vel_max));
+
+		AddEffect(NULL, blast);
+
+		// Spray out in a big ring.
+		float angle = flrand(0.0f, ANGLE_360);
+		const float angle_increment = ANGLE_360 / FIREWORM_BLAST_NUM;
+
+		for (int i = 0; i < 8; i++) //TODO: shouldn't this count to FIREWORM_BLAST_NUM?..
 		{
-			blast = ClientEntity_new(FX_WEAPON_FIREWAVE, CEF_ADDITIVE_PARTS, worm->endpos, NULL, 500);
-			blast->r.model = wall_models + 2;
-			blast->r.frame = 2;		// Circular halo for blast.
-			blast->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-			blast->alpha = 0.95;
-			blast->d_alpha = -0.5;
-			blast->r.scale = 0.25*worm->r.scale;
-			blast->d_scale = -3.0*worm->r.scale;
-			VectorSet(blast->velocity,
-						flrand(-0.25*FIREWORM_BLAST_VELOCITY *worm->r.scale, 0.25*FIREWORM_BLAST_VELOCITY *worm->r.scale),
-						flrand(-0.25*FIREWORM_BLAST_VELOCITY *worm->r.scale, 0.25*FIREWORM_BLAST_VELOCITY *worm->r.scale),
-						flrand(0, 0.25*FIREWORM_BLAST_VELOCITY *worm->r.scale));
-			AddEffect(NULL, blast);
+			const vec3_t diff_pos = { cosf(angle), sinf(angle), 0.0f };
+			angle += angle_increment;
 
-			// Spray out in a big ring
-			ang = flrand(0, M_PI*2.0);
-			anginc = (M_PI * 2.0) / FIREWORM_BLAST_NUM;
-			for (i=0; i<8; i++)
-			{
-				diffpos[0] = cos(ang);
-				diffpos[1] = sin(ang);
-				diffpos[2] = 0;
-				ang += anginc;
+			// Higher particle.
+			client_particle_t* spark_hi = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color_white, 500);
 
-				// Higher particle
-				spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color, 500);
+			VectorScale(diff_pos, FIREWORM_BLAST_RADIUS * worm->r.scale, spark_hi->origin);
+			VectorScale(diff_pos, flrand(0.45f, 0.5f) * worm_scale, spark_hi->velocity);
+			spark_hi->velocity[2] += flrand(0.8f, 1.0f) * worm_scale;
 
-				VectorScale(diffpos, FIREWORM_BLAST_RADIUS*worm->r.scale, spark->origin);
-				VectorScale(diffpos, flrand(0.45, 0.5)*FIREWORM_BLAST_VELOCITY *worm->r.scale, spark->velocity);
-				spark->velocity[2] += flrand(0.80, 1.0)*FIREWORM_BLAST_VELOCITY *worm->r.scale;
+			spark_hi->color.a = 254;
+			spark_hi->d_alpha = flrand(-768.0f, -512.0f);
+			spark_hi->scale = 16.0f * worm->r.scale;
+			spark_hi->d_scale = flrand(8.0f, 16.0f) * worm->r.scale;
 
-				spark->color.a = 254;
-				spark->d_alpha = flrand(-512.0, -768.0);
-				spark->scale = 16.0*worm->r.scale;
-				spark->d_scale = flrand(8.0, 16.0)*worm->r.scale;
+			AddParticleToList(blast, spark_hi);
 
-				AddParticleToList(blast, spark);
+			// Lower to ground particle.
+			client_particle_t* spark_low = ClientParticle_new(irand(PART_16x16_FIRE1, PART_16x16_FIRE3), color_white, 500);
 
-				// Lower to ground particle
-				spark2 = ClientParticle_new(irand(PART_16x16_FIRE1, PART_16x16_FIRE3), color, 500);
+			VectorCopy(spark_hi->origin, spark_low->origin);
+			VectorCopy(spark_hi->velocity, spark_low->velocity);
+			spark_low->velocity[2] *= 0.33f;
 
-				VectorCopy(spark->origin, spark2->origin);
-				VectorCopy(spark->velocity, spark2->velocity);
-				spark2->velocity[2] *= 0.33;
+			spark_low->color.a = 254;
+			spark_low->d_alpha = flrand(-768.0f, -512.0f);
+			spark_low->scale = 16.0f * worm->r.scale;
+			spark_low->d_scale = flrand(8.0f, 16.0f) * worm->r.scale;
 
-				spark2->color.a = 254;
-				spark2->d_alpha = flrand(-512.0, -768.0);
-				spark2->scale = 16.0*worm->r.scale;
-				spark2->d_scale = flrand(8.0, 16.0)*worm->r.scale;
+			AddParticleToList(blast, spark_low);
+		}
 
-				AddParticleToList(blast, spark2);
-			}
+		// Spray up in a little fountain too.
+		for (int i = 0; i < 4; i++)
+		{
+			client_particle_t* spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color_white, 500);
 
-			// Spray up in a little fountain too.
-			for (i=0; i<4; i++)
-			{
-				spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color, 500);
+			VectorSet(spark->velocity,
+				flrand(-0.1f * worm_scale, 0.1f * worm_scale),
+				flrand(-0.1f * worm_scale, 0.1f * worm_scale),
+				flrand(-0.2f * worm_scale, 0.2f * worm_scale));
+			spark->velocity[2] += FIREWORM_BLAST_VELOCITY;
 
-				VectorSet(spark->velocity,
-							flrand(-0.1*FIREWORM_BLAST_VELOCITY *worm->r.scale, 0.1*FIREWORM_BLAST_VELOCITY *worm->r.scale),
-							flrand(-0.1*FIREWORM_BLAST_VELOCITY *worm->r.scale, 0.1*FIREWORM_BLAST_VELOCITY *worm->r.scale),
-							flrand(-0.2*FIREWORM_BLAST_VELOCITY *worm->r.scale, 0.2*FIREWORM_BLAST_VELOCITY *worm->r.scale));
-				spark->velocity[2] += FIREWORM_BLAST_VELOCITY;
+			spark->color.a = 254;
+			spark->d_alpha = flrand(-768.0f, -512.0f);
+			spark->scale = 16.0f * worm->r.scale;
+			spark->d_scale = flrand(-16.0f, -8.0f);
 
-				spark->color.a = 254;
-				spark->d_alpha = flrand(-512.0, -768.0);
-				spark->scale = 16.0*worm->r.scale;
-				spark->d_scale = flrand(-8.0, -16.0);
-
-				AddParticleToList(blast, spark);
-			}
+			AddParticleToList(blast, spark);
 		}
 
 		return true;
 	}
 
-	// Continue snaking to target.
-
-//	VectorSubtract(worm->endpos, worm->startpos, diffpos);
-
-	// Move linearly to the target.
-//	VectorMA(worm->startpos, dtime, diffpos, worm->r.origin);
-	// Now add in an additional arc.
-//	worm->r.origin[2] += FIREWORM_INITVEL*dtime + FIREWORM_ACCEL*dtime2;
-//	worm->velocity[2] = (diffpos[2]/FIREWORM_LIFETIME) + FIREWORM_INITVEL + FIREWORM_ACCEL*dtime;
-
 	// Add a trail entity and particle trail segment.
-	blast = ClientEntity_new(FX_WEAPON_FIREWAVE, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, worm->r.origin, NULL, 500);
-	VectorClear(blast->velocity);
-	AddEffect(NULL, blast);
+	client_entity_t* trail = ClientEntity_new(FX_WEAPON_FIREWAVE, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, worm->r.origin, NULL, 500);
+	VectorClear(trail->velocity);
+	AddEffect(NULL, trail);
 
-	for (i=0; i<4; i++)
+	for (int i = 0; i < 4; i++)
 	{
-//		spark = ClientParticle_new(irand(PART_16x16_FIRE1, PART_16x16_FIRE3), color, 500);
-		spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color, 500);
+		client_particle_t* spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color_white, 500);
 
-		VectorSet(spark->velocity,
-					flrand(-0.25*FIREWORM_TRAIL_VELOCITY, 0.25*FIREWORM_TRAIL_VELOCITY),
-					flrand(-0.25*FIREWORM_TRAIL_VELOCITY, 0.25*FIREWORM_TRAIL_VELOCITY),
-					flrand(-0.25*FIREWORM_TRAIL_VELOCITY, 0.25*FIREWORM_TRAIL_VELOCITY));
-		VectorMA(spark->velocity, 0.5, worm->velocity, spark->velocity);
-		VectorScale(spark->velocity, -2.0, spark->acceleration);
+		VectorRandomSet(spark->velocity, 0.25f * FIREWORM_TRAIL_VELOCITY);
+		VectorMA(spark->velocity, 0.5f, worm->velocity, spark->velocity);
+		VectorScale(spark->velocity, -2.0f, spark->acceleration);
 
 		spark->color.a = 254;
-		spark->d_alpha = flrand(-512.0, -768.0);
-		spark->scale = 20.0*worm->r.scale;
-		spark->d_scale = flrand(8.0, 16.0)*worm->r.scale;
-		
-		AddParticleToList(blast, spark);
+		spark->d_alpha = flrand(-768.0f, -512.0f);
+		spark->scale = 20.0f * worm->r.scale;
+		spark->d_scale = flrand(8.0f, 16.0f) * worm->r.scale;
+
+		AddParticleToList(trail, spark);
 	}
 
 	return true;
 }
-
 
 #define FIREWAVE_TRACEDOWN		(128)
 #define FIREWAVE_WORM_TIME		(0.5*1000)
@@ -399,7 +375,7 @@ static qboolean FXFireWaveThink(client_entity_t *wall, centity_t *owner)
 		// New worm, but a small one.
 		worm->r.scale = 0.5*detailscale;
 
-		worm->Update = FXFireWormThink;
+		worm->Update = FireWormThink;
 		worm->color.c = 0xff0080ff;
 		worm->dlight = CE_DLight_new(worm->color, 128.0, 0.0);
 		VectorCopy(wall->velocity, worm->velocity);
@@ -411,7 +387,7 @@ static qboolean FXFireWaveThink(client_entity_t *wall, centity_t *owner)
 
 		AddEffect(NULL, worm);
 
-		FXFireWormThink(worm, NULL);
+		FireWormThink(worm, NULL);
 
 		wall->nextEventTime = fxi.cl->time + (flrand(0.8,1.2)*FIREWAVE_WORM_TIME);
 	}
@@ -512,7 +488,7 @@ void FXFireWaveWorm(centity_t *owner, int type, int flags, vec3_t origin)
 	VectorCopy(origin, worm->endpos);
 	worm->alpha = 0.95;
 	worm->r.scale = 1.5*detailscale;
-	worm->Update = FXFireWormThink;
+	worm->Update = FireWormThink;
 	worm->color.c = 0xff0080ff;
 	worm->dlight = CE_DLight_new(worm->color, 128.0, 0.0);
 	VectorScale(fwd, FIREWAVE_SPEED, worm->velocity);
@@ -523,7 +499,7 @@ void FXFireWaveWorm(centity_t *owner, int type, int flags, vec3_t origin)
 
 	AddEffect(NULL, worm);
 
-	FXFireWormThink(worm, NULL);
+	FireWormThink(worm, NULL);
 }
 
 #pragma endregion
