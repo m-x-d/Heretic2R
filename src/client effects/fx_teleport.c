@@ -83,72 +83,62 @@ void PlayerTeleportIn(centity_t* owner, const int type, const int flags, vec3_t 
 	}
 }
 
-void PlayerTeleportOut(centity_t *owner, int type, int flags, vec3_t origin)
+void PlayerTeleportOut(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t  	*teleport_fx;
-	int 					i, temp_col;
-	client_particle_t	*p;
-	paletteRGBA_t		color;
-	int 					particle_type;
-	vec3_t				angles;
-	byte					*col1;
-	byte					*col2;
-	byte					*col3;
-	int					count;
+	paletteRGBA_t color;
+	byte* col1;
+	byte* col2;
 
-	// create the teleport effect around the player to begin with
- 	teleport_fx = ClientEntity_new(type, flags, origin, NULL, 410);
-	teleport_fx->radius = 20.0F;
- 	teleport_fx->AddToView = LinkedEntityUpdatePlacement;
+	// Create the teleport effect around the player to begin with.
+	client_entity_t* teleport_fx = ClientEntity_new(type, flags, origin, NULL, 410);
 
-	// determine if this teleport is a spell, or a pad
-	// set up our colors appropriately
+	// Determine if this teleport is a spell, or a pad. Set up our colors appropriately.
 	if (!(flags & CEF_FLAG6))
 	{
-		col1 = &color.b;
-		col2 = &color.g;
-		col3 = &color.r;
+		col1 = &color.g;
+		col2 = &color.r;
 		teleport_fx->r.model = &teleport_models[0];
 	}
 	else
 	{
-		col1 = &color.b;
-		col2 = &color.r;
-		col3 = &color.g;
+		col1 = &color.r;
+		col2 = &color.g;
 		teleport_fx->r.model = &teleport_models[1];
 	}
 
-	teleport_fx->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA; 
-	teleport_fx->r.frame = 0;
-	teleport_fx->r.scale = 0.5;
-	teleport_fx->d_scale = 3.0;
+	teleport_fx->radius = 20.0f;
+	teleport_fx->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	teleport_fx->r.scale = 0.5f;
+	teleport_fx->d_scale = 3.0f;
+	teleport_fx->AddToView = LinkedEntityUpdatePlacement;
 
-  	AddEffect(owner, teleport_fx);
+	AddEffect(owner, teleport_fx);
 
-	// Use single point particles if we are in software
-	particle_type = PART_4x4_WHITE | PFL_SOFT_MASK;
+	// Spawn particles.
+	const int count = GetScaledCount(NUM_TELEPORT_FX_PARTICLES, 0.3f);
 
-	// spawn particles
-	count = GetScaledCount(NUM_TELEPORT_FX_PARTICLES, 0.3);
-	for(i = 0; i < count; i++)
+	for (int i = 0; i < count; i++)
 	{
-		temp_col = irand(0, 255); 
-		*col1 = *col2 = temp_col;
-		*col3 = 255;
+		const byte temp_col = (byte)irand(0, 255);
+		*col1 = temp_col;
+		*col2 = 255;
+		color.b = temp_col;
 		color.a = 1;
-		p = ClientParticle_new(particle_type, color, 400);
 
-		p->d_alpha = 300;
-		VectorSet(p->origin, 1.0,1.0,1.0);
-		VectorSet(angles, flrand(0, 6.28), flrand(0, 6.28), flrand(0, 6.28));
-		DirFromAngles(angles,p->origin);
-		Vec3ScaleAssign(flrand(PARTICLE_VELOCITY_OUT-10, PARTICLE_VELOCITY_OUT), p->origin);
+		// Use single point particles if we are in software.
+		client_particle_t* p = ClientParticle_new(PART_4x4_WHITE | PFL_SOFT_MASK, color, 400);
+
+		p->d_alpha = 300.0f;
+		VectorSet(p->origin, 1.0f, 1.0f, 1.0f);
+
+		const vec3_t angles = { flrand(0.0f, ANGLE_360), flrand(0.0f, ANGLE_360), flrand(0.0f, ANGLE_360) };
+		DirFromAngles(angles, p->origin);
+		Vec3ScaleAssign(flrand(PARTICLE_VELOCITY_OUT - 10.0f, PARTICLE_VELOCITY_OUT), p->origin);
 		VectorScale(p->origin, -PARTICLE_ACCELERATION_SCALE_OUT, p->acceleration);
 
 		AddParticleToList(teleport_fx, p);
 	}
 }
-
 
 static qboolean FXteleportPadThink(struct client_entity_s *self, centity_t *owner)
 {
