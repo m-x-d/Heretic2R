@@ -188,29 +188,30 @@ static qboolean PlayerTorchFadeInAddToView(client_entity_t* tome, centity_t* own
 	return true;
 }
 
-// make the light follow us
-static FXplayertorch_think(struct client_entity_s *self,centity_t *owner)
+// Make the light follow us.
+static qboolean PlayerTorchThink(struct client_entity_s* self, centity_t* owner)
 {
-	// kill us if we are done
+	// Kill us if we are done.
 	if (owner->current.effects & EF_LIGHT_ENABLED)
-		return(true);
-	else
-	if (!(self->SpawnInfo))
+		return true;
+
+	if (self->SpawnInfo == 0)
 	{
-	 	self->AddToView = PlayerTorchFadeInAddToView;
 		self->SpawnInfo = TIME_TO_FADE_TORCH;
-		self->d_alpha = -0.18;
-		return(true);
+		self->d_alpha = -0.18f;
+		self->AddToView = PlayerTorchFadeInAddToView;
+
+		return true;
 	}
 
-	if (!(--self->SpawnInfo))
-		return(false);
+	if (--self->SpawnInfo == 0)
+		return false;
 
-	// decrement the amount of light the torch gives out
+	// Decrement the amount of light the torch gives out.
 	if (self->SpawnInfo < TIME_TO_FADE_TORCH)
-		self->dlight->intensity -=	AMOUNT_TO_FADE_TORCH;
+		self->dlight->intensity -= AMOUNT_TO_FADE_TORCH;
 
-	return (true);
+	return true;
 }
 
 // light that the player gives off when he has this powerup
@@ -224,7 +225,7 @@ void FXPlayerTorch(centity_t *owner, int type, int flags, vec3_t origin)
 	effect->r.scale = .35;
 	effect->color.c = 0xffffff;
 	effect->dlight = CE_DLight_new(effect->color, 250.0F, 0.0F);
-	effect->Update = FXplayertorch_think;
+	effect->Update = PlayerTorchThink;
 	effect->AddToView = PlayerTorchAddToView;
 	effect->SpawnData = fxi.cl->time;
 	effect->alpha = 0.7;
