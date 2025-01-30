@@ -197,12 +197,11 @@ void DoWaterEntrySplash(const int type, const int flags, vec3_t origin, const by
 	}
 }
 
-void FXWaterEntrySplash(centity_t *Owner,int Type,int Flags,vec3_t Origin)
+void FXWaterEntrySplash(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	byte			SplashSize;
-	vec3_t			Dir;
+	byte splash_size;
+	vec3_t dir;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WATER_ENTRYSPLASH].formatString, &splash_size, dir);
 
-	fxi.GetEffect(Owner,Flags,clientEffectSpawners[FX_WATER_ENTRYSPLASH].formatString,&SplashSize,Dir);
-
-	DoWaterEntrySplash(Type, Flags, Origin, SplashSize, Dir);
+	DoWaterEntrySplash(type, flags, origin, splash_size, dir);
 }
