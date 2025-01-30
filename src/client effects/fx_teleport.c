@@ -200,15 +200,15 @@ static qboolean TeleportPadThink(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-// This is the persistant effect for the teleport pad
-void FXTeleportPad(centity_t *owner, int type, int flags, vec3_t origin)
+// This is the persistent effect for the teleport pad.
+void FXTeleportPad(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	client_entity_t		*glow;
-
 	flags |= CEF_NO_DRAW | CEF_ADDITIVE_PARTS | CEF_PULSE_ALPHA | CEF_VIEWSTATUSCHANGED | CEF_NOMOVE;
-	glow = ClientEntity_new(type,  flags, origin, 0, 110);
-	glow->Update = TeleportPadThink;
-	glow->radius = 100;
+	client_entity_t* glow = ClientEntity_new(type, flags, origin, NULL, 110);
+
+	glow->radius = 100.0f;
 	glow->r.origin[2] += TELEPORT_PAD_HEIGHT;
+	glow->Update = TeleportPadThink;
+
 	AddEffect(owner, glow);
 }
