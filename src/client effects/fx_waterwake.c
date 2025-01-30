@@ -10,17 +10,13 @@
 #include "Vector.h"
 #include "g_playstats.h"
 
-#define	NUM_WAKE_MODELS	2
-static struct model_s *wake_models[NUM_WAKE_MODELS];
-void PreCacheWake()
+static struct model_s* wake_models[2];
+
+void PreCacheWake(void)
 {
 	wake_models[0] = fxi.RegisterModel("sprites/fx/wake_add.sp2");
 	wake_models[1] = fxi.RegisterModel("sprites/fx/wfall.sp2");
 }
-
-// -----------------------------------------------------------------
-
-
 
 void FXWaterWake(centity_t *owner, int type, int flags, vec3_t origin)
 {
