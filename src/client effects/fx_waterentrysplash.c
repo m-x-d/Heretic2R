@@ -57,48 +57,6 @@ static qboolean WaterEntrySplashThinkerThink(struct client_entity_s* self, centi
 }
 
 // ************************************************************************************************
-// WaterEntryParticles
-// -------------------
-// ************************************************************************************************
-
-static void WaterEntryParticles(struct client_entity_s *Owner,float Radius,int NumParticles)
-{
-	float				Theta,DeltaTheta;
-	client_particle_t	*Particle;
-	paletteRGBA_t		color;
-
-	if (NumParticles<1||NumParticles>500)
-		return;
-	DeltaTheta=(2*M_PI)/NumParticles;
-
-	for(Theta=0.0;Theta<(2*M_PI);Theta+=DeltaTheta)
-	{		
-		color.c=0xffffffff;
-		color.a = irand(128, 200);
-
-		Particle=ClientParticle_new(PART_4x4_WHITE,color,1000);
-
-		Particle->origin[0]=Radius*cos(Theta);
-		Particle->origin[1]=Radius*sin(Theta);
-		Particle->origin[2]=0.0;
-
-		Particle->velocity[0]=flrand(0.0,50.0)*Particle->origin[0]*0.05;
-		Particle->velocity[1]=flrand(0.0,50.0)*Particle->origin[1]*0.05;
-		Particle->velocity[2]=flrand(50.0,120.0);
-
-		Particle->acceleration[0]=0.0;
-		Particle->acceleration[1]=0.0;
-		Particle->acceleration[2]=-PARTICLE_GRAVITY*3.5;
-
-		Particle->scale=flrand(0.5, 0.7);
-		Particle->d_alpha=-255.0;		
-		Particle->d_scale=-0.25;
-
-		AddParticleToList(Owner,Particle);
-	}
-}
-
-// ************************************************************************************************
 // FXWaterEntrySplash
 // ------------------
 // ************************************************************************************************
