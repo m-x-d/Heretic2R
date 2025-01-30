@@ -1,29 +1,23 @@
 //
 // fx_tornado.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
-
 #include "Client Effects.h"
-#include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Vector.h"
-#include "Matrix.h"
 #include "Random.h"
 #include "Utilities.h"
-#include "Reference.h"
+#include "Vector.h"
 #include "ce_DLight.h"
 #include "g_playstats.h"
-#include "q_sprite.h"
 
+#define TORNADO_RADIUS					80.0f
 
-#define TORN_RADIUS			80
-#define ACCEL_SCALE			3.1
-#define TELEPORT_RADIUS		400.0
+#define BALL_RADIUS						40
+#define BALL_PARTICLE_SCALE				10.0f
+#define BALL_PARTICLES_COUNT			4
+#define BALL_EXPLOSION_PARTICLES_COUNT	20
 
 #define	NUM_TORN_MODELS		4
 
@@ -36,10 +30,6 @@ void PreCacheTornado()
 	torn_models[2] = fxi.RegisterModel("sprites/fx/firestreak.sp2");
 	torn_models[3] = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
-#define BALL_RAD			40
-#define BALL_PART_SCALE		10.0
-#define BALL_PART_NUM		4
-#define BALL_EX_PART_NUM	20
 
 // make the tornade ball spark
 static qboolean FXTornadoBallThink(struct client_entity_s *self, centity_t *owner)
@@ -60,7 +50,7 @@ static qboolean FXTornadoBallThink(struct client_entity_s *self, centity_t *owne
 	}
 
 	color.c = 0xffffffff;
-	count = GetScaledCount(BALL_PART_NUM, 0.4);
+	count = GetScaledCount(BALL_PARTICLES_COUNT, 0.4);
 
 	for (i=0; i<count; i++)
 	{
@@ -74,11 +64,11 @@ static qboolean FXTornadoBallThink(struct client_entity_s *self, centity_t *owne
 		rad[YAW] = flrand(0, 360.0);
 		rad[ROLL] = 0.0;
 		AngleVectors(rad, fwd, NULL, NULL);
-		VectorScale(fwd, BALL_RAD, ce->velocity);
+		VectorScale(fwd, BALL_RADIUS, ce->velocity);
 		VectorScale(ce->velocity, -1.0, ce->acceleration);
 		ce->color.a = 245;
-		ce->scale = BALL_PART_SCALE;
-		ce->d_scale = -0.5*BALL_PART_SCALE;
+		ce->scale = BALL_PARTICLE_SCALE;
+		ce->d_scale = -0.5*BALL_PARTICLE_SCALE;
 		AddParticleToList(self, ce);
 	}
 
@@ -155,13 +145,13 @@ static qboolean FXTornadoThink(struct client_entity_s *self,centity_t *owner)
 			ce->color.a = 1;
 		}
 
-		ce->origin[CYL_RADIUS] = 0.1*TORN_RADIUS;
+		ce->origin[CYL_RADIUS] = 0.1*TORNADO_RADIUS;
 		ce->origin[CYL_YAW] = flrand(0, ANGLE_360);
 		ce->origin[CYL_Z] = 0;
 
-		ce->acceleration[CYL_RADIUS] = TORN_RADIUS;
+		ce->acceleration[CYL_RADIUS] = TORNADO_RADIUS;
 		ce->acceleration[CYL_YAW] = ANGLE_360*2.5;
-		ce->acceleration[CYL_Z] = flrand(TORN_RADIUS*1.5, TORN_RADIUS*1.75);
+		ce->acceleration[CYL_Z] = flrand(TORNADO_RADIUS*1.5, TORNADO_RADIUS*1.75);
 
   		AddParticleToList(self, ce);
   	}
@@ -221,7 +211,7 @@ void FXTornadoBallExplode(centity_t *owner, int type, int flags, vec3_t origin)
 	burst->radius = 100;
 	AddEffect(NULL, burst);
 
-	count = GetScaledCount(BALL_EX_PART_NUM, 0.4);
+	count = GetScaledCount(BALL_EXPLOSION_PARTICLES_COUNT, 0.4);
 	// create a bunch of exploding particles 
 	for (i=0; i< count; i++)
 	{
@@ -237,11 +227,11 @@ void FXTornadoBallExplode(centity_t *owner, int type, int flags, vec3_t origin)
 		ce = ClientParticle_new(part, color, 1150);
 
 		AngleVectors(rad, fwd, NULL, NULL);
-		VectorScale(fwd, BALL_RAD, ce->velocity);
+		VectorScale(fwd, BALL_RADIUS, ce->velocity);
 		VectorScale(ce->velocity, -0.7, ce->acceleration);
 		ce->color.a = 245;
-		ce->scale = BALL_PART_SCALE;
-		ce->d_scale = -0.5*BALL_PART_SCALE;
+		ce->scale = BALL_PARTICLE_SCALE;
+		ce->d_scale = -0.5*BALL_PARTICLE_SCALE;
 		AddParticleToList(burst, ce);
 	}
 
