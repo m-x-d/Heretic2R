@@ -403,46 +403,36 @@ static qboolean FireWaveThink(client_entity_t* wall, centity_t* owner)
 	return true;
 }
 
-// Create Effect FX_WEAPON_FIREWAVE
-void FXFireWave(centity_t *owner, int type, int flags, vec3_t origin)
+void FXFireWave(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*wall;
-	short				shortyaw,shortpitch;
+	short short_yaw;
+	short short_pitch;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_FIREWAVE].formatString, &short_yaw, &short_pitch);
 
-	wall = ClientEntity_new(type, flags | CEF_NO_DRAW | CEF_DONT_LINK, origin, NULL, 150);
+	client_entity_t* wall = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_DONT_LINK), origin, NULL, 150);
 
-	fxi.GetEffect(owner,flags,clientEffectSpawners[FX_WEAPON_FIREWAVE].formatString, &shortyaw, &shortpitch);
-
-	wall->r.angles[YAW]=(float)shortyaw * (360.0/65536.0);
-	wall->r.angles[PITCH]=(float)shortpitch * (360.0/65536.0);
-	wall->r.angles[ROLL]=0.0;
-	AngleVectors(wall->r.angles, wall->direction, wall->right, NULL);	
-
-	if (flags & CEF_FLAG8)	// Since we're in deathmatch, throw it faster.
-		VectorScale(wall->direction, FIREWAVE_DM_SPEED, wall->velocity);
-	else
-		VectorScale(wall->direction, FIREWAVE_SPEED, wall->velocity);
-
-	if (flags&CEF_FLAG6)
-	{	// Add a tad of left velocity
-		VectorMA(wall->velocity, -FIREWAVE_DRADIUS, wall->right, wall->velocity);
-	}
-	else if (flags&CEF_FLAG7)
-	{	// Add a tad of right velocity
-		VectorMA(wall->velocity, FIREWAVE_DRADIUS, wall->right, wall->velocity);
-	}
-
-	wall->Update = FireWaveThink;
 	wall->radius = FIREWAVE_RADIUS;
+	wall->r.angles[YAW] = SHORT2ANGLE(short_yaw);
+	wall->r.angles[PITCH] = SHORT2ANGLE(short_pitch);
+	wall->r.angles[ROLL] = 0.0f;
+
+	AngleVectors(wall->r.angles, wall->direction, wall->right, NULL);
+
+	const float speed = ((flags & CEF_FLAG8) ? FIREWAVE_DM_SPEED : FIREWAVE_SPEED); // Throw it faster in deathmatch.
+	VectorScale(wall->direction, speed, wall->velocity);
+
+	if (flags & CEF_FLAG6) // Add a tad of left velocity.
+		VectorMA(wall->velocity, -FIREWAVE_DRADIUS, wall->right, wall->velocity);
+	else if (flags & CEF_FLAG7) // Add a tad of right velocity.
+		VectorMA(wall->velocity, FIREWAVE_DRADIUS, wall->right, wall->velocity);
+
 	wall->color.c = 0xff00afff;
-	wall->dlight = CE_DLight_new(wall->color, 120.0F, 0.0F);
-	wall->nextEventTime = fxi.cl->time + (flrand(0,1.0)*FIREWAVE_WORM_TIME);
-	wall->SpawnInfo = 0;
+	wall->dlight = CE_DLight_new(wall->color, 120.0f, 0.0f);
+	wall->nextEventTime = fxi.cl->time + (int)(flrand(0.0f, 1.0f) * FIREWAVE_WORM_TIME);
+	wall->Update = FireWaveThink;
 
 	AddEffect(owner, wall);
 }
-
-
 
 // Create Effect FX_WEAPON_FIREWAVEWORM
 void FXFireWaveWorm(centity_t *owner, int type, int flags, vec3_t origin)
