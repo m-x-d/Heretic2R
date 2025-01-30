@@ -29,7 +29,7 @@ void PreCacheTeleport(void)
 	teleport_models[1] = fxi.RegisterModel("sprites/spells/teleport_2.sp2");
 }
 
-void PlayerTeleportIn(centity_t* owner, const int type, const int flags, vec3_t origin)
+void FXPlayerTeleportIn(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	paletteRGBA_t color;
 	byte* col1;
@@ -83,7 +83,7 @@ void PlayerTeleportIn(centity_t* owner, const int type, const int flags, vec3_t 
 	}
 }
 
-void PlayerTeleportOut(centity_t* owner, const int type, const int flags, vec3_t origin)
+void FXPlayerTeleportOut(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	paletteRGBA_t color;
 	byte* col1;
