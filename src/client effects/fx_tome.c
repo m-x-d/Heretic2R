@@ -81,48 +81,45 @@ static qboolean TomeOfPowerFadeInAddToView(client_entity_t* tome, centity_t* own
 	return true;
 }
 
-// update that Tome of power, so that more sparkles zip out of it, and the light casts pulses
-qboolean FXTomeThink(client_entity_t *tome, centity_t *owner)
+// Update the Tome of power, so that more sparkles zip out of it, and the light casts pulses.
+static qboolean TomeOfPowerThink(client_entity_t* tome, centity_t* owner)
 {
-	client_particle_t	*spark;
-	int					i;
-
-	// are we waiting for the shrine light to vanish ?
-	if (tome->SpawnInfo)
+	// Are we waiting for the shrine light to vanish?
+	if (tome->SpawnInfo > 0)
 	{
-		if(!(--tome->SpawnInfo))
-			return(false);
+		if (--tome->SpawnInfo == 0)
+			return false;
 	}
-	// no, could either be no light, or light still active
-	else
+	else // No, could either be no light, or light still active.
 	{
-		tome->dlight->intensity = 150.0 + (cos(fxi.cl->time * 0.01) * 20.0);
+		tome->dlight->intensity = 150.0f + cosf((float)fxi.cl->time * 0.01f) * 20.0f;
+
 		if (!(owner->current.effects & EF_POWERUP_ENABLED))
 		{
-		 	tome->AddToView = TomeOfPowerFadeInAddToView;
+			tome->AddToView = TomeOfPowerFadeInAddToView;
 			tome->SpawnInfo = TIME_TO_FADE_TOME;
-			tome->d_alpha = -0.18;
+			tome->d_alpha = -0.18f;
 		}
 	}
 
-// Brian P wanted this removed. I thought it was cool though. Jake
-	return(true);
-	for(i = 0; i < 4; i++)
+	//mxd. Disabled in original version. //TODO: make scale smaller and randomized, randomize color a bit? randomize particles count? Use several particle types?
+	for (int i = 0; i < 4; i++)
 	{
-		spark = ClientParticle_new(PART_16x16_STAR, tome->color, 2000);
+		client_particle_t* spark = ClientParticle_new(PART_16x16_STAR, tome->color, 2000);
 
-		VectorSet(spark->origin, flrand(-TOME_RADIUS, TOME_RADIUS), flrand(-TOME_RADIUS, TOME_RADIUS), flrand(-TOME_RADIUS, TOME_RADIUS));
+		VectorRandomSet(spark->origin, TOME_RADIUS);
 		VectorAdd(tome->origin, spark->origin, spark->origin);
 		spark->scale = TOME_SCALE;
-		VectorSet(spark->velocity, flrand(-20.0, 20.0), flrand(-20.0, 20.0), flrand(-10.0, 10.0));
+		VectorSet(spark->velocity, flrand(-20.0f, 20.0f), flrand(-20.0f, 20.0f), flrand(-10.0f, 10.0f));
 		spark->acceleration[2] = TOME_ACCEL;
-		spark->d_scale = flrand(-20.0, -15.0);
-		spark->d_alpha = flrand(-500.0, -400.0);
+		spark->d_scale = flrand(-20.0f, -15.0f);
+		spark->d_alpha = flrand(-500.0f, -400.0f);
 		spark->duration = 1000;
 
 		AddParticleToList(tome, spark);
 	}
-	return(true);
+
+	return true;
 }
 
 // original version of the tome of power. Casts a blue light etc
@@ -139,7 +136,7 @@ void FXTomeOfPower(centity_t *owner, int type, int flags, vec3_t origin)
 	tome->r.scale = 0.55;
 	tome->color.c = 0xe5ff2020;
 	tome->radius = 128;
-	tome->Update = FXTomeThink;
+	tome->Update = TomeOfPowerThink;
 	tome->AddToView = TomeOfPowerAddToView;
 	tome->dlight = CE_DLight_new(tome->color, 150.0F, 00.0F);
 	tome->SpawnData = fxi.cl->time;
