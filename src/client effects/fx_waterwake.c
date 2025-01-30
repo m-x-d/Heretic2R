@@ -18,96 +18,83 @@ void PreCacheWake(void)
 	wake_models[1] = fxi.RegisterModel("sprites/fx/wfall.sp2");
 }
 
-void FXWaterWake(centity_t *owner, int type, int flags, vec3_t origin)
+void FXWaterWake(centity_t* owner, int type, const int flags, vec3_t origin)
 {
-	short			CreatorEntNum;
-	centity_t		*CreatorClientEntity;
-	float			YawAngle;
-	vec3_t			dir = {0.0, 0.0, 1.0}, Velocity, fwd, right;
-	client_entity_t	*self;
-	float			len, vel;
-	byte			blah;
-	int				i, parts;
-	client_particle_t *part;
-	paletteRGBA_t	color={0xff, 0xff, 0xff, 0xff};
+	short creator_ent_num;
+	byte b_yaw;
+	vec3_t velocity;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WATER_WAKE].formatString, &creator_ent_num, &b_yaw, velocity);
 
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WATER_WAKE].formatString, &CreatorEntNum, &blah, Velocity);
-
-	YawAngle = (blah /255.0) * 6.283185;
-
-	CreatorClientEntity=&fxi.server_entities[CreatorEntNum];
+	const float yaw = (float)b_yaw * BYTEANGLE_TO_RAD;
+	const centity_t* creator = &fxi.server_entities[creator_ent_num];
 
 	// Create a water wake.
+	client_entity_t* wake = ClientEntity_new(FX_WATER_WAKE, flags, origin, vec3_up, 5000);
 
-	self=ClientEntity_new(FX_WATER_WAKE,flags,origin,dir,5000);
+	wake->r.model = &wake_models[0]; // wake_add sprite.
+	wake->r.flags = RF_FIXED | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	wake->r.scale = 0.3f;
+	wake->d_scale = 1.1f;
+	wake->alpha = 0.7f;
+	wake->d_alpha = -0.8f;
+	wake->r.origin[1] = creator->origin[1];
+	wake->r.origin[0] = creator->origin[0];
+	wake->r.angles[YAW] = yaw;
 
-	self->r.model = wake_models;
-	self->r.origin[1]=CreatorClientEntity->origin[1];
-	self->r.origin[0]=CreatorClientEntity->origin[0];
-	self->alpha=0.7;
-	self->r.scale=0.3;
-	self->r.flags |= RF_FIXED|RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA;
-	self->r.angles[YAW]=YawAngle;
+	float vel = VectorNormalize(velocity);
+	const float len = min(vel - 30.0f, 50.0f);
 
-	vel = VectorNormalize(Velocity);
+	VectorScale(velocity, len, wake->velocity);
+	wake->velocity[2] = 0.0f;
 
-	len = vel-30.0;
-	if(len > 50.0)
-	{
-		len = 50.0;
-	}
+	AddEffect(NULL, wake);
 
-	VectorScale(Velocity, len, self->velocity);
+	// Splashies too.
+	vel = min(320.0f, vel);
 
-	self->velocity[2] = 0.0;
-
-	self->d_scale=1.1;
-	self->d_alpha=-0.8;
-		
-	AddEffect(NULL, self);
-
-	if (vel > 320.0) 
-		vel=320.0;
-	// splashies too
-	if (r_detail->value >= DETAIL_HIGH)
-		parts = (int)(vel/32.0);
-	else if (r_detail->value >= DETAIL_NORMAL)
-		parts = (int)(vel/64.0);
-	else
+	int parts;
+	if ((int)r_detail->value == DETAIL_LOW)
 		parts = 0;
+	else if ((int)r_detail->value == DETAIL_NORMAL)
+		parts = (int)(vel / 64.0f);
+	else // DETAIL_HIGH+
+		parts = (int)(vel / 32.0f);
 
-	if (parts<4)
+	if (parts < 4)
 		return;
 
-	VectorSet(fwd, -cos(YawAngle), -sin(YawAngle), 0);
-	VectorSet(right, -sin(YawAngle), cos(YawAngle), 0);
+	const vec3_t fwd = { -cosf(yaw), -sinf(yaw), 0.0f };
+	const vec3_t right = { -sinf(yaw),  cosf(yaw), 0.0f };
 
-	for (i=0; i<parts; i++)
+	for (int i = 0; i < parts; i++)
 	{
-		part = ClientParticle_new(PART_32x32_WFALL, color, 500);
-		VectorScale(right, flrand(-12.0,12.0), part->origin);
-		VectorScale(part->origin, 0.01*vel, part->velocity);
-		VectorMA(part->velocity, flrand(0.2*vel, 0.5*vel), fwd, part->velocity);
-		part->velocity[2] += flrand(30.0, 40.0);
-		part->acceleration[2] = -320;
+		// Big particle.
+		client_particle_t* bp = ClientParticle_new(PART_32x32_WFALL, color_white, 500);
 
-		part->scale = 4.0;
-		part->d_scale = vel/5.0;
+		bp->scale = 4.0f;
+		bp->d_scale = vel / 5.0f;
 
-		AddParticleToList(self, part);
+		VectorScale(right, flrand(-12.0f, 12.0f), bp->origin);
+		VectorScale(bp->origin, 0.01f * vel, bp->velocity);
+		VectorMA(bp->velocity, flrand(0.2f * vel, 0.5f * vel), fwd, bp->velocity);
+		bp->velocity[2] += flrand(30.0f, 40.0f);
+		bp->acceleration[2] = -320.0f;
 
-		part = ClientParticle_new(PART_4x4_WHITE, color, 750);
-		VectorScale(right, flrand(-0.2*vel, 0.2*vel), part->velocity);
-		VectorMA(part->velocity, flrand(0, 0.5*vel), fwd, part->velocity);
-		part->velocity[2] += flrand(.1*vel, .2*vel);
-		part->acceleration[2] = -320;
+		AddParticleToList(wake, bp);
 
-		part->scale = 1.0;
-		part->d_scale = -1.0;
-		part->color.a = 128;
-		part->d_alpha = flrand(-200, -160);
+		// Small particle.
+		client_particle_t* sp = ClientParticle_new(PART_4x4_WHITE, color_white, 750);
 
-		AddParticleToList(self, part);
+		sp->scale = 1.0f;
+		sp->d_scale = -1.0f;
+		sp->color.a = 128;
+		sp->d_alpha = flrand(-200.0f, -160.0f);
+
+		VectorScale(right, flrand(-0.2f * vel, 0.2f * vel), sp->velocity);
+		VectorMA(sp->velocity, flrand(0.0f, 0.5f * vel), fwd, sp->velocity);
+		sp->velocity[2] += flrand(0.1f * vel, 0.2f * vel);
+		sp->acceleration[2] = -320.0f;
+
+		AddParticleToList(wake, sp);
 	}
-
 }
