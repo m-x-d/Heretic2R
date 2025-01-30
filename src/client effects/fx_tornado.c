@@ -19,16 +19,12 @@
 #define BALL_PARTICLES_COUNT			4
 #define BALL_EXPLOSION_PARTICLES_COUNT	20
 
-#define	NUM_TORN_MODELS		4
+static struct model_s* tornado_models[2];
 
-static struct model_s *torn_models[NUM_TORN_MODELS];
-
-void PreCacheTornado()
+void PreCacheTornado(void)
 {
-	torn_models[0] = fxi.RegisterModel("Sprites/fx/haloblue.sp2");
-	torn_models[1] = fxi.RegisterModel("Sprites/Spells/flyingfist.sp2");
-	torn_models[2] = fxi.RegisterModel("sprites/fx/firestreak.sp2");
-	torn_models[3] = fxi.RegisterModel("sprites/fx/halo.sp2");
+	tornado_models[0] = fxi.RegisterModel("sprites/fx/haloblue.sp2");
+	tornado_models[1] = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
 
 // make the tornade ball spark
@@ -88,7 +84,7 @@ void FXTornadoBall(centity_t *owner, int type, int flags, vec3_t origin)
 	glow->radius = 50;
 	glow->LifeTime = fxi.cl->time + (TORN_DUR * 1000) + 200;
 
-	glow->r.model = torn_models;
+	glow->r.model = &tornado_models[0];
 	glow->r.scale = 0.4;
 
 	AddEffect(owner, glow);
@@ -255,7 +251,7 @@ void FXTornadoBallExplode(centity_t *owner, int type, int flags, vec3_t origin)
 	// Add an additional flash as well.
 	// ...and a big-ass flash
 	burst = ClientEntity_new(-1, flags, origin, NULL, 250);
-	burst->r.model = torn_models + 3;
+	burst->r.model = &tornado_models[1];
 	burst->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;// | RF_FULLBRIGHT;
 	burst->r.frame = 1;
 	burst->radius=64;
