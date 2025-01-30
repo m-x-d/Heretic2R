@@ -19,14 +19,14 @@
 #define NUM_TELEPORT_PAD_PARTICLES		2
 
 #define TELEPORT_PAD_HEIGHT				10.0f
-#define TELEPORT_PAD_RADIUS	 			56.0f
+#define TELEPORT_PAD_RADIUS				56.0f
 
-#define	NUM_TELEPORT_MODELS	2		  
-static struct model_s *tele_models[NUM_TELEPORT_MODELS];
-void PreCacheTeleport()
+static struct model_s* teleport_models[2];
+
+void PreCacheTeleport(void)
 {
-	tele_models[0] = fxi.RegisterModel("sprites/spells/teleport_1.sp2");
-	tele_models[1] = fxi.RegisterModel("sprites/spells/teleport_2.sp2");
+	teleport_models[0] = fxi.RegisterModel("sprites/spells/teleport_1.sp2");
+	teleport_models[1] = fxi.RegisterModel("sprites/spells/teleport_2.sp2");
 }
 
 // -----------------------------------------------------------------
@@ -56,14 +56,14 @@ void PlayerTeleportIn(centity_t *owner, int type, int flags, vec3_t origin)
 		col1 = &color.b;
 		col2 = &color.g;
 		col3 = &color.r;
-		teleport_fx->r.model = tele_models;
+		teleport_fx->r.model = &teleport_models[0];
 	}
 	else
 	{
 		col1 = &color.b;
 		col2 = &color.r;
 		col3 = &color.g;
-		teleport_fx->r.model = tele_models + 1;
+		teleport_fx->r.model = &teleport_models[1];
 	}
 
 	teleport_fx->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
@@ -121,14 +121,14 @@ void PlayerTeleportOut(centity_t *owner, int type, int flags, vec3_t origin)
 		col1 = &color.b;
 		col2 = &color.g;
 		col3 = &color.r;
-		teleport_fx->r.model = tele_models;
+		teleport_fx->r.model = &teleport_models[0];
 	}
 	else
 	{
 		col1 = &color.b;
 		col2 = &color.r;
 		col3 = &color.g;
-		teleport_fx->r.model = tele_models + 1;
+		teleport_fx->r.model = &teleport_models[1];
 	}
 
 	teleport_fx->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA; 
