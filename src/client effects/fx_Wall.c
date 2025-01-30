@@ -21,21 +21,17 @@ void PreCacheWall(void)
 	wall_models[2] = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
 
-// *****************************************************************
-// The fire wall
-// Powered up
-// *****************************************************************
+#pragma region =========================== FIRE WALL (POWERED) ===========================
 
-
-#define FIREWORM_LIFETIME		1.0
-#define FIREWORM_BLASTLIFE		0.25
-#define FIREWORM_LIFETIME_MS	(FIREWORM_LIFETIME * 1000)
-#define FIREWORM_ACCEL			(-1000.0)
-#define FIREWORM_INITVEL		(-0.5 * FIREWORM_LIFETIME * FIREWORM_ACCEL)
-#define FIREWORM_TRAILVEL		128
-#define FIREWORM_BLASTVEL		128
-#define FIREWORM_BLASTNUM		12
-#define FIREWORM_BLASTRAD		32
+#define FIREWORM_LIFETIME			1.0f
+#define FIREWORM_BLASTLIFE			0.25f
+#define FIREWORM_LIFETIME_MS		(FIREWORM_LIFETIME * 1000.0f)
+#define FIREWORM_ACCELERATION		(-1000.0f)
+#define FIREWORM_INITIAL_VELOCITY	(-0.5f * FIREWORM_LIFETIME * FIREWORM_ACCELERATION)
+#define FIREWORM_TRAIL_VELOCITY		128
+#define FIREWORM_BLAST_VELOCITY		128
+#define FIREWORM_BLAST_NUM			12
+#define FIREWORM_BLAST_RADIUS		32
 
 static qboolean FXFireWormThink(client_entity_t *worm, centity_t *owner)
 {
@@ -71,14 +67,14 @@ static qboolean FXFireWormThink(client_entity_t *worm, centity_t *owner)
 			blast->r.scale = 0.25*worm->r.scale;
 			blast->d_scale = -3.0*worm->r.scale;
 			VectorSet(blast->velocity,
-						flrand(-0.25*FIREWORM_BLASTVEL*worm->r.scale, 0.25*FIREWORM_BLASTVEL*worm->r.scale), 
-						flrand(-0.25*FIREWORM_BLASTVEL*worm->r.scale, 0.25*FIREWORM_BLASTVEL*worm->r.scale), 
-						flrand(0, 0.25*FIREWORM_BLASTVEL*worm->r.scale));
+						flrand(-0.25*FIREWORM_BLAST_VELOCITY *worm->r.scale, 0.25*FIREWORM_BLAST_VELOCITY *worm->r.scale),
+						flrand(-0.25*FIREWORM_BLAST_VELOCITY *worm->r.scale, 0.25*FIREWORM_BLAST_VELOCITY *worm->r.scale),
+						flrand(0, 0.25*FIREWORM_BLAST_VELOCITY *worm->r.scale));
 			AddEffect(NULL, blast);
 
 			// Spray out in a big ring
 			ang = flrand(0, M_PI*2.0);
-			anginc = (M_PI * 2.0) / FIREWORM_BLASTNUM;
+			anginc = (M_PI * 2.0) / FIREWORM_BLAST_NUM;
 			for (i=0; i<8; i++)
 			{
 				diffpos[0] = cos(ang);
@@ -89,9 +85,9 @@ static qboolean FXFireWormThink(client_entity_t *worm, centity_t *owner)
 				// Higher particle
 				spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color, 500);
 
-				VectorScale(diffpos, FIREWORM_BLASTRAD*worm->r.scale, spark->origin);
-				VectorScale(diffpos, flrand(0.45, 0.5)*FIREWORM_BLASTVEL*worm->r.scale, spark->velocity);
-				spark->velocity[2] += flrand(0.80, 1.0)*FIREWORM_BLASTVEL*worm->r.scale;
+				VectorScale(diffpos, FIREWORM_BLAST_RADIUS*worm->r.scale, spark->origin);
+				VectorScale(diffpos, flrand(0.45, 0.5)*FIREWORM_BLAST_VELOCITY *worm->r.scale, spark->velocity);
+				spark->velocity[2] += flrand(0.80, 1.0)*FIREWORM_BLAST_VELOCITY *worm->r.scale;
 
 				spark->color.a = 254;
 				spark->d_alpha = flrand(-512.0, -768.0);
@@ -121,10 +117,10 @@ static qboolean FXFireWormThink(client_entity_t *worm, centity_t *owner)
 				spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color, 500);
 
 				VectorSet(spark->velocity,
-							flrand(-0.1*FIREWORM_BLASTVEL*worm->r.scale, 0.1*FIREWORM_BLASTVEL*worm->r.scale), 
-							flrand(-0.1*FIREWORM_BLASTVEL*worm->r.scale, 0.1*FIREWORM_BLASTVEL*worm->r.scale), 
-							flrand(-0.2*FIREWORM_BLASTVEL*worm->r.scale, 0.2*FIREWORM_BLASTVEL*worm->r.scale));
-				spark->velocity[2] += FIREWORM_BLASTVEL;
+							flrand(-0.1*FIREWORM_BLAST_VELOCITY *worm->r.scale, 0.1*FIREWORM_BLAST_VELOCITY *worm->r.scale),
+							flrand(-0.1*FIREWORM_BLAST_VELOCITY *worm->r.scale, 0.1*FIREWORM_BLAST_VELOCITY *worm->r.scale),
+							flrand(-0.2*FIREWORM_BLAST_VELOCITY *worm->r.scale, 0.2*FIREWORM_BLAST_VELOCITY *worm->r.scale));
+				spark->velocity[2] += FIREWORM_BLAST_VELOCITY;
 
 				spark->color.a = 254;
 				spark->d_alpha = flrand(-512.0, -768.0);
@@ -159,9 +155,9 @@ static qboolean FXFireWormThink(client_entity_t *worm, centity_t *owner)
 		spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), color, 500);
 
 		VectorSet(spark->velocity,
-					flrand(-0.25*FIREWORM_TRAILVEL, 0.25*FIREWORM_TRAILVEL), 
-					flrand(-0.25*FIREWORM_TRAILVEL, 0.25*FIREWORM_TRAILVEL), 
-					flrand(-0.25*FIREWORM_TRAILVEL, 0.25*FIREWORM_TRAILVEL));
+					flrand(-0.25*FIREWORM_TRAIL_VELOCITY, 0.25*FIREWORM_TRAIL_VELOCITY),
+					flrand(-0.25*FIREWORM_TRAIL_VELOCITY, 0.25*FIREWORM_TRAIL_VELOCITY),
+					flrand(-0.25*FIREWORM_TRAIL_VELOCITY, 0.25*FIREWORM_TRAIL_VELOCITY));
 		VectorMA(spark->velocity, 0.5, worm->velocity, spark->velocity);
 		VectorScale(spark->velocity, -2.0, spark->acceleration);
 
@@ -407,8 +403,8 @@ static qboolean FXFireWaveThink(client_entity_t *wall, centity_t *owner)
 		worm->color.c = 0xff0080ff;
 		worm->dlight = CE_DLight_new(worm->color, 128.0, 0.0);
 		VectorCopy(wall->velocity, worm->velocity);
-		worm->velocity[2] += FIREWORM_INITVEL;
-		worm->acceleration[2] = FIREWORM_ACCEL;
+		worm->velocity[2] += FIREWORM_INITIAL_VELOCITY;
+		worm->acceleration[2] = FIREWORM_ACCELERATION;
 
 		if (hitground)
 			worm->SpawnInfo = 1;
@@ -520,8 +516,8 @@ void FXFireWaveWorm(centity_t *owner, int type, int flags, vec3_t origin)
 	worm->color.c = 0xff0080ff;
 	worm->dlight = CE_DLight_new(worm->color, 128.0, 0.0);
 	VectorScale(fwd, FIREWAVE_SPEED, worm->velocity);
-	worm->velocity[2] += FIREWORM_INITVEL;
-	worm->acceleration[2] = FIREWORM_ACCEL;
+	worm->velocity[2] += FIREWORM_INITIAL_VELOCITY;
+	worm->acceleration[2] = FIREWORM_ACCELERATION;
 
 	worm->SpawnInfo = 1;
 
@@ -530,14 +526,9 @@ void FXFireWaveWorm(centity_t *owner, int type, int flags, vec3_t origin)
 	FXFireWormThink(worm, NULL);
 }
 
+#pragma endregion
 
-
-
-
-// *****************************************************************
-// The fire blast
-// Unpowered
-// *****************************************************************
+#pragma region ========================== FIRE BLAST (UNPOWERED) ==========================
 
 static FXFireBurstImpact(client_entity_t *wall)
 {
@@ -773,3 +764,4 @@ void FXFireBurst(centity_t *owner, int type, int flags, vec3_t origin)
 	}
 }
 
+#pragma endregion
