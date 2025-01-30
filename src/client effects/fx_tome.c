@@ -1,36 +1,29 @@
 //
 // fx_tome.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Vector.h"
 #include "Random.h"
-#include "Reference.h"
-#include "Utilities.h"
+#include "Vector.h"
 #include "ce_dlight.h"
 
-#define TOME_RADIUS 5.0
-#define TOME_SCALE	10.0
-#define TOME_ACCEL	(-64.0)
-#define TOME_ORBIT_DIST	20.0
-#define TORCH_ORBIT_DIST	38.0
-#define TOME_ORBIT_SCALE	0.0025
-#define TORCH_ORBIT_SCALE	0.0025
-#define TOME_SPIN_FACTOR	0.004
+#define TOME_RADIUS				5.0f
+#define TOME_SCALE				10.0f
+#define TOME_ACCEL				(-64.0f)
+#define TOME_ORBIT_DIST			20.0f
+#define TORCH_ORBIT_DIST		38.0f
+#define TOME_ORBIT_SCALE		0.0025f
+#define TORCH_ORBIT_SCALE		0.0025f
+#define TOME_SPIN_FACTOR		0.004f
 
-#define DURATION_OF_TORCH	450
-#define TIME_TO_FADE_TORCH	50
-#define TIME_TO_FADE_TOME	30
-#define TOME_INCOMING_ORBIT TOME_ORBIT_DIST/TIME_TO_FADE_TOME
-#define TORCH_INCOMING_ORBIT TORCH_ORBIT_DIST/TIME_TO_FADE_TORCH
-#define AMOUNT_TO_FADE_TORCH 255/TIME_TO_FADE_TORCH
+#define TIME_TO_FADE_TORCH		50
+#define TIME_TO_FADE_TOME		30
+#define TOME_INCOMING_ORBIT		(TOME_ORBIT_DIST / TIME_TO_FADE_TOME)
+#define TORCH_INCOMING_ORBIT	(TORCH_ORBIT_DIST / TIME_TO_FADE_TORCH)
+#define AMOUNT_TO_FADE_TORCH	(255 / TIME_TO_FADE_TORCH)
 
 #define NUM_TORCH_MODELS	2
 static struct model_s *torch_models[NUM_TORCH_MODELS];
