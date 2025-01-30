@@ -66,24 +66,20 @@ static qboolean TornadoBallThink(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-// create the ball that gets tossed out of Crovus when he casts the tornado spell
-void FXTornadoBall(centity_t *owner, int type, int flags, vec3_t origin)
+// Create the ball that gets tossed out of Crovus when he casts the tornado spell.
+void FXTornadoBall(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*glow;
+	client_entity_t* glow = ClientEntity_new(type, flags | CEF_VIEWSTATUSCHANGED, origin, NULL, 60);
 
-	// create the dummy entity, so particles can be attached
-	glow = ClientEntity_new(type, (flags | CEF_VIEWSTATUSCHANGED) , origin, 0, 60);
+	glow->radius = 50.0f;
+	glow->r.model = &tornado_models[0]; // Blue halo model.
+	glow->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	glow->r.scale = 0.4f;
+	glow->LifeTime = fxi.cl->time + (int)(TORN_DUR * 1000.0f) + 200;
 	glow->Update = TornadoBallThink;
-	glow->r.flags=RF_TRANSLUCENT|RF_TRANS_ADD|RF_TRANS_ADD_ALPHA;
-	glow->radius = 50;
-	glow->LifeTime = fxi.cl->time + (TORN_DUR * 1000) + 200;
-
-	glow->r.model = &tornado_models[0];
-	glow->r.scale = 0.4;
 
 	AddEffect(owner, glow);
 }
-
 
 static qboolean FXTornadoThink(struct client_entity_s *self,centity_t *owner)
 {
