@@ -85,6 +85,7 @@
     <ClCompile Include="fx_tbeast.c" />
     <ClCompile Include="fx_teleport.c" />
     <ClCompile Include="fx_tome.c" />
+    <ClCompile Include="fx_Torch.c" />
     <ClCompile Include="fx_tornado.c" />
     <ClCompile Include="fx_Wall.c" />
     <ClCompile Include="fx_waterentrysplash.c" />

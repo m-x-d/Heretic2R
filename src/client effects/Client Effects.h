@@ -136,7 +136,6 @@ extern void FXSpooSplat(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXBodyPart(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXPlayerTeleportOut(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXPlayerPersistant(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXSsithraArrowGlow(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXPlayerTorch(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXTomeOfPower(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXFireOnEntity(centity_t* owner, int type, int flags, vec3_t origin);
@@ -213,7 +212,7 @@ extern void PreCacheRipples(void);
 extern void PreCacheSparks(void);
 extern void PreCacheMaceball(void);
 extern void PreCacheTeleport(void);
-extern void PreCacheSsithraArrow(void);
+extern void PreCacheTome(void); //mxd
 extern void PreCacheTorch(void);
 extern void PreCacheFlareup(void);
 extern void PreCacheRockchunks(void);

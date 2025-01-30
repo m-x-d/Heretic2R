@@ -104,7 +104,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ FXPlayerTeleportOut,				NULL,					NULL		},
 	{ FXPlayerPersistant,				NULL,					NULL		},
 	{ FXPlayerTorch,					PreCacheTorch,			NULL		},
-	{ FXTomeOfPower,					NULL,					NULL		},
+	{ FXTomeOfPower,					PreCacheTome,			NULL		}, //mxd. Added separate precache function.
 	{ FXFireOnEntity,					NULL,					"bbb"		},
 	{ FXFlareup,						PreCacheFlareup,		NULL		},
 	{ FXShrinePlayerEffect,				PreCacheShrine,			"b"			},
