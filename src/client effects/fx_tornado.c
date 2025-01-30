@@ -170,76 +170,67 @@ void FXTornado(centity_t* owner, const int type, int flags, vec3_t origin)
 	AddEffect(owner, base);
 }
 
-// explode the ball in the middle of the shrine
-void FXTornadoBallExplode(centity_t *owner, int type, int flags, vec3_t origin)
+// Explode the ball in the middle of the shrine.
+void FXTornadoBallExplode(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_particle_t	*ce;
-	client_entity_t		*burst;
-	int					i, count;
-	paletteRGBA_t		color;
-	int					part;
-	vec3_t				rad, fwd;
-	vec3_t				angles;
+	// Create the dummy entity, so particles can be attached.
+	client_entity_t* base = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW) & ~CEF_NOMOVE, origin, NULL, 1400);
 
-	color.c = 0xffffffff;
+	base->radius = 100.0f;
+	AddEffect(NULL, base);
 
-	// create the dummy entity, so particles can be attached
-	burst = ClientEntity_new(type, (flags | CEF_NO_DRAW) & ~CEF_NOMOVE , origin, 0, 1400);
-	burst->radius = 100;
-	AddEffect(NULL, burst);
+	int count = GetScaledCount(BALL_EXPLOSION_PARTICLES_COUNT, 0.4f);
 
-	count = GetScaledCount(BALL_EXPLOSION_PARTICLES_COUNT, 0.4);
-	// create a bunch of exploding particles 
-	for (i=0; i< count; i++)
+	// Create a bunch of exploding particles.
+	for (int i = 0; i < count; i++)
 	{
-		rad[PITCH] = flrand(0, 360.0);
-		rad[YAW] = flrand(0, 360.0);
-		rad[ROLL] = 0.0;
+		const int part = (irand(0, 1) ? PART_16x16_LIGHTNING : PART_16x16_SPARK_B);
+		client_particle_t* ce = ClientParticle_new(part, color_white, 1150);
 
-		if (irand(0,1))
-			part = PART_16x16_LIGHTNING;
-		else
-			part = PART_16x16_SPARK_B;
-
-		ce = ClientParticle_new(part, color, 1150);
-
-		AngleVectors(rad, fwd, NULL, NULL);
-		VectorScale(fwd, BALL_RADIUS, ce->velocity);
-		VectorScale(ce->velocity, -0.7, ce->acceleration);
 		ce->color.a = 245;
 		ce->scale = BALL_PARTICLE_SCALE;
-		ce->d_scale = -0.5*BALL_PARTICLE_SCALE;
-		AddParticleToList(burst, ce);
+		ce->d_scale = -0.5f * BALL_PARTICLE_SCALE;
+
+		const vec3_t angles = { flrand(0.0f, 360.0f), flrand(0.0f, 360.0f), 0.0f };
+
+		vec3_t fwd;
+		AngleVectors(angles, fwd, NULL, NULL);
+		VectorScale(fwd, BALL_RADIUS, ce->velocity);
+		VectorScale(ce->velocity, -0.7f, ce->acceleration);
+
+		AddParticleToList(base, ce);
 	}
 
-	// create a bunch of exploding particles
+	// Create a bunch of exploding particles.
 	count *= 3;
-	for(i = 0; i < count; i++)
+
+	for (int i = 0; i < count; i++)
 	{
-		color.g = color.b = irand(0,255);
-		ce = ClientParticle_new(PART_4x4_WHITE | PFL_SOFT_MASK, color, 400);
+		const byte c = (byte)irand(0, 255);
+		const paletteRGBA_t color = { .r = 255, .g = c, .b = c, .a = 255 };
 
-		VectorSet(ce->origin, 1.0,1.0,1.0);
-		VectorSet(angles, flrand(0, 6.28), flrand(0, 6.28), flrand(0, 6.28));
-		DirFromAngles(angles,ce->origin);
-		Vec3ScaleAssign(flrand(50-10,50), ce->origin);
-		VectorScale(ce->origin, -15.1, ce->acceleration);
+		client_particle_t* ce = ClientParticle_new(PART_4x4_WHITE | PFL_SOFT_MASK, color, 400);
 
-		AddParticleToList(burst, ce);
+		VectorSet(ce->origin, 1.0f, 1.0f, 1.0f);
 
+		const vec3_t angles = { flrand(0.0f, ANGLE_360), flrand(0.0f, ANGLE_360), flrand(0.0f, ANGLE_360) };
+		DirFromAngles(angles, ce->origin);
+
+		Vec3ScaleAssign(flrand(40.0f, 50.0f), ce->origin);
+		VectorScale(ce->origin, -15.1f, ce->acceleration);
+
+		AddParticleToList(base, ce);
 	}
 
 	// Add an additional flash as well.
-	// ...and a big-ass flash
-	burst = ClientEntity_new(-1, flags, origin, NULL, 250);
-	burst->r.model = &tornado_models[1];
-	burst->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;// | RF_FULLBRIGHT;
-	burst->r.frame = 1;
-	burst->radius=64;
-	burst->r.scale=1.0;
-	burst->d_alpha=-4.0;
-	burst->d_scale=-4.0;
-	AddEffect(NULL, burst);
+	client_entity_t* flash = ClientEntity_new(-1, flags, origin, NULL, 250);
 
+	flash->radius = 64.0f;
+	flash->r.model = &tornado_models[1]; // Halo sprite.
+	flash->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_TRANSLUCENT;
+	flash->r.frame = 1;
+	flash->d_alpha = -4.0f;
+	flash->d_scale = -4.0f;
 
+	AddEffect(NULL, flash);
 }
