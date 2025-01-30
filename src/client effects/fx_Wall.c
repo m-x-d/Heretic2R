@@ -149,50 +149,41 @@ static qboolean FireWormThink(client_entity_t* worm, centity_t* owner)
 	return true;
 }
 
-#define FIREWAVE_TRACEDOWN		(128)
-#define FIREWAVE_WORM_TIME		(0.5*1000)
+#define FIREWAVE_TRACEDOWN		128.0f //mxd. Was int.
+#define FIREWAVE_WORM_TIME		500.0f //mxd. Was int.
 #define FIREWAVE_BLAST_NUM		4
-#define FIREWAVE_IMPACT_NUM		2
 
-static FXFireWaveImpact(client_entity_t *wall)
+static void FireWaveImpact(const client_entity_t* wall)
 {
-	client_entity_t *blast;
-	vec3_t			blastpt, spawnvel;
-	int				i;
+	vec3_t blast_pt;
+	VectorScale(wall->direction, -48.0f, blast_pt);
+	VectorAdd(blast_pt, wall->r.origin, blast_pt);
 
-	VectorScale(wall->direction, -48.0, blastpt);
-	VectorAdd(blastpt, wall->r.origin, blastpt);
-	VectorScale(wall->direction, -64.0, spawnvel);
+	vec3_t spawn_vel;
+	VectorScale(wall->direction, -64.0f, spawn_vel);
 
-	// Add some blasty bits along a line
-	for (i=0; i<FIREWAVE_BLAST_NUM; i++)
-	{	// Spawn along the top line of the wall
-		if (i&0x01)
-		{	// Throw blast up
-			spawnvel[2] = 128.0;
-		}
-		else
-		{
-			spawnvel[2] = -128.0;
-		}
+	// Add some blast bits along a line.
+	for (int i = 0; i < FIREWAVE_BLAST_NUM; i++)
+	{
+		// Spawn along the top line of the wall.
+		client_entity_t* blast = ClientEntity_new(FX_WEAPON_FIREWAVE, 0, blast_pt, NULL, 500);
 
-		blast = ClientEntity_new(FX_WEAPON_FIREWAVE, 0, blastpt, NULL, 500);
-		blast->r.model = wall_models+2;
+		blast->radius = 64.0f;
+		blast->r.model = &wall_models[2]; // Halo sprite.
 		blast->r.frame = 2;
-		blast->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-		blast->radius = 64.0;
+		blast->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		blast->alpha = 0.95f;
+		blast->r.scale = 1.6f;
+		blast->d_scale = -2.0f;
+		blast->d_alpha = -2.0f;
 
-		blast->alpha = 0.95;
-		blast->r.scale = 1.6;
-		blast->d_scale = -2.0;
-		blast->d_alpha = -2.0;
+		const float dir = ((i & 1) ? 1.0f : -1.0f);
+		spawn_vel[2] = 128.0f * dir; // Throw blast up or down.
+		VectorMA(spawn_vel, flrand(-0.2f, -0.1f), wall->velocity, blast->velocity);
 
-		VectorMA(spawnvel, flrand(-0.2, -0.1), wall->velocity, blast->velocity);
-		
 		AddEffect(NULL, blast);
 	}
 }
-
 
 static qboolean FXFireWaveThink(client_entity_t *wall, centity_t *owner)
 {
@@ -228,7 +219,7 @@ static qboolean FXFireWaveThink(client_entity_t *wall, centity_t *owner)
 			VectorClear(wall->velocity);
 			wall->lastThinkTime = fxi.cl->time + 1000;
 			wall->SpawnInfo = 1;
-			FXFireWaveImpact(wall);
+			FireWaveImpact(wall);
 			return true;
 		}
 		else if (wall->lastThinkTime > fxi.cl->time)
