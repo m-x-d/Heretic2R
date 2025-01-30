@@ -325,7 +325,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 
 		// Spawn ripples, splash.
 		if (do_splash_effect)
-			FXDoWaterEntrySplash(NULL, FX_WATER_ENTRYSPLASH, 0, surface_top, 64, trace->plane.normal);
+			DoWaterEntrySplash(FX_WATER_ENTRYSPLASH, 0, surface_top, 64, trace->plane.normal);
 
 		if (flrand(-0.5f, 0.0f) < hit_angle)
 		{
@@ -398,7 +398,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 
 		// Spawn ripples, splash.
 		if (do_splash_effect)
-			FXDoWaterEntrySplash(NULL, FX_WATER_ENTRYSPLASH, 0, surface_top, 64, trace->plane.normal);
+			DoWaterEntrySplash(FX_WATER_ENTRYSPLASH, 0, surface_top, 64, trace->plane.normal);
 
 		if (flrand(-0.75f, 0) < hit_angle)
 		{

@@ -122,7 +122,7 @@ static void WaterEntryParticles(struct client_entity_s *Owner,float Radius,int N
 // ------------------
 // ************************************************************************************************
 
-void FXDoWaterEntrySplash(centity_t *Owner,int Type,int Flags,vec3_t Origin, byte SplashSize, vec3_t Dir)
+void DoWaterEntrySplash(int Type,int Flags,vec3_t Origin, byte SplashSize, vec3_t Dir)
 {
 	byte			NoOfRipples;
 	client_entity_t	*EntrySplashThinker,
@@ -280,5 +280,5 @@ void FXWaterEntrySplash(centity_t *Owner,int Type,int Flags,vec3_t Origin)
 
 	fxi.GetEffect(Owner,Flags,clientEffectSpawners[FX_WATER_ENTRYSPLASH].formatString,&SplashSize,Dir);
 
-	FXDoWaterEntrySplash(Owner, Type, Flags, Origin, SplashSize, Dir);
+	DoWaterEntrySplash(Type, Flags, Origin, SplashSize, Dir);
 }
