@@ -140,74 +140,64 @@ void FXPlayerTeleportOut(centity_t* owner, const int type, const int flags, vec3
 	}
 }
 
-static qboolean FXteleportPadThink(struct client_entity_s *self, centity_t *owner)
+static qboolean TeleportPadThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_particle_t	*ce;
-	paletteRGBA_t		color;
-//	vec3_t				vel;
-	int					i;
-	int					count;
+	const int count = GetScaledCount(NUM_TELEPORT_PAD_PARTICLES, 0.7f);
 
-	count = GetScaledCount(NUM_TELEPORT_PAD_PARTICLES, 0.7);
-	for(i = 0; i < count; i++)
+	for (int i = 0; i < count; i++)
 	{
-		// Stuff gets sucked to the center
-		color.c = 0xffffffff;
-  		ce = ClientParticle_new(PART_16x16_SPARK_R | PFL_NEARCULL | PFL_MOVE_SPHERE, color, 1000);
+		// Stuff gets sucked to the center.
+		client_particle_t* c1 = ClientParticle_new((int)(PART_16x16_SPARK_R | PFL_NEARCULL | PFL_MOVE_SPHERE), color_white, 1000);
 
-		ce->color.a = 1;
-		ce->d_alpha = 256;
-		ce->scale = 16.0F;
-		ce->d_scale = -12.0F;
+		c1->color.a = 1;
+		c1->d_alpha = 256.0f;
+		c1->scale = 16.0f;
+		c1->d_scale = -12.0f;
 
-		ce->origin[SPH_RADIUS] = TELEPORT_PAD_RADIUS;
-		ce->origin[SPH_YAW] = flrand(0, ANGLE_360);
-//		ce->origin[SPH_PITCH] = flrand(-ANGLE_90, 0);
-		ce->origin[SPH_PITCH] = -ANGLE_90;
+		c1->origin[SPH_RADIUS] = TELEPORT_PAD_RADIUS;
+		c1->origin[SPH_YAW] = flrand(0, ANGLE_360);
+		c1->origin[SPH_PITCH] = -ANGLE_90;
 
-		ce->velocity[SPH_YAW] = flrand(-2.0*ANGLE_360, 2.0*ANGLE_360);
-		ce->velocity[SPH_PITCH] = ANGLE_180;
+		c1->velocity[SPH_YAW] = flrand(-2.0f * ANGLE_360, 2.0f * ANGLE_360);
+		c1->velocity[SPH_PITCH] = ANGLE_180;
 
-		ce->acceleration[SPH_RADIUS] = -2.0*TELEPORT_PAD_RADIUS;
+		c1->acceleration[SPH_RADIUS] = -2.0f * TELEPORT_PAD_RADIUS;
 
-		AddParticleToList(self, ce);
+		AddParticleToList(self, c1);
 
-		// Stuff comes up from the ground
-		color.c = 0xffffffff;
-  		ce = ClientParticle_new(PART_16x16_LIGHTNING | PFL_NEARCULL | PFL_MOVE_CYL_Z, color, 1000);
+		// Stuff comes up from the ground.
+		client_particle_t* c2 = ClientParticle_new((int)(PART_16x16_LIGHTNING | PFL_NEARCULL | PFL_MOVE_CYL_Z), color_white, 1000);
 
-		ce->color.a = 1;
-		ce->d_alpha = 512;
-		ce->scale = 4.0F;
-		ce->d_scale = -4.0F;
+		c2->color.a = 1;
+		c2->d_alpha = 512.0f;
+		c2->scale = 4.0f;
+		c2->d_scale = -4.0f;
 
-		ce->origin[CYL_RADIUS] = TELEPORT_PAD_RADIUS*0.5;
-		ce->origin[CYL_Z] = -TELEPORT_PAD_RADIUS;
-		ce->origin[CYL_YAW] = flrand(0, ANGLE_360);
+		c2->origin[CYL_RADIUS] = TELEPORT_PAD_RADIUS * 0.5f;
+		c2->origin[CYL_Z] = -TELEPORT_PAD_RADIUS;
+		c2->origin[CYL_YAW] = flrand(0.0f, ANGLE_360);
 
-		ce->velocity[CYL_RADIUS] = TELEPORT_PAD_RADIUS*0.5;
+		c2->velocity[CYL_RADIUS] = TELEPORT_PAD_RADIUS * 0.5f;
 
-		ce->acceleration[CYL_Z] = 5.0*TELEPORT_PAD_RADIUS;
-		ce->acceleration[CYL_YAW] = 2.0*ANGLE_360;
+		c2->acceleration[CYL_Z] = 5.0f * TELEPORT_PAD_RADIUS;
+		c2->acceleration[CYL_YAW] = 2.0f * ANGLE_360;
+
+		AddParticleToList(self, c2);
+	}
+
+	if (irand(0, 1) == 0)
+	{
+		client_particle_t* ce = ClientParticle_new((int)(PART_16x16_SPARK_R | PFL_NEARCULL), color_white, 250);
+
+		ce->d_alpha = -1024.0f;
+		ce->scale = 8.0f;
+		ce->d_scale = flrand(80.0f, 160.0f); //mxd. Original logic uses irand() here.
+		VectorRandomSet(ce->velocity, 16.0f);
 
 		AddParticleToList(self, ce);
 	}
 
-	if (irand(0,1) == 0)
-	{
-		color.c = 0xffffffff;
-  		ce = ClientParticle_new(PART_16x16_SPARK_R | PFL_NEARCULL, color, 250);
-		VectorSet(ce->velocity, flrand(-16.0, 16.0), flrand(-16.0, 16.0), flrand(-16.0, 16.0));
-
-		ce->color.a = 255;
-		ce->d_alpha = -1024;
-		ce->scale = 8.0F;
-		ce->d_scale = irand(80.0, 160.0);
-		AddParticleToList(self, ce);
-	}
-
-
-	return(true);
+	return true;
 }
 
 // This is the persistant effect for the teleport pad
@@ -217,7 +207,7 @@ void FXTeleportPad(centity_t *owner, int type, int flags, vec3_t origin)
 
 	flags |= CEF_NO_DRAW | CEF_ADDITIVE_PARTS | CEF_PULSE_ALPHA | CEF_VIEWSTATUSCHANGED | CEF_NOMOVE;
 	glow = ClientEntity_new(type,  flags, origin, 0, 110);
-	glow->Update = FXteleportPadThink;
+	glow->Update = TeleportPadThink;
 	glow->radius = 100;
 	glow->r.origin[2] += TELEPORT_PAD_HEIGHT;
 	AddEffect(owner, glow);
