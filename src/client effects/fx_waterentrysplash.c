@@ -1,15 +1,11 @@
 //
-// fx_waterentrysplash.c
+// fx_WaterEntrySplash.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "Client Effects.h"
-#include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
 #include "Vector.h"
 #include "Random.h"
 #include "g_playstats.h"
