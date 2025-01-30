@@ -535,23 +535,13 @@ static void FireBurstImpact(const client_entity_t* wall)
 	}
 }
 
-#define FIREBURST_PART_SPEED		160
+#define FIREBURST_PART_SPEED	160.0f //mxd. int in original logic.
 
-static qboolean FXFireBurstThink(client_entity_t *wall, centity_t *owner)
+static qboolean FireBurstThink(client_entity_t* wall, centity_t* owner)
 {
-	client_entity_t		*burst;
-
-	vec3_t				newDir;
-	vec3_t				origin, org;
-	int					i, j;
-	float				ang2;
-	float				numFlameColumns;
-	int					edgeVal;
-	paletteRGBA_t		color;
-	float				dtime, detailscale;
-
 	if (owner->current.effects & EF_ALTCLIENTFX)
-	{	// Time for this wall to die.
+	{
+		// Time for this wall to die.
 		if (wall->SpawnInfo != 1)
 		{
 			// Wait one second before disappearing.
@@ -559,102 +549,99 @@ static qboolean FXFireBurstThink(client_entity_t *wall, centity_t *owner)
 			wall->lastThinkTime = fxi.cl->time + 1000;
 			wall->SpawnInfo = 1;
 			FireBurstImpact(wall);
+
 			return true;
 		}
-		else if (wall->lastThinkTime > fxi.cl->time)
-		{	// Still some time left to live...
-			wall->dlight->intensity -= 20.0;
-			return true;
-		}
-		else
-		{	// Time's up
-			return false;
-		}
-	}
 
-	switch((int)(r_detail->value))
-	{
-	case DETAIL_LOW:
-		detailscale = 0.6;
-		break;
-	case DETAIL_HIGH:
-		detailscale = 0.9;
-		break;
-	case DETAIL_UBERHIGH:
-		detailscale = 1.0;
-		break;
-	case DETAIL_NORMAL:
-	default:
-		detailscale = 0.75;
-		break;
-	}
-
-	color.c = 0xe5007fff;
-	if (wall->dlight->intensity < 250.0)
-		wall->dlight->intensity += 15.0;
-
-	dtime = 1.0 + ((fxi.cl->time - wall->lastThinkTime) * (FIREBLAST_DRADIUS/1000.0));
-	wall->radius = FIREBLAST_RADIUS*dtime;
-
-	VectorMA(wall->r.origin, -24, wall->direction, origin);
-
-	numFlameColumns = GetScaledCount(8, 0.8) + 4;
-
-	for(i = 0; i < numFlameColumns; i++)
-	{
-		ang2 = (M_PI) * (float)i/((float)numFlameColumns-1);
-
-		VectorScale(wall->right, cos(ang2)*dtime, newDir);
-		VectorMA(newDir, sin(ang2), wall->direction, newDir);
-
-		VectorCopy(origin, org);
-		org[2] -= 16;
-		VectorMA(org, 16.0, newDir, org);
-
-		edgeVal = abs((numFlameColumns/2)-i)*(12.0/numFlameColumns);
-
-		j=1;
-//		for(j = 0; j < 2; j++)
+		if (wall->lastThinkTime > fxi.cl->time)
 		{
-			burst = ClientEntity_new(FX_WEAPON_FIREBURST, 0, org, NULL, 1000);
+			// Still some time left to live...
+			wall->dlight->intensity -= 20.0f;
+			return true;
+		}
 
-			burst->r.model = wall_models + 1;
-			
-			burst->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-			burst->r.frame = 0;
+		// Time's up
+		return false;
+	}
 
-			VectorScale(newDir, FIREBURST_PART_SPEED + irand(0, 40) - (edgeVal*10) + (j*20), burst->velocity);
-			burst->velocity[2] += j * (90 - (edgeVal*9)) + flrand(0, 10);
-			
-			if(i&1)
-			{
-				burst->velocity[2] *= .5;
-			}
+	float detail_scale;
 
-			burst->r.scale = flrand(0.5, 0.75)*detailscale;
-			burst->radius = 20.0;
-			burst->d_scale = 1.0;
-			burst->d_alpha = -2.5;
-			
-			burst->origin[0] += irand(-32, 32);
-			burst->origin[1] += irand(-32, 32);
-			burst->origin[2] += irand(-16, 16);
-			
-			burst->acceleration[2] = flrand(16, 64);
-			burst->velocity[2] += flrand(16, 64);
+	switch ((int)r_detail->value)
+	{
+		case DETAIL_LOW:
+			detail_scale = 0.6f;
+			break;
 
-			AddEffect(NULL,burst);
+		case DETAIL_NORMAL:
+		default:
+			detail_scale = 0.75f;
+			break;
 
-			if(((i == 0)||(i == numFlameColumns-1))&&(j == 1))
-			{
-				burst->dlight = CE_DLight_new(color, 150.0F, -250.0F);
-			}
+		case DETAIL_HIGH:
+			detail_scale = 0.9f;
+			break;
+
+		case DETAIL_UBERHIGH:
+			detail_scale = 1.0f;
+			break;
+	}
+
+	if (wall->dlight->intensity < 250.0f)
+		wall->dlight->intensity += 15.0f;
+
+	const float delta_time = 1.0f + (float)(fxi.cl->time - wall->lastThinkTime) * (FIREBLAST_DRADIUS / 1000.0f);
+	wall->radius = FIREBLAST_RADIUS * delta_time;
+
+	vec3_t origin;
+	VectorMA(wall->r.origin, -24.0f, wall->direction, origin);
+
+	const int num_flame_columns = GetScaledCount(8, 0.8f) + 4;
+
+	for (int i = 0; i < num_flame_columns; i++)
+	{
+		const float angle = ANGLE_180 * (float)i / ((float)num_flame_columns - 1);
+
+		vec3_t dir;
+		VectorScale(wall->right, cosf(angle) * delta_time, dir);
+		VectorMA(dir, sinf(angle), wall->direction, dir);
+
+		vec3_t cur_origin = { origin[0], origin[1], origin[2] - 16.0f };
+		VectorMA(cur_origin, 16.0f, dir, cur_origin);
+
+		client_entity_t* burst = ClientEntity_new(FX_WEAPON_FIREBURST, 0, cur_origin, NULL, 1000);
+
+		burst->radius = 20.0f;
+		burst->r.model = &wall_models[1]; // wflame2 sprite.
+		burst->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		burst->r.scale = flrand(0.5f, 0.75f) * detail_scale;
+		burst->d_scale = 1.0f;
+		burst->d_alpha = -2.5f;
+
+		const float edge_val = fabsf(((float)num_flame_columns / 2.0f) - (float)i) * (12.0f / (float)num_flame_columns);
+		VectorScale(dir, FIREBURST_PART_SPEED + flrand(0.0f, 40.0f) - (edge_val * 10.0f) + 20.0f, burst->velocity); //mxd. irand() in original logic.
+		burst->velocity[2] += 90.0f - (edge_val * 9.0f) + flrand(0.0f, 10.0f);
+
+		if (i & 1)
+			burst->velocity[2] *= 0.5f;
+
+		burst->origin[0] += flrand(-32.0f, 32.0f); //mxd. irand() in original logic.
+		burst->origin[1] += flrand(-32.0f, 32.0f); //mxd. irand() in original logic.
+		burst->origin[2] += flrand(-16.0f, 16.0f); //mxd. irand() in original logic.
+
+		burst->acceleration[2] = flrand(16.0f, 64.0f);
+		burst->velocity[2] += flrand(16.0f, 64.0f);
+
+		AddEffect(NULL, burst);
+
+		if (i == 0 || i == num_flame_columns - 1)
+		{
+			const paletteRGBA_t color = { .c = 0xe5007fff };
+			burst->dlight = CE_DLight_new(color, 150.0f, -250.0f);
 		}
 	}
 
 	return true;
 }
-
 
 // Create effect FX_WEAPON_FIREBURST
 void FXFireBurst(centity_t *owner, int type, int flags, vec3_t origin)
@@ -684,7 +671,7 @@ void FXFireBurst(centity_t *owner, int type, int flags, vec3_t origin)
 //	wall->r.model = wall_models + 1;
 //	wall->alpha = 0.01;
 
-	wall->Update = FXFireBurstThink;
+	wall->Update = FireBurstThink;
 	wall->radius = FIREBLAST_RADIUS;
 	wall->color.c = 0xff00afff;
 //	wall->r.scale = 8.0;
