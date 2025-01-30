@@ -643,75 +643,63 @@ static qboolean FireBurstThink(client_entity_t* wall, centity_t* owner)
 	return true;
 }
 
-// Create effect FX_WEAPON_FIREBURST
-void FXFireBurst(centity_t *owner, int type, int flags, vec3_t origin)
+void FXFireBurst(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	client_entity_t		*wall;
-	client_particle_t	*spark;
-	vec3_t				fwd;
-	int					i;
-	short				shortyaw,shortpitch;
+	short short_yaw;
+	short short_pitch;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_FIREBURST].formatString, &short_yaw, &short_pitch);
 
-	wall = ClientEntity_new(type, flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS | CEF_DONT_LINK, origin, NULL, 150);
-	fxi.GetEffect(owner,flags,clientEffectSpawners[FX_WEAPON_FIREBURST].formatString, &shortyaw, &shortpitch);
+	client_entity_t* wall = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS | CEF_DONT_LINK), origin, NULL, 150);
 
-	wall->r.angles[YAW]=(float)shortyaw * (360.0/65536.0);
-	wall->r.angles[PITCH]=(float)shortpitch * (360.0/65536.0);
-	wall->r.angles[ROLL]=0.0;
-
-	// The Build the velocity out of the fwd vector constructed from the two angles given.
-	AngleVectors(wall->r.angles, fwd, wall->right, NULL);
-	VectorScale(fwd, FIREBLAST_SPEED, wall->velocity);
-
-	// Zero out the direction Z velocity because it isn't used during the think.
-	VectorCopy(fwd, wall->direction);
-	wall->direction[2] = 0.0;
-	wall->right[2] = 0.0;
-
-//	wall->r.model = wall_models + 1;
-//	wall->alpha = 0.01;
-
-	wall->Update = FireBurstThink;
 	wall->radius = FIREBLAST_RADIUS;
 	wall->color.c = 0xff00afff;
-//	wall->r.scale = 8.0;
-//	wall->d_scale = 56.0;
-	wall->dlight = CE_DLight_new(wall->color, 150.0F, 0.0F);
 	wall->lastThinkTime = fxi.cl->time;
+
+	wall->r.angles[YAW] = SHORT2ANGLE(short_yaw);
+	wall->r.angles[PITCH] = SHORT2ANGLE(short_pitch);
+	wall->r.angles[ROLL] = 0.0f;
+
+	// The Build the velocity out of the fwd vector constructed from the two angles given.
+	vec3_t dir;
+	AngleVectors(wall->r.angles, dir, wall->right, NULL);
+	VectorScale(dir, FIREBLAST_SPEED, wall->velocity);
+
+	// Zero out the direction Z velocity because it isn't used during the think.
+	VectorCopy(dir, wall->direction);
+	wall->direction[2] = 0.0f;
+	wall->right[2] = 0.0f;
+
+	wall->dlight = CE_DLight_new(wall->color, 150.0f, 0.0f);
+	wall->Update = FireBurstThink;
 
 	AddEffect(owner, wall);
 
 	// Okay, this weapon feels REALLY weak at launch, so I'm going to add a little punch to it.
+	client_entity_t* flash = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS, origin, NULL, 1000);
 
-	// Add a big ol' flash.
-	wall = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS, origin, NULL, 1000);
-	wall->r.model = wall_models + 2;		// The starry halo.
-	wall->r.flags |= RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
-	wall->radius = 64.0;
+	flash->radius = 64.0f;
+	flash->r.model = &wall_models[2]; // The starry halo.
+	flash->r.flags = RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+	flash->r.scale = 0.1f;
+	flash->d_scale = 4.0f;
+	flash->alpha = 0.95f;
+	flash->d_alpha = -2.0f;
+	VectorScale(dir, FIREBLAST_SPEED * 0.15f, flash->velocity);
 
-	wall->r.scale = 0.1;
-	wall->d_scale = 4.0;
-	wall->alpha = 0.95;
-	wall->d_alpha = -2.0;
-	wall->color.c = 0xffffffff;
-	VectorScale(fwd, FIREBLAST_SPEED*0.15, wall->velocity);
-	
-	AddEffect(NULL, wall);
+	AddEffect(NULL, flash);
 
-	// And add a bunch o' particle blasty bits to it
-	for (i=0; i<25; i++)
+	// Add a bunch o' particle blast bits to it.
+	for (int i = 0; i < 25; i++)
 	{
-		spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), wall->color, 1000);
-		VectorSet(spark->velocity, 
-				flrand(-0.1*FIREBLAST_SPEED, 0.1*FIREBLAST_SPEED),
-				flrand(-0.1*FIREBLAST_SPEED, 0.1*FIREBLAST_SPEED),
-				flrand(-0.1*FIREBLAST_SPEED, 0.1*FIREBLAST_SPEED));
-		VectorAdd(wall->velocity, spark->velocity, spark->velocity);
-		spark->d_alpha = flrand(-256.0, -512.0);
-		spark->scale = 4.0;
-		spark->d_scale = flrand(8.0, 16.0);
+		client_particle_t* spark = ClientParticle_new(irand(PART_32x32_FIRE0, PART_32x32_FIRE2), flash->color, 1000);
 
-		AddParticleToList(wall, spark);
+		VectorRandomSet(spark->velocity, FIREBLAST_SPEED * 0.1f);
+		VectorAdd(flash->velocity, spark->velocity, spark->velocity);
+		spark->d_alpha = flrand(-512.0f, -256.0f);
+		spark->scale = 4.0f;
+		spark->d_scale = flrand(8.0f, 16.0f);
+
+		AddParticleToList(flash, spark);
 	}
 }
 

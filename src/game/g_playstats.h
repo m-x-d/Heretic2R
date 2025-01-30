@@ -91,10 +91,10 @@
 
 // Fireblast (unpowered firewall).
 #define FIREBLAST_LIFETIME				5
-#define FIREBLAST_SPEED					480.0
-#define FIREBLAST_RADIUS				48.0
+#define FIREBLAST_SPEED					480.0f
+#define FIREBLAST_RADIUS				48.0f
 #define FIREBLAST_PROJ_RADIUS			8.0
-#define FIREBLAST_DRADIUS				1.0
+#define FIREBLAST_DRADIUS				1.0f
 #define FIREBLAST_VRADIUS				16
 #define FIREBLAST_DAMAGE				48
 #define FIREBLAST_DAMAGE_MIN			32
