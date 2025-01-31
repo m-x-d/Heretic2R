@@ -290,7 +290,7 @@ static qboolean BloodSplatDripUpdate(client_entity_t* self, centity_t* owner)
 	const paletteRGBA_t color = { .r = 150, .g = 140, .b = 110, .a = 160 };
 
 	//TODO: make p duration based on self->radius?
-	const int drip_time = (int)(self->radius * 6);
+	const int drip_time = (int)(self->radius * 6.0f);
 	const float scale = flrand(0.2f, 0.4f);
 	const int num_drips = irand(7, 15);
 
@@ -316,14 +316,14 @@ static qboolean BloodSplatDripUpdate(client_entity_t* self, centity_t* owner)
 		AdvanceParticle(p, i * 7);
 		AddParticleToList(self, p);
 
-		if (drip_time >= 17)
+		if (drip_time >= MIN_UPDATE_TIME)
 		{
 			p->duration = (int)((float)drip_time * 3.0f * grav_mod);
 			self->SpawnInfo++;
 		}
 	}
 
-	if (self->SpawnInfo && drip_time >= 17)
+	if (self->SpawnInfo > 0 && drip_time >= MIN_UPDATE_TIME)
 	{
 		// Splash.
 		self->Update = BloodSplatSplashUpdate;

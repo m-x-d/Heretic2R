@@ -139,7 +139,7 @@ static qboolean SoundThink(struct client_entity_s* self, centity_t* owner)
 	}
 
 	self->updateTime = (int)(soundinfo->wait * flrand(0.5f, 1.5f));
-	self->updateTime = max(17, self->updateTime);
+	self->updateTime = max(MIN_UPDATE_TIME, self->updateTime);
 
 	return true; // Keep everything around so we can shut them down when needed.
 }

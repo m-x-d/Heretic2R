@@ -213,7 +213,7 @@ void FXLensFlare(centity_t* owner, int type, const int flags, vec3_t origin)
 
 			flare->extra = (centity_t*)owner;
 			flare->Update = LensFlareThinkAttached;
-			flare->updateTime = 17;
+			flare->updateTime = MIN_UPDATE_TIME;
 
 			LensFlareThinkAttached(flare, owner);
 

@@ -591,7 +591,7 @@ static qboolean InsectSwordTrailThink(struct client_entity_s* self, centity_t* o
 	if (self->LifeTime < fxi.cl->time || !RefPointsValid(owner))
 		return false;
 
-	self->updateTime = 17; // FIXME: with a next think time this effect does not look right.
+	self->updateTime = MIN_UPDATE_TIME; // FIXME: with a next think time this effect does not look right.
 
 	// Extrapolate down length of sword from hand!
 	const centity_t* caster = (centity_t*)self->extra;
