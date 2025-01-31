@@ -290,8 +290,8 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 	if (trace->surface->flags & SURF_SKY)
 	{
 		// Remove it.
-		self->Update = FXDebris_Remove;
 		self->nextThinkTime = fxi.cl->time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
+		self->Update = RemoveSelfAI; //mxd. FXDebris_Remove() in original logic.
 
 		return false;
 	}

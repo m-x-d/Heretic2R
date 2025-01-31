@@ -746,11 +746,6 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 
 #pragma region ========================== Debris update ==========================
 
-qboolean FXDebris_Remove(struct client_entity_s* self, centity_t* owner)
-{
-	return false;
-}
-
 qboolean FXDebris_Vanish(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->SpawnInfo & SIF_INLAVA)
@@ -763,8 +758,8 @@ qboolean FXDebris_Vanish(struct client_entity_s* self, centity_t* owner)
 			// Let the smoke die out.
 			self->alpha = 0.0f;
 			self->r.scale = 0.0f;
-			self->Update = FXDebris_Remove;
 			self->updateTime = 1000;
+			self->Update = RemoveSelfAI; //mxd. FXDebris_Remove() in original logic.
 
 			return true;
 		}
