@@ -81,7 +81,7 @@ static qboolean CWBeamUpdate(struct client_entity_s* self, centity_t* owner)
 
 	if (++self->LifeTime == 8)
 	{
-		fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound("Monsters/elflord/weld.wav"), 0.5f, ATTN_IDLE, 0);
+		fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound("Monsters/elflord/weld.wav"), 0.5f, ATTN_IDLE, 0.0f);
 		self->LifeTime = 0;
 	}
 
@@ -162,7 +162,7 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 
 		case CW_STAR_HIT: // A bright explosion.
 		{
-			fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("Monsters/elflord/impact.wav"), 0.5f, ATTN_IDLE, 0);
+			fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("Monsters/elflord/impact.wav"), 0.5f, ATTN_IDLE, 0.0f);
 
 			int count = GetScaledCount(4, 0.8f);
 			for (int i = 0; i < count; i++)

@@ -374,5 +374,5 @@ void FXPowerLightning(centity_t* owner, int type, const int flags, vec3_t origin
 	fxi.Activate_Screen_Shake(4.0f, 500.0f, (float)fxi.cl->time, SHAKE_ALL_DIR);
 
 	if (flags & CEF_FLAG8) // "Play sound" flag.
-		fxi.S_StartSound(target, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/LightningPower.wav"), 1.0f, ATTN_NORM, 0);
+		fxi.S_StartSound(target, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/LightningPower.wav"), 1.0f, ATTN_NORM, 0.0f);
 }

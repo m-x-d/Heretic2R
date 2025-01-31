@@ -47,7 +47,7 @@ void FXTPortSmoke(centity_t* owner, const int type, const int flags, vec3_t orig
 		scale_max = 45.0f;
 	}
 
-	fxi.S_StartSound(origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/assassin/smoke.wav"), 1.0f, ATTN_NORM, 0);
+	fxi.S_StartSound(origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/assassin/smoke.wav"), 1.0f, ATTN_NORM, 0.0f);
 
 	for (int i = 0; i < num_puffs; i++)
 	{

@@ -218,7 +218,7 @@ static void FizzleEffect(const client_entity_t* self, vec3_t surface_top, vec3_t
 	else
 		snd_name = "misc/lavaburn.wav";
 
-	fxi.S_StartSound(surface_top, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1, ATTN_STATIC, 0);
+	fxi.S_StartSound(surface_top, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_STATIC, 0.0f);
 
 	const int num_puffs = GetScaledCount(irand(2, 5), 0.3f);
 	for (int i = 0; i < num_puffs; i++)
@@ -331,7 +331,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 		{
 			// Splash sound.
 			if (do_splash_effect)
-				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("misc/splish%i.wav", irand(2, 3))), 1, ATTN_STATIC, 0);
+				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("misc/splish%i.wav", irand(2, 3))), 1.0f, ATTN_STATIC, 0.0f);
 
 			QPostMessage(self, MSG_COLLISION, "g", trace); // This will be processed next.
 
@@ -346,7 +346,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 			if (do_splash_effect)
 			{
 				FXBubble(NULL, FX_BUBBLE, 0, surface_top);
-				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/splish1.wav"), 1, ATTN_STATIC, 0);
+				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/splish1.wav"), 1.0f, ATTN_STATIC, 0.0f);
 			}
 
 			fxi.Trace(trace->endpos, mins, maxs, end, MASK_SHOT, self->flags, trace);
@@ -370,7 +370,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 		{
 			// Splash sound.
 			if (do_splash_effect)
-				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("player/waterrun%i.wav", irand(1, 2))), 1, ATTN_STATIC, 0);
+				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("player/waterrun%i.wav", irand(1, 2))), 1.0f, ATTN_STATIC, 0.0f);
 
 			VectorCopy(surface_top, r->origin);
 			VectorClear(self->velocity);
@@ -404,7 +404,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 		{
 			// Splash sound.
 			if (do_splash_effect)
-				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("player/waterrun%i.wav", irand(1, 2))), 1, ATTN_STATIC, 0);
+				fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("player/waterrun%i.wav", irand(1, 2))), 1.0f, ATTN_STATIC, 0.0f);
 
 			QPostMessage(self, MSG_COLLISION, "g", trace); // This will be processed next.
 
@@ -415,7 +415,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 		if (do_splash_effect)
 		{
 			FXBubble(NULL, FX_BUBBLE, 0, surface_top);
-			fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound("objects/submerge.wav"), 1, ATTN_STATIC, 0);
+			fxi.S_StartSound(r->origin, -1, CHAN_AUTO, fxi.S_RegisterSound("objects/submerge.wav"), 1.0f, ATTN_STATIC, 0.0f);
 		}
 
 		VectorCopy(surface_top, r->origin);

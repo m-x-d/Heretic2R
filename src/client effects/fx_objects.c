@@ -96,5 +96,5 @@ void FXBarrelExplode(centity_t* owner, const int type, const int flags, vec3_t o
 
 	AddEffect(NULL, halo);
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/PhoenixHit.wav"), 1.0f, ATTN_NORM, 0);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/PhoenixHit.wav"), 1.0f, ATTN_NORM, 0.0f);
 }

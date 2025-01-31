@@ -62,7 +62,7 @@ static void HellboltExplode(const vec3_t loc, const vec3_t vel)
 	blast->radius = 32.0f;
 	blast->dlight = CE_DLight_new(light_color, 150.0f, -200.0f);
 
-	fxi.S_StartSound(blast->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/HellHit.wav"), 1.0f, ATTN_NORM, 0);
+	fxi.S_StartSound(blast->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/HellHit.wav"), 1.0f, ATTN_NORM, 0.0f);
 	AddEffect(NULL, blast);
 
 	for (int i = 0; i < NUM_HELLBOLT_EXPLODES; i++)

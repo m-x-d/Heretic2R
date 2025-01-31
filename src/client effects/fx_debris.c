@@ -661,12 +661,12 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 					GenericSparks(NULL, FX_SPARKS, 0, self->r.origin, dir);
 
 					snd_name = (irand(0, 1) ? "misc/dropmetal1.wav" : "misc/dropmetal.wav");
-					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1, ATTN_NORM, 0);
+					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_NORM, 0.0f);
 				}
 				else
 				{
 					snd_name = va("misc/drophvmtl%i.wav", irand(1, 3));
-					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1, ATTN_STATIC, 0);
+					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_STATIC, 0.0f);
 				}
 				// Need more hollow sounds for big metal.
 				break;
@@ -675,7 +675,7 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 				if (irand(0, 6) == 0)
 				{
 					snd_name = (irand(0, 1) ? "misc/dropwood1.wav" : "misc/dropwood.wav");
-					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1, ATTN_STATIC, 0);
+					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_STATIC, 0.0f);
 				}
 				break;
 
@@ -685,7 +685,7 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 				if (irand(0, 6) == 0)
 				{
 					snd_name = (irand(0, 2) ? va("misc/boulder%i.wav", irand(1, 2)) : "misc/dropthing.wav");
-					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1, ATTN_STATIC, 0);
+					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_STATIC, 0.0f);
 				}
 				break;
 
@@ -701,7 +701,7 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 				if (self->effectID == FX_BODYPART || irand(0, 1))
 				{
 					snd_name = va("misc/fleshdrop%i.wav", irand(1, 3));
-					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1, ATTN_STATIC, 0);
+					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_STATIC, 0.0f);
 
 					if (!(self->SpawnInfo & SIF_INWATER))
 						ThrowBlood(self->r.origin, trace->plane.normal, dark, yellow, false);
@@ -712,7 +712,7 @@ static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 				if (irand(0, 2) == 0)
 				{
 					snd_name = va("misc/dropglass%i.wav", irand(1, 2));
-					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1, ATTN_STATIC, 0);
+					fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_STATIC, 0.0f);
 				}
 				break;
 

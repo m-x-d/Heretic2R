@@ -283,7 +283,7 @@ void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t o
 	halo->dlight = CE_DLight_new(color_white, 150.0f, -100.0f);
 	halo->lastThinkTime = fxi.cl->time + 750;
 
-	fxi.S_StartSound(halo->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/RipperImpact.wav"), 1, ATTN_NORM, 0);
+	fxi.S_StartSound(halo->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/RipperImpact.wav"), 1.0f, ATTN_NORM, 0.0f);
 
 	AddEffect(NULL, halo);
 

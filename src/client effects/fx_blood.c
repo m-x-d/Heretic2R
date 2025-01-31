@@ -268,7 +268,7 @@ static qboolean BloodSplatSplashUpdate(client_entity_t* self, centity_t* owner)
 	}
 
 	if (p != NULL) //mxd. Added sanity check.
-		fxi.S_StartSound(p->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("ambient/waterdrop%i.wav", irand(1, 3))), flrand(0.5f, 0.8f), ATTN_STATIC, 0);
+		fxi.S_StartSound(p->origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("ambient/waterdrop%i.wav", irand(1, 3))), flrand(0.5f, 0.8f), ATTN_STATIC, 0.0f);
 
 	if (!irand(0, 2))
 		VectorSet(self->startpos, flrand(-1, 1), flrand(-1, 1), 0);

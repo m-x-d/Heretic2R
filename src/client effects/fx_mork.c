@@ -819,7 +819,7 @@ static qboolean AssassinDaggerUpdate(struct client_entity_s* self, centity_t* ow
 {
 	if (++self->LifeTime == 4)
 	{
-		fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("monsters/assassin/throw%i.wav", irand(1, 2))), 0.5f, ATTN_IDLE, 0);
+		fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("monsters/assassin/throw%i.wav", irand(1, 2))), 0.5f, ATTN_IDLE, 0.0f);
 		self->LifeTime = 0;
 	}
 
@@ -975,7 +975,7 @@ static void QuakeRing(const vec3_t origin)
 	}
 
 	fxi.Activate_Screen_Shake(12.0f, 1000.0f, (float)fxi.cl->time, SHAKE_ALL_DIR);
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("world/quakeshort.wav"), 1.0f, ATTN_NONE, 0);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("world/quakeshort.wav"), 1.0f, ATTN_NONE, 0.0f);
 }
 
 static void GroundAttack(vec3_t origin)
@@ -983,14 +983,14 @@ static void GroundAttack(vec3_t origin)
 	origin[2] -= 16.0f;
 
 	// Create the dummy entity, so particles can be attached.
-	client_entity_t* spawner = ClientEntity_new(FX_M_EFFECTS, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, origin, NULL, 17);
+	client_entity_t* spawner = ClientEntity_new(FX_M_EFFECTS, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, origin, NULL, MIN_UPDATE_TIME);
 
 	spawner->radius = 100.0f;
 	spawner->LifeTime = fxi.cl->time + 1000;
 	VectorScale(vec3_up, 50.0f, spawner->direction);
 	spawner->Update = FXFlamethrowerTrail;
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/flamethrow.wav"), 1.0f, ATTN_NORM, 0);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/flamethrow.wav"), 1.0f, ATTN_NORM, 0.0f);
 
 	AddEffect(NULL, spawner);
 }
@@ -1069,7 +1069,7 @@ static qboolean MorkMissileThink3(struct client_entity_s* self, centity_t* owner
 
 	if (self->SpawnInfo > irand(15, 20))
 	{
-		fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/elflord/weld.wav"), 0.5f, ATTN_IDLE, 0);
+		fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/elflord/weld.wav"), 0.5f, ATTN_IDLE, 0.0f);
 		self->SpawnInfo = 0;
 	}
 
@@ -1142,7 +1142,7 @@ static void MorkMissileHit(const vec3_t origin)
 
 	AddEffect(NULL, core);
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/mork/ppexplode.wav"), 1.0f, ATTN_IDLE, 0);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/mork/ppexplode.wav"), 1.0f, ATTN_IDLE, 0.0f);
 }
 
 static qboolean MorkTrackingMissileTrailTrailThink(struct client_entity_s* self, centity_t* owner)
@@ -1342,14 +1342,14 @@ static void MSsithraExplode(vec3_t origin, vec3_t dir)
 
 	AddEffect(NULL, spawner);
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/mssithra/hit.wav"), 0.5f, ATTN_NORM, 0);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/mssithra/hit.wav"), 0.5f, ATTN_NORM, 0.0f);
 }
 
 static void MSsithraExplodeSmall(const vec3_t origin)
 {
 	//TODO: play correct sound here.
 	FireSparks(NULL, FX_SPARKS, 0, origin, vec3_up);
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/mssithra/hit.wav"), 0.5f, ATTN_NORM, 0);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/mssithra/hit.wav"), 0.5f, ATTN_NORM, 0.0f);
 }
 
 static qboolean ArrowCheckFuse(client_entity_t* self, centity_t* owner)
@@ -1392,7 +1392,7 @@ static qboolean ArrowDrawTrail(client_entity_t* self, centity_t* owner)
 		if (self->LifeTime > 10)
 		{
 			self->LifeTime = 0;
-			fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/pssithra/guntravel.wav"), 0.5f, ATTN_NORM, 0);
+			fxi.S_StartSound(self->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/pssithra/guntravel.wav"), 0.5f, ATTN_NORM, 0.0f);
 		}
 		else
 		{

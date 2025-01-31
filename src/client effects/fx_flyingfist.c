@@ -216,7 +216,7 @@ void FXFlyingFistExplode(centity_t* owner, const int type, const int flags, vec3
 		if (is_last_puff)
 		{
 			const char* snd_name = (is_powered ? "weapons/FireballPowerImpact.wav" : "weapons/FlyingFistImpact.wav"); //mxd
-			fxi.S_StartSound(smoke_puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound(snd_name), volume, ATTN_NORM, 0);
+			fxi.S_StartSound(smoke_puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound(snd_name), volume, ATTN_NORM, 0.0f);
 
 			smoke_puff->dlight = CE_DLight_new(light_color, light_radius, -50.0f);
 			VectorClear(smoke_puff->velocity);

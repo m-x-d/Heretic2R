@@ -96,7 +96,7 @@ static void PESpellGo(centity_t* owner, const int type, const int flags, const v
 
 	AddEffect(owner, missile);
 
-	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell.wav"), 1.0f, ATTN_NORM, 0);
+	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
 static void PESpellExplode(const int type, const int flags, vec3_t origin, vec3_t dir)
@@ -128,7 +128,7 @@ static void PESpellExplode(const int type, const int flags, vec3_t origin, vec3_
 
 		if (is_last_puff)
 		{
-			fxi.S_StartSound(puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spellhit.wav"), 1.0f, ATTN_NORM, 0);
+			fxi.S_StartSound(puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spellhit.wav"), 1.0f, ATTN_NORM, 0.0f);
 
 			const paletteRGBA_t light_color = { .c = 0xff20a0ff }; // Orange light.
 			puff->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
@@ -198,7 +198,7 @@ static void PESpell2Go(centity_t* owner, const int type, const int flags, const 
 
 	AddEffect(owner, missile);
 
-	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell2.wav"), 1.0f, ATTN_NORM, 0);
+	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell2.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
 static void PESpell2Explode(const int type, const int flags, vec3_t origin, vec3_t dir)
@@ -229,7 +229,7 @@ static void PESpell2Explode(const int type, const int flags, vec3_t origin, vec3
 
 		if (is_last_puff)
 		{
-			fxi.S_StartSound(puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell2hit.wav"), 1.0f, ATTN_NORM, 0);
+			fxi.S_StartSound(puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell2hit.wav"), 1.0f, ATTN_NORM, 0.0f);
 
 			const paletteRGBA_t light_color = { .c = 0xffff0077 }; // Purple light.
 			puff->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
@@ -268,7 +268,7 @@ static void PESpell3Explode(const int type, const int flags, vec3_t origin, vec3
 
 		if (is_last_puff)
 		{
-			fxi.S_StartSound(puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell3hit.wav"), 1.0f, ATTN_NORM, 0);
+			fxi.S_StartSound(puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell3hit.wav"), 1.0f, ATTN_NORM, 0.0f);
 
 			const paletteRGBA_t light_color = { .c = 0xffff6611 }; // Cyan light.
 			puff->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);

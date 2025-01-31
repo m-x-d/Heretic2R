@@ -122,7 +122,7 @@ void FXMorphMissile(centity_t* owner, const int type, const int flags, vec3_t or
 
 	AddEffect(owner, missile);
 
-	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/OvumFire.wav"), 1, ATTN_NORM, 0);
+	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/OvumFire.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
 // Initial entry from server - create first object. This has the light on it, but no trail yet.
@@ -160,7 +160,7 @@ void FXMorphMissileInitial(centity_t* owner, const int type, const int flags, ve
 		yaw_rad += MORPH_ANGLE_INC;
 
 		if (i == 0)
-			fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/OvumFire.wav"), 1.0f, ATTN_NORM, 0);
+			fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/OvumFire.wav"), 1.0f, ATTN_NORM, 0.0f);
 	}
 
 	if (r_detail->value >= DETAIL_HIGH)

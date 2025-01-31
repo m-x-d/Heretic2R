@@ -56,7 +56,7 @@ void FXLightningHit(centity_t* owner, int type, const int flags, vec3_t origin)
 	blast->d_scale = -2.0f;
 	blast->dlight = CE_DLight_new(color, 75.0f, 0.0f);
 
-	fxi.S_StartSound(blast->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/HellHit.wav"), 1.0f, ATTN_NORM, 0);
+	fxi.S_StartSound(blast->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/HellHit.wav"), 1.0f, ATTN_NORM, 0.0f);
 	AddEffect(NULL, blast);
 
 	for (int i = 0; i < NUM_LIGHTNING_BITS; i++)

@@ -38,7 +38,7 @@ static qboolean BubbleThink(client_entity_t* bubble, centity_t* owner)
 	DoWaterSplash(bubble, color_white, BUBBLE_NUM_SPLASHES);
 	FXWaterRipples(NULL, FX_WATER_RIPPLES, 0, bubble->r.origin);
 
-	fxi.S_StartSound(bubble->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("ambient/waterdrop%i.wav", irand(1, 3))), 1, ATTN_STATIC, 0);
+	fxi.S_StartSound(bubble->r.origin, -1, CHAN_AUTO, fxi.S_RegisterSound(va("ambient/waterdrop%i.wav", irand(1, 3))), 1.0f, ATTN_STATIC, 0.0f);
 
 	return true;
 }

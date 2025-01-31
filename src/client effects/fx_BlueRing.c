@@ -47,5 +47,5 @@ void FXBlueRing(centity_t* owner, const int type, const int flags, vec3_t origin
 		cur_angle += ANGLE_360 / count;
 	}
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/Spell Blue Ring.wav"), 1, ATTN_NORM, 0);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/Spell Blue Ring.wav"), 1.0f, ATTN_NORM, 0.0f);
 }

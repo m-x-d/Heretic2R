@@ -75,7 +75,7 @@ void FXEnvSmoke(centity_t* owner, const int type, int flags, vec3_t origin)
 	{
 		// Just a hiss and steam.
 		FXSmoke(origin, flrand(0.5f, 1.0f), flrand(32.0f, 64.0f));
-		fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/fout.wav"), 1.0f, ATTN_NORM, 0);
+		fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/fout.wav"), 1.0f, ATTN_NORM, 0.0f);
 
 		self->LifeTime = 33;
 		self->Update = EnvSmokeSpawner2;

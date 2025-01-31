@@ -127,13 +127,13 @@ void FXFlamethrower(centity_t* owner, const int type, const int flags, vec3_t or
 		if (flags & CEF_FLAG7)
 			glow->LifeTime = fxi.cl->time + 200;
 		else
-			fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("objects/steamjet.wav"), 1, ATTN_NORM, 0);
+			fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("objects/steamjet.wav"), 1.0f, ATTN_NORM, 0.0f);
 
 		glow->Update = FlamethrowerSteamTrail;
 	}
 	else
 	{
-		fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/flamethrow.wav"), 1, ATTN_NORM, 0);
+		fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/flamethrow.wav"), 1.0f, ATTN_NORM, 0.0f);
 		glow->Update = FXFlamethrowerTrail;
 	}
 

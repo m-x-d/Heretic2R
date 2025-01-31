@@ -510,7 +510,7 @@ static void InsectSpellMissileHit(const int type, const int flags, vec3_t origin
 
 		if (i == 0)
 		{
-			fxi.S_StartSound(smoke_puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/HellHit.wav"), 1.0f, ATTN_NORM, 0);
+			fxi.S_StartSound(smoke_puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/HellHit.wav"), 1.0f, ATTN_NORM, 0.0f);
 			smoke_puff->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
 			VectorClear(smoke_puff->velocity);
 		}
@@ -540,7 +540,7 @@ static void InsectSpellMissileHit2(const int type, const int flags, const vec3_t
 
 		if (i == 0)
 		{
-			fxi.S_StartSound(smoke_puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/HellHit.wav"), 1.0f, ATTN_NORM, 0);
+			fxi.S_StartSound(smoke_puff->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("weapons/HellHit.wav"), 1.0f, ATTN_NORM, 0.0f);
 			VectorClear(smoke_puff->velocity);
 		}
 

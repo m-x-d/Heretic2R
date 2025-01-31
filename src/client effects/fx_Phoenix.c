@@ -395,7 +395,7 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, vec3_t origin
 
 	AddEffect(NULL, phoenix);
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/PhoenixHit.wav"), 1.0f, ATTN_NORM, 0);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/PhoenixHit.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
 #pragma endregion
@@ -522,7 +522,7 @@ static void PhoenixExplodePower(const int type, int flags, const vec3_t origin, 
 
 	AddEffect(NULL, phoenix_inner);
 
-	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/PhoenixPowerHit.wav"), 1.0f, ATTN_NORM, 0);
+	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/PhoenixPowerHit.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
 static qboolean PhoenixMissilePowerThink(client_entity_t* missile, centity_t* owner)
