@@ -533,7 +533,7 @@ void FXSpherePlayerExplode(centity_t* owner, const int type, const int flags, ve
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_SPHEREPLAYEREXPLODE].formatString, dir, &size);
 
 	// Create an expanding ball of blue fire.
-	client_entity_t* explosion = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS, origin, NULL, 50);
+	client_entity_t* explosion = ClientEntity_new(type, flags | CEF_ADDITIVE_PARTS, origin, NULL, (size + 1) * 100);
 
 	explosion->radius = SPHERE_RADIUS_MIN + ((float)(SPHERE_RADIUS_MAX - SPHERE_RADIUS_MIN) / SPHERE_MAX_CHARGES * (float)explosion->SpawnInfo);
 	explosion->r.model = &sphere_models[3]; // Sphere model.
@@ -542,8 +542,6 @@ void FXSpherePlayerExplode(centity_t* owner, const int type, const int flags, ve
 	explosion->color = color_white;
 	explosion->d_scale = 1.5f;
 	explosion->SpawnInfo = (int)size;
-	explosion->updateTime = (size + 1) * 100;
-	explosion->nextEventTime = fxi.cl->time + explosion->updateTime;
 	explosion->lastThinkTime = fxi.cl->time;
 	explosion->dlight = CE_DLight_new(color_white, explosion->radius / 0.7f, 0);
 	explosion->AddToView = SpherePlayerExplodeAddToView;
@@ -564,7 +562,8 @@ void FXSpherePlayerExplode(centity_t* owner, const int type, const int flags, ve
 		glowball->r.model = &sphere_models[7]; // spark_blue sprite.
 		glowball->r.flags = RF_FULLBRIGHT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 		glowball->d_scale = 3.0f;
-		glowball->lastThinkTime = glowball->SpawnDelay = fxi.cl->time;
+		glowball->lastThinkTime = fxi.cl->time;
+		glowball->SpawnDelay = fxi.cl->time;
 		glowball->nextThinkTime = fxi.cl->time + (explosion->SpawnInfo + 1) * 100;
 
 		VectorClear(glowball->direction);

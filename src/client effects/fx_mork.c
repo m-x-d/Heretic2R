@@ -730,12 +730,6 @@ static void Buoy(centity_t* owner, const int flags, const vec3_t origin, const q
 	}
 }
 
-static qboolean PermanentUpdate(struct client_entity_s* self, centity_t* owner)
-{
-	self->updateTime = 16384;
-	return true;
-}
-
 static qboolean BuoyPathDelayedStart(struct client_entity_s* self, centity_t* owner)
 {
 	client_entity_t* buoy = ClientEntity_new(FX_BUOY, CEF_DONT_LINK, self->origin, NULL, 16384);
@@ -755,7 +749,7 @@ static qboolean BuoyPathDelayedStart(struct client_entity_s* self, centity_t* ow
 	VectorCopy(self->endpos, buoy->r.endpos);
 
 	buoy->updateTime = 16384;
-	buoy->Update = PermanentUpdate;
+	buoy->Update = KeepSelfAI; //mxd. PermanentUpdate() in original logic.
 
 	AddEffect(NULL, buoy);
 

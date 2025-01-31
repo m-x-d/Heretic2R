@@ -32,7 +32,6 @@ static qboolean BubbleThink(client_entity_t* bubble, centity_t* owner)
 	bubble->r.origin[2] += 1.0f;
 
 	// Delay the death of this entity by 500 ms.
-	bubble->updateTime = 500;
 	bubble->nextThinkTime = fxi.cl->time + 500;
 	bubble->Update = RemoveSelfAI;
 

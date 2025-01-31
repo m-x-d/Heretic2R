@@ -28,10 +28,10 @@ static void SpawnSmoke(const vec3_t origin, const float scale, const float range
 	smoke->r.scale = scale;
 	smoke->r.color.c = color;
 	VectorSet(smoke->velocity, flrand(-10.0f, 10.0f), flrand(-10.0f, 10.0f), 50.0f);
-	smoke->nextThinkTime = smoke->startTime + duration;
 	smoke->alpha = 0.5f;
 	smoke->d_alpha = -smoke->alpha * 1000.0f / (float)duration; // Rate of change in transparency.
 	smoke->d_scale = 1.0f; // Rate of change in scale.
+	smoke->nextThinkTime = smoke->startTime + duration;
 	smoke->Update = KeepSelfAI;
 
 	AddEffect(NULL, smoke); // Add the effect as independent world effect.
