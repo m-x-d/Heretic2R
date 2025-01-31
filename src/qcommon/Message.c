@@ -48,7 +48,7 @@ size_t SetParms(SinglyLinkedList_t* this_ptr, const char* format, va_list marker
 				break;
 
 			case 'f':
-				parm.t_float = va_arg(marker, double);
+				parm.t_float = (float)va_arg(marker, double);
 				bytesParsed += sizeof(double);
 				break;
 
