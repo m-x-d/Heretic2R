@@ -14,24 +14,18 @@
 #define BOB_SPEED			ANGLE_10
 #define WP_PARTICLE_RADIUS	16.0f
 
-#define	NUM_ITEMWEAPONS	7
+static struct model_s* weapon_models[7];
 
-extern int ref_soft;
-
-static struct model_s *weapon_models[NUM_ITEMWEAPONS];
-
-void PreCacheItemWeapons()
+void PreCacheItemWeapons(void)
 {
-	weapon_models[0] = fxi.RegisterModel("models/items/weapons/hellstaff/tris.fm");  // ITEM_WEAPON_HELLSTAFF
-	weapon_models[1] = fxi.RegisterModel("models/items/weapons/array/tris.fm");  // ITEM_WEAPON_MAGICMISSILE
-	weapon_models[2] = fxi.RegisterModel("models/items/weapons/bow/tris.fm");  // ITEM_WEAPON_REDRAINBOW
-	weapon_models[3] = fxi.RegisterModel("models/items/weapons/sphere/tris.fm");  // ITEM_WEAPON_SPHEREOFANNIHILIATION
-	weapon_models[4] = fxi.RegisterModel("models/items/weapons/bow/tris.fm");  // ITEM_WEAPON_PHOENIXBOW
-	weapon_models[5] = fxi.RegisterModel("models/items/weapons/maceballs/tris.fm");  // ITEM_WEAPON_MACEBALLS
-	weapon_models[6] = fxi.RegisterModel("models/items/weapons/firewall/tris.fm");  // ITEM_WEAPON_FIREWALL
+	weapon_models[0] = fxi.RegisterModel("models/items/weapons/hellstaff/tris.fm");	// ITEM_WEAPON_HELLSTAFF
+	weapon_models[1] = fxi.RegisterModel("models/items/weapons/array/tris.fm");		// ITEM_WEAPON_MAGICMISSILE
+	weapon_models[2] = fxi.RegisterModel("models/items/weapons/bow/tris.fm");		// ITEM_WEAPON_REDRAINBOW
+	weapon_models[3] = fxi.RegisterModel("models/items/weapons/sphere/tris.fm");	// ITEM_WEAPON_SPHEREOFANNIHILIATION
+	weapon_models[4] = fxi.RegisterModel("models/items/weapons/bow/tris.fm");		// ITEM_WEAPON_PHOENIXBOW
+	weapon_models[5] = fxi.RegisterModel("models/items/weapons/maceballs/tris.fm");	// ITEM_WEAPON_MACEBALLS
+	weapon_models[6] = fxi.RegisterModel("models/items/weapons/firewall/tris.fm");	// ITEM_WEAPON_FIREWALL
 }
-
-// --------------------------------------------------------------
 
 static qboolean FXWeaponPickupThink(struct client_entity_s *self, centity_t *owner)
 {
