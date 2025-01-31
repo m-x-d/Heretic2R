@@ -774,7 +774,7 @@ qboolean FXDebris_Vanish(struct client_entity_s* self, centity_t* owner)
 
 	if (self->flags & CEF_FLAG6 && irand(0, 2) == 0) // On fire - do a fire trail.
 	{
-		if (irand(0, 0.3f) > self->alpha || irand(0, 0.3f) > self->r.scale) //TODO: should use flrand?
+		if (flrand(0.0f, 0.3f) > self->alpha || flrand(0.0f, 0.3f) > self->r.scale) //BUGFIX: mxd. Original logic uses irand(0, 0.3) here.
 		{
 			self->dlight = NULL;
 			self->flags &= ~CEF_FLAG6;
