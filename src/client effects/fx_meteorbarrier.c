@@ -27,7 +27,7 @@ void PreCacheMeteor(void)
 	meteor_model = fxi.RegisterModel("models/spells/meteorbarrier/tris.fm");
 }
 
-static qboolean FXMeteorBarriertrailThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean MeteorBarrierTrailThink(struct client_entity_s* self, const centity_t* owner)
 {
 	// We theoretically shouldn't need to do this. Just in case.
 	if (!(owner->flags & CF_INUSE))
@@ -106,7 +106,7 @@ void FXMeteorBarrier(centity_t* owner, const int type, const int flags, const ve
 	trail->SpawnData = (float)((flags & (CEF_FLAG6 | CEF_FLAG7)) >> 5);
 	trail->radius = 10.0f;
 	trail->AddToView = MeteorAddToView;
-	trail->Update = FXMeteorBarriertrailThink;
+	trail->Update = MeteorBarrierTrailThink;
 
 	if (r_detail->value >= DETAIL_NORMAL)
 		trail->dlight = CE_DLight_new(meteor_dlight_color, 150.0f, 0.0f);
@@ -122,7 +122,7 @@ void FXMeteorBarrierTravel(centity_t* owner, const int type, const int flags, co
 	trail->r.model = &meteor_model;
 	trail->radius = 10.0f;
 	trail->AddToView = LinkedEntityUpdatePlacement;
-	trail->Update = FXMeteorBarriertrailThink;
+	trail->Update = MeteorBarrierTrailThink;
 
 	if (r_detail->value >= DETAIL_NORMAL)
 		trail->dlight = CE_DLight_new(meteor_dlight_color, 150.0f, 0.0f);

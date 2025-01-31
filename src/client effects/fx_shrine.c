@@ -75,7 +75,7 @@ void FXShrinePlayerEffect(centity_t* owner, int type, int flags, vec3_t origin) 
 
 #pragma region ========================== MANA EFFECT ROUTINES ==========================
 
-static qboolean FXShrineManaThink(struct client_entity_s* self, centity_t* owner)
+static qboolean ShrineManaThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (--self->SpawnInfo == 0)
 		return false;
@@ -122,7 +122,7 @@ void FXShrineManaEffect(centity_t* owner, const int type, const int flags, vec3_
 	VectorClear(fx_spawner->origin);
 	fx_spawner->SpawnInfo = 17;
 	fx_spawner->AddToView = LinkedEntityUpdatePlacement;
-	fx_spawner->Update = FXShrineManaThink;
+	fx_spawner->Update = ShrineManaThink;
 
 	AddEffect(owner, fx_spawner);
 }
@@ -131,7 +131,7 @@ void FXShrineManaEffect(centity_t* owner, const int type, const int flags, vec3_
 
 #pragma region ========================== ARMOR EFFECT ROUTINES ==========================
 
-static qboolean FXShrineArmorThink(struct client_entity_s* self, centity_t* owner)
+static qboolean ShrineArmorThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (--self->SpawnInfo == 0)
 		return false;
@@ -177,7 +177,7 @@ void FXShrineArmorEffect(centity_t* owner, const int type, const int flags, vec3
 	VectorClear(glow->origin);
 	glow->SpawnInfo = 18;
 	glow->AddToView = LinkedEntityUpdatePlacement;
-	glow->Update = FXShrineArmorThink;
+	glow->Update = ShrineArmorThink;
 
 	AddEffect(owner, glow);
 }
@@ -186,7 +186,7 @@ void FXShrineArmorEffect(centity_t* owner, const int type, const int flags, vec3
 
 #pragma region ========================== LUNGS EFFECT ROUTINES ==========================
 
-static qboolean FXShrineLungsThink(struct client_entity_s* self, centity_t* owner)
+static qboolean ShrineLungsThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (--self->SpawnInfo == 0)
 		return false;
@@ -226,7 +226,7 @@ void FXShrineLungsEffect(centity_t* owner, const int type, const int flags, vec3
 	VectorClear(glow->origin);
 	glow->SpawnInfo = 40;
 	glow->AddToView = LinkedEntityUpdatePlacement;
-	glow->Update = FXShrineLungsThink;
+	glow->Update = ShrineLungsThink;
 
 	AddEffect(owner, glow);
 }
@@ -256,7 +256,7 @@ void FXShrineLightEffect(centity_t* owner, const int type, const int flags, vec3
 #pragma region ========================== STAFF POWERUP EFFECT ROUTINES ==========================
 
 // Create the two circles that ring the player.
-static qboolean FXShrineStaffThink(struct client_entity_s* self, centity_t* owner)
+static qboolean ShrineStaffThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (--self->SpawnInfo == 0)
 		return false;
@@ -341,7 +341,7 @@ void FXShrineStaffEffect(centity_t* owner, const int type, const int flags, vec3
 	glow->SpawnDelay = line_count;
 	glow->LifeTime = particle_life;
 	glow->AddToView = LinkedEntityUpdatePlacement;
-	glow->Update = FXShrineStaffThink;
+	glow->Update = ShrineStaffThink;
 
 	AddEffect(owner, glow);
 }
@@ -351,7 +351,7 @@ void FXShrineStaffEffect(centity_t* owner, const int type, const int flags, vec3
 #pragma region ========================== HEALTH LIGHTNING ROUTINES ==========================
 
 // Recursively called to create the lightning effect.
-static void FXLightningSplit(struct client_entity_s* self, vec3_t org, vec3_t dir, int rand_chance, const float stop_height)
+static void LightningSplit(struct client_entity_s* self, vec3_t org, vec3_t dir, int rand_chance, const float stop_height)
 {
 	vec3_t cur_org;
 	VectorCopy(org, cur_org);
@@ -398,7 +398,7 @@ static void FXLightningSplit(struct client_entity_s* self, vec3_t org, vec3_t di
 			const float new_stop_height = (irand(0, 5) ? org[2] - 25.0f : stop_height);
 
 			// Create split.
-			FXLightningSplit(self, cur_org, new_dir, rand_chance, new_stop_height);
+			LightningSplit(self, cur_org, new_dir, rand_chance, new_stop_height);
 		}
 		else // Update the direction we want to go in.
 		{
@@ -424,7 +424,7 @@ static void FXLightningSplit(struct client_entity_s* self, vec3_t org, vec3_t di
 }
 
 // Create the lightning lines.
-static void FXCreateLightning(struct client_entity_s* self, const centity_t* owner)
+static void CreateLightning(struct client_entity_s* self, const centity_t* owner)
 {
 	// Create the lightning lines.
 	const int lightning_count = (ref_soft ? 1 : irand(2, 3));
@@ -440,7 +440,7 @@ static void FXCreateLightning(struct client_entity_s* self, const centity_t* own
 		vec3_t dir = { flrand(-LIGHTNING_MINIMUM, LIGHTNING_MINIMUM), flrand(-LIGHTNING_MINIMUM, LIGHTNING_MINIMUM), -0.5f };
 
 		// Create initial line of lightning.
-		FXLightningSplit(self, org, dir, 60, -30.0f);
+		LightningSplit(self, org, dir, 60, -30.0f);
 
 		cur_angle += angle_increment;
 	}
@@ -459,13 +459,13 @@ static void FXCreateLightning(struct client_entity_s* self, const centity_t* own
 }
 
 // Make the lightning effect re-occur.
-static qboolean FXShrineHealthThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean ShrineHealthThink(struct client_entity_s* self, const centity_t* owner)
 {
 	if (--self->SpawnInfo == 0)
 		return false;
 
 	// Create the lightning lines.
-	FXCreateLightning(self, owner);
+	CreateLightning(self, owner);
 
 	self->updateTime = irand(1, TOTAL_HEALTH_EFFECTS - self->SpawnInfo) * 100;
 
@@ -481,12 +481,12 @@ void FXShrineHealthEffect(centity_t* owner, const int type, const int flags, vec
 	glow->SpawnInfo = TOTAL_HEALTH_EFFECTS;
 	glow->SpawnData = 70;
 	glow->AddToView = LinkedEntityUpdatePlacement;
-	glow->Update = FXShrineHealthThink;
+	glow->Update = ShrineHealthThink;
 
 	AddEffect(owner, glow);
 
 	// Start off the lightning effect.
-	FXCreateLightning(glow, owner);
+	CreateLightning(glow, owner);
 }
 
 #pragma endregion
@@ -494,7 +494,7 @@ void FXShrineHealthEffect(centity_t* owner, const int type, const int flags, vec
 #pragma region ========================== REFLECT EFFECT ROUTINES ==========================
 
 // Create the two circles that ring the player.
-static qboolean FXShrineReflectThink(struct client_entity_s* self, centity_t* owner)
+static qboolean ShrineReflectThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (--self->SpawnInfo == 0)
 		return false;
@@ -558,7 +558,7 @@ void FXShrineReflectEffect(centity_t* owner, const int type, const int flags, ve
 	glow->SpawnInfo = TOTAL_FLIGHT_EFFECTS;
 	glow->SpawnData = FLIGHT_EFFECTS_START_HEIGHT;
 	glow->AddToView = LinkedEntityUpdatePlacement;
-	glow->Update = FXShrineReflectThink;
+	glow->Update = ShrineReflectThink;
 
 	AddEffect(owner, glow);
 }
@@ -568,7 +568,7 @@ void FXShrineReflectEffect(centity_t* owner, const int type, const int flags, ve
 #pragma region ========================== GHOSTING EFFECT ROUTINES ==========================
 
 // Make the glow go away.
-static qboolean FXShrineGlowThink(struct client_entity_s* self, centity_t* owner)
+static qboolean ShrineGlowThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (--self->SpawnInfo == 0)
 		return false;
@@ -580,7 +580,7 @@ static qboolean FXShrineGlowThink(struct client_entity_s* self, centity_t* owner
 }
 
 // Create the little glow bits.
-static qboolean FXShrineGhostThink(struct client_entity_s* self, centity_t* owner)
+static qboolean ShrineGhostThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (--self->SpawnInfo == 0)
 		return false;
@@ -598,7 +598,7 @@ static qboolean FXShrineGhostThink(struct client_entity_s* self, centity_t* owne
 		glow->d_alpha = 1.0f;
 		glow->alpha = 0.1f;
 		glow->AddToView = OffsetLinkedEntityUpdatePlacement;
-		glow->Update = FXShrineGlowThink;
+		glow->Update = ShrineGlowThink;
 
 		AddEffect(owner, glow);
 	}
@@ -612,7 +612,7 @@ void FXShrineGhostEffect(centity_t* owner, const int type, const int flags, vec3
 	client_entity_t* glow = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW), origin, NULL, 70);
 
 	glow->SpawnInfo = 20;
-	glow->Update = FXShrineGhostThink;
+	glow->Update = ShrineGhostThink;
 
 	AddEffect(owner, glow);
 }
@@ -622,7 +622,7 @@ void FXShrineGhostEffect(centity_t* owner, const int type, const int flags, vec3
 #pragma region ========================== SPEED EFFECT ROUTINES ==========================
 
 // Create the two circles that ring the player.
-static qboolean FXShrineSpeedThink(struct client_entity_s* self, centity_t* owner)
+static qboolean ShrineSpeedThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (--self->SpawnInfo == 0)
 		return false;
@@ -681,7 +681,7 @@ void FXShrineSpeedEffect(centity_t* owner, const int type, const int flags, vec3
 	glow->SpawnData = REFLECT_EFFECTS_START_HEIGHT;
 	glow->r.color.c = 0x604040ff;
 	glow->AddToView = LinkedEntityUpdatePlacement;
-	glow->Update = FXShrineSpeedThink;
+	glow->Update = ShrineSpeedThink;
 
 	AddEffect(owner, glow);
 }
@@ -691,7 +691,7 @@ void FXShrineSpeedEffect(centity_t* owner, const int type, const int flags, vec3
 #pragma region ========================== WEAPONS POWER UP EFFECT ROUTINES ==========================
 
 // Create the two circles that ring the player.
-static qboolean FXShrinePowerupThink(struct client_entity_s* self, centity_t* owner)
+static qboolean ShrinePowerupThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (--self->SpawnInfo == 0)
 		return false;
@@ -743,14 +743,14 @@ static qboolean FXShrinePowerupThink(struct client_entity_s* self, centity_t* ow
 	return true;
 }
 
-void FXShrinePowerUpEffect(centity_t* owner, const int type, const int flags, vec3_t origin)
+void FXShrinePowerupEffect(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	client_entity_t* glow = ClientEntity_new(type, (int)(flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS), origin, NULL, 75);
 
 	glow->SpawnInfo = TOTAL_POWERUP_EFFECTS;
 	glow->SpawnData = POWERUP_EFFECTS_START_HEIGHT;
 	glow->AddToView = LinkedEntityUpdatePlacement;
-	glow->Update = FXShrinePowerupThink;
+	glow->Update = ShrinePowerupThink;
 
 	AddEffect(owner, glow);
 }
@@ -794,7 +794,7 @@ static short shrine_particles[12][2] =
 };
 
 // Make the shrine glow ball effect shimmer, and give off steam.
-static qboolean FXShrineBallThink(struct client_entity_s* self, centity_t* owner)
+static qboolean ShrineBallThink(struct client_entity_s* self, centity_t* owner)
 {
 	int part;
 	const int count = GetScaledCount(BALL_PART_NUM, 0.4f);
@@ -853,7 +853,7 @@ void FXShrineBall(centity_t* owner, const int type, const int flags, vec3_t orig
 
 	glow->radius = 100.0f;
 	glow->SpawnInfo = shrine_type;
-	glow->Update = FXShrineBallThink;
+	glow->Update = ShrineBallThink;
 
 	AddEffect(owner, glow);
 }

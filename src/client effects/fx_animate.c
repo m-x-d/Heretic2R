@@ -11,12 +11,12 @@
 
 typedef struct FXAnimModel
 {
-	char* ModelName;
+	char* model_name;
 	struct model_s* model;
 	float radius;
 	float alpha;
-	int numframes;
-	int defaultframe;
+	int num_frames;
+	int default_frame;
 } FXAnimModel_t;
 
 // Animating chunks.
@@ -39,11 +39,11 @@ static FXAnimModel_t fx_anim_models[NUM_FX_ANIM] =
 void PreCacheFXAnimate(void)
 {
 	for (int i = 0; i < NUM_FX_ANIM; i++)
-		if (fx_anim_models[i].ModelName != NULL)
-			fx_anim_models[i].model = fxi.RegisterModel(fx_anim_models[i].ModelName);
+		if (fx_anim_models[i].model_name != NULL)
+			fx_anim_models[i].model = fxi.RegisterModel(fx_anim_models[i].model_name);
 }
 
-static qboolean FXAnimateGo(struct client_entity_s* self, centity_t* owner)
+static qboolean AnimateGo(struct client_entity_s* self, centity_t* owner)
 {
 	self->r.frame++;
 
@@ -53,7 +53,7 @@ static qboolean FXAnimateGo(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-static qboolean FXAnimateRandomGo(struct client_entity_s* self, centity_t* owner)
+static qboolean AnimateRandomGo(struct client_entity_s* self, centity_t* owner)
 {
 	self->r.frame++;
 
@@ -88,13 +88,13 @@ void FXAnimate(centity_t* owner, const int type, const int flags, vec3_t origin)
 
 	self->alpha = fx_anim_models[atype].alpha;
 	self->radius = fx_anim_models[atype].radius;
-	self->NoOfAnimFrames = fx_anim_models[atype].numframes;
-	self->r.frame = fx_anim_models[atype].defaultframe;
+	self->NoOfAnimFrames = fx_anim_models[atype].num_frames;
+	self->r.frame = fx_anim_models[atype].default_frame;
 
 	if (anim & 0x80)
 	{
 		// Animate (special animate for cocoon).
-		self->Update = ((atype == FX_ANIM_COCOON) ? FXAnimateRandomGo : FXAnimateGo);
+		self->Update = ((atype == FX_ANIM_COCOON) ? AnimateRandomGo : AnimateGo);
 		self->nextThinkTime = fxi.cl->time + irand(40, 1600); // So they don't all start on frame 0 at the same time.
 	}
 	else

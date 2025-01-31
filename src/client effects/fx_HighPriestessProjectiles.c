@@ -67,7 +67,7 @@ void PreCacheHPMissile(void)
 	hpproj_models[10] = fxi.RegisterModel("sprites/fx/hp_lightning.sp2");
 }
 
-static qboolean FXHPTeleportLineThink(struct client_entity_s* self, centity_t* owner)
+static qboolean HPTeleportLineThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->alpha <= 0.0f)
 		return false;
@@ -151,7 +151,7 @@ static qboolean FXHPTeleportLineThink(struct client_entity_s* self, centity_t* o
 	return true;
 }
 
-static qboolean FXHPTeleportLineThink2(struct client_entity_s* self, centity_t* owner)
+static qboolean HPTeleportLineThink2(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->alpha > 0.0f && self->r.scale > 0.0f)
 	{
@@ -162,7 +162,7 @@ static qboolean FXHPTeleportLineThink2(struct client_entity_s* self, centity_t* 
 	return false;
 }
 
-static qboolean FXHPMissileSpawnerThink(const struct client_entity_s* self, centity_t* owner)
+static qboolean HPMissileSpawnerThink(const struct client_entity_s* self, centity_t* owner)
 {
 	if (self->LifeTime < fxi.cl->time)
 		return false;
@@ -185,7 +185,7 @@ static qboolean FXHPMissileSpawnerThink(const struct client_entity_s* self, cent
 	return true;
 }
 
-static qboolean FXHPMissileSpawnerThink2(const struct client_entity_s* self, centity_t* owner)
+static qboolean HPMissileSpawnerThink2(const struct client_entity_s* self, centity_t* owner)
 {
 	if (self->LifeTime < fxi.cl->time)
 		return false;
@@ -211,16 +211,16 @@ static qboolean FXHPMissileSpawnerThink2(const struct client_entity_s* self, cen
 	return true;
 }
 
-static qboolean FXHPHaloDie(const struct client_entity_s* self, centity_t* owner)
+static qboolean HPHaloDie(const struct client_entity_s* self, centity_t* owner)
 {
 	return (self->r.scale > 0.0f && self->alpha > 0.0f);
 }
 
-static qboolean FXHPMissileSpawnerThink3(struct client_entity_s* self, centity_t* owner)
+static qboolean HPMissileSpawnerThink3(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->LifeTime < fxi.cl->time)
 	{
-		self->Update = FXHPHaloDie;
+		self->Update = HPHaloDie;
 		self->d_scale = -2.0f;
 		self->d_alpha = -1.0f;
 
@@ -245,7 +245,7 @@ static qboolean FXHPMissileSpawnerThink3(struct client_entity_s* self, centity_t
 	return true;
 }
 
-static qboolean FXHPTrailThink(struct client_entity_s* self, centity_t* owner)
+static qboolean HPTrailThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->alpha > 0.1f && self->r.scale > 0.0f)
 	{
@@ -256,7 +256,7 @@ static qboolean FXHPTrailThink(struct client_entity_s* self, centity_t* owner)
 	return false;
 }
 
-static qboolean FXHPTrailThink2(struct client_entity_s* self, centity_t* owner)
+static qboolean HPTrailThink2(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->alpha > 0.1f && self->r.scale > 0.0f)
 	{
@@ -267,7 +267,7 @@ static qboolean FXHPTrailThink2(struct client_entity_s* self, centity_t* owner)
 	return false;
 }
 
-static qboolean FXHPTrailThink3(struct client_entity_s* self, centity_t* owner)
+static qboolean HPTrailThink3(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->alpha > 0.1f && self->r.scale > 0.0f)
 	{
@@ -278,7 +278,7 @@ static qboolean FXHPTrailThink3(struct client_entity_s* self, centity_t* owner)
 	return false;
 }
 
-static qboolean FXHPBugThink(struct client_entity_s* self, centity_t* owner)
+static qboolean HPBugThink(struct client_entity_s* self, centity_t* owner)
 {
 	self->r.scale = flrand(0.2f, 0.4f);
 	self->alpha = flrand(0.3f, 0.5f);
@@ -286,7 +286,7 @@ static qboolean FXHPBugThink(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-static qboolean FXHPMissileTrailThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean HPMissileTrailThink(struct client_entity_s* self, const centity_t* owner)
 {
 	self->r.scale = flrand(0.35f, 0.65f);
 
@@ -307,7 +307,7 @@ static qboolean FXHPMissileTrailThink(struct client_entity_s* self, const centit
 	VectorCopy(owner->origin, trail->r.endpos);
 
 	trail->d_alpha = -2.5f;
-	trail->Update = FXHPTrailThink;
+	trail->Update = HPTrailThink;
 
 	AddEffect(NULL, trail);
 
@@ -316,7 +316,7 @@ static qboolean FXHPMissileTrailThink(struct client_entity_s* self, const centit
 	return true;
 }
 
-static qboolean FXHPMissileTrailThink2(struct client_entity_s* self, const centity_t* owner)
+static qboolean HPMissileTrailThink2(struct client_entity_s* self, const centity_t* owner)
 {
 	self->r.scale = flrand(0.35f, 0.55f);
 
@@ -338,7 +338,7 @@ static qboolean FXHPMissileTrailThink2(struct client_entity_s* self, const centi
 
 	trail->d_alpha = -4.0f;
 	trail->d_scale = 0.0f;
-	trail->Update = FXHPTrailThink2;
+	trail->Update = HPTrailThink2;
 
 	AddEffect(NULL, trail);
 
@@ -347,7 +347,7 @@ static qboolean FXHPMissileTrailThink2(struct client_entity_s* self, const centi
 	return true;
 }
 
-static qboolean FXHPMissileTrailThink3(struct client_entity_s* self, const centity_t* owner)
+static qboolean HPMissileTrailThink3(struct client_entity_s* self, const centity_t* owner)
 {
 	client_entity_t* trail = ClientEntity_new(FX_HP_MISSILE, CEF_DONT_LINK, owner->origin, NULL, 17);
 
@@ -367,7 +367,7 @@ static qboolean FXHPMissileTrailThink3(struct client_entity_s* self, const centi
 
 	trail->d_alpha = -2.0f;
 	trail->d_scale = 0.0f;
-	trail->Update = FXHPTrailThink3;
+	trail->Update = HPTrailThink3;
 
 	AddEffect(NULL, trail);
 
@@ -376,7 +376,7 @@ static qboolean FXHPMissileTrailThink3(struct client_entity_s* self, const centi
 	return true;
 }
 
-static void FXHPMissileExplode(struct client_entity_s* self, const centity_t* owner)
+static void HPMissileExplode(struct client_entity_s* self, const centity_t* owner)
 {
 	const vec3_t dir = { 1.0f, 1.0f, 1.0f };
 	const int count = GetScaledCount(irand(6, 8), 0.8f);
@@ -402,7 +402,7 @@ static void FXHPMissileExplode(struct client_entity_s* self, const centity_t* ow
 	}
 }
 
-static void FXHPBugExplode(struct client_entity_s* self, const centity_t* owner)
+static void HPBugExplode(struct client_entity_s* self, const centity_t* owner)
 {
 	const vec3_t dir = { 1.0f, 1.0f, 1.0f };
 	const int count = GetScaledCount(irand(12, 16), 0.8f);
@@ -468,13 +468,13 @@ static void SpawnHPMissile1(centity_t* owner, const int type, const vec3_t origi
 	trail->r.scale = 0.5f;
 	trail->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
 
-	trail->Update = FXHPMissileTrailThink;
+	trail->Update = HPMissileTrailThink;
 	trail->AddToView = PriestessLinkedEntityUpdatePlacement;
 
 	VectorCopy(origin, trail->startpos);
 
 	AddEffect(owner, trail);
-	FXHPMissileTrailThink(trail, owner);
+	HPMissileTrailThink(trail, owner);
 }
 
 static void SpawnHPMissile2(centity_t* owner, const int type, const vec3_t origin, const vec3_t velocity, const paletteRGBA_t light_color) //mxd
@@ -492,13 +492,13 @@ static void SpawnHPMissile2(centity_t* owner, const int type, const vec3_t origi
 	trail->r.scale = 0.45f;
 	trail->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
 
-	trail->Update = FXHPMissileTrailThink2;
+	trail->Update = HPMissileTrailThink2;
 	trail->AddToView = PriestessLinkedEntityUpdatePlacement;
 
 	VectorCopy(owner->origin, trail->startpos);
 
 	AddEffect(owner, trail);
-	FXHPMissileTrailThink2(trail, owner);
+	HPMissileTrailThink2(trail, owner);
 }
 
 static void SpawnHPMissile3(centity_t* owner, const int type, const vec3_t origin, vec3_t velocity, const paletteRGBA_t bug_color) //mxd
@@ -517,12 +517,12 @@ static void SpawnHPMissile3(centity_t* owner, const int type, const vec3_t origi
 	bug->dlight = CE_DLight_new(bug_color, 50.0f, 0.0f);
 
 	bug->AddToView = LinkedEntityUpdatePlacement;
-	bug->Update = FXHPMissileTrailThink3;
+	bug->Update = HPMissileTrailThink3;
 
 	VectorCopy(owner->origin, bug->startpos);
 
 	AddEffect(owner, bug);
-	FXHPMissileTrailThink3(bug, owner);
+	HPMissileTrailThink3(bug, owner);
 
 	// Create the halo to follow the bug.
 	client_entity_t* halo = ClientEntity_new(type, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, origin, NULL, 20);
@@ -535,12 +535,12 @@ static void SpawnHPMissile3(centity_t* owner, const int type, const vec3_t origi
 	halo->alpha = 0.5f;
 
 	halo->AddToView = LinkedEntityUpdatePlacement;
-	halo->Update = FXHPBugThink;
+	halo->Update = HPBugThink;
 
 	VectorCopy(origin, halo->startpos);
 
 	AddEffect(owner, halo);
-	FXHPBugThink(halo, owner);
+	HPBugThink(halo, owner);
 }
 
 static void SpawnHPMissile4(const int type, const vec3_t origin, vec3_t velocity) //mxd
@@ -665,14 +665,14 @@ static void SpawnHPMissile12Explode(const centity_t* owner, const int type, cons
 {
 	client_entity_t* explosion = ClientEntity_new(type, CEF_NO_DRAW | CEF_DONT_LINK, origin, NULL, 2000);
 	AddEffect(NULL, explosion);
-	FXHPMissileExplode(explosion, owner);
+	HPMissileExplode(explosion, owner);
 }
 
 static void SpawnHPMissile3Explode(const centity_t* owner, const int type, const vec3_t origin) //mxd
 {
 	client_entity_t* explosion = ClientEntity_new(type, CEF_NO_DRAW | CEF_DONT_LINK, origin, NULL, 2000);
 	AddEffect(NULL, explosion);
-	FXHPBugExplode(explosion, owner);
+	HPBugExplode(explosion, owner);
 }
 
 static void SpawnHPMissile12Light(const int type, const vec3_t origin, const paletteRGBA_t light_color) //mxd
@@ -685,7 +685,7 @@ static void SpawnHPMissile12Light(const int type, const vec3_t origin, const pal
 	light->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 	light->LifeTime = fxi.cl->time + 4000;
 	light->dlight = CE_DLight_new(light_color, 200.0f, 0.0f);
-	light->Update = FXHPMissileSpawnerThink;
+	light->Update = HPMissileSpawnerThink;
 
 	AddEffect(NULL, light);
 }
@@ -697,7 +697,7 @@ static void SpawnHPMissile3Light(const int type, const vec3_t origin, const pale
 	light->radius = 500.0f;
 	light->LifeTime = fxi.cl->time + 2000;
 	light->dlight = CE_DLight_new(bug_color, 10.0f, 0.0f);
-	light->Update = FXHPMissileSpawnerThink2;
+	light->Update = HPMissileSpawnerThink2;
 
 	AddEffect(NULL, light);
 }
@@ -732,7 +732,7 @@ static void SpawnHPMissile4Light(const int type, const vec3_t origin) //mxd
 	spark->d_scale = 2.0f;
 	spark->LifeTime = fxi.cl->time + 4000;
 	spark->dlight = CE_DLight_new(color_white, 250.0f, 0.0f);
-	spark->Update = FXHPMissileSpawnerThink3;
+	spark->Update = HPMissileSpawnerThink3;
 
 	AddEffect(NULL, spark);
 
@@ -759,7 +759,7 @@ static void SpawnHPTeleportStart(const int type, const vec3_t origin) //mxd
 	trail->d_alpha = 0.0f;
 	trail->d_scale = 0.0f;
 	trail->dlight = CE_DLight_new(color_white, 250.0f, 0.0f);
-	trail->Update = FXHPTeleportLineThink;
+	trail->Update = HPTeleportLineThink;
 
 	AddEffect(NULL, trail);
 }
@@ -783,7 +783,7 @@ static void SpawnHPTeleportEnd(const int type, const vec3_t origin) //mxd
 	trail->d_alpha = -1.0f;
 	trail->d_scale = 0.0f;
 	trail->dlight = CE_DLight_new(color_white, 250.0f, 0.0f);
-	trail->Update = FXHPTeleportLineThink2;
+	trail->Update = HPTeleportLineThink2;
 
 	AddEffect(NULL, trail);
 }

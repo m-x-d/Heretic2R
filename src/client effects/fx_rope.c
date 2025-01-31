@@ -39,7 +39,7 @@ static qboolean RopeCheckToHide(struct client_entity_s* self, const centity_t* o
 
 #pragma region ========================== ATTACHED ROPE SEGMENTS ==========================
 
-static qboolean FXRopeTopDrawAttached(struct client_entity_s* self, const centity_t* owner)
+static qboolean RopeTopDrawAttached(struct client_entity_s* self, const centity_t* owner)
 {
 	if (!RopeCheckToHide(self, owner))
 	{
@@ -58,7 +58,7 @@ static qboolean FXRopeTopDrawAttached(struct client_entity_s* self, const centit
 	return true;
 }
 
-static qboolean FXRopeMiddleDrawAttached(struct client_entity_s* self, const centity_t* owner)
+static qboolean RopeMiddleDrawAttached(struct client_entity_s* self, const centity_t* owner)
 {
 	if (!RopeCheckToHide(self, owner))
 	{
@@ -79,7 +79,7 @@ static qboolean FXRopeMiddleDrawAttached(struct client_entity_s* self, const cen
 	return true;
 }
 
-static qboolean FXRopeBottomDrawAttached(struct client_entity_s* self, const centity_t* owner)
+static qboolean RopeBottomDrawAttached(struct client_entity_s* self, const centity_t* owner)
 {
 	if (!RopeCheckToHide(self, owner))
 	{
@@ -158,7 +158,7 @@ static qboolean FXRopeBottomDrawAttached(struct client_entity_s* self, const cen
 
 #pragma region ========================== UNATTACHED ROPE SEGMENTS ==========================
 
-static qboolean FXRopeTopDraw(struct client_entity_s* self, centity_t* owner)
+static qboolean RopeTopDraw(struct client_entity_s* self, centity_t* owner)
 {
 	const centity_t* end = (centity_t*)self->extra;
 	const centity_t* grab = &fxi.server_entities[self->LifeTime];
@@ -246,8 +246,8 @@ void FXRope(centity_t* owner, int type, const int flags, const vec3_t origin)
 		VectorCopy(rope->startpos, rope->endpos);
 		VectorCopy(top, rope->direction);
 
-		rope->AddToView = FXRopeTopDraw;
-		rope->Update = FXRopeTopDraw;
+		rope->AddToView = RopeTopDraw;
+		rope->Update = RopeTopDraw;
 
 		AddEffect(NULL, rope);
 	}
@@ -270,11 +270,11 @@ void FXRope(centity_t* owner, int type, const int flags, const vec3_t origin)
 		VectorSubtract(owner->origin, end_pos, vec);
 		rope_top->r.tile = VectorLength(vec);
 
-		rope_top->AddToView = FXRopeTopDrawAttached;
+		rope_top->AddToView = RopeTopDrawAttached;
 		rope_top->Update = RopeCheckToHide;
 
 		AddEffect(owner, rope_top);
-		FXRopeTopDrawAttached(rope_top, owner);
+		RopeTopDrawAttached(rope_top, owner);
 
 		// Middle of the rope.
 		client_entity_t* rope_mid = ClientEntity_new(FX_ROPE, CEF_OWNERS_ORIGIN, origin, NULL, 1000);
@@ -287,11 +287,11 @@ void FXRope(centity_t* owner, int type, const int flags, const vec3_t origin)
 		rope_mid->LifeTime = grab_id;
 		rope_mid->SpawnInfo = fxi.cl->time + 1000;
 
-		rope_mid->AddToView = FXRopeMiddleDrawAttached;
+		rope_mid->AddToView = RopeMiddleDrawAttached;
 		rope_mid->Update = RopeCheckToHide;
 
 		AddEffect(owner, rope_mid);
-		FXRopeMiddleDrawAttached(rope_mid, owner);
+		RopeMiddleDrawAttached(rope_mid, owner);
 
 		// Bottom of the rope.
 		for (int i = 0; i < (int)ROPE_BOTTOM_SEGMENTS; i++)
@@ -318,11 +318,11 @@ void FXRope(centity_t* owner, int type, const int flags, const vec3_t origin)
 
 			VectorCopy(top, rope_bottom->direction);
 
-			rope_bottom->AddToView = FXRopeBottomDrawAttached;
+			rope_bottom->AddToView = RopeBottomDrawAttached;
 			rope_bottom->Update = RopeCheckToHide;
 
 			AddEffect(owner, rope_bottom);
-			FXRopeBottomDrawAttached(rope_bottom, owner);
+			RopeBottomDrawAttached(rope_bottom, owner);
 		}
 	}
 }

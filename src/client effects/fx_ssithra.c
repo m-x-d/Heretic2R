@@ -31,7 +31,7 @@ void PrecacheSsithraArrow(void)
 	arrow_models[2] = fxi.RegisterModel("models/objects/projectiles/sitharrow/tris.fm"); // Projectile model.
 }
 
-static qboolean FXSsithraArrowTrailThink(struct client_entity_s* self, centity_t* owner)
+static qboolean SsithraArrowTrailThink(struct client_entity_s* self, centity_t* owner)
 {
 	self->updateTime = 20;
 	self->r.angles[ROLL] += 10;
@@ -82,7 +82,7 @@ static qboolean FXSsithraArrowTrailThink(struct client_entity_s* self, centity_t
 	return true;
 }
 
-static void FXDoSsithraArrow(centity_t* owner, const int type, const int flags, const vec3_t origin, const vec3_t velocity)
+static void DoSsithraArrow(centity_t* owner, const int type, const int flags, const vec3_t origin, const vec3_t velocity)
 {
 	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
 
@@ -98,12 +98,12 @@ static void FXDoSsithraArrow(centity_t* owner, const int type, const int flags, 
 
 	missile->dlight = CE_DLight_new(color_orange, 120.0f, 0.0f);
 	missile->SpawnInfo = 32;
-	missile->Update = FXSsithraArrowTrailThink;
+	missile->Update = SsithraArrowTrailThink;
 
 	AddEffect(owner, missile);
 }
 
-static void FXDoSsithraArrow2(centity_t* owner, const int type, const int flags, const vec3_t origin, const vec3_t velocity)
+static void DoSsithraArrow2(centity_t* owner, const int type, const int flags, const vec3_t origin, const vec3_t velocity)
 {
 	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
 
@@ -121,12 +121,12 @@ static void FXDoSsithraArrow2(centity_t* owner, const int type, const int flags,
 
 	missile->dlight = CE_DLight_new(color_red, 160.0f, 0.0f);
 	missile->SpawnInfo = 32;
-	missile->Update = FXSsithraArrowTrailThink;
+	missile->Update = SsithraArrowTrailThink;
 
 	AddEffect(owner, missile);
 }
 
-static void FXSsithraArrowBoom(centity_t* owner, const int type, const int flags, const vec3_t origin, vec3_t direction)
+static void SsithraArrowBoom(centity_t* owner, const int type, const int flags, const vec3_t origin, vec3_t direction)
 {
 	Vec3ScaleAssign(32.0f, direction);
 
@@ -163,7 +163,7 @@ static void FXSsithraArrowBoom(centity_t* owner, const int type, const int flags
 	}
 }
 
-static void FXSsithraArrow2Boom(centity_t* owner, const int type, const int flags, const vec3_t origin, vec3_t direction)
+static void SsithraArrow2Boom(centity_t* owner, const int type, const int flags, const vec3_t origin, vec3_t direction)
 {
 	Vec3ScaleAssign(32.0f, direction);
 
@@ -212,19 +212,19 @@ void FXSsithraArrow(centity_t* owner, const int type, const int flags, vec3_t or
 	switch (effect)
 	{
 		case FX_SS_MAKE_ARROW:
-			FXDoSsithraArrow(owner, type, flags, origin, vel);
+			DoSsithraArrow(owner, type, flags, origin, vel);
 			break;
 
 		case FX_SS_MAKE_ARROW2:
-			FXDoSsithraArrow2(owner, type, flags, origin, vel);
+			DoSsithraArrow2(owner, type, flags, origin, vel);
 			break;
 
 		case FX_SS_EXPLODE_ARROW:
-			FXSsithraArrowBoom(owner, type, flags, origin, vel);
+			SsithraArrowBoom(owner, type, flags, origin, vel);
 			break;
 
 		case FX_SS_EXPLODE_ARROW2:
-			FXSsithraArrow2Boom(owner, type, flags, origin, vel);
+			SsithraArrow2Boom(owner, type, flags, origin, vel);
 			break;
 
 		default:

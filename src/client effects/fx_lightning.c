@@ -11,7 +11,6 @@
 #include "q_Sprite.h"
 #include "g_playstats.h"
 
-#define LIGHTNING_WIDTH				6.0f
 #define LIGHTNING_WIDTH_MULT		1.4f
 #define LIGHTNING_POWER_WIDTH_MULT	2.0f
 #define LIGHTNING_JOINT_SCALE		(1.0f / 12.0f)
@@ -150,7 +149,7 @@ static void LightningBolt(const int model, const float width, const vec3_t start
 	MakeLightningPiece(model, width, end_pos, last_pos, variance);
 }
 
-static qboolean FXLightningThink(const client_entity_t* thinker, centity_t* owner)
+static qboolean LightningThink(const client_entity_t* thinker, centity_t* owner)
 {
 	if (fxi.cl->time - thinker->lastThinkTime < thinker->LifeTime)
 	{
@@ -183,7 +182,7 @@ void FXLightning(centity_t* owner, int type, const int flags, const vec3_t origi
 		lightning->LifeTime = duration * 100 + 250;
 		lightning->SpawnInfo = ((flags & CEF_FLAG6) ? LIGHTNING_TYPE_RED : LIGHTNING_TYPE_BLUE);
 		lightning->xscale = (float)width;
-		lightning->Update = FXLightningThink;
+		lightning->Update = LightningThink;
 
 		AddEffect(NULL, lightning);
 	}

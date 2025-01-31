@@ -14,13 +14,13 @@
 
 void PreCacheRockchunks(void) { } //TODO: remove?
 
-static qboolean FXDustLandThink(client_entity_t* dust, centity_t* owner)
+static qboolean DustLandThink(client_entity_t* dust, centity_t* owner)
 {
 	FXSmoke(dust->r.origin, 1.0f, 40.0f);
 	return false;
 }
 
-static qboolean FXDustThink(client_entity_t* dust, centity_t* owner)
+static qboolean DustThink(client_entity_t* dust, centity_t* owner)
 {
 	dust->LifeTime++;
 
@@ -46,7 +46,7 @@ static qboolean FXDustThink(client_entity_t* dust, centity_t* owner)
 	const int duration = GetFallTime(rock->origin, rock->velocity[2], rock->acceleration[2], rock->radius, 3.0f, &trace);
 
 	client_entity_t* dust_cloud = ClientEntity_new(-1, CEF_NO_DRAW | CEF_NOMOVE, trace.endpos, NULL, duration);
-	dust_cloud->Update = FXDustLandThink;
+	dust_cloud->Update = DustLandThink;
 	AddEffect(NULL, dust_cloud);
 
 	return true;
@@ -63,7 +63,7 @@ void FXDust(centity_t* owner, int type, const int flags, vec3_t origin)
 	VectorScale(size, mag, dust->startpos);
 	dust->SpawnDelay = num;
 	dust->LifeTime = 0;
-	dust->Update = FXDustThink;
+	dust->Update = DustThink;
 
 	AddEffect(NULL, dust);
 }

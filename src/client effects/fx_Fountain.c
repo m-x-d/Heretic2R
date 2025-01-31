@@ -39,7 +39,7 @@ static void CreateFountainSplash(client_entity_t* owner, const float xspread, co
 	AddParticleToList(owner, mist);
 }
 
-static qboolean FXWaterfallBaseSpawner(client_entity_t* spawner, const centity_t* owner)
+static qboolean WaterfallBaseSpawner(client_entity_t* spawner, const centity_t* owner)
 {
 #define NUM_SPLASHES	0.005f
 
@@ -66,12 +66,12 @@ void FXWaterfallBase(centity_t* owner, const int type, int flags, vec3_t origin)
 	wfb->yscale = yscale;
 	wfb->yaw = (float)yaw * ANGLE_360 / 256.0f;
 	wfb->radius = wfb->xscale + wfb->yscale;
-	wfb->Update = FXWaterfallBaseSpawner;
+	wfb->Update = WaterfallBaseSpawner;
 
 	AddEffect(owner, wfb);
 }
 
-static qboolean FXWaterDropEnd(client_entity_t* waterdrop, centity_t* owner)
+static qboolean WaterDropEnd(client_entity_t* waterdrop, centity_t* owner)
 {
 	CreateFountainSplash(waterdrop, 10.0f, 10.0f, 0.0f);
 	waterdrop->Update = RemoveSelfAI;
@@ -80,7 +80,7 @@ static qboolean FXWaterDropEnd(client_entity_t* waterdrop, centity_t* owner)
 	return true;
 }
 
-static qboolean FXFountainParticleSpawner(client_entity_t* spawner, centity_t* owner)
+static qboolean FountainParticleSpawner(client_entity_t* spawner, centity_t* owner)
 {
 #define NUM_FOUNTAIN_PARTICLES	20
 
@@ -118,7 +118,7 @@ static qboolean FXFountainParticleSpawner(client_entity_t* spawner, centity_t* o
 		GetPositionOverTime(spawner->r.origin, velocity, drop->acceleration, (float)time * 0.001f, origin);
 
 		client_entity_t* splash = ClientEntity_new(-1, 0, origin, NULL, time);
-		splash->Update = FXWaterDropEnd;
+		splash->Update = WaterDropEnd;
 		splash->flags = CEF_NOMOVE | CEF_NO_DRAW;
 		AddEffect(NULL, splash);
 	}
@@ -141,7 +141,7 @@ void FXFountain(centity_t* owner, const int type, const int flags, vec3_t origin
 	fountain->SpawnData = (float)drop * 0.125f;
 	fountain->color = color_white; //mxd
 	fountain->radius = 128.0f + Q_fabs(fountain->SpawnData);
-	fountain->Update = FXFountainParticleSpawner;
+	fountain->Update = FountainParticleSpawner;
 	fountain->flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_VIEWSTATUSCHANGED;
 
 	AddEffect(owner, fountain);

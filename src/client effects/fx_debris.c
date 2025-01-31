@@ -147,7 +147,7 @@ static float debris_elasticity[NUM_MAT] =
 
 void InitDebrisStatics(void)
 {
-	ce_class_statics[CID_DEBRIS].msgReceivers[MSG_COLLISION] = FXDebris_Collision;
+	ce_class_statics[CID_DEBRIS].msgReceivers[MSG_COLLISION] = Debris_Collision;
 }
 
 void PreCacheDebris(void)
@@ -225,12 +225,12 @@ void FXBodyPart(centity_t* owner, const int type, const int flags, vec3_t origin
 	float ke = (float)damage * 10000.0f;
 	ke = max(10000.0f, ke);
 
-	FXBodyPart_Spawn(realowner, body_part, origin, ke, frame, type, modelindex, flags, owner);
+	BodyPart_Spawn(realowner, body_part, origin, ke, frame, type, modelindex, flags, owner);
 }
 
-static void FXBodyPart_Spawn(const centity_t* owner, const int body_part, vec3_t origin, const float ke, const int frame, const int type, const byte modelindex, const int flags, centity_t* harpy)
+static void BodyPart_Spawn(const centity_t* owner, const int body_part, vec3_t origin, const float ke, const int frame, const int type, const byte modelindex, const int flags, centity_t* harpy)
 {
-	FXBodyPart_Throw(owner, body_part, origin, ke, frame, type, modelindex, flags, harpy);
+	BodyPart_Throw(owner, body_part, origin, ke, frame, type, modelindex, flags, harpy);
 
 	vec3_t spray_org;
 	VectorAdd(origin, owner->origin, spray_org);
@@ -239,7 +239,7 @@ static void FXBodyPart_Spawn(const centity_t* owner, const int body_part, vec3_t
 		DoBloodSplash(origin, 5, flags & CEF_FLAG8);
 }
 
-static void FXBodyPart_Throw(const centity_t* owner, const int body_part, vec3_t origin, float ke, const int frame, const int type, const byte modelindex, int flags, centity_t* harpy)
+static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t origin, float ke, const int frame, const int type, const byte modelindex, int flags, centity_t* harpy)
 {
 	//FIXME: make sure parts have correct skins, even node 0!
 	client_entity_t* debris = ClientEntity_new(type, 0, origin, NULL, 17); //flags sent as 0
@@ -304,7 +304,7 @@ static void FXBodyPart_Throw(const centity_t* owner, const int body_part, vec3_t
 	if (harpy != NULL) //HACK: harpy took it!
 	{
 		debris->flags |= CEF_OWNERS_ORIGIN;
-		debris->Update = FXBodyPartAttachedUpdate;
+		debris->Update = BodyPartAttachedUpdate;
 		debris->updateTime = 50;
 		AddEffect(harpy, debris);
 
@@ -334,7 +334,7 @@ static void FXBodyPart_Throw(const centity_t* owner, const int body_part, vec3_t
 
 	debris->elasticity = debris_elasticity[MAT_FLESH];
 
-	debris->Update = FXBodyPart_Update;
+	debris->Update = BodyPart_Update;
 	debris->updateTime = 50;
 
 	const int detail = (int)r_detail->value; //mxd
@@ -361,7 +361,7 @@ static void FXBodyPart_Throw(const centity_t* owner, const int body_part, vec3_t
 	AddEffect(NULL, debris);
 }
 
-static qboolean FXBodyPartAttachedUpdate(struct client_entity_s* self, const centity_t* owner)
+static qboolean BodyPartAttachedUpdate(struct client_entity_s* self, const centity_t* owner)
 {
 	VectorCopy(owner->lerp_origin, self->r.origin);
 	VectorSet(self->r.angles,
@@ -378,7 +378,7 @@ static qboolean FXBodyPartAttachedUpdate(struct client_entity_s* self, const cen
 	return true;
 }
 
-static qboolean FXBodyPart_Update(struct client_entity_s* self, centity_t* owner)
+static qboolean BodyPart_Update(struct client_entity_s* self, centity_t* owner)
 {
 	const int cur_time = fxi.cl->time;
 	const float d_time = (float)(cur_time - self->lastThinkTime) / 1000.0f;
@@ -413,7 +413,7 @@ static qboolean FXBodyPart_Update(struct client_entity_s* self, centity_t* owner
 // CEF_FLAG7 = male insect skin on mat_insect (CEF_FLAG7 cleared out and set if has dynamic light for fire).
 // CEF_FLAG8 = use reflection skin.
 
-client_entity_t * FXDebris_Throw(const vec3_t origin, const int material, const vec3_t dir, const float ke, const float scale, const int flags, const qboolean altskin)
+client_entity_t* FXDebris_Throw(const vec3_t origin, const int material, const vec3_t dir, const float ke, const float scale, const int flags, const qboolean altskin)
 {
 	const int chunk_index = irand(debris_chunk_offsets[material], debris_chunk_offsets[material + 1] - 1);
 
@@ -440,7 +440,7 @@ client_entity_t * FXDebris_Throw(const vec3_t origin, const int material, const 
 
 	if (material == MAT_FLESH || material == MAT_INSECT) // Flesh need a different update for blood.
 	{
-		debris->Update = FXFleshDebris_Update;
+		debris->Update = FleshDebris_Update;
 		if (altskin && chunk_index < 47) // Using multi-skinned pottery chunks.
 			debris->r.skinnum = 1; // Male
 	}
@@ -452,7 +452,7 @@ client_entity_t * FXDebris_Throw(const vec3_t origin, const int material, const 
 			debris->r.flags |= RF_TRANSLUCENT;
 		}
 
-		debris->Update = FXDebris_Update;
+		debris->Update = Debris_Update;
 	}
 
 	// Debris lasts 10 seconds before it slowly goes away.
@@ -522,7 +522,7 @@ void FXDebris_SpawnChunks(int type, int flags, const vec3_t origin, const int nu
 	}
 }
 
-static void FXDebris_SpawnFleshChunks(int type, int flags, vec3_t origin, const int num, const int material, vec3_t dir, const float ke, vec3_t mins, const float scale, const qboolean altskin) //TODO: remove unused 'type' arg?
+static void Debris_SpawnFleshChunks(int type, int flags, vec3_t origin, const int num, const int material, vec3_t dir, const float ke, vec3_t mins, const float scale, const qboolean altskin) //TODO: remove unused 'type' arg?
 {
 	if (flags & CEF_FLAG6) // On fire, check for highdetail, non-ref_soft.
 	{
@@ -624,14 +624,14 @@ void FXFleshDebris(centity_t* owner, const int type, int flags, vec3_t origin)
 
 	const float scale = (float)mag / 24.0f;
 
-	FXDebris_SpawnFleshChunks(type, flags, origin, num, material, dir, 80000.0f, mins, scale, altskin);
+	Debris_SpawnFleshChunks(type, flags, origin, num, material, dir, 80000.0f, mins, scale, altskin);
 }
 
 #pragma endregion
 
 #pragma region ========================== Debris message receivers ==========================
 
-static void FXDebris_Collision(client_entity_t* self, CE_Message_t* msg)
+static void Debris_Collision(client_entity_t* self, CE_Message_t* msg)
 {
 	char* snd_name; //mxd
 
@@ -789,7 +789,7 @@ qboolean FXDebris_Vanish(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-static qboolean FXDebris_Update(struct client_entity_s* self, centity_t* owner)
+static qboolean Debris_Update(struct client_entity_s* self, centity_t* owner)
 {
 	const int cur_time = fxi.cl->time;
 
@@ -813,7 +813,7 @@ static qboolean FXDebris_Update(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-static qboolean FXFleshDebris_Update(struct client_entity_s* self, centity_t* owner)
+static qboolean FleshDebris_Update(struct client_entity_s* self, centity_t* owner)
 {
 	const int cur_time = fxi.cl->time;
 

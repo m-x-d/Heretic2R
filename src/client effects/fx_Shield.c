@@ -22,7 +22,7 @@ void PreCacheShield(void)
 	shield_model = fxi.RegisterModel("sprites/spells/spark_blue.sp2");
 }
 
-static qboolean FXShieldSparkThink(struct client_entity_s* shield, const centity_t* owner)
+static qboolean LightningShieldSparkThink(struct client_entity_s* shield, const centity_t* owner)
 {
 	// Update the angle of the spark.
 	VectorMA(shield->direction, (float)(fxi.cl->time - shield->lastThinkTime) / 1000.0f, shield->velocity2, shield->direction);
@@ -63,7 +63,7 @@ static qboolean FXShieldSparkThink(struct client_entity_s* shield, const centity
 	return true;
 }
 
-static qboolean FXShieldTerminate(struct client_entity_s* shield, centity_t* owner)
+static qboolean LightningShieldTerminate(struct client_entity_s* shield, centity_t* owner)
 {
 	// Don't instantly delete yourself. Don't accept any more updates and die out within a second.
 	shield->d_alpha = -1.2f; // Fade out.
@@ -108,8 +108,8 @@ void FXLightningShield(centity_t* owner, const int type, const int flags, const 
 		AngleVectors(shield->direction, direction, NULL, NULL);
 		VectorMA(owner->origin, shield->radius, direction, shield->r.origin);
 
-		shield->AddToView = FXShieldSparkThink;
-		shield->Update = FXShieldTerminate;
+		shield->AddToView = LightningShieldSparkThink;
+		shield->Update = LightningShieldTerminate;
 
 		AddEffect(owner, shield);
 	}

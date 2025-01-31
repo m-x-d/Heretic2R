@@ -41,7 +41,7 @@ static int random_spark_types[9] =
 	PART_16x16_SPARK_B,
 };
 
-static qboolean FXMagicPortalThink(client_entity_t* self, centity_t* owner)
+static qboolean MagicPortalThink(client_entity_t* self, centity_t* owner)
 {
 	// Already disabled?
 	if (self->LifeTime == 1)
@@ -195,7 +195,7 @@ void FXMagicPortal(centity_t* owner, const int type, const int flags, const vec3
 	VectorScale(forward, -1.0f, portal->direction);
 	VectorCopy(dir, portal->r.angles);
 
-	portal->Update = FXMagicPortalThink;
+	portal->Update = MagicPortalThink;
 
 	AddEffect(owner, portal);
 }

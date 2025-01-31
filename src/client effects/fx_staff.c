@@ -39,7 +39,7 @@ void PreCacheStaff(void)
 	staff_models[4] = fxi.RegisterModel("sprites/fx/haloblue.sp2");
 }
 
-static qboolean FXStaffElementThink(struct client_entity_s* self, centity_t* owner)
+static qboolean StaffElementThink(struct client_entity_s* self, centity_t* owner)
 {
 	float frac = (float)(fxi.cl->time - self->startTime) / 100.0f;
 
@@ -60,7 +60,7 @@ static qboolean FXStaffElementThink(struct client_entity_s* self, centity_t* own
 	return true;
 }
 
-static qboolean FXStaffLevel2Think(struct client_entity_s* self, centity_t* owner)
+static qboolean StaffLevel2Think(struct client_entity_s* self, centity_t* owner)
 {
 	// If we've timed out, stop the effect (allow for fading).
 	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
@@ -181,7 +181,7 @@ static qboolean FXStaffLevel2Think(struct client_entity_s* self, centity_t* owne
 	return true;
 }
 
-static qboolean FXStaffLevel3Think(struct client_entity_s* self, centity_t* owner)
+static qboolean StaffLevel3Think(struct client_entity_s* self, centity_t* owner)
 {
 	// If we've timed out, stop the effect (allow for fading).
 	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
@@ -265,7 +265,7 @@ static qboolean FXStaffLevel3Think(struct client_entity_s* self, centity_t* owne
 	return true;
 }
 
-static qboolean FXStaffThink(struct client_entity_s* self, centity_t* owner)
+static qboolean StaffLevel1Think(struct client_entity_s* self, centity_t* owner)
 {
 	// If we've timed out, stop the effect (allow for fading).
 	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
@@ -364,21 +364,21 @@ void FXStaff(centity_t* owner, const int type, const int flags, vec3_t origin)
 	{
 		case 1: // Blue.
 		default:
-			trail->Update = FXStaffThink;
+			trail->Update = StaffLevel1Think;
 			trail->color.c = 0x02201010;
 			trail->xscale = 0.175f;
 			break;
 
 			//NOTE: These were swapped after the functions were created.
 		case 2: // Fire.
-			trail->Update = FXStaffLevel3Think;
+			trail->Update = StaffLevel3Think;
 			trail->color = color_white;
 			trail->xscale = 0.2f;
 			break;
 
 		case 3: // Energy blast.
 		case 4:
-			trail->Update = FXStaffLevel2Think;
+			trail->Update = StaffLevel2Think;
 			trail->color = color_white;
 			trail->xscale = 0.225f;
 			break;
@@ -387,7 +387,7 @@ void FXStaff(centity_t* owner, const int type, const int flags, vec3_t origin)
 	AddEffect(owner, trail);
 }
 
-static qboolean FXStaffCreateThink(struct client_entity_s* self, centity_t* owner)
+static qboolean StaffCreateThink(struct client_entity_s* self, centity_t* owner)
 {
 	vec3_t start_pt;
 	vec3_t end_pt;
@@ -447,10 +447,10 @@ static qboolean FXStaffCreateThink(struct client_entity_s* self, centity_t* owne
 			trail->r.scale = (float)self->NoOfAnimFrames * 0.05f;
 			trail->AnimSpeed = 0.2f;
 			trail->NoOfAnimFrames = 2;
-			trail->Update = FXStaffElementThink;
+			trail->Update = StaffElementThink;
 
 			AddEffect(owner, trail);
-			FXStaffElementThink(trail, owner);
+			StaffElementThink(trail, owner);
 		}
 		else if (self->classID == STAFF_TRAIL2)
 		{
@@ -513,7 +513,7 @@ void FXStaffCreate(centity_t* owner, const int type, const int flags, vec3_t ori
 	staff_fx->flags |= CEF_NO_DRAW;
 	staff_fx->NoOfAnimFrames = 7;
 	staff_fx->refPoint = (short)((flags & CEF_FLAG6) ? STAFF_TYPE_HELL : STAFF_TYPE_SWORD);
-	staff_fx->Update = FXStaffCreateThink;
+	staff_fx->Update = StaffCreateThink;
 
 	AddEffect(owner, staff_fx);
 }
@@ -532,11 +532,11 @@ static void CreatePuff(centity_t* owner, const int flags, vec3_t origin)
 	puff->d_alpha = -0.2f;
 	puff->AnimSpeed = 0.2f;
 	puff->NoOfAnimFrames = 2;
-	puff->Update = FXStaffElementThink;
+	puff->Update = StaffElementThink;
 	puff->AddToView = OffsetLinkedEntityUpdatePlacement;
 
 	AddEffect(owner, puff);
-	FXStaffElementThink(puff, owner);
+	StaffElementThink(puff, owner);
 }
 
 void FXStaffCreatePoof(centity_t* owner, int type, const int flags, vec3_t origin)
@@ -558,7 +558,7 @@ void FXStaffCreatePoof(centity_t* owner, int type, const int flags, vec3_t origi
 	}
 }
 
-static qboolean FXStaffRemoveThink(struct client_entity_s* self, centity_t* owner)
+static qboolean StaffRemoveThink(struct client_entity_s* self, centity_t* owner)
 {
 	vec3_t start_pt;
 	vec3_t end_pt;
@@ -618,10 +618,10 @@ static qboolean FXStaffRemoveThink(struct client_entity_s* self, centity_t* owne
 			trail->r.scale = (float)self->NoOfAnimFrames * 0.05f;
 			trail->AnimSpeed = 0.2f;
 			trail->NoOfAnimFrames = 2;
-			trail->Update = FXStaffElementThink;
+			trail->Update = StaffElementThink;
 
 			AddEffect(owner, trail);
-			FXStaffElementThink(trail, owner);
+			StaffElementThink(trail, owner);
 		}
 		else if (self->classID == STAFF_TRAIL2)
 		{
@@ -683,7 +683,7 @@ void FXStaffRemove(centity_t* owner, const int type, const int flags, vec3_t ori
 	staff_fx->flags |= CEF_NO_DRAW;
 	staff_fx->NoOfAnimFrames = 1;
 	staff_fx->refPoint = (short)((flags & CEF_FLAG6) ? STAFF_TYPE_HELL : STAFF_TYPE_SWORD);
-	staff_fx->Update = FXStaffRemoveThink;
+	staff_fx->Update = StaffRemoveThink;
 
 	AddEffect(owner, staff_fx);
 }

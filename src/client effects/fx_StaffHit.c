@@ -23,7 +23,7 @@ void PreCacheStaffHit(void)
 }
 
 //mxd. Separated from FXStaffStrike().
-static void FXStaffStrikeLevel2(const int flags, const vec3_t origin, const vec3_t direction)
+static void StaffStrikeLevel2(const int flags, const vec3_t origin, const vec3_t direction)
 {
 	if (r_detail->value >= DETAIL_NORMAL)
 		fxi.Activate_Screen_Flash(0x30FFFFFF);
@@ -74,7 +74,7 @@ static void FXStaffStrikeLevel2(const int flags, const vec3_t origin, const vec3
 }
 
 //mxd. Separated from FXStaffStrike().
-static void FXStaffStrikeLevel3(const int flags, const vec3_t origin, const vec3_t direction)
+static void StaffStrikeLevel3(const int flags, const vec3_t origin, const vec3_t direction)
 {
 	// Spawn a bright flash at the core of the explosion.
 	client_entity_t* flash = ClientEntity_new(FX_WEAPON_STAFF_STRIKE, (int)(flags & ~CEF_NO_DRAW), origin, NULL, 1000);
@@ -158,8 +158,8 @@ void FXStaffStrike(centity_t* owner, int type, const int flags, vec3_t origin)
 
 	switch (power_level)
 	{
-		case 2: FXStaffStrikeLevel2(flags, origin, dir); break; //mxd
-		case 3: FXStaffStrikeLevel3(flags, origin, dir); break; //mxd
+		case 2: StaffStrikeLevel2(flags, origin, dir); break; //mxd
+		case 3: StaffStrikeLevel3(flags, origin, dir); break; //mxd
 		default: break;
 	}
 }

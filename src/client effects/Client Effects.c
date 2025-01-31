@@ -57,7 +57,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ FXPhoenixMissile,					PreCachePhoenix,		"t"			},
 	{ FXPhoenixExplode,					NULL,					"td"		},
 	{ FXMorphMissile,					PreCacheMorph,			"bb"		},
-	{ FXMorphMissile_initial,			NULL,					"bssssss"	},
+	{ FXMorphMissileInitial,			NULL,					"bssssss"	},
 	{ FXMorphExplode,					NULL,					"d"			},
 	{ FXFireWave,						PreCacheWall,			"ss"		},
 	{ FXFireWaveWorm,					PreCacheWall,			"t"			},
@@ -78,7 +78,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ FXMist,							PreCacheMist,			"b"			},
 	{ FXPlagueMist,						NULL,					"vb"		},
 	{ FXPlagueMistExplode,				NULL,					"b"			},
-	{ FXSpellHands,						PreCacheHands,			"b"			},
+	{ FXSpellHands,						NULL,					"b"			},
 	{ FXLensFlare,						PreCacheFlare,			"bbbf"		},
 	{ FXStaff,							PreCacheStaff,			"bb"		},
 	{ FXSpoo,							PreCacheSpoo,			NULL		},
@@ -117,7 +117,7 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ FXShrineStaffEffect,				NULL,					NULL		},
 	{ FXShrineGhostEffect,				NULL,					NULL		},
 	{ FXShrineSpeedEffect,				NULL,					NULL		},
-	{ FXShrinePowerUpEffect,			NULL,					NULL		},
+	{ FXShrinePowerupEffect,			NULL,					NULL		},
 	{ FXRope,							PreCacheRope,			"ssbvvv"	},
 	{ FXFireHands,						NULL,					"b"			},
 	{ FXShrineBall,						NULL,					"db"		},
@@ -132,8 +132,8 @@ ClientEffect_t clientEffectSpawners[NUM_FX] =
 	{ FXLightning,						PreCacheLightning,		"vbb"		},
 	{ FXPowerLightning,					PreCacheLightning,		"vb"		},
 	{ FXBubble,							PreCacheBubbler,		NULL		},
-	{ FXTPortSmoke,						PreCacheTPortSmoke,		NULL		},	// FX_TPORTSMOKE - 117
-	{ FXWaterParticles,					PreCacheWaterParticles,	NULL		},	// FX_WATER_PARTICLES - 119
+	{ FXTPortSmoke,						NULL,					NULL		},	// FX_TPORTSMOKE - 117
+	{ FXWaterParticles,					NULL,					NULL		},	// FX_WATER_PARTICLES - 119
 	{ FXMEffects,						PreCacheMEffects,		"bv"		},	// FX_M_EFFECTS - 120 - all of Morcalavin's effects.
 	{ FXHPStaff,						PreCacheHPStaff,		"bs"		},	// FX_HP_STAFF - 121 - staff effects for the high priestess.
 	{ FXRandWaterBubble,				NULL,					NULL		},

@@ -89,7 +89,7 @@ extern void FXMaceballExplode(centity_t* owner, int type, int flags, vec3_t orig
 extern void FXPhoenixMissile(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXPhoenixExplode(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXMorphMissile(centity_t* owner, int type, int flags, const vec3_t origin);
-extern void FXMorphMissile_initial(centity_t* owner, int type, int flags, const vec3_t origin);
+extern void FXMorphMissileInitial(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXMorphExplode(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXFireWave(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXFireWaveWorm(centity_t* owner, int type, int flags, vec3_t origin);
@@ -150,7 +150,7 @@ extern void FXShrineHealthEffect(centity_t* owner, int type, int flags, vec3_t o
 extern void FXShrineStaffEffect(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXShrineGhostEffect(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXShrineReflectEffect(centity_t* owner, int type, int flags, vec3_t origin);
-extern void FXShrinePowerUpEffect(centity_t* owner, int type, int flags, vec3_t origin);
+extern void FXShrinePowerupEffect(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXRope(centity_t* owner, int type, int flags, const vec3_t origin);
 extern void FXFireHands(centity_t* owner, int type, int flags, vec3_t origin);
 extern void FXShrineBall(centity_t* owner, int type, int flags, vec3_t origin);
@@ -225,7 +225,6 @@ extern void PreCacheShield(void);
 extern void PreCachePickup(void);
 extern void PreCacheScorch(void);
 extern void PreCacheSmoke(void);
-extern void PreCacheHands(void); //TODO: unused.
 extern void PreCacheSphere(void);
 extern void PreCacheSpoo(void);
 extern void PreCacheStaff(void);
@@ -238,8 +237,6 @@ extern void PreCacheHPMissile(void);
 extern void PreCacheIEffects(void);
 extern void PrecacheShadow(void);
 extern void PrecacheOgleHitPuff(void);
-extern void PreCacheTPortSmoke(void);
-extern void PreCacheWaterParticles(void);
 extern void PreCacheMEffects(void);
 extern void PreCacheLightning(void);
 extern void PreCacheHPStaff(void);

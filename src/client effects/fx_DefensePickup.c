@@ -36,7 +36,7 @@ void PreCacheItemDefense(void)
 	defense_sparks[5] = fxi.RegisterModel("sprites/spells/spark_blue.sp2");					// Also blue spark.
 }
 
-static qboolean FXDefensePickupSparkThink(struct client_entity_s* shield, centity_t* owner) //mxd. FXEggSparkThink in original version.
+static qboolean DefensePickupSparkThink(struct client_entity_s* shield, centity_t* owner) //mxd. FXEggSparkThink in original version.
 {
 	vec3_t origin;
 	VectorCopy(shield->origin, origin);
@@ -57,7 +57,7 @@ static qboolean FXDefensePickupSparkThink(struct client_entity_s* shield, centit
 	return true;
 }
 
-static qboolean FXDefensePickupThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean DefensePickupThink(struct client_entity_s* self, const centity_t* owner)
 {
 	// Rotate and bob.
 	self->r.angles[YAW] += ANGLE_5;
@@ -88,7 +88,7 @@ void FXDefensePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 
 	ce->radius = 10.0f;
 	ce->alpha = 0.8f;
-	ce->Update = FXDefensePickupThink;
+	ce->Update = DefensePickupThink;
 
 	AddEffect(owner, ce);
 
@@ -106,7 +106,7 @@ void FXDefensePickup(centity_t* owner, const int type, int flags, vec3_t origin)
 		spark->d_alpha = 0.5f;
 		spark->SpawnData = tag;
 
-		spark->Update = FXDefensePickupSparkThink;
+		spark->Update = DefensePickupSparkThink;
 		VectorCopy(spark->r.origin, spark->origin);
 
 		VectorClear(spark->direction);

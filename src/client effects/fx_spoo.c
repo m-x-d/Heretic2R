@@ -17,7 +17,7 @@ void PreCacheSpoo(void)
 	spoo_models[1] = fxi.RegisterModel("sprites/fx/spoo2.sp2");
 }
 
-static qboolean FXSpooTrailThink(struct client_entity_s* self, centity_t* owner)
+static qboolean SpooTrailThink(struct client_entity_s* self, centity_t* owner)
 {
 	const int count = GetScaledCount(8, 0.85f);
 
@@ -52,10 +52,10 @@ void FXSpoo(centity_t* owner, const int type, const int flags, vec3_t origin)
 
 	trail->flags |= CEF_NO_DRAW;
 	VectorCopy(origin, trail->startpos);
-	trail->Update = FXSpooTrailThink;
+	trail->Update = SpooTrailThink;
 
 	AddEffect(owner, trail);
-	FXSpooTrailThink(trail, owner);
+	SpooTrailThink(trail, owner);
 }
 
 void FXSpooSplat(centity_t* owner, int type, const int flags, vec3_t origin)

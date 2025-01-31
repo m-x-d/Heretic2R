@@ -1,7 +1,7 @@
 //
 // fx_blood_local.h
 //
-// Copyright 2025 m-x-d
+// Copyright 2025 mxd
 //
 
 #pragma once

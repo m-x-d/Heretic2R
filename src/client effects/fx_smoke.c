@@ -47,13 +47,13 @@ void FXSmoke(const vec3_t origin, const float scale, const float range)
 	SpawnSmoke(origin, scale, range, color_white.c); //mxd
 }
 
-static qboolean FXSmokeSpawner(const struct client_entity_s* self, centity_t* owner)
+static qboolean EnvSmokeSpawner(const struct client_entity_s* self, centity_t* owner)
 {
 	FXSmoke(self->r.origin, self->r.scale, self->Scale);
 	return true;
 }
 
-static qboolean FXSmokeSpawner2(struct client_entity_s* self, centity_t* owner)
+static qboolean EnvSmokeSpawner2(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->LifeTime-- > 0)
 	{
@@ -78,7 +78,7 @@ void FXEnvSmoke(centity_t* owner, const int type, int flags, vec3_t origin)
 		fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/fout.wav"), 1.0f, ATTN_NORM, 0);
 
 		self->LifeTime = 33;
-		self->Update = FXSmokeSpawner2;
+		self->Update = EnvSmokeSpawner2;
 
 		AddEffect(NULL, self);
 	}
@@ -96,7 +96,7 @@ void FXEnvSmoke(centity_t* owner, const int type, int flags, vec3_t origin)
 		self->Scale = maxrange;
 		self->r.scale = 32.0f / (float)scale;
 		self->updateTime = wait * 1000;
-		self->Update = FXSmokeSpawner;
+		self->Update = EnvSmokeSpawner;
 
 		AddEffect(owner, self);
 	}

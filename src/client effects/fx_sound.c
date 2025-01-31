@@ -18,7 +18,7 @@ typedef struct sound_think_info_s
 	float wait;
 } sound_think_info_t;
 
-static qboolean FXSoundThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean SoundThink(struct client_entity_s* self, const centity_t* owner)
 {
 	static cvar_t* cinematicfreeze = NULL; //mxd
 
@@ -156,7 +156,7 @@ void FXSound(centity_t* owner, const int type, const int flags, vec3_t origin)
 
 	self->flags &= ~CEF_OWNERS_ORIGIN;
 	self->extra = fxi.TagMalloc(sizeof(sound_think_info_t), TAG_LEVEL);
-	self->Update = FXSoundThink;
+	self->Update = SoundThink;
 
 	sound_think_info_t* info = self->extra;
 	info->style = style;

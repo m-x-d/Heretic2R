@@ -36,7 +36,7 @@ void PrecachePESpell(void)
 	spell_models[4] = fxi.RegisterModel("Sprites/fx/core_b.sp2");
 }
 
-static qboolean FXPESpellTrailThink(struct client_entity_s* self, centity_t* owner)
+static qboolean PESpellTrailThink(struct client_entity_s* self, centity_t* owner)
 {
 	self->updateTime = 20;
 
@@ -72,7 +72,7 @@ static qboolean FXPESpellTrailThink(struct client_entity_s* self, centity_t* own
 	return true;
 }
 
-static void FXPESpellGo(centity_t* owner, const int type, const int flags, const vec3_t origin, const vec3_t vel)
+static void PESpellGo(centity_t* owner, const int type, const int flags, const vec3_t origin, const vec3_t vel)
 {
 	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
 
@@ -92,14 +92,14 @@ static void FXPESpellGo(centity_t* owner, const int type, const int flags, const
 		missile->dlight = CE_DLight_new(light_color, 120.0f, 0.0f);
 	}
 
-	missile->Update = FXPESpellTrailThink;
+	missile->Update = PESpellTrailThink;
 
 	AddEffect(owner, missile);
 
 	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell.wav"), 1.0f, ATTN_NORM, 0);
 }
 
-static void FXPESpellExplode(const int type, const int flags, const vec3_t origin, vec3_t dir)
+static void PESpellExplode(const int type, const int flags, const vec3_t origin, vec3_t dir)
 {
 	if (flags & CEF_FLAG6)
 		FXClientScorchmark(origin, dir);
@@ -139,7 +139,7 @@ static void FXPESpellExplode(const int type, const int flags, const vec3_t origi
 	}
 }
 
-static qboolean FXPESpell2TrailThink(struct client_entity_s* self, centity_t* owner)
+static qboolean PESpell2TrailThink(struct client_entity_s* self, centity_t* owner)
 {
 	self->updateTime = 20;
 
@@ -174,7 +174,7 @@ static qboolean FXPESpell2TrailThink(struct client_entity_s* self, centity_t* ow
 	return true;
 }
 
-static void FXPESpell2Go(centity_t* owner, const int type, const int flags, const vec3_t origin, const vec3_t vel)
+static void PESpell2Go(centity_t* owner, const int type, const int flags, const vec3_t origin, const vec3_t vel)
 {
 	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 100);
 
@@ -194,14 +194,14 @@ static void FXPESpell2Go(centity_t* owner, const int type, const int flags, cons
 		missile->dlight = CE_DLight_new(light_color, 120.0f, 0.0f);
 	}
 
-	missile->Update = FXPESpell2TrailThink;
+	missile->Update = PESpell2TrailThink;
 
 	AddEffect(owner, missile);
 
 	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell2.wav"), 1.0f, ATTN_NORM, 0);
 }
 
-static void FXPESpell2Explode(const int type, const int flags, const vec3_t origin, vec3_t dir)
+static void PESpell2Explode(const int type, const int flags, const vec3_t origin, vec3_t dir)
 {
 	if (flags & CEF_FLAG6)
 		FXClientScorchmark(origin, dir);
@@ -240,7 +240,7 @@ static void FXPESpell2Explode(const int type, const int flags, const vec3_t orig
 	}
 }
 
-static void FXPESpell3Explode(const int type, const int flags, const vec3_t origin, vec3_t dir)
+static void PESpell3Explode(const int type, const int flags, const vec3_t origin, vec3_t dir)
 {
 	if (flags & CEF_FLAG6)
 		FXClientScorchmark(origin, dir);
@@ -289,19 +289,19 @@ void FXPESpell(centity_t* owner, const int type, const int flags, const vec3_t o
 	switch (fx_type)
 	{
 		case FX_PE_MAKE_SPELL:
-			FXPESpellGo(owner, type, flags, origin, vel);
+			PESpellGo(owner, type, flags, origin, vel);
 			break;
 
 		case FX_PE_EXPLODE_SPELL:
-			FXPESpellExplode(type, flags, origin, vel);
+			PESpellExplode(type, flags, origin, vel);
 			break;
 
 		case FX_PE_MAKE_SPELL2:
-			FXPESpell2Go(owner, type, flags, origin, vel);
+			PESpell2Go(owner, type, flags, origin, vel);
 			break;
 
 		case FX_PE_EXPLODE_SPELL2:
-			FXPESpell2Explode(type, flags, origin, vel);
+			PESpell2Explode(type, flags, origin, vel);
 			break;
 
 		case FX_PE_MAKE_SPELL3:
@@ -309,7 +309,7 @@ void FXPESpell(centity_t* owner, const int type, const int flags, const vec3_t o
 			break;
 
 		case FX_PE_EXPLODE_SPELL3:
-			FXPESpell3Explode(type, flags, origin, vel);
+			PESpell3Explode(type, flags, origin, vel);
 			break;
 
 		default:

@@ -1,7 +1,7 @@
 //
 // LightStyles.h -- added to avoid unnecessary forward declarations...
 //
-// Copyright 2024 m-x-d
+// Copyright 2024 mxd
 //
 
 #pragma once

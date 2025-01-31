@@ -21,7 +21,7 @@ void PrecacheShadow(void)
 	shadow_model = fxi.RegisterModel("models/fx/shadow/tris.fm");
 }
 
-static qboolean FXShadowUpdate(struct client_entity_s* self, const centity_t* owner)
+static qboolean ShadowUpdate(struct client_entity_s* self, const centity_t* owner)
 {
 	VectorCopy(owner->origin, self->r.origin);
 
@@ -56,7 +56,7 @@ static qboolean FXShadowUpdate(struct client_entity_s* self, const centity_t* ow
 	return true;
 }
 
-static qboolean FXShadowReferenceUpdate(struct client_entity_s* self, const centity_t* owner)
+static qboolean ShadowReferenceUpdate(struct client_entity_s* self, const centity_t* owner)
 {
 	// This tells if we are wasting our time, because the reference points are culled.
 	if (!RefPointsValid(owner))
@@ -128,10 +128,10 @@ void FXShadow(centity_t* owner, const int type, const int flags, const vec3_t or
 	self->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_ALPHA_TEXTURE;
 	self->r.scale = scale;
 	self->nextThinkTime = INT_MAX;
-	self->AddToView = FXShadowUpdate;
+	self->AddToView = ShadowUpdate;
 
 	AddEffect(owner, self);
-	FXShadowUpdate(self, owner);
+	ShadowUpdate(self, owner);
 }
 
 // Cast a shadow down from each foot and the player, too.
@@ -144,10 +144,10 @@ void FXPlayerShadow(centity_t* owner, const int type, const int flags, const vec
 	shadow_mid->r.model = &shadow_model;
 	shadow_mid->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_ALPHA_TEXTURE;
 	shadow_mid->nextThinkTime = INT_MAX;
-	shadow_mid->AddToView = FXShadowUpdate;
+	shadow_mid->AddToView = ShadowUpdate;
 
 	AddEffect(owner, shadow_mid);
-	FXShadowUpdate(shadow_mid, owner);
+	ShadowUpdate(shadow_mid, owner);
 
 	// Create shadow under the left foot.
 	client_entity_t* shadow_left = ClientEntity_new(type, flags, origin, NULL, INT_MAX);
@@ -158,10 +158,10 @@ void FXPlayerShadow(centity_t* owner, const int type, const int flags, const vec
 	shadow_left->nextThinkTime = INT_MAX;
 	shadow_left->refPoint = CORVUS_LEFTFOOT;
 	shadow_left->r.scale = 0.8f;
-	shadow_left->AddToView = FXShadowReferenceUpdate;
+	shadow_left->AddToView = ShadowReferenceUpdate;
 
 	AddEffect(owner, shadow_left);
-	FXShadowUpdate(shadow_left, owner);
+	ShadowUpdate(shadow_left, owner);
 
 	// Create shadow under the right foot.
 	client_entity_t* shadow_right = ClientEntity_new(type, flags, origin, NULL, INT_MAX);
@@ -172,8 +172,8 @@ void FXPlayerShadow(centity_t* owner, const int type, const int flags, const vec
 	shadow_right->nextThinkTime = INT_MAX;
 	shadow_right->refPoint = CORVUS_RIGHTFOOT;
 	shadow_right->r.scale = 0.8f;
-	shadow_right->AddToView = FXShadowReferenceUpdate;
+	shadow_right->AddToView = ShadowReferenceUpdate;
 
 	AddEffect(owner, shadow_right);
-	FXShadowUpdate(shadow_right, owner);
+	ShadowUpdate(shadow_right, owner);
 }

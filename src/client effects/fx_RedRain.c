@@ -40,7 +40,7 @@ void PreCacheRedrain(void)
 }
 
 // Thinker for the explosion, just fades the light.
-static qboolean FXRedRainDLightThink(const client_entity_t* dlight, centity_t* owner)
+static qboolean RedRainDLightThink(const client_entity_t* dlight, centity_t* owner)
 {
 	dlight->dlight->intensity -= 10.0f;
 	return dlight->dlight->intensity > 0.0f;
@@ -100,7 +100,7 @@ static void RedRainExplosion(vec3_t impact_pos, vec3_t rain_pos, const int durat
 
 	const paletteRGBA_t light_color = { .c = (powerup ? 0xff0080ff : 0xff0000ff) }; // Orange when powered up, red when not.
 	dlight->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
-	dlight->Update = FXRedRainDLightThink;
+	dlight->Update = RedRainDLightThink;
 
 	AddEffect(NULL, dlight);
 
@@ -163,7 +163,7 @@ static void RedRainExplosion(vec3_t impact_pos, vec3_t rain_pos, const int durat
 }
 
 // This is a delayed effect which creates a splash out of red sparks.
-static qboolean FXRedRainSplashThink(const client_entity_t* splash, centity_t* owner)
+static qboolean RedRainSplashThink(const client_entity_t* splash, centity_t* owner)
 {
 	client_entity_t* mist = ClientEntity_new(-1, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, splash->r.origin, NULL, 500);
 	AddEffect(NULL, mist);
@@ -186,7 +186,7 @@ static qboolean FXRedRainSplashThink(const client_entity_t* splash, centity_t* o
 }
 
 // The drops need to update as they're added to the view, because velocity doesn't update the sprite line's start and endpoint.
-static qboolean FXRedRainDropUpdate(client_entity_t* drop, centity_t* owner)
+static qboolean RedRainDropUpdate(client_entity_t* drop, centity_t* owner)
 {
 	// Make sure that the top of the drop doesn't go higher that the spawn height.
 	drop->r.startpos[2] = min(drop->SpawnData, drop->r.origin[2] + RAIN_HEIGHT);
@@ -196,7 +196,7 @@ static qboolean FXRedRainDropUpdate(client_entity_t* drop, centity_t* owner)
 }
 
 // This constantly starts new drops up at the top. It also spawns a splash, which is set to go off at the appropriate fall time.
-static qboolean FXRedRainThink(client_entity_t* rain, const centity_t* owner)
+static qboolean RedRainThink(client_entity_t* rain, const centity_t* owner)
 {
 	if (rain->nextEventTime <= fxi.cl->time)
 		return false; // In case we lose the packet that tells us to remove.
@@ -236,7 +236,7 @@ static qboolean FXRedRainThink(client_entity_t* rain, const centity_t* owner)
 
 		drop->SpawnInfo = rain->SpawnInfo;
 		drop->SpawnData = origin[2]; // This allows the drop to remember its top position, so the top doesn't go higher than it.
-		drop->AddToView = FXRedRainDropUpdate;
+		drop->AddToView = RedRainDropUpdate;
 
 		AddEffect(NULL, drop);
 
@@ -247,7 +247,7 @@ static qboolean FXRedRainThink(client_entity_t* rain, const centity_t* owner)
 			client_entity_t* splash = ClientEntity_new(-1, CEF_NO_DRAW | CEF_NOMOVE, origin, NULL, duration);
 
 			splash->SpawnInfo = rain->SpawnInfo;
-			splash->Update = FXRedRainSplashThink;
+			splash->Update = RedRainSplashThink;
 
 			AddEffect(NULL, splash);
 		}
@@ -284,7 +284,7 @@ void FXRedRain(centity_t* owner, const int type, int flags, const vec3_t origin)
 	spawner->SpawnData = -ceiling;
 	spawner->SpawnInfo = (powerup ? 1 : 0);
 
-	spawner->Update = FXRedRainThink;
+	spawner->Update = RedRainThink;
 
 	AddEffect(owner, spawner);
 
@@ -293,7 +293,7 @@ void FXRedRain(centity_t* owner, const int type, int flags, const vec3_t origin)
 }
 
 // The red rain projectile's trail of red sparks.
-static qboolean FXRedRainMissileThink(client_entity_t* missile, centity_t* owner)
+static qboolean RedRainMissileThink(client_entity_t* missile, centity_t* owner)
 {
 	vec3_t diff;
 	VectorSubtract(missile->r.origin, missile->origin, diff);
@@ -367,7 +367,7 @@ void FXRedRainMissile(centity_t* owner, const int type, const int flags, const v
 	}
 
 	missile->dlight = CE_DLight_new(missile->color, 150.0f, 0.0f);
-	missile->Update = FXRedRainMissileThink;
+	missile->Update = RedRainMissileThink;
 
 	AddEffect(owner, missile);
 }

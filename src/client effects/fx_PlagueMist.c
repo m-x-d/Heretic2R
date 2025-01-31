@@ -12,7 +12,7 @@
 
 #define NUM_MIST_PARTS	7
 
-static qboolean FXPlagueMistParticleSpawner(client_entity_t* spawner, centity_t* owner)
+static qboolean PlagueMistParticleSpawner(client_entity_t* spawner, centity_t* owner)
 {
 	int duration;
 	float mist_scale;
@@ -85,7 +85,7 @@ void FXPlagueMist(centity_t* owner, const int type, const int flags, const vec3_
 
 	pm->flags = CEF_NO_DRAW | CEF_NOMOVE;
 	pm->LifeTime = lifetime * 50;
-	pm->Update = FXPlagueMistParticleSpawner;
+	pm->Update = PlagueMistParticleSpawner;
 
 	AddEffect(owner, pm);
 }

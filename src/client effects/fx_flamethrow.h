@@ -8,4 +8,4 @@
 
 #include "q_Typedef.h"
 
-extern qboolean FXFlamethrower_trail(client_entity_t* self, centity_t* owner);
+extern qboolean FXFlamethrowerTrail(client_entity_t* self, centity_t* owner);

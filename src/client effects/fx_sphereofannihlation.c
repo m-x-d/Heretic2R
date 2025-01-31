@@ -36,7 +36,7 @@ void PreCacheSphere(void)
 	sphere_models[7] = fxi.RegisterModel("sprites/spells/spark_blue.sp2");
 }
 
-static qboolean FXSphereOfAnnihilationSphereThink(struct client_entity_s* self, centity_t* owner)
+static qboolean SphereOfAnnihilationSphereThink(struct client_entity_s* self, centity_t* owner)
 {
 	float detail_scale;
 	if ((int)r_detail->value == DETAIL_LOW)
@@ -51,7 +51,7 @@ static qboolean FXSphereOfAnnihilationSphereThink(struct client_entity_s* self, 
 	return true;
 }
 
-static qboolean FXSphereOfAnnihilationAuraThink(struct client_entity_s* self, centity_t* owner)
+static qboolean SphereOfAnnihilationAuraThink(struct client_entity_s* self, centity_t* owner)
 {
 	// No aura trail on low level.
 	if ((int)r_detail->value == DETAIL_LOW)
@@ -121,10 +121,10 @@ void FXSphereOfAnnihilation(centity_t* owner, const int type, const int flags, v
 
 	aura_thinker->extra = (void*)(&fxi.server_entities[caster_entnum]); // The caster's centity_t.
 	aura_thinker->AddToView = LinkedEntityUpdatePlacement;
-	aura_thinker->Update = FXSphereOfAnnihilationAuraThink;
+	aura_thinker->Update = SphereOfAnnihilationAuraThink;
 
 	AddEffect(owner, aura_thinker);
-	FXSphereOfAnnihilationAuraThink(aura_thinker, owner);
+	SphereOfAnnihilationAuraThink(aura_thinker, owner);
 
 	// Create the sphere of annihilation itself.
 	client_entity_t* sphere_thinker = ClientEntity_new(type, flags, origin, NULL, 100);
@@ -134,12 +134,12 @@ void FXSphereOfAnnihilation(centity_t* owner, const int type, const int flags, v
 	sphere_thinker->r.flags = RF_TRANSLUCENT;
 	sphere_thinker->r.scale = owner->current.scale;
 	sphere_thinker->AddToView = LinkedEntityUpdatePlacement;
-	sphere_thinker->Update = FXSphereOfAnnihilationSphereThink;
+	sphere_thinker->Update = SphereOfAnnihilationSphereThink;
 
 	AddEffect(owner, sphere_thinker);
 }
 
-static qboolean FXSphereOfAnnihilationGlowballThink(struct client_entity_s* self, centity_t* owner)
+static qboolean SphereOfAnnihilationGlowballThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (owner->current.effects & EF_MARCUS_FLAG1)
 		self->color.r++;
@@ -182,7 +182,7 @@ static qboolean FXSphereOfAnnihilationGlowballThink(struct client_entity_s* self
 	return false;
 }
 
-static qboolean FXSphereOfAnnihilationGlowballSpawnerThink(struct client_entity_s* self, centity_t* owner)
+static qboolean SphereOfAnnihilationGlowballSpawnerThink(struct client_entity_s* self, centity_t* owner)
 {
 	// 'Self->extra' refers to the caster's centity_t.
 	const centity_t* controller = (centity_t*)self->extra;
@@ -272,10 +272,10 @@ static qboolean FXSphereOfAnnihilationGlowballSpawnerThink(struct client_entity_
 	COLOUR_SET(glowball->r.color, irand(128, 180), irand(128, 180), irand(180, 255)); //mxd. Use macro.
 	glowball->color.r = 1;
 	glowball->extra = (void*)owner;
-	glowball->Update = FXSphereOfAnnihilationGlowballThink;
+	glowball->Update = SphereOfAnnihilationGlowballThink;
 
 	AddEffect(owner, glowball);
-	FXSphereOfAnnihilationGlowballThink(glowball, owner);
+	SphereOfAnnihilationGlowballThink(glowball, owner);
 
 	self->color.g++;
 
@@ -300,12 +300,12 @@ void FXSphereOfAnnihilationGlowballs(centity_t* owner, const int type, const int
 		glowball_spawner->extra = (void*)&fxi.server_entities[caster_entnum];
 
 	glowball_spawner->AddToView = LinkedEntityUpdatePlacement;
-	glowball_spawner->Update = FXSphereOfAnnihilationGlowballSpawnerThink;
+	glowball_spawner->Update = SphereOfAnnihilationGlowballSpawnerThink;
 
 	AddEffect(owner, glowball_spawner);
 }
 
-static qboolean FXSphereOfAnnihilationSphereExplodeThink(struct client_entity_s* self, centity_t* owner)
+static qboolean SphereOfAnnihilationSphereExplodeThink(struct client_entity_s* self, centity_t* owner)
 {
 	float frac = (float)(fxi.cl->time - self->startTime) / 100.0f;
 	if (self->AnimSpeed > 0.0f)
@@ -349,10 +349,10 @@ void FXSphereOfAnnihilationExplode(centity_t* owner, const int type, const int f
 	explosion->NoOfAnimFrames = (int)size;
 	explosion->AnimSpeed = 1.0f;
 	explosion->dlight = CE_DLight_new(color_white, explosion->radius / 0.7f, 0.0f);
-	explosion->Update = FXSphereOfAnnihilationSphereExplodeThink;
+	explosion->Update = SphereOfAnnihilationSphereExplodeThink;
 
 	AddEffect(NULL, explosion);
-	FXSphereOfAnnihilationSphereExplodeThink(explosion, NULL);
+	SphereOfAnnihilationSphereExplodeThink(explosion, NULL);
 
 	// Add some glowing blast particles.
 	VectorScale(dir, FX_SPHERE_EXPLOSION_SMOKE_SPEED, dir);
@@ -471,7 +471,7 @@ void FXSphereOfAnnihilationPower(centity_t* owner, const int type, const int fla
 	}
 }
 
-static qboolean FXSpherePlayerExplodeThink(struct client_entity_s* self, centity_t* owner)
+static qboolean SpherePlayerExplodeThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (fxi.cl->time > self->nextEventTime)
 	{
@@ -489,7 +489,7 @@ static qboolean FXSpherePlayerExplodeThink(struct client_entity_s* self, centity
 	return true;
 }
 
-static qboolean FXSpherePlayerExplodeAddToView(struct client_entity_s* self, centity_t* owner)
+static qboolean SpherePlayerExplodeAddToView(struct client_entity_s* self, centity_t* owner)
 {
 	self->r.angles[0] += FX_SPHERE_EXPLOSION_PITCH_INCREMENT * (float)(fxi.cl->time - self->lastThinkTime) / 50.0f;
 	self->r.angles[1] += FX_SPHERE_EXPLOSION_YAW_INCREMENT *   (float)(fxi.cl->time - self->lastThinkTime) / 50.0f;
@@ -499,7 +499,7 @@ static qboolean FXSpherePlayerExplodeAddToView(struct client_entity_s* self, cen
 	return true;
 }
 
-static qboolean FXSpherePlayerExplodeGlowballThink(client_entity_t* glowball, centity_t* owner)
+static qboolean SpherePlayerExplodeGlowballThink(client_entity_t* glowball, centity_t* owner)
 {
 	// Update the angle of the spark.
 	VectorMA(glowball->direction, (float)(fxi.cl->time - glowball->lastThinkTime) / 1000.0f, glowball->velocity2, glowball->direction);
@@ -516,7 +516,7 @@ static qboolean FXSpherePlayerExplodeGlowballThink(client_entity_t* glowball, ce
 	return true;
 }
 
-static qboolean FXSpherePlayerExplodeGlowballTerminate(client_entity_t* glowball, centity_t* owner)
+static qboolean SpherePlayerExplodeGlowballTerminate(client_entity_t* glowball, centity_t* owner)
 {
 	// Don't instantly delete yourself. Don't accept any more updates and die out within a second.
 	glowball->d_alpha = -5.0f; // Fade out.
@@ -546,11 +546,11 @@ void FXSpherePlayerExplode(centity_t* owner, const int type, const int flags, ve
 	explosion->nextEventTime = fxi.cl->time + explosion->updateTime;
 	explosion->lastThinkTime = fxi.cl->time;
 	explosion->dlight = CE_DLight_new(color_white, explosion->radius / 0.7f, 0);
-	explosion->AddToView = FXSpherePlayerExplodeAddToView;
-	explosion->Update = FXSpherePlayerExplodeThink;
+	explosion->AddToView = SpherePlayerExplodeAddToView;
+	explosion->Update = SpherePlayerExplodeThink;
 
 	AddEffect(NULL, explosion);
-	FXSpherePlayerExplodeThink(explosion, NULL);
+	SpherePlayerExplodeThink(explosion, NULL);
 
 	// Add some glowing blast particles.
 	VectorScale(dir, FX_SPHERE_EXPLOSION_SMOKE_SPEED, dir);
@@ -577,8 +577,8 @@ void FXSpherePlayerExplode(centity_t* owner, const int type, const int flags, ve
 			glowball->velocity2[c] += 90.0f * Q_signf(glowball->velocity2[c]); // Assure that the sparks are moving around at a pretty good clip.
 		}
 
-		glowball->AddToView = FXSpherePlayerExplodeGlowballThink;
-		glowball->Update = FXSpherePlayerExplodeGlowballTerminate;
+		glowball->AddToView = SpherePlayerExplodeGlowballThink;
+		glowball->Update = SpherePlayerExplodeGlowballTerminate;
 
 		AddEffect(NULL, glowball);
 	}

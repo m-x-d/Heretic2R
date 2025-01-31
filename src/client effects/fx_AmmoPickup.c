@@ -29,7 +29,7 @@ void PreCacheItemAmmo(void)
 	ammo_models[8] = fxi.RegisterModel("models/items/ammo/phoenix/tris.fm");	// ITEM_AMMO_PHOENIX
 }
 
-static qboolean FXAmmoPickupThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean AmmoPickupThink(struct client_entity_s* self, const centity_t* owner)
 {
 	paletteRGBA_t color;
 
@@ -109,7 +109,7 @@ void FXAmmoPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 	if (tag == ITEM_AMMO_MANA_COMBO_HALF || tag == ITEM_AMMO_MANA_DEFENSIVE_FULL || tag == ITEM_AMMO_MANA_OFFENSIVE_FULL)
 		ce->r.scale = 1.25f;
 
-	ce->Update = FXAmmoPickupThink;
+	ce->Update = AmmoPickupThink;
 
 	AddEffect(owner, ce);
 }

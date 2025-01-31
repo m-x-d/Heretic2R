@@ -10,7 +10,7 @@
 #include "Vector.h"
 #include "Random.h"
 
-static void FXDustPuff(client_entity_t* owner, const float scale)
+static void DustPuff(client_entity_t* owner, const float scale)
 {
 	const paletteRGBA_t color = { .c = 0x80c0c0c0 };
 	client_particle_t* puff = ClientParticle_new(PART_32x32_STEAM, color, 500);
@@ -27,7 +27,7 @@ static void FXDustPuff(client_entity_t* owner, const float scale)
 void CreateSinglePuff(vec3_t origin, const float scale)
 {
 	client_entity_t* ce = ClientEntity_new(-1, CEF_NOMOVE | CEF_NO_DRAW, origin, NULL, 500);
-	FXDustPuff(ce, scale);
+	DustPuff(ce, scale);
 	AddEffect(NULL, ce);
 }
 
@@ -47,7 +47,7 @@ void FXDustPuffOnGround(centity_t* owner, int type, int flags, vec3_t origin)
 
 		const int num_puffs = irand(3, 4);
 		for (int i = 0; i < num_puffs; i++)
-			FXDustPuff(ce, 5.0f);
+			DustPuff(ce, 5.0f);
 
 		AddEffect(NULL, ce);
 	}

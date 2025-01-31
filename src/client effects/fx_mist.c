@@ -18,7 +18,7 @@ void PreCacheMist(void)
 	mist_model = fxi.RegisterModel("sprites/fx/mist.sp2");
 }
 
-static qboolean FXMistThink(client_entity_t* mist, centity_t* owner)
+static qboolean MistThink(client_entity_t* mist, centity_t* owner)
 {
 	mist->flags &= ~CEF_DISAPPEARED;
 
@@ -54,7 +54,7 @@ void FXMist(centity_t* owner, const int type, const int flags, const vec3_t orig
 
 	mist->flags |= CEF_NOMOVE;
 	mist->alpha = 0.5f;
-	mist->Update = FXMistThink;
+	mist->Update = MistThink;
 
 	AddEffect(NULL, mist);
 }

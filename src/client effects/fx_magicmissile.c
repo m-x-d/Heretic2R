@@ -35,7 +35,7 @@ void PreCacheArray(void)
 }
 
 // These need to be converted to particles.
-static qboolean FXMagicMissileTrailThink(const struct client_entity_s* self, centity_t* owner)
+static qboolean MagicMissileTrailThink(const struct client_entity_s* self, centity_t* owner)
 {
 	vec3_t vel_normal;
 	VectorCopy(self->velocity, vel_normal);
@@ -79,13 +79,13 @@ static qboolean FXMagicMissileTrailThink(const struct client_entity_s* self, cen
 	return true;
 }
 
-static qboolean FXMagicMissileModelThink(struct client_entity_s* self, centity_t* owner)
+static qboolean MagicMissileModelThink(struct client_entity_s* self, centity_t* owner)
 {
 	self->d_scale = 0.0f;
 	self->r.scale = 0.8f;
 
-	self->Update = FXMagicMissileTrailThink;
-	FXMagicMissileTrailThink(self, owner);
+	self->Update = MagicMissileTrailThink;
+	MagicMissileTrailThink(self, owner);
 
 	return true;
 }
@@ -127,7 +127,7 @@ void FXMagicMissile(centity_t* owner, const int type, const int flags, const vec
 	missile->r.scale = 0.4f;
 	missile->d_scale = 4.0f;
 	missile->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
-	missile->Update = FXMagicMissileModelThink;
+	missile->Update = MagicMissileModelThink;
 
 	AddEffect(owner, missile);
 }

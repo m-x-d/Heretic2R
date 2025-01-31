@@ -60,7 +60,7 @@ void FXBarrelExplode(centity_t* owner, const int type, const int flags, const ve
 
 	const paletteRGBA_t color = { .c = 0xff00ffff };
 	explosion->dlight = CE_DLight_new(color, 150.0f, 0.0f);
-	explosion->Update = FXPhoenixExplosionBallThink;
+	explosion->Update = PhoenixExplosionBallThink;
 	AddEffect(NULL, explosion);
 
 	// Add some glowing blast particles.

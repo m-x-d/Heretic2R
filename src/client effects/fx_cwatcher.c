@@ -42,7 +42,7 @@ void PreCacheCWModels(void)
 	cwmodels[CWM_STAR_TRAIL] = fxi.RegisterModel("sprites/Spells/indigostreak.sp2");
 }
 
-static qboolean FXCWBeamUpdate(struct client_entity_s* self, const centity_t* owner)
+static qboolean CWBeamUpdate(struct client_entity_s* self, const centity_t* owner)
 {
 	const vec3_t vel = { 0.0f, 0.0f, 1.0f };
 
@@ -88,7 +88,7 @@ static qboolean FXCWBeamUpdate(struct client_entity_s* self, const centity_t* ow
 	return true;
 }
 
-static qboolean FXCWBeamThink(struct client_entity_s* self, centity_t* owner)
+static qboolean CWBeamThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->LifeTime >= fxi.cl->time)
 	{
@@ -99,7 +99,7 @@ static qboolean FXCWBeamThink(struct client_entity_s* self, centity_t* owner)
 	return false;
 }
 
-static qboolean FXCWBeamThink2(struct client_entity_s* self, centity_t* owner)
+static qboolean CWBeamThink2(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->LifeTime >= fxi.cl->time)
 	{
@@ -110,7 +110,7 @@ static qboolean FXCWBeamThink2(struct client_entity_s* self, centity_t* owner)
 	return false;
 }
 
-static qboolean FXCWStarThink(struct client_entity_s* self, centity_t* owner)
+static qboolean CWStarThink(struct client_entity_s* self, centity_t* owner)
 {
 	self->r.scale = flrand(0.3f, 0.5f);
 	return true;
@@ -154,7 +154,7 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 			halo->alpha = 0.75f;
 			halo->dlight = CE_DLight_new(light, 100.0f, 0.0f);
 
-			halo->Update = FXCWStarThink;
+			halo->Update = CWStarThink;
 			halo->AddToView = LinkedEntityUpdatePlacement;
 
 			AddEffect(owner, halo);
@@ -226,8 +226,8 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 			VectorCopy(origin, beam->r.endpos);
 			beam->LifeTime = fxi.cl->time + 3100;
 
-			beam->Update = FXCWBeamThink;
-			beam->AddToView = FXCWBeamUpdate;
+			beam->Update = CWBeamThink;
+			beam->AddToView = CWBeamUpdate;
 
 			AddEffect(owner, beam);
 
@@ -242,7 +242,7 @@ void FXCWatcherEffects(centity_t* owner, const int type, const int flags, vec3_t
 			halo->LifeTime = fxi.cl->time + 3100;
 			halo->dlight = CE_DLight_new(white_light, 200.0f, 0.0f);
 
-			halo->Update = FXCWBeamThink2;
+			halo->Update = CWBeamThink2;
 			halo->AddToView = LinkedEntityUpdatePlacement;
 
 			fxi.Activate_Screen_Shake(8.0f, 4000.0f, (float)fxi.cl->time, SHAKE_ALL_DIR);

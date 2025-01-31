@@ -14,10 +14,9 @@ void PreCacheHalos(void)
 {
 	halo_models[0] = fxi.RegisterModel("sprites/lens/halo1.sp2");
 	halo_models[1] = fxi.RegisterModel("sprites/lens/halo2.sp2");
-	//halo_models[2] = fxi.RegisterModel("sprites/lens/halo3.sp2"); //mxd. Unused
 }
 
-static qboolean FXHaloThink(struct client_entity_s* self, centity_t* owner)
+static qboolean HaloThink(struct client_entity_s* self, centity_t* owner)
 {
 	// Effect will be deleted if CEF_DISAPPEARED flag is set.
 	self->flags &= ~CEF_DISAPPEARED;
@@ -132,7 +131,7 @@ void FXHalo(centity_t* owner, int type, int flags, vec3_t origin)
 	}
 
 	halo->alpha = 0.6f;
-	halo->Update = FXHaloThink;
+	halo->Update = HaloThink;
 
 	AddEffect(owner, halo);
 }

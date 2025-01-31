@@ -10,8 +10,6 @@
 #include "Random.h"
 #include "g_playstats.h"
 
-void PreCacheTPortSmoke(void) { } //TODO: remove?
-
 void FXTPortSmoke(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	client_entity_t* smoke = ClientEntity_new(type, (uint)(flags | CEF_NO_DRAW), origin, NULL, 1650);

@@ -48,7 +48,7 @@ void PreCachePuzzleItems(void)
 		puzzle_models[i].model = fxi.RegisterModel(puzzle_models[i].model_name);
 }
 
-static qboolean FXPuzzlePickupThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean PuzzlePickupThink(struct client_entity_s* self, const centity_t* owner)
 {
 	// Rotate and bob.
 	VectorCopy(owner->current.origin, self->r.origin);
@@ -77,7 +77,7 @@ void FXPuzzlePickup(centity_t* owner, const int type, int flags, const vec3_t or
 		ce->r.skinnum = 1;
 
 	VectorDegreesToRadians(angles, ce->r.angles);
-	ce->Update = FXPuzzlePickupThink;
+	ce->Update = PuzzlePickupThink;
 
 	AddEffect(owner, ce);
 }

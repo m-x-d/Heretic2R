@@ -13,7 +13,7 @@ void PreCacheCrosshair(void)
 	crosshair_model = fxi.RegisterModel("sprites/fx/crosshair.sp2");
 }
 
-static qboolean FXDrawCrosshair(struct client_entity_s* crosshair_ent, centity_t* owner)
+static qboolean DrawCrosshair(struct client_entity_s* crosshair_ent, centity_t* owner)
 {
 	crosshair_ent->flags |= CEF_CULLED | CEF_DISAPPEARED;
 
@@ -44,7 +44,7 @@ void FXCrosshair(centity_t* owner, const int type, int flags, vec3_t origin)
 	client_entity_t* xh = ClientEntity_new(type, flags, origin, NULL, CROSSHAIR_THINKTIME);
 
 	xh->r.model = &crosshair_model;
-	xh->Update = FXDrawCrosshair;
+	xh->Update = DrawCrosshair;
 
 	AddEffect(owner, xh);
 }

@@ -12,7 +12,7 @@
 
 #define NUM_MIST_EXPLODE_PARTS	7
 
-static qboolean FXPlagueMistExplodeSpawn(client_entity_t* spawner, centity_t* owner)
+static qboolean PlagueMistExplodeSpawn(client_entity_t* spawner, centity_t* owner)
 {
 	spawner->LifeTime -= spawner->SpawnInfo;
 	if (spawner->LifeTime < 0)
@@ -95,7 +95,7 @@ void FXPlagueMistExplode(centity_t* owner, const int type, int flags, const vec3
 	spawner->radius = 20.0f;
 	spawner->SpawnInfo = mist_life;
 	spawner->LifeTime = lifetime * mist_life;
-	spawner->Update = FXPlagueMistExplodeSpawn;
+	spawner->Update = PlagueMistExplodeSpawn;
 
 	AddEffect(owner, spawner);
 }

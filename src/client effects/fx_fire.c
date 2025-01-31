@@ -68,7 +68,7 @@ void FXFlareup(centity_t* owner, const int type, const int flags, vec3_t origin)
 	}
 }
 
-static qboolean FXFireThink(client_entity_t* spawner, centity_t* owner)
+static qboolean FireThink(client_entity_t* spawner, centity_t* owner)
 {
 	int count = GetScaledCount(FLAME_COUNT, 0.9f);
 	count = min(FLAME_COUNT, count); // Don't go over flame count
@@ -131,7 +131,7 @@ void FXFire(centity_t* owner, const int type, const int flags, vec3_t origin)
 	spawner->flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_CHECK_OWNER | CEF_VIEWSTATUSCHANGED;
 	spawner->color.c = 0xe5007fff;
 	spawner->radius = 96.0f;
-	spawner->Update = FXFireThink;
+	spawner->Update = FireThink;
 
 	if (flags & CEF_FLAG6)
 		spawner->dlight = CE_DLight_new(spawner->color, 150.0f, 0.0f);
@@ -139,7 +139,7 @@ void FXFire(centity_t* owner, const int type, const int flags, vec3_t origin)
 	AddEffect(owner, spawner);
 }
 
-static qboolean FXFireOnEntityThink(client_entity_t* spawner, const centity_t* owner)
+static qboolean FireOnEntityThink(client_entity_t* spawner, const centity_t* owner)
 {
 	// For framerate-sensitive effect spawning.
 	int count = GetScaledCount(FLAME_COUNT, 0.9f);
@@ -216,7 +216,7 @@ static qboolean FXFireOnEntityThink(client_entity_t* spawner, const centity_t* o
 	return false;
 }
 
-static qboolean FXFireOnEntity2Think(client_entity_t* spawner, const centity_t* owner)
+static qboolean FireOnEntity2Think(client_entity_t* spawner, const centity_t* owner)
 {
 	//FIXME: can miss the message that tells you to remove the effect.
 	if (fxi.cl->time > spawner->nextEventTime)
@@ -287,11 +287,11 @@ void FXFireOnEntity(centity_t* owner, const int type, const int flags, vec3_t or
 
 	if (style == 0) // Fire fades out - for things that catch fire.
 	{
-		spawner->Update = FXFireOnEntityThink;
+		spawner->Update = FireOnEntityThink;
 	}
 	else // Fire never goes away - for moving fire ents.
 	{
-		spawner->Update = FXFireOnEntity2Think;
+		spawner->Update = FireOnEntity2Think;
 		spawner->nextEventTime = fxi.cl->time + 60000; // 60 seconds max, just in case.
 	}
 

@@ -97,16 +97,7 @@ void PreCacheMEffects(void)
 	mssithra_models[5] = fxi.RegisterModel("sprites/lens/halo2.sp2");
 }
 
-static qboolean FXMorkTrailThink_old(struct client_entity_s* self, centity_t* owner)
-{
-	if (self->alpha <= 0.1f || self->r.scale <= 0.0f)
-		return false;
-
-	self->r.scale -= 0.1f;
-	return true;
-}
-
-static qboolean FXCWTrailThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean CWTrailThink(struct client_entity_s* self, const centity_t* owner)
 {
 	if (self->alpha <= 0.1f || self->r.scale <= 0.0f)
 		return false;
@@ -124,7 +115,16 @@ static qboolean FXCWTrailThink(struct client_entity_s* self, const centity_t* ow
 	return true;
 }
 
-static qboolean FXMorkTrailThink2(struct client_entity_s* self, centity_t* owner)
+static qboolean MorkTrailThink(struct client_entity_s* self, centity_t* owner)
+{
+	if (self->alpha <= 0.1f || self->r.scale <= 0.0f)
+		return false;
+
+	self->r.scale -= 0.1f;
+	return true;
+}
+
+static qboolean MorkTrailThink2(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->alpha <= 0.1f || self->r.scale <= 0.0f)
 		return false;
@@ -162,7 +162,7 @@ static void AddGenericExplosion(const centity_t* owner, vec3_t dir, struct model
 	}
 }
 
-static void FXMorkMissileExplode(const centity_t* owner, vec3_t dir)
+static void MorkMissileExplode(const centity_t* owner, vec3_t dir)
 {
 	AddGenericExplosion(owner, dir, mork_projectile_models[1]); //mxd. Blue spark sprite.
 }
@@ -215,7 +215,7 @@ static client_entity_t* MorkMakeLightningPiece(const vec3_t start, const vec3_t 
 	return lightning_r;
 }
 
-static qboolean FXMorkBeamCircle(struct client_entity_s* self, const centity_t* owner)
+static qboolean MorkBeamCircle(struct client_entity_s* self, const centity_t* owner)
 {
 	self->LifeTime += 54;
 
@@ -232,7 +232,7 @@ static qboolean FXMorkBeamCircle(struct client_entity_s* self, const centity_t* 
 	return true;
 }
 
-static qboolean FXMorkBeamUpdate(struct client_entity_s* self, const centity_t* owner)
+static qboolean MorkBeamUpdate(struct client_entity_s* self, const centity_t* owner)
 {
 	static int particle_types[] =
 	{
@@ -260,7 +260,7 @@ static qboolean FXMorkBeamUpdate(struct client_entity_s* self, const centity_t* 
 
 	beam_inner->d_alpha = -1.0f;
 	beam_inner->d_scale = -0.1f;
-	beam_inner->Update = FXMorkTrailThink_old;
+	beam_inner->Update = MorkTrailThink;
 
 	AddEffect(NULL, beam_inner);
 
@@ -283,7 +283,7 @@ static qboolean FXMorkBeamUpdate(struct client_entity_s* self, const centity_t* 
 
 	beam_outer->d_alpha = -0.6f;
 	beam_outer->d_scale = -0.5f;
-	beam_outer->Update = FXMorkTrailThink_old;
+	beam_outer->Update = MorkTrailThink;
 
 	AddEffect(NULL, beam_outer);
 
@@ -312,7 +312,7 @@ static qboolean FXMorkBeamUpdate(struct client_entity_s* self, const centity_t* 
 	return true;
 }
 
-static void FXMorkBeam(centity_t* owner, const int type, const vec3_t origin, const vec3_t vel) //mxd. Separated from FXMEffects().
+static void MorkBeam(centity_t* owner, const int type, const vec3_t origin, const vec3_t vel) //mxd. Separated from FXMEffects().
 {
 	const paletteRGBA_t light_color = { .r = 0, .g = 0, .b = 255, .a = 255 };
 
@@ -325,12 +325,12 @@ static void FXMorkBeam(centity_t* owner, const int type, const vec3_t origin, co
 	beam->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
 
 	beam->AddToView = LinkedEntityUpdatePlacement;
-	beam->Update = FXMorkBeamUpdate;
+	beam->Update = MorkBeamUpdate;
 
 	VectorCopy(owner->origin, beam->startpos);
 
 	AddEffect(owner, beam);
-	FXMorkBeamUpdate(beam, owner);
+	MorkBeamUpdate(beam, owner);
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -341,23 +341,23 @@ static void FXMorkBeam(centity_t* owner, const int type, const vec3_t origin, co
 		trail->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
 		trail->r.scale = 0.5f;
 		trail->LifeTime = i * 120;
-		trail->Update = FXMorkBeamCircle;
+		trail->Update = MorkBeamCircle;
 
 		VectorCopy(owner->current.origin, trail->r.origin);
 		VectorCopy(owner->origin, trail->startpos);
 		VectorCopy(vel, trail->r.angles);
 
 		AddEffect(owner, trail);
-		FXMorkBeamCircle(trail, owner);
+		MorkBeamCircle(trail, owner);
 	}
 }
 
-static void FXImpFireBallExplode(const centity_t* owner, vec3_t dir)
+static void ImpFireBallExplode(const centity_t* owner, vec3_t dir)
 {
 	AddGenericExplosion(owner, dir, imp_models[1]); //mxd. Fire spark sprite.
 }
 
-static qboolean FXImpFireballUpdate(struct client_entity_s* self, const centity_t* owner)
+static qboolean ImpFireballUpdate(struct client_entity_s* self, const centity_t* owner)
 {
 	vec3_t angles;
 	VectorScale(self->r.angles, RAD_TO_ANGLE, angles);
@@ -414,7 +414,7 @@ static qboolean FXImpFireballUpdate(struct client_entity_s* self, const centity_
 	VectorCopy(owner->origin, trail->r.endpos);
 
 	trail->d_alpha = -4.0f;
-	trail->Update = FXMorkTrailThink2;
+	trail->Update = MorkTrailThink2;
 
 	AddEffect(NULL, trail);
 	VectorCopy(owner->origin, self->startpos);
@@ -422,7 +422,7 @@ static qboolean FXImpFireballUpdate(struct client_entity_s* self, const centity_
 	return true;
 }
 
-static void FXImpFireball(centity_t* owner, const vec3_t origin, const vec3_t vel) //mxd. Separated from FXMEffects().
+static void ImpFireball(centity_t* owner, const vec3_t origin, const vec3_t vel) //mxd. Separated from FXMEffects().
 {
 	const int flags = CEF_OWNERS_ORIGIN | CEF_DONT_LINK | CEF_ADDITIVE_PARTS | CEF_ABSOLUTE_PARTS;
 	client_entity_t* fx = ClientEntity_new(FX_SPARKS, flags, origin, NULL, 20);
@@ -437,7 +437,7 @@ static void FXImpFireball(centity_t* owner, const vec3_t origin, const vec3_t ve
 	vectoangles(vel, fx->r.angles);
 	VectorCopy(owner->origin, fx->startpos);
 
-	fx->Update = FXImpFireballUpdate;
+	fx->Update = ImpFireballUpdate;
 	fx->AddToView = LinkedEntityUpdatePlacement;
 
 	if (r_detail->value > DETAIL_NORMAL)
@@ -449,7 +449,7 @@ static void FXImpFireball(centity_t* owner, const vec3_t origin, const vec3_t ve
 	AddEffect(owner, fx);
 }
 
-static qboolean FXCWUpdate(struct client_entity_s* self, centity_t* owner)
+static qboolean CWUpdate(struct client_entity_s* self, centity_t* owner)
 {
 	static int star_particles[3] = { PART_16x16_STAR, PART_16x16_SPARK_C, PART_16x16_SPARK_B }; //mxd. Made local static.
 
@@ -500,7 +500,7 @@ static qboolean FXCWUpdate(struct client_entity_s* self, centity_t* owner)
 	VectorCopy(owner->current.origin, trail_head->r.endpos);
 
 	trail_head->d_alpha = -2.0f;
-	trail_head->Update = FXMorkTrailThink2;
+	trail_head->Update = MorkTrailThink2;
 
 	AddEffect(NULL, trail_head);
 
@@ -547,7 +547,7 @@ static qboolean FXCWUpdate(struct client_entity_s* self, centity_t* owner)
 	VectorCopy(self->direction, trail->velocity);
 	VectorCopy(self->direction, trail->velocity2);
 
-	trail->Update = FXCWTrailThink;
+	trail->Update = CWTrailThink;
 
 	AddEffect(owner, trail);
 
@@ -572,12 +572,12 @@ void FXCWStars(centity_t* owner, const int type, const vec3_t vel)
 	VectorCopy(owner->origin, fx->startpos);
 
 	fx->AddToView = LinkedEntityUpdatePlacement;
-	fx->Update = FXCWUpdate;
+	fx->Update = CWUpdate;
 
 	AddEffect(owner, fx);
 }
 
-static qboolean FXBuoyUpdate(struct client_entity_s* self, const centity_t* owner)
+static qboolean BuoyUpdate(struct client_entity_s* self, const centity_t* owner)
 {
 #define BUOY_FX_END			PART_4x4_RED
 #define BUOY_FX_START		PART_4x4_GREEN
@@ -693,7 +693,7 @@ static qboolean FXBuoyUpdate(struct client_entity_s* self, const centity_t* owne
 	return true;
 }
 
-static void FXBuoy(centity_t* owner, const int flags, const vec3_t origin, const qboolean white)
+static void Buoy(centity_t* owner, const int flags, const vec3_t origin, const qboolean white)
 {
 	client_entity_t* fx;
 
@@ -717,7 +717,7 @@ static void FXBuoy(centity_t* owner, const int flags, const vec3_t origin, const
 
 	fx->flags |= CEF_NO_DRAW;
 	fx->LifeTime = fxi.cl->time + 10000;
-	fx->Update = FXBuoyUpdate;
+	fx->Update = BuoyUpdate;
 
 	if (owner != NULL)
 	{
@@ -730,13 +730,13 @@ static void FXBuoy(centity_t* owner, const int flags, const vec3_t origin, const
 	}
 }
 
-static qboolean FXPermanentUpdate(struct client_entity_s* self, centity_t* owner)
+static qboolean PermanentUpdate(struct client_entity_s* self, centity_t* owner)
 {
 	self->updateTime = 16384;
 	return true;
 }
 
-static qboolean FXBuoyPathDelayedStart(struct client_entity_s* self, centity_t* owner)
+static qboolean BuoyPathDelayedStart(struct client_entity_s* self, centity_t* owner)
 {
 	client_entity_t* buoy = ClientEntity_new(FX_BUOY, CEF_DONT_LINK, self->origin, NULL, 16384);
 
@@ -755,7 +755,7 @@ static qboolean FXBuoyPathDelayedStart(struct client_entity_s* self, centity_t* 
 	VectorCopy(self->endpos, buoy->r.endpos);
 
 	buoy->updateTime = 16384;
-	buoy->Update = FXPermanentUpdate;
+	buoy->Update = PermanentUpdate;
 
 	AddEffect(NULL, buoy);
 
@@ -765,7 +765,7 @@ static qboolean FXBuoyPathDelayedStart(struct client_entity_s* self, centity_t* 
 	return true;
 }
 
-static void FXBuoyPath(const vec3_t start, const vec3_t end)
+static void BuoyPath(const vec3_t start, const vec3_t end)
 {
 	vec3_t origin;
 	VectorAdd(start, end, origin);
@@ -774,7 +774,7 @@ static void FXBuoyPath(const vec3_t start, const vec3_t end)
 	client_entity_t* fx = ClientEntity_new(FX_BUOY, CEF_DONT_LINK | CEF_NO_DRAW, origin, NULL, 100);
 
 	fx->radius = 100.0f;
-	fx->Update = FXBuoyPathDelayedStart;
+	fx->Update = BuoyPathDelayedStart;
 
 	VectorCopy(start, fx->startpos);
 	VectorCopy(end, fx->endpos);
@@ -782,12 +782,12 @@ static void FXBuoyPath(const vec3_t start, const vec3_t end)
 	AddEffect(NULL, fx);
 }
 
-static qboolean FXMMoBlurUpdate(const struct client_entity_s* self, centity_t* owner)
+static qboolean MMoBlurUpdate(const struct client_entity_s* self, centity_t* owner)
 {
 	return self->alpha > 0.05f;
 }
 
-static void FXMMoBlur(const centity_t* owner, const vec3_t origin, const vec3_t angles, const qboolean dagger)
+static void MMoBlur(const centity_t* owner, const vec3_t origin, const vec3_t angles, const qboolean dagger)
 {
 	client_entity_t* blur;
 
@@ -816,12 +816,12 @@ static void FXMMoBlur(const centity_t* owner, const vec3_t origin, const vec3_t 
 	blur->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA | RF_GLOW;
 	blur->r.scale = 1.0f;
 	blur->updateTime = 20;
-	blur->Update = FXMMoBlurUpdate;
+	blur->Update = MMoBlurUpdate;
 
 	AddEffect(NULL, blur);
 }
 
-static qboolean FXAssassinDaggerUpdate(struct client_entity_s* self, centity_t* owner)
+static qboolean AssassinDaggerUpdate(struct client_entity_s* self, centity_t* owner)
 {
 	if (++self->LifeTime == 4)
 	{
@@ -829,13 +829,13 @@ static qboolean FXAssassinDaggerUpdate(struct client_entity_s* self, centity_t* 
 		self->LifeTime = 0;
 	}
 
-	FXMMoBlur(NULL, self->r.origin, self->r.angles, true);
+	MMoBlur(NULL, self->r.origin, self->r.angles, true);
 	self->r.angles[PITCH] += self->velocity2[PITCH];
 
 	return true;
 }
 
-static void FXAssassinDagger(centity_t* owner, const vec3_t vel, const float avel)
+static void AssassinDagger(centity_t* owner, const vec3_t vel, const float avel)
 {
 	client_entity_t* dagger = ClientEntity_new(FX_M_EFFECTS, CEF_DONT_LINK, owner->current.origin, NULL, 20);
 
@@ -844,12 +844,12 @@ static void FXAssassinDagger(centity_t* owner, const vec3_t vel, const float ave
 	dagger->r.flags = RF_FULLBRIGHT;
 	VectorCopy(vel, dagger->velocity);
 	dagger->velocity2[0] = avel * ANGLE_TO_RAD;
-	dagger->Update = FXAssassinDaggerUpdate;
+	dagger->Update = AssassinDaggerUpdate;
 
 	AddEffect(owner, dagger);
 }
 
-static qboolean FXUnderWaterWakeUpdate(struct client_entity_s* self, const centity_t* owner)
+static qboolean UnderwaterWakeUpdate(struct client_entity_s* self, const centity_t* owner)
 {
 	static int water_particles[6] = //mxd. Made local static.
 	{
@@ -898,19 +898,19 @@ static qboolean FXUnderWaterWakeUpdate(struct client_entity_s* self, const centi
 	return (self->LifeTime > 0);
 }
 
-static void FXUnderWaterWake(centity_t* owner)
+static void UnderwaterWake(centity_t* owner)
 {
 	const int flags = CEF_OWNERS_ORIGIN | CEF_NO_DRAW | CEF_ABSOLUTE_PARTS; //mxd
 	client_entity_t* fx = ClientEntity_new(FX_M_EFFECTS, flags, owner->current.origin, NULL, 20);
 
 	fx->radius = 30.0f;
 	fx->LifeTime = 77;
-	fx->Update = FXUnderWaterWakeUpdate;
+	fx->Update = UnderwaterWakeUpdate;
 
 	AddEffect(owner, fx);
 }
 
-static void FXQuakeRing(const vec3_t origin)
+static void QuakeRing(const vec3_t origin)
 {
 #define NUM_RIPPER_PUFFS	12
 #define RIPPER_PUFF_ANGLE	(ANGLE_360 / (float)NUM_RIPPER_PUFFS)
@@ -984,7 +984,7 @@ static void FXQuakeRing(const vec3_t origin)
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("world/quakeshort.wav"), 1.0f, ATTN_NONE, 0);
 }
 
-static void FXGroundAttack(vec3_t origin)
+static void GroundAttack(vec3_t origin)
 {
 	origin[2] -= 16.0f;
 
@@ -994,14 +994,14 @@ static void FXGroundAttack(vec3_t origin)
 	spawner->radius = 100.0f;
 	spawner->LifeTime = fxi.cl->time + 1000;
 	VectorScale(vec3_up, 50.0f, spawner->direction);
-	spawner->Update = FXFlamethrower_trail;
+	spawner->Update = FXFlamethrowerTrail;
 
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/flamethrow.wav"), 1.0f, ATTN_NORM, 0);
 
 	AddEffect(NULL, spawner);
 }
 
-static qboolean FXMorkBeam2_AddToView(struct client_entity_s* self, const centity_t* owner)
+static qboolean MorkBeam2_AddToView(struct client_entity_s* self, const centity_t* owner)
 {
 	LinkedEntityUpdatePlacement(self, owner);
 	VectorCopy(self->r.origin, self->r.endpos);
@@ -1009,7 +1009,7 @@ static qboolean FXMorkBeam2_AddToView(struct client_entity_s* self, const centit
 	return true;
 }
 
-static void FXMorkBeam2(centity_t* owner, const vec3_t startpos)
+static void MorkBeam2(centity_t* owner, const vec3_t startpos)
 {
 	client_entity_t* fx = ClientEntity_new(FX_M_EFFECTS, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, owner->origin, NULL, 17);
 
@@ -1021,7 +1021,7 @@ static void FXMorkBeam2(centity_t* owner, const vec3_t startpos)
 	VectorCopy(startpos, fx->r.startpos);
 	VectorCopy(owner->origin, fx->r.endpos);
 
-	fx->AddToView = FXMorkBeam2_AddToView;
+	fx->AddToView = MorkBeam2_AddToView;
 	fx->Update = KeepSelfAI;
 
 	AddEffect(owner, fx);
@@ -1083,7 +1083,7 @@ static qboolean MorkMissileThink3(struct client_entity_s* self, centity_t* owner
 	return true;
 }
 
-static void FXMorkMissile(centity_t* owner, vec3_t startpos)
+static void MorkMissile(centity_t* owner, vec3_t startpos)
 {
 	const paletteRGBA_t light_color = { .r = 128, .g = 128,.b = 255, .a = 255 };
 	const int count = GetScaledCount(8, 0.85f);
@@ -1136,7 +1136,7 @@ static void FXMorkMissile(centity_t* owner, vec3_t startpos)
 	AddEffect(owner, core);
 }
 
-static void FXMorkMissileHit(const vec3_t origin)
+static void MorkMissileHit(const vec3_t origin)
 {
 	// The white core.
 	client_entity_t* core = ClientEntity_new(FX_M_EFFECTS, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, origin, NULL, 2000);
@@ -1151,7 +1151,7 @@ static void FXMorkMissileHit(const vec3_t origin)
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/mork/ppexplode.wav"), 1.0f, ATTN_IDLE, 0);
 }
 
-static qboolean FXMTrailThink(struct client_entity_s* self, centity_t* owner)
+static qboolean MorkTrackingMissileTrailTrailThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->alpha > 0.1f && self->r.scale > 0.0f)
 	{
@@ -1164,43 +1164,44 @@ static qboolean FXMTrailThink(struct client_entity_s* self, centity_t* owner)
 	return false;
 }
 
-static qboolean FXMMissileTrailThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean MorkTrackingMissileTrailThink(struct client_entity_s* self, const centity_t* owner)
 {
 	self->r.scale = flrand(0.35f, 0.65f);
 
-	client_entity_t* trail_ent = ClientEntity_new(FX_M_EFFECTS, CEF_DONT_LINK, owner->lerp_origin, NULL, 17);
+	client_entity_t* trail = ClientEntity_new(FX_M_EFFECTS, CEF_DONT_LINK, owner->lerp_origin, NULL, 17);
 
-	trail_ent->radius = 500.0f;
-	trail_ent->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA;
-	trail_ent->r.model = &morc_models[5]; // Blue segment trail sprite.
+	trail->radius = 500.0f;
+	trail->r.flags = RF_TRANSLUCENT | RF_TRANS_ADD_ALPHA;
+	trail->r.model = &morc_models[5]; // Blue segment trail sprite.
 
-	trail_ent->r.spriteType = SPRITE_LINE;
-	trail_ent->r.tile = 1.0f;
-	trail_ent->r.scale = 2.0f;
-	trail_ent->r.scale2 = 2.0f;
-	trail_ent->alpha = 0.5f;
+	trail->r.spriteType = SPRITE_LINE;
+	trail->r.tile = 1.0f;
+	trail->r.scale = 2.0f;
+	trail->r.scale2 = 2.0f;
+	trail->alpha = 0.5f;
+	trail->d_alpha = -2.5f;
 
-	VectorCopy(owner->lerp_origin, trail_ent->r.origin);
-	VectorCopy(self->startpos, trail_ent->r.startpos);
-	VectorCopy(owner->lerp_origin, trail_ent->r.endpos);
+	VectorCopy(owner->lerp_origin, trail->r.origin);
+	VectorCopy(self->startpos, trail->r.startpos);
+	VectorCopy(owner->lerp_origin, trail->r.endpos);
 
-	trail_ent->d_alpha = -2.5f;
-	trail_ent->Update = FXMTrailThink;
+	trail->Update = MorkTrackingMissileTrailTrailThink;
 
-	AddEffect(NULL, trail_ent);
+	AddEffect(NULL, trail);
 
 	VectorCopy(owner->lerp_origin, self->startpos);
 
 	return true;
 }
 
-static void FXMorkTrackingMissile(centity_t* owner, const vec3_t origin)
+static void MorkTrackingMissile(centity_t* owner, const vec3_t origin)
 {
 	const paletteRGBA_t light_color = { .r = 0,.g = 0,.b = 255,.a = 255 };
 
 	FXHPMissileCreateWarp(FX_M_EFFECTS, origin);
 
 	client_entity_t* trail = ClientEntity_new(FX_M_EFFECTS, CEF_OWNERS_ORIGIN | CEF_DONT_LINK, origin, NULL, 20);
+
 	trail->radius = 500.0f;
 	trail->r.model = &morc_models[4]; // Morc halo sprite.
 	trail->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
@@ -1209,11 +1210,11 @@ static void FXMorkTrackingMissile(centity_t* owner, const vec3_t origin)
 	VectorCopy(origin, trail->startpos);
 
 	trail->AddToView = LinkedEntityUpdatePlacement;
-	trail->Update = FXMMissileTrailThink;
+	trail->Update = MorkTrackingMissileTrailThink;
 
 	AddEffect(owner, trail);
 
-	FXMMissileTrailThink(trail, owner);
+	MorkTrackingMissileTrailThink(trail, owner);
 }
 
 static qboolean RubbleUpdate(client_entity_t* self, centity_t* owner)
@@ -1227,7 +1228,7 @@ static qboolean RubbleUpdate(client_entity_t* self, centity_t* owner)
 	return true;
 }
 
-static qboolean FXMSsithraExplosionThink(const client_entity_t* self, centity_t* owner)
+static qboolean MSsithraExplosionThink(const client_entity_t* self, centity_t* owner)
 {
 	if (self->LifeTime < fxi.cl->time)
 		return false;
@@ -1334,7 +1335,7 @@ static qboolean FXMSsithraExplosionThink(const client_entity_t* self, centity_t*
 	return true;
 }
 
-static void FXMSsithraExplode(vec3_t origin, vec3_t dir)
+static void MSsithraExplode(vec3_t origin, vec3_t dir)
 {
 	// Create an explosion spawner.
 	client_entity_t* spawner = ClientEntity_new(FX_M_EFFECTS, CEF_NO_DRAW, origin, NULL, 20);
@@ -1343,14 +1344,14 @@ static void FXMSsithraExplode(vec3_t origin, vec3_t dir)
 	spawner->dlight = CE_DLight_new(spawner->color, 100.0f, -50.0f);
 	VectorCopy(dir, spawner->direction);
 	spawner->LifeTime = fxi.cl->time + 250;
-	spawner->Update = FXMSsithraExplosionThink;
+	spawner->Update = MSsithraExplosionThink;
 
 	AddEffect(NULL, spawner);
 
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/mssithra/hit.wav"), 0.5f, ATTN_NORM, 0);
 }
 
-static void FXMSsithraExplodeSmall(const vec3_t origin)
+static void MSsithraExplodeSmall(const vec3_t origin)
 {
 	//TODO: play correct sound here.
 	FireSparks(NULL, FX_SPARKS, 0, origin, vec3_up);
@@ -1422,7 +1423,7 @@ static qboolean ArrowDrawTrail(client_entity_t* self, const centity_t* owner)
 	return true;
 }
 
-static void FXMSsithraArrow(centity_t* owner, vec3_t velocity, const qboolean super)
+static void MSsithraArrow(centity_t* owner, vec3_t velocity, const qboolean super)
 {
 	// Create an explosion spawner.
 	client_entity_t* spawner = ClientEntity_new(FX_M_EFFECTS, CEF_OWNERS_ORIGIN, owner->current.origin, NULL, 20);
@@ -1453,7 +1454,7 @@ static void FXMSsithraArrow(centity_t* owner, vec3_t velocity, const qboolean su
 	AddEffect(owner, spawner);
 }
 
-static void FXMSsithraArrowCharge(vec3_t startpos)
+static void MSsithraArrowCharge(vec3_t startpos)
 {
 	const int count = GetScaledCount(6, 0.85f);
 
@@ -1504,19 +1505,19 @@ void FXMEffects(centity_t* owner, const int type, const int flags, vec3_t origin
 	switch (fx_index)
 	{
 		case FX_M_MISC_EXPLODE:
-			FXMorkMissileExplode(owner, vel);
+			MorkMissileExplode(owner, vel);
 			break;
 
 		case FX_M_BEAM:
-			FXMorkBeam(owner, type, origin, vel); //mxd
+			MorkBeam(owner, type, origin, vel); //mxd
 			break;
 
 		case FX_IMP_FIRE:
-			FXImpFireball(owner, origin, vel); //mxd
+			ImpFireball(owner, origin, vel); //mxd
 			break;
 
 		case FX_IMP_FBEXPL:
-			FXImpFireBallExplode(owner, vel);
+			ImpFireBallExplode(owner, vel);
 			break;
 
 		case FX_CW_STARS:
@@ -1524,62 +1525,62 @@ void FXMEffects(centity_t* owner, const int type, const int flags, vec3_t origin
 			break;
 
 		case FX_BUOY:
-			FXBuoy(owner, flags, origin, (qboolean)vel[0]);
+			Buoy(owner, flags, origin, (qboolean)vel[0]);
 			break;
 
 		case FX_BUOY_PATH:
-			FXBuoyPath(origin, vel);
+			BuoyPath(origin, vel);
 			break;
 
 		case FX_M_MOBLUR:
-			FXMMoBlur(owner, origin, vel, false);
+			MMoBlur(owner, origin, vel, false);
 			break;
 
 		case FX_ASS_DAGGER:
-			FXAssassinDagger(owner, vel, origin[0]);
+			AssassinDagger(owner, vel, origin[0]);
 			break;
 
 		case FX_UNDER_WATER_WAKE:
-			FXUnderWaterWake(owner);
+			UnderwaterWake(owner);
 			break;
 
 		case FX_QUAKE_RING:
-			FXQuakeRing(vel);
+			QuakeRing(vel);
 			break;
 
 		case FX_GROUND_ATTACK:
-			FXGroundAttack(vel);
+			GroundAttack(vel);
 			break;
 
 		case FX_MORK_BEAM:
-			FXMorkBeam2(owner, vel);
+			MorkBeam2(owner, vel);
 			break;
 
 		case FX_MORK_MISSILE:
-			FXMorkMissile(owner, vel);
+			MorkMissile(owner, vel);
 			break;
 
 		case FX_MORK_MISSILE_HIT:
-			FXMorkMissileHit(origin);
+			MorkMissileHit(origin);
 			break;
 
 		case FX_MORK_TRACKING_MISSILE:
-			FXMorkTrackingMissile(owner, origin);
+			MorkTrackingMissile(owner, origin);
 			break;
 
 		case FX_MSSITHRA_EXPLODE:
 			if (flags & CEF_FLAG6)
-				FXMSsithraExplodeSmall(origin);
+				MSsithraExplodeSmall(origin);
 			else
-				FXMSsithraExplode(origin, vel);
+				MSsithraExplode(origin, vel);
 			break;
 
 		case FX_MSSITHRA_ARROW:
-			FXMSsithraArrow(owner, vel, (flags & CEF_FLAG6));
+			MSsithraArrow(owner, vel, (flags & CEF_FLAG6));
 			break;
 
 		case FX_MSSITHRA_ARROW_CHARGE:
-			FXMSsithraArrowCharge(vel);
+			MSsithraArrowCharge(vel);
 			break;
 
 		default:

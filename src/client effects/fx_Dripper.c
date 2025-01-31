@@ -23,7 +23,7 @@ void PreCacheDripper(void)
 	drip_models[2] = fxi.RegisterModel("sprites/fx/waterdrop.sp2");
 }
 
-static qboolean FXDripThinkSolid(client_entity_t* drip, centity_t* owner)
+static qboolean DripThinkSolid(client_entity_t* drip, centity_t* owner)
 {
 	vec3_t origin;
 	VectorCopy(drip->r.origin, origin);
@@ -50,7 +50,7 @@ static qboolean FXDripThinkSolid(client_entity_t* drip, centity_t* owner)
 	return true;
 }
 
-static qboolean FXDripThinkWater(client_entity_t* drip, centity_t* owner)
+static qboolean DripThinkWater(client_entity_t* drip, centity_t* owner)
 {
 	vec3_t origin;
 	VectorCopy(drip->r.origin, origin);
@@ -78,7 +78,7 @@ static qboolean FXDripThinkWater(client_entity_t* drip, centity_t* owner)
 	return true;
 }
 
-static qboolean FXDripThinkLava(client_entity_t* drip, centity_t* owner)
+static qboolean DripThinkLava(client_entity_t* drip, centity_t* owner)
 {
 	vec3_t origin;
 	VectorCopy(drip->r.origin, origin);
@@ -107,7 +107,7 @@ static qboolean FXDripThinkLava(client_entity_t* drip, centity_t* owner)
 	return true;
 }
 
-static qboolean FXDripperParticleSpawner(client_entity_t* spawner, centity_t* owner)
+static qboolean DripperParticleSpawner(client_entity_t* spawner, centity_t* owner)
 {
 	// Refresh time so it gets updated a random amount.
 	spawner->updateTime = irand(spawner->LifeTime / 2, spawner->LifeTime * 2);
@@ -127,15 +127,15 @@ static qboolean FXDripperParticleSpawner(client_entity_t* spawner, centity_t* ow
 	switch (spawner->SpawnInfo & (CONTENTS_SOLID | CONTENTS_WATER | CONTENTS_LAVA))
 	{
 		case CONTENTS_WATER:
-			drip->Update = FXDripThinkWater;
+			drip->Update = DripThinkWater;
 			break;
 
 		case CONTENTS_LAVA:
-			drip->Update = FXDripThinkLava;
+			drip->Update = DripThinkLava;
 			break;
 
 		default:
-			drip->Update = FXDripThinkSolid;
+			drip->Update = DripThinkSolid;
 			break;
 	}
 
@@ -157,7 +157,7 @@ void FXDripper(centity_t* owner, const int type, int flags, vec3_t origin)
 	dripper->r.frame = frame;
 
 	dripper->LifeTime = 60 * 1000 / drips_per_min;
-	dripper->Update = FXDripperParticleSpawner;
+	dripper->Update = DripperParticleSpawner;
 
 	dripper->acceleration[2] = GetGravity();
 	dripper->radius = DRIP_RADIUS;

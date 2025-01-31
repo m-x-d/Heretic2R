@@ -32,7 +32,7 @@ void PreCacheMorph(void)
 	morph_models[3] = fxi.RegisterModel("models/objects/feathers/feather2/tris.fm");
 }
 
-static qboolean FXMorphMissileThink(client_entity_t* missile, centity_t* owner)
+static qboolean MorphMissileThink(client_entity_t* missile, centity_t* owner)
 {
 	// Create a new entity for these particles to attach to.
 	const int flags = (int)(missile->flags | CEF_NO_DRAW | CEF_ADDITIVE_PARTS); //mxd
@@ -118,7 +118,7 @@ void FXMorphMissile(centity_t* owner, const int type, const int flags, const vec
 	missile->r.angles[PITCH] = -ANGLE_90; // Set the pitch AGAIN.
 	missile->color.c = MORPH_COLOR;
 	missile->dlight = CE_DLight_new(missile->color, 150.0f, 0.0f);
-	missile->Update = FXMorphMissileThink;
+	missile->Update = MorphMissileThink;
 
 	AddEffect(owner, missile);
 
@@ -126,7 +126,7 @@ void FXMorphMissile(centity_t* owner, const int type, const int flags, const vec
 }
 
 // Initial entry from server - create first object. This has the light on it, but no trail yet.
-void FXMorphMissile_initial(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXMorphMissileInitial(centity_t* owner, const int type, const int flags, const vec3_t origin)
 {
 	// Get the initial yaw.
 	byte yaw;
@@ -153,7 +153,7 @@ void FXMorphMissile_initial(centity_t* owner, const int type, const int flags, c
 
 		missile->color.c = MORPH_COLOR;
 		missile->dlight = CE_DLight_new(missile->color, 110.0f, 0.0f);
-		missile->Update = FXMorphMissileThink;
+		missile->Update = MorphMissileThink;
 
 		AddEffect(&fxi.server_entities[morph_array[i]], missile);
 
@@ -238,7 +238,7 @@ void FXMorphExplode(centity_t* owner, int type, const int flags, const vec3_t or
 }
 
 // Make the feather float down.
-static qboolean FXFeatherThink(client_entity_t* self, centity_t* owner)
+static qboolean FeatherThink(client_entity_t* self, centity_t* owner)
 {
 	if (--self->SpawnInfo == 0)
 		return false;
@@ -329,7 +329,7 @@ void FXChickenExplode(centity_t* owner, const int type, const int flags, const v
 			feather->yscale = flrand(0.05f, 0.2f);
 			feather->xscale = flrand(-0.2f, 0.2f);
 			feather->SpawnInfo = 170;
-			feather->Update = FXFeatherThink;
+			feather->Update = FeatherThink;
 
 			AddEffect(NULL, feather);
 		}
@@ -351,7 +351,7 @@ void FXChickenExplode(centity_t* owner, const int type, const int flags, const v
 			feather->yscale = flrand(0.1f, 0.3f);
 			feather->xscale = flrand(-0.3f, 0.3f);
 			feather->SpawnInfo = 170;
-			feather->Update = FXFeatherThink;
+			feather->Update = FeatherThink;
 
 			AddEffect(NULL, feather);
 		}

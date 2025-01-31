@@ -22,13 +22,13 @@ void PreCacheTB(void)
 	tb_dustpuff_model = fxi.RegisterModel("sprites/fx/steam_add.sp2");
 }
 
-static qboolean FXTBDustPuffThink(client_entity_t* puff, centity_t* owner)
+static qboolean TBDustPuffThink(client_entity_t* puff, centity_t* owner)
 {
 	puff->flags &= ~CEF_DISAPPEARED;
 	return puff->alpha > 0.0f;
 }
 
-static void FXTBDustPuff(const int type, const int flags, vec3_t origin, const float in_angle)
+static void TBDustPuff(const int type, const int flags, vec3_t origin, const float in_angle)
 {
 	client_entity_t* puff = ClientEntity_new(type, flags, origin, NULL, 100);
 
@@ -48,15 +48,15 @@ static void FXTBDustPuff(const int type, const int flags, vec3_t origin, const f
 	puff->velocity[2] = flrand(25.0f, 75.0f);
 	puff->acceleration[2] = puff->velocity[2] * -1.23f;
 
-	puff->Update = FXTBDustPuffThink;
+	puff->Update = TBDustPuffThink;
 
 	AddEffect(NULL, puff);
 }
 
-static void FXTBDustPuffOnGround(centity_t* owner, const int type, const int flags, vec3_t origin)
+static void TBDustPuffOnGround(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	for (int i = 0; i < 8; i++)
-		FXTBDustPuff(type, flags, origin, (float)i * flrand(30.0f, 60.0f));
+		TBDustPuff(type, flags, origin, (float)i * flrand(30.0f, 60.0f));
 }
 
 void FXTBEffects(centity_t* owner, const int type, const int flags, vec3_t origin)
@@ -66,5 +66,5 @@ void FXTBEffects(centity_t* owner, const int type, const int flags, vec3_t origi
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_TB_EFFECTS].formatString, &fx_index, &vel); //TODO: 'vel' arg is unused.
 
 	if (fx_index == FX_TB_PUFF)
-		FXTBDustPuffOnGround(owner, type, flags, origin);
+		TBDustPuffOnGround(owner, type, flags, origin);
 }

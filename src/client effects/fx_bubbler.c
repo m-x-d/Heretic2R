@@ -23,18 +23,18 @@ void PreCacheBubbler(void)
 	bubble_model = fxi.RegisterModel("sprites/fx/bubble.sp2");
 }
 
-static qboolean FXBubbleThink(client_entity_t* bubble, centity_t* owner)
+static qboolean BubbleThink(client_entity_t* bubble, centity_t* owner)
 {
-	// Delay the death of this entity by 500 ms.
-	bubble->updateTime = 500;
-	bubble->Update = RemoveSelfAI;
-	bubble->nextThinkTime = fxi.cl->time + 500;
-
 	bubble->d_scale = -2.0f;
 	bubble->d_alpha = -8.0f;
 	bubble->velocity[2] = 0.0f;
 	bubble->acceleration[2] = 0.0f;
 	bubble->r.origin[2] += 1.0f;
+
+	// Delay the death of this entity by 500 ms.
+	bubble->updateTime = 500;
+	bubble->nextThinkTime = fxi.cl->time + 500;
+	bubble->Update = RemoveSelfAI;
 
 	DoWaterSplash(bubble, color_white, BUBBLE_NUM_SPLASHES);
 	FXWaterRipples(NULL, FX_WATER_RIPPLES, 0, bubble->r.origin);
@@ -44,7 +44,7 @@ static qboolean FXBubbleThink(client_entity_t* bubble, centity_t* owner)
 	return true;
 }
 
-static qboolean FXBubblerParticleSpawner(client_entity_t* spawner, centity_t* owner)
+static qboolean BubblerParticleSpawner(client_entity_t* spawner, centity_t* owner)
 {
 	vec3_t origin;
 	VectorCopy(spawner->r.origin, origin);
@@ -57,13 +57,13 @@ static qboolean FXBubblerParticleSpawner(client_entity_t* spawner, centity_t* ow
 
 	client_entity_t* bubble = ClientEntity_new(-1, 0, origin, NULL, (int)spawner->SpawnData);
 
+	bubble->radius = flrand(0.5f, 1.5f);
 	bubble->r.model = &bubble_model;
 	bubble->r.scale = flrand(0.1f, 0.2f);
 	bubble->r.flags = RF_TRANSLUCENT;
-	bubble->radius = flrand(0.5f, 1.5f);
 	VectorCopy(spawner->acceleration, bubble->acceleration);
+	bubble->Update = BubbleThink;
 
-	bubble->Update = FXBubbleThink;
 	AddEffect(NULL, bubble);
 
 	return true;
@@ -91,12 +91,11 @@ void FXBubbler(centity_t* owner, const int type, int flags, vec3_t origin)
 	flags |= CEF_NO_DRAW | CEF_NOMOVE | CEF_CULLED | CEF_VIEWSTATUSCHANGED | CEF_CHECK_OWNER;
 	client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, 1000);
 
-	self->SpawnDelay = 60 * 1000 / bubbles_per_min;
-	self->Update = FXBubblerParticleSpawner;
-
-	self->acceleration[2] = BUBBLE_ACCELERATION;
 	self->radius = BUBBLE_RADIUS;
+	self->SpawnDelay = 60 * 1000 / bubbles_per_min;
+	self->acceleration[2] = BUBBLE_ACCELERATION;
 	self->SpawnData = time;
+	self->Update = BubblerParticleSpawner;
 
 	AddEffect(owner, self);
 }
@@ -118,12 +117,12 @@ void FXBubble(centity_t* owner, int type, const int flags, vec3_t origin)
 
 	client_entity_t* bubble = ClientEntity_new(FX_BUBBLE, flags, origin, NULL, time);
 
+	bubble->radius = BUBBLE_RADIUS * 2;
 	bubble->r.model = &bubble_model;
 	bubble->r.scale = flrand(0.025f, 0.1f);
 	bubble->r.flags = RF_TRANSLUCENT;
-	bubble->radius = BUBBLE_RADIUS * 2;
 	bubble->acceleration[2] = BUBBLE_ACCELERATION;
-	bubble->Update = FXBubbleThink;
+	bubble->Update = BubbleThink;
 
 	AddEffect(NULL, bubble);
 }
@@ -167,9 +166,9 @@ void FXRandWaterBubble(centity_t* owner, const int type, int flags, vec3_t origi
 	flags |= CEF_NO_DRAW | CEF_ABSOLUTE_PARTS | CEF_CHECK_OWNER;
 	client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, irand(50, 500));
 
-	self->Update = CreateBubble;
+	self->radius = 20.0f;
 	self->AddToView = LinkedEntityUpdatePlacement;
-	self->radius = 20;
+	self->Update = CreateBubble;
 
 	AddEffect(owner, self);
 }

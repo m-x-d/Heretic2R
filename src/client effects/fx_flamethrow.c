@@ -15,7 +15,7 @@
 
 #define FLAME_COUNT		4
 
-qboolean FXFlamethrower_trail(client_entity_t* self, centity_t* owner)
+qboolean FXFlamethrowerTrail(client_entity_t* self, centity_t* owner)
 {
 	if (self->LifeTime < fxi.cl->time)
 	{
@@ -62,10 +62,8 @@ qboolean FXFlamethrower_trail(client_entity_t* self, centity_t* owner)
 	return true;
 }
 
-static qboolean FXFlamethrower_steam_trail(client_entity_t* self, centity_t* owner)
+static qboolean FlamethrowerSteamTrail(client_entity_t* self, centity_t* owner)
 {
-	paletteRGBA_t color;
-
 	if (self->LifeTime < fxi.cl->time)
 	{
 		self->Update = RemoveSelfAI;
@@ -78,11 +76,7 @@ static qboolean FXFlamethrower_steam_trail(client_entity_t* self, centity_t* own
 
 	for (int i = 0; i < count; i++)
 	{
-		if (self->flags & CEF_FLAG7)
-			color.c = 0x33777777;
-		else
-			color.c = 0x50ffffff;
-
+		const paletteRGBA_t color = { .c = ((self->flags & CEF_FLAG7) ? 0x33777777 : 0x50ffffff) } ;
 		client_particle_t* flame = ClientParticle_new(PART_32x32_STEAM, color, 2000);
 
 		flame->d_alpha = flrand(-200.0f, -150.0f);
@@ -135,16 +129,16 @@ void FXFlamethrower(centity_t* owner, const int type, const int flags, vec3_t or
 		else
 			fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("objects/steamjet.wav"), 1, ATTN_NORM, 0);
 
-		glow->Update = FXFlamethrower_steam_trail;
+		glow->Update = FlamethrowerSteamTrail;
 	}
 	else
 	{
 		fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("misc/flamethrow.wav"), 1, ATTN_NORM, 0);
-		glow->Update = FXFlamethrower_trail;
+		glow->Update = FXFlamethrowerTrail;
 	}
 
 	AddEffect(NULL, glow);
 }
 
 // Put out there just so we can make the real effect match this.
-void FXflametest(centity_t* owner, int type, int flags, vec3_t origin) { }
+void FXflametest(centity_t* owner, int type, int flags, vec3_t origin) { } //TODO: remove?

@@ -24,7 +24,7 @@ void PreCacheFlare(void)
 }
 
 //mxd. Added to reduce code duplication. //TODO: the logic is kinda broken, at least for env_sun1 entity...
-static qboolean UpdateFlareOrigin(struct client_entity_s* self)
+static qboolean LensFlareUpdateOrigin(struct client_entity_s* self)
 {
 	// Determine visibility.
 	trace_t tr;
@@ -119,15 +119,15 @@ static qboolean UpdateFlareOrigin(struct client_entity_s* self)
 }
 
 // FIXME: These need to interpolate their movement so as to not do snap position changes.
-static qboolean FXFlareThink(struct client_entity_s* self, centity_t* owner)
+static qboolean LensFlareThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
 		return false;
 
-	return UpdateFlareOrigin(self); //mxd
+	return LensFlareUpdateOrigin(self); //mxd
 }
 
-static qboolean FXFlareThinkAttached(struct client_entity_s* self, centity_t* owner)
+static qboolean LensFlareThinkAttached(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
 		return false;
@@ -153,7 +153,7 @@ static qboolean FXFlareThinkAttached(struct client_entity_s* self, centity_t* ow
 	VectorSubtract(self->endpos2, self->startpos2, diff); // Diff between last updated spot and where to be.
 	VectorMA(self->startpos2, lerp, diff, self->direction);
 
-	return UpdateFlareOrigin(self); //mxd
+	return LensFlareUpdateOrigin(self); //mxd
 }
 
 void FXLensFlare(centity_t* owner, int type, const int flags, const vec3_t origin)
@@ -199,7 +199,7 @@ void FXLensFlare(centity_t* owner, int type, const int flags, const vec3_t origi
 		flare->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA | RF_NODEPTHTEST;
 		flare->Scale = flare_scale[i];
 		flare->NoOfAnimFrames = 1;
-		flare->Update = FXFlareThink;
+		flare->Update = LensFlareThink;
 		VectorCopy(origin, flare->direction);
 
 		if (flags & CEF_FLAG7)
@@ -212,10 +212,10 @@ void FXLensFlare(centity_t* owner, int type, const int flags, const vec3_t origi
 			AddEffect(owner, flare);
 
 			flare->extra = (centity_t*)owner;
-			flare->Update = FXFlareThinkAttached;
+			flare->Update = LensFlareThinkAttached;
 			flare->updateTime = 17;
 
-			FXFlareThinkAttached(flare, owner);
+			LensFlareThinkAttached(flare, owner);
 
 			VectorCopy(flare->direction, flare->startpos2);
 			VectorCopy(flare->direction, flare->endpos2);
@@ -225,7 +225,7 @@ void FXLensFlare(centity_t* owner, int type, const int flags, const vec3_t origi
 		else
 		{
 			AddEffect(NULL, flare);
-			FXFlareThink(flare, NULL);
+			LensFlareThink(flare, NULL);
 		}
 	}
 }

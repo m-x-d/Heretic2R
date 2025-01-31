@@ -21,7 +21,7 @@ void PreCacheHealth(void)
 	health_models[1] = fxi.RegisterModel("models/items/health/healthbig/tris.fm");
 }
 
-static qboolean FXHealthPickupThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean HealthPickupThink(struct client_entity_s* self, const centity_t* owner)
 {
 	paletteRGBA_t color;
 
@@ -71,7 +71,7 @@ void FXHealthPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 	if (model_index == 0) // Bigger scale for Half Health.
 		ce->r.scale = 1.5f;
 
-	ce->Update = FXHealthPickupThink;
+	ce->Update = HealthPickupThink;
 
 	AddEffect(owner, ce);
 }

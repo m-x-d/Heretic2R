@@ -12,8 +12,8 @@
 #include "fx_debris.h"
 #include "g_playstats.h"
 
-#define	FIST_SCALE				0.25f
-#define	FIST_WIMPY_SCALE		0.15f
+#define FIST_SCALE				0.25f
+#define FIST_WIMPY_SCALE		0.15f
 #define FIST_BLAST_VEL			64.0f
 #define FIST_POWER_BLAST_VEL	200.0f
 
@@ -26,7 +26,7 @@ void PreCacheFist(void)
 	fist_models[2] = fxi.RegisterModel("models/spells/meteorbarrier/tris.fm");
 }
 
-static qboolean FXFlyingFistTrailThink(struct client_entity_s* self, centity_t* owner)
+static qboolean FlyingFistTrailThink(struct client_entity_s* self, centity_t* owner)
 {
 	self->updateTime = 20;
 
@@ -120,7 +120,7 @@ void FXFlyingFist(centity_t* owner, const int type, const int flags, vec3_t orig
 
 	missile->radius = 128.0f;
 	missile->dlight = CE_DLight_new(light_color, lightsize, 0.0f);
-	missile->Update = FXFlyingFistTrailThink;
+	missile->Update = FlyingFistTrailThink;
 
 	missile->SpawnInfo = 32;
 
@@ -227,14 +227,11 @@ void FXFlyingFistExplode(centity_t* owner, const int type, const int flags, vec3
 
 	if (is_powered)
 	{
-		vec3_t mins;
-
 		// Meteor throws out chunks.
-		VectorSet(dir, 0.0f, 0.0f, 1.0f);
-		VectorSet(mins, 2.0f, 2.0f, 2.0f);	// Because SpawnChunks needs a value for bounding box.
+		const vec3_t mins = { 2.0f, 2.0f, 2.0f }; // Because SpawnChunks needs a value for bounding box.
 
 		// No mana meteors are wimpy! - clear out cef_flag# stuff, means different stuff to debris.
 		const float chunk_scale = (is_wimpy ? 0.5f : 1.0f); //mxd
-		FXDebris_SpawnChunks(type, flags & ~(CEF_FLAG6 | CEF_FLAG7 | CEF_FLAG8), origin, 5, MAT_GREYSTONE, dir, 80000.0f, mins, chunk_scale, false);
+		FXDebris_SpawnChunks(type, flags & ~(CEF_FLAG6 | CEF_FLAG7 | CEF_FLAG8), origin, 5, MAT_GREYSTONE, vec3_up, 80000.0f, mins, chunk_scale, false);
 	}
 }

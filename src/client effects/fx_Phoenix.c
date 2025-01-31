@@ -46,7 +46,7 @@ void PreCachePhoenix(void)
 
 #pragma region ========================== PHOENIX EXPLOSION ==========================
 
-static qboolean FXPhoenixMissileThink(client_entity_t* missile, centity_t* owner)
+static qboolean PhoenixMissileThink(client_entity_t* missile, centity_t* owner)
 {
 	int duration;
 
@@ -188,14 +188,14 @@ void FXPhoenixMissile(centity_t* owner, const int type, const int flags, const v
 		missile->dlight = CE_DLight_new(missile->color, 150.0f, 0.0f);
 
 	if (flags & CEF_FLAG6)
-		missile->Update = FXPhoenixMissilePowerThink;
+		missile->Update = PhoenixMissilePowerThink;
 	else
-		missile->Update = FXPhoenixMissileThink;
+		missile->Update = PhoenixMissileThink;
 
 	AddEffect(owner, missile);
 }
 
-static qboolean FXPhoenixExplosionSmallBallThink(client_entity_t* ball, centity_t* owner) //mxd. Moved above FXPhoenixExplosionBallThink.
+static qboolean PhoenixExplosionSmallBallThink(client_entity_t* ball, centity_t* owner) //mxd. Moved above FXPhoenixExplosionBallThink.
 {
 	if (fxi.cl->time - ball->startTime > EXPLODE_TIME_MAX)
 		return false;
@@ -211,9 +211,9 @@ static qboolean FXPhoenixExplosionSmallBallThink(client_entity_t* ball, centity_
 }
 
 // This is also exported for use in FXBarrelExplode.
-qboolean FXPhoenixExplosionBallThink(client_entity_t* ball, centity_t* owner)
+qboolean PhoenixExplosionBallThink(client_entity_t* ball, centity_t* owner)
 {
-	if (!FXPhoenixExplosionSmallBallThink(ball, owner))
+	if (!PhoenixExplosionSmallBallThink(ball, owner))
 		return false;
 
 	if (ball->dlight->intensity > 0.0f)
@@ -222,7 +222,7 @@ qboolean FXPhoenixExplosionBallThink(client_entity_t* ball, centity_t* owner)
 	return true;
 }
 
-static qboolean FXPhoenixExplosionBirdThink(client_entity_t* bird, centity_t* owner)
+static qboolean PhoenixExplosionBirdThink(client_entity_t* bird, centity_t* owner)
 {
 	bird->LifeTime--;
 
@@ -271,7 +271,7 @@ client_entity_t* CreatePhoenixSmallExplosion(const vec3_t ball_origin) //TODO: r
 	sub_explosion->lastThinkTime = fxi.cl->time;
 	sub_explosion->velocity2[YAW] = flrand(-ANGLE_180, ANGLE_180);
 	sub_explosion->velocity2[PITCH] = flrand(-ANGLE_180, ANGLE_180);
-	sub_explosion->Update = FXPhoenixExplosionSmallBallThink;
+	sub_explosion->Update = PhoenixExplosionSmallBallThink;
 
 	return sub_explosion;
 }
@@ -289,7 +289,7 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, const vec3_t 
 	if (flags & CEF_FLAG6)
 	{
 		// Powered-up version.
-		FXPhoenixExplodePower(type, flags, origin, dir);
+		PhoenixExplodePower(type, flags, origin, dir);
 		return;
 	}
 
@@ -334,7 +334,7 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, const vec3_t 
 
 	const paletteRGBA_t light_color = { .c = 0xff00ffff };
 	explosion->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
-	explosion->Update = FXPhoenixExplosionBallThink;
+	explosion->Update = PhoenixExplosionBallThink;
 
 	AddEffect(NULL, explosion);
 
@@ -391,7 +391,7 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, const vec3_t 
 	phoenix->d_alpha = -1.0f;
 	phoenix->d_scale = 1.25f;
 	phoenix->LifeTime = 10;
-	phoenix->Update = FXPhoenixExplosionBirdThink;
+	phoenix->Update = PhoenixExplosionBirdThink;
 
 	AddEffect(NULL, phoenix);
 
@@ -406,13 +406,13 @@ void FXPhoenixExplode(centity_t* owner, const int type, int flags, const vec3_t 
 #define PHOENIXPOWER_PARTS_PER_TRAIL	8
 #define PHOENIXPOWER_RADIUS				72.0f
 
-static qboolean FXPhoenixExplosionBirdThinkPower(client_entity_t* bird, centity_t* owner)
+static qboolean PhoenixExplosionBirdPowerThink(client_entity_t* bird, centity_t* owner)
 {
 	bird->LifeTime--;
 	return (bird->LifeTime > 0);
 }
 
-static void FXPhoenixExplodePower(const int type, int flags, const vec3_t origin, const vec3_t dir)
+static void PhoenixExplodePower(const int type, int flags, const vec3_t origin, const vec3_t dir)
 {
 #define TRAIL_SCALER	(18.0f / 8.0f) //mxd
 
@@ -431,7 +431,7 @@ static void FXPhoenixExplodePower(const int type, int flags, const vec3_t origin
 
 	const paletteRGBA_t light_color = { .c = 0xff00ffff };
 	explosion->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
-	explosion->Update = FXPhoenixExplosionBallThink;
+	explosion->Update = PhoenixExplosionBallThink;
 
 	AddEffect(NULL, explosion);
 
@@ -504,7 +504,7 @@ static void FXPhoenixExplodePower(const int type, int flags, const vec3_t origin
 	phoenix_outer->d_alpha = -1.5f;
 	phoenix_outer->d_scale = detail_scale;
 	phoenix_outer->LifeTime = 6;
-	phoenix_outer->Update = FXPhoenixExplosionBirdThinkPower;
+	phoenix_outer->Update = PhoenixExplosionBirdPowerThink;
 
 	AddEffect(NULL, phoenix_outer);
 
@@ -518,14 +518,14 @@ static void FXPhoenixExplodePower(const int type, int flags, const vec3_t origin
 	phoenix_inner->acceleration[2] = 256.0f;
 	phoenix_inner->d_scale = -1.0f / 0.6f;
 	phoenix_inner->LifeTime = 6;
-	phoenix_inner->Update = FXPhoenixExplosionBirdThinkPower;
+	phoenix_inner->Update = PhoenixExplosionBirdPowerThink;
 
 	AddEffect(NULL, phoenix_inner);
 
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("weapons/PhoenixPowerHit.wav"), 1.0f, ATTN_NORM, 0);
 }
 
-static qboolean FXPhoenixMissilePowerThink(client_entity_t* missile, centity_t* owner)
+static qboolean PhoenixMissilePowerThink(client_entity_t* missile, centity_t* owner)
 {
 	int duration;
 

@@ -14,7 +14,7 @@ void PreCacheRipples(void)
 	ripple_model = fxi.RegisterModel("sprites/fx/waterentryripple.sp2");
 }
 
-static qboolean FXRippleSpawnerThink(client_entity_t* spawner, centity_t* owner)
+static qboolean RippleSpawnerThink(client_entity_t* spawner, centity_t* owner)
 {
 	const float alpha = 1.0f / (float)((4 - spawner->SpawnInfo) * (4 - spawner->SpawnInfo));
 
@@ -50,7 +50,7 @@ void FXWaterRipples(centity_t* owner, const int type, const int flags, const vec
 
 		spawner->flags |= CEF_NO_DRAW | CEF_NOMOVE;
 		spawner->SpawnInfo = 3;
-		spawner->Update = FXRippleSpawnerThink;
+		spawner->Update = RippleSpawnerThink;
 
 		AddEffect(NULL, spawner);
 	}

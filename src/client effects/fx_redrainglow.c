@@ -16,7 +16,7 @@
 
 #define CLOUD_GEN_RAD	30.0f
 
-static qboolean FXRedRainGlowThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean RedRainGlowThink(struct client_entity_s* self, const centity_t* owner)
 {
 	// If we've timed out, stop the effect (allow for fading). If we're not on a time limit, check the EF flag.
 	if ((self->LifeTime > 0 && self->LifeTime < fxi.cl->time) || !(owner->current.effects & EF_TRAILS_ENABLED))
@@ -128,7 +128,7 @@ void FXRedRainGlow(centity_t* owner, const int type, const int flags, const vec3
 		glow->dlight = CE_DLight_new(glow->color, 150.0f, 0.0f);
 
 	glow->AddToView = LinkedEntityUpdatePlacement;
-	glow->Update = FXRedRainGlowThink;
+	glow->Update = RedRainGlowThink;
 
 	AddEffect(owner, glow);
 }

@@ -62,7 +62,7 @@ void PreCacheIEffects(void)
 	globe_models[4] = fxi.RegisterModel("sprites/fx/neon.sp2");
 }
 
-static qboolean FXInsectStaffTrailThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean InsectStaffTrailThink(struct client_entity_s* self, const centity_t* owner)
 {
 	vec3_t trail_start, trail;
 
@@ -122,7 +122,7 @@ static qboolean FXInsectStaffTrailThink(struct client_entity_s* self, const cent
 	return true;
 }
 
-static void FXInsectStaff(centity_t* owner, const int type, const int flags, vec3_t origin)
+static void InsectStaff(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	const paletteRGBA_t light_color = { .r = 255,.g = 64,.b = 32,.a = 255 };
 
@@ -134,7 +134,7 @@ static void FXInsectStaff(centity_t* owner, const int type, const int flags, vec
 	trail->r.color = color_white;
 	trail->radius = 20.0f;
 
-	trail->Update = FXInsectStaffTrailThink;
+	trail->Update = InsectStaffTrailThink;
 
 	if (r_detail->value > DETAIL_NORMAL)
 		trail->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
@@ -142,7 +142,7 @@ static void FXInsectStaff(centity_t* owner, const int type, const int flags, vec
 	AddEffect(owner, trail);
 }
 
-static void FXInsectStaffExplode(const int type, const int flags, vec3_t origin, vec3_t dir)
+static void InsectStaffExplode(const int type, const int flags, vec3_t origin, vec3_t dir)
 {
 	const paletteRGBA_t light_color = { .r = 255,.g = 64,.b = 32,.a = 255 };
 
@@ -178,13 +178,13 @@ static void FXInsectStaffExplode(const int type, const int flags, vec3_t origin,
 	}
 }
 
-static qboolean FXGlobeOfOuchinessGlobeThink(struct client_entity_s* self, centity_t* owner)
+static qboolean GlobeOfOuchinessGlobeThink(struct client_entity_s* self, centity_t* owner)
 {
 	self->r.scale = flrand(0.35f, 0.5f);
 	return true;
 }
 
-static qboolean FXGlobeOfOuchinessAuraThink(const struct client_entity_s* self, const centity_t* owner)
+static qboolean GlobeOfOuchinessAuraThink(const struct client_entity_s* self, const centity_t* owner)
 {
 	vec3_t trail_start;
 	VectorCopy(owner->origin, trail_start);
@@ -233,7 +233,7 @@ static qboolean FXGlobeOfOuchinessAuraThink(const struct client_entity_s* self, 
 	return true;
 }
 
-static void FXInsectGlobe(centity_t* owner, const int type, const int flags, vec3_t origin)
+static void InsectGlobe(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	const paletteRGBA_t light_color = { .r = 0,.g = 0,.b = 255,.a = 255 };
 
@@ -243,11 +243,11 @@ static void FXInsectGlobe(centity_t* owner, const int type, const int flags, vec
 
 	aura_thinker->flags |= CEF_NO_DRAW;
 	aura_thinker->dlight = CE_DLight_new(light_color, 150.0f, 0.0f);
-	aura_thinker->Update = FXGlobeOfOuchinessAuraThink;
+	aura_thinker->Update = GlobeOfOuchinessAuraThink;
 	aura_thinker->extra = owner; // The caster's centity_t.
 
 	AddEffect(owner, aura_thinker);
-	FXGlobeOfOuchinessAuraThink(aura_thinker, owner);
+	GlobeOfOuchinessAuraThink(aura_thinker, owner);
 
 	// Create the globe of ouchiness itself.
 	client_entity_t* globe_thinker = ClientEntity_new(type, flags, origin, NULL, 100);
@@ -260,12 +260,12 @@ static void FXInsectGlobe(centity_t* owner, const int type, const int flags, vec
 
 	globe_thinker->radius = 70.0f;
 	globe_thinker->AddToView = LinkedEntityUpdatePlacement;
-	globe_thinker->Update = FXGlobeOfOuchinessGlobeThink;
+	globe_thinker->Update = GlobeOfOuchinessGlobeThink;
 
 	AddEffect(owner, globe_thinker);
 }
 
-static qboolean FXGlobeOfOuchinessGlowballThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean GlobeOfOuchinessGlowballThink(struct client_entity_s* self, const centity_t* owner)
 {
 	if (owner->current.effects & EF_MARCUS_FLAG1)
 		self->color.r++;
@@ -300,7 +300,7 @@ static qboolean FXGlobeOfOuchinessGlowballThink(struct client_entity_s* self, co
 	return false;
 }
 
-static qboolean FXGlobeOfOuchinessGlowballSpawnerThink(struct client_entity_s* self, centity_t* owner)
+static qboolean GlobeOfOuchinessGlowballSpawnerThink(struct client_entity_s* self, centity_t* owner)
 {
 	// 'self->extra' refers to the caster's centity_t.
 	const centity_t* caster = (centity_t*)self->extra;
@@ -346,24 +346,24 @@ static qboolean FXGlobeOfOuchinessGlowballSpawnerThink(struct client_entity_s* s
 	glowball->radius = 20.0f;
 
 	glowball->extra = (void*)owner;
-	glowball->Update = FXGlobeOfOuchinessGlowballThink;
+	glowball->Update = GlobeOfOuchinessGlowballThink;
 
 	AddEffect(owner, glowball);
-	FXGlobeOfOuchinessGlowballThink(glowball, owner);
+	GlobeOfOuchinessGlowballThink(glowball, owner);
 
 	self->color.g++;
 
 	return true;
 }
 
-static void FXInsectGlow(centity_t* owner, const int type, const int flags, vec3_t origin, const short caster_entnum)
+static void InsectGlow(centity_t* owner, const int type, const int flags, vec3_t origin, const short caster_entnum)
 {
 	// Create a spawner that will create the glowballs.
 	const int caster_update = ((r_detail->value < DETAIL_NORMAL) ? 250 : 100);
 	client_entity_t* glowball_spawner = ClientEntity_new(type, flags, origin, NULL, caster_update);
 
 	glowball_spawner->flags |= CEF_NO_DRAW;
-	glowball_spawner->Update = FXGlobeOfOuchinessGlowballSpawnerThink;
+	glowball_spawner->Update = GlobeOfOuchinessGlowballSpawnerThink;
 	glowball_spawner->extra = (void*)(&fxi.server_entities[caster_entnum]);
 
 	AddEffect(owner, glowball_spawner);
@@ -380,7 +380,7 @@ static qboolean InsectFirstSeenInit(struct client_entity_s* self, const centity_
 	return true;
 }
 
-static void FXInsectReadyRefs(centity_t* owner, const int type, int flags, const vec3_t origin)
+static void InsectReadyRefs(centity_t* owner, const int type, int flags, const vec3_t origin)
 {
 	flags |= CEF_NO_DRAW;
 	client_entity_t* self = ClientEntity_new(type, flags, origin, NULL, 17);
@@ -391,7 +391,7 @@ static void FXInsectReadyRefs(centity_t* owner, const int type, int flags, const
 	AddEffect(owner, self);
 }
 
-static void FXInsectSpear(centity_t* owner, const int type, const int flags, const vec3_t origin, const vec3_t vel)
+static void InsectSpear(centity_t* owner, const int type, const int flags, const vec3_t origin, const vec3_t vel)
 {
 	const paletteRGBA_t light_color = { .r = 255, .g = 128, .b = 64, .a = 255 };
 
@@ -410,7 +410,7 @@ static void FXInsectSpear(centity_t* owner, const int type, const int flags, con
 	AddEffect(owner, hellbolt);
 }
 
-static qboolean FXInsectSpear2Update(struct client_entity_s* self, const centity_t* owner)
+static qboolean InsectSpear2Update(struct client_entity_s* self, const centity_t* owner)
 {
 	self->r.color.a = (byte)irand(128, 136);
 	self->r.scale = flrand(0.1f, 0.5f);
@@ -447,7 +447,7 @@ static qboolean FXInsectSpear2Update(struct client_entity_s* self, const centity
 	return true;
 }
 
-static void FXInsectSpear2(centity_t* owner, const int type, const vec3_t origin)
+static void InsectSpear2(centity_t* owner, const int type, const vec3_t origin)
 {
 	const paletteRGBA_t light_color = { .r = 255, .g = 128, .b = 255, .a = 255 };
 
@@ -465,7 +465,7 @@ static void FXInsectSpear2(centity_t* owner, const int type, const vec3_t origin
 		halo->dlight = CE_DLight_new(light_color, 150.0f, -300.0f);
 
 	halo->AddToView = LinkedEntityUpdatePlacement;
-	halo->Update = FXInsectSpear2Update;
+	halo->Update = InsectSpear2Update;
 
 	AddEffect(owner, halo);
 
@@ -483,7 +483,7 @@ static void FXInsectSpear2(centity_t* owner, const int type, const vec3_t origin
 	AddEffect(owner, spark);
 }
 
-static void FXInsectSpellMissileHit(const int type, const int flags, const vec3_t origin, vec3_t dir)
+static void InsectSpellMissileHit(const int type, const int flags, vec3_t origin, vec3_t dir)
 {
 	const paletteRGBA_t light_color = { .r = 255, .g = 96, .b = 48, .a = 255 };
 
@@ -519,7 +519,7 @@ static void FXInsectSpellMissileHit(const int type, const int flags, const vec3_
 	}
 }
 
-static void FXInsectSpellMissileHit2(const int type, const int flags, const vec3_t origin, vec3_t dir)
+static void InsectSpellMissileHit2(const int type, const int flags, const vec3_t origin, vec3_t dir)
 {
 	Vec3ScaleAssign(32.0f, dir);
 
@@ -562,7 +562,7 @@ static void FXInsectSpellMissileHit2(const int type, const int flags, const vec3
 	AddEffect(NULL, halo);
 }
 
-static qboolean FXInsectStaffElementThink(struct client_entity_s* self, centity_t* owner) //mxd. Renamed from FXStaffElementThink() to avoid collisions with function in fx_staff.c
+static qboolean InsectStaffElementThink(struct client_entity_s* self, centity_t* owner) //mxd. Renamed from FXStaffElementThink() to avoid collisions with function in fx_staff.c
 {
 	float frac = (float)(fxi.cl->time - self->startTime) / 100.0f;
 
@@ -583,7 +583,7 @@ static qboolean FXInsectStaffElementThink(struct client_entity_s* self, centity_
 	return true;
 }
 
-static qboolean FXInsectSwordTrailThink(struct client_entity_s* self, centity_t* owner)
+static qboolean InsectSwordTrailThink(struct client_entity_s* self, centity_t* owner)
 {
 	vec3_t last_org;
 	vec3_t current_org;
@@ -635,11 +635,11 @@ static qboolean FXInsectSwordTrailThink(struct client_entity_s* self, centity_t*
 		trail_ent->AnimSpeed = 0.2f;
 		trail_ent->NoOfAnimFrames = 2;
 
-		trail_ent->Update = FXInsectStaffElementThink;
+		trail_ent->Update = InsectStaffElementThink;
 		trail_ent->AddToView = OffsetLinkedEntityUpdatePlacement;
 
 		AddEffect(owner, trail_ent);
-		FXInsectStaffElementThink(trail_ent, owner);
+		InsectStaffElementThink(trail_ent, owner);
 
 		VectorCopy(pos, last_org);
 	}
@@ -648,14 +648,14 @@ static qboolean FXInsectSwordTrailThink(struct client_entity_s* self, centity_t*
 }
 
 // This effect spawns 70+ client fx which will cause problems.
-static void FXInsectSwordTrail(centity_t* owner, const int type, const int flags, vec3_t origin)
+static void InsectSwordTrail(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	if (!ReferencesInitialized(owner))
 		return;
 
 	client_entity_t* trail = ClientEntity_new(type, flags, origin, NULL, 17);
 
-	trail->Update = FXInsectSwordTrailThink;
+	trail->Update = InsectSwordTrailThink;
 	trail->flags |= CEF_NO_DRAW;
 	trail->NoOfAnimFrames = 1;
 
@@ -677,43 +677,43 @@ void FXInsectEffects(centity_t* owner, const int type, const int flags, vec3_t o
 	switch (fx_index)
 	{
 		case FX_I_SWORD:
-			FXInsectSwordTrail(owner, type, flags, origin);
+			InsectSwordTrail(owner, type, flags, origin);
 			break;
 
 		case FX_I_SPEAR:
-			FXInsectSpear(owner, type, flags, origin, vel);
+			InsectSpear(owner, type, flags, origin, vel);
 			break;
 
 		case FX_I_SP_MSL_HIT:
-			FXInsectSpellMissileHit(type, flags, origin, vel);
+			InsectSpellMissileHit(type, flags, origin, vel);
 			break;
 
 		case FX_I_GLOBE:
-			FXInsectGlobe(owner, type, flags, origin);
+			InsectGlobe(owner, type, flags, origin);
 			break;
 
 		case FX_I_GLOW:
-			FXInsectGlow(owner, type, flags, origin, (short)(vel[0]));
+			InsectGlow(owner, type, flags, origin, (short)(vel[0]));
 			break;
 
 		case FX_I_STAFF:
-			FXInsectStaff(owner, type, flags, origin);
+			InsectStaff(owner, type, flags, origin);
 			break;
 
 		case FX_I_ST_MSL_HIT:
-			FXInsectStaffExplode(type, flags, origin, vel);
+			InsectStaffExplode(type, flags, origin, vel);
 			break;
 
 		case FX_I_RREFS:
-			FXInsectReadyRefs(owner, type, flags, origin);
+			InsectReadyRefs(owner, type, flags, origin);
 			break;
 
 		case FX_I_SPEAR2:
-			FXInsectSpear2(owner, type, origin);
+			InsectSpear2(owner, type, origin);
 			break;
 
 		case FX_I_SP_MSL_HIT2:
-			FXInsectSpellMissileHit2(type, flags, origin, vel);
+			InsectSpellMissileHit2(type, flags, origin, vel);
 			break;
 
 		default:

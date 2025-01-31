@@ -27,8 +27,6 @@ void PrecacheOgleHitPuff(void)
 	genfx_models[5] = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
 
-void PreCacheWaterParticles(void) { } //TODO: remove?
-
 static qboolean ParticleTrailAI(const client_entity_t* this, const centity_t* owner)
 {
 #define PARTICLE_TRAIL_PUFF_TIME 1000 // Puffs last for 1 sec.

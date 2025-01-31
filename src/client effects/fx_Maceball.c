@@ -41,7 +41,7 @@ void PreCacheMaceball(void)
 
 #pragma region ========================== MACE BALL ==========================
 
-static qboolean FXMaceballThink(struct client_entity_s* self, centity_t* owner)
+static qboolean MaceballThink(struct client_entity_s* self, centity_t* owner)
 {
 	self->dlight->intensity = 150.0f + cosf((float)fxi.cl->time * 0.01f) * 20.0f;
 	self->r.angles[2] += ANGLE_30;
@@ -61,7 +61,7 @@ void FXMaceball(centity_t* owner, const int type, const int flags, const vec3_t 
 	ball->d_scale = BALL_GROWTH;
 	ball->color.c = 0xff00ffff;
 	ball->dlight = CE_DLight_new(ball->color, 150.0f, 0.0f);
-	ball->Update = FXMaceballThink;
+	ball->Update = MaceballThink;
 
 	AddEffect(owner, ball);
 }
@@ -199,7 +199,7 @@ void FXMaceballExplode(centity_t* owner, const int type, const int flags, vec3_t
 
 #pragma region ========================== RIPPER BALL ==========================
 
-static qboolean FXRipperExplodeBallThink(const struct client_entity_s* self, centity_t* owner)
+static qboolean RipperExplodeBallThink(const struct client_entity_s* self, centity_t* owner)
 {
 	vec3_t diff;
 	vec3_t curpos;
@@ -261,7 +261,7 @@ void FXRipperExplode(centity_t* owner, const int type, const int flags, vec3_t o
 		ripper->r.scale = 0.25f;
 		ripper->r.color = color_white;
 		ripper->radius = 10.0f;
-		ripper->Update = FXRipperExplodeBallThink;
+		ripper->Update = RipperExplodeBallThink;
 
 		// Add to the entity passed in, not the "owner".
 		assert(ball_array[i]);

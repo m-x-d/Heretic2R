@@ -13,7 +13,7 @@
 #define NUM_SPELL_BITS	12
 #define LIGHT_LIFETIME	1000
 
-static qboolean FXSpellChangeLightThink(const struct client_entity_s* self, centity_t* owner)
+static qboolean SpellChangeDlightThink(const struct client_entity_s* self, centity_t* owner)
 {
 	if (fxi.cl->time - self->startTime <= LIGHT_LIFETIME)
 	{
@@ -84,7 +84,7 @@ void FXSpellChange(centity_t* owner, const int type, const int flags, vec3_t ori
 	spell_puff->radius = 32.0f;
 	spell_puff->dlight = CE_DLight_new(color, 150.0f, 0.0f);
 	spell_puff->startTime = fxi.cl->time;
-	spell_puff->Update = FXSpellChangeLightThink;
+	spell_puff->Update = SpellChangeDlightThink;
 
 	// Attach some particles to it.
 	for (int i = 0; i < NUM_SPELL_BITS; i++)
