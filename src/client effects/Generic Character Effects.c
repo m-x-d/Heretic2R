@@ -523,7 +523,7 @@ static qboolean FXFeetTrailThink(struct client_entity_s* self, centity_t* owner)
 	if (!(owner->current.effects & EF_SPEED_ACTIVE))
 	{
 		self->Update = RemoveSelfAI;
-		self->updateTime = fxi.cl->time + 1500;
+		self->nextThinkTime = fxi.cl->time + 1500; //BUGFIX: mxd. sets updateTime in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 
 		return true;
 	}

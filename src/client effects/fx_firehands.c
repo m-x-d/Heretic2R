@@ -23,7 +23,7 @@ static qboolean FireHandsThink(struct client_entity_s* self, centity_t* owner)
 	if ((self->LifeTime > 0 && self->LifeTime < fxi.cl->time) || !(owner->current.effects & EF_TRAILS_ENABLED))
 	{
 		self->Update = RemoveSelfAI;
-		self->updateTime = fxi.cl->time + 500;
+		self->nextThinkTime = fxi.cl->time + 500; //BUGFIX: mxd. sets updateTime in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 
 		return true;
 	}

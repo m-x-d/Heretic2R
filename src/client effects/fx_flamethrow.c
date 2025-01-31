@@ -20,7 +20,7 @@ qboolean FXFlamethrowerTrail(client_entity_t* self, centity_t* owner)
 	if (self->LifeTime < fxi.cl->time)
 	{
 		self->Update = RemoveSelfAI;
-		self->updateTime = fxi.cl->time + 2000;
+		self->nextThinkTime = fxi.cl->time + 2000; //BUGFIX: mxd. sets updateTime in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 
 		return true;
 	}
@@ -67,7 +67,7 @@ static qboolean FlamethrowerSteamTrail(client_entity_t* self, centity_t* owner)
 	if (self->LifeTime < fxi.cl->time)
 	{
 		self->Update = RemoveSelfAI;
-		self->updateTime = fxi.cl->time + 2000;
+		self->nextThinkTime = fxi.cl->time + 2000; //BUGFIX: mxd. sets updateTime in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 
 		return true;
 	}

@@ -66,7 +66,7 @@ static qboolean StaffLevel2Think(struct client_entity_s* self, centity_t* owner)
 	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
 	{
 		self->Update = RemoveSelfAI;
-		self->updateTime = fxi.cl->time + 500;
+		self->nextThinkTime = fxi.cl->time + 500; //BUGFIX: mxd. sets updateTime in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 
 		return true;
 	}
@@ -187,7 +187,7 @@ static qboolean StaffLevel3Think(struct client_entity_s* self, centity_t* owner)
 	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
 	{
 		self->Update = RemoveSelfAI;
-		self->updateTime = fxi.cl->time + 500;
+		self->nextThinkTime = fxi.cl->time + 500; //BUGFIX: mxd. sets updateTime in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 
 		return true;
 	}
@@ -271,7 +271,7 @@ static qboolean StaffLevel1Think(struct client_entity_s* self, centity_t* owner)
 	if (self->LifeTime > 0 && self->LifeTime < fxi.cl->time)
 	{
 		self->Update = RemoveSelfAI;
-		self->updateTime = fxi.cl->time + 500;
+		self->nextThinkTime = fxi.cl->time + 500; //BUGFIX: mxd. sets updateTime in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 
 		return true;
 	}
@@ -280,7 +280,7 @@ static qboolean StaffLevel1Think(struct client_entity_s* self, centity_t* owner)
 	if (!RefPointsValid(owner))
 		return false; // Remove the effect in this case.
 
-	self->updateTime = 17; //FIXME: with a next think time this effect does not look right.
+	self->updateTime = MIN_UPDATE_TIME; //FIXME: with a next think time this effect does not look right.
 
 	// If this reference point hasn't changed since the last frame, return.
 	vec3_t diff;
@@ -393,7 +393,7 @@ static qboolean StaffCreateThink(struct client_entity_s* self, centity_t* owner)
 	vec3_t end_pt;
 	uint color;
 
-	self->updateTime = 17; //FIXME: with a next think time this effect does not look right.
+	self->updateTime = MIN_UPDATE_TIME; //FIXME: with a next think time this effect does not look right.
 
 	// This tells if we are wasting our time, because the reference points are culled.
 	if (!RefPointsValid(owner))
@@ -566,7 +566,7 @@ static qboolean StaffRemoveThink(struct client_entity_s* self, centity_t* owner)
 	vec3_t trail_org;
 	uint color;
 
-	self->updateTime = 17; //FIXME: with a next think time this effect does not look right.
+	self->updateTime = MIN_UPDATE_TIME; //FIXME: with a next think time this effect does not look right.
 
 	// This tells if we are wasting our time, because the reference points are culled.
 	if (!RefPointsValid(owner))

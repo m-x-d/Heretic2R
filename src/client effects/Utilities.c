@@ -291,7 +291,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 	{
 		// Remove it.
 		self->Update = FXDebris_Remove;
-		self->updateTime = fxi.cl->time + 0.1f; //TODO: this makes no sense. updateTime is added to fxi.cl->time in UpdateEffects(). Should be just 1? 
+		self->nextThinkTime = fxi.cl->time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 
 		return false;
 	}
@@ -377,7 +377,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 			VectorClear(self->acceleration);
 			self->d_alpha = -0.2f;
 			self->Update = FXDebris_Vanish;
-			self->updateTime = fxi.cl->time + 0.1f; //TODO: this makes no sense. updateTime is added to fxi.cl->time in UpdateEffects(). Should be just 1? 
+			self->nextThinkTime = fxi.cl->time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 		}
 
 		return false; // No need to update trace counter if not sending collision.
@@ -390,7 +390,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 		{
 			self->flags &= ~CEF_FLAG6;
 
-			if (do_splash_effect) //TODO: no such check for water. Why?..
+			if (do_splash_effect)
 				FizzleEffect(self, surface_top, trace->plane.normal);
 		}
 
@@ -421,7 +421,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 		VectorCopy(surface_top, r->origin);
 		self->d_alpha = -0.01f;
 		self->Update = FXDebris_Vanish;
-		self->updateTime = fxi.cl->time + 0.1f; //TODO: this makes no sense. updateTime is added to fxi.cl->time in UpdateEffects(). Should be just 1? 
+		self->nextThinkTime = fxi.cl->time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 
 		return false; // No need to update trace counter if not sending collision.
 	}
@@ -439,7 +439,7 @@ qboolean Physics_MoveEnt(client_entity_t* self, float d_time, float d_time2, tra
 		VectorCopy(surface_top, r->origin);
 		self->d_scale = -0.2f;
 		self->Update = FXDebris_Vanish;
-		self->updateTime = fxi.cl->time + 0.1f; //TODO: this makes no sense. updateTime is added to fxi.cl->time in UpdateEffects(). Should be just 1? 
+		self->nextThinkTime = fxi.cl->time; //BUGFIX. mxd. updateTime = fxi.cl->time + 0.1f; in original logic (makes no sense: updateTime is ADDED to fxi.cl->time in UpdateEffects()).
 
 		return false;
 	}
