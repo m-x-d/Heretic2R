@@ -15,7 +15,7 @@ extern void (*S_Init)(void);
 extern void (*S_Shutdown)(void);
 
 // If origin is NULL, the sound will be dynamically sourced from the entity
-extern void (*S_StartSound)(vec3_t origin, int entnum, int entchannel, struct sfx_s* sfx, float fvol, int attenuation, float timeofs);
+extern void (*S_StartSound)(const vec3_t origin, int entnum, int entchannel, struct sfx_s* sfx, float fvol, int attenuation, float timeofs);
 extern void (*S_StartLocalSound)(const char* sound);
 
 extern void (*S_StopAllSounds)(void);
@@ -25,7 +25,7 @@ extern void (*S_Update)(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up);
 extern void (*S_Activate)(qboolean active);
 
 extern void (*S_BeginRegistration)(void);
-extern struct sfx_s* (*S_RegisterSound)(char* name);
+extern struct sfx_s* (*S_RegisterSound)(const char* name);
 extern void (*S_EndRegistration)(void);
 
 extern struct sfx_s* (*S_FindName)(char* name, qboolean create);
