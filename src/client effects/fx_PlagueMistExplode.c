@@ -65,7 +65,7 @@ static qboolean PlagueMistExplodeSpawn(client_entity_t* spawner, centity_t* owne
 	return true;
 }
 
-void FXPlagueMistExplode(centity_t* owner, const int type, int flags, const vec3_t origin)
+void FXPlagueMistExplode(centity_t* owner, const int type, int flags, vec3_t origin)
 {
 	int mist_life;
 	int mist_think_time;

@@ -139,7 +139,7 @@ void FXFire(centity_t* owner, const int type, const int flags, vec3_t origin)
 	AddEffect(owner, spawner);
 }
 
-static qboolean FireOnEntityThink(client_entity_t* spawner, const centity_t* owner)
+static qboolean FireOnEntityThink(client_entity_t* spawner, centity_t* owner)
 {
 	// For framerate-sensitive effect spawning.
 	int count = GetScaledCount(FLAME_COUNT, 0.9f);
@@ -216,7 +216,7 @@ static qboolean FireOnEntityThink(client_entity_t* spawner, const centity_t* own
 	return false;
 }
 
-static qboolean FireOnEntity2Think(client_entity_t* spawner, const centity_t* owner)
+static qboolean FireOnEntity2Think(client_entity_t* spawner, centity_t* owner)
 {
 	//FIXME: can miss the message that tells you to remove the effect.
 	if (fxi.cl->time > spawner->nextEventTime)

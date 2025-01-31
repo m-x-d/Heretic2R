@@ -27,7 +27,7 @@ void PrecacheOgleHitPuff(void)
 	genfx_models[5] = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
 
-static qboolean ParticleTrailAI(const client_entity_t* this, const centity_t* owner)
+static qboolean ParticleTrailAI(client_entity_t* this, centity_t* owner)
 {
 #define PARTICLE_TRAIL_PUFF_TIME 1000 // Puffs last for 1 sec.
 
@@ -75,7 +75,7 @@ static qboolean PebbleUpdate(struct client_entity_s* self, centity_t* owner)
 }
 
 // Slight variation on the normal puff.
-void FXOgleHitPuff(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXOgleHitPuff(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	vec3_t dir;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_OGLE_HITPUFF].formatString, dir); // Normalized direction vector.
@@ -143,7 +143,7 @@ void FXOgleHitPuff(centity_t* owner, const int type, const int flags, const vec3
 	}
 }
 
-void FXGenericHitPuff(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXGenericHitPuff(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	byte count;
 	vec3_t dir;
@@ -349,7 +349,7 @@ static void DoWake(client_entity_t* self, const centity_t* owner, const int refp
 	}
 }
 
-static qboolean BubbleSpawner(client_entity_t* self, const centity_t* owner)
+static qboolean BubbleSpawner(client_entity_t* self, centity_t* owner)
 {
 	vec3_t org;
 
@@ -377,7 +377,7 @@ static qboolean BubbleSpawner(client_entity_t* self, const centity_t* owner)
 	return false; // Remove the effect.
 }
 
-void FXWaterParticles(centity_t* owner, const int type, int flags, const vec3_t origin)
+void FXWaterParticles(centity_t* owner, const int type, int flags, vec3_t origin)
 {
 	assert(owner);
 
@@ -403,7 +403,7 @@ void FXWaterParticles(centity_t* owner, const int type, int flags, const vec3_t 
 	AddEffect(owner, bubble_fx);
 }
 
-void FXCorpseRemove(centity_t* owner, const int type, int flags, const vec3_t origin)
+void FXCorpseRemove(centity_t* owner, const int type, int flags, vec3_t origin)
 {
 #define	NUM_FLAME_ITEMS		20
 #define NUM_FLAME_PARTS		40
@@ -461,7 +461,7 @@ void FXCorpseRemove(centity_t* owner, const int type, int flags, const vec3_t or
 }
 
 // Create the two circles that ring the player.
-static qboolean FXLeaderThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean FXLeaderThink(struct client_entity_s* self, centity_t* owner)
 {
 #define LEADER_RAD				12
 #define TOTAL_LEADER_EFFECTS	30
@@ -496,7 +496,7 @@ static qboolean FXLeaderThink(struct client_entity_s* self, const centity_t* own
 }
 
 // Create the entity the flight loops are on.
-void FXLeader(centity_t* owner, const int type, int flags, const vec3_t origin)
+void FXLeader(centity_t* owner, const int type, int flags, vec3_t origin)
 {
 	flags |= (int)(CEF_NO_DRAW | CEF_ADDITIVE_PARTS);
 	client_entity_t* glow = ClientEntity_new(type, flags, origin, NULL, 60);
@@ -510,7 +510,7 @@ void FXLeader(centity_t* owner, const int type, int flags, const vec3_t origin)
 	AddEffect(owner, glow);
 }
 
-static qboolean FXFeetTrailThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean FXFeetTrailThink(struct client_entity_s* self, centity_t* owner)
 {
 #define FOOTTRAIL_RADIUS	2.0f
 #define FOOTTRAIL_SCALE		8.0f

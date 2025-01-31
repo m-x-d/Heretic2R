@@ -6,7 +6,7 @@
 
 #include "Client Effects.h"
 
-void FXQuake(centity_t* owner, int type, const int flags, const vec3_t origin)
+void FXQuake(centity_t* owner, int type, const int flags, vec3_t origin)
 {
 	byte count;
 	byte time;

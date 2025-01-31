@@ -459,7 +459,7 @@ static void CreateLightning(struct client_entity_s* self, const centity_t* owner
 }
 
 // Make the lightning effect re-occur.
-static qboolean ShrineHealthThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean ShrineHealthThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (--self->SpawnInfo == 0)
 		return false;

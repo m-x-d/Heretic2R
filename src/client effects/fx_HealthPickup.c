@@ -21,7 +21,7 @@ void PreCacheHealth(void)
 	health_models[1] = fxi.RegisterModel("models/items/health/healthbig/tris.fm");
 }
 
-static qboolean HealthPickupThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean HealthPickupThink(struct client_entity_s* self, centity_t* owner)
 {
 	paletteRGBA_t color;
 

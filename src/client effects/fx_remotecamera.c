@@ -8,7 +8,7 @@
 #include "Utilities.h"
 #include "Vector.h"
 
-void FXRemoteCamera(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXRemoteCamera(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	short target_ent_num;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_REMOTE_CAMERA].formatString, &target_ent_num); //TODO: target_ent_num is unused.

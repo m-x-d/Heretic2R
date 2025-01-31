@@ -14,9 +14,9 @@ extern qboolean KeepSelfAI(client_entity_t* this, centity_t* owner);
 extern qboolean AttemptRemoveSelf(client_entity_t* self, centity_t* owner);
 
 // AddToView functions.
-extern qboolean LinkedEntityUpdatePlacement(client_entity_t* current, const centity_t* owner);
-extern qboolean OffsetLinkedEntityUpdatePlacement(client_entity_t* current, const centity_t* owner);
-extern qboolean ReferenceLinkedEntityUpdatePlacement(struct client_entity_s* self, const centity_t* owner);
+extern qboolean LinkedEntityUpdatePlacement(client_entity_t* current, centity_t* owner);
+extern qboolean OffsetLinkedEntityUpdatePlacement(client_entity_t* current, centity_t* owner);
+extern qboolean ReferenceLinkedEntityUpdatePlacement(struct client_entity_s* self, centity_t* owner);
 
 // Message response helper functions.
 extern void BecomeStatic(client_entity_t* self);

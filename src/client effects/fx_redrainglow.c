@@ -16,7 +16,7 @@
 
 #define CLOUD_GEN_RAD	30.0f
 
-static qboolean RedRainGlowThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean RedRainGlowThink(struct client_entity_s* self, centity_t* owner)
 {
 	// If we've timed out, stop the effect (allow for fading). If we're not on a time limit, check the EF flag.
 	if ((self->LifeTime > 0 && self->LifeTime < fxi.cl->time) || !(owner->current.effects & EF_TRAILS_ENABLED))
@@ -102,7 +102,7 @@ static qboolean RedRainGlowThink(struct client_entity_s* self, const centity_t* 
 	return true;
 }
 
-void FXRedRainGlow(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXRedRainGlow(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	char lifetime;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_REDRAINGLOW].formatString, &lifetime);

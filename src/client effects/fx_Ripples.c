@@ -38,7 +38,7 @@ static qboolean RippleSpawnerThink(client_entity_t* spawner, centity_t* owner)
 	return true;
 }
 
-void FXWaterRipples(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXWaterRipples(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	vec3_t dir;
 	float dist;

@@ -98,7 +98,7 @@ void FXGenericSparks(centity_t* owner, const int type, const int flags, vec3_t o
 	GenericSparks(owner, type, flags, origin, dir);
 }
 
-static qboolean FireSparkSpawnerUpdate(client_entity_t* spawner, const centity_t* owner)
+static qboolean FireSparkSpawnerUpdate(client_entity_t* spawner, centity_t* owner)
 {
 	//fixme- wigs out on hivetrialpit when the sparkers hit ground and separate?
 	vec3_t diff;

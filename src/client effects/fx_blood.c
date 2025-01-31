@@ -427,7 +427,7 @@ void FXBlood(centity_t* owner, int type, const int flags, vec3_t origin)
 	VectorCopy(velocity, spawner->velocity);
 }
 
-static qboolean LinkedBloodThink(client_entity_t* spawner, const centity_t* owner)
+static qboolean LinkedBloodThink(client_entity_t* spawner, centity_t* owner)
 {
 #define NUM_BLOOD_PARTS		3
 

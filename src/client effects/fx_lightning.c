@@ -149,7 +149,7 @@ static void LightningBolt(const int model, const float width, const vec3_t start
 	MakeLightningPiece(model, width, end_pos, last_pos, variance);
 }
 
-static qboolean LightningThink(const client_entity_t* thinker, centity_t* owner)
+static qboolean LightningThink(client_entity_t* thinker, centity_t* owner)
 {
 	if (fxi.cl->time - thinker->lastThinkTime < thinker->LifeTime)
 	{
@@ -160,7 +160,7 @@ static qboolean LightningThink(const client_entity_t* thinker, centity_t* owner)
 	return false;
 }
 
-void FXLightning(centity_t* owner, int type, const int flags, const vec3_t origin)
+void FXLightning(centity_t* owner, int type, const int flags, vec3_t origin)
 {
 	byte width;
 	byte duration;
@@ -197,7 +197,7 @@ void FXLightning(centity_t* owner, int type, const int flags, const vec3_t origi
 	LightningBolt(model, width, origin, target);
 }
 
-void FXPowerLightning(centity_t* owner, int type, const int flags, const vec3_t origin)
+void FXPowerLightning(centity_t* owner, int type, const int flags, vec3_t origin)
 {
 	vec3_t target;
 	byte b_width;

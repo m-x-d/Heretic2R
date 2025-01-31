@@ -29,7 +29,7 @@ void PreCacheItemAmmo(void)
 	ammo_models[8] = fxi.RegisterModel("models/items/ammo/phoenix/tris.fm");	// ITEM_AMMO_PHOENIX
 }
 
-static qboolean AmmoPickupThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean AmmoPickupThink(struct client_entity_s* self, centity_t* owner)
 {
 	paletteRGBA_t color;
 

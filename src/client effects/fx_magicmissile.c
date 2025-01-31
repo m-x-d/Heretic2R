@@ -35,7 +35,7 @@ void PreCacheArray(void)
 }
 
 // These need to be converted to particles.
-static qboolean MagicMissileTrailThink(const struct client_entity_s* self, centity_t* owner)
+static qboolean MagicMissileTrailThink(struct client_entity_s* self, centity_t* owner)
 {
 	vec3_t vel_normal;
 	VectorCopy(self->velocity, vel_normal);
@@ -90,7 +90,7 @@ static qboolean MagicMissileModelThink(struct client_entity_s* self, centity_t* 
 	return true;
 }
 
-void FXMagicMissile(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXMagicMissile(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	const paletteRGBA_t	light_color = { .r = 128, .g = 64, .b = 96, .a = 255 };
 

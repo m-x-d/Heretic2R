@@ -161,7 +161,7 @@ static qboolean PhoenixMissileThink(client_entity_t* missile, centity_t* owner)
 	return true;
 }
 
-void FXPhoenixMissile(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXPhoenixMissile(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	client_entity_t* missile = ClientEntity_new(type, flags | CEF_DONT_LINK, origin, NULL, 25);
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_WEAPON_PHOENIXMISSILE].formatString, missile->velocity);
@@ -276,7 +276,7 @@ client_entity_t* CreatePhoenixSmallExplosion(const vec3_t ball_origin) //TODO: r
 	return sub_explosion;
 }
 
-void FXPhoenixExplode(centity_t* owner, const int type, int flags, const vec3_t origin)
+void FXPhoenixExplode(centity_t* owner, const int type, int flags, vec3_t origin)
 {
 	vec3_t dir;
 	vec3_t scorch_dir;

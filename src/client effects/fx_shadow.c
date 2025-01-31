@@ -21,7 +21,7 @@ void PrecacheShadow(void)
 	shadow_model = fxi.RegisterModel("models/fx/shadow/tris.fm");
 }
 
-static qboolean ShadowUpdate(struct client_entity_s* self, const centity_t* owner)
+static qboolean ShadowUpdate(struct client_entity_s* self, centity_t* owner)
 {
 	VectorCopy(owner->origin, self->r.origin);
 
@@ -56,7 +56,7 @@ static qboolean ShadowUpdate(struct client_entity_s* self, const centity_t* owne
 	return true;
 }
 
-static qboolean ShadowReferenceUpdate(struct client_entity_s* self, const centity_t* owner)
+static qboolean ShadowReferenceUpdate(struct client_entity_s* self, centity_t* owner)
 {
 	// This tells if we are wasting our time, because the reference points are culled.
 	if (!RefPointsValid(owner))
@@ -112,7 +112,7 @@ static qboolean ShadowReferenceUpdate(struct client_entity_s* self, const centit
 	return true;
 }
 
-void FXShadow(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXShadow(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	float scale;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SHADOW].formatString, &scale);
@@ -135,7 +135,7 @@ void FXShadow(centity_t* owner, const int type, const int flags, const vec3_t or
 }
 
 // Cast a shadow down from each foot and the player, too.
-void FXPlayerShadow(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXPlayerShadow(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	// Create shadow under the player.
 	client_entity_t* shadow_mid = ClientEntity_new(type, flags, origin, NULL, INT_MAX);

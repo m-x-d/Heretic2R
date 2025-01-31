@@ -21,7 +21,7 @@ void PreCacheRope(void)
 	rope_models[3] = fxi.RegisterModel("sprites/fx/segment_tendril.sp2");
 }
 
-static qboolean RopeCheckToHide(struct client_entity_s* self, const centity_t* owner)
+static qboolean RopeCheckToHide(struct client_entity_s* self, centity_t* owner)
 {
 	// Get the entity.
 	const centity_t* grab = &fxi.server_entities[self->LifeTime];
@@ -39,7 +39,7 @@ static qboolean RopeCheckToHide(struct client_entity_s* self, const centity_t* o
 
 #pragma region ========================== ATTACHED ROPE SEGMENTS ==========================
 
-static qboolean RopeTopDrawAttached(struct client_entity_s* self, const centity_t* owner)
+static qboolean RopeTopDrawAttached(struct client_entity_s* self, centity_t* owner)
 {
 	if (!RopeCheckToHide(self, owner))
 	{
@@ -58,7 +58,7 @@ static qboolean RopeTopDrawAttached(struct client_entity_s* self, const centity_
 	return true;
 }
 
-static qboolean RopeMiddleDrawAttached(struct client_entity_s* self, const centity_t* owner)
+static qboolean RopeMiddleDrawAttached(struct client_entity_s* self, centity_t* owner)
 {
 	if (!RopeCheckToHide(self, owner))
 	{
@@ -79,7 +79,7 @@ static qboolean RopeMiddleDrawAttached(struct client_entity_s* self, const centi
 	return true;
 }
 
-static qboolean RopeBottomDrawAttached(struct client_entity_s* self, const centity_t* owner)
+static qboolean RopeBottomDrawAttached(struct client_entity_s* self, centity_t* owner)
 {
 	if (!RopeCheckToHide(self, owner))
 	{
@@ -212,7 +212,7 @@ static qboolean RopeTopDraw(struct client_entity_s* self, centity_t* owner)
 
 #pragma endregion
 
-void FXRope(centity_t* owner, int type, const int flags, const vec3_t origin)
+void FXRope(centity_t* owner, int type, const int flags, vec3_t origin)
 {
 	short grab_id;
 	short end_id;

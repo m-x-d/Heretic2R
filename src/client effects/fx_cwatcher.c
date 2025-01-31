@@ -42,7 +42,7 @@ void PreCacheCWModels(void)
 	cwmodels[CWM_STAR_TRAIL] = fxi.RegisterModel("sprites/Spells/indigostreak.sp2");
 }
 
-static qboolean CWBeamUpdate(struct client_entity_s* self, const centity_t* owner)
+static qboolean CWBeamUpdate(struct client_entity_s* self, centity_t* owner)
 {
 	const vec3_t vel = { 0.0f, 0.0f, 1.0f };
 

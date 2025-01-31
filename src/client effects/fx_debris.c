@@ -361,7 +361,7 @@ static void BodyPart_Throw(const centity_t* owner, const int body_part, vec3_t o
 	AddEffect(NULL, debris);
 }
 
-static qboolean BodyPartAttachedUpdate(struct client_entity_s* self, const centity_t* owner)
+static qboolean BodyPartAttachedUpdate(struct client_entity_s* self, centity_t* owner)
 {
 	VectorCopy(owner->lerp_origin, self->r.origin);
 	VectorSet(self->r.angles,

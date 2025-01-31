@@ -173,7 +173,7 @@ static qboolean MagicPortalThink(client_entity_t* self, centity_t* owner)
 }
 
 // This is the persistent effect for the teleport pad.
-void FXMagicPortal(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXMagicPortal(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	vec3_t dir;
 	byte color;

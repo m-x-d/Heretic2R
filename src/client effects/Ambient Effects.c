@@ -27,7 +27,7 @@ void DoWaterSplash(client_entity_t* effect, const paletteRGBA_t color, int count
 	}
 }
 
-void WaterSplash(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void WaterSplash(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	int cnt;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPLASH].formatString, &cnt);

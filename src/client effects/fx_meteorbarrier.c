@@ -27,7 +27,7 @@ void PreCacheMeteor(void)
 	meteor_model = fxi.RegisterModel("models/spells/meteorbarrier/tris.fm");
 }
 
-static qboolean MeteorBarrierTrailThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean MeteorBarrierTrailThink(struct client_entity_s* self, centity_t* owner)
 {
 	// We theoretically shouldn't need to do this. Just in case.
 	if (!(owner->flags & CF_INUSE))
@@ -81,7 +81,7 @@ static qboolean MeteorBarrierTrailThink(struct client_entity_s* self, const cent
 }
 
 // Putting the angular velocity in here saves 3 bytes of net traffic per meteor per server frame.
-static qboolean MeteorAddToView(client_entity_t* current, const centity_t* owner)
+static qboolean MeteorAddToView(client_entity_t* current, centity_t* owner)
 {
 	const float d_time = (float)(fxi.cl->time - current->startTime);
 	current->r.angles[ROLL] = d_time * 0.001f * METEOR_ROLL_SPEED;
@@ -97,7 +97,7 @@ static qboolean MeteorAddToView(client_entity_t* current, const centity_t* owner
 	return true;
 }
 
-void FXMeteorBarrier(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXMeteorBarrier(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	// Add a fiery trail effect.
 	client_entity_t* trail = ClientEntity_new(type, flags | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS | CEF_VIEWSTATUSCHANGED, origin, NULL, 50);
@@ -114,7 +114,7 @@ void FXMeteorBarrier(centity_t* owner, const int type, const int flags, const ve
 	AddEffect(owner, trail);
 }
 
-void FXMeteorBarrierTravel(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXMeteorBarrierTravel(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	// Add a fiery trail effect.
 	client_entity_t* trail = ClientEntity_new(type, flags | CEF_ABSOLUTE_PARTS | CEF_ADDITIVE_PARTS | CEF_VIEWSTATUSCHANGED, origin, NULL, 50);
@@ -130,7 +130,7 @@ void FXMeteorBarrierTravel(centity_t* owner, const int type, const int flags, co
 	AddEffect(owner, trail);
 }
 
-void FXMeteorBarrierExplode(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXMeteorBarrierExplode(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	vec3_t dir;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_SPELL_METEORBARRIEREXPLODE].formatString, dir);

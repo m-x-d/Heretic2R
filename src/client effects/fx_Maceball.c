@@ -52,7 +52,7 @@ static qboolean MaceballThink(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-void FXMaceball(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXMaceball(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	client_entity_t* ball = ClientEntity_new(type, flags, origin, NULL, 100);
 
@@ -199,7 +199,7 @@ void FXMaceballExplode(centity_t* owner, const int type, const int flags, vec3_t
 
 #pragma region ========================== RIPPER BALL ==========================
 
-static qboolean RipperExplodeBallThink(const struct client_entity_s* self, centity_t* owner)
+static qboolean RipperExplodeBallThink(struct client_entity_s* self, centity_t* owner)
 {
 	vec3_t diff;
 	vec3_t curpos;

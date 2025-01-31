@@ -40,7 +40,7 @@ void PreCacheRedrain(void)
 }
 
 // Thinker for the explosion, just fades the light.
-static qboolean RedRainDLightThink(const client_entity_t* dlight, centity_t* owner)
+static qboolean RedRainDLightThink(client_entity_t* dlight, centity_t* owner)
 {
 	dlight->dlight->intensity -= 10.0f;
 	return dlight->dlight->intensity > 0.0f;
@@ -159,11 +159,11 @@ static void RedRainExplosion(vec3_t impact_pos, vec3_t rain_pos, const int durat
 	AddEffect(NULL, flash);
 
 	const char* snd_name = (powerup ? "weapons/RedRainPowerHit.wav" : "weapons/RedRainHit.wav"); //mxd
-	fxi.S_StartSound(impact_pos, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_NORM, 0);
+	fxi.S_StartSound(impact_pos, -1, CHAN_AUTO, fxi.S_RegisterSound(snd_name), 1.0f, ATTN_NORM, 0.0f);
 }
 
 // This is a delayed effect which creates a splash out of red sparks.
-static qboolean RedRainSplashThink(const client_entity_t* splash, centity_t* owner)
+static qboolean RedRainSplashThink(client_entity_t* splash, centity_t* owner)
 {
 	client_entity_t* mist = ClientEntity_new(-1, CEF_NO_DRAW | CEF_ADDITIVE_PARTS, splash->r.origin, NULL, 500);
 	AddEffect(NULL, mist);
@@ -196,7 +196,7 @@ static qboolean RedRainDropUpdate(client_entity_t* drop, centity_t* owner)
 }
 
 // This constantly starts new drops up at the top. It also spawns a splash, which is set to go off at the appropriate fall time.
-static qboolean RedRainThink(client_entity_t* rain, const centity_t* owner)
+static qboolean RedRainThink(client_entity_t* rain, centity_t* owner)
 {
 	if (rain->nextEventTime <= fxi.cl->time)
 		return false; // In case we lose the packet that tells us to remove.
@@ -257,7 +257,7 @@ static qboolean RedRainThink(client_entity_t* rain, const centity_t* owner)
 }
 
 // This is from creating the effect FX_RED_RAIN.
-void FXRedRain(centity_t* owner, const int type, int flags, const vec3_t origin)
+void FXRedRain(centity_t* owner, const int type, int flags, vec3_t origin)
 {
 	vec3_t ceil_origin;
 	VectorCopy(origin, ceil_origin);
@@ -327,7 +327,7 @@ static qboolean RedRainMissileThink(client_entity_t* missile, centity_t* owner)
 	return true;
 }
 
-void FXRedRainMissile(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXRedRainMissile(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	int duration;
 

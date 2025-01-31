@@ -12,7 +12,7 @@
 #include "Vector.h"
 #include "g_playstats.h"
 
-static qboolean SpellHandsThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean SpellHandsThink(struct client_entity_s* self, centity_t* owner)
 {
 	// If we've timed out, stop the effect (allow for fading). If we're not on a time limit, check the EF flag.
 	if ((self->LifeTime > 0 && self->LifeTime < fxi.cl->time) || !(owner->current.effects & EF_TRAILS_ENABLED))

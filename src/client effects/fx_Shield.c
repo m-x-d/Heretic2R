@@ -22,7 +22,7 @@ void PreCacheShield(void)
 	shield_model = fxi.RegisterModel("sprites/spells/spark_blue.sp2");
 }
 
-static qboolean LightningShieldSparkThink(struct client_entity_s* shield, const centity_t* owner)
+static qboolean LightningShieldSparkThink(struct client_entity_s* shield, centity_t* owner)
 {
 	// Update the angle of the spark.
 	VectorMA(shield->direction, (float)(fxi.cl->time - shield->lastThinkTime) / 1000.0f, shield->velocity2, shield->direction);
@@ -74,7 +74,7 @@ static qboolean LightningShieldTerminate(struct client_entity_s* shield, centity
 	return true;
 }
 
-void FXLightningShield(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXLightningShield(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	const int count = GetScaledCount(NUM_SHIELD_SPARKS, 0.5f);
 

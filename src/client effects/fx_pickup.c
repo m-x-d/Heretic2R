@@ -13,7 +13,7 @@ void PreCachePickup(void)
 	pickup_model = fxi.RegisterModel("sprites/fx/halo.sp2");
 }
 
-void FXPickup(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXPickup(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	client_entity_t* halo = ClientEntity_new(type, flags | CEF_DONT_LINK | CEF_PULSE_ALPHA, origin, NULL, 500);
 

@@ -92,7 +92,7 @@ static qboolean MorphMissileThink(client_entity_t* missile, centity_t* owner)
 }
 
 // We reflected, create a new missile.
-void FXMorphMissile(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXMorphMissile(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	byte yaw;
 	byte pitch;
@@ -126,7 +126,7 @@ void FXMorphMissile(centity_t* owner, const int type, const int flags, const vec
 }
 
 // Initial entry from server - create first object. This has the light on it, but no trail yet.
-void FXMorphMissileInitial(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXMorphMissileInitial(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	// Get the initial yaw.
 	byte yaw;
@@ -182,7 +182,7 @@ void FXMorphMissileInitial(centity_t* owner, const int type, const int flags, co
 }
 
 // We hit a wall or an object.
-void FXMorphExplode(centity_t* owner, int type, const int flags, const vec3_t origin)
+void FXMorphExplode(centity_t* owner, int type, const int flags, vec3_t origin)
 {
 #define SMOKE_SPEED 160.0f
 
@@ -304,7 +304,7 @@ static qboolean FeatherThink(client_entity_t* self, centity_t* owner)
 }
 
 // Make the feathers zip out of the carcass and float down.
-void FXChickenExplode(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXChickenExplode(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	//NOTE: CEF_FLAG6 denotes we just want to spawn a couple feathers
 	if (flags & CEF_FLAG6)

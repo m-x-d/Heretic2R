@@ -38,7 +38,7 @@ static qboolean MistThink(client_entity_t* mist, centity_t* owner)
 	return true;
 }
 
-void FXMist(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXMist(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	byte b_scale;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_MIST].formatString, &b_scale);

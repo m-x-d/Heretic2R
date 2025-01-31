@@ -26,7 +26,7 @@ void PreCacheObjects(void)
 }
 
 // Create Effect FX_BARREL_EXPLODE
-void FXBarrelExplode(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXBarrelExplode(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	// Create three smaller explosion spheres.
 	for (int i = 0; i < BARREL_EXPLODE_BALLS; i++)

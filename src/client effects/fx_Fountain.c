@@ -39,7 +39,7 @@ static void CreateFountainSplash(client_entity_t* owner, const float xspread, co
 	AddParticleToList(owner, mist);
 }
 
-static qboolean WaterfallBaseSpawner(client_entity_t* spawner, const centity_t* owner)
+static qboolean WaterfallBaseSpawner(client_entity_t* spawner, centity_t* owner)
 {
 #define NUM_SPLASHES	0.005f
 

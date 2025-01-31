@@ -99,7 +99,7 @@ static void PESpellGo(centity_t* owner, const int type, const int flags, const v
 	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell.wav"), 1.0f, ATTN_NORM, 0);
 }
 
-static void PESpellExplode(const int type, const int flags, const vec3_t origin, vec3_t dir)
+static void PESpellExplode(const int type, const int flags, vec3_t origin, vec3_t dir)
 {
 	if (flags & CEF_FLAG6)
 		FXClientScorchmark(origin, dir);
@@ -201,7 +201,7 @@ static void PESpell2Go(centity_t* owner, const int type, const int flags, const 
 	fxi.S_StartSound(missile->r.origin, -1, CHAN_WEAPON, fxi.S_RegisterSound("monsters/plagueelf/spell2.wav"), 1.0f, ATTN_NORM, 0);
 }
 
-static void PESpell2Explode(const int type, const int flags, const vec3_t origin, vec3_t dir)
+static void PESpell2Explode(const int type, const int flags, vec3_t origin, vec3_t dir)
 {
 	if (flags & CEF_FLAG6)
 		FXClientScorchmark(origin, dir);
@@ -240,7 +240,7 @@ static void PESpell2Explode(const int type, const int flags, const vec3_t origin
 	}
 }
 
-static void PESpell3Explode(const int type, const int flags, const vec3_t origin, vec3_t dir)
+static void PESpell3Explode(const int type, const int flags, vec3_t origin, vec3_t dir)
 {
 	if (flags & CEF_FLAG6)
 		FXClientScorchmark(origin, dir);
@@ -279,7 +279,7 @@ static void PESpell3Explode(const int type, const int flags, const vec3_t origin
 	}
 }
 
-void FXPESpell(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXPESpell(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	byte fx_type = 0;
 	vec3_t vel;

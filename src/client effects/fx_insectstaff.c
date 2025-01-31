@@ -62,7 +62,7 @@ void PreCacheIEffects(void)
 	globe_models[4] = fxi.RegisterModel("sprites/fx/neon.sp2");
 }
 
-static qboolean InsectStaffTrailThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean InsectStaffTrailThink(struct client_entity_s* self, centity_t* owner)
 {
 	vec3_t trail_start, trail;
 
@@ -184,7 +184,7 @@ static qboolean GlobeOfOuchinessGlobeThink(struct client_entity_s* self, centity
 	return true;
 }
 
-static qboolean GlobeOfOuchinessAuraThink(const struct client_entity_s* self, const centity_t* owner)
+static qboolean GlobeOfOuchinessAuraThink(struct client_entity_s* self, centity_t* owner)
 {
 	vec3_t trail_start;
 	VectorCopy(owner->origin, trail_start);
@@ -265,7 +265,7 @@ static void InsectGlobe(centity_t* owner, const int type, const int flags, vec3_
 	AddEffect(owner, globe_thinker);
 }
 
-static qboolean GlobeOfOuchinessGlowballThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean GlobeOfOuchinessGlowballThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (owner->current.effects & EF_MARCUS_FLAG1)
 		self->color.r++;
@@ -369,7 +369,7 @@ static void InsectGlow(centity_t* owner, const int type, const int flags, vec3_t
 	AddEffect(owner, glowball_spawner);
 }
 
-static qboolean InsectFirstSeenInit(struct client_entity_s* self, const centity_t* owner)
+static qboolean InsectFirstSeenInit(struct client_entity_s* self, centity_t* owner)
 {
 	self->refMask |= INSECT_MASK;
 	EnableRefPoints(owner->referenceInfo, self->refMask);
@@ -410,7 +410,7 @@ static void InsectSpear(centity_t* owner, const int type, const int flags, const
 	AddEffect(owner, hellbolt);
 }
 
-static qboolean InsectSpear2Update(struct client_entity_s* self, const centity_t* owner)
+static qboolean InsectSpear2Update(struct client_entity_s* self, centity_t* owner)
 {
 	self->r.color.a = (byte)irand(128, 136);
 	self->r.scale = flrand(0.1f, 0.5f);

@@ -13,7 +13,7 @@
 #define NUM_SPELL_BITS	12
 #define LIGHT_LIFETIME	1000
 
-static qboolean SpellChangeDlightThink(const struct client_entity_s* self, centity_t* owner)
+static qboolean SpellChangeDlightThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (fxi.cl->time - self->startTime <= LIGHT_LIFETIME)
 	{

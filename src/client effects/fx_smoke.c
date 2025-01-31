@@ -47,7 +47,7 @@ void FXSmoke(const vec3_t origin, const float scale, const float range)
 	SpawnSmoke(origin, scale, range, color_white.c); //mxd
 }
 
-static qboolean EnvSmokeSpawner(const struct client_entity_s* self, centity_t* owner)
+static qboolean EnvSmokeSpawner(struct client_entity_s* self, centity_t* owner)
 {
 	FXSmoke(self->r.origin, self->r.scale, self->Scale);
 	return true;

@@ -53,17 +53,17 @@ qboolean AttemptRemoveSelf(client_entity_t* self, centity_t* owner)
 
 #pragma region ========================== AddToView functions ==========================
 
-qboolean LinkedEntityUpdatePlacement(client_entity_t* current, const centity_t* owner)
+qboolean LinkedEntityUpdatePlacement(client_entity_t* current, centity_t* owner)
 {
-	vec3_t up;
-	vec3_t direction;
-
 	if (current->r.flags & RF_FIXED)
 	{
 		matrix3_t rotation;
 		Matrix3FromAngles(owner->lerp_angles, rotation);
 
+		vec3_t direction;
 		Matrix3MultByVec3(rotation, current->direction, direction);
+
+		vec3_t up;
 		Matrix3MultByVec3(rotation, current->up, up);
 
 		AnglesFromDirAndUp(direction, up, current->r.angles);
@@ -74,7 +74,7 @@ qboolean LinkedEntityUpdatePlacement(client_entity_t* current, const centity_t* 
 	return true;
 }
 
-qboolean OffsetLinkedEntityUpdatePlacement(client_entity_t* current, const centity_t* owner)
+qboolean OffsetLinkedEntityUpdatePlacement(client_entity_t* current, centity_t* owner)
 {
 	matrix3_t rotation;
 	vec3_t up;
@@ -105,7 +105,7 @@ qboolean OffsetLinkedEntityUpdatePlacement(client_entity_t* current, const centi
 	return true;
 }
 
-qboolean ReferenceLinkedEntityUpdatePlacement(struct client_entity_s* self, const centity_t* owner)
+qboolean ReferenceLinkedEntityUpdatePlacement(struct client_entity_s* self, centity_t* owner)
 {
 	// This tells if we are wasting our time, because the reference points are culled.
 	if (!RefPointsValid(owner))

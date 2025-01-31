@@ -67,7 +67,7 @@ static qboolean PlagueMistParticleSpawner(client_entity_t* spawner, centity_t* o
 	return true;
 }
 
-void FXPlagueMist(centity_t* owner, const int type, const int flags, const vec3_t origin)
+void FXPlagueMist(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	int mist_think_time;
 

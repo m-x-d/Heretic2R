@@ -97,7 +97,7 @@ void PreCacheMEffects(void)
 	mssithra_models[5] = fxi.RegisterModel("sprites/lens/halo2.sp2");
 }
 
-static qboolean CWTrailThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean CWTrailThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->alpha <= 0.1f || self->r.scale <= 0.0f)
 		return false;
@@ -215,7 +215,7 @@ static client_entity_t* MorkMakeLightningPiece(const vec3_t start, const vec3_t 
 	return lightning_r;
 }
 
-static qboolean MorkBeamCircle(struct client_entity_s* self, const centity_t* owner)
+static qboolean MorkBeamCircle(struct client_entity_s* self, centity_t* owner)
 {
 	self->LifeTime += 54;
 
@@ -232,7 +232,7 @@ static qboolean MorkBeamCircle(struct client_entity_s* self, const centity_t* ow
 	return true;
 }
 
-static qboolean MorkBeamUpdate(struct client_entity_s* self, const centity_t* owner)
+static qboolean MorkBeamUpdate(struct client_entity_s* self, centity_t* owner)
 {
 	static int particle_types[] =
 	{
@@ -357,7 +357,7 @@ static void ImpFireBallExplode(const centity_t* owner, vec3_t dir)
 	AddGenericExplosion(owner, dir, imp_models[1]); //mxd. Fire spark sprite.
 }
 
-static qboolean ImpFireballUpdate(struct client_entity_s* self, const centity_t* owner)
+static qboolean ImpFireballUpdate(struct client_entity_s* self, centity_t* owner)
 {
 	vec3_t angles;
 	VectorScale(self->r.angles, RAD_TO_ANGLE, angles);
@@ -577,7 +577,7 @@ void FXCWStars(centity_t* owner, const int type, const vec3_t vel)
 	AddEffect(owner, fx);
 }
 
-static qboolean BuoyUpdate(struct client_entity_s* self, const centity_t* owner)
+static qboolean BuoyUpdate(struct client_entity_s* self, centity_t* owner)
 {
 #define BUOY_FX_END			PART_4x4_RED
 #define BUOY_FX_START		PART_4x4_GREEN
@@ -782,7 +782,7 @@ static void BuoyPath(const vec3_t start, const vec3_t end)
 	AddEffect(NULL, fx);
 }
 
-static qboolean MMoBlurUpdate(const struct client_entity_s* self, centity_t* owner)
+static qboolean MMoBlurUpdate(struct client_entity_s* self, centity_t* owner)
 {
 	return self->alpha > 0.05f;
 }
@@ -849,7 +849,7 @@ static void AssassinDagger(centity_t* owner, const vec3_t vel, const float avel)
 	AddEffect(owner, dagger);
 }
 
-static qboolean UnderwaterWakeUpdate(struct client_entity_s* self, const centity_t* owner)
+static qboolean UnderwaterWakeUpdate(struct client_entity_s* self, centity_t* owner)
 {
 	static int water_particles[6] = //mxd. Made local static.
 	{
@@ -1001,7 +1001,7 @@ static void GroundAttack(vec3_t origin)
 	AddEffect(NULL, spawner);
 }
 
-static qboolean MorkBeam2_AddToView(struct client_entity_s* self, const centity_t* owner)
+static qboolean MorkBeam2_AddToView(struct client_entity_s* self, centity_t* owner)
 {
 	LinkedEntityUpdatePlacement(self, owner);
 	VectorCopy(self->r.origin, self->r.endpos);
@@ -1027,7 +1027,7 @@ static void MorkBeam2(centity_t* owner, const vec3_t startpos)
 	AddEffect(owner, fx);
 }
 
-static qboolean MorkMissileAddToView(struct client_entity_s* self, const centity_t* owner)
+static qboolean MorkMissileAddToView(struct client_entity_s* self, centity_t* owner)
 {
 	LinkedEntityUpdatePlacement(self, owner);
 	VectorCopy(self->r.origin, self->r.startpos);
@@ -1164,7 +1164,7 @@ static qboolean MorkTrackingMissileTrailTrailThink(struct client_entity_s* self,
 	return false;
 }
 
-static qboolean MorkTrackingMissileTrailThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean MorkTrackingMissileTrailThink(struct client_entity_s* self, centity_t* owner)
 {
 	self->r.scale = flrand(0.35f, 0.65f);
 
@@ -1228,7 +1228,7 @@ static qboolean RubbleUpdate(client_entity_t* self, centity_t* owner)
 	return true;
 }
 
-static qboolean MSsithraExplosionThink(const client_entity_t* self, centity_t* owner)
+static qboolean MSsithraExplosionThink(client_entity_t* self, centity_t* owner)
 {
 	if (self->LifeTime < fxi.cl->time)
 		return false;
@@ -1358,7 +1358,7 @@ static void MSsithraExplodeSmall(const vec3_t origin)
 	fxi.S_StartSound(origin, -1, CHAN_AUTO, fxi.S_RegisterSound("monsters/mssithra/hit.wav"), 0.5f, ATTN_NORM, 0);
 }
 
-static qboolean ArrowCheckFuse(client_entity_t* self, const centity_t* owner)
+static qboolean ArrowCheckFuse(client_entity_t* self, centity_t* owner)
 {
 	if ((owner->current.effects & EF_ALTCLIENTFX) || (owner->current.effects & EF_MARCUS_FLAG1))
 	{
@@ -1376,7 +1376,7 @@ static qboolean ArrowCheckFuse(client_entity_t* self, const centity_t* owner)
 	return true;
 }
 
-static qboolean ArrowDrawTrail(client_entity_t* self, const centity_t* owner)
+static qboolean ArrowDrawTrail(client_entity_t* self, centity_t* owner)
 {
 	LinkedEntityUpdatePlacement(self, owner);
 

@@ -57,7 +57,7 @@ static qboolean DefensePickupSparkThink(struct client_entity_s* shield, centity_
 	return true;
 }
 
-static qboolean DefensePickupThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean DefensePickupThink(struct client_entity_s* self, centity_t* owner)
 {
 	// Rotate and bob.
 	self->r.angles[YAW] += ANGLE_5;

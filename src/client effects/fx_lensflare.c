@@ -156,7 +156,7 @@ static qboolean LensFlareThinkAttached(struct client_entity_s* self, centity_t* 
 	return LensFlareUpdateOrigin(self); //mxd
 }
 
-void FXLensFlare(centity_t* owner, int type, const int flags, const vec3_t origin)
+void FXLensFlare(centity_t* owner, int type, const int flags, vec3_t origin)
 {
 	static int sprite_indices[] = { 1, 2, 4, 3, 6, 3 }; //mxd //TODO: index 5 is unused.
 	static float flare1_pos[] = { 1.0f, 0.7f, 0.3f, 0.1f, 0.0f, -0.2f };

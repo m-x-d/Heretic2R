@@ -18,7 +18,7 @@ typedef struct sound_think_info_s
 	float wait;
 } sound_think_info_t;
 
-static qboolean SoundThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean SoundThink(struct client_entity_s* self, centity_t* owner)
 {
 	static cvar_t* cinematicfreeze = NULL; //mxd
 

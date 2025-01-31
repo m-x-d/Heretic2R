@@ -23,7 +23,7 @@ enum HighPriestessStaff_e
 	HP_STAFF_TRAIL,
 };
 
-static qboolean HPStaffTrailThink(const struct client_entity_s* self, centity_t* owner)
+static qboolean HPStaffTrailThink(struct client_entity_s* self, centity_t* owner)
 {
 	const centity_t* actual_owner = (centity_t*)self->extra;
 

@@ -162,7 +162,7 @@ static qboolean HPTeleportLineThink2(struct client_entity_s* self, centity_t* ow
 	return false;
 }
 
-static qboolean HPMissileSpawnerThink(const struct client_entity_s* self, centity_t* owner)
+static qboolean HPMissileSpawnerThink(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->LifeTime < fxi.cl->time)
 		return false;
@@ -185,7 +185,7 @@ static qboolean HPMissileSpawnerThink(const struct client_entity_s* self, centit
 	return true;
 }
 
-static qboolean HPMissileSpawnerThink2(const struct client_entity_s* self, centity_t* owner)
+static qboolean HPMissileSpawnerThink2(struct client_entity_s* self, centity_t* owner)
 {
 	if (self->LifeTime < fxi.cl->time)
 		return false;
@@ -211,7 +211,7 @@ static qboolean HPMissileSpawnerThink2(const struct client_entity_s* self, centi
 	return true;
 }
 
-static qboolean HPHaloDie(const struct client_entity_s* self, centity_t* owner)
+static qboolean HPHaloDie(struct client_entity_s* self, centity_t* owner)
 {
 	return (self->r.scale > 0.0f && self->alpha > 0.0f);
 }
@@ -286,7 +286,7 @@ static qboolean HPBugThink(struct client_entity_s* self, centity_t* owner)
 	return true;
 }
 
-static qboolean HPMissileTrailThink(struct client_entity_s* self, const centity_t* owner)
+static qboolean HPMissileTrailThink(struct client_entity_s* self, centity_t* owner)
 {
 	self->r.scale = flrand(0.35f, 0.65f);
 
@@ -316,7 +316,7 @@ static qboolean HPMissileTrailThink(struct client_entity_s* self, const centity_
 	return true;
 }
 
-static qboolean HPMissileTrailThink2(struct client_entity_s* self, const centity_t* owner)
+static qboolean HPMissileTrailThink2(struct client_entity_s* self, centity_t* owner)
 {
 	self->r.scale = flrand(0.35f, 0.55f);
 
@@ -347,7 +347,7 @@ static qboolean HPMissileTrailThink2(struct client_entity_s* self, const centity
 	return true;
 }
 
-static qboolean HPMissileTrailThink3(struct client_entity_s* self, const centity_t* owner)
+static qboolean HPMissileTrailThink3(struct client_entity_s* self, centity_t* owner)
 {
 	client_entity_t* trail = ClientEntity_new(FX_HP_MISSILE, CEF_DONT_LINK, owner->origin, NULL, 17);
 
@@ -443,7 +443,7 @@ void FXHPMissileCreateWarp(const int type, const vec3_t origin)
 	AddEffect(NULL, halo);
 }
 
-static qboolean PriestessLinkedEntityUpdatePlacement(struct client_entity_s* self, const centity_t* owner)
+static qboolean PriestessLinkedEntityUpdatePlacement(struct client_entity_s* self, centity_t* owner)
 {
 	LinkedEntityUpdatePlacement(self, owner);
 	VectorCopy(self->r.origin, self->r.startpos);
