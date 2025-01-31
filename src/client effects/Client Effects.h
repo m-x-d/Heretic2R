@@ -8,6 +8,8 @@
 
 #include "Client Entities.h"
 
+#define MIN_UPDATE_TIME	17 //mxd
+
 extern const paletteRGBA_t color_white; //mxd
 extern const paletteRGBA_t color_red; //mxd
 extern const paletteRGBA_t color_orange; //mxd

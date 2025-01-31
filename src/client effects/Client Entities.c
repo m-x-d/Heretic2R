@@ -317,14 +317,13 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 	const float d_time2 = d_time * d_time * 0.5f;
 	int cur_trace = 0;
 	int num_fx = 0;
-	const int cur_time = fxi.cl->time;
 
 	assert(root);
 	assert(*root);
 
 	// If the world is frozen then add the particles, just don't update the world time. Always update the particle timer.
 	if (!fx_FreezeWorld)
-		ParticleUpdateTime = cur_time;
+		ParticleUpdateTime = fxi.cl->time;
 
 	for (prev = root, current = *root; current != NULL; current = current->next)
 	{
@@ -333,21 +332,20 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 		if (current->msgHandler != NULL)
 			ProcessMessages(current);
 
-		if (current->Update != NULL && current->nextThinkTime <= cur_time)
+		if (current->Update != NULL && current->nextThinkTime <= fxi.cl->time)
 		{
 			// Only think when not culled and not think culled.
-			if (!((current->flags & CEF_VIEWSTATUSCHANGED) && (current->flags & CEF_CULLED)) && !current->Update(current, owner))
+			if (!(current->flags & CEF_VIEWSTATUSCHANGED) && !(current->flags & CEF_CULLED) && !current->Update(current, owner))
 			{
 				RemoveEffectFromList(prev, owner);
 
 				// current = current->next is still valid in the for loop.
-				// A deallocated resource is guaranteed not to be changed until it is reallocated,
-				// when the mananger is not shared between threads.
+				// A deallocated resource is guaranteed not to be changed until it is reallocated, when the manager is not shared between threads.
 				continue;
 			}
 
-			assert(current->updateTime > 16);
-			current->nextThinkTime = cur_time + current->updateTime;
+			assert(current->updateTime >= MIN_UPDATE_TIME); //mxd. Added macro.
+			current->nextThinkTime = fxi.cl->time + current->updateTime;
 		}
 
 		entity_t* r = &current->r;
