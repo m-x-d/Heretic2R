@@ -27,51 +27,52 @@ void PreCacheItemWeapons(void)
 	weapon_models[6] = fxi.RegisterModel("models/items/weapons/firewall/tris.fm");	// ITEM_WEAPON_FIREWALL
 }
 
-static qboolean FXWeaponPickupThink(struct client_entity_s *self, centity_t *owner)
+static qboolean WeaponPickupThink(struct client_entity_s* self, centity_t* owner)
 {
-	client_particle_t	*spark;
-	paletteRGBA_t		color;
 	int part;
+	paletteRGBA_t color;
 
-	// Rotate and bob
+	// Rotate and bob.
 	self->r.angles[YAW] += ANGLE_15;
 	VectorCopy(owner->current.origin, self->r.origin);
-	self->r.origin[2] += (cos(self->SpawnData) * BOB_HEIGHT); 
+	self->r.origin[2] += cosf(self->SpawnData) * BOB_HEIGHT;
 	self->SpawnData += BOB_SPEED;
 
-	switch(self->SpawnInfo)
+	switch (self->SpawnInfo)
 	{
-	case 0:		// Hellstaff
-		part = PART_16x16_SPARK_R;
-		color.c = 0xff0000ff;
-		break;
-	case 1:		// Magic Missile
-		part = PART_16x16_SPARK_I;
-		color.c = 0xff00ff00;
-		break;
-	case 2:		// Red rain bow
-		part = PART_16x16_SPARK_R;
-		color.c = 0xff0000ff;
-		break;
-	case 3:		// Sphere
-		part = PART_16x16_SPARK_B;
-		color.c = 0xffff0000;
-		break;
-	case 4:		// Phoenix bow
-		part = irand(PART_32x32_FIRE0, PART_32x32_FIRE2);
-		color.c = 0xff0080ff;
-		break;
-	case 5:		// Maceballs
-		part = PART_16x16_SPARK_G;
-		color.c = 0xff00ff00;
-		break;
-	case 6:		// firewall
-		part = irand(PART_16x16_FIRE1, PART_16x16_FIRE3);
-		color.c = 0xff0080ff;
-		break;
-	default:
-		return true;		// No effect
-		break;
+		case 0: // Hellstaff
+		case 2: // Red rain bow
+			part = PART_16x16_SPARK_R;
+			color.c = 0xff0000ff;
+			break;
+
+		case 1: // Magic Missile
+			part = PART_16x16_SPARK_I;
+			color.c = 0xff00ff00;
+			break;
+
+		case 3: // Sphere
+			part = PART_16x16_SPARK_B;
+			color.c = 0xffff0000;
+			break;
+
+		case 4: // Phoenix bow
+			part = irand(PART_32x32_FIRE0, PART_32x32_FIRE2);
+			color.c = 0xff0080ff;
+			break;
+
+		case 5: // Maceballs
+			part = PART_16x16_SPARK_G;
+			color.c = 0xff00ff00;
+			break;
+
+		case 6: // Firewall
+			part = irand(PART_16x16_FIRE1, PART_16x16_FIRE3);
+			color.c = 0xff0080ff;
+			break;
+
+		default: // No effect
+			return true;
 	}
 
 	if (ref_soft)
@@ -79,15 +80,17 @@ static qboolean FXWeaponPickupThink(struct client_entity_s *self, centity_t *own
 	else
 		color.c = 0xffffffff;
 
-	spark = ClientParticle_new(part, color, 500);
-	spark->origin[0] = cos(self->SpawnData*4.0) * WP_PARTICLE_RADIUS;
-	spark->origin[1] = sin(self->SpawnData*4.0) * WP_PARTICLE_RADIUS;
-	spark->origin[2] = -cos(self->SpawnData) * BOB_HEIGHT;
-	spark->acceleration[2] = flrand(128.0, 256.0);
-	spark->scale = 6.0;
+	client_particle_t* spark = ClientParticle_new(part, color, 500);
+
+	spark->scale = 6.0f;
+	spark->origin[0] = cosf(self->SpawnData * 4.0f) * WP_PARTICLE_RADIUS;
+	spark->origin[1] = sinf(self->SpawnData * 4.0f) * WP_PARTICLE_RADIUS;
+	spark->origin[2] = -cosf(self->SpawnData) * BOB_HEIGHT;
+	spark->acceleration[2] = flrand(128.0f, 256.0f);
+
 	AddParticleToList(self, spark);
 
-	return(true);
+	return true;
 }
 
 void FXWeaponPickup(centity_t *owner, int type, int flags, vec3_t origin)
@@ -109,7 +112,7 @@ void FXWeaponPickup(centity_t *owner, int type, int flags, vec3_t origin)
 	ce->r.scale = 0.5;
 	ce->radius = 10.0;
 	ce->alpha = 0.8;
-	ce->Update = FXWeaponPickupThink;
+	ce->Update = WeaponPickupThink;
 
 	if (tag == ITEM_WEAPON_FIREWALL)
 		ce->r.scale = 1;
