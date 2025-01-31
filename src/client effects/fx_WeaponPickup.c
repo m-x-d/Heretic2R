@@ -93,36 +93,27 @@ static qboolean WeaponPickupThink(struct client_entity_s* self, centity_t* owner
 	return true;
 }
 
-void FXWeaponPickup(centity_t *owner, int type, int flags, vec3_t origin)
+void FXWeaponPickup(centity_t* owner, const int type, int flags, vec3_t origin)
 {
-	client_entity_t		*ce;
-	byte				tag;
-
+	byte tag;
 	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_PICKUP_WEAPON].formatString, &tag);
 
+	//mxd. Skip non-pickable weapons.
+	if (tag < ITEM_WEAPON_HELLSTAFF)
+		return;
+
 	flags &= ~CEF_OWNERS_ORIGIN;
-	ce = ClientEntity_new(type, flags | CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_ADDITIVE_PARTS | CEF_VIEWSTATUSCHANGED, origin, NULL, 50);
+	flags |= CEF_DONT_LINK | CEF_CHECK_OWNER | CEF_ADDITIVE_PARTS | CEF_VIEWSTATUSCHANGED;
+	client_entity_t* ce = ClientEntity_new(type, flags, origin, NULL, 50);
 
-	VectorCopy(ce->r.origin, ce->origin);
+	ce->radius = 10.0f;
+	ce->SpawnInfo = tag - 2;
+	ce->r.model = &weapon_models[ce->SpawnInfo];
 	ce->r.flags = RF_TRANSLUCENT | RF_GLOW;
-	if(!tag)//sorry bob, just temporary...
-		ce->flags|=CEF_NO_DRAW;
-	else
-		ce->r.model = weapon_models + (tag -2);
-	ce->r.scale = 0.5;
-	ce->radius = 10.0;
-	ce->alpha = 0.8;
+	ce->r.scale = ((tag == ITEM_WEAPON_FIREWALL) ? 1.0f : 0.5f);
+	ce->r.skinnum = ((tag == ITEM_WEAPON_PHOENIXBOW) ? 1 : 0);
+	ce->alpha = 0.8f;
 	ce->Update = WeaponPickupThink;
-
-	if (tag == ITEM_WEAPON_FIREWALL)
-		ce->r.scale = 1;
-
-	if (tag == ITEM_WEAPON_PHOENIXBOW)
-		ce->r.skinnum = 1;
-
-	ce->SpawnInfo = tag-2;
 
 	AddEffect(owner, ce);
 }
-
-// end
