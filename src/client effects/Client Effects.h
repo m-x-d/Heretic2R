@@ -26,7 +26,7 @@ extern cvar_t* fxTest3;
 extern cvar_t* fxTest4;
 extern cvar_t* compass;
 
-extern int ref_soft;
+extern qboolean ref_soft;
 extern int numprocessedparticles;
 extern int numrenderedparticles;
 

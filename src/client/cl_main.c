@@ -81,7 +81,6 @@ cvar_t* cl_lightlevel;
 // H2:
 cvar_t* shownames;
 cvar_t* r_detail;
-static cvar_t* compass;
 cvar_t* cl_showcaptions;
 cvar_t* cl_doautoaim;
 
@@ -1228,8 +1227,6 @@ static void CL_InitLocal(void)
 	// H2:
 	shownames = Cvar_Get("shownames", "0", CVAR_ARCHIVE);
 	r_detail = Cvar_Get("r_detail", "3.0", CVAR_ARCHIVE); // H2_1.07: "2.0" -> "3".
-	compass = Cvar_Get("compass", "0", CVAR_ARCHIVE); //TODO: used only by ClientEffects. Remove?
-	game_downloadable_type = Cvar_Get("downloadable_game", "0", 0); //TODO: eh? Set again below
 	cl_showcaptions = Cvar_Get("cl_showcaptions", "1", 0);
 	cl_doautoaim = Cvar_Get("cl_doautoaim", "0.0", CVAR_ARCHIVE);
 	cl_camera_combat = Cvar_Get("cl_camera_combat", "0.0", 0);

@@ -5,18 +5,15 @@
 //
 
 #include "Client Effects.h"
-#include "FX.h"
-#include "ResourceManager.h"
-#include "Client Entities.h"
+#include "LightStyles.h" //mxd
 #include "Particle.h"
-#include "ce_DLight.h"
-#include "ce_Message.h"
-#include "Vector.h"
+#include "ResourceManager.h"
 #include "Skeletons.h"
+#include "Vector.h"
+#include "Utilities.h" //mxd
+#include "ce_DLight.h"
 #include "q_Physics.h"
 #include "g_playstats.h"
-#include "LightStyles.h" //mxd
-#include "Utilities.h" //mxd
 
 // Important! This is the string that determines if you can join a server - ie you have the right Client Effects.dll.
 static char clfx_string[128] = "Heretic II v1.06"; //mxd. Renamed from client_string to avoid collisions with the var defined in client.h.
@@ -29,19 +26,13 @@ cvar_t* r_nearclipdist;
 cvar_t* r_detail;
 cvar_t* clfx_gravity;
 cvar_t* vid_ref;
-cvar_t* fxTest1; //TODO: unused
-cvar_t* fxTest2; //TODO: unused
-cvar_t* fxTest3; //TODO: unused
-cvar_t* fxTest4; //TODO: unused
 cvar_t* cl_timedemo;
-cvar_t* crosshair;
-cvar_t* compass; //TODO: unused
 
 static cvar_t* fx_numinview;
 static cvar_t* fx_numactive;
 static cvar_t* cl_lerpdist2;
 
-int ref_soft; //TODO: change type to qboolean? Barely used. Remove?..
+qboolean ref_soft; //mxd. int in original logic.
 int numprocessedparticles;
 int numrenderedparticles;
 
@@ -92,16 +83,9 @@ static void Init(void)
 	fx_numactive = Cvar_Get("fx_numactive", "0", 0);
 	clfx_gravity = Cvar_Get("clfx_gravity", GRAVITY_STRING, 0);
 	cl_timedemo = Cvar_Get("timedemo", "0", 0);
-	compass = Cvar_Get("compass", "0", CVAR_ARCHIVE);
-
-	fxTest1 = Cvar_Get("fxTest1", "0", 0);
-	fxTest2 = Cvar_Get("fxTest2", "0", 0);
-	fxTest3 = Cvar_Get("fxTest3", "0", 0);
-	fxTest4 = Cvar_Get("fxTest4", "0", 0);
 
 	cl_lerpdist2 = Cvar_Get("cl_lerpdist2", "10000", 0);
 	vid_ref = Cvar_Get("vid_ref", "soft", CVAR_ARCHIVE);
-	crosshair = Cvar_Get("crosshair", "0", CVAR_ARCHIVE);
 
 	Clear();
 }
