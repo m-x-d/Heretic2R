@@ -52,7 +52,7 @@ void (*P_PlayerPlayPain)(playerinfo_t* playerinfo, int type);
 void (*P_PlayerIntLand)(playerinfo_t* playerinfo, float landspeed);
 
 void (*P_PlayerInit)(playerinfo_t* playerinfo, int complete_reset);
-void (*P_PlayerClearEffects)(playerinfo_t* playerinfo);
+void (*P_PlayerClearEffects)(const playerinfo_t* playerinfo);
 void (*P_PlayerUpdate)(playerinfo_t* playerinfo);
 void (*P_PlayerUpdateCmdFlags)(playerinfo_t* playerinfo);
 void (*P_PlayerUpdateModelAttributes)(playerinfo_t* playerinfo);
