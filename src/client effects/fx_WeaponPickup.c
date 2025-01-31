@@ -1,25 +1,18 @@
 //
 // fx_WeaponPickup.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
-#include "ce_DefaultMessageHandler.h"
 #include "Client Effects.h"
-#include "Client Entities.h"
 #include "Particle.h"
-#include "ResourceManager.h"
-#include "FX.h"
-#include "Vector.h"
 #include "Random.h"
-#include "Utilities.h"
-#include "Angles.h"
+#include "Vector.h"
 #include "g_items.h"
 
-#define BOB_HEIGHT		6.0
-#define BOB_SPEED		ANGLE_10
-#define WP_PART_RADIUS	16.0
+#define BOB_HEIGHT			6.0f
+#define BOB_SPEED			ANGLE_10
+#define WP_PARTICLE_RADIUS	16.0f
 
 #define	NUM_ITEMWEAPONS	7
 
@@ -93,8 +86,8 @@ static qboolean FXWeaponPickupThink(struct client_entity_s *self, centity_t *own
 		color.c = 0xffffffff;
 
 	spark = ClientParticle_new(part, color, 500);
-	spark->origin[0] = cos(self->SpawnData*4.0) * WP_PART_RADIUS;
-	spark->origin[1] = sin(self->SpawnData*4.0) * WP_PART_RADIUS;
+	spark->origin[0] = cos(self->SpawnData*4.0) * WP_PARTICLE_RADIUS;
+	spark->origin[1] = sin(self->SpawnData*4.0) * WP_PARTICLE_RADIUS;
 	spark->origin[2] = -cos(self->SpawnData) * BOB_HEIGHT;
 	spark->acceleration[2] = flrand(128.0, 256.0);
 	spark->scale = 6.0;
