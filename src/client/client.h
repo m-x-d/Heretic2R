@@ -312,7 +312,7 @@ typedef struct
 	void (*ParseClientEffects)(centity_t* cent);
 	void (*RemoveClientEffects)(centity_t* cent);
 
-	void (*AddPacketEntities)(frame_t* frame);
+	void (*AddPacketEntities)(const frame_t* frame);
 	void (*AddEffects)(qboolean freeze);
 	void (*UpdateEffects)(void);
 
