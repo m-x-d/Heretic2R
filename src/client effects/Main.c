@@ -251,11 +251,11 @@ static void ParseEffects(centity_t* owner)
 	int num;
 	int flags;
 	sizebuf_t* msg_read;
-	sizebuf_t tempBuf;
+	sizebuf_t temp_buf;
+
 	EffectsBuffer_t* fx_buf = NULL;
 	int last_effect = -1;
 	int event_id = 0;
-
 	centity_t* temp_owner = owner;
 
 	if (owner != NULL)
@@ -278,7 +278,7 @@ static void ParseEffects(centity_t* owner)
 
 		num = fx_buf->numEffects;
 
-		msg_read = &tempBuf;
+		msg_read = &temp_buf;
 		memset(msg_read, 0, sizeof(*msg_read));
 		msg_read->data = fx_buf->buf;
 		msg_read->cursize = msg_read->maxsize = fx_buf->bufSize;
