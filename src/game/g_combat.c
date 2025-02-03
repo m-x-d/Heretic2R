@@ -803,7 +803,7 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t pdir,
 			if (targ->client->playerinfo.pers.armor_count <= 0)
 			{
 				// stop drawing the armor
-				targ->client->playerinfo.pers.armortype = ARMOR_NONE;
+				targ->client->playerinfo.pers.armortype = ARMOR_TYPE_NONE; //mxd. ARMOR_NONE in original version.
 				targ->client->playerinfo.pers.armor_count = 0;
 
 				SetupPlayerinfo_effects(targ);

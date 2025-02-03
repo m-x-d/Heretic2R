@@ -115,7 +115,7 @@ void PlayerKillShrineFX(edict_t *self)
 
 	// Turn off the armor at the model level.
 
-	playerinfo->pers.armortype = ARMOR_NONE;
+	playerinfo->pers.armortype = ARMOR_TYPE_NONE; //mxd. ARMOR_NONE in original version.
 
 	SetupPlayerinfo_effects(self);
 	P_PlayerUpdateModelAttributes(&self->client->playerinfo);
