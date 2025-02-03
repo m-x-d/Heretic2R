@@ -672,7 +672,6 @@ extern "C"
 // g_cmds.c
 //
 
-void Cmd_Help_f (edict_t *ent);
 void Cmd_Score_f (edict_t *ent);
 
 //
@@ -687,8 +686,6 @@ void SetRespawn (edict_t *ent);
 void SpawnItem (edict_t *ent, gitem_t *item);
 void SpawnItemEffect(edict_t *ent, gitem_t *item);
 gitem_t	*IsItem(edict_t *ent);
-void Think_Weapon (edict_t *ent);
-int ArmorIndex (edict_t *ent);
 qboolean Add_Ammo (edict_t *ent, gitem_t *item, int count);
 
 //
@@ -712,7 +709,6 @@ edict_t *oldfindradius (edict_t *from, vec3_t org, float rad);
 edict_t *findradius (edict_t *from, vec3_t org, float rad);
 edict_t *findinblocking (edict_t *from, edict_t *checkent);
 edict_t *findinbounds(edict_t *from, vec3_t min, vec3_t max);
-edict_t *oldfindinbounds(edict_t *from, vec3_t min, vec3_t max);
 edict_t *finddistance (edict_t *from, vec3_t org, float mindist, float maxdist);
 edict_t *findonpath(edict_t *startent, vec3_t startpos, vec3_t endpos, vec3_t mins, vec3_t maxs, vec3_t *resultpos);
 edict_t *G_PickTarget (char *targetname);
@@ -772,7 +768,6 @@ void M_CheckGround (edict_t *ent);
 // g_misc.c
 //
 
-void ThrowClientHead (edict_t *self, int damage);
 void ThrowGib (edict_t *self, char *gibname, int damage, int type);
 void BecomeExplosion1(edict_t *self);
 
@@ -788,12 +783,8 @@ void ai_turn (edict_t *self, float dist);
 void ai_run (edict_t *self, float dist);
 void ai_charge (edict_t *self, float dist);
 void ai_eat (edict_t *self, float dist);
-void ai_generic(edict_t *self);
 void ai_flee(edict_t *self, float dist);
-int range (edict_t *self, edict_t *other);
 void FoundTarget (edict_t *self, qboolean setsightent);
-qboolean infront (edict_t *self, edict_t *other);
-qboolean visible (edict_t *self, edict_t *other);
 qboolean FacingIdeal(edict_t *self);
 
 //
@@ -831,7 +822,6 @@ qboolean SV_FilterPacket (char *from);
 //
 
 extern void ClientEndServerFrame(edict_t *ent);
-extern qboolean CheckButton(edict_t *self);
 extern void	SetupPlayerinfo(edict_t *ent);
 extern void	WritePlayerinfo(edict_t *ent);
 extern void	SetupPlayerinfo_effects(edict_t *ent);
@@ -842,18 +832,11 @@ extern void	WritePlayerinfo_effects(edict_t *ent);
 //
 
 void MoveClientToIntermission(edict_t *client,qboolean log_file);
-void MoveClientsToIntermission(vec3_t ViewOrigin,vec3_t ViewAngles);
 void G_SetStats (edict_t *ent);
 void ValidateSelectedItem (edict_t *ent);
 void SelectPrevItem (edict_t *ent, int itflags);
 void SelectNextItem (edict_t *ent, int itflags);
 void DeathmatchScoreboardMessage (edict_t *client, edict_t *killer,qboolean log_file);
-
-//
-// g_pweapon.c
-//
-
-void PlayerNoise(edict_t *who, vec3_t where, int type);
 
 //
 // m_move.c
