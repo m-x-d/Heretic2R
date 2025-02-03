@@ -557,83 +557,78 @@ extern "C"
 
 extern int sm_meat_index; //TODO: mxd. Never set -> always 0!
 
-extern	cvar_t			*maxentities;
-extern	cvar_t			*deathmatch;
-extern	cvar_t			*coop;
-extern	cvar_t			*dmflags;
-extern	cvar_t			*advancedstaff;
-extern	cvar_t			*skill;
-extern	cvar_t			*fraglimit;
-extern	cvar_t			*timelimit;
-extern	cvar_t			*password;
-extern	cvar_t			*dedicated;
-extern	cvar_t			*filterban;
+extern cvar_t* maxentities;
+extern cvar_t* deathmatch;
+extern cvar_t* coop;
+extern cvar_t* dmflags;
+extern cvar_t* advancedstaff;
+extern cvar_t* skill;
+extern cvar_t* fraglimit;
+extern cvar_t* timelimit;
+extern cvar_t* password;
+extern cvar_t* dedicated;
+extern cvar_t* filterban;
 
-extern	cvar_t			*sv_gravity;
-extern	cvar_t			*sv_friction;
-extern	cvar_t			*sv_maxvelocity;
+extern cvar_t* sv_gravity;
+extern cvar_t* sv_friction;
+extern cvar_t* sv_maxvelocity;
 
-extern	cvar_t			*sv_cheats;
-extern	cvar_t			*sv_nomonsters;
-extern  cvar_t			*blood_level;
-extern	cvar_t			*showbuoys;
-extern	cvar_t			*showlitebuoys;
-extern	cvar_t			*mgai_debug;
-extern	cvar_t			*deactivate_buoys;
-extern	cvar_t			*anarchy;
-extern	cvar_t			*impact_damage;
-extern	cvar_t			*cheating_monsters;
-extern	cvar_t			*singing_ogles;
-extern	cvar_t			*no_runshrine;
-extern	cvar_t			*no_tornado;
-extern	cvar_t			*no_irondoom;
-extern	cvar_t			*no_phoenix;
-extern	cvar_t			*no_morph;
-extern	cvar_t			*no_shield;
-extern	cvar_t			*no_teleport;
-extern	cvar_t			*log_file_name;
-extern	cvar_t			*log_file_header;
-extern	cvar_t			*log_file_footer;
-extern	cvar_t			*log_file_line_header;
+extern cvar_t* sv_cheats;
+extern cvar_t* sv_nomonsters;
+extern cvar_t* blood_level;
+extern cvar_t* showbuoys;
+extern cvar_t* showlitebuoys;
+extern cvar_t* mgai_debug;
+extern cvar_t* deactivate_buoys;
+extern cvar_t* anarchy;
+extern cvar_t* impact_damage;
+extern cvar_t* cheating_monsters;
+extern cvar_t* singing_ogles;
+extern cvar_t* no_runshrine;
+extern cvar_t* no_tornado;
+extern cvar_t* no_irondoom;
+extern cvar_t* no_phoenix;
+extern cvar_t* no_morph;
+extern cvar_t* no_shield;
+extern cvar_t* no_teleport;
+extern cvar_t* log_file_name;
+extern cvar_t* log_file_header;
+extern cvar_t* log_file_footer;
+extern cvar_t* log_file_line_header;
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-	extern	cvar_t			*sv_cinematicfreeze;
-	extern	cvar_t			*sv_jumpcinematic;
+	extern cvar_t* sv_cinematicfreeze;
+	extern cvar_t* sv_jumpcinematic;
 #ifdef __cplusplus
 }
 #endif
 
-extern	cvar_t			*sv_freezemonsters;
+extern cvar_t* sv_freezemonsters;
 
-extern	cvar_t			*maxclients;
-extern	cvar_t			*sv_maplist;
+extern cvar_t* maxclients;
+extern cvar_t* sv_maplist;
 
-extern	cvar_t			*checkanim;		// specifies whether monsters should check to see if most of the
-										// distance of a move animation is unobstructed before setting it
-extern	cvar_t			*allowillegalskins;
+// Specifies whether monsters should check to see if most of the distance of a move animation is unobstructed before setting it.
+extern cvar_t* checkanim;
+extern cvar_t* allowillegalskins;
 
-extern	cvar_t			*monster_speeds;
-extern	cvar_t			*pvs_cull;
+extern cvar_t* monster_speeds;
+extern cvar_t* pvs_cull;
 
-extern	cvar_t			*dm_no_bodies;
+extern cvar_t* dm_no_bodies;
 
-extern	cvar_t			*player_dll;
+extern cvar_t* player_dll;
 
-extern	cvar_t			*flood_msgs;
-extern	cvar_t			*flood_persecond;
-extern	cvar_t			*flood_waitdelay;
-extern	cvar_t			*flood_killdelay;
+extern cvar_t* flood_msgs;
+extern cvar_t* flood_persecond;
+extern cvar_t* flood_waitdelay;
+extern cvar_t* flood_killdelay;
 
-extern	int				self_spawn;
-#define world			(&g_edicts[0])
-
-// ************************************************************************************************
-// 'DROPPED_XXX'.
-// --------------
-// ************************************************************************************************
+extern int self_spawn;
+#define world (&g_edicts[0])
 
 #define DROPPED_ITEM		0x00008000
 
