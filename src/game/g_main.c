@@ -46,7 +46,6 @@ cvar_t	*password;
 cvar_t	*maxclients;
 cvar_t	*maxentities;
 cvar_t	*sv_maplist;
-cvar_t	*g_select_empty;
 
 cvar_t	*dedicated;
 cvar_t	*filterban;

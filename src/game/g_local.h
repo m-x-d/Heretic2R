@@ -556,7 +556,6 @@ extern "C"
 #endif
 
 extern int sm_meat_index; //TODO: mxd. Never set -> always 0!
-extern	int				snd_fry;
 
 extern	cvar_t			*maxentities;
 extern	cvar_t			*deathmatch;
@@ -567,7 +566,6 @@ extern	cvar_t			*skill;
 extern	cvar_t			*fraglimit;
 extern	cvar_t			*timelimit;
 extern	cvar_t			*password;
-extern	cvar_t			*g_select_empty;
 extern	cvar_t			*dedicated;
 extern	cvar_t			*filterban;
 
