@@ -125,11 +125,6 @@ typedef enum
 
 #define MELEE_DISTANCE	80
 
-// ************************************************************************************************
-// SHRINE_XXX
-// ----------
-// ************************************************************************************************
-
 enum
 {
 	SHRINE_MANA,
@@ -146,12 +141,7 @@ enum
 	SHRINE_RANDOM
 };
 
-// ************************************************************************************************
-// SFL_CROSS_TRIGGER_XXX
-// ---------------------
-// game.'serverflags' values.
-// ************************************************************************************************
-
+// game.serverflags values. //TODO: mxd. Only SFL_CROSS_TRIGGER_MASK is used.
 #define SFL_CROSS_TRIGGER_1		0x00000001
 #define SFL_CROSS_TRIGGER_2		0x00000002
 #define SFL_CROSS_TRIGGER_3		0x00000004
@@ -163,10 +153,11 @@ enum
 #define SFL_CROSS_TRIGGER_MASK	0x000000ff
 
 #define MAX_MESSAGESTRINGS 1000
+
 typedef struct
 {
-	char *string;
-	char *wav;
+	char* string;
+	char* wav;
 } trig_message_t;
 
 #ifdef __cplusplus
@@ -178,286 +169,232 @@ extern "C"
 }
 #endif
 
-unsigned	*messagebuf;
+extern uint* messagebuf;
 
-// ************************************************************************************************
-// game_locals_t
-// -------------
-// This structure is left intact through an entire game. It should be initialized at game.dll load
-// time and read from / written to the 'server.ssv' file for savegames.
-// ************************************************************************************************
-
+// This structure is left intact through an entire game.
+// It should be initialized at game.dll load time and read from / written to the 'server.ssv' file for savegames.
 typedef struct
 {
 	// [maxclients].
+	gclient_t* clients;
 
-	gclient_t	*clients;
-
-	// Needed for co-op respawns... can't store spawnpoint in level, because it would get
-	// overwritten by the savegame restore.
-
-	char		spawnpoint[512];	
+	// Needed for co-op respawns... can't store spawnpoint in level, because it would get overwritten by the savegame restore.
+	char spawnpoint[512];
 
 	// Store latched cvars that we want to get at often here.
+	int maxclients;
+	int maxentities;
 
-	int			maxclients;
-	int			maxentities;
+	// Updated every frame in DM, for pick-up and shrine respawn times.
+	int num_clients;
 
-	//updated every frame in DM, for pick-up and shrine respawn times
-	int			num_clients;
-
-	// Cross level triggers.
-
-	int			serverflags;
+	// Cross-level triggers.
+	int serverflags;
 
 	// Items.
-
-	int			num_items;
+	int num_items;
 
 	// Flag that we've autosaved.
-
-	qboolean	autosaved;
-
-	qboolean	entitiesSpawned;
-
+	qboolean autosaved;
+	qboolean entitiesSpawned;
 } game_locals_t;
 
 #include "ICScript.h"
 
-// ************************************************************************************************
-// alertent_t
-// ---------
-// This structure is used for alert entities, which are spawned a lot
-// ************************************************************************************************
-#define MAX_ALERT_ENTS	1024//no more that 1024 alertents allowed
+// This structure is used for alert entities, which are spawned a lot.
+#define MAX_ALERT_ENTS	1024
+
 typedef struct alertent_s alertent_t;
 struct alertent_s
 {
-	alertent_t	*next_alert;
-	alertent_t	*prev_alert;
-	edict_t		*enemy;
-	vec3_t		origin;
-	qboolean	inuse;
-	int			alert_svflags;
-	float		lifetime;
+	alertent_t* next_alert;
+	alertent_t* prev_alert;
+	edict_t* enemy;
+	vec3_t origin;
+	qboolean inuse;
+	int alert_svflags;
+	float lifetime;
 };
 
-// ************************************************************************************************
-// level_locals_t
-// --------------
-// This structure is cleared as each map is entered. It is read/written to the 'level.sav' file for
-// savegames.
-// ************************************************************************************************
-
+// This structure is cleared as each map is entered. It is read/written to the 'level.sav' file for savegames.
 typedef struct
 {
-	int			framenum;
-	float		time;
+	int framenum;
+	float time;
 
-	char		level_name[MAX_QPATH];	// The descriptive name (e.g. 'Outer Base').
-	char		mapname[MAX_QPATH];		// The server name (e.g. 'base1').
-	char		nextmap[MAX_QPATH];		// Go here when fraglimit is hit.
+	char level_name[MAX_QPATH];	// The descriptive name (e.g. 'Outer Base').
+	char mapname[MAX_QPATH];	// The server name (e.g. 'base1').
+	char nextmap[MAX_QPATH];	// Go here when fraglimit is hit.
 
 	// Intermission state information.
+	float intermissiontime;		// Time the intermission was started.
+	char* changemap;
+	int exitintermission;
+	vec3_t intermission_origin;
+	vec3_t intermission_angle;
 
-	float		intermissiontime;		// Time the intermission was started.
-	char		*changemap;
-	int			exitintermission;
-	vec3_t		intermission_origin;
-	vec3_t		intermission_angle;
+	edict_t* sight_client;		// Changed once each frame for coop games.
 
-	edict_t		*sight_client;			// Changed once each frame for coop games.
+	edict_t* sight_entity;
+	int sight_entity_framenum;
 
-	edict_t		*sight_entity;
-	int			sight_entity_framenum;
+	float far_clip_dist_f;
+	float fog;
+	float fog_density;
 
-	float		far_clip_dist_f;
-	float		fog;
-	float		fog_density;
+	edict_t* current_entity; // Entity running from G_RunFrame().
+	int body_que; // Dead bodies.
 
-	edict_t		*current_entity;			// Entity running from G_RunFrame().
-	int			body_que;					// Dead bodies.
+	ICScript_t inGameCin;
+	qboolean cinActive;
 
-	ICScript_t	inGameCin;
-	qboolean	cinActive;
+	buoy_t buoy_list[MAX_MAP_BUOYS]; // Buoy information for this map.
+	int active_buoys;	// Number of actual buoys on the level.
+	int fucked_buoys;	// Number of buoys that can't be fixed.
+	int fixed_buoys;	// Number of buoys that had to be fixed.
 
-	buoy_t		buoy_list[MAX_MAP_BUOYS];	//Buoy information for this map
-	int			active_buoys;				//Number of actual buoys on the level
-	int			fucked_buoys;				//Number of buoys that can't be fixed
-	int			fixed_buoys;				//Number of buoys that had to be fixed
-	
-	int			player_buoy[MAX_CLIENTS];				//stores current bestbuoy for a player enemy (if any)
-	int			player_last_buoy[MAX_CLIENTS];		//when player_buoy is invalid, saves it here so monsters can check it first instead of having to do a whole search
+	int player_buoy[MAX_CLIENTS];		// Stores current bestbuoy for a player enemy (if any).
+	int player_last_buoy[MAX_CLIENTS];	// When player_buoy is invalid, saves it here so monsters can check it first instead of having to do a whole search.
 
+	int offensive_weapons;
+	int defensive_weapons;
 
-	int			offensive_weapons,
-				defensive_weapons;
+	alertent_t alertents[MAX_ALERT_ENTS]; // All the alert ents on the map.
+	int num_alert_ents;			// Number of actual alert entities on the level.
+	alertent_t* alert_entity;	// The alert entity linked list start.
+	alertent_t* last_alert;		// The last entity in alert entity linked list.
 
-	alertent_t	alertents[MAX_ALERT_ENTS];	//all the alert ents on the map
-	int			num_alert_ents;				//Number of actual alert entities on the level
-	alertent_t	*alert_entity,				//the alert entity linked list start
-				*last_alert;				//the last entity in alert entity linked list
-
-	qboolean	fighting_beast;				//fighting a beast, do extra checks with trace instant weapons
-
+	qboolean fighting_beast; // Fighting a beast, do extra checks with trace instant weapons.
 } level_locals_t;
 
-// ************************************************************************************************
-// MOD_XXX
-// -------
 // Means of death.
-// ************************************************************************************************
-
 typedef enum
 {
-	MOD_UNKNOWN			,
+	MOD_UNKNOWN,
 
-	MOD_STAFF			,
-	MOD_FIREBALL		,
-	MOD_MMISSILE		,
-	MOD_SPHERE			,
-	MOD_SPHERE_SPL		,
-	MOD_IRONDOOM		,
-	MOD_FIREWALL		,
-	MOD_STORM			,
-	MOD_PHOENIX			,
-	MOD_PHOENIX_SPL		,
-	MOD_HELLSTAFF		,
+	MOD_STAFF,
+	MOD_FIREBALL,
+	MOD_MMISSILE,
+	MOD_SPHERE,
+	MOD_SPHERE_SPL,
+	MOD_IRONDOOM,
+	MOD_FIREWALL,
+	MOD_STORM,
+	MOD_PHOENIX,
+	MOD_PHOENIX_SPL,
+	MOD_HELLSTAFF,
 
-	MOD_P_STAFF			,
-	MOD_P_FIREBALL		,
-	MOD_P_MMISSILE		,
-	MOD_P_SPHERE	 	,
-	MOD_P_SPHERE_SPL 	,
-	MOD_P_IRONDOOM		,
-	MOD_P_FIREWALL		,
-	MOD_P_STORM			,
-	MOD_P_PHOENIX	 	,
-	MOD_P_PHOENIX_SPL	,
-	MOD_P_HELLSTAFF		,
+	MOD_P_STAFF,
+	MOD_P_FIREBALL,
+	MOD_P_MMISSILE,
+	MOD_P_SPHERE,
+	MOD_P_SPHERE_SPL,
+	MOD_P_IRONDOOM,
+	MOD_P_FIREWALL,
+	MOD_P_STORM,
+	MOD_P_PHOENIX,
+	MOD_P_PHOENIX_SPL,
+	MOD_P_HELLSTAFF,
 
-	MOD_KICKED			,
-	MOD_METEORS			,
-	MOD_ROR				,
-	MOD_SHIELD			,
-	MOD_CHICKEN			,
-	MOD_TELEFRAG		,
-	MOD_WATER			,
-	MOD_SLIME			,
-	MOD_LAVA			,
-	MOD_CRUSH			,
-	MOD_FALLING			,
-	MOD_SUICIDE			,
-	MOD_BARREL			,
-	MOD_EXIT			,
-	MOD_BURNT			,
-	MOD_BLEED			,
-	MOD_SPEAR			,
-	MOD_DIED			,
-	MOD_KILLED_SLF		,
-	MOD_DECAP			,
-	MOD_TORN			,
+	MOD_KICKED,
+	MOD_METEORS,
+	MOD_ROR,
+	MOD_SHIELD,
+	MOD_CHICKEN,
+	MOD_TELEFRAG,
+	MOD_WATER,
+	MOD_SLIME,
+	MOD_LAVA,
+	MOD_CRUSH,
+	MOD_FALLING,
+	MOD_SUICIDE,
+	MOD_BARREL,
+	MOD_EXIT,
+	MOD_BURNT,
+	MOD_BLEED,
+	MOD_SPEAR,
+	MOD_DIED,
+	MOD_KILLED_SLF,
+	MOD_DECAP,
+	MOD_TORN,
+
 	MOD_MAX
 } MOD_t;
 
 #define MOD_FRIENDLY_FIRE	0x8000000
 
-// ************************************************************************************************
-// spawn_temp_t
-// ------------
-// This is used to hold entity field values that can be set from the editor, but aren't actualy
-// present in 'edict_t' during gameplay.
-// ************************************************************************************************
-
+// This is used to hold entity field values that can be set from the editor, but aren't actually present in 'edict_t' during gameplay.
 typedef struct
 {
 	// Sky variables.
+	char* sky;
+	float skyrotate;
+	vec3_t skyaxis;
 
-	char	*sky;
-	float	skyrotate;
-	vec3_t	skyaxis;
-	
-	// Nextmap. Is this used?
+	char* nextmap;
 
-	char	*nextmap;
+	int lip;
+	int distance;
+	int height;
+	char* noise;
+	float pausetime;
+	char* item;
+	char* gravity;
 
-	int		lip;
-	int		distance;
-	int		height;
-	char	*noise;
-	float	pausetime;
-	char	*item;
-	char	*gravity;
-
-	float	minyaw;
-	float	maxyaw;
-	float	minpitch;
-	float	maxpitch;
-	int		rotate;
-	float	zangle;
-	char	*file;
-	int		radius;
+	float minyaw;
+	float maxyaw;
+	float minpitch;
+	float maxpitch;
+	int rotate;
+	float zangle;
+	char* file;
+	int radius;
 
 	// Weapons to be given to the player on spawning.
+	int offensive;
+	int defensive;
+	int spawnflags2;
 
-	int		offensive;
-	int		defensive;
-	int		spawnflags2;
-	
 	// Time to wait (in seconds) for all clients to have joined a map in coop.
-
-	int		cooptimeout;
+	int cooptimeout;
 
 	// Scripting stuff.
-
-	char	*script;
-	char	*parms[16];
+	char* script;
+	char* parms[16];
 } spawn_temp_t;
 
-// ************************************************************************************************
-// moveinfo_t
-// ----------
 // This is used to hold information pertaining to an entity's movement.
-// ************************************************************************************************
-
 typedef struct
 {
 	// Fixed data.
+	vec3_t start_origin;
+	vec3_t start_angles;
+	vec3_t end_origin;
+	vec3_t end_angles;
 
-	vec3_t	start_origin;
-	vec3_t	start_angles;
-	vec3_t	end_origin;
-	vec3_t	end_angles;
+	int sound_start;
+	int sound_middle;
+	int sound_end;
 
-	int		sound_start;
-	int		sound_middle;
-	int		sound_end;
+	float accel;
+	float speed;
+	float decel;
+	float distance;
 
-	float	accel;
-	float	speed;
-	float	decel;
-	float	distance;
-
-	float	wait;
+	float wait;
 
 	// State data.
-
-	int		state;
-	vec3_t	dir;
-	float	current_speed;
-	float	move_speed;
-	float	next_speed;
-	float	remaining_distance;
-	float	decel_distance;
-	void	(*endfunc)(edict_t *);
+	int state;
+	vec3_t dir;
+	float current_speed;
+	float move_speed;
+	float next_speed;
+	float remaining_distance;
+	float decel_distance;
+	void (*endfunc)(edict_t*);
 } moveinfo_t;
 
-// ************************************************************************************************
-// AI_XXX
-// ------
 // Monster AI flags.
-// ************************************************************************************************
-
 #define AI_STAND_GROUND			0x00000001
 #define AI_TEMP_STAND_GROUND	0x00000002
 #define AI_SOUND_TARGET			0x00000004
@@ -475,60 +412,42 @@ typedef struct
 #define AI_RESURRECTING			0x00004000
 #define AI_FLEE					0x00008000
 #define AI_FALLBACK				0x00010000
-#define AI_COWARD				0x00020000	//Babies (FLEE to certain distance & WATCH)
-#define AI_AGRESSIVE			0x00040000	//never run away
-#define AI_SHOVE				0x00080000	//shove others out of the way.
-#define AI_DONT_THINK			0x00100000	//animate, don't think or move
-#define AI_SWIM_OK				0x00200000	//ok to go in water
+#define AI_COWARD				0x00020000	// Babies (FLEE to certain distance & WATCH).
+#define AI_AGRESSIVE			0x00040000	// Never run away.
+#define AI_SHOVE				0x00080000	// Shove others out of the way.
+#define AI_DONT_THINK			0x00100000	// Animate, don't think or move.
+#define AI_SWIM_OK				0x00200000	// Ok to go in water.
 #define AI_OVERRIDE_GUIDE		0x00400000	
-#define AI_NO_MELEE				0x00800000	//not allowed to melee
-#define AI_NO_MISSILE			0x01000000	//not allowed to missile
-#define AI_USING_BUOYS			0x02000000	//Using Buoyah! Navigation System(tm)
-#define AI_STRAIGHT_TO_ENEMY	0x04000000	//Charge straight at enemy no matter what anything else tells you
-#define AI_NIGHTVISION			0x08000000	//light level does not effect this monster's vision or aim
-#define AI_NO_ALERT				0x10000000	//monster does not pay attemntion to alerts
+#define AI_NO_MELEE				0x00800000	// Not allowed to melee.
+#define AI_NO_MISSILE			0x01000000	// Not allowed to missile.
+#define AI_USING_BUOYS			0x02000000	// Using Buoyah! Navigation System(tm).
+#define AI_STRAIGHT_TO_ENEMY	0x04000000	// Charge straight at enemy no matter what anything else tells you.
+#define AI_NIGHTVISION			0x08000000	// Light level does not effect this monster's vision or aim.
+#define AI_NO_ALERT				0x10000000	// Monster does not pay attention to alerts.
 
-// ************************************************************************************************
-// AS_XXX
-// ------
 // Monster attack states.
-// ************************************************************************************************
-
 #define AS_STRAIGHT	1
 #define AS_SLIDING	2
 #define	AS_MELEE	3
 #define	AS_MISSILE	4
 #define	AS_DIVING	5
 
-// ************************************************************************************************
-// C_ANIM_XXX
-// ------
-// Cinmatic Animation flags
-// ************************************************************************************************
+// Cinmatic animation flags.
 #define C_ANIM_MOVE		1
 #define C_ANIM_REPEAT	2
 #define C_ANIM_DONE		4
 #define C_ANIM_IDLE		8
 
-// ************************************************************************************************
-// OBJ_XXX
-// ------
 // Flags for object entities
-// ************************************************************************************************
 #define OBJ_INVULNERABLE	1
 #define OBJ_ANIMATE			2
 #define OBJ_EXPLODING		4
 #define OBJ_NOPUSH			8
 
-
-// ************************************************************************************************
-// SIGHT_XXX
-// ------
-// Type of target aquisition
-// ************************************************************************************************
-#define SIGHT_SOUND_TARGET 0		//Heard the target make this noise
-#define SIGHT_VISIBLE_TARGET 1		//Saw this target
-#define SIGHT_ANNOUNCED_TARGET 2	//Target was announced by another monster
+// Type of target acquisition.
+#define SIGHT_SOUND_TARGET		0 // Heard the target make this noise.
+#define SIGHT_VISIBLE_TARGET	1 // Saw this target.
+#define SIGHT_ANNOUNCED_TARGET	2 // Target was announced by another monster.
 
 
 // ************************************************************************************************
