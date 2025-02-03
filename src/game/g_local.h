@@ -270,17 +270,6 @@ typedef struct
 	edict_t		*sight_entity;
 	int			sight_entity_framenum;
 
-	int			pic_health;
-
-	int			total_secrets;
-	int			found_secrets;
-
-	int			total_goals;
-	int			found_goals;
-
-	int			total_monsters;
-	int			killed_monsters;
-
 	float		far_clip_dist_f;
 	float		fog;
 	float		fog_density;

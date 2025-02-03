@@ -350,10 +350,7 @@ void Killed (edict_t *targ, edict_t *inflictor, edict_t *attacker, int damage, v
 		
 		if(!(targ->svflags & SVF_WAIT_NOTSOLID))
 			targ->svflags |= SVF_DEADMONSTER;	// now treat as a different content type
-		if (!(targ->monsterinfo.aiflags & AI_GOOD_GUY))
-		{
-			level.killed_monsters++;
-		}
+
 		targ->enemy = attacker;
 		AlertMonsters (targ, attacker, 7, true);
 		//spawns an ent that will alert other monsters to my enemy's presence for 7 seconds

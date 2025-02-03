@@ -701,9 +701,6 @@ qboolean monster_start (edict_t *self)
 		return false;
 	}
 
-	if (!(self->monsterinfo.aiflags & AI_GOOD_GUY))
-		level.total_monsters++;
-
 	self->monsterinfo.awake = false;
 	self->nextthink = level.time + FRAMETIME;
 	self->svflags |= SVF_MONSTER;

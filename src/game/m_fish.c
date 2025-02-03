@@ -1046,8 +1046,6 @@ The fish
 
 void SP_monster_fish (edict_t *self)
 {
-	level.total_monsters++;
-
 	if ((deathmatch->value == 1) && !((int)sv_cheats->value & self_spawn))
 	{
 		G_FreeEdict (self);
