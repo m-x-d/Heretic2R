@@ -426,56 +426,28 @@ typedef struct
 #define AI_NO_ALERT				0x10000000	// Monster does not pay attention to alerts.
 
 // Monster attack states.
-#define AS_STRAIGHT	1
-#define AS_SLIDING	2
-#define	AS_MELEE	3
-#define	AS_MISSILE	4
-#define	AS_DIVING	5
+#define AS_STRAIGHT				1
+#define AS_SLIDING				2
+#define	AS_MELEE				3
+#define	AS_MISSILE				4
+#define	AS_DIVING				5
 
-// Cinmatic animation flags.
-#define C_ANIM_MOVE		1
-#define C_ANIM_REPEAT	2
-#define C_ANIM_DONE		4
-#define C_ANIM_IDLE		8
+// Cinematic animation flags.
+#define C_ANIM_MOVE				1
+#define C_ANIM_REPEAT			2
+#define C_ANIM_DONE				4
+#define C_ANIM_IDLE				8
 
 // Flags for object entities
-#define OBJ_INVULNERABLE	1
-#define OBJ_ANIMATE			2
-#define OBJ_EXPLODING		4
-#define OBJ_NOPUSH			8
+#define OBJ_INVULNERABLE		1
+#define OBJ_ANIMATE				2
+#define OBJ_EXPLODING			4
+#define OBJ_NOPUSH				8
 
 // Type of target acquisition.
 #define SIGHT_SOUND_TARGET		0 // Heard the target make this noise.
 #define SIGHT_VISIBLE_TARGET	1 // Saw this target.
 #define SIGHT_ANNOUNCED_TARGET	2 // Target was announced by another monster.
-
-
-// ************************************************************************************************
-// mframe_t
-// --------
-// ************************************************************************************************
-
-typedef struct
-{
-	int		framenum;								// Index to current animation frame.
-	void	(*aifunc)(edict_t *self, float dist);	// AI function for this animation frame.
-	float	dist;									// Distance the AI function should move the
-													// entity this frame.
-	void	(*thinkfunc)(edict_t *self);			// Think function for this frame.
-} mframe_t;
-
-// ************************************************************************************************
-// mmove_t
-// -------
-// ************************************************************************************************
-
-typedef struct
-{
-	int			framecount;					// Number of frames in the animation frame array.
-	mframe_t	*frame;
-	void		(*endfunc)(edict_t *self);
-} mmove_t;
-
 
 // ************************************************************************************************
 // animframe_t
@@ -503,19 +475,6 @@ typedef struct
 	animframe_t	*frame;
 	void		(*endfunc)(edict_t *self);
 } animmove_t;
-
-
-// ************************************************************************************************
-// c_animflags_t
-// ----------
-// ************************************************************************************************
-typedef struct 
-{
-	qboolean moving;		// Does this action support moving
-	qboolean repeat;		// Does this action support repeating
-	qboolean turning;	// Does this action support turning
-} c_animflags_t;
-
 
 // ************************************************************************************************
 // monsterinfo_t
@@ -587,32 +546,6 @@ typedef struct
 	float		last_successful_enemy_tracking_time;	//last time successfully saw enemy or found a path to him
 	float		coop_check_debounce_time;
 } monsterinfo_t;
-
-// ************************************************************************************************
-// aceldata_t
-// ----------
-// ************************************************************************************************
-
-typedef struct 
-{
-	animmove_t	*move;
-	short		fly;
-	short		lockmove;
-	int			playerflags;
-} aceldata_t;
-
-// ************************************************************************************************
-// acelsizes_t
-// -----------
-// ************************************************************************************************
-
-typedef struct
-{
-	vec3_t	boundbox[2];
-	int		altmove;
-	float	viewheight;
-	float	waterheight;
-} acelsizes_t;
 
 // The structure for each monster class.
 
