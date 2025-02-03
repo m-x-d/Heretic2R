@@ -618,7 +618,6 @@ extern	cvar_t			*allowillegalskins;
 extern	cvar_t			*monster_speeds;
 extern	cvar_t			*pvs_cull;
 
-extern	cvar_t			*game_test; // sfs--for testing the speed impact of code changes
 extern	cvar_t			*dm_no_bodies;
 
 extern	cvar_t			*player_dll;
@@ -627,8 +626,6 @@ extern	cvar_t			*flood_msgs;
 extern	cvar_t			*flood_persecond;
 extern	cvar_t			*flood_waitdelay;
 extern	cvar_t			*flood_killdelay;
-
-extern	edict_t			*g_edicts;
 
 extern	int				self_spawn;
 #define world			(&g_edicts[0])

@@ -334,7 +334,6 @@ void InitGame (void)
 	no_morph = gi.cvar("no_morph","0",0);
 	no_shield = gi.cvar("no_shield","0",0);
 
-	game_test = gi.cvar("game_test", "0", 0);
 	flood_msgs = gi.cvar ("flood_msgs", "4", 0);
 	flood_persecond = gi.cvar ("flood_persecond", "4", 0);
 	flood_waitdelay = gi.cvar ("flood_waitdelay", "10", 0);
