@@ -229,7 +229,7 @@ typedef struct
 	// Intermission state information.
 	float intermissiontime;		// Time the intermission was started.
 	char* changemap;
-	int exitintermission;
+	qboolean exitintermission; //mxd. int in original logic.
 	vec3_t intermission_origin;
 	vec3_t intermission_angle;
 

@@ -220,12 +220,12 @@ void BeginIntermission(edict_t *targ)
 	{
 		// Go immediately to the next level if not deathmatch.
 
-		level.exitintermission = 1;
+		level.exitintermission = true;
 
 		return;
 	}
 
-	level.exitintermission = 0;
+	level.exitintermission = false;
 
 	// Find an intermission spot.
 

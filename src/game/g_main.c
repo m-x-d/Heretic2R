@@ -382,7 +382,7 @@ void ExitLevel (void)
 	Com_sprintf (command, sizeof(command), "gamemap \"%s\"\n", level.changemap);
 	gi.AddCommandString (command);
 	level.changemap = NULL;
-	level.exitintermission = 0;
+	level.exitintermission = false;
 	level.intermissiontime = 0;
 
 	ClientEndServerFrames ();
