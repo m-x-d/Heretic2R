@@ -834,8 +834,6 @@ LABEL_END:
 		cmd->camera_viewangles[i] = ANGLE2SHORT(cl.camera_viewangles[i]);
 	}
 
-	cmd->prediction = (cl_predict->value != 0.0f);
-
 	// Send the ambient light level at the player's current position
 	cmd->lightlevel = (byte)cl_lightlevel->value;
 

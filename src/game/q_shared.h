@@ -488,7 +488,6 @@ typedef struct usercmd_s
 	short forwardmove;
 	short sidemove;
 	short upmove;
-	byte prediction;
 	byte lightlevel; // Light level the player is standing on.
 } usercmd_t;
 
@@ -1052,7 +1051,7 @@ enum
 // Indicates what skin Corvus has.
 // When indicated on the model, each odd-numbered skin is the damaged version of the previous skin.
 
-// For code clarity
+// For code clarity.
 #define PLAGUE_NUM_LEVELS 3
 #define DAMAGE_NUM_LEVELS 2
 
