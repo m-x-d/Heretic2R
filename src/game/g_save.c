@@ -381,13 +381,6 @@ void InitGame (void)
 	// Server side only elements.
 
 	G_InitItems();
-	
-	// ********************************************************************************************
-	// Initialise hep messages.
-	// ********************************************************************************************
-
-	Com_sprintf (game.helpmessage1, sizeof(game.helpmessage1), "No help message1");
-	Com_sprintf (game.helpmessage2, sizeof(game.helpmessage2), "No help message2");
 
 	// ********************************************************************************************
 	// Initialize all entities for this game.

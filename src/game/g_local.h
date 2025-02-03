@@ -212,9 +212,6 @@ unsigned	*messagebuf;
 
 typedef struct
 {
-	char		helpmessage1[512];
-	char		helpmessage2[512];
-
 	// Flash F1 icon if not 0, play sound and increment only if 1, 2, or 3.
 
 	int			helpchanged;
