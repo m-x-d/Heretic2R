@@ -398,7 +398,7 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 	cl.playerinfo.waterheight = cl.frame.playerstate.waterheight;
 	cl.playerinfo.waterlevel = cl.frame.playerstate.waterlevel;
 
-	VectorSet(cl.playerinfo.oldvelocity, 0, 0, cl.frame.playerstate.oldvelocity_z);
+	VectorSet(cl.playerinfo.oldvelocity, 0.0f, 0.0f, cl.frame.playerstate.oldvelocity_z);
 
 	old_pmove_state = pm.s;
 
