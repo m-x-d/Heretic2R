@@ -7,9 +7,6 @@
 #include "q_ClientServer.h"
 #include "buoy.h"
 
-// Defined so I can insert hooks into code without breaking anything
-#define PAGAN	0
-
 // Define GAME_INCLUDE so that game.h does not define the short, server-visible 'gclient_t' and
 // 'edict_t' structures because we define the game versions in this file.
 
