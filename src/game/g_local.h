@@ -1,122 +1,91 @@
+//
 // g_local.h -- local definitions for game module.
+//
+// Copyright 1998 Raven Software
+//
 
-#ifndef	G_LOCAL_H
-#define G_LOCAL_H
+#pragma once
 
 #include "q_shared.h"
 #include "q_ClientServer.h"
 #include "buoy.h"
 
-// Define GAME_INCLUDE so that game.h does not define the short, server-visible 'gclient_t' and
-// 'edict_t' structures because we define the game versions in this file.
-
-#define	GAME_INCLUDE
+// Define GAME_INCLUDE so that game.h does not define the short, server-visible 'gclient_t' and 'edict_t' structures
+// because we define the game versions in this file.
+#define GAME_INCLUDE
 
 #include "game.h"
 #include "player.h"
 
 // The "gameversion" client command will print this plus compile date.
-#define GAMEVERSION "Heretic2v16"
+#define GAMEVERSION		"Heretic2v16"
 
 // Protocol bytes that can be directly added to messages.
 
-// volume mask for ent->sound_data - makes room for attn value in the lower bits
+// Volume mask for ent->sound_data - makes room for attn value in the lower bits.
 #define ENT_VOL_MASK	0xf8
 
-// ************************************************************************************************
-// AI_MOOD_XXX
-// -------------
-// Held in 'edict_t'->ai_mood. Used by higher level AI functions to relay states to lower functions
-// ************************************************************************************************
+// Held in 'edict_t'->ai_mood. Used by higher level AI functions to relay states to lower functions.
+#define AI_MOOD_NORMAL			0	// Not using any high level functionality (TEMP).
+#define AI_MOOD_ATTACK			1	// Used in conjunction with ai_mood_flags to attack the target.
+#define AI_MOOD_NAVIGATE		2	// Just walk towards the guide, ignoring everything else.
+#define AI_MOOD_STAND			3	// Just stand there and wait to be advised.
+#define AI_MOOD_PURSUE			4	// Run towards your enemy but don't attack.
+#define AI_MOOD_FALLBACK		5	// Back away from your enemy, but face him.
+#define AI_MOOD_DELAY			6	// Same as stand, but will allow interruption anywhere.
+#define AI_MOOD_WANDER			7	// Wandering around buoy to buoy in a walk.
+#define AI_MOOD_JUMP			8	// Jump towards goalentity.
+#define AI_MOOD_REST			9	// The Ogle at rest.
+#define AI_MOOD_POINT_NAVIGATE	10	// Navigate to a point, not an entity.
+#define AI_MOOD_FLEE			11	// Run away!
+#define AI_MOOD_BACKUP			12	// Backstep while attacking.
+#define AI_MOOD_WALK			13	// Walking, no buoys.
+#define AI_MOOD_EAT				14	// Sitting around, eating.
 
-#define	AI_MOOD_NORMAL		0		//Not using any high level functionality (TEMP)
-#define	AI_MOOD_ATTACK		1		//Used in conjuntion with ai_mood_flags to attack the target
-#define	AI_MOOD_NAVIGATE	2		//Just walk towards the guide, ignoring everything else
-#define	AI_MOOD_STAND		3		//Just stand there and wait to be adivsed
-#define	AI_MOOD_PURSUE		4		//Run towards your enemy but don't attack
-#define	AI_MOOD_FALLBACK	5		//Back away from your enemy, but face him
-#define	AI_MOOD_DELAY		6		//Same as stand, but will allow interruption anywhere
-#define AI_MOOD_WANDER		7		//Wandering around buoy to buoy in a walk
-#define AI_MOOD_JUMP		8		//Jump towards goalentity
-#define AI_MOOD_REST		9		//The Ogle at rest
-#define AI_MOOD_POINT_NAVIGATE	10	//Navigate to a point, not an entity
-#define AI_MOOD_FLEE		11		//run away!
-#define AI_MOOD_BACKUP		12		//backstep while attacking
-#define AI_MOOD_WALK		13		//walking, no buoys
-#define AI_MOOD_EAT			14		//sitting around, eating
+// Held in 'edict_t'->ai_mood_flags. Used in conjunction with ai_mood.
+#define AI_MOOD_FLAG_MISSILE		0x00000001	// Check for a missile attack.
+#define AI_MOOD_FLAG_MELEE			0x00000002	// Check for a melee attack.
+#define AI_MOOD_FLAG_WHIP			0x00000004	// Check for a whipping attack (no damage).
+#define AI_MOOD_FLAG_PREDICT		0x00000008	// Monster will predict movement on target.
+#define AI_MOOD_FLAG_IGNORE			0x00000010	// Monster will ignore moods.
+#define AI_MOOD_FLAG_FORCED_BUOY	0x00000020	// Monster will head towards it's forced_buoy.
+#define AI_MOOD_FLAG_IGNORE_ENEMY	0x00000040	// Monster will ignore it's enemy unless attacked or otherwise directed.
+#define AI_MOOD_FLAG_BACKSTAB		0x00000080	// Monster will advance on and attack enemy only from behind.
+#define AI_MOOD_FLAG_DUMB_FLEE		0x00000100	// Monster will flee by simply running directly away from player.
+#define AI_MOOD_FLAG_GOTO_FIXED		0x00000200	// Monster will become fixed upon getting to it's forced_buoy.
+#define AI_MOOD_FLAG_GOTO_STAND		0x00000400	// Monster will stand upon getting to it's forced_buoy.
+#define AI_MOOD_FLAG_GOTO_WANDER	0x00000800	// Monster will wander upon getting to it's forced_buoy.
+#define AIMF_CANT_FIND_ENEMY		0x00001000	// Monster can't find enemy with buoys or vision. //TODO: consistent name?
+#define AIMF_SEARCHING				0x00002000	// Monster now in dumb search mode... //TODO: consistent name?
 
-// ************************************************************************************************
-// AI_MOOD_FLAG_XXX
-// -------------
-// Held in 'edict_t'->ai_mood_flags. Used in conjuction with ai_mood
-// ************************************************************************************************
-
-#define	AI_MOOD_FLAG_MISSILE		0x00000001		//Check for a missile attack
-#define	AI_MOOD_FLAG_MELEE			0x00000002		//Check for a melee attack
-#define AI_MOOD_FLAG_WHIP			0x00000004		//Check for a whipping attack (no damage)
-#define AI_MOOD_FLAG_PREDICT		0x00000008		//Monster will predict movement on target
-#define AI_MOOD_FLAG_IGNORE			0x00000010		//Monster will ignore moods
-#define AI_MOOD_FLAG_FORCED_BUOY	0x00000020		//Monster will head towards it's forced_buoy
-#define AI_MOOD_FLAG_IGNORE_ENEMY	0x00000040		//Monster will ignore it's enemy unless attacked or otherwise directed
-#define AI_MOOD_FLAG_BACKSTAB		0x00000080		//Monster will advance on and attack enemy only from behind
-#define AI_MOOD_FLAG_DUMB_FLEE		0x00000100		//Monster will flee by simply running directly away from player
-#define AI_MOOD_FLAG_GOTO_FIXED		0x00000200		//Monster will become fixed upon getting to it's forced_buoy
-#define AI_MOOD_FLAG_GOTO_STAND		0x00000400		//Monster will stand upon getting to it's forced_buoy
-#define AI_MOOD_FLAG_GOTO_WANDER	0x00000800		//Monster will wander upon getting to it's forced_buoy
-#define AIMF_CANT_FIND_ENEMY		0x00001000		//Monster can't find enemy with buoys or vision
-#define AIMF_SEARCHING				0x00002000		//Monster now in dumb search mode...
-
-// ************************************************************************************************
-// SPAWNFLAG_XXX
-// -------------
 // Held in 'edict_t'->spawnflags. These are set with checkboxes on each entity in the map editor.
-// ************************************************************************************************
-
 #define	SPAWNFLAG_NOT_EASY			0x00000100
 #define	SPAWNFLAG_NOT_MEDIUM		0x00000200
 #define	SPAWNFLAG_NOT_HARD			0x00000400
 #define	SPAWNFLAG_NOT_DEATHMATCH	0x00000800
 #define	SPAWNFLAG_NOT_COOP			0x00001000
 
-// ************************************************************************************************
 // Timing constants that define the world heartbeat.
-// ************************************************************************************************
+#define FRAMETIME			0.1f
+#define MONSTER_THINK_INC	0.099f
+#define FRAMES_PER_SECOND	10.0f
 
-#define	FRAMETIME			0.1
-#define MONSTER_THINK_INC   0.099
-#define FRAMES_PER_SECOND	10.0
-
-// ************************************************************************************************
-// TAG_XXX
-// -------
 // Memory tags to allow dynamic memory to be selectively cleaned up.
-// ************************************************************************************************
-
-#define	TAG_GAME	765			// clear when unloading the dll
-#define	TAG_LEVEL	766			// clear when loading a new level
-
-// ************************************************************************************************
-// damage_t
-// --------
-// ************************************************************************************************
+#define TAG_GAME	765	// Clear when unloading the dll.
+#define TAG_LEVEL	766	// Clear when loading a new level.
 
 typedef enum
 {
 	DAMAGE_NO,
-	DAMAGE_YES,	// Will take damage if hit.
-	DAMAGE_AIM,	// Auto targeting recognizes this.
-	DAMAGE_NO_RADIUS,	// Will not take damage from radius blasts
+	DAMAGE_YES, // Will take damage if hit.
+	DAMAGE_AIM, // Auto targeting recognizes this.
+	DAMAGE_NO_RADIUS, // Will not take damage from radius blasts.
 } damage_t;
 
-#define GIB_ORGANIC 1
+#define GIB_ORGANIC		1
+#define BODY_QUEUE_SIZE	8
 
-#define BODY_QUEUE_SIZE		8
-
-// ************************************************************************************************
 // RANGE_XXX
-// ---------
-// ************************************************************************************************
-
 #define RANGE_MELEE	0
 #define RANGE_NEAR	1
 #define RANGE_MID	2
@@ -1293,6 +1262,3 @@ void SkyFly (edict_t *self);
 	void SaveScripts(FILE *FH, qboolean DoGlobals);
 	void LoadScripts(FILE *FH, qboolean DoGlobals);
 #endif
-
-#endif // G_LOCAL_H
-
