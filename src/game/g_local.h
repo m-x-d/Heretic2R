@@ -449,127 +449,113 @@ typedef struct
 #define SIGHT_VISIBLE_TARGET	1 // Saw this target.
 #define SIGHT_ANNOUNCED_TARGET	2 // Target was announced by another monster.
 
-// ************************************************************************************************
-// animframe_t
-// -----------
-// ************************************************************************************************
-
 typedef struct
 {
-	int		framenum;
-	void	(*movefunc)(edict_t *self, float var1, float var2, float var3);
-	float	var1, var2, var3;
-	void	(*actionfunc)(edict_t *self, float var4);
-	float	var4;
-	void	(*thinkfunc)(edict_t *self);
+	int framenum;
+	void (*movefunc)(edict_t* self, float var1, float var2, float var3);
+	float var1;
+	float var2;
+	float var3;
+	void (*actionfunc)(edict_t* self, float var4);
+	float var4;
+	void (*thinkfunc)(edict_t* self);
 } animframe_t;
 
-// ************************************************************************************************
-// animmove_t
-// ----------
-// ************************************************************************************************
-
 typedef struct
 {
-	int			numframes;
-	animframe_t	*frame;
-	void		(*endfunc)(edict_t *self);
+	int numframes;
+	animframe_t* frame;
+	void (*endfunc)(edict_t* self);
 } animmove_t;
 
-// ************************************************************************************************
-// monsterinfo_t
-// -------------
-// ************************************************************************************************
-
 typedef struct
 {
-// Not used in new system
-	char		*otherenemyname;				// ClassName of secondary enemy (other than player).
-												// E.g. a Rat's secondary enemy is a gib.
+	// Not used in new system.
+	char* otherenemyname; // ClassName of secondary enemy (other than player). E.g. a Rat's secondary enemy is a gib.
 
-	animmove_t	*currentmove;
-	int			aiflags;
-	int			aistate;						// Last order given to the monster (ORD_XXX).
-	int			currframeindex;					// Index to current monster frame.
-	int			nextframeindex;					// Used to force the next frameindex.
-	float		thinkinc;						// Time between thinks for this entity.
-	float		scale;
+	animmove_t* currentmove;
+	int aiflags;
+	int aistate;		// Last order given to the monster (ORD_XXX).
+	int currframeindex;	// Index to current monster frame.
+	int nextframeindex;	// Used to force the next frameindex.
+	float thinkinc;		// Time between thinks for this entity.
+	float scale;
 
-	void		(*idle)(edict_t *self);
-	void		(*search)(edict_t *self);
-	void		(*dodge)(edict_t *self, edict_t *other, float eta);
-	int			(*attack)(edict_t *self);
-	void		(*sight)(edict_t *self, edict_t *other);
-	void		(*dismember)(edict_t *self, int damage, int HitLocation);
-	qboolean	(*alert)(edict_t *self, alertent_t *alerter, edict_t *enemy);
-	qboolean	(*checkattack)(edict_t *self);
+	void (*idle)(edict_t* self);
+	void (*search)(edict_t* self);
+	void (*dodge)(edict_t* self, edict_t* other, float eta);
+	int (*attack)(edict_t* self);
+	void (*sight)(edict_t* self, edict_t* other);
+	void (*dismember)(edict_t* self, int damage, int HitLocation);
+	qboolean(*alert)(edict_t* self, alertent_t* alerter, edict_t* enemy);
+	qboolean(*checkattack)(edict_t* self);
 
-	float		pausetime;
-	float		attack_finished;
-	float		flee_finished;					// When a monster is done fleeing
-	float		chase_finished;					// When the monster can look for secondary monsters.
+	float pausetime;
+	float attack_finished;
+	float flee_finished;	// When a monster is done fleeing
+	float chase_finished;	// When the monster can look for secondary monsters.
 
-	vec3_t		saved_goal;
-	float		search_time;
-	float		misc_debounce_time;
-	vec3_t		last_sighting;
-	int			attack_state;
-	int			lefty;
-	float		idle_time;
-	int			linkcount;
+	vec3_t saved_goal;
+	float search_time;
+	float misc_debounce_time;
+	vec3_t last_sighting;
+	int attack_state;
+	int lefty;
+	float idle_time;
+	int linkcount;
 
-	int			searchType;
-	vec3_t		nav_goal;
-	float		jump_time;
+	int searchType;
+	vec3_t nav_goal;
+	float jump_time;
 
-	int			stepState;
+	int stepState;
 
-	int			ogleflags;		//Ogles have special spawnflags stored in here at spawntime
+	int ogleflags; // Ogles have special spawnflags stored in here at spawntime.
 
-	int			supporters;		//Number of supporting monsters (with common type) in the area when awoken
-	
-	float		sound_finished;	//Amount of time until the monster will be finishing talking (used for voices)
-	float		sound_start;	//The amount of time to wait before playing the pending sound
-	int			sound_pending;	//This monster is waiting to make a sound (used for voices) (0 if false, else sound ID)
-	
-	// Cinematic fields
-	int			c_dist;			// Distance left to move
-	int			c_repeat;		// # of times to repeat the anim cycle
-	void (*c_callback)(struct edict_s *self);	// Callback function when action is done
-	int			c_anim_flag;		// Shows if current cinematic anim supports moving, turning, or repeating
-	qboolean	c_mode;			// in cinematic mode or not?
-	edict_t		*c_ent;			// entity passed from a cinematic command
+	int supporters; // Number of supporting monsters (with common type) in the area when awoken.
 
-	qboolean	awake;			// has found an anemy AND gone after it.
-	qboolean	roared;			// Gorgon has roared or been woken up by a roar
+	float sound_finished;	// Amount of time until the monster will be finishing talking (used for voices).
+	float sound_start;		// The amount of time to wait before playing the pending sound.
+	int sound_pending;		// This monster is waiting to make a sound (used for voices) (0 if false, else sound ID).
 
-	float		last_successful_enemy_tracking_time;	//last time successfully saw enemy or found a path to him
-	float		coop_check_debounce_time;
+	// Cinematic fields.
+	int c_dist;		// Distance left to move.
+	int c_repeat;	// # of times to repeat the anim cycle.
+	void (*c_callback)(struct edict_s* self); // Callback function when action is done
+	int c_anim_flag;	// Shows if current cinematic anim supports moving, turning, or repeating.
+	qboolean c_mode;	// In cinematic mode or not?
+	edict_t* c_ent;		// Entity passed from a cinematic command.
+
+	qboolean awake;		// Has found an enemy AND gone after it.
+	qboolean roared;	// Gorgon has roared or been woken up by a roar.
+
+	float last_successful_enemy_tracking_time; // Last time successfully saw enemy or found a path to him.
+	float coop_check_debounce_time;
 } monsterinfo_t;
 
 // The structure for each monster class.
+#define FOFS(x)		((int)&(((edict_t*)0)->x))
+#define STOFS(x)	((int)&(((spawn_temp_t*)0)->x))
+#define LLOFS(x)	((int)&(((level_locals_t*)0)->x))
+#define CLOFS(x)	((int)&(((gclient_t*)0)->x))
+#define BYOFS(x)	((int)&(((buoy_t*)0)->x))
 
-#define	FOFS(x)		(int)&(((edict_t *)0)->x)
-#define	STOFS(x)	(int)&(((spawn_temp_t *)0)->x)
-#define	LLOFS(x)	(int)&(((level_locals_t *)0)->x)
-#define	CLOFS(x)	(int)&(((gclient_t *)0)->x)
-#define	BYOFS(x)	(int)&(((buoy_t *)0)->x)
+extern game_locals_t game;
 
-extern	game_locals_t	game;
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-extern	level_locals_t	level;
-extern	edict_t			*g_edicts;
-extern	game_import_t	gi;
-extern	spawn_temp_t	st;
-extern	game_export_t	globals;
+	extern level_locals_t level;
+	extern edict_t* g_edicts;
+	extern game_import_t gi;
+	extern spawn_temp_t st;
+	extern game_export_t globals;
 #ifdef __cplusplus
 }
 #endif
 
-extern	int				sm_meat_index;
+extern int sm_meat_index; //TODO: mxd. Never set -> always 0!
 extern	int				snd_fry;
 
 extern	cvar_t			*maxentities;
