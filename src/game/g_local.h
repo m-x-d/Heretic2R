@@ -7,10 +7,6 @@
 #include "q_ClientServer.h"
 #include "buoy.h"
 
-#if 0
-#define G_NOAMMO
-#endif
-
 // Defined so I can insert hooks into code without breaking anything
 #define PAGAN	0
 

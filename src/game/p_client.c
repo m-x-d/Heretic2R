@@ -2083,44 +2083,6 @@ void InitClientPersistant(edict_t *player)
 	item = P_FindItem("Def-mana");
 	client->playerinfo.pers.inventory.Items[ITEM_INDEX(item)] = client->playerinfo.pers.max_defmana / 2;
 
-#ifdef G_NOAMMO
-	
-	// Start with all weapons if G_NOAMMO is defined.
-
-	gi.dprintf("Starting with unlimited ammo.\n");
-
-	item = P_FindItem("hell");
-	client->playerinfo.pers.inventory.Items[ITEM_INDEX(item)] = 1;
-
-	item = P_FindItem("array");
-	client->playerinfo.pers.inventory.Items[ITEM_INDEX(item)] = 1;
-
-	item = P_FindItem("rain");
-	client->playerinfo.pers.inventory.Items[ITEM_INDEX(item)] = 1;
-
-	item = P_FindItem("sphere");
-	client->playerinfo.pers.inventory.Items[ITEM_INDEX(item)] = 1;
-
-	item = P_FindItem("phoen");
-	client->playerinfo.pers.inventory.Items[ITEM_INDEX(item)] = 1;
-
-	item = P_FindItem("mace");
-	client->playerinfo.pers.inventory.Items[ITEM_INDEX(item)] = 1;
-
-	item = P_FindItem("fwall");
-	client->playerinfo.pers.inventory.Items[ITEM_INDEX(item)] = 1;
-
-	item = P_FindItem("meteor");
-	client->playerinfo.pers.inventory.Items[ITEM_INDEX(item)] = 1;
-															   
-	item = P_FindItem("morph");
-	client->playerinfo.pers.inventory.Items[ITEM_INDEX(item)] = 1;
-
-	client->bowtype = BOW_TYPE_REDRAIN;
-	client->armortype = ARMOR_TYPE_SILVER;
-
-#endif // G_NOAMMO
-
 	client->playerinfo.pers.connected = true;
 }
 
