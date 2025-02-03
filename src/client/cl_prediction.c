@@ -440,9 +440,6 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 		pm.high_max = (cl.playerinfo.effects & EF_HIGH_MAX) != 0;
 		pm.run_shrine = (cl.playerinfo.effects & EF_SPEED_ACTIVE) != 0;
 
-		if (memcmp(&pm.s, &old_pmove_state, sizeof(pmove_state_t)) != 0)
-			pm.snapinitial = true;
-
 		if (pm.s.pm_flags & PMF_LOCKMOVE)
 		{
 			for (int i = 0; i < 3; i++)

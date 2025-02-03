@@ -500,7 +500,6 @@ typedef struct
 
 	// Command (in).
 	usercmd_t cmd;
-	qboolean snapinitial;		// If s has been changed outside pmove.
 	qboolean run_shrine;
 	qboolean high_max;
 

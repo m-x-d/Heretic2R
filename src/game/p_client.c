@@ -3047,11 +3047,6 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 		pm.s.origin[i] = ent->s.origin[i]*8;
 		pm.s.velocity[i] = ent->velocity[i]*8;
 	}
-	
-	if (memcmp(&client->old_pmove, &pm.s, sizeof(pm.s)))
-	{
-		pm.snapinitial = true;
-	}
 
 	pm.cmd = *ucmd;
 	client->pcmd = *ucmd;
