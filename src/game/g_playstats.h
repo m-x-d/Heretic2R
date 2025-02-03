@@ -6,8 +6,6 @@
 
 #pragma once
 
-#define DAMAGE_DM_FACTOR				0.67f
-
 #pragma region ========================== WEAPON STATS ==========================
 
 #define MAX_REFLECT						8
@@ -23,9 +21,6 @@
 #define SWORD_SPIN_DMG_MOD				1.75f
 #define SWORD_BACK_DMG_MOD				0.7f
 #define SWORD_STAB_DMG_MOD				2.5f
-#define SWORD_BLOCK_DELAY				1.2f
-#define SWORD_BLOCK_DURATION			0.4f
-#define SWORD_BLOCK_TIME				(SWORD_BLOCK_DELAY + SWORD_BLOCK_DURATION)
 
 // Flying Fist.
 #define FIREBALL_MIN_FIZZLE_DAMAGE		5		// Least amount of damage it will do after flying.
@@ -89,7 +84,6 @@
 #define POWER_RAIN_DMG_LIGHTNING_RADIUS	100
 
 // Fireblast (unpowered firewall).
-#define FIREBLAST_LIFETIME				5
 #define FIREBLAST_SPEED					480.0f
 #define FIREBLAST_RADIUS				48.0f
 #define FIREBLAST_PROJ_RADIUS			8.0f
@@ -109,7 +103,6 @@
 #define FIREWAVE_DAMAGE					75		// How much damage the wall does every think.
 #define FIREWAVE_DAMAGE_MIN				50
 #define FIREWAVE_WORM_DAMAGE			30
-#define FIREWAVE_WORM_RADIUS			64.0f
 
 // Phoenix Arrows.
 #define PHOENIX_EXPLODE_DAMAGE			175		// Silver armor + 100 health ends with 13 health. Demo: 225.
@@ -122,7 +115,6 @@
 #define SPHERE_DAMAGE					100
 #define SPHERE_RADIUS_MIN				48
 #define SPHERE_RADIUS_MAX				256
-#define SPHERE_BASE_MANA				6
 #define SPHERE_MANA_PER_CHARGE			1
 #define SPHERE_MAX_MANA_CHARGE			7		// For a total of 20 mana in a shot.
 #define SPHERE_MAX_CHARGES				(SPHERE_MAX_MANA_CHARGE * 2)	// 2 frames per charge.
@@ -134,10 +126,8 @@
 #define RIPPER_DAMAGE_MAX				50
 #define RIPPER_BALLS					8
 #define RIPPER_BALL_ANGLE				(ANGLE_360 / RIPPER_BALLS)
-#define RIPPER_BALL_BANGLE				(256 / RIPPER_BALLS)	// NOTE: Only works if the number of balls is evenly dividable!
 #define RIPPER_EXPLODE_DAMAGE			20
-#define RIPPER_SPEED					2000.0f
-#define RIPPER_EXPLODE_SPEED			500
+#define RIPPER_EXPLODE_SPEED			500.0f
 
 // Mace balls (powered up Iron Doom).
 #define MACEBALL_GRAVITY				0.5f
@@ -150,9 +140,6 @@
 #define TORN_DUR						0.5f
 #define	SPIN_DUR						15.0f
 #define TORN_DAMAGE						20
-
-#define FIRE_LINGER_PLAYER_DMG_MIN		0
-#define FIRE_LINGER_PLAYER_DMG_MAX		1
 
 #define FIRE_LINGER_DMG_MIN				2
 #define FIRE_LINGER_DMG_MAX				3
@@ -197,29 +184,6 @@
 #define BARREL_EXPLODE_DMG_MAX	100
 #define BARREL_EXPLODE_RADIUS	128.0f
 
-// Flamethrower stuff - server side.
-#define GRAV_MOV				1.0f	// Time to move from min to max grav values - server side.
-#define MAX_GRAV				1.2f	// Gravity flamethrower starts with - server side.
-#define MIN_GRAV				0.12f	// Gravity flamethrower maxes out at - server side.
-#define ZEN_TIME				3.0f	// Time for flamethrower to be at its max - server side - seconds.
-#define FLAME_THROW_DAMAGE		10.0f	// Damage flamethrower does at one hit.
-#define FLAME_UPDATE_PER_SEC	0.2f	// Frame update speed - server side.
-
-// Count of number of updates per second - server side.
-#define FLAME_NUM_UPDATE_PER_SEC	(GRAV_MOV / FLAME_UPDATE_PER_SEC)
-
-// Given the update speed, and the distance we have to go, and the time move from one to another,
-// get us a value to update gravity with each frame.
-#define TOTAL_GRAV_MOV				(MAX_GRAV - MIN_GRAV) / ((float)FLAME_NUM_UPDATE_PER_SEC)
-
-// FLAME THROWER STUFF - CLIENT EFFECTS SIDE
-#define FLAME_GRAV		(-675.0f)				// Initial gravity value - client effects side. Should match cl_gravity->value.
-#define MAX_GRAV_FX		FLAME_GRAV * MAX_GRAV	// Gravity flamethrower starts out with - client effects side.
-#define MIN_GRAV_FX		FLAME_GRAV * MIN_GRAV	// Gravity flamethrower maxes out at - client effects side.
-#define ZEN_TIME_FX		(ZEN_TIME * 1000.0f)	// Time for flamethrower to be at its max - client effects side - milliseconds.
-#define GRAV_MOV_FX		(GRAV_MOV * 1000.0f)	// Time to move from min to max grav values - client effects side - milliseconds.
-#define TOTAL_DIST_FX	((float)MAX_GRAV_FX - (float)MIN_GRAV_FX)	// Total distance from min to max grav.
-
 // Screen shake defines.
 #define SHAKE_LATERAL	1
 #define SHAKE_VERTICAL	2
@@ -232,7 +196,6 @@
 #define FAR_CLIP_DIST		"4096.0"
 #define FAR_CLIP_DIST_VAL	4096.0f
 #define NEAR_CLIP_DIST		"64.0"
-#define NEAR_CLIP_DIST_VAL	64.0f
 
 #define DETAIL_LOW		0
 #define DETAIL_NORMAL	1
@@ -244,7 +207,6 @@
 #define VIOLENCE_NONE	0
 #define VIOLENCE_BLOOD	1
 #define VIOLENCE_NORMAL	2
-#define VIOLENCE_ULTRA	3
 
 #define VIOLENCE_DEFAULT		VIOLENCE_NORMAL
 #define VIOLENCE_DEFAULT_STR	"2"
