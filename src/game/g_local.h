@@ -573,10 +573,6 @@ extern	cvar_t			*sv_gravity;
 extern	cvar_t			*sv_friction;
 extern	cvar_t			*sv_maxvelocity;
 
-extern	cvar_t			*gun_x,*gun_y,*gun_z;
-extern	cvar_t			*sv_rollspeed;
-extern	cvar_t			*sv_rollangle;
-
 extern	cvar_t			*run_pitch;
 extern	cvar_t			*run_roll;
 extern	cvar_t			*bob_up;
