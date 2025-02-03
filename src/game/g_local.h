@@ -632,49 +632,38 @@ extern int self_spawn;
 
 #define DROPPED_ITEM		0x00008000
 
-// fields are needed for spawning from the entity string
-// and saving / loading games
-
+// Fields are needed for spawning from the entity string and saving / loading games.
 #define FFL_SPAWNTEMP		1
 
-// ************************************************************************************************
-// fieldtype_t
-// -----------
-// ************************************************************************************************
-
-typedef enum {
-	F_INT, 
+typedef enum
+{
+	F_INT,
 	F_FLOAT,
-	F_LSTRING,			// string on disk, pointer in memory, TAG_LEVEL
-	F_GSTRING,			// string on disk, pointer in memory, TAG_GAME
+	F_LSTRING,	// String on disk, pointer in memory, TAG_LEVEL.
+	F_GSTRING,	// String on disk, pointer in memory, TAG_GAME.
 	F_VECTOR,
 	F_ANGLEHACK,
-	F_EDICT,			// index on disk, pointer in memory
-	F_ITEM,				// index on disk, pointer in memory
-	F_CLIENT,			// index on disk, pointer in memory
+	F_EDICT,	// Index on disk, pointer in memory.
+	F_ITEM,		// Index on disk, pointer in memory.
+	F_CLIENT,	// Index on disk, pointer in memory.
 	F_RGBA,
 	F_RGB,
 	F_IGNORE,
 } fieldtype_t;
 
-// ************************************************************************************************
-// field_t
-// -------
-// ************************************************************************************************
-
 typedef struct
 {
-	char	*name;
-	int		ofs;
-	fieldtype_t	type;
-	int		flags;
+	char* name;
+	int ofs;
+	fieldtype_t type;
+	int flags;
 } field_t;
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-	extern	field_t fields[];
+	extern field_t fields[];
 #ifdef __cplusplus
 }
 #endif
