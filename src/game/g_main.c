@@ -54,12 +54,6 @@ cvar_t	*sv_maxvelocity;
 cvar_t	*sv_gravity;
 cvar_t	*sv_friction;
 
-cvar_t	*run_pitch;
-cvar_t	*run_roll;
-cvar_t	*bob_up;
-cvar_t	*bob_pitch;
-cvar_t	*bob_roll;
-
 cvar_t	*sv_cheats;
 cvar_t	*sv_nomonsters=NULL;
 cvar_t	*sv_freezemonsters;

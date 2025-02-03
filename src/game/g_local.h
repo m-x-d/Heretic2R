@@ -573,12 +573,6 @@ extern	cvar_t			*sv_gravity;
 extern	cvar_t			*sv_friction;
 extern	cvar_t			*sv_maxvelocity;
 
-extern	cvar_t			*run_pitch;
-extern	cvar_t			*run_roll;
-extern	cvar_t			*bob_up;
-extern	cvar_t			*bob_pitch;
-extern	cvar_t			*bob_roll;
-
 extern	cvar_t			*sv_cheats;
 extern	cvar_t			*sv_nomonsters;
 extern  cvar_t			*blood_level;

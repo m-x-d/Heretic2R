@@ -313,12 +313,6 @@ void InitGame (void)
 	password = gi.cvar ("password", "", CVAR_USERINFO);
 	filterban = gi.cvar ("filterban", "1", 0);
 
-	run_pitch = gi.cvar ("run_pitch", "0.002", 0);
-	run_roll = gi.cvar ("run_roll", "0.005", 0);
-	bob_up  = gi.cvar ("bob_up", "0.005", 0);
-	bob_pitch = gi.cvar ("bob_pitch", "0.002", 0);
-	bob_roll = gi.cvar ("bob_roll", "0.002", 0);
-
 	autorotate = gi.cvar("autorotate", "0", 0);
 	blood = gi.cvar("blood", "1", 0);
 
