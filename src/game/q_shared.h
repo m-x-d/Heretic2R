@@ -1,5 +1,5 @@
 //
-// q_shared.h -- included first by ALL program modules (unfortuantly this is true for all code from id)
+// q_shared.h -- included first by ALL program modules (unfortunately this is true for all code from id).
 //
 // Copyright 1998 Raven Software
 //
@@ -25,36 +25,36 @@
 #define YAW					1		// left / right
 #define ROLL				2		// fall over
 
-#define MAX_STRING_CHARS	1024	// max length of a string passed to Cmd_TokenizeString
-#define MAX_STRING_TOKENS	80		// max tokens resulting from Cmd_TokenizeString
-#define MAX_TOKEN_CHARS		128		// max length of an individual token
+#define MAX_STRING_CHARS	1024	// Max length of a string passed to Cmd_TokenizeString.
+#define MAX_STRING_TOKENS	80		// Max tokens resulting from Cmd_TokenizeString.
+#define MAX_TOKEN_CHARS		128		// Max length of an individual token.
 
-#define MAX_QPATH			64		// max length of a quake game pathname
-#define MAX_OSPATH			128		// max length of a filesystem pathname
+#define MAX_QPATH			64		// Max length of a quake game pathname.
+#define MAX_OSPATH			128		// Max length of a filesystem pathname.
 
-// Game print flags
-#define PRINT_LOW			0		// pickup messages
-#define PRINT_MEDIUM		1		// death messages
-#define PRINT_HIGH			2		// critical messages
-#define PRINT_CHAT			3		// chat messages
-#define PRINT_CAPTION		4		// captioning at bottom
-#define PRINT_TEAM			5		// chat message to team members
+// Game print flags.
+#define PRINT_LOW			0		// Pickup messages.
+#define PRINT_MEDIUM		1		// Death messages.
+#define PRINT_HIGH			2		// Critical messages.
+#define PRINT_CHAT			3		// Chat messages.
+#define PRINT_CAPTION		4		// Captioning at bottom.
+#define PRINT_TEAM			5		// Chat message to team members.
 
-#define ERR_FATAL			0		// exit the entire game with a popup window
-#define ERR_DROP			1		// print to console and disconnect from game
-#define ERR_DISCONNECT		2		// don't kill server
+#define ERR_FATAL			0		// Exit the entire game with a popup window.
+#define ERR_DROP			1		// Print to console and disconnect from game.
+#define ERR_DISCONNECT		2		// Don't kill server.
 
 #define PRINT_ALL			0
-#define PRINT_DEVELOPER		1		// only print when "developer 1"
-#define PRINT_ALERT			2		
+#define PRINT_DEVELOPER		1		// Only print when "developer 1".
+#define PRINT_ALERT			2
 
 #ifndef M_PI
-	#define M_PI			3.14159265358979323846f	// matches value in gcc v2 math.h
+	#define M_PI			3.14159265358979323846f	// Matches value in gcc v2 math.h.
 #endif
 #define SQRT2				1.414213562
 #define TIME_EPSILON		0.01
 
-#define VectorCopy_Macro(a,b)			(b[0]=a[0],b[1]=a[1],b[2]=a[2])
+#define VectorCopy_Macro(a,b)			((b)[0] = (a)[0], (b)[1] = (a)[1], (b)[2] = (a)[2])
 //#define VectorSubtract_Macro(a,b,c)		(c[0]=a[0]-b[0],c[1]=a[1]-b[1],c[2]=a[2]-b[2]) //TODO: remove?
 
 //mxd. paletteRGBA_t handling macros.
@@ -170,25 +170,25 @@ extern H2COMMON_API const vec3_t vec3_up;
 }
 #endif
 
-extern int curtime; // Time returned by last Sys_Milliseconds
+extern int curtime; // Time returned by last Sys_Milliseconds.
 
 int Sys_Milliseconds(void);
 void Sys_Mkdir(const char* path);
 
-// Large block stack allocation routines
+// Large block stack allocation routines.
 void* Hunk_Begin(int maxsize);
 void* Hunk_Alloc(int size);
 void Hunk_Free(void* buf);
 int Hunk_End(void);
 
-// Directory searching
-#define SFF_ARCH    0x01
-#define SFF_HIDDEN  0x02
-#define SFF_RDONLY  0x04
-#define SFF_SUBDIR  0x08
-#define SFF_SYSTEM  0x10
+// Directory searching.
+#define SFF_ARCH	0x01
+#define SFF_HIDDEN	0x02
+#define SFF_RDONLY	0x04
+#define SFF_SUBDIR	0x08
+#define SFF_SYSTEM	0x10
 
-// Pass in an attribute mask of things you wish to REJECT
+// Pass in an attribute mask of things you wish to REJECT.
 char* Sys_FindFirst(const char* path, uint musthave, uint canthave);
 char* Sys_FindNext(uint musthave, uint canthave);
 void Sys_FindClose(void);
@@ -213,20 +213,20 @@ GAME_DECLSPEC void Com_ColourPrintf(PalIdx_t colour, const char* fmt, ...);
 #ifndef CVAR
 #define CVAR
 
-#define CVAR_ARCHIVE	1	// Set to cause it to be saved to vars.rc
-#define CVAR_USERINFO	2	// Added to userinfo  when changed
-#define CVAR_SERVERINFO	4	// Added to serverinfo when changed
-#define CVAR_NOSET		8	// Don't allow change from console at all, but can be set from the command line
-#define CVAR_LATCH		16	// Save changes until server restart
+#define CVAR_ARCHIVE	1	// Set to cause it to be saved to vars.rc.
+#define CVAR_USERINFO	2	// Added to userinfo  when changed.
+#define CVAR_SERVERINFO	4	// Added to serverinfo when changed.
+#define CVAR_NOSET		8	// Don't allow change from console at all, but can be set from the command line.
+#define CVAR_LATCH		16	// Save changes until server restart.
 
 // Nothing outside the Cvar_*() functions should modify these fields!
 typedef struct cvar_s
 {
 	char* name;
 	char* string;
-	char* latched_string; // For CVAR_LATCH vars
+	char* latched_string; // For CVAR_LATCH vars.
 	int flags;
-	qboolean modified; // Set each time the cvar is changed
+	qboolean modified; // Set each time the cvar is changed.
 	float value;
 	struct cvar_s* next;
 } cvar_t;
@@ -311,17 +311,15 @@ typedef struct
 // Auto set if any surface has transparency, e.g. water.
 #define CONTENTS_TRANSLUCENT	0x10000000
 
-// This flag is special in that it is not stored in the .bsp by QuakeEd. It is passed into the trace
-// functions to say that anything with CONTENTS_CAMERANOBLOCK should be ignored. So we can get away
-// with defining it = CONTENTS_CAMERANOBLOCK.
+// This flag is special in that it is not stored in the .bsp by QuakeEd.
+// It is passed into the trace functions to say that anything with CONTENTS_CAMERANOBLOCK should be ignored.
 #define CONTENTS_CAMERABLOCK	0x20000000	// Was CONTENTS_LADDER.
 
 // This flag is special in that it is NOT passed into the trace functions, but may be stored in the
-//.bsp by QuakeEd to say that traces with CONTENTS_CAMERABLOCK as the mask will ignore any brushes with this flag.
+// .bsp by QuakeEd to say that traces with CONTENTS_CAMERABLOCK as the mask will ignore any brushes with this flag.
 #define CONTENTS_CAMERANOBLOCK	0x40000000
 
-// Only do the trace against the world, not entities within it. Not stored in the .bsp and passed
-// only as an argument to trace fucntions.
+// Only do the trace against the world, not entities within it. Not stored in the .bsp and passed only as an argument to trace fucntions.
 #define CONTENTS_WORLD_ONLY		0x80000000
 
 #pragma endregion
@@ -543,41 +541,41 @@ typedef struct
 } pmove_t;
 
 // entity_state_t->renderfx flags
-#define RF_MINLIGHT			0x00000001		// Allways have some light (viewmodel)
-#define RF_REFLECTION		0x00000002		// Use GL spherical mapping, if available
-#define RF_WEAPONMODEL		0x00000004		// Only draw through eyes
-#define RF_FULLBRIGHT		0x00000008		// Allways draw full intensity
-#define RF_DEPTHHACK		0x00000010		// For view weapon Z crunching
+#define RF_MINLIGHT			0x00000001		// Always have some light (viewmodel).
+#define RF_REFLECTION		0x00000002		// Use GL spherical mapping, if available.
+#define RF_WEAPONMODEL		0x00000004		// Only draw through eyes.
+#define RF_FULLBRIGHT		0x00000008		// Always draw full intensity.
+#define RF_DEPTHHACK		0x00000010		// For view weapon Z crunching.
 #define RF_TRANSLUCENT		0x00000020
 #define RF_FRAMELERP		0x00000040
-#define RF_CUSTOMSKIN		0x00000080		// Skin is an index in image_precache
-#define RF_GLOW				0x00000100		// Pulse lighting for bonus items
+#define RF_CUSTOMSKIN		0x00000080		// Skin is an index in image_precache.
+#define RF_GLOW				0x00000100		// Pulse lighting for bonus items.
 #define RF_SCALE_XYZ		0x00000200
 #define RF_SCALE_XY			0x00000400
 #define RF_SCALE_Z			0x00000800
-#define RF_PRIMITIVE		0x00001000		// Line, or other primitive runtime generated by the render DLL
+#define RF_PRIMITIVE		0x00001000		// Line, or other primitive runtime generated by the render DLL.
 #define RF_FIXED			0x00002000		// The sprite has a fixed direction and up vector.
-											// By default, a sprite is always oriented to the view (no effect on models)
+											// By default, a sprite is always oriented to the view (no effect on models).
 
-#define RF_TRANS_ADD		0x00004000		// Additive transparency
-#define RF_TRANS_ADD_ALPHA	0x00008000		// Adds emulation of alpha for additive transparent objects using tint
-#define RF_TRANS_GHOST		0x00010000		// Like subtractive translucency
-#define RF_ALPHA_TEXTURE	0x00020000		// Object has an alpha texture map
-#define RF_NODEPTHTEST		0x00080000		// Turns off depth testing for sprites only
-#define RF_IGNORE_REFS		0x00100000		// Don't update the ref points for a model
+#define RF_TRANS_ADD		0x00004000		// Additive transparency.
+#define RF_TRANS_ADD_ALPHA	0x00008000		// Adds emulation of alpha for additive transparent objects using tint.
+#define RF_TRANS_GHOST		0x00010000		// Like subtractive translucency.
+#define RF_ALPHA_TEXTURE	0x00020000		// Object has an alpha texture map.
+#define RF_NODEPTHTEST		0x00080000		// Turns off depth testing for sprites only.
+#define RF_IGNORE_REFS		0x00100000		// Don't update the ref points for a model.
 #define RF_NODRAW			0x00200000
 #define RF_CULL_LARGE		0x00400000		// If set on a poly that is really close to the near clip plane and occupies
-											// a signifiant amount of screen real-estate, the poly will be culled. Used for particles in software.
+											// a significant amount of screen real-estate, the poly will be culled. Used for particles in software.
 
 #define RF_TRANS_ANY		(RF_TRANS_ADD | RF_TRANS_GHOST | RF_TRANSLUCENT)
 
 // player_state_t->refdef flags
-#define RDF_UNDERWATER		0x00000001		// warp the screen as apropriate
-#define RDF_NOWORLDMODEL	0x00000002		// used for player configuration screen
+#define RDF_UNDERWATER		0x00000001		// Warp the screen as appropriate.
+#define RDF_NOWORLDMODEL	0x00000002		// Used for player configuration screen.
 
-// Sound channels
-// Channel 0 never willingly overrides
-// Other channels (1-7) always override a playing sound on that channel
+// Sound channels.
+// Channel 0 never willingly overrides.
+// Other channels (1-7) always override a playing sound on that channel.
 #define CHAN_AUTO				0
 #define CHAN_WEAPON				1
 #define CHAN_VOICE				2
@@ -587,38 +585,38 @@ typedef struct
 #define CHAN_FOOTSTEP2			6
 #define CHAN_WEAPON2			7
 
-// Modifier flags
-#define CHAN_NO_PHS_ADD			8	// Send to all clients, not just ones in PHS (ATTN 0 will also do this)
-#define CHAN_RELIABLE			16	// Send by reliable message, not datagram
+// Modifier flags.
+#define CHAN_NO_PHS_ADD			8	// Send to all clients, not just ones in PHS (ATTN 0 will also do this).
+#define CHAN_RELIABLE			16	// Send by reliable message, not datagram.
 
-// Sound attenuation values
-#define ATTN_NONE				0	// Full volume the entire level
+// Sound attenuation values.
+#define ATTN_NONE				0	// Full volume the entire level.
 #define ATTN_NORM				1
 #define ATTN_IDLE				2
-#define ATTN_STATIC				3	// Diminish very rapidly with distance
+#define ATTN_STATIC				3	// Diminish very rapidly with distance.
 #define ATTN_VERYSTATIC			4
 #define ATTN_LEFT				256
 #define ATTN_RIGHT				512
 
-// player_state->stats[] indexes
+// player_state->stats[] indexes.
 
 // * - MUST BE SEQUENTIAL!!!
-#define STAT_HEALTH_ICON		0		// Icon for health
-#define STAT_HEALTH				1		// Health value
-#define STAT_AMMO_ICON			2		// Icon for ammo
-#define STAT_AMMO				3		// Amount of ammo
-#define STAT_WEAPON_ICON		4		// Current offensive weapon
+#define STAT_HEALTH_ICON		0		// Icon for health.
+#define STAT_HEALTH				1		// Health value.
+#define STAT_AMMO_ICON			2		// Icon for ammo.
+#define STAT_AMMO				3		// Amount of ammo.
+#define STAT_WEAPON_ICON		4		// Current offensive weapon.
 #define STAT_WEAPON				5
-#define STAT_DEFENCE_ICON		6		// Current defensive weapon
+#define STAT_DEFENCE_ICON		6		// Current defensive weapon.
 #define STAT_DEFENCE			7
-#define STAT_OFFMANA_ICON		8		// * Icon describing offensive mana
-#define STAT_OFFMANA_BACK		9		// Amount of offensive mana
-#define STAT_OFFMANA			10		// Icon describing defensive mana
-#define STAT_DEFMANA_ICON		11		// * Amount of defensive mana
+#define STAT_OFFMANA_ICON		8		// * Icon describing offensive mana.
+#define STAT_OFFMANA_BACK		9		// Amount of offensive mana.
+#define STAT_OFFMANA			10		// Icon describing defensive mana.
+#define STAT_DEFMANA_ICON		11		// * Amount of defensive mana.
 #define STAT_DEFMANA_BACK		12
 #define STAT_DEFMANA			13
-#define STAT_FRAGS_ICON			14		// Cleared each frame, 1 = health, 2 = armor
-#define STAT_FRAGS				15		// Which status to print                    
+#define STAT_FRAGS_ICON			14		// Cleared each frame, 1 = health, 2 = armor.
+#define STAT_FRAGS				15		// Which status to print.            
 #define STAT_FLASHES			16
 #define STAT_LAYOUTS			17
 #define STAT_PUZZLE_ITEM1		18
@@ -642,7 +640,7 @@ typedef struct
 
 #define MAX_STATS				48
 
-// dmflags->value flags
+// dmflags->value flags.
 #define DF_WEAPONS_STAY			0x0001
 #define DF_NO_SHRINE			0x0002
 #define DF_NONAMES				0x0004
@@ -674,19 +672,19 @@ typedef struct
 #define CS_NAME				0
 #define CS_CDTRACK			1
 #define CS_SKY				2
-#define CS_SKYAXIS			3	// %f %f %f format
+#define CS_SKYAXIS			3	// %f %f %f format.
 #define CS_SKYROTATE		4
 #define CS_LEVEL_NUMBER		5
-#define CS_STATUSBAR		6	// Display program string (this seems to take up several slots - hence must be last)
+#define CS_STATUSBAR		6	// Display program string (this seems to take up several slots - hence must be last).
 #define CS_MAXCLIENTS		30
-#define CS_MAPCHECKSUM		31	// For catching cheater maps
+#define CS_MAPCHECKSUM		31	// For catching cheater maps.
 #define CS_MODELS			32
 #define CS_SOUNDS			(CS_MODELS + MAX_MODELS)
 #define CS_IMAGES			(CS_SOUNDS + MAX_SOUNDS)
 #define CS_LIGHTS			(CS_IMAGES + MAX_IMAGES)
 #define CS_ITEMS			(CS_LIGHTS + MAX_LIGHTSTYLES)
 #define CS_PLAYERSKINS		(CS_ITEMS + MAX_ITEMS)
-#define CS_WELCOME			(CS_PLAYERSKINS + MAX_CLIENTS)  // Give us 4 welcome string messages so we can have a total of 256 characters per message
+#define CS_WELCOME			(CS_PLAYERSKINS + MAX_CLIENTS)  // Give us 4 welcome string messages so we can have a total of 256 characters per message.
 #define MAX_CONFIGSTRINGS	(CS_WELCOME + 4)
 
 #pragma endregion
@@ -806,7 +804,7 @@ typedef struct
 
 	// All the stuff below is required for client prediction to function.
 
-	vec3_t mins;				// Player's acurate mins and maxs.
+	vec3_t mins;				// Player's accurate mins and maxs.
 	vec3_t maxs;
 
 	byte NoOfItems;				// Inventory changes.
@@ -832,7 +830,7 @@ typedef struct
 	int flags;					// PLAYER_FLAG_XXX.
 	int edictflags;				// FL_XXX.
 
-	float oldvelocity_z;		// Player edict's oldvelocity. //TODO: unused?
+	float oldvelocity_z;		// Player edict's oldvelocity.
 
 	// Animation sequencing state.
 	int upperseq;
@@ -874,7 +872,6 @@ typedef struct
 
 	// Deathmatch flags.
 	int dmflags;
-
 } player_state_t;
 
 #pragma endregion
@@ -894,18 +891,6 @@ _inline long Q_ftol(const float f)
 {
 	return (int)f;
 }
-
-// Quick version of float to long (trunc/round undefined)
-/*#pragma warning (disable:4035)
-_inline __declspec( naked ) long Q_ftol(float f)
-{
-	static int tmp;
-	__asm fld dword ptr [esp+4]
-	__asm fistp tmp
-	__asm mov eax, tmp
-	__asm ret
-}
-#pragma warning (default:4035)*/
 
 //mxd
 _inline int Q_atoi(const char* s)
@@ -989,7 +974,7 @@ typedef enum AmbientSoundID_e
 
 typedef enum DoorSoundID_e
 {
-	DS_NONE = 0,
+	DS_NONE,
 	DS_GENERIC,
 	DS_HEAVYSTONE,
 	DS_SWINGARM,
@@ -1011,15 +996,16 @@ typedef enum DoorSoundID_e
 	DS_CLANG,
 	DS_UNDERWATER,
 	DS_BAM,
+
 	DS_MAX
 } DoorSoundID_t;
 
 // EAX sound presets
 enum
 {
-	EAX_ENVIRONMENT_GENERIC,	// Factory default
+	EAX_ENVIRONMENT_GENERIC,	// Factory default.
 	EAX_ENVIRONMENT_PADDEDCELL,
-	EAX_ENVIRONMENT_ROOM,		// Standard environments
+	EAX_ENVIRONMENT_ROOM,		// Standard environments.
 	EAX_ENVIRONMENT_BATHROOM,
 	EAX_ENVIRONMENT_LIVINGROOM,
 	EAX_ENVIRONMENT_STONEROOM,
@@ -1044,10 +1030,10 @@ enum
 	EAX_ENVIRONMENT_DIZZY,
 	EAX_ENVIRONMENT_PSYCHOTIC,
 
-	EAX_ENVIRONMENT_COUNT	// Total number of environments
+	EAX_ENVIRONMENT_COUNT	// Total number of environments.
 };
 
-// EAX world preset types
+// EAX world preset types.
 enum
 {
 	EAX_GENERIC,
