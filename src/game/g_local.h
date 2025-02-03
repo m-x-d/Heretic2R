@@ -636,7 +636,6 @@ extern	int				self_spawn;
 // ************************************************************************************************
 
 #define DROPPED_ITEM		0x00008000
-#define	DROPPED_PLAYER_ITEM	0x00010000
 
 // fields are needed for spawning from the entity string
 // and saving / loading games
