@@ -867,8 +867,6 @@ typedef struct
 	int					enterframe;			// The level.framenum when the client entered the game.
 	int					score;				// Frags, etc.
 	vec3_t				cmd_angles;			// Angles sent over in the last command.
-	int					game_helpchanged;
-	int					helpchanged;
 } client_respawn_t;
 
 // ************************************************************************************************
