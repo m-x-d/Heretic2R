@@ -6,11 +6,6 @@
 
 #pragma once
 
-// unknown pragmas are SUPPOSED to be ignored, but....
-//#pragma warning(disable : 4244)     // MIPS -- truncation from double to float in MSDEV
-//#pragma warning(disable : 4018)     // signed/unsigned mismatch
-//#pragma warning(disable : 4305)		// truncation from const double to float
-
 #include <direct.h>
 #include <assert.h>
 #include <math.h>
@@ -24,35 +19,6 @@
 #include "Heretic2.h"
 #include "q_Typedef.h"
 #include "Debug.h" //mxd
-//#include "player.h" //TODO: initially commented out. Remove?
-
-//TODO: remove?
-/*#ifdef QUAKE2_STATIC
-#define QUAKE2_API
-#else
-#ifdef QUAKE2
-#define QUAKE2_API __declspec(dllexport)
-#else
-#define QUAKE2_API __declspec(dllimport)
-#endif
-#endif*/
-
-//TODO: remove?
-// These are the only 2 references to C_ONLY
-// id386 could do with removing
-//#define C_ONLY 1
-
-//TODO: remove?
-/*#if defined _M_IX86 && !defined C_ONLY
-#define id386	1
-#else
-#define id386	0
-#endif*/
-
-//TODO: remove?
-/*#ifndef NULL
-#define NULL ((void *)0)
-#endif*/
 
 // Angle indexes
 #define PITCH				0		// up / down
