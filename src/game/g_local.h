@@ -932,13 +932,13 @@ extern qboolean EntReflecting(edict_t* ent, qboolean checkmonster, qboolean chec
 extern void SkyFly(edict_t* self);
 
 // For simplicity of use.. take it out later. //TODO: mxd. Take it out... later?
-#define BUOY_DEBUG			(int)showbuoys->value
-#define BUOY_DEBUG_LITE		(int)showlitebuoys->value
-#define MGAI_DEBUG			(int)mgai_debug->value
-#define DEACTIVATE_BUOYS	(int)deactivate_buoys->value
-#define ANARCHY				(int)anarchy->value
-#define IMPACT_DAMAGE		(int)impact_damage->value
-#define CHEATING_MONSTERS	(int)cheating_monsters->value
+#define BUOY_DEBUG			showbuoys->value
+#define BUOY_DEBUG_LITE		showlitebuoys->value
+#define MGAI_DEBUG			mgai_debug->value
+#define DEACTIVATE_BUOYS	deactivate_buoys->value
+#define ANARCHY				anarchy->value
+#define IMPACT_DAMAGE		impact_damage->value
+#define CHEATING_MONSTERS	cheating_monsters->value
 
 // Scripts ds.cpp
 #ifndef __cplusplus
