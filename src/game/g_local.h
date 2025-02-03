@@ -212,10 +212,6 @@ unsigned	*messagebuf;
 
 typedef struct
 {
-	// Flash F1 icon if not 0, play sound and increment only if 1, 2, or 3.
-
-	int			helpchanged;
-
 	// [maxclients].
 
 	gclient_t	*clients;
