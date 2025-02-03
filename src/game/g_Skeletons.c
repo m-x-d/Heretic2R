@@ -95,7 +95,7 @@ void FreeSkeleton(int root)
 	skeletalJoints[root].inUse = false;
 }
 
-void UpdateSkeletons()
+void UpdateSkeletons(void)
 {
 	int i, j;
 

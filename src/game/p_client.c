@@ -1,4 +1,4 @@
-#include "g_local.h"
+#include "p_client.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "g_Skeletons.h"
 #include "m_player.h"

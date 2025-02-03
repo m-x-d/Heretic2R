@@ -1,18 +1,24 @@
+//
+// g_main.c
+//
+// Copyright 1998 Raven Software
+//
+
 #include "g_local.h"
-#include "g_Skeletons.h"
-#include "ArrayedList.h"
-#include "vector.h"
+#include "g_cmds.h" //mxd
 #include "g_Physics.h"
-#include "g_volume_effect.h"
-//#include "PrimitiveDisplayHack.h"
-#include "q_shared.h"
-//#include "timing.h"
-#include "fx.h"
-#include "Utilities.h"
-#include "random.h"
 #include "g_playstats.h"
-#include "p_anims.h"
+#include "g_ResourceManagers.h" //mxd
+#include "g_save.h" //mxd
+#include "g_Skeletons.h"
+#include "g_spawnf.h" //mxd
+#include "FX.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
 #include "cl_strings.h"
+#include "p_anims.h"
+#include "p_client.h" //mxd
 
 game_locals_t	game;
 level_locals_t	level;
@@ -88,23 +94,7 @@ cvar_t	*log_file_header;
 cvar_t	*log_file_footer;
 cvar_t	*log_file_line_header;
 
-void SpawnEntities (char *mapname, char *entities, char *spawnpoint, qboolean loadgame);
-void ClientThink (edict_t *ent, usercmd_t *cmd);
-qboolean ClientConnect (edict_t *ent, char *userinfo);
-void ClientUserinfoChanged (edict_t *ent, char *userinfo);
-void ClientDisconnect (edict_t *ent);
-void ClientBegin (edict_t *ent);
-void ClientCommand (edict_t *ent);
-void RunEntity (edict_t *ent);
-void WriteGame (char *filename, qboolean autosave);
-void ReadGame (char *filename);
-void WriteLevel (char *filename);
-void ReadLevel (char *filename);
-void InitGame (void);
-void G_RunFrame (void);
-void ConstructEntities(void);
-void CheckCoopTimeout(qboolean BeenHereBefore);
-void ClearMessageQueues();
+static void G_RunFrame(void);
 
 //===================================================================
 
@@ -115,8 +105,6 @@ ShutdownGame
 */
 void ShutdownGame (void)
 {
-	void G_ReleaseResourceManagers();
-
 	edict_t *ent;
 	int i;
 
@@ -535,15 +523,12 @@ G_RunFrame
 Advances the world by 0.1 seconds
 ================
 */
-void G_RunFrame (void)
+static void G_RunFrame (void)
 {
-	void		UpdateSkeletons();
 	int			i;
 	edict_t		*ent;
 
 //	void (*update)(edict_t *self);				//old crap causing buoy crash
-
-	qboolean SV_RunThink(edict_t *ent);
 
 	if(deathmatch->value || coop->value)
 		Clamp(blood_level->value, VIOLENCE_NONE, VIOLENCE_NORMAL);

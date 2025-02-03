@@ -1,4 +1,4 @@
-#include "g_local.h"
+#include "g_cmds.h" //mxd
 #include "m_player.h"
 #include "vector.h"
 #include "g_items.h"
@@ -6,6 +6,7 @@
 #include "g_playstats.h"
 #include "p_actions.h"
 #include "p_anims.h"
+#include "p_client.h" //mxd
 #include "p_main.h"
 #include "p_funcs.h"
 #include "g_itemstats.h"
@@ -18,7 +19,6 @@ extern void MorphPlayerToChicken(edict_t *self, edict_t *caster);
 extern qboolean AddWeaponToInventory(gitem_t *it,edict_t *player);
 extern void AddDefenseToInventory(gitem_t *it,edict_t *player);
 extern player_export_t	playerExport;	// interface to player DLL.
-extern void ClientUserinfoChanged (edict_t *ent, char *userinfo);
 
 qboolean CheckFlood(edict_t *ent);
 void ED_CallSpawn (edict_t *ent);

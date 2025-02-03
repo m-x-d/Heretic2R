@@ -218,7 +218,7 @@ void ClearMessageQueue(edict_t *self)
 	}
 }
 
-void ClearMessageQueues()
+void ClearMessageQueues(void)
 {
 	edict_t *ent;
 	int i;

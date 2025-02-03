@@ -220,6 +220,7 @@
     <ClInclude Include="GameEntity.h" />
     <ClInclude Include="g_BoundingForm.h" />
     <ClInclude Include="g_ClassStatics.h" />
+    <ClInclude Include="g_cmds.h" />
     <ClInclude Include="g_DefaultMessageHandler.h" />
     <ClInclude Include="g_Edict.h" />
     <ClInclude Include="g_HitLocation.h" />
@@ -235,8 +236,11 @@
     <ClInclude Include="g_Physics.h" />
     <ClInclude Include="g_PhysicsInfo.h" />
     <ClInclude Include="g_playstats.h" />
+    <ClInclude Include="g_ResourceManagers.h" />
+    <ClInclude Include="g_save.h" />
     <ClInclude Include="g_Skeleton.h" />
     <ClInclude Include="g_Skeletons.h" />
+    <ClInclude Include="g_spawnf.h" />
     <ClInclude Include="g_StateInfo.h" />
     <ClInclude Include="g_teleport.h" />
     <ClInclude Include="g_Typedef.h" />
@@ -294,6 +298,7 @@
     <ClInclude Include="m_tcheckrik.h" />
     <ClInclude Include="m_tcheckrik_anim.h" />
     <ClInclude Include="pcode.h" />
+    <ClInclude Include="p_client.h" />
     <ClInclude Include="p_funcs.h" />
     <ClInclude Include="p_item.h" />
     <ClInclude Include="q_shared.h" />
