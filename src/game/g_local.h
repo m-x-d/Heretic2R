@@ -833,21 +833,7 @@ extern "C"
 }
 #endif
 
-//============================================================================
-
-
-
-
-
-
-
-
-// ************************************************************************************************
-// TRYSTEP_
-// --------
-// Used for ai_trystep (g_ai)
-// ************************************************************************************************
-
+// Used for ai_trystep (g_ai).
 #define TRYSTEP_OK			0
 #define TRYSTEP_ALLSOLID	1
 #define TRYSTEP_STARTSOLID	2
@@ -855,131 +841,109 @@ extern "C"
 #define TRYSTEP_NOSUPPORT	4
 #define TRYSTEP_INWATER		5
 
-// ************************************************************************************************
-// client_respawn_t
-// ----------------
 // Client data that stays across deathmatch respawns.
-// ************************************************************************************************
-
 typedef struct
 {
-	client_persistant_t	coop_respawn;		// What to set 'client'->pers to on a respawn.
-	int					enterframe;			// The level.framenum when the client entered the game.
-	int					score;				// Frags, etc.
-	vec3_t				cmd_angles;			// Angles sent over in the last command.
+	client_persistant_t coop_respawn; // What to set 'client'->pers to on a respawn.
+	int enterframe; // The level.framenum when the client entered the game.
+	int score; // Frags, etc.
+	vec3_t cmd_angles; // Angles sent over in the last command.
 } client_respawn_t;
 
-// ************************************************************************************************
-// gclient_t
-// ---------
 // This structure is cleared on each PutClientInServer() except for 'client->pers'.
-// ************************************************************************************************
-
 typedef struct gclient_s
 {
 	// The following two fields are known to the server.
-
-	player_state_t		ps;						// Communicated by server to clients.
-	int					ping;
+	player_state_t ps; // Communicated by server to clients.
+	int ping;
 
 	// All other fields below are private to the game.
-	
-	client_respawn_t	resp;
-	pmove_state_t		old_pmove;				// For detecting out-of-pmove changes.
+	client_respawn_t resp;
+	pmove_state_t old_pmove; // For detecting out-of-pmove changes.
 
 	// Damage stuff. Sum up damage over an entire frame.
+	qboolean damage_gas;	// Did damage come from plague mist?
+	int damage_blood;		// Damage taken out of health.
+	int damage_knockback;	// Impact damage.
+	vec3_t damage_from;		// Origin for vector calculation.
 
-	qboolean			damage_gas;				// Did damage come from plague mist?
-	int					damage_blood;			// Damage taken out of health.
-	int					damage_knockback;		// Impact damage.
-	vec3_t				damage_from;			// Origin for vector calculation.
-
-	//
-
-	usercmd_t			pcmd;
-	short				oldcmdangles[3];
-	vec3_t				aimangles;				// Spell / weapon aiming direction.
-	vec3_t				oldviewangles;
-	vec3_t				v_angle;				// Entity facing angles.
-	float				bobtime;				// So off-ground doesn't change it.
-	float				next_drown_time;
-	int					old_waterlevel;
+	usercmd_t pcmd;
+	short oldcmdangles[3];
+	vec3_t aimangles; // Spell / weapon aiming direction.
+	vec3_t oldviewangles;
+	vec3_t v_angle; // Entity facing angles.
+	float bobtime; // So off-ground doesn't change it.
+	float next_drown_time;
+	int old_waterlevel;
 
 	// Client can respawn when time > respawn_time.
-
-	float				respawn_time;
-	int					complete_reset;
+	float respawn_time;
+	int complete_reset;
 
 	//  Remote and walkby camera stuff.
-
-	int					RemoteCameraLockCount;
-	int					RemoteCameraNumber;
-	int					savedtargetcount;
-	edict_t				*savedtarget;
+	int RemoteCameraLockCount;
+	int RemoteCameraNumber;
+	int savedtargetcount;
+	edict_t* savedtarget;
 
 	// Teleport stuff.
-
-	vec3_t				tele_dest;
-	vec3_t				tele_angles;
-	int					tele_count;
-	int					tele_type;				/// Note only a byte of this is used.
-	int					old_solid;
+	vec3_t tele_dest;
+	vec3_t tele_angles;
+	int tele_count;
+	int tele_type; // Note: only a byte of this is used.
+	int old_solid;
 
 	// Weapon / defense stuff.
-
-	edict_t				*lastentityhit;
-	edict_t				*Meteors[4];
-	vec3_t				laststaffpos;
-	float				laststaffuse;
+	edict_t* lastentityhit;
+	edict_t* Meteors[4];
+	vec3_t laststaffpos;
+	float laststaffuse;
 
 	// Powerup timers.
-
-	float				invincible_framenum;
+	float invincible_framenum;
 
 	// Shrine stuff.
+	float shrine_framenum;
 
-	float				shrine_framenum;
-
-	// Data for the player obituaries
-
-	MOD_t				meansofdeath;	
+	// Data for the player obituaries.
+	MOD_t meansofdeath;
 
 	// Anti flooding vars
+	float flood_locktill;		// Locked from talking.
+	float flood_when[10];		// When messages were said.
+	int flood_whenhead;			// Head pointer for when said.
+	float flood_nextnamechange;	// Next time for valid nick change.
+	float flood_nextkill;		// Next time for suicide.
 
-	float				flood_locktill;			// locked from talking
-	float				flood_when[10];			// when messages were said
-	int					flood_whenhead;			// head pointer for when said
-	float				flood_nextnamechange;	// next time for valid nick change
-	float				flood_nextkill;			// next time for suicide
-
-	playerinfo_t		playerinfo;
+	playerinfo_t playerinfo;
 } gclient_t;
 
 #include "g_BoundingForm.h"
 #include "g_Edict.h"
-#ifdef __cplusplus	//this is for ds.cpp
-#include "Vector.h"
+
+#ifdef __cplusplus // This is for ds.cpp.
+	#include "Vector.h"
 #endif
-qboolean FindTarget (edict_t *self);
-void MG_PostDeathThink (edict_t *self);
-qboolean movable (edict_t *ent);
-qboolean EntReflecting(edict_t *ent, qboolean checkmonster, qboolean checkplayer);
-void SkyFly (edict_t *self);
 
-//For simplicity of use.. take it out later
+extern qboolean FindTarget(edict_t* self);
+extern void MG_PostDeathThink(edict_t* self);
+extern qboolean movable(edict_t* ent);
+extern qboolean EntReflecting(edict_t* ent, qboolean checkmonster, qboolean checkplayer);
+extern void SkyFly(edict_t* self);
 
-#define BUOY_DEBUG	showbuoys->value
-#define BUOY_DEBUG_LITE	showlitebuoys->value
-#define MGAI_DEBUG	mgai_debug->value
-#define DEACTIVATE_BUOYS deactivate_buoys->value
-#define ANARCHY anarchy->value
-#define IMPACT_DAMAGE impact_damage->value
-#define CHEATING_MONSTERS cheating_monsters->value
+// For simplicity of use.. take it out later. //TODO: mxd. Take it out... later?
+#define BUOY_DEBUG			(int)showbuoys->value
+#define BUOY_DEBUG_LITE		(int)showlitebuoys->value
+#define MGAI_DEBUG			(int)mgai_debug->value
+#define DEACTIVATE_BUOYS	(int)deactivate_buoys->value
+#define ANARCHY				(int)anarchy->value
+#define IMPACT_DAMAGE		(int)impact_damage->value
+#define CHEATING_MONSTERS	(int)cheating_monsters->value
 
 // Scripts ds.cpp
 #ifndef __cplusplus
-	void ProcessScripts(void);
-	void ShutdownScripts(qboolean Complete);
-	void SaveScripts(FILE *FH, qboolean DoGlobals);
-	void LoadScripts(FILE *FH, qboolean DoGlobals);
+	extern void ProcessScripts(void);
+	extern void ShutdownScripts(qboolean Complete);
+	extern void SaveScripts(FILE* FH, qboolean DoGlobals);
+	extern void LoadScripts(FILE* FH, qboolean DoGlobals);
 #endif
