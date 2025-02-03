@@ -59,11 +59,11 @@
 #define AIMF_SEARCHING				0x00002000	// Monster now in dumb search mode... //TODO: consistent name?
 
 // Held in 'edict_t'->spawnflags. These are set with checkboxes on each entity in the map editor.
-#define	SPAWNFLAG_NOT_EASY			0x00000100
-#define	SPAWNFLAG_NOT_MEDIUM		0x00000200
-#define	SPAWNFLAG_NOT_HARD			0x00000400
-#define	SPAWNFLAG_NOT_DEATHMATCH	0x00000800
-#define	SPAWNFLAG_NOT_COOP			0x00001000
+#define SPAWNFLAG_NOT_EASY			0x00000100
+#define SPAWNFLAG_NOT_MEDIUM		0x00000200
+#define SPAWNFLAG_NOT_HARD			0x00000400
+#define SPAWNFLAG_NOT_DEATHMATCH	0x00000800
+#define SPAWNFLAG_NOT_COOP			0x00001000
 
 // Timing constants that define the world heartbeat.
 #define FRAMETIME			0.1f
@@ -81,6 +81,38 @@ typedef enum
 	DAMAGE_AIM, // Auto targeting recognizes this.
 	DAMAGE_NO_RADIUS, // Will not take damage from radius blasts.
 } damage_t;
+
+// Damage flags.
+#define DAMAGE_NORMAL				0x00000000	// No modifiers to damage.
+#define DAMAGE_RADIUS				0x00000001	// Damage was indirect.
+#define DAMAGE_NO_KNOCKBACK			0x00000002	// Do not affect velocity, just view angles.
+#define DAMAGE_ALL_KNOCKBACK		0x00000004  // Ignore damage.
+#define DAMAGE_EXTRA_KNOCKBACK		0x00000008	// Throw in some extra z.
+#define DAMAGE_NO_PROTECTION		0x00000010  // Invulnerability and godmode have no effect.
+#define DAMAGE_NO_BLOOD				0x00000020  // Don't spawn any blood.
+#define DAMAGE_EXTRA_BLOOD			0x00000040	// Lots of blood.
+#define DAMAGE_SPELL				0x00000080  // This came from a spell - for use in calcing armor effects.
+#define DAMAGE_DISMEMBER			0x00000100  // Force this hit to use dismemberment message.
+#define DAMAGE_ATTACKER_IMMUNE		0x00000200  // Inflictor receives no effect.
+#define DAMAGE_ATTACKER_KNOCKBACK	0x00000400  // Inflictor takes knockback only.
+#define DAMAGE_REDRAIN				0x00000800	// Red rain acid damage.
+#define DAMAGE_BUBBLE				0x00001000	// Drowning damage.
+#define DAMAGE_FIRE					0x00002000  // Fire damage.
+#define DAMAGE_ALIVE_ONLY			0x00004000	// Only damage living things made of flesh.
+#define DAMAGE_BLEEDING				0x00008000	// No protection.
+#define DAMAGE_AVOID_ARMOR			0x00010000	// Don't do the armor effect.
+#define DAMAGE_DOUBLE_DISMEMBER		0x00020000  // Force this hit to use dismemberment message with TWICE the chance of cutting.
+#define DAMAGE_HURT_FRIENDLY		0x00040000  // Always hurt friendly entities (e.g. fellow coop players).
+#define DAMAGE_POWERPHOENIX			0x00080000	// Extra knockback to shooter, 1/4 damage.
+#define DAMAGE_FIRE_LINGER			0x00100000	// Do extra fire linger damage.
+#define DAMAGE_ENEMY_MAX			0x00200000	// Do maximum damage directly to the enemy in radius.
+#define DAMAGE_ONFIRE				0x00400000	// If the damage is FROM a fire...
+#define DAMAGE_PHOENIX				0x00800000	// Phoenix-oriented damage. Do minimal fire for show, but short duration.
+
+#define DAMAGE_SUFFOCATION			(DAMAGE_NO_KNOCKBACK | DAMAGE_NO_BLOOD | DAMAGE_BUBBLE | DAMAGE_AVOID_ARMOR)
+#define DAMAGE_LAVA					(DAMAGE_NO_KNOCKBACK | DAMAGE_NO_BLOOD | DAMAGE_FIRE | DAMAGE_AVOID_ARMOR)
+#define DAMAGE_SLIME				(DAMAGE_NO_KNOCKBACK | DAMAGE_NO_BLOOD | DAMAGE_AVOID_ARMOR)
+#define DAMAGE_BURNING				(DAMAGE_NO_KNOCKBACK | DAMAGE_NO_BLOOD | DAMAGE_FIRE | DAMAGE_AVOID_ARMOR | DAMAGE_ONFIRE)
 
 #define GIB_ORGANIC		1
 #define BODY_QUEUE_SIZE	8
@@ -916,42 +948,6 @@ void T_DamageRadius(edict_t *inflictor, edict_t *attacker, edict_t *ignore, floa
 						float maxdamage, float mindamage, int dflags,int MeansOfDeath);
 void T_DamageRadiusFromLoc(vec3_t origin, edict_t *inflictor, edict_t *attacker, edict_t *ignore, float radius, 
 							float maxdamage, float mindamage, int dflags,int MeansOfDeath);
-
-// ************************************************************************************************
-// DAMAGE_XXX
-// ----------
-// ************************************************************************************************
-
-#define DAMAGE_NORMAL				0x00000000	// No modifiers to damage
-#define DAMAGE_RADIUS				0x00000001	// damage was indirect
-#define DAMAGE_NO_KNOCKBACK			0x00000002	// do not affect velocity, just view angles
-#define DAMAGE_ALL_KNOCKBACK		0x00000004  // Ignore damage
-#define DAMAGE_EXTRA_KNOCKBACK		0x00000008	// throw in some extra z
-#define DAMAGE_NO_PROTECTION		0x00000010  // invulnerability, and godmode have no effect
-#define DAMAGE_NO_BLOOD				0x00000020  // don't spawn any blood
-#define DAMAGE_EXTRA_BLOOD			0x00000040	// Lots of blood
-#define DAMAGE_SPELL				0x00000080  // this came from a spell, - for use in calcing armor effects
-#define DAMAGE_DISMEMBER			0x00000100  // Force this hit to use dismemberment message
-#define DAMAGE_ATTACKER_IMMUNE		0x00000200  // Inflictor receives no effect
-#define DAMAGE_ATTACKER_KNOCKBACK	0x00000400  // Inflictor takes knockback only
-#define DAMAGE_REDRAIN				0x00000800	// Red rain acid damage
-#define DAMAGE_BUBBLE				0x00001000	// Drowning damage
-#define DAMAGE_FIRE					0x00002000  // Fire damage  
-#define DAMAGE_ALIVE_ONLY			0x00004000	// Only damage living things made of flesh
-#define DAMAGE_BLEEDING				0x00008000	// No protection
-#define DAMAGE_AVOID_ARMOR			0x00010000	// don't do the armor effect
-#define DAMAGE_DOUBLE_DISMEMBER		0x00020000  // Force this hit to use dismemberment message with TWICE the chance of cutting
-#define DAMAGE_HURT_FRIENDLY		0x00040000  // Always hurt friendly entities (e.g. fellow coop players).
-#define DAMAGE_POWERPHOENIX			0x00080000	// Extra knockback to shooter, 1/4 damage.
-#define DAMAGE_FIRE_LINGER			0x00100000	// Do extra fire linger damage.
-#define DAMAGE_ENEMY_MAX			0x00200000	// Do maximum damage directly to the enemy in radius
-#define DAMAGE_ONFIRE				0x00400000	// If the damage is FROM a fire...
-#define DAMAGE_PHOENIX				0x00800000	// Phoenix-oriented damage.  Do minimal fire for show, but short duration.
-
-#define DAMAGE_SUFFOCATION			(DAMAGE_NO_KNOCKBACK|DAMAGE_NO_BLOOD|DAMAGE_BUBBLE|DAMAGE_AVOID_ARMOR)
-#define DAMAGE_LAVA					(DAMAGE_NO_KNOCKBACK|DAMAGE_NO_BLOOD|DAMAGE_FIRE|DAMAGE_AVOID_ARMOR)
-#define DAMAGE_SLIME				(DAMAGE_NO_KNOCKBACK|DAMAGE_NO_BLOOD|DAMAGE_AVOID_ARMOR)
-#define DAMAGE_BURNING				(DAMAGE_ONFIRE|DAMAGE_NO_KNOCKBACK|DAMAGE_NO_BLOOD|DAMAGE_FIRE|DAMAGE_AVOID_ARMOR)
 
 //
 // g_monster.c
