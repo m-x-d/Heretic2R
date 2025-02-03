@@ -313,13 +313,6 @@ void Cmd_Give_f (edict_t *ent)
 			if (!(it->flags & IT_WEAPON))
 				continue;
 
-#if DEMO_CODE
-			// don't allow certain things for demo
-			if ((int)it->info)
-				continue;
-#endif
-
-
 			ent->client->playerinfo.pers.inventory.Items[i] += 1;
 
 			if((it->playeranimseq == ASEQ_WRRBOW_GO)||(it->playeranimseq == ASEQ_WPHBOW_GO))
@@ -349,13 +342,6 @@ void Cmd_Give_f (edict_t *ent)
 				continue;
 			if (!(it->flags & IT_DEFENSE))
 				continue;
-
-#if DEMO_CODE
-			// don't allow certain things for demo
-			if ((int)it->info)
-				continue;
-#endif
-
 
 			ent->client->playerinfo.pers.inventory.Items[i] += 1;
 		}
@@ -533,15 +519,6 @@ void Cmd_Give_f (edict_t *ent)
 		gi.dprintf ("non-pickup item\n");
 		return;
 	}
-
-#if DEMO_CODE
-			// don't allow certain things for demo
-	if ((int)it->info)
-	{
-		gi.cprintf (ent, PRINT_HIGH,"Non Selectable Item in Demo\n");
-		return;
-	}
-#endif
 
 	index = ITEM_INDEX(it);
 
@@ -1127,9 +1104,6 @@ Spawn an item
 
 void Cmd_SpawnEntity_f(edict_t *ent)
 {
-#if DEMO_CODE
-	gi.cprintf(ent, PRINT_HIGH, "Cannot spawn items in the Heretic II Demo.\n");
-#else
 	vec3_t	forward;
 	edict_t	*newent;
 
@@ -1149,7 +1123,6 @@ void Cmd_SpawnEntity_f(edict_t *ent)
 	VectorCopy(ent->s.angles, newent->s.angles);
 	ED_CallSpawn(newent);
 	self_spawn = FALSE;
-#endif
 }
 
 /*

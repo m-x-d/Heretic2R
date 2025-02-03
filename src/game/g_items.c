@@ -828,12 +828,6 @@ qboolean ValidItem(gitem_t *item)
 
 	}
 
-#if DEMO_CODE
-	// don't spawn this item in Demo game
-	if ((int)item->info)
-		return false;
-#endif
-
 	return true;
 }
 

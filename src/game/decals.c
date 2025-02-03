@@ -19,12 +19,6 @@ qboolean IsDecalApplicable(edict_t *owner, edict_t *target, vec3_t origin, csurf
 {
 	int		contents;
 
-#if DEMO_CODE
-	if(deathmatch->value)
-		return(false);
-#endif
-
-
 	if(!plane)
 	{
 		return(false);

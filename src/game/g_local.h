@@ -16,12 +16,7 @@
 #include "player.h"
 
 // The "gameversion" client command will print this plus compile date.
-
-#if DEMO_CODE
-#define	GAMEVERSION	"Heretic2Dmo"
-#else
-#define	GAMEVERSION	"Heretic2v16"
-#endif
+#define GAMEVERSION "Heretic2v16"
 
 // Protocol bytes that can be directly added to messages.
 

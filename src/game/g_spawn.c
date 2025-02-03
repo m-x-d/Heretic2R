@@ -456,7 +456,6 @@ spawn_t	spawns[]=
 	{"monster_tcheckrik_male",SP_monster_tcheckrik_male,CID_TCHECKRIK},
 	{"monster_gkrokon", SP_Monster_Gkrokon,CID_GKROKON},
 
-#if !DEMO_CODE
 	{"monster_gorgon_leader",SP_monster_gorgon_leader,CID_GORGON},
 	{"monster_rat_giant",SP_monster_rat_giant,CID_RAT},
 	{"monster_palace_plague_guard", SP_monster_palace_plague_guard,CID_PLAGUEELF}, 
@@ -475,7 +474,7 @@ spawn_t	spawns[]=
 	{"monster_morcalavin",SP_monster_morcalavin,CID_MORK},
 	{"monster_trial_beast",SP_monster_trial_beast,CID_TBEAST},
 	{"monster_imp", SP_monster_imp,CID_IMP},
-#endif
+
 	{"character_corvus1",SP_character_corvus1,CID_CORVUS},
 	{"character_corvus2",SP_character_corvus2,CID_CORVUS2},
 	{"character_corvus3",SP_character_corvus3,CID_CORVUS3},

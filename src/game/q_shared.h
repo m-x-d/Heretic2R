@@ -27,9 +27,6 @@
 //#include "player.h" //TODO: initially commented out. Remove?
 
 //TODO: remove?
-//#define DEMO_CODE		0
-
-//TODO: remove?
 /*#ifdef QUAKE2_STATIC
 #define QUAKE2_API
 #else
