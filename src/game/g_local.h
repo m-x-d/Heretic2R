@@ -611,9 +611,6 @@ extern	cvar_t			*sv_freezemonsters;
 extern	cvar_t			*maxclients;
 extern	cvar_t			*sv_maplist;
 
-extern	cvar_t			*autorotate;
-extern	cvar_t			*blood;
-
 extern	cvar_t			*checkanim;		// specifies whether monsters should check to see if most of the
 										// distance of a move animation is unobstructed before setting it
 extern	cvar_t			*allowillegalskins;

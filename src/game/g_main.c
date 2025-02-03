@@ -58,9 +58,6 @@ cvar_t	*sv_cheats;
 cvar_t	*sv_nomonsters=NULL;
 cvar_t	*sv_freezemonsters;
 
-cvar_t	*autorotate;
-cvar_t	*blood;
-
 cvar_t	*checkanim;
 cvar_t	*allowillegalskins;
 
