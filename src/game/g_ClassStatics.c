@@ -21,7 +21,6 @@ void FuncDoorStaticsInit();
 void SeraphOverlordStaticsInit();
 void SeraphGuardStaticsInit();
 void TeleporterStaticsInit();
-void HighPriestessStaticsInit();
 void TcheckrikStaticsInit();
 void ButtonStaticsInit();
 void LeverStaticsInit();

@@ -8,6 +8,7 @@
 //==============================================================================
 
 #include "g_local.h"
+#include "m_priestess.h"
 #include "m_priestess_local.h"
 #include "m_priestess_anim.h"
 #include "Utilities.h"
@@ -1589,7 +1590,7 @@ void priestess_postthink(edict_t *self)
 
 */
 
-void HighPriestessStaticsInit()
+void HighPriestessStaticsInit(void)
 {
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_STAND]	= priestess_stand;
 	classStatics[CID_HIGHPRIESTESS].msgReceivers[MSG_MISSILE] = priestess_missile;

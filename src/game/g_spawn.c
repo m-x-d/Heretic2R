@@ -86,7 +86,6 @@ void SP_monster_chkroktk (edict_t *self);
 void SP_monster_tcheckrik_male (edict_t *self);
 void SP_monster_tcheckrik_female (edict_t *self);
 void SP_monster_tcheckrik_mothers (edict_t *self);
-void SP_monster_high_priestess (edict_t *self);
 void SP_monster_seraph_overlord (edict_t *self);
 void SP_monster_seraph_guard (edict_t *self);
 

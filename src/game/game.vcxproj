@@ -297,6 +297,7 @@
     <ClInclude Include="m_plaguesSithra_local.h" />
     <ClInclude Include="m_plagueSsithra_anim.h" />
     <ClInclude Include="m_player.h" />
+    <ClInclude Include="m_priestess.h" />
     <ClInclude Include="m_priestess_local.h" />
     <ClInclude Include="m_priestess_anim.h" />
     <ClInclude Include="m_rat_anim.h" />
