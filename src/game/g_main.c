@@ -163,29 +163,15 @@ game_export_t* GetGameAPI(const game_import_t* import)
 	return &globals;
 }
 
-//======================================================================
-
-
-/*
-=================
-ClientEndServerFrames
-=================
-*/
-void ClientEndServerFrames (void)
+static void ClientEndServerFrames(void)
 {
-	int		i;
-	edict_t	*ent;
-
-	// calc the player views now that all pushing
-	// and damage has been added
-	for (i=0 ; i<maxclients->value ; i++)
+	// Calculate the player views now that all pushing and damage has been added.
+	for (int i = 0; i < (int)maxclients->value; i++)
 	{
-		ent = g_edicts + 1 + i;
-		if (!ent->inuse || !ent->client)
-			continue;
-		ClientEndServerFrame (ent);
+		edict_t* ent = &g_edicts[i + 1];
+		if (ent->inuse && ent->client)
+			ClientEndServerFrame(ent);
 	}
-
 }
 
 /*
