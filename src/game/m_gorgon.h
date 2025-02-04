@@ -153,8 +153,6 @@ extern animmove_t gorgon_move_eat_right;
 extern animmove_t gorgon_move_eat_snap;
 extern animmove_t gorgon_move_eat_react;
 
-void GorgonStaticsInit(void); //mxd
-
 void gorgon_eat(edict_t* self, G_Message_t* msg);
 void gorgon_stand(edict_t* self, G_Message_t* msg);
 void gorgon_walk(edict_t* self, G_Message_t* msg);

@@ -86,8 +86,6 @@ extern animmove_t rat_move_pain1;
 extern animmove_t rat_move_death1;
 extern animmove_t rat_move_death2;
 
-void RatStaticsInit(void); //mxd
-
 void rat_use(edict_t* self, edict_t* other, edict_t* activator);
 void rat_touch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf);
 
