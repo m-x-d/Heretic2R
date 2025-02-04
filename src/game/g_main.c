@@ -429,63 +429,44 @@ static void UpdatePlayerBuoys(void)
 	}
 }
 
-/*
-================
-G_RunFrame
-
-Advances the world by 0.1 seconds
-================
-*/
-static void G_RunFrame (void)
+// Advances the world by 0.1 seconds.
+static void G_RunFrame(void)
 {
-	int			i;
-	edict_t		*ent;
-
-//	void (*update)(edict_t *self);				//old crap causing buoy crash
-
-	if(deathmatch->value || coop->value)
+	if ((int)deathmatch->value || (int)coop->value)
 		Clamp(blood_level->value, VIOLENCE_NONE, VIOLENCE_NORMAL);
 
-	// Update server ticks
+	// Update server ticks.
 	level.framenum++;
-	level.time = level.framenum * FRAMETIME;
+	level.time = (float)level.framenum * FRAMETIME;
 
-	// choose a client for monsters to target this frame
-	// Only targets one client for all monsters
-	AI_SetSightClient ();
+	// Choose a client for monsters to target this frame. Only targets one client for all monsters.
+	AI_SetSightClient();
 
-	// exit intermissions
+	// Exit intermissions.
 	if (level.exitintermission)
 	{
-		ExitLevel ();
+		ExitLevel();
 		return;
 	}
 
 	// Update any joints that need to be
 	UpdateSkeletons();
 
-	//Keep track of player buoys
-	if(!deathmatch->value)
-		UpdatePlayerBuoys();
+	// Keep track of player buoys.
+	if ((int)deathmatch->value)
+		SetNumPlayers(); // For shrines and pick-ups.
 	else
-		SetNumPlayers();//for shrines and pick-ups
+		UpdatePlayerBuoys();
 
-	//
-	// treat each object in turn
-	// even the world gets a chance to think
-	//
-	ent = g_edicts;
-	for(i = 0; i < globals.num_edicts; i++, ent++)
+	// Treat each object in turn. Even the world gets a chance to think.
+	edict_t* ent = &g_edicts[0];
+	for (int i = 0; i < globals.num_edicts; i++, ent++)
 	{
+		if ((int)sv_cinematicfreeze->value && (ent->svflags & SVF_MONSTER) && !ent->monsterinfo.c_mode)
+			continue;
 
-		if (sv_cinematicfreeze->value)
-		{
-			if ((ent->svflags & SVF_MONSTER)  && (!ent->monsterinfo.c_mode))
-				continue;
-		}
-
-		// If entity not in use - don`t process
-		if(!ent->inuse)
+		// If entity not in use - don't process.
+		if (!ent->inuse)
 		{
 #ifdef BBOX_DISPLAY_HACK
 			DisableBBoxDisplay(i);
@@ -493,38 +474,7 @@ static void G_RunFrame (void)
 			continue;
 		}
 
-		//
-		// Don`t let monster think or move if its not in the PVS and not hunting
-		//
-
-		// If the ent is a monster (but not a  cinematic monster) and the culling is active...
-
-		if ((ent->svflags & SVF_MONSTER) && (!ent->monsterinfo.c_mode) && pvs_cull->value)
-		{
-			// Ent cannot be hunting an enemy or moving to a goalentity.
-
-			if (!ent->enemy && !ent->goalentity && level.sight_client)
-			{
-				int		j;
-				edict_t *client_ent;
-
-				// If not in our PVS, we don't care.
-
-				for(j=0;j<maxclients->value;j++)
-				{
-					client_ent=g_edicts+1+j;	
-					
-					if(client_ent->inuse)
-					{
-//						if (!gi.inPVS(ent->s.origin, level.sight_client->s.origin))
-						if (!gi.inPVS(ent->s.origin, client_ent->s.origin))
-						{
-							continue;
-						}
-					}
-				}
-			}
-		}
+		//mxd. Skip non-functional pvs_cull logic. Didn't cause performance problems in 1998, so can be skipped today sa well...
 
 #ifdef BBOX_DISPLAY_HACK
 		EnableBBoxDisplay(i);
@@ -534,89 +484,74 @@ static void G_RunFrame (void)
 #ifndef G_TRANSITION
 		assert(ent->msgHandler);
 #else
-		if(ent->msgHandler)	// eventually this check wont be needed
+		if (ent->msgHandler != NULL) // Eventually this check wont be needed.
 #endif // G_TRANSITION
 		{
 			ProcessMessages(ent);
 		}
 
-		if(ent->flags & FL_SUSPENDED)
-		{
+		if (ent->flags & FL_SUSPENDED)
 			continue;
-		}
 
-		// Remember original origin
+		// Remember original origin.
 		VectorCopy(ent->s.origin, ent->s.old_origin);
 
-		// Make sure the entity still has something to stand on
-		if(ent->groundentity)
+		// Make sure the entity still has something to stand on.
+		if (ent->groundentity != NULL)
 		{
-			// check for the groundentity being freed
-			if(!ent->groundentity->inuse)
+			// Check for the groundentity being freed.
+			if (!ent->groundentity->inuse)
 			{
 				ent->groundentity = NULL;
 			}
-			else if(ent->groundentity->linkcount != ent->groundentity_linkcount)
-			{	// if the ground entity moved, make sure we are still on it
+			else if (ent->groundentity->linkcount != ent->groundentity_linkcount)
+			{
+				// If the ground entity moved, make sure we are still on it.
 				ent->groundentity = NULL;
 
-				if(ent->svflags & SVF_MONSTER)
-				{
+				if (ent->svflags & SVF_MONSTER)
 					CheckEntityOn(ent);
-				}
 			}
 		}
 
-		if (i > 0 && i <= maxclients->value)
+		if (i > 0 && i <= (int)maxclients->value)
 		{
-			ClientBeginServerFrame (ent);
-			// ok, we need to hack in some bits here - the players think function never appears to get called. Why, I don't know
-			// kinda defies the point of having a think based system if your not going to use it. Still, never mind.
-			// we need the think function for when the player is a chicken, in order to keep track of how long he should remain a chicken
+			ClientBeginServerFrame(ent);
 
-			if (ent->flags & FL_CHICKEN)	// We're set as a chicken
+			// OK, we need to hack in some bits here - the player's think function never appears to get called.
+			// We need the think function for when the player is a chicken, in order to keep track of how long he should remain a chicken.
+			if (ent->flags & FL_CHICKEN) // We're set as a chicken.
 				EntityThink(ent);
 
 			continue;
 		}
 
-		// Use new physics for everything except flymissile (and movetype none)
-		// The scripts work using the new physics now
-		if(ent->movetype != MOVETYPE_FLYMISSILE)
+		// Use new physics for everything except flymissile (and movetype none).
+		// The scripts work using the new physics now.
+		if (ent->movetype != MOVETYPE_FLYMISSILE)
 		{
 			EntityThink(ent);
 
 			assert(ent->movetype < NUM_PHYSICSTYPES);
 
-			if(!ent->inuse)
-			{
+			if (!ent->inuse)
 				continue;
-			}
 
 			EntityPhysics(ent);
 			EntityPostThink(ent);
 		}
-		else
-		// Use old physics for missiles (for compatibility)
+		else // Use old physics for missiles (for compatibility)
 		{
 			G_RunEntity(ent);
 		}
 	}
 
 	// If the monsters are frozen, we wanted a single frame advance.
-	if (MonsterAdvanceFrame)
-	{
-		MonsterAdvanceFrame = false;
-	}
+	MonsterAdvanceFrame = false;
 
-	ProcessScripts ();
-
-	// see if it is time to end a deathmatch
-	CheckDMRules ();
-
-	// build the playerstate_t structures for all players
-	ClientEndServerFrames ();
+	ProcessScripts();
+	CheckDMRules(); // See if it is time to end a deathmatch.
+	ClientEndServerFrames(); // Build the playerstate_t structures for all players.
 
 	assert(Vec3IsZero(vec3_origin));
 }
-
