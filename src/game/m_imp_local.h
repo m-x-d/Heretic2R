@@ -95,7 +95,6 @@ void imp_dive(edict_t *self, G_Message_t *msg);
 void imp_pain(edict_t *self, G_Message_t *msg);
 void imp_perch(edict_t *self, G_Message_t *msg);
 
-void SP_monster_imp(edict_t* self);
 void imp_init(void);
 void imp_pain_init(edict_t *self);
 

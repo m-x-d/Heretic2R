@@ -96,7 +96,6 @@ void SP_monster_ogle (edict_t *self);
 void SP_monster_seraph_overlord (edict_t *self);
 void SP_monster_seraph_guard (edict_t *self);
 void SP_monster_morcalavin (edict_t *self);
-void SP_monster_imp (edict_t *self);
 
 void SP_character_corvus1 (edict_t *self);
 void SP_character_corvus2 (edict_t *self);

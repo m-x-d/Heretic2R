@@ -13,6 +13,7 @@ Copyright 1998 Raven Software
 -------------------------------------------------------------------*/
 
 #include "g_local.h"
+#include "m_imp.h"
 #include "m_imp_local.h"
 #include "m_imp_anim.h"
 #include "Utilities.h"
@@ -1336,7 +1337,7 @@ void imp_fireball (edict_t *self)
 
 ===============================================================*/
 
-void ImpStaticsInit()
+void ImpStaticsInit(void)
 {
 	classStatics[CID_IMP].msgReceivers[MSG_DEATH] = imp_die;
 	classStatics[CID_IMP].msgReceivers[MSG_FLY] = imp_hover;

@@ -32,7 +32,6 @@ void LeverStaticsInit();
 void FlameThrowerStaticsInit();
 void CorvusStaticsInit();
 void morcalavinStaticsInit();
-void ImpStaticsInit();
 void MotherStaticsInit();
 void victimSsithraStaticsInit();
 void SsithrascoutStaticsInit();

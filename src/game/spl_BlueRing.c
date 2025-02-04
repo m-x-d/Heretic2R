@@ -11,6 +11,8 @@
 #include "vector.h"
 #include "g_playstats.h"
 #include "m_assassin.h" //mxd
+#include "m_gkrokon.h" //mxd
+#include "m_imp.h" //mxd
 #include "p_actions.h"
 
 
@@ -26,8 +28,6 @@ extern edict_t *HellboltReflect(edict_t *self, edict_t *other, vec3_t vel);
 extern edict_t *MorphReflect(edict_t *self, edict_t *other, vec3_t vel);
 extern edict_t *MagicMissileReflect(edict_t *self, edict_t *other, vec3_t vel);
 extern edict_t *FlyingFistReflect(edict_t *self, edict_t *other, vec3_t vel);
-extern edict_t *GkrokonSpooReflect(edict_t *self, edict_t *other, vec3_t vel);
-extern edict_t *ImpFireballReflect(edict_t *self, edict_t *other, vec3_t vel);
 extern edict_t *MssithraAlphaArrowReflect(edict_t *self, edict_t *other, vec3_t vel);
 extern edict_t *SpearProjReflect(edict_t *self, edict_t *other, vec3_t vel);
 
