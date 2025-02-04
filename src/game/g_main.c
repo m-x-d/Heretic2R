@@ -94,45 +94,34 @@ cvar_t* log_file_line_header;
 
 static void G_RunFrame(void);
 
-//===================================================================
-
-/*
-=================
-ShutdownGame
-=================
-*/
-void ShutdownGame (void)
+static void ShutdownGame(void)
 {
-	edict_t *ent;
-	int i;
-
-	gi.dprintf ("==== ShutdownGame ====\n");
+	gi.dprintf("==== ShutdownGame ====\n");
 
 	ShutdownScripts(true);
 
-	if(game.entitiesSpawned)
+	if (game.entitiesSpawned)
 	{
 		ClearMessageQueues();
 
-		for(i = 0, ent = g_edicts; i < game.maxentities ; ++i, ++ent)
+		edict_t* ent = &g_edicts[0];
+		for (int i = 0; i < game.maxentities; i++, ent++)
 		{
 			SLList_Des(&ent->msgQ.msgs);
 			G_FreeEdict(ent);
 		}
 
 		G_ReleaseResourceManagers();
+		game.entitiesSpawned = false;
 	}
-	game.entitiesSpawned = false;
 
 	gi.FS_FreeFile(messagebuf);
 
 	gi.FreeTags(TAG_LEVEL);
 	gi.FreeTags(TAG_GAME);
 
-	P_Freelib();	// free the player lib
+	P_Freelib(); // Free the player lib.
 }
-
-
 
 game_export_t *GetGameAPI (game_import_t *import)
 {
