@@ -7,7 +7,8 @@
 #include "g_ClassStatics.h"
 #include "m_assassin.h" //mxd
 #include "m_beast.h" //mxd
-#include "m_bee.h"
+#include "m_bee.h" //mxd
+#include "m_chicken.h" //mxd
 
 G_ClassStatics_t classStatics[NUM_CLASSIDS];
 int Cid_init[NUM_CLASSIDS];
@@ -26,7 +27,6 @@ void ElflordStaticsInit();
 void BBrushStaticsInit();
 void FuncRotateStaticsInit();
 void FuncDoorStaticsInit();
-void ChickenStaticsInit();
 void SsithraStaticsInit();
 void MssithraStaticsInit();
 void OgleStaticsInit();

@@ -2,6 +2,7 @@
 #include "m_assassin.h" //mxd
 #include "m_beast.h" //mxd
 #include "m_bee.h" //mxd
+#include "m_chicken.h" //mxd
 #include "p_client.h" //mxd
 
 typedef struct
@@ -86,7 +87,6 @@ void SP_monster_gorgon (edict_t *self);
 void SP_monster_gorgon_leader (edict_t *self);
 void SP_monster_rat (edict_t *self);
 void SP_monster_rat_giant (edict_t *self);
-void SP_monster_chicken (edict_t *self);
 void SP_monster_plagueElf(edict_t *self);
 void SP_monster_palace_plague_guard(edict_t *self);
 void SP_monster_palace_plague_guard_invisible(edict_t *self);

@@ -256,6 +256,7 @@
     <ClInclude Include="m_beast_local.h" />
     <ClInclude Include="m_beast_anim.h" />
     <ClInclude Include="m_bee.h" />
+    <ClInclude Include="m_chicken.h" />
     <ClInclude Include="m_chicken_local.h" />
     <ClInclude Include="m_chicken_anim.h" />
     <ClInclude Include="m_elf.h" />
