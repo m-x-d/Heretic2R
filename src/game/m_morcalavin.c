@@ -1483,7 +1483,7 @@ void morcalavin_melee( edict_t *self, G_Message_t *msg)
 
 */
 
-void morcalavinStaticsInit(void)
+void MorcalavinStaticsInit(void)
 {
 	classStatics[CID_MORK].msgReceivers[MSG_STAND]	= morcalavin_stand;
 	classStatics[CID_MORK].msgReceivers[MSG_MELEE] = morcalavin_melee;

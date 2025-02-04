@@ -8,4 +8,4 @@
 
 void SP_monster_morcalavin(edict_t* self);
 void SP_obj_morcalavin_barrier(edict_t* self);
-void morcalavinStaticsInit(void);
+void MorcalavinStaticsInit(void);

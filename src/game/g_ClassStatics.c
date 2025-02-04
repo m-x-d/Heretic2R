@@ -84,7 +84,7 @@ void (*classStaticsInits[NUM_CLASSIDS])(void) =
 	ButtonStaticsInit,
 	BeeStaticsInit,
 	CorvusStaticsInit,
-	morcalavinStaticsInit,
+	MorcalavinStaticsInit,
 	TBeastStaticsInit,
 	ImpStaticsInit,
 	LeverStaticsInit,
