@@ -6,6 +6,7 @@
 
 #include "g_ClassStatics.h"
 #include "m_assassin.h" //mxd
+#include "m_beast.h" //mxd
 
 G_ClassStatics_t classStatics[NUM_CLASSIDS];
 int Cid_init[NUM_CLASSIDS];
@@ -39,7 +40,6 @@ void LeverStaticsInit();
 void FlameThrowerStaticsInit();
 void CorvusStaticsInit();
 void morcalavinStaticsInit();
-void TBeastStaticsInit();
 void ImpStaticsInit();
 void MotherStaticsInit();
 void victimSsithraStaticsInit();

@@ -1001,5 +1001,8 @@
     <ClInclude Include="m_assassin.h">
       <Filter>src\Monsters\Assassin</Filter>
     </ClInclude>
+    <ClInclude Include="m_beast.h">
+      <Filter>src\Monsters\Beast</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

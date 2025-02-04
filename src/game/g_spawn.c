@@ -1,4 +1,5 @@
 #include "g_local.h"
+#include "m_beast.h" //mxd
 #include "p_client.h" //mxd
 
 typedef struct
@@ -103,7 +104,6 @@ void SP_monster_seraph_overlord (edict_t *self);
 void SP_monster_seraph_guard (edict_t *self);
 void SP_monster_assassin (edict_t *self);
 void SP_monster_morcalavin (edict_t *self);
-void SP_monster_trial_beast (edict_t *self);
 void SP_monster_imp (edict_t *self);
 void SP_monster_bee (edict_t *self);
 

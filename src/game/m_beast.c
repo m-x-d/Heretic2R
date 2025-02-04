@@ -28,6 +28,7 @@ TBEAST
 #include "q_Physics.h"
 #include "g_Physics.h"
 #include "g_misc.h"
+#include "m_beast.h"
 #include "m_beast_local.h"
 #include "m_beast_anim.h"
 #include "m_stats.h"
@@ -1122,7 +1123,7 @@ void tbeast_apply_jump (edict_t *self)
 }
 
 
-qboolean CheckMoveFoot (edict_t *self, edict_t *foot, vec3_t dest)
+qboolean CheckMoveFoot (edict_t *self, edict_t *foot, vec3_t dest) //TODO: unused
 {
 	vec3_t	dir;
 	trace_t	trace;
@@ -2632,7 +2633,7 @@ void tbeast_go_charge (edict_t *self, edict_t *other, edict_t *activator)
 	self->use = tbeast_go_die;
 }
 
-void TBeastStaticsInit()
+void TBeastStaticsInit(void)
 {
 	classStatics[CID_TBEAST].msgReceivers[MSG_STAND] = tbeast_stand;
 	classStatics[CID_TBEAST].msgReceivers[MSG_WALK] = tbeast_walk;

@@ -15,6 +15,7 @@
 #include "buoy.h"
 #include "g_HitLocation.h"
 #include "Utilities.h"
+#include "m_beast.h" //mxd
 #include "m_stats.h"
 #include "g_playstats.h"
 #include "fx.h"
@@ -36,9 +37,6 @@ void BecomeDebris(edict_t *self);
 qboolean MG_MoveToGoal (edict_t *self, float dist);
 void MG_BuoyNavigate(edict_t *self);
 qboolean MG_GoToRandomBuoy(edict_t *self);
-
-qboolean TB_CheckBottom (edict_t *self);
-qboolean TB_CheckJump (edict_t *self);
 
 // AI Targeting Globals
 qboolean	enemy_vis;		// TRUE if enemy is visible
