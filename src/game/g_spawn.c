@@ -82,7 +82,6 @@ void SP_misc_flag (edict_t *ent);
 void SP_monster_rat (edict_t *self);
 void SP_monster_rat_giant (edict_t *self);
 void SP_monster_spreader (edict_t *self);
-void SP_monster_plague_ssithra (edict_t *self);
 void SP_monster_chkroktk (edict_t *self);
 void SP_monster_tcheckrik_male (edict_t *self);
 void SP_monster_tcheckrik_female (edict_t *self);
@@ -187,7 +186,6 @@ void SP_obj_cocoonopen(edict_t *ent);
 void SP_obj_cog1(edict_t *ent);
 void SP_obj_corpse1(edict_t *self);
 void SP_obj_corpse2(edict_t *self);
-void SP_obj_corpse_ssithra(edict_t *self);
 
 void SP_obj_dying_elf(edict_t *self);
 

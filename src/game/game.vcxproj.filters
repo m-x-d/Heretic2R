@@ -1043,5 +1043,8 @@
     <ClInclude Include="m_plagueElf.h">
       <Filter>src\Monsters\PlagueElf</Filter>
     </ClInclude>
+    <ClInclude Include="m_plagueSsithra.h">
+      <Filter>src\Monsters\PlagueSsithra</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

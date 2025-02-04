@@ -20,3 +20,4 @@
 #include "m_mssithra.h"
 #include "m_ogle.h"
 #include "m_plagueElf.h"
+#include "m_plagueSsithra.h"

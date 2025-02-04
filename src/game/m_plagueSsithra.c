@@ -16,6 +16,7 @@
 #include "buoy.h"
 #include "vector.h"
 
+#include "m_plaguesSithra.h"
 #include "m_plaguesSithra_local.h"
 #include "m_plaguesSithra_anim.h"
 #include "g_misc.h"
@@ -2924,7 +2925,7 @@ qboolean ssithraAlerted (edict_t *self, alertent_t *alerter, edict_t *enemy)
 //================================================================================
 
 
-void SsithraStaticsInit()
+void SsithraStaticsInit(void)
 {
 	classStatics[CID_SSITHRA].msgReceivers[MSG_STAND] = ssithra_stand;
 	classStatics[CID_SSITHRA].msgReceivers[MSG_WALK] = ssithra_walk;

@@ -18,7 +18,6 @@ void SpreaderStaticsInit();
 void BBrushStaticsInit();
 void FuncRotateStaticsInit();
 void FuncDoorStaticsInit();
-void SsithraStaticsInit();
 void SeraphOverlordStaticsInit();
 void SeraphGuardStaticsInit();
 void TeleporterStaticsInit();
