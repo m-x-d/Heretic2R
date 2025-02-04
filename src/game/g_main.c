@@ -287,24 +287,17 @@ static void CheckDMRules(void)
 	}
 }
 
-
-/*
-=============
-ExitLevel
-=============
-*/
-void ExitLevel (void)
+static void ExitLevel(void)
 {
-	char	command [256];
+	char command[256];
+	Com_sprintf(command, sizeof(command), "gamemap \"%s\"\n", level.changemap);
 
-	Com_sprintf (command, sizeof(command), "gamemap \"%s\"\n", level.changemap);
-	gi.AddCommandString (command);
+	gi.AddCommandString(command);
 	level.changemap = NULL;
 	level.exitintermission = false;
 	level.intermissiontime = 0;
 
-	ClientEndServerFrames ();
-
+	ClientEndServerFrames();
 	ClearMessageQueues();
 }
 
