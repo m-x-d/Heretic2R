@@ -57,8 +57,6 @@ cvar_t* sv_freezemonsters;
 cvar_t* checkanim;
 cvar_t* allowillegalskins;
 
-cvar_t* pvs_cull;
-
 cvar_t* showbuoys;
 cvar_t* showlitebuoys;
 cvar_t* mgai_debug;

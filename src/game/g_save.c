@@ -316,8 +316,6 @@ void InitGame (void)
 	checkanim = gi.cvar("checkanim", "0", 0);
 	allowillegalskins = gi.cvar("allowillegalskins", "0", CVAR_ARCHIVE);
 
-	pvs_cull = gi.cvar("pvs_cull", "1", 0);
-
 	showbuoys = gi.cvar("showbuoys", "0", 0);
 	showlitebuoys = gi.cvar("showlitebuoys", "0", 0);
 	mgai_debug = gi.cvar("mgai_debug", "0", 0);

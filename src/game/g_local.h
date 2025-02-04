@@ -615,9 +615,6 @@ extern cvar_t* sv_maplist;
 extern cvar_t* checkanim;
 extern cvar_t* allowillegalskins;
 
-extern cvar_t* monster_speeds;
-extern cvar_t* pvs_cull;
-
 extern cvar_t* dm_no_bodies;
 
 extern cvar_t* player_dll;
