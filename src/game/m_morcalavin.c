@@ -8,6 +8,7 @@
 //==============================================================================
 
 #include "g_local.h"
+#include "m_morcalavin.h"
 #include "m_morcalavin_local.h"
 #include "m_morcalavin_anim.h"
 #include "Utilities.h"
@@ -1482,7 +1483,7 @@ void morcalavin_melee( edict_t *self, G_Message_t *msg)
 
 */
 
-void morcalavinStaticsInit()
+void morcalavinStaticsInit(void)
 {
 	classStatics[CID_MORK].msgReceivers[MSG_STAND]	= morcalavin_stand;
 	classStatics[CID_MORK].msgReceivers[MSG_MELEE] = morcalavin_melee;

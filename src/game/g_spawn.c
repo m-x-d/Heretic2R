@@ -95,7 +95,6 @@ void SP_monster_high_priestess (edict_t *self);
 void SP_monster_ogle (edict_t *self);
 void SP_monster_seraph_overlord (edict_t *self);
 void SP_monster_seraph_guard (edict_t *self);
-void SP_monster_morcalavin (edict_t *self);
 
 void SP_character_corvus1 (edict_t *self);
 void SP_character_corvus2 (edict_t *self);
@@ -329,8 +328,6 @@ void SP_obj_web(edict_t *ent);
 void SP_obj_wheelbarrow(edict_t *ent);
 void SP_obj_wheelbarrowdamaged(edict_t *ent);
 void SP_obj_woodpile(edict_t *ent);
-
-void SP_obj_morcalavin_barrier(edict_t *ent);
 
 void SP_flamethrower(edict_t *ent);
 

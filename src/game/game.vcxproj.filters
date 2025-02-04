@@ -1031,5 +1031,8 @@
     <ClInclude Include="m_imp.h">
       <Filter>src\Monsters\Imp</Filter>
     </ClInclude>
+    <ClInclude Include="m_morcalavin.h">
+      <Filter>src\Monsters\Morcalavin</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
