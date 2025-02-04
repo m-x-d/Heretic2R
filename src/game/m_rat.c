@@ -49,6 +49,7 @@
 #include "random.h"
 #include "vector.h"
 
+#include "m_rat.h"
 #include "m_rat_local.h"
 #include "m_rat_anim.h"
 #include "g_misc.h"

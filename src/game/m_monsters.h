@@ -22,3 +22,4 @@
 #include "m_plagueElf.h"
 #include "m_plagueSsithra.h"
 #include "m_priestess.h"
+#include "m_rat.h"
