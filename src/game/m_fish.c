@@ -16,6 +16,7 @@
 #include "buoy.h"
 #include "vector.h"
 
+#include "m_fish.h"
 #include "m_fish_local.h"
 #include "m_fish_anim.h"
 #include "g_misc.h"
@@ -56,8 +57,6 @@ static animmove_t *animations[NUM_ANIMS] =
 static int sounds[NUM_SOUNDS];
 
 static ClassResourceInfo_t resInfo;
-
-void fish_dead_pain(edict_t *self, G_Message_t *msg);
 
 // bring all our movedir angles up positive again
 void reset_fish_movedir(edict_t *self)
@@ -1001,7 +1000,7 @@ void fish_growl (edict_t *self)
 }
 
 
-void FishStaticsInit()
+void FishStaticsInit(void)
 {
 	classStatics[CID_FISH].msgReceivers[MSG_PAIN] = fish_pain;
 	classStatics[CID_FISH].msgReceivers[MSG_DEATH] = fish_death;

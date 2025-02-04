@@ -10,6 +10,7 @@
 #include "m_bee.h" //mxd
 #include "m_chicken.h" //mxd
 #include "m_elflord.h" //mxd
+#include "m_fish.h" //mxd
 
 G_ClassStatics_t classStatics[NUM_CLASSIDS];
 int Cid_init[NUM_CLASSIDS];
@@ -18,7 +19,6 @@ void RatStaticsInit();
 void GorgonStaticsInit();
 void PlagueElfStaticsInit();
 void GkrokonStaticsInit();
-void FishStaticsInit();
 void ObjectStaticsInit();
 void LightStaticsInit();
 void TriggerStaticsInit();
