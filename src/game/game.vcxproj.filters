@@ -1001,5 +1001,8 @@
     <ClInclude Include="g_ResourceManagers.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="g_main.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
