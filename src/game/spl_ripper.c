@@ -15,7 +15,7 @@
 #include "g_playstats.h"
 #include "decals.h"
 #include "random.h"
-#include "m_beast_local.h"
+#include "m_beast.h"
 
 #define RIPPER_RADIUS				12.0
 #define RIPPER_EXPLODE_BALL_RADIUS	8.0

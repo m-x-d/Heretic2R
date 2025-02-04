@@ -137,7 +137,6 @@ void tbeast_check_impacts(edict_t *self);
 void tbeast_roar_knockdown(edict_t *self);
 void tbeast_roar_short(edict_t *self);
 void tbeast_gibs(edict_t *self);
-edict_t *check_hit_beast(vec3_t start, vec3_t end);
 
 //mxd. Mirrored in fx_tbeast.c.
 enum
