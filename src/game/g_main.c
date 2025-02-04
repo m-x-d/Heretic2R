@@ -255,46 +255,34 @@ static void EndDMLevel(void)
 	BeginIntermission(CreateTargetChangeLevel(level.mapname));
 }
 
-/*
-=================
-CheckDMRules
-=================
-*/
-void CheckDMRules (void)
+static void CheckDMRules(void)
 {
-	int			i;
-	gclient_t	*cl;
-
-	if (level.intermissiontime)
+	if (level.intermissiontime > 0.0f || !(int)deathmatch->value)
 		return;
 
-	if (!deathmatch->value)
-		return;
-
-	if (timelimit->value)
+	if (timelimit->value > 0.0f && level.time >= timelimit->value * 60.0f)
 	{
-		if (level.time >= timelimit->value*60)
-		{
-			gi.Obituary (PRINT_HIGH, GM_TIMELIMIT, 0, 0);
-			EndDMLevel ();
-			return;
-		}
+		gi.Obituary(PRINT_HIGH, GM_TIMELIMIT, 0, 0);
+		EndDMLevel();
+
+		return;
 	}
 
-	if (fraglimit->value)
-	{
-		for (i=0 ; i<maxclients->value ; i++)
-		{
-			cl = game.clients + i;
-			if (!g_edicts[i+1].inuse)
-				continue;
+	if (!(int)fraglimit->value)
+		return;
 
-			if (cl->resp.score >= fraglimit->value)
-			{
-				gi.Obituary (PRINT_HIGH, GM_FRAGLIMIT, 0, 0);
-				EndDMLevel ();
-				return;
-			}
+	for (int i = 0; i < (int)maxclients->value; i++)
+	{
+		if (!g_edicts[i + 1].inuse)
+			continue;
+
+		const gclient_t* cl = &game.clients[i];
+		if (cl->resp.score >= (int)fraglimit->value)
+		{
+			gi.Obituary(PRINT_HIGH, GM_FRAGLIMIT, 0, 0);
+			EndDMLevel();
+
+			return;
 		}
 	}
 }
