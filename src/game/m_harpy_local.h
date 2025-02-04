@@ -115,7 +115,6 @@ void harpy_dive(edict_t *self, G_Message_t *msg);
 void harpy_pain(edict_t *self, G_Message_t *msg);
 void harpy_perch(edict_t *self, G_Message_t *msg);
 
-void SP_monster_harpy(edict_t* self);
 void harpy_init(void);
 void harpy_pain_init(edict_t *self);
 

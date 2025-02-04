@@ -15,7 +15,6 @@ void PlagueElfStaticsInit();
 void ObjectStaticsInit();
 void LightStaticsInit();
 void TriggerStaticsInit();
-void HarpyStaticsInit();
 void SpreaderStaticsInit();
 void BBrushStaticsInit();
 void FuncRotateStaticsInit();

@@ -14,3 +14,4 @@
 #include "m_fish.h"
 #include "m_gkrokon.h"
 #include "m_gorgon.h"
+#include "m_harpy.h"

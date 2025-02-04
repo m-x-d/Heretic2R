@@ -13,6 +13,7 @@ Copyright 1998 Raven Software
 -------------------------------------------------------------------*/
 
 #include "g_local.h"
+#include "m_harpy.h"
 #include "m_harpy_local.h"
 #include "m_harpy_anim.h"
 #include "Utilities.h"
@@ -1594,9 +1595,8 @@ void harpy_hover_anim(edict_t *self)
 	Harpy Spawn Functions
 
 ===============================================================*/
-void harpy_dead_pain(edict_t *self, G_Message_t *msg);
 
-void HarpyStaticsInit()
+void HarpyStaticsInit(void)
 {
 	classStatics[CID_HARPY].msgReceivers[MSG_DEATH] = harpy_die;
 	classStatics[CID_HARPY].msgReceivers[MSG_FLY] = harpy_hover;

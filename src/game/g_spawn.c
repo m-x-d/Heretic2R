@@ -84,7 +84,6 @@ void SP_monster_rat_giant (edict_t *self);
 void SP_monster_plagueElf(edict_t *self);
 void SP_monster_palace_plague_guard(edict_t *self);
 void SP_monster_palace_plague_guard_invisible(edict_t *self);
-void SP_monster_harpy (edict_t *self);
 void SP_monster_spreader (edict_t *self);
 void SP_monster_plague_ssithra (edict_t *self);
 void SP_monster_mssithra (edict_t *self);
