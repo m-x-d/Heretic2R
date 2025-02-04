@@ -1,5 +1,6 @@
 
 #include "g_save.h" //mxd
+#include "g_ResourceManagers.h" //mxd
 #include "g_Skeletons.h"
 #include "ArrayedList.h"
 #include "Message.h"
@@ -268,8 +269,6 @@ only happens when a new game is begun
 */
 void InitGame (void)
 {
-	void G_InitResourceManagers();
-
 	gi.dprintf ("==== InitGame ====\n");
 
 	G_InitResourceManagers();

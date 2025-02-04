@@ -190,5 +190,7 @@ int ParseMsgParms(G_Message_t *this_ptr, char *format, ...);
 void ProcessMessages(struct edict_s *this_ptr);
 void ClearMessageQueue(struct edict_s *this_ptr);
 extern void ClearMessageQueues(void); //mxd
+extern void InitMsgMngr(void); //mxd
+extern void ReleaseMsgMngr(void); //mxd
 
 #endif
