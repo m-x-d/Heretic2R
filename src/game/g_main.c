@@ -362,30 +362,22 @@ void CheckContinuousAutomaticEffects(edict_t* self)
 	}
 }
 
-static void EntityThink(edict_t *self)
+static void EntityThink(edict_t* self)
 {
-	float	thinktime;
-
-	//see if anything is happening to us we need to update...
+	// See if anything is happening to us we need to update...
 	CheckContinuousAutomaticEffects(self);
 
-	thinktime = self->nextthink;
+	const float think_time = self->nextthink;
 
-	if(self->pre_think && self->next_pre_think > 0.0f && self->next_pre_think < level.time)
-	{//not used for guides anymore, but nice for effects
-		//like tinting/fading, etc that should continue
-		//while the entity is doing other stuff
+	// Not used for guides anymore, but nice for effects like tinting/fading, etc. that should continue while the entity is doing other stuff.
+	if (self->pre_think != NULL && self->next_pre_think > 0.0f && self->next_pre_think < level.time)
 		self->pre_think(self);
-	}
-	if(!ThinkTime(self))
-	{
-		return;
-	}
-	self->think(self);
 
-	assert(!self->inuse || !self->think || thinktime != self->nextthink);
-	//NOTENOTE: This is a Quake oldy... it's common practice to do this!
-	/*assert(self->nextthink == -1);*/
+	if (ThinkTime(self))
+	{
+		self->think(self);
+		assert(!self->inuse || self->think == NULL || think_time != self->nextthink);
+	}
 }
 
 static void EntityPostThink(edict_t *self)
