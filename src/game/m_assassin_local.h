@@ -190,7 +190,6 @@ qboolean assassinCheckTeleport (edict_t *self, int type);
 qboolean assassinChooseTeleportDestination(edict_t *self, int type, qboolean imperative, qboolean instant);
 void assassinGone(edict_t *self);
 void assassinSmoke(edict_t *self);
-void SP_monster_assassin (edict_t *self);
 void assassin_post_pain (edict_t *self);
 void assassinCloak (edict_t *self);
 void M_MoveFrame (edict_t *self);
