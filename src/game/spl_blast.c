@@ -44,7 +44,7 @@ void SpellCastBlast(edict_t *caster,vec3_t startpos,vec3_t aimangles,vec3_t aimd
 		{
 			edict_t *ent;
 			
-			if(ent = check_hit_beast(startpos, trace.endpos))
+			if(ent = TB_CheckHit(startpos, trace.endpos))
 				trace.ent = ent;
 		}
 

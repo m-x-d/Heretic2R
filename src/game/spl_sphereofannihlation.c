@@ -176,7 +176,7 @@ static void SpherePowerLaserThink(edict_t *Self)
 		{
 			edict_t *ent;
 			
-			if(ent = check_hit_beast(startPos, tr.endpos))
+			if(ent = TB_CheckHit(startPos, tr.endpos))
 				tr.ent = ent;
 		}
 

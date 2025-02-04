@@ -257,7 +257,7 @@ void SpellCastRipper(edict_t *caster, vec3_t StartPos, vec3_t AimAngles, vec3_t 
 	{
 		edict_t *ent;
 		
-		if(ent = check_hit_beast(StartPos, trace.endpos))
+		if(ent = TB_CheckHit(StartPos, trace.endpos))
 			trace.ent = ent;
 	}
 

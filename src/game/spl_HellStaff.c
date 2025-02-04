@@ -166,7 +166,7 @@ void SpellCastHellstaff(edict_t *caster, vec3_t loc, vec3_t aimangles, vec3_t un
 		{
 			edict_t *ent;
 			
-			if(ent = check_hit_beast(caster->s.origin, trace.endpos))
+			if(ent = TB_CheckHit(caster->s.origin, trace.endpos))
 				trace.ent = ent;
 		}
 		if ((trace.fraction > .99) || !(trace.contents & MASK_SOLID))
@@ -211,7 +211,7 @@ void SpellCastHellstaff(edict_t *caster, vec3_t loc, vec3_t aimangles, vec3_t un
 				{
 					edict_t *ent;
 					
-					if(ent = check_hit_beast(caster->s.origin, trace.endpos))
+					if(ent = TB_CheckHit(caster->s.origin, trace.endpos))
 						trace.ent = ent;
 				}
 
