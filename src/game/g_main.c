@@ -387,23 +387,14 @@ static void EntityPostThink(edict_t* self)
 		self->post_think(self);
 }
 
-static void SetNumPlayers (void)
+static void SetNumPlayers(void)
 {
-	int			i;
-	edict_t		*ent;
-
-	ent = g_edicts;
 	game.num_clients = 0;
-	for(i = 0; i < MAX_CLIENTS; i++, ent++)
-	{//If player hasn't moved, don't clear this
-		if(ent)
-		{
-			if(ent->client)
-			{
-				game.num_clients++;
-			}
-		}
-	}
+
+	edict_t* ent = &g_edicts[0];
+	for (int i = 0; i < MAX_CLIENTS; i++, ent++)
+		if (ent != NULL && ent->client != NULL)
+			game.num_clients++;
 }
 
 static void UpdatePlayerBuoys (void)
