@@ -35,6 +35,7 @@
 #include "buoy.h"
 #include "vector.h"
 #include "g_playstats.h"
+#include "m_assassin.h"
 #include "m_assassin_local.h"
 #include "m_assassin_anim.h"
 #include "g_HitLocation.h"
@@ -2723,7 +2724,7 @@ void assassin_check_mood (edict_t *self, G_Message_t *msg)
 /*-------------------------------------------------------------------------
 	AssassinStaticsInit
 -------------------------------------------------------------------------*/
-void AssassinStaticsInit()
+void AssassinStaticsInit(void)
 {
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_STAND] = assassin_stand;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_WALK] = assassin_walk;

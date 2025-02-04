@@ -249,6 +249,7 @@
     <ClInclude Include="list.h" />
     <ClInclude Include="mg_guide.h" />
     <ClInclude Include="m_actor.h" />
+    <ClInclude Include="m_assassin.h" />
     <ClInclude Include="m_assassin_local.h" />
     <ClInclude Include="m_assassin_anim.h" />
     <ClInclude Include="m_beast_local.h" />

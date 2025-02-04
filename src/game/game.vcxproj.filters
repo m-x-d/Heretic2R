@@ -998,5 +998,8 @@
     <ClInclude Include="m_rat_local.h">
       <Filter>src\Monsters\Rat</Filter>
     </ClInclude>
+    <ClInclude Include="m_assassin.h">
+      <Filter>src\Monsters\Assassin</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
