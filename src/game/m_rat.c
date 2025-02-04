@@ -647,7 +647,7 @@ void rat_ai_run (edict_t *self, float dist)
 	}
 }
 
-void RatStaticsInit()
+void RatStaticsInit(void)
 {
 	classStatics[CID_RAT].msgReceivers[MSG_STAND] = rat_stand;
 	classStatics[CID_RAT].msgReceivers[MSG_WALK] = rat_walk;
