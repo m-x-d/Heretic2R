@@ -128,7 +128,7 @@ static animmove_t *animations[NUM_ANIMS] =
 	&gorgon_move_to_swim,
 	&gorgon_move_swim,
 	&gorgon_move_swim_bite_a,
-	&gorgon_move_swim_bite_a,
+	&gorgon_move_swim_bite_a, //TODO: use gorgon_move_swim_bite_b?
 	&gorgon_move_outwater,
 	&gorgon_move_eat_down,
 	&gorgon_move_eat_up,
@@ -2145,7 +2145,7 @@ void gorgon_jump_msg (edict_t *self, G_Message_t *msg)
 	SetAnim(self, ANIM_FJUMP);
 }
 
-void GorgonStaticsInit()
+void GorgonStaticsInit(void)
 {
 	classStatics[CID_GORGON].msgReceivers[MSG_STAND] = gorgon_stand;
 	classStatics[CID_GORGON].msgReceivers[MSG_WALK] = gorgon_walk;
