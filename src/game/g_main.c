@@ -301,80 +301,65 @@ static void ExitLevel(void)
 	ClearMessageQueues();
 }
 
-void CheckContinuousAutomaticEffects(edict_t *self)
-{//only used for fire damage for now
-	edict_t *damager;
-	vec3_t	checkpoint;
-
-	if(self->fire_damage_time > level.time)
+void CheckContinuousAutomaticEffects(edict_t* self)
+{
+	// Only used for fire damage for now.
+	if (self->fire_damage_time > level.time)
 	{
-		VectorCopy(self->s.origin, checkpoint);
-		checkpoint[2] += self->mins[2];
-		checkpoint[2] += self->size[2] * 0.5;
-		if(gi.pointcontents(checkpoint) & (CONTENTS_WATER|CONTENTS_SLIME))			// Not lava
-		{//FIXME: make hiss and smoke too
-			gi.dprintf("%s fire doused\n", self->classname);
-			self->fire_damage_time = 0;
-//			gi.RemoveEffects(&self->s, FX_FIRE_ON_ENTITY);//turn off CFX too
-			self->s.effects &= ~EF_ON_FIRE;			// Use this to instead notify the fire to stop.
-			gi.CreateEffect(NULL,
-					FX_ENVSMOKE,
-					CEF_FLAG6,
-					checkpoint,
-					"");
-			return;
-		}
+		vec3_t check_point;
+		VectorCopy(self->s.origin, check_point);
+		check_point[2] += self->mins[2] + self->size[2] * 0.5f;
 
-		if(self->health <= 0)
-			return;
-
-		if(self->fire_damage_enemy)
-			damager = self->fire_damage_enemy;
-		else
-			damager = world;
-
-		if (self->client)
-		{	// Take less damage than a monster.
-			if (!(((byte)(level.time*10))&0x07))
-			{
-				T_Damage(self, damager, damager, vec3_origin, self->s.origin, vec3_origin, 
-							1, 0, DAMAGE_BURNING,MOD_BURNT);
-			}
-		}
-		else	// For monsters
-		{	// Only account for damage every .4 second.
-			if (!(((byte)(level.time*10))&0x03))
-			{
-				T_Damage(self, damager, damager, vec3_origin, self->s.origin, vec3_origin, 
-							irand(FIRE_LINGER_DMG_MIN, FIRE_LINGER_DMG_MAX), 0, DAMAGE_BURNING,MOD_BURNT);
-			}
-			//tint it darker brown as goes on?  How to get back? no, scorched art would look better
-		}
-
-		if(self->client)
+		if (gi.pointcontents(check_point) & (CONTENTS_WATER | CONTENTS_SLIME)) // Not lava.
 		{
-			if(self->client->playerinfo.lowerseq == ASEQ_ROLLDIVEF_W || self->client->playerinfo.lowerseq == ASEQ_ROLLDIVEF_R || self->client->playerinfo.lowerseq == ASEQ_ROLL_FROM_FFLIP ||
-				self->client->playerinfo.upperseq == ASEQ_ROLLDIVEF_W || self->client->playerinfo.upperseq == ASEQ_ROLLDIVEF_R || self->client->playerinfo.upperseq == ASEQ_ROLL_FROM_FFLIP ||
-				self->client->playerinfo.lowerseq == ASEQ_ROLL_L || self->client->playerinfo.lowerseq == ASEQ_ROLL_R || self->client->playerinfo.lowerseq == ASEQ_ROLL_B ||
-				self->client->playerinfo.upperseq == ASEQ_ROLL_L || self->client->playerinfo.upperseq == ASEQ_ROLL_R || self->client->playerinfo.upperseq == ASEQ_ROLL_B)
-			{
-				float waterlevel;
+			//FIXME: make hiss and smoke too.
+			gi.dprintf("%s fire doused\n", self->classname);
+			self->fire_damage_time = 0.0f;
+			self->s.effects &= ~EF_ON_FIRE; // Use this to instead notify the fire to stop.
+			gi.CreateEffect(NULL, FX_ENVSMOKE, CEF_FLAG6, check_point, "");
 
-				waterlevel = self->waterlevel/5.0;
-				if (self->watertype & CONTENTS_LAVA)
-					waterlevel = 0;
-				self->fire_damage_time -= (0.15 + (waterlevel*0.5));//stop, drop and roll!
-			}
+			return;
+		}
+
+		if (self->health <= 0)
+			return;
+
+		edict_t* damager = (self->fire_damage_enemy != NULL ? self->fire_damage_enemy : world);
+
+		if (self->client != NULL)
+		{
+			// Take less damage than a monster.
+			if (!((byte)(level.time * 10) & 7))
+				T_Damage(self, damager, damager, vec3_origin, self->s.origin, vec3_origin, 1, 0, DAMAGE_BURNING, MOD_BURNT);
+		}
+		else // For monsters.
+		{
+			// Only account for damage every .4 second.
+			if (!((byte)(level.time * 10) & 3))
+				T_Damage(self, damager, damager, vec3_origin, self->s.origin, vec3_origin, irand(FIRE_LINGER_DMG_MIN, FIRE_LINGER_DMG_MAX), 0, DAMAGE_BURNING, MOD_BURNT);
+		}
+
+		if (self->client == NULL)
+			return;
+
+		const playerinfo_t* pi = &self->client->playerinfo; //mxd
+		if (pi->lowerseq == ASEQ_ROLLDIVEF_W || pi->lowerseq == ASEQ_ROLLDIVEF_R || pi->lowerseq == ASEQ_ROLL_FROM_FFLIP ||
+			pi->upperseq == ASEQ_ROLLDIVEF_W || pi->upperseq == ASEQ_ROLLDIVEF_R || pi->upperseq == ASEQ_ROLL_FROM_FFLIP ||
+			pi->lowerseq == ASEQ_ROLL_L || pi->lowerseq == ASEQ_ROLL_R || pi->lowerseq == ASEQ_ROLL_B ||
+			pi->upperseq == ASEQ_ROLL_L || pi->upperseq == ASEQ_ROLL_R || pi->upperseq == ASEQ_ROLL_B)
+		{
+			float waterlevel = (float)self->waterlevel / 5.0f;
+			if (self->watertype & CONTENTS_LAVA)
+				waterlevel = 0.0f;
+
+			self->fire_damage_time -= 0.15f + waterlevel * 0.5f; // Stop, drop and roll!
 		}
 	}
-	else if(self->fire_damage_time>0)
+	else if (self->fire_damage_time > 0.0f)
 	{
-		self->fire_damage_time = 0;
-//		gi.RemoveEffects(&self->s, FX_FIRE_ON_ENTITY);//turn off CFX too
-		self->s.effects &= ~EF_ON_FIRE;		// Use this to instead notify the fire to stop.
-		return;
+		self->fire_damage_time = 0.0f;
+		self->s.effects &= ~EF_ON_FIRE; // Notify the fire to stop.
 	}
-
 }
 
 static void EntityThink(edict_t *self)
