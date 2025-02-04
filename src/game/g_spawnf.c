@@ -277,11 +277,6 @@ void ConstructEntities(void)
 	for(i = 0, ent = g_edicts; i < maxentities->value ; i++, ent++)
 	{
 		SLList_DefaultCon(&ent->msgQ.msgs);
-
-#ifdef BBOX_DISPLAY_HACK
-		InitBBoxDisplayInfo(i, ent->mins, ent->maxs);
-#endif
-
 		ent->s.skeletalType = SKEL_NULL;
 	}
 

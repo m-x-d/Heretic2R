@@ -465,18 +465,10 @@ static void G_RunFrame(void)
 
 		// If entity not in use - don't process.
 		if (!ent->inuse)
-		{
-#ifdef BBOX_DISPLAY_HACK
-			DisableBBoxDisplay(i);
-#endif
 			continue;
-		}
 
 		//mxd. Skip non-functional pvs_cull logic. Didn't cause performance problems in 1998, so can be skipped today sa well...
 
-#ifdef BBOX_DISPLAY_HACK
-		EnableBBoxDisplay(i);
-#endif
 		level.current_entity = ent;
 
 		if (ent->msgHandler != NULL) // Eventually this check won't be needed.
