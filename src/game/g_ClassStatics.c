@@ -13,7 +13,6 @@ int Cid_init[NUM_CLASSIDS];
 void ObjectStaticsInit();
 void LightStaticsInit();
 void TriggerStaticsInit();
-void SpreaderStaticsInit();
 void BBrushStaticsInit();
 void FuncRotateStaticsInit();
 void FuncDoorStaticsInit();

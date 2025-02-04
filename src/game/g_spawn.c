@@ -79,7 +79,6 @@ void SP_misc_magic_portal (edict_t *self);
 void SP_misc_fire_sparker (edict_t *ent);
 
 void SP_misc_flag (edict_t *ent);
-void SP_monster_spreader (edict_t *self);
 void SP_monster_chkroktk (edict_t *self);
 void SP_monster_tcheckrik_male (edict_t *self);
 void SP_monster_tcheckrik_female (edict_t *self);

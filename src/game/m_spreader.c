@@ -19,6 +19,7 @@
 
 #include "g_Physics.h"
 
+#include "m_spreader.h"
 #include "m_spreader_local.h"
 #include "m_spreader_anim.h"
 #include "m_spreadermist.h"
@@ -1248,10 +1249,10 @@ void spreader_go_inair (edict_t *self)
 /*------------------------------------------------------------------------
 	startup stuff -- initialization for the spreader class and individual
 	spreaders
-/*-------------------------------------------------------------------------
+-------------------------------------------------------------------------
 	SpreaderStaticsInit
 -------------------------------------------------------------------------*/
-void SpreaderStaticsInit()
+void SpreaderStaticsInit(void)
 {
 	resInfo.numAnims = NUM_ANIMS;
 	resInfo.animations = animations;

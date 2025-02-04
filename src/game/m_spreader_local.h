@@ -118,7 +118,6 @@ extern animmove_t spreader_move_delay;
 
 void spreader_mist(edict_t *self, float x, float y, float z);
 
-void SpreaderStaticsInit();
 void spreaderFly (edict_t *self);
 void spreaderTakeOff (edict_t *self);
 void spreaderFlyLoop (edict_t *self);

@@ -1058,5 +1058,8 @@
     <ClInclude Include="m_seraph_guard.h">
       <Filter>src\Monsters\SeraphGuard</Filter>
     </ClInclude>
+    <ClInclude Include="m_spreader.h">
+      <Filter>src\Monsters\Spreader</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
