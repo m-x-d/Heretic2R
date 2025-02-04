@@ -26,3 +26,4 @@
 #include "m_seraph.h"
 #include "m_seraph_guard.h"
 #include "m_spreader.h"
+#include "m_tcheckrik.h"

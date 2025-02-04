@@ -1061,5 +1061,8 @@
     <ClInclude Include="m_spreader.h">
       <Filter>src\Monsters\Spreader</Filter>
     </ClInclude>
+    <ClInclude Include="m_tcheckrik.h">
+      <Filter>src\Monsters\Tcheckrik</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

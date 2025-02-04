@@ -17,7 +17,6 @@ void BBrushStaticsInit();
 void FuncRotateStaticsInit();
 void FuncDoorStaticsInit();
 void TeleporterStaticsInit();
-void TcheckrikStaticsInit();
 void ButtonStaticsInit();
 void LeverStaticsInit();
 void FlameThrowerStaticsInit();

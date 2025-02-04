@@ -315,6 +315,7 @@
     <ClInclude Include="m_spreadermist.h" />
     <ClInclude Include="m_spreader_anim.h" />
     <ClInclude Include="m_stats.h" />
+    <ClInclude Include="m_tcheckrik.h" />
     <ClInclude Include="m_tcheckrik_local.h" />
     <ClInclude Include="m_tcheckrik_anim.h" />
     <ClInclude Include="pcode.h" />

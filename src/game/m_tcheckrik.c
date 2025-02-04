@@ -35,6 +35,7 @@
 #include "buoy.h"
 #include "vector.h"
 
+#include "m_tcheckrik.h"
 #include "m_tcheckrik_local.h"
 #include "m_tcheckrik_anim.h"
 #include "g_HitLocation.h"
@@ -1512,7 +1513,7 @@ void insect_jump (edict_t *self, G_Message_t *msg)
 /*-------------------------------------------------------------------------
 	insectStaticsInit
 -------------------------------------------------------------------------*/
-void TcheckrikStaticsInit()
+void TcheckrikStaticsInit(void)
 {
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_STAND] = insect_stand;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_WALK] = insect_walk;
