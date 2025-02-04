@@ -9,6 +9,7 @@
 #include "m_beast.h" //mxd
 #include "m_bee.h" //mxd
 #include "m_chicken.h" //mxd
+#include "m_elflord.h" //mxd
 
 G_ClassStatics_t classStatics[NUM_CLASSIDS];
 int Cid_init[NUM_CLASSIDS];
@@ -23,7 +24,6 @@ void LightStaticsInit();
 void TriggerStaticsInit();
 void HarpyStaticsInit();
 void SpreaderStaticsInit();
-void ElflordStaticsInit();
 void BBrushStaticsInit();
 void FuncRotateStaticsInit();
 void FuncDoorStaticsInit();

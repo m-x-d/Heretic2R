@@ -3,6 +3,7 @@
 #include "m_beast.h" //mxd
 #include "m_bee.h" //mxd
 #include "m_chicken.h" //mxd
+#include "m_elflord.h" //mxd
 #include "p_client.h" //mxd
 
 typedef struct
@@ -93,7 +94,6 @@ void SP_monster_palace_plague_guard_invisible(edict_t *self);
 void SP_monster_fish (edict_t *self);
 void SP_monster_harpy (edict_t *self);
 void SP_monster_spreader (edict_t *self);
-void SP_monster_elflord (edict_t *self);
 void SP_monster_plague_ssithra (edict_t *self);
 void SP_monster_mssithra (edict_t *self);
 void SP_monster_chkroktk (edict_t *self);

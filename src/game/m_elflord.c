@@ -16,6 +16,7 @@
 #include "buoy.h"
 #include "vector.h"
 #include "g_playstats.h"
+#include "m_elflord.h"
 #include "m_elflord_local.h"
 #include "m_elflord_anims.h"
 #include "g_monster.h"
@@ -759,7 +760,7 @@ void elflord_PreThink( edict_t *self )
 	ElflordStaticsInit
 -----------------------------------------------*/
 
-void ElflordStaticsInit()
+void ElflordStaticsInit(void)
 {
 	classStatics[CID_ELFLORD].msgReceivers[MSG_STAND] = elflord_stand;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_RUN] = elflord_run;

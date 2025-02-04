@@ -1010,5 +1010,8 @@
     <ClInclude Include="m_chicken.h">
       <Filter>src\Monsters\Chicken</Filter>
     </ClInclude>
+    <ClInclude Include="m_elflord.h">
+      <Filter>src\Monsters\ElfLord</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
