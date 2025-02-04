@@ -1,4 +1,5 @@
 #include "g_cmds.h" //mxd
+#include "g_combat.h" //mxd
 #include "m_player.h"
 #include "vector.h"
 #include "g_items.h"
@@ -12,9 +13,6 @@
 #include "g_itemstats.h"
 #include "cl_strings.h"
 
-
-extern gitem_armor_t silver_armor_info;
-extern gitem_armor_t gold_armor_info;
 extern void MorphPlayerToChicken(edict_t *self, edict_t *caster);
 extern qboolean AddWeaponToInventory(gitem_t *it,edict_t *player);
 extern void AddDefenseToInventory(gitem_t *it,edict_t *player);

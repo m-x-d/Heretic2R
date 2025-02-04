@@ -1067,5 +1067,8 @@
     <ClInclude Include="m_mother.h">
       <Filter>src\Monsters\TcheckrikMother</Filter>
     </ClInclude>
+    <ClInclude Include="g_combat.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -14,6 +14,7 @@
 #include "m_player.h"
 #include "p_funcs.h"
 #include "cl_strings.h"
+#include "g_combat.h" //mxd
 
 // Set up those shrines that are randomly selectable.
 
@@ -46,9 +47,6 @@ void player_shrine_speed_effect(edict_t *self);
 void shrine_armor_silver_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
 void shrine_armor_gold_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
 void shrine_random_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
-
-extern gitem_armor_t silver_armor_info;
-extern gitem_armor_t gold_armor_info;
 
 #define INVUN_TIME 2.0
 

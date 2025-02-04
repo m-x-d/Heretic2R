@@ -1,6 +1,6 @@
 // g_combat.c
 
-#include "g_local.h"
+#include "g_combat.h" //mxd
 #include "Utilities.h"
 #include "g_HitLocation.h"
 #include "g_DefaultMessageHandler.h"

@@ -220,6 +220,7 @@
     <ClInclude Include="GameEntity.h" />
     <ClInclude Include="g_ClassStatics.h" />
     <ClInclude Include="g_cmds.h" />
+    <ClInclude Include="g_combat.h" />
     <ClInclude Include="g_DefaultMessageHandler.h" />
     <ClInclude Include="g_Edict.h" />
     <ClInclude Include="g_HitLocation.h" />
