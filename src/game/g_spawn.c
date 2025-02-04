@@ -91,7 +91,6 @@ void SP_monster_tcheckrik_male (edict_t *self);
 void SP_monster_tcheckrik_female (edict_t *self);
 void SP_monster_tcheckrik_mothers (edict_t *self);
 void SP_monster_high_priestess (edict_t *self);
-void SP_monster_ogle (edict_t *self);
 void SP_monster_seraph_overlord (edict_t *self);
 void SP_monster_seraph_guard (edict_t *self);
 
@@ -191,7 +190,6 @@ void SP_obj_cocoonopen(edict_t *ent);
 void SP_obj_cog1(edict_t *ent);
 void SP_obj_corpse1(edict_t *self);
 void SP_obj_corpse2(edict_t *self);
-void SP_obj_corpse_ogle(edict_t *self);
 void SP_obj_corpse_ssithra(edict_t *self);
 
 void SP_obj_dying_elf(edict_t *self);

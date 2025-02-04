@@ -1037,5 +1037,8 @@
     <ClInclude Include="m_mssithra.h">
       <Filter>src\Monsters\Mssithra</Filter>
     </ClInclude>
+    <ClInclude Include="m_ogle.h">
+      <Filter>src\Monsters\Ogle</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

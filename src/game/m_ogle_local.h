@@ -195,9 +195,6 @@ extern animmove_t	ogle_move_walk1,
 					ogle_c_move_walk3,
 					ogle_c_move_walk4;
 
-
-void SP_monster_ogle(edict_t *self);
-
 void ogle_pick_dust(edict_t *self);
 void ogle_celebrate(edict_t *self);
 void ogle_strike(edict_t *self);

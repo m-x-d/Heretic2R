@@ -8,6 +8,7 @@
 //==============================================================================
 
 #include "g_local.h"
+#include "m_ogle.h"
 #include "m_ogle_local.h"
 #include "m_ogle_anim.h"
 #include "Utilities.h"
@@ -1566,7 +1567,7 @@ void ogle_push (edict_t *self, float dist)
 ==========================================================
 */
 
-void OgleStaticsInit()
+void OgleStaticsInit(void)
 {
 	classStatics[CID_OGLE].msgReceivers[MSG_STAND]		= ogle_stand1;
 	classStatics[CID_OGLE].msgReceivers[MSG_RUN]		= ogle_run1;
