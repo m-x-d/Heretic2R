@@ -1,3 +1,11 @@
+//
+// m_rat.h
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
+
 typedef enum AnimID_e
 {
 	ANIM_EATING1,
@@ -78,38 +86,33 @@ extern animmove_t rat_move_pain1;
 extern animmove_t rat_move_death1;
 extern animmove_t rat_move_death2;
 
-void rat_use(edict_t *self, edict_t *other, edict_t *activator);
-void rat_touch(edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf);
+void rat_use(edict_t* self, edict_t* other, edict_t* activator);
+void rat_touch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf);
 
-void ratdeathsqueal (edict_t *self);
-void ratsqueal (edict_t *self);
-void ratbite (edict_t *self);
-void rat_pain_init(edict_t *self);
-void rat_runorder(edict_t *self);
-void rat_standorder(edict_t *self);
-void rat_pause (edict_t *self);
+void ratdeathsqueal(edict_t* self);
+void ratsqueal(edict_t* self);
+void ratbite(edict_t* self);
+void rat_pain_init(edict_t* self);
+void rat_runorder(edict_t* self);
+void rat_standorder(edict_t* self);
+void rat_pause(edict_t* self);
 
-int rat_standdecision (edict_t *self);
-int rat_eatdecision (edict_t *self);
-void rat_eatorder(edict_t *self);
-void rat_runorder(edict_t *self);
-void rathiss (edict_t *self);
-void ratscratch (edict_t *self);
-void ratchatter (edict_t *self);
-void ratchew (edict_t *self);
-void ratswallow (edict_t *self);
-void ratjump(edict_t *self);
+void rat_eatorder(edict_t* self);
+void rathiss(edict_t* self);
+void ratscratch(edict_t* self);
+void ratchatter(edict_t* self);
+void ratchew(edict_t* self);
+void ratswallow(edict_t* self);
+void ratjump(edict_t* self);
 
-void rat_init (void);
+void rat_pain(edict_t* self, G_Message_t* msg);
+void rat_death(edict_t* self, G_Message_t* msg);
+void rat_run(edict_t* self, G_Message_t* msg);
+void rat_walk(edict_t* self, G_Message_t* msg);
+void rat_melee(edict_t* self, G_Message_t* msg);
+void rat_watch(edict_t* self, G_Message_t* msg);
+void rat_stand(edict_t* self, G_Message_t* msg);
+void rat_eat(edict_t* self, G_Message_t* msg);
 
-void rat_pain(edict_t *self, G_Message_t *msg);
-void rat_death(edict_t *self, G_Message_t *msg);
-void rat_run(edict_t *self, G_Message_t *msg);
-void rat_walk(edict_t *self, G_Message_t *msg);
-void rat_melee(edict_t *self, G_Message_t *msg);
-void rat_watch(edict_t *self, G_Message_t *msg);
-void rat_stand(edict_t *self, G_Message_t *msg);
-void rat_eat(edict_t *self, G_Message_t *msg);
-
-void rat_ai_eat(edict_t *self, float dist);
-void rat_ai_stand(edict_t *self, float dist);
+void rat_ai_eat(edict_t* self, float dist);
+void rat_ai_stand(edict_t* self, float dist);
