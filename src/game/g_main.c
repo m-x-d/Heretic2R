@@ -380,12 +380,11 @@ static void EntityThink(edict_t* self)
 	}
 }
 
-static void EntityPostThink(edict_t *self)
+static void EntityPostThink(edict_t* self)
 {
-	if(self->post_think && self->next_post_think > 0.0f && self->next_post_think < level.time)
-	{//for effects that rely on accurate physics info
-		self->post_think (self);
-	}
+	// For effects that rely on accurate physics info.
+	if (self->post_think != NULL && self->next_post_think > 0.0f && self->next_post_think < level.time)
+		self->post_think(self);
 }
 
 static void SetNumPlayers (void)
