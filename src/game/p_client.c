@@ -83,17 +83,6 @@ Use 'angles' instead of 'angle', so you can set pitch or roll as well as yaw.  '
 
 void SP_info_player_intermission(edict_t* self) { }
 
-int	SexedSoundIndex (edict_t *ent, char *base)
-{
-	char	buffer[MAX_QPATH];
-
-	Com_sprintf (buffer, sizeof(buffer), "%s/%s.wav", ent->client->playerinfo.pers.sounddir, base);
-
-	return gi.soundindex(buffer);
-}
-
-
-
 void ClientSetSkinType(edict_t *ent, char *skinname)
 {
 	playerinfo_t *playerinfo;

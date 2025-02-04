@@ -760,15 +760,13 @@ extern void ai_flee(edict_t* self, float dist);
 extern void FoundTarget(edict_t* self, qboolean setsightent);
 extern qboolean FacingIdeal(edict_t* self);
 
-// g_client.c
+// p_client.c
 extern void respawn(edict_t* ent);
-extern void BeginIntermission(edict_t* targ);
 extern void PutClientInServer(edict_t* ent);
 extern void InitClientPersistant(edict_t* player);
 extern void InitClientResp(gclient_t* client);
 extern void InitBodyQue(void);
 extern void ClientBeginServerFrame(edict_t* ent);
-extern int SexedSoundIndex(edict_t* ent, char* base);
 
 // g_player.c
 extern int player_pain(edict_t* self, edict_t* other, float kick, int damage);
@@ -789,6 +787,7 @@ extern void SetupPlayerinfo_effects(edict_t* ent);
 extern void WritePlayerinfo_effects(edict_t* ent);
 
 // p_hud.c
+extern void BeginIntermission(edict_t* targ);
 extern void MoveClientToIntermission(edict_t* client, qboolean log_file);
 extern void G_SetStats(edict_t* ent);
 extern void ValidateSelectedItem(edict_t* ent);
