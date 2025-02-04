@@ -5,7 +5,6 @@
 #include "g_Skeletons.h"
 #include "random.h"
 #include "vector.h"
-#include "g_BoundingForm.h"
 #include "g_Physics.h"
 
 void G_ProjectSource (vec3_t point, vec3_t distance, vec3_t forward, vec3_t right, vec3_t result)

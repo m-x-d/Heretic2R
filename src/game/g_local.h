@@ -915,7 +915,6 @@ typedef struct gclient_s
 	playerinfo_t playerinfo;
 } gclient_t;
 
-#include "g_BoundingForm.h"
 #include "g_Edict.h"
 
 #ifdef __cplusplus // This is for ds.cpp.

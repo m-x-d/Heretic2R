@@ -8,7 +8,6 @@
 
 #include <windows.h>
 #include "q_ClientServer.h"
-#include "g_BoundingForm.h"
 
 #define	GAME_API_VERSION	3
 

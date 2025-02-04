@@ -602,9 +602,6 @@
     <ClInclude Include="decals.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="g_BoundingForm.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="g_ClassStatics.h">
       <Filter>src</Filter>
     </ClInclude>
