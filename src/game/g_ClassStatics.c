@@ -7,6 +7,7 @@
 #include "g_ClassStatics.h"
 #include "m_assassin.h" //mxd
 #include "m_beast.h" //mxd
+#include "m_bee.h"
 
 G_ClassStatics_t classStatics[NUM_CLASSIDS];
 int Cid_init[NUM_CLASSIDS];
@@ -35,7 +36,6 @@ void TeleporterStaticsInit();
 void HighPriestessStaticsInit();
 void TcheckrikStaticsInit();
 void ButtonStaticsInit();
-void BeeStaticsInit();
 void LeverStaticsInit();
 void FlameThrowerStaticsInit();
 void CorvusStaticsInit();

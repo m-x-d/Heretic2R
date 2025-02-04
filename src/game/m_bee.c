@@ -16,6 +16,7 @@
 #include "fx.h"
 #include "g_HitLocation.h"
 #include "g_misc.h"
+#include "m_bee.h" //mxd
 #include "m_stats.h"
 
 static ClassResourceInfo_t resInfo;
@@ -38,7 +39,7 @@ static int sounds[NUM_SOUNDS];
 ==========================================================
 */
 
-void BeeStaticsInit()
+void BeeStaticsInit(void)
 {
 //	classStatics[CID_BEE].msgReceivers[MSG_STAND]		= bee_stand1;
 /*	classStatics[CID_BEE].msgReceivers[MSG_RUN]		= ogle_run1;
