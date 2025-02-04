@@ -300,7 +300,7 @@ static void tornboltTouch(edict_t *self, edict_t *other, cplane_t *plane, csurfa
 	}
 
 	// Attempt to apply a scorchmark decal to the thing I hit.
-	if(IsDecalApplicable(self, other, self->s.origin, surface, plane, planedir))
+	if(IsDecalApplicable(other, self->s.origin, surface, plane, planedir))
 	{
 		flags |= CEF_FLAG6;
 	}

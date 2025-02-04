@@ -1,6 +1,9 @@
-#ifndef DECALS_H
-#define DECALS_H
+//
+// decals.h
+//
+// Copyright 1998 Raven Software
+//
 
-qboolean IsDecalApplicable(edict_t *owner, edict_t *target, vec3_t origin, csurface_t *surface,cplane_t *plane, vec3_t planeDir);
+#pragma once
 
-#endif
+extern qboolean IsDecalApplicable(const edict_t* target, const vec3_t origin, const csurface_t* surface, const cplane_t* plane, vec3_t plane_dir);

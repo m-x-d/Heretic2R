@@ -167,7 +167,7 @@ void GkrokonSpooTouch(edict_t *self,edict_t *Other,cplane_t *Plane,csurface_t *S
 
 	gi.RemoveEffects(&self->s, 0);	
 
-	if(IsDecalApplicable(self, Other, self->s.origin, Surface, Plane, planeDir))
+	if(IsDecalApplicable(Other, self->s.origin, Surface, Plane, planeDir))
 	{
 		VectorCopy(self->s.origin, ScorchOrigin);
 		gi.CreateEffect(NULL,

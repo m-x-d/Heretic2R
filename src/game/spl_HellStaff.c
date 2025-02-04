@@ -116,7 +116,7 @@ static void HellboltTouch(edict_t *self, edict_t *other, cplane_t *plane, csurfa
 	}
 
 	makeScorch = 0;
-	if(IsDecalApplicable(self, other, self->s.origin, surface, plane, NULL))
+	if(IsDecalApplicable(other, self->s.origin, surface, plane, NULL))
 	{
 		makeScorch = CEF_FLAG6;
 	}
@@ -280,7 +280,7 @@ void SpellCastHellstaff(edict_t *caster, vec3_t loc, vec3_t aimangles, vec3_t un
 		blen = (byte)(VectorLength(vect)/8.0);
 
 		// decide if we need a scorch mark or not
-		if(IsDecalApplicable(caster, trace.ent, caster->s.origin, trace.surface, &trace.plane, planedir))
+		if(IsDecalApplicable(trace.ent, caster->s.origin, trace.surface, &trace.plane, planedir))
 			gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER, CEF_FLAG6|CEF_FLAG7, startpos, "tb", 
 					forward, blen);
 		else

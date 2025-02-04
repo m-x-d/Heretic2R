@@ -113,7 +113,7 @@ void PhoenixMissileTouch(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 
 	// Attempt to apply a scorchmark decal to the thing I hit.
 	makeScorch = 0;
-	if(IsDecalApplicable(self, other, self->s.origin, surface, plane, planedir))
+	if(IsDecalApplicable(other, self->s.origin, surface, plane, planedir))
 	{
 		makeScorch = CEF_FLAG8;
 	}

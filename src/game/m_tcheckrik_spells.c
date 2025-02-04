@@ -129,7 +129,7 @@ static void InsectStaffTouch(edict_t *self,edict_t *Other,cplane_t *Plane,csurfa
 
 	// Attempt to apply a scorchmark decal to the thing I hit.
 	makescorch = 0;
-	if(IsDecalApplicable(self,Other,self->s.origin,Surface,Plane,NULL))
+	if(IsDecalApplicable(Other,self->s.origin,Surface,Plane,NULL))
 	{
 		makescorch = CEF_FLAG6;
 	}
@@ -508,7 +508,7 @@ static void SpearProjTouch(edict_t *self, edict_t *other, cplane_t *plane, csurf
 	}
 
 	makeScorch = 0;
-	if(IsDecalApplicable(self, other, self->s.origin, surface, plane, NULL))
+	if(IsDecalApplicable(other, self->s.origin, surface, plane, NULL))
 	{
 		makeScorch = CEF_FLAG6;
 	}

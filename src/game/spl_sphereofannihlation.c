@@ -235,7 +235,7 @@ static void SpherePowerLaserThink(edict_t *Self)
 	if (Self->health==2)
 		flags|=CEF_FLAG8;
 
-	if(IsDecalApplicable(Self, tr.ent, Self->s.origin, tr.surface, &tr.plane, planedir))
+	if(IsDecalApplicable(tr.ent, Self->s.origin, tr.surface, &tr.plane, planedir))
 		flags|=CEF_FLAG6;
 
 	gi.CreateEffect(NULL, FX_WEAPON_SPHEREPOWER, flags, startPos, "xbb",
@@ -789,7 +789,7 @@ static void SphereWatcherTouch(edict_t *self, edict_t *Other, cplane_t *Plane, c
 
 	T_DamageRadius(self, self->owner, self, self->dmg_radius, self->dmg, self->dmg / 8, DAMAGE_ATTACKER_KNOCKBACK,MOD_SPHERE);
 	makeScorch = 0;
-	if(IsDecalApplicable(self, Other, self->s.origin, surface, Plane, NULL))
+	if(IsDecalApplicable(Other, self->s.origin, surface, Plane, NULL))
 	{
 		makeScorch = CEF_FLAG6;
 	}

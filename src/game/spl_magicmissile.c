@@ -152,7 +152,7 @@ static void MagicMissileTouch(edict_t *self,edict_t *Other,cplane_t *Plane,csurf
 
 	// Attempt to apply a scorchmark decal to the thing I hit.
 	makeScorch = 0;
-	if(IsDecalApplicable(self,Other,self->s.origin,Surface,Plane,NULL))
+	if(IsDecalApplicable(Other,self->s.origin,Surface,Plane,NULL))
 	{
 		makeScorch = CEF_FLAG6;
 	}
