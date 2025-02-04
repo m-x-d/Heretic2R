@@ -2789,7 +2789,7 @@ and eventually get to ClientBegin()
 Changing levels will NOT cause this to be called again.
 ============
 */
-qboolean ClientConnect (edict_t *ent, char *userinfo, qboolean loadgame)
+qboolean ClientConnect (edict_t *ent, char *userinfo)
 {
 	char	*value;
 
