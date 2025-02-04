@@ -19,3 +19,4 @@
 #include "m_morcalavin.h"
 #include "m_mssithra.h"
 #include "m_ogle.h"
+#include "m_plagueElf.h"

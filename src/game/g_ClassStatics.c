@@ -11,7 +11,6 @@ G_ClassStatics_t classStatics[NUM_CLASSIDS];
 int Cid_init[NUM_CLASSIDS];
 
 void RatStaticsInit();
-void PlagueElfStaticsInit();
 void ObjectStaticsInit();
 void LightStaticsInit();
 void TriggerStaticsInit();

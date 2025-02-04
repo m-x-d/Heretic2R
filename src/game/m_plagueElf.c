@@ -35,6 +35,7 @@
 #include "buoy.h"
 #include "vector.h"
 
+#include "m_plagueElf.h"
 #include "m_plagueElf_local.h"
 #include "m_plagueElf_anim.h"
 #include "g_HitLocation.h"
@@ -1805,7 +1806,7 @@ void pelf_init_phase_in (edict_t *self)
 /*-------------------------------------------------------------------------
 	PlagueElfStaticsInit
 -------------------------------------------------------------------------*/
-void PlagueElfStaticsInit()
+void PlagueElfStaticsInit(void)
 {
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_STAND] = plagueElf_stand;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_WALK] = plagueElf_walk;
