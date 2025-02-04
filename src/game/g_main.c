@@ -174,21 +174,15 @@ static void ClientEndServerFrames(void)
 	}
 }
 
-/*
-=================
-CreateTargetChangeLevel
-
-Returns the created target changelevel
-=================
-*/
-edict_t *CreateTargetChangeLevel(char *map)
+// Returns the created target changelevel.
+static edict_t* CreateTargetChangeLevel(char* map)
 {
-	edict_t *ent;
+	edict_t* ent = G_Spawn();
 
-	ent = G_Spawn ();
 	ent->classname = "target_changelevel";
 	Com_sprintf(level.nextmap, sizeof(level.nextmap), "%s", map);
 	ent->map = level.nextmap;
+
 	return ent;
 }
 
