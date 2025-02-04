@@ -1,4 +1,5 @@
 #include "g_local.h"
+#include "p_client.h" //mxd
 
 typedef struct
 {
@@ -7,10 +8,6 @@ typedef struct
 	int		CID;
 } spawn_t;
 
-void SP_info_player_start (edict_t *ent);
-void SP_info_player_deathmatch (edict_t *ent);
-void SP_info_player_coop (edict_t *ent);
-void SP_info_player_intermission (edict_t *ent);
 void SP_info_buoy (edict_t *ent);
 
 void SP_func_plat (edict_t *ent);
