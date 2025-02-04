@@ -61,9 +61,6 @@
     <Filter Include="src\Monsters\Bee">
       <UniqueIdentifier>{7ecbd00c-1a25-4a49-b3ff-74421ad7497e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Monsters\Checken">
-      <UniqueIdentifier>{7e39085b-506b-4971-bce6-54902faa621a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Scripting">
       <UniqueIdentifier>{6e12d637-cb6a-4aef-ac3a-01590442e054}</UniqueIdentifier>
     </Filter>
@@ -126,6 +123,9 @@
     </Filter>
     <Filter Include="src\Monsters\Tcheckrik">
       <UniqueIdentifier>{4ff034ac-7c0a-4c8d-bff3-c7148852522b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\Chicken">
+      <UniqueIdentifier>{7e39085b-506b-4971-bce6-54902faa621a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -469,10 +469,10 @@
       <Filter>src\Monsters\Bee</Filter>
     </ClCompile>
     <ClCompile Include="m_chicken.c">
-      <Filter>src\Monsters\Checken</Filter>
+      <Filter>src\Monsters\Chicken</Filter>
     </ClCompile>
     <ClCompile Include="m_chicken_anim.c">
-      <Filter>src\Monsters\Checken</Filter>
+      <Filter>src\Monsters\Chicken</Filter>
     </ClCompile>
     <ClCompile Include="..\qcommon\Skeletons.c">
       <Filter>qcommon</Filter>
@@ -843,10 +843,10 @@
       <Filter>qcommon</Filter>
     </ClInclude>
     <ClInclude Include="m_chicken.h">
-      <Filter>src\Monsters\Checken</Filter>
+      <Filter>src\Monsters\Chicken</Filter>
     </ClInclude>
     <ClInclude Include="m_chicken_anim.h">
-      <Filter>src\Monsters\Checken</Filter>
+      <Filter>src\Monsters\Chicken</Filter>
     </ClInclude>
     <ClInclude Include="..\qcommon\Skeletons.h">
       <Filter>qcommon</Filter>
