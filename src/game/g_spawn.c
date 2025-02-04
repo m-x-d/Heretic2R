@@ -86,7 +86,6 @@ void SP_monster_palace_plague_guard(edict_t *self);
 void SP_monster_palace_plague_guard_invisible(edict_t *self);
 void SP_monster_spreader (edict_t *self);
 void SP_monster_plague_ssithra (edict_t *self);
-void SP_monster_mssithra (edict_t *self);
 void SP_monster_chkroktk (edict_t *self);
 void SP_monster_tcheckrik_male (edict_t *self);
 void SP_monster_tcheckrik_female (edict_t *self);

@@ -284,6 +284,7 @@
     <ClInclude Include="m_morcalavin_anim.h" />
     <ClInclude Include="m_mother_local.h" />
     <ClInclude Include="m_mother_anim.h" />
+    <ClInclude Include="m_mssithra.h" />
     <ClInclude Include="m_mssithra_local.h" />
     <ClInclude Include="m_mssithra_anim.h" />
     <ClInclude Include="m_ogle_local.h" />

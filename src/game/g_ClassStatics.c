@@ -20,7 +20,6 @@ void BBrushStaticsInit();
 void FuncRotateStaticsInit();
 void FuncDoorStaticsInit();
 void SsithraStaticsInit();
-void MssithraStaticsInit();
 void OgleStaticsInit();
 void SeraphOverlordStaticsInit();
 void SeraphGuardStaticsInit();

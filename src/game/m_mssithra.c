@@ -16,6 +16,7 @@
 #include "buoy.h"
 #include "vector.h"
 
+#include "m_mssithra.h"
 #include "m_mssithra_local.h"
 #include "m_mssithra_anim.h"
 #include "g_misc.h"
@@ -644,7 +645,7 @@ void mssithraCheckShotLoop(edict_t *self)
 	}
 }
 
-void MssithraStaticsInit()
+void MssithraStaticsInit(void)
 {
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_STAND] = mssithra_stand;
 	classStatics[CID_MSSITHRA].msgReceivers[MSG_MISSILE] = mssithra_missile;
