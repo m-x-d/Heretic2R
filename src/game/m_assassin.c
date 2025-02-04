@@ -35,7 +35,7 @@
 #include "buoy.h"
 #include "vector.h"
 #include "g_playstats.h"
-#include "m_assassin.h"
+#include "m_assassin_local.h"
 #include "m_assassin_anim.h"
 #include "g_HitLocation.h"
 #include "g_misc.h"

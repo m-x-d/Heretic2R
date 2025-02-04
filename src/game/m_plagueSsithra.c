@@ -16,8 +16,8 @@
 #include "buoy.h"
 #include "vector.h"
 
-#include "m_plaguessithra.h"
-#include "m_plaguessithra_anim.h"
+#include "m_plaguesSithra_local.h"
+#include "m_plaguesSithra_anim.h"
 #include "g_misc.h"
 #include "g_HitLocation.h"
 #include "m_stats.h"

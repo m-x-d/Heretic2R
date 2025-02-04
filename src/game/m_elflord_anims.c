@@ -10,7 +10,7 @@
 #include "g_local.h"
 #include "g_monster.h"
 #include "m_elflord_anims.h"
-#include "m_elflord.h"
+#include "m_elflord_local.h"
 
 void elflord_finish_death(edict_t *self);
 void elflord_soa_loop(edict_t *self);

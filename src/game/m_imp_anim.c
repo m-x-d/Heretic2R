@@ -1,6 +1,6 @@
 #include "m_imp_anim.h"
 #include "g_local.h"
-#include "m_imp.h"
+#include "m_imp_local.h"
 #include "random.h"
 
 

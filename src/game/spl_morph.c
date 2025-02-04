@@ -15,7 +15,6 @@
 #include "g_teleport.h"
 #include "g_Skeletons.h"
 #include "g_volume_effect.h"
-#include "m_chicken.h"
 #include "m_chicken_anim.h"
 #include "angles.h"
 #include "fx.h"

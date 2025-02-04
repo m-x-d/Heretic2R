@@ -10,7 +10,7 @@
 #include "vector.h"
 #include "random.h"
 #include "decals.h"
-#include "m_tcheckrik.h"
+#include "m_tcheckrik_local.h"
 #include "Utilities.h"
 #include "m_stats.h"
 #include "g_playstats.h"

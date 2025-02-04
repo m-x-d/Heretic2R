@@ -15,7 +15,7 @@
 // ADD ANY ADDITIONAL FILES BELOW
 
 #include "m_beast_anim.h"
-#include "m_beast.h"
+#include "m_beast_local.h"
 
 #include "g_monster.h"
 

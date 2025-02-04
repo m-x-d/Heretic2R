@@ -8,7 +8,7 @@
 //==============================================================================
 
 #include "g_local.h"
-#include "m_priestess.h"
+#include "m_priestess_local.h"
 #include "m_priestess_anim.h"
 #include "Utilities.h"
 #include "g_DefaultMessageHandler.h"

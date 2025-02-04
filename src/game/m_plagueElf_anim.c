@@ -15,7 +15,7 @@
 // ADD ANY ADDITIONAL FILES BELOW
 
 #include "m_plagueElf_anim.h"
-#include "m_plagueElf.h"
+#include "m_plagueElf_local.h"
 
 #include "g_monster.h"
 #include "c_ai.h"

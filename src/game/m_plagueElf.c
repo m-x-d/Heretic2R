@@ -35,7 +35,7 @@
 #include "buoy.h"
 #include "vector.h"
 
-#include "m_plagueElf.h"
+#include "m_plagueElf_local.h"
 #include "m_plagueElf_anim.h"
 #include "g_HitLocation.h"
 #include "g_misc.h"

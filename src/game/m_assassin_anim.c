@@ -16,7 +16,7 @@
 
 #include "c_ai.h"
 #include "m_assassin_anim.h"
-#include "m_assassin.h"
+#include "m_assassin_local.h"
 #include "g_monster.h"
 
 //all of the anim frames that used to live in m_assassin.h

@@ -1,5 +1,5 @@
 #include "g_local.h"
-#include "m_morcalavin.h"
+#include "m_morcalavin_local.h"
 #include "m_morcalavin_anim.h"
 
 animframe_t morcalavin_frames_float[] =

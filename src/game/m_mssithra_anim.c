@@ -10,7 +10,7 @@
 #include "g_local.h"
 
 #include "m_mssithra_anim.h"
-#include "m_mssithra.h"
+#include "m_mssithra_local.h"
 
 /*----------------------------------------------------------------------
   mssithra Idle - looking around and standing

@@ -28,7 +28,7 @@ TBEAST
 #include "q_Physics.h"
 #include "g_Physics.h"
 #include "g_misc.h"
-#include "m_beast.h"
+#include "m_beast_local.h"
 #include "m_beast_anim.h"
 #include "m_stats.h"
 

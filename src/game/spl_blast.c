@@ -12,7 +12,7 @@
 #include "vector.h"
 #include "random.h"
 #include "g_playstats.h"
-#include "m_beast.h"
+#include "m_beast_local.h"
 
 
 

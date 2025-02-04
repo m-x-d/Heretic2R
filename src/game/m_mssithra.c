@@ -16,7 +16,7 @@
 #include "buoy.h"
 #include "vector.h"
 
-#include "m_mssithra.h"
+#include "m_mssithra_local.h"
 #include "m_mssithra_anim.h"
 #include "g_misc.h"
 #include "g_HitLocation.h"

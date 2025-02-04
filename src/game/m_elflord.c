@@ -16,7 +16,7 @@
 #include "buoy.h"
 #include "vector.h"
 #include "g_playstats.h"
-#include "m_elflord.h"
+#include "m_elflord_local.h"
 #include "m_elflord_anims.h"
 #include "g_monster.h"
 #include "m_stats.h"

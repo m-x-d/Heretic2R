@@ -17,7 +17,7 @@
 #include "vector.h"
 #include "decals.h"
 #include "g_playstats.h"
-#include "m_gkrokon.h"
+#include "m_gkrokon_local.h"
 #include "m_gkrokon_anim.h"
 #include "m_stats.h"
 #include "g_HitLocation.h"

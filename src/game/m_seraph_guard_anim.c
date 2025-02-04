@@ -1,5 +1,5 @@
 #include "g_local.h"
-#include "m_seraph_guard.h"
+#include "m_seraph_guard_local.h"
 #include "m_seraph_guard_anim.h"
 #include "m_stats.h"
 

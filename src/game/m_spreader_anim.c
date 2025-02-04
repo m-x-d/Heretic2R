@@ -16,7 +16,7 @@
 
 #include "m_spreader_anim.h"
 #include "m_spreadermist.h"
-#include "m_spreader.h"
+#include "m_spreader_local.h"
 
 void ai_charge2 (edict_t *self, float dist);
 

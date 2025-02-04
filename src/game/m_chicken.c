@@ -25,7 +25,7 @@
 #include "g_Skeletons.h"
 #include "p_anims.h"
 
-#include "m_chicken.h"
+#include "m_chicken_local.h"
 #include "m_chicken_anim.h"
 #include "m_stats.h"
 

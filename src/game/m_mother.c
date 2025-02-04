@@ -22,7 +22,7 @@
 #include "buoy.h"
 #include "vector.h"
 
-#include "m_mother.h"
+#include "m_mother_local.h"
 #include "m_mother_anim.h"
 #include "g_misc.h"
 #include "angles.h"

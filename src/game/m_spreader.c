@@ -19,7 +19,7 @@
 
 #include "g_Physics.h"
 
-#include "m_spreader.h"
+#include "m_spreader_local.h"
 #include "m_spreader_anim.h"
 #include "m_spreadermist.h"
 #include "matrix.h"

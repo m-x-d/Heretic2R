@@ -13,7 +13,7 @@ Copyright 1998 Raven Software
 -------------------------------------------------------------------*/
 
 #include "g_local.h"
-#include "m_imp.h"
+#include "m_imp_local.h"
 #include "m_imp_anim.h"
 #include "Utilities.h"
 #include "g_DefaultMessageHandler.h"

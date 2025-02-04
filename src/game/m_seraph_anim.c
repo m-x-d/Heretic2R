@@ -1,5 +1,5 @@
 #include "g_local.h"
-#include "m_seraph.h"
+#include "m_seraph_local.h"
 #include "m_seraph_anim.h"
 #include "g_monster.h"
 #include "m_stats.h"

@@ -53,7 +53,7 @@ GORGON
 #include "vector.h"
 
 #include "g_misc.h"
-#include "m_gorgon.h"
+#include "m_gorgon_local.h"
 #include "m_gorgon_anim.h"
 #include "m_stats.h"
 #include "p_anim_branch.h"

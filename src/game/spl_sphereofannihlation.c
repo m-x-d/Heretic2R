@@ -14,7 +14,7 @@
 #include "decals.h"
 #include "g_playstats.h"
 #include "p_main.h"	//for ITEM_WEAPON_SPHEREOFANNIHILATION
-#include "m_beast.h"
+#include "m_beast_local.h"
 
 #define SPHERE_INIT_SCALE				0.7
 #define SPHERE_MAX_SCALE				2.0

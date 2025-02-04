@@ -16,7 +16,7 @@
 #include "buoy.h"
 #include "vector.h"
 
-#include "m_fish.h"
+#include "m_fish_local.h"
 #include "m_fish_anim.h"
 #include "g_misc.h"
 #include "m_stats.h"

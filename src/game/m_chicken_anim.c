@@ -15,7 +15,7 @@
 // ADD ANY ADDITIONAL FILES BELOW
 
 #include "m_chicken_anim.h"
-#include "m_chicken.h"
+#include "m_chicken_local.h"
 
 #define ENEMY_WALK_SPEED  32
 #define ENEMY_RUN_SPEED   64

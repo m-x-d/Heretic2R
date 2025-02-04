@@ -14,7 +14,7 @@
 #include "decals.h"
 #include "p_main.h"
 #include "g_playstats.h"
-#include "m_beast.h"
+#include "m_beast_local.h"
 
 extern void AlertMonsters (edict_t *self, edict_t *enemy, float lifetime, qboolean ignore_shadows);
 static void HellboltThink(edict_t *Self);

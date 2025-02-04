@@ -16,7 +16,7 @@
 #include "g_items.h"
 #include "g_playstats.h"
 #include "p_main.h"
-#include "m_beast.h"
+#include "m_beast_local.h"
 #include "p_anims.h"
 
 extern void SpellCastFlyingFist(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,float Value);

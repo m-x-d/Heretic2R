@@ -827,13 +827,13 @@
     <ClInclude Include="pcode.h">
       <Filter>src\Scripting</Filter>
     </ClInclude>
-    <ClInclude Include="m_assassin.h">
+    <ClInclude Include="m_assassin_local.h">
       <Filter>src\Monsters\Assassin</Filter>
     </ClInclude>
     <ClInclude Include="m_assassin_anim.h">
       <Filter>src\Monsters\Assassin</Filter>
     </ClInclude>
-    <ClInclude Include="m_beast.h">
+    <ClInclude Include="m_beast_local.h">
       <Filter>src\Monsters\Beast</Filter>
     </ClInclude>
     <ClInclude Include="m_beast_anim.h">
@@ -842,7 +842,7 @@
     <ClInclude Include="..\qcommon\Message.h">
       <Filter>qcommon</Filter>
     </ClInclude>
-    <ClInclude Include="m_chicken.h">
+    <ClInclude Include="m_chicken_local.h">
       <Filter>src\Monsters\Chicken</Filter>
     </ClInclude>
     <ClInclude Include="m_chicken_anim.h">
@@ -860,103 +860,94 @@
     <ClInclude Include="..\qcommon\Vector.h">
       <Filter>qcommon</Filter>
     </ClInclude>
-    <ClInclude Include="m_elflord.h">
+    <ClInclude Include="m_elflord_local.h">
       <Filter>src\Monsters\ElfLord</Filter>
     </ClInclude>
     <ClInclude Include="m_elflord_anims.h">
       <Filter>src\Monsters\ElfLord</Filter>
     </ClInclude>
-    <ClInclude Include="m_fish.h">
+    <ClInclude Include="m_fish_local.h">
       <Filter>src\Monsters\Fish</Filter>
     </ClInclude>
     <ClInclude Include="m_fish_anim.h">
       <Filter>src\Monsters\Fish</Filter>
     </ClInclude>
-    <ClInclude Include="m_gkrokon.h">
+    <ClInclude Include="m_gkrokon_local.h">
       <Filter>src\Monsters\Gkrokon</Filter>
     </ClInclude>
     <ClInclude Include="m_gkrokon_anim.h">
       <Filter>src\Monsters\Gkrokon</Filter>
     </ClInclude>
-    <ClInclude Include="m_gorgon.h">
-      <Filter>src\Monsters\Gorgon</Filter>
-    </ClInclude>
     <ClInclude Include="m_gorgon_anim.h">
       <Filter>src\Monsters\Gorgon</Filter>
     </ClInclude>
-    <ClInclude Include="m_harpy.h">
+    <ClInclude Include="m_harpy_local.h">
       <Filter>src\Monsters\Harpy</Filter>
     </ClInclude>
     <ClInclude Include="m_harpy_anim.h">
       <Filter>src\Monsters\Harpy</Filter>
     </ClInclude>
-    <ClInclude Include="m_imp.h">
+    <ClInclude Include="m_imp_local.h">
       <Filter>src\Monsters\Imp</Filter>
     </ClInclude>
     <ClInclude Include="m_imp_anim.h">
       <Filter>src\Monsters\Imp</Filter>
     </ClInclude>
-    <ClInclude Include="m_morcalavin.h">
+    <ClInclude Include="m_morcalavin_local.h">
       <Filter>src\Monsters\Morcalavin</Filter>
     </ClInclude>
     <ClInclude Include="m_morcalavin_anim.h">
       <Filter>src\Monsters\Morcalavin</Filter>
     </ClInclude>
-    <ClInclude Include="m_mother.h">
+    <ClInclude Include="m_mother_local.h">
       <Filter>src\Monsters\TcheckrikMother</Filter>
     </ClInclude>
     <ClInclude Include="m_mother_anim.h">
       <Filter>src\Monsters\TcheckrikMother</Filter>
     </ClInclude>
-    <ClInclude Include="m_mssithra.h">
+    <ClInclude Include="m_mssithra_local.h">
       <Filter>src\Monsters\Mssithra</Filter>
     </ClInclude>
     <ClInclude Include="m_mssithra_anim.h">
       <Filter>src\Monsters\Mssithra</Filter>
     </ClInclude>
-    <ClInclude Include="m_ogle.h">
+    <ClInclude Include="m_ogle_local.h">
       <Filter>src\Monsters\Ogle</Filter>
     </ClInclude>
     <ClInclude Include="m_ogle_anim.h">
       <Filter>src\Monsters\Ogle</Filter>
     </ClInclude>
-    <ClInclude Include="m_plagueElf.h">
-      <Filter>src\Monsters\PlagueElf</Filter>
-    </ClInclude>
     <ClInclude Include="m_plagueElf_anim.h">
       <Filter>src\Monsters\PlagueElf</Filter>
     </ClInclude>
-    <ClInclude Include="m_plagueSsithra.h">
+    <ClInclude Include="m_plaguesSithra_local.h">
       <Filter>src\Monsters\PlagueSsithra</Filter>
     </ClInclude>
     <ClInclude Include="m_plagueSsithra_anim.h">
       <Filter>src\Monsters\PlagueSsithra</Filter>
     </ClInclude>
-    <ClInclude Include="m_priestess.h">
+    <ClInclude Include="m_priestess_local.h">
       <Filter>src\Monsters\Priestess</Filter>
     </ClInclude>
     <ClInclude Include="m_priestess_anim.h">
       <Filter>src\Monsters\Priestess</Filter>
     </ClInclude>
-    <ClInclude Include="m_rat.h">
-      <Filter>src\Monsters\Rat</Filter>
-    </ClInclude>
     <ClInclude Include="m_rat_anim.h">
       <Filter>src\Monsters\Rat</Filter>
     </ClInclude>
-    <ClInclude Include="m_seraph.h">
+    <ClInclude Include="m_seraph_local.h">
       <Filter>src\Monsters\Seraph</Filter>
     </ClInclude>
     <ClInclude Include="m_seraph_anim.h">
       <Filter>src\Monsters\Seraph</Filter>
     </ClInclude>
-    <ClInclude Include="m_seraph_guard.h">
+    <ClInclude Include="m_seraph_guard_local.h">
       <Filter>src\Monsters\SeraphGuard</Filter>
     </ClInclude>
     <ClInclude Include="m_seraph_guard_anim.h">
       <Filter>src\Monsters\SeraphGuard</Filter>
     </ClInclude>
-    <ClInclude Include="m_spreader.h">
+    <ClInclude Include="m_spreader_local.h">
       <Filter>src\Monsters\Spreader</Filter>
     </ClInclude>
     <ClInclude Include="m_spreader_anim.h">
@@ -968,7 +959,7 @@
     <ClInclude Include="m_spreadermist.h">
       <Filter>src\Monsters\Spreader</Filter>
     </ClInclude>
-    <ClInclude Include="m_tcheckrik.h">
+    <ClInclude Include="m_tcheckrik_local.h">
       <Filter>src\Monsters\Tcheckrik</Filter>
     </ClInclude>
     <ClInclude Include="m_tcheckrik_anim.h">
@@ -997,6 +988,15 @@
     </ClInclude>
     <ClInclude Include="g_main.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="m_gorgon_local.h">
+      <Filter>src\Monsters\Gorgon</Filter>
+    </ClInclude>
+    <ClInclude Include="m_plagueElf_local.h">
+      <Filter>src\Monsters\PlagueElf</Filter>
+    </ClInclude>
+    <ClInclude Include="m_rat_local.h">
+      <Filter>src\Monsters\Rat</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

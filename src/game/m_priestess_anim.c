@@ -1,5 +1,5 @@
 #include "g_local.h"
-#include "m_priestess.h"
+#include "m_priestess_local.h"
 #include "m_priestess_anim.h"
 
 animframe_t priestess_frames_stand1[] =

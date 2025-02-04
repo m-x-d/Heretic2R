@@ -15,7 +15,7 @@
 // ADD ANY ADDITIONAL FILES BELOW
 
 #include "m_gkrokon_anim.h"
-#include "m_gkrokon.h"
+#include "m_gkrokon_local.h"
 #include "random.h"
 
 // ****************************************************************************

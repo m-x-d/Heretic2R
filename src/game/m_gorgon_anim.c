@@ -15,7 +15,7 @@
 // ADD ANY ADDITIONAL FILES BELOW
 
 #include "m_gorgon_anim.h"
-#include "m_gorgon.h"
+#include "m_gorgon_local.h"
 
 #include "Utilities.h"
 #include "g_DefaultMessageHandler.h"
