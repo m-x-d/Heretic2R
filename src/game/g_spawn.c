@@ -1,10 +1,5 @@
 #include "g_local.h"
-#include "m_assassin.h" //mxd
-#include "m_beast.h" //mxd
-#include "m_bee.h" //mxd
-#include "m_chicken.h" //mxd
-#include "m_elflord.h" //mxd
-#include "m_fish.h" //mxd
+#include "m_monsters.h" //mxd
 #include "p_client.h" //mxd
 
 typedef struct

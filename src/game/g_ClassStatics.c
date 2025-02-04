@@ -5,11 +5,7 @@
 //
 
 #include "g_ClassStatics.h"
-#include "m_assassin.h" //mxd
-#include "m_beast.h" //mxd
-#include "m_bee.h" //mxd
-#include "m_chicken.h" //mxd
-#include "m_elflord.h" //mxd
+#include "m_monsters.h" //mxd
 #include "m_fish.h" //mxd
 
 G_ClassStatics_t classStatics[NUM_CLASSIDS];

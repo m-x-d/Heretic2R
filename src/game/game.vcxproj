@@ -274,6 +274,7 @@
     <ClInclude Include="m_harpy_anim.h" />
     <ClInclude Include="m_imp_local.h" />
     <ClInclude Include="m_imp_anim.h" />
+    <ClInclude Include="m_monsters.h" />
     <ClInclude Include="m_morcalavin_local.h" />
     <ClInclude Include="m_morcalavin_anim.h" />
     <ClInclude Include="m_mother_local.h" />
