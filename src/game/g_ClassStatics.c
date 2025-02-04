@@ -21,7 +21,6 @@ void ButtonStaticsInit();
 void LeverStaticsInit();
 void FlameThrowerStaticsInit();
 void CorvusStaticsInit();
-void MotherStaticsInit();
 void victimSsithraStaticsInit();
 void SsithrascoutStaticsInit();
 void DranorStaticsInit();

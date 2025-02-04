@@ -282,6 +282,7 @@
     <ClInclude Include="m_morcalavin.h" />
     <ClInclude Include="m_morcalavin_local.h" />
     <ClInclude Include="m_morcalavin_anim.h" />
+    <ClInclude Include="m_mother.h" />
     <ClInclude Include="m_mother_local.h" />
     <ClInclude Include="m_mother_anim.h" />
     <ClInclude Include="m_mssithra.h" />

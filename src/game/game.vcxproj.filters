@@ -1064,5 +1064,8 @@
     <ClInclude Include="m_tcheckrik.h">
       <Filter>src\Monsters\Tcheckrik</Filter>
     </ClInclude>
+    <ClInclude Include="m_mother.h">
+      <Filter>src\Monsters\TcheckrikMother</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

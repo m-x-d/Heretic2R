@@ -22,6 +22,7 @@
 #include "buoy.h"
 #include "vector.h"
 
+#include "m_mother.h"
 #include "m_mother_local.h"
 #include "m_mother_anim.h"
 #include "g_misc.h"
@@ -97,7 +98,7 @@ void mother_gib(edict_t *self, G_Message_t *msg)
 /*-------------------------------------------------------------------------
 	MotherStaticsInit
 -------------------------------------------------------------------------*/
-void MotherStaticsInit()
+void MotherStaticsInit(void)
 {
 
 	classStatics[CID_MOTHER].msgReceivers[MSG_STAND] = mother_stand;
