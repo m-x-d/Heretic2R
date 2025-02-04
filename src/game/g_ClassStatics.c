@@ -6,13 +6,11 @@
 
 #include "g_ClassStatics.h"
 #include "m_monsters.h" //mxd
-#include "m_fish.h" //mxd
 
 G_ClassStatics_t classStatics[NUM_CLASSIDS];
 int Cid_init[NUM_CLASSIDS];
 
 void RatStaticsInit();
-void GorgonStaticsInit();
 void PlagueElfStaticsInit();
 void ObjectStaticsInit();
 void LightStaticsInit();

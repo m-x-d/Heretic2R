@@ -13,3 +13,4 @@
 #include "m_elflord.h"
 #include "m_fish.h"
 #include "m_gkrokon.h"
+#include "m_gorgon.h"

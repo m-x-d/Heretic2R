@@ -79,8 +79,6 @@ void SP_misc_magic_portal (edict_t *self);
 void SP_misc_fire_sparker (edict_t *ent);
 
 void SP_misc_flag (edict_t *ent);
-void SP_monster_gorgon (edict_t *self);
-void SP_monster_gorgon_leader (edict_t *self);
 void SP_monster_rat (edict_t *self);
 void SP_monster_rat_giant (edict_t *self);
 void SP_monster_plagueElf(edict_t *self);
