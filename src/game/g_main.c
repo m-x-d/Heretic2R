@@ -186,74 +186,73 @@ static edict_t* CreateTargetChangeLevel(char* map)
 	return ent;
 }
 
-/*
-=================
-EndDMLevel
-
-The timelimit or fraglimit has been exceeded
-=================
-*/
-void EndDMLevel (void)
+// The timelimit or fraglimit has been exceeded.
+static void EndDMLevel(void)
 {
-	edict_t		*ent;
-	char *s, *t, *f;
-	static const char *seps = " ,\n\r";
+	static const char* delimiters = " ,\n\r";
 
-	// stay on same level flag
+	// Stay on same level flag.
 	if ((int)dmflags->value & DF_SAME_LEVEL)
 	{
-		BeginIntermission (CreateTargetChangeLevel (level.mapname) );
+		BeginIntermission(CreateTargetChangeLevel(level.mapname));
 		return;
 	}
 
-	// see if it's in the map list
-	if (*sv_maplist->string)
+	// See if it's in the map list.
+	if (sv_maplist->string[0] != 0)
 	{
-		s = strdup(sv_maplist->string);
-		f = NULL;
-		t = strtok(s, seps);
-		while (t != NULL)
+		char* maplist = _strdup(sv_maplist->string); //mxd. strdup -> _strdup
+		char* first = NULL;
+		char* ptr = NULL; //mxd
+		char* map = strtok_s(maplist, delimiters, &ptr); //mxd. strtok -> strtok_s
+
+		while (map != NULL)
 		{
-			if (Q_stricmp(t, level.mapname) == 0)
+			if (Q_stricmp(map, level.mapname) == 0)
 			{
-				// it's in the list, go to the next one
-				t = strtok(NULL, seps);
-				if (t == NULL)
-				{ // end of list, go to first one
-					if (f == NULL) // there isn't a first one, same level
-						BeginIntermission (CreateTargetChangeLevel (level.mapname) );
-					else
-						BeginIntermission (CreateTargetChangeLevel (f) );
-				}
-				else
-				{
-					BeginIntermission (CreateTargetChangeLevel (t) );
-				}
-				free(s);
+				// It's in the list, go to the next one.
+				map = strtok_s(NULL, delimiters, &ptr); //mxd. strtok -> strtok_s
+
+				char* dest_map; //mxd
+				if (map != NULL)
+					dest_map = map;
+				else if (first != NULL) // End of list, go to first one.
+					dest_map = first;
+				else // If there isn't a first one, go to the same level.
+					dest_map = level.mapname;
+
+				BeginIntermission(CreateTargetChangeLevel(dest_map));
+				free(maplist);
+
 				return;
 			}
-			if (!f)
-			{
-				f = t;
-			}
-			t = strtok(NULL, seps);
+
+			if (first == NULL)
+				first = map;
+
+			map = strtok_s(NULL, delimiters, &ptr); //mxd. strtok -> strtok_s
 		}
-		free(s);
+
+		free(maplist);
 	}
 
-	if (level.nextmap[0]) // go to a specific map
-		BeginIntermission (CreateTargetChangeLevel (level.nextmap) );
-	else
-	{	// search for a changelevel
-		ent = G_Find (NULL, FOFS(classname), "target_changelevel");
-		if (!ent)
-		{	// the map designer didn't include a changelevel,
-			// so create a fake ent that goes back to the same level
-			BeginIntermission (CreateTargetChangeLevel (level.mapname) );
-			return;
-		}
-		BeginIntermission (ent);
+	// Go to a specific map.
+	if (level.nextmap[0] != 0)
+	{
+		BeginIntermission(CreateTargetChangeLevel(level.nextmap));
+		return;
 	}
+
+	// Search for a changelevel.
+	edict_t* ent = G_Find(NULL, FOFS(classname), "target_changelevel");
+	if (ent != NULL)
+	{
+		BeginIntermission(ent);
+		return;
+	}
+
+	// The map designer didn't include a changelevel, so create a fake ent that goes back to the same level.
+	BeginIntermission(CreateTargetChangeLevel(level.mapname));
 }
 
 /*
