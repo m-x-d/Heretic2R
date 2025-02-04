@@ -13,6 +13,7 @@
 #include "utilities.h"
 //JWEIER END INCLUDES
 #include "g_HitLocation.h"
+#include "g_items.h" //mxd
 #include "mg_guide.h"
 
 #define FALLDAMAGE_MODIFIER	8

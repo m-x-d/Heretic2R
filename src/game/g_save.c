@@ -10,6 +10,7 @@
 #include "utilities.h"
 #include "p_anims.h"
 #include "FX.h"
+#include "g_items.h" //mxd
 
 extern void	InitPlayerinfo(edict_t *ent);
 extern void LoadPersistantEffects(FILE *f);

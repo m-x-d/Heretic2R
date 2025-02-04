@@ -52,3 +52,15 @@ typedef enum
 	ITEM_AMMO_REDRAIN,
 	ITEM_AMMO_PHOENIX,
 } itemammo_t;
+
+//mxd. For internal usage only.
+#ifdef _GAME_DLL
+	void G_InitItems(void);
+	void SetItemNames(void);
+	edict_t* Drop_Item(edict_t* ent, gitem_t* item);
+	void SpawnItem(edict_t* ent, gitem_t* item);
+	gitem_t* IsItem(edict_t* ent);
+	qboolean Add_Ammo(edict_t* ent, gitem_t* item, int count);
+	qboolean AddDefenseToInventory(gitem_t* item, edict_t* player);
+	qboolean AddWeaponToInventory(gitem_t* item, edict_t* player);
+#endif

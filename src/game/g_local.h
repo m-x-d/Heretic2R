@@ -668,17 +668,6 @@ extern "C"
 // g_cmds.c
 extern void Cmd_Score_f(edict_t* ent);
 
-// g_items.c
-extern void PrecacheItem(gitem_t* it);
-extern void G_InitItems(void);
-extern void SetItemNames(void);
-extern edict_t* Drop_Item(edict_t* ent, gitem_t* item);
-extern void SetRespawn(edict_t* ent);
-extern void SpawnItem(edict_t* ent, gitem_t* item);
-extern void SpawnItemEffect(edict_t* ent, gitem_t* item);
-extern gitem_t* IsItem(edict_t* ent);
-extern qboolean Add_Ammo(edict_t* ent, gitem_t* item, int count);
-
 // g_utils.c
 extern qboolean KillBox(edict_t* ent);
 extern void G_ProjectSource(vec3_t point, vec3_t distance, vec3_t forward, vec3_t right, vec3_t result);

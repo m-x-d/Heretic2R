@@ -11,6 +11,7 @@
 #include "p_main.h"
 #include "g_playstats.h"
 #include "buoy.h"
+#include "g_items.h" //mxd
 #include "g_itemstats.h"
 #include "m_stats.h"
 

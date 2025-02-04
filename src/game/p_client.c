@@ -11,6 +11,7 @@
 #include "vector.h"
 #include "random.h"
 #include "Utilities.h"
+#include "g_items.h" //mxd
 #include "g_playstats.h"
 #include "g_HitLocation.h"
 #include "g_misc.h"
@@ -27,8 +28,6 @@
 // FIXME: include headers.
 extern void	InitPlayerinfo(edict_t *ent);
 extern void PlayerChickenDeath(edict_t *ent);
-extern qboolean AddWeaponToInventory(gitem_t *item,edict_t *player);
-extern void AddDefenseToInventory(gitem_t *item,edict_t *player);
 extern void CalculatePIV(edict_t *player);
 
 #define SWIM_ADJUST_AMOUNT	16

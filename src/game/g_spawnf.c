@@ -1,7 +1,6 @@
 #include "g_spawnf.h" //mxd
 #include "g_Skeletons.h"
-#include "ArrayedList.h"
-//#include "PrimitiveDisplayHack.h"
+#include "g_items.h" //mxd
 #include "q_Physics.h"
 #include "q_shared.h"
 

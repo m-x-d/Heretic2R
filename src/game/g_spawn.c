@@ -1,4 +1,5 @@
 #include "g_local.h"
+#include "g_items.h" //mxd
 #include "m_monsters.h" //mxd
 #include "p_client.h" //mxd
 

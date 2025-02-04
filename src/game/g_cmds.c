@@ -1,26 +1,24 @@
+//
+// g_cmds.c
+//
+// Copyright 1998 Raven Software
+//
+
 #include "g_cmds.h" //mxd
+#include "cl_strings.h"
 #include "g_combat.h" //mxd
-#include "m_player.h"
-#include "vector.h"
 #include "g_items.h"
-#include "random.h"
+#include "g_itemstats.h"
 #include "g_playstats.h"
-#include "p_actions.h"
 #include "p_anims.h"
 #include "p_client.h" //mxd
-#include "p_main.h"
-#include "p_funcs.h"
-#include "g_itemstats.h"
-#include "cl_strings.h"
+#include "Random.h"
+#include "Vector.h"
 
 extern void MorphPlayerToChicken(edict_t *self, edict_t *caster);
-extern qboolean AddWeaponToInventory(gitem_t *it,edict_t *player);
-extern void AddDefenseToInventory(gitem_t *it,edict_t *player);
 extern player_export_t	playerExport;	// interface to player DLL.
 
 qboolean CheckFlood(edict_t *ent);
-void ED_CallSpawn (edict_t *ent);
-void MorphPlayerToChicken(edict_t *self, edict_t *caster);
 
 int		self_spawn = FALSE;
 

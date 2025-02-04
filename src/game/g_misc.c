@@ -10,6 +10,7 @@
 #include "vector.h"
 #include "g_teleport.h"
 #include "g_HitLocation.h"
+#include "g_items.h" //mxd
 #include "m_stats.h"
 #include "g_playstats.h"
 
