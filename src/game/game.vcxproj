@@ -266,6 +266,7 @@
     <ClInclude Include="m_fish.h" />
     <ClInclude Include="m_fish_local.h" />
     <ClInclude Include="m_fish_anim.h" />
+    <ClInclude Include="m_gkrokon.h" />
     <ClInclude Include="m_gkrokon_local.h" />
     <ClInclude Include="m_gkrokon_anim.h" />
     <ClInclude Include="m_gorgon_anim.h" />

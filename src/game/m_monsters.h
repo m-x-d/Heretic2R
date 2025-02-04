@@ -12,3 +12,4 @@
 #include "m_chicken.h"
 #include "m_elflord.h"
 #include "m_fish.h"
+#include "m_gkrokon.h"

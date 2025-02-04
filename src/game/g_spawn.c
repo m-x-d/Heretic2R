@@ -78,7 +78,6 @@ void SP_misc_remote_camera (edict_t *self);
 void SP_misc_magic_portal (edict_t *self);
 void SP_misc_fire_sparker (edict_t *ent);
 
-void SP_Monster_Gkrokon(edict_t *Self);
 void SP_misc_flag (edict_t *ent);
 void SP_monster_gorgon (edict_t *self);
 void SP_monster_gorgon_leader (edict_t *self);
