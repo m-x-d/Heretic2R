@@ -18,6 +18,7 @@
 #include "p_main.h"
 #include "g_itemstats.h"
 #include "cl_strings.h"
+#include "g_main.h" //mxd
 #include "p_actions.h"
 #include "p_anims.h" //mxd
 #include "p_anim_branch.h"
@@ -25,12 +26,9 @@
 
 // FIXME: include headers.
 extern void	InitPlayerinfo(edict_t *ent);
-extern void	SetupPlayerinfo(edict_t *ent);
-extern void	WritePlayerinfo(edict_t *ent);
 extern void PlayerChickenDeath(edict_t *ent);
 extern qboolean AddWeaponToInventory(gitem_t *item,edict_t *player);
 extern void AddDefenseToInventory(gitem_t *item,edict_t *player);
-extern void CheckContinuousAutomaticEffects(edict_t *self);
 extern void CalculatePIV(edict_t *player);
 
 #define SWIM_ADJUST_AMOUNT	16
@@ -41,7 +39,6 @@ extern void CalculatePIV(edict_t *player);
 vec3_t	mins = {-14, -14, -34};
 vec3_t	maxs = { 14,  14,  25};
 
-void ClientUserinfoChanged (edict_t *ent, char *userinfo);
 extern void PlayerKillShrineFX(edict_t *self);
 
 void SP_misc_teleporter_dest (edict_t *ent);
