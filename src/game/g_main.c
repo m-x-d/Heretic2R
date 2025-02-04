@@ -397,36 +397,34 @@ static void SetNumPlayers(void)
 			game.num_clients++;
 }
 
-static void UpdatePlayerBuoys (void)
+static void UpdatePlayerBuoys(void)
 {
-	qboolean	dont_null;
-	int			i, j;
-	edict_t		*ent;
-	vec3_t		v;
+	for (int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if (level.player_buoy[i] == NULL_BUOY) //mxd. Inverted check.
+			continue;
 
-	for(i = 0; i<MAX_CLIENTS; i++)
-	{	
-		if(level.player_buoy[i] > NULL_BUOY)
+		edict_t* ent = &g_edicts[0];
+		for (int j = 0; j < globals.num_edicts; j++, ent++)
 		{
-			ent = g_edicts;
-			for(j = 0; j < globals.num_edicts; j++, ent++)
-			{//If player hasn't moved, don't clear this
-				if(ent->s.number - 1 == i)
-				{
-					VectorSubtract(level.buoy_list[level.player_buoy[i]].origin, ent->s.origin, v);
-					if(VectorLengthSquared(v) > 576)//24 squared
-						dont_null = false;
-					else
-						dont_null = true;
-					break;
-				}
+			if (i != ent->s.number - 1)
+				continue;
+
+			// If player hasn't moved, don't clear this.
+			vec3_t v;
+			VectorSubtract(level.buoy_list[level.player_buoy[i]].origin, ent->s.origin, v);
+
+			if (VectorLengthSquared(v) > 576) // 24 squared.
+			{
+				// Save it so monsters can check this first- FIXME: should this expire?
+				level.player_last_buoy[i] = level.player_buoy[i];
+
+				// This is for monsters following buoys - only the first monster who's searching for the player has to do a buoy connection
+				// to him this frame, the rest can use this - reset each frame.
+				level.player_buoy[i] = NULL_BUOY;
 			}
-		}
 
-		if(!dont_null)
-		{
-			level.player_last_buoy[i] = level.player_buoy[i];//save it so monsters can check this first- FIXME: should this expire?
-			level.player_buoy[i] = NULL_BUOY;//this is for monsters following buoys- only the first monster who's searching for the player has to do a buoy connection to him this frame, the rest can use this- reset each frame
+			break;
 		}
 	}
 }
