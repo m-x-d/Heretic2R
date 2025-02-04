@@ -123,7 +123,8 @@ static void ShutdownGame(void)
 	P_Freelib(); // Free the player lib.
 }
 
-game_export_t *GetGameAPI (game_import_t *import)
+//mxd. Exported in game.def.
+game_export_t* GetGameAPI(const game_import_t* import)
 {
 	gi = *import;
 
@@ -137,7 +138,7 @@ game_export_t *GetGameAPI (game_import_t *import)
 	globals.Shutdown = ShutdownGame;
 	globals.SpawnEntities = SpawnEntities;
 	globals.ConstructEntities = ConstructEntities;
-	globals.CheckCoopTimeout= CheckCoopTimeout;
+	globals.CheckCoopTimeout = CheckCoopTimeout;
 
 	globals.WriteGame = WriteGame;
 	globals.ReadGame = ReadGame;
