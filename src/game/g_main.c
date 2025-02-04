@@ -4,7 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
-#include "g_local.h"
+#include "g_main.h" //mxd
 #include "g_cmds.h" //mxd
 #include "g_Physics.h"
 #include "g_playstats.h"
@@ -20,79 +20,77 @@
 #include "p_anims.h"
 #include "p_client.h" //mxd
 
-game_locals_t	game;
-level_locals_t	level;
-game_import_t	gi;
-game_export_t	globals;
-spawn_temp_t	st;
+game_locals_t game;
+level_locals_t level;
+game_import_t gi;
+game_export_t globals;
+spawn_temp_t st;
 
-int	sm_meat_index;
-qboolean MonsterAdvanceFrame=false;
+int sm_meat_index;
+qboolean MonsterAdvanceFrame = false;
 
-//int	snd_fry;
+edict_t* g_edicts;
 
-edict_t	*g_edicts;
+cvar_t* deathmatch;
+cvar_t* coop;
+cvar_t* dmflags;
+cvar_t* advancedstaff;
+cvar_t* skill;
+cvar_t* fraglimit;
+cvar_t* timelimit;
+cvar_t* password;
+cvar_t* maxclients;
+cvar_t* maxentities;
+cvar_t* sv_maplist;
 
-cvar_t	*deathmatch;
-cvar_t	*coop;
-cvar_t	*dmflags;
-cvar_t	*advancedstaff;
-cvar_t	*skill;
-cvar_t	*fraglimit;
-cvar_t	*timelimit;
-cvar_t	*password;
-cvar_t	*maxclients;
-cvar_t	*maxentities;
-cvar_t	*sv_maplist;
+cvar_t* dedicated;
+cvar_t* filterban;
 
-cvar_t	*dedicated;
-cvar_t	*filterban;
+cvar_t* sv_maxvelocity;
+cvar_t* sv_gravity;
+cvar_t* sv_friction;
 
-cvar_t	*sv_maxvelocity;
-cvar_t	*sv_gravity;
-cvar_t	*sv_friction;
+cvar_t* sv_cheats;
+cvar_t* sv_nomonsters = NULL;
+cvar_t* sv_freezemonsters;
 
-cvar_t	*sv_cheats;
-cvar_t	*sv_nomonsters=NULL;
-cvar_t	*sv_freezemonsters;
+cvar_t* checkanim;
+cvar_t* allowillegalskins;
 
-cvar_t	*checkanim;
-cvar_t	*allowillegalskins;
+cvar_t* pvs_cull;
 
-cvar_t	*pvs_cull;
+cvar_t* showbuoys;
+cvar_t* showlitebuoys;
+cvar_t* mgai_debug;
+cvar_t* deactivate_buoys;
+cvar_t* anarchy;
+cvar_t* impact_damage;
+cvar_t* cheating_monsters;
+cvar_t* singing_ogles;
 
-cvar_t	*showbuoys;
-cvar_t	*showlitebuoys;
-cvar_t	*mgai_debug;
-cvar_t	*deactivate_buoys;
-cvar_t	*anarchy;
-cvar_t	*impact_damage;
-cvar_t	*cheating_monsters;
-cvar_t	*singing_ogles;
+cvar_t* flood_msgs;
+cvar_t* flood_persecond;
+cvar_t* flood_waitdelay;
+cvar_t* flood_killdelay;
+cvar_t* no_runshrine;
+cvar_t* no_tornado;
+cvar_t* no_irondoom;
+cvar_t* no_phoenix;
+cvar_t* no_morph;
+cvar_t* no_shield;
+cvar_t* no_teleport;
 
-cvar_t	*flood_msgs;
-cvar_t	*flood_persecond;
-cvar_t	*flood_waitdelay;
-cvar_t	*flood_killdelay;
-cvar_t	*no_runshrine;
-cvar_t	*no_tornado;
-cvar_t	*no_irondoom;
-cvar_t	*no_phoenix;
-cvar_t	*no_morph;
-cvar_t	*no_shield;
-cvar_t	*no_teleport;
+cvar_t* dm_no_bodies;
 
-cvar_t	*dm_no_bodies;
+cvar_t* player_dll;
 
-cvar_t	*player_dll;
-
-cvar_t	*sv_cinematicfreeze;
-cvar_t	*sv_jumpcinematic;
-cvar_t	*blood_level;
-cvar_t	*log_file_name;
-cvar_t	*log_file_header;
-cvar_t	*log_file_footer;
-cvar_t	*log_file_line_header;
+cvar_t* sv_cinematicfreeze;
+cvar_t* sv_jumpcinematic;
+cvar_t* blood_level;
+cvar_t* log_file_name;
+cvar_t* log_file_header;
+cvar_t* log_file_footer;
+cvar_t* log_file_line_header;
 
 static void G_RunFrame(void);
 
