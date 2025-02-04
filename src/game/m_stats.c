@@ -14,7 +14,7 @@ bypass_missile_chance = 0 - 100 chance of a monster not taking
 	a shot even when it can, otherwise it will close in.
 */
 
-int AttackRangesForClass [NUM_ATTACKRANGES] =
+int AttackRangesForClass [NUM_ATTACK_RANGES] =
 {
 //melee_rng,missile_rng,min_msl_rng,bypass_missile_chance
 	0,		0,			0,			0,//	CID_NONE, -- NA - 0

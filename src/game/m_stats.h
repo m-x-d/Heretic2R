@@ -2,7 +2,7 @@
 #define G_STATS_H
 #include "g_ClassStatics.h"
 
-extern int AttackRangesForClass [NUM_ATTACKRANGES];
+extern int AttackRangesForClass [NUM_ATTACK_RANGES];
 extern byte MaxBuoysForClass [NUM_CLASSIDS];
 extern int JumpChanceForClass [NUM_CLASSIDS];
 extern vec3_t STDMinsForClass [NUM_CLASSIDS];
