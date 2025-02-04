@@ -140,9 +140,7 @@ field_t		savefields[] =
 	{"", FOFS(enemy), F_EDICT},
 	{"", FOFS(oldenemy), F_EDICT},
 	{"", FOFS(activator), F_EDICT},
-#ifdef G_TRANSITION
 	{"", FOFS(groundentity), F_EDICT},
-#endif
 	{"", FOFS(teamchain), F_EDICT},
 	{"", FOFS(teammaster), F_EDICT},
 	{"", FOFS(owner), F_EDICT},

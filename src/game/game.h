@@ -8,7 +8,6 @@
 
 #include <windows.h>
 #include "q_ClientServer.h"
-#include "g_NewSystem.h"
 #include "g_BoundingForm.h"
 
 #define	GAME_API_VERSION	3
@@ -19,26 +18,24 @@
 #define SVF_DEADMONSTER			0x00000002	// Treat as CONTENTS_DEADMONSTER for collision.
 #define SVF_MONSTER				0x00000004	// Treat as CONTENTS_MONSTER for collision.
 #define SVF_INUSE				0x00000008	// Used to replace the inuse field.
-#define SVF_ALWAYS_SEND			0x00000010	// Always send the ent to all the clients, regardless of
-											// of PVS or view culling
-#define SVF_NO_AUTOTARGET		0x00000020	// This entity will not be chosen by FindNearestVisibleActorInFrustum
-#define SVF_REFLECT				0x00000040	// Reflect shots
-#define SVF_TAKE_NO_IMPACT_DMG	0x00000080	// Don't apply impact damage to this entity
-#define SVF_BOSS				0x00000100	// Immunity to a number of things
-#define SVF_TOUCHED_BEAST		0x00000200	// Used for beast faked physics hack
-#define SVF_DO_NO_IMPACT_DMG	0x00000400	// This entity Doesn't do impact damage to others
-#define SVF_NO_PLAYER_DAMAGE	0x00000800	// This entity Doesn't take damage from players
-#define SVF_PARTS_GIBBED		0x00001000	// Used to delay gibbing so monsters can throw body parts
-#define SVF_WAIT_NOTSOLID		0x00002000	// Hacky flag to postpone dead monsters from turning notsolid
+#define SVF_ALWAYS_SEND			0x00000010	// Always send the ent to all the clients, regardless of of PVS or view culling.
+#define SVF_NO_AUTOTARGET		0x00000020	// This entity will not be chosen by FindNearestVisibleActorInFrustum.
+#define SVF_REFLECT				0x00000040	// Reflect shots.
+#define SVF_TAKE_NO_IMPACT_DMG	0x00000080	// Don't apply impact damage to this entity.
+#define SVF_BOSS				0x00000100	// Immunity to a number of things.
+#define SVF_TOUCHED_BEAST		0x00000200	// Used for beast faked physics hack.
+#define SVF_DO_NO_IMPACT_DMG	0x00000400	// This entity Doesn't do impact damage to others.
+#define SVF_NO_PLAYER_DAMAGE	0x00000800	// This entity Doesn't take damage from players.
+#define SVF_PARTS_GIBBED		0x00001000	// Used to delay gibbing so monsters can throw body parts.
+#define SVF_WAIT_NOTSOLID		0x00002000	// Hacky flag to postpone dead monsters from turning notsolid.
 #define SVF_ONFIRE				0x00004000	// He likes it Hot! Hot! Hot!
-#define SVF_SHOW_START_BUOY		0x00008000	// just puts an effect on a buoy for showbuoy debug mode
-#define SVF_SHOW_END_BUOY		0x00010000	// just puts an effect on a buoy for showbuoy debug mode
-#define SVF_FLOAT				0x00020000	// Allows walkmonsters to walk off ledges, assumes a low gravity
-#define SVF_ALLOW_AUTO_TARGET	0x00040000	// Used to allow player to autotarget non-monsters
-#define SVF_ALERT_NO_SHADE		0x00080000	// only used by alert_entity to make monsters check the alert as a sound alert
+#define SVF_SHOW_START_BUOY		0x00008000	// just puts an effect on a buoy for showbuoy debug mode.
+#define SVF_SHOW_END_BUOY		0x00010000	// just puts an effect on a buoy for showbuoy debug mode.
+#define SVF_FLOAT				0x00020000	// Allows walkmonsters to walk off ledges, assumes a low gravity.
+#define SVF_ALLOW_AUTO_TARGET	0x00040000	// Used to allow player to autotarget non-monsters.
+#define SVF_ALERT_NO_SHADE		0x00080000	// only used by alert_entity to make monsters check the alert as a sound alert.
 
-// 'solid_t'.
-// edict->solid values
+// edict->solid values.
 typedef enum
 {
 	SOLID_NOT,		// No interaction with other objects.
@@ -47,7 +44,6 @@ typedef enum
 	SOLID_BSP		// BSP clip, touch on edge.
 } solid_t;
 
-// 'link_t'.
 // Only used for entity area links.
 typedef struct link_s
 {
@@ -64,7 +60,6 @@ typedef struct gclient_s gclient_t;
 // when we are being #inclued in g_local.h.
 #ifndef GAME_INCLUDE
 
-// 'gclient_t'.
 // This structure is cleared on each PutClientInServer().
 typedef struct gclient_s
 {
@@ -87,11 +82,11 @@ struct edict_s
 
 	// House keeping information not used by the game logic.
 	qboolean inuse;
-	int just_deleted; // Used to delete stuff entities properly on the client
-	int client_sent; // Used to delete stuff entities properly on the client
+	int just_deleted; // Used to delete stuff entities properly on the client.
+	int client_sent; // Used to delete stuff entities properly on the client.
 	int linkcount;
 
-	// FIXME: move these fields to a server private sv_entity_t
+	// FIXME: move these fields to a server private sv_entity_t.
 	link_t area; // Linked to a division node or leaf.
 	int num_clusters; // If -1, use headnode instead.
 	int clusternums[MAX_ENT_CLUSTERS];
@@ -101,9 +96,9 @@ struct edict_s
 
 	int svflags;
 
-	edict_t* groundentity;		// Entity serving as ground
-	int groundentity_linkcount;	// If self and groundentity's don't match, groundentity should be cleared
-	vec3_t groundNormal;		// Normal of the ground
+	edict_t* groundentity;		// Entity serving as ground.
+	int groundentity_linkcount;	// If self and groundentity's don't match, groundentity should be cleared.
+	vec3_t groundNormal;		// Normal of the ground.
 
 	// If PF_RESIZE is set, then physics will attempt to change the ents bounding form to the new one indicated.
 	// If it was successfully resized, the PF_RESIZE is turned off, otherwise it will remain on.

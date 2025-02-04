@@ -4,7 +4,6 @@
 #include "g_Message.h"
 #include "Message.h"
 #include "g_ClassStatics.h"
-#include "g_NewSystem.h"
 
 #define MAX_BUOY_BRANCHES 3
 

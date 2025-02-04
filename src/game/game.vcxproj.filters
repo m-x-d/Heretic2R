@@ -632,9 +632,6 @@
     <ClInclude Include="g_MoveInfo.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="g_NewSystem.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="g_Physics.h">
       <Filter>src</Filter>
     </ClInclude>

@@ -479,14 +479,8 @@ static void G_RunFrame(void)
 #endif
 		level.current_entity = ent;
 
-#ifndef G_TRANSITION
-		assert(ent->msgHandler);
-#else
-		if (ent->msgHandler != NULL) // Eventually this check wont be needed.
-#endif // G_TRANSITION
-		{
+		if (ent->msgHandler != NULL) // Eventually this check won't be needed.
 			ProcessMessages(ent);
-		}
 
 		if (ent->flags & FL_SUSPENDED)
 			continue;
