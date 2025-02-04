@@ -303,6 +303,8 @@
     <ClInclude Include="m_rat.h" />
     <ClInclude Include="m_rat_anim.h" />
     <ClInclude Include="m_rat_local.h" />
+    <ClInclude Include="m_seraph.h" />
+    <ClInclude Include="m_seraph_guard.h" />
     <ClInclude Include="m_seraph_local.h" />
     <ClInclude Include="m_seraph_anim.h" />
     <ClInclude Include="m_seraph_guard_local.h" />

@@ -23,3 +23,5 @@
 #include "m_plagueSsithra.h"
 #include "m_priestess.h"
 #include "m_rat.h"
+#include "m_seraph.h"
+#include "m_seraph_guard.h"

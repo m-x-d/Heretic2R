@@ -9,6 +9,7 @@
 //==============================================================================
 
 #include "g_local.h"
+#include "m_seraph_guard.h"
 #include "m_seraph_guard_local.h"
 #include "m_seraph_guard_anim.h"
 #include "g_DefaultMessageHandler.h"
@@ -1094,7 +1095,7 @@ void ser_grd_SightSound(edict_t *self, G_Message_t *Msg)
 ==========================================================
 */
 
-void SeraphGuardStaticsInit()
+void SeraphGuardStaticsInit(void)
 {
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_STAND]	= seraph_guard_stand;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_RUN]	= seraph_guard_run;

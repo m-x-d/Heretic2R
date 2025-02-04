@@ -1052,5 +1052,11 @@
     <ClInclude Include="m_rat.h">
       <Filter>src\Monsters\Rat</Filter>
     </ClInclude>
+    <ClInclude Include="m_seraph.h">
+      <Filter>src\Monsters\Seraph</Filter>
+    </ClInclude>
+    <ClInclude Include="m_seraph_guard.h">
+      <Filter>src\Monsters\SeraphGuard</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

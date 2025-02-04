@@ -9,6 +9,7 @@
 //==============================================================================
 
 #include "g_local.h"
+#include "m_seraph.h"
 #include "m_seraph_local.h"
 #include "m_seraph_anim.h"
 #include "Utilities.h"
@@ -950,7 +951,7 @@ void ser_ovl_SightSound(edict_t *self, G_Message_t *Msg)
 ==========================================================
 */
 
-void SeraphOverlordStaticsInit()
+void SeraphOverlordStaticsInit(void)
 {
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_STAND]	= seraph_stand;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_RUN]		= seraph_run;

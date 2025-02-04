@@ -61,8 +61,6 @@ extern animmove_t	seraph_guard_move_stand,
 					seraph_guard_move_missile,
 					seraph_guard_move_delay;
 
-void SP_monster_seraph_guard( edict_t* self );
-
 void seraph_guard_death_loop ( edict_t *self );
 void seraph_guard_check_land ( edict_t *self );
 void seraph_guard_dead ( edict_t *self );
