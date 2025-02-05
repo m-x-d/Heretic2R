@@ -8,7 +8,7 @@
 // prediction by Marcus Whitlock.
 // "Rodgered" ??? No wonder he was working late :)
 
-#include "g_local.h"
+#include "spl_morph.h" //mxd
 #include "g_monster.h"
 #include "g_Physics.h"
 #include "g_playstats.h"
@@ -32,10 +32,8 @@
 
 char	chicken_text[] = "monster_chicken";
 
-extern void ED_CallSpawn (edict_t *ent);
 extern void PlayerKillShrineFX(edict_t *self);
 extern void SpawnInitialPlayerEffects(edict_t *ent);
-extern void MorphPlayerToChicken(edict_t *self, edict_t *caster);
 
 extern	vec3_t	mins;
 extern 	vec3_t	maxs;

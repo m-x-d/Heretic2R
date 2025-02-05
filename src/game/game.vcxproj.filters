@@ -1073,5 +1073,8 @@
     <ClInclude Include="..\qcommon\p_dll.h">
       <Filter>qcommon</Filter>
     </ClInclude>
+    <ClInclude Include="spl_morph.h">
+      <Filter>src\Spells</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

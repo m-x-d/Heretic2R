@@ -14,9 +14,8 @@
 #include "p_dll.h" //mxd
 #include "p_client.h" //mxd
 #include "Random.h"
+#include "spl_morph.h" //mxd
 #include "Vector.h"
-
-extern void MorphPlayerToChicken(edict_t *self, edict_t *caster);
 
 qboolean CheckFlood(edict_t *ent);
 

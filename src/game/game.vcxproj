@@ -326,6 +326,7 @@
     <ClInclude Include="p_funcs.h" />
     <ClInclude Include="p_item.h" />
     <ClInclude Include="q_shared.h" />
+    <ClInclude Include="spl_morph.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
