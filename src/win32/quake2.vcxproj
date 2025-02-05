@@ -169,6 +169,7 @@
     <ClInclude Include="..\qcommon\H2Common.h" />
     <ClInclude Include="..\qcommon\Heretic2.h" />
     <ClInclude Include="..\qcommon\LevelMaps.h" />
+    <ClInclude Include="..\qcommon\p_dll.h" />
     <ClInclude Include="..\qcommon\qcommon.h" />
     <ClInclude Include="..\qcommon\qfiles.h" />
     <ClInclude Include="..\qcommon\q_ClientServer.h" />

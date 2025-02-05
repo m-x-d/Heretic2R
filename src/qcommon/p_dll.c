@@ -5,12 +5,12 @@
 //
 
 #include <windows.h>
+#include "p_dll.h" //mxd
 #ifdef _GAME_DLL
 	#include "g_local.h" //mxd
 #else
 	#include "dll_io.h" //mxd
 #endif
-#include "Player.h"
 #include "qcommon.h"
 
 // Structure containing functions and data pointers exported from the player DLL.

@@ -11,12 +11,12 @@
 #include "g_itemstats.h"
 #include "g_playstats.h"
 #include "p_anims.h"
+#include "p_dll.h" //mxd
 #include "p_client.h" //mxd
 #include "Random.h"
 #include "Vector.h"
 
 extern void MorphPlayerToChicken(edict_t *self, edict_t *caster);
-extern player_export_t	playerExport;	// interface to player DLL.
 
 qboolean CheckFlood(edict_t *ent);
 

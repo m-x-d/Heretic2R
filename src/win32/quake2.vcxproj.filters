@@ -554,5 +554,8 @@
     <ClInclude Include="..\qcommon\Reference.h">
       <Filter>qcommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\qcommon\p_dll.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

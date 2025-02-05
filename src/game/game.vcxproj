@@ -171,6 +171,7 @@
   <ItemGroup>
     <ClInclude Include="..\qcommon\ArrayedList.h" />
     <ClInclude Include="..\qcommon\Message.h" />
+    <ClInclude Include="..\qcommon\p_dll.h" />
     <ClInclude Include="..\qcommon\q_Typedef.h" />
     <ClInclude Include="..\qcommon\Skeletons.h" />
     <ClInclude Include="..\qcommon\Vector.h" />

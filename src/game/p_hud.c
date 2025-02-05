@@ -4,8 +4,7 @@
 #include "g_playstats.h"
 #include "g_itemstats.h"
 #include "qcommon.h"
-
-extern player_export_t	playerExport;	// interface to player DLL.
+#include "p_dll.h" //mxd
 
 qboolean PossessCorrectItem(edict_t *ent, gitem_t *item);
 

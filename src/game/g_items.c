@@ -6,10 +6,9 @@
 //
 
 #include "g_local.h"
+#include "p_dll.h" //mxd
 #include "p_item.h"
 #include "g_items.h"
-//#include "p_types.h"
-#include "player.h"
 #include "p_weapon.h"
 #include "g_weapon.h"
 #include "p_anims.h"
@@ -24,8 +23,6 @@
 
 #define ITEM_COOP_ONLY		1
 #define ITEM_NO_DROP		2
-
-extern player_export_t	playerExport;	// interface to player DLL.
 
 // ************************************************************************************************
 // RespawnedThink

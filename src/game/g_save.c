@@ -9,13 +9,13 @@
 #include "g_playstats.h"
 #include "utilities.h"
 #include "p_anims.h"
+#include "p_dll.h" //mxd
 #include "FX.h"
 #include "g_items.h" //mxd
 
 extern void	InitPlayerinfo(edict_t *ent);
 extern void LoadPersistantEffects(FILE *f);
 extern void SavePersistantEffects(FILE *f);
-extern player_export_t	playerExport;	// interface to player DLL.
 
 field_t fields[] = {
 	{"classname", FOFS(classname), F_LSTRING},

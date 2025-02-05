@@ -13,8 +13,9 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "ref.h"
 
+#include "p_dll.h" //mxd
+#include "ref.h"
 #include "vid.h"
 #include "screen.h"
 #include "input.h"
@@ -529,7 +530,6 @@ void CL_Quit_f(void);
 
 // cl_main.c
 extern refexport_t re; // Interface to refresh DLL.
-extern player_export_t playerExport; // Interface to player DLL.
 
 void CL_RequestNextDownload(void);
 

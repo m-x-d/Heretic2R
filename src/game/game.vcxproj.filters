@@ -1070,5 +1070,8 @@
     <ClInclude Include="g_combat.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\qcommon\p_dll.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

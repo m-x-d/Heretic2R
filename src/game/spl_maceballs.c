@@ -15,6 +15,7 @@
 #include "g_playstats.h"
 #include "decals.h"
 #include "random.h"
+#include "p_dll.h" //mxd
 #include "p_item.h"
 #include "g_teleport.h"
 
@@ -27,8 +28,6 @@
 #define MACEBALL_ROT		(360*0.02)
 
 #define MACEBALL_SEARCHRAD	500.0
-
-extern player_export_t	playerExport;	// interface to player DLL.
 
 // ****************************************************************************
 // Maceball think
