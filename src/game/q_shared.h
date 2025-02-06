@@ -51,11 +51,10 @@
 #ifndef M_PI
 	#define M_PI			3.14159265358979323846f	// Matches value in gcc v2 math.h.
 #endif
-#define SQRT2				1.414213562
-#define TIME_EPSILON		0.01
+
+#define TIME_EPSILON		0.01f
 
 #define VectorCopy_Macro(a,b)			((b)[0] = (a)[0], (b)[1] = (a)[1], (b)[2] = (a)[2])
-//#define VectorSubtract_Macro(a,b,c)		(c[0]=a[0]-b[0],c[1]=a[1]-b[1],c[2]=a[2]-b[2]) //TODO: remove?
 
 //mxd. paletteRGBA_t handling macros.
 #define COLOUR_SET(c, cr, cg, cb)		((c).r=(byte)(cr), (c).g=(byte)(cg), (c).b=(byte)(cb), (c).a=255)
@@ -154,7 +153,6 @@ H2COMMON_API void Info_RemoveKey(char* s, const char* key);
 H2COMMON_API void Info_SetValueForKey(char* s, const char* key, const char* value);
 H2COMMON_API qboolean Info_Validate(const char* s);
 H2COMMON_API void Set_Com_Printf(void (*toSet)(const char* fmt, ...));
-
 
 #pragma region ========================== SYSTEM SPECIFIC ==========================
 
