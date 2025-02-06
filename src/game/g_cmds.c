@@ -467,33 +467,18 @@ static void Cmd_God_f(edict_t* ent)
 	}
 }
 
-
-/*
-==================
-Cmd_Notarget_f
-
-Sets client to notarget
-
-argv(0) notarget
-==================
-*/
-void Cmd_Notarget_f (edict_t *ent)
+// Sets client to notarget.
+static void Cmd_Notarget_f(edict_t* ent)
 {
-	char	*msg;
-
-	if (deathmatch->value && !sv_cheats->value)
+	if (DEATHMATCH && !SV_CHEATS)
 	{
-		gi.gamemsg_centerprintf (ent, GM_NOCHEATS);
-		return;
+		gi.gamemsg_centerprintf(ent, GM_NOCHEATS);
 	}
-
-	ent->flags ^= FL_NOTARGET;
-	if (!(ent->flags & FL_NOTARGET) )
-		msg = "notarget OFF\n";
 	else
-		msg = "notarget ON\n";
-
-	gi.cprintf (ent, PRINT_HIGH, msg);
+	{
+		ent->flags ^= FL_NOTARGET;
+		gi.cprintf(ent, PRINT_HIGH, ((ent->flags & FL_NOTARGET) ? "notarget ON\n" : "notarget OFF\n"));
+	}
 }
 
 /*
