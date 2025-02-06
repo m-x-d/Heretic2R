@@ -867,25 +867,11 @@ static void Cmd_SpawnEntity_f(const edict_t* ent)
 	self_spawn = FALSE;
 }
 
-/*
-===================
-Toggle the Inventory Console
-===================
-*/
-
-void Cmd_ToggleInventory_f(edict_t *ent)
+// Toggle the Inventory Console
+static void Cmd_ToggleInventory_f(const edict_t* ent)
 {
-	gclient_t	*cl;
-
-	cl = ent->client;
-
-	if (cl->playerinfo.showpuzzleinventory)
-		cl->playerinfo.showpuzzleinventory = false;
-	else
-		cl->playerinfo.showpuzzleinventory = true;
-
+	ent->client->playerinfo.showpuzzleinventory = !ent->client->playerinfo.showpuzzleinventory;
 }
-
 
 /*
 ===================
