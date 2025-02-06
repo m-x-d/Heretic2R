@@ -923,14 +923,10 @@ static void Cmd_AngerMonsters_f(edict_t* ent)
 	}
 }
 
-/*
-===================
-Go to next monster frame for frozen monsters
-===================
-*/
+extern qboolean MonsterAdvanceFrame; //TODO: debug stuff. remove?
 
-extern qboolean MonsterAdvanceFrame;
-void Cmd_NextMonsterFrame_f(edict_t *ent)
+// Go to next monster frame for frozen monsters.
+static void Cmd_NextMonsterFrame_f(void) //mxd. Removed unused arg.
 {
 	MonsterAdvanceFrame = true;
 }
@@ -1123,7 +1119,7 @@ void ClientCommand (edict_t *ent)
 	else if (Q_stricmp (cmd, "spawn") == 0)
 		Cmd_SpawnEntity_f (ent);
 	else if (Q_stricmp (cmd, "nextmonsterframe") == 0)
-		Cmd_NextMonsterFrame_f(ent);
+		Cmd_NextMonsterFrame_f();
 	else if (Q_stricmp (cmd, "crazymonsters") == 0)
 		Cmd_CrazyMonsters_f (ent);
 	else if (Q_stricmp (cmd, "angermonsters") == 0)
