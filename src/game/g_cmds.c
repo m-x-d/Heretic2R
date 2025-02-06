@@ -520,96 +520,87 @@ static void Cmd_Powerup_f(const edict_t* ent)
 	gi.cprintf(ent, PRINT_HIGH, msg);
 }
 
-
-/*
-==================
-Cmd_Use_f
-
-Use an inventory item
-==================
-*/
-void Cmd_Use_f (edict_t *ent, char *s)
+// Use an inventory item.
+void Cmd_Use_f(edict_t* ent, char* name)
 {
-	int			index;
-	gitem_t		*it;
-	qboolean	castme;
-	playerinfo_t	*playerinfo;
+	qboolean cast_me;
 
-	assert(ent);
-	assert(ent->client);
-//	assert(ent->client->playerinfo);
-	playerinfo = &(ent->client->playerinfo);
+	if (SV_CINEMATICFREEZE)
+		return;
 
-	if (s[0] == '*')
-	{	// Cast automatically with asterisk before name.  THIS ONLY WORKS WITH DEFENSIVE ITEMS.
-		castme=true;
-		s++;
+	assert(ent != NULL && ent->client != NULL);
+	playerinfo_t* p_info = &ent->client->playerinfo;
+
+	if (name[0] == '*')
+	{
+		// Cast automatically with asterisk before name. THIS ONLY WORKS WITH DEFENSIVE ITEMS.
+		cast_me = true;
+		name++;
 	}
 	else
 	{
-		castme=false;
+		cast_me = false;
 	}
 
-	it = P_FindItem (s);
+	gitem_t* item = P_FindItem(name);
 
-	if(sv_cinematicfreeze->value)
-		return;
-
-	if (!it)
+	if (item == NULL)
 	{
-		gi.cprintf (ent, PRINT_HIGH, "unknown item: %s\n", s);
-		return;
-	}
-	if (!it->use)
-	{
-		gi.gamemsg_centerprintf (ent, GM_NOTUSABLE);
-		return;
-	}
-	index = ITEM_INDEX(it);
-
-	if (!playerinfo->pers.inventory.Items[index])
-	{
-		if (it->flags & (IT_WEAPON|IT_DEFENSE))
-			// index is two off, since we can never run out of the staff or the flying fist
-			gi.gamemsg_centerprintf (ent, it->msg_nouse);
-		else
-			gi.gamemsg_centerprintf (ent, GM_NOITEM);
+		gi.cprintf(ent, PRINT_HIGH, "Unknown item: %s\n", name);
 		return;
 	}
 
-	if (castme && (it->flags & IT_DEFENSE) && 
-			it->weaponthink && 
-			ent->deadflag!=DEAD_DEAD && playerinfo->deadflag!=DEAD_DYING)
+	if (item->use == NULL)
 	{
-		if (playerinfo->leveltime > playerinfo->defensive_debounce)
-		{	// Do something only if the debounce is okay.
-			playerinfo->pers.lastdefence = playerinfo->pers.defence;	
-			playerinfo->pers.defence=it;
+		gi.gamemsg_centerprintf(ent, GM_NOTUSABLE);
+		return;
+	}
 
-			if (P_Defence_CurrentShotsLeft(playerinfo, 1) > 0)
-			{	// Only if there is ammo
-				it->weaponthink(ent,"");
+	const int index = ITEM_INDEX(item);
 
-				if(playerinfo->pers.defence&&playerinfo->pers.defence->ammo)
-					playerinfo->def_ammo_index=ITEM_INDEX(P_FindItem(playerinfo->pers.defence->ammo));
+	if (p_info->pers.inventory.Items[index] == 0)
+	{
+		// Index is two off for weapons, since we can never run out of the staff or the flying fist.
+		const short msg_id = (short)((item->flags & (IT_WEAPON | IT_DEFENSE)) ? item->msg_nouse : GM_NOITEM); //mxd
+		gi.gamemsg_centerprintf(ent, msg_id);
+
+		return;
+	}
+
+	if (cast_me && (item->flags & IT_DEFENSE) && item->weaponthink != NULL && ent->deadflag != DEAD_DEAD && p_info->deadflag != DEAD_DYING)
+	{
+		if (p_info->leveltime > p_info->defensive_debounce)
+		{
+			// Do something only if the debounce is okay.
+			p_info->pers.lastdefence = p_info->pers.defence;
+			p_info->pers.defence = item;
+
+			if (P_Defence_CurrentShotsLeft(p_info, 1) > 0)
+			{
+				// Only if there is ammo.
+				item->weaponthink(ent, "");
+
+				if (p_info->pers.defence != NULL && p_info->pers.defence->ammo != NULL)
+					p_info->def_ammo_index = ITEM_INDEX(P_FindItem(p_info->pers.defence->ammo));
 				else
-					playerinfo->def_ammo_index=0;
+					p_info->def_ammo_index = 0;
 
-				playerinfo->defensive_debounce = playerinfo->leveltime + DEFENSE_DEBOUNCE;
+				p_info->defensive_debounce = p_info->leveltime + DEFENSE_DEBOUNCE;
 			}
 			else
-			{	//Play a sound to tell the player they're out of mana
-				gi.sound(ent, CHAN_VOICE, gi.soundindex("*nomana.wav"), 0.75, ATTN_NORM, 0);
+			{
+				// Play a sound to tell the player they're out of mana.
+				gi.sound(ent, CHAN_VOICE, gi.soundindex("*nomana.wav"), 0.75f, ATTN_NORM, 0.0f);
 			}
 
 			// Put the ammo back.
-			playerinfo->pers.defence = playerinfo->pers.lastdefence;
-			playerinfo->pers.lastdefence = it;
+			p_info->pers.defence = p_info->pers.lastdefence;
+			p_info->pers.lastdefence = item;
 		}
 	}
 	else
 	{
-		it->use(&ent->client->playerinfo,it);
+		item->use(&ent->client->playerinfo, item);
 	}
 }
 
