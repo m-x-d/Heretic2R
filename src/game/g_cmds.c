@@ -1004,106 +1004,204 @@ static void Cmd_TestFX_f(edict_t* ent) //TODO: remove
 
 #pragma endregion
 
-/*
-=================
-ClientCommand
-=================
-*/
-void ClientCommand (edict_t *ent)
+void ClientCommand(edict_t* ent)
 {
-	char	*cmd;
+	if (ent->client == NULL)
+		return; // Not fully in game yet.
 
-	if (!ent->client)
-		return;		// not fully in game yet
+	const char* cmd = gi.argv(0);
 
-	cmd = gi.argv(0);
-
-	if (Q_stricmp (cmd, "players") == 0)
+	if (Q_stricmp(cmd, "players") == 0)
 	{
-		Cmd_Players_f (ent);
-		return;
-	}
-	if (Q_stricmp (cmd, "say") == 0)
-	{
-		Cmd_Say_f (ent, false, false);
-		return;
-	}
-	if (Q_stricmp (cmd, "say_team") == 0)
-	{
-		Cmd_Say_f (ent, true, false);
-		return;
-	}
-	if (Q_stricmp (cmd, "score") == 0)
-	{
-		Cmd_Score_f (ent);
+		Cmd_Players_f(ent);
 		return;
 	}
 
-	if (level.intermissiontime)
+	if (Q_stricmp(cmd, "say") == 0)
+	{
+		Cmd_Say_f(ent, false, false);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "say_team") == 0)
+	{
+		Cmd_Say_f(ent, true, false);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "score") == 0)
+	{
+		Cmd_Score_f(ent);
+		return;
+	}
+
+	if (level.intermissiontime > 0.0f)
 		return;
 
-	else if (Q_stricmp (cmd, "use") == 0)
-		Cmd_Use_f (ent, gi.args());
-	else if (Q_stricmp (cmd, "toggleinventory") == 0)
-		Cmd_ToggleInventory_f (ent);
-	else if (Q_stricmp (cmd, "invnextw") == 0)
-		SelectNextItem (ent, IT_WEAPON);
-	else if (Q_stricmp (cmd, "invprevw") == 0)
-		SelectPrevItem (ent, IT_WEAPON);
-	else if (Q_stricmp (cmd, "invnextp") == 0)
-		SelectNextItem (ent, IT_DEFENSE);
-	else if (Q_stricmp (cmd, "invprevp") == 0)
-		SelectPrevItem (ent, IT_DEFENSE);
-	else if (Q_stricmp (cmd, "weapprev") == 0)
-		Cmd_WeapPrev_f (ent);
-	else if (Q_stricmp (cmd, "weapnext") == 0)
-		Cmd_WeapNext_f (ent);
-	else if (Q_stricmp (cmd, "defprev") == 0)
-		Cmd_DefPrev_f (ent);
-	else if (Q_stricmp (cmd, "defnext") == 0)
-		Cmd_DefNext_f (ent);
-	else if (Q_stricmp (cmd, "weaplast") == 0)
-		Cmd_WeapLast_f (ent);
-	else if (Q_stricmp (cmd, "kill") == 0)
-		Cmd_Kill_f (ent);
-	else if (Q_stricmp (cmd, "spawn") == 0)
-		Cmd_SpawnEntity_f (ent);
-	else if (Q_stricmp (cmd, "nextmonsterframe") == 0)
+	if (Q_stricmp(cmd, "use") == 0)
+	{
+		Cmd_Use_f(ent, gi.args());
+		return;
+	}
+
+	if (Q_stricmp(cmd, "toggleinventory") == 0)
+	{
+		Cmd_ToggleInventory_f(ent);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "invnextw") == 0)
+	{
+		SelectNextItem(ent, IT_WEAPON);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "invprevw") == 0)
+	{
+		SelectPrevItem(ent, IT_WEAPON);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "invnextp") == 0)
+	{
+		SelectNextItem(ent, IT_DEFENSE);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "invprevp") == 0)
+	{
+		SelectPrevItem(ent, IT_DEFENSE);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "weapprev") == 0)
+	{
+		Cmd_WeapPrev_f(ent);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "weapnext") == 0)
+	{
+		Cmd_WeapNext_f(ent);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "defprev") == 0)
+	{
+		Cmd_DefPrev_f(ent);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "defnext") == 0)
+	{
+		Cmd_DefNext_f(ent);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "weaplast") == 0)
+	{
+		Cmd_WeapLast_f(ent);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "kill") == 0)
+	{
+		Cmd_Kill_f(ent);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "spawn") == 0)
+	{
+		Cmd_SpawnEntity_f(ent);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "nextmonsterframe") == 0)
+	{
 		Cmd_NextMonsterFrame_f();
-	else if (Q_stricmp (cmd, "crazymonsters") == 0)
-		Cmd_CrazyMonsters_f (ent);
-	else if (Q_stricmp (cmd, "angermonsters") == 0)
-		Cmd_AngerMonsters_f (ent);
-	else if (Q_stricmp (cmd, "showcoords") == 0)
-		Cmd_ShowCoords_f (ent);
-	else if (Q_stricmp (cmd, "testfx") == 0)
+		return;
+	}
+
+	if (Q_stricmp(cmd, "crazymonsters") == 0)
+	{
+		Cmd_CrazyMonsters_f(ent);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "angermonsters") == 0)
+	{
+		Cmd_AngerMonsters_f(ent);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "showcoords") == 0)
+	{
+		Cmd_ShowCoords_f(ent);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "testfx") == 0)
+	{
 		Cmd_TestFX_f(ent);
-	else if (Q_stricmp (cmd, "gameversion") == 0)
-	{
-		gi.cprintf (ent, PRINT_HIGH, "%s : %s\n", GAMEVERSION, __DATE__);
+		return;
 	}
 
-	else if (Q_stricmp (cmd, "playbetter") == 0)	//	else if (Q_stricmp (cmd, "god") == 0)
-		Cmd_God_f (ent);
-	else if (Q_stricmp (cmd, "kiwi") == 0)			//	else if (Q_stricmp (cmd, "noclip") == 0)
-		Cmd_Noclip_f (ent);
-	else if (Q_stricmp (cmd, "victor") == 0)		//	else if (Q_stricmp (cmd, "notarget") == 0)
-		Cmd_Notarget_f (ent);
-	else if (Q_stricmp (cmd, "suckitdown") == 0)	//	else if (Q_stricmp (cmd, "give") == 0)
-		Cmd_Give_f (ent);
-	else if (Q_stricmp (cmd, "twoweeks") == 0)		//	else if (Q_stricmp (cmd, "powerup") == 0)
-		Cmd_Powerup_f (ent);
-	else if (Q_stricmp (cmd, "meatwagon") == 0)		//	else if (Q_stricmp (cmd, "killmonsters") == 0)
-		Cmd_KillMonsters_f (ent);
-
-	else if (Q_stricmp (cmd, "fov") == 0)
+	if (Q_stricmp(cmd, "gameversion") == 0)
 	{
-		ent->client->ps.fov = atoi(gi.argv(1));
-		if (ent->client->ps.fov < 1)
-			ent->client->ps.fov = 90;
-		else if (ent->client->ps.fov > 160)
-			ent->client->ps.fov = 160;
+		gi.cprintf(ent, PRINT_HIGH, "%s : %s\n", GAMEVERSION, __DATE__);
+		return;
 	}
-	else	// anything that doesn't match a command will be a chat
-		Cmd_Say_f (ent, false, true);
+
+	if (Q_stricmp(cmd, "playbetter") == 0 || Q_stricmp(cmd, "god") == 0) //mxd. Re-enable classic cheats.
+	{
+		Cmd_God_f(ent);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "kiwi") == 0 || Q_stricmp(cmd, "noclip") == 0) //mxd. Re-enable classic cheats.
+	{
+		Cmd_Noclip_f(ent);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "victor") == 0 || Q_stricmp(cmd, "notarget") == 0) //mxd. Re-enable classic cheats.
+	{
+		Cmd_Notarget_f(ent);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "suckitdown") == 0 || Q_stricmp(cmd, "give") == 0) //mxd. Re-enable classic cheats.
+	{
+		Cmd_Give_f(ent);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "twoweeks") == 0 || Q_stricmp(cmd, "powerup") == 0) //mxd. Re-enable classic cheats.
+	{
+		Cmd_Powerup_f(ent);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "meatwagon") == 0 || Q_stricmp(cmd, "killmonsters") == 0) //mxd. Re-enable classic cheats.
+	{
+		Cmd_KillMonsters_f(ent);
+		return;
+	}
+
+	if (Q_stricmp(cmd, "fov") == 0)
+	{
+		float fov = (float)(Q_atoi(gi.argv(1))); //mxd
+
+		if (fov < 1.0f)
+			fov = 90.0f;
+		else if (fov > 160.0f)
+			fov = 160.0f;
+
+		ent->client->ps.fov = fov;
+
+		return;
+	}
+
+	// Anything that doesn't match a command will be a chat.
+	Cmd_Say_f(ent, false, true);
 }
