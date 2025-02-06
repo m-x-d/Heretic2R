@@ -113,32 +113,25 @@ qboolean OnSameTeam(const edict_t* ent1, const edict_t* ent2)
 	return (Q_stricmp(ent1_team, ent2_team) == 0); //mxd. stricmp -> Q_stricmp
 }
 
-void SelectNextItem (edict_t *ent, int itflags)
+static void SelectNextItem(const edict_t* ent, const int item_flags)
 {
-	gclient_t	*cl;
-	int			i, index;
-	gitem_t		*it;
-
-	if(sv_cinematicfreeze->value)
+	if (SV_CINEMATICFREEZE)
 		return;
 
-	cl = ent->client;
+	gclient_t* cl = ent->client;
 
-	// scan  for the next valid one
-	for (i=1 ; i<=MAX_ITEMS ; i++)
+	// Scan for the next valid one.
+	for (int i = 1; i < MAX_ITEMS; i++) //mxd. Bugfix, kinda: original logic eventually wraps back to selected_item index.
 	{
-		index = (cl->playerinfo.pers.selected_item + i)%MAX_ITEMS;
+		const int index = (cl->playerinfo.pers.selected_item + i) % MAX_ITEMS;
 		if (!cl->playerinfo.pers.inventory.Items[index])
 			continue;
 
-		it = &playerExport.p_itemlist[index];
-		if (!it->use)
-			continue;
-		if (!(it->flags & itflags))
+		const gitem_t* item = &playerExport.p_itemlist[index];
+		if (item->use == NULL || !(item->flags & item_flags))
 			continue;
 
 		cl->playerinfo.pers.selected_item = index;
-
 		return;
 	}
 
