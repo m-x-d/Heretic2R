@@ -873,28 +873,18 @@ static void Cmd_ToggleInventory_f(const edict_t* ent)
 	ent->client->playerinfo.showpuzzleinventory = !ent->client->playerinfo.showpuzzleinventory;
 }
 
-/*
-===================
-Kill all monsters on a level
-===================
-*/
-
-extern void Killed (edict_t *targ, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point, int mod);
-void Cmd_KillMonsters_f(edict_t *ent)
+// Kill all non-boss level monsters on a level.
+static void Cmd_KillMonsters_f(edict_t* ent)
 {
-	edict_t *searchent;
-
 	gi.cprintf(ent, PRINT_HIGH, "Killing all non-boss level monsters\n");
 
-	for (searchent = g_edicts; searchent < &g_edicts[globals.num_edicts]; searchent++)
+	for (edict_t* e = g_edicts; e < &g_edicts[globals.num_edicts]; e++)
 	{
-		if (!searchent->inuse)
-			continue;
-		if ((searchent->svflags & SVF_MONSTER) && !(searchent->monsterinfo.c_mode) && !(searchent->svflags & SVF_BOSS))
+		if (e->inuse && !e->monsterinfo.c_mode && (e->svflags & SVF_MONSTER) && !(e->svflags & SVF_BOSS))
 		{
-			gi.dprintf("Killing monster %s\n", searchent->classname);
-			Killed (searchent, ent, ent, 100000, searchent->s.origin, MOD_UNKNOWN);
-			searchent->health = 0;
+			gi.dprintf("Killing monster %s\n", e->classname);
+			Killed(e, ent, ent, 100000, e->s.origin, MOD_UNKNOWN);
+			e->health = 0; //TODO: is this necessary?
 		}
 	}
 }
