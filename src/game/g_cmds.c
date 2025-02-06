@@ -786,20 +786,17 @@ static void Cmd_Kill_f(edict_t* ent)
 	ent->client->flood_nextkill = level.time + flood_killdelay->value;
 }
 
-int PlayerSort (void const *a, void const *b)
+static int PlayerSort(const void* a, const void* b)
 {
-	int		anum, bnum;
-
-	anum = *(int *)a;
-	bnum = *(int *)b;
-
-	anum = game.clients[anum].ps.stats[STAT_FRAGS];
-	bnum = game.clients[bnum].ps.stats[STAT_FRAGS];
+	const int anum = game.clients[*(const int*)a].ps.stats[STAT_FRAGS];
+	const int bnum = game.clients[*(const int*)b].ps.stats[STAT_FRAGS];
 
 	if (anum < bnum)
 		return -1;
+
 	if (anum > bnum)
 		return 1;
+
 	return 0;
 }
 
