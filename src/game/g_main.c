@@ -5,6 +5,7 @@
 //
 
 #include "g_main.h" //mxd
+#include "g_ai.h" //mxd
 #include "g_cmds.h" //mxd
 #include "g_Physics.h"
 #include "g_playstats.h"

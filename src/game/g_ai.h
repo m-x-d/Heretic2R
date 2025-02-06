@@ -9,3 +9,4 @@
 #include "g_local.h"
 
 extern void AlertMonsters(edict_t* self, edict_t* enemy, float lifetime, qboolean ignore_shadows);
+extern void AI_SetSightClient(void);

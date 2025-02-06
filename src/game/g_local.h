@@ -745,7 +745,6 @@ extern void ThrowGib(edict_t* self, char* gibname, int damage, int type);
 extern void BecomeExplosion1(edict_t* self);
 
 // g_ai.c
-extern void AI_SetSightClient(void);
 extern void ai_stand(edict_t* self, float dist);
 extern void ai_move(edict_t* self, float dist);
 extern void ai_walk(edict_t* self, float dist);
