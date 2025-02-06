@@ -988,20 +988,6 @@ static void Cmd_ShowCoords_f(const edict_t* ent)
 	Com_Printf("       pitch:    %2.2f\n", -ent->client->aimangles[PITCH]);
 }
 
-static void Cmd_TestFX_f(edict_t* ent) //TODO: remove
-{
-	if (ent->client == NULL)
-		return;
-
-	const int i = irand(0, 15);
-	gi.dprintf("Setting pain skin number %d\n", i);
-	ent->client->playerinfo.pers.altparts |= 1 << i;
-
-	SetupPlayerinfo_effects(ent);
-	P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
-	WritePlayerinfo_effects(ent);
-}
-
 #pragma endregion
 
 void ClientCommand(edict_t* ent)
@@ -1137,12 +1123,6 @@ void ClientCommand(edict_t* ent)
 	if (Q_stricmp(cmd, "showcoords") == 0)
 	{
 		Cmd_ShowCoords_f(ent);
-		return;
-	}
-
-	if (Q_stricmp(cmd, "testfx") == 0)
-	{
-		Cmd_TestFX_f(ent);
 		return;
 	}
 
