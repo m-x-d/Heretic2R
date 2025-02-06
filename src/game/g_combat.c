@@ -1,26 +1,26 @@
+//
 // g_combat.c
+//
+// Copyright 1998 Raven Software
+//
 
 #include "g_combat.h" //mxd
-#include "Utilities.h"
-#include "g_HitLocation.h"
-#include "g_DefaultMessageHandler.h"
-#include "FX.h"
-#include "vector.h"
-#include "random.h"
-#include "g_misc.h"
-#include "p_main.h"
-#include "g_playstats.h"
-#include "buoy.h"
 #include "g_cmds.h" //mxd
+#include "g_HitLocation.h"
+#include "p_main.h"
+#include "g_misc.h"
 #include "g_items.h" //mxd
 #include "g_itemstats.h"
+#include "g_monster.h" //mxd
+#include "g_playstats.h"
 #include "m_stats.h"
+#include "FX.h"
+#include "Random.h"
+#include "Vector.h"
 
 gitem_armor_t silver_armor_info	= {MAX_SILVER_ARMOR, SILVER_HIT_MULT, SILVER_SPELL_MULT};
 gitem_armor_t gold_armor_info	= {MAX_GOLD_ARMOR, GOLD_HIT_MULT, GOLD_SPELL_MULT};
 
-void pitch_roll_for_slope (edict_t *forwhom, vec3_t *slope);
-void MG_PostDeathThink (edict_t *self);
 extern void AlertMonsters (edict_t *self, edict_t *enemy, float lifetime, qboolean ignore_shadows);
 
 /* 
