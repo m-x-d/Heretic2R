@@ -9,6 +9,7 @@
 #include "fx.h"
 #include "Angles.h"
 #include "g_cmds.h" //mxd
+#include "g_combat.h" //mxd
 #include "Utilities.h"
 #include "vector.h"
 #include "random.h"

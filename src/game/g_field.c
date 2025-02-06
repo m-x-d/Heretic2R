@@ -6,6 +6,7 @@
 #include "g_DefaultMessageHandler.h"
 #include "p_main.h"
 #include "buoy.h"
+#include "g_combat.h" //mxd
 #include "m_stats.h"
 #include "g_teleport.h"
 

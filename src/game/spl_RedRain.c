@@ -7,7 +7,8 @@
 #include "fx.h"
 #include "vector.h"
 #include "angles.h"
-#include "g_ai.h"
+#include "g_ai.h" //mxd
+#include "g_combat.h" //mxd
 #include "matrix.h"
 #include "g_volume_effect.h"
 #include "Utilities.h"

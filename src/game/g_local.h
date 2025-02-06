@@ -720,13 +720,6 @@ extern char* G_CopyString(char* in);
 extern char* vtos(vec3_t v);
 extern float vectoyaw(vec3_t vec);
 
-// g_combat.c
-extern qboolean CanDamage(edict_t* targ, edict_t* inflictor);
-extern qboolean CanDamageFromLoc(edict_t* targ, edict_t* inflictor, vec3_t origin);
-extern void T_Damage(edict_t* targ, edict_t* inflictor, edict_t* attacker, vec3_t dir, vec3_t point, vec3_t normal, int damage, int knockback, int dflags, int MeansOfDeath);
-extern void T_DamageRadius(edict_t* inflictor, edict_t* attacker, edict_t* ignore, float radius, float maxdamage, float mindamage, int dflags, int MeansOfDeath);
-extern void T_DamageRadiusFromLoc(vec3_t origin, edict_t* inflictor, edict_t* attacker, edict_t* ignore, float radius, float maxdamage, float mindamage, int dflags, int MeansOfDeath);
-
 // g_monster.c
 extern void M_droptofloor(edict_t* ent);
 extern void monster_think(edict_t* self);

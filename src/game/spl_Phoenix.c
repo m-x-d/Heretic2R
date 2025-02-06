@@ -12,7 +12,8 @@
 #include "Utilities.h"
 #include "g_playstats.h"
 #include "decals.h"
-#include "g_ai.h"
+#include "g_ai.h" //mxd
+#include "g_combat.h" //mxd
 
 #define ARROW_RADIUS			4.0F
 

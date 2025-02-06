@@ -6,6 +6,7 @@
 #include "g_local.h"
 #include "Vector.h"
 #include "FX.h"
+#include "g_combat.h" //mxd
 #include "g_playstats.h"
 #include "g_DefaultMessageHandler.h"
 

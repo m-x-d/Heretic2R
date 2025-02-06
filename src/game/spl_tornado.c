@@ -11,7 +11,8 @@
 #include "vector.h"
 #include "random.h"
 #include "decals.h"
-#include "g_ai.h"
+#include "g_ai.h" //mxd
+#include "g_combat.h" //mxd
 #include "Utilities.h"
 #include "g_playstats.h"
 #include "g_Physics.h"

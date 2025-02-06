@@ -12,7 +12,8 @@
 #include "Reference.h"
 #include "Utilities.h"
 #include "decals.h"
-#include "g_ai.h"
+#include "g_ai.h" //mxd
+#include "g_combat.h" //mxd
 #include "g_playstats.h"
 #include "p_main.h"	//for ITEM_WEAPON_SPHEREOFANNIHILATION
 #include "m_beast.h"

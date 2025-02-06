@@ -12,7 +12,8 @@
 #include "vector.h"
 #include "random.h"
 #include "decals.h"
-#include "g_ai.h"
+#include "g_ai.h" //mxd
+#include "g_combat.h" //mxd
 #include "g_playstats.h"
 
 #define ARROW_RADIUS			2.0F

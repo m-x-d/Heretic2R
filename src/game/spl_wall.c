@@ -11,6 +11,7 @@
 #include "g_volume_effect.h"
 #include "Utilities.h"
 #include "g_ClassStatics.h"
+#include "g_combat.h" //mxd
 #include "g_Physics.h"
 #include "g_volume_effect.h"
 #include "g_playstats.h"

@@ -11,6 +11,7 @@
 #include "angles.h"
 #include "fx.h"
 #include "g_cmds.h" //mxd
+#include "g_combat.h" //mxd
 #include "random.h"
 #include "vector.h"
 #include "utilities.h"

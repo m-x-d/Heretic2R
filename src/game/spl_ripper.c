@@ -14,7 +14,8 @@
 #include "g_Physics.h"
 #include "g_playstats.h"
 #include "decals.h"
-#include "g_ai.h"
+#include "g_ai.h" //mxd
+#include "g_combat.h" //mxd
 #include "random.h"
 #include "m_beast.h"
 

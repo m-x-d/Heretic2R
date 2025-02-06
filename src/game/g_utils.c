@@ -2,6 +2,7 @@
 
 #include "g_local.h"
 #include "FX.h"
+#include "g_combat.h" //mxd
 #include "g_Skeletons.h"
 #include "random.h"
 #include "vector.h"

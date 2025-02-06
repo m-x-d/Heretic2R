@@ -14,6 +14,7 @@
 #include "g_Physics.h"
 #include "g_playstats.h"
 #include "decals.h"
+#include "g_combat.h" //mxd
 #include "random.h"
 #include "p_dll.h" //mxd
 #include "p_item.h"

@@ -10,7 +10,8 @@
 #include "vector.h"
 #include "g_skeletons.h"
 #include "angles.h"
-#include "g_ai.h"
+#include "g_ai.h" //mxd
+#include "g_combat.h" //mxd
 #include "Reference.h"
 #include "Random.h"
 #include "Utilities.h"

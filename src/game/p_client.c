@@ -19,6 +19,7 @@
 #include "p_main.h"
 #include "g_itemstats.h"
 #include "cl_strings.h"
+#include "g_combat.h" //mxd
 #include "g_main.h" //mxd
 #include "p_actions.h"
 #include "p_anims.h" //mxd

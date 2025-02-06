@@ -10,6 +10,7 @@
 
 #include "g_local.h"
 #include "g_ai.h" //mxd
+#include "g_combat.h" //mxd
 #include "Message.h"
 #include "g_ClassStatics.h"
 

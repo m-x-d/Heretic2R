@@ -12,7 +12,8 @@
 #include "random.h"
 #include "vector.h"
 #include "decals.h"
-#include "g_ai.h"
+#include "g_ai.h" //mxd
+#include "g_combat.h" //mxd
 #include "g_playstats.h"
 
 #define METEOR_BARRIER_DIE_EXPLODE			1

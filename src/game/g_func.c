@@ -6,6 +6,7 @@
 #include "g_DefaultMessageHandler.h"
 #include "m_stats.h"
 #include "buoy.h"
+#include "g_combat.h" //mxd
 
 void ED_CallSpawn (edict_t *ent);
 void TrainAngleMove_Calc (edict_t *self,edict_t *targ,vec3_t dest);

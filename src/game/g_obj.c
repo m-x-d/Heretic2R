@@ -15,6 +15,7 @@
 #include "Random.h"
 #include "angles.h"
 #include "g_ai.h" //mxd
+#include "g_combat.h" //mxd
 #include "g_playstats.h"
 #include "m_stats.h"
 
