@@ -931,100 +931,53 @@ static void Cmd_NextMonsterFrame_f(void) //mxd. Removed unused arg.
 	MonsterAdvanceFrame = true;
 }
 
-
-
-/*
-==================
-Cmd_Say_f
-==================
-*/
-void Cmd_Say_f (edict_t *ent, qboolean team, qboolean arg0)
+static void Cmd_Say_f(const edict_t* ent, qboolean team, const qboolean arg0) //mxd. Rewritten to use single text buffer.
 {
-	int		j;
-	edict_t	*other;
-	char	*p;
-	char	text[2048];
-	char	text2[2048];
-	int		color;
+	char text[2048] = { 0 };
 
-	if (gi.argc () < 2 && !arg0)
+	if (CheckFlood(ent) || (gi.argc() < 2 && !arg0))
 		return;
 
-	if (!((int)(dmflags->value) & (DF_MODELTEAMS | DF_SKINTEAMS)))
+	if (!(DMFLAGS & (DF_MODELTEAMS | DF_SKINTEAMS)))
 		team = false;
-
-	// delimit the string if we are normal play talking, so we don't send the name with it
-	Com_sprintf (text2, sizeof(text), "%s: ", ent->client->playerinfo.pers.netname);
-	text[0] = 0;
 
 	if (arg0)
 	{
-		strcat (text, gi.argv(0));
-		strcat (text, " ");
-		strcat (text, gi.args());
-
-		strcat (text2, gi.argv(0));
-		strcat (text2, " ");
-		strcat (text2, gi.args());
+		strcat_s(text, sizeof(text), va("%s %s", gi.argv(0), gi.args())); //mxd. strcat -> strcat_s; use va().
 	}
 	else
 	{
-		p = gi.args();
+		char* p = gi.args();
 
-		if (*p == '"')
+		if (*p == '"') // Strip quotes.
 		{
 			p++;
-			p[strlen(p)-1] = 0;
+			p[strlen(p) - 1] = 0;
 		}
-		strcat(text, p);
 
-		p = gi.args();
-
-		if (*p == '"')
-		{
-			p++;
-			p[strlen(p)-1] = 0;
-		}
-		strcat(text2, p);
-
+		strcat_s(text, sizeof(text), p); //mxd. strcat -> strcat_s
 	}
 
-	// don't let text be too long for malicious reasons
+	// Don't let text be too long for malicious reasons.
 	if (strlen(text) > 150)
 		text[150] = 0;
 
-	if (strlen(text2) > 150)
-		text2[150] = 0;
+	strcat_s(text, sizeof(text), "\n"); //mxd. strcat -> strcat_s
 
+	if (DEDICATED)
+		gi.cprintf(NULL, PRINT_CHAT, "%s: %s", ent->client->playerinfo.pers.netname, text);
 
-	strcat(text, "\n");
-	strcat(text2, "\n");
-
-	if (CheckFlood(ent))
-		return;
-
-	if (dedicated->value)
-		gi.cprintf(NULL, PRINT_CHAT, "%s", text2);
-
-	for (j = 1; j <= game.maxclients; j++)
+	const int color = (team ? 1 : 0);
+	for (int i = 1; i <= game.maxclients; i++)
 	{
-		color = 0;
-		other = &g_edicts[j];
-		if (!other->inuse)
-			continue;
-		if (!other->client)
-			continue;
-		if (team)
-		{
-			color = 1;
-			if (!OnSameTeam(ent, other))
-				continue;
-		}
+		const edict_t* other = &g_edicts[i];
 
-		gi.clprintf(other,ent, color, "%s", text);	
+		if (!other->inuse || other->client == NULL || (team && !OnSameTeam(ent, other)))
+			continue;
+
+		gi.clprintf(other, ent, color, "%s", text);
 	}
 }
-
 
 void Cmd_ShowCoords_f (edict_t *ent)
 {
