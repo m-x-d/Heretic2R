@@ -17,10 +17,39 @@
 #include "spl_morph.h" //mxd
 #include "Vector.h"
 
-qboolean CheckFlood(edict_t *ent);
+int self_spawn = FALSE; // True when spawned manually using 'spawn' ccmd.
 
-int		self_spawn = FALSE;
+// Flood protection.
+static qboolean CheckFlood(const edict_t* ent)
+{
+	if (!FLOOD_MSGS)
+		return false;
 
+	if (level.time < ent->client->flood_locktill)
+	{
+		gi.msgvar_centerprintf(ent, GM_SHUTUP, (int)(ent->client->flood_locktill - level.time));
+		return true;
+	}
+
+	int pos = ent->client->flood_whenhead - FLOOD_MSGS + 1;
+
+	if (pos < 0)
+		pos += ARRAYSIZE(ent->client->flood_when);
+
+	if (ent->client->flood_when[pos] > 0.0f && (level.time - ent->client->flood_when[pos] < flood_persecond->value))
+	{
+		ent->client->flood_locktill = level.time + flood_waitdelay->value;
+		gi.msgvar_centerprintf(ent, GM_SHUTUP, (int)flood_waitdelay->value);
+
+		return true;
+	}
+
+	ent->client->flood_whenhead++;
+	ent->client->flood_whenhead %= ARRAYSIZE(ent->client->flood_when);
+	ent->client->flood_when[ent->client->flood_whenhead] = level.time;
+
+	return false;
+}
 
 char *ClientSkinTeam (edict_t *ent)
 {
@@ -1442,35 +1471,3 @@ void ClientCommand (edict_t *ent)
 	else	// anything that doesn't match a command will be a chat
 		Cmd_Say_f (ent, false, true);
 }
-
-// Flood protection
-
-qboolean CheckFlood(edict_t *ent)
-{
-	int					i;
-
-	if (flood_msgs->value)
-	{
-        if (level.time < ent->client->flood_locktill)
-		{
-			gi.msgvar_centerprintf(ent, GM_SHUTUP, (int)(ent->client->flood_locktill - level.time));
-            return true;
-        }
-        i = ent->client->flood_whenhead - flood_msgs->value + 1;
-        if (i < 0)
-		{
-            i = (sizeof(ent->client->flood_when) / sizeof(ent->client->flood_when[0])) + i;
-		}
-		if (ent->client->flood_when[i] && (level.time - ent->client->flood_when[i] < flood_persecond->value))
-		{
-			ent->client->flood_locktill = level.time + flood_waitdelay->value;
-			gi.msgvar_centerprintf(ent, GM_SHUTUP, (int)flood_waitdelay->value);
-            return true;
-        }
-		ent->client->flood_whenhead = (ent->client->flood_whenhead + 1) % (sizeof(ent->client->flood_when) / sizeof(ent->client->flood_when[0]));
-		ent->client->flood_when[ent->client->flood_whenhead] = level.time;
-	}
-	return false;
-}
-
-// end
