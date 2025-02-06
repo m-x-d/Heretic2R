@@ -1300,20 +1300,36 @@ static void CL_InitLocal(void)
 	Cmd_AddCommand("say", NULL);
 	Cmd_AddCommand("say_team", NULL);
 	Cmd_AddCommand("info", NULL);
+	Cmd_AddCommand("score", NULL); //mxd
+	Cmd_AddCommand("players", NULL); //mxd
 	Cmd_AddCommand("weapnext", NULL);
 	Cmd_AddCommand("weapprev", NULL);
+	Cmd_AddCommand("weaplast", NULL); //mxd
+	Cmd_AddCommand("defnext", NULL); //mxd
+	Cmd_AddCommand("defprev", NULL); //mxd
 
 	// H2:
 	Cmd_AddCommand("spawn", NULL);
 	Cmd_AddCommand("crazymonsters", NULL);
 	Cmd_AddCommand("angermonsters", NULL);
 	Cmd_AddCommand("showcoords", NULL);
+	Cmd_AddCommand("gameversion", NULL); //mxd
+
+	// H2 cheats.
 	Cmd_AddCommand("playbetter", NULL);
 	Cmd_AddCommand("kiwi", NULL);
 	Cmd_AddCommand("victor", NULL);
 	Cmd_AddCommand("suckitdown", NULL);
 	Cmd_AddCommand("twoweeks", NULL);
 	Cmd_AddCommand("meatwagon", NULL);
+
+	//mxd. Also classic cheats.
+	Cmd_AddCommand("god", NULL);
+	Cmd_AddCommand("noclip", NULL);
+	Cmd_AddCommand("notarget", NULL);
+	Cmd_AddCommand("give", NULL);
+	Cmd_AddCommand("powerup", NULL);
+	Cmd_AddCommand("killmonsters", NULL);
 }
 
 // Writes key bindings and archived cvars to config.cfg
