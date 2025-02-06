@@ -758,42 +758,33 @@ static void Cmd_DefNext_f(const edict_t* ent)
 	}
 }
 
-/*
-=================
-Cmd_Kill_f
-=================
-*/
-void Cmd_Kill_f (edict_t *ent)
+static void Cmd_Kill_f(edict_t* ent)
 {
-	if(ent->client->flood_nextkill > level.time)
+	if (ent->client->flood_nextkill > level.time)
 	{
 		gi.msgvar_centerprintf(ent, GM_NOKILL, (int)(ent->client->flood_nextkill - level.time) + 1);
 		return;
 	}
+
 	ent->flags &= ~FL_GODMODE;
-	
-	if(ent->health > -1)
-	{
-		// Make sure we gib as we don't want bodies lying around everywhere.
 
-		ent->health = -100000;
-		ent->client->meansofdeath = MOD_SUICIDE;
-		player_die (ent, ent, ent, 100000, vec3_origin);
+	if (ent->health < 0)
+		return;
 
-		// Don't even bother waiting for death frames.
+	// Make sure we gib as we don't want bodies lying around everywhere.
+	ent->health = -100000;
+	ent->client->meansofdeath = MOD_SUICIDE;
+	player_die(ent, ent, ent, 100000, vec3_origin);
 
-		ent->deadflag = DEAD_DEAD;
+	// Don't even bother waiting for death frames.
+	ent->deadflag = DEAD_DEAD;
 
-		// Put us back in the game
-		
-		respawn(ent);
+	// Put us back in the game.
+	respawn(ent);
 
-		// Set up the next valid suicide time.
-
-		ent->client->flood_nextkill = level.time + flood_killdelay->value;
-	}
+	// Set up the next valid suicide time.
+	ent->client->flood_nextkill = level.time + flood_killdelay->value;
 }
-
 
 int PlayerSort (void const *a, void const *b)
 {
