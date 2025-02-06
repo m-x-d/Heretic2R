@@ -923,14 +923,6 @@ static void Cmd_AngerMonsters_f(edict_t* ent)
 	}
 }
 
-extern qboolean MonsterAdvanceFrame; //TODO: debug stuff. remove?
-
-// Go to next monster frame for frozen monsters.
-static void Cmd_NextMonsterFrame_f(void) //mxd. Removed unused arg.
-{
-	MonsterAdvanceFrame = true;
-}
-
 static void Cmd_Say_f(const edict_t* ent, qboolean team, const qboolean arg0) //mxd. Rewritten to use single text buffer.
 {
 	char text[2048] = { 0 };
@@ -1099,12 +1091,6 @@ void ClientCommand(edict_t* ent)
 	if (Q_stricmp(cmd, "spawn") == 0)
 	{
 		Cmd_SpawnEntity_f(ent);
-		return;
-	}
-
-	if (Q_stricmp(cmd, "nextmonsterframe") == 0)
-	{
-		Cmd_NextMonsterFrame_f();
 		return;
 	}
 

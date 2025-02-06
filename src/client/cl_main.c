@@ -1305,7 +1305,6 @@ static void CL_InitLocal(void)
 
 	// H2:
 	Cmd_AddCommand("spawn", NULL);
-	Cmd_AddCommand("nextmonsterframe", NULL);
 	Cmd_AddCommand("crazymonsters", NULL);
 	Cmd_AddCommand("angermonsters", NULL);
 	Cmd_AddCommand("showcoords", NULL);

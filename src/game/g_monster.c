@@ -410,7 +410,6 @@ void M_droptofloor (edict_t *ent)
 	the Animation Frame Array.   Execute any aifunction or think function specified
 	with the given frame.
  --------------------------------------------------------------------------------*/
-extern qboolean MonsterAdvanceFrame;
 void M_MoveFrame (edict_t *self)
 {
 	animmove_t	*move;
@@ -445,7 +444,7 @@ void M_MoveFrame (edict_t *self)
 	}
 
 	// If this is set, the monster runs absolutely no animations or ai
-	if (sv_freezemonsters->value != 0 && !MonsterAdvanceFrame)
+	if (sv_freezemonsters->value != 0)
 		return;
 
 	// Forcing the next frame index - usually the start of an animation

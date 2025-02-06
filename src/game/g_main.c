@@ -27,7 +27,6 @@ game_export_t globals;
 spawn_temp_t st;
 
 int sm_meat_index;
-qboolean MonsterAdvanceFrame = false;
 
 edict_t* g_edicts;
 
@@ -529,9 +528,6 @@ static void G_RunFrame(void)
 			G_RunEntity(ent);
 		}
 	}
-
-	// If the monsters are frozen, we wanted a single frame advance.
-	MonsterAdvanceFrame = false;
 
 	ProcessScripts();
 	CheckDMRules(); // See if it is time to end a deathmatch.
