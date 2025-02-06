@@ -132,38 +132,33 @@ static void SelectNextItem(const edict_t* ent, const int item_flags)
 			continue;
 
 		cl->playerinfo.pers.selected_item = index;
+
 		return;
 	}
 
 	cl->playerinfo.pers.selected_item = -1;
 }
 
-void SelectPrevItem (edict_t *ent, int itflags)
+static void SelectPrevItem(const edict_t* ent, const int item_flags)
 {
-	gclient_t	*cl;
-	int			i, index;
-	gitem_t		*it;
-
-	if(sv_cinematicfreeze->value)
+	if (SV_CINEMATICFREEZE)
 		return;
 
-	cl = ent->client;
+	gclient_t* cl = ent->client;
 
-	// scan  for the next valid one
-	for (i=1 ; i<=MAX_ITEMS ; i++)
+	// Scan for the previous valid one.
+	for (int i = MAX_ITEMS - 1; i > 0; i--) //mxd. Bugfix, kinda: original logic eventually wraps back to selected_item index.
 	{
-		index = (cl->playerinfo.pers.selected_item + MAX_ITEMS - i) % MAX_ITEMS;
+		const int index = (cl->playerinfo.pers.selected_item + i) % MAX_ITEMS;
 		if (!cl->playerinfo.pers.inventory.Items[index])
 			continue;
 
-		it = &playerExport.p_itemlist[index];
-		if (!it->use)
-			continue;
-		if (!(it->flags & itflags))
+		gitem_t* item = &playerExport.p_itemlist[index];
+		if (item->use == NULL || !(item->flags & item_flags))
 			continue;
 
 		cl->playerinfo.pers.selected_item = index;
-		cl->playerinfo.pers.defence = it;
+		cl->playerinfo.pers.defence = item; //TODO: mxd. Huh? Why is it done here, but not in SelectNextItem()?..
 
 		return;
 	}
