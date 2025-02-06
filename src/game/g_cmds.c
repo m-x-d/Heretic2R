@@ -819,7 +819,7 @@ static void Cmd_Players_f(const edict_t* ent)
 
 	// Print information.
 	char message[1024] = { 0 }; //BUGFIX: mxd. 1280 in original logic (exceeds buffer size in PF_cprintf).
-	const char* fmt = "%s\n%i players\n"; //mxd
+	const char* fmt = "%s\n%i player(s)\n"; //mxd
 	const int fmt_len = (int)strlen(fmt) + 1; //mxd
 
 	for (int i = 0; i < clients_count; i++)
@@ -1151,20 +1151,6 @@ void ClientCommand(edict_t* ent)
 	if (Q_stricmp(cmd, "meatwagon") == 0 || Q_stricmp(cmd, "killmonsters") == 0) //mxd. Re-enable classic cheats.
 	{
 		Cmd_KillMonsters_f(ent);
-		return;
-	}
-
-	if (Q_stricmp(cmd, "fov") == 0)
-	{
-		float fov = (float)(Q_atoi(gi.argv(1))); //mxd
-
-		if (fov < 1.0f)
-			fov = 90.0f;
-		else if (fov > 160.0f)
-			fov = 160.0f;
-
-		ent->client->ps.fov = fov;
-
 		return;
 	}
 
