@@ -692,61 +692,37 @@ static void Cmd_WeapLast_f(const edict_t* ent)
 		wpn->use(&cl->playerinfo, wpn);
 }
 
-/*
-=================
-Cmd_DefPrev_f
-=================
-*/
-void Cmd_DefPrev_f (edict_t *ent)
+static void Cmd_DefPrev_f(const edict_t* ent)
 {
-	gclient_t	*cl;
-	int			i, index;
-	gitem_t		*it;
-	int			selected_defence;
-	int			start_defence;
-
-	if(sv_cinematicfreeze->value)
+	if (SV_CINEMATICFREEZE)
 		return;
 
-	cl = ent->client;
+	gclient_t* cl = ent->client;
+	const client_persistant_t* pers = &cl->playerinfo.pers; //mxd
+	const int selected_defence = ((pers->defence != NULL) ? ITEM_INDEX(pers->defence) : 1);
 
-	if (!cl->playerinfo.pers.defence)
-		selected_defence = 1;
-	else
-		selected_defence = ITEM_INDEX(cl->playerinfo.pers.defence);
-	start_defence = selected_defence;
-	
-	// scan  for the next valid one
-	for (i=1 ; i<=MAX_ITEMS ; i++)
+	// Scan for the previous valid one.
+	for (int i = MAX_ITEMS - 1; i > 0; i--) //mxd. Bugfix, kinda: original logic eventually wraps back to selected_defence index.
 	{
-		index = (selected_defence + (MAX_ITEMS-i))%MAX_ITEMS;
+		const int index = (selected_defence + i) % MAX_ITEMS;
 
-		if (!cl->playerinfo.pers.inventory.Items[index])
+		if (pers->inventory.Items[index] == 0)
 			continue;
 
-		it = &playerExport.p_itemlist[index];
-		if (!it->use)
-			continue;
-		if (! (it->flags & IT_DEFENSE) )
+		gitem_t* def = &playerExport.p_itemlist[index];
+
+		if (def->use == NULL || !(def->flags & IT_DEFENSE))
 			continue;
 
-		it->use(&ent->client->playerinfo,it);
-		if (cl->playerinfo.pers.defence == it)
+		def->use(&cl->playerinfo, def);
+
+		if (pers->defence == def)
 		{
-			selected_defence = index;
-			break;	// successful
+			//TODO: shouldn't defence item itself play select sound?
+			cl->playerinfo.G_Sound(SND_PRED_NULL, level.time, ent, CHAN_AUTO, cl->playerinfo.G_SoundIndex("Weapons/DefenseSelect.wav"), 1.0f, ATTN_NORM, 0.0f);
+			return; // Successful.
 		}
 	}
-
-	if ((selected_defence != 1) && (start_defence != selected_defence))
-		cl->playerinfo.G_Sound(SND_PRED_NULL,
-							   level.time,
-							   ent,
-							   CHAN_AUTO,
-							   cl->playerinfo.G_SoundIndex("Weapons/DefenseSelect.wav"),
-							   1,
-							   ATTN_NORM,
-							   0);
 }
 
 /*
