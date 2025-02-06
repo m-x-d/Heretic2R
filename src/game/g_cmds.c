@@ -840,32 +840,30 @@ static void Cmd_Players_f(const edict_t* ent)
 	gi.cprintf(ent, PRINT_HIGH, fmt, message, clients_count);
 }
 
-/*
-===================
-Spawn an item
-===================
-*/
-
-void Cmd_SpawnEntity_f(edict_t *ent)
+// Spawn an item.
+static void Cmd_SpawnEntity_f(const edict_t* ent)
 {
-	vec3_t	forward;
-	edict_t	*newent;
-
-	if (deathmatch->value && !sv_cheats->value)
+	if (DEATHMATCH && !SV_CHEATS)
 	{
-		gi.gamemsg_centerprintf (ent, GM_NOCHEATS);
+		gi.gamemsg_centerprintf(ent, GM_NOCHEATS);
 		return;
 	}
-	gi.cprintf(ent, PRINT_HIGH, "Spawning : %s\n", gi.argv(1));
+
+	gi.cprintf(ent, PRINT_HIGH, "Spawning %s\n", gi.argv(1));
+
 	self_spawn = TRUE;
 
-	newent = G_Spawn();
-	newent->classname = ED_NewString(gi.argv(1));
+	edict_t* new_ent = G_Spawn();
+	new_ent->classname = ED_NewString(gi.argv(1));
+
+	vec3_t forward;
 	AngleVectors(ent->s.angles, forward, NULL, NULL);
-	VectorScale(forward, 100, forward);
-	VectorAdd(ent->s.origin, forward, newent->s.origin);
-	VectorCopy(ent->s.angles, newent->s.angles);
-	ED_CallSpawn(newent);
+	VectorScale(forward, 100.0f, forward);
+	VectorAdd(ent->s.origin, forward, new_ent->s.origin);
+
+	VectorCopy(ent->s.angles, new_ent->s.angles);
+	ED_CallSpawn(new_ent);
+
 	self_spawn = FALSE;
 }
 
