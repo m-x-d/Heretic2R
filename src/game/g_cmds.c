@@ -453,32 +453,18 @@ static void Cmd_Give_f(edict_t* ent)
 		pers->defence = item;
 }
 
-/*
-==================
-Cmd_God_f
-
-Sets client to godmode
-
-argv(0) god
-==================
-*/
-void Cmd_God_f (edict_t *ent)
+// Sets client to godmode.
+static void Cmd_God_f(edict_t* ent)
 {
-	char	*msg;
-
-	if (deathmatch->value && !sv_cheats->value)
+	if (DEATHMATCH && !SV_CHEATS)
 	{
-		gi.gamemsg_centerprintf (ent, GM_NOCHEATS);
-		return;
+		gi.gamemsg_centerprintf(ent, GM_NOCHEATS);
 	}
-
-	ent->flags ^= FL_GODMODE;
-	if (!(ent->flags & FL_GODMODE) )
-		msg = "godmode OFF\n";
 	else
-		msg = "godmode ON\n";
-
-	gi.cprintf (ent, PRINT_HIGH, msg);
+	{
+		ent->flags ^= FL_GODMODE;
+		gi.cprintf(ent, PRINT_HIGH, ((ent->flags & FL_GODMODE) ? "godmode ON\n" : "godmode OFF\n"));
+	}
 }
 
 
