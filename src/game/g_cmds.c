@@ -494,36 +494,30 @@ static void Cmd_Noclip_f(edict_t* ent)
 	}
 }
 
-/*
-==================
-Cmd_Powerup_f
-
-argv(0) powerup
-==================
-*/
-void Cmd_Powerup_f (edict_t *ent)
+static void Cmd_Powerup_f(const edict_t* ent)
 {
-	char	*msg;
+	char* msg;
 
-	if (deathmatch->value && !sv_cheats->value)
+	if (DEATHMATCH && !SV_CHEATS)
 	{
-		gi.gamemsg_centerprintf (ent, GM_NOCHEATS);
+		gi.gamemsg_centerprintf(ent, GM_NOCHEATS);
 		return;
 	}
 
 	assert(ent->client);
+
 	if (ent->client->playerinfo.powerup_timer > level.time)
-	{	// Turn OFF powerup
-		ent->client->playerinfo.powerup_timer = level.time-0.1;
+	{
+		ent->client->playerinfo.powerup_timer = level.time - 0.1f;
 		msg = "Powerup OFF\n";
 	}
 	else
-	{	// Turn ON powerup
-		ent->client->playerinfo.powerup_timer = level.time + (60*60*24);	// One full day
+	{
+		ent->client->playerinfo.powerup_timer = level.time + (60 * 60 * 24); // One full day.
 		msg = "Powerup ON\n";
 	}
 
-	gi.cprintf (ent, PRINT_HIGH, msg);
+	gi.cprintf(ent, PRINT_HIGH, msg);
 }
 
 
