@@ -909,22 +909,20 @@ static void Cmd_CrazyMonsters_f(const edict_t* ent)
 	}
 }
 
-void Cmd_AngerMonsters_f(edict_t *ent)
+static void Cmd_AngerMonsters_f(edict_t* ent)
 {
-	edict_t *searchent;
-
 	gi.cprintf(ent, PRINT_HIGH, "Angering all level monsters\n");
-	for (searchent = g_edicts; searchent < &g_edicts[globals.num_edicts]; searchent++)
+
+	for (edict_t* e = g_edicts; e < &g_edicts[globals.num_edicts]; e++)
 	{
-		if (!searchent->inuse)
-			continue;
-		if (searchent->svflags & SVF_MONSTER)
+		if (e->inuse && e->svflags & SVF_MONSTER)
 		{
-			searchent->enemy = ent;
-			FoundTarget(searchent, false);
+			e->enemy = ent;
+			FoundTarget(e, false);
 		}
 	}
 }
+
 /*
 ===================
 Go to next monster frame for frozen monsters
