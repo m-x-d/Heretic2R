@@ -670,6 +670,28 @@ static void Cmd_WeapNext_f(const edict_t* ent)
 	}
 }
 
+static void Cmd_WeapLast_f(const edict_t* ent)
+{
+	if (SV_CINEMATICFREEZE)
+		return;
+
+	gclient_t* cl = ent->client;
+	const client_persistant_t* pers = &cl->playerinfo.pers; //mxd
+
+	if (pers->weapon == NULL || pers->lastweapon == NULL)
+		return;
+
+	const int index = ITEM_INDEX(pers->lastweapon);
+
+	if (pers->inventory.Items[index] == 0)
+		return;
+
+	gitem_t* wpn = &playerExport.p_itemlist[index];
+
+	if (wpn->use != NULL && (wpn->flags & IT_WEAPON))
+		wpn->use(&cl->playerinfo, wpn);
+}
+
 /*
 =================
 Cmd_DefPrev_f
@@ -781,38 +803,6 @@ void Cmd_DefNext_f (edict_t *ent)
 							   1,
 							   ATTN_NORM,
 							   0);
-}
-
-/*
-=================
-Cmd_WeapLast_f
-=================
-*/
-void Cmd_WeapLast_f (edict_t *ent)
-{
-	gclient_t	*cl;
-	int			index;
-	gitem_t		*it;
-
-	if(sv_cinematicfreeze->value)
-		return;
-
-	cl = ent->client;
-
-	if (!cl->playerinfo.pers.weapon || !cl->playerinfo.pers.lastweapon)
-		return;
-
-	index = ITEM_INDEX(cl->playerinfo.pers.lastweapon);
-	if (!cl->playerinfo.pers.inventory.Items[index])
-		return;
-
-	it = &playerExport.p_itemlist[index];
-	if (!it->use)
-		return;
-	if (! (it->flags & IT_WEAPON) )
-		return;
-
-	it->use(&ent->client->playerinfo,it);
 }
 
 /*
