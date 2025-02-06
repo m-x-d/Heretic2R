@@ -21,6 +21,7 @@ int MonsterHealth(int health);
 
 qboolean monster_start (edict_t *self);
 void walkmonster_start_go (edict_t *self);
+extern void pitch_roll_for_slope(edict_t* forwhom, vec3_t pass_slope); //mxd
 
 void DeadMsgHandler(edict_t *self, G_Message_t *msg);
 

@@ -32,7 +32,6 @@ void SV_FixCheckBottom (edict_t *ent);
 qboolean clear_visible (edict_t *self, edict_t *other);
 float ai_face_goal (edict_t *self);
 void ai_flee (edict_t *self, float dist);
-void pitch_roll_for_slope (edict_t *forwhom, vec3_t *slope);
 void BecomeDebris(edict_t *self);
 qboolean MG_MoveToGoal (edict_t *self, float dist);
 void MG_BuoyNavigate(edict_t *self);

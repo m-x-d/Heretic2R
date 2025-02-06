@@ -1517,7 +1517,6 @@ void ogle_start_push (edict_t *self, edict_t *other, edict_t *activator)
 }
 
 qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink);
-void pitch_roll_for_slope (edict_t *forwhom, vec3_t *slope);
 void ogle_push (edict_t *self, float dist)
 {
 	edict_t	*found = NULL;

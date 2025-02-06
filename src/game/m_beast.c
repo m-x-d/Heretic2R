@@ -670,7 +670,6 @@ void tbeast_death(edict_t *self, G_Message_t *msg)
 	SetAnim(self, ANIM_DIE_NORM);
 }
 
-void pitch_roll_for_slope (edict_t *forwhom, vec3_t *slope);
 void tbeast_go_die (edict_t *self, edict_t *other, edict_t *activator)
 {
 	M_ShowLifeMeter(self, 0, 0);
