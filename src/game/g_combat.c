@@ -5,7 +5,6 @@
 //
 
 #include "g_combat.h" //mxd
-#include "g_ai.h" //mxd
 #include "g_cmds.h" //mxd
 #include "g_HitLocation.h"
 #include "p_main.h"

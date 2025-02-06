@@ -8,6 +8,7 @@
 //==============================================================================
 
 #include "g_local.h"
+#include "g_ai.h" //mxd
 
 #pragma hdrstop("g_local.pch")
 // PRECOMPILED HEADER ABOVE
@@ -16,7 +17,6 @@
 
 #include "m_gkrokon_anim.h"
 #include "m_gkrokon_local.h"
-#include "random.h"
 
 // ****************************************************************************
 // Stand1 - Laid down, resting, still on the floor.

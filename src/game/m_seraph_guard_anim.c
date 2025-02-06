@@ -1,4 +1,5 @@
 #include "g_local.h"
+#include "g_ai.h" //mxd
 #include "m_seraph_guard_local.h"
 #include "m_seraph_guard_anim.h"
 #include "m_stats.h"

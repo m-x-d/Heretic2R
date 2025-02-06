@@ -1,4 +1,5 @@
 #include "g_local.h"
+#include "g_ai.h" //mxd
 #include "m_priestess_local.h"
 #include "m_priestess_anim.h"
 

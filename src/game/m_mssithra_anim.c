@@ -8,6 +8,7 @@
 //==============================================================================
 
 #include "g_local.h"
+#include "g_ai.h" //mxd
 
 #include "m_mssithra_anim.h"
 #include "m_mssithra_local.h"

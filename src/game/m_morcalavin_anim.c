@@ -1,4 +1,5 @@
 #include "g_local.h"
+#include "g_ai.h" //mxd
 #include "m_morcalavin_local.h"
 #include "m_morcalavin_anim.h"
 

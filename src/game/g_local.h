@@ -744,18 +744,6 @@ extern void M_CheckGround(edict_t* ent);
 extern void ThrowGib(edict_t* self, char* gibname, int damage, int type);
 extern void BecomeExplosion1(edict_t* self);
 
-// g_ai.c
-extern void ai_stand(edict_t* self, float dist);
-extern void ai_move(edict_t* self, float dist);
-extern void ai_walk(edict_t* self, float dist);
-extern void ai_turn(edict_t* self, float dist);
-extern void ai_run(edict_t* self, float dist);
-extern void ai_charge(edict_t* self, float dist);
-extern void ai_eat(edict_t* self, float dist);
-extern void ai_flee(edict_t* self, float dist);
-extern void FoundTarget(edict_t* self, qboolean setsightent);
-extern qboolean FacingIdeal(edict_t* self);
-
 // p_client.c
 extern void respawn(edict_t* ent);
 extern void PutClientInServer(edict_t* ent);

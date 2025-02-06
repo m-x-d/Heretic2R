@@ -9,6 +9,7 @@
 #define G_MONSTER_H
 
 #include "g_local.h"
+#include "g_ai.h" //mxd
 #include "Message.h"
 #include "g_ClassStatics.h"
 
