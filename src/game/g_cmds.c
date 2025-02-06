@@ -889,26 +889,22 @@ static void Cmd_KillMonsters_f(edict_t* ent)
 	}
 }
 
-void Cmd_CrazyMonsters_f(edict_t *ent)
+static void Cmd_CrazyMonsters_f(const edict_t* ent)
 {
-	edict_t *searchent;
-	edict_t *enemy_ent;
-
 	gi.cprintf(ent, PRINT_HIGH, "Berzerking all level monsters\n");
 	ANARCHY = true;
-	for (searchent = g_edicts; searchent < &g_edicts[globals.num_edicts]; searchent++)
+
+	for (edict_t* e = g_edicts; e < &g_edicts[globals.num_edicts]; e++)
 	{
-		if (!searchent->inuse)
-			continue;
-		if (searchent->svflags & SVF_MONSTER)
+		if (e->inuse && e->svflags & SVF_MONSTER)
 		{
-			enemy_ent = NULL;
-			while(!enemy_ent || !enemy_ent->inuse || !(enemy_ent->svflags & SVF_MONSTER)||enemy_ent->health<0||enemy_ent == searchent)
-			{
-				enemy_ent = &g_edicts[irand(0, globals.num_edicts)];
-			}
-			searchent->enemy = enemy_ent;
-			FoundTarget(searchent, false);
+			// Pick random enemy.
+			edict_t* enemy = NULL;
+			while (enemy == NULL || !enemy->inuse || !(enemy->svflags & SVF_MONSTER) || enemy->health < 0 || enemy == e)
+				enemy = &g_edicts[irand(0, globals.num_edicts - 1)]; //BUGFIX: mxd. irand(0, globals.num_edicts) in original logic, which can potentially cause array overrun.
+
+			e->enemy = enemy;
+			FoundTarget(e, false);
 		}
 	}
 }
