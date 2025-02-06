@@ -173,125 +173,79 @@ void ValidateSelectedItem(const edict_t* ent)
 		SelectNextItem(ent, -1);
 }
 
-/*
-==================
-Cmd_Give_f
+#pragma region ========================== Command handlers ==========================
 
-Give items to a client
-==================
-*/
-void Cmd_Give_f (edict_t *ent)
+// Give items to a client.
+static void Cmd_Give_f(edict_t* ent)
 {
-	char		*name;
-	gitem_t		*it;
-	int			index;
-	int			i;
-	qboolean	give_all;
-
-	if (deathmatch->value && !sv_cheats->value)
+	if (DEATHMATCH && !SV_CHEATS)
 	{
-		gi.gamemsg_centerprintf (ent, GM_NOCHEATS);
+		gi.gamemsg_centerprintf(ent, GM_NOCHEATS);
 		return;
 	}
 
-	name = gi.args();
-	// FOR TESTING ONLY !
+	const char* name = gi.args();
 
-	if ((Q_stricmp(name, "level") == 0))
+	// FOR TESTING ONLY!
+	if (Q_stricmp(name, "level") == 0)
 	{
+		// Give level-specified weapons.
+		if (level.offensive_weapons & 4)
+			AddWeaponToInventory(P_FindItem("hell"), ent);
 
-		if(level.offensive_weapons&4)
-		{	
-			it=P_FindItem("hell");
-			AddWeaponToInventory(it,ent);
-		}
+		if (level.offensive_weapons & 8)
+			AddWeaponToInventory(P_FindItem("array"), ent);
 
-		if(level.offensive_weapons&8)
-		{	
-			it=P_FindItem("array");
-			AddWeaponToInventory(it,ent);
-		}
+		if (level.offensive_weapons & 16)
+			AddWeaponToInventory(P_FindItem("rain"), ent);
 
-		if(level.offensive_weapons&16)
-		{	
-			it=P_FindItem("rain");
-			AddWeaponToInventory(it,ent);
-		}
+		if (level.offensive_weapons & 32)
+			AddWeaponToInventory(P_FindItem("sphere"), ent);
 
-		if(level.offensive_weapons&32)
-		{	
-			it=P_FindItem("sphere");
-			AddWeaponToInventory(it,ent);
-		}
+		if (level.offensive_weapons & 64)
+			AddWeaponToInventory(P_FindItem("phoen"), ent);
 
-		if(level.offensive_weapons&64)
-		{	
-			it=P_FindItem("phoen");
-			AddWeaponToInventory(it,ent);
-		}
+		if (level.offensive_weapons & 128)
+			AddWeaponToInventory(P_FindItem("mace"), ent);
 
-		if(level.offensive_weapons&128)
-		{	
-			it=P_FindItem("mace");
-			AddWeaponToInventory(it,ent);
-		}
+		if (level.offensive_weapons & 256)
+			AddWeaponToInventory(P_FindItem("fwall"), ent);
 
-		if(level.offensive_weapons&256)
-		{	
-			it=P_FindItem("fwall");
-			AddWeaponToInventory(it,ent);
-		}
+		// Give level-specified defenses.
+		if (level.defensive_weapons & 1)
+			AddDefenseToInventory(P_FindItem("ring"), ent);
 
-		if(level.defensive_weapons&1)
-		{	
-			it=P_FindItem("ring");
-			AddDefenseToInventory(it,ent);
-		}
+		if (level.defensive_weapons & 2)
+			AddDefenseToInventory(P_FindItem("lshield"), ent);
 
-		if(level.defensive_weapons&2)
-		{
-			it=P_FindItem("lshield");
-			AddDefenseToInventory(it,ent);
-		}
+		if (level.defensive_weapons & 4)
+			AddDefenseToInventory(P_FindItem("tele"), ent);
 
-		if(level.defensive_weapons&4)
-		{	
-			it=P_FindItem("tele");
-			AddDefenseToInventory(it,ent);
-		}
+		if (level.defensive_weapons & 8)
+			AddDefenseToInventory(P_FindItem("morph"), ent);
 
-		if(level.defensive_weapons&8)
-		{	
-			it=P_FindItem("morph");
-			AddDefenseToInventory(it,ent);
-		}
-
-		if(level.defensive_weapons&16)
-		{	
-			it=P_FindItem("meteor");
-			AddDefenseToInventory(it,ent);	
-		}
+		if (level.defensive_weapons & 16)
+			AddDefenseToInventory(P_FindItem("meteor"), ent);
 
 		SetupPlayerinfo_effects(ent);
 		P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
 		WritePlayerinfo_effects(ent);
+
 		return;
 	}
 
-	if (Q_stricmp(name, "all") == 0)
-		give_all = true;
-	else
-		give_all = false;
+	const qboolean give_all = (Q_stricmp(name, "all") == 0);
+	client_persistant_t* pers = &ent->client->playerinfo.pers; //mxd
 
 	if (give_all || Q_stricmp(name, "health") == 0)
 	{
 		if (gi.argc() == 3)
-			ent->health += atoi(gi.argv(2));
+			ent->health += Q_atoi(gi.argv(2)); //mxd. atoi -> Q_atoi //TODO: shouldn't this be clamped by max_health?
 		else
 			ent->health = ent->max_health;
-		
-		if(give_all || ent->health == ent->max_health)
-			ResetPlayerBaseNodes (ent);//put back all your limbs!
+
+		if (give_all || ent->health == ent->max_health)
+			ResetPlayerBaseNodes(ent); // Put back all your limbs!
 
 		if (!give_all)
 			return;
@@ -299,50 +253,42 @@ void Cmd_Give_f (edict_t *ent)
 
 	if (give_all || Q_stricmp(name, "weapons") == 0)
 	{
-		for (i=0 ; i<game.num_items ; i++)
+		for (int i = 0; i < game.num_items; i++)
 		{
-			it = playerExport.p_itemlist + i;
-			if (!it->pickup)
-				continue;
-			if (!(it->flags & IT_WEAPON))
+			const gitem_t* item = &playerExport.p_itemlist[i];
+
+			if (item->pickup == NULL || !(item->flags & IT_WEAPON))
 				continue;
 
-			ent->client->playerinfo.pers.inventory.Items[i] += 1;
+			pers->inventory.Items[i]++;
 
-			if((it->playeranimseq == ASEQ_WRRBOW_GO)||(it->playeranimseq == ASEQ_WPHBOW_GO))
+			if (item->playeranimseq == ASEQ_WRRBOW_GO || item->playeranimseq == ASEQ_WPHBOW_GO)
 			{
-				// This is a bow, put the bow on his back.
-
-				if (it->tag == ITEM_WEAPON_PHOENIXBOW)
-					ent->client->playerinfo.pers.bowtype = BOW_TYPE_PHOENIX;
-				else
-					ent->client->playerinfo.pers.bowtype = BOW_TYPE_REDRAIN;
+				// This is a bow, put the bow on player's back.
+				pers->bowtype = ((item->tag == ITEM_WEAPON_PHOENIXBOW) ? BOW_TYPE_PHOENIX : BOW_TYPE_REDRAIN);
 
 				SetupPlayerinfo_effects(ent);
 				P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
 				WritePlayerinfo_effects(ent);
 			}
 		}
+
 		if (!give_all)
 			return;
 	}
 
 	if (give_all || Q_stricmp(name, "defences") == 0)
-	{														
-		for (i=0 ; i<game.num_items ; i++)
+	{
+		for (int i = 0; i < game.num_items; i++)
 		{
-			it = playerExport.p_itemlist + i;
-			if (!it->pickup)
-				continue;
-			if (!(it->flags & IT_DEFENSE))
-				continue;
-
-			ent->client->playerinfo.pers.inventory.Items[i] += 1;
+			const gitem_t* item = &playerExport.p_itemlist[i];
+			if (item->pickup != NULL && (item->flags & IT_DEFENSE))
+				pers->inventory.Items[i]++;
 		}
 
-		// if we don't already have a defence item, make the ring default
-		if (ent->client->playerinfo.pers.defence == NULL)
-			ent->client->playerinfo.pers.defence=P_FindItem("ring");
+		// If we don't already have a defence item, make the ring default.
+		if (pers->defence == NULL)
+			pers->defence = P_FindItem("ring");
 
 		if (!give_all)
 			return;
@@ -350,31 +296,28 @@ void Cmd_Give_f (edict_t *ent)
 
 	if (give_all || Q_stricmp(name, "mana") == 0)
 	{
-		for (i=0 ; i<game.num_items ; i++)
+		for (int i = 0; i < game.num_items; i++)
 		{
-			it = playerExport.p_itemlist + i;
-			if (!it->pickup)
-				continue;
-			if (!(it->flags & IT_AMMO))
-				continue;
-			Add_Ammo (ent, it, 1000);
+			const gitem_t* item = &playerExport.p_itemlist[i];
+			if (item->pickup != NULL && (item->flags & IT_AMMO))
+				Add_Ammo(ent, item, 1000);
 		}
+
 		if (!give_all)
 			return;
 	}
 
 	if (give_all || Q_stricmp(name, "armor") == 0)
 	{
-		if (ent->client->playerinfo.pers.armortype == ARMOR_TYPE_NONE)
+		if (pers->armortype == ARMOR_TYPE_NONE)
 		{
-			ent->client->playerinfo.pers.armor_count = silver_armor_info.max_armor;
-			ent->client->playerinfo.pers.armortype = ARMOR_TYPE_SILVER;
+			pers->armor_count = silver_armor_info.max_armor;
+			pers->armortype = ARMOR_TYPE_SILVER;
 		}
-		else	// We'll assume there's armor, so load up with gold.
+		else // We'll assume there's armor, so load up with gold.
 		{
-			ent->client->playerinfo.pers.armor_count = gold_armor_info.max_armor;
-			ent->client->playerinfo.pers.armortype = ARMOR_TYPE_GOLD;
-
+			pers->armor_count = gold_armor_info.max_armor;
+			pers->armortype = ARMOR_TYPE_GOLD;
 		}
 
 		SetupPlayerinfo_effects(ent);
@@ -385,69 +328,54 @@ void Cmd_Give_f (edict_t *ent)
 			return;
 	}
 
-	// Give all does not give staff powerup
+	// Give all does not give staff powerup.
 	if (Q_stricmp(name, "staff") == 0)
 	{
-		if (ent->client->playerinfo.pers.stafflevel < (STAFF_LEVEL_MAX-1))
-			ent->client->playerinfo.pers.stafflevel++;
+		if (pers->stafflevel < STAFF_LEVEL_MAX - 1)
+			pers->stafflevel++;
 		else
-			ent->client->playerinfo.pers.stafflevel = STAFF_LEVEL_BASIC;
+			pers->stafflevel = STAFF_LEVEL_BASIC;
 
-		gi.dprintf("Setting staff level to %d\n", ent->client->playerinfo.pers.stafflevel);
+		gi.dprintf("Setting staff level to %d\n", pers->stafflevel);
 
 		SetupPlayerinfo_effects(ent);
 		P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
 		WritePlayerinfo_effects(ent);
-		
+
 		return;
 	}
 
-	// Give all does not give lungs
+	// Give all does not give lungs.
 	if (Q_stricmp(name, "lungs") == 0)
 	{
-
-		// add gam time + 30 secs to lungs timer
-
 		ent->client->playerinfo.lungs_timer = LUNGS_DURATION;
 		ent->air_finished = level.time + HOLD_BREATH_TIME;
 
 		return;
 	}
 
-	// Give all does not give powerups
+	// Give all does not give powerups.
 	if (Q_stricmp(name, "powerup") == 0)
 	{
-
-		// add gam time + 30 secs to powerup timer
-
-		ent->client->playerinfo.powerup_timer = POWERUP_DURATION + level.time;
-
+		ent->client->playerinfo.powerup_timer = level.time + POWERUP_DURATION;
 		return;
 	}
 
 	// Give all does not give reflection.
 	if (Q_stricmp(name, "reflection") == 0)
 	{
-
-		// add gam time + 30 secs to reflect timer
-
-		// add some time in on the timer for the reflectivity
 		ent->client->playerinfo.reflect_timer = level.time + REFLECT_DURATION_SINGLE;
-	
-		// turn on the relection at the client effect end through client flags that are passed down
-		ent->s.renderfx |= RF_REFLECTION;
-	
+		ent->s.renderfx |= RF_REFLECTION; // Turn on reflection client effect.
+
 		return;
 	}
 
-	// Give all does not give ghost
+	// Give all does not give ghost.
 	if (Q_stricmp(name, "ghost") == 0)
 	{
-		// add some time in on the timer for the ghost effect
 		ent->client->playerinfo.ghost_timer = level.time + GHOST_DURATION;
+		ent->s.renderfx |= RF_TRANS_GHOST; // Turn on ghosting client effect.
 
-		// turn on the ghosting at the client effect end through client flags that are passed down
-		ent->s.renderfx |= RF_TRANS_GHOST;
 		return;
 	}
 
@@ -455,90 +383,75 @@ void Cmd_Give_f (edict_t *ent)
 	if (Q_stricmp(name, "chicken") == 0)
 	{
 		MorphPlayerToChicken(ent, ent);
-	
 		return;
 	}
 
-	// Give all does not give plague
+	// Give all does not give plague.
 	if (Q_stricmp(name, "plague") == 0)
 	{
-		char	userinfo[MAX_INFO_STRING];
-		
-		if (ent->client->playerinfo.plaguelevel < PLAGUE_NUM_LEVELS-1)
+		if (ent->client->playerinfo.plaguelevel < PLAGUE_NUM_LEVELS - 1)
 			ent->client->playerinfo.plaguelevel++;
 		else
-			ent->client->playerinfo.plaguelevel=0;
+			ent->client->playerinfo.plaguelevel = 0;
 
 		gi.dprintf("Setting plague level to %d\n", ent->client->playerinfo.plaguelevel);
 
-		memcpy (userinfo, ent->client->playerinfo.pers.userinfo, sizeof(userinfo));
-		ClientUserinfoChanged (ent, userinfo);
+		char userinfo[MAX_INFO_STRING];
+		memcpy(userinfo, pers->userinfo, sizeof(userinfo));
+		ClientUserinfoChanged(ent, userinfo);
 
 		SetupPlayerinfo_effects(ent);
 		P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
 		WritePlayerinfo_effects(ent);
-	
+
 		return;
 	}
 
+	// Give puzzle items (?).
 	if (give_all)
 	{
-		for (i=0 ; i<game.num_items ; i++)
+		for (int i = 0; i < game.num_items; i++)
 		{
-			it = playerExport.p_itemlist + i;
-			if ((!it->pickup) && !(it->flags & IT_PUZZLE))
-				continue;
-			if (it->flags & (IT_ARMOR|IT_WEAPON|IT_AMMO|IT_DEFENSE))
+			const gitem_t* item = &playerExport.p_itemlist[i];
+
+			if (item->pickup == NULL && !(item->flags & IT_PUZZLE))
 				continue;
 
-			ent->client->playerinfo.pers.inventory.Items[i] = 1;
+			if (item->flags & (IT_ARMOR | IT_WEAPON | IT_AMMO | IT_DEFENSE)) //TODO: should skip IT_HEALTH items too?
+				continue;
+
+			pers->inventory.Items[i] = 1;
 		}
+
 		return;
 	}
 
-	it = P_FindItem (name);
-	if (!it)
+	// Give specific item by name, with optional count.
+	const char* item_name = gi.argv(1); //mxd
+	gitem_t* item = P_FindItem(item_name);
+	if (item == NULL)
 	{
-		name = gi.argv(1);
-		it = P_FindItem (name);
-		if (!it)
-		{
-			gi.dprintf ("unknown item\n");
-			return;
-		}
-	}
-
-	if (!it->pickup)
-	{
-		gi.dprintf ("non-pickup item\n");
+		gi.dprintf("Unknown item\n");
 		return;
 	}
 
-	index = ITEM_INDEX(it);
+	if (item->pickup == NULL)
+	{
+		gi.dprintf("Non-pickup item\n");
+		return;
+	}
 
-	if (it->flags & IT_WEAPON)
-	{
-		ent->client->playerinfo.pers.inventory.Items[index] += 1;
-	}
-	else if (it->flags & IT_AMMO)
-	{
-		if (gi.argc() == 3)
-			ent->client->playerinfo.pers.inventory.Items[index] += atoi(gi.argv(2));
-		else
-			ent->client->playerinfo.pers.inventory.Items[index] += it->quantity;
-	}
+	const int index = ITEM_INDEX(item);
+
+	if (item->flags & IT_AMMO)
+		pers->inventory.Items[index] += ((gi.argc() == 3) ? Q_atoi(gi.argv(2)) : item->quantity); //mxd. atoi -> Q_atoi
 	else
-	{
-		ent->client->playerinfo.pers.inventory.Items[index] += 1;
-	}
+		pers->inventory.Items[index]++;
 
- 	// if we don't already have a defence item, make this defence item default
-	if ((ent->client->playerinfo.pers.defence == NULL) && (it->flags & IT_DEFENSE))
-			ent->client->playerinfo.pers.defence=it;
-
-
+	// If we don't already have a defence item, make this defence item default.
+	if (pers->defence == NULL && item->flags & IT_DEFENSE)
+		pers->defence = item;
 }
-
 
 /*
 ==================
@@ -1337,6 +1250,8 @@ void Cmd_TestFX_f (edict_t *ent)
 	P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
 	WritePlayerinfo_effects(ent);
 }
+
+#pragma endregion
 
 /*
 =================
