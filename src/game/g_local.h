@@ -624,6 +624,15 @@ extern cvar_t* flood_persecond;
 extern cvar_t* flood_waitdelay;
 extern cvar_t* flood_killdelay;
 
+//mxd. For simplicity of use...
+#define FLOOD_MSGS			((int)flood_msgs->value)
+#define MAXCLIENTS			((int)maxclients->value)
+#define DEATHMATCH			((int)deathmatch->value)
+#define DMFLAGS				((int)dmflags->value)
+#define DEDICATED			((int)dedicated->value)
+#define SV_CINEMATICFREEZE	((int)sv_cinematicfreeze->value)
+#define SV_CHEATS			((int)sv_cheats->value)
+
 extern int self_spawn;
 #define world (&g_edicts[0])
 
