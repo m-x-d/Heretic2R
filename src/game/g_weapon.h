@@ -26,6 +26,5 @@ void WeaponThink_Blast(edict_t *Caster,char *Format,...);
 void WeaponThink_RedRainBow(edict_t *Caster, char *Format,...);
 void WeaponThink_PhoenixBow(edict_t *Caster, char *Format,...);
 void WeaponThink_HellStaff(edict_t *Caster, char *Format,...);
-extern void AlertMonsters (edict_t *self, edict_t *enemy, float lifetime, qboolean ignore_shadows);
 
 #endif // P_WEAPON_H

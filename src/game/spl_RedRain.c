@@ -7,6 +7,7 @@
 #include "fx.h"
 #include "vector.h"
 #include "angles.h"
+#include "g_ai.h"
 #include "matrix.h"
 #include "g_volume_effect.h"
 #include "Utilities.h"
@@ -15,8 +16,6 @@
 
 #define ARROW_RADIUS			2.0F
 #define ARROW_BACKUP			(45.0F - ARROW_RADIUS)
-
-extern void AlertMonsters (edict_t *self, edict_t *enemy, float lifetime, qboolean ignore_shadows);
 
 void create_redarrow(edict_t *redarrow);
 

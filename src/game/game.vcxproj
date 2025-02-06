@@ -219,6 +219,7 @@
     <ClInclude Include="ds.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GameEntity.h" />
+    <ClInclude Include="g_ai.h" />
     <ClInclude Include="g_ClassStatics.h" />
     <ClInclude Include="g_cmds.h" />
     <ClInclude Include="g_combat.h" />

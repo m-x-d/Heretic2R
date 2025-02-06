@@ -1,7 +1,7 @@
 // g_ai.c
 
 #include <assert.h>
-#include "g_local.h"
+#include "g_ai.h" //mxd
 #include "g_monster.h"
 #include "Random.h"
 #include "vector.h"

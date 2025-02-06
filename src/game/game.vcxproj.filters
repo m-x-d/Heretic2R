@@ -1076,5 +1076,8 @@
     <ClInclude Include="spl_morph.h">
       <Filter>src\Spells</Filter>
     </ClInclude>
+    <ClInclude Include="g_ai.h">
+      <Filter>src\Monsters</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

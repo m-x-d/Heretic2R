@@ -11,6 +11,7 @@
 #include "vector.h"
 #include "random.h"
 #include "decals.h"
+#include "g_ai.h"
 #include "Utilities.h"
 #include "g_playstats.h"
 #include "g_Physics.h"
@@ -21,7 +22,7 @@
 #define TORN_KNOCKBACK_SCALE	200.0
 #define TORN_KNOCKBACK_BASE		250.0
 #define TORN_MASS_FACTOR		200.0
-extern void AlertMonsters (edict_t *self, edict_t *enemy, float lifetime, qboolean ignore_shadows);
+
 static void tornboltTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface);
 extern edict_t *findringradius (edict_t *from, vec3_t org, float rad, edict_t *ringent);
 void SpellCasttornbolt(edict_t *caster, vec3_t startpos, vec3_t aimangles, vec3_t aimdir, float value);

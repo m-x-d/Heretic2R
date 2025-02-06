@@ -21,7 +21,6 @@
 #define RING_THINKS	4		// This is a .4 seconds
 
 
-extern void AlertMonsters (edict_t *self, edict_t *enemy, float lifetime, qboolean ignore_shadows);
 extern edict_t *PhoenixMissileReflect(edict_t *missile, edict_t *other, vec3_t vel);
 extern edict_t *RedRainMissileReflect(edict_t *self, edict_t *other, vec3_t vel);
 extern edict_t *MeteorBarrierReflect(edict_t *self, edict_t *other, vec3_t vel);

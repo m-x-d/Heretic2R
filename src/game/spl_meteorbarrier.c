@@ -12,6 +12,7 @@
 #include "random.h"
 #include "vector.h"
 #include "decals.h"
+#include "g_ai.h"
 #include "g_playstats.h"
 
 #define METEOR_BARRIER_DIE_EXPLODE			1
@@ -25,7 +26,6 @@ static void MeteorBarrierSearchInitThink(edict_t *self);
 static void MeteorBarrierSearchThink(edict_t *self);
 static void MeteorBarrierHuntThink(edict_t *self);
 static void MeteorBarrierTouch(edict_t *self, trace_t *trace);
-extern void AlertMonsters (edict_t *self, edict_t *enemy, float lifetime, qboolean ignore_shadows);
 
 void create_meteor(edict_t *Meteor);
 vec3_t	BBMin = {-5.0,-5.0,-5.0};

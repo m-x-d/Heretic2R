@@ -5,6 +5,7 @@
 //
 
 #include "g_combat.h" //mxd
+#include "g_ai.h" //mxd
 #include "g_cmds.h" //mxd
 #include "g_HitLocation.h"
 #include "p_main.h"
@@ -20,8 +21,6 @@
 
 gitem_armor_t silver_armor_info	= {MAX_SILVER_ARMOR, SILVER_HIT_MULT, SILVER_SPELL_MULT};
 gitem_armor_t gold_armor_info	= {MAX_GOLD_ARMOR, GOLD_HIT_MULT, GOLD_SPELL_MULT};
-
-extern void AlertMonsters (edict_t *self, edict_t *enemy, float lifetime, qboolean ignore_shadows);
 
 /* 
 ============

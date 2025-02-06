@@ -9,6 +9,7 @@
 #include "g_local.h"
 #include "fx.h"
 #include "Angles.h"
+#include "g_ai.h"
 #include "Utilities.h"
 #include "random.h"
 #include "vector.h"
@@ -17,7 +18,6 @@
 #include "g_playstats.h"
 
 extern void	SelectSpawnPoint (edict_t *ent,vec3_t origin, vec3_t angles);
-extern void AlertMonsters (edict_t *self, edict_t *enemy, float lifetime, qboolean ignore_shadows);
 
 // PLAYER ONLY!!!
 // make the guy actually teleport from one place to another

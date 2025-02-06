@@ -10,6 +10,7 @@
 #include "vector.h"
 #include "g_skeletons.h"
 #include "angles.h"
+#include "g_ai.h"
 #include "Reference.h"
 #include "Random.h"
 #include "Utilities.h"
@@ -35,7 +36,6 @@ extern void SpellCastHellstaff(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,
 
 static void Weapon_CalcStartPos(vec3_t OriginToLowerJoint,vec3_t OriginToUpperJoint,
 								vec3_t DefaultStartPos,vec3_t ActualStartPos,edict_t *Caster);
-extern void AlertMonsters (edict_t *self, edict_t *enemy, float lifetime, qboolean ignore_shadows);
 
 // ************************************************************************************************
 // Weapon_CalcStartPos

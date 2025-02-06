@@ -12,11 +12,11 @@
 #include "vector.h"
 #include "random.h"
 #include "decals.h"
+#include "g_ai.h"
 #include "p_main.h"
 #include "g_playstats.h"
 #include "m_beast.h"
 
-extern void AlertMonsters (edict_t *self, edict_t *enemy, float lifetime, qboolean ignore_shadows);
 static void HellboltThink(edict_t *Self);
 static void HellboltTouch(edict_t *Self,edict_t *Other,cplane_t *Plane,csurface_t *Surface);
 
