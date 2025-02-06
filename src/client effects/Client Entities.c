@@ -335,7 +335,8 @@ int UpdateEffects(client_entity_t** root, centity_t* owner)
 		if (current->Update != NULL && current->nextThinkTime <= fxi.cl->time)
 		{
 			// Only think when not culled and not think culled.
-			if (!(current->flags & CEF_VIEWSTATUSCHANGED) && !(current->flags & CEF_CULLED) && !current->Update(current, owner))
+			const qboolean is_culled = (current->flags & CEF_VIEWSTATUSCHANGED) && (current->flags & CEF_CULLED); //mxd
+			if (!is_culled && !current->Update(current, owner))
 			{
 				RemoveEffectFromList(prev, owner);
 
