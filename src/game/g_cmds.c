@@ -166,16 +166,11 @@ static void SelectPrevItem(const edict_t* ent, const int item_flags)
 	cl->playerinfo.pers.selected_item = -1;
 }
 
-void ValidateSelectedItem (edict_t *ent)
+void ValidateSelectedItem(const edict_t* ent)
 {
-	gclient_t	*cl;
-
-	cl = ent->client;
-
-	if (cl->playerinfo.pers.inventory.Items[cl->playerinfo.pers.selected_item])
-		return;		// valid
-
-	SelectNextItem (ent, -1);
+	const client_persistant_t* pers = &ent->client->playerinfo.pers;
+	if (pers->inventory.Items[pers->selected_item] == 0)
+		SelectNextItem(ent, -1);
 }
 
 /*
