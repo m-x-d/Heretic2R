@@ -51,26 +51,21 @@ static qboolean CheckFlood(const edict_t* ent)
 	return false;
 }
 
-char *ClientSkinTeam (edict_t *ent)
+static char* ClientSkinTeam(const edict_t* ent)
 {
-	char		*p;
 	static char	value[512];
 
 	value[0] = 0;
 
-	if (!ent->client)
+	if (ent->client == NULL)
 		return value;
 
-	strcpy(value, Info_ValueForKey (ent->client->playerinfo.pers.userinfo, "skin"));
+	strcpy_s(value, sizeof(value), Info_ValueForKey(ent->client->playerinfo.pers.userinfo, "skin")); //mxd. strcpy -> strcpy_s
 
-	p = strchr(value, '/');
-	if (!p)
-		return value;
+	char* p = strchr(value, '/');
 
-	// if ((int)(dmflags->value) & DF_SKINTEAMS)
-	return ++p;
+	return (p != NULL ? ++p : value);
 }
-
 
 char *ClientModelTeam (edict_t *ent)
 {
