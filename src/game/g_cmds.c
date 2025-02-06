@@ -67,31 +67,29 @@ static char* ClientSkinTeam(const edict_t* ent)
 	return (p != NULL ? ++p : value);
 }
 
-char *ClientModelTeam (edict_t *ent)
+static char* ClientModelTeam(const edict_t* ent)
 {
-	char		*p;
 	static char	value[512];
 
 	value[0] = 0;
 
-	if (!ent->client)
+	if (ent->client == NULL)
 		return value;
 
-	strcpy(value, Info_ValueForKey (ent->client->playerinfo.pers.userinfo, "skin"));
+	strcpy_s(value, sizeof(value), Info_ValueForKey(ent->client->playerinfo.pers.userinfo, "skin")); //mxd. strcpy -> strcpy_s
 
-	p = strchr(value, '/');
-	if (!p)
-	{	// If no slash, then assume male
-		strcpy(value, "male");
+	char* p = strchr(value, '/');
+
+	if (p == NULL)
+	{
+		// If no slash, then assume male.
+		strcpy_s(value, sizeof(value), "male"); //mxd. strcpy -> strcpy_s
 		return value;
 	}
 
 	*p = 0;
-
-	// if ((int)(dmflags->value) & DF_SKINTEAMS)
 	return value;
 }
-
 
 qboolean OnSameTeam (edict_t *ent1, edict_t *ent2)
 {
