@@ -800,51 +800,44 @@ static int PlayerSort(const void* a, const void* b)
 	return 0;
 }
 
-/*
-=================
-Cmd_Players_f
-=================
-*/
-void Cmd_Players_f (edict_t *ent)
+static void Cmd_Players_f(const edict_t* ent)
 {
-	int		i;
-	int		count;
-	char	qsmall[64];
-	char	large[1280];
-	int		index[256];
+	int client_indices[256];
 
-	count = 0;
-	for (i = 0 ; i < maxclients->value ; i++)
-		
+	int clients_count = 0;
+	for (int i = 0; i < MAXCLIENTS; i++)
+	{
 		if (game.clients[i].playerinfo.pers.connected)
 		{
-			index[count] = i;
-			count++;
+			client_indices[clients_count] = i;
+			clients_count++;
 		}
-
-	// sort by frags
-	qsort (index, count, sizeof(index[0]), PlayerSort);
-
-	// print information
-	large[0] = 0;
-
-	for (i = 0 ; i < count ; i++)
-	{
-		Com_sprintf (qsmall, sizeof(qsmall), "%3i %s\n",
-
-		game.clients[index[i]].ps.stats[STAT_FRAGS],
-
-		game.clients[index[i]].playerinfo.pers.netname);
-
-		if (strlen (qsmall) + strlen(large) > sizeof(large) - 100 )
-		{	// can't print all of them in one packet
-			strcat (large, "...\n");
-			break;
-		}
-		strcat (large, qsmall);
 	}
 
-	gi.cprintf (ent, PRINT_HIGH, "%s\n%i players\n", large, count);
+	// Sort by frags.
+	qsort(client_indices, clients_count, sizeof(client_indices[0]), PlayerSort);
+
+	// Print information.
+	char message[1024] = { 0 }; //BUGFIX: mxd. 1280 in original logic (exceeds buffer size in PF_cprintf).
+	const char* fmt = "%s\n%i players\n"; //mxd
+	const int fmt_len = (int)strlen(fmt) + 1; //mxd
+
+	for (int i = 0; i < clients_count; i++)
+	{
+		char line[64];
+		Com_sprintf(line, sizeof(line), "%3i %s\n", game.clients[client_indices[i]].ps.stats[STAT_FRAGS], game.clients[client_indices[i]].playerinfo.pers.netname);
+
+		if (strlen(line) + strlen(message) > sizeof(message) - fmt_len) //mxd. sizeof(large) - 100 in original logic.
+		{
+			// Can't print all of them in one packet.
+			strcat_s(message, sizeof(message), "...\n"); //mxd. strcat -> strcat_s
+			break;
+		}
+
+		strcat_s(message, sizeof(message), line); //mxd. strcat -> strcat_s
+	}
+
+	gi.cprintf(ent, PRINT_HIGH, fmt, message, clients_count);
 }
 
 /*
