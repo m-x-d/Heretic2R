@@ -91,32 +91,26 @@ static char* ClientModelTeam(const edict_t* ent)
 	return value;
 }
 
-qboolean OnSameTeam (edict_t *ent1, edict_t *ent2)
+qboolean OnSameTeam(const edict_t* ent1, const edict_t* ent2)
 {
-	char	ent1Team [512];
-	char	ent2Team [512];
+	char ent1_team[512];
+	char ent2_team[512];
 
-	if (!((int)(dmflags->value) & (DF_MODELTEAMS | DF_SKINTEAMS)))
+	if (!(DMFLAGS & (DF_MODELTEAMS | DF_SKINTEAMS)))
 		return false;
 
-	if ((int)(dmflags->value) & DF_SKINTEAMS)
+	if (DMFLAGS & DF_SKINTEAMS)
 	{
-		strcpy (ent1Team, ClientSkinTeam (ent1));
-		strcpy (ent2Team, ClientSkinTeam (ent2));
-
-		if (stricmp(ent1Team, ent2Team) == 0)
-			return true;
+		strcpy_s(ent1_team, sizeof(ent1_team), ClientSkinTeam(ent1)); //mxd. strcpy -> strcpy_s
+		strcpy_s(ent2_team, sizeof(ent2_team), ClientSkinTeam(ent2)); //mxd. strcpy -> strcpy_s
 	}
 	else
 	{
-		strcpy (ent1Team, ClientModelTeam (ent1));
-		strcpy (ent2Team, ClientModelTeam (ent2));
-
-		if (stricmp(ent1Team, ent2Team) == 0)
-			return true;
+		strcpy_s(ent1_team, sizeof(ent1_team), ClientModelTeam(ent1)); //mxd. strcpy -> strcpy_s
+		strcpy_s(ent2_team, sizeof(ent2_team), ClientModelTeam(ent2)); //mxd. strcpy -> strcpy_s
 	}
 
-	return false;
+	return (Q_stricmp(ent1_team, ent2_team) == 0); //mxd. stricmp -> Q_stricmp
 }
 
 void SelectNextItem (edict_t *ent, int itflags)
