@@ -637,51 +637,39 @@ void Cmd_WeapPrev_f(const edict_t* ent)
 	}
 }
 
-/*
-=================
-Cmd_WeapNext_f
-=================
-*/
-void Cmd_WeapNext_f (edict_t *ent)
+static void Cmd_WeapNext_f(const edict_t* ent)
 {
-	gclient_t	*cl;
-	int			i, index;
-	gitem_t		*it;
-	int			selected_weapon;
+	gclient_t* cl = ent->client;
 
-	cl = ent->client;
-
-	if (!cl->playerinfo.pers.weapon || sv_cinematicfreeze->value)
+	if (!cl->playerinfo.pers.weapon || SV_CINEMATICFREEZE)
 		return;
 
-	selected_weapon = ITEM_INDEX(cl->playerinfo.pers.weapon);
+	const int selected_weapon = ITEM_INDEX(cl->playerinfo.pers.weapon);
 
-	// scan  for the next valid one
-	for (i=1 ; i<=MAX_ITEMS ; i++)
+	// Scan for the next valid one.
+	for (int i = 1; i < MAX_ITEMS; i++) //mxd. Bugfix, kinda: original logic eventually wraps back to selected_weapon index.
 	{
-		index = (selected_weapon + i)%MAX_ITEMS;
+		const int index = (selected_weapon + i) % MAX_ITEMS;
 
-		if (!cl->playerinfo.pers.inventory.Items[index])
+		if (cl->playerinfo.pers.inventory.Items[index] == 0)
 			continue;
 
-		it = &playerExport.p_itemlist[index];
-		if (!it->use)
-			continue;
-		if (! (it->flags & IT_WEAPON) )
+		gitem_t* wpn = &playerExport.p_itemlist[index];
+
+		if (wpn->use == NULL || !(wpn->flags & IT_WEAPON))
 			continue;
 
-		// if we are in water, don't select any weapon that requires ammo
-		if ((ent->waterlevel >= 2) &&
-			((it->tag == ITEM_WEAPON_HELLSTAFF) ||
-			(it->tag == ITEM_WEAPON_REDRAINBOW) ||
-			(it->tag == ITEM_WEAPON_PHOENIXBOW)))
+		// If we are in water, skip weapons that require ammo.
+		if (ent->waterlevel > 1 && (wpn->tag == ITEM_WEAPON_HELLSTAFF || wpn->tag == ITEM_WEAPON_REDRAINBOW || wpn->tag == ITEM_WEAPON_PHOENIXBOW))
 			continue;
 
-		it->use(&ent->client->playerinfo,it);
-		if (ent->client->playerinfo.pers.newweapon == it)
-			return;	// successful
+		wpn->use(&cl->playerinfo, wpn);
+
+		if (cl->playerinfo.pers.newweapon == wpn)
+			return;	// Successful.
 	}
 }
+
 /*
 =================
 Cmd_DefPrev_f
