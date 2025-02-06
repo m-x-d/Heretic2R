@@ -481,35 +481,17 @@ static void Cmd_Notarget_f(edict_t* ent)
 	}
 }
 
-/*
-==================
-Cmd_Noclip_f
-
-argv(0) noclip
-==================
-*/
-void Cmd_Noclip_f (edict_t *ent)
+static void Cmd_Noclip_f(edict_t* ent)
 {
-	char	*msg;
-
-	if (deathmatch->value && !sv_cheats->value)
+	if (DEATHMATCH && !SV_CHEATS)
 	{
-		gi.gamemsg_centerprintf (ent, GM_NOCHEATS);
-		return;
-	}
-
-	if (ent->movetype == PHYSICSTYPE_NOCLIP)
-	{
-		ent->movetype = PHYSICSTYPE_STEP;
-		msg = "noclip OFF\n";
+		gi.gamemsg_centerprintf(ent, GM_NOCHEATS);
 	}
 	else
 	{
-		ent->movetype = PHYSICSTYPE_NOCLIP;
-		msg = "noclip ON\n";
+		ent->movetype = ((ent->movetype == PHYSICSTYPE_NOCLIP) ? PHYSICSTYPE_STEP : PHYSICSTYPE_NOCLIP);
+		gi.cprintf(ent, PRINT_HIGH, ((ent->movetype == PHYSICSTYPE_NOCLIP) ? "noclip ON\n" : "noclip OFF\n"));
 	}
-
-	gi.cprintf (ent, PRINT_HIGH, msg);
 }
 
 /*
