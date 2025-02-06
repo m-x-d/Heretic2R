@@ -712,7 +712,6 @@ extern char* vtos(vec3_t v);
 extern float vectoyaw(vec3_t vec);
 
 // g_combat.c
-extern qboolean OnSameTeam(edict_t* ent1, edict_t* ent2);
 extern qboolean CanDamage(edict_t* targ, edict_t* inflictor);
 extern qboolean CanDamageFromLoc(edict_t* targ, edict_t* inflictor, vec3_t origin);
 extern void T_Damage(edict_t* targ, edict_t* inflictor, edict_t* attacker, vec3_t dir, vec3_t point, vec3_t normal, int damage, int knockback, int dflags, int MeansOfDeath);
@@ -779,9 +778,6 @@ extern void WritePlayerinfo_effects(edict_t* ent);
 extern void BeginIntermission(edict_t* targ);
 extern void MoveClientToIntermission(edict_t* client, qboolean log_file);
 extern void G_SetStats(edict_t* ent);
-extern void ValidateSelectedItem(edict_t* ent);
-extern void SelectPrevItem(edict_t* ent, int itflags);
-extern void SelectNextItem(edict_t* ent, int itflags);
 extern void DeathmatchScoreboardMessage(edict_t* client, edict_t* killer, qboolean log_file);
 
 // m_move.c

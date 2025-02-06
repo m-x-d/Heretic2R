@@ -14,6 +14,7 @@
 #include "p_anims.h"
 #include "p_anim_data.h"
 #include "fx.h"
+#include "g_cmds.h" //mxd
 #include "random.h"
 #include "vector.h"
 #include "g_itemstats.h"

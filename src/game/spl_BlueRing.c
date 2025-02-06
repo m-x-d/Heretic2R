@@ -7,6 +7,7 @@
 
 #include "g_local.h"
 #include "fx.h"
+#include "g_cmds.h" //mxd
 #include "random.h"
 #include "vector.h"
 #include "g_playstats.h"

@@ -18,6 +18,7 @@
 #include "m_chicken_anim.h"
 #include "angles.h"
 #include "fx.h"
+#include "g_cmds.h" //mxd
 #include "matrix.h"
 #include "vector.h"
 #include "Utilities.h"

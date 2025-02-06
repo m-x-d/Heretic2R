@@ -14,6 +14,7 @@
 #include "g_Physics.h"
 #include "Random.h"
 #include "FX.H"
+#include "g_cmds.h" //mxd
 #include "p_main.h"
 
 //kill specific entitys at the begining of a cinematic

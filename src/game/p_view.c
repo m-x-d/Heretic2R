@@ -10,6 +10,7 @@
 #include "p_weapon.h"
 #include "angles.h"
 #include "fx.h"
+#include "g_cmds.h" //mxd
 #include "random.h"
 #include "vector.h"
 #include "utilities.h"
@@ -22,8 +23,6 @@ float				bobmove;
 int					bobcycle;		// odd cycles are right foot going forward
 float				bobfracsin;		// sin(bobfrac*M_PI)
 
-extern void Cmd_WeapPrev_f (edict_t *ent);
-extern void Cmd_Use_f (edict_t *ent, char *s);
 extern void PrintLocalBuoyInfo(vec3_t org);
 
 
@@ -103,7 +102,7 @@ void InitPlayerinfo(edict_t *ent)
 	ent->client->playerinfo.G_PlayerActionCheckRopeMove=G_PlayerActionCheckRopeMove;
 	ent->client->playerinfo.G_gamemsg_centerprintf=gi.gamemsg_centerprintf;
 	ent->client->playerinfo.G_levelmsg_centerprintf=gi.levelmsg_centerprintf;
-	ent->client->playerinfo.G_WeapNext=Cmd_WeapPrev_f;
+	ent->client->playerinfo.G_WeapNext=Cmd_WeapPrev_f; //TODO: mxd. BUT WHYYYYY?..
 	ent->client->playerinfo.G_UseItem=Cmd_Use_f;
 
 	// Common client & server (game) function callbacks.
