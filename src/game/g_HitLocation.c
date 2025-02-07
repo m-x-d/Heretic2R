@@ -1,74 +1,54 @@
-#include "q_shared.h"
+//
+// g_HitLocation.c
+//
+// Copyright 1998 Raven Software
+//
+
 #include "g_local.h"
-#include "matrix.h"
-#include "vector.h"
 #include "g_HitLocation.h"
-#include "random.h"
+#include "Random.h"
+#include "Vector.h"
 
-HitLocation_t HitLocationForVFLZone [] = 
-{//Lateral:
-//	0-20(left),		20-40(lmid),	40-60(mid),		60-80(rmid),	80-100(right)
-//Vertical: Between 0% and 20% of height (Lower Leg/Feet)
-	//Forward: Between 0% and 20% from back to front (Back)
-	hl_LegLowerLeft,hl_LegLowerLeft,hl_Half_LLL_LRL,hl_LegLowerRight,hl_LegLowerRight,
-	//Forward: Between 20% and 40% from back to front (BackMid)
-	hl_LegLowerLeft,hl_LegLowerLeft,hl_Half_LLL_LRL,hl_LegLowerRight,hl_LegLowerRight,
-	//Forward: Between 40% and 60% from back to front (Middle)
-	hl_LegLowerLeft,hl_LegLowerLeft,hl_Half_LLL_LRL,hl_LegLowerRight,hl_LegLowerRight,
-	//Forward: Between 60% and 80% from back to front (Fwd Middle)
-	hl_LegLowerLeft,hl_LegLowerLeft,hl_Half_LLL_LRL,hl_LegLowerRight,hl_LegLowerRight,
-	//Forward: Between 80% and 100% from back to front (Forward)
-	hl_LegLowerLeft,hl_LegLowerLeft,hl_Half_LLL_LRL,hl_LegLowerRight,hl_LegLowerRight,
+// 5 upper, 5 forward, 5 lateral.
+static HitLocation_t hit_location_for_vfl_zone[] =
+{
+	// Lateral:
+	// 0 - 20 (left),	20 - 40 (lmid),		40 - 60(mid),		60 - 80 (rmid),		80 - 100 (right)
 
-//Vertical: Between 20% and 40% of height (Upper Leg/Pelvis)
-	//Forward: Between 0% and 20% from back to front (Back)
-	hl_LegUpperLeft,hl_LegUpperLeft,hl_Half_ULL_URL,hl_LegUpperRight,hl_LegUpperRight,
-	//Forward: Between 20% and 40% from back to front (BackMid)
-	hl_LegUpperLeft,hl_LegUpperLeft,hl_Half_ULL_URL,hl_LegUpperRight,hl_LegUpperRight,
-	//Forward: Between 40% and 60% from back to front (Middle)
-	hl_LegUpperLeft,hl_LegUpperLeft,hl_Half_FT_BT,	hl_LegUpperRight,hl_LegUpperRight,
-	//Forward: Between 60% and 80% from back to front (Fwd Middle)
-	hl_LegUpperLeft,hl_LegUpperLeft,hl_Half_ULL_URL,hl_LegUpperRight,hl_LegUpperRight,
-	//Forward: Between 80% and 100% from back to front (Forward)
-	hl_LegUpperLeft,hl_LegUpperLeft,hl_Half_ULL_URL,hl_LegUpperRight,hl_LegUpperRight,
+	// Vertical: between 0% and 20% of height (lower leg / feet).
+	hl_LegLowerLeft,	hl_LegLowerLeft,	hl_Half_LLL_LRL,	hl_LegLowerRight,	hl_LegLowerRight,	// Between 0% and 20% from back to front (back).
+	hl_LegLowerLeft,	hl_LegLowerLeft,	hl_Half_LLL_LRL,	hl_LegLowerRight,	hl_LegLowerRight,	// Between 20% and 40% from back to front (middle-back).
+	hl_LegLowerLeft,	hl_LegLowerLeft,	hl_Half_LLL_LRL,	hl_LegLowerRight,	hl_LegLowerRight,	// Between 40% and 60% from back to front (middle).
+	hl_LegLowerLeft,	hl_LegLowerLeft,	hl_Half_LLL_LRL,	hl_LegLowerRight,	hl_LegLowerRight,	// Between 60% and 80% from back to front (middle-forward).
+	hl_LegLowerLeft,	hl_LegLowerLeft,	hl_Half_LLL_LRL,	hl_LegLowerRight,	hl_LegLowerRight,	// Between 80% and 100% from back to front (forward).
 
-//Vertical: Between 40% and 60% of height (Lower Torso/Arm)
-	//Forward: Between 0% and 20% from back to front (Back)
-	hl_Half_BT_LLA,	hl_TorsoBack,	hl_TorsoBack,	hl_TorsoBack,	hl_Half_BT_LRA,
-	//Forward: Between 20% and 40% from back to front (BackMid)
-	hl_ArmLowerLeft,hl_TorsoBack,	hl_TorsoBack,	hl_TorsoBack,	hl_ArmLowerRight,
-	//Forward: Between 40% and 60% from back to front (Middle)
-	hl_ArmLowerLeft,hl_Half_FT_BT,	hl_Half_FT_BT,	hl_Half_FT_BT,	hl_ArmLowerRight,
-	//Forward: Between 60% and 80% from back to front (Fwd Middle)
-	hl_ArmLowerLeft,hl_TorsoFront,	hl_TorsoFront,	hl_TorsoFront,	hl_ArmLowerRight,
-	//Forward: Between 80% and 100% from back to front (Forward)
-	hl_Half_FT_LLA,	hl_TorsoFront,	hl_TorsoFront,	hl_TorsoFront,	hl_Half_FT_LRA,
+	// Vertical: between 20% and 40% of height (upper leg / pelvis).
+	hl_LegUpperLeft,	hl_LegUpperLeft,	hl_Half_ULL_URL,	hl_LegUpperRight,	hl_LegUpperRight,	// Between 0% and 20% from back to front (back).
+	hl_LegUpperLeft,	hl_LegUpperLeft,	hl_Half_ULL_URL,	hl_LegUpperRight,	hl_LegUpperRight,	// Between 20% and 40% from back to front (middle-back).
+	hl_LegUpperLeft,	hl_LegUpperLeft,	hl_Half_FT_BT,		hl_LegUpperRight,	hl_LegUpperRight,	// Between 40% and 60% from back to front (middle).
+	hl_LegUpperLeft,	hl_LegUpperLeft,	hl_Half_ULL_URL,	hl_LegUpperRight,	hl_LegUpperRight,	// Between 60% and 80% from back to front (middle-forward).
+	hl_LegUpperLeft,	hl_LegUpperLeft,	hl_Half_ULL_URL,	hl_LegUpperRight,	hl_LegUpperRight,	// Between 80% and 100% from back to front (forward).
 
-//Vertical: Between 60% and 80% of height (Upper Torso/Arm)
-	//Forward: Between 0% and 20% from back to front (Back)
-	hl_Half_BT_ULA,	hl_TorsoBack,	hl_TorsoBack,	hl_TorsoBack,	hl_Half_BT_URA,
-	//Forward: Between 20% and 40% from back to front (BackMid)
-	hl_ArmUpperLeft,hl_TorsoBack,	hl_TorsoBack,	hl_TorsoBack,	hl_ArmUpperRight,
-	//Forward: Between 40% and 60% from back to front (Middle)
-	hl_ArmUpperLeft,hl_Half_FT_BT,	hl_Half_FT_BT,	hl_Half_FT_BT,	hl_ArmUpperRight,
-	//Forward: Between 60% and 80% from back to front (Fwd Middle)
-	hl_ArmUpperLeft,hl_TorsoFront,	hl_TorsoFront,	hl_TorsoFront,	hl_ArmUpperRight,
-	//Forward: Between 80% and 100% from back to front (Forward)
-	hl_Half_FT_ULA,	hl_TorsoFront,	hl_TorsoFront,	hl_TorsoFront,	hl_Half_FT_URA,
+	// Vertical: between 40% and 60% of height (lower torso / arms).
+	hl_Half_BT_LLA,		hl_TorsoBack,		hl_TorsoBack,		hl_TorsoBack,		hl_Half_BT_LRA,		// Between 0% and 20% from back to front (back).
+	hl_ArmLowerLeft,	hl_TorsoBack,		hl_TorsoBack,		hl_TorsoBack,		hl_ArmLowerRight,	// Between 20% and 40% from back to front (middle-back).
+	hl_ArmLowerLeft,	hl_Half_FT_BT,		hl_Half_FT_BT,		hl_Half_FT_BT,		hl_ArmLowerRight,	// Between 40% and 60% from back to front (middle).
+	hl_ArmLowerLeft,	hl_TorsoFront,		hl_TorsoFront,		hl_TorsoFront,		hl_ArmLowerRight,	// Between 60% and 80% from back to front (middle-forward).
+	hl_Half_FT_LLA,		hl_TorsoFront,		hl_TorsoFront,		hl_TorsoFront,		hl_Half_FT_LRA,		// Between 80% and 100% from back to front (forward).
 
-//Vertical: Between 80% and 100% of height (Head)
-	//Forward: Between 0% and 20% from back to front (Back)
-	hl_Half_BT_ULA,	hl_TorsoBack,	hl_TorsoBack,	hl_TorsoBack,	hl_Half_BT_URA,
-	//Forward: Between 20% and 40% from back to front (BackMid)
-	hl_ArmUpperLeft,hl_Head,		hl_Head,		hl_Head,		hl_ArmUpperRight,
-	//Forward: Between 40% and 60% from back to front (Middle)
-	hl_ArmUpperLeft,hl_Head,		hl_Head,		hl_Head,		hl_ArmUpperRight,
-	//Forward: Between 60% and 80% from back to front (Fwd Middle)
-	hl_ArmUpperLeft,hl_Head,		hl_Head,		hl_Head,		hl_ArmUpperRight,
-	//Forward: Between 80% and 100% from back to front (Forward)
-	hl_Half_FT_ULA,	hl_TorsoFront,	hl_TorsoFront,	hl_TorsoFront,	hl_Half_FT_URA,
-//Lateral:
-//	0-20(left),		20-40(lmid),	40-60(mid),		60-80(rmid),	80-100(right)
+	// Vertical: between 60% and 80% of height (upper torso / arms).
+	hl_Half_BT_ULA,		hl_TorsoBack,		hl_TorsoBack,		hl_TorsoBack,		hl_Half_BT_URA,		// Between 0% and 20% from back to front (back).
+	hl_ArmUpperLeft,	hl_TorsoBack,		hl_TorsoBack,		hl_TorsoBack,		hl_ArmUpperRight,	// Between 20% and 40% from back to front (middle-back).
+	hl_ArmUpperLeft,	hl_Half_FT_BT,		hl_Half_FT_BT,		hl_Half_FT_BT,		hl_ArmUpperRight,	// Between 40% and 60% from back to front (middle).
+	hl_ArmUpperLeft,	hl_TorsoFront,		hl_TorsoFront,		hl_TorsoFront,		hl_ArmUpperRight,	// Between 60% and 80% from back to front (middle-forward).
+	hl_Half_FT_ULA,		hl_TorsoFront,		hl_TorsoFront,		hl_TorsoFront,		hl_Half_FT_URA,		// Between 80% and 100% from back to front (forward).
+
+	// Vertical: between 80% and 100% of height (head).
+	hl_Half_BT_ULA,		hl_TorsoBack,		hl_TorsoBack,		hl_TorsoBack,		hl_Half_BT_URA,		// Between 0% and 20% from back to front (Back)
+	hl_ArmUpperLeft,	hl_Head,			hl_Head,			hl_Head,			hl_ArmUpperRight,	// Between 20% and 40% from back to front (BackMid)
+	hl_ArmUpperLeft,	hl_Head,			hl_Head,			hl_Head,			hl_ArmUpperRight,	// Between 40% and 60% from back to front (Middle)
+	hl_ArmUpperLeft,	hl_Head,			hl_Head,			hl_Head,			hl_ArmUpperRight,	// Between 60% and 80% from back to front (Fwd Middle)
+	hl_Half_FT_ULA,		hl_TorsoFront,		hl_TorsoFront,		hl_TorsoFront,		hl_Half_FT_URA,		// Between 80% and 100% from back to front (Forward)
 };
 
 HitLocation_t MG_GetHitLocation(edict_t *target, edict_t *inflictor, vec3_t ppoint, vec3_t pdir)
@@ -167,7 +147,7 @@ HitLocation_t MG_GetHitLocation(edict_t *target, edict_t *inflictor, vec3_t ppoi
 		Lateral = 0;
 
 //FIXME: make one for horizonal bodies (harpies, corpses)
-	HitLoc = HitLocationForVFLZone[Vertical * 25 + Forward * 5 + Lateral];
+	HitLoc = hit_location_for_vfl_zone[Vertical * 25 + Forward * 5 + Lateral];
 
 	switch(HitLoc)
 	{
