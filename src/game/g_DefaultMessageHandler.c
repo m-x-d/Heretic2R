@@ -55,45 +55,32 @@ G_MsgReceiver_t DefaultMessageReceivers[NUM_MESSAGES] =
 	NULL,						// MSG_CHECK_MOOD
 };
 
-void DefaultMsgHandler(edict_t *self, G_Message_t *msg)
+void DefaultMsgHandler(edict_t* self, G_Message_t* msg)
 {
-	G_MsgReceiver_t receiver;
-	char	*o_target;
-
-	if(msg->ID == MSG_PAIN)
+	if (msg->ID == MSG_PAIN)
 	{
-		edict_t *targ, *activator;
+		edict_t* target;
+		edict_t* activator;
+		ParseMsgParms(msg, "ee", &target, &activator);
 
-		ParseMsgParms(msg, "ee", &targ, &activator);
-
-		if(targ->pain_target)
+		if (target->pain_target != NULL)
 		{
-			o_target = targ->target;
-			targ->target = targ->pain_target;
-			G_UseTargets(targ, activator);
-			targ->target = o_target;
-			targ->pain_target = NULL;
+			char* o_target = target->target;
+			target->target = target->pain_target;
+
+			G_UseTargets(target, activator);
+
+			target->target = o_target;
+			target->pain_target = NULL;
 		}
 	}
 
-	receiver = classStatics[self->classID].msgReceivers[msg->ID];
+	const G_MsgReceiver_t receiver = classStatics[self->classID].msgReceivers[msg->ID];
 
-	if(receiver)
-	{
+	if (receiver != NULL)
 		receiver(self, msg);
-	}
-	else
-	{
-		// if and when there are a good number of defaults, change the NULL to be an Empty
-		// function, overall that should be faster to just always call the function then
-		// do the check
-		receiver = DefaultMessageReceivers[msg->ID];
-
-		if(receiver)
-		{
-			DefaultMessageReceivers[msg->ID](self, msg);
-		}
-	}
+	else if (DefaultMessageReceivers[msg->ID] != NULL) // If and when there are a good number of defaults, change the NULL to be an Empty function.
+		DefaultMessageReceivers[msg->ID](self, msg);
 }
 
 void DefaultReceiver_Repulse(edict_t *self, G_Message_t *msg)
