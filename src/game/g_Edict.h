@@ -373,7 +373,6 @@ struct edict_s
 	edict_t* nextbuoy[MAX_BUOY_BRANCHES];
 
 	float dead_size; // For dead thinking.
-	struct volume_effect_s* volfx; //TODO: unused!
 
 	// New monster stuff.
 	char* wakeup_target;	// Target to fire when find an enemy.

@@ -10,7 +10,6 @@
 #include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
 #include "matrix.h"
-#include "g_volume_effect.h"
 #include "Utilities.h"
 #include "g_playstats.h"
 #include "random.h"

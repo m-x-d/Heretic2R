@@ -650,9 +650,6 @@
     <ClInclude Include="g_Typedef.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="g_volume_effect.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="game.h">
       <Filter>src</Filter>
     </ClInclude>

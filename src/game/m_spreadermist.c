@@ -7,7 +7,6 @@
 #include "angles.h"
 #include "random.h"
 #include "matrix.h"
-#include "g_volume_effect.h"
 #include "g_ClassStatics.h"
 #include "g_monster.h"
 

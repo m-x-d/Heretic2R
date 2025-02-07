@@ -8,7 +8,6 @@
 #include "vector.h"
 #include "angles.h"
 #include "matrix.h"
-#include "g_volume_effect.h"
 #include "Utilities.h"
 #include "g_ClassStatics.h"
 #include "g_Physics.h"

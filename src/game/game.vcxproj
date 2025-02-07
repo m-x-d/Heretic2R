@@ -246,7 +246,6 @@
     <ClInclude Include="g_StateInfo.h" />
     <ClInclude Include="g_teleport.h" />
     <ClInclude Include="g_Typedef.h" />
-    <ClInclude Include="g_volume_effect.h" />
     <ClInclude Include="g_weapon.h" />
     <ClInclude Include="ICScript.h" />
     <ClInclude Include="list.h" />
