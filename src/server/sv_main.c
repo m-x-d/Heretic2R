@@ -19,8 +19,8 @@ cvar_t* sv_paused;
 static cvar_t* rcon_password; // Password for remote server commands
 
 cvar_t* dmflags; // H2
-static cvar_t* advancedstaff; // H2 //TODO: unused?
-static cvar_t* blood_level; // H2 //TODO: unused?
+static cvar_t* advancedstaff; // H2
+static cvar_t* blood_level; // H2
 
 static cvar_t* timeout; // Seconds without any message
 static cvar_t* zombietime; // Seconds to sink messages after disconnect

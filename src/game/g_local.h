@@ -74,7 +74,7 @@
 #define TAG_GAME	765	// Clear when unloading the dll.
 #define TAG_LEVEL	766	// Clear when loading a new level.
 
-typedef enum
+typedef enum damage_s
 {
 	DAMAGE_NO,
 	DAMAGE_YES, // Will take damage if hit.
@@ -626,11 +626,15 @@ extern cvar_t* flood_killdelay;
 
 //mxd. For simplicity of use...
 #define FLOOD_MSGS			((int)flood_msgs->value)
+#define BLOOD_LEVEL			((int)blood_level->value)
 #define MAXCLIENTS			((int)maxclients->value)
+#define COOP				((int)coop->value)
 #define DEATHMATCH			((int)deathmatch->value)
 #define DMFLAGS				((int)dmflags->value)
+#define SKILL				((int)skill->value)
 #define DEDICATED			((int)dedicated->value)
 #define SV_CINEMATICFREEZE	((int)sv_cinematicfreeze->value)
+#define SV_FREEZEMONSTERS	((int)sv_freezemonsters->value)
 #define SV_CHEATS			((int)sv_cheats->value)
 
 extern int self_spawn;
