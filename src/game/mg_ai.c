@@ -1523,7 +1523,7 @@ void MG_CheckEvade (edict_t *self)
 					if(MGAI_DEBUG)
 						gi.dprintf("Dodging projectile impact, going to hit %s\n", HitLocName[hl]);
 #endif
-					hl = T_GetHitLocation(self, ent, trace.endpos);
+					hl = MG_GetHitLocation(self, ent, trace.endpos, vec3_origin);
 					VectorSubtract(trace.endpos, ent->s.origin, total_dist);
 					eta = VectorLength(total_dist)/VectorLength(ent->velocity);
 					QPostMessage(self, MSG_EVADE, PRI_DIRECTIVE, "eif", ent, hl, eta);
@@ -1547,7 +1547,7 @@ void MG_CheckEvade (edict_t *self)
 							if(MGAI_DEBUG)
 								gi.dprintf("Dodging projectile close pass, going to hit %s\n", HitLocName[hl]);
 #endif
-							hl = T_GetHitLocation(self, ent, trace.endpos);
+							hl = MG_GetHitLocation(self, ent, trace.endpos, vec3_origin);
 							VectorSubtract(trace.endpos, ent->s.origin, total_dist);
 							eta = VectorLength(total_dist)/VectorLength(ent->velocity);
 							QPostMessage(self, MSG_EVADE, PRI_DIRECTIVE, "eif", ent, hl, eta);

@@ -817,9 +817,9 @@ void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, vec3_t p_d
 			if (target->classID != CID_HARPY) // Use new hitlocation function.
 				hl = MG_GetHitLocation(target, inflictor, point, dir);
 			else if (!(target->svflags & SVF_MONSTER) && client == NULL) // Target not a monster or client.
-				hl = T_GetHitLocation(target, inflictor, hit_spot);
+				hl = MG_GetHitLocation(target, inflictor, hit_spot, vec3_origin);
 			else
-				hl = T_GetHitLocation(target, attacker, hit_spot);
+				hl = MG_GetHitLocation(target, attacker, hit_spot, vec3_origin);
 
 			if (dflags & DAMAGE_DISMEMBER)
 				hl |= hl_MeleeHit; // Only melee can dismember. Add the 16th bit to it for melee hit.
