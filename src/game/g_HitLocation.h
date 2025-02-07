@@ -37,15 +37,6 @@ typedef	enum HitLocation_e
 	hl_Half_BT_LLA,//back torso and lower left arm
 } HitLocation_t;
 
-typedef struct HlDef_t
-{
-	vec3_t	*LocTable;
-	int		NumLocs;
-} HlDef_t;
-
-HitLocation_t T_GetHitLocation(struct edict_s *target, struct edict_s *inflictor, vec3_t point);
 HitLocation_t MG_GetHitLocation(edict_t *target, edict_t *inflictor, vec3_t ppoint, vec3_t pdir);
-
-#define TOTAL_ZONES		125//5 upper, 5 forward, 5 lateral
 
 #endif
