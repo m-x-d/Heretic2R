@@ -37,16 +37,6 @@ typedef	enum HitLocation_e
 	hl_Half_BT_LLA,//back torso and lower left arm
 } HitLocation_t;
 
-typedef enum BloodType_e
-{
-	BLOODTYPE_NONE,
-	BLOODTYPE_RED,
-	BLOODTYPE_GREEN,
-	BLOODTYPE_STONE_CHIPS,
-	BLOODTYPE_WOOD_CHIPS,
-	NUM_BLOOTYPES
-} BloodType_t;
-
 typedef struct HlDef_t
 {
 	vec3_t	*LocTable;
