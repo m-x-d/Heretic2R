@@ -392,644 +392,557 @@ static qboolean IsFlammable(const edict_t* target)
 			target->materialtype == MAT_LEAF || target->materialtype == MAT_WOOD || target->materialtype == MAT_INSECT);
 }
 
-/*
-============
-T_Damage
-
-targ		entity that is being damaged
-inflictor	entity that is causing the damage
-attacker	entity that caused the inflictor to damage targ
-
-example:	targ=monster, inflictor=rocket, attacker=player
-
-dir			direction of the attack:  
-					Directional vector (velocity is acceptable), in the direction the force is GOING.  
-					Normalized in the function, if (0,0,0) then vector from inflictor to target is used.
-					Used for knockback (scale force by this vector)
-					Also used for blood and puffs when objects are struck
-					CANNOT BE NULL.
-point		point at which the damage is being inflicted
-					Absolute point at which the damage is generated.
-					Used for hit locations, and blood (generation point)
-					CANNOT BE NULL
-normal		normal vector from that point
-					Directional vector, assumed to be normalized.(of course)
-					Used for blood from monsters and players (squirts in this direction).
-					Checked for NULL
-damage		amount of damage being inflicted
-knockback	force to be applied against targ as a result of the damage
-
-dflags		these flags are used to control how T_Damage works:
-
-DAMAGE_RADIUS			damage was indirect (from a nearby explosion)
-DAMAGE_NO_KNOCKBACK		do not affect velocity, just view angles
-DAMAGE_NO_PROTECTION	kills godmode, armor, everything
-DAMAGE_DISMEMBER		to force MSG_DISMEMBER to be used
-============
-*/
-void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t pdir, vec3_t ppoint, vec3_t pnormal, 
-			  int damage, int knockback, int dflags,int MeansOfDeath)
+/**
+ * @param target	Entity that is being damaged.
+ * @param inflictor	Entity that is causing the damage.
+ * @param attacker	Entity that caused the inflictor to damage target.
+ *
+ * @param p_dir		Direction of the attack.
+ *					Directional vector (velocity is acceptable), in the direction the force is GOING.
+ *					Normalized in the function, if (0,0,0) then vector from inflictor to target is used.
+ *					Used for knockback (scale force by this vector).
+ *					Also used for blood and puffs when objects are struck.
+ *
+ * @param p_point	Point at which the damage is being inflicted.
+ *					Absolute point at which the damage is generated.
+ *					Used for hit locations, and blood (generation point).
+ *
+ * @param p_normal	Normal vector from that point.
+ *					Directional vector, assumed to be normalized.
+ *					Used for blood from monsters and players (squirts in this direction).
+ *
+ * @param damage	Amount of damage being inflicted.
+ * @param knockback	Force to be applied against target as a result of the damage.
+ *
+ * @param dflags	Flags used to control how T_Damage works:\n
+ *					DAMAGE_RADIUS: damage was indirect (from a nearby explosion).\n
+ *					DAMAGE_NO_KNOCKBACK: do not affect velocity, just view angles.\n
+ *					DAMAGE_NO_PROTECTION: kills godmode, armor, everything.\n
+ *					DAMAGE_DISMEMBER: force MSG_DISMEMBER to be used.
+ *
+ * @param mod		Means of death flag (MOD_XXX).
+ */
+void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, vec3_t p_dir, vec3_t p_point, vec3_t p_normal, int damage, int knockback, const int dflags, int mod) //TODO: split into smaller functions?
 {
-	vec3_t			hit_spot;
-	gclient_t		*client;
-	int				take, dsm_dmg;
-	HitLocation_t	hl;
- 	gitem_armor_t	*info;
-	int				force_pain = 0;
-	qboolean		was_dead = false;
-	vec3_t			dir, normal, point;
-	float			knockbacktime;
-	char			armor_sound[50];
-	int				armorabsorb, orig_dmg;
-	int				violence=VIOLENCE_DEFAULT;
+	// Copious amounts of damage avoidance cases...
 
-	// Friendly-fire avoidance. If enabled, you can't hurt teammates (but you can hurt yourself).
-	// Knockback still occurs though.
-	if (targ->client && attacker->client && targ != attacker)
-	{	// Both different players, let's check if this will do damage!
-		if (coop->value)
+	if (target->takedamage == DAMAGE_NO)
+		return;
+
+	// Player is in a remote camera or cinematic mode, so he can't be hurt.
+	if (target->client != NULL && (target->client->RemoteCameraLockCount > 0 || target->client->playerinfo.c_mode))
+		return;
+
+	if ((dflags & DAMAGE_ALIVE_ONLY) && (target->materialtype != MAT_FLESH || target->health <= 0))
+		return;
+
+	if ((target->svflags & SVF_NO_PLAYER_DAMAGE) && attacker->client != NULL)
+		return;
+
+	qboolean was_dead = false;
+
+	if (target->health <= 0)
+	{
+		if (target->client != NULL) // Can't keep killing a dead player.
+			return;
+
+		if (target->classID != CID_NONE && classStatics[target->classID].msgReceivers[MSG_DEATH_PAIN] != NULL)
 		{
-			if(!((int)(dmflags->value) & DF_HURT_FRIENDS)&&(!(dflags&DAMAGE_HURT_FRIENDLY)))
+			if ((dflags & DAMAGE_SUFFOCATION) || (dflags & DAMAGE_BLEEDING) || (dflags == DAMAGE_BURNING))
+				return;
+
+			was_dead = true;
+		}
+	}
+
+	// If we are on a shrine or teleporting we are not to be harmed	- assuming we haven't been telefragged, in which case kill us dead.
+	if (target->client != NULL && target->client->shrine_framenum > level.time && !(dflags & DAMAGE_NO_PROTECTION))
+		return;
+
+	// Friendly-fire avoidance. If enabled, you can't hurt teammates (but you can hurt yourself). Knockback still occurs though.
+	if (target->client != NULL && attacker->client != NULL && target != attacker)
+	{
+		// Both different players, let's check if this will do damage!
+		if (COOP)
+		{
+			if (!(DMFLAGS & DF_HURT_FRIENDS) && !(dflags & DAMAGE_HURT_FRIENDLY))
 				damage = 0;
 			else
-				MeansOfDeath |= MOD_FRIENDLY_FIRE;
+				mod |= MOD_FRIENDLY_FIRE;
 		}
-		else if (deathmatch->value)
+		else if (DEATHMATCH)
 		{
-			if ((int)(dmflags->value) & (DF_MODELTEAMS|DF_SKINTEAMS))
+			if ((DMFLAGS & (DF_MODELTEAMS | DF_SKINTEAMS)) && OnSameTeam(target, attacker))
 			{
-				if (OnSameTeam (targ, attacker))
-				{
-					if(!((int)(dmflags->value) & DF_HURT_FRIENDS)&&(!(dflags&DAMAGE_HURT_FRIENDLY)))
-						damage = 0;
-					else
-						MeansOfDeath |= MOD_FRIENDLY_FIRE;
-				}
-			}
-		}
-	}
-
-	// ************************
-
-	if (blood_level)
-		violence = blood_level->value;
-
-	// Prevent players harming fellow players in non-deathmatch games. The attacking player can
-	// still harm himself of course.
-
-//	if((!deathmatch->value)&&(targ!=attacker)&&(targ->client)&&(attacker->client)&&(!(dflags&DAMAGE_HURT_FRIENDLY)))
-//		return;
-
-	if (!targ->takedamage)
-		return;
-
-	if (targ->client)
-	{
-		if (targ->client->RemoteCameraLockCount)	// In a remote camera so he can't be hurt
-			return;
-
-		if (targ->client->playerinfo.c_mode)		// In cinematic mode so he can't be hurt
-			return;
-	}
-
-	if(dflags & DAMAGE_ALIVE_ONLY)
-		if (targ->materialtype != MAT_FLESH||targ->health<=0)
-			return;
-
-	if(targ->svflags&SVF_NO_PLAYER_DAMAGE)
-		if(attacker->client)
-			return;
-
-	if(targ->health <= 0)
-	{
-		if(targ->client)//can't keep killing a dead player
-			return;
-
-		if(targ->classID)
-		{
-			if(classStatics[targ->classID].msgReceivers[MSG_DEATH_PAIN])
-			{
-				if(dflags & DAMAGE_SUFFOCATION || dflags & DAMAGE_BLEEDING || dflags == DAMAGE_BURNING)
-					return;
+				if (!(DMFLAGS & DF_HURT_FRIENDS) && (!(dflags & DAMAGE_HURT_FRIENDLY)))
+					damage = 0;
 				else
-					was_dead = true;
+					mod |= MOD_FRIENDLY_FIRE;
 			}
 		}
 	}
 
-	// if we are on a shrine or teleporting we are not to be harmed	- assuming we haven't been telefragged, in which case kill us dead
-	if (targ->client && (targ->client->shrine_framenum > level.time) && !(dflags & DAMAGE_NO_PROTECTION) )
-		return;
-
-//So we don't overwrite the passed-in vectors!!!
-	if(pdir && Vec3NotZero(pdir))
-		VectorCopy(pdir, dir);
-	else
-		VectorSet(dir, 0, 0, -1);
-
-	if(pnormal && Vec3NotZero(pnormal))
-		VectorCopy(pnormal, normal);
-	else
-		VectorSet(normal, 0, 0, 1);
-	
-	if(ppoint)
-		VectorCopy(ppoint, point);
-	else
-		VectorCopy(inflictor->s.origin, point);
-	
-	if (deathmatch->value == 0)
-	{	// Not deathmatch game.
-		// In easy skill-level, the player only takes half damage.
-		if ((skill->value == 0) && targ->client)
-			damage = ceil(damage * 0.5);
-	}
-	else
-	{	// In deathmatch game.
-		float temp;
-
-		// Factor in deathmatch to increase hit points
-		if (targ->client)
+	if (target->client != NULL)
+	{
+		if (DEATHMATCH)
 		{
-			temp = 4.0-skill->value;
-			if (temp < 1.0)
-				damage = (int)(damage * 4.0);
-			else 
-				damage = ceil(damage * 2.0 / (4.0 - skill->value));		// Skill 0: 1/2 damage, skill 1: 2/3 damage, skill 2: full
+			// Factor in deathmatch to increase hit points.
+			const float dmg_scaler = 4.0f - skill->value;
+			if (dmg_scaler < 1.0f)
+				damage *= 4;
+			else
+				damage = (int)(ceilf((float)damage * 2.0f / dmg_scaler)); // Skill 0: 1/2 damage; skill 1: 2/3 damage, skill 2: full
+		}
+		else
+		{
+			// In easy skill-level, the player only takes half damage.
+			if (SKILL == 0)
+				damage /= 2;
 		}
 	}
 
-	if (!damage && ((int)(dmflags->value) & DF_HURT_FRIENDS)&&(!(dflags&DAMAGE_HURT_FRIENDLY)) 
-		&& !(deathmatch->value && ((int)(dmflags->value) & (DF_MODELTEAMS|DF_SKINTEAMS))))
+	if (damage == 0 && (DMFLAGS & DF_HURT_FRIENDS) && !(dflags & DAMAGE_HURT_FRIENDLY) && !(DEATHMATCH && (DMFLAGS & (DF_MODELTEAMS | DF_SKINTEAMS))))
 		damage = 1;
 
-	orig_dmg = damage;
+	const int orig_dmg = damage;
 
-	// deal with armor - if we have any
-	// are we a player ?
-	if (targ->client && !(dflags&DAMAGE_BLEEDING))
+	// Copy passed-in vectors, so we don't overwrite them.
+	vec3_t dir;
+	if (p_dir != NULL && Vec3NotZero(p_dir))
+		VectorCopy(p_dir, dir);
+	else
+		VectorSet(dir, 0.0f, 0.0f, -1.0f);
+
+	VectorNormalize(dir);
+
+	vec3_t normal;
+	if (p_normal != NULL && Vec3NotZero(p_normal))
+		VectorCopy(p_normal, normal);
+	else
+		VectorSet(normal, 0.0f, 0.0f, 1.0f);
+
+	vec3_t point;
+	if (p_point != NULL)
+		VectorCopy(p_point, point);
+	else
+		VectorCopy(inflictor->s.origin, point);
+
+	// Deal with player armor - if we have any.
+	if (target->client != NULL && target->client->playerinfo.pers.armor_count > 0.0f && !(dflags & DAMAGE_BLEEDING))
 	{
-		// figure out where the armor details are located at
-		// do we actually have any armor anyway ?
-		// dont let armor effect us if we are drowning, in slime, or in lava
-		if (!(dflags & DAMAGE_AVOID_ARMOR) &&
-			targ->client->playerinfo.pers.armor_count &&
-			(dflags != DAMAGE_SUFFOCATION) &&
-			(dflags != DAMAGE_SLIME) &&
-			(dflags != DAMAGE_LAVA)) 
+		// Figure out where the armor details are located at.
+		// Don't let armor effect us if we are drowning, in slime, or in lava.
+		if (!(dflags & DAMAGE_AVOID_ARMOR) && dflags != DAMAGE_SUFFOCATION && dflags != DAMAGE_SLIME && dflags != DAMAGE_LAVA)
 		{
-			if (targ->client->playerinfo.pers.armortype == ARMOR_TYPE_SILVER)
+			gitem_armor_t* info;
+
+			if (target->client->playerinfo.pers.armortype == ARMOR_TYPE_SILVER)
 				info = &silver_armor_info;
 			else
 				info = &gold_armor_info;
 
-			// Figure out how much the armor takes
-			armorabsorb = damage;
+			// Figure out how much the armor takes.
+			int armor_absorb = damage;
 
-			// effect damage dependant on what type of effect hit us
+			// Effect damage dependant on what type of effect hit us.
 			if (dflags & DAMAGE_SPELL)
-				damage *= info->spell_protection;
+				damage = (int)((float)damage * info->spell_protection);
 			else
-				damage *= info->normal_protection;
+				damage = (int)((float)damage * info->normal_protection);
 
-			// make the little sparkle effect at the hit point
-			gi.CreateEffect(NULL,
-							FX_ARMOR_HIT,
-							0,
-							point,
-							"d",
-							normal);
-				
+			// Make the little sparkle effect at the hit point.
+			gi.CreateEffect(NULL, FX_ARMOR_HIT, 0, point, "d", normal);
+
 			if (dflags & DAMAGE_SPELL)
-				gi.sound(targ,CHAN_WEAPON,gi.soundindex("weapons/spellric.wav"),2,ATTN_NORM,0);
+			{
+				gi.sound(target, CHAN_WEAPON, gi.soundindex("weapons/spellric.wav"), 2.0f, ATTN_NORM, 0.0f); //TODO: does setting vol > 1.0 make any sense? 
+			}
+			else if (irand(0, 2) == 0) // Don't always make sound - being attacked by rats makes this go off incessantly.
+			{
+				char armor_sound[50];
+				sprintf_s(armor_sound, sizeof(armor_sound), "weapons/armorric%i.wav", irand(1, 3)); //mxd. sprintf -> sprintf_s
+				gi.sound(target, CHAN_WEAPON, gi.soundindex(armor_sound), 2.0f, ATTN_NORM, 0.0f); //TODO: does setting vol > 1.0 make any sense? 
+			}
+
+			// Be sure we still have some damage.
+			if (damage == 0)
+			{
+				damage = 1;
+				armor_absorb = 1;
+			}
 			else
 			{
-				// don't always make sound - being attacked by rats makes this go off incesantly
-				if (!(irand(0,2)))
+				// Everything not taken by the player is taken by the armor.
+				armor_absorb -= damage;
+				if (armor_absorb > (int)target->client->playerinfo.pers.armor_count)
 				{
-					sprintf(armor_sound, "weapons/armorric%d.wav",irand(1,3));
-					gi.sound(targ,CHAN_WEAPON,gi.soundindex(armor_sound),2,ATTN_NORM,0);
+					damage += armor_absorb - (int)target->client->playerinfo.pers.armor_count;
+					armor_absorb = (int)target->client->playerinfo.pers.armor_count;
 				}
 			}
 
-			// be sure we still have some damage
-			if (!damage)
-			{
-	  			damage = 1;
-				armorabsorb = 1;
-			}
-			else 
-			{	// Everything not taken by the player is taken by the armor
-				armorabsorb -= damage;
-				if (armorabsorb > targ->client->playerinfo.pers.armor_count)
-				{
-					damage += armorabsorb - targ->client->playerinfo.pers.armor_count;
-					armorabsorb = targ->client->playerinfo.pers.armor_count;
-				}
-			}
+			// Decrease armor count.
+			target->client->playerinfo.pers.armor_count -= (float)armor_absorb;
 
-			targ->client->playerinfo.pers.armor_count -= armorabsorb;
-			// dec armor count. are we down to zero armor ?
-			if (targ->client->playerinfo.pers.armor_count <= 0)
+			// Are we down to zero armor?
+			if (target->client->playerinfo.pers.armor_count <= 0.0f)
 			{
-				// stop drawing the armor
-				targ->client->playerinfo.pers.armortype = ARMOR_TYPE_NONE; //mxd. ARMOR_NONE in original version.
-				targ->client->playerinfo.pers.armor_count = 0;
+				// Stop drawing the armor.
+				target->client->playerinfo.pers.armortype = ARMOR_TYPE_NONE; //mxd. ARMOR_NONE in original version.
+				target->client->playerinfo.pers.armor_count = 0.0f;
 
-				SetupPlayerinfo_effects(targ);
-				P_PlayerUpdateModelAttributes(&targ->client->playerinfo);
-				WritePlayerinfo_effects(targ);
+				SetupPlayerinfo_effects(target);
+				P_PlayerUpdateModelAttributes(&target->client->playerinfo);
+				WritePlayerinfo_effects(target);
 
 				// Play the out-of-armor sound.
-				gi.sound(targ, CHAN_WEAPON, gi.soundindex("weapons/armorgone.wav"), 1, ATTN_NORM, 0);
+				gi.sound(target, CHAN_WEAPON, gi.soundindex("weapons/armorgone.wav"), 1.0f, ATTN_NORM, 0.0f);
 			}
 		}
 	}
 
-	client = targ->client;
-
-	VectorNormalize(dir);
-
-	// The player does bonus damage for suprising a monster.
-	// Bad idea for us.
-//	if (!(dflags & DAMAGE_RADIUS) && (targ->svflags & SVF_MONSTER) && (attacker->client) && (!targ->enemy) && (targ->health > 0))
-//		damage *= 2;
-
-	if (targ->flags & FL_NO_KNOCKBACK || targ->svflags & SVF_BOSS ||
-			(targ->svflags & SVF_MONSTER && sv_freezemonsters->value == 2.0))	// Freezemonster = 2 means no knockback 
-	{			
+	// SV_FREEZEMONSTERS = 2 means no knockback.
+	if ((target->flags & FL_NO_KNOCKBACK) || (target->svflags & SVF_BOSS) || ((target->svflags & SVF_MONSTER) && SV_FREEZEMONSTERS == 2))
 		knockback = 0;
-	}
 
-	// Figure  out the knockback momentum to impart to the target.
-	if (!(dflags & DAMAGE_NO_KNOCKBACK) && !(targ->svflags & SVF_BOSS))
-	{//hey, knockback of less than about 25 isn't going to do squat...
-		if ((knockback) && 
-				(targ->movetype != PHYSICSTYPE_NONE) && 
-				(targ->movetype != PHYSICSTYPE_PUSH) && 
-				(targ->movetype != PHYSICSTYPE_STOP))
+	// Figure out the knockback momentum to impart to the target.
+	if (!(dflags & DAMAGE_NO_KNOCKBACK) && !(target->svflags & SVF_BOSS))
+	{
+		// Knockback of less than about 25 isn't going to do squat...
+		if (knockback > 0 && target->movetype != PHYSICSTYPE_NONE && target->movetype != PHYSICSTYPE_PUSH && target->movetype != PHYSICSTYPE_STOP)
 		{
-			vec3_t	kvel;
-			float	mass, force, upvel;
-
-			if(Vec3IsZero(dir))
+			if (Vec3IsZero(dir)) //TODO: never happens? already checked when copying p_dir.
 			{
-				VectorSubtract(targ->s.origin, inflictor->s.origin, dir);
-				if(dir[2]<0)
-					dir[2] = 0;
+				VectorSubtract(target->s.origin, inflictor->s.origin, dir);
+				dir[2] = max(0.0f, dir[2]);
 				VectorNormalize(dir);
 			}
 
-			mass = VectorLength(targ->size) * 3;
-			/*
-			if (targ->mass < 50)
-				mass = 50;
-			else
-				mass = targ->mass;*/
-
-//			if (targ->client  && attacker == targ)
-//				force = 900.0 * (float)knockback / mass; //rocketjump hack...  More knockback to source.
-//			else
-				force = 600.0 * (float)knockback / mass;
+			const float mass = VectorLength(target->size) * 3.0f;
+			float force = 600.0f * (float)knockback / mass;
 
 			// Players are not as affected by velocities when they are on the ground, so increase what players experience.
-			if (targ->client && targ->groundentity)
-				force *= 4.0;
-			else if (targ->client)	// && !(targ->groundentity)
-				force *= 0.25;	// Too much knockback
+			if (target->client != NULL)
+				force *= (target->groundentity != NULL ? 4.0f : 0.25f);
 
 			if (dflags & DAMAGE_EXTRA_KNOCKBACK)
-				force *= 3.0;
+				force *= 3.0f;
 
-			if (force > 512)	// Cap this speed so it doesn't get insane
-				force=512;
-			VectorScale (dir, force, kvel);
+			force = min(512.0f, force); // Cap this speed, so it doesn't get insane.
 
-			if (targ->client)	// Don't force players up quite so much as monsters.
-				upvel=30;
-			else
-				upvel=60;
+			vec3_t knockback_vel;
+			VectorScale(dir, force, knockback_vel);
+
+			// Don't force players up quite so much as monsters.
+			const float up_vel = (target->client != NULL ? 30.0f : 60.0f);
+
 			// Now if the player isn't being forced DOWN very far, let's force them UP a bit.
-			if ((dir[2] > -0.5 || targ->groundentity) && kvel[2] < upvel && force > 30)
-			{	// Don't knock UP the player more than we do across...
-				if (force < upvel)
-					kvel[2] = force;
-				else
-					kvel[2] = upvel;
-			}
+			if ((dir[2] > -0.5f || target->groundentity != NULL) && knockback_vel[2] < up_vel && force > 30.0f)
+				knockback_vel[2] = min(force, up_vel); // Don't knock UP the player more than we do across...
 
-			VectorAdd (targ->velocity, kvel, targ->velocity);
+			VectorAdd(target->velocity, knockback_vel, target->velocity);
 
-			if (targ->client)	// If player, then set the player flag that will affect this.
+			if (target->client != NULL) // If player, then set the player flag that will affect this.
 			{
-				targ->client->playerinfo.flags |= PLAYER_FLAG_USE_ENT_POS;
-				// The knockbacktime indicates how long this knockback affects the player.
-				if (force>500)
-					knockbacktime = level.time + 1.25;
+				target->client->playerinfo.flags |= PLAYER_FLAG_USE_ENT_POS;
+
+				// The knockback_time indicates how long this knockback affects the player.
+				float knockback_time;
+				if (force > 500.0f)
+					knockback_time = level.time + 1.25f;
 				else
-					knockbacktime = level.time + (force/400.0);
-				if (knockbacktime > targ->client->playerinfo.knockbacktime)
+					knockback_time = level.time + (force / 400.0f);
+
+				if (knockback_time > target->client->playerinfo.knockbacktime)
 				{
-					targ->client->playerinfo.knockbacktime = knockbacktime;
-					if (MeansOfDeath == MOD_TORN)
+					target->client->playerinfo.knockbacktime = knockback_time;
+
+					// Since we are bing knocked by tornado, let our top speed be higher.
+					if (mod == MOD_TORN) //TODO: but what about MOD_FRIENDY_FIRE flag?..
 					{
-						// since we are bing knocked back, let our top speed be higher
-						targ->client->playerinfo.effects |= EF_HIGH_MAX;
-						targ->s.effects |= EF_HIGH_MAX;
+						target->client->playerinfo.effects |= EF_HIGH_MAX;
+						target->s.effects |= EF_HIGH_MAX;
 					}
 					else
 					{
-						// since we are bing knocked back, let our top speed be higher
-						targ->client->playerinfo.effects &= ~EF_HIGH_MAX;
-						targ->s.effects &= ~EF_HIGH_MAX;
+						target->client->playerinfo.effects &= ~EF_HIGH_MAX;
+						target->s.effects &= ~EF_HIGH_MAX;
 					}
-
 				}
-			} 
+			}
 
-			//so knockback doesn't gib them unless it really really should
-			if(force<300)
-				targ->jump_time = level.time + 0.5;
+			// So knockback doesn't gib them unless it really really should.
+			if (force < 300.0f)
+				target->jump_time = level.time + 0.5f;
 		}
 	}
 
-	take = damage;
+	int dmg_take = damage;
 
 	// If the target has godmode in effect, they take no damage.
-	if (targ->flags & FL_GODMODE && !(dflags & DAMAGE_NO_PROTECTION))
-		take = 0;
+	if ((target->flags & FL_GODMODE) && !(dflags & DAMAGE_NO_PROTECTION))
+		dmg_take = 0;
+
+	gclient_t* client = target->client;
 
 	// If the player is invincible, or on a shrine, they take no damage.
-	if ( (client && client->invincible_framenum > level.framenum ) && !(dflags & DAMAGE_NO_PROTECTION))
+	if (client != NULL && (int)client->invincible_framenum > level.framenum && !(dflags & DAMAGE_NO_PROTECTION))
 	{
-		if (targ->pain_debounce_time < level.time)
-		{
-//			gi.sound(targ, CHAN_ITEM, gi.soundindex("items/protect4.wav"), 1, ATTN_NORM, 0);
-			targ->pain_debounce_time = level.time + 2;
-		}
+		if (target->pain_debounce_time < level.time)
+			target->pain_debounce_time = level.time + 2.0f;
 
-		take = 0;
+		dmg_take = 0;
 	}
-	
+
 	//mxd. Skip non-implemented CheckTeamDamage() logic.
 
+	HitLocation_t hl = hl_NoneSpecific; //mxd. Initialize.
+
 	// Okay, we got all the way here, so do the damage.
-	if(take && !(targ->svflags & SVF_MONSTER && sv_freezemonsters->value != 0.0) && !(dflags & DAMAGE_ALL_KNOCKBACK))
+	if (dmg_take > 0 && !((target->svflags & SVF_MONSTER) && SV_FREEZEMONSTERS) && !(dflags & DAMAGE_ALL_KNOCKBACK))
 	{
-		int scale;
-		int duration;
-
-		//not damage_burning because that is coming from you being on fire already...
-		if (dflags & DAMAGE_FIRE && IsFlammable(targ) && dflags != DAMAGE_BURNING && !(targ->svflags & SVF_BOSS))
-		{//FIXME: not on BBRUSHES - have no origin!
-
-			if (dflags & DAMAGE_FIRE_LINGER)
-				duration = orig_dmg*0.4;
-			else
-				duration = orig_dmg*0.2;
-	
-			if (!duration)
+		// Process fire damage. Not DAMAGE_BURNING, because that is coming from you being on fire already...
+		if ((dflags & DAMAGE_FIRE) && IsFlammable(target) && dflags != DAMAGE_BURNING && !(target->svflags & SVF_BOSS))
+		{
+			// Don't burn underwater.
+			if (!(gi.pointcontents(target->s.origin) & (CONTENTS_WATER | CONTENTS_SLIME)))
 			{
-				duration = 1;
-			}
-			else if (dflags & DAMAGE_PHOENIX)
-			{	// The phoenix is just too damn powerful if it can do serious fire damage too...
-				duration = 1;		// This makes a burning death if the player should die, but it goes out right away.
-			}
-			else if (duration > 8)
-			{
-				duration = 8;
-			}
+				//FIXME: not on BBRUSHES - have no origin!
+				float duration = ((float)orig_dmg * ((dflags & DAMAGE_FIRE_LINGER) ? 0.4f : 0.2f)); //mxd. int in original logic.
 
-			scale = (int)(VectorLength(targ->size)*(0.5 * 0.25));	//is scled up drediculously on other side, quarter it
-			if (scale > 255)
-				scale = 255;
+				// The phoenix is just too damn powerful if it can do serious fire damage too...
+				if (duration == 0.0f || (dflags & DAMAGE_PHOENIX))
+					duration = 1.0f; // This makes a burning death if the player should die, but it goes out right away.
+				else if (duration > 8.0f)
+					duration = 8.0f;
 
-			if(!(gi.pointcontents(targ->s.origin) & (CONTENTS_WATER|CONTENTS_SLIME)))
-			{//need to check if under water!
-				if(targ->fire_damage_time < level.time && !(targ->svflags & SVF_BOSS))
-				{//not already on fire
-					if(targ->client && deathmatch->value)
-						targ->fire_damage_time = level.time + duration * 0.25;//burn for 3.2 seconds- length of effect, if effect length changed, this should too!
-					else
-						targ->fire_damage_time = level.time + duration * 0.5;//burn for 3.2 seconds- length of effect, if effect length changed, this should too!
-	
+				// Time to update fire damage effect?
+				if (target->fire_damage_time < level.time && !(target->svflags & SVF_BOSS))
+				{
+					// Not already on fire.
+					const float duration_scaler = ((target->client != NULL && DEATHMATCH) ? 0.25f : 0.5f); //mxd
+					target->fire_damage_time = level.time + duration * duration_scaler;
+
 					if (!was_dead)
-						targ->s.effects &= ~EF_DISABLE_EXTRA_FX;	// The flag causes the fire to stop generating.
-					targ->s.effects |= EF_ON_FIRE;
-					gi.CreateEffect(&targ->s, FX_FIRE_ON_ENTITY, CEF_OWNERS_ORIGIN, NULL, "bbb", (int)scale, 255, 1);//we'll turn this off manually
+						target->s.effects &= ~EF_DISABLE_EXTRA_FX; // The flag causes the fire to stop generating.
+
+					target->s.effects |= EF_ON_FIRE;
+
+					int scale = (int)(VectorLength(target->size) * 0.125f); // Is scaled up drediculously on other side, quarter it.
+					scale = min(255, scale);
+
+					gi.CreateEffect(&target->s, FX_FIRE_ON_ENTITY, CEF_OWNERS_ORIGIN, NULL, "bbb", scale, 255, 1); // We'll turn this off manually.
 				}
 				else
-					targ->fire_damage_time += duration;
+				{
+					target->fire_damage_time += duration;
+				}
 
 				// Always set the damage enemy to the most recent entity doing damage.
-				targ->fire_damage_enemy = attacker;
+				target->fire_damage_enemy = attacker;
 			}
 		}
-		else if(!(dflags & DAMAGE_NO_BLOOD))
+		else if (!(dflags & DAMAGE_NO_BLOOD))
 		{
-			if ((targ->svflags & SVF_MONSTER) || (client))
+			if ((target->svflags & SVF_MONSTER) || client != NULL)
 			{
-				int bloodamt;
-				vec3_t vel, diff, loc;
-				
-				if (take > 80)
-					bloodamt = 20;
-				else
-					bloodamt = take/4;
+				vec3_t vel;
+				vec3_t loc;
 
-				// Normal will be NULL from time to time.  FIXME:  Hellbolts will damage with a plane.normal that is null.
-				if (normal==NULL || Vec3IsZero(normal))
+				// Normal will be NULL from time to time. FIXME:  Hellbolts will damage with a plane.normal that is null.
+				if (Vec3IsZero(normal)) //TODO: never happens? already checked when copying p_normal.
 				{
 					VectorClear(vel);
 					VectorCopy(point, loc);
 				}
 				else
 				{
-					VectorScale(normal, -64.0, vel);
+					VectorScale(normal, -64.0f, vel);
 
 					// Now let's try moving the hit point towards the hit object.
-					VectorSubtract(targ->s.origin, point, diff);
+					vec3_t diff;
+					VectorSubtract(target->s.origin, point, diff);
+
 					// We can't be assured that the vertical origin is the center...
-					diff[2] += (targ->maxs[2] + targ->mins[2])*0.5;
+					diff[2] += (target->maxs[2] + target->mins[2]) * 0.5f;
+
 					// Take half that distance, since the hit always tends to be on the outside of the bbox.
-					VectorMA(point, 0.5, diff, loc);
+					VectorMA(point, 0.5f, diff, loc);
 				}
 
-				if(violence == VIOLENCE_NONE)
+				if (BLOOD_LEVEL == VIOLENCE_NONE)
+				{
 					gi.CreateEffect(NULL, FX_HITPUFF, CEF_FLAG6, point, "db", dir, 5);
-				else if(targ->materialtype == MAT_INSECT)
-					gi.CreateEffect(NULL, FX_BLOOD, CEF_FLAG8, loc, "ub", vel, bloodamt);
+				}
 				else
-					gi.CreateEffect(NULL, FX_BLOOD, 0, loc, "ub", vel, bloodamt);
+				{
+					const int flags = (target->materialtype == MAT_INSECT ? CEF_FLAG8 : 0); //mxd
+					const int blood_amt = ((dmg_take > 80) ? 20 : dmg_take / 4); //mxd
+					gi.CreateEffect(NULL, FX_BLOOD, flags, loc, "ub", vel, blood_amt);
+				}
 			}
 			else
 			{
-				if ((targ->svflags & SVF_DEADMONSTER ||targ->materialtype == MAT_INSECT||targ->materialtype == MAT_FLESH) && violence > VIOLENCE_NONE)
+				if (((target->svflags & SVF_DEADMONSTER) || target->materialtype == MAT_INSECT || target->materialtype == MAT_FLESH) && BLOOD_LEVEL > VIOLENCE_NONE)
 				{
-					if(targ->materialtype == MAT_INSECT)
-						gi.CreateEffect(NULL, FX_BLOOD, CEF_FLAG8, point, "ub", dir, 8);
-					else
-						gi.CreateEffect(NULL, FX_BLOOD, 0, point, "ub", dir, 8);
+					const int flags = (target->materialtype == MAT_INSECT ? CEF_FLAG8 : 0); //mxd
+					gi.CreateEffect(NULL, FX_BLOOD, flags, point, "ub", dir, 8);
 				}
 				else
+				{
 					gi.CreateEffect(NULL, FX_HITPUFF, 0, point, "db", dir, 5);
+				}
 			}
 		}
 		else if (dflags & DAMAGE_BUBBLE)
 		{
-			vec3_t bubbleloc;
+			vec3_t bubble_pos = { flrand(-10.0f, 10.0f), flrand(-10.0f, 10.0f), (float)target->viewheight };
+			VectorAdd(bubble_pos, target->s.origin, bubble_pos);
 
-			VectorSet(bubbleloc, flrand(-10, 10), flrand(-10,10), targ->viewheight);
-			VectorAdd(bubbleloc, targ->s.origin, bubbleloc);
-			gi.CreateEffect(NULL, FX_BUBBLE, 0, bubbleloc, "");
+			gi.CreateEffect(NULL, FX_BUBBLE, 0, bubble_pos, NULL);
 		}
 
-		targ->health -= take;
-			
-		if(targ!=attacker && violence > VIOLENCE_BLOOD)//can't dismember yourself
+		// Apply damage.
+		target->health -= dmg_take;
+
+		if (target != attacker && BLOOD_LEVEL > VIOLENCE_BLOOD) // Can't dismember yourself.
 		{
-			if(attacker==inflictor)
+			vec3_t hit_spot;
+			if (attacker == inflictor)
 				VectorCopy(point, hit_spot);
 			else
 				VectorCopy(inflictor->s.origin, hit_spot);
 
-			if(targ->classID != CID_HARPY)//use new hitlocation function
-				hl = MG_GetHitLocation(targ, inflictor, point, dir);
-			else if (!(targ->svflags & SVF_MONSTER)&&!(client))//target not a monster or client
-				hl = T_GetHitLocation(targ, inflictor, hit_spot);
+			//TODO: 2-nd case never used (harpy is monster)? Why CID_HARPY needs separate GetHitLocation() logic?
+			if (target->classID != CID_HARPY) // Use new hitlocation function.
+				hl = MG_GetHitLocation(target, inflictor, point, dir);
+			else if (!(target->svflags & SVF_MONSTER) && client == NULL) // Target not a monster or client.
+				hl = T_GetHitLocation(target, inflictor, hit_spot);
 			else
-				hl = T_GetHitLocation(targ, attacker, hit_spot);
+				hl = T_GetHitLocation(target, attacker, hit_spot);
 
-			if(dflags&DAMAGE_DISMEMBER)
-				hl |= hl_MeleeHit;//only melee can dismember Add the 16th bit to it for melee hit
-			
-			if(!(targ->svflags & SVF_PARTS_GIBBED) && !(dflags & DAMAGE_SUFFOCATION) && !(dflags & DAMAGE_BLEEDING))
-			{//don't dismember someone who's already gibbed or gibbing, no dismember damage from suffocation or bleeding
-				if(dflags&DAMAGE_DOUBLE_DISMEMBER)
-					dsm_dmg = take * 2;
-				else
-					dsm_dmg = take;
+			if (dflags & DAMAGE_DISMEMBER)
+				hl |= hl_MeleeHit; // Only melee can dismember. Add the 16th bit to it for melee hit.
 
-				if(targ->client)
-					player_dismember(targ, attacker, dsm_dmg, hl);
+			// Don't dismember someone who's already gibbed or is gibbing, no dismember damage from suffocation or bleeding.
+			if (!(target->svflags & SVF_PARTS_GIBBED) && !(dflags & DAMAGE_SUFFOCATION) && !(dflags & DAMAGE_BLEEDING))
+			{
+				int dismemeber_dmg = dmg_take;
+
+				if (dflags & DAMAGE_DOUBLE_DISMEMBER)
+					dismemeber_dmg *= 2;
+
+				if (target->client != NULL)
+					player_dismember(target, attacker, dismemeber_dmg, hl);
 				else
-					QPostMessage(targ, MSG_DISMEMBER, PRI_DIRECTIVE, "ii", dsm_dmg, hl);
+					QPostMessage(target, MSG_DISMEMBER, PRI_DIRECTIVE, "ii", dismemeber_dmg, hl);
 			}
 		}
 
-		if (targ->health <= 0)
+		if (target->health <= 0)
 		{
-//			if ((targ->svflags & SVF_MONSTER) || (client))
-//				targ->flags |= FL_NO_KNOCKBACK;
-
 			// Target has died, so kill it good and dead.
-			if(was_dead)
-			{//FIXME: if on fire, Become a charred husk, no gib.
-				if(!(dflags & DAMAGE_SUFFOCATION) && !(dflags & DAMAGE_BLEEDING) && dflags != DAMAGE_BURNING)
-				{//drowning, bleeding and burning do not gib
-					if(targ->health<=-100)
+			if (was_dead)
+			{
+				//FIXME: if on fire, become a charred husk, no gib.
+				if (dflags != DAMAGE_SUFFOCATION && !(dflags & DAMAGE_BLEEDING) && dflags != DAMAGE_BURNING)
+				{
+					// Drowning, bleeding and burning do not gib.
+					if (target->health <= -100)
 					{
-						if(targ->think != BecomeDebris && targ->think != G_SetToFree)
+						if (target->think != BecomeDebris && target->think != G_SetToFree)
 						{
-							targ->post_think = BecomeDebris;
-							targ->next_post_think = level.time;
+							target->post_think = BecomeDebris;
+							target->next_post_think = level.time;
 						}
 					}
-					else if(violence > VIOLENCE_BLOOD)
+					else if (BLOOD_LEVEL > VIOLENCE_BLOOD)
 					{
-						hl|=hl_MeleeHit;//force dismember
-						QPostMessage(targ, MSG_DEATH_PAIN, PRI_DIRECTIVE,"ii", take, hl);
+						hl |= hl_MeleeHit; // Force dismember.
+						QPostMessage(target, MSG_DEATH_PAIN, PRI_DIRECTIVE, "ii", dmg_take, hl);
 					}
 				}
+
 				return;
 			}
 
-			if(targ->client)
+			// Player died from fire damage. //TODO: can player have SVF_BOSS flag?..
+			if (target->client != NULL && (dflags & DAMAGE_FIRE) && !(target->svflags & SVF_BOSS))
 			{
-				if(dflags & DAMAGE_FIRE && !(targ->svflags & SVF_BOSS))
-				{
-					scale = (int)(VectorLength(targ->size)*(0.5*8.0));	// eight times the value is sent over, no more than 32 wide.
-					if (scale > 255)
-						scale = 255;
-					targ->fire_damage_time = -1;//so we know we died from fire
+				target->fire_damage_time = -1; // So we know we died from fire.
 
-					//spawn a fire to keep burning for ~ 6 secs
-					if (!was_dead)
-						targ->s.effects &= ~EF_DISABLE_EXTRA_FX;	// The flag causes the fire to stop generating.
-					targ->s.effects |= EF_ON_FIRE;			// The flag causes the fire to stop generating.
-					gi.CreateEffect(&targ->s, FX_FIRE_ON_ENTITY, CEF_OWNERS_ORIGIN, NULL, "bbb", (int)scale, 40, 0);
-				}
+				// Spawn a fire to keep burning for ~ 6 secs.
+				target->s.effects &= ~EF_DISABLE_EXTRA_FX; // The flag causes the fire to stop generating.
+				target->s.effects |= EF_ON_FIRE; // The flag causes the fire to stop generating.
+
+				int scale = (int)(VectorLength(target->size) * 4.0f); // Eight times the value is sent over, no more than 32 wide.
+				scale = min(255, scale);
+
+				gi.CreateEffect(&target->s, FX_FIRE_ON_ENTITY, CEF_OWNERS_ORIGIN, NULL, "bbb", scale, 40, 0);
 			}
 
-			if(!targ->takedamage)//already killed by decapitation or some other killing dismemberment
-				return;
+			// Already killed by decapitation or some other killing dismemberment?
+			if (target->takedamage != DAMAGE_NO)
+				Killed(target, inflictor, attacker, dmg_take, point, mod);
 
-			Killed (targ, inflictor, attacker, take, point, MeansOfDeath);
-			
 			return;
 		}
 	}
 
-	if (targ->svflags & SVF_MONSTER && sv_freezemonsters->value != 0.0)
+	if ((target->svflags & SVF_MONSTER) && SV_FREEZEMONSTERS)
 	{
-		// Do do anything.  Frozen monsters take no damage, don't die.
+		// Do do anything. Frozen monsters take no damage, don't die.
 	}
-	else if (targ->svflags & SVF_MONSTER)
+	else if (target->svflags & SVF_MONSTER)
 	{
-		if(!targ->enemy)
-			force_pain = true;
-		else
-			force_pain = false;
+		target->spawnflags &= ~MSF_AMBUSH;
+		target->targetname = NULL;
 
-		targ->spawnflags &= ~MSF_AMBUSH;
-		targ->targetname = NULL;
+		M_ReactToDamage(target, attacker);
 
-		M_ReactToDamage (targ, attacker);
-
-		if (!(targ->monsterinfo.aiflags & AI_DUCKED) && (take) && 
-			(targ->pain_debounce_time  < level.time))
+		if (!(target->monsterinfo.aiflags & AI_DUCKED) && dmg_take > 0 && target->pain_debounce_time < level.time)
 		{
-			if(targ->classID == CID_ASSASSIN)
-				QPostMessage(targ,MSG_PAIN,PRI_DIRECTIVE,"eeiii", inflictor, attacker, force_pain, take, hl);
+			const qboolean force_pain = (target->enemy == NULL); //mxd
+
+			if (target->classID == CID_ASSASSIN)
+				QPostMessage(target, MSG_PAIN, PRI_DIRECTIVE, "eeiii", inflictor, attacker, force_pain, dmg_take, hl);
 			else
-				QPostMessage(targ,MSG_PAIN,PRI_DIRECTIVE,"eeiii", targ, attacker, force_pain, take, hl);
-			
+				QPostMessage(target, MSG_PAIN, PRI_DIRECTIVE, "eeiii", target, attacker, force_pain, dmg_take, hl);
+
 			// In Nightmare skill-level, monsters don't go into pain frames often.
-
-			if (skill->value >= 3)
-				targ->pain_debounce_time = level.time + 5;
+			if (SKILL >= 3)
+				target->pain_debounce_time = level.time + 5;
 		}
 	}
-	else if (client)
+	else if (client != NULL)
 	{
-		if (!(targ->flags & FL_GODMODE) && (take))
-			QPostMessage(targ,MSG_PAIN,PRI_DIRECTIVE,"eeiii", targ, attacker, knockback, take, hl);
+		if (!(target->flags & FL_GODMODE) && dmg_take > 0)
+			QPostMessage(target, MSG_PAIN, PRI_DIRECTIVE, "eeiii", target, attacker, knockback, dmg_take, hl);
 	}
-	else if (take)
+	else if (dmg_take > 0 && target->pain != NULL)
 	{
-		if (targ->pain)
+		if (target->classID == CID_NONE || classStatics[target->classID].msgReceivers[MSG_PAIN] == NULL)
 		{
-			if(!targ->classID || !classStatics[targ->classID].msgReceivers[MSG_PAIN])
-			{
-				if(!stricmp(targ->classname, "NATE"))
-					targ->activator = inflictor;
-				targ->pain(targ, attacker, knockback, take);//pass spot too
-			}
-			else
-				QPostMessage(targ,MSG_PAIN,PRI_DIRECTIVE,"eeiii", targ, attacker, knockback, take, hl);
+			if (Q_stricmp(target->classname, "NATE") == 0) //mxd. Classname of chicken spawned in spawn_hanging_chicken()...
+				target->activator = inflictor;
+
+			target->pain(target, attacker, (float)knockback, dmg_take); // Pass spot too.
+		}
+		else
+		{
+			QPostMessage(target, MSG_PAIN, PRI_DIRECTIVE, "eeiii", target, attacker, knockback, dmg_take, hl);
 		}
 	}
 
-	// Add to the damage inflicted on a player this frame. The total will be turned into screen
-	// blends and view angle kicks at the end of the frame.
-
-	if(client)
+	// Add to the damage inflicted on a player this frame.
+	// The total will be turned into screen blends and view angle kicks at the end of the frame.
+	if (client != NULL)
 	{
-		client->damage_gas = (!stricmp(inflictor->classname, "plague_mist") || !stricmp(inflictor->classname, "spreader_grenade")) ? true : false;
-
-		client->damage_blood += take;
+		client->damage_gas = (Q_stricmp(inflictor->classname, "plague_mist") == 0 || Q_stricmp(inflictor->classname, "spreader_grenade") == 0);
+		client->damage_blood += dmg_take;
 		client->damage_knockback += knockback;
-		VectorCopy (point, client->damage_from);
+
+		VectorCopy(point, client->damage_from);
 	}
 }
 
