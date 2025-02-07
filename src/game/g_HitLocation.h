@@ -1,11 +1,16 @@
-#ifndef G_HITLOCATION_H
-#define	G_HITLOCATION_H
-// Enumerated hit locations
+//
+// g_HitLocation.h
+//
+// Copyright 1998 Raven Software
+//
 
+#pragma once
+
+// Enumerated hit locations.
 typedef	enum HitLocation_e
 {
-	hl_Null				= -1,
-	hl_NoneSpecific		= 0,
+	hl_Null = -1,
+	hl_NoneSpecific = 0,
 	hl_Head,
 	hl_TorsoFront,
 	hl_TorsoBack,
@@ -21,22 +26,21 @@ typedef	enum HitLocation_e
 	hl_WingedPoints,
 	hl_extra14,
 	hl_extra15,
-	hl_MeleeHit,//16
+	hl_MeleeHit, // 16
 	hl_Max,
-	//50/50 HITLOCS
-	hl_Half_LLL_LRL,//left lower leg and right lower leg
-	hl_Half_ULL_URL,//left upper leg and right upper leg
-	hl_Half_FT_BT,//front and back torso
-	hl_Half_FT_URA,//front torso and upper right arm
-	hl_Half_FT_ULA,//front torso and upper left arm
-	hl_Half_FT_LRA,//front torso and lower right arm
-	hl_Half_FT_LLA,//front torso and lower left arm
-	hl_Half_BT_URA,//back torso and upper right arm
-	hl_Half_BT_ULA,//back torso and upper left arm
-	hl_Half_BT_LRA,//back torso and lower right arm
-	hl_Half_BT_LLA,//back torso and lower left arm
+
+	// 50/50 chance hit locations (mxd. used only by MG_GetHitLocation() logic!).
+	hl_Half_LLL_LRL,	// Left lower leg and right lower leg.
+	hl_Half_ULL_URL,	// Left upper leg and right upper leg.
+	hl_Half_FT_BT,		// Front and back torso.
+	hl_Half_FT_URA,		// Front torso and upper right arm.
+	hl_Half_FT_ULA,		// Front torso and upper left arm.
+	hl_Half_FT_LRA,		// Front torso and lower right arm.
+	hl_Half_FT_LLA,		// Front torso and lower left arm.
+	hl_Half_BT_URA,		// Back torso and upper right arm.
+	hl_Half_BT_ULA,		// Back torso and upper left arm.
+	hl_Half_BT_LRA,		// Back torso and lower right arm.
+	hl_Half_BT_LLA,		// Back torso and lower left arm.
 } HitLocation_t;
 
-HitLocation_t MG_GetHitLocation(edict_t *target, edict_t *inflictor, vec3_t ppoint, vec3_t pdir);
-
-#endif
+HitLocation_t MG_GetHitLocation(const edict_t* target, const edict_t* inflictor, const vec3_t p_point, const vec3_t p_dir);
