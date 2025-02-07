@@ -208,7 +208,7 @@ struct edict_s
 	// like a flag indicating if it takes damage anyone ever heard of using a bit for a flag, or
 	// even better a whole bunch of flags in an 'int'.
 
-	int					takedamage;	
+	damage_t			takedamage; //mxd. int in original logic.
 
 	// Unless something will do both normal and radius damage, we only need one field. In fact we
 	// may want to move this into class statics or something.
