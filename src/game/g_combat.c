@@ -184,109 +184,91 @@ static void SpawnReward(const edict_t* self, const edict_t* attacker)
 	gi.CreateEffect(NULL, FX_PICKUP, 0, ed->s.origin, NULL);
 }
 
-/*
-============
-Killed
-============
-*/
-
-void Killed (edict_t *targ, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point, int mod)
+void Killed(edict_t* target, edict_t* inflictor, edict_t* attacker, const int damage, vec3_t point, const int mod)
 {
-	vec3_t hitdir;
-
-	if (targ->classID == CID_MORK)
+	if (target->classID == CID_MORK)
 	{
-		targ->die(targ, inflictor, attacker, damage, vec3_origin);		
+		target->die(target, inflictor, attacker, damage, vec3_origin);
 		return;
 	}
 
+	// Clear special enemy attack stuff.
+	//FIXME? Make attacking monster look for a new target? Or search for all monsters with 'target' as enemy and find new target for them?
 	if (attacker->svflags & SVF_MONSTER)
-	{//clear special enemy attack stuff
-		//FIXME?  Make attacking monster look for a new target?
-		//OR: Search for all monsters with targ as enemy and
-		//find new target for them?
 		attacker->monsterinfo.aiflags &= ~AI_STRAIGHT_TO_ENEMY;
-	}
 
-	if (targ->classID != CID_BBRUSH)	
-		targ->enemy = attacker;
+	if (target->classID != CID_BBRUSH)
+		target->enemy = attacker;
 
-	if ((targ->svflags & SVF_MONSTER) && (targ->deadflag != DEAD_DEAD))
+	if ((target->svflags & SVF_MONSTER) && target->deadflag != DEAD_DEAD)
 	{
-		MG_RemoveBuoyEffects(targ);
-		//What about if off ledge or on steep slope- slide off?
-		pitch_roll_for_slope(targ, NULL);
-	
-		targ->dead_size = Q_fabs( (targ->maxs[2] - targ->mins[2]) ) * 0.5;
-		MG_PostDeathThink(targ);
-		
-		if(!(targ->svflags & SVF_WAIT_NOTSOLID))
-			targ->svflags |= SVF_DEADMONSTER;	// now treat as a different content type
+		MG_RemoveBuoyEffects(target);
 
-		targ->enemy = attacker;
-		AlertMonsters (targ, attacker, 7, true);
-		//spawns an ent that will alert other monsters to my enemy's presence for 7 seconds
+		// What about if off ledge or on steep slope - slide off?
+		pitch_roll_for_slope(target, NULL);
 
-		//Spawn a reward for the kill
-		if (attacker->client)
-			SpawnReward(targ, attacker);
+		target->dead_size = Q_fabs(target->maxs[2] - target->mins[2]) * 0.5f;
+		MG_PostDeathThink(target);
+
+		if (!(target->svflags & SVF_WAIT_NOTSOLID))
+			target->svflags |= SVF_DEADMONSTER; // Now treat as a different content type.
+
+		target->enemy = attacker;
+
+		// Spawn an ent that will alert other monsters to my enemy's presence for 7 seconds.
+		AlertMonsters(target, attacker, 7.0f, true);
+
+		// Spawn a reward for the kill.
+		if (attacker->client != NULL)
+			SpawnReward(target, attacker);
 	}
-	if (targ->movetype == PHYSICSTYPE_PUSH || targ->movetype == PHYSICSTYPE_STOP || targ->movetype == PHYSICSTYPE_NONE)
-	{	
+
+	if (target->movetype == PHYSICSTYPE_PUSH || target->movetype == PHYSICSTYPE_STOP || target->movetype == PHYSICSTYPE_NONE)
+	{
 		// Doors, triggers, breakable brushes, etc. die with their own KillBrush() routine.
-		if (targ->classID == CID_BBRUSH)
-		{
-			KillBrush(targ,inflictor,attacker,damage);
-		}
+		if (target->classID == CID_BBRUSH)
+			KillBrush(target, inflictor, attacker, damage);
+		else if ((target->classID == CID_NONE || classStatics[target->classID].msgReceivers[MSG_PAIN] == NULL) && target->die != NULL)
+			target->die(target, inflictor, attacker, damage, vec3_origin);
 		else
-		{
-			if((!targ->classID || !classStatics[targ->classID].msgReceivers[MSG_PAIN]) && targ->die)
-			{
-				targ->die(targ, inflictor, attacker, damage, vec3_origin);
-			}
-			else
-			{
-				QPostMessage(targ,MSG_DEATH,PRI_DIRECTIVE,"eeei",targ,inflictor,attacker,damage);
-			}
-		}
+			QPostMessage(target, MSG_DEATH, PRI_DIRECTIVE, "eeei", target, inflictor, attacker, damage);
+
 		return;
 	}
 
-	// Also, put the flag of fire on the entity- makes fire lower when die
-	if(targ->size[2] > 24)
-		targ->s.effects |= EF_DISABLE_EXTRA_FX;
+	// Also, put the flag of fire on the entity - makes fire lower when die.
+	if (target->size[2] > 24.0f)
+		target->s.effects |= EF_DISABLE_EXTRA_FX;
 
-	if (targ->deadflag != DEAD_DEAD)
+	if (target->deadflag != DEAD_DEAD)
 	{
-//		ClientObituary(self, inflictor, attacker);
-
-		targ->touch = NULL;
-
-		monster_death_use (targ);
+		target->touch = NULL;
+		monster_death_use(target);
 	}
 
-	if(targ->client)
-	{	//FIXME: Make sure you can still dismember and gib player while dying
-		targ->client->meansofdeath = mod;
-		player_die(targ, inflictor, attacker, damage, point);
+	if (target->client != NULL)
+	{
+		//FIXME: Make sure you can still dismember and gib player while dying.
+		target->client->meansofdeath = mod;
+		player_die(target, inflictor, attacker, damage, point);
 	}
 	else
 	{
-		//CID_RAT SHOULD NOT BE ZERO!!! CID_NONE SHOULD BE
-		if((!targ->classID || !classStatics[targ->classID].msgReceivers[MSG_PAIN]) && targ->die)
-		{
-			targ->die(targ, inflictor, attacker, damage, vec3_origin);
-		}
+		if ((target->classID == CID_NONE || classStatics[target->classID].msgReceivers[MSG_PAIN] == NULL) && target->die != NULL)
+			target->die(target, inflictor, attacker, damage, vec3_origin);
 		else
-			QPostMessage(targ,MSG_DEATH,PRI_DIRECTIVE,"eeei",targ,inflictor,attacker,damage);
+			QPostMessage(target, MSG_DEATH, PRI_DIRECTIVE, "eeei", target, inflictor, attacker, damage);
 	}
-	
-	if(Vec3IsZero(targ->velocity) && (damage != 12345))
-	{//fall back some!
-		VectorSubtract(targ->s.origin, inflictor->s.origin, hitdir);
-		hitdir[2] = 50;
-		VectorNormalize(hitdir);
-		VectorMA(targ->velocity, damage*3, hitdir, targ->velocity);
+
+	if (Vec3IsZero(target->velocity)) //mxd. BUGFIX, sorta: '&& damage != 12345' in original logic. '12345' value is never used anywhere else.
+	{
+		// Fall back some!
+		vec3_t hit_dir;
+		VectorSubtract(target->s.origin, inflictor->s.origin, hit_dir);
+		hit_dir[2] = 50.0f;
+
+		VectorNormalize(hit_dir);
+		VectorMA(target->velocity, (float)damage * 3.0f, hit_dir, target->velocity);
 	}
 }
 
