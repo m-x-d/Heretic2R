@@ -71,7 +71,7 @@ struct edict_s
 
 	MsgQueue_t			msgQ;
 	G_MessageHandler_t	msgHandler;
-	int					classID;
+	enum ClassID_e		classID; //mxd. int in original version.
 
 	void				(*think)(edict_t *self);
 	void				(*ai)(edict_t *self);
