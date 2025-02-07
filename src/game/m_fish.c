@@ -164,7 +164,7 @@ void fish_new_direction(edict_t *self)
 	reset_fish_movedir(self);
 
 	// if we change direction, we might hit the same poly we just last collided with
-	self->shrine_type = 0;
+	self->shrine_type = 0; //TODO: part of union, add fish-specific prop?
 
 	// decide which animation to use
 	if (self->ai_mood == AI_MOOD_WANDER)
@@ -1105,7 +1105,7 @@ void SP_monster_fish (edict_t *self)
 	self->yaw_speed = 11;
 	self->dmg_radius = 4;
 	// random(ish) speed
-	self->old_yaw = flrand(0.65,1.0);
+	self->old_yaw = flrand(0.65,1.0); //TODO: part of union, add fish-specific name?
 
 	self->movetype=PHYSICSTYPE_STEP;
 	VectorClear(self->knockbackvel);

@@ -1252,7 +1252,7 @@ void SetGroundEntFromTrace(edict_t *self, trace_t *trace)
 //---------------------------------------------------------------------------------
 // Sets the blockingEntity info contained in self based on trace
 //---------------------------------------------------------------------------------
-void SetBlockingEntFromTrace(edict_t *self, trace_t *trace)
+void SetBlockingEntFromTrace(edict_t *self, trace_t *trace) //TODO: set properties never used.
 {
 	assert(self);
 

@@ -337,7 +337,7 @@ void SP_script_runner (edict_t *ent);
 spawn_t	spawns[]= 
 {
 	// Quake2 specific spawns.
-	{"info_player_start", SP_info_player_start,-1},
+	{"info_player_start", SP_info_player_start,-1}, //TODO: change -1 to CID_NONE.
 	{"info_player_deathmatch", SP_info_player_deathmatch,-1},
 	{"info_player_coop", SP_info_player_coop,-1},
 	{"info_player_intermission", SP_info_player_intermission,-1},
