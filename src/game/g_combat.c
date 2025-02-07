@@ -90,108 +90,98 @@ qboolean CanDamage(const edict_t* target, const edict_t* inflictor)
 	return CanDamageFromLoc(target, inflictor, inflictor->s.origin); //mxd. Avoid code duplication.
 }
 
-void SpawnReward(edict_t *self, edict_t *attacker)
+static void SpawnReward(const edict_t* self, const edict_t* attacker)
 {
-	gitem_t	*item, *lookup;
-	edict_t *newitem;
-	vec3_t	forward, holdorigin;
-	float	health_chance, off_chance, def_chance;
-	char	*item_name;
-	int		off_amount, off_max, def_amount, def_max, index, chance;
-
-	//MG: Assassins always give you something
+	// Assassins always give you something.
 	if (self->classID != CID_ASSASSIN)
 	{
-		//Randomly refuse to give them anything
-		if (coop->value)
+		// Randomly refuse to give them anything.
+		if (COOP)
 		{
-			if ( !irand(0, (maxclients->value+1)/2) )
+			if (irand(0, (MAXCLIENTS + 1) / 2) == 0)
 				return;
 		}
-		else if (skill->value < 3.0)
+		else if (SKILL < 3)
 		{
-			if (irand(0, ITEM_REWARD_CHANCE + (2*skill->value)))
-			{	// Easy: 1 in 2 chance, normal: 1 in 4 chance; Hard: 1 in 6 chance
+			// Easy: 1 in 2 chance; Normal: 1 in 4 chance; Hard: 1 in 6 chance.
+			if (irand(0, ITEM_REWARD_CHANCE + SKILL * 2) > 0)
 				return;
-			}
 		}
 		else
-		{	// No rewards in skills at or above 3.0.
+		{
+			// No rewards in skills at or above 3.0.
 			return;
 		}
 	}
-	
-	//Only intelligent monsters produce items, not creatures (and not Ogles)
-	if ( (self->classID == CID_RAT) || (self->classID == CID_HARPY) || (self->classID == CID_GKROKON) || (self->classID == CID_GORGON) || (self->classID == CID_FISH) || (self->classID == CID_OGLE) )
+
+	// Only intelligent monsters produce items, not creatures (and not Ogles).
+	if (self->classID == CID_RAT || self->classID == CID_HARPY || self->classID == CID_GKROKON ||
+		self->classID == CID_GORGON || self->classID == CID_FISH || self->classID == CID_OGLE)
 		return;
 
-	//Bosses don't spawn a reward either
-	if ( self->svflags & SVF_BOSS )
+	// Bosses don't spawn a reward either.
+	if (self->svflags & SVF_BOSS)
 		return;
 
-	//Check the health amount on the attacker
-	health_chance = (attacker->health < attacker->max_health) ? ( (float) attacker->health / (float) attacker->max_health) : 9999;
+	// Check the health amount on the attacker.
+	const float health_chance = (attacker->health < attacker->max_health) ? ((float)attacker->health / (float)attacker->max_health) : 9999.0f;
 
-	//Check the offensive mana amount on the attacker
-	lookup = P_FindItemByClassname("item_mana_offensive_half");
-	index = ITEM_INDEX(lookup);
-	off_max = attacker->client->playerinfo.pers.max_offmana;
-	off_amount = attacker->client->playerinfo.pers.inventory.Items[index];
+	// Check the offensive mana amount on the attacker.
+	const gitem_t* lookup = P_FindItemByClassname("item_mana_offensive_half");
+	int index = ITEM_INDEX(lookup);
+	const int off_max = attacker->client->playerinfo.pers.max_offmana;
+	const int off_amount = attacker->client->playerinfo.pers.inventory.Items[index];
 
-	off_chance = (off_amount < off_max) ? ( (float) off_amount / (float) off_max ) : 9999;
+	const float off_chance = (off_amount < off_max) ? ((float)off_amount / (float)off_max) : 9999.0f;
 
-	//Check the offensive mana amount on the attacker
+	// Check the defensive mana amount on the attacker.
 	lookup = P_FindItemByClassname("item_mana_defensive_half");
 	index = ITEM_INDEX(lookup);
-	def_max = attacker->client->playerinfo.pers.max_defmana;
-	def_amount = attacker->client->playerinfo.pers.inventory.Items[index];
+	const int def_max = attacker->client->playerinfo.pers.max_defmana;
+	const int def_amount = attacker->client->playerinfo.pers.inventory.Items[index];
 
-	def_chance = (def_amount < def_max) ? ( (float) def_amount / (float) def_max ) : 9999;
-	
-	//We don't need anything
-	if ( (health_chance == 9999) && (off_chance == 9999) && (def_chance == 9999))
+	const float def_chance = (def_amount < def_max) ? ((float)def_amount / (float)def_max) : 9999.0f;
+
+	// We don't need anything.
+	if (health_chance == 9999.0f && off_chance == 9999.0f && def_chance == 9999.0f)
 		return;
 
-	//Determine what they get
-	if ( (health_chance < off_chance) && (health_chance < def_chance) )
+	// Determine what they get.
+	char* item_name;
+	if (health_chance < off_chance && health_chance < def_chance)
 	{
 		item_name = "item_health_half";
 	}
-	else if ( (off_chance < health_chance) && (off_chance < def_chance) )
+	else if (off_chance < health_chance && off_chance < def_chance)
 	{
 		item_name = "item_mana_offensive_half";
 	}
-	else if ( (def_chance < health_chance) && (def_chance < off_chance) )
+	else if (def_chance < health_chance && def_chance < off_chance)
 	{
 		item_name = "item_mana_defensive_half";
 	}
 	else
 	{
-		chance = irand(0,2);
+		const int chance = irand(0, 2);
 
-		if (chance==0)
+		if (chance == 0)
 			item_name = "item_health_half";
-		else if (chance==1)
+		else if (chance == 1)
 			item_name = "item_mana_offensive_half";
 		else
 			item_name = "item_mana_defensive_half";
 	}
 
-	//We know what we want to give them, so create it!
-	item = P_FindItemByClassname(item_name);
+	// We know what we want to give them, so create it!
+	gitem_t* item = P_FindItemByClassname(item_name);
+	edict_t* ed = G_Spawn();
 
-	newitem = G_Spawn();
+	ed->movetype = PHYSICSTYPE_STEP;
+	VectorCopy(self->s.origin, ed->s.origin);
+	SpawnItem(ed, item);
 
-	newitem->movetype = PHYSICSTYPE_STEP;
-	AngleVectors(self->s.angles,forward,NULL,NULL);
-	VectorCopy(self->s.origin,newitem->s.origin);
-
-	SpawnItem(newitem, item);
-
-	VectorCopy(newitem->s.origin,holdorigin);
-	
-	//Make the effect
-	gi.CreateEffect(NULL, FX_PICKUP, 0, holdorigin, "");
+	// Make the effect.
+	gi.CreateEffect(NULL, FX_PICKUP, 0, ed->s.origin, NULL);
 }
 
 /*
