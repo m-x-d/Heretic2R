@@ -386,17 +386,10 @@ static void M_ReactToDamage(edict_t* target, edict_t* attacker)
 	FoundTarget(target, true);
 }
 
-qboolean flammable (edict_t *targ)
+static qboolean IsFlammable(const edict_t* target)
 {
-	if(targ->materialtype == MAT_CLOTH||
-		targ->materialtype == MAT_FLESH||	
-		targ->materialtype == MAT_POTTERY||	
-		targ->materialtype == MAT_LEAF||	
-		targ->materialtype == MAT_WOOD||	
-		targ->materialtype == MAT_INSECT)
-		return (true);
-
-	return (false);
+	return (target->materialtype == MAT_CLOTH || target->materialtype == MAT_FLESH || target->materialtype == MAT_POTTERY ||
+			target->materialtype == MAT_LEAF || target->materialtype == MAT_WOOD || target->materialtype == MAT_INSECT);
 }
 
 /*
@@ -786,7 +779,7 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t pdir,
 		int duration;
 
 		//not damage_burning because that is coming from you being on fire already...
-		if (dflags & DAMAGE_FIRE && flammable(targ) && dflags != DAMAGE_BURNING && !(targ->svflags & SVF_BOSS))
+		if (dflags & DAMAGE_FIRE && IsFlammable(targ) && dflags != DAMAGE_BURNING && !(targ->svflags & SVF_BOSS))
 		{//FIXME: not on BBRUSHES - have no origin!
 
 			if (dflags & DAMAGE_FIRE_LINGER)
