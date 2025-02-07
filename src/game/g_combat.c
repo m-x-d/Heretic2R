@@ -946,84 +946,85 @@ void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, vec3_t p_d
 	}
 }
 
-// ************************************************************************************************
-// T_DamageRadius
-// --------------
-// ************************************************************************************************
-
-void T_DamageRadius(edict_t *inflictor, edict_t *attacker, edict_t *ignore, float radius, 
-							float maxdamage, float mindamage, int dflags,int MeansOfDeath)
+void T_DamageRadius(edict_t* inflictor, edict_t* attacker, const edict_t* ignore, const float radius, const float maxdamage, const float mindamage, const int dflags, const int mod)
 {
-	float	points, dist;
-	edict_t	*ent = NULL;
-	vec3_t	v, center;
-	vec3_t	dir, hitspot;
-	edict_t *damageenemy = NULL;
+	assert(radius > 0.0f);
 
-	assert(radius>0);
+	edict_t* damage_enemy = NULL;
 
 	if (dflags & DAMAGE_ENEMY_MAX)
 	{
-		damageenemy = inflictor->enemy;
+		damage_enemy = inflictor->enemy;
 
-		if (damageenemy && damageenemy->takedamage)
+		if (damage_enemy != NULL && damage_enemy->takedamage != DAMAGE_NO)
 		{
-			VectorAdd (damageenemy->mins, damageenemy->maxs, center);
-			VectorMA (damageenemy->s.origin, 0.5, center, center);
-			VectorSubtract (inflictor->s.origin, center, v);
-			dist = VectorNormalize(v);
-			VectorScale(v, -1, dir);
-			VectorMA(center, damageenemy->maxs[0], v, hitspot);//estimate a good hit spot
+			vec3_t center;
+			VectorAdd(damage_enemy->mins, damage_enemy->maxs, center);
+			VectorMA(damage_enemy->s.origin, 0.5f, center, center);
 
-			T_Damage(damageenemy, inflictor, attacker, dir, hitspot, vec3_origin,
-					(int)maxdamage, (int)maxdamage, DAMAGE_RADIUS|dflags,MeansOfDeath);
-		} 
+			vec3_t v;
+			VectorSubtract(inflictor->s.origin, center, v);
+			VectorNormalize(v);
+
+			vec3_t dir;
+			VectorScale(v, -1.0f, dir);
+
+			vec3_t hit_spot;
+			VectorMA(center, damage_enemy->maxs[0], v, hit_spot); // Estimate a good hit spot.
+
+			T_Damage(damage_enemy, inflictor, attacker, dir, hit_spot, vec3_origin, (int)maxdamage, (int)maxdamage, dflags | DAMAGE_RADIUS, mod);
+		}
 	}
-	while ((ent = findradius(ent, inflictor->s.origin, radius)) != NULL)
+
+	edict_t* ent = findradius(NULL, inflictor->s.origin, radius);
+
+	while (ent != NULL)
 	{
-		if (ent == ignore)
-			continue;
-		if (!ent->takedamage||ent->takedamage==DAMAGE_NO_RADIUS)
-			continue;
-		if (ent == attacker && dflags & DAMAGE_ATTACKER_IMMUNE)
-			continue;
-		if ((dflags & DAMAGE_ALIVE_ONLY) && (ent->materialtype != MAT_FLESH||ent->health<=0))
-			continue;
-		if (ent==damageenemy)	// We already dealt with the damageenemy above...
+		if (ent == ignore || ent == damage_enemy || ent->takedamage == DAMAGE_NO || ent->takedamage == DAMAGE_NO_RADIUS) // We already dealt with the damage_enemy above...
 			continue;
 
-		VectorAdd (ent->mins, ent->maxs, center);
-		VectorMA (ent->s.origin, 0.5, center, center);
-		VectorSubtract (inflictor->s.origin, center, v);
-		dist = VectorNormalize(v);
-		VectorScale(v, -1, dir);
+		if (ent == attacker && (dflags & DAMAGE_ATTACKER_IMMUNE))
+			continue;
 
-		// Scale from maxdamage at center to mindamage at outer edge
-		points = maxdamage - ((maxdamage-mindamage) * (dist/radius));
+		if ((dflags & DAMAGE_ALIVE_ONLY) && (ent->materialtype != MAT_FLESH || ent->health <= 0))
+			continue;
 
-		if (points > 0)
+		vec3_t center;
+		VectorAdd(ent->mins, ent->maxs, center);
+		VectorMA(ent->s.origin, 0.5f, center, center);
+
+		vec3_t v;
+		VectorSubtract(inflictor->s.origin, center, v);
+		const float dist = VectorNormalize(v);
+
+		vec3_t dir;
+		VectorScale(v, -1.0f, dir);
+
+		// Scale from maxdamage at center to mindamage at outer edge.
+		const float points = maxdamage - ((maxdamage - mindamage) * (dist / radius));
+
+		if (points > 0.0f && CanDamage(ent, inflictor))
 		{
-			if (CanDamage (ent, inflictor))
-			{
-				VectorMA(center, ent->maxs[0], v, hitspot);//estimate a good hit spot
+			vec3_t hit_spot;
+			VectorMA(center, ent->maxs[0], v, hit_spot); // Estimate a good hit spot.
 
-				if (ent == attacker)
-				{
-					if (dflags & DAMAGE_ATTACKER_KNOCKBACK)
-						T_Damage(ent, inflictor, attacker, dir, hitspot, vec3_origin, //hitspot was ent->s.origin
-									0, (int)points, DAMAGE_RADIUS|dflags, MOD_KILLED_SLF);
-					else if (dflags & DAMAGE_POWERPHOENIX)
-						T_Damage(ent, inflictor, attacker, dir, hitspot, vec3_origin,	// extra knockback, .25 damage.
-									(int)(points*0.25), (int)(points*0.5), DAMAGE_RADIUS|dflags,MOD_KILLED_SLF);
-					else
-						T_Damage(ent, inflictor, attacker, dir, hitspot, vec3_origin,
-									(int)points, (int)points, DAMAGE_RADIUS|dflags, MOD_KILLED_SLF);
-				}
+			// Process self-damage?
+			if (ent == attacker)
+			{
+				if (dflags & DAMAGE_ATTACKER_KNOCKBACK)
+					T_Damage(ent, inflictor, attacker, dir, hit_spot, vec3_origin, 0, (int)points, dflags | DAMAGE_RADIUS, MOD_KILLED_SLF);
+				else if (dflags & DAMAGE_POWERPHOENIX)
+					T_Damage(ent, inflictor, attacker, dir, hit_spot, vec3_origin, (int)(points * 0.25f), (int)(points * 0.5f), dflags | DAMAGE_RADIUS, MOD_KILLED_SLF); // Extra knockback, 0.25 damage.
 				else
-					T_Damage(ent, inflictor, attacker, dir, hitspot, vec3_origin,
-								(int)points, (int)points, DAMAGE_RADIUS|dflags,MeansOfDeath);
+					T_Damage(ent, inflictor, attacker, dir, hit_spot, vec3_origin, (int)points, (int)points, dflags | DAMAGE_RADIUS, MOD_KILLED_SLF);
+			}
+			else
+			{
+				T_Damage(ent, inflictor, attacker, dir, hit_spot, vec3_origin, (int)points, (int)points, dflags | DAMAGE_RADIUS, mod);
 			}
 		}
+
+		ent = findradius(ent, inflictor->s.origin, radius);
 	}
 }
 
