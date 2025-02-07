@@ -83,39 +83,34 @@ void DefaultMsgHandler(edict_t* self, G_Message_t* msg)
 		DefaultMessageReceivers[msg->ID](self, msg);
 }
 
-void DefaultReceiver_Repulse(edict_t *self, G_Message_t *msg)
+void DefaultReceiver_Repulse(edict_t* self, G_Message_t* msg)
 {
-	vec3_t		vel;
-
+	vec3_t vel;
 	ParseMsgParms(msg, "fff", &vel[0], &vel[1], &vel[2]);
-//	VectorAdd(self->velocity, vel, self->velocity);
 }
 
-void DefaultReceiver_SetAnim(edict_t *self, G_Message_t *msg)
+void DefaultReceiver_SetAnim(edict_t* self, G_Message_t* msg)
 {
-	int ID;
-
-	if(msg->priority >= PRI_DIRECTIVE)
+	if (msg->priority >= PRI_DIRECTIVE)
 	{
-		ParseMsgParms(msg, "i", &ID);
-
-		SetAnim(self, ID);
+		int id;
+		ParseMsgParms(msg, "i", &id);
+		SetAnim(self, id);
 	}
 }
 
-void DefaultReceiver_RemoveSelf(edict_t *self, G_Message_t *msg)
+void DefaultReceiver_RemoveSelf(edict_t* self, G_Message_t* msg)
 {
 	self->think = G_FreeEdict;
-	
-	self->nextthink = 0;
+	self->nextthink = 0.0f;
 }
 
-void DefaultReceiver_Suspend(edict_t *self, G_Message_t *msg)
+void DefaultReceiver_Suspend(edict_t* self, G_Message_t* msg)
 {
 	self->flags |= FL_SUSPENDED;
 }
 
-void DefaultReceiver_Unsuspend(edict_t *self, G_Message_t *msg)
+void DefaultReceiver_Unsuspend(edict_t* self, G_Message_t* msg)
 {
 	self->flags &= ~FL_SUSPENDED;
 }
