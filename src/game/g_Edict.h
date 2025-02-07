@@ -82,7 +82,7 @@ struct edict_s
 
 	// Used by the game physics.
 
-	int					movetype;
+	physicsType_t		movetype; //mxd. int in original version.
 
 	int					physicsFlags;
 
