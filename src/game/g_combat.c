@@ -18,194 +18,76 @@
 #include "Random.h"
 #include "Vector.h"
 
-gitem_armor_t silver_armor_info	= {MAX_SILVER_ARMOR, SILVER_HIT_MULT, SILVER_SPELL_MULT};
-gitem_armor_t gold_armor_info	= {MAX_GOLD_ARMOR, GOLD_HIT_MULT, GOLD_SPELL_MULT};
+gitem_armor_t silver_armor_info	= { MAX_SILVER_ARMOR, SILVER_HIT_MULT, SILVER_SPELL_MULT };
+gitem_armor_t gold_armor_info	= { MAX_GOLD_ARMOR, GOLD_HIT_MULT, GOLD_SPELL_MULT };
 
-/* 
-============
-CanDamage
-
-Returns true if the inflictor can directly damage the target.  Used for
-explosions and melee attacks.
-============
-*/
-
-qboolean CanDamage (edict_t *targ, edict_t *inflictor)
+// Returns true if the inflictor can directly damage the target. The origin point of the damage doesn't have to be the same as the inflictor's.
+static qboolean CanDamageFromLoc(const edict_t* target, const edict_t* inflictor, const vec3_t origin)
 {
-	vec3_t	dest, diff;
-	trace_t	trace;
-
-	// bmodels need special checking because their origin is 0,0,0
-	if (targ->movetype == PHYSICSTYPE_PUSH || targ->classID == CID_BBRUSH)
+	// bmodels need special checking because their origin is 0 0 0.
+	if (target->movetype == PHYSICSTYPE_PUSH || target->classID == CID_BBRUSH)
 	{
-		VectorAdd (targ->absmin, targ->absmax, dest);
-		VectorScale (dest, 0.5, dest);
-		gi.trace (inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID,&trace);
-		
-		if (trace.fraction == 1.0)
-			return true;
-		
-		if (trace.ent == targ)
-			return true;
-		
-		return false;
+		vec3_t dest;
+		VectorAdd(target->absmin, target->absmax, dest);
+		VectorScale(dest, 0.5f, dest);
+
+		trace_t trace;
+		gi.trace(origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID, &trace);
+
+		return (trace.fraction == 1.0f || trace.ent == target);
 	}
 
-	// Try a basic trace straight to the origin.  This takes care of 99% of the tests.
-	gi.trace (inflictor->s.origin, vec3_origin, vec3_origin, targ->s.origin, inflictor, MASK_SOLID,&trace);
-	if (trace.fraction == 1.0)
+	// Try a basic trace straight to the origin. This takes care of 99% of the tests.
+	trace_t trace;
+	gi.trace(origin, vec3_origin, vec3_origin, target->s.origin, inflictor, MASK_SOLID, &trace);
+	if (trace.fraction == 1.0f)
 		return true;
 
 	// Well, a trace from origin to origin didn't work, so try tracing to the edges of the victim.
 
 	// If there are no edges, let's skip the rest of these checks..
-	if (Vec3IsZero(targ->mins) || Vec3IsZero(targ->maxs))
+	if (Vec3IsZero(target->mins) || Vec3IsZero(target->maxs))
 		return false;
-	
+
 	// First figure out which two sides of the victim to check.
-	VectorSubtract(inflictor->s.origin, targ->s.origin, diff);
+	vec3_t diff;
+	VectorSubtract(origin, target->s.origin, diff);
 
-	// If the X is greater than the Y difference, then the perpendicular edges, north and south, should be checked.
-	if (fabs(diff[0]) > fabs(diff[1]))
-	{	// check north and south edges.
-		// South edge
-		VectorCopy(targ->s.origin, dest);
-		dest[1] += targ->mins[1];
-		gi.trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID,&trace);
-		if (trace.fraction > .99)
-			return true;
+	// Check XY axis with lesser difference.
+	const int axis = ((fabsf(diff[0]) < fabsf(diff[1])) ? 0 : 1); //mxd
 
-		// North edge
-		VectorCopy(targ->s.origin, dest);
-		dest[1] += targ->maxs[1];
-		gi.trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID,&trace);
-		if (trace.fraction > .99)
-			return true;
-	}
-	else
-	{	// check east and west edges.
-		// West edge
-		VectorCopy(targ->s.origin, dest);
-		dest[0] += targ->mins[0];
-		gi.trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID,&trace);
-		if (trace.fraction > .99)
-			return true;
+	// Check opposite edges.
+	for (int i = 0; i < 2; i++)
+	{
+		vec3_t dest;
+		VectorCopy(target->s.origin, dest);
+		dest[axis] += (i == 0 ? target->mins[axis] : target->maxs[axis]);
 
-		// East edge
-		VectorCopy(targ->s.origin, dest);
-		dest[0] += targ->maxs[0];
-		gi.trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID,&trace);
-		if (trace.fraction > .99)
+		gi.trace(origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID, &trace);
+		if (trace.fraction > 0.99f)
 			return true;
 	}
 
 	// Since the side checks didn't work, check the top and bottom.
-	// bottom edge
-	VectorCopy(targ->s.origin, dest);
-	dest[2] += targ->mins[2];
-	gi.trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID,&trace);
-	if (trace.fraction > .99)
-		return true;
+	for (int i = 0; i < 2; i++)
+	{
+		vec3_t dest;
+		VectorCopy(target->s.origin, dest);
+		dest[2] += (i == 0 ? target->mins[2] : target->maxs[2]);
 
-	// top edge
-	VectorCopy(targ->s.origin, dest);
-	dest[2] += targ->maxs[2];
-	gi.trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID,&trace);
-	if (trace.fraction > .99)
-		return true;
+		gi.trace(origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID, &trace);
+		if (trace.fraction > 0.99f)
+			return true;
+	}
 
 	// None of the traces were successful, so no good.
 	return false;
 }
 
-
-// Same function, except the origin point of the damage doesn't have to be the same as the inflictor's
-qboolean CanDamageFromLoc (edict_t *targ, edict_t *inflictor, vec3_t origin)
+// Returns true if the inflictor can directly damage the target. Used for explosions and melee attacks.
+qboolean CanDamage(const edict_t* target, const edict_t* inflictor)
 {
-	vec3_t	dest, diff;
-	trace_t	trace;
-
-	// bmodels need special checking because their origin is 0,0,0
-	if (targ->movetype == PHYSICSTYPE_PUSH || targ->classID == CID_BBRUSH)
-	{
-		VectorAdd (targ->absmin, targ->absmax, dest);
-		VectorScale (dest, 0.5, dest);
-		gi.trace (origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID,&trace);
-		
-		if (trace.fraction == 1.0)
-			return true;
-		
-		if (trace.ent == targ)
-			return true;
-		
-		return false;
-	}
-
-	// Try a basic trace straight to the origin.  This takes care of 99% of the tests.
-	gi.trace (origin, vec3_origin, vec3_origin, targ->s.origin, inflictor, MASK_SOLID,&trace);
-	if (trace.fraction == 1.0)
-		return true;
-
-	// Well, a trace from origin to origin didn't work, so try tracing to the edges of the victim.
-
-	// If there are no edges, let's skip the rest of these checks..
-	if (Vec3IsZero(targ->mins) || Vec3IsZero(targ->maxs))
-		return false;
-	
-	// First figure out which two sides of the victim to check.
-	VectorSubtract(origin, targ->s.origin, diff);
-
-	// If the X is greater than the Y difference, then the perpendicular edges, north and south, should be checked.
-	if (fabs(diff[0]) > fabs(diff[1]))
-	{	// check north and south edges.
-		// South edge
-		VectorCopy(targ->s.origin, dest);
-		dest[1] += targ->mins[1];
-		gi.trace(origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID,&trace);
-		if (trace.fraction > .99)
-			return true;
-
-		// North edge
-		VectorCopy(targ->s.origin, dest);
-		dest[1] += targ->maxs[1];
-		gi.trace(origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID,&trace);
-		if (trace.fraction > .99)
-			return true;
-	}
-	else
-	{	// check east and west edges.
-		// West edge
-		VectorCopy(targ->s.origin, dest);
-		dest[0] += targ->mins[0];
-		gi.trace(origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID,&trace);
-		if (trace.fraction > .99)
-			return true;
-
-		// East edge
-		VectorCopy(targ->s.origin, dest);
-		dest[0] += targ->maxs[0];
-		gi.trace(origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID,&trace);
-		if (trace.fraction > .99)
-			return true;
-	}
-
-	// Since the side checks didn't work, check the top and bottom.
-	// bottom edge
-	VectorCopy(targ->s.origin, dest);
-	dest[2] += targ->mins[2];
-	gi.trace(origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID,&trace);
-	if (trace.fraction > .99)
-		return true;
-
-	// top edge
-	VectorCopy(targ->s.origin, dest);
-	dest[2] += targ->maxs[2];
-	gi.trace(origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID,&trace);
-	if (trace.fraction > .99)
-		return true;
-
-	// None of the traces were successful, so no good.
-	return false;
+	return CanDamageFromLoc(target, inflictor, inflictor->s.origin); //mxd. Avoid code duplication.
 }
 
 void SpawnReward(edict_t *self, edict_t *attacker)
