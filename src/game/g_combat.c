@@ -386,18 +386,6 @@ static void M_ReactToDamage(edict_t* target, edict_t* attacker)
 	FoundTarget(target, true);
 }
 
-// ************************************************************************************************
-// CheckTeamDamage
-// ---------------
-// ************************************************************************************************
-
-qboolean CheckTeamDamage (edict_t *targ, edict_t *attacker)
-{
-	//FIXME: Make the next line real and uncomment this block.
-	//if ((ability to damage a teammate == OFF) && (targ's team == attacker's team))
-		return(false);
-}
-
 qboolean flammable (edict_t *targ)
 {
 	if(targ->materialtype == MAT_CLOTH||
@@ -789,10 +777,7 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t pdir,
 		take = 0;
 	}
 	
-	// If target and attacker are on the same team, don't inflict any damage.
-	
-	if(CheckTeamDamage (targ, attacker))
-		return;
+	//mxd. Skip non-implemented CheckTeamDamage() logic.
 
 	// Okay, we got all the way here, so do the damage.
 	if(take && !(targ->svflags & SVF_MONSTER && sv_freezemonsters->value != 0.0) && !(dflags & DAMAGE_ALL_KNOCKBACK))
