@@ -166,7 +166,7 @@ typedef struct
 	void (*setmodel)(edict_t* ent, const char* name);
 
 	// Collision detection.
-	void (*trace)(vec3_t start, const vec3_t mins, const vec3_t maxs, vec3_t end, edict_t* passent, uint contentmask, trace_t* tr);
+	void (*trace)(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const edict_t* passent, uint contentmask, trace_t* tr);
 	int (*pointcontents)(vec3_t point);
 
 	// Potentially visible / invisible set routines.

@@ -52,7 +52,7 @@ typedef struct
 	const float* end;
 
 	trace_t* trace; // Q2: trace_t
-	edict_t* passedict;
+	const edict_t* passedict;
 	uint contentmask; //mxd. int -> uint
 } moveclip_t;
 
@@ -558,7 +558,7 @@ static void SV_TraceBounds(const vec3_t start, const vec3_t mins, const vec3_t m
 // If the entire move stays in a solid volume, trace.startsolid and trace.allsolid will be set, and trace.fraction will be 0.
 // If the starting point is in a solid, it will be allowed to move out to an open area.
 // passedict is explicitly excluded from clipping checks (normally NULL).
-void SV_Trace(vec3_t start, const vec3_t mins, const vec3_t maxs, vec3_t end, edict_t* passent, const uint contentmask, trace_t* tr)
+void SV_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const edict_t* passent, const uint contentmask, trace_t* tr)
 {
 	moveclip_t clip;
 
@@ -672,7 +672,7 @@ void SV_TraceBoundingForm(FormMove_t* formMove) // H2
 	if (clip.trace->fraction == 0.0f)
 		return;
 
-	clip.passedict = (edict_t*)formMove->passEntity;
+	clip.passedict = (const edict_t*)formMove->passEntity;
 	clip.contentmask = formMove->clipMask;
 	clip.start = start;
 	clip.end = end;
