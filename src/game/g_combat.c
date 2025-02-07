@@ -1028,64 +1028,63 @@ void T_DamageRadius(edict_t* inflictor, edict_t* attacker, const edict_t* ignore
 	}
 }
 
-
-// Same function, except the origin point of the damage doesn't have to be the same as the inflictor's
-void T_DamageRadiusFromLoc(vec3_t origin, edict_t *inflictor, edict_t *attacker, edict_t *ignore, float radius, 
-							float maxdamage, float mindamage, int dflags,int MeansOfDeath)
+// Same function, except the origin point of the damage doesn't have to be the same as the inflictor's.
+void T_DamageRadiusFromLoc(vec3_t origin, edict_t* inflictor, edict_t* attacker, const edict_t* ignore, const float radius, const float maxdamage, const float mindamage, const int dflags, const int mod)
 {
-	float	points, dist;
-	edict_t	*ent = NULL;
-	vec3_t	v, center, dir;
-	vec3_t	hitspot;
+	assert(radius > 0.0f);
 
+	edict_t* ent = findradius(NULL, origin, radius);
 
-	assert(radius>0);
-
-	while ((ent = findradius(ent, origin, radius)) != NULL)
+	while (ent != NULL)
 	{
-		if (ent == ignore)
-			continue;
-		if (!ent->takedamage||ent->takedamage==DAMAGE_NO_RADIUS)
-			continue;
-		if (ent == attacker && dflags & DAMAGE_ATTACKER_IMMUNE)
-			continue;
-		if ((dflags & DAMAGE_ALIVE_ONLY) && (ent->materialtype != MAT_FLESH||ent->health<=0))
+		if (ent == ignore || ent->takedamage == DAMAGE_NO || ent->takedamage == DAMAGE_NO_RADIUS)
 			continue;
 
-		// if we are reflecting, stop us from taking damage
-		if((EntReflecting(ent, true, true)))
+		if (ent == attacker && (dflags & DAMAGE_ATTACKER_IMMUNE))
 			continue;
 
-		VectorAdd (ent->mins, ent->maxs, center);
-		VectorMA (ent->s.origin, 0.5, center, center);
-		VectorSubtract (origin, center, v);
-		dist = VectorNormalize(v);
-		VectorScale(v, -1, dir);
-		// Scale from maxdamage at center to mindamage at outer edge
-		points = maxdamage - ((maxdamage-mindamage) * (dist/radius));
- 
-		if (points > 0)
+		if ((dflags & DAMAGE_ALIVE_ONLY) && (ent->materialtype != MAT_FLESH || ent->health <= 0))
+			continue;
+
+		// If we are reflecting, stop us from taking damage.
+		if (EntReflecting(ent, true, true)) //TODO: no reflecting check in T_DamageRadius(). Unintentional?
+			continue;
+
+		vec3_t center;
+		VectorAdd(ent->mins, ent->maxs, center);
+		VectorMA(ent->s.origin, 0.5f, center, center);
+
+		vec3_t v;
+		VectorSubtract(origin, center, v);
+		const float dist = VectorNormalize(v);
+
+		vec3_t dir;
+		VectorScale(v, -1.0f, dir);
+
+		// Scale from maxdamage at center to mindamage at outer edge.
+		const float points = maxdamage - ((maxdamage - mindamage) * (dist / radius));
+
+		if (points > 0 && CanDamageFromLoc(ent, inflictor, origin))
 		{
-			if (CanDamageFromLoc (ent, inflictor, origin))
-			{
-				VectorMA(center, ent->maxs[0], v, hitspot);//estimate a good hit spot
+			vec3_t hit_spot;
+			VectorMA(center, ent->maxs[0], v, hit_spot); // Estimate a good hit spot.
 
-				if (ent == attacker)
-				{
-					if (dflags & DAMAGE_ATTACKER_KNOCKBACK)
-						T_Damage(ent, inflictor, attacker, dir, hitspot, vec3_origin, //hitspot was ent->s.origin
-									0, (int)points, DAMAGE_RADIUS|dflags, MOD_KILLED_SLF);
-					else if (dflags & DAMAGE_POWERPHOENIX)
-						T_Damage(ent, inflictor, attacker, dir, hitspot, vec3_origin,	// extra knockback, .25 damage.
-									(int)(points*0.25), (int)(points*2.0), DAMAGE_RADIUS|dflags,MOD_KILLED_SLF);
-					else
-						T_Damage(ent, inflictor, attacker, dir, hitspot, vec3_origin,
-									(int)points, (int)points, DAMAGE_RADIUS|dflags,MOD_KILLED_SLF);
-				}
+			// Process self-damage?
+			if (ent == attacker)
+			{
+				if (dflags & DAMAGE_ATTACKER_KNOCKBACK)
+					T_Damage(ent, inflictor, attacker, dir, hit_spot, vec3_origin, 0, (int)points, dflags | DAMAGE_RADIUS, MOD_KILLED_SLF);
+				else if (dflags & DAMAGE_POWERPHOENIX)
+					T_Damage(ent, inflictor, attacker, dir, hit_spot, vec3_origin, (int)(points * 0.25f), (int)(points * 2.0f), dflags | DAMAGE_RADIUS, MOD_KILLED_SLF); // Extra knockback, 0.25 damage.
 				else
-					T_Damage(ent, inflictor, attacker, dir, hitspot, vec3_origin,
-								(int)points, (int)points, DAMAGE_RADIUS|dflags, MeansOfDeath);
+					T_Damage(ent, inflictor, attacker, dir, hit_spot, vec3_origin, (int)points, (int)points, dflags | DAMAGE_RADIUS, MOD_KILLED_SLF);
+			}
+			else
+			{
+				T_Damage(ent, inflictor, attacker, dir, hit_spot, vec3_origin, (int)points, (int)points, dflags | DAMAGE_RADIUS, mod);
 			}
 		}
+
+		ent = findradius(ent, inflictor->s.origin, radius);
 	}
 }
