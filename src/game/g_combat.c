@@ -272,121 +272,118 @@ void Killed(edict_t* target, edict_t* inflictor, edict_t* attacker, const int da
 	}
 }
 
-/*
-============
-M_ReactToDamage
-============
-*/
-void M_ReactToDamage (edict_t *targ, edict_t *attacker)
+static void M_ReactToDamage(edict_t* target, edict_t* attacker)
 {
-	if (!(attacker->client) && !(attacker->svflags & SVF_MONSTER))
+	if ((attacker->client == NULL && !(attacker->svflags & SVF_MONSTER)) || attacker == target)
 		return;
 
-	if (attacker == targ)
+	//FIXME: in SP, after player dead, allow this? Or make attacker lose it's enemy?
+	if (!ANARCHY && attacker->classID == target->classID)
+		return; // Monsters of same type won't fight each other.
+
+	if (target->classID == CID_OGLE && (!target->monsterinfo.awake || attacker->client != NULL)) // Ogles do their own checks to get angry at their first enemy.
 		return;
 
-	//FIXME: in SP, after player dead, allow this?  Or Make attacker lose it's enemy?
-	if(!ANARCHY && attacker->classID == targ->classID)
-		return;//monsters of same type won't fight each other
+	if (attacker == target->enemy)
+	{
+		// Ok, no more stalking - now we get serious.
+		target->ai_mood_flags &= ~AI_MOOD_FLAG_BACKSTAB;
 
-	if (targ->classID == CID_OGLE && (!targ->monsterinfo.awake || attacker->client))//ogles do their own checks to get angry at their first enemy
-		return;
+		if (!target->monsterinfo.awake)
+			FoundTarget(target, true);
 
-	if (attacker == targ->enemy)
-	{//ok, no more stalking- now we get serious
-		targ->ai_mood_flags &= ~AI_MOOD_FLAG_BACKSTAB;
-		if(!targ->monsterinfo.awake)
-			FoundTarget(targ, true);
 		return;
 	}
 
-	if (!attacker->takedamage)//world, etc.
+	if (attacker->takedamage == DAMAGE_NO) // World, etc.
 		return;
 
-	if(targ->monsterinfo.c_mode)//don't anger cinematic monsters
+	if (target->monsterinfo.c_mode) // Don't anger cinematic monsters.
 		return;
 
-	if (attacker->client)
+	if (attacker->client != NULL)
 	{
-		targ->monsterinfo.chase_finished = level.time + 4;	// When the monster can notice secondary enemies
+		target->monsterinfo.chase_finished = level.time + 4.0f; // When the monster can notice secondary enemies.
 
-		if (targ->enemy && targ->enemy->client)
-			targ->oldenemy = targ->enemy;
-		targ->enemy = attacker;
-		FoundTarget (targ, true);
+		if (target->enemy != NULL && target->enemy->client != NULL)
+			target->oldenemy = target->enemy;
+
+		target->enemy = attacker;
+		FoundTarget(target, true);
+
 		return;
 	}
 
-	if (targ->monsterinfo.aiflags & AI_GOOD_GUY)
+	if (attacker->client == NULL && (target->monsterinfo.aiflags & AI_GOOD_GUY) && !(attacker->monsterinfo.aiflags & AI_GOOD_GUY))
 	{
-		if (!(attacker->client) && !(attacker->monsterinfo.aiflags & AI_GOOD_GUY))
+		target->enemy = attacker;
+		FoundTarget(target, true);
+
+		return;
+	}
+
+	// If attacker is a client or it's the same base (walk/swim/fly) type and a different classname
+	// and it's a monster that sprays too much, get mad at them.
+	if ((target->flags & (FL_FLY | FL_SWIM)) == (attacker->flags & (FL_FLY | FL_SWIM)) && target->classID != attacker->classID &&
+		target->enemy != NULL) // Target has an enemy, otherwise always get mad.
+	{
+		if (target->enemy->client != NULL)
+			target->oldenemy = target->enemy;
+
+		target->enemy = attacker;
+		FoundTarget(target, true);
+
+		return;
+	}
+
+	// Otherwise get mad at whoever they are mad at (help our buddy).
+	if (attacker->enemy != NULL) // This really should be an assert, but there are problems with this.
+	{
+		if (attacker->enemy == target && attacker->classID == target->classID && !(target->monsterinfo.aiflags & AI_AGRESSIVE))
 		{
-			targ->enemy = attacker;
-			FoundTarget (targ, true);
-			return;
+			// Attacker was shooting at me (target) and is my class, but I'm not aggressive so I didn't hit him first.
+			if (irand(0, 10) < 7)
+			{
+				// Run away!
+				if (target->enemy == attacker && irand(0, 10) < 3 && Q_stricmp(attacker->classname, "player") != 0) //mxd. stricmp -> Q_stricmp
+				{
+					target->monsterinfo.flee_finished = 0;
+				}
+				else if (target->monsterinfo.flee_finished < level.time + 7.0f)
+				{
+					target->monsterinfo.aiflags |= AI_FLEE;
+					target->monsterinfo.flee_finished = level.time + flrand(3.0f, 7.0f);
+				}
+			}
+
+			target->enemy = attacker;
+			FoundTarget(target, true);
 		}
+		else if (attacker->enemy != target && (target->enemy == NULL || target->enemy->health <= 0))
+		{
+			// Attacker wasn't after me and my enemy is invalid or don't have one... go after attacker's enemy.
+			if (target->enemy != NULL && (target->enemy->client != NULL || ANARCHY))
+				target->oldenemy = target->enemy;
+
+			target->enemy = attacker->enemy;
+			FoundTarget(target, true);
+		}
+		else if ((attacker->classID != target->classID && !irand(0, 2)) || ANARCHY)
+		{
+			// 30% chance to get mad (only if they're not my class), or always get mad if ANARCHY.
+			if (target->enemy != NULL && (target->enemy->client != NULL || ANARCHY))
+				target->oldenemy = target->enemy;
+
+			target->enemy = attacker;
+			FoundTarget(target, true);
+		}
+
+		return;
 	}
 
-	// if attacker is a client or
-	// it's the same base (walk/swim/fly) type and a different classname and it's a monster that sprays too much
-	// get mad at them
-	if (((targ->flags & (FL_FLY|FL_SWIM)) == (attacker->flags & (FL_FLY|FL_SWIM))) &&
-		 (targ->classID != attacker->classID)&&
-		 (targ->enemy))//targ has an enemy, otherwise always get mad
-	{
-		if (targ->enemy->client)
-			targ->oldenemy = targ->enemy;
-		targ->enemy = attacker;
-		FoundTarget (targ, true);
-	}
-	else// otherwise get mad at whoever they are mad at (help our buddy)
-	{
-		if (attacker->enemy)		// This really should be an assert, but there are problems with this.
-		{
-			if(attacker->enemy==targ && attacker->classID==targ->classID && !(targ->monsterinfo.aiflags&AI_AGRESSIVE))
-			{//attacker was shooting at me(targ) and is my class, but I'm not agressive so I didn't hit him first
-				if(irand(0,10)<7)
-				{//run away!
-					if(targ->enemy==attacker&&irand(0,10)<3&&stricmp(attacker->classname, "player"))
-					{
-						targ->monsterinfo.flee_finished = 0;
-					}
-					else if(targ->monsterinfo.flee_finished < level.time + 7.0)
-					{
-						targ->monsterinfo.aiflags |= AI_FLEE;
-						targ->monsterinfo.flee_finished = level.time + flrand(3.0, 7.0);
-					}
-				}
-				targ->enemy = attacker;
-				FoundTarget (targ, true);
-			}
-			else if(attacker->enemy != targ && (!targ->enemy || targ->enemy->health <= 0))
-			{//attacker wasn't after me and my enemy is invalid or don't have one... go after atacker's enemy
-				if (targ->enemy)
-				{
-					if (targ->enemy->client||ANARCHY)
-						targ->oldenemy = targ->enemy;
-				}
-				targ->enemy = attacker->enemy;
-				FoundTarget (targ, true);
-			}
-			else if( (attacker->classID!=targ->classID&&!irand(0,2)) ||ANARCHY)
-			{//30% chance to get mad (only if they're not my class), or always get mad if ANARCHY
-				if (targ->enemy)
-				{
-					if (targ->enemy->client||ANARCHY)
-						targ->oldenemy = targ->enemy;
-				}
-				targ->enemy = attacker;
-				FoundTarget (targ, true);
-			}
-		}
-		else
-		{//attacker's on crack, kill him
-			targ->enemy = attacker;
-			FoundTarget (targ, true);
-		}
-	}
+	// Attacker's on crack, kill him.
+	target->enemy = attacker;
+	FoundTarget(target, true);
 }
 
 // ************************************************************************************************
