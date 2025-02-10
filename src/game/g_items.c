@@ -869,20 +869,12 @@ void G_InitItems(void)
 	game.num_items = playerExport.p_num_items;
 }
 
-/*
-===============
-SetItemNames - called by worldspawn.
-===============
-*/
-
+// Called by worldspawn.
 void SetItemNames(void)
 {
-	int		i;
-	gitem_t	*it;
-
-	for (i=0 ; i<game.num_items ; i++)
-	{
-		it = &playerExport.p_itemlist[i];
-		gi.configstring (CS_ITEMS+i, it->pickup_name);
-	}
+	gitem_t* item = &playerExport.p_itemlist[0];
+	for (int i = 0; i < game.num_items; i++, item++)
+		gi.configstring(CS_ITEMS + i, item->pickup_name);
 }
+
+#pragma endregion

@@ -59,8 +59,8 @@ typedef enum
 	void SetItemNames(void);
 	edict_t* Drop_Item(edict_t* ent, gitem_t* item);
 	void SpawnItem(edict_t* ent, gitem_t* item);
-	gitem_t* IsItem(edict_t* ent);
-	qboolean Add_Ammo(edict_t* ent, gitem_t* item, int count);
-	qboolean AddDefenseToInventory(gitem_t* item, edict_t* player);
-	qboolean AddWeaponToInventory(gitem_t* item, edict_t* player);
+	gitem_t* IsItem(const edict_t* ent);
+	qboolean Add_Ammo(const edict_t* ent, const gitem_t* ammo, int count);
+	qboolean AddDefenseToInventory(gitem_t* defence, edict_t* player);
+	qboolean AddWeaponToInventory(gitem_t* weapon, edict_t* player);
 #endif
