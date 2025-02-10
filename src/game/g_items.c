@@ -512,50 +512,32 @@ static qboolean IsValidItem(const gitem_t* item) //mxd. Named 'ValidItem' in ori
 	return true;
 }
 
-// ************************************************************************************************
-// SpawnItemEffect
-// ---------------
-// ************************************************************************************************
-
-void SpawnItemEffect(edict_t *ent, gitem_t *item)
+static void SpawnItemEffect(edict_t* ent, const gitem_t* item)
 {
-
-	if(!IsValidItem(item))
+	if (!IsValidItem(item))
 	{
-		G_FreeEdict (ent);
+		G_FreeEdict(ent);
 		return;
 	}
 
-	assert(!ent->PersistantCFX);
+	assert(ent->PersistantCFX == 0);
 
-	if ((ent->spawnflags & ITEM_COOP_ONLY) && (!coop->value))
+	if ((ent->spawnflags & ITEM_COOP_ONLY) && !COOP)
 		return;
 
-	if(ent->item->flags & IT_PUZZLE)
-	{
-		ent->PersistantCFX = gi.CreatePersistantEffect(&ent->s, FX_PICKUP_PUZZLE, CEF_BROADCAST, ent->s.origin, "bv", ent->item->tag,ent->s.angles);
-	}
-	else if(ent->item->flags & IT_WEAPON)
-	{
+	if (ent->item->flags & IT_PUZZLE)
+		ent->PersistantCFX = gi.CreatePersistantEffect(&ent->s, FX_PICKUP_PUZZLE, CEF_BROADCAST, ent->s.origin, "bv", ent->item->tag, ent->s.angles);
+	else if (ent->item->flags & IT_WEAPON)
 		ent->PersistantCFX = gi.CreatePersistantEffect(&ent->s, FX_PICKUP_WEAPON, CEF_BROADCAST, ent->s.origin, "b", ent->item->tag);
-	}
-	else if(ent->item->flags & IT_AMMO)
-	{
+	else if (ent->item->flags & IT_AMMO)
 		ent->PersistantCFX = gi.CreatePersistantEffect(&ent->s, FX_PICKUP_AMMO, CEF_BROADCAST, ent->s.origin, "b", ent->item->tag);
-	}
-	else if(ent->item->flags & IT_DEFENSE)
-	{
+	else if (ent->item->flags & IT_DEFENSE)
 		ent->PersistantCFX = gi.CreatePersistantEffect(&ent->s, FX_PICKUP_DEFENSE, CEF_BROADCAST, ent->s.origin, "b", ent->item->tag);
-	}
-	else 
-	{
-		if (ent->item->tag)
-			ent->PersistantCFX = gi.CreatePersistantEffect(&ent->s, FX_PICKUP_HEALTH, CEF_FLAG6|CEF_BROADCAST, ent->s.origin, "");
-		else
-			ent->PersistantCFX = gi.CreatePersistantEffect(&ent->s, FX_PICKUP_HEALTH, CEF_BROADCAST, ent->s.origin, "");
-	}
+	else if (ent->item->tag != 0)
+		ent->PersistantCFX = gi.CreatePersistantEffect(&ent->s, FX_PICKUP_HEALTH, CEF_FLAG6 | CEF_BROADCAST, ent->s.origin, "");
+	else
+		ent->PersistantCFX = gi.CreatePersistantEffect(&ent->s, FX_PICKUP_HEALTH, CEF_BROADCAST, ent->s.origin, "");
 }
-
 
 /*
 ================
