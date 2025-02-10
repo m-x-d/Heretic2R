@@ -201,30 +201,18 @@ qboolean AddWeaponToInventory(gitem_t* weapon, edict_t* player)
 	return Add_Ammo(player, ammo, count); // Count as added if ammo was added.
 }
 
-// ************************************************************************************************
-// Pickup_Weapon
-// -------------
-// ************************************************************************************************
-
-qboolean Pickup_Weapon(edict_t *ent,edict_t *other)
+static qboolean Pickup_Weapon(edict_t* ent, edict_t* other)
 {
-	if (other->flags & FL_CHICKEN)
-	{
-		return(false);
-	}
+	if (other->flags & FL_CHICKEN) // Chicken can't into weapons...
+		return false;
 
-	if(AddWeaponToInventory(ent->item,other))
+	if (AddWeaponToInventory(ent->item, other))
 	{
 		gi.gamemsg_centerprintf(other, ent->item->msg_pickup);
-		
-		return(true);
+		return true;
 	}
-	else
-	{
-		// We already have it.
 
-		return(false);
-	}
+	return false; // We already have it.
 }
 
 #pragma endregion
