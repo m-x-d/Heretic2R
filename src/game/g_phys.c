@@ -48,39 +48,19 @@ static void SV_Impact(edict_t* e1, trace_t* trace)
 		e2->touch(e2, e1, NULL, NULL);
 }
 
-/*
-==================
-ClipVelocity
-
-Slide off of the impacting object
-returns the blocked flags (1 = floor, 2 = step / wall)
-==================
-*/
-#define	STOP_EPSILON	0.1
-
-int ClipVelocity (vec3_t in, vec3_t normal, vec3_t out, float overbounce)
+// Slide off of the impacting object.
+static void ClipVelocity(const vec3_t in, const vec3_t normal, vec3_t out) //mxd. Removed return value (unused), removed non-MOVETYPE_FLYMISSILE logic.
 {
-	float	backoff;
-	float	change;
-	int		i, blocked;
-	
-	blocked = 0;
-	if (normal[2] > 0)
-		blocked |= 1;		// floor
-	if (!normal[2])
-		blocked |= 2;		// step
-	
-	backoff = DotProduct (in, normal) * overbounce;
+	const float backoff = DotProduct(in, normal);
 
-	for (i=0 ; i<3 ; i++)
+	for (int i = 0; i < 3; i++)
 	{
-		change = normal[i]*backoff;
+		const float change = normal[i] * backoff;
 		out[i] = in[i] - change;
+
 		if (out[i] > -STOP_EPSILON && out[i] < STOP_EPSILON)
-			out[i] = 0;
+			out[i] = 0.0f;
 	}
-	
-	return blocked;
 }
 
 /*
@@ -228,7 +208,7 @@ void SV_Physics_Toss (edict_t *ent)
 		else
 			backoff = 1;
 
-		ClipVelocity (ent->velocity, trace.plane.normal, ent->velocity, backoff);
+		ClipVelocity (ent->velocity, trace.plane.normal, ent->velocity);
 
 	// stop if on ground
 		if (trace.plane.normal[2] > 0.7)
