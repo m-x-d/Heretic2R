@@ -63,17 +63,6 @@ static void ClipVelocity(const vec3_t in, const vec3_t normal, vec3_t out) //mxd
 	}
 }
 
-/*
-============
-SV_AddGravity
-
-============
-*/
-static void SV_AddGravity(edict_t* ent)
-{
-	ent->velocity[2] -= ent->gravity * sv_gravity->value * FRAMETIME;
-}
-
 // Does not change the entities velocity at all.
 static trace_t SV_PushEntity(edict_t* ent, vec3_t push) //mxd. Removed non-MOVETYPE_FLYMISSILE logic.
 {
@@ -115,127 +104,62 @@ static trace_t SV_PushEntity(edict_t* ent, vec3_t push) //mxd. Removed non-MOVET
 	}
 }
 
-/*
-==============================================================================
-
-TOSS / BOUNCE
-
-==============================================================================
-*/
-
-/*
-=============
-SV_Physics_Toss
-
-Toss, bounce, and fly movement.  When onground, do nothing.
-=============
-*/
-void PhysicsCheckWaterTransition(edict_t *self);
-void SV_Physics_Toss (edict_t *ent)
+// Fly movement. When on ground, do nothing.
+static void SV_Physics_Toss(edict_t* ent) //mxd. Removed non-MOVETYPE_FLYMISSILE logic.
 {
-	trace_t		trace;
-	vec3_t		move;
-	float		backoff;
-	edict_t		*slave;
-//	qboolean	wasinwater;
-//	qboolean	isinwater;
-	vec3_t		old_origin;
+	// Regular thinking.
+	SV_RunThink(ent);
 
-// regular thinking
-	SV_RunThink (ent);
-
-	// if not a team captain, so movement will be handled elsewhere
-	if ( ent->flags & FL_TEAMSLAVE)
+	// If not a team captain, so movement will be handled elsewhere.
+	if (ent->flags & FL_TEAMSLAVE) //TODO: ever used on missiles?
 		return;
 
-	if (ent->velocity[2] > 0)
+	// Check for the groundentity going away.
+	if (ent->velocity[2] > 0.0f || (ent->groundentity != NULL && !ent->groundentity->inuse))
 		ent->groundentity = NULL;
 
-// check for the groundentity going away
-	if (ent->groundentity)
-		if (!ent->groundentity->inuse)
-			ent->groundentity = NULL;
-
-// if onground, return without moving
-	if ( ent->groundentity )
+	// If on ground, return without moving.
+	if (ent->groundentity != NULL)
 		return;
 
-	VectorCopy (ent->s.origin, old_origin);
+	SV_CheckVelocity(ent);
 
-	SV_CheckVelocity (ent);
+	// Move angles.
+	VectorMA(ent->s.angles, FRAMETIME, ent->avelocity, ent->s.angles);
 
-// add gravity
-	if (ent->movetype != MOVETYPE_FLY
-	&& ent->movetype != MOVETYPE_FLYMISSILE)
-		SV_AddGravity (ent);
+	// Move origin.
+	vec3_t move;
+	VectorScale(ent->velocity, FRAMETIME, move);
 
-// move angles
-	VectorMA (ent->s.angles, FRAMETIME, ent->avelocity, ent->s.angles);
-
-// move origin
-	VectorScale (ent->velocity, FRAMETIME, move);
-	trace = SV_PushEntity (ent, move);
+	const trace_t trace = SV_PushEntity(ent, move);
 	if (!ent->inuse)
 		return;
 
-	if (trace.fraction < 1)
+	if (trace.fraction < 1.0f)
 	{
-		if (ent->movetype == MOVETYPE_BOUNCE)
-			backoff = 1.5;
-		else
-			backoff = 1;
+		ClipVelocity(ent->velocity, trace.plane.normal, ent->velocity);
 
-		ClipVelocity (ent->velocity, trace.plane.normal, ent->velocity);
-
-	// stop if on ground
-		if (trace.plane.normal[2] > 0.7)
-		{		
-			if (ent->velocity[2] < 60 || ent->movetype != MOVETYPE_BOUNCE )
-			{
-				ent->groundentity = trace.ent;
-				ent->groundentity_linkcount = trace.ent->linkcount;
-				VectorCopy (vec3_origin, ent->velocity);
-				VectorCopy (vec3_origin, ent->avelocity);
-			}
+		// Stop if on ground.
+		if (trace.plane.normal[2] > 0.7f)
+		{
+			ent->groundentity = trace.ent;
+			ent->groundentity_linkcount = trace.ent->linkcount;
+			VectorCopy(vec3_origin, ent->velocity);
+			VectorCopy(vec3_origin, ent->avelocity);
 		}
-
-//		if (ent->touch)
-//			ent->touch (ent, trace.ent, &trace.plane, trace.surface);
 	}
-	
-// check for water transition
+
+	// Check for water transition.
 	PhysicsCheckWaterTransition(ent);
 
-/*
-	wasinwater = (ent->watertype & MASK_WATER);
-	ent->watertype = gi.pointcontents (ent->s.origin);
-	isinwater = ent->watertype & MASK_WATER;
-
-	if (isinwater)
-		ent->waterlevel = 1;
-	else
-		ent->waterlevel = 0;
-
-	if (!wasinwater && isinwater)
-		gi.positioned_sound (old_origin, g_edicts, CHAN_AUTO, gi.soundindex("misc/h2ohit1.wav"), 1, 1, 0);
-	else if (wasinwater && !isinwater)
-		gi.positioned_sound (ent->s.origin, g_edicts, CHAN_AUTO, gi.soundindex("misc/h2ohit1.wav"), 1, 1, 0);
-*/
-// move teamslaves
-	for (slave = ent->teamchain; slave; slave = slave->teamchain)
+	// Move teamslaves. //TODO: ever used on missiles?
+	for (edict_t* slave = ent->teamchain; slave != NULL; slave = slave->teamchain)
 	{
-		VectorCopy (ent->s.origin, slave->s.origin);
-		gi.linkentity (slave);
+		VectorCopy(ent->s.origin, slave->s.origin);
+		gi.linkentity(slave);
 	}
 }
 
-//============================================================================
-/*
-================
-G_RunEntity
-
-================
-*/
 //mxd. Used only for MOVETYPE_FLYMISSILE.
 void G_RunEntity(edict_t* ent)
 {
