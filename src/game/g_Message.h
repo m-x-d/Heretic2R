@@ -161,10 +161,10 @@ void G_Message_DefaultCon(G_Message_t* this_ptr);
 G_Message_t* G_Message_new(G_MsgID_t ID, G_MsgPriority_t priority);
 void G_Message_Delete(G_Message_t* this_ptr);
 
-void QPostMessage(struct edict_s* to, G_MsgID_t ID, G_MsgPriority_t priority, char* format, ...);
-
-#ifdef __cplusplus
-	extern "C" void PostGameMessage(struct edict_s* to, G_MsgID_t ID, G_MsgPriority_t priority, char* format, ...);
+#ifdef __cplusplus // Used by ds.cpp...
+	extern "C" void QPostMessage(struct edict_s* to, G_MsgID_t id, G_MsgPriority_t priority, char* format, ...);
+#else
+	extern void QPostMessage(struct edict_s* to, G_MsgID_t id, G_MsgPriority_t priority, char* format, ...);
 #endif
 
 int ParseMsgParms(G_Message_t* this_ptr, char* format, ...);
