@@ -238,28 +238,18 @@ qboolean AddDefenseToInventory(gitem_t* defence, edict_t* player)
 	return false; // We already have it...
 }
 
-// ************************************************************************************************
-// Pickup_Defense
-// --------------
-// ************************************************************************************************
-
-qboolean Pickup_Defense (edict_t *ent, edict_t *other)
+static qboolean Pickup_Defense(edict_t* ent, edict_t* other)
 {
-	if (other->flags & FL_CHICKEN)
-	{
-		return(false);
-	}
+	if (other->flags & FL_CHICKEN) // Chicken can't into defence...
+		return false;
 
-	if(AddDefenseToInventory(ent->item,other))
+	if (AddDefenseToInventory(ent->item, other))
 	{
 		gi.gamemsg_centerprintf(other, ent->item->msg_pickup);
+		return true;
+	}
 
-		return(true);
-	}
-	else
-	{
-		return(false);
-	}
+	return false;
 }
 
 #pragma endregion
