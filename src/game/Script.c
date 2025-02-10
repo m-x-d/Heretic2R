@@ -104,7 +104,7 @@ static qboolean ICScript_Advance(ICScript_t *this)
 		}
 		else
 		{
-			G_Message_delete(newMsg);
+			G_Message_Delete(newMsg);
 		}
 
 		assert(this->count <= this->bufSize);

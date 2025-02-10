@@ -159,7 +159,7 @@ typedef void (*G_MsgReceiver_t)(struct edict_s* self, G_Message_t* msg);
 
 void G_Message_DefaultCon(G_Message_t* this_ptr);
 G_Message_t* G_Message_new(G_MsgID_t ID, G_MsgPriority_t priority);
-void G_Message_delete(G_Message_t* this_ptr);
+void G_Message_Delete(G_Message_t* this_ptr);
 
 void QPostMessage(struct edict_s* to, G_MsgID_t ID, G_MsgPriority_t priority, char* format, ...);
 

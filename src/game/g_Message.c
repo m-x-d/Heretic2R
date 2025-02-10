@@ -57,7 +57,7 @@ void G_Message_Des(G_Message_t *this)
 	SLList_Des(&this->parms);
 }
 
-void G_Message_delete(G_Message_t *this)
+void G_Message_Delete(G_Message_t *this)
 {
 	G_Message_Des(this);
 
