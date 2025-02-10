@@ -74,7 +74,7 @@
     <ClCompile Include="g_misc.c" />
     <ClCompile Include="g_monster.c" />
     <ClCompile Include="g_obj.c" />
-    <ClCompile Include="g_phys.c" />
+    <ClCompile Include="g_PhysicsQ2.c" />
     <ClCompile Include="g_Physics.c" />
     <ClCompile Include="g_PhysicsInfo.c" />
     <ClCompile Include="g_ResourceManagers.c" />

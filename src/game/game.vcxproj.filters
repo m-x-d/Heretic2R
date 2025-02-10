@@ -156,7 +156,7 @@
     <ClCompile Include="g_Message.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="g_phys.c">
+    <ClCompile Include="g_PhysicsQ2.c">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="g_Physics.c">
