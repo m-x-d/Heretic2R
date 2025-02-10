@@ -422,57 +422,50 @@ static void DropItemMakeTouchable(edict_t* ent) //mxd. Named 'drop_make_touchabl
 	}
 }
 
-/*
-================
-Drop_Item
-================
-*/
-
-edict_t *Drop_Item (edict_t *ent, gitem_t *item)
+edict_t* Drop_Item(edict_t* ent, gitem_t* item)
 {
-	edict_t	*dropped;
-	vec3_t	forward, right;
-	vec3_t	offset;
-
-	dropped = G_Spawn();
+	edict_t* dropped = G_Spawn();
 
 	dropped->classname = item->classname;
 	dropped->item = item;
 	dropped->spawnflags = DROPPED_ITEM;
 	dropped->s.effects = item->world_model_flags;
 	dropped->s.renderfx = RF_GLOW;
-	VectorSet (dropped->mins, -15, -15, -15);
-	VectorSet (dropped->maxs, 15, 15, 15);
-	gi.setmodel (dropped, dropped->item->world_model);
+	VectorSet(dropped->mins, -15.0f, -15.0f, -15.0f);
+	VectorSet(dropped->maxs,  15.0f,  15.0f,  15.0f);
+	gi.setmodel(dropped, dropped->item->world_model);
 	dropped->solid = SOLID_TRIGGER;
-	dropped->movetype = PHYSICSTYPE_NONE;  
+	dropped->movetype = PHYSICSTYPE_NONE;
 	dropped->touch = DropItemTempTouch;
 	dropped->owner = ent;
 
-	if (ent->client)
-	{
-		trace_t	trace;
+	vec3_t forward;
+	vec3_t right;
 
-		AngleVectors (ent->client->v_angle, forward, right, NULL);
-		VectorSet(offset, 24, 0, -16);
-		G_ProjectSource (ent->s.origin, offset, forward, right, dropped->s.origin);
-		gi.trace (ent->s.origin, dropped->mins, dropped->maxs,
-			dropped->s.origin, ent, CONTENTS_SOLID,&trace);
-		VectorCopy (trace.endpos, dropped->s.origin);
+	if (ent->client != NULL)
+	{
+		AngleVectors(ent->client->v_angle, forward, right, NULL);
+
+		vec3_t offset = { 24.0f, 0.0f, -16.0f };
+		G_ProjectSource(ent->s.origin, offset, forward, right, dropped->s.origin);
+
+		trace_t	trace;
+		gi.trace(ent->s.origin, dropped->mins, dropped->maxs, dropped->s.origin, ent, CONTENTS_SOLID, &trace);
+		VectorCopy(trace.endpos, dropped->s.origin);
 	}
 	else
 	{
-		AngleVectors (ent->s.angles, forward, right, NULL);
-		VectorCopy (ent->s.origin, dropped->s.origin);
+		AngleVectors(ent->s.angles, forward, right, NULL);
+		VectorCopy(ent->s.origin, dropped->s.origin);
 	}
 
-	VectorScale (forward, 100, dropped->velocity);
-	dropped->velocity[2] = 300;
+	VectorScale(forward, 100.0f, dropped->velocity);
+	dropped->velocity[2] = 300.0f;
 
 	dropped->think = DropItemMakeTouchable;
-	dropped->nextthink = level.time + 1;
+	dropped->nextthink = level.time + 1.0f;
 
-	gi.linkentity (dropped);
+	gi.linkentity(dropped);
 
 	return dropped;
 }
