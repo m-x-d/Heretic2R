@@ -270,62 +270,40 @@ static qboolean Add_AmmoToInventory(const edict_t* ent, const gitem_t* ammo, con
 	return false;
 }
 
-/*
-===============
-Add_Ammo
-===============
-*/
-
-qboolean Add_Ammo (edict_t *ent, gitem_t *item, int count)
+qboolean Add_Ammo(const edict_t* ent, const gitem_t* ammo, const int count)
 {
-	int bo;
-	int	max;
+	if (ent->client == NULL)
+		return false;
 
-	if (!ent->client)
-		return(false);
+	const client_persistant_t* pers = &ent->client->playerinfo.pers; //mxd
 
-	if ((item->tag == ITEM_AMMO_MANA_OFFENSIVE_HALF) || (item->tag == ITEM_AMMO_MANA_OFFENSIVE_FULL))
+	switch (ammo->tag)
 	{
-		item = P_FindItemByClassname("item_mana_offensive_half");
-		max = ent->client->playerinfo.pers.max_offmana;
-		return(Add_AmmoToInventory (ent,item,count,max));
-	}
-	else if ((item->tag == ITEM_AMMO_MANA_DEFENSIVE_HALF) || (item->tag == ITEM_AMMO_MANA_DEFENSIVE_FULL))
-	{
-		item = P_FindItemByClassname("item_mana_defensive_half");
-		max = ent->client->playerinfo.pers.max_defmana;
-		return(Add_AmmoToInventory (ent,item,count,max));
-	}
-	else if ((item->tag == ITEM_AMMO_MANA_COMBO_QUARTER) || (item->tag == ITEM_AMMO_MANA_COMBO_HALF))
-	{
-		item = P_FindItemByClassname("item_mana_offensive_half");
-		max = ent->client->playerinfo.pers.max_offmana;
-		
-		bo = Add_AmmoToInventory (ent,item,count,max);
+		case ITEM_AMMO_MANA_OFFENSIVE_HALF:
+		case ITEM_AMMO_MANA_OFFENSIVE_FULL:
+			return Add_AmmoToInventory(ent, P_FindItemByClassname("item_mana_offensive_half"), count, pers->max_offmana);
 
-		item = P_FindItemByClassname("item_mana_defensive_half");
-		max = ent->client->playerinfo.pers.max_defmana;
-		bo |= Add_AmmoToInventory (ent,item,count,max);
+		case ITEM_AMMO_MANA_DEFENSIVE_HALF:
+		case ITEM_AMMO_MANA_DEFENSIVE_FULL:
+			return Add_AmmoToInventory(ent, P_FindItemByClassname("item_mana_defensive_half"), count, pers->max_defmana);
 
-		return(bo);
+		case ITEM_AMMO_MANA_COMBO_QUARTER:
+		case ITEM_AMMO_MANA_COMBO_HALF:
+			return (Add_AmmoToInventory(ent, P_FindItemByClassname("item_mana_offensive_half"), count, pers->max_offmana) |
+				Add_AmmoToInventory(ent, P_FindItemByClassname("item_mana_defensive_half"), count, pers->max_defmana));
+
+		case ITEM_AMMO_REDRAIN:
+			return Add_AmmoToInventory(ent, ammo, count, pers->max_redarrow);
+
+		case ITEM_AMMO_PHOENIX:
+			return Add_AmmoToInventory(ent, ammo, count, pers->max_phoenarr);
+
+		case ITEM_AMMO_HELLSTAFF:
+			return Add_AmmoToInventory(ent, ammo, count, pers->max_hellstaff);
+
+		default:
+			return false;
 	}
-	else if (item->tag == ITEM_AMMO_REDRAIN)
-	{
-		max = ent->client->playerinfo.pers.max_redarrow;
-		return(Add_AmmoToInventory (ent,item,count,max));
-	}
-	else if (item->tag == ITEM_AMMO_PHOENIX)
-	{
-		max = ent->client->playerinfo.pers.max_phoenarr;
-		return(Add_AmmoToInventory (ent,item,count,max));
-	}
-	else if (item->tag == ITEM_AMMO_HELLSTAFF)
-	{
-		max = ent->client->playerinfo.pers.max_hellstaff;
-		return(Add_AmmoToInventory (ent,item,count,max));
-	}
-	else
-		return(false);
 }
 
 /*
