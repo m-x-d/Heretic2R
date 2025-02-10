@@ -48,11 +48,10 @@ static void G_Message_Des(G_Message_t* this)
 	SLList_Des(&this->parms);
 }
 
-void G_Message_Delete(G_Message_t *this)
+void G_Message_Delete(G_Message_t* msg)
 {
-	G_Message_Des(this);
-
-	ResMngr_DeallocateResource(&messages_manager, this, sizeof(G_Message_t));
+	G_Message_Des(msg);
+	ResMngr_DeallocateResource(&messages_manager, msg, sizeof(G_Message_t));
 }
 
 void QPostMessage(edict_t *to, G_MsgID_t ID, G_MsgPriority_t priority, char *format, ...)
