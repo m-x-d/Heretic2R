@@ -306,32 +306,19 @@ qboolean Add_Ammo(const edict_t* ent, const gitem_t* ammo, const int count)
 	}
 }
 
-/*
-===============
-Pickup_Ammo
-===============
-*/
-
-qboolean Pickup_Ammo (edict_t *ent, edict_t *other)
+static qboolean Pickup_Ammo(edict_t* ent, edict_t* other)
 {
-	int		count;
+	if (other->flags & FL_CHICKEN) // Chicken can't into ammo...
+		return false;
 
-	if (other->flags & FL_CHICKEN)
+	const int count = (ent->count > 0 ? ent->count : ent->item->quantity); //mxd
+	if (Add_Ammo(other, ent->item, count))
 	{
-		return(false);
+		gi.gamemsg_centerprintf(other, ent->item->msg_pickup);
+		return true;
 	}
 
-	if (ent->count)
-		count = ent->count;
-	else
-		count = ent->item->quantity;
-
-	if (!Add_Ammo (other, ent->item, count))
-		return(false);
-
-	gi.gamemsg_centerprintf(other, ent->item->msg_pickup);
-
-	return(true);
+	return false;
 }
 
 #pragma endregion
