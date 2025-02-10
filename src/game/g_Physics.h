@@ -36,6 +36,7 @@ extern void ApplyRotationalFriction(edict_t *ent);
 extern void SetGroundEntFromTrace(edict_t *self, trace_t *trace);
 extern void SetBlockingEntFromTrace(edict_t *self, trace_t *trace);
 extern void CheckInWater(FormMove_t *formMove);
+extern void PhysicsCheckWaterTransition(edict_t* self); //mxd
 extern qboolean DiscreteMove_Step(edict_t *self, vec3_t move, FormMove_t *formMove);
 extern void CreateMove_Step(edict_t *self, vec3_t move, float dist);
 
