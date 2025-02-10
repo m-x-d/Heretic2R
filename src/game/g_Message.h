@@ -1,87 +1,74 @@
-#ifndef G_MESSAGE_H
-#define G_MESSAGE_H
+//
+// g_Message.h
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
 
 #include "SinglyLinkedList.h"
 
 // Be sure to update DefaultMessageReceivers after adding a new message
 typedef enum G_MsgID_e
 {
-	MSG_STAND = 0,
-	MSG_CROUCH,
-	MSG_DUCKDOWN, //going down to duck
-	MSG_DUCKHOLD,
-	MSG_DUCKUP,  //rising up from duck
+	MSG_STAND,
+	MSG_CROUCH, //TODO: unused?
+	MSG_DUCKDOWN, // Going down to duck. //TODO: unused?
+	MSG_DUCKHOLD, //TODO: unused?
+	MSG_DUCKUP, // Rising up from duck. //TODO: unused?
 	MSG_WALK,
 	MSG_RUN,
 	MSG_JUMP,
 	MSG_MELEE,
 	MSG_MISSILE,
-	MSG_WATCH,//10
+	MSG_WATCH,
 	MSG_EAT,
 	MSG_PAIN,
 	MSG_DEATH,
-	MSG_FLY,
-	MSG_FLYBACK,//15
-	MSG_HOVER,
-	MSG_FLEE,
-	MSG_FLYATTACK, 
-	MSG_REPULSE,
-	//the following messages will probably be dumped when josh finishes his AI stuff
-	//however, for the time being I need them for spreader to work for E3 --bb
-	MSG_IDLE,//20		//these are basically more things that were originally function *'s
-	MSG_TOUCH,
+	MSG_FLY, //TODO: handled, but never posted?
+	MSG_FLYBACK, //TODO: unused?
+	MSG_HOVER, //TODO: unused?
+	MSG_FLEE, //TODO: unused?
+	MSG_FLYATTACK, //TODO: unused?
+	MSG_REPULSE, //TODO: only posted, never handled?
+
+	// The following messages will probably be dumped when josh finishes his AI stuff.
+	// However, for the time being I need them for spreader to work for E3 --bb
+	MSG_IDLE, // These are basically more things that were originally function *'s. //TODO: unused?
+	MSG_TOUCH, //TODO: unused?
 	MSG_FALLBACK,
-	MSG_SEARCH,
-	MSG_DODGE,
-	MSG_ATTACK,//25
-	MSG_SIGHT,
-	MSG_TURN,
-	MSG_TURNLEFT,
-	MSG_TURNRIGHT,
-	MSG_BLOCKED,//30
-	//end E3 bb 
+	MSG_SEARCH, //TODO: unused?
+	MSG_DODGE, //TODO: unused?
+	MSG_ATTACK, //TODO: unused?
+	MSG_SIGHT, //TODO: handled in ElflordStaticsInit, but never posted?
+	MSG_TURN, //TODO: unused?
+	MSG_TURNLEFT, //TODO: unused?
+	MSG_TURNRIGHT, //TODO: unused?
+	MSG_BLOCKED, //TODO: only posted, never handled?
 
-//--------------------------------------------
-// High Level Utitlity messages
-//--------------------------------------------
+	// High-level utility messages.
+	G_MSG_KNOCKEDBACK, //TODO: only posted, never handled?
+	G_MSG_RESTSTATE, //TODO: only posted, never handled?
 
-	G_MSG_KNOCKEDBACK,
-	G_MSG_RESTSTATE,
-
-//--------------------------------------------
-// Low Level Utitlity messages
-//--------------------------------------------
-	G_MSG_SET_ANIM,
-		// int anim ID
-	G_MSG_REMOVESELF,		// the only time an ent should be freed is in response to this_ptr message,
-							// which should set self->think to G_FreeEdict and nextthink to 0
-	G_MSG_SUSPEND,//35
-		// float time ( <= 0 indicates indefinite suspend )
+	// Low-level utility messages.
+	G_MSG_SET_ANIM, // int anim ID //TODO: unused?
+	G_MSG_REMOVESELF, // The only time an ent should be freed is in response to this_ptr message, which should set self->think to G_FreeEdict and nextthink to 0. //TODO: unused?
+	G_MSG_SUSPEND, // float time (<= 0 indicates indefinite suspend).
 	G_MSG_UNSUSPEND,
 
-	
-//--------------------------------------------
-// Voice messages
-//--------------------------------------------
+	// Voice messages.
+	MSG_VOICE_SIGHT, // Sight sounds.
+	MSG_VOICE_POLL, // Polled for a reply sound.
+	MSG_VOICE_PUPPET, // Forced sound by a trigger.
 
-	MSG_VOICE_SIGHT,	//Sight sounds
-	MSG_VOICE_POLL,		//Polled for a reply sound
-	MSG_VOICE_PUPPET,	//Forced sound by a trigger
-
-	MSG_CHECK_MOOD,	//forced to check it's mood
-
-	//end
+	MSG_CHECK_MOOD, // Forced to check it's mood.
 
 	MSG_DISMEMBER,
+	MSG_EVADE, // If set, new ai_run will check and see if going to get hit and send evasion message with hit location.
+	MSG_DEATH_PAIN, // Taking pain after death - for dismemberment or twitch.
 
-	MSG_EVADE,				//if set, new ai_run will check and see if going to get hit and send evasion message with hitloc
-	MSG_DEATH_PAIN,			//taking pain after death- for dismemberment or twitch
-
-//--------------------------------------------
-// Cinematic messages
-//--------------------------------------------
-
-	MSG_C_ACTION1,	// Differs between monsters
+	// Cinematic messages.
+	MSG_C_ACTION1,	// Differs between monsters.
 	MSG_C_ACTION2,	// 
 	MSG_C_ACTION3,	// 
 	MSG_C_ACTION4,	// 
@@ -120,16 +107,16 @@ typedef enum G_MsgID_e
 	MSG_C_PAIN1,
 	MSG_C_PAIN2,
 	MSG_C_PAIN3,
-	MSG_C_PIVOTLEFTGO,	
-	MSG_C_PIVOTLEFT,	
-	MSG_C_PIVOTLEFTSTOP,	
-	MSG_C_PIVOTRIGHTGO,	
-	MSG_C_PIVOTRIGHT,	
-	MSG_C_PIVOTRIGHTSTOP,	
+	MSG_C_PIVOTLEFTGO,
+	MSG_C_PIVOTLEFT,
+	MSG_C_PIVOTLEFTSTOP,
+	MSG_C_PIVOTRIGHTGO,
+	MSG_C_PIVOTRIGHT,
+	MSG_C_PIVOTRIGHTSTOP,
 	MSG_C_RUN1,
-	MSG_C_STEPLEFT,	
-	MSG_C_STEPRIGHT,	
-	MSG_C_THINKAGAIN, // Turns off Cinematic AI and puts monster into idle state
+	MSG_C_STEPLEFT,
+	MSG_C_STEPRIGHT,
+	MSG_C_THINKAGAIN, // Turns off Cinematic AI and puts monster into idle state.
 	MSG_C_TRANS1,
 	MSG_C_TRANS2,
 	MSG_C_TRANS3,
@@ -144,20 +131,19 @@ typedef enum G_MsgID_e
 	MSG_C_WALKSTOP1,
 	MSG_C_WALKSTOP2,
 	MSG_C_ATTACK4,
-	MSG_C_ATTACK5,
-
+	MSG_C_ATTACK5, //TODO: unused.
 
 	NUM_MESSAGES
 } G_MsgID_t;
 
 typedef enum G_MsgPriority_e
 {
-	PRI_SUGGESTION,	// message from high level ai that dosn't need to be accepted unless convienent
-	PRI_ORDER,		// message from high level ai that should be accepted if possible
-	PRI_DIRECTIVE,	// message from self that must be accepted unless it conflicts with a 
-					// higher priority message
-	PRI_PHYSICS,	// message that has physical meaning such as knockback or damage
-	PRI_SYSTEM,		// message from the system that must be accepted
+	PRI_SUGGESTION,	// Message from high level ai that doesn't need to be accepted unless convenient. //TODO: unused.
+	PRI_ORDER,		// Message from high level ai that should be accepted if possible.
+	PRI_DIRECTIVE,	// Message from self that must be accepted unless it conflicts with a  higher priority message.
+	PRI_PHYSICS,	// Message that has physical meaning such as knockback or damage.
+	PRI_SYSTEM,		// Message from the system that must be accepted.
+
 	NUM_MSG_PRIORITIES
 } G_MsgPriority_t;
 
@@ -168,29 +154,22 @@ typedef struct G_Message_s
 	SinglyLinkedList_t parms;
 } G_Message_t;
 
-typedef void (*G_MessageHandler_t)(struct edict_s *self, G_Message_t *msg);
-typedef void (*G_MsgReceiver_t)(struct edict_s *self, G_Message_t *msg);
+typedef void (*G_MessageHandler_t)(struct edict_s* self, G_Message_t* msg);
+typedef void (*G_MsgReceiver_t)(struct edict_s* self, G_Message_t* msg);
 
-void G_Message_DefaultCon(G_Message_t *this_ptr);
-G_Message_t *G_Message_new(G_MsgID_t ID, G_MsgPriority_t priority);
-void G_Message_delete(G_Message_t *this_ptr);
+void G_Message_DefaultCon(G_Message_t* this_ptr);
+G_Message_t* G_Message_new(G_MsgID_t ID, G_MsgPriority_t priority);
+void G_Message_delete(G_Message_t* this_ptr);
 
-void QPostMessage(struct edict_s *to, G_MsgID_t ID, G_MsgPriority_t priority, char *format, ...);
+void QPostMessage(struct edict_s* to, G_MsgID_t ID, G_MsgPriority_t priority, char* format, ...);
 
 #ifdef __cplusplus
-
-extern "C" 
-{
-	void PostGameMessage(struct edict_s *to, G_MsgID_t ID, G_MsgPriority_t priority, char *format, ...);
-}
-
+	extern "C" void PostGameMessage(struct edict_s* to, G_MsgID_t ID, G_MsgPriority_t priority, char* format, ...);
 #endif
 
-int ParseMsgParms(G_Message_t *this_ptr, char *format, ...);
-void ProcessMessages(struct edict_s *this_ptr);
-void ClearMessageQueue(struct edict_s *this_ptr);
+int ParseMsgParms(G_Message_t* this_ptr, char* format, ...);
+void ProcessMessages(struct edict_s* this_ptr);
+void ClearMessageQueue(struct edict_s* this_ptr);
 extern void ClearMessageQueues(void); //mxd
 extern void InitMsgMngr(void); //mxd
 extern void ReleaseMsgMngr(void); //mxd
-
-#endif
