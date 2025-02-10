@@ -26,52 +26,35 @@ static void RespawnedThink(edict_t* ent) //TODO: can't we just clear ent->think 
 	ent->think = NULL;
 }
 
-// ************************************************************************************************
-// DoRespawn
-// ---------
-// ************************************************************************************************
-
-void DoRespawn(edict_t *ent)
+static void DoRespawn(edict_t* ent)
 {
-	if(ent->team)
+	// For team, respawn random member of the team (?)
+	if (ent->team != NULL)
 	{
-		edict_t	*Master;
-		int		Count;
-		int		Choice;
+		int count;
+		edict_t* master = ent->teammaster;
 
-		Master=ent->teammaster;
+		ent = master;
+		for (count = 0; ent != NULL; count++)
+			ent = ent->chain;
 
-		for(Count=0,ent=Master;ent;ent=ent->chain,Count++)
-			;
+		const int choice = irand(0, count - 1);
 
-		Choice=irand(0, Count - 1);
-
-		for(Count=0,ent=Master;Count<Choice;ent=ent->chain,Count++)
-			;
+		ent = master;
+		for (int i = 0; i < choice; i++)
+			ent = ent->chain;
 	}
 
-	ent->solid=SOLID_TRIGGER;
-
+	ent->solid = SOLID_TRIGGER;
 	gi.linkentity(ent);
 
-	// Create a respawn client-effect (this isn't currenlty doing anything on the client).
-
-	//gi.CreateEffect(&ent->s,FX_ITEM_RESPAWN,CEF_OWNERS_ORIGIN,ent->s.origin,NULL);
-
-	// So it'll get sent to the client again.
-
-//	ent->svflags &= ~SVF_NOCLIENT;
-
 	// Re-enable the persistent effect.
-
 	ent->s.effects &= ~EF_DISABLE_ALL_CFX;
 
 	// So it'll get displayed again.
-
 	ent->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 
 	// And the rest.
-
 	ent->think = RespawnedThink;
 	ent->nextthink = level.time + FRAMETIME;
 }
