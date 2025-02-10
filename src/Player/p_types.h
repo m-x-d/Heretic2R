@@ -188,7 +188,7 @@ typedef struct client_persistant_s
 	char userinfo[MAX_INFO_STRING];
 	char netname[16];
 	char sounddir[MAX_QPATH]; //TODO: unused?
-	int autoweapon;
+	int autoweapon; //TODO: change type to qboolean.
 
 	// A loadgame will leave valid entities that just don't have a connection yet.
 	qboolean connected;
@@ -198,7 +198,7 @@ typedef struct client_persistant_s
 	// Health.
 	int health;
 	int max_health;
-	
+
 	short mission_num1;
 	short mission_num2;
 
@@ -212,7 +212,7 @@ typedef struct client_persistant_s
 	float armor_count;	// Not used on client.
 	short skintype;		// Skin index that reflects plague stages and alternate skins
 	uint altparts;		// Missing hands, heads etc.
-	
+
 	// Inventory.
 	inventory_t inventory;
 	inventory_t old_inventory;
