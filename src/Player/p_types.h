@@ -263,38 +263,27 @@ typedef struct client_persistant_s
 // 'edict_t'->movetype values.
 typedef enum physicsType_e
 {
-	// New system
-	PHYSICSTYPE_NONE,			// MOVETYPE_NONE			0
+	PHYSICSTYPE_NONE,
 	PHYSICSTYPE_STATIC,
-	PHYSICSTYPE_NOCLIP,			// MOVETYPE_NOCLIP			2
-	PHYSICSTYPE_FLY,			// MOVETYPE_FLY				3
-	PHYSICSTYPE_STEP,			// MOVETYPE_WALK, MOVETYPE_STEP, MOVETYPE_TOSS, MOVETYPE_BOUNCE
-	PHYSICSTYPE_PUSH,			// MOVETYPE_PUSH			5
-	PHYSICSTYPE_STOP,			// MOVETYPE_STOP			6
-	MOVETYPE_FLYMISSILE,		// MOVETYPE_FYMISSILE (extra size to monsters)
-	PHYSICSTYPE_SCRIPT_ANGULAR,	// MOVETYPE_SCRIPT_ANGULAR	8
-	NUM_PHYSICSTYPES,
+	PHYSICSTYPE_NOCLIP,
+	PHYSICSTYPE_FLY,
+	PHYSICSTYPE_STEP,
+	PHYSICSTYPE_PUSH,
+	PHYSICSTYPE_STOP,
+	MOVETYPE_FLYMISSILE,
+	PHYSICSTYPE_SCRIPT_ANGULAR,
 
-	MOVETYPE_NONE,		// Never moves
-	MOVETYPE_NOCLIP,	// Origin and angles change with no interaction
-	MOVETYPE_PUSH,		// No clip to world, push on box contact
-	MOVETYPE_STOP,		// No clip to world, stops on box contact
-	MOVETYPE_WALK,		// Gravity
-	MOVETYPE_STEP,		// Gravity, special edge handling
-	MOVETYPE_FLY,
-	MOVETYPE_TOSS,		// Gravity
-	MOVETYPE_BOUNCE,
-
-	MOVETYPE_SCRIPT_ANGULAR, // Moves with the rotation of another entity
+	NUM_PHYSICSTYPES
 } physicsType_t;
 
 // DEAD_XXX
 // Held in 'edict_t'->deadflag.
 typedef enum deadState_e
 {
-	DEAD_NO = 0,
+	DEAD_NO,
 	DEAD_DYING,
 	DEAD_DEAD,
+
 	NUM_DEADSTATE
 } deadState_t;
 
@@ -302,7 +291,7 @@ typedef enum deadState_e
 // Hand effects, glowing for spells. Can be used for staff and bow, or others that are used by the upper torso half and toggle.
 typedef enum handfx_e
 {
-	HANDFX_NONE = 0,
+	HANDFX_NONE,
 	HANDFX_FIREBALL,
 	HANDFX_MISSILE,
 	HANDFX_SPHERE,
@@ -315,7 +304,8 @@ typedef enum handfx_e
 	HANDFX_STAFF1,
 	HANDFX_STAFF2,
 	HANDFX_STAFF3,
-	HANDFX_MAX,
+
+	HANDFX_MAX
 } handfx_t;
 
 // Unique sound IDs required for correct prediction of sounds played from player.dll.
@@ -380,6 +370,7 @@ enum
 	SND_PRED_ID51,
 	SND_PRED_ID52,
 	SND_PRED_ID53,
+
 	SND_PRED_MAX	= 127
 };
 
@@ -426,6 +417,7 @@ enum
 	EFFECT_PRED_ID32,
 	EFFECT_PRED_ID33,
 	EFFECT_PRED_ID34,
+
 	EFFECT_PRED_MAX		= 127
 };
 
