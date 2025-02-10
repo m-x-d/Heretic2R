@@ -15,52 +15,25 @@ static void SV_CheckVelocity(edict_t* ent)
 		ent->velocity[i] = Clamp(ent->velocity[i], -sv_maxvelocity->value, sv_maxvelocity->value);
 }
 
-/*
-=============
-SV_RunThink
-
-Runs thinking code for this frame if necessary
-=============
-*/
-qboolean SV_RunThink (edict_t *ent)
+// Runs thinking code for this frame if necessary.
+static qboolean SV_RunThink(edict_t* ent)
 {
-	float	thinktime;
-
-	thinktime = ent->nextthink;
+	const float think_time = ent->nextthink;
 
 	assert(ent->inuse);
 
-	if(ent->msgHandler)
-	{
+	if (ent->msgHandler != NULL)
 		ProcessMessages(ent);
-	}
 
 	assert(ent->inuse);
 
-	if(!ent->think || thinktime<=0 || thinktime>level.time+0.001)
+	if (ent->think != NULL && think_time > 0.0f && think_time <= level.time + 0.001f)
 	{
-		return(true);
+		ent->nextthink = 0.0f;
+		ent->think(ent);
 	}
 
-#if 1
-	ent->nextthink = 0;
-
-	ent->think(ent);
-#else
-	{
-#ifndef NDEBUG
-	void *think;
-	think = ent->think;
-#endif
-
-	ent->think(ent);
-
-	assert(!ent->think || think != ent->think || thinktime != ent->nextthink);	// think should be nulled if nextthink is not set
-	}
-#endif
-
-	// NOTENOTE Is this what we want to return if it gets this far?
-	return(true);
+	return true; //NOTE: is this what we want to return if it gets this far?
 }
 
 /*
