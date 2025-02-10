@@ -79,22 +79,16 @@ void QPostMessage(edict_t* to, const G_MsgID_t id, const G_MsgPriority_t priorit
 	QueueMessage(&to->msgQ, msg);
 }
 
-int ParseMsgParms(G_Message_t *this, char *format, ...)
+int ParseMsgParms(G_Message_t* msg, char* format, ...)
 {
-	SinglyLinkedList_t *parms;
-	va_list marker;
-	int args_filled;
+	assert(msg != NULL);
 
-	assert(this);
-
-	parms = &this->parms;
-
+	SinglyLinkedList_t* parms = &msg->parms;
 	SLList_Front(parms);
 
+	va_list marker;
 	va_start(marker, format);
-
-	args_filled = GetParms(parms, format, marker);
-
+	const int args_filled = GetParms(parms, format, marker);
 	va_end(marker);
 
 	return args_filled;
