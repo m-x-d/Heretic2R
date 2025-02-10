@@ -470,52 +470,43 @@ edict_t* Drop_Item(edict_t* ent, gitem_t* item)
 	return dropped;
 }
 
-// ************************************************************************************************
-// ValidItem
-// ---------
-// ************************************************************************************************
-
-qboolean ValidItem(gitem_t *item)
+static qboolean IsValidItem(const gitem_t* item) //mxd. Named 'ValidItem' in original version.
 {
+	if (!DEATHMATCH)
+		return true;
+
 	// Some items will be prevented in deathmatch.
+	if ((DMFLAGS & DF_NO_DEFENSIVE_SPELL) && (item->flags & IT_DEFENSE))
+		return false;
 
-	if(deathmatch->value)
+	if ((DMFLAGS & DF_NO_OFFENSIVE_SPELL) && (item->flags & IT_OFFENSE))
+		return false;
+
+	if ((DMFLAGS & DF_NO_HEALTH) && (item->flags & IT_HEALTH))
+		return false;
+
+	if (item->flags & IT_DEFENSE)
 	{
-		if ( (int)dmflags->value & DF_NO_DEFENSIVE_SPELL )
-		{
-			if (item->flags & IT_DEFENSE)
-			{
-				return false;
-			}
-		}
-		if ( (int)dmflags->value & DF_NO_OFFENSIVE_SPELL )
-		{
-			if (item->flags & IT_OFFENSE)
-			{
-				return false;
-			}
-		}
-		if ( (int)dmflags->value & DF_NO_HEALTH )
-		{
-			if (item->flags & IT_HEALTH)
-			{
-				return false;
-			}
-		}
-
-		if ((item->flags & IT_DEFENSE) && (item->tag == ITEM_DEFENSE_TORNADO) && (no_tornado->value))
-			return false;
-		else if ((item->flags & IT_DEFENSE) && (item->tag == ITEM_DEFENSE_POLYMORPH) && (no_morph->value))
-			return false;
-		else if ((item->flags & IT_DEFENSE) && (item->tag == ITEM_DEFENSE_SHIELD) && (no_shield->value))
-			return false;
-		else if ((item->flags & IT_DEFENSE) && (item->tag == ITEM_DEFENSE_TELEPORT) && (no_teleport->value))
-			return false;
-		else if ((item->flags & IT_OFFENSE) && (item->tag == ITEM_WEAPON_PHOENIXBOW) && (no_phoenix->value))
-			return false;
-		else if ((item->flags & IT_OFFENSE) && (item->tag == ITEM_WEAPON_MACEBALLS) && (no_irondoom->value))
+		if (item->tag == ITEM_DEFENSE_TORNADO && (int)no_tornado->value)
 			return false;
 
+		if (item->tag == ITEM_DEFENSE_POLYMORPH && (int)no_morph->value)
+			return false;
+
+		if (item->tag == ITEM_DEFENSE_SHIELD && (int)no_shield->value)
+			return false;
+
+		if (item->tag == ITEM_DEFENSE_TELEPORT && (int)no_teleport->value)
+			return false;
+	}
+
+	if (item->flags & IT_OFFENSE)
+	{
+		if (item->tag == ITEM_WEAPON_PHOENIXBOW && (int)no_phoenix->value)
+			return false;
+
+		if (item->tag == ITEM_WEAPON_MACEBALLS && (int)no_irondoom->value)
+			return false;
 	}
 
 	return true;
@@ -529,7 +520,7 @@ qboolean ValidItem(gitem_t *item)
 void SpawnItemEffect(edict_t *ent, gitem_t *item)
 {
 
-	if(!ValidItem(item))
+	if(!IsValidItem(item))
 	{
 		G_FreeEdict (ent);
 		return;
@@ -655,7 +646,7 @@ void SpawnItem (edict_t *ent, gitem_t *item)
 
 	PrecacheItem(item);
 
-	if(!ValidItem(item))
+	if(!IsValidItem(item))
 	{
 		G_FreeEdict (ent);
 		return;
