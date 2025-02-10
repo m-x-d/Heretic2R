@@ -24,15 +24,12 @@ void ReleaseMsgMngr(void)
 	ResMngr_Des(&messages_manager);
 }
 
-void G_Message_DefaultCon(G_Message_t *this)
+static void G_Message_DefaultCon(G_Message_t* self)
 {
-	SinglyLinkedList_t *parms;
+	SinglyLinkedList_t* parms = &self->parms;
 
-	parms = &this->parms;
-
-	// Fix Me !!!
-	SLList_DefaultCon(parms);  // whoops, need to port object manager to C
-	SLList_PushEmpty(parms);			// should make a constructor fo G_Message_t too
+	SLList_DefaultCon(parms); // Need to port object manager to C.
+	SLList_PushEmpty(parms); // Should make a constructor fo G_Message_t too.
 }
 
 G_Message_t *G_Message_new(G_MsgID_t ID, G_MsgPriority_t priority)
