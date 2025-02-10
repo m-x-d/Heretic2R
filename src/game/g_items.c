@@ -73,47 +73,25 @@ static void PreRespawnThink(edict_t* ent)
 	ent->think = DoRespawn;
 }
 
-// ************************************************************************************************
-// SetRespawn
-// ----------
-// ************************************************************************************************
-
-void SetRespawn(edict_t *ent)
+static void SetRespawn(edict_t* ent)
 {
-	// So it'll get sent to the client again.
-
-//	ent->svflags &= ~SVF_NOCLIENT;
-
-	// Disables all the effects on the entity.
-
-	ent->s.effects |= EF_DISABLE_ALL_CFX;
-
-	// Take off the EF_ALWAYS_ADD_EFFECTS or EF_DISABLE_ALL_CFX wont have an effect.
-
-	ent->s.effects &= ~EF_ALWAYS_ADD_EFFECTS;
-
-	// And the rest.
-
+	ent->s.effects |= EF_DISABLE_ALL_CFX; // Disables all the effects on the entity.
+	ent->s.effects &= ~EF_ALWAYS_ADD_EFFECTS; // Take off the EF_ALWAYS_ADD_EFFECTS or EF_DISABLE_ALL_CFX won't have an effect.
 	ent->solid = SOLID_NOT;
 
-	if(deathmatch->value && game.num_clients > 8)
-	{
-		// No less than 1/4th the delay.
+	float delay = ent->delay; //mxd
 
-		ent->nextthink = level.time + (ent->delay) / 4;
-	}
-	if(deathmatch->value && game.num_clients > 2)
+	if (DEATHMATCH && game.num_clients > 2)
 	{
+		// No less than 1/4th the delay. //BUGFIX: logic skipped in original version. 
+		const float num_clients = min(8.0f, (float)game.num_clients); //mxd
+
 		// So things respawn faster with a lot of players.
-
-		ent->nextthink = level.time + (ent->delay) / (game.num_clients/2);
-	}
-	else
-	{
-		ent->nextthink = level.time + ent->delay;
+		delay /= num_clients * 0.5f;
 	}
 
 	ent->think = PreRespawnThink;
+	ent->nextthink = level.time + delay;
 }
 
 #pragma endregion
