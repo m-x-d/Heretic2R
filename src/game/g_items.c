@@ -1,7 +1,6 @@
 //
 // g_items.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
@@ -9,18 +8,13 @@
 #include "p_dll.h" //mxd
 #include "p_item.h"
 #include "g_items.h"
-#include "p_weapon.h"
-#include "g_weapon.h"
-#include "p_anims.h"
-#include "p_anim_data.h"
-#include "fx.h"
-#include "g_cmds.h" //mxd
-#include "random.h"
-#include "vector.h"
 #include "g_itemstats.h"
+#include "g_weapon.h"
+#include "FX.h"
+#include "Random.h"
+#include "Vector.h"
 
 #define HEALTH_IGNORE_MAX	1
-#define HEALTH_TIMED		2
 
 #define ITEM_COOP_ONLY		1
 #define ITEM_NO_DROP		2
