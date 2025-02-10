@@ -675,35 +675,15 @@ void SpawnItem(edict_t* ent, gitem_t* item)
 	}
 }
 
-// ************************************************************************************************
-// IsItem
-// ------
-// ************************************************************************************************
-
-gitem_t	*IsItem(edict_t *ent)
+gitem_t* IsItem(const edict_t* ent)
 {
-	gitem_t	*item;
-	int i;
-
-	if(!ent->classname)
-	{
+	if (ent->classname == NULL)
 		return NULL;
-	}
 
-	for(i = 0, item = playerExport.p_itemlist; i < game.num_items; ++i, ++item)
-	{
-		if(!item->classname)
-		{
-			continue;
-		}
-
-		if(!strcmp(item->classname, ent->classname))
-		{	
-			// Found it.
-
-			return item;
-		}
-	}
+	gitem_t* item = &playerExport.p_itemlist[0];
+	for (int i = 0; i < game.num_items; i++, item++)
+		if (item->classname != NULL && strcmp(item->classname, ent->classname) == 0)
+			return item; // Found it.
 
 	return NULL;
 }
