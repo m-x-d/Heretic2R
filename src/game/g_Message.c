@@ -12,14 +12,14 @@
 
 static ResourceManager_t messages_manager;
 
-void InitMsgMngr()
+void InitMsgMngr(void)
 {
 #define MESSAGE_BLOCK_SIZE 256
 
 	ResMngr_Con(&messages_manager, sizeof(G_Message_t), MESSAGE_BLOCK_SIZE);
 }
 
-void ReleaseMsgMngr()
+void ReleaseMsgMngr(void)
 {
 	ResMngr_Des(&messages_manager);
 }
