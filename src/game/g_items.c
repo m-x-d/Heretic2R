@@ -117,113 +117,88 @@ static qboolean Pickup_Puzzle(edict_t* ent, edict_t* other)
 
 #pragma endregion
 
-// ************************************************************************************************
-// AddWeaponToInventory
-// --------------------
-// ************************************************************************************************
+#pragma region ========================== WEAPON PICKUP LOGIC ==========================
 
-qboolean AddWeaponToInventory(gitem_t *item,edict_t *player)
+qboolean AddWeaponToInventory(gitem_t* weapon, edict_t* player)
 {
-	gitem_t	*newitem;
-	int		count;
+	client_persistant_t* pers = &player->client->playerinfo.pers; //mxd
+	const int wpn_index = ITEM_INDEX(weapon); //mxd
 
 	// Do we already have this weapon?
-
-	if(!player->client->playerinfo.pers.inventory.Items[ITEM_INDEX(item)])
+	if (pers->inventory.Items[wpn_index] == 0)
 	{
 		// We don't already have it, so get the weapon and some ammo.
+		pers->inventory.Items[wpn_index] = 1;
 
-		if (item->tag == ITEM_WEAPON_SWORDSTAFF)
-			count= 0;
-		else if (item->tag == ITEM_WEAPON_HELLSTAFF)
-			count = AMMO_COUNT_HELLSTAFF;
-		else if (item->tag == ITEM_WEAPON_REDRAINBOW)
+		// Add ammo.
+		int count;
+		switch (weapon->tag)
 		{
-			// give us the bowtype
-			player->client->playerinfo.pers.bowtype = BOW_TYPE_REDRAIN;
-			count = AMMO_COUNT_REDRAINBOW;
-		}
-		else if (item->tag == ITEM_WEAPON_PHOENIXBOW)
-		{
-			// give us the bowtype
-			player->client->playerinfo.pers.bowtype = BOW_TYPE_PHOENIX;
-			count = AMMO_COUNT_PHOENIXBOW;
-		}
-		else
-			count = AMMO_COUNT_MOST;
+			case ITEM_WEAPON_SWORDSTAFF:
+				count = 0;
+				break;
 
-		player->client->playerinfo.pers.inventory.Items[ITEM_INDEX(item)] = 1;
-		
-		if(count)
-		{
-			newitem = P_FindItem(item->ammo);
-			Add_Ammo(player, newitem,count);
-		}
-
-		// Now decide if we want to swap weapons or not.
-
-		if (player->client->playerinfo.pers.autoweapon)
-		{
-			// If this new weapon is a higher value than the one we currently have, swap the current
-			// weapon for the new one.
-
-			if (ITEM_INDEX(item) > ITEM_INDEX(player->client->playerinfo.pers.weapon))
-			{
-				item->use(&player->client->playerinfo,item);
-			}
-		}
-
-		return(true);
-	}
-	else 
-	{
-		// We already have it...
-
-		if(!((deathmatch->value&&((int)dmflags->value&DF_WEAPONS_STAY))||coop->value))
-		{
-			// ...and DF_WEPONS_STAY is off and we're not in coop, so just try to up the ammo counts.
-
-			if (item->tag == ITEM_WEAPON_HELLSTAFF)
-			{
-				newitem = P_FindItemByClassname("item_ammo_hellstaff");
+			case ITEM_WEAPON_HELLSTAFF:
 				count = AMMO_COUNT_HELLSTAFF;
-			}
-			else if (item->tag == ITEM_WEAPON_REDRAINBOW)
-			{
-				newitem = P_FindItemByClassname("item_ammo_redrain");
+				break;
+
+			case ITEM_WEAPON_REDRAINBOW:
+				pers->bowtype = BOW_TYPE_REDRAIN;
 				count = AMMO_COUNT_REDRAINBOW;
-			}
-			else if (item->tag == ITEM_WEAPON_PHOENIXBOW)
-			{
-				newitem = P_FindItemByClassname("item_ammo_phoenix");
+				break;
+
+			case ITEM_WEAPON_PHOENIXBOW:
+				pers->bowtype = BOW_TYPE_PHOENIX;
 				count = AMMO_COUNT_PHOENIXBOW;
-			}
-			else 
-			{
-				newitem = P_FindItemByClassname("item_mana_offensive_half");
+				break;
+
+			default:
 				count = AMMO_COUNT_MOST;
-			}
-
-			if(Add_Ammo(player, newitem,count))
-			{
-				// Have space in our inventory, so add ammo.
-
-				return(true);
-			}
-			else
-			{
-				// No space in inventory to add the ammo.
-
-				return(false);
-			}
+				break;
 		}
-		else	
-		{
-			// ...but we're not able to pick it up.
 
-			return(false);
-		}
+		if (count > 0)
+			Add_Ammo(player, P_FindItem(weapon->ammo), count);
+
+		// If new weapon is a higher value than the one we currently have, swap the current weapon for the new one.
+		if (pers->autoweapon && wpn_index > ITEM_INDEX(pers->weapon))
+			weapon->use(&player->client->playerinfo, weapon);
+
+		return true;
 	}
+
+	// We already have it...
+	if (COOP || (DEATHMATCH && (DMFLAGS & DF_WEAPONS_STAY)))
+		return false;
+
+	// ...and DF_WEPONS_STAY is off and we're not in coop, so just try to up the ammo counts.
+	gitem_t* ammo;
+	int count;
+
+	switch (weapon->tag)
+	{
+		case ITEM_WEAPON_HELLSTAFF:
+			ammo = P_FindItemByClassname("item_ammo_hellstaff");
+			count = AMMO_COUNT_HELLSTAFF;
+			break;
+
+		case ITEM_WEAPON_REDRAINBOW:
+			ammo = P_FindItemByClassname("item_ammo_redrain");
+			count = AMMO_COUNT_REDRAINBOW;
+			break;
+
+		case ITEM_WEAPON_PHOENIXBOW:
+			ammo = P_FindItemByClassname("item_ammo_phoenix");
+			count = AMMO_COUNT_PHOENIXBOW;
+			break;
+
+		default:
+			ammo = P_FindItemByClassname("item_mana_offensive_half");
+			count = AMMO_COUNT_MOST;
+			break;
+	}
+
+	return Add_Ammo(player, ammo, count); // Count as added if ammo was added.
 }
 
 // ************************************************************************************************
@@ -251,6 +226,8 @@ qboolean Pickup_Weapon(edict_t *ent,edict_t *other)
 		return(false);
 	}
 }
+
+#pragma endregion
 
 // ************************************************************************************************
 // AddDefenseToInventory
