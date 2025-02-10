@@ -525,7 +525,7 @@ static void G_RunFrame(void)
 			EntityPhysics(ent);
 			EntityPostThink(ent);
 		}
-		else // Use old physics for missiles (for compatibility)
+		else // Use old physics for missiles (for compatibility).
 		{
 			G_RunEntity(ent);
 		}
