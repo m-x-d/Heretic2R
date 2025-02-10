@@ -333,55 +333,42 @@ static qboolean Pickup_Mana(edict_t* ent, edict_t* other)
 
 #pragma endregion
 
-/*
-===============
-Pickup_Health
-===============
-*/
+#pragma region ========================== HEALTH PICKUP LOGIC ==========================
 
-qboolean Pickup_Health (edict_t *ent, edict_t *other)
+static qboolean Pickup_Health(edict_t* ent, edict_t* other)
 {
-	if (other->flags & FL_CHICKEN)
-	{
-		return(false);
-	}
+	if (other->flags & FL_CHICKEN) // Chicken is not very healthy...
+		return false;
 
-	if (!(ent->style & HEALTH_IGNORE_MAX))
-	{
-		if (other->health >= other->max_health)
-		{
-			return(false);
-		}
-	}
+	if (!(ent->style & HEALTH_IGNORE_MAX) && other->health >= other->max_health)
+		return false;
 
 	other->health += ent->item->quantity;
 
-	if(other->fire_damage_time>level.time)
+	if (!(ent->style & HEALTH_IGNORE_MAX) && other->health > other->max_health)
+		other->health = other->max_health;
+
+	// Use health pickup to douse fire.
+	if (other->fire_damage_time > level.time)
 	{
-		other->fire_damage_time -= ent->item->quantity/10;
-		if(other->fire_damage_time<=0)
+		other->fire_damage_time -= (float)ent->item->quantity / 10.0f;
+
+		if (other->fire_damage_time <= 0.0f)
 		{
-			other->fire_damage_time = 0;
-//			gi.RemoveEffects(&other->s, FX_FIRE_ON_ENTITY);//turn off CFX too
-			other->s.effects |= EF_MARCUS_FLAG1;		// Notify the effect to turn itself off.
+			other->fire_damage_time = 0.0f;
+			other->s.effects |= EF_MARCUS_FLAG1; // Notify the effect to turn itself off.
 		}
 	}
 
-	if (!(ent->style & HEALTH_IGNORE_MAX))
-	{
-		if (other->health > other->max_health)
-		{
-			other->health = other->max_health;
-		}
-	}
-
-	if(other->client)
+	if (other->client != NULL)
 		player_repair_skin(other);
 
 	gi.gamemsg_centerprintf(other, ent->item->msg_pickup);
-	
-	return(true);
+
+	return true;
 }
+
+#pragma endregion
 
 /*
 ===============
