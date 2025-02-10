@@ -688,378 +688,185 @@ gitem_t* IsItem(const edict_t* ent)
 	return NULL;
 }
 
-// ************************************************************************************************
-// G_InitItems
-// -----------
-// ************************************************************************************************
-
 void G_InitItems(void)
 {
-	// ********************************************************************************************
-	// Setup item function pointers which yield pick-up, use, drop and weaponthink functionality.
-	// ********************************************************************************************
+	// Setup item function pointers which yield pick-up, use, drop and weaponthink functionality. Leave index 0 empty.
 
-	// Leave index 0 empty.
+	// weapon_swordstaff. Can't be placed in the editor.
+	playerExport.p_itemlist[1].pickup = Pickup_Weapon;
+	playerExport.p_itemlist[1].use = P_Weapon_EquipSwordStaff;
+	playerExport.p_itemlist[1].weaponthink = WeaponThink_SwordStaff;
 
-	// weapon_swordstaff
-	// This can't be placed in the editor
+	// weapon_flyingfist. Can't be placed in the editor.
+	playerExport.p_itemlist[2].pickup = Pickup_Weapon;
+	playerExport.p_itemlist[2].use = P_Weapon_EquipSpell;
+	playerExport.p_itemlist[2].weaponthink = WeaponThink_FlyingFist;
 
-	playerExport.p_itemlist[1].pickup=Pickup_Weapon;
-	playerExport.p_itemlist[1].use=P_Weapon_EquipSwordStaff;
-	playerExport.p_itemlist[1].weaponthink=WeaponThink_SwordStaff;
+	// item_weapon_hellstaff. Pickup for the hellstaff weapon.
+	playerExport.p_itemlist[3].pickup = Pickup_Weapon;
+	playerExport.p_itemlist[3].use = P_Weapon_EquipHellStaff;
+	playerExport.p_itemlist[3].weaponthink = WeaponThink_HellStaff;
 
-	// weapon_flyingfist
-	// This can't be placed in the editor
+	// item_weapon_magicmissile. Pickup for the Magic Missile weapon.
+	playerExport.p_itemlist[4].pickup = Pickup_Weapon;
+	playerExport.p_itemlist[4].use = P_Weapon_EquipSpell;
+	playerExport.p_itemlist[4].weaponthink = WeaponThink_MagicMissileSpread;
 
-	playerExport.p_itemlist[2].pickup=Pickup_Weapon;
-	playerExport.p_itemlist[2].use=P_Weapon_EquipSpell;
-	playerExport.p_itemlist[2].weaponthink=WeaponThink_FlyingFist;
+	// item_weapon_redrain_bow. Pickup for the Red Rain Bow weapon.
+	playerExport.p_itemlist[5].pickup = Pickup_Weapon;
+	playerExport.p_itemlist[5].use = P_Weapon_EquipBow;
+	playerExport.p_itemlist[5].weaponthink = WeaponThink_RedRainBow;
 
-	// item_weapon_hellstaff
-/*QUAKED item_weapon_hellstaff (.3 .3 1) (-16 -16 -16) (16 16 16) COOP_ONLY
-Pickup for the hellstaff weapon.
-*/
+	// item_weapon_firewall. Pickup for the Fire Wall weapon.
+	playerExport.p_itemlist[6].pickup = Pickup_Weapon;
+	playerExport.p_itemlist[6].use = P_Weapon_EquipSpell;
+	playerExport.p_itemlist[6].weaponthink = WeaponThink_Firewall;
 
-	playerExport.p_itemlist[3].pickup=Pickup_Weapon;
-	playerExport.p_itemlist[3].use=P_Weapon_EquipHellStaff;
-	playerExport.p_itemlist[3].weaponthink=WeaponThink_HellStaff;
+	// item_weapon_phoenixbow. Pickup for the Phoenix Bow weapon.
+	playerExport.p_itemlist[7].pickup = Pickup_Weapon;
+	playerExport.p_itemlist[7].use = P_Weapon_EquipBow;
+	playerExport.p_itemlist[7].weaponthink = WeaponThink_PhoenixBow;
 
-	// item_weapon_magicmissile
-/*QUAKED item_weapon_magicmissile (.3 .3 1) (-16 -16 -16) (16 16 16) COOP_ONLY
-Pickup for the Magic Missile weapon.
-*/
+	// item_weapon_sphereofannihilation. Pickup for the Sphere Annihilation weapon.
+	playerExport.p_itemlist[8].pickup = Pickup_Weapon;
+	playerExport.p_itemlist[8].use = P_Weapon_EquipSpell;
+	playerExport.p_itemlist[8].weaponthink = WeaponThink_SphereOfAnnihilation;
 
-	playerExport.p_itemlist[4].pickup=Pickup_Weapon;
-	playerExport.p_itemlist[4].use=P_Weapon_EquipSpell;
-	playerExport.p_itemlist[4].weaponthink=WeaponThink_MagicMissileSpread;
+	// item_weapon_maceballs. Pickup for the Mace Balls weapon.
+	playerExport.p_itemlist[9].pickup = Pickup_Weapon;
+	playerExport.p_itemlist[9].use = P_Weapon_EquipSpell;
+	playerExport.p_itemlist[9].weaponthink = WeaponThink_Maceballs;
 
-	// item_weapon_redrain_bow
-/*QUAKED item_weapon_redrain_bow (.3 .3 1) (-16 -16 -16) (16 16 16)  COOP_ONLY
-Pickup for the Red Rain Bow weapon.
-*/
+	// item_defense_powerup. Can't be placed in the editor.
+	playerExport.p_itemlist[10].pickup = Pickup_Defense;
+	playerExport.p_itemlist[10].use = Use_Defence;
+	playerExport.p_itemlist[10].weaponthink = DefenceThink_Powerup;
 
-	playerExport.p_itemlist[5].pickup=Pickup_Weapon;
-	playerExport.p_itemlist[5].use=P_Weapon_EquipBow;
-	playerExport.p_itemlist[5].weaponthink=WeaponThink_RedRainBow;
+	// item_defense_ringofrepulsion. Pickup for the Ring of Repulsion defensive spell.
+	playerExport.p_itemlist[11].pickup = Pickup_Defense;
+	playerExport.p_itemlist[11].use = Use_Defence;
+	playerExport.p_itemlist[11].weaponthink = DefenceThink_RingOfRepulsion;
 
-	// item_weapon_firewall
-/*QUAKED item_weapon_firewall (.3 .3 1) (-16 -16 -16) (16 16 16)   COOP_ONLY
-Pickup for the Fire Wall weapon.
-*/
+	// item_defense_shield. Pickup for the Shield defensive spell.
+	playerExport.p_itemlist[12].pickup = Pickup_Defense;
+	playerExport.p_itemlist[12].use = Use_Defence;
+	playerExport.p_itemlist[12].weaponthink = DefenceThink_Shield;
 
-	playerExport.p_itemlist[6].pickup=Pickup_Weapon;
-	playerExport.p_itemlist[6].use=P_Weapon_EquipSpell;
-	playerExport.p_itemlist[6].weaponthink=WeaponThink_Firewall;
+	// item_defense_teleport. Pickup for the Teleport defensive spell.
+	playerExport.p_itemlist[13].pickup = Pickup_Defense;
+	playerExport.p_itemlist[13].use = Use_Defence;
+	playerExport.p_itemlist[13].weaponthink = DefenceThink_Teleport;
 
-	// item_weapon_phoenixbow
-/*QUAKED item_weapon_phoenixbow (.3 .3 1) (-16 -16 -16) (16 16 16)  COOP_ONLY
-Pickup for the Phoenix Bow weapon.
-*/
+	// item_defense_polymorph. Pickup for the Polymorph Barrier defensive spell.
+	playerExport.p_itemlist[14].pickup = Pickup_Defense;
+	playerExport.p_itemlist[14].use = Use_Defence;
+	playerExport.p_itemlist[14].weaponthink = DefenceThink_Morph;
 
-	playerExport.p_itemlist[7].pickup=Pickup_Weapon;
-	playerExport.p_itemlist[7].use=P_Weapon_EquipBow;
-	playerExport.p_itemlist[7].weaponthink=WeaponThink_PhoenixBow;
+	// item_defense_meteorbarrier. Pickup for the Meteor Barrier defensive spell.
+	playerExport.p_itemlist[15].pickup = Pickup_Defense;
+	playerExport.p_itemlist[15].use = Use_Defence;
+	playerExport.p_itemlist[15].weaponthink = DefenceThink_MeteorBarrier;
 
-	// item_weapon_sphereofannihilation
-/*QUAKED item_weapon_sphereofannihilation (.3 .3 1) (-16 -16 -16) (16 16 16)  COOP_ONLY
-Pickup for the Sphere Annihilation weapon.
-*/
+	// item_mana_offensive_half. Pickup for the offensive mana (50 points).
+	playerExport.p_itemlist[16].pickup = Pickup_Mana;
 
-	playerExport.p_itemlist[8].pickup=Pickup_Weapon;
-	playerExport.p_itemlist[8].use=P_Weapon_EquipSpell;
-	playerExport.p_itemlist[8].weaponthink=WeaponThink_SphereOfAnnihilation;
+	// item_mana_offensive_full. Pickup for the offensive mana (100 points).
+	playerExport.p_itemlist[17].pickup = Pickup_Mana;
 
-	// item_weapon_maceballs
-/*QUAKED item_weapon_maceballs (.3 .3 1) (-16 -16 -16) (16 16 16)  COOP_ONLY
-Pickup for the Mace Balls weapon.
-*/
+	// item_mana_defensive_half. Pickup for the defensive mana (50 points).
+	playerExport.p_itemlist[18].pickup = Pickup_Mana;
 
-	playerExport.p_itemlist[9].pickup=Pickup_Weapon;
-	playerExport.p_itemlist[9].use=P_Weapon_EquipSpell;
-	playerExport.p_itemlist[9].weaponthink=WeaponThink_Maceballs;
-	
-	// item_defense_powerup
-	// This can't be placed in the editor
+	// item_mana_defensive_full. Pickup for the defensive mana (100 points).
+	playerExport.p_itemlist[19].pickup = Pickup_Mana;
 
-	playerExport.p_itemlist[10].pickup=Pickup_Defense;
-	playerExport.p_itemlist[10].use=Use_Defence;
-	playerExport.p_itemlist[10].weaponthink=DefenceThink_Powerup;
+	// item_mana_combo_quarter. Pickup for both defensive & offensive mana (25 points).
+	playerExport.p_itemlist[20].pickup = Pickup_Mana;
 
-	// item_defense_ringofrepulsion
-/*QUAKED item_defense_ringofrepulsion (.3 .3 1) (-16 -16 -16) (16 16 16)   COOP_ONLY
-Pickup for the Ring of Repulsion defensive spell.
-*/
+	// item_mana_combo_half. Pickup for both defensive & offensive mana (50 points).
+	playerExport.p_itemlist[21].pickup = Pickup_Mana;
 
-	playerExport.p_itemlist[11].pickup=Pickup_Defense;
-	playerExport.p_itemlist[11].use=Use_Defence;
-	playerExport.p_itemlist[11].weaponthink=DefenceThink_RingOfRepulsion;
-	
-	// item_defense_shield
-/*QUAKED item_defense_shield (.3 .3 1) (-16 -16 -16) (16 16 16)   COOP_ONLY
-Pickup for the Shield defensive spell.
-*/
+	// item_ammo_redrain. Pickup ammo for the Red Rain Bow.
+	playerExport.p_itemlist[22].pickup = Pickup_Ammo;
 
-	playerExport.p_itemlist[12].pickup=Pickup_Defense;
-	playerExport.p_itemlist[12].use=Use_Defence;
-	playerExport.p_itemlist[12].weaponthink=DefenceThink_Shield;
+	// item_ammo_phoenix. Pickup ammo for the Phoenix Bow.
+	playerExport.p_itemlist[23].pickup = Pickup_Ammo;
 
-	// item_defense_teleport
-/*QUAKED item_defense_teleport (.3 .3 1) (-16 -16 -16) (16 16 16)   COOP_ONLY
-Pickup for the Teleport defensive spell.
-*/
+	// item_ammo_hellstaff. Pickup ammo for the Hellstaff.
+	playerExport.p_itemlist[24].pickup = Pickup_Ammo;
 
-	playerExport.p_itemlist[13].pickup=Pickup_Defense;
-	playerExport.p_itemlist[13].use=Use_Defence;
-	playerExport.p_itemlist[13].weaponthink=DefenceThink_Teleport;
+	// item_health_half. Pickup health (10 points).
+	playerExport.p_itemlist[25].pickup = Pickup_Health;
 
-	// item_defense_polymorph
-/*QUAKED item_defense_polymorph (.3 .3 1) (-16 -16 -16) (16 16 16)   COOP_ONLY
-Pickup for the Polymorph Barrier defensive spell.
-*/
+	// item_health_full. Pickup health (30 points).
+	playerExport.p_itemlist[26].pickup = Pickup_Health;
 
-	playerExport.p_itemlist[14].pickup=Pickup_Defense;
-	playerExport.p_itemlist[14].use=Use_Defence;
-	playerExport.p_itemlist[14].weaponthink=DefenceThink_Morph;
-
-	// item_defense_meteorbarrier
-/*QUAKED item_defense_meteorbarrier (.3 .3 1) (-16 -16 -16) (16 16 16)   COOP_ONLY
-Pickup for the Meteor Barrier defensive spell.
-*/
-
-	playerExport.p_itemlist[15].pickup=Pickup_Defense;
-	playerExport.p_itemlist[15].use=Use_Defence;
-	playerExport.p_itemlist[15].weaponthink=DefenceThink_MeteorBarrier;
-
-	// item_mana_offensive_half
-/*QUAKED item_mana_offensive_half (.3 .3 1) (-16 -16 -16) (16 16 16)   COOP_ONLY
-Pickup for the offensive mana (50 points).
-*/
-	playerExport.p_itemlist[16].pickup=Pickup_Mana;
-	
-	// item_mana_offensive_full
-/*QUAKED item_mana_offensive_full (.3 .3 1) (-16 -16 -16) (16 16 16)   COOP_ONLY
-Pickup for the offensive mana (100 points).
-*/
-
-	playerExport.p_itemlist[17].pickup=Pickup_Mana;
-
-	// item_mana_defensive_half
-/*QUAKED item_mana_defensive_half (.3 .3 1) (-16 -16 -16) (16 16 16)   COOP_ONLY
-Pickup for the defensive mana (50 points).
-*/
-
-	playerExport.p_itemlist[18].pickup=Pickup_Mana;
-
-	// item_mana_defensive_full
-/*QUAKED item_mana_defensive_full (.3 .3 1) (-16 -16 -16) (16 16 16)   COOP_ONLY
-Pickup for the defensive mana (100 points).
-*/
-
-	playerExport.p_itemlist[19].pickup=Pickup_Mana;
-
-	// item_mana_combo_quarter
-/*QUAK-ED item_mana_combo_quarter (.3 .3 1) (-16 -16 -16) (16 16 16)   COOP_ONLY
-Pickup for both defensive & offensive mana (25 points).
-*/
-
-	playerExport.p_itemlist[20].pickup=Pickup_Mana;
-
-	// item_mana_combo_half
-/*QUAKED item_mana_combo_half (.3 .3 1) (-16 -16 -16) (16 16 16)   COOP_ONLY
-Pickup for both defensive & offensive mana (50 points).
-*/
-
-	playerExport.p_itemlist[21].pickup=Pickup_Mana;
-
-	// item_ammo_redrain
-/*QUAKED item_ammo_redrain (.3 .3 1) (-16 -16 -16) (16 16 16)   COOP_ONLY
-Pickup ammo for the Red Rain Bow
-*/
-
-	playerExport.p_itemlist[22].pickup=Pickup_Ammo;
-
-	// item_ammo_phoenix
-/*QUAKED item_ammo_phoenix (.3 .3 1) (-16 -16 -16) (16 16 16)   COOP_ONLY
-Pickup ammo for the Phoenix Bow
-*/
-
-	playerExport.p_itemlist[23].pickup=Pickup_Ammo;
-
-	// item_ammo_hellstaff
-/*QUAKED item_ammo_hellstaff (.3 .3 1) (-16 -16 -16) (16 16 16)   COOP_ONLY
-Pickup ammo for the Hellstaff
-*/
-
-	playerExport.p_itemlist[24].pickup=Pickup_Ammo;
-
-	// item_health_half
-/*QUAKED item_health_half (.3 .3 1) (-16 -16 -16) (16 16 16)   COOP_ONLY
-Pickup health (10 points)
-*/
-
-	playerExport.p_itemlist[25].pickup=Pickup_Health;
-
-	// item_health_full
-/*QUAKED item_health_full (.3 .3 1) (-16 -16 -16) (16 16 16)   COOP_ONLY
-Pickup health (30 points)
-*/
-
-	playerExport.p_itemlist[26].pickup=Pickup_Health;
-
-/*QUAKED item_puzzle_townkey (.3 .3 1) (-8 -8 -4) (8 8 4)  x NO_DROP
-Key puzzle piece
-Town Level
-NO_DROP - won't drop to ground
-
-*/
+	// item_puzzle_townkey. Key puzzle piece (Town level).
 	playerExport.p_itemlist[27].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_cog (.3 .3 1) (-10 -10 -24) (10 10 20)  x  NO_DROP
-Cog puzzle piece
-Palace level
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_cog. Cog puzzle piece (Palace level).
 	playerExport.p_itemlist[28].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_shield (.3 .3 1) (-2 -6 -12) (2 6 12)  x  NO_DROP
-Sithra Shield puzzle item
-Healer Level
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_shield. Sithra Shield puzzle item (Healer level).
 	playerExport.p_itemlist[29].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_potion (.3 .3 1) (-3 -3 -10) (3 3 10)  x  NO_DROP
-Potion puzzle item
-Healer Level
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_potion. Potion puzzle item (Healer level).
 	playerExport.p_itemlist[30].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_plazacontainer (.3 .3 1) (-6 -6 -8) (6 6 6)  x  NO_DROP
-Container puzzle item
-Plaza Level
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_plazacontainer. Container puzzle item (Plaza level).
 	playerExport.p_itemlist[31].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_slumcontainer (.3 .3 1) (-6 -6 -8) (6 6 6)  x  NO_DROP
-Full Container puzzle item
-Slum Level
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_slumcontainer. Full Container puzzle item (Slum level).
 	playerExport.p_itemlist[32].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_crystal (.3 .3 1) (-16 -16 -16) (16 16 16)  x  NO_DROP
-Crystal puzzle item
-Academic Level
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_crystal. Crystal puzzle item (Academic level).
 	playerExport.p_itemlist[33].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_canyonkey (.3 .3 1) (-16 -16 -16) (16 16 16)  x  NO_DROP
-Key puzzle item
-Canyon Level
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_canyonkey. Key puzzle item (Canyon level).
 	playerExport.p_itemlist[34].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_hive2amulet (.3 .3 1) (-16 -16 -16) (16 16 16)  x  NO_DROP
-Amulet puzzle item
-Hive 2 Level
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_hive2amulet. Amulet puzzle item (Hive 2 level).
 	playerExport.p_itemlist[35].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_hive2spear (.3 .3 1) (-16 -16 -16) (16 16 16)  x  NO_DROP
-Spear puzzle item
-Hive 2 Level
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_hive2spear. Spear puzzle item (Hive 2 level).
 	playerExport.p_itemlist[36].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_hive2gem (.3 .3 1) (-16 -16 -16) (16 16 16)  x  NO_DROP
-Gem puzzle item
-Hive 2 Level
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_hive2gem. Gem puzzle item (Hive 2 level).
 	playerExport.p_itemlist[37].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_minecartwheel (.3 .3 1) (-1 -6 -6) (1 6 6)  x  NO_DROP
-Mine Cart Wheel puzzle item
-Mine 1 Level
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_minecartwheel. Mine Cart Wheel puzzle item (Mine 1 level).
 	playerExport.p_itemlist[38].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_ore (.3 .3 1) (-10 -10 -8) (10 10 8)  x  NO_DROP
-Unrefined Ore puzzle item
-Mine 2 Level
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_ore. Unrefined Ore puzzle item (Mine 2 level).
 	playerExport.p_itemlist[39].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_refinedore (.3 .3 1) (-3 -12 -2) (3 12 2) x   NO_DROP
-Refined Ore puzzle item
-Mine 2 Level
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_refinedore. Refined Ore puzzle item (Mine 2 level).
 	playerExport.p_itemlist[40].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_dungeonkey (.3 .3 1) (-1 -18 -9) (1 18 9)  x  NO_DROP
-Amulet puzzle item
-Dungeon Level
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_dungeonkey. Amulet puzzle item (Dungeon level).
 	playerExport.p_itemlist[41].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_cloudkey (.3 .3 1) (-8 -8 -3) (8 8 6)  x  NO_DROP
-Key puzzle item
-Cloud Quarters 2 Level
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_cloudkey. Key puzzle item (Cloud Quarters 2 level).
 	playerExport.p_itemlist[42].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_highpriestesskey (.3 .3 1) (-12 -12 -6) (12 12 6) x   NO_DROP
-Key puzzle item
-High Priestess Level
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_highpriestesskey. Key puzzle item (High Priestess level).
 	playerExport.p_itemlist[43].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_highpriestesssymbol (.3 .3 1) (-12 -12 -4) (12 12 4) x   NO_DROP
-Key puzzle item
-High Priestess Level
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_highpriestesssymbol. Key puzzle item (High Priestess level).
 	playerExport.p_itemlist[44].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_tome (.3 .3 1) (-12 -12 -4) (12 12 4)  x  NO_DROP
-Tome puzzle piece
-2 Cloud Levels
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_tome. Tome puzzle piece (2 Cloud levels).
 	playerExport.p_itemlist[45].pickup = Pickup_Puzzle;
 
-/*QUAKED item_puzzle_tavernkey (.3 .3 1) (-8 -8 -4) (8 8 4)    x   NO_DROP
-Key puzzle piece
-Ssdocks Level
-NO_DROP - won't drop to ground
-*/
+	// item_puzzle_tavernkey. Key puzzle piece (Ssdocks level).
 	playerExport.p_itemlist[46].pickup = Pickup_Puzzle;
 
-	// item_defense_tornado
-/*QUAKED item_defense_tornado (.3 .3 1) (-16 -16 -16) (16 16 16)   COOP_ONLY
-Pickup for the Tornado defensive spell.
-*/
-	playerExport.p_itemlist[47].pickup=Pickup_Defense;
-	playerExport.p_itemlist[47].use=Use_Defence;
-	playerExport.p_itemlist[47].weaponthink=DefenceThink_Tornado;
+	// item_defense_tornado. Pickup for the Tornado defensive spell.
+	playerExport.p_itemlist[47].pickup = Pickup_Defense;
+	playerExport.p_itemlist[47].use = Use_Defence;
+	playerExport.p_itemlist[47].weaponthink = DefenceThink_Tornado;
 
-	// ********************************************************************************************
 	// Initialise game variables.
-	// ********************************************************************************************
-
-	game.num_items=playerExport.p_num_items;
+	game.num_items = playerExport.p_num_items;
 }
 
 /*
