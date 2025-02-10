@@ -217,33 +217,25 @@ static qboolean Pickup_Weapon(edict_t* ent, edict_t* other)
 
 #pragma endregion
 
-// ************************************************************************************************
-// AddDefenseToInventory
-// ---------------------
-// ************************************************************************************************
+#pragma region ========================== DEFENSE PICKUP LOGIC (OR IS IT DEFENCE?..) ==========================
 
-qboolean AddDefenseToInventory(gitem_t *item,edict_t *player)
+qboolean AddDefenseToInventory(gitem_t* defence, edict_t* player)
 {
-	if(!player->client->playerinfo.pers.inventory.Items[ITEM_INDEX(item)])
+	client_persistant_t* pers = &player->client->playerinfo.pers; //mxd
+	const int def_index = ITEM_INDEX(defence); //mxd
+
+	if (pers->inventory.Items[def_index] == 0)
 	{
-		player->client->playerinfo.pers.inventory.Items[ITEM_INDEX(item)]=1;
+		pers->inventory.Items[def_index] = 1;
 
 		// Now decide if we want to swap defenses or not.
+		if (pers->autoweapon)
+			defence->use(&player->client->playerinfo, defence);
 
-//		if(player->client->playerinfo.pers.autoweapon || !player->client->playerinfo.pers.defence)
-		if(player->client->playerinfo.pers.autoweapon )
-		{
-			item->use(&player->client->playerinfo,item);
-		}
-
-		return(true);
+		return true;
 	}
-	else 
-	{
-		// We already have it...
 
-		return(false);
-	}
+	return false; // We already have it...
 }
 
 // ************************************************************************************************
@@ -269,6 +261,8 @@ qboolean Pickup_Defense (edict_t *ent, edict_t *other)
 		return(false);
 	}
 }
+
+#pragma endregion
 
 // ************************************************************************************************
 // Add_AmmoToInventory
