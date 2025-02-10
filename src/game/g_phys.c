@@ -69,74 +69,51 @@ SV_AddGravity
 
 ============
 */
-void SV_AddGravity(edict_t* ent)
+static void SV_AddGravity(edict_t* ent)
 {
 	ent->velocity[2] -= ent->gravity * sv_gravity->value * FRAMETIME;
 }
 
-/*
-===============================================================================
-
-PUSHMOVE
-
-===============================================================================
-*/
-
-/*
-============
-SV_PushEntity
-
-Does not change the entities velocity at all
-============
-*/
-trace_t SV_PushEntity (edict_t *ent, vec3_t push)
+// Does not change the entities velocity at all.
+static trace_t SV_PushEntity(edict_t* ent, vec3_t push) //mxd. Removed non-MOVETYPE_FLYMISSILE logic.
 {
-	trace_t	trace;
-	vec3_t	start;
-	vec3_t	end;
-	int		mask;
+	static trace_t trace; //mxd. Made local static.
 
-	VectorCopy (ent->s.origin, start);
-	VectorAdd (start, push, end);
+	vec3_t start;
+	VectorCopy(ent->s.origin, start);
 
-retry:
-	if (ent->clipmask)
-		mask = ent->clipmask;
-	else
-		mask = MASK_SOLID;
+	vec3_t end;
+	VectorAdd(start, push, end);
 
-	gi.trace (start, ent->mins, ent->maxs, end, ent, mask,&trace);
-	
-	VectorCopy (trace.endpos, ent->s.origin);
-
-	if (ent->movetype == MOVETYPE_FLYMISSILE)
+	while (true) //mxd. Use while loop instead of goto.
 	{
+		const int mask = (ent->clipmask != 0 ? ent->clipmask : MASK_SOLID);
+		gi.trace(start, ent->mins, ent->maxs, end, ent, mask, &trace);
+
+		VectorCopy(trace.endpos, ent->s.origin);
 		G_LinkMissile(ent);
-	}
-	else
-	{
-		gi.linkentity (ent);
-	}
 
-	if (trace.fraction != 1.0)
-	{
-		SV_Impact (ent, &trace);
-
-		// if the pushed entity went away and the pusher is still there
-		if (!trace.ent->inuse && ent->inuse)
+		if (trace.fraction != 1.0f)
 		{
-			// move the pusher back and try again
-			VectorCopy (start, ent->s.origin);
-			gi.linkentity (ent);
-			goto retry;
+			SV_Impact(ent, &trace);
+
+			// If the pushed entity went away and the pusher is still there...
+			if (!trace.ent->inuse && ent->inuse)
+			{
+				//...move the pusher back and try again.
+				VectorCopy(start, ent->s.origin);
+				gi.linkentity(ent);
+
+				continue; // Try again...
+			}
 		}
+
+		if (ent->inuse)
+			G_TouchTriggers(ent);
+
+		return trace;
 	}
-
-	if (ent->inuse)
-		G_TouchTriggers (ent);
-
-	return trace;
-}					
+}
 
 /*
 ==============================================================================
