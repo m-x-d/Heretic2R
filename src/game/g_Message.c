@@ -94,37 +94,26 @@ int ParseMsgParms(G_Message_t* msg, char* format, ...)
 	return args_filled;
 }
 
-void ProcessMessages(edict_t *self)
+void ProcessMessages(edict_t* self)
 {
-	SinglyLinkedList_t *msgs;
-	SinglyLinkedList_t *parms;
-	G_Message_t *msg;
+	assert(self->msgHandler != NULL);
 
-	assert(self->msgHandler);
+	SinglyLinkedList_t* msgs = &self->msgQ.msgs;
 
-	msgs = &self->msgQ.msgs;
-
-	if(!SLList_IsEmpty(msgs))
-	{
+	if (!SLList_IsEmpty(msgs))
 		self->flags &= ~FL_SUSPENDED;
-	}
 
-	while(!SLList_IsEmpty(msgs))
+	while (!SLList_IsEmpty(msgs))
 	{
-		msg = SLList_Pop(msgs).t_void_p;
+		G_Message_t* msg = SLList_Pop(msgs).t_void_p;
+		SinglyLinkedList_t* parms = &msg->parms;
 
-		parms = &msg->parms;
-
-		if(!SLList_AtLast(parms) && !SLList_AtEnd(parms))
-		{
+		if (!SLList_AtLast(parms) && !SLList_AtEnd(parms))
 			SLList_Chop(parms);
-		}
 
 		self->msgHandler(self, msg);
 
-		// Fix Me !!!
-		G_Message_Des(msg); // whoops, need to port object manager to C
-
+		G_Message_Des(msg); // Need to port object manager to C.
 		ResMngr_DeallocateResource(&messages_manager, msg, sizeof(G_Message_t));
 	}
 }
