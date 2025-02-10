@@ -323,18 +323,15 @@ static qboolean Pickup_Ammo(edict_t* ent, edict_t* other)
 
 #pragma endregion
 
-/*
-===============
-Pickup_Manna
+#pragma region ========================== MANA PICKUP LOGIC ==========================
 
-Separate routine so we can distinguish between ammo and mana.
-===============
-*/
-
-qboolean Pickup_Mana (edict_t *ent, edict_t *other)
+// Separate routine so we can distinguish between ammo and mana.
+static qboolean Pickup_Mana(edict_t* ent, edict_t* other)
 {
-	return(Pickup_Ammo(ent, other));
+	return Pickup_Ammo(ent, other);
 }
+
+#pragma endregion
 
 /*
 ===============
