@@ -254,26 +254,20 @@ static qboolean Pickup_Defense(edict_t* ent, edict_t* other)
 
 #pragma endregion
 
-// ************************************************************************************************
-// Add_AmmoToInventory
-// -------------------
-// ************************************************************************************************
+#pragma region ========================== AMMO PICKUP LOGIC ==========================
 
-qboolean Add_AmmoToInventory (edict_t *ent, gitem_t *item, int count,int max)
+static qboolean Add_AmmoToInventory(const edict_t* ent, const gitem_t* ammo, const int count, const int max)
 {
-	int			index;
+	inventory_t* inventory = &ent->client->playerinfo.pers.inventory; //mxd
+	const int ammo_index = ITEM_INDEX(ammo);
 
-	index = ITEM_INDEX(item);
+	if (inventory->Items[ammo_index] < max)
+	{
+		inventory->Items[ammo_index] = min(max, inventory->Items[ammo_index] + count);
+		return true;
+	}
 
-	if (ent->client->playerinfo.pers.inventory.Items[index] == max)
-		return(false);
-
-	ent->client->playerinfo.pers.inventory.Items[index] += count;
-
-	if (ent->client->playerinfo.pers.inventory.Items[index] > max)
-		ent->client->playerinfo.pers.inventory.Items[index] = max;
-
-	return(true);
+	return false;
 }
 
 /*
@@ -361,6 +355,8 @@ qboolean Pickup_Ammo (edict_t *ent, edict_t *other)
 
 	return(true);
 }
+
+#pragma endregion
 
 /*
 ===============
