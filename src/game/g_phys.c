@@ -8,25 +8,11 @@
 #include "g_Physics.h" //mxd
 #include "Vector.h"
 
-/*
-================
-SV_CheckVelocity
-================
-*/
-void SV_CheckVelocity (edict_t *ent)
+static void SV_CheckVelocity(edict_t* ent)
 {
-	int		i;
-
-//
-// bound velocity
-//
-	for (i=0 ; i<3 ; i++)
-	{
-		if (ent->velocity[i] > sv_maxvelocity->value)
-			ent->velocity[i] = sv_maxvelocity->value;
-		else if (ent->velocity[i] < -sv_maxvelocity->value)
-			ent->velocity[i] = -sv_maxvelocity->value;
-	}
+	// Bound velocity.
+	for (int i = 0; i < 3; i++)
+		ent->velocity[i] = Clamp(ent->velocity[i], -sv_maxvelocity->value, sv_maxvelocity->value);
 }
 
 /*
