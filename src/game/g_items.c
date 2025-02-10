@@ -59,43 +59,18 @@ static void DoRespawn(edict_t* ent)
 	ent->nextthink = level.time + FRAMETIME;
 }
 
-// ************************************************************************************************
-// PreRespawnThink
-// ---------------
-// ************************************************************************************************
-
-void PreRespawnThink(edict_t *ent)
+static void PreRespawnThink(edict_t* ent)
 {
-	int delay;
-	float clients;
+	float delay = ent->delay;
 
-	// The equation for respawn:  
-	//		--The respawn times should be normal for 8 players.
-	//		--For 32 players the respawn should be halved
-	//		--For 2 players the respawn should be doubled.
-	if (deathmatch->value)
+	if (DEATHMATCH)
 	{
-/*		// You know what?  I thought I was being clever here, but I just screwed up the eq and made the game not respawn enough.
-		delay = ent->delay * sqrt((float)game.num_clients/8.0);		// This makes it a nice curve.  Clever, no?
-		// Lemme see here:  sqrt(2/8) = sqrt(1/4) = 1/2
-		//					sqrt(8/8) = sqrt(1) = 1
-		//					sqrt(32/8) = sqrt(4) = 2
-*/
-		clients=(float)game.num_clients;
-		if (clients<2.0)
-			clients=2.0;
-		delay = ent->delay * sqrt(2.0/clients);		// Spawn more frequently when more players.
-		// Lemme see here:  sqrt(2/2) = sqrt(1) = 1
-		//					sqrt(2/8) = sqrt(1/4) = 1/2
-		//					sqrt(2/32) = sqrt(1/16) = 1/4
+		const float num_clients = max(2.0f, (float)game.num_clients);
+		delay *= sqrtf(2.0f / num_clients); // Spawn more frequently when more players.
 	}
-	else
-	{
-		delay = ent->delay;
-	}
+
 	ent->nextthink = level.time + delay - FRAMETIME;
 	ent->think = DoRespawn;
-//	ent->svflags |= SVF_NOCLIENT;
 }
 
 // ************************************************************************************************
