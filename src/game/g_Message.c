@@ -3,28 +3,25 @@
 //
 // Copyright 1998 Raven Software
 //
-// Heretic II
-//
 
 #include "g_Message.h"
 #include "Message.h"
-
 #include "g_local.h"
 #include "ResourceManager.h"
 #include "SinglyLinkedList.h"
 
-static ResourceManager_t MsgMngr;
+static ResourceManager_t messages_manager;
 
 void InitMsgMngr()
 {
 #define MESSAGE_BLOCK_SIZE 256
 
-	ResMngr_Con(&MsgMngr, sizeof(G_Message_t), MESSAGE_BLOCK_SIZE);
+	ResMngr_Con(&messages_manager, sizeof(G_Message_t), MESSAGE_BLOCK_SIZE);
 }
 
 void ReleaseMsgMngr()
 {
-	ResMngr_Des(&MsgMngr);
+	ResMngr_Des(&messages_manager);
 }
 
 void G_Message_DefaultCon(G_Message_t *this)
@@ -42,7 +39,7 @@ G_Message_t *G_Message_new(G_MsgID_t ID, G_MsgPriority_t priority)
 {
 	G_Message_t *newMsg;
 
-	newMsg = ResMngr_AllocateResource(&MsgMngr, sizeof(G_Message_t));
+	newMsg = ResMngr_AllocateResource(&messages_manager, sizeof(G_Message_t));
 
 	G_Message_DefaultCon(newMsg);
 
@@ -61,7 +58,7 @@ void G_Message_Delete(G_Message_t *this)
 {
 	G_Message_Des(this);
 
-	ResMngr_DeallocateResource(&MsgMngr, this, sizeof(G_Message_t));
+	ResMngr_DeallocateResource(&messages_manager, this, sizeof(G_Message_t));
 }
 
 void QPostMessage(edict_t *to, G_MsgID_t ID, G_MsgPriority_t priority, char *format, ...)
@@ -78,7 +75,7 @@ void QPostMessage(edict_t *to, G_MsgID_t ID, G_MsgPriority_t priority, char *for
 		return;
 	}
 
-	newMsg = ResMngr_AllocateResource(&MsgMngr, sizeof(G_Message_t));
+	newMsg = ResMngr_AllocateResource(&messages_manager, sizeof(G_Message_t));
 
 	// Fix Me !!!
 	G_Message_DefaultCon(newMsg);	// whoops, need to port object manager to C
@@ -152,7 +149,7 @@ void ProcessMessages(edict_t *self)
 		// Fix Me !!!
 		G_Message_Des(msg); // whoops, need to port object manager to C
 
-		ResMngr_DeallocateResource(&MsgMngr, msg, sizeof(G_Message_t));
+		ResMngr_DeallocateResource(&messages_manager, msg, sizeof(G_Message_t));
 	}
 }
 
@@ -178,7 +175,7 @@ void ClearMessageQueue(edict_t *self)
 		// Fix Me !!!
 		SLList_Des(parms); // whoops, need to port object manager to C
 
-		ResMngr_DeallocateResource(&MsgMngr, msg, sizeof(G_Message_t));
+		ResMngr_DeallocateResource(&messages_manager, msg, sizeof(G_Message_t));
 	}
 }
 
