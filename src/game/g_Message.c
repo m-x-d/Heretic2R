@@ -32,18 +32,15 @@ static void G_Message_DefaultCon(G_Message_t* self)
 	SLList_PushEmpty(parms); // Should make a constructor fo G_Message_t too.
 }
 
-G_Message_t *G_Message_new(G_MsgID_t ID, G_MsgPriority_t priority)
+G_Message_t* G_Message_new(const G_MsgID_t id, const G_MsgPriority_t priority)
 {
-	G_Message_t *newMsg;
+	G_Message_t* msg = ResMngr_AllocateResource(&messages_manager, sizeof(G_Message_t));
 
-	newMsg = ResMngr_AllocateResource(&messages_manager, sizeof(G_Message_t));
+	G_Message_DefaultCon(msg);
+	msg->ID = id;
+	msg->priority = priority;
 
-	G_Message_DefaultCon(newMsg);
-
-	newMsg->ID = ID;
-	newMsg->priority = priority;
-
-	return newMsg;
+	return msg;
 }
 
 void G_Message_Des(G_Message_t *this)
