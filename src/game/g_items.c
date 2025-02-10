@@ -19,15 +19,11 @@
 #define ITEM_COOP_ONLY		1
 #define ITEM_NO_DROP		2
 
-// ************************************************************************************************
-// RespawnedThink
-// --------------
-// ************************************************************************************************
+#pragma region ========================== RESPAWN LOGIC ==========================
 
-void RespawnedThink(edict_t *ent)
+static void RespawnedThink(edict_t* ent) //TODO: can't we just clear ent->think in place instead of doing this?
 {
 	ent->think = NULL;
-//	ent->svflags |= SVF_NOCLIENT;
 }
 
 // ************************************************************************************************
@@ -161,6 +157,8 @@ void SetRespawn(edict_t *ent)
 
 	ent->think = PreRespawnThink;
 }
+
+#pragma endregion
 
 // ************************************************************************************************
 // Pickup_Puzzle
