@@ -539,49 +539,41 @@ static void SpawnItemEffect(edict_t* ent, const gitem_t* item)
 		ent->PersistantCFX = gi.CreatePersistantEffect(&ent->s, FX_PICKUP_HEALTH, CEF_BROADCAST, ent->s.origin, "");
 }
 
-/*
-================
-droptofloor
-================
-*/
-
-void itemsdroptofloor (edict_t *ent)
+static void ItemDropToFloor(edict_t* ent) //mxd. Named 'itemsdroptofloor' in original version.
 {
-	trace_t		tr;
-	vec3_t		dest;
-
-	ent->movetype = PHYSICSTYPE_STATIC;  
+	ent->movetype = PHYSICSTYPE_STATIC;
 	ent->solid = SOLID_TRIGGER;
 	ent->touch = Touch_Item;
 	ent->think = NULL;
 
 	if (!(ent->spawnflags & ITEM_NO_DROP))
 	{
-		VectorSet(dest, 0.0, 0.0, -128.0);
-		Vec3AddAssign (ent->s.origin, dest);
+		vec3_t dest = { 0.0f, 0.0f, -128.0f };
+		Vec3AddAssign(ent->s.origin, dest);
 
-		gi.linkentity (ent);
+		gi.linkentity(ent);
 
-		gi.trace (ent->s.origin, ent->mins, ent->maxs, dest, ent, MASK_SOLID, &tr);
+		trace_t tr;
+		gi.trace(ent->s.origin, ent->mins, ent->maxs, dest, ent, MASK_SOLID, &tr);
+
 		if (tr.startsolid)
 		{
-			gi.dprintf ("droptofloor: %s startsolid at %s (inhibited)\n", ent->classname, vtos(ent->s.origin));
-			G_FreeEdict (ent);
+			gi.dprintf("droptofloor: %s startsolid at %s (inhibited)\n", ent->classname, vtos(ent->s.origin));
+			G_FreeEdict(ent);
+
 			return;
 		}
 
-		tr.endpos[2] += 24;
-		VectorCopy(tr.endpos,ent->s.origin);
+		tr.endpos[2] += 24.0f;
+		VectorCopy(tr.endpos, ent->s.origin);
 	}
 
+	gi.linkentity(ent);
 
-	gi.linkentity (ent);
-
-	// if we loading a saved game - the objects will already be out there
-	if (!ent->PersistantCFX)
+	// If we loading a saved game, the objects will already be out there.
+	if (ent->PersistantCFX == 0)
 		SpawnItemEffect(ent, ent->item);
 }
-
 
 /*
 ===============
@@ -636,7 +628,7 @@ void SpawnItem (edict_t *ent, gitem_t *item)
 
 	ent->item = item;
 	ent->nextthink = level.time + (2 * FRAMETIME);    // items start after other solids
-	ent->think = itemsdroptofloor;
+	ent->think = ItemDropToFloor;
 
 	ent->s.effects = item->world_model_flags;
 	ent->s.renderfx = RF_GLOW;
