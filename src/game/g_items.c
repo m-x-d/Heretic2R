@@ -575,37 +575,32 @@ static void ItemDropToFloor(edict_t* ent) //mxd. Named 'itemsdroptofloor' in ori
 		SpawnItemEffect(ent, ent->item);
 }
 
-/*
-===============
-PrecacheItem
-
-Precaches all data needed for a given item. This will be called for each item
-spawned in a level, and for each item in each client's inventory.
-===============
-*/
-
-void PrecacheItem (gitem_t *it)
+// Precaches all data needed for a given item.
+// This will be called for each item spawned in a level, and for each item in each client's inventory.
+static void PrecacheItem(const gitem_t* item)
 {
-	gitem_t	*ammo;
-
-	if (!it)
+	if (item == NULL)
 		return;
 
-	if (it->pickup_sound)
-		gi.soundindex (it->pickup_sound);
-	if (it->world_model)
-		gi.modelindex (it->world_model);
-	if (it->icon)
-		gi.imageindex (it->icon);
+	if (item->pickup_sound != NULL)
+		gi.soundindex(item->pickup_sound);
 
-	// parse everything for its ammo
-	if (it->ammo && it->ammo[0])
+	if (item->world_model != NULL)
+		gi.modelindex(item->world_model);
+
+	if (item->icon != NULL)
+		gi.imageindex(item->icon);
+
+	// Parse everything for its ammo.
+	if (item->ammo != NULL && item->ammo[0] != 0)
 	{
-		ammo = P_FindItem (it->ammo);
-		if (ammo != it)
-			PrecacheItem (ammo);
+		const gitem_t* ammo = P_FindItem(item->ammo);
+
+		if (ammo != item)
+			PrecacheItem(ammo);
 	}
 }
+
 // ************************************************************************************************
 // SpawnItem
 // ---------
