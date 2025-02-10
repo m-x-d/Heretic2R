@@ -73,7 +73,6 @@
     <ClCompile Include="g_Message.c" />
     <ClCompile Include="g_misc.c" />
     <ClCompile Include="g_monster.c" />
-    <ClCompile Include="g_MoveInfo.c" />
     <ClCompile Include="g_obj.c" />
     <ClCompile Include="g_phys.c" />
     <ClCompile Include="g_Physics.c" />
@@ -234,7 +233,6 @@
     <ClInclude Include="g_misc.h" />
     <ClInclude Include="g_monster.h" />
     <ClInclude Include="g_Monster_State.h" />
-    <ClInclude Include="g_MoveInfo.h" />
     <ClInclude Include="g_Physics.h" />
     <ClInclude Include="g_PhysicsInfo.h" />
     <ClInclude Include="g_playstats.h" />

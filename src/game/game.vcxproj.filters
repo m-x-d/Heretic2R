@@ -156,9 +156,6 @@
     <ClCompile Include="g_Message.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="g_MoveInfo.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="g_phys.c">
       <Filter>src</Filter>
     </ClCompile>
@@ -624,9 +621,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="g_Message.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="g_MoveInfo.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="g_Physics.h">
