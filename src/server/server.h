@@ -231,9 +231,9 @@ void SV_ExecuteClientMessage(client_t* cl);
 void SV_ClearWorld(void);
 void SV_LinkEdict(edict_t* ent);
 void SV_UnlinkEdict(edict_t* ent);
-int SV_AreaEdicts(vec3_t mins, vec3_t maxs, edict_t** list, int maxcount, int areatype);
-int SV_FindEntitiesInBounds(vec3_t mins, vec3_t maxs, struct SinglyLinkedList_s* list, int areatype); // H2
-int SV_PointContents(vec3_t p);
+int SV_AreaEdicts(const vec3_t mins, const vec3_t maxs, edict_t** list, int maxcount, int areatype);
+int SV_FindEntitiesInBounds(const vec3_t mins, const vec3_t maxs, struct SinglyLinkedList_s* list, int areatype); // H2
+int SV_PointContents(const vec3_t p);
 void SV_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const edict_t* passent, uint contentmask, trace_t* tr); // H2: different definition
 void SV_TraceBoundingForm(struct FormMove_s* formMove); // H2
 qboolean SV_ResizeBoundingForm(edict_t* self, struct FormMove_s* formMove); // H2

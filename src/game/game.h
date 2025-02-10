@@ -167,7 +167,7 @@ typedef struct
 
 	// Collision detection.
 	void (*trace)(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const edict_t* passent, uint contentmask, trace_t* tr);
-	int (*pointcontents)(vec3_t point);
+	int (*pointcontents)(const vec3_t point);
 
 	// Potentially visible / invisible set routines.
 	qboolean (*inPVS)(const vec3_t p1, const vec3_t p2);

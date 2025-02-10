@@ -27,8 +27,8 @@ static areanode_t sv_areanodes[AREA_NODES];
 static int sv_numareanodes;
 
 //mxd. Used by SV_AreaEdicts logic.
-static float* area_mins;
-static float* area_maxs;
+static const float* area_mins;
+static const float* area_maxs;
 static edict_t** area_list;
 static int area_count;
 static int area_maxcount;
@@ -366,7 +366,7 @@ static void SV_AreaEdicts_r(areanode_t* node)
 // Fills in a table of edict pointers with edicts that have bounding boxes that intersect the given area.
 // It is possible for a non-axial bmodel to be returned that doesn't actually intersect the area on an exact test.
 // Returns the number of pointers filled in.
-int SV_AreaEdicts(vec3_t mins, vec3_t maxs, edict_t** list, const int maxcount, const int areatype)
+int SV_AreaEdicts(const vec3_t mins, const vec3_t maxs, edict_t** list, const int maxcount, const int areatype)
 {
 	area_mins = mins;
 	area_maxs = maxs;
@@ -424,7 +424,7 @@ static void SV_FindEntitiesInBounds_r(areanode_t* node)
 		SV_AreaEdicts_r(node->children[1]);
 }
 
-int SV_FindEntitiesInBounds(vec3_t mins, vec3_t maxs, SinglyLinkedList_t* list, const int areatype) // H2
+int SV_FindEntitiesInBounds(const vec3_t mins, const vec3_t maxs, SinglyLinkedList_t* list, const int areatype) // H2
 {
 	area_mins = mins;
 	area_maxs = maxs;
@@ -460,7 +460,7 @@ static int SV_HullForEntity(const edict_t* ent)
 
 // Returns the CONTENTS_* value from the world at the given point.
 // Quake 2 extends this to also check entities, to allow moving liquids.
-int SV_PointContents(vec3_t p)
+int SV_PointContents(const vec3_t p)
 {
 	edict_t* touchlist[MAX_EDICTS];
 
