@@ -370,89 +370,38 @@ static qboolean Pickup_Health(edict_t* ent, edict_t* other)
 
 #pragma endregion
 
-/*
-===============
-Touch_Item
-===============
-*/
+#pragma region ========================== GENERIC PICKUP LOGIC ==========================
 
-void Touch_Item (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void Touch_Item(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf)
 {
-	if(strcmp(other->classname,"player"))
-	{
-		// Only players can touch items.
-
+	// Only alive players can touch items.
+	if (strcmp(other->classname, "player") != 0 || other->health <= 0)
 		return;
-	}
 
-	if(other->health <= 0)
-	{
-		// Dead players can't pickup.
-
+	// Not a grabbable item or player can't hold it.
+	if (ent->item->pickup == NULL || !ent->item->pickup(ent, other))
 		return;
-	}
 
+	//mxd. Skip Pickup_Health() chicken check. Pickup_Health() already checks for chicken.
 
-	if(!ent->item->pickup)
-	{
-		// Not a grabbable item.
-
-		return;
-	}
-
-	assert(ent->item->pickup);
-
-	if((other->client->playerinfo.edictflags & FL_CHICKEN) && (ent->item->pickup == Pickup_Health))
-	{
-		// chickens can't pickup health
-
-		return;
-	}
-
-		if(!ent->item->pickup(ent, other))
-	{
-		// Player can't hold it.
-
-		return;
-	}
-	
-	gi.sound(other, CHAN_ITEM, gi.soundindex(ent->item->pickup_sound), 1, ATTN_NORM, 0);
-
+	gi.sound(other, CHAN_ITEM, gi.soundindex(ent->item->pickup_sound), 1.0f, ATTN_NORM, 0.0f);
 	gi.CreateEffect(NULL, FX_PICKUP, 0, ent->s.origin, "");
 
-	G_UseTargets (ent, other);
+	G_UseTargets(ent, other);
 
-	// Handle respawn / removal of the item.
-
-	if(((ent->item->pickup==Pickup_Weapon)||(ent->item->pickup==Pickup_Defense)||(ent->item->pickup==Pickup_Puzzle))&& 
-	   ((deathmatch->value&&((int)dmflags->value&DF_WEAPONS_STAY))||coop->value))
-	{
-		// The item is a weapon or a defence or a puzzle piece AND (deathmatch rule DF_WEAPONS_STAY 
-		// is on OR we are playing coop), so just return right now, as we don't care about respawn
-		// or removal.
-
+	// Don't remove weapon/defence/puzzle pickup when coop or dm with DF_WEAPONS_STAY flag.
+	if ((ent->item->pickup == Pickup_Weapon || ent->item->pickup == Pickup_Defense || ent->item->pickup == Pickup_Puzzle) && (COOP || (DEATHMATCH && (DMFLAGS & DF_WEAPONS_STAY))))
 		return;
-	}
-	
-	if(ent->flags&FL_RESPAWN)
-	{
-		// The item should respawn.
 
-		SetRespawn(ent);
+	if (ent->flags & FL_RESPAWN)
+	{
+		SetRespawn(ent); // The item should respawn.
 	}
 	else
 	{
-		// Going away for good, so make it noclipping.
-
-		ent->solid = SOLID_NOT;
-
-		// Once picked up, the item is gone forever, so remove it's client effect(s).
-
-		gi.RemoveEffects(&ent->s,0);
-
-		// The persistent part is removed from the server here.
-
-		G_SetToFree(ent);
+		ent->solid = SOLID_NOT; // Going away for good, so make it noclipping.
+		gi.RemoveEffects(&ent->s, 0); // Once picked up, the item is gone forever, so remove it's client effect(s).
+		G_SetToFree(ent); // The persistent part is removed from the server here.
 	}
 }
 
