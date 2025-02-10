@@ -118,28 +118,20 @@ void ProcessMessages(edict_t* self)
 	}
 }
 
-void ClearMessageQueue(edict_t *self)
+static void ClearMessageQueue(edict_t* self)
 {
-	SinglyLinkedList_t *msgs;
-	SinglyLinkedList_t *parms;
-	G_Message_t *msg;
+	SinglyLinkedList_t* msgs = &self->msgQ.msgs;
 
-	msgs = &self->msgQ.msgs;
+	// If either of these fire - do a rebuild all, otherwise it will try to free random memory and lead to an unstable system.
+	assert(msgs->front != NULL);
+	assert(msgs->rearSentinel != NULL);
 
-	// If either of these fire - do a rebuild all
-	// otherwise it will try to free random memory and lead to an unstable system
-	assert(msgs->front);
-	assert(msgs->rearSentinel);
-
-	while(!SLList_IsEmpty(msgs))
+	while (!SLList_IsEmpty(msgs))
 	{
-		msg = SLList_Pop(msgs).t_void_p;
+		G_Message_t* msg = SLList_Pop(msgs).t_void_p;
+		SinglyLinkedList_t* parms = &msg->parms;
 
-		parms = &msg->parms;
-
-		// Fix Me !!!
-		SLList_Des(parms); // whoops, need to port object manager to C
-
+		SLList_Des(parms); // Need to port object manager to C.
 		ResMngr_DeallocateResource(&messages_manager, msg, sizeof(G_Message_t));
 	}
 }
