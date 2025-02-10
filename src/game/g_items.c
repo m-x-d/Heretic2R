@@ -411,17 +411,11 @@ static void DropItemTempTouch(edict_t* ent, edict_t* other, cplane_t* plane, csu
 		Touch_Item(ent, other, plane, surf);
 }
 
-/*
-================
-drop_make_touchable
-================
-*/
-
-static void drop_make_touchable (edict_t *ent)
+static void DropItemMakeTouchable(edict_t* ent) //mxd. Named 'drop_make_touchable' in original logic.
 {
 	ent->touch = Touch_Item;
 
-	if (deathmatch->value)
+	if (DEATHMATCH)
 	{
 		ent->nextthink = level.time + 29;
 		ent->think = G_FreeEdict;
@@ -475,7 +469,7 @@ edict_t *Drop_Item (edict_t *ent, gitem_t *item)
 	VectorScale (forward, 100, dropped->velocity);
 	dropped->velocity[2] = 300;
 
-	dropped->think = drop_make_touchable;
+	dropped->think = DropItemMakeTouchable;
 	dropped->nextthink = level.time + 1;
 
 	gi.linkentity (dropped);
