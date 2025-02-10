@@ -36,27 +36,17 @@ static qboolean SV_RunThink(edict_t* ent)
 	return true; //NOTE: is this what we want to return if it gets this far?
 }
 
-/*
-==================
-SV_Impact
-
-Two entities have touched, so run their touch functions
-==================
-*/
-void SV_Impact (edict_t *e1, trace_t *trace)
+// Two entities have touched, so run their touch functions.
+static void SV_Impact(edict_t* e1, trace_t* trace)
 {
-	edict_t		*e2;
-//	cplane_t	backplane;
+	edict_t* e2 = trace->ent;
 
-	e2 = trace->ent;
+	if (e1->touch != NULL && e1->solid != SOLID_NOT)
+		e1->touch(e1, e2, &trace->plane, trace->surface);
 
-	if (e1->touch && e1->solid != SOLID_NOT)
-		e1->touch (e1, e2, &trace->plane, trace->surface);
-	
-	if (e2->touch && e2->solid != SOLID_NOT)
-		e2->touch (e2, e1, NULL, NULL);
+	if (e2->touch != NULL && e2->solid != SOLID_NOT)
+		e2->touch(e2, e1, NULL, NULL);
 }
-
 
 /*
 ==================
