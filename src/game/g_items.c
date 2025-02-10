@@ -405,18 +405,10 @@ static void Touch_Item(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t
 	}
 }
 
-/*
-================
-drop_temp_touch
-================
-*/
-
-static void drop_temp_touch (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void DropItemTempTouch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'drop_temp_touch' in original logic.
 {
-	if (other == ent->owner)
-		return;
-
-	Touch_Item (ent, other, plane, surf);
+	if (other != ent->owner)
+		Touch_Item(ent, other, plane, surf);
 }
 
 /*
@@ -460,7 +452,7 @@ edict_t *Drop_Item (edict_t *ent, gitem_t *item)
 	gi.setmodel (dropped, dropped->item->world_model);
 	dropped->solid = SOLID_TRIGGER;
 	dropped->movetype = PHYSICSTYPE_NONE;  
-	dropped->touch = drop_temp_touch;
+	dropped->touch = DropItemTempTouch;
 	dropped->owner = ent;
 
 	if (ent->client)
