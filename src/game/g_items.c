@@ -601,39 +601,40 @@ static void PrecacheItem(const gitem_t* item)
 	}
 }
 
-// ************************************************************************************************
-// SpawnItem
-// ---------
-// Sets the clipping size and plants the object on the floor. Items can't be immediately dropped to
-// the floor because they might be on an entity that hasn't spawned yet.
-// ************************************************************************************************
-
-void SpawnItem (edict_t *ent, gitem_t *item)
+// Sets the clipping size and plants the object on the floor.
+// Items can't be immediately dropped to the floor because they might be on an entity that hasn't spawned yet.
+void SpawnItem(edict_t* ent, gitem_t* item)
 {
-	if ((ent->spawnflags & ITEM_COOP_ONLY) && (!coop->value))
+	if ((ent->spawnflags & ITEM_COOP_ONLY) && !COOP)
 		return;
 
 	PrecacheItem(item);
 
-	if(!IsValidItem(item))
+	if (!IsValidItem(item))
 	{
-		G_FreeEdict (ent);
+		G_FreeEdict(ent);
 		return;
 	}
 
 	ent->item = item;
-	ent->nextthink = level.time + (2 * FRAMETIME);    // items start after other solids
+	ent->nextthink = level.time + FRAMETIME * 2.0f; // Items start after other solids.
 	ent->think = ItemDropToFloor;
+
+	ent->clipmask = MASK_MONSTERSOLID;
+	ent->classname = item->classname;
+
+	ent->flags = item->flags;
+	if (DEATHMATCH)
+		ent->flags |= FL_RESPAWN;
 
 	ent->s.effects = item->world_model_flags;
 	ent->s.renderfx = RF_GLOW;
-//	ent->svflags |= SVF_ALWAYS_SEND;				// make sure SVF_NOCLIENT gets set in think
 	ent->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 
 	if (item->flags & IT_WEAPON)
 	{
 		if (item->tag == ITEM_WEAPON_MACEBALLS)
-			ent->delay = RESPAWN_TIME_MACEBALL;		// Maceballs shouldn't come back as fast...
+			ent->delay = RESPAWN_TIME_MACEBALL; // Maceballs shouldn't come back as fast...
 		else
 			ent->delay = RESPAWN_TIME_WEAPON;
 	}
@@ -655,13 +656,10 @@ void SpawnItem (edict_t *ent, gitem_t *item)
 		else
 			ent->delay = RESPAWN_TIME_AMMO;
 	}
-	else // Health and anything else
+	else // Health and anything else.
 	{
 		ent->delay = RESPAWN_TIME_MISC;
 	}
-
-	ent->flags = item->flags;
-	ent->clipmask = MASK_MONSTERSOLID;
 
 	if (item->flags == IT_PUZZLE)
 	{
@@ -672,16 +670,11 @@ void SpawnItem (edict_t *ent, gitem_t *item)
 	// FIXME: Until all objects have bounding boxes, default to these vals.
 	if (Vec3IsZero(ent->mins))
 	{
-		VectorSet (ent->mins, -10.0, -10.0, -10.0);
-		VectorSet (ent->maxs, 10.0, 10.0, 10.0);
-	}
-
-	ent->classname = item->classname;
-	if(deathmatch->value)
-	{
-		ent->flags |= FL_RESPAWN;
+		VectorSet(ent->mins, -10.0f, -10.0f, -10.0f);
+		VectorSet(ent->maxs,  10.0f,  10.0f,  10.0f);
 	}
 }
+
 // ************************************************************************************************
 // IsItem
 // ------
