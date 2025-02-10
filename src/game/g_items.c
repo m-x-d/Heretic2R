@@ -96,35 +96,26 @@ static void SetRespawn(edict_t* ent)
 
 #pragma endregion
 
-// ************************************************************************************************
-// Pickup_Puzzle
-// -------------
-// ************************************************************************************************
+#pragma region ========================== PUZZLE ITEM PICKUP LOGIC ==========================
 
-qboolean Pickup_Puzzle(edict_t *ent, edict_t *other)
+static qboolean Pickup_Puzzle(edict_t* ent, edict_t* other)
 {
-	gitem_t	*item;
+	if (other->flags & FL_CHICKEN) // Chicken can't into puzzles...
+		return false;
 
-	if (other->flags & FL_CHICKEN)
+	const int item_index = ITEM_INDEX(ent->item); //mxd
+	if (other->client->playerinfo.pers.inventory.Items[item_index] == 0)
 	{
-		return(false);
-	}
-
-	item = P_FindItemByClassname(ent->classname);
-
-	if (!other->client->playerinfo.pers.inventory.Items[ITEM_INDEX(ent->item)])
-	{
-		other->client->playerinfo.pers.inventory.Items[ITEM_INDEX(ent->item)] = 1;
-
+		other->client->playerinfo.pers.inventory.Items[item_index] = 1;
 		gi.gamemsg_centerprintf(other, ent->item->msg_pickup);
 
-		return(true);
+		return true;
 	}
-	else
-	{
-		return(false);
-	}
+
+	return false;
 }
+
+#pragma endregion
 
 // ************************************************************************************************
 // AddWeaponToInventory
