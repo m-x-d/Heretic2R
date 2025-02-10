@@ -509,29 +509,6 @@ qboolean Pickup_Mana (edict_t *ent, edict_t *other)
 
 /*
 ===============
-Drop_Ammo
-===============
-*/
-
-void Drop_Ammo (edict_t *ent, gitem_t *item)
-{
-	edict_t	*dropped;
-	int		index;
-
-	index = ITEM_INDEX(item);
-	dropped = Drop_Item (ent, item);
-
-	if (ent->client->playerinfo.pers.inventory.Items[index] >= item->quantity)
-		dropped->count = item->quantity;
-	else
-		dropped->count = ent->client->playerinfo.pers.inventory.Items[index];
-	ent->client->playerinfo.pers.inventory.Items[index] -= dropped->count;
-
-	ValidateSelectedItem (ent);
-}
-
-/*
-===============
 Pickup_Health
 ===============
 */
