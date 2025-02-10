@@ -98,7 +98,7 @@ static void SetRespawn(edict_t* ent)
 
 #pragma region ========================== PUZZLE ITEM PICKUP LOGIC ==========================
 
-static qboolean Pickup_Puzzle(edict_t* ent, edict_t* other)
+static qboolean Pickup_Puzzle(const edict_t* ent, edict_t* other)
 {
 	if (other->flags & FL_CHICKEN) // Chicken can't into puzzles...
 		return false;
@@ -119,7 +119,7 @@ static qboolean Pickup_Puzzle(edict_t* ent, edict_t* other)
 
 #pragma region ========================== WEAPON PICKUP LOGIC ==========================
 
-qboolean AddWeaponToInventory(gitem_t* weapon, edict_t* player)
+qboolean AddWeaponToInventory(gitem_t* weapon, const edict_t* player)
 {
 	client_persistant_t* pers = &player->client->playerinfo.pers; //mxd
 	const int wpn_index = ITEM_INDEX(weapon); //mxd
@@ -201,7 +201,7 @@ qboolean AddWeaponToInventory(gitem_t* weapon, edict_t* player)
 	return Add_Ammo(player, ammo, count); // Count as added if ammo was added.
 }
 
-static qboolean Pickup_Weapon(edict_t* ent, edict_t* other)
+static qboolean Pickup_Weapon(const edict_t* ent, edict_t* other)
 {
 	if (other->flags & FL_CHICKEN) // Chicken can't into weapons...
 		return false;
@@ -219,7 +219,7 @@ static qboolean Pickup_Weapon(edict_t* ent, edict_t* other)
 
 #pragma region ========================== DEFENSE PICKUP LOGIC (OR IS IT DEFENCE?..) ==========================
 
-qboolean AddDefenseToInventory(gitem_t* defence, edict_t* player)
+qboolean AddDefenseToInventory(gitem_t* defence, const edict_t* player)
 {
 	client_persistant_t* pers = &player->client->playerinfo.pers; //mxd
 	const int def_index = ITEM_INDEX(defence); //mxd
@@ -238,7 +238,7 @@ qboolean AddDefenseToInventory(gitem_t* defence, edict_t* player)
 	return false; // We already have it...
 }
 
-static qboolean Pickup_Defense(edict_t* ent, edict_t* other)
+static qboolean Pickup_Defense(const edict_t* ent, edict_t* other)
 {
 	if (other->flags & FL_CHICKEN) // Chicken can't into defence...
 		return false;
@@ -306,7 +306,7 @@ qboolean Add_Ammo(const edict_t* ent, const gitem_t* ammo, const int count)
 	}
 }
 
-static qboolean Pickup_Ammo(edict_t* ent, edict_t* other)
+static qboolean Pickup_Ammo(const edict_t* ent, edict_t* other)
 {
 	if (other->flags & FL_CHICKEN) // Chicken can't into ammo...
 		return false;
@@ -326,7 +326,7 @@ static qboolean Pickup_Ammo(edict_t* ent, edict_t* other)
 #pragma region ========================== MANA PICKUP LOGIC ==========================
 
 // Separate routine so we can distinguish between ammo and mana.
-static qboolean Pickup_Mana(edict_t* ent, edict_t* other)
+static qboolean Pickup_Mana(const edict_t* ent, edict_t* other)
 {
 	return Pickup_Ammo(ent, other);
 }
@@ -335,7 +335,7 @@ static qboolean Pickup_Mana(edict_t* ent, edict_t* other)
 
 #pragma region ========================== HEALTH PICKUP LOGIC ==========================
 
-static qboolean Pickup_Health(edict_t* ent, edict_t* other)
+static qboolean Pickup_Health(const edict_t* ent, edict_t* other)
 {
 	if (other->flags & FL_CHICKEN) // Chicken is not very healthy...
 		return false;

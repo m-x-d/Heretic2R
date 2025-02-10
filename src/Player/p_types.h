@@ -123,7 +123,7 @@ typedef struct gitem_s
 	short msg_nouse;	// Can`t use.
 
 	// Access function pointers.
-	qboolean (*pickup)(struct edict_s* ent, struct edict_s* other);
+	qboolean (*pickup)(const struct edict_s* ent, struct edict_s* other);
 	void (*use)(playerinfo_t* playerinfo, struct gitem_s* item);
 	void (*drop)(struct edict_s* ent, struct gitem_s* item);
 	void (*weaponthink)(struct edict_s* WeaponOwner, char* Format, ...);
