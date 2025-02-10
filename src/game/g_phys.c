@@ -1,8 +1,12 @@
-// g_phys.c
+//
+// g_PhysicsQ2.h
+//
+// Copyright 1998 Raven Software
+//
 
 #include "g_local.h"
 #include "g_Physics.h" //mxd
-#include "vector.h"
+#include "Vector.h"
 
 /*
 ================
