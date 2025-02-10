@@ -43,7 +43,7 @@ G_Message_t* G_Message_new(const G_MsgID_t id, const G_MsgPriority_t priority)
 	return msg;
 }
 
-void G_Message_Des(G_Message_t *this)
+static void G_Message_Des(G_Message_t* this)
 {
 	SLList_Des(&this->parms);
 }
