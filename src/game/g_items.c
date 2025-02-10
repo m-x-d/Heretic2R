@@ -470,32 +470,6 @@ edict_t* Drop_Item(edict_t* ent, gitem_t* item)
 	return dropped;
 }
 
-/*
-================
-Use_Item
-================
-*/
-/*
-void Use_Item (edict_t *ent, edict_t *other, edict_t *activator)
-{
-//	ent->svflags &= ~SVF_NOCLIENT;
-	ent->use = NULL;
-
-	if (ent->spawnflags & 2)	// NO_TOUCH
-	{
-		ent->solid = SOLID_BBOX;
-		ent->touch = NULL;
-	}
-	else
-	{
-		ent->solid = SOLID_TRIGGER;
-		ent->touch = Touch_Item;
-	}
-
-	gi.linkentity (ent);
-}
-*/
-
 // ************************************************************************************************
 // ValidItem
 // ---------
