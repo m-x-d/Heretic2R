@@ -157,9 +157,8 @@ typedef struct G_Message_s
 typedef void (*G_MessageHandler_t)(struct edict_s* self, G_Message_t* msg);
 typedef void (*G_MsgReceiver_t)(struct edict_s* self, G_Message_t* msg);
 
-void G_Message_DefaultCon(G_Message_t* this_ptr);
-G_Message_t* G_Message_new(G_MsgID_t ID, G_MsgPriority_t priority);
-void G_Message_Delete(G_Message_t* this_ptr);
+extern G_Message_t* G_Message_new(G_MsgID_t id, G_MsgPriority_t priority);
+extern void G_Message_Delete(G_Message_t* msg);
 
 #ifdef __cplusplus // Used by ds.cpp...
 	extern "C" void QPostMessage(struct edict_s* to, G_MsgID_t id, G_MsgPriority_t priority, char* format, ...);
@@ -167,9 +166,8 @@ void G_Message_Delete(G_Message_t* this_ptr);
 	extern void QPostMessage(struct edict_s* to, G_MsgID_t id, G_MsgPriority_t priority, char* format, ...);
 #endif
 
-int ParseMsgParms(G_Message_t* this_ptr, char* format, ...);
-void ProcessMessages(struct edict_s* this_ptr);
-void ClearMessageQueue(struct edict_s* this_ptr);
+extern int ParseMsgParms(G_Message_t* msg, char* format, ...);
+extern void ProcessMessages(struct edict_s* self);
 extern void ClearMessageQueues(void); //mxd
 extern void InitMsgMngr(void); //mxd
 extern void ReleaseMsgMngr(void); //mxd

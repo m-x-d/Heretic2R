@@ -138,11 +138,7 @@ static void ClearMessageQueue(edict_t* self)
 
 void ClearMessageQueues(void)
 {
-	edict_t *ent;
-	int i;
-
-	for (i=0, ent = &g_edicts[0]; i<globals.num_edicts ; i++, ent++)
-	{
+	edict_t* ent = &g_edicts[0];
+	for (int i = 0; i < globals.num_edicts; i++, ent++)
 		ClearMessageQueue(ent);
-	}
 }
