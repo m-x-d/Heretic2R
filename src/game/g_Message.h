@@ -157,7 +157,7 @@ typedef struct G_Message_s
 typedef void (*G_MessageHandler_t)(struct edict_s* self, G_Message_t* msg);
 typedef void (*G_MsgReceiver_t)(struct edict_s* self, G_Message_t* msg);
 
-extern G_Message_t* G_Message_new(G_MsgID_t id, G_MsgPriority_t priority);
+extern G_Message_t* G_Message_New(G_MsgID_t id, G_MsgPriority_t priority);
 extern void G_Message_Delete(G_Message_t* msg);
 
 #ifdef __cplusplus // Used by ds.cpp...

@@ -72,7 +72,7 @@ static qboolean ICScript_Advance(ICScript_t *this)
 
 		i = 0;
 
-		newMsg = G_Message_new(msgID, PRI_SYSTEM);
+		newMsg = G_Message_New(msgID, PRI_SYSTEM);
 
 		parms = &newMsg->parms;
 
