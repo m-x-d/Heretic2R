@@ -461,572 +461,357 @@ static void MoveEntity_Bounce(edict_t* self, FormMove_t* form_move)
 	}
 }
 
-//---------------------------------------------------------------------------------
-//	Moves an entity sliding or bouncing of off any planes collided with
-//---------------------------------------------------------------------------------
-void MoveEntity_Slide(edict_t *self)
+// Moves an entity sliding or bouncing of off any planes collided with.
+static void MoveEntity_Slide(edict_t* self)
 {
-#define	MAX_CLIP_PLANES					5
+#define MAX_CLIP_PLANES					5
 #define MAX_BUMPS						4
-#define STEEP_SLOPE_FRICTION_MODIFIER	0.1
+#define STEEP_SLOPE_FRICTION_MODIFIER	0.1f
 
-	edict_t		*hit;
-	int			bumpcount;
-	vec3_t		dir, gdir;
-	int			numplanes = 0;
-	vec3_t		primal_velocity, original_velocity, new_velocity;
-	int			i, j;
-	vec3_t		end, delta;
-	float		timeRemaining = FRAMETIME, timeRemaining2, timeMoved;
 	static vec3_t planes[MAX_CLIP_PLANES];
-	FormMove_t	formMove;
-	float		base_friction, friction, gravity;
-	float		dist, dot, accel, speed, faccel, gaccel;
-	qboolean	slide;
-	float		*groundNormal;
-	int			fudgeIndex = -1;
 
-	assert(self->clipmask);
+	vec3_t dir;
+	vec3_t gravity_dir;
+	vec3_t new_velocity;
+	vec3_t delta;
+
 	assert(self);
+	assert(self->clipmask);
 
-	gravity = self->gravity * sv_gravity->value;
-	base_friction = self->friction * sv_friction->value;
-//	gi.dprintf("Gravity %f, Friction %f, to be applied\n", gravity, friction);
-	
-//	gi.dprintf("Velocity %f, %f, %f\n", self->velocity[0], self->velocity[1], self->velocity[2]);
-//	gi.dprintf("speed in %f\n", VectorLength(self->velocity));
-	
+	const float gravity = self->gravity * sv_gravity->value;
+	const float base_friction = self->friction * sv_friction->value;
+
+	vec3_t original_velocity;
 	VectorCopy(self->velocity, original_velocity);
+
+	vec3_t primal_velocity;
 	VectorCopy(self->velocity, primal_velocity);
-	
-//	self->groundentity = NULL;
 
-	groundNormal = self->groundNormal;
+	float* ground_normal = self->groundNormal;
 
-	if(!self->groundentity)
+	if (self->groundentity == NULL)
+		ground_normal[2] = 0.0f;
+
+	FormMove_t form_move;
+	VectorCopy(self->mins, form_move.mins);
+	VectorCopy(self->maxs, form_move.maxs);
+
+	form_move.start = self->s.origin;
+	form_move.passEntity = self;
+	form_move.clipMask = self->clipmask;
+
+	int cur_plane = 0; //mxd. Initialize.
+	int num_planes = 0;
+	int fudge_index = -1;
+	float time_remaining = FRAMETIME;
+	float dist = 0.0f; //mxd. Initialize.
+	float fwd_accel = 0.0f; //mxd. Initialize.
+	float grav_accel = 0.0f; //mxd. Initialize.
+
+	for (int bumpcount = 0; bumpcount < MAX_BUMPS; bumpcount++)
 	{
-		groundNormal[2] = 0.0;
-	}
+		const float friction = base_friction;
+		const float time_remaining_sq = time_remaining * time_remaining;
+		qboolean slide = false;
 
-	VectorCopy(self->mins, formMove.mins);
-	VectorCopy(self->maxs, formMove.maxs);
+		VectorScale(self->velocity, time_remaining, delta);
 
-	formMove.start = self->s.origin;
-	formMove.passEntity = self;
-	formMove.clipMask = self->clipmask;
+		// On some type of upward facing slope (otherwise fall straight down, no surface friction needed).
+		if (ground_normal[2] > 0.0f)
+		{
+			// No velocity.
+			if (Vec3IsZero(self->velocity))
+			{
+				// Can't slide -> not going anywhere.
+				if (ground_normal[2] >= GROUND_NORMAL && (ground_normal[2] >= gravity / (friction + gravity)) && bumpcount > 0)
+					return;
 
-	for(bumpcount = 0; bumpcount < MAX_BUMPS; ++bumpcount)
-	{
-		friction = base_friction;
+				// (|gravity| * ground_normal) * ground_normal yields the vector in the direction of gravity applied to the the slope of ground_normal.
+				gravity_dir[0] = ground_normal[0] * ground_normal[2];
+				gravity_dir[1] = ground_normal[1] * ground_normal[2];
+				gravity_dir[2] = -ground_normal[0] * ground_normal[0] - ground_normal[1] * ground_normal[1];
 
-		VectorScale(self->velocity, timeRemaining, delta);
+				VectorNormalize(gravity_dir);
 
-		timeRemaining2 = timeRemaining * timeRemaining;
+				const float dot = DotProduct(gravity_dir, ground_normal);
 
-		slide = false;
-
-		if(groundNormal[2])
-		{	// on some type of upward facing slope
-			assert(groundNormal[2] > 0.0);
-
-			if(Vec3IsZero(self->velocity))
-			{	// no velocity
-//				gi.dprintf("no vel on slope\n");
-
-				if(groundNormal[2] >= GROUND_NORMAL)
+				if (dot < -FLOAT_ZERO_EPSILON)
 				{
-					if(groundNormal[2] >= (gravity / (friction + gravity)))
-					{	// can't slide									
-						if(bumpcount)
-						{	// not going anywhere
-	//						gi.dprintf("no vel on no slide slope\n");
-#if 0
-							formMove.trace.fraction = 0.0;
-							break;
-#else
-							return;
-#endif
-						}
-						else
-						{	// check in calling func
-							assert(0);				
-						}
-					}
+					// Floating point error, fudge it away from the plane a bit.
+					fudge_index = cur_plane;
+					VectorMA(self->s.origin, PHYSICS_Z_FUDGE, planes[cur_plane], self->s.origin);
 				}
 
-				// ( |gravity| X groundNormal ) X groundNormal yeilds the vector in the 
-				//direction of gravity applied to the the slope of groundNormal
-				gdir[0] = groundNormal[0]*groundNormal[2];
-				gdir[1] = groundNormal[1]*groundNormal[2];
-				gdir[2] = -groundNormal[0]*groundNormal[0] - groundNormal[1]*groundNormal[1];
-
-				VectorNormalize(gdir);
-
-				dot = DotProduct(gdir, groundNormal);
-
-				if(dot < -FLOAT_ZERO_EPSILON)	
-				{	// floating point error, shit, fudge it away from the plane a bit
-//					gi.dprintf("Dot %f, Fudge for bump %i and plane %i\n", dot, bumpcount, i);
-					fudgeIndex = i;
-					VectorMA(self->s.origin, PHYSICS_Z_FUDGE, planes[i], self->s.origin);
-				}
-
-//				dir[2] += 0.0001;	// fudge it away from the slope just a little
-
-				dist = 0;
-
-				dot = 0;
-
+				dist = 0.0f;
 				slide = true;
 			}
 			else
 			{
 				dist = VectorNormalize2(delta, dir);
-				dot = DotProduct(dir, groundNormal);
 
-				if(dot < -0.05)
-				{ // the trace will fail, try to restructure inorder to skip it
-				}
-				else if(dot < 0.05) // parallel to ground
-				{
-					slide = true;
-				}
-				else
-				{	// pulling away from ground
-				}
+				// dot < -0.05f: the trace will fail, try to restructure in order to skip it.
+				// dot <  0.05f: parallel to ground.
+				// dot >= 0.05f: pulling away from ground.
+				const float dot = DotProduct(dir, ground_normal);
+				slide = (Q_fabs(dot) < 0.05f); // Parallel to ground.
 			}
-
-		}
-		else
-		{	// easy case, fall straight down, no surface friction needed
 		}
 
-		if(slide)
-		{	// moving along ground, apply gravity and friction appropriatly
-			gdir[0] = groundNormal[0]*groundNormal[2];
-			gdir[1] = groundNormal[1]*groundNormal[2];
-			gdir[2] = -groundNormal[0]*groundNormal[0] - groundNormal[1]*groundNormal[1];
+		if (slide)
+		{
+			// Moving along ground, apply gravity and friction.
+			gravity_dir[0] = ground_normal[0] * ground_normal[2];
+			gravity_dir[1] = ground_normal[1] * ground_normal[2];
+			gravity_dir[2] = -ground_normal[0] * ground_normal[0] - ground_normal[1] * ground_normal[1];
 
-			VectorNormalize(gdir);
+			VectorNormalize(gravity_dir);
 
-			dot = DotProduct(gdir, dir);
+			fwd_accel = -friction * ground_normal[2];
 
-			if(groundNormal[2] < GROUND_NORMAL)
-			{	// turn down friction on a steep slope, the theory being that something wouldn't be able to maintain
-				// good surface contact on such a slope
-//				friction *= STEEP_SLOPE_FRICTION_MODIFIER;
-				faccel = -friction * groundNormal[2] * STEEP_SLOPE_FRICTION_MODIFIER;
-			}
-			else
+			// Turn down friction on a steep slope, the theory being that something wouldn't be able to maintain good surface contact on such a slope.
+			if (ground_normal[2] < GROUND_NORMAL)
+				fwd_accel *= STEEP_SLOPE_FRICTION_MODIFIER;
+
+			dist += 0.5f * fwd_accel * time_remaining_sq;
+
+			if (dist < 0.0f)
 			{
-				faccel = -friction * groundNormal[2];
-			}
-
-#if 0
-			if(accel < 0)
-			{
-				gi.dprintf("Accel less than zero\n");
-			}
-#endif
-
-			dist += 0.5 * faccel * timeRemaining2;
-
-			if(dist < 0)
-			{
-				dist = 0;
-				faccel = 0;
+				dist = 0.0f;
+				fwd_accel = 0.0f;
 			}
 
 			VectorScale(dir, dist, delta);
-//			gi.dprintf("Move slid, accel %f\n", faccel);
-			dot = DotProduct(gdir, groundNormal);
 
-			if(dot < -FLOAT_ZERO_EPSILON)	
-			{	// floating point error, shit, fudge it away from the plane a bit
-//				gi.dprintf("Dot %f, Fudge for bump %i and plane %i\n", dot, bumpcount, i);
-				fudgeIndex = i;
-				VectorMA(self->s.origin, PHYSICS_Z_FUDGE, planes[i], self->s.origin);
-			}
+			const float dot = DotProduct(gravity_dir, ground_normal);
 
-			if(groundNormal[2] < GROUND_NORMAL)
-			{	// turn down friction on a steep slope, the theory being that something wouldn't be able to maintain
-				// good surface contact on such a slope
-//				friction *= STEEP_SLOPE_FRICTION_MODIFIER;
-				gaccel = gravity * (1 - groundNormal[2]) - friction * groundNormal[2] * STEEP_SLOPE_FRICTION_MODIFIER;
-			}
-			else
+			if (dot < -FLOAT_ZERO_EPSILON)
 			{
-				gaccel = gravity * (1 - groundNormal[2]) - friction * groundNormal[2];
+				// Floating point error, fudge it away from the plane a bit.
+				fudge_index = cur_plane;
+				VectorMA(self->s.origin, PHYSICS_Z_FUDGE, planes[cur_plane], self->s.origin);
 			}
 
-			if(gaccel < 0)
-			{
-				gaccel = 0;
-			}
+			grav_accel = gravity * (1 - ground_normal[2]) - friction * ground_normal[2];
 
-			VectorMA(delta, gaccel * 0.5 * timeRemaining2, gdir, delta);
+			// Turn down friction on a steep slope, the theory being that something wouldn't be able to maintain good surface contact on such a slope.
+			if (ground_normal[2] < GROUND_NORMAL)
+				grav_accel *= STEEP_SLOPE_FRICTION_MODIFIER;
 
-			if(dist + faccel + gaccel == 0.0)
+			grav_accel = max(0.0f, grav_accel);
+			VectorMA(delta, grav_accel * 0.5f * time_remaining_sq, gravity_dir, delta);
+
+			if (dist + fwd_accel + grav_accel == 0.0f)
 			{
 				VectorClear(self->velocity);
-#if 0
-				break;
-#else
 				return;
-#endif
 			}
 		}
 		else
-		{	// else apply gravity straight down, no friction
-			delta[2] -= 0.5 * gravity * timeRemaining2;
-//			gi.dprintf("Move dropped, accel\n");
+		{
+			// Not sliding, apply gravity straight down, no friction.
+			delta[2] -= 0.5f * gravity * time_remaining_sq;
 		}
 
+		vec3_t end;
 		VectorCopy(self->s.origin, end);
 		Vec3AddAssign(delta, end);
 
-		formMove.end = end;
+		form_move.end = end;
 
-		gi.TraceBoundingForm(&formMove);
+		gi.TraceBoundingForm(&form_move);
 
-		if(formMove.trace.startsolid)
+		if (form_move.trace.startsolid)
 		{
-			if(fudgeIndex != -1)
-			{	// undo fudge and let it try that again
-//				gi.dprintf("Fudge undone\n");
-				VectorMA(self->s.origin, -PHYSICS_Z_FUDGE, planes[fudgeIndex], self->s.origin);
+			if (fudge_index != -1)
+			{
+				// Undo fudge and let it try that again.
+				VectorMA(self->s.origin, -PHYSICS_Z_FUDGE, planes[fudge_index], self->s.origin);
 				continue;
 			}
-			else
-			{
-				VectorClear(self->velocity);
 
-//				gi.dprintf("self %i, trace startsolid on bump %i\n", self->s.number, bumpcount);
-				return;
-			}
-		}
-
-		if(formMove.trace.allsolid)
-		{	// entity is trapped in another solid
 			VectorClear(self->velocity);
-			
-			self->s.origin[2] += 20;
-
-//			gi.dprintf("self %d, trace allsolid\n", self->s.number);
 			return;
 		}
 
-		timeMoved = timeRemaining * formMove.trace.fraction;
+		if (form_move.trace.allsolid)
+		{
+			// Entity is trapped in another solid.
+			VectorClear(self->velocity);
+			self->s.origin[2] += 20.0f;
 
-		if(formMove.trace.fraction > 0)
-		{	// actually covered some distance
-			VectorCopy(formMove.trace.endpos, self->s.origin);
+			return;
+		}
 
-			if(slide)
+		const float time_moved = time_remaining * form_move.trace.fraction;
+
+		if (form_move.trace.fraction > 0.0f)
+		{
+			// Actually covered some distance.
+			VectorCopy(form_move.trace.endpos, self->s.origin);
+
+			if (slide)
 			{
-				speed = VectorNormalize2(self->velocity, dir);
-
-				dot = DotProduct(dir, groundNormal);
-
-//				assert(Q_fabs(dot) <= 0.05);
-
-				speed += faccel * timeMoved;
-
-#if 0
-				if(Q_fabs(speed) < friction * 0.05)
-				{
-					speed = 0;
-				}
-#endif
+				float speed = VectorNormalize2(self->velocity, dir);
+				speed += fwd_accel * time_moved;
 
 				VectorScale(dir, speed, self->velocity);
-//					gi.dprintf("Full move, slid, speed %f\n", speed);
-
-				VectorMA(self->velocity, gaccel * timeMoved, gdir, self->velocity);
+				VectorMA(self->velocity, grav_accel * time_moved, gravity_dir, self->velocity);
 			}
 			else
 			{
-//					gi.dprintf("Full move, dropped\n");
-				self->velocity[2] -= gravity * timeMoved;
+				self->velocity[2] -= gravity * time_moved;
 			}
 
-			if(formMove.trace.fraction == 1)
-			{
-				break;		// moved the entire distance
-			}
+			if (form_move.trace.fraction == 1.0f)
+				break; // Moved the entire distance.
 
 			VectorCopy(self->velocity, original_velocity);
 
-			numplanes = 0;
-			fudgeIndex = -1;
+			num_planes = 0;
+			fudge_index = -1;
+		}
+		else if (Vec3IsZero(self->velocity) && self->groundNormal[2] >= gravity / (friction + gravity))
+		{
+			break; // No velocity and the trace failed, not going anywhere on ground the ent can't slide on.
+		}
+
+		// Results in isBlocked being called on the last bounced.
+		const int flags = CH_BOUNCED | ((bumpcount == MAX_BUMPS - 1) ? CH_STANDARD : CH_ISBLOCKING); //mxd
+		HandleCollision(self, &form_move.trace, delta, false, flags);
+
+		VectorCopy(form_move.trace.plane.normal, ground_normal);
+
+		if (ground_normal[2] > 0.0f && form_move.trace.ent->solid == SOLID_BSP) // Hit the floor.
+		{
+			self->groundentity = form_move.trace.ent;
 		}
 		else
 		{
-#if 0
-			dist = VectorNormalize2(delta, dir);
-
-			if(Q_fabs(DotProduct(dir, formMove.trace.plane.normal)) < 0.01)
-			{
-
-			}
-#endif
-			if(Vec3IsZero(self->velocity) && self->groundNormal[2] >= (gravity / (friction + gravity)))
-			{	// no velocity, and the trace failed, not going anywhere on ground the ent can't slide on
-				break;
-			}
-//			gi.dprintf("0 trace with %i bumps and %i planes\n", bumpcount, numplanes);
-		}
-
-		hit = formMove.trace.ent;
-
-		if(bumpcount == MAX_BUMPS - 1)
-		{	// results in isBlocked being called on the last bounced
-			HandleCollision(self, &formMove.trace, delta, false, CH_BOUNCED|CH_STANDARD);
-		}
-		else
-		{
-			HandleCollision(self, &formMove.trace, delta, false, CH_BOUNCED|CH_ISBLOCKING);
-		}
-
-		VectorCopy(formMove.trace.plane.normal, groundNormal);
-
-		if(groundNormal[2] > 0 && hit->solid == SOLID_BSP)	// hit the floor
-		{
-			self->groundentity = formMove.trace.ent;
-		}
-		else
-		{
-			if(groundNormal[2] < 0.0)
-			{
-				groundNormal[2] = 0.0;
-			}
-
+			ground_normal[2] = max(0.0f, ground_normal[2]);
 			self->groundentity = NULL;
 		}
 
-		timeRemaining -= timeMoved;
-		
-		// clipped to another plane
-		assert(numplanes < MAX_CLIP_PLANES);
+		time_remaining -= time_moved;
 
-		if(!numplanes || !VectorCompare(formMove.trace.plane.normal, planes[numplanes-1]))
+		// Clipped to another plane.
+		assert(num_planes < MAX_CLIP_PLANES);
+
+		if (num_planes == 0 || !VectorCompare(form_move.trace.plane.normal, planes[num_planes - 1]))
 		{
-			VectorCopy(formMove.trace.plane.normal, planes[numplanes]);
-			numplanes++;
+			VectorCopy(form_move.trace.plane.normal, planes[num_planes]);
+			num_planes++;
 		}
 		else
 		{
-//			gi.dprintf("Attemping to add identical plane for bump %i\n", bumpcount);
-//			gi.dprintf("Identical Plane Fudge for bump %i and plane %i\n", bumpcount, numplanes);
-			fudgeIndex = numplanes-1;
-			VectorMA(self->s.origin, PHYSICS_Z_FUDGE, planes[fudgeIndex], self->s.origin);
+			fudge_index = num_planes - 1;
+			VectorMA(self->s.origin, PHYSICS_Z_FUDGE, planes[fudge_index], self->s.origin);
 		}
 
-		// modify original_velocity so it parallels all of the clip planes
-		for(i = 0; i < numplanes; ++i)
+		// Modify original_velocity so it parallels all of the clip planes.
+		for (cur_plane = 0; cur_plane < num_planes; cur_plane++)
 		{
-			float dirMag;
+			assert(Vec3NotZero(planes[cur_plane]));
+			BounceVelocity(original_velocity, planes[cur_plane], new_velocity, self->elasticity);
+			const float dir_mag = VectorNormalize2(new_velocity, dir);
 
-			assert(Vec3NotZero(planes[i]));
-
-#if 0
-#define ACCEL_A // velocity is maintained throughout, otherwise, elasticity is accounted for
-#endif
-
-#ifdef ACCEL_A	// top version is better for testing sliding with sv_friction at 0
-			speed = VectorNormalize2(original_velocity, dir);
-
-//			gi.dprintf("Speed %f\n", speed);
-
-			BounceVelocity(dir, planes[i], dir, 1.0001f);	// only works with an elasticity a bit greater than 1.0
-																	// going to need a different func
-																	// for bouncing stuff
-
-			dirMag = VectorNormalize(dir);
-
-#else
-			BounceVelocity(original_velocity, planes[i], new_velocity, self->elasticity);
-
-			dirMag = speed = VectorNormalize2(new_velocity, dir);
-
-#endif // ACCEL_A
-
-			if(FloatIsZeroEpsilon(dirMag))
-			{	// smacked into something exactly head on
-				if(planes[i][2] > 0.0)
-				{	// slide down slope
-					dir[0] = -planes[i][0]*planes[i][2];
-					dir[1] = -planes[i][1]*planes[i][2];
-					dir[2] = planes[i][0]*planes[i][0] + planes[i][1]*planes[i][1];
+			if (FloatIsZeroEpsilon(dir_mag))
+			{
+				// Smacked into something exactly head on.
+				if (planes[cur_plane][2] > 0.0f)
+				{
+					// Slide down slope.
+					dir[0] = -planes[cur_plane][0] * planes[cur_plane][2];
+					dir[1] = -planes[cur_plane][1] * planes[cur_plane][2];
+					dir[2] = planes[cur_plane][0] * planes[cur_plane][0] + planes[cur_plane][1] * planes[cur_plane][1];
 
 					VectorNormalize(dir);
 				}
 				else
-				{	// drop straight down
-					dir[2] = -1.0;
+				{
+					// Drop straight down.
+					dir[2] = -1.0f;
 				}
-
 			}
 
-			dot = DotProduct(dir, planes[i]);
+			const float dot = DotProduct(dir, planes[cur_plane]);
 
-			if(dot < -FLOAT_ZERO_EPSILON)	
-			{	// floating point error, shit, fudge it away from the plane a bit
-//				gi.dprintf("Dot %f, Fudge for bump %i and plane %i\n", dot, bumpcount, i);
-				fudgeIndex = i;
-				VectorMA(self->s.origin, PHYSICS_Z_FUDGE, planes[i], self->s.origin);
+			if (dot < -FLOAT_ZERO_EPSILON)
+			{
+				// Floating point error, fudge it away from the plane a bit.
+				fudge_index = cur_plane;
+				VectorMA(self->s.origin, PHYSICS_Z_FUDGE, planes[cur_plane], self->s.origin);
 			}
 
 			slide = false;
 
-			if(planes[i][2] > 0.0)
+			if (planes[cur_plane][2] > 0.0f)
 			{
-				if(dot < -0.01)
-				{ // the trace will fail, try to restructure inorder to skip it
-#ifdef ACCEL_A
-					assert(0);	// shouldn't happen
-#endif // ACCEL_A
-				}
-				else if(Q_fabs(dot) < 0.01) // parallel to surface
-				{
-					slide = true;
-				}
-				else
-				{	// pulling away from surface
-				}
-			}
-			else
-			{	// easy case, fall straight down, no surface friction needed
-			}
+				// dot < -0.01f: the trace will fail, try to restructure in order to skip it.
+				// dot <  0.01f: parallel to surface.
+				// dot >= 0.01f: pulling away from surface.
+				slide = (Q_fabs(dot) < 0.01f); // Parallel to surface.
+			} // Otherwise, fall straight down, no surface friction needed.
 
-#ifdef ACCEL_A
-			if(slide)
-			{	// moving along ground, apply gravity and friction appropriatly
-				assert(Q_fabs(DotProduct(dir, planes[i])) < 0.1);
+			int p;
+			for (p = 0; p < num_planes; p++)
+				if (p != cur_plane && DotProduct(new_velocity, planes[p]) <= 0.0f)
+					break; // Unacceptable slide.
 
-				accel = -friction * planes[i][2] - gravity * dir[2];
-				speed += accel * timeRemaining;
-				VectorScale(dir, speed, new_velocity);
-//				gi.dprintf("Velocity slid, accel %f, speed %f\n", accel, speed);
-			}
-			else
-			{	// else apply gravity straight down, no friction
-				VectorScale(dir, speed, new_velocity);
-				new_velocity[2] -= gravity * timeRemaining;
-//				gi.dprintf("Velocity dropped 1, bump %i, plane %i\n", bumpcount, i);
-//				gi.dprintf("dir %f, %f, %f\n", dir[0], dir[1], dir[2]);
-			}
-
-#endif // ACCEL_A
-
-//			gi.dprintf("dirMag %f\n", dirMag);
-//			gi.dprintf("Speed %f\n", VectorLength(new_velocity));
-
-//			gi.dprintf("Bounce dot %f\n", dot);
-			
-			for(j = 0; j < numplanes; ++j)
-			{
-				if(j != i)
-				{
-					if(DotProduct(new_velocity, planes[j]) <= 0)
-					{
-						break;	// unacceptable slide
-					}
-				}
-			}
-
-			if(j == numplanes)
-			{
-				break;	// acceptable slide
-			}
+			if (p == num_planes)
+				break; // Acceptable slide.
 		}
-		
-		if (i != numplanes)
-		{	// good slide
-			VectorCopy (new_velocity, self->velocity);
 
-//			gi.dprintf("Acceptable slide for bump %i\n", bumpcount);
-
+		if (cur_plane != num_planes)
+		{
+			VectorCopy(new_velocity, self->velocity); // Good slide.
 		}
 		else
-		{	// go along the crease
-			assert(numplanes);
+		{
+			// Go along the crease.
+			assert(num_planes);
 
-			if (numplanes != 2)
+			if (num_planes != 2)
 			{
-//				gi.dprintf ("slide, numplanes == %i\n",numplanes);
 				VectorClear(self->velocity);
 				return;
 			}
 
-//			gi.dprintf("Unacceptable slide for bump %i\n", bumpcount);
+			CrossProduct(planes[0], planes[1], dir);
+			VectorScale(dir, VectorLength(self->velocity), self->velocity);
 
-			CrossProduct (planes[0], planes[1], dir);
-
-			speed = VectorLength(self->velocity);
-
-			if(dir[2] <= 0)
-			{
-#ifdef ACCEL_A
-				accel = -friction * (1 - dir[2]) - gravity * dir[2];
-				speed += accel * timeRemaining;
-#else
+			if (dir[2] <= 0.0f)
 				slide = true;
-#endif // ACCEL_A
-			}
-
-			VectorScale(dir, speed, self->velocity);
 		}
 
-#ifndef ACCEL_A
-		speed = VectorNormalize2(self->velocity, dir);
+		float speed = VectorNormalize2(self->velocity, dir);
 
-		if(slide)
-		{	// moving along ground, apply gravity and friction appropriatly
-			accel = -friction * (1 - dir[2]) - gravity * dir[2];
-			speed += accel * timeRemaining;
+		if (slide)
+		{
+			// Moving along ground, apply gravity and friction.
+			const float accel = -friction * (1.0f - dir[2]) - gravity * dir[2];
+			speed += accel * time_remaining;
 			VectorScale(dir, speed, new_velocity);
-//				gi.dprintf("Velocity slid, accel %f, speed %f\n", accel, speed);
 		}
 		else
-		{	// else apply gravity straight down, no friction
-			VectorScale(dir, speed, new_velocity);
-			new_velocity[2] -= gravity * timeRemaining;
-//			gi.dprintf("Velocity dropped 2, bump %i, plane %i\n", bumpcount, i);
-//			gi.dprintf("dir %f, %f, %f\n", dir[0], dir[1], dir[2]);
-		}
-
-#endif // ACCEL_A
-
-		// if velocity is against the original velocity, stop dead
-		// to avoid tiny occilations in sloping corners
-#if 0	// haven't seen a problem with it yet. . .
-		if(DotProduct(self->velocity, primal_velocity) <= 0)
 		{
-			gi.dprintf("Velocity was cleared at bump %i\n", bumpcount);
-
-			VectorClear(self->velocity);
-			break;
+			// Apply gravity straight down, no friction.
+			VectorScale(dir, speed, new_velocity);
+			new_velocity[2] -= gravity * time_remaining;
 		}
-#endif
 	}
 
-	if(formMove.trace.fraction < 1)
+	if (form_move.trace.fraction < 1.0f)
 	{
-		HandleCollision(self, &formMove.trace, delta, false, CH_STANDARD);
+		HandleCollision(self, &form_move.trace, delta, false, CH_STANDARD);
+		VectorClear(self->velocity);
 
-		if(Vec3NotZero(self->velocity))
+		if (form_move.trace.plane.normal[2] > GROUND_NORMAL) // Hit the floor.
 		{
-			VectorClear(self->velocity);
-//			gi.dprintf("Unsuccesful move with %i bumps and %i planes\n", bumpcount, numplanes);
-		}
-
-		if(formMove.trace.plane.normal[2] > GROUND_NORMAL)	// hit the floor
-		{
-			SetGroundEntFromTrace(self, &formMove.trace);
+			SetGroundEntFromTrace(self, &form_move.trace);
 			return;
 		}
 	}
+
 	CheckEntityOn(self);
 }
 
