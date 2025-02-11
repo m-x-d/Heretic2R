@@ -1017,297 +1017,217 @@ static qboolean LUDecomposition(float a[][MAX_MATRIX], int indx[], const int sz,
 	return true;
 }
 
-/*
-============
-PushEntities
-
-Objects need to be moved back on a failed push,
-otherwise riders would continue to slide.
-============
-*/
-
-#define GIL_PUSH 1
-qboolean PushEntities(edict_t *pusher, vec3_t move, vec3_t amove)
+// Objects need to be moved back on a failed push, otherwise riders would continue to slide.
+static qboolean PushEntities(edict_t* pusher, const vec3_t move, const vec3_t amove)
 {
-	int			e;
-	edict_t		*check, *block;
-	vec3_t		mins, maxs;
-	pushed_t	*p;
-	vec3_t		org, org2, move2, forward, right, up,holdOrg;
+	vec3_t mins;
+	vec3_t maxs;
 
-#if GIL_PUSH
-	float a[3][3];
-	vec3_t		forwardInv, rightInv, upInv,OrgOrg;
-	int indx[3];
-	float d;
-#endif
-	// Commented out for Mr Rick
-#if	0
-// clamp the move to 1/8 units, so the position will
-// be accurate for client side prediction
-	Vec3ScaleAssign(8.0, move);
-	VectorRound(move);
-	Vec3ScaleAssign(0.125, move);
-#endif
-
-// find the bounding box
-
-	if (move[0]<0)
+	// Find the bounding box.
+	for (int i = 0; i < 3; i++)
 	{
-		mins[0]=pusher->absmin[0]+move[0];
-		maxs[0]=pusher->absmax[0];
-	}
-	else
-	{
-		mins[0]=pusher->absmin[0];
-		maxs[0]=pusher->absmax[0]+move[0];
-	}
-	if (move[1]<0)
-	{
-		mins[1]=pusher->absmin[1]+move[1];
-		maxs[1]=pusher->absmax[1];
-	}
-	else
-	{
-		mins[1]=pusher->absmin[1];
-		maxs[1]=pusher->absmax[1]+move[1];
-	}
-	if (move[2]<0)
-	{
-		mins[2]=pusher->absmin[2]+move[2];
-		maxs[2]=pusher->absmax[2];
-	}
-	else
-	{
-		mins[2]=pusher->absmin[2];
-		maxs[2]=pusher->absmax[2]+move[2];
+		if (move[i] < 0.0f)
+		{
+			mins[i] = pusher->absmin[i] + move[i];
+			maxs[i] = pusher->absmax[i];
+		}
+		else
+		{
+			mins[i] = pusher->absmin[i];
+			maxs[i] = pusher->absmax[i] + move[i];
+		}
 	}
 
-// we need this for pushing things later
-#if GIL_PUSH
+	// We need this for pushing things later.
+	vec3_t org;
 	VectorCopy(pusher->s.angles, org);
 	Vec3AddAssign(amove, org);
+
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
 	AngleVectors(org, forward, right, up);
-/*
-	a[0][0]=forward[0];
-	a[0][1]=forward[1];
-	a[0][2]=forward[2];
-	a[1][0]=-right[0];
-	a[1][1]=-right[1];
-	a[1][2]=-right[2];
-	a[2][0]=up[0];
-	a[2][1]=up[1];
-	a[2][2]=up[2];
-*/
-	a[0][0]=forward[0];
-	a[1][0]=forward[1];
-	a[2][0]=forward[2];
-	a[0][1]=-right[0];
-	a[1][1]=-right[1];
-	a[2][1]=-right[2];
-	a[0][2]=up[0];
-	a[1][2]=up[1];
-	a[2][2]=up[2];
-	if (LUDecomposition(a,indx,3,&d))
+
+	float a[3][3];
+	a[0][0] = forward[0];
+	a[1][0] = forward[1];
+	a[2][0] = forward[2];
+	a[0][1] = -right[0];
+	a[1][1] = -right[1];
+	a[2][1] = -right[2];
+	a[0][2] = up[0];
+	a[1][2] = up[1];
+	a[2][2] = up[2];
+
+	int indx[3];
+	float d;
+
+	vec3_t forward_inv;
+	vec3_t right_inv;
+	vec3_t up_inv;
+
+	if (LUDecomposition(a, indx, 3, &d))
 	{
-		VectorSet(forwardInv, 1.0, 0.0, 0.0);
-		BackSub(a,indx,forwardInv,3);
-		VectorSet(rightInv, 0.0, 1.0, 0.0);
-		BackSub(a,indx,rightInv,3);
-		VectorSet(upInv, 0.0, 0.0, 1.0);
-		BackSub(a,indx,upInv,3);
+		VectorSet(forward_inv, 1.0f, 0.0f, 0.0f);
+		BackSub(a, indx, forward_inv, 3);
+
+		VectorSet(right_inv, 0.0f, 1.0f, 0.0f);
+		BackSub(a, indx, right_inv, 3);
+
+		VectorSet(up_inv, 0.0f, 0.0f, 1.0f);
+		BackSub(a, indx, up_inv, 3);
 	}
 	else
 	{
-		VectorClear(forwardInv);
-		VectorClear(rightInv);
-		VectorClear(upInv);
+		VectorClear(forward_inv);
+		VectorClear(right_inv);
+		VectorClear(up_inv);
 	}
-	AngleVectors(pusher->s.angles, forward, right, up);
-#else
-	VectorNegate(amove, org);
-	AngleVectors(org, forward, right, up);
-#endif
 
-// save the pusher's original position
+	AngleVectors(pusher->s.angles, forward, right, up);
+
+	// Save the pusher's original position.
 	pushed_p->ent = pusher;
 
 	VectorCopy(pusher->s.origin, pushed_p->origin);
 	VectorCopy(pusher->s.angles, pushed_p->angles);
 
-	if(pusher->client)
-	{
+	// If pusher rotates, rotate the player.
+	if (pusher->client != NULL)
 		pushed_p->delta_yaw = pusher->client->ps.pmove.delta_angles[YAW];
-	}
 
 	pushed_p++;
 
-// move the pusher to it's final position
-#if GIL_PUSH
-	VectorCopy(pusher->s.origin,OrgOrg);
-#endif
+	// Move the pusher to it's final position.
+	vec3_t pusher_org;
+	VectorCopy(pusher->s.origin, pusher_org);
 	Vec3AddAssign(move, pusher->s.origin);
 	Vec3AddAssign(amove, pusher->s.angles);
 
 	gi.linkentity(pusher);
 
-// see if any solid entities are inside the final position
-	check = g_edicts+1;
+	// See if any solid entities are inside the final position.
+	edict_t* check = &g_edicts[1];
 
-	for(e = 1; e < globals.num_edicts; ++e, ++check)
+	for (int i = 1; i < globals.num_edicts; i++, check++)
 	{
-		if(!check->inuse)
-		{
+		if (!check->inuse)
 			continue;
-		}
 
-		switch(check->movetype)
-		{
-		case PHYSICSTYPE_PUSH:
-		case PHYSICSTYPE_STOP:
-		case PHYSICSTYPE_NONE:
-		case PHYSICSTYPE_NOCLIP:
+		if (check->movetype == PHYSICSTYPE_NONE || check->movetype == PHYSICSTYPE_PUSH ||
+			check->movetype == PHYSICSTYPE_STOP || check->movetype == PHYSICSTYPE_NOCLIP)
 			continue;
-		}
 
-		// if the entity is standing on the pusher, it will definitely be moved
-		if(check->groundentity != pusher)
+		// If the entity is standing on the pusher, it will definitely be moved.
+		if (check->groundentity != pusher)
 		{
-			// see if the self needs to be tested
-			if(check->absmin[0] >= maxs[0]
-			|| check->absmin[1] >= maxs[1]
-			|| check->absmin[2] >= maxs[2]
-			|| check->absmax[0] <= mins[0]
-			|| check->absmax[1] <= mins[1]
-			|| check->absmax[2] <= mins[2])
+			// See if the self needs to be tested.
+			if (check->absmin[0] >= maxs[0] || check->absmin[1] >= maxs[1] || check->absmin[2] >= maxs[2] ||
+				check->absmax[0] <= mins[0] || check->absmax[1] <= mins[1] || check->absmax[2] <= mins[2])
 				continue;
 
-			// see if the self's bbox is inside the pusher's final position
-			if(!TestEntityPosition(check))
-			{
+			// See if the self's bbox is inside the pusher's final position.
+			if (!TestEntityPosition(check))
 				continue;
-			}
 		}
 
-		if((pusher->movetype == PHYSICSTYPE_PUSH) || (check->groundentity == pusher))
+		if (pusher->movetype == PHYSICSTYPE_PUSH || check->groundentity == pusher)
 		{
-			// move this entity
+			// Move this entity.
 			pushed_p->ent = check;
 
 			VectorCopy(check->s.origin, pushed_p->origin);
 			VectorCopy(check->s.angles, pushed_p->angles);
-			VectorCopy(check->s.origin, holdOrg);
 
-			++pushed_p;
+			vec3_t hold_org;
+			VectorCopy(check->s.origin, hold_org);
 
-			// try moving the contacted entity 
+			pushed_p++;
 
-			if(check->client)
-			{	// FIXME: doesn't rotate monsters?
-				check->client->ps.pmove.delta_angles[YAW] += amove[YAW];
-			}
-			// figure movement due to the pusher's amove
-#if GIL_PUSH
+			// Try moving the contacted entity.
+			if (check->client != NULL)
+				check->client->ps.pmove.delta_angles[YAW] += (short)amove[YAW]; // FIXME: doesn't rotate monsters?
+
+			const edict_t* block = NULL;
+
+			// Figure movement due to the pusher's amove.
+			for (int test = 0; test < 4; test++)
 			{
-				int test;
-				vec3_t testpnt;
-				for (test=0;test<4;test++)
-				{
-					VectorCopy(holdOrg,testpnt);
-					VectorCopy(holdOrg,check->s.origin);
-					testpnt[2]+=check->mins[2];
-					if (test&1)
-						testpnt[0]+=check->mins[0];
-					else
-						testpnt[0]+=check->maxs[0];
-					if (test&2)
-						testpnt[1]+=check->mins[1];
-					else
-						testpnt[1]+=check->maxs[1];
+				vec3_t test_point;
+				VectorCopy(hold_org, test_point);
+				test_point[2] += check->mins[2];
 
-					VectorSubtract(testpnt, OrgOrg, org);
-					Vec3AddAssign(move, check->s.origin);
-					org2[0] = DotProduct(org, forward);
-					org2[1] = -DotProduct(org, right);
-					org2[2] = DotProduct(org, up);
-					move2[0]=DotProduct(org2,forwardInv)-org[0];
-					move2[1]=DotProduct(org2,rightInv)-org[1];
-					move2[2]=DotProduct(org2,upInv)-org[2];
-					Vec3AddAssign(move2, check->s.origin);
+				VectorCopy(hold_org, check->s.origin);
 
-					// may have pushed them off an edge
-					if(check->groundentity != pusher)
-					{
-						check->groundentity = NULL;
-					}
+				if (test & 1)
+					test_point[0] += check->mins[0];
+				else
+					test_point[0] += check->maxs[0];
 
-					block = TestEntityPosition(check);
-					if(!block)
-						break;
-				}
+				if (test & 2)
+					test_point[1] += check->mins[1];
+				else
+					test_point[1] += check->maxs[1];
+
+				VectorSubtract(test_point, pusher_org, org);
+				Vec3AddAssign(move, check->s.origin);
+
+				vec3_t org2;
+				org2[0] = DotProduct(org, forward);
+				org2[1] = -DotProduct(org, right);
+				org2[2] = DotProduct(org, up);
+
+				vec3_t move2;
+				move2[0] = DotProduct(org2, forward_inv) - org[0];
+				move2[1] = DotProduct(org2, right_inv) - org[1];
+				move2[2] = DotProduct(org2, up_inv) - org[2];
+
+				Vec3AddAssign(move2, check->s.origin);
+
+				// May have pushed them off an edge.
+				if (check->groundentity != pusher)
+					check->groundentity = NULL;
+
+				block = TestEntityPosition(check);
+				if (block == NULL)
+					break;
 			}
-#else
-			Vec3AddAssign(move, check->s.origin);
-			VectorSubtract(check->s.origin, pusher->s.origin, org);
-			org2[0] = DotProduct(org, forward);
-			org2[1] = -DotProduct(org, right);
-			org2[2] = DotProduct(org, up);
-			VectorSubtract(org2, org, move2);
-			Vec3AddAssign(move2, check->s.origin);
 
-			// may have pushed them off an edge
-			if(check->groundentity != pusher)
+			if (block == NULL)
 			{
-				check->groundentity = NULL;
-			}
+				// Pushed ok.
+				gi.linkentity(check);
 
-			block = TestEntityPosition(check);
-#endif
+				if (check->client != NULL)
+					check->client->playerinfo.flags |= PLAYER_FLAG_USE_ENT_POS;
 
-			if(!block)
-			{	// pushed ok
-				gi.linkentity (check);
-
-				if(check->client)
-				{
-					check->client->playerinfo.flags|=PLAYER_FLAG_USE_ENT_POS;
-				}
-
-				// impact?
+				// Impact?
 				continue;
 			}
-			// if it is ok to leave in the old position, do it
-			// this is only relevent for riding entities, not pushed
 
-			// No good, (A+B)-B!=A
-			//Vec3SubtractAssign(move, check->s.origin);
-			//Vec3SubtractAssign(move2, check->s.origin);
-
-			VectorCopy(holdOrg,check->s.origin);
+			// If it is ok to leave in the old position, do it.	This is only relevant for riding entities, not pushed.
+			VectorCopy(hold_org, check->s.origin);
 			block = TestEntityPosition(check);
 
-			if(!block)
+			if (block == NULL)
 			{
-				--pushed_p;
+				pushed_p--;
 				continue;
 			}
 		}
-		
-		// save off the obstacle so we can call the block function
+
+		// Save off the obstacle so we can call the block function.
 		obstacle = check;
 
-		// move back any entities we already moved
-		// go backwards, so if the same entity was pushed
-		// twice, it goes back to the original position
-		for(p = pushed_p - 1; p >= pushed; --p)
+		// Move back any entities we already moved.
+		// Go backwards, so if the same entity was pushed twice, it goes back to the original position.
+		for (const pushed_t* p = pushed_p - 1; p >= &pushed[0]; p--)
 		{
 			VectorCopy(p->origin, p->ent->s.origin);
 			VectorCopy(p->angles, p->ent->s.angles);
 
-			if(p->ent->client)
-			{
-				p->ent->client->ps.pmove.delta_angles[YAW] = p->delta_yaw;
-			}
+			if (p->ent->client != NULL)
+				p->ent->client->ps.pmove.delta_angles[YAW] = (short)p->delta_yaw;
 
 			gi.linkentity(p->ent);
 		}
@@ -1315,12 +1235,9 @@ qboolean PushEntities(edict_t *pusher, vec3_t move, vec3_t amove)
 		return false;
 	}
 
-	//FIXME: is there a better way to handle this?
-	// see if anything we moved has touched a trigger
-	for(p = pushed_p - 1; p >= pushed; --p)
-	{
-		ActivateTriggers (p->ent);
-	}
+	// See if anything we moved has touched a trigger.
+	for (const pushed_t* p = pushed_p - 1; p >= &pushed[0]; p--)
+		ActivateTriggers(p->ent);
 
 	return true;
 }
