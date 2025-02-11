@@ -1,29 +1,23 @@
+//
+// g_Physics.c
+//
+// Copyright 1998 Raven Software
+//
+
 #include "g_Physics.h"
-#include "g_PhysicsLocal.h"
+#include "g_PhysicsLocal.h" //mxd
 #include "g_local.h"
-
-#include "Vector.h"
-#include "Angles.h"
-//#include "PrimitiveDisplayHack.h"
-#include "SinglyLinkedList.h"
-#include "q_Physics.h"
-#include "Utilities.h"
-#include "p_main.h"
-#include "random.h"
-#include "p_anim_branch.h"
-#include "p_anims.h"
-#include "fx.h"
 #include "g_combat.h" //mxd
-#include "g_playstats.h"
-#include "p_actions.h"
+#include "q_Physics.h"
+#include "p_main.h"
+#include "p_anims.h"
+#include "FX.h"
+#include "Random.h"
+#include "SinglyLinkedList.h"
+#include "Vector.h"
+#include "Utilities.h"
 
-static void Physics_None(edict_t *self);
 static void Physics_Static(edict_t *self);
-static void Physics_NoclipMove(edict_t *self);
-static void Physics_FlyMove(edict_t *self);
-static void Physics_StepMove(edict_t *self);
-static void Physics_Push(edict_t *self);
-static void Physics_ScriptAngular(edict_t *self);
 
 void (*physicsFuncs[NUM_PHYSICSTYPES])(edict_t *self) =
 {
