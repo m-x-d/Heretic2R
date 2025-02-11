@@ -59,56 +59,39 @@ static void Physics_NoclipMove(edict_t* self)
 	gi.linkentity(self);
 }
 
-//---------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------
-static void Physics_FlyMove(edict_t *self)
+static void Physics_FlyMove(edict_t* self)
 {
-	FormMove_t		formMove;
+	FormMove_t form_move;
 
-	if(self->physicsFlags & PF_RESIZE)
+	if (self->physicsFlags & PF_RESIZE)
 	{
-		if(gi.ResizeBoundingForm(self, &formMove))
-		{
-			self->physicsFlags &= ~PF_RESIZE;
-		}
-		else
-		{
-			return;	// if an ent can't be resized, then it probably can't be moved either
-		}
+		if (!gi.ResizeBoundingForm(self, &form_move))
+			return; // If an ent can't be resized, then it probably can't be moved either.
+
+		self->physicsFlags &= ~PF_RESIZE;
 	}
 
-	// update angles
+	// Update angles.
 	VectorMA(self->s.angles, FRAMETIME, self->avelocity, self->s.angles);
 
-	if(!BoundVelocity(self->velocity) && self->gravity <= 0.0f)
-	{
+	if (!BoundVelocity(self->velocity) && self->gravity <= 0.0f)
 		return;
-	}
 
-	if(self->velocity[2] > 0.0f)
-	{
+	if (self->velocity[2] > 0.0f)
 		self->groundentity = NULL;
-	}
-	else
-	{
-		if(self->groundentity)
-		{	// onground, return without moving
-			return;
-		}
-	}
+	else if (self->groundentity != NULL)
+		return; // On ground, return without moving.
 
-	VectorCopy(self->mins, formMove.mins);
-	VectorCopy(self->maxs, formMove.maxs);
+	VectorCopy(self->mins, form_move.mins);
+	VectorCopy(self->maxs, form_move.maxs);
 
-	formMove.passEntity = self;
-	formMove.clipMask = self->clipmask;
+	form_move.passEntity = self;
+	form_move.clipMask = self->clipmask;
 
-	MoveEntity_Bounce(self, &formMove);
-
+	MoveEntity_Bounce(self, &form_move);
 	PhysicsCheckWaterTransition(self);
 
 	gi.linkentity(self);
-
 	ActivateTriggers(self);
 }
 
