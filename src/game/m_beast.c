@@ -2025,7 +2025,6 @@ void LevelToGround (edict_t *self, float fscale, float rscale, qboolean z_adjust
 	}*/
 }
 
-void DoImpactDamage(edict_t *self, trace_t *trace);
 void tbeast_fake_impact(edict_t *self, trace_t *trace, qboolean crush)
 {
 	trace_t	tr;

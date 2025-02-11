@@ -2940,8 +2940,6 @@ void PrintPmove (pmove_t *pm)
 // for a given client, ClientThink() probably be called several times,
 // ==============
 */
-extern edict_t	*TestEntityPosition(edict_t *self);
-
 void ClientThink (edict_t *ent, usercmd_t *ucmd)
 {
 	gclient_t	*client;
