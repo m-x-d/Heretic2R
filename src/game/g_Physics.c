@@ -897,33 +897,38 @@ static edict_t* obstacle;
 
 #define MAX_MATRIX	3
 
-static void BackSub(float a[][MAX_MATRIX],int *indx,float *b,int sz)
+static void BackSub(float a[][MAX_MATRIX], const int* indx, float* b, const int sz)
 {
-    int i,j,ii=-1,ip;
-    float sum;
-    for (i=0;i<sz;i++)
-    {
-		ip=indx[i];
-		sum=b[ip];
-        b[ip]=b[i];
-        if (ii>=0)
-        {
-            for (j=ii;j<i;j++)
-                sum-=a[i][j]*b[j];
-        }
-        else if (sum!=0.0)
-        {
-            ii=i;
-        }
-        b[i]=sum;
-    }
-    for (i=sz-1;i>=0;i--)
-    {
-        sum=b[i];
-        for (j=i+1;j<sz;j++)
-            sum-=a[i][j]*b[j];
-        b[i]=sum/a[i][i];
-    }
+	int ii = -1;
+
+	for (int i = 0; i < sz; i++)
+	{
+		const int ip = indx[i];
+
+		float sum = b[ip];
+		b[ip] = b[i];
+
+		if (ii >= 0)
+		{
+			for (int j = ii; j < i; j++)
+				sum -= a[i][j] * b[j];
+		}
+		else if (sum != 0.0f)
+		{
+			ii = i;
+		}
+
+		b[i] = sum;
+	}
+
+	for (int i = sz - 1; i >= 0; i--)
+	{
+		float sum = b[i];
+		for (int j = i + 1; j < sz; j++)
+			sum -= a[i][j] * b[j];
+
+		b[i] = sum / a[i][i];
+	}
 }
 
 #define EPS_MATRIX (1E-15)
