@@ -804,11 +804,11 @@ void MoveEntity_Slide(edict_t *self)
 
 		if(bumpcount == MAX_BUMPS - 1)
 		{	// results in isBlocked being called on the last bounced
-			HandleCollision(self, &formMove.trace, delta, -1, CH_BOUNCED|CH_STANDARD);
+			HandleCollision(self, &formMove.trace, delta, false, CH_BOUNCED|CH_STANDARD);
 		}
 		else
 		{
-			HandleCollision(self, &formMove.trace, delta, -1, CH_BOUNCED|CH_ISBLOCKING);
+			HandleCollision(self, &formMove.trace, delta, false, CH_BOUNCED|CH_ISBLOCKING);
 		}
 
 		VectorCopy(formMove.trace.plane.normal, groundNormal);
@@ -1036,7 +1036,7 @@ void MoveEntity_Slide(edict_t *self)
 
 	if(formMove.trace.fraction < 1)
 	{
-		HandleCollision(self, &formMove.trace, delta, -1, CH_STANDARD);
+		HandleCollision(self, &formMove.trace, delta, false, CH_STANDARD);
 
 		if(Vec3NotZero(self->velocity))
 		{
