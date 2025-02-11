@@ -255,127 +255,117 @@ static void ApplyGravity(edict_t* self, vec3_t move)
 	self->velocity[2] -= self->gravity * sv_gravity->value * FRAMETIME;
 }
 
-//Make things that hit each other do some damage
-void DoImpactDamage(edict_t *self, trace_t *trace)
+// Make things that hit each other do some damage.
+void DoImpactDamage(edict_t* self, trace_t* trace)
 {
-	vec3_t	normal, movedir;
-	float	impact_dmg, total_health, tr_health, self_health, speed;
-	int		tr_dmg, self_dmg;
-
-	if(self->impact_debounce_time>level.time)
-		return;
-	
-	if(self->svflags&SVF_DO_NO_IMPACT_DMG)
+	if (self->impact_debounce_time > level.time || (self->svflags & SVF_DO_NO_IMPACT_DMG))
 		return;
 
-	if(self->client)
+	if (self->client != NULL && (self->client->playerinfo.edictflags & FL_CHICKEN)) // Chicken is not very impactful...
+		return;
+
+	// Skip when not a player or monster, and has no mass.
+	if (self->client == NULL && !(self->svflags & SVF_MONSTER) && self->mass <= 0)
+		return;
+
+	const float speed = VectorLength(self->velocity);
+
+	if (speed < 50.0f || (speed < 500.0f && self->watertype > 0))
+		return;
+
+	float impact_dmg = sqrtf(speed / 10.0f);
+
+	// Monsters don't do impact damage to their own type.
+	if (self->classID != CID_NONE && self->classID == trace->ent->classID)
+		return;
+
+	vec3_t normal;
+	if (Vec3NotZero(trace->plane.normal)) //BUGFIX: mxd. 2 always true checks in original version.
+		VectorCopy(trace->plane.normal, normal);
+	else
+		VectorCopy(vec3_up, normal);
+
+	vec3_t move_dir;
+	if (Vec3NotZero(self->velocity))
 	{
-		if(self->client->playerinfo.edictflags & FL_CHICKEN)
-		{
+		VectorCopy(self->velocity, move_dir);
+		VectorNormalize(move_dir);
+	}
+	else
+	{
+		VectorCopy(vec3_up, move_dir);
+	}
+
+	float other_health;
+
+	if (trace->ent->solid == SOLID_BSP)
+	{
+		if (self->health > 0)
+			impact_dmg = impact_dmg * (float)self->health / 100.0f;
+		else if (speed < 300.0f)
 			return;
+
+		if ((trace->ent->takedamage == DAMAGE_NO && self->health > 100) || self->health <= 0)
+			other_health = (float)self->health * 10.0f; //TODO: err, self->health CAN be negative!
+		else
+			other_health = 1000.0f;
+	}
+	else if (trace->ent->health > 0)
+	{
+		other_health = (float)trace->ent->health * 0.5f;
+	}
+	else
+	{
+		other_health = 1.0f;
+	}
+
+	float self_health = 2.0f;
+	if (self->health > 0)
+		self_health *= (float)self->health;
+
+	const float total_health = self_health + other_health;
+
+	float other_damage; //mxd. int in original version.
+	if (trace->ent->solid == SOLID_BSP && trace->ent->takedamage == DAMAGE_NO)
+		other_damage = 0.0f;
+	else
+		other_damage = floorf(impact_dmg * self_health / total_health);
+
+	float self_damage = floorf(impact_dmg - other_damage); //mxd. int in original version.
+
+	// Damage other.
+	if (other_damage >= 1.0f && trace->ent->takedamage != DAMAGE_NO && !(trace->ent->svflags & SVF_TAKE_NO_IMPACT_DMG) && !(trace->ent->svflags & SVF_BOSS))
+	{
+		if (skill->value < SKILL_HARD && (self->svflags & SVF_MONSTER) && trace->ent->client != NULL)
+			other_damage = ceilf(other_damage * 0.5f); // Monsters do a bit less damage to player on normal and easy skill.
+
+		if (other_damage >= 1.0f)
+		{
+			T_Damage(trace->ent, self, self, move_dir, trace->endpos, normal, (int)other_damage, (int)other_damage, 0, MOD_CRUSH);
+
+			// Knokdown player?
+			if (trace->ent->health > 0 && trace->ent->client != NULL && other_damage > flrand(25.0f, 40.0f) - (5.0f * skill->value))
+			{
+				if (trace->ent->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
+					P_KnockDownPlayer(&trace->ent->client->playerinfo);
+			}
 		}
 	}
 
-	if(self->svflags&SVF_MONSTER||self->mass||self->client)
+	// Damage self.
+	if (self_damage >= 1.0f && self->takedamage != DAMAGE_NO && (speed > 600.0f || self->health <= 0) && !(self->svflags & SVF_TAKE_NO_IMPACT_DMG) && !(self->svflags & SVF_BOSS) && self->jump_time < level.time)
 	{
-		speed = VectorLength(self->velocity);
+		if (skill->value > SKILL_EASY && self->client != NULL && trace->ent->solid == SOLID_BSP)
+			self_damage = floorf((float)self->dmg * 1.5f); // More damage to player from falls. //TODO: why self->dmg?.. Should be self_damage * 1.5 instead?
 
-		if(speed<50)
-			return;
-
-		if(speed < 500 && self->watertype)
-			return;
-
-		impact_dmg = sqrt(speed/10);
-
-		//monsters dont do impact damage to their own type
-		if(self->classID && trace->ent->classID && self->classID == trace->ent->classID)
-			return;
-
-		if(impact_dmg>0)
+		if ((self_damage >= 3.0f && (self->classID != CID_ASSASSIN && self->classID != CID_SSITHRA)) || self->health <= 0) // But what about ring of repulsion?
 		{
-			VectorSet(normal, 0, 0, 1);
-			if(&trace->plane)
-			{
-				if(trace->plane.normal)
-				{
-					VectorCopy(trace->plane.normal, normal);
-				}
-			}
+			int flags = DAMAGE_AVOID_ARMOR; //mxd
+			if (self_damage < 5.0f)
+				flags |= DAMAGE_NO_BLOOD;
 
-			VectorSet(movedir, 0, 0, 1);
-			if(!Vec3IsZero(self->velocity))
-			{
-				VectorCopy(self->velocity, movedir);
-				VectorNormalize(movedir);
-			}
-
-			if(trace->ent->solid==SOLID_BSP)
-			{
-				if(self->health>0)
-					impact_dmg = impact_dmg * self->health / 100;
-				else if(speed<300)
-					return;
-
-				if((!trace->ent->takedamage && self->health*10 > 1000) || self->health<=0)
-					tr_health = self->health * 10;
-				else
-					tr_health = 1000;
-			}
-			else if(trace->ent->health>0)
-				tr_health = trace->ent->health * 0.5;
-			else
-				tr_health = 1;
-
-			if(self->health>0)
-				self_health = self->health * 2;
-			else
-				self_health = 2;
-
-			total_health = self_health + tr_health;
-
-			if(trace->ent->solid==SOLID_BSP&&!trace->ent->takedamage)
-				tr_dmg = 0;
-			else
-				tr_dmg = floor(impact_dmg * self_health/total_health);
-
-			self_dmg = floor(impact_dmg - tr_dmg);
-
-			if(tr_dmg>=1 && trace->ent->takedamage && !(trace->ent->svflags&SVF_TAKE_NO_IMPACT_DMG)&&!(trace->ent->svflags&SVF_BOSS))
-			{
-				if(skill->value < 2 && self->svflags & SVF_MONSTER && trace->ent->client)
-					tr_dmg = ceil(tr_dmg * 0.5);//monsters do a bit less damage to player on normal and easy skill
-				if(tr_dmg >= 1)
-				{
-					T_Damage(trace->ent, self, self, movedir, trace->endpos, normal, tr_dmg, tr_dmg, 0,MOD_CRUSH);
-					if(trace->ent->health>0)
-					{
-						if(trace->ent->client)
-						{
-							if(tr_dmg > irand(25, 40) - (5 * (skill->value)))
-							{
-								if(trace->ent->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
-									P_KnockDownPlayer(&trace->ent->client->playerinfo);
-							}
-						}
-					}
-				}
-			}
-
-			if(self_dmg>=1 && self->takedamage && (speed > 600 || self->health <= 0) && !(self->svflags&SVF_TAKE_NO_IMPACT_DMG) && !(self->svflags&SVF_BOSS) && self->jump_time < level.time)
-			{
-				if(skill->value && self->client && trace->ent->solid == SOLID_BSP)
-					self_dmg = floor(self->dmg * 1.5);//more damage to player from falls
-
-				if(self_dmg >= 3 && (self->classID != CID_ASSASSIN && self->classID != CID_SSITHRA) || self->health<=0)//but what about ring of repulsion?
-				{
-					if(self_dmg < 5)
-						T_Damage(self, self, self, movedir, trace->endpos, normal, self_dmg, 0, DAMAGE_NO_BLOOD|DAMAGE_AVOID_ARMOR,MOD_FALLING);
-					else
-						T_Damage(self, self, self, movedir, trace->endpos, normal, self_dmg, 0, DAMAGE_AVOID_ARMOR,MOD_FALLING);
-					self->impact_debounce_time = level.time + 0.3;//don't collide again too soon
-				}
-			}
+			T_Damage(self, self, self, move_dir, trace->endpos, normal, (int)self_damage, 0, flags, MOD_FALLING);
+			self->impact_debounce_time = level.time + 0.3f; // Don't collide again too soon.
 		}
 	}
 }
