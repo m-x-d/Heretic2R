@@ -95,104 +95,71 @@ static void Physics_FlyMove(edict_t* self)
 	ActivateTriggers(self);
 }
 
-//---------------------------------------------------------------------------------
-//Monsters freefall when they don't have a ground entity, otherwise
-//all movement is done with discrete steps.
-
-//This is also used for objects that have become still on the ground, but
-//will fall if the floor is pulled out from under them.
-//---------------------------------------------------------------------------------
-static void Physics_StepMove(edict_t *self)
+// Monsters freefall when they don't have a ground entity, otherwise all movement is done with discrete steps.
+// This is also used for objects that have become still on the ground, but will fall if the floor is pulled out from under them.
+static void Physics_StepMove(edict_t* self)
 {
-	qboolean	hasVel;
-	FormMove_t	formMove;
-	float		gravity;
-	float		friction;
-
 	assert(self->gravity >= 0.0f);
 
-	hasVel = Vec3NotZero(self->velocity);
+	const qboolean has_velocity = Vec3NotZero(self->velocity);
 
-//	gi.dprintf("hasVel %i\n", hasVel);
-
-//	gi.dprintf("vel in Physics_StepMove %f, %f, %f\n", self->velocity[0],
-//		self->velocity[1], self->velocity[2]);
-
-	// Apply rotation friction if desired
-	if(self->physicsFlags & PF_ROTATIONAL_FRICTION)
+	// Apply rotation friction if desired.
+	if (self->physicsFlags & PF_ROTATIONAL_FRICTION)
 	{
-		if(!Vec3IsZero(self->avelocity))
-		{
+		if (has_velocity)
 			ApplyRotationalFriction(self);
-		}
 	}
 	else
 	{
 		VectorMA(self->s.angles, FRAMETIME, self->avelocity, self->s.angles);
 	}
 
-	if(self->physicsFlags & PF_RESIZE)
+	FormMove_t form_move;
+	if ((self->physicsFlags & PF_RESIZE) && gi.ResizeBoundingForm(self, &form_move))
+		self->physicsFlags &= ~PF_RESIZE;
+
+	const float gravity = self->gravity * sv_gravity->value;
+
+	// Check for submersion or nograv.
+	if (self->waterlevel < 2 && gravity > 0.0f)
 	{
-		if(gi.ResizeBoundingForm(self, &formMove))
+		if (self->groundentity != NULL)
 		{
-			self->physicsFlags &= ~PF_RESIZE;
-		}
-	}
+			const float friction = self->friction * sv_friction->value;
 
-	gravity = self->gravity * sv_gravity->value;
-
-	// check for submersion or nograv
-	if(self->waterlevel <= 1 && gravity > 0.0f)
-	{
-		if(self->groundentity)
-		{
-			friction = self->friction * sv_friction->value;
-
-			if(!hasVel)
-			{
-				if(self->groundNormal[2] >= GROUND_NORMAL && self->groundNormal[2] >= (gravity / (friction + gravity)))
-				{	// not going anywhere without velocity on ground whose slope this ent won't slide on
-					return;
-				}
-			}
+			if (!has_velocity && self->groundNormal[2] >= GROUND_NORMAL && self->groundNormal[2] >= gravity / (friction + gravity))
+				return; // Not going anywhere without velocity on ground whose slope this ent won't slide on.
 		}
 
 		MoveEntity_Slide(self);
 	}
 	else
-	{	
-		if(!hasVel)
-		{	// not going anywhere without vel
-			return;
-		}
-
-		VectorCopy(self->mins, formMove.mins);
-		VectorCopy(self->maxs, formMove.maxs);
-
-		formMove.passEntity = self;
-		formMove.clipMask = self->clipmask;
-
-		MoveEntity_Bounce(self, &formMove);
-	}
-
-	if(!BoundVelocity(self->velocity))
 	{
-//		gi.dprintf("Doesn't have vel\n");
+		if (!has_velocity)
+			return; // Not going anywhere without velocity.
 
-		if(hasVel)
-		{	// stopped
-			QPostMessage(self, G_MSG_RESTSTATE, PRI_PHYSICS, "i", hasVel);
-		}
+		VectorCopy(self->mins, form_move.mins);
+		VectorCopy(self->maxs, form_move.maxs);
+
+		form_move.passEntity = self;
+		form_move.clipMask = self->clipmask;
+
+		MoveEntity_Bounce(self, &form_move);
 	}
-	else if(!hasVel)
-	{	// started
-		QPostMessage(self, G_MSG_RESTSTATE, PRI_PHYSICS, "i", hasVel);
+
+	if (!BoundVelocity(self->velocity))
+	{
+		if (has_velocity)
+			QPostMessage(self, G_MSG_RESTSTATE, PRI_PHYSICS, "i", has_velocity); // Stopped moving.
+	}
+	else if (!has_velocity)
+	{
+		QPostMessage(self, G_MSG_RESTSTATE, PRI_PHYSICS, "i", has_velocity); // Started moving.
 	}
 
 	PhysicsCheckWaterTransition(self);
 
 	gi.linkentity(self);
-
 	ActivateTriggers(self);
 }
 
