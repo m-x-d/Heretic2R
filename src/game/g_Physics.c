@@ -202,52 +202,45 @@ void EntityPhysics(edict_t* self)
 	}
 }
 
-//---------------------------------------------------------------------------------
-// Determines which entity if any the self is on
-// Also zeros z vel and moves onto ground if it was in the air
-//---------------------------------------------------------------------------------
-void CheckEntityOn(edict_t *self)
+// Determines which entity if any the self is on.
+// Also zeros z vel and moves onto ground if it was in the air.
+void CheckEntityOn(edict_t* self)
 {
-	vec3_t		point;
-	FormMove_t formMove;
-
 	assert(self);
 
-	if(self->velocity[2] > Z_VEL_NOT_ONGROUND)
+	if (self->velocity[2] > Z_VEL_NOT_ONGROUND)
 	{
 		self->groundentity = NULL;
 		return;
 	}
 
-	// if the hull point one-quarter unit down is solid the entity is on ground
-	point[0] = self->s.origin[0];
-	point[1] = self->s.origin[1];
-	point[2] = self->s.origin[2] - (PHYSICS_Z_FUDGE + CHECK_BELOW_DIST);
+	// If the hull point one-quarter unit down is solid, the entity is on ground.
+	vec3_t point;
+	VectorCopy(self->s.origin, point);
+	point[2] -= PHYSICS_Z_FUDGE + CHECK_BELOW_DIST;
 
-	VectorCopy(self->mins, formMove.mins);
-	VectorCopy(self->maxs, formMove.maxs);
+	FormMove_t form_move;
+	VectorCopy(self->mins, form_move.mins);
+	VectorCopy(self->maxs, form_move.maxs);
 
-	formMove.start = self->s.origin;
-	formMove.end = point;
-	formMove.passEntity = self;
-	formMove.clipMask = MASK_MONSTERSOLID;
+	form_move.start = self->s.origin;
+	form_move.end = point;
+	form_move.passEntity = self;
+	form_move.clipMask = MASK_MONSTERSOLID;
 
-	gi.TraceBoundingForm(&formMove);
+	gi.TraceBoundingForm(&form_move);
 
-	// check steepness
-	if(!formMove.trace.ent || (formMove.trace.plane.normal[2] < GROUND_NORMAL && !formMove.trace.startsolid))
+	// Check steepness.
+	if (form_move.trace.ent == NULL || (form_move.trace.plane.normal[2] < GROUND_NORMAL && !form_move.trace.startsolid))
 	{
 		self->groundentity = NULL;
 		return;
 	}
 
-	if(!formMove.trace.startsolid && !formMove.trace.allsolid)
+	if (!form_move.trace.startsolid && !form_move.trace.allsolid)
 	{
-		VectorCopy(formMove.trace.endpos, self->s.origin);
-
-		SetGroundEntFromTrace(self, &formMove.trace);
-
-//		self->velocity[2] = 0;
+		VectorCopy(form_move.trace.endpos, self->s.origin);
+		SetGroundEntFromTrace(self, &form_move.trace);
 	}
 }
 
