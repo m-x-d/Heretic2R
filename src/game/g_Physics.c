@@ -852,19 +852,14 @@ static void ApplyRotationalFriction(edict_t* self)
 	}
 }
 
-//---------------------------------------------------------------------------------
-// Sets the groundentity info contained in self based on trace
-//---------------------------------------------------------------------------------
-void SetGroundEntFromTrace(edict_t *self, trace_t *trace)
+// Sets the groundentity info contained in self based on trace.
+static void SetGroundEntFromTrace(edict_t* self, const trace_t* trace)
 {
 	assert(self);
-
 	assert(trace->plane.normal[2] > GROUND_NORMAL);
 
 	self->groundentity = trace->ent;
-
 	self->groundentity_linkcount = trace->ent->linkcount;
-
 	VectorCopy(trace->plane.normal, self->groundNormal);
 }
 
