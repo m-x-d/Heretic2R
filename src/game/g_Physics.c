@@ -1293,32 +1293,30 @@ static void Physics_Push(edict_t* self)
 	}
 }
 
-static void Physics_ScriptAngular(edict_t *self)
+static void Physics_ScriptAngular(edict_t* self)
 {
-	vec3_t		forward, dest, angle;
-
-	if (self->owner)
+	if (self->owner != NULL)
 	{
+		vec3_t angle;
 		VectorAdd(self->owner->s.angles, self->moveinfo.start_angles, angle);
+
+		vec3_t forward;
 		if (self->moveinfo.state & 1)
-		{
 			AngleVectors(angle, NULL, forward, NULL);
-		}
 		else
-		{
 			AngleVectors(angle, NULL, NULL, forward);
-		}
+
 		VectorInverse(forward);
+
+		vec3_t dest;
 		VectorMA(self->moveinfo.start_origin, self->moveinfo.distance, forward, dest);
-		// Distance moved this frame
-		Vec3SubtractAssign(self->s.origin, dest);
-		// Hence velocity
-		VectorScale(dest, (1.0 / FRAMETIME), self->velocity);
+
+		Vec3SubtractAssign(self->s.origin, dest); // Distance moved this frame.
+		VectorScale(dest, (1.0f / FRAMETIME), self->velocity); // Hence velocity.
 
 		if (self->moveinfo.state & 1)
-		{
 			VectorCopy(angle, self->s.angles);
-		}
 	}
+
 	Physics_Push(self);
 }
