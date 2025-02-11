@@ -1242,77 +1242,54 @@ static qboolean PushEntities(edict_t* pusher, const vec3_t move, const vec3_t am
 	return true;
 }
 
-/*
-================
-Physics_Push
-
-Bmodel objects don't interact with each other, but
-push all box objects
-================
-*/
-void Physics_Push(edict_t *self)
+// Bmodel objects don't interact with each other, but push all box objects.
+static void Physics_Push(edict_t* self)
 {
-	vec3_t		move, amove;
-	edict_t		*part, *mv;
-
-	// Not a team captain, so movement will be handled elsewhere
-	if(self->flags & FL_TEAMSLAVE)
-	{
+	// Not a team captain, so movement will be handled elsewhere.
+	if (self->flags & FL_TEAMSLAVE)
 		return;
-	}
 
-	// make sure all team slaves can move before commiting
-	// any moves or calling any think functions
-	// if the move is blocked, all moved objects will be backed out
-	pushed_p = pushed;
+	// Make sure all team slaves can move before commiting any moves or calling any think functions.
+	// If the move is blocked, all moved objects will be backed out.
+	pushed_p = &pushed[0];
 
-	for(part = self; part; part = part->teamchain)
+	edict_t* pusher;
+	for (pusher = self; pusher != NULL; pusher = pusher->teamchain)
 	{
-		if(Vec3NotZero(part->velocity) || Vec3NotZero(part->avelocity))
-		{	// object is moving
-			VectorScale (part->velocity, FRAMETIME, move);
-			VectorScale (part->avelocity, FRAMETIME, amove);
-
-			if(!PushEntities(part, move, amove))
-			{
-				break;	// move was blocked
-			}
-		}
-	}
-
-	if(pushed_p > &pushed[MAX_EDICTS])
-	{
-		gi.error (ERR_FATAL, "pushed_p > &pushed[MAX_EDICTS], memory corrupted");
-	}
-
-	if(part)
-	{
-		// the move failed, bump all nextthink times and back out moves
-		for(mv = self; mv; mv = mv->teamchain)
+		if (Vec3NotZero(pusher->velocity) || Vec3NotZero(pusher->avelocity))
 		{
-			if(mv->nextthink > 0)
-			{
-				mv->nextthink += FRAMETIME;
-			}
-		}
+			// Object is moving.
+			vec3_t move;
+			VectorScale(pusher->velocity, FRAMETIME, move);
 
-		// if the pusher has a "blocked" function, call it
-		// otherwise, just stay in place until the obstacle is gone
-		if(part->blocked)
-		{
-			part->blocked(part, obstacle);
+			vec3_t amove;
+			VectorScale(pusher->avelocity, FRAMETIME, amove);
+
+			if (!PushEntities(pusher, move, amove))
+				break; // Move was blocked.
 		}
+	}
+
+	if (pushed_p > &pushed[MAX_EDICTS])
+		gi.error(ERR_FATAL, "pushed_p > &pushed[MAX_EDICTS], memory corrupted");
+
+	if (pusher != NULL)
+	{
+		// The move failed, bump all nextthink times and back out moves.
+		for (edict_t* moved = self; moved != NULL; moved = moved->teamchain)
+			if (moved->nextthink > 0.0f)
+				moved->nextthink += FRAMETIME;
+
+		// If the pusher has a "blocked" function, call it.	Otherwise, just stay in place until the obstacle is gone.
+		if (pusher->blocked != NULL)
+			pusher->blocked(pusher, obstacle);
 	}
 	else
 	{
-		// the move succeeded, so call all think functions
-		for(part = self; part; part = part->teamchain)
-		{
-			if(ThinkTime(part))
-			{
-				part->think(part);
-			}
-		}
+		// The move succeeded, so call all think functions.
+		for (edict_t* moved = self; moved != NULL; moved = moved->teamchain)
+			if (ThinkTime(moved))
+				moved->think(moved);
 	}
 }
 
