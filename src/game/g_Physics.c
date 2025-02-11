@@ -17,49 +17,36 @@
 #include "Vector.h"
 #include "Utilities.h"
 
-void PhysicsCheckWaterTransition(edict_t *self)
-{//fixme: a high detail option?  Or just not in netplay?- maybe a flag for client to take care of
-	//disabling for now since it might cause too much net traffic
-	qboolean wasinwater, isinwater;
-	trace_t	trace;
-	int	size;
-
-	if(deathmatch->value || coop->value)
+//FIXME: a high detail option? Or just not in netplay?
+// - maybe a flag for client to take care of disabling for now since it might cause too much net traffic.
+void PhysicsCheckWaterTransition(edict_t* self)
+{
+	if (DEATHMATCH || COOP)
 		return;
 
-	// check for water transition
-	wasinwater = (self->watertype & MASK_WATER);
-	self->watertype = gi.pointcontents (self->s.origin);
-	isinwater = self->watertype & MASK_WATER;
+	// Check for water transition.
+	const qboolean wasinwater = (self->watertype & MASK_WATER);
 
+	self->watertype = gi.pointcontents(self->s.origin);
+	const qboolean isinwater = (self->watertype & MASK_WATER);
+
+	if (wasinwater == isinwater)
+		return;
+
+	trace_t trace;
 	if (!wasinwater && isinwater)
-	{
-		gi.trace(self->s.old_origin, vec3_origin, vec3_origin, self->s.origin, self, MASK_WATER,&trace);
-	}
+		gi.trace(self->s.old_origin, vec3_origin, vec3_origin, self->s.origin, self, MASK_WATER, &trace);
 	else if (wasinwater && !isinwater)
-	{
-		gi.trace(self->s.origin, vec3_origin, vec3_origin, self->s.old_origin, self, MASK_WATER,&trace);
-	}
-	else
+		gi.trace(self->s.origin, vec3_origin, vec3_origin, self->s.old_origin, self, MASK_WATER, &trace);
+
+	if (trace.fraction == 1.0f)
 		return;
 
-	if(trace.fraction==1.0)
-		return;
+	//FIXME: just put a flag on them and do the effect on the other side?
+	int size = (int)(ceilf(VectorLength(self->size) + VectorLength(self->velocity) / 10.0f));
+	size = ClampI(size, 10, 255);
 
-//fixme: just put a flag on them and do the effect on the other side?
-	size = ceil(VectorLength(self->size) + VectorLength(self->velocity)/10);
-	if(size<10)
-		size = 10;
-	else if(size>255)
-		size = 255;
-	
-	gi.CreateEffect(NULL,
-					FX_WATER_ENTRYSPLASH,
-					CEF_FLAG6 | CEF_FLAG7,
-					trace.endpos,
-					"bd",
-					size,
-					trace.plane.normal);
+	gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG6 | CEF_FLAG7, trace.endpos, "bd", size, trace.plane.normal);
 }
 
 //---------------------------------------------------------------------------------
