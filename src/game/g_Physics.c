@@ -885,16 +885,17 @@ edict_t* TestEntityPosition(edict_t* self)
 
 typedef struct
 {
-	edict_t	*ent;
-	vec3_t	origin;
-	vec3_t	angles;
-	float	deltayaw;
+	edict_t* ent;
+	vec3_t origin;
+	vec3_t angles;
+	float delta_yaw;
 } pushed_t;
-pushed_t	pushed[MAX_EDICTS], *pushed_p;
 
-edict_t	*obstacle;
+static pushed_t pushed[MAX_EDICTS];
+static pushed_t* pushed_p;
+static edict_t* obstacle;
 
-#define MAX_MATRIX (3)
+#define MAX_MATRIX	3
 
 static void BackSub(float a[][MAX_MATRIX],int *indx,float *b,int sz)
 {
@@ -1110,7 +1111,7 @@ qboolean PushEntities(edict_t *pusher, vec3_t move, vec3_t amove)
 
 	if(pusher->client)
 	{
-		pushed_p->deltayaw = pusher->client->ps.pmove.delta_angles[YAW];
+		pushed_p->delta_yaw = pusher->client->ps.pmove.delta_angles[YAW];
 	}
 
 	pushed_p++;
@@ -1279,7 +1280,7 @@ qboolean PushEntities(edict_t *pusher, vec3_t move, vec3_t amove)
 
 			if(p->ent->client)
 			{
-				p->ent->client->ps.pmove.delta_angles[YAW] = p->deltayaw;
+				p->ent->client->ps.pmove.delta_angles[YAW] = p->delta_yaw;
 			}
 
 			gi.linkentity(p->ent);
