@@ -931,69 +931,90 @@ static void BackSub(float a[][MAX_MATRIX], const int* indx, float* b, const int 
 	}
 }
 
-#define EPS_MATRIX (1E-15)
+#define EPS_MATRIX	(1E-15f) //TODO: outside of floating point precision, evaluates to 0.0f. Use FLT_EPSILON instead?
 
-static int LUDecomposition(float a[][MAX_MATRIX],int indx[],int sz,float *d)
+static qboolean LUDecomposition(float a[][MAX_MATRIX], int indx[], const int sz, float* d)
 {
-    int i,imax,j,k;
-    float big,dum,sum,temp;
-    float vv[MAX_MATRIX];
-	*d=1;
-    for (i=0;i<sz;i++)
-    {
-        big=0.;
-        for (j=0;j<sz;j++)
-            if ((temp=fabs(a[i][j]))>big)
-                    big=temp;
-        if (big<EPS_MATRIX)
-			return 0;
-        vv[i]=1.0/big;
-    }
-	imax = 0;//should have a def value just to make sure
-    for (j=0;j<sz;j++)
-    {
-        for (i=0;i<j;i++)
-        {
-            sum=a[i][j];
-            for (k=0;k<i;k++)
-                sum-=a[i][k]*a[k][j];
-            a[i][j]=sum;
-        }
-        big=0.;
-        for (i=j;i<sz;i++)
-        {
-            sum=a[i][j];
-            for (k=0;k<j;k++)
-                sum-=a[i][k]*a[k][j];
-            a[i][j]=sum;
-            if ((dum=vv[i]*fabs(sum))>=big)
-            {
-                big=dum;
-                imax=i;
-            }
-        }
-        if (j!=imax)
-        {
-            for (k=0;k<sz;k++)
-            {
-                dum=a[imax][k];
-                a[imax][k]=a[j][k];
-                a[j][k]=dum;
-            }
-            vv[imax]=vv[j];
-			*d=-(*d);
-        }
-        indx[j]=imax;
-        if (fabs(a[j][j])<EPS_MATRIX)
-			return 0;
-        if (j!=sz-1)
-        {
-            dum=1.0/a[j][j];
-            for (i=j+1;i<sz;i++)
-                    a[i][j]*=dum;
-        }
-    }
-	return 1;
+	float vv[MAX_MATRIX];
+
+	*d = 1;
+
+	for (int i = 0; i < sz; i++)
+	{
+		float big = 0.0f;
+
+		for (int j = 0; j < sz; j++)
+		{
+			const float temp = fabsf(a[i][j]);
+			big = max(big, temp);
+		}
+
+		if (big < EPS_MATRIX)
+			return false;
+
+		vv[i] = 1.0f / big;
+	}
+
+	int i_max = 0; // Should have a default value just to make sure.
+
+	for (int i = 0; i < sz; i++)
+	{
+		for (int j = 0; j < i; j++)
+		{
+			float sum = a[j][i];
+
+			for (int k = 0; k < j; k++)
+				sum -= a[j][k] * a[k][i];
+
+			a[j][i] = sum;
+		}
+
+		float big = 0.0f;
+
+		for (int j = i; j < sz; j++)
+		{
+			float sum = a[j][i];
+
+			for (int k = 0; k < i; k++)
+				sum -= a[j][k] * a[k][i];
+
+			a[j][i] = sum;
+
+			const float dum = vv[j] * fabsf(sum);
+			if (dum >= big)
+			{
+				big = dum;
+				i_max = j;
+			}
+		}
+
+		if (i != i_max)
+		{
+			for (int k = 0; k < sz; k++)
+			{
+				const float dum = a[i_max][k];
+				a[i_max][k] = a[i][k];
+				a[i][k] = dum;
+			}
+
+			vv[i_max] = vv[i];
+			*d *= -1.0f;
+		}
+
+		indx[i] = i_max;
+
+		if (fabsf(a[i][i]) < EPS_MATRIX)
+			return false;
+
+		if (i != sz - 1)
+		{
+			const float dum = 1.0f / a[i][i];
+			for (int j = i + 1; j < sz; j++)
+				a[j][i] *= dum;
+		}
+	}
+
+	return true;
 }
 
 /*
