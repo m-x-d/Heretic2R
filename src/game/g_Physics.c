@@ -398,45 +398,30 @@ static void HandleCollision(edict_t* self, trace_t* trace, const vec3_t move, co
 	}
 }
 
-//---------------------------------------------------------------------------------------
-// forceful < 0 indicates that the forcer shouldn't be knocked back
-//---------------------------------------------------------------------------------------
-void HandleForcefulCollision(edict_t *forcer, edict_t *forcee, vec3_t move, int forceful)
+static void HandleForcefulCollision(edict_t* forcer, edict_t* forcee, const vec3_t move, const qboolean forceful) //mxd. int forceful -> qboolean forceful.
 {
-	vec3_t dir, vel;
-	float knockback;
-	qboolean hitWorld = false;
-
 	assert(forcee);
 
-	if(forcee == g_edicts)
-	{
-		hitWorld = true;
-		VectorScale(move, -FRAMES_PER_SECOND*0.8, vel);
-	}
-	else
-	{
-		hitWorld = false;	
-		VectorScale(move, FRAMES_PER_SECOND*0.5, vel);
-	}
-	
-	knockback = VectorNormalize2(vel, dir);
+	const qboolean hit_world = (forcee == world);
+	const float vel_scaler = FRAMES_PER_SECOND * (hit_world ? -0.8f : 0.5f); //mxd
 
-	knockback *= forcer->mass;
-	knockback /= KNOCK_BACK_MULTIPLIER;
+	vec3_t vel;
+	VectorScale(move, vel_scaler, vel);
 
-	// knock other entity back
-	if(!hitWorld)
+	vec3_t dir;
+	float knockback = VectorNormalize2(vel, dir);
+	knockback *= (float)forcer->mass / KNOCK_BACK_MULTIPLIER;
+
+	// Knock other entity back?
+	if (!hit_world)
 	{
 		PostKnockBack(forcee, dir, knockback, 0);
-		Vec3ScaleAssign(-1.0, dir);
+		Vec3ScaleAssign(-1.0f, dir);
 	}
 
-	if(forceful > 0)
-	{
-		// knock back running ent
+	// Knock back running ent?
+	if (forceful)
 		PostKnockBack(forcer, dir, knockback, 0);
-	}
 }
 
 //---------------------------------------------------------------------------------
