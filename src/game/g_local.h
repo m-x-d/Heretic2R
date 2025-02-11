@@ -20,6 +20,12 @@
 // The "gameversion" client command will print this plus compile date.
 #define GAMEVERSION		"Heretic2v16"
 
+//mxd. Skill defines.
+#define SKILL_EASY		0.0f
+#define SKILL_MEDIUM	1.0f
+#define SKILL_HARD		2.0f
+#define SKILL_VERYHARD	3.0f
+
 // Protocol bytes that can be directly added to messages.
 
 // Volume mask for ent->sound_data - makes room for attn value in the lower bits.
