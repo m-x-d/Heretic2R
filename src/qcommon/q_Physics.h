@@ -36,12 +36,6 @@ typedef struct FormMove_s
 	void* passEntity;
 	int clipMask;
 	trace_t trace;
-	int waterLevel;
-	int waterType;
-	float stepHeight; //TODO: mxd. Used, but never set?
-	float dropHeight; //TODO: mxd. Used, but never set?
-	int processFlags;	// Filled in prior to passing in the FormMove to a high level physics call //TODO: mxd. Checked, but never set?
-	int resultFlags;	// Will eventually be filled in by physics //TODO: unused
 } FormMove_t;
 
 H2COMMON_API void BounceVelocity(const vec3_t in, const vec3_t normal, vec3_t out, float elasticity);
