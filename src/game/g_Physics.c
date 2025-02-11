@@ -815,41 +815,27 @@ static void MoveEntity_Slide(edict_t* self)
 	CheckEntityOn(self);
 }
 
-//---------------------------------------------------------------------------------
-// Searches for any triggers in the entities bounding box and their touch function
-//---------------------------------------------------------------------------------
-void ActivateTriggers(edict_t *self)
+// Searches for any triggers in the entities bounding box and calls their touch function.
+static void ActivateTriggers(edict_t* self)
 {
-	int num;
-	edict_t *hit;
-	GenericUnion4_t found;
-	SinglyLinkedList_t list;
-
-	// dead things don't activate triggers
-	if(self->deadState != DEAD_NO)
-	{
+	// Dead things don't activate triggers.
+	if (self->deadState != DEAD_NO)
 		return;
-	}
 
-	SLList_DefaultCon(&list);	// this should be global, initialized at startup
+	SinglyLinkedList_t list;
+	SLList_DefaultCon(&list); // This should be global, initialized at startup.
+	gi.FindEntitiesInBounds(self->mins, self->maxs, &list, AREA_TRIGGERS);
 
-	num = gi.FindEntitiesInBounds(self->mins, self->maxs, &list, AREA_TRIGGERS);
-
-	while(!SLList_IsEmpty(&list))
+	while (!SLList_IsEmpty(&list))
 	{
-		found = SLList_Pop(&list);
+		const GenericUnion4_t found = SLList_Pop(&list);
+		edict_t* hit = found.t_edict_p;
 
-		hit = found.t_edict_p;
-
-		if(!hit->inuse || !hit->touch)
-		{
-			continue;
-		}
-
-		hit->touch(hit, self, NULL, NULL);
+		if (hit->inuse && hit->touch != NULL)
+			hit->touch(hit, self, NULL, NULL);
 	}
 
-	SLList_Des(&list);			// kill on shut down
+	SLList_Des(&list); // Kill on shut down.
 }
 
 //---------------------------------------------------------------------------------
