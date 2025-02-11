@@ -17,21 +17,6 @@
 #include "Vector.h"
 #include "Utilities.h"
 
-static void Physics_Static(edict_t *self);
-
-void (*physicsFuncs[NUM_PHYSICSTYPES])(edict_t *self) =
-{
-	Physics_None,			// PHYSICSTYPE_NONE
-	Physics_Static,			// PHYSICSTYPE_STATIC
-	Physics_NoclipMove,		// PHYSICSTYPE_NOCLIP
-	Physics_FlyMove,		// PHYSICSTYPE_FLY
-	Physics_StepMove,		// PHYSICSTYPE_STEP
-	Physics_Push,			// PHYSICSTYPE_PUSH
-	Physics_Push,			// PHYSICSTYPE_STOP
-	Physics_FlyMove,		// MOVETYPE_FLYMISSILE
-	Physics_ScriptAngular,	// PHYSICSTYPE_SCRIPT_ANGULAR
-};
-
 void PhysicsCheckWaterTransition(edict_t *self)
 {//fixme: a high detail option?  Or just not in netplay?- maybe a flag for client to take care of
 	//disabling for now since it might cause too much net traffic
@@ -80,12 +65,6 @@ void PhysicsCheckWaterTransition(edict_t *self)
 //---------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------
 static void Physics_None(edict_t *self)
-{
-}
-
-//---------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------
-static void Physics_Static(edict_t *self)
 {
 }
 
@@ -253,20 +232,43 @@ static void Physics_StepMove(edict_t *self)
 	ActivateTriggers(self);
 }
 
-//---------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------
-void EntityPhysics(edict_t *self)
+void EntityPhysics(edict_t* self)
 {
 	assert(self->inuse);
 
-	if(self->movetype < 0 || self->movetype >= NUM_PHYSICSTYPES)
+	switch (self->movetype)
 	{
-		assert(0);
-		gi.error ("SV_Physics: bad movetype %i", self->movetype);
-		return;
-	}
+		case PHYSICSTYPE_NONE:
+		case PHYSICSTYPE_STATIC:
+			Physics_None(self);
+			break;
 
-	physicsFuncs[self->movetype](self);
+		case PHYSICSTYPE_NOCLIP:
+			Physics_NoclipMove(self);
+			break;
+
+		case PHYSICSTYPE_FLY:
+		case MOVETYPE_FLYMISSILE:
+			Physics_FlyMove(self);
+			break;
+
+		case PHYSICSTYPE_STEP:
+			Physics_StepMove(self);
+			break;
+
+		case PHYSICSTYPE_PUSH:
+		case PHYSICSTYPE_STOP:
+			Physics_Push(self);
+			break;
+
+		case PHYSICSTYPE_SCRIPT_ANGULAR:
+			Physics_ScriptAngular(self);
+			break;
+
+		default:
+			gi.error("SV_Physics: bad movetype %i", self->movetype);
+			break;
+	}
 }
 
 //---------------------------------------------------------------------------------
