@@ -1216,8 +1216,8 @@ void CM_BoxTrace(const vec3_t start, const vec3_t end, const vec3_t mins, const 
 	}
 }
 
-//TODO: mxd. What the heck does this do?..
-static qboolean ShouldAdjustNormal(matrix3_t m, int* axis_arr)
+//mxd. Duplicate of LUDecomposition() from g_Physics.c in original logic?
+static qboolean LUDecomposition(matrix3_t m, int* axis_arr)
 {
 	vec3_t scaler;
 
@@ -1281,8 +1281,8 @@ static qboolean ShouldAdjustNormal(matrix3_t m, int* axis_arr)
 	return true;
 }
 
-//TODO: mxd. What the heck does this do?..
-static void AdjustNormal(const matrix3_t m, const int* axis_arr, vec3_t normal)
+//mxd. Duplicate of BackSub() from g_Physics.c in original logic?
+static void BackSub(const matrix3_t m, const int* axis_arr, vec3_t normal)
 {
 	int tgt_axis = -1;
 
@@ -1399,8 +1399,8 @@ void CM_TransformedBoxTrace(const vec3_t start, const vec3_t end, const vec3_t m
 		}
 
 		int axis_arr[3];
-		if (ShouldAdjustNormal(m, axis_arr))
-			AdjustNormal(m, axis_arr, return_trace->plane.normal);
+		if (LUDecomposition(m, axis_arr))
+			BackSub(m, axis_arr, return_trace->plane.normal);
 		else
 			VectorClear(return_trace->plane.normal);
 
