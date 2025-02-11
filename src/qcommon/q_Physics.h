@@ -33,8 +33,8 @@ typedef struct FormMove_s
 	vec3_t maxs;
 	float* start;
 	float* end;
-	void* passEntity;
-	int clipMask;
+	void* pass_entity;
+	int clipmask;
 	trace_t trace;
 } FormMove_t;
 

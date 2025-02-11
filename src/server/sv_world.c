@@ -666,14 +666,14 @@ void SV_TraceBoundingForm(FormMove_t* formMove) // H2
 	moveclip_t clip;
 	clip.trace = &formMove->trace;
 
-	CM_BoxTrace(start, end, formMove->mins, formMove->maxs, 0, formMove->clipMask, clip.trace);
+	CM_BoxTrace(start, end, formMove->mins, formMove->maxs, 0, formMove->clipmask, clip.trace);
 	formMove->trace.ent = ge->edicts;
 
 	if (clip.trace->fraction == 0.0f)
 		return;
 
-	clip.passedict = (const edict_t*)formMove->passEntity;
-	clip.contentmask = formMove->clipMask;
+	clip.passedict = (const edict_t*)formMove->pass_entity;
+	clip.contentmask = formMove->clipmask;
 	clip.start = start;
 	clip.end = end;
 	clip.mins = formMove->mins;
@@ -704,8 +704,8 @@ qboolean SV_ResizeBoundingForm(edict_t* self, FormMove_t* formMove) // H2
 	VectorCopy(self->maxs, form.maxs);
 	VectorCopy(self->s.origin, start);
 
-	form.passEntity = self;
-	form.clipMask = self->clipmask;
+	form.pass_entity = self;
+	form.clipmask = self->clipmask;
 	form.start = start;
 	form.end = end;
 

@@ -85,8 +85,8 @@ static void Physics_FlyMove(edict_t* self)
 	VectorCopy(self->mins, form_move.mins);
 	VectorCopy(self->maxs, form_move.maxs);
 
-	form_move.passEntity = self;
-	form_move.clipMask = self->clipmask;
+	form_move.pass_entity = self;
+	form_move.clipmask = self->clipmask;
 
 	MoveEntity_Bounce(self, &form_move);
 	PhysicsCheckWaterTransition(self);
@@ -141,8 +141,8 @@ static void Physics_StepMove(edict_t* self)
 		VectorCopy(self->mins, form_move.mins);
 		VectorCopy(self->maxs, form_move.maxs);
 
-		form_move.passEntity = self;
-		form_move.clipMask = self->clipmask;
+		form_move.pass_entity = self;
+		form_move.clipmask = self->clipmask;
 
 		MoveEntity_Bounce(self, &form_move);
 	}
@@ -225,8 +225,8 @@ void CheckEntityOn(edict_t* self)
 
 	form_move.start = self->s.origin;
 	form_move.end = point;
-	form_move.passEntity = self;
-	form_move.clipMask = MASK_MONSTERSOLID;
+	form_move.pass_entity = self;
+	form_move.clipmask = MASK_MONSTERSOLID;
 
 	gi.TraceBoundingForm(&form_move);
 
@@ -497,8 +497,8 @@ static void MoveEntity_Slide(edict_t* self)
 	VectorCopy(self->maxs, form_move.maxs);
 
 	form_move.start = self->s.origin;
-	form_move.passEntity = self;
-	form_move.clipMask = self->clipmask;
+	form_move.pass_entity = self;
+	form_move.clipmask = self->clipmask;
 
 	int cur_plane = 0; //mxd. Initialize.
 	int num_planes = 0;
@@ -872,8 +872,8 @@ edict_t* TestEntityPosition(edict_t* self)
 
 	form_move.start = self->s.origin;
 	form_move.end = self->s.origin;
-	form_move.passEntity = self;
-	form_move.clipMask = self->clipmask;
+	form_move.pass_entity = self;
+	form_move.clipmask = self->clipmask;
 
 	gi.TraceBoundingForm(&form_move);
 
