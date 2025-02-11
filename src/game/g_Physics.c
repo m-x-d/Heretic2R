@@ -244,17 +244,13 @@ void CheckEntityOn(edict_t* self)
 	}
 }
 
-//---------------------------------------------------------------------------------
-// set move to be based on gravity and velocity, and adjust velocity for gravity
-//---------------------------------------------------------------------------------
-void ApplyGravity(edict_t *self, vec3_t move)
+// Set move to be based on gravity and velocity, and adjust velocity for gravity.
+static void ApplyGravity(edict_t* self, vec3_t move)
 {
 	assert(self);
 
-	if(move)
-	{
-		move[2] -= self->gravity * sv_gravity->value * (FRAMETIME * FRAMETIME * 0.5);
-	}
+	if (move != NULL)
+		move[2] -= self->gravity * sv_gravity->value * (FRAMETIME * FRAMETIME * 0.5f);
 
 	self->velocity[2] -= self->gravity * sv_gravity->value * FRAMETIME;
 }
