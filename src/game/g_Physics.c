@@ -49,15 +49,9 @@ void PhysicsCheckWaterTransition(edict_t* self)
 	gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG6 | CEF_FLAG7, trace.endpos, "bd", size, trace.plane.normal);
 }
 
-//---------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------
-static void Physics_None(edict_t *self)
-{
-}
+static void Physics_None(edict_t* self) { }
 
-//---------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------
-static void Physics_NoclipMove(edict_t *self)
+static void Physics_NoclipMove(edict_t* self)
 {
 	VectorMA(self->s.angles, FRAMETIME, self->avelocity, self->s.angles);
 	VectorMA(self->s.origin, FRAMETIME, self->velocity, self->s.origin);
