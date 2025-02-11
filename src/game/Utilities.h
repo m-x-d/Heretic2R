@@ -7,7 +7,7 @@
 #define LUNG_AIRTIME 12
 #define GILL_AIRTIME 18
 
-#define KNOCK_BACK_MULTIPLIER 1000.0
+#define KNOCK_BACK_MULTIPLIER 1000.0f
 
 float NormalizeAngle(float angle);
 float AddNormalizedAngles(float angle1, float angle2);
