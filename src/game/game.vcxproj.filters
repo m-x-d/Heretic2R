@@ -162,9 +162,6 @@
     <ClCompile Include="g_Physics.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="g_PhysicsInfo.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="g_ResourceManagers.c">
       <Filter>src</Filter>
     </ClCompile>
@@ -624,9 +621,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="g_Physics.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="g_PhysicsInfo.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="g_playstats.h">
