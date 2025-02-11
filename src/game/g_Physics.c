@@ -424,48 +424,40 @@ static void HandleForcefulCollision(edict_t* forcer, edict_t* forcee, const vec3
 		PostKnockBack(forcer, dir, knockback, 0);
 }
 
-//---------------------------------------------------------------------------------
-// takes into account gravity, and bounces an ent away from impacts based on elasticity
-// fiction is ignored
-//---------------------------------------------------------------------------------
-void MoveEntity_Bounce(edict_t *self, FormMove_t *formMove)
+// Takes into account gravity, and bounces an ent away from impacts based on elasticity. Fiction is ignored.
+static void MoveEntity_Bounce(edict_t* self, FormMove_t* form_move)
 {
-	vec3_t		move, end;
-
+	vec3_t move;
 	VectorScale(self->velocity, FRAMETIME, move);
 
-	// create the delta move
-	if(self->gravity > 0.0f)
-	{
+	// Create the delta move.
+	if (self->gravity > 0.0f)
 		ApplyGravity(self, move);
-	}
 
+	vec3_t end;
 	VectorAdd(self->s.origin, move, end);
 
-	formMove->start = self->s.origin;
-	formMove->end = end;
+	form_move->start = self->s.origin;
+	form_move->end = end;
 
-	gi.TraceBoundingForm(formMove);
+	gi.TraceBoundingForm(form_move);
 
-	VectorCopy(formMove->trace.endpos, self->s.origin);
+	VectorCopy(form_move->trace.endpos, self->s.origin);
 
-	// handle bouncing and sliding
-	if(formMove->trace.fraction < 1.0)
+	// Handle bouncing and sliding.
+	if (form_move->trace.fraction < 1.0f)
 	{
-		BounceVelocity(self->velocity, formMove->trace.plane.normal, self->velocity, self->elasticity);
+		BounceVelocity(self->velocity, form_move->trace.plane.normal, self->velocity, self->elasticity);
 
-		if(self->elasticity > ELASTICITY_SLIDE)
+		if (self->elasticity > ELASTICITY_SLIDE && self->velocity[2] < 60.0f && form_move->trace.plane.normal[2] > GROUND_NORMAL)
 		{
-			if((self->velocity[2] < 60.0) && (formMove->trace.plane.normal[2] > GROUND_NORMAL))
-			{	
-				SetGroundEntFromTrace(self, &formMove->trace);
+			SetGroundEntFromTrace(self, &form_move->trace);
 
-				VectorClear(self->velocity);
-				VectorClear(self->avelocity);
-			}
+			VectorClear(self->velocity);
+			VectorClear(self->avelocity);
 		}
 
-		HandleCollision(self, &formMove->trace, move, (self->physicsFlags & PF_FORCEFUL_COLLISIONS), CH_STANDARD);
+		HandleCollision(self, &form_move->trace, move, (self->physicsFlags & PF_FORCEFUL_COLLISIONS), CH_STANDARD);
 	}
 }
 
