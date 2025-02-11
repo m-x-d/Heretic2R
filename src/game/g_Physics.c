@@ -370,40 +370,24 @@ void DoImpactDamage(edict_t* self, trace_t* trace)
 	}
 }
 
-//---------------------------------------------------------------------------------
-// Calls correct collision handling functions for ents involved
-//---------------------------------------------------------------------------------
-void HandleCollision(edict_t *self, trace_t *trace, vec3_t move, int forceful, int flags)
+// Calls correct collision handling functions for ents involved.
+static void HandleCollision(edict_t* self, trace_t* trace, const vec3_t move, const qboolean forceful, const int flags) //mxd. int forceful -> qboolean forceful.
 {
-	edict_t *other = trace->ent;
+	edict_t* other = trace->ent;
 
-//	assert(self->solid != SOLID_NOT);
-//	assert(other->solid != SOLID_NOT);
+	if (IMPACT_DAMAGE && (flags & CH_ISBLOCKED || flags & CH_BOUNCED))
+		DoImpactDamage(self, trace);
 
-	if(IMPACT_DAMAGE)
-	{
-		if(flags&CH_ISBLOCKED || flags&CH_BOUNCED)
-		{
-			DoImpactDamage(self, trace);
-		}
-	}
-
-	if(forceful)
-	{
+	if (forceful)
 		HandleForcefulCollision(self, other, move, forceful);
-	}
 
-	if(flags&CH_ISBLOCKED && self->isBlocked)
-	{
+	if ((flags & CH_ISBLOCKED) && self->isBlocked)
 		self->isBlocked(self, trace);
-	}
 
-	if(flags&CH_BOUNCED && self->bounced)
-	{
+	if ((flags & CH_BOUNCED) && self->bounced)
 		self->bounced(self, trace);
-	}
 
-	if(flags&CH_ISBLOCKING && other->isBlocking)
+	if ((flags & CH_ISBLOCKING) && other->isBlocking)
 	{
 		trace_t temp = *trace;
 
