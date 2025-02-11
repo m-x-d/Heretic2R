@@ -235,6 +235,7 @@
     <ClInclude Include="g_Monster_State.h" />
     <ClInclude Include="g_Physics.h" />
     <ClInclude Include="g_PhysicsInfo.h" />
+    <ClInclude Include="g_PhysicsLocal.h" />
     <ClInclude Include="g_playstats.h" />
     <ClInclude Include="g_ResourceManagers.h" />
     <ClInclude Include="g_save.h" />

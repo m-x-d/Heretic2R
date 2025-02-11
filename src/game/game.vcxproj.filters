@@ -1070,5 +1070,8 @@
     <ClInclude Include="g_ai.h">
       <Filter>src\Monsters</Filter>
     </ClInclude>
+    <ClInclude Include="g_PhysicsLocal.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

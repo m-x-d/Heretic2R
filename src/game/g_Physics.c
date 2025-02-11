@@ -1,4 +1,5 @@
 #include "g_Physics.h"
+#include "g_PhysicsLocal.h"
 #include "g_local.h"
 
 #include "Vector.h"
