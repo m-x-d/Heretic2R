@@ -838,37 +838,17 @@ static void ActivateTriggers(edict_t* self)
 	SLList_Des(&list); // Kill on shut down.
 }
 
-//---------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------
-void ApplyRotationalFriction(edict_t *self)
+static void ApplyRotationalFriction(edict_t* self)
 {
-	int		i;
-	float	adjustment;
-
 	VectorMA(self->s.angles, FRAMETIME, self->avelocity, self->s.angles);
+	const float adjustment = FRAMETIME * FRICTION_STOPSPEED * FRICTION_SURFACE;
 
-	adjustment = FRAMETIME * FRICTION_STOPSPEED * FRICTION_SURFACE;
-
-	for(i = 0; i < 3; ++i)
+	for (int i = 0; i < 3; ++i)
 	{
-		if(self->avelocity[i] > 0.0)
-		{
-			self->avelocity[i] -= adjustment;
-
-			if(self->avelocity[i] < 0.0)
-			{
-				self->avelocity[i] = 0.0;
-			}
-		}
+		if (self->avelocity[i] > 0.0f)
+			self->avelocity[i] = max(0.0f, self->avelocity[i] - adjustment);
 		else
-		{
-			self->avelocity[i] += adjustment;
-
-			if(self->avelocity[i] > 0.0)
-			{
-				self->avelocity[i] = 0.0;
-			}
-		}
+			self->avelocity[i] = min(0.0f, self->avelocity[i] + adjustment);
 	}
 }
 
