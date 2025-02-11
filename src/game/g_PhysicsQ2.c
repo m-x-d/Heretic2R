@@ -1,5 +1,5 @@
 //
-// g_PhysicsQ2.h
+// g_PhysicsQ2.c -- mxd. g_phys.c in original version.
 //
 // Copyright 1998 Raven Software
 //
