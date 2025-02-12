@@ -725,80 +725,64 @@ static void ReadLevelLocals(FILE* f)
 
 #pragma endregion
 
-/*
-=================
-WriteLevel
+#pragma region ========================== LEVEL IO ==========================
 
-=================
-*/
-void WriteLevel (char *filename)
+void WriteLevel(char* filename)
 {
-	int		i;
-	edict_t	*ent;
-	FILE	*f;
-	void	*base;
-	PerEffectsBuffer_t	*peffect;
-
-	f = fopen (filename, "wb");
-	if (!f)
-		gi.error ("Couldn't open %s", filename);
-
-	// write out edict size for checking
-	i = sizeof(edict_t);
-	fwrite (&i, sizeof(i), 1, f);
-
-	// write out a function pointer for checking
-	base = (void *)InitGame;
-	fwrite (&base, sizeof(base), 1, f);
-
-	// write out level_locals_t
-	WriteLevelLocals (f);
-
-	// write out all the configstrings
-//	fwrite (sv.configstrings, sizeof(sv.configstrings), 1, f);
-
-	// write out all the entities
-	for (i=0 ; i<globals.num_edicts ; i++)
+	FILE* f;
+	if (fopen_s(&f, filename, "wb") != 0) //mxd. fopen -> fopen_s
 	{
-		ent = &g_edicts[i];
-	
-		// we don't want to not save player entities, even if they are not in use, since when we go from
-		// level to a level we've already been to, there maybe monsters that are targeting the player,
-		// and they have problems if they are targeted at a player that has no data in them, even if the player is
-		// not inuse.
-		if (!ent->inuse && !ent->client)
-			continue;
-
-		fwrite (&i, sizeof(i), 1, f);
-		WriteEdict (f, ent);
+		gi.error("Couldn't open %s", filename);
+		return;
 	}
-	i = -1;
-	fwrite (&i, sizeof(i), 1, f);
+
+	// Write out edict size for checking.
+	const int ed_size = sizeof(edict_t);
+	fwrite(&ed_size, sizeof(ed_size), 1, f);
+
+	// Write out a function pointer for checking.
+	void* base = (void*)InitGame;
+	fwrite(&base, sizeof(base), 1, f);
+
+	// Write out level_locals_t.
+	WriteLevelLocals(f);
+
+	// Write out all the entities.
+	for (int i = 0; i < globals.num_edicts; i++)
+	{
+		edict_t* ent = &g_edicts[i];
+
+		// We want to save player entities, even if they are not in use, since when we go from level to a level we've already been to,
+		// there may be monsters that are targeting the player, and they have problems if they are targeted at a player
+		// that has no data in them, even if the player is not inuse.
+		if (ent->inuse || ent->client != NULL)
+		{
+			fwrite(&i, sizeof(i), 1, f);
+			WriteEdict(f, ent);
+		}
+	}
+
+	const int last = -1; //mxd
+	fwrite(&last, sizeof(last), 1, f);
 
 	SaveScripts(f, false);
 
-	// this is a bit bogus - search through the client effects and kill all the FX_PLAYER_EFFECTS before saving, since they will be re-created
-	// upon players re-joining the game after a load anyway.
-	peffect = (PerEffectsBuffer_t*) gi.Persistant_Effects_Array;
-	for (i=0; i<MAX_PERSISTANT_EFFECTS; i++, peffect++)
-	{
-		if (peffect->fx_num == FX_PLAYER_PERSISTANT)
-			peffect->numEffects = 0;
-	}
+	// This is a bit bogus - search through the client effects and kill all the FX_PLAYER_EFFECTS before saving,
+	// since they will be re-created upon players re-joining the game after a load anyway.
+	PerEffectsBuffer_t* fx_buf = gi.Persistant_Effects_Array;
+	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++, fx_buf++)
+		if (fx_buf->fx_num == FX_PLAYER_PERSISTANT)
+			fx_buf->numEffects = 0;
 
-	// save all the current persistant effects
-	fwrite (gi.Persistant_Effects_Array, (sizeof(PerEffectsBuffer_t) * MAX_PERSISTANT_EFFECTS), 1, f);
+	// Save all the current persistent effects.
+	fwrite(gi.Persistant_Effects_Array, (sizeof(PerEffectsBuffer_t) * MAX_PERSISTANT_EFFECTS), 1, f);
+	fclose(f);
 
-	fclose (f);
-
-	// this is a bit bogus - search through the client effects and renable all FX_PLAYER_EFFECTS
-	peffect = (PerEffectsBuffer_t*) gi.Persistant_Effects_Array;
-	for (i=0; i<MAX_PERSISTANT_EFFECTS; i++, peffect++)
-	{
-		if (peffect->fx_num == FX_PLAYER_PERSISTANT)
-			peffect->numEffects = 1;
-
-	} 
+	// This is a bit bogus - search through the client effects and re-enable all FX_PLAYER_EFFECTS.
+	fx_buf = (PerEffectsBuffer_t*)gi.Persistant_Effects_Array;
+	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++, fx_buf++)
+		if (fx_buf->fx_num == FX_PLAYER_PERSISTANT)
+			fx_buf->numEffects = 1;
 }
 
 
@@ -944,3 +928,5 @@ void ReadLevel (char *filename)
 				ent->nextthink = level.time + ent->delay;
 	}
 }
+
+#pragma endregion
