@@ -194,23 +194,23 @@ static field_t clientfields[] =
 trig_message_t message_text[MAX_MESSAGESTRINGS];
 uint* messagebuf;
 
-int LoadTextFile(char *name, char **addr)
+static int LoadTextFile(char* name, char** addr)
 {
-	int		length;
-	char	*buffer;
+	char* buffer;
+	const int length = gi.FS_LoadFile(name, (void**)&buffer);
 
-	length = gi.FS_LoadFile(name, &buffer);
-	if(length <= 0)
+	if (length <= 0)
 	{
 		Sys_Error("Unable to load %s", name);
-		return(0);
+		return 0;
 	}
-	*addr = (char *)gi.TagMalloc(length + 1, 0);
+
+	*addr = (char*)gi.TagMalloc(length + 1, 0);
 	memcpy(*addr, buffer, length);
 	*(*addr + length) = 0;
 	gi.FS_FreeFile(buffer);
 
-	return(length + 1);
+	return length + 1;
 }
 
 void Load_Strings(void)
