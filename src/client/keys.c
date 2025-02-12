@@ -297,7 +297,8 @@ static void Key_Console(int key)
 		char* cbd = Sys_GetClipboardData();
 		if (cbd != NULL)
 		{
-			strtok(cbd, "\n\r\b");
+			char* ptr = NULL; //mxd
+			strtok_s(cbd, "\n\r\b", &ptr); //mxd. strtok -> strtok_s
 
 			int len = (int)strlen(cbd);
 			if (key_linepos + len >= MAXCMDLINE)
