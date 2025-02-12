@@ -571,38 +571,40 @@ void WriteGame(char* filename, const qboolean autosave)
 			fx_buf->numEffects = 1;
 }
 
-void ReadGame (char *filename)
+void ReadGame(char* filename)
 {
-	FILE	*f;
-	int		i;
-	char	str[16];
-
-
-	f = fopen (filename, "rb");
-	if (!f)
-		gi.error ("Couldn't open %s", filename);
-
-	fread (str, sizeof(str), 1, f);
-	if (strcmp (str, __DATE__))
+	FILE* f;
+	if (fopen_s(&f, filename, "rb") != 0) //mxd. fopen -> fopen_s
 	{
-		fclose (f);
-		gi.error ("Savegame from an older version.\n");
+		gi.error("Couldn't open %s", filename);
 		return;
 	}
 
-	gi.FreeTags (TAG_GAME);
+	char str[16];
+	fread(str, sizeof(str), 1, f);
 
-	g_edicts =  gi.TagMalloc (game.maxentities * sizeof(g_edicts[0]), TAG_GAME);
+	if (strcmp(str, __DATE__) != 0)
+	{
+		fclose(f);
+		gi.error("Savegame from an older version (expected '%s', got '%s').\n", __DATE__, str);
+
+		return;
+	}
+
+	gi.FreeTags(TAG_GAME);
+
+	g_edicts = gi.TagMalloc(game.maxentities * (int)sizeof(g_edicts[0]), TAG_GAME);
 	globals.edicts = g_edicts;
 
-	fread (&game, sizeof(game), 1, f);
-	game.clients = gi.TagMalloc (game.maxclients * sizeof(game.clients[0]), TAG_GAME);
-	for (i=0 ; i<game.maxclients ; i++)
-		ReadClient (f, &game.clients[i]);
+	fread(&game, sizeof(game), 1, f);
+	game.clients = gi.TagMalloc(game.maxclients * (int)sizeof(game.clients[0]), TAG_GAME);
+
+	for (int i = 0; i < game.maxclients; i++)
+		ReadClient(f, &game.clients[i]);
 
 	LoadScripts(f, true);
 
-	fclose (f);
+	fclose(f);
 }
 
 #pragma endregion
