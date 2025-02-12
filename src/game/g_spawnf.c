@@ -568,7 +568,7 @@ void SP_worldspawn (edict_t *ent)
 	// GRAVITY for all games.
 
 	if (!st.gravity)
-		gi.cvar_set("sv_gravity", "675");
+		gi.cvar_set("sv_gravity", GRAVITY_STRING); //mxd. Use define.
 	else
 		gi.cvar_set("sv_gravity", st.gravity);
 
