@@ -419,22 +419,14 @@ static void ConvertField(const field_t* field, byte* base) //mxd. Named 'WriteFi
 	}
 }
 
-void WriteField2 (FILE *f, field_t *field, byte *base)
+static void WriteField(FILE* f, const field_t* field, byte* base) //mxd. Named 'WriteField2' in original logic.
 {
-	int			len;
-	void		*p;
+	void* p = &base[field->ofs];
 
-	p = (void *)(base + field->ofs);
-	switch (field->type)
+	if ((field->type == F_LSTRING || field->type == F_GSTRING) && *(char**)p != NULL)
 	{
-	case F_LSTRING:
-	case F_GSTRING:
-		if ( *(char **)p )
-		{
-			len = strlen(*(char **)p) + 1;
-			fwrite (*(char **)p, len, 1, f);
-		}
-		break;
+		const int len = (int)strlen(*(char**)p) + 1;
+		fwrite(*(char**)p, len, 1, f);
 	}
 }
 
@@ -530,7 +522,7 @@ void WriteClient (FILE *f, gclient_t *client)
 	// now write any allocated data following the edict
 	for (field=clientfields ; field->name ; field++)
 	{
-		WriteField2 (f, field, (byte *)client);
+		WriteField (f, field, (byte *)client);
 	}
 }
 
@@ -682,7 +674,7 @@ void WriteEdict (FILE *f, edict_t *ent)
 	// now write any allocated data following the edict
 	for (field=savefields ; field->name ; field++)
 	{
-		WriteField2 (f, field, (byte *)ent);
+		WriteField (f, field, (byte *)ent);
 	}
 
 }
@@ -735,7 +727,7 @@ void WriteLevelLocals (FILE *f)
 	// now write any allocated data following the edict
 	for (field=levelfields ; field->name ; field++)
 	{
-		WriteField2 (f, field, (byte *)&level);
+		WriteField (f, field, (byte *)&level);
 	}
 
 	for (i = 0; i< level.active_buoys; i++)
@@ -743,7 +735,7 @@ void WriteLevelLocals (FILE *f)
 		// change the pointers to lengths or indexes
 		for (field=bouyfields ; field->name ; field++)
 		{
-			WriteField2 (f, field, (byte *)&level.buoy_list[i]);
+			WriteField (f, field, (byte *)&level.buoy_list[i]);
 		}
 	}
 
