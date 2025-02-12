@@ -47,7 +47,7 @@ cvar_t* sv_maplist;
 cvar_t* dedicated;
 cvar_t* filterban;
 
-cvar_t* sv_maxvelocity;
+cvar_t* sv_maxvelocity; //TODO: turn into define?
 cvar_t* sv_gravity;
 cvar_t* sv_friction;
 
@@ -55,12 +55,12 @@ cvar_t* sv_cheats;
 cvar_t* sv_nomonsters = NULL;
 cvar_t* sv_freezemonsters;
 
-cvar_t* checkanim;
+cvar_t* checkanim; //TODO: unused. Remove.
 cvar_t* allowillegalskins;
 
-cvar_t* showbuoys;
-cvar_t* showlitebuoys;
-cvar_t* mgai_debug;
+cvar_t* showbuoys; //TODO: ancient debug stuff. Remove?
+cvar_t* showlitebuoys; //TODO: ancient debug stuff. Remove?
+cvar_t* mgai_debug; //TODO: ancient debug stuff. Remove?
 cvar_t* deactivate_buoys;
 cvar_t* anarchy;
 cvar_t* impact_damage;
