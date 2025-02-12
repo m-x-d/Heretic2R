@@ -263,56 +263,44 @@ static void LoadStrings(void)
 	}
 }
 
-/*
-============
-InitGame
-
-This will be called when the dll is first loaded, which
-only happens when a new game is begun
-============
-*/
-void InitGame (void)
+// This will be called when the dll is first loaded, which only happens when a new game is begun.
+void InitGame(void)
 {
-	gi.dprintf ("==== InitGame ====\n");
+	gi.dprintf("==== InitGame ====\n");
 
 	G_InitResourceManagers();
 
 	//FIXME: sv_ prefix is wrong for these.
-
-	sv_maxvelocity = gi.cvar ("sv_maxvelocity", MAX_VELOCITY_STRING, 0);
-
-	sv_gravity = gi.cvar ("sv_gravity", GRAVITY_STRING, 0);		// GRAVITY FOR ALL GAMES
-	sv_friction = gi.cvar ("sv_friction", FRICTION_STRING, 0);		// FRICTION FOR ALL GAMES
+	sv_maxvelocity = gi.cvar("sv_maxvelocity", MAX_VELOCITY_STRING, 0);
+	sv_gravity = gi.cvar("sv_gravity", GRAVITY_STRING, 0); //mxd. Needs to be inited here, otherwise SetupPlayerinfo() will crash. Inited again in SP_worldspawn().
+	//sv_friction = gi.cvar("sv_friction", FRICTION_STRING, 0); //mxd. Inited again in SP_worldspawn().
 
 	// Noset vars.
-
-	dedicated = gi.cvar ("dedicated", "0", CVAR_NOSET);
+	dedicated = gi.cvar("dedicated", "0", CVAR_NOSET);
 
 	// Latched vars.
+	sv_cheats = gi.cvar("cheats", "0", CVAR_SERVERINFO | CVAR_LATCH);
+	gi.cvar("gamename", GAMEVERSION, CVAR_SERVERINFO | CVAR_LATCH);
+	gi.cvar("gamedate", __DATE__, CVAR_SERVERINFO | CVAR_LATCH);
 
-	sv_cheats = gi.cvar ("cheats", "0", CVAR_SERVERINFO|CVAR_LATCH);
-	gi.cvar ("gamename", GAMEVERSION , CVAR_SERVERINFO | CVAR_LATCH);
-	gi.cvar ("gamedate", __DATE__ , CVAR_SERVERINFO | CVAR_LATCH);
+	maxclients = gi.cvar("maxclients", "4", CVAR_SERVERINFO | CVAR_LATCH);
+	deathmatch = gi.cvar("deathmatch", "0", CVAR_LATCH);
+	coop = gi.cvar("coop", "0", CVAR_LATCH);
 
-	maxclients = gi.cvar ("maxclients", "4", CVAR_SERVERINFO | CVAR_LATCH);
-	deathmatch = gi.cvar ("deathmatch", "0", CVAR_LATCH);
-	coop = gi.cvar ("coop", "0", CVAR_LATCH);
-	
-	skill = gi.cvar ("skill", "1", CVAR_LATCH);
-	maxentities = gi.cvar ("maxentities", G_MAX_ENTITIES, CVAR_LATCH);
+	skill = gi.cvar("skill", "1", CVAR_LATCH);
+	maxentities = gi.cvar("maxentities", G_MAX_ENTITIES, CVAR_LATCH);
 
-	sv_nomonsters = gi.cvar ("nomonsters", "0", CVAR_SERVERINFO|CVAR_LATCH);
-	sv_freezemonsters = gi.cvar ("freezemonsters", "0", 0);
+	sv_nomonsters = gi.cvar("nomonsters", "0", CVAR_SERVERINFO | CVAR_LATCH);
+	sv_freezemonsters = gi.cvar("freezemonsters", "0", 0);
 
 	// Change anytime vars.
+	dmflags = gi.cvar("dmflags", "0", CVAR_SERVERINFO);
+	advancedstaff = gi.cvar("advancedstaff", "1", CVAR_SERVERINFO);
 
-	dmflags = gi.cvar ("dmflags", "0", CVAR_SERVERINFO);
-	advancedstaff = gi.cvar ("advancedstaff", "1", CVAR_SERVERINFO);
-
-	fraglimit = gi.cvar ("fraglimit", "0", CVAR_SERVERINFO);
-	timelimit = gi.cvar ("timelimit", "0", CVAR_SERVERINFO);
-	password = gi.cvar ("password", "", CVAR_USERINFO);
-	filterban = gi.cvar ("filterban", "1", 0);
+	fraglimit = gi.cvar("fraglimit", "0", CVAR_SERVERINFO);
+	timelimit = gi.cvar("timelimit", "0", CVAR_SERVERINFO);
+	password = gi.cvar("password", "", CVAR_USERINFO);
+	filterban = gi.cvar("filterban", "1", 0);
 
 	checkanim = gi.cvar("checkanim", "0", 0);
 	allowillegalskins = gi.cvar("allowillegalskins", "0", CVAR_ARCHIVE);
@@ -327,17 +315,17 @@ void InitGame (void)
 	singing_ogles = gi.cvar("singing_ogles", "0", 0);
 	no_runshrine = gi.cvar("no_runshrine", "0", 0);
 	no_tornado = gi.cvar("no_tornado", "0", 0);
-	no_teleport = gi.cvar("no_teleport","0",0);
-	no_phoenix = gi.cvar("no_phoenix","0",0);
-	no_irondoom = gi.cvar("no_irondoom","0",0);
-	no_morph = gi.cvar("no_morph","0",0);
-	no_shield = gi.cvar("no_shield","0",0);
+	no_teleport = gi.cvar("no_teleport", "0", 0);
+	no_phoenix = gi.cvar("no_phoenix", "0", 0);
+	no_irondoom = gi.cvar("no_irondoom", "0", 0);
+	no_morph = gi.cvar("no_morph", "0", 0);
+	no_shield = gi.cvar("no_shield", "0", 0);
 
-	flood_msgs = gi.cvar ("flood_msgs", "4", 0);
-	flood_persecond = gi.cvar ("flood_persecond", "4", 0);
-	flood_waitdelay = gi.cvar ("flood_waitdelay", "10", 0);
-	flood_killdelay = gi.cvar ("flood_killdelay", "10", 0);
-	sv_maplist = gi.cvar ("sv_maplist", "", 0);
+	flood_msgs = gi.cvar("flood_msgs", "4", 0);
+	flood_persecond = gi.cvar("flood_persecond", "4", 0);
+	flood_waitdelay = gi.cvar("flood_waitdelay", "10", 0);
+	flood_killdelay = gi.cvar("flood_killdelay", "10", 0);
+	sv_maplist = gi.cvar("sv_maplist", "", 0);
 
 	player_dll = Cvar_Get("player_dll", DEFAULT_PLAYER_LIB, 0);
 
@@ -348,37 +336,26 @@ void InitGame (void)
 	log_file_header = gi.cvar("log_file_header", "", CVAR_ARCHIVE);
 	log_file_line_header = gi.cvar("log_file_line_header", "", CVAR_ARCHIVE);
 
-	blood_level = gi.cvar ("blood_level", VIOLENCE_DEFAULT_STR, CVAR_ARCHIVE);
-	dm_no_bodies = gi.cvar ("dm_no_bodies", "0", CVAR_ARCHIVE);
+	blood_level = gi.cvar("blood_level", VIOLENCE_DEFAULT_STR, CVAR_ARCHIVE);
+	dm_no_bodies = gi.cvar("dm_no_bodies", "0", CVAR_ARCHIVE);
 
 	gi.cvar("flash_screen", "1", 0);
 
 	P_Load(player_dll->string);
 
-	// ********************************************************************************************
 	// Initialise the inventory items.
-	// ********************************************************************************************
-	
-	// Server side only elements.
+	G_InitItems(); // Server-side only elements.
 
-	G_InitItems();
-
-	// ********************************************************************************************
 	// Initialize all entities for this game.
-	// ********************************************************************************************
-
-	game.maxentities = maxentities->value;
-	g_edicts =  gi.TagMalloc (game.maxentities * sizeof(g_edicts[0]), TAG_GAME);
+	game.maxentities = (int)maxentities->value;
+	g_edicts = gi.TagMalloc(game.maxentities * (int)sizeof(g_edicts[0]), TAG_GAME);
 	globals.edicts = g_edicts;
 	globals.max_edicts = game.maxentities;
 
-	// ********************************************************************************************
 	// Initialize all clients for this game.
-	// ********************************************************************************************
-
-	game.maxclients = maxclients->value;
-	game.clients = gi.TagMalloc (game.maxclients * sizeof(game.clients[0]), TAG_GAME);
-	globals.num_edicts = game.maxclients+1;
+	game.maxclients = (int)maxclients->value;
+	game.clients = gi.TagMalloc(game.maxclients * (int)sizeof(game.clients[0]), TAG_GAME);
+	globals.num_edicts = game.maxclients + 1;
 
 	level.cinActive = false;
 
