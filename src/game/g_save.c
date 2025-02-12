@@ -493,35 +493,24 @@ static void ReadField(FILE* f, const field_t* field, byte* base)
 
 #pragma endregion
 
-/*
-==============
-WriteClient
+#pragma region ========================== CLIENT IO ==========================
 
-All pointer variables (except function pointers) must be handled specially.
-==============
-*/
-void WriteClient (FILE *f, gclient_t *client)
+// All pointer variables (except function pointers) must be handled specially.
+static void WriteClient(FILE* f, gclient_t* client)
 {
-	field_t		*field;
-	gclient_t	temp;
-	
-	// all of the ints, floats, and vectors stay as they are
-	temp = *client;
+	// All of the ints, floats, and vectors stay as they are.
+	gclient_t temp = *client;
 
-	// change the pointers to lengths or indexes
-	for (field=clientfields ; field->name ; field++)
-	{
-		ConvertField (field, (byte *)&temp);
-	}
+	// Change the pointers to lengths or indexes.
+	for (const field_t* field = clientfields; field->name != NULL; field++)
+		ConvertField(field, (byte*)&temp);
 
-	// write the block
-	fwrite (&temp, sizeof(temp), 1, f);
+	// Write the block.
+	fwrite(&temp, sizeof(temp), 1, f);
 
-	// now write any allocated data following the edict
-	for (field=clientfields ; field->name ; field++)
-	{
-		WriteField (f, field, (byte *)client);
-	}
+	// Now write any allocated data following the edict.
+	for (const field_t* field = clientfields; field->name != NULL; field++)
+		WriteField(f, field, (byte*)client);
 }
 
 /*
@@ -542,6 +531,8 @@ void ReadClient (FILE *f, gclient_t *client)
 		ReadField (f, field, (byte *)client);
 	}
 }
+
+#pragma endregion
 
 /*
 ============
