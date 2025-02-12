@@ -1,3 +1,4 @@
+#include "p_view.h" //mxd
 #include "g_Skeletons.h"
 #include "g_teleport.h"
 #include "m_player.h"

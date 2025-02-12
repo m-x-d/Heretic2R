@@ -322,6 +322,7 @@
     <ClInclude Include="p_client.h" />
     <ClInclude Include="p_funcs.h" />
     <ClInclude Include="p_item.h" />
+    <ClInclude Include="p_view.h" />
     <ClInclude Include="q_shared.h" />
     <ClInclude Include="spl_morph.h" />
     <ClInclude Include="Utilities.h" />

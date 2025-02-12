@@ -24,10 +24,10 @@
 #include "p_actions.h"
 #include "p_anims.h" //mxd
 #include "p_anim_branch.h"
+#include "p_view.h" //mxd
 #include "qcommon.h"
 
 // FIXME: include headers.
-extern void	InitPlayerinfo(edict_t *ent);
 extern void PlayerChickenDeath(edict_t *ent);
 extern void CalculatePIV(edict_t *player);
 

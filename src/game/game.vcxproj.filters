@@ -1067,5 +1067,8 @@
     <ClInclude Include="g_PhysicsLocal.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="p_view.h">
+      <Filter>src\Player</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
