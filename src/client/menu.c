@@ -437,7 +437,8 @@ qboolean Field_Key(menufield_s* field, int key)
 
 		if (cbd != NULL)
 		{
-			strtok(cbd, "\n\r\b");
+			char* ptr = NULL; //mxd
+			strtok_s(cbd, "\n\r\b", &ptr); //mxd. strtok -> strtok_s
 			strncpy_s(field->buffer, sizeof(field->buffer), cbd, field->length - 1); //mxd. strncpy -> strncpy_s
 
 			field->cursor = (int)strlen(field->buffer);
