@@ -687,48 +687,35 @@ static void WriteLevelLocals(FILE* f)
 			WriteField(f, field, (byte*)&level.buoy_list[i]);
 }
 
-/*
-==============
-ReadLevelLocals
-
-All pointer variables (except function pointers) must be handled specially.
-==============
-*/
-void ReadLevelLocals (FILE *f)
+// All pointer variables (except function pointers) must be handled specially.
+static void ReadLevelLocals(FILE* f)
 {
-	field_t		*field;
-	char		temp[20];
-	int			i;
+	fread(&level, sizeof(level), 1, f);
 
-	fread (&level, sizeof(level), 1, f);
+	// Change the pointers to lengths or indexes.
+	for (const field_t* field = levelfields; field->name != NULL; field++)
+		ReadField(f, field, (byte*)&level);
 
-	for (field=levelfields ; field->name ; field++)
-	{
-		ReadField (f, field, (byte *)&level);
-	}
+	for (int i = 0; i < level.active_buoys; i++)
+		for (const field_t* field = bouyfields; field->name != NULL; field++)
+			ReadField(f, field, (byte*)&level.buoy_list[i]);
 
-	for (i = 0; i< level.active_buoys; i++)
-	{
-		// change the pointers to lengths or indexes
-		for (field=bouyfields ; field->name ; field++)
-		{
-			ReadField (f, field, (byte *)&level.buoy_list[i]);
-		}
-	}
-
-
-	// set those console vars we should 
-	sprintf(temp, "%f", level.far_clip_dist_f);
+	// Set those console vars we should.
+	char temp[20];
+	sprintf_s(temp, sizeof(temp), "%f", level.far_clip_dist_f); //mxd. sprintf -> sprintf_s
 	gi.cvar_set("r_farclipdist", temp);
-	sprintf(temp, "%f", level.fog);
+
+	sprintf_s(temp, sizeof(temp), "%f", level.fog); //mxd. sprintf -> sprintf_s
 	gi.cvar_set("r_fog", temp);
-	sprintf(temp, "%f", level.fog_density);
+
+	sprintf_s(temp, sizeof(temp), "%f", level.fog_density); //mxd. sprintf -> sprintf_s
 	gi.cvar_set("r_fog_density", temp);
 
-	// these are pointers and should be reset.
+	// These are pointers and should be reset.
 	level.alert_entity = NULL;
 	level.last_alert = NULL;
-	for (i=0; i<MAX_ALERT_ENTS; i++)
+
+	for (int i = 0; i < MAX_ALERT_ENTS; i++)
 	{
 		level.alertents[i].inuse = false;
 		level.alertents[i].prev_alert = NULL;
