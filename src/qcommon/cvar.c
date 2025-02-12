@@ -20,7 +20,7 @@ static qboolean Cvar_InfoValidate(const char* s)
 
 static cvar_t* Cvar_FindVar(const char* var_name)
 {
-	for (cvar_t* var = cvar_vars; var != NULL; var = var->next)
+	for (cvar_t* var = &cvar_vars[0]; var != NULL; var = var->next)
 		if (strcmp(var_name, var->name) == 0)
 			return var;
 
@@ -53,12 +53,12 @@ const char* Cvar_CompleteVariable(const char* partial)
 		return NULL;
 
 	// Check for exact match.
-	for (const cvar_t* cvar = cvar_vars; cvar != NULL; cvar = cvar->next)
+	for (const cvar_t* cvar = &cvar_vars[0]; cvar != NULL; cvar = cvar->next)
 		if (strcmp(partial, cvar->name) == 0)
 			return cvar->name;
 
 	// Check for partial match.
-	for (const cvar_t* cvar = cvar_vars; cvar != NULL; cvar = cvar->next)
+	for (const cvar_t* cvar = &cvar_vars[0]; cvar != NULL; cvar = cvar->next)
 		if (strncmp(partial, cvar->name, len) == 0)
 			return cvar->name;
 
@@ -78,7 +78,7 @@ const char* Cvar_CompleteVariableNext(const char* partial, const char* last) // 
 
 	// Find previous match...
 	const cvar_t* prev;
-	for (prev = cvar_vars; prev != NULL; prev = prev->next)
+	for (prev = &cvar_vars[0]; prev != NULL; prev = prev->next)
 		if (strcmp(last, prev->name) == 0)
 			break;
 
@@ -268,7 +268,7 @@ void Cvar_SetValue(const char* var_name, const float value)
 // Any variables with latched values will now be updated
 void Cvar_GetLatchedVars(void)
 {
-	for (cvar_t* var = cvar_vars; var != NULL; var = var->next)
+	for (cvar_t* var = &cvar_vars[0]; var != NULL; var = var->next)
 	{
 		if (var->latched_string == NULL)
 			continue;
@@ -348,7 +348,7 @@ void Cvar_WriteVariables(const char* path)
 	char buffer[1024];
 
 	FILE* f = fopen(path, "a");
-	for (const cvar_t* var = cvar_vars; var != NULL; var = var->next)
+	for (const cvar_t* var = &cvar_vars[0]; var != NULL; var = var->next)
 	{
 		if (var->flags & CVAR_ARCHIVE)
 		{
@@ -364,7 +364,7 @@ void Cvar_WriteVariables(const char* path)
 static void Cvar_List_f(void)
 {
 	int i = 0;
-	for (const cvar_t* var = cvar_vars; var != NULL; var = var->next, i++)
+	for (const cvar_t* var = &cvar_vars[0]; var != NULL; var = var->next, i++)
 	{
 		if (var->flags & CVAR_ARCHIVE)
 			Com_Printf("*");
@@ -401,7 +401,7 @@ static char* Cvar_BitInfo(const int bit)
 
 	info[0] = 0;
 
-	for (const cvar_t* var = cvar_vars; var != NULL; var = var->next)
+	for (const cvar_t* var = &cvar_vars[0]; var != NULL; var = var->next)
 		if (var->flags & bit)
 			Info_SetValueForKey(info, var->name, var->string);
 
