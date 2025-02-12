@@ -609,38 +609,27 @@ void ReadGame(char* filename)
 
 #pragma endregion
 
+#pragma region ========================== EDICT IO ==========================
 
-/*
-==============
-WriteEdict
-
-All pointer variables (except function pointers) must be handled specially.
-==============
-*/
-void WriteEdict (FILE *f, edict_t *ent)
+// All pointer variables (except function pointers) must be handled specially.
+static void WriteEdict(FILE* f, edict_t* ent)
 {
-	field_t		*field;
-	edict_t		temp;
+	// All of the ints, floats, and vectors stay as they are.
+	edict_t temp = *ent;
 
-	// all of the ints, floats, and vectors stay as they are
-	temp = *ent;
+	// Change the pointers to lengths or indexes.
+	for (const field_t* field = savefields; field->name != NULL; field++)
+		ConvertField(field, (byte*)&temp);
 
-	// change the pointers to lengths or indexes
-	for (field=savefields ; field->name ; field++)
-	{
-		ConvertField (field, (byte *)&temp);
-	}
+	// Write the block.
+	fwrite(&temp, sizeof(temp), 1, f);
 
-	// write the block
-	fwrite (&temp, sizeof(temp), 1, f);
-
-	// now write any allocated data following the edict
-	for (field=savefields ; field->name ; field++)
-	{
-		WriteField (f, field, (byte *)ent);
-	}
-
+	// Now write any allocated data following the edict.
+	for (const field_t* field = savefields; field->name != NULL; field++)
+		WriteField(f, field, (byte*)ent);
 }
+
+#pragma endregion
 
 /*
 ==============
