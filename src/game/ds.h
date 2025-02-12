@@ -1,6 +1,7 @@
 #ifndef __DS
 #define __DS
 
+#include "g_save.h" //mxd
 #include "pcode.h"
 #include "list.h"
 

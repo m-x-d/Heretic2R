@@ -158,25 +158,6 @@ enum
 #define SFL_CROSS_TRIGGER_8		0x00000080
 #define SFL_CROSS_TRIGGER_MASK	0x000000ff
 
-#define MAX_MESSAGESTRINGS 1000
-
-typedef struct
-{
-	char* string;
-	char* wav;
-} trig_message_t;
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-	extern trig_message_t message_text[];
-#ifdef __cplusplus
-}
-#endif
-
-extern uint* messagebuf;
-
 // This structure is left intact through an entire game.
 // It should be initialized at game.dll load time and read from / written to the 'server.ssv' file for savegames.
 typedef struct
@@ -647,42 +628,6 @@ extern int self_spawn;
 #define world (&g_edicts[0])
 
 #define DROPPED_ITEM		0x00008000
-
-// Fields are needed for spawning from the entity string and saving / loading games.
-#define FFL_SPAWNTEMP		1
-
-typedef enum
-{
-	F_INT,
-	F_FLOAT,
-	F_LSTRING,	// String on disk, pointer in memory, TAG_LEVEL.
-	F_GSTRING,	// String on disk, pointer in memory, TAG_GAME.
-	F_VECTOR,
-	F_ANGLEHACK,
-	F_EDICT,	// Index on disk, pointer in memory.
-	F_ITEM,		// Index on disk, pointer in memory.
-	F_CLIENT,	// Index on disk, pointer in memory.
-	F_RGBA,
-	F_RGB,
-	F_IGNORE,
-} fieldtype_t;
-
-typedef struct
-{
-	char* name;
-	int ofs;
-	fieldtype_t type;
-	int flags;
-} field_t;
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-	extern field_t fields[];
-#ifdef __cplusplus
-}
-#endif
 
 // g_cmds.c
 extern void Cmd_Score_f(edict_t* ent);

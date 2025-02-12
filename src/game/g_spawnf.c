@@ -1,6 +1,7 @@
 #include "g_spawnf.h" //mxd
 #include "g_Skeletons.h"
 #include "g_items.h" //mxd
+#include "g_save.h" //mxd
 #include "q_Physics.h"
 #include "q_shared.h"
 
