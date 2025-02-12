@@ -17,6 +17,9 @@
 #include "Vector.h"
 #include "Utilities.h"
 
+#define FRICTION_STOPSPEED	100.0f
+#define FRICTION_SURFACE	6.0f
+
 //FIXME: a high detail option? Or just not in netplay?
 // - maybe a flag for client to take care of disabling for now since it might cause too much net traffic.
 void PhysicsCheckWaterTransition(edict_t* self)
@@ -48,8 +51,6 @@ void PhysicsCheckWaterTransition(edict_t* self)
 
 	gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG6 | CEF_FLAG7, trace.endpos, "bd", size, trace.plane.normal);
 }
-
-static void Physics_None(edict_t* self) { }
 
 static void Physics_NoclipMove(edict_t* self)
 {
@@ -171,7 +172,6 @@ void EntityPhysics(edict_t* self)
 	{
 		case PHYSICSTYPE_NONE:
 		case PHYSICSTYPE_STATIC:
-			Physics_None(self);
 			break;
 
 		case PHYSICSTYPE_NOCLIP:
