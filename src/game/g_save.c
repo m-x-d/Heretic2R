@@ -629,6 +629,24 @@ static void WriteEdict(FILE* f, edict_t* ent)
 		WriteField(f, field, (byte*)ent);
 }
 
+// All pointer variables (except function pointers) must be handled specially.
+static void ReadEdict(FILE* f, edict_t* ent)
+{
+	byte* fx_buf = ent->s.clientEffects.buf; // Buffer needs to be stored to be cleared by the engine.
+	const SinglyLinkedList_t msgs = ent->msgQ.msgs;
+	void* script = ent->Script;
+
+	fread(ent, sizeof(*ent), 1, f);
+
+	ent->Script = script;
+	ent->s.clientEffects.buf = fx_buf;
+	ent->msgQ.msgs = msgs;
+	ent->last_alert = NULL;
+
+	for (const field_t* field = savefields; field->name != NULL; field++)
+		ReadField(f, field, (byte*)ent);
+}
+
 #pragma endregion
 
 /*
@@ -691,55 +709,6 @@ void WriteLevelLocals (FILE *f)
 		}
 	}
 
-}
-
-
-/*
-==============
-ReadEdict
-
-All pointer variables (except function pointers) must be handled specially.
-==============
-*/
-void ReadEdict (FILE *f, edict_t *ent)
-{
-	field_t		*field;
-	SinglyLinkedList_t msgs;
-	char *temp;
-	void *s;
-
-	if(ent->s.clientEffects.buf)
-	{
-		temp = ent->s.clientEffects.buf; // buffer needs to be stored to be cleared by the engine
-	}
-	else
-	{
-		temp = NULL;
-	}
-
-	msgs = ent->msgQ.msgs;
-
-	s=ent->Script;
-	fread (ent, sizeof(*ent), 1, f);
-	ent->Script=s;
-
-	ent->s.clientEffects.buf = temp;
-
-	ent->msgQ.msgs = msgs;
-	ent->last_alert = NULL;
-
-/*
-	// Only clients need skeletons - these are set up when all else is done. -MW.
-
-	if(ent->s.skeletalType != SKEL_NULL)
-	{
-		CreateSkeleton(ent->s.skeletalType);
-	}
-*/
-	for (field=savefields ; field->name ; field++)
-	{
-		ReadField (f, field, (byte *)ent);
-	}
 }
 
 /*
