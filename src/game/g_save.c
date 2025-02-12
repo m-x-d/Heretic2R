@@ -362,56 +362,60 @@ void InitGame(void)
 	LoadStrings();
 }
 
-//=========================================================
+#pragma region ========================== FIELDS IO ==========================
 
-void WriteField1 (FILE *f, field_t *field, byte *base)
+static void ConvertField(const field_t* field, byte* base) //mxd. Named 'WriteField1' in original logic.
 {
-	void		*p;
-	int			len;
-	int			index;
+	int len;
+	int index;
 
-	p = (void *)(base + field->ofs);
+	void* p = &base[field->ofs];
+
 	switch (field->type)
 	{
-	case F_INT:
-	case F_FLOAT:
-	case F_ANGLEHACK:
-	case F_VECTOR:
-	case F_IGNORE:
-		break;
+		case F_INT:
+		case F_FLOAT:
+		case F_ANGLEHACK:
+		case F_VECTOR:
+		case F_IGNORE:
+			break;
 
-	case F_LSTRING:
-	case F_GSTRING:
-		if ( *(char **)p )
-			len = strlen(*(char **)p) + 1;
-		else
-			len = 0;
-		*(int *)p = len;
-		break;
-	case F_EDICT:
-		if ( *(edict_t **)p == NULL)
-			index = -1;
-		else
-			index = *(edict_t **)p - g_edicts;
-		*(int *)p = index;
-		break;
-	case F_CLIENT:
-		if ( *(gclient_t **)p == NULL)
-			index = -1;
-		else
-			index = *(gclient_t **)p - game.clients;
-		*(int *)p = index;
-		break;
-	case F_ITEM:
-		if ( *(edict_t **)p == NULL)
-			index = -1;
-		else
-			index = *(gitem_t **)p - playerExport.p_itemlist;
-		*(int *)p = index;
-		break;
+		case F_LSTRING: // Convert string pointer to string length.
+		case F_GSTRING:
+			if (*(char**)p != NULL)
+				len = (int)strlen(*(char**)p) + 1;
+			else
+				len = 0;
+			*(int*)p = len;
+			break;
 
-	default:
-		gi.error ("WriteEdict: unknown field type");
+		case F_EDICT: // Convert edict pointer to edict index.
+			if (*(edict_t**)p != NULL)
+				index = *(edict_t**)p - g_edicts;
+			else
+				index = -1;
+			*(int*)p = index;
+			break;
+
+		case F_CLIENT: // Convert client pointer to client index.
+			if (*(gclient_t**)p != NULL)
+				index = *(gclient_t**)p - game.clients;
+			else
+				index = -1;
+			*(int*)p = index;
+			break;
+
+		case F_ITEM: // Convert item pointer to item index.
+			if (*(edict_t**)p != NULL)
+				index = *(gitem_t**)p - playerExport.p_itemlist;
+			else
+				index = -1;
+			*(int*)p = index;
+			break;
+
+		default:
+			gi.error("WriteEdict: unknown field type");
+			break;
 	}
 }
 
@@ -497,7 +501,7 @@ void ReadField (FILE *f, field_t *field, byte *base)
 	}
 }
 
-//=========================================================
+#pragma endregion
 
 /*
 ==============
@@ -517,7 +521,7 @@ void WriteClient (FILE *f, gclient_t *client)
 	// change the pointers to lengths or indexes
 	for (field=clientfields ; field->name ; field++)
 	{
-		WriteField1 (f, field, (byte *)&temp);
+		ConvertField (field, (byte *)&temp);
 	}
 
 	// write the block
@@ -669,7 +673,7 @@ void WriteEdict (FILE *f, edict_t *ent)
 	// change the pointers to lengths or indexes
 	for (field=savefields ; field->name ; field++)
 	{
-		WriteField1 (f, field, (byte *)&temp);
+		ConvertField (field, (byte *)&temp);
 	}
 
 	// write the block
@@ -713,7 +717,7 @@ void WriteLevelLocals (FILE *f)
 	// change the pointers to lengths or indexes
 	for (field=levelfields ; field->name ; field++)
 	{
-		WriteField1 (f, field, (byte *)&temp);
+		ConvertField (field, (byte *)&temp);
 	}
 
 	for (i = 0; i< level.active_buoys; i++)
@@ -721,7 +725,7 @@ void WriteLevelLocals (FILE *f)
 		// change the pointers to lengths or indexes
 		for (field=bouyfields ; field->name ; field++)
 		{
-			WriteField1 (f, field, (byte *)&temp.buoy_list[i]);
+			ConvertField (field, (byte *)&temp.buoy_list[i]);
 		}
 	}
 
