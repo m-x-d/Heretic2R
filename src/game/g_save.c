@@ -785,147 +785,123 @@ void WriteLevel(char* filename)
 			fx_buf->numEffects = 1;
 }
 
-
-/*
-=================
-ReadLevel
-
-SpawnEntities will allready have been called on the
-level the same way it was when the level was saved.
-
-That is necessary to get the baselines
-set up identically.
-
-The server will have cleared all of the world links before
-calling ReadLevel.
-=================
-*/
-void ReadLevel (char *filename)
+// SpawnEntities will already have been called on the level the same way it was when the level was saved.
+// That is necessary to get the baselines set up identically.
+// The server will have cleared all of the world links before calling ReadLevel.
+void ReadLevel(char* filename)
 {
-	void ClearMessageQueues();
-
-	int		entnum;
-	FILE	*f;
-	int		i;
-	void	*base;
-	edict_t	*ent;
-
-	f = fopen (filename, "rb");
-	if (!f)
-		gi.error ("Couldn't open %s", filename);
-
-//	ClearMessageQueues();
-
-	// Free any dynamic memory allocated by loading the level base state.
-
-	gi.FreeTags (TAG_LEVEL);
-
-	// Wipe all the entities.
-
-	memset (g_edicts, 0, game.maxentities*sizeof(g_edicts[0]));
-
-	globals.num_edicts = maxclients->value+1;
-
-	// Check edict size.
-
-	fread (&i, sizeof(i), 1, f);
-	if (i != sizeof(edict_t))
+	FILE* f;
+	if (fopen_s(&f, filename, "rb") != 0) //mxd. fopen -> fopen_s
 	{
-		fclose (f);
-		gi.error ("ReadLevel: mismatched edict size");
+		gi.error("Couldn't open %s", filename);
+		return;
 	}
 
-	fread (&base, sizeof(base), 1, f);
-	if (base != (void *)InitGame)
+	// Free any dynamic memory allocated by loading the level base state.
+	gi.FreeTags(TAG_LEVEL);
+
+	// Wipe all the entities.
+	memset(g_edicts, 0, game.maxentities * sizeof(g_edicts[0]));
+
+	globals.num_edicts = MAXCLIENTS + 1;
+
+	// Check edict size.
+	int ed_size;
+	fread(&ed_size, sizeof(ed_size), 1, f);
+
+	if (ed_size != sizeof(edict_t))
 	{
-		fclose (f);
-		gi.error ("ReadLevel: function pointers have moved - file was saved on different version.");
+		fclose(f);
+		gi.error("ReadLevel: mismatched edict size");
+
+		return;
+	}
+
+	void* base;
+	fread(&base, sizeof(base), 1, f);
+
+	if (base != (void*)InitGame)
+	{
+		fclose(f);
+		gi.error("ReadLevel: function pointers have moved - file was saved on different version.");
+
+		return;
 	}
 
 	// Load the level locals.
-
-	ReadLevelLocals (f);
+	ReadLevelLocals(f);
 
 	// Load all the entities.
-
-	while (1)
+	while (true)
 	{
-		if (fread (&entnum, sizeof(entnum), 1, f) != 1)
+		int ent_num;
+		if (fread(&ent_num, sizeof(ent_num), 1, f) != 1)
 		{
-			fclose (f);
-			gi.error ("ReadLevel: failed to read entnum");
-		}
-		if (entnum == -1)
-			break;
-		if (entnum >= globals.num_edicts)
-			globals.num_edicts = entnum+1;
+			fclose(f);
+			gi.error("ReadLevel: failed to read entnum");
 
-		ent = &g_edicts[entnum];
-		ReadEdict (f, ent);
+			return;
+		}
+
+		if (ent_num == -1)
+			break;
+
+		if (ent_num >= globals.num_edicts)
+			globals.num_edicts = ent_num + 1;
+
+		edict_t* ent = &g_edicts[ent_num];
+		ReadEdict(f, ent);
 
 		// Let the server rebuild world links for this ent.
-
 		ent->last_alert = NULL;
-		memset (&ent->area, 0, sizeof(ent->area));
+		memset(&ent->area, 0, sizeof(ent->area));
 
-		// NOTE NOTE 
-		// Missiles must be linked in specially.  G_LinkMissile links as a SOLID_NOT, even though the entity is SOLID_BBOX
+		//NOTE: missiles must be linked in specially. G_LinkMissile links as a SOLID_NOT, even though the entity is SOLID_BBOX.
 		if (ent->movetype == MOVETYPE_FLYMISSILE && ent->solid == SOLID_BBOX)
-		{	
-			G_LinkMissile (ent);
-		}
+			G_LinkMissile(ent);
 		else
-		{
-			gi.linkentity (ent);
-		}
-		
-		// Force the monsters just loaded to point at the right anim.
+			gi.linkentity(ent);
 
-		if((ent->classID > 0) && (!Cid_init[ent->classID]) && (ent->classID < NUM_CLASSIDS))	 	// Need to call once per level that item is on
+		// Force the monsters just loaded to point at the right anim.
+		if (ent->classID > CID_NONE && ent->classID < NUM_CLASSIDS && !Cid_init[ent->classID]) // Need to call once per level that item is on.
 		{
-			classStaticsInits[ent->classID]();	
+			classStaticsInits[ent->classID]();
 			Cid_init[ent->classID] = -1;
 		}
 
-		if ( ((ent->classname) && (*ent->classname)) && strcmp(ent->classname, "player") && ent->classID && classStatics[ent->classID].resInfo && ent->curAnimID)
+		//TODO: ent->curAnimID 0 is NOT 'no animation'! Do we need this check?
+		if (ent->classname != NULL && strcmp(ent->classname, "player") != 0 && ent->classID != CID_NONE && classStatics[ent->classID].resInfo != NULL && ent->curAnimID > 0)
 			SetAnim(ent, ent->curAnimID);
 	}
 
 	LoadScripts(f, false);
 
-  	// Load up all the persistant effects and fire them off.
-
-	fread (gi.Persistant_Effects_Array, (sizeof(PerEffectsBuffer_t) * MAX_PERSISTANT_EFFECTS), 1, f);
+	// Load up all the persistent effects and fire them off.
+	fread(gi.Persistant_Effects_Array, sizeof(PerEffectsBuffer_t) * MAX_PERSISTANT_EFFECTS, 1, f);
 	gi.ClearPersistantEffects();
 
-	fclose (f);
+	fclose(f);
 
 	// Mark all clients as unconnected.
-
-	for (i=0 ; i<maxclients->value ; i++)
+	for (int i = 0; i < MAXCLIENTS; i++)
 	{
-		ent = &g_edicts[i+1];
-		ent->client = game.clients + i;
-		ent->client->playerinfo.pers.connected = false;
-		InitPlayerinfo(ent);
-		SetupPlayerinfo(ent);
-		P_PlayerBasicAnimReset(&ent->client->playerinfo);
+		edict_t* cl = &g_edicts[i + 1];
+		cl->client = &game.clients[i];
+		cl->client->playerinfo.pers.connected = false;
+
+		InitPlayerinfo(cl);
+		SetupPlayerinfo(cl);
+		P_PlayerBasicAnimReset(&cl->client->playerinfo);
 	}
 
-	// Do any load time things at this point.
-
-	for (i=0 ; i<globals.num_edicts ; i++)
+	// Do any load-time things at this point.
+	for (int i = 0; i < globals.num_edicts; i++)
 	{
-		ent = &g_edicts[i];
+		edict_t* ent = &g_edicts[i];
 
-		if (!ent->inuse)
-			continue;
-
-		// Fire any cross-level triggers.
-
-		if (ent->classname)
-			if (strcmp(ent->classname, "target_crosslevel_target") == 0)
-				ent->nextthink = level.time + ent->delay;
+		// Fire any cross-level triggers. //TODO: does H2 use cross-level triggers?
+		if (ent->inuse && ent->classname != NULL && strcmp(ent->classname, "target_crosslevel_target") == 0)
+			ent->nextthink = level.time + ent->delay;
 	}
 }
 
