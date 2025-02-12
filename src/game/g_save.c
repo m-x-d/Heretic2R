@@ -430,66 +430,64 @@ static void WriteField(FILE* f, const field_t* field, byte* base) //mxd. Named '
 	}
 }
 
-void ReadField (FILE *f, field_t *field, byte *base)
+static void ReadField(FILE* f, const field_t* field, byte* base)
 {
-	void		*p;
-	int			len;
-	int			index;
+	int len;
+	int index;
 
-	p = (void *)(base + field->ofs);
+	void* p = &base[field->ofs];
+
 	switch (field->type)
 	{
-	case F_INT:
-	case F_FLOAT:
-	case F_ANGLEHACK:
-	case F_VECTOR:
-	case F_IGNORE:
-		break;
+		case F_INT:
+		case F_FLOAT:
+		case F_ANGLEHACK:
+		case F_VECTOR:
+		case F_IGNORE:
+			break;
 
-	case F_LSTRING:
-		len = *(int *)p;
-		if (!len)
-			*(char **)p = NULL;
-		else
-		{
-			*(char **)p = gi.TagMalloc (len, TAG_LEVEL);
-			fread (*(char **)p, len, 1, f);
-		}
-		break;
-	case F_GSTRING:
-		len = *(int *)p;
-		if (!len)
-			*(char **)p = NULL;
-		else
-		{
-			*(char **)p = gi.TagMalloc (len, TAG_GAME);
-			fread (*(char **)p, len, 1, f);
-		}
-		break;
-	case F_EDICT:
-		index = *(int *)p;
-		if ( index == -1 )
-			*(edict_t **)p = NULL;
-		else
-			*(edict_t **)p = &g_edicts[index];
-		break;
-	case F_CLIENT:
-		index = *(int *)p;
-		if ( index == -1 )
-			*(gclient_t **)p = NULL;
-		else
-			*(gclient_t **)p = &game.clients[index];
-		break;
-	case F_ITEM:
-		index = *(int *)p;
-		if ( index == -1 )
-			*(gitem_t **)p = NULL;
-		else
-			*(gitem_t **)p = &playerExport.p_itemlist[index];
-		break;
+		case F_LSTRING:
+		case F_GSTRING:
+			len = *(int*)p;
+			if (len == 0)
+			{
+				*(char**)p = NULL;
+			}
+			else
+			{
+				const int tag = (field->type == F_LSTRING ? TAG_LEVEL : TAG_GAME); //mxd
+				*(char**)p = gi.TagMalloc(len, tag);
+				fread(*(char**)p, len, 1, f);
+			}
+			break;
 
-	default:
-		gi.error ("ReadEdict: unknown field type");
+		case F_EDICT:
+			index = *(int*)p;
+			if (index == -1)
+				*(edict_t**)p = NULL;
+			else
+				*(edict_t**)p = &g_edicts[index];
+			break;
+
+		case F_CLIENT:
+			index = *(int*)p;
+			if (index == -1)
+				*(gclient_t**)p = NULL;
+			else
+				*(gclient_t**)p = &game.clients[index];
+			break;
+
+		case F_ITEM:
+			index = *(int*)p;
+			if (index == -1)
+				*(gitem_t**)p = NULL;
+			else
+				*(gitem_t**)p = &playerExport.p_itemlist[index];
+			break;
+
+		default:
+			gi.error("ReadEdict: unknown field type");
+			break;
 	}
 }
 
