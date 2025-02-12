@@ -649,66 +649,42 @@ static void ReadEdict(FILE* f, edict_t* ent)
 
 #pragma endregion
 
-/*
-==============
-WriteLevelLocals
+#pragma region ========================== LEVEL LOCALS IO ==========================
 
-All pointer variables (except function pointers) must be handled specially.
-==============
-*/
-void WriteLevelLocals (FILE *f)
+// All pointer variables (except function pointers) must be handled specially.
+static void WriteLevelLocals(FILE* f)
 {
-	field_t		*field;
-	level_locals_t		temp;
-	cvar_t *r_farclipdist;
-	cvar_t *r_fog;
-	cvar_t *r_fog_density;
-	int			i;
-
-	// set up some console vars as level save variables
-	r_farclipdist = gi.cvar("r_farclipdist", FAR_CLIP_DIST, 0);
+	// Set up some console vars as level save variables.
+	const cvar_t* r_farclipdist = gi.cvar("r_farclipdist", FAR_CLIP_DIST, 0);
 	level.far_clip_dist_f = r_farclipdist->value;
-	r_fog = Cvar_Get ("r_fog", "0", 0);
+
+	const cvar_t* r_fog = Cvar_Get("r_fog", "0", 0);
 	level.fog = r_fog->value;
-	r_fog_density = Cvar_Get ("r_fog_density", "0", 0);
+
+	const cvar_t* r_fog_density = Cvar_Get("r_fog_density", "0", 0);
 	level.fog_density = r_fog_density->value;
 
-	// all of the ints, floats, and vectors stay as they are
-	temp = level;
+	// All of the ints, floats, and vectors stay as they are.
+	level_locals_t temp = level;
 
-	// change the pointers to lengths or indexes
-	for (field=levelfields ; field->name ; field++)
-	{
-		ConvertField (field, (byte *)&temp);
-	}
+	// Change the pointers to lengths or indexes.
+	for (const field_t* field = levelfields; field->name != NULL; field++)
+		ConvertField(field, (byte*)&temp);
 
-	for (i = 0; i< level.active_buoys; i++)
-	{
-		// change the pointers to lengths or indexes
-		for (field=bouyfields ; field->name ; field++)
-		{
-			ConvertField (field, (byte *)&temp.buoy_list[i]);
-		}
-	}
+	for (int i = 0; i < level.active_buoys; i++)
+		for (const field_t* field = bouyfields; field->name != NULL; field++)
+			ConvertField(field, (byte*)&temp.buoy_list[i]);
 
-	// write the block
-	fwrite (&temp, sizeof(temp), 1, f);
+	// Write the block.
+	fwrite(&temp, sizeof(temp), 1, f);
 
-	// now write any allocated data following the edict
-	for (field=levelfields ; field->name ; field++)
-	{
-		WriteField (f, field, (byte *)&level);
-	}
+	// Now write any allocated data following the edict.
+	for (const field_t* field = levelfields; field->name != NULL; field++)
+		WriteField(f, field, (byte*)&level);
 
-	for (i = 0; i< level.active_buoys; i++)
-	{
-		// change the pointers to lengths or indexes
-		for (field=bouyfields ; field->name ; field++)
-		{
-			WriteField (f, field, (byte *)&level.buoy_list[i]);
-		}
-	}
-
+	for (int i = 0; i < level.active_buoys; i++)
+		for (const field_t* field = bouyfields; field->name != NULL; field++)
+			WriteField(f, field, (byte*)&level.buoy_list[i]);
 }
 
 /*
@@ -760,6 +736,7 @@ void ReadLevelLocals (FILE *f)
 	}
 }
 
+#pragma endregion
 
 /*
 =================
