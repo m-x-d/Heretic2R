@@ -524,69 +524,51 @@ static void ReadClient(FILE* f, gclient_t* client)
 
 #pragma endregion
 
-/*
-============
-WriteGame
+#pragma region ========================== GAME IO ==========================
 
-This will be called whenever the game goes to a new level,
-and when the user explicitly saves the game.
-
-Game information include cross level data, like multi level
-triggers, help computer info, and all client states.
-
-A single player death will automatically restore from the
-last save position.
-============
-*/
-void WriteGame (char *filename, qboolean autosave)
+// This will be called whenever the game goes to a new level and when the user explicitly saves the game.
+// Game information include cross-level data, like multi-level triggers, and all client states.
+// A single player death will automatically restore from the last save position.
+void WriteGame(char* filename, const qboolean autosave)
 {
-	FILE	*f;
-	int		i;
-	char	str[16];
-	PerEffectsBuffer_t	*peffect;
+	SaveClientData();
 
-	SaveClientData ();
+	FILE* f;
+	if (fopen_s(&f, filename, "wb") != 0) //mxd. fopen -> fopen_s
+	{
+		gi.error("Couldn't open %s", filename);
+		return;
+	}
 
-	f = fopen (filename, "wb");
-	if (!f)
-		gi.error ("Couldn't open %s", filename);
-
-	memset (str, 0, sizeof(str));
-	strcpy (str, __DATE__);
-	fwrite (str, sizeof(str), 1, f);
+	char str[16] = { 0 };
+	strcpy_s(str, sizeof(str), __DATE__); //mxd. strcpy -> strcpy_s
+	fwrite(str, sizeof(str), 1, f);
 
 	game.autosaved = autosave;
-	fwrite (&game, sizeof(game), 1, f);
+	fwrite(&game, sizeof(game), 1, f);
 	game.autosaved = false;
 
-	for (i=0 ; i<game.maxclients ; i++)
-		WriteClient (f, &game.clients[i]);
+	for (int i = 0; i < game.maxclients; i++)
+		WriteClient(f, &game.clients[i]);
 
 	SaveScripts(f, true);
 
-	// this is a bit bogus - search through the client effects and kill all the FX_PLAYER_EFFECTS before saving, since they will be re-created
-	// upon players re-joining the game after a load anyway.
-	peffect = (PerEffectsBuffer_t*) gi.Persistant_Effects_Array;
-	for (i=0; i<MAX_PERSISTANT_EFFECTS; i++, peffect++)
-	{
-		if (peffect->fx_num == FX_PLAYER_PERSISTANT)
-			peffect->numEffects = 0;
-	}
+	// This is a bit bogus - search through the client effects and kill all the FX_PLAYER_EFFECTS before saving,
+	// since they will be re-created upon players re-joining the game after a load anyway.
+	PerEffectsBuffer_t* fx_buf = gi.Persistant_Effects_Array;
+	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++, fx_buf++)
+		if (fx_buf->fx_num == FX_PLAYER_PERSISTANT)
+			fx_buf->numEffects = 0;
 
-	// save all the current persistant effects
-	fwrite (gi.Persistant_Effects_Array, (sizeof(PerEffectsBuffer_t) * MAX_PERSISTANT_EFFECTS), 1, f);
+	// Save all the current persistent effects.
+	fwrite(gi.Persistant_Effects_Array, (sizeof(PerEffectsBuffer_t) * MAX_PERSISTANT_EFFECTS), 1, f);
+	fclose(f);
 
-	fclose (f);
-
-	// this is a bit bogus - search through the client effects and renable all FX_PLAYER_EFFECTS
-	peffect = (PerEffectsBuffer_t*) gi.Persistant_Effects_Array;
-	for (i=0; i<MAX_PERSISTANT_EFFECTS; i++, peffect++)
-	{
-		if (peffect->fx_num == FX_PLAYER_PERSISTANT)
-			peffect->numEffects = 1;
-	}
-
-
+	// This is a bit bogus - search through the client effects and re-enable all FX_PLAYER_EFFECTS.
+	fx_buf = (PerEffectsBuffer_t*)gi.Persistant_Effects_Array;
+	for (int i = 0; i < MAX_PERSISTANT_EFFECTS; i++, fx_buf++)
+		if (fx_buf->fx_num == FX_PLAYER_PERSISTANT)
+			fx_buf->numEffects = 1;
 }
 
 void ReadGame (char *filename)
@@ -623,7 +605,7 @@ void ReadGame (char *filename)
 	fclose (f);
 }
 
-//==========================================================
+#pragma endregion
 
 
 /*
