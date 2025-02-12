@@ -513,23 +513,13 @@ static void WriteClient(FILE* f, gclient_t* client)
 		WriteField(f, field, (byte*)client);
 }
 
-/*
-==============
-ReadClient
-
-All pointer variables (except function pointers) must be handled specially.
-==============
-*/
-void ReadClient (FILE *f, gclient_t *client)
+// All pointer variables (except function pointers) must be handled specially.
+static void ReadClient(FILE* f, gclient_t* client)
 {
-	field_t		*field;
+	fread(client, sizeof(*client), 1, f);
 
-	fread (client, sizeof(*client), 1, f);
-
-	for (field=clientfields ; field->name ; field++)
-	{
-		ReadField (f, field, (byte *)client);
-	}
+	for (const field_t* field = clientfields; field->name != NULL; field++)
+		ReadField(f, field, (byte*)client);
 }
 
 #pragma endregion
