@@ -192,7 +192,7 @@ static field_t clientfields[] =
 #pragma endregion
 
 trig_message_t message_text[MAX_MESSAGESTRINGS];
-uint* messagebuf;
+static char* message_buf; //mxd. Made local.
 
 static int LoadTextFile(char* name, char** addr)
 {
@@ -215,15 +215,12 @@ static int LoadTextFile(char* name, char** addr)
 
 static void LoadStrings(void)
 {
-	char* buffer;
+	const int length = LoadTextFile("levelmsg.txt", &message_buf);
 
-	const int length = LoadTextFile("levelmsg.txt", &buffer);
-	messagebuf = (uint*)buffer;
-
-	char* start_ptr = buffer;
+	char* start_ptr = message_buf;
 	char* p = NULL;
 
-	for (int i = 1; p < buffer + length; i++)
+	for (int i = 1; p < message_buf + length; i++)
 	{
 		if (i > MAX_MESSAGESTRINGS)
 		{
@@ -261,6 +258,11 @@ static void LoadStrings(void)
 		return_ptr += 2; // Skip '\r\n'. 
 		start_ptr = return_ptr; // Advance to next string.
 	}
+}
+
+void FreeLevelMessagesBuffer(void) //mxd
+{
+	gi.FS_FreeFile(message_buf);
 }
 
 // This will be called when the dll is first loaded, which only happens when a new game is begun.

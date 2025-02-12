@@ -47,7 +47,7 @@ cvar_t* sv_maplist;
 cvar_t* dedicated;
 cvar_t* filterban;
 
-cvar_t* sv_maxvelocity; //TODO: turn into define?
+cvar_t* sv_maxvelocity; //TODO: turn into define? Missile SFX becomes desynched with missile ent when sv_maxvelocity < missile velocity.
 cvar_t* sv_gravity;
 cvar_t* sv_friction;
 
@@ -114,7 +114,7 @@ static void ShutdownGame(void)
 		game.entitiesSpawned = false;
 	}
 
-	gi.FS_FreeFile(messagebuf);
+	FreeLevelMessagesBuffer(); //mxd
 
 	gi.FreeTags(TAG_LEVEL);
 	gi.FreeTags(TAG_GAME);
