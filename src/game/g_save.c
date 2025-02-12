@@ -213,55 +213,54 @@ static int LoadTextFile(char* name, char** addr)
 	return length + 1;
 }
 
-void Load_Strings(void)
+static void LoadStrings(void)
 {
-	char	*buffer;
-	int		i,length;
-	char *p,*startp,*return_p;
+	char* buffer;
 
-	length = LoadTextFile ("levelmsg.txt", &buffer);
-	messagebuf = (unsigned *) buffer;
-	startp = buffer;
-	p =0;
-	for (i=1; p < (buffer + length) ;++i)
-	{			
-		if (i> MAX_MESSAGESTRINGS)
+	const int length = LoadTextFile("levelmsg.txt", &buffer);
+	messagebuf = (uint*)buffer;
+
+	char* start_ptr = buffer;
+	char* p = NULL;
+
+	for (int i = 1; p < buffer + length; i++)
+	{
+		if (i > MAX_MESSAGESTRINGS)
 		{
-			Com_Printf ("Too many strings\n");
+			Com_Printf("Too many strings\n");
 			return;
 		}
 
-		// Read in string up to return
-		return_p = strchr(startp,13);	// Search for return characters 13 10
-		if (!return_p)	// At end of file
-		{
+		// Read in string up to return.
+		char* return_ptr = strchr(start_ptr, '\r');
+
+		if (return_ptr == NULL) // At end of file.
 			break;
-		}
-		else
-			*return_p = 0;
+
+		*return_ptr = 0;
 
 		// Search string for #
-		p = strchr(startp,'#');	// Search for # which signifies a wav file
-		if ((p) && (p < return_p))
+		p = strchr(start_ptr, '#');	// Search for '#', which signifies a wav file.
+
+		if (p != NULL && p < return_ptr)
 		{
 			*p = 0;
-			message_text[i].wav = ++p;	// Save stuff after #
+			message_text[i].wav = ++p; // Save stuff after '#'.
 		}
 
 		// Save stuff before #
-		message_text[i].string = startp;
+		message_text[i].string = start_ptr;
 
 		do
 		{
-			p = strchr(startp,'@');	// Search for # which signifies a wav file
-			if (p)
+			p = strchr(start_ptr, '@'); // Replace '@' markers with newlines.
+			if (p != NULL)
 				*p = '\n';
-		} while(p);
+		} while (p != NULL);
 
-		return_p +=2;	// Hop over 13 10 
-		startp = return_p;	// Advance to next string
-
-	} 
+		return_ptr += 2; // Skip '\r\n'. 
+		start_ptr = return_ptr; // Advance to next string.
+	}
 }
 
 /*
@@ -383,7 +382,7 @@ void InitGame (void)
 
 	level.cinActive = false;
 
-	Load_Strings();
+	LoadStrings();
 }
 
 //=========================================================
