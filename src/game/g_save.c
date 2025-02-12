@@ -19,178 +19,180 @@
 
 #define MAX_MESSAGESTRINGS	1000
 
-field_t fields[] = {
-	{"classname", FOFS(classname), F_LSTRING},
-	{"origin", FOFS(s.origin), F_VECTOR},
-	{"model", FOFS(model), F_LSTRING},
-	{"spawnflags", FOFS(spawnflags), F_INT},
-	{"speed", FOFS(speed), F_FLOAT},
-	{"accel", FOFS(accel), F_FLOAT},
-	{"decel", FOFS(decel), F_FLOAT},
-	{"target", FOFS(target), F_LSTRING},
-	{"targetname", FOFS(targetname), F_LSTRING},
-	{"scripttarget", FOFS(scripttarget), F_LSTRING},
-	{"pathtarget", FOFS(pathtarget), F_LSTRING},
-	{"jumptarget", FOFS(jumptarget), F_LSTRING},
-	{"deathtarget", FOFS(deathtarget), F_LSTRING},
-	{"killtarget", FOFS(killtarget), F_LSTRING},
-	{"combattarget", FOFS(combattarget), F_LSTRING},
-	{"message", FOFS(message), F_LSTRING},
-	{"text_msg", FOFS(text_msg), F_LSTRING},
-	{"team", FOFS(team), F_LSTRING},
-	{"wait", FOFS(wait), F_FLOAT},
-	{"delay", FOFS(delay), F_FLOAT},
-	{"time", FOFS(time), F_FLOAT},
-	{"random", FOFS(random), F_FLOAT},
-	{"style", FOFS(style), F_INT},
-	{"count", FOFS(count), F_INT},
-	{"health", FOFS(health), F_INT},
-	{"skinnum", FOFS(s.skinnum), F_INT},
-	{"sounds", FOFS(sounds), F_INT},
-	{"light", 0, F_IGNORE},
-	{"dmg", FOFS(dmg), F_INT},
-	{"angles", FOFS(s.angles), F_VECTOR},
-	{"angle", FOFS(s.angles), F_ANGLEHACK},
-	{"mass", FOFS(mass), F_INT},
-	{"volume", FOFS(volume), F_FLOAT},
-	{"attenuation", FOFS(attenuation), F_FLOAT},
-	{"map", FOFS(map), F_LSTRING},
-	{"materialtype", FOFS(materialtype), F_INT},
-	{"scale", FOFS(s.scale), F_FLOAT},
-	{"color", FOFS(s.color), F_RGBA},
-	{"absLight", FOFS(s.absLight), F_RGB},
-	{"frame", FOFS(s.frame), F_INT},
-	{"mintel", FOFS(mintel), F_INT},
-	{"melee_range", FOFS(melee_range), F_FLOAT},
-	{"missile_range", FOFS(missile_range), F_FLOAT},
-	{"min_missile_range", FOFS(min_missile_range), F_FLOAT},
-	{"bypass_missile_chance", FOFS(bypass_missile_chance), F_INT},
-	{"jump_chance", FOFS(jump_chance), F_INT},
-	{"wakeup_distance", FOFS(wakeup_distance), F_FLOAT},
-	{"c_mode", FOFS(monsterinfo.c_mode), F_INT, F_INT},
-	{"homebuoy", FOFS(homebuoy), F_LSTRING},
-	{"wakeup_target", FOFS(wakeup_target), F_LSTRING},
-	{"pain_target", FOFS(pain_target), F_LSTRING},
+#pragma region ========================== SAVE FIELDS ==========================
 
-	// temp spawn vars -- only valid when the spawn function is called
-	{"lip", STOFS(lip), F_INT, FFL_SPAWNTEMP},
-	{"distance", STOFS(distance), F_INT, FFL_SPAWNTEMP},
-	{"height", STOFS(height), F_INT, FFL_SPAWNTEMP},
-	{"noise", STOFS(noise), F_LSTRING, FFL_SPAWNTEMP},
-	{"pausetime", STOFS(pausetime), F_FLOAT, FFL_SPAWNTEMP},
-	{"item", STOFS(item), F_LSTRING, FFL_SPAWNTEMP},
-	{"gravity", STOFS(gravity), F_LSTRING, FFL_SPAWNTEMP},
-	{"sky", STOFS(sky), F_LSTRING, FFL_SPAWNTEMP},
-	{"skyrotate", STOFS(skyrotate), F_FLOAT, FFL_SPAWNTEMP},
-	{"skyaxis", STOFS(skyaxis), F_VECTOR, FFL_SPAWNTEMP},
-	{"minyaw", STOFS(minyaw), F_FLOAT, FFL_SPAWNTEMP},
-	{"maxyaw", STOFS(maxyaw), F_FLOAT, FFL_SPAWNTEMP},
-	{"minpitch", STOFS(minpitch), F_FLOAT, FFL_SPAWNTEMP},
-	{"maxpitch", STOFS(maxpitch), F_FLOAT, FFL_SPAWNTEMP},
-	{"nextmap", STOFS(nextmap), F_LSTRING, FFL_SPAWNTEMP},
-	{"rotate", STOFS(rotate), F_INT, FFL_SPAWNTEMP},
-	{"target2", FOFS(target2), F_LSTRING},
-	{"pathtargetname",  FOFS(pathtargetname), F_LSTRING},
-	{"zangle", STOFS(zangle), F_FLOAT, FFL_SPAWNTEMP},
-	{"file", STOFS(file), F_LSTRING, FFL_SPAWNTEMP},
-	{"radius", STOFS(radius), F_INT, FFL_SPAWNTEMP},
-	{"offensive", STOFS(offensive), F_INT, FFL_SPAWNTEMP},
-	{"defensive", STOFS(defensive), F_INT, FFL_SPAWNTEMP},
-	{"spawnflags2", STOFS(spawnflags2), F_INT, FFL_SPAWNTEMP},
-	{"cooptimeout", STOFS(cooptimeout), F_INT, FFL_SPAWNTEMP},
-
-	{"script", STOFS(script), F_LSTRING, FFL_SPAWNTEMP},
-	{"parm1", STOFS(parms[0]), F_LSTRING, FFL_SPAWNTEMP},
-	{"parm2", STOFS(parms[1]), F_LSTRING, FFL_SPAWNTEMP},
-	{"parm3", STOFS(parms[2]), F_LSTRING, FFL_SPAWNTEMP},
-	{"parm4", STOFS(parms[3]), F_LSTRING, FFL_SPAWNTEMP},
-	{"parm5", STOFS(parms[4]), F_LSTRING, FFL_SPAWNTEMP},
-	{"parm6", STOFS(parms[5]), F_LSTRING, FFL_SPAWNTEMP},
-	{"parm7", STOFS(parms[6]), F_LSTRING, FFL_SPAWNTEMP},
-	{"parm8", STOFS(parms[7]), F_LSTRING, FFL_SPAWNTEMP},
-	{"parm9", STOFS(parms[8]), F_LSTRING, FFL_SPAWNTEMP},
-	{"parm10", STOFS(parms[9]), F_LSTRING, FFL_SPAWNTEMP},
-
-	{ NULL, 0, F_INT, 0 }, //mxd. Added terminator field.
-};
-
-// -------- just for savegames ----------
-// all pointer fields should be listed here, or savegames
-// won't work properly (they will crash and burn).
-// this wasn't just tacked on to the fields array, because
-// these don't need names, we wouldn't want map fields using
-// some of these, and if one were accidentally present twice
-// it would double swizzle (fuck) the pointer.
-
-field_t		savefields[] =
+field_t fields[] =
 {
-	{"", FOFS(classname), F_LSTRING},
-	{"", FOFS(target), F_LSTRING},
-	{"", FOFS(target2), F_LSTRING},
-	{"", FOFS(targetname), F_LSTRING},
-	{"", FOFS(scripttarget), F_LSTRING},
-	{"", FOFS(killtarget), F_LSTRING},
-	{"", FOFS(team), F_LSTRING},
-	{"", FOFS(pathtarget), F_LSTRING},
-	{"", FOFS(deathtarget), F_LSTRING},
-	{"", FOFS(combattarget), F_LSTRING},
-	{"", FOFS(model), F_LSTRING},
-	{"", FOFS(map), F_LSTRING},
-	{"", FOFS(message), F_LSTRING},
-	{"", FOFS(client), F_CLIENT},
-	{"", FOFS(item), F_ITEM},
-	{"", FOFS(goalentity), F_EDICT},
-	{"", FOFS(movetarget), F_EDICT},
-	{"", FOFS(enemy), F_EDICT},
-	{"", FOFS(oldenemy), F_EDICT},
-	{"", FOFS(activator), F_EDICT},
-	{"", FOFS(groundentity), F_EDICT},
-	{"", FOFS(teamchain), F_EDICT},
-	{"", FOFS(teammaster), F_EDICT},
-	{"", FOFS(owner), F_EDICT},
-	{"", FOFS(mynoise), F_EDICT},
-	{"", FOFS(mynoise2), F_EDICT},
-	{"", FOFS(target_ent), F_EDICT},
-	{"", FOFS(chain), F_EDICT},
-	{"", FOFS(blockingEntity), F_EDICT},
-	{"", FOFS(last_buoyed_enemy), F_EDICT},
-	{"", FOFS(placeholder), F_EDICT},
-	{"", FOFS(fire_damage_enemy), F_EDICT},
+	{ "classname",		FOFS(classname),	F_LSTRING,	0 },
+	{ "origin",			FOFS(s.origin),		F_VECTOR,	0 },
+	{ "model",			FOFS(model),		F_LSTRING,	0 },
+	{ "spawnflags",		FOFS(spawnflags),	F_INT,		0 },
+	{ "speed",			FOFS(speed),		F_FLOAT,	0 },
+	{ "accel",			FOFS(accel),		F_FLOAT,	0 },
+	{ "decel",			FOFS(decel),		F_FLOAT,	0 },
+	{ "target",			FOFS(target),		F_LSTRING,	0 },
+	{ "targetname",		FOFS(targetname),	F_LSTRING,	0 },
+	{ "scripttarget",	FOFS(scripttarget),	F_LSTRING,	0 },
+	{ "pathtarget",		FOFS(pathtarget),	F_LSTRING,	0 },
+	{ "jumptarget",		FOFS(jumptarget),	F_LSTRING,	0 },
+	{ "deathtarget",	FOFS(deathtarget),	F_LSTRING,	0 },
+	{ "killtarget",		FOFS(killtarget),	F_LSTRING,	0 },
+	{ "combattarget",	FOFS(combattarget),	F_LSTRING,	0 },
+	{ "message",		FOFS(message),		F_LSTRING,	0 },
+	{ "text_msg",		FOFS(text_msg),		F_LSTRING,	0 },
+	{ "team",			FOFS(team),			F_LSTRING,	0 },
+	{ "wait",			FOFS(wait),			F_FLOAT,	0 },
+	{ "delay",			FOFS(delay),		F_FLOAT,	0 },
+	{ "time",			FOFS(time),			F_FLOAT,	0 },
+	{ "random",			FOFS(random),		F_FLOAT,	0 },
+	{ "style",			FOFS(style),		F_INT,		0 },
+	{ "count",			FOFS(count),		F_INT,		0 },
+	{ "health",			FOFS(health),		F_INT,		0 },
+	{ "skinnum",		FOFS(s.skinnum),	F_INT,		0 },
+	{ "sounds",			FOFS(sounds),		F_INT,		0 },
+	{ "light",			0,					F_IGNORE,	0 },
+	{ "dmg",			FOFS(dmg),			F_INT,		0 },
+	{ "angles",			FOFS(s.angles),		F_VECTOR,	0 },
+	{ "angle",			FOFS(s.angles),		F_ANGLEHACK,0 },
+	{ "mass",			FOFS(mass),			F_INT,		0 },
+	{ "volume",			FOFS(volume),		F_FLOAT,	0 },
+	{ "attenuation",	FOFS(attenuation),	F_FLOAT,	0 },
+	{ "map",			FOFS(map),			F_LSTRING,	0 },
+	{ "materialtype",	FOFS(materialtype),	F_INT,		0 },
+	{ "scale",			FOFS(s.scale),		F_FLOAT,	0 },
+	{ "color",			FOFS(s.color),		F_RGBA,		0 },
+	{ "absLight",		FOFS(s.absLight),	F_RGB,		0 },
+	{ "frame",			FOFS(s.frame),		F_INT,		0 },
+	{ "mintel",			FOFS(mintel),		F_INT,		0 },
+	{ "melee_range",	FOFS(melee_range),	F_FLOAT,	0 },
+	{ "missile_range",			FOFS(missile_range),			F_FLOAT,	0 },
+	{ "min_missile_range",		FOFS(min_missile_range),		F_FLOAT,	0 },
+	{ "bypass_missile_chance",	FOFS(bypass_missile_chance),	F_INT,		0 },
+	{ "jump_chance",			FOFS(jump_chance),				F_INT,		0 },
+	{ "wakeup_distance",		FOFS(wakeup_distance),			F_FLOAT,	0 },
+	{ "c_mode",			FOFS(monsterinfo.c_mode),	F_INT,		0 }, //BUGFIX, kinda: 'F_INT, F_INT' in original logic.
+	{ "homebuoy",		FOFS(homebuoy),				F_LSTRING,	0 },
+	{ "wakeup_target",	FOFS(wakeup_target),		F_LSTRING,	0 },
+	{ "pain_target",	FOFS(pain_target),			F_LSTRING,	0 },
 
-	{NULL, 0, F_INT}
+	// Temporary spawn vars - only valid when the spawn function is called.
+	{ "lip",			STOFS(lip),				F_INT,		FFL_SPAWNTEMP },
+	{ "distance",		STOFS(distance),		F_INT,		FFL_SPAWNTEMP },
+	{ "height",			STOFS(height),			F_INT,		FFL_SPAWNTEMP },
+	{ "noise",			STOFS(noise),			F_LSTRING,	FFL_SPAWNTEMP },
+	{ "pausetime",		STOFS(pausetime),		F_FLOAT,	FFL_SPAWNTEMP },
+	{ "item",			STOFS(item),			F_LSTRING,	FFL_SPAWNTEMP },
+	{ "gravity",		STOFS(gravity),			F_LSTRING,	FFL_SPAWNTEMP },
+	{ "sky",			STOFS(sky),				F_LSTRING,	FFL_SPAWNTEMP },
+	{ "skyrotate",		STOFS(skyrotate),		F_FLOAT,	FFL_SPAWNTEMP },
+	{ "skyaxis",		STOFS(skyaxis),			F_VECTOR,	FFL_SPAWNTEMP },
+	{ "minyaw",			STOFS(minyaw),			F_FLOAT,	FFL_SPAWNTEMP },
+	{ "maxyaw",			STOFS(maxyaw),			F_FLOAT,	FFL_SPAWNTEMP },
+	{ "minpitch",		STOFS(minpitch),		F_FLOAT,	FFL_SPAWNTEMP },
+	{ "maxpitch",		STOFS(maxpitch),		F_FLOAT,	FFL_SPAWNTEMP },
+	{ "nextmap",		STOFS(nextmap),			F_LSTRING,	FFL_SPAWNTEMP },
+	{ "rotate",			STOFS(rotate),			F_INT,		FFL_SPAWNTEMP },
+	{ "target2",		FOFS(target2),			F_LSTRING,	0 },
+	{ "pathtargetname",	FOFS(pathtargetname),	F_LSTRING,	0 },
+	{ "zangle",			STOFS(zangle),			F_FLOAT,	FFL_SPAWNTEMP },
+	{ "file",			STOFS(file),			F_LSTRING,	FFL_SPAWNTEMP },
+	{ "radius",			STOFS(radius),			F_INT,		FFL_SPAWNTEMP },
+	{ "offensive",		STOFS(offensive),		F_INT,		FFL_SPAWNTEMP },
+	{ "defensive",		STOFS(defensive),		F_INT,		FFL_SPAWNTEMP },
+	{ "spawnflags2",	STOFS(spawnflags2),		F_INT,		FFL_SPAWNTEMP },
+	{ "cooptimeout",	STOFS(cooptimeout),		F_INT,		FFL_SPAWNTEMP },
+
+	{ "script",			STOFS(script),			F_LSTRING,	FFL_SPAWNTEMP },
+	{ "parm1",			STOFS(parms[0]),		F_LSTRING,	FFL_SPAWNTEMP },
+	{ "parm2",			STOFS(parms[1]),		F_LSTRING,	FFL_SPAWNTEMP },
+	{ "parm3",			STOFS(parms[2]),		F_LSTRING,	FFL_SPAWNTEMP },
+	{ "parm4",			STOFS(parms[3]),		F_LSTRING,	FFL_SPAWNTEMP },
+	{ "parm5",			STOFS(parms[4]),		F_LSTRING,	FFL_SPAWNTEMP },
+	{ "parm6",			STOFS(parms[5]),		F_LSTRING,	FFL_SPAWNTEMP },
+	{ "parm7",			STOFS(parms[6]),		F_LSTRING,	FFL_SPAWNTEMP },
+	{ "parm8",			STOFS(parms[7]),		F_LSTRING,	FFL_SPAWNTEMP },
+	{ "parm9",			STOFS(parms[8]),		F_LSTRING,	FFL_SPAWNTEMP },
+	{ "parm10",			STOFS(parms[9]),		F_LSTRING,	FFL_SPAWNTEMP },
+
+	{ NULL, 0,	F_INT,	0 } //BUGFIX: mxd. Added terminator field.
 };
 
-field_t		levelfields[] =
+// -------- Just for savegames ----------
+// All pointer fields should be listed here, or savegames won't work properly (they will crash and burn).
+// This wasn't just tacked on to the fields array, because these don't need names, we wouldn't want map fields
+// using some of these, and if one were accidentally present twice, it would double swizzle (fuck) the pointer.
+static field_t savefields[] =
 {
-	{"", LLOFS(changemap), F_LSTRING},
-	{"", LLOFS(sight_client), F_EDICT},
-	{"", LLOFS(sight_entity), F_EDICT},
-	{NULL, 0, F_INT}
+	{ "", FOFS(classname),			F_LSTRING,	0 },
+	{ "", FOFS(target),				F_LSTRING,	0 },
+	{ "", FOFS(target2),			F_LSTRING,	0 },
+	{ "", FOFS(targetname),			F_LSTRING,	0 },
+	{ "", FOFS(scripttarget),		F_LSTRING,	0 },
+	{ "", FOFS(killtarget),			F_LSTRING,	0 },
+	{ "", FOFS(team),				F_LSTRING,	0 },
+	{ "", FOFS(pathtarget),			F_LSTRING,	0 },
+	{ "", FOFS(deathtarget),		F_LSTRING,	0 },
+	{ "", FOFS(combattarget),		F_LSTRING,	0 },
+	{ "", FOFS(model),				F_LSTRING,	0 },
+	{ "", FOFS(map),				F_LSTRING,	0 },
+	{ "", FOFS(message),			F_LSTRING,	0 },
+	{ "", FOFS(client),				F_CLIENT,	0 },
+	{ "", FOFS(item),				F_ITEM,		0 },
+	{ "", FOFS(goalentity),			F_EDICT,	0 },
+	{ "", FOFS(movetarget),			F_EDICT,	0 },
+	{ "", FOFS(enemy),				F_EDICT,	0 },
+	{ "", FOFS(oldenemy),			F_EDICT,	0 },
+	{ "", FOFS(activator),			F_EDICT,	0 },
+	{ "", FOFS(groundentity),		F_EDICT,	0 },
+	{ "", FOFS(teamchain),			F_EDICT,	0 },
+	{ "", FOFS(teammaster),			F_EDICT,	0 },
+	{ "", FOFS(owner),				F_EDICT,	0 },
+	{ "", FOFS(mynoise),			F_EDICT,	0 },
+	{ "", FOFS(mynoise2),			F_EDICT,	0 },
+	{ "", FOFS(target_ent),			F_EDICT,	0 },
+	{ "", FOFS(chain),				F_EDICT,	0 },
+	{ "", FOFS(blockingEntity),		F_EDICT,	0 },
+	{ "", FOFS(last_buoyed_enemy),	F_EDICT,	0 },
+	{ "", FOFS(placeholder),		F_EDICT,	0 },
+	{ "", FOFS(fire_damage_enemy),	F_EDICT,	0 },
+
+	{ NULL, 0, F_INT, 0 }
 };
 
-field_t		bouyfields[] =
+static field_t levelfields[] =
 {
-	{"", BYOFS(pathtarget), F_LSTRING},
-	{"", BYOFS(target), F_LSTRING},
-	{"", BYOFS(targetname), F_LSTRING},
-	{"", BYOFS(jump_target), F_LSTRING},
-	{NULL, 0, F_INT}
+	{ "", LLOFS(changemap),		F_LSTRING,	0 },
+	{ "", LLOFS(sight_client),	F_EDICT,	0 },
+	{ "", LLOFS(sight_entity),	F_EDICT,	0 },
+
+	{ NULL, 0, F_INT, 0 }
 };
 
-
-field_t		clientfields[] =
+static field_t bouyfields[] =
 {
-	{"", CLOFS(playerinfo.pers.weapon), F_ITEM},
-	{"", CLOFS(playerinfo.pers.lastweapon), F_ITEM},
-	{"", CLOFS(playerinfo.pers.defence), F_ITEM},
-	{"", CLOFS(playerinfo.pers.lastdefence), F_ITEM},
-	{"", CLOFS(playerinfo.pers.newweapon), F_ITEM},
-						 
-	{NULL, 0, F_INT}
+	{ "", BYOFS(pathtarget),	F_LSTRING,	0 },
+	{ "", BYOFS(target),		F_LSTRING,	0 },
+	{ "", BYOFS(targetname),	F_LSTRING,	0 },
+	{ "", BYOFS(jump_target),	F_LSTRING,	0 },
+
+	{ NULL, 0, F_INT, 0 }
 };
 
-trig_message_t	message_text[MAX_MESSAGESTRINGS];
-unsigned		*messagebuf;
+static field_t clientfields[] =
+{
+	{ "", CLOFS(playerinfo.pers.weapon),		F_ITEM,	0 },
+	{ "", CLOFS(playerinfo.pers.lastweapon),	F_ITEM,	0 },
+	{ "", CLOFS(playerinfo.pers.defence),		F_ITEM,	0 },
+	{ "", CLOFS(playerinfo.pers.lastdefence),	F_ITEM,	0 },
+	{ "", CLOFS(playerinfo.pers.newweapon),		F_ITEM,	0 },
+
+	{ NULL, 0, F_INT, 0 }
+};
+
+#pragma endregion
+
+trig_message_t message_text[MAX_MESSAGESTRINGS];
+uint* messagebuf;
 
 int LoadTextFile(char *name, char **addr)
 {
