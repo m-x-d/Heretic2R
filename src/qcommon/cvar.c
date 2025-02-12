@@ -347,7 +347,13 @@ void Cvar_WriteVariables(const char* path)
 {
 	char buffer[1024];
 
-	FILE* f = fopen(path, "a");
+	FILE* f;
+	if (fopen_s(&f, path, "a") != 0) //mxd. fopen -> fopen_s
+	{
+		Com_Printf("Unable to write cvars: failed to open '%s'!\n", path);
+		return;
+	}
+
 	for (const cvar_t* var = &cvar_vars[0]; var != NULL; var = var->next)
 	{
 		if (var->flags & CVAR_ARCHIVE)
