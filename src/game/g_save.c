@@ -1,21 +1,23 @@
+//
+// g_save.c
+//
+// Copyright 1998 Raven Software
+//
 
 #include "g_save.h" //mxd
-#include "g_ResourceManagers.h" //mxd
-#include "g_Skeletons.h"
-#include "ArrayedList.h"
-#include "Message.h"
-#include "q_ClientServer.h"
-#include "q_Physics.h"
+#include "g_items.h" //mxd
 #include "g_playstats.h"
-#include "utilities.h"
+#include "g_ResourceManagers.h" //mxd
 #include "p_anims.h"
 #include "p_dll.h" //mxd
+#include "p_view.h" //mxd
+#include "q_ClientServer.h"
+#include "q_Physics.h"
 #include "FX.h"
-#include "g_items.h" //mxd
+#include "Message.h"
+#include "Utilities.h"
 
-extern void	InitPlayerinfo(edict_t *ent);
-extern void LoadPersistantEffects(FILE *f);
-extern void SavePersistantEffects(FILE *f);
+#define MAX_MESSAGESTRINGS	1000
 
 field_t fields[] = {
 	{"classname", FOFS(classname), F_LSTRING},
