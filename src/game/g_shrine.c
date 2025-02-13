@@ -951,23 +951,15 @@ void SP_shrine_ghost_trigger(edict_t* ent) //mxd. Named 'shrine_ghost' in origin
 
 #pragma endregion
 
-// ************************************************************************************************
-// Spell reflecting shrine.
-// ************************************************************************************************
+#pragma region ========================== SPELL REFLECTING SHRINE ==========================
 
 // Fire off the reflect shrine effect.
-
-void PlayerShrineReflectEffect(edict_t *self)
+static void PlayerShrineReflectEffect(edict_t* self) //mxd. Named 'player_shrine_reflect_effect' in original version.
 {
 	assert(self->client);
 
-	// Start up the shrine staff effect.
-
 	gi.CreateEffect(&self->s, FX_SHRINE_REFLECT, CEF_OWNERS_ORIGIN, NULL, "");
-
-	// Do the SHRINE sound.
-
-	gi.sound(self,CHAN_ITEM,gi.soundindex("items/shrine3.wav"),1,ATTN_NORM,0);
+	gi.sound(self, CHAN_ITEM, gi.soundindex("items/shrine3.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
 void shrine_reflect_core(edict_t *self,edict_t *other)
@@ -1063,6 +1055,8 @@ void SP_shrine_reflect_trigger (edict_t *ent)
 	gi.setmodel(ent, ent->model);
 	gi.linkentity (ent);
 }
+
+#pragma endregion
 
 // ************************************************************************************************
 // Spell powerup Shrine
