@@ -238,6 +238,7 @@
     <ClInclude Include="g_ResourceManagers.h" />
     <ClInclude Include="g_save.h" />
     <ClInclude Include="g_Shrine.h" />
+    <ClInclude Include="g_ShrineLocal.h" />
     <ClInclude Include="g_Skeleton.h" />
     <ClInclude Include="g_Skeletons.h" />
     <ClInclude Include="g_spawnf.h" />

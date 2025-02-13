@@ -5,6 +5,7 @@
 //
 
 #include "g_Shrine.h" //mxd
+#include "g_ShrineLocal.h" //mxd
 #include "cl_strings.h"
 #include "g_combat.h" //mxd
 #include "g_itemstats.h"
@@ -47,22 +48,6 @@ static char ghost_text[] = "ghost shrine touch";
 static char reflect_text[] = "reflect shrine touch";
 static char armor_gold_text[] = "armor gold shrine touch";
 static char armor_silver_text[] = "armor silver shrine touch";
-
-void PlayerShrineHealthEffect(edict_t *self);
-void PlayerShrineArmorSilverEffect(edict_t *self);
-void PlayerShrineArmorGoldEffect(edict_t *self);
-void PlayerShrineLungsEffect(edict_t *self);
-void PlayerShrineLightEffect(edict_t *self);
-void PlayerShrineStaffEffect(edict_t *self);
-void PlayerShrineManaEffect(edict_t *self);
-void PlayerShrineGhostEffect(edict_t *self);
-void PlayerShrineReflectEffect(edict_t *self);
-void PlayerShrinePowerupEffect(edict_t *self);
-void PlayerShrineSpeedEffect(edict_t *self);
-
-void ShrineArmorSilverTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
-void ShrineArmorGoldTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
-void ShrineRandomTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
 
 // Remove all shrine effects associated with a player. Used when he's turned into a chicken.
 void PlayerKillShrineFX(edict_t* self)

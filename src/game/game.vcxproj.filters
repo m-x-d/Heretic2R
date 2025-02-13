@@ -1073,5 +1073,8 @@
     <ClInclude Include="g_Shrine.h">
       <Filter>src\Game objects</Filter>
     </ClInclude>
+    <ClInclude Include="g_ShrineLocal.h">
+      <Filter>src\Game objects</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
