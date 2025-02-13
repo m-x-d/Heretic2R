@@ -141,21 +141,17 @@ static void SVCmd_RemoveIP_f(void)
 	gi.cprintf(NULL, PRINT_HIGH, "Didn't find %s.\n", gi.argv(2));
 }
 
-/*
-=================
-SV_ListIP_f
-=================
-*/
-void SVCmd_ListIP_f (void)
+// Print the current list of IP filters.
+static void SVCmd_ListIP_f(void)
 {
-	int		i;
-	byte	b[4];
+	gi.cprintf(NULL, PRINT_HIGH, "Filter list:\n");
 
-	gi.cprintf (NULL, PRINT_HIGH, "Filter list:\n");
-	for (i=0 ; i<num_ipfilters; i++)
+	for (int i = 0; i < num_ipfilters; i++)
 	{
-		*(unsigned *)b = ipfilters[i].compare;
-		gi.cprintf (NULL, PRINT_HIGH, "%3i.%3i.%3i.%3i\n", b[0], b[1], b[2], b[3]);
+		byte ip[4];
+		*(uint*)ip = ipfilters[i].compare;
+
+		gi.cprintf(NULL, PRINT_HIGH, "%3i.%3i.%3i.%3i\n", ip[0], ip[1], ip[2], ip[3]);
 	}
 }
 
