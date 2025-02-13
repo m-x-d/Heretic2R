@@ -333,47 +333,24 @@ static void ShrineHealCore(edict_t* other) //mxd. Named 'shrine_heal_core' in or
 	ShrineRestorePlayer(other);
 }
 
-// ************************************************************************************************
-// shrine_heal_touch
-// -----------------
 // Fire off a heal effect and give us some health.
-// ************************************************************************************************
-
-void shrine_heal_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void ShrineHealTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_heal_touch' in original version.
 {
 	// If we aren't a player, forget it.
-
-	if (!other->client)
+	if (other->client == NULL)
 		return;
 
 	ShrineHealCore(other);
-
 	gi.gamemsg_centerprintf(other, GM_S_HEALTH);
 
-	// If we are in death match, don't make us go through the shrine anim, just start the effect,
-	// give us whatever, and leave it at that.
-
-	if (deathmatch->value || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
-	{
+	// If we are in deathmatch, a chicken or underwater (or underwater chicken. In deathmatch!), don't make us go through the shrine anim,
+	// just start the effect, give us whatever, and leave it at that.
+	if (DEATHMATCH || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
 		PlayerShrineHealthEffect(other);
-	}
 	else
-	{
-		// Tell us what sort of shrine we just hit.
-
-		other->shrine_type = SHRINE_HEAL;
-
-		// Initialise the shrine animation.
-
-		P_PlayerAnimSetLowerSeq(&other->client->playerinfo,ASEQ_SHRINE);
-
-		// Make us invunerable for a couple of seconds.
-
-		other->client->shrine_framenum = level.time + INVUNERABILITY_TIME;
-	}
+		PlayerShrineStartUseAnimation(other, SHRINE_HEAL); //mxd
 
 	// Decide whether to delete this shrine or disable it for a while.
-	
 	UpdateShrineNode(self);
 }
 
@@ -389,7 +366,7 @@ void SP_shrine_heal_trigger (edict_t *ent)
 	ent->classname = health_text;
 
 	if(!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_NO_SHRINE)))
-		ent->touch = shrine_heal_touch;
+		ent->touch = ShrineHealTouch;
 
 	if(deathmatch->value && ((int)dmflags->value & DF_SHRINE_CHAOS) && !((int)dmflags->value & DF_NO_SHRINE))
 	{
