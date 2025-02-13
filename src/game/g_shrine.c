@@ -314,26 +314,22 @@ static void PlayerShrineHealthEffect(edict_t* self) //mxd. Named 'player_shrine_
 	gi.sound(self, CHAN_ITEM, gi.soundindex("items/shrine4.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
-void shrine_heal_core(edict_t *self,edict_t *other)
+static void ShrineHealCore(edict_t* other) //mxd. Named 'shrine_heal_core' in original version.
 {
 	if (other->deadflag != DEAD_NO)
 		return;
 
-	// If we are a chicken, lets make us a player again.  Don't give him anything else.
+	// If we are a chicken, lets make us a player again. Don't give him anything else.
 	if (other->flags & FL_CHICKEN)
 	{
-		other->morph_timer = level.time - 0.1;
+		other->morph_timer = (int)level.time - 1; //BUGFIX: mxd. 'level.time - 0.1f' in original version. 
 		return;
 	}
 
 	// Give us some health.
+	other->health = min(SHRINE_MAX_HEALTH, other->health + SHRINE_HEALTH);
 
-	if (other->health < (SHRINE_MAX_HEALTH - SHRINE_HEALTH))
-		other->health += SHRINE_HEALTH;
-	else if (other->health < SHRINE_MAX_HEALTH)
-		other->health = SHRINE_MAX_HEALTH;
-
-	// restore dismemberment, and stop us being on fire
+	// Restore dismemberment, and stop us being on fire.
 	ShrineRestorePlayer(other);
 }
 
@@ -350,7 +346,7 @@ void shrine_heal_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface
 	if (!other->client)
 		return;
 
-	shrine_heal_core(self,other);
+	ShrineHealCore(other);
 
 	gi.gamemsg_centerprintf(other, GM_S_HEALTH);
 
@@ -1634,7 +1630,7 @@ void ShrineRandomTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface
 	{
 		case SHRINE_HEAL:
 
-			shrine_heal_core(self,other);
+			ShrineHealCore(other);
 			gi.gamemsg_centerprintf(other, GM_CS_HEALTH);
 
 			break;
