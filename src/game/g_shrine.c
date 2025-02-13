@@ -1,37 +1,52 @@
+//
 // g_shrine.c
 //
-// Heretic II - Raven software
+// Copyright 1998 Raven Software
 //
 
 #include "g_Shrine.h" //mxd
-#include "FX.h"
-#include "g_local.h"
-#include "g_itemstats.h"
-#include "random.h"
-#include "vector.h"
-#include "p_actions.h"
-#include "p_anims.h"
-#include "p_main.h"
-#include "m_player.h"
-#include "p_funcs.h"
 #include "cl_strings.h"
 #include "g_combat.h" //mxd
+#include "g_itemstats.h"
+#include "p_anims.h"
+#include "p_main.h"
+#include "FX.h"
+#include "Random.h"
+#include "Vector.h"
+
+#define INVUNERABILITY_TIME 2.0f
+#define SF_PERMANENT		1 //mxd
+
+typedef enum ShrineType_s //mxd. Made typed.
+{
+	SHRINE_MANA,
+	SHRINE_LUNGS,
+	SHRINE_ARMOR_SILVER,
+	SHRINE_ARMOR_GOLD,
+	SHRINE_LIGHT,
+	SHRINE_SPEED,
+	SHRINE_HEAL,
+	SHRINE_STAFF,
+	SHRINE_GHOST,
+	SHRINE_REFLECT,
+	SHRINE_POWERUP,
+	SHRINE_RANDOM
+} ShrineType_t;
 
 // Set up those shrines that are randomly selectable.
-
-char	delay_text[] = "shrine respawn delay";
-char	chaos_text[] = "chaos shrine touch";
-char	health_text[] = "health shrine touch";
-char	mana_text[] = "mana shrine touch";
-char	light_text[] = "light shrine touch";
-char	lungs_text[] = "lungs shrine touch";
-char	run_text[] = "run shrine touch";
-char	staff_text[] = "staff shrine touch";
-char	powerup_text[] = "powerup shrine touch";
-char	ghost_text[] = "ghost shrine touch";
-char	reflect_text[] = "reflect shrine touch";
-char	armor_gold_text[] = "armor gold shrine touch";
-char	armor_silver_text[] = "armor silver shrine touch";
+static char delay_text[] = "shrine respawn delay";
+static char chaos_text[] = "chaos shrine touch";
+static char health_text[] = "health shrine touch";
+static char mana_text[] = "mana shrine touch";
+static char light_text[] = "light shrine touch";
+static char lungs_text[] = "lungs shrine touch";
+static char run_text[] = "run shrine touch";
+static char staff_text[] = "staff shrine touch";
+static char powerup_text[] = "powerup shrine touch";
+static char ghost_text[] = "ghost shrine touch";
+static char reflect_text[] = "reflect shrine touch";
+static char armor_gold_text[] = "armor gold shrine touch";
+static char armor_silver_text[] = "armor silver shrine touch";
 
 void player_shrine_health_effect(edict_t *self);
 void player_shrine_armor_silver_effect(edict_t *self);
@@ -48,8 +63,6 @@ void player_shrine_speed_effect(edict_t *self);
 void shrine_armor_silver_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
 void shrine_armor_gold_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
 void shrine_random_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
-
-#define INVUN_TIME 2.0
 
 // ************************************************************************************************
 // PlayerKillShrineFX
@@ -569,7 +582,7 @@ void shrine_heal_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 		// Make us invunerable for a couple of seconds.
 
-		other->client->shrine_framenum = level.time + INVUN_TIME;
+		other->client->shrine_framenum = level.time + INVUNERABILITY_TIME;
 	}
 
 	// Decide whether to delete this shrine or disable it for a while.
@@ -684,7 +697,7 @@ void shrine_armor_silver_touch	(edict_t *self, edict_t *other, cplane_t *plane, 
 
 		// Make us invunerable for a couple of seconds.
 
-		other->client->shrine_framenum = level.time + INVUN_TIME;
+		other->client->shrine_framenum = level.time + INVUNERABILITY_TIME;
 	}
 
 	// Decide whether to delete this shrine or disable it for a while.
@@ -791,7 +804,7 @@ void shrine_armor_gold_touch (edict_t *self, edict_t *other, cplane_t *plane, cs
 
 		// Make us invunerable for a couple of seconds.
 
-		other->client->shrine_framenum = level.time + INVUN_TIME;
+		other->client->shrine_framenum = level.time + INVUNERABILITY_TIME;
 	}
 
 	// Decide whether to delete this shrine or disable it for a while.
@@ -909,7 +922,7 @@ void shrine_staff_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 
 		// Make us invunerable for a couple of seconds.
 
-		other->client->shrine_framenum = level.time + INVUN_TIME;
+		other->client->shrine_framenum = level.time + INVUNERABILITY_TIME;
 	}
 
 	// Decide whether to delete this shrine or disable it for a while.
@@ -1011,7 +1024,7 @@ void shrine_lung_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 		// Make us invulnerable for a couple of seconds.
 
-		other->client->shrine_framenum = level.time + INVUN_TIME;
+		other->client->shrine_framenum = level.time + INVUNERABILITY_TIME;
 	}
 
 	// Decide whether to delete this shrine or disable it for a while.
@@ -1127,7 +1140,7 @@ void shrine_light_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 
 		// Make us invunerable for a couple of seconds.
 
-		other->client->shrine_framenum = level.time + INVUN_TIME;
+		other->client->shrine_framenum = level.time + INVUNERABILITY_TIME;
 	}
 
 	// Decide whether to delete this shrine or disable it for a while.
@@ -1230,7 +1243,7 @@ void shrine_mana_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 		// Make us invunerable for a couple of seconds.
 
-		other->client->shrine_framenum = level.time + INVUN_TIME;
+		other->client->shrine_framenum = level.time + INVUNERABILITY_TIME;
 	}
 
 	// Decide whether to delete this shrine or disable it for a while.
@@ -1340,7 +1353,7 @@ void shrine_ghost_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 
 		// Make us invulnerable for a couple of seconds.
 
-		other->client->shrine_framenum = level.time + INVUN_TIME;
+		other->client->shrine_framenum = level.time + INVUNERABILITY_TIME;
 	}
 
 	// Decide whether to delete this shrine or disable it for a while.
@@ -1453,7 +1466,7 @@ void shrine_reflect_touch(edict_t *self, edict_t *other, cplane_t *plane, csurfa
 
 		// Make us invunerable for a couple of seconds.
 
-		other->client->shrine_framenum = level.time + INVUN_TIME;
+		other->client->shrine_framenum = level.time + INVUNERABILITY_TIME;
 	}
 
 	// Decide whether to delete this shrine or disable it for a while.
@@ -1569,7 +1582,7 @@ void shrine_powerup_touch (edict_t *self, edict_t *other, cplane_t *plane, csurf
 
 		// Make us invunerable for a couple of seconds.
 
-		other->client->shrine_framenum = level.time + INVUN_TIME;
+		other->client->shrine_framenum = level.time + INVUNERABILITY_TIME;
 	}
 
 	// Decide whether to delete this shrine or disable it for a while.
@@ -1684,7 +1697,7 @@ void shrine_speed_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfac
 
 		// Make us invunerable for a couple of seconds.
 
-		other->client->shrine_framenum = level.time + INVUN_TIME;
+		other->client->shrine_framenum = level.time + INVUNERABILITY_TIME;
 	}
 
 	// Decide whether to delete this shrine or disable it for a while.
@@ -1915,7 +1928,7 @@ void shrine_random_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfa
 
 		// Make us invulnerable for a couple of seconds.
 
-		other->client->shrine_framenum = level.time + INVUN_TIME;
+		other->client->shrine_framenum = level.time + INVUNERABILITY_TIME;
 	}
 
 	// Decide whether to delete this shrine or disable it for a while.
