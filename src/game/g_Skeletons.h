@@ -1,17 +1,19 @@
-#ifndef G_SKELETON_H
-#define G_SKELETON_H
+//
+// g_Skeletons.h
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
+
 #include "g_Skeleton.h"
-#endif
-#ifndef SKELETONS_H
-#define SKELETONS_H
 #include "Skeletons.h"
-#endif
 
 extern G_SkeletalJoint_t skeletalJoints[MAX_ARRAYED_SKELETAL_JOINTS];
 extern struct ArrayedListNode_s jointNodes[MAX_ARRAYED_JOINT_NODES];
 
-int CreateSkeleton(int structure);
+extern int CreateSkeleton(int structure);
 extern void UpdateSkeletons(void); //mxd
-void FreeSkeleton(int root);
-float GetJointAngle(int jointIndex, int angleIndex);
-qboolean SetJointAngVel(int jointIndex, int angleIndex, float destAngle, float angSpeed);
+extern void FreeSkeleton(int root);
+extern float GetJointAngle(int joint_index, int angle_index);
+extern qboolean SetJointAngVel(int joint_index, int angle_index, float dest_angle, float angular_velocity);
