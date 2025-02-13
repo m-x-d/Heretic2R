@@ -962,34 +962,28 @@ static void PlayerShrineReflectEffect(edict_t* self) //mxd. Named 'player_shrine
 	gi.sound(self, CHAN_ITEM, gi.soundindex("items/shrine3.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
-void shrine_reflect_core(edict_t *self,edict_t *other)
+static void ShrineReflectCore(edict_t* other) //mxd. Named 'shrine_reflect_core' in original version.
 {
 	if (other->deadflag != DEAD_NO)
 		return;
 
-	// If we are a chicken, lets make us a player again.  Don't give him anything else.
+	// If we are a chicken, lets make us a player again. Don't give him anything else.
 	if (other->flags & FL_CHICKEN)
 	{
-		other->morph_timer = level.time - 0.1;
+		other->morph_timer = (int)level.time - 1; //BUGFIX: mxd. 'level.time - 0.1f' in original version.
 		return;
 	}
 
 	// Add some time in on the timer for the reflectivity.
-
-	if (deathmatch->value)
-		other->client->playerinfo.reflect_timer = level.time + REFLECT_DURATION_DEATHMATCH;
-	else
-		other->client->playerinfo.reflect_timer = level.time + REFLECT_DURATION_SINGLE;
+	other->client->playerinfo.reflect_timer = level.time + (DEATHMATCH ? REFLECT_DURATION_DEATHMATCH : REFLECT_DURATION_SINGLE);
 
 	// Update the model attributes for the reflection skin.
-	
 	SetupPlayerinfo_effects(other);
 	P_PlayerUpdateModelAttributes(&other->client->playerinfo);
 	WritePlayerinfo_effects(other);
 
-	// restore dismemberment, and stop us being on fire
+	// Restore dismemberment, and stop us being on fire.
 	ShrineRestorePlayer(other);
-
 }
 
 // Fire off an effect and give us a reflecting for a while powerup.
@@ -1001,7 +995,7 @@ void shrine_reflect_touch(edict_t *self, edict_t *other, cplane_t *plane, csurfa
 	if (!other->client)
 		return;
 
-	shrine_reflect_core(self,other);
+	ShrineReflectCore(other);
 
 	gi.gamemsg_centerprintf(other, GM_S_REFLECT);
 
@@ -1443,7 +1437,7 @@ void ShrineRandomTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 		case SHRINE_REFLECT:
 
-			shrine_reflect_core(self,other);
+			ShrineReflectCore(other);
 			gi.gamemsg_centerprintf(other, GM_CS_REFLECT);
 			
 			break;
