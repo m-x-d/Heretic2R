@@ -733,29 +733,26 @@ static void PlayerShrineLightEffect(edict_t* self) //mxd. Named 'player_shrine_l
 	gi.sound(self, CHAN_ITEM, gi.soundindex("items/shrine8.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
-void shrine_light_core(edict_t *self, edict_t *other)
+static void ShrineLightCore(edict_t* other) //mxd. Named 'shrine_light_core' in original version.
 {
 	if (other->deadflag != DEAD_NO)
 		return;
 
-	// If we are a chicken, lets make us a player again.  Don't give him anything else.
+	// If we are a chicken, lets make us a player again. Don't give him anything else.
 	if (other->flags & FL_CHICKEN)
 	{
-		other->morph_timer = level.time - 0.1;
+		other->morph_timer = (int)level.time - 1; //BUGFIX: mxd. 'level.time - 0.1f' in original version.
 		return;
 	}
 
 	// Add some time in on the timer for the light.
-
 	other->client->playerinfo.light_timer = level.time + LIGHT_DURATION;
 
 	// Turn on the light.
-
 	other->s.effects |= EF_LIGHT_ENABLED;
 
-	// restore dismemberment, and stop us being on fire
+	// Restore dismemberment, and stop us being on fire.
 	ShrineRestorePlayer(other);
-
 }
 
 // Fire off an effect and give us some light.
@@ -767,7 +764,7 @@ void shrine_light_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 	if (!other->client)
 		return;
 
-	shrine_light_core(self,other);
+	ShrineLightCore(other);
 
 	gi.gamemsg_centerprintf(other, GM_S_LIGHT);
 
