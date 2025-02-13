@@ -70,14 +70,11 @@ int CreateSkeleton(const int structure)
 	return index;
 }
 
-void FreeSkeleton(int root)
+void FreeSkeleton(const int root)
 {
-	int child;
-
-	for(child = skeletalJoints[root].children; child != ARRAYEDLISTNODE_NULL; child = jointNodes[child].next)
+	for (int child = skeletalJoints[root].children; child != ARRAYEDLISTNODE_NULL; child = jointNodes[child].next)
 	{
 		FreeSkeleton(jointNodes[child].data);
-
 		FreeNode(jointNodes, child);
 	}
 
