@@ -548,29 +548,29 @@ void SP_shrine_armor_gold_trigger(edict_t* ent) //mxd. Named 'shrine_armor_gold'
 
 #pragma endregion
 
-// ************************************************************************************************
-// Staff powerup shrine.
-// ************************************************************************************************
+#pragma region ========================== STAFF POWERUP SHRINE ==========================
 
 // Fire off the staff shrine effect.
-
-void PlayerShrineStaffEffect(edict_t *self)
+static void PlayerShrineStaffEffect(edict_t* self) //mxd. Named 'player_shrine_staff_effect' in original version.
 {
 	int	flags = CEF_OWNERS_ORIGIN;
-	// Start up the shrine staff effect.
+	char* snd_name; //mxd
 
+	// Do the SHRINE sound.
 	if (self->client->playerinfo.pers.stafflevel == STAFF_LEVEL_POWER2)
 	{
 		flags |= CEF_FLAG6;
-		gi.sound(self,CHAN_ITEM,gi.soundindex("weapons/FirewallPowerCast.wav"),1,ATTN_NORM,0);
+		snd_name = "weapons/FirewallPowerCast.wav";
 	}
 	else
-		gi.sound(self,CHAN_ITEM,gi.soundindex("items/shrine7.wav"),1,ATTN_NORM,0);
+	{
+		snd_name = "items/shrine7.wav";
+	}
 
+	gi.sound(self, CHAN_ITEM, gi.soundindex(snd_name), 1.0f, ATTN_NORM, 0.0f);
+
+	// Start up the shrine staff effect.
 	gi.CreateEffect(&self->s, FX_SHRINE_STAFF, flags, NULL, "");
-
-	// Do the SHRINE sound.
-
 }
 
 void shrine_staff_core(edict_t *self,edict_t *other)
@@ -639,6 +639,8 @@ void shrine_staff_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 
 	UpdateShrineNode(self);
 }
+
+#pragma endregion
 
 /*QUAKED shrine_staff (.5 .3 .5) ? PERMANENT
 */
