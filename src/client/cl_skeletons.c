@@ -52,21 +52,23 @@ void SK_ClearJoints(const int joint_index)
 }
 
 //mxd. Similar to SetJointAngVel() in game/g_Skeletons.c.
-static qboolean SetJointAngVel(const int joint_index, const int angleIndex, const float destAngle, const float angSpeed)
+static qboolean SetJointAngVel(const int joint_index, const int angle_index, const float dest_angle, const float angular_velocity)
 {
-	const CL_SkeletalJoint_t* joint = &skeletal_joints[joint_index];
+	CL_SkeletalJoint_t* joint = &skeletal_joints[joint_index];
 
-	if (destAngle < joint->destAngles[angleIndex])
+	if (dest_angle < joint->destAngles[angle_index])
 	{
-		skeletal_joints[joint_index].destAngles[angleIndex] = destAngle;
-		skeletal_joints[joint_index].angVels[angleIndex] = -angSpeed;
+		joint->destAngles[angle_index] = dest_angle;
+		joint->angVels[angle_index] = -angular_velocity;
+
 		return true;
 	}
 
-	if (destAngle > joint->destAngles[angleIndex])
+	if (dest_angle > joint->destAngles[angle_index])
 	{
-		skeletal_joints[joint_index].destAngles[angleIndex] = destAngle;
-		skeletal_joints[joint_index].angVels[angleIndex] = angSpeed;
+		joint->destAngles[angle_index] = dest_angle;
+		joint->angVels[angle_index] = angular_velocity;
+
 		return true;
 	}
 
