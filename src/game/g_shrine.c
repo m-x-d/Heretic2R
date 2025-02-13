@@ -1198,208 +1198,156 @@ void SP_shrine_speed_trigger(edict_t* ent) //mxd. Named 'shrine_speed' in origin
 
 #pragma endregion
 
-// ************************************************************************************************
-// Random shrine.
-// ************************************************************************************************
-
-#define POSSIBLE_RANDOM_SHRINES 9
-
-int	possible_shrines[POSSIBLE_RANDOM_SHRINES] =
-{
-	SHRINE_MANA,
-	SHRINE_STAFF,
-	SHRINE_ARMOR_SILVER,
-	SHRINE_ARMOR_GOLD,
-};
-
+#pragma region ========================== RANDOM SHRINE ==========================
 
 // Fire off an effect and give us a powerup for a while powerup.
-void ShrineRandomTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void ShrineRandomTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_random_touch' in original version.
 {
-	int		random_shrine_num;
-	int		total_rand_count = 0;
-	int		possible_shrines[10];
-
 	// If we aren't a player, forget it!
-
-	if (!other->client)
+	if (other->client == NULL)
 		return;
 
-	if(other->client->playerinfo.flags&PLAYER_FLAG_BLEED||
-	   other->client->playerinfo.flags&PLAYER_FLAG_NO_LARM||
-	   other->client->playerinfo.flags&PLAYER_FLAG_NO_RARM)
-	{
-		// Always heal if they're missing a limb or bleeding to death - should it give full health
-		// too though?
+	ShrineType_t random_shrine_id;
+	const playerinfo_t* pi = &other->client->playerinfo; //mxd
 
-		random_shrine_num = SHRINE_HEAL;
+	if (pi->flags & PLAYER_FLAG_BLEED || pi->flags & PLAYER_FLAG_NO_LARM || pi->flags & PLAYER_FLAG_NO_RARM)
+	{
+		// Always heal if they're missing a limb or bleeding to death - should it give full health too though?
+		random_shrine_id = SHRINE_HEAL;
 	}
 	else
 	{
-		
-		// here's where we make the shrines clever. If we already have a shrine option, lets remove it from
-		// the possible shrine list
-		if (other->client->playerinfo.speed_timer < level.time)
+		int total_rand_count = 0;
+		ShrineType_t possible_shrines[10];
+
+		// Here's where we make the shrines clever. If we already have a shrine option, lets remove it from the possible shrine list.
+		if (pi->speed_timer < level.time)
 		{
-			if (!no_runshrine->value)
+			if (!(int)no_runshrine->value)
 			{
 				possible_shrines[total_rand_count] = SHRINE_SPEED;
 				total_rand_count++;
 			}
 		}
+
 		if (other->health < SHRINE_MAX_HEALTH)
 		{
 			possible_shrines[total_rand_count] = SHRINE_HEAL;
 			total_rand_count++;
 		}
-		if (other->client->playerinfo.powerup_timer < level.time)
+
+		if (pi->powerup_timer < level.time)
 		{
 			possible_shrines[total_rand_count] = SHRINE_POWERUP;
 			total_rand_count++;
 		}
-		if (other->client->playerinfo.ghost_timer < level.time)
+
+		if (pi->ghost_timer < level.time)
 		{
 			possible_shrines[total_rand_count] = SHRINE_GHOST;
 			total_rand_count++;
 		}
-		if (other->client->playerinfo.reflect_timer < level.time)
+
+		// Reflection shrines appear 50% as often as other shrines.
+		if (pi->reflect_timer < level.time && irand(0, 1) == 0)
 		{
-			if (!irand(0,1))
-			{	// Reflection shrines appear 50% as often as other shrines.
-				possible_shrines[total_rand_count] = SHRINE_REFLECT;
-				total_rand_count++;
-			}
+			possible_shrines[total_rand_count] = SHRINE_REFLECT;
+			total_rand_count++;
 		}
-		if ((other->client->playerinfo.pers.armortype != ARMOR_TYPE_GOLD) ||
-			(!other->client->playerinfo.pers.armor_count))
+
+		if (pi->pers.armortype != ARMOR_TYPE_GOLD || pi->pers.armor_count == 0.0f)
 		{
 			possible_shrines[total_rand_count] = SHRINE_ARMOR_GOLD;
 			total_rand_count++;
 		}
-		if ((other->client->playerinfo.pers.inventory.Items[ITEM_INDEX(P_FindItem("Off-mana"))] < 100) ||
-		    (other->client->playerinfo.pers.inventory.Items[ITEM_INDEX(P_FindItem("Def-mana"))] < 100))
+
+		if (pi->pers.inventory.Items[ITEM_INDEX(P_FindItem("Off-mana"))] < 100 ||
+			pi->pers.inventory.Items[ITEM_INDEX(P_FindItem("Def-mana"))] < 100)
 		{
 			possible_shrines[total_rand_count] = SHRINE_MANA;
 			total_rand_count++;
 		}
-		if (other->client->playerinfo.pers.stafflevel < STAFF_LEVEL_MAX-1)
+
+		if (pi->pers.stafflevel < STAFF_LEVEL_MAX - 1)
 		{
 			possible_shrines[total_rand_count] = SHRINE_STAFF;
 			total_rand_count++;
 		}
-		if (((other->client->playerinfo.pers.armortype != ARMOR_TYPE_GOLD) &&
-			(other->client->playerinfo.pers.armortype != ARMOR_TYPE_SILVER)) ||
-			(!other->client->playerinfo.pers.armor_count))
+
+		if ((pi->pers.armortype != ARMOR_TYPE_GOLD && pi->pers.armortype != ARMOR_TYPE_SILVER) || pi->pers.armor_count == 0.0f)
 		{
 			possible_shrines[total_rand_count] = SHRINE_ARMOR_SILVER;
 			total_rand_count++;
 		}
 
-		// if we have everything, give us a powerup. thats always helpful
-		if (!total_rand_count)
-			random_shrine_num = SHRINE_POWERUP;
+		// If we have everything, give us a powerup. That's always helpful.
+		if (total_rand_count == 0)
+			random_shrine_id = SHRINE_POWERUP;
 		else
-			random_shrine_num = possible_shrines[irand(0,total_rand_count)];
+			random_shrine_id = possible_shrines[irand(0, total_rand_count - 1)]; //BUGFIX: mxd. irand(0, total_rand_count) in original version.
 	}
 
 	// Give us whatever we should have from this shrine.
-
-	switch(random_shrine_num)
+	switch (random_shrine_id)
 	{
 		case SHRINE_HEAL:
-
 			ShrineHealCore(other);
 			gi.gamemsg_centerprintf(other, GM_CS_HEALTH);
-
 			break;
 
 		case SHRINE_ARMOR_SILVER:
-			
 			ShrineArmorSilverCore(other);
 			gi.gamemsg_centerprintf(other, GM_CS_SILVER);
-
 			break;
 
 		case SHRINE_ARMOR_GOLD:
-
 			ShrineArmorGoldCore(other);
 			gi.gamemsg_centerprintf(other, GM_CS_GOLD);
-
 			break;
 
 		case SHRINE_MANA:
-
 			ShrineManaCore(other);
 			gi.gamemsg_centerprintf(other, GM_CS_MANA);
-
 			break;
 
 		case SHRINE_STAFF:
-
 			ShrineStaffCore(other);
 			gi.gamemsg_centerprintf(other, GM_CS_BLADE);
-
 			break;
 
 		case SHRINE_GHOST:
-
 			ShrineGhostCore(other);
 			gi.gamemsg_centerprintf(other, GM_CS_GHOST);
-
 			break;
 
 		case SHRINE_REFLECT:
-
 			ShrineReflectCore(other);
 			gi.gamemsg_centerprintf(other, GM_CS_REFLECT);
-			
 			break;
 
 		case SHRINE_POWERUP:
-		
 			ShrinePowerupCore(other);
 			gi.gamemsg_centerprintf(other, GM_CS_POWERUP);
-			
 			break;
 
 		case SHRINE_SPEED:
 			ShrineSpeedCore(other);
 			gi.gamemsg_centerprintf(other, GM_CS_SPEED);
-
 			break;
 
 		default:
-
 			ShrinePowerupCore(other);
 			gi.gamemsg_centerprintf(other, GM_CS_POWERUP);
-			
 			break;
 	}
 
-	// If we are in death match, don't make us go through the shrine anim, just start the effect,
-	// give us whatever, and leave it at that.
-
-	if (deathmatch->value || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
-	{
-		PlayerRandomShrineEffect(other, random_shrine_num);
-	}
+	// If we are in deathmatch, don't make us go through the shrine anim, just start the effect, give us whatever, and leave it at that.
+	if (DEATHMATCH || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
+		PlayerRandomShrineEffect(other, random_shrine_id);
 	else
-	{
-		// Tell us what sort of shrine we just hit.
-
-		other->shrine_type = random_shrine_num;
-
-		// Initialise the shrine animation.
-
-		P_PlayerAnimSetLowerSeq(&other->client->playerinfo, ASEQ_SHRINE);
-
-		// Make us invulnerable for a couple of seconds.
-
-		other->client->shrine_framenum = level.time + INVUNERABILITY_TIME;
-	}
+		PlayerShrineStartUseAnimation(other, random_shrine_id); //mxd
 
 	// Decide whether to delete this shrine or disable it for a while.
-
 	UpdateShrineNode(self);
 }
 
@@ -1421,3 +1369,4 @@ void SP_shrine_random_trigger(edict_t *ent)
 	gi.linkentity (ent);
 }
 
+#pragma endregion
