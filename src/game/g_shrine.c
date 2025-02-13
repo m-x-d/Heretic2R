@@ -354,10 +354,8 @@ static void ShrineHealTouch(edict_t* self, edict_t* other, cplane_t* plane, csur
 	UpdateShrineNode(self);
 }
 
-/*QUAKED shrine_heal (.5 .3 .5) ? PERMANENT
-*/
-
-void SP_shrine_heal_trigger (edict_t *ent)
+// QUAKED shrine_heal (.5 .3 .5) ? PERMANENT
+void SP_shrine_heal_trigger(edict_t* ent) //mxd. Named 'shrine_heal' in original version.
 {
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;
@@ -365,10 +363,10 @@ void SP_shrine_heal_trigger (edict_t *ent)
 	ent->shrine_type = SHRINE_HEAL;
 	ent->classname = health_text;
 
-	if(!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_NO_SHRINE)))
+	if (!DEATHMATCH || (DEATHMATCH && !(DMFLAGS & DF_NO_SHRINE)))
 		ent->touch = ShrineHealTouch;
 
-	if(deathmatch->value && ((int)dmflags->value & DF_SHRINE_CHAOS) && !((int)dmflags->value & DF_NO_SHRINE))
+	if (DEATHMATCH && (DMFLAGS & DF_SHRINE_CHAOS) && !(DMFLAGS & DF_NO_SHRINE))
 	{
 		ent->shrine_type = SHRINE_RANDOM;
 		ent->touch = ShrineRandomTouch;
