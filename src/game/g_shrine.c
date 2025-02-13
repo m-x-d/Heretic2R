@@ -715,32 +715,22 @@ void SP_shrine_lungs_trigger(edict_t* ent) //mxd. Named 'shrine_lung' in origina
 
 #pragma endregion
 
-// ************************************************************************************************
-// Light Shrine
-// ************************************************************************************************
+#pragma region ========================== LIGHT SHRINE ==========================
 
-// Fire off the shrine light effect .
-
-void PlayerShrineLightEffect(edict_t *self)
+// Fire off the shrine light effect.
+static void PlayerShrineLightEffect(edict_t* self) //mxd. Named 'player_shrine_light_effect' in original version.
 {
 	assert(self->client);
 
-	// Kill any lights that may already be out there for this player.
-
+	// Reset light effect.
 	gi.RemoveEffects(&self->s, FX_PLAYER_TORCH);
-
-	// Create the light and the tome of power.
-
 	gi.CreateEffect(&self->s, FX_PLAYER_TORCH, CEF_OWNERS_ORIGIN, NULL, "");
 
 	// Start up the shrine light effect.
-
 	gi.CreateEffect(&self->s, FX_SHRINE_LIGHT, CEF_OWNERS_ORIGIN, NULL, "");
 
 	// Do the SHRINE sound.
-
-	gi.sound(self,CHAN_ITEM,gi.soundindex("items/shrine8.wav"),1,ATTN_NORM,0);
-
+	gi.sound(self, CHAN_ITEM, gi.soundindex("items/shrine8.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
 void shrine_light_core(edict_t *self, edict_t *other)
@@ -831,6 +821,8 @@ void SP_shrine_light_trigger (edict_t *ent)
 	gi.setmodel(ent, ent->model);
 	gi.linkentity (ent);
 }
+
+#pragma endregion
 
 // ************************************************************************************************
 // Mana Shrine
