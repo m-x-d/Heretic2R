@@ -83,45 +83,32 @@ void FreeSkeleton(const int root)
 
 void UpdateSkeletons(void)
 {
-	int i, j;
-
-	for(i = 0; i < MAX_ARRAYED_SKELETAL_JOINTS; ++i)
+	for (int i = 0; i < MAX_ARRAYED_SKELETAL_JOINTS; i++)
 	{
-		G_SkeletalJoint_t *joint;
-		joint = &skeletalJoints[i];
+		G_SkeletalJoint_t* joint = &skeletalJoints[i];
 
-		if(joint->inUse)
+		if (!joint->inUse)
+			continue;
+
+		for (int j = 0; j < 3; j++)
 		{
-			for(j = 0; j < 3; ++j)
+			joint->changed[j] = false;
+
+			const float dest_angle = joint->destAngles[j];
+			float* angle = &joint->angles[j];
+
+			if (*angle != dest_angle)
 			{
-				float destAngle, *angle;
+				*angle += joint->angVels[j] * FRAMETIME;
 
-				joint->changed[j] = false;
-				destAngle = joint->destAngles[j];
-				angle = joint->angles + j;
-
-				if(*angle != destAngle)
-				{
-					*angle += joint->angVels[j]*FRAMETIME;
-
-					if(joint->angVels[j] > 0)
-					{
-						if(*angle > destAngle)
-						{
-							*angle = destAngle;
-						}
-					}
-					else if(joint->angVels[j] < 0)
-					{
-						if(*angle < destAngle)
-						{
-							*angle = destAngle;
-						}
-					}
-				}
+				if (joint->angVels[j] > 0.0f)
+					*angle = min(dest_angle, *angle);
+				else if (joint->angVels[j] < 0.0f)
+					*angle = max(dest_angle, *angle);
 			}
 		}
-	}	
+
+	}
 }
 
 #pragma endregion
