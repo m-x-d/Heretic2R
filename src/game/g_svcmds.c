@@ -155,44 +155,35 @@ static void SVCmd_ListIP_f(void)
 	}
 }
 
-/*
-=================
-SV_WriteIP_f
-=================
-*/
-void SVCmd_WriteIP_f (void)
+// Dumps "addip <ip>" commands to listip.cfg so it can be exec'ed at a later date.
+// The filter lists are not saved and restored by default, because I believe it would cause too much confusion.
+static void SVCmd_WriteIP_f(void)
 {
-	FILE	*f;
-	char	name[MAX_OSPATH];
-	byte	b[4];
-	int		i;
-	cvar_t	*game;
+	const cvar_t* cv_game = gi.cvar("game", "", 0);
+	const char* version = (*cv_game->string != 0 ? cv_game->string : GAMEVERSION); //mxd
 
-	game = gi.cvar("game", "", 0);
+	char name[MAX_OSPATH];
+	sprintf_s(name, sizeof(name), "%s/listip.cfg", version); //mxd. sprintf -> sprintf_s
 
-	if (!*game->string)
-		sprintf (name, "%s/listip.cfg", GAMEVERSION);
-	else
-		sprintf (name, "%s/listip.cfg", game->string);
+	gi.cprintf(NULL, PRINT_HIGH, "Writing %s.\n", name);
 
-	gi.cprintf (NULL, PRINT_HIGH, "Writing %s.\n", name);
-
-	f = fopen (name, "wb");
-	if (!f)
+	FILE* f;
+	if (fopen_s(&f, name, "wb") != 0) //mxd. fopen -> fopen_s
 	{
-		gi.cprintf (NULL, PRINT_HIGH, "Couldn't open %s\n", name);
+		gi.cprintf(NULL, PRINT_HIGH, "Couldn't open %s\n", name);
 		return;
 	}
-	
-	fprintf(f, "set filterban %d\n", (int)filterban->value);
 
-	for (i=0 ; i<num_ipfilters; i++)
+	fprintf(f, "set filterban %d\n", FILTERBAN);
+
+	for (int i = 0; i < num_ipfilters; i++)
 	{
-		*(unsigned *)b = ipfilters[i].compare;
-		fprintf (f, "sv addip %i.%i.%i.%i\n", b[0], b[1], b[2], b[3]);
+		byte ip[4];
+		*(uint*)ip = ipfilters[i].compare;
+		fprintf(f, "sv addip %i.%i.%i.%i\n", ip[0], ip[1], ip[2], ip[3]);
 	}
-	
-	fclose (f);
+
+	fclose(f);
 }
 
 #pragma endregion
