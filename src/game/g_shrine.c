@@ -643,21 +643,13 @@ void SP_shrine_staff_trigger(edict_t* ent) //mxd. Named 'shrine_staff' in origin
 
 #pragma endregion
 
-// ************************************************************************************************
-// Lungs Shrine
-// ************************************************************************************************
+#pragma region ========================== LUNGS SHRINE ==========================
 
 // Fire off the lungs shrine effect.
-
-void PlayerShrineLungsEffect(edict_t *self)
+static void PlayerShrineLungsEffect(edict_t* self) //mxd. Named 'player_shrine_lungs_effect' in original version.
 {
-	// Start up the shrine lung effect.
-
 	gi.CreateEffect(&self->s, FX_SHRINE_LUNGS, CEF_OWNERS_ORIGIN, NULL, "");
-
-	// Do the SHRINE sound.
-
-	gi.sound(self,CHAN_ITEM,gi.soundindex("items/shrine9.wav"),1,ATTN_NORM,0);
+	gi.sound(self, CHAN_ITEM, gi.soundindex("items/shrine9.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
 void shrine_lung_core(edict_t *self, edict_t *other)
@@ -743,6 +735,8 @@ void SP_shrine_lungs_trigger (edict_t *ent)
 	gi.setmodel(ent, ent->model);
 	gi.linkentity (ent);
 }
+
+#pragma endregion
 
 // ************************************************************************************************
 // Light Shrine
