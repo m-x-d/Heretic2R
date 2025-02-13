@@ -479,20 +479,19 @@ static void PlayerShrineArmorGoldEffect(edict_t* self) //mxd. Named 'player_shri
 	gi.sound(self, CHAN_ITEM, gi.soundindex("items/shrine2.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
-void shrine_armor_gold_core(edict_t *self,edict_t *other)
+static void ShrineArmorGoldCore(edict_t* other) //mxd. Named 'shrine_armor_gold_core' in original version.
 {
 	if (other->deadflag != DEAD_NO)
 		return;
 
-	// If we are a chicken, lets make us a player again.  Don't give him anything else.
+	// If we are a chicken, lets make us a player again. Don't give him anything else.
 	if (other->flags & FL_CHICKEN)
 	{
-		other->morph_timer = level.time - 0.1;
+		other->morph_timer = (int)level.time - 1; //BUGFIX: mxd. 'level.time - 0.1f' in original version. 
 		return;
 	}
 
 	// Add gold armor to player.
-
 	other->client->playerinfo.pers.armortype = ARMOR_TYPE_GOLD;
 	other->client->playerinfo.pers.armor_count = gold_armor_info.max_armor;
 
@@ -500,9 +499,8 @@ void shrine_armor_gold_core(edict_t *self,edict_t *other)
 	P_PlayerUpdateModelAttributes(&other->client->playerinfo);
 	WritePlayerinfo_effects(other);
 
-	// restore dismemberment, and stop us being on fire
+	// Restore dismemberment, and stop us being on fire.
 	ShrineRestorePlayer(other);
-
 }
 
 // Fire off an effect and give us some armor.
@@ -514,7 +512,7 @@ void ShrineArmorGoldTouch (edict_t *self, edict_t *other, cplane_t *plane, csurf
 	if (!other->client)
 		return;
 
-	shrine_armor_gold_core(self,other);
+	ShrineArmorGoldCore(other);
 
 	gi.gamemsg_centerprintf(other, GM_S_GOLD);
 
@@ -1590,7 +1588,7 @@ void ShrineRandomTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 		case SHRINE_ARMOR_GOLD:
 
-			shrine_armor_gold_core(self,other);			
+			ShrineArmorGoldCore(other);
 			gi.gamemsg_centerprintf(other, GM_CS_GOLD);
 
 			break;
