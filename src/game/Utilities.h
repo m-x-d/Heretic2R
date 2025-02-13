@@ -1,4 +1,6 @@
-#include "g_Typedef.h"
+#pragma once
+
+#include "q_Typedef.h"
 
 #define X 0
 #define Y 1
@@ -27,15 +29,8 @@ extern void QPlaySound(edict_t *self, int sound, int channel);
 
 extern void SetAnim(edict_t *self, int anim);
 
-extern void SpawnBlood(edict_t *target, edict_t *inflictor, vec3_t point, vec3_t normal, 
-	int damage);
 extern void CalculateKnockBack(vec3_t dir, float knockback, int flags, float mass, vec3_t vel);
 extern void PostKnockBack(edict_t *target, vec3_t dir, float knockback, int flags);
-extern void DoDamage(edict_t *target, edict_t *inflictor, edict_t *attacker, vec3_t dir,
-	vec3_t point, vec3_t normal, int damage, int knockback, int flags, HitLocation_t hitLocation);
-extern void CheckForEnviromentDamage(edict_t *self);
-extern void DefaultApplyKnockBack(edict_t *self, vec3_t vel);
-extern int CategorizeDirection(int stepDOF, float stepDir);
 
 void StartICScript(char *name);
 void GetAimVelocity(edict_t *enemy, vec3_t org, vec_t speed, vec3_t AimAngles, vec3_t out);
@@ -43,5 +38,3 @@ void remove_non_cinematic_entites(edict_t *owner);
 
 qboolean ok_to_autotarget(edict_t *shooter, edict_t *target);
 qboolean ThinkTime(edict_t *self);
-
-

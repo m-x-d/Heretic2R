@@ -629,9 +629,6 @@
     <ClInclude Include="g_Skeletons.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="g_Typedef.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="game.h">
       <Filter>src</Filter>
     </ClInclude>
