@@ -18,50 +18,34 @@ typedef struct
 static ipfilter_t ipfilters[MAX_IPFILTERS];
 static int num_ipfilters;
 
-/*
-=================
-StringToFilter
-=================
-*/
-static qboolean StringToFilter (char *s, ipfilter_t *f)
+static qboolean StringToFilter(char* s, ipfilter_t* f)
 {
-	char	num[128];
-	int		i, j;
-	byte	b[4];
-	byte	m[4];
-	
-	for (i=0 ; i<4 ; i++)
-	{
-		b[i] = 0;
-		m[i] = 0;
-	}
-	
-	for (i=0 ; i<4 ; i++)
+	char num[128];
+	byte ip[4];
+	byte ip_mask[4];
+
+	for (int i = 0; i < 4 && *s != 0; i++, s++)
 	{
 		if (*s < '0' || *s > '9')
 		{
 			gi.cprintf(NULL, PRINT_HIGH, "Bad filter address: %s\n", s);
 			return false;
 		}
-		
-		j = 0;
-		while (*s >= '0' && *s <= '9')
-		{
-			num[j++] = *s++;
-		}
-		num[j] = 0;
-		b[i] = atoi(num);
-		if (b[i] != 0)
-			m[i] = 255;
 
-		if (!*s)
-			break;
-		s++;
+		int j = 0;
+		while (*s >= '0' && *s <= '9')
+			num[j++] = *s++;
+
+		num[j] = 0;
+		ip[i] = (byte)Q_atoi(num);
+
+		if (ip[i] != 0)
+			ip_mask[i] = 255;
 	}
-	
-	f->mask = *(unsigned *)m;
-	f->compare = *(unsigned *)b;
-	
+
+	f->mask = *(uint*)ip_mask;
+	f->compare = *(uint*)ip;
+
 	return true;
 }
 
