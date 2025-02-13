@@ -225,95 +225,63 @@ static void DelayThink(edict_t* self)
 	G_SetToFree(self);
 }
 
-// ************************************************************************************************
-// deal_with_shrine_node
-// ---------------------
-// Either kill or set this shrine node to unuseable for a while.
-// ************************************************************************************************
-
-void deal_with_shrine_node(edict_t *self)
+// Either kill or set this shrine node to unusable for a while.
+static void UpdateShrineNode(edict_t* self) //mxd. Named 'deal_with_shrine_node' in original version.
 {
-	edict_t	*delay,*dest;
-	vec3_t	offset,offset2;
-	int		time;
-	float	clients;
-
 	// Set up a delay so we can't use this shrine for a while.
-
-	if (deathmatch->value || (self->spawnflags & 1))
+	if (DEATHMATCH || (self->spawnflags & SF_PERMANENT))
 	{
-		delay = G_Spawn ();
+		edict_t* delay = G_Spawn();
+
 		delay->svflags |= SVF_NOCLIENT;
 		delay->movetype = PHYSICSTYPE_NONE;
 		delay->solid = SOLID_NOT;
 		delay->think = DelayThink;
 		delay->owner = self;
-		delay->classname = delay_text;
-		if (deathmatch->value)
-		// The equation for respawn:  
-		//		--The respawn times should be normal for 8 players.
-		//		--For 32 players the respawn should be halved
-		//		--For 2 players the respawn should be doubled.
-		{
-/*
-			time = SHRINE_DELAY * sqrt((float)game.num_clients/8.0);		// This makes it a nice curve.  Clever, no?
-			// Lemme see here:  sqrt(2/8) = sqrt(1/4) = 1/2
-			//					sqrt(8/8) = sqrt(1) = 1
-			//					sqrt(32/8) = sqrt(4) = 2
-*/
-			clients=(float)game.num_clients;
-			if (clients<2.0)
-				clients=2.0;
-			time = SHRINE_DELAY * sqrt(2.0/clients);		// Spawn more frequently when more players.
-			// Lemme see here:  sqrt(2/2) = sqrt(1) = 1
-			//					sqrt(2/8) = sqrt(1/4) = 1/2
-			//					sqrt(2/32) = sqrt(1/16) = 1/4
-		}
-		else
-		{
-			time = SHRINE_DELAY;
-		}
-
-		// sanity check
-		if (time < 5)
-			time = 5;
-
-		delay->nextthink = level.time + time;
 		delay->oldtouch = self->touch;
-		gi.linkentity (delay);
+		delay->classname = delay_text; //TODO: is this ever used?..
+
+		float delay_time = SHRINE_DELAY;
+
+		if (DEATHMATCH)
+		{
+			const float clients = max(2.0f, (float)game.num_clients);
+			delay_time *= sqrtf(2.0f / clients); // Spawn more frequently when more players.
+			delay_time = max(5.0f, delay_time); // Sanity check.
+		}
+
+		delay->nextthink = level.time + delay_time;
+
+		gi.linkentity(delay);
 	}
 
 	// Turn off the touch for this shrine.
-
 	self->touch = NULL;
 
-	// Setup in playerinfo, the destination entity of the teleport.
+	// Setup the destination entity of the teleport.
+	edict_t* dest = G_Find(NULL, FOFS(targetname), self->target);
 
-	dest = G_Find (NULL, FOFS(targetname), self->target);
-
-	if (!dest)
-	{
-#ifdef _DEVEL
-		gi.dprintf ("Shrine Trigger couldn't find shrine model\n");
-#endif
+	if (dest == NULL)
 		return;
-	}
 
-	// But kill the shrine ball thats out there for this shrine.
-
+	// But kill the shrine ball that's out there for this shrine.
 	gi.RemoveEffects(&dest->s, FX_SHRINE_BALL);
 
 	// Kill the glowing ball in the middle.
-	if (dest->PersistantCFX)
+	if (dest->PersistantCFX > 0)
 	{
 		gi.RemovePersistantEffect(dest->PersistantCFX, REMOVE_SHRINE);
 		dest->PersistantCFX = 0;
 	}
 
 	// Make the shrine ball explode.
-	VectorScale(dest->s.angles, ANGLE_TO_RAD, offset);
-	DirFromAngles(offset, offset2);
-	gi.CreateEffect(&dest->s,FX_SHRINE_BALL_EXPLODE,CEF_OWNERS_ORIGIN,dest->s.origin,"db",offset2,(byte)(dest->style-1));
+	vec3_t angles;
+	VectorScale(dest->s.angles, ANGLE_TO_RAD, angles);
+
+	vec3_t direction;
+	DirFromAngles(angles, direction);
+
+	gi.CreateEffect(&dest->s, FX_SHRINE_BALL_EXPLODE, CEF_OWNERS_ORIGIN, dest->s.origin, "db", direction, (byte)(dest->style - 1));
 }
 
 void shrine_restore_player(edict_t *other)
@@ -422,7 +390,7 @@ void shrine_heal_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 	// Decide whether to delete this shrine or disable it for a while.
 	
-	deal_with_shrine_node(self);
+	UpdateShrineNode(self);
 }
 
 /*QUAKED shrine_heal (.5 .3 .5) ? PERMANENT
@@ -537,7 +505,7 @@ void ShrineArmorSilverTouch	(edict_t *self, edict_t *other, cplane_t *plane, csu
 
 	// Decide whether to delete this shrine or disable it for a while.
 
-	deal_with_shrine_node(self);
+	UpdateShrineNode(self);
 }
 
 /*QUAKED shrine_armor (.5 .3 .5) ? PERMANENT
@@ -644,7 +612,7 @@ void ShrineArmorGoldTouch (edict_t *self, edict_t *other, cplane_t *plane, csurf
 
 	// Decide whether to delete this shrine or disable it for a while.
 
-	deal_with_shrine_node(self);
+	UpdateShrineNode(self);
 }
 
 /*QUAKED shrine_armor_gold (.5 .3 .5) ? PERMANENT
@@ -762,7 +730,7 @@ void shrine_staff_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 
 	// Decide whether to delete this shrine or disable it for a while.
 
-	deal_with_shrine_node(self);
+	UpdateShrineNode(self);
 }
 
 /*QUAKED shrine_staff (.5 .3 .5) ? PERMANENT
@@ -864,7 +832,7 @@ void shrine_lung_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 	// Decide whether to delete this shrine or disable it for a while.
 
-	deal_with_shrine_node(self);
+	UpdateShrineNode(self);
 }
 
 /*QUAKED shrine_lung (.5 .3 .5) ? PERMANENT
@@ -980,7 +948,7 @@ void shrine_light_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 
 	// Decide whether to delete this shrine or disable it for a while.
 
-	deal_with_shrine_node(self);
+	UpdateShrineNode(self);
 }
 
 /*QUAKED shrine_light (.5 .3 .5) ? PERMANENT
@@ -1083,7 +1051,7 @@ void shrine_mana_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 	// Decide whether to delete this shrine or disable it for a while.
 
-	deal_with_shrine_node(self);
+	UpdateShrineNode(self);
 }
 
 /*QUAKED shrine_mana (.5 .3 .5) ? PERMANENT
@@ -1193,7 +1161,7 @@ void shrine_ghost_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 
 	// Decide whether to delete this shrine or disable it for a while.
 	
-	deal_with_shrine_node(self);
+	UpdateShrineNode(self);
 }
 
 /*QUAKED shrine_ghost (.5 .3 .5) ? PERMANENT
@@ -1306,7 +1274,7 @@ void shrine_reflect_touch(edict_t *self, edict_t *other, cplane_t *plane, csurfa
 
 	// Decide whether to delete this shrine or disable it for a while.
 
-	deal_with_shrine_node(self);
+	UpdateShrineNode(self);
 }
 
 /*QUAKED shrine_reflect (.5 .3 .5) ? PERMANENT
@@ -1422,7 +1390,7 @@ void shrine_powerup_touch (edict_t *self, edict_t *other, cplane_t *plane, csurf
 
 	// Decide whether to delete this shrine or disable it for a while.
 
-	deal_with_shrine_node(self);
+	UpdateShrineNode(self);
 }
 
 /*QUAKED shrine_powerup (.5 .3 .5) ? PERMANENT
@@ -1537,7 +1505,7 @@ void shrine_speed_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfac
 
 	// Decide whether to delete this shrine or disable it for a while.
 
-	deal_with_shrine_node(self);
+	UpdateShrineNode(self);
 }
 
 /*QUAKED shrine_speed (.5 .3 .5) ? PERMANENT
@@ -1768,7 +1736,7 @@ void ShrineRandomTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 	// Decide whether to delete this shrine or disable it for a while.
 
-	deal_with_shrine_node(self);
+	UpdateShrineNode(self);
 }
 
 /*QUAKED shrine_random (.5 .3 .5) ? PERMANENT
