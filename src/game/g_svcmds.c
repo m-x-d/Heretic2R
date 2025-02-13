@@ -91,24 +91,30 @@ static void SVCmd_AddIP_f(void)
 		return;
 	}
 
-	int index;
-	for (index = 0; index < num_ipfilters; index++)
-		if (ipfilters[index].compare == 0xffffffff)
-			break; // Free spot.
-
-	if (index == num_ipfilters)
+	//mxd. Check array size first.
+	if (num_ipfilters == MAX_IPFILTERS)
 	{
-		if (num_ipfilters == MAX_IPFILTERS)
-		{
-			gi.cprintf(NULL, PRINT_HIGH, "IP filter list is full\n");
-			return;
-		}
-
-		num_ipfilters++;
+		gi.cprintf(NULL, PRINT_HIGH, "IP filter list is full\n");
+		return;
 	}
 
-	if (!StringToFilter(gi.argv(2), &ipfilters[index]))
-		ipfilters[index].compare = 0xffffffff;
+	ipfilter_t f;
+	if (!StringToFilter(gi.argv(2), &f))
+		return;
+
+	//BUGFIX: mxd. Check if IP was already added.
+	for (int i = 0; i < num_ipfilters; i++)
+	{
+		if (ipfilters[i].mask == f.mask && ipfilters[i].compare == f.compare)
+		{
+			gi.cprintf(NULL, PRINT_HIGH, "IP already added to filters list\n");
+			return;
+		}
+	}
+
+	// Add new filter.
+	ipfilters[num_ipfilters] = f;
+	num_ipfilters++;
 }
 
 // Remove IP address from the filter list.
