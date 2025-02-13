@@ -387,34 +387,35 @@ static void PlayerShrineArmorSilverEffect(edict_t* self) //mxd. Named 'player_sh
 	gi.sound(self, CHAN_ITEM, gi.soundindex("items/shrine2.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
-void shrine_armor_silver_core(edict_t *self,edict_t *other)
+static void ShrineArmorSilverCore(edict_t* other) //mxd. Named 'shrine_armor_silver_core' in original version.
 {
 	if (other->deadflag != DEAD_NO)
 		return;
 
-	// If we are a chicken, lets make us a player again.  Don't give him anything else.
+	// If we are a chicken, lets make us a player again. Don't give him anything else.
 	if (other->flags & FL_CHICKEN)
 	{
-		other->morph_timer = level.time - 0.1;
+		other->morph_timer = (int)level.time - 1; //BUGFIX: mxd. 'level.time - 0.1f' in original version. 
 		return;
 	}
 
 	// Add armor to player.
-	if ((other->client->playerinfo.pers.armortype == ARMOR_TYPE_GOLD) &&
-		(other->client->playerinfo.pers.armor_count >= gold_armor_info.max_armor / 2))
-		other->client->playerinfo.pers.armor_count = gold_armor_info.max_armor;
+	client_persistant_t* pers = &other->client->playerinfo.pers; //mxd
+	if (pers->armortype == ARMOR_TYPE_GOLD && pers->armor_count >= gold_armor_info.max_armor / 2.0f)
+	{
+		pers->armor_count = gold_armor_info.max_armor;
+	}
 	else
 	{
-		other->client->playerinfo.pers.armortype = ARMOR_TYPE_SILVER;
-		other->client->playerinfo.pers.armor_count = silver_armor_info.max_armor;
+		pers->armortype = ARMOR_TYPE_SILVER;
+		pers->armor_count = silver_armor_info.max_armor;
 	}
 
 	SetupPlayerinfo_effects(other);
 	P_PlayerUpdateModelAttributes(&other->client->playerinfo);
 	WritePlayerinfo_effects(other);
 
-
-	// restore dismemberment, and stop us being on fire
+	// Restore dismemberment, and stop us being on fire.
 	ShrineRestorePlayer(other);
 }
 
@@ -427,7 +428,7 @@ void ShrineArmorSilverTouch	(edict_t *self, edict_t *other, cplane_t *plane, csu
 	if (!other->client)
 		return;
 
-	shrine_armor_silver_core(self,other);
+	ShrineArmorSilverCore(other);
 
 	gi.gamemsg_centerprintf(other, GM_S_SILVER);
 
@@ -1606,7 +1607,7 @@ void ShrineRandomTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 		case SHRINE_ARMOR_SILVER:
 			
-			shrine_armor_silver_core(self,other);
+			ShrineArmorSilverCore(other);
 			gi.gamemsg_centerprintf(other, GM_CS_SILVER);
 
 			break;
