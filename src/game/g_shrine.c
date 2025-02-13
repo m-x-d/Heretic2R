@@ -378,21 +378,13 @@ void SP_shrine_heal_trigger(edict_t* ent) //mxd. Named 'shrine_heal' in original
 
 #pragma endregion
 
-// ************************************************************************************************
-// Silver armor shrine.
-// ************************************************************************************************
+#pragma region ========================== SILVER ARMOR SHRINE ==========================
 
 // Fire off the armor shrine effect.
-
-void PlayerShrineArmorSilverEffect(edict_t *self)
+static void PlayerShrineArmorSilverEffect(edict_t* self) //mxd. Named 'player_shrine_armor_silver_effect' in original version.
 {
-	// Start up the shrine armor effect.
-
 	gi.CreateEffect(&self->s, FX_SHRINE_ARMOR, CEF_OWNERS_ORIGIN, NULL, "");
-
-	// Do the SHRINE sound.
-
-	gi.sound(self,CHAN_ITEM,gi.soundindex("items/shrine2.wav"),1,ATTN_NORM,0);
+	gi.sound(self, CHAN_ITEM, gi.soundindex("items/shrine2.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
 void shrine_armor_silver_core(edict_t *self,edict_t *other)
@@ -492,6 +484,8 @@ void SP_shrine_armor_silver_trigger (edict_t *ent)
 	gi.setmodel(ent, ent->model);
 	gi.linkentity (ent);
 }
+
+#pragma endregion
 
 // ************************************************************************************************
 // Armor shrine - gold.
