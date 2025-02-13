@@ -28,48 +28,48 @@ void CreateSkeletonInPlace(const int structure, const ModelSkeleton_t* skel)
 	SkeletonCreators[structure](skel->rootJoint, sizeof(M_SkeletalJoint_t), skel->rootNode, 0);
 }
 
-static int GetRootIndex(const int max, const int numJoints)
+static int GetRootIndex(const int max, const int num_joints)
 {
-	qboolean cont = false;
+	qboolean skip_block = false;
 
 	for (int i = 0; i < max; i++)
 	{
 		if (SkeletalClusters[i].inUse)
 			continue;
 
-		const int max2 = i + numJoints;
+		const int requred_size = num_joints + i;
 
-		// Check the size of the array
-		if (max2 > max)
+		// Check the size of the array.
+		if (requred_size > max)
 			return -1;
 
-		// Check for a big enough unused block
-		for (int j = i + 1; j < max2; j++)
+		// Check for a big enough unused block.
+		for (int j = i + 1; j < requred_size; j++)
 		{
 			if (SkeletalClusters[j].inUse)
 			{
 				i = j;
-				cont = true;
+				skip_block = true;
 
 				break;
 			}
 		}
 
-		// Not a big enough block, so continue searching
-		if (cont)
+		// Not a big enough block, so continue searching.
+		if (skip_block)
 		{
-			cont = false;
+			skip_block = false;
 			continue;
 		}
 
-		// Found a block, mark it as used
-		for (int j = i; j < max2; j++)
+		// Found a block, mark it as used.
+		for (int j = i; j < requred_size; j++)
 			SkeletalClusters[j].inUse = true;
 
 		return i;
 	}
 
-	// Couldn't find a block
+	// Couldn't find a block.
 	return -1;
 }
 
