@@ -305,21 +305,13 @@ static void PlayerShrineStartUseAnimation(edict_t* player, const ShrineType_t sh
 	player->client->shrine_framenum = level.time + INVUNERABILITY_TIME; // Make us invulnerable for a couple of seconds.
 }
 
-// ************************************************************************************************
-// Health Shrine
-// ************************************************************************************************
+#pragma region ========================== HEALTH SHRINE ==========================
 
 // Fire off the health shrine effect.
-
-void PlayerShrineHealthEffect(edict_t *self)
+static void PlayerShrineHealthEffect(edict_t* self) //mxd. Named 'player_shrine_health_effect' in original version.
 {
-	// Start up the shrine heal effect.
-
 	gi.CreateEffect(&self->s, FX_SHRINE_HEALTH, CEF_OWNERS_ORIGIN, NULL, "");
-
-	// Do the SHRINE sound.
-
-	gi.sound(self,CHAN_ITEM,gi.soundindex("items/shrine4.wav"),1,ATTN_NORM,0);
+	gi.sound(self, CHAN_ITEM, gi.soundindex("items/shrine4.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
 void shrine_heal_core(edict_t *self,edict_t *other)
@@ -412,6 +404,8 @@ void SP_shrine_heal_trigger (edict_t *ent)
 	gi.setmodel(ent, ent->model);
 	gi.linkentity(ent);
 }
+
+#pragma endregion
 
 // ************************************************************************************************
 // Silver armor shrine.
