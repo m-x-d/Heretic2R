@@ -908,42 +908,22 @@ static void ShrineGhostCore(edict_t* other) //mxd. Named 'shrine_ghost_core' in 
 }
 
 // Fire off an effect and give us a ghosting for a while powerup.
-
-void shrine_ghost_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void ShrineGhostTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_ghost_touch' in original version.
 {
 	// If we aren't a player, forget it.
-
-	if (!other->client)
+	if (other->client == NULL)
 		return;
 
 	ShrineGhostCore(other);
-
 	gi.gamemsg_centerprintf(other, GM_S_GHOST);
 
-	// If we are in death match, don't make us go through the shrine anim, just start the effect,
-	// give us whatever, and leave it at that.
-
-	if (deathmatch->value || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
-	{
+	// If we are in deathmatch, don't make us go through the shrine anim, just start the effect, give us whatever, and leave it at that.
+	if (DEATHMATCH || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
 		PlayerShrineGhostEffect(other);
-	}
 	else
-	{
-		// Tell us what sort of shrine we just hit.
-
-		other->shrine_type = SHRINE_GHOST;
-
-		// Initialise the shrine animation.
-
-		P_PlayerAnimSetLowerSeq(&other->client->playerinfo, ASEQ_SHRINE);
-
-		// Make us invulnerable for a couple of seconds.
-
-		other->client->shrine_framenum = level.time + INVUNERABILITY_TIME;
-	}
+		PlayerShrineStartUseAnimation(other, SHRINE_GHOST); //mxd
 
 	// Decide whether to delete this shrine or disable it for a while.
-	
 	UpdateShrineNode(self);
 }
 
@@ -959,7 +939,7 @@ void SP_shrine_ghost_trigger (edict_t *ent)
 	ent->classname = ghost_text;
 
 	if (!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_NO_SHRINE)))
-		ent->touch = shrine_ghost_touch;
+		ent->touch = ShrineGhostTouch;
 
 	if(deathmatch->value && ((int)dmflags->value & DF_SHRINE_CHAOS) && !((int)dmflags->value & DF_NO_SHRINE))
 	{
