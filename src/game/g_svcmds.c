@@ -1,12 +1,6 @@
 
 #include "g_local.h"
 
-
-void	Svcmd_Test_f (void)
-{
-	gi.cprintf (NULL, PRINT_HIGH, "Svcmd_Test_f()\n");
-}
-
 /*
 ==============================================================================
 
@@ -130,6 +124,10 @@ qboolean SV_FilterPacket (char *from)
 	return (int)!filterban->value;
 }
 
+static void SVCmd_Test_f(void) //mxd. Named 'Svcmd_Test_f' in original version.
+{
+	gi.cprintf(NULL, PRINT_HIGH, "Svcmd_Test_f()\n");
+}
 
 /*
 =================
@@ -266,7 +264,7 @@ void	ServerCommand (void)
 
 	cmd = gi.argv(1);
 	if (Q_stricmp (cmd, "test") == 0)
-		Svcmd_Test_f ();
+		SVCmd_Test_f ();
 	else if (Q_stricmp (cmd, "addip") == 0)
 		SVCmd_AddIP_f ();
 	else if (Q_stricmp (cmd, "removeip") == 0)
