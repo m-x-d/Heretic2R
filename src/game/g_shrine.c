@@ -125,76 +125,8 @@ void PlayerRestartShrineFX(edict_t* self)
 	}
 }
 
-// ************************************************************************************************
-// G_PlayerActionShrineEffect
-// --------------------------
-// ************************************************************************************************
-
-void G_PlayerActionShrineEffect(playerinfo_t *playerinfo)
-{
-	edict_t *self;
-
-	self=(edict_t *)playerinfo->self;
-
-	switch(self->shrine_type)
-	{
-		case SHRINE_ARMOR_SILVER:
-			PlayerShrineArmorSilverEffect(self);
-			break;
-
-		case SHRINE_ARMOR_GOLD:
-			PlayerShrineArmorGoldEffect(self);
-			break;
-
-		case SHRINE_LIGHT:
-			PlayerShrineLightEffect(self);
-			break;
-
-		case SHRINE_HEAL:
-			PlayerShrineHealthEffect(self);
-			break;
-
-		case SHRINE_STAFF:
-			PlayerShrineStaffEffect(self);
-			break;
-
-		case SHRINE_LUNGS:
-			PlayerShrineLungsEffect(self);
-			break;
-
-		case SHRINE_GHOST:
-			PlayerShrineGhostEffect(self);
-			break;
-
-		case SHRINE_REFLECT:
-			PlayerShrineReflectEffect(self);
-			break;
-
-		case SHRINE_POWERUP:
-			PlayerShrinePowerupEffect(self);
-			break;
-
-		case SHRINE_MANA:
-			PlayerShrineManaEffect(self);
-			break;
-
-		case SHRINE_SPEED:
-			PlayerShrineSpeedEffect(self);
-			break;
-		
-		default:
-			PlayerShrineManaEffect(self);
-			break;		
-	}
-}
-
-// ************************************************************************************************
-// PlayerRandomShrineEffect
-// ------------------------
 // Called from the random Shrine - which one do we want to do?
-// ************************************************************************************************
-
-void PlayerRandomShrineEffect(edict_t *self, int value)
+static void PlayerRandomShrineEffect(edict_t* self, const ShrineType_t value)
 {
 	switch (value)
 	{
@@ -243,9 +175,15 @@ void PlayerRandomShrineEffect(edict_t *self, int value)
 			break;
 
 		default:
-			PlayerShrinePowerupEffect(self);
+			PlayerShrinePowerupEffect(self); //mxd. G_PlayerActionShrineEffect() uses player_shrine_mana_effect() here in original version.
 			break;
 	}
+}
+
+void G_PlayerActionShrineEffect(const playerinfo_t* playerinfo)
+{
+	edict_t* self = playerinfo->self;
+	PlayerRandomShrineEffect(self, self->shrine_type); //mxd. Reduce code duplication. 
 }
 
 // ************************************************************************************************
