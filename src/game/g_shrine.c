@@ -1125,38 +1125,31 @@ static void PlayerShrineSpeedEffect(edict_t* self) //mxd. Named 'player_shrine_s
 	gi.sound(self, CHAN_ITEM, gi.soundindex("items/shrine10.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
-// Fire off an effect and give us double speed for a while
-
-void shrine_speed_core (edict_t *self, edict_t *other)
+// Fire off an effect and give us double speed for a while.
+static void ShrineSpeedCore(edict_t* other) //mxd. Named 'shrine_speed_core' in original version.
 {
 	if (other->deadflag != DEAD_NO)
 		return;
 
-	// If we are a chicken, lets make us a player again.  Don't give him anything else.
+	// If we are a chicken, lets make us a player again. Don't give him anything else.
 	if (other->flags & FL_CHICKEN)
 	{
-		other->morph_timer = level.time - 0.1;
+		other->morph_timer = (int)level.time - 1; //BUGFIX: mxd. 'level.time - 0.1f' in original version.
 		return;
 	}
 
 	// Add some time in on the timer for speeding
-
 	other->client->playerinfo.speed_timer = level.time + SPEED_DURATION;
 
 	// Turn on the speed at the client level.
 	other->s.effects |= EF_SPEED_ACTIVE;
 
-	// Kill any tomes that may already be out there for this player.
-
+	// Reset foot trail effect.
 	gi.RemoveEffects(&other->s, FX_FOOT_TRAIL);
-
-	// Create the tome of power.
-
 	gi.CreateEffect(&other->s, FX_FOOT_TRAIL, CEF_OWNERS_ORIGIN, NULL, "");
 
-	// restore dismemberment, and stop us being on fire
+	// Restore dismemberment, and stop us being on fire.
 	ShrineRestorePlayer(other);
-
 }
 
 void shrine_speed_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
@@ -1166,7 +1159,7 @@ void shrine_speed_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfac
 	if (!other->client)
 		return;
 
-	shrine_speed_core(self,other);
+	ShrineSpeedCore(other);
 
 	gi.gamemsg_centerprintf(other, GM_S_SPEED);
 
@@ -1390,7 +1383,7 @@ void ShrineRandomTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface
 			break;
 
 		case SHRINE_SPEED:
-			shrine_speed_core(self,other);
+			ShrineSpeedCore(other);
 			gi.gamemsg_centerprintf(other, GM_CS_SPEED);
 
 			break;
