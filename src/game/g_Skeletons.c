@@ -62,12 +62,9 @@ static int GetRootIndex(const int max, const int num_joints)
 	return -1;
 }
 
-int CreateSkeleton(int structure)
+int CreateSkeleton(const int structure)
 {
-	int index;
-
-	index = GetRootIndex(MAX_ARRAYED_SKELETAL_JOINTS, numJointsInSkeleton[structure]);
-
+	const int index = GetRootIndex(MAX_ARRAYED_SKELETAL_JOINTS, numJointsInSkeleton[structure]);
 	SkeletonCreators[structure](skeletalJoints, sizeof(G_SkeletalJoint_t), jointNodes, index);
 
 	return index;
