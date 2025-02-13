@@ -186,71 +186,43 @@ void G_PlayerActionShrineEffect(const playerinfo_t* playerinfo)
 	PlayerRandomShrineEffect(self, self->shrine_type); //mxd. Reduce code duplication. 
 }
 
-// ************************************************************************************************
-// DelayThink
-// ----------
 // Wait till we can use this shrine again.
-// ************************************************************************************************
-
-void DelayThink(edict_t *self)
+static void DelayThink(edict_t* self)
 {
-	edict_t		*dest;
-	vec3_t		offset;
-	vec3_t		offset2;
-
 	// Handle changing shrine types in deathmatch.
-
-	if (deathmatch->value && (self->oldtouch == ShrineArmorGoldTouch))
+	if (DEATHMATCH)
 	{
-		// If we were gold in death match, we won't be again.
-
-		self->owner->touch = ShrineArmorSilverTouch;
-	}	
-	else if (deathmatch->value && (self->oldtouch == ShrineArmorSilverTouch) && !(irand(0,8)))
-	{
-		// 1 in 9 chance in death match an armor shrine turns gold.
-
-		self->owner->touch = ShrineArmorGoldTouch;
+		if (self->oldtouch == ShrineArmorGoldTouch)
+			self->owner->touch = ShrineArmorSilverTouch; // If we were gold in deathmatch, we won't be again.
+		else if (self->oldtouch == ShrineArmorSilverTouch && irand(0, 8) == 0)
+			self->owner->touch = ShrineArmorGoldTouch; // 1 in 9 chance in deathmatch an armor shrine turns gold.
 	}
 	else
 	{
-		// Restore the touch pad.
-
-		self->owner->touch = self->oldtouch;
+		self->owner->touch = self->oldtouch; // Restore the touch pad.
 	}
 
-	// Make the ball appear in the middle.
+	// Setup the destination entity of the teleport.
+	edict_t* dest = G_Find(NULL, FOFS(targetname), self->owner->target);
 
-	// Setup in playerinfo the destination entity of the teleport.
-
-	dest = G_Find (NULL, FOFS(targetname), self->owner->target);
-
-	if (!dest)
+	if (dest != NULL)
 	{
-#ifdef _DEVEL
-		gi.dprintf ("Shrine Trigger couldn't find shrine model\n");
-#endif
-		G_SetToFree (self);
-		return;
+		// Make the ball appear in the middle.
+		if (self->owner->touch == ShrineArmorGoldTouch)
+			dest->style = 7;
+		else if (self->owner->touch == ShrineArmorSilverTouch)
+			dest->style = 6;
+
+		vec3_t angles;
+		VectorScale(dest->s.angles, ANGLE_TO_RAD, angles);
+
+		vec3_t direction;
+		DirFromAngles(angles, direction);
+
+		dest->PersistantCFX = gi.CreatePersistantEffect(&dest->s, FX_SHRINE_BALL, CEF_BROADCAST, dest->s.origin, "db", direction, (byte)(dest->style - 1));
 	}
 
-	if (self->owner->touch == ShrineArmorGoldTouch)
-		dest->style = 7;
-	else
-	if (self->owner->touch == ShrineArmorSilverTouch)
-		dest->style = 6;
-		
-	VectorScale(dest->s.angles, ANGLE_TO_RAD, offset);
-	DirFromAngles(offset, offset2);
-	dest->PersistantCFX=gi.CreatePersistantEffect(&dest->s,
-												  FX_SHRINE_BALL,
-												  CEF_BROADCAST,
-												  dest->s.origin, 
-												  "db",
-												  offset2,
-												  (byte)(dest->style-1));
-
-	G_SetToFree (self);
+	G_SetToFree(self);
 }
 
 // ************************************************************************************************
