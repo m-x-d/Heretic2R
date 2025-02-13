@@ -652,25 +652,23 @@ static void PlayerShrineLungsEffect(edict_t* self) //mxd. Named 'player_shrine_l
 	gi.sound(self, CHAN_ITEM, gi.soundindex("items/shrine9.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
-void shrine_lung_core(edict_t *self, edict_t *other)
+static void ShrineLungsCore(edict_t* other) //mxd. Named 'shrine_lung_core' in original version.
 {
 	if (other->deadflag != DEAD_NO)
 		return;
 
-	// If we are a chicken, lets make us a player again.  Don't give him anything else.
+	// If we are a chicken, lets make us a player again. Don't give him anything else.
 	if (other->flags & FL_CHICKEN)
 	{
-		other->morph_timer = level.time - 0.1;
+		other->morph_timer = (int)level.time - 1; //BUGFIX: mxd. 'level.time - 0.1f' in original version.
 		return;
 	}
 
 	// Add some time in on the timer for the lungs.
-
 	other->client->playerinfo.lungs_timer = LUNGS_DURATION;
 
-	// restore dismemberment, and stop us being on fire
+	// Restore dismemberment, and stop us being on fire.
 	ShrineRestorePlayer(other);
-
 }
 
 // Fire off an effect and give us lung power.
@@ -682,7 +680,7 @@ void shrine_lung_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface
 	if (!other->client)
 		return;
 
-	shrine_lung_core(self,other);
+	ShrineLungsCore(other);
 
 	gi.gamemsg_centerprintf(other, GM_S_LUNGS);
 
