@@ -188,30 +188,22 @@ static void SVCmd_WriteIP_f(void)
 
 #pragma endregion
 
-/*
-=================
-ServerCommand
-
-ServerCommand will be called when an "sv" command is issued.
-The game can issue gi.argc() / gi.argv() commands to get the rest
-of the parameters
-=================
-*/
-void	ServerCommand (void)
+// ServerCommand will be called when an "sv" command is issued.
+// The game can issue gi.argc() / gi.argv() commands to get the rest of the parameters.
+void ServerCommand(void)
 {
-	char	*cmd;
+	char* cmd = gi.argv(1);
 
-	cmd = gi.argv(1);
-	if (Q_stricmp (cmd, "test") == 0)
-		SVCmd_Test_f ();
-	else if (Q_stricmp (cmd, "addip") == 0)
-		SVCmd_AddIP_f ();
-	else if (Q_stricmp (cmd, "removeip") == 0)
-		SVCmd_RemoveIP_f ();
-	else if (Q_stricmp (cmd, "listip") == 0)
-		SVCmd_ListIP_f ();
-	else if (Q_stricmp (cmd, "writeip") == 0)
-		SVCmd_WriteIP_f ();
+	if (Q_stricmp(cmd, "test") == 0)
+		SVCmd_Test_f();
+	else if (Q_stricmp(cmd, "addip") == 0)
+		SVCmd_AddIP_f();
+	else if (Q_stricmp(cmd, "removeip") == 0)
+		SVCmd_RemoveIP_f();
+	else if (Q_stricmp(cmd, "listip") == 0)
+		SVCmd_ListIP_f();
+	else if (Q_stricmp(cmd, "writeip") == 0)
+		SVCmd_WriteIP_f();
 	else
-		gi.cprintf (NULL, PRINT_HIGH, "Unknown server command \"%s\"\n", cmd);
+		gi.cprintf(NULL, PRINT_HIGH, "Unknown server command \"%s\"\n", cmd);
 }
