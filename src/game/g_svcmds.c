@@ -111,35 +111,34 @@ static void SVCmd_AddIP_f(void)
 		ipfilters[index].compare = 0xffffffff;
 }
 
-/*
-=================
-SV_RemoveIP_f
-=================
-*/
-void SVCmd_RemoveIP_f (void)
+// Remove IP address from the filter list.
+static void SVCmd_RemoveIP_f(void)
 {
-	ipfilter_t	f;
-	int			i, j;
-
-	if (gi.argc() < 3) {
-		gi.cprintf(NULL, PRINT_HIGH, "Usage:  sv removeip <ip-mask>\n");
+	if (gi.argc() < 3)
+	{
+		gi.cprintf(NULL, PRINT_HIGH, "Usage: sv removeip <ip-mask>\n");
 		return;
 	}
 
-	if (!StringToFilter (gi.argv(2), &f))
+	ipfilter_t f;
+	if (!StringToFilter(gi.argv(2), &f))
 		return;
 
-	for (i=0 ; i<num_ipfilters; i++)
-		if (ipfilters[i].mask == f.mask
-		&& ipfilters[i].compare == f.compare)
+	for (int i = 0; i < num_ipfilters; i++)
+	{
+		if (ipfilters[i].mask == f.mask && ipfilters[i].compare == f.compare)
 		{
-			for (j=i+1 ; j<num_ipfilters; j++)
-				ipfilters[j-1] = ipfilters[j];
+			for (int j = i + 1; j < num_ipfilters; j++)
+				ipfilters[j - 1] = ipfilters[j];
+
 			num_ipfilters--;
-			gi.cprintf (NULL, PRINT_HIGH, "Removed.\n");
+			gi.cprintf(NULL, PRINT_HIGH, "Removed.\n");
+
 			return;
 		}
-	gi.cprintf (NULL, PRINT_HIGH, "Didn't find %s.\n", gi.argv(2));
+	}
+
+	gi.cprintf(NULL, PRINT_HIGH, "Didn't find %s.\n", gi.argv(2));
 }
 
 /*
