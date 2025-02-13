@@ -297,6 +297,14 @@ static void ShrineRestorePlayer(edict_t* other) //mxd. Named 'ShrineRestorePlaye
 	ResetPlayerBaseNodes(other); //mxd. Removes PLAYER_FLAG_BLEED, PLAYER_FLAG_NO_LARM and PLAYER_FLAG_NO_RARM flags, among other things.
 }
 
+//mxd. Added to reduce code duplication.
+static void PlayerShrineStartUseAnimation(edict_t* player, const ShrineType_t shrine_type)
+{
+	player->shrine_type = shrine_type; // Tell us what sort of shrine we just hit.
+	P_PlayerAnimSetLowerSeq(&player->client->playerinfo, ASEQ_SHRINE); // Initialise the shrine animation.
+	player->client->shrine_framenum = level.time + INVUNERABILITY_TIME; // Make us invulnerable for a couple of seconds.
+}
+
 // ************************************************************************************************
 // Health Shrine
 // ************************************************************************************************
