@@ -113,15 +113,13 @@ void UpdateSkeletons(void)
 
 #pragma endregion
 
-// ********************************************************************
-// Skeletal Manipulation stuff
-//
-// Mirrored in cl_Skeletons.c
-// ********************************************************************
+#pragma region ========================== Skeletal manipulation stuff ==========================
 
-float GetJointAngle(int jointIndex, int angleIndex)
+// Mirrored in cl_Skeletons.c
+
+float GetJointAngle(const int joint_index, const int angle_index)
 {
-	return skeletalJoints[jointIndex].angles[angleIndex];
+	return skeletalJoints[joint_index].angles[angle_index];
 }
 
 qboolean SetJointAngVel(int jointIndex, int angleIndex, float destAngle, float angSpeed)
@@ -149,3 +147,5 @@ qboolean SetJointAngVel(int jointIndex, int angleIndex, float destAngle, float a
 		return false;
 	}
 }
+
+#pragma endregion
