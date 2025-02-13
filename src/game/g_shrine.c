@@ -619,31 +619,29 @@ static void ShrineStaffTouch(edict_t* self, edict_t* other, cplane_t* plane, csu
 	UpdateShrineNode(self);
 }
 
-#pragma endregion
-
-/*QUAKED shrine_staff (.5 .3 .5) ? PERMANENT
-*/
-
-void SP_shrine_staff_trigger (edict_t *ent)
-{	
+// QUAKED shrine_staff (.5 .3 .5) ? PERMANENT
+void SP_shrine_staff_trigger(edict_t* ent) //mxd. Named 'shrine_staff' in original version.
+{
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;
 	ent->solid = SOLID_TRIGGER;
 	ent->shrine_type = SHRINE_STAFF;
 	ent->classname = staff_text;
 
-	if(!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_NO_SHRINE)))
+	if (!DEATHMATCH || (DEATHMATCH && !(DMFLAGS & DF_NO_SHRINE)))
 		ent->touch = ShrineStaffTouch;
 
-	if(deathmatch->value && ((int)dmflags->value & DF_SHRINE_CHAOS) && !((int)dmflags->value & DF_NO_SHRINE))
+	if (DEATHMATCH && (DMFLAGS & DF_SHRINE_CHAOS) && !(DMFLAGS & DF_NO_SHRINE))
 	{
 		ent->shrine_type = SHRINE_RANDOM;
 		ent->touch = ShrineRandomTouch;
 	}
 
 	gi.setmodel(ent, ent->model);
-	gi.linkentity (ent);
+	gi.linkentity(ent);
 }
+
+#pragma endregion
 
 // ************************************************************************************************
 // Lungs Shrine
