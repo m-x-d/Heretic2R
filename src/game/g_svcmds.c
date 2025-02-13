@@ -144,6 +144,13 @@ static void SVCmd_RemoveIP_f(void)
 // Print the current list of IP filters.
 static void SVCmd_ListIP_f(void)
 {
+	//mxd
+	if (num_ipfilters < 1)
+	{
+		gi.cprintf(NULL, PRINT_HIGH, "No ip addresses in filter list\n");
+		return;
+	}
+
 	gi.cprintf(NULL, PRINT_HIGH, "Filter list:\n");
 
 	for (int i = 0; i < num_ipfilters; i++)
