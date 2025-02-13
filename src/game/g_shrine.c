@@ -114,54 +114,30 @@ void PlayerKillShrineFX(edict_t* self)
 	self->s.effects &= ~EF_POWERUP_ENABLED;
 }
 
-// ************************************************************************************************
-// PlayerRestartShrineFX
-// ---------------------
-// This is the routine that re-starts any client effects that need to be running. For instance,
-// recovery of a saved game, where for example, the torch is active.
-// ************************************************************************************************
-
-void PlayerRestartShrineFX(edict_t *self)
+// This is the routine that restarts any client effects that need to be running.
+// For instance, recovery of a saved game, where for example, the torch is active.
+void PlayerRestartShrineFX(edict_t* self)
 {
-	// If we have a light, turn it on.
-
+	// If we have a light, restart it's sfx.
 	if (self->s.effects & EF_LIGHT_ENABLED)
 	{
-		// Kill any lights that may already be out there for this player.
-
 		gi.RemoveEffects(&self->s, FX_PLAYER_TORCH);
-
-		// Create the light and the tome of power.
-
 		gi.CreateEffect(&self->s, FX_PLAYER_TORCH, CEF_OWNERS_ORIGIN, NULL, "");
 	}
 
-	// If we have a powerup, turn it on.
-
+	// If we have Tome of Power, restart it's sfx.
 	if (self->s.effects & EF_POWERUP_ENABLED)
 	{
-		// Kill any lights that may already be out there for this player.
-
 		gi.RemoveEffects(&self->s, FX_TOME_OF_POWER);
-
-		// Create the light and the tome of power.
-		
 		gi.CreateEffect(&self->s, FX_TOME_OF_POWER, CEF_OWNERS_ORIGIN, NULL, "");
 	}
 
-	// If we have a powerup, turn it on.
-
+	// If we have a Speed powerup, restart it's sfx.
 	if (self->s.effects & EF_SPEED_ACTIVE)
 	{
-		// Kill any lights that may already be out there for this player.
-
 		gi.RemoveEffects(&self->s, FX_FOOT_TRAIL);
-
-		// Create the light and the tome of power.
-		
 		gi.CreateEffect(&self->s, FX_FOOT_TRAIL, CEF_OWNERS_ORIGIN, NULL, "");
 	}
-
 }
 
 // ************************************************************************************************
