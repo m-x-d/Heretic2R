@@ -75,40 +75,40 @@ qboolean SV_FilterPacket(char* from)
 	return !FILTERBAN;
 }
 
+#pragma region ========================== Server commands ==========================
+
 static void SVCmd_Test_f(void) //mxd. Named 'Svcmd_Test_f' in original version.
 {
 	gi.cprintf(NULL, PRINT_HIGH, "Svcmd_Test_f()\n");
 }
 
-/*
-=================
-SV_AddIP_f
-=================
-*/
-void SVCmd_AddIP_f (void)
+// Add IP address to the filter list.
+static void SVCmd_AddIP_f(void)
 {
-	int		i;
-	
-	if (gi.argc() < 3) {
-		gi.cprintf(NULL, PRINT_HIGH, "Usage:  addip <ip-mask>\n");
+	if (gi.argc() < 3)
+	{
+		gi.cprintf(NULL, PRINT_HIGH, "Usage: addip <ip-mask>\n");
 		return;
 	}
 
-	for (i=0 ; i<num_ipfilters; i++)
-		if (ipfilters[i].compare == 0xffffffff)
-			break;		// free spot
-	if (i == num_ipfilters)
+	int index;
+	for (index = 0; index < num_ipfilters; index++)
+		if (ipfilters[index].compare == 0xffffffff)
+			break; // Free spot.
+
+	if (index == num_ipfilters)
 	{
 		if (num_ipfilters == MAX_IPFILTERS)
 		{
-			gi.cprintf (NULL, PRINT_HIGH, "IP filter list is full\n");
+			gi.cprintf(NULL, PRINT_HIGH, "IP filter list is full\n");
 			return;
 		}
+
 		num_ipfilters++;
 	}
-	
-	if (!StringToFilter (gi.argv(2), &ipfilters[i]))
-		ipfilters[i].compare = 0xffffffff;
+
+	if (!StringToFilter(gi.argv(2), &ipfilters[index]))
+		ipfilters[index].compare = 0xffffffff;
 }
 
 /*
@@ -200,6 +200,8 @@ void SVCmd_WriteIP_f (void)
 	fclose (f);
 }
 
+#pragma endregion
+
 /*
 =================
 ServerCommand
@@ -227,4 +229,3 @@ void	ServerCommand (void)
 	else
 		gi.cprintf (NULL, PRINT_HIGH, "Unknown server command \"%s\"\n", cmd);
 }
-
