@@ -122,30 +122,29 @@ float GetJointAngle(const int joint_index, const int angle_index)
 	return skeletalJoints[joint_index].angles[angle_index];
 }
 
-qboolean SetJointAngVel(int jointIndex, int angleIndex, float destAngle, float angSpeed)
+qboolean SetJointAngVel(const int joint_index, const int angle_index, const float dest_angle, const float angular_velocity)
 {
-	G_SkeletalJoint_t *joint;
+	G_SkeletalJoint_t* joint = &skeletalJoints[joint_index];
 
-	joint = &skeletalJoints[jointIndex];
-
-	if(destAngle < joint->destAngles[angleIndex])
+	if (dest_angle < joint->destAngles[angle_index])
 	{
-		skeletalJoints[jointIndex].destAngles[angleIndex] = destAngle;
-		skeletalJoints[jointIndex].angVels[angleIndex] = -angSpeed;
-		skeletalJoints[jointIndex].changed[angleIndex] = true;
+		joint->destAngles[angle_index] = dest_angle;
+		joint->angVels[angle_index] = -angular_velocity;
+		joint->changed[angle_index] = true;
+
 		return true;
 	}
-	else if(destAngle > joint->destAngles[angleIndex])
+
+	if (dest_angle > joint->destAngles[angle_index])
 	{
-		skeletalJoints[jointIndex].destAngles[angleIndex] = destAngle;
-		skeletalJoints[jointIndex].angVels[angleIndex] = angSpeed;
-		skeletalJoints[jointIndex].changed[angleIndex] = true;
+		joint->destAngles[angle_index] = dest_angle;
+		joint->angVels[angle_index] = angular_velocity;
+		joint->changed[angle_index] = true;
+
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+
+	return false;
 }
 
 #pragma endregion
