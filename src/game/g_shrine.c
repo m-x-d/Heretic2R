@@ -573,21 +573,20 @@ static void PlayerShrineStaffEffect(edict_t* self) //mxd. Named 'player_shrine_s
 	gi.CreateEffect(&self->s, FX_SHRINE_STAFF, flags, NULL, "");
 }
 
-void shrine_staff_core(edict_t *self,edict_t *other)
+static void ShrineStaffCore(edict_t* other) //mxd. Named 'shrine_staff_core' in original version.
 {
 	if (other->deadflag != DEAD_NO)
 		return;
 
-	// If we are a chicken, lets make us a player again.  Don't give him anything else.
+	// If we are a chicken, lets make us a player again. Don't give him anything else.
 	if (other->flags & FL_CHICKEN)
 	{
-		other->morph_timer = level.time - 0.1;
+		other->morph_timer = (int)level.time - 1; //BUGFIX: mxd. 'level.time - 0.1f' in original version. 
 		return;
 	}
 
 	// Add onto his staff.
-
-	if (other->client->playerinfo.pers.stafflevel < STAFF_LEVEL_MAX-1)
+	if (other->client->playerinfo.pers.stafflevel < STAFF_LEVEL_MAX - 1)
 	{
 		other->client->playerinfo.pers.stafflevel++;
 
@@ -596,7 +595,7 @@ void shrine_staff_core(edict_t *self,edict_t *other)
 		WritePlayerinfo_effects(other);
 	}
 
-	// restore dismemberment, and stop us being on fire
+	// Restore dismemberment, and stop us being on fire.
 	ShrineRestorePlayer(other);
 }
 
@@ -609,7 +608,7 @@ void shrine_staff_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 	if (!other->client)
 		return;
 
-	shrine_staff_core(self,other);
+	ShrineStaffCore(other);
 
 	gi.gamemsg_centerprintf(other, GM_S_BLADE);
 
@@ -1581,7 +1580,7 @@ void ShrineRandomTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 		case SHRINE_STAFF:
 
-			shrine_staff_core(self,other);
+			ShrineStaffCore(other);
 			gi.gamemsg_centerprintf(other, GM_CS_BLADE);
 
 			break;
