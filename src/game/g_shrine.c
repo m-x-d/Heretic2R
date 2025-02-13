@@ -1171,30 +1171,29 @@ static void ShrineSpeedTouch(edict_t* self, edict_t* other, cplane_t* plane, csu
 	UpdateShrineNode(self);
 }
 
-/*QUAKED shrine_speed (.5 .3 .5) ? PERMANENT
-*/
-void SP_shrine_speed_trigger (edict_t *ent)
-{	
+// QUAKED shrine_speed (.5 .3 .5) ? PERMANENT
+void SP_shrine_speed_trigger(edict_t* ent) //mxd. Named 'shrine_speed' in original version.
+{
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;
 	ent->solid = SOLID_TRIGGER;
 	ent->shrine_type = SHRINE_SPEED;
 	ent->classname = run_text;
 
-	if (no_runshrine->value)
+	if ((int)no_runshrine->value)
 		return;
 
-	if (!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_NO_SHRINE)))
+	if (!DEATHMATCH || (DEATHMATCH && !(DMFLAGS & DF_NO_SHRINE)))
 		ent->touch = ShrineSpeedTouch;
 
-	if(deathmatch->value && ((int)dmflags->value & DF_SHRINE_CHAOS) && !((int)dmflags->value & DF_NO_SHRINE))
+	if (DEATHMATCH && (DMFLAGS & DF_SHRINE_CHAOS) && !(DMFLAGS & DF_NO_SHRINE))
 	{
 		ent->shrine_type = SHRINE_RANDOM;
 		ent->touch = ShrineRandomTouch;
 	}
 
 	gi.setmodel(ent, ent->model);
-	gi.linkentity (ent);
+	gi.linkentity(ent);
 }
 
 #pragma endregion
