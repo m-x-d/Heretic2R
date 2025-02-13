@@ -64,89 +64,53 @@ void shrine_armor_silver_touch(edict_t *self, edict_t *other, cplane_t *plane, c
 void shrine_armor_gold_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
 void shrine_random_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
 
-// ************************************************************************************************
-// PlayerKillShrineFX
-// ------------------
 // Remove all shrine effects associated with a player. Used when he's turned into a chicken.
-// ************************************************************************************************
-
-void PlayerKillShrineFX(edict_t *self)
+void PlayerKillShrineFX(edict_t* self)
 {
-	playerinfo_t *playerinfo;
-	
-	playerinfo=&self->client->playerinfo;
-	
-	assert(playerinfo);
+	playerinfo_t* info = &self->client->playerinfo;
 
-	// --- Remove Reflection
-	
-	// Remove time on the timer for the reflectivity.
+	assert(info);
 
-	self->client->playerinfo.reflect_timer = level.time - 1.0;
-
-	// Turn off the relection at the client effect end through client flags that are passed down.
-
+	// Turn off the reflection powerup.
+	info->reflect_timer = level.time - 1.0f;
 	self->s.renderfx &= ~RF_REFLECTION;
 
-	// --- Remove Ghosting.
-
-	// Remove time on the timer for the ghosting.
-
-	self->client->playerinfo.ghost_timer = level.time - 1.0;
-
-	// Turn off the ghosting at the client effect end through client flags that are passed down.
-
+	// Turn off the invisibility powerup.
+	info->ghost_timer = level.time - 1.0f;
 	self->s.renderfx &= ~RF_TRANS_GHOST;
 
-	// --- Remove the light.
-
-	// Remove time on the timer for the light.
-
-	self->client->playerinfo.light_timer = level.time - 1.0;
-
-	// Turn off the light at the client effect end through client flags that are passed down.
-
+	// Turn off the light powerup.
+	info->light_timer = level.time - 1.0f;
 	self->s.effects &= ~EF_LIGHT_ENABLED;
 
-	// turn off the run shrine should we need to
-
+	// Turn off the run shrine effect.
 	self->s.effects &= ~EF_SPEED_ACTIVE;
 	gi.RemoveEffects(&self->s, FX_FOOT_TRAIL);
 
 	// Kill any lights that may already be out there for this player.
-
 	gi.RemoveEffects(&self->s, FX_PLAYER_TORCH);
 
 	// Kill lungs.
-
-	self->client->playerinfo.lungs_timer = 0.0;
+	info->lungs_timer = 0.0f;
 
 	// Remove Armor.
-
-	self->client->playerinfo.pers.armor_count = 0;
-
-	// Turn off the armor at the model level.
-
-	playerinfo->pers.armortype = ARMOR_TYPE_NONE; //mxd. ARMOR_NONE in original version.
+	info->pers.armor_count = 0.0f;
+	info->pers.armortype = ARMOR_TYPE_NONE; //mxd. ARMOR_NONE in original version.
 
 	SetupPlayerinfo_effects(self);
-	P_PlayerUpdateModelAttributes(&self->client->playerinfo);
+	P_PlayerUpdateModelAttributes(info);
 	WritePlayerinfo_effects(self);
 
 	// Remove Staff powerup.
-
-	self->client->playerinfo.pers.stafflevel = STAFF_LEVEL_BASIC;
+	info->pers.stafflevel = STAFF_LEVEL_BASIC;
 
 	// Remove Weapons powerup.
-
-	self->client->playerinfo.powerup_timer = level.time - 1.0;
+	info->powerup_timer = level.time - 1.0f;
 
 	// Kill any tomes that may already be out there for this player.
-
 	gi.RemoveEffects(&self->s, FX_TOME_OF_POWER);
 
 	// Turn off the tome at the client effect end through client flags that are passed down.
-
 	self->s.effects &= ~EF_POWERUP_ENABLED;
 }
 
