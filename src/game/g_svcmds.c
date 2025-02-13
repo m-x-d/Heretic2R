@@ -21,8 +21,8 @@ static int num_ipfilters;
 static qboolean StringToFilter(char* s, ipfilter_t* f)
 {
 	char num[128];
-	byte ip[4];
-	byte ip_mask[4];
+	byte ip[4] = { 0 };
+	byte ip_mask[4] = { 0 };
 
 	for (int i = 0; i < 4 && *s != 0; i++, s++)
 	{
