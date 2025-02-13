@@ -420,22 +420,17 @@ static void ShrineArmorSilverCore(edict_t* other) //mxd. Named 'shrine_armor_sil
 }
 
 // Fire off an effect and give us some armor.
-
-void ShrineArmorSilverTouch	(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void ShrineArmorSilverTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'shrine_armor_silver_touch' in original version.
 {
 	// If we aren't a player, forget it.
-
-	if (!other->client)
+	if (other->client == NULL)
 		return;
 
 	ShrineArmorSilverCore(other);
-
 	gi.gamemsg_centerprintf(other, GM_S_SILVER);
 
-	// If we are in death match, don't make us go through the shrine anim, just start the effect,
-	// give us whatever, and leave it at that.
-
-	if (deathmatch->value || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
+	// If we are in deathmatch, don't make us go through the shrine anim, just start the effect, give us whatever, and leave it at that.
+	if (DEATHMATCH || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
 	{
 		if (other->client->playerinfo.pers.armortype == ARMOR_TYPE_SILVER)
 			PlayerShrineArmorSilverEffect(other);
@@ -444,21 +439,10 @@ void ShrineArmorSilverTouch	(edict_t *self, edict_t *other, cplane_t *plane, csu
 	}
 	else
 	{
-		// Tell us what sort of shrine we just hit.
-
-		other->shrine_type = SHRINE_ARMOR_SILVER;
-
-		// Initialise the shrine animation.
-
-		P_PlayerAnimSetLowerSeq(&other->client->playerinfo, ASEQ_SHRINE);
-
-		// Make us invunerable for a couple of seconds.
-
-		other->client->shrine_framenum = level.time + INVUNERABILITY_TIME;
+		PlayerShrineStartUseAnimation(other, SHRINE_ARMOR_SILVER); //mxd
 	}
 
 	// Decide whether to delete this shrine or disable it for a while.
-
 	UpdateShrineNode(self);
 }
 
