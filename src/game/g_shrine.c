@@ -1049,30 +1049,26 @@ static void PlayerShrinePowerupEffect(edict_t* self) //mxd. Named 'player_shrine
 }
 
 // Fire off an effect and give us a powerup for a while.
-
-void shrine_powerup_core (edict_t *self, edict_t *other)
+static void ShrinePowerupCore(edict_t* other) //mxd. Named 'shrine_powerup_core' in original version.
 {
 	if (other->deadflag != DEAD_NO)
 		return;
 
-	// If we are a chicken, lets make us a player again.  Don't give him anything else.
+	// If we are a chicken, lets make us a player again. Don't give him anything else.
 	if (other->flags & FL_CHICKEN)
 	{
-		other->morph_timer = level.time - 0.1;
+		other->morph_timer = (int)level.time - 1; //BUGFIX: mxd. 'level.time - 0.1f' in original version.
 		return;
 	}
 
 	// Add some time in on the timer for the reflectivity.
-
 	other->client->playerinfo.powerup_timer = level.time + POWERUP_DURATION;
 
 	// Turn on the light at the client end through client flags that are passed to the client.
-
 	other->s.effects |= EF_POWERUP_ENABLED;
 
-	// restore dismemberment, and stop us being on fire
+	// Restore dismemberment, and stop us being on fire.
 	ShrineRestorePlayer(other);
-
 }
 
 void shrine_powerup_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
@@ -1082,7 +1078,7 @@ void shrine_powerup_touch (edict_t *self, edict_t *other, cplane_t *plane, csurf
 	if (!other->client)
 		return;
 
-	shrine_powerup_core(self,other);
+	ShrinePowerupCore(other);
 
 	gi.gamemsg_centerprintf(other, GM_S_POWERUP);
 
@@ -1415,7 +1411,7 @@ void ShrineRandomTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 		case SHRINE_POWERUP:
 		
-			shrine_powerup_core(self,other);
+			ShrinePowerupCore(other);
 			gi.gamemsg_centerprintf(other, GM_CS_POWERUP);
 			
 			break;
@@ -1428,7 +1424,7 @@ void ShrineRandomTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 		default:
 
-			shrine_powerup_core(self,other);
+			ShrinePowerupCore(other);
 			gi.gamemsg_centerprintf(other, GM_CS_POWERUP);
 			
 			break;
