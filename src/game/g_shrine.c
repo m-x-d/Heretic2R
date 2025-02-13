@@ -284,29 +284,17 @@ static void UpdateShrineNode(edict_t* self) //mxd. Named 'deal_with_shrine_node'
 	gi.CreateEffect(&dest->s, FX_SHRINE_BALL_EXPLODE, CEF_OWNERS_ORIGIN, dest->s.origin, "db", direction, (byte)(dest->style - 1));
 }
 
-void shrine_restore_player(edict_t *other)
+static void ShrineRestorePlayer(edict_t* other) //mxd. Named 'ShrineRestorePlayer' in original version.
 {
 	// Stop us from being on fire.
-
-	if(other->fire_damage_time>level.time)
+	if (other->fire_damage_time > level.time)
 	{
-		other->fire_damage_time = 0;
-
-		// Turn off CFX too.
-		other->s.effects &= ~EF_ON_FIRE;
+		other->fire_damage_time = 0.0f;
+		other->s.effects &= ~EF_ON_FIRE; // Turn off CFX too.
 	}
-	
-	// Stop bleeding.
 
-	other->client->playerinfo.flags &= ~PLAYER_FLAG_BLEED;
-
-	// Restore limbs!
-	// FIXME: maybe do some cool temp effect on these nodes to show they respawned?
-
-	ResetPlayerBaseNodes(other);
-
-	other->client->playerinfo.flags &= ~PLAYER_FLAG_NO_LARM;
-	other->client->playerinfo.flags &= ~PLAYER_FLAG_NO_RARM;
+	// Stop bleeding and Restore limbs. //FIXME: maybe do some cool temp effect on these nodes to show they respawned?
+	ResetPlayerBaseNodes(other); //mxd. Removes PLAYER_FLAG_BLEED, PLAYER_FLAG_NO_LARM and PLAYER_FLAG_NO_RARM flags, among other things.
 }
 
 // ************************************************************************************************
@@ -346,7 +334,7 @@ void shrine_heal_core(edict_t *self,edict_t *other)
 		other->health = SHRINE_MAX_HEALTH;
 
 	// restore dismemberment, and stop us being on fire
-	shrine_restore_player(other);
+	ShrineRestorePlayer(other);
 }
 
 // ************************************************************************************************
@@ -462,7 +450,7 @@ void shrine_armor_silver_core(edict_t *self,edict_t *other)
 
 
 	// restore dismemberment, and stop us being on fire
-	shrine_restore_player(other);
+	ShrineRestorePlayer(other);
 }
 
 // Fire off an effect and give us some armor.
@@ -571,7 +559,7 @@ void shrine_armor_gold_core(edict_t *self,edict_t *other)
 	WritePlayerinfo_effects(other);
 
 	// restore dismemberment, and stop us being on fire
-	shrine_restore_player(other);
+	ShrineRestorePlayer(other);
 
 }
 
@@ -690,7 +678,7 @@ void shrine_staff_core(edict_t *self,edict_t *other)
 	}
 
 	// restore dismemberment, and stop us being on fire
-	shrine_restore_player(other);
+	ShrineRestorePlayer(other);
 }
 
 // Fire off an effect and give us a staff powerup.
@@ -791,7 +779,7 @@ void shrine_lung_core(edict_t *self, edict_t *other)
 	other->client->playerinfo.lungs_timer = LUNGS_DURATION;
 
 	// restore dismemberment, and stop us being on fire
-	shrine_restore_player(other);
+	ShrineRestorePlayer(other);
 
 }
 
@@ -907,7 +895,7 @@ void shrine_light_core(edict_t *self, edict_t *other)
 	other->s.effects |= EF_LIGHT_ENABLED;
 
 	// restore dismemberment, and stop us being on fire
-	shrine_restore_player(other);
+	ShrineRestorePlayer(other);
 
 }
 
@@ -1010,7 +998,7 @@ void shrine_mana_core(edict_t *self, edict_t *other)
     other->client->playerinfo.pers.inventory.Items[ITEM_INDEX(P_FindItem("Def-mana"))] = 100;
 
 	// restore dismemberment, and stop us being on fire
-	shrine_restore_player(other);
+	ShrineRestorePlayer(other);
 
 }
 
@@ -1120,7 +1108,7 @@ void shrine_ghost_core(edict_t *self,edict_t *other)
 	WritePlayerinfo_effects(other);
 
 	// restore dismemberment, and stop us being on fire
-	shrine_restore_player(other);
+	ShrineRestorePlayer(other);
 
 }
 
@@ -1233,7 +1221,7 @@ void shrine_reflect_core(edict_t *self,edict_t *other)
 	WritePlayerinfo_effects(other);
 
 	// restore dismemberment, and stop us being on fire
-	shrine_restore_player(other);
+	ShrineRestorePlayer(other);
 
 }
 
@@ -1351,7 +1339,7 @@ void shrine_powerup_core (edict_t *self, edict_t *other)
 	other->s.effects |= EF_POWERUP_ENABLED;
 
 	// restore dismemberment, and stop us being on fire
-	shrine_restore_player(other);
+	ShrineRestorePlayer(other);
 
 }
 
@@ -1466,7 +1454,7 @@ void shrine_speed_core (edict_t *self, edict_t *other)
 	gi.CreateEffect(&other->s, FX_FOOT_TRAIL, CEF_OWNERS_ORIGIN, NULL, "");
 
 	// restore dismemberment, and stop us being on fire
-	shrine_restore_player(other);
+	ShrineRestorePlayer(other);
 
 }
 
