@@ -799,21 +799,13 @@ void SP_shrine_light_trigger(edict_t* ent) //mxd. Named 'shrine_light' in origin
 
 #pragma endregion
 
-// ************************************************************************************************
-// Mana Shrine
-// ************************************************************************************************
+#pragma region ========================== MANA SHRINE ==========================
 
 // Fire off the shrine mana effect.
-
-void PlayerShrineManaEffect(edict_t *self)
+static void PlayerShrineManaEffect(edict_t* self) //mxd. Named 'player_shrine_mana_effect' in original version.
 {
- 	// Start up the shrine mana effect.
-	
 	gi.CreateEffect(&self->s, FX_SHRINE_MANA, CEF_OWNERS_ORIGIN, NULL, "");
-
-	// Do the SHRINE sound.
-
-	gi.sound(self,CHAN_ITEM,gi.soundindex("items/shrine1.wav"),1,ATTN_NORM,0);
+	gi.sound(self, CHAN_ITEM, gi.soundindex("items/shrine1.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
 void shrine_mana_core(edict_t *self, edict_t *other)
@@ -901,6 +893,8 @@ void SP_shrine_mana_trigger (edict_t *ent)
 	gi.setmodel(ent, ent->model);
 	gi.linkentity (ent);
 }
+
+#pragma endregion
 
 // ************************************************************************************************
 // Ghost (invisibilty) shrine.
