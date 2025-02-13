@@ -3,15 +3,10 @@
 //
 // Copyright 1998 Raven Software
 //
-// Heretic II
-//
 
 #include "g_Skeletons.h"
 #include "ArrayedList.h"
-
 #include "g_local.h"
-
-#include <assert.h>
 
 G_SkeletalJoint_t skeletalJoints[MAX_ARRAYED_SKELETAL_JOINTS];
 ArrayedListNode_t jointNodes[MAX_ARRAYED_JOINT_NODES];
