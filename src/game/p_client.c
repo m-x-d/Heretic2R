@@ -21,6 +21,7 @@
 #include "cl_strings.h"
 #include "g_combat.h" //mxd
 #include "g_main.h" //mxd
+#include "g_Shrine.h" //mxd
 #include "p_actions.h"
 #include "p_anims.h" //mxd
 #include "p_anim_branch.h"
@@ -1744,10 +1745,6 @@ void respawn (edict_t *self)
 }
 
 //==============================================================
-
-
-extern void PlayerRestartShrineFX(edict_t *self);
-
 
 void SpawnInitialPlayerEffects(edict_t *ent)
 {

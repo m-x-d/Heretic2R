@@ -168,9 +168,6 @@
     <ClCompile Include="g_save.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="g_shrine.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="g_Skeletons.c">
       <Filter>src</Filter>
     </ClCompile>
@@ -590,6 +587,9 @@
     </ClCompile>
     <ClCompile Include="g_weapon.c">
       <Filter>src\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="g_shrine.c">
+      <Filter>src\Game objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1069,6 +1069,9 @@
     </ClInclude>
     <ClInclude Include="p_view.h">
       <Filter>src\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="g_Shrine.h">
+      <Filter>src\Game objects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

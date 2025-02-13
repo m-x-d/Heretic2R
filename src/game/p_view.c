@@ -17,6 +17,7 @@
 #include "vector.h"
 #include "utilities.h"
 #include "g_playstats.h"
+#include "g_Shrine.h" //mxd
 
 static	edict_t		*current_player;
 static	gclient_t	*current_client;

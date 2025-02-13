@@ -18,6 +18,7 @@
 #include "angles.h"
 #include "fx.h"
 #include "g_cmds.h" //mxd
+#include "g_Shrine.h" //mxd
 #include "matrix.h"
 #include "vector.h"
 #include "Utilities.h"
@@ -32,7 +33,6 @@
 
 char	chicken_text[] = "monster_chicken";
 
-extern void PlayerKillShrineFX(edict_t *self);
 extern void SpawnInitialPlayerEffects(edict_t *ent);
 
 extern	vec3_t	mins;

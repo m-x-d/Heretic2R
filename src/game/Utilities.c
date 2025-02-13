@@ -164,8 +164,6 @@ void remove_non_cinematic_entites(edict_t *owner)
 	}
 
 }
-void player_shrine_light_effect(edict_t *self);
-void shrine_light_core(edict_t *self, edict_t *other);
 
 void reinstate_non_cinematic_entites(edict_t *owner)
 {

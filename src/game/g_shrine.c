@@ -3,6 +3,7 @@
 // Heretic II - Raven software
 //
 
+#include "g_Shrine.h" //mxd
 #include "FX.h"
 #include "g_local.h"
 #include "g_itemstats.h"
@@ -579,7 +580,7 @@ void shrine_heal_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface
 /*QUAKED shrine_heal (.5 .3 .5) ? PERMANENT
 */
 
-void shrine_heal(edict_t *ent)
+void SP_shrine_heal_trigger (edict_t *ent)
 {
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;
@@ -694,7 +695,7 @@ void shrine_armor_silver_touch	(edict_t *self, edict_t *other, cplane_t *plane, 
 /*QUAKED shrine_armor (.5 .3 .5) ? PERMANENT
 */
 
-void shrine_armor (edict_t *ent)
+void SP_shrine_armor_silver_trigger (edict_t *ent)
 {
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;
@@ -801,7 +802,7 @@ void shrine_armor_gold_touch (edict_t *self, edict_t *other, cplane_t *plane, cs
 /*QUAKED shrine_armor_gold (.5 .3 .5) ? PERMANENT
 */
 
-void shrine_armor_gold (edict_t *ent)
+void SP_shrine_armor_gold_trigger (edict_t *ent)
 {	
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;
@@ -919,7 +920,7 @@ void shrine_staff_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 /*QUAKED shrine_staff (.5 .3 .5) ? PERMANENT
 */
 
-void shrine_staff (edict_t *ent)
+void SP_shrine_staff_trigger (edict_t *ent)
 {	
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;
@@ -1020,7 +1021,7 @@ void shrine_lung_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 /*QUAKED shrine_lung (.5 .3 .5) ? PERMANENT
 */
-void shrine_lung (edict_t *ent)
+void SP_shrine_lungs_trigger (edict_t *ent)
 {
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;
@@ -1137,7 +1138,7 @@ void shrine_light_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 /*QUAKED shrine_light (.5 .3 .5) ? PERMANENT
 */
 
-void shrine_light (edict_t *ent)
+void SP_shrine_light_trigger (edict_t *ent)
 {
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;
@@ -1240,7 +1241,7 @@ void shrine_mana_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface
 /*QUAKED shrine_mana (.5 .3 .5) ? PERMANENT
 */
 
-void shrine_mana (edict_t *ent)
+void SP_shrine_mana_trigger (edict_t *ent)
 {
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;
@@ -1350,7 +1351,7 @@ void shrine_ghost_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 /*QUAKED shrine_ghost (.5 .3 .5) ? PERMANENT
 */
 
-void shrine_ghost (edict_t *ent)
+void SP_shrine_ghost_trigger (edict_t *ent)
 {
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;
@@ -1463,7 +1464,7 @@ void shrine_reflect_touch(edict_t *self, edict_t *other, cplane_t *plane, csurfa
 /*QUAKED shrine_reflect (.5 .3 .5) ? PERMANENT
 */
 
-void shrine_reflect (edict_t *ent)
+void SP_shrine_reflect_trigger (edict_t *ent)
 {
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;
@@ -1579,7 +1580,7 @@ void shrine_powerup_touch (edict_t *self, edict_t *other, cplane_t *plane, csurf
 /*QUAKED shrine_powerup (.5 .3 .5) ? PERMANENT
 */
 
-void shrine_powerup (edict_t *ent)
+void SP_shrine_powerup_trigger (edict_t *ent)
 {	
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;
@@ -1693,7 +1694,7 @@ void shrine_speed_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfac
 
 /*QUAKED shrine_speed (.5 .3 .5) ? PERMANENT
 */
-void shrine_speed (edict_t *ent)
+void SP_shrine_speed_trigger (edict_t *ent)
 {	
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;
@@ -1925,7 +1926,7 @@ void shrine_random_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfa
 /*QUAKED shrine_random (.5 .3 .5) ? PERMANENT
 */
 
-void shrine_random(edict_t *ent)
+void SP_shrine_random_trigger(edict_t *ent)
 {	
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;

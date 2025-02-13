@@ -1,5 +1,6 @@
 #include "g_local.h"
 #include "g_items.h" //mxd
+#include "g_Shrine.h" //mxd
 #include "m_monsters.h" //mxd
 #include "p_client.h" //mxd
 
@@ -316,21 +317,6 @@ void SP_obj_woodpile(edict_t *ent);
 void SP_flamethrower(edict_t *ent);
 
 void SP_item_spitter(edict_t *ent);
-
-// shrine stuff
-
-void shrine_heal (edict_t *ent);
-void shrine_armor (edict_t *ent);
-void shrine_armor_gold (edict_t *ent);
-void shrine_staff (edict_t *ent);
-void shrine_lung (edict_t *ent);
-void shrine_light (edict_t *ent);
-void shrine_mana (edict_t *ent);
-void shrine_ghost (edict_t *ent);
-void shrine_reflect (edict_t *ent);
-void shrine_powerup (edict_t *ent);
-void shrine_random (edict_t *ent);
-void shrine_speed (edict_t *ent);
 
 void SP_script_runner (edict_t *ent);
 
@@ -666,18 +652,18 @@ spawn_t	spawns[]=
 
 	{"info_buoy", SP_info_buoy,-1},
 
-	{"shrine_heal", shrine_heal, CID_TRIGGER},
-	{"shrine_armor", shrine_armor, CID_TRIGGER},
-	{"shrine_staff", shrine_staff, CID_TRIGGER},
-	{"shrine_lung", shrine_lung, CID_TRIGGER},
-	{"shrine_armor_gold", shrine_armor_gold, CID_TRIGGER},
-	{"shrine_light", shrine_light, CID_TRIGGER},
-	{"shrine_mana", shrine_mana, CID_TRIGGER},
-	{"shrine_ghost", shrine_ghost, CID_TRIGGER},
-	{"shrine_reflect", shrine_reflect, CID_TRIGGER},
-	{"shrine_powerup", shrine_powerup, CID_TRIGGER},
-	{"shrine_speed", shrine_speed, CID_TRIGGER},
-	{"shrine_random", shrine_random, CID_TRIGGER},
+	{"shrine_heal", SP_shrine_heal_trigger, CID_TRIGGER},
+	{"shrine_armor", SP_shrine_armor_silver_trigger, CID_TRIGGER},
+	{"shrine_staff", SP_shrine_staff_trigger, CID_TRIGGER},
+	{"shrine_lung", SP_shrine_lungs_trigger, CID_TRIGGER},
+	{"shrine_armor_gold", SP_shrine_armor_gold_trigger, CID_TRIGGER},
+	{"shrine_light", SP_shrine_light_trigger, CID_TRIGGER},
+	{"shrine_mana", SP_shrine_mana_trigger, CID_TRIGGER},
+	{"shrine_ghost", SP_shrine_ghost_trigger, CID_TRIGGER},
+	{"shrine_reflect", SP_shrine_reflect_trigger, CID_TRIGGER},
+	{"shrine_powerup", SP_shrine_powerup_trigger, CID_TRIGGER},
+	{"shrine_speed", SP_shrine_speed_trigger, CID_TRIGGER},
+	{"shrine_random", SP_shrine_random_trigger, CID_TRIGGER},
 
 	{"script_runner", SP_script_runner, CID_TRIGGER},
 	{NULL, NULL,-1}

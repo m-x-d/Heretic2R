@@ -10,7 +10,6 @@
 
 #include "g_local.h"
 
-extern void G_PlayerActionShrineEffect(playerinfo_t *playerinfo);
 extern entity_state_t *G_GetEntityStatePtr(edict_t *entity);
 extern int G_BranchLwrClimbing(playerinfo_t *playerinfo);
 extern qboolean G_PlayerActionCheckRopeGrab(playerinfo_t *playerinfo, float stomp_org);
