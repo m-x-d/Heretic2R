@@ -49,38 +49,30 @@ static qboolean StringToFilter(char* s, ipfilter_t* f)
 	return true;
 }
 
-/*
-=================
-SV_FilterPacket
-=================
-*/
-qboolean SV_FilterPacket (char *from)
+// filterban <0 or 1>
+// If 1 (the default), then ip addresses matching the current list will be prohibited from entering the game.
+// If 0, then only addresses matching the list will be allowed. This lets you easily set up a private game,
+// or a game that only allows players from your local network.
+qboolean SV_FilterPacket(char* from)
 {
-	int		i;
-	unsigned	in;
-	byte m[4];
-	char *p;
+	byte ip_mask[4];
 
-	i = 0;
-	p = from;
-	while (*p && i < 4) {
-		m[i] = 0;
-		while (*p >= '0' && *p <= '9') {
-			m[i] = m[i]*10 + (*p - '0');
-			p++;
+	char* s = from;
+	for (int i = 0; i < 4 && *s != 0 && *s != ':'; i++, s++)
+	{
+		while (*s >= '0' && *s <= '9')
+		{
+			ip_mask[i] = ip_mask[i] * 10 + (byte)(*s - '0');
+			s++;
 		}
-		if (!*p || *p == ':')
-			break;
-		i++, p++;
 	}
-	
-	in = *(unsigned *)m;
 
-	for (i=0 ; i<num_ipfilters; i++)
-		if ( (in & ipfilters[i].mask) == ipfilters[i].compare)
-			return (int)filterban->value;
+	const uint mask = *(uint*)ip_mask;
+	for (int i = 0; i < num_ipfilters; i++)
+		if ((mask & ipfilters[i].mask) == ipfilters[i].compare)
+			return FILTERBAN;
 
-	return (int)!filterban->value;
+	return !FILTERBAN;
 }
 
 static void SVCmd_Test_f(void) //mxd. Named 'Svcmd_Test_f' in original version.
