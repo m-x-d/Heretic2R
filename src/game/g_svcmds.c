@@ -1,47 +1,22 @@
+//
+// g_svcmds.c
+//
+// Copyright 1998 Raven Software
+//
 
 #include "g_local.h"
 
-/*
-==============================================================================
-
-PACKET FILTERING
- 
-
-You can add or remove addresses from the filter list with:
-
-addip <ip>
-removeip <ip>
-
-The ip address is specified in dot format, and any unspecified digits will match any value, so you can specify an entire class C network with "addip 192.246.40".
-
-Removeip will only remove an address specified exactly the same way.  You cannot addip a subnet, then removeip a single host.
-
-listip
-Prints the current list of filters.
-
-writeip
-Dumps "addip <ip>" commands to listip.cfg so it can be execed at a later date.  The filter lists are not saved and restored by default, because I beleive it would cause too much confusion.
-
-filterban <0 or 1>
-
-If 1 (the default), then ip addresses matching the current list will be prohibited from entering the game.  This is the default setting.
-
-If 0, then only addresses matching the list will be allowed.  This lets you easily set up a private game, or a game that only allows players from your local network.
-
-
-==============================================================================
-*/
+#define MAX_IPFILTERS	1024
+#define FILTERBAN		(int)filterban->value //mxd
 
 typedef struct
 {
-	unsigned	mask;
-	unsigned	compare;
+	uint mask;
+	uint compare;
 } ipfilter_t;
 
-#define	MAX_IPFILTERS	1024
-
-ipfilter_t	ipfilters[MAX_IPFILTERS];
-int			numipfilters;
+static ipfilter_t ipfilters[MAX_IPFILTERS];
+static int num_ipfilters;
 
 /*
 =================
@@ -117,7 +92,7 @@ qboolean SV_FilterPacket (char *from)
 	
 	in = *(unsigned *)m;
 
-	for (i=0 ; i<numipfilters ; i++)
+	for (i=0 ; i<num_ipfilters; i++)
 		if ( (in & ipfilters[i].mask) == ipfilters[i].compare)
 			return (int)filterban->value;
 
@@ -143,17 +118,17 @@ void SVCmd_AddIP_f (void)
 		return;
 	}
 
-	for (i=0 ; i<numipfilters ; i++)
+	for (i=0 ; i<num_ipfilters; i++)
 		if (ipfilters[i].compare == 0xffffffff)
 			break;		// free spot
-	if (i == numipfilters)
+	if (i == num_ipfilters)
 	{
-		if (numipfilters == MAX_IPFILTERS)
+		if (num_ipfilters == MAX_IPFILTERS)
 		{
 			gi.cprintf (NULL, PRINT_HIGH, "IP filter list is full\n");
 			return;
 		}
-		numipfilters++;
+		num_ipfilters++;
 	}
 	
 	if (!StringToFilter (gi.argv(2), &ipfilters[i]))
@@ -178,13 +153,13 @@ void SVCmd_RemoveIP_f (void)
 	if (!StringToFilter (gi.argv(2), &f))
 		return;
 
-	for (i=0 ; i<numipfilters ; i++)
+	for (i=0 ; i<num_ipfilters; i++)
 		if (ipfilters[i].mask == f.mask
 		&& ipfilters[i].compare == f.compare)
 		{
-			for (j=i+1 ; j<numipfilters ; j++)
+			for (j=i+1 ; j<num_ipfilters; j++)
 				ipfilters[j-1] = ipfilters[j];
-			numipfilters--;
+			num_ipfilters--;
 			gi.cprintf (NULL, PRINT_HIGH, "Removed.\n");
 			return;
 		}
@@ -202,7 +177,7 @@ void SVCmd_ListIP_f (void)
 	byte	b[4];
 
 	gi.cprintf (NULL, PRINT_HIGH, "Filter list:\n");
-	for (i=0 ; i<numipfilters ; i++)
+	for (i=0 ; i<num_ipfilters; i++)
 	{
 		*(unsigned *)b = ipfilters[i].compare;
 		gi.cprintf (NULL, PRINT_HIGH, "%3i.%3i.%3i.%3i\n", b[0], b[1], b[2], b[3]);
@@ -240,7 +215,7 @@ void SVCmd_WriteIP_f (void)
 	
 	fprintf(f, "set filterban %d\n", (int)filterban->value);
 
-	for (i=0 ; i<numipfilters ; i++)
+	for (i=0 ; i<num_ipfilters; i++)
 	{
 		*(unsigned *)b = ipfilters[i].compare;
 		fprintf (f, "sv addip %i.%i.%i.%i\n", b[0], b[1], b[2], b[3]);
