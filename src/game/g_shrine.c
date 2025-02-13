@@ -48,21 +48,21 @@ static char reflect_text[] = "reflect shrine touch";
 static char armor_gold_text[] = "armor gold shrine touch";
 static char armor_silver_text[] = "armor silver shrine touch";
 
-void player_shrine_health_effect(edict_t *self);
-void player_shrine_armor_silver_effect(edict_t *self);
-void player_shrine_armor_gold_effect(edict_t *self);
-void player_shrine_lungs_effect(edict_t *self);
-void player_shrine_light_effect(edict_t *self);
-void player_shrine_staff_effect(edict_t *self);
-void player_shrine_mana_effect(edict_t *self);
-void player_shrine_ghost_effect(edict_t *self);
-void player_shrine_reflect_effect(edict_t *self);
-void player_shrine_powerup_effect(edict_t *self);
-void player_shrine_speed_effect(edict_t *self);
+void PlayerShrineHealthEffect(edict_t *self);
+void PlayerShrineArmorSilverEffect(edict_t *self);
+void PlayerShrineArmorGoldEffect(edict_t *self);
+void PlayerShrineLungsEffect(edict_t *self);
+void PlayerShrineLightEffect(edict_t *self);
+void PlayerShrineStaffEffect(edict_t *self);
+void PlayerShrineManaEffect(edict_t *self);
+void PlayerShrineGhostEffect(edict_t *self);
+void PlayerShrineReflectEffect(edict_t *self);
+void PlayerShrinePowerupEffect(edict_t *self);
+void PlayerShrineSpeedEffect(edict_t *self);
 
-void shrine_armor_silver_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
-void shrine_armor_gold_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
-void shrine_random_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
+void ShrineArmorSilverTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
+void ShrineArmorGoldTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
+void ShrineRandomTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
 
 // Remove all shrine effects associated with a player. Used when he's turned into a chicken.
 void PlayerKillShrineFX(edict_t* self)
@@ -154,51 +154,51 @@ void G_PlayerActionShrineEffect(playerinfo_t *playerinfo)
 	switch(self->shrine_type)
 	{
 		case SHRINE_ARMOR_SILVER:
-			player_shrine_armor_silver_effect(self);
+			PlayerShrineArmorSilverEffect(self);
 			break;
 
 		case SHRINE_ARMOR_GOLD:
-			player_shrine_armor_gold_effect(self);
+			PlayerShrineArmorGoldEffect(self);
 			break;
 
 		case SHRINE_LIGHT:
-			player_shrine_light_effect(self);
+			PlayerShrineLightEffect(self);
 			break;
 
 		case SHRINE_HEAL:
-			player_shrine_health_effect(self);
+			PlayerShrineHealthEffect(self);
 			break;
 
 		case SHRINE_STAFF:
-			player_shrine_staff_effect(self);
+			PlayerShrineStaffEffect(self);
 			break;
 
 		case SHRINE_LUNGS:
-			player_shrine_lungs_effect(self);
+			PlayerShrineLungsEffect(self);
 			break;
 
 		case SHRINE_GHOST:
-			player_shrine_ghost_effect(self);
+			PlayerShrineGhostEffect(self);
 			break;
 
 		case SHRINE_REFLECT:
-			player_shrine_reflect_effect(self);
+			PlayerShrineReflectEffect(self);
 			break;
 
 		case SHRINE_POWERUP:
-			player_shrine_powerup_effect(self);
+			PlayerShrinePowerupEffect(self);
 			break;
 
 		case SHRINE_MANA:
-			player_shrine_mana_effect(self);
+			PlayerShrineManaEffect(self);
 			break;
-		
+
 		case SHRINE_SPEED:
-			player_shrine_speed_effect(self);
+			PlayerShrineSpeedEffect(self);
 			break;
 		
 		default:
-			player_shrine_mana_effect(self);
+			PlayerShrineManaEffect(self);
 			break;		
 	}
 }
@@ -211,54 +211,54 @@ void G_PlayerActionShrineEffect(playerinfo_t *playerinfo)
 
 void PlayerRandomShrineEffect(edict_t *self, int value)
 {
-	switch(value)
+	switch (value)
 	{
 		case SHRINE_ARMOR_SILVER:
-			player_shrine_armor_silver_effect(self);
+			PlayerShrineArmorSilverEffect(self);
 			break;
 
 		case SHRINE_ARMOR_GOLD:
-			player_shrine_armor_gold_effect(self);
+			PlayerShrineArmorGoldEffect(self);
 			break;
 
 		case SHRINE_LIGHT:
-			player_shrine_light_effect(self);
+			PlayerShrineLightEffect(self);
 			break;
 
 		case SHRINE_HEAL:
-			player_shrine_health_effect(self);
+			PlayerShrineHealthEffect(self);
 			break;
 
 		case SHRINE_STAFF:
-			player_shrine_staff_effect(self);
+			PlayerShrineStaffEffect(self);
 			break;
 
 		case SHRINE_LUNGS:
-			player_shrine_lungs_effect(self);
+			PlayerShrineLungsEffect(self);
 			break;
 
 		case SHRINE_GHOST:
-			player_shrine_ghost_effect(self);
+			PlayerShrineGhostEffect(self);
 			break;
 
 		case SHRINE_REFLECT:
-			player_shrine_reflect_effect(self);
+			PlayerShrineReflectEffect(self);
 			break;
 
 		case SHRINE_POWERUP:
-			player_shrine_powerup_effect(self);
+			PlayerShrinePowerupEffect(self);
 			break;
 
 		case SHRINE_MANA:
-			player_shrine_mana_effect(self);
+			PlayerShrineManaEffect(self);
 			break;
 
 		case SHRINE_SPEED:
-			player_shrine_speed_effect(self);
+			PlayerShrineSpeedEffect(self);
 			break;
 
 		default:
-			player_shrine_powerup_effect(self);
+			PlayerShrinePowerupEffect(self);
 			break;
 	}
 }
@@ -277,17 +277,17 @@ void DelayThink(edict_t *self)
 
 	// Handle changing shrine types in deathmatch.
 
-	if (deathmatch->value && (self->oldtouch == shrine_armor_gold_touch))
+	if (deathmatch->value && (self->oldtouch == ShrineArmorGoldTouch))
 	{
 		// If we were gold in death match, we won't be again.
 
-		self->owner->touch = shrine_armor_silver_touch;
+		self->owner->touch = ShrineArmorSilverTouch;
 	}	
-	else if (deathmatch->value && (self->oldtouch == shrine_armor_silver_touch) && !(irand(0,8)))
+	else if (deathmatch->value && (self->oldtouch == ShrineArmorSilverTouch) && !(irand(0,8)))
 	{
 		// 1 in 9 chance in death match an armor shrine turns gold.
 
-		self->owner->touch = shrine_armor_gold_touch;
+		self->owner->touch = ShrineArmorGoldTouch;
 	}
 	else
 	{
@@ -311,10 +311,10 @@ void DelayThink(edict_t *self)
 		return;
 	}
 
-	if (self->owner->touch == shrine_armor_gold_touch)
+	if (self->owner->touch == ShrineArmorGoldTouch)
 		dest->style = 7;
 	else
-	if (self->owner->touch == shrine_armor_silver_touch)
+	if (self->owner->touch == ShrineArmorSilverTouch)
 		dest->style = 6;
 		
 	VectorScale(dest->s.angles, ANGLE_TO_RAD, offset);
@@ -452,7 +452,7 @@ void shrine_restore_player(edict_t *other)
 
 // Fire off the health shrine effect.
 
-void player_shrine_health_effect(edict_t *self)
+void PlayerShrineHealthEffect(edict_t *self)
 {
 	// Start up the shrine heal effect.
 
@@ -508,7 +508,7 @@ void shrine_heal_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 	if (deathmatch->value || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
 	{
-		player_shrine_health_effect(other);
+		PlayerShrineHealthEffect(other);
 	}
 	else
 	{
@@ -547,7 +547,7 @@ void SP_shrine_heal_trigger (edict_t *ent)
 	if(deathmatch->value && ((int)dmflags->value & DF_SHRINE_CHAOS) && !((int)dmflags->value & DF_NO_SHRINE))
 	{
 		ent->shrine_type = SHRINE_RANDOM;
-		ent->touch = shrine_random_touch;
+		ent->touch = ShrineRandomTouch;
 	}
 
 	gi.setmodel(ent, ent->model);
@@ -560,7 +560,7 @@ void SP_shrine_heal_trigger (edict_t *ent)
 
 // Fire off the armor shrine effect.
 
-void player_shrine_armor_silver_effect(edict_t *self)
+void PlayerShrineArmorSilverEffect(edict_t *self)
 {
 	// Start up the shrine armor effect.
 
@@ -604,7 +604,7 @@ void shrine_armor_silver_core(edict_t *self,edict_t *other)
 
 // Fire off an effect and give us some armor.
 
-void shrine_armor_silver_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+void ShrineArmorSilverTouch	(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	// If we aren't a player, forget it.
 
@@ -621,9 +621,9 @@ void shrine_armor_silver_touch	(edict_t *self, edict_t *other, cplane_t *plane, 
 	if (deathmatch->value || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
 	{
 		if (other->client->playerinfo.pers.armortype == ARMOR_TYPE_SILVER)
-			player_shrine_armor_silver_effect(other);
+			PlayerShrineArmorSilverEffect(other);
 		else
-			player_shrine_armor_gold_effect(other);
+			PlayerShrineArmorGoldEffect(other);
 	}
 	else
 	{
@@ -657,12 +657,12 @@ void SP_shrine_armor_silver_trigger (edict_t *ent)
 	ent->classname = armor_silver_text;
 
 	if (!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_NO_SHRINE)))
-		ent->touch = shrine_armor_silver_touch;
+		ent->touch = ShrineArmorSilverTouch;
 
 	if(deathmatch->value && ((int)dmflags->value & DF_SHRINE_CHAOS) && !((int)dmflags->value & DF_NO_SHRINE))
 	{
 		ent->shrine_type = SHRINE_RANDOM;
-		ent->touch = shrine_random_touch;
+		ent->touch = ShrineRandomTouch;
 	}
 
 	gi.setmodel(ent, ent->model);
@@ -675,7 +675,7 @@ void SP_shrine_armor_silver_trigger (edict_t *ent)
 
 // Fire off the gold armor shrine effect.
 
-void player_shrine_armor_gold_effect(edict_t *self)
+void PlayerShrineArmorGoldEffect(edict_t *self)
 {
 	// Start up the shrine armor effect.
 
@@ -714,7 +714,7 @@ void shrine_armor_gold_core(edict_t *self,edict_t *other)
 
 // Fire off an effect and give us some armor.
 
-void shrine_armor_gold_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+void ShrineArmorGoldTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	//  If we aren't a player, forget it.
 
@@ -730,7 +730,7 @@ void shrine_armor_gold_touch (edict_t *self, edict_t *other, cplane_t *plane, cs
 
 	if (deathmatch->value || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
 	{
-		player_shrine_armor_gold_effect(other);
+		PlayerShrineArmorGoldEffect(other);
 	}
 	else
 	{
@@ -766,12 +766,12 @@ void SP_shrine_armor_gold_trigger (edict_t *ent)
 	// No touch if flags say so.
 
 	if(!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_NO_SHRINE)))
-		ent->touch = shrine_armor_gold_touch;
+		ent->touch = ShrineArmorGoldTouch;
 
 	if(deathmatch->value && ((int)dmflags->value & DF_SHRINE_CHAOS) && !((int)dmflags->value & DF_NO_SHRINE))
 	{
 		ent->shrine_type = SHRINE_RANDOM;
-		ent->touch = shrine_random_touch;
+		ent->touch = ShrineRandomTouch;
 	}
 
 	gi.setmodel(ent, ent->model);
@@ -784,7 +784,7 @@ void SP_shrine_armor_gold_trigger (edict_t *ent)
 
 // Fire off the staff shrine effect.
 
-void player_shrine_staff_effect(edict_t *self)
+void PlayerShrineStaffEffect(edict_t *self)
 {
 	int	flags = CEF_OWNERS_ORIGIN;
 	// Start up the shrine staff effect.
@@ -848,7 +848,7 @@ void shrine_staff_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 
 	if (deathmatch->value || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
 	{
-		player_shrine_staff_effect(other);
+		PlayerShrineStaffEffect(other);
 	}
 	else
 	{
@@ -887,7 +887,7 @@ void SP_shrine_staff_trigger (edict_t *ent)
 	if(deathmatch->value && ((int)dmflags->value & DF_SHRINE_CHAOS) && !((int)dmflags->value & DF_NO_SHRINE))
 	{
 		ent->shrine_type = SHRINE_RANDOM;
-		ent->touch = shrine_random_touch;
+		ent->touch = ShrineRandomTouch;
 	}
 
 	gi.setmodel(ent, ent->model);
@@ -900,7 +900,7 @@ void SP_shrine_staff_trigger (edict_t *ent)
 
 // Fire off the lungs shrine effect.
 
-void player_shrine_lungs_effect(edict_t *self)
+void PlayerShrineLungsEffect(edict_t *self)
 {
 	// Start up the shrine lung effect.
 
@@ -950,7 +950,7 @@ void shrine_lung_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 	if (deathmatch->value || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
 	{
-		player_shrine_lungs_effect(other);
+		PlayerShrineLungsEffect(other);
 	}
 	else
 	{
@@ -988,7 +988,7 @@ void SP_shrine_lungs_trigger (edict_t *ent)
 	if(deathmatch->value && ((int)dmflags->value & DF_SHRINE_CHAOS) && !((int)dmflags->value & DF_NO_SHRINE))
 	{
 		ent->shrine_type = SHRINE_RANDOM;
-		ent->touch = shrine_random_touch;
+		ent->touch = ShrineRandomTouch;
 	}
 
 	gi.setmodel(ent, ent->model);
@@ -1001,7 +1001,7 @@ void SP_shrine_lungs_trigger (edict_t *ent)
 
 // Fire off the shrine light effect .
 
-void player_shrine_light_effect(edict_t *self)
+void PlayerShrineLightEffect(edict_t *self)
 {
 	assert(self->client);
 
@@ -1066,7 +1066,7 @@ void shrine_light_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 
 	if (deathmatch->value || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
 	{
-		player_shrine_light_effect(other);
+		PlayerShrineLightEffect(other);
 	}
 	else
 	{
@@ -1105,7 +1105,7 @@ void SP_shrine_light_trigger (edict_t *ent)
 	if(deathmatch->value && ((int)dmflags->value & DF_SHRINE_CHAOS) && !((int)dmflags->value & DF_NO_SHRINE))
 	{
 		ent->shrine_type = SHRINE_RANDOM;
-		ent->touch = shrine_random_touch;
+		ent->touch = ShrineRandomTouch;
 	}
 
 	gi.setmodel(ent, ent->model);
@@ -1118,7 +1118,7 @@ void SP_shrine_light_trigger (edict_t *ent)
 
 // Fire off the shrine mana effect.
 
-void player_shrine_mana_effect(edict_t *self)
+void PlayerShrineManaEffect(edict_t *self)
 {
  	// Start up the shrine mana effect.
 	
@@ -1169,7 +1169,7 @@ void shrine_mana_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 	if (deathmatch->value || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
 	{
-		player_shrine_mana_effect(other);
+		PlayerShrineManaEffect(other);
 	}
 	else
 	{
@@ -1208,7 +1208,7 @@ void SP_shrine_mana_trigger (edict_t *ent)
 	if(deathmatch->value && ((int)dmflags->value & DF_SHRINE_CHAOS) && !((int)dmflags->value & DF_NO_SHRINE))
 	{
 		ent->shrine_type = SHRINE_RANDOM;
-		ent->touch = shrine_random_touch;
+		ent->touch = ShrineRandomTouch;
 	}
 
 	gi.setmodel(ent, ent->model);
@@ -1221,7 +1221,7 @@ void SP_shrine_mana_trigger (edict_t *ent)
 
 // Fire off the ghost shrine effect.
 
-void player_shrine_ghost_effect(edict_t *self)
+void PlayerShrineGhostEffect(edict_t *self)
 {
 	assert(self->client);
 	
@@ -1279,7 +1279,7 @@ void shrine_ghost_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 
 	if (deathmatch->value || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
 	{
-		player_shrine_ghost_effect(other);
+		PlayerShrineGhostEffect(other);
 	}
 	else
 	{
@@ -1318,7 +1318,7 @@ void SP_shrine_ghost_trigger (edict_t *ent)
 	if(deathmatch->value && ((int)dmflags->value & DF_SHRINE_CHAOS) && !((int)dmflags->value & DF_NO_SHRINE))
 	{
 		ent->shrine_type = SHRINE_RANDOM;
-		ent->touch = shrine_random_touch;
+		ent->touch = ShrineRandomTouch;
 	}
 
 	gi.setmodel(ent, ent->model);
@@ -1331,7 +1331,7 @@ void SP_shrine_ghost_trigger (edict_t *ent)
 
 // Fire off the reflect shrine effect.
 
-void player_shrine_reflect_effect(edict_t *self)
+void PlayerShrineReflectEffect(edict_t *self)
 {
 	assert(self->client);
 
@@ -1392,7 +1392,7 @@ void shrine_reflect_touch(edict_t *self, edict_t *other, cplane_t *plane, csurfa
 
 	if (deathmatch->value || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
 	{
-		player_shrine_reflect_effect(other);
+		PlayerShrineReflectEffect(other);
 	}
 	else
 	{
@@ -1431,7 +1431,7 @@ void SP_shrine_reflect_trigger (edict_t *ent)
 	if(deathmatch->value && ((int)dmflags->value & DF_SHRINE_CHAOS) && !((int)dmflags->value & DF_NO_SHRINE))
 	{
 		ent->shrine_type = SHRINE_RANDOM;
-		ent->touch = shrine_random_touch;
+		ent->touch = ShrineRandomTouch;
 	}
 
 	gi.setmodel(ent, ent->model);
@@ -1444,7 +1444,7 @@ void SP_shrine_reflect_trigger (edict_t *ent)
 
 // Fire off the powerup shrine effect.
 
-void player_shrine_powerup_effect(edict_t *self)
+void PlayerShrinePowerupEffect(edict_t *self)
 {
 	assert(self->client);
 
@@ -1508,7 +1508,7 @@ void shrine_powerup_touch (edict_t *self, edict_t *other, cplane_t *plane, csurf
 
 	if (deathmatch->value || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
 	{
-		player_shrine_powerup_effect(other);
+		PlayerShrinePowerupEffect(other);
 	}
 	else
 	{
@@ -1547,7 +1547,7 @@ void SP_shrine_powerup_trigger (edict_t *ent)
 	if(deathmatch->value && ((int)dmflags->value & DF_SHRINE_CHAOS) && !((int)dmflags->value & DF_NO_SHRINE))
 	{
 		ent->shrine_type = SHRINE_RANDOM;
-		ent->touch = shrine_random_touch;
+		ent->touch = ShrineRandomTouch;
 	}
 
 	gi.setmodel(ent, ent->model);
@@ -1560,7 +1560,7 @@ void SP_shrine_powerup_trigger (edict_t *ent)
 
 // Fire off the powerup shrine effect.
 
-void player_shrine_speed_effect(edict_t *self)
+void PlayerShrineSpeedEffect(edict_t *self)
 {
 	assert(self->client);
 
@@ -1623,7 +1623,7 @@ void shrine_speed_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfac
 
 	if (deathmatch->value || (other->flags & FL_CHICKEN) || (other->client->playerinfo.flags & PLAYER_FLAG_WATER))
 	{
-		player_shrine_speed_effect(other);
+		PlayerShrineSpeedEffect(other);
 	}
 	else
 	{
@@ -1664,7 +1664,7 @@ void SP_shrine_speed_trigger (edict_t *ent)
 	if(deathmatch->value && ((int)dmflags->value & DF_SHRINE_CHAOS) && !((int)dmflags->value & DF_NO_SHRINE))
 	{
 		ent->shrine_type = SHRINE_RANDOM;
-		ent->touch = shrine_random_touch;
+		ent->touch = ShrineRandomTouch;
 	}
 
 	gi.setmodel(ent, ent->model);
@@ -1687,7 +1687,7 @@ int	possible_shrines[POSSIBLE_RANDOM_SHRINES] =
 
 
 // Fire off an effect and give us a powerup for a while powerup.
-void shrine_random_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+void ShrineRandomTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	int		random_shrine_num;
 	int		total_rand_count = 0;
@@ -1888,7 +1888,7 @@ void SP_shrine_random_trigger(edict_t *ent)
 	ent->classname = chaos_text;
 
 	if(!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_NO_SHRINE)))
-		ent->touch = shrine_random_touch;
+		ent->touch = ShrineRandomTouch;
 
 	gi.setmodel(ent, ent->model);
 	gi.linkentity (ent);
