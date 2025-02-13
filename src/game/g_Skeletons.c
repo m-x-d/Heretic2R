@@ -11,56 +11,53 @@
 G_SkeletalJoint_t skeletalJoints[MAX_ARRAYED_SKELETAL_JOINTS];
 ArrayedListNode_t jointNodes[MAX_ARRAYED_JOINT_NODES];
 
-// ********************************************************************
-// Skeleton Managment stuff
-// ********************************************************************
+#pragma region ========================== Skeleton management stuff ==========================
 
-static int GetRootIndex(int max, int numJoints)
+static int GetRootIndex(const int max, const int num_joints)
 {
-	int i, j, max2;
-	qboolean cont = false;
+	qboolean skip_block = false;
 
-	for(i = 0; i < max; ++i)
+	for (int i = 0; i < max; i++)
 	{
-		if(!skeletalJoints[i].inUse)
+		if (skeletalJoints[i].inUse)
+			continue;
+
+		const int requred_size = num_joints + i;
+
+		// Check the size of the array.
+		if (requred_size > max)
 		{
-			max2 = i + numJoints;
-
-			// check the size of the array
-			if(max2 > max)
-			{
-				assert(0);
-				return -1;
-			}
-
-			// check for a big enough unused block
-			for(j = i + 1; j < max2; ++j)
-			{
-				if(skeletalJoints[j].inUse)
-				{
-					i = j;
-					cont = true;
-					break;
-				}
-			}
-
-			if(cont) // not a big enough block, so continue searching
-			{
-				cont = false;
-				continue;
-			}
-
-			// found a block, mark it as used
-			for(j = i; j < max2; ++j)
-			{
-				skeletalJoints[j].inUse = true;
-			}
-
-			return i;
+			assert(0);
+			return -1;
 		}
+
+		// Check for a big enough unused block.
+		for (int j = i + 1; j < requred_size; j++)
+		{
+			if (skeletalJoints[j].inUse)
+			{
+				i = j;
+				skip_block = true;
+
+				break;
+			}
+		}
+
+		// Not a big enough block, so continue searching.
+		if (skip_block)
+		{
+			skip_block = false;
+			continue;
+		}
+
+		// Found a block, mark it as used.
+		for (int j = i; j < requred_size; j++)
+			skeletalJoints[j].inUse = true;
+
+		return i;
 	}
 
-	// couldn't find a block
+	// Couldn't find a block.
 	assert(0);
 	return -1;
 }
@@ -132,6 +129,8 @@ void UpdateSkeletons(void)
 		}
 	}	
 }
+
+#pragma endregion
 
 // ********************************************************************
 // Skeletal Manipulation stuff
