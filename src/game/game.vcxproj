@@ -83,7 +83,6 @@
     <ClCompile Include="g_Skeletons.c" />
     <ClCompile Include="g_spawn.c" />
     <ClCompile Include="g_spawnf.c" />
-    <ClCompile Include="g_StateInfo.c" />
     <ClCompile Include="g_svcmds.c" />
     <ClCompile Include="g_target.c" />
     <ClCompile Include="g_trigger.c" />
@@ -242,7 +241,6 @@
     <ClInclude Include="g_Skeleton.h" />
     <ClInclude Include="g_Skeletons.h" />
     <ClInclude Include="g_spawnf.h" />
-    <ClInclude Include="g_StateInfo.h" />
     <ClInclude Include="g_teleport.h" />
     <ClInclude Include="g_Typedef.h" />
     <ClInclude Include="g_weapon.h" />
