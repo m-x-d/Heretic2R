@@ -1030,31 +1030,22 @@ void SP_shrine_reflect_trigger(edict_t* ent) //mxd. Named 'shrine_reflect' in or
 
 #pragma endregion
 
-// ************************************************************************************************
-// Spell powerup Shrine
-// ************************************************************************************************
+#pragma region ========================== SPELL POWERUP SHRINE ==========================
 
 // Fire off the powerup shrine effect.
-
-void PlayerShrinePowerupEffect(edict_t *self)
+static void PlayerShrinePowerupEffect(edict_t* self) //mxd. Named 'player_shrine_powerup_effect' in original version.
 {
 	assert(self->client);
 
-	// Kill any tomes that may already be out there for this player.
-
+	// Reset Tome of Power effect.
 	gi.RemoveEffects(&self->s, FX_TOME_OF_POWER);
-
-	// Create the tome of power.
-
 	gi.CreateEffect(&self->s, FX_TOME_OF_POWER, CEF_OWNERS_ORIGIN, NULL, "");
 
 	// Start up the shrine powerup effect.
-
 	gi.CreateEffect(&self->s, FX_SHRINE_POWERUP, CEF_OWNERS_ORIGIN, NULL, "");
-	
-	// Do the SHRINE sound.
 
-	gi.sound(self,CHAN_ITEM,gi.soundindex("items/shrine5.wav"),1,ATTN_NORM,0);
+	// Do the SHRINE sound.
+	gi.sound(self, CHAN_ITEM, gi.soundindex("items/shrine5.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
 // Fire off an effect and give us a powerup for a while.
@@ -1145,6 +1136,8 @@ void SP_shrine_powerup_trigger (edict_t *ent)
 	gi.setmodel(ent, ent->model);
 	gi.linkentity (ent);
 }
+
+#pragma endregion
 
 // ************************************************************************************************
 // Speed Shrine
