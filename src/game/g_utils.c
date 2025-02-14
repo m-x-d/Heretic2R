@@ -340,19 +340,14 @@ void G_SetMovedir(vec3_t angles, vec3_t movedir)
 	VectorClear(angles);
 }
 
-
-float vectoyaw (vec3_t vec)
+float vectoyaw(const vec3_t v) //TODO: rename to VectorYaw.
 {
-	float	yaw;
-	
-	if (vec[YAW] == 0 && vec[PITCH] == 0)
-		yaw = 0;
-	else
-	{
-		yaw = (float) (atan2(vec[YAW], vec[PITCH]) * (180 / M_PI));
-		if (yaw < 0)
-			yaw += 360;
-	}
+	if (v[YAW] == 0.0f && v[PITCH] == 0.0f)
+		return 0.0f;
+
+	float yaw = atan2f(v[YAW], v[PITCH]) * RAD_TO_ANGLE;
+	if (yaw < 0.0f)
+		yaw += 360.0f;
 
 	return yaw;
 }
