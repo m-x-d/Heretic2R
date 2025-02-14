@@ -179,7 +179,7 @@ typedef struct
 	// If the size, position, or solidity changes, it must be relinked.
 	void (*linkentity)(edict_t* ent);
 	void (*unlinkentity)(edict_t* ent); // Call before removing an interactive edict.
-	int (*BoxEdicts)(vec3_t mins, vec3_t maxs, edict_t** list, int maxcount, int areatype);
+	int (*BoxEdicts)(const vec3_t mins, const vec3_t maxs, edict_t** list, int maxcount, int areatype);
 	void (*Pmove)(pmove_t* pmove, qboolean server); // Player movement code, common with client prediction.
 
 	// New_Physics
