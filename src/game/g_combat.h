@@ -6,7 +6,8 @@
 
 #pragma once
 
-#include "g_local.h"
+#include "q_Typedef.h"
+#include "p_item.h"
 
 extern gitem_armor_t silver_armor_info;
 extern gitem_armor_t gold_armor_info;
