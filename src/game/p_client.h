@@ -6,7 +6,8 @@
 
 #pragma once
 
-#include "g_local.h"
+#include "q_shared.h"
+#include "q_Typedef.h"
 
 qboolean ClientConnect(edict_t* ent, char* userinfo);
 void ClientThink(edict_t* ent, usercmd_t* cmd);

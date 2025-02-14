@@ -21,6 +21,7 @@
 #include "cl_strings.h"
 #include "p_anims.h"
 #include "p_client.h" //mxd
+#include "g_local.h"
 
 game_locals_t game;
 level_locals_t level;
