@@ -19,10 +19,9 @@ void G_ProjectSource(const vec3_t point, const vec3_t distance, const vec3_t for
 	result[2] = point[2] + forward[2] * distance[0] + right[2] * distance[1] + distance[2];
 }
 
-
-void G_SetToFree(edict_t *self)
+void G_SetToFree(edict_t* self)
 {
-	if(self->PersistantCFX)
+	if (self->PersistantCFX > 0)
 	{
 		gi.RemovePersistantEffect(self->PersistantCFX, REMOVE_ENTITY);
 		self->PersistantCFX = 0;
