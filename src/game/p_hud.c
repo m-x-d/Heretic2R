@@ -6,8 +6,6 @@
 #include "qcommon.h"
 #include "p_dll.h" //mxd
 
-qboolean PossessCorrectItem(edict_t *ent, gitem_t *item);
-
 #if 0
 	// cursor positioning
 	xl <value>
