@@ -414,7 +414,7 @@ void harpy_ai_glide (edict_t *self, float fd, float rd, float ud)
 	dot  = DotProduct(vf, nvec);
 	rdot = DotProduct(vr, nvec);
 	
-	self->ideal_yaw = vectoyaw(vec);
+	self->ideal_yaw = VectorYaw(vec);
 
 	M_ChangeYaw(self);
 
@@ -466,7 +466,7 @@ void harpy_ai_fly (edict_t *self, float fd, float rd, float ud)
 
 	//Find our ideal yaw to the player and correct to it
 	VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
-	self->ideal_yaw = vectoyaw(vec);
+	self->ideal_yaw = VectorYaw(vec);
 
 	M_ChangeYaw(self);
 
@@ -508,7 +508,7 @@ void harpy_ai_hover(edict_t *self, float dist)
 	
 	//Find our ideal yaw to the player and correc to it
 	VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
-	self->ideal_yaw = vectoyaw(vec);
+	self->ideal_yaw = VectorYaw(vec);
 
 	M_ChangeYaw(self);
 
@@ -1239,7 +1239,7 @@ void move_harpy_dive_end(edict_t *self)
 
 	VectorSubtract(enemy_pos, vec, vec);
 	hd = VectorLength(vec);
-	self->ideal_yaw = vectoyaw(vec);
+	self->ideal_yaw = VectorYaw(vec);
 
 	M_ChangeYaw(self);
 
@@ -1391,7 +1391,7 @@ void move_harpy_hover(edict_t *self)
 	dist = VectorLength(goal);
 	
 	//Face target
-	self->ideal_yaw = vectoyaw(goal);
+	self->ideal_yaw = VectorYaw(goal);
 	M_ChangeYaw(self);
 
 	//If he is...

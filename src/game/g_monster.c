@@ -899,7 +899,7 @@ void monster_start_go (edict_t *self)
 				if(self->classID != CID_SERAPH_OVERLORD)
 				{
 					VectorSubtract (self->goalentity->s.origin, self->s.origin, v);
-					self->ideal_yaw = self->s.angles[YAW] = vectoyaw(v);
+					self->ideal_yaw = self->s.angles[YAW] = VectorYaw(v);
 					gi.dprintf("Monster start go to walk\n");
 					QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 					self->monsterinfo.pausetime = 0;

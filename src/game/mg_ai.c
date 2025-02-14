@@ -675,7 +675,7 @@ float MG_FaceGoal (edict_t *self, qboolean doturn)
 		return false;
 	}
 	
-	self->ideal_yaw = vectoyaw(vec);
+	self->ideal_yaw = VectorYaw(vec);
 	
 	if(doturn)
 		return MG_ChangeYaw(self);
@@ -968,7 +968,7 @@ qboolean MG_ExtraCheckJump (edict_t *self)
 #endif
 					VectorSubtract(trace.endpos, self->s.origin, source2);
 					VectorNormalize(source2);
-					self->ideal_yaw = vectoyaw(source2);
+					self->ideal_yaw = VectorYaw(source2);
 					
 					VectorMA(self->velocity, 300, vf, self->velocity);
 					self->velocity[2]+=150;
@@ -1087,7 +1087,7 @@ qboolean MG_ExtraCheckJump (edict_t *self)
 						VectorSubtract(trace.endpos, self->s.origin, source2);
 						source2[2] = 0;
 						VectorNormalize(source2);
-						self->ideal_yaw = vectoyaw(source2);
+						self->ideal_yaw = VectorYaw(source2);
 						
 						VectorMA(self->s.origin, 64, source2, source);
 						gi.trace(self->s.origin, vec3_origin, vec3_origin, source, self, MASK_SOLID,&trace);
@@ -1658,7 +1658,7 @@ void mg_ai_charge (edict_t *self, float dist)
 
 	VectorSubtract (self->enemy->s.origin, self->s.origin, v);
 
-	self->ideal_yaw = vectoyaw(v);
+	self->ideal_yaw = VectorYaw(v);
 
 	MG_ChangeYaw (self);
 
@@ -2492,13 +2492,13 @@ qboolean MG_MoveToGoal (edict_t *self, float dist)
 		if(irand(0,10)<3)//30% chance of trying other way first
 			VectorScale(new_forward, -1, new_forward);
 		
-		self->best_move_yaw=vectoyaw(new_forward);
+		self->best_move_yaw=VectorYaw(new_forward);
 
 		if(new_best_yaw && self->best_move_yaw == oby)
 		{
 			VectorScale(new_forward, -1, new_forward);
 		
-			self->best_move_yaw=vectoyaw(new_forward);
+			self->best_move_yaw=VectorYaw(new_forward);
 		}
 
 		//make sure we can move in chosen dir
@@ -2532,7 +2532,7 @@ qboolean MG_MoveToGoal (edict_t *self, float dist)
 				gi.dprintf("turn other way\n");
 #endif
 			VectorScale(new_forward, -1, new_forward);
-			self->best_move_yaw=vectoyaw(new_forward);			
+			self->best_move_yaw=VectorYaw(new_forward);			
 			//restore yaw
 			self->s.angles[YAW] = save_yaw;
 			//try new dir
@@ -2838,13 +2838,13 @@ qboolean MG_SwimFlyToGoal (edict_t *self, float dist)
 		if(irand(0,10)<3)//30% chance of trying other way first
 			VectorScale(new_forward, -1, new_forward);
 		
-		self->best_move_yaw=vectoyaw(new_forward);
+		self->best_move_yaw=VectorYaw(new_forward);
 
 		if(new_best_yaw && self->best_move_yaw == oby)
 		{
 			VectorScale(new_forward, -1, new_forward);
 		
-			self->best_move_yaw=vectoyaw(new_forward);
+			self->best_move_yaw=VectorYaw(new_forward);
 		}
 
 		//make sure we can move in chosen dir
@@ -2875,7 +2875,7 @@ qboolean MG_SwimFlyToGoal (edict_t *self, float dist)
 				gi.dprintf("turn other way\n");
 #endif
 			VectorScale(new_forward, -1, new_forward);
-			self->best_move_yaw=vectoyaw(new_forward);			
+			self->best_move_yaw=VectorYaw(new_forward);			
 			//restore yaw
 			self->s.angles[YAW] = save_yaw;
 			//try new dir

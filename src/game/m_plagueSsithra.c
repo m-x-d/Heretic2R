@@ -865,7 +865,7 @@ void ssithraCheckJump (edict_t *self)
 					{//jumping into water
 						VectorSubtract(trace.endpos, self->s.origin, source2);
 						VectorNormalize(source2);
-						self->ideal_yaw = vectoyaw(source2);
+						self->ideal_yaw = VectorYaw(source2);
 
 						if (self->monsterinfo.jump_time < level.time)
 						{//check depth
@@ -894,7 +894,7 @@ void ssithraCheckJump (edict_t *self)
 #endif
 					VectorSubtract(trace.endpos, self->s.origin, source2);
 					VectorNormalize(source2);
-					self->ideal_yaw = vectoyaw(source2);
+					self->ideal_yaw = VectorYaw(source2);
 					
 					if (self->monsterinfo.jump_time < level.time)
 					{
@@ -1003,7 +1003,7 @@ void ssithraCheckJump (edict_t *self)
 						{
 							VectorSubtract(trace.endpos, self->s.origin, source2);
 							VectorNormalize(source2);
-							self->ideal_yaw = vectoyaw(source2);
+							self->ideal_yaw = VectorYaw(source2);
 							
 							if (self->monsterinfo.jump_time < level.time)
 							{

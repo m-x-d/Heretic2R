@@ -340,7 +340,7 @@ void G_SetMovedir(vec3_t angles, vec3_t movedir)
 	VectorClear(angles);
 }
 
-float vectoyaw(const vec3_t v) //TODO: rename to VectorYaw.
+float VectorYaw(const vec3_t v) //mxd. Named 'vectoyaw' in original version.
 {
 	if (v[YAW] == 0.0f && v[PITCH] == 0.0f)
 		return 0.0f;

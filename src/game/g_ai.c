@@ -292,7 +292,7 @@ int ai_hopdown(edict_t *self, vec3_t goalpos, float height_max)
 			{
 				VectorSubtract(trace.endpos, self->s.origin, source2);
 				VectorNormalize(source2);
-				self->ideal_yaw = vectoyaw(source2);
+				self->ideal_yaw = VectorYaw(source2);
 				
 				return true;
 			}
@@ -357,7 +357,7 @@ void ai_stand (edict_t *self, float dist)
 		if (self->enemy)
 		{
 			VectorSubtract (self->enemy->s.origin, self->s.origin, v);
-			self->ideal_yaw = vectoyaw(v);
+			self->ideal_yaw = VectorYaw(v);
 			if (self->s.angles[YAW] != self->ideal_yaw && self->monsterinfo.aiflags & AI_TEMP_STAND_GROUND)
 			{
 				self->monsterinfo.aiflags &= ~(AI_STAND_GROUND | AI_TEMP_STAND_GROUND);
@@ -477,7 +477,7 @@ void ai_charge (edict_t *self, float dist)
 
 	VectorSubtract (self->enemy->s.origin, self->s.origin, v);
 
-	self->ideal_yaw = vectoyaw(v);
+	self->ideal_yaw = VectorYaw(v);
 
 	MG_ChangeYaw (self);
 
@@ -508,7 +508,7 @@ void ai_moveright (edict_t *self, float dist)
 
 	AngleVectors (self->s.angles, NULL, right, NULL);
 
-	movedir = vectoyaw(right);
+	movedir = VectorYaw(right);
 
 	MG_WalkMove (self, movedir, dist);
 }
@@ -548,7 +548,7 @@ void ai_charge2 (edict_t *self, float dist)
 		return;
 
 	VectorSubtract (self->enemy->s.origin, self->s.origin, v);
-	self->ideal_yaw = vectoyaw(v);
+	self->ideal_yaw = VectorYaw(v);
 	MG_ChangeYaw (self);
 
 	if(self->spawnflags&MSF_FIXED)
@@ -933,7 +933,7 @@ void HuntTarget (edict_t *self)
 		}
 	}
 	VectorSubtract (self->enemy->s.origin, self->s.origin, vec);
-	self->ideal_yaw = vectoyaw(vec);
+	self->ideal_yaw = VectorYaw(vec);
 	// wait a while before first attack
 	if (!(self->monsterinfo.aiflags & AI_STAND_GROUND))
 		AttackFinished (self, 1);
@@ -1705,7 +1705,7 @@ qboolean ai_checkattack (edict_t *self, float dist)
 	enemy_infront = infront(self, self->enemy);
 	enemy_range = range(self, self->enemy);
 	VectorSubtract (self->enemy->s.origin, self->s.origin, temp);
-	enemy_yaw = vectoyaw(temp);
+	enemy_yaw = VectorYaw(temp);
 
 
 	// JDC self->ideal_yaw = enemy_yaw;
@@ -1789,11 +1789,11 @@ void ai_runaway (edict_t *self, float dist)
 		AngleVectors(na,NULL,nvr,NULL);
 		
 		if(DotProduct(nvr,vf)>0)
-			self->ideal_yaw=vectoyaw(nvr);
+			self->ideal_yaw=VectorYaw(nvr);
 		else
 		{
 			VectorScale(nvr, -1, nvr);
-			self->ideal_yaw=vectoyaw(nvr);
+			self->ideal_yaw=VectorYaw(nvr);
 		}
 
 		VectorCopy(self->mins, mins);
@@ -1811,7 +1811,7 @@ void ai_runaway (edict_t *self, float dist)
 		{
 			//gi.dprintf("Failed next move!\n");
 			VectorScale(nvr, -1, nvr);
-			self->ideal_yaw=vectoyaw(nvr);			
+			self->ideal_yaw=VectorYaw(nvr);			
 		}
 
 		M_ChangeYaw (self);
@@ -1846,7 +1846,7 @@ void ai_runaway (edict_t *self, float dist)
 
 	if (self->monsterinfo.idle_time < level.time)
 	{
-		self->ideal_yaw = vectoyaw(vec);
+		self->ideal_yaw = VectorYaw(vec);
 		self->ideal_yaw += 180;
 		M_ChangeYaw (self);
 	}
@@ -1911,7 +1911,7 @@ float ai_face_goal (edict_t *self)
 
 	if (self->monsterinfo.idle_time < level.time)
 	{
-		self->ideal_yaw = vectoyaw(vec);
+		self->ideal_yaw = VectorYaw(vec);
 		return M_ChangeYaw(self);
 	}
 	else
@@ -1969,7 +1969,7 @@ void old_ai_run (edict_t *self, float dist)
 	if (self->monsterinfo.aiflags & AI_FLEE||self->monsterinfo.aiflags & AI_COWARD)
 	{
 		VectorSubtract (self->enemy->s.origin, self->s.origin, vec);
-		self->ideal_yaw = vectoyaw(vec);
+		self->ideal_yaw = VectorYaw(vec);
 		self->ideal_yaw += 180;
 		ai_runaway(self, dist);
 		return;
@@ -2063,12 +2063,12 @@ void old_ai_run (edict_t *self, float dist)
 		
 		if(DotProduct(nvr,vf)>0)
 		{
-			self->ideal_yaw=vectoyaw(nvr);
+			self->ideal_yaw=VectorYaw(nvr);
 		}
 		else
 		{
 			VectorScale(nvr, -1, nvr);
-			self->ideal_yaw=vectoyaw(nvr);
+			self->ideal_yaw=VectorYaw(nvr);
 		}
 
 		VectorCopy(self->mins, mins);
@@ -2085,7 +2085,7 @@ void old_ai_run (edict_t *self, float dist)
 		if (trace.fraction < 1||trace.allsolid||trace.startsolid)
 		{
 			VectorScale(nvr, -1, nvr);
-			self->ideal_yaw=vectoyaw(nvr);			
+			self->ideal_yaw=VectorYaw(nvr);			
 		}
 
 		oldyaw = self->s.angles[YAW];
@@ -2104,7 +2104,7 @@ void old_ai_run (edict_t *self, float dist)
 
 			if ((ret != TRYSTEP_OK) && (self->monsterinfo.idle_time < level.time))
 			{
-				self->ideal_yaw = -vectoyaw(nvr);
+				self->ideal_yaw = -VectorYaw(nvr);
 				turnamt = Q_fabs(M_ChangeYaw(self));
 				distloss = turnamt/self->yaw_speed * 0.3;
 				dist -= (dist * distloss);
@@ -2212,7 +2212,7 @@ void ai_flee (edict_t *self, float dist)
 	if (self->enemy)
 	{
 		VectorSubtract (self->enemy->s.origin, self->s.origin, vec);
-		self->ideal_yaw = vectoyaw(vec);
+		self->ideal_yaw = VectorYaw(vec);
 		self->ideal_yaw = anglemod(self->ideal_yaw + self->best_move_yaw);
 		M_ChangeYaw(self);
 		if(!M_walkmove(self, self->s.angles[YAW], dist) && EqualAngle(self->s.angles[YAW], self->ideal_yaw, 5))

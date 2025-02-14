@@ -2204,7 +2204,7 @@ void assassinGone(edict_t *self)
 	if(self->enemy)
 	{//face enemy
 		VectorSubtract(self->enemy->s.origin, self->s.origin, enemy_dir);
-		self->s.angles[YAW] = anglemod(vectoyaw(enemy_dir));
+		self->s.angles[YAW] = anglemod(VectorYaw(enemy_dir));
 	}
 
 	assassinSmoke(self);

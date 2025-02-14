@@ -738,7 +738,7 @@ void seraph_guard_death(edict_t *self, G_Message_t *msg)
 
 		VectorScale(vf, -1, yf);
 
-		self->ideal_yaw = vectoyaw( yf );
+		self->ideal_yaw = VectorYaw( yf );
 		self->yaw_speed = 24;
 
 		VectorScale(vf, 300, dVel);

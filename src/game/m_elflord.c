@@ -328,7 +328,7 @@ void elflord_flymove (edict_t *self, float dist)
 
 	VectorSubtract(self->enemy->s.origin, self->s.origin, forward);
 	
-	self->ideal_yaw = vectoyaw(forward);
+	self->ideal_yaw = VectorYaw(forward);
 	
 	M_ChangeYaw(self);
 	

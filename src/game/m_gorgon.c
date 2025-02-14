@@ -461,7 +461,7 @@ void gorgon_walk(edict_t *self, G_Message_t *msg)
 	{
 		VectorSubtract (self->s.origin, targ_org, v);
 		len = VectorLength (v);
-		self->ideal_yaw = vectoyaw(v);
+		self->ideal_yaw = VectorYaw(v);
 		M_ChangeYaw(self);
 
 		if (len < 200)
@@ -1148,7 +1148,7 @@ void gorgon_check_landed (edict_t *self)
 	
 	save_yspeed = self->yaw_speed;
 	self->yaw_speed *= 0.33;
-	self->best_move_yaw = vectoyaw(self->velocity);
+	self->best_move_yaw = VectorYaw(self->velocity);
 	MG_ChangeWhichYaw(self, false);//turn toward best_move_yaw, 1/3 as fast as if on ground
 	self->yaw_speed = save_yspeed;
 	
@@ -1256,7 +1256,7 @@ qboolean gorgon_check_jump (edict_t *self)
 	VectorSubtract (self->s.origin, landing_spot,  v);
 	landing_spot_angles[PITCH] = 0;
 	landing_spot_angles[ROLL] = 0;
-	landing_spot_angles[YAW] = vectoyaw(v);
+	landing_spot_angles[YAW] = VectorYaw(v);
 
 	AngleVectors (landing_spot_angles, forward, right, up);
 
@@ -1359,7 +1359,7 @@ void gorgon_jump (edict_t *self)
 	VectorSubtract (self->s.origin, landing_spot,  v);
 	landing_spot_angles[PITCH] = 0;
 	landing_spot_angles[ROLL] = 0;
-	landing_spot_angles[YAW] = vectoyaw(v);
+	landing_spot_angles[YAW] = VectorYaw(v);
 
 	AngleVectors (landing_spot_angles, forward, right, up);
 
@@ -1937,7 +1937,7 @@ void gorgon_ai_swim (edict_t *self, float dist)
 		return;
 	}
 
-	self->ideal_yaw = vectoyaw(dir);
+	self->ideal_yaw = VectorYaw(dir);
 	MG_ChangeYaw(self);
 
 	if(dist == -1)

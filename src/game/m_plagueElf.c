@@ -440,7 +440,7 @@ void plagueElf_death(edict_t *self, G_Message_t *msg)
 
 		VectorScale(vf, -1, yf);
 
-		self->ideal_yaw = vectoyaw( yf );
+		self->ideal_yaw = VectorYaw( yf );
 		self->yaw_speed = 48;
 
 		VectorScale(vf, 250, dVel);

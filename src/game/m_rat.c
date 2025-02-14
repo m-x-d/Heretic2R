@@ -166,7 +166,7 @@ void rat_run(edict_t *self, G_Message_t *msg)
 	if (M_ValidTarget(self, self->enemy))
 	{
 		VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
-		self->ideal_yaw = vectoyaw(vec);
+		self->ideal_yaw = VectorYaw(vec);
 		delta = anglemod(self->s.angles[YAW] - self->ideal_yaw);
 
 		if(self->monsterinfo.attack_finished < level.time)
@@ -636,7 +636,7 @@ void rat_ai_run (edict_t *self, float dist)
 		if(!self->count)
 			self->count = 180;
 		VectorSubtract (self->enemy->s.origin, self->s.origin, vec);
-		self->ideal_yaw = vectoyaw(vec);
+		self->ideal_yaw = VectorYaw(vec);
 		self->ideal_yaw = anglemod(self->ideal_yaw + self->count);
 		M_ChangeYaw(self);
 		if(!M_walkmove(self, self->s.angles[YAW], dist) && EqualAngle(self->s.angles[YAW], self->ideal_yaw, 5))
