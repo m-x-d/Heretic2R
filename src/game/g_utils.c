@@ -406,84 +406,46 @@ edict_t* G_Spawn(void)
 	return ent;
 }
 
-/*
-=================
-G_FreeEdict
-
-Marks the edict as free
-=================
-*/
-void G_FreeEdict(edict_t *self)
+// Marks the edict as free.
+void G_FreeEdict(edict_t* self)
 {
-	SinglyLinkedList_t msgs;
-	char *temp;
-	unsigned int	usageCount;
-	int		server_seen;
-	int		entnum;
+	gi.unlinkentity(self); // Unlink from world.
 
-	gi.unlinkentity (self);		// unlink from world
-
-	// From Quake2 3.17 code release.
-
-	if ((self - g_edicts) <= (maxclients->value + BODY_QUEUE_SIZE))
+	if (self - g_edicts <= MAXCLIENTS + BODY_QUEUE_SIZE)
 	{
-#ifdef _DEVEL
-		gi.dprintf("tried to free special edict\n");
-#endif
+		gi.dprintf("Tried to free special edict\n");
 		return;
 	}
 
-	// Start non-quake2.
+	// Upon startup, portals need to be marked as open even if they are freed in deathmatch, only when deliberately removed for netplay.
+	if (level.time <= 0.2f && self->classname != NULL && Q_stricmp(self->classname, "func_areaportal") == 0)
+		gi.SetAreaPortalState(self->style, true);
 
-	// Portals need to be marked as open even if they are freed in deathmatch, only when deliberately removed for netplay.
-	if (self->classname && level.time <= 0.2)			// Just upon startup
-	{
-		if (Q_stricmp(self->classname, "func_areaportal") == 0)
-			gi.SetAreaPortalState (self->style, true);
-	}
-
-	if(self->s.effects & EF_JOINTED)
-	{
+	if (self->s.effects & EF_JOINTED)
 		FreeSkeleton(self->s.rootJoint);
-	}
 
-	if(self->s.clientEffects.buf)
-	{
-		temp = self->s.clientEffects.buf; // buffer needs to be stored to be cleared by the engine
-	}
-	else
-	{
-		temp = NULL;
-	}
-
-	msgs = self->msgQ.msgs;
-	usageCount = self->s.usageCount;
-	server_seen = self->client_sent;
-	entnum = self->s.number;
-
-	// End non-quake2.
+	byte* fx_buf = self->s.clientEffects.buf; // Buffer needs to be stored to be cleared by the engine.
+	const SinglyLinkedList_t msgs = self->msgQ.msgs;
+	const int server_seen = self->client_sent;
+	const byte usage_count = self->s.usageCount;
+	const short ent_num = self->s.number;
 
 	memset(self, 0, sizeof(*self));
 
-	// Start non-quake2.
 
-	self->s.usageCount = usageCount;
 	self->msgQ.msgs = msgs;
-	self->s.clientEffects.buf = temp;
+	self->s.clientEffects.buf = fx_buf;
+	self->s.usageCount = usage_count;
+	self->s.number = ent_num;
+	self->s.skeletalType = SKEL_NULL;
 	self->just_deleted = SERVER_DELETED;
 	self->client_sent = server_seen;
-	self->s.number = entnum;
-
-	// End non-quake2.
-
 	self->classname = "freed";
-	self->freetime = level.time + 2.0;
+	self->freetime = level.time + 2.0f;
 	self->inuse = false;
-	self->s.skeletalType = SKEL_NULL;
 
-	self->svflags = SVF_NOCLIENT;	// so it will get removed from the client properly
+	self->svflags = SVF_NOCLIENT; // So it will get removed from the client properly.
 }
-
 
 /*
 ============
