@@ -308,29 +308,20 @@ qboolean PossessCorrectItem(const edict_t* ent, const gitem_t* item)
 	return false;
 }
 
-/*
-=============
-VectorToString
-
-This is just a convenience function
-for printing vectors
-=============
-*/
-char	*vtos (vec3_t v)
+// VectorToString. This is just a convenience function for printing vectors.
+char* vtos(const vec3_t v)
 {
-	static	int		index;
-	static	char	str[8][32];
-	char	*s;
+	static int index;
+	static char str[8][32];
 
-	// use an array so that multiple vtos won't collide
-	s = str[index];
-	index = (index + 1)&7;
+	// Use an array so that multiple vtos calls won't collide.
+	char* s = str[index];
+	index = (index + 1) & 7;
 
-	Com_sprintf (s, 32, "(%i %i %i)", (int)v[0], (int)v[1], (int)v[2]);
+	Com_sprintf(s, sizeof(str[0]), "(%i %i %i)", (int)v[0], (int)v[1], (int)v[2]);
 
 	return s;
 }
-
 
 vec3_t VEC_UP		= {0.0, -1.0, 0.0};
 vec3_t MOVEDIR_UP	= {0.0, 0.0, 1.0};
