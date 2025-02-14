@@ -48,40 +48,28 @@ void G_SetToFree(edict_t* self)
 	gi.linkentity(self);
 }
 
-/*
-=============
-G_Find
-
-Searches all active entities for the next one that holds
-the matching string at fieldofs (use the FOFS() macro) in the structure.
-
-Searches beginning at the edict after from, or the beginning if NULL
-NULL will be returned if the end of the list is reached.
-
-=============
-*/
-edict_t *G_Find (edict_t *from, int fieldofs, char *match)
+// Searches all active entities for the next one that holds the matching string at fieldofs (use the FOFS() macro) in the structure.
+// Searches beginning at the edict after 'from', or the beginning if NULL.
+// NULL will be returned if the end of the list is reached.
+edict_t* G_Find(edict_t* from, const int fieldofs, const char* match)
 {
-	char	*s;
-
-	// if we aren't trying to find anything, then exit.
+	// If we aren't trying to find anything, then exit.
 	if (match == NULL)
 		return NULL;
 
-	if (!from)
-		from = g_edicts;
+	if (from == NULL)
+		from = &g_edicts[0];
 	else
 		from++;
 
-	for ( ; from < &g_edicts[globals.num_edicts] ; from++)
+	for (; from < &g_edicts[globals.num_edicts]; from++)
 	{
-		if (!from->inuse)
-			continue;
-		s = *(char **) ((byte *)from + fieldofs);
-		if (!s)
-			continue;
-		if (!Q_stricmp (s, match))
-			return from;
+		if (from->inuse)
+		{
+			const char* s = *(char**)((byte*)from + fieldofs);
+			if (s != NULL && Q_stricmp(s, match) == 0)
+				return from;
+		}
 	}
 
 	return NULL;
