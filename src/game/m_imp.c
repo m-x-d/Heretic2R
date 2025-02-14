@@ -814,7 +814,7 @@ void imp_check_dodge(edict_t *self)
 	VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
 	VectorNormalize(vec);
 
-	while ((ent = findradius(ent, self->s.origin, IMP_PROJECTILE_RADIUS)) != NULL)
+	while ((ent = FindInRadius(ent, self->s.origin, IMP_PROJECTILE_RADIUS)) != NULL)
 	{
 		//We're only interested in his projectiles
 		if (ent->owner != self->enemy)
@@ -970,7 +970,7 @@ void move_imp_hover(edict_t *self)
 			VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
 			enemy_dist = VectorNormalize(vec);
 
-			while ((ent = findradius(ent, self->s.origin, IMP_PROJECTILE_RADIUS)) != NULL)
+			while ((ent = FindInRadius(ent, self->s.origin, IMP_PROJECTILE_RADIUS)) != NULL)
 			{
 				//We're only interested in his projectiles
 				if (ent->owner != self->enemy)

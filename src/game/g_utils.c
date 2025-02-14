@@ -75,8 +75,8 @@ edict_t* G_Find(edict_t* from, const int fieldofs, const char* match)
 	return NULL;
 }
 
-// This works like findradius, except it uses the bbox of an ent to indicate the area to check.
-edict_t* FindInBlocking(edict_t* from, const edict_t* check_ent)
+// This works like FindInRadius, except it uses the bbox of an ent to indicate the area to check.
+edict_t* FindInBlocking(edict_t* from, const edict_t* check_ent) //mxd. Named 'findinblocking' in original version.
 {
 	static vec3_t min;
 	static vec3_t max;
@@ -99,7 +99,7 @@ edict_t* FindInBlocking(edict_t* from, const edict_t* check_ent)
 }
 
 // Returns entities that have origins within a spherical area.
-edict_t* findradius(edict_t* from, const vec3_t org, const float radius) //TODO: rename to FindRadius
+edict_t* FindInRadius(edict_t* from, const vec3_t org, const float radius) //mxd. Named 'findradius' in original version.
 {
 	static float radius_sq;
 	static vec3_t min;

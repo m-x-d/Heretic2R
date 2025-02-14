@@ -1659,7 +1659,7 @@ int M_FindSupport( edict_t *self, int range )
 	edict_t *ent = NULL;
 	int		numSupport = 0;
 
-	while((ent = findradius(ent, self->s.origin, range)) != NULL)
+	while((ent = FindInRadius(ent, self->s.origin, range)) != NULL)
 	{
 		if (ent==self)
 			continue;
@@ -1693,7 +1693,7 @@ qboolean M_CheckAlert( edict_t *self, int range )
 	edict_t *ent = NULL;
 	int		numSupport = 0;
 
-	while((ent = findradius(ent, self->s.origin, range)) != NULL)
+	while((ent = FindInRadius(ent, self->s.origin, range)) != NULL)
 	{
 		if (ent==self)
 			continue;

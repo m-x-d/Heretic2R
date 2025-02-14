@@ -1044,7 +1044,7 @@ void tbeast_land(edict_t *self)
 	
 	gi.sound(self, CHAN_ITEM, sounds[SND_LAND], 1, ATTN_NORM, 0);
 
-	while(found = findradius(found, self->s.origin, 512))
+	while(found = FindInRadius(found, self->s.origin, 512))
 	{
 		if(found->client)
 		{
@@ -1067,7 +1067,7 @@ void tbeast_roar_knockdown(edict_t *self)
 	if(irand(0, 2))
 		return;
 
-	while(found = findradius(found, self->s.origin, 512))
+	while(found = FindInRadius(found, self->s.origin, 512))
 	{
 		if(found->client && ahead(self, found))
 		{
@@ -1467,7 +1467,7 @@ void tbeast_check_snatch(edict_t *self, float ofsf, float ofsr, float ofsu)
 	enemy_dist = VectorLength(endpos);
 	if(enemy_dist>ok_dist || flrand(0, 50)>self->enemy->health)
 	{//if missed or health is low, just chomp it now
-		while(found = findradius(found, startpos, ok_dist))
+		while(found = FindInRadius(found, startpos, ok_dist))
 		{
 			if(found->takedamage&&movable(found))
 			{

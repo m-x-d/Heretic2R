@@ -1256,7 +1256,7 @@ qboolean ogle_findtarget (edict_t *self)
 	edict_t		*found = NULL;
 
 	//take down weak overlords
-	while(found = findradius(found, self->s.origin, 1024))
+	while(found = FindInRadius(found, self->s.origin, 1024))
 	{
 		if(found->classID == CID_SERAPH_OVERLORD && found->health > 0 && (found->health<SERAPH_HEALTH/2 || found->ai_mood == AI_MOOD_FLEE))
 		{
@@ -1307,7 +1307,7 @@ qboolean ogle_findtarget (edict_t *self)
 	
 	found = NULL;
 	//help out other ogles
-	while(found = findradius(found, self->s.origin, 1024))
+	while(found = FindInRadius(found, self->s.origin, 1024))
 	{
 		if(found->classID == CID_OGLE && found->health > 0 && found != self)
 		{

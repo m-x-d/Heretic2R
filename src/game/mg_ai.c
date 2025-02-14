@@ -1495,7 +1495,7 @@ void MG_CheckEvade (edict_t *self)
 	//else if(flrand(0, 3) > skill->value)
 	//	return;
 
-	while(ent = findradius(ent, self->s.origin, 500))
+	while(ent = FindInRadius(ent, self->s.origin, 500))
 	{
 		if(ent->movetype == MOVETYPE_FLYMISSILE && ent->solid && ent->owner!=self)
 		{

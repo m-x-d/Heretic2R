@@ -181,7 +181,7 @@ static void spreader_grenade_think(edict_t *self)
 	else
 	{
 		ent = NULL;
-		while ((ent = findradius(ent, self->s.origin, self->dmg_radius)) != NULL)
+		while ((ent = FindInRadius(ent, self->s.origin, self->dmg_radius)) != NULL)
 		{			
 			VectorCopy(ent->s.origin, temp);
 			temp[2] += 5;

@@ -2516,7 +2516,7 @@ void assassinCloakThink (edict_t *self)
 		{
 			if(irand(0, 4 - skill->value) <= 0)
 			{//easy is 40% chance per second, hard is 60% chance to check per second
-				while(found = findradius(found, self->s.origin, 200 + skill->value * 50))
+				while(found = FindInRadius(found, self->s.origin, 200 + skill->value * 50))
 				{
 					if(!stricmp(found->classname, "Spell_Maceball"))
 					{

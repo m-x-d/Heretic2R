@@ -976,7 +976,7 @@ void T_DamageRadius(edict_t* inflictor, edict_t* attacker, const edict_t* ignore
 		}
 	}
 
-	edict_t* ent = findradius(NULL, inflictor->s.origin, radius);
+	edict_t* ent = FindInRadius(NULL, inflictor->s.origin, radius);
 
 	while (ent != NULL)
 	{
@@ -1024,7 +1024,7 @@ void T_DamageRadius(edict_t* inflictor, edict_t* attacker, const edict_t* ignore
 			}
 		}
 
-		ent = findradius(ent, inflictor->s.origin, radius);
+		ent = FindInRadius(ent, inflictor->s.origin, radius);
 	}
 }
 
@@ -1033,7 +1033,7 @@ void T_DamageRadiusFromLoc(vec3_t origin, edict_t* inflictor, edict_t* attacker,
 {
 	assert(radius > 0.0f);
 
-	edict_t* ent = findradius(NULL, origin, radius);
+	edict_t* ent = FindInRadius(NULL, origin, radius);
 
 	while (ent != NULL)
 	{
@@ -1085,6 +1085,6 @@ void T_DamageRadiusFromLoc(vec3_t origin, edict_t* inflictor, edict_t* attacker,
 			}
 		}
 
-		ent = findradius(ent, inflictor->s.origin, radius);
+		ent = FindInRadius(ent, inflictor->s.origin, radius);
 	}
 }
