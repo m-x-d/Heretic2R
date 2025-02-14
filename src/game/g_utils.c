@@ -201,116 +201,86 @@ static void Delay_Think(edict_t* ent) //mxd. Named 'Think_Delay' in original ver
 	G_FreeEdict(ent);
 }
 
-/*
-==============================
-G_UseTargets
-
-the global "activator" should be set to the entity that initiated the firing.
-
-If self.delay is set, a DelayedUse entity will be created that will actually
-do the SUB_UseTargets after that many seconds have passed.
-
-Centerprints any self.message to the activator.
-
-Search for (string)targetname in all entities that
-match (string)self.target and call their .use function
-
-==============================
-*/
-void G_UseTargets (edict_t *ent, edict_t *activator)
+// The global "activator" should be set to the entity that initiated the firing.
+// If self.delay is set, a DelayedUse entity will be created that will actually do the SUB_UseTargets after that many seconds have passed.
+// Centerprints any self.message to the activator.
+// Searches for (string)targetname in all entities that match (string)self.target and calls their .use function.
+void G_UseTargets(edict_t* ent, edict_t* activator)
 {
-	edict_t		*t;
-
-//
-// check for a delay
-//
-	if (ent->delay)
+	// Check for a delay.
+	if (ent->delay > 0.0f)
 	{
-	// create a temp object to fire at a later time
-		t = G_Spawn();
-		t->movetype = PHYSICSTYPE_NONE;
-		t->classname = "DelayedUse";
-		t->nextthink = level.time + ent->delay;
-		t->think = Delay_Think;
-		t->activator = activator;
-#ifdef _DEVEL
-		if (!activator)
-			gi.dprintf ("Think_Delay with no activator\n");
-#endif
-		t->message = ent->message;
-		t->text_msg = ent->text_msg;
-		t->target = ent->target;
-		t->killtarget = ent->killtarget;
+		if (activator == NULL) //mxd. Added sanity check.
+		{
+			gi.dprintf("Delayed G_UseTargets with no activator from '%s' at %s\n", ent->classname, vtos(ent->s.origin));
+			return;
+		}
+
+		// Create a temp object to fire at a later time.
+		edict_t* delay = G_Spawn();
+
+		delay->movetype = PHYSICSTYPE_NONE;
+		delay->classname = "DelayedUse";
+		delay->nextthink = level.time + ent->delay;
+		delay->think = Delay_Think;
+		delay->activator = activator;
+		delay->message = ent->message;
+		delay->text_msg = ent->text_msg;
+		delay->target = ent->target;
+		delay->killtarget = ent->killtarget;
+
 		return;
 	}
-	
-	
-//
-// print the message
-//
-	if ((ent->message) && !(activator->svflags & SVF_MONSTER))
+
+	// Print messages.
+	if (!(activator->svflags & SVF_MONSTER))
 	{
-		gi.levelmsg_centerprintf (activator, (short)atoi(ent->message));
-		if (ent->noise_index)
+		if (ent->message != NULL)
 		{
-			gi.sound (activator, CHAN_AUTO, ent->noise_index, 1, ATTN_NORM, 0);
+			gi.levelmsg_centerprintf(activator, (short)Q_atoi(ent->message));
+
+			if (ent->noise_index > 0)
+				gi.sound(activator, CHAN_AUTO, ent->noise_index, 1.0f, ATTN_NORM, 0.0f);
 		}
+
+		if (ent->text_msg != NULL)
+			gi.centerprintf(activator, "%s", ent->text_msg);
 	}
 
-	if ((ent->text_msg) && !(activator->svflags & SVF_MONSTER))
+	// Kill killtargets.
+	if (ent->killtarget != NULL)
 	{
-		gi.centerprintf (activator, "%s", ent->text_msg);
-	}
-
-//
-// kill killtargets
-//
-	if (ent->killtarget)
-	{
-		t = NULL;
-		while ((t = G_Find (t, FOFS(targetname), ent->killtarget)))
+		edict_t* killtarget = NULL;
+		while ((killtarget = G_Find(killtarget, FOFS(targetname), ent->killtarget)) != NULL)
 		{
-			QPostMessage(t,MSG_DEATH,PRI_DIRECTIVE,"eeei",t,ent,activator,100000);
+			QPostMessage(killtarget, MSG_DEATH, PRI_DIRECTIVE, "eeei", killtarget, ent, activator, 100000);
 
 			if (!ent->inuse)
 			{
-#ifdef _DEVEL
-				gi.dprintf("entity was removed while using killtargets\n");
-#endif
+				gi.dprintf("Entity was removed while using killtargets\n");
 				return;
 			}
 		}
 	}
 
-//
-// fire targets
-//
-	if (ent->target)
+	// Fire targets.
+	if (ent->target != NULL)
 	{
-		t = NULL;
-		while ((t = G_Find (t, FOFS(targetname), ent->target)))
+		edict_t* target = NULL;
+		while ((target = G_Find(target, FOFS(targetname), ent->target)) != NULL)
 		{
-			// doors fire area portals in a specific way
-			if (!Q_stricmp(t->classname, "func_areaportal") &&
-				(!Q_stricmp(ent->classname, "func_door") || !Q_stricmp(ent->classname, "func_door_rotating")))
+			// Doors fire area portals in a specific way. //TODO: but what about func_door_secret?..
+			if (Q_stricmp(target->classname, "func_areaportal") == 0 && (Q_stricmp(ent->classname, "func_door") == 0 || Q_stricmp(ent->classname, "func_door_rotating") == 0))
 				continue;
 
-			if (t == ent)
-			{
-#ifdef _DEVEL
-				gi.dprintf ("WARNING: %s used itself.\n", t->classname);
-#endif
-			}
-			else
-			{
-				if (t->use)
-					t->use (t, ent, activator);
-			}
+			if (target == ent)
+				gi.dprintf("WARNING: %s at %s used itself.\n", target->classname, vtos(target->s.origin)); //mxd. Print origin.
+			else if (target->use != NULL)
+				target->use(target, ent, activator);
+
 			if (!ent->inuse)
 			{
-#ifdef _DEVEL
-				gi.dprintf("entity was removed while using targets\n");
-#endif
+				gi.dprintf("Entity was removed while using targets\n");
 				return;
 			}
 		}
