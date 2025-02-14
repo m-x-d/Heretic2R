@@ -98,49 +98,43 @@ edict_t* findinblocking(edict_t* from, const edict_t* checkent) //TODO: rename t
 	}
 }
 
-/*
-=================
-findradius
-
-Returns entities that have origins within a spherical area
-
-findradius (origin, radius)
-=================
-*/
-edict_t *findradius (edict_t *from, vec3_t org, float rad)
+// Returns entities that have origins within a spherical area.
+edict_t* findradius(edict_t* from, const vec3_t org, const float radius) //TODO: rename to FindRadius
 {
-	static float max2;
+	static float radius_sq;
 	static vec3_t min;
 	static vec3_t max;
-	vec3_t	eorg;
-	int		j;
-	float elen;
 
-	if (!from)
+	if (from == NULL)
 	{
-		max2=rad*rad;
-		VectorCopy(org,min);
-		VectorCopy(org,max);
-		for (j=0 ; j<3 ; j++)
+		radius_sq = radius * radius;
+		VectorCopy(org, min);
+		VectorCopy(org, max);
+
+		for (int i = 0; i < 3; i++)
 		{
-			min[j]-=rad;
-			max[j]+=rad;
+			min[i] -= radius;
+			max[i] += radius;
 		}
 	}
-	while (1)
+
+	while (true)
 	{
-		from=findinbounds(from,min,max);
-		if (!from)
-			return 0;
-		if (!from->inuse)
-			continue;
-		for (j=0 ; j<3 ; j++)
-			eorg[j] = org[j] - (from->s.origin[j] + (from->mins[j] + from->maxs[j])*0.5);
-		elen = DotProduct(eorg,eorg);
-		if (elen > max2)
-			continue;
-		return from;
-	} 
+		from = findinbounds(from, min, max);
+
+		if (from == NULL)
+			return NULL;
+
+		if (from->inuse)
+		{
+			vec3_t ent_org;
+			for (int i = 0; i < 3; i++)
+				ent_org[i] = org[i] - (from->s.origin[i] + (from->mins[i] + from->maxs[i]) * 0.5f);
+
+			if (VectorLengthSquared(ent_org) <= radius_sq)
+				return from;
+		}
+	}
 }
 
 /*
