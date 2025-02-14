@@ -613,12 +613,9 @@ extern int self_spawn;
 
 #define DROPPED_ITEM		0x00008000
 
-// g_cmds.c
-extern void Cmd_Score_f(edict_t* ent);
-
 // g_utils.c
 extern qboolean KillBox(edict_t* ent);
-extern void G_ProjectSource(vec3_t point, vec3_t distance, vec3_t forward, vec3_t right, vec3_t result);
+extern void G_ProjectSource(const vec3_t point, const vec3_t distance, const vec3_t forward, const vec3_t right, vec3_t result);
 
 #ifdef __cplusplus
 extern "C"
