@@ -95,7 +95,7 @@ void RedRainThink(edict_t *self)
 			VectorAdd(self->s.origin, min, min);
 			VectorAdd(self->s.origin, max, max);
 			victim=NULL;
-			while (victim = findinbounds(victim, min, max))
+			while (victim = FindInBounds(victim, min, max))
 			{
 				if (victim != self->owner && victim->takedamage &&
 						(victim->client || victim->svflags & SVF_MONSTER) && !(victim->svflags & SVF_DEADMONSTER))

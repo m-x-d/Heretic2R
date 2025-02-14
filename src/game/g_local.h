@@ -631,7 +631,7 @@ extern "C"
 extern edict_t* oldfindradius(edict_t* from, vec3_t org, float radius);
 extern edict_t* FindInRadius(edict_t* from, const vec3_t org, float radius);
 extern edict_t* FindInBlocking(edict_t* from, const edict_t* check_ent);
-extern edict_t* findinbounds(const edict_t* from, const vec3_t min, const vec3_t max);
+extern edict_t* FindInBounds(const edict_t* from, const vec3_t min, const vec3_t max);
 extern edict_t* G_PickTarget(const char* targetname);
 
 // Commonly used functions.

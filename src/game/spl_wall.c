@@ -153,7 +153,7 @@ void FireBlastThink(edict_t *self)
 	VectorAdd(self->s.origin, max, max);
 
 	// find all the entities in the volume
-	while(ent = findinbounds(ent, min, max))
+	while(ent = FindInBounds(ent, min, max))
 	{					
 //		if ((!(ent->svflags & SVF_MONSTER) && !(ent->client && deathmatch->value)) || (ent->svflags & SVF_DEADMONSTER))
 		if(!ent->takedamage)
@@ -405,7 +405,7 @@ void WallMissileThink(edict_t *self)
 	VectorAdd(self->s.origin, max, max);
 
 	// find all the entities in the volume
-	while(ent = findinbounds(ent, min, max))
+	while(ent = FindInBounds(ent, min, max))
 	{					
 //		if ((!(ent->svflags & SVF_MONSTER) && !(ent->client && deathmatch->value)) || (ent->svflags & SVF_DEADMONSTER))
 		if(!ent->takedamage)

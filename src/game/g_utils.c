@@ -89,7 +89,7 @@ edict_t* FindInBlocking(edict_t* from, const edict_t* check_ent) //mxd. Named 'f
 
 	while (true)
 	{
-		from = findinbounds(from, min, max);
+		from = FindInBounds(from, min, max);
 		if (from == NULL)
 			return NULL;
 
@@ -120,7 +120,7 @@ edict_t* FindInRadius(edict_t* from, const vec3_t org, const float radius) //mxd
 
 	while (true)
 	{
-		from = findinbounds(from, min, max);
+		from = FindInBounds(from, min, max);
 
 		if (from == NULL)
 			return NULL;
@@ -137,7 +137,7 @@ edict_t* FindInRadius(edict_t* from, const vec3_t org, const float radius) //mxd
 	}
 }
 
-edict_t* findinbounds(const edict_t* from, const vec3_t min, const vec3_t max) //TODO: rename to FindInBounds
+edict_t* FindInBounds(const edict_t* from, const vec3_t min, const vec3_t max) //mxd. Named 'findinbounds' in original version.
 {
 	static edict_t* touch_list[MAX_EDICTS];
 	static int index = -1;
@@ -478,7 +478,7 @@ void KillBox(edict_t* ent)
 	edict_t* e = NULL;
 	const int dflags = DAMAGE_NO_PROTECTION | DAMAGE_AVOID_ARMOR | DAMAGE_HURT_FRIENDLY; //mxd
 
-	while ((e = findinbounds(e, mins, maxs)) != NULL)
+	while ((e = FindInBounds(e, mins, maxs)) != NULL)
 		if (e != ent && e->takedamage != DAMAGE_NO)
 			T_Damage(e, ent, ent, vec3_origin, ent->s.origin, vec3_origin, 100000, 0, dflags, MOD_TELEFRAG);
 }

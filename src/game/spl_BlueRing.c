@@ -59,7 +59,7 @@ edict_t *findringradius (edict_t *from, vec3_t org, float rad, edict_t *ringent)
 
 	while (1)
 	{
-		from=findinbounds(from,min,max);
+		from=FindInBounds(from,min,max);
 		if (!from)
 			return 0;
 		if ((from->reflected_time > level.time) || (from == ringent->owner))
