@@ -137,30 +137,28 @@ edict_t* findradius(edict_t* from, const vec3_t org, const float radius) //TODO:
 	}
 }
 
-edict_t *findinbounds(edict_t *from, vec3_t min, vec3_t max)
+edict_t* findinbounds(const edict_t* from, const vec3_t min, const vec3_t max) //TODO: rename to FindInBounds
 {
-	static edict_t *touchlist[MAX_EDICTS];
-	static int index=-1;
-	static int num;
+	static edict_t* touch_list[MAX_EDICTS];
+	static int index = -1;
+	static int count;
 
-	if (!from)
+	if (from == NULL)
 	{
-		num = gi.BoxEdicts(min,max, touchlist, MAX_EDICTS, AREA_SOLID);
-		index=0;
+		count = gi.BoxEdicts(min, max, touch_list, MAX_EDICTS, AREA_SOLID);
+		index = 0;
 	}
 	else
 	{
-		assert(touchlist[index]==from);
-		// you cannot adjust the pointers yourself...
-		// this means you did not call it with the previous edict
+		// You cannot adjust the pointers yourself... This means you did not call it with the previous edict.
+		assert(touch_list[index] == from);
 		index++;
 	}
-	for (;index<num;index++)
-	{
-		if (!touchlist[index]->inuse)
-			continue;
-		return touchlist[index];
-	}
+
+	for (; index < count; index++)
+		if (touch_list[index]->inuse)
+			return touch_list[index];
+
 	return NULL;
 }
 
