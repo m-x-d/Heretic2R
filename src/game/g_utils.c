@@ -484,31 +484,6 @@ void KillBox(edict_t* ent)
 }
 
 /*
-ClearBBox
-
-returns true if there is nothing in you BBOX
-*/
-
-qboolean ClearBBox (edict_t *self)
-{
-	vec3_t	top, bottom, mins, maxs;
-	trace_t	trace;
-	VectorSet(mins, self->mins[0], self->mins[1], 0);
-	VectorSet(maxs, self->maxs[0], self->maxs[1], 1);
-	VectorSet(bottom, self->s.origin[0], self->s.origin[1], self->absmin[2]);
-	VectorSet(top, self->s.origin[0], self->s.origin[1], self->absmax[2] - 1);
-
-	gi.trace(top, mins, maxs, bottom, self, self->clipmask,&trace);
-	if(trace.startsolid || trace.allsolid)
-		return false;
-
-	if(trace.fraction == 1.0)
-		return true;
-
-	return false;
-}
-
-/*
 =================
 oldfindradius
 
