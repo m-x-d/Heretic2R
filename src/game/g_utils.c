@@ -75,27 +75,27 @@ edict_t* G_Find(edict_t* from, const int fieldofs, const char* match)
 	return NULL;
 }
 
-// THis works like findradius, except it uses the bbox of an ent to indicate the area to check.
-edict_t *findinblocking(edict_t *from, edict_t *checkent)
+// This works like findradius, except it uses the bbox of an ent to indicate the area to check.
+edict_t* findinblocking(edict_t* from, const edict_t* checkent) //TODO: rename to FindInBlocking, rename checkent to check_ent.
 {
-	static vec3_t	min, max;
+	static vec3_t min;
+	static vec3_t max;
 
-	if (!from)
+	if (from == NULL)
 	{
 		VectorAdd(checkent->s.origin, checkent->mins, min);
 		VectorAdd(checkent->s.origin, checkent->maxs, max);
 	}
-	while (1)
+
+	while (true)
 	{
-		from=findinbounds(from,min,max);
-		if (!from)
-			return 0;
-		if (!from->inuse)
-			continue;
-		if (from == checkent)
-			continue;
-		return from;
-	} 
+		from = findinbounds(from, min, max);
+		if (from == NULL)
+			return NULL;
+
+		if (from->inuse && from != checkent)
+			return from;
+	}
 }
 
 /*
