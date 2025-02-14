@@ -221,6 +221,10 @@ static void DelayThink(edict_t* self)
 
 		dest->PersistantCFX = gi.CreatePersistantEffect(&dest->s, FX_SHRINE_BALL, CEF_BROADCAST, dest->s.origin, "db", direction, (byte)(dest->style - 1));
 	}
+	else
+	{
+		gi.dprintf("Shrine trigger at %s couldn't find shrine model '%s'\n", vtos(self->s.origin), self->owner->target);
+	}
 
 	G_SetToFree(self);
 }
@@ -262,7 +266,10 @@ static void UpdateShrineNode(edict_t* self) //mxd. Named 'deal_with_shrine_node'
 	edict_t* dest = G_Find(NULL, FOFS(targetname), self->target);
 
 	if (dest == NULL)
+	{
+		gi.dprintf("Shrine trigger at %s couldn't find shrine model '%s'\n", vtos(self->s.origin), self->target);
 		return;
+	}
 
 	// But kill the shrine ball that's out there for this shrine.
 	gi.RemoveEffects(&dest->s, FX_SHRINE_BALL);
