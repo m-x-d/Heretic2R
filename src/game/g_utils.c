@@ -374,46 +374,36 @@ void G_InitEdict(edict_t* self)
 	self->reflected_time = level.time;
 }
 
-/*
-=================
-G_Spawn
-
-Either finds a free edict, or allocates a new one.
-Try to avoid reusing an entity that was recently freed, because it
-can cause the client to think the entity morphed into something else
-instead of being removed and recreated, which can cause interpolated
-angles and bad trails.
-=================
-*/
-edict_t *G_Spawn (void)
+// Either finds a free edict, or allocates a new one.
+// Try to avoid reusing an entity that was recently freed, because it can cause the client to think the entity morphed into something else
+// instead of being removed and recreated, which can cause interpolated angles and bad trails.
+edict_t* G_Spawn(void)
 {
-	int			i;
-	edict_t		*e;
-	//static unsigned int entID = 0;
+	int index = MAXCLIENTS + 1;
+	edict_t* ent = &g_edicts[index];
 
-	e = &g_edicts[(int)maxclients->value+1];
-	for(i=maxclients->value + 1; i < globals.num_edicts; ++i, ++e)
+	for (; index < globals.num_edicts; index++, ent++)
 	{
-		// the first couple seconds of server time can involve a lot of
-		// freeing and allocating, so relax the replacement policy
-		if(!e->inuse && e->freetime <= level.time)
+		// The first couple seconds of server time can involve a lot of freeing and allocating, so relax the replacement policy.
+		if (!ent->inuse && ent->freetime <= level.time)
 		{
-			G_InitEdict (e);
+			G_InitEdict(ent);
+			++ent->s.usageCount;
 
-			++e->s.usageCount;
-			return e;
+			return ent;
 		}
 	}
 
-	if (i == game.maxentities)
+	if (index == game.maxentities)
 	{
-		assert(0);
-		gi.error ("ED_Alloc: Spawning more than %d edicts", game.maxentities);
+		gi.error("ED_Alloc: spawning more than %i edicts", game.maxentities);
+		return NULL;
 	}
-		
+
 	globals.num_edicts++;
-	G_InitEdict (e);
-	return e;
+	G_InitEdict(ent);
+
+	return ent;
 }
 
 /*
