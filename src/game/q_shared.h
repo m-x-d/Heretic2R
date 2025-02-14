@@ -60,7 +60,7 @@
 #define COLOUR_SET(c, cr, cg, cb)		((c).r=(byte)(cr), (c).g=(byte)(cg), (c).b=(byte)(cb), (c).a=255)
 #define COLOUR_SETA(c, cr, cg, cb, ca)	((c).r=(byte)(cr), (c).g=(byte)(cg), (c).b=(byte)(cb), (c).a=(byte)(ca))
 #define COLOUR_COPY(src, dst)			((dst).r=(src).r, (dst).g=(src).g, (dst).b=(src).b)
-#define COLOUR_COPYA(src, dst)			((dst).r=(src).r, (dst).g=(src).g, (dst).b=(src).b, , (dst).a=(src).a)
+#define COLOUR_COPYA(src, dst)			((dst).r=(src).r, (dst).g=(src).g, (dst).b=(src).b, (dst).a=(src).a)
 
 H2COMMON_API int Q_log2(int val);
 H2COMMON_API int Q_sign(int val); //mxd
