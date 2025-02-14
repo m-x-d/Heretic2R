@@ -287,29 +287,25 @@ void G_UseTargets(edict_t* ent, edict_t* activator)
 	}
 }
 
-qboolean PossessCorrectItem(edict_t *ent, gitem_t *item)
+qboolean PossessCorrectItem(const edict_t* ent, const gitem_t* item)
 {
-	edict_t	*t;
+	if (ent->target_ent == NULL)
+		return false;
 
-	if(!ent->target_ent)
-	{
-		return(false);
-	}
 	ent = ent->target_ent;
-	t = NULL;
-	while ((t = G_Find (t, FOFS(targetname), ent->target)))
+
+	edict_t* target = NULL;
+	while ((target = G_Find(target, FOFS(targetname), ent->target)))
 	{
-		// doors fire area portals in a specific way
-		if (!Q_stricmp(t->classname, "func_areaportal") &&
-			(!Q_stricmp(ent->classname, "func_door") || !Q_stricmp(ent->classname, "func_door_rotating")))
+		// Doors fire area portals in a specific way. //TODO: but what about func_door_secret?..
+		if (!Q_stricmp(target->classname, "func_areaportal") && (!Q_stricmp(ent->classname, "func_door") || !Q_stricmp(ent->classname, "func_door_rotating")))
 			continue;
 
-		if(t->item == item)
-		{
-			return(true);
-		}
+		if (target->item == item)
+			return true;
 	}
-	return(false);
+
+	return false;
 }
 
 /*
