@@ -507,23 +507,17 @@ edict_t* oldfindradius(edict_t* from, vec3_t org, const float radius) //TODO: us
 	return NULL;
 }
 
-// ========================================
-// LinkMissile(edict_t *self)
-//
 // This is a way to kinda "cheat" the system.
-// We don't want missiles to be considered for collision, 
-// yet we want them to collide with other things.
-// So when we link the entity (for rendering, etc) we set 
-// SOLID_NOT so certain things don't happen.
-// ========================================
-void G_LinkMissile(edict_t *self) //TODO: mxd. Non-functional? Replace with gi.linkentity(self)?
+// We don't want missiles to be considered for collision, yet we want them to collide with other things.
+// So when we link the entity (for rendering, etc) we set SOLID_NOT so certain things don't happen.
+void G_LinkMissile(edict_t* self) //TODO: mxd. Non-functional? Replace with gi.linkentity(self)?
 {
-    int oldsolid;
-	
-	oldsolid=self->solid;
+	const int oldsolid = self->solid;
+	//  self->solid=SOLID_NOT; // comment this line out for old behaviour
+	gi.linkentity(self); //mxd. SV_LinkEdict() doesn't seem to change 'solid' prop.
 
-//  self->solid=SOLID_NOT; // comment this line out for old behaviour
-    gi.linkentity(self);
-    self->solid=oldsolid;
+	//mxd. dbg
+	assert(oldsolid == self->solid);
+
+	self->solid = oldsolid;
 }
-
