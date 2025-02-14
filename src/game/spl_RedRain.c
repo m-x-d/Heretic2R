@@ -40,7 +40,7 @@ void RedRainThink(edict_t *self)
 		rad_dmg = self->dmg;
 
 	// find all the entities in the volume
-	while(victim = findinblocking(victim, self))
+	while(victim = FindInBlocking(victim, self))
 	{					
 		if(victim != self->owner && victim->takedamage && 
 				(victim->client || victim->svflags & SVF_MONSTER) && !(victim->svflags & SVF_DEADMONSTER))		
