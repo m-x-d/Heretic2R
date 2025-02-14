@@ -422,7 +422,7 @@ static qboolean IsFlammable(const edict_t* target)
  *
  * @param mod		Means of death flag (MOD_XXX).
  */
-void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, vec3_t p_dir, vec3_t p_point, vec3_t p_normal, int damage, int knockback, const int dflags, int mod) //TODO: split into smaller functions?
+void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, const vec3_t p_dir, const vec3_t p_point, const vec3_t p_normal, int damage, int knockback, const int dflags, int mod) //TODO: split into smaller functions?
 {
 	// Copious amounts of damage avoidance cases...
 
