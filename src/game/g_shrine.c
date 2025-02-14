@@ -6,6 +6,7 @@
 
 #include "g_Shrine.h" //mxd
 #include "g_ShrineLocal.h" //mxd
+#include "g_local.h"
 #include "cl_strings.h"
 #include "g_combat.h" //mxd
 #include "g_itemstats.h"

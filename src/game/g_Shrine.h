@@ -6,7 +6,8 @@
 
 #pragma once
 
-#include "g_local.h"
+#include "p_types.h"
+#include "q_Typedef.h"
 
 extern void PlayerKillShrineFX(edict_t* self);
 extern void PlayerRestartShrineFX(edict_t* self);
