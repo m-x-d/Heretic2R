@@ -352,16 +352,6 @@ float vectoyaw(const vec3_t v) //TODO: rename to VectorYaw.
 	return yaw;
 }
 
-char *G_CopyString (char *in)
-{
-	char	*out;
-	
-	out = gi.TagMalloc (strlen(in)+1, TAG_LEVEL);
-	strcpy (out, in);
-	return out;
-}
-
-
 void G_InitEdict (edict_t *self)
 {
 	self->s.clientEffects.buf = NULL;
