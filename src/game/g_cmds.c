@@ -5,7 +5,9 @@
 //
 
 #include "g_cmds.h" //mxd
+#include "g_local.h"
 #include "cl_strings.h"
+#include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
 #include "g_items.h"
 #include "g_itemstats.h"
