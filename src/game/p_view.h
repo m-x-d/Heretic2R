@@ -6,6 +6,6 @@
 
 #pragma once
 
-#include "g_local.h"
+#include "q_Typedef.h"
 
 extern void InitPlayerinfo(edict_t* ent);

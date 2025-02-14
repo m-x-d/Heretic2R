@@ -16,6 +16,7 @@
 #include "FX.h"
 #include "Message.h"
 #include "Utilities.h"
+#include "g_local.h"
 
 #define MAX_MESSAGESTRINGS	1000
 
