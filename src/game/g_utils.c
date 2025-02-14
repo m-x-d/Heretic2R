@@ -466,39 +466,6 @@ void G_TouchTriggers(edict_t* ent)
 }
 
 /*
-============
-G_TouchSolids
-
-Call after linking a new trigger in during gameplay
-to force all entities it covers to immediately touch it
-============
-*/
-void	G_TouchSolids (edict_t *ent)
-{
-	int			i, num;
-	edict_t		*touch[MAX_EDICTS], *hit;
-
-	num = gi.BoxEdicts (ent->absmin, ent->absmax, touch
-		, MAX_EDICTS, AREA_SOLID);
-
-	// be careful, it is possible to have an entity in this
-	// list removed before we get to it (killtriggered)
-	for (i=0 ; i<num ; i++)
-	{
-		hit = touch[i];
-		if (!hit->inuse)
-			continue;
-		if (ent->touch)
-			ent->touch (hit, ent, NULL, NULL);
-		if (!ent->inuse)
-			break;
-	}
-}
-
-
-
-
-/*
 ==============================================================================
 
 Kill box
