@@ -483,41 +483,29 @@ void KillBox(edict_t* ent)
 			T_Damage(e, ent, ent, vec3_origin, ent->s.origin, vec3_origin, 100000, 0, dflags, MOD_TELEFRAG);
 }
 
-/*
-=================
-oldfindradius
-
-Returns entities that have origins within a spherical area
-
-oldfindradius (origin, radius)
-=================
-*/
-edict_t *oldfindradius (edict_t *from, vec3_t org, float rad)
+// Returns entities that have origins within a spherical area
+edict_t* oldfindradius(edict_t* from, vec3_t org, const float radius) //TODO: used ONLY by ElfLord. Can be replaced with FindRadius()?
 {
-	vec3_t	eorg;
-	int		j;
-
-	if (!from)
-		from = g_edicts;
+	if (from == NULL)
+		from = &g_edicts[0];
 	else
 		from++;
-	for ( ; from < &g_edicts[globals.num_edicts]; from++)
+
+	for (; from < &g_edicts[globals.num_edicts]; from++)
 	{
-		if (!from->inuse)
+		if (!from->inuse || from->solid == SOLID_NOT)
 			continue;
-		if (from->solid == SOLID_NOT)
-			continue;
-		for (j=0 ; j<3 ; j++)
-			eorg[j] = org[j] - (from->s.origin[j] + (from->mins[j] + from->maxs[j])*0.5);
-		if (VectorLength(eorg) > rad)
-			continue;
-		return from;
+
+		vec3_t ent_org;
+		for (int i = 0; i < 3; i++)
+			ent_org[i] = org[i] - (from->s.origin[i] + (from->mins[i] + from->maxs[i]) * 0.5f);
+
+		if (VectorLength(ent_org) <= radius)
+			return from;
 	}
 
 	return NULL;
 }
-
-
 
 // ========================================
 // LinkMissile(edict_t *self)
