@@ -162,56 +162,38 @@ edict_t* findinbounds(const edict_t* from, const vec3_t min, const vec3_t max) /
 	return NULL;
 }
 
-/*
-=============
-G_PickTarget
-
-Searches all active entities for the next one that holds
-the matching string at fieldofs (use the FOFS() macro) in the structure.
-
-Searches beginning at the edict after from, or the beginning if NULL
-NULL will be returned if the end of the list is reached.
-
-=============
-*/
+// Searches all active entities for the next one that holds the matching string at fieldofs (use the FOFS() macro) in the structure.
+// Searches beginning at the edict after 'from', or the beginning if NULL.
+// NULL will be returned if the end of the list is reached.
+edict_t* G_PickTarget(const char* targetname)
+{
 #define MAXCHOICES	8
 
-edict_t *G_PickTarget (char *targetname)
-{
-	edict_t	*ent = NULL;
-	int		num_choices = 0;
-	edict_t	*choice[MAXCHOICES];
+	edict_t* choices[MAXCHOICES];
+	edict_t* ent = NULL;
+	int num_choices = 0;
 
-	if (!targetname)
+	if (targetname == NULL)
 	{
-#ifdef _DEVEL
 		gi.dprintf("G_PickTarget called with NULL targetname\n");
-#endif
 		return NULL;
 	}
 
-	while(1)
+	while (num_choices < MAXCHOICES)
 	{
-		ent = G_Find (ent, FOFS(targetname), targetname);
-		if (!ent)
+		ent = G_Find(ent, FOFS(targetname), targetname);
+		if (ent == NULL)
 			break;
-		choice[num_choices++] = ent;
-		if (num_choices == MAXCHOICES)
-			break;
+
+		choices[num_choices++] = ent;
 	}
 
-	if (!num_choices)
-	{
-#ifdef _DEVEL
-		gi.dprintf("G_PickTarget: target %s not found\n", targetname);
-#endif
-		return NULL;
-	}
+	if (num_choices > 0)
+		return choices[irand(0, num_choices - 1)];
 
-	return choice[irand(0, num_choices - 1)];
+	gi.dprintf("G_PickTarget: target '%s' not found\n", targetname);
+	return NULL;
 }
-
-
 
 void Think_Delay (edict_t *ent)
 {
