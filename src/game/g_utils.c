@@ -323,27 +323,21 @@ char* vtos(const vec3_t v)
 	return s;
 }
 
-vec3_t VEC_UP		= {0.0, -1.0, 0.0};
-vec3_t MOVEDIR_UP	= {0.0, 0.0, 1.0};
-vec3_t VEC_DOWN		= {0.0, -2.0, 0.0};
-vec3_t MOVEDIR_DOWN	= {0.0, 0.0, -1.0};
-
-void G_SetMovedir (vec3_t angles, vec3_t movedir)
+void G_SetMovedir(vec3_t angles, vec3_t movedir)
 {
-	if (VectorCompare (angles, VEC_UP))
-	{
-		VectorCopy (MOVEDIR_UP, movedir);
-	}
-	else if (VectorCompare (angles, VEC_DOWN))
-	{
-		VectorCopy (MOVEDIR_DOWN, movedir);
-	}
-	else
-	{
-		AngleVectors (angles, movedir, NULL, NULL);
-	}
+	static const vec3_t vec_up =		{ 0.0f, -1.0f,  0.0f };
+	static const vec3_t movedir_up =	{ 0.0f,  0.0f,  1.0f };
+	static const vec3_t vec_down =		{ 0.0f, -2.0f,  0.0f };
+	static const vec3_t movedir_down =	{ 0.0f,  0.0f, -1.0f };
 
-	VectorClear (angles);
+	if (VectorCompare(angles, vec_up))
+		VectorCopy(movedir_up, movedir);
+	else if (VectorCompare(angles, vec_down))
+		VectorCopy(movedir_down, movedir);
+	else
+		AngleVectors(angles, movedir, NULL, NULL);
+
+	VectorClear(angles);
 }
 
 
