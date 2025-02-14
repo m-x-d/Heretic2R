@@ -465,52 +465,22 @@ void G_TouchTriggers(edict_t* ent)
 	}
 }
 
-/*
-==============================================================================
-
-Kill box
-
-==============================================================================
-*/
-
-/*
-=================
-KillBox
-
-Kills all entities that would touch the proposed new positioning
-of ent.  Ent should be unlinked before calling this!
-=================
-*/
-qboolean KillBox (edict_t *ent)
+// Kills all entities that would touch the proposed new positioning of ent. Ent should be unlinked before calling this!
+void KillBox(edict_t* ent)
 {
-	edict_t *current=NULL;
-	vec3_t	mins, maxs;
+	vec3_t mins;
+	vec3_t maxs;
 
-	// since we can't trust the absmin and absmax to be set correctly on entry, I'll create my own versions
-
+	// Since we can't trust the absmin and absmax to be set correctly on entry, I'll create my own versions.
 	VectorAdd(ent->s.origin, ent->mins, mins);
 	VectorAdd(ent->s.origin, ent->maxs, maxs);
 
-	while (1)
-	{
-		current = findinbounds(current, mins, maxs);
+	edict_t* e = NULL;
+	const int dflags = DAMAGE_NO_PROTECTION | DAMAGE_AVOID_ARMOR | DAMAGE_HURT_FRIENDLY; //mxd
 
-		// don't allow us to kill the player
-		if(current == ent)
-			continue;
-
-		// we've checked everything
-		if(!current)
-			break;
-
-		// nail it
-		if (current->takedamage)
-			T_Damage (current, ent, ent, vec3_origin, ent->s.origin, vec3_origin, 100000, 0, 
-					  DAMAGE_NO_PROTECTION|DAMAGE_AVOID_ARMOR|DAMAGE_HURT_FRIENDLY,MOD_TELEFRAG);
-	
-	}
-
-	return true;		// all clear
+	while ((e = findinbounds(e, mins, maxs)) != NULL)
+		if (e != ent && e->takedamage != DAMAGE_NO)
+			T_Damage(e, ent, ent, vec3_origin, ent->s.origin, vec3_origin, 100000, 0, dflags, MOD_TELEFRAG);
 }
 
 /*
