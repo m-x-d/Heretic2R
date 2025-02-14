@@ -352,7 +352,7 @@ float vectoyaw(const vec3_t v) //TODO: rename to VectorYaw.
 	return yaw;
 }
 
-void G_InitEdict (edict_t *self)
+void G_InitEdict(edict_t* self)
 {
 	self->s.clientEffects.buf = NULL;
 	self->s.clientEffects.bufSize = 0;
@@ -362,17 +362,16 @@ void G_InitEdict (edict_t *self)
 	self->inuse = true;
 	self->movetype = PHYSICSTYPE_NONE;
 	self->classname = "noclass";
-	self->gravity = 1.0F;
-	self->friction = 1.0F;
+	self->gravity = 1.0f;
+	self->friction = 1.0f;
 	self->elasticity = ELASTICITY_SLIDE;
-	self->s.number = self - g_edicts;
-	self->s.scale = 1.0F;
+	self->s.number = (short)(self - g_edicts);
+	self->s.scale = 1.0f;
 	self->msgHandler = NULL;
 	self->svflags = 0;
 	self->client_sent = 0;
 	self->just_deleted = 0;
 	self->reflected_time = level.time;
-
 }
 
 /*
