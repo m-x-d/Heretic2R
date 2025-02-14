@@ -614,26 +614,25 @@ extern int self_spawn;
 #define DROPPED_ITEM		0x00008000
 
 // g_utils.c
-extern qboolean KillBox(edict_t* ent);
+extern void KillBox(edict_t* ent); //mxd. qboolean KillBox in original logic (always returned true).
 extern void G_ProjectSource(const vec3_t point, const vec3_t distance, const vec3_t forward, const vec3_t right, vec3_t result);
+extern qboolean PossessCorrectItem(const edict_t* ent, const gitem_t* item); //mxd
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-	extern edict_t* G_Find(edict_t* from, int fieldofs, char* match);
+	extern edict_t* G_Find(edict_t* from, int fieldofs, const char* match);
 	extern edict_t* G_Spawn(void);
 #ifdef __cplusplus
 }
 #endif
 
-extern edict_t* oldfindradius(edict_t* from, vec3_t org, float rad);
-extern edict_t* findradius(edict_t* from, vec3_t org, float rad);
-extern edict_t* findinblocking(edict_t* from, edict_t* checkent);
-extern edict_t* findinbounds(edict_t* from, vec3_t min, vec3_t max);
-extern edict_t* finddistance(edict_t* from, vec3_t org, float mindist, float maxdist);
-extern edict_t* findonpath(edict_t* startent, vec3_t startpos, vec3_t endpos, vec3_t mins, vec3_t maxs, vec3_t* resultpos);
-extern edict_t* G_PickTarget(char* targetname);
+extern edict_t* oldfindradius(edict_t* from, vec3_t org, float radius);
+extern edict_t* findradius(edict_t* from, const vec3_t org, float radius);
+extern edict_t* findinblocking(edict_t* from, const edict_t* checkent);
+extern edict_t* findinbounds(const edict_t* from, const vec3_t min, const vec3_t max);
+extern edict_t* G_PickTarget(const char* targetname);
 
 // Commonly used functions.
 extern int range(edict_t* self, edict_t* other);
@@ -646,15 +645,13 @@ extern qboolean ahead(edict_t* self, edict_t* other);
 
 extern void G_UseTargets(edict_t* ent, edict_t* activator);
 extern void G_SetMovedir(vec3_t angles, vec3_t movedir);
-extern void G_InitEdict(edict_t* e);
-extern void G_FreeEdict(edict_t* e);
-extern void G_SetToFree(edict_t*);
+extern void G_InitEdict(edict_t* self);
+extern void G_FreeEdict(edict_t* self);
+extern void G_SetToFree(edict_t* self);
 extern void G_TouchTriggers(edict_t* ent);
-extern void G_TouchSolids(edict_t* ent);
-extern void G_LinkMissile(edict_t* ent);
-extern char* G_CopyString(char* in);
-extern char* vtos(vec3_t v);
-extern float vectoyaw(vec3_t vec);
+extern void G_LinkMissile(edict_t* self);
+extern char* vtos(const vec3_t v);
+extern float vectoyaw(const vec3_t v);
 
 // g_monster.c
 extern void M_droptofloor(edict_t* ent);
