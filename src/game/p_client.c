@@ -2282,10 +2282,7 @@ void PutClientInServer (edict_t *ent)
 	VectorCopy (ent->s.angles, client->ps.viewangles);
 	VectorCopy (ent->s.angles, client->v_angle);
 
-	if(!KillBox(ent))
-	{
-		// could't spawn in?
-	}
+	KillBox(ent);
 	
 	ent->s.effects=(EF_CAMERA_NO_CLIP|EF_SWAPFRAME|EF_JOINTED|EF_PLAYER);
 
