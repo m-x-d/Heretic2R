@@ -1,7 +1,7 @@
 //
 // p_utility.c -- mxd. Utility functions to reduce code repetition...
 //
-// Copyright 2024 m-x-d
+// Copyright 2024 mxd
 //
 
 #include "Player.h"
@@ -55,21 +55,6 @@ float ClampAngleDeg(float angle) //mxd. Was CL_NormaliseAngle() in p_actions in 
 
 	if (angle < -180.0f)
 		return angle + 360.0f;
-
-	return angle;
-}
-
-float ClampAngleRad(float angle) //mxd. Was NormalizeAngle() in p_animactor.c (function with the same name is already defined in Utilities.c).
-{
-	// Returns the remainder.
-	angle = fmodf(angle, ANGLE_360);
-
-	// Makes the angle signed.
-	if (angle >= ANGLE_180)
-		return angle - ANGLE_360;
-
-	if (angle <= -ANGLE_180)
-		return angle + ANGLE_360;
 
 	return angle;
 }
