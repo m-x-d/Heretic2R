@@ -1,12 +1,12 @@
 //
-// g_combat.h
+// g_ai.h
 //
 // Copyright 2025 mxd
 //
 
 #pragma once
 
-#include "g_local.h"
+#include "q_Typedef.h"
 
 extern void AlertMonsters(edict_t* self, edict_t* enemy, float lifetime, qboolean ignore_shadows);
 extern void AI_SetSightClient(void);
