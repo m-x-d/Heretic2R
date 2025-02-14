@@ -632,9 +632,6 @@
     <ClInclude Include="game.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="GameEntity.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="q_shared.h">
       <Filter>src</Filter>
     </ClInclude>
