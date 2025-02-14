@@ -447,34 +447,21 @@ void G_FreeEdict(edict_t* self)
 	self->svflags = SVF_NOCLIENT; // So it will get removed from the client properly.
 }
 
-/*
-============
-G_TouchTriggers
-
-============
-*/
-void	G_TouchTriggers (edict_t *ent)
+void G_TouchTriggers(edict_t* ent)
 {
-	int			i, num;
-	edict_t		*touch[MAX_EDICTS], *hit;
-
-	// dead things don't activate triggers!
-	if ((ent->client || (ent->svflags & SVF_MONSTER)) && (ent->health <= 0))
+	// Dead things don't activate triggers!
+	if ((ent->client != NULL || (ent->svflags & SVF_MONSTER)) && ent->health <= 0)
 		return;
 
-	num = gi.BoxEdicts (ent->absmin, ent->absmax, touch
-		, MAX_EDICTS, AREA_TRIGGERS);
+	edict_t* touched[MAX_EDICTS];
+	const int num_touched = gi.BoxEdicts(ent->absmin, ent->absmax, touched, MAX_EDICTS, AREA_TRIGGERS);
 
-	// be careful, it is possible to have an entity in this
-	// list removed before we get to it (killtriggered)
-	for (i=0 ; i<num ; i++)
+	// Be careful, it is possible to have an entity in this list removed before we get to it (killtriggered).
+	for (int i = 0; i < num_touched; i++)
 	{
-		hit = touch[i];
-		if (!hit->inuse)
-			continue;
-		if (!hit->touch)
-			continue;
-		hit->touch (hit, ent, NULL, NULL);
+		edict_t* hit = touched[i];
+		if (hit->inuse && hit->touch != NULL)
+			hit->touch(hit, ent, NULL, NULL);
 	}
 }
 
