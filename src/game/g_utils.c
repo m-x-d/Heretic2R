@@ -137,55 +137,6 @@ edict_t* findradius(edict_t* from, const vec3_t org, const float radius) //TODO:
 	}
 }
 
-/*
-=================
-finddistance
-
-Returns entities that have origins within a spherical shell area
-
-finddistance (origin, mindist, maxdist)
-=================
-*/
-edict_t *finddistance (edict_t *from, vec3_t org, float mindist, float maxdist)
-{
-	static float min2;
-	static float max2;
-	static vec3_t min;
-	static vec3_t max;
-	vec3_t	eorg;
-	int		j;
-	float elen;
-
-	if (!from)
-	{
-		min2=mindist*mindist;
-		max2=maxdist*maxdist;
-		VectorCopy(org,min);
-		VectorCopy(org,max);
-		for (j=0 ; j<3 ; j++)
-		{
-			min[j]-=maxdist;
-			max[j]+=maxdist;
-		}
-	}
-	while (1)
-	{
-		from=findinbounds(from,min,max);
-		if (!from)
-			return 0;
-		if (!from->inuse)
-			continue;
-		for (j=0 ; j<3 ; j++)
-			eorg[j] = org[j] - (from->s.origin[j] + (from->mins[j] + from->maxs[j])*0.5);
-		elen = DotProduct(eorg,eorg);
-		if (elen > max2)
-			continue;
-		if (elen < min2)
-			continue;
-		return from;
-	} 
-}
-
 edict_t *findinbounds(edict_t *from, vec3_t min, vec3_t max)
 {
 	static edict_t *touchlist[MAX_EDICTS];
