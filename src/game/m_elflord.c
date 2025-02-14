@@ -465,7 +465,7 @@ void elflord_FindMoveTarget (edict_t *self)
 	vec3_t	vel, target;
 	float	len;
 
-	while((movetarg = oldfindradius(movetarg, self->s.origin, 640)) != NULL)
+	while((movetarg = FindInRadius_Old(movetarg, self->s.origin, 640)) != NULL)
 	{
 		//Must be a path_corner
 		if (strcmp(movetarg->classname, "path_corner"))
@@ -580,7 +580,7 @@ void elflord_MoveToFinalPosition( edict_t *self )
 	vec3_t	vel, target;
 	float	len;
 
-	while((movetarg = oldfindradius(movetarg, self->s.origin, 640)) != NULL)
+	while((movetarg = FindInRadius_Old(movetarg, self->s.origin, 640)) != NULL)
 	{
 		//Must be a path_corner
 		if (strcmp(movetarg->classname, "path_corner"))

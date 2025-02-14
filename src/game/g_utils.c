@@ -483,8 +483,8 @@ void KillBox(edict_t* ent)
 			T_Damage(e, ent, ent, vec3_origin, ent->s.origin, vec3_origin, 100000, 0, dflags, MOD_TELEFRAG);
 }
 
-// Returns entities that have origins within a spherical area
-edict_t* oldfindradius(edict_t* from, vec3_t org, const float radius) //TODO: used ONLY by ElfLord. Can be replaced with FindRadius()?
+// Returns entities that have origins within a spherical area.
+edict_t* FindInRadius_Old(edict_t* from, vec3_t org, const float radius) //mxd. Named 'oldfindradius' in original version. //TODO: used ONLY by ElfLord. Can be replaced with FindRadius()?
 {
 	if (from == NULL)
 		from = &g_edicts[0];
