@@ -16,23 +16,23 @@
 #define SVF_NOCLIENT			0x00000001	// Don't send entity to clients, even if it has effects. This overrides SVF_ALWAYS_SEND.
 #define SVF_DEADMONSTER			0x00000002	// Treat as CONTENTS_DEADMONSTER for collision.
 #define SVF_MONSTER				0x00000004	// Treat as CONTENTS_MONSTER for collision.
-#define SVF_INUSE				0x00000008	// Used to replace the inuse field.
+//#define SVF_INUSE				0x00000008	// Used to replace the inuse field. //mxd. Unused
 #define SVF_ALWAYS_SEND			0x00000010	// Always send the ent to all the clients, regardless of of PVS or view culling.
 #define SVF_NO_AUTOTARGET		0x00000020	// This entity will not be chosen by FindNearestVisibleActorInFrustum.
-#define SVF_REFLECT				0x00000040	// Reflect shots.
+#define SVF_REFLECT				0x00000040	// Reflect shots. //TODO: checked in EntReflecting(), but never set?
 #define SVF_TAKE_NO_IMPACT_DMG	0x00000080	// Don't apply impact damage to this entity.
 #define SVF_BOSS				0x00000100	// Immunity to a number of things.
 #define SVF_TOUCHED_BEAST		0x00000200	// Used for beast faked physics hack.
-#define SVF_DO_NO_IMPACT_DMG	0x00000400	// This entity Doesn't do impact damage to others.
-#define SVF_NO_PLAYER_DAMAGE	0x00000800	// This entity Doesn't take damage from players.
+#define SVF_DO_NO_IMPACT_DMG	0x00000400	// This entity doesn't do impact damage to others.
+#define SVF_NO_PLAYER_DAMAGE	0x00000800	// This entity doesn't take damage from players.
 #define SVF_PARTS_GIBBED		0x00001000	// Used to delay gibbing so monsters can throw body parts.
 #define SVF_WAIT_NOTSOLID		0x00002000	// Hacky flag to postpone dead monsters from turning notsolid.
 #define SVF_ONFIRE				0x00004000	// He likes it Hot! Hot! Hot!
-#define SVF_SHOW_START_BUOY		0x00008000	// just puts an effect on a buoy for showbuoy debug mode.
-#define SVF_SHOW_END_BUOY		0x00010000	// just puts an effect on a buoy for showbuoy debug mode.
+#define SVF_SHOW_START_BUOY		0x00008000	// Just puts an effect on a buoy for showbuoy debug mode.
+#define SVF_SHOW_END_BUOY		0x00010000	// Just puts an effect on a buoy for showbuoy debug mode.
 #define SVF_FLOAT				0x00020000	// Allows walkmonsters to walk off ledges, assumes a low gravity.
 #define SVF_ALLOW_AUTO_TARGET	0x00040000	// Used to allow player to autotarget non-monsters.
-#define SVF_ALERT_NO_SHADE		0x00080000	// only used by alert_entity to make monsters check the alert as a sound alert.
+#define SVF_ALERT_NO_SHADE		0x00080000	// Only used by alert_entity to make monsters check the alert as a sound alert.
 
 // edict->solid values.
 typedef enum
