@@ -1,12 +1,16 @@
+//
 // g_utils.c -- misc utility functions for game module
+//
+// Copyright 1998 Raven Software
+//
 
 #include "g_local.h"
-#include "FX.h"
 #include "g_combat.h" //mxd
-#include "g_Skeletons.h"
-#include "random.h"
-#include "vector.h"
 #include "g_Physics.h"
+#include "g_Skeletons.h"
+#include "FX.h"
+#include "Random.h"
+#include "Vector.h"
 
 void G_ProjectSource (vec3_t point, vec3_t distance, vec3_t forward, vec3_t right, vec3_t result)
 {
