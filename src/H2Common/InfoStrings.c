@@ -106,7 +106,7 @@ H2COMMON_API void Info_SetValueForKey(char* s, const char* key, const char* valu
 	if (key == NULL)
 		return;
 
-	if (strstr(key, "\\") || (value && strstr(value, "\\")))
+	if (strstr(key, "\\") || (value != NULL && strstr(value, "\\")))
 	{
 		(*com_printf)("Can't use keys or values with a \\\n");
 		return;
@@ -118,13 +118,13 @@ H2COMMON_API void Info_SetValueForKey(char* s, const char* key, const char* valu
 		return;
 	}
 
-	if (strstr(key, "\"") || (value && strstr(value, "\"")))
+	if (strstr(key, "\"") || (value != NULL && strstr(value, "\"")))
 	{
 		(*com_printf)("Can't use keys or values with a \"\n");
 		return;
 	}
 
-	if ((strlen(key) > MAX_INFO_KEY - 1) || (value && (strlen(value) > MAX_INFO_KEY - 1)))
+	if ((strlen(key) > MAX_INFO_KEY - 1) || (value != NULL && (strlen(value) > MAX_INFO_VALUE - 1)))
 	{
 		(*com_printf)("Keys and values must be < 64 characters.\n");
 		return;
@@ -150,9 +150,7 @@ H2COMMON_API void Info_SetValueForKey(char* s, const char* key, const char* valu
 	while (*v != 0)
 	{
 		const char c = *v++; //mxd. int c -> char c
-		//c &= 127; // Strip high bits
-
-		if (c >= ' ' /*&& c < 127*/)
+		if (c >= ' ')
 			*s++ = c;
 	}
 
