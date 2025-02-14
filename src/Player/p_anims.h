@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "p_types.h"
+#include "Player.h"
 
 extern PLAYER_API void PlayerBasicAnimReset(playerinfo_t *info);
 extern PLAYER_API void PlayerAnimReset(playerinfo_t *info);

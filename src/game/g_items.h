@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "p_types.h"
+
 // Health pickups.
 typedef enum
 {

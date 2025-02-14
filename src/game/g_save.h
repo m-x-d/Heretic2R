@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "g_local.h"
+#include "q_Typedef.h"
 
 // Fields are needed for spawning from the entity string and saving / loading games.
 #define FFL_SPAWNTEMP	1
