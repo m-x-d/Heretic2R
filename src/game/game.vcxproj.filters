@@ -1064,5 +1064,35 @@
     <ClInclude Include="g_ShrineLocal.h">
       <Filter>src\Game objects</Filter>
     </ClInclude>
+    <ClInclude Include="spl_flyingfist.h">
+      <Filter>src\Spells</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_magicmissile.h">
+      <Filter>src\Spells</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_sphereofannihlation.h">
+      <Filter>src\Spells</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_maceballs.h">
+      <Filter>src\Spells</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_wall.h">
+      <Filter>src\Spells</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_ripper.h">
+      <Filter>src\Spells</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_blast.h">
+      <Filter>src\Spells</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_RedRain.h">
+      <Filter>src\Spells</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_Phoenix.h">
+      <Filter>src\Spells</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_HellStaff.h">
+      <Filter>src\Spells</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

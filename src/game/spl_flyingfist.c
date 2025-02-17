@@ -5,6 +5,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include "spl_flyingfist.h" //mxd
 #include "g_local.h"
 #include "fx.h"
 #include "vector.h"

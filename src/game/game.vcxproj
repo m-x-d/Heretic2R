@@ -322,7 +322,17 @@
     <ClInclude Include="p_item.h" />
     <ClInclude Include="p_view.h" />
     <ClInclude Include="q_shared.h" />
+    <ClInclude Include="spl_blast.h" />
+    <ClInclude Include="spl_flyingfist.h" />
+    <ClInclude Include="spl_HellStaff.h" />
+    <ClInclude Include="spl_maceballs.h" />
+    <ClInclude Include="spl_magicmissile.h" />
     <ClInclude Include="spl_morph.h" />
+    <ClInclude Include="spl_Phoenix.h" />
+    <ClInclude Include="spl_RedRain.h" />
+    <ClInclude Include="spl_ripper.h" />
+    <ClInclude Include="spl_sphereofannihlation.h" />
+    <ClInclude Include="spl_wall.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

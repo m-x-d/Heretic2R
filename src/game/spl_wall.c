@@ -3,6 +3,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include "spl_wall.h" //mxd
 #include "g_local.h"
 #include "fx.h"
 #include "vector.h"
