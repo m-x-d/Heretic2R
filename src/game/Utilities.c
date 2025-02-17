@@ -243,45 +243,24 @@ static float AddNormalizedAngles(const float angle1, const float angle2)
 	return sum;
 }
 
-qboolean ok_to_autotarget(edict_t *shooter, edict_t *target)
+qboolean ok_to_autotarget(const edict_t* shooter, const edict_t* target) //TODO: rename to OkToAutotarget.
 {
-	if((!target->inuse)||(target->solid==SOLID_NOT)||(target->health<=0)||(target==shooter)||(target->svflags&SVF_NO_AUTOTARGET))
-		return(false);
+	if (!target->inuse || target->solid == SOLID_NOT || target->health <= 0 || target == shooter || (target->svflags & SVF_NO_AUTOTARGET))
+		return false;
 
-	// Don't allow us to find our caster , if there is one.
+	// Don't allow us to auto-target our caster, if there is one.
+	if (shooter->owner != NULL && shooter->owner == target)
+		return false;
 
-	if (shooter->owner)
-	{
-		if (target == shooter->owner)
-			return(false);
-	}
+	// Now test against deathmatch / coop / single player specifics.
+	if (DEATHMATCH)
+		return (target->client != NULL); // Only want to auto-target other clients in deathmatch.
 
-	// Now test against single player / deathmatch / coop specifics.
+	if (COOP && target->client != NULL && (DMFLAGS & DF_HURT_FRIENDS))
+		return true;
 
-	if(deathmatch->value)
-	{
-		// Only want to find other clients in deathmatch.
-
-		if(!target->client)
-			return(false);
-	}
-	else
-	if (coop->value)
-	{
-		if(target->client && ((int)dmflags->value & DF_HURT_FRIENDS))
-			return(true);
-		else
-		if((!(target->svflags&SVF_MONSTER))&&(!(target->svflags&SVF_ALLOW_AUTO_TARGET))) 
-			return(false);
-	}
-	else
-	{
-		// Find just monsters in single player / coop. - unless the hurt friends flag is set
-		if((!(target->svflags&SVF_MONSTER))&&(!(target->svflags&SVF_ALLOW_AUTO_TARGET))) 
-			return(false);
-	}
-
-	return(true);
+	// Find just monsters in single player / coop, unless the hurt friends flag is set.
+	return ((target->svflags & SVF_MONSTER) || (target->svflags & SVF_ALLOW_AUTO_TARGET));
 }
 
 // ************************************************************************************************
