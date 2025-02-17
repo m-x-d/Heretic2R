@@ -250,8 +250,7 @@ qboolean OkToAutotarget(const edict_t* shooter, const edict_t* target) // mxd. N
 // I copied FindNearestActorInFrustum() and modified it so that it can take line-of-sight into account if specified (i.e. LOSStartPos is not NULL).
 // Additionally I relaxed the constraint that the horizontal search arc has to be [-180.0 <= hFOV <= +180.0], so that homing missiles
 // can see all around themselves when looking for a targetet 'lock'. -Marcus
-//TODO: remove unused 'flags' arg, change 'h_fov' and 'v_fov' types to float?
-edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t finder_angles, const float near_dist, const float far_dist, const double h_fov, const double v_fov, long flags, const vec3_t los_start_pos, const vec3_t bb_min, const vec3_t bb_max)
+edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t finder_angles, const float near_dist, const float far_dist, const float h_fov, const float v_fov, const vec3_t los_start_pos, const vec3_t bb_min, const vec3_t bb_max)
 {
 	vec3_t bbmin;
 	vec3_t bbmax;
@@ -275,10 +274,10 @@ edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t fi
 	float best_dist = far_dist * far_dist;
 	const float near_dist_sq = near_dist * near_dist;
 
-	const float min_horiz_fov = (float)(-h_fov * 0.5);
+	const float min_horiz_fov = -h_fov * 0.5f;
 	const float max_horiz_fov = -min_horiz_fov;
 
-	const float min_vert_fov = (float)(-v_fov * 0.5);
+	const float min_vert_fov = -v_fov * 0.5f;
 	const float max_vert_fov = -min_vert_fov;
 
 	const float base_yaw = NormalizeAngle(finder_angles[YAW] * ANGLE_TO_RAD);

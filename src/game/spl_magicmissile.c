@@ -222,7 +222,6 @@ void SpellCastMagicMissile(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3
 													1000.0,
 													ANGLE_30,
 													ANGLE_180,
-													SVF_MONSTER,
 													MagicMissile->s.origin,
 													NULL,NULL))
 	{
