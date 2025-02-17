@@ -31,7 +31,6 @@
 
 // FIXME: include headers.
 extern void PlayerChickenDeath(edict_t *ent);
-extern void CalculatePIV(edict_t *player);
 
 #define SWIM_ADJUST_AMOUNT	16
 #define FOV_DEFAULT			75.0
