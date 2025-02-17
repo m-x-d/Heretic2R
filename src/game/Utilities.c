@@ -514,22 +514,18 @@ void CalculatePIV(const edict_t* player)
 	player->client->ps.PIV = piv;
 }
 
-#define EXTRA_KNOCKBACK_PRE_MULT 2
-#define EXTRA_KNOCKBACK_POST_Z_MULT 1.25
-
-void CalculateKnockBack(vec3_t dir, float knockback, int flags, float mass, vec3_t vel)
+static void CalculateKnockBack(const vec3_t dir, float knockback, const int flags, const float mass, vec3_t vel)
 {
-	if(flags & DAMAGE_EXTRA_KNOCKBACK)
-	{
+#define EXTRA_KNOCKBACK_PRE_MULT		2
+#define EXTRA_KNOCKBACK_POST_Z_MULT		1.25f
+
+	if (flags & DAMAGE_EXTRA_KNOCKBACK)
 		knockback *= EXTRA_KNOCKBACK_PRE_MULT;
-	}
 
-	VectorScale(dir, (KNOCK_BACK_MULTIPLIER * (float)knockback) / mass, vel);
+	VectorScale(dir, KNOCK_BACK_MULTIPLIER * knockback / mass, vel);
 
-	if(flags & DAMAGE_EXTRA_KNOCKBACK)
-	{
+	if (flags & DAMAGE_EXTRA_KNOCKBACK)
 		vel[2] *= EXTRA_KNOCKBACK_POST_Z_MULT;
-	}
 }
 
 void PostKnockBack(edict_t *target, vec3_t dir, float knockback, int flags)
