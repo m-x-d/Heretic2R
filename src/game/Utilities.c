@@ -587,25 +587,13 @@ void SetAnim(edict_t* self, const int anim)
 	self->curAnimID = anim;
 }
 
-// Returns true if it is time to think
-
-qboolean ThinkTime(edict_t *self)
+// Returns true if it is time to think.
+qboolean ThinkTime(const edict_t* self)
 {
-	if(!self->think)
-	{
-		return(false);
-	}
-	if(self->nextthink <= TIME_EPSILON)
-	{
-		return(false);
-	}
-	// Need an epsilon value to account for floating point error
-	// The epsilon can be large because level.time goes up in increments of 0.1
-	if((self->nextthink - level.time) > TIME_EPSILON) 
-	{
-		return(false);
-	}
-	return(true);
-}
+	// Need an epsilon value to account for floating point error.
+	// The epsilon can be large because level.time goes up in increments of 0.1.
+	if (self->think != NULL && self->nextthink > TIME_EPSILON)
+		return (self->nextthink - level.time <= TIME_EPSILON);
 
-// end
+	return false;
+}
