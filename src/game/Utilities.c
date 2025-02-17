@@ -535,36 +535,37 @@ void PostKnockBack(edict_t* target, const vec3_t dir, const float knockback, con
 	QPostMessage(target, G_MSG_KNOCKEDBACK, PRI_PHYSICS, "fffi", vel[0], vel[1], vel[2], flags);
 }
 
-
-// Gets aiming vector to enemy or uses default aimangles
-
-void GetAimVelocity(edict_t *enemy, vec3_t org, vec_t speed, vec3_t AimAngles, vec3_t out)
+// Gets aiming vector to enemy or uses default aimangles.
+void GetAimVelocity(const edict_t* enemy, const vec3_t org, const float speed, const vec3_t aim_angles, vec3_t out)
 {
-	float	h_offs, v_offs;
-
-	if(enemy)
+	if (enemy != NULL)
 	{
-		VectorAverage(enemy->mins, enemy->maxs, out);		// Get center of model
+		VectorAverage(enemy->mins, enemy->maxs, out); // Get center of model
 
-		if(skill->value)
-		{//if skill = 0, aim for center of chest, otherwise, offset it some
-			h_offs = enemy->maxs[0] * 0.75;
-			v_offs = enemy->maxs[2] * 0.5;
+		if (SKILL > SKILL_EASY)
+		{
+			// If skill = 0, aim for center of chest, otherwise, offset it some.
+			const float h_offs = enemy->maxs[0] * 0.75f;
+			const float v_offs = enemy->maxs[2] * 0.5f;
+
 			out[0] += flrand(-h_offs, h_offs);
 			out[1] += flrand(-h_offs, h_offs);
 			out[2] += flrand(-v_offs, v_offs);
 		}
 		else
-			out[2] += enemy->maxs[2] /2;
+		{
+			out[2] += enemy->maxs[2] / 2.0f;
+		}
 
 		Vec3AddAssign(enemy->s.origin, out);
-		Vec3SubtractAssign(org, out);																					
+		Vec3SubtractAssign(org, out);
 		VectorNormalize(out);
 	}
 	else
 	{
-		AngleVectors(AimAngles, out, NULL, NULL);
+		AngleVectors(aim_angles, out, NULL, NULL);
 	}
+
 	Vec3ScaleAssign(speed, out);
 }
 
