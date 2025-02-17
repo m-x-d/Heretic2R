@@ -569,25 +569,21 @@ void GetAimVelocity(const edict_t* enemy, const vec3_t org, const float speed, c
 	Vec3ScaleAssign(speed, out);
 }
 
-void SetAnim(edict_t *self, int anim)
+void SetAnim(edict_t* self, const int anim)
 {
-	monsterinfo_t *monsterinfo = &self->monsterinfo;
+	assert(classStatics[self->classID].resInfo != NULL);
+	assert(classStatics[self->classID].resInfo->animations != NULL);
 
-	assert(classStatics[self->classID].resInfo);
-	assert(classStatics[self->classID].resInfo->animations);
+	self->monsterinfo.currentmove = classStatics[self->classID].resInfo->animations[anim];
 
-	monsterinfo->currentmove = classStatics[self->classID].resInfo->animations[anim];
-
-	//only reset the anim index if the new anim is diff. from your
-	//current anim
-	if(self->curAnimID != anim)
+	// Only reset the anim index if the new anim is different from your current anim.
+	if (self->curAnimID != anim)
 	{
-		monsterinfo->currframeindex = 0;
-		monsterinfo->nextframeindex = 0;
+		self->monsterinfo.currframeindex = 0;
+		self->monsterinfo.nextframeindex = 0;
 	}
 
 	self->lastAnimID = self->curAnimID;
-
 	self->curAnimID = anim;
 }
 
