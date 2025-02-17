@@ -364,99 +364,77 @@ edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t fi
 	return best;
 }
 
-edict_t *FindSpellTargetInRadius(edict_t *searchent, float radius, vec3_t searchpos,
-									  vec3_t mins, vec3_t maxs)
+edict_t* FindSpellTargetInRadius(const edict_t* search_ent, const float radius, const vec3_t search_pos, const vec3_t mins, const vec3_t maxs)
 {
-	vec3_t	distVect,
-			_mins,_maxs,
-			entpos;
-	edict_t *ent,*best;
-	float	curDist, bestDist;
-	trace_t Trace;
+	vec3_t bb_mins;
+	vec3_t bb_maxs;
 
-	assert(radius>=0.0);
-	assert(searchpos);
+	assert(radius >= 0.0f);
+	assert(search_pos != NULL);
 
-	if(!mins)
-		VectorClear(_mins);
+	if (mins == NULL)
+		VectorClear(bb_mins);
 	else
-		VectorCopy(mins, _mins);
+		VectorCopy(mins, bb_mins);
 
-	if(!maxs)
-		VectorClear(_maxs);
+	if (maxs == NULL)
+		VectorClear(bb_maxs);
 	else
-		VectorCopy(maxs, _maxs);
+		VectorCopy(maxs, bb_maxs);
 
-	bestDist = radius * radius;
+	float best_dist_sq = radius * radius;
 
-	best = NULL;
-	ent = NULL;
-	while(ent = FindInRadius(ent, searchpos, radius))
+	edict_t* best = NULL;
+	edict_t* ent = NULL;
+
+	while ((ent = FindInRadius(ent, search_pos, radius)) != NULL)
 	{
 		// Ignore certain entities altogether.
-		if (ent == searchent || ent == searchent->owner)
+		if (ent == search_ent || ent == search_ent->owner)
 			continue;
 
-		if (!ent->takedamage && ent->health <= 0)
+		if (ent->takedamage == DAMAGE_NO && ent->health <= 0)
 			continue;
 
-		if(!ok_to_autotarget(searchent, ent))
+		if (!ok_to_autotarget(search_ent, ent))
 			continue;
 
-		// don't target ghosting players, or target players in coop.
+		// Don't target ghosting players, or target players in coop.
 		if (ent->client && (ent->client->playerinfo.ghost_timer > level.time))
 			continue;
 
-		// don't target team members in team deathmatching, if they are on the same team, and friendly fire is not enabled.
-		if (((int)(dmflags->value) & (DF_MODELTEAMS | DF_SKINTEAMS)) && !((int)dmflags->value & DF_HURT_FRIENDS) && deathmatch->value)
-		{
-			if (OnSameTeam(ent, searchent->owner))
+		// Don't target team members in team deathmatch, if they are on the same team, and friendly fire is not enabled.
+		if (DEATHMATCH && (DMFLAGS & (DF_MODELTEAMS | DF_SKINTEAMS)) && !(DMFLAGS & DF_HURT_FRIENDS))
+			if (OnSameTeam(ent, search_ent->owner))
 				continue;
-		}
 
-		// Get the center (in world terms) of the entity (actually the center according to it's
-		// bounding box).
-		GetEdictCenter(ent, entpos);
+		// Get the center (in world terms) of the entity (actually the center according to it's bounding box).
+		vec3_t ent_pos;
+		GetEdictCenter(ent, ent_pos);
 
 		// Ok, we can see the entity (or don't care whether we can or can't) so make the checks to
 		// see if it lies within the specified frustum parameters.
 
-		VectorSubtract(entpos, searchpos, distVect);
+		vec3_t ent_dist;
+		VectorSubtract(ent_pos, search_pos, ent_dist);
 
-		curDist = distVect[1] * distVect[1] + distVect[0] * distVect[0] + distVect[2] * distVect[2];
+		const float cur_dist_sq = VectorLengthSquared(ent_dist);
 
-		if(curDist <= bestDist)
+		if (cur_dist_sq > best_dist_sq || !gi.inPVS(search_pos, ent_pos)) // Cheaper than a trace.
+			continue;
+
+		trace_t trace;
+		gi.trace(search_pos, bb_mins, bb_maxs, ent_pos, search_ent, CONTENTS_SOLID, &trace);
+
+		if (!trace.startsolid && trace.fraction == 1.0f)
 		{
-			if(gi.inPVS(searchpos, entpos))
-			{//cheaper than a trace
-				gi.trace(searchpos,						// Start pos.
-							   _mins,					// Bounding box min.
-							   _maxs,					// Bounding box max.
-							   entpos,					// End pos.
-							   searchent,				// Ignore this edict.
-							   CONTENTS_SOLID, &Trace);	  		// Contents mask.
-
-				if((Trace.fraction!=1.0)||(Trace.startsolid))
-				{
-					continue;
-				}
-				else
-				{
-					bestDist=curDist;
-					best=ent;
-				}
-			}
+			best_dist_sq = cur_dist_sq;
+			best = ent;
 		}
 	}
 
-	return(best);
+	return best;
 }
-
-
-
-
-
-
 
 // Pretty much the same as the above routine
 // Except it is only for client to client
