@@ -1,36 +1,24 @@
+//
+// Utilities.h
+//
+// Copyright 1998 Raven Software
+//
+
 #pragma once
 
 #include "q_Typedef.h"
 
-#define LUNG_AIRTIME 12
-#define GILL_AIRTIME 18
-
 #define KNOCK_BACK_MULTIPLIER 1000.0f
 
-float NormalizeAngle(float angle);
-float AddNormalizedAngles(float angle1, float angle2);
+extern edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t finder_angles,
+	float near_dist, float far_dist, double h_fov, double v_fov, long flags, const vec3_t los_start_pos, const vec3_t bb_min, const vec3_t bb_max);
 
-extern edict_t *FindNearestVisibleActorInFrustum(edict_t *Finder,vec3_t FinderAngles,
-													float nearDist,float farDist,
-													double hFOV,double vFOV,
-													long Flags,
-													vec3_t LOSStartPos,
-													vec3_t BBMin,vec3_t BBMax);
+extern edict_t* FindSpellTargetInRadius(const edict_t* search_ent, float radius, const vec3_t search_pos, const vec3_t mins, const vec3_t maxs);
 
-extern edict_t *FindSpellTargetInRadius(edict_t *searchent, float radius, vec3_t searchpos,
-													vec3_t mins, vec3_t maxs);
+extern void SetAnim(edict_t* self, int anim);
+extern void PostKnockBack(edict_t* target, const vec3_t dir, float knockback, int flags);
+extern void GetAimVelocity(const edict_t* enemy, const vec3_t org, float speed, const vec3_t aim_angles, vec3_t out);
+extern void CalculatePIV(const edict_t* player);
 
-extern void GetVectorsToActor(edict_t *self, edict_t *actor, vec3_t vec);
-extern void QPlaySound(edict_t *self, int sound, int channel);
-
-extern void SetAnim(edict_t *self, int anim);
-
-extern void CalculateKnockBack(vec3_t dir, float knockback, int flags, float mass, vec3_t vel);
-extern void PostKnockBack(edict_t *target, vec3_t dir, float knockback, int flags);
-
-void StartICScript(char *name);
-void GetAimVelocity(edict_t *enemy, vec3_t org, vec_t speed, vec3_t AimAngles, vec3_t out);
-void remove_non_cinematic_entites(edict_t *owner);
-
-qboolean ok_to_autotarget(edict_t *shooter, edict_t *target);
-qboolean ThinkTime(edict_t *self);
+extern qboolean ok_to_autotarget(const edict_t* shooter, const edict_t* target);
+extern qboolean ThinkTime(const edict_t* self);
