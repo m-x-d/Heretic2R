@@ -528,12 +528,10 @@ static void CalculateKnockBack(const vec3_t dir, float knockback, const int flag
 		vel[2] *= EXTRA_KNOCKBACK_POST_Z_MULT;
 }
 
-void PostKnockBack(edict_t *target, vec3_t dir, float knockback, int flags)
+void PostKnockBack(edict_t* target, const vec3_t dir, const float knockback, const int flags)
 {
-	vec3_t	vel;
-
-	CalculateKnockBack(dir, knockback, flags, target->mass, vel);
-
+	vec3_t vel;
+	CalculateKnockBack(dir, knockback, flags, (float)target->mass, vel);
 	QPostMessage(target, G_MSG_KNOCKEDBACK, PRI_PHYSICS, "fffi", vel[0], vel[1], vel[2], flags);
 }
 
