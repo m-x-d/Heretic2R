@@ -1,42 +1,33 @@
-// g_weapon.c - generic weapon handling code for all player weapons //TODO: mxd. Rename to p_weapon.c ?
+//
+// g_weapon.c -- Generic weapon handling code for all player weapons.
+//
+// Copyright 1998 Raven Software
+//
 
-//#include "p_types.h"
-#include "player.h"
-#include "g_local.h"
-#include "p_weapon.h"
-#include "m_player.h"
-#include "fx.h"
-#include "matrix.h"
-#include "vector.h"
+#include "g_weapon.h" //mxd
+#include "p_anims.h"
+#include "p_main.h"
+#include "g_playstats.h"
 #include "g_skeletons.h"
-#include "angles.h"
 #include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
-#include "Reference.h"
-#include "Random.h"
-#include "Utilities.h"
-#include "g_items.h"
-#include "g_playstats.h"
-#include "p_main.h"
 #include "m_beast.h"
-#include "p_anims.h"
-
-extern void SpellCastFlyingFist(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,float Value);
-extern void SpellCastMagicMissile(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir);
-extern void SpellCastMagicMissileSpread(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,
-										float NoOfMissiles,float Separation);
-extern void SpellCastSphereOfAnnihilation(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,
-										 float Value,qboolean *ReleaseFlagsPtr);
-extern void SpellCastMaceball(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,float Value);
-extern void SpellCastWall(edict_t *caster, vec3_t startpos, vec3_t aimangles, vec3_t AimDir, float Value);
-extern void SpellCastRipper(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir);
-extern void SpellCastBlast(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir);
-extern void SpellCastRedRain(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,float Value);
-extern void SpellCastPhoenix(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,float Value);
-extern void SpellCastHellstaff(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir);
-
-static void Weapon_CalcStartPos(vec3_t OriginToLowerJoint,vec3_t OriginToUpperJoint,
-								vec3_t DefaultStartPos,vec3_t ActualStartPos,edict_t *Caster);
+#include "spl_blast.h" //mxd
+#include "spl_flyingfist.h" //mxd
+#include "spl_HellStaff.h" //mxd
+#include "spl_maceballs.h" //mxd
+#include "spl_magicmissile.h" //mxd
+#include "spl_Phoenix.h" //mxd
+#include "spl_RedRain.h" //mxd
+#include "spl_ripper.h" //mxd
+#include "spl_sphereofannihlation.h" //mxd
+#include "spl_wall.h" //mxd
+#include "FX.h"
+#include "Matrix.h"
+#include "Random.h"
+#include "Reference.h"
+#include "Vector.h"
+#include "g_local.h"
 
 // ************************************************************************************************
 // Weapon_CalcStartPos
