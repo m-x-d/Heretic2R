@@ -225,44 +225,22 @@ static float NormalizeAngle(float angle)
 	return angle;
 }
 
-float AddNormalizedAngles(float angle1, float angle2)
+static float AddNormalizedAngles(const float angle1, const float angle2)
 {
-	float sum;
+	const float sum = angle1 + angle2;
 
-	if(angle1 >= 0)
+	if (angle1 >= 0.0f)
 	{
-		if(angle2 >= 0)
-		{
-			sum = angle1 + angle2;
-
-			if(sum >= ANGLE_180)
-			{
-				return (sum - ANGLE_360);
-			}
-		}
-		else
-		{
-			return (angle1 + angle2);
-		}
+		if (angle2 >= 0.0f && sum >= ANGLE_180)
+			return sum - ANGLE_360;
 	}
 	else
 	{
-		if(angle2 < 0)
-		{
-			sum = angle1 + angle2;
-
-			if(sum < -ANGLE_180)
-			{
-				return (sum + ANGLE_360);
-			}
-		}
-		else
-		{
-			return (angle1 + angle2);
-		}
+		if (angle2 < 0.0f && sum < -ANGLE_180)
+			return sum + ANGLE_360;
 	}
 
-	return sum;	
+	return sum;
 }
 
 qboolean ok_to_autotarget(edict_t *shooter, edict_t *target)
