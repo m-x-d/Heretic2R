@@ -136,76 +136,71 @@ void remove_non_cinematic_entites(const edict_t* owner) //TODO: rename to Remove
 	}
 }
 
-void reinstate_non_cinematic_entites(edict_t *owner)
+void reinstate_non_cinematic_entites(edict_t* owner) //TODO: rename to ReinstateNonCinematicEntities, remove unused arg.
 {
-	int i;
-	edict_t	*ent = NULL;
-
-	// Put client entities back in game
-	ent = NULL;
-	for (i=0 ; i<maxclients->value ; i++)
+	// Put client entities back in game.
+	for (int i = 0; i < MAXCLIENTS; i++)
 	{
-		ent = g_edicts + 1 + i;
-		if (!ent->inuse || !ent->client)
+		edict_t* player = &g_edicts[i + 1];
+		playerinfo_t* info = &player->client->playerinfo; //mxd
+
+		if (!player->inuse || player->client == NULL)
 			continue;
 
-		if (level.time > ent->client->playerinfo.cinematic_starttime)
+		if (level.time > info->cinematic_starttime)
 		{
 
-			if (ent->client->playerinfo.light_timer > ent->client->playerinfo.cinematic_starttime)
+			if (info->light_timer > info->cinematic_starttime)
 			{
-				ent->client->playerinfo.light_timer += level.time - ent->client->playerinfo.cinematic_starttime;
-				ent->s.effects |= EF_LIGHT_ENABLED;
-				gi.CreateEffect(&ent->s, FX_PLAYER_TORCH, CEF_OWNERS_ORIGIN, NULL, "");
+				info->light_timer += level.time - info->cinematic_starttime;
+				player->s.effects |= EF_LIGHT_ENABLED;
+				gi.CreateEffect(&player->s, FX_PLAYER_TORCH, CEF_OWNERS_ORIGIN, NULL, "");
 			}
 
-			if (ent->client->playerinfo.reflect_timer > ent->client->playerinfo.cinematic_starttime)
+			if (info->reflect_timer > info->cinematic_starttime)
 			{
-				ent->client->playerinfo.reflect_timer += level.time - ent->client->playerinfo.cinematic_starttime;
-				ent->s.renderfx |= RF_REFLECTION;
+				info->reflect_timer += level.time - info->cinematic_starttime;
+				player->s.renderfx |= RF_REFLECTION;
 			}
 
-			if (ent->client->playerinfo.ghost_timer > ent->client->playerinfo.cinematic_starttime)
+			if (info->ghost_timer > info->cinematic_starttime)
 			{
-				ent->client->playerinfo.ghost_timer += level.time - ent->client->playerinfo.cinematic_starttime;
-				ent->s.renderfx |= RF_TRANS_GHOST;
+				info->ghost_timer += level.time - info->cinematic_starttime;
+				player->s.renderfx |= RF_TRANS_GHOST;
 			}
 
-			if (ent->client->playerinfo.powerup_timer > ent->client->playerinfo.cinematic_starttime)
+			if (info->powerup_timer > info->cinematic_starttime)
 			{
-				ent->client->playerinfo.powerup_timer += level.time - ent->client->playerinfo.cinematic_starttime;
-				ent->s.effects |= EF_POWERUP_ENABLED;
-				ent->client->playerinfo.effects |= EF_POWERUP_ENABLED;
-				gi.CreateEffect(&ent->s, FX_TOME_OF_POWER, CEF_OWNERS_ORIGIN, NULL, "");
+				info->powerup_timer += level.time - info->cinematic_starttime;
+				player->s.effects |= EF_POWERUP_ENABLED;
+				info->effects |= EF_POWERUP_ENABLED;
+				gi.CreateEffect(&player->s, FX_TOME_OF_POWER, CEF_OWNERS_ORIGIN, NULL, "");
 			}
 
-			if (ent->client->playerinfo.cin_shield_timer > ent->client->playerinfo.cinematic_starttime)
+			if (info->cin_shield_timer > info->cinematic_starttime)
 			{
-				ent->client->playerinfo.shield_timer = 
-					ent->client->playerinfo.cin_shield_timer + level.time - ent->client->playerinfo.cinematic_starttime;
-				ent->PersistantCFX = gi.CreatePersistantEffect(&ent->s, FX_SPELL_LIGHTNINGSHIELD, CEF_OWNERS_ORIGIN|CEF_BROADCAST, NULL, "");
+				info->shield_timer = info->cin_shield_timer + level.time - info->cinematic_starttime;
+				player->PersistantCFX = gi.CreatePersistantEffect(&player->s, FX_SPELL_LIGHTNINGSHIELD, CEF_OWNERS_ORIGIN | CEF_BROADCAST, NULL, "");
 			}
 
-			if (ent->client->playerinfo.speed_timer > ent->client->playerinfo.cinematic_starttime)
+			if (info->speed_timer > info->cinematic_starttime)
 			{
-				ent->client->playerinfo.speed_timer += level.time - ent->client->playerinfo.cinematic_starttime;
-				ent->s.effects |= EF_SPEED_ACTIVE;
-				ent->client->playerinfo.effects |= EF_SPEED_ACTIVE;
-				gi.CreateEffect(&ent->s, FX_FOOT_TRAIL, CEF_OWNERS_ORIGIN, NULL, "");
+				info->speed_timer += level.time - info->cinematic_starttime;
+				player->s.effects |= EF_SPEED_ACTIVE;
+				info->effects |= EF_SPEED_ACTIVE;
+				gi.CreateEffect(&player->s, FX_FOOT_TRAIL, CEF_OWNERS_ORIGIN, NULL, "");
 			}
 
-			// since we messed around with model stuff, like armor nodes and the like, lets update the model.
-			SetupPlayerinfo_effects(ent);
-			P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
-			WritePlayerinfo_effects(ent);
-
+			// Since we messed around with model stuff, like armor nodes and the like, lets update the model.
+			SetupPlayerinfo_effects(player);
+			P_PlayerUpdateModelAttributes(&player->client->playerinfo);
+			WritePlayerinfo_effects(player);
 		}
-		
-		ent->client->playerinfo.c_mode = 0;	// Show cinematic mode is off
-		ent->s.modelindex = ent->curr_model;
-		ent->solid = SOLID_BBOX;
-	}
 
+		info->c_mode = 0; // Show cinematic mode is off.
+		player->s.modelindex = (byte)player->curr_model;
+		player->solid = SOLID_BBOX;
+	}
 }
 
 void GetEdictCenter(edict_t *self, vec3_t out)
