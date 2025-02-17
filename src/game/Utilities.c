@@ -203,7 +203,7 @@ void reinstate_non_cinematic_entites(edict_t* owner) //TODO: rename to Reinstate
 	}
 }
 
-void GetEdictCenter(edict_t *self, vec3_t out)
+static void GetEdictCenter(const edict_t* self, vec3_t out)
 {
 	VectorAverage(self->mins, self->maxs, out);
 	Vec3AddAssign(self->s.origin, out);
