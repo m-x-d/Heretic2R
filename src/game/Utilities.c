@@ -436,102 +436,82 @@ edict_t* FindSpellTargetInRadius(const edict_t* search_ent, const float radius, 
 	return best;
 }
 
-// Pretty much the same as the above routine
-// Except it is only for client to client
-
-#define MAX_PLAYER_VIEW		1024.0F
-
-// FIXME : Need to use cameras origin, not players origin
-
-void CalculatePIV(edict_t *player)
+void CalculatePIV(const edict_t* player)
 {
-	int			i, PIV;
-	edict_t		*target;
-	float		FOV;
-	vec3_t		endpos, dist, movedir;
-	vec3_t		mins, maxs, angles, org;
-	trace_t		trace;
-	int			frameidx, playeridx;
+#define MAX_PLAYER_VIEW		1024.0f
 
-	// if we have no names on through deathmatch flags, don't send them down
-	if(deathmatch->value && ((int)dmflags->value & DF_NONAMES))
+	// If we have no names on through deathmatch flags, don't send them down.
+	if (DEATHMATCH && (DMFLAGS & DF_NONAMES))
 	{
 		player->client->ps.PIV = 0;
 		return;
 	}
 
-	// Only update data once every 8 frames
-	frameidx = level.framenum & 7;
-	playeridx = (player->s.number - 1) & 7;
-	if(frameidx != playeridx)
-	{
+	// Only update data once every 8 frames.
+	const int frame_idx = level.framenum & 7;
+	const int player_idx = (player->s.number - 1) & 7;
+
+	if (frame_idx != player_idx)
 		return;
-	}
 
+	int piv = 0;
+	const float fov = cosf(player->client->ps.fov * ANGLE_TO_RAD * 0.5f);
 
-	PIV = 0;
-	FOV	= cos(player->client->ps.fov * ANGLE_TO_RAD * 0.5);
+	// Grab camera angles.
+	vec3_t angles;
+	for (int i = 0; i < 3; i++)
+		angles[i] = SHORT2ANGLE(player->client->playerinfo.pcmd.camera_viewangles[i]);
 
-	// Grab camera angles
-	angles[0] = SHORT2ANGLE(player->client->playerinfo.pcmd.camera_viewangles[0]);
-	angles[1] = SHORT2ANGLE(player->client->playerinfo.pcmd.camera_viewangles[1]);
-	angles[2] = SHORT2ANGLE(player->client->playerinfo.pcmd.camera_viewangles[2]);
-	AngleVectors(angles, movedir, NULL, NULL);
+	vec3_t move_dir;
+	AngleVectors(angles, move_dir, NULL, NULL);
 
-	// Grab camera coords
-	org[0] = player->client->playerinfo.pcmd.camera_vieworigin[0] * 0.125F;
-	org[1] = player->client->playerinfo.pcmd.camera_vieworigin[1] * 0.125F;
-	org[2] = player->client->playerinfo.pcmd.camera_vieworigin[2] * 0.125F;
+	// Grab camera coords.
+	vec3_t org;
+	for (int i = 0; i < 3; i++)
+		org[i] = (float)player->client->playerinfo.pcmd.camera_vieworigin[i] / 8.0f;
 
-	VectorScale(player->mins, 0.25F, mins);
-	VectorScale(player->maxs, 0.25F, maxs);
+	vec3_t mins;
+	vec3_t maxs;
+	VectorScale(player->mins, 0.25f, mins);
+	VectorScale(player->maxs, 0.25f, maxs);
 
-	// FIXME : Need some way of knowing whether client is valid or not
-	for(i = 0, target = g_edicts + 1; i < game.maxclients; i++, target++)
+	//FIXME: need some way of knowing whether client is valid or not.
+	edict_t* target = &g_edicts[1];
+	for (int i = 0; i < game.maxclients; i++, target++)
 	{
-		assert(target->client);
-		// Don`t do an in view check on yourself
-		if(player == target)
-		{
-			continue;
-		}
-		if(!target->inuse)
-		{
-			continue;
-		}
-		if (target->s.renderfx & RF_TRANS_GHOST)
-		{	// Can't target ghosts.
-			continue;
-		}
-		if (target->light_level < 16)
-		{	// Too dark to see
-			continue;
-		}
-		// Get center of enemy
-		GetEdictCenter(target, endpos);
-		VectorSubtract(endpos, org, dist);
+		assert(target->client != NULL);
 
-		// Check range to other player
-		if(VectorNormalize(dist) > MAX_PLAYER_VIEW)
-		{
+		// Don`t do an in-view check on yourself.
+		if (player == target || !target->inuse)
 			continue;
-		}
-		// Check in players FOV
-		if(DotProduct(dist, movedir) < FOV)
-		{
+
+		// Can't target ghosts or too dark to see.
+		if ((target->s.renderfx & RF_TRANS_GHOST) || target->light_level < 16)
 			continue;
-		}
-		if(!gi.inPVS(org, endpos))
-		{
+
+		// Get center of enemy.
+		vec3_t end_pos;
+		GetEdictCenter(target, end_pos);
+
+		vec3_t dist;
+		VectorSubtract(end_pos, org, dist);
+
+		// Check range to other player.
+		if (VectorNormalize(dist) > MAX_PLAYER_VIEW)
 			continue;
-		}
-		gi.trace(org, mins, maxs, endpos, player, MASK_PLAYERSOLID,&trace);
-		if(trace.ent == target)
-		{
-			PIV |= 1 << i;
-		}
+
+		// Check in players FOV.
+		if (DotProduct(dist, move_dir) < fov || !gi.inPVS(org, end_pos))
+			continue;
+
+		trace_t trace;
+		gi.trace(org, mins, maxs, end_pos, player, MASK_PLAYERSOLID, &trace);
+
+		if (trace.ent == target)
+			piv |= 1 << i;
 	}
-	player->client->ps.PIV = PIV;
+
+	player->client->ps.PIV = piv;
 }
 
 void GetVectorsToActor(edict_t *self, edict_t *actor, vec3_t vec)
