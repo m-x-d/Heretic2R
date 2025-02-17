@@ -263,130 +263,105 @@ qboolean ok_to_autotarget(const edict_t* shooter, const edict_t* target) //TODO:
 	return ((target->svflags & SVF_MONSTER) || (target->svflags & SVF_ALLOW_AUTO_TARGET));
 }
 
-// ************************************************************************************************
-// FindNearestVisibleActorInFrustum
-// --------------------------------
-// I copied FindNearestActorInFrustum() and modified it so that it can take line-of-sight into
-// account if specified (i.e. LOSStartPos is not NULL). Additionally I relaxed the constraint that
-// the horizontal search arc has to be [-180.0<=hFOV<=+180.0] so that homing missiles can see all
-// around themselves when looking for a targetet 'lock'. -Marcus
-// ************************************************************************************************
-edict_t *FindNearestVisibleActorInFrustum(edict_t *Finder,vec3_t FinderAngles,
-										  float nearDist,float farDist,
-										  double hFOV,double vFOV,
-										  long Flags,
-										  vec3_t LOSStartPos,
-										  vec3_t BBMin,vec3_t BBMax)
+// I copied FindNearestActorInFrustum() and modified it so that it can take line-of-sight into account if specified (i.e. LOSStartPos is not NULL).
+// Additionally I relaxed the constraint that the horizontal search arc has to be [-180.0 <= hFOV <= +180.0], so that homing missiles
+// can see all around themselves when looking for a targetet 'lock'. -Marcus
+//TODO: remove unused 'flags' arg, change 'h_fov' and 'v_fov' types to float?
+edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t finder_angles, const float near_dist, const float far_dist, const double h_fov, const double v_fov, long flags, const vec3_t los_start_pos, const vec3_t bb_min, const vec3_t bb_max)
 {
-	vec3_t	distVect,
-			_BBMin,_BBMax,
-			TempVec;
-	edict_t *end,*best,*ent;
-	float	curDist,nearDist2,
-			bestDist,
-			curYaw,curPitch,
-			minHFOV,maxHFOV,minVFOV,maxVFOV;
-	float	baseYaw,distTemp,mag;
-	trace_t Trace;
+	vec3_t bbmin;
+	vec3_t bbmax;
 
-	assert(nearDist>=0.0);
+	assert(near_dist >= 0.0f);
 
-	if(LOSStartPos)
-	{	
-		if(!BBMin)
-			VectorClear(_BBMin);
+	// Initialize bbox.
+	if (los_start_pos != NULL)
+	{
+		if (bb_min == NULL)
+			VectorClear(bbmin);
 		else
-			VectorCopy(BBMin,_BBMin);
+			VectorCopy(bb_min, bbmin);
 
-		if(!BBMax)
-			VectorClear(_BBMax);
+		if (bb_max == NULL)
+			VectorClear(bbmax);
 		else
-			VectorCopy(BBMax,_BBMax);
+			VectorCopy(bb_max, bbmax);
 	}
 
-	bestDist = farDist * farDist;
-	nearDist2 = nearDist * nearDist;
+	float best_dist = far_dist * far_dist;
+	const float near_dist_sq = near_dist * near_dist;
 
-	minHFOV = -hFOV * 0.5;
-	maxHFOV = -minHFOV;
+	const float min_horiz_fov = (float)(-h_fov * 0.5);
+	const float max_horiz_fov = -min_horiz_fov;
 
-	minVFOV = -vFOV * 0.5;
-	maxVFOV = -minVFOV;
+	const float min_vert_fov = (float)(-v_fov * 0.5);
+	const float max_vert_fov = -min_vert_fov;
 
-	baseYaw = NormalizeAngle(FinderAngles[YAW] * ANGLE_TO_RAD);
-	best = NULL;
+	const float base_yaw = NormalizeAngle(finder_angles[YAW] * ANGLE_TO_RAD);
+	edict_t* best = NULL;
 
-	end = &g_edicts[globals.num_edicts];
+	const edict_t* end = &g_edicts[globals.num_edicts];
 
-	for(ent = g_edicts + 1; ent < end; ent++)
+	for (edict_t* e = &g_edicts[1]; e < end; e++)
 	{
 		// Ignore certain entities altogether.
-		if(!ok_to_autotarget(Finder, ent))
+		if (!ok_to_autotarget(finder, e))
 			continue;
 
-		// don't target ghosting players.
-		if (ent->client && (ent->client->playerinfo.ghost_timer > level.time))
+		// Don't target ghosting players.
+		if (e->client != NULL && e->client->playerinfo.ghost_timer > level.time)
 			continue;
 
-		// Get the center (in world terms) of the entity (actually the center according to it's
-		// bounding box).
-		GetEdictCenter(ent, TempVec);
+		// Get the center (in world terms) of the entity (actually the center according to it's bounding box).
+		vec3_t end_pos;
+		GetEdictCenter(e, end_pos);
 
-		// Ok, we can see the entity (or don't care whether we can or can't) so make the checks to
+		// Ok, we can see the entity (or don't care whether we can or can't), so make the checks to
 		// see if it lies within the specified frustum parameters.
 
-		VectorSubtract(TempVec, Finder->s.origin, distVect);
+		vec3_t dist_vec;
+		VectorSubtract(end_pos, finder->s.origin, dist_vec);
 
-		distTemp = distVect[1] * distVect[1] + distVect[0] * distVect[0];
-		curDist = distTemp + distVect[2] * distVect[2];
+		// Check distance.
+		const float cur_dist_xy_sq = dist_vec[1] * dist_vec[1] + dist_vec[0] * dist_vec[0];
+		const float cur_dist_sq = cur_dist_xy_sq + dist_vec[2] * dist_vec[2];
 
-		if((curDist >= nearDist2) && (curDist <= bestDist))
+		if (cur_dist_sq < near_dist_sq || cur_dist_sq > best_dist)
+			continue;
+
+		// Check if in horizontal FOV.
+		float mag = sqrtf(cur_dist_xy_sq);
+		float cur_yaw = atan2f(dist_vec[1] / mag, dist_vec[0] / mag);
+		cur_yaw = AddNormalizedAngles(cur_yaw, -base_yaw);
+
+		if (cur_yaw < min_horiz_fov || cur_yaw > max_horiz_fov)
+			continue;
+
+		// Check if in vertical FOV.
+		mag = sqrtf(dist_vec[1] * dist_vec[1] + dist_vec[2] * dist_vec[2]);
+		const float cur_pitch = asinf(dist_vec[2] / mag);
+
+		if (cur_pitch < min_vert_fov || cur_pitch > max_vert_fov)
+			continue;
+
+		// If los_start_pos is not NULL, we need a line of sight to the entity (see above), else skip to the next entity.
+		if (los_start_pos != NULL)
 		{
-			mag = sqrt(distTemp);
+			if (!gi.inPVS(los_start_pos, end_pos)) // Cheaper than a trace.
+				continue;
 
-			curYaw = atan2(distVect[1]/mag,distVect[0]/mag);
+			trace_t trace;
+			gi.trace(los_start_pos, bbmin, bbmax, end_pos, finder, CONTENTS_SOLID, &trace);
 
-			curYaw = AddNormalizedAngles(curYaw,-baseYaw);
-
-			if((curYaw>=minHFOV)&&(curYaw<=maxHFOV))
-			{
-				mag=sqrt(distVect[1]*distVect[1]+distVect[2]*distVect[2]);
-
-				curPitch=asin(distVect[2]/mag);
-
-				if((curPitch>=minVFOV)&&(curPitch<=maxVFOV))
-				{
-					// If LOSStartPos is not NULL, we need a line of sight to the entity (see above), else
-					// skip to the next entity.
-
-					if(LOSStartPos)
-					{	
-						if(gi.inPVS(LOSStartPos, TempVec))
-						{//cheaper than a trace
-							gi.trace(LOSStartPos,				// Start pos.
-										   _BBMin,					// Bounding box min.
-										   _BBMax,					// Bounding box max.
-										   TempVec,					// End pos.
-										   Finder,					// Ignore this edict.
-										   CONTENTS_SOLID,&Trace);	  		// Contents mask.
-
-							if((Trace.fraction!=1.0)||(Trace.startsolid))
-							{
-								continue;
-							}
-						}
-						else
-							continue;
-					}
-
-					bestDist=curDist;
-					best=ent;
-				}
-			}
+			if (trace.startsolid || trace.fraction != 1.0f)
+				continue;
 		}
+
+		best_dist = cur_dist_sq;
+		best = e;
 	}
 
-	return(best);
+	return best;
 }
 
 edict_t *FindSpellTargetInRadius(edict_t *searchent, float radius, vec3_t searchpos,
