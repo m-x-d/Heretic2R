@@ -622,8 +622,13 @@ extern qboolean PossessCorrectItem(const edict_t* ent, const gitem_t* item); //m
 extern "C"
 {
 #endif
+	// g_utils.c funcs used by ds.cpp...
 	extern edict_t* G_Find(edict_t* from, int fieldofs, const char* match);
 	extern edict_t* G_Spawn(void);
+
+	//mxd. Utilities.c funcs used by ds.cpp...
+	extern void remove_non_cinematic_entites(const edict_t* owner);
+	extern void reinstate_non_cinematic_entites(edict_t* owner);
 #ifdef __cplusplus
 }
 #endif

@@ -28,9 +28,7 @@ extern "C"
 #endif
 	extern void Use_Multi(edict_t *self, edict_t *other, edict_t *activator);
 	extern void c_swapplayer(edict_t *Self,edict_t *Cinematic);
-	extern void remove_non_cinematic_entites(edict_t *owner);
-	extern void reinstate_non_cinematic_entites(edict_t *owner);
-	extern cvar_t 	*Cvar_Set (char *var_name, char *value);
+	extern cvar_t 	*Cvar_Set (const char *var_name, const char *value);
 #ifdef _HERETIC2_
 }
 #endif
