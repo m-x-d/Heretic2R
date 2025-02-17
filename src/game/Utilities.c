@@ -11,152 +11,129 @@
 #include "Vector.h"
 #include "g_local.h"
 
-//kill specific entitys at the begining of a cinematic
-void remove_non_cinematic_entites(edict_t *owner)
+// Kill specific entities at the beginning of a cinematic.
+void remove_non_cinematic_entites(const edict_t* owner) //TODO: rename to RemoveNonCinematicEntities.
 {
-	int i;
-	edict_t	*ent = NULL;
+	edict_t* ent = NULL;
 
-	// firstly, search for RED RAIN DAMAGE entites
-	while (1)
+	// Firstly, search for RED RAIN DAMAGE entities.
+	while ((ent = G_Find(ent, FOFS(classname), "Spell_RedRain")) != NULL)
 	{
-		ent = G_Find (ent, FOFS(classname), "Spell_RedRain");
-		if (!ent)
-			break;
-		if (!owner || (ent->owner && (ent->owner == owner)))
+		if (owner == NULL || owner == ent->owner)
 		{
-			// kill the rain sound
-			gi.sound(ent, CHAN_VOICE, gi.soundindex("misc/null.wav"), 1, ATTN_NORM,0);
-			// remove the entity
-			gi.RemoveEffects(&ent->s, FX_WEAPON_REDRAIN);
+			gi.sound(ent, CHAN_VOICE, gi.soundindex("misc/null.wav"), 1.0f, ATTN_NORM, 0.0f); // Kill the rain sound.
+			gi.RemoveEffects(&ent->s, FX_WEAPON_REDRAIN); // Remove the entity.
+
 			G_SetToFree(ent);
 		}
 	}
 
-	// then remove red rain arrows - in case of hitting something and starting the red rain
 	ent = NULL;
-	while (1)
+
+	// Then remove red rain arrows - in case of hitting something and starting the red rain.
+	while ((ent = G_Find(ent, FOFS(classname), "Spell_RedRainArrow")) != NULL)
 	{
-		ent = G_Find (ent, FOFS(classname), "Spell_RedRainArrow");
-		if (!ent)
-			break;
-		if (!owner || (ent->owner && (ent->owner == owner)))
+		if (owner == NULL || owner == ent->owner)
 		{
-			// kill the rain arrow travel sound
-			gi.sound(ent, CHAN_VOICE, gi.soundindex("misc/null.wav"), 1, ATTN_NORM,0);
-			// remove the entity
-			gi.RemoveEffects(&ent->s, FX_WEAPON_REDRAINMISSILE);
+			gi.sound(ent, CHAN_VOICE, gi.soundindex("misc/null.wav"), 1.0f, ATTN_NORM, 0.0f); // Kill the rain arrow travel sound.
+			gi.RemoveEffects(&ent->s, FX_WEAPON_REDRAINMISSILE); // Remove the entity.
+
 			G_SetToFree(ent);
 		}
 	}
 
-	// look for Powered up Mace balls - they've got to go too.
 	ent = NULL;
-	while (1)
+
+	// Look for Powered up Mace balls - they've got to go too.
+	while ((ent = G_Find(ent, FOFS(classname), "Spell_Maceball")) != NULL)
+		if (owner == NULL || owner == ent->owner)
+			G_SetToFree(ent); // Remove the entity.
+
+	ent = NULL;
+
+	// Look for Phoenix arrows - we should remove them.
+	while ((ent = G_Find(ent, FOFS(classname), "Spell_PhoenixArrow")) != NULL)
 	{
-		ent = G_Find (ent, FOFS(classname), "Spell_Maceball");
-		if (!ent)
-			break;
-		if (!owner || (ent->owner && (ent->owner == owner)))
+		if (owner == NULL || owner == ent->owner)
 		{
-			// remove the entity
-			G_SetToFree(ent);
+			gi.sound(ent, CHAN_WEAPON, gi.soundindex("misc/null.wav"), 1.0f, ATTN_NORM, 0.0f); // Kill the phoenix arrow travel sound.
+			G_SetToFree(ent); // Remove the entity.
 		}
 	}
 
-	// look for Phoenix arrows - we should remove them
 	ent = NULL;
-	while (1)
+
+	// Look for Spheres of Annihilation - we should remove them.
+	while ((ent = G_Find(ent, FOFS(classname), "Spell_SphereOfAnnihilation")) != NULL)
 	{
-		ent = G_Find (ent, FOFS(classname), "Spell_PhoenixArrow");
-		if (!ent)
-			break;
-		if (!owner || (ent->owner && (ent->owner == owner)))
+		if (owner == NULL || owner == ent->owner)
 		{
-			// kill the phoneix arrow travel sound
-			gi.sound(ent, CHAN_WEAPON, gi.soundindex("misc/null.wav"), 1, ATTN_NORM,0);
-			// remove the entity
-			G_SetToFree(ent);
+			gi.sound(ent, CHAN_WEAPON, gi.soundindex("misc/null.wav"), 1, ATTN_NORM, 0); // Kill the sphere grow sound.
+			G_SetToFree(ent); // Remove the entity.
 		}
 	}
 
-	// look for Sphere - we should remove them
 	ent = NULL;
-	while (1)
-	{
-		ent = G_Find (ent, FOFS(classname), "Spell_SphereOfAnnihilation");
-		if (!ent)
-			break;
-		if (!owner || (ent->owner && (ent->owner == owner)))
-		{
-			// kill the sphere grow sound 
-			gi.sound(ent, CHAN_WEAPON, gi.soundindex("misc/null.wav"), 1, ATTN_NORM,0);
-			// remove the entity
-			G_SetToFree(ent);
-		}
-	}
 
-	// look for meteor barriers - we should remove them
-	ent = NULL;
-	while (1)
+	// Look for meteor barriers - we should remove them.
+	while ((ent = G_Find(ent, FOFS(classname), "Spell_MeteorBarrier")) != NULL)
 	{
-		ent = G_Find (ent, FOFS(classname), "Spell_MeteorBarrier");
-		if (!ent)
-			break;
-		if (!owner || (ent->owner && (ent->owner == owner)))
+		if (owner == NULL || owner == ent->owner)
 		{
-			// remove any persistant meteor effects
-			if (ent->PersistantCFX)
+			// Remove any persistent meteor effects.
+			if (ent->PersistantCFX > 0)
 			{
 				gi.RemovePersistantEffect(ent->PersistantCFX, REMOVE_METEOR);
-				gi.RemoveEffects(&ent->owner->s, FX_SPELL_METEORBARRIER+ent->health);
+				gi.RemoveEffects(&ent->owner->s, FX_SPELL_METEORBARRIER + ent->health);
 				ent->PersistantCFX = 0;
 			}
-			// kill the meteorbarrier ambient sound 
+
+			// Kill the meteor barrier ambient sound.
 			ent->owner->client->Meteors[ent->health] = NULL;
 
-			// now we've been cast, remove us from the count of meteors the caster owns, and turn off his looping sound if need be
-			ent->owner->client->playerinfo.meteor_count &= ~(1<<ent->health);
-			if (!ent->owner->client->playerinfo.meteor_count)
+			// Now we've been cast, remove us from the count of meteors the caster owns, and turn off his looping sound if need be.
+			ent->owner->client->playerinfo.meteor_count &= ~(1 << ent->health);
+
+			if (ent->owner->client->playerinfo.meteor_count == 0)
 				ent->owner->s.sound = 0;
 
-			// remove the entity
+			// Remove the entity.
 			G_SetToFree(ent);
 		}
 	}
 
-	// Hide all other players and make them not clip
-	ent = NULL;
-	for (i=0 ; i<maxclients->value ; i++)
+	// Hide all other players and make them not clip.
+	for (int i = 0; i < MAXCLIENTS; i++)
 	{
-		ent = g_edicts + 1 + i;
-		if (!ent->inuse || !ent->client)
+		edict_t* player = &g_edicts[i + 1];
+		playerinfo_t* info = &player->client->playerinfo; //mxd
+
+		if (!player->inuse || player->client == NULL)
 			continue;
 
-		ent->client->playerinfo.cinematic_starttime = level.time;
+		info->cinematic_starttime = level.time;
 
-		if (ent->client->playerinfo.powerup_timer > ent->client->playerinfo.cinematic_starttime)
-			gi.RemoveEffects(&ent->s, FX_TOME_OF_POWER);
+		if (info->powerup_timer > info->cinematic_starttime)
+			gi.RemoveEffects(&player->s, FX_TOME_OF_POWER);
 
-		if (ent->client->playerinfo.speed_timer > ent->client->playerinfo.cinematic_starttime)
-			gi.RemoveEffects(&ent->s, FX_FOOT_TRAIL);
+		if (info->speed_timer > info->cinematic_starttime)
+			gi.RemoveEffects(&player->s, FX_FOOT_TRAIL);
 
-		if (ent->client->playerinfo.shield_timer > ent->client->playerinfo.leveltime)
+		if (info->shield_timer > info->leveltime)
 		{
-			gi.RemoveEffects(&ent->s, FX_SPELL_LIGHTNINGSHIELD);
-			ent->client->playerinfo.cin_shield_timer = ent->client->playerinfo.shield_timer;
-			ent->client->playerinfo.shield_timer = 0;
+			gi.RemoveEffects(&player->s, FX_SPELL_LIGHTNINGSHIELD);
+			info->cin_shield_timer = info->shield_timer;
+			info->shield_timer = 0;
 		}
 
 		// No looping sound attached.
-		ent->s.sound = 0;
+		player->s.sound = 0;
 
-		ent->curr_model = ent->s.modelindex;	// Temp holder, should be fine because player isn't doing anything during cinematics
-		ent->client->playerinfo.c_mode = 1;		// Show it's in cinematic mode
-		ent->s.modelindex = 0;
-		ent->solid = SOLID_NOT;
+		player->curr_model = player->s.modelindex; // Temp holder, should be fine because player isn't doing anything during cinematics.
+		info->c_mode = 1; // Show it's in cinematic mode.
+		player->s.modelindex = 0;
+		player->solid = SOLID_NOT;
 	}
-
 }
 
 void reinstate_non_cinematic_entites(edict_t *owner)
