@@ -1,21 +1,15 @@
-#define WIN32_LEAN_AND_MEAN
-#define VC_EXTRALEAN
-
-#include <windows.h>
-#include <stdio.h>
-#include <math.h>
-#include <assert.h>
+//
+// Utilities.c
+//
+// Copyright 1998 Raven Software
+//
 
 #include "Utilities.h"
-#include "Angles.h"
-#include "g_local.h"
-#include "Vector.h"
-#include "g_HitLocation.h"
-#include "g_Physics.h"
-#include "Random.h"
-#include "FX.H"
 #include "g_cmds.h" //mxd
-#include "p_main.h"
+#include "FX.h"
+#include "Random.h"
+#include "Vector.h"
+#include "g_local.h"
 
 //kill specific entitys at the begining of a cinematic
 void remove_non_cinematic_entites(edict_t *owner)
@@ -439,22 +433,22 @@ edict_t *FindNearestVisibleActorInFrustum(edict_t *Finder,vec3_t FinderAngles,
 
 		VectorSubtract(TempVec, Finder->s.origin, distVect);
 
-		distTemp = distVect[Y] * distVect[Y] + distVect[X] * distVect[X];
-		curDist = distTemp + distVect[Z] * distVect[Z];
+		distTemp = distVect[1] * distVect[1] + distVect[0] * distVect[0];
+		curDist = distTemp + distVect[2] * distVect[2];
 
 		if((curDist >= nearDist2) && (curDist <= bestDist))
 		{
 			mag = sqrt(distTemp);
 
-			curYaw = atan2(distVect[Y]/mag,distVect[X]/mag);
+			curYaw = atan2(distVect[1]/mag,distVect[0]/mag);
 
 			curYaw = AddNormalizedAngles(curYaw,-baseYaw);
 
 			if((curYaw>=minHFOV)&&(curYaw<=maxHFOV))
 			{
-				mag=sqrt(distVect[Y]*distVect[Y]+distVect[Z]*distVect[Z]);
+				mag=sqrt(distVect[1]*distVect[1]+distVect[2]*distVect[2]);
 
-				curPitch=asin(distVect[Z]/mag);
+				curPitch=asin(distVect[2]/mag);
 
 				if((curPitch>=minVFOV)&&(curPitch<=maxVFOV))
 				{
@@ -702,7 +696,7 @@ edict_t *FindSpellTargetInRadius(edict_t *searchent, float radius, vec3_t search
 
 		VectorSubtract(entpos, searchpos, distVect);
 
-		curDist = distVect[Y] * distVect[Y] + distVect[X] * distVect[X] + distVect[Z] * distVect[Z];
+		curDist = distVect[1] * distVect[1] + distVect[0] * distVect[0] + distVect[2] * distVect[2];
 
 		if(curDist <= bestDist)
 		{

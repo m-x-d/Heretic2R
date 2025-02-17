@@ -6,10 +6,13 @@
 
 #pragma once
 
+#define WIN32_LEAN_AND_MEAN
+#define VC_EXTRALEAN
+
 #include <windows.h>
 #include "q_ClientServer.h"
 
-#define	GAME_API_VERSION	3
+#define GAME_API_VERSION	3
 
 // 'SVF_XXX'.
 // Held in 'edict_t'->svflags.
