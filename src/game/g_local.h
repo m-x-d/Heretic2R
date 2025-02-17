@@ -627,7 +627,7 @@ extern "C"
 	extern edict_t* G_Spawn(void);
 
 	//mxd. Utilities.c funcs used by ds.cpp...
-	extern void remove_non_cinematic_entites(const edict_t* owner);
+	extern void RemoveNonCinematicEntities(void);
 	extern void reinstate_non_cinematic_entites(edict_t* owner);
 #ifdef __cplusplus
 }

@@ -12,20 +12,17 @@
 #include "g_local.h"
 
 // Kill specific entities at the beginning of a cinematic.
-void remove_non_cinematic_entites(const edict_t* owner) //TODO: rename to RemoveNonCinematicEntities.
+void RemoveNonCinematicEntities(void)
 {
 	edict_t* ent = NULL;
 
 	// Firstly, search for RED RAIN DAMAGE entities.
 	while ((ent = G_Find(ent, FOFS(classname), "Spell_RedRain")) != NULL)
 	{
-		if (owner == NULL || owner == ent->owner)
-		{
-			gi.sound(ent, CHAN_VOICE, gi.soundindex("misc/null.wav"), 1.0f, ATTN_NORM, 0.0f); // Kill the rain sound.
-			gi.RemoveEffects(&ent->s, FX_WEAPON_REDRAIN); // Remove the entity.
+		gi.sound(ent, CHAN_VOICE, gi.soundindex("misc/null.wav"), 1.0f, ATTN_NORM, 0.0f); // Kill the rain sound.
+		gi.RemoveEffects(&ent->s, FX_WEAPON_REDRAIN); // Remove the entity.
 
-			G_SetToFree(ent);
-		}
+		G_SetToFree(ent);
 	}
 
 	ent = NULL;
@@ -33,32 +30,25 @@ void remove_non_cinematic_entites(const edict_t* owner) //TODO: rename to Remove
 	// Then remove red rain arrows - in case of hitting something and starting the red rain.
 	while ((ent = G_Find(ent, FOFS(classname), "Spell_RedRainArrow")) != NULL)
 	{
-		if (owner == NULL || owner == ent->owner)
-		{
-			gi.sound(ent, CHAN_VOICE, gi.soundindex("misc/null.wav"), 1.0f, ATTN_NORM, 0.0f); // Kill the rain arrow travel sound.
-			gi.RemoveEffects(&ent->s, FX_WEAPON_REDRAINMISSILE); // Remove the entity.
+		gi.sound(ent, CHAN_VOICE, gi.soundindex("misc/null.wav"), 1.0f, ATTN_NORM, 0.0f); // Kill the rain arrow travel sound.
+		gi.RemoveEffects(&ent->s, FX_WEAPON_REDRAINMISSILE); // Remove the entity.
 
-			G_SetToFree(ent);
-		}
+		G_SetToFree(ent);
 	}
 
 	ent = NULL;
 
 	// Look for Powered up Mace balls - they've got to go too.
 	while ((ent = G_Find(ent, FOFS(classname), "Spell_Maceball")) != NULL)
-		if (owner == NULL || owner == ent->owner)
-			G_SetToFree(ent); // Remove the entity.
+		G_SetToFree(ent); // Remove the entity.
 
 	ent = NULL;
 
 	// Look for Phoenix arrows - we should remove them.
 	while ((ent = G_Find(ent, FOFS(classname), "Spell_PhoenixArrow")) != NULL)
 	{
-		if (owner == NULL || owner == ent->owner)
-		{
-			gi.sound(ent, CHAN_WEAPON, gi.soundindex("misc/null.wav"), 1.0f, ATTN_NORM, 0.0f); // Kill the phoenix arrow travel sound.
-			G_SetToFree(ent); // Remove the entity.
-		}
+		gi.sound(ent, CHAN_WEAPON, gi.soundindex("misc/null.wav"), 1.0f, ATTN_NORM, 0.0f); // Kill the phoenix arrow travel sound.
+		G_SetToFree(ent); // Remove the entity.
 	}
 
 	ent = NULL;
@@ -66,11 +56,8 @@ void remove_non_cinematic_entites(const edict_t* owner) //TODO: rename to Remove
 	// Look for Spheres of Annihilation - we should remove them.
 	while ((ent = G_Find(ent, FOFS(classname), "Spell_SphereOfAnnihilation")) != NULL)
 	{
-		if (owner == NULL || owner == ent->owner)
-		{
-			gi.sound(ent, CHAN_WEAPON, gi.soundindex("misc/null.wav"), 1, ATTN_NORM, 0); // Kill the sphere grow sound.
-			G_SetToFree(ent); // Remove the entity.
-		}
+		gi.sound(ent, CHAN_WEAPON, gi.soundindex("misc/null.wav"), 1, ATTN_NORM, 0); // Kill the sphere grow sound.
+		G_SetToFree(ent); // Remove the entity.
 	}
 
 	ent = NULL;
@@ -78,28 +65,25 @@ void remove_non_cinematic_entites(const edict_t* owner) //TODO: rename to Remove
 	// Look for meteor barriers - we should remove them.
 	while ((ent = G_Find(ent, FOFS(classname), "Spell_MeteorBarrier")) != NULL)
 	{
-		if (owner == NULL || owner == ent->owner)
+		// Remove any persistent meteor effects.
+		if (ent->PersistantCFX > 0)
 		{
-			// Remove any persistent meteor effects.
-			if (ent->PersistantCFX > 0)
-			{
-				gi.RemovePersistantEffect(ent->PersistantCFX, REMOVE_METEOR);
-				gi.RemoveEffects(&ent->owner->s, FX_SPELL_METEORBARRIER + ent->health);
-				ent->PersistantCFX = 0;
-			}
-
-			// Kill the meteor barrier ambient sound.
-			ent->owner->client->Meteors[ent->health] = NULL;
-
-			// Now we've been cast, remove us from the count of meteors the caster owns, and turn off his looping sound if need be.
-			ent->owner->client->playerinfo.meteor_count &= ~(1 << ent->health);
-
-			if (ent->owner->client->playerinfo.meteor_count == 0)
-				ent->owner->s.sound = 0;
-
-			// Remove the entity.
-			G_SetToFree(ent);
+			gi.RemovePersistantEffect(ent->PersistantCFX, REMOVE_METEOR);
+			gi.RemoveEffects(&ent->owner->s, FX_SPELL_METEORBARRIER + ent->health);
+			ent->PersistantCFX = 0;
 		}
+
+		// Kill the meteor barrier ambient sound.
+		ent->owner->client->Meteors[ent->health] = NULL;
+
+		// Now we've been cast, remove us from the count of meteors the caster owns, and turn off his looping sound if need be.
+		ent->owner->client->playerinfo.meteor_count &= ~(1 << ent->health);
+
+		if (ent->owner->client->playerinfo.meteor_count == 0)
+			ent->owner->s.sound = 0;
+
+		// Remove the entity.
+		G_SetToFree(ent);
 	}
 
 	// Hide all other players and make them not clip.

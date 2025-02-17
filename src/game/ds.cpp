@@ -3260,7 +3260,7 @@ void CScript::HandleFeature(bool Enable)
 				{
 					CinematicSound_cnt = 0;
 					Cvar_Set("sv_cinematicfreeze","1");
-					remove_non_cinematic_entites(NULL);
+					RemoveNonCinematicEntities();
 				}
 				else
 				{
