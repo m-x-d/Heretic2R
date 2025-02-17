@@ -628,7 +628,7 @@ extern "C"
 
 	//mxd. Utilities.c funcs used by ds.cpp...
 	extern void RemoveNonCinematicEntities(void);
-	extern void reinstate_non_cinematic_entites(edict_t* owner);
+	extern void ReinstateNonCinematicEntities(void);
 #ifdef __cplusplus
 }
 #endif

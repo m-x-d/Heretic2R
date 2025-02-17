@@ -120,7 +120,7 @@ void RemoveNonCinematicEntities(void)
 	}
 }
 
-void reinstate_non_cinematic_entites(edict_t* owner) //TODO: rename to ReinstateNonCinematicEntities, remove unused arg.
+void ReinstateNonCinematicEntities(void)
 {
 	// Put client entities back in game.
 	for (int i = 0; i < MAXCLIENTS; i++)

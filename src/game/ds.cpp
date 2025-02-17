@@ -3282,7 +3282,7 @@ void CScript::HandleFeature(bool Enable)
 
 
 					Cvar_Set("sv_cinematicfreeze","0");
-					reinstate_non_cinematic_entites(NULL);
+					ReinstateNonCinematicEntities();
 				}
 			#endif
 			break;
