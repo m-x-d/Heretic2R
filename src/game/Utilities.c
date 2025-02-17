@@ -514,30 +514,6 @@ void CalculatePIV(const edict_t* player)
 	player->client->ps.PIV = piv;
 }
 
-void GetVectorsToActor(edict_t *self, edict_t *actor, vec3_t vec)
-{
-	vec3_t		dest, source;
-
-	GetEdictCenter(self, source);
-	GetEdictCenter(actor, dest);
-	VectorSubtract(dest, source, vec);
-	VectorNormalize(vec);
-}
-
-void QPlaySound(edict_t *self, int sound, int channel)
-{
-	gi.sound (self, channel, classStatics[self->classID].resInfo->sounds[sound], 1, ATTN_NORM, 0);
-}
-
-void StartICScript(char *name)
-{
-	assert(!level.cinActive);
-
-	level.cinActive = true;
-
-	ICScript_Con(&level.inGameCin, name);
-}
-
 #define EXTRA_KNOCKBACK_PRE_MULT 2
 #define EXTRA_KNOCKBACK_POST_Z_MULT 1.25
 
