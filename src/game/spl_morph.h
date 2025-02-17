@@ -6,6 +6,6 @@
 
 #pragma once
 
-#include "g_local.h"
+#include "q_Typedef.h"
 
 extern void MorphPlayerToChicken(edict_t* self, edict_t* caster);
