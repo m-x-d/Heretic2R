@@ -109,7 +109,7 @@ static void SphereOfAnnihilationGrowThink(edict_t *Self)
 		AngleVectors(angles, Forward, NULL, NULL);
 		VectorMA(Self->s.origin, SPHERE_FLY_SPEED, Forward, endpos);
 		gi.trace(Self->s.origin, vec3_origin, vec3_origin, endpos, Self->owner, MASK_MONSTERSOLID,&trace);
-		if(trace.ent && ok_to_autotarget(Self->owner, trace.ent))
+		if(trace.ent && OkToAutotarget(Self->owner, trace.ent))
 		{//already going to hit a valid target at this angle- so don't autotarget
 			VectorScale(Forward, SPHERE_FLY_SPEED, Self->velocity);
 		}
@@ -661,7 +661,7 @@ static void SphereWatcherGrowThink(edict_t *Self)
 		AngleVectors(angles, Forward, NULL, NULL);
 		VectorMA(Self->s.origin, SPHERE_FLY_SPEED, Forward, endpos);
 		gi.trace(Self->s.origin, vec3_origin, vec3_origin, endpos, Self->owner, MASK_MONSTERSOLID,&trace);
-		if(trace.ent && ok_to_autotarget(Self->owner, trace.ent))
+		if(trace.ent && OkToAutotarget(Self->owner, trace.ent))
 		{//already going to hit a valid target at this angle- so don't autotarget
 			VectorScale(Forward, SPHERE_FLY_SPEED, Self->velocity);
 		}

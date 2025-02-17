@@ -631,7 +631,7 @@ void SpellCastInsectSpear(edict_t *caster, vec3_t StartPos, vec3_t AimAngles, in
 		AngleVectors(AimAngles, forward, NULL, NULL);
 		VectorMA(StartPos, SPEARPROJ_SPEED, forward, endpos);
 		gi.trace(StartPos, vec3_origin, vec3_origin, endpos, caster, MASK_MONSTERSOLID,&trace);
-		if(trace.ent && ok_to_autotarget(caster, trace.ent))
+		if(trace.ent && OkToAutotarget(caster, trace.ent))
 		{//already going to hit a valid target at this angle- so don't autotarget
 			VectorScale(forward, SPEARPROJ_SPEED, spearproj->velocity);
 		}

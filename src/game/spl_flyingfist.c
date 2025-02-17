@@ -274,7 +274,7 @@ void SpellCastFlyingFist(edict_t *caster, vec3_t startpos, vec3_t aimangles, vec
 	AngleVectors(aimangles, forward, NULL, NULL);
 	VectorMA(flyingfist->s.origin, FLYING_FIST_SPEED, forward, endpos);
 	gi.trace(startpos, vec3_origin, vec3_origin, endpos, caster, MASK_MONSTERSOLID,&trace);
-	if(trace.ent && ok_to_autotarget(caster, trace.ent))
+	if(trace.ent && OkToAutotarget(caster, trace.ent))
 	{//already going to hit a valid target at this angle- so don't autotarget
 		VectorScale(forward, FLYING_FIST_SPEED, flyingfist->velocity);
 	}

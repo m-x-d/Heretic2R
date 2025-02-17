@@ -180,7 +180,7 @@ void SpellCastPhoenix(edict_t *Caster, vec3_t StartPos, vec3_t AimAngles, vec3_t
 	AngleVectors(AimAngles, forward, NULL, NULL);
 	VectorMA(StartPos, PHOENIX_ARROW_SPEED, forward, endpos);
 	gi.trace(StartPos, vec3_origin, vec3_origin, endpos, Caster, MASK_MONSTERSOLID,&trace);
-	if(trace.ent && ok_to_autotarget(Caster, trace.ent))
+	if(trace.ent && OkToAutotarget(Caster, trace.ent))
 	{//already going to hit a valid target at this angle- so don't autotarget
 		VectorScale(forward, PHOENIX_ARROW_SPEED, phoenix->velocity);
 	}

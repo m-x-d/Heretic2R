@@ -12,7 +12,7 @@
 #include "g_local.h"
 
 // Kill specific entities at the beginning of a cinematic.
-void RemoveNonCinematicEntities(void)
+void RemoveNonCinematicEntities(void) // mxd. Named 'remove_non_cinematic_entites' in original version.
 {
 	edict_t* ent = NULL;
 
@@ -120,7 +120,7 @@ void RemoveNonCinematicEntities(void)
 	}
 }
 
-void ReinstateNonCinematicEntities(void)
+void ReinstateNonCinematicEntities(void) // mxd. Named 'reinstate_non_cinematic_entites' in original version.
 {
 	// Put client entities back in game.
 	for (int i = 0; i < MAXCLIENTS; i++)
@@ -227,7 +227,7 @@ static float AddNormalizedAngles(const float angle1, const float angle2)
 	return sum;
 }
 
-qboolean ok_to_autotarget(const edict_t* shooter, const edict_t* target) //TODO: rename to OkToAutotarget.
+qboolean OkToAutotarget(const edict_t* shooter, const edict_t* target) // mxd. Named 'ok_to_autotarget' in original version.
 {
 	if (!target->inuse || target->solid == SOLID_NOT || target->health <= 0 || target == shooter || (target->svflags & SVF_NO_AUTOTARGET))
 		return false;
@@ -289,7 +289,7 @@ edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t fi
 	for (edict_t* e = &g_edicts[1]; e < end; e++)
 	{
 		// Ignore certain entities altogether.
-		if (!ok_to_autotarget(finder, e))
+		if (!OkToAutotarget(finder, e))
 			continue;
 
 		// Don't target ghosting players.
@@ -380,7 +380,7 @@ edict_t* FindSpellTargetInRadius(const edict_t* search_ent, const float radius, 
 		if (ent->takedamage == DAMAGE_NO && ent->health <= 0)
 			continue;
 
-		if (!ok_to_autotarget(search_ent, ent))
+		if (!OkToAutotarget(search_ent, ent))
 			continue;
 
 		// Don't target ghosting players, or target players in coop.

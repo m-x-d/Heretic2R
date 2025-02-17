@@ -20,5 +20,5 @@ extern void PostKnockBack(edict_t* target, const vec3_t dir, float knockback, in
 extern void GetAimVelocity(const edict_t* enemy, const vec3_t org, float speed, const vec3_t aim_angles, vec3_t out);
 extern void CalculatePIV(const edict_t* player);
 
-extern qboolean ok_to_autotarget(const edict_t* shooter, const edict_t* target);
+extern qboolean OkToAutotarget(const edict_t* shooter, const edict_t* target);
 extern qboolean ThinkTime(const edict_t* self);

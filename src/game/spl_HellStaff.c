@@ -305,7 +305,7 @@ void SpellCastHellstaff(edict_t *caster, vec3_t loc, vec3_t aimangles, vec3_t un
 		{
 			VectorMA(loc, HELLBOLT_SPEED, forward, endpos);
 			gi.trace(loc, vec3_origin, vec3_origin, endpos, caster, MASK_MONSTERSOLID,&trace);
-			if(trace.ent && ok_to_autotarget(caster, trace.ent))
+			if(trace.ent && OkToAutotarget(caster, trace.ent))
 			{//already going to hit a valid target at this angle- so don't autotarget
 				VectorScale(forward, HELLBOLT_SPEED, hellbolt->velocity);
 			}
