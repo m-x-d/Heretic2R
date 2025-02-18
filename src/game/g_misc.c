@@ -13,10 +13,9 @@
 #include "g_items.h" //mxd
 #include "m_stats.h"
 #include "g_playstats.h"
+#include "p_client.h" //mxd
 
 void ED_CallSpawn (edict_t *ent);
-
-extern	vec3_t	mins;
 
 #define CAMERA_SCRIPTED 2
 
@@ -1270,7 +1269,7 @@ void SP_misc_teleporter_dest (edict_t *ent)
 	gi.trace (ent->s.origin, vec3_origin, vec3_origin, endpos, NULL, CONTENTS_WORLD_ONLY|MASK_PLAYERSOLID,&tr);
 
 	VectorCopy(tr.endpos,ent->last_org);
-	ent->last_org[2] -= mins[2];
+	ent->last_org[2] -= player_mins[2];
 
 }
 

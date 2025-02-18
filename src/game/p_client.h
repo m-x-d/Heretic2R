@@ -9,6 +9,10 @@
 #include "q_shared.h"
 #include "q_Typedef.h"
 
+//NOTE: The precious, delicate player bbox coords!
+extern const vec3_t player_mins;
+extern const vec3_t player_maxs;
+
 extern qboolean ClientConnect(edict_t* ent, char* userinfo);
 extern void ClientThink(edict_t* ent, usercmd_t* cmd);
 extern void ClientUserinfoChanged(edict_t* ent, char* userinfo);

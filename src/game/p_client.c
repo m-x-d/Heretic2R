@@ -34,10 +34,8 @@ extern void PlayerChickenDeath(edict_t *ent);
 #define SWIM_ADJUST_AMOUNT	16
 #define FOV_DEFAULT			75.0
 
-// NOTENOTE: The precious, delicate player bbox coords!
-
-vec3_t	mins = {-14, -14, -34};
-vec3_t	maxs = { 14,  14,  25};
+const vec3_t player_mins = { -14.0f, -14.0f, -34.0f };
+const vec3_t player_maxs = {  14.0f,  14.0f,  25.0f };
 
 extern void PlayerKillShrineFX(edict_t *self);
 
@@ -1536,7 +1534,7 @@ void	SelectSpawnPoint (edict_t *ent,vec3_t origin, vec3_t angles)
 	gi.trace (spot->s.origin, vec3_origin, vec3_origin, endpos, NULL, CONTENTS_WORLD_ONLY|MASK_PLAYERSOLID,&tr);
 
 	VectorCopy(tr.endpos,origin);
-	origin[2] -= mins[2];
+	origin[2] -= player_mins[2];
 
 	// ???
 
@@ -2221,10 +2219,10 @@ void PutClientInServer (edict_t *ent)
 	ent->flags &= ~FL_NO_KNOCKBACK;
 	ent->svflags &= ~SVF_DEADMONSTER;
 
-	VectorCopy (mins, ent->mins);
-	VectorCopy (maxs, ent->maxs);
-	VectorCopy (mins, ent->intentMins);
-	VectorCopy (maxs, ent->intentMaxs);
+	VectorCopy (player_mins, ent->mins);
+	VectorCopy (player_maxs, ent->maxs);
+	VectorCopy (player_mins, ent->intentMins);
+	VectorCopy (player_maxs, ent->intentMaxs);
 	VectorClear (ent->velocity);
 
 	// ********************************************************************************************
@@ -3112,8 +3110,8 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	{
 		// Resize the player's bounding box.
 
-		VectorCopy(mins, ent->intentMins);
-		VectorCopy(maxs, ent->intentMaxs);
+		VectorCopy(player_mins, ent->intentMins);
+		VectorCopy(player_maxs, ent->intentMaxs);
 		
 		ent->physicsFlags |= PF_RESIZE;
 

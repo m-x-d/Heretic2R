@@ -25,7 +25,7 @@
 #include "p_main.h"
 #include "p_anims.h"
 #include "random.h"
-#include "h2common.h"
+#include "p_client.h" //mxd
 
 #define ARROW_SPEED			400.0F
 #define ARROW_RADIUS			2.0F
@@ -34,9 +34,6 @@
 char	chicken_text[] = "monster_chicken";
 
 extern void SpawnInitialPlayerEffects(edict_t *ent);
-
-extern	vec3_t	mins;
-extern 	vec3_t	maxs;
 
 void create_morph(edict_t *morph);
 
@@ -163,8 +160,8 @@ void reset_morph_to_elf(edict_t *ent)
 	ent->client->playerinfo.renderfx &= ~RF_IGNORE_REFS;
 
 	// reset our mins and max's. And then let the physics move us out of anyone elses bounding box
-	VectorCopy (mins, ent->intentMins);
-	VectorCopy (maxs, ent->intentMaxs);
+	VectorCopy (player_mins, ent->intentMins);
+	VectorCopy (player_maxs, ent->intentMaxs);
 	ent->physicsFlags |= PF_RESIZE;
 
 	// reset our thinking
