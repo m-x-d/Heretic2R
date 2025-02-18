@@ -1,32 +1,31 @@
+//
+// p_client.c
+//
+// Copyright 1998 Raven Software
+//
+
 #include "p_client.h" //mxd
-#include "g_DefaultMessageHandler.h"
-#include "g_Skeletons.h"
-#include "m_player.h"
-#include "p_main.h"
-#include "p_chicken.h"
-#include "p_funcs.h"
-#include "Angles.h"
-//#include "compfmod.h"
-#include "FX.h"
-#include "vector.h"
-#include "random.h"
-#include "Utilities.h"
-#include "g_items.h" //mxd
-#include "g_playstats.h"
-#include "g_HitLocation.h"
-#include "g_misc.h"
-#include "g_Physics.h"
-#include "p_main.h"
-#include "g_itemstats.h"
 #include "cl_strings.h"
 #include "g_cmds.h" //mxd
 #include "g_combat.h" //mxd
+#include "g_HitLocation.h"
+#include "g_items.h" //mxd
+#include "g_itemstats.h"
 #include "g_main.h" //mxd
+#include "g_misc.h"
+#include "g_Physics.h"
+#include "g_playstats.h"
 #include "g_Shrine.h" //mxd
-#include "p_actions.h"
+#include "g_Skeletons.h"
+#include "m_player.h"
 #include "p_anims.h" //mxd
-#include "p_anim_branch.h"
+#include "p_funcs.h"
+#include "p_main.h"
 #include "p_view.h" //mxd
+#include "FX.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
 #include "qcommon.h"
 
 // FIXME: include headers.
