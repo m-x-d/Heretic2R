@@ -29,74 +29,65 @@
 #include "Vector.h"
 #include "g_local.h"
 
-// ************************************************************************************************
-// Weapon_CalcStartPos
-// -------------------
-// Sets up a spell missile's starting position, correct with respect to the player model's angles
-// and posture. We want the start position of the missile to be the caster's hand, so we must take
-// into account the caster's joint orientations and global model orientation. This is a big-arsed
-// hack. We assume that if the caster is standing fully upstraight, the missile will be launched
-// from default co-ordinates (relative to the caster's origin) specified in DefaultStartPos. The
-// other two inputs, LowerJoint & UpperJoint specify Corvus's bone joint positions (relative to his
-// model's origin) for the animation frame in which the weapon is launched.
-// *************************************************************************************************
-
-static void Weapon_CalcStartPos(vec3_t OriginToLowerJoint,vec3_t OriginToUpperJoint,
-								vec3_t DefaultStartPos,vec3_t ActualStartPos,edict_t *Caster)
+// Sets up a spell missile's starting position, correct with respect to the player model's angles and posture.
+// We want the start position of the missile to be the caster's hand, so we must take into account the caster's joint orientations
+// and global model orientation. This is a big-arsed hack. We assume that if the caster is standing fully upstraight, the missile
+// will be launched from default coordinates (relative to the caster's origin) specified in DefaultStartPos.
+// The other two inputs, LowerJoint & UpperJoint specify Corvus's bone joint positions (relative to his model's origin)
+// for the animation frame in which the weapon is launched.
+static void Weapon_CalcStartPos(const vec3_t origin_to_lower_joint, const vec3_t origin_to_upper_joint, const vec3_t default_start_pos, vec3_t actual_start_pos, const edict_t* caster)
 {
-	matrix3_t	LowerRotationMatrix,UpperRotationMatrix;
-	vec3_t		LowerbackJointAngles,UpperbackJointAngles,
-				LowerJoint,UpperJoint,LowerJointToUpperJoint,
-				Forward,Right,Up,
-				StartPos;
-
 	// Get matrices corresponding to the current angles of the upper and lower back joints.
+	vec3_t lowerback_joint_angles;
+	vec3_t upperback_joint_angles;
 
-	LowerbackJointAngles[PITCH]=GetJointAngle(Caster->s.rootJoint+CORVUS_LOWERBACK,PITCH);
-	LowerbackJointAngles[YAW]=GetJointAngle(Caster->s.rootJoint+CORVUS_LOWERBACK,YAW);
-	LowerbackJointAngles[ROLL]=GetJointAngle(Caster->s.rootJoint+CORVUS_LOWERBACK,ROLL);
-	Matrix3FromAngles(LowerbackJointAngles,LowerRotationMatrix);
+	for (int i = 0; i < 3; i++)
+	{
+		lowerback_joint_angles[i] = GetJointAngle(caster->s.rootJoint + CORVUS_LOWERBACK, i);
+		upperback_joint_angles[i] = GetJointAngle(caster->s.rootJoint + CORVUS_UPPERBACK, i);
+	}
 
-	UpperbackJointAngles[PITCH]=GetJointAngle(Caster->s.rootJoint+CORVUS_UPPERBACK,PITCH);
-	UpperbackJointAngles[YAW]=GetJointAngle(Caster->s.rootJoint+CORVUS_UPPERBACK,YAW);	
-	UpperbackJointAngles[ROLL]=GetJointAngle(Caster->s.rootJoint+CORVUS_UPPERBACK,ROLL);
-	Matrix3FromAngles(UpperbackJointAngles,UpperRotationMatrix);
+	matrix3_t lower_rotation;
+	Matrix3FromAngles(lowerback_joint_angles, lower_rotation);
+
+	matrix3_t upper_rotation;
+	Matrix3FromAngles(upperback_joint_angles, upper_rotation);
 
 	// Get vector from player model's origin to lower joint.
-
-	VectorAdd(Caster->s.origin,OriginToLowerJoint,LowerJoint);
+	vec3_t lower_joint;
+	VectorAdd(caster->s.origin, origin_to_lower_joint, lower_joint);
 
 	// Get vector from player model's origin to upper joint.
-
-	VectorAdd(Caster->s.origin,OriginToUpperJoint,UpperJoint);
+	vec3_t upper_joint;
+	VectorAdd(caster->s.origin, origin_to_upper_joint, upper_joint);
 
 	// Get vector from lower joint to upper joint.
-
-	VectorSubtract(OriginToUpperJoint,OriginToLowerJoint,LowerJointToUpperJoint);
+	vec3_t lower_joint_to_upper_joint;
+	VectorSubtract(origin_to_upper_joint, origin_to_lower_joint, lower_joint_to_upper_joint);
 
 	// Get vector from upper joint to the default flying-fist's start position.
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(caster->s.angles, forward, right, up);
 
-	AngleVectors(Caster->s.angles,Forward,Right,Up);
-	VectorMA(Caster->s.origin,DefaultStartPos[0],Right,StartPos);
-	VectorMA(StartPos,DefaultStartPos[1],Forward,StartPos);
-	VectorMA(StartPos,DefaultStartPos[2],Up,StartPos);
-	VectorSubtract(StartPos,UpperJoint,StartPos);
+	vec3_t start_pos;
+	VectorMA(caster->s.origin, default_start_pos[0], right, start_pos);
+	VectorMA(start_pos, default_start_pos[1], forward, start_pos);
+	VectorMA(start_pos, default_start_pos[2], up, start_pos);
+	VectorSubtract(start_pos, upper_joint, start_pos);
 
 	// Add in the contribution from the 'bone' from the lower joint to upper joint.
+	Matrix3MultByVec3(upper_rotation, start_pos, start_pos);
+	VectorAdd(start_pos, lower_joint_to_upper_joint, start_pos);
 
-	Matrix3MultByVec3(UpperRotationMatrix,StartPos,StartPos);
-	VectorAdd(StartPos,LowerJointToUpperJoint,StartPos);
-	
 	// Add in the contribution from the model's origin to the lower joint.
+	Matrix3MultByVec3(lower_rotation, start_pos, start_pos);
+	VectorAdd(origin_to_lower_joint, start_pos, start_pos);
 
-	Matrix3MultByVec3(LowerRotationMatrix,StartPos,StartPos);
-	VectorAdd(OriginToLowerJoint,StartPos,StartPos);
-	
 	// Finally, add on the model's origin to give the correct start position for the flying-fist.
-
-	VectorAdd(StartPos,Caster->s.origin,StartPos);
-
-	VectorCopy(StartPos,ActualStartPos);
+	VectorAdd(start_pos, caster->s.origin, start_pos);
+	VectorCopy(start_pos, actual_start_pos);
 }
 
 // ************************************************************************************************
