@@ -28,16 +28,11 @@
 #include "Vector.h"
 #include "qcommon.h"
 
-#define SWIM_ADJUST_AMOUNT	16
-#define FOV_DEFAULT			75.0
+#define SWIM_ADJUST_AMOUNT	16.0f
+#define FOV_DEFAULT			75.0f
 
 const vec3_t player_mins = { -14.0f, -14.0f, -34.0f };
 const vec3_t player_maxs = {  14.0f,  14.0f,  25.0f };
-
-extern void PlayerKillShrineFX(edict_t *self);
-
-void SP_misc_teleporter_dest (edict_t *ent);
-
 
 /*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32)
 The normal starting point for a level.
