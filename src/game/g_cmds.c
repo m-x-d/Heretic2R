@@ -229,9 +229,7 @@ static void Cmd_Give_f(edict_t* ent)
 		if (level.defensive_weapons & 16)
 			AddDefenseToInventory(P_FindItem("meteor"), ent);
 
-		SetupPlayerinfo_effects(ent);
-		P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
-		WritePlayerinfo_effects(ent);
+		ClientUpdateModelAttributes(ent); //mxd
 
 		return;
 	}
@@ -268,10 +266,7 @@ static void Cmd_Give_f(edict_t* ent)
 			{
 				// This is a bow, put the bow on player's back.
 				pers->bowtype = ((item->tag == ITEM_WEAPON_PHOENIXBOW) ? BOW_TYPE_PHOENIX : BOW_TYPE_REDRAIN);
-
-				SetupPlayerinfo_effects(ent);
-				P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
-				WritePlayerinfo_effects(ent);
+				ClientUpdateModelAttributes(ent); //mxd
 			}
 		}
 
@@ -322,9 +317,7 @@ static void Cmd_Give_f(edict_t* ent)
 			pers->armortype = ARMOR_TYPE_GOLD;
 		}
 
-		SetupPlayerinfo_effects(ent);
-		P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
-		WritePlayerinfo_effects(ent);
+		ClientUpdateModelAttributes(ent); //mxd
 
 		if (!give_all)
 			return;
@@ -339,10 +332,7 @@ static void Cmd_Give_f(edict_t* ent)
 			pers->stafflevel = STAFF_LEVEL_BASIC;
 
 		gi.dprintf("Setting staff level to %d\n", pers->stafflevel);
-
-		SetupPlayerinfo_effects(ent);
-		P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
-		WritePlayerinfo_effects(ent);
+		ClientUpdateModelAttributes(ent); //mxd
 
 		return;
 	}
@@ -401,10 +391,7 @@ static void Cmd_Give_f(edict_t* ent)
 		char userinfo[MAX_INFO_STRING];
 		memcpy(userinfo, pers->userinfo, sizeof(userinfo));
 		ClientUserinfoChanged(ent, userinfo);
-
-		SetupPlayerinfo_effects(ent);
-		P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
-		WritePlayerinfo_effects(ent);
+		ClientUpdateModelAttributes(ent); //mxd
 
 		return;
 	}

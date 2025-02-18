@@ -6,6 +6,7 @@
 
 #include "Utilities.h"
 #include "g_cmds.h" //mxd
+#include "p_client.h" //mxd
 #include "FX.h"
 #include "Random.h"
 #include "Vector.h"
@@ -176,9 +177,7 @@ void ReinstateNonCinematicEntities(void) // mxd. Named 'reinstate_non_cinematic_
 			}
 
 			// Since we messed around with model stuff, like armor nodes and the like, lets update the model.
-			SetupPlayerinfo_effects(player);
-			P_PlayerUpdateModelAttributes(&player->client->playerinfo);
-			WritePlayerinfo_effects(player);
+			ClientUpdateModelAttributes(player); //mxd
 		}
 
 		info->c_mode = 0; // Show cinematic mode is off.

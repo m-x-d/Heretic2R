@@ -14,6 +14,7 @@
 #include "g_monster.h" //mxd
 #include "g_playstats.h"
 #include "m_stats.h"
+#include "p_client.h" //mxd
 #include "FX.h"
 #include "Random.h"
 #include "Vector.h"
@@ -591,9 +592,7 @@ void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, const vec3
 				target->client->playerinfo.pers.armortype = ARMOR_TYPE_NONE; //mxd. ARMOR_NONE in original version.
 				target->client->playerinfo.pers.armor_count = 0.0f;
 
-				SetupPlayerinfo_effects(target);
-				P_PlayerUpdateModelAttributes(&target->client->playerinfo);
-				WritePlayerinfo_effects(target);
+				ClientUpdateModelAttributes(target); //mxd
 
 				// Play the out-of-armor sound.
 				gi.sound(target, CHAN_WEAPON, gi.soundindex("weapons/armorgone.wav"), 1.0f, ATTN_NORM, 0.0f);

@@ -186,9 +186,9 @@ void player_repair_skin (edict_t *self)
 				self->s.fmnodeinfo[i].skin = self->s.skinnum;
 			}
 		}
-		SetupPlayerinfo_effects(self);
-		P_PlayerUpdateModelAttributes(&self->client->playerinfo);
-		WritePlayerinfo_effects(self);
+
+		ClientUpdateModelAttributes(self); //mxd
+
 		return;
 	}
 
@@ -244,9 +244,7 @@ void player_repair_skin (edict_t *self)
 		}
 	}
 	
-	SetupPlayerinfo_effects(self);
-	P_PlayerUpdateModelAttributes(&self->client->playerinfo);
-	WritePlayerinfo_effects(self);
+	ClientUpdateModelAttributes(self); //mxd
 }
 
 void ResetPlayerBaseNodes (edict_t *ent)
@@ -286,10 +284,7 @@ void ResetPlayerBaseNodes (edict_t *ent)
 	ent->s.fmnodeinfo[MESH__LLEG].skin = ent->s.skinnum;
 
 	// FIXME: Turn hands back on too? But two pairs, which one? Shouldn't PlayerUpdateModelAttributes do that?
-
-	SetupPlayerinfo_effects(ent);
-	P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
-	WritePlayerinfo_effects(ent);
+	ClientUpdateModelAttributes(ent); //mxd
 }
 
 #define BIT_BASE2		0//		MESH_BASE2		0 - front
@@ -727,9 +722,7 @@ void player_dismember (edict_t *self, edict_t *other, int damage, int HitLocatio
 
 finish:
 
-	SetupPlayerinfo_effects(self);
-	P_PlayerUpdateModelAttributes(&self->client->playerinfo);
-	WritePlayerinfo_effects(self);
+	ClientUpdateModelAttributes(self); //mxd
 }
 
 void player_decap (edict_t *self, edict_t *other)
@@ -762,9 +755,7 @@ void player_decap (edict_t *self, edict_t *other)
 		player_die(self, other, other, 100, gore_spot);
 	}
 
-	SetupPlayerinfo_effects(self);
-	P_PlayerUpdateModelAttributes(&self->client->playerinfo);
-	WritePlayerinfo_effects(self);
+	ClientUpdateModelAttributes(self); //mxd
 }
 
 void player_leader_effect(void)
@@ -1954,9 +1945,7 @@ void GiveLevelItems(edict_t *player)
 		AddDefenseToInventory(item,player);	
 	}
 
-	SetupPlayerinfo_effects(player);
-	P_PlayerUpdateModelAttributes(&player->client->playerinfo);
-	WritePlayerinfo_effects(player);
+	ClientUpdateModelAttributes(player); //mxd
 }
 
 // ************************************************************************************************
@@ -2280,10 +2269,7 @@ void PutClientInServer (edict_t *ent)
 	VectorClear(client->playerinfo.velocity);
 
 	// Make the player have the right attributes - armor that sort of thing.
-
-	SetupPlayerinfo_effects(ent);
-	P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
-	WritePlayerinfo_effects(ent);
+	ClientUpdateModelAttributes(ent); //mxd
 
 	// Make sure the skin attributes are transferred.
 
