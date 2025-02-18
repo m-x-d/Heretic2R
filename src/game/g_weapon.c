@@ -552,24 +552,22 @@ void WeaponThink_Firewall(edict_t* caster, char* format, ...)
 		info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity;
 }
 
-// ************************************************************************************************
-// WeaponThink_RedRainBow
-// ----------------------
-// ************************************************************************************************
-
-void WeaponThink_RedRainBow(edict_t *caster,char *Format,...)
+void WeaponThink_RedRainBow(edict_t* caster, char* format, ...)
 {
-	vec3_t	StartPos, Forward, Right;
+	vec3_t fwd;
+	vec3_t right;
+	AngleVectors(caster->client->aimangles, fwd, right, NULL);
 
-	AngleVectors(caster->client->aimangles, Forward, Right, NULL);
-	VectorMA(caster->s.origin, 25.0F, Forward, StartPos);
-	VectorMA(StartPos, 6.0F, Right, StartPos);
-	StartPos[2] += caster->viewheight + 4.0;
-	
-	SpellCastRedRain(caster, StartPos, caster->client->aimangles, NULL, 0.0F);
+	vec3_t start_pos;
+	VectorMA(caster->s.origin, 25.0f, fwd, start_pos);
+	VectorMA(start_pos, 6.0f, right, start_pos);
+	start_pos[2] += (float)caster->viewheight + 4.0f;
 
-	if (!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_INFINITE_MANA)))
-		caster->client->playerinfo.pers.inventory.Items[caster->client->playerinfo.weap_ammo_index] -= caster->client->playerinfo.pers.weapon->quantity;
+	SpellCastRedRain(caster, start_pos, caster->client->aimangles, NULL, 0.0f);
+
+	playerinfo_t* info = &caster->client->playerinfo; //mxd
+	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
+		info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity;
 }
 
 // ************************************************************************************************
