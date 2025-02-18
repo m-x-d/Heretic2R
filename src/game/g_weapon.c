@@ -483,58 +483,45 @@ void WeaponThink_Maceballs(edict_t* caster, char* format, ...)
 	}
 }
 
-// ************************************************************************************************
-// WeaponThink_MagicMissileSpread
-// ------------------------------
-// ************************************************************************************************
-#define MISSILE_YAW 7.0
-#define MISSILE_PITCH 2.0
-#define MISSILE_SEP	4.0
-void WeaponThink_MagicMissileSpread(edict_t *caster,char *format,...)
+void WeaponThink_MagicMissileSpread(edict_t* caster, char* format, ...)
 {
-	va_list marker;
-	int		missilepos,
-			count;
-	char	curchar;
-	vec3_t	OriginToLowerJoint={0.945585,2.26076,0.571354},
-			OriginToUpperJoint={1.80845,2.98912,3.27800},
-			DefaultStartPos={8.0,0.0,5.0},
-			StartPos;
-	vec3_t	fireangles, fwd;
+#define MISSILE_YAW			7.0f
+#define MISSILE_PITCH		2.0f
+#define MISSILE_SEPARATION	4.0f
+
+	vec3_t default_start_pos = { 8.0f, 0.0f, 5.0f };
 
 	// Get number of missiles to fire off and get the separation between missiles.
-
-	assert(strlen(format));
-
-	missilepos=1;
-
-	count=0;
-
-	va_start(marker,format);
-	curchar=format[0];
-	assert(curchar=='i');
-	missilepos=va_arg(marker,int);
+	va_list marker;
+	va_start(marker, format);
+	const float missile_pos = (float)va_arg(marker, int);
 	va_end(marker);
 
 	// Set up the Magic-missile's starting position and aiming angles then cast the spell.
 
-	// Push the start position forward for earlier shots
-	DefaultStartPos[0] -= MISSILE_SEP*missilepos;
-	DefaultStartPos[1] += MISSILE_SEP*missilepos;
-	Weapon_CalcStartPos(OriginToLowerJoint,OriginToUpperJoint,DefaultStartPos,StartPos,caster);
-	StartPos[2] += caster->viewheight - 14.0;
-	
-	VectorCopy(caster->client->aimangles, fireangles);
-	fireangles[YAW] += missilepos*MISSILE_YAW;
-	fireangles[PITCH] += missilepos*MISSILE_PITCH;
-	AngleVectors(fireangles, fwd, NULL, NULL);
-	SpellCastMagicMissile(caster, StartPos, fireangles, fwd);
+	// Push the start position forward for earlier shots.
+	default_start_pos[0] -= MISSILE_SEPARATION * missile_pos;
+	default_start_pos[1] += MISSILE_SEPARATION * missile_pos;
 
-	if (missilepos == -1.0)
-		gi.sound(caster,CHAN_WEAPON,gi.soundindex("weapons/MagicMissileSpreadFire.wav"),1,ATTN_NORM,0);
+	vec3_t start_pos;
+	Weapon_CalcStartPos(origin_to_lower_joint, origin_to_upper_joint, default_start_pos, start_pos, caster);
+	start_pos[2] += (float)caster->viewheight - 14.0f;
 
-	if (!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_INFINITE_MANA)))
-		caster->client->playerinfo.pers.inventory.Items[caster->client->playerinfo.weap_ammo_index]--;
+	vec3_t fire_angles;
+	VectorCopy(caster->client->aimangles, fire_angles);
+	fire_angles[YAW] += missile_pos * MISSILE_YAW;
+	fire_angles[PITCH] += missile_pos * MISSILE_PITCH;
+
+	vec3_t fwd;
+	AngleVectors(fire_angles, fwd, NULL, NULL);
+	SpellCastMagicMissile(caster, start_pos, fire_angles, fwd);
+
+	if (missile_pos == -1.0f)
+		gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/MagicMissileSpreadFire.wav"), 1.0f, ATTN_NORM, 0.0f);
+
+	playerinfo_t* info = &caster->client->playerinfo; //mxd
+	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
+		info->pers.inventory.Items[info->weap_ammo_index]--; //TODO: why doesn't this use info->pers.weapon->quantity?
 }
 
 // ************************************************************************************************
