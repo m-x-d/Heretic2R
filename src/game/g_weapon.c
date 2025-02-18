@@ -449,49 +449,37 @@ void WeaponThink_FlyingFist(edict_t* caster, char* format, ...)
 		info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity; //TODO: Can info->pers.inventory.Items[] go below zero?
 }
 
-
-// ************************************************************************************************
-// WeaponThink_Maceballs
-// ----------------------
-// ************************************************************************************************
-
-void WeaponThink_Maceballs(edict_t *caster, char *format,...)
+void WeaponThink_Maceballs(edict_t* caster, char* format, ...)
 {
-	vec3_t	OriginToLowerJoint={0.945585,2.26076,0.571354},
-			OriginToUpperJoint={1.80845,2.98912,3.27800},
-			defaultstartpos={-4.0,15.0,15.0},		// Ripper start position
-			defaultstartpos2={13.0,15.0,-15.0},		// Maceball start position
-			startpos,
-			fwd;
+	assert(caster->client != NULL);
 
-	assert(caster->client);
-	
-	if (caster->client->playerinfo.powerup_timer > level.time)
+	vec3_t start_pos;
+	playerinfo_t* info = &caster->client->playerinfo; //mxd
+
+	if (info->powerup_timer > level.time)
 	{
 		// Set up the ball's starting position and aiming angles then cast the spell.
-		Weapon_CalcStartPos(OriginToLowerJoint, OriginToUpperJoint, defaultstartpos2, startpos, caster);
+		const vec3_t maceball_start_pos = { 13.0f, 15.0f, -15.0f }; // Maceball start position.
+		Weapon_CalcStartPos(origin_to_lower_joint, origin_to_upper_joint, maceball_start_pos, start_pos, caster);
+		start_pos[2] += (float)caster->viewheight - 14.0f;
 
-		AngleVectors(caster->client->aimangles, fwd, NULL, NULL);
-		startpos[2] += caster->viewheight - 14.0;
+		SpellCastMaceball(caster, start_pos, caster->client->aimangles, NULL, 0.0f);
 
-		SpellCastMaceball(caster, startpos, caster->client->aimangles, NULL, 0.0);
-		// Giant iron dooms require lotsa mana, but yer average ripper needs far less.
-		if (!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_INFINITE_MANA)))
-			caster->client->playerinfo.pers.inventory.Items[caster->client->playerinfo.weap_ammo_index] -= 
-					caster->client->playerinfo.pers.weapon->quantity * 2.0;
+		// Giant iron dooms require lots of mana, but yer average ripper needs far less.
+		if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
+			info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity * 2; //TODO: Can info->pers.inventory.Items[] go below zero?
 	}
 	else
 	{
 		// Set up the ball's starting position and aiming angles then cast the spell.
-		Weapon_CalcStartPos(OriginToLowerJoint, OriginToUpperJoint,defaultstartpos,startpos,caster);
+		const vec3_t ripper_start_pos = { -4.0f, 15.0f, 15.0f }; // Ripper start position.
+		Weapon_CalcStartPos(origin_to_lower_joint, origin_to_upper_joint, ripper_start_pos, start_pos, caster);
+		start_pos[2] += (float)caster->viewheight - 14.0f;
 
-		AngleVectors(caster->client->aimangles, fwd, NULL, NULL);
-		startpos[2] += caster->viewheight - 14.0;
+		SpellCastRipper(caster, start_pos, caster->client->aimangles, NULL);
 
-		SpellCastRipper(caster, startpos, caster->client->aimangles, NULL);
-		if (!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_INFINITE_MANA)))
-			caster->client->playerinfo.pers.inventory.Items[caster->client->playerinfo.weap_ammo_index] -= 
-					caster->client->playerinfo.pers.weapon->quantity;		// Un-powered
+		if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
+			info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity; // Un-powered. //TODO: Can info->pers.inventory.Items[] go below zero?
 	}
 }
 
