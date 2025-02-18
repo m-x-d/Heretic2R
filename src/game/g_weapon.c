@@ -426,34 +426,27 @@ void WeaponThink_SwordStaff(edict_t* caster, char* format, ...)
 	}
 }
 
-// ************************************************************************************************
-// WeaponThink_FlyingFist
-// ----------------------
-// ************************************************************************************************
-void WeaponThink_FlyingFist(edict_t *Caster,char *Format,...)
+static const vec3_t origin_to_lower_joint = { 0.945585f, 2.26076f, 0.571354f }; //mxd. Made global static.
+static const vec3_t origin_to_upper_joint = { 1.80845f,  2.98912f, 3.278f }; //mxd. Made global static.
+
+void WeaponThink_FlyingFist(edict_t* caster, char* format, ...)
 {
-	vec3_t	OriginToLowerJoint={0.945585,2.26076,0.571354},
-			OriginToUpperJoint={1.80845,2.98912,3.27800},
-			DefaultStartPos={18.0,10.0,15.0},
-			StartPos,
-			Forward;
+	const vec3_t default_start_pos = { 18.0f, 10.0f, 15.0f };
 
-	// Set up the Magic-missile's starting position and aiming angles then cast the spell.
+	// Set up the Magic-missile's starting position and aiming angles, then cast the spell.
+	vec3_t start_pos;
+	Weapon_CalcStartPos(origin_to_lower_joint, origin_to_upper_joint, default_start_pos, start_pos, caster);
+	start_pos[2] += (float)caster->viewheight - 14.0f;
 
-	Weapon_CalcStartPos(OriginToLowerJoint,OriginToUpperJoint,DefaultStartPos,StartPos,Caster);
-	
-	AngleVectors(Caster->client->aimangles,Forward,NULL,NULL);
+	vec3_t forward;
+	AngleVectors(caster->client->aimangles, forward, NULL, NULL);
 
-	StartPos[2] += Caster->viewheight - 14.0;
-	SpellCastFlyingFist(Caster,StartPos,Caster->client->aimangles,Forward,0.0);
+	SpellCastFlyingFist(caster, start_pos, caster->client->aimangles, forward, 0.0f);
 
 	// Take off mana, but if there is none, then fire a wimpy fizzle-weapon.
-	if (Caster->client->playerinfo.pers.inventory.Items[Caster->client->playerinfo.weap_ammo_index] > 0)
-	{
-		if (!(deathmatch->value && ((int)dmflags->value & DF_INFINITE_MANA)))
-				Caster->client->playerinfo.pers.inventory.Items[Caster->client->playerinfo.weap_ammo_index] -= 
-						Caster->client->playerinfo.pers.weapon->quantity;	
-	}
+	playerinfo_t* info = &caster->client->playerinfo; //mxd
+	if (info->pers.inventory.Items[info->weap_ammo_index] > 0 && (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA)))
+		info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity; //TODO: Can info->pers.inventory.Items[] go below zero?
 }
 
 
