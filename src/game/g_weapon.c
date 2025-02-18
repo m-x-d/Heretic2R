@@ -606,45 +606,39 @@ void WeaponThink_HellStaff(edict_t* caster, char* format, ...)
 		info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity;
 }
 
-// ************************************************************************************************
-// WeaponThink_Blast
-// ---------------------
-// ************************************************************************************************
-
-void WeaponThink_Blast(edict_t *caster,char *Format,...)
+void WeaponThink_Blast(edict_t* caster, char* format, ...)
 {
-	vec3_t	startpos;
-	vec3_t	fwd, right;
-	vec3_t	mins={-3.0, -3.0, -3.0}, maxs={3.0, 3.0, 3.0};
-	trace_t	trace;
+	const vec3_t mins = { -3.0f, -3.0f, -3.0f };
+	const vec3_t maxs = {  3.0f,  3.0f,  3.0f };
 
-	assert(caster->client);
+	assert(caster->client != NULL);
 
 	// Find the firing position first.
+	vec3_t fwd;
+	vec3_t right;
 	AngleVectors(caster->client->aimangles, fwd, right, NULL);
-	VectorMA(caster->s.origin,10,fwd,startpos);
-	VectorMA(startpos, -4.0F, right, startpos);
-	startpos[2] += caster->viewheight;
+
+	vec3_t start_pos;
+	VectorMA(caster->s.origin, 10.0f, fwd, start_pos);
+	VectorMA(start_pos, -4.0f, right, start_pos);
+	start_pos[2] += (float)caster->viewheight;
 
 	// Trace from the player's origin to the casting location to assure not spawning in a wall.
-	gi.trace(caster->s.origin, mins, maxs, startpos, caster, MASK_SHOT,&trace);
+	trace_t	trace;
+	gi.trace(caster->s.origin, mins, maxs, start_pos, caster, MASK_SHOT, &trace);
+
 	if (trace.startsolid || trace.allsolid)
-	{	// No way to avoid spawning in a wall.
-		return;
-	}
+		return; // No way to avoid spawning in a wall.
 
-	if (trace.fraction < 1.0)
-	{
-		VectorCopy(trace.endpos, startpos);
-	}
+	if (trace.fraction < 1.0f)
+		VectorCopy(trace.endpos, start_pos);
 
-	// This weapon does not autotarget
-	SpellCastBlast(caster, startpos, caster->client->aimangles, NULL);
+	// This weapon does not auto-target.
+	SpellCastBlast(caster, start_pos, caster->client->aimangles, NULL);
 
-	if (!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_INFINITE_MANA)))
-		caster->client->playerinfo.pers.inventory.Items[caster->client->playerinfo.weap_ammo_index] -= caster->client->playerinfo.pers.weapon->quantity;
+	playerinfo_t* info = &caster->client->playerinfo; //mxd
+	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
+		info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity;
 
-	gi.sound(caster,CHAN_WEAPON,gi.soundindex("weapons/BlastFire.wav"),1,ATTN_NORM,0);
+	gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/BlastFire.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
-
-// end
