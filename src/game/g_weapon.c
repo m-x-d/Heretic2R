@@ -543,17 +543,13 @@ void WeaponThink_SphereOfAnnihilation(edict_t* caster, char* format, ...)
 		info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity;
 }
 
-// ************************************************************************************************
-// WeaponThink_Firewall
-// -------------------------------
-// ************************************************************************************************
-
-void WeaponThink_Firewall(edict_t *caster, char *format,...)
+void WeaponThink_Firewall(edict_t* caster, char* format, ...)
 {
-	SpellCastWall(caster, caster->s.origin, caster->client->aimangles, NULL, 0.0);
+	SpellCastWall(caster, caster->s.origin, caster->client->aimangles, NULL, 0.0f);
 
-	if (!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_INFINITE_MANA)))
-		caster->client->playerinfo.pers.inventory.Items[caster->client->playerinfo.weap_ammo_index] -= caster->client->playerinfo.pers.weapon->quantity;
+	playerinfo_t* info = &caster->client->playerinfo; //mxd
+	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
+		info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity;
 }
 
 // ************************************************************************************************
