@@ -48,4 +48,5 @@ extern void G_PlayerActionCheckRopeMove(playerinfo_t *playerinfo);
 extern qboolean G_EntIsAButton(edict_t *ent);
 void Updatefmnodeinfo(edict_t *ent);
 void Setfmnodeinfo(edict_t *ent);
+extern void PlayerChickenDeath(edict_t* self); //mxd
 #endif // _P_FUNCS_H_

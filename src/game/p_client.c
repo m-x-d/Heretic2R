@@ -28,9 +28,6 @@
 #include "Vector.h"
 #include "qcommon.h"
 
-// FIXME: include headers.
-extern void PlayerChickenDeath(edict_t *ent);
-
 #define SWIM_ADJUST_AMOUNT	16
 #define FOV_DEFAULT			75.0
 
