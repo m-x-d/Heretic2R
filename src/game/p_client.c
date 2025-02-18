@@ -34,43 +34,29 @@
 const vec3_t player_mins = { -14.0f, -14.0f, -34.0f };
 const vec3_t player_maxs = {  14.0f,  14.0f,  25.0f };
 
-/*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32)
-The normal starting point for a level.
-*/
+// QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32)
+// The normal starting point for a level.
 void SP_info_player_start(edict_t* self) { }
 
-/*QUAKED info_player_deathmatch (1 0 1) (-16 -16 -24) (16 16 32)
-potential spawning position for deathmatch games
-*/
-void SP_info_player_deathmatch(edict_t *self)
+// QUAKED info_player_deathmatch (1 0 1) (-16 -16 -24) (16 16 32)
+// Potential spawning position for deathmatch games.
+void SP_info_player_deathmatch(edict_t* self)
 {
-	if (!deathmatch->value)
-	{
-		G_FreeEdict (self);
-		return;
-	}
-//	SP_misc_teleporter_dest (self);
+	if (!DEATHMATCH)
+		G_FreeEdict(self);
 }
 
-/*QUAKED info_player_coop (1 0 1) (-16 -16 -24) (16 16 32)
-potential spawning position for coop games
-*/
-void SP_info_player_coop(edict_t *self)
+// QUAKED info_player_coop (1 0 1) (-16 -16 -24) (16 16 32)
+// Potential spawning position for coop games.
+void SP_info_player_coop(edict_t* self)
 {
-	if(!coop->value)
-	{
-		G_FreeEdict (self);
-		return;
-	}
-//	SP_misc_teleporter_dest (self);
+	if (!COOP)
+		G_FreeEdict(self);
 }
 
-
-/*QUAKED info_player_intermission (1 0 1) (-16 -16 -24) (16 16 32)
-The deathmatch intermission point will be at one of these
-Use 'angles' instead of 'angle', so you can set pitch or roll as well as yaw.  'pitch yaw roll'
-*/
-
+// QUAKED info_player_intermission (1 0 1) (-16 -16 -24) (16 16 32)
+// The deathmatch intermission point will be at one of these.
+// Use 'angles' instead of 'angle', so you can set pitch or roll as well as yaw. 'pitch yaw roll'.
 void SP_info_player_intermission(edict_t* self) { }
 
 void ClientSetSkinType(edict_t *ent, char *skinname)
