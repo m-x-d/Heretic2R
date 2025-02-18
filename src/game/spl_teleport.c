@@ -16,8 +16,7 @@
 #include "g_teleport.h"
 #include "p_main.h"
 #include "g_playstats.h"
-
-extern void	SelectSpawnPoint (edict_t *ent,vec3_t origin, vec3_t angles);
+#include "p_client.h" //mxd
 
 // PLAYER ONLY!!!
 // make the guy actually teleport from one place to another

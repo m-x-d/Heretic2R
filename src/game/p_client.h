@@ -25,6 +25,7 @@ extern int player_die(edict_t* self, edict_t* inflictor, edict_t* attacker, int 
 extern void player_dismember(edict_t* self, edict_t* other, int damage, int HitLocation);
 extern void ResetPlayerBaseNodes(edict_t* ent);
 extern void player_repair_skin(edict_t* self);
+extern void SelectSpawnPoint(const edict_t* ent, vec3_t origin, vec3_t angles); //mxd
 
 extern void SP_info_player_start(edict_t* self);
 extern void SP_info_player_deathmatch(edict_t* self);
