@@ -90,11 +90,6 @@ static void Weapon_CalcStartPos(const vec3_t origin_to_lower_joint, const vec3_t
 	VectorCopy(start_pos, actual_start_pos);
 }
 
-// ************************************************************************************************
-// WeaponThink_SwordStaff
-// ----------------------
-// ************************************************************************************************
-
 enum swordpos_e
 {
 	SWORD_ATK_L,
@@ -105,429 +100,328 @@ enum swordpos_e
 	SWORD_ATK_STAB
 };
 
-
-vec3_t swordpositions[23] =
+static vec3_t sword_positions[23] =
 {
-	{	0,		0,		0	},	// 0
-	{	-20,	-20,	26	},	// 1	swipeA4
-	{	4,		-34,	22	},	// 2	swipeA5
-	{	43,		-16,	-10	},	// 3	swipeA6
-	{	33,		20,		-32	},	// 4	swipeA7
+	{	0.0f,	0.0f,	0.0f	},	// 0
+	{	-20.0f,	-20.0f,	26.0f	},	// 1	swipeA4
+	{	4.0f,	-34.0f,	22.0f	},	// 2	swipeA5
+	{	43.0f,	-16.0f,	-10.0f	},	// 3	swipeA6
+	{	33.0f,	20.0f,	-32.0f	},	// 4	swipeA7
 
-	{	-16,	12,		20	},	// 5	swipeB4
-	{	8,		34,		16	},	// 6	swipeB5
-	{	40,		-16,	-10	},	// 7	swipeB6
-	{	-8,		-24,	-22	},	// 8	swipeB7
+	{	-16.0f,	12.0f,	20.0f	},	// 5	swipeB4
+	{	8.0f,	34.0f,	16.0f	},	// 6	swipeB5
+	{	40.0f,	-16.0f,	-10.0f	},	// 7	swipeB6
+	{	-8.0f,	-24.0f,	-22.0f	},	// 8	swipeB7
 
-	{	-32,	0,		32	},	// 9	newspin5
-	{	24,		-36,	8	},	// 10	newspin6
-	{	44,		20,		-20	},	// 11	newspin7
-	{	0,		0,		0	},	// 12
+	{	-32.0f,	0.0f,	32.0f	},	// 9	newspin5
+	{	24.0f,	-36.0f,	8.0f	},	// 10	newspin6
+	{	44.0f,	20.0f,	-20.0f	},	// 11	newspin7
+	{	0.0f,	0.0f,	0.0f	},	// 12
 
-	{	-24,	0,		20	},	// 13	spining4
-	{	24,		36,		16	},	// 14	spining5
-	{	36,		-36,	-20	},	// 15	spining6
-	{	0,		0,		0	},	// 16
+	{	-24.0f,	0.0f,	20.0f	},	// 13	spining4
+	{	24.0f,	36.0f,	16.0f	},	// 14	spining5
+	{	36.0f,	-36.0f,	-20.0f	},	// 15	spining6
+	{	0.0f,	0.0f,	0.0f	},	// 16
 
-	{	-12,	-12, 	-12	},	// 17	roundbck2
-	{	-20,	28,		-4	},	// 18	roundbck3
-	{	16,		36,		0	},	// 19	roundbck4
-	{	0,		0,		0	},	// 20
+	{	-12.0f,	-12.0f, -12.0f	},	// 17	roundbck2
+	{	-20.0f,	28.0f,	-4.0f	},	// 18	roundbck3
+	{	16.0f,	36.0f,	0.0f	},	// 19	roundbck4
+	{	0.0f,	0.0f,	0.0f	},	// 20
 
-	{	12,		0,		-12	},	// 21	spikedown7
-	{	20,		0,		-48	},	// 22	spikedown8
+	{	12.0f,	0.0f,	-12.0f	},	// 21	spikedown7
+	{	20.0f,	0.0f,	-48.0f	},	// 22	spikedown8
 };
 
-int sworddamage[STAFF_LEVEL_MAX][2] = 
-{	//	MIN		MAX
-	{	0,						0						},		// STAFF_LEVEL_NONE
-	{	SWORD_DMG_MIN,			SWORD_DMG_MAX			},		// STAFF_LEVEL_BASIC
-	{	SWORD_POWER1_DMG_MIN,	SWORD_POWER1_DMG_MAX	},		// STAFF_LEVEL_POWER1
-	{	SWORD_POWER2_DMG_MIN,	SWORD_POWER2_DMG_MAX	},		// STAFF_LEVEL_POWER2
+static int sword_damage[STAFF_LEVEL_MAX][2] =
+{
+	//	MIN						MAX
+	{	0,						0						}, // STAFF_LEVEL_NONE
+	{	SWORD_DMG_MIN,			SWORD_DMG_MAX			}, // STAFF_LEVEL_BASIC
+	{	SWORD_POWER1_DMG_MIN,	SWORD_POWER1_DMG_MAX	}, // STAFF_LEVEL_POWER1
+	{	SWORD_POWER2_DMG_MIN,	SWORD_POWER2_DMG_MAX	}, // STAFF_LEVEL_POWER2
 };
 
-void WeaponThink_SwordStaff(edict_t *Caster,char *Format,...)
+void WeaponThink_SwordStaff(edict_t* caster, char* format, ...)
 {
-	va_list Marker;
-	char CurrentChar;
-		int locid;
-	vec3_t fwd, right, up;
-	vec3_t atkpos, startpos, endpos, hitdir, hitangles, diffangles;
-	vec3_t mins={-12, -12, -12};
-	vec3_t maxs={12, 12, 12};
-	int damage, powerlevel, dflags;
-	playerinfo_t *playerinfo;
+	const vec3_t mins = { -12.0f, -12.0f, -12.0f };
+	const vec3_t maxs = {  12.0f,  12.0f,  12.0f };
 
-	trace_t trace;
+	assert(caster->client != NULL);
 
-	assert(Caster->client);
-	playerinfo = &Caster->client->playerinfo;
-	assert(playerinfo);
+	playerinfo_t* info = &caster->client->playerinfo;
+	assert(info != NULL);
 
-	powerlevel = playerinfo->pers.stafflevel;
-	if (playerinfo->powerup_timer > level.time)
-		powerlevel++;							// powerups now power up your staff, too.
+	int power_level = info->pers.stafflevel;
+	if (info->powerup_timer > level.time)
+		power_level++; // Powerups now power up your staff, too.
 
-	if (powerlevel <= STAFF_LEVEL_NONE)
+	if (power_level <= STAFF_LEVEL_NONE)
 		return;
-	else if (powerlevel >= STAFF_LEVEL_MAX)
-		powerlevel = STAFF_LEVEL_MAX-1;
 
-	assert(strlen(Format));
-	va_start(Marker,Format);
-	CurrentChar=Format[0];
-	assert(CurrentChar=='i');
-	locid=va_arg(Marker,int);
-	va_end(Marker);
+	power_level = min(STAFF_LEVEL_MAX - 1, power_level);
 
-	AngleVectors(Caster->client->aimangles, fwd, right, up);
+	va_list marker;
+	va_start(marker, format);
+	const int loc_id = va_arg(marker, int);
+	va_end(marker);
+
+	vec3_t fwd;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(caster->client->aimangles, fwd, right, up);
 
 	// Set up the area to check.
-	VectorCopy(swordpositions[locid], atkpos);
-	VectorMA(Caster->s.origin, atkpos[0], fwd, endpos);
-	VectorMA(endpos, -atkpos[1], right, endpos);
-	VectorMA(endpos, atkpos[2], up, endpos);
+	vec3_t attack_pos;
+	VectorCopy(sword_positions[loc_id], attack_pos);
 
-	// Now if we are the first attack of this sweep (1, 5, 9, 13), starting in solid means a hit.  If not, then we must avoid startsolid entities.
-	if ((locid & 0x03) == 0x01)
-	{	// First check of the swing.
-		Caster->client->lastentityhit = NULL;
-		VectorCopy(endpos, startpos);
+	vec3_t end_pos;
+	VectorMA(caster->s.origin, attack_pos[0], fwd, end_pos);
+	VectorMA(end_pos, -attack_pos[1], right, end_pos);
+	VectorMA(end_pos, attack_pos[2], up, end_pos);
+
+	vec3_t start_pos;
+
+	// Now if we are the first attack of this sweep (1, 5, 9, 13), starting in solid means a hit. If not, then we must avoid startsolid entities.
+	if ((loc_id & 3) == 1)
+	{
+		// First check of the swing.
+		caster->client->lastentityhit = NULL;
+		VectorCopy(end_pos, start_pos);
 	}
 	else
 	{
-		VectorCopy(swordpositions[locid-1], atkpos);
-		VectorMA(Caster->s.origin, atkpos[0], fwd, startpos);
-		VectorMA(startpos, -atkpos[1], right, startpos);
-		VectorMA(startpos, atkpos[2], up, startpos);
+		VectorCopy(sword_positions[loc_id - 1], attack_pos);
+		VectorMA(caster->s.origin, attack_pos[0], fwd, start_pos);
+		VectorMA(start_pos, -attack_pos[1], right, start_pos);
+		VectorMA(start_pos, attack_pos[2], up, start_pos);
 	}
-	startpos[2] += Caster->viewheight;
-	endpos[2] += Caster->viewheight;
 
-	// For showing where the sword attacks are.
-//	gi.CreateEffect(NULL, FX_TEST_BBOX, 0, endpos, "fff", maxs[0], mins[2], maxs[2]);
+	start_pos[2] += (float)caster->viewheight;
+	end_pos[2] += (float)caster->viewheight;
 
-	VectorCopy(endpos, Caster->client->laststaffpos);
-	Caster->client->laststaffuse = level.time;
+	VectorCopy(end_pos, caster->client->laststaffpos);
+	caster->client->laststaffuse = level.time;
 
-	gi.trace(startpos, mins, maxs, endpos, Caster, MASK_PLAYERSOLID|CONTENTS_DEADMONSTER,&trace);
-	if(level.fighting_beast)
+	trace_t trace;
+	gi.trace(start_pos, mins, maxs, end_pos, caster, MASK_PLAYERSOLID | CONTENTS_DEADMONSTER, &trace);
+
+	if (level.fighting_beast)
 	{
-		edict_t *ent;
-		
-		if(ent = TB_CheckHit(startpos, trace.endpos))
+		edict_t* ent = TB_CheckHit(start_pos, trace.endpos);
+
+		if (ent != NULL)
 			trace.ent = ent;
 	}
 
-	if (trace.ent && trace.ent->takedamage)
+	const int fx_flags = (power_level >= STAFF_LEVEL_POWER2 ? CEF_FLAG7 : 0); //mxd. Fire sparks when powered, blue otherwise.
+
+	if (trace.ent != NULL && trace.ent->takedamage != DAMAGE_NO)
 	{
-		if (!trace.startsolid || trace.ent != Caster->client->lastentityhit)
+		if (trace.startsolid && trace.ent == caster->client->lastentityhit)
+			return;
+
+		// Hit another player?
+		if (info->advancedstaff && trace.ent->client != NULL)
 		{
-			if (playerinfo->advancedstaff && trace.ent->client && trace.ent->client->playerinfo.block_timer >= level.time)
-			{	// Crimminy, what if they're blocking?
-				// Check angle
-				VectorSubtract(Caster->s.origin, trace.ent->s.origin, hitdir);
-				VectorNormalize(hitdir);
-				vectoangles(hitdir, hitangles);
-				diffangles[YAW] = hitangles[YAW] - trace.ent->client->aimangles[YAW];
-				if (diffangles[YAW] > 180.0)
-					diffangles[YAW] -= 360.0;
-				else if (diffangles[YAW] < -180.0)
-					diffangles[YAW] += 360.0;
-				diffangles[PITCH] = hitangles[PITCH] - trace.ent->client->aimangles[PITCH];
-
-				if (diffangles[YAW] > -60.0 && 
-						diffangles[YAW] < 60.0 &&
-						diffangles[PITCH] > -45.0 &&
-						diffangles[PITCH] < 75.0)
-				{	// The opponent is indeed facing you...
-					if (powerlevel >= STAFF_LEVEL_POWER2)
-					{
-						gi.CreateEffect(NULL,
-										FX_BLOCK_SPARKS,
-										CEF_FLAG7,
-										trace.endpos,
-										"d",
-										hitdir);
-					}
-					else
-					{
-						gi.CreateEffect(NULL,
-										FX_BLOCK_SPARKS,
-										0,
-										trace.endpos,
-										"d",
-										hitdir);
-					}
-
-					AlertMonsters (Caster, Caster, 1, true);
-					switch(irand(1,3))
-					{
-					case 1:
-						gi.sound(Caster, CHAN_AUTO, gi.soundindex("weapons/ArmorRic1.wav"), 1, ATTN_NORM, 0);
-						break;
-					case 2:
-						gi.sound(Caster, CHAN_AUTO, gi.soundindex("weapons/ArmorRic2.wav"), 1, ATTN_NORM, 0);
-						break;
-					case 3:
-						gi.sound(Caster, CHAN_AUTO, gi.soundindex("weapons/ArmorRic3.wav"), 1, ATTN_NORM, 0);
-						break;
-					}
-					Caster->client->lastentityhit = trace.ent;
-
-					// Now we're in trouble, go into the attack recoil...
-					switch((locid-1)>>2)
-					{
-					case SWORD_ATK_L:
-						P_PlayerAnimSetUpperSeq(playerinfo, ASEQ_WSWORD_BLOCKED_L);
-						// And of course the blocker must react too.
-						P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCK_L);
-						return;
-						break;
-					case SWORD_ATK_R:
-						P_PlayerAnimSetUpperSeq(playerinfo, ASEQ_WSWORD_BLOCKED_R);
-						// And of course the blocker must react too.
-						P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCK_R);
-						return;
-						break;
-					case SWORD_SPINATK_L:
-						P_PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSWORD_SPINBLOCKED);
-						// And of course the blocker must react too.
-						P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCK_L);
-						return;
-						break;
-					case SWORD_SPINATK_R:
-						P_PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSWORD_SPINBLOCKED2);
-						// And of course the blocker must react too.
-						P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCK_R);
-						return;
-						break;
-					case SWORD_ATK_B:
-						P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCK_R);
-						return;
-						break;
-					case SWORD_ATK_STAB:
-						P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCK_L);
-						return;
-						break;
-					}
-				}
-			}
-
-			if (playerinfo->advancedstaff && trace.ent->client && trace.ent->client->laststaffuse+0.1 >= level.time)
-			{	// Check if the staffs collided.
-				VectorSubtract(trace.endpos, trace.ent->client->laststaffpos, hitdir);
-
-				if (VectorLength(hitdir) < 48.0)
-				{	// Let's make these two staffs collide.
-					if (powerlevel >= STAFF_LEVEL_POWER2)
-					{
-						gi.CreateEffect(NULL,
-										FX_BLOCK_SPARKS,
-										CEF_FLAG7,
-										trace.endpos,
-										"d",
-										hitdir);
-					}
-					else
-					{
-						gi.CreateEffect(NULL,
-										FX_BLOCK_SPARKS,
-										0,
-										trace.endpos,
-										"d",
-										hitdir);
-					}
-
-					AlertMonsters (Caster, Caster, 1, true);
-					switch(irand(1,3))
-					{
-					case 1:
-						gi.sound(Caster, CHAN_AUTO, gi.soundindex("weapons/ArmorRic1.wav"), 1, ATTN_NORM, 0);
-						break;
-					case 2:
-						gi.sound(Caster, CHAN_AUTO, gi.soundindex("weapons/ArmorRic2.wav"), 1, ATTN_NORM, 0);
-						break;
-					case 3:
-						gi.sound(Caster, CHAN_AUTO, gi.soundindex("weapons/ArmorRic3.wav"), 1, ATTN_NORM, 0);
-						break;
-					}
-					Caster->client->lastentityhit = trace.ent;
-					trace.ent->client->lastentityhit = Caster;
-
-					// Now we're in trouble, go into the attack recoil...
-					switch((locid-1)>>2)
-					{
-					case SWORD_ATK_L:
-						P_PlayerAnimSetUpperSeq(playerinfo, ASEQ_WSWORD_BLOCKED_L);
-						// And of course the blocker must react too.
-						P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCKED_L);
-						return;
-						break;
-					case SWORD_ATK_R:
-						P_PlayerAnimSetUpperSeq(playerinfo, ASEQ_WSWORD_BLOCKED_R);
-						// And of course the blocker must react too.
-						P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCKED_R);
-						return;
-						break;
-					case SWORD_SPINATK_L:
-						P_PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSWORD_SPINBLOCKED);
-						// And of course the blocker must react too.
-						P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCKED_L);
-						return;
-						break;
-					case SWORD_SPINATK_R:
-						P_PlayerAnimSetLowerSeq(playerinfo, ASEQ_WSWORD_SPINBLOCKED2);
-						// And of course the blocker must react too.
-						P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCKED_R);
-						return;
-						break;
-					case SWORD_ATK_B:
-						P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCKED_R);
-						return;
-						break;
-					case SWORD_ATK_STAB:
-						P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCKED_L);
-						return;
-						break;
-					}
-				}
-			}
-
-			if (CanDamage (trace.ent, Caster))
+			// Crimminy, what if they're blocking?
+			if (trace.ent->client->playerinfo.block_timer >= level.time)
 			{
-				VectorSubtract(endpos, startpos, hitdir);
-				VectorNormalize2(hitdir, hitdir);
+				// Check angle
+				vec3_t hit_dir;
+				VectorSubtract(caster->s.origin, trace.ent->s.origin, hit_dir);
+				VectorNormalize(hit_dir);
 
-				if (powerlevel > STAFF_LEVEL_POWER2)
-					powerlevel = STAFF_LEVEL_POWER2;
+				vec3_t hit_angles;
+				vectoangles(hit_dir, hit_angles);
 
-				damage = irand(sworddamage[powerlevel][0], sworddamage[powerlevel][1]);
-				// Spin attacks should double damage
-				switch((locid-1)>>2)
+				vec3_t diff_angles;
+				diff_angles[YAW] = hit_angles[YAW] - trace.ent->client->aimangles[YAW];
+
+				if (diff_angles[YAW] > 180.0f)
+					diff_angles[YAW] -= 360.0f;
+				else if (diff_angles[YAW] < -180.0f)
+					diff_angles[YAW] += 360.0f;
+
+				diff_angles[PITCH] = hit_angles[PITCH] - trace.ent->client->aimangles[PITCH];
+
+				if (diff_angles[YAW] > -60.0f && diff_angles[YAW] < 60.0f && diff_angles[PITCH] > -45.0f && diff_angles[PITCH] < 75.0f)
 				{
-//				case SWORD_ATK_L:
-//					break;
-//				case SWORD_ATK_R:
-//					break;
-				case SWORD_SPINATK_L:
-				case SWORD_SPINATK_R:
-					damage *= SWORD_SPIN_DMG_MOD;		// 50% more damage from spins.
-					break;
-				case SWORD_ATK_B:
-					damage *= SWORD_BACK_DMG_MOD;		// Half damage from behind.
-					break;
-				case SWORD_ATK_STAB:
-					damage *= SWORD_STAB_DMG_MOD;		// Double damage from stab.
-					break;
-				}
+					// The opponent is indeed facing you...
+					gi.CreateEffect(NULL, FX_BLOCK_SPARKS, fx_flags, trace.endpos, "d", hit_dir);
+					AlertMonsters(caster, caster, 1.0f, true);
+					gi.sound(caster, CHAN_AUTO, gi.soundindex(va("weapons/ArmorRic%i.wav", irand(1, 3))), 1.0f, ATTN_NORM, 0.0f);
+					caster->client->lastentityhit = trace.ent;
 
-				if(Caster->client)
-				{
-					if(playerinfo->flags & PLAYER_FLAG_NO_LARM)
+					// Now we're in trouble, go into the attack recoil...
+					switch ((loc_id - 1) >> 2)
 					{
-						damage = ceil(damage/3);//only one arm 1/3 the damage
+						case SWORD_ATK_L:
+							P_PlayerAnimSetUpperSeq(info, ASEQ_WSWORD_BLOCKED_L);
+							P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCK_L); // The blocker must react too.
+							return;
+
+						case SWORD_ATK_R:
+							P_PlayerAnimSetUpperSeq(info, ASEQ_WSWORD_BLOCKED_R);
+							P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCK_R); // The blocker must react too.
+							return;
+
+						case SWORD_SPINATK_L:
+							P_PlayerAnimSetLowerSeq(info, ASEQ_WSWORD_SPINBLOCKED);
+							P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCK_L); // The blocker must react too.
+							return;
+
+						case SWORD_SPINATK_R:
+							P_PlayerAnimSetLowerSeq(info, ASEQ_WSWORD_SPINBLOCKED2);
+							P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCK_R); // The blocker must react too.
+							return;
+
+						case SWORD_ATK_B:
+							P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCK_R);
+							return;
+
+						case SWORD_ATK_STAB:
+							P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCK_L);
+							return;
 					}
 				}
+			}
 
-				switch(powerlevel)
+			if (trace.ent->client->laststaffuse + 0.1f >= level.time)
+			{
+				// Check if the staffs collided.
+				vec3_t hit_dir;
+				VectorSubtract(trace.endpos, trace.ent->client->laststaffpos, hit_dir);
+
+				if (VectorLength(hit_dir) < 48.0f)
 				{
-				case STAFF_LEVEL_BASIC:
-					dflags = DAMAGE_EXTRA_KNOCKBACK|DAMAGE_DISMEMBER;
-					break;
+					// Let's make these two staffs collide.
+					gi.CreateEffect(NULL, FX_BLOCK_SPARKS, fx_flags, trace.endpos, "d", hit_dir);
+					AlertMonsters(caster, caster, 1.0f, true);
+					gi.sound(caster, CHAN_AUTO, gi.soundindex(va("weapons/ArmorRic%i.wav", irand(1, 3))), 1.0f, ATTN_NORM, 0.0f);
+					caster->client->lastentityhit = trace.ent;
+					trace.ent->client->lastentityhit = caster;
 
-				case STAFF_LEVEL_POWER1:
-					dflags = DAMAGE_EXTRA_KNOCKBACK|DAMAGE_DISMEMBER|DAMAGE_DOUBLE_DISMEMBER;
-					break;
+					// Now we're in trouble, go into the attack recoil...
+					switch ((loc_id - 1) >> 2)
+					{
+						case SWORD_ATK_L:
+							P_PlayerAnimSetUpperSeq(info, ASEQ_WSWORD_BLOCKED_L);
+							P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCKED_L); // The blocker must react too.
+							return;
 
-				case STAFF_LEVEL_POWER2:
-					dflags = DAMAGE_EXTRA_KNOCKBACK|DAMAGE_DISMEMBER|DAMAGE_FIRE;
-					break;
+						case SWORD_ATK_R:
+							P_PlayerAnimSetUpperSeq(info, ASEQ_WSWORD_BLOCKED_R);
+							P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCKED_R); // The blocker must react too.
+							return;
+
+						case SWORD_SPINATK_L:
+							P_PlayerAnimSetLowerSeq(info, ASEQ_WSWORD_SPINBLOCKED);
+							P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCKED_L); // The blocker must react too.
+							return;
+
+						case SWORD_SPINATK_R:
+							P_PlayerAnimSetLowerSeq(info, ASEQ_WSWORD_SPINBLOCKED2);
+							P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCKED_R); // The blocker must react too.
+							return;
+
+						case SWORD_ATK_B:
+							P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCKED_R);
+							return;
+
+						case SWORD_ATK_STAB:
+							P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_WSWORD_BLOCKED_L);
+							return;
+					}
 				}
-
-				T_Damage (trace.ent, Caster, Caster, fwd, trace.endpos, hitdir, damage, damage*4, dflags,MOD_STAFF);
-				
-				// If we hit a monster, stick a trail of blood on the staff...
-				if (trace.ent->svflags & SVF_MONSTER)
-				{
-					if(trace.ent->materialtype == MAT_INSECT)//yellow blood
-						gi.CreateEffect(&Caster->s, FX_LINKEDBLOOD, CEF_FLAG8|CEF_OWNERS_ORIGIN, NULL, "bb", 30, CORVUS_BLADE);
-					else
-						gi.CreateEffect(&Caster->s, FX_LINKEDBLOOD, CEF_OWNERS_ORIGIN, NULL, "bb", 30, CORVUS_BLADE);
-				}
-
-				if (trace.ent->svflags & SVF_MONSTER || trace.ent->client)
-				{
-					Caster->s.effects |= EF_BLOOD_ENABLED;
-					playerinfo->effects |= EF_BLOOD_ENABLED;
-				}
-
-				//Use special hit puff
-				switch (powerlevel)
-				{
-				case STAFF_LEVEL_BASIC:
-					gi.sound(Caster,CHAN_AUTO,gi.soundindex("weapons/staffhit.wav"),1,ATTN_NORM,0);
-					break;
-
-				case STAFF_LEVEL_POWER1:
-					gi.CreateEffect(NULL,
-									FX_WEAPON_STAFF_STRIKE,
-									0,
-									trace.endpos,
-									"db",
-									trace.plane.normal,
-									powerlevel);
-					
-					gi.sound(Caster,CHAN_AUTO,gi.soundindex("weapons/staffhit_2.wav"),1,ATTN_NORM,0);
-					break;
-
-				case STAFF_LEVEL_POWER2:
-					gi.CreateEffect(NULL,
-									FX_WEAPON_STAFF_STRIKE,
-									0,
-									trace.endpos,
-									"db",
-									trace.plane.normal,
-									powerlevel);
-					
-					gi.sound(Caster,CHAN_AUTO,gi.soundindex("weapons/staffhit_3.wav"),1,ATTN_NORM,0);
-					break;
-				}
-
-				Caster->client->lastentityhit = trace.ent;
 			}
 		}
+
+		if (CanDamage(trace.ent, caster))
+		{
+			vec3_t hit_dir;
+			VectorSubtract(end_pos, start_pos, hit_dir);
+			VectorNormalize2(hit_dir, hit_dir);
+
+			float damage = (float)(irand(sword_damage[power_level][0], sword_damage[power_level][1]));
+
+			// Spin attacks should do double damage.
+			switch ((loc_id - 1) >> 2)
+			{
+				case SWORD_SPINATK_L:
+				case SWORD_SPINATK_R:
+					damage *= SWORD_SPIN_DMG_MOD;	// 175% damage from spins.
+					break;
+
+				case SWORD_ATK_B:
+					damage *= SWORD_BACK_DMG_MOD;	// 70% damage from behind.
+					break;
+
+				case SWORD_ATK_STAB:
+					damage *= SWORD_STAB_DMG_MOD;	// 250% damage from stab.
+					break;
+			}
+
+			if (caster->client != NULL && (info->flags & PLAYER_FLAG_NO_LARM))
+				damage = ceilf(damage / 3.0f); // only one arm 1/3 the damage
+
+			int dflags = DAMAGE_EXTRA_KNOCKBACK | DAMAGE_DISMEMBER;
+
+			if (power_level == STAFF_LEVEL_POWER1)
+				dflags |= DAMAGE_DOUBLE_DISMEMBER;
+			else if (power_level == STAFF_LEVEL_POWER2)
+				dflags |= DAMAGE_FIRE;
+
+			T_Damage(trace.ent, caster, caster, fwd, trace.endpos, hit_dir, (int)damage, (int)(damage * 4.0f), dflags, MOD_STAFF);
+
+			// If we hit a monster, stick a trail of blood on the staff...
+			if (trace.ent->svflags & SVF_MONSTER)
+			{
+				const int flags = CEF_OWNERS_ORIGIN | ((trace.ent->materialtype == MAT_INSECT) ? CEF_FLAG8 : 0); //mxd
+				gi.CreateEffect(&caster->s, FX_LINKEDBLOOD, flags, NULL, "bb", 30, CORVUS_BLADE);
+			}
+
+			if (trace.ent->svflags & SVF_MONSTER || trace.ent->client != NULL)
+			{
+				caster->s.effects |= EF_BLOOD_ENABLED;
+				info->effects |= EF_BLOOD_ENABLED;
+			}
+
+			// Use special hit puff.
+			switch (power_level)
+			{
+				case STAFF_LEVEL_BASIC:
+					gi.sound(caster, CHAN_AUTO, gi.soundindex("weapons/staffhit.wav"), 1.0f, ATTN_NORM, 0.0f);
+					break;
+
+				case STAFF_LEVEL_POWER1:
+					gi.CreateEffect(NULL, FX_WEAPON_STAFF_STRIKE, 0, trace.endpos, "db", trace.plane.normal, power_level);
+					gi.sound(caster, CHAN_AUTO, gi.soundindex("weapons/staffhit_2.wav"), 1.0f, ATTN_NORM, 0.0f);
+					break;
+
+				case STAFF_LEVEL_POWER2:
+					gi.CreateEffect(NULL, FX_WEAPON_STAFF_STRIKE, 0, trace.endpos, "db", trace.plane.normal, power_level);
+					gi.sound(caster, CHAN_AUTO, gi.soundindex("weapons/staffhit_3.wav"), 1.0f, ATTN_NORM, 0.0f);
+					break;
+			}
+
+			caster->client->lastentityhit = trace.ent;
+		}
 	}
-	else if (trace.fraction < 1.0 || trace.startsolid)
-	{	// Hit a wall or such...
-		if (Caster->client->lastentityhit == NULL && Vec3NotZero(trace.plane.normal))
-		{	// Don't do sparks if already hit something
-			vectoangles(trace.plane.normal, hitangles);
+	else if (trace.fraction < 1.0f || trace.startsolid)
+	{
+		// Hit a wall or such...
+		if (caster->client->lastentityhit == NULL && Vec3NotZero(trace.plane.normal))
+		{
+			// Don't do sparks if already hit something.
+			vec3_t hit_angles;
+			vectoangles(trace.plane.normal, hit_angles);
 
-			if (powerlevel >= STAFF_LEVEL_POWER2)
-			{
-				gi.CreateEffect(NULL,
-								FX_SPARKS,
-								CEF_FLAG7,
-								trace.endpos,
-								"d",
-								hitdir);
-			}
-			else
-			{
-				gi.CreateEffect(NULL,
-								FX_SPARKS,
-								0,
-								trace.endpos,
-								"d",
-								hitdir);
-			}
+			gi.CreateEffect(NULL, FX_SPARKS, fx_flags, trace.endpos, "d", trace.plane.normal); //BUGFIX: mxd. Original logic uses uninitialized 'hit_dir' var here.
+			AlertMonsters(caster, caster, 1.0f, true);
+			gi.sound(caster, CHAN_AUTO, gi.soundindex("weapons/staffhitwall.wav"), 1.0f, ATTN_NORM, 0.0f);
 
-			AlertMonsters (Caster, Caster, 1, true);
-			gi.sound(Caster, CHAN_AUTO, gi.soundindex("weapons/staffhitwall.wav"), 1, ATTN_NORM, 0);
-
-			// NOTENOTE -1 means that the last entity was a wall...
-			Caster->client->lastentityhit = (edict_t *)0xFFFFFFFF;
+			//NOTENOTE: -1 means that the last entity was a wall...
+			caster->client->lastentityhit = (edict_t*)0xFFFFFFFF;
 		}
 	}
 }
