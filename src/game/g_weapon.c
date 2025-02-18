@@ -588,45 +588,23 @@ void WeaponThink_PhoenixBow(edict_t* caster, char* format, ...)
 		info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity;
 }
 
-// ************************************************************************************************
-// WeaponThink_HellStaff
-// ---------------------
-// ************************************************************************************************
-
-void WeaponThink_HellStaff(edict_t *caster,char *Format,...)
+void WeaponThink_HellStaff(edict_t* caster, char* format, ...)
 {
-	vec3_t	StartPos;	//, off;
-	vec3_t	fwd, right;
-//	vec3_t	startangle;
-
-	// Set up the Hellstaff's starting position and aiming angles then cast the spell.
-//	VectorSet(off, 34.0, -6.0, 0.0);
-//	VectorGetOffsetOrigin(off, caster->s.origin, caster->client->aimangles[YAW], StartPos);
-
-	// Two-thirds of the player angle is torso movement.
-/*	startangle[PITCH] = (caster->client->aimangles[PITCH] - caster->s.angles[PITCH]) * 2.0 / 3.0;
-	startangle[YAW] = caster->client->aimangles[YAW] - caster->s.angles[YAW];
-	if (startangle[YAW] > 180.0)
-		startangle[YAW] -= 360.0;
-	else if (startangle[YAW] < -180.0)
-		startangle[YAW] += 360;
-	startangle[YAW] *= 2.0/3.0;
-	startangle[ROLL] = 0.0;
-*/
-//	VectorAdd(startangle, caster->s.angles, startangle);
-//	AngleVectors(startangle, fwd, right, NULL);
+	vec3_t fwd;
+	vec3_t right;
 	AngleVectors(caster->client->aimangles, fwd, right, NULL);
-	VectorMA(caster->s.origin,30,fwd,StartPos);
-	VectorMA(StartPos,10,right,StartPos);
-	StartPos[2] += caster->viewheight - 14.0;
 
-	SpellCastHellstaff(caster, StartPos, caster->client->aimangles, NULL);
+	vec3_t start_pos;
+	VectorMA(caster->s.origin, 30.0f, fwd, start_pos);
+	VectorMA(start_pos, 10.0f, right, start_pos);
+	start_pos[2] += (float)caster->viewheight - 14.0f;
 
-	if (!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_INFINITE_MANA)))
-		caster->client->playerinfo.pers.inventory.Items[caster->client->playerinfo.weap_ammo_index] -= caster->client->playerinfo.pers.weapon->quantity;
+	SpellCastHellstaff(caster, start_pos, caster->client->aimangles, NULL);
+
+	playerinfo_t* info = &caster->client->playerinfo; //mxd
+	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
+		info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity;
 }
-
-
 
 // ************************************************************************************************
 // WeaponThink_Blast
