@@ -524,42 +524,23 @@ void WeaponThink_MagicMissileSpread(edict_t* caster, char* format, ...)
 		info->pers.inventory.Items[info->weap_ammo_index]--; //TODO: why doesn't this use info->pers.weapon->quantity?
 }
 
-// ************************************************************************************************
-// WeaponThink_SphereOfAnnihilation
-// -------------------------------
-// ************************************************************************************************
-
-void WeaponThink_SphereOfAnnihilation(edict_t *Caster,char *Format,...)
+void WeaponThink_SphereOfAnnihilation(edict_t* caster, char* format, ...)
 {
-	va_list		Marker;
-	qboolean	*ReleaseFlagsPtr;
-	vec3_t		Forward;
-
 	// Get pointer to missile's release flag.
-
-	assert(strlen(Format));
-
-	va_start(Marker,Format);
-
-	assert(*Format=='g');
-
-	ReleaseFlagsPtr=va_arg(Marker,qboolean *);
-
-	va_end(Marker);
+	va_list marker;
+	va_start(marker, format);
+	qboolean* release_flags_ptr = va_arg(marker, qboolean*);
+	va_end(marker);
 
 	// Set up the Sphere-of-annihilation's aiming angles then cast the spell.
+	vec3_t fwd;
+	AngleVectors(caster->client->aimangles, fwd, NULL, NULL);
 
-	AngleVectors(Caster->client->aimangles,Forward,NULL,NULL);
+	SpellCastSphereOfAnnihilation(caster, NULL, caster->client->aimangles, fwd, 0.0f, release_flags_ptr);
 
-	SpellCastSphereOfAnnihilation(Caster,
-								 NULL,
-								 Caster->client->aimangles,		//v_angle,
-								 Forward,
-								 0.0,
-								 ReleaseFlagsPtr);
-
-	if (!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_INFINITE_MANA)))
-		Caster->client->playerinfo.pers.inventory.Items[Caster->client->playerinfo.weap_ammo_index]-= Caster->client->playerinfo.pers.weapon->quantity;
+	playerinfo_t* info = &caster->client->playerinfo; //mxd
+	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
+		info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity;
 }
 
 // ************************************************************************************************
