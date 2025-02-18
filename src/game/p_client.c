@@ -59,18 +59,12 @@ void SP_info_player_coop(edict_t* self)
 // Use 'angles' instead of 'angle', so you can set pitch or roll as well as yaw. 'pitch yaw roll'.
 void SP_info_player_intermission(edict_t* self) { }
 
-void ClientSetSkinType(edict_t *ent, char *skinname)
+void ClientUpdateModelAttributes(edict_t *ent) //mxd. Named 'ClientSetSkinType' in original version.
 {
-	playerinfo_t *playerinfo;
-
-	playerinfo = &(ent->client->playerinfo);
-
 	SetupPlayerinfo_effects(ent);
- 	P_PlayerUpdateModelAttributes(playerinfo);
+ 	P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
 	WritePlayerinfo_effects(ent);
-	
 }
-
 
 int player_pain (edict_t *self, edict_t *other, float kick, int damage)
 {
@@ -2293,7 +2287,7 @@ void PutClientInServer (edict_t *ent)
 
 	// Make sure the skin attributes are transferred.
 
-	ClientSetSkinType(ent, Info_ValueForKey (ent->client->playerinfo.pers.userinfo, "skin"));
+	ClientUpdateModelAttributes(ent);
 
 	if(deathmatch->value||coop->value)
 	{
@@ -2703,7 +2697,7 @@ void ClientUserinfoChanged (edict_t *ent, char *userinfo)
 	}
 
 	// Change skins, but lookup the proper skintype.
-	ClientSetSkinType(ent, s);
+	ClientUpdateModelAttributes(ent);
 
 	// FOV.
 
