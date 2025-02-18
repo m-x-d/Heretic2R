@@ -683,13 +683,6 @@ extern void InitClientResp(gclient_t* client);
 extern void InitBodyQue(void);
 extern void ClientBeginServerFrame(edict_t* ent);
 
-// g_player.c
-extern int player_pain(edict_t* self, edict_t* other, float kick, int damage);
-extern int player_die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point);
-extern void player_dismember(edict_t* self, edict_t* other, int damage, int HitLocation);
-extern void ResetPlayerBaseNodes(edict_t* ent);
-extern void player_repair_skin(edict_t* self);
-
 // g_svcmds.c
 extern void ServerCommand(void);
 extern qboolean SV_FilterPacket(char* from);

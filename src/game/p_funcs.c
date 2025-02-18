@@ -20,6 +20,7 @@
 #include "utilities.h"
 #include "g_playstats.h"
 #include "g_weapon.h"
+#include "p_client.h" //mxd
 
 // ************************************************************************************************
 // G_GetEntityStatePtr
