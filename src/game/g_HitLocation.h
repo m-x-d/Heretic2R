@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "q_Typedef.h" //mxd
+
 // Enumerated hit locations.
 typedef	enum HitLocation_e
 {
