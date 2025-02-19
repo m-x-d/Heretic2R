@@ -895,32 +895,20 @@ static void ClientObituary(edict_t* self, edict_t* attacker)
 	}
 }
 
-void player_make_gib(edict_t *self, edict_t *attacker)
+static void PlayerMakeGib(edict_t* self, edict_t* attacker)
 {
-	byte		magb;
-	float		mag;
-	int	i, num_limbs;
-
-	if(self->client)
+	if (self->client != NULL)
 	{
 		//FIXME: Have a generic GibParts effect that throws flesh and several body parts - much cheaper.
+		const int num_limbs = irand(1, 3);
 
-		num_limbs = irand(1, 3);
-		for(i = 0; i < num_limbs; i++)
-			player_dismember(self, attacker, flrand(80, 160), irand(hl_Head, hl_LegLowerRight) | hl_MeleeHit);
+		for (int i = 0; i < num_limbs; i++)
+			player_dismember(self, attacker, irand(80, 160), irand(hl_Head, hl_LegLowerRight) | hl_MeleeHit); //mxd. 'damage' arg set using flrand() in original version.
 	}
 
-	mag = VectorLength(self->mins);
-	magb = Clamp(mag, 1.0, 255.0);
-   	
-	gi.CreateEffect(NULL,
-					FX_FLESH_DEBRIS,
-   					0,
-   					self->s.origin,
-   					"bdb",
-   					irand(10, 30), self->mins, magb);
-
-   	self->takedamage = DAMAGE_NO;
+	const byte mag = (byte)(Clamp(VectorLength(self->mins), 1.0f, 255.0f));
+	gi.CreateEffect(NULL, FX_FLESH_DEBRIS, 0, self->s.origin, "bdb", irand(10, 30), self->mins, mag);
+	self->takedamage = DAMAGE_NO;
 }
 
 int player_die(edict_t *self, edict_t *inflictor, edict_t *attacker,int damage,vec3_t point)
@@ -1015,7 +1003,7 @@ int player_die(edict_t *self, edict_t *inflictor, edict_t *attacker,int damage,v
 	{	
 		gi.sound(self,CHAN_BODY,gi.soundindex("*gib.wav"),1,ATTN_NORM,0);
 		
-		player_make_gib(self, attacker);
+		PlayerMakeGib(self, attacker);
 	   
 		self->s.modelindex=0;
 		// Won`t get sent to client if mi 0 unless flag is set
@@ -1047,7 +1035,7 @@ int player_die(edict_t *self, edict_t *inflictor, edict_t *attacker,int damage,v
 				// We're a chicken, so die a chicken's death.
 
    				PlayerChickenDeath(self);
-   				player_make_gib(self, attacker);
+   				PlayerMakeGib(self, attacker);
   		   		self->s.modelindex=0;
 				// Won`t get sent to client if mi 0 unless flag is set
 				self->svflags |= SVF_ALWAYS_SEND;
