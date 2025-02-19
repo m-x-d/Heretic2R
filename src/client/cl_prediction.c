@@ -370,8 +370,8 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 	cl.playerinfo.pers.handfxtype = cl.frame.playerstate.handfxtype;
 	cl.playerinfo.pers.skintype = cl.frame.playerstate.skintype;
 	cl.playerinfo.pers.altparts = cl.frame.playerstate.altparts;
-	cl.playerinfo.pers.health = 100;
-	cl.playerinfo.pers.max_health = 100;
+	cl.playerinfo.pers.health = PLAYER_HEALTH; //mxd. Use define.
+	cl.playerinfo.pers.max_health = PLAYER_HEALTH; //mxd. Use define.
 
 	cl.playerinfo.weap_ammo_index = cl.frame.playerstate.weap_ammo_index;
 	cl.playerinfo.def_ammo_index = cl.frame.playerstate.def_ammo_index;
