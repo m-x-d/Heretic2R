@@ -1408,24 +1408,21 @@ void SaveClientData(void)
 	}
 }
 
-/*
-==================
-FetchClientEntData
-==================
-*/
-
-void FetchClientEntData (edict_t *ent)
+void FetchClientEntData(edict_t* client)
 {
-	ent->health=ent->client->playerinfo.pers.health;
-	if (coop->value && ent->health < 25)
-		ent->health = 25;
-	ent->max_health=ent->client->playerinfo.pers.max_health;
+	const client_persistant_t* pers = &client->client->playerinfo.pers;
+	client->health = pers->health;
 
-	ent->client->ps.mission_num1 = ent->client->playerinfo.pers.mission_num1;
-	ent->client->ps.mission_num2 = ent->client->playerinfo.pers.mission_num2;
-	
-	if(coop->value)
-		ent->client->resp.score=ent->client->playerinfo.pers.score;
+	if (COOP)
+	{
+		client->health = max(25, client->health);
+		client->client->resp.score = pers->score;
+	}
+
+	client->max_health = pers->max_health;
+
+	client->client->ps.mission_num1 = pers->mission_num1;
+	client->client->ps.mission_num2 = pers->mission_num2;
 }
 
 // ************************************************************************************************
