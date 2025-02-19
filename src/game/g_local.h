@@ -675,11 +675,8 @@ extern void M_CheckGround(edict_t* ent);
 extern void ThrowGib(edict_t* self, char* gibname, int damage, int type);
 extern void BecomeExplosion1(edict_t* self);
 
-// p_client.c
-extern void respawn(edict_t* ent);
-extern void PutClientInServer(edict_t* ent);
-extern void InitClientPersistant(edict_t* player);
-extern void InitClientResp(gclient_t* client);
+// p_client.c //TODO: move to p_client.h
+extern void respawn(edict_t* self);
 extern void InitBodyQue(void);
 extern void ClientBeginServerFrame(edict_t* ent);
 
@@ -713,8 +710,8 @@ extern void M_MoveAwayFromGoal(edict_t* ent, float dist);
 extern void G_RunEntity(edict_t* ent);
 
 // g_main.c
-extern void SaveClientData(void);
-extern void FetchClientEntData(edict_t* ent);
+extern void SaveClientData(void); //TODO: move to p_client.h
+extern void FetchClientEntData(edict_t* client); //TODO: move to p_client.h
 
 // g_breakable.c
 extern void KillBrush(edict_t* targ, edict_t* inflictor, edict_t* attacker, int damage);
@@ -779,9 +776,9 @@ typedef struct gclient_s
 
 	// Client can respawn when time > respawn_time.
 	float respawn_time;
-	int complete_reset;
+	int complete_reset; //TODO: change type to qboolean.
 
-	//  Remote and walkby camera stuff.
+	// Remote and walkby camera stuff.
 	int RemoteCameraLockCount;
 	int RemoteCameraNumber;
 	int savedtargetcount;
