@@ -685,7 +685,7 @@ extern void ClientBeginServerFrame(edict_t* ent);
 
 // g_svcmds.c
 extern void ServerCommand(void);
-extern qboolean SV_FilterPacket(char* from);
+extern qboolean SV_FilterPacket(const char* from);
 
 // p_view.c
 extern void ClientEndServerFrame(edict_t* ent);

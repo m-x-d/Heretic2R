@@ -53,11 +53,11 @@ static qboolean StringToFilter(char* s, ipfilter_t* f)
 // If 1 (the default), then ip addresses matching the current list will be prohibited from entering the game.
 // If 0, then only addresses matching the list will be allowed. This lets you easily set up a private game,
 // or a game that only allows players from your local network.
-qboolean SV_FilterPacket(char* from)
+qboolean SV_FilterPacket(const char* from)
 {
 	byte ip_mask[4];
 
-	char* s = from;
+	const char* s = from;
 	for (int i = 0; i < 4 && *s != 0 && *s != ':'; i++, s++)
 	{
 		while (*s >= '0' && *s <= '9')
