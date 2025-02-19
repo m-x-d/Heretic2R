@@ -238,7 +238,6 @@ int CL_PMpointcontents(vec3_t point)
 // Sets cl.predicted_origin and cl.predicted_angles.
 void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function...
 {
-	static pmove_state_t old_pmove_state = { 0 };
 	static short old_cmd_angles[3] = { 0, 0, 0 };
 
 	paceldata_t* player_anim;
@@ -400,8 +399,6 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 
 	VectorSet(cl.playerinfo.oldvelocity, 0.0f, 0.0f, cl.frame.playerstate.oldvelocity_z);
 
-	old_pmove_state = pm.s;
-
 	int cmd_time_delta = 0;
 	int frame = 0;
 
@@ -497,8 +494,6 @@ void CL_PredictMovement(void) //mxd. Surprisingly, NOT the biggest H2 function..
 		cl.playerinfo.GroundSurface = pm.GroundSurface;
 		cl.playerinfo.GroundPlane = pm.GroundPlane;
 		cl.playerinfo.GroundContents = pm.GroundContents;
-
-		old_pmove_state = pm.s;
 
 		if (pm.waterlevel)
 			cl.playerinfo.flags |= PLAYER_FLAG_BOWDRAWN;
