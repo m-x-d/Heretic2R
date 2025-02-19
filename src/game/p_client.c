@@ -59,17 +59,17 @@ void SP_info_player_coop(edict_t* self)
 // Use 'angles' instead of 'angle', so you can set pitch or roll as well as yaw. 'pitch yaw roll'.
 void SP_info_player_intermission(edict_t* self) { }
 
-void ClientUpdateModelAttributes(edict_t *ent) //mxd. Named 'ClientSetSkinType' in original version.
+void ClientUpdateModelAttributes(edict_t* ent) //mxd. Named 'ClientSetSkinType' in original version.
 {
 	SetupPlayerinfo_effects(ent);
- 	P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
+	P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
 	WritePlayerinfo_effects(ent);
 }
 
-int player_pain (edict_t *self, edict_t *other, float kick, int damage)
+// Player pain is handled at the end of the frame in P_DamageFeedback().
+int player_pain(edict_t* self, edict_t* other, float kick, int damage)
 {
-	// player pain is handled at the end of the frame in P_DamageFeedback
-	return(0);
+	return 0;
 }
 
 void BleederThink (edict_t *self)
