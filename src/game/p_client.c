@@ -1118,118 +1118,28 @@ static float PlayersRangeFromSpot(const edict_t* spot)
 	return best_player_dist;
 }
 
-/*
-================
-SelectRandomDeathmatchSpawnPoint
-
-go to a random point, but NOT the two points closest
-to other players
-================
-*/
-edict_t *SelectRandomDeathmatchSpawnPoint (void)
+static edict_t* SelectDeathmatchSpawnPoint(void) //mxd. 'SelectFarthestDeathmatchSpawnPoint' in original logic.
 {
-	edict_t	*spot, *spot1, *spot2;
-	int		count = 0;
-	int		selection;
-	float	range, range1, range2;
+	edict_t* spot = NULL;
+	edict_t* best_spot = NULL;
+	float best_dist = 0.0f;
 
-	spot = NULL;
-	range1 = range2 = 99999;
-	spot1 = spot2 = NULL;
-
-	while ((spot = G_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL)
+	while ((spot = G_Find(spot, FOFS(classname), "info_player_deathmatch")) != NULL)
 	{
-//		if(spot->damage_debounce_time > level.time)
-//			continue;//was just used
+		const float best_player_dist = PlayersRangeFromSpot(spot);
 
-//		if(irand(0,1))
-//			continue;//50% chance to skip it- helps make it more random
-
-		count++;
-		range = PlayersRangeFromSpot(spot);
-		if (range < range1)
+		if (best_player_dist > best_dist)
 		{
-			range1 = range;
-			spot1 = spot;
-		}
-		else if (range < range2)
-		{
-			range2 = range;
-			spot2 = spot;
+			best_spot = spot;
+			best_dist = best_player_dist;
 		}
 	}
 
-	if (!count)
-		return NULL;
+	if (best_spot != NULL)
+		return best_spot;
 
-	if (count <= 2)
-	{
-		spot1 = spot2 = NULL;
-	}
-	else
-		count -= 2;
-
-	selection = irand(0, count -1 );
-
-	spot = NULL;
-	do
-	{
-		spot = G_Find (spot, FOFS(classname), "info_player_deathmatch");
-		if (spot == spot1 || spot == spot2)
-			selection++;
-	} while(selection--);
-
-	return spot;
-}
-
-/*
-================
-SelectFarthestDeathmatchSpawnPoint
-
-================
-*/
-edict_t *SelectFarthestDeathmatchSpawnPoint (void)
-{
-	edict_t	*bestspot;
-	float	bestdistance, bestplayerdistance;
-	edict_t	*spot;
-
-
-	spot = NULL;
-	bestspot = NULL;
-	bestdistance = 0;
-	while ((spot = G_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL)
-	{
-//		if(spot->damage_debounce_time > level.time)
-//			continue;//was just used
-
-		bestplayerdistance = PlayersRangeFromSpot (spot);
-
-		if (bestplayerdistance > bestdistance)
-		{
-			bestspot = spot;
-			bestdistance = bestplayerdistance;
-		}
-	}
-
-	if (bestspot)
-	{
-		return bestspot;
-	}
-
-	// if there is a player just spawned on each and every start spot
-	// we have no choice to turn one into a telefrag meltdown
-	spot = G_Find (NULL, FOFS(classname), "info_player_deathmatch");
-
-	return spot;
-}
-
-edict_t *SelectDeathmatchSpawnPoint (void)
-{
-//	if ( (int)(dmflags->value) & DF_SPAWN_FARTHEST)
-	return SelectFarthestDeathmatchSpawnPoint ();
-//	else
-//		return SelectRandomDeathmatchSpawnPoint ();
+	// If a player just spawned on each and every start spot, we have no choice to turn one into a telefrag meltdown...
+	return G_Find(NULL, FOFS(classname), "info_player_deathmatch");
 }
 
 edict_t *SelectCoopSpawnPoint (edict_t *ent)
