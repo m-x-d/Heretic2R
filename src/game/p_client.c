@@ -1094,50 +1094,28 @@ int player_die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage,
 	return 0;
 }
 
-/*
-=======================================================================
+#pragma region ========================== SelectSpawnPoint logic ==========================
 
-  SelectSpawnPoint
-
-=======================================================================
-*/
-
-/*
-================
-PlayersRangeFromSpot
-
-Returns the distance to the nearest player from the given spot
-================
-*/
-float	PlayersRangeFromSpot (edict_t *spot)
+// Returns the distance to the nearest player from the given spot.
+static float PlayersRangeFromSpot(const edict_t* spot)
 {
-	edict_t	*player;
-	float	bestplayerdistance;
-	vec3_t	v;
-	int		n;
-	float	playerdistance;
+	float best_player_dist = 9999999.0f; //TODO: why not FLT_MAX?..
 
-
-	bestplayerdistance = 9999999;
-
-	for (n = 1; n <= maxclients->value; n++)
+	for (int i = 1; i <= MAXCLIENTS; i++)
 	{
-		player = &g_edicts[n];
+		const edict_t* player = &g_edicts[i];
 
-		if (!player->inuse)
+		if (!player->inuse || player->health < 1)
 			continue;
 
-		if (player->health <= 0)
-			continue;
+		vec3_t v;
+		VectorSubtract(spot->s.origin, player->s.origin, v);
+		const float player_dist = VectorLength(v);
 
-		VectorSubtract (spot->s.origin, player->s.origin, v);
-		playerdistance = VectorLength (v);
-
-		if (playerdistance < bestplayerdistance)
-			bestplayerdistance = playerdistance;
+		best_player_dist = min(player_dist, best_player_dist);
 	}
 
-	return bestplayerdistance;
+	return best_player_dist;
 }
 
 /*
@@ -1363,7 +1341,7 @@ void	SelectSpawnPoint (edict_t *ent,vec3_t origin, vec3_t angles)
 	VectorCopy (spot->s.angles, angles);
 }
 
-//======================================================================
+#pragma endregion
 
 int body_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
