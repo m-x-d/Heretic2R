@@ -1511,7 +1511,7 @@ void door_touch (edict_t *self, trace_t *trace)
 
 void door_sounds (edict_t *ent)
 {
-	switch((int)(ent->sounds))
+	switch((DoorSoundID_t)ent->sounds)
 	{
 	case DS_NONE:
 		ent->moveinfo.sound_start = 0;
