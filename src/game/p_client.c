@@ -1381,37 +1381,30 @@ void SpawnInitialPlayerEffects(edict_t* ent)
 		player_leader_effect();
 }
 
-/*
-==================
-SaveClientData
-
-Some information that should be persistant, like health, is still stored in the edict structure, so
-it needs to be mirrored out to the game.client structure(s) before all the edicts are wiped.
-==================
-*/
-
-void SaveClientData (void)
+// Some information that should be persistent, like health, is still stored in the edict structure,
+// so it needs to be mirrored out to the game.client structure(s) before all the edicts are wiped.
+void SaveClientData(void)
 {
-	int		i;
-	edict_t	*ent;
-
-	for(i=0;i<game.maxclients;i++)
+	for (int i = 1; i <= game.maxclients; i++)
 	{
-		ent=&g_edicts[1+i];
+		const edict_t* client = &g_edicts[i];
 
-		if(!ent->inuse)
+		if (!client->inuse)
 			continue;
 
-		game.clients[i].playerinfo.pers.health=ent->health;
-		if (coop->value && game.clients[i].playerinfo.pers.health < 25)
-			game.clients[i].playerinfo.pers.health=25;
-		game.clients[i].playerinfo.pers.max_health=ent->max_health;
+		client_persistant_t* pers = &game.clients[i].playerinfo.pers; //mxd
+		pers->health = client->health;
 
-		game.clients[i].playerinfo.pers.mission_num1 = ent->client->ps.mission_num1;
-		game.clients[i].playerinfo.pers.mission_num2 = ent->client->ps.mission_num2;
-		
-		if(coop->value)
-			game.clients[i].playerinfo.pers.score=ent->client->resp.score;
+		if (COOP)
+		{
+			pers->health = max(25, pers->health);
+			pers->score = client->client->resp.score;
+		}
+
+		pers->max_health = client->max_health;
+
+		pers->mission_num1 = client->client->ps.mission_num1;
+		pers->mission_num2 = client->client->ps.mission_num2;
 	}
 }
 
