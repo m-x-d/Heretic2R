@@ -1831,268 +1831,300 @@ void ClientBegin(edict_t* ent)
 	ClientEndServerFrame(ent);
 }
 
-/*
-===========
-ClientUserInfoChanged
+#pragma region ========================== ClientUserinfoChanged logic ==========================
 
-Called whenever the player updates a userinfo variable. The game can override any of the settings
-in place (forcing skins or names, etc) before copying it off.
-============
-*/
-
-void ClientUserinfoChanged (edict_t *ent, char *userinfo)
+//mxd. Split from ClientUserinfoChanged().
+static void SetDMPlayerSkin(const edict_t* ent, const char* skin_name, const int player_num)
 {
-	char	*s, skin[MAX_QPATH], filename[MAX_QPATH];
-	int		playernum;
-	FILE	*f;
-	qboolean found=false;
+	char skin[MAX_QPATH];
 
-	assert(ent->client);
-//	assert(ent->client->playerinfo);
+	// In DM any skins are okay.
+	if (strchr(skin_name, '/') == NULL) // Backward compatibility, if not model, then assume male.
+		sprintf_s(skin, sizeof(skin), "male/%s", skin_name); //mxd. sprintf -> sprintf_s
+	else
+		strcpy_s(skin, sizeof(skin), skin_name); //mxd. strcpy -> strcpy_s
 
-	// check for malformed or illegal info strings
-	if (!Info_Validate(userinfo))
+	char filename[MAX_QPATH];
+	sprintf_s(filename, sizeof(filename), "players/%s.m8", skin); //mxd. sprintf -> sprintf_s
+
+	FILE* f;
+	if (FS_FOpenFile(filename, &f) != -1)
 	{
-		strcpy (userinfo, "\\name\\badinfo\\skin\\male/Corvus");
+		FS_FCloseFile(f); // Just checking for the existence of the file.
+	}
+	else
+	{
+		if (strstr(skin_name, "female/")) // This was a female skin, fall back to Kiera.
+			strcpy_s(skin, sizeof(skin), "female/Kiera"); //mxd. strcpy -> strcpy_s
+		else // Anything else, assume that it was male.
+			strcpy_s(skin, sizeof(skin), "male/Corvus"); //mxd. strcpy -> strcpy_s
 	}
 
-	// Set name.
+	gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\%s", ent->client->playerinfo.pers.netname, skin));
+}
 
-	s = Info_ValueForKey (userinfo, "name");
-	strncpy (ent->client->playerinfo.pers.netname, s, sizeof(ent->client->playerinfo.pers.netname)-1);
+//mxd. Split from ClientUserinfoChanged().
+static void SetCoopPlayerSkin(const edict_t* ent, const char* skin_name, const int player_num)
+{
+	char skin[MAX_QPATH];
+	qboolean found = false;
 
-	// Set skin.
+	// In coop only allow skins that have full plague levels...
+	if (strchr(skin_name, '/') == NULL) // Backward compatibility, if not model, then assume male.
+		sprintf_s(skin, sizeof(skin), "male/%s", skin_name); //mxd. sprintf -> sprintf_s
+	else
+		strcpy_s(skin, sizeof(skin), skin_name); //mxd. strcpy -> strcpy_s
 
-	s = Info_ValueForKey (userinfo, "skin");
+	char filename[MAX_QPATH];
+	sprintf_s(filename, sizeof(filename), "players/%s.m8", skin); //mxd. sprintf -> sprintf_s
 
-	playernum = ent-g_edicts-1;
+	FILE* f;
+	if (FS_FOpenFile(filename, &f) != -1)
+	{
+		FS_FCloseFile(f); // Just checking for the existence of the file.
 
-	// Please note that this function became very long with the various limitations of coop and single-play skins...
-	if (deathmatch->value)
-	{	// In DM any skins are okay.
-		if (!strchr(s, '/'))				// Backward compatibility, if not model, then assume male
-			sprintf(skin, "male/%s", s);
-		else
-			strcpy(skin, s);
-
-		sprintf(filename, "players/%s.m8", skin);
-		if (FS_FOpenFile (filename, &f) != -1)
+		if ((int)allowillegalskins->value)
 		{
-			FS_FCloseFile(f);		// Just checking for the existence of the file.
+			found = true; // All we need is the base skin.
 		}
 		else
 		{
-			if (strstr(s, "female/"))
-			{	// This was a female skin, fall back to Kiera.
-				strcpy(skin, "female/Kiera");
-			}
-			else
-			{	// Anything else, assume that it was male.
-				strcpy(skin, "male/Corvus");
-			}
-		}
+			sprintf_s(filename, sizeof(filename), "players/%sP1.m8", skin); //mxd. sprintf -> sprintf_s
 
-		gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\%s", ent->client->playerinfo.pers.netname, skin) );
-	}
-	else if (coop->value)
-	{	// In coop only allow skins that have full plague levels...
-		if (!strchr(s, '/'))				// Backward compatibility, if not model, then assume male
-			sprintf(skin, "male/%s", s);
-		else
-			strcpy(skin, s);
+			if (FS_FOpenFile(filename, &f) != -1)
+			{
+				FS_FCloseFile(f); // Just checking for the existence of the file.
 
-		sprintf(filename, "players/%s.m8", skin);
-		if (FS_FOpenFile (filename, &f) != -1)
-		{
-			FS_FCloseFile(f);		// Just checking for the existence of the file.
-			if (allowillegalskins->value)
-			{
-				found=true;		// All we need is the base skin.
-			}
-			else
-			{
-				sprintf(filename, "players/%sP1.m8", skin);
-				if (FS_FOpenFile (filename, &f) != -1)
+				sprintf_s(filename, sizeof(filename), "players/%sP2.m8", skin); //mxd. sprintf -> sprintf_s
+
+				if (FS_FOpenFile(filename, &f) != -1)
 				{
-					FS_FCloseFile(f);		// Just checking for the existence of the file.
-					sprintf(filename, "players/%sP2.m8", skin);
-					if (FS_FOpenFile (filename, &f) != -1)
-					{
-						FS_FCloseFile(f);
-						found=true;
-					}
+					FS_FCloseFile(f); // Just checking for the existence of the file.
+					found = true;
 				}
 			}
 		}
+	}
 
-		if (!found)
-		{	// Not all three skins were found.
-			if (strstr(s, "female/"))
-			{	// This was a female skin, fall back to Kiera.
-				strcpy(skin, "female/Kiera");
-			}
-			else
-			{	// Anything else, assume that it was male.
-				strcpy(skin, "male/Corvus");
-			}
-		}
+	if (!found)
+	{
+		// Not all three skins were found.
+		if (strstr(skin_name, "female/") != NULL)
+			strcpy_s(skin, sizeof(skin), "female/Kiera"); // This was a female skin, fall back to Kiera. //mxd. strcpy -> strcpy_s
+		else
+			strcpy_s(skin, sizeof(skin), "male/Corvus"); // Anything else, assume that it was male. //mxd. strcpy -> strcpy_s
+	}
 
-		// Combine name and skin into a configstring.
-		switch(ent->client->playerinfo.plaguelevel)
-		{
-		case 1:		// Plague level 1
-			if (allowillegalskins->value)
-			{	// Do the check for a valid skin in case an illegal skin has been let through.
-				sprintf(filename, "players/%sP1.m8", skin);
-				if (FS_FOpenFile (filename, &f) != -1)
-				{	// The plague1 skin exists.
-					FS_FCloseFile(f);		// Just checking for the existence of the file.
-					gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\%sP1", ent->client->playerinfo.pers.netname, skin) );
+	// Combine name and skin into a configstring.
+	switch (ent->client->playerinfo.plaguelevel)
+	{
+		case 1: // Plague level 1
+			if ((int)allowillegalskins->value)
+			{
+				// Do the check for a valid skin in case an illegal skin has been let through.
+				sprintf_s(filename, sizeof(filename), "players/%sP1.m8", skin); //mxd. sprintf -> sprintf_s
+
+				if (FS_FOpenFile(filename, &f) != -1)
+				{
+					// The plague1 skin exists.
+					FS_FCloseFile(f); // Just checking for the existence of the file.
+					gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\%sP1", ent->client->playerinfo.pers.netname, skin));
 				}
 				else
 				{	// Just use the basic skin, then.
-					gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\%s", ent->client->playerinfo.pers.netname, skin) );
+					gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\%s", ent->client->playerinfo.pers.netname, skin));
 				}
 			}
 			else
 			{
-				gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\%sP1", ent->client->playerinfo.pers.netname, skin) );
+				gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\%sP1", ent->client->playerinfo.pers.netname, skin));
 			}
 			break;
-		case 2:		// Plague level 2
-			if (allowillegalskins->value)
-			{	// Do the check for a valid skin in case an illegal skin has been let through.
-				sprintf(filename, "players/%sP2.m8", skin);
-				if (FS_FOpenFile (filename, &f) != -1)
-				{	// The plague1 skin exists.
-					FS_FCloseFile(f);		// Just checking for the existence of the file.
-					gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\%sP2", ent->client->playerinfo.pers.netname, skin) );
+
+		case 2: // Plague level 2
+			if ((int)allowillegalskins->value)
+			{
+				// Do the check for a valid skin in case an illegal skin has been let through.
+				sprintf_s(filename, sizeof(filename), "players/%sP2.m8", skin); //mxd. sprintf -> sprintf_s
+
+				if (FS_FOpenFile(filename, &f) != -1)
+				{
+					// The plague1 skin exists.
+					FS_FCloseFile(f); // Just checking for the existence of the file.
+					gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\%sP2", ent->client->playerinfo.pers.netname, skin));
 				}
 				else
-				{	// No plague 2 skin, try for a plague 1 skin.
-					sprintf(filename, "players/%sP1.m8", skin);
-					if (FS_FOpenFile (filename, &f) != -1)
-					{	// The plague1 skin exists.
-						FS_FCloseFile(f);		// Just checking for the existence of the file.
-						gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\%sP1", ent->client->playerinfo.pers.netname, skin) );
+				{
+					// No plague level 2 skin, try for a plague level 1 skin.
+					sprintf_s(filename, sizeof(filename), "players/%sP1.m8", skin); //mxd. sprintf -> sprintf_s
+
+					if (FS_FOpenFile(filename, &f) != -1)
+					{
+						// The plague1 skin exists.
+						FS_FCloseFile(f); // Just checking for the existence of the file.
+						gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\%sP1", ent->client->playerinfo.pers.netname, skin));
 					}
 					else
 					{	// Just use the basic skin, then.
-						gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\%s", ent->client->playerinfo.pers.netname, skin) );
+						gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\%s", ent->client->playerinfo.pers.netname, skin));
 					}
 				}
 			}
 			else
 			{
-				gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\%sP2", ent->client->playerinfo.pers.netname, skin) );
+				gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\%sP2", ent->client->playerinfo.pers.netname, skin));
 			}
 			break;
+
 		default:
-			gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\%s", ent->client->playerinfo.pers.netname, skin) );
+			gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\%s", ent->client->playerinfo.pers.netname, skin));
+	}
+}
+
+//mxd. Split from ClientUserinfoChanged().
+static void SetSPPlayerSkin(const edict_t* ent, const char* skin_name, const int player_num)
+{
+	// Single player. This is CORVUS ONLY unless allowillegalskins is engaged
+	if ((int)allowillegalskins->value)
+	{
+		char skin[MAX_QPATH];
+
+		// Allow any skin at all.
+		if (strchr(skin_name, '/') == NULL) // Backward compatibility, if not model, then assume male
+			sprintf_s(skin, sizeof(skin), "male/%s", skin_name); //mxd. sprintf -> sprintf_s
+		else
+			strcpy_s(skin, sizeof(skin), skin_name); //mxd. strcpy -> strcpy_s
+
+		char filename[MAX_QPATH];
+		sprintf_s(filename, sizeof(filename), "players/%s.m8", skin); //mxd. sprintf -> sprintf_s
+
+		FILE* f;
+		if (FS_FOpenFile(filename, &f) != -1)
+			FS_FCloseFile(f); // Just checking for the existence of the file.
+		else
+			strcpy_s(skin, sizeof(skin), "male/Corvus"); //mxd. strcpy -> strcpy_s
+
+		// Combine name and skin into a configstring.
+		switch (ent->client->playerinfo.plaguelevel)
+		{
+			case 1: // Plague level 1.
+				sprintf_s(filename, sizeof(filename), "players/%sP1.m8", skin); //mxd. sprintf -> sprintf_s
+
+				if (FS_FOpenFile(filename, &f) != -1)
+				{
+					// The plague1 skin exists.
+					FS_FCloseFile(f); // Just checking for the existence of the file.
+					gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\%sP1", ent->client->playerinfo.pers.netname, skin));
+				}
+				else
+				{
+					// Just use the basic skin, then.
+					gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\%s", ent->client->playerinfo.pers.netname, skin));
+				}
+				break;
+
+			case 2: // Plague level 2.
+				sprintf_s(filename, sizeof(filename), "players/%sP2.m8", skin); //mxd. sprintf -> sprintf_s
+
+				if (FS_FOpenFile(filename, &f) != -1)
+				{
+					// The plague1 skin exists.
+					FS_FCloseFile(f); // Just checking for the existence of the file.
+					gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\%sP2", ent->client->playerinfo.pers.netname, skin));
+				}
+				else
+				{
+					// No plague 2 skin, try for a plague 1 skin.
+					sprintf_s(filename, sizeof(filename), "players/%sP1.m8", skin); //mxd. sprintf -> sprintf_s
+
+					if (FS_FOpenFile(filename, &f) != -1)
+					{
+						// The plague1 skin exists.
+						FS_FCloseFile(f); // Just checking for the existence of the file.
+						gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\%sP1", ent->client->playerinfo.pers.netname, skin));
+					}
+					else
+					{	// Just use the basic skin, then.
+						gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\%s", ent->client->playerinfo.pers.netname, skin));
+					}
+				}
+				break;
+
+			default:
+				gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\%s", ent->client->playerinfo.pers.netname, skin));
+				break;
 		}
 	}
 	else
-	{	// Single player.  This is CORVUS ONLY unless allowillegalskins is engaged
-		if (allowillegalskins->value)
-		{	// Allow any skin at all.
-			if (!strchr(s, '/'))				// Backward compatibility, if not model, then assume male
-				sprintf(skin, "male/%s", s);
-			else
-				strcpy(skin, s);
+	{
+		// Just care about Corvus.
+		switch (ent->client->playerinfo.plaguelevel)
+		{
+			case 1: // Plague level 1.
+				gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\male/CorvusP1", ent->client->playerinfo.pers.netname));
+				break;
 
-			sprintf(filename, "players/%s.m8", skin);
-			if (FS_FOpenFile (filename, &f) != -1)
-			{
-				FS_FCloseFile(f);		// Just checking for the existence of the file.
-			}
-			else
-			{
-				strcpy(skin, "male/Corvus");
-			}
+			case 2: // Plague level 2.
+				gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\male/CorvusP2", ent->client->playerinfo.pers.netname));
+				break;
 
-			// Combine name and skin into a configstring.
-			switch(ent->client->playerinfo.plaguelevel)
-			{
-			case 1:		// Plague level 1
-				sprintf(filename, "players/%sP1.m8", skin);
-				if (FS_FOpenFile (filename, &f) != -1)
-				{	// The plague1 skin exists.
-					FS_FCloseFile(f);		// Just checking for the existence of the file.
-					gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\%sP1", ent->client->playerinfo.pers.netname, skin) );
-				}
-				else
-				{	// Just use the basic skin, then.
-					gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\%s", ent->client->playerinfo.pers.netname, skin) );
-				}
-				break;
-			case 2:		// Plague level 2
-				sprintf(filename, "players/%sP2.m8", skin);
-				if (FS_FOpenFile (filename, &f) != -1)
-				{	// The plague1 skin exists.
-					FS_FCloseFile(f);		// Just checking for the existence of the file.
-					gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\%sP2", ent->client->playerinfo.pers.netname, skin) );
-				}
-				else
-				{	// No plague 2 skin, try for a plague 1 skin.
-					sprintf(filename, "players/%sP1.m8", skin);
-					if (FS_FOpenFile (filename, &f) != -1)
-					{	// The plague1 skin exists.
-						FS_FCloseFile(f);		// Just checking for the existence of the file.
-						gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\%sP1", ent->client->playerinfo.pers.netname, skin) );
-					}
-					else
-					{	// Just use the basic skin, then.
-						gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\%s", ent->client->playerinfo.pers.netname, skin) );
-					}
-				}
-				break;
 			default:
-				gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\%s", ent->client->playerinfo.pers.netname, skin) );
+				gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\male/Corvus", ent->client->playerinfo.pers.netname));
 				break;
-			}
-		}
-		else
-		{	// JUST care about Corvus
-			switch(ent->client->playerinfo.plaguelevel)
-			{
-			case 1:		// Plague level 1
-				gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\male/CorvusP1", ent->client->playerinfo.pers.netname) );
-				break;
-			case 2:		// Plague level 2
-				gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\male/CorvusP2", ent->client->playerinfo.pers.netname) );
-				break;
-			default:
-				gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\male/Corvus", ent->client->playerinfo.pers.netname) );
-				break;
-			}	
 		}
 	}
+}
+
+// Called whenever the player updates a userinfo variable.
+// The game can override any of the settings in place (forcing skins or names, etc) before copying it off.
+void ClientUserinfoChanged(edict_t* ent, char* userinfo) //TODO: add int userinfo_size arg?
+{
+	assert(ent->client != NULL);
+
+	// Check for malformed or illegal info strings.
+	if (!Info_Validate(userinfo))
+		strcpy_s(userinfo, MAX_INFO_STRING, "\\name\\badinfo\\skin\\male/Corvus"); //mxd. strcpy -> strcpy_s
+
+	// Set name.
+	const char* name = Info_ValueForKey(userinfo, "name");
+	client_persistant_t* pers = &ent->client->playerinfo.pers; //mxd
+	const int name_size = sizeof(pers->netname); //mxd
+	strncpy_s(pers->netname, name_size, name, name_size - 1); //mxd. strncpy -> strncpy_s
+
+	// Set skin.
+	const char* skin_name = Info_ValueForKey(userinfo, "skin");
+	const int player_num = ent - g_edicts - 1;
+
+	// Please note that this function became very long with the various limitations of coop and single-play skins...
+	if (DEATHMATCH)
+		SetDMPlayerSkin(ent, skin_name, player_num); //mxd
+	else if (COOP)
+		SetCoopPlayerSkin(ent, skin_name, player_num); //mxd
+	else // Single player.
+		SetSPPlayerSkin(ent, skin_name, player_num); //mxd
 
 	// Change skins, but lookup the proper skintype.
 	ClientUpdateModelAttributes(ent);
 
 	// FOV.
+	ent->client->ps.fov = (float)(Q_atoi(Info_ValueForKey(userinfo, "fov")));
 
-	ent->client->ps.fov = atoi(Info_ValueForKey(userinfo, "fov"));
-
-	if (ent->client->ps.fov < 1)
+	if (ent->client->ps.fov < 1.0f)
 		ent->client->ps.fov = FOV_DEFAULT;
-	else if (ent->client->ps.fov > 160)
-		ent->client->ps.fov = 160;
+	else if (ent->client->ps.fov > 160.0f)
+		ent->client->ps.fov = 160.0f;
 
 	// Autoweapon changeup.
-
-	s = Info_ValueForKey (userinfo, "autoweapon");
-	if (strlen(s))
-	{
-		ent->client->playerinfo.pers.autoweapon = atoi(s);
-	}
+	const char* autoweapon = Info_ValueForKey(userinfo, "autoweapon");
+	if (strlen(autoweapon) > 0)
+		ent->client->playerinfo.pers.autoweapon = Q_atoi(autoweapon);
 
 	// Save off the userinfo in case we want to check something later.
-
-	strncpy (ent->client->playerinfo.pers.userinfo, userinfo, sizeof(ent->client->playerinfo.pers.userinfo)-1);
+	const int userinfo_size = sizeof(pers->userinfo); //mxd
+	strncpy_s(pers->userinfo, userinfo_size, userinfo, userinfo_size - 1); //mxd. strncpy -> strncpy_s
 }
 
+#pragma endregion
 
 /*
 ===========
