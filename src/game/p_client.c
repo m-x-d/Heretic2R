@@ -2222,27 +2222,21 @@ void ClientDisconnect(edict_t* ent)
 	player_leader_effect();
 }
 
-edict_t	*pm_passent;
+static edict_t* pm_passent;
 
 // The pmove() routine doesn't need to know about passent and contentmask.
-
-void PM_trace (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end,trace_t *trace)
+static void PM_trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* trace)
 {
-	// NOTENOTE All right, pmove doesn't need to know the gory details, but I need to be able to detect a water surface, bub.
+	//NOTE: pmove doesn't need to know the gory details, but I need to be able to detect a water surface.
 	// Hence, if the mins and max are NULL, then wask out water (cheezy I know, but blame me) ---Pat
-
 	if (mins == NULL && maxs == NULL)
 	{
-		gi.trace (start, vec3_origin, vec3_origin, end, pm_passent, MASK_PLAYERSOLID | MASK_WATER,trace);
+		gi.trace(start, vec3_origin, vec3_origin, end, pm_passent, MASK_PLAYERSOLID | MASK_WATER, trace);
+		return;
 	}
-	else if (pm_passent->health > 0)
-	{
-		gi.trace (start, mins, maxs, end, pm_passent, MASK_PLAYERSOLID,trace);
-	}
-	else
-	{
-		gi.trace (start, mins, maxs, end, pm_passent, MASK_DEADSOLID,trace);
-	}
+
+	const int mask = ((pm_passent->health > 0) ? MASK_PLAYERSOLID : MASK_DEADSOLID); //mxd
+	gi.trace(start, mins, maxs, end, pm_passent, mask, trace);
 }
 
 unsigned CheckBlock (void *b, int c)
