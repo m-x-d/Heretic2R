@@ -705,7 +705,6 @@ extern void M_MoveAwayFromGoal(edict_t* ent, float dist);
 extern void G_RunEntity(edict_t* ent);
 
 // g_main.c
-extern void SaveClientData(void); //TODO: move to p_client.h
 extern void FetchClientEntData(edict_t* client); //TODO: move to p_client.h
 
 // g_breakable.c

@@ -31,6 +31,7 @@ extern void player_repair_skin(edict_t* self);
 extern void SelectSpawnPoint(const edict_t* ent, vec3_t origin, vec3_t angles); //mxd
 extern void SpawnInitialPlayerEffects(edict_t* ent); //mxd
 extern void InitBodyQue(void);
+extern void SaveClientData(void);
 
 extern void SP_info_player_start(edict_t* self);
 extern void SP_info_player_deathmatch(edict_t* self);
