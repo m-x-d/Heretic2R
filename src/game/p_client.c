@@ -1218,12 +1218,6 @@ void SelectSpawnPoint(const edict_t* ent, vec3_t origin, vec3_t angles)
 
 #pragma endregion
 
-int body_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
-{
-	BecomeDebris(self);
-	return true;
-}
-
 void InitBodyQue (void)
 {
 	int		i;
