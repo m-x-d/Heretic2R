@@ -19,6 +19,7 @@ extern void ClientThink(edict_t* ent, usercmd_t* ucmd);
 extern void ClientUserinfoChanged(edict_t* ent, char* userinfo);
 extern void ClientDisconnect(edict_t* ent);
 extern void ClientBegin(edict_t* ent);
+extern void ClientBeginServerFrame(edict_t* ent);
 extern void ClientUpdateModelAttributes(edict_t* ent); //mxd
 
 extern int player_pain(edict_t* self, edict_t* other, float kick, int damage);

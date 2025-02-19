@@ -677,7 +677,6 @@ extern void BecomeExplosion1(edict_t* self);
 
 // p_client.c //TODO: move to p_client.h
 extern void respawn(edict_t* self);
-extern void ClientBeginServerFrame(edict_t* ent);
 
 // g_svcmds.c
 extern void ServerCommand(void);
