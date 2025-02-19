@@ -2239,99 +2239,76 @@ static void PM_trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, c
 	gi.trace(start, mins, maxs, end, pm_passent, mask, trace);
 }
 
-/*
-// ==============
-// ClientThink
-// -----------
-// This will be called once for each client-frame received from a client. So during a server frame,
-// for a given client, ClientThink() probably be called several times,
-// ==============
-*/
-void ClientThink (edict_t *ent, usercmd_t *ucmd)
+// This will be called once for each client-frame received from a client.
+// So during a server frame, for a given client, ClientThink() probably be called several times.
+void ClientThink(edict_t* ent, usercmd_t* ucmd)
 {
-	gclient_t	*client;
-	edict_t		*other;
-	int			i, j;
-	pmove_t		pm;
-	vec3_t		LOSOrigin,ang;
-	float		knockback;
-	edict_t		*TargetEnt;
+	/*gclient_t* client;
+	edict_t* other;
+	int i;
+	int j;
+	pmove_t pm;
+	vec3_t los_origin;
+	edict_t* target_ent;*/
 
 	level.current_entity = ent;
-	client = ent->client;
-		
+	gclient_t* client = ent->client;
+
 	CheckContinuousAutomaticEffects(ent);
 
-	// ********************************************************************************************
 	// Handle an active intermission.
-	// ********************************************************************************************
-
-	if (level.intermissiontime)
+	if (level.intermissiontime > 0.0f)
 	{
 		client->ps.pmove.pm_type = PM_INTERMISSION;
 
 		// Can exit intermission after five seconds
-		
-		if (level.time > level.intermissiontime + 5.0 && (ucmd->buttons & BUTTON_ANY) )
+		if (level.time > level.intermissiontime + 5.0f && (ucmd->buttons & BUTTON_ANY))
 			level.exitintermission = true;
 
 		return;
 	}
 
-	// ********************************************************************************************
 	// Movement stuff.
-	// ********************************************************************************************
-
 	if (ent->movetype == PHYSICSTYPE_NOCLIP)
 		client->ps.pmove.pm_type = PM_SPECTATOR;
-	else if ((ent->s.modelindex != 255) && !(ent->flags & FL_CHICKEN))	// We're not set as a chicken
+	else if ((ent->s.modelindex != 255) && !(ent->flags & FL_CHICKEN)) // We're not set as a chicken.
 		client->ps.pmove.pm_type = PM_GIB;
-	else if (ent->deadflag)
+	else if (ent->deadflag != DEAD_NO)
 		client->ps.pmove.pm_type = PM_DEAD;
 	else
 		client->ps.pmove.pm_type = PM_NORMAL;
 
-	client->ps.pmove.gravity = sv_gravity->value;
+	client->ps.pmove.gravity = (short)sv_gravity->value;
 
 	// If we are not currently on a rope, then clear out any ropes as valid for a check.
-
 	if (!(client->playerinfo.flags & PLAYER_FLAG_ONROPE))
-	{
 		ent->targetEnt = NULL;
-	}
 
-	// If we are turn-locked, then set the PMF_LOCKTURN flag that informs the client of this (the
-	// client-side camera needs to know).
-
-	if ((client->playerinfo.flags & PLAYER_FLAG_TURNLOCK) && (client->ps.pmove.pm_type == PM_NORMAL))
+	// If we are turn-locked, then set the PMF_LOCKTURN flag that informs the client of this (the client-side camera needs to know).
+	if ((client->playerinfo.flags & PLAYER_FLAG_TURNLOCK) && client->ps.pmove.pm_type == PM_NORMAL)
 	{
-		client->ps.pmove.pm_flags|=PMF_LOCKTURN;
+		client->ps.pmove.pm_flags |= PMF_LOCKTURN;
 	}
 	else
 	{
-		client->playerinfo.turncmd+=SHORT2ANGLE(ucmd->angles[YAW]-client->oldcmdangles[YAW]);
-		client->ps.pmove.pm_flags&=~PMF_LOCKTURN;
+		client->playerinfo.turncmd += SHORT2ANGLE(ucmd->angles[YAW] - client->oldcmdangles[YAW]);
+		client->ps.pmove.pm_flags &= ~PMF_LOCKTURN;
 	}
 
-	// Save the cmd->angles away so we may calculate the delta (on client->turncmd above) in the
-	// next frame.
-
-	client->oldcmdangles[0]=ucmd->angles[0];
-	client->oldcmdangles[1]=ucmd->angles[1];
-	client->oldcmdangles[2]=ucmd->angles[2];
+	// Save the cmd->angles away so we may calculate the delta (on client->turncmd above) in the next frame.
+	for (int i = 0; i < 3; i++)
+		client->oldcmdangles[i] = ucmd->angles[i];
 
 	pm_passent = ent;
 
 	// Set up inputs for a Pmove().
-
-	memset (&pm, 0, sizeof(pm));
-
+	pmove_t pm = { 0 };
 	pm.s = client->ps.pmove;
 
-	for (i=0 ; i<3 ; i++)
+	for (int i = 0; i < 3; i++)
 	{
-		pm.s.origin[i] = ent->s.origin[i]*8;
-		pm.s.velocity[i] = ent->velocity[i]*8;
+		pm.s.origin[i] = (short)(ent->s.origin[i] * 8);
+		pm.s.velocity[i] = (short)(ent->velocity[i] * 8);
 	}
 
 	pm.cmd = *ucmd;
@@ -2339,46 +2316,37 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 
 	if (ent->movetype != PHYSICSTYPE_NOCLIP)
 	{
-		pm.cmd.forwardmove = client->playerinfo.fwdvel;
-		pm.cmd.sidemove = client->playerinfo.sidevel;
-		pm.cmd.upmove = client->playerinfo.upvel;
+		pm.cmd.forwardmove = (short)client->playerinfo.fwdvel;
+		pm.cmd.sidemove = (short)client->playerinfo.sidevel;
+		pm.cmd.upmove = (short)client->playerinfo.upvel;
 	}
 
-	if(client->RemoteCameraLockCount>0)
+	if (client->RemoteCameraLockCount > 0)
 	{
-		pm.cmd.forwardmove =0;
+		pm.cmd.forwardmove = 0;
 		pm.cmd.sidemove = 0;
 		pm.cmd.upmove = 0;
 	}
 
 	// Input the DESIRED waterheight.
 	// FIXME: This should be retrieved from the animation frame eventually.
-
-	pm.desiredWaterHeight = 15.00;
+	pm.desiredWaterHeight = 15.0f;
 	pm.waterheight = client->playerinfo.waterheight;
 	pm.waterlevel = ent->waterlevel;
-	pm.viewheight = ent->viewheight;
+	pm.viewheight = (float)ent->viewheight;
 	pm.watertype = ent->watertype;
 	pm.groundentity = ent->groundentity;
 
 	// This is a scale of 0 to 1 describing how much knockback to take into account.
-
-	knockback = client->playerinfo.knockbacktime - level.time;
-	if (knockback > 1.0)
-		knockback = 1.0;
-	else if (knockback < 0.0)
-		knockback = 0.0;
-	pm.knockbackfactor = knockback;
+	float knockback = client->playerinfo.knockbacktime - level.time;
+	pm.knockbackfactor = Clamp(knockback, 0.0f, 1.0f);
 
 	// Handle lockmove cases.
-
-	if((client->playerinfo.flags&(PLAYER_FLAG_LOCKMOVE_WAS_SET|PLAYER_FLAG_USE_ENT_POS))&&!(client->ps.pmove.pm_flags&PMF_LOCKMOVE))
-	{ 
-		// Lockmove was set last frame, but isn't now, so we copy the player edict's origin and
-		// velocity values to the client for use in Pmove(). NOTE: Pmove() on the SERVER needs
-		// pointers to specify vectors to be read and written for the origin and velocity. So
-		// be careful if you screw around with this crazy code.
-				
+	if ((client->playerinfo.flags & (PLAYER_FLAG_LOCKMOVE_WAS_SET | PLAYER_FLAG_USE_ENT_POS)) && !(client->ps.pmove.pm_flags & PMF_LOCKMOVE))
+	{
+		// Lockmove was set last frame, but isn't now, so we copy the player edict's origin and velocity values to the client for use in Pmove().
+		// NOTE: Pmove() on the SERVER needs pointers to specify vectors to be read and written for the origin and velocity.
+		// So be careful if you screw around with this crazy code.
 		client->playerinfo.flags &= ~PLAYER_FLAG_USE_ENT_POS;
 
 		VectorCopy(ent->s.origin, client->playerinfo.origin);
@@ -2386,49 +2354,41 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	}
 
 	// Check to add into movement velocity through crouch and duck if underwater.
-
-	if (!ent->deadflag && ent->waterlevel > 2)
+	if (ent->deadflag == DEAD_NO)
 	{
-		// NOTENOTE: If they're pressing both, nullify it.
+		if (ent->waterlevel > 2)
+		{
+			// NOTENOTE: If they're pressing both, nullify it.
+			if (client->playerinfo.seqcmd[ACMDL_CROUCH])
+				client->playerinfo.velocity[2] -= SWIM_ADJUST_AMOUNT;
 
-		if (client->playerinfo.seqcmd[ACMDL_CROUCH])
-		{
-			client->playerinfo.velocity[2] -= SWIM_ADJUST_AMOUNT;
+			if (client->playerinfo.seqcmd[ACMDL_JUMP])
+				client->playerinfo.velocity[2] += SWIM_ADJUST_AMOUNT;
 		}
-		
-		if (client->playerinfo.seqcmd[ACMDL_JUMP])
+		else if (ent->waterlevel > 1) // On the surface trying to go down?
 		{
-			client->playerinfo.velocity[2] += SWIM_ADJUST_AMOUNT;
+			// NOTENOTE: If they're pressing both, nullify it.
+			if (client->playerinfo.seqcmd[ACMDL_CROUCH])
+			{
+				pm.s.w_flags |= WF_SINK;
+				client->playerinfo.velocity[2] -= SWIM_ADJUST_AMOUNT;
+			}
+
+			if (client->playerinfo.seqcmd[ACMDL_JUMP])
+				client->playerinfo.velocity[2] += SWIM_ADJUST_AMOUNT;
 		}
 	}
-	else if (!ent->deadflag && ent->waterlevel > 1)	// On the surface trying to go down???
-	{
-		// NOTENOTE: If they're pressing both, nullify it.
-
-		if (client->playerinfo.seqcmd[ACMDL_CROUCH])
-		{
-			pm.s.w_flags |= WF_SINK;
-			client->playerinfo.velocity[2] -= SWIM_ADJUST_AMOUNT;
-		}
-		
-		if (client->playerinfo.seqcmd[ACMDL_JUMP])
-		{
-			client->playerinfo.velocity[2] += SWIM_ADJUST_AMOUNT;
-		}
-	}		
 
 	pm.origin = client->playerinfo.origin;
 	pm.velocity = client->playerinfo.velocity;
 
 	// If not the chicken, and not explicitly resizing the bounding box...
-
-	if ( (!(client->playerinfo.edictflags & FL_CHICKEN)) && (!(client->playerinfo.flags & PLAYER_FLAG_RESIZED)) )
+	if (!(client->playerinfo.edictflags & FL_CHICKEN) && !(client->playerinfo.flags & PLAYER_FLAG_RESIZED))
 	{
 		// Resize the player's bounding box.
-
 		VectorCopy(player_mins, ent->intentMins);
 		VectorCopy(player_maxs, ent->intentMaxs);
-		
+
 		ent->physicsFlags |= PF_RESIZE;
 
 		pm.intentMins = ent->intentMins;
@@ -2437,16 +2397,15 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	else
 	{
 		// Otherwise we don't want to resize.
-
-		if ( (client->playerinfo.edictflags & FL_AVERAGE_CHICKEN) )
+		if (client->playerinfo.edictflags & FL_AVERAGE_CHICKEN)
 		{
-			VectorSet(ent->mins,-8,-8,-14);
-			VectorSet(ent->maxs,8,8,14);
+			VectorSet(ent->mins, -8.0f, -8.0f, -14.0f);
+			VectorSet(ent->maxs, 8.0f, 8.0f, 14.0f);
 		}
-		else if ( (client->playerinfo.edictflags & FL_SUPER_CHICKEN) )
+		else if (client->playerinfo.edictflags & FL_SUPER_CHICKEN)
 		{
-			VectorSet(ent->mins,-16,-16,-36);
-			VectorSet(ent->maxs,16,16,36);
+			VectorSet(ent->mins, -16.0f, -16.0f, -36.0f);
+			VectorSet(ent->maxs, 16.0f, 16.0f, 36.0f);
 		}
 
 		pm.intentMins = ent->mins;
@@ -2459,31 +2418,24 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 
 	pm.self = ent;
 
-	pm.trace = PM_trace;	// Adds default parms.
+	pm.trace = PM_trace; // Adds default parms.
 	pm.pointcontents = gi.pointcontents;
 
-	pm.viewheight = ent->viewheight;
+	pm.viewheight = (float)ent->viewheight;
 
 	VectorCopy(ent->mins, pm.mins);
 	VectorCopy(ent->maxs, pm.maxs);
 
-	// set up speed up if we have hit the run shrine recently
-	if (client->playerinfo.speed_timer > level.time)
-		pm.run_shrine = true;
-	else
-		pm.run_shrine = false;
+	// Setup speed up if we have hit the run shrine recently.
+	pm.run_shrine = (client->playerinfo.speed_timer > level.time);
 
-	// set up speed up if we have been hit recently
-	if (client->playerinfo.effects & EF_HIGH_MAX)
-		pm.high_max = true;
-	else
-		pm.high_max = false;
+	// Setup speed up if we have been hit recently.
+	pm.high_max = (client->playerinfo.effects & EF_HIGH_MAX);
 
 	// Perform a Pmove().
-
 	gi.Pmove(&pm, true);
 
-	if(ent->waterlevel)
+	if (ent->waterlevel > 0)
 		client->playerinfo.flags |= FL_INWATER;
 	else
 		client->playerinfo.flags &= ~FL_INWATER;
@@ -2491,16 +2443,15 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	client->playerinfo.flags &= ~(PLAYER_FLAG_COLLISION | PLAYER_FLAG_SLIDE);
 
 	if (pm.s.c_flags & PC_COLLISION)
-	{
 		client->playerinfo.flags |= PLAYER_FLAG_COLLISION;
-	}
-	
-	if ((pm.s.c_flags & PC_SLIDING))
+
+	if (pm.s.c_flags & PC_SLIDING)
 	{
 		client->playerinfo.flags |= PLAYER_FLAG_SLIDE;
 
-		if(Vec3NotZero(pm.GroundPlane.normal))
+		if (Vec3NotZero(pm.GroundPlane.normal))
 		{
+			vec3_t ang;
 			vectoangles(pm.GroundPlane.normal, ang);
 			ent->ideal_yaw = ang[YAW];
 		}
@@ -2511,19 +2462,16 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	}
 
 	// Save the results of the above Pmove().
-
 	client->ps.pmove = pm.s;
 	client->old_pmove = pm.s;
 
-	client->playerinfo.GroundSurface=pm.GroundSurface;
-	memcpy(&client->playerinfo.GroundPlane,&pm.GroundPlane,sizeof(cplane_t));
-	client->playerinfo.GroundContents=pm.GroundContents;
+	client->playerinfo.GroundSurface = pm.GroundSurface;
+	memcpy(&client->playerinfo.GroundPlane, &pm.GroundPlane, sizeof(cplane_t));
+	client->playerinfo.GroundContents = pm.GroundContents;
 
-	// If we're move-locked, don't update the edict's origin and velocity, otherwise copy the
-	// origin and velocity from playerinfo (which have been written by Pmove()) into the edict's
-	// origin and velocity.
-
-	if((client->ps.pmove.pm_flags&PMF_LOCKMOVE))
+	// If we're move-locked, don't update the edict's origin and velocity, otherwise copy the origin and velocity
+	// from playerinfo (which have been written by Pmove()) into the edict's origin and velocity.
+	if (client->ps.pmove.pm_flags & PMF_LOCKMOVE)
 	{
 		client->playerinfo.flags |= PLAYER_FLAG_LOCKMOVE_WAS_SET;
 	}
@@ -2536,60 +2484,56 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	}
 
 	// Update other player stuff.
-
 	VectorCopy(pm.mins, ent->mins);
 	VectorCopy(pm.maxs, ent->maxs);
 
-	client->resp.cmd_angles[0] = SHORT2ANGLE(ucmd->angles[0]);
-	client->resp.cmd_angles[1] = SHORT2ANGLE(ucmd->angles[1]);
-	client->resp.cmd_angles[2] = SHORT2ANGLE(ucmd->angles[2]);
+	for (int i = 0; i < 3; i++)
+		client->resp.cmd_angles[i] = SHORT2ANGLE(ucmd->angles[i]);
 
 	client->playerinfo.waterlevel = pm.waterlevel;
 	client->playerinfo.waterheight = pm.waterheight;
 	client->playerinfo.watertype = pm.watertype;
 
-
 	ent->waterlevel = pm.waterlevel;
-	ent->viewheight = pm.viewheight;
+	ent->viewheight = (int)pm.viewheight;
 	ent->watertype = pm.watertype;
 	ent->groundentity = pm.groundentity;
 
-	if (pm.groundentity)
-	{
+	if (pm.groundentity != NULL)
 		ent->groundentity_linkcount = pm.groundentity->linkcount;
-	}
 
-	if(!ent->deadflag)
+	if (ent->deadflag == DEAD_NO)
 	{
-		VectorCopy(pm.viewangles,client->v_angle);
-		
-		client->aimangles[0]=SHORT2ANGLE(ucmd->aimangles[0]);
-		client->aimangles[1]=SHORT2ANGLE(ucmd->aimangles[1]);
-		client->aimangles[2]=SHORT2ANGLE(ucmd->aimangles[2]);
+		VectorCopy(pm.viewangles, client->v_angle);
 
-		VectorCopy(client->aimangles,client->ps.viewangles);
+		for (int i = 0; i < 3; i++)
+			client->aimangles[i] = SHORT2ANGLE(ucmd->aimangles[i]);
+
+		VectorCopy(client->aimangles, client->ps.viewangles);
 	}
 
-	gi.linkentity (ent);
+	gi.linkentity(ent);
 
 	// Process touch triggers that the client could activate.
-
 	if (ent->movetype != PHYSICSTYPE_NOCLIP)
-		G_TouchTriggers (ent);
+		G_TouchTriggers(ent);
 
 	// Touch other objects.
-
-	for (i=0 ; i<pm.numtouch ; i++)
+	for (int i = 0; i < pm.numtouch; i++)
 	{
-		other = pm.touchents[i];
-		for (j=0 ; j<i ; j++)
-			if (pm.touchents[j] == other)
-				break;
-		if (j != i)
-			continue;	// duplicated
-		if (!other->touch)
+		edict_t* other = pm.touchents[i];
+
+		if (other->touch == NULL)
 			continue;
-		other->touch (other, ent, NULL, NULL);
+
+		for (int j = 0; j < i; j++)
+		{
+			if (pm.touchents[j] == other && j == i) // Not duplicated.
+			{
+				other->touch(other, ent, NULL, NULL);
+				break;
+			}
+		}
 	}
 
 	client->playerinfo.oldbuttons = client->playerinfo.buttons;
@@ -2598,42 +2542,32 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	client->playerinfo.remember_buttons |= client->playerinfo.buttons;
 
 	// Save the light level that the player is standing on for monster sighting AI.
-
 	ent->light_level = ucmd->lightlevel;
-	
-	// ********************************************************************************************
+
 	// Handle autotargeting by looking for the nearest monster that:
 	// a) Lies in a 35 degree degree horizontal, 180 degree vertical cone from the player's facing.
 	// b) Lies within 0 to 500 meters of the player.
 	// c) Is visible (i.e. LOS exists from player to target).
-	// ********************************************************************************************
-	
-	// Get the origin of the LOS (from player to target) used in identifying potential targets.
 
-	VectorCopy(ent->s.origin,LOSOrigin);
-	LOSOrigin[2]+=ent->viewheight;
+	// Get the origin of the LOS (from player to target) used in identifying potential targets.
+	vec3_t los_origin;
+	VectorCopy(ent->s.origin, los_origin);
+	los_origin[2] += (float)ent->viewheight;
 
 	// Handle autotaiming etc.
-	
-	TargetEnt=ent->enemy=NULL;
-	client->ps.AutotargetEntityNum=0;
+	ent->enemy = NULL;
+	client->ps.AutotargetEntityNum = 0;
 
-	if(client->playerinfo.autoaim)
-	{	
+	if (client->playerinfo.autoaim)
+	{
 		// Autoaiming is active so look for an enemy to autotarget.
+		edict_t* target_ent = FindNearestVisibleActorInFrustum(ent, ent->client->aimangles, 0.0f, 500.0f, 35.0f * ANGLE_TO_RAD, 160.0f * ANGLE_TO_RAD, los_origin, NULL, NULL);
 
-		TargetEnt=FindNearestVisibleActorInFrustum(ent,
-												   ent->client->aimangles,
-												   0.0,500.0,
-												   35*ANGLE_TO_RAD,160*ANGLE_TO_RAD,
-												   LOSOrigin,
-												   NULL,NULL);
-		if(TargetEnt!=NULL)
+		if (target_ent != NULL)
 		{
 			// An enemy was successfully autotargeted, so store away the pointer to our enemy.
-
-			ent->enemy=TargetEnt;
-			client->ps.AutotargetEntityNum=ent->enemy->s.number;
+			ent->enemy = target_ent;
+			client->ps.AutotargetEntityNum = ent->enemy->s.number;
 		}
 	}
 
