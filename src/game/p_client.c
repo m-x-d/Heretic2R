@@ -226,52 +226,54 @@ void ResetPlayerBaseNodes(edict_t* ent) //TODO: rename to PlayerResetBaseNodes()
 	ClientUpdateModelAttributes(ent); //mxd
 }
 
-#define BIT_BASE2		0//		MESH_BASE2		0 - front
-#define BIT_BACK		1//		MESH__BACK		1 - back
-#define BIT_STOFF		2//		MESH__STOFF		2 - staff on leg
-#define BIT_BOFF		4//		MESH__BOFF		3 - bow on shoulder
-#define BIT_ARMOR		8//		MESH__ARMOR		4 - armor
-#define BIT_RARM		16//	MESH__RARM		5 - right shoulder to wrist
-#define BIT_RHANDHI		32//	MESH__RHANDHI	6 - right hand flat
-#define BIT_STAFACTV	64//	MESH__STAFACTV	7 - right hand fist & staff stub
-#define BIT_BLADSTF		128//	MESH__BLADSTF	8 - staff (active)
-#define BIT_HELSTF		256//	MESH__HELSTF	9 - hellstaff
-#define BIT_LARM		512//	MESH__LARM		10 - left shoulder to wrist
-#define BIT_LHANDHI		1024//	MESH__LHANDHI	11 - left hand flat
-#define BIT_BOWACTV		2048//	MESH__BOWACTV	12 - left hand fist & bow
-#define BIT_RLEG		4096//	MESH__RLEG		13 - right leg
-#define BIT_LLEG		8192//	MESH__LLEG		14 - left leg
-#define BIT_HEAD		16384//	MESH__HEAD		15 - head
+#define BIT_BASE2		0		// MESH_BASE2		0 - Front.
+#define BIT_BACK		1		// MESH__BACK		1 - Back.
+#define BIT_STOFF		2		// MESH__STOFF		2 - Staff on leg.
+#define BIT_BOFF		4		// MESH__BOFF		3 - Bow on shoulder.
+#define BIT_ARMOR		8		// MESH__ARMOR		4 - Armor.
+#define BIT_RARM		16		// MESH__RARM		5 - Right shoulder to wrist.
+#define BIT_RHANDHI		32		// MESH__RHANDHI	6 - Right hand flat.
+#define BIT_STAFACTV	64		// MESH__STAFACTV	7 - Right hand fist & staff stub.
+#define BIT_BLADSTF		128		// MESH__BLADSTF	8 - Staff (active).
+#define BIT_HELSTF		256		// MESH__HELSTF		9 - Hellstaff.
+#define BIT_LARM		512		// MESH__LARM		10 - Left shoulder to wrist.
+#define BIT_LHANDHI		1024	// MESH__LHANDHI	11 - Left hand flat.
+#define BIT_BOWACTV		2048	// MESH__BOWACTV	12 - Left hand fist & bow.
+#define BIT_RLEG		4096	// MESH__RLEG		13 - Right leg.
+#define BIT_LLEG		8192	// MESH__LLEG		14 - Left leg.
+#define BIT_HEAD		16384	// MESH__HEAD		15 - Head.
 
-int Bit_for_MeshNode_player [16] =
+static qboolean CanThrowNode(edict_t* self, const int body_part, int* throw_nodes) //mxd. Named 'canthrownode_player' in original version.
 {
-	BIT_BASE2,//	0 - front
-	BIT_BACK,//		1 - back
-	BIT_STOFF,//	2 - staff on leg
-	BIT_BOFF,//		3 - bow on shoulder
-	BIT_ARMOR,//	4 - armor
-	BIT_RARM,//		5 - right shoulder to wrist
-	BIT_RHANDHI,//	6 - right hand flat
-	BIT_STAFACTV,//	7 - right hand fist & staff stub
-	BIT_BLADSTF,//	8 - staff (active)
-	BIT_HELSTF,//	9 - hellstaff
-	BIT_LARM,//		10 - left shoulder to wrist
-	BIT_LHANDHI,//	11 - left hand flat
-	BIT_BOWACTV,//	12 - left hand fist & bow
-	BIT_RLEG,//		13 - right leg
-	BIT_LLEG,//		14 - left leg
-	BIT_HEAD,//		15 - head
-};
-
-qboolean canthrownode_player (edict_t *self, int BP, int *throw_nodes)
-{//see if it's on, if so, add it to throw_nodes
-	//turn it off on thrower
-	if(!(self->s.fmnodeinfo[BP].flags & FMNI_NO_DRAW))
+	static int bit_to_meshnode[16] = //mxd. Made local static.
 	{
-		*throw_nodes |= Bit_for_MeshNode_player[BP];
-		self->s.fmnodeinfo[BP].flags |= FMNI_NO_DRAW;
+		BIT_BASE2,		// 0 - Front.
+		BIT_BACK,		// 1 - Back.
+		BIT_STOFF,		// 2 - Staff on leg.
+		BIT_BOFF,		// 3 - Bow on shoulder.
+		BIT_ARMOR,		// 4 - Armor.
+		BIT_RARM,		// 5 - Right shoulder to wrist.
+		BIT_RHANDHI,	// 6 - Right hand flat.
+		BIT_STAFACTV,	// 7 - Right hand fist & staff stub.
+		BIT_BLADSTF,	// 8 - Staff (active).
+		BIT_HELSTF,		// 9 - Hellstaff.
+		BIT_LARM,		// 10 - Left shoulder to wrist.
+		BIT_LHANDHI,	// 11 - Left hand flat.
+		BIT_BOWACTV,	// 12 - Left hand fist & bow.
+		BIT_RLEG,		// 13 - Right leg.
+		BIT_LLEG,		// 14 - Left leg.
+		BIT_HEAD,		// 15 - Head.
+	};
+
+	// See if it's on, if so, add it to throw_nodes. Turn it off on thrower.
+	if (!(self->s.fmnodeinfo[body_part].flags & FMNI_NO_DRAW))
+	{
+		*throw_nodes |= bit_to_meshnode[body_part];
+		self->s.fmnodeinfo[body_part].flags |= FMNI_NO_DRAW;
+
 		return true;
 	}
+
 	return false;
 }
 
@@ -421,7 +423,7 @@ void player_dismember (edict_t *self, edict_t *other, int damage, HitLocation_t 
 			{
 //				player_dropweapon (self, (int)damage, (BIT_BOWACTV|BIT_BLADSTF|BIT_HELSTF));
 
-				canthrownode_player(self, MESH__HEAD,&throw_nodes);
+				CanThrowNode(self, MESH__HEAD,&throw_nodes);
 
 				gore_spot[2]+=18;
 				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
@@ -455,13 +457,13 @@ void player_dismember (edict_t *self, edict_t *other, int damage, HitLocation_t 
 			{
 				self->client->playerinfo.flags |= (PLAYER_FLAG_NO_LARM|PLAYER_FLAG_NO_RARM);
 				gore_spot[2]+=12;
-				canthrownode_player(self, MESH_BASE2,&throw_nodes);
-				canthrownode_player(self, MESH__BACK,&throw_nodes);
-				canthrownode_player(self, MESH__LARM,&throw_nodes);
-				canthrownode_player(self, MESH__RARM,&throw_nodes);
-				canthrownode_player(self, MESH__HEAD,&throw_nodes);
-				canthrownode_player(self, MESH__LHANDHI,&throw_nodes);
-				canthrownode_player(self, MESH__RHANDHI,&throw_nodes);
+				CanThrowNode(self, MESH_BASE2,&throw_nodes);
+				CanThrowNode(self, MESH__BACK,&throw_nodes);
+				CanThrowNode(self, MESH__LARM,&throw_nodes);
+				CanThrowNode(self, MESH__RARM,&throw_nodes);
+				CanThrowNode(self, MESH__HEAD,&throw_nodes);
+				CanThrowNode(self, MESH__LHANDHI,&throw_nodes);
+				CanThrowNode(self, MESH__RHANDHI,&throw_nodes);
 
 //				player_dropweapon (self, (int)damage, (BIT_BOWACTV|BIT_BLADSTF|BIT_HELSTF));
 				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 1);
@@ -493,13 +495,13 @@ void player_dismember (edict_t *self, edict_t *other, int damage, HitLocation_t 
 			{
 				self->client->playerinfo.flags |= (PLAYER_FLAG_NO_LARM|PLAYER_FLAG_NO_RARM);
 				gore_spot[2]+=12;
-				canthrownode_player(self, MESH_BASE2,&throw_nodes);
-				canthrownode_player(self, MESH__BACK,&throw_nodes);
-				canthrownode_player(self, MESH__LARM,&throw_nodes);
-				canthrownode_player(self, MESH__RARM,&throw_nodes);
-				canthrownode_player(self, MESH__HEAD,&throw_nodes);
-				canthrownode_player(self, MESH__LHANDHI,&throw_nodes);
-				canthrownode_player(self, MESH__RHANDHI,&throw_nodes);
+				CanThrowNode(self, MESH_BASE2,&throw_nodes);
+				CanThrowNode(self, MESH__BACK,&throw_nodes);
+				CanThrowNode(self, MESH__LARM,&throw_nodes);
+				CanThrowNode(self, MESH__RARM,&throw_nodes);
+				CanThrowNode(self, MESH__HEAD,&throw_nodes);
+				CanThrowNode(self, MESH__LHANDHI,&throw_nodes);
+				CanThrowNode(self, MESH__RHANDHI,&throw_nodes);
 
 //				player_dropweapon (self, (int)damage, (BIT_BOWACTV|BIT_BLADSTF|BIT_HELSTF));
 				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 1);
@@ -530,11 +532,11 @@ void player_dismember (edict_t *self, edict_t *other, int damage, HitLocation_t 
 				damage*=1.5;//greater chance to cut off if previously damaged
 			if(flrand(0,self->health) < damage && dismember_ok)
 			{
-				if(canthrownode_player(self, MESH__LARM, &throw_nodes))
+				if(CanThrowNode(self, MESH__LARM, &throw_nodes))
 				{
 					self->client->playerinfo.flags |= PLAYER_FLAG_NO_LARM;
 					player_dropweapon (self, (int)damage, BIT_BOWACTV);
-					canthrownode_player(self, MESH__LHANDHI, &throw_nodes);
+					CanThrowNode(self, MESH__LHANDHI, &throw_nodes);
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
 					VectorMA(gore_spot,-10,right,gore_spot);
@@ -563,11 +565,11 @@ void player_dismember (edict_t *self, edict_t *other, int damage, HitLocation_t 
 				damage*=1.5;//greater chance to cut off if previously damaged
 			if(flrand(0,self->health) < damage && dismember_ok)
 			{
-				if(canthrownode_player(self, MESH__RARM, &throw_nodes))
+				if(CanThrowNode(self, MESH__RARM, &throw_nodes))
 				{
 					self->client->playerinfo.flags |= PLAYER_FLAG_NO_RARM;
 					player_dropweapon (self, (int)damage, BIT_HELSTF|BIT_BLADSTF);
-					canthrownode_player(self, MESH__RHANDHI, &throw_nodes);
+					CanThrowNode(self, MESH__RHANDHI, &throw_nodes);
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
 					VectorMA(gore_spot,10,right,gore_spot);
@@ -605,7 +607,7 @@ void player_dismember (edict_t *self, edict_t *other, int damage, HitLocation_t 
 			{
 				if(self->s.fmnodeinfo[MESH__LLEG].flags & FMNI_NO_DRAW)
 					break;
-				if(canthrownode_player(self, MESH__LLEG, &throw_nodes))
+				if(CanThrowNode(self, MESH__LLEG, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -629,7 +631,7 @@ void player_dismember (edict_t *self, edict_t *other, int damage, HitLocation_t 
 			{
 				if(self->s.fmnodeinfo[MESH__RLEG].flags & FMNI_NO_DRAW)
 					break;
-				if(canthrownode_player(self, MESH__RLEG, &throw_nodes))
+				if(CanThrowNode(self, MESH__RLEG, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -677,7 +679,7 @@ void player_decap (edict_t *self, edict_t *other)
 
 	player_dropweapon (self, 100, (BIT_BOWACTV|BIT_BLADSTF|BIT_HELSTF));
 
-	canthrownode_player(self, MESH__HEAD,&throw_nodes);
+	CanThrowNode(self, MESH__HEAD,&throw_nodes);
 
 	gore_spot[2]+=18;
 	
