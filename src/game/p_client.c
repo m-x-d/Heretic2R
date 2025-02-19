@@ -1492,78 +1492,58 @@ static void GiveLevelItems(edict_t* player)
 	ClientUpdateModelAttributes(player); //mxd
 }
 
-// ************************************************************************************************
-// InitClientPersistant
-// --------------------
-// ************************************************************************************************
-
-void InitClientPersistant(edict_t *player)
+static void InitClientPersistant(const edict_t* player)
 {
-	gclient_t *client;
-	gitem_t	*item;
+	playerinfo_t* info = &player->client->playerinfo; //mxd
 
-	client=player->client;
+	memset(&info->pers, 0, sizeof(info->pers));
 
-	memset(&client->playerinfo.pers, 0, sizeof(client->playerinfo.pers));	
-
-	// ********************************************************************************************
 	// Set up player's health.
-	// ********************************************************************************************
+	info->pers.health = PLAYER_HEALTH; //mxd. Use define.
 
-	client->playerinfo.pers.health = 100;
-	
-	// ********************************************************************************************
 	// Set up maximums amounts for health, mana and ammo for bows and hellstaff.
-	// ********************************************************************************************
+	info->pers.max_health = PLAYER_HEALTH; //mxd. Use define.
+	info->pers.max_offmana = MAX_OFF_MANA;
+	info->pers.max_defmana = MAX_DEF_MANA;
+	info->pers.max_redarrow = MAX_RAIN_AMMO;
+	info->pers.max_phoenarr = MAX_PHOENIX_AMMO;
+	info->pers.max_hellstaff = MAX_HELL_AMMO;
 
-	client->playerinfo.pers.max_health		= 100;
-	client->playerinfo.pers.max_offmana		= MAX_OFF_MANA;
-	client->playerinfo.pers.max_defmana		= MAX_DEF_MANA;
-	client->playerinfo.pers.max_redarrow	= MAX_RAIN_AMMO;
-	client->playerinfo.pers.max_phoenarr	= MAX_PHOENIX_AMMO;
-	client->playerinfo.pers.max_hellstaff	= MAX_HELL_AMMO;
-
-	// ********************************************************************************************
 	// Give defensive and offensive weapons to player.
-	// ********************************************************************************************
-
-	client->playerinfo.pers.weapon=0;
-	client->playerinfo.pers.defence=0;
+	info->pers.weapon = NULL;
+	info->pers.defence = NULL;
 
 	// Give just the sword-staff and flying-fist to the player as starting weapons.
+	gitem_t* item = P_FindItem("staff");
+	AddWeaponToInventory(item, player);
+	info->pers.selected_item = ITEM_INDEX(item);
+	info->pers.weapon = item;
+	info->pers.lastweapon = item;
+	info->weap_ammo_index = 0;
 
-	item = P_FindItem("staff");
-	AddWeaponToInventory(item,player);
-	client->playerinfo.pers.selected_item = ITEM_INDEX(item);
-	client->playerinfo.pers.weapon = item;
-	client->playerinfo.pers.lastweapon = item;
-	client->playerinfo.weap_ammo_index = 0;
-
-	if(!(((int)dmflags->value)&DF_NO_OFFENSIVE_SPELL))
+	if (!(DMFLAGS & DF_NO_OFFENSIVE_SPELL))
 	{
-		item=P_FindItem("fball");
-		AddWeaponToInventory(item,player);
-		client->playerinfo.pers.selected_item = ITEM_INDEX(item);
-		client->playerinfo.pers.weapon = item;
-		client->playerinfo.pers.lastweapon = item;
-		client->playerinfo.weap_ammo_index = ITEM_INDEX(P_FindItem(item->ammo));
+		item = P_FindItem("fball");
+		AddWeaponToInventory(item, player);
+		info->pers.selected_item = ITEM_INDEX(item);
+		info->pers.weapon = item;
+		info->pers.lastweapon = item;
+		info->weap_ammo_index = ITEM_INDEX(P_FindItem(item->ammo));
 	}
 
-	item=P_FindItem("powerup");
-	AddDefenseToInventory(item,player);
-	client->playerinfo.pers.defence = item;
+	// Give Tome of Power to the player.
+	item = P_FindItem("powerup");
+	AddDefenseToInventory(item, player);
+	info->pers.defence = item;
 
-	// ********************************************************************************************
 	// Start player with half offensive and defensive mana - as instructed by Brian P.
-	// ********************************************************************************************
-
 	item = P_FindItem("Off-mana");
-	client->playerinfo.pers.inventory.Items[ITEM_INDEX(item)] = client->playerinfo.pers.max_offmana / 2;
+	info->pers.inventory.Items[ITEM_INDEX(item)] = info->pers.max_offmana / 2;
 
 	item = P_FindItem("Def-mana");
-	client->playerinfo.pers.inventory.Items[ITEM_INDEX(item)] = client->playerinfo.pers.max_defmana / 2;
+	info->pers.inventory.Items[ITEM_INDEX(item)] = info->pers.max_defmana / 2;
 
-	client->playerinfo.pers.connected = true;
+	info->pers.connected = true;
 }
 
 /*
