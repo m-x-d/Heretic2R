@@ -33,8 +33,6 @@
 
 char	chicken_text[] = "monster_chicken";
 
-extern void SpawnInitialPlayerEffects(edict_t *ent);
-
 void create_morph(edict_t *morph);
 
 // *************************************************************************************************

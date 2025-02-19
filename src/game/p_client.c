@@ -387,7 +387,7 @@ void player_dropweapon (edict_t *self, int damage, int whichweaps)
 	}
 }
 
-void player_dismember (edict_t *self, edict_t *other, int damage, int HitLocation)
+void player_dismember (edict_t *self, edict_t *other, int damage, HitLocation_t HitLocation)
 {//FIXME: Make sure you can still dismember and gib player while dying
 	int				throw_nodes = 0;
 	vec3_t			gore_spot, right, blood_dir, blood_spot;
