@@ -109,28 +109,20 @@ static void BleederThink(edict_t* self)
 	self->nextthink = level.time + flrand(0.1f, 0.5f);
 }
 
-void SpawnBleeder (edict_t *self, edict_t *other, vec3_t bleed_dir, vec3_t bleed_spot)//, byte refpoint)
+static void SpawnBleeder(edict_t* self, edict_t* other, vec3_t bleed_dir, vec3_t bleed_spot)
 {
-	edict_t	*bleeder;
-
 	self->client->playerinfo.flags |= PLAYER_FLAG_BLEED;
 
-	bleeder = G_Spawn();
+	edict_t* bleeder = G_Spawn();
+
 	bleeder->owner = self;
 	bleeder->activator = other;
 	bleeder->classname = "bleeder";
 	VectorCopy(bleed_spot, bleeder->pos1);
 	VectorCopy(bleed_dir, bleeder->movedir);
+
 	bleeder->think = BleederThink;
-	bleeder->nextthink = level.time + 0.1;
-//when refpoints on arms and head in for corvus, do this:
-/*	gi.CreateEffect(&self->s.,
-			FX_LINKEDBLOOD,
-			0,
-			self->s.origin,
-			"bb",
-			180,
-			refpoint);*/
+	bleeder->nextthink = level.time + 0.1f;
 }
 
 void player_repair_skin (edict_t *self)
