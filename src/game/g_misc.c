@@ -612,7 +612,7 @@ void ThrowBodyPart(edict_t *self, vec3_t *spot, int BodyPart, float damage, int 
 					self->s.number);//my number
 }
 
-void ThrowWeapon(edict_t *self, vec3_t *spot, int BodyPart, float damage, int frame)
+void ThrowWeapon(edict_t *self, vec3_t *spot, int BodyPart, float damage, int frame) //TODO: change 'damage' arg type to int.
 {//same but no blood and metal sound when hits ground
 	vec3_t	spot2;
 
