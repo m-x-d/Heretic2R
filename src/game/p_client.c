@@ -1777,92 +1777,58 @@ static void ClientBeginDeathmatch(edict_t* ent)
 	ClientEndServerFrame(ent);
 }
 
-/*
-===========
-ClientBegin
-
-Called when a client has finished connecting, and is ready to be placed into the game. This will
-happen every level load.
-============
-*/
-void ClientBegin (edict_t *ent)
+// Called when a client has finished connecting, and is ready to be placed into the game.
+// This will happen on every level load.
+void ClientBegin(edict_t* ent)
 {
-	int	i;
+	ent->client = &game.clients[ent - g_edicts - 1];
 
-	ent->client = game.clients + (ent - g_edicts - 1);
-
-	if (deathmatch->value)
+	if (DEATHMATCH)
 	{
-		ClientBeginDeathmatch (ent);
-
+		ClientBeginDeathmatch(ent);
 		return;
 	}
 
-	// If there is already a body waiting for us (a loadgame), just take it, otherwise spawn one
-	// from scratch.
-
-	if (ent->inuse == true)
+	// If there is already a body waiting for us (a loadgame), just take it, otherwise spawn one from scratch.
+	if (ent->inuse)
 	{
-		// The client has cleared the client side cl.inputangles upon connecting to the server, which
-		// is different from the state when the game is saved, so we need to compensate with 
-		// delta_angles.
-		
-		for(i=0;i<3;i++)
+		// The client has cleared the client side cl.inputangles and cl.viewangles upon connecting to the server,
+		// which is different from the state when the game is saved, so we need to compensate with delta_angles and camera_delta_angles.
+		for (int i = 0; i < 3; i++)
+		{
 			ent->client->ps.pmove.delta_angles[i] = ANGLE2SHORT(ent->client->v_angle[i]);
-
-		// The client has cleared the client side cl.viewangles upon connecting to the server, which
-		// is different from the state when the game is saved, so we need to compensate with 
-		// camara_delta_angles.
-		
-		for(i=0;i<3;i++)
-			ent->client->ps.pmove.camera_delta_angles[i]=
-				ANGLE2SHORT(ent->client->ps.viewangles[i])-ent->client->ps.pmove.delta_angles[i];
+			ent->client->ps.pmove.camera_delta_angles[i] = (short)(ANGLE2SHORT(ent->client->ps.viewangles[i]) - ent->client->ps.pmove.delta_angles[i]);
+		}
 
 		SpawnInitialPlayerEffects(ent);
-
-		// The player has a body waiting from a (just) loaded game, so we want to do just a partial
-		// reset of the player's model.
-
-		ent->client->complete_reset=0;
 	}
 	else
 	{
-		// A spawn point will completely reinitialize the entity except for the persistant data
-		// that was initialized at ClientConnect() time.
-
-		G_InitEdict (ent);
+		// A spawn point will completely reinitialize the entity except for the persistent data that was initialized at ClientConnect() time.
+		G_InitEdict(ent);
 		ent->classname = "player";
-		InitClientResp (ent->client);
-		PutClientInServer (ent);
-	
-		// All resets should be partial, until ClientConnect() gets called again for a new game,
-		// respawn() occurs (which will do the correct reset type).
-
-		ent->client->complete_reset=0;
+		InitClientResp(ent->client);
+		PutClientInServer(ent);
 	}
 
-	if(level.intermissiontime)
+	// All resets should be partial, until ClientConnect() gets called again for a new game and respawn() occurs
+	// (which will do the correct reset type).
+	ent->client->complete_reset = 0;
+
+	if (level.intermissiontime > 0.0f)
 	{
-		MoveClientToIntermission(ent,false);
+		MoveClientToIntermission(ent, false);
 	}
-	else
+	else if (game.maxclients > 1) // Send effect if in a multiplayer game.
 	{
-		// Send effect if in a multiplayer game.
-
-		if (game.maxclients > 1)
-		{
-			// Do the teleport sound and client effect and announce the player's entry into the
-			// level.
-
-			gi.sound(ent,CHAN_WEAPON,gi.soundindex("weapons/teleport.wav"),1,ATTN_NORM,0);
-			gi.CreateEffect(&ent->s, FX_PLAYER_TELEPORT_IN, CEF_OWNERS_ORIGIN, ent->s.origin, NULL);
-			gi.Obituary (PRINT_HIGH, GM_ENTERED, ent->s.number, 0);
-		}
+		// Do the teleport sound and client effect and announce the player's entry into the level.
+		gi.sound(ent, CHAN_WEAPON, gi.soundindex("weapons/teleport.wav"), 1.0f, ATTN_NORM, 0.0f);
+		gi.CreateEffect(&ent->s, FX_PLAYER_TELEPORT_IN, CEF_OWNERS_ORIGIN, ent->s.origin, NULL);
+		gi.Obituary(PRINT_HIGH, GM_ENTERED, ent->s.number, 0);
 	}
 
 	// Make sure all view stuff is valid.
-
-	ClientEndServerFrame (ent);
+	ClientEndServerFrame(ent);
 }
 
 /*
