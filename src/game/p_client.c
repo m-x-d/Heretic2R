@@ -1425,177 +1425,69 @@ void FetchClientEntData(edict_t* client)
 	client->client->ps.mission_num2 = pers->mission_num2;
 }
 
-// ************************************************************************************************
-// GiveLevelItems
-// --------------
-// If additional starting weapons and defences are specified by the current map, give them to the
-// player (to support players joining a coop game midway through).
-// ************************************************************************************************
-
-void GiveLevelItems(edict_t *player)
+static void GiveWeapon(const edict_t* player, const char* name, const enum weaponready_e weapon_id) //mxd. Added to reduce code duplication.
 {
-	gclient_t	*client;
-	gitem_t		*item,*weapon;
+	gitem_t* item = P_FindItem(name);
 
-	client=player->client;
-
-	weapon=NULL;
-
-	if(level.offensive_weapons&1)
-	{	
-		item=P_FindItem("staff");
-		if(AddWeaponToInventory(item,player))
-		{
-			if((ITEM_INDEX(item) > ITEM_INDEX(weapon))&&(client->playerinfo.pers.autoweapon))
-			{
-				weapon=item;
-				client->playerinfo.pers.newweapon=item;
-				client->playerinfo.switchtoweapon=WEAPON_READY_SWORDSTAFF;
-			}
-		}
-	}
-
-	if(level.offensive_weapons&2)
-	{	
-		item=P_FindItem("fball");
-		if(AddWeaponToInventory(item,player))
-		{
-			if((ITEM_INDEX(item) > ITEM_INDEX(weapon))&&(client->playerinfo.pers.autoweapon))
-			{
-				weapon=item;
-				client->playerinfo.pers.newweapon=item;
-				client->playerinfo.switchtoweapon=WEAPON_READY_HANDS;
-			}
-		}
-	}
-
-	if(level.offensive_weapons&4)
-	{	
-		item=P_FindItem("hell");
-		if(AddWeaponToInventory(item,player))
-		{
-			if((ITEM_INDEX(item) > ITEM_INDEX(weapon))&&(client->playerinfo.pers.autoweapon))
-			{
-				weapon=item;
-				client->playerinfo.pers.newweapon=item;
-				client->playerinfo.switchtoweapon=WEAPON_READY_HELLSTAFF;
-			}
-		}
-	}
-
-	if(level.offensive_weapons&8)
-	{	
-		item=P_FindItem("array");
-		if(AddWeaponToInventory(item,player))
-		{
-			if((ITEM_INDEX(item) > ITEM_INDEX(weapon))&&(client->playerinfo.pers.autoweapon))
-			{
-				weapon=item;
-				client->playerinfo.pers.newweapon=item;
-				client->playerinfo.switchtoweapon=WEAPON_READY_HANDS;
-			}
-		}
-	}
-
-	if(level.offensive_weapons&16)
-	{	
-		item=P_FindItem("rain");
-		if(AddWeaponToInventory(item,player))
-		{
-			if((ITEM_INDEX(item) > ITEM_INDEX(weapon))&&(client->playerinfo.pers.autoweapon))
-			{
-				weapon=item;
-				client->playerinfo.pers.newweapon=item;
-				client->playerinfo.switchtoweapon=WEAPON_READY_BOW;
-			}
-		}
-	}
-
-	if(level.offensive_weapons&32)
-	{	
-		item=P_FindItem("sphere");
-		if(AddWeaponToInventory(item,player))
-		{
-			if((ITEM_INDEX(item) > ITEM_INDEX(weapon))&&(client->playerinfo.pers.autoweapon))
-			{
-				weapon=item;
-				client->playerinfo.pers.newweapon=item;
-				client->playerinfo.switchtoweapon=WEAPON_READY_HANDS;
-			}
-		}
-	}
-
-	if(level.offensive_weapons&64)
-	{	
-		item=P_FindItem("phoen");
-		if(AddWeaponToInventory(item,player))
-		{
-			if((ITEM_INDEX(item) > ITEM_INDEX(weapon))&&(client->playerinfo.pers.autoweapon))
-			{
-				weapon=item;
-				client->playerinfo.pers.newweapon=item;
-				client->playerinfo.switchtoweapon=WEAPON_READY_BOW;
-			}
-		}
-	}
-
-	if(level.offensive_weapons&128)
-	{	
-		item=P_FindItem("mace");
-		if(AddWeaponToInventory(item,player))
-		{
-			if((ITEM_INDEX(item) > ITEM_INDEX(weapon))&&(client->playerinfo.pers.autoweapon))
-			{
-				weapon=item;
-				client->playerinfo.pers.newweapon=item;
-				client->playerinfo.switchtoweapon=WEAPON_READY_HANDS;
-			}
-		}
-	}
-
-	if(level.offensive_weapons&256)
-	{	
-		item=P_FindItem("fwall");
-		if(AddWeaponToInventory(item,player))
-		{
-			if((ITEM_INDEX(item) > ITEM_INDEX(weapon))&&(client->playerinfo.pers.autoweapon))
-			{
-				weapon=item;
-				client->playerinfo.pers.newweapon=item;
-				client->playerinfo.switchtoweapon=WEAPON_READY_HANDS;
-			}
-		}
-	}
-
-	if(level.defensive_weapons&1)
-	{	
-		item=P_FindItem("ring");
-		AddDefenseToInventory(item,player);
-	}
-
-	if(level.defensive_weapons&2)
+	if (AddWeaponToInventory(item, player))
 	{
-		item=P_FindItem("lshield");
-		AddDefenseToInventory(item,player);
-	}
+		playerinfo_t* info = &player->client->playerinfo;
 
-	if(level.defensive_weapons&4)
-	{	
-		item=P_FindItem("tele");
-		AddDefenseToInventory(item,player);
+		if (info->pers.autoweapon && (info->pers.newweapon == NULL || ITEM_INDEX(item) > ITEM_INDEX(info->pers.newweapon)))
+		{
+			info->pers.newweapon = item;
+			info->switchtoweapon = weapon_id;
+		}
 	}
+}
 
-	if(level.defensive_weapons&8)
-	{	
-		item=P_FindItem("morph");
-		AddDefenseToInventory(item,player);
-	}
+// If additional starting weapons and defenses are specified by the current map, give them to the player
+// (to support players joining a coop game midway through).
+static void GiveLevelItems(edict_t* player)
+{
+	// Add weapons.
+	if (level.offensive_weapons & 1)
+		GiveWeapon(player, "staff", WEAPON_READY_SWORDSTAFF); //mxd
 
-	if(level.defensive_weapons&16)
-	{	
-		item=P_FindItem("meteor");
-		AddDefenseToInventory(item,player);	
-	}
+	if (level.offensive_weapons & 2)
+		GiveWeapon(player, "fball", WEAPON_READY_HANDS); //mxd
+
+	if (level.offensive_weapons & 4)
+		GiveWeapon(player, "hell", WEAPON_READY_HELLSTAFF); //mxd
+
+	if (level.offensive_weapons & 8)
+		GiveWeapon(player, "array", WEAPON_READY_HANDS); //mxd
+
+	if (level.offensive_weapons & 16)
+		GiveWeapon(player, "rain", WEAPON_READY_BOW); //mxd
+
+	if (level.offensive_weapons & 32)
+		GiveWeapon(player, "sphere", WEAPON_READY_HANDS); //mxd
+
+	if (level.offensive_weapons & 64)
+		GiveWeapon(player, "phoen", WEAPON_READY_BOW); //mxd
+
+	if (level.offensive_weapons & 128)
+		GiveWeapon(player, "mace", WEAPON_READY_HANDS); //mxd
+
+	if (level.offensive_weapons & 256)
+		GiveWeapon(player, "fwall", WEAPON_READY_HANDS); //mxd
+
+	// Add defenses.
+	if (level.defensive_weapons & 1)
+		AddDefenseToInventory(P_FindItem("ring"), player);
+
+	if (level.defensive_weapons & 2)
+		AddDefenseToInventory(P_FindItem("lshield"), player);
+
+	if (level.defensive_weapons & 4)
+		AddDefenseToInventory(P_FindItem("tele"), player);
+
+	if (level.defensive_weapons & 8)
+		AddDefenseToInventory(P_FindItem("morph"), player);
+
+	if (level.defensive_weapons & 16)
+		AddDefenseToInventory(P_FindItem("meteor"), player);
 
 	ClientUpdateModelAttributes(player); //mxd
 }
