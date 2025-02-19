@@ -731,180 +731,167 @@ static void player_leader_effect(void) //TODO: rename to PlayerLeaderEffect().
 	}
 }
 
-
-// ************************************************************************************************
-// ClientObituary
-// --------------
-// ************************************************************************************************
-
-static const short KillSelf[MOD_MAX] =
+static void ClientObituary(edict_t* self, edict_t* attacker)
 {
-	0,			// MOD_UNKNOWN		 
+#pragma region ========================== Message arrays ==========================
 
-	0,			// MOD_STAFF		 
-	0,			// MOD_FIREBALL	 
-	0,			// MOD_MMISSILE	 
-	0,			// MOD_SPHERE		 
-	0,			// MOD_SPHERE_SPL	 
-	0,			// MOD_IRONDOOM	 
-	0,			// MOD_FIREWALL	 
-	0,			// MOD_STORM		 
-	0,			// MOD_PHOENIX		 
-	0,			// MOD_PHOENIX_SPL	 
-	0,			// MOD_HELLSTAFF	 
-
-	0,			// MOD_P_STAFF		 
-	0,			// MOD_P_FIREBALL	 
-	0,			// MOD_P_MMISSILE	 
-	0,			// MOD_P_SPHERE	 
-	0,			// MOD_P_SPHERE_SPL 
-	0,			// MOD_P_IRONDOOM	 
-	0,			// MOD_P_FIREWALL	 
-	0,			// MOD_P_STORM		 
-	0,			// MOD_P_PHOENIX	 
-	0,			// MOD_P_PHOENIX_SPL
-	0,			// MOD_P_HELLSTAFF	 
-
-	0,			// MOD_KICKED		 
-	0,			// MOD_METEORS		 
-	0,			// MOD_ROR			 
-	0,			// MOD_SHIELD		 
-	0,			// MOD_CHICKEN		 
-	0,			// MOD_TELEFRAG	 
-	GM_OBIT_WATER,			// MOD_WATER		 
-	GM_OBIT_SLIME,			// MOD_SLIME		 
-	GM_OBIT_LAVA,			// MOD_LAVA		 
-	GM_OBIT_CRUSH,			// MOD_CRUSH		 
-	GM_OBIT_FALLING,		// MOD_FALLING		 
-	GM_OBIT_SUICIDE,		// MOD_SUICIDE		 
-	GM_OBIT_BARREL,			// MOD_BARREL		 
-	GM_OBIT_EXIT,			// MOD_EXIT		 
-	GM_OBIT_BURNT,			// MOD_BURNT		 
-	GM_OBIT_BLEED,			// MOD_BLEED		 
-	0,			// MOD_SPEAR		 
-	0,			// MOD_DIED		 
-	GM_OBIT_EXPL,			// MOD_KILLED_SLF	 
-	0,			// MOD_DECAP
-	GM_OBIT_TORN_SELF	//MOD_TORN
-};
-
-static const short KillBy[MOD_MAX] = 
-{
-	0,			// MOD_UNKNOWN		 
-
-	GM_OBIT_STAFF,			// MOD_STAFF		 
-	GM_OBIT_FIREBALL,	  	// MOD_FIREBALL	 
-	GM_OBIT_MMISSILE,	  	// MOD_MMISSILE	 
-	GM_OBIT_SPHERE,			// MOD_SPHERE		 
-	GM_OBIT_SPHERE_SPL,	  	// MOD_SPHERE_SPL	 
-	GM_OBIT_IRONDOOM,	  	// MOD_IRONDOOM	 
-	GM_OBIT_FIREWALL,	  	// MOD_FIREWALL	 
-	GM_OBIT_STORM,			// MOD_STORM		 
-	GM_OBIT_PHOENIX,	  	// MOD_PHOENIX		 
-	GM_OBIT_PHOENIX_SPL,  	// MOD_PHOENIX_SPL	 
-	GM_OBIT_HELLSTAFF,	  	// MOD_HELLSTAFF	 
-
-	GM_OBIT_STAFF,			// MOD_P_STAFF		 
-	GM_OBIT_FIREBALL,		// MOD_P_FIREBALL	 
-	GM_OBIT_MMISSILE,		// MOD_P_MMISSILE	 
-	GM_OBIT_SPHERE,			// MOD_P_SPHERE	 
-	GM_OBIT_SPHERE_SPL,		// MOD_P_SPHERE_SPL 
-	GM_OBIT_IRONDOOM,		// MOD_P_IRONDOOM	 
-	GM_OBIT_FIREWALL,		// MOD_P_FIREWALL	 
-	GM_OBIT_STORM,			// MOD_P_STORM		 
-	GM_OBIT_PHOENIX,		// MOD_P_PHOENIX	 
-	GM_OBIT_PHOENIX_SPL,	// MOD_P_PHOENIX_SPL
-	GM_OBIT_HELLSTAFF,		// MOD_P_HELLSTAFF	 
-
-	GM_OBIT_KICKED,			// MOD_KICKED		 
-	GM_OBIT_METEORS,		// MOD_METEORS		 
-	GM_OBIT_ROR,			// MOD_ROR			 
-	GM_OBIT_SHIELD,			// MOD_SHIELD		 
-	GM_OBIT_CHICKEN,		// MOD_CHICKEN		 
-	GM_OBIT_TELEFRAG,		// MOD_TELEFRAG	 
-	0,			// MOD_WATER		 
-	0,			// MOD_SLIME		 
-	0,			// MOD_LAVA		 
-	0,			// MOD_CRUSH		 
-	0,			// MOD_FALLING		 
-	0,			// MOD_SUICIDE		 
-	0,			// MOD_BARREL		 
-	0,			// MOD_EXIT		 
-	GM_OBIT_BURNT,			// MOD_BURNT		 
-	GM_OBIT_BLEED,			// MOD_BLEED		 
-	0,			// MOD_SPEAR		 
-	0,			// MOD_DIED		 
-	0,			// MOD_KILLED_SLF	 
-	0,			// MOD_DECAP
-	GM_OBIT_TORN	//MOD_TORN
-};
-
-void ClientObituary(edict_t *self, edict_t *inflictor, edict_t *attacker)
-{
-	short		message;
-	int			friendlyFire;
-
-	assert(self->client);
-
-	if(!(deathmatch->value || coop->value))
+	static const short killed_self[MOD_MAX] =
 	{
-		// No obituaries in single player.
+		0,	// MOD_UNKNOWN
 
-		return;
-	}
+		0,	// MOD_STAFF
+		0,	// MOD_FIREBALL
+		0,	// MOD_MMISSILE
+		0,	// MOD_SPHERE
+		0,	// MOD_SPHERE_SPL
+		0,	// MOD_IRONDOOM
+		0,	// MOD_FIREWALL
+		0,	// MOD_STORM
+		0,	// MOD_PHOENIX
+		0,	// MOD_PHOENIX_SPL
+		0,	// MOD_HELLSTAFF
 
-	friendlyFire=self->client->meansofdeath&MOD_FRIENDLY_FIRE;
-	self->client->meansofdeath&=~MOD_FRIENDLY_FIRE;
+		0,	// MOD_P_STAFF
+		0,	// MOD_P_FIREBALL
+		0,	// MOD_P_MMISSILE
+		0,	// MOD_P_SPHERE
+		0,	// MOD_P_SPHERE_SPL
+		0,	// MOD_P_IRONDOOM
+		0,	// MOD_P_FIREWALL
+		0,	// MOD_P_STORM
+		0,	// MOD_P_PHOENIX
+		0,	// MOD_P_PHOENIX_SPL
+		0,	// MOD_P_HELLSTAFF
 
-	if(deathmatch->value || coop->value)
+		0,					// MOD_KICKED
+		0,					// MOD_METEORS
+		0,					// MOD_ROR
+		0,					// MOD_SHIELD
+		0,					// MOD_CHICKEN
+		0,					// MOD_TELEFRAG
+		GM_OBIT_WATER,		// MOD_WATER
+		GM_OBIT_SLIME,		// MOD_SLIME
+		GM_OBIT_LAVA,		// MOD_LAVA
+		GM_OBIT_CRUSH,		// MOD_CRUSH
+		GM_OBIT_FALLING,	// MOD_FALLING
+		GM_OBIT_SUICIDE,	// MOD_SUICIDE
+		GM_OBIT_BARREL,		// MOD_BARREL
+		GM_OBIT_EXIT,		// MOD_EXIT
+		GM_OBIT_BURNT,		// MOD_BURNT
+		GM_OBIT_BLEED,		// MOD_BLEED
+		0,					// MOD_SPEAR
+		0,					// MOD_DIED
+		GM_OBIT_EXPL,		// MOD_KILLED_SLF
+		0,					// MOD_DECAP
+		GM_OBIT_TORN_SELF	// MOD_TORN
+	};
+
+	static const short killed_by[MOD_MAX] =
 	{
-		self->enemy = attacker;
-		
-		if(attacker && attacker->client && attacker != self)
+		0,						// MOD_UNKNOWN
+
+		GM_OBIT_STAFF,			// MOD_STAFF
+		GM_OBIT_FIREBALL,		// MOD_FIREBALL
+		GM_OBIT_MMISSILE,		// MOD_MMISSILE
+		GM_OBIT_SPHERE,			// MOD_SPHERE
+		GM_OBIT_SPHERE_SPL,		// MOD_SPHERE_SPL
+		GM_OBIT_IRONDOOM,		// MOD_IRONDOOM
+		GM_OBIT_FIREWALL,		// MOD_FIREWALL
+		GM_OBIT_STORM,			// MOD_STORM
+		GM_OBIT_PHOENIX,		// MOD_PHOENIX
+		GM_OBIT_PHOENIX_SPL,	// MOD_PHOENIX_SPL
+		GM_OBIT_HELLSTAFF,		// MOD_HELLSTAFF
+
+		GM_OBIT_STAFF,			// MOD_P_STAFF
+		GM_OBIT_FIREBALL,		// MOD_P_FIREBALL
+		GM_OBIT_MMISSILE,		// MOD_P_MMISSILE
+		GM_OBIT_SPHERE,			// MOD_P_SPHERE
+		GM_OBIT_SPHERE_SPL,		// MOD_P_SPHERE_SPL
+		GM_OBIT_IRONDOOM,		// MOD_P_IRONDOOM
+		GM_OBIT_FIREWALL,		// MOD_P_FIREWALL
+		GM_OBIT_STORM,			// MOD_P_STORM
+		GM_OBIT_PHOENIX,		// MOD_P_PHOENIX
+		GM_OBIT_PHOENIX_SPL,	// MOD_P_PHOENIX_SPL
+		GM_OBIT_HELLSTAFF,		// MOD_P_HELLSTAFF
+
+		GM_OBIT_KICKED,			// MOD_KICKED
+		GM_OBIT_METEORS,		// MOD_METEORS
+		GM_OBIT_ROR,			// MOD_ROR
+		GM_OBIT_SHIELD,			// MOD_SHIELD
+		GM_OBIT_CHICKEN,		// MOD_CHICKEN
+		GM_OBIT_TELEFRAG,		// MOD_TELEFRAG
+		0,						// MOD_WATER
+		0,						// MOD_SLIME
+		0,						// MOD_LAVA
+		0,						// MOD_CRUSH
+		0,						// MOD_FALLING
+		0,						// MOD_SUICIDE
+		0,						// MOD_BARREL
+		0,						// MOD_EXIT
+		GM_OBIT_BURNT,			// MOD_BURNT
+		GM_OBIT_BLEED,			// MOD_BLEED
+		0,						// MOD_SPEAR
+		0,						// MOD_DIED
+		0,						// MOD_KILLED_SLF
+		0,						// MOD_DECAP
+		GM_OBIT_TORN			// MOD_TORN
+	};
+
+#pragma endregion
+
+	assert(self->client != NULL);
+
+	if (!DEATHMATCH && !COOP)
+		return; // No obituaries in single player.
+
+	const qboolean friendly_fire = (self->client->meansofdeath & MOD_FRIENDLY_FIRE);
+	self->client->meansofdeath &= ~MOD_FRIENDLY_FIRE;
+
+	//mxd. Skip extra DEATHMATCH || COOP check.
+	self->enemy = attacker;
+
+	if (attacker != NULL && attacker->client != NULL && attacker != self)
+	{
+		const short message = killed_by[self->client->meansofdeath];
+
+		if (message > 0)
 		{
-			message = KillBy[self->client->meansofdeath];
+			gi.Obituary(PRINT_MEDIUM, (short)(message + irand(0, 2)), self->s.number, attacker->s.number);
 
-			if(message)
+			if (DEATHMATCH)
 			{
-				gi.Obituary(PRINT_MEDIUM, (short)(message + irand(0, 2)), self->s.number, attacker->s.number);
-				
-				if(deathmatch->value)
-				{
-					if(friendlyFire)
-						attacker->client->resp.score--;
-					else
-				   		attacker->client->resp.score++;
-
-					player_leader_effect();
-				}
-				return;
+				attacker->client->resp.score += (friendly_fire ? -1 : 1);
+				player_leader_effect();
 			}
-		}
 
-		// Wasn't an awarded a frag, check for suicide messages.
-		message = KillSelf[self->client->meansofdeath];
-		
-		if(message)
-		{
-			gi.Obituary(PRINT_MEDIUM, (short)(message + irand(0, 2)), self->s.number, 0);
-
-			if(deathmatch->value)
-			{
-				self->client->resp.score--;
-			   	player_leader_effect();
-			}
-			
-			self->enemy = NULL;
 			return;
 		}
 	}
 
-	gi.Obituary(PRINT_MEDIUM, (short)(GM_OBIT_DIED + irand(0, 2)), self->s.number, 0);	
+	// Wasn't awarded a frag, check for suicide messages.
+	const short message = killed_self[self->client->meansofdeath];
 
-	if (deathmatch->value)
+	if (message > 0)
 	{
-		self->client->resp.score--;
-		player_leader_effect();
+		gi.Obituary(PRINT_MEDIUM, (short)(message + irand(0, 2)), self->s.number, 0);
+
+		if (DEATHMATCH)
+		{
+			self->client->resp.score--;
+			player_leader_effect();
+		}
+
+		self->enemy = NULL;
+	}
+	else
+	{
+		gi.Obituary(PRINT_MEDIUM, (short)(GM_OBIT_DIED + irand(0, 2)), self->s.number, 0);
+
+		if (DEATHMATCH)
+		{
+			self->client->resp.score--;
+			player_leader_effect();
+		}
 	}
 }
 
@@ -1136,7 +1123,7 @@ int player_die(edict_t *self, edict_t *inflictor, edict_t *attacker,int damage,v
 		}
 	}
 
-	ClientObituary(self, inflictor, attacker);
+	ClientObituary(self, attacker);
 
 	gi.linkentity(self);
 
