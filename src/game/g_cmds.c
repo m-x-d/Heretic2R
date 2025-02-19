@@ -769,7 +769,7 @@ static void Cmd_Kill_f(edict_t* ent)
 	ent->deadflag = DEAD_DEAD;
 
 	// Put us back in the game.
-	respawn(ent);
+	ClientRespawn(ent);
 
 	// Set up the next valid suicide time.
 	ent->client->flood_nextkill = level.time + flood_killdelay->value;

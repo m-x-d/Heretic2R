@@ -15,6 +15,7 @@ extern const vec3_t player_mins;
 extern const vec3_t player_maxs;
 
 extern qboolean ClientConnect(edict_t* ent, char* userinfo);
+extern void ClientRespawn(edict_t* self);
 extern void ClientThink(edict_t* ent, usercmd_t* ucmd);
 extern void ClientUserinfoChanged(edict_t* ent, char* userinfo);
 extern void ClientDisconnect(edict_t* ent);

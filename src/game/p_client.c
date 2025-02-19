@@ -1337,7 +1337,7 @@ static void CopyToBodyQue(edict_t* ent)
 	//FIXME: Re-create certain client effects that were on the player when he died (e.g. fire).
 }
 
-void respawn(edict_t* self) //TODO: rename to Respawn().
+void ClientRespawn(edict_t* self) //TODO: rename to Respawn().
 {
 	if (!DEATHMATCH && !COOP)
 	{
@@ -2596,7 +2596,7 @@ void ClientBeginServerFrame(edict_t* ent)
 
 		if ((client->playerinfo.latched_buttons & button_mask) || (DEATHMATCH && (DMFLAGS & DF_FORCE_RESPAWN)))
 		{
-			respawn(ent);
+			ClientRespawn(ent);
 			client->playerinfo.latched_buttons = 0;
 		}
 	}

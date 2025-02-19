@@ -675,9 +675,6 @@ extern void M_CheckGround(edict_t* ent);
 extern void ThrowGib(edict_t* self, char* gibname, int damage, int type);
 extern void BecomeExplosion1(edict_t* self);
 
-// p_client.c //TODO: move to p_client.h
-extern void respawn(edict_t* self);
-
 // g_svcmds.c
 extern void ServerCommand(void);
 extern qboolean SV_FilterPacket(const char* from);

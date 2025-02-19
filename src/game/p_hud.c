@@ -3,6 +3,7 @@
 #include "vector.h"
 #include "g_playstats.h"
 #include "g_itemstats.h"
+#include "p_client.h" //mxd
 #include "qcommon.h"
 #include "p_dll.h" //mxd
 
@@ -207,7 +208,7 @@ void BeginIntermission(edict_t *targ)
 		if (!client->inuse)
 			continue;
 		if (client->health <= 0)
-			respawn(client);
+			ClientRespawn(client);
 	}
 
 	level.intermissiontime = level.time;
