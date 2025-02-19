@@ -531,7 +531,7 @@ typedef struct
 
 	// Callbacks to test the world.
 	void (*trace)(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, trace_t* trace);
-	int (*pointcontents)(vec3_t point);
+	int (*pointcontents)(const vec3_t point);
 
 	struct edict_s* self;
 } pmove_t;
