@@ -1759,33 +1759,22 @@ static void InitClientResp(gclient_t* client)
 	client->resp.coop_respawn = client->playerinfo.pers;
 }
 
-/*
-=====================
-ClientBeginDeathmatch
-
-A client has just connected to the server in deathmatch mode, so clear everything out before starting them.
-=====================
-*/
-void ClientBeginDeathmatch (edict_t *ent)
+// A client has just connected to the server in deathmatch mode, so clear everything out before starting them.
+static void ClientBeginDeathmatch(edict_t* ent)
 {
-	G_InitEdict (ent);
-
-	InitClientResp (ent->client);
+	G_InitEdict(ent);
+	InitClientResp(ent->client);
 
 	// Locate ent at a spawn point.
+	PutClientInServer(ent);
 
-	PutClientInServer (ent);
-
-	// Do the teleport sound and client effect and announce the player's entry into the
-	// level.
-
-	gi.sound(ent,CHAN_WEAPON,gi.soundindex("weapons/teleport.wav"),1,ATTN_NORM,0);
+	// Do the teleport sound and client effect and announce the player's entry into the level.
+	gi.sound(ent, CHAN_WEAPON, gi.soundindex("weapons/teleport.wav"), 1.0f, ATTN_NORM, 0.0f);
 	gi.CreateEffect(&ent->s, FX_PLAYER_TELEPORT_IN, CEF_OWNERS_ORIGIN, ent->s.origin, NULL);
 	gi.Obituary(PRINT_HIGH, GM_ENTERED, ent->s.number, 0);
 
 	// Make sure all view stuff is valid.
-
-	ClientEndServerFrame (ent);
+	ClientEndServerFrame(ent);
 }
 
 /*
