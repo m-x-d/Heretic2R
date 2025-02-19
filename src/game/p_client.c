@@ -125,104 +125,76 @@ static void SpawnBleeder(edict_t* self, edict_t* other, vec3_t bleed_dir, vec3_t
 	bleeder->nextthink = level.time + 0.1f;
 }
 
-void player_repair_skin (edict_t *self)
-{//FIXME: make sure it doesn't turn on a hand without the arm!
-	int i, num_allowed_dmg_skins, to_fix;
-	int	found_dmg_skins = 0;
-	int	checked = 0;
-	int hurt_nodes[NUM_PLAYER_NODES];
+static qboolean ShouldRepairPlayerNode(const int index) //mxd. Added to reduce code duplication.
+{
+	return (index != MESH__STOFF && index != MESH__BOFF && index != MESH__ARMOR && index != MESH__STAFACTV &&
+			index != MESH__BLADSTF && index != MESH__HELSTF && index != MESH__BOWACTV); // These shouldn't be messed with.
+}
 
-	if(!self->client)
+void player_repair_skin(edict_t* self) //TODO: rename to PlayerRepairSkin().
+{
+	//FIXME: make sure it doesn't turn on a hand without the arm!
+	if (self->client == NULL || self->s.modelindex == 0)
 		return;
 
-	if(!self->s.modelindex)
-		return;
+	const int num_allowed_dmg_skins = 5 - self->health / 20;
 
-	num_allowed_dmg_skins = 5 - floor(self->health/20);
-#ifdef _DEVEL
-	gi.dprintf("Allowed damaged nodes: %d\n", num_allowed_dmg_skins);
-#endif
-
-	if(num_allowed_dmg_skins <= 0)
-	{//restore all nodes
-		for(i = 0; i < NUM_PLAYER_NODES; i++)
+	if (num_allowed_dmg_skins <= 0)
+	{
+		// Restore all nodes.
+		for (int i = 0; i < NUM_PLAYER_NODES; i++)
 		{
-			if(i == MESH__STOFF||
-				i == MESH__BOFF||
-				i == MESH__ARMOR||
-				i == MESH__STAFACTV||
-				i == MESH__BLADSTF||
-				i == MESH__HELSTF||
-				i == MESH__BOWACTV)
-				continue;//these shouldn't be fucked with
-			else
-			{
-#ifdef _DEVEL
-				gi.dprintf("Healed player skin on node %d\n", i);
-#endif
-				self->client->playerinfo.pers.altparts &= ~(1<<i);
-				self->s.fmnodeinfo[i].flags &= ~FMNI_USE_SKIN;
-				self->s.fmnodeinfo[i].skin = self->s.skinnum;
-			}
+			if (!ShouldRepairPlayerNode(i))
+				continue;
+
+			self->client->playerinfo.pers.altparts &= ~(1 << i);
+			self->s.fmnodeinfo[i].flags &= ~FMNI_USE_SKIN;
+			self->s.fmnodeinfo[i].skin = self->s.skinnum;
 		}
 
 		ClientUpdateModelAttributes(self); //mxd
-
 		return;
 	}
 
-	for(i = 0; i<NUM_PLAYER_NODES; i++)
-	{//how many nodes are hurt
-		if(i == MESH__STOFF||
-			i == MESH__BOFF||
-			i == MESH__ARMOR||
-			i == MESH__STAFACTV||
-			i == MESH__BLADSTF||
-			i == MESH__HELSTF||
-			i == MESH__BOWACTV)
-			continue;//these shouldn't be fucked with
+	int hurt_nodes[NUM_PLAYER_NODES];
+	int	found_dmg_skins = 0;
 
-		if(!(self->s.fmnodeinfo[i].flags&FMNI_NO_DRAW)&&(self->s.fmnodeinfo[i].flags&FMNI_USE_SKIN))
+	for (int i = 0; i < NUM_PLAYER_NODES; i++)
+	{
+		// How many nodes are hurt.
+		if (ShouldRepairPlayerNode(i) && !(self->s.fmnodeinfo[i].flags & FMNI_NO_DRAW) && (self->s.fmnodeinfo[i].flags & FMNI_USE_SKIN))
 		{
 			hurt_nodes[found_dmg_skins] = i;
 			found_dmg_skins++;
 		}
 	}
 
-#ifdef _DEVEL
-	gi.dprintf("Found damaged nodes: %d\n", found_dmg_skins);
-#endif
-	if(found_dmg_skins<=num_allowed_dmg_skins)//no healing
+	if (found_dmg_skins <= num_allowed_dmg_skins) // No healing.
 		return;
 
-	to_fix = found_dmg_skins - num_allowed_dmg_skins;
+	int to_fix = found_dmg_skins - num_allowed_dmg_skins;
+	int	checked = 0;
 
-	while(to_fix > 0 && checked<100)
-	{//heal num damaged nodes over allowed
-		i = hurt_nodes[irand(0, (found_dmg_skins - 1))];
-		if(!(self->s.fmnodeinfo[i].flags&FMNI_NO_DRAW))
-		{
-			if(self->s.fmnodeinfo[i].flags&FMNI_USE_SKIN)
-			{
-#ifdef _DEVEL
-				gi.dprintf("Healed player skin on node %d\n", i);
-#endif
-				self->s.fmnodeinfo[i].flags &= ~FMNI_USE_SKIN;
-				self->s.fmnodeinfo[i].skin = self->s.skinnum;
+	while (to_fix > 0 && checked < 100)
+	{
+		// Heal num damaged nodes over allowed.
+		const int index = hurt_nodes[irand(0, found_dmg_skins - 1)];
 
-				self->client->playerinfo.pers.altparts &= ~(1<<i);
+		//mxd. FMNI_NO_DRAW and FMNI_USE_SKIN flags are already checked when filling hurt_nodes array.
+		self->s.fmnodeinfo[index].flags &= ~FMNI_USE_SKIN;
+		self->s.fmnodeinfo[index].skin = self->s.skinnum;
 
-				if(i == MESH__LARM)
-					self->client->playerinfo.flags &= ~PLAYER_FLAG_NO_LARM;
-				else if(i == MESH__RARM)
-					self->client->playerinfo.flags &= ~PLAYER_FLAG_NO_RARM;
-				
-				to_fix--;
-				checked++;//to protect against infinite loops, this IS random after all
-			}
-		}
+		self->client->playerinfo.pers.altparts &= ~(1 << index);
+
+		if (index == MESH__LARM)
+			self->client->playerinfo.flags &= ~PLAYER_FLAG_NO_LARM;
+		else if (index == MESH__RARM)
+			self->client->playerinfo.flags &= ~PLAYER_FLAG_NO_RARM;
+
+		to_fix--;
+		checked++; // To protect against infinite loops, this IS random after all.
 	}
-	
+
 	ClientUpdateModelAttributes(self); //mxd
 }
 
