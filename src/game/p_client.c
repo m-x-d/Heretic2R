@@ -1142,49 +1142,28 @@ static edict_t* SelectDeathmatchSpawnPoint(void) //mxd. 'SelectFarthestDeathmatc
 	return G_Find(NULL, FOFS(classname), "info_player_deathmatch");
 }
 
-edict_t *SelectCoopSpawnPoint (edict_t *ent)
+static edict_t* SelectCoopSpawnPoint(const edict_t* ent)
 {
-	int		index;
-	edict_t	*spot = NULL;
-	char	*target;
-
-	index = ent->client - game.clients;
+	int index = ent->client - game.clients;
 
 	// Player 0 starts in normal player spawn point.
-
-	if (!index)
+	if (index == 0)
 		return NULL;
 
-	spot = NULL;
+	edict_t* spot = NULL;
 
 	// Assume there are four coop spots at each spawnpoint.
-
-	while (1)
+	while ((spot = G_Find(spot, FOFS(classname), "info_player_coop")) != NULL)
 	{
-		spot = G_Find (spot, FOFS(classname), "info_player_coop");
-			
-		if (!spot)
-			return NULL;	// we didn't have enough...
-
-//		try not to use the same spot for a bit to prevent telefrags
-//		if(spot->damage_debounce_time > level.time)
-//			continue;
-
-		target = spot->targetname;
-		if (!target)
+		const char* target = spot->targetname;
+		if (target == NULL)
 			target = "";
-		if ( Q_stricmp(game.spawnpoint, target) == 0 )
-		{	
-			// This is a coop spawn point for one of the clients here.
 
-			index--;
-			
-			if (!index)
-				return spot;// this is it
-		}
+		if (Q_stricmp(game.spawnpoint, target) == 0 && --index == 0)
+			return spot; // This is a coop spawn point for one of the clients here.
 	}
 
-	return spot;
+	return NULL; // We didn't have enough...
 }
 
 /*
