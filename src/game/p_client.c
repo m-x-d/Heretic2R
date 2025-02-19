@@ -1218,16 +1218,15 @@ void SelectSpawnPoint(const edict_t* ent, vec3_t origin, vec3_t angles)
 
 #pragma endregion
 
-void InitBodyQue (void)
-{
-	int		i;
-	edict_t	*ent;
+#pragma region ========================== Respawn / body que logic ==========================
 
+void InitBodyQue(void)
+{
 	level.body_que = 0;
 
-	for (i=0; i<BODY_QUEUE_SIZE ; i++)
+	for (int i = 0; i < BODY_QUEUE_SIZE; i++)
 	{
-		ent = G_Spawn();
+		edict_t* ent = G_Spawn();
 		ent->classname = "bodyque";
 	}
 }
@@ -1410,7 +1409,7 @@ void respawn (edict_t *self)
 	gi.AddCommandString ("menu_loadgame\n");
 }
 
-//==============================================================
+#pragma endregion
 
 void SpawnInitialPlayerEffects(edict_t *ent)
 {
