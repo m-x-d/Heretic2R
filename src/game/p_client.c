@@ -2574,47 +2574,30 @@ void ClientThink(edict_t* ent, usercmd_t* ucmd)
 	CalculatePIV(ent);
 }
 
-/*
-==============
-ClientBeginServerFrame
-
-This will be called once for each server frame, before running
-any other entities in the world.
-==============
-*/
-void ClientBeginServerFrame (edict_t *ent)
+// This will be called once for each server frame, before running any other entities in the world.
+void ClientBeginServerFrame(edict_t* ent)
 {
-	gclient_t	*client;
-	int			buttonMask;
-
-	if (level.intermissiontime)
+	if (level.intermissiontime > 0.0f)
 		return;
 
-	client = ent->client;
+	gclient_t* client = ent->client;
 
-	if (ent->deadflag & DEAD_DEAD)
+	if (ent->deadflag != DEAD_DEAD) //mxd. inverted check. 'ent->deadflag & DEAD_DEAD' in original version. Deadflags are never OR'ed anywhere.
 	{
-		// Wait for any button just going down.
-
-		if ( level.time > client->respawn_time)
-		{
-			// In deathmatch, only wait for attack button.
-
-			if (deathmatch->value)
-				buttonMask = BUTTON_ATTACK;
-			else
-				buttonMask = -1;
-
-			if ( ( client->playerinfo.latched_buttons & buttonMask ) ||
-				(deathmatch->value && ((int)dmflags->value & DF_FORCE_RESPAWN) ) )
-			{
-				respawn(ent);
-
-				client->playerinfo.latched_buttons = 0;
-			}
-		}
+		client->playerinfo.latched_buttons = 0;
 		return;
 	}
 
-	client->playerinfo.latched_buttons = 0;
+	// Wait for any button just going down.
+	if (level.time > client->respawn_time)
+	{
+		// In deathmatch, only wait for attack button.
+		const int button_mask = (DEATHMATCH ? BUTTON_ATTACK : -1);
+
+		if ((client->playerinfo.latched_buttons & button_mask) || (DEATHMATCH && (DMFLAGS & DF_FORCE_RESPAWN)))
+		{
+			respawn(ent);
+			client->playerinfo.latched_buttons = 0;
+		}
+	}
 }
