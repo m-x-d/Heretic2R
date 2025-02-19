@@ -72,54 +72,41 @@ int player_pain(edict_t* self, edict_t* other, float kick, int damage)
 	return 0;
 }
 
-void BleederThink (edict_t *self)
+static void BleederThink(edict_t* self)
 {
-	vec3_t	bleed_spot, bleed_dir, forward, right, up;
-	int		damage;
+	if (self->owner == NULL || self->owner->client == NULL || self->owner->s.modelindex == 0 || self->owner->health <= 0 ||
+		!(self->owner->client->playerinfo.flags & PLAYER_FLAG_BLEED))
+	{
+		G_SetToFree(self);
+		return;
+	}
 
-	if(!self->owner)
-		goto byebye;
+	//FIXME: this will be a client effect attached to ref points.
+	const int damage = irand(1, 3);
 
-	if(!self->owner->client)
-		goto byebye;
-
-	if(!self->owner->s.modelindex)
-		goto byebye;
-
-	if(!(self->owner->client->playerinfo.flags&PLAYER_FLAG_BLEED))
-		goto byebye;
-
-	if(self->owner->health <= 0)
-		goto byebye;
-
-	//FIXME: this will be a client effect attached to ref points
-	damage = irand(1, 3);
-
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
 	AngleVectors(self->owner->s.angles, forward, right, up);
-	VectorMA(self->owner->s.origin, self->pos1[0], forward, bleed_spot);
-	VectorMA(bleed_spot, self->pos1[1], right, bleed_spot);
-	VectorMA(bleed_spot, self->pos1[2], up, bleed_spot);
 
+	vec3_t bleed_pos;
+	VectorMA(self->owner->s.origin, self->pos1[0], forward, bleed_pos);
+	VectorMA(bleed_pos, self->pos1[1], right, bleed_pos);
+	VectorMA(bleed_pos, self->pos1[2], up, bleed_pos);
+
+	vec3_t bleed_dir;
 	VectorScale(forward, self->movedir[0], bleed_dir);
 	VectorMA(bleed_dir, self->movedir[1], right, bleed_dir);
 	VectorMA(bleed_dir, self->movedir[2], up, bleed_dir);
-	VectorScale(bleed_dir, damage*3, bleed_dir);
+	VectorScale(bleed_dir, (float)damage * 3.0f, bleed_dir);
 
-	if(self->owner->materialtype == MAT_INSECT)
-		gi.CreateEffect(NULL, FX_BLOOD, CEF_FLAG8, bleed_spot, "ub", bleed_dir, damage);
-	else
-		gi.CreateEffect(NULL, FX_BLOOD, 0, bleed_spot, "ub", bleed_dir, damage);
+	const int flags = ((self->owner->materialtype == MAT_INSECT) ? CEF_FLAG8 : 0); //mxd
+	gi.CreateEffect(NULL, FX_BLOOD, flags, bleed_pos, "ub", bleed_dir, damage);
 
-	if(!irand(0,3))//25%chance to do damage
-		T_Damage(self->owner, self, self->activator, bleed_dir, bleed_spot, bleed_dir, damage, 0, DAMAGE_NO_BLOOD|DAMAGE_NO_KNOCKBACK|DAMAGE_BLEEDING|DAMAGE_AVOID_ARMOR,MOD_BLEED);//armor doesn't stop it
+	if (irand(0, 3) == 0) // 25% chance to do damage.
+		T_Damage(self->owner, self, self->activator, bleed_dir, bleed_pos, bleed_dir, damage, 0, DAMAGE_NO_BLOOD | DAMAGE_NO_KNOCKBACK | DAMAGE_BLEEDING | DAMAGE_AVOID_ARMOR, MOD_BLEED); // Armor doesn't stop it.
 
-	self->nextthink = level.time + flrand(0.1, 0.5);
-	return;
-
-byebye:
-	G_SetToFree(self);
-	return;
-
+	self->nextthink = level.time + flrand(0.1f, 0.5f);
 }
 
 void SpawnBleeder (edict_t *self, edict_t *other, vec3_t bleed_dir, vec3_t bleed_spot)//, byte refpoint)
