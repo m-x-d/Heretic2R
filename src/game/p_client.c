@@ -911,38 +911,30 @@ static void PlayerMakeGib(edict_t* self, edict_t* attacker)
 	self->takedamage = DAMAGE_NO;
 }
 
-int player_die(edict_t *self, edict_t *inflictor, edict_t *attacker,int damage,vec3_t point)
-{//FIXME: Make sure you can still dismember and gib player while dying
-	int		i;
-
-	assert(self->client);
+int player_die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point)
+{
+	//FIXME: Make sure you can still dismember and gib player while dying.
+	assert(self->client != NULL);
 
 	VectorClear(self->avelocity);
 
-	if(self->health < -99)
-		self->health = -99;//looks better on stat bar display
+	self->health = max(-99, self->health); // Looks better on stat bar display.
+	self->takedamage = DAMAGE_NO;
+	self->movetype = PHYSICSTYPE_STEP;
+	self->solid = SOLID_NOT;
+	self->maxs[2] = -8.0f;
 
-	self->takedamage=DAMAGE_NO;
-	self->movetype=PHYSICSTYPE_STEP;
+	self->s.angles[PITCH] = 0.0f;
+	self->s.angles[ROLL] = 0.0f;
+	self->s.sound = 0;
 
-	self->s.angles[PITCH]=0.0;
-	self->s.angles[ROLL]=0.0;
-
-	self->s.sound=0;
-
-	self->maxs[2]=-8;
-
-	self->solid=SOLID_NOT;
-
-	// tell the leader client effect that this client is dead - so if we drawing the effect, please stop.
+	// Tell the leader client effect that this client is dead to stop drawing the effect.
 	self->s.effects |= EF_CLIENT_DEAD;
 
 	// Get the player off of the rope!
-
 	if (self->client->playerinfo.flags & PLAYER_FLAG_ONROPE)
 	{
 		// Turn off the rope graphic immediately.
-
 		self->targetEnt->count = 0;
 		self->targetEnt->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
 
@@ -952,41 +944,44 @@ int player_die(edict_t *self, edict_t *inflictor, edict_t *attacker,int damage,v
 
 		self->client->playerinfo.flags |= PLAYER_FLAG_FALLBREAK | PLAYER_FLAG_FALLING;
 	}
+
 	// Get rid of the player's persistent effect.
-	if (self->PersistantCFX)
-	{	
+	if (self->PersistantCFX > 0)
+	{
 		gi.RemovePersistantEffect(self->PersistantCFX, REMOVE_DIE);
 		self->PersistantCFX = 0;
 	}
 
-	if (self->Leader_PersistantCFX)
+	if (self->Leader_PersistantCFX > 0)
 	{
 		gi.RemovePersistantEffect(self->Leader_PersistantCFX, REMOVE_LEADER_DIE);
-		self->Leader_PersistantCFX =0;
+		self->Leader_PersistantCFX = 0;
 	}
 
-	// remove any persistant meteor effects
-	for (i=0; i<4; i++)
+	// Remove any persistent meteor effects.
+	for (int i = 0; i < 4; i++)
 	{
-		if (self->client->Meteors[i])
+		if (self->client->Meteors[i] == NULL)
+			continue;
+
+		if (self->client->Meteors[i]->PersistantCFX > 0)
 		{
-			if (self->client->Meteors[i]->PersistantCFX)
-			{
-				gi.RemovePersistantEffect(self->client->Meteors[i]->PersistantCFX, REMOVE_METEOR);
-				gi.RemoveEffects(&self->s, FX_SPELL_METEORBARRIER+i);
-				self->client->Meteors[i]->PersistantCFX = 0;
-			}
-			G_SetToFree(self->client->Meteors[i]);
-			self->client->Meteors[i] = NULL;
+			gi.RemovePersistantEffect(self->client->Meteors[i]->PersistantCFX, REMOVE_METEOR);
+			gi.RemoveEffects(&self->s, FX_SPELL_METEORBARRIER + i);
+
+			self->client->Meteors[i]->PersistantCFX = 0;
 		}
+
+		G_SetToFree(self->client->Meteors[i]);
+		self->client->Meteors[i] = NULL;
 	}
-	// we now own no meteors at all
+
+	// We now own no meteors at all.
 	self->client->playerinfo.meteor_count = 0;
 
-	// Create a persistant FX_REMOVE_EFFECTS effect - this is a special hack. If we just created
-	// a regular FX_REMOVE_EFFECTS effect, it will overwrite the next FX_PLAYER_PERSISTANT sent
-	// out. Luverly jubberly!!!
-	gi.CreatePersistantEffect(&self->s,FX_REMOVE_EFFECTS,CEF_BROADCAST|CEF_OWNERS_ORIGIN,NULL,"s",0); 
+	// Create a persistent FX_REMOVE_EFFECTS effect - this is a special hack.
+	// If we create a regular FX_REMOVE_EFFECTS effect, it will overwrite the next FX_PLAYER_PERSISTANT effect sent out.
+	gi.CreatePersistantEffect(&self->s, FX_REMOVE_EFFECTS, CEF_BROADCAST | CEF_OWNERS_ORIGIN, NULL, "s", 0);
 
 	// Get rid of all the stuff set up in PlayerFirstSeenInit...
 	gi.RemoveEffects(&self->s, FX_SHADOW);
@@ -995,127 +990,108 @@ int player_die(edict_t *self, edict_t *inflictor, edict_t *attacker,int damage,v
 
 	// Remove any shrine effects we have going.
 	PlayerKillShrineFX(self);
-	
-	// Remove any sound effects we may be generating.
-	gi.sound(self, CHAN_WEAPON, gi.soundindex("misc/null.wav"), 1, ATTN_NORM,0);
 
-	if((self->health<-40) && !(self->flags & FL_CHICKEN))
-	{	
-		gi.sound(self,CHAN_BODY,gi.soundindex("*gib.wav"),1,ATTN_NORM,0);
-		
+	// Remove any sound effects we may be generating.
+	gi.sound(self, CHAN_WEAPON, gi.soundindex("misc/null.wav"), 1.0f, ATTN_NORM, 0.0f);
+
+	if (self->health < -40 && !(self->flags & FL_CHICKEN))
+	{
+		// Gib player.
+		gi.sound(self, CHAN_BODY, gi.soundindex("*gib.wav"), 1.0f, ATTN_NORM, 0.0f);
+
 		PlayerMakeGib(self, attacker);
-	   
-		self->s.modelindex=0;
-		// Won`t get sent to client if mi 0 unless flag is set
+
+		self->s.modelindex = 0;
+
+		// Won't get sent to client if modelindex is 0 unless SVF_ALWAYS_SEND flag is set.
 		self->svflags |= SVF_ALWAYS_SEND;
-		self->s.effects |= EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS;
-	   	self->deadflag=DEAD_DEAD;
-	   	
-		self->client->playerinfo.deadflag=DEAD_DEAD;
+		self->s.effects |= (EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS);
+		self->deadflag = DEAD_DEAD;
+
+		self->client->playerinfo.deadflag = DEAD_DEAD;
 	}
 	else
-	{	
+	{
 		// Make player die a normal death.
+		self->health = -1;
 
-		self->health=-1;
-
-		if(!self->deadflag)
+		if (self->deadflag == DEAD_NO)
 		{
-			self->client->respawn_time=level.time+1.0;
-			self->client->ps.pmove.pm_type=PM_DEAD;
-	
+			self->client->respawn_time = level.time + 1.0f;
+			self->client->ps.pmove.pm_type = PM_DEAD;
+
 			// If player died in a deathmatch or coop, show scores.
-
 			Cmd_Score_f(self);
-	
-   			// Check if a chicken?
 
-   			if (self->flags & FL_CHICKEN)
-   			{
+			// Check if a chicken?
+			if (self->flags & FL_CHICKEN)
+			{
 				// We're a chicken, so die a chicken's death.
+				PlayerChickenDeath(self);
+				PlayerMakeGib(self, attacker);
+				self->s.modelindex = 0;
 
-   				PlayerChickenDeath(self);
-   				PlayerMakeGib(self, attacker);
-  		   		self->s.modelindex=0;
-				// Won`t get sent to client if mi 0 unless flag is set
+				// Won't get sent to client if modelindex is 0 unless SVF_ALWAYS_SEND flag is set.
 				self->svflags |= SVF_ALWAYS_SEND;
 				self->s.effects |= EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS;
-   			}
-			else if ( (self->client->playerinfo.flags & PLAYER_FLAG_SURFSWIM) || (self->waterlevel >= 2) )
-   			{
-   				P_PlayerAnimSetLowerSeq(&self->client->playerinfo, ASEQ_DROWN);
-   				gi.sound(self,CHAN_BODY,gi.soundindex("*drowndeath.wav"),1,ATTN_NORM,0);
-   			}
-			else if ( !stricmp(inflictor->classname, "plague_mist"))
-			{
-   				P_PlayerAnimSetLowerSeq(&self->client->playerinfo, ASEQ_DEATH_CHOKE);
-				gi.sound(self,CHAN_BODY,gi.soundindex("*chokedeath.wav"),1,ATTN_NORM,0);
 			}
-			else if ( self->fire_damage_time == -1 )
+			else if ((self->client->playerinfo.flags & PLAYER_FLAG_SURFSWIM) || self->waterlevel > 1)
 			{
-   				P_PlayerAnimSetLowerSeq(&self->client->playerinfo, ASEQ_DEATH_B);
-				if (blood_level && (int)(blood_level->value) <= VIOLENCE_BLOOD)	// Don't scream bloody murder in Germany. 
-					gi.sound(self,CHAN_BODY,gi.soundindex("*death1.wav"),1,ATTN_NORM,0);
-				else
-					gi.sound(self,CHAN_BODY,gi.soundindex("*firedeath.wav"),1,ATTN_NORM,0);
+				P_PlayerAnimSetLowerSeq(&self->client->playerinfo, ASEQ_DROWN);
+				gi.sound(self, CHAN_BODY, gi.soundindex("*drowndeath.wav"), 1.0f, ATTN_NORM, 0.0f);
 			}
-   			else
-   			{	// "Normal" deaths.
-				vec3_t fwd;
-				float speed;
+			else if (Q_stricmp(inflictor->classname, "plague_mist") == 0) //mxd. stricmp -> Q_stricmp
+			{
+				P_PlayerAnimSetLowerSeq(&self->client->playerinfo, ASEQ_DEATH_CHOKE);
+				gi.sound(self, CHAN_BODY, gi.soundindex("*chokedeath.wav"), 1.0f, ATTN_NORM, 0.0f);
+			}
+			else if (self->fire_damage_time == -1.0f)
+			{
+				P_PlayerAnimSetLowerSeq(&self->client->playerinfo, ASEQ_DEATH_B);
 
+				const char* snd_name = ((blood_level != NULL && (int)(blood_level->value) <= VIOLENCE_BLOOD) ? "*death1.wav" : "*firedeath.wav"); //mxd
+				gi.sound(self, CHAN_BODY, gi.soundindex(snd_name), 1.0f, ATTN_NORM, 0.0f);
+			}
+			else // "Normal" deaths.
+			{
 				// Check if the player had a velocity forward or backward during death.
+				vec3_t fwd;
 				AngleVectors(self->s.angles, fwd, NULL, NULL);
-				speed = DotProduct(fwd, self->velocity);
-				speed += flrand(-16.0, 16.0);		// Add a spot of randomness to it.
 
-				if (speed > 16.0)
-				{	// Fly forward
-					P_PlayerAnimSetLowerSeq(&self->client->playerinfo, ASEQ_DEATH_FLYFWD);
-				}
-				else if (speed < -16.0)
-				{	// Fly backward
-					P_PlayerAnimSetLowerSeq(&self->client->playerinfo, ASEQ_DEATH_FLYBACK);
-				}
-				else
-				{	// Jes' flop to the ground.
-					P_PlayerAnimSetLowerSeq(&self->client->playerinfo, ASEQ_DEATH_A);
-				}
+				const float speed = DotProduct(fwd, self->velocity) + flrand(-16.0f, 16.0f); // Add a spot of randomness to it.
 
-   				if (irand(0,1))
-   					gi.sound(self,CHAN_BODY,gi.soundindex("*death1.wav"),1,ATTN_NORM,0);
-   				else
-   					gi.sound(self,CHAN_BODY,gi.soundindex("*death2.wav"),1,ATTN_NORM,0);
-   			}
+				int aseq_index = ASEQ_DEATH_A; // Jes' flop to the ground.
+				if (speed > 16.0f)
+					aseq_index = ASEQ_DEATH_FLYFWD; // Fly forward.
+				else if (speed < -16.0f)
+					aseq_index = ASEQ_DEATH_FLYBACK; // Fly backward.
+
+				P_PlayerAnimSetLowerSeq(&self->client->playerinfo, aseq_index);
+				gi.sound(self, CHAN_BODY, gi.soundindex(va("*death%i.wav", irand(1, 2))), 1.0f, ATTN_NORM, 0.0f);
+			}
 
 			// Make sure it doesn't try and finish an animation.
-
 			P_PlayerAnimSetUpperSeq(&self->client->playerinfo, ASEQ_NONE);
 			self->client->playerinfo.upperidle = true;
 
 			// If we're not a chicken, don't set the dying flag.
-
-			if (!(self->client->playerinfo.edictflags & FL_CHICKEN))	// We're not set as a chicken
+			if (!(self->client->playerinfo.edictflags & FL_CHICKEN))
 			{
-				// Not a chicken so set the dying flag.
-
-				self->deadflag=DEAD_DYING;
-				self->client->playerinfo.deadflag=DEAD_DYING;
+				self->deadflag = DEAD_DYING;
+				self->client->playerinfo.deadflag = DEAD_DYING;
 			}
 			else
 			{
 				// I WAS a chicken, but not any more, I'm dead and an Elf again.
-
 				self->client->playerinfo.edictflags &= ~FL_CHICKEN;
 			}
 		}
 	}
 
 	ClientObituary(self, attacker);
-
 	gi.linkentity(self);
 
-	return(0);
+	return 0;
 }
 
 /*
