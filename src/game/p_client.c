@@ -331,343 +331,315 @@ static void DropWeapons(edict_t* self, const int damage, const int which_weapons
 	}
 }
 
-void player_dismember (edict_t *self, edict_t *other, int damage, HitLocation_t HitLocation)
-{//FIXME: Make sure you can still dismember and gib player while dying
-	int				throw_nodes = 0;
-	vec3_t			gore_spot, right, blood_dir, blood_spot;
-	qboolean dismember_ok = false;
-	qboolean inpolevault = false;
+#pragma region ========================== PlayerDismember() logic ==========================
 
-	if(HitLocation & hl_MeleeHit)
+static void PlayerThrowHead(edict_t* self, edict_t* other, float damage, const qboolean dismember_ok) //mxd
+{
+	if (self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_NO_DRAW)
+		return;
+
+	if (self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	//NOTE: I'm cutting down the decap chance just a little bit... Happened too often.
+	if (dismember_ok && flrand(0.0f, (float)self->health) < damage * 0.4f)
+	{
+		int thrown_nodes = 0;
+		CanThrowNode(self, MESH__HEAD, &thrown_nodes);
+
+		vec3_t gore_spot = { 0.0f, 0.0f, 18.0f };
+		ThrowBodyPart(self, &gore_spot, thrown_nodes, damage, 0);
+
+		VectorAdd(self->s.origin, gore_spot, gore_spot);
+		SprayDebris(self, gore_spot, 8, damage);
+
+		if (self->health > 0)
+		{
+			self->health = 1;
+			T_Damage(self, other, other, vec3_origin, vec3_origin, vec3_origin, 10, 20, DAMAGE_AVOID_ARMOR, MOD_STAFF);
+		}
+	}
+	else
+	{
+		self->client->playerinfo.pers.altparts |= (1 << MESH__HEAD);
+		self->s.fmnodeinfo[MESH__HEAD].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[MESH__HEAD].skin = self->s.skinnum + 1;
+	}
+}
+
+static void PlayerThrowTorso(edict_t* self, edict_t* other, float damage, const qboolean dismember_ok, const int node_index) //mxd
+{
+	if (self->s.fmnodeinfo[node_index].flags & FMNI_NO_DRAW)
+		return;
+
+	if (self->s.fmnodeinfo[node_index].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	if (dismember_ok && flrand(0.0f, (float)self->health) < damage * 0.3f)
+	{
+		self->client->playerinfo.flags |= (PLAYER_FLAG_NO_LARM | PLAYER_FLAG_NO_RARM);
+
+		int thrown_nodes = 0;
+		CanThrowNode(self, MESH_BASE2, &thrown_nodes);
+		CanThrowNode(self, MESH__BACK, &thrown_nodes);
+		CanThrowNode(self, MESH__LARM, &thrown_nodes);
+		CanThrowNode(self, MESH__RARM, &thrown_nodes);
+		CanThrowNode(self, MESH__HEAD, &thrown_nodes);
+		CanThrowNode(self, MESH__LHANDHI, &thrown_nodes);
+		CanThrowNode(self, MESH__RHANDHI, &thrown_nodes);
+
+		vec3_t gore_spot = { 0.0f, 0.0f, 12.0f };
+		ThrowBodyPart(self, &gore_spot, thrown_nodes, damage, 1);
+
+		VectorAdd(self->s.origin, gore_spot, gore_spot);
+		SprayDebris(self, gore_spot, 12, damage);
+
+		if (self->health > 0)
+		{
+			self->health = 1;
+			T_Damage(self, other, other, vec3_origin, vec3_origin, vec3_origin, 10, 20, DAMAGE_AVOID_ARMOR, MOD_STAFF);
+		}
+	}
+	else
+	{
+		self->client->playerinfo.pers.altparts |= (1 << node_index);
+		self->s.fmnodeinfo[node_index].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[node_index].skin = self->s.skinnum + 1;
+	}
+}
+
+static int PlayerThrowLeftArm(edict_t* self, edict_t* other, float damage, const qboolean dismember_ok) //mxd
+{
+	int thrown_nodes = 0;
+
+	if (self->s.fmnodeinfo[MESH__LARM].flags & FMNI_NO_DRAW)
+		return thrown_nodes;
+
+	if (self->s.fmnodeinfo[MESH__LARM].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	if (dismember_ok && flrand(0.0f, (float)self->health) < damage)
+	{
+		if (CanThrowNode(self, MESH__LARM, &thrown_nodes))
+		{
+			self->client->playerinfo.flags |= PLAYER_FLAG_NO_LARM;
+			DropWeapons(self, (int)damage, BIT_BOWACTV);
+
+			CanThrowNode(self, MESH__LHANDHI, &thrown_nodes);
+
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+			VectorMA(gore_spot, -10.0f, right, gore_spot);
+			ThrowBodyPart(self, &gore_spot, thrown_nodes, damage, 0);
+
+			vec3_t blood_dir = { 0.0f, -1.0f,  0.0f };
+			vec3_t blood_spot = { 0.0f, -12.0f, 10.0f };
+			SpawnBleeder(self, other, blood_dir, blood_spot);
+		}
+	}
+	else
+	{
+		self->client->playerinfo.pers.altparts |= (1 << MESH__LARM);
+		self->s.fmnodeinfo[MESH__LARM].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[MESH__LARM].skin = self->s.skinnum + 1;
+	}
+
+	return thrown_nodes;
+}
+
+static int PlayerThrowRightArm(edict_t* self, edict_t* other, float damage, const qboolean dismember_ok, const qboolean in_polevault) //mxd
+{
+	int thrown_nodes = 0;
+
+	// Knock weapon out of hand?
+	if (self->s.fmnodeinfo[MESH__RARM].flags & FMNI_NO_DRAW)
+		return thrown_nodes;
+
+	if (self->s.fmnodeinfo[MESH__RARM].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	if (dismember_ok && flrand(0.0f, (float)self->health) < damage)
+	{
+		if (CanThrowNode(self, MESH__RARM, &thrown_nodes))
+		{
+			self->client->playerinfo.flags |= PLAYER_FLAG_NO_RARM;
+			DropWeapons(self, (int)damage, BIT_HELSTF | BIT_BLADSTF);
+
+			CanThrowNode(self, MESH__RHANDHI, &thrown_nodes);
+
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+			VectorMA(gore_spot, 10.0f, right, gore_spot);
+			ThrowBodyPart(self, &gore_spot, thrown_nodes, damage, 0);
+
+			vec3_t blood_dir = { 0.0f, 1.0f,  0.0f };
+			vec3_t blood_spot = { 0.0f, 12.0f, 10.0f };
+			SpawnBleeder(self, other, blood_dir, blood_spot);
+
+			if (in_polevault) // Oops! No staff! Fall down!
+				P_KnockDownPlayer(&self->client->playerinfo);
+		}
+	}
+	else
+	{
+		self->client->playerinfo.pers.altparts |= (1 << MESH__RARM);
+		self->s.fmnodeinfo[MESH__RARM].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[MESH__RARM].skin = self->s.skinnum + 1;
+	}
+
+	return thrown_nodes;
+}
+
+static int PlayerThrowLeg(edict_t* self, const float damage, const int node_index) //mxd
+{
+	int thrown_nodes = 0;
+
+	if (self->health > 0)
+	{
+		// Still alive.
+		if (self->s.fmnodeinfo[node_index].flags & FMNI_USE_SKIN)
+			return thrown_nodes;
+
+		self->client->playerinfo.pers.altparts |= (1 << node_index);
+		self->s.fmnodeinfo[node_index].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[node_index].skin = self->s.skinnum + 1;
+	}
+	else
+	{
+		if (self->s.fmnodeinfo[node_index].flags & FMNI_NO_DRAW)
+			return thrown_nodes;
+
+		if (CanThrowNode(self, node_index, &thrown_nodes))
+		{
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+			VectorMA(gore_spot, -10.0f, right, gore_spot); //TODO: shouldn't this offset to the left instead for MESH__LLEG?
+			ThrowBodyPart(self, &gore_spot, thrown_nodes, damage, 0);
+		}
+	}
+
+	return thrown_nodes;
+}
+
+void player_dismember(edict_t* self, edict_t* other, const int damage, HitLocation_t hit_location) //TODO: rename to PlayerDismember().
+{
+	//FIXME: Make sure you can still dismember and gib player while dying.
+	qboolean dismember_ok = false;
+	qboolean in_polevault = false;
+
+	if (hit_location & hl_MeleeHit)
 	{
 		dismember_ok = true;
-		HitLocation &= ~hl_MeleeHit;
+		hit_location &= ~hl_MeleeHit;
 	}
 
-	//dismember living players in deathmatch only if that dmflag set!
-	if(deathmatch->value)
+	// Dismember living players in deathmatch only if that dmflag set!
+	if (DEATHMATCH)
 	{
-		if(!((int)dmflags->value&DF_DISMEMBER))
-		{
-			if(self->health > 0)// && !(self->flags&FL_GODMODE))
-			{
-				dismember_ok = false;
-			}
-		}
-		if(dismember_ok)
-		{
-			if(self->client->playerinfo.frame > FRAME_vault3 &&
-				self->client->playerinfo.frame < FRAME_vault15)
-				inpolevault = true;
-			else
-				inpolevault = false;
+		if (!(DMFLAGS & DF_DISMEMBER) && self->health > 0)
+			dismember_ok = false;
 
-			if(inpolevault)
+		if (dismember_ok)
+		{
+			in_polevault = ((self->client->playerinfo.frame > FRAME_vault3 && self->client->playerinfo.frame < FRAME_vault15)); //mxd
+
+			if (in_polevault)
 			{
-				//Horizontal, in air, need to alter hitloc
-				switch(HitLocation)
+				// Horizontal, in air, need to alter hit_location.
+				switch (hit_location)
 				{
-				case hl_Head:
-					HitLocation = hl_TorsoFront;
-					break;
-				case hl_TorsoFront:
-					HitLocation = hl_TorsoFront;
-					break;
-				case hl_TorsoBack:
-					HitLocation = hl_Head;
-					break;
+					case hl_Head:
+						hit_location = hl_TorsoFront;
+						break;
+
+					case hl_TorsoFront:
+						hit_location = hl_TorsoFront; //TODO: shouldn't this be hl_TorsoBack?..
+						break;
+
+					case hl_TorsoBack:
+						hit_location = hl_Head;
+						break;
 				}
 			}
 
-			if(self->health > 0 && !irand(0,2) &&
-				HitLocation != hl_Head &&
-				HitLocation != hl_ArmUpperLeft &&
-				HitLocation != hl_ArmUpperRight)
-			{//deathmatch hack
-				if(irand(0,1))
-					HitLocation = hl_ArmUpperLeft;
-				else
-					HitLocation = hl_ArmUpperRight;
-			}
+			if (self->health > 0 && irand(0, 2) == 0 && hit_location != hl_Head && hit_location != hl_ArmUpperLeft && hit_location != hl_ArmUpperRight)
+				hit_location = (irand(0, 1) ? hl_ArmUpperLeft : hl_ArmUpperRight); // Deathmatch hack.
 		}
 	}
-	else if(self->health > 0)// && !(self->flags&FL_GODMODE))
-		dismember_ok = false;
-
-	if(!dismember_ok)
+	else if (self->health > 0)
 	{
-		if(damage <= 3 && self->health>10)
-			return;
-
-		if(damage < 10 && self->health>85)
-			return;
+		dismember_ok = false;
 	}
 
-	if(HitLocation<1)
+	if (!dismember_ok && ((damage < 4 && self->health > 10) || (damage < 10 && self->health > 85)))
 		return;
 
-	if(HitLocation>hl_Max)
+	if (hit_location <= hl_NoneSpecific || hit_location >= hl_Max) //mxd. 'hit_location > hl_Max' in original version.
 		return;
 
-//FIXME: special manipulations of hit locations depending on anim
+	//FIXME: special manipulations of hit locations depending on anim.
+	int thrown_nodes = 0;
 
-	VectorClear(gore_spot);
-	switch(HitLocation)
+	switch (hit_location)
 	{
 		case hl_Head:
-			if(self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-
-			// NOTE I AM CUTTING DOWN THE DECAP CHANCE JUST A LITTLE BIT...  HAPPENED TOO OFTEN.
-//			if(flrand(0,self->health) < damage*0.5 && dismember_ok)
-			if(flrand(0,self->health) < damage*0.4 && dismember_ok)
-			{
-//				player_dropweapon (self, (int)damage, (BIT_BOWACTV|BIT_BLADSTF|BIT_HELSTF));
-
-				CanThrowNode(self, MESH__HEAD,&throw_nodes);
-
-				gore_spot[2]+=18;
-				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-
-				VectorAdd(self->s.origin, gore_spot, gore_spot);
-				SprayDebris(self,gore_spot,8,damage);
-
-				if(self->health>0)
-				{
-					self->health = 1;
-					T_Damage (self, other, other, vec3_origin, vec3_origin, vec3_origin, 10, 20,DAMAGE_AVOID_ARMOR,MOD_STAFF);
-				}
-
-				goto finish;
-			}
-			else
-			{
-//				if(flrand(0,self->health)<damage*0.25)
-//					player_dropweapon (self, (int)damage, (BIT_BOWACTV|BIT_BLADSTF|BIT_HELSTF));
-				self->client->playerinfo.pers.altparts |= (1<<MESH__HEAD);
-				self->s.fmnodeinfo[MESH__HEAD].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__HEAD].skin = self->s.skinnum+1;
-			}
-			break;
-		case hl_TorsoFront://split in half?
-			if(self->s.fmnodeinfo[MESH_BASE2].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH_BASE2].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
-			{
-				self->client->playerinfo.flags |= (PLAYER_FLAG_NO_LARM|PLAYER_FLAG_NO_RARM);
-				gore_spot[2]+=12;
-				CanThrowNode(self, MESH_BASE2,&throw_nodes);
-				CanThrowNode(self, MESH__BACK,&throw_nodes);
-				CanThrowNode(self, MESH__LARM,&throw_nodes);
-				CanThrowNode(self, MESH__RARM,&throw_nodes);
-				CanThrowNode(self, MESH__HEAD,&throw_nodes);
-				CanThrowNode(self, MESH__LHANDHI,&throw_nodes);
-				CanThrowNode(self, MESH__RHANDHI,&throw_nodes);
-
-//				player_dropweapon (self, (int)damage, (BIT_BOWACTV|BIT_BLADSTF|BIT_HELSTF));
-				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 1);
-				VectorAdd(self->s.origin, gore_spot, gore_spot);
-				SprayDebris(self,gore_spot,12,damage);
-
-				if(self->health>0)
-				{
-					self->health = 1;
-					T_Damage (self, other, other, vec3_origin, vec3_origin, vec3_origin, 10, 20,DAMAGE_AVOID_ARMOR,MOD_STAFF);
-				}
-				goto finish;
-			}
-			else
-			{
-//				if(flrand(0,self->health)<damage*0.5)
-//					player_dropweapon (self, (int)damage, (BIT_BOWACTV|BIT_BLADSTF|BIT_HELSTF));
-				self->client->playerinfo.pers.altparts |= (1<<MESH_BASE2);
-				self->s.fmnodeinfo[MESH_BASE2].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH_BASE2].skin = self->s.skinnum+1;
-			}
-			break;
-		case hl_TorsoBack://split in half?
-			if(self->s.fmnodeinfo[MESH__BACK].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__BACK].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
-			{
-				self->client->playerinfo.flags |= (PLAYER_FLAG_NO_LARM|PLAYER_FLAG_NO_RARM);
-				gore_spot[2]+=12;
-				CanThrowNode(self, MESH_BASE2,&throw_nodes);
-				CanThrowNode(self, MESH__BACK,&throw_nodes);
-				CanThrowNode(self, MESH__LARM,&throw_nodes);
-				CanThrowNode(self, MESH__RARM,&throw_nodes);
-				CanThrowNode(self, MESH__HEAD,&throw_nodes);
-				CanThrowNode(self, MESH__LHANDHI,&throw_nodes);
-				CanThrowNode(self, MESH__RHANDHI,&throw_nodes);
-
-//				player_dropweapon (self, (int)damage, (BIT_BOWACTV|BIT_BLADSTF|BIT_HELSTF));
-				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 1);
-				VectorAdd(self->s.origin, gore_spot, gore_spot);
-				SprayDebris(self,gore_spot,12,damage);
-
-				if(self->health>0)
-				{
-					self->health = 1;
-					T_Damage (self, other, other, vec3_origin, vec3_origin, vec3_origin, 10, 20,DAMAGE_AVOID_ARMOR,MOD_STAFF);
-				}
-				goto finish;
-			}
-			else
-			{
-//				if(flrand(0,self->health)<damage*0.5)
-//					player_dropweapon (self, (int)damage, (BIT_BOWACTV|BIT_BLADSTF|BIT_HELSTF));
-				self->client->playerinfo.pers.altparts |= (1<<MESH__BACK);
-				self->s.fmnodeinfo[MESH__BACK].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__BACK].skin = self->s.skinnum+1;
-			}
-			break;
-		case hl_ArmUpperLeft:
-		case hl_ArmLowerLeft://left arm
-			if(self->s.fmnodeinfo[MESH__LARM].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__LARM].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health) < damage && dismember_ok)
-			{
-				if(CanThrowNode(self, MESH__LARM, &throw_nodes))
-				{
-					self->client->playerinfo.flags |= PLAYER_FLAG_NO_LARM;
-					DropWeapons(self, (int)damage, BIT_BOWACTV);
-					CanThrowNode(self, MESH__LHANDHI, &throw_nodes);
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-
-					VectorSet(blood_dir, 0, -1, 0);
-					VectorSet(blood_spot, 0, -12, 10);
-					SpawnBleeder(self, other, blood_dir, blood_spot);//, CORVUS_LARM);
-				}
-			}
-			else
-			{
-//				if(flrand(0,self->health)<damage*0.4)
-//					player_dropweapon (self, (int)damage, BIT_BOWACTV);
-				self->client->playerinfo.pers.altparts |= (1<<MESH__LARM);
-				self->s.fmnodeinfo[MESH__LARM].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__LARM].skin = self->s.skinnum+1;
-			}
-			break;
-		case hl_ArmUpperRight:
-		case hl_ArmLowerRight://right arm
-			//Knock weapon out of hand?
-			if(self->s.fmnodeinfo[MESH__RARM].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__RARM].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health) < damage && dismember_ok)
-			{
-				if(CanThrowNode(self, MESH__RARM, &throw_nodes))
-				{
-					self->client->playerinfo.flags |= PLAYER_FLAG_NO_RARM;
-					DropWeapons(self, (int)damage, BIT_HELSTF|BIT_BLADSTF);
-					CanThrowNode(self, MESH__RHANDHI, &throw_nodes);
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-
-					VectorSet(blood_dir, 0, 1, 0);
-					VectorSet(blood_spot, 0, 12, 10);
-					SpawnBleeder(self, other, blood_dir, blood_spot);//, CORVUS_RARM);
-
-					if(inpolevault)//oops!  no staff! fall down!
-						P_KnockDownPlayer(&self->client->playerinfo);
-				}
-			}
-			else
-			{
-//				if(flrand(0,self->health)<damage*0.75)
-//					player_dropweapon (self, (int)damage, BIT_HELSTF|BIT_BLADSTF);
-				self->client->playerinfo.pers.altparts |= (1<<MESH__RARM);
-				self->s.fmnodeinfo[MESH__RARM].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__RARM].skin = self->s.skinnum+1;
-			}
+			PlayerThrowHead(self, other, (float)damage, dismember_ok); //mxd
 			break;
 
-		case hl_LegUpperLeft:
-		case hl_LegLowerLeft://left leg
-			if(self->health>0)
-			{//still alive
-				if(self->s.fmnodeinfo[MESH__LLEG].flags & FMNI_USE_SKIN)
-					break;
-				self->client->playerinfo.pers.altparts |= (1<<MESH__LLEG);
-				self->s.fmnodeinfo[MESH__LLEG].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__LLEG].skin = self->s.skinnum+1;
-			}
-			else
-			{
-				if(self->s.fmnodeinfo[MESH__LLEG].flags & FMNI_NO_DRAW)
-					break;
-				if(CanThrowNode(self, MESH__LLEG, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-				break;
-			}
+		case hl_TorsoFront: // Split in half?
+			PlayerThrowTorso(self, other, (float)damage, dismember_ok, MESH_BASE2); //mxd
 			break;
-		case hl_LegUpperRight:
-		case hl_LegLowerRight://right leg
-			if(self->health>0)
-			{//still alive
-				if(self->s.fmnodeinfo[MESH__RLEG].flags & FMNI_USE_SKIN)
-					break;
-				self->client->playerinfo.pers.altparts |= (1<<MESH__RLEG);
-				self->s.fmnodeinfo[MESH__RLEG].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__RLEG].skin = self->s.skinnum+1;
-			}
-			else
-			{
-				if(self->s.fmnodeinfo[MESH__RLEG].flags & FMNI_NO_DRAW)
-					break;
-				if(CanThrowNode(self, MESH__RLEG, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-				break;
-			}
+
+		case hl_TorsoBack: // Split in half?
+			PlayerThrowTorso(self, other, (float)damage, dismember_ok, MESH__BACK); //mxd
+			break;
+
+		case hl_ArmUpperLeft: // Left arm.
+		case hl_ArmLowerLeft:
+			thrown_nodes = PlayerThrowLeftArm(self, other, (float)damage, dismember_ok); //mxd
+			break;
+
+		case hl_ArmUpperRight: // Right arm.
+		case hl_ArmLowerRight:
+			thrown_nodes = PlayerThrowRightArm(self, other, (float)damage, dismember_ok, in_polevault); //mxd
+			break;
+
+		case hl_LegUpperLeft: // Left leg.
+		case hl_LegLowerLeft:
+			thrown_nodes = PlayerThrowLeg(self, (float)damage, MESH__LLEG); //mxd
+			break;
+
+		case hl_LegUpperRight: // Right leg.
+		case hl_LegLowerRight:
+			thrown_nodes = PlayerThrowLeg(self, (float)damage, MESH__RLEG); //mxd
 			break;
 
 		default:
-//			if(flrand(0,self->health)<damage*0.25)
-//				player_dropweapon (self, (int)damage, (BIT_BOWACTV|BIT_BLADSTF|BIT_HELSTF));
 			break;
 	}
-	if(throw_nodes)
+
+	if (thrown_nodes > 0)
 	{
 		self->pain_debounce_time = 0;
-		if(!P_BranchCheckDismemberAction(&self->client->playerinfo, self->client->playerinfo.pers.weapon->tag))
+
+		if (!P_BranchCheckDismemberAction(&self->client->playerinfo, self->client->playerinfo.pers.weapon->tag))
 		{
 			P_PlayerInterruptAction(&self->client->playerinfo);
 			P_PlayerAnimSetUpperSeq(&self->client->playerinfo, ASEQ_NONE);
-			if(irand(0, 1))
-				P_PlayerAnimSetLowerSeq(&self->client->playerinfo, ASEQ_PAIN_A);
-			else
-				P_PlayerAnimSetLowerSeq(&self->client->playerinfo, ASEQ_PAIN_B);
+			P_PlayerAnimSetLowerSeq(&self->client->playerinfo, irand(ASEQ_PAIN_A, ASEQ_PAIN_B));
 		}
 	}
 
-finish:
-
 	ClientUpdateModelAttributes(self); //mxd
 }
+
+#pragma endregion
 
 void player_decap (edict_t *self, edict_t *other)
 {
