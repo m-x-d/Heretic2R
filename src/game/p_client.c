@@ -1231,27 +1231,17 @@ void InitBodyQue(void)
 	}
 }
 
-int player_body_die(edict_t *self,edict_t *inflictor,edict_t *attacker,int damage,vec3_t point)
+static int player_body_die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point)
 {
-	byte	magb;
-	float	mag;
-	vec3_t	mins;
+	gi.sound(self, CHAN_BODY, gi.soundindex("misc/fleshbreak.wav"), 1.0f, ATTN_NORM, 0.0f);
 
-	VectorCopy(self->mins,mins);
-	mins[2]=-30.0;
+	vec3_t mins;
+	VectorCopy(self->mins, mins);
+	mins[2] = -30.0f;
 
-	gi.sound(self,CHAN_BODY,gi.soundindex("misc/fleshbreak.wav"),1,ATTN_NORM,0);
+	const byte mag = (byte)(Clamp(VectorLength(mins), 1.0f, 255.0f));
 
-	mag = VectorLength(mins);
-	magb = Clamp(mag, 1.0, 255.0);
-   	
-	gi.CreateEffect(NULL,
-					FX_FLESH_DEBRIS,
-   					0,
-   					self->s.origin,
-   					"bdb",
-   					irand(10, 30), mins, magb);
-
+	gi.CreateEffect(NULL, FX_FLESH_DEBRIS, 0, self->s.origin, "bdb", irand(10, 30), mins, mag);
 	gi.unlinkentity(self);
 
 	VectorClear(self->mins);
@@ -1259,19 +1249,20 @@ int player_body_die(edict_t *self,edict_t *inflictor,edict_t *attacker,int damag
 	VectorClear(self->absmin);
 	VectorClear(self->absmax);
 	VectorClear(self->size);
-	self->movetype=PHYSICSTYPE_NONE;
-	self->solid=SOLID_NOT;
-	self->clipmask=0;
-	self->takedamage=DAMAGE_NO;
-	self->materialtype=MAT_NONE;
-	self->health=0;
-	self->die=NULL;
-	self->deadflag=DEAD_DEAD;
-   	self->s.modelindex=0;
+
+	self->movetype = PHYSICSTYPE_NONE;
+	self->solid = SOLID_NOT;
+	self->clipmask = 0;
+	self->takedamage = DAMAGE_NO;
+	self->materialtype = MAT_NONE;
+	self->health = 0;
+	self->die = NULL;
+	self->deadflag = DEAD_DEAD;
+	self->s.modelindex = 0;
 
 	gi.linkentity(self);
 
-	return(1);
+	return 1;
 }
 
 void CopyToBodyQue (edict_t *ent)
