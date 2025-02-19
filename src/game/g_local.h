@@ -704,9 +704,6 @@ extern void M_MoveAwayFromGoal(edict_t* ent, float dist);
 // g_phys.c
 extern void G_RunEntity(edict_t* ent);
 
-// g_main.c
-extern void FetchClientEntData(edict_t* client); //TODO: move to p_client.h
-
 // g_breakable.c
 extern void KillBrush(edict_t* targ, edict_t* inflictor, edict_t* attacker, int damage);
 

@@ -1408,7 +1408,7 @@ void SaveClientData(void)
 	}
 }
 
-void FetchClientEntData(edict_t* client)
+static void FetchClientEntData(edict_t* client)
 {
 	const client_persistant_t* pers = &client->client->playerinfo.pers;
 	client->health = pers->health;
