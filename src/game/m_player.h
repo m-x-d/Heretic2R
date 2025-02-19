@@ -1431,21 +1431,21 @@
 
 #define NUM_MESH_NODES		16
 
-#define MESH_BASE2		0
-#define MESH__BACK		1
-#define MESH__STOFF		2
-#define MESH__BOFF		3
-#define MESH__ARMOR		4
-#define MESH__RARM		5
+#define MESH_BASE2			0
+#define MESH__BACK			1
+#define MESH__STOFF			2
+#define MESH__BOFF			3
+#define MESH__ARMOR			4
+#define MESH__RARM			5
 #define MESH__RHANDHI		6
 #define MESH__STAFACTV		7
 #define MESH__BLADSTF		8
 #define MESH__HELSTF		9
-#define MESH__LARM		10
+#define MESH__LARM			10
 #define MESH__LHANDHI		11
 #define MESH__BOWACTV		12
-#define MESH__RLEG		13
-#define MESH__LLEG		14
-#define MESH__HEAD		15
+#define MESH__RLEG			13
+#define MESH__LLEG			14
+#define MESH__HEAD			15
 
 #define NUM_PLAYER_NODES	16
