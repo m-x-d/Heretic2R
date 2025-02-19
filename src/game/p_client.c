@@ -1370,17 +1370,15 @@ void respawn(edict_t* self) //TODO: rename to Respawn().
 
 #pragma endregion
 
-void SpawnInitialPlayerEffects(edict_t *ent)
+void SpawnInitialPlayerEffects(edict_t* ent)
 {
 	PlayerRestartShrineFX(ent);
 
-	// Don't need to keep track of this persistant effect, since its started but never stopped.
+	// Don't need to keep track of this persistent effect, since its started but never stopped.
+	gi.CreatePersistantEffect(&ent->s, FX_PLAYER_PERSISTANT, CEF_BROADCAST | CEF_OWNERS_ORIGIN, NULL, "");
 
-	gi.CreatePersistantEffect(&ent->s, FX_PLAYER_PERSISTANT, 
-		CEF_BROADCAST | CEF_OWNERS_ORIGIN, NULL, ""); 
-
-	if (deathmatch->value || coop->value)
-	   	player_leader_effect();
+	if (DEATHMATCH || COOP)
+		player_leader_effect();
 }
 
 /*
