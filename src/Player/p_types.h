@@ -181,6 +181,8 @@ typedef struct inventory_s
 	float Timer[MAX_ITEMS]; // Timer (if this item requires one).
 } inventory_t;
 
+#define PLAYER_HEALTH	100 //mxd. Used by gamex86 and client.
+
 // Client data that stays across multiple level loads.
 typedef struct client_persistant_s
 {
