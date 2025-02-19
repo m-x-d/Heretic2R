@@ -668,69 +668,67 @@ void player_decap(edict_t* self, edict_t* other) //TODO: rename to PlayerDecapit
 	ClientUpdateModelAttributes(self); //mxd
 }
 
-void player_leader_effect(void)
+static void player_leader_effect(void) //TODO: rename to PlayerLeaderEffect().
 {
-	int			i;
-	int			score = 1;
-	int			num_scored = 0;
-	int			total_player = 0;
-	edict_t		*ent;
-
-	// if we don't want leader effects, bump outta here.
-	if(!(((int)dmflags->value) & DF_SHOW_LEADER))
+	// If we don't want leader effects, bump outta here.
+	if (!(DMFLAGS & DF_SHOW_LEADER))
 		return;
 
-	// now we decide if anyone is a leader here, and if they are, we put the glow around them.
-	// first, search through all clients and see what the leading score is.
-	for (i=0; i<game.maxclients; i++)
+	int max_score = 1;
+	int scored_players = 0;
+	int total_players = 0;
+
+	// Now we decide if anyone is a leader here, and if they are, we put the glow around them.
+	// First, search through all clients and see what the leading score is.
+	for (int i = 0; i < game.maxclients; i++)
 	{
-		ent = &g_edicts[i];
-		// are we a player thats playing ?
-		if (ent->client && ent->inuse)
+		const edict_t* ent = &g_edicts[i];
+
+		// Are we a player that's playing?
+		if (!ent->inuse || ent->client == NULL)
+			continue;
+
+		total_players++;
+
+		if (ent->client->resp.score == max_score)
 		{
-			total_player++;
-			if (ent->client->resp.score == score)
-				num_scored++;
-			else
-			if (ent->client->resp.score > score)
-			{
-				num_scored = 0;
-				score = ent->client->resp.score;
-			}
+			scored_players++;
+		}
+		else if (ent->client->resp.score > max_score)
+		{
+			scored_players = 0;
+			max_score = ent->client->resp.score;
 		}
 	}
 
-	// if more than 3 people have it, no one is the leader
-	if ((num_scored > 3) || (total_player == num_scored))
-		score = 999999;
+	// If more than 3 people have it, no one is the leader.
+	if (scored_players > 3 || total_players == scored_players)
+		max_score = 999999;
 
-	// now loop through and turn off the persistant effect of anyone that has below the leader score
-	// and turn it on for anyone that does have it, if its not already turned on
-	for (i=0; i<game.maxclients; i++)
+	// Now loop through and turn off the persistent effect of anyone that has below the leader score.
+	// And turn it on for anyone that does have it, if its not already turned on.
+	for (int i = 0; i < game.maxclients; i++)
 	{
-		ent = &g_edicts[i];
-		// are we a player thats playing ?
-		if (ent->client)
-		{
-			// are we a leader ?
-			if (ent->client->resp.score == score && ent->inuse)
-			{
-				if (!ent->Leader_PersistantCFX)
-					ent->Leader_PersistantCFX = gi.CreatePersistantEffect
-						(&ent->s, FX_SHOW_LEADER, CEF_BROADCAST|CEF_OWNERS_ORIGIN, NULL, "" );
-			}
-			// if not, then if we have the effect, remove it
-			else
-			if (ent->Leader_PersistantCFX)
-			{
-				gi.RemovePersistantEffect(ent->Leader_PersistantCFX, REMOVE_LEADER);
-				gi.RemoveEffects(&ent->s, FX_SHOW_LEADER);
-				ent->Leader_PersistantCFX =0;
-			}
+		edict_t* ent = &g_edicts[i];
 
+		// Are we a player that's playing?
+		if (ent->client == NULL)
+			continue;
+
+		// Are we a leader?
+		if (ent->inuse && ent->client->resp.score == max_score)
+		{
+			if (ent->Leader_PersistantCFX == 0)
+				ent->Leader_PersistantCFX = gi.CreatePersistantEffect(&ent->s, FX_SHOW_LEADER, CEF_BROADCAST | CEF_OWNERS_ORIGIN, NULL, "");
+		}
+		else if (ent->Leader_PersistantCFX > 0) // If not, then if we have the effect, remove it.
+		{
+			gi.RemovePersistantEffect(ent->Leader_PersistantCFX, REMOVE_LEADER);
+			gi.RemoveEffects(&ent->s, FX_SHOW_LEADER);
+
+			ent->Leader_PersistantCFX = 0;
 		}
 	}
-
 }
 
 
