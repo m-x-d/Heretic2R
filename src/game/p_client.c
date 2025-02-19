@@ -198,33 +198,21 @@ void player_repair_skin(edict_t* self) //TODO: rename to PlayerRepairSkin().
 	ClientUpdateModelAttributes(self); //mxd
 }
 
-void ResetPlayerBaseNodes (edict_t *ent)
+void ResetPlayerBaseNodes(edict_t* ent) //TODO: rename to PlayerResetBaseNodes()?
 {
-	if(!ent->client)
+	if (ent->client == NULL)
 		return;
 
-	ent->client->playerinfo.flags &= ~PLAYER_FLAG_BLEED;
-
-	ent->client->playerinfo.flags &= ~PLAYER_FLAG_NO_LARM;
-	ent->client->playerinfo.flags &= ~PLAYER_FLAG_NO_RARM;
-
+	ent->client->playerinfo.flags &= ~(PLAYER_FLAG_BLEED | PLAYER_FLAG_NO_LARM | PLAYER_FLAG_NO_RARM);
 	ent->client->playerinfo.pers.altparts = 0;
 
-	ent->s.fmnodeinfo[MESH_BASE2].flags &= ~FMNI_NO_DRAW;
-	ent->s.fmnodeinfo[MESH__BACK].flags &= ~FMNI_NO_DRAW;
-	ent->s.fmnodeinfo[MESH__RARM].flags &= ~FMNI_NO_DRAW;
-	ent->s.fmnodeinfo[MESH__LARM].flags &= ~FMNI_NO_DRAW;
-	ent->s.fmnodeinfo[MESH__HEAD].flags &= ~FMNI_NO_DRAW;
-	ent->s.fmnodeinfo[MESH__RLEG].flags &= ~FMNI_NO_DRAW;
-	ent->s.fmnodeinfo[MESH__LLEG].flags &= ~FMNI_NO_DRAW;
-
-	ent->s.fmnodeinfo[MESH_BASE2].flags &= ~FMNI_USE_SKIN;
-	ent->s.fmnodeinfo[MESH__BACK].flags &= ~FMNI_USE_SKIN;
-	ent->s.fmnodeinfo[MESH__RARM].flags &= ~FMNI_USE_SKIN;
-	ent->s.fmnodeinfo[MESH__LARM].flags &= ~FMNI_USE_SKIN;
-	ent->s.fmnodeinfo[MESH__HEAD].flags &= ~FMNI_USE_SKIN;
-	ent->s.fmnodeinfo[MESH__RLEG].flags &= ~FMNI_USE_SKIN;
-	ent->s.fmnodeinfo[MESH__LLEG].flags &= ~FMNI_USE_SKIN;
+	ent->s.fmnodeinfo[MESH_BASE2].flags &= ~(FMNI_NO_DRAW | FMNI_USE_SKIN);
+	ent->s.fmnodeinfo[MESH__BACK].flags &= ~(FMNI_NO_DRAW | FMNI_USE_SKIN);
+	ent->s.fmnodeinfo[MESH__RARM].flags &= ~(FMNI_NO_DRAW | FMNI_USE_SKIN);
+	ent->s.fmnodeinfo[MESH__LARM].flags &= ~(FMNI_NO_DRAW | FMNI_USE_SKIN);
+	ent->s.fmnodeinfo[MESH__HEAD].flags &= ~(FMNI_NO_DRAW | FMNI_USE_SKIN);
+	ent->s.fmnodeinfo[MESH__RLEG].flags &= ~(FMNI_NO_DRAW | FMNI_USE_SKIN);
+	ent->s.fmnodeinfo[MESH__LLEG].flags &= ~(FMNI_NO_DRAW | FMNI_USE_SKIN);
 
 	ent->s.fmnodeinfo[MESH_BASE2].skin = ent->s.skinnum;
 	ent->s.fmnodeinfo[MESH__BACK].skin = ent->s.skinnum;
