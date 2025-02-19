@@ -1166,68 +1166,54 @@ static edict_t* SelectCoopSpawnPoint(const edict_t* ent)
 	return NULL; // We didn't have enough...
 }
 
-/*
-===========
-SelectSpawnPoint
-
-Chooses a player start, deathmatch start, coop start, etc
-============
-*/
-void	SelectSpawnPoint (edict_t *ent,vec3_t origin, vec3_t angles)
+// Chooses a player start, deathmatch start, coop start, etc.
+void SelectSpawnPoint(const edict_t* ent, vec3_t origin, vec3_t angles)
 {
-	edict_t	*spot = NULL;
-	trace_t	tr;
-	vec3_t	endpos;
+	edict_t* spot = NULL;
 
-	if (deathmatch->value)
-		spot = SelectDeathmatchSpawnPoint ();
-	else if (coop->value)
-		spot = SelectCoopSpawnPoint (ent);
+	if (DEATHMATCH)
+		spot = SelectDeathmatchSpawnPoint();
+	else if (COOP)
+		spot = SelectCoopSpawnPoint(ent);
 
 	// Find a single player start spot.
-
-	if (!spot)
+	if (spot == NULL)
 	{
-		while ((spot = G_Find (spot, FOFS(classname), "info_player_start")) != NULL)
+		while ((spot = G_Find(spot, FOFS(classname), "info_player_start")) != NULL)
 		{
-			if (!game.spawnpoint[0] && !spot->targetname)
+			if (!game.spawnpoint[0] && spot->targetname == NULL)
 				break;
 
-			if (!game.spawnpoint[0] || !spot->targetname)
+			if (!game.spawnpoint[0] || spot->targetname == NULL)
 				continue;
 
 			if (Q_stricmp(game.spawnpoint, spot->targetname) == 0)
 				break;
 		}
 
-		if (!spot)
+		if (spot == NULL)
 		{
 			if (!game.spawnpoint[0])
-			{
-				// There wasn't a spawnpoint without a target, so use any.
+				spot = G_Find(spot, FOFS(classname), "info_player_start"); // There wasn't a spawnpoint without a target, so use any.
 
-				spot = G_Find (spot, FOFS(classname), "info_player_start");
-			}
-			if (!spot)
-				gi.error ("Couldn't find spawn point %s\n", game.spawnpoint);
+			if (spot == NULL)
+				gi.error("Couldn't find spawn point %s\n", game.spawnpoint);
 		}
 	}
 
-	//debounce tim eon use to help prevent telefragging
-	//spot->damage_debounce_time = level.time + 0.3;
-
 	// Do a trace to the floor to find where to put player.
+	vec3_t end_pos;
+	VectorCopy(spot->s.origin, end_pos);
+	end_pos[2] -= 1000.0f;
 
-	VectorCopy(spot->s.origin, endpos);
-	endpos[2] -= 1000;
-	gi.trace (spot->s.origin, vec3_origin, vec3_origin, endpos, NULL, CONTENTS_WORLD_ONLY|MASK_PLAYERSOLID,&tr);
+	trace_t tr;
+	gi.trace(spot->s.origin, vec3_origin, vec3_origin, end_pos, NULL, CONTENTS_WORLD_ONLY | MASK_PLAYERSOLID, &tr);
 
-	VectorCopy(tr.endpos,origin);
+	VectorCopy(tr.endpos, origin);
 	origin[2] -= player_mins[2];
 
 	// ???
-
-	VectorCopy (spot->s.angles, angles);
+	VectorCopy(spot->s.angles, angles);
 }
 
 #pragma endregion
