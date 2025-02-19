@@ -2239,23 +2239,6 @@ static void PM_trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, c
 	gi.trace(start, mins, maxs, end, pm_passent, mask, trace);
 }
 
-unsigned CheckBlock (void *b, int c)
-{
-	int	v,i;
-	v = 0;
-	for (i=0 ; i<c ; i++)
-		v+= ((byte *)b)[i];
-	return v;
-}
-
-void PrintPmove (pmove_t *pm)
-{
-	unsigned	c1, c2;
-
-	c1 = CheckBlock (&pm->s, sizeof(pm->s));
-	c2 = CheckBlock (&pm->cmd, sizeof(pm->cmd));
-}
-
 /*
 // ==============
 // ClientThink
