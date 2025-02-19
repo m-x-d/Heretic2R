@@ -1931,7 +1931,8 @@ static void SetCoopPlayerSkin(const edict_t* ent, const char* skin_name, const i
 					gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\%sP1", ent->client->playerinfo.pers.netname, skin));
 				}
 				else
-				{	// Just use the basic skin, then.
+				{
+					// Just use the basic skin, then.
 					gi.configstring(CS_PLAYERSKINS + player_num, va("%s\\%s", ent->client->playerinfo.pers.netname, skin));
 				}
 			}
@@ -2126,69 +2127,50 @@ void ClientUserinfoChanged(edict_t* ent, char* userinfo) //TODO: add int userinf
 
 #pragma endregion
 
-/*
-===========
-ClientConnect
-
-Called when a player begins connecting to the server.
-The game can refuse entrance to a client by returning false.
-If the client is allowed, the connection process will continue
-and eventually get to ClientBegin()
-Changing levels will NOT cause this to be called again.
-============
-*/
-qboolean ClientConnect (edict_t *ent, char *userinfo)
+// Called when a player begins connecting to the server.
+// The game can refuse entrance to a client by returning false.
+// If the client is allowed, the connection process will continue and eventually get to ClientBegin().
+// Changing levels will NOT cause this to be called again.
+qboolean ClientConnect(edict_t* ent, char* userinfo)
 {
-	char	*value;
-
 	// Check to see if they are on the banned IP list.
-
-	value = Info_ValueForKey (userinfo, "ip");
-	if (SV_FilterPacket(value))
+	const char* ip = Info_ValueForKey(userinfo, "ip");
+	if (SV_FilterPacket(ip))
 		return false;
 
 	// Check for a password.
-
-	value = Info_ValueForKey (userinfo, "password");
-	
-	if (strcmp(password->string, value) != 0)
+	const char* pwd = Info_ValueForKey(userinfo, "password");
+	if (strcmp(password->string, pwd) != 0)
 		return false;
 
 	// Ok, they can connect.
+	ent->client = &game.clients[ent - g_edicts - 1];
 
-	ent->client = game.clients + (ent - g_edicts - 1);
-
-	// If there isn't already a body waiting for us (a loadgame), spawn one from scratch. otherwise,
-	// just take what's there already.
-
-	if (ent->inuse == false)
+	// If there isn't already a body waiting for us (a loadgame), spawn one from scratch. Otherwise, just take what's there already.
+	if (!ent->inuse)
 	{
 		// Clear the respawning variables.
+		InitClientResp(ent->client);
 
-		InitClientResp (ent->client);
-
-		if (!ent->client->playerinfo.pers.weapon)
+		if (ent->client->playerinfo.pers.weapon == NULL)
 		{
-			InitClientPersistant (ent);
+			InitClientPersistant(ent);
 
-			// This is the very frist time that this player has entered the game (be it single player,
-			// coop or deathmatch) so we want to do a complete reset of the player's model.
-
-			ent->client->complete_reset=1;
+			// This is the very first time that this player has entered the game (be it single player, coop or deathmatch)
+			// so we want to do a complete reset of the player's model.
+			ent->client->complete_reset = 1;
 		}
 	}
 	else
 	{
-		// The player has a body waiting from a (just) loaded game, so we want to do just a partial
-		// reset of the player's model.
-
-		ent->client->complete_reset=0;
+		// The player has a body waiting from a (just) loaded game, so we want to do just a partial reset of the player's model.
+		ent->client->complete_reset = 0;
 	}
 
-	ClientUserinfoChanged (ent, userinfo);
+	ClientUserinfoChanged(ent, userinfo);
 
 	if (game.maxclients > 1)
-		gi.dprintf ("%s connected\n", ent->client->playerinfo.pers.netname);
+		gi.dprintf("%s connected\n", ent->client->playerinfo.pers.netname);
 
 	ent->client->playerinfo.pers.connected = true;
 
