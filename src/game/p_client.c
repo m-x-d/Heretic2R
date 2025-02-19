@@ -641,30 +641,24 @@ void player_dismember(edict_t* self, edict_t* other, const int damage, HitLocati
 
 #pragma endregion
 
-void player_decap (edict_t *self, edict_t *other)
+void player_decap(edict_t* self, edict_t* other) //TODO: rename to PlayerDecapitate().
 {
-	int				throw_nodes = 0;
-	vec3_t			gore_spot;
-
 	//FIXME: special manipulations of hit locations depending on anim.
-
-	VectorClear(gore_spot);
-	if(self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_NO_DRAW)
+	if (self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_NO_DRAW)
 		return;
 
-	DropWeapons(self, 100, (BIT_BOWACTV|BIT_BLADSTF|BIT_HELSTF));
+	DropWeapons(self, 100, (BIT_BOWACTV | BIT_BLADSTF | BIT_HELSTF));
 
-	CanThrowNode(self, MESH__HEAD,&throw_nodes);
+	int throw_nodes = 0;
+	CanThrowNode(self, MESH__HEAD, &throw_nodes);
 
-	gore_spot[2]+=18;
-	
+	vec3_t gore_spot = { 0.0f, 0.0f, 18.0f };
 	ThrowBodyPart(self, &gore_spot, throw_nodes, 0, 0);
 
 	VectorAdd(self->s.origin, gore_spot, gore_spot);
-
 	SprayDebris(self, gore_spot, 8, 100);
 
-	if(self->health > 0)
+	if (self->health > 0)
 	{
 		self->health = 0;
 		self->client->meansofdeath = MOD_DECAP;
