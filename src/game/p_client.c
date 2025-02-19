@@ -1546,131 +1546,77 @@ static void InitClientPersistant(const edict_t* player)
 	info->pers.connected = true;
 }
 
-/*
-===========
-PutClientInServer
-
-Called when a player connects to a server or respawns in a deathmatch.
-============
-*/
-
-void PutClientInServer (edict_t *ent)
+// Called when a player connects to a server or respawns in a deathmatch.
+static void PutClientInServer(edict_t* ent)
 {
-	int					index;
-	vec3_t				spawn_origin, spawn_angles;
-	gclient_t			*client;
-	int					i;
-	client_persistant_t	saved;
-	client_respawn_t	resp;
-	int					complete_reset;
-	int					plaguelevel;
+	// Find a spawn point. Do it before setting health back up, so farthest ranging doesn't count this client.
+	vec3_t spawn_origin;
+	vec3_t spawn_angles;
+	SelectSpawnPoint(ent, spawn_origin, spawn_angles);
 
-	// ********************************************************************************************
-	// Find a spawn point. Do it before setting health back up, so farthest ranging doesn't count
-	// this client.
-	// ********************************************************************************************
-
-	SelectSpawnPoint (ent,spawn_origin, spawn_angles);
-
-	index = ent-g_edicts-1;
-	client = ent->client;
+	const int index = ent - g_edicts - 1;
+	gclient_t* client = ent->client;
 
 	// The player's starting plague skin is determined by the worldspawn's s.skinnum.
-	if (!deathmatch->value)
-	{	// We set this up now because the ClientUserinfoChanged needs to know the plaguelevel.
-		client->playerinfo.plaguelevel = g_edicts[0].s.skinnum;
+	// We set this up now because the ClientUserinfoChanged needs to know the plaguelevel.
+	if (!DEATHMATCH)
+		client->playerinfo.plaguelevel = min((byte)world->s.skinnum, PLAGUE_NUM_LEVELS - 1);
 
-		if (client->playerinfo.plaguelevel >= PLAGUE_NUM_LEVELS)
-			client->playerinfo.plaguelevel = PLAGUE_NUM_LEVELS-1;
-		else if (client->playerinfo.plaguelevel < 0)
-			client->playerinfo.plaguelevel = 0;
-	}
+	char userinfo[MAX_INFO_STRING];
+	memcpy(userinfo, client->playerinfo.pers.userinfo, sizeof(userinfo));
+	client_respawn_t resp;
 
-	// ********************************************************************************************
 	// Deathmatch wipes most client data every spawn.
-	// ********************************************************************************************
-
-	if (deathmatch->value)
+	if (DEATHMATCH)
 	{
-		char userinfo[MAX_INFO_STRING];
-
 		resp = client->resp;
-
-		memcpy (userinfo, client->playerinfo.pers.userinfo, sizeof(userinfo));
-		InitClientPersistant (ent);
-		ClientUserinfoChanged (ent, userinfo);
+		InitClientPersistant(ent);
+		ClientUserinfoChanged(ent, userinfo);
 	}
-	else if (coop->value)
+	else if (COOP)
 	{
-		char	userinfo[MAX_INFO_STRING];
-
 		resp = client->resp;
-
-		memcpy (userinfo, client->playerinfo.pers.userinfo, sizeof(userinfo));
-
-		ClientUserinfoChanged (ent, userinfo);
+		ClientUserinfoChanged(ent, userinfo);
 
 		if (resp.score > client->playerinfo.pers.score)
 			client->playerinfo.pers.score = resp.score;
 	}
 	else
 	{
-		char	userinfo[MAX_INFO_STRING];
-		memcpy (userinfo, client->playerinfo.pers.userinfo, sizeof(userinfo));
-
-		ClientUserinfoChanged (ent, userinfo);
-
-		memset (&resp, 0, sizeof(resp));
+		ClientUserinfoChanged(ent, userinfo);
+		memset(&resp, 0, sizeof(resp));
 	}
-
 
 	// Complete or partial reset of the player's model?
+	const qboolean complete_reset = (DEATHMATCH ? true : client->complete_reset);
 
-	if(!deathmatch->value)
-	{
-		complete_reset=client->complete_reset;
-	}
-	else
-	{
-		// Deathmatch always means a complete reset of the player's model.
-
-		complete_reset=1;		
-	}
-
-	// ********************************************************************************************
 	// Initialise the player's gclient_t.
-	// ********************************************************************************************
 
-	// Clear everything but the persistant data.
-
-	plaguelevel = client->playerinfo.plaguelevel;	// Save me too.
-	saved = client->playerinfo.pers;
-	memset (client, 0, sizeof(gclient_t));
+	// Clear everything but the persistent data.
+	const byte plague_level = client->playerinfo.plaguelevel; // Save me too.
+	const client_persistant_t saved = client->playerinfo.pers;
+	memset(client, 0, sizeof(gclient_t));
 	client->playerinfo.pers = saved;
 
 	// Initialise...
-
 	if (client->playerinfo.pers.health <= 0)
 		InitClientPersistant(ent);
-	
+
 	client->resp = resp;
 
-	// Rsestore data that is persistant accross level changes.
+	// Restore data that is persistent across level changes.
+	FetchClientEntData(ent);
 
-	FetchClientEntData (ent);
-
-	// ********************************************************************************************
 	// Initialize the player's edict_t.
-	// ********************************************************************************************
-
 	ent->groundentity = NULL;
 	ent->client = &game.clients[index];
-	ent->s.clientnum = index;
+	ent->s.clientnum = (short)index;
 	ent->takedamage = DAMAGE_AIM;
 	ent->materialtype = MAT_FLESH;
 	ent->movetype = PHYSICSTYPE_STEP;
 	ent->viewheight = 0;
-	ent->just_deleted = ent->client_sent = 0;
+	ent->just_deleted = 0;
+	ent->client_sent = 0;
 	ent->inuse = true;
 	ent->s.scale = 1.0f;
 	ent->classname = "player";
@@ -1679,24 +1625,23 @@ void PutClientInServer (edict_t *ent)
 	ent->deadflag = DEAD_NO;
 	ent->air_finished = level.time + HOLD_BREATH_TIME;
 	ent->clipmask = MASK_PLAYERSOLID;
+	ent->PersistantCFX = 0; //mxd
 	ent->Leader_PersistantCFX = 0;
 
-	// Default to making us not invunerable (may change later).
-
+	// Default to making us not invulnerable (may change later).
 	ent->client->shrine_framenum = 0;
 
-	// A few Multiplayer reset safeguards... i.e. if we were teleporting when we died, we aren't now.
-
+	// A few multiplayer reset safeguards... i.e. if we were teleporting when we died, we aren't now.
 	client->playerinfo.flags &= ~PLAYER_FLAG_TELEPORT;
-	client->tele_dest[0] = client->tele_dest[1] = client->tele_dest[2] = 0;
+	VectorClear(client->tele_dest);
 	client->tele_count = 0;
-	ent->s.color.c = 0x00000000;	// Restore model visibility.
+	ent->s.color.c = 0;	// Restore model visibility.
 
 	ent->fire_damage_time = 0;
 	ent->fire_timestamp = 0;
 
 	ent->model = "players/male/tris.fm";
-	
+
 	ent->pain = player_pain;
 	ent->die = player_die;
 	ent->waterlevel = 0;
@@ -1704,21 +1649,18 @@ void PutClientInServer (edict_t *ent)
 	ent->flags &= ~FL_NO_KNOCKBACK;
 	ent->svflags &= ~SVF_DEADMONSTER;
 
-	VectorCopy (player_mins, ent->mins);
-	VectorCopy (player_maxs, ent->maxs);
-	VectorCopy (player_mins, ent->intentMins);
-	VectorCopy (player_maxs, ent->intentMaxs);
-	VectorClear (ent->velocity);
+	VectorCopy(player_mins, ent->mins);
+	VectorCopy(player_maxs, ent->maxs);
+	VectorCopy(player_mins, ent->intentMins);
+	VectorCopy(player_maxs, ent->intentMaxs);
+	VectorClear(ent->velocity);
 
-	// ********************************************************************************************
 	// Initialize the player's gclient_t and playerstate_t.
-	// ********************************************************************************************
-	
-	client->ps.pmove.origin[0] = spawn_origin[0]*8;
-	client->ps.pmove.origin[1] = spawn_origin[1]*8;
-	client->ps.pmove.origin[2] = spawn_origin[2]*8;
 
-	client->ps.fov = atoi(Info_ValueForKey(client->playerinfo.pers.userinfo, "fov"));
+	for (int i = 0; i < 3; i++)
+		client->ps.pmove.origin[i] = (short)(spawn_origin[i] * 8);
+
+	client->ps.fov = (float)(Q_atoi(Info_ValueForKey(client->playerinfo.pers.userinfo, "fov")));
 
 	if (client->ps.fov < 1)
 		client->ps.fov = FOV_DEFAULT;
@@ -1727,115 +1669,86 @@ void PutClientInServer (edict_t *ent)
 
 	VectorClear(client->ps.offsetangles);
 
-	// Set the delta angles.
-
-	for (i=0 ; i<3 ; i++)
+	// Set the delta angles, reset the camera delta angles.
+	for (int i = 0; i < 3; i++)
+	{
 		client->ps.pmove.delta_angles[i] = ANGLE2SHORT(spawn_angles[i] - client->resp.cmd_angles[i]);
+		client->ps.pmove.camera_delta_angles[i] = 0;
+	}
 
-	// Reset the camera delta angles.
+	client->ps.remote_id = -1;
 
-	for (i=0 ; i<3 ; i++)
-		client->ps.pmove.camera_delta_angles[i]=0;
-
-	client->ps.remote_id=-1;
-
-	// ********************************************************************************************
 	// Initialize the player's entity_state_t.
-	// ********************************************************************************************
 
-	// Zero the current animation frame.
+	ent->s.frame = 0; // Zero the current animation frame.
+	ent->s.modelindex = 255; // Modelindex is always 255 for player models.
 
-	ent->s.frame=0;
-
-	// Modelindex is always 255 for player models.
-
-	ent->s.modelindex=255;		
-	
 	// Set up the model's origin, making sure it's off the ground.
+	VectorCopy(spawn_origin, ent->s.origin);
+	ent->s.origin[2] += 1.0f;
+	VectorCopy(ent->s.origin, ent->s.old_origin);
 
-	VectorCopy (spawn_origin, ent->s.origin);
-	ent->s.origin[2] += 1;
-	VectorCopy (ent->s.origin, ent->s.old_origin);
-
-	ent->s.angles[PITCH] = 0;
-	ent->s.angles[YAW] = spawn_angles[YAW];
-	ent->s.angles[ROLL] = 0;
-	VectorCopy (ent->s.angles, client->ps.viewangles);
-	VectorCopy (ent->s.angles, client->v_angle);
+	VectorSet(ent->s.angles, 0.0f, spawn_angles[YAW], 0.0f);
+	VectorCopy(ent->s.angles, client->ps.viewangles);
+	VectorCopy(ent->s.angles, client->v_angle);
 
 	KillBox(ent);
-	
-	ent->s.effects=(EF_CAMERA_NO_CLIP|EF_SWAPFRAME|EF_JOINTED|EF_PLAYER);
+
+	ent->s.effects = (EF_CAMERA_NO_CLIP | EF_SWAPFRAME | EF_JOINTED | EF_PLAYER);
 
 	// Set up skeletal info. Note, skeleton has been created already.
-
 	ent->s.skeletalType = SKEL_CORVUS;
 
 	// Link us into the physics system.
+	gi.linkentity(ent);
 
-	gi.linkentity (ent);
-
-	// ********************************************************************************************
 	// Initialize the player's playerinfo_t.
-	// ********************************************************************************************
-	
-	client->playerinfo.plaguelevel = plaguelevel;
+
+	client->playerinfo.plaguelevel = plague_level;
 
 	// Set the player's current offensive and defensive ammo indexes.
-	
-	if (client->playerinfo.pers.weapon->ammo)
+	if (client->playerinfo.pers.weapon->ammo != NULL)
 		client->playerinfo.weap_ammo_index = ITEM_INDEX(P_FindItem(client->playerinfo.pers.weapon->ammo));
 
-	if (client->playerinfo.pers.defence)
+	if (client->playerinfo.pers.defence != NULL)
 		client->playerinfo.def_ammo_index = ITEM_INDEX(P_FindItem(client->playerinfo.pers.defence->ammo));
 
-	VectorCopy(spawn_origin,client->playerinfo.origin);
+	VectorCopy(spawn_origin, client->playerinfo.origin);
 	VectorClear(client->playerinfo.velocity);
 
 	// Make the player have the right attributes - armor that sort of thing.
 	ClientUpdateModelAttributes(ent); //mxd
 
 	// Make sure the skin attributes are transferred.
-
 	ClientUpdateModelAttributes(ent);
 
-	if(deathmatch->value||coop->value)
+	if (DEATHMATCH || COOP)
 	{
 		// Reset the player's fmodel nodes when spawning in deathmatch or coop.
-		
 		ResetPlayerBaseNodes(ent);
 
 		// Just in case we were on fire when we died.
-
 		gi.RemoveEffects(&ent->s, FX_FIRE_ON_ENTITY);
 
 		// Make us invincible for a few seconds after spawn.
-
-		ent->client->shrine_framenum = level.time + 3.3;
+		ent->client->shrine_framenum = level.time + 3.3f;
 	}
 
 	InitPlayerinfo(ent);
-
 	SetupPlayerinfo(ent);
-
-	P_PlayerInit(&ent->client->playerinfo,complete_reset);
-
+	P_PlayerInit(&ent->client->playerinfo, complete_reset);
 	WritePlayerinfo(ent);
 
 	SpawnInitialPlayerEffects(ent);
 
-	if(coop->value)
+	if (COOP)
 		GiveLevelItems(ent);
 
-	if(((int)dmflags->value)&DF_NO_OFFENSIVE_SPELL)
+	// For blade only DMing, ensure we start with staff in our hand.
+	if (DMFLAGS & DF_NO_OFFENSIVE_SPELL)
 	{
-		// For blade only DMing, ensure we start with staff in our hand.
-
-		gitem_t *item;
-		
-		item=P_FindItem("staff");
-		client->playerinfo.pers.newweapon=item;
-		client->playerinfo.switchtoweapon=WEAPON_READY_SWORDSTAFF;
+		client->playerinfo.pers.newweapon = P_FindItem("staff");
+		client->playerinfo.switchtoweapon = WEAPON_READY_SWORDSTAFF;
 	}
 }
 
