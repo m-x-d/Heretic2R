@@ -1265,84 +1265,76 @@ static int player_body_die(edict_t* self, edict_t* inflictor, edict_t* attacker,
 	return 1;
 }
 
-void CopyToBodyQue (edict_t *ent)
+static void CopyToBodyQue(edict_t* ent)
 {
-	edict_t	*body;
-	vec3_t	origin;
+	if (ent->s.modelindex == 0)
+		return; // Safety - was gibbed?
+
+	if (level.body_que == -1)
+	{
+		vec3_t origin;
+		VectorCopy(ent->s.origin, origin);
+		origin[2] += ent->mins[2] + 8.0f;
+
+		// Put in the pretty effect when removing the corpse first.
+		gi.CreateEffect(NULL, FX_CORPSE_REMOVE, 0, origin, "");
+
+		// No body que on this level.
+		return;
+	}
 
 	// Grab a body que and cycle to the next one.
-
-	if(!ent->s.modelindex)
-	{
-		// Safety - was gibbed?
-
-		return;
-	}
-
-	if(level.body_que == -1)
-	{
-		VectorCopy(ent->s.origin, origin);
-		origin[2] += (ent->mins[2] + 8.0f);
-		
-		// Put in the pretty effect when removing the corpse first.
-
-		gi.CreateEffect(NULL, FX_CORPSE_REMOVE, 0, origin, "");
-		
-		// No body que on this level.
-
-		return;
-	}
-
-	body = &g_edicts[((int)maxclients->value) + 1 + level.body_que];
+	edict_t* body = &g_edicts[level.body_que + MAXCLIENTS + 1];
 	level.body_que = (level.body_que + 1) % BODY_QUEUE_SIZE;
 
-	gi.unlinkentity (ent);
+	gi.unlinkentity(ent);
 
 	// If the body was being used, then lets put an effect on it before removing it.
-
-	if (body->inuse&&(body->s.modelindex!=0))
+	if (body->inuse && body->s.modelindex != 0)
 	{
+		vec3_t origin;
 		VectorCopy(body->s.origin, origin);
-		origin[2] += (body->mins[2] + 8.0f);
+		origin[2] += body->mins[2] + 8.0f;
+
 		gi.CreateEffect(NULL, FX_CORPSE_REMOVE, 0, origin, "");
 	}
 
-	gi.unlinkentity (body);
+	gi.unlinkentity(body);
 
-	body->s=ent->s;
-	body->s.number=body-g_edicts;
-	body->s.skeletalType=SKEL_NULL;
-	body->s.effects&=~(EF_JOINTED|EF_SWAPFRAME);
-	body->s.rootJoint=NULL_ROOT_JOINT;
-	body->s.swapFrame=NO_SWAP_FRAME;
-	body->owner=ent->owner;
-	VectorScale(ent->mins,0.5,body->mins);
-	VectorScale(ent->maxs,0.5,body->maxs);
-	body->maxs[2]=10;
-	VectorCopy(ent->absmin,body->absmin);
-	VectorCopy(ent->absmax,body->absmax);
-	body->absmax[2]=10;
-	VectorCopy(ent->size,body->size);
-	body->svflags=ent->svflags|SVF_DEADMONSTER; // Stops player getting stuck.
-	body->movetype=PHYSICSTYPE_STEP;
-	body->solid=SOLID_BBOX;
-	body->clipmask=MASK_PLAYERSOLID;
-	body->takedamage=DAMAGE_YES;
-	body->materialtype=MAT_FLESH;
-	body->health=25;
-	body->deadflag=DEAD_NO;
-	body->die=player_body_die;
+	body->s = ent->s;
+	body->s.number = (short)(body - g_edicts);
+	body->s.skeletalType = SKEL_NULL;
+	body->s.effects &= ~(EF_JOINTED | EF_SWAPFRAME);
+	body->s.rootJoint = NULL_ROOT_JOINT;
+	body->s.swapFrame = NO_SWAP_FRAME;
+	body->owner = ent->owner;
 
-	gi.linkentity (body);
+	VectorScale(ent->mins, 0.5f, body->mins);
+	VectorScale(ent->maxs, 0.5f, body->maxs);
+	body->maxs[2] = 10.0f;
+
+	VectorCopy(ent->absmin, body->absmin);
+	VectorCopy(ent->absmax, body->absmax);
+	body->absmax[2] = 10.0f;
+
+	VectorCopy(ent->size, body->size);
+	body->svflags = ent->svflags | SVF_DEADMONSTER; // Stops player getting stuck.
+	body->movetype = PHYSICSTYPE_STEP;
+	body->solid = SOLID_BBOX;
+	body->clipmask = MASK_PLAYERSOLID;
+	body->takedamage = DAMAGE_YES;
+	body->materialtype = MAT_FLESH;
+	body->health = 25;
+	body->deadflag = DEAD_NO;
+	body->die = player_body_die;
+
+	gi.linkentity(body);
 
 	// Clear out any client effectsBuffer_t on the corpse (inherited from the player who just died)
-	// as the engine will take care of deallocating any effects still on the player.
+	// as the engine will take care of de-allocating any effects still on the player.
+	memset(&body->s.clientEffects, 0, sizeof(EffectsBuffer_t));
 
-	memset(&body->s.clientEffects,0,sizeof(EffectsBuffer_t));
-
-	// FIXME: Re-create certain client effects that were on the player when he died (e.g. fire).
-
-	return;
+	//FIXME: Re-create certain client effects that were on the player when he died (e.g. fire).
 }
 
 void respawn (edict_t *self)
