@@ -1752,15 +1752,9 @@ static void PutClientInServer(edict_t* ent)
 	}
 }
 
-/*
-=====================
-InitClientResp
-=====================
-*/
-
-void InitClientResp (gclient_t *client)
+static void InitClientResp(gclient_t* client)
 {
-	memset (&client->resp, 0, sizeof(client->resp));
+	memset(&client->resp, 0, sizeof(client->resp));
 	client->resp.enterframe = level.framenum;
 	client->resp.coop_respawn = client->playerinfo.pers;
 }
