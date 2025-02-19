@@ -277,51 +277,54 @@ static qboolean CanThrowNode(edict_t* self, const int body_part, int* throw_node
 	return false;
 }
 
-void player_dropweapon (edict_t *self, int damage, int whichweaps)
-{//FIXME: OR in the BIT_... to playerinfo->altparts!
-	vec3_t handspot, forward, right, up;
-
-	//Current code doesn't really support dropping weapons!!!
-	if(deathmatch->value)
+static void DropWeapons(edict_t* self, const int damage, const int which_weapons) //mxd. Named 'player_dropweapon' in original version.
+{
+	//FIXME: OR in the BIT_... to playerinfo->altparts!
+	// Current code doesn't really support dropping weapons!!!
+	if (DEATHMATCH)
 	{
-		if(!((int)dmflags->value&DF_DISMEMBER))
-		{
-			if(self->health > 0)
-			{
-				return;
-			}
-		}
+		if (!(DMFLAGS & DF_DISMEMBER) && self->health > 0)
+			return;
 	}
-	else if(self->health > 0)
+	else if (self->health > 0)
+	{
 		return;
+	}
 
 	//FIXME: use refpoints for this?
-	VectorClear(handspot);
-	AngleVectors(self->s.angles,forward,right,up);
-	VectorMA(handspot,5,forward,handspot);
-	VectorMA(handspot,8,right,handspot);
-	VectorMA(handspot,-6,up,handspot);
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, right, up);
 
-	if(whichweaps & BIT_BLADSTF && !(self->s.fmnodeinfo[MESH__BLADSTF].flags & FMNI_NO_DRAW))
+	vec3_t hand_spot = { 0 };
+	VectorMA(hand_spot, 5.0f, forward, hand_spot);
+	VectorMA(hand_spot, 8.0f, right, hand_spot);
+	VectorMA(hand_spot, -6.0f, up, hand_spot);
+
+	//TODO: can these 3 cases happen on the same call?
+	if ((which_weapons & BIT_BLADSTF) && !(self->s.fmnodeinfo[MESH__BLADSTF].flags & FMNI_NO_DRAW))
 	{
-//		self->client->playerinfo.stafflevel = 0;
-		ThrowWeapon(self, &handspot, BIT_BLADSTF, damage, 0);
+		ThrowWeapon(self, &hand_spot, BIT_BLADSTF, (float)damage, 0);
+
 		self->s.fmnodeinfo[MESH__BLADSTF].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__STAFACTV].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__RHANDHI].flags &= ~FMNI_NO_DRAW;
 	}
-	if(whichweaps & BIT_HELSTF && !(self->s.fmnodeinfo[MESH__HELSTF].flags & FMNI_NO_DRAW))
+
+	if ((which_weapons & BIT_HELSTF) && !(self->s.fmnodeinfo[MESH__HELSTF].flags & FMNI_NO_DRAW))
 	{
-//		self->client->playerinfo.helltype = 0;
-		ThrowWeapon(self, &handspot, BIT_HELSTF, damage, 0);
+		ThrowWeapon(self, &hand_spot, BIT_HELSTF, (float)damage, 0);
+
 		self->s.fmnodeinfo[MESH__HELSTF].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__STAFACTV].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__RHANDHI].flags &= ~FMNI_NO_DRAW;
 	}
-	if(whichweaps & BIT_BOWACTV && !(self->s.fmnodeinfo[MESH__BOWACTV].flags & FMNI_NO_DRAW))
+
+	if (which_weapons & BIT_BOWACTV && !(self->s.fmnodeinfo[MESH__BOWACTV].flags & FMNI_NO_DRAW))
 	{
-//		self->client->playerinfo.bowtype = 0;
-		ThrowWeapon(self, &handspot, BIT_BOFF, damage, 0);
+		ThrowWeapon(self, &hand_spot, BIT_BOFF, (float)damage, 0);
+
 		self->s.fmnodeinfo[MESH__BOFF].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__BOWACTV].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__LHANDHI].flags &= ~FMNI_NO_DRAW;
@@ -535,7 +538,7 @@ void player_dismember (edict_t *self, edict_t *other, int damage, HitLocation_t 
 				if(CanThrowNode(self, MESH__LARM, &throw_nodes))
 				{
 					self->client->playerinfo.flags |= PLAYER_FLAG_NO_LARM;
-					player_dropweapon (self, (int)damage, BIT_BOWACTV);
+					DropWeapons(self, (int)damage, BIT_BOWACTV);
 					CanThrowNode(self, MESH__LHANDHI, &throw_nodes);
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -568,7 +571,7 @@ void player_dismember (edict_t *self, edict_t *other, int damage, HitLocation_t 
 				if(CanThrowNode(self, MESH__RARM, &throw_nodes))
 				{
 					self->client->playerinfo.flags |= PLAYER_FLAG_NO_RARM;
-					player_dropweapon (self, (int)damage, BIT_HELSTF|BIT_BLADSTF);
+					DropWeapons(self, (int)damage, BIT_HELSTF|BIT_BLADSTF);
 					CanThrowNode(self, MESH__RHANDHI, &throw_nodes);
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -677,7 +680,7 @@ void player_decap (edict_t *self, edict_t *other)
 	if(self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_NO_DRAW)
 		return;
 
-	player_dropweapon (self, 100, (BIT_BOWACTV|BIT_BLADSTF|BIT_HELSTF));
+	DropWeapons(self, 100, (BIT_BOWACTV|BIT_BLADSTF|BIT_HELSTF));
 
 	CanThrowNode(self, MESH__HEAD,&throw_nodes);
 
