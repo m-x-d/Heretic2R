@@ -1337,59 +1337,35 @@ static void CopyToBodyQue(edict_t* ent)
 	//FIXME: Re-create certain client effects that were on the player when he died (e.g. fire).
 }
 
-void respawn (edict_t *self)
+void respawn(edict_t* self) //TODO: rename to Respawn().
 {
-	if (deathmatch->value || coop->value)
+	if (!DEATHMATCH && !COOP)
 	{
-		// FIXME: make bodyque objects obey gravity.
-
-		if(!(self->flags & FL_CHICKEN) && !((int)dm_no_bodies->value))
-		{
-			// We're not set as a chicken, so duplicate ourselves.
-
-			CopyToBodyQue (self);
-		}
-
-		// Create a persistant FX_REMOVE_EFFECTS effect - this is a special hack. If we just created
-		// a regular FX_REMOVE_EFFECTS effect, it will overwrite the next FX_PLAYER_PERSISTANT sent
-		// out. Luverly jubberly!!!
-
-		gi.CreatePersistantEffect(&self->s,FX_REMOVE_EFFECTS,CEF_BROADCAST|CEF_OWNERS_ORIGIN,NULL,"s",0); 
-	
-		if(deathmatch->value)
-		{
-			// Respawning in deathmatch always means a complete reset of the player's model.
-
-			self->client->complete_reset=1;
-		}
-		else if(coop->value)
-		{
-			// Respawning in coop always means a partial reset of the player's model.
-
-			self->client->complete_reset=0;
-		}
-
-		PutClientInServer (self);
-
-		// Do the teleport sound.
-
-		gi.sound(self,CHAN_WEAPON,gi.soundindex("weapons/teleport.wav"),1,ATTN_NORM,0);
-	
-		// Add a teleportation effect.
-
-		gi.CreateEffect(&self->s, FX_PLAYER_TELEPORT_IN, CEF_OWNERS_ORIGIN, self->s.origin, NULL);
-
-		// Hold in place briefly.
-
-		self->client->ps.pmove.pm_time = 50;
-
-
+		// Restart the entire server.
+		gi.AddCommandString("menu_loadgame\n");
 		return;
 	}
 
-	// Restart the entire server.
+	// FIXME: make bodyque objects obey gravity.
+	if (!(self->flags & FL_CHICKEN) && !(int)dm_no_bodies->value)
+		CopyToBodyQue(self); // We're not set as a chicken, so duplicate ourselves.
 
-	gi.AddCommandString ("menu_loadgame\n");
+	// Create a persistent FX_REMOVE_EFFECTS effect - this is a special hack.
+	// If we create a regular FX_REMOVE_EFFECTS effect, it will overwrite the next FX_PLAYER_PERSISTANT sent out.
+	gi.CreatePersistantEffect(&self->s, FX_REMOVE_EFFECTS, CEF_BROADCAST | CEF_OWNERS_ORIGIN, NULL, "s", 0);
+
+	// Respawning in deathmatch always means a complete reset of the player's model.
+	// Respawning in coop always means a partial reset of the player's model.
+	self->client->complete_reset = (DEATHMATCH ? 1 : 0);
+
+	PutClientInServer(self);
+
+	// Do the teleport sound and effect.
+	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/teleport.wav"), 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(&self->s, FX_PLAYER_TELEPORT_IN, CEF_OWNERS_ORIGIN, self->s.origin, NULL);
+
+	// Hold in place briefly.
+	self->client->ps.pmove.pm_time = 50;
 }
 
 #pragma endregion
