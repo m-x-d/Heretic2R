@@ -2177,69 +2177,50 @@ qboolean ClientConnect(edict_t* ent, char* userinfo)
 	return true;
 }
 
-/*
-===========
-ClientDisconnect
-
-called when a player drops from the server
-============
-*/
-void ClientDisconnect (edict_t *ent)
+// Called when a player drops from the server.
+void ClientDisconnect(edict_t* ent)
 {
-	int		playernum;
-
-	if (!ent->client)
+	if (ent->client == NULL)
 		return;
 
 	// Inform other players that the disconnecting client has left the game.
+	gi.Obituary(PRINT_HIGH, GM_DISCON, ent->s.number, 0);
 
-	gi.Obituary (PRINT_HIGH, GM_DISCON, ent->s.number, 0);
-
-	// Do the teleport sound.
-
-	gi.sound(ent,CHAN_WEAPON,gi.soundindex("weapons/teleport.wav"),1,ATTN_NORM,0);
-
-	// Send teleport effect.
-
+	// Do the teleport sound and effect.
+	gi.sound(ent, CHAN_WEAPON, gi.soundindex("weapons/teleport.wav"), 1.0f, ATTN_NORM, 0.0f);
 	gi.CreateEffect(&ent->s, FX_PLAYER_TELEPORT_OUT, CEF_OWNERS_ORIGIN, ent->s.origin, NULL);
 
 	// Clean up after leaving.
-
-	if (ent->Leader_PersistantCFX)
+	if (ent->Leader_PersistantCFX > 0)
 	{
 		gi.RemovePersistantEffect(ent->Leader_PersistantCFX, REMOVE_LEADER_CLIENT);
 		gi.RemoveEffects(&ent->s, FX_SHOW_LEADER);
-		ent->Leader_PersistantCFX =0;
+		ent->Leader_PersistantCFX = 0;
 	}
 
-	// If we're on a rope...
-
+	// If we're on a rope, unhook the rope graphic from the disconnecting player.
 	if (ent->client->playerinfo.flags & PLAYER_FLAG_ONROPE)
 	{
-		// ..unhook the rope graphic from the disconnecting player.
-
 		ent->targetEnt->count = 0;
 		ent->targetEnt->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
-		ent->targetEnt->enemy=NULL;
-		ent->targetEnt=NULL;
+		ent->targetEnt->enemy = NULL;
+		ent->targetEnt = NULL;
 	}
 
-	gi.unlinkentity (ent);
+	gi.unlinkentity(ent);
 	ent->s.modelindex = 0;
 	ent->solid = SOLID_NOT;
 	ent->inuse = false;
 	ent->just_deleted = SERVER_DELETED;
 	ent->classname = "disconnected";
 	ent->client->playerinfo.pers.connected = false;
-	playernum = ent-g_edicts-1;
-	gi.configstring (CS_PLAYERSKINS+playernum, "");
 
-	// Redo the leader effect cos this guy has gone, and he might have had it.
+	const int player_num = ent - g_edicts - 1;
+	gi.configstring(CS_PLAYERSKINS + player_num, "");
 
+	// Redo the leader effect, because this guy has gone, and he might have had it.
 	player_leader_effect();
 }
-
-//==============================================================
 
 edict_t	*pm_passent;
 
