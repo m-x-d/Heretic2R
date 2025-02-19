@@ -5,6 +5,7 @@
 #include "q_Physics.h"
 #include "q_shared.h"
 #include "g_local.h"
+#include "p_client.h" //mxd
 
 void ED_CallSpawn (edict_t *ent);
 void Cvar_SetValue (char *var_name, float value);
