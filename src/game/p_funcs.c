@@ -824,16 +824,10 @@ void G_PlayerVaultKick(const playerinfo_t* info)
 		P_KnockDownPlayer(&tr.ent->client->playerinfo);
 }
 
-// *******************************************************
-// G_PlayerLightningShieldDamage
-// -----------------------------
-// *******************************************************
-
-extern void SpellLightningShieldAttack(edict_t *self);
-void G_PlayerSpellShieldAttack(playerinfo_t *playerinfo)
+void G_PlayerSpellShieldAttack(const playerinfo_t* info)
 {
-	if (irand(0, (SHIELD_ATTACK_CHANCE-1)) == 0)
-		SpellLightningShieldAttack((edict_t *)playerinfo->self);
+	if (irand(0, SHIELD_ATTACK_CHANCE - 1) == 0)
+		SpellLightningShieldAttack((edict_t*)info->self);
 }
 
 // stop the attack and remove the persistant effect
