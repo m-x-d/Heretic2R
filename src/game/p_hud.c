@@ -584,208 +584,147 @@ static short GetShrineTime(const float time)
 	return 0;
 }
 
-static char *healthicons[2] =
+void G_SetStats(const edict_t* ent)
 {
-	"icons/i_health.m8",
-	"icons/i_health2.m8",
-};
-
-// ************************************************************************************************
-// G_SetStats
-// ----------
-// ************************************************************************************************
-
-void G_SetStats (edict_t *ent)
-{
-	int					i, count;
-	gitem_t				*item;
-	gclient_t			*pi;
-	player_state_t		*ps;
-	client_persistant_t	*pers;
-	float				time;
-
-	pi = ent->client;
-	ps = &ent->client->ps;
-	pers = &ent->client->playerinfo.pers;
-
-	// ********************************************************************************************
-	// Frags
-	// ********************************************************************************************
-
-	ps->stats[STAT_FRAGS] = pi->resp.score;
-
-	// ********************************************************************************************
-	// Health.
-	// ********************************************************************************************
-
-	ps->stats[STAT_HEALTH_ICON]=gi.imageindex (healthicons[Q_ftol(level.time*2)&1]);
-	ps->stats[STAT_HEALTH]=ent->health;
-
-	// ********************************************************************************************
-	// Weapon / defence.
-	// ********************************************************************************************
-
-	ps->stats[STAT_WEAPON_ICON]=gi.imageindex(pers->weapon->icon);
-	if (pers->defence)
-		ps->stats[STAT_DEFENCE_ICON]=gi.imageindex(pers->defence->icon);
-
-	// ********************************************************************************************
-	// Weapon ammo.
-	// ********************************************************************************************
-
-	if(pers->weapon->ammo&&pers->weapon->count_width)
+	static char* health_icons[2] = //TODO: i_health.m8 and i_health2.m8 files are identical!
 	{
-		item=P_FindItem(pers->weapon->ammo);
-		ps->stats[STAT_AMMO_ICON]=gi.imageindex(item->icon);
-		ps->stats[STAT_AMMO] = pers->inventory.Items[ITEM_INDEX(item)];
+		"icons/i_health.m8",
+		"icons/i_health2.m8",
+	};
+
+	const gclient_t* pi = ent->client;
+	player_state_t* ps = &ent->client->ps;
+	const client_persistant_t* pers = &ent->client->playerinfo.pers;
+
+	// Frags.
+	ps->stats[STAT_FRAGS] = (short)pi->resp.score;
+
+	// Health.
+	ps->stats[STAT_HEALTH_ICON] = (short)gi.imageindex(health_icons[Q_ftol(level.time * 2.0f) & 1]);
+	ps->stats[STAT_HEALTH] = (short)ent->health;
+
+	// Weapon / defense.
+	ps->stats[STAT_WEAPON_ICON] = (short)gi.imageindex(pers->weapon->icon);
+	if (pers->defence != NULL)
+		ps->stats[STAT_DEFENCE_ICON] = (short)gi.imageindex(pers->defence->icon);
+
+	// Weapon ammo.
+	if (pers->weapon->ammo != NULL && pers->weapon->count_width > 0)
+	{
+		const gitem_t* ammo = P_FindItem(pers->weapon->ammo);
+
+		ps->stats[STAT_AMMO_ICON] = (short)gi.imageindex(ammo->icon);
+		ps->stats[STAT_AMMO] = (short)pers->inventory.Items[ITEM_INDEX(ammo)];
 	}
 	else
 	{
 		ps->stats[STAT_AMMO_ICON] = 0;
 	}
-	
-	// ********************************************************************************************
+
 	// Offensive mana.
-	// ********************************************************************************************
+	ps->stats[STAT_OFFMANA_ICON] = (short)gi.imageindex("icons/green-mana.m8");
+	ps->stats[STAT_OFFMANA_BACK] = (short)gi.imageindex("icons/green-mana2.m8");
 
-	ps->stats[STAT_OFFMANA_ICON]=gi.imageindex("icons/green-mana.m8");
-	ps->stats[STAT_OFFMANA_BACK]=gi.imageindex("icons/green-mana2.m8");
-	item = P_FindItem("Off-mana");
-	ps->stats[STAT_OFFMANA] = (pers->inventory.Items[ITEM_INDEX(item)] * 100) / MAX_OFF_MANA;
-	if(ps->stats[STAT_OFFMANA] < 0)
-		ps->stats[STAT_OFFMANA] = 0;
+	const gitem_t* mana_off = P_FindItem("Off-mana");
+	ps->stats[STAT_OFFMANA] = (short)((pers->inventory.Items[ITEM_INDEX(mana_off)] * 100) / MAX_OFF_MANA);
+	ps->stats[STAT_OFFMANA] = max(0, ps->stats[STAT_OFFMANA]);
 
-	// ********************************************************************************************
 	// Defensive mana.
-	// ********************************************************************************************
-	
-	ps->stats[STAT_DEFMANA_ICON]=gi.imageindex("icons/blue-mana.m8");
-	ps->stats[STAT_DEFMANA_BACK]=gi.imageindex("icons/blue-mana2.m8");
-	item = P_FindItem("Def-mana");
-	ps->stats[STAT_DEFMANA] = (pers->inventory.Items[ITEM_INDEX(item)] * 100) / MAX_DEF_MANA;
-	if(ps->stats[STAT_DEFMANA] < 0)
+	ps->stats[STAT_DEFMANA_ICON] = (short)gi.imageindex("icons/blue-mana.m8");
+	ps->stats[STAT_DEFMANA_BACK] = (short)gi.imageindex("icons/blue-mana2.m8");
+
+	const gitem_t* mana_def = P_FindItem("Def-mana");
+	ps->stats[STAT_DEFMANA] = (short)((pers->inventory.Items[ITEM_INDEX(mana_def)] * 100) / MAX_DEF_MANA);
+	if (ps->stats[STAT_DEFMANA] < 0)
 		ps->stats[STAT_DEFMANA] = 0;
 
-	// ********************************************************************************************
 	// Shrine timers.
-	// ********************************************************************************************
+	ps->stats[STAT_POWERUP_BACK] = (short)gi.imageindex("icons/powerup2.m8");
+	ps->stats[STAT_POWERUP_ICON] = (short)gi.imageindex("icons/powerup.m8");
+	ps->stats[STAT_POWERUP_TIMER] = (short)((GetShrineTime(pi->playerinfo.powerup_timer) * 100) / (short)POWERUP_DURATION);
 
-	ps->stats[STAT_POWERUP_BACK] = gi.imageindex("icons/powerup2.m8");
-	ps->stats[STAT_POWERUP_ICON] = gi.imageindex("icons/powerup.m8");
-	ps->stats[STAT_POWERUP_TIMER] = (GetShrineTime(pi->playerinfo.powerup_timer) * 100) / POWERUP_DURATION;
 	// Cheating sets the powerup timer to something huge, so let's avoid a crash here.
-	if (ps->stats[STAT_POWERUP_TIMER] > 100)
-		ps->stats[STAT_POWERUP_TIMER]=100;
+	ps->stats[STAT_POWERUP_TIMER] = min(100, ps->stats[STAT_POWERUP_TIMER]);
 
-	ps->stats[STAT_LUNG_BACK] =	gi.imageindex("icons/breath2.m8");
-	ps->stats[STAT_LUNG_ICON] =	gi.imageindex("icons/breath.m8");
+	// Lungs timer.
+	ps->stats[STAT_LUNG_BACK] = (short)gi.imageindex("icons/breath2.m8");
+	ps->stats[STAT_LUNG_ICON] = (short)gi.imageindex("icons/breath.m8");
 	ps->stats[STAT_LUNG_TIMER] = 0;
-	if((ent->waterlevel > 2) && !(ent->flags & FL_INLAVA))
+
+	if (ent->waterlevel > 2 && !(ent->flags & FL_INLAVA))
 	{
 		// Make negative if we have lungs powerup.
-		if(pi->playerinfo.lungs_timer)
+		if (pi->playerinfo.lungs_timer > 0.0f)
 		{
-			time = pi->playerinfo.lungs_timer + ent->air_finished - level.time;
-			if(time > 0)
-			{
-				ps->stats[STAT_LUNG_TIMER] = -(time * 100) / (HOLD_BREATH_TIME + LUNGS_DURATION);
-			}
+			const float time = pi->playerinfo.lungs_timer + ent->air_finished - level.time;
+			if (time > 0)
+				ps->stats[STAT_LUNG_TIMER] = (short)(-(time * 100.0f) / (HOLD_BREATH_TIME + LUNGS_DURATION));
 		}
 		else
 		{
-			time = ent->air_finished - level.time;
-			if(time > 0)
-			{
-				ps->stats[STAT_LUNG_TIMER] = (time * 100) / HOLD_BREATH_TIME;
-			}
+			const float time = ent->air_finished - level.time;
+			if (time > 0)
+				ps->stats[STAT_LUNG_TIMER] = (short)((time * 100.0f) / HOLD_BREATH_TIME);
 		}
 	}
 
-	// ********************************************************************************************
 	// Armour items.
-	// ********************************************************************************************	
-
 	ps->stats[STAT_ARMOUR_ICON] = 0;
 	ps->stats[STAT_ARMOUR] = 0;
-	if(pers->armortype == ARMOR_TYPE_SILVER)
+
+	if (pers->armortype == ARMOR_TYPE_SILVER)
 	{
-		ps->stats[STAT_ARMOUR_ICON] = gi.imageindex("icons/arm_silver.m32");
-		ps->stats[STAT_ARMOUR] = (pi->playerinfo.pers.armor_count * 100) / MAX_SILVER_ARMOR;
+		ps->stats[STAT_ARMOUR_ICON] = (short)gi.imageindex("icons/arm_silver.m32");
+		ps->stats[STAT_ARMOUR] = (short)((pi->playerinfo.pers.armor_count * 100.0f) / MAX_SILVER_ARMOR);
 	}
-	if(pers->armortype == ARMOR_TYPE_GOLD)
+	else if (pers->armortype == ARMOR_TYPE_GOLD)
 	{
-		ps->stats[STAT_ARMOUR_ICON] = gi.imageindex("icons/arm_gold.m32");
-		ps->stats[STAT_ARMOUR] = (pi->playerinfo.pers.armor_count * 250) / MAX_GOLD_ARMOR;
+		ps->stats[STAT_ARMOUR_ICON] = (short)gi.imageindex("icons/arm_gold.m32");
+		ps->stats[STAT_ARMOUR] = (short)((pi->playerinfo.pers.armor_count * 250.0f) / MAX_GOLD_ARMOR);
 	}
 
-	// ********************************************************************************************
 	// Puzzle items.
-	// ********************************************************************************************	
-
 	ps->stats[STAT_PUZZLE_ITEM1] = 0;
 	ps->stats[STAT_PUZZLE_ITEM2] = 0;
 	ps->stats[STAT_PUZZLE_ITEM3] = 0;
 	ps->stats[STAT_PUZZLE_ITEM4] = 0;
 
 	// Scan through inventory to handle puzzle pieces.
-
-	item = playerExport.p_itemlist;
-	count = STAT_PUZZLE_ITEM1;
 	ps->stats[STAT_PUZZLE_COUNT] = 0;
-	for(i = 0; i < MAX_ITEMS; i++, item++)
+
+	int count = STAT_PUZZLE_ITEM1;
+	gitem_t* item = playerExport.p_itemlist;
+	for (int i = 0; i < MAX_ITEMS; i++, item++)
 	{
-		if((item->flags & IT_PUZZLE) && pers->inventory.Items[i])
+		if ((item->flags & IT_PUZZLE) && pers->inventory.Items[i] > 0)
 		{
-			 if(count > STAT_PUZZLE_ITEM4)
-			 {
-				 break;
-			 }
-			 else
-			 {
-				ps->stats[count] = gi.imageindex (item->icon);
-				ps->stats[STAT_PUZZLE_COUNT]++;
-				if(PossessCorrectItem(ent, item))
-				{
-					ps->stats[count] |= 0x8000;
-				}
-				count++;
-			 }
-		} 
+			ps->stats[count] = (short)gi.imageindex(item->icon);
+			ps->stats[STAT_PUZZLE_COUNT]++;
+
+			if (PossessCorrectItem(ent, item))
+				ps->stats[count] |= 0x8000;
+
+			count++;
+		}
+
+		if (count > STAT_PUZZLE_ITEM4)
+			break;
 	}
 
-	// ********************************************************************************************
 	// Layouts.
-	// ********************************************************************************************
-
 	ent->client->ps.stats[STAT_LAYOUTS] = 0;
 
 	// Inventory gets activated when player is in a use puzzle trigger field.
-
-	if(ent->target_ent)
-	{
-		if(!strcmp(ent->target_ent->classname, "trigger_playerusepuzzle"))
-		{
-			ps->stats[STAT_LAYOUTS] |= 4;
-		}
-	}
-
-	if (ent->client->playerinfo.showpuzzleinventory)
-	{
-		// Show puzzle inventory.
-
+	if (ent->target_ent != NULL && strcmp(ent->target_ent->classname, "trigger_playerusepuzzle") == 0)
 		ps->stats[STAT_LAYOUTS] |= 4;
-	}
 
-	if (deathmatch->value)
-	{
-		if (pers->health <= 0 || level.intermissiontime	|| ent->client->playerinfo.showscores)
-			ps->stats[STAT_LAYOUTS] |= 1;
-	}
-	else
-	{
-		if (ent->client->playerinfo.showscores)
-		    ps->stats[STAT_LAYOUTS] |= 1;
-	}
+	// Show puzzle inventory?
+	if (ent->client->playerinfo.showpuzzleinventory)
+		ps->stats[STAT_LAYOUTS] |= 4;
+
+	// Show scoreboard?
+	if (ent->client->playerinfo.showscores || (DEATHMATCH && (pers->health <= 0 || level.intermissiontime > 0.0f)))
+		ps->stats[STAT_LAYOUTS] |= 1;
 }
 
 #pragma endregion
