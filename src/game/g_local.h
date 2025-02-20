@@ -686,10 +686,10 @@ extern void WritePlayerinfo(edict_t* ent);
 extern void SetupPlayerinfo_effects(edict_t* ent);
 extern void WritePlayerinfo_effects(edict_t* ent);
 
-// p_hud.c
-extern void BeginIntermission(edict_t* targ);
+// p_hud.c //TODO: move to p_hud.h
+extern void BeginIntermission(const edict_t* target_changelevel);
 extern void MoveClientToIntermission(edict_t* client, qboolean log_file);
-extern void G_SetStats(edict_t* ent);
+extern void G_SetStats(const edict_t* ent);
 extern void DeathmatchScoreboardMessage(edict_t* client, edict_t* killer, qboolean log_file);
 
 // m_move.c
