@@ -749,65 +749,40 @@ void G_PlayerActionChickenBite(const playerinfo_t* info)
 	gi.sound(self, CHAN_WEAPON, gi.soundindex(sound_name), 1.0f, ATTN_NORM, 0.0f);
 }
 
-// ************************************************************************************************
-// G_PlayerFallingDamage
-// ---------------------
-// ************************************************************************************************
-
-void G_PlayerFallingDamage(playerinfo_t *playerinfo,float delta)
+void G_PlayerFallingDamage(const playerinfo_t* info, const float delta)
 {
-	edict_t *ent;
-	vec3_t	dir;
-	float	damage;
+	edict_t* ent = (edict_t*)info->self;
+	ent->pain_debounce_time = level.time;
 
-	ent=(edict_t *)playerinfo->self;
+	float damage = delta - 30.0f;
 
-	ent->pain_debounce_time=level.time;
-	
-	if(delta > 50)
-		damage = delta - 30;
-	else if((damage = (delta - 30) * 0.8) < 1.0f)
-		damage = 1;
+	if (delta <= 50.0f)
+		damage = max(1.0f, damage * 0.8f);
 
-	VectorSet(dir,0.0,0.0,1.0);
+	T_Damage(ent, world, world, vec3_up, ent->s.origin, vec3_origin, (int)damage, 0, DAMAGE_AVOID_ARMOR, MOD_FALLING);
 
-	T_Damage(ent,world,world,dir,ent->s.origin,vec3_origin,damage,0,DAMAGE_AVOID_ARMOR,MOD_FALLING);
+	// Stomp whatever we landed on?
+	if (!DEATHMATCH && !COOP) //TODO: remove this check? Why is this done in COOP/DM only?
+		return;
 
-	if(deathmatch->value || coop->value)
-	{
-		if(ent->groundentity && ent->groundentity->takedamage)
-		{
-			int		mod;
-			vec3_t	victim_dir, impact_spot;
+	if (ent->groundentity == NULL || ent->groundentity->takedamage == DAMAGE_NO)
+		return;
 
-			if (playerinfo->edictflags & FL_SUPER_CHICKEN)
-			{
-				damage = 500;
-				mod = MOD_CHICKEN;
-			}
-			else
-			{
-				damage *= 2;
-				mod = 0;
-			}
+	vec3_t victim_dir;
+	VectorSubtract(ent->groundentity->s.origin, ent->s.origin, victim_dir);
+	VectorNormalize(victim_dir);
 
-			VectorSubtract(ent->groundentity->s.origin, ent->s.origin, victim_dir);
-			VectorNormalize(victim_dir);
-			VectorMA(ent->s.origin, -1.2 * ent->mins[2], victim_dir, impact_spot);
+	vec3_t impact_spot;
+	VectorMA(ent->s.origin, -1.2f * ent->mins[2], victim_dir, impact_spot);
 
-			T_Damage(ent->groundentity, ent, ent, victim_dir, impact_spot, vec3_origin, damage, 0, DAMAGE_AVOID_ARMOR, 0);
-			if(ent->groundentity->client)
-			{
-				if(ent->groundentity->health > 0)
-				{
-					if(!irand(0, 1))
-					{
-						P_KnockDownPlayer(&ent->groundentity->client->playerinfo);
-					}
-				}
-			}
-		}
-	}
+	const qboolean is_superchicken = (info->edictflags & FL_SUPER_CHICKEN); //mxd
+	const int mod = (is_superchicken ? MOD_CHICKEN : MOD_UNKNOWN);
+	const int stomp_damage = (is_superchicken ? 500 : (int)(damage * 2.0f)); //mxd
+	T_Damage(ent->groundentity, ent, ent, victim_dir, impact_spot, vec3_origin, stomp_damage, 0, DAMAGE_AVOID_ARMOR, mod); //BUGFIX: original version doesn't use 'mod' value.
+
+	// Knock down player we landed on?
+	if (ent->groundentity->client != NULL && ent->groundentity->health > 0 && irand(0, 1) == 0)
+		P_KnockDownPlayer(&ent->groundentity->client->playerinfo);
 }
 
 
