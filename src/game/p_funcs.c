@@ -440,24 +440,21 @@ qboolean G_PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org) //TODO
 	return true;
 }
 
-// ************************************************************************************************
-// G_PlayerClimbingMoveFunc
-// ------------------------
-// ************************************************************************************************
-
-void G_PlayerClimbingMoveFunc(playerinfo_t *playerinfo, float height, float var2, float var3)
+void G_PlayerClimbingMoveFunc(playerinfo_t* info, const float height, float var2, float var3) //TODO: remove unused var2 and var3 args?
 {
-	if(!playerinfo->isclient)
+	if (info->isclient) // Ignore client-side playerinfo_t.
+		return;
+
+	// Pull Corvus into the rope.
+	G_PlayerActionCheckRopeGrab(info, 1);
+
+	if (info->targetEnt != NULL)
 	{
-		// Pull Corvus into the rope.
-		G_PlayerActionCheckRopeGrab(playerinfo,1);	
-			
-		if (playerinfo->targetEnt)
-		{
-			//Update the rope's information about the player's position
-			((edict_t *)playerinfo->targetEnt)->rope_grab->accel=((edict_t *)playerinfo->targetEnt)->rope_grab->viewheight;
-			((edict_t *)playerinfo->targetEnt)->rope_grab->viewheight-=height;
-		}
+		const edict_t* rope = info->targetEnt; //mxd
+
+		// Update the rope's information about the player's position.
+		rope->rope_grab->accel = (float)rope->rope_grab->viewheight;
+		rope->rope_grab->viewheight -= (int)height;
 	}
 }
 
