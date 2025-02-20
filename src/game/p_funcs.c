@@ -32,98 +32,60 @@ static void PlayerClimbSound(playerinfo_t* info, char* name)
 		info->G_Sound(SND_PRED_ID53, info->leveltime, info->self, CHAN_VOICE, info->G_SoundIndex(name), 0.75f, ATTN_NORM, 0.0f);
 }
 
-// ************************************************************************************************
-// G_PlayerActionCheckRopeMove
-// -------------------
-// ************************************************************************************************
-
-void G_PlayerActionCheckRopeMove(playerinfo_t *playerinfo)
+void G_PlayerActionCheckRopeMove(playerinfo_t* info)
 {
-	vec3_t		vr,vf;
-	int			chance = irand(0,3);
-	float		threshold;
+	edict_t* player = info->self; //mxd
 
-	if ( (playerinfo->seqcmd[ACMDL_JUMP]) )
+	if (info->seqcmd[ACMDL_JUMP])
 	{
-		playerinfo->flags &= ~PLAYER_FLAG_ONROPE;
-		VectorCopy(((edict_t *)playerinfo->self)->targetEnt->rope_grab->velocity,playerinfo->velocity);
-		threshold = VectorLengthSquared(playerinfo->velocity);
-		
-		if (threshold < 300*300)
+		info->flags &= ~PLAYER_FLAG_ONROPE;
+		VectorCopy(player->targetEnt->rope_grab->velocity, info->velocity);
+		const float threshold = VectorLengthSquared(info->velocity);
+
+		if (threshold < 300 * 300)
 		{
-			AngleVectors(playerinfo->aimangles, vf, NULL, NULL);
-			VectorMA(playerinfo->velocity, 200, vf, playerinfo->velocity);
+			vec3_t fwd;
+			AngleVectors(info->aimangles, fwd, NULL, NULL);
+			VectorMA(info->velocity, 200.0f, fwd, info->velocity);
 		}
 		else
 		{
-			VectorScale(playerinfo->velocity,0.75,playerinfo->velocity);
+			VectorScale(info->velocity, 0.75f, info->velocity);
 		}
 
-		playerinfo->velocity[2]=250.0;
-		playerinfo->flags |= PLAYER_FLAG_USE_ENT_POS;
+		info->velocity[2] = 250.0f;
+		info->flags |= PLAYER_FLAG_USE_ENT_POS;
 
-		((edict_t *)playerinfo->self)->monsterinfo.jump_time = playerinfo->leveltime + 2;
+		player->monsterinfo.jump_time = info->leveltime + 2.0f;
 
-		((edict_t *)playerinfo->self)->targetEnt->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
-		((edict_t *)playerinfo->self)->targetEnt->enemy = NULL;
-		((edict_t *)playerinfo->self)->targetEnt = NULL;
+		player->targetEnt->rope_grab->s.effects &= ~EF_ALTCLIENTFX;
+		player->targetEnt->enemy = NULL;
+		player->targetEnt = NULL;
 
-		P_PlayerAnimSetUpperSeq(playerinfo, ASEQ_NONE);
-		P_PlayerAnimSetLowerSeq(playerinfo, ASEQ_JUMPFWD);
-		
+		P_PlayerAnimSetUpperSeq(info, ASEQ_NONE);
+		P_PlayerAnimSetLowerSeq(info, ASEQ_JUMPFWD);
+
 		return;
 	}
 
-	if (playerinfo->seqcmd[ACMDL_STRAFE_L])
+	if (info->seqcmd[ACMDL_STRAFE_L] || info->seqcmd[ACMDL_STRAFE_R])
 	{
-		AngleVectors(playerinfo->angles, NULL, vr, NULL);
-		VectorScale(vr, -32, vr);
-		VectorAdd(((edict_t *)playerinfo->self)->targetEnt->rope_grab->velocity,vr,((edict_t *)playerinfo->self)->targetEnt->rope_grab->velocity);
-		
-		switch (playerinfo->lowerseq)
-		{
-		case ASEQ_CLIMB_HOLD_R:
-		case ASEQ_CLIMB_SETTLE_R:
-			if (irand(0,1))
-				PlayerClimbSound(playerinfo, "player/ropeto.wav");
-			else
-				PlayerClimbSound(playerinfo, "player/ropefro.wav");
-			break;
+		vec3_t right;
+		AngleVectors(info->angles, NULL, right, NULL);
 
-		case ASEQ_CLIMB_ON:
-		case ASEQ_CLIMB_HOLD_L:
-		case ASEQ_CLIMB_SETTLE_L:
-			if (irand(0,1))
-				PlayerClimbSound(playerinfo, "player/ropeto.wav");
-			else
-				PlayerClimbSound(playerinfo, "player/ropefro.wav");
-			break;
-		}
-	}
-	else if (playerinfo->seqcmd[ACMDL_STRAFE_R])
-	{
-		AngleVectors(playerinfo->angles, NULL, vr, NULL);
-		VectorScale(vr, 32, vr);
-		VectorAdd(((edict_t *)playerinfo->self)->targetEnt->rope_grab->velocity,vr,((edict_t *)playerinfo->self)->targetEnt->rope_grab->velocity);
-		
-		switch (playerinfo->lowerseq)
-		{
-		case ASEQ_CLIMB_HOLD_R:
-		case ASEQ_CLIMB_SETTLE_R:
-			if (irand(0,1))
-				PlayerClimbSound(playerinfo, "player/ropeto.wav");
-			else
-				PlayerClimbSound(playerinfo, "player/ropefro.wav");
-			break;
+		const float scale = 32.0f * (info->seqcmd[ACMDL_STRAFE_L] ? -1.0f : 1.0f); //mxd
+		VectorScale(right, scale, right);
+		VectorAdd(player->targetEnt->rope_grab->velocity, right, player->targetEnt->rope_grab->velocity);
 
-		case ASEQ_CLIMB_ON:
-		case ASEQ_CLIMB_HOLD_L:
-		case ASEQ_CLIMB_SETTLE_L:
-			if (irand(0,1))
-				PlayerClimbSound(playerinfo, "player/ropeto.wav");
-			else
-				PlayerClimbSound(playerinfo, "player/ropefro.wav");
-			break;
+		switch (info->lowerseq)
+		{
+			case ASEQ_CLIMB_ON:
+			case ASEQ_CLIMB_HOLD_L:
+			case ASEQ_CLIMB_SETTLE_L:
+			case ASEQ_CLIMB_HOLD_R:
+			case ASEQ_CLIMB_SETTLE_R:
+				PlayerClimbSound(info, (irand(0, 1) ? "player/ropeto.wav" : "player/ropefro.wav"));
+				break;
 		}
 	}
 }
