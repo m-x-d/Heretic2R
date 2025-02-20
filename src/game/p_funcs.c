@@ -914,14 +914,8 @@ void G_PlayerActionSpellDefensive(playerinfo_t* info)
 
 #pragma endregion
 
-// ************************************************************************************************
-// G_EntIsAButton - this is exceedingly gay that this has to be done this way.
-// ----------------------------
-// ************************************************************************************************
-
-qboolean G_EntIsAButton(edict_t *ent)
+// This is exceedingly gay that this has to be done this way...
+qboolean G_EntIsAButton(const edict_t* ent)
 {
-	if(ent->classID == CID_BUTTON)
-		return (true);
-	return (false);
+	return ent->classID == CID_BUTTON;
 }
