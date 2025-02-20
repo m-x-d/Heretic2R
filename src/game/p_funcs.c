@@ -478,15 +478,12 @@ qboolean G_PlayerActionCheckPuzzleGrab(playerinfo_t* info)
 	return true;
 }
 
-// ************************************************************************************************
-// G_PlayerActionTakePuzzle
-// ------------------------
-// ************************************************************************************************
-
-void G_PlayerActionTakePuzzle(playerinfo_t *playerinfo)
+void G_PlayerActionTakePuzzle(const playerinfo_t* info)
 {
-	if(((edict_t *)playerinfo->self)->targetEnt->use)
-		((edict_t *)playerinfo->self)->targetEnt->use(((edict_t *)playerinfo->self)->targetEnt,((edict_t *)playerinfo->self),((edict_t *)playerinfo->self));
+	edict_t* item = info->self; //mxd
+
+	if (item->targetEnt->use != NULL)
+		item->targetEnt->use(item->targetEnt, item, item);
 }
 
 // ************************************************************************************************
