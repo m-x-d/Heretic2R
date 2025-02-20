@@ -1,26 +1,23 @@
+//
 // p_funcs.c
 //
 // Heretic II - Raven software
 //
 
 #include "p_funcs.h"
-#include "p_animactor.h"
 #include "p_anims.h"
-#include "p_funcs.h"
+#include "p_client.h" //mxd
 #include "p_main.h"
-#include "p_weapon.h"
-#include "g_local.h"
+#include "g_combat.h" //mxd
+#include "g_playstats.h"
 #include "g_Skeletons.h"
 #include "g_teleport.h"
-#include "angles.h"
-#include "fx.h"
-#include "g_combat.h" //mxd
-#include "random.h"
-#include "vector.h"
-#include "utilities.h"
-#include "g_playstats.h"
 #include "g_weapon.h"
-#include "p_client.h" //mxd
+#include "spl_shield.h" //mxd
+#include "FX.h"
+#include "Random.h"
+#include "Vector.h"
+#include "g_local.h"
 
 // ************************************************************************************************
 // G_GetEntityStatePtr
