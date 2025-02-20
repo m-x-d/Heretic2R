@@ -458,42 +458,24 @@ void G_PlayerClimbingMoveFunc(playerinfo_t* info, const float height, float var2
 	}
 }
 
-// ************************************************************************************************
-// G_PlayerActionCheckPuzzleGrab
-// -----------------------------
-// ************************************************************************************************
-
-qboolean G_PlayerActionCheckPuzzleGrab(playerinfo_t *playerinfo)
+qboolean G_PlayerActionCheckPuzzleGrab(playerinfo_t* info)
 {
-	vec3_t	player_facing,
-			forward,
-			endpoint;
-	trace_t grabtrace;
+	vec3_t forward;
+	const vec3_t player_facing = { 0.0f, info->angles[1], 0.0f };
+	AngleVectors(player_facing, forward, NULL, NULL);
 
- 	VectorCopy(playerinfo->angles,player_facing);
-	player_facing[PITCH]=player_facing[ROLL]=0;
-	AngleVectors(player_facing,forward,NULL,NULL);
-	VectorMA(playerinfo->origin,32,forward,endpoint);
+	vec3_t end_point;
+	VectorMA(info->origin, 32.0f, forward, end_point);
 
-	gi.trace(playerinfo->origin,
-					   playerinfo->mins,
-					   playerinfo->maxs,
-					   endpoint,
-					   (edict_t *)playerinfo->self,
-					   MASK_PLAYERSOLID,&grabtrace);
+	trace_t tr;
+	gi.trace(info->origin, info->mins, info->maxs, end_point, (edict_t*)info->self, MASK_PLAYERSOLID, &tr);
 
-	if((grabtrace.fraction==1)||(!grabtrace.ent))
-		return(false);
+	if (tr.fraction == 1.0f || tr.ent == NULL || tr.ent->item == NULL || tr.ent->item->flags != IT_PUZZLE)
+		return false;
 
-	if(!grabtrace.ent->item)
-		return(false);
-		
-	if(grabtrace.ent->item->flags!=IT_PUZZLE)
-		return(false);
+	info->targetEnt = tr.ent;
 
-	playerinfo->targetEnt=grabtrace.ent;
-
-	return(true);
+	return true;
 }
 
 // ************************************************************************************************
