@@ -645,55 +645,37 @@ qboolean G_HandleTeleport(const playerinfo_t* info)
 	return !DEATHMATCH;
 }
 
-// ************************************************************************************************
-// PlayerChickenDeath
-// ------------------
-// ************************************************************************************************
-
-void PlayerChickenDeath(edict_t *self)
+void PlayerChickenDeath(edict_t* self)
 {
-	//FIXME:
-
-	//gi.sound (self, CHAN_BODY, sounds[SND_GIB], 1, ATTN_NORM, 0);
+	//gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1, ATTN_NORM, 0); //TODO: play "Monsters/chicken/die.wav"?
 	self->deadflag = DEAD_DEAD;
 	self->client->playerinfo.deadflag = DEAD_DEAD;
-	gi.CreateEffect(&self->s, FX_CHICKEN_EXPLODE, CEF_OWNERS_ORIGIN, NULL, "" ); 
+	gi.CreateEffect(&self->s, FX_CHICKEN_EXPLODE, CEF_OWNERS_ORIGIN, NULL, "");
 
-	// fix that respawning bug
-	self->morph_timer = level.time -1;
-	
+	// Fix that respawning bug.
+	self->morph_timer = (int)level.time - 1;
+
 	// Reset our thinking.
-
 	self->think = self->oldthink;
 	self->nextthink = level.time + FRAMETIME;
 
-#ifdef COMP_FMOD
-	self->model = "models/player/corvette/tris_c.fm";
-#else
-	self->model = "models/player/corvette/tris.fm";
-#endif
+	self->model = "models/player/corvette/tris.fm"; //TODO: there's no such model!
 	self->pain = player_pain;
 
 	// Reset our skins.
+	self->s.skinnum = 0; // The skinnum stores the skin now.
+	self->s.clientnum = (short)(self - g_edicts - 1);
 
-	self->s.effects = 0;
-
-	self->s.skinnum = 0;	// Hey, the skinnum stores the skin now, capiche?
-	self->s.clientnum = self - g_edicts - 1;
-
-	self->s.modelindex = 255;		// will use the skin specified model
+	self->s.modelindex = 255; // Will use the skin specified model.
 	self->s.frame = 0;
 
 	// Turn our skeleton back on.
-
-	self->s.skeletalType = SKEL_CORVUS;
-	self->s.effects |= (EF_SWAPFRAME|EF_JOINTED);
-	self->s.effects &= ~EF_CHICKEN;
 	self->flags &= ~FL_CHICKEN;
+	self->s.skeletalType = SKEL_CORVUS;
+	self->s.effects = (EF_SWAPFRAME | EF_JOINTED);
 	self->s.renderfx &= ~RF_IGNORE_REFS;
 
 	// Reset our animations.
-
 	P_PlayerAnimReset(&self->client->playerinfo);
 }
 
