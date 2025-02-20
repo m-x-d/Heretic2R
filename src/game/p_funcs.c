@@ -717,66 +717,36 @@ void G_ResetJointAngles(const playerinfo_t* info)
 	SetJointAngVel(self->s.rootJoint + CORVUS_LOWERBACK, ROLL, 0, ANGLE_45);
 }
 
-// ************************************************************************************************
-// G_PlayerActionChickenBite
-// -------------------------
-// ************************************************************************************************
-
-void G_PlayerActionChickenBite(playerinfo_t *playerinfo)
+void G_PlayerActionChickenBite(const playerinfo_t* info)
 {
-	trace_t	trace;
-	vec3_t	endpos, vf, mins;
+	vec3_t vf;
+	AngleVectors(info->aimangles, vf, NULL, NULL);
 
-	AngleVectors(playerinfo->aimangles, vf, NULL, NULL);
-	VectorMA(playerinfo->origin, 64, vf, endpos);
-	
-	
-	//Account for step height
-	VectorSet(mins, playerinfo->mins[0], playerinfo->mins[1], playerinfo->mins[2] + 18);
+	vec3_t end_pos;
+	VectorMA(info->origin, 64.0f, vf, end_pos);
 
-	gi.trace(playerinfo->origin, mins, playerinfo->maxs, endpos, ((edict_t *)playerinfo->self), MASK_SHOT,&trace);
+	// Account for step height.
+	trace_t tr;
+	edict_t* self = (edict_t*)info->self; //mxd
+	const vec3_t mins = { info->mins[0], info->mins[1], info->mins[2] + 18.0f };
+	gi.trace(info->origin, mins, info->maxs, end_pos, self, MASK_SHOT, &tr);
 
-	if (trace.ent && trace.ent->takedamage)
+	char* hit_type; //mxd
+
+	if (tr.ent != NULL && tr.ent->takedamage)
 	{
-		if (playerinfo->edictflags & FL_SUPER_CHICKEN)
-			T_Damage(trace.ent,((edict_t *)playerinfo->self),((edict_t *)playerinfo->self),vf,trace.endpos,trace.plane.normal,500,0,DAMAGE_AVOID_ARMOR,MOD_CHICKEN);
-		else
-			T_Damage(trace.ent,((edict_t *)playerinfo->self),((edict_t *)playerinfo->self),vf,trace.endpos,trace.plane.normal,1,0,DAMAGE_AVOID_ARMOR,MOD_CHICKEN);
-
-		if (playerinfo->edictflags & FL_SUPER_CHICKEN)
-		{
-			// Sound for hitting.
-			if (irand(0,1))
-				gi.sound(((edict_t *)playerinfo->self), CHAN_WEAPON, gi.soundindex ("monsters/superchicken/bite1.wav"), 1, ATTN_NORM, 0);
-			else
-				gi.sound(((edict_t *)playerinfo->self), CHAN_WEAPON, gi.soundindex ("monsters/superchicken/bite2.wav"), 1, ATTN_NORM, 0);
-		}
-		else
-		{
-			// Sound for hitting.
-			if (irand(0,1))
-				gi.sound(((edict_t *)playerinfo->self), CHAN_WEAPON, gi.soundindex ("monsters/chicken/bite1.wav"), 1, ATTN_NORM, 0);
-			else
-				gi.sound(((edict_t *)playerinfo->self), CHAN_WEAPON, gi.soundindex ("monsters/chicken/bite2.wav"), 1, ATTN_NORM, 0);
-		}
+		const int damage = ((info->edictflags & FL_SUPER_CHICKEN) ? 500 : 1); //mxd
+		T_Damage(tr.ent, self, self, vf, tr.endpos, tr.plane.normal, damage, 0, DAMAGE_AVOID_ARMOR, MOD_CHICKEN);
+		hit_type = "bite";  // Sound for hitting.
 	}
 	else
-	{	// Sound for missing.
-		if (playerinfo->edictflags & FL_SUPER_CHICKEN)
-		{
-			if (irand(0,1))
-				gi.sound(((edict_t *)playerinfo->self), CHAN_WEAPON, gi.soundindex ("monsters/superchicken/peck1.wav"), 1, ATTN_NORM, 0);
-			else
-				gi.sound(((edict_t *)playerinfo->self), CHAN_WEAPON, gi.soundindex ("monsters/superchicken/peck2.wav"), 1, ATTN_NORM, 0);
-		}
-		else
-		{
-			if (irand(0,1))
-				gi.sound(((edict_t *)playerinfo->self), CHAN_WEAPON, gi.soundindex ("monsters/chicken/peck1.wav"), 1, ATTN_NORM, 0);
-			else
-				gi.sound(((edict_t *)playerinfo->self), CHAN_WEAPON, gi.soundindex ("monsters/chicken/peck2.wav"), 1, ATTN_NORM, 0);
-		}
+	{
+		hit_type = "peck"; // Sound for missing.
 	}
+
+	const char* chicken_type = ((info->edictflags & FL_SUPER_CHICKEN) ? "superchicken" : "chicken"); //mxd
+	const char* sound_name = va("monsters/%s/%s%i.wav", chicken_type, hit_type, irand(1, 2)); //mxd
+	gi.sound(self, CHAN_WEAPON, gi.soundindex(sound_name), 1.0f, ATTN_NORM, 0.0f);
 }
 
 // ************************************************************************************************
