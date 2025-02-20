@@ -486,22 +486,17 @@ void G_PlayerActionTakePuzzle(const playerinfo_t* info)
 		item->targetEnt->use(item->targetEnt, item, item);
 }
 
-// ************************************************************************************************
-// G_PlayerActionUsePuzzle
-// -----------------------
-// ************************************************************************************************
-
-qboolean G_PlayerActionUsePuzzle(playerinfo_t *playerinfo)
+qboolean G_PlayerActionUsePuzzle(const playerinfo_t* info)
 {
- 	if (!((edict_t *)playerinfo->self)->target_ent)
-		return(false);
+	edict_t* item = info->self; //mxd
 
- 	if (strcmp(((edict_t *)playerinfo->self)->target_ent->classname,"trigger_playerusepuzzle"))
-		return(false);
+	if (item->target_ent != NULL && strcmp(item->target_ent->classname, "trigger_playerusepuzzle") == 0)
+	{
+		G_UseTargets(item->target_ent, item);
+		return true;
+	}
 
-	G_UseTargets(((edict_t *)playerinfo->self)->target_ent,((edict_t *)playerinfo->self));
-
-	return(true);
+	return false;
 }
 
 // ************************************************************************************************
