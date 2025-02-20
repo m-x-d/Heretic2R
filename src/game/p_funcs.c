@@ -610,78 +610,39 @@ void G_PlayerActionPushLever(const playerinfo_t* info) //mxd. Same logic as G_Pl
 	G_UseTargets(self, self);
 }
 
-// ************************************************************************************************
-// G_HandleTeleport
-// ----------------
-// ************************************************************************************************
-
-qboolean G_HandleTeleport(playerinfo_t *playerinfo)
+qboolean G_HandleTeleport(const playerinfo_t* info)
 {
 	// Are we teleporting or morphing?
+	if (!(info->flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING)))
+		return false;
 
-	if (playerinfo->flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING))
+	edict_t* self = info->self; //mxd
+
+	// Are we doing de-materialize or...
+	if (self->client->tele_dest[0] != -1.0f)
 	{
-		// Are we doing de-materialiZe or...
-
-		if (((edict_t *)playerinfo->self)->client->tele_dest[0]!=-1)
-		{
-			// Are we done dematerialiZing? Or still fading?
-
-			if (((edict_t *)playerinfo->self)->client->tele_count--)
-			{
-				((edict_t *)playerinfo->self)->s.color.a -= TELE_FADE_OUT;
-				
-				return(true);
-			}
-			else
-			{
-				// We have finished dematerialiZing, let's move the character.
-
-				if (playerinfo->flags & PLAYER_FLAG_TELEPORT)
-				{
-					Perform_Teleport((edict_t *)playerinfo->self);
-				}
-				else
-				{	
-					if(playerinfo->edictflags & FL_CHICKEN)
-					{
-						// We're set as a chicken.
-
-						reset_morph_to_elf((edict_t *)playerinfo->self);
-					}
-					else
-					{
-						Perform_Morph((edict_t *)playerinfo->self);
-					}
-				}
-
-				return(true);
-			}
-		}
+		// Are we done de-materializing? Or still fading?
+		if (self->client->tele_count-- > 0)
+			self->s.color.a -= TELE_FADE_OUT;
+		else if (info->flags & PLAYER_FLAG_TELEPORT) // We have finished dematerializing, let's move the character.
+			Perform_Teleport(self);
+		else if (info->edictflags & FL_CHICKEN)
+			reset_morph_to_elf(self); // We're set as a chicken.
 		else
-		{
-			// Are we done dematerialiZing? Or still fading?
+			Perform_Morph(self);
 
-			if (((edict_t *)playerinfo->self)->client->tele_count--)
-			{
-				((edict_t *)playerinfo->self)->s.color.a += TELE_FADE;
-			}
-			else
-			{
-				// We are done re-materialiZing, let's kill all this BS and get back to the game.
-
-				if(playerinfo->flags & PLAYER_FLAG_TELEPORT)
-					CleanUpTeleport((edict_t *)playerinfo->self);
-				else
-					CleanUpMorph((edict_t *)playerinfo->self);
-			}
-		}
-
-		if(!deathmatch->value)
-		  	return(true);
+		return true;
 	}
 
-	return(false);
+	// Are we done dematerializing? Or still fading?
+	if (self->client->tele_count-- > 0)
+		self->s.color.a += TELE_FADE;
+	else if (info->flags & PLAYER_FLAG_TELEPORT) // We are done re-materializing, let's kill all this BS and get back to the game.
+		CleanUpTeleport(self);
+	else
+		CleanUpMorph(self);
+
+	return !DEATHMATCH;
 }
 
 // ************************************************************************************************
