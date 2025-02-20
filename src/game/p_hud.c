@@ -573,24 +573,15 @@ void Cmd_Score_f(edict_t* ent)
 
 #pragma endregion
 
-/*
-===============
-G_GetShrineTime
-===============
-*/
+#pragma region ========================== STATUSBAR LAYOUT LOGIC ==========================
 
-short GetShrineTime(float time)
+static short GetShrineTime(const float time)
 {
-	float		duration;
-	short		result;
+	const float duration = time - level.time;
+	if (duration >= 0.0f)
+		return (short)(ceilf(duration));
 
-	duration = time - level.time;
-	if(duration < 0.0)
-	{
-		return(0);
-	}
-	result = (short)ceil(duration);
-	return(result);
+	return 0;
 }
 
 static char *healthicons[2] =
@@ -797,4 +788,4 @@ void G_SetStats (edict_t *ent)
 	}
 }
 
-// end
+#pragma endregion
