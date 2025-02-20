@@ -1094,5 +1094,8 @@
     <ClInclude Include="spl_HellStaff.h">
       <Filter>src\Spells</Filter>
     </ClInclude>
+    <ClInclude Include="spl_shield.h">
+      <Filter>src\Spells</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -331,6 +331,7 @@
     <ClInclude Include="spl_Phoenix.h" />
     <ClInclude Include="spl_RedRain.h" />
     <ClInclude Include="spl_ripper.h" />
+    <ClInclude Include="spl_shield.h" />
     <ClInclude Include="spl_sphereofannihlation.h" />
     <ClInclude Include="spl_wall.h" />
     <ClInclude Include="Utilities.h" />
