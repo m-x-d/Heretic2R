@@ -5,7 +5,6 @@
 //
 
 #include "g_cmds.h" //mxd
-#include "g_local.h"
 #include "cl_strings.h"
 #include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
@@ -15,9 +14,11 @@
 #include "p_anims.h"
 #include "p_dll.h" //mxd
 #include "p_client.h" //mxd
-#include "Random.h"
+#include "p_hud.h" //mxd
 #include "spl_morph.h" //mxd
+#include "Random.h"
 #include "Vector.h"
+#include "g_local.h"
 
 int self_spawn = FALSE; // True when spawned manually using 'spawn' ccmd.
 

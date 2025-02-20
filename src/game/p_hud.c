@@ -556,7 +556,7 @@ void DeathmatchScoreboardMessage(qboolean log_file)
 }
 
 // Display the scoreboard.
-void Cmd_Score_f(edict_t* ent)
+void Cmd_Score_f(const edict_t* ent)
 {
 	if (!DEATHMATCH)
 		return;
