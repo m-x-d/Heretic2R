@@ -27,6 +27,7 @@
 #include "Utilities.h"
 #include "Vector.h"
 #include "qcommon.h"
+#include "g_local.h"
 
 #define SWIM_ADJUST_AMOUNT	16.0f
 #define FOV_DEFAULT			75.0f
