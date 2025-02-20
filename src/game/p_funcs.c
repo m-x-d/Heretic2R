@@ -518,65 +518,45 @@ void G_PlayerActionMoveItem(const playerinfo_t* info, const float distance) //TO
 	self->target_ent->target_ent = self;
 }
 
-// ************************************************************************************************
-// G_PlayerActionCheckPushButton
-// -----------------------------
-// ************************************************************************************************
-
-#define MAX_PUSH_BUTTON_RANGE	80.0
-
-qboolean G_PlayerActionCheckPushButton(playerinfo_t *playerinfo)
+qboolean G_PlayerActionCheckPushButton(const playerinfo_t* info)
 {
-	edict_t *t;
-	vec3_t	v,dir;
-	float	len1, dot;
-	vec3_t	forward;
+#define MAX_PUSH_BUTTON_RANGE	80.0f
 
 	// Are you near a button?
-
- 	if(!((edict_t *)playerinfo->self)->target)
-	{
-		// No button so return.
-
-		return false;
-	}
+	const edict_t* self = info->self; //mxd
+	if (self->target == NULL)
+		return false; // No button, so return.
 
 	// A button is nearby, so look to see if it's in reach.
+	edict_t* button = NULL;
+	button = G_Find(button, FOFS(targetname), self->target);
 
-	t = NULL;
-	t = G_Find(t,FOFS(targetname),((edict_t *)playerinfo->self)->target);
+	if (button == NULL || button->classID != CID_BUTTON)
+		return false;
 
-	if (!t)  
-		return(false);
+	// Get center of button
+	vec3_t v;
+	VectorAverage(button->mins, button->maxs, v);
 
-// 	if (!(strcmp(t->classname,"func_train")==0))
- 	if (t->classID == CID_BUTTON)
+	// Get distance from player origin to the center of button.
+	Vec3SubtractAssign(info->origin, v);
+	const float range = VectorLength(v);
+
+	if (range < MAX_PUSH_BUTTON_RANGE)
 	{
-		// Get center of button
-		VectorAverage(t->mins, t->maxs, v);
-		// Get distance from player origin to center of button
-		Vec3SubtractAssign(playerinfo->origin, v);
-		len1 = VectorLength(v);
-	}
-	else
-		return(false);
+		vec3_t dir;
+		VectorCopy(self->client->playerinfo.aimangles, dir);
+		dir[PITCH] = 0.0f;
 
-	if (len1 < MAX_PUSH_BUTTON_RANGE)
-	{
-		VectorCopy(((edict_t *)playerinfo->self)->client->playerinfo.aimangles, dir);
-		dir[PITCH] = 0;
-
+		vec3_t forward;
 		AngleVectors(dir, forward, NULL, NULL);
 		VectorNormalize(v);
-		// Both these vectors are normalized so result is cos of angle
-		dot = DotProduct(v, forward);
 
-		// 41 degree range either way 
-		if (dot > 0.75)
-			return(true);
+		// Both these vectors are normalized so result is cos of angle.
+		return DotProduct(v, forward) > 0.75f; // 41 degree range either way.
 	}
 
-	return(false);
+	return false;
 }
 
 // ************************************************************************************************
