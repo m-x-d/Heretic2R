@@ -6,7 +6,6 @@
 
 #include "p_client.h" //mxd
 #include "cl_strings.h"
-#include "g_cmds.h" //mxd
 #include "g_combat.h" //mxd
 #include "g_HitLocation.h"
 #include "g_items.h" //mxd
@@ -20,6 +19,7 @@
 #include "m_player.h"
 #include "p_anims.h" //mxd
 #include "p_funcs.h"
+#include "p_hud.h" //mxd
 #include "p_main.h"
 #include "p_view.h" //mxd
 #include "FX.h"
