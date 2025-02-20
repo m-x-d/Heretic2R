@@ -499,17 +499,9 @@ qboolean G_PlayerActionUsePuzzle(const playerinfo_t* info)
 	return false;
 }
 
-// ************************************************************************************************
-// G_PlayerActionCheckPushPull_Ent
-// -------------------------------
-// ************************************************************************************************
-
-qboolean G_PlayerActionCheckPushPull_Ent(void *ent)
+qboolean G_PlayerActionCheckPushPull_Ent(const edict_t* ent)
 {
-	if(!(strcmp(((edict_t *)ent)->classname,"func_train")==0)||!(((edict_t *)ent)->spawnflags&32))
-		return(false);
-	else
-		return(true);
+	return (strcmp(ent->classname, "func_train") == 0 && (ent->spawnflags & 32));
 }
 
 // ************************************************************************************************

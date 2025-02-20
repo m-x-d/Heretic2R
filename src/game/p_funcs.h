@@ -15,7 +15,7 @@ extern void G_PlayerClimbingMoveFunc(playerinfo_t* info, float height, float var
 extern qboolean G_PlayerActionCheckPuzzleGrab(playerinfo_t* info);
 extern void G_PlayerActionTakePuzzle(const playerinfo_t* info);
 extern qboolean G_PlayerActionUsePuzzle(const playerinfo_t* info);
-extern qboolean G_PlayerActionCheckPushPull_Ent(const void* ent);
+extern qboolean G_PlayerActionCheckPushPull_Ent(const edict_t* ent); //mxd. 'void* ent' in original logic.
 extern void G_PlayerActionMoveItem(const playerinfo_t* info, float distance);
 extern qboolean G_PlayerActionCheckPushButton(const playerinfo_t* info);
 extern void G_PlayerActionPushButton(const playerinfo_t* info);
