@@ -378,89 +378,66 @@ int G_BranchLwrClimbing(playerinfo_t* info)
 	return ASEQ_NONE;
 }
 
-// ************************************************************************************************
-// G_PlayerActionCheckRopeGrab
-// ---------------------------
-// ************************************************************************************************
-
-qboolean G_PlayerActionCheckRopeGrab(playerinfo_t *playerinfo, float stomp_org)
+qboolean G_PlayerActionCheckRopeGrab(playerinfo_t* info, float stomp_org) //TODO: remove 'stomp_org' arg?
 {
-	edict_t		*rope;
-	trace_t		trace;
-	vec3_t		rope_end, rope_top, rope_check, vec;
-	float		len, dist;
-	int			check_dist = 48;
+	assert(info != NULL);
 
-	assert(playerinfo);
+	const edict_t* rope = (edict_t*)info->targetEnt;
 
-	if (playerinfo->groundentity == NULL)
-		check_dist = 64;
-
-	rope = (edict_t *)playerinfo->targetEnt;
-	
-	//Get the position of the rope's end
+	// Get the position of the rope's end.
+	vec3_t rope_end;
 	VectorCopy(rope->rope_end->s.origin, rope_end);
-	
+
+	vec3_t rope_top;
 	VectorCopy(rope->s.origin, rope_top);
 	rope_top[2] += rope->maxs[2];
-	
-  	//If we're above the rope then we can't grab it
-	if (playerinfo->origin[2] > rope_top[2])
-	{
-		//((edict_t *)playerinfo->self)->targetEnt = NULL;
-		return false;
-	}
 
-	VectorSubtract(playerinfo->origin, rope_top, vec);
-	len = VectorLength(vec);
+	// If we're above the rope then we can't grab it.
+	if (info->origin[2] > rope_top[2])
+		return false;
+
+	vec3_t vec;
+	VectorSubtract(info->origin, rope_top, vec);
+	const float len = VectorLength(vec);
 
 	VectorSubtract(rope_end, rope_top, vec);
-	dist = VectorNormalize(vec);
+	float dist = VectorNormalize(vec);
 
-	//Player is below the rope's length
+	// Player is below the rope's length
 	if (len > dist)
-	{
-		//((edict_t *)playerinfo->self)->targetEnt = NULL;
 		return false;
-	}
 
+	vec3_t rope_check;
 	VectorMA(rope_top, len, vec, rope_check);
 
-	dist = vhlen(playerinfo->origin, rope_check);
+	dist = vhlen(info->origin, rope_check);
+	const float check_dist = ((info->groundentity != NULL) ? 48.0f : 64.0f);
 
-	if (dist < check_dist)
+	if (dist >= check_dist)
+		return false;
+
+	// Player is getting on the rope for the first time.
+	if (!(info->flags & PLAYER_FLAG_ONROPE))
 	{
-		// Player is getting on the rope for the first time.
+		VectorCopy(info->velocity, rope->rope_grab->velocity);
+		VectorScale(rope->rope_grab->velocity, 2.0f, rope->rope_grab->velocity);
+		VectorClear(info->velocity);
+		VectorCopy(info->origin, rope->rope_grab->s.origin);
+		VectorSubtract(info->origin, rope_top, vec);
+		rope->rope_grab->viewheight = (int)(VectorLength(vec));
+	}
+	else
+	{
+		trace_t trace;
+		info->G_Trace(info->origin, info->mins, info->maxs, rope->rope_grab->s.origin, info->self, MASK_PLAYERSOLID, &trace);
 
-		if (!(playerinfo->flags & PLAYER_FLAG_ONROPE))
-		{
-			VectorCopy(playerinfo->velocity,((edict_t *)playerinfo->targetEnt)->rope_grab->velocity);
-			VectorScale(((edict_t *)playerinfo->targetEnt)->rope_grab->velocity,2,((edict_t *)playerinfo->targetEnt)->rope_grab->velocity);
-			VectorClear(playerinfo->velocity);
-			VectorCopy(playerinfo->origin,((edict_t *)playerinfo->targetEnt)->rope_grab->s.origin);
-			VectorSubtract(playerinfo->origin,rope_top,vec);
-			rope->rope_grab->viewheight=VectorLength(vec);
-		}
-		else
-		{
-			playerinfo->G_Trace(playerinfo->origin,
-									  playerinfo->mins,
-									  playerinfo->maxs,
-									  ((edict_t *)playerinfo->targetEnt)->rope_grab->s.origin,
-									  playerinfo->self,
-									  MASK_PLAYERSOLID,&trace);
+		if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
+			return false;
 
-			if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
-				return false;
-
-			VectorCopy(((edict_t *)playerinfo->targetEnt)->rope_grab->s.origin, playerinfo->origin);
-		}
-
-		return true;
+		VectorCopy(rope->rope_grab->s.origin, info->origin);
 	}
 
-	//((edict_t *)playerinfo->self)->targetEnt = NULL;
-	return false;
+	return true;
 }
 
 // ************************************************************************************************
