@@ -504,43 +504,18 @@ qboolean G_PlayerActionCheckPushPull_Ent(const edict_t* ent)
 	return (strcmp(ent->classname, "func_train") == 0 && (ent->spawnflags & 32));
 }
 
-// ************************************************************************************************
-// PushPull_stop
-// -------------
-// ************************************************************************************************
-
-void PushPull_stop(edict_t *self)
+void G_PlayerActionMoveItem(const playerinfo_t* info, const float distance) //TODO: unused
 {
-/*
-	playerinfo_t *playerinfo;
+	vec3_t push_dir;
+	const vec3_t player_facing = { 0.0f, info->angles[1], 0.0f };
+	AngleVectors(player_facing, push_dir, NULL, NULL);
 
-	playerinfo=&self->target_ent->client->playerinfo;
+	edict_t* item = info->target_ent; //mxd
+	VectorScale(push_dir, distance, item->velocity);
 
-	if((playerinfo->lowerseq!=ASEQ_PUSH)&&(playerinfo->lowerseq!=ASEQ_PULL)) 
-		VectorClear(self->velocity);
-	else if (Vec3IsZero(self->target_ent->velocity))
-		VectorClear(self->target_ent->velocity);
-*/
-}
-
-// ************************************************************************************************
-// G_PlayerActionMoveItem
-// ----------------------
-// ************************************************************************************************
-
-void G_PlayerActionMoveItem(playerinfo_t *playerinfo,float distance)
-{
-	vec3_t player_facing,pushdir;
-
-	VectorCopy(playerinfo->angles,player_facing);
-	player_facing[PITCH]=player_facing[ROLL]=0;
-	AngleVectors(player_facing, pushdir, NULL, NULL);
-
-	VectorScale (pushdir, distance, ((edict_t *)playerinfo->target_ent)->velocity);
-
-	((edict_t *)(playerinfo->self))->target_ent->think = PushPull_stop;
-	((edict_t *)(playerinfo->self))->target_ent->nextthink = level.time + 2 * FRAMETIME;
-	((edict_t *)(playerinfo->self))->target_ent->target_ent = ((edict_t *)playerinfo->self);
+	edict_t* self = info->self; //mxd
+	self->target_ent->nextthink = level.time + 2.0f * FRAMETIME;
+	self->target_ent->target_ent = self;
 }
 
 // ************************************************************************************************
