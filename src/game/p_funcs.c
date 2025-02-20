@@ -703,25 +703,18 @@ void G_SetJointAngles(const playerinfo_t* info)
 	}
 }
 
-// ************************************************************************************************
-// G_ResetJointAngles
-// ------------------
 // Reset the player model's joint angles.
-// ************************************************************************************************
-
-void G_ResetJointAngles(playerinfo_t *playerinfo)
+void G_ResetJointAngles(const playerinfo_t* info)
 {
-	edict_t *self;
+	const edict_t* self = (edict_t*)info->self;
 
-	self=(edict_t *)playerinfo->self;
+	SetJointAngVel(self->s.rootJoint + CORVUS_HEAD, PITCH, 0, ANGLE_45);
+	SetJointAngVel(self->s.rootJoint + CORVUS_UPPERBACK, PITCH, 0, ANGLE_45);
+	SetJointAngVel(self->s.rootJoint + CORVUS_LOWERBACK, PITCH, 0, ANGLE_45);
 
-	SetJointAngVel(self->s.rootJoint + CORVUS_HEAD,PITCH,0,ANGLE_45);
-	SetJointAngVel(self->s.rootJoint + CORVUS_UPPERBACK,PITCH,0,ANGLE_45);
-	SetJointAngVel(self->s.rootJoint + CORVUS_LOWERBACK,PITCH,0,ANGLE_45);
-
-	SetJointAngVel(self->s.rootJoint + CORVUS_HEAD,ROLL,0,ANGLE_45);
-	SetJointAngVel(self->s.rootJoint + CORVUS_UPPERBACK,ROLL,0,ANGLE_45);
-	SetJointAngVel(self->s.rootJoint + CORVUS_LOWERBACK,ROLL,0,ANGLE_45);
+	SetJointAngVel(self->s.rootJoint + CORVUS_HEAD, ROLL, 0, ANGLE_45);
+	SetJointAngVel(self->s.rootJoint + CORVUS_UPPERBACK, ROLL, 0, ANGLE_45);
+	SetJointAngVel(self->s.rootJoint + CORVUS_LOWERBACK, ROLL, 0, ANGLE_45);
 }
 
 // ************************************************************************************************
