@@ -895,30 +895,21 @@ void G_PlayerActionHellstaffAttack(const playerinfo_t* info)
 	WeaponThink_HellStaff((edict_t*)info->self, "");
 }
 
-// ************************************************************************************************
-// G_PlayerActionSpellDefensive
-// ----------------------------
-// ************************************************************************************************
-
-void G_PlayerActionSpellDefensive(playerinfo_t *playerinfo)
+void G_PlayerActionSpellDefensive(playerinfo_t* info)
 {
-	int			index;
-	gitem_t	*it;
+	if (info->leveltime <= info->defensive_debounce)
+		return;
 
-	if (playerinfo->leveltime > playerinfo->defensive_debounce)
-	{
-//		playerinfo->pers.defence->use(playerinfo,playerinfo->pers.defence);
-		playerinfo->pers.defence->weaponthink((edict_t *)playerinfo->self,"");
-		playerinfo->defensive_debounce = playerinfo->leveltime + DEFENSE_DEBOUNCE;
+	info->pers.defence->weaponthink((edict_t*)info->self, "");
+	info->defensive_debounce = info->leveltime + DEFENSE_DEBOUNCE;
 
-		// if we've run out of defence shots, and we have the ring of repulsion - switch to that.
-		it = P_FindItem ("ring");
-		index = ITEM_INDEX(it);
-		if ((P_Defence_CurrentShotsLeft(playerinfo, 1) <=0) && playerinfo->pers.inventory.Items[index])
-		{
-			playerinfo->G_UseItem(playerinfo->self,"ring");
-		}
-	}
+	if (P_Defence_CurrentShotsLeft(info, 1) > 0) //TODO: do ALL defenses use 1 mana? Even when Tome of Power is active?
+		return;
+
+	// If we've run out of defense shots, and we have the ring of repulsion - switch to that.
+	const int index = ITEM_INDEX(P_FindItem("ring"));
+	if (info->pers.inventory.Items[index] > 0)
+		info->G_UseItem(info->self, "ring");
 }
 
 #pragma endregion
