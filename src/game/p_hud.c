@@ -175,92 +175,68 @@ void MoveClientToIntermission(edict_t* client, const qboolean log_file)
 	}
 }
 
-void BeginIntermission(edict_t *targ)
+void BeginIntermission(const edict_t* target_changelevel)
 {
-	int		i;
-	edict_t	*ent,
-			*client;
-
 	// Already activated?
-
-	if(level.intermissiontime)
+	if (level.intermissiontime > 0.0f)
 		return;
 
 	game.autosaved = false;
 
 	// Respawn any dead clients.
-
-	for (i=0 ; i<maxclients->value ; i++)
+	for (int i = 0; i < MAXCLIENTS; i++)
 	{
-		client = g_edicts + 1 + i;
-		if (!client->inuse)
-			continue;
-		if (client->health <= 0)
+		edict_t* client = &g_edicts[i + 1];
+
+		if (client->inuse && client->health <= 0)
 			ClientRespawn(client);
 	}
 
 	level.intermissiontime = level.time;
-	level.changemap = targ->map;
+	level.changemap = target_changelevel->map;
 
-	if (!deathmatch->value)
+	if (!DEATHMATCH)
 	{
 		// Go immediately to the next level if not deathmatch.
-
 		level.exitintermission = true;
-
 		return;
 	}
 
 	level.exitintermission = false;
 
 	// Find an intermission spot.
+	edict_t* spot = G_Find(NULL, FOFS(classname), "info_player_intermission");
 
-	ent = G_Find (NULL, FOFS(classname), "info_player_intermission");
-	
-	if (!ent)
-	{	
+	if (spot == NULL)
+	{
 		// The map creator forgot to put in an intermission point.
+		spot = G_Find(NULL, FOFS(classname), "info_player_start");
 
-		ent = G_Find (NULL, FOFS(classname), "info_player_start");
-		
-		if (!ent)
-			ent = G_Find (NULL, FOFS(classname), "info_player_deathmatch");
+		if (spot == NULL)
+			spot = G_Find(NULL, FOFS(classname), "info_player_deathmatch");
 	}
 	else
-	{	
+	{
 		// Chose one of four spots.
-
-		i = irand(0, 3);
-		
-		while (i--)
+		for (int i = 0; i < irand(0, 3); i++)
 		{
-			ent = G_Find (ent, FOFS(classname), "info_player_intermission");
-			
-			if (!ent)
-			{	
-				// Wrap around the list.
+			spot = G_Find(spot, FOFS(classname), "info_player_intermission");
 
-				ent = G_Find (ent, FOFS(classname), "info_player_intermission");
-			}
+			if (spot == NULL)
+				spot = G_Find(spot, FOFS(classname), "info_player_intermission"); // Wrap around the list.
 		}
 	}
 
-	VectorCopy (ent->s.origin, level.intermission_origin);
-	VectorCopy (ent->s.angles, level.intermission_angle);
+	VectorCopy(spot->s.origin, level.intermission_origin);
+	VectorCopy(spot->s.angles, level.intermission_angle);
 
 	// Move all clients to the intermission point.
-
-	for(i=0;i<maxclients->value;i++)
+	for (int i = 0; i < MAXCLIENTS; i++)
 	{
-		client=g_edicts+1+i;
+		edict_t* client = &g_edicts[i + 1];
 
-		if(!client->inuse)
-			continue;
-
-		if (!i)
-			MoveClientToIntermission(client, true);
-		else
-			MoveClientToIntermission(client, false);
+		if (client->inuse)
+			MoveClientToIntermission(client, i == 0);
 	}
 }
 
