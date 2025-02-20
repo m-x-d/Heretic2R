@@ -555,41 +555,20 @@ void DeathmatchScoreboardMessage(edict_t* ent, edict_t* killer, qboolean log_fil
 	}
 }
 
-/*
-==================
-DeathmatchScoreboard
-
-Draw instead of help message.
-Note that it isn't that hard to overflow the 1400 byte message limit!
-==================
-*/
-void DeathmatchScoreboard (edict_t *ent)
+// Display the scoreboard.
+void Cmd_Score_f(edict_t* ent)
 {
-	DeathmatchScoreboardMessage (ent, ent->enemy, false);
-	gi.unicast (ent, true);
-}
-
-
-/*
-==================
-Cmd_Score_f
-
-Display the scoreboard
-==================
-*/
-void Cmd_Score_f (edict_t *ent)
-{
-	if (!deathmatch->value)
+	if (!DEATHMATCH)
 		return;
 
-	if (ent->client->playerinfo.showscores)
+	if (!ent->client->playerinfo.showscores)
 	{
-		ent->client->playerinfo.showscores = false;
-		return;
+		// Draw instead of help message. Note that it isn't that hard to overflow the 1400 byte message limit!
+		DeathmatchScoreboardMessage(ent, ent->enemy, false);
+		gi.unicast(ent, true);
 	}
 
-	ent->client->playerinfo.showscores = true;
-	DeathmatchScoreboard (ent);
+	ent->client->playerinfo.showscores = !ent->client->playerinfo.showscores;
 }
 
 #pragma endregion
