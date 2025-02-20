@@ -14,141 +14,134 @@
 #include "qcommon.h"
 #include "g_local.h"
 
-#if 0
-	// cursor positioning
+#pragma region ========================== Statusbar layouts ==========================
+
+/*
+Cursor positioning:
 	xl <value>
 	xr <value>
 	yb <value>
 	yt <value>
 
-	// drawing
+Drawing:
 	statpic <name>
 	pic <stat>
 	num <fieldwidth> <stat>
 	string <stat>
 
-	// control
+Control:
 	if <stat>
 	ifeq <stat> <value>
 	ifbit <stat> <value>
 	endif
+*/
 
-#endif
-
-char *single_statusbar = 
-"yb	-74 "
-"xl 16 "		// green mana
+char* single_statusbar =
+"yb -74 "
+"xl 16 "		// Green mana.
 "bar 8 16 60 "
 
 "yb -44 "
 
-"xl	40 "
-"pic 4 "		// Weapon
+"xl 40 "
+"pic 4 "		// Weapon.
 
-"xl 76 "		// Ammo
+"xl 76 "		// Ammo.
 "pic 2 "
 "am "
 
-"xr -152 "		// Armour
+"xr -152 "		// Armour.
 "pic 34 "
 "arm "
 
 "xr -112 "
 "pic 0 "
-"hnum "			// Health
+"hnum "			// Health.
 
 "if 6 "
 "yb -44 "
 "xr -72 "
-"pic 6 "		// Defence
+"pic 6 "		// Defence.
 "endif "
 
-"yb	-74 "
+"yb -74 "
 "xr -32 "
-"bar 11 16 60 "		// blue mana
+"bar 11 16 60 "	// Blue mana.
 
 " yt 16 "
 
-"if 28 "		
+"if 28 "
 " xl 32 "
-" bar 26 60 16 " 	// Lung time left
+" bar 26 60 16 "	// Lung time left.
 "endif "
 
 "if 25 "
 " xr -96 "
-" bar 23 60 16 "	// Powerup time left
+" bar 23 60 16 "	// Powerup time left.
 "endif "
 
-"yt	16 "		
+"yt 16 "
 
-"xc 0 "				// Inventory Puzzle Item 1
+"xc 0 "		// Inventory Puzzle Item 1.
 "pici 18 "
 
-"xc 40 "			// Puzzle 2
+"xc 40 "	// Inventory Puzzle Item 2.
 "pici 19 "
 
-"xc 80 "			// Puzzle 3
+"xc 80 "	// Inventory Puzzle Item 3.
 "pici 20 "
 
-"xc 120 "			// Puzzle 4
+"xc 120 "	// Inventory Puzzle Item 4.
 "pici 21 "
 
-"if 31 "		
+"if 31 "
 " xl 32 "
-" gbar 29 "			// Boss Life Meter
-"endif "
+" gbar 29 "	// Boss Life Meter.
+"endif ";
 
-//"hstring 0 -10 2 Name__________Score__Ping__Time "
-//"aclient 0 0 3 0 4 300 12 "
-;
-
-char *dm_statusbar =
-"yb	-74 "
-"xl 16 "		// green mana
+char* dm_statusbar =
+"yb -74 "
+"xl 16 "		// Green mana.
 "bar 8 16 60 "
 
 "yb -44 "
 
-"xl	40 "
-"pic 4 "		// Weapon
+"xl 40 "
+"pic 4 "		// Weapon.
 
-"xl 76 "		// Ammo
+"xl 76 "		// Ammo.
 "pic 2 "
 "am "
 
-"xr -152 "		// Armour
+"xr -152 "		// Armour.
 "pic 34 "
 "arm "
 
 "xr -112 "
 "pic 0 "
-"hnum "			// Health
+"hnum "			// Health.
 
 "yb -44 "
 "xr -72 "
-"pic 6 "		// Defence
+"pic 6 "		// Defence.
 
-"yb	-74 "
+"yb -74 "
 "xr -32 "
-"bar 11 16 60 " // blue mana
+"bar 11 16 60 " // Blue mana.
 
 " yt 16 "
 
-"if 28 "		
+"if 28 "
 " xl 32 "
-" bar 26 60 16 " // Lung time left
+" bar 26 60 16 " // Lung time left.
 "endif "
 
 "if 25 "
 " xr -96 "
-" bar 23 60 16 " // Powerup time left
-"endif "
+" bar 23 60 16 " // Powerup time left.
+"endif ";
 
-#if	0
-"xc 0 "			// Frag 
-"num 3 15 "
-#endif
-;
+#pragma endregion
 
 /*
 ======================================================================
