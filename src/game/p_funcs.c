@@ -785,58 +785,43 @@ void G_PlayerFallingDamage(const playerinfo_t* info, const float delta)
 		P_KnockDownPlayer(&ent->groundentity->client->playerinfo);
 }
 
-
-// *******************************************************
-// G_PlayerVaultKick
-// -----------------------------
-// Check to kick entities inside the pole vault animation
-// *******************************************************
-#define VAULTKICK_DIST	30			//Amount to trace outward from the player's origin
-#define VAULTKICK_MODIFIER 0.25		//percentage of the velocity magnitude to use as damage
-
-void G_PlayerVaultKick(playerinfo_t *playerinfo)
+// Check to kick entities inside the pole vault animation.
+void G_PlayerVaultKick(const playerinfo_t* info)
 {
-	edict_t *self = ((edict_t *)playerinfo->self);
-	trace_t trace;
-	vec3_t	endpos, vf;
-	float	kick_vel;
+#define VAULTKICK_DIST		30		// Amount to trace outward from the player's origin.
+#define VAULTKICK_MODIFIER	0.25f	// Percentage of the velocity magnitude to use as damage.
 
-	//Ignore pitch
-	VectorSet(vf, 0, self->s.angles[YAW], 0);
+	edict_t* self = (edict_t*)info->self;
+
+	// Ignore pitch.
+	vec3_t vf;
+	VectorSet(vf, 0.0f, self->s.angles[YAW], 0.0f);
 	AngleVectors(vf, vf, NULL, NULL);
-	
-	//Move ahead by a small amount
-	VectorMA(self->s.origin, VAULTKICK_DIST, vf, endpos);
 
-	//Trace out to see if we've hit anything
-	gi.trace(self->s.origin, self->mins, self->maxs, endpos, self, MASK_PLAYERSOLID,&trace);
+	// Move ahead by a small amount.
+	vec3_t end_pos;
+	VectorMA(self->s.origin, VAULTKICK_DIST, vf, end_pos);
 
-	//If we have...
-	if (trace.fraction < 1 && (!(trace.startsolid || trace.allsolid)) )
-	{
-		if (trace.ent->takedamage)
-		{
-			//Find the velocity of the kick
-			kick_vel = VectorLength(self->velocity);
-			kick_vel *= VAULTKICK_MODIFIER;
+	// Trace out to see if we've hit anything.
+	trace_t tr;
+	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_PLAYERSOLID, &tr);
 
-			//FIXME: Get a real sound
-			gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/plagueElf/hamhit.wav"), 1, ATTN_NORM, 0);
-			T_Damage(trace.ent, self, self, vf, trace.endpos, trace.plane.normal, kick_vel, kick_vel*2, DAMAGE_NORMAL,MOD_KICKED);
-			VectorMA(trace.ent->velocity, irand(300,500), vf, trace.ent->velocity);
-			trace.ent->velocity[2] = 150;
-			if(trace.ent->client)
-			{
-				if(trace.ent->health > 0)
-				{
-					if(infront(trace.ent, self) && !irand(0, 2))
-					{
-						P_KnockDownPlayer(&trace.ent->client->playerinfo);
-					}
-				}
-			}
-		}
-	}
+	if (tr.fraction == 1.0f || tr.startsolid || tr.allsolid || tr.ent->takedamage == DAMAGE_NO)
+		return;
+
+	// Find the velocity of the kick.
+	const float kick_vel = VectorLength(self->velocity) * VAULTKICK_MODIFIER;
+
+	//FIXME: Get a real sound.
+	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/plagueElf/hamhit.wav"), 1.0f, ATTN_NORM, 0.0f);
+	T_Damage(tr.ent, self, self, vf, tr.endpos, tr.plane.normal, (int)kick_vel, (int)(kick_vel * 2.0f), DAMAGE_NORMAL, MOD_KICKED);
+
+	VectorMA(tr.ent->velocity, flrand(300.0f, 500.0f), vf, tr.ent->velocity); //mxd. Original logic uses irand() here.
+	tr.ent->velocity[2] = 150.0f;
+
+	// Knock down player we kicked?
+	if (tr.ent->client != NULL && tr.ent->health > 0 && infront(tr.ent, self) && irand(0, 2) == 0)
+		P_KnockDownPlayer(&tr.ent->client->playerinfo);
 }
 
 // *******************************************************
