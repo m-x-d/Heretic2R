@@ -10,9 +10,9 @@
 #include "Matrix.h"
 #include "Random.h"
 
-H2COMMON_API const vec3_t vec3_origin =	{ 0.0f, 0.0f, 0.0f };
-H2COMMON_API const vec3_t vec3_right =	{ 1.0f, 0.0f, 0.0f }; //mxd. NOT exported in original .dll!
-H2COMMON_API const vec3_t vec3_up =		{ 0.0f, 0.0f, 1.0f };
+H2COMMON_API const vec3_t vec3_origin =	{ 0.0f, 0.0f, 0.0f }; // [0, 0, 0]
+H2COMMON_API const vec3_t vec3_right =	{ 1.0f, 0.0f, 0.0f }; // [1, 0, 0] //mxd. NOT exported in original .dll!
+H2COMMON_API const vec3_t vec3_up =		{ 0.0f, 0.0f, 1.0f }; // [0, 0, 1]
 
 //mxd. Function logic does NOT match Q2 counterpart
 H2COMMON_API void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, const float degrees)
