@@ -6,13 +6,10 @@
 #include "q_shared.h"
 #include "g_local.h"
 #include "p_client.h" //mxd
+#include "p_hud.h" //mxd
 
 void ED_CallSpawn (edict_t *ent);
 void Cvar_SetValue (char *var_name, float value);
-
-extern char *dm_statusbar;
-extern char *single_statusbar;
-
 
 typedef struct
 {

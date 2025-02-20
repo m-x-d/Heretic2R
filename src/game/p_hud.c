@@ -1,11 +1,18 @@
-#include "g_local.h"
-#include "random.h"
-#include "vector.h"
+//
+// p_hud.c
+//
+// Copyright 1998 Raven Software
+//
+
+#include "p_hud.h" //mxd
 #include "g_playstats.h"
 #include "g_itemstats.h"
 #include "p_client.h" //mxd
-#include "qcommon.h"
 #include "p_dll.h" //mxd
+#include "Random.h"
+#include "Vector.h"
+#include "qcommon.h"
+#include "g_local.h"
 
 #if 0
 	// cursor positioning

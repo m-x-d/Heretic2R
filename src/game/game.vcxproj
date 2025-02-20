@@ -319,6 +319,7 @@
     <ClInclude Include="pcode.h" />
     <ClInclude Include="p_client.h" />
     <ClInclude Include="p_funcs.h" />
+    <ClInclude Include="p_hud.h" />
     <ClInclude Include="p_item.h" />
     <ClInclude Include="p_view.h" />
     <ClInclude Include="q_shared.h" />
