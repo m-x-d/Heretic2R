@@ -19,14 +19,9 @@
 #include "Vector.h"
 #include "g_local.h"
 
-// ************************************************************************************************
-// G_GetEntityStatePtr
-// -------------------
-// ************************************************************************************************
-
-entity_state_t *G_GetEntityStatePtr(edict_t *entity)
+entity_state_t* G_GetEntityStatePtr(edict_t* entity)
 {
-	return(&entity->s);
+	return &entity->s;
 }
 
 void PlayerClimbSound(playerinfo_t *playerinfo, char *name)
