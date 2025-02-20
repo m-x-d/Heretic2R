@@ -843,105 +843,56 @@ void G_PlayerSpellStopShieldAttack(const playerinfo_t* info)
 	}
 }
 
-// ************************************************************************************************
-// G_PlayerActionSwordAttack
-// -------------------------
-// ************************************************************************************************
+#pragma region ========================== Player actions ==========================
 
-void G_PlayerActionSwordAttack(playerinfo_t *playerinfo,int value)
+void G_PlayerActionSwordAttack(const playerinfo_t* info, const int value)
 {
-	WeaponThink_SwordStaff((edict_t *)playerinfo->self,"i",value);
+	WeaponThink_SwordStaff((edict_t*)info->self, "i", value);
 }
 
-// ************************************************************************************************
-// G_PlayerActionSpellFireball
-// ---------------------------
-// ************************************************************************************************
-
-void G_PlayerActionSpellFireball(playerinfo_t *playerinfo)
+void G_PlayerActionSpellFireball(const playerinfo_t* info)
 {
-	WeaponThink_FlyingFist((edict_t *)playerinfo->self,"");
+	WeaponThink_FlyingFist((edict_t*)info->self, "");
 }
 
-// ************************************************************************************************
-// G_PlayerActionSpellBlast
-// ------------------------
-// ************************************************************************************************
-
-void G_PlayerActionSpellBlast(playerinfo_t *playerinfo)
+void G_PlayerActionSpellBlast(const playerinfo_t* info)
 {
-	WeaponThink_Blast((edict_t *)playerinfo->self,"");
+	WeaponThink_Blast((edict_t*)info->self, "");
 }
 
-// ************************************************************************************************
-// G_PlayerActionSpellArray
-// ------------------------
-// ************************************************************************************************
-
-void G_PlayerActionSpellArray(playerinfo_t *playerinfo,int value)
+void G_PlayerActionSpellArray(const playerinfo_t* info, const int value)
 {
-	WeaponThink_MagicMissileSpread((edict_t *)playerinfo->self,"i",value);
+	WeaponThink_MagicMissileSpread((edict_t*)info->self, "i", value);
 }
 
-// ************************************************************************************************
-// G_PlayerActionSpellSphereCreate
-// -------------------------------
-// ************************************************************************************************
-
-void G_PlayerActionSpellSphereCreate(playerinfo_t *playerinfo,qboolean *Charging)
+void G_PlayerActionSpellSphereCreate(const playerinfo_t* info, qboolean* charging)
 {
-	// Start a glow effect.
-	WeaponThink_SphereOfAnnihilation((edict_t *)playerinfo->self,"g",Charging);
+	WeaponThink_SphereOfAnnihilation((edict_t*)info->self, "g", charging); // Start a glow effect.
 }
 
-// ************************************************************************************************
-// G_PlayerActionSpellBigBall
-// --------------------------
-// ************************************************************************************************
-
-void G_PlayerActionSpellBigBall(playerinfo_t *playerinfo)
+void G_PlayerActionSpellBigBall(const playerinfo_t* info)
 {
-	WeaponThink_Maceballs((edict_t *)playerinfo->self,"");
+	WeaponThink_Maceballs((edict_t*)info->self, "");
 }
 
-// ************************************************************************************************
-// G_PlayerActionSpellFirewall
-// ---------------------------
-// ************************************************************************************************
-
-void G_PlayerActionSpellFirewall(playerinfo_t *playerinfo)
+void G_PlayerActionSpellFirewall(const playerinfo_t* info)
 {
-	WeaponThink_Firewall((edict_t *)playerinfo->self,"");
+	WeaponThink_Firewall((edict_t*)info->self, "");
 }
 
-// ************************************************************************************************
-// G_PlayerActionRedRainBowAttack
-// ------------------------------
-// ************************************************************************************************
-
-void G_PlayerActionRedRainBowAttack(playerinfo_t *playerinfo)
+void G_PlayerActionRedRainBowAttack(const playerinfo_t* info)
 {
-	WeaponThink_RedRainBow((edict_t *)playerinfo->self,"");
+	WeaponThink_RedRainBow((edict_t*)info->self, "");
 }
 
-// ************************************************************************************************
-// G_PlayerActionPhoenixBowAttack
-// ------------------------------
-// ************************************************************************************************
-
-void G_PlayerActionPhoenixBowAttack(playerinfo_t *playerinfo)
+void G_PlayerActionPhoenixBowAttack(const playerinfo_t* info)
 {
-	WeaponThink_PhoenixBow((edict_t *)playerinfo->self,"");
+	WeaponThink_PhoenixBow((edict_t*)info->self, "");
 }
 
-// ************************************************************************************************
-// G_PlayerActionHellstaffAttack
-// -----------------------------
-// ************************************************************************************************
-
-void G_PlayerActionHellstaffAttack(playerinfo_t *playerinfo)
+void G_PlayerActionHellstaffAttack(const playerinfo_t* info)
 {
-	WeaponThink_HellStaff((edict_t *)playerinfo->self,"");
+	WeaponThink_HellStaff((edict_t*)info->self, "");
 }
 
 // ************************************************************************************************
@@ -969,6 +920,8 @@ void G_PlayerActionSpellDefensive(playerinfo_t *playerinfo)
 		}
 	}
 }
+
+#pragma endregion
 
 // ************************************************************************************************
 // G_EntIsAButton - this is exceedingly gay that this has to be done this way.
