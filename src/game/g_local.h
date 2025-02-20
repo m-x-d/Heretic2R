@@ -686,9 +686,6 @@ extern void WritePlayerinfo(edict_t* ent);
 extern void SetupPlayerinfo_effects(edict_t* ent);
 extern void WritePlayerinfo_effects(edict_t* ent);
 
-// p_hud.c //TODO: move to p_hud.h
-extern void DeathmatchScoreboardMessage(qboolean log_file);
-
 // m_move.c
 extern qboolean M_CheckBottom(edict_t* ent);
 extern qboolean M_CheckTop(edict_t* ent);
