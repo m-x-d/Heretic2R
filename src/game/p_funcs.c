@@ -604,14 +604,10 @@ qboolean G_PlayerActionCheckPushLever(const playerinfo_t* info)
 	return false;
 }
 
-// ************************************************************************************************
-// G_PlayerActionPushLever
-// ------------------------
-// ************************************************************************************************
-
-void G_PlayerActionPushLever(playerinfo_t *playerinfo)
+void G_PlayerActionPushLever(const playerinfo_t* info) //mxd. Same logic as G_PlayerActionPushButton().
 {
-	G_UseTargets((edict_t *)playerinfo->self,(edict_t *)playerinfo->self);
+	edict_t* self = info->self; //mxd
+	G_UseTargets(self, self);
 }
 
 // ************************************************************************************************
