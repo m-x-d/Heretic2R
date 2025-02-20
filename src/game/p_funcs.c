@@ -830,21 +830,18 @@ void G_PlayerSpellShieldAttack(const playerinfo_t* info)
 		SpellLightningShieldAttack((edict_t*)info->self);
 }
 
-// stop the attack and remove the persistant effect
-void G_PlayerSpellStopShieldAttack(playerinfo_t *playerinfo)
+// Stop the attack and remove the persistent effect.
+void G_PlayerSpellStopShieldAttack(const playerinfo_t* info)
 {
-	edict_t	*self;
+	edict_t* self = info->self;
 
-	self = playerinfo->self;
-	if (self->PersistantCFX)
+	if (self->PersistantCFX > 0)
 	{
 		gi.RemovePersistantEffect(self->PersistantCFX, REMOVE_SHIELD);
 		self->PersistantCFX = 0;
 		self->s.sound = 0;
 	}
-
 }
-
 
 // ************************************************************************************************
 // G_PlayerActionSwordAttack
