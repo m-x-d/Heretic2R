@@ -143,47 +143,35 @@ char* dm_statusbar =
 
 #pragma endregion
 
-/*
-======================================================================
+#pragma region ========================== INTERMISSION ==========================
 
-INTERMISSION
-
-======================================================================
-*/
-
-void MoveClientToIntermission(edict_t *ent, qboolean log_file)
+void MoveClientToIntermission(edict_t* client, const qboolean log_file)
 {
-	if(deathmatch->value)
-		ent->client->playerinfo.showscores = true;
+	VectorCopy(level.intermission_origin, client->s.origin);
 
-	VectorCopy(level.intermission_origin,ent->s.origin);
+	for (int i = 0; i < 3; i++)
+		client->client->ps.pmove.origin[i] = (float)(level.intermission_origin[i] * 8.0f);
 
-	ent->client->ps.pmove.origin[0] = level.intermission_origin[0]*8;
-	ent->client->ps.pmove.origin[1] = level.intermission_origin[1]*8;
-	ent->client->ps.pmove.origin[2] = level.intermission_origin[2]*8;
+	VectorCopy(level.intermission_angle, client->client->ps.viewangles);
 
-	VectorCopy(level.intermission_angle,ent->client->ps.viewangles);
-	
-	ent->client->ps.pmove.pm_type = PM_INTERMISSION;
-	ent->client->ps.rdflags &= ~RDF_UNDERWATER;
-	
+	client->client->ps.pmove.pm_type = PM_INTERMISSION;
+	client->client->ps.rdflags &= ~RDF_UNDERWATER;
+
 	// Clean up powerup info.
+	client->client->invincible_framenum = 0;
 
-	ent->client->invincible_framenum = 0;
-
-	ent->viewheight = 0;
-	ent->s.modelindex = 0;
-	ent->s.effects = 0;
-	ent->s.sound = 0;
-	ent->solid = SOLID_NOT;
+	client->viewheight = 0;
+	client->s.modelindex = 0;
+	client->s.effects = 0;
+	client->s.sound = 0;
+	client->solid = SOLID_NOT;
 
 	// Add the layout.
-
-	if(deathmatch->value)
+	if (DEATHMATCH)
 	{
-		DeathmatchScoreboardMessage(ent,NULL,log_file);
-	
-		gi.unicast(ent,true);
+		client->client->playerinfo.showscores = true;
+		DeathmatchScoreboardMessage(client, NULL, log_file);
+		gi.unicast(client, true);
 	}
 }
 
@@ -276,6 +264,7 @@ void BeginIntermission(edict_t *targ)
 	}
 }
 
+#pragma endregion
 
 /*
 ==================
