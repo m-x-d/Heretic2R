@@ -170,7 +170,7 @@ void MoveClientToIntermission(edict_t* client, const qboolean log_file)
 	if (DEATHMATCH)
 	{
 		client->client->playerinfo.showscores = true;
-		DeathmatchScoreboardMessage(client, NULL, log_file);
+		DeathmatchScoreboardMessage(log_file);
 		gi.unicast(client, true);
 	}
 }
@@ -258,7 +258,7 @@ typedef struct
 	team_sort_t	team_sort[MAX_CLIENTS];
 } team_scores_t;
 
-void DeathmatchScoreboardMessage(edict_t* ent, edict_t* killer, qboolean log_file) //TODO: remove 'ent' and 'killer' args.
+void DeathmatchScoreboardMessage(qboolean log_file)
 {
 #define MAX_STRING_SIZE 1400
 
@@ -564,7 +564,7 @@ void Cmd_Score_f(edict_t* ent)
 	if (!ent->client->playerinfo.showscores)
 	{
 		// Draw instead of help message. Note that it isn't that hard to overflow the 1400 byte message limit!
-		DeathmatchScoreboardMessage(ent, ent->enemy, false);
+		DeathmatchScoreboardMessage(false);
 		gi.unicast(ent, true);
 	}
 

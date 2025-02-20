@@ -690,7 +690,7 @@ extern void WritePlayerinfo_effects(edict_t* ent);
 extern void BeginIntermission(const edict_t* target_changelevel);
 extern void MoveClientToIntermission(edict_t* client, qboolean log_file);
 extern void G_SetStats(const edict_t* ent);
-extern void DeathmatchScoreboardMessage(edict_t* client, edict_t* killer, qboolean log_file);
+extern void DeathmatchScoreboardMessage(qboolean log_file);
 
 // m_move.c
 extern qboolean M_CheckBottom(edict_t* ent);

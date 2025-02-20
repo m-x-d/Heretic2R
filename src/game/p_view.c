@@ -950,7 +950,7 @@ void ClientEndServerFrame (edict_t *ent)
 
 	if(ent->client->playerinfo.showscores && deathmatch->value && (!(level.framenum&31)))
 	{
-		DeathmatchScoreboardMessage(ent,ent->enemy,false);
+		DeathmatchScoreboardMessage(false);
 		
 		gi.unicast(ent,false);
 	}
