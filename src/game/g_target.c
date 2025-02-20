@@ -4,6 +4,7 @@
 #include "vector.h"
 #include "cl_strings.h"
 #include "g_combat.h" //mxd
+#include "p_hud.h" //mxd
 
 /*QUAK-ED target_temp_entity (1 0 0) (-8 -8 -8) (8 8 8)
 Fire an origin based temp entity event to the clients.
