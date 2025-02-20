@@ -565,66 +565,43 @@ void G_PlayerActionPushButton(const playerinfo_t* info) //mxd. Same logic as G_P
 	G_UseTargets(self, self);
 }
 
-// ************************************************************************************************
-// G_PlayerActionCheckPushLever
-// -----------------------------
-// ************************************************************************************************
-
-#define MAX_PUSH_LEVER_RANGE	80.0
-
-qboolean G_PlayerActionCheckPushLever(playerinfo_t *playerinfo)
+qboolean G_PlayerActionCheckPushLever(const playerinfo_t* info)
 {
-	edict_t *t;
-	vec3_t	v,dir;
-	float	len1, dot;
-	vec3_t	forward;
-	edict_t *self;
-
-	self = (edict_t *) playerinfo->self;
+#define MAX_PUSH_LEVER_RANGE	80.0f
 
 	// Are you near a lever?
+	const edict_t* self = info->self;
+	if (self->target == NULL)
+		return false; // No level, so return.
 
- 	if(!(self->target))
-	{
-		// No button so return.
+	// A level is nearby, so look to see if it's in reach.
+	edict_t* lever = NULL;
+	lever = G_Find(lever, FOFS(targetname), self->target);
 
+	if (lever == NULL || lever->classID != CID_LEVER)
 		return false;
-	}
 
-	// A button is nearby, so look to see if it's in reach.
+	// Get distance from player origin to center of lever
+	vec3_t v;
+	VectorSubtract(info->origin, lever->s.origin, v);
+	const float range = VectorLength(v);
 
-	t = NULL;
-	t = G_Find(t,FOFS(targetname),self->target);
-
-	if (!t)  
-		return(false);
-
- 	if (t->classID == CID_LEVER)
+	if (range < MAX_PUSH_LEVER_RANGE)
 	{
-		// Get distance from player origin to center of lever
-		VectorSubtract(playerinfo->origin, t->s.origin,v);
-		len1 = VectorLength(v);
-	}
-	else
-		return(false);
+		vec3_t dir;
+		VectorCopy(self->client->playerinfo.aimangles, dir);
+		dir[PITCH] = 0.0f;
 
-	if (len1 < MAX_PUSH_LEVER_RANGE)
-	{		
-		VectorCopy(((edict_t *)playerinfo->self)->client->playerinfo.aimangles, dir);
-		dir[PITCH] = 0;
-
+		vec3_t forward;
 		AngleVectors(dir, forward, NULL, NULL);
-		VectorSubtract (t->s.origin, self->s.origin, v);
+		VectorSubtract(lever->s.origin, self->s.origin, v);
 		VectorNormalize(v);
-		// Both these vectors are normalized so result is cos of angle
-		dot = DotProduct(v, forward);
 
-		// 41 degree range either way 
-		if (dot > 0.70)
-			return(true); 
+		// Both these vectors are normalized so result is cos of angle.
+		return DotProduct(v, forward) > 0.7f; // 41 degree range either way.
 	}
 
-	return(false);
+	return false;
 }
 
 // ************************************************************************************************
