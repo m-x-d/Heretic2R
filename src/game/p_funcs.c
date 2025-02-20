@@ -24,29 +24,12 @@ entity_state_t* G_GetEntityStatePtr(edict_t* entity)
 	return &entity->s;
 }
 
-void PlayerClimbSound(playerinfo_t *playerinfo, char *name)
+static void PlayerClimbSound(playerinfo_t* info, char* name)
 {
-	if(playerinfo->isclient)
-	{
-		playerinfo->CL_Sound(	SND_PRED_ID53,		
-								playerinfo->origin, 
-								CHAN_VOICE, 
-								name, 
-								0.75, 
-								ATTN_NORM, 
-								0);
-	}
+	if (info->isclient)
+		info->CL_Sound(SND_PRED_ID53, info->origin, CHAN_VOICE, name, 0.75f, ATTN_NORM, 0.0f);
 	else
-	{
-		playerinfo->G_Sound(	SND_PRED_ID53,
-								playerinfo->leveltime,
-								playerinfo->self, 
-								CHAN_VOICE, 
-								playerinfo->G_SoundIndex(name), 
-								0.75, 
-								ATTN_NORM, 
-								0);
-	}
+		info->G_Sound(SND_PRED_ID53, info->leveltime, info->self, CHAN_VOICE, info->G_SoundIndex(name), 0.75f, ATTN_NORM, 0.0f);
 }
 
 // ************************************************************************************************
