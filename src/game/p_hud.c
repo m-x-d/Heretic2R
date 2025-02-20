@@ -242,335 +242,316 @@ void BeginIntermission(const edict_t* target_changelevel)
 
 #pragma endregion
 
-/*
-==================
-DeathmatchScoreboardMessage
-
-==================
-*/
-#define MAX_STRING_SIZE 1400
+#pragma region ========================== DM SCOREBOARD ==========================
 
 typedef struct
 {
-	int			sorted;
-	int			scores;
+	int sorted;
+	int scores;
 } team_sort_t;
 
 typedef struct
 {
-	char		teamname[200];
-	int			teamscore;
-	int			count_for_team;
+	char team_name[200];
+	int team_score;
+	int count_for_team;
 	team_sort_t	team_sort[MAX_CLIENTS];
 } team_scores_t;
 
-void DeathmatchScoreboardMessage (edict_t *ent, edict_t *killer, qboolean log_file)
+void DeathmatchScoreboardMessage(edict_t* ent, edict_t* killer, qboolean log_file) //TODO: remove 'ent' and 'killer' args.
 {
-	char		entry[MAX_STRING_SIZE];
-	char		value[512];
-	int			game_type = 0;
-	char		name[MAX_QPATH];
-	char		string[MAX_STRING_SIZE];
-	int			stringlength;
-	int			i, j, k, z;
-	int			sorted[MAX_CLIENTS];
-	int			sortedscores[MAX_CLIENTS];
-	int			score, total, max_team, total_team, max_team_display, real_total;
-	int			hours, secs, mins;
-	int			x, y;
-	qboolean	bubble;
-	gclient_t	*cl;
-	edict_t		*cl_ent;
-	char		*p;
-	team_scores_t	team_scores[MAX_CLIENTS];
-	team_scores_t	temp_point;
-	FILE		*f;
-	cvar_t		*host_name;
-	char		*game_types[3] = 
-	{{"Cooperative"},
-	{"Death Match"},
-	{"Team Play Death Match"}};
+#define MAX_STRING_SIZE 1400
 
-	string[0] = 0;
-	stringlength = 0;
-	total = 0;
+	const char* game_types[3] = { "Cooperative", "Death Match", "Team Play Death Match" };
+	FILE* logfile;
 
-	if (log_file && log_file_name->string[0])
+	if (log_file && log_file_name->string[0] != 0)
 	{
-		Com_sprintf (name, sizeof(name), "%s/%s", gi.FS_Userdir(), log_file_name->string);
+		char name[MAX_QPATH];
+		Com_sprintf(name, sizeof(name), "%s/%s", gi.FS_Userdir(), log_file_name->string);
 
-		Com_Printf ("Dumping end game log to %s\n", name);
-		gi.FS_CreatePath (name);
-		f = fopen (name, "a");
-		if (!f)
+		Com_Printf("Dumping end game log to %s\n", name);
+		gi.FS_CreatePath(name);
+
+		if (fopen_s(&logfile, name, "a") == 0) //mxd. fopen -> fopen_s.
 		{
-			Com_Printf ("ERROR: couldn't open.\n");
-			log_file = false;
+			int game_type = 0; // COOP.
+
+			if (DEATHMATCH)
+				game_type = ((DMFLAGS & (DF_MODELTEAMS | DF_SKINTEAMS)) ? 2 : 1); // TDM/DM.
+
+			int secs = (int)level.time;
+			const int hours = secs / (60 * 60);
+			secs -= hours * (60 * 60);
+			const int mins = secs / 60;
+			secs -= mins * 60;
+
+			const cvar_t* host_name = gi.cvar("hostname", "", 0);
+
+			fprintf(logfile, "%s\n", log_file_header->string);
+			fprintf(logfile, "%sMap Name : %s\n", log_file_line_header->string, level.mapname);
+			fprintf(logfile, "%sHost Name : %s\n", log_file_line_header->string, host_name->string);
+			fprintf(logfile, "%sGame Type : %s\n", log_file_line_header->string, game_types[game_type]);
+			fprintf(logfile, "%sGame Duration : %02i:%02i:%02i\n%s\n", log_file_line_header->string, hours, mins, secs, log_file_line_header->string);
 		}
 		else
 		{
-			if (coop->value)
-				game_type = 0;
-			else
-			if (deathmatch->value)
-			{
-				game_type = 1;
-				if ((int)dmflags->value & (DF_MODELTEAMS | DF_SKINTEAMS))
-					game_type = 2;
-			}
-		   
-			secs = level.time;
-			hours = secs / (60*60);
-			secs -= hours * (60*60);
-			mins = secs / 60;
-			secs -= mins * 60;
-			host_name = gi.cvar("hostname", "", 0);
-			fprintf (f, "%s\n", log_file_header->string);
-			fprintf (f, "%sMap Name : %s\n", log_file_line_header->string, level.mapname);
-			fprintf (f, "%sHost Name : %s\n", log_file_line_header->string, host_name->string);
-			fprintf (f, "%sGame type : %s\n", log_file_line_header->string, game_types[game_type]);
-			fprintf (f, "%sGame Duration : %02i:%02i:%02i\n%s\n", log_file_line_header->string, hours, mins, secs, log_file_line_header->string);
+			Com_Printf("ERROR: couldn't open.\n");
+			log_file = false;
 		}
 	}
-	// we might have no file name, but logging is set to go
 	else
-		log_file = false;
-
-	// sort the clients by score and team if we are playing team play.
-	// then resort them by team score.
-	if ((int)(dmflags->value) & (DF_MODELTEAMS | DF_SKINTEAMS))
 	{
-		// ensure we have an empty table
-		memset(team_scores,0,sizeof(team_scores));
-		max_team = 0;
-		total_team = 0;
+		// We might have no file name, but logging is set to go.
+		log_file = false;
+	}
 
-		for(i = 0; i < game.maxclients; i++)
+	char string[MAX_STRING_SIZE] = { 0 };
+	int string_length = 0;
+
+	// Sort the clients by score and team if we are playing team play, then resort them by team score.
+	if (DMFLAGS & (DF_MODELTEAMS | DF_SKINTEAMS))
+	{
+		// Ensure we have an empty table
+		team_scores_t team_scores[MAX_CLIENTS] = { 0 };
+		int total_teams = 0;
+
+		for (int i = 0; i < game.maxclients; i++)
 		{
-			cl_ent = g_edicts + 1 + i;
+			const edict_t* cl_ent = &g_edicts[i + 1];
 			if (!cl_ent->inuse)
 				continue;
 
-			// determine score and team type
-			score = game.clients[i].resp.score;
-			strcpy(value, Info_ValueForKey (cl_ent->client->playerinfo.pers.userinfo, "skin"));
+			// Determine score and team type.
+			const int score = game.clients[i].resp.score;
 
-			if (!value[0])
+			char value[512];
+			strcpy_s(value, sizeof(value), Info_ValueForKey(cl_ent->client->playerinfo.pers.userinfo, "skin")); //mxd. strcpy -> strcpy_s
+
+			if (value[0] == 0)
 				continue;
 
-			p = strchr(value, '/');
+			char* p = strchr(value, '/');
 
-			if (p== NULL)
-				p=&value[0];
-			else
-			// didn't find a team name
-			if ((int)(dmflags->value) & DF_SKINTEAMS)
+			if (p == NULL)
+			{
+				p = &value[0];
+			}
+			else if (DMFLAGS & DF_SKINTEAMS) // Didn't find a team name.
+			{
 				p++;
+			}
 			else
 			{
-				*p = 0;					
+				*p = 0;
 				p = &value[0];
 			}
 
-			// now find a place in the team list to insert it
-			for(j = 0; j<total_team;j++)
-			{
-				// is it the same as our current one ?
-   				if(!stricmp(team_scores[j].teamname, p))
-   				{
+			// Now find a place in the team list to insert it.
+			int team_index;
+			for (team_index = 0; team_index < total_teams; team_index++)
+				if (Q_stricmp(team_scores[team_index].team_name, p) == 0) // Is it the same as our current one?
 					break;
-   				}
-			}
 
-			// find the position within the team mates array we should be, given score
-			for(k=0; k<team_scores[j].count_for_team;k++)
-			{
-				if (team_scores[j].team_sort[k].scores < score)
+			// Find the position within the team mates array we should be, given score.
+			int score_index;
+			team_scores_t* cur_score = &team_scores[team_index]; //mxd
+			for (score_index = 0; score_index < cur_score->count_for_team; score_index++)
+				if (cur_score->team_sort[score_index].scores < score)
 					break;
-			}
 
-			// shuffle all the othe scores down if they need to be
-			for(x = team_scores[j].count_for_team ; x >k ; x--)
-				team_scores[j].team_sort[x] = team_scores[j].team_sort[x-1];
+			// Shuffle all the other scores down if they need to be.
+			for (int c = cur_score->count_for_team; c > score_index; c--)
+				cur_score->team_sort[c] = cur_score->team_sort[c - 1];
 
-			// insert us into this team/sorted player slot within the team structure
-			strcpy(team_scores[j].teamname, p);
-			team_scores[j].teamscore +=	score;
-			team_scores[j].team_sort[k].scores = score;
-			team_scores[j].team_sort[k].sorted = i;
-			team_scores[j].count_for_team++;
+			// Insert us into this team/sorted player slot within the team structure.
+			strcpy_s(cur_score->team_name, sizeof(cur_score->team_name), p); //mxd. strcpy -> strcpy_s
+			cur_score->team_score += score;
+			cur_score->team_sort[score_index].scores = score;
+			cur_score->team_sort[score_index].sorted = i;
+			cur_score->count_for_team++;
 
-			if (j==total_team)
-				total_team++;
-
+			if (team_index == total_teams)
+				total_teams++;
 		}
 
-		//determine how many of each team gets displayed
-		if (total_team)
-			max_team_display = 10/total_team;
-		else
-			max_team_display = 0;
-
-		if (max_team_display < 1)
-			max_team_display = 1;
-
-		// now order the teams into team score order - nasty little bubble sort here
+		// Now order the teams into team score order - nasty little bubble sort here.
+		qboolean bubble;
 		do
 		{
 			bubble = false;
-			for (i=0; i<total_team-1; i++)
+			for (int i = 0; i < total_teams - 1; i++)
 			{
-				if (team_scores[i].teamscore < team_scores[i+1].teamscore)
+				if (team_scores[i].team_score < team_scores[i + 1].team_score)
 				{
 					bubble = true;
-					temp_point = team_scores[i];
-					team_scores[i] = team_scores[i+1];
-					team_scores[i+1] = temp_point;
+					const team_scores_t temp_point = team_scores[i];
+					team_scores[i] = team_scores[i + 1];
+					team_scores[i + 1] = temp_point;
 				}
-				
+
 			}
 		} while (bubble);
-		
-		// now display the data
-		real_total = total_team;
-		if (total_team > 10)
-			total_team = 10;
 
-		y = 32;
-		for(i = 0, k = 0; i < total_team; i++)
+		// Determine how many of each team gets displayed.
+		const int max_team_display = ((total_teams > 0) ? max(1, 10 / total_teams) : 0);
+
+		// Now display the data.
+		const int real_total = total_teams;
+		total_teams = min(10, total_teams);
+
+		int y = 32;
+		for (int i = 0, k = 0; i < total_teams; i++)
 		{
-			x = (k >= 5) ? 180 : 0;
+			int x = (k >= 5 ? 180 : 0);
 			if (k == 5)
 				y = 32;
 
-			Com_sprintf (entry, sizeof(entry), "tm %i %i %i %s ",x,y, team_scores[i].teamscore, team_scores[i].teamname);
-			j = strlen(entry);
-			if(stringlength + j > MAX_STRING_SIZE)
+			char entry[MAX_STRING_SIZE];
+			Com_sprintf(entry, sizeof(entry), "tm %i %i %i %s ", x, y, team_scores[i].team_score, team_scores[i].team_name);
+
+			const int len = (int)strlen(entry);
+			if (string_length + len > MAX_STRING_SIZE)
 				break;
 
-			strcpy (string + stringlength, entry);
-			stringlength += j;
+			strcpy_s(&string[string_length], sizeof(string) - string_length - 1, entry); //mxd. strcpy -> strcpy_s
+			string_length += len;
 			y += 16;
 
-			for (j = 0; j < max_team_display; j++)
+			for (int j = 0; j < max_team_display; j++)
 			{
-				// don't try and print more than there are for this team
+				// Don't try and print more than there are for this team.
 				if (j >= team_scores[i].count_for_team)
 					continue;
 
-				x = (k >= 5) ? 180 : 0;
-				cl = &game.clients[team_scores[i].team_sort[j].sorted];
-				cl_ent = g_edicts + 1 + team_scores[i].team_sort[j].sorted;
+				x = (k >= 5 ? 180 : 0);
+
+				const team_sort_t* cur_team = &team_scores[i].team_sort[j]; //mxd
+				const gclient_t* cl = &game.clients[cur_team->sorted];
+
 				// Send the layout.
-				Com_sprintf (entry, sizeof(entry), "client %i %i %i %i %i %i ",
-					x, y, team_scores[i].team_sort[j].sorted,team_scores[i].team_sort[j].scores , cl->ping, (level.framenum - cl->resp.enterframe) / 600);
-				z = strlen(entry);
-				if(stringlength + z > MAX_STRING_SIZE)
+				Com_sprintf(entry, sizeof(entry), "client %i %i %i %i %i %i ", x, y, cur_team->sorted, cur_team->scores, cl->ping, (level.framenum - cl->resp.enterframe) / 600);
+
+				const int entry_len = (int)strlen(entry);
+				if (string_length + entry_len > MAX_STRING_SIZE)
 					break;
 
-				strcpy (string + stringlength, entry);
-				stringlength += z;
+				strcpy_s(&string[string_length], sizeof(string) - string_length - 1, entry); //mxd. strcpy -> strcpy_s
+
+				string_length += entry_len;
 				y += 32;
 				k++;
+
 				if (k == 5)
 					y = 32;
 			}
+
 			y += 8;
 		}
+
 		if (log_file)
 		{
-			for(i = 0, k = 0; i < real_total; i++)
+			for (int i = 0; i < real_total; i++)
 			{
-				fprintf (f, "%s%sTeam %s\n",log_file_line_header->string,log_file_line_header->string,team_scores[i].teamname);
-				fprintf (f, "%sTeam Score %i\n%s\n",log_file_line_header->string,team_scores[i].teamscore,log_file_line_header->string);
+				team_scores_t* cur_team = &team_scores[i]; //mxd
+				fprintf(logfile, "%s%sTeam %s\n", log_file_line_header->string, log_file_line_header->string, cur_team->team_name);
+				fprintf(logfile, "%sTeam Score %i\n%s\n", log_file_line_header->string, cur_team->team_score, log_file_line_header->string);
 
-				for (j = 0; j < team_scores[i].count_for_team; j++)
+				for (int j = 0; j < cur_team->count_for_team; j++)
 				{
-					cl = &game.clients[team_scores[i].team_sort[j].sorted];
-					cl_ent = g_edicts + 1 + team_scores[i].team_sort[j].sorted;
-					fprintf (f, "%sClient %s\n", log_file_line_header->string, cl_ent->client->playerinfo.pers.netname);
-					fprintf (f, "%sScore %i\n", log_file_line_header->string, team_scores[i].team_sort[j].scores);
-					fprintf (f, "%sPing %i\n", log_file_line_header->string, cl->ping);
-					fprintf (f, "%sTime %i\n%s\n", log_file_line_header->string, (level.framenum - cl->resp.enterframe) / 600, log_file_line_header->string);
+					const gclient_t* cl = &game.clients[cur_team->team_sort[j].sorted];
+					const edict_t* cl_ent = &g_edicts[cur_team->team_sort[j].sorted + 1];
+
+					fprintf(logfile, "%sClient %s\n", log_file_line_header->string, cl_ent->client->playerinfo.pers.netname);
+					fprintf(logfile, "%sScore %i\n", log_file_line_header->string, cur_team->team_sort[j].scores);
+					fprintf(logfile, "%sPing %i\n", log_file_line_header->string, cl->ping);
+					fprintf(logfile, "%sTime %i\n%s\n", log_file_line_header->string, (level.framenum - cl->resp.enterframe) / 600, log_file_line_header->string);
 				}
 			}
 		}
 	}
-	// Sort the clients by score - for normal deathmatch play.
-	else
+	else // Sort the clients by score - for normal deathmatch play.
 	{
-		for(i = 0; i < game.maxclients; i++)
+		int total = 0;
+		int sorted[MAX_CLIENTS];
+
+		for (int i = 0; i < game.maxclients; i++)
 		{
-			cl_ent = g_edicts + 1 + i;
+			int sorted_scores[MAX_CLIENTS];
+
+			const edict_t* cl_ent = &g_edicts[i + 1];
 			if (!cl_ent->inuse)
 				continue;
 
-			score = game.clients[i].resp.score;
-			for(j = 0; j < total; j++)
-			{
-				if(score > sortedscores[j])
+			int score = game.clients[i].resp.score;
+
+			int insert_index;
+			for (insert_index = 0; insert_index < total; insert_index++)
+				if (score > sorted_scores[insert_index])
 					break;
-			}
-			for(k = total; k > j; k--)
+
+			for (int k = total; k > insert_index; k--)
 			{
 				sorted[k] = sorted[k - 1];
-				sortedscores[k] = sortedscores[k - 1];
+				sorted_scores[k] = sorted_scores[k - 1];
 			}
-			sorted[j] = i;
-			sortedscores[j] = score;
+
+			sorted[insert_index] = i;
+			sorted_scores[insert_index] = score;
 			total++;
 		}
-		real_total = total;
-		if(total > 12)
-		{
-			total = 12;
-		}
-		// now display the data
 
-		y = 32;
-		for(i = 0; i < total; i++)
+		int real_total = total;
+		total = min(12, total);
+
+		// Now display the data.
+		int y = 32;
+
+		for (int i = 0; i < total; i++)
 		{
-			cl = &game.clients[sorted[i]];
-			cl_ent = g_edicts + 1 + sorted[i];
-			x = (i >= 6) ? 160 : 0;
+			gclient_t* cl = &game.clients[sorted[i]];
+
+			int x = (i >= 6 ? 160 : 0);
 			if (i == 6)
 				y = 32;
 
 			// Send the layout.
-			Com_sprintf (entry, sizeof(entry), "client %i %i %i %i %i %i ",
-				x, y, sorted[i], cl->resp.score, cl->ping, (level.framenum - cl->resp.enterframe) / 600);
-			j = strlen(entry);
-			if(stringlength + j > MAX_STRING_SIZE)
-			{
+			char entry[MAX_STRING_SIZE];
+			Com_sprintf(entry, sizeof(entry), "client %i %i %i %i %i %i ", x, y, sorted[i], cl->resp.score, cl->ping, (level.framenum - cl->resp.enterframe) / 600);
+
+			int len = (int)strlen(entry);
+			if (string_length + len > MAX_STRING_SIZE)
 				break;
-			}
-			strcpy (string + stringlength, entry);
-			stringlength += j;
+
+			strcpy_s(&string[string_length], sizeof(string) - string_length - 1, entry); //mxd. strcpy -> strcpy_s
+			string_length += len;
 			y += 32;
 		}
+
 		if (log_file)
 		{
-			for (i = 0; i<real_total; i++)
+			for (int i = 0; i < real_total; i++)
 			{
-				cl = &game.clients[sorted[i]];
-				cl_ent = g_edicts + 1 + sorted[i];
-				fprintf (f, "%sClient %s\n", log_file_line_header->string, cl_ent->client->playerinfo.pers.netname);
-				fprintf (f, "%sScore %i\n", log_file_line_header->string, cl->resp.score);
-				fprintf (f, "%sPing %i\n", log_file_line_header->string, cl->ping);
-				fprintf (f, "%sTime %i\n%s\n", log_file_line_header->string, (level.framenum - cl->resp.enterframe) / 600, log_file_line_header->string);
+				gclient_t* cl = &game.clients[sorted[i]];
+				edict_t* cl_ent = &g_edicts[sorted[i] + 1];
+
+				fprintf(logfile, "%sClient %s\n", log_file_line_header->string, cl_ent->client->playerinfo.pers.netname);
+				fprintf(logfile, "%sScore %i\n", log_file_line_header->string, cl->resp.score);
+				fprintf(logfile, "%sPing %i\n", log_file_line_header->string, cl->ping);
+				fprintf(logfile, "%sTime %i\n%s\n", log_file_line_header->string, (level.framenum - cl->resp.enterframe) / 600, log_file_line_header->string);
 			}
 		}
 	}
 
 	// Print level name and exit rules.
-	gi.WriteByte (svc_layout);
-	gi.WriteString (string);
+	gi.WriteByte(svc_layout);
+	gi.WriteString(string);
 
-	// close any file that needs to be 
+	// Close any file that needs to be.
 	if (log_file)
 	{
-		fprintf (f, "%s\n", log_file_footer->string);
-		fclose(f);
+		fprintf(logfile, "%s\n", log_file_footer->string);
+		fclose(logfile);
 	}
 }
 
@@ -611,7 +592,7 @@ void Cmd_Score_f (edict_t *ent)
 	DeathmatchScoreboard (ent);
 }
 
-//=======================================================================
+#pragma endregion
 
 /*
 ===============
