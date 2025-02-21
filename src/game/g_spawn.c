@@ -1,8 +1,9 @@
-#include "g_local.h"
 #include "g_items.h" //mxd
 #include "g_Shrine.h" //mxd
+#include "c_actors.h" //mxd
 #include "m_monsters.h" //mxd
 #include "p_client.h" //mxd
+#include "g_local.h"
 
 typedef struct
 {
@@ -83,7 +84,6 @@ void SP_misc_fire_sparker (edict_t *ent);
 void SP_misc_flag (edict_t *ent);
 void SP_monster_chkroktk (edict_t *self);
 
-void SP_character_corvus1 (edict_t *self);
 void SP_character_corvus2 (edict_t *self);
 void SP_character_corvus3 (edict_t *self);
 void SP_character_corvus4 (edict_t *self);

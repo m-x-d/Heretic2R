@@ -1106,5 +1106,8 @@
     <ClInclude Include="mg_ai.h">
       <Filter>src\Monsters</Filter>
     </ClInclude>
+    <ClInclude Include="c_actors.h">
+      <Filter>src\Cinematics</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

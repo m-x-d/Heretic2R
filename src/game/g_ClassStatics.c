@@ -5,6 +5,7 @@
 //
 
 #include "g_ClassStatics.h"
+#include "c_actors.h" //mxd
 #include "m_monsters.h" //mxd
 
 G_ClassStatics_t classStatics[NUM_CLASSIDS];
@@ -20,7 +21,6 @@ void TeleporterStaticsInit();
 void ButtonStaticsInit();
 void LeverStaticsInit();
 void FlameThrowerStaticsInit();
-void CorvusStaticsInit();
 void victimSsithraStaticsInit();
 void SsithrascoutStaticsInit();
 void DranorStaticsInit();

@@ -173,6 +173,7 @@
     <ClInclude Include="..\qcommon\Skeletons.h" />
     <ClInclude Include="..\qcommon\Vector.h" />
     <ClInclude Include="buoy.h" />
+    <ClInclude Include="c_actors.h" />
     <ClInclude Include="c_ai.h" />
     <ClInclude Include="c_corvus1.h" />
     <ClInclude Include="c_corvus1_anim.h" />
