@@ -84,7 +84,6 @@ void SP_misc_fire_sparker (edict_t *ent);
 void SP_misc_flag (edict_t *ent);
 void SP_monster_chkroktk (edict_t *self);
 
-void SP_character_corvus2 (edict_t *self);
 void SP_character_corvus3 (edict_t *self);
 void SP_character_corvus4 (edict_t *self);
 void SP_character_corvus5 (edict_t *self);

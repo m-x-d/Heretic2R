@@ -33,7 +33,6 @@ void Siernan1CinStaticsInit();
 void Siernan2CinStaticsInit();
 void TomeStaticsInit();
 void MorcalavinCinStaticsInit();
-void Corvus2StaticsInit();
 void Corvus3StaticsInit();
 void Corvus4StaticsInit();
 void Corvus5StaticsInit();

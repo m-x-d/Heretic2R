@@ -1,29 +1,13 @@
-/*-------------------------------------------------------------------
-c_corvus.c
+//
+// c_corvus2.c
+//
+// Copyright 1998 Raven Software
+//
 
-Heretic II
-Copyright 1998 Raven Software
-
-  AI:
-
-
--------------------------------------------------------------------*/
-#include "g_local.h"
-#include "Utilities.h"
-#include "g_DefaultMessageHandler.h"
-#include "g_monster.h"
-#include "fx.h"
-#include "random.h"
-#include "buoy.h"
-#include "vector.h"
-
-#include "g_Skeletons.h"
 #include "c_corvus2.h"
 #include "c_corvus2_anim.h"
-#include "g_HitLocation.h"
-#include "g_misc.h"
-#include "angles.h"
 #include "c_ai.h"
+#include "Utilities.h"
 
 /*----------------------------------------------------------------------
   plagueElf Base Info
@@ -141,7 +125,7 @@ void corvus2_c_anims(edict_t *self, G_Message_t *msg)
 /*-------------------------------------------------------------------------
 	PlagueElfStaticsInit
 -------------------------------------------------------------------------*/
-void Corvus2StaticsInit()
+void Corvus2StaticsInit(void)
 {
 	classStatics[CID_CORVUS2].msgReceivers[MSG_C_ACTION1] = corvus2_c_anims;
 	classStatics[CID_CORVUS2].msgReceivers[MSG_C_IDLE1] = corvus2_c_anims;
