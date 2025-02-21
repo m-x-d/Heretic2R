@@ -172,12 +172,9 @@ void CorvusStaticsInit(void)
 	classStatics[CID_CORVUS].resInfo = &res_info;
 }
 
-
-
-/*QUAKED character_corvus1 (1 .5 0) (-17 -25 -32) (22 12 32) INVISIBLE
-The cinematic corvus for the torture victim
-*/
-void SP_character_corvus1 (edict_t *self)
+// QUAKED character_corvus1 (1 .5 0) (-17 -25 -32) (22 12 32) INVISIBLE
+// The cinematic corvus for the torture victim.
+void SP_character_corvus1(edict_t* self)
 {
-	c_corvus_init(self,CID_CORVUS);
+	c_corvus_init(self, CID_CORVUS);
 }
