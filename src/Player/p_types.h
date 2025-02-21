@@ -438,13 +438,13 @@ typedef struct playerinfo_s
 	// Server (game) function callbacks (approximating functionality of client-side function callbacks).
 	void (*G_L_Sound)(edict_t* entity, int sound_num);
 	void (*G_Sound)(byte EventId, float leveltime, edict_t* entity, int channel, int sound_num, float volume, float attenuation, float timeofs);
-	void (*G_Trace)(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const edict_t* passent, int contentmask, trace_t* trace);
-	void (*G_CreateEffect)(byte EventId, entity_state_t* state, int type, int flags, vec3_t origin, char* format, ...);
+	void (*G_Trace)(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, const edict_t* passent, uint contentmask, trace_t* trace);
+	void (*G_CreateEffect)(byte EventId, entity_state_t* state, int type, int flags, const vec3_t origin, const char* format, ...);
 	void (*G_RemoveEffects)(byte Eventid, entity_state_t* state, int type);
 
 	// Server (game) function callbacks that have no client side equivalent.
-	int (*G_SoundIndex)(char* name);
-	void (*G_SoundRemove)(char* name);
+	int (*G_SoundIndex)(const char* name);
+	void (*G_SoundRemove)(const char* name);
 	void (*G_UseTargets)(edict_t* ent, edict_t* activator);
 	entity_state_t* (*G_GetEntityStatePtr)(edict_t* entity);
 	int (*G_BranchLwrClimbing)(playerinfo_t* playerinfo);
@@ -467,13 +467,13 @@ typedef struct playerinfo_s
 	void (*G_PlayerSpellStopShieldAttack)(const playerinfo_t* playerinfo);
 	void (*G_PlayerVaultKick)(const playerinfo_t* playerinfo);
 	void (*G_PlayerActionCheckRopeMove)(playerinfo_t* playerinfo);
-	void (*G_gamemsg_centerprintf)(edict_t* ent, short msg);
-	void (*G_levelmsg_centerprintf)(edict_t* ent, short msg);
-	void (*G_WeapNext)(edict_t* ent);
+	void (*G_gamemsg_centerprintf)(const edict_t* ent, short msg);
+	void (*G_levelmsg_centerprintf)(const edict_t* ent, short msg);
+	void (*G_WeapNext)(const edict_t* ent);
 	void (*G_UseItem)(edict_t* ent, char* s);
 
 	// Common client & server (game) function callbacks.
-	int (*PointContents)(vec3_t point);
+	int (*PointContents)(const vec3_t point);
 	void (*SetJointAngles)(const playerinfo_t* playerinfo);
 	void (*ResetJointAngles)(const playerinfo_t* playerinfo);
 	void (*PlayerActionSwordAttack)(const playerinfo_t* playerinfo, int value);
@@ -567,7 +567,7 @@ typedef struct playerinfo_s
 	float upvel;
 	float turncmd;
 	float waterheight;
-	vec3_t LastWatersplashPos; // Not used on client.
+	vec3_t LastWatersplashPos; // Not used on client. //TODO: only Z-coord is used.
 	vec3_t oldvelocity;
 	qboolean chargingspell;
 	float quickturn_rate;		// Rotational velocity (degrees/second).
