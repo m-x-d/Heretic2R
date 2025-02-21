@@ -23,13 +23,12 @@ static gclient_t* current_client;
 static float bob_move;
 static int bob_cycle; // Odd cycles are right foot going forward.
 
-// ** setup a looping sound on the client
-void G_set_looping_sound(edict_t *self, int sound_num)
+// Setup a looping sound on the client.
+static void G_set_looping_sound(edict_t* self, const int sound_num)
 {
-	self->s.sound = sound_num;
+	self->s.sound = (byte)sound_num;
 	self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
 }
-
 
 // ************************************************************************************************
 // ClientServerRand
