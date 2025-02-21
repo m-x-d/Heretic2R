@@ -53,18 +53,10 @@ void DefenceThink_RingOfRepulsion(edict_t* caster, char* format, ...)
 	TakeMana(caster); //mxd
 }
 
-// ************************************************************************************************
-
-void DefenceThink_MeteorBarrier(edict_t *Caster, char *Format,...)
+void DefenceThink_MeteorBarrier(edict_t* caster, char* format, ...)
 {
-	playerinfo_t *playerinfo;
-
-	playerinfo = &Caster->client->playerinfo;
-
-	SpellCastMeteorBarrier(Caster, Caster->s.origin, NULL, NULL, 0.0F);
-
-	assert(playerinfo->def_ammo_index);
-
+	SpellCastMeteorBarrier(caster, caster->s.origin, NULL, NULL, 0.0f);
+	//mxd. Mana decrement is handled per-meteor in SpellCastMeteorBarrier(). 
 }
 
 
