@@ -24,20 +24,18 @@ void ai_c_readmessage(edict_t* self, G_Message_t* msg)
 	self->ideal_yaw = anglemod(self->s.angles[YAW] + (float)turning);
 }
 
-
-
-// This is called at the end of each anim cycle
-void ai_c_cycleend (edict_t *self)
+// This is called at the end of each anim cycle.
+void ai_c_cycleend(edict_t* self)
 {
-	// A movement action that still has a distance to walk
-	if ((self->monsterinfo.c_anim_flag & C_ANIM_MOVE) &&  ((self->monsterinfo.c_dist) || (self->s.angles[YAW] != self->ideal_yaw)))	 
+	// A movement action that still has a distance to walk.
+	if ((self->monsterinfo.c_anim_flag & C_ANIM_MOVE) && (self->monsterinfo.c_dist > 0 || self->s.angles[YAW] != self->ideal_yaw))
 		return;
 
-	// A repeating action that still has to repeat
-	if ((self->monsterinfo.c_anim_flag & C_ANIM_REPEAT) && (self->monsterinfo.c_repeat))
+	// A repeating action that still has to repeat.
+	if ((self->monsterinfo.c_anim_flag & C_ANIM_REPEAT) && self->monsterinfo.c_repeat > 0)
 	{
-		--self->monsterinfo.c_repeat;
-		if (self->monsterinfo.c_repeat)
+		self->monsterinfo.c_repeat--;
+		if (self->monsterinfo.c_repeat > 0)
 			return;
 	}
 
@@ -45,23 +43,19 @@ void ai_c_cycleend (edict_t *self)
 	{
 		self->nextthink = -1;
 		self->think = NULL;
+	}
 
-		if (self->monsterinfo.c_callback)	// Was a callback specified?
-			self->monsterinfo.c_callback(self);
-
+	// This anim is all done.
+	if (self->monsterinfo.c_callback != NULL) // Was a callback specified?
+	{
+		self->monsterinfo.c_callback(self);
 		return;
 	}
 
-	// This anim is all done
-	if (self->monsterinfo.c_callback)	// Was a callback specified?
-		self->monsterinfo.c_callback(self);
-	else								// Well then just sit there if you aren't already
-	{
-		if (!(self->monsterinfo.c_anim_flag & C_ANIM_IDLE))	// 
-			QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige",0,0,0,NULL,NULL);
-	} 
+	// Well then just sit there if you aren't already.
+	if (!(self->monsterinfo.c_anim_flag & C_ANIM_IDLE))
+		QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 }
-
 
 void ai_c_move (edict_t *self,float forward,float right,float up)
 {
