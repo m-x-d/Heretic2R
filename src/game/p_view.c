@@ -248,24 +248,15 @@ void SetupPlayerinfo_effects(const edict_t* ent)
 		ent->client->playerinfo.fmnodeinfo[i] = ent->s.fmnodeinfo[i];
 }
 
-// ************************************************************************************************
-// WritePlayerinfo_effects
-// -----------------------
-// ************************************************************************************************
-
-void WritePlayerinfo_effects(edict_t *ent)
+void WritePlayerinfo_effects(edict_t* ent)
 {
-	int i;
-
 	ent->s.effects = ent->client->playerinfo.effects;
 	ent->s.renderfx = ent->client->playerinfo.renderfx;
 	ent->s.skinnum = ent->client->playerinfo.skinnum;
-	ent->s.clientnum = ent->client->playerinfo.clientnum;
+	ent->s.clientnum = (short)ent->client->playerinfo.clientnum;
 
-	for(i = 0; i < MAX_FM_MESH_NODES; i++)
-	{
+	for (int i = 0; i < MAX_FM_MESH_NODES; i++)
 		ent->s.fmnodeinfo[i] = ent->client->playerinfo.fmnodeinfo[i];
-	}
 }
 
 // ************************************************************************************************
