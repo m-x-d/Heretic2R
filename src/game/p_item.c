@@ -71,22 +71,15 @@ void DefenceThink_Teleport(edict_t* caster, char* format, ...)
 	TakeMana(caster); //mxd
 }
 
-// ************************************************************************************************
-void DefenceThink_Shield(edict_t *Caster, char *Format,...)
+void DefenceThink_Shield(edict_t* caster, char* format, ...)
 {
-	playerinfo_t *playerinfo;
-	assert(Caster->client);
-	playerinfo = &Caster->client->playerinfo;
+	assert(caster->client != NULL);
+	const playerinfo_t* info = &caster->client->playerinfo;
 
 	// Make sure that there isn't already a shield in place.
-	if (playerinfo->shield_timer < playerinfo->leveltime)
-	{	// Don't do anything if there is already a shield in place.
-		// Set up the shield and then do it
-
-		SpellCastShield(Caster, Caster->s.origin, NULL, NULL, 0.0F);
-
-		assert(playerinfo->def_ammo_index);
-		if (!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_INFINITE_MANA)))
-			playerinfo->pers.inventory.Items[playerinfo->def_ammo_index] -= playerinfo->pers.defence->quantity;
+	if (info->shield_timer < info->leveltime)
+	{
+		SpellCastShield(caster, caster->s.origin, NULL, NULL, 0.0f);
+		TakeMana(caster); //mxd
 	}
 }
