@@ -679,10 +679,6 @@ extern void BecomeExplosion1(edict_t* self);
 extern void ServerCommand(void);
 extern qboolean SV_FilterPacket(const char* from);
 
-// p_view.c //TODO: move to p_view.h
-extern void SetupPlayerinfo(edict_t* ent);
-extern void WritePlayerinfo(edict_t* ent);
-
 // m_move.c
 extern qboolean M_CheckBottom(edict_t* ent);
 extern qboolean M_CheckTop(edict_t* ent);
