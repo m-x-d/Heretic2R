@@ -80,52 +80,42 @@ void ai_c_move(edict_t* self, const float forward, float right, float up)
 		ai_c_cycleend(self);
 }
 
-void c_swapplayer(edict_t *Self,edict_t *Cinematic)
+void c_swapplayer(const edict_t* self, edict_t* cinematic) //TODO: move declaration to c_ai.h
 {
-	int i;
-
-	if (!Self->client)	// What are you trying to do?  Exchange a non-player for Corvus?
+	if (self->client == NULL || cinematic == NULL) // What are you trying to do? Exchange a non-player for Corvus?
 		return;
 
-	if (Cinematic==NULL)
-	{
-//		gi.dprintf("Trying to swap Corvus for a non-existent cinematic version\n");
-		return;
-	}
+	P_PlayerUpdateModelAttributes(&self->client->playerinfo);
 
-	P_PlayerUpdateModelAttributes(&Self->client->playerinfo);
-
-//	Cinematic->s.skinnum = Self->client->playerinfo.skinnum;
 	// Add in plague level for the skin, since the cinematic players use six stock skins.
-	Cinematic->s.skinnum = Self->client->playerinfo.skinnum + (Self->client->playerinfo.plaguelevel * DAMAGE_NUM_LEVELS);
+	cinematic->s.skinnum = self->client->playerinfo.skinnum + (self->client->playerinfo.plaguelevel * DAMAGE_NUM_LEVELS);
 
-	for (i=0;i<NUM_MESH_NODES;++i)
+	for (int i = 0; i < NUM_MESH_NODES; i++)
 	{
-		Cinematic->s.fmnodeinfo[i].flags =  Self->s.fmnodeinfo[i].flags;
-		Cinematic->s.fmnodeinfo[i].skin = Self->s.fmnodeinfo[i].skin;
+		cinematic->s.fmnodeinfo[i].flags = self->s.fmnodeinfo[i].flags;
+		cinematic->s.fmnodeinfo[i].skin = self->s.fmnodeinfo[i].skin;
 	}
 
-	// Open up hands
-	if (Cinematic->s.fmnodeinfo[MESH__RHANDHI].flags & FMNI_NO_DRAW)
-		Cinematic->s.fmnodeinfo[MESH__RHANDHI].flags &= ~FMNI_NO_DRAW;
+	// Open up hands.
+	if (cinematic->s.fmnodeinfo[MESH__RHANDHI].flags & FMNI_NO_DRAW)
+		cinematic->s.fmnodeinfo[MESH__RHANDHI].flags &= ~FMNI_NO_DRAW;
 
-	if (Cinematic->s.fmnodeinfo[MESH__LHANDHI].flags & FMNI_NO_DRAW)
-		Cinematic->s.fmnodeinfo[MESH__LHANDHI].flags &= ~FMNI_NO_DRAW;
+	if (cinematic->s.fmnodeinfo[MESH__LHANDHI].flags & FMNI_NO_DRAW)
+		cinematic->s.fmnodeinfo[MESH__LHANDHI].flags &= ~FMNI_NO_DRAW;
 
-	// If bow is active put it on his back
-	if (!(Cinematic->s.fmnodeinfo[MESH__BOWACTV].flags & FMNI_NO_DRAW))
-		Cinematic->s.fmnodeinfo[MESH__BOFF].flags &= ~FMNI_NO_DRAW;
+	// If bow is active, put it on his back.
+	if (!(cinematic->s.fmnodeinfo[MESH__BOWACTV].flags & FMNI_NO_DRAW))
+		cinematic->s.fmnodeinfo[MESH__BOFF].flags &= ~FMNI_NO_DRAW;
 
-	// If staff is active put it on his hip
-	if (!(Cinematic->s.fmnodeinfo[MESH__STAFACTV].flags & FMNI_NO_DRAW))
-		Cinematic->s.fmnodeinfo[MESH__STOFF].flags &= ~FMNI_NO_DRAW;
+	// If staff is active, put it on his hip.
+	if (!(cinematic->s.fmnodeinfo[MESH__STAFACTV].flags & FMNI_NO_DRAW))
+		cinematic->s.fmnodeinfo[MESH__STOFF].flags &= ~FMNI_NO_DRAW;
 
-
-	// Get rid of all weapons in the hands
-	Cinematic->s.fmnodeinfo[MESH__BLADSTF].flags |= FMNI_NO_DRAW;
-	Cinematic->s.fmnodeinfo[MESH__HELSTF].flags |= FMNI_NO_DRAW;
-	Cinematic->s.fmnodeinfo[MESH__BOWACTV].flags |= FMNI_NO_DRAW;
-	Cinematic->s.fmnodeinfo[MESH__STAFACTV].flags |= FMNI_NO_DRAW;
+	// Get rid of all weapons in the hands.
+	cinematic->s.fmnodeinfo[MESH__BLADSTF].flags |= FMNI_NO_DRAW;
+	cinematic->s.fmnodeinfo[MESH__HELSTF].flags |= FMNI_NO_DRAW;
+	cinematic->s.fmnodeinfo[MESH__BOWACTV].flags |= FMNI_NO_DRAW;
+	cinematic->s.fmnodeinfo[MESH__STAFACTV].flags |= FMNI_NO_DRAW;
 }
 
 #define ENT_INVISIBLE 1
