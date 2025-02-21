@@ -1112,5 +1112,8 @@
     <ClInclude Include="spl_tornado.h">
       <Filter>src\Spells</Filter>
     </ClInclude>
+    <ClInclude Include="mg_ai.h">
+      <Filter>src\Monsters</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

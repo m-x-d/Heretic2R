@@ -244,6 +244,7 @@
     <ClInclude Include="g_weapon.h" />
     <ClInclude Include="ICScript.h" />
     <ClInclude Include="list.h" />
+    <ClInclude Include="mg_ai.h" />
     <ClInclude Include="mg_guide.h" />
     <ClInclude Include="m_actor.h" />
     <ClInclude Include="m_assassin.h" />

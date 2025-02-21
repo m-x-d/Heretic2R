@@ -8,6 +8,7 @@
 */
 
 #include <assert.h>
+#include "mg_ai.h" //mxd
 #include "g_local.h"
 #include "g_monster.h"
 #include "Random.h"
