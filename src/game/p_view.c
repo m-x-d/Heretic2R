@@ -292,64 +292,44 @@ static void PlayerTimerUpdate(const edict_t* ent)
 		info->renderfx &= ~RF_TRANS_GHOST;
 }
 
-/*
-===============
-P_DamageFeedback
-
-Handles color blends and view kicks
-===============
-*/
-
-void P_DamageFeedback (edict_t *player)
+// Handles color blends and view kicks.
+static void P_DamageFeedback(edict_t* player)
 {
-	gclient_t	*client;
-	int			count;
-
-	client=player->client;
+	gclient_t* client = player->client;
 
 	// Flash the backgrounds behind the status numbers.
+	client->ps.stats[STAT_FLASHES] = 0;
 
-	client->ps.stats[STAT_FLASHES]=0;
+	if (client->damage_blood > 0)
+		client->ps.stats[STAT_FLASHES] |= 1;
 
-	if (client->damage_blood)
-		client->ps.stats[STAT_FLASHES]|=1;
-	
 	// Total up the points of damage shot at the player this frame.
-	
-	if((count=client->damage_blood)==0)
-	{
-		// Didn't take any damage.
-		return;
-	}
+	if (client->damage_blood == 0)
+		return; // Didn't take any damage.
 
-	//Check for gasssss damage
+	// Check for gasssss damage.
 	if (player->pain_debounce_time < level.time && client->damage_gas)
 	{
-		if ( client->playerinfo.loweridle && client->playerinfo.upperidle )
+		if (client->playerinfo.loweridle && client->playerinfo.upperidle)
 			P_PlayerAnimSetLowerSeq(&client->playerinfo, ASEQ_PAIN_A);
 
 		P_PlayerPlayPain(&client->playerinfo, 1);
 	}
-	else if (((!irand(0, 4)) || count > 8) && (player->pain_debounce_time < level.time)) // Play pain animation.
+	else if ((irand(0, 4) == 0 || client->damage_blood > 8) && player->pain_debounce_time < level.time) // Play pain animation.
 	{
-		if ( client->playerinfo.loweridle && client->playerinfo.upperidle )
+		if (client->playerinfo.loweridle && client->playerinfo.upperidle)
 			P_PlayerAnimSetLowerSeq(&client->playerinfo, ASEQ_PAIN_A);
-		
-		if (count <= 4)
-			P_PlayerPlayPain(&client->playerinfo, 2);
-		else
-			P_PlayerPlayPain(&client->playerinfo, 0);
 
-		player->pain_debounce_time = level.time + 0.5;
+		const int snd_type = (client->damage_blood > 4 ? 0 : 2); //mxd. 0 - normal, 1 - gas, 2 - small.
+		P_PlayerPlayPain(&client->playerinfo, snd_type);
+		player->pain_debounce_time = level.time + 0.5f;
 	}
 
 	// Reset the player's pain_debounce_time.
-
 	if (level.time > player->pain_debounce_time)
-		player->pain_debounce_time = level.time + 0.7;		
+		player->pain_debounce_time = level.time + 0.7f;
 
 	// Clear damage totals.
-
 	client->damage_blood = 0;
 	client->damage_knockback = 0;
 }
