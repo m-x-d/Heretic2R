@@ -192,66 +192,49 @@ void SetupPlayerinfo(edict_t* ent)
 	ent->client->playerinfo.pm_w_flags = ent->client->ps.pmove.w_flags;
 }
 
-// ************************************************************************************************
-// WritePlayerinfo
-// ---------------
-// ************************************************************************************************
-
-void WritePlayerinfo(edict_t *ent)
+void WritePlayerinfo(edict_t* ent)
 {
-	int	i;
-	
-	// ********************************************************************************************
 	// Inputs & outputs.
-	// ********************************************************************************************
 
-	memcpy(&ent->client->pcmd,&ent->client->playerinfo.pcmd,sizeof(usercmd_t));
+	memcpy(&ent->client->pcmd, &ent->client->playerinfo.pcmd, sizeof(usercmd_t));
 
 	// From edict_t.
-
-	VectorCopy(ent->client->playerinfo.origin,ent->s.origin);
-	VectorCopy(ent->client->playerinfo.angles,ent->s.angles);
-	VectorCopy(ent->client->playerinfo.velocity,ent->velocity);
-	VectorCopy(ent->client->playerinfo.mins,ent->mins);
-	VectorCopy(ent->client->playerinfo.maxs,ent->maxs);
-	ent->enemy=ent->client->playerinfo.enemy;
-	ent->targetEnt=ent->client->playerinfo.targetEnt;
-	ent->target_ent=ent->client->playerinfo.target_ent;
-	ent->target=ent->client->playerinfo.target;
-	ent->nextthink=ent->client->playerinfo.nextthink;
-	ent->viewheight=ent->client->playerinfo.viewheight;
-	ent->watertype=ent->client->playerinfo.watertype;
-	ent->waterlevel=ent->client->playerinfo.waterlevel;
-	ent->deadflag=ent->client->playerinfo.deadflag;
-	ent->movetype=ent->client->playerinfo.movetype;
-	ent->flags=ent->client->playerinfo.edictflags;
+	VectorCopy(ent->client->playerinfo.origin, ent->s.origin);
+	VectorCopy(ent->client->playerinfo.angles, ent->s.angles);
+	VectorCopy(ent->client->playerinfo.velocity, ent->velocity);
+	VectorCopy(ent->client->playerinfo.mins, ent->mins);
+	VectorCopy(ent->client->playerinfo.maxs, ent->maxs);
+	ent->enemy = ent->client->playerinfo.enemy;
+	ent->targetEnt = ent->client->playerinfo.targetEnt;
+	ent->target_ent = ent->client->playerinfo.target_ent;
+	ent->target = ent->client->playerinfo.target;
+	ent->nextthink = ent->client->playerinfo.nextthink;
+	ent->viewheight = (int)ent->client->playerinfo.viewheight;
+	ent->watertype = ent->client->playerinfo.watertype;
+	ent->waterlevel = ent->client->playerinfo.waterlevel;
+	ent->deadflag = ent->client->playerinfo.deadflag;
+	ent->movetype = ent->client->playerinfo.movetype;
+	ent->flags = ent->client->playerinfo.edictflags;
 
 	// From entity_state_t.
+	ent->s.frame = (short)ent->client->playerinfo.frame;
+	ent->s.swapFrame = (short)ent->client->playerinfo.swapFrame;
+	ent->s.effects = ent->client->playerinfo.effects;
+	ent->s.renderfx = ent->client->playerinfo.renderfx;
+	ent->s.skinnum = ent->client->playerinfo.skinnum;
+	ent->s.clientnum = (short)ent->client->playerinfo.clientnum;
 
-	ent->s.frame=ent->client->playerinfo.frame,
-	ent->s.swapFrame=ent->client->playerinfo.swapFrame;
-	ent->s.effects=ent->client->playerinfo.effects;
-	ent->s.renderfx=ent->client->playerinfo.renderfx;
-	ent->s.skinnum=ent->client->playerinfo.skinnum;
-	ent->s.clientnum=ent->client->playerinfo.clientnum;
-
-	for(i=0;i<MAX_FM_MESH_NODES;i++)
-	{
-		ent->s.fmnodeinfo[i]=ent->client->playerinfo.fmnodeinfo[i];
-	}
+	for (int i = 0; i < MAX_FM_MESH_NODES; i++)
+		ent->s.fmnodeinfo[i] = ent->client->playerinfo.fmnodeinfo[i];
 
 	// From pmove_state_t.
+	ent->client->ps.pmove.pm_flags = (byte)ent->client->playerinfo.pm_flags;
+	ent->client->ps.pmove.w_flags = (byte)ent->client->playerinfo.pm_w_flags;
 
-	ent->client->ps.pmove.pm_flags=ent->client->playerinfo.pm_flags;
-	ent->client->ps.pmove.w_flags=ent->client->playerinfo.pm_w_flags;
-
-	// ********************************************************************************************
 	// Outputs only.
-	// ********************************************************************************************
 
 	// From playerstate_t.
-
-	VectorCopy(ent->client->playerinfo.offsetangles,ent->client->ps.offsetangles);
+	VectorCopy(ent->client->playerinfo.offsetangles, ent->client->ps.offsetangles);
 }
 
 // ************************************************************************************************
