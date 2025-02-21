@@ -758,20 +758,11 @@
     <ClInclude Include="g_monster.h">
       <Filter>src\Monsters</Filter>
     </ClInclude>
-    <ClInclude Include="g_Monster_State.h">
-      <Filter>src\Monsters</Filter>
-    </ClInclude>
     <ClInclude Include="buoy.h">
       <Filter>src\NavSys</Filter>
     </ClInclude>
     <ClInclude Include="mg_guide.h">
       <Filter>src\NavSys</Filter>
-    </ClInclude>
-    <ClInclude Include="m_actor.h">
-      <Filter>src\Monsters</Filter>
-    </ClInclude>
-    <ClInclude Include="m_elf.h">
-      <Filter>src\Monsters</Filter>
     </ClInclude>
     <ClInclude Include="m_stats.h">
       <Filter>src\Monsters</Filter>

@@ -229,7 +229,6 @@
     <ClInclude Include="g_Message.h" />
     <ClInclude Include="g_misc.h" />
     <ClInclude Include="g_monster.h" />
-    <ClInclude Include="g_Monster_State.h" />
     <ClInclude Include="g_Physics.h" />
     <ClInclude Include="g_PhysicsLocal.h" />
     <ClInclude Include="g_playstats.h" />
@@ -246,7 +245,6 @@
     <ClInclude Include="list.h" />
     <ClInclude Include="mg_ai.h" />
     <ClInclude Include="mg_guide.h" />
-    <ClInclude Include="m_actor.h" />
     <ClInclude Include="m_assassin.h" />
     <ClInclude Include="m_assassin_local.h" />
     <ClInclude Include="m_assassin_anim.h" />
@@ -257,7 +255,6 @@
     <ClInclude Include="m_chicken.h" />
     <ClInclude Include="m_chicken_local.h" />
     <ClInclude Include="m_chicken_anim.h" />
-    <ClInclude Include="m_elf.h" />
     <ClInclude Include="m_elflord.h" />
     <ClInclude Include="m_elflord_local.h" />
     <ClInclude Include="m_elflord_anims.h" />
