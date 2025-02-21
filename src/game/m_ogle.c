@@ -20,6 +20,7 @@
 #include "g_HitLocation.h"
 #include "g_misc.h"
 #include "c_ai.h"
+#include "mg_guide.h" //mxd
 #include "m_stats.h"
 
 #define OGLE_WORKER_CHISEL 1

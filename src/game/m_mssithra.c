@@ -24,6 +24,7 @@
 #include "p_anim_branch.h"
 #include "m_stats.h"
 #include "g_playstats.h"
+#include "mg_guide.h" //mxd
 #include "p_actions.h"
 
 void extrapolateFiredir (edict_t *self,vec3_t p1,float pspeed,edict_t *targ,float accept,vec3_t vec2);

@@ -10,6 +10,7 @@
 #include "g_misc.h"
 #include "g_monster.h"
 #include "mg_ai.h" //mxd
+#include "mg_guide.h" //mxd
 #include "FX.h"
 #include "Vector.h"
 #include "g_local.h"

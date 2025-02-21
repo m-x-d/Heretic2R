@@ -147,7 +147,6 @@ extern animmove_t assassin_move_c_attack2;
 void MG_CheckLanded (edict_t *self, float next_anim);
 void MG_InAirMove (edict_t *self, float fwdspd,float upspd,float rtspd);
 void MG_ApplyJump (edict_t *self);
-void MG_InitMoods(edict_t *self);
 
 
 

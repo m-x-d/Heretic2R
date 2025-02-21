@@ -23,11 +23,10 @@
 #include "g_HitLocation.h"
 #include "m_stats.h"
 #include "g_playstats.h"
+#include "mg_guide.h" //mxd
 #include "p_anim_branch.h"
 #include "p_anims.h"
 #include "p_actions.h"
-
-void MG_InitMoods(edict_t *self);
 
 static animmove_t *animations[NUM_ANIMS] =
 {

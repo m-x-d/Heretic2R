@@ -27,6 +27,7 @@
 #include "Angles.h"
 #include "g_misc.h"
 #include "g_HitLocation.h"
+#include "mg_guide.h" //mxd
 #include "m_stats.h"
 #include "p_anim_branch.h"
 #include "p_anims.h"

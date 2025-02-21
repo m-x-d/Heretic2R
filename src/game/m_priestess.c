@@ -18,6 +18,7 @@
 #include "vector.h"
 #include "fx.h"
 #include "g_HitLocation.h"
+#include "mg_guide.h" //mxd
 
 #include "m_stats.h"
 

@@ -18,8 +18,6 @@ typedef enum AnimID_e
 	NUM_ANIMS
 } AnimID_t;
 
-void MG_InitMoods(edict_t *self);
-
 extern animmove_t corvus2_move_c_action1; 
 extern animmove_t corvus2_move_c_idle1; 
 extern animmove_t corvus2_move_c_idle2; 

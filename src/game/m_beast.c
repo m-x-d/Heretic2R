@@ -32,6 +32,7 @@ TBEAST
 #include "m_beast_local.h"
 #include "m_beast_anim.h"
 #include "m_stats.h"
+#include "mg_guide.h" //mxd
 
 
 // *************************************

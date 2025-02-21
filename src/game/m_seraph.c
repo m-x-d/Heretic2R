@@ -20,10 +20,9 @@
 #include "fx.h"
 #include "g_HitLocation.h"
 #include "g_misc.h"
-
+#include "mg_guide.h" //mxd
 #include "m_stats.h"
 
-void MG_InitMoods(edict_t *self);
 //Seraphs need knowledge of the ogle's animations
 //Any changes in m_ogle.h must be mirrored here
 enum

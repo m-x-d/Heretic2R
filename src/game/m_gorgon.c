@@ -60,6 +60,7 @@ GORGON
 #include "p_anim_branch.h"
 #include "p_anims.h"
 #include "g_HitLocation.h"
+#include "mg_guide.h" //mxd
 #include "p_actions.h"
 
 

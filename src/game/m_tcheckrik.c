@@ -43,7 +43,7 @@
 #include "angles.h"
 #include "g_HitLocation.h"
 #include "c_ai.h"
-
+#include "mg_guide.h" //mxd
 #include "m_stats.h"
 
 void insect_dismember(edict_t *self, int damage, int HitLocation);

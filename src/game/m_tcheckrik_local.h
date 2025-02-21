@@ -164,7 +164,6 @@ void insect_random_idle_sound (edict_t *self);
 void insect_go_finair(edict_t *self);
 
 void SP_monster_insect (edict_t *self);
-void MG_InitMoods(edict_t *self);
 
 
 #define BIT_MASTER		0

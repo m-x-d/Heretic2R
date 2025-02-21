@@ -1,3 +1,11 @@
-qboolean assassinCheckTeleport (edict_t *self, int type);
+//
+// mg_guide.h
+//
+// Copyright 1998 Raven Software
+//
 
-#define MONSTER_SEARCH_TIME		10//monsters search for player for 10 seconds after losing him before giving up
+#pragma once
+
+#define MONSTER_SEARCH_TIME		10 // Monsters search for player for 10 seconds after losing him before giving up.
+
+extern void MG_InitMoods(edict_t* self); //mxd
