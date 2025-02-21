@@ -109,71 +109,44 @@ void InitPlayerinfo(const edict_t* ent)
 	ent->client->playerinfo.ishistory = false;
 }
 
-// ************************************************************************************************
-// SetupPlayerinfo
-// ---------------
-// ************************************************************************************************
-
-void SetupPlayerinfo(edict_t *ent)
+void SetupPlayerinfo(edict_t* ent)
 {
-	int	i;
-
-	// ********************************************************************************************
 	// Inputs only.
-	// ********************************************************************************************
 
 	// Pointer to the associated player's edict_t.
+	ent->client->playerinfo.self = ent;
 
-	ent->client->playerinfo.self=ent;
-	
 	// Game .dll variables.
+	ent->client->playerinfo.leveltime = level.time;
 
-	ent->client->playerinfo.leveltime=level.time;
-	
 	// Server variables.
-
-	ent->client->playerinfo.sv_gravity=sv_gravity->value;
-	ent->client->playerinfo.sv_cinematicfreeze=sv_cinematicfreeze->value;
-	ent->client->playerinfo.sv_jumpcinematic=sv_jumpcinematic->value;
+	ent->client->playerinfo.sv_gravity = sv_gravity->value;
+	ent->client->playerinfo.sv_cinematicfreeze = sv_cinematicfreeze->value;
+	ent->client->playerinfo.sv_jumpcinematic = sv_jumpcinematic->value;
 
 	// From edict_t.
-
-	ent->client->playerinfo.ideal_yaw=ent->ideal_yaw;
-	ent->client->playerinfo.groundentity=ent->groundentity;
+	ent->client->playerinfo.ideal_yaw = ent->ideal_yaw;
+	ent->client->playerinfo.groundentity = ent->groundentity;
 
 	// Pointer to entity_state_t of player's enemy edict.
-	
-	if(ent->enemy)
-		ent->client->playerinfo.enemystate=&ent->enemy->s;
-	else
-		ent->client->playerinfo.enemystate=NULL;
+	ent->client->playerinfo.enemystate = (ent->enemy != NULL ? &ent->enemy->s : NULL);
 
 	// Spell / weapon aiming direction.
+	VectorCopy(ent->client->aimangles, ent->client->playerinfo.aimangles);
 
-	VectorCopy(ent->client->aimangles,ent->client->playerinfo.aimangles);
-
-	// Deathmatch flags - only set this if we are in death match.
-
-	if (deathmatch->value)
-		ent->client->playerinfo.dmflags = DF_DEATHMATCH_SET | (int)dmflags->value;		// Send the high bit if deathmatch.
-	else
-		ent->client->playerinfo.dmflags=0;
-
+	// Deathmatch flags - only set this if we are in deathmatch.
+	ent->client->playerinfo.dmflags = (DEATHMATCH ? (int)(DMFLAGS | DF_DEATHMATCH_SET) : 0); // Send the high bit if deathmatch.
 	ent->client->playerinfo.advancedstaff = (int)(advancedstaff->value);
 
-	// ********************************************************************************************
 	// Inputs & outputs.
-	// ********************************************************************************************
 
-	// If we are in a cinematic, remove certain commands from the ucmd_t the server received from
-	// the client. NOTE: THIS IS HIGHLY SUBJECTIVE. REQUIRES VIGOUROUS TESTING.
-	// Basically, just killing all buttons pressed while a cinematic is running - Probably not the best way to do this
-	// Jake 9/28/98
-	// need to reget this constantly, since it changes on the fly.
+	memcpy(&ent->client->playerinfo.pcmd, &ent->client->pcmd, sizeof(usercmd_t));
 
-	memcpy(&ent->client->playerinfo.pcmd,&ent->client->pcmd,sizeof(usercmd_t));	
-
-	if (sv_cinematicfreeze->value)
+	// If we are in a cinematic, remove certain commands from the ucmd_t the server received from the client.
+	// NOTE: THIS IS HIGHLY SUBJECTIVE. REQUIRES VIGOUROUS TESTING.
+	// Basically, just killing all buttons pressed while a cinematic is running - Probably not the best way to do this -- Jake 9/28/98.
+	// Need to re-get this constantly, since it changes on the fly.
+	if (SV_CINEMATICFREEZE)
 	{
 		ent->client->pcmd.buttons = 0;
 		ent->client->pcmd.sidemove = 0;
@@ -186,42 +159,37 @@ void SetupPlayerinfo(edict_t *ent)
 	}
 
 	// From edict_t.
-
-	VectorCopy(ent->s.origin,ent->client->playerinfo.origin);
-	VectorCopy(ent->s.angles,ent->client->playerinfo.angles);
-	VectorCopy(ent->velocity,ent->client->playerinfo.velocity);
-	VectorCopy(ent->mins,ent->client->playerinfo.mins);
-	VectorCopy(ent->maxs,ent->client->playerinfo.maxs);
-	ent->client->playerinfo.enemy=ent->enemy;
-	ent->client->playerinfo.target=ent->target;
-	ent->client->playerinfo.targetEnt=ent->targetEnt;
-	ent->client->playerinfo.target_ent=ent->target_ent;
-	ent->client->playerinfo.nextthink=ent->nextthink;
-	ent->client->playerinfo.viewheight=ent->viewheight;
-	ent->client->playerinfo.watertype=ent->watertype;
-	ent->client->playerinfo.waterlevel=ent->waterlevel;		
-	ent->client->playerinfo.deadflag=ent->deadflag;
-	ent->client->playerinfo.movetype=ent->movetype;
-	ent->client->playerinfo.edictflags=ent->flags;
+	VectorCopy(ent->s.origin, ent->client->playerinfo.origin);
+	VectorCopy(ent->s.angles, ent->client->playerinfo.angles);
+	VectorCopy(ent->velocity, ent->client->playerinfo.velocity);
+	VectorCopy(ent->mins, ent->client->playerinfo.mins);
+	VectorCopy(ent->maxs, ent->client->playerinfo.maxs);
+	ent->client->playerinfo.enemy = ent->enemy;
+	ent->client->playerinfo.target = ent->target;
+	ent->client->playerinfo.targetEnt = ent->targetEnt;
+	ent->client->playerinfo.target_ent = ent->target_ent;
+	ent->client->playerinfo.nextthink = ent->nextthink;
+	ent->client->playerinfo.viewheight = (float)ent->viewheight;
+	ent->client->playerinfo.watertype = ent->watertype;
+	ent->client->playerinfo.waterlevel = ent->waterlevel;
+	ent->client->playerinfo.deadflag = ent->deadflag;
+	ent->client->playerinfo.movetype = ent->movetype;
+	ent->client->playerinfo.edictflags = ent->flags;
 
 	// From entity_state_t.
+	ent->client->playerinfo.frame = ent->s.frame;
+	ent->client->playerinfo.swapFrame = ent->s.swapFrame;
+	ent->client->playerinfo.effects = ent->s.effects;
+	ent->client->playerinfo.renderfx = ent->s.renderfx;
+	ent->client->playerinfo.skinnum = ent->s.skinnum;
+	ent->client->playerinfo.clientnum = ent->s.clientnum;
 
-	ent->client->playerinfo.frame=ent->s.frame,
-	ent->client->playerinfo.swapFrame=ent->s.swapFrame;
-	ent->client->playerinfo.effects=ent->s.effects;
-	ent->client->playerinfo.renderfx=ent->s.renderfx;
-	ent->client->playerinfo.skinnum=ent->s.skinnum;
-	ent->client->playerinfo.clientnum=ent->s.clientnum;
-
-	for(i=0;i<MAX_FM_MESH_NODES;i++)
-	{
-		ent->client->playerinfo.fmnodeinfo[i]=ent->s.fmnodeinfo[i];
-	}
+	for (int i = 0; i < MAX_FM_MESH_NODES; i++)
+		ent->client->playerinfo.fmnodeinfo[i] = ent->s.fmnodeinfo[i];
 
 	// From pmove_state_t.
-
-	ent->client->playerinfo.pm_flags=ent->client->ps.pmove.pm_flags;
-	ent->client->playerinfo.pm_w_flags=ent->client->ps.pmove.w_flags;
+	ent->client->playerinfo.pm_flags = ent->client->ps.pmove.pm_flags;
+	ent->client->playerinfo.pm_w_flags = ent->client->ps.pmove.w_flags;
 }
 
 // ************************************************************************************************
