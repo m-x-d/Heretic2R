@@ -9,12 +9,9 @@
 #include "c_ai.h"
 #include "Utilities.h"
 
-/*----------------------------------------------------------------------
-  Corvus1 Base Info
------------------------------------------------------------------------*/
-static animmove_t *animations[ NUM_ANIMS] =
+// Corvus1 cinematic actions.
+static animmove_t* animations[NUM_ANIMS] =
 {
-	// Cinematics
 	&corvus_move_c_action1,
 	&corvus_move_c_action2,
 	&corvus_move_c_action3,
@@ -35,9 +32,6 @@ static animmove_t *animations[ NUM_ANIMS] =
 	&corvus_move_c_pivotright,
 	&corvus_move_c_pivotrightstop,
 };
-
-static ClassResourceInfo_t resInfo;
-
 
 /*-------------------------------------------------------------------------
 	corvus_c_anims
@@ -139,12 +133,9 @@ void corvus_c_anims(edict_t *self, G_Message_t *msg)
 	SetAnim(self, curr_anim);
 }
 
-
-/*-------------------------------------------------------------------------
-	PlagueElfStaticsInit
--------------------------------------------------------------------------*/
-void CorvusStaticsInit()
+void CorvusStaticsInit(void)
 {
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
 	classStatics[CID_CORVUS].msgReceivers[MSG_C_ACTION1] = corvus_c_anims;
 	classStatics[CID_CORVUS].msgReceivers[MSG_C_ACTION2] = corvus_c_anims;
@@ -162,13 +153,11 @@ void CorvusStaticsInit()
 	classStatics[CID_CORVUS].msgReceivers[MSG_C_PIVOTRIGHT] = corvus_c_anims;
 	classStatics[CID_CORVUS].msgReceivers[MSG_C_PIVOTRIGHTSTOP] = corvus_c_anims;
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	
-	resInfo.modelIndex = gi.modelindex("models/player/victim_scene/tris.fm");
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/player/victim_scene/tris.fm");
 
-	classStatics[CID_CORVUS].resInfo = &resInfo;
-
+	classStatics[CID_CORVUS].resInfo = &res_info;
 }
 
 
