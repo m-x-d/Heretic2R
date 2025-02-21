@@ -1,27 +1,18 @@
 //
-// Heretic II
+// p_item.c
+//
 // Copyright 1998 Raven Software
 //
-// Created by JJS
 
-//#include "p_types.h"
-#include "player.h"
+#include "p_items.h" //mxd
+#include "spl_BlueRing.h" //mxd
+#include "spl_meteorbarrier.h" //mxd
+#include "spl_morph.h" //mxd
+#include "spl_powerup.h" //mxd
+#include "spl_shield.h" //mxd
+#include "g_teleport.h" //mxd
+#include "spl_tornado.h" //mxd
 #include "g_local.h"
-#include "p_weapon.h"
-#include "m_player.h"
-#include "fx.h"
-#include "matrix.h"
-#include "vector.h"
-#include "g_skeletons.h"
-#include "angles.h"
-
-void SpellCastPowerup(edict_t *Caster, vec3_t StartPos, vec3_t AimAngles, vec3_t AimDir, float value);
-void SpellCastBlueRing(edict_t *Caster, vec3_t StartPos, vec3_t AimAngles, vec3_t AimDir, float value);
-void SpellCastMeteorBarrier(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,float Value);
-void SpellCastTeleport(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,float Value);
-void SpellCastMorph(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,float Value);
-void SpellCastShield(edict_t *caster,vec3_t startpos,vec3_t aimangles,vec3_t aimdir,float Value);
-void SpellCastDropTornado(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,float Value);
 
 void Use_Defence(playerinfo_t *playerinfo, gitem_t *defence)
 {
