@@ -176,32 +176,30 @@ void c_corvus_init(edict_t* self, const int class_id)
 	self->monsterinfo.c_mode = true;
 }
 
-void c_character_init(edict_t *self,int classId)
+void c_character_init(edict_t* self, const int class_id)
 {
-	self->classID = classId;
-	self->s.modelindex = classStatics[classId].resInfo->modelIndex;
+	self->classID = class_id;
+	self->s.modelindex = (byte)classStatics[class_id].resInfo->modelIndex;
 
-	if (!monster_start(self))		
-		return;						// Failed initialization
-		
+	if (!monster_start(self)) // Failed initialization.
+		return;
+
 	self->msgHandler = DefaultMsgHandler;
 	self->think = walkmonster_start_go;
 
-	self->viewheight = self->maxs[2]*0.8;
+	self->viewheight = (int)(self->maxs[2] * 0.8f);
 
-	if (!self->health)
-	{
+	if (self->health == 0)
 		self->health = 30;
-	}
 
 	self->mass = 300;
 	self->yaw_speed = 20;
-
 	VectorClear(self->knockbackvel);
-	
-	if (!self->monsterinfo.scale)
+
+	if (self->monsterinfo.scale == 0.0f)
 	{
-		self->s.scale = self->monsterinfo.scale = 1;
+		self->s.scale = 1.0f;
+		self->monsterinfo.scale = 1.0f;
 	}
 
 	self->count = self->s.modelindex;
@@ -217,18 +215,17 @@ void c_character_init(edict_t *self,int classId)
 	}
 	else
 	{
-		self->solid=SOLID_BBOX;
+		self->solid = SOLID_BBOX;
 		self->movetype = PHYSICSTYPE_STEP;
 	}
 
 	BboxYawAndScale(self);
 
-	//set up my mood function
+	// Setup my mood function.
 	MG_InitMoods(self);
 
-	self->monsterinfo.c_mode = 1;
-	QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige",0,0,0,NULL,NULL);
-
+	self->monsterinfo.c_mode = true;
+	QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 }
 
 void ai_c_gib(edict_t *self, G_Message_t *msg)
