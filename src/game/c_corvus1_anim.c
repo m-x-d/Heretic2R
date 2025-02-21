@@ -1,25 +1,11 @@
-//==============================================================================
 //
-// m_corvus_anim.c
+// c_corvus1_anim.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//==============================================================================
-
-#include "g_local.h"
-
-#pragma hdrstop("g_local.pch")
-// PRECOMPILED HEADER ABOVE
-// WARNING:  DO NOT CHANGE THE ABOVE HEADERS OR THE PRECOMPILED STUFF WILL BREAK!  
-// ADD ANY ADDITIONAL FILES BELOW
 
 #include "c_corvus1_anim.h"
-#include "c_corvus1.h"
-
-#include "g_monster.h"
 #include "c_ai.h"
-
 
 /************************************************************************
 /************************************************************************

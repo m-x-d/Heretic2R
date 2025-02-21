@@ -1,25 +1,13 @@
-/*-------------------------------------------------------------------
-c_corvus1.c
-
-Heretic II
-Copyright 1998 Raven Software
-
-  AI:
-
-
--------------------------------------------------------------------*/
-#include "g_local.h"
-#include "Utilities.h"
-#include "g_DefaultMessageHandler.h"
-#include "g_monster.h"
-#include "fx.h"
-#include "random.h"
-#include "buoy.h"
-#include "vector.h"
+//
+// c_corvus1.c
+//
+// Copyright 1998 Raven Software
+//
 
 #include "c_corvus1.h"
 #include "c_corvus1_anim.h"
 #include "c_ai.h"
+#include "Utilities.h"
 
 /*----------------------------------------------------------------------
   Corvus1 Base Info
