@@ -1,8 +1,6 @@
 #include "g_local.h"
-#define WIN32_LEAN_AND_MEAN
-#define VC_EXTRALEAN
-#include <windows.h>
 #include "ds.h"
+#include "c_ai.h" //mxd
 
 //TODO: mxd. Remove _HERETIC2_ define? Not used by quake2.dll.
 #define _HERETIC2_
@@ -27,7 +25,6 @@ extern "C"
 {
 #endif
 	extern void Use_Multi(edict_t *self, edict_t *other, edict_t *activator);
-	extern void c_swapplayer(edict_t *Self,edict_t *Cinematic);
 	extern cvar_t 	*Cvar_Set (const char *var_name, const char *value);
 #ifdef _HERETIC2_
 }
