@@ -1,24 +1,21 @@
+//
+// p_view.c
+//
+// Copyright 1998 Raven Software
+//
+
 #include "p_view.h" //mxd
-#include "g_Skeletons.h"
-#include "g_teleport.h"
-#include "m_player.h"
-//#include "p_types.h"
-#include "player.h"
-#include "p_animactor.h"
-#include "p_anims.h"
-#include "p_funcs.h"
-#include "p_main.h"
-#include "p_weapon.h"
-#include "angles.h"
-#include "fx.h"
 #include "g_cmds.h" //mxd
 #include "g_combat.h" //mxd
-#include "random.h"
-#include "vector.h"
-#include "utilities.h"
 #include "g_playstats.h"
 #include "g_Shrine.h" //mxd
+#include "p_anims.h"
+#include "p_funcs.h"
 #include "p_hud.h" //mxd
+#include "FX.h"
+#include "Random.h"
+#include "Vector.h"
+#include "g_local.h" //mxd
 
 static	edict_t		*current_player;
 static	gclient_t	*current_client;
