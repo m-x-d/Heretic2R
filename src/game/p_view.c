@@ -30,23 +30,16 @@ static void G_set_looping_sound(edict_t* self, const int sound_num)
 	self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
 }
 
-// ************************************************************************************************
-// ClientServerRand
-// ----------------
-// ************************************************************************************************
-
-static int ClientServerRand(playerinfo_t *playerinfo,int mn,int mx)
+static int ClientServerRand(const playerinfo_t* info, const int min, const int max)
 {
-	int t;
+	if (min >= max)
+		return min;
 
-	if (mn>=mx)
-		return(mn);
+	int rand = (int)(info->leveltime * 10.0f);
+	rand = (rand >> 7) ^ (rand >> 10) ^ (rand >> 5);
+	rand %= (1 + max - min);
 
-	t=(int)(playerinfo->leveltime*10.0f);
-	t=(t>>7)^(t>>10)^(t>>5);
-	t%=(1+mx-mn);
-
-	return(t+mn);
+	return rand + min;
 }
 
 // ************************************************************************************************
