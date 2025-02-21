@@ -1,29 +1,18 @@
-//==============================================================================
 //
 // c_ai.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//==============================================================================
 
-#include "g_local.h"
-#include "g_DefaultMessageHandler.h"
-
-#pragma hdrstop("g_local.pch")
-// PRECOMPILED HEADER ABOVE
-// WARNING:  DO NOT CHANGE THE ABOVE HEADERS OR THE PRECOMPILED STUFF WILL BREAK!  
-// ADD ANY ADDITIONAL FILES BELOW
-#include "fx.h"
-#include "g_monster.h"
-#include "vector.h"
-#include "g_misc.h"
+#include "c_ai.h" //mxd
 #include "c_corvus1_anim.h"
-#include "p_main.h"
-
-
-
-trace_t MG_MoveStep (edict_t *self, vec3_t move, qboolean relink);
+#include "g_DefaultMessageHandler.h"
+#include "g_misc.h"
+#include "g_monster.h"
+#include "mg_ai.h" //mxd
+#include "FX.h"
+#include "Vector.h"
+#include "g_local.h"
 
 #define	NUM_C_SOUNDS	2
 
