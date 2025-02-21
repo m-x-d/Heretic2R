@@ -8,4 +8,4 @@
 
 #include "q_Typedef.h"
 
-extern void InitPlayerinfo(edict_t* ent);
+extern void InitPlayerinfo(const edict_t* ent);
