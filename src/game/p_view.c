@@ -259,58 +259,37 @@ void WritePlayerinfo_effects(edict_t* ent)
 		ent->s.fmnodeinfo[i] = ent->client->playerinfo.fmnodeinfo[i];
 }
 
-// ************************************************************************************************
-// PlayerTimerUpdate
-// -----------------
 // Deal with incidental player stuff, like setting the personal light to OFF if its should be.
-// ************************************************************************************************
-
-void PlayerTimerUpdate(edict_t *ent)
+static void PlayerTimerUpdate(const edict_t* ent)
 {
-	playerinfo_t *playerinfo;
-
-	playerinfo=&ent->client->playerinfo;
+	playerinfo_t* info = &ent->client->playerinfo;
 
 	// Disable light when we should.
-
-	if (playerinfo->light_timer < level.time)
-		playerinfo->effects &= ~EF_LIGHT_ENABLED;
+	if (info->light_timer < level.time)
+		info->effects &= ~EF_LIGHT_ENABLED;
 
 	// Disable speed when we should.
-
-	if (playerinfo->speed_timer < level.time)
-		playerinfo->effects &= ~EF_SPEED_ACTIVE;
+	if (info->speed_timer < level.time)
+		info->effects &= ~EF_SPEED_ACTIVE;
 
 	// Disable max speed when we should.
-
-	if (playerinfo->knockbacktime < level.time)
-		playerinfo->effects &= ~EF_HIGH_MAX;
+	if (info->knockbacktime < level.time)
+		info->effects &= ~EF_HIGH_MAX;
 
 	// Disable powerup when we should.
+	if (info->powerup_timer < level.time)
+		info->effects &= ~EF_POWERUP_ENABLED;
 
-	if (playerinfo->powerup_timer < level.time)
-		playerinfo->effects &= ~EF_POWERUP_ENABLED;
-
-	// Disable relection when we should.
-
-	if (playerinfo->reflect_timer < level.time)
+	// Disable reflection when we should. Were we reflective last frame?
+	if (info->reflect_timer < level.time && (info->renderfx & RF_REFLECTION))
 	{
-		// Were we relfective last frame?
-
-		if (playerinfo->renderfx &RF_REFLECTION) 
-		{
-			playerinfo->renderfx &= ~RF_REFLECTION;
-			
-			// Unset the skin.
-
-			P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
-		}
+		info->renderfx &= ~RF_REFLECTION;
+		P_PlayerUpdateModelAttributes(&ent->client->playerinfo); // Unset the skin.
 	}
 
 	// Disable ghosting when we should.
-
-	if (playerinfo->ghost_timer < level.time)
-		playerinfo->renderfx &= ~RF_TRANS_GHOST;
+	if (info->ghost_timer < level.time)
+		info->renderfx &= ~RF_TRANS_GHOST;
 }
 
 /*
