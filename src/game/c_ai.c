@@ -14,22 +14,6 @@
 #include "Vector.h"
 #include "g_local.h"
 
-#define	NUM_C_SOUNDS	2
-
-static	char *c_wavname[NUM_C_SOUNDS] =
-{
-"",
-"Cinematics/Dranor/19-316.wav",
-};
-
-
-
-void ai_c_wav (edict_t *self,float wav_num)
-{
-	gi.sound (self, CHAN_WEAPON, gi.soundindex(c_wavname[(int)wav_num]), 1, ATTN_NORM, 0);
-}
-
-
 void ai_c_readmessage(edict_t *self, G_Message_t *msg)
 {
 	int turning;
