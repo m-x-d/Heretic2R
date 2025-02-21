@@ -237,24 +237,15 @@ void WritePlayerinfo(edict_t* ent)
 	VectorCopy(ent->client->playerinfo.offsetangles, ent->client->ps.offsetangles);
 }
 
-// ************************************************************************************************
-// SetupPlayerinfo_effects
-// -----------------------
-// ************************************************************************************************
-
-void SetupPlayerinfo_effects(edict_t *ent)
+void SetupPlayerinfo_effects(const edict_t* ent)
 {
-	int i;
-
 	ent->client->playerinfo.effects = ent->s.effects;
 	ent->client->playerinfo.renderfx = ent->s.renderfx;
 	ent->client->playerinfo.skinnum = ent->s.skinnum;
 	ent->client->playerinfo.clientnum = ent->s.clientnum;
 
-	for(i = 0; i < MAX_FM_MESH_NODES; i++)
-	{
+	for (int i = 0; i < MAX_FM_MESH_NODES; i++)
 		ent->client->playerinfo.fmnodeinfo[i] = ent->s.fmnodeinfo[i];
-	}
 }
 
 // ************************************************************************************************
