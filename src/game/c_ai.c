@@ -14,16 +14,14 @@
 #include "Vector.h"
 #include "g_local.h"
 
-void ai_c_readmessage(edict_t *self, G_Message_t *msg)
+void ai_c_readmessage(edict_t* self, G_Message_t* msg)
 {
 	int turning;
 	int repeat;
-
-	ParseMsgParms(msg, "iiige", &self->monsterinfo.c_dist,&turning,&repeat,
-		&self->monsterinfo.c_callback,&self->monsterinfo.c_ent);
+	ParseMsgParms(msg, "iiige", &self->monsterinfo.c_dist, &turning, &repeat, &self->monsterinfo.c_callback, &self->monsterinfo.c_ent);
 
 	self->monsterinfo.c_repeat = repeat;
-	self->ideal_yaw = anglemod(self->s.angles[YAW] + turning);
+	self->ideal_yaw = anglemod(self->s.angles[YAW] + (float)turning);
 }
 
 
