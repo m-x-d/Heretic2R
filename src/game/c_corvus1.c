@@ -33,69 +33,75 @@ static animmove_t* animations[NUM_ANIMS] =
 	&corvus_move_c_pivotrightstop,
 };
 
-/*-------------------------------------------------------------------------
-	corvus_c_anims
--------------------------------------------------------------------------*/
-void corvus_c_anims(edict_t *self, G_Message_t *msg)
+static void corvus_c_anims(edict_t* self, G_Message_t* msg)
 {
-	int int_msg;
 	int curr_anim;
 
 	ai_c_readmessage(self, msg);
-	int_msg = (int) msg->ID;
+	self->monsterinfo.c_anim_flag = 0;
 
-	self->monsterinfo.c_anim_flag = 0; 
-
-	switch(int_msg)
+	switch (msg->ID)
 	{
 		case MSG_C_ACTION1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION1;
 			break;
+
 		case MSG_C_ACTION2:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION2;
 			break;
+
 		case MSG_C_ACTION3:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION3;
 			break;
+
 		case MSG_C_ACTION4:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION4;
 			break;
+
 		case MSG_C_IDLE1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT | C_ANIM_IDLE;
 			curr_anim = ANIM_C_IDLE1;
 			break;
+
 		case MSG_C_IDLE2:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_IDLE2;
 			break;
+
 		case MSG_C_PIVOTLEFTGO:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_PIVOTLEFTGO;
 			break;
+
 		case MSG_C_PIVOTLEFT:
 			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
 			curr_anim = ANIM_C_PIVOTLEFT;
 			break;
+
 		case MSG_C_PIVOTLEFTSTOP:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_PIVOTLEFTSTOP;
 			break;
+
 		case MSG_C_PIVOTRIGHTGO:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_PIVOTRIGHTGO;
 			break;
+
 		case MSG_C_PIVOTRIGHT:
 			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
 			curr_anim = ANIM_C_PIVOTRIGHT;
 			break;
+
 		case MSG_C_PIVOTRIGHTSTOP:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_PIVOTRIGHTSTOP;
 			break;
+
 		case MSG_C_STEPLEFT:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_STRAFELEFT;
@@ -104,31 +110,37 @@ void corvus_c_anims(edict_t *self, G_Message_t *msg)
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_STRAFERIGHT;
 			break;
+
 		case MSG_C_WALKSTART:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_WALKSTART;
 			break;
+
 		case MSG_C_WALK1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
 			curr_anim = ANIM_C_WALK1;
 			break;
+
 		case MSG_C_WALK2:
 			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
 			curr_anim = ANIM_C_WALK2;
 			break;
+
 		case MSG_C_WALKSTOP1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_WALKSTOP1;
 			break;
+
 		case MSG_C_WALKSTOP2:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_WALKSTOP2;
 			break;
+
 		default:
 			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
 			curr_anim = ANIM_C_IDLE1;
 			break;
-	} 
+	}
 
 	SetAnim(self, curr_anim);
 }
