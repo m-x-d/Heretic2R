@@ -57,43 +57,26 @@ void ai_c_cycleend(edict_t* self)
 		QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 }
 
-void ai_c_move (edict_t *self,float forward,float right,float up)
+void ai_c_move(edict_t* self, const float forward, float right, float up)
 {
-	vec3_t move;
-	float yaw;
-	float dist;
+	M_ChangeYaw(self);
 
-	dist = forward;
-
-  	M_ChangeYaw(self);
-
-	if (dist == 0)	//	Just standing there
-	{
+	if (forward == 0.0f) // Just standing there.
 		return;
-	}
 
 	// Is the distance desired to move in the next frame past what it should be?
-	if (Q_fabs(dist) > abs(self->monsterinfo.c_dist))
-	{
-		dist = self->monsterinfo.c_dist;
-	}
+	float dist = forward;
+	if (Q_fabs(dist) > fabsf((float)self->monsterinfo.c_dist))
+		dist = (float)self->monsterinfo.c_dist;
 
-
-	yaw = self->s.angles[YAW]*M_PI*2 / 360;
-	
-	move[0] = cos(yaw)*dist;
-	move[1] = sin(yaw)*dist;
-	move[2] = 0;
-
+	const float yaw = self->s.angles[YAW] * ANGLE_180 * 2.0f / 360.0f;
+	vec3_t move = { cosf(yaw) * dist, sinf(yaw) * dist, 0.0f };
 	MG_MoveStep(self, move, true);
 
-//	if (dist <0)
-//		self->monsterinfo.c_dist += dist;
-//	else
-		self->monsterinfo.c_dist -= dist;
+	self->monsterinfo.c_dist -= (int)dist;
 
 	// If this cycle gets stopped by finishing a distance, then kill it.
-	if ((!self->monsterinfo.c_dist) && (self->monsterinfo.c_anim_flag & C_ANIM_MOVE))
+	if (self->monsterinfo.c_dist == 0 && (self->monsterinfo.c_anim_flag & C_ANIM_MOVE))
 		ai_c_cycleend(self);
 }
 
