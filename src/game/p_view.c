@@ -17,12 +17,11 @@
 #include "Vector.h"
 #include "g_local.h" //mxd
 
-static	edict_t		*current_player;
-static	gclient_t	*current_client;
-float				xyspeed;
-float				bobmove;
-int					bobcycle;		// odd cycles are right foot going forward
-float				bobfracsin;		// sin(bobfrac*M_PI)
+static edict_t* current_player;
+static gclient_t* current_client;
+
+static float bob_move;
+static int bob_cycle; // Odd cycles are right foot going forward.
 
 // ** setup a looping sound on the client
 void G_set_looping_sound(edict_t *self, int sound_num)
@@ -592,7 +591,7 @@ void P_WorldEffects (void)
 	if (sv_cinematicfreeze->value)
 		return;
 
-		if((((int)(current_client->bobtime+bobmove))!=bobcycle) && (!sv_cinematicfreeze->value))
+		if((((int)(current_client->bobtime+bob_move))!=bob_cycle) && (!sv_cinematicfreeze->value))
 		{
 			// FIXME: Doing more work then we need to here???? How about re-writing this so that it
 			// is always active on the client and does water tests itself? We'll see - currently not
@@ -855,41 +854,40 @@ void ClientEndServerFrame (edict_t *ent)
 	// Handle calcs for cyclic effects like walking / swimming.
 	// ********************************************************************************************
 
-	xyspeed = sqrt(ent->velocity[0] * ent->velocity[0] + ent->velocity[1] * ent->velocity[1]);
+	float xy_speed = sqrt(ent->velocity[0] * ent->velocity[0] + ent->velocity[1] * ent->velocity[1]);
 
-	if (xyspeed < 5)
+	if (xy_speed < 5)
 	{
 		// Start at beginning of cycle again.
 
-		bobmove = 0;
+		bob_move = 0;
 		current_client->bobtime = 0;
 	}
 	else if(ent->groundentity && !current_player->waterlevel)
 	{	
 		// So bobbing only cycles when on ground.
 
-		if(xyspeed > 210)
-			bobmove = 0.25;
-		else if(xyspeed > 100)
-			bobmove = 0.125;
+		if(xy_speed > 210)
+			bob_move = 0.25;
+		else if(xy_speed > 100)
+			bob_move = 0.125;
 		else
-			bobmove = 0.0625;
+			bob_move = 0.0625;
 	}
 	else if(current_player->waterlevel)
 	{
 		// So bobbing only cycles when in water.
 
-		if(xyspeed > 100)
-			bobmove = 1.0;
-		else if(xyspeed > 50)
-			bobmove = 0.5;
+		if(xy_speed > 100)
+			bob_move = 1.0;
+		else if(xy_speed > 50)
+			bob_move = 0.5;
 		else
-			bobmove = 0.25;
+			bob_move = 0.25;
 	}
 
-	bobtime = (current_client->bobtime += bobmove);
-	bobcycle = (int)bobtime;
-	bobfracsin = Q_fabs(sin(bobtime * M_PI));
+	bobtime = (current_client->bobtime += bob_move);
+	bob_cycle = (int)bobtime;
 
 	// ********************************************************************************************
 	// Calculate damage (if any) from hitting the floor and apply the damage taken this frame from
