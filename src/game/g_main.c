@@ -5,6 +5,7 @@
 //
 
 #include "g_main.h" //mxd
+#include "cl_strings.h"
 #include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
 #include "g_cmds.h" //mxd
@@ -14,15 +15,15 @@
 #include "g_save.h" //mxd
 #include "g_Skeletons.h"
 #include "g_spawnf.h" //mxd
+#include "p_anims.h"
+#include "p_client.h" //mxd
+#include "p_hud.h" //mxd
+#include "p_view.h" //mxd
 #include "FX.h"
 #include "Random.h"
 #include "Utilities.h"
 #include "Vector.h"
-#include "cl_strings.h"
-#include "p_anims.h"
-#include "p_client.h" //mxd
 #include "g_local.h"
-#include "p_hud.h" //mxd
 
 game_locals_t game;
 level_locals_t level;
@@ -167,10 +168,10 @@ game_export_t* GetGameAPI(const game_import_t* import)
 static void ClientEndServerFrames(void)
 {
 	// Calculate the player views now that all pushing and damage has been added.
-	for (int i = 0; i < (int)maxclients->value; i++)
+	for (int i = 0; i < MAXCLIENTS; i++)
 	{
 		edict_t* ent = &g_edicts[i + 1];
-		if (ent->inuse && ent->client)
+		if (ent->inuse && ent->client != NULL)
 			ClientEndServerFrame(ent);
 	}
 }

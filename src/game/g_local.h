@@ -680,7 +680,6 @@ extern void ServerCommand(void);
 extern qboolean SV_FilterPacket(const char* from);
 
 // p_view.c //TODO: move to p_view.h
-extern void ClientEndServerFrame(edict_t* ent);
 extern void SetupPlayerinfo(edict_t* ent);
 extern void WritePlayerinfo(edict_t* ent);
 
