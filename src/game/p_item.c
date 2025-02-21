@@ -47,19 +47,10 @@ void DefenceThink_Powerup(edict_t* caster, char* format, ...)
 	TakeMana(caster); //mxd
 }
 
-// ************************************************************************************************
-
-void DefenceThink_RingOfRepulsion(edict_t *Caster, char *Format,...)
+void DefenceThink_RingOfRepulsion(edict_t* caster, char* format, ...)
 {
-	playerinfo_t *playerinfo;
-	playerinfo = &Caster->client->playerinfo;
-
-	SpellCastBlueRing(Caster, Caster->s.origin, NULL,NULL, 0.0F); 
-
-	assert(playerinfo->def_ammo_index);
-
-	if (!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_INFINITE_MANA)))
-		playerinfo->pers.inventory.Items[playerinfo->def_ammo_index] -= playerinfo->pers.defence->quantity;
+	SpellCastBlueRing(caster, caster->s.origin, NULL, NULL, 0.0f);
+	TakeMana(caster); //mxd
 }
 
 // ************************************************************************************************
