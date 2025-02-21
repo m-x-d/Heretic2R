@@ -59,21 +59,10 @@ void DefenceThink_MeteorBarrier(edict_t* caster, char* format, ...)
 	//mxd. Mana decrement is handled per-meteor in SpellCastMeteorBarrier(). 
 }
 
-
-// ************************************************************************************************
-
-void DefenceThink_Morph(edict_t *Caster, char *Format,...)
+void DefenceThink_Morph(edict_t* caster, char* format, ...)
 {
-	playerinfo_t *playerinfo;
-	playerinfo = &Caster->client->playerinfo;
-
-	// Set up the Meteor-barrier's aiming angles and starting position then cast the spell.
-
-	SpellCastMorph(Caster, Caster->s.origin, Caster->client->aimangles, NULL, 0.0F);
-
-	assert(playerinfo->def_ammo_index);
-	if (!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_INFINITE_MANA)))
-		playerinfo->pers.inventory.Items[playerinfo->def_ammo_index] -= playerinfo->pers.defence->quantity;
+	SpellCastMorph(caster, caster->s.origin, caster->client->aimangles, NULL, 0.0f);
+	TakeMana(caster); //mxd
 }
 
 // ************************************************************************************************
