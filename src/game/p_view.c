@@ -530,24 +530,6 @@ static void P_WorldEffects(void)
 	}
 }
 
-/*
-===============
-G_SetClientSound
-===============
-*/
-
-void G_SetClientSound (edict_t *ent)
-{
-	char	*weap;
-
-	if (ent->client->playerinfo.pers.weapon)
-		weap = ent->client->playerinfo.pers.weapon->classname;
-	else
-		weap = "";
-// this seems like a silly thing to do ?
-///	ent->s.sound = 0;
-}
-
 // ************************************************************************************************
 // ClientEndServerFrame
 // --------------------
@@ -662,7 +644,6 @@ void ClientEndServerFrame (edict_t *ent)
 	// ********************************************************************************************
 
 	G_SetStats(ent);
-	G_SetClientSound(ent);
 
 	// ********************************************************************************************
 	// Handle player animation.
