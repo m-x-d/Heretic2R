@@ -118,41 +118,39 @@ void c_swapplayer(const edict_t* self, edict_t* cinematic) //TODO: move declarat
 	cinematic->s.fmnodeinfo[MESH__STAFACTV].flags |= FMNI_NO_DRAW;
 }
 
-#define ENT_INVISIBLE 1
+#define ENT_INVISIBLE	1
 
-vec3_t	c_mins = {-16, -16, -34};
-vec3_t	c_maxs = {16, 16, 25};
-
-void c_corvus_init(edict_t *self,int classId)
+void c_corvus_init(edict_t* self, const int class_id)
 {
-	self->classID = classId;
-	self->s.modelindex = classStatics[classId].resInfo->modelIndex;
+	static vec3_t c_mins = { -16.0f, -16.0f, -34.0f };
+	static vec3_t c_maxs = {  16.0f,  16.0f,  25.0f };
 
-	if (!monster_start(self))		// Failed initialization
+	self->classID = class_id;
+	self->s.modelindex = (byte)classStatics[class_id].resInfo->modelIndex;
+
+	if (!monster_start(self)) // Failed initialization.
 		return;
-		
+
 	self->msgHandler = DefaultMsgHandler;
 	self->think = walkmonster_start_go;
 
-	if (!self->health)
-	{
+	if (self->health == 0)
 		self->health = 30;
-	}
 
 	self->mass = 300;
 	self->yaw_speed = 20;
 	VectorClear(self->knockbackvel);
-	
-	VectorCopy (c_mins, self->mins);
-	VectorCopy (c_maxs, self->maxs);
-	VectorCopy (c_mins, self->intentMins);
-	VectorCopy (c_maxs, self->intentMaxs);
-	self->viewheight = self->maxs[2]*0.8;
-	
 
-	if (!self->monsterinfo.scale)
+	VectorCopy(c_mins, self->mins);
+	VectorCopy(c_maxs, self->maxs);
+	VectorCopy(c_mins, self->intentMins);
+	VectorCopy(c_maxs, self->intentMaxs);
+	self->viewheight = (int)(self->maxs[2] * 0.8f);
+
+	if (self->monsterinfo.scale == 0.0f)
 	{
-		self->s.scale = self->monsterinfo.scale = 1;
+		self->s.scale = 1.0f;
+		self->monsterinfo.scale = 1.0f;
 	}
 
 	self->materialtype = MAT_FLESH;
@@ -168,17 +166,15 @@ void c_corvus_init(edict_t *self,int classId)
 	}
 	else
 	{
-		self->solid=SOLID_BBOX;
+		self->solid = SOLID_BBOX;
 		self->movetype = PHYSICSTYPE_STEP;
 	}
 
-	//set up my mood function
+	// Setup my mood function.
 	MG_InitMoods(self);
-	VectorClear(self->knockbackvel);
 
-	self->monsterinfo.c_mode = 1;
+	self->monsterinfo.c_mode = true;
 }
-
 
 void c_character_init(edict_t *self,int classId)
 {
