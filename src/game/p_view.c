@@ -334,287 +334,181 @@ static void P_DamageFeedback(edict_t* player)
 	client->damage_knockback = 0;
 }
 
-/*
-=============
-P_WorldEffects
-=============
-*/
-
-void P_WorldEffects (void)
+static void P_WorldEffects(void)
 {
-	int		waterlevel,old_waterlevel;
-	vec3_t	Origin,
-			Dir;
-
-	if (current_player->client->playerinfo.deadflag > DEAD_NO)
+	if (current_player->client->playerinfo.deadflag != DEAD_NO)
 		return;
 
-	// If we are in no clip, or we have special lungs, we don't need air.
-
-	if(current_player->movetype==PHYSICSTYPE_NOCLIP)
+	// If we are in no clip, we don't need air.
+	if (current_player->movetype == PHYSICSTYPE_NOCLIP)
 	{
-		current_player->air_finished=level.time+HOLD_BREATH_TIME;
-
-		if(current_player->movetype==PHYSICSTYPE_NOCLIP)
-			return;
+		current_player->air_finished = level.time + HOLD_BREATH_TIME;
+		return;
 	}
 
-	waterlevel=current_player->waterlevel;
-	old_waterlevel=current_client->old_waterlevel;
-	current_client->old_waterlevel=waterlevel;
+	const int waterlevel = current_player->waterlevel;
+	const int old_waterlevel = current_client->old_waterlevel;
+	current_client->old_waterlevel = waterlevel;
 
-	//
-	// If the current player just entered a water volume, play a sound and start a water-ripple
-	// client effect.
-	//
-
-	if(!old_waterlevel&&waterlevel)
+	// If the current player just entered a water volume, play a sound and start a water-ripple client effect.
+	if (old_waterlevel == 0 && waterlevel > 0)
 	{
-		// Clear damage_debounce, so the pain sound will play immediately.
-
-		current_player->damage_debounce_time=level.time-1;
+		// Clear damage_debounce_time, so the pain sound will play immediately.
+		current_player->damage_debounce_time = level.time - 1.0f;
 
 		if (current_player->watertype & CONTENTS_LAVA)
 		{
-			gi.sound(current_player, CHAN_BODY, gi.soundindex("player/inlava.wav"), 1, ATTN_NORM, 0);
+			gi.sound(current_player, CHAN_BODY, gi.soundindex("player/inlava.wav"), 1.0f, ATTN_NORM, 0.0f);
 			current_player->flags |= FL_INLAVA;
 		}
 		else if (current_player->watertype & CONTENTS_SLIME)
 		{
-			gi.sound(current_player, CHAN_BODY, gi.soundindex("player/muckin.wav"), 1, ATTN_NORM, 0);
+			gi.sound(current_player, CHAN_BODY, gi.soundindex("player/muckin.wav"), 1.0f, ATTN_NORM, 0.0f);
 			current_player->flags |= FL_INSLIME;
 		}
-		else 
+		else
 		{
-			gi.sound(current_player, CHAN_BODY, gi.soundindex("player/Water Enter.wav"),1,ATTN_NORM,0);
+			gi.sound(current_player, CHAN_BODY, gi.soundindex("player/Water Enter.wav"), 1.0f, ATTN_NORM, 0.0f);
 		}
-		current_player->flags|=FL_INWATER;
 
-		VectorCopy(current_player->s.origin,Origin);
+		current_player->flags |= FL_INWATER;
 
-		Origin[2]+=current_player->client->playerinfo.waterheight;
+		vec3_t origin;
+		VectorCopy(current_player->s.origin, origin);
+		origin[2] += current_player->client->playerinfo.waterheight;
 
+		VectorCopy(origin, current_player->client->playerinfo.LastWatersplashPos);
+
+		//TODO: different entry splashes for lava and slime.
 		// Fixme: Need to determine the actual water surface normal - if we have any sloping water??
-
-		Dir[0]=0.0;
-		Dir[1]=0.0;
-		Dir[2]=1.0;
-
-		VectorCopy(Origin,current_player->client->playerinfo.LastWatersplashPos);
-
-		gi.CreateEffect(NULL,
-						FX_WATER_ENTRYSPLASH,
-						CEF_FLAG7,
-						Origin,
-						"bd",
-						128|96,			// FIXME: Size propn. to entry velocity?
-						Dir);
+		gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG7, origin, "bd", 128 | 96, vec3_up); // FIXME: Size propn. to entry velocity?
 	}
-	else if (old_waterlevel&&!waterlevel)
+	else if (old_waterlevel > 0 && waterlevel == 0)
 	{
-
-		//
 		// If the current player just completely exited a water volume, play a sound.
-		//
 
-		// INWATER is set whether in lava, slime or water.
+		// FL_INWATER is set whether in lava, slime or water.
 		if (current_player->flags & FL_INLAVA)
 		{
-			gi.sound (current_player, CHAN_BODY, gi.soundindex("player/inlava.wav"), 1, ATTN_NORM, 0);
+			gi.sound(current_player, CHAN_BODY, gi.soundindex("player/inlava.wav"), 1.0f, ATTN_NORM, 0.0f);
 			current_player->flags &= ~FL_INLAVA;
 		}
 		else if (current_player->flags & FL_INSLIME)
 		{
-			gi.sound (current_player, CHAN_BODY, gi.soundindex("player/muckexit.wav"), 1, ATTN_NORM, 0);
+			gi.sound(current_player, CHAN_BODY, gi.soundindex("player/muckexit.wav"), 1.0f, ATTN_NORM, 0.0f);
 			current_player->flags &= ~FL_INSLIME;
 		}
-		else 
+		else
 		{
-			gi.sound (current_player, CHAN_BODY, gi.soundindex("player/Water Exit.wav"), 1, ATTN_NORM, 0);
+			gi.sound(current_player, CHAN_BODY, gi.soundindex("player/Water Exit.wav"), 1.0f, ATTN_NORM, 0.0f);
 		}
-		current_player->flags&=~FL_INWATER;
 
-		VectorCopy(current_player->s.origin,Origin);
+		current_player->flags &= ~FL_INWATER;
 
-		Origin[2]=current_player->client->playerinfo.LastWatersplashPos[2];
+		vec3_t origin;
+		VectorCopy(current_player->s.origin, origin);
+		origin[2] = current_player->client->playerinfo.LastWatersplashPos[2];
 
+		VectorCopy(origin, current_player->client->playerinfo.LastWatersplashPos);
+
+		//TODO: different entry splashes for lava and slime.
 		// Fixme: Need to determine the actual water surface normal - if we have any sloping water??
-
-		Dir[0]=0.0;
-		Dir[1]=0.0;
-		Dir[2]=1.0;
-
-		VectorCopy(Origin,current_player->client->playerinfo.LastWatersplashPos);
-
-		gi.CreateEffect(NULL,
-						FX_WATER_ENTRYSPLASH,
-						0,
-						Origin,
-						"bd",
-						96,				// FIXME: Size propn. to exit velocity.
-						Dir);
+		gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, 0, origin, "bd", 96, vec3_up); // FIXME: Size propn. to exit velocity.
 	}
 
-	//
+	//TODO: move 'Handle lava sizzle damage' block here, abort when in lava?
+
 	// Start a waterwake effect if the current player has been in water and still is in water.
-	//
-
-	if(waterlevel && (old_waterlevel&&waterlevel<3) && (VectorLength(current_player->velocity)!=0.0))
+	if (waterlevel > 0 && (old_waterlevel > 1 && waterlevel < 3) && VectorLength(current_player->velocity) != 0.0f)
 	{
-	// no ripples while in cinematics
-	if (sv_cinematicfreeze->value)
-		return;
+		// No ripples while in cinematics.
+		if (SV_CINEMATICFREEZE) //TODO: shouldn't this check be at the beginning of the function?
+			return;
 
-		if((((int)(current_client->bobtime+bob_move))!=bob_cycle) && (!sv_cinematicfreeze->value))
+		if ((int)(current_client->bobtime + bob_move) != bob_cycle) //TODO: skip when in lava.
 		{
-			// FIXME: Doing more work then we need to here???? How about re-writing this so that it
-			// is always active on the client and does water tests itself? We'll see - currently not
-			// enough info. is available on the client to try this.
+			// FIXME: Doing more work then we need to here????
+			// How about re-writing this so that it is always active on the client and does water tests itself?
+			// We'll see - currently not enough info is available on the client to try this.
+			vec3_t temp;
+			VectorCopy(current_player->velocity, temp);
+			VectorNormalize(temp);
 
-			vec3_t	Angles,
-					Temp;
-			byte	angle_byte;
-			
-			VectorCopy(current_player->velocity,Temp);
+			vec3_t angles;
+			vectoangles(temp, angles);
 
-			VectorNormalize(Temp);
+			vec3_t origin;
+			VectorCopy(current_player->s.origin, origin);
+			origin[2] += current_player->client->playerinfo.waterheight;
 
-			vectoangles(Temp,Angles);
-
-			VectorCopy(current_player->s.origin,Origin);
-
-			Origin[2]+=current_player->client->playerinfo.waterheight;
-
-			angle_byte = Q_ftol(((Angles[YAW] + DEGREE_180)/360.0) * 255.0);
-
-			gi.CreateEffect(NULL,
-							FX_WATER_WAKE,
-							0,
-							Origin,
-							"sbv",							
-							(short)current_player->s.number,
-							angle_byte,
-							current_player->velocity);
+			const byte angle_byte = (byte)Q_ftol((angles[YAW] + DEGREE_180) / 360.0f * 255.0f);
+			gi.CreateEffect(NULL, FX_WATER_WAKE, 0, origin, "sbv", current_player->s.number, angle_byte, current_player->velocity);
 		}
 	}
 
-	//
 	// Check for head just coming out of water.
-	//
-
 	if (old_waterlevel == 3 && waterlevel != 3)
 	{
 		if (current_player->air_finished < level.time)
-		{	
-			// Gasp for air.
-			if (irand(0,1))
-				gi.sound (current_player, CHAN_BODY, gi.soundindex("*gasp1.wav"), 1, ATTN_NORM, 0);
-			else
-				gi.sound (current_player, CHAN_BODY, gi.soundindex("*gasp2.wav"), 1, ATTN_NORM, 0);
-
-		}
-		else  if (current_player->air_finished < level.time + 11)
-		{	
-			// Broke surface, low on air
-			gi.sound (current_player, CHAN_BODY, gi.soundindex("*waterresurface.wav"), 1, ATTN_NORM, 0);
-		}
+			gi.sound(current_player, CHAN_BODY, gi.soundindex(va("*gasp%i.wav", irand(1, 2))), 1.0f, ATTN_NORM, 0.0f); // Gasp for air.
+		else if (current_player->air_finished < level.time + 11)
+			gi.sound(current_player, CHAN_BODY, gi.soundindex("*waterresurface.wav"), 1.0f, ATTN_NORM, 0.0f); // Broke surface, low on air.
 	}
 
-	// ********************************************************************************************
 	// Handle drowning.
-	// ********************************************************************************************
-
 	if (waterlevel == 3)
 	{
-		if(current_player->watertype & CONTENTS_SLIME)
+		if (current_player->watertype & CONTENTS_SLIME)
 		{
 			// Slime should kill really quick.
-
-			current_player->dmg=25;
+			current_player->dmg = 25;
 
 			// Play a gurp sound instead of a normal pain sound.
-			
-			if (irand(0, 1))
-				gi.sound (current_player, CHAN_VOICE, gi.soundindex("*drowning1.wav"), 1, ATTN_NORM, 0);
-			else
-				gi.sound (current_player, CHAN_VOICE, gi.soundindex("*drowning2.wav"), 1, ATTN_NORM, 0);		
-
+			gi.sound(current_player, CHAN_VOICE, gi.soundindex(va("*drowning%i.wav", irand(1, 2))), 1.0f, ATTN_NORM, 0.0f);
 			current_player->pain_debounce_time = level.time;
 
-			T_Damage(current_player,
-					 world,
-					 world,
-					 vec3_origin,
-					 current_player->s.origin,
-					 vec3_origin,
-					 current_player->dmg,
-					 0,
-					 DAMAGE_SUFFOCATION,
-					 MOD_SLIME);		
+			T_Damage(current_player, world, world, vec3_origin, current_player->s.origin, vec3_origin, current_player->dmg, 0, DAMAGE_SUFFOCATION, MOD_SLIME);
 		}
-		else if ((current_player->air_finished + current_player->client->playerinfo.lungs_timer) < level.time)
-		{	
+		else if (current_player->air_finished + current_player->client->playerinfo.lungs_timer < level.time)
+		{
 			// If out of air, start drowning.
-
 			if (current_player->client->next_drown_time < level.time && current_player->health > 0)
 			{
-				current_player->client->next_drown_time = level.time + 1;
+				current_player->client->next_drown_time = level.time + 1.0f;
 
 				// Take more damage the longer underwater.
-
-				current_player->dmg += 2;
-
-				if (current_player->dmg > 15)
-					current_player->dmg = 15;
+				current_player->dmg = min(15, current_player->dmg + 2);
 
 				// Play a gurp sound instead of a normal pain sound.
-				
-				if (irand(0, 1))
-					gi.sound (current_player, CHAN_VOICE, gi.soundindex("*drowning1.wav"), 1, ATTN_NORM, 0);
-				else
-					gi.sound (current_player, CHAN_VOICE, gi.soundindex("*drowning2.wav"), 1, ATTN_NORM, 0);		
+				gi.sound(current_player, CHAN_VOICE, gi.soundindex(va("*drowning%i.wav", irand(1, 2))), 1.0f, ATTN_NORM, 0.0f);
 
 				current_player->pain_debounce_time = level.time;
 
-				T_Damage(current_player,
-						 world,
-						 world,
-						 vec3_origin,
-						 current_player->s.origin,
-						 vec3_origin,
-						 current_player->dmg,
-						 0,
-						 DAMAGE_SUFFOCATION,
-						 MOD_WATER);
+				T_Damage(current_player, world, world, vec3_origin, current_player->s.origin, vec3_origin, current_player->dmg, 0, DAMAGE_SUFFOCATION, MOD_WATER);
 			}
-			
+
 		}
-		// else, we aren't drowning yet, but we may well need to decrement the amount of extra lungs we have from shrines
-		// since we still have lungs, reset air finished till we don't anymore.
 		else
-		if (current_player->client->playerinfo.lungs_timer)
 		{
-			// floatinf point inaccuracy never lets us equal zero by ourselves
-			if (current_player->client->playerinfo.lungs_timer < 0.1)
-				current_player->client->playerinfo.lungs_timer = 0.0;
-			else
+			// We aren't drowning yet, but we may well need to decrement the amount of extra lungs we have from shrines.
+
+			// Since we still have lungs, reset air finished till we don't anymore.
+			if (current_player->client->playerinfo.lungs_timer > 0.0f)
 			{
-				current_player->client->playerinfo.lungs_timer -= 0.1;
+				current_player->client->playerinfo.lungs_timer -= 0.1f;
 				current_player->air_finished = level.time + HOLD_BREATH_TIME;
+
+				// Floating point inaccuracy never lets us equal zero by ourselves
+				if (current_player->client->playerinfo.lungs_timer < 0.1f)
+					current_player->client->playerinfo.lungs_timer = 0.0f;
 			}
 		}
 
+		// We weren't underwater before this, so play a submerged sound. //TODO: don't play when submerged in lava!
 		if (old_waterlevel != 3)
-		{	// We weren't underwater before this, so play a submerged sound
-			gi.sound (current_player, CHAN_VOICE, gi.soundindex("player/underwater.wav"), 1, ATTN_IDLE, 0);
-		}
-
-		// Play an underwater sound every 4 seconds!
-		if (((int)(level.time/4.0))*4.0 == level.time)
-		{	// Underwater ambient
-			// Play local only?
-			gi.sound (current_player, CHAN_BODY, gi.soundindex("player/underwater.wav"), 1, ATTN_IDLE, 0);
-		}
+			gi.sound(current_player, CHAN_VOICE, gi.soundindex("player/underwater.wav"), 1.0f, ATTN_IDLE, 0.0f);
+		else if ((int)(level.time / 4.0f) * 4 == (int)level.time) // Play an underwater sound every 4 seconds! //BUGFIX, kinda: mxd. Separate if case in original logic.
+			gi.sound(current_player, CHAN_BODY, gi.soundindex("player/underwater.wav"), 1.0f, ATTN_IDLE, 0.0f); // Play local only?
 	}
 	else
 	{
@@ -622,29 +516,17 @@ void P_WorldEffects (void)
 		current_player->dmg = 2;
 	}
 
-	// ********************************************************************************************
 	// Handle lava sizzle damage.
-	// ********************************************************************************************
-
-	if (waterlevel && (current_player->watertype&(CONTENTS_LAVA)) )
+	if (waterlevel > 0 && (current_player->watertype & CONTENTS_LAVA))
 	{
 		if (current_player->health > 0 && current_player->pain_debounce_time <= level.time)
 		{
-			gi.sound (current_player, CHAN_VOICE, gi.soundindex("player/lavadamage.wav"), 1, ATTN_NORM, 0);
-			
-			current_player->pain_debounce_time = level.time + 1;
+			gi.sound(current_player, CHAN_VOICE, gi.soundindex("player/lavadamage.wav"), 1.0f, ATTN_NORM, 0.0f);
+			current_player->pain_debounce_time = level.time + 1.0f;
 		}
 
-		T_Damage(current_player,
-				 world,
-				 world,
-				 vec3_origin,
-				 current_player->s.origin,
-				 vec3_origin,
-				 (waterlevel>2)?25:(3*waterlevel),
-				 0,
-				 DAMAGE_LAVA,
-				 MOD_LAVA);
+		const int damage = (waterlevel > 2 ? 25 : waterlevel * 3); //mxd
+		T_Damage(current_player, world, world, vec3_origin, current_player->s.origin, vec3_origin, damage, 0, DAMAGE_LAVA, MOD_LAVA);
 	}
 }
 
