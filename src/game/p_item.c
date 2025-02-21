@@ -25,21 +25,20 @@ void Use_Defence(playerinfo_t* info, gitem_t* defence)
 		info->def_ammo_index = 0;
 }
 
-// ************************************************************************************************
-// DefenceThink_DropTornado
-// ----------------------
-// ************************************************************************************************
-
-void DefenceThink_Tornado(edict_t *Caster,char *Format,...)
+static void TakeMana(const edict_t* caster) //mxd. Added to reduce code duplication.
 {
+	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
+	{
+		playerinfo_t* info = &caster->client->playerinfo;
+		assert(info->def_ammo_index);
+		info->pers.inventory.Items[info->def_ammo_index] -= info->pers.defence->quantity;
+	}
+}
 
-	// Set up the Tornado's starting position and aiming angles then cast the spell.
-
-	SpellCastDropTornado(Caster,Caster->s.origin,Caster->client->aimangles,NULL,0.0);
-
-	// Take off mana
-	if (!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_INFINITE_MANA)))
-		Caster->client->playerinfo.pers.inventory.Items[Caster->client->playerinfo.def_ammo_index]-= Caster->client->playerinfo.pers.defence->quantity;
+void DefenceThink_Tornado(edict_t* caster, char* format, ...)
+{
+	SpellCastDropTornado(caster, caster->s.origin, caster->client->aimangles, NULL, 0.0f);
+	TakeMana(caster); //mxd
 }
 
 
