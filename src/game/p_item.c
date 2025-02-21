@@ -14,15 +14,15 @@
 #include "spl_tornado.h" //mxd
 #include "g_local.h"
 
-void Use_Defence(playerinfo_t *playerinfo, gitem_t *defence)
+void Use_Defence(playerinfo_t* info, gitem_t* defence)
 {
-	playerinfo->pers.lastdefence = playerinfo->pers.defence;	
-	playerinfo->pers.defence=defence;
+	info->pers.lastdefence = info->pers.defence;
+	info->pers.defence = defence;
 
-	if(playerinfo->pers.defence&&playerinfo->pers.defence->ammo)
-		playerinfo->def_ammo_index=ITEM_INDEX(P_FindItem(playerinfo->pers.defence->ammo));
+	if (info->pers.defence != NULL && info->pers.defence->ammo != NULL)
+		info->def_ammo_index = ITEM_INDEX(P_FindItem(info->pers.defence->ammo));
 	else
-		playerinfo->def_ammo_index=0;
+		info->def_ammo_index = 0;
 }
 
 // ************************************************************************************************
