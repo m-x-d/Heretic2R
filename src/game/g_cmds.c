@@ -15,6 +15,7 @@
 #include "p_dll.h" //mxd
 #include "p_client.h" //mxd
 #include "p_hud.h" //mxd
+#include "p_view.h" //mxd
 #include "spl_morph.h" //mxd
 #include "Random.h"
 #include "Vector.h"
@@ -230,7 +231,7 @@ static void Cmd_Give_f(edict_t* ent)
 		if (level.defensive_weapons & 16)
 			AddDefenseToInventory(P_FindItem("meteor"), ent);
 
-		ClientUpdateModelAttributes(ent); //mxd
+		Player_UpdateModelAttributes(ent); //mxd
 
 		return;
 	}
@@ -267,7 +268,7 @@ static void Cmd_Give_f(edict_t* ent)
 			{
 				// This is a bow, put the bow on player's back.
 				pers->bowtype = ((item->tag == ITEM_WEAPON_PHOENIXBOW) ? BOW_TYPE_PHOENIX : BOW_TYPE_REDRAIN);
-				ClientUpdateModelAttributes(ent); //mxd
+				Player_UpdateModelAttributes(ent); //mxd
 			}
 		}
 
@@ -318,7 +319,7 @@ static void Cmd_Give_f(edict_t* ent)
 			pers->armortype = ARMOR_TYPE_GOLD;
 		}
 
-		ClientUpdateModelAttributes(ent); //mxd
+		Player_UpdateModelAttributes(ent); //mxd
 
 		if (!give_all)
 			return;
@@ -333,7 +334,7 @@ static void Cmd_Give_f(edict_t* ent)
 			pers->stafflevel = STAFF_LEVEL_BASIC;
 
 		gi.dprintf("Setting staff level to %d\n", pers->stafflevel);
-		ClientUpdateModelAttributes(ent); //mxd
+		Player_UpdateModelAttributes(ent); //mxd
 
 		return;
 	}
@@ -392,7 +393,7 @@ static void Cmd_Give_f(edict_t* ent)
 		char userinfo[MAX_INFO_STRING];
 		memcpy(userinfo, pers->userinfo, sizeof(userinfo));
 		ClientUserinfoChanged(ent, userinfo);
-		ClientUpdateModelAttributes(ent); //mxd
+		Player_UpdateModelAttributes(ent); //mxd
 
 		return;
 	}

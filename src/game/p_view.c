@@ -237,7 +237,7 @@ void WritePlayerinfo(edict_t* ent)
 	VectorCopy(ent->client->playerinfo.offsetangles, ent->client->ps.offsetangles);
 }
 
-void SetupPlayerinfo_effects(const edict_t* ent)
+static void SetupPlayerinfo_effects(const edict_t* ent)
 {
 	ent->client->playerinfo.effects = ent->s.effects;
 	ent->client->playerinfo.renderfx = ent->s.renderfx;
@@ -248,7 +248,7 @@ void SetupPlayerinfo_effects(const edict_t* ent)
 		ent->client->playerinfo.fmnodeinfo[i] = ent->s.fmnodeinfo[i];
 }
 
-void WritePlayerinfo_effects(edict_t* ent)
+static void WritePlayerinfo_effects(edict_t* ent)
 {
 	ent->s.effects = ent->client->playerinfo.effects;
 	ent->s.renderfx = ent->client->playerinfo.renderfx;
@@ -257,6 +257,13 @@ void WritePlayerinfo_effects(edict_t* ent)
 
 	for (int i = 0; i < MAX_FM_MESH_NODES; i++)
 		ent->s.fmnodeinfo[i] = ent->client->playerinfo.fmnodeinfo[i];
+}
+
+void Player_UpdateModelAttributes(edict_t* ent) //mxd. 'ClientSetSkinType' in p_client.c in original version.
+{
+	SetupPlayerinfo_effects(ent);
+	P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
+	WritePlayerinfo_effects(ent);
 }
 
 // Deal with incidental player stuff, like setting the personal light to OFF if its should be.

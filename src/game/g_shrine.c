@@ -13,6 +13,7 @@
 #include "p_anims.h"
 #include "p_client.h" //mxd
 #include "p_main.h"
+#include "p_view.h" //mxd
 #include "FX.h"
 #include "Random.h"
 #include "Vector.h"
@@ -83,7 +84,7 @@ void PlayerKillShrineFX(edict_t* self)
 	// Remove Armor.
 	info->pers.armor_count = 0.0f;
 	info->pers.armortype = ARMOR_TYPE_NONE; //mxd. ARMOR_NONE in original version.
-	ClientUpdateModelAttributes(self); //mxd
+	Player_UpdateModelAttributes(self); //mxd
 
 	// Remove Staff powerup.
 	info->pers.stafflevel = STAFF_LEVEL_BASIC;
@@ -417,7 +418,7 @@ static void ShrineArmorSilverCore(edict_t* other) //mxd. Named 'shrine_armor_sil
 		pers->armor_count = silver_armor_info.max_armor;
 	}
 
-	ClientUpdateModelAttributes(other); //mxd
+	Player_UpdateModelAttributes(other); //mxd
 
 	// Restore dismemberment, and stop us being on fire.
 	ShrineRestorePlayer(other);
@@ -499,7 +500,7 @@ static void ShrineArmorGoldCore(edict_t* other) //mxd. Named 'shrine_armor_gold_
 	other->client->playerinfo.pers.armortype = ARMOR_TYPE_GOLD;
 	other->client->playerinfo.pers.armor_count = gold_armor_info.max_armor;
 
-	ClientUpdateModelAttributes(other); //mxd
+	Player_UpdateModelAttributes(other); //mxd
 
 	// Restore dismemberment, and stop us being on fire.
 	ShrineRestorePlayer(other);
@@ -591,7 +592,7 @@ static void ShrineStaffCore(edict_t* other) //mxd. Named 'shrine_staff_core' in 
 	if (other->client->playerinfo.pers.stafflevel < STAFF_LEVEL_MAX - 1)
 	{
 		other->client->playerinfo.pers.stafflevel++;
-		ClientUpdateModelAttributes(other); //mxd
+		Player_UpdateModelAttributes(other); //mxd
 	}
 
 	// Restore dismemberment, and stop us being on fire.
@@ -898,7 +899,7 @@ static void ShrineGhostCore(edict_t* other) //mxd. Named 'shrine_ghost_core' in 
 	other->client->playerinfo.ghost_timer = level.time + GHOST_DURATION;
 
 	// Update the model attributes for ghosting.
-	ClientUpdateModelAttributes(other); //mxd
+	Player_UpdateModelAttributes(other); //mxd
 
 	// Restore dismemberment, and stop us being on fire.
 	ShrineRestorePlayer(other);
@@ -975,7 +976,7 @@ static void ShrineReflectCore(edict_t* other) //mxd. Named 'shrine_reflect_core'
 	other->client->playerinfo.reflect_timer = level.time + (DEATHMATCH ? REFLECT_DURATION_DEATHMATCH : REFLECT_DURATION_SINGLE);
 
 	// Update the model attributes for the reflection skin.
-	ClientUpdateModelAttributes(other); //mxd
+	Player_UpdateModelAttributes(other); //mxd
 
 	// Restore dismemberment, and stop us being on fire.
 	ShrineRestorePlayer(other);

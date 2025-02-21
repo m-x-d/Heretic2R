@@ -21,7 +21,6 @@ extern void ClientUserinfoChanged(edict_t* ent, char* userinfo);
 extern void ClientDisconnect(edict_t* ent);
 extern void ClientBegin(edict_t* ent);
 extern void ClientBeginServerFrame(edict_t* ent);
-extern void ClientUpdateModelAttributes(edict_t* ent); //mxd
 
 extern int player_pain(edict_t* self, edict_t* other, float kick, int damage);
 extern int player_die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point);

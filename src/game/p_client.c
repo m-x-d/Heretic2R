@@ -60,13 +60,6 @@ void SP_info_player_coop(edict_t* self)
 // Use 'angles' instead of 'angle', so you can set pitch or roll as well as yaw. 'pitch yaw roll'.
 void SP_info_player_intermission(edict_t* self) { }
 
-void ClientUpdateModelAttributes(edict_t* ent) //mxd. Named 'ClientSetSkinType' in original version.
-{
-	SetupPlayerinfo_effects(ent);
-	P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
-	WritePlayerinfo_effects(ent);
-}
-
 // Player pain is handled at the end of the frame in P_DamageFeedback().
 int player_pain(edict_t* self, edict_t* other, float kick, int damage)
 {
@@ -153,7 +146,7 @@ void player_repair_skin(edict_t* self) //TODO: rename to PlayerRepairSkin().
 			self->s.fmnodeinfo[i].skin = self->s.skinnum;
 		}
 
-		ClientUpdateModelAttributes(self); //mxd
+		Player_UpdateModelAttributes(self); //mxd
 		return;
 	}
 
@@ -196,7 +189,7 @@ void player_repair_skin(edict_t* self) //TODO: rename to PlayerRepairSkin().
 		checked++; // To protect against infinite loops, this IS random after all.
 	}
 
-	ClientUpdateModelAttributes(self); //mxd
+	Player_UpdateModelAttributes(self); //mxd
 }
 
 void ResetPlayerBaseNodes(edict_t* ent) //TODO: rename to PlayerResetBaseNodes()?
@@ -224,7 +217,7 @@ void ResetPlayerBaseNodes(edict_t* ent) //TODO: rename to PlayerResetBaseNodes()
 	ent->s.fmnodeinfo[MESH__LLEG].skin = ent->s.skinnum;
 
 	// FIXME: Turn hands back on too? But two pairs, which one? Shouldn't PlayerUpdateModelAttributes do that?
-	ClientUpdateModelAttributes(ent); //mxd
+	Player_UpdateModelAttributes(ent); //mxd
 }
 
 #define BIT_BASE2		0		// MESH_BASE2		0 - Front.
@@ -637,7 +630,7 @@ void player_dismember(edict_t* self, edict_t* other, const int damage, HitLocati
 		}
 	}
 
-	ClientUpdateModelAttributes(self); //mxd
+	Player_UpdateModelAttributes(self); //mxd
 }
 
 #pragma endregion
@@ -666,7 +659,7 @@ void player_decap(edict_t* self, edict_t* other) //TODO: rename to PlayerDecapit
 		player_die(self, other, other, 100, gore_spot);
 	}
 
-	ClientUpdateModelAttributes(self); //mxd
+	Player_UpdateModelAttributes(self); //mxd
 }
 
 static void player_leader_effect(void) //TODO: rename to PlayerLeaderEffect().
@@ -1490,7 +1483,7 @@ static void GiveLevelItems(edict_t* player)
 	if (level.defensive_weapons & 16)
 		AddDefenseToInventory(P_FindItem("meteor"), player);
 
-	ClientUpdateModelAttributes(player); //mxd
+	Player_UpdateModelAttributes(player); //mxd
 }
 
 static void InitClientPersistant(const edict_t* player)
@@ -1718,10 +1711,7 @@ static void PutClientInServer(edict_t* ent)
 	VectorClear(client->playerinfo.velocity);
 
 	// Make the player have the right attributes - armor that sort of thing.
-	ClientUpdateModelAttributes(ent); //mxd
-
-	// Make sure the skin attributes are transferred.
-	ClientUpdateModelAttributes(ent);
+	Player_UpdateModelAttributes(ent); //mxd
 
 	if (DEATHMATCH || COOP)
 	{
@@ -2106,7 +2096,7 @@ void ClientUserinfoChanged(edict_t* ent, char* userinfo) //TODO: add int userinf
 		SetSPPlayerSkin(ent, skin_name, player_num); //mxd
 
 	// Change skins, but lookup the proper skintype.
-	ClientUpdateModelAttributes(ent);
+	Player_UpdateModelAttributes(ent);
 
 	// FOV.
 	ent->client->ps.fov = (float)(Q_atoi(Info_ValueForKey(userinfo, "fov")));
