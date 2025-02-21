@@ -6,6 +6,7 @@
 //
 // By Jake Simpson
 
+#include "spl_tornado.h" //mxd
 #include "g_local.h"
 #include "fx.h"
 #include "vector.h"

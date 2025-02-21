@@ -1100,5 +1100,17 @@
     <ClInclude Include="p_hud.h">
       <Filter>src\Player</Filter>
     </ClInclude>
+    <ClInclude Include="spl_powerup.h">
+      <Filter>src\Spells</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_BlueRing.h">
+      <Filter>src\Spells</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_meteorbarrier.h">
+      <Filter>src\Spells</Filter>
+    </ClInclude>
+    <ClInclude Include="spl_tornado.h">
+      <Filter>src\Spells</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

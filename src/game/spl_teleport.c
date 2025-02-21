@@ -6,6 +6,7 @@
 //
 // Written by Jake Simpson
 
+#include "g_teleport.h" //mxd
 #include "g_local.h"
 #include "fx.h"
 #include "Angles.h"

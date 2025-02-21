@@ -5,6 +5,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include "spl_meteorbarrier.h" //mxd
 #include "g_local.h"
 #include "fx.h"
 #include "Angles.h"

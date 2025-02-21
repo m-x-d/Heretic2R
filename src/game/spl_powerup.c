@@ -5,10 +5,10 @@
 // Copyright 1998 Raven Software
 //
 
-#include "g_local.h"
-#include "fx.h"
+#include "spl_powerup.h" //mxd
+#include "FX.h"
 #include "g_itemstats.h"
-
+#include "g_local.h"
 
 void SpellCastPowerup(edict_t *Caster, vec3_t StartPos, vec3_t AimAngles, vec3_t AimDir, float value)
 {
