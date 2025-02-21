@@ -27,9 +27,6 @@ float				bobmove;
 int					bobcycle;		// odd cycles are right foot going forward
 float				bobfracsin;		// sin(bobfrac*M_PI)
 
-extern void PrintLocalBuoyInfo(vec3_t org);
-
-
 // ** setup a looping sound on the client
 void G_set_looping_sound(edict_t *self, int sound_num)
 {
@@ -923,15 +920,6 @@ void ClientEndServerFrame (edict_t *ent)
 	SetupPlayerinfo(ent);
 
 	P_PlayerUpdateCmdFlags(&ent->client->playerinfo);
-
-	if(BUOY_DEBUG) // Note this is a bit of a hack
-	{
-		if(ent->client->playerinfo.seqcmd[ACMDL_ACTION] == true)
-		{
-			PrintLocalBuoyInfo(ent->s.origin);
-		}
-	}
-	
 	P_PlayerUpdate(&ent->client->playerinfo);
 	P_AnimUpdateFrame(&ent->client->playerinfo);
 	PlayerTimerUpdate(ent);
