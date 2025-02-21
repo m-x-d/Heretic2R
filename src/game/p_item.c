@@ -14,6 +14,7 @@
 #include "spl_tornado.h" //mxd
 #include "g_local.h"
 
+//TODO: is this layer of indirection needed? Can't we rewrite spell-casting functions (SpellCastDropTornado(), SpellCastPowerup() etc.) to take mana and work as weaponthink callbacks?
 void Use_Defence(playerinfo_t* info, gitem_t* defence)
 {
 	info->pers.lastdefence = info->pers.defence;
