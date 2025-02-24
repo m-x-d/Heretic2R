@@ -1,11 +1,12 @@
-typedef enum AnimID_e
-{	
-	ANIM_C_ACTION1,
-	ANIM_C_ACTION2,
-	ANIM_C_IDLE1,
-	NUM_ANIMS
-} AnimID_t;
+//
+// c_siernan2.h
+//
+// Copyright 1998 Raven Software
+//
 
-extern animmove_t siernan2_move_c_action1;
-extern animmove_t siernan2_move_c_action2;
-extern animmove_t siernan2_move_c_idle1; 
+#pragma once
+
+#include "q_Typedef.h"
+
+extern void Siernan2CinStaticsInit(void); //mxd
+extern void SP_character_siernan2(edict_t* self); //mxd
