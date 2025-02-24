@@ -2586,7 +2586,7 @@ void tbeast_post_think (edict_t *self)
 	self->next_post_think = level.time + 0.1;
 }
 
-edict_t *TB_CheckHit(vec3_t start, vec3_t end)
+edict_t *TB_CheckHit(const vec3_t start, vec3_t end)
 {
 	edict_t	*found = NULL;
 	int		i = 0;
