@@ -1,5 +1,5 @@
 //
-// c_corvus1.h
+// c_corvus2.h
 //
 // Copyright 1998 Raven Software
 //
