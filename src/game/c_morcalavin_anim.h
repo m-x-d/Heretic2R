@@ -1,5 +1,5 @@
 //
-// c_mjorcalavin_anim.h
+// c_morcalavin_anim.h
 //
 // Copyright 1998 Raven Software
 //
