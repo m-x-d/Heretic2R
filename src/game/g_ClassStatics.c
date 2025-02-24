@@ -21,18 +21,8 @@ void TeleporterStaticsInit();
 void ButtonStaticsInit();
 void LeverStaticsInit();
 void FlameThrowerStaticsInit();
-void victimSsithraStaticsInit();
-void SsithrascoutStaticsInit();
-void DranorStaticsInit();
 void TrigDamageStaticsInit();
 void TrigPushStaticsInit();
-void ElflordCinStaticsInit();
-void PriestessCStaticsInit();
-void Priestess2CStaticsInit();
-void Siernan1CinStaticsInit();
-void Siernan2CinStaticsInit();
-void TomeStaticsInit();
-void MorcalavinCinStaticsInit();
 
 void (*classStaticsInits[NUM_CLASSIDS])(void) = 
 {
@@ -64,7 +54,7 @@ void (*classStaticsInits[NUM_CLASSIDS])(void) =
 	TcheckrikStaticsInit,
 	ButtonStaticsInit,
 	BeeStaticsInit,
-	CorvusStaticsInit,
+	Corvus1CinStaticsInit,
 	MorcalavinStaticsInit,
 	TBeastStaticsInit,
 	ImpStaticsInit,
@@ -72,24 +62,24 @@ void (*classStaticsInits[NUM_CLASSIDS])(void) =
 	FlameThrowerStaticsInit,
 
 	MotherStaticsInit,
-	victimSsithraStaticsInit,
-	SsithrascoutStaticsInit,
-	DranorStaticsInit,
+	VictimSsithraCinStaticsInit,
+	SsithraScoutCinStaticsInit,
+	DranorCinStaticsInit,
 	TrigDamageStaticsInit,
 	TrigPushStaticsInit,
 	ElflordCinStaticsInit,
 	Siernan1CinStaticsInit,
 	Siernan2CinStaticsInit,
-	PriestessCStaticsInit,
-	Priestess2CStaticsInit,
-	TomeStaticsInit,
+	PriestessCinStaticsInit,
+	Priestess2CinStaticsInit,
+	TomeCinStaticsInit,
 	MorcalavinCinStaticsInit,
-	Corvus2StaticsInit,
-	Corvus3StaticsInit,
-	Corvus4StaticsInit,
-	Corvus5StaticsInit,
-	Corvus6StaticsInit,
-	Corvus7StaticsInit,
-	Corvus8StaticsInit,
-	Corvus9StaticsInit,
+	Corvus2CinStaticsInit,
+	Corvus3CinStaticsInit,
+	Corvus4CinStaticsInit,
+	Corvus5CinStaticsInit,
+	Corvus6CinStaticsInit,
+	Corvus7CinStaticsInit,
+	Corvus8CinStaticsInit,
+	Corvus9CinStaticsInit,
 };

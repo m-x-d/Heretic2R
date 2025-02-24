@@ -8,5 +8,5 @@
 
 #include "q_Typedef.h"
 
-extern void TomeStaticsInit(void); //mxd
+extern void TomeCinStaticsInit(void); //mxd
 extern void SP_character_tome(edict_t* self); //mxd

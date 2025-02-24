@@ -11,5 +11,5 @@
 
 #include "q_Typedef.h"
 
-extern void PriestessCStaticsInit(void); //mxd
+extern void PriestessCinStaticsInit(void); //mxd
 extern void SP_character_highpriestess(edict_t* self); //mxd

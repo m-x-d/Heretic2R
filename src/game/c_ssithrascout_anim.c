@@ -5,7 +5,6 @@
 //
 
 #include "c_ssithrascout_anim.h"
-
 #include "c_ai.h"
 
 // Ssithra scout action 1.

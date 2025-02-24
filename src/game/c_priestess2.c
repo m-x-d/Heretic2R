@@ -87,7 +87,7 @@ static void priestess2_c_anims(edict_t* self, G_Message_t* msg)
 	SetAnim(self, curr_anim);
 }
 
-void Priestess2CStaticsInit(void)
+void Priestess2CinStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 

@@ -164,7 +164,7 @@ static void corvus5_c_anims(edict_t* self, G_Message_t* msg)
 	SetAnim(self, curr_anim);
 }
 
-void Corvus5StaticsInit(void)
+void Corvus5CinStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 

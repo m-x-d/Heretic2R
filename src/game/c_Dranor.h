@@ -8,5 +8,5 @@
 
 #include "q_Typedef.h"
 
-extern void DranorStaticsInit(void); //mxd
+extern void DranorCinStaticsInit(void); //mxd
 extern void SP_character_dranor(edict_t* self); //mxd

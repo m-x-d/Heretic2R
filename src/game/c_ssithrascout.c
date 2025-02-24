@@ -122,7 +122,7 @@ static void scout_c_anims(edict_t* self, G_Message_t* msg)
 	SetAnim(self, curr_anim);
 }
 
-void SsithraScoutStaticsInit(void)
+void SsithraScoutCinStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 	static int sounds[NUM_SOUNDS]; //mxd. Made local static.

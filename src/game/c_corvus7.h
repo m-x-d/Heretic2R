@@ -8,5 +8,5 @@
 
 #include "q_Typedef.h"
 
-extern void Corvus7StaticsInit(void); //mxd
+extern void Corvus7CinStaticsInit(void); //mxd
 extern void SP_character_corvus7(edict_t* self); //mxd
