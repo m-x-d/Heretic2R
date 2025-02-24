@@ -1,4 +1,3 @@
-
 //
 // c_priestess2.h
 //
