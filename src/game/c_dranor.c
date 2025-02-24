@@ -1,27 +1,23 @@
-//==============================================================================
 //
-// m_victimSsithra.c
+// c_dranor.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//==============================================================================
-#include "g_local.h"
-#include "Utilities.h"
-#include "g_DefaultMessageHandler.h"
-#include "g_monster.h"
-#include "fx.h"
-#include "random.h"
-#include "vector.h"
 
+#include "c_Dranor.h"
 #include "c_dranor_anim.h"
-#include "c_dranor.h"
 #include "c_ai.h"
+#include "Vector.h"
+#include "Utilities.h"
 
-/*----------------------------------------------------------------------
-  victimSsithra Base Info
------------------------------------------------------------------------*/
-static animmove_t *animations[ NUM_ANIMS] =
+typedef enum SoundID_e
+{
+	SND_PAIN1,
+	NUM_SOUNDS
+} SoundID_t;
+
+// Dranor cinematic actions.
+static animmove_t* animations[NUM_ANIMS] =
 {
 	&dranor_move_c_action1,
 	&dranor_move_c_action2,
@@ -41,106 +37,113 @@ static animmove_t *animations[ NUM_ANIMS] =
 	&dranor_move_c_idle3,
 };
 
-static int sounds[NUM_SOUNDS];
-static ClassResourceInfo_t resInfo;
-
-
-/*-------------------------------------------------------------------------
-	victimSsithra_c_anims
--------------------------------------------------------------------------*/
-void Dranor_c_anims(edict_t *self, G_Message_t *msg)
+static void Dranor_c_anims(edict_t* self, G_Message_t* msg)
 {
-	int int_msg;
 	int curr_anim;
 
 	ai_c_readmessage(self, msg);
-	int_msg = (int) msg->ID;
+	self->monsterinfo.c_anim_flag = 0;
 
-	self->monsterinfo.c_anim_flag = 0; 
-
-	switch(int_msg)
+	switch (msg->ID)
 	{
 		case MSG_C_ACTION1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION1;
 			break;
+
 		case MSG_C_ACTION2:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION2;
 			break;
+
 		case MSG_C_ACTION3:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION3;
 			break;
+
 		case MSG_C_ACTION4:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION4;
 			break;
+
 		case MSG_C_ACTION5:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION5;
 			break;
+
 		case MSG_C_ACTION6:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION6;
 			break;
+
 		case MSG_C_ACTION7:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION7;
 			break;
+
 		case MSG_C_ACTION8:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION8;
 			break;
+
 		case MSG_C_ACTION9:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION9;
 			break;
+
 		case MSG_C_ACTION10:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION10;
 			break;
+
 		case MSG_C_ACTION11:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION11;
 			break;
+
 		case MSG_C_ACTION12:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION12;
 			break;
+
 		case MSG_C_DEATH1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_DONE;
 			self->health = 5;
 			curr_anim = ANIM_C_DEATH1;
-			self->svflags |= SVF_DEADMONSTER;//doesn't block walking
+			self->svflags |= SVF_DEADMONSTER; // Doesn't block walking.
 			self->takedamage = DAMAGE_YES;
 			self->movetype = PHYSICSTYPE_STOP;
 			self->solid = SOLID_BBOX;
 			break;
+
 		case MSG_C_IDLE1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT | C_ANIM_IDLE;
 			curr_anim = ANIM_C_IDLE1;
 			break;
+
 		case MSG_C_IDLE2:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_IDLE2;
 			break;
+
 		case MSG_C_IDLE3:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_IDLE3;
 			break;
+
 		default:
-			break;
-	} 
+			assert(0); //mxd
+			return; //mxd. 'break' in original version.
+	}
 
 	SetAnim(self, curr_anim);
 }
 
-/*-------------------------------------------------------------------------
-	DranorStaticsInit
--------------------------------------------------------------------------*/
-void DranorStaticsInit()
+void DranorStaticsInit(void)
 {
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
+	static int sounds[NUM_SOUNDS]; //mxd. Made local static.
+
 	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION1] = Dranor_c_anims;
 	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION2] = Dranor_c_anims;
 	classStatics[CID_DRANOR].msgReceivers[MSG_C_ACTION3] = Dranor_c_anims;
@@ -158,35 +161,28 @@ void DranorStaticsInit()
 	classStatics[CID_DRANOR].msgReceivers[MSG_C_IDLE2] = Dranor_c_anims;
 	classStatics[CID_DRANOR].msgReceivers[MSG_C_IDLE3] = Dranor_c_anims;
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	
-	resInfo.modelIndex = gi.modelindex("models/monsters/plaguelf/dranor/tris.fm");
-
-	classStatics[CID_SSITHRA_VICTIM].resInfo = &resInfo;
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/plaguelf/dranor/tris.fm");
 
 	sounds[SND_PAIN1] = gi.soundindex("monsters/plagueElf/pain1.wav");
-	
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = sounds;
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
 
-	classStatics[CID_DRANOR].resInfo = &resInfo;
-
+	classStatics[CID_SSITHRA_VICTIM].resInfo = &res_info;
+	classStatics[CID_DRANOR].resInfo = &res_info;
 }
 
-/*QUAKED character_dranor (1 .5 0) (-17 -25 -32) (22 12 32)  INVISIBLE
-The elf who talks like Sean Connery
-*/
-void SP_character_dranor (edict_t *self)
+// QUAKED character_dranor (1 .5 0) (-17 -25 -32) (22 12 32)  INVISIBLE
+// The elf who talks like Sean Connery.
+void SP_character_dranor(edict_t* self)
 {
-	VectorSet (self->mins, -16, -16, -32);
-	VectorSet (self->maxs, 16, 16, 32);	
+	VectorSet(self->mins, -16.0f, -16.0f, -32.0f);
+	VectorSet(self->maxs,  16.0f,  16.0f,  32.0f);
 
-	c_character_init(self,CID_DRANOR);
+	c_character_init(self, CID_DRANOR);
 
 	self->s.fmnodeinfo[MESH__HOE].flags |= FMNI_NO_DRAW;
 	self->s.fmnodeinfo[MESH__GAFF].flags |= FMNI_NO_DRAW;
 	self->health = 30;
-
 }
-
