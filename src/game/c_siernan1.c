@@ -1,34 +1,20 @@
-/*-------------------------------------------------------------------
-c_siernan1.c
-
-Heretic II
-Copyright 1998 Raven Software
-
-  AI:
-
-
--------------------------------------------------------------------*/
-#include "g_local.h"
-#include "Utilities.h"
-#include "g_DefaultMessageHandler.h"
-#include "g_monster.h"
-#include "fx.h"
-#include "random.h"
-#include "vector.h"
+//
+// c_siernan1.c
+//
+// Copyright 1998 Raven Software
+//
 
 #include "c_siernan1.h"
 #include "c_siernan1_anim.h"
 #include "c_ai.h"
+#include "Utilities.h"
+#include "Vector.h"
 
-#define ENT_INVISIBLE 1
-#define ENT_LEANING	4
+#define ENT_LEANING		4
 
-/*----------------------------------------------------------------------
-  plagueElf Base Info
------------------------------------------------------------------------*/
-static animmove_t *animations[ NUM_ANIMS] =
+// Siernan cinematic actions.
+static animmove_t* animations[NUM_ANIMS] =
 {
-	// Cinematics
 	&siernan1_move_c_action1,
 	&siernan1_move_c_action2,
 	&siernan1_move_c_action3,
@@ -52,127 +38,132 @@ static animmove_t *animations[ NUM_ANIMS] =
 	&siernan1_move_c_walkstop1,
 };
 
-static ClassResourceInfo_t resInfo;
-
-
-/*-------------------------------------------------------------------------
-	siernan1_c_anims
--------------------------------------------------------------------------*/
-void siernan1_c_anims(edict_t *self, G_Message_t *msg)
+static void siernan1_c_anims(edict_t* self, G_Message_t* msg)
 {
-	int int_msg;
 	int curr_anim;
 
 	ai_c_readmessage(self, msg);
-	int_msg = (int) msg->ID;
+	self->monsterinfo.c_anim_flag = 0;
 
-	self->monsterinfo.c_anim_flag = 0; 
-
-	switch(int_msg)
+	switch (msg->ID)
 	{
-		case MSG_C_ACTION1 :
+		case MSG_C_ACTION1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION1;
 			break;
-		case MSG_C_ACTION2 :
+
+		case MSG_C_ACTION2:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION2;
 			break;
-		case MSG_C_ACTION3 :
+
+		case MSG_C_ACTION3:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION3;
 			break;
-		case MSG_C_ACTION4 :
+
+		case MSG_C_ACTION4:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION4;
 			break;
-		case MSG_C_ACTION5 :
+
+		case MSG_C_ACTION5:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION5;
 			break;
-		case MSG_C_ACTION6 :
+
+		case MSG_C_ACTION6:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION6;
 			break;
-		case MSG_C_ACTION7 :
+
+		case MSG_C_ACTION7:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION7;
 			break;
-		case MSG_C_ACTION8 :
+
+		case MSG_C_ACTION8:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION8;
 			break;
-		case MSG_C_ACTION9 :
+
+		case MSG_C_ACTION9:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION9;
 			break;
-		case MSG_C_ACTION10 :
+
+		case MSG_C_ACTION10:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION10;
 			break;
-		case MSG_C_ACTION11 :
+
+		case MSG_C_ACTION11:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION11;
 			break;
-		case MSG_C_ACTION12 :
+
+		case MSG_C_ACTION12:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION12;
 			break;
-		case MSG_C_ACTION13 :
+
+		case MSG_C_ACTION13:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ACTION13;
 			break;
+
 		case MSG_C_IDLE1:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT | C_ANIM_IDLE;
-			if (self->spawnflags & ENT_LEANING)
-				curr_anim = ANIM_C_IDLE3;
-			else
-				curr_anim = ANIM_C_IDLE1;
+			self->monsterinfo.c_anim_flag |= (C_ANIM_REPEAT | C_ANIM_IDLE);
+			curr_anim = ((self->spawnflags & ENT_LEANING) ? ANIM_C_IDLE3 : ANIM_C_IDLE1);
 			break;
+
 		case MSG_C_IDLE2:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_IDLE2;
 			break;
+
 		case MSG_C_IDLE3:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT | C_ANIM_IDLE;
+			self->monsterinfo.c_anim_flag |= (C_ANIM_REPEAT | C_ANIM_IDLE);
 			curr_anim = ANIM_C_IDLE3;
 			break;
+
 		case MSG_C_IDLE4:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_IDLE4;
 			break;
+
 		case MSG_C_IDLE5:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_IDLE5;
 			break;
+
 		case MSG_C_WALKSTART:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_WALKSTART;
 			break;
+
 		case MSG_C_WALK1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_WALK1;
 			break;
+
 		case MSG_C_WALKSTOP1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_WALKSTOP1;
 			break;
+
 		default:
 			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
 			curr_anim = ANIM_C_IDLE1;
 			break;
-	} 
+	}
 
 	SetAnim(self, curr_anim);
 }
 
-
-/*-------------------------------------------------------------------------
-	StaticsInit
--------------------------------------------------------------------------*/
-void Siernan1CinStaticsInit()
+void Siernan1CinStaticsInit(void)
 {
-
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
 	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION1] = siernan1_c_anims;
 	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_ACTION2] = siernan1_c_anims;
@@ -196,32 +187,24 @@ void Siernan1CinStaticsInit()
 	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_WALK1] = siernan1_c_anims;
 	classStatics[CID_C_SIERNAN1].msgReceivers[MSG_C_WALKSTOP1] = siernan1_c_anims;
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	
-	//note that the name is different in the path
-	resInfo.modelIndex = gi.modelindex("models/monsters/siernan/standing/tris.fm");
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/siernan/standing/tris.fm"); // Note that the name is different in the path.
 
-	classStatics[CID_C_SIERNAN1].resInfo = &resInfo;
-
+	classStatics[CID_C_SIERNAN1].resInfo = &res_info;
 }
 
-
-/*QUAKED character_siernan1 (1 .5 0) (-10 -10 -20) (10 10 20) INVISIBLE x LEANING
-The cinematic siernan standing
-INVISIBLE - can't be seen
-LEANING - leaning against a wall, idling
-*/
-void SP_character_siernan1 (edict_t *self)
+// QUAKED character_siernan1 (1 .5 0) (-10 -10 -20) (10 10 20) INVISIBLE x LEANING
+// The cinematic siernan standing.
+// INVISIBLE -	Can't be seen.
+// LEANING -	Leaning against a wall, idling.
+void SP_character_siernan1(edict_t* self)
 {
-	VectorSet (self->mins, -10, -10, -20);
-	VectorSet (self->maxs, 10, 10, 20);	
+	VectorSet(self->mins, -10.0f, -10.0f, -20.0f);
+	VectorSet(self->maxs,  10.0f,  10.0f,  20.0f);
 
-	self->s.scale = self->monsterinfo.scale = 1.2;
+	self->s.scale = 1.2f;
+	self->monsterinfo.scale = 1.2f;
 
-	c_character_init(self,CID_C_SIERNAN1);
-
-
+	c_character_init(self, CID_C_SIERNAN1);
 }
-
-
