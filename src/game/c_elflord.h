@@ -1,24 +1,16 @@
-//c_elflord.h
+//
+// c_elflord.h
+//
+// Copyright 1998 Raven Software
+//
 
+#pragma once
 
-typedef enum AnimID_e
-{
-	ANIM_C_ACTION1,
-	ANIM_C_ACTION2,
-	ANIM_C_DEATH1,
-	ANIM_C_DEATH2,
-	ANIM_C_IDLE1,
-	ANIM_C_IDLE2,
-	ANIM_C_GIB1,
-	NUM_ANIMS
-} AnimID_t;
+#include "q_Typedef.h"
 
-#define MODEL_SCALE		1.000000
+extern void ElflordCinStaticsInit(void); //mxd
+extern void SP_character_elflord(edict_t* self); //mxd
 
-extern animmove_t Elflord_move_c_action1; 
-extern animmove_t Elflord_move_c_action2; 
-extern animmove_t Elflord_move_c_death1; 
-extern animmove_t Elflord_move_c_death2; 
-extern animmove_t Elflord_move_c_idle1; 
-extern animmove_t Elflord_move_c_idle2; 
-extern void Elflord_c_boom(edict_t *self);
+extern void elflord_c_boom(edict_t* self); //mxd
+extern void elflord_c_throwhead(edict_t* self); //mxd
+extern void elflord_c_mist(edict_t* self, float x, float y, float z); //mxd
