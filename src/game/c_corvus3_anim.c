@@ -4,8 +4,8 @@
 // Copyright 1998 Raven Software
 //
 
-#include "c_corvus3.h"
 #include "c_corvus3_anim.h"
+#include "c_corvus3.h"
 #include "c_ai.h"
 
 // Corvus action 1.
