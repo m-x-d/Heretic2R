@@ -33,13 +33,6 @@ void Siernan1CinStaticsInit();
 void Siernan2CinStaticsInit();
 void TomeStaticsInit();
 void MorcalavinCinStaticsInit();
-void Corvus3StaticsInit();
-void Corvus4StaticsInit();
-void Corvus5StaticsInit();
-void Corvus6StaticsInit();
-void Corvus7StaticsInit();
-void Corvus8StaticsInit();
-void Corvus9StaticsInit();
 
 void (*classStaticsInits[NUM_CLASSIDS])(void) = 
 {
