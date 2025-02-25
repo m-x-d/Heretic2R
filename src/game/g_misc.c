@@ -2242,15 +2242,15 @@ qboolean EntReflecting(edict_t *ent, qboolean checkmonster, qboolean checkplayer
 	return false;
 }
 
-void SkyFlyCheck(edict_t *self)
+/*void SkyFlyCheck(edict_t *self)
 {
 	if(self->s.origin[2]>3900)
 		G_FreeEdict(self);
 	else
 		self->nextthink = level.time + 0.1;
-}
+}*/
 
-void SkyFly (edict_t *self)
+void SkyFly (edict_t *self) //TODO: replace with G_SetToFree()?
 {
 /*	if(deathmatch->value)
 	{*/
