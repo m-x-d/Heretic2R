@@ -166,92 +166,73 @@ edict_t* FlyingFistReflect(edict_t* self, edict_t* other, vec3_t vel)
 	return flying_fist;
 }
 
-// ************************************************************************************************
-// SpellCastFlyingFist
-// ************************************************************************************************
-
-
-void SpellCastFlyingFist(edict_t *caster, vec3_t startpos, vec3_t aimangles, vec3_t aimdir, float value)
+void SpellCastFlyingFist(edict_t* caster, vec3_t start_pos, vec3_t aim_angles, vec3_t aimdir, float value) //TODO: remove unused args.
 {
-	edict_t		*flyingfist;
-	trace_t		trace;
-	int			flags;
-	qboolean	powerup, wimpy;
-	vec3_t		forward, endpos;
-	playerinfo_t	*playerinfo;
+	// Spawn the flying-fist (fireball).
+	edict_t* flying_fist = G_Spawn();
+	const playerinfo_t* info = &caster->client->playerinfo;
 
-	// Spawn the flying-fist (fireball)
-	flyingfist = G_Spawn();
+	const qboolean wimpy = (info->pers.inventory.Items[info->weap_ammo_index] < info->pers.weapon->quantity);
+	int fx_flags = (wimpy ? CEF_FLAG8 : 0);
 
-	playerinfo = &caster->client->playerinfo;
-
-	if (playerinfo->pers.inventory.Items[playerinfo->weap_ammo_index] < playerinfo->pers.weapon->quantity)
+	if (info->powerup_timer > level.time)
 	{
-		wimpy=true;
-		flags = CEF_FLAG8;
+		// Powered up flying fist. Make it a meteor!
+		fx_flags |= CEF_FLAG7;
+		flying_fist->health = 1;
+
+		const float volume = (wimpy ? 0.5f : 1.0f); // Play it quiet?
+		gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/FireballPowerCast.wav"), volume, ATTN_NORM, 0.0f);
 	}
 	else
 	{
-		wimpy=false;
-		flags = 0;
+		// Not powered up.
+		const char* snd_name = (wimpy ? "weapons/FireballNoMana.wav" : "weapons/FlyingFistCast.wav"); // // Play special wimpy sound?
+		gi.sound(caster, CHAN_WEAPON, gi.soundindex(snd_name), 1.0f, ATTN_NORM, 0.0f);
 	}
 
-	if (playerinfo->powerup_timer > level.time)
-	{	// Powered up flying fist.  Make it a meteor!
-		powerup = true;
-		flags |= CEF_FLAG7;
-		flyingfist->health = 1;
-		if (wimpy)	// Play it quiet
-			gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/FireballPowerCast.wav"), 0.5, ATTN_NORM, 0);
-		else		// Play it loud
-			gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/FireballPowerCast.wav"), 1.0, ATTN_NORM, 0);
-	}
-	else
-	{	// Not powered up
-		powerup = false;
-		if (wimpy)	// Play special wimpy sound
-			gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/FireballNoMana.wav"), 1.0, ATTN_NORM, 0);
-		else		// Normal fireball sound
-			gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/FlyingFistCast.wav"), 1.0, ATTN_NORM, 0);
-	}
-
-	CreateFlyingFist(flyingfist);
-	flyingfist->reflect_debounce_time = MAX_REFLECT;
-	VectorCopy(startpos, flyingfist->s.origin);	
+	CreateFlyingFist(flying_fist);
+	flying_fist->reflect_debounce_time = MAX_REFLECT;
+	VectorCopy(start_pos, flying_fist->s.origin);
 
 	if (wimpy)
-		flyingfist->flags |= FL_NO_KNOCKBACK;	// Just using the no knockback flag to indicate a wussy weapon.
+		flying_fist->flags |= FL_NO_KNOCKBACK; // Just using the no knockback flag to indicate a wussy weapon.
 
-	//Check ahead first to see if it's going to hit anything at this angle
-	AngleVectors(aimangles, forward, NULL, NULL);
-	VectorMA(flyingfist->s.origin, FLYING_FIST_SPEED, forward, endpos);
-	gi.trace(startpos, vec3_origin, vec3_origin, endpos, caster, MASK_MONSTERSOLID,&trace);
-	if(trace.ent && OkToAutotarget(caster, trace.ent))
-	{//already going to hit a valid target at this angle- so don't autotarget
-		VectorScale(forward, FLYING_FIST_SPEED, flyingfist->velocity);
-	}
+	// Check ahead first to see if it's going to hit anything at this angle.
+	vec3_t forward;
+	AngleVectors(aim_angles, forward, NULL, NULL);
+
+	vec3_t end_pos;
+	VectorMA(flying_fist->s.origin, FLYING_FIST_SPEED, forward, end_pos);
+
+	trace_t trace;
+	gi.trace(start_pos, vec3_origin, vec3_origin, end_pos, caster, MASK_MONSTERSOLID, &trace);
+
+	if (trace.ent != NULL && OkToAutotarget(caster, trace.ent))
+		VectorScale(forward, FLYING_FIST_SPEED, flying_fist->velocity); // Already going to hit a valid target at this angle, so don't auto-target.
 	else
-	{//autotarget current enemy
-		GetAimVelocity(caster->enemy, flyingfist->s.origin, FLYING_FIST_SPEED, aimangles, flyingfist->velocity);
-	}
-	flyingfist->owner = caster;
-	flyingfist->enemy = caster->enemy;
-	// Remember velocity in case we have to reverse it
-	VectorNormalize2(flyingfist->velocity, flyingfist->movedir);
+		GetAimVelocity(caster->enemy, flying_fist->s.origin, FLYING_FIST_SPEED, aim_angles, flying_fist->velocity); // Auto-target current enemy.
 
-	G_LinkMissile(flyingfist); 
+	flying_fist->owner = caster;
+	flying_fist->enemy = caster->enemy;
 
-	// Make sure we don`t start in a solid
-	gi.trace(caster->s.origin, vec3_origin, vec3_origin, flyingfist->s.origin, caster, MASK_PLAYERSOLID,&trace);
-	if (trace.startsolid || trace.fraction < 1.0)
+	// Remember velocity in case we have to reverse it.
+	VectorNormalize2(flying_fist->velocity, flying_fist->movedir);
+
+	G_LinkMissile(flying_fist);
+
+	// Make sure we don`t start in a solid.
+	gi.trace(caster->s.origin, vec3_origin, vec3_origin, flying_fist->s.origin, caster, MASK_PLAYERSOLID, &trace);
+
+	if (trace.startsolid || trace.fraction < 1.0f)
 	{
-		VectorCopy(trace.endpos, flyingfist->s.origin);
-		FlyingFistTouch(flyingfist, trace.ent, &trace.plane, trace.surface);
+		VectorCopy(trace.endpos, flying_fist->s.origin);
+		FlyingFistTouch(flying_fist, trace.ent, &trace.plane, trace.surface);
+
 		return;
 	}
-	// Spawn effect after it has been determined it has not started in wall
-	// This is so it won`t try to remove it before it exists
-	gi.CreateEffect(&flyingfist->s, FX_WEAPON_FLYINGFIST, CEF_OWNERS_ORIGIN | flags, NULL,
-					"t", flyingfist->velocity);
-}
 
+	// Spawn effect after it has been determined it has not started in wall.
+	// This is so it won`t try to remove it before it exists.
+	gi.CreateEffect(&flying_fist->s, FX_WEAPON_FLYINGFIST, fx_flags | CEF_OWNERS_ORIGIN, NULL, "t", flying_fist->velocity);
+}
