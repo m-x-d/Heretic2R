@@ -17,6 +17,7 @@
 #include "Utilities.h"
 #include "g_playstats.h"
 #include "g_Physics.h"
+#include "spl_BlueRing.h" //mxd
 
 #define FIST_RADIUS				2.0
 #define TORN_RADIUS				10.0
@@ -26,7 +27,6 @@
 #define TORN_MASS_FACTOR		200.0
 
 static void tornboltTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface);
-extern edict_t *findringradius (edict_t *from, vec3_t org, float rad, edict_t *ringent);
 void SpellCasttornbolt(edict_t *caster, vec3_t startpos, vec3_t aimangles, vec3_t aimdir, float value);
 
 // do the think for the tornado ring
@@ -39,7 +39,7 @@ static void TornadoThink(edict_t *self)
 	vec3_t	endpos, angles;
 
 	// stolen wholesale from the ring of repulsion. Cheers Pat :)
-	while(ent = findringradius(ent, self->s.origin, TORN_EFFECT_RADIUS, self))
+	while(ent = FindRingRadius(ent, self->s.origin, TORN_EFFECT_RADIUS, self))
 	{
 		if (ent->mass && ent!=self->owner)
    		{

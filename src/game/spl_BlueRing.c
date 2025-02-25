@@ -25,66 +25,62 @@
 #include "Vector.h"
 #include "g_local.h"
 
-// Since findradius is not specific enough for our needs
+// Since findradius is not specific enough for our needs.
 // This, for one, will seek out player maceballs, arrows, and meteors.
-edict_t *findringradius (edict_t *from, vec3_t org, float rad, edict_t *ringent)
+edict_t* FindRingRadius(edict_t* from, const vec3_t org, const float rad, const edict_t* ring_ent) //mxd. Named 'findringradius' in original logic.
 {
-	static float max2;
+	static float max_sq;
 	static vec3_t min;
 	static vec3_t max;
-	vec3_t	eorg;
-	int		j;
-	float elen;
 
-	if (!from)
+	if (from == NULL)
 	{
-		max2=rad*rad;
-		VectorCopy(org,min);
-		VectorCopy(org,max);
-		for (j=0 ; j<3 ; j++)
+		max_sq = rad * rad;
+		VectorCopy(org, min);
+		VectorCopy(org, max);
+
+		for (int i = 0; i < 3; i++)
 		{
-			min[j]-=rad;
-			max[j]+=rad;
+			min[i] -= rad;
+			max[i] += rad;
 		}
 	}
 
-	while (1)
+	while ((from = FindInBounds(from, min, max)) != NULL)
 	{
-		from=FindInBounds(from,min,max);
-		if (!from)
-			return 0;
-		if ((from->reflected_time > level.time) || (from == ringent->owner))
-			continue;
-		if ((fabs(from->s.origin[2] - ringent->s.origin[2])) > 50.0)		// This is a RING, not a sphere.  Cap the vert at 40].
+		if (from->reflected_time > level.time || from == ring_ent->owner)
 			continue;
 
-		// don't let these affect coop friends
-		if (from->client && coop->value && !((int)dmflags->value & DF_HURT_FRIENDS))
+		if (fabsf(from->s.origin[2] - ring_ent->s.origin[2]) > 50.0f) // This is a RING, not a sphere. Cap the vert at 40].
 			continue;
 
-		// don't target team members in team deathmatching, if they are on the same team, and friendly fire is not enabled.
-		if ((from->client && (int)(dmflags->value) & (DF_MODELTEAMS | DF_SKINTEAMS)) && !((int)dmflags->value & DF_HURT_FRIENDS) && deathmatch->value)
+		if (from->client != NULL)
 		{
-			if (OnSameTeam(from, ringent->owner))
+			// Don't let these affect coop friends.
+			if (COOP && !(DMFLAGS & DF_HURT_FRIENDS))
+				continue;
+
+			// Don't target team members in team deathmatch if they are on the same team and friendly fire is not enabled.
+			if (DEATHMATCH && !(DMFLAGS & DF_HURT_FRIENDS) && (DMFLAGS & (DF_MODELTEAMS | DF_SKINTEAMS)))
 				continue;
 		}
 
+		vec3_t dist;
+		for (int i = 0; i < 3; i++)
+			dist[i] = org[i] - (from->s.origin[i] + (from->mins[i] + from->maxs[i]) * 0.5f);
 
-		for (j=0 ; j<3 ; j++)
-			eorg[j] = org[j] - (from->s.origin[j] + (from->mins[j] + from->maxs[j])*0.5);
-		elen = DotProduct(eorg,eorg);
-
-		if (elen > max2)
+		if (VectorLengthSquared(dist) > max_sq)
 			continue;
 
-		// if we've already reflected this, don't do it again.  
+		// If we've already reflected this, don't do it again.  
 		// We DO have to wait for after the radius check, however, because the shot might get closer over the next half second.
-		from->reflected_time = level.time + 0.6;
+		from->reflected_time = level.time + 0.6f;
 
 		return from;
-	} 
-}
+	}
 
+	return NULL;
+}
 
 void RingThink(edict_t *self)
 {
@@ -106,7 +102,7 @@ void RingThink(edict_t *self)
 	self->count--;
 
 	// Since find radius is not specific enough for our needs, here is 
-	while(ent = findringradius(ent, self->s.origin, RING_EFFECT_RADIUS*0.25*(RING_THINKS-self->count), self))
+	while(ent = FindRingRadius(ent, self->s.origin, RING_EFFECT_RADIUS*0.25*(RING_THINKS-self->count), self))
 	{
 		hit = false;
 		reflect = NULL;
