@@ -118,207 +118,211 @@ edict_t* HellboltReflect(edict_t* self, edict_t* other, const vec3_t vel)
 	return hellbolt;
 }
 
-// ****************************************************************************
-// SpellCastHellbolt
-// ****************************************************************************
-
-#define HELLSTAFF_LASER_MAX_TARGETS	8
-void SpellCastHellstaff(edict_t *caster, vec3_t loc, vec3_t aimangles, vec3_t unused)
+//mxd. Added to reduce code duplication.
+static void HellboltTryApplyDamage(edict_t* caster, const vec3_t start_pos, vec3_t aim_angles, const vec3_t forward, const trace_t* trace)
 {
-	edict_t	*hellbolt, *tracebuddy;
-	trace_t trace;
-	vec3_t	endpos, startpos, forward, vect;
-	int		numHit = 0;	// can hit no more than 8 guys...
-	vec3_t	min={-4, -4, -4};
-	vec3_t	max={ 4,  4,  4};
-	byte	blen;
-	float	laser_dist;
-	vec3_t		planedir;
+	// Did we hit something that reflects?
+	if (EntReflecting(trace->ent, true, true))
+	{
+		// Reflect it off into space - powerless now, so it won't hurt anyone it hits.
 
-	assert(caster->client);
+		// Draw line to this point.
+		vec3_t vect;
+		VectorSubtract(trace->endpos, start_pos, vect);
+		const byte b_len = (byte)(VectorLength(vect) / 8.0f);
+
+		gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER, 0, start_pos, "tb", forward, b_len);
+
+		// Re-constitute aimangle.
+		aim_angles[1] += flrand(160.0f, 200.0f);
+		aim_angles[0] += flrand(-20.0f, 20.0f);
+	}
+	else
+	{
+		const int damage = irand(HELLLASER_DAMAGE_MIN, HELLLASER_DAMAGE_MAX); //mxd
+		T_Damage(trace->ent, caster, caster, forward, trace->endpos, forward,
+			damage, 0, DAMAGE_SPELL, MOD_P_HELLSTAFF);
+
+		gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER_BURN, CEF_FLAG6, trace->endpos, "t", forward);
+	}
+}
+
+//mxd. Added to reduce code duplication.
+static void PlayHellstaffFiringSound(edict_t* caster, const char* snd_name)
+{
+	int snd_channel; //mxd
+
+	// This alternation avoids cutting sounds out prematurely.
+	if (caster->client->playerinfo.flags & PLAYER_FLAG_ALTFIRE)
+	{
+		// Use the alternate slot, clear the flag.
+		snd_channel = CHAN_WEAPON2;
+		caster->client->playerinfo.flags &= ~PLAYER_FLAG_ALTFIRE;
+	}
+	else
+	{
+		// Use the regular slot, set the flag.
+		snd_channel = CHAN_WEAPON;
+		caster->client->playerinfo.flags |= PLAYER_FLAG_ALTFIRE;
+	}
+
+	gi.sound(caster, snd_channel, gi.soundindex(snd_name), 1.0f, ATTN_NORM, 0.0f);
+}
+
+void SpellCastHellstaff(edict_t* caster, vec3_t loc, vec3_t aim_angles, vec3_t unused) //TODO: remove unused arg.
+{
+#define HELLSTAFF_LASER_MAX_TARGETS		8
+
+	const vec3_t min = { -4.0f, -4.0f, -4.0f };
+	const vec3_t max = { 4.0f,  4.0f,  4.0f };
+
+	assert(caster->client != NULL);
+
 	if (caster->client->playerinfo.powerup_timer > level.time)
-	{	// Powered up version of this weapon-- a laser.
-		// We must trace from the player's centerpoint to the casting location to assure we don't hit anything.before the laser starts
-		tracebuddy = caster;
-		VectorCopy(loc, startpos);
-		gi.trace(caster->s.origin, min, max, startpos, caster, MASK_SHOT,&trace);
-		if(level.fighting_beast)
+	{
+		// Powered up version of this weapon - a laser.
+		// We must trace from the player's centerpoint to the casting location to assure we don't hit anything before the laser starts.
+		const edict_t* trace_buddy = caster;
+
+		vec3_t start_pos;
+		VectorCopy(loc, start_pos);
+
+		trace_t trace;
+		gi.trace(caster->s.origin, min, max, start_pos, caster, MASK_SHOT, &trace);
+
+		if (level.fighting_beast)
 		{
-			edict_t *ent;
-			
-			if(ent = TB_CheckHit(caster->s.origin, trace.endpos))
+			edict_t* ent = TB_CheckHit(caster->s.origin, trace.endpos);
+
+			if (ent != NULL)
 				trace.ent = ent;
 		}
-		if ((trace.fraction > .99) || !(trace.contents & MASK_SOLID))
-		{	// It's okay to continue with the shot.  If not, we should skip right to the impact.
+
+		if (trace.fraction > 0.99f || !(trace.contents & MASK_SOLID))
+		{
+			// It's okay to continue with the shot. If not, we should skip right to the impact.
 			// Now then, if we hit something on the way to the start location, damage him NOW!
-			if (trace.ent && trace.ent->takedamage)
+			if (trace.ent != NULL && trace.ent->takedamage != DAMAGE_NO)
 			{
-				// did we hit something that reflects ?
-  				if(EntReflecting(trace.ent, true, true))
-  				{
-  					// reflect it off into space - powerless now, so it won't hurt anyone it hits
+				vec3_t forward;
+				AngleVectors(aim_angles, forward, NULL, NULL); //BUGFIX: mxd. Uninitialized in original version.
 
-  					// draw line to this point
-  					VectorSubtract(trace.endpos, startpos, vect);
-  					blen = (byte)(VectorLength(vect)/8.0);
+				HellboltTryApplyDamage(caster, start_pos, aim_angles, forward, &trace); //mxd
 
-  					gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER, 0, startpos, "tb", 
-  						forward, blen);
-  					// re-constitute aimangle
-  					aimangles[1] += flrand(160,200);
-  					aimangles[0] += flrand(-20,20);
-  				}
-  				else
-  				{
-  					T_Damage(trace.ent, caster, caster, forward, trace.endpos, forward,
-  							irand(HELLLASER_DAMAGE_MIN, HELLLASER_DAMAGE_MAX), 0, DAMAGE_SPELL,MOD_P_HELLSTAFF);
-  					gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER_BURN, CEF_FLAG6, trace.endpos, "t", 
-  							forward);
-  				}
-				tracebuddy = trace.ent;
-			}	// Don't trace again since there really should only be one thing between the player and startpos
-			
+				trace_buddy = trace.ent;
+			} // Don't trace again since there really should only be one thing between the player and start_pos.
+
 			// Set up for main laser damaging loop.
-			laser_dist = HELLLASER_DIST;
+			float laser_dist = HELLLASER_DIST;
+			int num_hit = 0; // Can hit no more than 8 guys...
 
 			do
 			{
-				AngleVectors(aimangles, forward, NULL, NULL);
-				VectorMA(startpos, laser_dist, forward, endpos);
-				gi.trace(startpos, min, max, endpos, tracebuddy, MASK_SHOT,&trace);
-				if(level.fighting_beast)
+				vec3_t forward;
+				AngleVectors(aim_angles, forward, NULL, NULL);
+
+				vec3_t end_pos;
+				VectorMA(start_pos, laser_dist, forward, end_pos);
+
+				gi.trace(start_pos, min, max, end_pos, trace_buddy, MASK_SHOT, &trace);
+
+				if (level.fighting_beast)
 				{
-					edict_t *ent;
-					
-					if(ent = TB_CheckHit(caster->s.origin, trace.endpos))
+					edict_t* ent = TB_CheckHit(caster->s.origin, trace.endpos);
+
+					if (ent != NULL)
 						trace.ent = ent;
 				}
 
-				if(trace.fraction < .99 )
+				if (trace.fraction < 0.99f)
 				{
-					// if we hit anything that won't take damage, kill the beam
-					if (!trace.ent->takedamage)
+					// If we hit anything that won't take damage, kill the beam.
+					if (trace.ent->takedamage == DAMAGE_NO)
 						break;
 
-					// This is possible if the tracebuddy is not the caster because a new one was on the way to startpos.
+					// This is possible if the trace_buddy is not the caster because a new one was on the way to start_pos.
 					if (trace.ent != caster)
-					{
-						// did we hit something that reflects ?
-  						if(EntReflecting(trace.ent, true, true))
-  						{
-  							// reflect it off into space - powerless now, so it won't hurt anyone it hits
+						HellboltTryApplyDamage(caster, start_pos, aim_angles, forward, &trace); //mxd
 
-  							// draw line to this point
-  							VectorSubtract(trace.endpos, startpos, vect);
-  							blen = (byte)(VectorLength(vect)/8.0);
-
-  							gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER, 0, startpos, "tb", 
-  								forward, blen);
-  							// re-constitute aimangle
-  							aimangles[1] += flrand(160,200);
-  							aimangles[0] += flrand(-20,20);
-  						}
-  						else
-  						{
-  							T_Damage(trace.ent, caster, caster, forward, trace.endpos, forward,
-  									irand(HELLLASER_DAMAGE_MIN, HELLLASER_DAMAGE_MAX), 0, DAMAGE_SPELL,MOD_P_HELLSTAFF);
-  							gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER_BURN, CEF_FLAG6, trace.endpos, "t", 
-  									forward);
-  						}
-					}
-					// this seems to alleviate the problem of a trace hitting the same ent multiple times...
-					VectorSubtract(trace.endpos, startpos, vect);
+					// This seems to alleviate the problem of a trace hitting the same ent multiple times...
+					vec3_t vect;
+					VectorSubtract(trace.endpos, start_pos, vect);
 					laser_dist -= VectorLength(vect);
 
-					VectorCopy(trace.endpos, startpos);
-					VectorSubtract(endpos, startpos, vect);
-					if(VectorLength(vect) > 16.0)
-					{
-						VectorMA(startpos, 16.0, forward, startpos);
-					}
-					tracebuddy = trace.ent;
-					numHit++;
+					VectorCopy(trace.endpos, start_pos);
+					VectorSubtract(end_pos, start_pos, vect);
+
+					if (VectorLength(vect) > 16.0f)
+						VectorMA(start_pos, 16.0f, forward, start_pos);
+
+					trace_buddy = trace.ent;
+					num_hit++;
 				}
 
-			} while((trace.fraction < .99) && !(trace.contents & MASK_SOLID) && (numHit < HELLSTAFF_LASER_MAX_TARGETS) );
+			} while (trace.fraction < 0.99f && !(trace.contents & MASK_SOLID) && num_hit < HELLSTAFF_LASER_MAX_TARGETS);
 		}
 
-		// We altenate sound slots to make the quick-firing work well with the sounds.
-		if (caster->client->playerinfo.flags & PLAYER_FLAG_ALTFIRE)
-		{	// Use the alternate slot, clear the flag.
-			gi.sound(caster, CHAN_WEAPON2, gi.soundindex("weapons/HellLaserFire.wav"), 1, ATTN_NORM, 0);
-			caster->client->playerinfo.flags &= ~PLAYER_FLAG_ALTFIRE;
-		}
-		else
-		{	// Use the regular slot, set the flag.
-			gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/HellLaserFire.wav"), 1, ATTN_NORM, 0);
-			caster->client->playerinfo.flags |= PLAYER_FLAG_ALTFIRE;
-		}
+		PlayHellstaffFiringSound(caster, "weapons/HellLaserFire.wav"); //mxd
 
-		VectorSubtract(trace.endpos, startpos, vect);
-		blen = (byte)(VectorLength(vect)/8.0);
+		vec3_t vect;
+		VectorSubtract(trace.endpos, start_pos, vect);
+		const byte b_len = (byte)(VectorLength(vect) / 8.0f);
 
-		// decide if we need a scorch mark or not
-		if(IsDecalApplicable(trace.ent, caster->s.origin, trace.surface, &trace.plane, planedir))
-			gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER, CEF_FLAG6|CEF_FLAG7, startpos, "tb", 
-					forward, blen);
-		else
-			gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER, CEF_FLAG6, startpos, "tb", 
-					forward, blen);
-	}	
+		vec3_t forward;
+		AngleVectors(aim_angles, forward, NULL, NULL); //BUGFIX: mxd. Potentially uninitialized in original version.
+
+		// Decide if we need a scorch mark or not.
+		vec3_t plane_dir;
+		int fx_flags = CEF_FLAG6; //mxd
+
+		if (IsDecalApplicable(trace.ent, caster->s.origin, trace.surface, &trace.plane, plane_dir))
+			fx_flags |= CEF_FLAG7;
+
+		gi.CreateEffect(NULL, FX_WEAPON_HELLSTAFF_POWER, fx_flags, start_pos, "tb", forward, b_len);
+	}
 	else
-	{	// Unpowered version of this weapon-- hellbolts.
-		// Spawn the hellbolt
-		hellbolt = G_Spawn();
-
+	{
+		// Unpowered version of this weapon - hellbolts.
+		edict_t* hellbolt = G_Spawn();
+		CreateHellbolt(hellbolt);
 		VectorCopy(loc, hellbolt->s.origin);
 
-		//Check ahead first to see if it's going to hit anything at this angle
-		AngleVectors(aimangles, forward, NULL, NULL);
-		if(caster->client->playerinfo.flags & PLAYER_FLAG_NO_LARM)
+		// Check ahead first to see if it's going to hit anything at this angle.
+		vec3_t forward;
+		AngleVectors(aim_angles, forward, NULL, NULL);
+
+		if (caster->client->playerinfo.flags & PLAYER_FLAG_NO_LARM)
 		{
 			VectorScale(forward, HELLBOLT_SPEED, hellbolt->velocity);
 		}
 		else
 		{
-			VectorMA(loc, HELLBOLT_SPEED, forward, endpos);
-			gi.trace(loc, vec3_origin, vec3_origin, endpos, caster, MASK_MONSTERSOLID,&trace);
-			if(trace.ent && OkToAutotarget(caster, trace.ent))
-			{//already going to hit a valid target at this angle- so don't autotarget
-				VectorScale(forward, HELLBOLT_SPEED, hellbolt->velocity);
-			}
+			vec3_t end_pos;
+			VectorMA(loc, HELLBOLT_SPEED, forward, end_pos);
+
+			trace_t trace;
+			gi.trace(loc, vec3_origin, vec3_origin, end_pos, caster, MASK_MONSTERSOLID, &trace);
+
+			if (trace.ent != NULL && OkToAutotarget(caster, trace.ent))
+				VectorScale(forward, HELLBOLT_SPEED, hellbolt->velocity); // Already going to hit a valid target at this angle, so don't auto-target.
 			else
-			{//autotarget current enemy
-				GetAimVelocity(caster->enemy, hellbolt->s.origin, HELLBOLT_SPEED, aimangles, hellbolt->velocity);
-			}
+				GetAimVelocity(caster->enemy, hellbolt->s.origin, HELLBOLT_SPEED, aim_angles, hellbolt->velocity); // Auto-target current enemy.
 		}
 
 		hellbolt->owner = caster;
 		VectorNormalize2(hellbolt->velocity, hellbolt->movedir);
-		CreateHellbolt(hellbolt);
 		hellbolt->reflect_debounce_time = MAX_REFLECT;
-		G_LinkMissile(hellbolt); 
 
-		// This alternation avoids cutting sounds out prematurely.
-		if (caster->client->playerinfo.flags & PLAYER_FLAG_ALTFIRE)
-		{	// Use the alternate slot, clear the flag.
-			gi.sound(caster, CHAN_WEAPON2, gi.soundindex("weapons/HellFire.wav"), 1, ATTN_NORM, 0);
-			caster->client->playerinfo.flags &= ~PLAYER_FLAG_ALTFIRE;
-		}
-		else
-		{	// Use the regular slot, set the flag.
-			gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/HellFire.wav"), 1, ATTN_NORM, 0);
-			caster->client->playerinfo.flags |= PLAYER_FLAG_ALTFIRE;
-		}
+		G_LinkMissile(hellbolt);
 
-		gi.trace(hellbolt->s.origin, vec3_origin, vec3_origin, hellbolt->s.origin, caster, MASK_PLAYERSOLID,&trace);
+		PlayHellstaffFiringSound(caster, "weapons/HellFire.wav"); //mxd
+
+		trace_t trace;
+		gi.trace(hellbolt->s.origin, vec3_origin, vec3_origin, hellbolt->s.origin, caster, MASK_PLAYERSOLID, &trace);
+
 		if (trace.startsolid)
-		{
 			HellboltTouch(hellbolt, trace.ent, &trace.plane, trace.surface);
-			return;
-		}
-		gi.CreateEffect(&hellbolt->s, FX_WEAPON_HELLBOLT, CEF_OWNERS_ORIGIN, NULL, "t", hellbolt->velocity);
+		else
+			gi.CreateEffect(&hellbolt->s, FX_WEAPON_HELLBOLT, CEF_OWNERS_ORIGIN, NULL, "t", hellbolt->velocity);
 	}
 }
-// end

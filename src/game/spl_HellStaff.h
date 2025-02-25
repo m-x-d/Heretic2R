@@ -8,5 +8,5 @@
 
 #include "q_Typedef.h"
 
-extern void SpellCastHellstaff(edict_t* Caster, vec3_t StartPos, vec3_t AimAngles, vec3_t AimDir);
-extern edict_t* HellboltReflect(edict_t* self, edict_t* other, vec3_t vel);
+extern void SpellCastHellstaff(edict_t* caster, vec3_t start_pos, vec3_t aim_angles, vec3_t AimDir);
+extern edict_t* HellboltReflect(edict_t* self, edict_t* other, const vec3_t vel);
