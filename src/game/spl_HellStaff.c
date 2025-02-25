@@ -18,10 +18,50 @@
 #include "g_local.h"
 
 static void HellboltThink(edict_t *Self);
-static void HellboltTouch(edict_t *Self,edict_t *Other,cplane_t *Plane,csurface_t *Surface);
 
 // Radius of zero seems to prevent collision between bolts.
 #define HELLBOLT_RADIUS		0.0f
+
+static void HellboltTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
+{
+	// Did we hit the sky? 
+	if (surface != NULL && (surface->flags & SURF_SKY))
+	{
+		SkyFly(self);
+		return;
+	}
+
+	// Has the target got reflection turned on?
+	if (self->reflect_debounce_time > 0 && EntReflecting(other, true, true))
+	{
+		Create_rand_relect_vect(self->velocity, self->velocity);
+		Vec3ScaleAssign(HELLBOLT_SPEED / 2.0f, self->velocity);
+		HellboltReflect(self, other, self->velocity);
+
+		return;
+	}
+
+	VectorNormalize2(self->velocity, self->movedir);
+
+	if (other->takedamage != DAMAGE_NO)
+	{
+		T_Damage(other, self, self->owner, self->movedir, self->s.origin, plane->normal, self->dmg, self->dmg * 2, DAMAGE_SPELL, MOD_HELLSTAFF);
+	}
+	else
+	{
+		// Back off the origin for the damage a bit.
+		// We are a point and this will help fix hitting base of a stair and not hurting a guy on next step up.
+		AlertMonsters(self, self->owner, 1.0f, false);
+		VectorMA(self->s.origin, -8.0f, self->movedir, self->s.origin);
+	}
+
+	int fx_flags = 0;
+	if (IsDecalApplicable(other, self->s.origin, surface, plane, NULL))
+		fx_flags = CEF_FLAG6;
+
+	gi.CreateEffect(&self->s, FX_WEAPON_HELLBOLTEXPLODE, CEF_OWNERS_ORIGIN | fx_flags, NULL, "d", self->movedir);
+	G_SetToFree(self);
+}
 
 // guts of creating a hell bolt
 void create_hellbolt(edict_t *hellbolt)
@@ -69,58 +109,6 @@ edict_t *HellboltReflect(edict_t *self, edict_t *other, vec3_t vel)
    		gi.CreateEffect(&hellbolt->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", hellbolt->velocity);
 
 	return(hellbolt);
-}
-
-// ****************************************************************************
-// HellboltTouch
-// ****************************************************************************
-
-static void HellboltTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface)
-{
-	byte	makeScorch = 0;
-
-	// did we hit the sky ? 
-	if(surface && (surface->flags & SURF_SKY))
-	{
-		SkyFly(self);
-		return;
-	}
-
-	// did we hit someone where reflection is functional ?
-	if (self->reflect_debounce_time)
-	{
-		if(EntReflecting(other, true, true))
-		{
-			Create_rand_relect_vect(self->velocity, self->velocity);
-			Vec3ScaleAssign(HELLBOLT_SPEED/2,self->velocity);
-			HellboltReflect(self, other, self->velocity);
-
-			return;
-		}
-	}
-
-   	VectorNormalize2(self->velocity, self->movedir);
-
-	if(other->takedamage)
-	{
-		T_Damage(other, self, self->owner, self->movedir, self->s.origin, plane->normal, self->dmg, self->dmg*2, 
-					DAMAGE_SPELL, MOD_HELLSTAFF);
-	}
-	else
-	{
-		// Back off the origin for the damage a bit. We are a point and this will
-		// help fix hitting base of a stair and not hurting a guy on next step up.
-		AlertMonsters (self, self->owner, 1, false);
-		VectorMA(self->s.origin, -8.0, self->movedir, self->s.origin);
-	}
-
-	makeScorch = 0;
-	if(IsDecalApplicable(other, self->s.origin, surface, plane, NULL))
-	{
-		makeScorch = CEF_FLAG6;
-	}
-	gi.CreateEffect(&self->s, FX_WEAPON_HELLBOLTEXPLODE, CEF_OWNERS_ORIGIN | makeScorch, NULL, "d", self->movedir);
-	G_SetToFree(self);
 }
 
 // ****************************************************************************
