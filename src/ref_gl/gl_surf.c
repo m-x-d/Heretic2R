@@ -580,9 +580,8 @@ void R_SortAndDrawAlphaSurfaces(void)
 {
 	#define MAX_ALPHA_SURFACES 512 //TODO: is max number of alpha surfaces actually defined somewhere?
 
-	int i;
 	msurface_t* surf;
-	AlphaSurfaceSortInfo_t sorted_ents[MAX_ALPHA_ENTITIES];
+	AlphaSurfaceSortInfo_t sorted_ents[MAX_ALPHA_ENTITIES + 1]; //mxd. Extra slot for terminator (depth -100000) entry.
 	AlphaSurfaceSortInfo_t sorted_surfs[MAX_ALPHA_SURFACES];
 
 	// Initialize 1-st entity entry...
@@ -591,7 +590,7 @@ void R_SortAndDrawAlphaSurfaces(void)
 	info->depth = -100000.0f;
 
 	// Add alpha entities to array...
-	for (i = 0, info = &sorted_ents[0]; i < r_newrefdef.num_alpha_entities; i++, info++)
+	for (int i = 0; i < r_newrefdef.num_alpha_entities; i++, info++)
 	{
 		entity_t* ent = r_newrefdef.alpha_entities[i];
 
@@ -613,7 +612,7 @@ void R_SortAndDrawAlphaSurfaces(void)
 	info->surface = NULL;
 	info->depth = -100000.0f;
 
-	// Add alpha surfaces to array
+	// Add alpha surfaces to array.
 	int num_surfaces;
 	for (num_surfaces = 0, surf = r_alpha_surfaces, info = &sorted_surfs[0]; surf != NULL; num_surfaces++, surf = surf->texturechain, info++)
 	{
@@ -622,7 +621,7 @@ void R_SortAndDrawAlphaSurfaces(void)
 
 		for (int j = 0; j < surf->numedges; j++)
 		{
-			const int lindex = r_worldmodel->surfedges[surf->firstedge + i];
+			const int lindex = r_worldmodel->surfedges[surf->firstedge + j];
 			float* vec;
 
 			if (lindex > 0)
@@ -664,8 +663,8 @@ void R_SortAndDrawAlphaSurfaces(void)
 	const AlphaSurfaceSortInfo_t* sorted_ent = &sorted_ents[0];
 	const AlphaSurfaceSortInfo_t* sorted_surf = &sorted_surfs[0];
 
-	// Draw them all
-	for (int j = 0; j < num_elements; j++)
+	// Draw them all.
+	for (int i = 0; i < num_elements; i++)
 	{
 		if (sorted_surf->depth > sorted_ent->depth)
 		{
