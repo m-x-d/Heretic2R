@@ -17,8 +17,6 @@
 
 #define FIST_RADIUS		2.0f
 
-static void FlyingFistTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface);
-
 static void FlyingFistFizzleThink(edict_t* self)
 {
 	// Don't fizzle in deathmatch, or if powered up.
@@ -35,6 +33,87 @@ static void FlyingFistInitThink(edict_t* self)
 	self->think = FlyingFistFizzleThink;
 
 	FlyingFistFizzleThink(self);
+}
+
+static void FlyingFistTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Moved to avoid forward declaration...
+{
+	if (other == self->owner) // Don't touch owner.
+		return;
+
+	if (surface != NULL && (surface->flags & SURF_SKY))
+	{
+		SkyFly(self);
+		return;
+	}
+
+	const qboolean powerup = (self->health > 0); // Powered up meteor?
+	int fx_flags = (powerup ? CEF_FLAG7 : 0);
+
+	const qboolean wimpy = (self->flags & FL_NO_KNOCKBACK); // Wimpy out-of-ammo weapon.
+	if (wimpy)
+		fx_flags |= CEF_FLAG8;
+
+	// Has the target got reflection turned on?
+	if (self->reflect_debounce_time > 0 && EntReflecting(other, true, true))
+	{
+		Create_rand_relect_vect(self->velocity, self->velocity);
+
+		// Scale speed down.
+		Vec3ScaleAssign(FLYING_FIST_SPEED / 2.0f, self->velocity);
+		FlyingFistReflect(self, other, self->velocity);
+
+		return;
+	}
+
+	AlertMonsters(self, self->owner, 1.0f, false);
+
+	if (other->takedamage != DAMAGE_NO)
+	{
+		const int dmg_div = (DEATHMATCH ? 2 : 1); //mxd
+
+		if (powerup) // Check for powered up meteor.
+		{
+			int damage = irand(FIREBALL_DAMAGE_MIN_POWER / dmg_div, FIREBALL_DAMAGE_MAX_POWER / dmg_div);
+
+			if (wimpy) // Wimpy (no mana) shots do half damage.
+			{
+				damage /= 2;
+
+				T_Damage(other, self, self->owner, self->movedir, self->s.origin, plane->normal,
+					damage, damage, DAMAGE_SPELL, MOD_FIREBALL); // No blast damage, just direct.
+			}
+			else
+			{
+				// Half goes directly to target, blast does rest.
+				T_Damage(other, self, self->owner, self->movedir, self->s.origin, plane->normal,
+					damage / 2, damage, DAMAGE_SPELL | DAMAGE_EXTRA_KNOCKBACK, MOD_FIREBALL);
+
+				T_DamageRadius(self, self->owner, self->owner, FIREBALL_RADIUS,
+					FIREBALL_DAMAGE_MAX_POWER, FIREBALL_DAMAGE_MIN_POWER, DAMAGE_SPELL, MOD_FIREBALL);
+			}
+		}
+		else
+		{
+			int damage = irand(FIREBALL_DAMAGE_MIN / dmg_div, FIREBALL_DAMAGE_MAX / dmg_div);
+
+			if (wimpy)	// Wimpy (no mana) shots do half damage.
+				damage /= 2;
+
+			T_Damage(other, self, self->owner, self->movedir, self->s.origin, plane->normal, damage, damage, DAMAGE_SPELL, MOD_FIREBALL);
+		}
+	}
+	else
+	{
+		VectorMA(self->s.origin, -8.0f, self->movedir, self->s.origin);
+	}
+
+	// Attempt to apply a scorchmark decal to the thing I hit.
+	vec3_t plane_dir;
+	if (IsDecalApplicable(other, self->s.origin, surface, plane, plane_dir))
+		fx_flags |= CEF_FLAG6;
+
+	gi.CreateEffect(NULL, FX_WEAPON_FLYINGFISTEXPLODE, fx_flags, self->s.origin, "d", self->movedir);
+	G_SetToFree(self);
 }
 
 void CreateFlyingFist(edict_t *flyingfist)
@@ -92,115 +171,6 @@ edict_t *FlyingFistReflect(edict_t *self, edict_t *other, vec3_t vel)
 
 	return(flyingfist);
 }
-
-
-
-// ************************************************************************************************
-// FlyingFistTouch
-// ************************************************************************************************
-
-static void FlyingFistTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface)
-{
-	int			damage;
-	vec3_t		planedir;
-	qboolean	powerup, wimpy;
-	int			flags;
-
-	if(other == self->owner)
-	{
-		return;
-	}
-	if(surface && (surface->flags & SURF_SKY))
-	{
-		SkyFly(self);
-		return;
-	}
-
-	if (self->health)
-	{	// Powered up meteor
-		powerup=true;
-		flags = CEF_FLAG7;
-	}
-	else
-	{	// Unpowered fireball
-		powerup=false;
-		flags = 0;
-	}
-
-	if (self->flags & FL_NO_KNOCKBACK)
-	{	// Wimpy out-of-ammo weapon.
-		wimpy=true;
-		flags |= CEF_FLAG8;
-	}
-	else
-	{
-		wimpy=false;
-	}
-
-	// has the target got reflection turned on ?
-	if (self->reflect_debounce_time)
-	{
-		if(EntReflecting(other, true, true))
-		{
-			Create_rand_relect_vect(self->velocity, self->velocity);
-			// scale speed down
-			Vec3ScaleAssign(FLYING_FIST_SPEED/2, self->velocity);
-			FlyingFistReflect(self, other, self->velocity);
-
-			return;
-		}
-	}
-
-	AlertMonsters (self, self->owner, 1, false);
-	if(other->takedamage)
-	{
-		if(powerup)		// Check for powered up meteor
-		{
-			if(deathmatch->value)
-				damage = irand(FIREBALL_DAMAGE_MIN_POWER/2, FIREBALL_DAMAGE_MAX_POWER/2);
-			else
-				damage = irand(FIREBALL_DAMAGE_MIN_POWER, FIREBALL_DAMAGE_MAX_POWER);
-			if (wimpy)
-			{	// Wimpy shots do half damage.
-				damage /= 2;
-				T_Damage(other, self, self->owner, self->movedir, self->s.origin, plane->normal,
-						damage, damage, DAMAGE_SPELL,MOD_FIREBALL);									// No blast damage, just direct.
-			}
-			else
-			{
-				T_Damage(other, self, self->owner, self->movedir, self->s.origin, plane->normal,
-						damage>>1, damage, DAMAGE_SPELL|DAMAGE_EXTRA_KNOCKBACK,MOD_FIREBALL);		// Half goes directly to target, blast does rest.
-				T_DamageRadius(self, self->owner, self->owner, FIREBALL_RADIUS, 
-						FIREBALL_DAMAGE_MAX_POWER, FIREBALL_DAMAGE_MIN_POWER, DAMAGE_SPELL,MOD_FIREBALL);
-			}
-		}
-		else
-		{
-			if(deathmatch->value)
-				damage = irand(FIREBALL_DAMAGE_MIN/2, FIREBALL_DAMAGE_MAX/2);
-			else
-				damage = irand(FIREBALL_DAMAGE_MIN, FIREBALL_DAMAGE_MAX);
-			if (wimpy)	// Wimpy (no mana) shots do half damage
-				damage /= 2;
-			T_Damage(other, self, self->owner, self->movedir, self->s.origin, plane->normal, damage, damage, DAMAGE_SPELL,MOD_FIREBALL);
-		}
-	}
-	else
-	{
-		VectorMA(self->s.origin, -8.0, self->movedir, self->s.origin);
-	}
-
-	// Attempt to apply a scorchmark decal to the thing I hit.
-	if(IsDecalApplicable(other, self->s.origin, surface, plane, planedir))
-	{
-		flags |= CEF_FLAG6;
-	}
-
-	gi.CreateEffect(NULL, FX_WEAPON_FLYINGFISTEXPLODE, flags, self->s.origin, "d", self->movedir);
-
-	G_SetToFree(self);
-}
-
 
 // ************************************************************************************************
 // SpellCastFlyingFist
