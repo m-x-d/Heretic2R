@@ -87,32 +87,35 @@ static void CreateHellbolt(edict_t* hellbolt)
 	hellbolt->clipmask = MASK_SHOT;
 }
 
-edict_t *HellboltReflect(edict_t *self, edict_t *other, vec3_t vel)
+edict_t* HellboltReflect(edict_t* self, edict_t* other, const vec3_t vel)
 {
-	edict_t	*hellbolt;
+	// Create a new missile to replace the old one - this is necessary because physics will do nasty things
+	// with the existing one, since we hit something. Hence, we create a new one totally.
+	edict_t* hellbolt = G_Spawn();
 
-	hellbolt = G_Spawn();
-
-   	VectorCopy(self->s.origin, hellbolt->s.origin);
+	// Copy everything across.
 	CreateHellbolt(hellbolt);
+	VectorCopy(self->s.origin, hellbolt->s.origin);
 	VectorCopy(vel, hellbolt->velocity);
-   	hellbolt->owner = other;
-   	hellbolt->reflect_debounce_time = self->reflect_debounce_time -1;
-	hellbolt->reflected_time=self->reflected_time;
 	VectorNormalize2(vel, hellbolt->movedir);
-	vectoangles(hellbolt->movedir, hellbolt->s.angles);
-   	G_LinkMissile(hellbolt); 
-   	gi.CreateEffect(&hellbolt->s, FX_WEAPON_HELLBOLT, CEF_OWNERS_ORIGIN|CEF_FLAG6, NULL, "t", hellbolt->velocity);
+	vectoangles(hellbolt->movedir, hellbolt->s.angles); //TODO: FlyingFistReflect() uses AnglesFromDir() here. Why?
+	hellbolt->owner = other;
+	hellbolt->reflect_debounce_time = self->reflect_debounce_time - 1; // So it doesn't infinitely reflect in one frame somehow.
+	hellbolt->reflected_time = self->reflected_time;
 
-   	// kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it. 
-   	G_SetToFree(self);
+	G_LinkMissile(hellbolt);
 
-   	// Do a nasty looking blast at the impact point
-   	// only do this rarely, since we hit alot.
-   	if (!(irand(0,10)))
-   		gi.CreateEffect(&hellbolt->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", hellbolt->velocity);
+	// Create new trails for the new missile.
+	gi.CreateEffect(&hellbolt->s, FX_WEAPON_HELLBOLT, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "t", hellbolt->velocity);
 
-	return(hellbolt);
+	// Kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it. 
+	G_SetToFree(self);
+
+	// Do a nasty looking blast at the impact point. Do this rarely, since we hit a lot.
+	if (irand(0, 10) == 0)
+		gi.CreateEffect(&hellbolt->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", hellbolt->velocity);
+
+	return hellbolt;
 }
 
 // ****************************************************************************
