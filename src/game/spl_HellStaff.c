@@ -17,8 +17,6 @@
 #include "Vector.h"
 #include "g_local.h"
 
-static void HellboltThink(edict_t *Self);
-
 // Radius of zero seems to prevent collision between bolts.
 #define HELLBOLT_RADIUS		0.0f
 
@@ -61,6 +59,13 @@ static void HellboltTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfa
 
 	gi.CreateEffect(&self->s, FX_WEAPON_HELLBOLTEXPLODE, CEF_OWNERS_ORIGIN | fx_flags, NULL, "d", self->movedir);
 	G_SetToFree(self);
+}
+
+static void HellboltThink(edict_t* self)
+{
+	// Prevent any further transmission of this entity to clients.
+	self->svflags |= SVF_NOCLIENT;
+	self->think = NULL;
 }
 
 // guts of creating a hell bolt
@@ -110,20 +115,6 @@ edict_t *HellboltReflect(edict_t *self, edict_t *other, vec3_t vel)
 
 	return(hellbolt);
 }
-
-// ****************************************************************************
-// HellboltThink
-// ****************************************************************************
-
-static void HellboltThink(edict_t *Self)
-{
-	// Prevent any further transmission of this entity to clients.
-	Self->svflags |= SVF_NOCLIENT;
-	Self->think = NULL;
-}
-
-
-
 
 // ****************************************************************************
 // SpellCastHellbolt
