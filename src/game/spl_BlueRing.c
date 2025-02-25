@@ -1,39 +1,29 @@
 //
 // spl_bluering.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "spl_BlueRing.h" //mxd
-#include "g_local.h"
-#include "fx.h"
 #include "g_cmds.h" //mxd
 #include "g_combat.h" //mxd
-#include "random.h"
-#include "vector.h"
 #include "g_playstats.h"
 #include "m_assassin.h" //mxd
 #include "m_gkrokon.h" //mxd
 #include "m_imp.h" //mxd
 #include "m_mssithra.h" //mxd
-#include "p_actions.h"
-
-
-#define RING_THINKS	4		// This is a .4 seconds
-
-
-extern edict_t *PhoenixMissileReflect(edict_t *missile, edict_t *other, vec3_t vel);
-extern edict_t *RedRainMissileReflect(edict_t *self, edict_t *other, vec3_t vel);
-extern edict_t *MeteorBarrierReflect(edict_t *self, edict_t *other, vec3_t vel);
-extern edict_t *SphereReflect(edict_t *self, edict_t *other, vec3_t vel);
-extern edict_t *HellboltReflect(edict_t *self, edict_t *other, vec3_t vel);
-extern edict_t *MorphReflect(edict_t *self, edict_t *other, vec3_t vel);
-extern edict_t *MagicMissileReflect(edict_t *self, edict_t *other, vec3_t vel);
-extern edict_t *FlyingFistReflect(edict_t *self, edict_t *other, vec3_t vel);
-extern edict_t *SpearProjReflect(edict_t *self, edict_t *other, vec3_t vel);
-
-
+#include "m_tcheckrik_spells.h"
+#include "spl_flyingfist.h"
+#include "spl_HellStaff.h"
+#include "spl_magicmissile.h"
+#include "spl_meteorbarrier.h"
+#include "spl_morph.h"
+#include "spl_Phoenix.h"
+#include "spl_RedRain.h"
+#include "spl_sphereofannihlation.h"
+#include "FX.h"
+#include "Vector.h"
+#include "g_local.h"
 
 // Since findradius is not specific enough for our needs
 // This, for one, will seek out player maceballs, arrows, and meteors.
@@ -98,6 +88,8 @@ edict_t *findringradius (edict_t *from, vec3_t org, float rad, edict_t *ringent)
 
 void RingThink(edict_t *self)
 {
+#define RING_THINKS	4		// This is a .4 seconds
+
 	int			hit;
 	edict_t		*ent = NULL, *newent;
 	vec3_t		vel, hitloc;
