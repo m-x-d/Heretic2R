@@ -236,28 +236,27 @@ static void RingThink(edict_t* self)
 	}
 }
 
-// Formula for knockback:	1 to 0 (center to outside) * KNOCKBACK_SCALE + KNOCKBACK_BASE
-//							This total is multiplied by (MASS_FACTOR / mass).  (If mass > 200, less, if < 200, more)
-void SpellCastBlueRing(edict_t *Caster, vec3_t StartPos, vec3_t AimAngles, vec3_t AimDir, float value)
+// Formula for knockback:
+// 1 to 0 (center to outside) * KNOCKBACK_SCALE + KNOCKBACK_BASE.
+// This total is multiplied by (MASS_FACTOR / mass) (less if mass > 200, more if < 200).
+void SpellCastBlueRing(edict_t* caster)
 {
-	edict_t		*newent;
-				  
-	// create the actual effect entity
-	newent = G_Spawn();
-	newent->owner = Caster;
-	newent->solid = SOLID_NOT;
-	newent->svflags |= SVF_NOCLIENT;
-	newent->movetype = PHYSICSTYPE_NONE;
-	newent->classname = "Spell_Ring";
-	newent->nextthink = level.time + 0.1;
-	newent->think = RingThink;
-	newent->count = RING_THINKS;
-	newent->timestamp = level.time;
-	VectorCopy(Caster->s.origin, newent->s.origin);
-	gi.linkentity(newent); 
+	// Create the actual effect entity.
+	edict_t* ring = G_Spawn();
 
-	// fire off a special effect.
-	gi.CreateEffect(&Caster->s, FX_SPELL_BLUERING, CEF_OWNERS_ORIGIN, 0, "");
+	ring->owner = caster;
+	ring->solid = SOLID_NOT;
+	ring->svflags |= SVF_NOCLIENT;
+	ring->movetype = PHYSICSTYPE_NONE;
+	ring->classname = "Spell_Ring";
+	ring->nextthink = level.time + 0.1f;
+	ring->think = RingThink;
+	ring->count = RING_THINKS;
+	ring->timestamp = level.time;
+	VectorCopy(caster->s.origin, ring->s.origin);
+
+	gi.linkentity(ring);
+
+	// Fire off a special effect.
+	gi.CreateEffect(&caster->s, FX_SPELL_BLUERING, CEF_OWNERS_ORIGIN, NULL, "");
 }
-
-// end

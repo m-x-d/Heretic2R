@@ -50,7 +50,7 @@ void DefenceThink_Powerup(edict_t* caster, char* format, ...)
 
 void DefenceThink_RingOfRepulsion(edict_t* caster, char* format, ...)
 {
-	SpellCastBlueRing(caster, caster->s.origin, NULL, NULL, 0.0f);
+	SpellCastBlueRing(caster);
 	TakeMana(caster); //mxd
 }
 
