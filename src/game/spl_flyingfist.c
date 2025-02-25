@@ -116,26 +116,22 @@ static void FlyingFistTouch(edict_t* self, edict_t* other, cplane_t* plane, csur
 	G_SetToFree(self);
 }
 
-void CreateFlyingFist(edict_t *flyingfist)
+static void CreateFlyingFist(edict_t* flying_fist)
 {
-	flyingfist->s.effects |= EF_ALWAYS_ADD_EFFECTS;
-	flyingfist->svflags |= SVF_ALWAYS_SEND;
-	flyingfist->movetype = MOVETYPE_FLYMISSILE;
-	flyingfist->s.scale = 1.0;
+	flying_fist->s.effects |= EF_ALWAYS_ADD_EFFECTS;
+	flying_fist->svflags |= SVF_ALWAYS_SEND;
+	flying_fist->movetype = MOVETYPE_FLYMISSILE;
 
-	flyingfist->touch = FlyingFistTouch;
-	flyingfist->think = FlyingFistInitThink;
-	flyingfist->classname = "Spell_FlyingFist";
-	flyingfist->nextthink = level.time + 0.1;
-	VectorSet(flyingfist->mins, -FIST_RADIUS, -FIST_RADIUS, -FIST_RADIUS);
-	VectorSet(flyingfist->maxs, FIST_RADIUS, FIST_RADIUS, FIST_RADIUS);
+	flying_fist->touch = FlyingFistTouch;
+	flying_fist->think = FlyingFistInitThink;
+	flying_fist->classname = "Spell_FlyingFist";
+	flying_fist->nextthink = level.time + 0.1f;
+	VectorSet(flying_fist->mins, -FIST_RADIUS, -FIST_RADIUS, -FIST_RADIUS);
+	VectorSet(flying_fist->maxs, FIST_RADIUS, FIST_RADIUS, FIST_RADIUS);
 
-	flyingfist->solid = SOLID_BBOX;
-	flyingfist->clipmask = MASK_SHOT;
+	flying_fist->solid = SOLID_BBOX;
+	flying_fist->clipmask = MASK_SHOT;
 }
-
-
-
 
 edict_t *FlyingFistReflect(edict_t *self, edict_t *other, vec3_t vel)
 {
