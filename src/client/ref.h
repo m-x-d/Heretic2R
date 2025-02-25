@@ -11,7 +11,7 @@
 // These are the maximum number that maybe rendered on any given frame
 #define	MAX_DLIGHTS			32
 #define	MAX_ENTITIES		128	
-#define MAX_ALPHA_ENTITIES	(MAX_ENTITIES * 2)
+#define MAX_ALPHA_ENTITIES	(MAX_ENTITIES * 2) //TODO: increase? Exceeded relatively often...
 #define	MAX_SERVER_ENTITIES	MAX_ENTITIES
 #define	MAX_PARTICLES		4096
 #define	MAX_LIGHTSTYLES		256
