@@ -596,7 +596,7 @@ void WeaponThink_HellStaff(edict_t* caster, char* format, ...)
 	VectorMA(start_pos, 10.0f, right, start_pos);
 	start_pos[2] += (float)caster->viewheight - 14.0f;
 
-	SpellCastHellstaff(caster, start_pos, caster->client->aimangles, NULL);
+	SpellCastHellstaff(caster, start_pos, caster->client->aimangles);
 
 	playerinfo_t* info = &caster->client->playerinfo; //mxd
 	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))

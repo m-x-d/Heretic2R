@@ -169,7 +169,7 @@ static void PlayHellstaffFiringSound(edict_t* caster, const char* snd_name)
 	gi.sound(caster, snd_channel, gi.soundindex(snd_name), 1.0f, ATTN_NORM, 0.0f);
 }
 
-void SpellCastHellstaff(edict_t* caster, vec3_t loc, vec3_t aim_angles, vec3_t unused) //TODO: remove unused arg.
+void SpellCastHellstaff(edict_t* caster, const vec3_t loc, vec3_t aim_angles)
 {
 #define HELLSTAFF_LASER_MAX_TARGETS		8
 
