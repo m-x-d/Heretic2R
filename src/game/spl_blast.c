@@ -1,81 +1,72 @@
 //
 // spl_blast.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "spl_blast.h" //mxd
-#include "g_local.h"
-#include "fx.h"
-#include "Angles.h"
 #include "g_combat.h" //mxd
-#include "Utilities.h"
-#include "vector.h"
-#include "random.h"
 #include "g_playstats.h"
 #include "m_beast.h"
+#include "FX.h"
+#include "Random.h"
+#include "Vector.h"
+#include "g_local.h"
 
-
-
-// ****************************************************************************
-// SpellCastBlast
-// ****************************************************************************
-
-void SpellCastBlast(edict_t *caster,vec3_t startpos,vec3_t aimangles,vec3_t aimdir)
+void SpellCastBlast(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles)
 {
-	vec3_t fwd, endpos, mins={-3.0, -3.0, -3.0}, maxs={3.0, 3.0, 3.0};
-	trace_t trace;
-	int	damage;
-	vec3_t	angles, diff;
-	int i;
-	short	distance[BLAST_NUM_SHOTS];
-	short	syaw, spitch;
+	static const vec3_t mins = { -3.0f, -3.0f, -3.0f }; //mxd. Made const static.
+	static const vec3_t maxs = {  3.0f,  3.0f,  3.0f }; //mxd. Made const static.
 
-	// This weapon does not autotarget
-	VectorCopy(aimangles, angles);
+	short distance[BLAST_NUM_SHOTS];
 
-	angles[YAW] -= BLAST_ANGLE_INC * (BLAST_NUM_SHOTS-1) * 0.5;
-	for (i=0; i<BLAST_NUM_SHOTS; i++)
+	// This weapon does not auto-target.
+	vec3_t angles;
+	VectorCopy(aim_angles, angles);
+	angles[YAW] -= BLAST_ANGLE_INC * (BLAST_NUM_SHOTS - 1) * 0.5f;
+
+	for (int i = 0; i < BLAST_NUM_SHOTS; i++)
 	{
-		// Single shot travelling out
-		AngleVectors(angles, fwd, NULL, NULL);
-		VectorMA(startpos, BLAST_DISTANCE, fwd, endpos);
-		gi.trace(startpos, mins, maxs, endpos, caster, MASK_SHOT,&trace);
-		if(level.fighting_beast)
+		// Single shot traveling out.
+		vec3_t forward;
+		AngleVectors(angles, forward, NULL, NULL);
+
+		vec3_t end_pos;
+		VectorMA(start_pos, BLAST_DISTANCE, forward, end_pos);
+
+		trace_t trace;
+		gi.trace(start_pos, mins, maxs, end_pos, caster, MASK_SHOT, &trace);
+
+		if (level.fighting_beast)
 		{
-			edict_t *ent;
-			
-			if(ent = TB_CheckHit(startpos, trace.endpos))
+			edict_t* ent = TB_CheckHit(start_pos, trace.endpos);
+
+			if (ent != NULL)
 				trace.ent = ent;
 		}
 
-		if (trace.ent && trace.ent->takedamage && !(EntReflecting(trace.ent, true, true)))
-		{	
-			if(deathmatch->value)
-				damage = irand(BLAST_DMG_MIN*0.75, BLAST_DMG_MAX*0.75);
-			else
-				damage = irand(BLAST_DMG_MIN, BLAST_DMG_MAX);
-			T_Damage(trace.ent, caster, caster, fwd, trace.endpos, fwd, damage, damage, 0, MOD_MMISSILE);
+		if (trace.ent != NULL && trace.ent->takedamage != DAMAGE_NO && !EntReflecting(trace.ent, true, true))
+		{
+			int	damage = irand(BLAST_DMG_MIN, BLAST_DMG_MAX);
+
+			if (DEATHMATCH)
+				damage = (int)((float)damage * 0.75f);
+
+			T_Damage(trace.ent, caster, caster, forward, trace.endpos, forward, damage, damage, 0, MOD_MMISSILE);
 		}
 
-		VectorSubtract(trace.endpos, startpos, diff);
-		distance[i] = VectorLength(diff);
+		vec3_t diff;
+		VectorSubtract(trace.endpos, start_pos, diff);
+		distance[i] = (short)(VectorLength(diff));
 
 		angles[YAW] += BLAST_ANGLE_INC;
 	}
 
 	// The assumption is that there are 5 shot blasts.
-	assert(BLAST_NUM_SHOTS==5);
+	assert(BLAST_NUM_SHOTS == 5);
 
 	// Compress the angles into two shorts.
-	syaw = (short)(aimangles[YAW]*(65536.0/360.0));
-	spitch = (short)(aimangles[PITCH]*(65536.0/360.0));
-
-	gi.CreateEffect(NULL, FX_WEAPON_BLAST, 0, startpos, 
-					"sssssss", syaw, spitch, distance[0], distance[1], distance[2], distance[3], distance[4]);
+	const short s_yaw = ANGLE2SHORT(aim_angles[YAW]);
+	const short s_pitch = ANGLE2SHORT(aim_angles[PITCH]);
+	gi.CreateEffect(NULL, FX_WEAPON_BLAST, 0, start_pos, "sssssss", s_yaw, s_pitch, distance[0], distance[1], distance[2], distance[3], distance[4]);
 }
-
-
-
-

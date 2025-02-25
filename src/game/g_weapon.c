@@ -634,7 +634,7 @@ void WeaponThink_Blast(edict_t* caster, char* format, ...)
 		VectorCopy(trace.endpos, start_pos);
 
 	// This weapon does not auto-target.
-	SpellCastBlast(caster, start_pos, caster->client->aimangles, NULL);
+	SpellCastBlast(caster, start_pos, caster->client->aimangles);
 
 	playerinfo_t* info = &caster->client->playerinfo; //mxd
 	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
