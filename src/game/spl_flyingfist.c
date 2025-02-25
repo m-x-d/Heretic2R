@@ -29,15 +29,11 @@ static void FlyingFistFizzleThink(edict_t* self)
 	}
 }
 
-
-
-// ****************************************
-// Creation functions
-// ****************************************
-void FlyingFistInitThink(edict_t *self)
+static void FlyingFistInitThink(edict_t* self)
 {
 	self->svflags |= SVF_NOCLIENT;
 	self->think = FlyingFistFizzleThink;
+
 	FlyingFistFizzleThink(self);
 }
 
