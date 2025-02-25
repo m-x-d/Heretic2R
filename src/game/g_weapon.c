@@ -438,10 +438,7 @@ void WeaponThink_FlyingFist(edict_t* caster, char* format, ...)
 	Weapon_CalcStartPos(origin_to_lower_joint, origin_to_upper_joint, default_start_pos, start_pos, caster);
 	start_pos[2] += (float)caster->viewheight - 14.0f;
 
-	vec3_t forward;
-	AngleVectors(caster->client->aimangles, forward, NULL, NULL);
-
-	SpellCastFlyingFist(caster, start_pos, caster->client->aimangles, forward, 0.0f);
+	SpellCastFlyingFist(caster, start_pos, caster->client->aimangles);
 
 	// Take off mana, but if there is none, then fire a wimpy fizzle-weapon.
 	playerinfo_t* info = &caster->client->playerinfo; //mxd
