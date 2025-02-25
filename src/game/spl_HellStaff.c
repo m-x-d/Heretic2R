@@ -68,24 +68,23 @@ static void HellboltThink(edict_t* self)
 	self->think = NULL;
 }
 
-// guts of creating a hell bolt
-void create_hellbolt(edict_t *hellbolt)
+// Guts of creating a hell bolt.
+static void CreateHellbolt(edict_t* hellbolt)
 {
-
 	hellbolt->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 	hellbolt->svflags |= SVF_ALWAYS_SEND;
 	hellbolt->movetype = MOVETYPE_FLYMISSILE;
+	hellbolt->dmg = irand(HELLBOLT_DAMAGE_MIN, HELLBOLT_DAMAGE_MAX);
 
+	hellbolt->touch = HellboltTouch;
+	hellbolt->think = HellboltThink;
+	hellbolt->classname = "Spell_Hellbolt";
+	hellbolt->nextthink = level.time + 0.1f;
 	VectorSet(hellbolt->mins, -HELLBOLT_RADIUS, -HELLBOLT_RADIUS, -HELLBOLT_RADIUS);
-	VectorSet(hellbolt->maxs, HELLBOLT_RADIUS, HELLBOLT_RADIUS, HELLBOLT_RADIUS);
+	VectorSet(hellbolt->maxs,  HELLBOLT_RADIUS,  HELLBOLT_RADIUS,  HELLBOLT_RADIUS);
 
 	hellbolt->solid = SOLID_BBOX;
 	hellbolt->clipmask = MASK_SHOT;
-	hellbolt->touch = HellboltTouch;
-	hellbolt->think = HellboltThink;
-	hellbolt->dmg = irand(HELLBOLT_DAMAGE_MIN, HELLBOLT_DAMAGE_MAX);
-	hellbolt->classname = "Spell_Hellbolt";
-	hellbolt->nextthink = level.time + 0.1;
 }
 
 edict_t *HellboltReflect(edict_t *self, edict_t *other, vec3_t vel)
@@ -95,7 +94,7 @@ edict_t *HellboltReflect(edict_t *self, edict_t *other, vec3_t vel)
 	hellbolt = G_Spawn();
 
    	VectorCopy(self->s.origin, hellbolt->s.origin);
-   	create_hellbolt(hellbolt);
+	CreateHellbolt(hellbolt);
 	VectorCopy(vel, hellbolt->velocity);
    	hellbolt->owner = other;
    	hellbolt->reflect_debounce_time = self->reflect_debounce_time -1;
@@ -294,7 +293,7 @@ void SpellCastHellstaff(edict_t *caster, vec3_t loc, vec3_t aimangles, vec3_t un
 
 		hellbolt->owner = caster;
 		VectorNormalize2(hellbolt->velocity, hellbolt->movedir);
-		create_hellbolt(hellbolt);
+		CreateHellbolt(hellbolt);
 		hellbolt->reflect_debounce_time = MAX_REFLECT;
 		G_LinkMissile(hellbolt); 
 
