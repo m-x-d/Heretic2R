@@ -1,22 +1,21 @@
 //
 // spl_flyingfist.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "spl_flyingfist.h" //mxd
-#include "g_local.h"
-#include "fx.h"
-#include "vector.h"
-#include "random.h"
-#include "decals.h"
 #include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
-#include "Utilities.h"
 #include "g_playstats.h"
+#include "Decals.h"
+#include "FX.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_local.h"
 
-#define FIST_RADIUS				2.0
+#define FIST_RADIUS		2.0f
 
 static void FlyingFistTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface);
 
