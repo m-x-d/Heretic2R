@@ -1,30 +1,27 @@
 //
 // spl_hellstaff.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "spl_HellStaff.h" //mxd
-#include "g_local.h"
-#include "fx.h"
-#include "Angles.h"
-#include "Utilities.h"
-#include "vector.h"
-#include "random.h"
-#include "decals.h"
 #include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
 #include "p_main.h"
 #include "g_playstats.h"
 #include "m_beast.h"
+#include "Decals.h"
+#include "FX.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_local.h"
 
 static void HellboltThink(edict_t *Self);
 static void HellboltTouch(edict_t *Self,edict_t *Other,cplane_t *Plane,csurface_t *Surface);
 
-// Radius of zero seems to prevent collision between bolts
-
-#define HELLBOLT_RADIUS			0.0
+// Radius of zero seems to prevent collision between bolts.
+#define HELLBOLT_RADIUS		0.0f
 
 // guts of creating a hell bolt
 void create_hellbolt(edict_t *hellbolt)
