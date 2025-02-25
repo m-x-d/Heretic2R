@@ -19,21 +19,13 @@
 
 static void FlyingFistTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface);
 
-
-// ************************************************************************************************
-// FlyingFistThink
-// ************************************************************************************************
-
-static void FlyingFistFizzleThink(edict_t *self)
+static void FlyingFistFizzleThink(edict_t* self)
 {
-	// Don't fizzle in deathmatch, or if powered up
-	if (!(deathmatch->value) && self->health==0)
+	// Don't fizzle in deathmatch, or if powered up.
+	if (!DEATHMATCH && self->health == 0)
 	{
-		if ( (self->dmg - 2) > FIREBALL_MIN_FIZZLE_DAMAGE )
-		{
-			self->dmg -= 2;
-		}
-		self->nextthink = level.time + 0.1;
+		self->dmg = max(FIREBALL_MIN_FIZZLE_DAMAGE, self->dmg - 2);
+		self->nextthink = level.time + 0.1f;
 	}
 }
 
