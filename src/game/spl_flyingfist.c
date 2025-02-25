@@ -127,45 +127,43 @@ static void CreateFlyingFist(edict_t* flying_fist)
 	flying_fist->classname = "Spell_FlyingFist";
 	flying_fist->nextthink = level.time + 0.1f;
 	VectorSet(flying_fist->mins, -FIST_RADIUS, -FIST_RADIUS, -FIST_RADIUS);
-	VectorSet(flying_fist->maxs, FIST_RADIUS, FIST_RADIUS, FIST_RADIUS);
+	VectorSet(flying_fist->maxs,  FIST_RADIUS,  FIST_RADIUS,  FIST_RADIUS);
 
 	flying_fist->solid = SOLID_BBOX;
 	flying_fist->clipmask = MASK_SHOT;
 }
 
-edict_t *FlyingFistReflect(edict_t *self, edict_t *other, vec3_t vel)
+edict_t* FlyingFistReflect(edict_t* self, edict_t* other, vec3_t vel)
 {
-	edict_t	*flyingfist;
+	// Create a new missile to replace the old one - this is necessary because physics will do nasty things
+	// with the existing one, since we hit something. Hence, we create a new one totally.
+	edict_t* flying_fist = G_Spawn();
 
-	// create a new missile to replace the old one - this is necessary cos physics will do nasty things
-	// with the existing one,since we hit something. Hence, we create a new one totally.
-	flyingfist = G_Spawn();
+	// Copy everything across.
+	CreateFlyingFist(flying_fist);
+	VectorCopy(self->s.origin, flying_fist->s.origin);
+	VectorCopy(vel, flying_fist->velocity);
+	VectorNormalize2(vel, flying_fist->movedir);
+	AnglesFromDir(flying_fist->movedir, flying_fist->s.angles);
+	flying_fist->owner = other;
+	flying_fist->health = self->health;
+	flying_fist->enemy = self->owner;
+	flying_fist->flags |= (self->flags & FL_NO_KNOCKBACK); //TODO: why is it reflected as wimpy? Why is the CEF_FLAG8 flag not applied?
+	flying_fist->reflect_debounce_time = self->reflect_debounce_time - 1; // So it doesn't infinitely reflect in one frame somehow.
+	flying_fist->reflected_time = self->reflected_time;
 
-	// copy everything across
-	VectorCopy(self->s.origin, flyingfist->s.origin);
-	CreateFlyingFist(flyingfist);
-	VectorCopy(vel, flyingfist->velocity);
-	VectorNormalize2(vel, flyingfist->movedir);
-	AnglesFromDir(flyingfist->movedir, flyingfist->s.angles);
-	flyingfist->owner = other;
-	flyingfist->health = self->health;
-	flyingfist->enemy = self->owner;
-	flyingfist->flags |= (self->flags & FL_NO_KNOCKBACK);
-	flyingfist->reflect_debounce_time = self->reflect_debounce_time -1; //so it doesn't infinitely reflect in one frame somehow
-	flyingfist->reflected_time=self->reflected_time;
-	G_LinkMissile(flyingfist); 
+	G_LinkMissile(flying_fist);
 
-	// create new trails for the new missile
-	gi.CreateEffect(&flyingfist->s, FX_WEAPON_FLYINGFIST, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL,
-					"t", flyingfist->velocity);
+	// Create new trails for the new missile. //TODO: powered/wimpy flags are not carried over!
+	gi.CreateEffect(&flying_fist->s, FX_WEAPON_FLYINGFIST, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "t", flying_fist->velocity);
 
-	// kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it. 
+	// Kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it. 
 	G_SetToFree(self);
 
-	// Do a nasty looking blast at the impact point
-	gi.CreateEffect(&flyingfist->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", flyingfist->velocity);
+	// Do a nasty looking blast at the impact point.
+	gi.CreateEffect(&flying_fist->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", flying_fist->velocity);
 
-	return(flyingfist);
+	return flying_fist;
 }
 
 // ************************************************************************************************
