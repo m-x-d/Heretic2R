@@ -82,59 +82,61 @@ edict_t* FindRingRadius(edict_t* from, const vec3_t org, const float rad, const 
 	return NULL;
 }
 
-void RingThink(edict_t *self)
+static void RingThink(edict_t* self)
 {
-#define RING_THINKS	4		// This is a .4 seconds
+#define RING_THINKS	4 // This is 0.4 seconds.
 
-	int			hit;
-	edict_t		*ent = NULL, *newent;
-	vec3_t		vel, hitloc;
-	vec_t		scale;
-	edict_t* (*reflect)(edict_t*, edict_t*, vec3_t);
-
-	// kill the ring eventually
-	self->nextthink = level.time + 0.1;
-	if (self->count <= 0)
+	// Kill the ring eventually.
+	if (self->count-- < 1)
 	{
 		G_SetToFree(self);
 		return;
 	}
-	self->count--;
 
-	// Since find radius is not specific enough for our needs, here is 
-	while(ent = FindRingRadius(ent, self->s.origin, RING_EFFECT_RADIUS*0.25*(RING_THINKS-self->count), self))
+	self->nextthink = level.time + 0.1f;
+
+	// Since find radius is not specific enough for our needs, here is.
+	edict_t* ent = NULL;
+	while ((ent = FindRingRadius(ent, self->s.origin, RING_EFFECT_RADIUS * 0.25f * (float)(RING_THINKS - self->count), self)) != NULL)
 	{
-		hit = false;
-		reflect = NULL;
-		if (ent->mass)
+		qboolean hit = false;
+		edict_t* (*reflect)(edict_t*, edict_t*, vec3_t) = NULL;
+
+		if (ent->mass > 0)
 		{
+			vec3_t vel;
 			VectorSubtract(ent->s.origin, self->s.origin, vel);
-			scale = (RING_EFFECT_RADIUS - VectorLength(vel)) 
-						* (RING_KNOCKBACK_SCALE/RING_EFFECT_RADIUS) 
-						* sqrt(RING_MASS_FACTOR / ent->mass)
-						+ RING_KNOCKBACK_BASE;
+
+			float scale = (RING_EFFECT_RADIUS - VectorLength(vel)) * (RING_KNOCKBACK_SCALE / RING_EFFECT_RADIUS)
+				* sqrtf(RING_MASS_FACTOR / (float)ent->mass) + RING_KNOCKBACK_BASE;
+
 			VectorNormalize(vel);
-			if (ent->client)
-			{	// For players, force them up more and faster.
-				vel[2] = 0.5;
-				if (vel[2] < 0.5 && vel[2] > 0.0)
+
+			// For players, force them up more and faster.
+			if (ent->client != NULL)
+			{
+				vel[2] = 0.5f; //TODO: below block is never executed. Supposed to be 'vel[2] += 0.5f'?
+
+				if (vel[2] > 0.0f && vel[2] < 0.5f)
 				{
-					scale *= 2.0;
+					scale *= 2.0f;
 					VectorNormalize(vel);
 				}
 			}
+
 			// Vel is just passing the direction of the knockback.
-			QPostMessage(ent, MSG_REPULSE, PRI_DIRECTIVE, "fff", vel[0], vel[1], vel[2] + 30.0);
-			if (ent->takedamage)
+			QPostMessage(ent, MSG_REPULSE, PRI_DIRECTIVE, "fff", vel[0], vel[1], vel[2] + 30.0f);
+
+			if (ent->takedamage != DAMAGE_NO)
 			{
-				VectorMA(ent->s.origin, -ent->maxs[0], vel, hitloc);
-				if (ent->movetype != PHYSICSTYPE_NONE)
-					T_Damage (ent, ent, self, vel, hitloc, vec3_origin, 4, (int)scale, DAMAGE_RADIUS | DAMAGE_SPELL,MOD_ROR);
-				else
-					T_Damage (ent, ent, self, vel, hitloc, vec3_origin, 4, 0, DAMAGE_RADIUS | DAMAGE_SPELL,MOD_ROR);
+				vec3_t hit_loc;
+				VectorMA(ent->s.origin, -ent->maxs[0], vel, hit_loc);
+
+				const int knockback = ((ent->movetype != PHYSICSTYPE_NONE) ? (int)scale : 0); //mxd
+				T_Damage(ent, ent, self, vel, hit_loc, vec3_origin, 4, knockback, DAMAGE_RADIUS | DAMAGE_SPELL, MOD_ROR);
 			}
 		}
-		else if (strcmp(ent->classname, "Spell_RedRainArrow") == 0)
+		else if (strcmp(ent->classname, "Spell_RedRainArrow") == 0) //TODO: convert to defines? Or add/use ent->classID?
 		{
 			reflect = RedRainMissileReflect;
 		}
@@ -186,54 +188,53 @@ void RingThink(edict_t *self)
 		{
 			reflect = SpearProjReflect;
 		}
-		else if (strcmp(ent->classname, "Spell_Maceball") == 0)
+		else if (strcmp(ent->classname, "Spell_Maceball") == 0 && ent->owner != self->owner) // Don't reflect your own projectiles.
 		{
-			if (ent->owner != self->owner)
-			{	// Don't screw up your own projectiles.
+			hit = true;
 
-				hit = true;
-				// Give the self credit for stuff killed with it, or worse yet, set the originator as the enemy.
-				ent->enemy = ent->owner;
-				ent->owner = self->owner;
+			// Give the self credit for stuff killed with it, or worse yet, set the originator as the enemy.
+			ent->enemy = ent->owner;
+			ent->owner = self->owner;
 
-				// Do a nasty looking blast at the impact point
-				gi.CreateEffect(&ent->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", ent->velocity);
-			}
+			// Do a nasty looking blast at the impact point.
+			gi.CreateEffect(&ent->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", ent->velocity);
 		}
 
-		if (reflect)
+		if (reflect != NULL)
 		{
-			if (ent->owner != self && ent->reflect_debounce_time)
-			{
+			if (ent->owner != self && ent->reflect_debounce_time > 0)
 				hit = true;
-			}
 			else
-			{
 				reflect = NULL;
-			}
 		}
 
 		if (hit)
 		{
+			vec3_t vel;
 			VectorSubtract(self->s.origin, ent->s.origin, vel);
 			VectorNormalize(vel);
+
 			// The dot product is the velocity towards the self (normally negative), let's reverse it.
-			scale = DotProduct(vel, ent->velocity);
-			if (scale > 0)	// If heading towards the self, reverse that portion of the velocity
-				VectorMA(ent->velocity, -2.0*scale, vel, vel);
-			else	// Jes' double the speed away
-				VectorMA(ent->velocity, scale, vel, vel);
-			if(reflect)
+			float scale = DotProduct(vel, ent->velocity);
+
+			// If heading towards the self, reverse that portion of the velocity.
+			if (scale > 0.0f)
+				scale *= -2.0f;
+
+			VectorMA(ent->velocity, scale, vel, vel);
+
+			if (reflect != NULL)
 			{
-				if (Vec3IsZero(vel))	// Reflect needs a non-zero vel.  If zeroed, throw it straight up.
-					VectorSet(vel, 0, 0, 200.0);
-				newent = reflect(ent, self->owner, vel);
-				vectoangles(newent->velocity, newent->s.angles);
+				if (Vec3IsZero(vel)) // Reflect needs a non-zero vel. If zeroed, throw it straight up.
+					VectorSet(vel, 0.0f, 0.0f, 200.0f);
+
+				edict_t* new_ent = reflect(ent, self->owner, vel);
+				vectoangles(new_ent->velocity, new_ent->s.angles);
 			}
 		}
+
 	}
 }
-
 
 // Formula for knockback:	1 to 0 (center to outside) * KNOCKBACK_SCALE + KNOCKBACK_BASE
 //							This total is multiplied by (MASS_FACTOR / mass).  (If mass > 200, less, if < 200, more)
