@@ -315,6 +315,7 @@
     <ClInclude Include="m_tcheckrik.h" />
     <ClInclude Include="m_tcheckrik_local.h" />
     <ClInclude Include="m_tcheckrik_anim.h" />
+    <ClInclude Include="m_tcheckrik_spells.h" />
     <ClInclude Include="pcode.h" />
     <ClInclude Include="p_client.h" />
     <ClInclude Include="p_funcs.h" />

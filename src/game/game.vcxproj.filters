@@ -1109,5 +1109,8 @@
     <ClInclude Include="c_actors.h">
       <Filter>src\Cinematics</Filter>
     </ClInclude>
+    <ClInclude Include="m_tcheckrik_spells.h">
+      <Filter>src\Monsters\Tcheckrik</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
