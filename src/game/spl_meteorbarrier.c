@@ -152,26 +152,15 @@ static void MeteorBarrierHuntThink(edict_t* self)
 	}
 }
 
-// ************************************************************************************************
-// MeteorBarrierHuntThink
-// ----------------------
-// ************************************************************************************************
-
-static void MeteorBarrierBounceThink(edict_t *self)
+static void MeteorBarrierBounceThink(edict_t* self)
 {
-	self->random += 20;			// Lifetime
-	if((self->enemy->health > 0) && (self->random < (5000 + (self->health * 200.0))))
-	{
-		self->nextthink = level.time + 0.1;
-	}
+	self->random += 20.0f; // Lifetime.
+
+	if (self->enemy->health > 0 && self->random < 5000.0f + (float)self->health * 200.0f)
+		self->nextthink = level.time + 0.1f;
 	else
-	{
-		// My enemy has died so I die too.
-		MeteorBarrierDie(self, METEOR_BARRIER_DIE_EXPLODE);
-	}
+		Kill_Meteor(self); // My enemy has died so I die too.
 }
-
-
 
 // ************************************************************************************************
 // MeteorBarrierReflect
