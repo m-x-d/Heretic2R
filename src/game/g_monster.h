@@ -8,7 +8,7 @@
 #ifndef G_MONSTER_H
 #define G_MONSTER_H
 
-#include "g_local.h"
+#include "g_local.h" //TODO: remove.
 #include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
 #include "Message.h"
