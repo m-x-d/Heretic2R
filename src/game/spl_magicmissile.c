@@ -18,10 +18,68 @@
 #define MISSILE_RADIUS	2.0f //mxd. ARROW_RADIUS in original version.
 
 void create_magic(edict_t *MagicMissile);
-
 static void MagicMissileThink2(edict_t *self);
-static void MagicMissileTouch(edict_t *self,edict_t *Other,cplane_t *Plane,csurface_t *Surface);
 
+static void MagicMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
+{
+	if (surface != NULL && (surface->flags & SURF_SKY))
+	{
+		SkyFly(self);
+		return;
+	}
+
+	// Has the target got reflection turned on?
+	if (self->reflect_debounce_time > 0 && EntReflecting(other, true, true))
+	{
+		Create_rand_relect_vect(self->velocity, self->velocity);
+
+		// Scale speed down.
+		Vec3ScaleAssign(MAGICMISSILE_SPEED / 2.0f, self->velocity);
+		MagicMissileReflect(self, other, self->velocity);
+
+		return;
+	}
+
+	if (other == self->owner || strcmp(self->classname, other->classname) == 0) // Don't collide with owner or other magic missiles.
+		return;
+
+	vec3_t scorch_origin;
+	VectorCopy(self->s.origin, scorch_origin);
+
+	// Calculate the position for the explosion entity.
+	vec3_t origin;
+	VectorMA(self->s.origin, -0.02f, self->velocity, origin);
+
+	AlertMonsters(self, self->owner, 1.0f, false);
+
+	if (other->takedamage != DAMAGE_NO)
+	{
+		T_Damage(other, self, self->owner, self->movedir, self->s.origin, plane->normal, self->dmg, self->dmg, DAMAGE_SPELL, MOD_MMISSILE);
+	}
+	else
+	{
+		// Back off the origin for the damage a bit.
+		// We are a point and this will help fix hitting base of a stair and not hurting a guy on next step up.
+		VectorMA(self->s.origin, -8.0f, self->movedir, self->s.origin);
+	}
+
+	// Do some blast damage when in deathmatch (too wimpy without it).
+	if (DEATHMATCH)
+	{
+		T_DamageRadius(self, self->owner, self->owner, MAGICMISSILE_RADIUS, MAGICMISSILE_DAMAGE_RAD,
+			MAGICMISSILE_DAMAGE_RAD * 0.25f, DAMAGE_SPELL | DAMAGE_EXTRA_KNOCKBACK, MOD_MMISSILE);
+	}
+
+	// Attempt to apply a scorchmark decal to the thing I hit.
+	int make_scorch = 0;
+	if (IsDecalApplicable(other, self->s.origin, surface, plane, NULL))
+		make_scorch = CEF_FLAG6;
+
+	gi.CreateEffect(&self->s, FX_WEAPON_MAGICMISSILEEXPLODE, make_scorch | CEF_OWNERS_ORIGIN, self->s.origin, "d", self->movedir);
+	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/MagicMissileHit.wav"), 2.0f, ATTN_NORM, 0.0f); //TODO: why 2.0 volume?
+
+	G_SetToFree(self);
+}
 
 // ****************************************************************************
 // MagicMissileThink2
@@ -82,83 +140,6 @@ edict_t *MagicMissileReflect(edict_t *self, edict_t *other, vec3_t vel)
 	gi.CreateEffect(&magicmissile->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", magicmissile->velocity);
 
 	return(magicmissile);
-}
-
-
-
-// ****************************************************************************
-// MagicMissileTouch
-// ****************************************************************************
-
-
-
-static void MagicMissileTouch(edict_t *self,edict_t *Other,cplane_t *Plane,csurface_t *Surface)
-{
-	vec3_t		Origin,	ScorchOrigin;
-	int			makeScorch;
-
-	if(Surface&&(Surface->flags&SURF_SKY))
-	{
-		SkyFly(self);
-		return;
-	}
-
-	// has the target got reflection turned on ?
-	if (self->reflect_debounce_time)
-	{
-		if(EntReflecting(Other, true, true))
-		{
-			Create_rand_relect_vect(self->velocity, self->velocity);
-			// scale speed down
-			Vec3ScaleAssign(MAGICMISSILE_SPEED/2, self->velocity);
-			MagicMissileReflect(self, Other, self->velocity);
-
-			return;
-		}
-	}
-
-	if((Other==self->owner)||(!strcmp(self->classname,Other->classname)))
-	{
-		return;
-	}
-
-	VectorCopy(self->s.origin,ScorchOrigin);
-
-	// Calculate the position for the explosion entity.
-
-	VectorMA(self->s.origin,-0.02,self->velocity,Origin);
-
-	AlertMonsters (self, self->owner, 1, false);
-	if(Other->takedamage)
-	{
-		T_Damage(Other,self,self->owner,self->movedir,self->s.origin,Plane->normal,self->dmg,self->dmg,DAMAGE_SPELL,MOD_MMISSILE);
-	}
-	else
-	{
-		// Back off the origin for the damage a bit. We are a point and this will
-		// help fix hitting base of a stair and not hurting a guy on next step up.
-		VectorMA(self->s.origin,-8.0,self->movedir,self->s.origin);
-	}
-
-	// Okay, we have to do some blast damage no matter what.
-	// They say that blast is too much.
-	if (deathmatch->value)
-	{	// Except in deathmatch the weapon is too wimpy.
-		T_DamageRadius(self, self->owner, self->owner, 
-				MAGICMISSILE_RADIUS, MAGICMISSILE_DAMAGE_RAD, MAGICMISSILE_DAMAGE_RAD*0.25, 
-				DAMAGE_SPELL|DAMAGE_EXTRA_KNOCKBACK, MOD_MMISSILE);
-	}
-
-	// Attempt to apply a scorchmark decal to the thing I hit.
-	makeScorch = 0;
-	if(IsDecalApplicable(Other,self->s.origin,Surface,Plane,NULL))
-	{
-		makeScorch = CEF_FLAG6;
-	}
-	gi.CreateEffect(&self->s, FX_WEAPON_MAGICMISSILEEXPLODE, CEF_OWNERS_ORIGIN | makeScorch, self->s.origin, "d", self->movedir);
-	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/MagicMissileHit.wav"), 2, ATTN_NORM, 0);
-
-	G_SetToFree(self);
 }
 
 // create guts of magice missile
