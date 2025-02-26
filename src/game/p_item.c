@@ -56,7 +56,7 @@ void DefenceThink_RingOfRepulsion(edict_t* caster, char* format, ...)
 
 void DefenceThink_MeteorBarrier(edict_t* caster, char* format, ...)
 {
-	SpellCastMeteorBarrier(caster, caster->s.origin, NULL, NULL, 0.0f);
+	SpellCastMeteorBarrier(caster, caster->s.origin);
 	//mxd. Mana decrement is handled per-meteor in SpellCastMeteorBarrier(). 
 }
 

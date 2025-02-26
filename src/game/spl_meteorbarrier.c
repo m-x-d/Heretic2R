@@ -339,7 +339,7 @@ static void MeteorBarrierSearchInitThink(edict_t* self)
 }
 
 // Spawn the meteors.
-void SpellCastMeteorBarrier(edict_t* caster, const vec3_t start_pos, vec3_t AimAngles, vec3_t AimDir, float Value) //TODO: remove unused args.
+void SpellCastMeteorBarrier(edict_t* caster, const vec3_t start_pos)
 {
 	assert(caster->client != NULL); //mxd. caster->client NULL checks were done inconsistently in original logic. Replace with assert for now...
 
