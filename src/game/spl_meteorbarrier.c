@@ -1,37 +1,30 @@
 //
 // spl_meteorbarrier.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "spl_meteorbarrier.h" //mxd
-#include "g_local.h"
-#include "fx.h"
-#include "Angles.h"
-#include "Utilities.h"
-#include "random.h"
-#include "vector.h"
-#include "decals.h"
 #include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
 #include "g_playstats.h"
+#include "FX.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_local.h"
 
 #define METEOR_BARRIER_DIE_EXPLODE			1
 #define METEOR_BARRIER_DIE_EXPLODEIMPACT	2
 
-#define	METEOR_RADIUS	4.0
-#define	METEOR_HUNT_SPEED	600.0
+#define	METEOR_RADIUS		4.0f
+#define	METEOR_HUNT_SPEED	600.0f
 
-static void MeteorBarrierDie(edict_t *self, int Flags);
-static void MeteorBarrierSearchInitThink(edict_t *self);
-static void MeteorBarrierSearchThink(edict_t *self);
-static void MeteorBarrierHuntThink(edict_t *self);
+static vec3_t bb_min = { -5.0f, -5.0f, -5.0f };
+static vec3_t bb_max = {  5.0f,  5.0f,  5.0f };
+
 static void MeteorBarrierTouch(edict_t *self, trace_t *trace);
-
 void create_meteor(edict_t *Meteor);
-vec3_t	BBMin = {-5.0,-5.0,-5.0};
-vec3_t	BBMax = {5.0,5.0,5.0};
 
 // ************************************************************************************************
 // MeteorBarrierDie
@@ -185,8 +178,8 @@ edict_t *MeteorBarrierReflect(edict_t *self, edict_t *other, vec3_t vel)
 	Meteor->count = self->count;
 	Meteor->random = self->random;							// Lifetime count
 	Meteor->solid = self->solid;
-	VectorCopy(BBMin,Meteor->mins);
-	VectorCopy(BBMax,Meteor->maxs);
+	VectorCopy(bb_min,Meteor->mins);
+	VectorCopy(bb_max,Meteor->maxs);
 	Meteor->movetype = PHYSICSTYPE_FLY;
 	Meteor->think = MeteorBarrierBounceThink;
 	Meteor->nextthink = level.time+0.1;
@@ -288,15 +281,15 @@ static void MeteorBarrierSearchThink(edict_t *self)
 
 	if(!irand(0, METEOR_SEARCH_CHANCE))
 	{
-		NewTarg = FindSpellTargetInRadius(self, METEOR_SEARCH_RADIUS, self->s.origin, BBMin, BBMax);
+		NewTarg = FindSpellTargetInRadius(self, METEOR_SEARCH_RADIUS, self->s.origin, bb_min, bb_max);
 
 		// we found something to shoot at, lets go get it
 		if(NewTarg)
 		{
 			self->enemy = NewTarg;
 			self->solid = SOLID_BBOX;
-			VectorCopy(BBMin,self->mins);
-			VectorCopy(BBMax,self->maxs);
+			VectorCopy(bb_min,self->mins);
+			VectorCopy(bb_max,self->maxs);
 			self->accel = 0.0;
 			self->think = MeteorBarrierHuntThink;
 			self->movetype = PHYSICSTYPE_FLY;
