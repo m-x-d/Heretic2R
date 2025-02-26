@@ -105,48 +105,40 @@ static void CreateMagicMissile(edict_t* missile) //mxd. Named 'create_magic' in 
 	missile->clipmask = MASK_SHOT;
 }
 
-edict_t *MagicMissileReflect(edict_t *self, edict_t *other, vec3_t vel)
+edict_t* MagicMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
 {
-	edict_t	*magicmissile;
-	short shortyaw, shortpitch;
+	// Create a new missile to replace the old one - this is necessary because physics will do nasty things
+	// with the existing one, since we hit something. Hence, we create a new one totally.
+	edict_t* missile = G_Spawn();
 
-	// create a new missile to replace the old one - this is necessary cos physics will do nasty things
-	// with the existing one,since we hit something. Hence, we create a new one totally.
-	magicmissile = G_Spawn();
+	// Copy everything across.
+	CreateMagicMissile(missile);
+	VectorCopy(self->s.origin, missile->s.origin);
+	VectorCopy(vel, missile->velocity);
+	VectorNormalize2(vel, missile->movedir);
+	AnglesFromDir(missile->movedir, missile->s.angles);
+	missile->owner = other;
+	missile->think = MagicMissileThink;
+	missile->health = self->health;
+	missile->enemy = self->owner;
+	missile->flags |= (self->flags & FL_NO_KNOCKBACK);
+	missile->reflect_debounce_time = self->reflect_debounce_time - 1; // So it doesn't infinitely reflect in one frame somehow.
+	missile->reflected_time = self->reflected_time;
 
-	// copy everything across
-	VectorCopy(self->s.origin, magicmissile->s.origin);
-	CreateMagicMissile(magicmissile);
-	VectorCopy(vel, magicmissile->velocity);
-	VectorNormalize2(vel, magicmissile->movedir);
-	AnglesFromDir(magicmissile->movedir, magicmissile->s.angles);
-	magicmissile->owner = other;
-	magicmissile->think = MagicMissileThink;
-	magicmissile->health = self->health;
-	magicmissile->enemy = self->owner;
-	magicmissile->flags |= (self->flags & FL_NO_KNOCKBACK);
-	magicmissile->reflect_debounce_time = self->reflect_debounce_time -1; //so it doesn't infinitely reflect in one frame somehow
-	magicmissile->reflected_time=self->reflected_time;
-	G_LinkMissile(magicmissile); 
+	G_LinkMissile(missile);
 
-	// create new trails for the new missile
-	shortyaw = (short)(magicmissile->s.angles[YAW]*(65536.0/360.0));
-	shortpitch = (short)(magicmissile->s.angles[PITCH]*(65536.0/360.0));
+	// Create new trails for the new missile.
+	const short s_yaw = ANGLE2SHORT(missile->s.angles[YAW]);
+	const short s_pitch = ANGLE2SHORT(missile->s.angles[PITCH]);
+	gi.CreateEffect(&missile->s, FX_WEAPON_MAGICMISSILE, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "ss", s_yaw, s_pitch);
 
-	gi.CreateEffect(&magicmissile->s,
-				FX_WEAPON_MAGICMISSILE,
-				CEF_OWNERS_ORIGIN|CEF_FLAG6,
-				0,		
-				"ss",
-				shortyaw, shortpitch);
-
-	// kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it. 
+	// Kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it. 
 	G_SetToFree(self);
 
-	// Do a nasty looking blast at the impact point
-	gi.CreateEffect(&magicmissile->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", magicmissile->velocity);
+	// Do a nasty looking blast at the impact point.
+	gi.CreateEffect(&missile->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", missile->velocity);
 
-	return(magicmissile);
+	return missile;
 }
 
 // ****************************************************************************
