@@ -25,7 +25,7 @@ static gitem_t itemlist[] =
 
 #pragma region ========================== WEAPONS ==========================
 
-	{
+	{ // 1
 		"Weapon_SwordStaff",					// Spawnname (char *).
 		"staff",								// Pickup name (char *).
 		0,										// Pickup message.
@@ -51,7 +51,7 @@ static gitem_t itemlist[] =
 		"icons/i_staff.m8",						// Icon name (char *).
 	},
 
-	{
+	{ // 2
 		"Weapon_FlyingFist",					// Spawnname (char *).
 		"fball",								// Pickup name (char *).
 		0,										// Pickup message.
@@ -77,7 +77,7 @@ static gitem_t itemlist[] =
 		"icons/i_fball.m8",						// Icon name (char *).
 	},
 
-	{
+	{ // 3
 		"item_weapon_hellstaff",				// Spawnname (char *).
 		"hell",									// Pickup name (char *).
 		GM_HELLSTAFF,							// Pickup message.
@@ -103,7 +103,7 @@ static gitem_t itemlist[] =
 		"icons/i_hell.m8",						// Icon name (char *).
 	},
 
-	{
+	{ // 4
 		"item_weapon_magicmissile",				// Spawnname (char *).
 		"array",								// Pickup name (char *).
 		GM_FORCEBLAST,							// Pickup message.
@@ -129,7 +129,7 @@ static gitem_t itemlist[] =
 		"icons/i_array.m8",						// Icon name (char *).
 	},
 
-	{
+	{ // 5
 		"item_weapon_redrain_bow",				// Spawnname (char *).
 		"rain",									// Pickup name (char *).
 		GM_STORMBOW,							// Pickup message.
@@ -155,7 +155,7 @@ static gitem_t itemlist[] =
 		"icons/i_rain.m8",						// Icon name (char *).
 	},
 
-	{
+	{ // 6
 		"item_weapon_firewall",					// Spawnname (char *).
 		"fwall",								// Pickup name (char *).
 		GM_FIREWALL,							// Pickup message.
@@ -166,9 +166,9 @@ static gitem_t itemlist[] =
 		NULL,									// Think function pointer.
 		"player/getweapon.wav",					// Pickup sound (char *).
 		NULL,									// World model (char *).
+		EF_ROTATE,								// World model flags. //BUGFIX: mxd. Goes AFTER PICKUP_MAX in original version.
 		PICKUP_MIN,								// Bounding box mins.
 		PICKUP_MAX,								// Bounding box maxs.
-		EF_ROTATE,								// World model flags.
 		ASEQ_WFIREWALL,							// Player animation sequence to engage when used.
 		ASEQ_WFIREWALL,							// Player animation sequence to engage when powered
 		-1,										// Max uses (-1 = inifinite).
@@ -181,7 +181,7 @@ static gitem_t itemlist[] =
 		"icons/i_fwall.m8",						// Icon name (char *).
 	},
 
-	{
+	{ // 7
 		"item_weapon_phoenixbow",				// Spawnname (char *).
 		"phoen",								// Pickup name (char *).
 		GM_PHOENIX,								// Pickup message.
@@ -193,8 +193,8 @@ static gitem_t itemlist[] =
 		"player/getweapon.wav",					// Pickup sound (char *).
 		NULL,									// World model (char *).
 		0,										// World model flags.
-		0, 0, 0,								// Bounding box mins.
-		0, 0, 0,								// Bounding box maxs.
+		PICKUP_MIN,								// Bounding box mins.
+		PICKUP_MAX,								// Bounding box maxs.
 		ASEQ_WPHBOW_GO,							// Player animation sequence to engage when used.
 		ASEQ_WPHBOW_GO,							// Player animation sequence to engage when powered
 		-1,										// Max uses (-1 = inifinite).
@@ -207,7 +207,7 @@ static gitem_t itemlist[] =
 		"icons/i_phoen.m8",						// Icon name (char *).
 	},
 
-	{
+	{ // 8
 		"item_weapon_sphereofannihilation",		// Spawnname (char *).
 		"sphere",								// Pickup name (char *).
 		GM_SPHERE,								// Pickup message.
@@ -233,7 +233,7 @@ static gitem_t itemlist[] =
 		"icons/i_sphere.m8",					// Icon name (char *).
 	},
 
-	{
+	{ // 9
 		"item_weapon_maceballs",				// Spawnname (char *).
 		"mace",									// Pickup name (char *).
 		GM_IRONDOOM,							// Pickup message.
@@ -263,7 +263,7 @@ static gitem_t itemlist[] =
 
 #pragma region ========================== DEFENSE POWERUPS ==========================
 
-	{
+	{ // 10
 		"item_defense_powerup",					// Spawnname (char *).
 		"powerup",								// Pickup name (char *).
 		GM_TOME,								// Pickup message.
@@ -289,7 +289,7 @@ static gitem_t itemlist[] =
 		"icons/i_tome.m8",						// Icon name (char *).
 	},
 
-	{
+	{ // 11
 		"item_defense_ringofrepulsion",			// Spawnname (char *).
 		"ring",									// Pickup name (char *).
 		GM_RING,								// Pickup message.
@@ -315,7 +315,7 @@ static gitem_t itemlist[] =
 		"icons/i_ring.m8",						// Icon name (char *).
 	},
 
-	{
+	{ // 12
 		"item_defense_shield",					// Spawnname (char *).
 		"lshield",								// Pickup name (char *).
 		GM_SHIELD,								// Pickup message.
@@ -341,7 +341,7 @@ static gitem_t itemlist[] =
 		"icons/i_shield.m8",					// Icon name (char *).
 	},
 
-	{
+	{ // 13
 		"item_defense_teleport",				// Spawnname (char *).
 		"tele",									// Pickup name (char *).
 		GM_TELEPORT,							// Pickup message.
@@ -367,7 +367,7 @@ static gitem_t itemlist[] =
 		"icons/i_tele.m8",						// Icon name (char *).
 	},
 
-	{
+	{ // 14
 		"item_defense_polymorph",				// Spawnname (char *).
 		"morph",								// Pickup name (char *).
 		GM_MORPH,								// Pickup message.
@@ -393,7 +393,7 @@ static gitem_t itemlist[] =
 		"icons/i_morph.m8",						// Icon name (char *).
 	},
 
-	{
+	{ // 15
 		"item_defense_meteorbarrier",			// Spawnname (char *).
 		"meteor",								// Pickup name (char *).
 		GM_METEOR,								// Pickup message.
@@ -423,7 +423,7 @@ static gitem_t itemlist[] =
 
 #pragma region ========================== AMMO ==========================
 
-	{
+	{ // 16
 		"item_mana_offensive_half",				// Spawnname (char *).
 		"Off-mana",								// Pickup name (char *).
 		GM_OFFMANAS,							// Pickup message.
@@ -449,7 +449,7 @@ static gitem_t itemlist[] =
 		NULL,									// Icon name (char *).
 	},
 
-	{
+	{ // 17
 		"item_mana_offensive_full",				// Spawnname (char *).
 		"Off-mana",								// Pickup name (char *).
 		GM_OFFMANAB,							// Pickup message.
@@ -475,7 +475,7 @@ static gitem_t itemlist[] =
 		NULL,									// Icon name (char *).
 	},
 
-	{
+	{ // 18
 		"item_mana_defensive_half",				// Spawnname (char *).
 		"Def-mana",								// Pickup name (char *).
 		GM_DEFMANAS,							// Pickup message.
@@ -501,7 +501,7 @@ static gitem_t itemlist[] =
 		NULL,									// Icon name (char *).
 	},
 
-	{
+	{ // 19
 		"item_mana_defensive_full",				// Spawnname (char *).
 		"Def-mana",								// Pickup name (char *).
 		GM_DEFMANAB,							// Pickup message.
@@ -527,7 +527,7 @@ static gitem_t itemlist[] =
 		NULL,									// Icon name (char *).
 	},
 
-	{
+	{ // 20
 		"item_mana_combo_quarter",				// Spawnname (char *).
 		"Def-mana",								// Pickup name (char *).
 		GM_COMBMANAS,							// Pickup message.
@@ -553,7 +553,7 @@ static gitem_t itemlist[] =
 		NULL,									// Icon name (char *).
 	},
 
-	{
+	{ // 21
 		"item_mana_combo_half",					// Spawnname (char *).
 		"Def-mana",								// Pickup name (char *).
 		GM_COMBMANAB,							// Pickup message.
@@ -579,7 +579,7 @@ static gitem_t itemlist[] =
 		NULL,									// Icon name (char *).
 	},
 
-	{
+	{ // 22
 		"item_ammo_redrain",					// Spawnname (char *).
 		"Red-Rain-Arrows",						// Pickup name (char *).
 		GM_STORMARROWS,							// Pickup message.
@@ -605,7 +605,7 @@ static gitem_t itemlist[] =
 		"icons/i_ammo-redrain.m8",				// Icon name (char *).
 	},
 
-	{
+	{ // 23
 		"item_ammo_phoenix",					// Spawnname (char *).
 		"Phoenix-Arrows",						// Pickup name (char *).
 		GM_PHOENARROWS,							// Pickup message.
@@ -631,7 +631,7 @@ static gitem_t itemlist[] =
 		"icons/i_ammo-phoen.m8",				// Icon name (char *).
 	},
 
-	{
+	{ // 24
 		"item_ammo_hellstaff",					// Spawnname (char *).
 		"Hell-staff-ammo",						// Pickup name (char *).
 		GM_HELLORB,								// Pickup message.
@@ -661,7 +661,7 @@ static gitem_t itemlist[] =
 
 #pragma region ========================== HEALTH ==========================
 
-	{
+	{ // 25
 		"item_health_half",						// Spawnname (char *).
 		"Minor health",							// Pickup name (char *).
 		GM_HEALTHVIAL,							// Pickup message.
@@ -687,7 +687,7 @@ static gitem_t itemlist[] =
 		NULL,									// Icon name (char *).
 	},
 
-	{
+	{ // 26
 		"item_health_full",						// Spawnname (char *).
 		"Major health",							// Pickup name (char *).
 		GM_HEALTHPOTION,						// Pickup message.
@@ -717,7 +717,7 @@ static gitem_t itemlist[] =
 
 #pragma region ========================== PUZZLE PIECES ==========================
 
-	{
+	{ // 27
 		"item_puzzle_townkey",					// Spawnname (char *).
 		"Town Key",								// Pickup name (char *).
 		GM_F_TOWNKEY,							// Pickup message.
@@ -729,8 +729,8 @@ static gitem_t itemlist[] =
 		"player/picup.wav",						// Pickup sound (char *).
 		NULL,									// World model (char *).
 		0,										// World model flags.
-		{ -8, -8, -4 },							// Bounding box mins.
-		{  8,  8,  4 },							// Bounding box maxs.
+		{ -8.0f, -8.0f, -4.0f },				// Bounding box mins.
+		{  8.0f,  8.0f,  4.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
 		0,										// Max uses (-1 = inifinite).
@@ -743,7 +743,7 @@ static gitem_t itemlist[] =
 		"icons/p_townkey.m8",					// Icon name (char *).
 	},
 
-	{
+	{ // 28
 		"item_puzzle_cog",						// Spawnname (char *).
 		"Cog",									// Pickup name (char *).
 		GM_F_COG,								// Pickup message.
@@ -755,8 +755,8 @@ static gitem_t itemlist[] =
 		"player/picup.wav",						// Pickup sound (char *).
 		NULL,									// World model (char *).
 		0,										// World model flags.
-		{ -10, -10, -24 },						// Bounding box mins.
-		{  10,  10,  20 },						// Bounding box maxs.
+		{ -10.0f, -10.0f, -24.0f },				// Bounding box mins.
+		{  10.0f,  10.0f,  20.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
 		0,										// Max uses (-1 = inifinite).
@@ -769,7 +769,7 @@ static gitem_t itemlist[] =
 		"icons/p_cog.m8",						// Icon name (char *).
 	},
 
-	{
+	{ // 29
 		"item_puzzle_shield",					// Spawnname (char *).
 		"Defensive Shield",						// Pickup name (char *).
 		GM_F_SHIELD,							// Pickup message.
@@ -781,8 +781,8 @@ static gitem_t itemlist[] =
 		"player/picup.wav",						// Pickup sound (char *).
 		NULL,									// World model (char *).
 		0,										// World model flags.
-		{ -2, -6, -12 },						// Bounding box mins.
-		{  2,  6,  12 },						// Bounding box maxs.
+		{ -2.0f, -6.0f, -12.0f },				// Bounding box mins.
+		{  2.0f,  6.0f,  12.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
 		0,										// Max uses (-1 = inifinite).
@@ -795,7 +795,7 @@ static gitem_t itemlist[] =
 		"icons/p_shield.m8",					// Icon name (char *).
 	},
 
-	{
+	{ // 30
 		"item_puzzle_potion",					// Spawnname (char *).
 		"Potion",								// Pickup name (char *).
 		GM_F_POTION,							// Pickup message.
@@ -807,8 +807,8 @@ static gitem_t itemlist[] =
 		"player/picup.wav",						// Pickup sound (char *).
 		NULL,									// World model (char *).
 		0,										// World model flags.
-		{ -3, -3, -10 },						// Bounding box mins.
-		{  3,  3,  10 },						// Bounding box maxs.
+		{ -3.0f, -3.0f, -10.0f },				// Bounding box mins.
+		{  3.0f,  3.0f,  10.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
 		0,										// Max uses (-1 = inifinite).
@@ -821,7 +821,7 @@ static gitem_t itemlist[] =
 		"icons/p_potion.m8",					// Icon name (char *).
 	},
 
-	{
+	{ // 31
 		"item_puzzle_plazacontainer",			// Spawnname (char *).
 		"Container",							// Pickup name (char *).
 		GM_F_CONT,								// Pickup message.
@@ -833,8 +833,8 @@ static gitem_t itemlist[] =
 		"player/picup.wav",						// Pickup sound (char *).
 		NULL,									// World model (char *).
 		0,										// World model flags.
-		{ -6, -6, -8 },							// Bounding box mins.
-		{  6,  6,  6 },							// Bounding box maxs.
+		{ -6.0f, -6.0f, -8.0f },				// Bounding box mins.
+		{  6.0f,  6.0f,  6.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
 		0,										// Max uses (-1 = inifinite).
@@ -847,7 +847,7 @@ static gitem_t itemlist[] =
 		"icons/p_plazajug.m8",					// Icon name (char *).
 	},
 
-	{
+	{ // 32
 		"item_puzzle_slumcontainer",			// Spawnname (char *).
 		"Full Container",						// Pickup name (char *).
 		GM_F_CONTFULL,							// Pickup message.
@@ -859,8 +859,8 @@ static gitem_t itemlist[] =
 		"player/picup.wav",						// Pickup sound (char *).
 		NULL,									// World model (char *).
 		0,										// World model flags.
-		{ -6, -6, -8 },								// Bounding box mins.
-		{  6,  6,  6 },								// Bounding box maxs.
+		{ -6.0f, -6.0f, -8.0f },				// Bounding box mins.
+		{  6.0f,  6.0f,  6.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
 		0,										// Max uses (-1 = inifinite).
@@ -873,7 +873,7 @@ static gitem_t itemlist[] =
 		"icons/p_jugfill.m8",					// Icon name (char *).
 	},
 
-	{
+	{ // 33
 		"item_puzzle_crystal",					// Spawnname (char *).
 		"Crystal",								// Pickup name (char *).
 		GM_F_CRYSTAL,							// Pickup message.
@@ -899,7 +899,7 @@ static gitem_t itemlist[] =
 		"icons/p_crystal.m8",					// Icon name (char *).
 	},
 
-	{
+	{ // 34
 		"item_puzzle_canyonkey",				// Spawnname (char *).
 		"Canyon Key",							// Pickup name (char *).
 		GM_F_CANYONKEY,							// Pickup message.
@@ -925,7 +925,7 @@ static gitem_t itemlist[] =
 		"icons/p_canyonkey.m8",					// Icon name (char *).
 	},
 
-	{
+	{ // 35
 		"item_puzzle_hive2amulet",				// Spawnname (char *).
 		"Hive 2 Amulet",						// Pickup name (char *).
 		GM_F_AMULET,							// Pickup message.
@@ -951,7 +951,7 @@ static gitem_t itemlist[] =
 		"icons/p_tcheckrikbust.m8",				// Icon name (char *).
 	},
 
-	{
+	{ // 36
 		"item_puzzle_hive2spear",				// Spawnname (char *).
 		"Hive 2 Spear",							// Pickup name (char *).
 		GM_F_SPEAR,								// Pickup message.
@@ -977,7 +977,7 @@ static gitem_t itemlist[] =
 		"icons/p_spear.m8",						// Icon name (char *).
 	},
 
-	{
+	{ // 37
 		"item_puzzle_hive2gem",					// Spawnname (char *).
 		"Hive 2 Gem",							// Pickup name (char *).
 		GM_F_GEM,								// Pickup message.
@@ -1003,7 +1003,7 @@ static gitem_t itemlist[] =
 		"icons/p_tcheckrikgem.m8",				// Icon name (char *).
 	},
 
-	{
+	{ // 38
 		"item_puzzle_minecartwheel",			// Spawnname (char *).
 		"Minecart Wheel",						// Pickup name (char *).
 		GM_F_CARTWHEEL,							// Pickup message.
@@ -1015,8 +1015,8 @@ static gitem_t itemlist[] =
 		"player/picup.wav",						// Pickup sound (char *).
 		NULL,									// World model (char *).
 		0,										// World model flags.
-		{ -1, -6, -6 },								// Bounding box mins.
-		{  1,  6,  6 },								// Bounding box maxs.
+		{ -1.0f, -6.0f, -6.0f },				// Bounding box mins.
+		{  1.0f,  6.0f,  6.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
 		0,										// Max uses (-1 = inifinite).
@@ -1029,7 +1029,7 @@ static gitem_t itemlist[] =
 		"icons/p_wheel.m8",						// Icon name (char *).
 	},
 
-	{
+	{ // 39
 		"item_puzzle_ore",						// Spawnname (char *).
 		"Ore",									// Pickup name (char *).
 		GM_F_UNREFORE,							// Pickup message.
@@ -1041,8 +1041,8 @@ static gitem_t itemlist[] =
 		"player/picup.wav",						// Pickup sound (char *).
 		NULL,									// World model (char *).
 		0,										// World model flags.
-		{ -10, -10, -8 },						// Bounding box mins.
-		{  10,  10,  8 },						// Bounding box maxs.
+		{ -10.0f, -10.0f, -8.0f },				// Bounding box mins.
+		{  10.0f,  10.0f,  8.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
 		0,										// Max uses (-1 = inifinite).
@@ -1055,7 +1055,7 @@ static gitem_t itemlist[] =
 		"icons/p_oreunrefined.m8",				// Icon name (char *).
 	},
 
-	{
+	{ // 40
 		"item_puzzle_refinedore",				// Spawnname (char *).
 		"Refined Ore",							// Pickup name (char *).
 		GM_F_REFORE,							// Pickup message.
@@ -1067,8 +1067,8 @@ static gitem_t itemlist[] =
 		"player/picup.wav",						// Pickup sound (char *).
 		NULL,									// World model (char *).
 		0,										// World model flags.
-		{ -3, -12, -2 },						// Bounding box mins.
-		{  3,  12,  2 },						// Bounding box maxs.
+		{ -3.0f, -12.0f, -2.0f },				// Bounding box mins.
+		{  3.0f,  12.0f,  2.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
 		0,										// Max uses (-1 = inifinite).
@@ -1081,7 +1081,7 @@ static gitem_t itemlist[] =
 		"icons/p_orerefined.m8",				// Icon name (char *).
 	},
 
-	{
+	{ // 41
 		"item_puzzle_dungeonkey",				// Spawnname (char *).
 		"Dungeon Key",							// Pickup name (char *).
 		GM_F_DUNGEONKEY,						// Pickup message.
@@ -1093,8 +1093,8 @@ static gitem_t itemlist[] =
 		"player/picup.wav",						// Pickup sound (char *).
 		NULL,									// World model (char *).
 		0,										// World model flags.
-		{ -1, -18, -9 },						// Bounding box mins.
-		{  1,  18,  9 },						// Bounding box maxs.
+		{ -1.0f, -18.0f, -9.0f },				// Bounding box mins.
+		{  1.0f,  18.0f,  9.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
 		0,										// Max uses (-1 = inifinite).
@@ -1107,7 +1107,7 @@ static gitem_t itemlist[] =
 		"icons/p_dungeonkey.m8",				// Icon name (char *).
 	},
 
-	{
+	{ // 42
 		"item_puzzle_cloudkey",					// Spawnname (char *).
 		"Cloud Key",							// Pickup name (char *).
 		GM_F_CLOUDKEY,							// Pickup message.
@@ -1119,8 +1119,8 @@ static gitem_t itemlist[] =
 		"player/picup.wav",						// Pickup sound (char *).
 		NULL,									// World model (char *).
 		0,										// World model flags.
-		{ -8, -8, -3 },							// Bounding box mins.
-		{  8,  8,  3 },							// Bounding box maxs.
+		{ -8.0f, -8.0f, -3.0f },				// Bounding box mins.
+		{  8.0f,  8.0f,  3.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
 		0,										// Max uses (-1 = inifinite).
@@ -1133,7 +1133,7 @@ static gitem_t itemlist[] =
 		"icons/p_cloudkey.m8",					// Icon name (char *).
 	},
 
-	{
+	{ // 43
 		"item_puzzle_highpriestesskey",			// Spawnname (char *).
 		"Key",									// Pickup name (char *).
 		GM_F_HIGHKEY,							// Pickup message.
@@ -1145,8 +1145,8 @@ static gitem_t itemlist[] =
 		"player/picup.wav",						// Pickup sound (char *).
 		NULL,									// World model (char *).
 		0,										// World model flags.
-		{ -12, -12, -6 },						// Bounding box mins.
-		{  12,  12,  6 },						// Bounding box maxs.
+		{ -12.0f, -12.0f, -6.0f },				// Bounding box mins.
+		{  12.0f,  12.0f,  6.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
 		0,										// Max uses (-1 = inifinite).
@@ -1159,7 +1159,7 @@ static gitem_t itemlist[] =
 		"icons/p_hivekey.m8",					// Icon name (char *).
 	},
 
-	{
+	{ // 44
 		"item_puzzle_highpriestesssymbol",		// Spawnname (char *).
 		"Symbol",								// Pickup name (char *).
 		GM_F_SYMBOL,							// Pickup message.
@@ -1171,8 +1171,8 @@ static gitem_t itemlist[] =
 		"player/picup.wav",						// Pickup sound (char *).
 		NULL,									// World model (char *).
 		0,										// World model flags.
-		{ -12, -12, -4 },						// Bounding box mins.
-		{  12,  12,  4 },						// Bounding box maxs.
+		{ -12.0f, -12.0f, -4.0f },				// Bounding box mins.
+		{  12.0f,  12.0f,  4.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
 		0,										// Max uses (-1 = inifinite).
@@ -1185,7 +1185,7 @@ static gitem_t itemlist[] =
 		"icons/p_queenkey.m8",					// Icon name (char *).
 	},
 
-	{
+	{ // 45
 		"item_puzzle_tome",						// Spawnname (char *).
 		"Tome",									// Pickup name (char *).
 		GM_F_TOME,								// Pickup message.
@@ -1197,8 +1197,8 @@ static gitem_t itemlist[] =
 		"player/picup.wav",						// Pickup sound (char *).
 		NULL,									// World model (char *).
 		0,										// World model flags.
-		{ -12, -12, -4 },						// Bounding box mins.
-		{  12,  12,  4 },						// Bounding box maxs.
+		{ -12.0f, -12.0f, -4.0f },				// Bounding box mins.
+		{  12.0f,  12.0f,  4.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
 		0,										// Max uses (-1 = inifinite).
@@ -1211,7 +1211,7 @@ static gitem_t itemlist[] =
 		"icons/p_tomepower.m8",					// Icon name (char *).
 	},
 
-	{
+	{ // 46
 		"item_puzzle_tavernkey",				// Spawnname (char *).
 		"Tavern Key",							// Pickup name (char *).
 		GM_F_TAVERNKEY,							// Pickup message.
@@ -1223,8 +1223,8 @@ static gitem_t itemlist[] =
 		"player/picup.wav",						// Pickup sound (char *).
 		NULL,									// World model (char *).
 		0,										// World model flags.
-		{ -12, -12, -4 },						// Bounding box mins.
-		{  12,  12,  4 },						// Bounding box maxs.
+		{ -12.0f, -12.0f, -4.0f },				// Bounding box mins.
+		{  12.0f,  12.0f,  4.0f },				// Bounding box maxs.
 		ASEQ_NONE,								// Player animation sequence to engage when used.
 		ASEQ_NONE,								// Alternate player animation sequence to engage when used.
 		0,										// Max uses (-1 = inifinite).
@@ -1239,7 +1239,7 @@ static gitem_t itemlist[] =
 
 #pragma endregion
 
-	{ //TODO: move to 'defence powerups' category? Will that break vanilla compatibility?
+	{ // 47 //TODO: move to 'defence powerups' category? Will that break vanilla compatibility?
 		"item_defense_tornado",					// Spawnname (char *).
 		"tornado",								// Pickup name (char *).
 		GM_TORNADO,								// Pickup message.

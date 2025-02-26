@@ -100,8 +100,8 @@ enum helltype_e
 	HELL_TYPE_POWER
 };
 
-#define PICKUP_MIN  0, 0, 0
-#define PICKUP_MAX  0, 0, 0
+#define PICKUP_MIN  { 0.0f, 0.0f, 0.0f }
+#define PICKUP_MAX  { 0.0f, 0.0f, 0.0f }
 
 // Held in 'gitem_t'->flags.
 #define IT_WEAPON		1 // Use makes active weapon
