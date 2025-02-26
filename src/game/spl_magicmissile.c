@@ -1,23 +1,21 @@
 //
 // spl_magicmissile.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "spl_magicmissile.h" //mxd
-#include "g_local.h"
-#include "fx.h"
-#include "Angles.h"
-#include "Utilities.h"
-#include "vector.h"
-#include "random.h"
-#include "decals.h"
 #include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
 #include "g_playstats.h"
+#include "Decals.h"
+#include "FX.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_local.h"
 
-#define ARROW_RADIUS			2.0F
+#define MISSILE_RADIUS	2.0f //mxd. ARROW_RADIUS in original version.
 
 void create_magic(edict_t *MagicMissile);
 
@@ -176,8 +174,8 @@ void create_magic(edict_t *MagicMissile)
 	else
 		MagicMissile->dmg=irand(MAGICMISSILE_DAMAGE_MIN, MAGICMISSILE_DAMAGE_MAX);//30 - 40
 	MagicMissile->clipmask=MASK_SHOT;
-	VectorSet(MagicMissile->mins, -ARROW_RADIUS, -ARROW_RADIUS, -ARROW_RADIUS);
-	VectorSet(MagicMissile->maxs, ARROW_RADIUS, ARROW_RADIUS, ARROW_RADIUS);
+	VectorSet(MagicMissile->mins, -MISSILE_RADIUS, -MISSILE_RADIUS, -MISSILE_RADIUS);
+	VectorSet(MagicMissile->maxs, MISSILE_RADIUS, MISSILE_RADIUS, MISSILE_RADIUS);
 	MagicMissile->nextthink=level.time+0.1;
 
 }
