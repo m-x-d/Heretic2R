@@ -233,87 +233,82 @@ edict_t* MeteorBarrierReflect(edict_t* self, edict_t* other, vec3_t vel)
 	return meteor;
 }
 
-// ************************************************************************************************
-// SpellCastMeteorBarrier
-// ----------------------
-// ************************************************************************************************
-
-// Make meteors orbit player
-
-static void MeteorBarrierSearchThink(edict_t *self)
+static qboolean FindNewTarget(edict_t* self) //mxd. Split out of MeteorBarrierSearchThink().
 {
-	edict_t *NewTarg = NULL;
-	int		DoneSearching = 0;
+	edict_t* target = FindSpellTargetInRadius(self, METEOR_SEARCH_RADIUS, self->s.origin, bb_min, bb_max);
+
+	if (target == NULL)
+		return false;
+
+	// We found something to shoot at, lets go get it.
+	self->enemy = target;
+	self->solid = SOLID_BBOX;
+	self->movetype = PHYSICSTYPE_FLY;
+	VectorCopy(bb_min, self->mins);
+	VectorCopy(bb_max, self->maxs);
+	self->accel = 0.0f;
+	self->svflags = SVF_ALWAYS_SEND;
+	self->s.effects |= EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS;
+	self->targetname = self->enemy->classname;
+	self->alert_time = 0.0f;
+
+	self->think = MeteorBarrierHuntThink;
+	self->nextthink = level.time + 0.1f;
+
+	// Did we start up inside someone?
 	trace_t	tr;
-	
-	// Only check for a target every so often as this reduces CPU requirements AND it looks much
-	// cooler.
-	// (using self->owner->enemy as the target would be much quicker...but not 360 degrees)
+	gi.trace(self->s.origin, self->mins, self->maxs, self->s.origin, self, MASK_MONSTERSOLID, &tr);
 
-	if(!irand(0, METEOR_SEARCH_CHANCE))
+	if (tr.startsolid)
 	{
-		NewTarg = FindSpellTargetInRadius(self, METEOR_SEARCH_RADIUS, self->s.origin, bb_min, bb_max);
-
-		// we found something to shoot at, lets go get it
-		if(NewTarg)
-		{
-			self->enemy = NewTarg;
-			self->solid = SOLID_BBOX;
-			VectorCopy(bb_min,self->mins);
-			VectorCopy(bb_max,self->maxs);
-			self->accel = 0.0;
-			self->think = MeteorBarrierHuntThink;
-			self->movetype = PHYSICSTYPE_FLY;
-			self->nextthink = level.time + 0.1;
-			self->svflags = SVF_ALWAYS_SEND;
-			self->s.effects |= EF_NODRAW_ALWAYS_SEND|EF_ALWAYS_ADD_EFFECTS;
-			self->targetname = self->enemy->classname;
-			self->alert_time = 0;
-	
-			// did we start up inside someone ? - check and see
-			gi.trace(self->s.origin, self->mins, self->maxs, self->s.origin, self, MASK_MONSTERSOLID, &tr);
-			if(tr.startsolid)
-			{
-				MeteorBarrierOnBlocked(self,&tr);
-				return;
-			}
-
-			gi.sound(self,CHAN_BODY,gi.soundindex("weapons/MeteorBarrierSeek.wav"),1,ATTN_NORM,0);
-			gi.CreateEffect(&self->s, FX_SPELL_METEORBARRIER_TRAVEL, CEF_BROADCAST|CEF_OWNERS_ORIGIN, NULL, "");
-
-			// remove the persistant effect from the persistant effect list
-			if (self->PersistantCFX)
-			{
-				gi.RemovePersistantEffect(self->PersistantCFX, REMOVE_METEOR);
-				gi.RemoveEffects(&self->owner->s, FX_SPELL_METEORBARRIER+self->health);
-				self->PersistantCFX = 0;
-			}
-
-			// now we've been cast, remove us from the count of meteors the caster owns, and turn off his looping sound if need be
-			self->owner->client->playerinfo.meteor_count &= ~(1<<self->health);
-			if (!self->owner->client->playerinfo.meteor_count)
-				self->owner->s.sound = 0;
-			return;
-		}
+		MeteorBarrierOnBlocked(self, &tr);
+		return true;
 	}
 
-	self->random += 20;			// Lifetime
+	gi.sound(self, CHAN_BODY, gi.soundindex("weapons/MeteorBarrierSeek.wav"), 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(&self->s, FX_SPELL_METEORBARRIER_TRAVEL, CEF_BROADCAST | CEF_OWNERS_ORIGIN, NULL, "");
 
-	if((self->owner->health > 0) && (self->random < (5000 + (self->health * 200.0))))
+	// Remove the persistent effect from the persistent effects list.
+	if (self->PersistantCFX > 0)
 	{
-		float Angle;
+		gi.RemovePersistantEffect(self->PersistantCFX, REMOVE_METEOR);
+		gi.RemoveEffects(&self->owner->s, FX_SPELL_METEORBARRIER + self->health);
+		self->PersistantCFX = 0;
+	}
 
-		Angle = ((level.time * 150.0) + (90.0 * self->health)) * ANGLE_TO_RAD;
+	// Now we've been cast, remove us from the count of meteors the caster owns, and turn off his looping sound if need be.
+	self->owner->client->playerinfo.meteor_count &= ~(1 << self->health);
+
+	if (self->owner->client->playerinfo.meteor_count == 0)
+		self->owner->s.sound = 0;
+
+	return true;
+}
+
+// Make meteors orbit player.
+static void MeteorBarrierSearchThink(edict_t* self)
+{
+	// Only check for a target every so often as this reduces CPU requirements AND it looks much cooler.
+	// (using self->owner->enemy as the target would be much quicker...but not 360 degrees).
+	if (irand(0, METEOR_SEARCH_CHANCE) == 0 && FindNewTarget(self))
+		return;
+
+	self->random += 20.0f; // Lifetime
+
+	if (self->owner->health > 0 && self->random < 5000.0f + (float)self->health * 200.0f)
+	{
 		VectorCopy(self->owner->s.origin, self->s.origin);
-		self->s.origin[0] += cos(Angle) * 30.0;
-		self->s.origin[1] += sin(Angle) * 30.0;
-		self->s.origin[2] += cos(Angle / (M_PI / 5)) * 10.0;
-		self->nextthink = level.time + 0.1;
+
+		const float angle = ((level.time * 150.0f) + ((float)self->health * 90.0f)) * ANGLE_TO_RAD;
+		self->s.origin[0] += cosf(angle) * 30.0f;
+		self->s.origin[1] += sinf(angle) * 30.0f;
+		self->s.origin[2] += cosf(angle / (ANGLE_180 / 5.0f)) * 10.0f;
+
+		self->nextthink = level.time + 0.1f;
 	}
 	else
-	{	
-		// My lifetime has expired so I die.
-		MeteorBarrierDie(self, METEOR_BARRIER_DIE_EXPLODE);
+	{
+		Kill_Meteor(self); // My lifetime has expired so I die.
 	}
 }
 
