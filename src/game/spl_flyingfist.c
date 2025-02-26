@@ -166,7 +166,7 @@ edict_t* FlyingFistReflect(edict_t* self, edict_t* other, const vec3_t vel)
 	return flying_fist;
 }
 
-void SpellCastFlyingFist(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
+void SpellCastFlyingFist(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles)
 {
 	// Spawn the flying-fist (fireball).
 	edict_t* flying_fist = G_Spawn();
