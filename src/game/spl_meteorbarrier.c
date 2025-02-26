@@ -100,62 +100,56 @@ static void MeteorBarrierOnBlocked(edict_t* self, trace_t* trace) //mxd. Named '
 	MeteorBarrierDie(self, METEOR_BARRIER_DIE_EXPLODE | METEOR_BARRIER_DIE_EXPLODEIMPACT);
 }
 
-// ************************************************************************************************
-// MeteorBarrierHuntThink
-// ----------------------
-// ************************************************************************************************
-
-static void MeteorBarrierHuntThink(edict_t *self)
+static void MeteorBarrierHuntThink(edict_t* self)
 {
-	vec3_t	Heading, Dest;
-	float	dist;
-	trace_t	tr;
-	
-//	self->svflags &= ~SVF_ALWAYS_SEND;
-	if (deathmatch->value == 0 || self->accel == 0.0)			// These don't home in on an enemy in deathmatch... too powerful.
+	// Don't home in on an enemy in deathmatch... too powerful.
+	if (DEATHMATCH && self->accel > 0.0f)
 	{
-		if((self->enemy->health > 0) && (self->targetname && !strcmp(self->enemy->classname, self->targetname)) && self->enemy->inuse)
+		// Be sure it dies within 2 minutes.
+		self->nextthink = level.time + 2.0f;
+		self->think = Kill_Meteor;
+
+		return;
+	}
+
+	if (self->enemy->inuse && self->enemy->health > 0 && self->targetname != NULL && strcmp(self->enemy->classname, self->targetname) == 0)
+	{
+		vec3_t dest;
+		VectorCopy(self->enemy->s.origin, dest);
+
+		for (int i = 0; i < 3; i++)
+			dest[i] += (self->enemy->mins[i] + self->enemy->maxs[i]) * 0.5f;
+
+		vec3_t heading;
+		VectorSubtract(dest, self->s.origin, heading);
+		VectorScale(heading, 10.0f, self->velocity);
+
+		const float dist = VectorLength(heading);
+
+		// Are we now in the center of something?
+		if (dist < 5.0f)
 		{
-			VectorCopy(self->enemy->s.origin, Dest);
+			trace_t	tr;
+			gi.trace(self->s.origin, self->mins, self->maxs, self->s.origin, self, MASK_MONSTERSOLID, &tr);
+			MeteorBarrierOnBlocked(self, &tr);
 
-			Dest[0] += (self->enemy->mins[0] + self->enemy->maxs[0]) * 0.5;
-			Dest[1] += (self->enemy->mins[1] + self->enemy->maxs[1]) * 0.5;
-			Dest[2] += (self->enemy->mins[2] + self->enemy->maxs[2]) * 0.5;
-
-			VectorSubtract(Dest, self->s.origin, Heading);
-			VectorScale(Heading, 10, self->velocity);
-			dist = VectorLength(Heading);
-			// are we now in the center of something ?
-			if (dist < 5)
-			{
-				gi.trace(self->s.origin, self->mins, self->maxs, self->s.origin, self, MASK_MONSTERSOLID, &tr);
-				MeteorBarrierOnBlocked(self,&tr);
-				return;
-			}
-
-			VectorNormalize(Heading);
-			VectorCopy(Heading, self->movedir);
-			// don't let us over shoot the enemy
-			if (dist > (METEOR_HUNT_SPEED * 0.1))
-				VectorScale(self->movedir, METEOR_HUNT_SPEED, self->velocity);
-			
-			
-			self->nextthink = level.time + 0.1;
-			self->accel = 1.0;		// Signal that we have already gotten a target speed.
+			return;
 		}
-		else
-		{
-			// My enemy has died so I die too.
-			MeteorBarrierDie(self, METEOR_BARRIER_DIE_EXPLODE);
-		}
+
+		VectorNormalize(heading);
+		VectorCopy(heading, self->movedir);
+
+		// Don't let us over shoot the enemy.
+		if (dist > METEOR_HUNT_SPEED * 0.1f)
+			VectorScale(self->movedir, METEOR_HUNT_SPEED, self->velocity);
+
+		self->nextthink = level.time + 0.1f;
+		self->accel = 1.0f; // Signal that we have already gotten a target speed.
 	}
 	else
 	{
-		// be sure it dies within 2 minutes.
-		self->nextthink = level.time + 2.0;
-		self->think = Kill_Meteor;
+		Kill_Meteor(self); // My enemy has died so I die too.
 	}
-
 }
 
 // ************************************************************************************************
