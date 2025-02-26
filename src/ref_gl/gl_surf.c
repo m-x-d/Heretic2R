@@ -484,7 +484,6 @@ typedef struct
 		entity_t* entity;
 		msurface_t* surface;
 	};
-	//qboolean is_entity; // Unused
 	float depth;
 } AlphaSurfaceSortInfo_t;
 
@@ -580,16 +579,11 @@ void R_SortAndDrawAlphaSurfaces(void)
 {
 	#define MAX_ALPHA_SURFACES 512 //TODO: is max number of alpha surfaces actually defined somewhere?
 
-	msurface_t* surf;
 	AlphaSurfaceSortInfo_t sorted_ents[MAX_ALPHA_ENTITIES + 1]; //mxd. Extra slot for terminator (depth -100000) entry.
-	AlphaSurfaceSortInfo_t sorted_surfs[MAX_ALPHA_SURFACES];
-
-	// Initialize 1-st entity entry...
-	AlphaSurfaceSortInfo_t* info = &sorted_ents[0];
-	info->entity = NULL;
-	info->depth = -100000.0f;
+	AlphaSurfaceSortInfo_t sorted_surfs[MAX_ALPHA_SURFACES + 1]; //mxd. Extra slot for terminator (depth -100000) entry.
 
 	// Add alpha entities to array...
+	AlphaSurfaceSortInfo_t* info = &sorted_ents[0];
 	for (int i = 0; i < r_newrefdef.num_alpha_entities; i++, info++)
 	{
 		entity_t* ent = r_newrefdef.alpha_entities[i];
@@ -607,21 +601,18 @@ void R_SortAndDrawAlphaSurfaces(void)
 
 	currentmodel = r_worldmodel;
 
-	// Initialize 1-st surface entry...
-	info = &sorted_surfs[0];
-	info->surface = NULL;
-	info->depth = -100000.0f;
-
 	// Add alpha surfaces to array.
 	int num_surfaces;
-	for (num_surfaces = 0, surf = r_alpha_surfaces, info = &sorted_surfs[0]; surf != NULL; num_surfaces++, surf = surf->texturechain, info++)
+	msurface_t* surf = r_alpha_surfaces;
+	info = &sorted_surfs[0];
+	for (num_surfaces = 0; surf != NULL; num_surfaces++, surf = surf->texturechain, info++)
 	{
 		info->surface = surf;
 		info->depth = -100000.0f;
 
-		for (int j = 0; j < surf->numedges; j++)
+		for (int i = 0; i < surf->numedges; i++)
 		{
-			const int lindex = r_worldmodel->surfedges[surf->firstedge + j];
+			const int lindex = r_worldmodel->surfedges[surf->firstedge + i];
 			float* vec;
 
 			if (lindex > 0)
@@ -646,7 +637,7 @@ void R_SortAndDrawAlphaSurfaces(void)
 
 		if (num_surfaces >= MAX_ALPHA_SURFACES)
 		{
-			Com_DPrintf("Warning : Attempting to draw too many alpha surfaces.\n");
+			Com_DPrintf("Warning: attempting to draw too many alpha surfaces.\n");
 			break;
 		}
 	}
