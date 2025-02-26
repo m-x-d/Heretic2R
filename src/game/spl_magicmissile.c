@@ -17,8 +17,6 @@
 
 #define MISSILE_RADIUS	2.0f //mxd. ARROW_RADIUS in original version.
 
-void create_magic(edict_t *MagicMissile);
-
 static void MagicMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
 	if (surface != NULL && (surface->flags & SURF_SKY))
@@ -87,6 +85,26 @@ static void MagicMissileThink(edict_t* self)
 	self->think = NULL;
 }
 
+// Create guts of magic missile
+static void CreateMagicMissile(edict_t* missile) //mxd. Named 'create_magic' in original version.
+{
+	missile->s.effects = (EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS);
+	missile->movetype = MOVETYPE_FLYMISSILE;
+
+	missile->touch = MagicMissileTouch;
+	missile->classname = "Spell_MagicMissile";
+	missile->nextthink = level.time + 0.1f;
+	VectorSet(missile->mins, -MISSILE_RADIUS, -MISSILE_RADIUS, -MISSILE_RADIUS);
+	VectorSet(missile->maxs,  MISSILE_RADIUS,  MISSILE_RADIUS,  MISSILE_RADIUS);
+
+	missile->dmg = irand(MAGICMISSILE_DAMAGE_MIN, MAGICMISSILE_DAMAGE_MAX); //30 - 40
+	if (DEATHMATCH)
+		missile->dmg /= 2; //15 - 20
+
+	missile->solid = SOLID_BBOX;
+	missile->clipmask = MASK_SHOT;
+}
+
 edict_t *MagicMissileReflect(edict_t *self, edict_t *other, vec3_t vel)
 {
 	edict_t	*magicmissile;
@@ -98,7 +116,7 @@ edict_t *MagicMissileReflect(edict_t *self, edict_t *other, vec3_t vel)
 
 	// copy everything across
 	VectorCopy(self->s.origin, magicmissile->s.origin);
-	create_magic(magicmissile);
+	CreateMagicMissile(magicmissile);
 	VectorCopy(vel, magicmissile->velocity);
 	VectorNormalize2(vel, magicmissile->movedir);
 	AnglesFromDir(magicmissile->movedir, magicmissile->s.angles);
@@ -131,25 +149,6 @@ edict_t *MagicMissileReflect(edict_t *self, edict_t *other, vec3_t vel)
 	return(magicmissile);
 }
 
-// create guts of magice missile
-void create_magic(edict_t *MagicMissile)
-{
-	MagicMissile->s.effects=EF_NODRAW_ALWAYS_SEND|EF_ALWAYS_ADD_EFFECTS;
-	MagicMissile->movetype=MOVETYPE_FLYMISSILE;
-	MagicMissile->solid=SOLID_BBOX;
-	MagicMissile->classname="Spell_MagicMissile";
-	MagicMissile->touch=MagicMissileTouch;
-	if(deathmatch->value)
-		MagicMissile->dmg=irand(MAGICMISSILE_DAMAGE_MIN/2, MAGICMISSILE_DAMAGE_MAX/2);//15 - 20
-	else
-		MagicMissile->dmg=irand(MAGICMISSILE_DAMAGE_MIN, MAGICMISSILE_DAMAGE_MAX);//30 - 40
-	MagicMissile->clipmask=MASK_SHOT;
-	VectorSet(MagicMissile->mins, -MISSILE_RADIUS, -MISSILE_RADIUS, -MISSILE_RADIUS);
-	VectorSet(MagicMissile->maxs, MISSILE_RADIUS, MISSILE_RADIUS, MISSILE_RADIUS);
-	MagicMissile->nextthink=level.time+0.1;
-
-}
-
 // ****************************************************************************
 // SpellCastMagicMissile
 // ****************************************************************************
@@ -168,7 +167,7 @@ void SpellCastMagicMissile(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3
 	VectorNormalize2(AimDir, MagicMissile->movedir);
 	VectorMA(StartPos,1.0,AimDir,MagicMissile->s.origin);
 
-	create_magic(MagicMissile);
+	CreateMagicMissile(MagicMissile);
 	MagicMissile->owner=Caster;
 	MagicMissile->reflect_debounce_time = MAX_REFLECT;
 	G_LinkMissile(MagicMissile); 
