@@ -61,37 +61,30 @@ static void MaceballThink(edict_t* self)
 	}
 }
 
-// ****************************************************************************
-// Maceball bounce
-// ****************************************************************************
-
-static vec3_t BoxNormals[6] = 
+static void GetCollisionPoint(const vec3_t velocity, const vec3_t origin, const float size, vec3_t point)
 {
-	{ 0.0, 0.0, 1.0 },		// up
-	{ 0.0, 0.0, -1.0 },		// down
-	{ 0.0, 1.0, 0.0 },		// left
-	{ 0.0, -1.0, 0.0 },		// right
-	{ 1.0, 0.0, 0.0 },		// front
-	{ -1.0, 0.0, 0.0 },		// back
-};
-
-void GetCollisionPoint(vec3_t velocity, vec3_t origin, vec_t size, vec3_t point)
-{
-	int		maxn = 1;
-	int		i;
-	float	theta;
-	float	max = -1.0;
-
-	for(i = 0; i < 6; i++)
+	static vec3_t box_normals[] = //mxd. Made local static.
 	{
-		theta = DotProduct(velocity, BoxNormals[i]);
-		if(theta > max)
+		{ 0.0f, 0.0f, 1.0f }, {  0.0f,  0.0f, -1.0f }, // Up / down.
+		{ 0.0f, 1.0f, 0.0f }, {  0.0f, -1.0f,  0.0f }, // Left / right.
+		{ 1.0f, 0.0f, 0.0f }, { -1.0f,  0.0f,  0.0f }, // Front / back.
+	};
+
+	int max_axis = 1;
+	float max = -1.0f;
+
+	for (int i = 0; i < 6; i++)
+	{
+		const float theta = DotProduct(velocity, box_normals[i]);
+
+		if (theta > max)
 		{
 			max = theta;
-			maxn = i;
+			max_axis = i;
 		}
 	}
-	VectorMA(origin, size, BoxNormals[maxn], point);
+
+	VectorMA(origin, size, box_normals[max_axis], point);
 }
 
 void MaceballBounce(edict_t *self, trace_t *trace)
