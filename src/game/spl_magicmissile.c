@@ -141,33 +141,26 @@ edict_t* MagicMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
 	return missile;
 }
 
-// ****************************************************************************
-// SpellCastMagicMissile
-// ****************************************************************************
-
-void SpellCastMagicMissile(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir)
+void SpellCastMagicMissile(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const vec3_t aim_dir)
 {
-	edict_t	*MagicMissile;
-	trace_t trace;
-	vec3_t	TempVec;
-	short	shortyaw, shortpitch;
-
 	// Spawn the magic-missile.
+	edict_t* missile = G_Spawn();
 
-	MagicMissile=G_Spawn();
+	VectorNormalize2(aim_dir, missile->movedir);
+	VectorAdd(start_pos, aim_dir, missile->s.origin);
 
-	VectorNormalize2(AimDir, MagicMissile->movedir);
-	VectorMA(StartPos,1.0,AimDir,MagicMissile->s.origin);
+	CreateMagicMissile(missile);
+	missile->owner = caster;
+	missile->reflect_debounce_time = MAX_REFLECT;
 
-	CreateMagicMissile(MagicMissile);
-	MagicMissile->owner=Caster;
-	MagicMissile->reflect_debounce_time = MAX_REFLECT;
-	G_LinkMissile(MagicMissile); 
+	G_LinkMissile(missile);
 
-	gi.trace(Caster->s.origin, MagicMissile->mins, MagicMissile->maxs, MagicMissile->s.origin, Caster, MASK_PLAYERSOLID,&trace);
+	trace_t trace;
+	gi.trace(caster->s.origin, missile->mins, missile->maxs, missile->s.origin, caster, MASK_PLAYERSOLID, &trace);
+
 	if (trace.startsolid)
 	{
-		MagicMissileTouch(MagicMissile, trace.ent, &trace.plane, trace.surface);
+		MagicMissileTouch(missile, trace.ent, &trace.plane, trace.surface);
 		return;
 	}
 
@@ -175,48 +168,36 @@ void SpellCastMagicMissile(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3
 	// a) Lies in a 45 degree degree horizontal, 180 degree vertical cone from my facing.
 	// b) Lies within 0 to 1000 meters of myself.
 	// c) Is visible (i.e. LOS exists from the missile to myself).
-	
-	if(MagicMissile->enemy=FindNearestVisibleActorInFrustum(MagicMissile,
-													AimAngles,
-													0.0,
-													1000.0,
-													ANGLE_30,
-													ANGLE_180,
-													MagicMissile->s.origin,
-													NULL,NULL))
-	{
-		VectorCopy(MagicMissile->s.origin,TempVec);
-		VectorSubtract(MagicMissile->enemy->s.origin,TempVec,TempVec);
+	missile->enemy = FindNearestVisibleActorInFrustum(missile, aim_angles, 0.0f, 1000.0f, ANGLE_30, ANGLE_180, missile->s.origin, NULL, NULL);
 
-		TempVec[0]+=(MagicMissile->enemy->mins[0]+MagicMissile->enemy->maxs[0])/2.0;
-		TempVec[1]+=(MagicMissile->enemy->mins[1]+MagicMissile->enemy->maxs[1])/2.0;
-		TempVec[2]+=(MagicMissile->enemy->mins[2]+MagicMissile->enemy->maxs[2])/2.0;
-		
-		VectorNormalize(TempVec);
-		vectoangles(TempVec,MagicMissile->s.angles);
+	if (missile->enemy != NULL)
+	{
+		vec3_t temp;
+		VectorCopy(missile->s.origin, temp);
+		VectorSubtract(missile->enemy->s.origin, temp, temp);
+
+		for (int i = 0; i < 3; i++)
+			temp[i] += (missile->enemy->mins[i] + missile->enemy->maxs[i]) / 2.0f;
+
+		VectorNormalize(temp);
+		vectoangles(temp, missile->s.angles);
+
 		// The pitch is flipped in these?
-		MagicMissile->s.angles[PITCH] = -MagicMissile->s.angles[PITCH];
-		VectorScale(TempVec,MAGICMISSILE_SPEED,MagicMissile->velocity);
+		missile->s.angles[PITCH] *= -1.0f;
+		VectorScale(temp, MAGICMISSILE_SPEED, missile->velocity);
 	}
 	else
 	{
-		VectorScale(AimDir,MAGICMISSILE_SPEED,MagicMissile->velocity);
-		VectorCopy(AimAngles,MagicMissile->s.angles);
+		VectorScale(aim_dir, MAGICMISSILE_SPEED, missile->velocity);
+		VectorCopy(aim_angles, missile->s.angles);
 	}
 
-	shortyaw = (short)(MagicMissile->s.angles[YAW]*(65536.0/360.0));
-	shortpitch = (short)(MagicMissile->s.angles[PITCH]*(65536.0/360.0));
+	const short s_yaw = ANGLE2SHORT(missile->s.angles[YAW]);
+	const short s_pitch = ANGLE2SHORT(missile->s.angles[PITCH]);
+	gi.CreateEffect(&missile->s, FX_WEAPON_MAGICMISSILE, CEF_OWNERS_ORIGIN, NULL, "ss", s_yaw, s_pitch);
 
-	gi.CreateEffect(&MagicMissile->s,
-				FX_WEAPON_MAGICMISSILE,
-				CEF_OWNERS_ORIGIN,
-				0,		
-				"ss",
-				shortyaw, shortpitch);
-
-
-	MagicMissile->think=MagicMissileThink;
-	MagicMissile->nextthink=level.time+0.1;
+	missile->think = MagicMissileThink;
+	missile->nextthink = level.time + 0.1f;
 }
 
 
