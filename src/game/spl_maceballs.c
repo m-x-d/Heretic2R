@@ -190,38 +190,28 @@ static void MaceballBounce(edict_t* self, trace_t* trace)
 	VectorCopy(trace->plane.normal, self->movedir);
 }
 
-
-
-// ****************************************************************************
-// SpellCastMaceballs
-// ****************************************************************************
-
-void SpellCastMaceball(edict_t *caster, vec3_t startpos, vec3_t aimangles, vec3_t unused, float value)
+void SpellCastMaceball(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, vec3_t unused, float value) //TODO: remove unused args.
 {
-	edict_t			*ball;
-	trace_t			trace;
-	vec3_t			orig;
+	edict_t* ball = G_Spawn();
 
-	ball = G_Spawn();
-
-	VectorCopy(startpos, ball->s.origin);
+	VectorCopy(start_pos, ball->s.origin);
 
 	VectorSet(ball->mins, -MACEBALL_RADIUS, -MACEBALL_RADIUS, -MACEBALL_RADIUS);
-	VectorSet(ball->maxs, MACEBALL_RADIUS, MACEBALL_RADIUS, MACEBALL_RADIUS);
+	VectorSet(ball->maxs,  MACEBALL_RADIUS,  MACEBALL_RADIUS,  MACEBALL_RADIUS);
 
-	VectorCopy(startpos, orig);
-	GetAimVelocity(caster->enemy, orig, MACEBALL_SPEED, aimangles, ball->velocity);
+	GetAimVelocity(caster->enemy, start_pos, MACEBALL_SPEED, aim_angles, ball->velocity);
 
 	// Throw the ball down.
 	ball->velocity[2] = -MACEBALL_DOWNSPEED;
 	VectorAdd(ball->velocity, caster->velocity, ball->velocity);
-	// If the caster has an enemy, then aim it at the enemy
+
+	// If the caster has an enemy, then aim it at the enemy.
 	ball->enemy = caster->enemy;
 
-	// Spin it forward
+	// Spin it forward.
 	ball->mass = 2500;
 	ball->elasticity = ELASTICITY_MACEBALL;
-	ball->friction = 0;
+	ball->friction = 0.0f;
 	ball->gravity = MACEBALL_GRAVITY;
 	ball->svflags = SVF_DO_NO_IMPACT_DMG;
 
@@ -231,11 +221,11 @@ void SpellCastMaceball(edict_t *caster, vec3_t startpos, vec3_t aimangles, vec3_
 	ball->clipmask = MASK_MONSTERSOLID;
 	ball->owner = caster;
 	ball->think = MaceballThink;
-	ball->nextthink = level.time + 0.1;
+	ball->nextthink = level.time + 0.1f;
 	ball->bounced = MaceballBounce;
 	ball->classname = "Spell_Maceball";
-	ball->touch_debounce_time = level.time + MACEBALL_LIFE;		// The ball will expire the next bounce after this one.
-	ball->s.modelindex = gi.modelindex("models/spells/maceball/tris.fm");
+	ball->touch_debounce_time = level.time + MACEBALL_LIFE; // The ball will expire the next bounce after this one.
+	ball->s.modelindex = (byte)gi.modelindex("models/spells/maceball/tris.fm");
 	ball->s.scale = MACEBALL_SCALE_INCREMENT;
 	ball->dmg = MACEBALL_DAMAGE;
 	ball->health = 2;
@@ -244,29 +234,27 @@ void SpellCastMaceball(edict_t *caster, vec3_t startpos, vec3_t aimangles, vec3_
 
 	gi.linkentity(ball);
 
-	gi.trace(caster->s.origin, ball->mins, ball->maxs, startpos, caster, MASK_PLAYERSOLID,&trace);
+	trace_t trace;
+	gi.trace(caster->s.origin, ball->mins, ball->maxs, start_pos, caster, MASK_PLAYERSOLID, &trace);
+
 	if (trace.startsolid)
-	{	// Spawning in something, give up now, and kill the thang.
+	{
+		// Spawning in something, give up now, and kill the thing.
 		VectorClear(ball->velocity);
 
-		gi.sound(ball, CHAN_WEAPON, gi.soundindex("weapons/MaceBallDeath.wav"), 2, ATTN_NORM, 0);
-		gi.CreateEffect(NULL,
-						FX_WEAPON_MACEBALLEXPLODE,
-						0,
-						ball->s.origin,
-						"d",
-						ball->velocity);
+		gi.sound(ball, CHAN_WEAPON, gi.soundindex("weapons/MaceBallDeath.wav"), 2.0f, ATTN_NORM, 0.0f); //TODO: why 2.0 volume?
+		gi.CreateEffect(NULL, FX_WEAPON_MACEBALLEXPLODE, 0, ball->s.origin, "d", ball->velocity);
 		G_SetToFree(ball);
-		return;
 	}
-	else if (trace.fraction < 0.99)
-	{	// Hit something along the way from the center of the player to here.
-		VectorCopy(trace.endpos, ball->s.origin);
-		VectorCopy(trace.endpos, ball->last_org);
+	else
+	{
+		// Hit something along the way from the center of the player to here.
+		if (trace.fraction < 0.99f)
+		{
+			VectorCopy(trace.endpos, ball->s.origin);
+			VectorCopy(trace.endpos, ball->last_org);
+		}
+
+		gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/MaceBallCast.wav"), 1.0f, ATTN_NORM, 0.0f);
 	}
-	gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/MaceBallCast.wav"), 1, ATTN_NORM, 0);
 }
-
-
-// end
-

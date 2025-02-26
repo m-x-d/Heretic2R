@@ -8,4 +8,4 @@
 
 #include "q_Typedef.h"
 
-extern void SpellCastMaceball(edict_t* Caster, vec3_t StartPos, vec3_t AimAngles, vec3_t AimDir, float Value);
+extern void SpellCastMaceball(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, vec3_t AimDir, float Value);
