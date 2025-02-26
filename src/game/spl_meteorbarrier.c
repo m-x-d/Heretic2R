@@ -23,7 +23,6 @@
 static vec3_t bb_min = { -5.0f, -5.0f, -5.0f };
 static vec3_t bb_max = {  5.0f,  5.0f,  5.0f };
 
-static void MeteorBarrierTouch(edict_t *self, trace_t *trace);
 void create_meteor(edict_t *Meteor);
 
 static void MeteorBarrierDie(edict_t* self, const int flags)
@@ -65,6 +64,42 @@ static void Kill_Meteor(edict_t* self)
 	MeteorBarrierDie(self, METEOR_BARRIER_DIE_EXPLODE);
 }
 
+static void MeteorBarrierOnBlocked(edict_t* self, trace_t* trace) //mxd. Named 'MeteorBarrierTouch' in original version.
+{
+	edict_t* other = trace->ent;
+	
+	// Has the target got reflection turned on?
+	if (self->reflect_debounce_time > 0 && EntReflecting(other, true, true))
+	{
+		Create_rand_relect_vect(self->velocity, self->velocity);
+		Vec3ScaleAssign(METEOR_HUNT_SPEED / 2.0f, self->velocity);
+		MeteorBarrierReflect(self, other, self->velocity);
+
+		return;
+	}
+
+	if (trace->surface != NULL && (trace->surface->flags & SURF_SKY))
+	{
+		Kill_Meteor(self);
+		return;
+	}
+
+	AlertMonsters(self, self->owner, 1.0f, false);
+
+	if (other->takedamage != DAMAGE_NO)
+	{
+		T_Damage(other, self, self->owner, self->movedir, self->s.origin, trace->plane.normal, self->dmg, 0, DAMAGE_SPELL, MOD_METEORS);
+	}
+	else
+	{
+		// Back off the origin for the damage a bit. We are a point and this will help fix hitting
+		// the base of a stair and not hurting a guy on next step up.
+		VectorMA(self->s.origin, -8.0f, self->movedir, self->s.origin);
+	}
+
+	MeteorBarrierDie(self, METEOR_BARRIER_DIE_EXPLODE | METEOR_BARRIER_DIE_EXPLODEIMPACT);
+}
+
 // ************************************************************************************************
 // MeteorBarrierHuntThink
 // ----------------------
@@ -94,7 +129,7 @@ static void MeteorBarrierHuntThink(edict_t *self)
 			if (dist < 5)
 			{
 				gi.trace(self->s.origin, self->mins, self->maxs, self->s.origin, self, MASK_MONSTERSOLID, &tr);
-				MeteorBarrierTouch(self,&tr);
+				MeteorBarrierOnBlocked(self,&tr);
 				return;
 			}
 
@@ -197,56 +232,6 @@ edict_t *MeteorBarrierReflect(edict_t *self, edict_t *other, vec3_t vel)
 	return(Meteor);
 }
 
-
-
-// ************************************************************************************************
-// MeteorBarrierTouch
-// ------------------
-// ************************************************************************************************
-
-static void MeteorBarrierTouch(edict_t *self, trace_t *trace)
-{
-	edict_t		*Other;
-	csurface_t	*Surface;
-	cplane_t   	*Plane;
-
-	Other = trace->ent;
-	Surface = trace->surface;
-	Plane = &trace->plane;
-
-	// has the target got reflection turned on ?
-	if (self->reflect_debounce_time)
-	{
-		if(EntReflecting(Other, true, true))
-		{
-			Create_rand_relect_vect(self->velocity, self->velocity);
-			Vec3ScaleAssign(METEOR_HUNT_SPEED/2,self->velocity);
-			MeteorBarrierReflect(self, Other, self->velocity);
-
-			return;
-		}
-	}
-
-	if(Surface && (Surface->flags & SURF_SKY))
-	{
-		MeteorBarrierDie(self, METEOR_BARRIER_DIE_EXPLODE);
-		return;
-	}
-
-	AlertMonsters (self, self->owner, 1, false);
-	if(Other->takedamage)
-	{
-		T_Damage(Other, self, self->owner, self->movedir, self->s.origin, Plane->normal, self->dmg, 0, DAMAGE_SPELL,MOD_METEORS);
-	}
-	else
-	{
-		// Back off the origin for the damage a bit. We are a point and this will help fix hitting
-		// the base of a stair and not hurting a guy on next step up.
-		VectorMA(self->s.origin, -8.0, self->movedir, self->s.origin);
-	}
-	MeteorBarrierDie(self, METEOR_BARRIER_DIE_EXPLODE | METEOR_BARRIER_DIE_EXPLODEIMPACT);
-}
-
 // ************************************************************************************************
 // SpellCastMeteorBarrier
 // ----------------------
@@ -288,7 +273,7 @@ static void MeteorBarrierSearchThink(edict_t *self)
 			gi.trace(self->s.origin, self->mins, self->maxs, self->s.origin, self, MASK_MONSTERSOLID, &tr);
 			if(tr.startsolid)
 			{
-				MeteorBarrierTouch(self,&tr);
+				MeteorBarrierOnBlocked(self,&tr);
 				return;
 			}
 
@@ -363,8 +348,8 @@ void create_meteor(edict_t *Meteor)
 {
    	Meteor->movetype = PHYSICSTYPE_NOCLIP;
    	Meteor->classname = "Spell_MeteorBarrier";
-   	Meteor->isBlocked = MeteorBarrierTouch;
-   	Meteor->isBlocking = MeteorBarrierTouch;
+   	Meteor->isBlocked = MeteorBarrierOnBlocked;
+   	Meteor->isBlocking = MeteorBarrierOnBlocked;
    	Meteor->dmg = irand(METEOR_DAMAGE_MIN, METEOR_DAMAGE_MAX);
 	if (deathmatch->value)
 		Meteor->dmg *= 0.5;		// These badasses do half damage in deathmatch.
