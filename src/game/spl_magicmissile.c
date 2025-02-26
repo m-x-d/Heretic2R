@@ -18,7 +18,6 @@
 #define MISSILE_RADIUS	2.0f //mxd. ARROW_RADIUS in original version.
 
 void create_magic(edict_t *MagicMissile);
-static void MagicMissileThink2(edict_t *self);
 
 static void MagicMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
@@ -81,22 +80,12 @@ static void MagicMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, cs
 	G_SetToFree(self);
 }
 
-// ****************************************************************************
-// MagicMissileThink2
-// ****************************************************************************
-
-static void MagicMissileThink2(edict_t *self)
+static void MagicMissileThink(edict_t* self)
 {
 	// Prevent any further transmission of this entity to clients.
-
-//	self->s.effects=0;
-
-	self->svflags|=SVF_NOCLIENT;
+	self->svflags |= SVF_NOCLIENT;
 	self->think = NULL;
 }
-
-
-
 
 edict_t *MagicMissileReflect(edict_t *self, edict_t *other, vec3_t vel)
 {
@@ -114,7 +103,7 @@ edict_t *MagicMissileReflect(edict_t *self, edict_t *other, vec3_t vel)
 	VectorNormalize2(vel, magicmissile->movedir);
 	AnglesFromDir(magicmissile->movedir, magicmissile->s.angles);
 	magicmissile->owner = other;
-	magicmissile->think = MagicMissileThink2;
+	magicmissile->think = MagicMissileThink;
 	magicmissile->health = self->health;
 	magicmissile->enemy = self->owner;
 	magicmissile->flags |= (self->flags & FL_NO_KNOCKBACK);
@@ -235,7 +224,7 @@ void SpellCastMagicMissile(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3
 				shortyaw, shortpitch);
 
 
-	MagicMissile->think=MagicMissileThink2;
+	MagicMissile->think=MagicMissileThink;
 	MagicMissile->nextthink=level.time+0.1;
 }
 
