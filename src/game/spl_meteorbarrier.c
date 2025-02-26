@@ -26,52 +26,37 @@ static vec3_t bb_max = {  5.0f,  5.0f,  5.0f };
 static void MeteorBarrierTouch(edict_t *self, trace_t *trace);
 void create_meteor(edict_t *Meteor);
 
-// ************************************************************************************************
-// MeteorBarrierDie
-// ----------------
-// ************************************************************************************************
-
-static void MeteorBarrierDie(edict_t *self, int Flags)
+static void MeteorBarrierDie(edict_t* self, const int flags)
 {
-	vec3_t	ExplodeDir;
-	int		flag = 0;
-
 	// If required, create an explode client effect and make an explosion noise.
-	VectorScale(self->movedir, -1.0, ExplodeDir);
-
-	if(Flags & METEOR_BARRIER_DIE_EXPLODE)
+	if (flags & METEOR_BARRIER_DIE_EXPLODE)
 	{
-		if(Flags & METEOR_BARRIER_DIE_EXPLODEIMPACT)
-		{
-			flag = CEF_FLAG6;
-		}
-		gi.CreateEffect(NULL,
-						FX_SPELL_METEORBARRIEREXPLODE,
-						CEF_BROADCAST|flag,
-						self->s.origin,
-						"d",
-						ExplodeDir);
+		vec3_t explode_dir;
+		VectorScale(self->movedir, -1.0f, explode_dir);
 
-		gi.sound(self, CHAN_BODY, gi.soundindex("weapons/MeteorBarrierImpact.wav"), 2, ATTN_NORM, 0);
+		const int fx_flags = ((flags & METEOR_BARRIER_DIE_EXPLODEIMPACT) ? CEF_FLAG6 : 0);
+		gi.CreateEffect(NULL, FX_SPELL_METEORBARRIEREXPLODE, fx_flags | CEF_BROADCAST, self->s.origin, "d", explode_dir);
+		gi.sound(self, CHAN_BODY, gi.soundindex("weapons/MeteorBarrierImpact.wav"), 2.0f, ATTN_NORM, 0.0f); //TODO: why 2.0 volume?
 	}
 
-	// remove the persistant effect from the persistant effect list
-	if (self->PersistantCFX)
+	// Remove the persistent effect from the persistent effects list.
+	if (self->PersistantCFX > 0)
 	{
 		gi.RemovePersistantEffect(self->PersistantCFX, REMOVE_METEOR);
-		gi.RemoveEffects(&self->owner->s, FX_SPELL_METEORBARRIER+self->health);
+		gi.RemoveEffects(&self->owner->s, FX_SPELL_METEORBARRIER + self->health);
 		self->PersistantCFX = 0;
 	}
 
-	// remove the players pointer to this now in-active meteor
+	// Remove the players pointer to this now in-active meteor.
 	self->owner->client->Meteors[self->health] = NULL;
 
-	// now we've been cast, remove us from the count of meteors the caster owns, and turn off his looping sound if need be
-	self->owner->client->playerinfo.meteor_count &= ~(1<<self->health);
-	if (!self->owner->client->playerinfo.meteor_count)
+	// Now we've been cast, remove us from the count of meteors the caster owns, and turn off his looping sound if need be.
+	self->owner->client->playerinfo.meteor_count &= ~(1 << self->health);
+
+	if (self->owner->client->playerinfo.meteor_count == 0)
 		self->owner->s.sound = 0;
 
-	// And finally remove myself (with assoc cfx)
+	// And finally remove myself (with associated cfx).
 	G_SetToFree(self);
 }
 
