@@ -312,31 +312,29 @@ static void MeteorBarrierSearchThink(edict_t* self)
 	}
 }
 
-// Move the meteors out to radius
-
-static void MeteorBarrierSearchInitThink(edict_t *self)
+// Move the meteors out to radius.
+static void MeteorBarrierSearchInitThink(edict_t* self)
 {
-	float	Angle;
-
-	if(self->owner->health > 0)
+	if (self->owner->health > 0)
 	{
-		Angle = ((level.time * 150.0) + (90.0 * self->health)) * ANGLE_TO_RAD;
 		VectorCopy(self->owner->s.origin, self->s.origin);
-		self->s.origin[0] += cos(Angle) * 30.0 * (self->count / 5.0);
-		self->s.origin[1] += sin(Angle) * 30.0 * (self->count / 5.0);
-		self->s.origin[2] += cos(Angle / (M_PI / 5)) * 10.0;
 
-		if(self->count++ > 5)
+		const float angle = ((level.time * 150.0f) + ((float)self->health * 90.0f)) * ANGLE_TO_RAD;
+		self->s.origin[0] += cosf(angle) * 30.0f * ((float)self->count / 5.0f);
+		self->s.origin[1] += sinf(angle) * 30.0f * ((float)self->count / 5.0f);
+		self->s.origin[2] += cosf(angle / (ANGLE_180 / 5.0f)) * 10.0f;
+
+		if (self->count++ > 5)
 		{
-			self->random = self->health * 90.0;
+			self->random = (float)self->health * 90.0f;
 			self->think = MeteorBarrierSearchThink;
 		}
-		self->nextthink = level.time + 0.1;
+
+		self->nextthink = level.time + 0.1f;
 	}
 	else
-	{	
-		// My caster died so I die too.
-		MeteorBarrierDie(self, METEOR_BARRIER_DIE_EXPLODE);
+	{
+		Kill_Meteor(self); // My caster died so I die too.
 	}
 }
 
