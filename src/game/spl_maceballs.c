@@ -23,57 +23,40 @@
 #define MACEBALL_SCALE_INCREMENT	0.03f
 #define MACEBALL_SEARCH_RADIUS		500.0f
 
-// ****************************************************************************
-// Maceball think
-// ****************************************************************************
-
-void MaceballThink(edict_t *self)
-{	
-	vec3_t movevect;
-	qboolean killme=false;
-
-//	self->s.angles[YAW] += MACEBALL_ROT*0.5;
-//	self->s.angles[PITCH] += MACEBALL_ROT*2.0;
-
+static void MaceballThink(edict_t* self)
+{
 	if (self->s.scale < MACEBALL_SCALE)
-	{
-		self->s.scale += MACEBALL_SCALE_INCREMENT;
-		if (self->s.scale > MACEBALL_SCALE)
-			self->s.scale = MACEBALL_SCALE;
-	}
+		self->s.scale = min(MACEBALL_SCALE, self->s.scale + MACEBALL_SCALE_INCREMENT);
 
 	// Check the NOTARGET flag to see if the mace should readjust to a new target.
 	if (self->flags & FL_NOTARGET)
-	{	// Head towards its enemy
+	{
+		// Head towards its enemy
 		self->flags &= ~FL_NOTARGET;
-		if (self->enemy)
+
+		if (self->enemy != NULL)
 		{
 			VectorScale(self->movedir, MACEBALL_UPSPEED, self->velocity);
-			VectorSubtract(self->enemy->s.origin, self->s.origin, movevect);
-			VectorNormalize(movevect);
-			VectorMA(self->velocity, MACEBALL_SPEED, movevect, self->velocity);
+
+			vec3_t dir;
+			VectorSubtract(self->enemy->s.origin, self->s.origin, dir);
+			VectorNormalize(dir);
+			VectorMA(self->velocity, MACEBALL_SPEED, dir, self->velocity);
 		}
 
-		if (self->velocity[2] > 0)
-		{	// Adjust anyway so that the ball has a consistent bounce height.
-			self->velocity[2] = MACEBALL_UPSPEED;
-		}
+		if (self->velocity[2] > 0.0f)
+			self->velocity[2] = MACEBALL_UPSPEED; // Adjust anyway so that the ball has a consistent bounce height.
 	}
 
 	VectorCopy(self->s.origin, self->last_org);
 
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + 0.1f;
 
 	// Now check if we should die soon.
-	if (killme || self->deadflag == DEAD_DYING || self->touch_debounce_time + MACEBALL_EXTRALIFE <= level.time)
+	if (self->deadflag == DEAD_DYING || self->touch_debounce_time + MACEBALL_EXTRALIFE <= level.time)
 	{
-		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/MaceBallDeath.wav"), 2, ATTN_NORM, 0);
-		gi.CreateEffect(NULL,
-						FX_WEAPON_MACEBALLEXPLODE,
-						0,
-						self->s.origin,
-						"d",
-						self->velocity);
+		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/MaceBallDeath.wav"), 2.0f, ATTN_NORM, 0.0f); //TODO: why 2.0 volume?
+		gi.CreateEffect(NULL, FX_WEAPON_MACEBALLEXPLODE, 0, self->s.origin, "d", self->velocity);
 		G_SetToFree(self);
 	}
 }
