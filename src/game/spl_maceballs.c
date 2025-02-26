@@ -190,7 +190,7 @@ static void MaceballBounce(edict_t* self, trace_t* trace)
 	VectorCopy(trace->plane.normal, self->movedir);
 }
 
-void SpellCastMaceball(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, vec3_t unused, float value) //TODO: remove unused args.
+void SpellCastMaceball(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles)
 {
 	edict_t* ball = G_Spawn();
 

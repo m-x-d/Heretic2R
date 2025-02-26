@@ -460,7 +460,7 @@ void WeaponThink_Maceballs(edict_t* caster, char* format, ...)
 		Weapon_CalcStartPos(origin_to_lower_joint, origin_to_upper_joint, maceball_start_pos, start_pos, caster);
 		start_pos[2] += (float)caster->viewheight - 14.0f;
 
-		SpellCastMaceball(caster, start_pos, caster->client->aimangles, NULL, 0.0f);
+		SpellCastMaceball(caster, start_pos, caster->client->aimangles);
 
 		// Giant iron dooms require lots of mana, but yer average ripper needs far less.
 		if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
