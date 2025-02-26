@@ -181,57 +181,56 @@ static void CreateMeteor(edict_t* meteor) //mxd. Named 'create_meteor' in origin
 	meteor->clipmask = MASK_SHOT;
 }
 
-// ************************************************************************************************
-// MeteorBarrierReflect
-// ------------------
-// ************************************************************************************************
-
-edict_t *MeteorBarrierReflect(edict_t *self, edict_t *other, vec3_t vel)
+edict_t* MeteorBarrierReflect(edict_t* self, edict_t* other, vec3_t vel)
 {
-	edict_t		*Meteor;
+	// Create a new missile to replace the old one - this is necessary because physics will do nasty things
+	// with the existing one, since we hit something. Hence, we create a new one totally.
+	edict_t* meteor = G_Spawn();
 
-	Meteor = G_Spawn();
-	VectorCopy(self->s.origin, Meteor->s.origin);
-	CreateMeteor(Meteor);
-	VectorCopy(vel, Meteor->velocity);
-	Meteor->owner = self->owner;
-	Meteor->enemy = self->enemy;
-	Meteor->health = self->health;
-	Meteor->count = self->count;
-	Meteor->random = self->random;							// Lifetime count
-	Meteor->solid = self->solid;
-	VectorCopy(bb_min,Meteor->mins);
-	VectorCopy(bb_max,Meteor->maxs);
-	Meteor->movetype = PHYSICSTYPE_FLY;
-	Meteor->think = MeteorBarrierBounceThink;
-	Meteor->nextthink = level.time+0.1;
-	Meteor->reflect_debounce_time = self->reflect_debounce_time -1;
-	Meteor->reflected_time=self->reflected_time;
-	Meteor->s.effects |= EF_NODRAW_ALWAYS_SEND|EF_ALWAYS_ADD_EFFECTS;
-	Meteor->svflags = SVF_ALWAYS_SEND;
-	gi.linkentity(Meteor); 
+	// Copy everything across.
+	CreateMeteor(meteor);
+	VectorCopy(self->s.origin, meteor->s.origin);
+	VectorCopy(vel, meteor->velocity);
+	meteor->owner = self->owner;
+	meteor->enemy = self->enemy;
+	meteor->health = self->health;
+	meteor->count = self->count;
+	meteor->random = self->random; // Lifetime count.
+	meteor->solid = self->solid;
+	VectorCopy(bb_min, meteor->mins);
+	VectorCopy(bb_max, meteor->maxs);
+	meteor->movetype = PHYSICSTYPE_FLY;
+	meteor->reflect_debounce_time = self->reflect_debounce_time - 1;
+	meteor->reflected_time = self->reflected_time;
+	meteor->s.effects |= (EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS);
+	meteor->svflags = SVF_ALWAYS_SEND;
 
-	// remove the persistant effect from the persistant effect list
-	if (self->PersistantCFX)
+	meteor->think = MeteorBarrierBounceThink;
+	meteor->nextthink = level.time + 0.1f;
+
+	gi.linkentity(meteor);
+
+	// Remove the persistent effect from the persistent effects list.
+	if (self->PersistantCFX > 0)
 	{
 		gi.RemovePersistantEffect(self->PersistantCFX, REMOVE_METEOR);
-		gi.RemoveEffects(&self->owner->s, FX_SPELL_METEORBARRIER+self->health);
+		gi.RemoveEffects(&self->owner->s, FX_SPELL_METEORBARRIER + self->health);
 		self->PersistantCFX = 0;
 	}
 
-	// replace this new meteor in the owners meteor list
-	Meteor->owner->client->Meteors[Meteor->health] = Meteor;
+	// Replace this new meteor in the owners meteor list.
+	meteor->owner->client->Meteors[meteor->health] = meteor;
 
-	// create a client effect for this new meteor
-	gi.CreateEffect(&Meteor->s, FX_SPELL_METEORBARRIER_TRAVEL, CEF_BROADCAST|CEF_OWNERS_ORIGIN, NULL, "");
+	// Create a client effect for this new meteor.
+	gi.CreateEffect(&meteor->s, FX_SPELL_METEORBARRIER_TRAVEL, CEF_BROADCAST | CEF_OWNERS_ORIGIN, NULL, "");
 
-	// kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it. 
+	// Kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it. 
 	G_SetToFree(self);
 
 	// Do a nasty looking blast at the impact point
-	gi.CreateEffect(&Meteor->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", Meteor->velocity);
+	gi.CreateEffect(&meteor->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", meteor->velocity);
 
-	return(Meteor);
+	return meteor;
 }
 
 // ************************************************************************************************
