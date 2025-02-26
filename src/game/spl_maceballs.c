@@ -87,74 +87,70 @@ static void GetCollisionPoint(const vec3_t velocity, const vec3_t origin, const 
 	VectorMA(origin, size, box_normals[max_axis], point);
 }
 
-void MaceballBounce(edict_t *self, trace_t *trace)
+static void MaceballBounce(edict_t* self, trace_t* trace)
 {
-	vec3_t		point;
-	qboolean	done = false;
-	qboolean	targetowner = false;
-
-	vec3_t movevect;
-
-	// did we hit something we can destroy ?
-	if (trace->ent && trace->ent->takedamage && trace->ent->health>0)
+	// Did we hit something we can destroy?
+	if (trace->ent != NULL && trace->ent->takedamage != DAMAGE_NO && trace->ent->health > 0)
 	{
-		VectorNormalize2(self->velocity, movevect);
-		if(EntReflecting(trace->ent, true, true))
+		vec3_t move_vec;
+		VectorNormalize2(self->velocity, move_vec);
+
+		if (EntReflecting(trace->ent, true, true))
 		{
-			// do nothing except bounce if we hit someone who's reflecting
-			// and make whoever it bounced off the owner of the ball now
+			// Do nothing except bounce if we hit someone who's reflecting and make whoever it bounced off the owner of the ball now.
 			self->enemy = self->owner;
 			self->owner = trace->ent;
 		}
-		else
-		if (trace->ent->svflags & SVF_BOSS)
+		else if (trace->ent->svflags & SVF_BOSS)
 		{
-			T_Damage(trace->ent, self, self->owner, movevect, trace->endpos, movevect, 
-					MACEBALL_BOSS_DAMAGE, MACEBALL_BOSS_DAMAGE, 0,MOD_P_IRONDOOM);
+			T_Damage(trace->ent, self, self->owner, move_vec, trace->endpos, move_vec,
+				MACEBALL_BOSS_DAMAGE, MACEBALL_BOSS_DAMAGE, 0, MOD_P_IRONDOOM);
+
 			self->deadflag = DEAD_DYING;
 		}
 		else
 		{
-   			int no_teleport = 1;
-   			gitem_t	*Defence,
-   						*ManaItem;
-   			int		ManaIndex;
-   			int		Quantity;
+			qboolean teleported = false; //mxd
 
-   			// can we teleport the player out of danger ?
-   			// firstly, are we a player ?
-   			if (trace->ent->client)
-   			{
-   				Defence = trace->ent->client->playerinfo.pers.defence;
-   				Quantity = playerExport.p_itemlist[12].quantity;
-   				if(Defence->ammo && Quantity)
-   				{
-   					// do we have enough mana to teleport ?
-   					ManaItem = P_FindItem(Defence->ammo);
-   					ManaIndex = ITEM_INDEX(ManaItem);
-   					if (trace->ent->client->playerinfo.pers.inventory.Items[ManaIndex]/Quantity > 0)
-   					{
-   						// yes, do we actually have a teleport ?
-						if (trace->ent->client->playerinfo.pers.inventory.Items[13])
+			// Can we teleport the player out of danger?
+			if (trace->ent->client != NULL) //TODO: this logic is very strange. Shouldn't we just teleport player if he has teleport spell and enough mana to use it?
+			{
+				const gitem_t* defence = trace->ent->client->playerinfo.pers.defence;
+				const int quantity = playerExport.p_itemlist[12].quantity; // Quantity of item_defense_shield (MANA_USE_SHIELD).
+
+				if (defence->ammo != NULL && quantity > 0)
+				{
+					// Do we have enough mana to teleport?
+					const gitem_t* mana_item = P_FindItem(defence->ammo);
+					const int mana_index = ITEM_INDEX(mana_item);
+
+					if (trace->ent->client->playerinfo.pers.inventory.Items[mana_index] / quantity > 0)
+					{
+						// Yes, do we actually have a teleport spell?
+						if (trace->ent->client->playerinfo.pers.inventory.Items[13] > 0)
 						{
-   							SpellCastTeleport(trace->ent, trace->ent->s.origin, NULL, NULL, 0.0F);
-   							if (!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_INFINITE_MANA)))
-   								trace->ent->client->playerinfo.pers.inventory.Items[ManaIndex] -= Quantity;
-   							no_teleport = 0;
+							SpellCastTeleport(trace->ent, trace->ent->s.origin, NULL, NULL, 0.0f);
+
+							if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
+								trace->ent->client->playerinfo.pers.inventory.Items[mana_index] -= quantity;
+
+							teleported = true;
 						}
-   					}
-   				}
-   				
-   			}
-   			if (no_teleport)
-   			{
-   				T_Damage(trace->ent, self, self->owner, movevect, trace->endpos, movevect, 
-   	 				self->dmg, self->dmg, 0,MOD_P_IRONDOOM);
-				// if we hit a player or a monster, kill this maceball
-				if (trace->ent->client || (trace->ent->svflags & SVF_MONSTER))
+					}
+				}
+
+			}
+
+			if (!teleported)
+			{
+				T_Damage(trace->ent, self, self->owner, move_vec, trace->endpos, move_vec,
+					self->dmg, self->dmg, 0, MOD_P_IRONDOOM);
+
+				// If we hit a player or a monster, kill this maceball.
+				if (trace->ent->client != NULL || (trace->ent->svflags & SVF_MONSTER))
 					self->deadflag = DEAD_DYING;
-   			}
-   		}
+			}
+		}
 	}
 
 	// If it's time is up, then kill it.
@@ -164,34 +160,32 @@ void MaceballBounce(edict_t *self, trace_t *trace)
 		return;
 	}
 
-	if (self->health == 1)
-		targetowner = true;
+	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/MaceBallBounce.wav"), 1.0f, ATTN_NORM, 0.0f);
 
-	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/MaceBallBounce.wav"), 1, ATTN_NORM, 0);
-
-	// Do a spiffy hit effect
+	// Do a spiffy hit effect.
+	vec3_t point;
 	GetCollisionPoint(self->velocity, self->s.origin, self->maxs[0], point);
 	gi.CreateEffect(NULL, FX_WEAPON_MACEBALLBOUNCE, 0, point, "d", trace->plane.normal);
 
-	if (trace->plane.normal[2] < .5)
-	{	// Hit a vertical surface
-		return;		// Don't track a target.
-	}
+	// Hit a vertical surface? Don't track a target.
+	if (trace->plane.normal[2] < 0.5f)
+		return;
 
-	self->flags |= FL_NOTARGET;		// This indicates to the thinker to revise the trajectory.
+	self->flags |= FL_NOTARGET; // This indicates to the thinker to revise the trajectory.
 
-	// It should track its target
-	if (self->enemy==NULL || self->enemy->health<=0)
-	{	// Find new enemy
-		self->enemy = FindSpellTargetInRadius(self, MACEBALL_SEARCH_RADIUS, self->s.origin,
-												self->mins, self->maxs);
+	// It should track its target.
+	if (self->enemy == NULL || self->enemy->health <= 0)
+	{
+		// Find new enemy
+		self->enemy = FindSpellTargetInRadius(self, MACEBALL_SEARCH_RADIUS, self->s.origin, self->mins, self->maxs);
 
-		if (self->enemy == NULL)	// no target, don't head for a target.
+		if (self->enemy == NULL) // No target, don't head for a target.
 		{
 			self->health = 1;
 			return;
 		}
 	}
+
 	// Since we have an enemy, set the flag to readjust next think.
 	VectorCopy(trace->plane.normal, self->movedir);
 }
