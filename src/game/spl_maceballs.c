@@ -1,34 +1,27 @@
 //
-// Heretic II
+// spl_maceballs.c
+//
 // Copyright 1998 Raven Software
 //
 
 #include "spl_maceballs.h" //mxd
-#include "g_local.h"
-#include "fx.h"
-#include "vector.h"
-#include "angles.h"
-#include "matrix.h"
-#include "Utilities.h"
-#include "g_ClassStatics.h"
 #include "g_Physics.h"
 #include "g_playstats.h"
-#include "decals.h"
 #include "g_combat.h" //mxd
-#include "random.h"
-#include "p_dll.h" //mxd
-#include "p_item.h"
 #include "g_teleport.h"
+#include "p_dll.h" //mxd
+#include "FX.h"
+#include "Vector.h"
+#include "Utilities.h"
+#include "g_local.h"
 
-#define MACEBALL_UPSPEED	200.0F
-#define MACEBALL_SPEED		250.0F
-#define MACEBALL_DOWNSPEED	150.0F
-#define MACEBALL_RADIUS		16.0
-#define MACEBALL_SCALE		0.17
-#define MACEBALL_SCALEINC	0.03
-#define MACEBALL_ROT		(360*0.02)
-
-#define MACEBALL_SEARCHRAD	500.0
+#define MACEBALL_UPSPEED			200.0f
+#define MACEBALL_SPEED				250.0f
+#define MACEBALL_DOWNSPEED			150.0f
+#define MACEBALL_RADIUS				16.0f
+#define MACEBALL_SCALE				0.17f
+#define MACEBALL_SCALE_INCREMENT	0.03f
+#define MACEBALL_SEARCH_RADIUS		500.0f
 
 // ****************************************************************************
 // Maceball think
@@ -44,7 +37,7 @@ void MaceballThink(edict_t *self)
 
 	if (self->s.scale < MACEBALL_SCALE)
 	{
-		self->s.scale += MACEBALL_SCALEINC;
+		self->s.scale += MACEBALL_SCALE_INCREMENT;
 		if (self->s.scale > MACEBALL_SCALE)
 			self->s.scale = MACEBALL_SCALE;
 	}
@@ -214,7 +207,7 @@ void MaceballBounce(edict_t *self, trace_t *trace)
 	// It should track its target
 	if (self->enemy==NULL || self->enemy->health<=0)
 	{	// Find new enemy
-		self->enemy = FindSpellTargetInRadius(self, MACEBALL_SEARCHRAD, self->s.origin,
+		self->enemy = FindSpellTargetInRadius(self, MACEBALL_SEARCH_RADIUS, self->s.origin,
 												self->mins, self->maxs);
 
 		if (self->enemy == NULL)	// no target, don't head for a target.
@@ -273,7 +266,7 @@ void SpellCastMaceball(edict_t *caster, vec3_t startpos, vec3_t aimangles, vec3_
 	ball->classname = "Spell_Maceball";
 	ball->touch_debounce_time = level.time + MACEBALL_LIFE;		// The ball will expire the next bounce after this one.
 	ball->s.modelindex = gi.modelindex("models/spells/maceball/tris.fm");
-	ball->s.scale = MACEBALL_SCALEINC;
+	ball->s.scale = MACEBALL_SCALE_INCREMENT;
 	ball->dmg = MACEBALL_DAMAGE;
 	ball->health = 2;
 	ball->s.effects |= EF_MACE_ROTATE;
