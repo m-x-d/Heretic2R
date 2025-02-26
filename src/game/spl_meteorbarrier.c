@@ -338,63 +338,58 @@ static void MeteorBarrierSearchInitThink(edict_t* self)
 	}
 }
 
-// Spawn the meteors
-
-void SpellCastMeteorBarrier(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,float Value)
+// Spawn the meteors.
+void SpellCastMeteorBarrier(edict_t* caster, const vec3_t start_pos, vec3_t AimAngles, vec3_t AimDir, float Value) //TODO: remove unused args.
 {
-	int		I, cast;
-	edict_t	*Meteor;
+	assert(caster->client != NULL); //mxd. caster->client NULL checks were done inconsistently in original logic. Replace with assert for now...
 
-	// Now create up to 4 spinning meteors.
+	qboolean do_cast_sound = false;
+	playerinfo_t* info = &caster->client->playerinfo; //mxd
 
-	cast = false;
-	for(I = 0; I < 4; I++)
-	{		
-		// If my caster is a player, then make sure they only have one instance of me active, then
-		if(Caster->client)
-		{
-			if(Caster->client->Meteors[I])
-				continue;
-		}
+	for (int i = 0; i < 4; i++)
+	{
+		// If my caster is a player, make sure they only have one instance of me active.
+		if (caster->client->Meteors[i] != NULL)
+			continue;
 
-		// enough mana to do this ?
-		if (Caster->client->playerinfo.pers.inventory.Items[Caster->client->playerinfo.def_ammo_index] < Caster->client->playerinfo.pers.defence->quantity)
+		// Enough mana to do this?
+		if (info->pers.inventory.Items[info->def_ammo_index] < info->pers.defence->quantity)
 			break;
 
-		// decrement our mana
-		if (!deathmatch->value || (deathmatch->value && !((int)dmflags->value & DF_INFINITE_MANA)))
-			Caster->client->playerinfo.pers.inventory.Items[Caster->client->playerinfo.def_ammo_index] -= Caster->client->playerinfo.pers.defence->quantity;
+		// Decrement our mana?
+		if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
+			info->pers.inventory.Items[info->def_ammo_index] -= info->pers.defence->quantity;
 
-		cast = true;
-		Meteor = G_Spawn();
-		Meteor->svflags |= SVF_NOCLIENT;
+		edict_t* meteor = G_Spawn();
 
-		if(Caster->client)
-		{
-			Caster->client->Meteors[I] = Meteor;
-		}
+		CreateMeteor(meteor);
+		meteor->svflags |= SVF_NOCLIENT;
+		VectorCopy(start_pos, meteor->s.origin);
+		meteor->reflect_debounce_time = MAX_REFLECT;
+		meteor->health = i;
+		meteor->think = MeteorBarrierSearchInitThink;
+		meteor->count = 0;
+		meteor->random = 0.0f; // Lifetime count
+		meteor->solid = SOLID_NOT;
+		meteor->owner = caster;
 
-		VectorCopy(StartPos, Meteor->s.origin);
-		CreateMeteor(Meteor);
-		Meteor->reflect_debounce_time = MAX_REFLECT;
-		Meteor->health = I;
-		Meteor->think = MeteorBarrierSearchInitThink;
-	   	Meteor->count = 0;
-		Meteor->random = 0;							// Lifetime count
-		Meteor->solid = SOLID_NOT;
-		Meteor->owner = Caster;
-		Caster->client->playerinfo.meteor_count |= 1<<I;				// determine how many meteors are still attached to the player
+		gi.linkentity(meteor);
 
-		gi.linkentity(Meteor);
+		meteor->PersistantCFX = gi.CreatePersistantEffect(&caster->s, FX_SPELL_METEORBARRIER + i, CEF_BROADCAST | CEF_OWNERS_ORIGIN | (i << 5), NULL, "");
 
-		Meteor->PersistantCFX = gi.CreatePersistantEffect(&Caster->s, FX_SPELL_METEORBARRIER+I, CEF_BROADCAST|CEF_OWNERS_ORIGIN|(I<<5), NULL, "" );
+		// Store on client.
+		info->meteor_count |= (1 << i); // Determine how many meteors are still attached to the player.
+		caster->client->Meteors[i] = meteor;
 
+		// Play spell cast sound.
+		do_cast_sound = true;
 	}
-	if(cast)
+
+	if (do_cast_sound)
 	{
-		gi.sound(Caster,CHAN_WEAPON,gi.soundindex("weapons/MeteorBarrierCast.wav"),1,ATTN_NORM,0);
-	 	Caster->s.sound = gi.soundindex("weapons/MeteorBarrierAmbient.wav");
-	 	Caster->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
+		gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/MeteorBarrierCast.wav"), 1.0f, ATTN_NORM, 0.0f);
+
+		caster->s.sound = (byte)gi.soundindex("weapons/MeteorBarrierAmbient.wav");
+		caster->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
 	}
 }
-// end
