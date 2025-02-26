@@ -23,8 +23,6 @@
 static vec3_t bb_min = { -5.0f, -5.0f, -5.0f };
 static vec3_t bb_max = {  5.0f,  5.0f,  5.0f };
 
-void create_meteor(edict_t *Meteor);
-
 static void MeteorBarrierDie(edict_t* self, const int flags)
 {
 	// If required, create an explode client effect and make an explosion noise.
@@ -162,6 +160,27 @@ static void MeteorBarrierBounceThink(edict_t* self)
 		Kill_Meteor(self); // My enemy has died so I die too.
 }
 
+static void CreateMeteor(edict_t* meteor) //mxd. Named 'create_meteor' in original version.
+{
+	meteor->movetype = PHYSICSTYPE_NOCLIP;
+	meteor->gravity = 0.0f; // No gravity.
+
+	meteor->classname = "Spell_MeteorBarrier";
+	meteor->isBlocked = MeteorBarrierOnBlocked;
+	meteor->isBlocking = MeteorBarrierOnBlocked;
+	meteor->nextthink = level.time + 0.1f;
+
+	meteor->dmg = irand(METEOR_DAMAGE_MIN, METEOR_DAMAGE_MAX);
+	if (DEATHMATCH)
+		meteor->dmg /= 2; // These badasses do half damage in deathmatch.
+
+	VectorSet(meteor->mins, -METEOR_RADIUS, -METEOR_RADIUS, -METEOR_RADIUS);
+	VectorSet(meteor->maxs, METEOR_RADIUS, METEOR_RADIUS, METEOR_RADIUS);
+
+	meteor->takedamage = DAMAGE_NO;
+	meteor->clipmask = MASK_SHOT;
+}
+
 // ************************************************************************************************
 // MeteorBarrierReflect
 // ------------------
@@ -173,7 +192,7 @@ edict_t *MeteorBarrierReflect(edict_t *self, edict_t *other, vec3_t vel)
 
 	Meteor = G_Spawn();
 	VectorCopy(self->s.origin, Meteor->s.origin);
-	create_meteor(Meteor);
+	CreateMeteor(Meteor);
 	VectorCopy(vel, Meteor->velocity);
 	Meteor->owner = self->owner;
 	Meteor->enemy = self->enemy;
@@ -327,24 +346,6 @@ static void MeteorBarrierSearchInitThink(edict_t *self)
 	}
 }
 
-void create_meteor(edict_t *Meteor)
-{
-   	Meteor->movetype = PHYSICSTYPE_NOCLIP;
-   	Meteor->classname = "Spell_MeteorBarrier";
-   	Meteor->isBlocked = MeteorBarrierOnBlocked;
-   	Meteor->isBlocking = MeteorBarrierOnBlocked;
-   	Meteor->dmg = irand(METEOR_DAMAGE_MIN, METEOR_DAMAGE_MAX);
-	if (deathmatch->value)
-		Meteor->dmg *= 0.5;		// These badasses do half damage in deathmatch.
-   	Meteor->clipmask = MASK_SHOT;
-   	VectorSet(Meteor->mins, -METEOR_RADIUS, -METEOR_RADIUS, -METEOR_RADIUS);
-   	VectorSet(Meteor->maxs, METEOR_RADIUS, METEOR_RADIUS, METEOR_RADIUS);
-   	Meteor->nextthink = level.time+0.1;
-	Meteor->takedamage = DAMAGE_NO;
-	// no gravity
-	Meteor->gravity = 0;
-}
-
 // Spawn the meteors
 
 void SpellCastMeteorBarrier(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,float Value)
@@ -382,7 +383,7 @@ void SpellCastMeteorBarrier(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec
 		}
 
 		VectorCopy(StartPos, Meteor->s.origin);
-		create_meteor(Meteor);
+		CreateMeteor(Meteor);
 		Meteor->reflect_debounce_time = MAX_REFLECT;
 		Meteor->health = I;
 		Meteor->think = MeteorBarrierSearchInitThink;
