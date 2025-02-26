@@ -60,7 +60,7 @@ static void MeteorBarrierDie(edict_t* self, const int flags)
 	G_SetToFree(self);
 }
 
-static void Kill_Meteor(edict_t *self)
+static void Kill_Meteor(edict_t* self)
 {
 	MeteorBarrierDie(self, METEOR_BARRIER_DIE_EXPLODE);
 }
