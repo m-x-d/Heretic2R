@@ -19,9 +19,9 @@
 
 void create_redarrow(edict_t *redarrow);
 
-void RedRainRemove(edict_t *self)
+static void RedRainRemove(edict_t* self)
 {
-	gi.RemoveEffects(&self->s, 0);
+	gi.RemoveEffects(&self->s, 0); //mxd. Type 0 means remove all effects.
 	G_SetToFree(self);
 }
 
