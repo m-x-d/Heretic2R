@@ -976,9 +976,8 @@ void T_DamageRadius(edict_t* inflictor, edict_t* attacker, const edict_t* ignore
 		}
 	}
 
-	edict_t* ent = FindInRadius(NULL, inflictor->s.origin, radius);
-
-	while (ent != NULL)
+	edict_t* ent = NULL;
+	while ((ent = FindInRadius(ent, inflictor->s.origin, radius)) != NULL)
 	{
 		if (ent == ignore || ent == damage_enemy || ent->takedamage == DAMAGE_NO || ent->takedamage == DAMAGE_NO_RADIUS) // We already dealt with the damage_enemy above...
 			continue;
@@ -1023,8 +1022,6 @@ void T_DamageRadius(edict_t* inflictor, edict_t* attacker, const edict_t* ignore
 				T_Damage(ent, inflictor, attacker, dir, hit_spot, vec3_origin, (int)points, (int)points, dflags | DAMAGE_RADIUS, mod);
 			}
 		}
-
-		ent = FindInRadius(ent, inflictor->s.origin, radius);
 	}
 }
 
@@ -1033,9 +1030,8 @@ void T_DamageRadiusFromLoc(vec3_t origin, edict_t* inflictor, edict_t* attacker,
 {
 	assert(radius > 0.0f);
 
-	edict_t* ent = FindInRadius(NULL, origin, radius);
-
-	while (ent != NULL)
+	edict_t* ent = NULL;
+	while ((ent = FindInRadius(ent, origin, radius)) != NULL)
 	{
 		if (ent == ignore || ent->takedamage == DAMAGE_NO || ent->takedamage == DAMAGE_NO_RADIUS)
 			continue;
@@ -1084,7 +1080,5 @@ void T_DamageRadiusFromLoc(vec3_t origin, edict_t* inflictor, edict_t* attacker,
 				T_Damage(ent, inflictor, attacker, dir, hit_spot, vec3_origin, (int)points, (int)points, dflags | DAMAGE_RADIUS, mod);
 			}
 		}
-
-		ent = FindInRadius(ent, inflictor->s.origin, radius);
 	}
 }
