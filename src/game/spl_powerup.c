@@ -9,7 +9,7 @@
 #include "g_itemstats.h"
 #include "g_local.h"
 
-void SpellCastPowerup(edict_t* caster, vec3_t StartPos, vec3_t AimAngles, vec3_t AimDir, float value)
+void SpellCastPowerup(edict_t* caster)
 {
 	assert(caster->client != NULL);
 

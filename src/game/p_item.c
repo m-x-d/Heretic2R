@@ -44,7 +44,7 @@ void DefenceThink_Tornado(edict_t* caster, char* format, ...)
 
 void DefenceThink_Powerup(edict_t* caster, char* format, ...)
 {
-	SpellCastPowerup(caster, caster->s.origin, NULL, NULL, 0.0f);
+	SpellCastPowerup(caster);
 	TakeMana(caster); //mxd
 }
 

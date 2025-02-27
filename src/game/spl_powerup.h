@@ -8,4 +8,4 @@
 
 #include "q_Typedef.h"
 
-extern void SpellCastPowerup(edict_t* caster, vec3_t StartPos, vec3_t AimAngles, vec3_t AimDir, float value);
+extern void SpellCastPowerup(edict_t* caster);
