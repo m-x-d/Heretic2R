@@ -25,162 +25,156 @@ static void RedRainRemove(edict_t* self)
 	G_SetToFree(self);
 }
 
-void RedRainThink(edict_t *self)
+static void RedRainLighning(edict_t* self) //mxd. Split from RedRainThink().
 {
-	edict_t *victim=NULL;
-	vec3_t startpos, endpos, diffpos, min, max, hitpos, vec;
-	trace_t trace;
-	qboolean poweredup;
-	float	lradius, rradius, rad_dmg;
-	int		damage;
+	// Powerup value comes from the health in the edict.
+	const qboolean is_powered = (self->health > 0);
 
-	if(deathmatch->value)
-		rad_dmg = self->dmg * 0.25;
-	else
-		rad_dmg = self->dmg;
+	// First check the area for a potential victim.
+	const float rain_radius = (is_powered ? POWER_RAIN_RADIUS : RED_RAIN_RADIUS); //mxd
+	const float lightning_radius = (is_powered ? POWER_RAIN_LIGHTNING_RADIUS : RED_RAIN_LIGHTNING_RADIUS); //mxd
 
-	// find all the entities in the volume
-	while(victim = FindInBlocking(victim, self))
-	{					
-		if(victim != self->owner && victim->takedamage && 
-				(victim->client || victim->svflags & SVF_MONSTER) && !(victim->svflags & SVF_DEADMONSTER))		
-		{	// No damage to casting player
-			VectorSubtract(self->pos1, victim->s.origin, vec);
-			VectorNormalize(vec);
-			VectorMA(victim->s.origin, victim->maxs[0], vec, hitpos);
-			
-			if (victim->svflags & SVF_BOSS)
+	// Find the bounds to search under.
+	vec3_t min;
+	VectorSet(min, -lightning_radius, -lightning_radius, self->mins[2]);
+
+	// Only search the lower half of the area for lightning hits.
+	vec3_t max;
+	VectorSet(max, lightning_radius, lightning_radius, self->mins[2] + ((self->maxs[2] - self->mins[2]) * 0.5f));
+
+	Vec3AddAssign(self->s.origin, min);
+	Vec3AddAssign(self->s.origin, max);
+
+	// Find a target to zap.
+	edict_t* victim = NULL;
+	while ((victim = FindInBounds(victim, min, max)) != NULL)
+		if (victim != self->owner && victim->takedamage != DAMAGE_NO && (victim->client != NULL || victim->svflags & SVF_MONSTER) && !(victim->svflags & SVF_DEADMONSTER))
+			break;
+
+	if (victim != NULL)
+	{
+		// Try to zap somebody with lightning.
+		vec3_t start_pos;
+		for (int i = 0; i < 2; i++)
+			start_pos[i] = flrand(-rain_radius * 0.6f, rain_radius * 0.6f);
+		start_pos[2] = self->maxs[2];
+
+		Vec3AddAssign(self->s.origin, start_pos);
+
+		vec3_t end_pos;
+		for (int i = 0; i < 3; i++)
+			end_pos[i] = flrand(victim->mins[i] * 0.5f, victim->maxs[i] * 0.5f);
+
+		Vec3AddAssign(victim->s.origin, end_pos);
+
+		trace_t trace;
+		gi.trace(start_pos, vec3_origin, vec3_origin, end_pos, self->owner, MASK_SOLID, &trace);
+
+		if (!trace.startsolid && trace.fraction == 1.0f)
+		{
+			// FINALLY! A clear lightning strike!
+			vec3_t dir;
+			VectorSubtract(end_pos, start_pos, dir);
+			VectorNormalize(dir);
+
+			if (!is_powered)
 			{
-				T_Damage(victim, self, self->owner, vec3_origin, hitpos, vec3_origin, 
-						rad_dmg/2, 0, DAMAGE_SPELL,MOD_STORM); 
+				gi.CreateEffect(NULL, FX_LIGHTNING, CEF_FLAG6, start_pos, "vbb", end_pos, (byte)RED_RAIN_LIGHTNING_WIDTH, (byte)0);
+				gi.sound(victim, CHAN_WEAPON, gi.soundindex("weapons/Lightning.wav"), 1.0f, ATTN_NORM, 0.0f);
+
+				// Do a nasty looking blast at the impact point
+				gi.CreateEffect(&victim->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN | CEF_FLAG7, NULL, "t", dir);
+
+				if (!EntReflecting(victim, true, true))
+				{
+					const int damage = irand(RED_RAIN_DMG_LIGHTNING_MIN, RED_RAIN_DMG_LIGHTNING_MAX); //mxd
+					T_Damage(victim, self, self->owner, dir, end_pos, vec3_origin, damage, 0, DAMAGE_SPELL, MOD_STORM);
+				}
 			}
 			else
 			{
-				T_Damage(victim, self, self->owner, vec3_origin, hitpos, vec3_origin, 
-						rad_dmg, 0, DAMAGE_SPELL,MOD_STORM); 
+				gi.CreateEffect(NULL, FX_POWER_LIGHTNING, 0, start_pos, "vb", end_pos, (byte)POWER_RAIN_LIGHTNING_WIDTH);
+				gi.sound(victim, CHAN_WEAPON, gi.soundindex("weapons/LightningPower.wav"), 1.0f, ATTN_NORM, 0.0f);
+
+				if (!EntReflecting(victim, true, true))
+				{
+					const float damage = flrand(POWER_RAIN_DMG_LIGHTNING_MIN, POWER_RAIN_DMG_LIGHTNING_MAX); //mxd. int / irand() in original logic.
+					T_DamageRadiusFromLoc(end_pos, self, self->owner, self->owner, POWER_RAIN_DMG_LIGHTNING_RADIUS,
+						damage, damage / 4, DAMAGE_SPELL, MOD_P_STORM);
+				}
 			}
 		}
 	}
+	else
+	{
+		vec3_t start_pos;
+		for (int i = 0; i < 2; i++)
+			start_pos[i] = flrand(-rain_radius * 0.75f, rain_radius * 0.75f);
+		start_pos[2] = self->maxs[2];
 
-	if (self->delay <= level.time || (self->owner->red_rain_count - self->red_rain_count) > NUM_STORMS_PER_PLAYER)
+		Vec3AddAssign(self->s.origin, start_pos);
+
+		vec3_t end_pos;
+		for (int i = 0; i < 2; i++)
+			end_pos[i] = flrand(-rain_radius, rain_radius);
+		end_pos[2] = self->mins[2];
+
+		Vec3AddAssign(self->s.origin, end_pos);
+
+		if (!is_powered)
+		{
+			gi.CreateEffect(NULL, FX_LIGHTNING, CEF_FLAG6, start_pos, "vbb", end_pos, (byte)RED_RAIN_LIGHTNING_WIDTH, (byte)0);
+			gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/Lightning.wav"), 2.0f, ATTN_NORM, 0.0f); //TODO: why 2.0 volume?
+		}
+		else
+		{
+			gi.CreateEffect(NULL, FX_POWER_LIGHTNING, 0, start_pos, "vb", end_pos, (byte)POWER_RAIN_LIGHTNING_WIDTH);
+			gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/LightningPower.wav"), 2.0f, ATTN_NORM, 0.0f); //TODO: why 2.0 volume?
+
+			// The lightning does radius damage even if no target.
+			const float damage = flrand(POWER_RAIN_DMG_LIGHTNING_MIN, POWER_RAIN_DMG_LIGHTNING_MAX); //mxd. int / irand() in original logic.
+			T_DamageRadiusFromLoc(end_pos, self, self->owner, self->owner, POWER_RAIN_DMG_LIGHTNING_RADIUS,
+				damage, damage / 4, DAMAGE_SPELL, MOD_P_STORM);
+		}
+	}
+}
+
+static void RedRainThink(edict_t* self)
+{
+	const int base_damage = (DEATHMATCH ? self->dmg / 4 : self->dmg); //mxd
+
+	// Damage all the entities in the volume.
+	edict_t* victim = NULL;
+	while ((victim = FindInBlocking(victim, self)) != NULL)
+	{
+		// No damage to casting player.
+		if (victim == self->owner || victim->takedamage == DAMAGE_NO || (victim->client == NULL && !(victim->svflags & SVF_MONSTER)) || (victim->svflags & SVF_DEADMONSTER))
+			continue;
+
+		vec3_t vec;
+		VectorSubtract(self->pos1, victim->s.origin, vec);
+		VectorNormalize(vec);
+
+		vec3_t hit_pos;
+		VectorMA(victim->s.origin, victim->maxs[0], vec, hit_pos);
+
+		const int damage = ((victim->svflags & SVF_BOSS) ? base_damage / 2 : base_damage); //mxd
+		T_Damage(victim, self, self->owner, vec3_origin, hit_pos, vec3_origin, damage, 0, DAMAGE_SPELL, MOD_STORM);
+	}
+
+	if (self->delay <= level.time || self->owner->red_rain_count - self->red_rain_count > NUM_STORMS_PER_PLAYER)
 	{
 		self->owner->red_rain_count--;
 		self->s.effects |= EF_DISABLE_EXTRA_FX;
-		self->nextthink = level.time + 1.0;//lasts another 1.0 secs
+		self->nextthink = level.time + 1.0f; // Lasts another second.
 		self->think = RedRainRemove;
 	}
 	else
 	{
-		// Powerup value comes from the health in the edict.
-		poweredup = self->health;
-
-		// Check for lightning
+		// Check for lightning.
 		if (self->delay - level.time < RED_RAIN_LIGHTNING_DURATION && irand(0, RED_RAIN_LIGHTNING_CHANCE) == 0)
-		{	// First check the area for a potential victim.
-			if (!poweredup)
-			{
-				rradius = RED_RAIN_RADIUS;
-				lradius = RED_RAIN_LIGHTNING_RADIUS;
-			}
-			else
-			{
-				rradius = POWER_RAIN_RADIUS;
-				lradius = POWER_RAIN_LIGHTNING_RADIUS;
-			}
+			RedRainLighning(self);
 
-			// Find the bounds to search under.
-			VectorSet(min, -lradius, -lradius, self->mins[2]);
-			// Only search the lower half of the area for lightning hits.
-			VectorSet(max, lradius, lradius, self->mins[2] + ((self->maxs[2] - self->mins[2])*0.5));
-			VectorAdd(self->s.origin, min, min);
-			VectorAdd(self->s.origin, max, max);
-			victim=NULL;
-			while (victim = FindInBounds(victim, min, max))
-			{
-				if (victim != self->owner && victim->takedamage &&
-						(victim->client || victim->svflags & SVF_MONSTER) && !(victim->svflags & SVF_DEADMONSTER))
-					break;
-			}
-			if (victim)
-			{	// Try to zap somebody with lightning
-				VectorSet(startpos, 
-							flrand(-rradius*0.6, rradius*0.6), 
-							flrand(-rradius*0.6, rradius*0.6), 
-							self->maxs[2]);
-				VectorAdd(startpos, self->s.origin, startpos);
-				VectorSet(endpos,
-							flrand(victim->mins[0]*0.5, victim->maxs[0]*0.5),
-							flrand(victim->mins[1]*0.5, victim->maxs[1]*0.5),
-							flrand(victim->mins[2]*0.5, victim->maxs[2]*0.5));
-				VectorAdd(endpos, victim->s.origin, endpos);
-
-				gi.trace(startpos, vec3_origin, vec3_origin, endpos, self->owner, MASK_SOLID,&trace);
-				if (!trace.startsolid && trace.fraction == 1.0)
-				{	// FINALLY!  A clear lightning strike!
-					VectorSubtract(endpos, startpos, diffpos);
-					VectorNormalize(diffpos);
-					if (!poweredup)
-					{
-						gi.CreateEffect(NULL, FX_LIGHTNING, CEF_FLAG6, 
-								startpos, "vbb", endpos, (byte)RED_RAIN_LIGHTNING_WIDTH, (byte)0);
-						gi.sound(victim,CHAN_WEAPON,gi.soundindex("weapons/Lightning.wav"),1,ATTN_NORM,0);
-
-						// Do a nasty looking blast at the impact point
-						gi.CreateEffect(&victim->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN | CEF_FLAG7, NULL, "t", diffpos);
-
-						if(!(EntReflecting(victim, true, true)))
-						{
-							T_Damage(victim, self, self->owner, diffpos, endpos, vec3_origin, 
-									irand(RED_RAIN_DMG_LIGHTNING_MIN, RED_RAIN_DMG_LIGHTNING_MAX), 0, DAMAGE_SPELL,MOD_STORM); 
-						}
-					}
-					else
-					{
-						gi.CreateEffect(NULL, FX_POWER_LIGHTNING, 0, 
-								startpos, "vb", endpos, (byte)POWER_RAIN_LIGHTNING_WIDTH);
-						gi.sound(victim,CHAN_WEAPON,gi.soundindex("weapons/LightningPower.wav"),1,ATTN_NORM,0);
-
-						if(!(EntReflecting(victim, true, true)))
-						{
-							damage = irand(POWER_RAIN_DMG_LIGHTNING_MIN, POWER_RAIN_DMG_LIGHTNING_MAX); 
-							
-							T_DamageRadiusFromLoc(endpos, self, self->owner, self->owner, POWER_RAIN_DMG_LIGHTNING_RADIUS, 
-									damage, damage*0.25, DAMAGE_SPELL,MOD_P_STORM);
-						}
-					}
-				}
-			}
-			else
-			{
-				VectorSet(startpos, 
-							flrand(-rradius*0.75, rradius*0.75), 
-							flrand(-rradius*0.75, rradius*0.75), 
-							self->maxs[2]);
-				VectorAdd(startpos, self->s.origin, startpos);
-				VectorSet(endpos, 
-							flrand(-rradius, rradius), 
-							flrand(-rradius, rradius), 
-							self->mins[2]);
-				VectorAdd(endpos, self->s.origin, endpos);
-				if (!poweredup)
-				{
-					gi.CreateEffect(NULL, FX_LIGHTNING, CEF_FLAG6, 
-							startpos, "vbb", endpos, (byte)RED_RAIN_LIGHTNING_WIDTH, (byte)0);
-					gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/Lightning.wav"), 2, ATTN_NORM,0);
-				}
-				else
-				{
-					gi.CreateEffect(NULL, FX_POWER_LIGHTNING, 0, 
-							startpos, "vb", endpos, (byte)POWER_RAIN_LIGHTNING_WIDTH);
-					gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/LightningPower.wav"), 2, ATTN_NORM,0);
-
-					// The lightning does radius damage even if no target.
-					damage = irand(POWER_RAIN_DMG_LIGHTNING_MIN, POWER_RAIN_DMG_LIGHTNING_MAX); 
-					T_DamageRadiusFromLoc(endpos, self, self->owner, self->owner, POWER_RAIN_DMG_LIGHTNING_RADIUS, 
-							damage, damage*0.25, DAMAGE_SPELL,MOD_P_STORM);
-				}
-			}
-		}
 		self->nextthink = level.time + self->wait;
 	}
 }
