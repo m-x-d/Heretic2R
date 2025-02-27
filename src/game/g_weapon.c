@@ -578,7 +578,7 @@ void WeaponThink_PhoenixBow(edict_t* caster, char* format, ...)
 	VectorMA(start_pos, 6.0f, right, start_pos);
 	start_pos[2] += (float)caster->viewheight + 4.0f;
 
-	SpellCastPhoenix(caster, start_pos, caster->client->aimangles, fwd, 0.0f);
+	SpellCastPhoenix(caster, start_pos, caster->client->aimangles);
 
 	playerinfo_t* info = &caster->client->playerinfo; //mxd
 	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
