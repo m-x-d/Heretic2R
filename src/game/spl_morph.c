@@ -156,59 +156,38 @@ void ResetPlayerMorph(edict_t* self) //mxd. Named 'reset_morph_to_elf' in origin
 	VectorSet(self->client->tele_dest, -1.0f, -1.0f, -1.0f);
 }
 
-// *************************************************************************************************
-// MorphChickenToPlayer
-// --------------------
-// Modify a chicken into a player - first call. Start the teleport effect on the chicken.
-// For PLAYER only.
-// *************************************************************************************************
-
-void MorphChickenToPlayer(edict_t *self)
+// Modify a chicken into a player - first call. Start the teleport effect on the chicken. For PLAYER only.
+static void MorphChickenToPlayer(edict_t* self)
 {
-	gclient_t	*playerinfo;
-	
-	playerinfo = self->client;
-
-	// if we are teleporting or morphing, forget it
+	// If we are teleporting or morphing, forget it.
 	if (self->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING))
 		return;
 
-	// set the player as teleporting
-	self->client->playerinfo.flags |= PLAYER_FLAG_MORPHING;
+	self->client->playerinfo.flags |= PLAYER_FLAG_MORPHING; // Set the player as teleporting.
+	self->client->tele_count = TELE_TIME_OUT; // Time taken over de-materialization.
+	self->client->shrine_framenum = level.time + 10.0f; // Make us invulnerable for a couple of seconds.
+	self->client->tele_type = 1; // Tell us how we triggered the teleport.
+	self->flags |= FL_LOCKMOVE; // Make the player stand still. //TODO: sets 'self->client->playerinfo.flags' in MorphPlayerToChicken().
 
-	// time taken over dematerialisation
-	self->client->tele_count = TELE_TIME_OUT;
-
-	// make us invunerable for a couple of seconds
-	self->client->shrine_framenum = level.time + 10;
-
-	// tell us how we triggered the teleport
-	self->client->tele_type = 1;
-
-	// clear the velocity and hold them in place briefly
-	VectorClear (self->velocity);
+	// Clear the velocity and hold them in place briefly.
+	VectorClear(self->velocity);
 	self->client->ps.pmove.pm_time = 50;
-	// make the player still
-	self->flags |= FL_LOCKMOVE;
-	// allow the player to fade out
-	self->s.color.a = 255;
-	self->s.color.r = 255;
-	self->s.color.g = 255;
-	self->s.color.b = 255;
+
+	// Allow the player to fade out.
+	self->s.color.c = 0xffffffff;
 	self->s.renderfx |= RF_TRANSLUCENT;
 
-	// make us not think at all
+	// Make us not think at all.
 	self->think = NULL;
 
-	// make it so that the stuff that does the demateriasation in G_ANIM_ACTOR knows we are fading out, not in
-	self->client->tele_dest[0] = self->client->tele_dest[1] = self->client->tele_dest[2] = 0;
+	// Make it so that the stuff that does the de-materialization in G_ANIM_ACTOR knows we are fading out, not in.
+	VectorClear(self->client->tele_dest);
 
-	// draw the teleport splash at the teleport source
-	gi.CreateEffect(&self->s, FX_PLAYER_TELEPORT_OUT, CEF_OWNERS_ORIGIN |CEF_FLAG6, NULL, "" );
-	// do the teleport sound
-	gi.sound(self,CHAN_WEAPON,gi.soundindex("weapons/teleport.wav"),1,ATTN_NORM,0);
+	// Draw the teleport splash at the teleport source.
+	gi.CreateEffect(&self->s, FX_PLAYER_TELEPORT_OUT, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "");
 
-
+	// Do the teleport sound.
+	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/teleport.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
 // *************************************************************************************************
