@@ -17,8 +17,6 @@
 #define ARROW_RADIUS	2.0f
 #define ARROW_BACKUP	(45.0f - ARROW_RADIUS)
 
-void create_redarrow(edict_t *redarrow);
-
 static void RedRainRemove(edict_t* self)
 {
 	gi.RemoveEffects(&self->s, 0); //mxd. Type 0 means remove all effects.
@@ -290,6 +288,29 @@ static void RedRainMissileThink(edict_t* self)
 	self->think = NULL;
 }
 
+// Create the guts of the red rain arrow.
+static void CreateRedRainArrow(edict_t* arrow)
+{
+	arrow->s.effects |= EF_ALWAYS_ADD_EFFECTS;
+	arrow->svflags |= SVF_ALWAYS_SEND;
+	arrow->movetype = MOVETYPE_FLYMISSILE;
+
+	arrow->touch = RedRainMissileTouch;
+	arrow->think = RedRainMissileThink;
+	arrow->classname = "Spell_RedRainArrow";
+	arrow->nextthink = level.time + 0.1f;
+	VectorSet(arrow->mins, -ARROW_RADIUS, -ARROW_RADIUS, -ARROW_RADIUS);
+	VectorSet(arrow->maxs,  ARROW_RADIUS,  ARROW_RADIUS,  ARROW_RADIUS);
+
+	if (arrow->health == 1) // Powered arrow?
+		arrow->dmg = irand(POWER_RAIN_DMG_ARROW_MIN, POWER_RAIN_DMG_ARROW_MAX);
+	else
+		arrow->dmg = irand(RED_RAIN_DMG_ARROW_MIN, RED_RAIN_DMG_ARROW_MAX);
+
+	arrow->solid = SOLID_BBOX;
+	arrow->clipmask = MASK_SHOT;
+}
+
 // ****************************************************************************
 // RedRainMissile reflect
 // ****************************************************************************
@@ -307,7 +328,7 @@ edict_t *RedRainMissileReflect(edict_t *self, edict_t *other, vec3_t vel)
 	redarrow->enemy = self->owner;
 	redarrow->owner->red_rain_count++;
 	self->owner->red_rain_count--;
-	create_redarrow(redarrow);
+	CreateRedRainArrow(redarrow);
 
 	VectorCopy(vel, redarrow->velocity);
 	redarrow->reflect_debounce_time = self->reflect_debounce_time -1;
@@ -323,32 +344,6 @@ edict_t *RedRainMissileReflect(edict_t *self, edict_t *other, vec3_t vel)
 	gi.CreateEffect(&redarrow->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", redarrow->velocity);
 
 	return(redarrow);
-}
-
-// create the guts of the red rain missile
-void create_redarrow(edict_t *redarrow)
-{
-	redarrow->s.effects |= EF_ALWAYS_ADD_EFFECTS;
-	redarrow->svflags |= SVF_ALWAYS_SEND;
-	redarrow->movetype = MOVETYPE_FLYMISSILE;
-
-	VectorSet(redarrow->mins, -ARROW_RADIUS, -ARROW_RADIUS, -ARROW_RADIUS);
-	VectorSet(redarrow->maxs, ARROW_RADIUS, ARROW_RADIUS, ARROW_RADIUS);
-
-	redarrow->solid = SOLID_BBOX;
-	redarrow->clipmask = MASK_SHOT;
-	redarrow->touch = RedRainMissileTouch;
-	redarrow->think = RedRainMissileThink;
-	redarrow->classname = "Spell_RedRainArrow";
-	redarrow->nextthink = level.time + 0.1;
-	if (redarrow->health==1)
-	{	// powerup arrow
-		redarrow->dmg = irand(POWER_RAIN_DMG_ARROW_MIN, POWER_RAIN_DMG_ARROW_MAX);
-	}
-	else
-	{
-		redarrow->dmg = irand(RED_RAIN_DMG_ARROW_MIN, RED_RAIN_DMG_ARROW_MAX);
-	}
 }
 
 // ****************************************************************************
@@ -394,7 +389,7 @@ void SpellCastRedRain(edict_t *Caster, vec3_t StartPos, vec3_t AimAngles, vec3_t
 	// naughty naughty - this requires a normalised vector
 	AnglesFromDir(dir, redarrow->s.angles);
 
-	create_redarrow(redarrow);
+	CreateRedRainArrow(redarrow);
 	redarrow->reflect_debounce_time = MAX_REFLECT;
 	
 	redarrow->owner = Caster;
