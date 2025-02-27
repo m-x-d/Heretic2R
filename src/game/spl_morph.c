@@ -464,65 +464,43 @@ edict_t* MorphReflect(edict_t* self, edict_t* other, vec3_t vel)
 	return egg;
 }
 
-// ****************************************************************************
-// SpellCastMorph
-// ****************************************************************************
-
-void SpellCastMorph(edict_t *Caster, vec3_t StartPos, vec3_t AimAngles, vec3_t unused, float value)
+void SpellCastMorph(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, vec3_t unused, float value) //TODO: remove unused args.
 {
-	edict_t		*morph;
-	int			i;
-	byte 			yaw;
-	float			current_ang;
-	vec3_t		temp_angles;
-	short	morpharray[NUM_OF_OVUMS];
+	short morph_array[NUM_OF_OVUMS];
+	byte yaw = 0;
 
-//	if (!(Caster->client->playerinfo.edictflags & FL_CHICKEN))
-//	{
-//		MorphPlayerToChicken2(Caster, Caster);
-//		return;
-//	}
+	// First ovum gets sent out along our aiming angle.
+	float current_ang = aim_angles[YAW];
 
-	// first ovum gets sent out along our aiming angle
-	current_ang = AimAngles[YAW];
-	for (i=0; i<NUM_OF_OVUMS; i++)
+	for (int i = 0; i < NUM_OF_OVUMS; i++)
 	{
-		// create each of the server side entities that are the morph ovum spells
-		morph = G_Spawn();
-		VectorCopy(StartPos, morph->s.origin);
+		// Create each of the server side entities that are the morph ovum spells.
+		edict_t* egg = G_Spawn();
+		VectorCopy(start_pos, egg->s.origin);
 
-		// decide its direction
-		morph->s.angles[YAW] = current_ang;
-		VectorScale(morph->s.angles, ANGLE_TO_RAD, temp_angles);
-		DirFromAngles(temp_angles, morph->velocity);
-		Vec3ScaleAssign(OVUM_SPEED,morph->velocity);
+		// Decide its direction.
+		egg->s.angles[YAW] = current_ang;
 
-		CreateMorphOvum(morph);
-		morph->reflect_debounce_time = MAX_REFLECT;
-		morph->owner = Caster;
-		G_LinkMissile(morph);
+		vec3_t temp_angles;
+		VectorScale(egg->s.angles, ANGLE_TO_RAD, temp_angles);
+		DirFromAngles(temp_angles, egg->velocity);
+		Vec3ScaleAssign(OVUM_SPEED, egg->velocity);
 
-		// if we are the first effect, calculate our yaw
-		if (!i)
-			yaw = Q_ftol((morph->s.angles[YAW]/360.0) * 255.0);
-		// Store the entity numbers for sending with the effect.
-		morpharray[i] = morph->s.number;
+		CreateMorphOvum(egg);
+		egg->reflect_debounce_time = MAX_REFLECT;
+		egg->owner = caster;
 
-		//increment current angle to get circular radius of ovums
-		current_ang+= ANGLE_INC;
+		G_LinkMissile(egg);
+
+		// If we are the first effect, calculate our yaw.
+		if (i == 0)
+			yaw = (byte)Q_ftol(egg->s.angles[YAW] / 360.0f * 255.0f);
+
+		morph_array[i] = egg->s.number; // Store the entity numbers for sending with the effect.
+		current_ang += ANGLE_INC; // Increment current angle to get circular radius of ovums.
 	}
 
-	// create the client effect that gets seen on screen
-	gi.CreateEffect(&Caster->s, FX_SPELL_MORPHMISSILE_INITIAL, CEF_OWNERS_ORIGIN, NULL, "bssssss", 
-			yaw, 
-			morpharray[0],
-			morpharray[1],
-			morpharray[2],
-			morpharray[3],
-			morpharray[4],
-			morpharray[5]);
+	// Create the client effect that gets seen on screen.
+	gi.CreateEffect(&caster->s, FX_SPELL_MORPHMISSILE_INITIAL, CEF_OWNERS_ORIGIN, NULL, "bssssss",
+		yaw, morph_array[0], morph_array[1], morph_array[2], morph_array[3], morph_array[4], morph_array[5]);
 }
-
-// end
-
- 
