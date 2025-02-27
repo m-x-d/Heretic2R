@@ -190,21 +190,14 @@ static void MorphChickenToPlayer(edict_t* self)
 	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/teleport.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
-// *************************************************************************************************
-// watch_chicken
-// -------------
 // Watch the chicken to see if we should become the elf again. For PLAYER only.
-// *************************************************************************************************
-
-void watch_chicken(edict_t *self)
+static void ChickenPlayerThink(edict_t* self) //mxd. Named 'watch_chicken' in original version.
 {
-
-	// are we done yet ?
-	if (self->morph_timer <= level.time)
-	{
+	// Are we done yet?
+	if (self->morph_timer <= (int)level.time)
 		MorphChickenToPlayer(self);
-	}
-	self->nextthink = level.time + 0.1;
+
+	self->nextthink = level.time + 0.1f;
 }
 
 // *************************************************************************************************
@@ -288,7 +281,7 @@ void Perform_Morph(edict_t *self)
 
 	// reset our thinking
 	self->oldthink = self->think;
-	self->think = watch_chicken;
+	self->think = ChickenPlayerThink;
 	self->nextthink = level.time + 0.1;
 
 	self->physicsFlags |= PF_RESIZE;
