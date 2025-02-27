@@ -332,69 +332,6 @@ void MorphPlayerToChicken(edict_t* self, edict_t* caster) //TODO: remove unused 
 	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/teleport.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
-// *************************************************************************************************
-// MorphPlayerToChicken2
-// ---------------------
-// Modify a player into a chicken - first call. Start the teleport effect on the player. For PLAYER
-// only. Temporary func. See Marcus for explaination.
-// *************************************************************************************************
-
-void MorphPlayerToChicken2(edict_t *self, edict_t *caster)
-{
-	gclient_t	*playerinfo;
-	
-	playerinfo = self->client;
-
-	// if we are teleporting or morphing, forget it
-	if (self->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING))
-		return;
-
-	// remove any hand or weapon effects
-	P_TurnOffPlayerEffects(&self->client->playerinfo);
-
-	// remove any shrine effects he has
-	PlayerKillShrineFX(self);
-
-	// set the player as teleporting
-	self->client->playerinfo.flags |= PLAYER_FLAG_MORPHING;
-
-	// time taken over dematerialisation
-	self->client->tele_count = TELE_TIME_OUT;
-
-	// make us invunerable for a couple of seconds
-	self->client->shrine_framenum = level.time + 10;
-
-	// tell us how we triggered the teleport
-	self->client->tele_type = 1;
-
-	// clear the velocity and hold them in place briefly
-	VectorClear (self->velocity);
-	self->client->ps.pmove.pm_time = 50;
-
-	// make the player still
-	self->client->playerinfo.flags |= FL_LOCKMOVE;
-
-	// allow the player to fade out
-	self->s.color.a = 255;
-	self->s.color.r = 255;
-	self->s.color.g = 255;
-	self->s.color.b = 255;
-
-	self->client->playerinfo.renderfx |= RF_TRANSLUCENT;
-
-	// make it so that the stuff that does the demateriasation in G_ANIM_ACTOR knows we are fading out, not in
-	self->client->tele_dest[0] = self->client->tele_dest[1] = self->client->tele_dest[2] = 0;
-
-	// tell us how long we have to be a chicken
-	self->morph_timer = level.time + MORPH_DURATION;
-
-	// draw the teleport splash at the teleport source
-	gi.CreateEffect(&self->s, FX_PLAYER_TELEPORT_OUT, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "");
-		// do the teleport sound
-	gi.sound(self,CHAN_WEAPON,gi.soundindex("weapons/teleport.wav"),1,ATTN_NORM,0);
-
-}
-
 edict_t *MorphReflect(edict_t *self, edict_t *other, vec3_t vel)
 {
 	edict_t	*morph;
