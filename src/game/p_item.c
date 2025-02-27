@@ -62,7 +62,7 @@ void DefenceThink_MeteorBarrier(edict_t* caster, char* format, ...)
 
 void DefenceThink_Morph(edict_t* caster, char* format, ...)
 {
-	SpellCastMorph(caster, caster->s.origin, caster->client->aimangles, NULL, 0.0f);
+	SpellCastMorph(caster, caster->s.origin, caster->client->aimangles);
 	TakeMana(caster); //mxd
 }
 

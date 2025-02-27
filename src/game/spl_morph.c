@@ -464,7 +464,7 @@ edict_t* MorphReflect(edict_t* self, edict_t* other, vec3_t vel)
 	return egg;
 }
 
-void SpellCastMorph(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, vec3_t unused, float value) //TODO: remove unused args.
+void SpellCastMorph(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles)
 {
 	short morph_array[NUM_OF_OVUMS];
 	byte yaw = 0;
