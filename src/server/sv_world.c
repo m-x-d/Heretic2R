@@ -571,7 +571,7 @@ void SV_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const ve
 	// Clip to world
 	CM_BoxTrace(start, end, mins, maxs, 0, (contentmask & ~CONTENTS_WORLD_ONLY), tr);
 
-	tr->architecture = 1; // H2
+	tr->architecture = true; // H2
 	tr->ent = ge->edicts;
 
 	// H2: New 'contentmask' check.
