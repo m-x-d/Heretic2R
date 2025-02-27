@@ -1,7 +1,6 @@
 //
 // spl_powerup.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
@@ -10,37 +9,31 @@
 #include "g_itemstats.h"
 #include "g_local.h"
 
-void SpellCastPowerup(edict_t *Caster, vec3_t StartPos, vec3_t AimAngles, vec3_t AimDir, float value)
+void SpellCastPowerup(edict_t* caster, vec3_t StartPos, vec3_t AimAngles, vec3_t AimDir, float value)
 {
-	assert(Caster->client);
+	assert(caster->client != NULL);
 
 	// Kill any tomes that may already be out there for this player.
+	gi.RemoveEffects(&caster->s, FX_TOME_OF_POWER);
 
-	gi.RemoveEffects(&Caster->s, FX_TOME_OF_POWER);
-
-	// if we are a chicken, lets make us a player again
-	if (Caster->flags & FL_CHICKEN)
+	// If we are a chicken, lets make us a player again.
+	if (caster->flags & FL_CHICKEN)
 	{
-		Caster->morph_timer = level.time - 0.1;
+		caster->morph_timer = (int)level.time - 1;
 	}
 	else
 	{
-		// add some time in on the timer for the powerup
-		Caster->client->playerinfo.powerup_timer = level.time + POWERUP_DURATION;
+		// Add some time in on the timer for the powerup
+		caster->client->playerinfo.powerup_timer = level.time + POWERUP_DURATION;
 
-		// turn on the light at the client effect end through client flags that are passed down
-		Caster->s.effects |= EF_POWERUP_ENABLED;
-		Caster->client->playerinfo.effects |= EF_POWERUP_ENABLED;
+		// Turn on the light at the client effect end through client flags that are passed down.
+		caster->s.effects |= EF_POWERUP_ENABLED;
+		caster->client->playerinfo.effects |= EF_POWERUP_ENABLED;
 
-		// create the tome of power
-		gi.CreateEffect(&Caster->s, FX_TOME_OF_POWER, CEF_OWNERS_ORIGIN, NULL, "");
+		// Create the Tome of Power effect.
+		gi.CreateEffect(&caster->s, FX_TOME_OF_POWER, CEF_OWNERS_ORIGIN, NULL, "");
 	}
 
-	// start up the shrine powerup effect
-//	gi.CreateEffect(&Caster->s, FX_SHRINE_POWERUP, CEF_OWNERS_ORIGIN, NULL, "");
-
-	// do the SHRINE sound
-	gi.sound(Caster, CHAN_ITEM,gi.soundindex("items/shrine5.wav"),1,ATTN_NORM,0);
+	// Do the SHRINE sound.
+	gi.sound(caster, CHAN_ITEM, gi.soundindex("items/shrine5.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
-
-// end
