@@ -409,6 +409,12 @@ static void MorphMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, cs
 	G_SetToFree(self);
 }
 
+static void MorphMissileThink(edict_t* self)
+{
+	self->svflags |= SVF_NOCLIENT; // No messages to client after it has received velocity.
+	self->think = NULL; // Not required to think anymore.
+}
+
 edict_t *MorphReflect(edict_t *self, edict_t *other, vec3_t vel)
 {
 	edict_t	*morph;
@@ -438,17 +444,6 @@ edict_t *MorphReflect(edict_t *self, edict_t *other, vec3_t vel)
    	gi.CreateEffect(&morph->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", morph->velocity);
 	return(morph);
 }
-
-// ****************************************************************************
-// MorphMissile think
-// ****************************************************************************
-
-void MorphMissileThink(edict_t *self)
-{
-	self->svflags |= SVF_NOCLIENT;			// No messages to client after it has received velocity
-	self->think = NULL;						// Not required to think anymore
-}
-
 
 // create the guts of the morph ovum
 void create_morph(edict_t *morph)
