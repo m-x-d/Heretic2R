@@ -29,20 +29,14 @@ char	chicken_text[] = "monster_chicken";
 
 void create_morph(edict_t *morph);
 
-// *************************************************************************************************
-// MorphFadeIn
-// -----------
 // Fade in the chicken - for MONSTERS only.
-// *************************************************************************************************
-
-void MorphFadeIn(edict_t *self)
+static void MonsterMorphFadeIn(edict_t* self) //mxd. Named 'MorphFadeIn' in original version.
 {
 	self->s.color.a += MORPH_TELE_FADE;
-	self->nextthink = level.time + 0.1;
-	if (!(--self->morph_timer))
-	{
+	self->nextthink = level.time + 0.1f;
+
+	if (--self->morph_timer == 0)
 		self->think = walkmonster_start_go;
-	}
 }
 
 // *************************************************************************************************
@@ -78,7 +72,7 @@ void MorphFadeOut(edict_t *self)
 		ED_CallSpawn(newent);
 		newent->s.color.c = 0xffffff;
 		newent->morph_timer = MORPH_TELE_TIME;
-		newent->think = MorphFadeIn;
+		newent->think = MonsterMorphFadeIn;
 		gi.CreateEffect(&newent->s, FX_PLAYER_TELEPORT_IN, CEF_OWNERS_ORIGIN|CEF_FLAG6, NULL, "" ); 
 		// do the teleport sound
 		gi.sound(newent,CHAN_WEAPON,gi.soundindex("weapons/teleport.wav"),1,ATTN_NORM,0);
