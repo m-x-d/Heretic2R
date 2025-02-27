@@ -332,6 +332,83 @@ void MorphPlayerToChicken(edict_t* self, edict_t* caster) //TODO: remove unused 
 	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/teleport.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
+// This called when missile touches anything (world or edict).
+static void MorphMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
+{
+	// Has the target got reflection turned on?
+	if (self->reflect_debounce_time > 0 && EntReflecting(other, true, true))
+	{
+		Create_rand_relect_vect(self->velocity, self->velocity);
+		Vec3ScaleAssign(OVUM_SPEED / 2.0f, self->velocity);
+		MorphReflect(self, other, self->velocity);
+
+		return;
+	}
+
+	// Turn target into a chicken if monster or player.
+	if (((other->svflags & SVF_MONSTER) && !(other->svflags & SVF_BOSS) && !other->monsterinfo.c_mode) || (other->client != NULL && DEATHMATCH))
+	{
+		if (other->client != NULL)
+		{
+			qboolean skip_morph = false; //mxd
+
+			// Don't turn a super chicken back to a player.
+			if (other->client->playerinfo.edictflags & FL_SUPER_CHICKEN)
+				skip_morph = true;
+
+			// Don't target team members in team deathmatching, if they are on the same team, and friendly fire is not enabled.
+			if (DEATHMATCH && (DMFLAGS & (DF_MODELTEAMS | DF_SKINTEAMS)) && !(DMFLAGS & DF_HURT_FRIENDS) && OnSameTeam(other, self->owner))
+				skip_morph = true;
+
+			if (skip_morph)
+			{
+				// Turn off the client effect.
+				gi.sound(other, CHAN_WEAPON, gi.soundindex("misc/null.wav"), 1.0f, ATTN_NORM, 0.0f);
+				gi.CreateEffect(NULL, FX_SPELL_MORPHEXPLODE, 0, self->s.origin, "d", self->movedir);
+				G_SetToFree(self);
+
+				return;
+			}
+		}
+
+		if (other->svflags & SVF_MONSTER)
+		{
+			// Deal with the existing bad guy.
+			other->think = MonsterMorphFadeOut;
+			other->nextthink = level.time + 0.1f;
+			other->touch = NULL;
+			other->morph_timer = MORPH_TELE_TIME;
+			other->enemy = self->owner;
+			VectorClear(other->velocity);
+
+			gi.CreateEffect(&other->s, FX_PLAYER_TELEPORT_OUT, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "");
+		}
+		else
+		{
+			MorphPlayerToChicken(other, self->owner);
+		}
+
+		const char* snd_name = "weapons/crow.wav"; //mxd
+		if (DEATHMATCH && other->client != NULL && (other->client->playerinfo.edictflags & FL_SUPER_CHICKEN)) // There shouldn't be any monsters in deathmatch, but...
+			snd_name = "weapons/supercrow.wav"; //mxd
+
+		gi.sound(other, CHAN_VOICE, gi.soundindex(snd_name), 1.0f, ATTN_NORM, 0.0f);
+
+		// Turn off the client effect.
+		gi.sound(other, CHAN_WEAPON, gi.soundindex("misc/null.wav"), 1.0f, ATTN_NORM, 0.0f);
+		gi.CreateEffect(NULL, FX_SPELL_MORPHEXPLODE, 0, self->s.origin, "d", self->movedir);
+	}
+	else // We hit a wall or object.
+	{
+		// Start the explosion.
+		vec3_t* dir = (plane != NULL ? &plane->normal : &self->movedir); //mxd
+		gi.CreateEffect(NULL, FX_SPELL_MORPHEXPLODE, 0, self->s.origin, "d", *dir);
+	}
+
+	// Turn off the client effect.
+	G_SetToFree(self);
+}
+
 edict_t *MorphReflect(edict_t *self, edict_t *other, vec3_t vel)
 {
 	edict_t	*morph;
@@ -360,99 +437,6 @@ edict_t *MorphReflect(edict_t *self, edict_t *other, vec3_t vel)
    	// Do a nasty looking blast at the impact point
    	gi.CreateEffect(&morph->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", morph->velocity);
 	return(morph);
-}
-
-
-// ****************************************************************************
-// MorphMissile touch
-// ****************************************************************************
-
-// This called when missile touches anything (world or edict)
-
-void MorphMissileTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface)
-{
-
-	// has the target got reflection turned on ?
-	if(EntReflecting(other, true, true) && self->reflect_debounce_time)
-	{
-	   	Create_rand_relect_vect(self->velocity, self->velocity);
-	   	Vec3ScaleAssign(OVUM_SPEED/2, self->velocity);
-	   	MorphReflect(self, other, self->velocity);
-
-		return;
-	}
-
-	// Turn target into a chicken if monster or player
-	if(((other->svflags & SVF_MONSTER) && !(other->svflags&SVF_BOSS) && !(other->monsterinfo.c_mode)) || 
-				((other->client)&&(deathmatch->value)))
-	{
-		//Don't turn a super chicken back to a player
-		if ( (other->client) && (other->client->playerinfo.edictflags & FL_SUPER_CHICKEN) )
-		{
-			// Turn off the client effect
-			gi.sound(other,CHAN_WEAPON,gi.soundindex("misc/null.wav"),1,ATTN_NORM,0);
-			gi.CreateEffect(NULL, FX_SPELL_MORPHEXPLODE, 0, self->s.origin, "d", self->movedir);
-			G_SetToFree(self);
-			return;
-		}
-
-		// don't target team members in team deathmatching, if they are on the same team, and friendly fire is not enabled.
-		if ((other->client && (int)(dmflags->value) & (DF_MODELTEAMS | DF_SKINTEAMS)) && !((int)dmflags->value & DF_HURT_FRIENDS) && deathmatch->value)
-		{
-			if (OnSameTeam(other, self->owner))
-			{
-				// Turn off the client effect
-				gi.sound(other,CHAN_WEAPON,gi.soundindex("misc/null.wav"),1,ATTN_NORM,0);
-				gi.CreateEffect(NULL, FX_SPELL_MORPHEXPLODE, 0, self->s.origin, "d", self->movedir);
-				G_SetToFree(self);
-				return;
-			}
-		}
-
-		if (other->svflags & SVF_MONSTER ) 
-		{
-			// deal with the existing bad guy
-			other->think = MonsterMorphFadeOut;
-			other->nextthink = level.time + 0.1;
-			other->touch = NULL;
-			other->morph_timer = MORPH_TELE_TIME;
-			other->enemy = self->owner;
-			VectorClear(other->velocity);
-			gi.CreateEffect(&other->s, FX_PLAYER_TELEPORT_OUT, CEF_OWNERS_ORIGIN|CEF_FLAG6, NULL, "" ); 
-		}
-		else
-			MorphPlayerToChicken(other, self->owner);
-
-		if (deathmatch->value)
-		{
-			//There shouldn't be any monsters in deathmatch.. but...
-			assert(other->client);
-
-			if ( (other->client) && (other->client->playerinfo.edictflags & FL_SUPER_CHICKEN) )
-				gi.sound(other,CHAN_VOICE,gi.soundindex("weapons/supercrow.wav"),1,ATTN_NONE,0);
-			else
-				gi.sound(other,CHAN_VOICE,gi.soundindex("weapons/crow.wav"),1,ATTN_NONE,0);
-		}
-		else
-		{
-			gi.sound(other,CHAN_VOICE,gi.soundindex("weapons/crow.wav"),1,ATTN_NORM,0);
-		}
-
-		gi.sound(other,CHAN_WEAPON,gi.soundindex("misc/null.wav"),1,ATTN_NORM,0);
-		gi.CreateEffect(NULL, FX_SPELL_MORPHEXPLODE, 0, self->s.origin, "d", self->movedir);
-	}
-	// else we hit a wall / object
-	else
-	{
-		if(plane && (plane->normal))
-			// Start the explosion
-			gi.CreateEffect(NULL, FX_SPELL_MORPHEXPLODE, 0, self->s.origin, "d", plane->normal);
-		else
-			gi.CreateEffect(NULL, FX_SPELL_MORPHEXPLODE, 0, self->s.origin, "d", self->movedir);
-	}
-
-	// Turn off the client effect
-	G_SetToFree(self);				// Allow time to get to client
 }
 
 // ****************************************************************************
