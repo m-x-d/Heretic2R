@@ -19,7 +19,10 @@
 #include "Vector.h"
 #include "g_local.h"
 
-#pragma region ========================== Chicken -> Corvus morph ==========================
+// Morphing is done in 3 steps:
+// 1: Spawn teleport sfx, start fading out current player model.
+// 2: After fade-out is finished, swap to target player model and start fading it in.
+// 3: Cleanup morph-related player settings.
 
 // Done morphing, clean up after ourselves - for PLAYER only.
 void CleanUpPlayerMorph(edict_t* self) //mxd. Named 'CleanUpMorph' in original version.
@@ -35,8 +38,10 @@ void CleanUpPlayerMorph(edict_t* self) //mxd. Named 'CleanUpMorph' in original v
 	self->s.color.a = 255;
 }
 
+#pragma region ========================== Chicken -> Corvus morph ==========================
+
 // We are done being a chicken, let's be Corvus again - switch models from chicken back to Corvus and do teleport fade in - for PLAYER only.
-void ResetPlayerMorph(edict_t* self) //mxd. Named 'reset_morph_to_elf' in original version.
+void MorphChickenToPlayerEnd(edict_t* self) //mxd. Named 'reset_morph_to_elf' in original version.
 {
 	// We have no damage, and no motion type.
 	self->takedamage = DAMAGE_AIM;
@@ -99,7 +104,7 @@ void ResetPlayerMorph(edict_t* self) //mxd. Named 'reset_morph_to_elf' in origin
 }
 
 // Modify a chicken into a player - first call. Start the teleport effect on the chicken. For PLAYER only.
-static void MorphChickenToPlayer(edict_t* self)
+static void MorphChickenToPlayerStart(edict_t* self)
 {
 	// If we are teleporting or morphing, forget it.
 	if (self->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING))
@@ -132,25 +137,25 @@ static void MorphChickenToPlayer(edict_t* self)
 	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/teleport.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
+#pragma endregion
+
+#pragma region ========================== Corvus -> Chicken morph ==========================
+
 // Watch the chicken to see if we should become the elf again. For PLAYER only.
 static void ChickenPlayerThink(edict_t* self) //mxd. Named 'watch_chicken' in original version.
 {
 	// Are we done yet?
 	if (self->morph_timer <= (int)level.time)
-		MorphChickenToPlayer(self);
+		MorphChickenToPlayerStart(self);
 
 	self->nextthink = level.time + 0.1f;
 }
 
-#pragma endregion
-
-#pragma region ========================== Corvus -> Chicken morph ==========================
-
 // Switch the models from player to chicken and then make us re-appear ala teleport. For PLAYER only.
-void PerformPlayerMorph(edict_t* self) //mxd. Named 'Perform_Morph' in original version.
+void MorphPlayerToChickenEnd(edict_t* self) //mxd. Named 'Perform_Morph' in original version.
 {
 	static const vec3_t mins = { -16.0f, -16.0f, -36.0f }; //mxd. Made local static.
-	static const vec3_t maxs = { 16.0f,  16.0f,  36.0f }; //mxd. Made local static.
+	static const vec3_t maxs = {  16.0f,  16.0f,  36.0f }; //mxd. Made local static.
 
 	// Change out our model.
 	self->model = "models/monsters/chicken2/tris.fm";
@@ -189,7 +194,7 @@ void PerformPlayerMorph(edict_t* self) //mxd. Named 'Perform_Morph' in original 
 		self->s.scale = 2.5f;
 
 		VectorSet(self->mins, -16.0f, -16.0f, -48.0f);
-		VectorSet(self->maxs, 16.0f, 16.0f, 64.0f);
+		VectorSet(self->maxs,  16.0f,  16.0f,  64.0f);
 
 		self->client->playerinfo.edictflags |= FL_SUPER_CHICKEN;
 	}
@@ -204,7 +209,7 @@ void PerformPlayerMorph(edict_t* self) //mxd. Named 'Perform_Morph' in original 
 
 		// Set new mins and maxs.
 		VectorSet(self->intentMins, -8.0f, -8.0f, -12.0f);
-		VectorSet(self->intentMaxs, 8.0f, 8.0f, 12.0f);
+		VectorSet(self->intentMaxs,  8.0f,  8.0f,  12.0f);
 
 		self->client->playerinfo.edictflags |= FL_AVERAGE_CHICKEN;
 	}
@@ -239,7 +244,7 @@ void PerformPlayerMorph(edict_t* self) //mxd. Named 'Perform_Morph' in original 
 }
 
 // Modify a player into a chicken - first call. Start the teleport effect on the player. For PLAYER only.
-void MorphPlayerToChicken(edict_t* self)
+void MorphPlayerToChickenStart(edict_t* self)
 {
 	// If we are teleporting or morphing, forget it.
 	if (self->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING))

@@ -376,7 +376,7 @@ static void Cmd_Give_f(edict_t* ent)
 	// Give all does not give chicken.
 	if (Q_stricmp(name, "chicken") == 0)
 	{
-		MorphPlayerToChicken(ent);
+		MorphPlayerToChickenStart(ent);
 		return;
 	}
 

@@ -121,7 +121,7 @@ static void MorphMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, cs
 		}
 		else
 		{
-			MorphPlayerToChicken(other);
+			MorphPlayerToChickenStart(other);
 		}
 
 		const char* snd_name = "weapons/crow.wav"; //mxd

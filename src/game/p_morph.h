@@ -8,7 +8,7 @@
 
 #include "q_Typedef.h"
 
-extern void MorphPlayerToChicken(edict_t* self);
-extern void PerformPlayerMorph(edict_t* self);
+extern void MorphPlayerToChickenStart(edict_t* self);
+extern void MorphPlayerToChickenEnd(edict_t* self);
+extern void MorphChickenToPlayerEnd(edict_t* self);
 extern void CleanUpPlayerMorph(edict_t* self);
-extern void ResetPlayerMorph(edict_t* self);
