@@ -630,7 +630,7 @@ qboolean G_HandleTeleport(const playerinfo_t* info)
 		else if (info->edictflags & FL_CHICKEN)
 			ResetPlayerMorph(self); // We're set as a chicken.
 		else
-			Perform_Morph(self);
+			PerformPlayerMorph(self);
 
 		return true;
 	}

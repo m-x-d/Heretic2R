@@ -200,58 +200,50 @@ static void ChickenPlayerThink(edict_t* self) //mxd. Named 'watch_chicken' in or
 	self->nextthink = level.time + 0.1f;
 }
 
-// *************************************************************************************************
-// Perform_Morph
-// ------------
-// Switch the models from player to chicken and then make us re-appear ala teleport. For PLAYER
-// only. Called from G_ANIMACTOR.C.
-// *************************************************************************************************
-
-void Perform_Morph(edict_t *self)
+// Switch the models from player to chicken and then make us re-appear ala teleport. For PLAYER only.
+void PerformPlayerMorph(edict_t* self) //mxd. Named 'Perform_Morph' in original version.
 {
-	qboolean	super_chicken = false;
-	trace_t		trace;
-	vec3_t		mins = { -16, -16, -36};
-	vec3_t		maxs = {  16,  16,  36};
-	vec3_t		pos;
-	int			i;
+	static const vec3_t mins = { -16.0f, -16.0f, -36.0f }; //mxd. Made local static.
+	static const vec3_t maxs = {  16.0f,  16.0f,  36.0f }; //mxd. Made local static.
 
-	// change out our model
+	// Change out our model.
 	self->model = "models/monsters/chicken2/tris.fm";
-	self->s.modelindex = gi.modelindex("models/monsters/chicken2/tris.fm");
+	self->s.modelindex = (byte)gi.modelindex("models/monsters/chicken2/tris.fm");
 
-	self->client->playerinfo.effects &= ~(EF_JOINTED|EF_SWAPFRAME);
+	self->client->playerinfo.effects &= ~(EF_JOINTED | EF_SWAPFRAME);
 	self->client->playerinfo.effects |= EF_CHICKEN;
 	self->s.skeletalType = SKEL_NULL;
 	self->client->playerinfo.renderfx |= RF_IGNORE_REFS;
 
-	if (!irand(0,10))
-		super_chicken = true;
+	qboolean super_chicken = (irand(0, 10) == 0);
 
+	// Check if super-chicken can fit here.
 	if (super_chicken)
 	{
+		vec3_t pos;
 		VectorCopy(self->s.origin, pos);
-		pos[2] += 2;
+		pos[2] += 2.0f;
 
-		gi.trace(pos, mins, maxs, pos, self, MASK_PLAYERSOLID,&trace);
+		trace_t trace;
+		gi.trace(pos, mins, maxs, pos, self, MASK_PLAYERSOLID, &trace);
 
-		if (trace.fraction < 1 || trace.startsolid || trace.allsolid)
+		if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
 			super_chicken = false;
 	}
-	
+
 	if (super_chicken)
 	{
-		// reset our motion stuff
+		// Reset our motion stuff.
 		self->health = 999;
 		self->mass = 3000;
-		self->yaw_speed = 30;
-		self->gravity = 1.0;
+		self->yaw_speed = 30.0f;
+		self->gravity = 1.0f;
 
-		self->monsterinfo.scale = 2.5;
-		self->s.scale = 2.5;
+		self->monsterinfo.scale = 2.5f;
+		self->s.scale = 2.5f;
 
-		VectorSet(self->mins, -16, -16, -48);
-		VectorSet(self->maxs,  16,  16,  64);
+		VectorSet(self->mins, -16.0f, -16.0f, -48.0f);
+		VectorSet(self->maxs, 16.0f, 16.0f, 64.0f);
 
 		self->client->playerinfo.edictflags |= FL_SUPER_CHICKEN;
 	}
@@ -259,45 +251,45 @@ void Perform_Morph(edict_t *self)
 	{
 		self->health = 1;
 		self->mass = 30;
-		self->yaw_speed = 20;
-		self->gravity = 0.6;
+		self->yaw_speed = 20.0f;
+		self->gravity = 0.6f;
 
 		self->monsterinfo.scale = MODEL_SCALE;
 
-		// new mins and max's too
-		VectorSet(self->intentMins,-8,-8,-12);
-		VectorSet(self->intentMaxs,8,8,12);
+		// Set new mins and maxs.
+		VectorSet(self->intentMins, -8.0f, -8.0f, -12.0f);
+		VectorSet(self->intentMaxs, 8.0f, 8.0f, 12.0f);
 
 		self->client->playerinfo.edictflags |= FL_AVERAGE_CHICKEN;
 	}
 
-	// not being knocked back, and stepping like a chicken
+	// Not being knocked back, and stepping like a chicken.
 	self->movetype = PHYSICSTYPE_STEP;
 	VectorClear(self->knockbackvel);
 
-	// reseting which skin we use, and new scale
+	// Reset which skin we use.
 	self->client->playerinfo.skinnum = 0;
 	self->client->playerinfo.clientnum = self - g_edicts - 1;
 
-	// reset our thinking
+	// Reset our thinking.
 	self->oldthink = self->think;
 	self->think = ChickenPlayerThink;
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + 0.1f;
 
 	self->physicsFlags |= PF_RESIZE;
 
-	for (i=0;i<MAX_FM_MESH_NODES;i++)
+	for (int i = 0; i < MAX_FM_MESH_NODES; i++)
 		self->client->playerinfo.fmnodeinfo[i].flags &= ~FMNI_NO_DRAW;
 
-	// reset our animation
+	// Reset our animation.
 	P_PlayerAnimSetLowerSeq(&self->client->playerinfo, ASEQ_STAND);
 
-	// draw the teleport splash at the destination
-	gi.CreateEffect(&self->s, FX_PLAYER_TELEPORT_IN, CEF_BROADCAST|CEF_OWNERS_ORIGIN|CEF_FLAG6, self->s.origin, "");
+	// Draw the teleport splash at the destination.
+	gi.CreateEffect(&self->s, FX_PLAYER_TELEPORT_IN, CEF_BROADCAST | CEF_OWNERS_ORIGIN | CEF_FLAG6, self->s.origin, "");
 
-	// restart the loop and tell us next time we aren't de-materialising
+	// Restart the loop and tell us next time we aren't de-materializing.
 	self->client->tele_count = TELE_TIME;
-	self->client->tele_dest[0] = self->client->tele_dest[1] = self->client->tele_dest[2] = -1;
+	VectorSet(self->client->tele_dest, -1.0f, -1.0f, -1.0f);
 }
 
 // *************************************************************************************************
