@@ -179,6 +179,110 @@ static void RedRainThink(edict_t* self)
 	}
 }
 
+static void RedRainMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
+{
+	// Has the target got reflection turned on?
+	if (self->reflect_debounce_time > 0 && EntReflecting(other, true, true))
+	{
+		Create_rand_relect_vect(self->velocity, self->velocity);
+		Vec3ScaleAssign(RED_ARROW_SPEED / 2, self->velocity);
+		RedRainMissileReflect(self, other, self->velocity);
+
+		return;
+	}
+
+	// Damage from direct impact of arrow, normal or powered up.
+	if (other->takedamage != DAMAGE_NO)
+		T_Damage(other, self, self->owner, self->movedir, self->s.origin, plane->normal, self->dmg, self->dmg, DAMAGE_SPELL, MOD_STORM);
+
+	AlertMonsters(self, self->owner, 5.0f, false);
+
+	// Backup effect a little so it doesn't appear in the wall (but only if we hit the wall).
+	vec3_t origin;
+	if (other->svflags & SVF_MONSTER)
+	{
+		VectorCopy(self->s.origin, origin);
+	}
+	else
+	{
+		VectorNormalize2(self->velocity, origin);
+		Vec3ScaleAssign(-ARROW_BACKUP, origin);
+		Vec3AddAssign(self->s.origin, origin);
+	}
+
+	VectorClear(self->velocity);
+
+	// Create a damage handling effect.
+	edict_t* damage_area = G_Spawn();
+
+	VectorCopy(origin, damage_area->s.origin);
+	damage_area->think = RedRainThink;
+	damage_area->nextthink = level.time + RED_RAIN_DAMAGE_INTERVAL;
+	damage_area->solid = SOLID_NOT;
+	damage_area->clipmask = CONTENTS_EMPTY;
+	damage_area->movetype = MOVETYPE_FLYMISSILE; // Necessary for proper processing of thinkers.
+	damage_area->wait = RED_RAIN_DAMAGE_INTERVAL;
+
+	damage_area->delay = level.time + RED_RAIN_DURATION;
+	if (DEATHMATCH)
+		damage_area->delay -= 2; // 5 seconds in DM.
+
+	damage_area->owner = self->owner;
+	damage_area->red_rain_count = self->owner->red_rain_count;
+	damage_area->classname = "Spell_RedRain";
+	damage_area->health = self->health; // Copy over the powerup status.
+	damage_area->s.effects |= EF_ALWAYS_ADD_EFFECTS;
+
+	const qboolean is_powered = (self->health > 0);
+	damage_area->dmg = (is_powered ? POWER_RAIN_DAMAGE : RED_RAIN_DAMAGE); //mxd
+	const float radius = (is_powered ? POWER_RAIN_RADIUS : RED_RAIN_RADIUS); //mxd
+
+	// Find the top of the damage area.  Check down in an area less than the max size.
+	VectorSet(damage_area->mins, -radius * 0.5f, -radius * 0.5f, -1.0f);
+	VectorSet(damage_area->maxs, radius * 0.5f, radius * 0.5f, 1.0f);
+
+	vec3_t end;
+	VectorCopy(origin, end);
+	end[2] += MAX_REDRAINHEIGHT;
+
+	trace_t trace;
+	gi.trace(origin, damage_area->mins, damage_area->maxs, end, damage_area, MASK_SOLID, &trace);
+
+	if (trace.fraction == 1.0f)
+		damage_area->maxs[2] = MAX_REDRAINHEIGHT; // Put the bounds up all the way.
+	else
+		damage_area->maxs[2] = trace.endpos[2] - origin[2]; // Set the bounds up only part way.
+
+	// Find the bottom of the damage area.
+	end[2] = origin[2] - MAX_REDRAINFALLDIST;
+
+	gi.trace(origin, damage_area->mins, damage_area->maxs, end, damage_area, MASK_SOLID, &trace);
+
+	if (trace.fraction == 1.0f)
+		damage_area->mins[2] = -MAX_REDRAINFALLDIST; // Put the bounds down all the way.
+	else
+		damage_area->mins[2] = trace.endpos[2] - origin[2]; // Set the bounds down where the trace stopped.
+
+	// Put the bounds of the damage area out to the max position now.
+	damage_area->mins[0] = -radius;
+	damage_area->mins[1] = -radius;
+	damage_area->maxs[0] = radius;
+	damage_area->maxs[1] = radius;
+
+	VectorSet(damage_area->pos1, damage_area->s.origin[0], damage_area->s.origin[1], damage_area->maxs[2]);
+
+	gi.linkentity(damage_area);
+
+	// Start the red rain. Send along the health as a flag, to indicate if powered up.
+	gi.CreateEffect(&damage_area->s, FX_WEAPON_REDRAIN, CEF_BROADCAST | (self->health << 5), origin, "");
+
+	damage_area->s.sound = (byte)gi.soundindex("weapons/RedRainFall.wav");
+	damage_area->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
+
+	// Turn off the client effect.
+	gi.RemoveEffects(&self->s, FX_WEAPON_REDRAINMISSILE);
+	G_SetToFree(self);
+}
 
 // ****************************************************************************
 // RedRainMissile reflect
@@ -214,129 +318,6 @@ edict_t *RedRainMissileReflect(edict_t *self, edict_t *other, vec3_t vel)
 
 	return(redarrow);
 }
-
-
-// ****************************************************************************
-// RedRainMissile touch
-// ****************************************************************************
-
-void RedRainMissileTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface)
-{
-	vec3_t				org, end;
-	edict_t				*damagearea;
-	trace_t				trace;
-	float				radius;
-
-	// has the target got reflection turned on ?
-	if (self->reflect_debounce_time)
-	{
-		if(EntReflecting(other, true, true))
-		{
-			Create_rand_relect_vect(self->velocity, self->velocity);
-			Vec3ScaleAssign(RED_ARROW_SPEED/2, self->velocity);
-			RedRainMissileReflect(self, other, self->velocity);
-
-			return;
-		}
-	}
-
-	if(other->takedamage)
-	{	// Damage from direct impact of arrow, normal or powered up.
-		T_Damage(other, self, self->owner, self->movedir, self->s.origin, plane->normal, self->dmg, self->dmg, DAMAGE_SPELL,MOD_STORM);
-	}
-	AlertMonsters (self, self->owner, 5, false);
-
-	// Backup effect a little so it doesn`t appear in the wall (but only if we hit the wall)
-	if(other->svflags & SVF_MONSTER)
-	{
-		VectorCopy(self->s.origin, org);
-	}
-	else
-	{
-		VectorNormalize2(self->velocity, org);
-		Vec3ScaleAssign(-ARROW_BACKUP, org);
-		Vec3AddAssign(self->s.origin, org);
-	}
-	VectorClear(self->velocity);
-
-	// Create a damage handling effect
-	damagearea = G_Spawn();
-	VectorCopy(org, damagearea->s.origin);
-	damagearea->think = RedRainThink;
-	damagearea->nextthink = level.time + RED_RAIN_DAMAGE_INTERVAL;
-	damagearea->solid = SOLID_NOT;
-	damagearea->clipmask = CONTENTS_EMPTY;
-	damagearea->movetype = MOVETYPE_FLYMISSILE;				// Necessary for proper processing of thinkers
-	damagearea->wait = RED_RAIN_DAMAGE_INTERVAL;
-	if(deathmatch->value)
-		damagearea->delay = level.time + RED_RAIN_DURATION - 2;//5 secs in DM
-	else
-		damagearea->delay = level.time + RED_RAIN_DURATION;
-	damagearea->owner = self->owner;
-	damagearea->red_rain_count = self->owner->red_rain_count;
-	damagearea->classname = "Spell_RedRain";
-	damagearea->health = self->health;						// Copy over the powerup status.
-	damagearea->s.effects |= EF_ALWAYS_ADD_EFFECTS;
-
-	if (self->health == 0)
-	{	// Not powered up
-		damagearea->dmg = RED_RAIN_DAMAGE;
-		radius = RED_RAIN_RADIUS;
-	}
-	else
-	{	// Powered up rain
-		damagearea->dmg = POWER_RAIN_DAMAGE;
-		radius = POWER_RAIN_RADIUS;
-	}
-
-	// Find the top of the damage area.  Check down in an area less than the max size.
-	VectorSet(damagearea->mins, -radius*0.5, -radius*0.5, -1.0F);
-	VectorSet(damagearea->maxs, radius*0.5, radius*0.5, 1.0F);
-	VectorCopy(org, end);
-	end[2] += MAX_REDRAINHEIGHT;
-
-	gi.trace(org, damagearea->mins, damagearea->maxs, end, damagearea, MASK_SOLID,&trace);
-//	if(trace.startsolid)						// Ignore startsolids.
-//		damagearea->maxs[2] = 1.0;
-//	else
-	if (trace.fraction == 1.0F)
-		damagearea->maxs[2] = MAX_REDRAINHEIGHT;			// Put the bounds up all the way
-	else
-		damagearea->maxs[2] = trace.endpos[2] - org[2];		// Set the bounds up only part way
-
-	// Find the bottom of the damage area.
-	end[2] = org[2] - MAX_REDRAINFALLDIST;
-
-	gi.trace(org, damagearea->mins, damagearea->maxs, end, damagearea, MASK_SOLID,&trace);
-//	if(trace.startsolid)						// Startsolids mean that the area is too close to a wall
-//		damagearea->mins[2] = -1.0;
-//	else 
-	if (trace.fraction == 1.0F)
-		damagearea->mins[2] = -MAX_REDRAINFALLDIST;			// Put the bounds down all the way
-	else
-		damagearea->mins[2] = trace.endpos[2] - org[2];		// Set the bounds down where the trace stopped
-
-	// Put the bounds of the damage area out to the max position now.
-	damagearea->mins[0] = damagearea->mins[1] = -radius;
-	damagearea->maxs[0] = damagearea->maxs[1] = radius;
-	
-	VectorSet(damagearea->pos1, damagearea->s.origin[0], damagearea->s.origin[1], damagearea->maxs[2]);
-
-	gi.linkentity(damagearea);
-
-	// Start the red rain
-	// Send along the health as a flag, to indicate if powered up.
-	gi.CreateEffect(&damagearea->s, FX_WEAPON_REDRAIN, CEF_BROADCAST|(self->health<<5), org, "");
-	
-//	gi.sound(damagearea, CHAN_VOICE, gi.soundindex("weapons/RedRainFall.wav"), 2, ATTN_NORM,0);
-	damagearea->s.sound = gi.soundindex("weapons/RedRainFall.wav");
-	damagearea->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
-
-	// Turn off the client effect
-	gi.RemoveEffects(&self->s, FX_WEAPON_REDRAINMISSILE);
-	G_SetToFree(self);
-}
-
 
 // ****************************************************************************
 // RedRainMissile think
