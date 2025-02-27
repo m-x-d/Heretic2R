@@ -1,21 +1,20 @@
 //
-// Heretic II
+// spl_Phoenix.c
+//
 // Copyright 1998 Raven Software
 //
 
 #include "spl_Phoenix.h" //mxd
-#include "g_local.h"
-#include "fx.h"
-#include "vector.h"
-#include "angles.h"
-#include "matrix.h"
-#include "Utilities.h"
 #include "g_playstats.h"
-#include "decals.h"
 #include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
+#include "Decals.h"
+#include "FX.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_local.h"
 
-#define ARROW_RADIUS			4.0F
+#define ARROW_RADIUS	4.0f
 
 void create_phoenix(edict_t *phoenix);
 
