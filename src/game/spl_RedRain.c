@@ -284,6 +284,12 @@ static void RedRainMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 	G_SetToFree(self);
 }
 
+static void RedRainMissileThink(edict_t* self)
+{
+	self->svflags |= SVF_NOCLIENT;
+	self->think = NULL;
+}
+
 // ****************************************************************************
 // RedRainMissile reflect
 // ****************************************************************************
@@ -317,16 +323,6 @@ edict_t *RedRainMissileReflect(edict_t *self, edict_t *other, vec3_t vel)
 	gi.CreateEffect(&redarrow->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", redarrow->velocity);
 
 	return(redarrow);
-}
-
-// ****************************************************************************
-// RedRainMissile think
-// ****************************************************************************
-
-void RedRainMissileThink(edict_t *self)
-{
-	self->svflags |= SVF_NOCLIENT;
-	self->think = NULL;
 }
 
 // create the guts of the red rain missile
