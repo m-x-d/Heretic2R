@@ -311,39 +311,37 @@ static void CreateRedRainArrow(edict_t* arrow)
 	arrow->clipmask = MASK_SHOT;
 }
 
-// ****************************************************************************
-// RedRainMissile reflect
-// ****************************************************************************
-
-edict_t *RedRainMissileReflect(edict_t *self, edict_t *other, vec3_t vel)
+edict_t* RedRainMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
 {
-	edict_t *redarrow;
+	// Create a new missile to replace the old one - this is necessary because physics will do nasty things
+	// with the existing one, since we hit something. Hence, we create a new one totally.
+	edict_t* arrow = G_Spawn();
 
-	// create a new missile to replace the old one - this is necessary cos physics will do nasty shit
-	// with the existing one,since we hit something. Hence, we create a new one totally.
-	redarrow = G_Spawn();
-	VectorCopy(self->s.origin, redarrow->s.origin);
-	redarrow->health = self->health;
-	redarrow->owner = other;
-	redarrow->enemy = self->owner;
-	redarrow->owner->red_rain_count++;
+	// Copy everything across.
+	CreateRedRainArrow(arrow);
+	VectorCopy(self->s.origin, arrow->s.origin);
+	VectorCopy(vel, arrow->velocity);
+	arrow->health = self->health;
+	arrow->owner = other;
+	arrow->enemy = self->owner;
+	arrow->reflect_debounce_time = self->reflect_debounce_time - 1; // So it doesn't infinitely reflect in one frame somehow.
+	arrow->reflected_time = self->reflected_time;
+
+	arrow->owner->red_rain_count++;
 	self->owner->red_rain_count--;
-	CreateRedRainArrow(redarrow);
 
-	VectorCopy(vel, redarrow->velocity);
-	redarrow->reflect_debounce_time = self->reflect_debounce_time -1;
-	redarrow->reflected_time=self->reflected_time;
-	G_LinkMissile(redarrow); 
-	gi.CreateEffect(&redarrow->s, FX_WEAPON_REDRAINMISSILE, 
-			CEF_OWNERS_ORIGIN|(redarrow->health<<5)|CEF_FLAG8, NULL, "t", redarrow->velocity);
+	G_LinkMissile(arrow);
 
-	// kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it. 
+	// Create new trails for the new missile.
+	gi.CreateEffect(&arrow->s, FX_WEAPON_REDRAINMISSILE, CEF_OWNERS_ORIGIN | (arrow->health << 5) | CEF_FLAG8, NULL, "t", arrow->velocity);
+
+	// Kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it.
 	G_SetToFree(self);
 
-	// Do a nasty looking blast at the impact point
-	gi.CreateEffect(&redarrow->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", redarrow->velocity);
+	// Do a nasty looking blast at the impact point.
+	gi.CreateEffect(&arrow->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", arrow->velocity);
 
-	return(redarrow);
+	return arrow;
 }
 
 // ****************************************************************************
