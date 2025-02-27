@@ -105,7 +105,7 @@ edict_t* FindInRadius(edict_t* from, const vec3_t org, const float radius) //mxd
 	static vec3_t min;
 	static vec3_t max;
 
-	if (from == NULL)
+	if (from == NULL) // First call.
 	{
 		radius_sq = radius * radius;
 		VectorCopy(org, min);
@@ -143,7 +143,7 @@ edict_t* FindInBounds(const edict_t* from, const vec3_t min, const vec3_t max) /
 	static int index = -1;
 	static int count;
 
-	if (from == NULL)
+	if (from == NULL) // First call.
 	{
 		count = gi.BoxEdicts(min, max, touch_list, MAX_EDICTS, AREA_SOLID);
 		index = 0;
