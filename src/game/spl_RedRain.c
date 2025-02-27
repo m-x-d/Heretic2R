@@ -344,92 +344,68 @@ edict_t* RedRainMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
 	return arrow;
 }
 
-// ****************************************************************************
-// SpellCastRedRain
-// ****************************************************************************
-
-void SpellCastRedRain(edict_t *Caster, vec3_t StartPos, vec3_t AimAngles, vec3_t unused, float value)
+void SpellCastRedRain(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, vec3_t unused, float value) //TODO: remove unused args.
 {
-	edict_t		*redarrow;
-	trace_t		trace;
-	vec3_t		dir, forward, endpos;
-	qboolean	powerup;
+	caster->red_rain_count++;
 
-	redarrow = G_Spawn();
+	edict_t* arrow = G_Spawn();
+	CreateRedRainArrow(arrow);
 
-	Caster->red_rain_count++;
-	// health indicates a level of powerup
-	if (Caster->client->playerinfo.powerup_timer > level.time)
-	{	// Shoot powered up red rain.
- 		redarrow->health = 1;
-		powerup=true;
-	}
+	// Health indicates a level of powerup.
+	const qboolean is_powered = (caster->client->playerinfo.powerup_timer > level.time); //mxd
+	arrow->health = (is_powered ? 1 : 0); //mxd
+
+	VectorCopy(start_pos, arrow->s.origin);
+
+	// Check ahead first to see if it's going to hit anything at this angle.
+	vec3_t forward;
+	AngleVectors(aim_angles, forward, NULL, NULL);
+
+	vec3_t end_pos;
+	VectorMA(start_pos, RED_ARROW_SPEED, forward, end_pos);
+
+	trace_t trace;
+	gi.trace(start_pos, vec3_origin, vec3_origin, end_pos, caster, MASK_MONSTERSOLID, &trace);
+
+	if (trace.ent != NULL && OkToAutotarget(caster, trace.ent))
+		VectorScale(forward, RED_ARROW_SPEED, arrow->velocity); // Already going to hit a valid target at this angle - so don't auto-target.
 	else
-	{	// Normal red rain arrow
-		redarrow->health = 0;
-		powerup=false;
-	}
+		GetAimVelocity(caster->enemy, arrow->s.origin, RED_ARROW_SPEED, aim_angles, arrow->velocity); // Auto-target current enemy.
 
-	VectorCopy(StartPos, redarrow->s.origin);
-	//Check ahead first to see if it's going to hit anything at this angle
-	AngleVectors(AimAngles, forward, NULL, NULL);
-	VectorMA(StartPos, RED_ARROW_SPEED, forward, endpos);
-	gi.trace(StartPos, vec3_origin, vec3_origin, endpos, Caster, MASK_MONSTERSOLID,&trace);
-	if(trace.ent && OkToAutotarget(Caster, trace.ent))
-	{//already going to hit a valid target at this angle- so don't autotarget
-		VectorScale(forward, RED_ARROW_SPEED, redarrow->velocity);
-	}
-	else
-	{//autotarget current enemy
-		GetAimVelocity(Caster->enemy, redarrow->s.origin, RED_ARROW_SPEED, AimAngles, redarrow->velocity);
-	}
-	VectorNormalize2(redarrow->velocity, dir);
-	// naughty naughty - this requires a normalised vector
-	AnglesFromDir(dir, redarrow->s.angles);
+	vec3_t dir;
+	VectorNormalize2(arrow->velocity, dir);
+	AnglesFromDir(dir, arrow->s.angles);
 
-	CreateRedRainArrow(redarrow);
-	redarrow->reflect_debounce_time = MAX_REFLECT;
-	
-	redarrow->owner = Caster;
-	G_LinkMissile(redarrow);
+	arrow->reflect_debounce_time = MAX_REFLECT;
+	arrow->owner = caster;
 
-	gi.RemoveEffects(&Caster->s, FX_WEAPON_REDRAINGLOW);
+	G_LinkMissile(arrow);
 
-	if (powerup)
-	{	// Play powerup firing sound
-		gi.sound(Caster, CHAN_WEAPON, gi.soundindex("weapons/RedRainPowerFire.wav"), 1, ATTN_NORM, 0);
-	}
-	else
-	{	// Player normal red rain firing sound
-		gi.sound(Caster, CHAN_WEAPON, gi.soundindex("weapons/RedRainFire.wav"), 1, ATTN_NORM, 0);
-	}
+	gi.RemoveEffects(&caster->s, FX_WEAPON_REDRAINGLOW);
 
-	// remove the bow ready sound
-	Caster->s.sound = 0;
+	// Play firing sound.
+	const char* snd_name = (is_powered ? "weapons/RedRainPowerFire.wav" : "weapons/RedRainFire.wav"); //mxd
+	gi.sound(caster, CHAN_WEAPON, gi.soundindex(snd_name), 1.0f, ATTN_NORM, 0.0f);
+
+	// Remove the bow ready sound.
+	caster->s.sound = 0;
 
 	// Trace from the player's origin because then if we hit a wall, the effect won't be inside it...
-	gi.trace(Caster->s.origin, redarrow->mins, redarrow->maxs, redarrow->s.origin, Caster, MASK_PLAYERSOLID,&trace);
-	if (trace.startsolid || trace.fraction < .99)
-	{
-		if (trace.startsolid)
-			VectorCopy(Caster->s.origin, redarrow->s.origin);
-		else
-			VectorCopy(trace.endpos, redarrow->s.origin);
-		RedRainMissileTouch(redarrow, trace.ent, &trace.plane, trace.surface);
-		return;
-	}
+	gi.trace(caster->s.origin, arrow->mins, arrow->maxs, arrow->s.origin, caster, MASK_PLAYERSOLID, &trace);
 
-	// Create the missile and trail effect only if we successfully launch the missile
-	if (powerup)
-	{	// Magenta trail
-		gi.CreateEffect(&redarrow->s, FX_WEAPON_REDRAINMISSILE, CEF_OWNERS_ORIGIN|CEF_FLAG6, 
-					NULL, "t", redarrow->velocity);
+	if (trace.startsolid || trace.fraction < 0.99f)
+	{
+		const vec3_t* pos = (trace.startsolid ? &caster->s.origin : &trace.endpos); //mxd
+		VectorCopy(*pos, arrow->s.origin);
+		RedRainMissileTouch(arrow, trace.ent, &trace.plane, trace.surface);
 	}
 	else
-	{	// Red trail
-		gi.CreateEffect(&redarrow->s, FX_WEAPON_REDRAINMISSILE, CEF_OWNERS_ORIGIN, 
-					NULL, "t", redarrow->velocity);
+	{
+		// Create the missile and trail effect only if we successfully launch the missile.
+		int fx_flags = CEF_OWNERS_ORIGIN; // Red trail.
+		if (is_powered)
+			fx_flags |= CEF_FLAG6; // Magenta trail.
+
+		gi.CreateEffect(&arrow->s, FX_WEAPON_REDRAINMISSILE, fx_flags, NULL, "t", arrow->velocity);
 	}
 }
-
-// end
