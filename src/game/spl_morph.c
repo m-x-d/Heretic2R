@@ -39,46 +39,44 @@ static void MonsterMorphFadeIn(edict_t* self) //mxd. Named 'MorphFadeIn' in orig
 		self->think = walkmonster_start_go;
 }
 
-// *************************************************************************************************
-// MorphFadeOut
-// ------------
 // Fade out the chicken model till its gone - for MONSTERS only.
-// *************************************************************************************************
-
-void MorphFadeOut(edict_t *self)
+static void MonsterMorphFadeOut(edict_t* self) //mxd. Named 'MorphFadeOut' in original version.
 {
-	edict_t	*newent;
-
 	self->s.color.a -= MORPH_TELE_FADE;
-	self->nextthink = level.time + 0.1;
-	if (!(--self->morph_timer))
-	{
-		// create the Chicken object
-		newent = G_Spawn();
-		newent->classname = chicken_text;
-		VectorCopy(self->s.origin, newent->s.origin);
+	self->nextthink = level.time + 0.1f;
 
-		// if we are looking at an original model thats not got an origin at the waist, move us up in the world
-		if (self->mins[2] == 0)
-			newent->s.origin[2] += 16;
+	if (--self->morph_timer > 0)
+		return;
 
-		VectorCopy(self->s.angles, newent->s.angles);
-		newent->enemy = self->enemy;
-		// keep some info around so we can return to our original persona
-		newent->map = self->classname;
-		newent->target = self->target;
-		// time we stay a chicken
-		newent->time = level.time + 20;
-		ED_CallSpawn(newent);
-		newent->s.color.c = 0xffffff;
-		newent->morph_timer = MORPH_TELE_TIME;
-		newent->think = MonsterMorphFadeIn;
-		gi.CreateEffect(&newent->s, FX_PLAYER_TELEPORT_IN, CEF_OWNERS_ORIGIN|CEF_FLAG6, NULL, "" ); 
-		// do the teleport sound
-		gi.sound(newent,CHAN_WEAPON,gi.soundindex("weapons/teleport.wav"),1,ATTN_NORM,0);
+	// Create The Chicken Object.
+	edict_t* chicken = G_Spawn();
+	chicken->classname = "monster_chicken";
+	VectorCopy(self->s.origin, chicken->s.origin);
 
-		G_SetToFree(self);
-	}
+	// If we are looking at an original model that's not got an origin at the waist, move us up in the world.
+	if (self->mins[2] == 0.0f)
+		chicken->s.origin[2] += 16.0f;
+
+	VectorCopy(self->s.angles, chicken->s.angles);
+	chicken->enemy = self->enemy;
+
+	// Keep some info around so we can return to our original persona.
+	chicken->map = self->classname;
+	chicken->target = self->target;
+
+	// Time we stay a chicken.
+	chicken->time = level.time + 20.0f;
+
+	ED_CallSpawn(chicken);
+
+	chicken->s.color.c = 0xffffff; //TODO: should also set alpha to 255?
+	chicken->morph_timer = MORPH_TELE_TIME;
+	chicken->think = MonsterMorphFadeIn;
+
+	gi.CreateEffect(&chicken->s, FX_PLAYER_TELEPORT_IN, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "");
+	gi.sound(chicken, CHAN_WEAPON, gi.soundindex("weapons/teleport.wav"), 1.0f, ATTN_NORM, 0.0f);
+
+	G_SetToFree(self);
 }
 
 // *************************************************************************************************
@@ -552,7 +550,7 @@ void MorphMissileTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_
 		if (other->svflags & SVF_MONSTER ) 
 		{
 			// deal with the existing bad guy
-			other->think = MorphFadeOut;
+			other->think = MonsterMorphFadeOut;
 			other->nextthink = level.time + 0.1;
 			other->touch = NULL;
 			other->morph_timer = MORPH_TELE_TIME;
