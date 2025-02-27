@@ -1,22 +1,21 @@
 //
-// Heretic II
+// spl_RedRain.c
+//
 // Copyright 1998 Raven Software
 //
 
 #include "spl_RedRain.h" //mxd
-#include "g_local.h"
-#include "fx.h"
-#include "vector.h"
-#include "angles.h"
 #include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
-#include "matrix.h"
-#include "Utilities.h"
 #include "g_playstats.h"
-#include "random.h"
+#include "FX.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_local.h"
 
-#define ARROW_RADIUS			2.0F
-#define ARROW_BACKUP			(45.0F - ARROW_RADIUS)
+#define ARROW_RADIUS	2.0f
+#define ARROW_BACKUP	(45.0f - ARROW_RADIUS)
 
 void create_redarrow(edict_t *redarrow);
 
