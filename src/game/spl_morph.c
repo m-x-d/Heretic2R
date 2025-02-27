@@ -289,7 +289,7 @@ void PerformPlayerMorph(edict_t* self) //mxd. Named 'Perform_Morph' in original 
 }
 
 // Modify a player into a chicken - first call. Start the teleport effect on the player. For PLAYER only.
-void MorphPlayerToChicken(edict_t* self, edict_t* caster) //TODO: remove unused arg.
+void MorphPlayerToChicken(edict_t* self)
 {
 	// If we are teleporting or morphing, forget it.
 	if (self->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING))
@@ -381,7 +381,7 @@ static void MorphMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, cs
 		}
 		else
 		{
-			MorphPlayerToChicken(other, self->owner);
+			MorphPlayerToChicken(other);
 		}
 
 		const char* snd_name = "weapons/crow.wav"; //mxd
