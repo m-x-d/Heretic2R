@@ -85,6 +85,12 @@ static void PhoenixMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 	G_SetToFree(self);
 }
 
+static void PhoenixMissileThink(edict_t* self)
+{
+	self->svflags |= SVF_NOCLIENT;
+	self->think = NULL;
+}
+
 // ****************************************************************************
 // PhoenixMissile Reflect
 // ****************************************************************************
@@ -120,16 +126,6 @@ edict_t *PhoenixMissileReflect(edict_t *self, edict_t *other, vec3_t vel)
 	gi.CreateEffect(&phoenix->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", phoenix->velocity);
 
 	return(phoenix);
-}
-
-// ****************************************************************************
-// PhoenixMissile think
-// ****************************************************************************
-
-void PhoenixMissileThink(edict_t *self)
-{
-	self->svflags |= SVF_NOCLIENT;
-	self->think = NULL;
 }
 
 // create the guts of a phoenix arrow
