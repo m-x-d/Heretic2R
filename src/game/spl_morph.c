@@ -1,35 +1,29 @@
 //
-// Heretic II
-// Copyright 1998 Raven Software
-//
 // spl_morph.c
 //
-// Created by John Scott, but written by Jake Simpson and finally rodgered to be work with client
-// prediction by Marcus Whitlock.
-// "Rodgered" ??? No wonder he was working late :)
+// Copyright 1998 Raven Software
+//
 
 #include "spl_morph.h" //mxd
+#include "g_cmds.h" //mxd
 #include "g_monster.h"
 #include "g_Physics.h"
 #include "g_playstats.h"
 #include "g_teleport.h"
+#include "g_Shrine.h" //mxd
 #include "g_Skeletons.h"
 #include "m_chicken_anim.h"
-#include "angles.h"
-#include "fx.h"
-#include "g_cmds.h" //mxd
-#include "g_Shrine.h" //mxd
-#include "matrix.h"
-#include "vector.h"
-#include "Utilities.h"
 #include "p_main.h"
 #include "p_anims.h"
-#include "random.h"
 #include "p_client.h" //mxd
+#include "FX.h"
+#include "Random.h"
+#include "Vector.h"
+#include "g_local.h"
 
-#define ARROW_SPEED			400.0F
-#define ARROW_RADIUS			2.0F
-#define ANGLE_INC				360/NUM_OF_OVUMS
+#define OVUM_SPEED		400.0f
+#define OVUM_RADIUS		2.0f
+#define ANGLE_INC		(360.0f / NUM_OF_OVUMS)
 
 char	chicken_text[] = "monster_chicken";
 
@@ -528,7 +522,7 @@ void MorphMissileTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_
 	if(EntReflecting(other, true, true) && self->reflect_debounce_time)
 	{
 	   	Create_rand_relect_vect(self->velocity, self->velocity);
-	   	Vec3ScaleAssign(ARROW_SPEED/2, self->velocity);
+	   	Vec3ScaleAssign(OVUM_SPEED/2, self->velocity);
 	   	MorphReflect(self, other, self->velocity);
 
 		return;
@@ -626,8 +620,8 @@ void create_morph(edict_t *morph)
 	morph->movetype = MOVETYPE_FLYMISSILE;
 
 	// set up our collision boxes
-	VectorSet(morph->mins, -ARROW_RADIUS, -ARROW_RADIUS, -ARROW_RADIUS);
-	VectorSet(morph->maxs, ARROW_RADIUS, ARROW_RADIUS, ARROW_RADIUS);
+	VectorSet(morph->mins, -OVUM_RADIUS, -OVUM_RADIUS, -OVUM_RADIUS);
+	VectorSet(morph->maxs, OVUM_RADIUS, OVUM_RADIUS, OVUM_RADIUS);
 
 	morph->solid = SOLID_BBOX;
 	morph->clipmask = MASK_MONSTERSOLID;
@@ -668,7 +662,7 @@ void SpellCastMorph(edict_t *Caster, vec3_t StartPos, vec3_t AimAngles, vec3_t u
 		morph->s.angles[YAW] = current_ang;
 		VectorScale(morph->s.angles, ANGLE_TO_RAD, temp_angles);
 		DirFromAngles(temp_angles, morph->velocity);
-		Vec3ScaleAssign(ARROW_SPEED,morph->velocity);
+		Vec3ScaleAssign(OVUM_SPEED,morph->velocity);
 
 		create_morph(morph);
 		morph->reflect_debounce_time = MAX_REFLECT;
