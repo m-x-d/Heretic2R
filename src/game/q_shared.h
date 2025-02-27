@@ -400,17 +400,17 @@ typedef struct csurface_s
 // A trace is returned when a box is swept through the world.
 typedef struct trace_s
 {
-	byte allsolid;		// If true, plane is not valid
-	byte startsolid;	// If true, the initial point was in a solid area
-	byte succeeded;		// Not always set, just in special cases, subjective
-	byte architecture;	// Set if the ??? moved collided with world (not entities)
-						// Needed because the player move code doesn`t know anything about the location or nature of edicts
-	float fraction;		// Time completed, 1.0 = didn't hit anything
-	vec3_t endpos;		// Final position
-	cplane_t plane;		// Surface normal at impact
-	csurface_t* surface;// Surface hit
-	int contents;		// Contents on other side of surface hit
-	struct edict_s* ent;// Not set by CM_*() functions
+	byte allsolid;		// If true, plane is not valid.
+	byte startsolid;	// If true, the initial point was in a solid area.
+	byte succeeded;		// Not always set, just in special cases, subjective.
+	byte architecture;	// Set if the ??? moved collided with world (not entities).
+						// Needed because the player move code doesn't know anything about the location or nature of edicts.
+	float fraction;		// Delta between start and end positions, 1.0 = didn't hit anything (traveled full distance).
+	vec3_t endpos;		// Final position.
+	cplane_t plane;		// Surface normal at impact.
+	csurface_t* surface;// Surface hit.
+	int contents;		// Contents on other side of surface hit.
+	struct edict_s* ent;// Not set by CM_*() functions.
 } trace_t;
 
 typedef enum 
@@ -426,20 +426,20 @@ typedef enum
 // pmove->pm_flags
 #define PMF_STANDSTILL		0x0001
 #define PMF_ON_GROUND		0x0004
-#define PMF_TIME_LAND		0x0008	// pm_time is time before rejump
-#define PMF_TIME_TELEPORT	0x0010	// pm_time is non-moving time
-#define PMF_NO_PREDICTION	0x0020	// Temporarily disables prediction (used for grappling hook)
+#define PMF_TIME_LAND		0x0008	// pm_time is time before re-jump.
+#define PMF_TIME_TELEPORT	0x0010	// pm_time is non-moving time.
+#define PMF_NO_PREDICTION	0x0020	// Temporarily disables prediction. //TODO: unused.
 #define PMF_LOCKMOVE		0x0040
 #define PMF_LOCKTURN		0x0080
 
-#define PC_COLLISION		0x0001	// Collided on a move
-#define PC_SLIDING			0x0002	// Sliding down a steep slope
+#define PC_COLLISION		0x0001	// Collided on a move.
+#define PC_SLIDING			0x0002	// Sliding down a steep slope.
 
-#define WF_SURFACE			0x0001	// On the surface
-#define WF_DIVE				0x0002	// Dive on next animation
-#define WF_DIVING			0x0004	// Currently diving
-#define WF_SWIMFREE			0x0008	// Currently swimming freely underwater
-#define WF_SINK				0x0010	// Sink below the surface of the water
+#define WF_SURFACE			0x0001	// On the surface.
+#define WF_DIVE				0x0002	// Dive on next animation.
+#define WF_DIVING			0x0004	// Currently diving.
+#define WF_SWIMFREE			0x0008	// Currently swimming freely underwater.
+#define WF_SINK				0x0010	// Sink below the surface of the water.
 
 // pmove_state_t
 
