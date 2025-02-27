@@ -327,7 +327,7 @@ typedef struct
 extern client_fx_export_t fxe;
 
 // These are the data and functions imported by the client fx module
-typedef struct 
+typedef struct
 {
 	client_state_t* cl;
 	client_static_t* cls;
@@ -336,7 +336,7 @@ typedef struct
 	centity_t* server_entities;
 
 	// Buffer into which net stuff is parsed.
-	entity_state_t	*parse_entities;
+	entity_state_t* parse_entities;
 
 	sizebuf_t* net_message;
 	float* PlayerAlpha;
