@@ -25,10 +25,6 @@
 #define OVUM_RADIUS		2.0f
 #define ANGLE_INC		(360.0f / NUM_OF_OVUMS)
 
-char	chicken_text[] = "monster_chicken";
-
-void create_morph(edict_t *morph);
-
 // Fade in the chicken - for MONSTERS only.
 static void MonsterMorphFadeIn(edict_t* self) //mxd. Named 'MorphFadeIn' in original version.
 {
@@ -415,6 +411,26 @@ static void MorphMissileThink(edict_t* self)
 	self->think = NULL; // Not required to think anymore.
 }
 
+// Create the guts of the morph ovum.
+static void CreateMorphOvum(edict_t* egg) //mxd. Named 'create_morph' in original version.
+{
+	egg->s.effects |= EF_ALWAYS_ADD_EFFECTS;
+	egg->svflags |= SVF_ALWAYS_SEND;
+	egg->movetype = MOVETYPE_FLYMISSILE;
+
+	egg->touch = MorphMissileTouch;
+	egg->think = MorphMissileThink;
+	egg->classname = "Spell_MorphArrow";
+	egg->nextthink = level.time + 0.1f;
+
+	// Set up our collision boxes.
+	VectorSet(egg->mins, -OVUM_RADIUS, -OVUM_RADIUS, -OVUM_RADIUS);
+	VectorSet(egg->maxs,  OVUM_RADIUS,  OVUM_RADIUS,  OVUM_RADIUS);
+
+	egg->solid = SOLID_BBOX;
+	egg->clipmask = MASK_MONSTERSOLID;
+}
+
 edict_t *MorphReflect(edict_t *self, edict_t *other, vec3_t vel)
 {
 	edict_t	*morph;
@@ -423,7 +439,7 @@ edict_t *MorphReflect(edict_t *self, edict_t *other, vec3_t vel)
    	// create a new missile to replace the old one - this is necessary cos physics will do nasty shit
    	// with the existing one,since we hit something. Hence, we create a new one totally.
    	morph = G_Spawn();
-   	create_morph(morph);
+   	CreateMorphOvum(morph);
    	morph->reflect_debounce_time = self->reflect_debounce_time -1;
 	morph->reflected_time=self->reflected_time;
    	morph->owner = other;
@@ -443,25 +459,6 @@ edict_t *MorphReflect(edict_t *self, edict_t *other, vec3_t vel)
    	// Do a nasty looking blast at the impact point
    	gi.CreateEffect(&morph->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", morph->velocity);
 	return(morph);
-}
-
-// create the guts of the morph ovum
-void create_morph(edict_t *morph)
-{
-	morph->s.effects |= EF_ALWAYS_ADD_EFFECTS;
-	morph->svflags |= SVF_ALWAYS_SEND;
-	morph->movetype = MOVETYPE_FLYMISSILE;
-
-	// set up our collision boxes
-	VectorSet(morph->mins, -OVUM_RADIUS, -OVUM_RADIUS, -OVUM_RADIUS);
-	VectorSet(morph->maxs, OVUM_RADIUS, OVUM_RADIUS, OVUM_RADIUS);
-
-	morph->solid = SOLID_BBOX;
-	morph->clipmask = MASK_MONSTERSOLID;
-	morph->touch = MorphMissileTouch;
-	morph->think = MorphMissileThink;
-	morph->classname = "Spell_MorphArrow";
-	morph->nextthink = level.time + 0.1;
 }
 
 // ****************************************************************************
@@ -497,7 +494,7 @@ void SpellCastMorph(edict_t *Caster, vec3_t StartPos, vec3_t AimAngles, vec3_t u
 		DirFromAngles(temp_angles, morph->velocity);
 		Vec3ScaleAssign(OVUM_SPEED,morph->velocity);
 
-		create_morph(morph);
+		CreateMorphOvum(morph);
 		morph->reflect_debounce_time = MAX_REFLECT;
 		morph->owner = Caster;
 		G_LinkMissile(morph);
