@@ -45,7 +45,7 @@ static void PhoenixMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 	if (self->health == 1)
 	{
 		// Must be powered up version. Storing in health is not so good, though...
-		// Powered up Phoenix will NOT damage the shooter. //TODO: check this. Shouldn't 'ignore' arg be set for this to work?
+		// Powered up Phoenix will NOT damage the shooter. //TODO: doesn't work. Shouldn't 'ignore' arg be set for this to work?
 		T_DamageRadius(self, self->owner, NULL, PHOENIX_EXPLODE_RADIUS_POWER,
 			PHOENIX_EXPLODE_DAMAGE_POWER, PHOENIX_EXPLODE_DAMAGE_POWER >> 4,
 			DAMAGE_NORMAL | DAMAGE_FIRE | DAMAGE_EXTRA_KNOCKBACK | DAMAGE_POWERPHOENIX | DAMAGE_ENEMY_MAX | DAMAGE_PHOENIX,
@@ -69,11 +69,9 @@ static void PhoenixMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 
 	VectorNormalize2(self->velocity, self->movedir);
 
-	// Start the explosion.
-	if (plane->normal) //TODO: this is always true. Should use Vec3NotZero() instead?
-		gi.CreateEffect(&self->s, FX_WEAPON_PHOENIXEXPLODE, CEF_BROADCAST | (self->health << 5) | scorch_flag, self->s.origin, "td", plane->normal, self->movedir);
-	else
-		gi.CreateEffect(&self->s, FX_WEAPON_PHOENIXEXPLODE, CEF_BROADCAST | (self->health << 5) | scorch_flag, self->s.origin, "td", self->movedir, self->movedir);
+	// Start the explosion effect.
+	const vec3_t* dir = (Vec3NotZero(plane->normal) ? &plane->normal : &self->movedir); //BUGFIX: mxd. 'if (plane->normal)' in original version (always true).
+	gi.CreateEffect(&self->s, FX_WEAPON_PHOENIXEXPLODE, CEF_BROADCAST | (self->health << 5) | scorch_flag, self->s.origin, "td", *dir, self->movedir);
 
 	VectorClear(self->velocity);
 
