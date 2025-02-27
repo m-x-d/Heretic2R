@@ -588,6 +588,9 @@
     <ClCompile Include="g_shrine.c">
       <Filter>src\Game objects</Filter>
     </ClCompile>
+    <ClCompile Include="p_morph.c">
+      <Filter>src\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="decals.h">
@@ -1111,6 +1114,9 @@
     </ClInclude>
     <ClInclude Include="m_tcheckrik_spells.h">
       <Filter>src\Monsters\Tcheckrik</Filter>
+    </ClInclude>
+    <ClInclude Include="p_morph.h">
+      <Filter>src\Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

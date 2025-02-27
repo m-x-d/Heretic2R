@@ -143,6 +143,7 @@
     <ClCompile Include="p_funcs.c" />
     <ClCompile Include="p_hud.c" />
     <ClCompile Include="p_item.c" />
+    <ClCompile Include="p_morph.c" />
     <ClCompile Include="p_view.c" />
     <ClCompile Include="q_shared.c" />
     <ClCompile Include="Script.c" />
@@ -321,6 +322,7 @@
     <ClInclude Include="p_funcs.h" />
     <ClInclude Include="p_hud.h" />
     <ClInclude Include="p_item.h" />
+    <ClInclude Include="p_morph.h" />
     <ClInclude Include="p_view.h" />
     <ClInclude Include="q_shared.h" />
     <ClInclude Include="spl_blast.h" />

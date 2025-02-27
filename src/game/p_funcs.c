@@ -8,12 +8,12 @@
 #include "p_anims.h"
 #include "p_client.h" //mxd
 #include "p_main.h"
+#include "p_morph.h" //mxd
 #include "g_combat.h" //mxd
 #include "g_playstats.h"
 #include "g_Skeletons.h"
 #include "g_teleport.h"
 #include "g_weapon.h"
-#include "spl_morph.h" //mxd
 #include "spl_shield.h" //mxd
 #include "FX.h"
 #include "Random.h"

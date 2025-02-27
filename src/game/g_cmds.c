@@ -15,8 +15,8 @@
 #include "p_dll.h" //mxd
 #include "p_client.h" //mxd
 #include "p_hud.h" //mxd
+#include "p_morph.h" //mxd
 #include "p_view.h" //mxd
-#include "spl_morph.h" //mxd
 #include "Random.h"
 #include "Vector.h"
 #include "g_local.h"
