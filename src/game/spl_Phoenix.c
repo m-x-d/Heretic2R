@@ -16,8 +16,6 @@
 
 #define ARROW_RADIUS	4.0f
 
-void create_phoenix(edict_t *phoenix);
-
 static void PhoenixMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
 	// Did we hit the sky? 
@@ -91,6 +89,24 @@ static void PhoenixMissileThink(edict_t* self)
 	self->think = NULL;
 }
 
+// Create the guts of a phoenix arrow.
+static void CreatePhoenixArrow(edict_t* arrow)
+{
+	arrow->s.effects |= EF_ALWAYS_ADD_EFFECTS;
+	arrow->svflags |= SVF_ALWAYS_SEND;
+	arrow->movetype = MOVETYPE_FLYMISSILE;
+
+	arrow->touch = PhoenixMissileTouch;
+	arrow->think = PhoenixMissileThink;
+	arrow->classname = "Spell_PhoenixArrow";
+	arrow->nextthink = level.time + 0.1f;
+	VectorSet(arrow->mins, -ARROW_RADIUS, -ARROW_RADIUS, -ARROW_RADIUS);
+	VectorSet(arrow->maxs,  ARROW_RADIUS,  ARROW_RADIUS,  ARROW_RADIUS);
+
+	arrow->solid = SOLID_BBOX;
+	arrow->clipmask = MASK_SHOT;
+}
+
 // ****************************************************************************
 // PhoenixMissile Reflect
 // ****************************************************************************
@@ -103,7 +119,7 @@ edict_t *PhoenixMissileReflect(edict_t *self, edict_t *other, vec3_t vel)
 	// with the existing one,since we hit something. Hence, we create a new one totally.
 	phoenix = G_Spawn();
 	VectorCopy(self->s.origin, phoenix->s.origin);
-	create_phoenix(phoenix);
+	CreatePhoenixArrow(phoenix);
 	phoenix->owner = other;
 	phoenix->enemy = self->owner;
 	phoenix->health = self->health;
@@ -127,26 +143,6 @@ edict_t *PhoenixMissileReflect(edict_t *self, edict_t *other, vec3_t vel)
 
 	return(phoenix);
 }
-
-// create the guts of a phoenix arrow
-void create_phoenix(edict_t *phoenix)
-{
-	phoenix->s.effects |= EF_ALWAYS_ADD_EFFECTS;
-	phoenix->svflags |= SVF_ALWAYS_SEND;
-	phoenix->movetype = MOVETYPE_FLYMISSILE;
-
-	phoenix->touch = PhoenixMissileTouch;
-	phoenix->think = PhoenixMissileThink;
-	phoenix->classname = "Spell_PhoenixArrow";
-	phoenix->nextthink = level.time + 0.1;
-	VectorSet(phoenix->mins, -ARROW_RADIUS, -ARROW_RADIUS, -ARROW_RADIUS);
-	VectorSet(phoenix->maxs, ARROW_RADIUS, ARROW_RADIUS, ARROW_RADIUS);
-
-	phoenix->solid = SOLID_BBOX;
-	phoenix->clipmask = MASK_SHOT;
-
-}
-
 
 // ****************************************************************************
 // SpellCastPhoenix
@@ -175,7 +171,7 @@ void SpellCastPhoenix(edict_t *Caster, vec3_t StartPos, vec3_t AimAngles, vec3_t
 		GetAimVelocity(Caster->enemy, phoenix->s.origin, PHOENIX_ARROW_SPEED, AimAngles, phoenix->velocity);
 	}
 	VectorCopy(AimAngles, phoenix->s.angles);
-	create_phoenix(phoenix);
+	CreatePhoenixArrow(phoenix);
  	phoenix->reflect_debounce_time = MAX_REFLECT;
 
 	phoenix->owner = Caster;
