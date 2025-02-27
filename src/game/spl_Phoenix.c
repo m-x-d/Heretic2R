@@ -107,41 +107,39 @@ static void CreatePhoenixArrow(edict_t* arrow)
 	arrow->clipmask = MASK_SHOT;
 }
 
-// ****************************************************************************
-// PhoenixMissile Reflect
-// ****************************************************************************
-
-edict_t *PhoenixMissileReflect(edict_t *self, edict_t *other, vec3_t vel)
+edict_t* PhoenixMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
 {
-	edict_t *phoenix;
+	// Create a new missile to replace the old one - this is necessary because physics will do nasty things
+	// with the existing one, since we hit something. Hence, we create a new one totally.
+	edict_t* arrow = G_Spawn();
 
-	// create a new missile to replace the old one - this is necessary cos physics will do nasty shit
-	// with the existing one,since we hit something. Hence, we create a new one totally.
-	phoenix = G_Spawn();
-	VectorCopy(self->s.origin, phoenix->s.origin);
-	CreatePhoenixArrow(phoenix);
-	phoenix->owner = other;
-	phoenix->enemy = self->owner;
-	phoenix->health = self->health;
-	phoenix->reflect_debounce_time = self->reflect_debounce_time - 1;
-	phoenix->reflected_time=self->reflected_time;
+	// Copy everything across.
+	CreatePhoenixArrow(arrow);
+	VectorCopy(vel, arrow->velocity);
+	VectorCopy(self->s.origin, arrow->s.origin);
+	arrow->owner = other;
+	arrow->enemy = self->owner;
+	arrow->health = self->health;
+	arrow->reflect_debounce_time = self->reflect_debounce_time - 1; // So it doesn't infinitely reflect in one frame somehow.
+	arrow->reflected_time = self->reflected_time;
 
-	VectorCopy(vel, phoenix->velocity);
-	G_LinkMissile(phoenix);
-	gi.CreateEffect(&phoenix->s, FX_WEAPON_PHOENIXMISSILE, CEF_OWNERS_ORIGIN | (phoenix->health << 5) | CEF_FLAG8, NULL, "t", phoenix->velocity);
-	// kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it. 
+	G_LinkMissile(arrow);
+
+	// Create new trails for the new missile.
+	gi.CreateEffect(&arrow->s, FX_WEAPON_PHOENIXMISSILE, CEF_OWNERS_ORIGIN | (arrow->health << 5) | CEF_FLAG8, NULL, "t", arrow->velocity);
+
+	// Kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it.
 	G_SetToFree(self);
 
-	// travel sound on the weapon itself - the one on the original arrow will be deleted when the object is removed.
-	phoenix->s.sound = gi.soundindex("weapons/PhoenixTravel.wav");
-	phoenix->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
-	// but just to be safe..
-	self->s.sound = 0;
+	// Play travel sound on the arrow itself - the one on the original arrow will be deleted when the object is removed.
+	arrow->s.sound = (byte)gi.soundindex("weapons/PhoenixTravel.wav");
+	arrow->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
+	self->s.sound = 0; // But just to be safe...
 
-	// Do a nasty looking blast at the impact point
-	gi.CreateEffect(&phoenix->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", phoenix->velocity);
+	// Do a nasty looking blast at the impact point.
+	gi.CreateEffect(&arrow->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", arrow->velocity);
 
-	return(phoenix);
+	return arrow;
 }
 
 // ****************************************************************************
