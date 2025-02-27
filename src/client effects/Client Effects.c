@@ -177,12 +177,14 @@ void NullEffect(centity_t* owner, int type, int flags, vec3_t origin) {}
 
 void RemoveEffects(centity_t* owner, int type, const int flags, vec3_t origin)
 {
-	assert(owner);
-	assert(owner->effects); // FIXME: This assert fires, but it should not. We shouldn't be here anyway.
+	assert(owner != NULL);
 
-	short fx;
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_REMOVE_EFFECTS].formatString, &fx);
-	RemoveEffectTypeList(&owner->effects, fx, owner);
+	if (owner->effects != NULL) //TODO: This check occasionally fails, but it should not.
+	{
+		short fx;
+		fxi.GetEffect(owner, flags, clientEffectSpawners[FX_REMOVE_EFFECTS].formatString, &fx);
+		RemoveEffectTypeList(&owner->effects, fx, owner);
+	}
 }
 
 void RegisterSounds(void) {} //TODO: remove?
