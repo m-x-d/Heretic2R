@@ -104,7 +104,7 @@ void MorphChickenToPlayerEnd(edict_t* self) //mxd. Named 'reset_morph_to_elf' in
 }
 
 // Modify a chicken into a player - first call. Start the teleport effect on the chicken. For PLAYER only.
-static void MorphChickenToPlayerStart(edict_t* self)
+static void MorphChickenToPlayerStart(edict_t* self) //mxd. Named 'MorphChickenToPlayer' in original version.
 {
 	// If we are teleporting or morphing, forget it.
 	if (self->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING))
@@ -244,7 +244,7 @@ void MorphPlayerToChickenEnd(edict_t* self) //mxd. Named 'Perform_Morph' in orig
 }
 
 // Modify a player into a chicken - first call. Start the teleport effect on the player. For PLAYER only.
-void MorphPlayerToChickenStart(edict_t* self)
+void MorphPlayerToChickenStart(edict_t* self) //mxd. Named 'MorphPlayerToChicken' in original version.
 {
 	// If we are teleporting or morphing, forget it.
 	if (self->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING))
