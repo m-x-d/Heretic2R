@@ -165,7 +165,7 @@
 
 // Morph ovum.
 #define NUM_OF_OVUMS			6
-#define MORPH_DUR				30	// How long players / bad guys remain chickens  - in seconds.
+#define MORPH_DURATION			30	// How long players / bad guys remain chickens - in seconds.
 
 // Lightning Shield.
 #define SHIELD_DAMAGE_MIN		15

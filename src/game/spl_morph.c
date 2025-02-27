@@ -243,7 +243,7 @@ void PerformPlayerMorph(edict_t* self) //mxd. Named 'Perform_Morph' in original 
 		self->s.scale = 2.5f;
 
 		VectorSet(self->mins, -16.0f, -16.0f, -48.0f);
-		VectorSet(self->maxs, 16.0f, 16.0f, 64.0f);
+		VectorSet(self->maxs,  16.0f,  16.0f,  64.0f);
 
 		self->client->playerinfo.edictflags |= FL_SUPER_CHICKEN;
 	}
@@ -258,7 +258,7 @@ void PerformPlayerMorph(edict_t* self) //mxd. Named 'Perform_Morph' in original 
 
 		// Set new mins and maxs.
 		VectorSet(self->intentMins, -8.0f, -8.0f, -12.0f);
-		VectorSet(self->intentMaxs, 8.0f, 8.0f, 12.0f);
+		VectorSet(self->intentMaxs,  8.0f,  8.0f,  12.0f);
 
 		self->client->playerinfo.edictflags |= FL_AVERAGE_CHICKEN;
 	}
@@ -292,66 +292,44 @@ void PerformPlayerMorph(edict_t* self) //mxd. Named 'Perform_Morph' in original 
 	VectorSet(self->client->tele_dest, -1.0f, -1.0f, -1.0f);
 }
 
-// *************************************************************************************************
-// MorphPlayerToChicken
-// --------------------
-// Modify a player into a chicken - first call. Start the teleport effect on the player. For PLAYER
-// only.
-// *************************************************************************************************
-
-void MorphPlayerToChicken(edict_t *self, edict_t *caster)
+// Modify a player into a chicken - first call. Start the teleport effect on the player. For PLAYER only.
+void MorphPlayerToChicken(edict_t* self, edict_t* caster) //TODO: remove unused arg.
 {
-	gclient_t	*playerinfo;
-	
-	playerinfo = self->client;
-
-	// if we are teleporting or morphing, forget it
+	// If we are teleporting or morphing, forget it.
 	if (self->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING))
 		return;
 
-	// remove any hand or weapon effects
+	// Remove any hand or weapon effects.
 	P_TurnOffPlayerEffects(&self->client->playerinfo);
 
-	// remove any shrine effects he has
+	// Remove any shrine effects he has.
 	PlayerKillShrineFX(self);
 
-	// set the player as teleporting
-	self->client->playerinfo.flags |= PLAYER_FLAG_MORPHING;
+	self->client->playerinfo.flags |= PLAYER_FLAG_MORPHING; // Set the player as teleporting.
+	self->client->tele_count = TELE_TIME_OUT; // Time taken over de-materialization.
+	self->client->shrine_framenum = level.time + 10.0f; // Make us invulnerable for a couple of seconds.
+	self->client->tele_type = 1; // Tell us how we triggered the teleport.
+	self->client->playerinfo.flags |= FL_LOCKMOVE; // Make the player still.
 
-	// time taken over dematerialisation
-	self->client->tele_count = TELE_TIME_OUT;
-
-	// make us invunerable for a couple of seconds
-	self->client->shrine_framenum = level.time + 10;
-
-	// tell us how we triggered the teleport
-	self->client->tele_type = 1;
-
-	// clear the velocity and hold them in place briefly
-	VectorClear (self->velocity);
+	// Clear the velocity and hold them in place briefly.
+	VectorClear(self->velocity);
 	self->client->ps.pmove.pm_time = 50;
 
-	// make the player still
-	self->client->playerinfo.flags |= FL_LOCKMOVE;
-
-	// allow the player to fade out
-	self->s.color.a = 255;
-	self->s.color.r = 255;
-	self->s.color.g = 255;
-	self->s.color.b = 255;
+	// Allow the player to fade out.
+	self->s.color.c = 0xffffffff;
 	self->s.renderfx |= RF_TRANSLUCENT;
 
-	// make it so that the stuff that does the demateriasation in G_ANIM_ACTOR knows we are fading out, not in
-	self->client->tele_dest[0] = self->client->tele_dest[1] = self->client->tele_dest[2] = 0;
+	// Make it so that the stuff that does the de-materialization in G_ANIM_ACTOR knows we are fading out, not in.
+	VectorClear(self->client->tele_dest);
 
-	// tell us how long we have to be a chicken
-	self->morph_timer = level.time + MORPH_DUR;
+	// Tell us how long we have to be a chicken.
+	self->morph_timer = (int)level.time + MORPH_DURATION;
 
-	// draw the teleport splash at the teleport source
+	// Draw the teleport splash at the teleport source.
 	gi.CreateEffect(&self->s, FX_PLAYER_TELEPORT_OUT, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "");
-		// do the teleport sound
-	gi.sound(self,CHAN_WEAPON,gi.soundindex("weapons/teleport.wav"),1,ATTN_NORM,0);
 
+	// Do the teleport sound.
+	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/teleport.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
 // *************************************************************************************************
@@ -408,7 +386,7 @@ void MorphPlayerToChicken2(edict_t *self, edict_t *caster)
 	self->client->tele_dest[0] = self->client->tele_dest[1] = self->client->tele_dest[2] = 0;
 
 	// tell us how long we have to be a chicken
-	self->morph_timer = level.time + MORPH_DUR;
+	self->morph_timer = level.time + MORPH_DURATION;
 
 	// draw the teleport splash at the teleport source
 	gi.CreateEffect(&self->s, FX_PLAYER_TELEPORT_OUT, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "");
