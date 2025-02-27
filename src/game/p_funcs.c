@@ -628,7 +628,7 @@ qboolean G_HandleTeleport(const playerinfo_t* info)
 		else if (info->flags & PLAYER_FLAG_TELEPORT) // We have finished dematerializing, let's move the character.
 			Perform_Teleport(self);
 		else if (info->edictflags & FL_CHICKEN)
-			reset_morph_to_elf(self); // We're set as a chicken.
+			ResetPlayerMorph(self); // We're set as a chicken.
 		else
 			Perform_Morph(self);
 

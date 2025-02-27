@@ -14,3 +14,4 @@ extern void MorphPlayerToChicken(edict_t* self, edict_t* caster);
 
 //TODO: move to p_morph.c?
 extern void CleanUpPlayerMorph(edict_t* self);
+extern void ResetPlayerMorph(edict_t* self);

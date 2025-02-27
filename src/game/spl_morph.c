@@ -93,81 +93,67 @@ void CleanUpPlayerMorph(edict_t* self) //mxd. Named 'CleanUpMorph' in original v
 	self->s.color.a = 255;
 }
 
-// *************************************************************************************************
-// reset_morph_to_elf
-// ------------------
-// We are done being a chicken, let's be Corvus again - switch models from chicken back to corvus
-// and do teleport fade in - for PLAYER only. Called from G_ANIMACTOR.C.
-// *************************************************************************************************
-
-void reset_morph_to_elf(edict_t *ent)
+// We are done being a chicken, let's be Corvus again - switch models from chicken back to Corvus and do teleport fade in - for PLAYER only.
+void ResetPlayerMorph(edict_t* self) //mxd. Named 'reset_morph_to_elf' in original version.
 {
-	// we have no damage, and no motion type
-	ent->takedamage = DAMAGE_AIM;
-	ent->movetype = PHYSICSTYPE_STEP;
-	ent->health = ent->max_health;
+	// We have no damage, and no motion type.
+	self->takedamage = DAMAGE_AIM;
+	self->movetype = PHYSICSTYPE_STEP;
+	self->health = self->max_health;
 
-	// move the camera back to where it should be, and reset our lungs and stuff
-	ent->viewheight = 0;
-	ent->mass = 200;
-	ent->deadflag = DEAD_NO;
-	ent->air_finished = level.time + HOLD_BREATH_TIME;
+	// Move the camera back to where it should be, and reset our lungs and stuff.
+	self->viewheight = 0;
+	self->mass = 200;
+	self->deadflag = DEAD_NO;
+	self->air_finished = level.time + HOLD_BREATH_TIME;
 
-	ent->s.scale = 1.0;
+	self->s.scale = 1.0f;
 
-	// set the model back to corvux
-#ifdef COMP_FMOD
-	ent->model = "models/player/corvette/tris_c.fm";
-#else
-	ent->model = "models/player/corvette/tris.fm";
-#endif
-	ent->pain = player_pain;
-	ent->die = player_die;
-	ent->flags &= ~FL_NO_KNOCKBACK;
-	ent->gravity = 1.0;
+	// Set the model back to Corvus.
+	self->model = "models/player/corvette/tris.fm"; //TODO: there's no such model!
+	self->pain = player_pain;
+	self->die = player_die;
+	self->flags &= ~FL_NO_KNOCKBACK;
+	self->gravity = 1.0f;
 
-	// reset our skins
-	ent->client->playerinfo.effects = 0;
-	ent->client->playerinfo.skinnum = 0;
-	ent->client->playerinfo.clientnum = ent - g_edicts - 1;
-	ent->s.modelindex = 255;		// will use the skin specified model
-	ent->client->playerinfo.frame = 0;
+	// Reset our skins.
+	self->client->playerinfo.effects = 0;
+	self->client->playerinfo.skinnum = 0;
+	self->client->playerinfo.clientnum = self - g_edicts - 1;
+	self->s.modelindex = 255; // Will use the skin-specified model.
+	self->client->playerinfo.frame = 0;
 
-	// turn our skeleton back on
-	ent->s.skeletalType = SKEL_CORVUS;
-	ent->client->playerinfo.effects|=(EF_SWAPFRAME|EF_JOINTED|EF_CAMERA_NO_CLIP|EF_PLAYER);
-	ent->client->playerinfo.effects&=~EF_CHICKEN;
-	ent->client->playerinfo.edictflags &= ~FL_CHICKEN;
-	ent->client->playerinfo.renderfx &= ~RF_IGNORE_REFS;
+	// Turn our skeleton back on.
+	self->s.skeletalType = SKEL_CORVUS;
+	self->client->playerinfo.effects |= (EF_SWAPFRAME | EF_JOINTED | EF_CAMERA_NO_CLIP | EF_PLAYER);
+	self->client->playerinfo.effects &= ~EF_CHICKEN;
+	self->client->playerinfo.edictflags &= ~FL_CHICKEN;
+	self->client->playerinfo.renderfx &= ~RF_IGNORE_REFS;
 
-	// reset our mins and max's. And then let the physics move us out of anyone elses bounding box
-	VectorCopy (player_mins, ent->intentMins);
-	VectorCopy (player_maxs, ent->intentMaxs);
-	ent->physicsFlags |= PF_RESIZE;
+	// Reset our mins and maxs. And then let the physics move us out of anyone else's bounding box.
+	VectorCopy(player_mins, self->intentMins);
+	VectorCopy(player_maxs, self->intentMaxs);
+	self->physicsFlags |= PF_RESIZE;
 
-	// reset our thinking
-	ent->think = ent->oldthink;
-	ent->nextthink = level.time + 0.1;
+	// Reset our thinking.
+	self->think = self->oldthink;
+	self->nextthink = level.time + 0.1f;
 
-	// reset our animations
-	P_PlayerBasicAnimReset(&ent->client->playerinfo);
-	ent->client->playerinfo.upperframe = 43;
-	ent->client->playerinfo.lowerframe = 43;
+	// Reset our animations.
+	P_PlayerBasicAnimReset(&self->client->playerinfo);
+	self->client->playerinfo.upperframe = 43; //mxd. FRAME_asscrtch24 ?..
+	self->client->playerinfo.lowerframe = 43;
 
-	P_PlayerUpdateModelAttributes(&ent->client->playerinfo);
-	P_PlayerAnimSetLowerSeq(&ent->client->playerinfo, ASEQ_NONE);
-	P_PlayerAnimSetLowerSeq(&ent->client->playerinfo, ASEQ_IDLE_WIPE_BROW);
+	P_PlayerUpdateModelAttributes(&self->client->playerinfo);
+	P_PlayerAnimSetLowerSeq(&self->client->playerinfo, ASEQ_NONE);
+	P_PlayerAnimSetLowerSeq(&self->client->playerinfo, ASEQ_IDLE_WIPE_BROW);
 
-	// re-spawn anything that should be - shrine effects and the like
-//	SpawnInitialPlayerEffects(ent);
+	// Draw the teleport splash at the destination.
+	gi.CreateEffect(&self->s, FX_PLAYER_TELEPORT_IN, CEF_BROADCAST | CEF_OWNERS_ORIGIN | CEF_FLAG6, self->s.origin, "");
 
-	// draw the teleport splash at the destination
-	gi.CreateEffect(&ent->s, FX_PLAYER_TELEPORT_IN, CEF_BROADCAST|CEF_OWNERS_ORIGIN|CEF_FLAG6, ent->s.origin, "");
-
-	// restart the loop and tell us next time we aren't de-materialising
-	ent->client->tele_count = TELE_TIME;
-	ent->client->tele_dest[0] = ent->client->tele_dest[1] = ent->client->tele_dest[2] = -1;
-
+	// Restart the loop and tell us next time we aren't de-materializing.
+	self->client->tele_count = TELE_TIME;
+	VectorSet(self->client->tele_dest, -1.0f, -1.0f, -1.0f);
 }
 
 // *************************************************************************************************
