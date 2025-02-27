@@ -22,7 +22,6 @@ void SpellCastTeleport(edict_t *caster,vec3_t StartPos,vec3_t AimAngles,vec3_t A
 void CleanUpTeleport(edict_t *self);
 void Perform_Teleport(edict_t *self);
 void Perform_Morph(edict_t *self);
-void CleanUpMorph(edict_t *self);
 void reset_morph_to_elf(edict_t *ent);
 extern void	SP_misc_teleport(edict_t *ent);
 

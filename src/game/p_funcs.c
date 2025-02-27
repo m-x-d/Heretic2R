@@ -1,7 +1,7 @@
 //
 // p_funcs.c
 //
-// Heretic II - Raven software
+// Copyright 1998 Raven Software
 //
 
 #include "p_funcs.h"
@@ -13,6 +13,7 @@
 #include "g_Skeletons.h"
 #include "g_teleport.h"
 #include "g_weapon.h"
+#include "spl_morph.h" //mxd
 #include "spl_shield.h" //mxd
 #include "FX.h"
 #include "Random.h"
@@ -640,7 +641,7 @@ qboolean G_HandleTeleport(const playerinfo_t* info)
 	else if (info->flags & PLAYER_FLAG_TELEPORT) // We are done re-materializing, let's kill all this BS and get back to the game.
 		CleanUpTeleport(self);
 	else
-		CleanUpMorph(self);
+		CleanUpPlayerMorph(self);
 
 	return !DEATHMATCH;
 }

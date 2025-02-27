@@ -79,20 +79,17 @@ static void MonsterMorphFadeOut(edict_t* self) //mxd. Named 'MorphFadeOut' in or
 	G_SetToFree(self);
 }
 
-// *************************************************************************************************
-// CleanUpMorph
-// ------------
-// Done morphing, clean up after ourselves - for PLAYER only. Called from G_ANIMACTOR.C.
-// *************************************************************************************************
-
-void CleanUpMorph(edict_t *self)
+// Done morphing, clean up after ourselves - for PLAYER only.
+void CleanUpPlayerMorph(edict_t* self) //mxd. Named 'CleanUpMorph' in original version.
 {
-	self->client->tele_dest[0] = self->client->tele_dest[1] = self->client->tele_dest[2] = 0;
+	VectorClear(self->client->tele_dest);
+
 	self->client->tele_count = 0;
 	self->client->playerinfo.edictflags &= ~FL_LOCKMOVE;
 	self->client->playerinfo.renderfx &= ~RF_TRANSLUCENT;
-	self->client->playerinfo.flags &=~PLAYER_FLAG_MORPHING;
-	self->client->shrine_framenum = level.time - 1;;
+	self->client->playerinfo.flags &= ~PLAYER_FLAG_MORPHING;
+	self->client->shrine_framenum = level.time - 1.0f;
+
 	self->s.color.a = 255;
 }
 
