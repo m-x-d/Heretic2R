@@ -142,71 +142,58 @@ edict_t* PhoenixMissileReflect(edict_t* self, edict_t* other, vec3_t vel)
 	return arrow;
 }
 
-// ****************************************************************************
-// SpellCastPhoenix
-// ****************************************************************************
-
-void SpellCastPhoenix(edict_t *Caster, vec3_t StartPos, vec3_t AimAngles, vec3_t unused, float value)
+void SpellCastPhoenix(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, vec3_t unused, float value) //TODO: remove unused args.
 {
-	edict_t		*phoenix;
-	trace_t		trace;
-	vec3_t		forward, endpos;
+	edict_t* arrow = G_Spawn();
 
+	CreatePhoenixArrow(arrow);
+	VectorCopy(start_pos, arrow->s.origin);
 
-	phoenix = G_Spawn();
+	// Check ahead first to see if it's going to hit anything at this angle.
+	vec3_t forward;
+	AngleVectors(aim_angles, forward, NULL, NULL);
 
-	VectorCopy(StartPos, phoenix->s.origin);
-	//Check ahead first to see if it's going to hit anything at this angle
-	AngleVectors(AimAngles, forward, NULL, NULL);
-	VectorMA(StartPos, PHOENIX_ARROW_SPEED, forward, endpos);
-	gi.trace(StartPos, vec3_origin, vec3_origin, endpos, Caster, MASK_MONSTERSOLID,&trace);
-	if(trace.ent && OkToAutotarget(Caster, trace.ent))
-	{//already going to hit a valid target at this angle- so don't autotarget
-		VectorScale(forward, PHOENIX_ARROW_SPEED, phoenix->velocity);
-	}
+	vec3_t end_pos;
+	VectorMA(start_pos, PHOENIX_ARROW_SPEED, forward, end_pos);
+
+	trace_t trace;
+	gi.trace(start_pos, vec3_origin, vec3_origin, end_pos, caster, MASK_MONSTERSOLID, &trace);
+
+	if (trace.ent != NULL && OkToAutotarget(caster, trace.ent))
+		VectorScale(forward, PHOENIX_ARROW_SPEED, arrow->velocity); // Already going to hit a valid target at this angle - so don't auto-target.
 	else
-	{//autotarget current enemy
-		GetAimVelocity(Caster->enemy, phoenix->s.origin, PHOENIX_ARROW_SPEED, AimAngles, phoenix->velocity);
-	}
-	VectorCopy(AimAngles, phoenix->s.angles);
-	CreatePhoenixArrow(phoenix);
- 	phoenix->reflect_debounce_time = MAX_REFLECT;
+		GetAimVelocity(caster->enemy, arrow->s.origin, PHOENIX_ARROW_SPEED, aim_angles, arrow->velocity); // Auto-target current enemy.
 
-	phoenix->owner = Caster;
-	G_LinkMissile(phoenix);
+	VectorCopy(aim_angles, arrow->s.angles);
+	arrow->reflect_debounce_time = MAX_REFLECT;
+	arrow->owner = caster;
 
-	// travel sound on the weapon itself
-	phoenix->s.sound = gi.soundindex("weapons/PhoenixTravel.wav");
-	phoenix->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
+	G_LinkMissile(arrow);
 
-	if (Caster->client->playerinfo.powerup_timer > level.time)
-	{
-		// We still want the sound on the player.
-		gi.sound(Caster, CHAN_WEAPON, gi.soundindex("weapons/PhoenixPowerFire.wav"), 1, ATTN_NORM, 0);
- 		phoenix->health = 1;
-	}
-	else
-	{
-		// We still want the sound on the player.
-		gi.sound(Caster, CHAN_WEAPON, gi.soundindex("weapons/PhoenixFire.wav"), 1, ATTN_NORM, 0);
- 		phoenix->health = 0;
-	}
+	// Play travel sound on the arrow itself.
+	arrow->s.sound = (byte)gi.soundindex("weapons/PhoenixTravel.wav");
+	arrow->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
 
-	// remove the bow ready sound
-	Caster->s.sound = 0;
+	// Play firing sound on the player.
+	const qboolean is_powered = (caster->client->playerinfo.powerup_timer > level.time); //mxd
+	const char* snd_name = (is_powered ? "weapons/PhoenixPowerFire.wav" : "weapons/PhoenixFire.wav"); //mxd
+	gi.sound(caster, CHAN_WEAPON, gi.soundindex(snd_name), 1.0f, ATTN_NORM, 0.0f);
+	arrow->health = is_powered;
+
+	// Remove the bow ready sound.
+	caster->s.sound = 0;
 
 	// Trace from the player's origin because then if we hit a wall, the effect won't be inside it...
-	gi.trace(Caster->s.origin, phoenix->mins, phoenix->maxs, phoenix->s.origin, Caster, MASK_PLAYERSOLID,&trace);
-	if (trace.startsolid || trace.fraction < .99)
-	{
-		if (trace.startsolid)
-			VectorCopy(Caster->s.origin, phoenix->s.origin);
-		else
-			VectorCopy(trace.endpos, phoenix->s.origin);
-		PhoenixMissileTouch(phoenix, trace.ent, &trace.plane, trace.surface);
-		return;
-	}
-	gi.CreateEffect(&phoenix->s, FX_WEAPON_PHOENIXMISSILE, CEF_OWNERS_ORIGIN|(phoenix->health<<5), NULL, "t", phoenix->velocity);
-}
+	gi.trace(caster->s.origin, arrow->mins, arrow->maxs, arrow->s.origin, caster, MASK_PLAYERSOLID, &trace);
 
-// end
+	if (trace.startsolid || trace.fraction < 0.99f)
+	{
+		const vec3_t* src = (trace.startsolid ? &caster->s.origin : &trace.endpos); //mxd
+		VectorCopy(*src, arrow->s.origin);
+		PhoenixMissileTouch(arrow, trace.ent, &trace.plane, trace.surface);
+	}
+	else
+	{
+		gi.CreateEffect(&arrow->s, FX_WEAPON_PHOENIXMISSILE, CEF_OWNERS_ORIGIN | (arrow->health << 5), NULL, "t", arrow->velocity);
+	}
+}
