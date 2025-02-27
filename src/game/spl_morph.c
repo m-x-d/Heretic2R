@@ -431,34 +431,37 @@ static void CreateMorphOvum(edict_t* egg) //mxd. Named 'create_morph' in origina
 	egg->clipmask = MASK_MONSTERSOLID;
 }
 
-edict_t *MorphReflect(edict_t *self, edict_t *other, vec3_t vel)
+edict_t* MorphReflect(edict_t* self, edict_t* other, vec3_t vel)
 {
-	edict_t	*morph;
-	byte 	yaw, pitch;
+	// Create a new missile to replace the old one - this is necessary because physics will do nasty things
+	// with the existing one, since we hit something. Hence, we create a new one totally.
+	edict_t* egg = G_Spawn();
 
-   	// create a new missile to replace the old one - this is necessary cos physics will do nasty shit
-   	// with the existing one,since we hit something. Hence, we create a new one totally.
-   	morph = G_Spawn();
-   	CreateMorphOvum(morph);
-   	morph->reflect_debounce_time = self->reflect_debounce_time -1;
-	morph->reflected_time=self->reflected_time;
-   	morph->owner = other;
-   	morph->enemy = self->enemy;
-   	VectorCopy(self->s.origin, morph->s.origin);
-	VectorCopy(vel, morph->velocity);
-	VectorNormalize2(morph->velocity, morph->movedir);
-   	AnglesFromDir(morph->movedir, morph->s.angles);
-   	G_LinkMissile(morph); 
-   	yaw = Q_ftol((morph->s.angles[YAW]/6.2831) * 255.0);
-   	pitch = Q_ftol((morph->s.angles[PITCH]/6.2831) * 255.0);
-   	gi.CreateEffect(&morph->s, FX_SPELL_MORPHMISSILE, CEF_OWNERS_ORIGIN|CEF_FLAG6, NULL, "bb", yaw,pitch);
+	// Copy everything across.
+	CreateMorphOvum(egg);
+	VectorCopy(self->s.origin, egg->s.origin);
+	VectorCopy(vel, egg->velocity);
+	VectorNormalize2(egg->velocity, egg->movedir);
+	AnglesFromDir(egg->movedir, egg->s.angles);
+	egg->owner = other;
+	egg->enemy = self->enemy;
+	egg->reflect_debounce_time = self->reflect_debounce_time - 1; // So it doesn't infinitely reflect in one frame somehow.
+	egg->reflected_time = self->reflected_time;
 
-   	// kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it. 
-   	G_SetToFree(self);
+	G_LinkMissile(egg);
 
-   	// Do a nasty looking blast at the impact point
-   	gi.CreateEffect(&morph->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", morph->velocity);
-	return(morph);
+	// Create new trails for the new missile.
+	const byte yaw = (byte)Q_ftol(egg->s.angles[YAW] / 6.2831f * 255.0f);
+	const byte pitch = (byte)Q_ftol(egg->s.angles[PITCH] / 6.2831f * 255.0f);
+	gi.CreateEffect(&egg->s, FX_SPELL_MORPHMISSILE, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "bb", yaw, pitch);
+
+	// Kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it.
+	G_SetToFree(self);
+
+	// Do a nasty looking blast at the impact point.
+	gi.CreateEffect(&egg->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", egg->velocity);
+
+	return egg;
 }
 
 // ****************************************************************************
