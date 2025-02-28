@@ -607,89 +607,62 @@ static void SphereWatcherTouch(edict_t* self, edict_t* other, cplane_t* plane, c
 	G_SetToFree(self);
 }
 
-// ****************************************************************************
-// SpellCastSphereOfAnnihilation
-// ****************************************************************************
-
-void SpellCastSphereOfAnnihilation(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,
-								  float Value,qboolean *ReleaseFlagsPtr)
+void SpellCastSphereOfAnnihilation(edict_t* caster, vec3_t start_pos, vec3_t aim_angles, vec3_t aim_dir, float Value, qboolean* release_flags_ptr) //TODO: remove unused arg.
 {
-	edict_t	*Sphere;
-	int	flags;
+	// Spawn the sphere of annihilation as an invisible entity (i.e. modelindex = 0).
+	edict_t* sphere = G_Spawn();
+	CreateSphere(sphere);
 
-	// Spawn the sphere of annihilation as an invisible entity (i.e. modelindex=0).
-
-	Sphere=G_Spawn();
-
-	if(Caster->client)
+	if (caster->client != NULL)
 	{
-		VectorCopy(Caster->s.origin, Sphere->s.origin);	
-		Sphere->s.origin[0] += AimDir[0]*20.0;
-		Sphere->s.origin[1] += AimDir[1]*20.0;
-		Sphere->s.origin[2] += Caster->viewheight-5.0;
-	}
-	else
-		VectorCopy(StartPos, Sphere->s.origin);	
-	
-	VectorCopy(AimAngles,Sphere->s.angles);
-
-	Sphere->avelocity[YAW]=100.0;
-	Sphere->avelocity[ROLL]=100.0;
-
-	// NOTE: 'edict_t'->combattarget is used as a pointer to a 'qboolean' which flags
-	// whether or not I have been released. Would like a dedicated value in the 'edict_t' but this
-	// is unlikely to happen, sooooo...
-
-
-	Sphere->combattarget=(char *)ReleaseFlagsPtr;
-
-	Sphere->count = 0;
-	Sphere->solid = SOLID_NOT;
-	Sphere->dmg = 0;
-	Sphere->s.scale = SPHERE_INIT_SCALE;
-	Sphere->owner = Caster;
-	Sphere->enemy = Caster->enemy;
-	CreateSphere(Sphere);
-	Sphere->reflect_debounce_time = MAX_REFLECT;
-
-	if (Caster->client && Caster->client->playerinfo.powerup_timer > level.time)
-	{
-		Sphere->think=SphereOfAnnihilationGrowThinkPower;
+		VectorCopy(caster->s.origin, sphere->s.origin);
+		sphere->s.origin[0] += aim_dir[0] * 20.0f;
+		sphere->s.origin[1] += aim_dir[1] * 20.0f;
+		sphere->s.origin[2] += (float)caster->viewheight - 5.0f;
 	}
 	else
 	{
-		if (Caster->client)
-			Sphere->think=SphereOfAnnihilationGrowThink;
-		else	// The celestial watcher can also cast a sphere, but a different kind of one.
-			Sphere->think=SphereWatcherGrowThink;
+		VectorCopy(start_pos, sphere->s.origin);
 	}
 
-	gi.linkentity(Sphere); 
+	VectorCopy(aim_angles, sphere->s.angles);
 
-	if(!Caster->client)
-		flags = 0;
+	sphere->avelocity[YAW] = 100.0f;
+	sphere->avelocity[ROLL] = 100.0f;
+
+	// NOTE: 'edict_t'->combattarget is used as a pointer to a 'qboolean' which flags whether or not I have been released.
+	// Would like a dedicated value in the 'edict_t' but this is unlikely to happen, sooooo...
+	sphere->combattarget = (char*)release_flags_ptr;
+
+	sphere->count = 0;
+	sphere->solid = SOLID_NOT;
+	sphere->dmg = 0;
+	sphere->s.scale = SPHERE_INIT_SCALE;
+	sphere->owner = caster;
+	sphere->enemy = caster->enemy;
+	sphere->reflect_debounce_time = MAX_REFLECT;
+
+	if (caster->client != NULL)
+	{
+		if (caster->client->playerinfo.powerup_timer > level.time)
+			sphere->think = SphereOfAnnihilationGrowThinkPower;
+		else
+			sphere->think = SphereOfAnnihilationGrowThink;
+	}
 	else
-		flags = CEF_OWNERS_ORIGIN;
+	{
+		// The celestial watcher can also cast a sphere, but a different kind of one.
+		sphere->think = SphereWatcherGrowThink;
+	}
 
-	gi.CreateEffect(&Sphere->s,
-					FX_WEAPON_SPHERE,
-					flags,
-					StartPos,
-					"s",
-					(short)Caster->s.number);
+	gi.linkentity(sphere);
 
-	if(!Caster->client)
-		flags = CEF_FLAG6;
-	else
-		flags = CEF_OWNERS_ORIGIN;
+	int	fx_flags = (caster->client != NULL ? CEF_OWNERS_ORIGIN : 0); //mxd
+	gi.CreateEffect(&sphere->s, FX_WEAPON_SPHERE, fx_flags, start_pos, "s", caster->s.number);
 
-	gi.CreateEffect(&Sphere->s,
-					FX_WEAPON_SPHEREGLOWBALLS,
-					flags,
-					StartPos,
-					"s",
-					(short)Caster->s.number);
+	fx_flags = (caster->client != NULL ? CEF_OWNERS_ORIGIN : CEF_FLAG6); //mxd
+	gi.CreateEffect(&sphere->s, FX_WEAPON_SPHEREGLOWBALLS, fx_flags, start_pos, "s", caster->s.number);
 
-	Sphere->s.sound = gi.soundindex("weapons/SphereGrow.wav");
-	Sphere->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
+	sphere->s.sound = (byte)gi.soundindex("weapons/SphereGrow.wav");
+	sphere->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
 }

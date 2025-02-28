@@ -113,8 +113,8 @@
 
 // Sphere of Annihilation.
 #define SPHERE_DAMAGE					100
-#define SPHERE_RADIUS_MIN				48
-#define SPHERE_RADIUS_MAX				256
+#define SPHERE_RADIUS_MIN				48.0f
+#define SPHERE_RADIUS_MAX				256.0f
 #define SPHERE_MANA_PER_CHARGE			1
 #define SPHERE_MAX_MANA_CHARGE			7		// For a total of 20 mana in a shot.
 #define SPHERE_MAX_CHARGES				(SPHERE_MAX_MANA_CHARGE * 2)	// 2 frames per charge.
