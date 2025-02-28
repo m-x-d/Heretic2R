@@ -120,105 +120,87 @@ static void SphereOfAnnihilationTouch(edict_t* self, edict_t* other, cplane_t* p
 	SphereExplodeThink(explosion);
 }
 
-// ****************************************************************************
-// SphereOfAnnihilationGrowThink
-// ****************************************************************************
-
-static void SphereOfAnnihilationGrowThink(edict_t *Self)
+static void SphereOfAnnihilationGrowThink(edict_t* self)
 {
-	vec3_t	Forward, Up, endpos;
-	trace_t trace;
+	vec3_t forward;
+	vec3_t up;
 
+	const gclient_t* cl = self->owner->client; //mxd
 
-	if (Self->owner->client)
-		AngleVectors(Self->owner->client->aimangles,Forward,NULL,Up);
+	if (cl != NULL)
+		AngleVectors(cl->aimangles, forward, NULL, up);
 	else
-		AngleVectors(Self->owner->s.angles,Forward,NULL,Up);
+		AngleVectors(self->owner->s.angles, forward, NULL, up);
 
-	// NOTE: 'edict_t'->combattarget is used as a pointer to a 'qboolean' which flags
-	// whether or not I have been released. Would like a dedicated value in the 'edict_t' but this
-	// is unlikely to happen, sooooo...
+	// NOTE: 'edict_t'->combattarget is used as a pointer to a 'qboolean' which flags whether or not I have been released.
+	// Would like a dedicated value in the 'edict_t' but this is unlikely to happen, sooooo...
 
-	// if we have released, or we are dead, or a chicken, release the sphere 
-	if(*(qboolean *)Self->combattarget && !(Self->owner->deadflag & (DEAD_DYING|DEAD_DEAD))
-		&& (Self->owner->client && !(Self->owner->client->playerinfo.edictflags & FL_CHICKEN)) &&
-		(!(Self->owner->client->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN)))
+	// If we have released, or we are dead, or a chicken, release the sphere.
+	if (*(qboolean*)self->combattarget && !(self->owner->deadflag & (DEAD_DYING | DEAD_DEAD))
+		&& (cl != NULL && !(cl->playerinfo.edictflags & FL_CHICKEN)) && !(cl->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN))
 	{
-		if (Self->count < SPHERE_MAX_CHARGES)
+		if (self->count < SPHERE_MAX_CHARGES)
 		{
-			Self->count++;
-			Self->s.scale = SPHERE_INIT_SCALE + (SPHERE_SCALE_PER_CHARGE * Self->count);
+			self->count++;
+			self->s.scale = SPHERE_INIT_SCALE + (SPHERE_SCALE_PER_CHARGE * (float)self->count);
 		}
 		else
-		{	// If at max size, pulse like crazy!
-			Self->s.scale = SPHERE_MAX_SCALE + flrand(0, SPHERE_SCALE_PULSE);
-		}
-
-		// detect if we have teleported, since we need to move with the player if thats so
-		if(Self->owner->client)
 		{
-			VectorCopy(Self->owner->s.origin, Self->s.origin);	
-			Self->s.origin[0] += Forward[0]*20.0;
-			Self->s.origin[1] += Forward[1]*20.0;
-	   		Self->s.origin[2] += Self->owner->viewheight-5.0;
+			self->s.scale = SPHERE_MAX_SCALE + flrand(0, SPHERE_SCALE_PULSE); // If at max size, pulse like crazy!
 		}
 
-		Self->nextthink=level.time+0.1;
+		// Detect if we have teleported, need to move with the player if that's so.
+		if (cl != NULL)
+		{
+			VectorCopy(self->owner->s.origin, self->s.origin);
+
+			self->s.origin[0] += forward[0] * 20.0f;
+			self->s.origin[1] += forward[1] * 20.0f;
+			self->s.origin[2] += (float)self->owner->viewheight - 5.0f;
+		}
+
+		self->nextthink = level.time + 0.1f;
 	}
 	else
 	{
-		vec3_t	angles;
 		// My caster has released me, so I am now a missile and I will fly like the wind.
+		self->svflags &= ~SVF_NOCLIENT;
+		self->s.effects &= ~EF_MARCUS_FLAG1;
 
-		Self->svflags &= ~SVF_NOCLIENT;
+		// Check ahead first to see if it's going to hit anything at this angle.
+		vec3_t end_pos;
+		VectorMA(self->s.origin, SPHERE_FLY_SPEED, forward, end_pos);
 
-		Self->s.effects&=~EF_MARCUS_FLAG1;
+		trace_t trace;
+		gi.trace(self->s.origin, vec3_origin, vec3_origin, end_pos, self->owner, MASK_MONSTERSOLID, &trace);
 
-		VectorCopy(Self->owner->movedir,Self->movedir);
-
-		//FIXME: Need to get rid of the 'client' reference so that anything can cast this spell.
-
-		//Check ahead first to see if it's going to hit anything at this angle
-		if(Self->owner->client)
-			VectorCopy(Self->owner->client->aimangles, angles);
+		if (trace.ent != NULL && OkToAutotarget(self->owner, trace.ent))
+			VectorScale(forward, SPHERE_FLY_SPEED, self->velocity); // Already going to hit a valid target at this angle - so don't auto-target.
 		else
-			VectorCopy(Self->owner->s.angles, angles);
-		AngleVectors(angles, Forward, NULL, NULL);
-		VectorMA(Self->s.origin, SPHERE_FLY_SPEED, Forward, endpos);
-		gi.trace(Self->s.origin, vec3_origin, vec3_origin, endpos, Self->owner, MASK_MONSTERSOLID,&trace);
-		if(trace.ent && OkToAutotarget(Self->owner, trace.ent))
-		{//already going to hit a valid target at this angle- so don't autotarget
-			VectorScale(Forward, SPHERE_FLY_SPEED, Self->velocity);
-		}
-		else
-		{//autotarget current enemy
-			GetAimVelocity(Self->owner->enemy, Self->s.origin, SPHERE_FLY_SPEED, Self->owner->client->aimangles, Self->velocity);
-		}
-		VectorNormalize2(Self->velocity, Self->movedir);
-		
-		Self->movetype=MOVETYPE_FLYMISSILE;
-		Self->solid=SOLID_BBOX;
-		Self->health=0;
-		Self->dmg = SPHERE_DAMAGE;
-		Self->dmg_radius = SPHERE_RADIUS_MIN + (SPHERE_RADIUS_PER_CHARGE * Self->count);
-		Self->touch=SphereOfAnnihilationTouch;
-		Self->think=NULL;
-			
-	   	VectorSet(Self->mins, -SPHERE_RADIUS, -SPHERE_RADIUS, -SPHERE_RADIUS);
-		VectorSet(Self->maxs, SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS);
+			GetAimVelocity(self->owner->enemy, self->s.origin, SPHERE_FLY_SPEED, cl->aimangles, self->velocity); // Auto-target current enemy.
 
-		Self->s.sound = 0;
-		gi.sound(Self,CHAN_WEAPON,gi.soundindex("weapons/SphereFire.wav"),1,ATTN_NORM,0);
+		VectorNormalize2(self->velocity, self->movedir);
 
-		gi.trace(Self->s.origin, vec3_origin, vec3_origin, Self->s.origin, Self->owner, MASK_PLAYERSOLID,&trace);
+		self->movetype = MOVETYPE_FLYMISSILE;
+		self->solid = SOLID_BBOX;
+		self->health = 0;
+		self->dmg = SPHERE_DAMAGE;
+		self->dmg_radius = SPHERE_RADIUS_MIN + (SPHERE_RADIUS_PER_CHARGE * (float)self->count);
+		self->touch = SphereOfAnnihilationTouch;
+		self->think = NULL;
+
+		VectorSet(self->mins, -SPHERE_RADIUS, -SPHERE_RADIUS, -SPHERE_RADIUS);
+		VectorSet(self->maxs, SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS);
+
+		self->s.sound = 0;
+		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/SphereFire.wav"), 1.0f, ATTN_NORM, 0.0f);
+
+		gi.trace(self->s.origin, vec3_origin, vec3_origin, self->s.origin, self->owner, MASK_PLAYERSOLID, &trace);
+
 		if (trace.startsolid)
-		{
-			SphereOfAnnihilationTouch(Self, trace.ent, &trace.plane, trace.surface);
-			return;
-		}
+			SphereOfAnnihilationTouch(self, trace.ent, &trace.plane, trace.surface);
 	}
 }
-
 
 static void SpherePowerLaserThink(edict_t *Self)
 {
