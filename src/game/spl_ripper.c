@@ -88,7 +88,7 @@ static void RipperExplodeBallTouch(edict_t* self, edict_t* other, cplane_t* plan
 }
 
 // This is like a touch function, except since the ripper is instant now...
-static void RipperImpact(edict_t* caster, edict_t* other, vec3_t start_pos, vec3_t end_pos, vec3_t angles)
+static void RipperImpact(edict_t* caster, edict_t* other, const vec3_t start_pos, const vec3_t end_pos, const vec3_t angles)
 {
 	short ball_array[RIPPER_BALLS];
 
@@ -181,44 +181,40 @@ static void RipperImpact(edict_t* caster, edict_t* other, vec3_t start_pos, vec3
 		start_pos, b_yaw, ball_array[0], ball_array[1], ball_array[2], ball_array[3], ball_array[4], ball_array[5], ball_array[6], ball_array[7]);
 }
 
-// ****************************************************************************
-// SpellCastRipper
-// ****************************************************************************
-
-
-void SpellCastRipper(edict_t *caster, vec3_t StartPos, vec3_t AimAngles, vec3_t unused)
+void SpellCastRipper(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, vec3_t unused) //TODO: remove unused arg.
 {
-	trace_t trace;
-	vec3_t	endpos, forward;
-	vec3_t	mins={-RIPPER_RADIUS, -RIPPER_RADIUS, -RIPPER_RADIUS}, maxs={RIPPER_RADIUS, RIPPER_RADIUS, RIPPER_RADIUS};
+	static const vec3_t mins = { -RIPPER_RADIUS, -RIPPER_RADIUS, -RIPPER_RADIUS }; //mxd. Made static.
+	static const vec3_t maxs = {  RIPPER_RADIUS,  RIPPER_RADIUS,  RIPPER_RADIUS }; //mxd. Made static.
 
-	gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/RipperFire.wav"), 1, ATTN_NORM, 0);
+	gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/RipperFire.wav"), 1.0f, ATTN_NORM, 0.0f);
 
 	// Make sure we don't spawn in a wall.
-	gi.trace(caster->s.origin, mins, maxs, StartPos, caster, MASK_PLAYERSOLID,&trace);
-	if (trace.startsolid || trace.fraction<.99)
+	trace_t trace;
+	gi.trace(caster->s.origin, mins, maxs, start_pos, caster, MASK_PLAYERSOLID, &trace);
+
+	if (trace.startsolid || trace.fraction < 0.99f)
 	{
-		RipperImpact(caster, trace.ent, caster->s.origin, trace.endpos, AimAngles);
+		RipperImpact(caster, trace.ent, caster->s.origin, trace.endpos, aim_angles);
 		return;
 	}
-	
-	// Get the forward angle
-	AngleVectors(AimAngles, forward, NULL, NULL);
+
+	// Get the forward angle.
+	vec3_t forward;
+	AngleVectors(aim_angles, forward, NULL, NULL);
 
 	// Now trace from the starting point to the final destination.
-	VectorMA(StartPos, RIPPER_MAX_DISTANCE, forward, endpos);
-	gi.trace(StartPos, mins, maxs, endpos, caster, MASK_SHOT,&trace);
-	if(level.fighting_beast)
+	vec3_t end_pos;
+	VectorMA(start_pos, RIPPER_MAX_DISTANCE, forward, end_pos);
+
+	gi.trace(start_pos, mins, maxs, end_pos, caster, MASK_SHOT, &trace);
+
+	if (level.fighting_beast)
 	{
-		edict_t *ent;
-		
-		if(ent = TB_CheckHit(StartPos, trace.endpos))
+		edict_t* ent = TB_CheckHit(start_pos, trace.endpos);
+
+		if (ent != NULL)
 			trace.ent = ent;
 	}
 
-	RipperImpact(caster, trace.ent, StartPos, trace.endpos, AimAngles);
+	RipperImpact(caster, trace.ent, start_pos, trace.endpos, aim_angles);
 }
-
-
-// end
-
