@@ -11,7 +11,7 @@
 #include "p_anim_branch.h"
 #include "p_main.h"
 #include "p_utility.h" //mxd
-#include "g_teleport.h"
+#include "g_Edict.h" //mxd
 #include "Angles.h"
 #include "Vector.h"
 #include "FX.h"
