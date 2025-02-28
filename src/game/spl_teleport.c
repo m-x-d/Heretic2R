@@ -148,57 +148,43 @@ void teleporter_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t
 	gi.sound(other, CHAN_VOICE, gi.soundindex("weapons/teleport.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
-// Spawn the Spell teleport effect - from the player
-// We could send the teleport type over the flags instead of as a parameter byte
-void SpellCastTeleport(edict_t *caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,float Value)
+// Spawn the Spell teleport effect - from the player.
+// We could send the teleport type over the flags instead of as a parameter byte.
+void SpellCastTeleport(edict_t* caster, vec3_t StartPos, vec3_t AimAngles, vec3_t AimDir, float Value)
 {
-
-	vec3_t	dest, dest_angles;
-
-	// if we are already teleporting, forget it
-	if ((caster->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING)) || (caster->deadflag & (DEAD_DYING|DEAD_DEAD)))
+	// If we are already teleporting, forget it.
+	if ((caster->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING)) || (caster->deadflag & (DEAD_DYING | DEAD_DEAD)))
 		return;
 
-	// setup other teleporter information that the character will require
-	// when the teleport is actually performed in AnimUpdateFrame
+	// Setup other teleporter information that the character will require when the teleport is actually performed in AnimUpdateFrame.
 
-	// set the player as teleporting
+	// Set the player as teleporting.
 	caster->client->playerinfo.flags |= PLAYER_FLAG_TELEPORT;
-
 	caster->client->ps.pmove.pm_flags |= PMF_LOCKMOVE;
 
-	// figure out a destination point
-	SelectSpawnPoint(caster,dest, dest_angles);
+	// Figure out a destination point.
+	vec3_t dest_pos;
+	vec3_t dest_angles;
+	SelectSpawnPoint(caster, dest_pos, dest_angles);
 
-	// dest coors to teleport to
-	VectorCopy(dest,caster->client->tele_dest);
-	// angles we should start at 
-	VectorCopy(dest_angles,caster->client->tele_angles);
-	// time taken over dematerialisation
-	caster->client->tele_count = TELE_TIME_OUT;
+	VectorCopy(dest_pos, caster->client->tele_dest); // Set destination coordinates to teleport to.
+	VectorCopy(dest_angles, caster->client->tele_angles); // Set angles we should start at.
 
-	// tell us how we triggered the teleport
-	caster->client->tele_type = 1;
+	caster->client->tele_count = TELE_TIME_OUT; // Time taken over de-materialization.
+	caster->client->tele_type = 1; // Tell us how we triggered the teleport.
+	caster->client->old_solid = caster->solid; // Save out what kind of solid ability we are.
+	caster->client->shrine_framenum = level.time + 10.0f; // Make us invunerable for a couple of seconds.
 
-	// save out what kind of solid ability we are
-	caster->client->old_solid = caster->solid;
-
-	// make us invunerable for a couple of seconds
-	caster->client->shrine_framenum = level.time + 10;
-
-	// clear the velocity and hold them in place briefly
-	VectorClear (caster->velocity);
+	// Clear the velocity and hold them in place briefly.
+	VectorClear(caster->velocity);
 	caster->client->ps.pmove.pm_time = 50;
-	// make the player still
-	caster->flags |= FL_LOCKMOVE;
-	// allow the player to fade out
-	caster->s.color.a = 255;
-	caster->s.color.r = 255;
-	caster->s.color.g = 255;
-	caster->s.color.b = 255;
 
-	// draw the teleport splash at the teleport source
-	gi.CreateEffect(&caster->s, FX_PLAYER_TELEPORT_OUT, CEF_OWNERS_ORIGIN | ((byte)caster->client->tele_type << 5), NULL, "" );
-	// do the teleport sound
-	gi.sound(caster,CHAN_VOICE,gi.soundindex("weapons/teleport.wav"),1,ATTN_NORM,0);
+	caster->flags |= FL_LOCKMOVE; // Make the player still.
+	caster->s.color.c = 0xffffffff; // Allow the player to fade out.
+
+	// Draw the teleport splash at the teleport source.
+	gi.CreateEffect(&caster->s, FX_PLAYER_TELEPORT_OUT, CEF_OWNERS_ORIGIN | ((byte)caster->client->tele_type << 5), NULL, "");
+
+	// Do the teleport sound.
+	gi.sound(caster, CHAN_VOICE, gi.soundindex("weapons/teleport.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
