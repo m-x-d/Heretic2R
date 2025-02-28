@@ -564,6 +564,49 @@ static edict_t* SphereWatcherReflect(edict_t* self, edict_t* other, vec3_t vel)
 	return sphere;
 }
 
+static void SphereWatcherTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
+{
+	// Has the target got reflection turned on?
+	if (self->reflect_debounce_time > 0 && EntReflecting(other, true, true))
+	{
+		Create_rand_relect_vect(self->velocity, self->velocity);
+		Vec3ScaleAssign(SPHERE_FLY_SPEED / 2.0f, self->velocity);
+		SphereWatcherReflect(self, other, self->velocity);
+
+		return;
+	}
+
+	if (surface != NULL && (surface->flags & SURF_SKY))
+	{
+		SkyFly(self);
+		return;
+	}
+
+	AlertMonsters(self, self->owner, 3.0f, false);
+
+	if (other->takedamage != DAMAGE_NO)
+	{
+		T_Damage(other, self, self->owner, self->movedir, self->s.origin, plane->normal, self->dmg, self->dmg, DAMAGE_SPELL, MOD_SPHERE);
+	}
+	else
+	{
+		// Back off the origin for the damage a bit.
+		// We are a point and this will help fix hitting base of a stair and not hurting a guy on next step up.
+		VectorMA(self->s.origin, -8.0f, self->movedir, self->s.origin);
+	}
+
+	T_DamageRadius(self, self->owner, self, self->dmg_radius, (float)self->dmg, (float)self->dmg / 8.0f, DAMAGE_ATTACKER_KNOCKBACK, MOD_SPHERE);
+
+	int fx_scorch_flag = 0;
+	if (IsDecalApplicable(other, self->s.origin, surface, plane, NULL))
+		fx_scorch_flag = CEF_FLAG6;
+
+	gi.CreateEffect(&self->s, FX_WEAPON_SPHEREEXPLODE, CEF_OWNERS_ORIGIN | fx_scorch_flag, NULL, "db", self->movedir, (byte)(self->s.scale * 7.5f));
+	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/SphereImpact.wav"), 2.0f, ATTN_NORM, 0.0f); //TODO:why 2.0 volume?
+
+	G_SetToFree(self);
+}
+
 // ****************************************************************************
 // SpellCastSphereOfAnnihilation
 // ****************************************************************************
@@ -649,50 +692,4 @@ void SpellCastSphereOfAnnihilation(edict_t *Caster,vec3_t StartPos,vec3_t AimAng
 
 	Sphere->s.sound = gi.soundindex("weapons/SphereGrow.wav");
 	Sphere->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
-}
-
-static void SphereWatcherTouch(edict_t *self, edict_t *Other, cplane_t *Plane, csurface_t *surface)
-{
-	int			makeScorch;
-
-	// has the target got reflection turned on ?
-	if(EntReflecting(Other, true, true) && self->reflect_debounce_time)
-	{
-		Create_rand_relect_vect(self->velocity, self->velocity);
-		Vec3ScaleAssign(SPHERE_FLY_SPEED/2, self->velocity);
-		SphereWatcherReflect(self, Other, self->velocity);
-		return;
-	}
-
-
-	if(surface && (surface->flags & SURF_SKY))
-	{
-		SkyFly(self);
-		return;
-	}
-
-	AlertMonsters (self, self->owner, 3, false);
-	if(Other->takedamage)
-	{
-		T_Damage(Other, self, self->owner, self->movedir, self->s.origin, Plane->normal, self->dmg, self->dmg, DAMAGE_SPELL,MOD_SPHERE);
-	}
-	else
-	{
-		// Back off the origin for the damage a bit. We are a point and this will
-		// help fix hitting base of a stair and not hurting a guy on next step up.
-		VectorMA(self->s.origin, -8.0, self->movedir, self->s.origin);
-	}
-
-	T_DamageRadius(self, self->owner, self, self->dmg_radius, self->dmg, self->dmg / 8, DAMAGE_ATTACKER_KNOCKBACK,MOD_SPHERE);
-	makeScorch = 0;
-	if(IsDecalApplicable(Other, self->s.origin, surface, Plane, NULL))
-	{
-		makeScorch = CEF_FLAG6;
-	}
-	gi.CreateEffect(&self->s, FX_WEAPON_SPHEREEXPLODE, CEF_OWNERS_ORIGIN | makeScorch, NULL,
-					"db", self->movedir, (byte)(self->s.scale * 7.5));
-
-	gi.sound(self,CHAN_WEAPON,gi.soundindex("weapons/SphereImpact.wav"),2,ATTN_NORM,0);
-
-	G_SetToFree(self);
 }
