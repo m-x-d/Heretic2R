@@ -43,6 +43,28 @@ static void SphereWatcherGrowThink(edict_t *Self);
 
 void create_sphere(edict_t *Sphere);
 
+static void SphereExplodeThink(edict_t* self)
+{
+	edict_t* ent = NULL;
+
+	while ((ent = FindInRadius(ent, self->s.origin, self->dmg_radius)) != NULL)
+	{
+		if (ent->takedamage == DAMAGE_NO || ent == self->owner || ent->fire_timestamp >= self->fire_timestamp)
+			continue;
+
+		T_Damage(ent, self, self->owner, self->velocity, ent->s.origin, vec3_origin, self->dmg, 0, 0, MOD_SPHERE);
+		ent->fire_timestamp = self->fire_timestamp;
+		gi.CreateEffect(&ent->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", vec3_origin);
+	}
+
+	self->count--;
+	self->dmg_radius += SPHERE_GROW_SPEED;
+	self->nextthink = level.time + 0.1f;
+
+	if (self->count < 0)
+		G_SetToFree(self);
+}
+
 // ****************************************************************************
 // SphereOfAnnihilationGrowThink
 // ****************************************************************************
@@ -389,30 +411,6 @@ edict_t *SphereReflect(edict_t *self, edict_t *other, vec3_t vel)
 
    	return(Sphere);
 }
-
-
-void SphereExplodeThink(edict_t *self)
-{
-	edict_t *ent=NULL;
-
-	while(ent=FindInRadius(ent, self->s.origin, self->dmg_radius))
-	{
-		if (ent->takedamage && ent != self->owner && ent->fire_timestamp < self->fire_timestamp)
-		{
-			T_Damage(ent, self, self->owner, self->velocity, ent->s.origin, vec3_origin, self->dmg, 0, 0, MOD_SPHERE);
-			ent->fire_timestamp = self->fire_timestamp;
-		   	gi.CreateEffect(&ent->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", vec3_origin);
-		}
-	}
-
-	self->count--;
-	self->dmg_radius += SPHERE_GROW_SPEED;
-	self->nextthink = level.time + 0.1;
-
-	if (self->count < 0)
-		G_SetToFree(self);
-}
-
 
 // ****************************************************************************
 // SphereOfAnnihilationTouch
