@@ -1,33 +1,22 @@
 //
 // spl_tornado.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-// By Jake Simpson
 
 #include "spl_tornado.h" //mxd
-#include "g_local.h"
-#include "fx.h"
-#include "vector.h"
-#include "random.h"
-#include "decals.h"
-#include "g_ai.h" //mxd
-#include "g_combat.h" //mxd
-#include "Utilities.h"
-#include "g_playstats.h"
-#include "g_Physics.h"
 #include "spl_BlueRing.h" //mxd
+#include "g_combat.h" //mxd
+#include "g_playstats.h"
+#include "FX.h"
+#include "Random.h"
+#include "Vector.h"
+#include "g_local.h"
 
-#define FIST_RADIUS				2.0
-#define TORN_RADIUS				10.0
-#define TORN_EFFECT_RADIUS		100.0		
-#define TORN_KNOCKBACK_SCALE	200.0
-#define TORN_KNOCKBACK_BASE		250.0
-#define TORN_MASS_FACTOR		200.0
-
-static void tornboltTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface);
-void SpellCasttornbolt(edict_t *caster, vec3_t startpos, vec3_t aimangles, vec3_t aimdir, float value);
+#define TORN_EFFECT_RADIUS		100.0f	
+#define TORN_KNOCKBACK_SCALE	200.0f
+#define TORN_KNOCKBACK_BASE		250.0f
+#define TORN_MASS_FACTOR		200.0f
 
 // do the think for the tornado ring
 static void TornadoThink(edict_t *self)
@@ -186,184 +175,4 @@ void SpellCastDropTornado(edict_t *caster, vec3_t startpos, vec3_t aimangles, ve
 	}
 
 	gi.CreateEffect(&tornado->s, FX_TORNADO_BALL, CEF_OWNERS_ORIGIN | flags , NULL, "");
-}			
-
-
-// TORNADO BOLT FUNCTIONS
-
-
-// ****************************************
-// Creation functions
-// ****************************************
-void tornboltInitThink(edict_t *self)
-{
-	self->svflags |= SVF_NOCLIENT;
-	self->think = NULL;
 }
-
-void Createtornbolt(edict_t *tornbolt)
-{
-	tornbolt->s.effects |= EF_ALWAYS_ADD_EFFECTS;
-	tornbolt->svflags |= SVF_ALWAYS_SEND;
-	tornbolt->movetype = MOVETYPE_FLYMISSILE;
-	tornbolt->s.scale = 1.0;
-
-	tornbolt->touch = tornboltTouch;
-	tornbolt->think = tornboltInitThink;
-	tornbolt->classname = "Spell_tornbolt";
-	tornbolt->nextthink = level.time + 0.1;
-	VectorSet(tornbolt->mins, -FIST_RADIUS, -FIST_RADIUS, -FIST_RADIUS);
-	VectorSet(tornbolt->maxs, FIST_RADIUS, FIST_RADIUS, FIST_RADIUS);
-
-	tornbolt->solid = SOLID_BBOX;
-	tornbolt->clipmask = MASK_SHOT;
-}
-
-edict_t *tornboltReflect(edict_t *self, edict_t *other, vec3_t vel)
-{
-	edict_t	*tornbolt;
-
-	// create a new missile to replace the old one - this is necessary cos physics will do nasty things
-	// with the existing one,since we hit something. Hence, we create a new one totally.
-	tornbolt = G_Spawn();
-
-	// copy everything across
-	VectorCopy(self->s.origin, tornbolt->s.origin);
-	Createtornbolt(tornbolt);
-	VectorCopy(vel, tornbolt->velocity);
-	VectorNormalize2(vel, tornbolt->movedir);
-	AnglesFromDir(tornbolt->movedir, tornbolt->s.angles);
-	tornbolt->owner = other;
-	tornbolt->enemy = self->owner;
-	tornbolt->flags |= (self->flags & FL_NO_KNOCKBACK);
-	tornbolt->reflect_debounce_time = self->reflect_debounce_time -1; //so it doesn't infinitely reflect in one frame somehow
-	tornbolt->reflected_time=self->reflected_time;
-	G_LinkMissile(tornbolt); 
-
-	// create new trails for the new missile
-	gi.CreateEffect(&tornbolt->s, FX_WEAPON_FLYINGFIST, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL,
-					"t", tornbolt->velocity);
-
-	// kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it. 
-	G_SetToFree(self);
-
-	// Do a nasty looking blast at the impact point
-	gi.CreateEffect(&tornbolt->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", tornbolt->velocity);
-
-	return(tornbolt);
-}
-
-
-
-// ************************************************************************************************
-// tornboltTouch
-// ************************************************************************************************
-
-static void tornboltTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface)
-{
-	int			damage;
-	vec3_t		planedir;
-	int			flags = 0;
-
-	if(other == self->owner)
-	{
-		return;
-	}
-	if(surface && (surface->flags & SURF_SKY))
-	{
-		SkyFly(self);
-		return;
-	}
-
-	// has the target got reflection turned on ?
-	if (self->reflect_debounce_time)
-	{
-		if(EntReflecting(other, true, true))
-		{
-			Create_rand_relect_vect(self->velocity, self->velocity);
-			// scale speed down
-			Vec3ScaleAssign(FLYING_FIST_SPEED/2, self->velocity);
-			tornboltReflect(self, other, self->velocity);
-			return;
-		}
-	}
-
-	AlertMonsters (self, self->owner, 1, false);
-	if(other->takedamage)
-	{
-		if(deathmatch->value)
-			damage = irand(FIREBALL_DAMAGE_MIN/2, FIREBALL_DAMAGE_MAX/2);
-		else
-			damage = irand(FIREBALL_DAMAGE_MIN, FIREBALL_DAMAGE_MAX);
-		T_Damage(other, self, self->owner, self->movedir, self->s.origin, plane->normal, damage, damage, DAMAGE_SPELL,MOD_FIREBALL);
-	}
-	else
-	{
-		VectorMA(self->s.origin, -8.0, self->movedir, self->s.origin);
-	}
-
-	// Attempt to apply a scorchmark decal to the thing I hit.
-	if(IsDecalApplicable(other, self->s.origin, surface, plane, planedir))
-	{
-		flags |= CEF_FLAG6;
-	}
-
-	gi.CreateEffect(NULL, FX_WEAPON_FLYINGFISTEXPLODE, flags, self->s.origin, "d", self->movedir);
-
-	G_SetToFree(self);
-}
-
-
-// ************************************************************************************************
-// SpellCasttornbolt
-// ************************************************************************************************
-
-
-void SpellCasttornbolt(edict_t *caster, vec3_t startpos, vec3_t aimangles, vec3_t aimdir, float value)
-{
-	edict_t		*tornbolt;
-	trace_t		trace;
-	vec3_t		forward, endpos;
-
-	// Spawn the tornado blot / flying-fist (fireball)
-	tornbolt = G_Spawn();
-
-	gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/tornboltCast.wav"), 1.0, ATTN_NORM, 0);
-
-	Createtornbolt(tornbolt);
-	tornbolt->reflect_debounce_time = MAX_REFLECT;
-	VectorCopy(startpos, tornbolt->s.origin);	
-
-	//Check ahead first to see if it's going to hit anything at this angle
-	AngleVectors(aimangles, forward, NULL, NULL);
-	VectorMA(tornbolt->s.origin, FLYING_FIST_SPEED, forward, endpos);
-	gi.trace(startpos, vec3_origin, vec3_origin, endpos, caster, MASK_MONSTERSOLID,&trace);
-	if(trace.ent && OkToAutotarget(caster, trace.ent))
-	{//already going to hit a valid target at this angle- so don't autotarget
-		VectorScale(forward, FLYING_FIST_SPEED, tornbolt->velocity);
-	}
-	else
-	{//autotarget current enemy
-		GetAimVelocity(caster->enemy, tornbolt->s.origin, FLYING_FIST_SPEED / 2, aimangles, tornbolt->velocity);
-	}
-	tornbolt->owner = caster;
-	tornbolt->enemy = caster->enemy;
-	// Remember velocity in case we have to reverse it
-	VectorNormalize2(tornbolt->velocity, tornbolt->movedir);
-
-	G_LinkMissile(tornbolt); 
-
-	// Make sure we don`t start in a solid
-	gi.trace(caster->s.origin, vec3_origin, vec3_origin, tornbolt->s.origin, caster, MASK_PLAYERSOLID,&trace);
-	if (trace.startsolid || trace.fraction < 1.0)
-	{
-		VectorCopy(trace.endpos, tornbolt->s.origin);
-		tornboltTouch(tornbolt, trace.ent, &trace.plane, trace.surface);
-		return;
-	}
-	// Spawn effect after it has been determined it has not started in wall
-	// This is so it won`t try to remove it before it exists
-	gi.CreateEffect(&tornbolt->s, FX_WEAPON_FLYINGFIST, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL,
-					"t", tornbolt->velocity);
-}
-
