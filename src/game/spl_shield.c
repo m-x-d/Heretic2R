@@ -13,7 +13,7 @@
 #include "Vector.h"
 #include "g_local.h"
 
-void SpellCastShield(edict_t* caster, vec3_t startpos, vec3_t aimangles, vec3_t aimdir, float Value) //TODO: remove unuse args.
+void SpellCastShield(edict_t* caster)
 {
 	assert(caster->client != NULL);
 	caster->client->playerinfo.shield_timer = level.time + (float)SHIELD_DURATION;

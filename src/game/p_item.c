@@ -80,7 +80,7 @@ void DefenceThink_Shield(edict_t* caster, char* format, ...)
 	// Make sure that there isn't already a shield in place.
 	if (info->shield_timer < info->leveltime)
 	{
-		SpellCastShield(caster, caster->s.origin, NULL, NULL, 0.0f);
+		SpellCastShield(caster);
 		TakeMana(caster); //mxd
 	}
 }
