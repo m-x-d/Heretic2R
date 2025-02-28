@@ -13,16 +13,16 @@
 #include "Vector.h"
 #include "g_local.h"
 
-void SpellCastShield(edict_t *caster,vec3_t startpos,vec3_t aimangles,vec3_t aimdir,float Value)
+void SpellCastShield(edict_t* caster, vec3_t startpos, vec3_t aimangles, vec3_t aimdir, float Value) //TODO: remove unuse args.
 {
-	assert(caster->client);
+	assert(caster->client != NULL);
 	caster->client->playerinfo.shield_timer = level.time + (float)SHIELD_DURATION;
 
 	// Start the lightning effect.
-	caster->PersistantCFX = gi.CreatePersistantEffect(&caster->s, FX_SPELL_LIGHTNINGSHIELD, CEF_OWNERS_ORIGIN|CEF_BROADCAST, NULL, "");
+	caster->PersistantCFX = gi.CreatePersistantEffect(&caster->s, FX_SPELL_LIGHTNINGSHIELD, CEF_OWNERS_ORIGIN | CEF_BROADCAST, NULL, "");
 
-	gi.sound(caster,CHAN_WEAPON,gi.soundindex("weapons/Shield.wav"),1,ATTN_NORM,0);
-	caster->s.sound = gi.soundindex("weapons/ShieldIdle.wav");
+	gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/Shield.wav"), 1.0f, ATTN_NORM, 0.0f);
+	caster->s.sound = (byte)gi.soundindex("weapons/ShieldIdle.wav");
 	caster->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
 }
 
