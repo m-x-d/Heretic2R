@@ -40,8 +40,6 @@
 
 static void SphereWatcherGrowThink(edict_t *Self);
 
-void create_sphere(edict_t *Sphere);
-
 static void SphereExplodeThink(edict_t* self)
 {
 	edict_t* ent = NULL;
@@ -390,11 +388,22 @@ static void SphereOfAnnihilationGrowThinkPower(edict_t* self)
 	}
 }
 
+// Guts of create sphere.
+static void CreateSphere(edict_t* sphere)
+{
+	sphere->svflags |= SVF_ALWAYS_SEND;
+	sphere->s.effects |= EF_ALWAYS_ADD_EFFECTS | EF_MARCUS_FLAG1;
+	sphere->classname = "Spell_SphereOfAnnihilation";
+	sphere->clipmask = MASK_SHOT;
+	sphere->movetype = MOVETYPE_FLYMISSILE;
+	sphere->nextthink = level.time + 0.1f;
+}
+
 edict_t *SphereReflect(edict_t *self, edict_t *other, vec3_t vel)
 {
 	edict_t	*Sphere;
    	Sphere = G_Spawn();
-   	create_sphere(Sphere);
+   	CreateSphere(Sphere);
    	Sphere->owner = other;
    	Sphere->enemy = self->enemy;
    	Sphere->reflect_debounce_time = self->reflect_debounce_time -1;
@@ -441,18 +450,6 @@ edict_t *SphereReflect(edict_t *self, edict_t *other, vec3_t vel)
    	return(Sphere);
 }
 
-// guts of create sphere
-void create_sphere(edict_t *Sphere)
-{
-	Sphere->svflags |= SVF_ALWAYS_SEND;
-	Sphere->s.effects |= EF_ALWAYS_ADD_EFFECTS|EF_MARCUS_FLAG1;
-	Sphere->classname="Spell_SphereOfAnnihilation";
-	Sphere->clipmask=MASK_SHOT;
-	Sphere->movetype = MOVETYPE_FLYMISSILE;
-	Sphere->nextthink=level.time+0.1;
-
-}
-
 // ****************************************************************************
 // SpellCastSphereOfAnnihilation
 // ****************************************************************************
@@ -495,7 +492,7 @@ void SpellCastSphereOfAnnihilation(edict_t *Caster,vec3_t StartPos,vec3_t AimAng
 	Sphere->s.scale = SPHERE_INIT_SCALE;
 	Sphere->owner = Caster;
 	Sphere->enemy = Caster->enemy;
-	create_sphere(Sphere);
+	CreateSphere(Sphere);
 	Sphere->reflect_debounce_time = MAX_REFLECT;
 
 	if (Caster->client && Caster->client->playerinfo.powerup_timer > level.time)
@@ -662,7 +659,7 @@ edict_t *SphereWatcherReflect(edict_t *self, edict_t *other, vec3_t vel)
 {
 	edict_t	*Sphere;
    	Sphere = G_Spawn();
-   	create_sphere(Sphere);
+   	CreateSphere(Sphere);
    	Sphere->owner = other;
    	Sphere->enemy = self->enemy;
    	Sphere->reflect_debounce_time = self->reflect_debounce_time -1;
