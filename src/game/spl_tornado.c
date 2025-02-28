@@ -13,7 +13,7 @@
 #include "Vector.h"
 #include "g_local.h"
 
-#define TORN_EFFECT_RADIUS		100.0f	
+#define TORN_EFFECT_RADIUS		100.0f
 #define TORN_KNOCKBACK_SCALE	200.0f
 #define TORN_KNOCKBACK_BASE		250.0f
 #define TORN_MASS_FACTOR		200.0f
@@ -91,27 +91,25 @@ static void TornadoThink(edict_t* self)
 	}
 }
 
-// times up, create the tornado effect
-void create_tornado(edict_t *tornado)
+// Time's up, create the tornado effect.
+static void CreateTornado(edict_t* tornado)
 {
-	int	flags = 0;
-
 	tornado->classname = "Spell_Tornado";
 	tornado->think = TornadoThink;
-	tornado->nextthink = level.time + 0.1;
+	tornado->nextthink = level.time + 0.1f;
 	tornado->timestamp = level.time;
-	tornado->count = level.time + SPIN_DUR;
-	tornado->gravity = 0;
-	tornado->alert_time = level.time + flrand(0.6, 1.2);
-	tornado->s.sound = gi.soundindex("weapons/tornadospell.wav");
+	tornado->count = (int)(level.time + SPIN_DUR);
+	tornado->gravity = 0.0f;
+	tornado->alert_time = level.time + flrand(0.6f, 1.2f);
+	tornado->jump_time = level.time + flrand(0.2f, 1.0f);
+
+	tornado->s.sound = (byte)gi.soundindex("weapons/tornadospell.wav");
 	tornado->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
 	tornado->s.effects |= EF_SPEED_ACTIVE;
-	tornado->jump_time = level.time + flrand(0.2, 1.0);
-   
-	tornado->PersistantCFX = gi.CreatePersistantEffect(&tornado->s, FX_TORNADO, CEF_BROADCAST|CEF_OWNERS_ORIGIN | flags , NULL, "");
 
-}	
-		
+	tornado->PersistantCFX = gi.CreatePersistantEffect(&tornado->s, FX_TORNADO, CEF_BROADCAST | CEF_OWNERS_ORIGIN, NULL, "");
+}
+
 // we just cast/dropped the tornado, set up a timer so it doesn't erupt immediately and hit the caster
 void SpellCastDropTornado(edict_t *caster, vec3_t startpos, vec3_t aimangles, vec3_t aimdir, float value)
 {
@@ -131,7 +129,7 @@ void SpellCastDropTornado(edict_t *caster, vec3_t startpos, vec3_t aimangles, ve
 	tornado = G_Spawn();
 	tornado->movetype = PHYSICSTYPE_NONE;
 	tornado->classname = "Spell_Tornado_time";
-	tornado->think = create_tornado;
+	tornado->think = CreateTornado;
 	tornado->nextthink = level.time + TORN_DUR;
 	tornado->takedamage = DAMAGE_NO;
 
