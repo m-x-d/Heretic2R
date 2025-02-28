@@ -473,7 +473,7 @@ void WeaponThink_Maceballs(edict_t* caster, char* format, ...)
 		Weapon_CalcStartPos(origin_to_lower_joint, origin_to_upper_joint, ripper_start_pos, start_pos, caster);
 		start_pos[2] += (float)caster->viewheight - 14.0f;
 
-		SpellCastRipper(caster, start_pos, caster->client->aimangles, NULL);
+		SpellCastRipper(caster, start_pos, caster->client->aimangles);
 
 		if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
 			info->pers.inventory.Items[info->weap_ammo_index] -= info->pers.weapon->quantity; // Un-powered. //TODO: Can info->pers.inventory.Items[] go below zero?

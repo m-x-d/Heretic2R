@@ -181,7 +181,7 @@ static void RipperImpact(edict_t* caster, edict_t* other, const vec3_t start_pos
 		start_pos, b_yaw, ball_array[0], ball_array[1], ball_array[2], ball_array[3], ball_array[4], ball_array[5], ball_array[6], ball_array[7]);
 }
 
-void SpellCastRipper(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, vec3_t unused) //TODO: remove unused arg.
+void SpellCastRipper(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles)
 {
 	static const vec3_t mins = { -RIPPER_RADIUS, -RIPPER_RADIUS, -RIPPER_RADIUS }; //mxd. Made static.
 	static const vec3_t maxs = {  RIPPER_RADIUS,  RIPPER_RADIUS,  RIPPER_RADIUS }; //mxd. Made static.
