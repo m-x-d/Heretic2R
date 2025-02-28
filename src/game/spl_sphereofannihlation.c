@@ -314,87 +314,79 @@ static void SpherePowerLaserTouch(edict_t* self, edict_t* other, cplane_t* plane
 	G_SetToFree(self);
 }
 
-static void SphereOfAnnihilationGrowThinkPower(edict_t *Self)
+static void SphereOfAnnihilationGrowThinkPower(edict_t* self)
 {
-	vec3_t	Forward, Right, Up;
-	edict_t *laser;
+	vec3_t forward;
+	vec3_t right;
 
-	if (Self->owner->client)
-		AngleVectors(Self->owner->client->aimangles,Forward,Right,Up);
+	const gclient_t* cl = self->owner->client; //mxd
+
+	if (cl != NULL)
+		AngleVectors(cl->aimangles, forward, right, NULL);
 	else
-		AngleVectors(Self->owner->s.angles,Forward,Right,Up);
+		AngleVectors(self->owner->s.angles, forward, right, NULL);
 
-	// NOTE: 'edict_t'->combattarget is used as a pointer to a 'qboolean' which flags
-	// whether or not I have been released. Would like a dedicated value in the 'edict_t' but this
-	// is unlikely to happen, sooooo...
+	// NOTE: 'edict_t'->combattarget is used as a pointer to a 'qboolean' which flags whether or not I have been released.
+	// Would like a dedicated value in the 'edict_t' but this is unlikely to happen, sooooo...
 
-	if(*(qboolean *)Self->combattarget && !(Self->owner->deadflag & (DEAD_DYING|DEAD_DEAD))
-		&& (Self->owner->client && !(Self->owner->client->playerinfo.edictflags & FL_CHICKEN)) &&
-		(!(Self->owner->client->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN)))	
+	// If we have released, or we are dead, or a chicken, release the sphere.
+	if (*(qboolean*)self->combattarget && !(self->owner->deadflag & (DEAD_DYING | DEAD_DEAD))
+		&& (cl != NULL && !(cl->playerinfo.edictflags & FL_CHICKEN)) && !(cl->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN))
 	{
-		if (Self->count < SPHERE_MAX_CHARGES)
+		if (self->count < SPHERE_MAX_CHARGES)
 		{
-			Self->count++;
-			Self->s.scale = SPHERE_INIT_SCALE + (SPHERE_SCALE_PER_CHARGE * Self->count);
+			self->count++;
+			self->s.scale = SPHERE_INIT_SCALE + (SPHERE_SCALE_PER_CHARGE * (float)self->count);
 		}
 		else
-		{	// If at max size, pulse like crazy!
-			Self->s.scale = SPHERE_MAX_SCALE + flrand(0, SPHERE_SCALE_PULSE);
-		}
-
-		// detect if we have teleported, since we need to move with the player if thats so
-		if(Self->owner->client)
 		{
-			VectorCopy(Self->owner->s.origin, Self->s.origin);	
-			Self->s.origin[0] += Forward[0]*20.0;
-			Self->s.origin[1] += Forward[1]*20.0;
-	   		Self->s.origin[2] += Self->owner->viewheight-5.0;
+			self->s.scale = SPHERE_MAX_SCALE + flrand(0, SPHERE_SCALE_PULSE); // If at max size, pulse like crazy!
 		}
 
-		Self->nextthink=level.time+0.1;
+		// Detect if we have teleported, need to move with the player if that's so.
+		if (cl != NULL)
+		{
+			VectorCopy(self->owner->s.origin, self->s.origin);
+
+			self->s.origin[0] += forward[0] * 20.0f;
+			self->s.origin[1] += forward[1] * 20.0f;
+			self->s.origin[2] += (float)self->owner->viewheight - 5.0f;
+		}
+
+		self->nextthink = level.time + 0.1f;
 	}
 	else
 	{
-		laser = G_Spawn();
-		laser->owner = Self->owner;
-		laser->count = Self->count-SPHERE_COUNT_MIN;
-		VectorMA(Self->s.origin, 10.0, Right, laser->s.origin);
-		if (Self->owner->client)
-			VectorCopy(Self->owner->client->aimangles, laser->s.angles);
-		else
-			VectorCopy(Self->owner->s.angles, laser->s.angles);
-		VectorScale(Right, SPHERE_LASER_SPEED, laser->velocity);
-		laser->health = 1;		// right
-		laser->movetype=MOVETYPE_FLYMISSILE;
-		laser->solid=SOLID_BBOX;
-		laser->clipmask=MASK_SOLID;
-		laser->think = SpherePowerLaserThink;
-		laser->touch = SpherePowerLaserTouch;
-		laser->fire_timestamp = level.time;
-		G_LinkMissile(laser);
-		SpherePowerLaserThink(laser);
-				
-		laser = G_Spawn();
-		laser->owner = Self->owner;
-		laser->count = Self->count-SPHERE_COUNT_MIN;
-		VectorMA(Self->s.origin, -10.0, Right, laser->s.origin);
-		if (Self->owner->client)
-			VectorCopy(Self->owner->client->aimangles, laser->s.angles);
-		else
-			VectorCopy(Self->owner->s.angles, laser->s.angles);
-		VectorScale(Right, -SPHERE_LASER_SPEED, laser->velocity);
-		laser->health = 2;		// left
-		laser->movetype=MOVETYPE_FLYMISSILE;
-		laser->solid=SOLID_BBOX;
-		laser->clipmask=MASK_SOLID;
-		laser->think = SpherePowerLaserThink;
-		laser->touch = SpherePowerLaserTouch;
-		laser->fire_timestamp = level.time;
-		G_LinkMissile(laser);
-		SpherePowerLaserThink(laser);
+		for (int i = 1; i < 3; i++)
+		{
+			const float direction = (i == 1 ? 1.0f : -1.0f); //mxd. Left / right.
 
-		gi.sound(Self->owner,CHAN_WEAPON,gi.soundindex("weapons/SpherePowerFire.wav"),1,ATTN_NORM,0);
-		G_SetToFree(Self);
+			edict_t* laser = G_Spawn();
+
+			laser->owner = self->owner;
+			laser->count = self->count - SPHERE_COUNT_MIN;
+			VectorMA(self->s.origin, 10.0f * direction, right, laser->s.origin);
+
+			if (cl != NULL)
+				VectorCopy(cl->aimangles, laser->s.angles);
+			else
+				VectorCopy(self->owner->s.angles, laser->s.angles);
+
+			VectorScale(right, SPHERE_LASER_SPEED * direction, laser->velocity);
+			laser->health = i;
+			laser->movetype = MOVETYPE_FLYMISSILE;
+			laser->solid = SOLID_BBOX;
+			laser->clipmask = MASK_SOLID;
+			laser->think = SpherePowerLaserThink;
+			laser->touch = SpherePowerLaserTouch;
+			laser->fire_timestamp = level.time;
+
+			G_LinkMissile(laser);
+			SpherePowerLaserThink(laser);
+		}
+
+		gi.sound(self->owner, CHAN_WEAPON, gi.soundindex("weapons/SpherePowerFire.wav"), 1.0f, ATTN_NORM, 0.0f);
+		G_SetToFree(self);
 	}
 }
 
