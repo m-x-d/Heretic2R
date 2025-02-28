@@ -1,46 +1,45 @@
 //
 // spl_sphereofannihilation.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "spl_sphereofannihlation.h" //mxd
-#include "g_local.h"
-#include "fx.h"
-#include "random.h"
-#include "vector.h"
-#include "Reference.h"
-#include "Utilities.h"
-#include "decals.h"
 #include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
 #include "g_playstats.h"
-#include "p_main.h"	//for ITEM_WEAPON_SPHEREOFANNIHILATION
 #include "m_beast.h"
+#include "p_main.h" // For PLAYER_FLAG_KNOCKDOWN.
+#include "Decals.h"
+#include "FX.h"
+#include "Random.h"
+#include "Vector.h"
+#include "Utilities.h"
+#include "g_local.h"
 
-#define SPHERE_INIT_SCALE				0.7
-#define SPHERE_MAX_SCALE				2.0
-#define SPHERE_SCALE_RANGE				(SPHERE_MAX_SCALE - SPHERE_INIT_SCALE)
-#define SPHERE_SCALE_PER_CHARGE			(SPHERE_SCALE_RANGE / SPHERE_MAX_CHARGES)
-#define SPHERE_SCALE_PULSE				0.5
+#define SPHERE_INIT_SCALE			0.7f
+#define SPHERE_MAX_SCALE			2.0f
+#define SPHERE_SCALE_RANGE			(SPHERE_MAX_SCALE - SPHERE_INIT_SCALE)
+#define SPHERE_SCALE_PER_CHARGE		(SPHERE_SCALE_RANGE / SPHERE_MAX_CHARGES)
+#define SPHERE_SCALE_PULSE			0.5f
 
-#define SPHERE_RADIUS_DIFF				(SPHERE_RADIUS_MAX - SPHERE_RADIUS_MIN)
-#define SPHERE_RADIUS_PER_CHARGE		(SPHERE_RADIUS_DIFF / SPHERE_MAX_CHARGES)
-#define SPHERE_GROW_MIN_TIME			2
-#define SPHERE_GROW_SPEED				(SPHERE_RADIUS_DIFF / SPHERE_MAX_CHARGES)
-#define SPHERE_GROW_START				(SPHERE_RADIUS_MIN - (SPHERE_GROW_SPEED * SPHERE_GROW_MIN_TIME))
+#define SPHERE_RADIUS_DIFF			(SPHERE_RADIUS_MAX - SPHERE_RADIUS_MIN)
+#define SPHERE_RADIUS_PER_CHARGE	(SPHERE_RADIUS_DIFF / SPHERE_MAX_CHARGES)
+#define SPHERE_GROW_MIN_TIME		2
+#define SPHERE_GROW_SPEED			(SPHERE_RADIUS_DIFF / SPHERE_MAX_CHARGES)
+#define SPHERE_GROW_START			(SPHERE_RADIUS_MIN - (SPHERE_GROW_SPEED * SPHERE_GROW_MIN_TIME))
 
-#define SPHERE_COUNT_MIN				3
-#define SPHERE_COUNT_PER_CHARGE			2
+#define SPHERE_COUNT_MIN			3
+#define SPHERE_RADIUS				2.0f
 
-#define SPHERE_RADIUS					2.0
+// For Celestial Watcher.
+#define SPHERE_WATCHER_DAMAGE_MIN			50
+#define SPHERE_WATCHER_DAMAGE_RANGE			150
+#define SPHERE_WATCHER_EXPLOSION_RADIUS_MIN	50.0f
+#define SPHERE_WATCHER_EXPLOSION_RADIUS_MAX	200.0f
 
-static void SphereOfAnnihilationFlyFinnishedThink(edict_t *Self);
-static void SphereOfAnnihilationGrowThink(edict_t *Self);
 static void SphereOfAnnihilationTouch(edict_t *Self,edict_t *Other,cplane_t *Plane,csurface_t *Surface);
 static void SphereWatcherGrowThink(edict_t *Self);
-static void SphereWatcherTouch(edict_t *self, edict_t *Other, cplane_t *Plane, csurface_t *surface);
 
 void create_sphere(edict_t *Sphere);
 
@@ -573,17 +572,6 @@ void SpellCastSphereOfAnnihilation(edict_t *Caster,vec3_t StartPos,vec3_t AimAng
 	Sphere->s.sound = gi.soundindex("weapons/SphereGrow.wav");
 	Sphere->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
 }
-
-
-
-
-//////////////////////////////////
-// For Celestial Watcher
-//////////////////////////////////
-#define SPHERE_WATCHER_DAMAGE_MIN				50
-#define SPHERE_WATCHER_DAMAGE_RANGE				150
-#define SPHERE_WATCHER_EXPLOSION_RADIUS_MIN		50.0
-#define SPHERE_WATCHER_EXPLOSION_RADIUS_MAX		200.0
 
 // ****************************************************************************
 // SphereWatcherFlyThink
