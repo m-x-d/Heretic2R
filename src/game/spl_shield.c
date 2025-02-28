@@ -1,21 +1,17 @@
 //
 // spl_shield.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "spl_shield.h" //mxd
-#include "fx.h"
-#include "Angles.h"
 #include "g_cmds.h" //mxd
 #include "g_combat.h" //mxd
-#include "Utilities.h"
-#include "vector.h"
-#include "random.h"
 #include "g_playstats.h"
+#include "FX.h"
+#include "Random.h"
+#include "Vector.h"
 #include "g_local.h"
-
 
 void SpellCastShield(edict_t *caster,vec3_t startpos,vec3_t aimangles,vec3_t aimdir,float Value)
 {
