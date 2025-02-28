@@ -68,110 +68,84 @@ void CleanUpTeleport(edict_t* self) //TODO: rename to CleanUpPlayerTeleport?
 	self->client->shrine_framenum = level.time - 1.0f;
 }
 
-// Setup the teleporter - from the player hitting a teleport pad
-// We could send the teleport type over the flags instead of as a parameter byte
-void teleporter_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+// Setup the teleporter - from the player hitting a teleport pad.
+// We could send the teleport type over the flags instead of as a parameter byte.
+void teleporter_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf)
 {
-	vec3_t	dest_v, dest_v_angles;
-	int	rand_targ, i;
-	edict_t  *dest = NULL;
-	
-	// if we aren't a player, forget it
-	if (!other->client)
+	// If we aren't a player, dead or already teleporting, forget it.
+	if (other->client == NULL || (other->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING)) || (other->deadflag & (DEAD_DYING | DEAD_DEAD)))
 		return;
 
-	// if we are already teleporting, forget it
-
-	if ((other->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING)) || (other->deadflag & (DEAD_DYING|DEAD_DEAD)))
-		return;
-
-	// if we are in deathmatch, and this teleporter is so flagged, give us a random destination
-	if (deathmatch->value && (self->spawnflags & 2))
+	// If we are in deathmatch, and this teleporter is so flagged, give us a random destination.
+	if (DEATHMATCH && (self->spawnflags & DEATHMATCH_RANDOM))
 	{
-		// figure out a destination point
-		SelectSpawnPoint(other,dest_v, dest_v_angles);
-		// dest coors to teleport to
-		VectorCopy(dest_v,other->client->tele_dest);
-		// angles we should start at 
-		VectorCopy(dest_v_angles,other->client->tele_angles);
+		// Figure out a destination point.
+		vec3_t dest_pos;
+		vec3_t dest_angles;
+		SelectSpawnPoint(other, dest_pos, dest_angles);
+
+		VectorCopy(dest_pos, other->client->tele_dest); // Set destination coordinates to teleport to.
+		VectorCopy(dest_angles, other->client->tele_angles); // Set angles we should start at.
 	}
-	// we do have a specific destination in mind
-	else
+	else // We do have a specific destination in mind.
 	{
-		// setup in player info the dest entity of the teleport
+		// Setup in player info the destination entity of the teleport.
+		edict_t* dest = NULL;
 
-		// do we have multiple destinations ?
+		// Do we have multiple destinations?
 		if (self->style)
 		{
-			rand_targ = irand(1,self->style);
-			for (i = 0; i<rand_targ;i++)
+			const int rand_targ = irand(1, self->style);
+
+			for (int i = 0; i < rand_targ; i++)
 			{
-				dest = G_Find (dest, FOFS(targetname), self->target);
-				if (!dest)
+				dest = G_Find(dest, FOFS(targetname), self->target);
+
+				if (dest == NULL)
 				{
-#ifdef _DEVEL
-					gi.dprintf ("Couldn't find multiple teleport destination %d\n",rand_targ);
-#endif
+					gi.dprintf("Couldn't find multiple teleport destination %d\n", rand_targ);
 					return;
 				}
 			}
 		}
-		// no - just the one
-		else
+		else // No - just one target.
 		{
-			dest = G_Find (dest, FOFS(targetname), self->target);
-			if (!dest)
+			dest = G_Find(dest, FOFS(targetname), self->target);
+
+			if (dest == NULL)
 			{
-#ifdef _DEVEL
-				gi.dprintf ("Couldn't find teleport destination  %s\n",self->target);
-#endif
+				gi.dprintf("Couldn't find teleport destination %s\n", self->target);
 				return;
 			}
 		}
-		// dest coors to teleport to
-		VectorCopy(dest->last_org,other->client->tele_dest);
-		// angles we should start at
-		VectorCopy(dest->s.angles,other->client->tele_angles);
+
+		VectorCopy(dest->last_org, other->client->tele_dest); // Set destination coordinates to teleport to.
+		VectorCopy(dest->s.angles, other->client->tele_angles); // Set angles we should start at.
 	}
 
+	// Setup other teleporter information that the character will require when the teleport is actually performed in AnimUpdateFrame.
 
-	// setup other teleporter information that the character will require
-	// when the teleport is actually performed in AnimUpdateFrame
-
-	// set the player as teleporting
-
+	// Set the player as teleporting.
 	other->client->playerinfo.flags |= PLAYER_FLAG_TELEPORT;
-
 	other->client->ps.pmove.pm_flags |= PMF_LOCKMOVE;
 
-	// time taken over dematerialisation
-	other->client->tele_count = TELE_TIME_OUT;
+	other->client->tele_count = TELE_TIME_OUT; // Time taken over de-materialization.
+	other->client->tele_type = 0; // Tell us how we triggered the teleport.
+	other->client->old_solid = other->solid; // Save out what kind of solid ability we are.
+	other->client->shrine_framenum = level.time + 10.0f; // Make us invunerable for a couple of seconds.
 
-	// save out what kind of solid ability we are
-	other->client->old_solid = other->solid;
-
-	// make us invunerable for a couple of seconds
-	other->client->shrine_framenum = level.time + 10;
-
-	// tell us how we triggered the teleport
-	other->client->tele_type = 0;
-
-	// clear the velocity and hold them in place briefly
-	VectorClear (other->velocity);
+	// Clear the velocity and hold them in place briefly.
+	VectorClear(other->velocity);
 	other->client->ps.pmove.pm_time = 50;
-	// make the player still
-	other->flags |= FL_LOCKMOVE;
-	// allow the player to fade out
-	other->s.color.a = 255;
-	other->s.color.r = 255;
-	other->s.color.g = 255;
-	other->s.color.b = 255;
 
-	// draw the teleport splash at the teleport source
-	gi.CreateEffect(&other->s, FX_PLAYER_TELEPORT_OUT, CEF_OWNERS_ORIGIN | ((byte)other->client->tele_type << 5), NULL, "" );
-	// do the teleport sound
-	gi.sound(other,CHAN_VOICE,gi.soundindex("weapons/teleport.wav"),1,ATTN_NORM,0);
+	other->flags |= FL_LOCKMOVE; // Make the player still.
+	other->s.color.c = 0xffffffff; // Allow the player to fade out.
 
+	// Draw the teleport splash at the teleport source.
+	gi.CreateEffect(&other->s, FX_PLAYER_TELEPORT_OUT, CEF_OWNERS_ORIGIN | ((byte)other->client->tele_type << 5), NULL, "");
+
+	// Do the teleport sound.
+	gi.sound(other, CHAN_VOICE, gi.soundindex("weapons/teleport.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
 // Spawn the Spell teleport effect - from the player
