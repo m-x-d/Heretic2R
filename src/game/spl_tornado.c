@@ -110,71 +110,66 @@ static void CreateTornado(edict_t* tornado)
 	tornado->PersistantCFX = gi.CreatePersistantEffect(&tornado->s, FX_TORNADO, CEF_BROADCAST | CEF_OWNERS_ORIGIN, NULL, "");
 }
 
-// we just cast/dropped the tornado, set up a timer so it doesn't erupt immediately and hit the caster
-void SpellCastDropTornado(edict_t *caster, vec3_t startpos, vec3_t aimangles, vec3_t aimdir, float value)
+// We just cast/dropped the tornado, set up a timer so it doesn't erupt immediately and hit the caster.
+void SpellCastDropTornado(edict_t* caster, vec3_t start_pos, vec3_t aimangles, vec3_t aimdir, float value) //TODO: remove unused args.
 {
-	edict_t		*tornado;
-	trace_t		trace;
-	vec3_t		end;
-	edict_t		*spot = NULL;
-	int			flags = 0;
-	float		length;
-	vec3_t		diff;
-	int			g_type = 0;
-	char		*spawn_check[3] =
-	{{"info_player_start"},
-	 {"info_player_deathmatch"},
-	 {"info_player_coop"}};
+	static const char* spawn_checks[] = { "info_player_start", "info_player_deathmatch", "info_player_coop" }; //mxd. Made static const.
 
-	tornado = G_Spawn();
+	edict_t* tornado = G_Spawn();
+
 	tornado->movetype = PHYSICSTYPE_NONE;
 	tornado->classname = "Spell_Tornado_time";
 	tornado->think = CreateTornado;
 	tornado->nextthink = level.time + TORN_DUR;
 	tornado->takedamage = DAMAGE_NO;
-
 	tornado->owner = caster;
 
-	// use the speed active ef_flag to tell the client effect when the effect is over
-	tornado->s.effects |= EF_ALWAYS_ADD_EFFECTS ;
+	// Use the speed active ef_flag to tell the client effect when the effect is over.
+	tornado->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 	tornado->svflags |= SVF_ALWAYS_SEND;
 	tornado->solid = SOLID_NOT;
 	tornado->clipmask = MASK_SOLID;
 	tornado->targetEnt = caster;
 
-	VectorCopy(startpos, tornado->s.origin);
-	tornado->s.origin[2] += 1.0;
-	VectorCopy (tornado->s.origin, end);
-	end[2] -= 256;
-	
-	gi.linkentity (tornado);
+	VectorCopy(start_pos, tornado->s.origin);
+	tornado->s.origin[2] += 1.0f;
 
-	gi.trace (tornado->s.origin, NULL, NULL, end, tornado, MASK_SOLID,&trace);
+	gi.linkentity(tornado);
 
-	tornado->s.origin[2] += 3.0;
+	vec3_t end;
+	VectorCopy(tornado->s.origin, end);
+	end[2] -= 256.0f;
+
+	trace_t trace;
+	gi.trace(tornado->s.origin, NULL, NULL, end, tornado, MASK_SOLID, &trace);
+
 	VectorCopy(trace.endpos, tornado->s.origin);
+	tornado->s.origin[2] += 3.0f; //BUGFIX: mxd. Set BEFORE VectorCopy() in original version.
 
-	// check to see if we are over a spawn point - this won't catch specific teleport arrival points, but will get some of them
-	if (coop->value)
-		g_type = 2;
-	else
-	if (deathmatch->value)
-		g_type = 1;
+	// Check to see if we are over a spawn point - this won't catch specific teleport arrival points, but will get some of them.
+	int game_type = 0;
+	if (DEATHMATCH)
+		game_type = 1;
+	else if (COOP)
+		game_type = 2;
 
-	// go search out an spots there are.
-	while ((spot = G_Find (spot, FOFS(classname), spawn_check[g_type])) != NULL)
+	// Search for spawn points.
+	edict_t* spot = NULL;
+	while ((spot = G_Find(spot, FOFS(classname), spawn_checks[game_type])) != NULL)
 	{
-		// if we are over a spawn spot, explode the tornado immediately.
+		// If we are over a spawn spot, explode the tornado immediately.
+		vec3_t diff;
 		VectorSubtract(spot->s.origin, tornado->s.origin, diff);
-		length = VectorLength(diff);
-		if (length < 80)
+
+		if (VectorLength(diff) < 80.0f)
 		{
 			tornado->think = G_SetToFree;
-			tornado->nextthink = level.time + 0.1;
-			gi.CreateEffect(NULL, FX_TORNADO_BALL_EXPLODE, 0 , tornado->s.origin, "");
+			tornado->nextthink = level.time + 0.1f;
+			gi.CreateEffect(NULL, FX_TORNADO_BALL_EXPLODE, 0, tornado->s.origin, "");
+
 			return;
 		}
 	}
 
-	gi.CreateEffect(&tornado->s, FX_TORNADO_BALL, CEF_OWNERS_ORIGIN | flags , NULL, "");
+	gi.CreateEffect(&tornado->s, FX_TORNADO_BALL, CEF_OWNERS_ORIGIN, NULL, "");
 }
