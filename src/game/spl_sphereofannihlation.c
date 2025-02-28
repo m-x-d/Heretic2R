@@ -438,6 +438,14 @@ edict_t* SphereReflect(edict_t* self, edict_t* other, vec3_t vel)
 	return sphere;
 }
 
+static void SphereWatcherFlyThink(edict_t* self)
+{
+	if (++self->count > 20)
+		G_SetToFree(self); // End the circling...
+	else
+		self->nextthink = level.time + 0.2f;
+}
+
 // ****************************************************************************
 // SpellCastSphereOfAnnihilation
 // ****************************************************************************
@@ -524,26 +532,6 @@ void SpellCastSphereOfAnnihilation(edict_t *Caster,vec3_t StartPos,vec3_t AimAng
 	Sphere->s.sound = gi.soundindex("weapons/SphereGrow.wav");
 	Sphere->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
 }
-
-// ****************************************************************************
-// SphereWatcherFlyThink
-// ****************************************************************************
-
-void SphereWatcherFlyThink(edict_t *Self)
-{
-	Self->count++;
-
-	if(Self->count > 20)
-	{	
-		// End the circling...
-		G_SetToFree(Self);
-	}
-	else
-	{
-		Self->nextthink=level.time+0.2;
-	}
-}
-
 
 static void SphereWatcherGrowThink(edict_t *Self)
 {
