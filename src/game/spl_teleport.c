@@ -14,51 +14,45 @@
 #include "Vector.h"
 #include "g_local.h"
 
-// PLAYER ONLY!!!
-// make the guy actually teleport from one place to another
-// called from ANIMACTOR
-void Perform_Teleport(edict_t *self)
+// Make the guy actually teleport from one place to another.
+void Perform_Teleport(edict_t* self) //TODO: rename to PerformPlayerTeleport?
 {
-	int i;
-
-	//Get the player off the rope
+	// Get the player off the rope.
 	self->client->playerinfo.flags |= PLAYER_FLAG_RELEASEROPE;
-	
-	//physically move the player, bearing in mind thats what a teleport is
-	VectorCopy (self->client->tele_dest, self->client->playerinfo.origin);
-	VectorCopy (self->client->tele_dest, self->s.origin);
 
-	// set angles
-	for (i=0 ; i<3 ; i++)
+	// Physically move the player, bearing in mind that's what a teleport is.
+	VectorCopy(self->client->tele_dest, self->client->playerinfo.origin);
+	VectorCopy(self->client->tele_dest, self->s.origin);
+
+	// Set angles.
+	for (int i = 0; i < 3; i++)
 		self->client->ps.pmove.delta_angles[i] = ANGLE2SHORT(self->client->tele_angles[i] - self->client->resp.cmd_angles[i]);
 
-	self->s.angles[PITCH] = 0;
-	self->s.angles[YAW] = self->client->tele_angles[YAW];
-	self->s.angles[ROLL] = 0;
-	VectorCopy (self->client->tele_angles, self->client->ps.viewangles);
-	VectorCopy (self->client->tele_angles, self->client->v_angle);
+	VectorSet(self->s.angles, 0.0f, self->client->tele_angles[YAW], 0.0f);
+	VectorCopy(self->client->tele_angles, self->client->ps.viewangles);
+	VectorCopy(self->client->tele_angles, self->client->v_angle);
 
-	// reset the cvar Farclip dist, incase it was modified by a trigger - there should be no teleport
+	// Reset the r_farclipdist cvar, in case it was modified by a trigger - there should be no teleport
 	// destinations or spawn points anywhere where the far clip has been modified.
 	gi.cvar_set("r_farclipdist", FAR_CLIP_DIST);
 
-	// unlink to make sure it can't possibly interfere with KillBox - we don't want to collide with ourselves
-	gi.unlinkentity (self);
-	
-	// kill anything at the destination
-	KillBox (self);
+	// Unlink to make sure it can't possibly interfere with KillBox - we don't want to collide with ourselves.
+	gi.unlinkentity(self);
 
-	// re link us
-	gi.linkentity (self);
+	// Kill anything at the destination.
+	KillBox(self);
 
-	// draw the teleport splash at the destination
-	gi.CreateEffect(&self->s, FX_PLAYER_TELEPORT_IN, CEF_BROADCAST|CEF_OWNERS_ORIGIN | ((byte)self->client->tele_type << 5), NULL, "" );
+	// Re-link us.
+	gi.linkentity(self);
 
-	// restart the loop and tell us next time we aren't de-materialising
+	// Draw the teleport splash at the destination.
+	gi.CreateEffect(&self->s, FX_PLAYER_TELEPORT_IN, CEF_BROADCAST | CEF_OWNERS_ORIGIN | ((byte)self->client->tele_type << 5), NULL, "");
+
+	// Restart the loop and tell us next time we aren't de-materializing.
 	self->client->tele_count = TELE_TIME;
-	self->client->tele_dest[0] = self->client->tele_dest[1] = self->client->tele_dest[2] = -1;
+	VectorSet(self->client->tele_dest, -1.0f, -1.0f, -1.0f);
 
-	AlertMonsters (self, self, 2, true);
+	AlertMonsters(self, self, 2.0f, true);
 }
 
 // PLAYER ONLY!!!
