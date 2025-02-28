@@ -150,7 +150,7 @@ void teleporter_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t
 
 // Spawn the Spell teleport effect - from the player.
 // We could send the teleport type over the flags instead of as a parameter byte.
-void SpellCastTeleport(edict_t* caster, vec3_t StartPos, vec3_t AimAngles, vec3_t AimDir, float Value)
+void SpellCastTeleport(edict_t* caster)
 {
 	// If we are already teleporting, forget it.
 	if ((caster->client->playerinfo.flags & (PLAYER_FLAG_TELEPORT | PLAYER_FLAG_MORPHING)) || (caster->deadflag & (DEAD_DYING | DEAD_DEAD)))

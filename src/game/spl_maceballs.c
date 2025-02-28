@@ -129,7 +129,7 @@ static void MaceballBounce(edict_t* self, trace_t* trace)
 						// Yes, do we actually have a teleport spell?
 						if (trace->ent->client->playerinfo.pers.inventory.Items[13] > 0)
 						{
-							SpellCastTeleport(trace->ent, trace->ent->s.origin, NULL, NULL, 0.0f);
+							SpellCastTeleport(trace->ent);
 
 							if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))
 								trace->ent->client->playerinfo.pers.inventory.Items[mana_index] -= quantity;

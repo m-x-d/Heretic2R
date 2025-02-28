@@ -68,7 +68,7 @@ void DefenceThink_Morph(edict_t* caster, char* format, ...)
 
 void DefenceThink_Teleport(edict_t* caster, char* format, ...)
 {
-	SpellCastTeleport(caster, caster->s.origin, NULL, NULL, 0.0f);
+	SpellCastTeleport(caster);
 	TakeMana(caster); //mxd
 }
 
