@@ -38,7 +38,6 @@
 #define SPHERE_WATCHER_EXPLOSION_RADIUS_MIN	50.0f
 #define SPHERE_WATCHER_EXPLOSION_RADIUS_MAX	200.0f
 
-static void SphereOfAnnihilationTouch(edict_t *Self,edict_t *Other,cplane_t *Plane,csurface_t *Surface);
 static void SphereWatcherGrowThink(edict_t *Self);
 
 void create_sphere(edict_t *Sphere);
@@ -63,6 +62,62 @@ static void SphereExplodeThink(edict_t* self)
 
 	if (self->count < 0)
 		G_SetToFree(self);
+}
+
+static void SphereOfAnnihilationTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
+{
+	// Has the target got reflection turned on?
+	if (self->reflect_debounce_time > 0 && EntReflecting(other, true, true))
+	{
+		Create_rand_relect_vect(self->velocity, self->velocity);
+		Vec3ScaleAssign(SPHERE_FLY_SPEED / 2.0f, self->velocity);
+		SphereReflect(self, other, self->velocity);
+
+		return;
+	}
+
+	if (surface != NULL && (surface->flags & SURF_SKY))
+	{
+		SkyFly(self);
+		return;
+	}
+
+	edict_t* explosion = G_Spawn();
+
+	VectorCopy(self->s.origin, explosion->s.origin);
+	explosion->solid = SOLID_NOT;
+	explosion->dmg_radius = SPHERE_GROW_START;
+	explosion->count = self->count + SPHERE_GROW_MIN_TIME;
+	explosion->fire_timestamp = level.time;
+	explosion->think = SphereExplodeThink;
+	explosion->owner = self->owner;
+	explosion->classname = "sphere_damager";
+	explosion->dmg = self->dmg;
+
+	gi.linkentity(explosion);
+
+	AlertMonsters(self, self->owner, 3.0f, false);
+
+	// Back off the origin for the damage a bit.
+	// We are a point and this will help fix hitting base of a stair and not hurting a guy on next step up.
+	VectorMA(self->s.origin, -8.0f, self->movedir, self->s.origin);
+
+	gi.CreateEffect(&self->s, FX_WEAPON_SPHEREPLAYEREXPLODE, CEF_OWNERS_ORIGIN, NULL, "db", self->movedir, (byte)self->count);
+	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/SphereImpact.wav"), 2.0f, ATTN_NORM, 0.0f); //TODO: why 2.0 volume?
+
+	G_SetToFree(self);
+
+	// Do damage directly to the thing you hit. This is mainly for big creatures, like the trial beast.
+	// The sphere will not damage others after this initial impact.
+	if (other != NULL && other->takedamage != DAMAGE_NO)
+	{
+		T_Damage(other, self, self->owner, self->velocity, self->s.origin, vec3_origin, self->dmg, 0, 0, MOD_SPHERE);
+		other->fire_timestamp = level.time;
+
+		gi.CreateEffect(&other->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", vec3_origin);
+	}
+
+	SphereExplodeThink(explosion);
 }
 
 // ****************************************************************************
@@ -410,66 +465,6 @@ edict_t *SphereReflect(edict_t *self, edict_t *other, vec3_t vel)
    	gi.CreateEffect(&Sphere->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", Sphere->velocity);
 
    	return(Sphere);
-}
-
-// ****************************************************************************
-// SphereOfAnnihilationTouch
-// ****************************************************************************
-
-static void SphereOfAnnihilationTouch(edict_t *self, edict_t *Other, cplane_t *Plane, csurface_t *surface)
-{
-	edict_t		*explosion;
-
-	// has the target got reflection turned on ?
-	if(EntReflecting(Other, true, true) && self->reflect_debounce_time)
-	{
-		Create_rand_relect_vect(self->velocity, self->velocity);
-		Vec3ScaleAssign(SPHERE_FLY_SPEED/2, self->velocity);
-		SphereReflect(self, Other, self->velocity);
-		return;
-	}
-
-	if(surface && (surface->flags & SURF_SKY))
-	{
-		SkyFly(self);
-		return;
-	}
-
-	explosion = G_Spawn();
-	VectorCopy(self->s.origin, explosion->s.origin);
-	explosion->solid = SOLID_NOT;
-	explosion->dmg_radius = SPHERE_GROW_START;
-	explosion->count = self->count + SPHERE_GROW_MIN_TIME;
-	explosion->fire_timestamp = level.time;
-	explosion->think = SphereExplodeThink;
-	explosion->owner = self->owner;
-	explosion->classname = "sphere_damager";
-	explosion->dmg = self->dmg;
-
-	gi.linkentity(explosion);
-
-	AlertMonsters (self, self->owner, 3, false);
-	// Back off the origin for the damage a bit. We are a point and this will
-	// help fix hitting base of a stair and not hurting a guy on next step up.
-	VectorMA(self->s.origin, -8.0, self->movedir, self->s.origin);
-
-	gi.CreateEffect(&self->s, FX_WEAPON_SPHEREPLAYEREXPLODE, CEF_OWNERS_ORIGIN, NULL,
-					"db", self->movedir, (byte)(self->count));
-
-	gi.sound(self,CHAN_WEAPON,gi.soundindex("weapons/SphereImpact.wav"),2,ATTN_NORM,0);
-
-	G_SetToFree(self);
-
-	// Do damage directly to the thing you hit.  This is mainly for big creatures, like the trial beast.
-	// The sphere will not damage the other after this initial impact.
-	if (Other && Other->takedamage)
-	{
-		T_Damage(Other, self, self->owner, self->velocity, self->s.origin, vec3_origin, self->dmg, 0, 0, MOD_SPHERE);
-		Other->fire_timestamp = level.time;
-		gi.CreateEffect(&Other->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", vec3_origin);
-	}
-		
-	SphereExplodeThink(explosion);
 }
 
 // guts of create sphere
