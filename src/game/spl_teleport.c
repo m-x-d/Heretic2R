@@ -15,7 +15,7 @@
 #include "g_local.h"
 
 // Make the guy actually teleport from one place to another.
-void Perform_Teleport(edict_t* self) //TODO: rename to PerformPlayerTeleport?
+void PerformPlayerTeleport(edict_t* self) //mxd. Named 'Perform_Teleport' in original version.
 {
 	// Get the player off the rope.
 	self->client->playerinfo.flags |= PLAYER_FLAG_RELEASEROPE;
@@ -56,7 +56,7 @@ void Perform_Teleport(edict_t* self) //TODO: rename to PerformPlayerTeleport?
 }
 
 // Done teleporting, clean up after ourselves.
-void CleanUpTeleport(edict_t* self) //TODO: rename to CleanUpPlayerTeleport?
+void CleanUpPlayerTeleport(edict_t* self) //mxd. Named 'CleanUpTeleport' in original version.
 {
 	VectorClear(self->client->tele_dest);
 

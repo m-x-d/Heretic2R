@@ -626,7 +626,7 @@ qboolean G_HandleTeleport(const playerinfo_t* info)
 		if (self->client->tele_count-- > 0)
 			self->s.color.a -= TELE_FADE_OUT;
 		else if (info->flags & PLAYER_FLAG_TELEPORT) // We have finished dematerializing, let's move the character.
-			Perform_Teleport(self);
+			PerformPlayerTeleport(self);
 		else if (info->edictflags & FL_CHICKEN)
 			MorphChickenToPlayerEnd(self); // We're set as a chicken.
 		else
@@ -639,7 +639,7 @@ qboolean G_HandleTeleport(const playerinfo_t* info)
 	if (self->client->tele_count-- > 0)
 		self->s.color.a += TELE_FADE;
 	else if (info->flags & PLAYER_FLAG_TELEPORT) // We are done re-materializing, let's kill all this BS and get back to the game.
-		CleanUpTeleport(self);
+		CleanUpPlayerTeleport(self);
 	else
 		CleanUpPlayerMorph(self);
 

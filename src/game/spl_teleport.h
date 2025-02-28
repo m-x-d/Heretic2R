@@ -17,6 +17,6 @@
 #define DEATHMATCH_RANDOM	2
 
 void SpellCastTeleport(edict_t* caster);
-void CleanUpTeleport(edict_t* self);
-void Perform_Teleport(edict_t* self);
+void CleanUpPlayerTeleport(edict_t* self);
+void PerformPlayerTeleport(edict_t* self);
 void teleporter_touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf);
