@@ -533,7 +533,7 @@ void WeaponThink_SphereOfAnnihilation(edict_t* caster, char* format, ...)
 	vec3_t fwd;
 	AngleVectors(caster->client->aimangles, fwd, NULL, NULL);
 
-	SpellCastSphereOfAnnihilation(caster, NULL, caster->client->aimangles, fwd, 0.0f, release_flags_ptr);
+	SpellCastSphereOfAnnihilation(caster, NULL, caster->client->aimangles, fwd, release_flags_ptr);
 
 	playerinfo_t* info = &caster->client->playerinfo; //mxd
 	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))

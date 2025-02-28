@@ -607,7 +607,7 @@ static void SphereWatcherTouch(edict_t* self, edict_t* other, cplane_t* plane, c
 	G_SetToFree(self);
 }
 
-void SpellCastSphereOfAnnihilation(edict_t* caster, vec3_t start_pos, vec3_t aim_angles, vec3_t aim_dir, float Value, qboolean* release_flags_ptr) //TODO: remove unused arg.
+void SpellCastSphereOfAnnihilation(edict_t* caster, const vec3_t start_pos, const vec3_t aim_angles, const vec3_t aim_dir, qboolean* release_flags_ptr)
 {
 	// Spawn the sphere of annihilation as an invisible entity (i.e. modelindex = 0).
 	edict_t* sphere = G_Spawn();

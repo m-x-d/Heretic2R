@@ -377,7 +377,6 @@ void elflord_soa_start(edict_t *self, G_Message_t *msg)
 								 startpos,
 								 self->s.angles,		//v_angle,
 								 forward,
-								 0.0,
 								 &self->show_hostile);
 	SetAnim(self, ANIM_ATTACK_SOA_BTRANS);
 }
@@ -407,7 +406,6 @@ void elflord_soa_go(edict_t *self)
 								 self->s.origin,
 								 self->s.angles,		//v_angle,
 								 forward,
-								 0.0,
 								 &self->show_hostile);
 }
 
