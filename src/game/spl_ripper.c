@@ -1,40 +1,22 @@
 //
-// Heretic II
+// spl_ripper.c
+//
 // Copyright 1998 Raven Software
 //
 
 #include "spl_ripper.h" //mxd
-#include "g_local.h"
-#include "fx.h"
-#include "vector.h"
-#include "angles.h"
-#include "matrix.h"
-#include "Utilities.h"
-#include "g_ClassStatics.h"
-#include "g_Physics.h"
 #include "g_playstats.h"
-#include "decals.h"
 #include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
-#include "random.h"
 #include "m_beast.h"
+#include "FX.h"
+#include "Random.h"
+#include "Vector.h"
+#include "g_local.h"
 
-#define RIPPER_RADIUS				12.0
-#define RIPPER_EXPLODE_BALL_RADIUS	8.0
-#define RIPPER_MAX_DISTANCE			2000
-
-
-void RipperThink(edict_t *Self);
-
-
-//---------------------
-//---------------------
-//---------------------
-// RIPPER
-//---------------------
-//---------------------
-//---------------------
-
+#define RIPPER_RADIUS				12.0f
+#define RIPPER_EXPLODE_BALL_RADIUS	8.0f
+#define RIPPER_MAX_DISTANCE			2000.0f
 
 // ****************************************************************************
 // RipperExplodeBallThink
