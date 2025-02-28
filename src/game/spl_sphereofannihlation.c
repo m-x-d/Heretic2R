@@ -399,55 +399,43 @@ static void CreateSphere(edict_t* sphere)
 	sphere->nextthink = level.time + 0.1f;
 }
 
-edict_t *SphereReflect(edict_t *self, edict_t *other, vec3_t vel)
+edict_t* SphereReflect(edict_t* self, edict_t* other, vec3_t vel)
 {
-	edict_t	*Sphere;
-   	Sphere = G_Spawn();
-   	CreateSphere(Sphere);
-   	Sphere->owner = other;
-   	Sphere->enemy = self->enemy;
-   	Sphere->reflect_debounce_time = self->reflect_debounce_time -1;
-	Sphere->reflected_time=self->reflected_time;
+	edict_t* sphere = G_Spawn();
 
-   	Sphere->count=self->count;
-   	Sphere->solid=self->solid;
-   	Sphere->dmg=self->dmg;
-   	Sphere->dmg_radius=self->dmg_radius;
-   	Sphere->s.scale=self->s.scale;
+	CreateSphere(sphere);
+	sphere->owner = other;
+	sphere->enemy = self->enemy;
+	sphere->reflect_debounce_time = self->reflect_debounce_time - 1; // So it doesn't infinitely reflect in one frame somehow.
+	sphere->reflected_time = self->reflected_time;
 
-   	VectorCopy(vel, Sphere->velocity);
+	sphere->count = self->count;
+	sphere->solid = self->solid;
+	sphere->dmg = self->dmg;
+	sphere->dmg_radius = self->dmg_radius;
+	sphere->s.scale = self->s.scale;
 
-   	Sphere->touch=SphereOfAnnihilationTouch;
-   	Sphere->nextthink=level.time+0.1;
+	sphere->touch = SphereOfAnnihilationTouch;
+	sphere->nextthink = level.time + 0.1f;
 
-   	VectorCopy(self->mins, Sphere->mins);
-   	VectorCopy(self->maxs, Sphere->maxs);
+	VectorCopy(vel, sphere->velocity);
+	VectorCopy(self->mins, sphere->mins);
+	VectorCopy(self->maxs, sphere->maxs);
+	VectorCopy(self->s.origin, sphere->s.origin);
 
-   	VectorCopy(self->s.origin, Sphere->s.origin);
-   	G_LinkMissile(Sphere); 
+	G_LinkMissile(sphere);
 
-   	gi.CreateEffect(&Sphere->s,
-   				FX_WEAPON_SPHERE,
-   				CEF_OWNERS_ORIGIN,
-   				NULL,
-   				"s",
-   				(short)Sphere->owner->s.number);
+	// Create new trails for the new sphere.
+	gi.CreateEffect(&sphere->s, FX_WEAPON_SPHERE, CEF_OWNERS_ORIGIN, NULL, "s", sphere->owner->s.number);
+	gi.CreateEffect(&sphere->s, FX_WEAPON_SPHEREGLOWBALLS, CEF_OWNERS_ORIGIN, NULL, "s", -1);
 
-   	gi.CreateEffect(&Sphere->s,
-   				FX_WEAPON_SPHEREGLOWBALLS,
-   				CEF_OWNERS_ORIGIN,
-   				NULL,
-   				"s",
-   				-1);
+	// Kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it. 
+	G_SetToFree(self);
 
+	// Do a nasty looking blast at the impact point
+	gi.CreateEffect(&sphere->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", sphere->velocity);
 
-   	// kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it. 
-   	G_SetToFree(self);
-
-   	// Do a nasty looking blast at the impact point
-   	gi.CreateEffect(&Sphere->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", Sphere->velocity);
-
-   	return(Sphere);
+	return sphere;
 }
 
 // ****************************************************************************
