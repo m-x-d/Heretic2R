@@ -82,8 +82,7 @@ static void RipperExplodeBallThink(edict_t* self)
 	self->nextthink = level.time + 0.1f;
 }
 
-
-static void RipperExplodeBallTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface)
+static void RipperExplodeBallTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
 	G_SetToFree(self);
 }
