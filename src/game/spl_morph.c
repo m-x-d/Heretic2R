@@ -191,8 +191,8 @@ edict_t* MorphReflect(edict_t* self, edict_t* other, vec3_t vel)
 	G_LinkMissile(egg);
 
 	// Create new trails for the new missile.
-	const byte yaw = (byte)Q_ftol(egg->s.angles[YAW] / 6.2831f * 255.0f);
-	const byte pitch = (byte)Q_ftol(egg->s.angles[PITCH] / 6.2831f * 255.0f);
+	const byte yaw = (byte)Q_ftol(egg->s.angles[YAW] / ANGLE_360 * 255.0f);
+	const byte pitch = (byte)Q_ftol(egg->s.angles[PITCH] / ANGLE_360 * 255.0f);
 	gi.CreateEffect(&egg->s, FX_SPELL_MORPHMISSILE, CEF_OWNERS_ORIGIN | CEF_FLAG6, NULL, "bb", yaw, pitch);
 
 	// Kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it.
