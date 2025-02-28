@@ -55,18 +55,17 @@ void Perform_Teleport(edict_t* self) //TODO: rename to PerformPlayerTeleport?
 	AlertMonsters(self, self, 2.0f, true);
 }
 
-// PLAYER ONLY!!!
-// Done teleporting, clean up after ourselves
-// called from ANIMACTOR
-void CleanUpTeleport(edict_t *self)
+// Done teleporting, clean up after ourselves.
+void CleanUpTeleport(edict_t* self) //TODO: rename to CleanUpPlayerTeleport?
 {
-	self->client->tele_dest[0] = self->client->tele_dest[1] = self->client->tele_dest[2] = 0;
+	VectorClear(self->client->tele_dest);
+
 	self->client->tele_count = 0;
 	self->flags &= ~FL_LOCKMOVE;
-	self->client->playerinfo.flags &=~PLAYER_FLAG_TELEPORT;
+	self->client->playerinfo.flags &= ~PLAYER_FLAG_TELEPORT;
 	self->client->ps.pmove.pm_flags &= ~PMF_LOCKMOVE;
 	self->s.color.a = 255;
-	self->client->shrine_framenum = level.time - 1;;
+	self->client->shrine_framenum = level.time - 1.0f;
 }
 
 // Setup the teleporter - from the player hitting a teleport pad
