@@ -1,22 +1,18 @@
 //
 // spl_teleport.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-// Written by Jake Simpson
 
 #include "spl_teleport.h" //mxd
-#include "g_local.h"
-#include "fx.h"
-#include "Angles.h"
 #include "g_ai.h"
-#include "Utilities.h"
-#include "random.h"
-#include "vector.h"
-#include "p_main.h"
 #include "g_playstats.h"
+#include "p_main.h"
 #include "p_client.h" //mxd
+#include "FX.h"
+#include "Random.h"
+#include "Vector.h"
+#include "g_local.h"
 
 // PLAYER ONLY!!!
 // make the guy actually teleport from one place to another
