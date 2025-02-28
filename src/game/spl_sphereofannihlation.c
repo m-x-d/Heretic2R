@@ -309,11 +309,10 @@ static void SpherePowerLaserThink(edict_t* self)
 		self->nextthink = level.time + 0.1f;
 }
 
-static void SpherePowerLaserTouch(edict_t *Self,edict_t *Other,cplane_t *Plane, csurface_t *Surface)
+static void SpherePowerLaserTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
-	G_SetToFree(Self);
+	G_SetToFree(self);
 }
-
 
 static void SphereOfAnnihilationGrowThinkPower(edict_t *Self)
 {
