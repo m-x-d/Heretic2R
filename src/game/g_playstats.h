@@ -137,9 +137,9 @@
 #define MACEBALL_BOSS_DAMAGE			100
 
 // Tornado.
-#define TORN_DUR						0.5f
-#define	SPIN_DUR						15.0f
-#define TORN_DAMAGE						20
+#define TORN_DUR						0.5f //TODO: rename to TORNADO_DURATION
+#define	SPIN_DUR						15.0f //TODO: rename to TORNADO_SPIN_DURATION
+#define TORNADO_DAMAGE					20
 
 #define FIRE_LINGER_DMG_MIN				2
 #define FIRE_LINGER_DMG_MAX				3

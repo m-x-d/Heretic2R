@@ -18,72 +18,76 @@
 #define TORN_KNOCKBACK_BASE		250.0f
 #define TORN_MASS_FACTOR		200.0f
 
-// do the think for the tornado ring
-static void TornadoThink(edict_t *self)
+// Do the think for the tornado ring.
+static void TornadoThink(edict_t* self)
 {
-	edict_t	*ent = NULL;
-	vec3_t	vel, hitloc;
-	float	scale;
-	int		damage = TORN_DAMAGE;
-	vec3_t	endpos, angles;
+	edict_t* ent = NULL;
 
-	// stolen wholesale from the ring of repulsion. Cheers Pat :)
-	while(ent = FindRingRadius(ent, self->s.origin, TORN_EFFECT_RADIUS, self))
+	// Stolen wholesale from the ring of repulsion...
+	while ((ent = FindRingRadius(ent, self->s.origin, TORN_EFFECT_RADIUS, self)) != NULL)
 	{
-		if (ent->mass && ent!=self->owner)
-   		{
-   			VectorSubtract(ent->s.origin, self->s.origin, vel);
-   			scale = (TORN_EFFECT_RADIUS - VectorLength(vel)) 
-   						* (TORN_KNOCKBACK_SCALE/TORN_EFFECT_RADIUS) 
-   						* sqrt(TORN_MASS_FACTOR / ent->mass)
-   						+ TORN_KNOCKBACK_BASE;
-			scale *= 20; // just for yucks
-			VectorNormalize(vel);
-			Vec3ScaleAssign(scale, vel);
-			vel[2] += 200;
-   			// Vel is just passing the direction of the knockback.
-   			QPostMessage(ent, MSG_REPULSE, PRI_DIRECTIVE, "fff", vel[0], vel[1], vel[2] );
-			damage = TORN_DAMAGE;
-			// double the damage if this tornado is powered up
-   			if (ent->takedamage)
-   			{
-				// Do a nasty looking blast at the impact point
-				gi.CreateEffect(&ent->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", ent->velocity);
-				VectorClear(ent->velocity);
+		if (ent->mass == 0 || ent == self->owner)
+			continue;
 
-				// no damage if reflection is on.
-				if(EntReflecting(ent, true, true))
-					damage = 0;
+		vec3_t vel;
+		VectorSubtract(ent->s.origin, self->s.origin, vel);
 
-   				VectorMA(ent->s.origin, -ent->maxs[0], vel, hitloc);
-   				if (ent->movetype != PHYSICSTYPE_NONE)
-   					T_Damage (ent, ent, self->targetEnt, vel, hitloc, vec3_origin, damage, 600, DAMAGE_RADIUS | DAMAGE_SPELL,MOD_TORN);
-   				else
-   					T_Damage (ent, ent, self->targetEnt, vel, hitloc, vec3_origin, damage, 600, DAMAGE_RADIUS | DAMAGE_SPELL,MOD_TORN);
-   			}
-   		}
+		float scale = (TORN_EFFECT_RADIUS - VectorLength(vel)) * (TORN_KNOCKBACK_SCALE / TORN_EFFECT_RADIUS) * sqrtf(TORN_MASS_FACTOR / (float)ent->mass) + TORN_KNOCKBACK_BASE;
+		scale *= 20.0f; // Just for yucks.
+
+		VectorNormalize(vel);
+		Vec3ScaleAssign(scale, vel);
+		vel[2] += 200.0f;
+
+		// Vel is just passing the direction of the knockback.
+		QPostMessage(ent, MSG_REPULSE, PRI_DIRECTIVE, "fff", vel[0], vel[1], vel[2]);
+
+		// Double the damage if this tornado is powered up.
+		if (ent->takedamage != DAMAGE_NO)
+		{
+			// Do a nasty looking blast at the impact point.
+			gi.CreateEffect(&ent->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", ent->velocity);
+			VectorClear(ent->velocity);
+
+			// No damage if reflection is on.
+			const int damage = (EntReflecting(ent, true, true) ? 0 : TORNADO_DAMAGE);
+
+			vec3_t hit_pos;
+			VectorMA(ent->s.origin, -ent->maxs[0], vel, hit_pos);
+
+			T_Damage(ent, ent, self->targetEnt, vel, hit_pos, vec3_origin, damage, 600, DAMAGE_RADIUS | DAMAGE_SPELL, MOD_TORN);
+		}
 	}
 
 	if (self->jump_time < level.time)
 	{
-		VectorSet(angles, flrand(0.0, 6.28), flrand(0.0, 6.28), 0);
-		DirFromAngles(angles, endpos);
-		Vec3ScaleAssign((flrand(0,110.0)), endpos);
-		endpos[2] = 100.0;
-		VectorAdd(endpos, self->s.origin, endpos);
-   		gi.CreateEffect(NULL, FX_LIGHTNING, 0, 
-   			self->s.origin, "vbb", endpos, (byte)RED_RAIN_LIGHTNING_WIDTH, (byte)0);
-   		gi.sound(self,CHAN_WEAPON,gi.soundindex("weapons/Lightning.wav"),1,ATTN_NORM,0);
-		self->jump_time = level.time + flrand(0.2, 1.0);
+		const vec3_t angles = { flrand(0.0f, ANGLE_360), flrand(0.0f, ANGLE_360), 0.0f };
+
+		vec3_t end_pos;
+		DirFromAngles(angles, end_pos);
+
+		Vec3ScaleAssign(flrand(0.0f, 110.0f), end_pos);
+		end_pos[2] = 100.0f;
+
+		VectorAdd(end_pos, self->s.origin, end_pos);
+
+		gi.CreateEffect(NULL, FX_LIGHTNING, 0, self->s.origin, "vbb", end_pos, (byte)RED_RAIN_LIGHTNING_WIDTH, (byte)0);
+		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/Lightning.wav"), 1.0f, ATTN_NORM, 0.0f);
+
+		self->jump_time = level.time + flrand(0.2f, 1.0f);
 	}
 
-	self->nextthink = level.time + 0.1;
-	if (self->count < level.time)
+	if ((float)self->count < level.time)
 	{
-		self->nextthink = level.time + 1.0;
 		self->think = G_SetToFree;
 		self->s.effects &= ~EF_SPEED_ACTIVE;
 		self->s.effects &= ~EF_HIGH_MAX;
+
+		self->nextthink = level.time + 1.0f;
+	}
+	else
+	{
+		self->nextthink = level.time + 0.1f;
 	}
 }
 
