@@ -38,7 +38,7 @@ static void TakeMana(const edict_t* caster) //mxd. Added to reduce code duplicat
 
 void DefenceThink_Tornado(edict_t* caster, char* format, ...)
 {
-	SpellCastDropTornado(caster, caster->s.origin, caster->client->aimangles, NULL, 0.0f);
+	SpellCastDropTornado(caster, caster->s.origin);
 	TakeMana(caster); //mxd
 }
 

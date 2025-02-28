@@ -111,7 +111,7 @@ static void CreateTornado(edict_t* tornado)
 }
 
 // We just cast/dropped the tornado, set up a timer so it doesn't erupt immediately and hit the caster.
-void SpellCastDropTornado(edict_t* caster, vec3_t start_pos, vec3_t aimangles, vec3_t aimdir, float value) //TODO: remove unused args.
+void SpellCastDropTornado(edict_t* caster, const vec3_t start_pos)
 {
 	static const char* spawn_checks[] = { "info_player_start", "info_player_deathmatch", "info_player_coop" }; //mxd. Made static const.
 
