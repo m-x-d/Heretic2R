@@ -14,9 +14,6 @@
 #define TELE_TIME_OUT	5						// Number of server frames we take to do the fades.
 #define TELE_FADE_OUT	(255 / TELE_TIME_OUT)	// Amount to fade the player by each fade.
 
-#define MORPH_TELE_TIME 5						// Number of server frames to do the fade.
-#define MORPH_TELE_FADE (255 / MORPH_TELE_TIME)
-
 #define DEATHMATCH_RANDOM	2
 
 void SpellCastTeleport(edict_t* caster, vec3_t StartPos, vec3_t AimAngles, vec3_t AimDir, float Value);
