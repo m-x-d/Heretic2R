@@ -18,66 +18,68 @@
 #define RIPPER_EXPLODE_BALL_RADIUS	8.0f
 #define RIPPER_MAX_DISTANCE			2000.0f
 
-// ****************************************************************************
-// RipperExplodeBallThink
-// ****************************************************************************
-
-static void RipperExplodeBallThink(edict_t *self)
+static void RipperExplodeBallThink(edict_t* self)
 {
-	vec3_t	vel;
-	vec3_t	startpos, endpos, vect, forward;
-	edict_t	*tracebuddy;
 	trace_t trace;
-	int		numHit = 0;	// can hit no more than 8 guys...
 
-   	VectorCopy(self->s.origin, startpos);
-   	VectorCopy(self->last_org, endpos);
-   	tracebuddy = self;
-   	do
-   	{
-   		gi.trace(startpos, self->mins, self->maxs, endpos, tracebuddy, MASK_SHOT,&trace);
-   		// if we hit anything that won't take damage, kill the beam
-   		if (!trace.ent->takedamage)
-   			break;
-   		if(trace.fraction < .99 )
-   		{
-   			// did we hit something that reflects ?
-			if(!EntReflecting(trace.ent, true, true))
+	vec3_t start_pos;
+	VectorCopy(self->s.origin, start_pos);
+
+	vec3_t end_pos;
+	VectorCopy(self->last_org, end_pos);
+
+	const edict_t* trace_buddy = self;
+	int num_hit = 0; // Can't hit more than 6 guys...
+
+	do
+	{
+		gi.trace(start_pos, self->mins, self->maxs, end_pos, trace_buddy, MASK_SHOT, &trace);
+
+		// If we hit anything that won't take damage, kill the beam.
+		if (trace.ent->takedamage == DAMAGE_NO || trace.fraction >= 0.99f)
+			break;
+
+		// Did we hit something that reflects?
+		if (!EntReflecting(trace.ent, true, true))
+		{
+			T_Damage(trace.ent, self, self->owner, self->movedir, trace.endpos, vec3_origin, self->dmg, 0, DAMAGE_SPELL | DAMAGE_EXTRA_BLOOD, MOD_IRONDOOM);
+
+			if (trace.ent->svflags & SVF_MONSTER)
 			{
-   				T_Damage(trace.ent, self, self->owner, self->movedir, trace.endpos, vec3_origin, 
-   						self->dmg, 0, DAMAGE_SPELL | DAMAGE_EXTRA_BLOOD,MOD_IRONDOOM); 
+				// Let's spawn a big gush of blood in the traveling direction.
+				vec3_t vel;
+				VectorScale(self->movedir, RIPPER_EXPLODE_SPEED * 0.25f, vel);
 
-				if (trace.ent->svflags & SVF_MONSTER)
-				{
-   					// What the hell, let's spawn a big gush of blood in the travelling direction.
-   					VectorScale(self->movedir, RIPPER_EXPLODE_SPEED*0.25, vel);
-					if(trace.ent->materialtype == MAT_INSECT)
-	   					gi.CreateEffect(NULL, FX_BLOOD, CEF_FLAG8, self->last_org, "ub", vel, (byte)20);
-   					else
-						gi.CreateEffect(NULL, FX_BLOOD, 0, self->last_org, "ub", vel, (byte)20);
+				const int fx_flags = (trace.ent->materialtype == MAT_INSECT ? CEF_FLAG8 : 0); //mxd
+				gi.CreateEffect(NULL, FX_BLOOD, fx_flags, self->last_org, "ub", vel, (byte)20);
 
-   					gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/RipperDamage.wav"), 1, ATTN_NORM, 0);
-				}
+				gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/RipperDamage.wav"), 1.0f, ATTN_NORM, 0.0f);
 			}
-   			// this seems to alleviate the problem of a trace hitting the same ent multiple times...
-   			VectorCopy(trace.endpos, startpos);
-   			VectorSubtract(endpos, startpos, vect);
-   			if(VectorLength(vect) > 16.0)
-   			{
-				VectorSubtract(startpos,endpos,forward);
-				VectorNormalize(forward);
-   				VectorMA(startpos, 16.0, forward, startpos);
-   			}
-   			tracebuddy = trace.ent;
-   			numHit++;
-   		}
-   	} while((trace.fraction < .99) && !(trace.contents & MASK_SOLID) && (numHit < 6) );
+		}
+
+		// This seems to alleviate the problem of a trace hitting the same ent multiple times...
+		VectorCopy(trace.endpos, start_pos);
+
+		vec3_t diff;
+		VectorSubtract(end_pos, start_pos, diff);
+
+		if (VectorLength(diff) > 16.0f)
+		{
+			vec3_t forward;
+			VectorSubtract(start_pos, end_pos, forward);
+			VectorNormalize(forward);
+			VectorMA(start_pos, 16.0f, forward, start_pos);
+		}
+
+		trace_buddy = trace.ent;
+		num_hit++;
+	} while (!(trace.contents & MASK_SOLID) && num_hit < 6);
 
 	// Prevent any further transmission of this entity to clients.
 	self->svflags |= SVF_NOCLIENT;
 
 	VectorCopy(self->s.origin, self->last_org);
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + 0.1f;
 }
 
 
