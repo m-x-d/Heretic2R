@@ -22,6 +22,7 @@
 #include "g_monster.h"
 #include "m_stats.h"
 #include "g_HitLocation.h"
+#include "spl_sphereofannihlation.h" //mxd
 
 /*QUAKED monster_elflord (1 .5 0) (-16 -16 -0) (16 16 32)
 */
@@ -34,9 +35,6 @@ enum
 	CW_BEAM,
 	CW_METEOR,
 } cwatcher_effect_id_t;
-
-void SpellCastSphereOfAnnihilation(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,
-								  float Value,qboolean *ReleaseFlagsPtr);
 
 /*----------------------------------------------------------------------
   Elf Lord Base Info
