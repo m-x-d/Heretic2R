@@ -7,13 +7,13 @@
 #include "p_morph.h"
 #include "g_Physics.h"
 #include "g_playstats.h"
-#include "g_teleport.h"
 #include "g_Shrine.h" //mxd
 #include "g_Skeletons.h"
 #include "m_chicken_anim.h"
 #include "p_main.h"
 #include "p_anims.h"
 #include "p_client.h" //mxd
+#include "spl_teleport.h"
 #include "FX.h"
 #include "Random.h"
 #include "Vector.h"

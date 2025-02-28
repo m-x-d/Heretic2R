@@ -8,7 +8,7 @@
 #include "buoy.h"
 #include "g_combat.h" //mxd
 #include "m_stats.h"
-#include "g_teleport.h"
+#include "spl_teleport.h"
 
 extern void SP_misc_teleporter (edict_t *self);
 

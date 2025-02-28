@@ -8,8 +8,8 @@
 #include "g_Physics.h"
 #include "g_playstats.h"
 #include "g_combat.h" //mxd
-#include "g_teleport.h"
 #include "p_dll.h" //mxd
+#include "spl_teleport.h"
 #include "FX.h"
 #include "Vector.h"
 #include "Utilities.h"

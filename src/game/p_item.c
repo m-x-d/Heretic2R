@@ -4,13 +4,13 @@
 // Copyright 1998 Raven Software
 //
 
-#include "p_items.h" //mxd
+#include "p_item.h" //mxd
 #include "spl_BlueRing.h" //mxd
 #include "spl_meteorbarrier.h" //mxd
 #include "spl_morph.h" //mxd
 #include "spl_powerup.h" //mxd
 #include "spl_shield.h" //mxd
-#include "g_teleport.h" //mxd
+#include "spl_teleport.h" //mxd
 #include "spl_tornado.h" //mxd
 #include "g_local.h"
 

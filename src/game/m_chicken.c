@@ -21,7 +21,7 @@
 #include "buoy.h"
 #include "vector.h"
 #include "g_Physics.h"
-#include "g_teleport.h"
+#include "spl_teleport.h"
 #include "g_Skeletons.h"
 #include "p_anims.h"
 

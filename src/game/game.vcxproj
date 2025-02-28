@@ -241,7 +241,7 @@
     <ClInclude Include="g_Skeleton.h" />
     <ClInclude Include="g_Skeletons.h" />
     <ClInclude Include="g_spawnf.h" />
-    <ClInclude Include="g_teleport.h" />
+    <ClInclude Include="spl_teleport.h" />
     <ClInclude Include="g_weapon.h" />
     <ClInclude Include="ICScript.h" />
     <ClInclude Include="list.h" />

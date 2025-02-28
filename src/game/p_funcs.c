@@ -12,9 +12,9 @@
 #include "g_combat.h" //mxd
 #include "g_playstats.h"
 #include "g_Skeletons.h"
-#include "g_teleport.h"
 #include "g_weapon.h"
 #include "spl_shield.h" //mxd
+#include "spl_teleport.h"
 #include "FX.h"
 #include "Random.h"
 #include "Vector.h"

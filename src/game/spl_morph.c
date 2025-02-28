@@ -8,8 +8,8 @@
 #include "g_cmds.h" //mxd
 #include "g_monster.h"
 #include "g_playstats.h"
-#include "g_teleport.h"
 #include "p_morph.h" //mxd
+#include "spl_teleport.h"
 #include "FX.h"
 #include "Vector.h"
 #include "g_local.h"
