@@ -87,126 +87,99 @@ static void RipperExplodeBallTouch(edict_t* self, edict_t* other, cplane_t* plan
 	G_SetToFree(self);
 }
 
-
-// ****************************************************************************
-// RipperImpact
-// ****************************************************************************
 // This is like a touch function, except since the ripper is instant now...
-static void RipperImpact(edict_t *caster, edict_t *other, vec3_t startpos, vec3_t endpos, vec3_t angles)
+static void RipperImpact(edict_t* caster, edict_t* other, vec3_t start_pos, vec3_t end_pos, vec3_t angles)
 {
-	edict_t	*ripper;
-	byte	makeScorch = 0;
-	int		i;
-	int		dmg;
-	vec3_t	hitpos, fwd;
-	short	ballarray[RIPPER_BALLS];
-	byte	byaw;
-	float	curyaw;
+	short ball_array[RIPPER_BALLS];
 
-	// Get the forward vector for various calculations
+	// Get the forward vector for various calculations.
+	vec3_t fwd;
 	AngleVectors(angles, fwd, NULL, NULL);
 
-	// did we hit someone where reflection is functional ?
-	if(EntReflecting(other, true, true))
-	{
-		// Erg...  Do nothing right now.
-	}
+	AlertMonsters(caster, caster, 2.0f, false);
 
-	AlertMonsters (caster, caster, 2, false);
-	if(other && other->takedamage)
+	vec3_t hit_pos;
+	if (other != NULL && other->takedamage != DAMAGE_NO)
 	{
-		dmg = irand(RIPPER_DAMAGE_MIN, RIPPER_DAMAGE_MAX);
-		VectorCopy(endpos, hitpos);
-		T_Damage(other, caster, caster, fwd, endpos, fwd, dmg, dmg*2, DAMAGE_SPELL,MOD_IRONDOOM);
+		const int dmg = irand(RIPPER_DAMAGE_MIN, RIPPER_DAMAGE_MAX);
+		VectorCopy(end_pos, hit_pos);
+		T_Damage(other, caster, caster, fwd, end_pos, fwd, dmg, dmg * 2, DAMAGE_SPELL, MOD_IRONDOOM);
 	}
 	else
 	{
-		// Back off the origin for the damage a bit. We are a point and this will
-		// help fix hitting base of a stair and not hurting a guy on next step up.
-		VectorMA(endpos, -8.0, fwd, hitpos);
+		// Back off the origin for the damage a bit.
+		// We are a point and this will help fix hitting base of a stair and not hurting a guy on next step up.
+		VectorMA(end_pos, -8.0f, fwd, hit_pos);
 	}
 
-	// Shoot out ripper balls
-	curyaw = (angles[YAW]*ANGLE_TO_RAD) + (RIPPER_BALL_ANGLE*0.5);		
-														// Add half an increment so that the balls don't come right back.
-														// STORE THE CURRENT YAW IN RADIANS FOR SIN/COS OPERATIONS
+	// Shoot out ripper balls. Add half-increment so that the balls don't come right back.
+	float cur_yaw = (angles[YAW] * ANGLE_TO_RAD) + (RIPPER_BALL_ANGLE * 0.5f);
 
-	// Reduce precision to a 0-255 byte.
-	byaw = (byte)(curyaw*(256.0/(M_PI*2.0)));			// The byte yaw loses lots of precision here
-	curyaw = ((float)byaw)*((M_PI*2.0)/256.0);			// ...and pass this imprecision back to the float yaw.
-	for (i=0; i<RIPPER_BALLS; i++)
+	// Store the current yaw in radians for sin/cos operations.
+	const byte b_yaw = (byte)(cur_yaw * (256.0f / ANGLE_360)); // Reduce precision to a 0-255 byte...
+	cur_yaw = (float)b_yaw * (ANGLE_360 / 256.0f); // ...and pass this imprecision back to the float yaw.
+	edict_t* ripper = NULL;
+
+	for (int i = 0; i < RIPPER_BALLS; i++)
 	{
 		ripper = G_Spawn();
 
-		// Set up the angle vectors
-		ripper->movedir[0] = cos(curyaw);
-		ripper->movedir[1] = sin(curyaw);
-		ripper->movedir[2] = 0.0;
+		// Set up the angle vectors.
+		VectorSet(ripper->movedir, cosf(cur_yaw), sinf(cur_yaw), 0.0f);
 
-		// Place the ball		
-		VectorCopy(hitpos, ripper->s.origin);
+		// Place the ball.	
+		VectorCopy(hit_pos, ripper->s.origin);
 		VectorScale(ripper->movedir, RIPPER_EXPLODE_SPEED, ripper->velocity);
 
-		// Set up the net transmission attributes
+		// Set up the net transmission attributes.
 		ripper->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 		ripper->svflags |= SVF_ALWAYS_SEND;
 		ripper->movetype = MOVETYPE_FLYMISSILE;
 
-		// Set up the dimentsions
+		// Set up the dimensions.
 		VectorSet(ripper->mins, -RIPPER_EXPLODE_BALL_RADIUS, -RIPPER_EXPLODE_BALL_RADIUS, -RIPPER_EXPLODE_BALL_RADIUS);
-		VectorSet(ripper->maxs, RIPPER_EXPLODE_BALL_RADIUS, RIPPER_EXPLODE_BALL_RADIUS, RIPPER_EXPLODE_BALL_RADIUS);
+		VectorSet(ripper->maxs,  RIPPER_EXPLODE_BALL_RADIUS,  RIPPER_EXPLODE_BALL_RADIUS,  RIPPER_EXPLODE_BALL_RADIUS);
 
-		// Set up physics attributes
+		// Set up physics attributes.
 		ripper->solid = SOLID_BBOX;
 		ripper->clipmask = MASK_SOLID;
+		ripper->classname = "Spell_Ripper";
 		ripper->touch = RipperExplodeBallTouch;
 		ripper->think = RipperExplodeBallThink;
+		ripper->nextthink = level.time + 0.1f;
 		ripper->dmg = RIPPER_EXPLODE_DAMAGE;
-		ripper->classname = "Spell_Ripper";
-		ripper->nextthink = level.time + 0.1;
-
-		// last_org is used for damaging things
-		VectorCopy(ripper->s.origin, ripper->last_org);
-
 		ripper->owner = caster;
 
-		// Store the entity numbers for sending with the effect.
-		ballarray[i] = ripper->s.number;
+		// last_org is used for damaging things.
+		VectorCopy(ripper->s.origin, ripper->last_org);
 
-		curyaw += RIPPER_BALL_ANGLE;
+		// Store the entity numbers for sending with the effect.
+		ball_array[i] = ripper->s.number;
+
+		cur_yaw += RIPPER_BALL_ANGLE;
 	}
 
-	gi.sound(ripper, CHAN_WEAPON, gi.soundindex("weapons/RipperImpact.wav"), 1, ATTN_NORM, 0);
+	gi.sound(ripper, CHAN_WEAPON, gi.soundindex("weapons/RipperImpact.wav"), 1.0f, ATTN_NORM, 0.0f);
 
-	// Okay (whew) now we send the big ol' mutherlovin' effect.  There's a lot here, but believe me, this is WAY more
-	//		efficient than sending out eight (well, nine with the impact) seperate effects...
+	// Now we send the effect. There's a lot here, but this is WAY more efficient than sending out eight
+	// (well, nine with the impact) separate effects...
 
 	// Send it attached to the last ball...
-	assert(ripper);
+	assert(ripper != NULL);
 	assert(RIPPER_BALLS == 8);
 
 	// So we send this with:
-	//	--The position of the caster (for the launch trail effect)
-	//	--The byte angle to shoot things at.
-	//	--All eight entity numbers to attach things to.  
+	//	-- The position of the caster (for the launch trail effect).
+	//	-- The byte angle to shoot things at.
+	//	-- All eight entity numbers to attach things to.  
 	//		Okay, so I only need seven (the eighth comes with the effect), but for consistency I'm going to send all eight.
 	//	(NOTE: Further optimization would maybe pass a pitch and distance, and make the yaw precise, but that would save
-	//		little and make things more confusing than they are...)
+	//		little and make things more confusing than they are...).
 	//	Currently this sends 29 bytes plus the entity it's attached to.
 	//		This is down from (12 plus the entity) times eight, plus another effect for impact, plus another for the trail.
-	gi.CreateEffect(&ripper->s, FX_WEAPON_RIPPEREXPLODE, CEF_OWNERS_ORIGIN, NULL, "vbssssssss", 
-			startpos, 
-			byaw, 
-			ballarray[0],
-			ballarray[1],
-			ballarray[2],
-			ballarray[3],
-			ballarray[4],
-			ballarray[5],
-			ballarray[6],
-			ballarray[7]);
+	gi.CreateEffect(&ripper->s, FX_WEAPON_RIPPEREXPLODE, CEF_OWNERS_ORIGIN, NULL, "vbssssssss",
+		start_pos, b_yaw, ball_array[0], ball_array[1], ball_array[2], ball_array[3], ball_array[4], ball_array[5], ball_array[6], ball_array[7]);
 }
-
 
 // ****************************************************************************
 // SpellCastRipper
