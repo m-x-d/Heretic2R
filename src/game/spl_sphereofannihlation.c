@@ -524,6 +524,46 @@ static void SphereWatcherGrowThink(edict_t* self)
 	}
 }
 
+static edict_t* SphereWatcherReflect(edict_t* self, edict_t* other, vec3_t vel)
+{
+	edict_t* sphere = G_Spawn();
+	CreateSphere(sphere);
+
+	sphere->owner = other;
+	sphere->enemy = self->enemy;
+	sphere->reflect_debounce_time = self->reflect_debounce_time - 1; // So it doesn't infinitely reflect in one frame somehow.
+	sphere->reflected_time = self->reflected_time;
+
+	sphere->count = self->count;
+	sphere->solid = self->solid;
+	sphere->dmg = self->dmg;
+	sphere->dmg_radius = self->dmg_radius;
+	sphere->s.scale = self->s.scale;
+
+	sphere->touch = SphereWatcherTouch;
+	sphere->think = SphereWatcherFlyThink;
+	sphere->nextthink = level.time + 0.1f;
+
+	VectorCopy(vel, sphere->velocity);
+	VectorCopy(self->mins, sphere->mins);
+	VectorCopy(self->maxs, sphere->maxs);
+	VectorCopy(self->s.origin, sphere->s.origin);
+
+	G_LinkMissile(sphere);
+
+	// Create new trails for the new sphere.
+	gi.CreateEffect(&sphere->s, FX_WEAPON_SPHERE, CEF_OWNERS_ORIGIN, NULL, "s", sphere->owner->s.number);
+	gi.CreateEffect(&sphere->s, FX_WEAPON_SPHEREGLOWBALLS, CEF_OWNERS_ORIGIN, NULL, "s", -1);
+
+	// Kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it.
+	G_SetToFree(self);
+
+	// Do a nasty looking blast at the impact point.
+	gi.CreateEffect(&sphere->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", sphere->velocity);
+
+	return sphere;
+}
+
 // ****************************************************************************
 // SpellCastSphereOfAnnihilation
 // ****************************************************************************
@@ -610,60 +650,6 @@ void SpellCastSphereOfAnnihilation(edict_t *Caster,vec3_t StartPos,vec3_t AimAng
 	Sphere->s.sound = gi.soundindex("weapons/SphereGrow.wav");
 	Sphere->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_NORM;
 }
-
-edict_t *SphereWatcherReflect(edict_t *self, edict_t *other, vec3_t vel)
-{
-	edict_t	*Sphere;
-   	Sphere = G_Spawn();
-   	CreateSphere(Sphere);
-   	Sphere->owner = other;
-   	Sphere->enemy = self->enemy;
-   	Sphere->reflect_debounce_time = self->reflect_debounce_time -1;
-	Sphere->reflected_time=self->reflected_time;
-
-   	Sphere->count=self->count;
-   	Sphere->solid=self->solid;
-   	Sphere->dmg=self->dmg;
-   	Sphere->dmg_radius=self->dmg_radius;
-   	Sphere->s.scale=self->s.scale;
-
-   	VectorCopy(vel, Sphere->velocity);
-
-   	Sphere->touch=SphereWatcherTouch;
-   	Sphere->think=SphereWatcherFlyThink;
-   	Sphere->nextthink=level.time+0.1;
-
-   	VectorCopy(self->mins, Sphere->mins);
-   	VectorCopy(self->maxs, Sphere->maxs);
-
-   	VectorCopy(self->s.origin, Sphere->s.origin);
-   	G_LinkMissile(Sphere); 
-
-   	gi.CreateEffect(&Sphere->s,
-   				FX_WEAPON_SPHERE,
-   				CEF_OWNERS_ORIGIN,
-   				NULL,
-   				"s",
-   				(short)Sphere->owner->s.number);
-
-   	gi.CreateEffect(&Sphere->s,
-   				FX_WEAPON_SPHEREGLOWBALLS,
-   				CEF_OWNERS_ORIGIN,
-   				NULL,
-   				"s",
-   				-1);
-
-
-   	// kill the existing missile, since its a pain in the ass to modify it so the physics won't screw it. 
-   	G_SetToFree(self);
-
-   	// Do a nasty looking blast at the impact point
-   	gi.CreateEffect(&Sphere->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", Sphere->velocity);
-
-   	return(Sphere);
-}
-
-
 
 static void SphereWatcherTouch(edict_t *self, edict_t *Other, cplane_t *Plane, csurface_t *surface)
 {
