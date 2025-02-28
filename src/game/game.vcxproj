@@ -144,6 +144,7 @@
     <ClCompile Include="p_hud.c" />
     <ClCompile Include="p_item.c" />
     <ClCompile Include="p_morph.c" />
+    <ClCompile Include="p_teleport.c" />
     <ClCompile Include="p_view.c" />
     <ClCompile Include="q_shared.c" />
     <ClCompile Include="Script.c" />
@@ -241,6 +242,7 @@
     <ClInclude Include="g_Skeleton.h" />
     <ClInclude Include="g_Skeletons.h" />
     <ClInclude Include="g_spawnf.h" />
+    <ClInclude Include="p_teleport.h" />
     <ClInclude Include="spl_teleport.h" />
     <ClInclude Include="g_weapon.h" />
     <ClInclude Include="ICScript.h" />

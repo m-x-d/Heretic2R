@@ -591,6 +591,9 @@
     <ClCompile Include="p_morph.c">
       <Filter>src\Player</Filter>
     </ClCompile>
+    <ClCompile Include="p_teleport.c">
+      <Filter>src\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="decals.h">
@@ -1117,6 +1120,9 @@
     </ClInclude>
     <ClInclude Include="spl_teleport.h">
       <Filter>src\Spells</Filter>
+    </ClInclude>
+    <ClInclude Include="p_teleport.h">
+      <Filter>src\Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

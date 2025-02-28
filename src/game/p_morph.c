@@ -13,7 +13,7 @@
 #include "p_main.h"
 #include "p_anims.h"
 #include "p_client.h" //mxd
-#include "spl_teleport.h"
+#include "p_teleport.h" //mxd
 #include "FX.h"
 #include "Random.h"
 #include "Vector.h"
