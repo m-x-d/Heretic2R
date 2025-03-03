@@ -412,27 +412,23 @@ static void CastFireWall(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
 
 #pragma endregion
 
-
-// ****************************************************************************
 // The Firewall spell is cast.
-// ****************************************************************************
-
-
-void SpellCastWall(edict_t *caster, vec3_t startpos, vec3_t aimangles, vec3_t unused, float value)
+void SpellCastWall(edict_t* caster, vec3_t start_pos, vec3_t aim_angles, vec3_t unused, float value) //TODO: rename to SpellCastFireWall, remove unused args
 {
-	vec3_t	castpos;
-
-	VectorCopy(startpos, castpos);
-	
 	if (caster->client->playerinfo.powerup_timer <= level.time)
-	{	// Not powered up.
-		castpos[2] += 16;	// Aim higher than powered up version.
-		CastFireBlast(caster, castpos, aimangles);
-		gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/FirewallCast.wav"), 1, ATTN_NORM, 0);
+	{
+		// Not powered up.
+		vec3_t cast_pos;
+		VectorCopy(start_pos, cast_pos);
+		cast_pos[2] += 16.0f; // Aim higher than powered up version.
+
+		CastFireBlast(caster, cast_pos, aim_angles);
+		gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/FirewallCast.wav"), 1.0f, ATTN_NORM, 0.0f);
 	}
 	else
-	{	// Powered up, cast big wall o' doom.
-		CastFireWall(caster, castpos, aimangles);
-		gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/FirewallPowerCast.wav"), 1, ATTN_NORM, 0);
+	{
+		// Powered up, cast big wall o' doom.
+		CastFireWall(caster, start_pos, aim_angles);
+		gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/FirewallPowerCast.wav"), 1.0f, ATTN_NORM, 0.0f);
 	}
 }
