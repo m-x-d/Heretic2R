@@ -25,8 +25,6 @@
 // If a buoy is found after a pass, we know we've got the closest buoy, and further passes can be skipped.
 #define BUOY_SEARCH_PASSES	6
 
-qboolean MG_CheckClearPathToSpot(edict_t *self, vec3_t spot);
-
 /* 
  *
  *
@@ -1476,7 +1474,7 @@ qboolean MG_CheckClearPathToEnemy(edict_t *self)
 	return true;
 }
 
-qboolean MG_CheckClearPathToSpot(edict_t *self, vec3_t spot)
+static qboolean MG_CheckClearPathToSpot(edict_t *self, vec3_t spot)
 {
 	trace_t	trace;
 	vec3_t	mins, checkspot, enemy_dir;

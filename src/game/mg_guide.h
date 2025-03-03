@@ -12,4 +12,7 @@
 
 extern void MG_InitMoods(edict_t* self); //mxd
 extern void MG_RemoveBuoyEffects(edict_t* self); //mxd
-extern qboolean MG_MakeConnection(edict_t* self, buoy_t* first_buoy, qboolean skipjump);
+extern qboolean MG_MakeConnection(edict_t* self, buoy_t* first_buoy, qboolean skipjump); //mxd
+
+//mxd. Local forward declarations for mg_guide.c:
+static qboolean MG_CheckClearPathToSpot(edict_t* self, vec3_t spot);
