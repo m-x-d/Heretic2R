@@ -6,7 +6,6 @@
 
 #include "buoy.h"
 #include "m_stats.h"
-#include "FX.h" //TODO: remove later...
 #include "Random.h"
 #include "Vector.h"
 #include "g_local.h"
@@ -230,182 +229,119 @@ static void LinkBuoyInfo(edict_t* self) //mxd. Named 'info_buoy_link' in origina
 	G_SetToFree(self);
 }
 
-/*QUAKED info_buoy(0.6 0 0.8) (-24 -24 -24) (24 24 24) JUMP ACTIVATE TURN ONEWAY
-BUOYAH! Navigation System
-Mike Gummelt & Josh Weier
+/*QUAKED info_buoy(0.6 0 0.8) (-24 -24 -24) (24 24 24) JUMP ACTIVATE x ONEWAY
+BUOYAH! Navigation System Usage Manual:
+  0) You shall not give a buoy more than one targetname.
+  1) You shall have a buoy target up to two OTHER buoys, therefore:
+  2) You shall connect each buoy to up to three other buoys (only three lines can come off a buoy).
+  3) Direction of connection does not matter, unless you are trying to make a one-way buoy (see ONEWAY below).
+  4) You shall place your buoy in an area that a monster can fit into.
+  5) You shall place your buoys such that each buoy can "see" each buoy it's connected to (have a clear line of sight).
+  6) Buoys do not need to be placed throughout wide open areas, monsters can get around fine there.
+  7) You shall not place buoys in the ground or walls or any other world object.
+  8) You shall not give any two buoys the same targetname, and each buoy should have a targetname, even if it is not targeted (this is for debug purposes).
+  9) You shall not have any other AI system above the BUOYAH! Navigation System.
 
-THOU SHALT NOT COMMIT GRIEVOUS DESIGN ERRORS FOR THEY ARE AN ABOMINATION BEFORE THE EYES OF THE PROGRAMMER AND THE PROGRAMMER'S WORD IS INFALLIBLE!
+Keep in mind that when choosing a buoy, monsters need to be able to find a buoy withing 1024 map units of them.
+So make sure buoys are placed so that wherever they can get, they are within 1024 of a buoy.
 
-THE BUOY TEN COMMANDMENTS as Handed Down to M0535 on Mount Sine-AI:
-  0) Thou shalt not give a buoy more than one targetname
-  1) Thou shalt have a buoy target up to two OTHER buoies
-	therefore:
-  2) Thou shalt connect each buoy to up to three other buoies (only three lines can come off a buoy)
-  3) Thou shalt knowest that direction of connection does not matter unless you are trying to make a one-way buoy (see ONEWAY) below
-  4) Thou shalt place thine buoy in an area that a monster can fit into
-  5) Thou shalt place thine buoies such that each buoy can "see" each buoy it's conencted to (have a clear line of sight)
-  6) Thou shalt knowest that buoies do not need to be placed throughout wide open areas, monsters can get around fine there.
-  7) Thou shalt not place buoies in the ground or walls or any other world object
-  8) Thou shalt not give any two buoies the same targetname, and each buoy should have a targetname, even if it is not targeted (this is for debug purposes)
-  9) Thou shalt not have any other AI system above the BUOYAH! Navigation System.
-
-Keep in mind that when choosing a buoy, monsters need to be able to find a buoy withing 1024 map units of them.  So make sure buoies are placed so that wherever they can get, they are within 1024 of a buoy.
-
-"showbuoys" - At the console, setting "showbuoys" to 1 and restarting the map will allow you to see each buoy.  The flags you will see are each monster's indicator of where they are trying to go at the minute.  In addition you will get buoy debug messages on the console in this mode, telling you if a monster has a hard time getting to a buoy (it times out) or if, for some reason, a connection cannot be made between two buoies.
 "cheating_monsters" - At the console, set this to 1 to allow monsters to teleport to a buoy it's having a hard time getting to.
 
 Lots of info and useful instructions here:
-JUMP - Will make monster jump ("angle" is the direction to go in (default = 0), "speed" if the forward velocity in this dir (default = 400), "height" is the height of the jump (default = 400))
-ACTIVATE - Will allow monster to activate doors, triggers, plats, etc.  NOTE: the activated object's "pathtargetname" must match the buoy's "pathtarget" field.
-(not implemented) TURN - Will make monster turn to buoy's angles
-ONEWAY - This buoy will not allow buoys it's targeting to send monsters backwards along the path.  Basically, does not back-link, paths from it to buoys it's targeting become one-way.
+JUMP - Will make monster jump ("angle": the direction to go in (default = 0), "speed": the forward velocity in this dir (default = 400),
+"height": the height of the jump (default = 400)).
+ACTIVATE - Will allow monster to activate doors, triggers, plats, etc. NOTE: the activated object's "pathtargetname" must match the buoy's "pathtarget" field.
+ONEWAY - This buoy will not allow buoys it's targeting to send monsters backwards along the path.
+Basically, does not back-link, paths from it to buoys it's targeting become one-way.
 
-"jumptarget" - used with JUMP - this buoy will only make monsters jump at the buoy whose "targetname" is the same as "jumpbuoy"- without this, the buoy WILL NOT MAKE MONSTERS JUMP!
-"wait" - used with ACTIVATE- will make the buoy wait this many seconds before allowing a monster to activate the targeted ent again
-"delay" - used with ACTIVATE - will make the monster stand and wait this long after activating the target ent (so it stands and waits on a lift or for the door to open)
-
-NOTE: AVOID GRIEVOUS DESIGN ERRORS!
-
-DEBUG INFO:
-For "showbuoys" = 2, in addition to the arrow paths indicating target->targetname direction, particles appear on buoys, here's what each color indicates:
-red - the buoy a monster has determined is your closest buoy
-green - the buoy a monster has determined is it's next buoy to get to
-cyan - this buoy has a jump flag
-blue - this buoy is the jumptarget of a jump flagged buoy
-magenta - this buoy has an activate flag
-white - this buoy has an oneway flag
-
-Standing over a buoy that has a spawnflag of BUOY_JUMP or BUOY_ACTIVATE and hitting "action" will print it's info to the console is in "showbuoys" mode
+"jumptarget" - used with JUMP - this buoy will only make monsters jump at the buoy whose "targetname" is the same as "jumpbuoy".
+Without this, the buoy WILL NOT MAKE MONSTERS JUMP!
+"wait" - used with ACTIVATE. Will make the buoy wait this many seconds before allowing a monster to activate the targeted ent again.
+"delay" - used with ACTIVATE. Will make the monster stand and wait this long after activating the target ent
+(so it stands and waits on a lift or for the door to open).
 */
-
-void SP_info_buoy(edict_t *self)
+void SP_info_buoy(edict_t* self)
 {
-	int i;
+	static const vec3_t mins = { -24.0f, -24.0f, 0.0f }; //mxd. Made local static.
+	static const vec3_t maxs = {  24.0f,  24.0f, 1.0f }; //mxd. Made local static.
 
-	if(!level.active_buoys)
-	{//1st buoy, initialize a couple arrays
-		for(i = 0; i < MAX_CLIENTS; i++)
+	// 1-st buoy, initialize a couple arrays.
+	if (level.active_buoys == 0)
+	{
+		for (int i = 0; i < MAX_CLIENTS; i++)
 		{
-			level.player_buoy[i] = NULL_BUOY;				//stores current bestbuoy for a player enemy (if any)
-			level.player_last_buoy[i] = NULL_BUOY;		//when player_buoy is invalid, saves it here so monsters can check it first instead of having to do a whole search
+			level.player_buoy[i] = NULL_BUOY; // Stores current bestbuoy for a player enemy (if any).
+			level.player_last_buoy[i] = NULL_BUOY; // When player_buoy is invalid, saves it here so monsters can check it first instead of having to do a whole search.
 		}
 	}
 
-	if(self->spawnflags&BUOY_JUMP)
+	if (self->spawnflags & BUOY_JUMP)
 	{
-		if (!self->speed)
-			self->speed = 400;
+		if (self->speed == 0.0f)
+			self->speed = 400.0f;
 
-		if (!st.height)
+		if (st.height == 0)
 			st.height = 400;
 
-		if (self->s.angles[YAW] == 0)
-			self->s.angles[YAW] = 360;
+		if (self->s.angles[YAW] == 0.0f)
+			self->s.angles[YAW] = 360.0f;
 
-		self->movedir[2] = st.height;
-
-		if(BUOY_DEBUG>1)
-		{
-			gi.CreatePersistantEffect(NULL,
-				FX_M_EFFECTS,//cyan particles
-				CEF_FLAG7|CEF_BROADCAST,
-				self->s.origin,
-				"bv",
-				FX_BUOY,
-				vec3_origin);
-		}
+		self->movedir[2] = (float)st.height;
 	}
 
-	if(BUOY_DEBUG>1)
-	{
-		if(self->spawnflags&BUOY_ACTIVATE)
-		{
-			gi.CreatePersistantEffect(NULL,
-				FX_M_EFFECTS,
-				CEF_DONT_LINK|CEF_BROADCAST,//magenta particles
-				self->s.origin,
-				"bv",
-				FX_BUOY,
-				vec3_origin);
-		}
+	if (self->targetname == NULL)
+		gi.dprintf("Buoy with no targetname at %s!\n", vtos(self->s.origin));
 
-		if(self->spawnflags&SF_ONEWAY)
-		{
-			vec3_t	extra_shit;
-
-			VectorSet(extra_shit, 1, 0, 0);//really hacky way to send a diff effect
-			gi.CreatePersistantEffect(NULL,
-				FX_M_EFFECTS,
-				CEF_BROADCAST,
-				self->s.origin,
-				"bv",
-				FX_BUOY,
-				extra_shit);//white particles
-		}
-	}
-
-	if(!self->targetname)
-	{
-		if (BUOY_DEBUG)
-			gi.dprintf("Buoy with no targetname at %s!!!\n", vtos(self->s.origin));
-	}
-
-	//make sure it's not in the ground at all
-	if(gi.pointcontents(self->s.origin)&CONTENTS_SOLID)
+	// Make sure it's not in the ground at all.
+	if (gi.pointcontents(self->s.origin) & CONTENTS_SOLID)
 	{
 		gi.dprintf("Buoy %s(%s) in ground!!!\n", self->targetname, vtos(self->s.origin));
 		self->ai_mood_flags |= SF_BROKEN;
 	}
 	else
-	{//check down against world- does not check against entities! Does not check up against cieling (why would they put one close to a cieling???)
-		vec3_t		top, bottom, mins, maxs;
-		trace_t		trace;
-
+	{
+		// Check down against world. Does not check against entities! Does not check up against ceiling (why would they put one close to a ceiling???).
+		vec3_t top;
 		VectorCopy(self->s.origin, top);
+		top[2] += 23.0f; //BUGFIX: mxd. Increments 'bottom' in original version.
+
+		vec3_t bottom;
 		VectorCopy(self->s.origin, bottom);
-		bottom[2] += 23;
-		bottom[2] -= 24;
+		bottom[2] -= 24.0f;
 
-		VectorSet(mins, -24, -24, 0);
-		VectorSet(maxs, 24, 24, 1);
+		trace_t trace;
+		gi.trace(top, mins, maxs, bottom, self, MASK_SOLID, &trace);
 
-		gi.trace(top, mins, maxs, bottom, self, MASK_SOLID,&trace);
-		if(trace.allsolid || trace.startsolid)//bouy in solid, can't be fixed
+		if (trace.allsolid || trace.startsolid) // Bouy in solid, can't be fixed.
 		{
-			gi.dprintf("Buoy %s(%s) in solid(%s)!!!\n", self->targetname, vtos(self->s.origin), trace.ent->classname);
+			gi.dprintf("Buoy %s(%s) in solid(%s)!\n", self->targetname, vtos(self->s.origin), trace.ent->classname);
 			self->ai_mood_flags |= SF_BROKEN;
 		}
-		else if(trace.fraction<1.0)
-		{//buoy is in the ground
+		else if (trace.fraction < 1.0f)
+		{
+			// Buoy is in the ground.
 			VectorCopy(trace.endpos, bottom);
-			bottom[2] += 24;
+			bottom[2] += 24.0f;
+
 			gi.dprintf("Buoy %s was in ground(%s), moved it from %s to %s...\n", self->targetname, trace.ent->classname, vtos(self->s.origin), vtos(bottom));
 			VectorCopy(bottom, self->s.origin);
+
 			self->ai_mood_flags |= SF_BROKEN;
 			level.fixed_buoys++;
 		}
 	}
 
-	self->movetype=PHYSICSTYPE_NONE;
-
+	self->movetype = PHYSICSTYPE_NONE;
 	self->solid = SOLID_NOT;
 	self->clipmask = 0;
-
 	self->classname = "info_buoy";
-
-	if (BUOY_DEBUG)
-	{
-		self->s.renderfx = RF_GLOW;
-		self->s.angles[2] = 180;
-		self->s.modelindex = gi.modelindex("models/objects/lights/bug/tris.fm");
-	}
-	
 	self->think = LinkBuoyInfo;
 	self->nextthink = level.time + FRAMETIME;
+	self->count = InsertBuoy(self);
 
-	if ((self->count = InsertBuoy(self)) == NULL_BUOY)
-		gi.dprintf("ERROR! SP_info_buoy : Failed to insert buoy into map list!\n");
-	
+	if (self->count == NULL_BUOY)
+		gi.dprintf("ERROR! SP_info_buoy: failed to insert buoy into map list!\n");
+
 	gi.linkentity(self);
 }
 
