@@ -156,21 +156,21 @@ static void FireBlastStartThink(edict_t* self)
 	self->nextthink = level.time + 0.1f;
 }
 
-void CastFireBlast(edict_t *caster, vec3_t startpos, vec3_t aimangles)
+static void CastFireBlast(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
 {
-	edict_t	*wall;
-	vec3_t	newpos, fwd;	
-	trace_t trace;
+	vec3_t fwd;
+	AngleVectors(aim_angles, fwd, NULL, NULL);
 
-	wall = G_Spawn();
+	vec3_t new_pos;
+	VectorMA(start_pos, FIREBLAST_RADIUS * 0.5f, fwd, new_pos);
 
-	AngleVectors(aimangles, fwd, NULL, NULL);
-	VectorMA(startpos, FIREBLAST_RADIUS*0.5, fwd, newpos);
-	wall = CreateFireBlast(newpos, aimangles, caster, 3, level.time);		// Bounce 3 times
+	edict_t* wall = CreateFireBlast(new_pos, aim_angles, caster, 3, level.time); // Bounce 3 times.
 
 	// Check to see if this is a legit spawn.
+	trace_t trace;
 	gi.trace(caster->s.origin, wall->mins, wall->maxs, wall->s.origin, caster, MASK_SOLID, &trace);
-	if (trace.startsolid || trace.fraction < .99)
+
+	if (trace.startsolid || trace.fraction < 0.99f)
 	{
 		if (trace.startsolid)
 			VectorCopy(caster->s.origin, wall->s.origin);
@@ -178,10 +178,11 @@ void CastFireBlast(edict_t *caster, vec3_t startpos, vec3_t aimangles)
 			VectorCopy(trace.endpos, wall->s.origin);
 
 		FireBlastBlocked(wall, &trace);
-		return;
 	}
-
-	FireBlastThink(wall);
+	else
+	{
+		FireBlastThink(wall);
+	}
 }
 
 #pragma endregion
