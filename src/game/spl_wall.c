@@ -324,74 +324,52 @@ static void FireWallMissileBlocked(edict_t* self, trace_t* trace)
 	G_SetToFree(self);
 }
 
-// ****************************************************************************
-// WallMissile think
-// ****************************************************************************
-
-void WallMissileThink(edict_t *self)
-{	// Check in the area and try to damage anything in the immediate area
-	edict_t *ent=NULL, *worm;
-	vec3_t	min, max;
-
+// Check in the area and try to damage anything in the immediate area.
+static void FireWallMissileThink(edict_t* self)
+{
 	// Set up the checking volume
-	VectorSet(min, -self->dmg_radius, -self->dmg_radius, -FIREWAVE_DOWN);
-	VectorAdd(self->s.origin, min, min);
-	VectorSet(max, self->dmg_radius, self->dmg_radius, FIREWAVE_UP);
-	VectorAdd(self->s.origin, max, max);
+	vec3_t min = { -self->dmg_radius, -self->dmg_radius, -FIREWAVE_DOWN };
+	Vec3AddAssign(self->s.origin, min);
 
-	// find all the entities in the volume
-	while(ent = FindInBounds(ent, min, max))
-	{					
-//		if ((!(ent->svflags & SVF_MONSTER) && !(ent->client && deathmatch->value)) || (ent->svflags & SVF_DEADMONSTER))
-		if(!ent->takedamage)
-		{	// Anything that takes damage now.
-			continue;
-		}
+	vec3_t max = { self->dmg_radius, self->dmg_radius, FIREWAVE_UP };
+	Vec3AddAssign(self->s.origin, max);
 
-		if (ent->fire_timestamp >= self->fire_timestamp)
+	// Find all the entities in the volume.
+	edict_t* ent = NULL;
+	while ((ent = FindInBounds(ent, min, max)) != NULL)
+	{
+		if (ent->takedamage == DAMAGE_NO || ent->fire_timestamp >= self->fire_timestamp || EntReflecting(ent, true, true) || ent == self->owner) // No damage to casting player.
 			continue;
 
-		// if we have reflection on, then no damage
-		if(EntReflecting(ent, true, true))
-			continue;
+		T_Damage(ent, self, self->owner, self->movedir, self->s.origin, vec3_origin, self->dmg, self->dmg, DAMAGE_FIRE | DAMAGE_FIRE_LINGER, MOD_FIREWALL);
+		gi.CreateEffect(&ent->s, FX_FLAREUP, CEF_OWNERS_ORIGIN, NULL, "");
 
-		if(ent != self->owner)		// No damage to casting player
-		{
-			T_Damage(ent, self, self->owner, self->movedir, self->s.origin, vec3_origin, 
-					self->dmg, self->dmg, DAMAGE_FIRE | DAMAGE_FIRE_LINGER, MOD_FIREWALL); 
-			gi.CreateEffect(&ent->s, FX_FLAREUP, CEF_OWNERS_ORIGIN, NULL, "");
+		ent->fire_timestamp = self->fire_timestamp;
+		gi.CreateEffect(NULL, FX_WEAPON_FIREWAVEWORM, 0, ent->s.origin, "t", self->movedir);
 
-			ent->fire_timestamp = self->fire_timestamp;
+		edict_t* worm = G_Spawn();
+		VectorCopy(ent->s.origin, worm->s.origin);
+		worm->think = FireWallMissileWormThink;
+		worm->nextthink = level.time + FIREWORM_LIFETIME;
+		worm->solid = SOLID_NOT;
+		worm->clipmask = MASK_DRIP;
+		worm->owner = self->owner;
+		gi.linkentity(worm);
 
-			gi.CreateEffect(NULL, FX_WEAPON_FIREWAVEWORM, 0, ent->s.origin, "t", self->movedir);
-			
-			worm = G_Spawn();
-			VectorCopy(ent->s.origin, worm->s.origin);
-			worm->think = FireWallMissileWormThink;
-			worm->nextthink = level.time + FIREWORM_LIFETIME;
-			worm->solid = SOLID_NOT;
-			worm->clipmask = MASK_DRIP;
-			worm->owner = self->owner;
-			gi.linkentity(worm);
-
-			gi.sound(self,CHAN_WEAPON,gi.soundindex("weapons/FirewallDamage.wav"),1,ATTN_NORM,0);
-		}
+		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/FirewallDamage.wav"), 1.0f, ATTN_NORM, 0.0f);
 	}
 
-	self->nextthink = level.time + 0.1;
-	self->dmg_radius += .1*FIREWAVE_DRADIUS;
-	self->dmg -= 3;
-	if (self->dmg < FIREWAVE_DAMAGE_MIN)
-		self->dmg = FIREWAVE_DAMAGE_MIN;
+	self->nextthink = level.time + 0.1f;
+	self->dmg_radius += FIREWAVE_DRADIUS * 0.1f;
+	self->dmg = max(FIREWAVE_DAMAGE_MIN, self->dmg - 3);
 }
-
 
 void FireWallMissileStartThink(edict_t *self)
 {
 	self->svflags |= SVF_NOCLIENT;			// Allow transmission to client
 
-	WallMissileThink(self);
-	self->think = WallMissileThink;
+	FireWallMissileThink(self);
+	self->think = FireWallMissileThink;
 	self->nextthink = level.time + 0.1;
 }
 
@@ -421,7 +399,7 @@ void CastFireWall(edict_t *caster, vec3_t startpos, vec3_t aimangles)
 		goto rightwall;
 	}
 
-	WallMissileThink(wall);
+	FireWallMissileThink(wall);
 
 rightwall:
 	// Spawn wall to right
@@ -441,7 +419,7 @@ rightwall:
 		return;
 	}
 
-	WallMissileThink(wall);
+	FireWallMissileThink(wall);
 }
 
 
