@@ -6,6 +6,7 @@
 #include "Random.h"
 #include "vector.h"
 #include "buoy.h"
+#include "mg_guide.h"
 #include "m_stats.h"
 #include "p_anims.h"
 
@@ -413,7 +414,6 @@ ai_walk
 The monster is walking it's beat
 =============
 */
-qboolean MG_ReachedBuoy (edict_t *self, vec3_t pspot);
 void ai_walk (edict_t *self, float dist)
 {
 	if (FindTarget (self))
