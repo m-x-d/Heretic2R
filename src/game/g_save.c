@@ -8,7 +8,7 @@
 #include "g_items.h" //mxd
 #include "g_playstats.h"
 #include "g_ResourceManagers.h" //mxd
-#include "p_anims.h"
+#include "p_client.h" //mxd
 #include "p_dll.h" //mxd
 #include "p_view.h" //mxd
 #include "q_ClientServer.h"
