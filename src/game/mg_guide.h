@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "g_Edict.h"
+
 #define MONSTER_SEARCH_TIME		10 // Monsters search for player for 10 seconds after losing him before giving up.
 
 extern void MG_InitMoods(edict_t* self); //mxd

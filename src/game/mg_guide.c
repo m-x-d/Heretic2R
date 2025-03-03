@@ -22,7 +22,6 @@
 // ****************************************************************************
 
 #include "g_local.h"
-#include "Angles.h"
 #include "Utilities.h"
 #include "random.h"
 #include "vector.h"
@@ -31,6 +30,7 @@
 #include "m_stats.h"
 #include "fx.h"
 #include "mg_guide.h"
+#include "m_assassin.h" //mxd
 
 #define	BUOY_SEARCH_TIME		10//10 seconds between choosing a buoy and getting there
 
@@ -43,7 +43,6 @@
 qboolean Clear_Path(edict_t *self, vec3_t end);
 void MG_AddBuoyEffect(edict_t *self, qboolean endbuoy);
 qboolean MG_MakeConnection(edict_t *self, buoy_t *first_buoy, qboolean skipjump);
-void assassinPrepareTeleportDest(edict_t *self, vec3_t spot);
 qboolean MG_CheckClearPathToSpot(edict_t *self, vec3_t spot);
 
 /* 
@@ -1606,7 +1605,7 @@ qboolean MG_MonsterAttemptTeleport(edict_t *self, vec3_t destination, qboolean i
 				bottom[2] -= self->mins[2];
 
 				if(self->classID == CID_ASSASSIN)
-					assassinPrepareTeleportDest(self, bottom);
+					assassinPrepareTeleportDest(self, bottom, false);
 				else
 				{
 					VectorCopy(bottom, self->s.origin);
@@ -1622,7 +1621,7 @@ qboolean MG_MonsterAttemptTeleport(edict_t *self, vec3_t destination, qboolean i
 		{
 			bottom[2] -= self->mins[2];
 			if(self->classID == CID_ASSASSIN)
-				assassinPrepareTeleportDest(self, bottom);
+				assassinPrepareTeleportDest(self, bottom, false);
 			else
 			{
 				VectorCopy(bottom, self->s.origin);
