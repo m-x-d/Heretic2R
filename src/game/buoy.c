@@ -52,9 +52,6 @@ static int InsertBuoy(const edict_t* self) //mxd. Named 'insert_buoy' in origina
 
 	VectorCopy(self->s.origin, buoy->origin);
 
-	// Get the contents so that we know if this is a water buoy or not.
-	buoy->contents = gi.pointcontents(buoy->origin);
-
 	// Are we going to be opening anything?
 	buoy->pathtarget = self->pathtarget;
 

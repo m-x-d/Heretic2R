@@ -31,7 +31,6 @@ struct buoy_s
 	int modflags;	// modflags replaces spawnflags.
 	int opflags;	// opflags hold SF_DONT_TRY and the like.
 	vec3_t origin;	// Where it is in the world.
-	int contents;	// If buoy is in water or not (actual return from a pointcontents call). //TODO: assigned, but never used. Remove?
 	int id;			// This buoy's id number.
 	char* pathtarget;
 	float wait;
@@ -47,7 +46,6 @@ struct buoy_s
 	char* target; // Saving these two to make debugging info. //TODO: assigned, but never used. Remove?
 	char* targetname;	// Useful to the designer.
 	char* jump_target;	// Keep around for debug.
-	float print_debounce_time;	// Wait between +action print info. //TODO: unused.
 };
 
 extern void SP_info_buoy(edict_t* self);
