@@ -113,186 +113,121 @@ static void AssignJumpBuoy(edict_t* self, const edict_t* ent) //mxd. Named 'assi
 	}
 }
 
-// ****************************************************************************
-//	Link the buoys after all entities have been spawned
-// ****************************************************************************
-void info_buoy_link(edict_t *self)
+// Link the buoys after all entities have been spawned.
+static void LinkBuoyInfo(edict_t* self) //mxd. Named 'info_buoy_link' in original version.
 {
-	edict_t *ent = NULL;
-	int		i;
-	
-	if(self->spawnflags & BUOY_ACTIVATE)
+	if ((self->spawnflags & BUOY_ACTIVATE) && self->pathtarget == NULL)
 	{
-		if(!self->pathtarget)
-		{
-			if (BUOY_DEBUG)
-			{
-				gi.dprintf("Buoy %s at %s is an ACTIVATE buoy but has no pathtarget!!!\n", self->targetname, vtos(self->s.origin));
-				self->ai_mood_flags |= SF_BROKEN;
-			}
-			self->spawnflags &= ~BUOY_ACTIVATE;
-		}
+		gi.dprintf("Buoy %s at %s is an ACTIVATE buoy but has no pathtarget!\n", self->targetname, vtos(self->s.origin));
+		self->ai_mood_flags |= SF_BROKEN; //TODO: set only when BUOY_DEBUG is enabled in original version. Is this still required without the cvar?
+		self->spawnflags &= ~BUOY_ACTIVATE;
 	}
 
-	//Make sure we have a target to link to
-	if (self->target)
+	// Make sure we have a target to link to.
+	if (self->target != NULL)
 	{
-		ent	= NULL;
+		edict_t* ent = NULL;
 		ent = G_Find(ent, FOFS(targetname), self->target);
 
 		if (ent == NULL)
 		{
-			if (BUOY_DEBUG)
-			{
-				gi.dprintf("info_buoy_link: %s(%s) failed to find target buoy %s\n", self->targetname, vtos(self->s.origin), self->target);
-				self->ai_mood_flags |= SF_BROKEN;
-			}
+			gi.dprintf("info_buoy_link: %s(%s) failed to find target buoy %s\n", self->targetname, vtos(self->s.origin), self->target);
+			self->ai_mood_flags |= SF_BROKEN; //TODO: set only when BUOY_DEBUG is enabled in original version. Is this still required without the cvar?
 		}
-		else if(ent == self)
+		else if (ent == self)
 		{
-			gi.dprintf("info_buoy_link: %s(%s) target(%s) is self!!!\n", self->targetname, vtos(self->s.origin), self->target);
+			gi.dprintf("info_buoy_link: %s(%s) target(%s) is self!\n", self->targetname, vtos(self->s.origin), self->target);
 			self->ai_mood_flags |= SF_BROKEN;
 		}
 		else
 		{
-			if (BUOY_DEBUG)
-				gi.dprintf("info_buoy_link: linked %s to %s\n", self->targetname, ent->targetname);
-
-			//Link this buoy to it's target
+			// Link this buoy to it's target.
 			AssignNextBuoy(self, ent);
 
-			if(BUOY_DEBUG > 1)
-			{
-				gi.CreatePersistantEffect(NULL,
-						FX_M_EFFECTS,//green arrows
-						CEF_BROADCAST,
-						self->s.origin,
-						"bv",
-						FX_BUOY_PATH,
-						ent->s.origin);
-			}
-			//If it's not one way, then back link it as well
-			if(!(self->spawnflags&SF_ONEWAY))
+			// If it's not one way, then back link it as well.
+			if (!(self->spawnflags & SF_ONEWAY))
 				AssignNextBuoy(ent, self);
 		}
 	}
 
-	//Also check for a secondary target
-	if (self->target2)
+	// Also check for a secondary target.
+	if (self->target2 != NULL)
 	{
-		if ( (self->target) && (!stricmp(self->target2, self->target)) )
+		if (self->target != NULL && Q_stricmp(self->target2, self->target) == 0) //mxd. stricmp -> Q_stricmp.
 		{
-			if (BUOY_DEBUG)
-			{
-				gi.dprintf("info_buoy_link2: %s(%s) has target2 same as target %s\n", self->targetname, vtos(self->s.origin), self->target2);
-				self->ai_mood_flags |= SF_BROKEN;
-			}
+			gi.dprintf("info_buoy_link2: %s(%s) has target2 same as target %s\n", self->targetname, vtos(self->s.origin), self->target2);
+			self->ai_mood_flags |= SF_BROKEN; //TODO: set only when BUOY_DEBUG is enabled in original version. Is this still required without the cvar?
 		}
 		else
 		{
-			ent	= NULL;
+			edict_t* ent = NULL;
 			ent = G_Find(ent, FOFS(targetname), self->target2);
 
 			if (ent == NULL)
 			{
-				if (BUOY_DEBUG)
-				{
-					gi.dprintf("info_buoy_link2: %s(%s) failed to find target2 buoy %s\n", self->targetname, vtos(self->s.origin), self->target2);
-					self->ai_mood_flags |= SF_BROKEN;
-				}
+				gi.dprintf("info_buoy_link2: %s(%s) failed to find target2 buoy %s\n", self->targetname, vtos(self->s.origin), self->target2);
+				self->ai_mood_flags |= SF_BROKEN; //TODO: set only when BUOY_DEBUG is enabled in original version. Is this still required without the cvar?
 			}
-			else if(ent == self)
+			else if (ent == self)
 			{
 				gi.dprintf("info_buoy_link2: %s(%s) target2(%s) is self!!!\n", self->targetname, vtos(self->s.origin), self->target2);
 				self->ai_mood_flags |= SF_BROKEN;
 			}
 			else
 			{
-				//Link this buoy to it's target
+				// Link this buoy to it's target.
 				AssignNextBuoy(self, ent);
-				
-				if(BUOY_DEBUG > 1)
-				{
-					gi.CreatePersistantEffect(NULL,
-							FX_M_EFFECTS,//green arrows
-							CEF_BROADCAST,
-							self->s.origin,
-							"bv",
-							FX_BUOY_PATH,
-							ent->s.origin);
-				}
-				//If it's not one way, then back link it as well
-				if(!(self->spawnflags&SF_ONEWAY))
+
+				// If it's not one way, then back link it as well.
+				if (!(self->spawnflags & SF_ONEWAY))
 					AssignNextBuoy(ent, self);
 			}
 		}
 	}
 
-	if(self->spawnflags&BUOY_JUMP)
+	if (self->spawnflags & BUOY_JUMP)
 	{
-		if(!self->jumptarget)
+		if (self->jumptarget == NULL)
 		{
-			if (BUOY_DEBUG)
-			{
-				gi.dprintf("Buoy %s at %s is a JUMP buoy but has no jumptarget!!!\n", self->targetname, vtos(self->s.origin));
-				self->ai_mood_flags |= SF_BROKEN;
-			}
+			gi.dprintf("Buoy %s at %s is a JUMP buoy but has no jumptarget!\n", self->targetname, vtos(self->s.origin));
+			self->ai_mood_flags |= SF_BROKEN; //TODO: set only when BUOY_DEBUG is enabled in original version. Is this still required without the cvar?
 			self->spawnflags &= ~BUOY_JUMP;
 		}
 		else
 		{
-			ent = NULL;
-			if(ent = G_Find(ent, FOFS(targetname), self->jumptarget))
+			edict_t* ent = NULL;
+			ent = G_Find(ent, FOFS(targetname), self->jumptarget);
+
+			if (ent != NULL)
 			{
 				AssignJumpBuoy(self, ent);
-				if(BUOY_DEBUG>1)
-				{
-					gi.CreatePersistantEffect(NULL,
-						FX_M_EFFECTS,//blue particles
-						CEF_FLAG8|CEF_BROADCAST,
-						ent->s.origin,
-						"bv",
-						FX_BUOY,
-						vec3_origin);
-				}
 			}
-			else if(BUOY_DEBUG)
+			else
 			{
 				gi.dprintf("Buoy %s(%s) could not find jumptarget buoy %s\n", self->targetname, vtos(self->s.origin), self->jumptarget);
-				self->ai_mood_flags |= SF_BROKEN;
+				self->ai_mood_flags |= SF_BROKEN; //TODO: set only when BUOY_DEBUG is enabled in original version. Is this still required without the cvar?
 			}
 		}
 	}
 
-	if(self->ai_mood_flags & SF_BROKEN)
-	{//put an effect on broken buoys?
+	// Put an effect on broken buoys?
+	if (self->ai_mood_flags & SF_BROKEN)
+	{
 		level.buoy_list[self->count].opflags |= SF_BROKEN;
 		level.fucked_buoys++;
 	}
 
-	if(self->count == level.active_buoys - 1)
+	if (self->count == level.active_buoys - 1)
 	{
-		for(i = 0; i < level.active_buoys; i++)
-		{//see if any buoys are loners
-			if(!level.buoy_list[i].nextbuoy[0]&&
-				!level.buoy_list[i].nextbuoy[1]&&
-				!level.buoy_list[i].nextbuoy[2])
-			{
+		// See if any buoys are loners.
+		for (int i = 0; i < level.active_buoys; i++)
+			if (level.buoy_list[i].nextbuoy[0] == 0 && level.buoy_list[i].nextbuoy[1] == 0 && level.buoy_list[i].nextbuoy[2] == 0)
 				gi.dprintf("G.D.E. WARNING: buoy %s(%s) has no connections\n", level.buoy_list[i].targetname, vtos(level.buoy_list[i].origin));
-			}
-		}
+
 		Com_Printf("%d buoys processed by BUOYAH! Navigation System(tm) (%d bad : %d fixed)\n", level.active_buoys, level.fucked_buoys, level.fixed_buoys);
 	}
 
-	if(!BUOY_DEBUG)
-	{
-		G_SetToFree(self);
-	}
-	else
-	{//buoys don't need to think
-		self->think = NULL;
-		self->nextthink = -1;
-	}
+	G_SetToFree(self);
 }
 
 /*QUAKED info_buoy(0.6 0 0.8) (-24 -24 -24) (24 24 24) JUMP ACTIVATE TURN ONEWAY
@@ -465,7 +400,7 @@ void SP_info_buoy(edict_t *self)
 		self->s.modelindex = gi.modelindex("models/objects/lights/bug/tris.fm");
 	}
 	
-	self->think = info_buoy_link;
+	self->think = LinkBuoyInfo;
 	self->nextthink = level.time + FRAMETIME;
 
 	if ((self->count = InsertBuoy(self)) == NULL_BUOY)
