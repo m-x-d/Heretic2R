@@ -189,42 +189,41 @@ static void CastFireBlast(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
 
 #pragma region ========================== FireWall (powered up) ==========================
 
-edict_t *CreateFireWall(vec3_t startpos, vec3_t angles, edict_t *owner, int health, float timestamp, float sidespeed)
+static edict_t* CreateFireWall(vec3_t start_pos, vec3_t angles, edict_t* owner, const int health, const float timestamp, const float side_speed)
 {
-	edict_t *wall;
-	vec3_t	right;
-	short	angle_yaw, angle_pitch;
-	int flags=0;
+	edict_t* wall = G_Spawn();
 
-	wall = G_Spawn();
+	VectorSet(wall->mins, -FIREWAVE_PROJ_RADIUS, -FIREWAVE_PROJ_RADIUS, -FIREWAVE_PROJ_RADIUS);
+	VectorSet(wall->maxs,  FIREWAVE_PROJ_RADIUS,  FIREWAVE_PROJ_RADIUS,  FIREWAVE_PROJ_RADIUS);
 
-   	VectorSet(wall->mins, -FIREWAVE_PROJ_RADIUS, -FIREWAVE_PROJ_RADIUS, -FIREWAVE_PROJ_RADIUS);
-   	VectorSet(wall->maxs, FIREWAVE_PROJ_RADIUS, FIREWAVE_PROJ_RADIUS, FIREWAVE_PROJ_RADIUS);
-
-	VectorCopy(startpos, wall->s.origin);
+	VectorCopy(start_pos, wall->s.origin);
 	VectorCopy(angles, wall->s.angles);
+
+	vec3_t right;
 	AngleVectors(angles, wall->movedir, right, NULL);
 
-	if (deathmatch->value)				
+	int flags = 0;
+	if (DEATHMATCH)
 	{
 		flags |= CEF_FLAG8;
-		VectorScale(wall->movedir, FIREWAVE_DM_SPEED, wall->velocity);		// Goes faster in deathmatch
+		VectorScale(wall->movedir, FIREWAVE_DM_SPEED, wall->velocity); // Goes faster in deathmatch.
 	}
 	else
 	{
 		VectorScale(wall->movedir, FIREWAVE_SPEED, wall->velocity);
 	}
-	VectorMA(wall->velocity, sidespeed, right, wall->velocity);
 
-	if (sidespeed < 0)
+	VectorMA(wall->velocity, side_speed, right, wall->velocity);
+
+	if (side_speed < 0.0f)
 		flags |= CEF_FLAG6;
-	else if (sidespeed > 0)
+	else if (side_speed > 0.0f)
 		flags |= CEF_FLAG7;
 
 	wall->mass = 250;
 	wall->elasticity = ELASTICITY_NONE;
-	wall->friction = 0;
-	wall->gravity = 0;
+	wall->friction = 0.0f;
+	wall->gravity = 0.0f;
 
 	wall->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 	wall->svflags |= SVF_ALWAYS_SEND;
@@ -236,23 +235,21 @@ edict_t *CreateFireWall(vec3_t startpos, vec3_t angles, edict_t *owner, int heal
 	wall->clipmask = MASK_DRIP;
 	wall->owner = owner;
 	wall->think = FireWallMissileStartThink;
-	wall->nextthink = level.time + 0.1;
+	wall->nextthink = level.time + 0.1f;
 	wall->dmg = FIREWAVE_DAMAGE;
 	wall->dmg_radius = FIREWAVE_RADIUS;
 
-	wall->health = health;					// Can bounce 3 times
-
-	wall->fire_timestamp = timestamp;		// Mark the wall so it can't damage something twice.
+	wall->health = health; // Can bounce 3 times
+	wall->fire_timestamp = timestamp; // Mark the wall so it can't damage something twice.
 
 	gi.linkentity(wall);
 
-	angle_yaw = (short)(angles[YAW]*(65536.0/360.0));
-	angle_pitch = (short)(angles[PITCH]*(65536.0/360.0));
-	gi.CreateEffect(&wall->s, FX_WEAPON_FIREWAVE, CEF_OWNERS_ORIGIN | flags, startpos, "ss", angle_yaw, angle_pitch);
+	const short angle_yaw = ANGLE2SHORT(angles[YAW]);
+	const short angle_pitch = ANGLE2SHORT(angles[PITCH]);
+	gi.CreateEffect(&wall->s, FX_WEAPON_FIREWAVE, CEF_OWNERS_ORIGIN | flags, start_pos, "ss", angle_yaw, angle_pitch);
 
 	return wall;
 }
-
 
 // ****************************************************************************
 // WallMissile touch
