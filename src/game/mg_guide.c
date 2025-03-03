@@ -25,7 +25,6 @@
 // If a buoy is found after a pass, we know we've got the closest buoy, and further passes can be skipped.
 #define BUOY_SEARCH_PASSES	6
 
-qboolean MG_MakeConnection(edict_t *self, buoy_t *first_buoy, qboolean skipjump);
 qboolean MG_CheckClearPathToSpot(edict_t *self, vec3_t spot);
 
 /* 

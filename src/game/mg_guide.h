@@ -12,3 +12,4 @@
 
 extern void MG_InitMoods(edict_t* self); //mxd
 extern void MG_RemoveBuoyEffects(edict_t* self); //mxd
+extern qboolean MG_MakeConnection(edict_t* self, buoy_t* first_buoy, qboolean skipjump);
