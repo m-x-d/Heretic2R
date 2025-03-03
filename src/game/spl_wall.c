@@ -1,30 +1,21 @@
 //
-// Heretic II
+// spl_wall.c
+//
 // Copyright 1998 Raven Software
 //
 
 #include "spl_wall.h" //mxd
-#include "g_local.h"
-#include "fx.h"
-#include "vector.h"
-#include "angles.h"
-#include "matrix.h"
-#include "Utilities.h"
-#include "g_ClassStatics.h"
 #include "g_combat.h" //mxd
 #include "g_Physics.h"
 #include "g_playstats.h"
+#include "FX.h"
+#include "Vector.h"
+#include "g_local.h"
 
+#define FIREWALL_DOT_MIN	0.25f
+#define FIREWORM_LIFETIME	1.0f
 
-#define FIREWALL_DOT_MIN	0.25
-
-// ****************************************************************************
-// FireBlast
-// Unpowered
-// ****************************************************************************
-
-void FireBlastBlocked(edict_t *self, trace_t *trace);
-void FireBlastStartThink(edict_t *self);
+#pragma region ========================== FireBlast (unpowered) ==========================
 
 
 // ****************************************************************************
@@ -227,18 +218,9 @@ void CastFireBlast(edict_t *caster, vec3_t startpos, vec3_t aimangles)
 	FireBlastThink(wall);
 }
 
+#pragma endregion
 
-
-
-
-
-// ****************************************************************************
-// FireWall
-// Powered up
-// ****************************************************************************
-
-void WallMissileBlocked(edict_t *self, trace_t *trace);
-void WallMissileStartThink(edict_t *self);
+#pragma region ========================== FireWall (powered up) ==========================
 
 edict_t *CreateFireWall(vec3_t startpos, vec3_t angles, edict_t *owner, int health, float timestamp, float sidespeed)
 {
@@ -280,13 +262,13 @@ edict_t *CreateFireWall(vec3_t startpos, vec3_t angles, edict_t *owner, int heal
 	wall->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 	wall->svflags |= SVF_ALWAYS_SEND;
 	wall->movetype = PHYSICSTYPE_FLY;
-	wall->isBlocked = WallMissileBlocked;
+	wall->isBlocked = FireWallMissileBlocked;
 
 	wall->classname = "Spell_FireWall";
 	wall->solid = SOLID_BBOX;
 	wall->clipmask = MASK_DRIP;
 	wall->owner = owner;
-	wall->think = WallMissileStartThink;
+	wall->think = FireWallMissileStartThink;
 	wall->nextthink = level.time + 0.1;
 	wall->dmg = FIREWAVE_DAMAGE;
 	wall->dmg_radius = FIREWAVE_RADIUS;
@@ -318,11 +300,8 @@ void WallMissileWormThink(edict_t *self)
 }
 
 
-#define FIREWORM_LIFETIME		1.0
-
-
 // This called when missile touches anything (world or edict)
-void WallMissileBlocked(edict_t *self, trace_t *trace)
+void FireWallMissileBlocked(edict_t *self, trace_t *trace)
 {
 	edict_t *newwall;
 	float	dot, speed, factor;
@@ -452,7 +431,7 @@ void WallMissileThink(edict_t *self)
 }
 
 
-void WallMissileStartThink(edict_t *self)
+void FireWallMissileStartThink(edict_t *self)
 {
 	self->svflags |= SVF_NOCLIENT;			// Allow transmission to client
 
@@ -483,7 +462,7 @@ void CastFireWall(edict_t *caster, vec3_t startpos, vec3_t aimangles)
 		else
 			VectorCopy(trace.endpos, wall->s.origin);
 
-		WallMissileBlocked(wall, &trace);
+		FireWallMissileBlocked(wall, &trace);
 		goto rightwall;
 	}
 
@@ -503,7 +482,7 @@ rightwall:
 		else
 			VectorCopy(trace.endpos, wall->s.origin);
 
-		WallMissileBlocked(wall, &trace);
+		FireWallMissileBlocked(wall, &trace);
 		return;
 	}
 
@@ -537,4 +516,4 @@ void SpellCastWall(edict_t *caster, vec3_t startpos, vec3_t aimangles, vec3_t un
 	}
 }
 
-// end
+#pragma endregion
