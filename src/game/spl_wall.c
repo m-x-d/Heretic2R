@@ -147,15 +147,14 @@ static void FireBlastThink(edict_t* self)
 	self->dmg = max(FIREBLAST_DAMAGE_MIN, self->dmg - 3);
 }
 
-void FireBlastStartThink(edict_t *self)
+static void FireBlastStartThink(edict_t* self)
 {
-	self->svflags |= SVF_NOCLIENT;			// Allow transmission to client
+	self->svflags |= SVF_NOCLIENT; // Allow transmission to client.
 
 	FireBlastThink(self);
 	self->think = FireBlastThink;
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + 0.1f;
 }
-
 
 void CastFireBlast(edict_t *caster, vec3_t startpos, vec3_t aimangles)
 {
