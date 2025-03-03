@@ -117,56 +117,35 @@ static void FireBlastBlocked(edict_t* self, trace_t* trace)
 	G_SetToFree(self);
 }
 
-// ****************************************************************************
-// FireBlast think
-// ****************************************************************************
+// Check in the area and try to damage anything in the immediate area.
+static void FireBlastThink(edict_t* self)
+{
+	// Set up the checking volume.
+	vec3_t min = { -self->dmg_radius, -self->dmg_radius, -FIREBLAST_VRADIUS };
+	Vec3AddAssign(self->s.origin, min);
 
-void FireBlastThink(edict_t *self)
-{	// Check in the area and try to damage anything in the immediate area
-	edict_t *ent=NULL;
-	vec3_t min, max;
+	vec3_t max = { self->dmg_radius, self->dmg_radius, FIREBLAST_VRADIUS };
+	Vec3AddAssign(self->s.origin, max);
 
-	// Set up the checking volume
-	VectorSet(min, -self->dmg_radius, -self->dmg_radius, -FIREBLAST_VRADIUS);
-	VectorAdd(self->s.origin, min, min);
-	VectorSet(max, self->dmg_radius, self->dmg_radius, FIREBLAST_VRADIUS);
-	VectorAdd(self->s.origin, max, max);
-
-	// find all the entities in the volume
-	while(ent = FindInBounds(ent, min, max))
-	{					
-//		if ((!(ent->svflags & SVF_MONSTER) && !(ent->client && deathmatch->value)) || (ent->svflags & SVF_DEADMONSTER))
-		if(!ent->takedamage)
-		{	// Anything that takes damage now.
-			continue;
-		}
-
-		if (self->fire_timestamp <= ent->fire_timestamp)
+	// Find all the entities in the volume.
+	edict_t* ent = NULL;
+	while ((ent = FindInBounds(ent, min, max)) != NULL)
+	{
+		if (ent->takedamage == DAMAGE_NO || self->fire_timestamp <= ent->fire_timestamp || EntReflecting(ent, true, true) || ent == self->owner) // No damage to casting player.
 			continue;
 
-		// if we have reflection on, then no damage
-		if(EntReflecting(ent, true, true))
-			continue;
+		T_Damage(ent, self, self->owner, self->movedir, self->s.origin, vec3_origin, self->dmg, self->dmg, DAMAGE_FIRE | DAMAGE_FIRE_LINGER, MOD_FIREWALL);
 
-		if(ent != self->owner)		// No damage to casting player
-		{
-			T_Damage(ent, self, self->owner, self->movedir, self->s.origin, vec3_origin, 
-					self->dmg, self->dmg, DAMAGE_FIRE | DAMAGE_FIRE_LINGER, MOD_FIREWALL); 
-			gi.CreateEffect(&ent->s, FX_FLAREUP, CEF_OWNERS_ORIGIN, NULL, "");
+		gi.CreateEffect(&ent->s, FX_FLAREUP, CEF_OWNERS_ORIGIN, NULL, "");
+		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/FirewallDamage.wav"), 1.0f, ATTN_NORM, 0.0f);
 
-			gi.sound(self,CHAN_WEAPON,gi.soundindex("weapons/FirewallDamage.wav"),1,ATTN_NORM,0);
-
-			ent->fire_timestamp = self->fire_timestamp;		// Mark so the fire doesn't damage an ent twice.
-		}
+		ent->fire_timestamp = self->fire_timestamp; // Mark so the fire doesn't damage an ent twice.
 	}
 
-	self->nextthink = level.time + 0.1;
-	self->dmg_radius += FIREBLAST_DRADIUS*0.1;
-	self->dmg -= 3;
-	if (self->dmg < FIREBLAST_DAMAGE_MIN)
-		self->dmg = FIREBLAST_DAMAGE_MIN;
+	self->nextthink = level.time + 0.1f;
+	self->dmg_radius += FIREBLAST_DRADIUS * 0.1f;
+	self->dmg = max(FIREBLAST_DAMAGE_MIN, self->dmg - 3);
 }
-
 
 void FireBlastStartThink(edict_t *self)
 {
