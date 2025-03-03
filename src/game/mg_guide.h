@@ -18,6 +18,7 @@ extern qboolean MG_GoToRandomBuoy(edict_t* self); //mxd
 extern qboolean MG_ReachedBuoy(edict_t* self, vec3_t pspot);
 extern void MG_RemoveBuoyEffects(edict_t* self); //mxd
 extern qboolean MG_CheckClearPathToEnemy(edict_t* self); //mxd
+extern qboolean MG_MonsterAttemptTeleport(edict_t* self, vec3_t destination, qboolean ignoreLOS); //mxd
 extern qboolean MG_MakeConnection(edict_t* self, buoy_t* first_buoy, qboolean skipjump); //mxd
 
 //mxd. Local forward declarations for mg_guide.c:

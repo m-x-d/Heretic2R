@@ -6,12 +6,12 @@
 #include "g_DefaultMessageHandler.h"
 #include "m_stats.h"
 #include "buoy.h"
+#include "mg_guide.h" //mxd
 #include "g_combat.h" //mxd
 
 void ED_CallSpawn (edict_t *ent);
 void TrainAngleMove_Calc (edict_t *self,edict_t *targ,vec3_t dest);
 int MG_SetFirstBuoy(edict_t *self);
-qboolean MG_MonsterAttemptTeleport(edict_t *self, vec3_t destination, qboolean ignoreLOS);
 void door_sounds (edict_t *ent);
 
 #define	DSF_SWINGAWAY		0x00002000//8192

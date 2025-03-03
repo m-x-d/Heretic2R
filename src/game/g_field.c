@@ -365,8 +365,6 @@ void SP_trigger_MonsterJump(edict_t *self)
 #define TSF_BUOY_STAND				32
 #define TSF_BUOY_WANDER				64
 
-extern qboolean MG_MakeConnection(edict_t *self, buoy_t *first_buoy, qboolean skipjump);
-qboolean MG_MonsterAttemptTeleport(edict_t *self, vec3_t destination, qboolean ignoreLOS);
 void trigger_goto_buoy_execute (edict_t *self, edict_t *monster, edict_t *activator)
 {
 	qboolean	found = false;
