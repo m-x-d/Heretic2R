@@ -1,34 +1,26 @@
-// ****************************************************************************
-//	BUOYAH! Navigation System
 //
-//	Heretic II
-//	Copyright 1998 Raven Software
+// buoy.c -- BUOYAH! Navigation System. Mike Gummelt & Josh Weier
 //
-//  Mike Gummelt & Josh Weier
-// ****************************************************************************
+// Copyright 1998 Raven Software
+//
 
-#include "g_local.h"
 #include "buoy.h"
-#include "vector.h"
-#include "random.h"
-#include "fx.h"
 #include "m_stats.h"
+#include "FX.h" //TODO: remove later...
+#include "Random.h"
+#include "Vector.h"
+#include "g_local.h"
 
-#define SF_JUMP		1//make monster jump
-#define SF_ACTIVATE	2//turn something on
-#define SF_TURN		4
-#define SF_ONEWAY	8//don't back-link
+#define SF_ONEWAY	8	// Don't back-link.
+#define SF_BROKEN	64	// A bad bad buoy.
+#define SF_DONT_TRY	128	// Don't allow monster to head here.
 
-#define SF_BROKEN	64//a bad bad buoy	
-#define SF_DONT_TRY	128//don't allow monster to head here
+#define MAX_BUOY_BRANCH_CHECKS		1024	// Only check 1024 branches before giving up.
+#define MAX_PROGRESSIVE_CHECK_DEPTH	20		// Only search 20 buoys deep if doing a progressive depth check.
 
-#define BUOY_PRINT_INFO_DIST 64
-#define MAX_BUOY_BRANCH_CHECKS 1024//only check 1024 branches before giving up
-#define MAX_PROGRESSIVE_CHECK_DEPTH 20//only search 20 buoys deep if doing a progressive depth check
-
-static int	check_depth;
-static int	buoy_depth;
-static int	branch_counter;//short circuit check if 1024
+static int check_depth;
+static int buoy_depth;
+static int branch_counter; // Short circuit check if 1024.
 
 //Returns the buoy's id
 int insert_buoy(edict_t *self)
