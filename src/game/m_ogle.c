@@ -41,7 +41,6 @@
 
 
 qboolean MG_CheckClearPathToEnemy( edict_t *self );
-void MG_Pathfind(edict_t *self, qboolean check_clear_path);
 
 static animmove_t *animations[NUM_ANIMS] =
 {

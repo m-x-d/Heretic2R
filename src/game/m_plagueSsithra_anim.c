@@ -18,13 +18,13 @@
 #include "m_plaguesSithra_local.h"
 #include "g_monster.h"
 #include "c_ai.h"
+#include "mg_guide.h" //mxd
 #include "vector.h"
 
 void old_ai_run (edict_t *self, float dist);
 void ai_run (edict_t *self, float dist);
 void ai_charge2 (edict_t *self, float dist);
 qboolean ssithraCheckInWater (edict_t *self);
-void MG_Pathfind(edict_t *self, qboolean check_clear_path);
 void MG_SwimFlyToGoal (edict_t *self, float dist);
 
 

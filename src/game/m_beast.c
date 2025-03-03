@@ -1304,7 +1304,6 @@ qboolean TB_CheckJump (edict_t *self)//, edict_t *other)
 	return false;
 }
 
-void MG_Pathfind(edict_t *self, qboolean check_clear_path);
 void tbeast_run_think (edict_t *self, float dist)
 {
 	vec3_t	angles, forward, start, end, mins;
