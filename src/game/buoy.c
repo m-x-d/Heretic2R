@@ -417,161 +417,110 @@ static qboolean CheckBuoyPath(edict_t* self, const int last_buoy_id, const int s
 	return false;
 }
 
-buoy_t	*find_next_buoy_2(edict_t *self, int sb_id, int fb_id)
+static buoy_t* FindNextBuoy2(edict_t* self, const int start_buoy_id, const int final_buoy_id) //mxd. Named 'find_next_buoy_2' in original version.
 {
-	buoy_t		*check_buoy = NULL, *save_buoy = NULL, *start_buoy, *final_buoy;
-	int			i, branch;
-	qboolean	branch_checked[MAX_BUOY_BRANCHES];
-	int			num_branches_checked = 0;
-	int			infinite_loop_short_circuit = 0;
+	qboolean branch_checked[MAX_BUOY_BRANCHES];
+	int num_branches_checked = 0;
+	int infinite_loop_short_circuit = 0;
 
-	for(i = 0; i < MAX_BUOY_BRANCHES; i++)
+	for (int i = 0; i < MAX_BUOY_BRANCHES; i++)
 		branch_checked[i] = false;
 
-	start_buoy = &level.buoy_list[sb_id];
-	final_buoy = &level.buoy_list[fb_id];
+	buoy_t* start_buoy = &level.buoy_list[start_buoy_id];
+	const buoy_t* final_buoy = &level.buoy_list[final_buoy_id];
 
 	buoy_depth = 1;
 	start_buoy->opflags |= SF_DONT_TRY;
-	if(self->lastbuoy > NULL_BUOY)
-	{//don't loop back around, the save_buoy last branch check will be a shorter path
-#ifdef _DEVEL
-		if(BUOY_DEBUG)
-			gi.dprintf("Last buoy was %s...\n", level.buoy_list[self->lastbuoy].targetname);
-#endif
-		level.buoy_list[self->lastbuoy].opflags |= SF_DONT_TRY;
-	}
 
-//fixme: make my last_buoy also a dont_try?
-	
-	for (i = 0; num_branches_checked < MAX_BUOY_BRANCHES; i++)
+	// Don't loop back around, the save_buoy last branch check will be a shorter path.
+	if (self->lastbuoy > NULL_BUOY)
+		level.buoy_list[self->lastbuoy].opflags |= SF_DONT_TRY;
+
+	buoy_t* save_buoy = NULL;
+
+	//fixme: make my last_buoy also a dont_try?
+	for (int i = 0; num_branches_checked < MAX_BUOY_BRANCHES; i++)
 	{
+		int branch;
+
 		do
 		{
-			if(infinite_loop_short_circuit++ > 1000)
+			if (infinite_loop_short_circuit++ > 1000)
 				assert(0);
 
 			branch = irand(0, MAX_BUOY_BRANCHES - 1);
-		} 
-		while(branch_checked[branch] == true);
+		} while (branch_checked[branch] == true);
 
 		branch_checked[branch] = true;
 		num_branches_checked++;
 
 		if (start_buoy->nextbuoy[branch] == NULL_BUOY)
 		{
-			if(num_branches_checked == MAX_BUOY_BRANCHES)
+			if (num_branches_checked == MAX_BUOY_BRANCHES)
 			{
 				start_buoy->opflags &= ~SF_DONT_TRY;
-				if(self->lastbuoy > NULL_BUOY)
+
+				if (self->lastbuoy > NULL_BUOY)
 					level.buoy_list[self->lastbuoy].opflags &= ~SF_DONT_TRY;
-				return NULL;//hasn't found one before here, and last branch was false and next is null, failed!
+
+				return NULL;// Hasn't found one before here, and last branch was false and next is null, failed!
 			}
-			else
-				continue;//check others
+
+			continue; // Check others.
 		}
 
-		if(self->lastbuoy == start_buoy->nextbuoy[branch])
+		if (self->lastbuoy == start_buoy->nextbuoy[branch])
 		{
-#ifdef _DEVEL
-			if (BUOY_DEBUG>2)
-				gi.dprintf("Saving %s's last (previous) buoy %s for last path check\n", self->classname, level.buoy_list[self->lastbuoy].targetname);
-#endif			
 			save_buoy = &level.buoy_list[self->lastbuoy];
 			continue;
 		}
-			
-		check_buoy = &level.buoy_list[start_buoy->nextbuoy[branch]];
 
-#ifdef _DEVEL
-		if(BUOY_DEBUG>2)
-			gi.dprintf("(Start) Checking buoy %s off of %s\n", check_buoy->targetname, start_buoy->targetname);
-#endif
+		buoy_t* check_buoy = &level.buoy_list[start_buoy->nextbuoy[branch]];
+
 		if (check_buoy == final_buoy)
 		{
-#ifdef _DEVEL
-			if(BUOY_DEBUG_LITE||BUOY_DEBUG)
-				gi.dprintf("%s FOUND CONNECTION FROM %s TO %s IN 1 STEP, %d BRANCHES CHECKED\n", self->classname, start_buoy->targetname, final_buoy->targetname, branch_counter);
-#endif			
 			start_buoy->opflags &= ~SF_DONT_TRY;
-			if(self->lastbuoy > NULL_BUOY)
+
+			if (self->lastbuoy > NULL_BUOY)
 				level.buoy_list[self->lastbuoy].opflags &= ~SF_DONT_TRY;
+
 			return check_buoy;
 		}
 
-		if ((check_buoy->opflags & SF_DONT_TRY))
-//	Gil suggestion: unimplemented
-//	|| check_buoy->failed_depth <= buoy_depth)
-		{
-#ifdef _DEVEL
-			if(BUOY_DEBUG>2)
-				gi.dprintf("Buoy %s marked as don't try, skipping\n", check_buoy->targetname);
-#endif
+		if (check_buoy->opflags & SF_DONT_TRY)
 			continue;
-		}
 
-		if(CheckBuoyPath(self, start_buoy->id, check_buoy->id, final_buoy->id))
+		if (CheckBuoyPath(self, start_buoy->id, check_buoy->id, final_buoy->id))
 		{
-#ifdef _DEVEL
-			if(BUOY_DEBUG_LITE||BUOY_DEBUG)
-				gi.dprintf("%s FOUND CONNECTION FROM %s TO %s IN %d STEPS, %d BRANCHES CHECKED\n", self->classname, start_buoy->targetname, final_buoy->targetname, buoy_depth, branch_counter);
-#endif			
 			start_buoy->opflags &= ~SF_DONT_TRY;
-			if(self->lastbuoy > NULL_BUOY)
+
+			if (self->lastbuoy > NULL_BUOY)
 				level.buoy_list[self->lastbuoy].opflags &= ~SF_DONT_TRY;
 
-			if(check_buoy->id == self->lastbuoy)
-				assert(0);//should NEVER happen!!!
+			if (check_buoy->id == self->lastbuoy)
+				assert(0); // Should NEVER happen!
 
 			return check_buoy;
 		}
-		else
-			continue;
 	}
 
-	if(save_buoy)
+	if (save_buoy != NULL)
 	{
 		save_buoy->opflags &= ~SF_DONT_TRY;
-		check_buoy = save_buoy;
 
-#ifdef _DEVEL
-		if (BUOY_DEBUG>2)
-			gi.dprintf("Now checking saved buoy %s for last path check\n", check_buoy->targetname);
-#endif
-		if (check_buoy == final_buoy)
+		if (save_buoy == final_buoy || (!(save_buoy->opflags & SF_DONT_TRY) && CheckBuoyPath(self, start_buoy->id, save_buoy->id, final_buoy->id)))
 		{
-#ifdef _DEVEL
-			if(BUOY_DEBUG_LITE||BUOY_DEBUG)
-				gi.dprintf("%s FOUND CONNECTION FROM %s TO %s IN 1 STEP, %d BRANCHES CHECKED\n", self->classname, start_buoy->targetname, final_buoy->targetname, branch_counter);
-#endif
 			start_buoy->opflags &= ~SF_DONT_TRY;
-			if(self->lastbuoy > NULL_BUOY)
+
+			if (self->lastbuoy > NULL_BUOY)
 				level.buoy_list[self->lastbuoy].opflags &= ~SF_DONT_TRY;
 
-			return check_buoy;
-		}
-
-		if (!(check_buoy->opflags & SF_DONT_TRY))
-//	Gil suggestion: unimplemented
-//	&& check_buoy->failed_depth > buoy_depth)
-		{
-			if(CheckBuoyPath(self, start_buoy->id, check_buoy->id, final_buoy->id))
-			{
-#ifdef _DEVEL
-				if(BUOY_DEBUG_LITE||BUOY_DEBUG)
-					gi.dprintf("%s FOUND CONNECTION FROM %s TO %s IN %d STEPS, %d BRANCHES CHECKED\n", self->classname, start_buoy->targetname, final_buoy->targetname, buoy_depth, branch_counter);
-#endif				
-				start_buoy->opflags &= ~SF_DONT_TRY;
-				if(self->lastbuoy > NULL_BUOY)
-					level.buoy_list[self->lastbuoy].opflags &= ~SF_DONT_TRY;
-
-				return check_buoy;
-			}
+			return save_buoy;
 		}
 	}
 
 	start_buoy->opflags &= ~SF_DONT_TRY;
-	if(self->lastbuoy > NULL_BUOY)
+	if (self->lastbuoy > NULL_BUOY)
 		level.buoy_list[self->lastbuoy].opflags &= ~SF_DONT_TRY;
 
 	return NULL;
@@ -611,7 +560,7 @@ buoy_t	*find_next_buoy(edict_t *self, int sb_id, int fb_id)
 		while(check_depth < self->mintel && check_depth < MAX_PROGRESSIVE_CHECK_DEPTH)
 		{//only search to max of 20 buoys deep if doing a progressive depth check
 			check_depth++;
-			found = find_next_buoy_2(self, start_buoy->id, final_buoy->id);
+			found = FindNextBuoy2(self, start_buoy->id, final_buoy->id);
 			if(found)
 			{
 				check_depth = 0;
@@ -626,7 +575,7 @@ buoy_t	*find_next_buoy(edict_t *self, int sb_id, int fb_id)
 			gi.dprintf("%s starting max depth(%d) buoy path check\n", self->classname, self->mintel);
 #endif
 		check_depth = self->mintel;
-		found = find_next_buoy_2(self, start_buoy->id, final_buoy->id);
+		found = FindNextBuoy2(self, start_buoy->id, final_buoy->id);
 		if(found)
 		{
 			check_depth = 0;
