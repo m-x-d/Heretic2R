@@ -1,44 +1,29 @@
-// ****************************************************************************
-//	mg_guide
 //
-//	High level monster guide information using BUOYAH! Navigation System(tm)
+// mg_guide.c -- High level monster guide information using BUOYAH! Navigation System(tm). Mike Gummelt & Josh Weier.
 //
-//	Heretic II
-//	Copyright 1998 Raven Software
+// Copyright 1998 Raven Software
 //
-//  Mike Gummelt & Josh Weier
-//
-//	FIXME:
-//
-//	1) Way to send monsters to a buoy out of water/lava if they are drowning
-//		or burning.
-//
-//	2) When you get to a buoy, do a trace to the next if it's blocked, you
-//		need to find another way...
-//	
-//	3) Way to handle lots of monsters gathered around the same buoy... the one
-//		that is at it can't get out, the others cant get to it, they just crowd it.
-//
-// ****************************************************************************
 
-#include "g_local.h"
-#include "Utilities.h"
-#include "random.h"
-#include "vector.h"
-#include "buoy.h"
-#include "g_monster.h"
-#include "m_stats.h"
-#include "fx.h"
+//FIXME: way to send monsters to a buoy out of water/lava if they are drowning or burning.
+//FIXME: when you get to a buoy, do a trace to the next. If it's blocked, you need to find another way...
+//FIXME: way to handle lots of monsters gathered around the same buoy... The one that is at it can't get out, the others can't get to it, they just crowd it.
+
 #include "mg_guide.h"
+#include "g_monster.h"
 #include "m_assassin.h" //mxd
+#include "m_stats.h"
+#include "Random.h"
+#include "Vector.h"
+#include "FX.h"
+#include "g_local.h"
 
-#define	BUOY_SEARCH_TIME		10//10 seconds between choosing a buoy and getting there
+// 10 seconds between choosing a buoy and getting there.
+#define	BUOY_SEARCH_TIME	10	
 
-#define BUOY_SEARCH_PASSES 6//sfs--number of passes through buoy list when searching
-							//		(only accept buoys closer than 1/BUOY_SEARCH_PASSES * MAX_BUOY_DIST
-							//		for first pass, etc.). if a buoy is found after a pass,
-							//		we know we've got the closest buoy, and further passes can
-							//		be skipped.
+// Number of passes through buoy list when searching.
+// Only accept buoys closer than 1 / BUOY_SEARCH_PASSES * MAX_BUOY_DIST	for first pass, etc.
+// If a buoy is found after a pass, we know we've got the closest buoy, and further passes can be skipped.
+#define BUOY_SEARCH_PASSES	6
 
 qboolean MG_MakeConnection(edict_t *self, buoy_t *first_buoy, qboolean skipjump);
 qboolean MG_CheckClearPathToSpot(edict_t *self, vec3_t spot);
