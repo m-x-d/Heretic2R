@@ -40,7 +40,6 @@
 							//		we know we've got the closest buoy, and further passes can
 							//		be skipped.
 
-buoy_t	*find_next_buoy(edict_t *self, int sb_id, int fb_id);
 qboolean Clear_Path(edict_t *self, vec3_t end);
 void MG_AddBuoyEffect(edict_t *self, qboolean endbuoy);
 qboolean MG_MakeConnection(edict_t *self, buoy_t *first_buoy, qboolean skipjump);

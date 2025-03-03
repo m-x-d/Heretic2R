@@ -12,7 +12,6 @@ void ED_CallSpawn (edict_t *ent);
 void TrainAngleMove_Calc (edict_t *self,edict_t *targ,vec3_t dest);
 int MG_SetFirstBuoy(edict_t *self);
 qboolean MG_MonsterAttemptTeleport(edict_t *self, vec3_t destination, qboolean ignoreLOS);
-buoy_t	*find_next_buoy(edict_t *self, int sb_id, int fb_id);
 void door_sounds (edict_t *ent);
 
 #define	DSF_SWINGAWAY		0x00002000//8192

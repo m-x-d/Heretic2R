@@ -12,8 +12,6 @@ typedef struct
 	int		CID;
 } spawn_t;
 
-void SP_info_buoy (edict_t *ent);
-
 void SP_func_plat (edict_t *ent);
 void SP_func_rotating (edict_t *ent);
 void SP_func_button (edict_t *ent);
