@@ -33,7 +33,6 @@ void MG_NoBlocking (edict_t *self);
 
 qboolean MG_GetTargOrg (edict_t *self, vec3_t targ_org);
 qboolean visible_pos (edict_t *self, vec3_t spot2);
-qboolean clear_visible_pos (edict_t *self, vec3_t spot2);
 qboolean infront_pos (edict_t *self, vec3_t pos);
 qboolean M_ValidTarget( edict_t *self, edict_t *target );
 qboolean M_CheckAlert( edict_t *self, int range );
