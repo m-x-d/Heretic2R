@@ -73,19 +73,19 @@ static int InsertBuoy(const edict_t* self) //mxd. Named 'insert_buoy' in origina
 	return buoy->id;
 }
 
-void assign_nextbuoy(edict_t *self, edict_t *ent)
+static void AssignNextBuoy(edict_t* self, const edict_t* ent) //mxd. Named 'assign_nextbuoy' in original version.
 {
-	buoy_t	*buoy = &level.buoy_list[self->count];
-	int i;
-	
-	for (i = 0; i < MAX_BUOY_BRANCHES; i++)
+	buoy_t* buoy = &level.buoy_list[self->count];
+
+	for (int i = 0; i < MAX_BUOY_BRANCHES; i++)
 	{
 		if (buoy->nextbuoy[i] > NULL_BUOY)
 		{
-			if (i==2)
+			if (i == MAX_BUOY_BRANCHES - 1)
 			{
-				gi.dprintf("Buoy %d: Too many connections on buoy %s (%s)\n", self->count, self->targetname, vtos(self->s.origin));
+				gi.dprintf("Buoy %d: too many connections on buoy %s (%s)\n", self->count, self->targetname, vtos(self->s.origin));
 				self->ai_mood_flags |= SF_BROKEN;
+
 				return;
 			}
 
@@ -95,8 +95,6 @@ void assign_nextbuoy(edict_t *self, edict_t *ent)
 		buoy->nextbuoy[i] = ent->count;
 		return;
 	}
-
-	return;
 }
 
 void assign_jumpbuoy(edict_t *self, edict_t *ent)
@@ -167,7 +165,7 @@ void info_buoy_link(edict_t *self)
 				gi.dprintf("info_buoy_link: linked %s to %s\n", self->targetname, ent->targetname);
 
 			//Link this buoy to it's target
-			assign_nextbuoy(self, ent);
+			AssignNextBuoy(self, ent);
 
 			if(BUOY_DEBUG > 1)
 			{
@@ -181,7 +179,7 @@ void info_buoy_link(edict_t *self)
 			}
 			//If it's not one way, then back link it as well
 			if(!(self->spawnflags&SF_ONEWAY))
-				assign_nextbuoy(ent, self);
+				AssignNextBuoy(ent, self);
 		}
 	}
 
@@ -217,7 +215,7 @@ void info_buoy_link(edict_t *self)
 			else
 			{
 				//Link this buoy to it's target
-				assign_nextbuoy(self, ent);
+				AssignNextBuoy(self, ent);
 				
 				if(BUOY_DEBUG > 1)
 				{
@@ -231,7 +229,7 @@ void info_buoy_link(edict_t *self)
 				}
 				//If it's not one way, then back link it as well
 				if(!(self->spawnflags&SF_ONEWAY))
-					assign_nextbuoy(ent, self);
+					AssignNextBuoy(ent, self);
 			}
 		}
 	}
