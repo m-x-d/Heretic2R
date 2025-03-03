@@ -40,8 +40,6 @@
 							//		we know we've got the closest buoy, and further passes can
 							//		be skipped.
 
-qboolean Clear_Path(edict_t *self, vec3_t end);
-void MG_AddBuoyEffect(edict_t *self, qboolean endbuoy);
 qboolean MG_MakeConnection(edict_t *self, buoy_t *first_buoy, qboolean skipjump);
 qboolean MG_CheckClearPathToSpot(edict_t *self, vec3_t spot);
 
@@ -156,6 +154,82 @@ qboolean clear_visible_pos (edict_t *self, vec3_t spot2)
 	if (trace.fraction == 1.0)
 		return true;
 	return false;
+}
+
+void MG_AddBuoyEffect(edict_t* self, qboolean endbuoy)
+{
+	if (BUOY_DEBUG)
+	{//turn on sparkly effects on my start and end buoys
+		if (!endbuoy)
+		{//marking our next buoy
+			if (self->nextbuoy[0])
+			{//check a 10 second debouce timer
+				if (!self->nextbuoy[0]->count)
+				{
+#ifdef _DEVEL
+					gi.dprintf("Adding green effect to buoy %s\n", self->nextbuoy[0]->targetname);
+#endif
+					gi.CreateEffect(&self->nextbuoy[0]->s,
+						FX_M_EFFECTS,
+						CEF_OWNERS_ORIGIN | CEF_FLAG6,//green
+						self->nextbuoy[0]->s.origin,
+						"bv",
+						FX_BUOY,
+						vec3_origin);
+				}
+				self->nextbuoy[0]->s.frame = self->nextbuoy[0]->count++;
+			}
+		}
+		else
+		{//marking our end buoy (enemy's closest buoy)
+			if (self->nextbuoy[1])
+			{
+				if (!self->nextbuoy[1]->s.frame)
+				{
+#ifdef _DEVEL
+					gi.dprintf("Adding red effect to buoy %s\n", self->nextbuoy[1]->targetname);
+#endif
+					gi.CreateEffect(&self->nextbuoy[1]->s,
+						FX_M_EFFECTS,
+						CEF_OWNERS_ORIGIN,//red
+						self->nextbuoy[1]->s.origin,
+						"bv",
+						FX_BUOY,
+						vec3_origin);
+				}
+				self->nextbuoy[1]->s.frame = self->nextbuoy[1]->count++;
+			}
+		}
+	}
+}
+
+void MG_RemoveBuoyEffects(edict_t* self)
+{//fixme- because this is really using only one effect with flags, it's turning off both red and green when it turns either off...
+	if (BUOY_DEBUG)
+	{//turn off sparkly effects on my start and end buoys
+		if (self->nextbuoy[0])
+		{//reset a 10 second debouce timer
+			if (self->nextbuoy[0]->count > 1)
+				self->nextbuoy[0]->count--;
+			else
+			{
+				self->nextbuoy[0]->count = 0;
+			}
+			self->nextbuoy[0]->s.frame = self->nextbuoy[0]->count;
+		}
+
+		if (self->nextbuoy[1])
+		{
+			if (self->nextbuoy[1]->count > 1)
+				self->nextbuoy[1]->count--;
+			else
+			{
+				self->nextbuoy[1]->count = 0;
+			}
+			self->nextbuoy[1]->s.frame = self->nextbuoy[1]->count;
+		}
+	}
+
 }
 
 int MG_SetFirstBuoy(edict_t *self)
@@ -1633,82 +1707,6 @@ qboolean MG_MonsterAttemptTeleport(edict_t *self, vec3_t destination, qboolean i
 		}
 	}
 	return false;
-}
-
-void MG_AddBuoyEffect(edict_t *self, qboolean endbuoy)
-{
-	if(BUOY_DEBUG)
-	{//turn on sparkly effects on my start and end buoys
-		if(!endbuoy)
-		{//marking our next buoy
-			if(self->nextbuoy[0])
-			{//check a 10 second debouce timer
-				if(!self->nextbuoy[0]->count)
-				{
-#ifdef _DEVEL
-					gi.dprintf("Adding green effect to buoy %s\n", self->nextbuoy[0]->targetname);
-#endif
-					gi.CreateEffect(&self->nextbuoy[0]->s,
-						FX_M_EFFECTS,
-						CEF_OWNERS_ORIGIN|CEF_FLAG6,//green
-						self->nextbuoy[0]->s.origin,
-						"bv",
-						FX_BUOY,
-						vec3_origin);
-				}
-				self->nextbuoy[0]->s.frame = self->nextbuoy[0]->count++;
-			}
-		}
-		else
-		{//marking our end buoy (enemy's closest buoy)
-			if(self->nextbuoy[1])
-			{
-				if(!self->nextbuoy[1]->s.frame)
-				{
-#ifdef _DEVEL
-					gi.dprintf("Adding red effect to buoy %s\n", self->nextbuoy[1]->targetname);
-#endif
-					gi.CreateEffect(&self->nextbuoy[1]->s,
-						FX_M_EFFECTS,
-						CEF_OWNERS_ORIGIN,//red
-						self->nextbuoy[1]->s.origin,
-						"bv",
-						FX_BUOY,
-						vec3_origin);
-				}
-				self->nextbuoy[1]->s.frame = self->nextbuoy[1]->count++;
-			}
-		}
-	}
-}
-
-void MG_RemoveBuoyEffects(edict_t *self)
-{//fixme- because this is really using only one effect with flags, it's turning off both red and green when it turns either off...
-	if(BUOY_DEBUG)
-	{//turn off sparkly effects on my start and end buoys
-		if(self->nextbuoy[0])
-		{//reset a 10 second debouce timer
-			if(self->nextbuoy[0]->count>1)
-				self->nextbuoy[0]->count--;
-			else
-			{
-				self->nextbuoy[0]->count = 0;
-			}
-			self->nextbuoy[0]->s.frame = self->nextbuoy[0]->count;
-		}
-
-		if(self->nextbuoy[1])
-		{
-			if(self->nextbuoy[1]->count>1)
-				self->nextbuoy[1]->count--;
-			else
-			{
-				self->nextbuoy[1]->count = 0;
-			}
-			self->nextbuoy[1]->s.frame = self->nextbuoy[1]->count;
-		}
-	}
-
 }
 
 //FIXME:  If a monster CAN see player but can't get to him for a short while and does not have a clear path to him, use the buoys anyway!
