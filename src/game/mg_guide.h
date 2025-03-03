@@ -11,6 +11,7 @@
 #define MONSTER_SEARCH_TIME		10 // Monsters search for player for 10 seconds after losing him before giving up.
 
 extern void MG_InitMoods(edict_t* self); //mxd
+extern void MG_BuoyNavigate(edict_t* self); //mxd
 extern qboolean MG_ReachedBuoy(edict_t* self, vec3_t pspot);
 extern void MG_RemoveBuoyEffects(edict_t* self); //mxd
 extern qboolean MG_MakeConnection(edict_t* self, buoy_t* first_buoy, qboolean skipjump); //mxd

@@ -9,6 +9,7 @@
 
 #include <assert.h>
 #include "mg_ai.h" //mxd
+#include "mg_guide.h" //mxd
 #include "g_local.h"
 #include "g_monster.h"
 #include "Random.h"
@@ -35,7 +36,6 @@ float ai_face_goal (edict_t *self);
 void ai_flee (edict_t *self, float dist);
 void BecomeDebris(edict_t *self);
 qboolean MG_MoveToGoal (edict_t *self, float dist);
-void MG_BuoyNavigate(edict_t *self);
 qboolean MG_GoToRandomBuoy(edict_t *self);
 
 // AI Targeting Globals
