@@ -542,7 +542,7 @@ void WeaponThink_SphereOfAnnihilation(edict_t* caster, char* format, ...)
 
 void WeaponThink_Firewall(edict_t* caster, char* format, ...)
 {
-	SpellCastWall(caster, caster->s.origin, caster->client->aimangles, NULL, 0.0f);
+	SpellCastFireWall(caster, caster->s.origin, caster->client->aimangles);
 
 	playerinfo_t* info = &caster->client->playerinfo; //mxd
 	if (!DEATHMATCH || !(DMFLAGS & DF_INFINITE_MANA))

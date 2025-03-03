@@ -413,7 +413,7 @@ static void CastFireWall(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
 #pragma endregion
 
 // The Firewall spell is cast.
-void SpellCastWall(edict_t* caster, vec3_t start_pos, vec3_t aim_angles, vec3_t unused, float value) //TODO: rename to SpellCastFireWall, remove unused args
+void SpellCastFireWall(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
 {
 	if (caster->client->playerinfo.powerup_timer <= level.time)
 	{

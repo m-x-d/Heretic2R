@@ -8,7 +8,7 @@
 
 #include "q_shared.h"
 
-extern void SpellCastWall(edict_t* caster, vec3_t start_pos, vec3_t aim_angles, vec3_t AimDir, float Value);
+extern void SpellCastFireWall(edict_t* caster, vec3_t start_pos, vec3_t aim_angles);
 
 // Local forward declarations for spl_wall.c:
 static void FireBlastBlocked(edict_t* self, trace_t* trace);
