@@ -40,8 +40,6 @@
 //#define OGLE_RADIUS 1000 //FIXME: Tweak this out, activation range
 
 
-qboolean MG_CheckClearPathToEnemy( edict_t *self );
-
 static animmove_t *animations[NUM_ANIMS] =
 {
 	&ogle_move_walk1,
