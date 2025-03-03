@@ -364,15 +364,14 @@ static void FireWallMissileThink(edict_t* self)
 	self->dmg = max(FIREWAVE_DAMAGE_MIN, self->dmg - 3);
 }
 
-void FireWallMissileStartThink(edict_t *self)
+static void FireWallMissileStartThink(edict_t* self)
 {
-	self->svflags |= SVF_NOCLIENT;			// Allow transmission to client
+	self->svflags |= SVF_NOCLIENT; // Allow transmission to client.
 
 	FireWallMissileThink(self);
 	self->think = FireWallMissileThink;
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + 0.1f;
 }
-
 
 void CastFireWall(edict_t *caster, vec3_t startpos, vec3_t aimangles)
 {	// Big wall is powered up
