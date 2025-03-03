@@ -1,5 +1,5 @@
 //
-// buoy.c -- BUOYAH! Navigation System. Mike Gummelt & Josh Weier
+// buoy.c -- BUOYAH! Navigation System. Mike Gummelt & Josh Weier.
 //
 // Copyright 1998 Raven Software
 //
