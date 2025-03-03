@@ -36,7 +36,6 @@ float ai_face_goal (edict_t *self);
 void ai_flee (edict_t *self, float dist);
 void BecomeDebris(edict_t *self);
 qboolean MG_MoveToGoal (edict_t *self, float dist);
-qboolean MG_GoToRandomBuoy(edict_t *self);
 
 // AI Targeting Globals
 qboolean	enemy_vis;		// TRUE if enemy is visible
