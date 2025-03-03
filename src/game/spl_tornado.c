@@ -146,6 +146,7 @@ void SpellCastDropTornado(edict_t* caster, const vec3_t start_pos)
 	VectorCopy(trace.endpos, tornado->s.origin);
 	tornado->s.origin[2] += 3.0f; //BUGFIX: mxd. Set BEFORE VectorCopy() in original version.
 
+	//TODO: do spawnpoint check in DM only (meaningless in SP, mostly meaningless in COOP)?
 	// Check to see if we are over a spawn point - this won't catch specific teleport arrival points, but will get some of them.
 	int game_type = 0;
 	if (DEATHMATCH)
