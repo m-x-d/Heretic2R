@@ -79,7 +79,7 @@ static void AssignNextBuoy(edict_t* self, const edict_t* ent) //mxd. Named 'assi
 
 	for (int i = 0; i < MAX_BUOY_BRANCHES; i++)
 	{
-		if (buoy->nextbuoy[i] > NULL_BUOY)
+		if (buoy->nextbuoy[i] != NULL_BUOY)
 		{
 			if (i == MAX_BUOY_BRANCHES - 1)
 			{
@@ -97,26 +97,20 @@ static void AssignNextBuoy(edict_t* self, const edict_t* ent) //mxd. Named 'assi
 	}
 }
 
-void assign_jumpbuoy(edict_t *self, edict_t *ent)
-{//self is supposed to make monsters jump at ent
-	buoy_t	*buoy = &level.buoy_list[self->count];
-	int i;
-	
-	for (i = 0; i < MAX_BUOY_BRANCHES; i++)
+// self is supposed to make monsters jump at ent.
+static void AssignJumpBuoy(edict_t* self, const edict_t* ent) //mxd. Named 'assign_jumpbuoy' in original version.
+{
+	buoy_t* buoy = &level.buoy_list[self->count];
+
+	if (buoy->jump_target_id != NULL_BUOY)
 	{
-		if (buoy->jump_target_id > NULL_BUOY)
-		{
-			gi.dprintf("Buoy %s (%s): already has a jump_target(%s), tried to assign another %s!\n", buoy->targetname, vtos(buoy->origin), buoy->jump_target, ent->targetname);
-			self->ai_mood_flags |= SF_BROKEN;
-			return;
-			continue;
-		}
-
-		buoy->jump_target_id = ent->count;
-		return;
+		gi.dprintf("Buoy %s (%s) already has a jump_target (%s), tried to assign another %s!\n", buoy->targetname, vtos(buoy->origin), buoy->jump_target, ent->targetname);
+		self->ai_mood_flags |= SF_BROKEN;
 	}
-
-	return;
+	else
+	{
+		buoy->jump_target_id = ent->count;
+	}
 }
 
 // ****************************************************************************
@@ -250,7 +244,7 @@ void info_buoy_link(edict_t *self)
 			ent = NULL;
 			if(ent = G_Find(ent, FOFS(targetname), self->jumptarget))
 			{
-				assign_jumpbuoy(self, ent);
+				AssignJumpBuoy(self, ent);
 				if(BUOY_DEBUG>1)
 				{
 					gi.CreatePersistantEffect(NULL,
