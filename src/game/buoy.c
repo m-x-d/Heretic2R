@@ -526,42 +526,28 @@ static buoy_t* FindNextBuoy2(edict_t* self, const int start_buoy_id, const int f
 	return NULL;
 }
 
-buoy_t	*find_next_buoy(edict_t *self, int sb_id, int fb_id)
+buoy_t* find_next_buoy(edict_t* self, const int start_buoy_id, const int final_buoy_id) //TODO: rename to FindNextBuoy. //mxd. Named 'find_next_buoy' in original version.
 {
-	buoy_t	*found = NULL, *start_buoy, *final_buoy;
-	int		i;
-
-	if(!self->mintel)
-	{
-#ifdef _DEVEL
-		if(BUOY_DEBUG_LITE||BUOY_DEBUG)
-			gi.dprintf("Can't use buoys- no mintel!...\n");
-#endif	
+	if (self->mintel == 0)
 		return NULL;
-	}
 
-	start_buoy = &level.buoy_list[sb_id];
-	final_buoy = &level.buoy_list[fb_id];
+	const buoy_t* start_buoy = &level.buoy_list[start_buoy_id];
+	const buoy_t* final_buoy = &level.buoy_list[final_buoy_id];
 
-#ifdef _DEVEL
-	if(BUOY_DEBUG)
-		gi.dprintf("********************************************************\n    %s Beginning search from %s to %s\n********************************************************\n", self->classname, start_buoy->targetname, final_buoy->targetname);
-#endif
 	branch_counter = 0;
 
-	if(irand(0, 1))
-	{//progressive_depth- finds shortest
-#ifdef _DEVEL
-		if(BUOY_DEBUG)
-			gi.dprintf("%s starting progressive depth buoy path check\n", self->classname);
-#endif
+	if (irand(0, 1) != 0)
+	{
+		// Progressive_depth - finds shortest.
 		check_depth = 0;
 
-		while(check_depth < self->mintel && check_depth < MAX_PROGRESSIVE_CHECK_DEPTH)
-		{//only search to max of 20 buoys deep if doing a progressive depth check
+		while (check_depth < min(self->mintel, MAX_PROGRESSIVE_CHECK_DEPTH))
+		{
+			// Only search to max of 20 buoys deep if doing a progressive depth check.
 			check_depth++;
-			found = FindNextBuoy2(self, start_buoy->id, final_buoy->id);
-			if(found)
+			buoy_t* found = FindNextBuoy2(self, start_buoy->id, final_buoy->id);
+
+			if (found != NULL)
 			{
 				check_depth = 0;
 				return found;
@@ -569,36 +555,21 @@ buoy_t	*find_next_buoy(edict_t *self, int sb_id, int fb_id)
 		}
 	}
 	else
-	{//start at max depth- finds first
-#ifdef _DEVEL
-		if(BUOY_DEBUG)
-			gi.dprintf("%s starting max depth(%d) buoy path check\n", self->classname, self->mintel);
-#endif
+	{
+		// Start at max depth - finds first.
 		check_depth = self->mintel;
-		found = FindNextBuoy2(self, start_buoy->id, final_buoy->id);
-		if(found)
+		buoy_t* found = FindNextBuoy2(self, start_buoy->id, final_buoy->id);
+
+		if (found != NULL)
 		{
 			check_depth = 0;
 			return found;
 		}
 	}
 
-	for(i = 0; i <= level.active_buoys; i++)
-	{
+	for (int i = 0; i <= level.active_buoys; i++)
 		level.buoy_list[i].opflags &= ~SF_DONT_TRY;
-//	Gil suggestion: unimplemented
-//	level.buoy_list[i].failed_depth = 999999999;
-	}
 
-#ifdef _DEVEL
-	if(BUOY_DEBUG_LITE||BUOY_DEBUG)
-		if(check_depth == self->mintel)
-			gi.dprintf("Hit my max buoy depth (%d) & failed\n", check_depth);
-#endif	
-#ifdef _DEVEL
-	if(BUOY_DEBUG_LITE||BUOY_DEBUG)
-		gi.dprintf("Path from buoy %s(%s) to buoy %s(%s) not possible at depth of %d!\n", start_buoy->targetname, vtos(start_buoy->origin), final_buoy->targetname, vtos(final_buoy->origin), check_depth);
-#endif
 	check_depth = 0;
 	return NULL;
 }
