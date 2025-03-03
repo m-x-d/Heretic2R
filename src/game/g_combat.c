@@ -13,6 +13,7 @@
 #include "g_monster.h" //mxd
 #include "g_playstats.h"
 #include "m_stats.h"
+#include "mg_guide.h" //mxd
 #include "p_main.h"
 #include "p_client.h" //mxd
 #include "p_view.h" //mxd

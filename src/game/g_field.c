@@ -7,6 +7,7 @@
 #include "p_main.h"
 #include "buoy.h"
 #include "g_combat.h" //mxd
+#include "mg_guide.h" //mxd
 #include "m_stats.h"
 #include "p_teleport.h"
 

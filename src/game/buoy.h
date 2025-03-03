@@ -49,5 +49,4 @@ struct buoy_s
 };
 
 extern void SP_info_buoy(edict_t* self);
-extern void MG_RemoveBuoyEffects(edict_t* self); //TODO: move to mg_guide.h
 extern buoy_t* FindNextBuoy(edict_t* self, int start_buoy_id, int final_buoy_id); //mxd
