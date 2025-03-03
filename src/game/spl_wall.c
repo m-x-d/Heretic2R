@@ -17,33 +17,25 @@
 
 #pragma region ========================== FireBlast (unpowered) ==========================
 
-
-// ****************************************************************************
-// SpellCastBlast
-// ****************************************************************************
-
-edict_t *CreateFireBlast(vec3_t startpos, vec3_t angles, edict_t *owner, int health, float timestamp)
+static edict_t* CreateFireBlast(vec3_t start_pos, vec3_t angles, edict_t* owner, const int health, const float timestamp)
 {
-	edict_t *wall;
-	short	angle_yaw, angle_pitch;
+	edict_t* wall = G_Spawn();
 
-	wall = G_Spawn();
+	VectorSet(wall->mins, -FIREBLAST_PROJ_RADIUS, -FIREBLAST_PROJ_RADIUS, -FIREBLAST_PROJ_RADIUS);
+	VectorSet(wall->maxs,  FIREBLAST_PROJ_RADIUS,  FIREBLAST_PROJ_RADIUS,  FIREBLAST_PROJ_RADIUS);
 
-   	VectorSet(wall->mins, -FIREBLAST_PROJ_RADIUS, -FIREBLAST_PROJ_RADIUS, -FIREBLAST_PROJ_RADIUS);
-   	VectorSet(wall->maxs, FIREBLAST_PROJ_RADIUS, FIREBLAST_PROJ_RADIUS, FIREBLAST_PROJ_RADIUS);
-
-	VectorCopy(startpos, wall->s.origin);
+	VectorCopy(start_pos, wall->s.origin);
 	VectorCopy(angles, wall->s.angles);
 	AngleVectors(angles, wall->movedir, NULL, NULL);
 	VectorScale(wall->movedir, FIREBLAST_SPEED, wall->velocity);
 
 	wall->mass = 250;
 	wall->elasticity = ELASTICITY_NONE;
-	wall->friction = 0;
-	wall->gravity = 0;
+	wall->friction = 0.0f;
+	wall->gravity = 0.0f;
 
 	wall->s.effects |= EF_ALWAYS_ADD_EFFECTS;
-	wall->svflags |= SVF_ALWAYS_SEND|SVF_DO_NO_IMPACT_DMG;
+	wall->svflags |= SVF_ALWAYS_SEND | SVF_DO_NO_IMPACT_DMG;
 	wall->movetype = PHYSICSTYPE_FLY;
 	wall->isBlocked = FireBlastBlocked;
 
@@ -52,24 +44,21 @@ edict_t *CreateFireBlast(vec3_t startpos, vec3_t angles, edict_t *owner, int hea
 	wall->clipmask = MASK_DRIP;
 	wall->owner = owner;
 	wall->think = FireBlastStartThink;
-	wall->nextthink = level.time + 0.1;
+	wall->nextthink = level.time + 0.1f;
 	wall->dmg_radius = FIREBLAST_RADIUS;
 	wall->dmg = FIREBLAST_DAMAGE;
 
-	wall->health = health;					// Can bounce 3 times
-
-	wall->fire_timestamp = timestamp;		// This marks the wall with a more-or-less unique value so the wall 
-											//		doesn't damage twice.
+	wall->health = health; // Can bounce 3 times.
+	wall->fire_timestamp = timestamp; // This marks the wall with a more-or-less unique value so the wall doesn't damage twice.
 
 	gi.linkentity(wall);
 
-	angle_yaw = (short)(angles[YAW]*(65536.0/360.0));
-	angle_pitch = (short)(angles[PITCH]*(65536.0/360.0));
+	const short angle_yaw = ANGLE2SHORT(angles[YAW]);
+	const short angle_pitch = ANGLE2SHORT(angles[PITCH]);
 	gi.CreateEffect(&wall->s, FX_WEAPON_FIREBURST, CEF_OWNERS_ORIGIN, NULL, "ss", angle_yaw, angle_pitch);
 
 	return wall;
 }
-
 
 // This called when missile touches anything (world or edict)
 void FireBlastBlocked(edict_t *self, trace_t *trace)
