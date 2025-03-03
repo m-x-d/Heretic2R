@@ -373,55 +373,44 @@ static void FireWallMissileStartThink(edict_t* self)
 	self->nextthink = level.time + 0.1f;
 }
 
-void CastFireWall(edict_t *caster, vec3_t startpos, vec3_t aimangles)
-{	// Big wall is powered up
-	edict_t	*wall;
-	vec3_t	fwd, right, spawnpos;	
-	trace_t	trace;
+static void CastFireWall(edict_t* caster, vec3_t start_pos, vec3_t aim_angles)
+{
+	// Big wall is powered up.
+	vec3_t fwd;
+	vec3_t right;
+	AngleVectors(aim_angles, fwd, right, NULL);
 
-	AngleVectors(aimangles, fwd, right, NULL);
-
-	// Spawn wall to left
-	VectorMA(startpos, -FIREWAVE_RADIUS, right, spawnpos);
-	wall = CreateFireWall(spawnpos, aimangles, caster, 3, level.time, -FIREWAVE_DRADIUS);
-
-	// Check to see if this is a legit spawn.
-	gi.trace(caster->s.origin, wall->mins, wall->maxs, wall->s.origin, caster, MASK_SOLID, &trace);
-	if (trace.startsolid || trace.fraction < .99)
+	// Spawn walls to the left and right.
+	for (int i = 0; i < 2; i++)
 	{
-		if (trace.startsolid)
-			VectorCopy(caster->s.origin, wall->s.origin);
+		const float radius = FIREWAVE_RADIUS * (i == 0 ? -1.0f : 1.0f); //mxd
+
+		vec3_t spawn_pos;
+		VectorMA(start_pos, radius, right, spawn_pos);
+
+		edict_t* wall = CreateFireWall(spawn_pos, aim_angles, caster, 3, level.time, radius);
+
+		// Check to see if this is a legit spawn.
+		trace_t trace;
+		gi.trace(caster->s.origin, wall->mins, wall->maxs, wall->s.origin, caster, MASK_SOLID, &trace);
+
+		if (trace.startsolid || trace.fraction < 0.99f)
+		{
+			if (trace.startsolid)
+				VectorCopy(caster->s.origin, wall->s.origin);
+			else
+				VectorCopy(trace.endpos, wall->s.origin);
+
+			FireWallMissileBlocked(wall, &trace);
+		}
 		else
-			VectorCopy(trace.endpos, wall->s.origin);
-
-		FireWallMissileBlocked(wall, &trace);
-		goto rightwall;
+		{
+			FireWallMissileThink(wall);
+		}
 	}
-
-	FireWallMissileThink(wall);
-
-rightwall:
-	// Spawn wall to right
-	VectorMA(startpos, FIREWAVE_RADIUS, right, spawnpos);
-	wall = CreateFireWall(spawnpos, aimangles, caster, 3, level.time, FIREWAVE_DRADIUS);
-
-	// Check to see if this is a legit spawn.
-	gi.trace(caster->s.origin, wall->mins, wall->maxs, wall->s.origin, caster, MASK_SOLID, &trace);
-	if (trace.startsolid || trace.fraction < .99)
-	{
-		if (trace.startsolid)
-			VectorCopy(caster->s.origin, wall->s.origin);
-		else
-			VectorCopy(trace.endpos, wall->s.origin);
-
-		FireWallMissileBlocked(wall, &trace);
-		return;
-	}
-
-	FireWallMissileThink(wall);
 }
 
-
+#pragma endregion
 
 
 // ****************************************************************************
@@ -447,5 +436,3 @@ void SpellCastWall(edict_t *caster, vec3_t startpos, vec3_t aimangles, vec3_t un
 		gi.sound(caster, CHAN_WEAPON, gi.soundindex("weapons/FirewallPowerCast.wav"), 1, ATTN_NORM, 0);
 	}
 }
-
-#pragma endregion
