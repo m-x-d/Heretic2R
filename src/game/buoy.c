@@ -526,7 +526,7 @@ static buoy_t* FindNextBuoy2(edict_t* self, const int start_buoy_id, const int f
 	return NULL;
 }
 
-buoy_t* find_next_buoy(edict_t* self, const int start_buoy_id, const int final_buoy_id) //TODO: rename to FindNextBuoy. //mxd. Named 'find_next_buoy' in original version.
+buoy_t* FindNextBuoy(edict_t* self, const int start_buoy_id, const int final_buoy_id) //mxd. Named 'find_next_buoy' in original version.
 {
 	if (self->mintel == 0)
 		return NULL;

@@ -459,7 +459,7 @@ qboolean MG_ResolveBuoyConnection(edict_t *self, buoy_t *bestbuoy, buoy_t *e_bes
 		VectorSubtract(e_bestbuoy->origin, goalpos, vec);
 		len = VectorLength(vec);
 
-		dest = find_next_buoy(self, bestbuoy->id, e_bestbuoy->id);
+		dest = FindNextBuoy(self, bestbuoy->id, e_bestbuoy->id);
 
 		if (dest != NULL)	
 		{

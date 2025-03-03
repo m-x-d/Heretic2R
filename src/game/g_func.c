@@ -2808,7 +2808,7 @@ pickbuoy:
 			o_mintel = monster->mintel;
 
 		monster->mintel = ceil(monster->mintel * 0.5);
-		if(!find_next_buoy(monster, start_buoy->id, end_buoy->id))
+		if(!FindNextBuoy(monster, start_buoy->id, end_buoy->id))
 		{
 			monster->mintel = o_mintel;
 			goto pickbuoy;//can't make connection within 1/2 mintel steps
