@@ -251,15 +251,9 @@ static edict_t* CreateFireWall(vec3_t start_pos, vec3_t angles, edict_t* owner, 
 	return wall;
 }
 
-// ****************************************************************************
-// WallMissile touch
-// ****************************************************************************
-
-void WallMissileWormThink(edict_t *self)
+static void FireWallMissileWormThink(edict_t* self)
 {
-	T_DamageRadius(self, self->owner, self->owner, 64.0, 
-			FIREWAVE_WORM_DAMAGE, FIREWAVE_WORM_DAMAGE, DAMAGE_FIRE, MOD_FIREWALL);
-
+	T_DamageRadius(self, self->owner, self->owner, 64.0f, FIREWAVE_WORM_DAMAGE, FIREWAVE_WORM_DAMAGE, DAMAGE_FIRE, MOD_FIREWALL);
 	G_SetToFree(self);
 }
 
@@ -293,7 +287,7 @@ void FireWallMissileBlocked(edict_t *self, trace_t *trace)
 				
 				worm = G_Spawn();
 				VectorCopy(trace->ent->s.origin, worm->s.origin);
-				worm->think = WallMissileWormThink;
+				worm->think = FireWallMissileWormThink;
 				worm->nextthink = level.time + FIREWORM_LIFETIME;
 				worm->solid = SOLID_NOT;
 				worm->clipmask = MASK_DRIP;
@@ -376,7 +370,7 @@ void WallMissileThink(edict_t *self)
 			
 			worm = G_Spawn();
 			VectorCopy(ent->s.origin, worm->s.origin);
-			worm->think = WallMissileWormThink;
+			worm->think = FireWallMissileWormThink;
 			worm->nextthink = level.time + FIREWORM_LIFETIME;
 			worm->solid = SOLID_NOT;
 			worm->clipmask = MASK_DRIP;
