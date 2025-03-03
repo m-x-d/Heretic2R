@@ -129,9 +129,6 @@ static animmove_t *animations[NUM_ANIMS] =
 static int sounds[NUM_SOUNDS];
 static ClassResourceInfo_t resInfo;
 
-int MG_SetFirstBuoy(edict_t *self);
-qboolean MG_WanderToNextBuoy(edict_t *self);
-
 /*QUAKED obj_corpse_ogle (1 .5 0) (-30 -12 -2) (30 12 2) pushing pick_up pick_down chisel_up chisel_down hammer_up hammer_down 
 A dead ogle.
 ---------- KEYS -----------------  

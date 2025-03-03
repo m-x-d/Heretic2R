@@ -11,7 +11,6 @@
 
 void ED_CallSpawn (edict_t *ent);
 void TrainAngleMove_Calc (edict_t *self,edict_t *targ,vec3_t dest);
-int MG_SetFirstBuoy(edict_t *self);
 void door_sounds (edict_t *ent);
 
 #define	DSF_SWINGAWAY		0x00002000//8192

@@ -13,6 +13,7 @@
 extern void MG_InitMoods(edict_t* self); //mxd
 extern qboolean clear_visible_pos(edict_t* self, vec3_t spot2); //mxd
 extern void MG_Pathfind(edict_t* self, qboolean check_clear_path); //mxd
+extern int MG_SetFirstBuoy(edict_t* self); //mxd
 extern void MG_BuoyNavigate(edict_t* self); //mxd
 extern qboolean MG_GoToRandomBuoy(edict_t* self); //mxd
 extern qboolean MG_ReachedBuoy(edict_t* self, vec3_t pspot);
