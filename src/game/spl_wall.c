@@ -257,73 +257,70 @@ static void FireWallMissileWormThink(edict_t* self)
 	G_SetToFree(self);
 }
 
-
-// This called when missile touches anything (world or edict)
-void FireWallMissileBlocked(edict_t *self, trace_t *trace)
+// This called when missile touches anything (world or edict).
+static void FireWallMissileBlocked(edict_t* self, trace_t* trace)
 {
-	edict_t *newwall;
-	float	dot, speed, factor;
-	vec3_t	surfvect, surfvel, testpos, newang;
-	trace_t	newtrace;
-	edict_t *worm;
-
-	assert(trace);
+	assert(trace != NULL);
 
 	// If we haven't damaged what we are hitting yet, damage it now.  Mainly for the Trial Beast.
-	if (trace->ent && trace->ent->takedamage && self->fire_timestamp > trace->ent->fire_timestamp)
+	if (trace->ent != NULL && trace->ent->takedamage != DAMAGE_NO && self->fire_timestamp > trace->ent->fire_timestamp)
 	{
-		// if we have reflection on, then no damage
-		if(!EntReflecting(trace->ent, true, true))
+		// If we have reflection on, then no damage; no damage to casting player.
+		if (!EntReflecting(trace->ent, true, true) && trace->ent != self->owner)
 		{
-			if(trace->ent != self->owner)		// No damage to casting player
-			{
-				T_Damage(trace->ent, self, self->owner, self->movedir, self->s.origin, vec3_origin, 
-						self->dmg, self->dmg, DAMAGE_FIRE | DAMAGE_FIRE_LINGER, MOD_FIREWALL); 
-				gi.CreateEffect(&(trace->ent->s), FX_FLAREUP, CEF_OWNERS_ORIGIN, NULL, "");
+			T_Damage(trace->ent, self, self->owner, self->movedir, self->s.origin, vec3_origin, self->dmg, self->dmg, DAMAGE_FIRE | DAMAGE_FIRE_LINGER, MOD_FIREWALL);
+			gi.CreateEffect(&(trace->ent->s), FX_FLAREUP, CEF_OWNERS_ORIGIN, NULL, "");
 
-				trace->ent->fire_timestamp = self->fire_timestamp;
+			trace->ent->fire_timestamp = self->fire_timestamp;
+			gi.CreateEffect(NULL, FX_WEAPON_FIREWAVEWORM, 0, trace->ent->s.origin, "t", self->movedir);
 
-				gi.CreateEffect(NULL, FX_WEAPON_FIREWAVEWORM, 0, trace->ent->s.origin, "t", self->movedir);
-				
-				worm = G_Spawn();
-				VectorCopy(trace->ent->s.origin, worm->s.origin);
-				worm->think = FireWallMissileWormThink;
-				worm->nextthink = level.time + FIREWORM_LIFETIME;
-				worm->solid = SOLID_NOT;
-				worm->clipmask = MASK_DRIP;
-				worm->owner = self->owner;
-				gi.linkentity(worm);
+			edict_t* worm = G_Spawn();
+			VectorCopy(trace->ent->s.origin, worm->s.origin);
+			worm->think = FireWallMissileWormThink;
+			worm->nextthink = level.time + FIREWORM_LIFETIME;
+			worm->solid = SOLID_NOT;
+			worm->clipmask = MASK_DRIP;
+			worm->owner = self->owner;
+			gi.linkentity(worm);
 
-				gi.sound(self,CHAN_WEAPON,gi.soundindex("weapons/FirewallDamage.wav"),1,ATTN_NORM,0);
-			}
+			gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/FirewallDamage.wav"), 1.0f, ATTN_NORM, 0.0f);
 		}
 	}
 
-	if (self->health > 0 && !(trace->contents & CONTENTS_WATER) && 
-			(trace->plane.normal[2] > FIREWALL_DOT_MIN || trace->plane.normal[2] < -FIREWALL_DOT_MIN))
-	dot = DotProduct(self->movedir, trace->plane.normal);
-	speed = VectorLength(self->velocity);
-	if (dot < 0 && dot > -0.67)	// slide on all but the most extreme angles.
+	float dot = 0.0f; //BUGFIX: mxd. Uninitialized in original version.
+	if (self->health > 0 && !(trace->contents & CONTENTS_WATER) && (trace->plane.normal[2] > FIREWALL_DOT_MIN || trace->plane.normal[2] < -FIREWALL_DOT_MIN))
+		dot = DotProduct(self->movedir, trace->plane.normal);
+
+	if (dot > -0.67f && dot < 0.0f) // Slide on all but the most extreme angles.
 	{
-		VectorMA(self->movedir, -dot, trace->plane.normal, surfvel);	// Vel then holds the velocity negated by the impact.
-		factor = VectorNormalize2(surfvel, surfvect);					// Yes, there is the tiniest chance this could be a zero vect, 
-		if (factor > 0)
+		vec3_t surf_vel;
+		VectorMA(self->movedir, -dot, trace->plane.normal, surf_vel); // Vel then holds the velocity negated by the impact.
+
+		vec3_t surf_dir;
+		const float factor = VectorNormalize2(surf_vel, surf_dir); // Yes, there is the tiniest chance this could be a zero vect, 
+
+		if (factor > 0.0f)
 		{
-			VectorMA(self->s.origin, 16.0, surfvect, testpos);				// test distance
-			
-			gi.trace(self->s.origin, self->mins, self->maxs, testpos, self, MASK_SOLID, &newtrace);
-			if (newtrace.fraction > 0.99)
-			{	// If this is successful, then we can make another fireblast moving in the new direction.
-				vectoangles(surfvect, newang);
-				newwall = CreateFireWall(self->s.origin, newang, self->owner, self->health-1, level.time, 0);
+			vec3_t test_pos;
+			VectorMA(self->s.origin, 16.0f, surf_dir, test_pos); // Test distance.
+
+			trace_t	new_trace;
+			gi.trace(self->s.origin, self->mins, self->maxs, test_pos, self, MASK_SOLID, &new_trace);
+
+			if (new_trace.fraction > 0.99f)
+			{
+				// If this is successful, then we can make another fireblast moving in the new direction.
+				vec3_t new_ang;
+				vectoangles(surf_dir, new_ang);
+				CreateFireWall(self->s.origin, new_ang, self->owner, self->health - 1, level.time, 0.0f);
 			}
 		}
 	}
 
 	// Well, whatever happened, free the current blast.
-	VectorSet(self->velocity, 0.0, 0.0, 0.0);
+	VectorClear(self->velocity);
 
-	self->s.effects |= EF_ALTCLIENTFX;		// Indicate to the wall that it's time to die
+	self->s.effects |= EF_ALTCLIENTFX; // Indicate to the wall that it's time to die.
 	G_SetToFree(self);
 }
 
