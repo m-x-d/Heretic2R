@@ -345,126 +345,75 @@ void SP_info_buoy(edict_t* self)
 	gi.linkentity(self);
 }
 
-qboolean check_buoy_path(edict_t *self, int lb_id, int sb_id, int fb_id)
+static qboolean CheckBuoyPath(edict_t* self, const int last_buoy_id, const int start_buoy_id, const int final_buoy_id) //mxd. Named 'check_buoy_path' in original version.
 {
-	buoy_t		*check_buoy = NULL;
-	buoy_t		*last_buoy, *start_buoy, *final_buoy;
-	int			i, branch;
-	qboolean	branch_checked[MAX_BUOY_BRANCHES];
-	int			num_branches_checked = 0;
-	int			infinite_loop_short_circuit = 0;
+	qboolean branch_checked[MAX_BUOY_BRANCHES];
+	int num_branches_checked = 0;
+	int infinite_loop_short_circuit = 0;
 
-	if(branch_counter++ >= MAX_BUOY_BRANCH_CHECKS)
-	{
-#ifdef _DEVEL
-		if(BUOY_DEBUG)
-			gi.dprintf("Passed MAX_BUOY_DEPTH %d!!!\n", branch_counter);
-		else
-#endif
-			return false;//going too deep into buoys
-	}
+	if (branch_counter++ >= MAX_BUOY_BRANCH_CHECKS || check_depth < buoy_depth + 1)
+		return false; // Going too deep into buoys.
 
-	if(check_depth < buoy_depth+1)
-	{
-#ifdef _DEVEL
-		if(BUOY_DEBUG_LITE||BUOY_DEBUG)
-			gi.dprintf("Hit max buoy check_depth (%d/%d) & failed\n", check_depth, buoy_depth);
-#endif
-		return false;//going too deep into buoys
-	}
-
-	for(i = 0; i < MAX_BUOY_BRANCHES; i++)
+	for (int i = 0; i < MAX_BUOY_BRANCHES; i++)
 		branch_checked[i] = false;
 
-	last_buoy = &level.buoy_list[lb_id];
-	start_buoy = &level.buoy_list[sb_id];
-	final_buoy = &level.buoy_list[fb_id];
+	const buoy_t* last_buoy = &level.buoy_list[last_buoy_id];
+	buoy_t* start_buoy = &level.buoy_list[start_buoy_id];
+	const buoy_t* final_buoy = &level.buoy_list[final_buoy_id];
 
 	start_buoy->opflags |= SF_DONT_TRY;
 
-	buoy_depth++;//add a level to buoy search depth
-	
-	for (i = 0; num_branches_checked < MAX_BUOY_BRANCHES; i++)
+	buoy_depth++; // Add a level to buoy search depth.
+
+	for (int i = 0; num_branches_checked < MAX_BUOY_BRANCHES; i++)
 	{
+		int branch;
+
 		do
 		{
-			if(infinite_loop_short_circuit++ > 1000)
+			if (infinite_loop_short_circuit++ > 1000)
 				assert(0);
 
 			branch = irand(0, MAX_BUOY_BRANCHES - 1);
-		} 
-		while(branch_checked[branch] == true);
+		} while (branch_checked[branch]);
 
 		branch_checked[branch] = true;
 		num_branches_checked++;
 
 		if (start_buoy->nextbuoy[branch] == NULL_BUOY)
 		{
-#ifdef _DEVEL
-			if (BUOY_DEBUG>2)
-				gi.dprintf("No #%d Branch off of %s\n", branch + 1, start_buoy->targetname);
-#endif
-			if(num_branches_checked == MAX_BUOY_BRANCHES)
+			if (num_branches_checked == MAX_BUOY_BRANCHES)
 			{
 				start_buoy->opflags &= ~SF_DONT_TRY;
-				buoy_depth--;//take last level off
+				buoy_depth--; // Take last level off.
+
 				return false;
 			}
-			else
-				continue;//check others
+
+			continue; // Check others.
 		}
 
-		check_buoy = &level.buoy_list[start_buoy->nextbuoy[branch]];
-
-#ifdef _DEVEL
-		if(BUOY_DEBUG>2)
-			gi.dprintf("Checking buoy %s off of %s\n", check_buoy->targetname, start_buoy->targetname);
-#endif
+		const buoy_t* check_buoy = &level.buoy_list[start_buoy->nextbuoy[branch]];
 
 		if (check_buoy == final_buoy)
 		{
-#ifdef _DEVEL
-			if (BUOY_DEBUG)
-				gi.dprintf("buoy found...\n");
-#endif			
 			start_buoy->opflags &= ~SF_DONT_TRY;
 			return true;
 		}
 
-		if ((check_buoy->opflags&SF_DONT_TRY))
-//	Gil suggestion: unimplemented
-// || check_buoy->failed_depth <= buoy_depth)
-		{
-#ifdef _DEVEL
-			if(BUOY_DEBUG>2)
-				gi.dprintf("Buoy %s marked as don't try, skipping\n", check_buoy->targetname);
-#endif
+		if ((check_buoy->opflags & SF_DONT_TRY) || check_buoy == last_buoy)
 			continue;
-		}
 
-		if (check_buoy == last_buoy)
-		{
-			continue;
-		}
-
-		if(check_buoy_path(self, start_buoy->id, check_buoy->id, final_buoy->id))
+		if (CheckBuoyPath(self, start_buoy->id, check_buoy->id, final_buoy->id))
 		{
 			start_buoy->opflags &= ~SF_DONT_TRY;
 			return true;
 		}
-
-//	Gil suggestion: unimplemented
-/*
-		//this buoy cannot reach goal at this depth, so don't try it again this search unless come across it at a lower depth
-		if(BUOY_DEBUG>2)
-			gi.dprintf("Buoy %s marked as failed at depth %d, will skip for rest of checks of lower depth\n", check_buoy->targetname, buoy_depth);
-		//NOTE: EXPERIMENTAL - remove if can't prove it works!
-		check_buoy->failed_depth = buoy_depth;
-*/
-  }
+	}
 
 	start_buoy->opflags &= ~SF_DONT_TRY;
-	buoy_depth--;//take last level off
+	buoy_depth--; // Take last level off.
+
 	return false;
 }
 
@@ -561,7 +510,7 @@ buoy_t	*find_next_buoy_2(edict_t *self, int sb_id, int fb_id)
 			continue;
 		}
 
-		if(check_buoy_path(self, start_buoy->id, check_buoy->id, final_buoy->id))
+		if(CheckBuoyPath(self, start_buoy->id, check_buoy->id, final_buoy->id))
 		{
 #ifdef _DEVEL
 			if(BUOY_DEBUG_LITE||BUOY_DEBUG)
@@ -606,7 +555,7 @@ buoy_t	*find_next_buoy_2(edict_t *self, int sb_id, int fb_id)
 //	Gil suggestion: unimplemented
 //	&& check_buoy->failed_depth > buoy_depth)
 		{
-			if(check_buoy_path(self, start_buoy->id, check_buoy->id, final_buoy->id))
+			if(CheckBuoyPath(self, start_buoy->id, check_buoy->id, final_buoy->id))
 			{
 #ifdef _DEVEL
 				if(BUOY_DEBUG_LITE||BUOY_DEBUG)
