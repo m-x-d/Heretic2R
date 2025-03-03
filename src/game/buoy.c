@@ -22,21 +22,22 @@ static int check_depth;
 static int buoy_depth;
 static int branch_counter; // Short circuit check if 1024.
 
-//Returns the buoy's id
-int insert_buoy(edict_t *self)
+// Returns the buoy's id.
+static int InsertBuoy(const edict_t* self) //mxd. Named 'insert_buoy' in original version.
 {
-	buoy_t	*buoy = &level.buoy_list[level.active_buoys];
-	int	i;
-	
-	//Init these values to -1 so we know what's filled
-	for (i=0;i<MAX_BUOY_BRANCHES;i++)
+	buoy_t* buoy = &level.buoy_list[level.active_buoys];
+
+	// Init these values to -1 so we know what's filled.
+	for (int i = 0; i < MAX_BUOY_BRANCHES; i++)
 		buoy->nextbuoy[i] = NULL_BUOY;
+
 	buoy->jump_target_id = NULL_BUOY;
 
-	//Copy all the other important info
+	// Copy all the other important info.
 	buoy->opflags = self->ai_mood_flags;
 	buoy->modflags = self->spawnflags;
-	if(buoy->modflags & BUOY_JUMP)
+
+	if (buoy->modflags & BUOY_JUMP)
 	{
 		buoy->jump_target = self->jumptarget;
 		buoy->jump_fspeed = self->speed;
@@ -45,30 +46,29 @@ int insert_buoy(edict_t *self)
 	}
 	else
 	{
-		buoy->jump_fspeed = buoy->jump_yaw = buoy->jump_uspeed = 0;
+		buoy->jump_fspeed = 0.0f;
+		buoy->jump_yaw = 0.0f;
+		buoy->jump_uspeed = 0.0f;
 	}
+
 	VectorCopy(self->s.origin, buoy->origin);
-	
-	//Get the contents so that we know if this is a water buoy or not
+
+	// Get the contents so that we know if this is a water buoy or not.
 	buoy->contents = gi.pointcontents(buoy->origin);
-	//are we going to be opening anything?
+
+	// Are we going to be opening anything?
 	buoy->pathtarget = self->pathtarget;
 
-	//save the connections for easier debugging
+	// Save the connections for easier debugging.
 	buoy->target = self->target;
 	buoy->jump_target = self->jumptarget;
 	buoy->targetname = self->targetname;
 
 	buoy->wait = self->wait;
 	buoy->delay = self->delay;
-	
-//	Gil suggestion: unimplemented
-//	buoy->failed_depth = 999999999;
 
-	//Post incremented on purpose, thank you
+	// Post incremented on purpose, thank you.
 	buoy->id = level.active_buoys++;
-	//when done, level.active_buoys will be the total number of buoys,
-	//level.active_buoys - 1 will be the last valid buoy
 
 	return buoy->id;
 }
@@ -476,7 +476,7 @@ void SP_info_buoy(edict_t *self)
 	self->think = info_buoy_link;
 	self->nextthink = level.time + FRAMETIME;
 
-	if ((self->count = insert_buoy(self)) == NULL_BUOY)
+	if ((self->count = InsertBuoy(self)) == NULL_BUOY)
 		gi.dprintf("ERROR! SP_info_buoy : Failed to insert buoy into map list!\n");
 	
 	gi.linkentity(self);
