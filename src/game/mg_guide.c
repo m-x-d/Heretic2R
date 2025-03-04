@@ -321,173 +321,112 @@ static qboolean MG_ResolveBuoyConnection(edict_t* self, const buoy_t* best_buoy,
 	return false;
 }
 
-/*
-========================
-
-MG_MakeStartForcedConnection
-
-  Attempts to make a connection between a buoy and a monster's enemy
-  This function itself just finds the two buoys to attempt to make the connection between,
-  MG_ResolveBuoyConnection actually makes the connection between two buoys
-
-========================
-*/
-qboolean MG_MakeStartForcedConnection(edict_t *self, int sforced_buoy, qboolean dont_use_last, qboolean skipjump)
+// Attempts to make a connection between a buoy and a monster's enemy.
+// This function itself just finds the two buoys to attempt to make the connection between,
+// MG_ResolveBuoyConnection() actually makes the connection between two buoys.
+static qboolean MG_MakeStartForcedConnection(edict_t* self, const int forced_buoy, const qboolean dont_use_last, const qboolean skip_jump)
 {
-	buoy_t		*found_buoy = NULL;
-	buoy_t		*e_bestbuoy = NULL;
-	buoy_t		*bestbuoy = NULL;
-	buoy_t		*dest = NULL;
-	qboolean	e_vis;
-	vec3_t		vec, goalpos, e_buoyvec;
-	float		bestdist, e_bestdist, e_len, e_buoydist;
-	int			i;
-	int			tracecount = 0;
-	float		tracedist_total=0;
-	float		buoy_passes = BUOY_SEARCH_PASSES;
-	float		e_radius;
-
-	float search_pass_interval = MAX_BUOY_DIST / buoy_passes;
-	float k;
-
-	if(DEACTIVATE_BUOYS)
+	if (DEACTIVATE_BUOYS)
 		return false;
 
-	bestbuoy	= &level.buoy_list[sforced_buoy];
-	bestdist    = 0;
-	e_bestdist  = 9999999;
+	self->last_buoyed_enemy = self->enemy; // Remember the last enemy I looked for.
 
-	self->last_buoyed_enemy = self->enemy;//Remember the last enemy I looked for
+	vec3_t goal_pos;
+	VectorCopy(self->enemy->s.origin, goal_pos);
+	goal_pos[2] += (float)self->viewheight;
 
-	VectorCopy(self->enemy->s.origin, goalpos);
-	goalpos[2] += self->viewheight;
+	const buoy_t* e_best_buoy = NULL;
+	float e_best_dist = 9999999.0f;
+	const float e_radius = 24.0f + max(16.0f, self->enemy->maxs[0]);
 
-	if(self->enemy->maxs[0]>16)
-		e_radius = 24 + self->enemy->maxs[0];
-	else
-		e_radius = 40;//24 + 16
-
-	//first, precalc all distances
-	for(i = 0; i <= level.active_buoys; i++)
+	// First, pre-calculate all distances.
+	for (int i = 0; i <= level.active_buoys; i++)
 	{
-		found_buoy = &level.buoy_list[i];
-		VectorSubtract(goalpos, found_buoy->origin, vec);
-		found_buoy->temp_e_dist = VectorLength(vec);
-		if (found_buoy->temp_e_dist < (24+e_radius))
+		buoy_t* buoy = &level.buoy_list[i];
+
+		vec3_t vec;
+		VectorSubtract(goal_pos, buoy->origin, vec);
+		buoy->temp_e_dist = VectorLength(vec);
+
+		if (buoy->temp_e_dist < e_radius + 24.0f)
 		{
-			e_bestbuoy = found_buoy;
-			e_bestdist = found_buoy->temp_dist;
+			e_best_buoy = buoy;
+			e_best_dist = buoy->temp_dist;
+
 			break;
 		}
 	}
 
-	//now, do all the passes, going from closest to farthest
-	for(k = 0; (k < buoy_passes)&&(!bestbuoy || !e_bestbuoy); k++)
+	const float search_pass_interval = MAX_BUOY_DIST / BUOY_SEARCH_PASSES;
+	const buoy_t* best_buoy = &level.buoy_list[forced_buoy];
+
+	// Now, do all the passes, going from closest to farthest.
+	for (int i = 0; i < BUOY_SEARCH_PASSES && (best_buoy == NULL || e_best_buoy == NULL); i++)
 	{
-		for(i = 0; i <= level.active_buoys; i++)
+		for (int c = 0; c <= level.active_buoys; c++)
 		{
-			found_buoy = &level.buoy_list[i];
+			const buoy_t* buoy = &level.buoy_list[c];
+			const float e_dist = buoy->temp_e_dist;
 
-			e_vis = false;
-			e_len = found_buoy->temp_e_dist;
-
-			//only consider buoys in the current interval--closer ones have already been
-			//checked, and we'll save farther ones for later
-			if (e_len < e_bestdist && e_len > search_pass_interval*k && e_len < search_pass_interval*(k+1.0))
+			// Only consider buoys in the current interval. Closer ones have already been checked, and we'll save farther ones for later.
+			if (e_dist < e_best_dist && e_dist > search_pass_interval * (float)i && e_dist < search_pass_interval * (float)(i + 1))
 			{
-				tracecount++;
-				tracedist_total+=e_len;
-				e_vis = IsClearPath(self->enemy, found_buoy->origin);
-			}
-
-			if (e_vis)
-			{
-				e_bestdist = e_len;
-				e_bestbuoy = found_buoy;
-			}
-		}
-	}
-
-	tracecount=0;
-	tracedist_total=0;
-
-	if (!e_bestbuoy && irand(0,10) < 5)
-	{//ok, Clear_Path too restrictive, try just clear_visible
-
-		//distances precalced already, so skip that step
-
-		//now, do all the passes, going from closest to farthest
-		for(k = 0; (k < buoy_passes)&&(!e_bestbuoy); k++)
-		{
-			for(i = 0; i <= level.active_buoys; i++)
-			{
-				found_buoy = &level.buoy_list[i];
-				e_vis = false;
-
-				e_len = found_buoy->temp_e_dist;
-
-				//only consider buoys in the current interval--closer ones have already been
-				//checked, and we'll save farther ones for later
-				if (e_len < e_bestdist && e_len > search_pass_interval*k && e_len < search_pass_interval*(k+1.0))
+				if (IsClearPath(self->enemy, buoy->origin))
 				{
-					tracecount++;
-					tracedist_total+=e_len;
-					e_vis = clear_visible_pos(self->enemy, found_buoy->origin);
-				}
-
-				if (e_vis)
-				{
-					e_bestdist = e_len;
-					e_bestbuoy = found_buoy;
+					e_best_dist = e_dist;
+					e_best_buoy = buoy;
 				}
 			}
 		}
 	}
 
-	if (e_bestdist > MAX_BUOY_DIST)
+	if (e_best_buoy == NULL && irand(0, 10) < 5)
 	{
-#ifdef _DEVEL
-		if(BUOY_DEBUG_LITE||BUOY_DEBUG)
-			gi.dprintf("%s's %s CLOSEST BUOY TOO FAR AWAY (%4.2f)\n", self->enemy->classname, vtos(self->s.origin), e_bestdist);
-#endif
+		// Clear_Path too restrictive, try just clear_visible.
+		// Distances are pre-calculated already, so skip that step.
+
+		// Now, do all the passes, going from closest to farthest.
+		for (int i = 0; (i < BUOY_SEARCH_PASSES) && (!e_best_buoy); i++)
+		{
+			for (int c = 0; c <= level.active_buoys; c++)
+			{
+				const buoy_t* found_buoy = &level.buoy_list[c];
+				const float e_dist = found_buoy->temp_e_dist;
+
+				// Only consider buoys in the current interval. Closer ones have already been checked, and we'll save farther ones for later.
+				if (e_dist < e_best_dist && e_dist > search_pass_interval * (float)i && e_dist < search_pass_interval * (float)(i + 1))
+				{
+					if (clear_visible_pos(self->enemy, found_buoy->origin))
+					{
+						e_best_dist = e_dist;
+						e_best_buoy = found_buoy;
+					}
+				}
+			}
+		}
+	}
+
+	// Closest buoy too far away...
+	if (e_best_dist > MAX_BUOY_DIST)
 		return false;
+
+	// Don't skip jump buoys, they're crucial.
+	if ((!(best_buoy->modflags & BUOY_JUMP) || skip_jump) && e_best_buoy != NULL)
+	{
+		vec3_t e_buoy_vec;
+		VectorSubtract(e_best_buoy->origin, self->s.origin, e_buoy_vec);
+		const float e_buoy_dist = VectorLength(e_buoy_vec);
+
+		// Enemy best buoy is farther away from me and not my buoy.
+		if (best_buoy != e_best_buoy && e_buoy_dist > 0.0f && IsClearPath(self, e_best_buoy->origin))
+			best_buoy = e_best_buoy; // Can go straight at enemy best buoy even though farther away.
 	}
 
-	if(!(bestbuoy->modflags&BUOY_JUMP)||skipjump)
-	{//don't skip jump buoys, they're crucial
-		if(e_bestbuoy)
-		{
-			VectorSubtract(e_bestbuoy->origin, self->s.origin, e_buoyvec);
-			e_buoydist = VectorLength(e_buoyvec);
-			if (bestbuoy != e_bestbuoy && e_buoydist > bestdist)
-			{//enemy best buoy is farther away from me and not my buoy
-				if(IsClearPath(self, e_bestbuoy->origin))
-				{//can go straight at enemy best buoy even though farther away
-#ifdef _DEVEL
-					if(BUOY_DEBUG_LITE||BUOY_DEBUG)
-						gi.dprintf("%s going after %s's buoy even though farther\n", self->classname, self->enemy->classname);
-#endif
-					bestbuoy = e_bestbuoy;
-					bestdist = e_bestdist;
-				}
-			}
-		}
-	}
+	// If going after a player, set his buoy for other monsters this frame.
+	if (e_best_buoy != NULL && self->enemy->client != NULL)
+		level.player_buoy[self->enemy->s.number - 1] = e_best_buoy->id;
 
-
-	if(e_bestbuoy)
-	{//if going after a player, set his buoy for other monsters this frame
-		if(self->enemy->client)
-		{
-#ifdef _DEVEL
-			if(BUOY_DEBUG)
-				gi.dprintf("%s setting player_buoy %d to %s\n", self->classname, self->enemy->s.number, e_bestbuoy->targetname);
-#endif
-			level.player_buoy[self->enemy->s.number - 1] = e_bestbuoy->id;
-		}
-	}
-
-	return MG_ResolveBuoyConnection(self, bestbuoy, e_bestbuoy, goalpos, dont_use_last, skipjump);
+	return MG_ResolveBuoyConnection(self, best_buoy, e_best_buoy, goal_pos, dont_use_last, skip_jump);
 }
 
 /*
