@@ -154,71 +154,68 @@ int MG_SetFirstBuoy(edict_t* self)
 	return best_buoy->id;
 }
 
-qboolean MG_GoToRandomBuoy(edict_t *self)
+qboolean MG_GoToRandomBuoy(edict_t* self)
 {
-	buoy_t		*found_buoy;
-	qboolean	searching;
-	qboolean	dead_end = false;
-	int			i, nextbranch, j;
-	int			branches_checked;
-	qboolean	branch_checked[MAX_BUOY_BRANCHES];
-	int			last_buoy = NULL_BUOY;
-	
-	if(MG_SetFirstBuoy(self) == NULL_BUOY)
+	if (MG_SetFirstBuoy(self) == NULL_BUOY)
 		return false;
 
-	found_buoy = &level.buoy_list[self->buoy_index];
-	for(i = 0; i < self->mintel; i++)
+	const buoy_t* found_buoy = &level.buoy_list[self->buoy_index];
+	qboolean dead_end = false;
+	qboolean branch_checked[MAX_BUOY_BRANCHES];
+	int last_buoy_id = NULL_BUOY;
+
+	for (int i = 0; i < self->mintel && !dead_end; i++)
 	{
-		searching = true;
-		for(j = 0; j<MAX_BUOY_BRANCHES; j++)
+		for (int j = 0; j < MAX_BUOY_BRANCHES; j++)
 			branch_checked[j] = false;
 
-		while(searching)
+		while (true)
 		{
-			nextbranch = irand(0, 2);
-			branch_checked[nextbranch] = true;
+			const int next_branch = irand(0, MAX_BUOY_BRANCHES - 1);
+			branch_checked[next_branch] = true;
 
-			branches_checked = false;
-			for(j = 0; j<MAX_BUOY_BRANCHES; j++)
-			{
-				if(branch_checked[j])
-				{
+			int branches_checked = false;
+
+			for (int j = 0; j < MAX_BUOY_BRANCHES; j++)
+				if (branch_checked[j])
 					branches_checked++;
-				}
+
+			if (found_buoy->nextbuoy[next_branch] > NULL_BUOY &&
+				found_buoy->nextbuoy[next_branch] != self->buoy_index &&
+				(found_buoy->nextbuoy[next_branch] != self->lastbuoy || branches_checked >= MAX_BUOY_BRANCHES) &&
+				(found_buoy->nextbuoy[next_branch] != last_buoy_id || branches_checked >= MAX_BUOY_BRANCHES))
+			{
+				// nextbuoy off this one is not null, not my start buoy, not my last buoy, and not last buoy found.
+				last_buoy_id = found_buoy->id;
+				found_buoy = &level.buoy_list[found_buoy->nextbuoy[next_branch]];
+
+				// Break inner loop.
+				break;
 			}
-			
-			if(found_buoy->nextbuoy[nextbranch] > NULL_BUOY &&
-				found_buoy->nextbuoy[nextbranch] != self->buoy_index &&
-				(found_buoy->nextbuoy[nextbranch] != self->lastbuoy || branches_checked >= MAX_BUOY_BRANCHES)&&
-				(found_buoy->nextbuoy[nextbranch] != last_buoy || branches_checked >= MAX_BUOY_BRANCHES))
-			{//nextbuoy off this one is not null, not my start buoy, not my last buoy, and not last buoy found
-				last_buoy = found_buoy->id;
-				found_buoy = &level.buoy_list[found_buoy->nextbuoy[nextbranch]];
-				searching = false;
-			}
-			else if (branches_checked >= MAX_BUOY_BRANCHES)
-			{//a dead end, checked all 3 branches
-				if(i < 3)//can't run away far enough
+
+			if (branches_checked >= MAX_BUOY_BRANCHES)
+			{
+				// A dead end, checked all 3 branches.
+				if (i < MAX_BUOY_BRANCHES) // Can't run away far enough.
 					return false;
-				searching = false;
+
+				// Break both loops.
 				dead_end = true;
+				break;
 			}
 		}
-		if(dead_end)
-			break;
 	}
 
-	if(self->ai_mood == AI_MOOD_FLEE)
-		self->ai_mood_flags|=AI_MOOD_FLAG_IGNORE_ENEMY;
+	if (self->ai_mood == AI_MOOD_FLEE)
+		self->ai_mood_flags |= AI_MOOD_FLAG_IGNORE_ENEMY;
 	else
-		self->ai_mood = AI_MOOD_NAVIGATE;//wander?
+		self->ai_mood = AI_MOOD_NAVIGATE; // Wander?
 
 	self->ai_mood_flags &= ~AI_MOOD_FLAG_DUMB_FLEE;
-	self->ai_mood_flags|=AI_MOOD_FLAG_FORCED_BUOY;
+	self->ai_mood_flags |= AI_MOOD_FLAG_FORCED_BUOY;
 	self->forced_buoy = found_buoy->id;
 
-	QPostMessage(self, MSG_RUN,PRI_DIRECTIVE, NULL);
+	QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 
 	MG_RemoveBuoyEffects(self);
 	MG_MakeConnection(self, NULL, false);
