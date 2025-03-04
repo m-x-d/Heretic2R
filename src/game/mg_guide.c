@@ -223,22 +223,13 @@ qboolean MG_GoToRandomBuoy(edict_t* self)
 	return true;
 }
 
-/*
-MG_AssignMonsterNextBuoy(edict_t *self, buoy_t *startbuoy, buoy_t *endbuoy)
-
-Actually assigns the bstartbuoy as the monster's buoy
-*/
-
-void MG_AssignMonsterNextBuoy(edict_t *self, buoy_t *startbuoy, buoy_t *endbuoy)
+// Assigns the start_buoy as the monster's buoy.
+static void MG_AssignMonsterNextBuoy(edict_t* self, const buoy_t* start_buoy)
 {
-	edict_t		*showme;
+	VectorCopy(start_buoy->origin, self->monsterinfo.nav_goal);
 
-	VectorCopy(startbuoy->origin, self->monsterinfo.nav_goal);
-	if(self->buoy_index!=NULL_BUOY)
-		self->lastbuoy = self->buoy_index;
-	else
-		self->lastbuoy = NULL_BUOY;
-	self->buoy_index = startbuoy->id;
+	self->lastbuoy = self->buoy_index;
+	self->buoy_index = start_buoy->id;
 	self->last_buoy_time = level.time;
 }
 
@@ -381,11 +372,11 @@ qboolean MG_ResolveBuoyConnection(edict_t *self, buoy_t *bestbuoy, buoy_t *e_bes
 
 			if((!(bestbuoy->modflags&BUOY_JUMP)||skipjump) && MG_ReachedBuoy(self, bestbuoy->origin))
 			{
-				MG_AssignMonsterNextBuoy(self, dest, e_bestbuoy);
+				MG_AssignMonsterNextBuoy(self, dest);
 			}
 			else
 			{
-				MG_AssignMonsterNextBuoy(self, bestbuoy, e_bestbuoy);
+				MG_AssignMonsterNextBuoy(self, bestbuoy);
 			}
 			return true;
 		}
