@@ -96,78 +96,62 @@ void MG_RemoveBuoyEffects(const edict_t* self) //TODO: remove.
 {
 }
 
-int MG_SetFirstBuoy(edict_t *self)
+int MG_SetFirstBuoy(edict_t* self)
 {
-	buoy_t		*found_buoy = NULL;
-	buoy_t		*bestbuoy = NULL;
-	qboolean	vis;
-	vec3_t		vec;
-	float		bestdist, len;
-	int			i = 0;
-	int			tracecount=0;
-	float		buoy_passes = BUOY_SEARCH_PASSES;
-
-	float search_pass_interval = MAX_BUOY_DIST / buoy_passes;
-	float j;
-
-	bestdist    = 9999999;
-
-	if(!self->client)
+	if (self->client == NULL && !(self->monsterinfo.aiflags & AI_USING_BUOYS))
 	{
-		if(!(self->monsterinfo.aiflags & AI_USING_BUOYS))
-		{
-			self->ai_mood = AI_MOOD_PURSUE;
-			return NULL_BUOY;
-		}
-	}
-
-	if(DEACTIVATE_BUOYS)
+		self->ai_mood = AI_MOOD_PURSUE;
 		return NULL_BUOY;
-	//first, precalc all distances
-	for(i = 0; i <= level.active_buoys; i++)
-	{
-		found_buoy = &level.buoy_list[i];
-		VectorSubtract(self->s.origin, found_buoy->origin, vec);
-		found_buoy->temp_dist = VectorLength(vec);
 	}
 
-	//now, do all the passes, going from closest to farthest
-	for(j = 0; (j < buoy_passes)&&(!bestbuoy); j++)
+	if (DEACTIVATE_BUOYS)
+		return NULL_BUOY;
+
+	// First, pre-calculate all distances.
+	for (int i = 0; i <= level.active_buoys; i++)
 	{
-		for(i = 0; i <= level.active_buoys; i++)
+		buoy_t* buoy = &level.buoy_list[i];
+
+		vec3_t vec;
+		VectorSubtract(self->s.origin, buoy->origin, vec);
+		buoy->temp_dist = VectorLength(vec);
+	}
+
+	const float search_pass_interval = MAX_BUOY_DIST / BUOY_SEARCH_PASSES;
+	const buoy_t* best_buoy = NULL;
+	float best_dist = 9999999.0f;
+
+	// Now, do all the passes, going from closest to farthest.
+	for (int i = 0; i < BUOY_SEARCH_PASSES && best_buoy == NULL; i++)
+	{
+		for (int c = 0; c <= level.active_buoys; c++)
 		{
-			vis	  = false;
+			const buoy_t* buoy = &level.buoy_list[c];
+			const float dist = buoy->temp_dist;
 
-			found_buoy = &level.buoy_list[i];
-			len = found_buoy->temp_dist;
-
-			//only consider buoys in the current interval--closer ones have already been
-			//checked, and we'll save farther ones for later
-			if (len < bestdist && len > search_pass_interval*j && len < search_pass_interval*(j+1.0))
+			// Only consider buoys in the current interval. Closer ones have already been checked, and we'll save farther ones for later.
+			if (dist < best_dist && dist > search_pass_interval * (float)i && dist < search_pass_interval * (float)(i + 1))
 			{
-				tracecount++;
-				vis = IsClearPath(self, found_buoy->origin);
-			}
-
-			if (vis)
-			{
-				bestdist = len;
-				bestbuoy = found_buoy;
+				if (IsClearPath(self, buoy->origin))
+				{
+					best_dist = dist;
+					best_buoy = buoy;
+				}
 			}
 		}
 	}
 
-	if (!bestbuoy)
+	if (best_buoy == NULL)
 		return NULL_BUOY;
 
-	if(!self->client)
+	if (self->client == NULL)
 	{
 		self->lastbuoy = NULL_BUOY;
-		self->buoy_index = bestbuoy->id;
-		VectorCopy(bestbuoy->origin, self->monsterinfo.nav_goal);
+		self->buoy_index = best_buoy->id;
+		VectorCopy(best_buoy->origin, self->monsterinfo.nav_goal);
 	}
 
-	return bestbuoy->id;
+	return best_buoy->id;
 }
 
 qboolean MG_GoToRandomBuoy(edict_t *self)
