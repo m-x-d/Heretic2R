@@ -308,6 +308,7 @@ struct edict_s
 		int shrine_type;
 		int morph_timer;
 		int buoy_index;
+		qboolean* sphere_charging_ptr; //mxd. Used by Sphere of Annihilation spell.
 	};
 
 	// Only set in trigger_push_touch and probably only on players.

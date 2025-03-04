@@ -128,11 +128,8 @@ static void SphereOfAnnihilationGrowThink(edict_t* self)
 	else
 		AngleVectors(self->owner->s.angles, forward, NULL, up);
 
-	// NOTE: 'edict_t'->combattarget is used as a pointer to a 'qboolean' which flags whether or not I have been released.
-	// Would like a dedicated value in the 'edict_t' but this is unlikely to happen, sooooo...
-
 	// If we have released, or we are dead, or a chicken, release the sphere.
-	if (*(qboolean*)self->combattarget && !(self->owner->deadflag & (DEAD_DYING | DEAD_DEAD))
+	if (*self->sphere_charging_ptr && !(self->owner->deadflag & (DEAD_DYING | DEAD_DEAD))
 		&& (cl != NULL && !(cl->playerinfo.edictflags & FL_CHICKEN)) && !(cl->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN))
 	{
 		if (self->count < SPHERE_MAX_CHARGES)
@@ -322,11 +319,8 @@ static void SphereOfAnnihilationGrowThinkPower(edict_t* self)
 	else
 		AngleVectors(self->owner->s.angles, forward, right, NULL);
 
-	// NOTE: 'edict_t'->combattarget is used as a pointer to a 'qboolean' which flags whether or not I have been released.
-	// Would like a dedicated value in the 'edict_t' but this is unlikely to happen, sooooo...
-
 	// If we have released, or we are dead, or a chicken, release the sphere.
-	if (*(qboolean*)self->combattarget && !(self->owner->deadflag & (DEAD_DYING | DEAD_DEAD))
+	if (*self->sphere_charging_ptr && !(self->owner->deadflag & (DEAD_DYING | DEAD_DEAD))
 		&& (cl != NULL && !(cl->playerinfo.edictflags & FL_CHICKEN)) && !(cl->playerinfo.flags & PLAYER_FLAG_KNOCKDOWN))
 	{
 		if (self->count < SPHERE_MAX_CHARGES)
@@ -456,11 +450,8 @@ static void SphereWatcherGrowThink(edict_t* self)
 	else
 		AngleVectors(self->owner->s.angles, forward, NULL, up);
 
-	// NOTE: 'edict_t'->combattarget is used as a pointer to a 'qboolean' which flags whether or not I have been released.
-	// Would like a dedicated value in the 'edict_t' but this is unlikely to happen, sooooo...
-
 	// If we have released or we are dead, release the sphere.
-	if (*(qboolean*)self->combattarget && !(self->owner->deadflag & (DEAD_DYING | DEAD_DEAD)))
+	if (*self->sphere_charging_ptr && !(self->owner->deadflag & (DEAD_DYING | DEAD_DEAD)))
 	{
 		self->count += irand(1, 2);
 
@@ -627,13 +618,9 @@ void SpellCastSphereOfAnnihilation(edict_t* caster, const vec3_t start_pos, cons
 
 	VectorCopy(aim_angles, sphere->s.angles);
 
+	sphere->sphere_charging_ptr = release_flags_ptr; //mxd. Added dedicated edict_t property.
 	sphere->avelocity[YAW] = 100.0f;
 	sphere->avelocity[ROLL] = 100.0f;
-
-	// NOTE: 'edict_t'->combattarget is used as a pointer to a 'qboolean' which flags whether or not I have been released.
-	// Would like a dedicated value in the 'edict_t' but this is unlikely to happen, sooooo...
-	sphere->combattarget = (char*)release_flags_ptr;
-
 	sphere->count = 0;
 	sphere->solid = SOLID_NOT;
 	sphere->dmg = 0;
