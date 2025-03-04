@@ -69,40 +69,27 @@ static qboolean IsClearPath(const edict_t* self, const vec3_t end) //mxd. Named 
 	return (trace.fraction == 1.0f || trace.ent == self->enemy);
 }
 
-/*
-=============
-clear_visible_pos
-
-returns 1 if the spot is visible, but not through transparencies
-=============
-*/
-qboolean clear_visible_pos (edict_t *self, vec3_t spot2)
+// Returns true if the spot is visible, but not through transparencies.
+qboolean clear_visible_pos(const edict_t* self, const vec3_t spot) //TODO: rename to MG_ClearVisiblePos.
 {
-	vec3_t	spot1;
-	trace_t	trace;
-
-	if (!self)
+	if (self == NULL || !gi.inPVS(self->s.origin, spot)) // Quicker way to discard points that are very not visible.
 		return false;
 
-	VectorCopy (self->s.origin, spot1);
-	spot1[2] += self->viewheight;
-	if(self->classID == CID_TBEAST)
+	vec3_t start;
+	VectorCopy(self->s.origin, start);
+	start[2] += (float)self->viewheight;
+
+	if (self->classID == CID_TBEAST)
 	{
-		vec3_t	forward;
-	
+		vec3_t forward;
 		AngleVectors(self->s.angles, forward, NULL, NULL);
-		VectorMA(spot1, self->maxs[0], forward, spot1);
+		VectorMA(start, self->maxs[0], forward, start);
 	}
 
-	//quicker way to discard points that are very not visible
-	if (!gi.inPVS(self->s.origin, spot2))
-		return false;
+	trace_t trace;
+	gi.trace(start, vec3_origin, vec3_origin, spot, self, MASK_SOLID, &trace);
 
-	gi.trace (spot1, vec3_origin, vec3_origin, spot2, self, MASK_SOLID,&trace);
-	
-	if (trace.fraction == 1.0)
-		return true;
-	return false;
+	return (trace.fraction == 1.0f);
 }
 
 void MG_AddBuoyEffect(edict_t* self, qboolean endbuoy)
