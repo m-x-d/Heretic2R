@@ -14,7 +14,7 @@
 #include "m_stats.h"
 #include "Random.h"
 #include "Vector.h"
-#include "FX.h"
+#include "FX.h" //TODO: remove
 #include "g_local.h"
 
 // 10 seconds between choosing a buoy and getting there.
@@ -25,40 +25,25 @@
 // If a buoy is found after a pass, we know we've got the closest buoy, and further passes can be skipped.
 #define BUOY_SEARCH_PASSES	6
 
-/* 
- *
- *
- *	Helper functions
- *
- *
- */
+#pragma region ========================== Helper functions ==========================
 
-qboolean MG_ReachedBuoy (edict_t *self, vec3_t pspot)
+qboolean MG_ReachedBuoy(const edict_t* self, const vec3_t p_spot)
 {
-	float	len, radius, z_diff, center;
-	vec3_t	spot;
+	vec3_t spot;
 
-	if(!pspot)
+	if (p_spot == NULL)
 		VectorCopy(self->monsterinfo.nav_goal, spot);
 	else
-		VectorCopy(pspot, spot);
+		VectorCopy(p_spot, spot);
 
-	center = (self->absmin[2] + self->absmax[2]) * 0.5;
-	z_diff = Q_fabs(spot[2] - center);
-	if(z_diff > self->size[2])
+	const float center_z = (self->absmin[2] + self->absmax[2]) * 0.5f;
+	if (Q_fabs(spot[2] - center_z) > self->size[2])
 		return false;
 
-	len = vhlen(spot, self->s.origin);
-	
-	if(self->maxs[0]>16)
-		radius = 24 + self->maxs[0];
-	else
-		radius = 40;//24 + 16
+	const float dist = vhlen(spot, self->s.origin);
+	const float radius = 24 + max(16.0f, self->maxs[0]);
 
-	if (len < (24+radius))
-		return true;
-
-	return false;
+	return (dist < radius + 24.0f);
 }
 
 qboolean Clear_Path(edict_t *self, vec3_t end)
@@ -1990,21 +1975,9 @@ void MG_Pathfind(edict_t *self, qboolean check_clear_path)
 	}
 }
 
-/* 
- *
- *
- *
- *
- *
- *
- *	Guide functions
- *
- *
- *
- *
- *
- *
- */
+#pragma endregion
+
+#pragma region ========================== Guide functions ==========================
 
 void MG_BuoyNavigate(edict_t *self)
 {//Only handles buoy selection, some mood changing
@@ -2586,4 +2559,4 @@ void MG_InitMoods(edict_t *self)
 	self->lastbuoy = NULL_BUOY;
 }
 
-
+#pragma endregion
