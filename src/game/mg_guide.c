@@ -46,45 +46,27 @@ qboolean MG_ReachedBuoy(const edict_t* self, const vec3_t p_spot)
 	return (dist < radius + 24.0f);
 }
 
-qboolean Clear_Path(edict_t *self, vec3_t end)
+static qboolean IsClearPath(const edict_t* self, const vec3_t end) //mxd. Named 'Clear_Path' in original version.
 {
-	trace_t	trace;
-	vec3_t	mins, maxs;
-
-	if(DEACTIVATE_BUOYS)
+	if (DEACTIVATE_BUOYS || !gi.inPVS(self->s.origin, end)) // Quicker way to discard points that are very not in a clear path.
 		return false;
 
-	VectorCopy(self->mins, mins);
-	VectorCopy(self->maxs, maxs);
+	vec3_t mins;
+	vec3_t maxs;
+	VectorScale(self->mins, 0.5f, mins);
+	VectorScale(self->maxs, 0.5f, maxs);
 
-	//sfs--i guess it's an ob/com thing, since msdev can probably be relied on to
-	//		optimize it during compile, but mults are faster than divides.
-
-	mins[0] *= 0.5;
-	mins[1] *= 0.5;
-	mins[2] *= 0.5;
-
-	maxs[0] *= 0.5;
-	maxs[1] *= 0.5;
-	maxs[2] *= 0.5;
-
-	if(self->mins[2] + 18 > mins[2])//need to account for stepheight
-	{//took off less than 18
-		mins[2] = self->mins[2] + 18;
-		if(mins[2] > maxs[2])
-			maxs[2] = mins[2];
+	if (self->mins[2] + 18.0f > mins[2]) // Need to account for stepheight.
+	{
+		// Took off less than 18.
+		mins[2] = self->mins[2] + 18.0f;
+		maxs[2] = max(mins[2], maxs[2]);
 	}
-	
-	//quicker way to discard points that are very not in a clear path
-	if (!gi.inPVS(self->s.origin, end))
-		return false;
 
-	gi.trace(self->s.origin, mins, maxs, end, self, MASK_SOLID,&trace);
+	trace_t trace;
+	gi.trace(self->s.origin, mins, maxs, end, self, MASK_SOLID, &trace);
 
-	if ((trace.fraction < 1) && (trace.ent != self->enemy))
-		return false;
-
-	return true;
+	return (trace.fraction == 1.0f || trace.ent == self->enemy);
 }
 
 /*
@@ -249,7 +231,7 @@ int MG_SetFirstBuoy(edict_t *self)
 			if (len < bestdist && len > search_pass_interval*j && len < search_pass_interval*(j+1.0))
 			{
 				tracecount++;
-				vis = Clear_Path(self, found_buoy->origin);
+				vis = IsClearPath(self, found_buoy->origin);
 			}
 
 			if (vis)
@@ -630,7 +612,7 @@ qboolean MG_MakeStartForcedConnection(edict_t *self, int sforced_buoy, qboolean 
 			{
 				tracecount++;
 				tracedist_total+=e_len;
-				e_vis = Clear_Path(self->enemy, found_buoy->origin);
+				e_vis = IsClearPath(self->enemy, found_buoy->origin);
 			}
 
 			if (e_vis)
@@ -694,7 +676,7 @@ qboolean MG_MakeStartForcedConnection(edict_t *self, int sforced_buoy, qboolean 
 			e_buoydist = VectorLength(e_buoyvec);
 			if (bestbuoy != e_bestbuoy && e_buoydist > bestdist)
 			{//enemy best buoy is farther away from me and not my buoy
-				if(Clear_Path(self, e_bestbuoy->origin))
+				if(IsClearPath(self, e_bestbuoy->origin))
 				{//can go straight at enemy best buoy even though farther away
 #ifdef _DEVEL
 					if(BUOY_DEBUG_LITE||BUOY_DEBUG)
@@ -802,7 +784,7 @@ qboolean MG_MakeForcedConnection(edict_t *self, int forced_buoy, qboolean dont_u
 			{
 				tracecount++;
 				tracedist_total+=len;
-				vis = Clear_Path(self, found_buoy->origin);
+				vis = IsClearPath(self, found_buoy->origin);
 			}
 
 			if (vis)
@@ -832,7 +814,7 @@ qboolean MG_MakeForcedConnection(edict_t *self, int forced_buoy, qboolean dont_u
 		e_buoydist = VectorLength(e_buoyvec);
 		if (bestbuoy != e_bestbuoy && e_buoydist > bestdist)
 		{//enemy best buoy is farther away from me and not my buoy
-			if(Clear_Path(self, e_bestbuoy->origin))
+			if(IsClearPath(self, e_bestbuoy->origin))
 			{//can go straight at enemy best buoy even though farther away
 #ifdef _DEVEL
 				if(BUOY_DEBUG_LITE||BUOY_DEBUG)
@@ -942,7 +924,7 @@ qboolean MG_MakeNormalConnection(edict_t *self, qboolean dont_use_last, qboolean
 			{
 				tracecount++;
 				tracedist_total+=len;
-				vis = Clear_Path(self, found_buoy->origin);
+				vis = IsClearPath(self, found_buoy->origin);
 			}
 
 			if (vis)
@@ -959,7 +941,7 @@ qboolean MG_MakeNormalConnection(edict_t *self, qboolean dont_use_last, qboolean
 			{
 				tracecount++;
 				tracedist_total+=e_len;
-				e_vis = Clear_Path(self->enemy, found_buoy->origin);
+				e_vis = IsClearPath(self->enemy, found_buoy->origin);
 			}
 
 			if (e_vis)
@@ -1041,7 +1023,7 @@ qboolean MG_MakeNormalConnection(edict_t *self, qboolean dont_use_last, qboolean
 			e_buoydist = VectorLength(e_buoyvec);
 			if (bestbuoy != e_bestbuoy && e_buoydist > bestdist)
 			{//enemy best buoy is farther away from me and not my buoy
-				if(Clear_Path(self, e_bestbuoy->origin))
+				if(IsClearPath(self, e_bestbuoy->origin))
 				{//can go straight at enemy best buoy even though farther away
 #ifdef _DEVEL
 					if(BUOY_DEBUG_LITE||BUOY_DEBUG)
