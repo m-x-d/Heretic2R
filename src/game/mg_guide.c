@@ -245,151 +245,79 @@ static qboolean MG_IsValidBestBuoyForEnt(edict_t* ent, const buoy_t* test_buoy) 
 	return false; // Too far.
 }
 
-/*
-========================
+// Makes the connection between two buoys.
+static qboolean MG_ResolveBuoyConnection(edict_t* self, const buoy_t* best_buoy, const buoy_t* e_best_buoy, const vec3_t goal_pos, qboolean dont_use_last, const qboolean skip_jump)
+{
+	// When called directly, this does not and should not set player_buoy.
 
-MG_ResolveBuoyConnection
-
-  Actually makes the connection between two buoys
-
-========================
-*/
-qboolean MG_ResolveBuoyConnection(edict_t *self, buoy_t *bestbuoy, buoy_t *e_bestbuoy, vec3_t goalpos, qboolean dont_use_last, qboolean skipjump)
-{//When called directly, this does not and should not set player_buoy
-	buoy_t		*found_buoy = NULL;
-	buoy_t		*dest = NULL;
-	vec3_t		vec;
-	float		len, e_len;
-	edict_t		*showme = NULL;
-
-	//FIXME:  Allow assassins to take any buoy even if can;t make a connection, since they can teleport
-	//- Basically, pick the player's buoy and randomly pick one off of it or even that one...?
-
-	if(self->lastbuoy == e_bestbuoy->id)
+	//FIXME: Allow assassins to take any buoy even if can't make a connection, since they can teleport.
+	// Basically, pick the player's buoy and randomly pick one off of it or even that one?..
+	if (self->lastbuoy == e_best_buoy->id && !MG_ReachedBuoy(self, e_best_buoy->origin) && !clear_visible_pos(self, goal_pos))
 	{
-		if(!MG_ReachedBuoy(self, e_bestbuoy->origin) && !clear_visible_pos(self, goalpos))
-		{
-			self->lastbuoy = NULL_BUOY;
-			dont_use_last = false;
-		}
+		self->lastbuoy = NULL_BUOY;
+		dont_use_last = false;
 	}
 
-	if (bestbuoy->modflags&BUOY_JUMP && bestbuoy->jump_target_id == e_bestbuoy->id)
+	if ((best_buoy->modflags & BUOY_JUMP) && best_buoy->jump_target_id == e_best_buoy->id)
 	{
-		if(skipjump)
-			dest = e_bestbuoy;
-		else
-			dest = bestbuoy;
-
 		self->monsterinfo.searchType = SEARCH_BUOY;
 
-		if(self->ai_mood != AI_MOOD_FLEE)
+		if (self->ai_mood != AI_MOOD_FLEE)
 			self->ai_mood = AI_MOOD_NAVIGATE;
 
+		const buoy_t* dest = (skip_jump ? e_best_buoy : best_buoy); //mxd
 		VectorCopy(dest->origin, self->monsterinfo.nav_goal);
 
-#ifdef _DEVEL
-		if (BUOY_DEBUG)
-			gi.dprintf("Found 1-step JUMP connection at %s\n", dest->targetname);
-#endif
-		if(self->buoy_index!=NULL_BUOY)
-			self->lastbuoy = self->buoy_index;
-		else
-			self->lastbuoy = NULL_BUOY;
-		
-		self->buoy_index =dest->id;
-
+		self->lastbuoy = self->buoy_index;
+		self->buoy_index = dest->id;
 		self->last_buoy_time = level.time;
+
 		return true;
 	}
 
-	//hey what if we're touching our e_bestbuoy buoy? - also, if this is a jump buoy and e_bestboy is the target of it, foce use of bestbuoy
-	if (bestbuoy == e_bestbuoy)
+	// What if we're touching our e_bestbuoy buoy? Also, if this is a jump buoy and e_bestboy is the target of it, force use of bestbuoy.
+	if (best_buoy == e_best_buoy)
 	{
-		if(dont_use_last)
-			if(self->lastbuoy == bestbuoy->id)//found same buoy just touched as next buoy
-				return false;
+		if (dont_use_last && self->lastbuoy == best_buoy->id) // Found same buoy just touched as next buoy.
+			return false;
 
 		self->monsterinfo.searchType = SEARCH_BUOY;
 
-		if(self->ai_mood != AI_MOOD_FLEE)
+		if (self->ai_mood != AI_MOOD_FLEE)
 			self->ai_mood = AI_MOOD_NAVIGATE;
 
-		VectorCopy(bestbuoy->origin, self->monsterinfo.nav_goal);
+		VectorCopy(best_buoy->origin, self->monsterinfo.nav_goal);
 
-#ifdef _DEVEL
-		if (BUOY_DEBUG)
-			gi.dprintf("Found 1-step connection at %s\n", bestbuoy->targetname);
-#endif
-		if(self->buoy_index!=NULL_BUOY)
-			self->lastbuoy = self->buoy_index;
-		else
-			self->lastbuoy = NULL_BUOY;
-		self->buoy_index = bestbuoy->id;
+		self->lastbuoy = self->buoy_index;
+		self->buoy_index = best_buoy->id;
 		self->last_buoy_time = level.time;
+
 		return true;
 	}
 
-	if (bestbuoy && e_bestbuoy)
+	if (best_buoy != NULL && e_best_buoy != NULL)
 	{
-		VectorSubtract(goalpos, self->s.origin, vec);
-		e_len = VectorLength(vec);
+		const buoy_t* dest = FindNextBuoy(self, best_buoy->id, e_best_buoy->id);
 
-		VectorSubtract(e_bestbuoy->origin, goalpos, vec);
-		len = VectorLength(vec);
-
-		dest = FindNextBuoy(self, bestbuoy->id, e_bestbuoy->id);
-
-		if (dest != NULL)	
+		if (dest != NULL)
 		{
-#ifdef _DEVEL
-			if (BUOY_DEBUG)
-			{
-				gi.dprintf("Found connection from %s to %s\n", bestbuoy->targetname, e_bestbuoy->targetname);
-			}
-#endif			
-			if(dont_use_last)
-			{
-				if(self->lastbuoy == dest->id)//found same buoy just touched as next buoy
-					return false;
-			}
+			if (dont_use_last && self->lastbuoy == dest->id) // Found same buoy just touched as next buoy.
+				return false;
 
 			self->monsterinfo.searchType = SEARCH_BUOY;
 
-			if(self->ai_mood != AI_MOOD_FLEE)
+			if (self->ai_mood != AI_MOOD_FLEE)
 				self->ai_mood = AI_MOOD_NAVIGATE;
 
-			if((!(bestbuoy->modflags&BUOY_JUMP)||skipjump) && MG_ReachedBuoy(self, bestbuoy->origin))
-			{
+			if ((!(best_buoy->modflags & BUOY_JUMP) || skip_jump) && MG_ReachedBuoy(self, best_buoy->origin))
 				MG_AssignMonsterNextBuoy(self, dest);
-			}
 			else
-			{
-				MG_AssignMonsterNextBuoy(self, bestbuoy);
-			}
+				MG_AssignMonsterNextBuoy(self, best_buoy);
+
 			return true;
 		}
-#ifdef _DEVEL
-		else if (BUOY_DEBUG)
-		{
-			gi.dprintf("Failed to find a path\n");
-		}
-#endif
 	}
 
-	//EXPERIMENTAL
-	//ok, now you can backtrack since couldn't get there
-	//self->lastbuoy = NULL_BUOY;
-
-#ifdef _DEVEL
-	if(BUOY_DEBUG_LITE||BUOY_DEBUG)
-	{
-		if (!bestbuoy)
-			gi.dprintf("%s COULDN'T FIND BUOYS FOR SELF!!!\n", self->classname);
-		else if (!e_bestbuoy)
-			gi.dprintf("%s COULDN'T FIND BUOYS FOR %s!!!\n", self->classname, self->enemy->classname);
-	}
-#endif
 	return false;
 }
 
