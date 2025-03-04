@@ -233,27 +233,16 @@ static void MG_AssignMonsterNextBuoy(edict_t* self, const buoy_t* start_buoy)
 	self->last_buoy_time = level.time;
 }
 
-/*
-========================
-
-MG_ValidBestBuoyForEnt
-
- Just see if this entity and this buoy are ok to be associated (clear path, etc.)
-
-========================
-*/
-qboolean MG_ValidBestBuoyForEnt (edict_t *ent, buoy_t *test_buoy)
+// See if this entity and this buoy are ok to be associated (clear path, etc.).
+static qboolean MG_IsValidBestBuoyForEnt(edict_t* ent, const buoy_t* test_buoy) //mxd. Named 'MG_ValidBestBuoyForEnt' in original version.
 {
-	vec3_t	v;
-	float	dist;
+	vec3_t diff;
+	VectorSubtract(ent->s.origin, test_buoy->origin, diff);
 
-	VectorSubtract(ent->s.origin, test_buoy->origin, v);
-	dist = VectorLengthSquared(v);
-	if(dist > 250000)//500 squared
-		return false;//to damn far!
+	if (VectorLengthSquared(diff) <= 250000.0f) // 500 squared.
+		return MG_CheckClearPathToSpot(ent, test_buoy->origin);
 
-	return MG_CheckClearPathToSpot(ent, test_buoy->origin);
-//	return Clear_Path(ent, test_buoy->origin);
+	return false; // Too far.
 }
 
 /*
@@ -1048,7 +1037,7 @@ int MG_MakeConnection_Go(edict_t *self, buoy_t *first_buoy, qboolean skipjump)
 		{
 			if(level.player_last_buoy[self->enemy->s.number - 1] > NULL_BUOY)
 			{//see if the player_last_buoy is a valid buoy for the enemy, if so, go for it
-				if(MG_ValidBestBuoyForEnt(self->enemy, &level.buoy_list[level.player_last_buoy[self->enemy->s.number - 1]]))
+				if(MG_IsValidBestBuoyForEnt(self->enemy, &level.buoy_list[level.player_last_buoy[self->enemy->s.number - 1]]))
 				{
 					last_buoy_clear = true;
 					goto last_resort;
