@@ -92,80 +92,8 @@ qboolean clear_visible_pos(const edict_t* self, const vec3_t spot) //TODO: renam
 	return (trace.fraction == 1.0f);
 }
 
-void MG_AddBuoyEffect(edict_t* self, qboolean endbuoy)
+void MG_RemoveBuoyEffects(const edict_t* self) //TODO: remove.
 {
-	if (BUOY_DEBUG)
-	{//turn on sparkly effects on my start and end buoys
-		if (!endbuoy)
-		{//marking our next buoy
-			if (self->nextbuoy[0])
-			{//check a 10 second debouce timer
-				if (!self->nextbuoy[0]->count)
-				{
-#ifdef _DEVEL
-					gi.dprintf("Adding green effect to buoy %s\n", self->nextbuoy[0]->targetname);
-#endif
-					gi.CreateEffect(&self->nextbuoy[0]->s,
-						FX_M_EFFECTS,
-						CEF_OWNERS_ORIGIN | CEF_FLAG6,//green
-						self->nextbuoy[0]->s.origin,
-						"bv",
-						FX_BUOY,
-						vec3_origin);
-				}
-				self->nextbuoy[0]->s.frame = self->nextbuoy[0]->count++;
-			}
-		}
-		else
-		{//marking our end buoy (enemy's closest buoy)
-			if (self->nextbuoy[1])
-			{
-				if (!self->nextbuoy[1]->s.frame)
-				{
-#ifdef _DEVEL
-					gi.dprintf("Adding red effect to buoy %s\n", self->nextbuoy[1]->targetname);
-#endif
-					gi.CreateEffect(&self->nextbuoy[1]->s,
-						FX_M_EFFECTS,
-						CEF_OWNERS_ORIGIN,//red
-						self->nextbuoy[1]->s.origin,
-						"bv",
-						FX_BUOY,
-						vec3_origin);
-				}
-				self->nextbuoy[1]->s.frame = self->nextbuoy[1]->count++;
-			}
-		}
-	}
-}
-
-void MG_RemoveBuoyEffects(edict_t* self)
-{//fixme- because this is really using only one effect with flags, it's turning off both red and green when it turns either off...
-	if (BUOY_DEBUG)
-	{//turn off sparkly effects on my start and end buoys
-		if (self->nextbuoy[0])
-		{//reset a 10 second debouce timer
-			if (self->nextbuoy[0]->count > 1)
-				self->nextbuoy[0]->count--;
-			else
-			{
-				self->nextbuoy[0]->count = 0;
-			}
-			self->nextbuoy[0]->s.frame = self->nextbuoy[0]->count;
-		}
-
-		if (self->nextbuoy[1])
-		{
-			if (self->nextbuoy[1]->count > 1)
-				self->nextbuoy[1]->count--;
-			else
-			{
-				self->nextbuoy[1]->count = 0;
-			}
-			self->nextbuoy[1]->s.frame = self->nextbuoy[1]->count;
-		}
-	}
-
 }
 
 int MG_SetFirstBuoy(edict_t *self)
@@ -331,25 +259,6 @@ void MG_AssignMonsterNextBuoy(edict_t *self, buoy_t *startbuoy, buoy_t *endbuoy)
 		self->lastbuoy = NULL_BUOY;
 	self->buoy_index = startbuoy->id;
 	self->last_buoy_time = level.time;
-	if(BUOY_DEBUG>1)
-	{
-		showme = G_Find(NULL, FOFS(targetname), startbuoy->targetname);
-		if(showme)
-		{
-			self->nextbuoy[0] = showme;
-			MG_AddBuoyEffect(self, false);
-		}
-
-		if(endbuoy)
-		{
-			showme = G_Find(NULL, FOFS(targetname), endbuoy->targetname);
-			if(showme)
-			{
-				self->nextbuoy[1] = showme;
-				MG_AddBuoyEffect(self, true);
-			}
-		}
-	}
 }
 
 /*
