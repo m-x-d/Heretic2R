@@ -18,7 +18,7 @@ extern struct MonsterShadow_s G_MonsterShadow[NUM_CLASSIDS];
 
 #define ITEM_REWARD_CHANCE	1
 
-#define	MAX_SIGHT_PLAYER_DIST 1000
+#define MAX_SIGHT_PLAYER_DIST 1000.0f
 
 // ***************************************
 // ** MONSTER SPAWNFLAGS
