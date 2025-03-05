@@ -8,38 +8,25 @@
 #include "Vector.h"
 #include "g_local.h"
 
-void env_dust_use(edict_t *self, edict_t *other, edict_t *activator)
-{	
-	byte	count, magb;
-	float	mag;
+#pragma region ========================== env_dust, env_muck ==========================
 
-	gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE,self->moveinfo.sound_middle, 2, ATTN_NORM, 0);
+static void EnvDustUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'env_dust_use' in original logic.
+{
+	gi.sound(self, CHAN_NO_PHS_ADD + CHAN_VOICE, self->moveinfo.sound_middle, 2.0f, ATTN_NORM, 0.0f); //TODO: why volume is 2.0?
 
-	if(!self->count)
+	byte count;
+	if (self->count == 0)
 	{
-		count = (byte)(self->size[0] * self->size[1] / 800.0);   //  28 x 28
-		if (count > 16)
-		{
-			count = 16;
-		}
+		count = (byte)(self->size[0] * self->size[1] / 800.0f); // 28 x 28
+		count = min(16, count);
 	}
 	else
 	{
-		count = self->count;
+		count = (byte)self->count;
 	}
 
-	mag = VectorLength(self->size);
-	magb = Clamp(mag, 1.0, 255.0);
-	gi.CreateEffect(NULL,
-					FX_DUST,
-					0,
-					self->mins,
-					"bdb",
-					(byte) count,
-					self->size,
-					magb
-					);
-
+	const byte b_len = (byte)(Clamp(VectorLength(self->size), 1.0f, 255.0f));
+	gi.CreateEffect(NULL, FX_DUST, 0, self->mins, "bdb", count, self->size, b_len);
 }
 
 /*QUAKED env_dust (1 .5 0) ? 
@@ -55,13 +42,17 @@ void SP_env_dust (edict_t *self)
 
 	self->svflags |= SVF_NOCLIENT;
 
-	self->use = env_dust_use;
+	self->use = EnvDustUse;
 
 	self->moveinfo.sound_middle = gi.soundindex ("world/quakeshort.wav");
 
 	gi.setmodel (self, self->model);
 	gi.linkentity (self);
 }
+
+#pragma endregion
+
+#pragma region ========================== env_smoke ==========================
 
 #define START_OFF 8
 
@@ -163,6 +154,8 @@ void SP_env_smoke (edict_t *self)
 	}
 }
 
+#pragma endregion
+
 /*QUAKED env_muck (1 .5 0) ? 
 -------KEYS--------
 */
@@ -174,7 +167,7 @@ void SP_env_muck (edict_t *self)
 
 	self->svflags |= SVF_NOCLIENT;
 
-	self->use = env_dust_use;
+	self->use = EnvDustUse;
 
 	gi.setmodel (self, self->model);
 	gi.linkentity (self);
