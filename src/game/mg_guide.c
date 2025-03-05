@@ -956,24 +956,21 @@ static qboolean MG_OkToShoot(const edict_t* self, const edict_t* target) //mxd. 
 	return (target == self->enemy || (target->takedamage != DAMAGE_NO && (target->classID == CID_RAT || (!(target->svflags & SVF_MONSTER) && target->health < 50))));
 }
 
-qboolean MG_CheckClearShotToEnemy(edict_t *self)
+static qboolean MG_CheckClearShotToEnemy(const edict_t* self)
 {
-	trace_t		trace;
-	vec3_t		startpos, endpos;
-	vec3_t		zerovec = {0, 0, 0};
-	
-	VectorCopy(self->s.origin, startpos);
-	startpos[2]+=self->viewheight;
+	static const vec3_t zero_vec = { 0.0f, 0.0f, 0.0f }; //mxd. Made static.
 
-	VectorCopy(self->enemy->s.origin, endpos);
+	vec3_t start_pos;
+	VectorCopy(self->s.origin, start_pos);
+	start_pos[2] += (float)self->viewheight;
 
-	gi.trace(startpos, zerovec, zerovec, endpos, self, MASK_MONSTERSOLID,&trace);
-//	trace = gi.trace(startpos, vec3_origin, vec3_origin, endpos, self, MASK_MONSTERSOLID);
+	vec3_t end_pos;
+	VectorCopy(self->enemy->s.origin, end_pos);
 
-	if(MG_OkToShoot(self, trace.ent))
-		return true;
+	trace_t trace;
+	gi.trace(start_pos, zero_vec, zero_vec, end_pos, self, MASK_MONSTERSOLID, &trace);
 
-	return false;
+	return MG_OkToShoot(self, trace.ent);
 }
 
 void MG_MonsterFirePathTarget(edict_t *self, char *ptarg)
