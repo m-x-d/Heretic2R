@@ -951,17 +951,9 @@ static qboolean MG_CheckClearPathToSpot(edict_t* self, const vec3_t spot)
 	return true;
 }
 
-qboolean MG_OK_ToShoot(edict_t *self, edict_t *target)
+static qboolean MG_OkToShoot(const edict_t* self, const edict_t* target) //mxd. Named 'MG_OK_ToShoot' in original logic.
 {
-	if(target == self->enemy || 
-			(target->takedamage && 
-				(target->classID == CID_RAT || 
-					(!(target->svflags&SVF_MONSTER) && target->health<50)
-				)
-			)
-		)
-		return true;
-	return false;
+	return (target == self->enemy || (target->takedamage != DAMAGE_NO && (target->classID == CID_RAT || (!(target->svflags & SVF_MONSTER) && target->health < 50))));
 }
 
 qboolean MG_CheckClearShotToEnemy(edict_t *self)
@@ -978,7 +970,7 @@ qboolean MG_CheckClearShotToEnemy(edict_t *self)
 	gi.trace(startpos, zerovec, zerovec, endpos, self, MASK_MONSTERSOLID,&trace);
 //	trace = gi.trace(startpos, vec3_origin, vec3_origin, endpos, self, MASK_MONSTERSOLID);
 
-	if(MG_OK_ToShoot(self, trace.ent))
+	if(MG_OkToShoot(self, trace.ent))
 		return true;
 
 	return false;
