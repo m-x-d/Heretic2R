@@ -46,7 +46,7 @@ void BBrushStaticsInit(void)
 	classStatics[CID_BBRUSH].msgReceivers[MSG_DEATH] = DefaultObjectDieHandler;
 }
 
-void BBrushInit(edict_t *self)
+static void BBrushInit(edict_t *self) //TODO: remove
 {
 
 	self->movetype = PHYSICSTYPE_NONE;
@@ -64,29 +64,13 @@ void BBrushInit(edict_t *self)
 
 }
 
-qboolean EntitiesTouching(edict_t *e1,edict_t *e2)
+static qboolean EntitiesTouching(const edict_t* e1, const edict_t* e2)
 {
-	vec3_t e1max, e1min, e2max, e2min;
+	for (int i = 0; i < 3; i++)
+		if (e1->mins[i] > e2->maxs[i] || e1->maxs[i] < e2->mins[i])
+			return false;
 
-	VectorCopy(e1->maxs,e1max);
-	VectorCopy(e1->mins,e1min);
-
-	VectorCopy(e2->maxs,e2max);
-	VectorCopy(e2->mins,e2min);
-
-	if (e1min[0] > e2max[0])
-		return (false);
-	if (e1min[1] > e2max[1])
-		return (false);
-	if (e1min[2] > e2max[2])
-		return (false);
-	if (e1max[0] < e2min[0])
-		return (false);
-	if (e1max[1] < e2min[1])
-		return (false);
-	if (e1max[2] < e2min[2])
-		return (false);
-	return (true);
+	return true;
 }
 
 /*--------------------------------------
