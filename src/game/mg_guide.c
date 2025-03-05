@@ -1074,301 +1074,214 @@ qboolean MG_MonsterAttemptTeleport(edict_t* self, const vec3_t destination, cons
 	return false;
 }
 
-//FIXME:  If a monster CAN see player but can't get to him for a short while and does not have a clear path to him, use the buoys anyway!
-void MG_Pathfind(edict_t *self, qboolean check_clear_path)
+//FIXME: If a monster CAN see player but can't get to him for a short while and does not have a clear path to him, use the buoys anyway!
+void MG_Pathfind(edict_t* self, const qboolean check_clear_path)
 {
-	buoy_t		*current_buoy = NULL;
-	buoy_t		*last_buoy = NULL;
-	buoy_t		*jump_buoy = NULL;
-	qboolean	clear_path = false;
-
-	if(self->spawnflags & MSF_FIXED)
+	if (self->spawnflags & MSF_FIXED)
 		return;
 
-	if(!(self->monsterinfo.aiflags & AI_USING_BUOYS))
+	if (!(self->monsterinfo.aiflags & AI_USING_BUOYS))
 	{
 		self->ai_mood = AI_MOOD_PURSUE;
 		return;
 	}
 
-	if(DEACTIVATE_BUOYS)
+	if (DEACTIVATE_BUOYS)
 	{
 		self->monsterinfo.searchType = SEARCH_COMMON;
 		self->ai_mood = AI_MOOD_PURSUE;
+
 		return;
 	}
 
 	if (self->monsterinfo.searchType == SEARCH_COMMON)
 	{
-		if(!self->enemy)
-			return;
+		// Why should I do this every time pathfind is called?
+		// I need to know if the monster can get to the player directly. If so, no MakeConnection attempt, less traces.
+		if (self->enemy != NULL && (!check_clear_path || !MG_CheckClearPathToEnemy(self)))
+			MG_MakeConnection(self, NULL, false);
 
-		if(check_clear_path)
-			clear_path = MG_CheckClearPathToEnemy(self);
-		else
-			clear_path = false;
-
-		if(!clear_path)
-		{//this sucks- why should I do this every time pathfind is called- I need to know if the monster can get to the player directly.. if so, no Makeconnection attempt, less traces
-			if(!MG_MakeConnection(self, NULL, false))//if(!MG_MakeConnection(self, true, false))
-			{
-			}
-		}
+		return;
 	}
-	else if (self->monsterinfo.searchType == SEARCH_BUOY)
-	{
-		current_buoy = &level.buoy_list[self->buoy_index];
-		last_buoy = &level.buoy_list[self->lastbuoy];
 
-		if(self->ai_mood != AI_MOOD_FLEE && self->ai_mood != AI_MOOD_WANDER)
+	if (self->monsterinfo.searchType == SEARCH_BUOY)
+	{
+		const buoy_t* buoy = &level.buoy_list[self->buoy_index];
+
+		if (self->ai_mood != AI_MOOD_FLEE && self->ai_mood != AI_MOOD_WANDER)
 			self->ai_mood = AI_MOOD_NAVIGATE;
 
 		if (self->ai_mood == AI_MOOD_DELAY)
 			self->ai_mood = AI_MOOD_NAVIGATE;
 
-		if (self->ai_mood == AI_MOOD_JUMP && self->groundentity)
+		if (self->ai_mood == AI_MOOD_JUMP && self->groundentity != NULL)
 			self->ai_mood = AI_MOOD_NAVIGATE;
 
 		if (MG_ReachedBuoy(self, NULL))
 		{
 			MG_RemoveBuoyEffects(self);
-#ifdef _DEVEL
-			if (BUOY_DEBUG)
+
+			// Check the possibility of activating something.
+			if ((buoy->modflags & BUOY_ACTIVATE) && self->ai_mood != AI_MOOD_DELAY && self->wait < level.time)
 			{
-				gi.dprintf("Reached goal %s\n", current_buoy->targetname);
-			}
-#endif
-			//Check the possibility of activating something
-			if ((current_buoy->modflags & BUOY_ACTIVATE) && (self->ai_mood != AI_MOOD_DELAY))
-			{
-#ifdef _DEVEL
-				if (BUOY_DEBUG)
-					gi.dprintf("Activating target %s\n", current_buoy->pathtarget);
-#endif
-				if (self->wait < level.time)
+				self->wait = level.time + buoy->wait;
+				MG_MonsterFirePathTarget(self, buoy->pathtarget);
+
+				if (buoy->delay > 0.0f)
 				{
-					self->wait = level.time + current_buoy->wait;
-					MG_MonsterFirePathTarget(self, current_buoy->pathtarget);
-					if (current_buoy->delay)
-					{
-						QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-						self->ai_mood = AI_MOOD_DELAY;
-						self->mood_nextthink = level.time + current_buoy->delay;
-						return;
-					}
+					QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+					self->ai_mood = AI_MOOD_DELAY;
+					self->mood_nextthink = level.time + buoy->delay;
+
+					return;
 				}
 			}
 
-
-			//if in AI_MOOD_FORCED_BUOY mode and this buoy is my forced_buoy,
-			//take off that ai_mood flag and clear forced_buoy
-			//also, if AI_MOOD_IGNORE_ENEMY flag, remove it
-			if(self->ai_mood_flags&AI_MOOD_FLAG_FORCED_BUOY && self->forced_buoy == current_buoy->id)
+			// If in AI_MOOD_FORCED_BUOY mode and this buoy is my forced_buoy, take off that ai_mood flag and clear forced_buoy.
+			// Also, if AI_MOOD_IGNORE_ENEMY flag is set, remove it.
+			if (self->ai_mood_flags & AI_MOOD_FLAG_FORCED_BUOY && self->forced_buoy == buoy->id)
 			{
-				self->forced_buoy = -1;
+				self->forced_buoy = NULL_BUOY;
 				self->ai_mood_flags &= ~AI_MOOD_FLAG_FORCED_BUOY;
 
-				if(self->ai_mood_flags&AI_MOOD_FLAG_GOTO_STAND)
+				if (self->ai_mood_flags & AI_MOOD_FLAG_GOTO_STAND)
 				{
 					self->ai_mood_flags &= ~AI_MOOD_FLAG_GOTO_STAND;
 					self->enemy = NULL;
 					self->ai_mood = AI_MOOD_STAND;
 					QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, "");
+
 					return;
 				}
 
-				if(self->ai_mood_flags&AI_MOOD_FLAG_GOTO_WANDER)
+				if (self->ai_mood_flags & AI_MOOD_FLAG_GOTO_WANDER)
 				{
 					self->ai_mood_flags &= ~AI_MOOD_FLAG_GOTO_WANDER;
 					self->enemy = NULL;
 					self->ai_mood = AI_MOOD_WANDER;
+
 					return;
 				}
 
-				if(self->ai_mood_flags&AI_MOOD_FLAG_GOTO_FIXED)
+				if (self->ai_mood_flags & AI_MOOD_FLAG_GOTO_FIXED)
 				{
 					self->ai_mood_flags &= ~AI_MOOD_FLAG_GOTO_FIXED;
 					self->spawnflags |= MSF_FIXED;
-					if(self->enemy)
-						self->ai_mood = AI_MOOD_PURSUE;
-					else
-						self->ai_mood = AI_MOOD_STAND;
-				}
-		
-				if(self->ai_mood != AI_MOOD_FLEE)
-					self->ai_mood_flags &= ~AI_MOOD_FLAG_IGNORE_ENEMY;
-				else
-				{//reached buoy was fleeing to now what?
-					if(MG_GoToRandomBuoy(self))
-					{
-						self->monsterinfo.searchType = SEARCH_BUOY;
-						return;
-					}
-					else
-					{//couldn't flee using buoys, use dumb fleeing
-						//FIXME: cowering if can't flee using buoys?
-						self->ai_mood_flags |= AI_MOOD_FLAG_DUMB_FLEE;
-						return;
-					}
+					self->ai_mood = (self->enemy != NULL ? AI_MOOD_PURSUE : AI_MOOD_STAND);
 				}
 
-				if(!M_ValidTarget(self, self->enemy))
-				{//got to where I was going, no enemy, so chill, baby.
-					if (self->monsterinfo.pausetime == -1)
+				if (self->ai_mood != AI_MOOD_FLEE)
+				{
+					self->ai_mood_flags &= ~AI_MOOD_FLAG_IGNORE_ENEMY;
+				}
+				else
+				{
+					// Reached buoy was fleeing to now what?
+					if (MG_GoToRandomBuoy(self))
+						self->monsterinfo.searchType = SEARCH_BUOY;
+					else
+						self->ai_mood_flags |= AI_MOOD_FLAG_DUMB_FLEE; // Couldn't flee using buoys, use dumb fleeing. //FIXME: cowering if can't flee using buoys?
+
+					return;
+				}
+
+				if (!M_ValidTarget(self, self->enemy))
+				{
+					// Got to where I was going, no enemy, so chill, baby.
+					if (self->monsterinfo.pausetime == -1.0f)
 					{
 						self->spawnflags |= MSF_WANDER;
 						self->ai_mood = AI_MOOD_WANDER;
 					}
 					else if (level.time > self->monsterinfo.pausetime)
+					{
 						self->ai_mood = AI_MOOD_WALK;
+					}
 					else
 					{
 						self->ai_mood = AI_MOOD_STAND;
 						QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, "");
 					}
+
 					return;
 				}
 			}
 
-			if ((current_buoy->modflags & BUOY_JUMP) && (self->ai_mood != AI_MOOD_JUMP))
+			if ((buoy->modflags & BUOY_JUMP) && self->ai_mood != AI_MOOD_JUMP)
 			{
-				if(MG_MakeConnection(self, current_buoy, true))//make a regular connection, allowing skipping of jump_buoys
+				if (MG_MakeConnection(self, buoy, true)) // Make a regular connection, allowing skipping of jump_buoys.
 				{
-					jump_buoy = current_buoy;
-					current_buoy = &level.buoy_list[self->buoy_index];
-					if(jump_buoy == current_buoy)
-					{//Shit, found same buoy, shouldn't happen with dont_use_last = true! unless switching enemies
-#ifdef _DEVEL
-						if (BUOY_DEBUG)
-							gi.dprintf("Warning: %s found same next buoy as last buoy at jump buoy\n",self->classname);
-#endif
+					const buoy_t* jump_buoy = buoy;
+					buoy = &level.buoy_list[self->buoy_index];
+
+					if (jump_buoy == buoy)
+					{
+						// Shit, found same buoy, shouldn't happen with dont_use_last = true! unless switching enemies.
 					}
-					else if(current_buoy->id == jump_buoy->jump_target_id)
-					{//go ahead and jump
-						if(self->groundentity)
+					else if (buoy->id == jump_buoy->jump_target_id)
+					{
+						// Go ahead and jump.
+						if (self->groundentity != NULL)
 						{
-							vec3_t	jumpangles, jumpfwd, jump_spot;
+							const vec3_t jump_angles = { 0.0f, jump_buoy->jump_yaw, 0.0f };
 
-#ifdef _DEVEL
-							if (BUOY_DEBUG)
-								gi.dprintf("Jumping after buoy %s at angle %4.2f with height %4.2f and speed %4.2f\n", 
-										current_buoy->targetname, jump_buoy->jump_yaw, jump_buoy->jump_uspeed, jump_buoy->jump_fspeed);
-#endif
-							VectorSet(jumpangles, 0, jump_buoy->jump_yaw, 0);
-							AngleVectors(jumpangles, jumpfwd, NULL, NULL);
-							
-							//since we may not be right on the buoy, find out where they want us to go by extrapolating and finding MY dir to there
-							VectorMA(jump_buoy->origin, jump_buoy->jump_fspeed, jumpfwd, jump_spot);
-							VectorSubtract(jump_spot, self->s.origin, jumpfwd);
-							jumpfwd[2] = 0;
-							VectorNormalize(jumpfwd);
+							vec3_t jump_fwd;
+							AngleVectors(jump_angles, jump_fwd, NULL, NULL);
 
-							VectorScale(jumpfwd, jump_buoy->jump_fspeed, self->movedir);
+							// Since we may not be right on the buoy, find out where they want us to go by extrapolating and finding MY dir to there.
+							vec3_t jump_spot;
+							VectorMA(jump_buoy->origin, jump_buoy->jump_fspeed, jump_fwd, jump_spot);
+							VectorSubtract(jump_spot, self->s.origin, jump_fwd);
+							jump_fwd[2] = 0.0f;
+							VectorNormalize(jump_fwd);
+
+							VectorScale(jump_fwd, jump_buoy->jump_fspeed, self->movedir);
 							self->movedir[2] = jump_buoy->jump_uspeed;
-							self->ai_mood = AI_MOOD_JUMP;//don't technically need this line
-							self->mood_nextthink = level.time + 0.5;
-							//as an alternative, call self->forced_jump(self);
+							self->ai_mood = AI_MOOD_JUMP; //Don't technically need this line.
+							self->mood_nextthink = level.time + 0.5f;
+
+							// As an alternative, call self->forced_jump(self);
 							QPostMessage(self, MSG_CHECK_MOOD, PRI_DIRECTIVE, "i", AI_MOOD_JUMP);
+
 							return;
 						}
 					}
 					else
-					{//follow the new path
-#ifdef _DEVEL
-						if (BUOY_DEBUG)
-						{
-							current_buoy = &level.buoy_list[self->buoy_index];
-							gi.dprintf("Heading to new goal %s\n", current_buoy->targetname);
-						}
-#endif
-						return;
-//WAS: oops, not the right one, set it back and search down below again
-//						current_buoy = jump_buoy;
-//						MG_AssignMonsterNextBuoy(self, current_buoy, NULL);
+					{
+						return; // Follow the new path.
 					}
 				}
 				else
 				{
-					return;//?
+					return; //?
 				}
 			}
 
-			if (!MG_MakeConnection(self, current_buoy, false))
-			{
-				return;//?
-			}
-			else
-			{
-#ifdef _DEVEL
-				if (BUOY_DEBUG)
-				{
-					gi.dprintf("Heading to new goal %s\n", current_buoy->targetname);
-				}
-#endif
-			}
+			if (!MG_MakeConnection(self, buoy, false))
+				return; //?
 		}
-		
-		if(self->last_buoy_time > 0 && self->last_buoy_time + BUOY_SEARCH_TIME < level.time)
+
+		if (self->last_buoy_time > 0.0f && self->last_buoy_time + BUOY_SEARCH_TIME < level.time)
 		{
-#ifdef _DEVEL
-			if (BUOY_DEBUG)
+			if (self->classID == CID_ASSASSIN)
 			{
-				gi.dprintf("Buoy search timed out trying to get to %s\n", current_buoy->targetname);
-			}
-#endif
-			
-			if(self->classID == CID_ASSASSIN)
-			{
-				if(MG_MonsterAttemptTeleport(self, current_buoy->origin, true))
+				if (MG_MonsterAttemptTeleport(self, buoy->origin, true))
 				{
 					self->monsterinfo.aiflags |= AI_OVERRIDE_GUIDE;
-#ifdef _DEVEL
-					if(BUOY_DEBUG)
-						gi.dprintf("%s teleported to buoy %s (ignoring player LOS)\n", 
-								self->classname, current_buoy->targetname);
-#endif
 					return;
 				}
 			}
-			else if(CHEATING_MONSTERS)
+			else if (CHEATING_MONSTERS)
 			{
-				if(CHEATING_MONSTERS<2)
-				{
-#ifdef _DEVEL
-					if(MG_MonsterAttemptTeleport(self, current_buoy->origin, false))
-						if(BUOY_DEBUG)
-							gi.dprintf("%s cheated and teleported to buoy %s\n", 
-									self->classname, current_buoy->targetname);
-#else
-					MG_MonsterAttemptTeleport(self, current_buoy->origin, false);
-#endif
-				}
-				else
-				{
-#ifdef _DEVEL
-					if(MG_MonsterAttemptTeleport(self, current_buoy->origin, true))
-						if(BUOY_DEBUG)
-							gi.dprintf("%s cheated and teleported to buoy %s (ignoring player LOS)\n", 
-									self->classname, current_buoy->targetname);
-#else
-					MG_MonsterAttemptTeleport(self, current_buoy->origin, true);
-#endif
-				}
+				MG_MonsterAttemptTeleport(self, buoy->origin, CHEATING_MONSTERS >= 2);
 			}
-			if (!MG_MakeConnection(self, NULL, false))
-			{
-			}
+
+			MG_MakeConnection(self, NULL, false);
 		}
-		else if(!irand(0, 4) && !clear_visible_pos(self, current_buoy->origin))
-		{//DAMN!  Lost sight of buoy, let's re-aquire
-#ifdef _DEVEL
-			if (BUOY_DEBUG)
-				gi.dprintf("%s Lost sight of buoy %s looking for another...\n", 
-						self->classname, current_buoy->targetname);
-#endif			
-			if (!MG_MakeConnection(self, NULL, false))
-			{
-			}
+		else if (irand(0, 4) == 0 && !clear_visible_pos(self, buoy->origin))
+		{
+			// Lost sight of buoy, let's re-acquire.
+			MG_MakeConnection(self, NULL, false);
 		}
 	}
 }
