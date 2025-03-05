@@ -1290,170 +1290,176 @@ void MG_Pathfind(edict_t* self, const qboolean check_clear_path)
 
 #pragma region ========================== Guide functions ==========================
 
-void MG_BuoyNavigate(edict_t *self)
-{//Only handles buoy selection, some mood changing
-//called from ai_run
-	qboolean	valid_enemy = false;
-	int			i;
-	buoy_t		*found_buoy = NULL;
-	qboolean	found;
+// Only handles buoy selection, some mood changing.
+void MG_BuoyNavigate(edict_t* self)
+{
+	// See if my enemy is still valid.
+	const qboolean valid_enemy = M_ValidTarget(self, self->enemy);
 
-	//See if my enemy is still valid
-	valid_enemy = M_ValidTarget(self, self->enemy);
-
-	if(self->spawnflags & MSF_FIXED)
+	if (self->spawnflags & MSF_FIXED)
 		return;
 
-	if(!(self->monsterinfo.aiflags & AI_USING_BUOYS))
+	if (!(self->monsterinfo.aiflags & AI_USING_BUOYS))
 	{
-		self->ai_mood = AI_MOOD_PURSUE;//ai_mood_normal?
+		self->ai_mood = AI_MOOD_PURSUE; // ai_mood_normal?
 		return;
 	}
-	
-//STEP 1: See if should be running away or wandering
 
-	if(self->monsterinfo.flee_finished < level.time)
-		self->monsterinfo.aiflags &= ~AI_FLEE;//clear the flee flag now
+	// STEP 1: See if should be running away or wandering.
+	if (self->monsterinfo.flee_finished < level.time)
+		self->monsterinfo.aiflags &= ~AI_FLEE; // Clear the flee flag now.
 
-	if(self->monsterinfo.aiflags & AI_COWARD || 
-		(self->monsterinfo.aiflags&AI_FLEE && self->monsterinfo.flee_finished >= level.time))
+	if (self->monsterinfo.aiflags & AI_COWARD || (self->monsterinfo.aiflags & AI_FLEE && self->monsterinfo.flee_finished >= level.time))
 		self->ai_mood = AI_MOOD_FLEE;
 
-	if(!valid_enemy)
-	{//no enemy, now what?
+	if (!valid_enemy)
+	{
+		// No enemy, now what?
 		self->enemy = NULL;
-		if(self->spawnflags & MSF_WANDER || self->monsterinfo.pausetime == -1)
+
+		if (self->spawnflags & MSF_WANDER || self->monsterinfo.pausetime == -1.0f)
 		{
 			self->spawnflags |= MSF_WANDER;
 			self->ai_mood = AI_MOOD_WANDER;
 		}
 		else if (level.time > self->monsterinfo.pausetime)
+		{
 			self->ai_mood = AI_MOOD_WALK;
+		}
 		else
+		{
 			self->ai_mood = AI_MOOD_STAND;
+		}
 	}
-	else
+	else if (self->ai_mood == AI_MOOD_WANDER)
 	{
-		if(self->ai_mood == AI_MOOD_WANDER)
-			self->ai_mood = AI_MOOD_PURSUE;
+		self->ai_mood = AI_MOOD_PURSUE;
 	}
 
-	if(self->ai_mood == AI_MOOD_FLEE || self->ai_mood == AI_MOOD_WANDER)
-	{//go off in a random buoy path
-
-		if(!(self->ai_mood_flags&AI_MOOD_FLAG_FORCED_BUOY))
-		{//first time, find closest buoy, alert other enemies
-			if(self->ai_mood == AI_MOOD_FLEE)
-			{//wake up enemies for next 10 seconds
+	if (self->ai_mood == AI_MOOD_FLEE || self->ai_mood == AI_MOOD_WANDER)
+	{
+		// Go off in a random buoy path.
+		if (!(self->ai_mood_flags & AI_MOOD_FLAG_FORCED_BUOY))
+		{
+			// First time, find closest buoy, alert other enemies.
+			if (self->ai_mood == AI_MOOD_FLEE)
+			{
+				// Wake up enemies for next 10 seconds.
 				level.sight_entity = self;
 				level.sight_entity_framenum = level.framenum + 100;
 				level.sight_entity->light_level = 128;
 			}
 
-			if(MG_GoToRandomBuoy(self))
+			if (MG_GoToRandomBuoy(self))
 			{
 				self->monsterinfo.searchType = SEARCH_BUOY;
 				return;
 			}
-			else if(self->ai_mood == AI_MOOD_FLEE)
-			{//couldn't flee using buoys, use dumb fleeing
-				//FIXME: cowering if can't flee using buoys?
+
+			if (self->ai_mood == AI_MOOD_FLEE)
+			{
+				// Couldn't flee using buoys, use dumb fleeing. //FIXME: cowering if can't flee using buoys?
 				self->ai_mood_flags |= AI_MOOD_FLAG_DUMB_FLEE;
 				return;
 
 			}
-				//otherwise, want to wander, but can't, continue down the possibilities
+
+			// Otherwise, want to wander, but can't, continue down the possibilities.
 		}
 		else
 		{
 			self->monsterinfo.searchType = SEARCH_BUOY;
 			MG_Pathfind(self, false);
-			return;//already wandering normal buoy navigation
+
+			return; // Already wandering normal buoy navigation.
 		}
 	}
-//STEP 2: Not running away or wandering, see what should be doing
 
-	if(!valid_enemy)
-	{//No enemy, Not wandering or can't, see if I have a homebuoy
-		if(self->homebuoy)
-		{//have a home base, let's get back there if no enemy
-			for(i = 0; i <= level.active_buoys; i++)
+	// STEP 2: Not running away or wandering, see what we should be doing.
+	if (!valid_enemy)
+	{
+		// No enemy, not wandering or can't, see if I have a homebuoy.
+		if (self->homebuoy != NULL)
+		{
+			qboolean found = false;
+			const buoy_t* found_buoy = NULL;
+
+			// Have a home base, let's get back there if no enemy.
+			for (int i = 0; i <= level.active_buoys; i++)
 			{
 				found_buoy = &level.buoy_list[i];
-				if(found_buoy->targetname && !stricmp(found_buoy->targetname, self->homebuoy))
+
+				if (found_buoy->targetname != NULL && Q_stricmp(found_buoy->targetname, self->homebuoy) == 0) //mxd. stricmp -> Q_stricmp
 				{
 					found = true;
 					break;
 				}
 			}
 
-			if(!found)
+			if (!found)
 			{
-#ifdef _DEVEL
-				if(BUOY_DEBUG)
-					gi.dprintf("ERROR: %s can't find it's homebuoy %s\n", self->classname, self->homebuoy);
-#endif
+				gi.dprintf("ERROR: %s can't find it's homebuoy %s\n", self->classname, self->homebuoy);
 				return;
 			}
 
-			if(!MG_ReachedBuoy(self, found_buoy->origin))
+			if (!MG_ReachedBuoy(self, found_buoy->origin))
 			{
-#ifdef _DEVEL
-				if(BUOY_DEBUG)
-					gi.dprintf("%s heading for homebuoy %s\n", self->classname, self->homebuoy);
-#endif
-				self->ai_mood_flags|=AI_MOOD_FLAG_FORCED_BUOY;
+				self->ai_mood_flags |= AI_MOOD_FLAG_FORCED_BUOY;
 				self->forced_buoy = found_buoy->id;
 
-				if(MG_MakeConnection(self, NULL, false))
+				if (MG_MakeConnection(self, NULL, false))
 				{
 					self->ai_mood = AI_MOOD_NAVIGATE;
-
-					QPostMessage(self, MSG_WALK,PRI_DIRECTIVE, NULL);
-
+					QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 					MG_RemoveBuoyEffects(self);
 				}
 				else
 				{
 					self->ai_mood_flags &= ~AI_MOOD_FLAG_FORCED_BUOY;
-					self->forced_buoy = -1;
+					self->forced_buoy = NULL_BUOY;
 				}
 			}
 		}
-//No enemy Not wandering, not going to homebuoy (or can't do these for some reason), so just stand around
-		//do we really need to clear the enemy?  mAybe we shouldn't...
-		if(self->enemy)
-		{
-			if(self->enemy->client)
-				self->oldenemy = self->enemy;//remember last player enemy
-		}
-		self->enemy = NULL;
 
-		self->mood_nextthink = level.time + 1;
-		//fixme: check for a self->target also?
-		if (self->monsterinfo.pausetime == -1)
+		// No enemy, not wandering, not going to homebuoy (or can't do these for some reason), so just stand around.
+		if (self->enemy != NULL && self->enemy->client != NULL)
+			self->oldenemy = self->enemy; // Remember last player enemy.
+
+		self->enemy = NULL; //FIXME: do we really need to clear the enemy? Maybe we shouldn't...
+		self->mood_nextthink = level.time + 1.0f;
+
+		//FIXME: check for a self->target also?
+		if (self->monsterinfo.pausetime == -1.0f)
 		{
 			self->spawnflags |= MSF_WANDER;
 			self->ai_mood = AI_MOOD_WANDER;
 		}
 		else if (level.time > self->monsterinfo.pausetime)
+		{
 			self->ai_mood = AI_MOOD_WALK;
+		}
 		else
+		{
 			self->ai_mood = AI_MOOD_STAND;
-		return;
-	}
-	else if(self->ai_mood_flags&AI_MOOD_FLAG_IGNORE_ENEMY)
-	{//have an enemy, but being forced to use buoys, and ignore enemy until get to forced_buoy
-		self->ai_mood = AI_MOOD_NAVIGATE;
-		MG_Pathfind(self, false);
+		}
+
 		return;
 	}
 
-//Actually have a valid enemy. let's try to get him
+	// Have an enemy, but being forced to use buoys, and ignore enemy until get to forced_buoy.
+	if (self->ai_mood_flags & AI_MOOD_FLAG_IGNORE_ENEMY)
+	{
+		self->ai_mood = AI_MOOD_NAVIGATE;
+		MG_Pathfind(self, false);
+
+		return;
+	}
+
+	// Actually have a valid enemy. Let's try to get him.
 	self->ai_mood = AI_MOOD_PURSUE;
 
 	MG_Pathfind(self, true);
-	if(self->ai_mood == AI_MOOD_PURSUE)
+	if (self->ai_mood == AI_MOOD_PURSUE)
 		self->goalentity = self->enemy;
 }
 
