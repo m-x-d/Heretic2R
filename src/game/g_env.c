@@ -29,25 +29,21 @@ static void EnvDustUse(edict_t* self, edict_t* other, edict_t* activator) //mxd.
 	gi.CreateEffect(NULL, FX_DUST, 0, self->mins, "bdb", count, self->size, b_len);
 }
 
-/*QUAKED env_dust (1 .5 0) ? 
-Generates dust and rock over an area. This is triggerable.
--------KEYS--------
-count - number of rocks (default 1 rock per 28 x 28 square)
-*/
-void SP_env_dust (edict_t *self)
-{
+// QUAKED env_dust (1 .5 0) ?
+// Generates dust and rock over an area. This is triggerable.
 
+// Variables:
+// count - number of rocks (default 1 rock per 28 x 28 square).
+void SP_env_dust(edict_t* self)
+{
 	self->movetype = PHYSICSTYPE_NONE;
 	self->solid = SOLID_NOT;
-
 	self->svflags |= SVF_NOCLIENT;
-
+	self->moveinfo.sound_middle = gi.soundindex("world/quakeshort.wav"); //mxd. Only difference between this and SP_env_muck. Could've used a spawnflag instead...
 	self->use = EnvDustUse;
 
-	self->moveinfo.sound_middle = gi.soundindex ("world/quakeshort.wav");
-
-	gi.setmodel (self, self->model);
-	gi.linkentity (self);
+	gi.setmodel(self, self->model);
+	gi.linkentity(self);
 }
 
 #pragma endregion
