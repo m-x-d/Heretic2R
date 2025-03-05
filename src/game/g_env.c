@@ -62,7 +62,7 @@ void SP_env_muck(edict_t* self)
 
 #pragma region ========================== env_smoke ==========================
 
-#define SF_START_OFF 8
+#define SF_START_OFF	8
 
 static void SetupEnvSmokeEffect(edict_t* self) //mxd. Added to reduce code duplication.
 {
@@ -99,68 +99,48 @@ static void EnvSmokeUse(edict_t* self, edict_t* other, edict_t* activator) //mxd
 	}
 }
 
-/*QUAKED env_smoke (1 .5 0) (-4 -4 -4) (4 4 4)  START_OFF
-Generates steady puffs of smoke.  This is triggerable.
-START_OFF - smoke will start off
--------KEYS--------
-scale - size of puff  (default 1) range 0 - 8.
-angle - direction puff is to move (default 0)
-speed - how quickly puffs move (default 100) range 10 - 2500
-distance - how far smoke will move before disappearing (default 100) range 1 - 255
-wait - time in seconds between puffs (default 5) range 1 - 255
-*/
-void SP_env_smoke (edict_t *self)
+// QUAKED env_smoke (1 .5 0) (-4 -4 -4) (4 4 4)  START_OFF
+// Generates steady puffs of smoke. This is triggerable.
+
+// Spawnflags:
+// START_OFF - smoke will start off.
+
+// Variables:
+// scale	- size of puff (default 1) range 0 - 8.
+// angle	- direction puff is to move (default 0).
+// speed	- how quickly puffs move (default 100) range 10 - 2500.
+// distance	- how far smoke will move before disappearing (default 100) range 1 - 255.
+// wait		- time in seconds between puffs (default 5) range 1 - 255.
+void SP_env_smoke(edict_t* self)
 {
-	vec3_t	dir;
-	byte	scale,speed,wait,maxrange;
+	// Set scale.
+	if (self->s.scale == 0.0f)
+		self->s.scale = 1.0f;
 
-	// set scale
-	if (!self->s.scale)
-		self->s.scale = 1;
-	scale = (byte)(self->s.scale * 32.0);
-
-	// allow us to use this stuff
-	if (self->targetname)
+	// Allow us to use this stuff.
+	if (self->targetname != NULL)
 		self->use = EnvSmokeUse;
 
-	// set the wait between puffs
-   	if (!self->wait)
-		self->wait = 5;
+	// Set the wait between puffs.
+	if (self->wait == 0.0f)
+		self->wait = 5.0f;
 
-	// set the distance
-	if (st.distance)
-		self->maxrange = st.distance;
-	else
-		self->maxrange = 100;
+	// Set the distance.
+	self->maxrange = ((st.distance > 0) ? (float)st.distance : 100.0f);
 
-	// set the speed
-	if (!self->speed)
-		self->speed = 100;
+	// Set the speed.
+	if (self->speed == 0.0f)
+		self->speed = 100.0f;
 
-	// reduce out the resolution
-	self->speed = self->speed / 10;
-
-	// make us all bytes
-	speed = Q_ftol(self->speed);
-	wait = Q_ftol(self->wait);
-	maxrange = Q_ftol(self->maxrange);
+	// Reduce out the resolution.
+	self->speed /= 10.0f;
 
 	self->s.effects |= EF_NODRAW_ALWAYS_SEND;
+
 	gi.linkentity(self);
 
-	if (self->spawnflags & SF_START_OFF)	// Start off
-	{
-		return;
-	}
-
-	else
-	{
-		AngleVectors(self->s.angles, dir, NULL, NULL);
-		self->PersistantCFX = gi.CreatePersistantEffect(&self->s,
-								FX_ENVSMOKE,
-								CEF_BROADCAST,self->s.origin,
-								"bdbbb",scale,dir,speed,wait,maxrange);
-	}
+	if (!(self->spawnflags & SF_START_OFF)) // Start off?
+		SetupEnvSmokeEffect(self); //mxd
 }
 
 #pragma endregion
