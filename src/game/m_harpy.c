@@ -45,6 +45,9 @@ Copyright 1998 Raven Software
 
 #define HARPY_PROJECTILE_RADIUS	1024
 
+edict_t* give_head_to_harpy = NULL; //mxd. Not SUS at all :)
+edict_t* take_head_from = NULL;
+
 void harpy_blocked (edict_t *self, struct trace_s *trace);
 
 /*-----------------------------------------------------------------

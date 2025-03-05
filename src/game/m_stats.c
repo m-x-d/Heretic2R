@@ -385,8 +385,3 @@ vec3_t STDMaxsForClass [NUM_CLASSIDS] =
 	0,		0,			0,			//	CID_CORVUS8,		//50
 	0,		0,			0,			//	CID_CORVUS9,		//51
 };
-
-//MISC GLOBALS
-
-edict_t	*give_head_to_harpy = NULL;
-edict_t *take_head_from = NULL;

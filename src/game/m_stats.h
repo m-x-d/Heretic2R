@@ -428,8 +428,4 @@ enum {
 	FX_MSSITHRA_ARROW_CHARGE,
 };
 
-//MISC globals
-
-extern edict_t	*give_head_to_harpy;
-extern edict_t *take_head_from;
 #endif // G_STATS_H
