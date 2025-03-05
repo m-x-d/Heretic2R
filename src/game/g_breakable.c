@@ -1,28 +1,21 @@
-/*
-==============================================================================
-
+//
 // g_breakable.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
+//
 
-
-==============================================================================
-*/
-#include "g_local.h"
 #include "g_misc.h"
-#include "fx.h"
 #include "g_DefaultMessageHandler.h"
-#include "vector.h"
+#include "FX.h"
+#include "Vector.h"
+#include "g_local.h"
 
-int BREAK_KILLALL		= 1;
-int BREAK_NOLINK	    = 2;
-int BREAK_CHECKNAME	    = 4;
-int BREAK_ORDERED       = 8;
-int BREAK_TRANSLUCENT   = 16;
-int BREAK_INVULNERABLE  = 32;
-int BREAK_INVISIBLE     = 64;
-
+#define SF_KILLALL			1
+#define SF_NOLINK			2
+#define SF_INVULNERABLE		16
+#define SF_INVULNERABLE2	32 //mxd. Original logic sets brush as invulnerable when spawnflag 16 or 32 is set.
+#define SF_PUSHABLE			64 //mxd
+#define SF_NOPLAYERDAMAGE	128 //mxd
 
 /*
 void KillBrushOrdered(edict_t *self)
@@ -49,7 +42,7 @@ void KillBrush(edict_t *targ,edict_t *inflictor,edict_t *attacker,int damage)
 	
 	starte = targ;
 	
-	if (starte->spawnflags & BREAK_KILLALL)
+	if (starte->spawnflags & SF_KILLALL)
 	{
 		do
 		{
@@ -93,7 +86,7 @@ void BBrushInit(edict_t *self)
 	self->msgHandler = DefaultMsgHandler;
 	self->classID = CID_BBRUSH;
 
-	if (self->spawnflags & BREAK_INVULNERABLE)
+	if (self->spawnflags & SF_INVULNERABLE2)
 	{
 		self->takedamage = DAMAGE_NO;
 	}
@@ -173,7 +166,7 @@ void LinkBreakables(edict_t *self)
 			return;
 		}
 
-		if (ent->spawnflags & BREAK_NOLINK)
+		if (ent->spawnflags & SF_NOLINK)
 			continue;	
 
 		if (EntitiesTouching(self,t))
