@@ -46,6 +46,18 @@ void SP_env_dust(edict_t* self)
 	gi.linkentity(self);
 }
 
+// QUAKED env_muck (1 .5 0) ?
+void SP_env_muck(edict_t* self)
+{
+	self->movetype = PHYSICSTYPE_NONE;
+	self->solid = SOLID_NOT;
+	self->svflags |= SVF_NOCLIENT;
+	self->use = EnvDustUse;
+
+	gi.setmodel(self, self->model);
+	gi.linkentity(self);
+}
+
 #pragma endregion
 
 #pragma region ========================== env_smoke ==========================
@@ -151,20 +163,3 @@ void SP_env_smoke (edict_t *self)
 }
 
 #pragma endregion
-
-/*QUAKED env_muck (1 .5 0) ? 
--------KEYS--------
-*/
-void SP_env_muck (edict_t *self)
-{
-
-	self->movetype = PHYSICSTYPE_NONE;
-	self->solid = SOLID_NOT;
-
-	self->svflags |= SVF_NOCLIENT;
-
-	self->use = EnvDustUse;
-
-	gi.setmodel (self, self->model);
-	gi.linkentity (self);
-}
