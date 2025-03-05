@@ -17,38 +17,24 @@
 #define SF_PUSHABLE			64 //mxd
 #define SF_NOPLAYERDAMAGE	128 //mxd
 
-void KillBrush(edict_t *targ,edict_t *inflictor,edict_t *attacker,int damage)
+void KillBrush(edict_t* target, edict_t* inflictor, edict_t* attacker, const int damage)
 {
-	edict_t *starte, *other;
-	
-	starte = targ;
-	
-	if (starte->spawnflags & SF_KILLALL)
+	const edict_t* start = target;
+
+	if (start->spawnflags & SF_KILLALL)
 	{
 		do
 		{
-			other = targ->enemy;
-
-			QPostMessage(targ,MSG_DEATH,PRI_DIRECTIVE,"eeei",targ,inflictor,attacker,damage);
-
-			targ = other;
-		} while ( (targ != starte) );
+			edict_t* other = target->enemy;
+			QPostMessage(target, MSG_DEATH, PRI_DIRECTIVE, "eeei", target, inflictor, attacker, damage);
+			target = other;
+		} while (target != start);
 	}
-//	else if (targ->spawnflags & BREAK_HIERARCH) 
-//	{
-//		;
-//		KillBrushOrdered(targ);
-//	}
-	else 
+	else
 	{
-		QPostMessage(targ,MSG_DEATH,PRI_DIRECTIVE,"eeei",targ,inflictor,attacker,damage);
+		QPostMessage(target, MSG_DEATH, PRI_DIRECTIVE, "eeei", target, inflictor, attacker, damage);
 	}
-
-//	this was firing off targets twice... fix it if this is not good,
-//	but the MSG_DEATH handler for objects uses targets a second time!
-//	G_UseTargets(targ, targ);
 }
-
 
 void KillBrushUse(edict_t *targ,edict_t *inflictor,edict_t *attacker)
 {
