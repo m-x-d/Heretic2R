@@ -765,85 +765,60 @@ last_resort:
 	return 0;
 }
 
-qboolean MG_MakeConnection(edict_t *self, buoy_t *first_buoy, qboolean skipjump)
-{//just for debug info
-	qboolean	result;
+qboolean MG_MakeConnection(edict_t* self, const buoy_t* first_buoy, const qboolean skip_jump)
+{
+	// Just for debug info.
+	int result = MG_TryMakeConnection(self, first_buoy, skip_jump);
 
-#ifdef _DEVEL
-	if(BUOY_DEBUG)
-		gi.dprintf("========================================================\n    %s Start MakeConnection    \n========================================================\n", self->classname);
-#endif	
-	result = MG_TryMakeConnection (self, first_buoy, skipjump);
-
-	if(!(self->ai_mood_flags&AIMF_CANT_FIND_ENEMY))
+	if (!(self->ai_mood_flags & AIMF_CANT_FIND_ENEMY))
 	{
 		self->monsterinfo.last_successful_enemy_tracking_time = level.time;
 		self->ai_mood_flags &= ~AIMF_SEARCHING;
 	}
 
-	if(result != true)
-	{//If can't find him(not including player_last_buoys) for 5 - 10 seconds, go into wander mode...
-#ifdef _DEVEL
-		if (BUOY_DEBUG && !result)
+	//TODO: result 2 is not handled.
+	if (result != 1)
+	{
+		// If can't find him (not including player_last_buoys) for 5 - 10 seconds, go into wander mode...
+		if (result == 3 && !(self->ai_mood_flags & AIMF_SEARCHING))
 		{
-			gi.dprintf("MG_MakeConnection: failed\n");
-		}
-#endif
-		if(result == 3 && !(self->ai_mood_flags&AIMF_SEARCHING))
-		{
-#ifdef _DEVEL
-			if(BUOY_DEBUG)
-				gi.dprintf("%s got to %s's last_buoy, searching normally...\n", self->classname, self->enemy->classname);
-#endif
 			self->monsterinfo.last_successful_enemy_tracking_time = level.time;
 			self->monsterinfo.searchType = SEARCH_COMMON;
 			self->ai_mood = AI_MOOD_PURSUE;
 			self->ai_mood_flags |= AIMF_SEARCHING;
 		}
-		else if(self->enemy &&
-			self->ai_mood != AI_MOOD_FLEE &&
-			!(self->ai_mood_flags & AI_MOOD_FLAG_IGNORE_ENEMY) &&
-			self->monsterinfo.last_successful_enemy_tracking_time + MONSTER_SEARCH_TIME < level.time)
-		{//give up, can't see him or find path to him for ten seconds now...
-			if(self->classID == CID_ASSASSIN && self->monsterinfo.last_successful_enemy_tracking_time + MONSTER_SEARCH_TIME + 20 > level.time)
-			{//assassins get an extra 20 seconds to look for the enemy and try to teleport to him
+		else if (self->enemy != NULL && self->ai_mood != AI_MOOD_FLEE && !(self->ai_mood_flags & AI_MOOD_FLAG_IGNORE_ENEMY) && self->monsterinfo.last_successful_enemy_tracking_time + MONSTER_SEARCH_TIME < level.time)
+		{
+			// Give up, can't see him or find path to him for ten seconds now...
+			if (self->classID == CID_ASSASSIN && self->monsterinfo.last_successful_enemy_tracking_time + MONSTER_SEARCH_TIME + 20 > level.time)
+			{
+				// Assassins get an extra 20 seconds to look for the enemy and try to teleport to him.
 			}
 			else
 			{
-#ifdef _DEVEL
-				if(BUOY_DEBUG)
-					gi.dprintf("%s giving up finding %s, wandering around\n", self->classname, self->enemy->classname);
-#endif
-				if(self->enemy->client)
+				if (self->enemy->client != NULL)
 					self->oldenemy = self->enemy;
-				self->enemy = NULL;
 
-				if(!result && self->ai_mood == AI_MOOD_WANDER)
-					self->ai_mood = AI_MOOD_STAND;
-				else
-					self->ai_mood = AI_MOOD_WANDER;
+				self->enemy = NULL;
+				self->ai_mood = ((result == 0 && self->ai_mood == AI_MOOD_WANDER) ? AI_MOOD_STAND : AI_MOOD_WANDER); //mxd
 			}
 		}
-		else if(!result && self->ai_mood != AI_MOOD_FLEE && self->enemy)
+		else if (result == 0 && self->ai_mood != AI_MOOD_FLEE && self->enemy != NULL)
 		{
 			self->monsterinfo.searchType = SEARCH_COMMON;
 			self->ai_mood = AI_MOOD_PURSUE;
 		}
-		
-		if(!result && self->ai_mood == AI_MOOD_WANDER)
+
+		if (result == 0 && self->ai_mood == AI_MOOD_WANDER)
 		{
 			self->monsterinfo.pausetime = 0;
 			self->ai_mood = AI_MOOD_STAND;
 		}
 
-		if(result == 3)
-			result = false;
+		if (result == 3)
+			result = 0;
 	}
 
-#ifdef _DEVEL
-	if(BUOY_DEBUG)
-		gi.dprintf("========================================================\n    %s End MakeConnection    \n========================================================\n", self->classname);
-#endif
 	return result;
 }
 
