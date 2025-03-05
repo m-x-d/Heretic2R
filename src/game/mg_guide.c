@@ -1819,48 +1819,52 @@ enemy_too_close: //TODO: split into a function, remove goto?
 	}
 }
 
-void MG_InitMoods(edict_t *self)
+void MG_InitMoods(edict_t* self)
 {
 	self->monsterinfo.searchType = SEARCH_COMMON;
 
-	if(!self->mintel)
+	if (self->mintel == 0)
 		self->mintel = MaxBuoysForClass[self->classID];
 
-	self->mood_think = MG_GenericMoodSet;//we'll re-specialize these soon
-	self->mood_nextthink = level.time + 0.1;
-	if(self->mood_nextthink <= 0.0f)
-		self->mood_nextthink = 0.1;
+	self->mood_think = MG_GenericMoodSet; // We'll re-specialize these soon.
+	self->mood_nextthink = level.time + 0.1f;
 
-	//setup attack ranges for the mood functions to use
-	//these can be set by the designer if desired and can be
-	//affected later by the loss of a weapon or limb...
-	if(!self->min_melee_range)
-		self->min_melee_range = 0;//rendundant, I know, but clearer to see it here with other stuff
+	if (self->mood_nextthink <= 0.0f) //TODO: when level.time + 0.1f can be < 0?..
+		self->mood_nextthink = 0.1f;
 
-	if(!self->melee_range)
-		self->melee_range = AttackRangesForClass[self->classID * 4 + 0];
+	// Setup attack ranges for the mood functions to use.
+	// These can be set by the designer if desired and can be affected later by the loss of a weapon or limb...
 
-	if(!self->missile_range)
-		self->missile_range = AttackRangesForClass[self->classID * 4 + 1];
-	
-	if(!self->min_missile_range)
-		self->min_missile_range = AttackRangesForClass[self->classID * 4 + 2];
+	//if (self->min_melee_range == 0.0f)
+		//self->min_melee_range = 0; // Rendundant, I know, but clearer to see it here with other stuff
 
-	if(!self->bypass_missile_chance)
+	if (self->melee_range == 0.0f)
+		self->melee_range = (float)AttackRangesForClass[self->classID * 4 + 0];
+
+	if (self->missile_range == 0.0f)
+		self->missile_range = (float)AttackRangesForClass[self->classID * 4 + 1];
+
+	if (self->min_missile_range == 0.0f)
+		self->min_missile_range = (float)AttackRangesForClass[self->classID * 4 + 2];
+
+	if (self->bypass_missile_chance == 0)
 		self->bypass_missile_chance = AttackRangesForClass[self->classID * 4 + 3];
 
-	if(!self->jump_chance)
+	if (self->jump_chance == 0)
 		self->jump_chance = JumpChanceForClass[self->classID];
 
-	if(!self->wakeup_distance)
+	if (self->wakeup_distance == 0.0f)
 		self->wakeup_distance = MAX_SIGHT_PLAYER_DIST;
 
-	//so ai_run knows to call MG_BuoyNavigate...
-	if(self->mintel > 0)
+	// So ai_run knows to call MG_BuoyNavigate...
+	if (self->mintel > 0)
 		self->monsterinfo.aiflags |= AI_USING_BUOYS;
 
-	if(!skill->value)//no skill = 1/2 health monsters
-		self->max_health = self->health = self->health * 0.5;
+	if (SKILL == SKILL_EASY) // Easy skill = 1/2 health monsters.
+	{
+		self->health /= 2;
+		self->max_health = self->health;
+	}
 
 	self->lastbuoy = NULL_BUOY;
 }
