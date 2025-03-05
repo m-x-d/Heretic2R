@@ -73,64 +73,47 @@ static qboolean EntitiesTouching(const edict_t* e1, const edict_t* e2)
 	return true;
 }
 
-/*--------------------------------------
-  LinkBreakables - used to link up brushes that have KILLALL set
-----------------------------------------*/
-void LinkBreakables(edict_t *self)
+// Used to link up brushes that have KILLALL set.
+static void LinkBreakables(edict_t* self)
 {
-  edict_t   *t, *ent;
-  vec3_t	cmins, cmaxs;
-
 	self->think = NULL;
 
-	if (self->enemy) // already linked by another breakable
-	{
-		return;		
-	}
-	
-	VectorCopy(self->mins,cmins);
-	VectorCopy(self->maxs,cmaxs);
-	
-	t = ent = self;
-	
-	do
-	{
-		ent->owner = self;			// master breakable
+	if (self->enemy != NULL) // Already linked by another breakable.
+		return;
 
-		if (ent->health) 
-		{
+	edict_t* t = self;
+	edict_t* ent = self;
+
+	while (true)
+	{
+		ent->owner = self; // Master breakable.
+
+		if (ent->health > 0)
 			self->health = ent->health;
-		}
 
-		if (ent->targetname) 
-		{
+		if (ent->targetname != NULL)
 			self->targetname = ent->targetname;
-		}
 
-		t = G_Find (t, FOFS(classname), ent->classname);
+		t = G_Find(t, FOFS(classname), ent->classname);
 
-
-		if (!t)
+		if (t == NULL)
 		{
-			ent->enemy = self;		// make the chain a loop
-			ent = ent->owner;
+			ent->enemy = self; // Make the chain a loop.
 			return;
 		}
 
 		if (ent->spawnflags & SF_NOLINK)
-			continue;	
+			continue;
 
-		if (EntitiesTouching(self,t))
-		{		
-			if (t->enemy) 
-			{
+		if (EntitiesTouching(self, t))
+		{
+			if (t->enemy != NULL)
 				return;
-			}
-			
+
 			ent->enemy = t;
 			ent = t;
 		}
-	} while (1);
+	}
 }
 
 /*QUAKED breakable_brush (1 .5 0) ? KILLALL NOLINK ORDERED TRANSLUCENT INVULNERABLE INVISIBLE PUSHPULL NOTPLAYERDAMAGE
