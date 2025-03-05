@@ -1124,5 +1124,8 @@
     <ClInclude Include="p_teleport.h">
       <Filter>src\Player</Filter>
     </ClInclude>
+    <ClInclude Include="g_breakable.h">
+      <Filter>src\Game objects</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

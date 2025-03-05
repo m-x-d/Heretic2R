@@ -1,6 +1,7 @@
+#include "c_actors.h" //mxd
 #include "g_items.h" //mxd
 #include "g_Shrine.h" //mxd
-#include "c_actors.h" //mxd
+#include "g_breakable.h" //mxd
 #include "m_monsters.h" //mxd
 #include "p_client.h" //mxd
 #include "g_local.h"
@@ -100,8 +101,6 @@ void SP_character_siernan2 (edict_t *self);
 void SP_character_ssithra_scout (edict_t *self);
 void SP_character_ssithra_victim (edict_t *self);
 void SP_character_tome (edict_t *self);
-
-void SP_breakable_brush (edict_t *ent);
 
 void SP_light_walltorch (edict_t *ent);
 //void SP_light_flame (edict_t *ent);

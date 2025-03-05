@@ -691,9 +691,6 @@ extern void M_MoveAwayFromGoal(edict_t* ent, float dist);
 // g_phys.c
 extern void G_RunEntity(edict_t* ent);
 
-// g_breakable.c
-extern void KillBrush(edict_t* target, edict_t* inflictor, edict_t* attacker, int damage);
-
 // g_obj.c
 extern void ObjectInit(edict_t* self, int health, int mass, int materialtype, int solid);
 

@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include "g_breakable.h" //mxd
 #include "g_misc.h"
 #include "g_DefaultMessageHandler.h"
 #include "FX.h"
