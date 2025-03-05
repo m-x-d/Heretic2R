@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include "g_env.h" //mxd
 #include "FX.h"
 #include "Vector.h"
 #include "g_local.h"

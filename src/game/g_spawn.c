@@ -2,6 +2,7 @@
 #include "g_items.h" //mxd
 #include "g_Shrine.h" //mxd
 #include "g_breakable.h" //mxd
+#include "g_env.h" //mxd
 #include "m_monsters.h" //mxd
 #include "p_client.h" //mxd
 #include "g_local.h"
@@ -118,16 +119,12 @@ void SP_light_lantern5 (edict_t *ent);
 void SP_light_buglight (edict_t *ent);
 
 void SP_env_fire (edict_t *self);
-void SP_env_dust (edict_t *self);
-void SP_env_smoke (edict_t *self);
 void SP_env_mist(edict_t *self);
 void SP_env_bubbler(edict_t *self);
 void SP_env_water_drip(edict_t *self);
 void SP_env_water_fountain(edict_t *self);
 void SP_env_waterfall_base(edict_t *self);
 void SP_env_sun1(edict_t *ent);
-void SP_env_muck(edict_t *ent);
-//void SP_env_galaxy (edict_t *ent);
 
 void SP_sound_ambient_silverspring (edict_t *ent);
 void SP_sound_ambient_swampcanyon (edict_t *ent);
