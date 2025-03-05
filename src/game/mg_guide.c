@@ -982,116 +982,95 @@ static void MG_MonsterFirePathTarget(edict_t* self, const char* path_target)
 			ent->use(ent, self, self);
 }
 
-qboolean MG_MonsterAttemptTeleport(edict_t *self, vec3_t destination, qboolean ignoreLOS)
+qboolean MG_MonsterAttemptTeleport(edict_t* self, const vec3_t destination, const qboolean ignore_los)
 {
-	qboolean no_teleport = false;
-	trace_t trace;
-	vec3_t	top, bottom, mins, maxs;
-	edict_t	*ent = NULL;
-	int		i;
+	qboolean can_teleport = true; //mxd. Renamed from 'no_teleport' to avoid shadowing global cvar...
 
-	if(self->svflags & SVF_BOSS || self->classID == CID_OGLE)
+	if ((self->svflags & SVF_BOSS) || self->classID == CID_OGLE)
 		return false;
 
-	if(self->classID != CID_ASSASSIN)
+	if (self->classID != CID_ASSASSIN && !ignore_los)
 	{
-		//if still SEE monsters cheat, re-enable the following 2 lines
-		//if(skill->value < 2)
-		//	return false;//only cheat on hard
+		// Check line of sight with all players.
+		for (int i = 0; i <= game.maxclients; i++)
+		{
+			const edict_t* ent = &g_edicts[i];
 
-		if(!ignoreLOS)
-		{//check line of sight with all players
-			ent = g_edicts;
+			if (ent->client == NULL)
+				continue;
 
-			for(i = 0; i <= game.maxclients; i++)
-			{
-				ent = &g_edicts[i];
+			edict_t* temp = G_Spawn();
 
-				if(ent->client)
-				{
-					edict_t	*temp;
+			for (int c = 0; c < 3; c++)
+				temp->s.origin[c] = (float)ent->client->playerinfo.pcmd.camera_vieworigin[c] * 0.125f;
 
-					temp = G_Spawn();
+			can_teleport = (!gi.inPVS(temp->s.origin, destination) && !gi.inPVS(temp->s.origin, self->s.origin));
 
-					VectorSet(temp->s.origin,
-						ent->client->playerinfo.pcmd.camera_vieworigin[0] * 0.125,
-						ent->client->playerinfo.pcmd.camera_vieworigin[1] * 0.125,
-						ent->client->playerinfo.pcmd.camera_vieworigin[2] * 0.125);
+			G_FreeEdict(temp);
 
-					if(gi.inPVS(temp->s.origin, destination))
-					{
-						no_teleport = true;
-						G_FreeEdict(temp);
-						break;
-					}
-
-					if(gi.inPVS(temp->s.origin, self->s.origin))
-					{
-						no_teleport = true;
-						G_FreeEdict(temp);
-						break;
-					}
-
-					G_FreeEdict(temp);
-				}
-			}
+			if (!can_teleport)
+				break;
 		}
 	}
 
-	if(!no_teleport)
-	{//do traces
+	if (can_teleport)
+	{
+		// Do traces
+		vec3_t bottom;
 		VectorCopy(destination, bottom);
 		bottom[2] -= self->size[2];
-		
+
+		vec3_t mins;
 		VectorCopy(self->mins, mins);
+		mins[2] = 0.0f;
+
+		vec3_t maxs;
 		VectorCopy(self->maxs, maxs);
-		mins[2] = 0;
-		maxs[2] = 1;
+		maxs[2] = 1.0f;
 
-		gi.trace(destination, mins, maxs, bottom, self, MASK_MONSTERSOLID, &trace);//self->clipmask
+		trace_t trace;
+		gi.trace(destination, mins, maxs, bottom, self, MASK_MONSTERSOLID, &trace);
 
-		if(trace.fraction<1.0)
+		qboolean perform_teleport; //mxd
+
+		if (trace.fraction < 1.0f)
 		{
 			VectorCopy(trace.endpos, bottom);
+
+			vec3_t top;
 			VectorCopy(bottom, top);
-			top[2] += self->size[2] - 1;
+			top[2] += self->size[2] - 1.0f;
+
 			gi.trace(bottom, mins, maxs, top, self, MASK_MONSTERSOLID, &trace);
 
-			if(trace.allsolid || trace.startsolid)
-				return false;
-
-			if(trace.fraction == 1.0)
-			{
-				bottom[2] -= self->mins[2];
-
-				if(self->classID == CID_ASSASSIN)
-					assassinPrepareTeleportDest(self, bottom, false);
-				else
-				{
-					VectorCopy(bottom, self->s.origin);
-					gi.linkentity(self);
-				}
-
-				MG_RemoveBuoyEffects(self);
-				self->lastbuoy = -1;
-				return true;
-			}
+			perform_teleport = (!trace.allsolid && !trace.startsolid && trace.fraction == 1.0f);
 		}
-		else if(!trace.allsolid && !trace.startsolid)
+		else
+		{
+			perform_teleport = (!trace.allsolid && !trace.startsolid);
+		}
+
+		if (perform_teleport)
 		{
 			bottom[2] -= self->mins[2];
-			if(self->classID == CID_ASSASSIN)
+
+			if (self->classID == CID_ASSASSIN)
+			{
 				assassinPrepareTeleportDest(self, bottom, false);
+			}
 			else
 			{
 				VectorCopy(bottom, self->s.origin);
 				gi.linkentity(self);
 			}
+
 			MG_RemoveBuoyEffects(self);
 			self->lastbuoy = -1;
+
 			return true;
 		}
 	}
+
 	return false;
 }
 
