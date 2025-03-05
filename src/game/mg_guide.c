@@ -822,72 +822,72 @@ qboolean MG_MakeConnection(edict_t* self, const buoy_t* first_buoy, const qboole
 	return result;
 }
 
-qboolean MG_CheckClearPathToEnemy(edict_t *self)
+qboolean MG_CheckClearPathToEnemy(edict_t* self)
 {
-	trace_t	trace;
-	vec3_t	mins, checkspot, enemy_dir, center;
-	float	dist, i;
-	qboolean	close_ok = false;
-	
-	if(!self->enemy)
+	if (self->enemy == NULL)
 		return false;
 
+	vec3_t mins;
 	VectorCopy(self->mins, mins);
-	mins[2] += 18;
-	gi.trace(self->s.origin, mins, self->maxs, self->enemy->s.origin, self, MASK_SOLID,&trace);
+	mins[2] += 18.0f;
 
-	if(trace.ent)
-	{
-		if(trace.ent == self->enemy)
-			return true;//bumped into our enemy!
-	}
+	trace_t	trace;
+	gi.trace(self->s.origin, mins, self->maxs, self->enemy->s.origin, self, MASK_SOLID, &trace);
 
-	if(trace.allsolid||trace.startsolid)//trace is through a wall next to me?
+	if (trace.ent != NULL && trace.ent == self->enemy)
+		return true; // Bumped into our enemy!
+
+	if (trace.allsolid || trace.startsolid) // Trace is through a wall next to me?
 		return false;
 
-	if(trace.fraction<1.0)
-	{//couldn't get to enemy
-		VectorSubtract(self->enemy->s.origin, trace.endpos, enemy_dir);
-		dist = VectorLength(enemy_dir);
-		if(dist>48 || !visible(self, self->enemy))
-			return false;//couldn't even get close to a visible enemy
+	if (trace.fraction < 1.0f)
+	{
+		// Couldn't get to enemy.
+		vec3_t enemy_diff;
+		VectorSubtract(self->enemy->s.origin, trace.endpos, enemy_diff);
+
+		if (VectorLength(enemy_diff) > 48.0f || !visible(self, self->enemy))
+			return false; // Couldn't even get close to a visible enemy.
 	}
 
-	if(!self->groundentity || (self->flags & FL_INWATER && self->enemy->flags & FL_INWATER))
+	if (self->groundentity == NULL || (self->flags & FL_INWATER && self->enemy->flags & FL_INWATER))
 		return true;
 
-	if(self->flags & FL_FLY || self->movetype == PHYSICSTYPE_FLY || !self->gravity || self->classID == CID_GORGON)
+	if (self->flags & FL_FLY || self->movetype == PHYSICSTYPE_FLY || self->gravity == 0.0f || self->classID == CID_GORGON)
 		return true;
 
-	if((self->flags & FL_INWATER || (self->flags & FL_SWIM) || (self->flags & FL_AMPHIBIAN))&&
-		self->enemy->flags & FL_INWATER)
+	if (((self->flags & FL_INWATER) || (self->flags & FL_SWIM) || (self->flags & FL_AMPHIBIAN)) && self->enemy->flags & FL_INWATER)
 		return true;
 
-	//Now lets see if there is a solid ground or steps path to the enemy
-
-	//FIXME: what about jumping monsters?  Call a jump message?
-
+	// Now lets see if there is a solid ground or steps path to the enemy.
+	//FIXME: what about jumping monsters? Call a jump message?
+	vec3_t center;
 	VectorAverage(self->absmin, self->absmax, center);
 
-	VectorSubtract(self->enemy->s.origin, center, enemy_dir);
-	dist = VectorNormalize(enemy_dir);
+	vec3_t enemy_diff;
+	VectorSubtract(self->enemy->s.origin, center, enemy_diff);
+	const float dist = VectorNormalize(enemy_diff);
 
-	VectorCopy(self->s.origin, mins);
-	mins[2] += self->mins[2];
+	vec3_t origin;
+	VectorCopy(self->s.origin, origin);
+	origin[2] += self->mins[2];
 
-	for(i = 0; i < dist; i += 8)
-	{//check to see if ground is there all the way to enemy
-		VectorMA(mins, i, enemy_dir, checkspot);
-		checkspot[2] -= 3;
-		if(!(gi.pointcontents(checkspot) & CONTENTS_SOLID))
-		{//not solid underneath
-			checkspot[2] -= 16;
-			if(!(gi.pointcontents(checkspot) & CONTENTS_SOLID))
-			{
-				return false;//not a step down
-			}
+	for (int i = 0; (float)i < dist; i += 8)
+	{
+		// Check to see if ground is there all the way to enemy.
+		vec3_t check_spot;
+		VectorMA(origin, (float)i, enemy_diff, check_spot);
+		check_spot[2] -= 3.0f;
+
+		if (!(gi.pointcontents(check_spot) & CONTENTS_SOLID))
+		{
+			check_spot[2] -= 16.0f; // Not solid underneath.
+
+			if (!(gi.pointcontents(check_spot) & CONTENTS_SOLID))
+				return false; // Not a step down.
 		}
 	}
+
 	return true;
 }
 
