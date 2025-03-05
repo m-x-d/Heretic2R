@@ -973,17 +973,13 @@ static qboolean MG_CheckClearShotToEnemy(const edict_t* self)
 	return MG_OkToShoot(self, trace.ent);
 }
 
-void MG_MonsterFirePathTarget(edict_t *self, char *ptarg)
+static void MG_MonsterFirePathTarget(edict_t* self, const char* path_target)
 {
-	edict_t	*ent;
+	edict_t* ent = NULL;
 
-	ent = NULL;
-
-	while ((ent = G_Find(ent, FOFS(pathtargetname), ptarg)) != NULL)
-	{
-		if (ent->use)
+	while ((ent = G_Find(ent, FOFS(pathtargetname), path_target)) != NULL)
+		if (ent->use != NULL)
 			ent->use(ent, self, self);
-	}
 }
 
 qboolean MG_MonsterAttemptTeleport(edict_t *self, vec3_t destination, qboolean ignoreLOS)
