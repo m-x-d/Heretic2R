@@ -36,12 +36,12 @@ void KillBrush(edict_t* target, edict_t* inflictor, edict_t* attacker, const int
 	}
 }
 
-void KillBrushUse(edict_t *targ,edict_t *inflictor,edict_t *attacker)
+static void KillBrushUse(edict_t* target, edict_t* inflictor, edict_t* attacker)
 {
-	QPostMessage(targ,MSG_DEATH,PRI_DIRECTIVE,"eeei",targ,inflictor,attacker,0);
+	QPostMessage(target, MSG_DEATH, PRI_DIRECTIVE, "eeei", target, inflictor, attacker, 0);
 }
 
-void BBrushStaticsInit(void) 
+void BBrushStaticsInit(void)
 {
 	classStatics[CID_BBRUSH].msgReceivers[MSG_DEATH] = DefaultObjectDieHandler;
 }
