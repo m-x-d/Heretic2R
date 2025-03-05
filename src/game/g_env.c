@@ -62,39 +62,40 @@ void SP_env_muck(edict_t* self)
 
 #pragma region ========================== env_smoke ==========================
 
-#define START_OFF 8
+#define SF_START_OFF 8
 
-void smoke_use (edict_t *self, edict_t *other, edict_t *activator)
+static void SetupEnvSmokeEffect(edict_t* self) //mxd. Added to reduce code duplication.
 {
-	vec3_t	dir;
-	byte	scale,speed,wait,maxrange;
-	if (self->spawnflags & START_OFF)
+	vec3_t dir;
+	AngleVectors(self->s.angles, dir, NULL, NULL);
+
+	const byte scale = (byte)(self->s.scale * 32.0f);
+	const byte speed = (byte)Q_ftol(self->speed);
+	const byte wait = (byte)Q_ftol(self->wait);
+	const byte max_range = (byte)Q_ftol(self->maxrange);
+
+	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_ENVSMOKE, CEF_BROADCAST, self->s.origin, "bdbbb", scale, dir, speed, wait, max_range);
+}
+
+static void EnvSmokeUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'smoke_use' in original logic.
+{
+	if (self->spawnflags & SF_START_OFF)
 	{
-		scale = (byte)(self->s.scale * 32.0);
-		AngleVectors(self->s.angles, dir, NULL, NULL);
-
-		speed = Q_ftol(self->speed);
-		wait = Q_ftol(self->wait);
-		maxrange = Q_ftol(self->maxrange);
-
-		self->PersistantCFX = gi.CreatePersistantEffect(&self->s,
-								FX_ENVSMOKE,
-								CEF_BROADCAST,self->s.origin,
-								"bdbbb",scale,dir,speed,wait,maxrange);
-
-		self->s.sound = gi.soundindex("ambient/fountainloop.wav");
+		SetupEnvSmokeEffect(self); //mxd
+		self->s.sound = (byte)gi.soundindex("ambient/fountainloop.wav");
 		self->s.sound_data = (127 & ENT_VOL_MASK) | ATTN_STATIC;
-		self->spawnflags &= ~START_OFF;
+		self->spawnflags &= ~SF_START_OFF;
 	}
 	else
 	{
-		if (self->PersistantCFX)
+		if (self->PersistantCFX > 0)
 		{
 			gi.RemovePersistantEffect(self->PersistantCFX, REMOVE_SMOKE);
 			self->PersistantCFX = 0;
 		}
+
 		gi.RemoveEffects(&self->s, FX_ENVSMOKE);
-		self->spawnflags |= START_OFF;
+		self->spawnflags |= SF_START_OFF;
 	}
 }
 
@@ -120,7 +121,7 @@ void SP_env_smoke (edict_t *self)
 
 	// allow us to use this stuff
 	if (self->targetname)
-		self->use = smoke_use;
+		self->use = EnvSmokeUse;
 
 	// set the wait between puffs
    	if (!self->wait)
@@ -147,7 +148,7 @@ void SP_env_smoke (edict_t *self)
 	self->s.effects |= EF_NODRAW_ALWAYS_SEND;
 	gi.linkentity(self);
 
-	if (self->spawnflags & START_OFF)	// Start off
+	if (self->spawnflags & SF_START_OFF)	// Start off
 	{
 		return;
 	}
