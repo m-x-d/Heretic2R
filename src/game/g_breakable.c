@@ -17,25 +17,6 @@
 #define SF_PUSHABLE			64 //mxd
 #define SF_NOPLAYERDAMAGE	128 //mxd
 
-/*
-void KillBrushOrdered(edict_t *self)
-{
-   local entity starte, oself, other;
-	local float headNum;
-
-	oself = starte = self;
-	headNum = self.count;
-
-	do
-	{
-	  if (self.count >= headNum) 
-		self.th_die();
-
-	  self = self.enemy;
-	} while ( (self != starte) && (self != world) && (self.frags != self.cnt));
-}
-*/
-
 void KillBrush(edict_t *targ,edict_t *inflictor,edict_t *attacker,int damage)
 {
 	edict_t *starte, *other;
