@@ -14,7 +14,7 @@
 #include "m_stats.h"
 #include "Random.h"
 #include "Vector.h"
-#include "FX.h" //TODO: remove
+#include "qcommon.h"
 #include "g_local.h"
 
 // 10 seconds between choosing a buoy and getting there.
@@ -1463,371 +1463,360 @@ void MG_BuoyNavigate(edict_t* self)
 		self->goalentity = self->enemy;
 }
 
-void Cvar_SetValue (char *var_name, float value);
-void MG_GenericMoodSet(edict_t *self)
+static void MG_GenericMoodSet(edict_t* self)
 {
-	vec3_t		v, forward, pursue_vel;
-	float		enemydist;
-	qboolean	coward = false;
-	qboolean	can_attack_ranged = false;
-	qboolean	can_attack_close = false;
-	qboolean	clear_shot = false;
-	qboolean	enemyvis = false;
-	qboolean	enemyinfront = false;
-	qboolean	found = false;
-	qboolean	melee_go = false;
-	int			i;
-	buoy_t		*found_buoy;
-	qboolean	valid_enemy = false;
-
-	if(!level.active_buoys)
+	if (level.active_buoys == 0 && !DEACTIVATE_BUOYS)
 	{
-		if(!DEACTIVATE_BUOYS)
+		gi.dprintf("WARNING: no buoys on this map!\n");
+
+		// 1-st buoy, initialize a couple arrays.
+		for (int i = 0; i < MAX_CLIENTS; i++)
 		{
-			gi.dprintf("WARNING: no buoys on this map!!!\n");
-			if(!level.active_buoys)
-			{//1st buoy, initialize a couple arrays
-				for(i = 0; i < MAX_CLIENTS; i++)
-				{
-					level.player_buoy[i] = NULL_BUOY;				//stores current bestbuoy for a player enemy (if any)
-					level.player_last_buoy[i] = NULL_BUOY;		//when player_buoy is invalid, saves it here so monsters can check it first instead of having to do a whole search
-				}
-			}
-			Cvar_SetValue("deactivate_buoys", 1);
-			DEACTIVATE_BUOYS = true;
+			level.player_buoy[i] = NULL_BUOY; // Stores current bestbuoy for a player enemy (if any).
+			level.player_last_buoy[i] = NULL_BUOY; // When player_buoy is invalid, saves it here so monsters can check it first instead of having to do a whole search.
 		}
+
+		Cvar_SetValue("deactivate_buoys", 1.0f);
+		DEACTIVATE_BUOYS = true;
 	}
 
-	if(self->mood_nextthink > level.time || self->mood_nextthink <= 0.0f)
+	if (self->mood_nextthink > level.time || self->mood_nextthink <= 0.0f)
 		return;
 
-	//See if my enemy is still valid
-	valid_enemy = M_ValidTarget(self, self->enemy);
+	// See if my enemy is still valid.
+	const qboolean valid_enemy = M_ValidTarget(self, self->enemy);
 
-	if(!(self->monsterinfo.aiflags & AI_USING_BUOYS))
-	{//skip buoy stuff
+	// Skip buoy stuff?
+	if (!(self->monsterinfo.aiflags & AI_USING_BUOYS))
+	{
 		self->ai_mood = AI_MOOD_PURSUE;
 	}
-	else
-	{//use buoys
-//STEP 1: See if should be running away or wandering
-		if(self->monsterinfo.flee_finished < level.time)
-			self->monsterinfo.aiflags &= ~AI_FLEE;//clear the flee flag now
+	else // Use buoys.
+	{
+		// STEP 1: See if should be running away or wandering.
+		if (self->monsterinfo.flee_finished < level.time)
+			self->monsterinfo.aiflags &= ~AI_FLEE; // Clear the flee flag now.
 
-		if(self->monsterinfo.aiflags & AI_COWARD || 
-			(self->monsterinfo.aiflags&AI_FLEE && self->monsterinfo.flee_finished >= level.time))
+		if (self->monsterinfo.aiflags & AI_COWARD || (self->monsterinfo.aiflags & AI_FLEE && self->monsterinfo.flee_finished >= level.time))
 			self->ai_mood = AI_MOOD_FLEE;
 
-		if(!valid_enemy)
-		{//no enemy, now what?
+		if (!valid_enemy)
+		{
+			// No enemy, now what?
 			self->enemy = NULL;
-			
-			if(self->spawnflags & MSF_FIXED)
+
+			if (self->spawnflags & MSF_FIXED)
 				return;
 
-			if(self->spawnflags & MSF_WANDER || self->monsterinfo.pausetime == -1)
+			if (self->spawnflags & MSF_WANDER || self->monsterinfo.pausetime == -1.0f)
 			{
 				self->spawnflags |= MSF_WANDER;
 				self->ai_mood = AI_MOOD_WANDER;
 			}
 			else if (level.time > self->monsterinfo.pausetime)
+			{
 				self->ai_mood = AI_MOOD_WALK;
+			}
 			else
+			{
 				self->ai_mood = AI_MOOD_STAND;
+			}
 		}
 		else
 		{
-			if(self->spawnflags & MSF_FIXED)
-				goto checkattacks;
+			if (self->spawnflags & MSF_FIXED)
+				goto check_attacks;
 
-			if(self->ai_mood == AI_MOOD_WANDER)
+			if (self->ai_mood == AI_MOOD_WANDER)
 				self->ai_mood = AI_MOOD_PURSUE;
 		}
 
-		if(self->ai_mood == AI_MOOD_FLEE || self->ai_mood == AI_MOOD_WANDER)
-		{//go off in a random buoy path
-			if(!(self->ai_mood_flags&AI_MOOD_FLAG_FORCED_BUOY))
-			{//first time, find closest buoy, alert other enemies
-				if(self->ai_mood == AI_MOOD_FLEE)
-				{//wake up enemies for next 10 seconds
+		if (self->ai_mood == AI_MOOD_FLEE || self->ai_mood == AI_MOOD_WANDER)
+		{
+			// Go off in a random buoy path.
+			if (!(self->ai_mood_flags & AI_MOOD_FLAG_FORCED_BUOY))
+			{
+				// First time, find closest buoy, alert other enemies.
+				if (self->ai_mood == AI_MOOD_FLEE)
+				{
+					// Wake up enemies for next 10 seconds.
 					level.sight_entity = self;
 					level.sight_entity_framenum = level.framenum + 100;
 					level.sight_entity->light_level = 128;
 				}
 
-				if(MG_GoToRandomBuoy(self))
+				if (MG_GoToRandomBuoy(self))
 				{
 					self->monsterinfo.searchType = SEARCH_BUOY;
 					return;
 				}
-				else if(self->ai_mood == AI_MOOD_FLEE)
-				{//couldn't flee using buoys, use dumb fleeing
-					//FIXME: cowering if can't flee using buoys?
+
+				if (self->ai_mood == AI_MOOD_FLEE)
+				{
+					// Couldn't flee using buoys, use dumb fleeing. //FIXME: cowering if can't flee using buoys?
 					self->ai_mood_flags |= AI_MOOD_FLAG_DUMB_FLEE;
 					return;
 				}
-				//otherwise, want to wander, but can't, continue down the possibilities
+
+				// Otherwise, want to wander, but can't, continue down the possibilities.
 			}
 			else
 			{
 				self->monsterinfo.searchType = SEARCH_BUOY;
 				MG_Pathfind(self, false);
-				return;//already wandering normal buoy navigation
+
+				return; // Already wandering normal buoy navigation.
 			}
 		}
-//STEP 2: Not running away or wandering, see what should be doing
 
-		if(!valid_enemy)
-		{//No enemy, Not wandering or can't, see if I have a homebuoy
-			if(self->homebuoy)
-			{//have a home base, let's get back there if no enemy
-				for(i = 0; i <= level.active_buoys; i++)
+		// STEP 2: not running away or wandering, see what we should be doing.
+		if (!valid_enemy)
+		{
+			// No enemy, not wandering or can't, see if I have a homebuoy.
+			if (self->homebuoy != NULL)
+			{
+				const buoy_t* found_buoy = NULL;
+				qboolean found = false;
+
+				// Have a home base, let's get back there if no enemy.
+				for (int i = 0; i <= level.active_buoys; i++)
 				{
 					found_buoy = &level.buoy_list[i];
-					if(found_buoy->targetname && !stricmp(found_buoy->targetname, self->homebuoy))
+
+					if (found_buoy->targetname != NULL && Q_stricmp(found_buoy->targetname, self->homebuoy) == 0) //mxd. stricmp -> Q_stricmp
 					{
 						found = true;
 						break;
 					}
 				}
 
-////////////////////////////  BUGBUGBUGBUG 7 lines above, targetname can be NULL if you just happen to die.
-
-				if(!found)
+				if (!found)
 				{
-#ifdef _DEVEL
-					if(BUOY_DEBUG)
-						gi.dprintf("ERROR: %s can't find it's homebuoy %s\n", self->classname, self->homebuoy);
-#endif
+					gi.dprintf("ERROR: %s can't find it's homebuoy %s\n", self->classname, self->homebuoy);
 					return;
 				}
 
-				if(!MG_ReachedBuoy(self, found_buoy->origin))
+				if (!MG_ReachedBuoy(self, found_buoy->origin))
 				{
-#ifdef _DEVEL
-					if(BUOY_DEBUG)
-						gi.dprintf("%s heading for homebuoy %s\n", self->classname, self->homebuoy);
-#endif
-
-					self->ai_mood_flags|=AI_MOOD_FLAG_FORCED_BUOY;
+					self->ai_mood_flags |= AI_MOOD_FLAG_FORCED_BUOY;
 					self->forced_buoy = found_buoy->id;
 
-					if(MG_MakeConnection(self, NULL, false))
+					if (MG_MakeConnection(self, NULL, false))
 					{
 						self->ai_mood = AI_MOOD_NAVIGATE;
-
-						QPostMessage(self, MSG_WALK,PRI_DIRECTIVE, NULL);
-
+						QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 						MG_RemoveBuoyEffects(self);
 					}
 					else
 					{
 						self->ai_mood_flags &= ~AI_MOOD_FLAG_FORCED_BUOY;
-						self->forced_buoy = -1;
+						self->forced_buoy = NULL_BUOY;
 					}
 				}
 			}
-//No enemy Not wandering, not going to homebuoy (or can't do these for some reason), so just stand around
-			//do we really need to clear the enemy?  mAybe we shouldn't...
-			if(self->enemy)
-			{
-				if(self->enemy->client)
-					self->oldenemy = self->enemy;//remember last player enemy
-			}
-			self->enemy = NULL;
 
-			self->mood_nextthink = level.time + 1;
-			//fixme: check for a self->target also?
-			if (self->monsterinfo.pausetime == -1)
+			// No enemy, not wandering, not going to homebuoy (or can't do these for some reason), so just stand around.
+			if (self->enemy != NULL && self->enemy->client != NULL)
+				self->oldenemy = self->enemy; // Remember last player enemy.
+
+			self->enemy = NULL; //FIXME: do we really need to clear the enemy? Maybe we shouldn't...
+			self->mood_nextthink = level.time + 1.0f;
+
+			//FIXME: check for a self->target also?
+			if (self->monsterinfo.pausetime == -1.0f)
 			{
 				self->spawnflags |= MSF_WANDER;
 				self->ai_mood = AI_MOOD_WANDER;
 			}
 			else if (level.time > self->monsterinfo.pausetime)
+			{
 				self->ai_mood = AI_MOOD_WALK;
+			}
 			else
+			{
 				self->ai_mood = AI_MOOD_STAND;
+			}
+
 			return;
 		}
-		else if(self->ai_mood_flags&AI_MOOD_FLAG_IGNORE_ENEMY)
-		{//have an enemy, but being forced to use buoys, and ignore enemy until get to forced_buoy
+
+		if (self->ai_mood_flags & AI_MOOD_FLAG_IGNORE_ENEMY)
+		{
+			// Have an enemy, but being forced to use buoys, and ignore enemy until get to forced_buoy.
 			self->ai_mood = AI_MOOD_NAVIGATE;
 			MG_Pathfind(self, false);
+
 			return;
 		}
 	}
 
-	if(!valid_enemy || !self->enemy)
+	if (!valid_enemy || self->enemy == NULL)
 	{
 		if (self->monsterinfo.aiflags & AI_EATING)
 			self->ai_mood = AI_MOOD_EAT;
+
 		return;
 	}
-	
-//STEP 3: OK, have a valid enemy, let's go get him!
-checkattacks:
+
+	// STEP 3: OK, have a valid enemy, let's go get him!
+check_attacks:
 	self->ai_mood = AI_MOOD_PURSUE;
 
-	//get distance to target, ignore Z diff if close
-	VectorSubtract (self->s.origin, self->enemy->s.origin, v);
-	if (v[2] <= 40)
-		v[2] = 0;
-	enemydist = VectorLength(v) - self->enemy->maxs[0];
+	// Get distance to target, ignore z-diff if close.
+	vec3_t v;
+	VectorSubtract(self->s.origin, self->enemy->s.origin, v);
+	if (v[2] <= 40.0f)
+		v[2] = 0.0f;
 
-	if ((self->monsterinfo.aiflags & AI_EATING) && (enemydist > self->wakeup_distance) && !self->monsterinfo.awake)
+	const float enemy_dist = VectorLength(v) - self->enemy->maxs[0];
+
+	if ((self->monsterinfo.aiflags & AI_EATING) && enemy_dist > self->wakeup_distance && !self->monsterinfo.awake)
 	{
 		self->monsterinfo.last_successful_enemy_tracking_time = level.time;
 		self->ai_mood = AI_MOOD_EAT;
+
 		return;
 	}
 
-	if(self->monsterinfo.aiflags & AI_NO_MISSILE)
-		self->spawnflags &= ~MSF_FIXED;//don't stand around if can't fire
+	if (self->monsterinfo.aiflags & AI_NO_MISSILE)
+		self->spawnflags &= ~MSF_FIXED; // Don't stand around if can't fire.
 
-	if(self->attack_debounce_time > level.time || self->monsterinfo.attack_finished > level.time)
-	{//can't attack yet
-		can_attack_ranged = false;
-		clear_shot = false;
-		can_attack_close = false;
-	}
-	else
+	qboolean can_attack_ranged = false;
+	qboolean can_attack_melee = false;
+
+	// Time to attack?
+	if (self->attack_debounce_time <= level.time && self->monsterinfo.attack_finished <= level.time)
 	{
-		if(classStatics[self->classID].msgReceivers[MSG_MISSILE] && !(self->monsterinfo.aiflags&AI_NO_MISSILE))
-		{
-			can_attack_ranged = true;
-			clear_shot = MG_CheckClearShotToEnemy(self);
-		}
-		else
-			clear_shot = false;
-		
-		if(classStatics[self->classID].msgReceivers[MSG_MELEE] && !(self->monsterinfo.aiflags&AI_NO_MELEE))
-			can_attack_close = true;
+		if (classStatics[self->classID].msgReceivers[MSG_MISSILE] && !(self->monsterinfo.aiflags & AI_NO_MISSILE))
+			can_attack_ranged = MG_CheckClearShotToEnemy(self);
+
+		if (classStatics[self->classID].msgReceivers[MSG_MELEE] && !(self->monsterinfo.aiflags & AI_NO_MELEE))
+			can_attack_melee = true;
 	}
 
-	if(enemyvis = visible(self, self->enemy))
+	const qboolean enemy_visible = visible(self, self->enemy);
+
+	if (enemy_visible)
 	{
 		self->ai_mood_flags &= ~AIMF_CANT_FIND_ENEMY;
 		self->ai_mood_flags &= ~AIMF_SEARCHING;
 		self->monsterinfo.last_successful_enemy_tracking_time = level.time;
-		
-		if(self->ai_mood_flags&AI_MOOD_FLAG_BACKSTAB)
-		{//only approach and attack the enemy's back- be sure to take this off if hurt?
-			if(enemydist < 128)
+
+		if (self->ai_mood_flags & AI_MOOD_FLAG_BACKSTAB)
+		{
+			// Only approach and attack the enemy's back. Be sure to take this off if hurt?
+			if (enemy_dist < 128.0f)
 			{
 				self->ai_mood_flags &= ~AI_MOOD_FLAG_BACKSTAB;
 			}
-			else if(infront(self->enemy, self))
+			else if (infront(self->enemy, self))
 			{
 				self->ai_mood = AI_MOOD_DELAY;
 				return;
 			}
 		}
 	}
-	enemyinfront = infront(self, self->enemy);
 
-//HEY! What if too close- backpedal or flee for a bit?
-//Also, need a chance of closing in anyway- a bypass_missile_chance?
-	if(enemyvis && enemyinfront &&
-		can_attack_ranged &&
-		clear_shot &&
-		enemydist <= self->missile_range)
-	{//are they far enough away?
-		if(irand(0, 100)>self->bypass_missile_chance)
+	const qboolean enemy_infront = infront(self, self->enemy);
+
+	// What if too close - backpedal or flee for a bit?
+	// Also, need a chance of closing in anyway - a bypass_missile_chance?
+	if (enemy_visible && enemy_infront && can_attack_ranged && enemy_dist <= self->missile_range)
+	{
+		// Are they far enough away?
+		if (irand(0, 100) > self->bypass_missile_chance)
 		{
-			if(enemydist >= self->min_missile_range)
-			{//ranged attack!
+			if (enemy_dist >= self->min_missile_range)
+			{
+				// Ranged attack!
 				self->ai_mood = AI_MOOD_ATTACK;
 				self->ai_mood_flags &= ~AI_MOOD_FLAG_MELEE;
 				self->ai_mood_flags |= AI_MOOD_FLAG_MISSILE;
-				self->attack_debounce_time = level.time + (3 - skill->value)/2;
+				self->attack_debounce_time = level.time + (3 - skill->value) / 2;
+
 				return;
 			}
-			else if(!can_attack_close)
-			{//too close and can't melee!
-				goto enemy_too_close;
-			}
+
+			if (!can_attack_melee)
+				goto enemy_too_close; // Too close and can't melee!
 		}
 	}
 
-//otherwise, close in
-	if (!MG_CheckClearPathToEnemy(self)&&self->classID!=CID_TBEAST)
-	{//can't directly approach enemy
-//		if(enemyinfront)//ie, failed to shoot for some other reason
-//		{//can't shoot enemy, use buoys to get there
-			MG_Pathfind(self, false);//false means don't do a mg_checkclearpath
-			if(self->ai_mood == AI_MOOD_PURSUE)
-				self->goalentity = self->enemy;
-			if(self->cant_attack_think)
-				self->cant_attack_think(self, enemydist, enemyvis, enemyinfront);
-			return;
-//		}
+	// Otherwise, close in.
+	if (!MG_CheckClearPathToEnemy(self) && self->classID != CID_TBEAST)
+	{
+		// Can't directly approach enemy.
+		MG_Pathfind(self, false); // False means don't do a mg_checkclearpath.
+
+		if (self->ai_mood == AI_MOOD_PURSUE)
+			self->goalentity = self->enemy;
+
+		if (self->cant_attack_think != NULL)
+			self->cant_attack_think(self, enemy_dist, enemy_visible, enemy_infront);
+
+		return;
 	}
 
-//use dummy AI
+	// Use dummy AI.
 	self->monsterinfo.searchType = SEARCH_COMMON;
 	self->movetarget = self->goalentity = self->enemy;
 
-//can directly approach player
+	// Can directly approach player. If too close, hang back and wait until CAN fire a shot off, else close in.
+	if (self->melee_range < 0.0f && enemy_dist <= -self->melee_range)
+		goto enemy_too_close;
 
-	if(self->melee_range < 0)
-	{//keep a distance
-		if(enemydist <= -self->melee_range)
-		{//hang back and wait until CAN fire a shot off
-			goto enemy_too_close;
-		}//else close in
-	}
+	qboolean do_melee_attack = false;
 
-//check for melee range attack
-
-	if(can_attack_close)
+	// Check for melee range attack.
+	if (can_attack_melee)
 	{
-		if(!enemyvis || !enemyinfront || enemydist > self->melee_range || enemydist < self->min_melee_range)
+		if (!enemy_visible || !enemy_infront || enemy_dist > self->melee_range || enemy_dist < self->min_melee_range)
 		{
+			vec3_t forward;
 			AngleVectors(self->s.angles, forward, NULL, NULL);
+
+			vec3_t pursue_vel;
 			VectorSubtract(self->s.origin, self->s.old_origin, pursue_vel);
-			melee_go  = M_PredictTargetEvasion(self, self->enemy, pursue_vel, self->enemy->velocity, self->melee_range, 5);//predict for next half second
+
+			do_melee_attack = M_PredictTargetEvasion(self, self->enemy, pursue_vel, self->enemy->velocity, self->melee_range, 5.0f); // Predict for next half second.
 		}
 		else
-			melee_go = true;
+		{
+			do_melee_attack = true;
+		}
 	}
 
-	if(melee_go)
-	{//Close enough to melee
+	if (do_melee_attack)
+	{
+		// Close enough to melee.
 		self->ai_mood = AI_MOOD_ATTACK;
 		self->ai_mood_flags |= AI_MOOD_FLAG_MELEE;
 		self->ai_mood_flags &= ~AI_MOOD_FLAG_MISSILE;
-		self->attack_debounce_time = level.time + (3 - skill->value)/2;
-		//OR: ok to missile too?
-		return;
+		self->attack_debounce_time = level.time + (3.0f - skill->value) / 2.0f;
+
+		return; // OR: ok to missile too?
 	}
-	else if(enemydist < self->min_melee_range)
-	{
+
+	if (enemy_dist < self->min_melee_range)
 		goto enemy_too_close;
-		return;
-	}
 
-//Can't melee, so just run blindly
+	// Can't melee, so just run blindly.
 	self->ai_mood = AI_MOOD_PURSUE;
-	if(self->cant_attack_think)
-		self->cant_attack_think(self, enemydist, enemyvis, enemyinfront);
+	if (self->cant_attack_think != NULL)
+		self->cant_attack_think(self, enemy_dist, enemy_visible, enemy_infront);
+
 	return;
 
-enemy_too_close:
-	if(classStatics[self->classID].msgReceivers[MSG_FALLBACK])
-	{//what if I hit a wall?  Go into attack anyway?
-		self->ai_mood = AI_MOOD_BACKUP;//walk back while firing
-	}
-	else//maybe turn and run for a bit?
+enemy_too_close: //TODO: split into a function, remove goto?
+	if (classStatics[self->classID].msgReceivers[MSG_FALLBACK])
 	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("%s running away to get some distance from %s\n", self->classname, self->enemy->classname);
-#endif
-		self->monsterinfo.aiflags |= AI_FLEE;
-		self->monsterinfo.flee_finished = level.time + flrand(3, 6);
-		//self->ai_mood = AI_MOOD_DELAY;//fixme: this is not good!
+		self->ai_mood = AI_MOOD_BACKUP; // Walk back while firing. What if I hit a wall? Go into attack anyway?
 	}
-	return;
+	else // Maybe turn and run for a bit?
+	{
+		self->monsterinfo.aiflags |= AI_FLEE;
+		self->monsterinfo.flee_finished = level.time + flrand(3.0f, 6.0f);
+	}
 }
 
 void MG_InitMoods(edict_t *self)
