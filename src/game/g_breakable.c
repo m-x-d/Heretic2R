@@ -46,24 +46,6 @@ void BBrushStaticsInit(void)
 	classStatics[CID_BBRUSH].msgReceivers[MSG_DEATH] = DefaultObjectDieHandler;
 }
 
-static void BBrushInit(edict_t *self) //TODO: remove
-{
-
-	self->movetype = PHYSICSTYPE_NONE;
-	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_BBRUSH;
-
-	if (self->spawnflags & SF_INVULNERABLE2)
-	{
-		self->takedamage = DAMAGE_NO;
-	}
-	else
-	{
-		self->takedamage = DAMAGE_YES;
-	}
-
-}
-
 static qboolean EntitiesTouching(const edict_t* e1, const edict_t* e2)
 {
 	for (int i = 0; i < 3; i++)
@@ -116,84 +98,46 @@ static void LinkBreakables(edict_t* self)
 	}
 }
 
-/*QUAKED breakable_brush (1 .5 0) ? KILLALL NOLINK ORDERED TRANSLUCENT INVULNERABLE INVISIBLE PUSHPULL NOTPLAYERDAMAGE
+// QUAKED breakable_brush (1 .5 0) ? KILLALL NOLINK x x INVULNERABLE INVULNERABLE PUSHABLE NOPLAYERDAMAGE
+// A brush that explodes.
 
-	A brush that explodes. 
+// Spawnflags:
+// KILLALL			- kills any brushes touching this one.
+// NOLINK			- can touch a KILLALL brush and not be linked to it.
+// INVULNERABLE		- if set, it can't be hurt.
+// PUSHABLE			- can be pushed by player.
+// NOPLAYERDAMAGE	- can't be damaged by player.
 
-NOTPLAYERDAMAGE - players cannot damage this brush
-
-KILLALL - kills any brushes touching this one 
-
-HIERARCH - kills any brushes touching this one 
-
-NOLINK - can touch a KILLALL brush and not be linked to it
-
-INVULNERABLE - if set it can't be hurt
-
-*** VARIABLES ***
-health - amount of damage the brush can take before exploding
-materialtype - 
-0 = STONE
-1 = GREYSTONE (default)map 
-2 = CLOTH
-3 = METAL
-4 = FLESH
-5 = POTTERY
-6 = GLASS
-7 = LEAF
-8 = WOOD
-9 = BROWNSTONE
-10 = NONE - just makes smoke
-
-
-*/
-void SP_breakable_brush (edict_t *ent)
+// Variables:
+// health - amount of damage the brush can take before exploding.
+// materialtype:	0 = STONE; 1 = GREYSTONE (default); 2 = CLOTH; 3 = METAL; 4 = FLESH; 5 = POTTERY;
+//					6 = GLASS; 7 = LEAF; 8 = WOOD; 9 = BROWNSTONE; 10 = NONE - just makes smoke.
+void SP_breakable_brush(edict_t* ent)
 {
-	vec3_t space;
-	float spacecube;
+	ent->classID = CID_BBRUSH;
+	ent->msgHandler = DefaultMsgHandler;
 
-	BBrushInit(ent);
-
-	if (!ent->materialtype)
+	if (ent->materialtype == 0) //TODO: it's impossible to set STONE (0) materialtype! Can't be fixed without either adjusting vanilla maps or adding vanilla map-fixing logic similar to Q2...
 		ent->materialtype = MAT_GREYSTONE;
 
-	if (!ent->health)
+	if (ent->health == 0)
 		ent->health = 1;
 
-
-	if (ent->spawnflags & 16)	// Invulnerable
-	{
-		ent->takedamage = DAMAGE_NO;
-	}
-	else
-	{
-		ent->takedamage = DAMAGE_YES;
-	}
-
-
-	if (ent->spawnflags & 64)
-	{
-		ent->movetype = PHYSICSTYPE_PUSH;
-//		ent->think = M_droptofloor;
-//		ent->nextthink = level.time + 2 * FRAMETIME;
-	}
-	else
-		ent->movetype = PHYSICSTYPE_NONE;
-
-	if (ent->spawnflags & 128)
+	if (ent->spawnflags & SF_NOPLAYERDAMAGE)
 		ent->svflags |= SVF_NO_PLAYER_DAMAGE;
 
+	ent->takedamage = ((ent->spawnflags & (SF_INVULNERABLE | SF_INVULNERABLE2)) ? DAMAGE_NO : DAMAGE_YES); //mxd. Preserve original logic... //TODO: are both of these spawnflags used in vanilla maps?
+	ent->movetype = ((ent->spawnflags & SF_PUSHABLE) ? PHYSICSTYPE_PUSH : PHYSICSTYPE_NONE);
 	ent->solid = SOLID_BSP;
-
 	ent->use = KillBrushUse;
 
-	gi.setmodel (ent, ent->model);
-	gi.linkentity (ent);
+	gi.setmodel(ent, ent->model);
+	gi.linkentity(ent);
 
-	// Use size to calculate mass
+	// Use size to calculate mass.
+	vec3_t space;
 	VectorSubtract(ent->maxs, ent->mins, space);
-	spacecube = space[0] * space[1] * space[2];
-	ent->mass = spacecube / 64;   // 
+	ent->mass = (int)((space[0] * space[1] * space[2]) / 64.0f);
 
 	ent->nextthink = level.time + FRAMETIME;
 	ent->think = LinkBreakables;
