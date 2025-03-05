@@ -651,243 +651,118 @@ static qboolean MG_MakeNormalConnection(edict_t* self, const qboolean dont_use_l
 	return MG_ResolveBuoyConnection(self, best_buoy, e_best_buoy, goal_pos, dont_use_last, skip_jump);
 }
 
-
-/*
-========================
-
-MG_MakeConnection
-
-	Determines if monster should be pursuing a forced_buoy, if not, calls normal
-	enemy-tracking buoy connection finding function
-
-========================
-*/
-int MG_MakeConnection_Go(edict_t *self, buoy_t *first_buoy, qboolean skipjump)
+// Determines if monster should be pursuing a forced_buoy. If not, calls normal enemy-tracking buoy connection finding function.
+static int MG_TryMakeConnection(edict_t* self, const buoy_t* first_buoy, const qboolean skip_jump) //mxd. Named 'MG_MakeConnection_Go' in original logic.
 {
-	qboolean	found_path = false;
-	qboolean	dont_use_last;
-	buoy_t		*forced_buoy = NULL;
-	buoy_t		*found_buoy = NULL;
-	int			k;
-	qboolean	last_buoy_clear = false;
-
-	if(self->spawnflags & MSF_FIXED)
-		return false;
+	if (self->spawnflags & MSF_FIXED)
+		return 0;
 
 	MG_RemoveBuoyEffects(self);
 
-	if(self->enemy && !(self->ai_mood_flags&AI_MOOD_FLAG_IGNORE_ENEMY) && self->ai_mood != AI_MOOD_FLEE)
+	qboolean dont_use_last;
+	qboolean found_path = false;
+	qboolean last_buoy_clear = false;
+
+	if (self->enemy != NULL && !(self->ai_mood_flags & AI_MOOD_FLAG_IGNORE_ENEMY) && self->ai_mood != AI_MOOD_FLEE)
 	{
 		self->ai_mood_flags &= ~AIMF_CANT_FIND_ENEMY;
 
-		if(self->enemy!=self->last_buoyed_enemy)//Current enemywasn't the last enemy I looked for...
+		if (self->enemy != self->last_buoyed_enemy) // Current enemy wasn't the last enemy I looked for...
 		{
 			dont_use_last = false;
-			self->lastbuoy = NULL_BUOY;//so forget last buoy I used
+			self->lastbuoy = NULL_BUOY; // So forget last buoy I used.
 		}
-		else if(self->monsterinfo.searchType == SEARCH_BUOY)
-			dont_use_last = true;
 		else
-			dont_use_last = false;
+		{
+			dont_use_last = (self->monsterinfo.searchType == SEARCH_BUOY);
+		}
 
-		self->last_buoyed_enemy = self->enemy;//Remember the last enemy I looked for
+		self->last_buoyed_enemy = self->enemy; // Remember the last enemy I looked for.
 
-		if(self->enemy->client)
-		{//see if this player already has a bestbuoy found by a previous monster this frame
-			if(level.player_buoy[self->enemy->s.number - 1]>NULL_BUOY)//entity numbers 0 - 8 should be players
-			{//FIXME: if not, try his last player_buoy first!
-				if(BUOY_DEBUG)
-				{
-					for(k = 0; k<level.active_buoys; k++)
-					{
-						if(k == level.player_buoy[self->enemy->s.number - 1])
-						{
-							found_buoy = &level.buoy_list[k];
-							break;
-						}
-					}
-					if(found_buoy)
-					{
-#ifdef _DEVEL
-						gi.dprintf("%s using player_buoy %d (%s) set previously this frame\n", 
-								self->classname, self->enemy->s.number, found_buoy->targetname);
-#endif
-					}
-				}
-				self->forced_buoy = level.player_buoy[self->enemy->s.number - 1];//just stores id in player_buoy
-				if(first_buoy)
-				{
-					forced_buoy = &level.buoy_list[self->forced_buoy];
-#ifdef _DEVEL
-					if(BUOY_DEBUG)
-						gi.dprintf("%s trying connection to player_buoy %d (%s) from first_buoy %s\n", 
-								self->classname, self->enemy->s.number, found_buoy->targetname, first_buoy->targetname);
-#endif
-					found_path = MG_ResolveBuoyConnection(self, first_buoy, forced_buoy, forced_buoy->origin, dont_use_last, skipjump);
-				}
-				else
-				{
-#ifdef _DEVEL
-					if(BUOY_DEBUG)
-						gi.dprintf("%s trying normal connection to player_buoy %d (%s)\n", 
-								self->classname, self->enemy->s.number, found_buoy->targetname);
-#endif
-					found_path = MG_MakeForcedConnection(self, self->forced_buoy, dont_use_last, skipjump);
-				}
+		// See if this player already has a best_buoy found by a previous monster this frame.
+		if (self->enemy->client != NULL && level.player_buoy[self->enemy->s.number - 1] > NULL_BUOY) // Entity numbers 0 - 8 should be players.
+		{
+			//FIXME: if not, try his last player_buoy first!
+			self->forced_buoy = level.player_buoy[self->enemy->s.number - 1]; // Just stores id in player_buoy.
+
+			if (first_buoy != NULL)
+			{
+				const buoy_t* forced_buoy = &level.buoy_list[self->forced_buoy];
+				found_path = MG_ResolveBuoyConnection(self, first_buoy, forced_buoy, forced_buoy->origin, dont_use_last, skip_jump);
+			}
+			else
+			{
+				found_path = MG_MakeForcedConnection(self, self->forced_buoy, dont_use_last, skip_jump);
 			}
 		}
 	}
 	else
 	{
-		dont_use_last = false;
 		self->last_buoyed_enemy = NULL;
 
-		if(self->ai_mood_flags&AI_MOOD_FLAG_FORCED_BUOY && self->forced_buoy != -1)
+		if (self->ai_mood_flags & AI_MOOD_FLAG_FORCED_BUOY && self->forced_buoy != -1)
 		{
-			if(first_buoy)
+			if (first_buoy)
 			{
-				forced_buoy = &level.buoy_list[self->forced_buoy];
-#ifdef _DEVEL
-				if(BUOY_DEBUG)
-					gi.dprintf("%s trying non-enemy forced_buoy connection to %s from first_buoy %s\n", 
-							self->classname, forced_buoy->targetname, first_buoy->targetname);
-#endif
-				return MG_ResolveBuoyConnection(self, first_buoy, forced_buoy, forced_buoy->origin, dont_use_last, skipjump);
+				const buoy_t* forced_buoy = &level.buoy_list[self->forced_buoy];
+				return MG_ResolveBuoyConnection(self, first_buoy, forced_buoy, forced_buoy->origin, false, skip_jump);
 			}
-			else
-			{
-#ifdef _DEVEL
-				if(BUOY_DEBUG)
-					gi.dprintf("%s trying non-enemy forced_buoy connection to %s\n", 
-							self->classname, level.buoy_list[self->forced_buoy].targetname);
-#endif
-				return MG_MakeForcedConnection(self, self->forced_buoy, dont_use_last, skipjump);
-			}
+
+			return MG_MakeForcedConnection(self, self->forced_buoy, false, skip_jump);
 		}
-		else
-		{
-			self->lastbuoy = NULL_BUOY;//so forget last buoy I used
-			return false;
-		}
+
+		self->lastbuoy = NULL_BUOY; // So forget last buoy I used.
+		return 0;
 	}
 
-	if(!found_path)
+	if (!found_path)
 	{
-		if(self->ai_mood == AI_MOOD_FLEE)
-			return false;
+		if (self->ai_mood == AI_MOOD_FLEE)
+			return 0;
 
-		if(self->enemy->client)
+		if (self->enemy->client != NULL && level.player_last_buoy[self->enemy->s.number - 1] > NULL_BUOY)
 		{
-			if(level.player_last_buoy[self->enemy->s.number - 1] > NULL_BUOY)
-			{//see if the player_last_buoy is a valid buoy for the enemy, if so, go for it
-				if(MG_IsValidBestBuoyForEnt(self->enemy, &level.buoy_list[level.player_last_buoy[self->enemy->s.number - 1]]))
-				{
-					last_buoy_clear = true;
-					goto last_resort;
-				}
+			// See if the player_last_buoy is a valid buoy for the enemy, if so, go for it.
+			if (MG_IsValidBestBuoyForEnt(self->enemy, &level.buoy_list[level.player_last_buoy[self->enemy->s.number - 1]]))
+			{
+				last_buoy_clear = true;
+				goto last_resort;
 			}
 		}
-	
-#ifdef _DEVEL
-		if(BUOY_DEBUG)
-			gi.dprintf("%s searching for player(%d)'s bestbuoy\n", self->classname, self->enemy->s.number);
-#endif
-		if(first_buoy)
-		{
-#ifdef _DEVEL
-			if(BUOY_DEBUG)
-				gi.dprintf("%s making connection from forced start %s to %s\n", 
-						self->classname, first_buoy->targetname, self->enemy->classname);
-#endif
-			found_path = MG_MakeStartForcedConnection(self, first_buoy->id, dont_use_last, skipjump);
-		}
+
+		if (first_buoy)
+			found_path = MG_MakeStartForcedConnection(self, first_buoy->id, dont_use_last, skip_jump);
 		else
-		{
-#ifdef _DEVEL
-			if(BUOY_DEBUG)
-				gi.dprintf("%s making normal connection to %s\n", self->classname, self->enemy->classname);
-#endif
-			found_path = MG_MakeNormalConnection(self, dont_use_last, skipjump);
-		}
+			found_path = MG_MakeNormalConnection(self, dont_use_last, skip_jump);
 	}
 
-	if(found_path)
-		return true;
+	if (found_path)
+		return 1;
 
-//OK you!  Can't find ANY buoy connections, let's go with player_lastbuoy even if it can't connect to you!
+	// Can't find ANY buoy connections, let's go with player_last_buoy even if it can't connect to you!
 	self->ai_mood_flags |= AIMF_CANT_FIND_ENEMY;
 
 last_resort:
-	if(self->enemy->client)
+	// Try the player_last_buoy, don't care if it can connect to player!
+	if (self->enemy->client != NULL && level.player_last_buoy[self->enemy->s.number - 1] > NULL_BUOY)
 	{
-		if(level.player_last_buoy[self->enemy->s.number - 1] > NULL_BUOY)
-		{//try the player_last_buoy, don't care if it can connect to player!
 		//FIXME: require that the player be withing 250 of this buoy at least?
-			if(BUOY_DEBUG)
-			{
-				for(k = 0; k<level.active_buoys; k++)
-				{
-					if(k == level.player_last_buoy[self->enemy->s.number - 1])
-					{
-						found_buoy = &level.buoy_list[k];
-						break;
-					}
-				}
-			}
-			//we dont actually set self->forced_buoy since we want to find a better buoy next time we look
-			forced_buoy = &level.buoy_list[level.player_last_buoy[self->enemy->s.number - 1]];
-			if(!last_buoy_clear)
-			{
-				if(self->ai_mood_flags & AIMF_SEARCHING || MG_ReachedBuoy(self, forced_buoy->origin))
-				{
-					return 3;
-				}
-			}
 
-			if(first_buoy)
-			{
-#ifdef _DEVEL
-				if(BUOY_DEBUG)
-				{
-					if(last_buoy_clear)
-						gi.dprintf("%s using clear-path player_last_buoy %d (%s) from first_buoy %s\n", 
-								self->classname, self->enemy->s.number, found_buoy->targetname, first_buoy->targetname);
-					else
-						gi.dprintf("%s using player_last_buoy %d (%s) from first_buoy %s even though it doesn't connect to player!\n", 
-								self->classname, self->enemy->s.number, found_buoy->targetname, first_buoy->targetname);
-				}
-#endif
-				if(MG_ResolveBuoyConnection(self, first_buoy, forced_buoy, forced_buoy->origin, dont_use_last, skipjump))
-				{
-					return 2;
-				}
-			}
-			else
-			{
-#ifdef _DEVEL
-				if(BUOY_DEBUG)
-				{
-					if(last_buoy_clear)
-						gi.dprintf("%s using clear-path player_last_buoy %d (%s)\n", 
-								self->classname, self->enemy->s.number, found_buoy->targetname);
-					else
-						gi.dprintf("%s using player_last_buoy %d (%s) even though it doesn't connect to player!\n", 
-								self->classname, self->enemy->s.number, found_buoy->targetname);
-				}
-#endif
-				if(MG_MakeForcedConnection(self, forced_buoy->id, dont_use_last, skipjump))
-				{
-					return 2;
-				}
-			}
-		}
+		// We don't actually set self->forced_buoy since we want to find a better buoy next time we look.
+		const buoy_t* forced_buoy = &level.buoy_list[level.player_last_buoy[self->enemy->s.number - 1]];
+
+		if (!last_buoy_clear && (self->ai_mood_flags & AIMF_SEARCHING || MG_ReachedBuoy(self, forced_buoy->origin)))
+			return 3;
+
+		if (first_buoy && MG_ResolveBuoyConnection(self, first_buoy, forced_buoy, forced_buoy->origin, dont_use_last, skip_jump))
+			return 2;
+
+		if (MG_MakeForcedConnection(self, forced_buoy->id, dont_use_last, skip_jump))
+			return 2;
 	}
-	//damn, lost him!  Currrzzze you Corvuzzz!!!
-#ifdef _DEVEL
-	if(BUOY_DEBUG)
-		gi.dprintf("FAILURE: %s Could not find %s in any way shape or form!!!\n", self->classname, self->enemy->classname);
-#endif
-	return false;
+
+	// Damn, lost him!
+	return 0;
 }
 
 qboolean MG_MakeConnection(edict_t *self, buoy_t *first_buoy, qboolean skipjump)
@@ -898,7 +773,7 @@ qboolean MG_MakeConnection(edict_t *self, buoy_t *first_buoy, qboolean skipjump)
 	if(BUOY_DEBUG)
 		gi.dprintf("========================================================\n    %s Start MakeConnection    \n========================================================\n", self->classname);
 #endif	
-	result = MG_MakeConnection_Go (self, first_buoy, skipjump);
+	result = MG_TryMakeConnection (self, first_buoy, skipjump);
 
 	if(!(self->ai_mood_flags&AIMF_CANT_FIND_ENEMY))
 	{
