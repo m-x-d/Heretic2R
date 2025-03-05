@@ -1,16 +1,12 @@
-/*
-==============================================================================
+//
 // g_env.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
-==============================================================================
-*/
-#include "fx.h"
-#include "g_local.h"
-#include "vector.h"
-#include "random.h"
+//
 
+#include "FX.h"
+#include "Vector.h"
+#include "g_local.h"
 
 void env_dust_use(edict_t *self, edict_t *other, edict_t *activator)
 {	
