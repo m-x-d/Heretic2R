@@ -365,26 +365,14 @@ void ThrowBodyPart(const edict_t* self, const vec3_t* spot, const int body_part,
 	}
 }
 
-void ThrowWeapon(edict_t *self, vec3_t *spot, int BodyPart, float damage, int frame) //TODO: change 'damage' arg type to int.
-{//same but no blood and metal sound when hits ground
-	vec3_t	spot2;
+void ThrowWeapon(const edict_t* self, const vec3_t* spot, const int body_part, float damage, const int frame) //TODO: change 'damage' arg type to int.
+{
+	damage = min(255.0f, damage);
 
-	if (damage>255)
-	{
-		damage = 255;
-	}
+	vec3_t origin;
+	VectorAdd(self->s.origin, *spot, origin);
 
-	VectorAdd(self->s.origin, *spot, spot2);
-	gi.CreateEffect(NULL,//owner
-					FX_THROWWEAPON,//type
-					0,//can't mess with this, sends only 1st byte and effects message
-					spot2,//spot,
-					"ssbbb",// int int float byte
-					(short)frame,//only 1 frame, sorry no anim
-					(short)BodyPart,//bitwise - node(s) to leave on
-					(byte)damage,//speed
-					self->s.modelindex,//my modelindex
-					self->s.number);//my number
+	gi.CreateEffect(NULL, FX_THROWWEAPON, 0, origin, "ssbbb", (short)frame, (short)body_part, (byte)damage, self->s.modelindex, self->s.number);
 }
 
 #pragma endregion
