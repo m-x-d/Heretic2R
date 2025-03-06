@@ -1,24 +1,23 @@
+//
 // g_misc.c
+//
+// Copyright 1998 Raven Software
+//
 
-#include "q_shared.h"
-#include "g_DefaultMessageHandler.h"
 #include "g_misc.h"
-#include "g_local.h"
-#include "FX.h"
-#include "random.h"
+#include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
-#include "vector.h"
-#include "g_HitLocation.h"
 #include "g_items.h" //mxd
+#include "m_harpy.h" //mxd
 #include "m_stats.h"
 #include "g_playstats.h"
-#include "m_harpy.h" //mxd
 #include "p_client.h" //mxd
 #include "p_teleport.h" //mxd
-
-void ED_CallSpawn (edict_t *ent);
-
-#define CAMERA_SCRIPTED 2
+#include "FX.h"
+#include "Random.h"
+#include "Vector.h"
+#include "q_shared.h"
+#include "g_local.h"
 
 int AndoriaSoundID[AS_MAX] =
 {
@@ -29,8 +28,6 @@ int AndoriaSoundID[AS_MAX] =
 	AS_OUTSIDEWATERWAY,
 	AS_WINDCHIME,
 };
-
-
 
 int CloudSoundID[AS_MAX] =
 {
