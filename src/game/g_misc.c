@@ -1716,10 +1716,11 @@ static void MiscFireSparkThink(edict_t* self) //mxd. Named 'fire_spark_think' in
 	}
 }
 
-void fire_spark_gone (edict_t *self, edict_t *other, edict_t *activator)
+static void MiscFireSparkRemove(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'fire_spark_gone' in original logic.
 {
 	self->use = NULL;
 	gi.RemoveEffects(&self->s, FX_SPARKS);
+
 	G_FreeEdict(self);
 }
 
@@ -1727,7 +1728,7 @@ void fire_spark_use (edict_t *self, edict_t *other, edict_t *activator)
 {
 	gi.CreateEffect(&self->s, FX_SPARKS, CEF_FLAG6|CEF_FLAG7|CEF_FLAG8, self->s.origin, "d", vec3_up);
 
-	self->use = fire_spark_gone;
+	self->use = MiscFireSparkRemove;
 
 	self->think = MiscFireSparkThink;
 	self->nextthink = level.time + 0.1;
