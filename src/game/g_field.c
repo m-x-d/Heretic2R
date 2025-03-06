@@ -229,37 +229,34 @@ void SP_trigger_Damage(edict_t* self) //TODO: rename to SP_trigger_damage.
 
 #pragma endregion
 
-//----------------------------------------------------------------------
-// Gravity Field
-//----------------------------------------------------------------------
+#pragma region ========================== trigger_gravity ==========================
 
-void GravityField_Touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
-
-/*QUAKED trigger_Gravity (.5 .5 .5) ?
-Changes the Touching entites Gravity to
-the value of "Gravity".  1.0 is standard
-Gravity for the level.
-*/
-void SP_trigger_Gravity(edict_t *self)
-{
-	if (st.gravity == 0)
-	{
-		gi.dprintf("trigger_Gravity without gravity set at %s\n", vtos(self->s.origin));
-		G_FreeEdict  (self);
-		return;
-	}
-
-	InitField(self);
-	self->gravity = atoi(st.gravity);
-	self->touch = GravityField_Touch;
-}
-
-void GravityField_Touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void TriggerGravityTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'GravityField_Touch' in original logic.
 {
 	other->gravity = self->gravity;
 	G_UseTargets(self, self);
-
 }
+
+// QUAKED trigger_Gravity (.5 .5 .5) ?
+// Changes the Touching entities gravity.
+// Variables:
+// gravity	- Target gravity. 1.0 is standard gravity for the level.
+void SP_trigger_Gravity(edict_t* self) //TODO: rename to SP_trigger_gravity.
+{
+	if (st.gravity == NULL)
+	{
+		gi.dprintf("trigger_gravity without gravity set at %s\n", vtos(self->s.origin));
+		G_FreeEdict(self);
+	}
+	else
+	{
+		InitField(self);
+		self->gravity = (float)(Q_atoi(st.gravity));
+		self->touch = TriggerGravityTouch;
+	}
+}
+
+#pragma endregion
 
 //----------------------------------------------------------------------
 // Monster Jump Field
