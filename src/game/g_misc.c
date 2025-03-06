@@ -128,19 +128,12 @@ DebrisSound_t DebrisSound [NUM_MAT]=
 	NULL,					// MAT_INSECT
 };
 
+#pragma region ========================== func_areaportal ==========================
 
-/*QUAKED func_group (0 0 0) ?
-	
-	Used to group brushes together just for editor convenience.
-*/
-
-//=====================================================
-
-void Use_Areaportal (edict_t *ent, edict_t *other, edict_t *activator)
+static void FuncAreaportalUse(edict_t* ent, edict_t* other, edict_t* activator) //mxd. Named 'Use_Areaportal' in original logic.
 {
-	ent->count ^= 1;		// toggle state
-//	gi.dprintf ("portalstate: %i = %i\n", ent->style, ent->count);
-	gi.SetAreaPortalState (ent->style, ent->count);
+	ent->count ^= 1; // Toggle state.
+	gi.SetAreaPortalState(ent->style, ent->count);
 }
 
 /*QUAKED func_areaportal (0 0 0) ?
@@ -151,11 +144,11 @@ void Use_Areaportal (edict_t *ent, edict_t *other, edict_t *activator)
 */
 void SP_func_areaportal (edict_t *ent)
 {
-	ent->use = Use_Areaportal;
+	ent->use = FuncAreaportalUse;
 	ent->count = 0;		// allways start closed;
 }
 
-//=====================================================
+#pragma endregion
 
 /*
 =================
