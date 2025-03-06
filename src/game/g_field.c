@@ -154,7 +154,21 @@ static void TriggerDamageUse(edict_t* self, edict_t* other, edict_t* activator) 
 		self->use = NULL;
 }
 
-void DamageField_Touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
+static void TriggerDamageTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'DamageField_Touch' in original logic.
+{
+	if (other->takedamage == DAMAGE_NO || self->timestamp > level.time)
+		return;
+
+	self->timestamp = level.time + ((self->spawnflags & SF_SLOW) ? 1.0f : FRAMETIME);
+
+	if (!(self->spawnflags & SF_SILENT) && (level.framenum % 10) == 0)
+		gi.sound(other, CHAN_AUTO, self->noise_index, 1.0f, ATTN_NORM, 0.0f);
+
+	const int dmg_flags = ((self->spawnflags & SF_NO_PROTECTION) ? DAMAGE_NO_PROTECTION : 0);
+	T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, self->dmg, dmg_flags | DAMAGE_SPELL | DAMAGE_AVOID_ARMOR, MOD_DIED);
+
+	G_UseTargets(self, self);
+}
 
 void TrigDamage_Deactivate(edict_t *self, G_Message_t *msg)
 {
@@ -204,7 +218,7 @@ void SP_trigger_Damage(edict_t *self)
 	self->msgHandler = DefaultMsgHandler;
 	self->classID = CID_TRIG_DAMAGE;
 
-	self->touch = DamageField_Touch;
+	self->touch = TriggerDamageTouch;
 
 	if (!self->dmg)
 		self->dmg = 5;
@@ -219,37 +233,6 @@ void SP_trigger_Damage(edict_t *self)
 
 	self->movetype = PHYSICSTYPE_NONE;
 	gi.linkentity (self);
-}
-
-void DamageField_Touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
-{
-	int		dflags;
-
-	if (!other->takedamage)
-		return;
-
-	if (self->timestamp > level.time)
-		return;
-
-	if (self->spawnflags & 16)
-		self->timestamp = level.time + 1;
-	else
-		self->timestamp = level.time + FRAMETIME;
-
-	if (!(self->spawnflags & 4))
-	{
-		if ((level.framenum % 10) == 0)
-			gi.sound (other, CHAN_AUTO, self->noise_index, 1, ATTN_NORM, 0);
-	}
-
-	if (self->spawnflags & 8)
-		dflags = DAMAGE_NO_PROTECTION;
-	else
-		dflags = 0;
-
-	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, self->dmg, dflags | DAMAGE_SPELL|DAMAGE_AVOID_ARMOR,MOD_DIED);
-
-	G_UseTargets(self, self);
 }
 
 #pragma endregion
