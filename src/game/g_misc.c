@@ -898,27 +898,25 @@ void TeleporterStaticsInit(void) //TODO: rename to MiscTeleporterStaticsInit.
 	classStatics[CID_TELEPORTER].msgReceivers[G_MSG_UNSUSPEND] = MiscTeleporterActivate;
 }
 
-/*QUAKED misc_teleporter (1 0 0) ? NO_MODEL DEATHMATCH_RANDOM START_OFF MULT_DEST
-This creates the teleporter disc that will send us places
-Stepping onto this disc will teleport players to the targeted misc_teleporter_dest object.
--------  FIELDS  ------------------
-NO_MODEL - makes teleporter invisible
-DEATHMATCH_RANDOM - makes the teleporter dump you at random spawn points in deathmatch
-START_OFF - Pad has no effect, and won't teleport you anywhere till its activated 
-MULT_DEST - pad is targeted at more than one destination 
----------- KEYS -----------------  
-style - number of destinations this pad has.
+// QUAKED misc_teleporter (1 0 0) ? NO_MODEL DEATHMATCH_RANDOM START_OFF MULT_DEST
+// This creates the teleporter disc that will send us places
+// Stepping onto this disc will teleport players to the targeted misc_teleporter_dest object.
 
-*/
-void SP_misc_teleporter (edict_t *ent)
+// Spawnflags:
+// NO_MODEL				- Makes teleporter invisible.
+// DEATHMATCH_RANDOM	- Makes the teleporter dump you at random spawn points in deathmatch.
+// START_OFF			- Pad has no effect, and won't teleport you anywhere till its activated.
+// MULT_DEST			- Pad is targeted at more than one destination.
+
+// Variables:
+// style - Number of destinations this pad has.
+void SP_misc_teleporter(edict_t* ent)
 {
-	vec3_t	real_origin;
-	edict_t	*effect;
-
-	if (!ent->target && (!ent->spawnflags&DEATHMATCH_RANDOM || !deathmatch->value))
+	if (ent->target == NULL && (!(ent->spawnflags & SF_DEATHMATCH_RANDOM) || !DEATHMATCH)) //BUGFIX: '!ent->spawnflags & DEATHMATCH_RANDOM' in original logic.
 	{
-		gi.dprintf ("teleporter without a target.\n");
-		G_FreeEdict (ent);
+		gi.dprintf("teleporter without a target.\n");
+		G_FreeEdict(ent);
+
 		return;
 	}
 
@@ -930,36 +928,19 @@ void SP_misc_teleporter (edict_t *ent)
 	ent->solid = SOLID_TRIGGER;
 
 	gi.setmodel(ent, ent->model);
-	gi.linkentity (ent);
+	gi.linkentity(ent);
 
-	// if we don't have mult dests - probably redundant
-	if (!(ent->spawnflags & 8))
+	// If we don't have multiple destinations - probably redundant.
+	if (!(ent->spawnflags & SF_MULT_DEST))
 		ent->style = 0;
 
-	// if we want an effect on spawn, create it.
-	if (!(ent->spawnflags & 4))
+	// If we want an effect on spawn, create it.
+	if (!(ent->spawnflags & SF_START_OFF))
 	{
 		ent->touch = teleporter_touch;
-
-		effect = G_Spawn();
-		VectorCopy(ent->maxs, effect->maxs);
-		VectorCopy(ent->mins, effect->mins);
-		effect->solid = SOLID_NOT;
-		effect->s.effects |= EF_NODRAW_ALWAYS_SEND|EF_ALWAYS_ADD_EFFECTS;
-		ent->enemy = effect;
-		gi.linkentity (effect);
-
-		real_origin[0] = ((ent->maxs[0] - ent->mins[0]) / 2.0) + ent->mins[0];
-		real_origin[1] = ((ent->maxs[1] - ent->mins[1]) / 2.0) + ent->mins[1];
-		real_origin[2] = ((ent->maxs[2] - ent->mins[2]) / 2.0) + ent->mins[2];
-
-		if (!(ent->spawnflags & 1))
-			effect->PersistantCFX = gi.CreatePersistantEffect(&effect->s, FX_TELEPORT_PAD, CEF_BROADCAST, real_origin, "");
+		MiscTeleporterCreateEffect(ent); //mxd
 	}
-
 }
-
-#pragma endregion
 
 /*QUAKED misc_teleporter_dest (1 0 0) (-32 -32 -24) (32 32 -16)
 
@@ -985,7 +966,7 @@ void SP_misc_teleporter_dest (edict_t *ent)
 
 }
 
-
+#pragma endregion
 
 extern void use_target_changelevel (edict_t *self, edict_t *other, edict_t *activator);
 void misc_magic_portal_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
