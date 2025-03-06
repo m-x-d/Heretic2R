@@ -782,41 +782,44 @@ void SP_item_spitter(edict_t* self)
 
 #pragma endregion
 
-// update the spawner so that we will rematerialise in a different position
-void respawner_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
-{
-	edict_t	*spot = NULL;
+#pragma region ========================== misc_update_spawner ==========================
 
-	// if we aren't a player, forget it
-	if (!other->client)
+// Update the spawner so that we will re-materialize in a different position.
+static void MiscUpdateSpawnerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'respawner_touch' in original version,
+{
+	// If we aren't a player, forget it.
+	if (other->client == NULL)
 		return;
 
-	while ((spot = G_Find (spot, FOFS(classname), "info_player_start")) != NULL)
+	edict_t* spot = NULL;
+	while ((spot = G_Find(spot, FOFS(classname), "info_player_start")) != NULL)
 	{
-		if (!game.spawnpoint[0] && !spot->targetname)
+		if (game.spawnpoint[0] == 0 && spot->targetname == NULL)
 			break;
 
-		if (!game.spawnpoint[0] || !spot->targetname)
+		if (game.spawnpoint[0] == 0 || spot->targetname == NULL)
 			continue;
 
 		if (Q_stricmp(game.spawnpoint, spot->targetname) == 0)
 			break;
 	}
 
-	if (!spot)
+	if (spot == NULL)
 	{
-		if (!game.spawnpoint[0])
-		{	// there wasn't a spawnpoint without a target, so use any
-			spot = G_Find (spot, FOFS(classname), "info_player_start");
+		if (game.spawnpoint[0] == 0)
+			spot = G_Find(spot, FOFS(classname), "info_player_start"); // There wasn't a spawnpoint without a target, so use any.
+
+		if (spot == NULL)
+		{
+			gi.error("Couldn't find spawn point %s\n", game.spawnpoint);
+			return;
 		}
-		if (!spot)
-			gi.error ("Couldn't find spawn point %s\n", game.spawnpoint);
 	}
 
-	VectorSet(spot->s.origin, self->mins[0]+((self->size[0]) /2), self->mins[1]+((self->size[1]) /2) ,self->mins[2]+self->size[2]);
-	VectorCopy (self->s.angles, spot->s.angles);
+	VectorSet(spot->s.origin, self->mins[0] + self->size[0] / 2.0f, self->mins[1] + self->size[1] / 2.0f, self->mins[2] + self->size[2]);
+	VectorCopy(self->s.angles, spot->s.angles);
 
-	G_FreeEdict (self);
+	G_FreeEdict(self);
 }
 
 /*QUAKED misc_update_spawner (.5 .5 .5) ?
@@ -828,7 +831,7 @@ void misc_update_spawner (edict_t *ent)
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;
 	ent->solid = SOLID_TRIGGER;
-	ent->touch = respawner_touch;
+	ent->touch = MiscUpdateSpawnerTouch;
 
 	gi.setmodel(ent,ent->model);
 	gi.linkentity (ent);
