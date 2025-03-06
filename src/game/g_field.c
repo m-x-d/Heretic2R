@@ -371,21 +371,10 @@ static void TriggerGotoBuoyExecute(const edict_t* self, edict_t* monster, edict_
 	}
 }
 
-void trigger_goto_buoy_touch_go (edict_t *self)
+static void TriggerGotoBuoyTouchThink(edict_t* self) //mxd. Named 'trigger_goto_buoy_touch_go' in original logic.
 {
-	if(!self->enemy)
-		return;
-
-	if(!(self->enemy->svflags&SVF_MONSTER))
-		return;
-
-	if(self->enemy->health<=0)
-		return;
-
-	if(!(self->enemy->monsterinfo.aiflags&AI_USING_BUOYS))
-		return;
-
-	TriggerGotoBuoyExecute(self, self->enemy, self->activator);
+	if (self->enemy != NULL && self->enemy->health > 0 && (self->enemy->svflags & SVF_MONSTER) && (self->enemy->monsterinfo.aiflags & AI_USING_BUOYS))
+		TriggerGotoBuoyExecute(self, self->enemy, self->activator);
 }
 
 void trigger_goto_buoy_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
@@ -407,7 +396,7 @@ void trigger_goto_buoy_touch (edict_t *self, edict_t *other, cplane_t *plane, cs
 	if(self->delay)
 	{
 		self->enemy = other;
-		self->think = trigger_goto_buoy_touch_go;
+		self->think = TriggerGotoBuoyTouchThink;
 		self->nextthink = level.time + self->delay;
 		return;
 	}
