@@ -103,7 +103,7 @@ static void TriggerPushActivate(edict_t* self, G_Message_t* msg) //mxd. Named 'T
 	gi.linkentity(self);
 }
 
-void TrigPushStaticsInit()
+void TrigPushStaticsInit(void) //TODO: rename to TriggerPushStaticsInit.
 {
 	classStatics[CID_TRIG_PUSH].msgReceivers[G_MSG_SUSPEND] = TriggerPushDeactivate;
 	classStatics[CID_TRIG_PUSH].msgReceivers[G_MSG_UNSUSPEND] = TriggerPushActivate;
