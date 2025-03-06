@@ -54,45 +54,39 @@ void SP_trigger_fogdensity(edict_t* self)
 
 #pragma endregion
 
-//----------------------------------------------------------------------
-// Force Field
-//----------------------------------------------------------------------
+#pragma region ========================== trigger_push ==========================
 
-#define FIELD_FORCE_ONCE		1
+#define SF_FORCE_ONCE	1
 
-
-void push_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void TriggerPushTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'push_touch' in original logic.
 {
-	vec3_t forward,up;
-	
-	if(other->health > 0)
+	if (other->health > 0)
 	{
-		if (other->client)	// A player???
+		if (other->client != NULL) // A player?
 		{
-			// don't take falling damage immediately from this
+			// Don't take falling damage immediately from this.
 			VectorCopy(other->velocity, other->client->playerinfo.oldvelocity);
 			other->client->playerinfo.flags |= PLAYER_FLAG_USE_ENT_POS;
 			other->groundentity = NULL;
 		}
 
-		AngleVectors(self->s.angles,forward,NULL,up);
+		vec3_t forward;
+		vec3_t up;
+		AngleVectors(self->s.angles, forward, NULL, up);
 
-		VectorMA(other->velocity,self->speed,forward,other->velocity);
-		VectorMA(other->velocity,self->speed,up,other->velocity);
-
+		VectorMA(other->velocity, self->speed, forward, other->velocity);
+		VectorMA(other->velocity, self->speed, up, other->velocity);
 	}
 
 	G_UseTargets(self, self);
 
-	if(self->spawnflags & FIELD_FORCE_ONCE)
-	{
-		G_FreeEdict (self);
-	}
+	if (self->spawnflags & SF_FORCE_ONCE)
+		G_FreeEdict(self);
 }
 
 void push_touch_trigger(edict_t *self, edict_t *activator)
 {
-	push_touch(self,activator,NULL,NULL);
+	TriggerPushTouch(self,activator,NULL,NULL);
 }
 
 void TrigPush_Deactivate(edict_t *self, G_Message_t *msg)
@@ -105,7 +99,7 @@ void TrigPush_Deactivate(edict_t *self, G_Message_t *msg)
 void TrigPush_Activate(edict_t *self, G_Message_t *msg)
 {
 	self->solid = SOLID_TRIGGER;
-	self->touch = push_touch;
+	self->touch = TriggerPushTouch;
 	gi.linkentity (self);
 }
 
@@ -142,11 +136,11 @@ void SP_trigger_push(edict_t *self)
 	self->s.angles[2] = st.zangle;
 
 	// Can't really use the normal trigger setup cause it doesn't update velocity often enough
-	self->touch =  push_touch;
+	self->touch =  TriggerPushTouch;
 	self->TriggerActivated = push_touch_trigger;
 }
 
-
+#pragma endregion
 
 //----------------------------------------------------------------------
 // Damage Field
