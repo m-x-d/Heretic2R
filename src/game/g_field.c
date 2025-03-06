@@ -170,7 +170,7 @@ static void TriggerDamageTouch(edict_t* self, edict_t* other, cplane_t* plane, c
 	G_UseTargets(self, self);
 }
 
-void TrigDamage_Deactivate(edict_t *self, G_Message_t *msg)
+static void TriggerDamageDeactivate(edict_t* self, G_Message_t* msg) //mxd. Named 'TrigDamage_Deactivate' in original logic.
 {
 	self->solid = SOLID_NOT;
 	self->use = NULL;
@@ -187,7 +187,7 @@ void TrigDamage_Activate(edict_t *self, G_Message_t *msg)
 
 void TrigDamageStaticsInit()
 {
-	classStatics[CID_TRIG_DAMAGE].msgReceivers[G_MSG_SUSPEND] = TrigDamage_Deactivate;
+	classStatics[CID_TRIG_DAMAGE].msgReceivers[G_MSG_SUSPEND] = TriggerDamageDeactivate;
 	classStatics[CID_TRIG_DAMAGE].msgReceivers[G_MSG_UNSUSPEND] = TrigDamage_Activate;
 }
 
