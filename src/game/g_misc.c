@@ -1054,94 +1054,112 @@ void SP_misc_magic_portal(edict_t* self)
 
 #pragma endregion
 
-void soundambient_think(edict_t *self)
+#pragma region ========================== sound_ambient_xxx ==========================
+
+#define SF_NON_LOCAL	1 //mxd
+#define SF_START_OFF	2 //mxd
+
+static void SoundAmbientThink(edict_t* self) //mxd. Named 'soundambient_think' in original logic.
 {
-	byte	style,wait,attenuation,volume;
+	const byte b_attenuation = (byte)(Q_ftol(self->attenuation));
+	const byte b_volume = (byte)(Q_ftol(self->volume * 255.0f));
 
-	attenuation = Q_ftol(self->attenuation);
-	volume = Q_ftol(self->volume * 255);
+	self->s.sound_data = (b_volume & ENT_VOL_MASK) | b_attenuation;
 
-	self->s.sound_data = (volume & ENT_VOL_MASK) | attenuation;
-
-	// if its a looping sound, create it on this entity
-	switch((int)(self->style))
+	// If its a looping sound, create it on this entity.
+	switch (self->style)
 	{
-	case AS_FIRE:
-		self->s.sound = gi.soundindex("ambient/fireplace.wav");
-		break;
-	case AS_WATERLAPPING:
-		self->s.sound = gi.soundindex("ambient/waterlap.wav");
-		break;
-	case AS_OCEAN:	
-		self->s.sound = gi.soundindex("ambient/ocean.wav");
-		break;
-	case AS_SMALLFOUNTAIN:
-   		self->s.sound = gi.soundindex("ambient/smallfountain.wav");
-		break;
-	case AS_LARGEFOUNTAIN:
-   		self->s.sound = gi.soundindex("ambient/fountainloop.wav");
-		break;
-	case AS_SEWERWATER:
-   		self->s.sound = gi.soundindex("ambient/sewerflow.wav");
-		break;
-	case AS_OUTSIDEWATERWAY:
-   		self->s.sound = gi.soundindex("ambient/river.wav");
-		break;
-	case AS_CAULDRONBUBBLE:
-		self->s.sound = gi.soundindex("ambient/cauldronbubble.wav");
-		break;
-	case AS_HUGEWATERFALL:
-		self->s.sound = gi.soundindex("ambient/hugewaterfall.wav");
-		break;
-	case AS_MUDPOOL:
-		self->s.sound = gi.soundindex("ambient/mudpool.wav");
-		break;
-   	case AS_WINDEERIE:
-   		self->s.sound = gi.soundindex("ambient/windeerie.wav");
-		break;
-   	case AS_WINDNOISY:
-   		self->s.sound = gi.soundindex("ambient/windnoisy.wav");
-		break;
-   	case AS_WINDSOFTHI:
-   		self->s.sound = gi.soundindex("ambient/windsofthi.wav");
-		break;
-   	case AS_WINDSOFTLO:
-   		self->s.sound = gi.soundindex("ambient/windsoftlow.wav");
-		break;
-   	case AS_WINDSTRONG1:
-   		self->s.sound = gi.soundindex("ambient/windstrong1.wav");
-		break;
-   	case AS_WINDSTRONG2:
-   		self->s.sound = gi.soundindex("ambient/windstrong2.wav");
-		break;
-   	case AS_WINDWHISTLE:
-   		self->s.sound = gi.soundindex("ambient/windwhistle.wav");
-		break;
-   	case AS_CONVEYOR:
-   		self->s.sound = gi.soundindex("objects/conveyor.wav");
-		break;
-   	case AS_BUCKETCONVEYOR:
-   		self->s.sound = gi.soundindex("objects/bucketconveyor.wav");
-		break;
-   	case AS_SPIT:
-   		self->s.sound = gi.soundindex("objects/spit.wav");
-		break;
-	default:
-		style = Q_ftol(self->style);
-		wait = Q_ftol(self->wait);
-		gi.CreatePersistantEffect(&self->s,
-					FX_SOUND,
-					CEF_BROADCAST | CEF_OWNERS_ORIGIN,
-					self->s.origin,
-					"bbbb",
-					style,attenuation,volume,wait);
-		break;
-	}
-	self->count = 1;	// This is just a flag to show it's on
+		case AS_FIRE:
+			self->s.sound = (byte)gi.soundindex("ambient/fireplace.wav");
+			break;
 
+		case AS_WATERLAPPING:
+			self->s.sound = (byte)gi.soundindex("ambient/waterlap.wav");
+			break;
+
+		case AS_OCEAN:
+			self->s.sound = (byte)gi.soundindex("ambient/ocean.wav");
+			break;
+
+		case AS_SMALLFOUNTAIN:
+			self->s.sound = (byte)gi.soundindex("ambient/smallfountain.wav");
+			break;
+
+		case AS_LARGEFOUNTAIN:
+			self->s.sound = (byte)gi.soundindex("ambient/fountainloop.wav");
+			break;
+
+		case AS_SEWERWATER:
+			self->s.sound = (byte)gi.soundindex("ambient/sewerflow.wav");
+			break;
+
+		case AS_OUTSIDEWATERWAY:
+			self->s.sound = (byte)gi.soundindex("ambient/river.wav");
+			break;
+
+		case AS_CAULDRONBUBBLE:
+			self->s.sound = (byte)gi.soundindex("ambient/cauldronbubble.wav");
+			break;
+
+		case AS_HUGEWATERFALL:
+			self->s.sound = (byte)gi.soundindex("ambient/hugewaterfall.wav");
+			break;
+
+		case AS_MUDPOOL:
+			self->s.sound = (byte)gi.soundindex("ambient/mudpool.wav");
+			break;
+
+		case AS_WINDEERIE:
+			self->s.sound = (byte)gi.soundindex("ambient/windeerie.wav");
+			break;
+
+		case AS_WINDNOISY:
+			self->s.sound = (byte)gi.soundindex("ambient/windnoisy.wav");
+			break;
+
+		case AS_WINDSOFTHI:
+			self->s.sound = (byte)gi.soundindex("ambient/windsofthi.wav");
+			break;
+
+		case AS_WINDSOFTLO:
+			self->s.sound = (byte)gi.soundindex("ambient/windsoftlow.wav");
+			break;
+
+		case AS_WINDSTRONG1:
+			self->s.sound = (byte)gi.soundindex("ambient/windstrong1.wav");
+			break;
+
+		case AS_WINDSTRONG2:
+			self->s.sound = (byte)gi.soundindex("ambient/windstrong2.wav");
+			break;
+
+		case AS_WINDWHISTLE:
+			self->s.sound = (byte)gi.soundindex("ambient/windwhistle.wav");
+			break;
+
+		case AS_CONVEYOR:
+			self->s.sound = (byte)gi.soundindex("objects/conveyor.wav");
+			break;
+
+		case AS_BUCKETCONVEYOR:
+			self->s.sound = (byte)gi.soundindex("objects/bucketconveyor.wav");
+			break;
+
+		case AS_SPIT:
+			self->s.sound = (byte)gi.soundindex("objects/spit.wav");
+			break;
+
+		default:
+		{
+			const byte b_style = (byte)self->style;
+			const byte b_wait = (byte)(Q_ftol(self->wait));
+			gi.CreatePersistantEffect(&self->s, FX_SOUND, CEF_BROADCAST | CEF_OWNERS_ORIGIN, self->s.origin, "bbbb", b_style, b_attenuation, b_volume, b_wait);
+		} break;
+	}
+
+	self->count = 1; // This is just a flag to show it's on.
 	self->think = NULL;
 }
-
 
 void sound_ambient_use (edict_t *self, edict_t *other, edict_t *activator)
 {
@@ -1151,7 +1169,7 @@ void sound_ambient_use (edict_t *self, edict_t *other, edict_t *activator)
 		gi.RemoveEffects(&self->s,0);
 	}
 	else
-		soundambient_think(self);
+		SoundAmbientThink(self);
 }
 
 
@@ -1176,7 +1194,7 @@ void sound_ambient_init(edict_t *self)
 	if (!(self->spawnflags & 2))
 	{
 		self->nextthink = level.time + 2.5;
-		self->think = soundambient_think;
+		self->think = SoundAmbientThink;
 	}
 
 	// if we are asked to do a sound of type zero, free this edict, since its obviously bogus
