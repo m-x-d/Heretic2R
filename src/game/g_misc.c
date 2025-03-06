@@ -648,7 +648,7 @@ static void FuncObjectTouch(edict_t* self, edict_t* other, cplane_t* plane, csur
 		T_Damage(other, self, self, vec3_origin, self->s.origin, vec3_origin, self->dmg, 1, DAMAGE_AVOID_ARMOR, MOD_DIED);
 }
 
-void func_object_release (edict_t *self)
+static void FuncObjectRelease(edict_t* self) //mxd. Named 'func_object_release' in original logic.
 {
 	self->movetype = PHYSICSTYPE_STEP;
 	self->touch = FuncObjectTouch;
@@ -660,7 +660,7 @@ void func_object_use (edict_t *self, edict_t *other, edict_t *activator)
 	self->svflags &= ~SVF_NOCLIENT;
 	self->use = NULL;
 	KillBox (self);
-	func_object_release (self);
+	FuncObjectRelease (self);
 }
 
 void SP_func_object (edict_t *self)
@@ -681,7 +681,7 @@ void SP_func_object (edict_t *self)
 	{
 		self->solid = SOLID_BSP;
 		self->movetype = PHYSICSTYPE_PUSH;
-		self->think = func_object_release;
+		self->think = FuncObjectRelease;
 		self->nextthink = level.time + 2 * FRAMETIME;
 	}
 	else
