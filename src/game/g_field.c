@@ -271,26 +271,22 @@ static void TriggerMonsterJumpTouch(edict_t* self, edict_t* other, cplane_t* pla
 	other->groundentity = NULL;
 }
 
-/*QUAKED trigger_MonsterJump (.5 .5 .5) ?
-Walking monsters that Touch this will jump in the direction of the trigger's angle
-"speed" default to 200, the speed thrown forward
-"height" default to 200, the speed thrown upwards
-*/
-void SP_trigger_MonsterJump(edict_t *self)
+// QUAKED trigger_monsterjump (.5 .5 .5) ?
+// Walking monsters that touch this will jump in the direction of the trigger's angle.
+// Variables:
+// speed	- The speed thrown forward (default 200).
+// height	- The speed thrown upwards (default 200).
+void SP_trigger_MonsterJump(edict_t* self) //TODO: rename to SP_trigger_monsterjump.
 {
-	if (self->s.angles[YAW] == 0)
-		self->s.angles[YAW] = 360;
+	if (self->s.angles[YAW] == 0.0f)
+		self->s.angles[YAW] = 360.0f;
 
 	InitField(self);
 
-	if (!self->speed)
-		self->speed = 200;
+	if (self->speed == 0.0f)
+		self->speed = 200.0f;
 
-	if (!st.height)
-		self->accel = 200;
-	else
-		self->accel = st.height;
-
+	self->accel = (st.height == 0 ? 200.0f : (float)st.height);
 	self->touch = TriggerMonsterJumpTouch;
 }
 
