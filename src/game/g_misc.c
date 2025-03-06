@@ -518,15 +518,21 @@ static void PointCombatTouch(edict_t* self, edict_t* other, cplane_t* plane, csu
 	}
 }
 
-void SP_point_combat (edict_t *self)
+// QUAKED point_combat (0.5 0.3 0) (-8 -8 -8) (8 8 8) HOLD
+// Makes this the target of a monster and it will head here when first activated before going after the activator.
+// Spawnflags:
+// HOLD - monster will stay here.
+void SP_point_combat(edict_t* self)
 {
 	self->solid = SOLID_TRIGGER;
-	self->touch = PointCombatTouch;
-	VectorSet (self->mins, -8, -8, -16);
-	VectorSet (self->maxs, 8, 8, 16);
 	self->svflags = SVF_NOCLIENT;
-	gi.linkentity (self);
-};
+	self->touch = PointCombatTouch;
+
+	VectorSet(self->mins, -8.0f, -8.0f, -16.0f);
+	VectorSet(self->maxs, 8.0f, 8.0f, 16.0f);
+
+	gi.linkentity(self);
+}
 
 #pragma endregion
 
