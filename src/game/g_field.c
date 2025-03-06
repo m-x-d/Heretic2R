@@ -377,39 +377,33 @@ static void TriggerGotoBuoyTouchThink(edict_t* self) //mxd. Named 'trigger_goto_
 		TriggerGotoBuoyExecute(self, self->enemy, self->activator);
 }
 
-void trigger_goto_buoy_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void TriggerGotoBuoyTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'trigger_goto_buoy_touch' in original logic.
 {
-	if(level.time < self->air_finished)
-		return;
-
-	if(!(other->svflags & SVF_MONSTER))
-		return;
-
-	if(!(other->monsterinfo.aiflags&AI_USING_BUOYS))
-		return;
-
-	if(other->health<=0)
+	if (level.time < self->air_finished || other->health <= 0 || !(other->svflags & SVF_MONSTER) || !(other->monsterinfo.aiflags & AI_USING_BUOYS))
 		return;
 
 	self->activator = other->enemy;
 
-	if(self->delay)
+	if (self->delay > 0.0f)
 	{
 		self->enemy = other;
 		self->think = TriggerGotoBuoyTouchThink;
 		self->nextthink = level.time + self->delay;
+
 		return;
 	}
 
 	TriggerGotoBuoyExecute(self, other, self->activator);
 
-	if(self->wait == -1)
+	if (self->wait == -1.0f)
 	{
 		self->touch = NULL;
 		self->use = NULL;
 	}
 	else
+	{
 		self->air_finished = level.time + self->wait;
+	}
 }
 
 void trigger_goto_buoy_use_go (edict_t *self)
@@ -532,7 +526,7 @@ void SP_trigger_goto_buoy(edict_t *self)
 	}
 
 	if(self->spawnflags&SF_BUOY_TOUCH)
-		self->touch = trigger_goto_buoy_touch;
+		self->touch = TriggerGotoBuoyTouch;
 
 	if(self->targetname)
 	{
