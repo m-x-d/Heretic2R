@@ -1174,54 +1174,48 @@ static void SoundAmbientUse(edict_t* self, edict_t* other, edict_t* activator) /
 	}
 }
 
-void sound_ambient_init(edict_t *self)
+static void SoundAmbientInit(edict_t* self) //mxd. Named 'sound_ambient_init' in original logic.
 {
-	VectorSet(self->mins,-4,-4,-4);
-	VectorSet(self->maxs,4,4,4);
+	VectorSet(self->mins, -4.0f, -4.0f, -4.0f);
+	VectorSet(self->maxs,  4.0f,  4.0f,  4.0f);
 
 	self->movetype = PHYSICSTYPE_NONE;
 
-	if (self->attenuation <= 0.01)
-		self->attenuation = 1;
+	if (self->attenuation <= 0.01f)
+		self->attenuation = 1.0f;
 
-	if (self->volume <= 0.01)
-		self->volume = .5;
+	if (self->volume <= 0.01f)
+		self->volume = 0.5f;
 
-	if (self->wait<1)
-		self->wait = 10;
+	if (self->wait < 1.0f)
+		self->wait = 10.0f;
 
 	self->s.effects |= EF_NODRAW_ALWAYS_SEND;
 
-	if (!(self->spawnflags & 2))
+	if (!(self->spawnflags & SF_START_OFF))
 	{
-		self->nextthink = level.time + 2.5;
 		self->think = SoundAmbientThink;
+		self->nextthink = level.time + 2.5f;
 	}
 
-	// if we are asked to do a sound of type zero, free this edict, since its obviously bogus
-	if (!self->style)
+	// If we are asked to do a sound of type zero, free this edict, since its obviously bogus.
+	if (self->style == 0)
 	{
-		gi.dprintf("Bogus ambient sound at x:%f y:%f z:%f\n",self->s.origin[0], self->s.origin[1],self->s.origin[2]); 
+		gi.dprintf("Bogus ambient sound at %s\n", vtos(self->s.origin));
 		G_SetToFree(self);
+
 		return;
 	}
 
-	// if we are non local, clear the origin of this object
-	if (self->spawnflags & 1)
-	{
+	// If we are non-local, clear the origin of this object.
+	if (self->spawnflags & SF_NON_LOCAL)
 		VectorClear(self->s.origin);
-	}	
 	else
-		// if we are here, then this ambient sound should have an origin
-		assert(Vec3NotZero(self->s.origin));
+		assert(Vec3NotZero(self->s.origin)); // If we are here, then this ambient sound should have an origin.
 
 	self->use = SoundAmbientUse;
-
 	gi.linkentity(self);
 }
-
-
-
 
 /*QUAKED sound_ambient_cloudfortress (1 0 0) (-4 -4 0) (4 4 4) NON_LOCAL START_OFF
 Generates an ambient sound for cloud fortress levels
@@ -1253,7 +1247,7 @@ volume   range of .1 to 1   (default .5)
 */
 void SP_sound_ambient_cloudfortress (edict_t *self)
 {
-	sound_ambient_init(self);
+	SoundAmbientInit(self);
 
 	self->style = CloudSoundID[self->style];
 }
@@ -1288,7 +1282,7 @@ volume   range of .1 to 1   (default .5)
 */
 void SP_sound_ambient_mine (edict_t *self)
 {
-	sound_ambient_init(self);
+	SoundAmbientInit(self);
 
 	self->style = MineSoundID[self->style];
 }
@@ -1324,7 +1318,7 @@ volume   range of .1 to 1   (default .5)
 */
 void SP_sound_ambient_hive (edict_t *self)
 {
-	sound_ambient_init(self);
+	SoundAmbientInit(self);
 
 	self->style = HiveSoundID[self->style];
 }
@@ -1357,7 +1351,7 @@ volume   range of .1 to 1   (default .5)
 */
 void SP_sound_ambient_andoria (edict_t *self)
 {
-	sound_ambient_init(self);
+	SoundAmbientInit(self);
 
 	self->style = AndoriaSoundID[self->style];
 }
@@ -1397,7 +1391,7 @@ volume   range of .1 to 1   (default .5)
 void SP_sound_ambient_swampcanyon (edict_t *self)
 {
 	self->style = SwampCanyonSoundID[self->style];
-	sound_ambient_init(self);
+	SoundAmbientInit(self);
 }
 
 /*QUAKED sound_ambient_silverspring (1 0 0) (-4 -4 -4) (4 4 4) NON_LOCAL  START_OFF
@@ -1441,7 +1435,7 @@ volume   range of .1 to 1   (default .5)
 void SP_sound_ambient_silverspring (edict_t *self)
 {
 	self->style = SilverSpringSoundID[self->style];
-	sound_ambient_init(self);
+	SoundAmbientInit(self);
 }
 
 /*QUAKED misc_remote_camera (0 0.5 0.8) (-4 -4 -4) (4 4 4) ACTIVATING SCRIPTED NO_DELETE
