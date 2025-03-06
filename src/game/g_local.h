@@ -671,10 +671,6 @@ extern void M_CatagorizePosition(edict_t* ent);
 extern qboolean M_CheckAttack(edict_t* self);
 extern void M_CheckGround(edict_t* ent);
 
-// g_misc.c
-extern void ThrowGib(edict_t* self, char* gibname, int damage, int type);
-extern void BecomeExplosion1(edict_t* self);
-
 // g_svcmds.c
 extern void ServerCommand(void);
 extern qboolean SV_FilterPacket(const char* from);
@@ -800,7 +796,7 @@ typedef struct gclient_s
 extern qboolean FindTarget(edict_t* self);
 extern void MG_PostDeathThink(edict_t* self);
 extern qboolean movable(edict_t* ent);
-extern qboolean EntReflecting(edict_t* ent, qboolean checkmonster, qboolean checkplayer);
+extern qboolean EntReflecting(const edict_t* ent, qboolean check_monster, qboolean check_player);
 extern void SkyFly(edict_t* self);
 
 // For simplicity of use.. take it out later. //TODO: mxd. Take it out... later?
