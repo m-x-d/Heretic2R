@@ -377,82 +377,54 @@ void ThrowWeapon(const edict_t* self, const vec3_t* spot, const int body_part, f
 
 #pragma endregion
 
-/*QUAKED path_corner (.5 .3 0) (-8 -8 -8) (8 8 8) TELEPORT
----------KEYS---------------	
-target -  target name of next path corner
-pathtarget - used when an entity that has this path_corner targeted touches it
-angles - used to make the brush rotate. The brush MUST have an origin brush in it. It is an
- accumulative value so if the value is 0 40 0 the brush rotate an additional 40 degrees along
- the y axis before it reaches this path corner.
-wait - -1 makes trains stop until retriggered
-       -3 trains explode upon reaching this path corner
+#pragma region ========================== path_corner ==========================
 
-noise -	file to play when corner is hit (trains only)
--objects/bucket.wav
-*/
-
-void path_corner_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void PathCornerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'path_corner_touch' in original logic.
 {
-	vec3_t		v;
-	edict_t		*next;
-
-	if (other->movetarget != self)
-		return;
-	
-	if (other->enemy)
+	if (other->movetarget != self || other->enemy != NULL)
 		return;
 
-
-	if (self->pathtarget)
+	if (self->pathtarget != NULL)
 	{
-		char *savetarget;
-
-		savetarget = self->target;
+		char* save_target = self->target;
 		self->target = self->pathtarget;
-		G_UseTargets (self, other);
-		self->target = savetarget;
+		G_UseTargets(self, other);
+		self->target = save_target;
 	}
 
-	if (self->target)
-		next = G_PickTarget(self->target);
-	else
-		next = NULL;
+	edict_t* next = ((self->target != NULL) ? G_PickTarget(self->target) : NULL);
 
-	if ((next) && (next->spawnflags & MSF_AMBUSH))
+	if (next != NULL && (next->spawnflags & MSF_AMBUSH))
 	{
-		VectorCopy (next->s.origin, v);
+		vec3_t v;
+		VectorCopy(next->s.origin, v);
 		v[2] += next->mins[2];
 		v[2] -= other->mins[2];
-		VectorCopy (v, other->s.origin);
+
+		VectorCopy(v, other->s.origin);
+
 		next = G_PickTarget(next->target);
 	}
 
-	other->goalentity = other->movetarget = next;
+	other->goalentity = next;
+	other->movetarget = next;
 
-	if (self->wait)
+	if (self->wait > 0.0f)
 	{
 		other->monsterinfo.pausetime = level.time + self->wait;
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-//		M_GiveOrder(ORD_STAND,other,other,PR_LOW, 0,0,0,0,0,0);
-//		other->monsterinfo.stand (other);
-		return;
 	}
-
-
-	if (!other->movetarget)
+	else if (other->movetarget != NULL)
 	{
-		other->monsterinfo.pausetime = level.time + 100000000;
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-//		M_GiveOrder(ORD_STAND,other,other,PR_LOW, 0,0,0,0,0,0);
-//		other->monsterinfo.stand (other);
+		vec3_t v;
+		VectorSubtract(other->goalentity->s.origin, other->s.origin, v);
+		other->ideal_yaw = VectorYaw(v);
 	}
 	else
 	{
-		VectorSubtract (other->goalentity->s.origin, other->s.origin, v);
-		other->ideal_yaw = VectorYaw (v);
+		other->monsterinfo.pausetime = level.time + 100000000.0f;
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
-
-
 }
 
 void SP_path_corner (edict_t *self)
@@ -469,7 +441,7 @@ void SP_path_corner (edict_t *self)
 
 	self->solid = SOLID_TRIGGER;
 	self->movetype = PHYSICSTYPE_NONE;
-	self->touch = path_corner_touch;
+	self->touch = PathCornerTouch;
 	VectorSet (self->mins, -8, -8, -8);
 	VectorSet (self->maxs, 8, 8, 8);
 	self->svflags |= SVF_NOCLIENT;
