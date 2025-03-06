@@ -822,21 +822,20 @@ static void MiscUpdateSpawnerTouch(edict_t* self, edict_t* other, cplane_t* plan
 	G_FreeEdict(self);
 }
 
-/*QUAKED misc_update_spawner (.5 .5 .5) ?
-  	This creates the spawner update entity, which upates the spawner position when triggered
-*/
-void misc_update_spawner (edict_t *ent)
+// QUAKED misc_update_spawner (.5 .5 .5) ?
+// This creates the spawner update entity, which updates the spawner position when triggered.
+void misc_update_spawner(edict_t* ent) //TODO: Rename to SP_misc_update_spawner?
 {
-
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;
 	ent->solid = SOLID_TRIGGER;
 	ent->touch = MiscUpdateSpawnerTouch;
 
-	gi.setmodel(ent,ent->model);
-	gi.linkentity (ent);
-
+	gi.setmodel(ent, ent->model);
+	gi.linkentity(ent);
 }
+
+#pragma endregion
 
 void Teleporter_Deactivate(edict_t *self, G_Message_t *msg)
 {
