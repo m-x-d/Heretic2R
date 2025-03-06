@@ -176,19 +176,18 @@ static void TriggerDamageDeactivate(edict_t* self, G_Message_t* msg) //mxd. Name
 	self->use = NULL;
 }
 
-
-void TrigDamage_Activate(edict_t *self, G_Message_t *msg)
+static void TriggerDamageActivate(edict_t* self, G_Message_t* msg) //mxd. Named 'TrigDamage_Activate' in original logic.
 {
 	self->solid = SOLID_TRIGGER;
 	self->use = TriggerDamageUse;
-	gi.linkentity (self);
-}
 
+	gi.linkentity(self);
+}
 
 void TrigDamageStaticsInit()
 {
 	classStatics[CID_TRIG_DAMAGE].msgReceivers[G_MSG_SUSPEND] = TriggerDamageDeactivate;
-	classStatics[CID_TRIG_DAMAGE].msgReceivers[G_MSG_UNSUSPEND] = TrigDamage_Activate;
+	classStatics[CID_TRIG_DAMAGE].msgReceivers[G_MSG_UNSUSPEND] = TriggerDamageActivate;
 }
 
 
