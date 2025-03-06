@@ -427,26 +427,40 @@ static void PathCornerTouch(edict_t* self, edict_t* other, cplane_t* plane, csur
 	}
 }
 
-void SP_path_corner (edict_t *self)
+// QUAKED path_corner (.5 .3 0) (-8 -8 -8) (8 8 8) TELEPORT
+// Variables:
+// target		- Target name of next path corner.
+// pathtarget	- Used when an entity that has this path_corner targeted touches it angles - used to make the brush rotate.
+//				  The brush MUST have an origin brush in it. It is an accumulative value, so if the value is 0 40 0 the brush rotate
+//				  an additional 40 degrees along the y axis before it reaches this path corner.
+// wait			- -1 makes trains stop until retriggered.
+//				  -3 trains explode upon reaching this path corner.
+// noise		- Wav file to play when corner is hit (trains only).
+void SP_path_corner(edict_t* self)
 {
-	if (!self->targetname)
+	if (self->targetname == NULL)
 	{
-		gi.dprintf ("path_corner with no targetname at %s\n", vtos(self->s.origin));
-		G_FreeEdict (self);
+		gi.dprintf("path_corner with no targetname at %s\n", vtos(self->s.origin));
+		G_FreeEdict(self);
+
 		return;
 	}
 
-	if (st.noise)
-		self->moveinfo.sound_middle = gi.soundindex  (st.noise);
+	if (st.noise != NULL)
+		self->moveinfo.sound_middle = gi.soundindex(st.noise);
 
 	self->solid = SOLID_TRIGGER;
 	self->movetype = PHYSICSTYPE_NONE;
-	self->touch = PathCornerTouch;
-	VectorSet (self->mins, -8, -8, -8);
-	VectorSet (self->maxs, 8, 8, 8);
 	self->svflags |= SVF_NOCLIENT;
-	gi.linkentity (self);
+	self->touch = PathCornerTouch;
+
+	VectorSet(self->mins, -8.0f, -8.0f, -8.0f);
+	VectorSet(self->maxs, 8.0f, 8.0f, 8.0f);
+
+	gi.linkentity(self);
 }
+
+#pragma endregion
 
 /*QUAKED point_combat (0.5 0.3 0) (-8 -8 -8) (8 8 8) Hold
 	
