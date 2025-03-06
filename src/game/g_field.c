@@ -417,23 +417,23 @@ static void TriggerGotoBuoyUseThink(edict_t* self) //mxd. Named 'trigger_goto_bu
 		gi.dprintf("ERROR: trigger_goto_buoy can't find it's target monster %s\n", self->pathtarget);
 }
 
-void trigger_goto_buoy_use (edict_t *self, edict_t *other, edict_t *activator)
+static void TriggerGotoBuoyUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_goto_buoy_use' in original logic.
 {
-	if(level.time < self->air_finished)
+	if (level.time < self->air_finished)
 		return;
 
 	self->activator = activator;
 
-	if(self->delay)
+	if (self->delay > 0.0f)
 	{
 		self->think = TriggerGotoBuoyUseThink;
 		self->nextthink = level.time + self->delay;
+
 		return;
 	}
 
 	TriggerGotoBuoyUseThink(self);
-
-	self->air_finished = level.time + self->wait;
+	self->air_finished = level.time + self->wait; //TODO: add dedicated edict_t property instead of hijacking 'air_finished'?
 }
 
 void trigger_goto_buoy_find_target(edict_t *self)
@@ -518,6 +518,6 @@ void SP_trigger_goto_buoy(edict_t *self)
 	{
 		if(!self->target)
 			gi.dprintf("targeted trigger_goto_buoy with no monster target!\n");
-		self->use = trigger_goto_buoy_use;
+		self->use = TriggerGotoBuoyUse;
 	}
 }
