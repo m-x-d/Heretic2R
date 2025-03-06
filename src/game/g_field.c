@@ -436,54 +436,50 @@ static void TriggerGotoBuoyUse(edict_t* self, edict_t* other, edict_t* activator
 	self->air_finished = level.time + self->wait; //TODO: add dedicated edict_t property instead of hijacking 'air_finished'?
 }
 
-/*QUAKED trigger_goto_buoy (.5 .5 .5) ? Touch IgnoreEnemy TeleportSafe TeleportUnSafe FIXED STAND WANDER
-A monster touching this trigger will find the buoy with the "pathtarget" targetname and head for it if it can.
+// QUAKED trigger_goto_buoy (.5 .5 .5) ? BUOY_TOUCH BUOY_IGNORE_ENEMY BUOY_TELEPORT_SAFE BUOY_TELEPORT_UNSAFE BUOY_FIXED BUOY_STAND BUOY_WANDER
+// A monster touching this trigger will find the buoy with the "pathtarget" targetname and head for it if it can.
+// This is NOT a touch trigger for a player, only monsters should ever touch it and only if the TOUCH spawnflag is on.
+// To have a player touch-trigger it, have the player touch a normal trigger that fires this trigger.
+// Otherwise, acts like a normal trigger.
 
-This is NOT a touch trigger for a player, only monsters should ever touch it and only if the TOUCH spawnflag is on.
+// Spawnflags:
+// BUOY_TOUCH			- Should be able to be touch-activated by monsters. NOTE: This will try to force the entity touching the trigger
+//						  to it's buoy - should NOT be intended to be touched by anything but monsters.
+// BUOY_IGNORE_ENEMY	- Monster will ignore his enemy until he gets to his target buoy (or until attacked or woken up some other way,
+//						  working on preventing this if desired).
+// BUOY_TELEPORT_SAFE	- Make monster teleport to target buoy only if there is nothing there and the player cannot see the monster and/or destination buoy.
+// BUOY_TELEPORT_UNSAFE	- Same as BUOY_TELEPORT_SAFE, but ignores whether or not the player can see the monster and/or desination buoy.
+//						  If you wish to make an assassin teleport to a buoy, use BUOY_TELEPORT_UNSAFE since he doesn't need to hide the teleport from the player.
+// BUOY_FIXED			- Upon arriving at the target buoy, the monster will become fixed and wait for an enemy (will not move from that spot no matter what).
+// BUOY_STAND			- Upon arriving at the target buoy, the monster will forget any enemy it has and simply stand around there until it sees another enemy.
+// BUOY_WANDER			- Upon arriving at the target buoy, the monster will forget any enemy it has and begin to wander around that buoy's vicinity.
 
-To have a player touch-trigger it, have the player touch a normal trigger that fires this trigger... (sorry!)
-
-Otherwise, acts like a normal trigger.
-
-"pathtarget" - targetname of buoy monster should head to
-
-Touch - should be able to be touch-activated by monsters- NOTE: This will try to force the entity touching the trigger to it's buoy- should NOT be intended to be touched by anything but monsters
-
-IgnoreEnemy - Monster will ignore his enemy until he gets to his target buoy (or until attacked or woken up some other way, working on preventing this if desired)
-
-TeleportSafe - Make monster teleport to target buoy only if there is nothing there and the player cannot see the monster and/or desination buoy
-
-TeleportUnSafe - Same as TeleportSafe, but ignores whether or not the player can see the monster and/or desination buoy
-
-If you wish to make an assassin teleport to a buoy, use TeleportUnsafe since he doesn't need to hide the teleport from the player
-
-FIXED - Upon arriving at the target buoy, the monster will become fixed and wait for an enemy (will not move from that spot no matter what)
-
-STAND - Upon arriving at the target buoy, the monster will forget any aenemy it has and simply stand around there until it sees another enemy
-
-WANDER - Upon arriving at the target buoy, the monster will forget any aenemy it has and begin to wander around that buoy's vicinity
-
-"wait" how long to wait between firings
-"delay" how long to wait after being activated to actually try to send the monster away
-*/
-void SP_trigger_goto_buoy(edict_t *self)
+// Variables:
+// pathtarget	- Targetname of buoy monster should head to.
+// wait			- How long to wait between firings.
+// delay		- How long to wait after being activated to actually try to send the monster away.
+void SP_trigger_goto_buoy(edict_t* self)
 {
 	InitField(self);
 
-	if(!self->pathtarget)
+	if (self->pathtarget == NULL)
 	{
 		gi.dprintf("trigger_goto_buoy with no pathtarget!\n");
 		G_FreeEdict(self);
+
 		return;
 	}
 
-	if(self->spawnflags&SF_BUOY_TOUCH)
+	if (self->spawnflags & SF_BUOY_TOUCH)
 		self->touch = TriggerGotoBuoyTouch;
 
-	if(self->targetname)
+	if (self->targetname != NULL)
 	{
-		if(!self->target)
+		if (self->target == NULL)
 			gi.dprintf("targeted trigger_goto_buoy with no monster target!\n");
+
 		self->use = TriggerGotoBuoyUse;
 	}
 }
+
+#pragma endregion
