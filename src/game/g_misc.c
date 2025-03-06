@@ -664,43 +664,45 @@ static void FuncObjectUse(edict_t* self, edict_t* other, edict_t* activator) //m
 	FuncObjectRelease(self);
 }
 
-void SP_func_object (edict_t *self)
+#define SF_TRIGGER_SPAWN	1 //mxd
+#define SF_ANIMATED			2 //mxd
+#define SF_ANIMATED_FAST	4 //mxd
+
+// QUAKED func_object (0 .5 .8) ? TRIGGER_SPAWN ANIMATED ANIMATED_FAST
+// This is solid bmodel that will fall if it's support it removed.
+void SP_func_object(edict_t* self)
 {
-	gi.setmodel (self, self->model);
+	gi.setmodel(self, self->model);
 
-	self->mins[0] += 1;
-	self->mins[1] += 1;
-	self->mins[2] += 1;
-	self->maxs[0] -= 1;
-	self->maxs[1] -= 1;
-	self->maxs[2] -= 1;
+	VectorInc(self->mins);
+	VectorDec(self->maxs);
 
-	if (!self->dmg)
+	if (self->dmg == 0)
 		self->dmg = 100;
 
-	if (self->spawnflags == 0)
+	if (self->spawnflags == 0) //TODO: a strange way to check for SF_TRIGGER_SPAWN flag?.. Will also trigger when SF_ANIMATED or SF_ANIMATED_FAST are set!
 	{
 		self->solid = SOLID_BSP;
-		self->movetype = PHYSICSTYPE_PUSH;
 		self->think = FuncObjectRelease;
-		self->nextthink = level.time + 2 * FRAMETIME;
+		self->nextthink = level.time + FRAMETIME * 2.0f;
 	}
 	else
 	{
 		self->solid = SOLID_NOT;
-		self->movetype = PHYSICSTYPE_PUSH;
 		self->use = FuncObjectUse;
 		self->svflags |= SVF_NOCLIENT;
 	}
 
-	if (self->spawnflags & 2)
+	if (self->spawnflags & SF_ANIMATED)
 		self->s.effects |= EF_ANIM_ALL;
-	if (self->spawnflags & 4)
+
+	if (self->spawnflags & SF_ANIMATED_FAST)
 		self->s.effects |= EF_ANIM_ALLFAST;
 
+	self->movetype = PHYSICSTYPE_PUSH;
 	self->clipmask = MASK_MONSTERSOLID;
 
-	gi.linkentity (self);
+	gi.linkentity(self);
 }
 
 #pragma endregion
