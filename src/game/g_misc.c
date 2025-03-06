@@ -1604,28 +1604,36 @@ static void MiscRemoteCameraUse(edict_t* self, edict_t* other, edict_t* activato
 	self->nextthink = level.time + FRAMETIME;
 }
 
-void SP_misc_remote_camera(edict_t *Self)
-{
-	Self->enemy=Self->targetEnt=NULL;
+// QUAKED misc_remote_camera (0 0.5 0.8) (-4 -4 -4) (4 4 4) ACTIVATING SCRIPTED NO_DELETE
+// Spawnflags:
+// ACTIVATING	- Only the activating client will see the remote camera view.
+// SCRIPTED		- This is a scripted camera.
+// NO_DELETE	- Don't delete camera.
 
-	if(!Self->target)
+// Variables:
+// pathtarget	- Holds the name of the camera's owner entity (if any).
+// target		- Holds the name of the entity to be looked at.
+void SP_misc_remote_camera(edict_t* self)
+{
+	self->enemy = NULL;
+	self->targetEnt = NULL;
+
+	if (self->target == NULL)
 	{
 		gi.dprintf("Object 'misc_remote_camera' without a target.\n");
-		
-		G_FreeEdict(Self);
-		
+		G_FreeEdict(self);
+
 		return;
 	}
-	
-	Self->movetype = PHYSICSTYPE_NONE;
-	Self->solid=SOLID_NOT;
-	VectorSet(Self->mins,-4,-4,-4);
-	VectorSet(Self->maxs,4,4,4);
-	Self->count=0;
 
-	Self->use=MiscRemoteCameraUse;
-	
-	gi.linkentity(Self);
+	self->movetype = PHYSICSTYPE_NONE;
+	self->solid = SOLID_NOT;
+	VectorSet(self->mins, -4.0f, -4.0f, -4.0f);
+	VectorSet(self->maxs, 4.0f, 4.0f, 4.0f);
+	self->count = 0; //TODO: add a dedicated 'qboolean is_active' property to one of many edict_t unions?..
+	self->use = MiscRemoteCameraUse;
+
+	gi.linkentity(self);
 }
 
 #pragma endregion
