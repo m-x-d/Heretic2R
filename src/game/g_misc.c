@@ -837,6 +837,33 @@ void misc_update_spawner(edict_t* ent) //TODO: Rename to SP_misc_update_spawner?
 
 #pragma endregion
 
+#pragma region ========================== misc_teleporter ==========================
+
+#define SF_NO_MODEL				1
+#define SF_DEATHMATCH_RANDOM	2
+#define SF_START_OFF			4
+#define SF_MULT_DEST			8
+
+static void MiscTeleporterCreateEffect(edict_t* self) //mxd. Added to reduce code duplication.
+{
+	edict_t* effect = G_Spawn();
+
+	VectorCopy(self->maxs, effect->maxs);
+	VectorCopy(self->mins, effect->mins);
+	effect->solid = SOLID_NOT;
+	effect->s.effects |= (EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS);
+	self->enemy = effect;
+
+	gi.linkentity(effect);
+
+	vec3_t fx_origin;
+	for (int i = 0; i < 3; i++)
+		fx_origin[i] = ((self->maxs[i] - self->mins[i]) / 2.0f) + self->mins[i];
+
+	if (!(self->spawnflags & SF_NO_MODEL))
+		effect->PersistantCFX = gi.CreatePersistantEffect(&effect->s, FX_TELEPORT_PAD, CEF_BROADCAST, fx_origin, "");
+}
+
 void Teleporter_Deactivate(edict_t *self, G_Message_t *msg)
 {
 	self->touch = NULL;
@@ -946,6 +973,8 @@ void SP_misc_teleporter (edict_t *ent)
 	}
 
 }
+
+#pragma endregion
 
 /*QUAKED misc_teleporter_dest (1 0 0) (-32 -32 -24) (32 32 -16)
 
