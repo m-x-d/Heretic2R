@@ -1668,36 +1668,25 @@ void SpawnClientAnim(edict_t* self, byte type, const char* sound) //TODO: add de
 	self->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 }
 
-//A check to see if ent should reflect
-qboolean EntReflecting(edict_t *ent, qboolean checkmonster, qboolean checkplayer)
+// A check to see if ent should reflect.
+qboolean EntReflecting(const edict_t* ent, const qboolean check_monster, const qboolean check_player) //TODO: move declaration to g_misc.h
 {
-	if(!ent)
-	{
+	if (ent == NULL)
 		return false;
-	}
 
-	if(checkmonster)
+	if (check_monster && (ent->svflags & SVF_MONSTER) && (ent->svflags & SVF_REFLECT))
+		return true;
+
+	if (check_player && ent->client != NULL)
 	{
-		if(ent->svflags & SVF_MONSTER && ent->svflags & SVF_REFLECT)
-		{
+		const playerinfo_t* info = &ent->client->playerinfo; //mxd
+
+		if (info->reflect_timer > level.time)
 			return true;
-		}
-	}
 
-	if(checkplayer)
-	{
-		if(ent->client)
-		{
-			if(ent->client->playerinfo.reflect_timer > level.time)
-			{
-				return true;
-			}
-			// possibly, we might want to reflect this if the player has gold armor
-			else
-			if((ent->client->playerinfo.pers.armortype == ARMOR_TYPE_GOLD) && (ent->client->playerinfo.pers.armor_count) && (irand(0,100) < 30))
-				return true;
-
-		}
+		// Possibly, we might want to reflect this if the player has gold armor.
+		if (info->pers.armortype == ARMOR_TYPE_GOLD && info->pers.armor_count > 0.0f && irand(0, 100) < 30)
+			return true;
 	}
 
 	return false;
