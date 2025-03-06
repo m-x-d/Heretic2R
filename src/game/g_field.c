@@ -138,11 +138,22 @@ void SP_trigger_push(edict_t* self)
 
 #pragma endregion
 
-//----------------------------------------------------------------------
-// Damage Field
-//----------------------------------------------------------------------
+#pragma region ========================== trigger_damage ==========================
 
-void DamageField_Use(edict_t *self, edict_t *other, edict_t *activator);
+#define SF_START_OFF		1 //mxd
+#define SF_TOGGLE			2 //mxd
+#define SF_SILENT			4 //mxd
+#define SF_NO_PROTECTION	8 //mxd
+#define SF_SLOW				16 //mxd
+
+static void TriggerDamageUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'DamageField_Use' in original logic.
+{
+	self->solid = ((self->solid == SOLID_NOT) ? SOLID_TRIGGER : SOLID_NOT);
+
+	if (!(self->spawnflags & SF_TOGGLE))
+		self->use = NULL;
+}
+
 void DamageField_Touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
 
 void TrigDamage_Deactivate(edict_t *self, G_Message_t *msg)
@@ -155,7 +166,7 @@ void TrigDamage_Deactivate(edict_t *self, G_Message_t *msg)
 void TrigDamage_Activate(edict_t *self, G_Message_t *msg)
 {
 	self->solid = SOLID_TRIGGER;
-	self->use = DamageField_Use;
+	self->use = TriggerDamageUse;
 	gi.linkentity (self);
 }
 
@@ -204,24 +215,11 @@ void SP_trigger_Damage(edict_t *self)
 		self->solid = SOLID_TRIGGER;
 
 	if (self->spawnflags & 2)
-		self->use = DamageField_Use;
+		self->use = TriggerDamageUse;
 
 	self->movetype = PHYSICSTYPE_NONE;
 	gi.linkentity (self);
 }
-
-void DamageField_Use(edict_t *self, edict_t *other, edict_t *activator)
-{
-	if (self->solid == SOLID_NOT)
-		self->solid = SOLID_TRIGGER;
-	else
-		self->solid = SOLID_NOT;
-
-	if (!(self->spawnflags & 2))
-		self->use = NULL;
-
-}
-
 
 void DamageField_Touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
@@ -253,6 +251,8 @@ void DamageField_Touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_
 
 	G_UseTargets(self, self);
 }
+
+#pragma endregion
 
 //----------------------------------------------------------------------
 // Gravity Field
