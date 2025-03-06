@@ -1413,6 +1413,52 @@ static void MiscRemoteCameraRemove(edict_t* self) //mxd. Named 'remove_camera' i
 		G_FreeEdict(self);
 }
 
+static void MiscRemoteCameraUpdateViewangles(const edict_t* self) //mxd. Added to reduce code duplication.
+{
+	if (self->spawnflags & SF_ACTIVATING)
+	{
+		// Just for the activator.
+		if (self->activator->client->RemoteCameraNumber == self->s.number)
+			for (int i = 0; i < 3; i++)
+				self->activator->client->ps.remote_viewangles[i] = self->s.angles[i];
+	}
+	else
+	{
+		// For all clients.
+		for (int i = 0; i < game.maxclients; i++)
+		{
+			const edict_t* client = &g_edicts[i + 1];
+
+			if (client->inuse && client->client->RemoteCameraNumber == self->s.number)
+				for (int j = 0; j < 3; j++)
+					client->client->ps.remote_viewangles[j] = self->s.angles[j];
+		}
+	}
+}
+
+static void MiscRemoteCameraUpdateVieworigin(const edict_t* self) //mxd. Added to reduce code duplication.
+{
+	if (self->spawnflags & SF_ACTIVATING)
+	{
+		// Just for the activator.
+		if (self->activator->client->RemoteCameraNumber == self->s.number)
+			for (int i = 0; i < 3; i++)
+				self->activator->client->ps.remote_vieworigin[i] = self->s.origin[i] * 8.0f;
+	}
+	else
+	{
+		// For all clients.
+		for (int i = 0; i < game.maxclients; i++)
+		{
+			const edict_t* client = &g_edicts[i + 1];
+
+			if (client->inuse && client->client->RemoteCameraNumber == self->s.number)
+				for (int j = 0; j < 3; j++)
+					client->client->ps.remote_vieworigin[j] = self->s.origin[j] * 8.0f;
+		}
+	}
+}
+
 void misc_remote_camera_think(edict_t *Self)
 {
 	// ********************************************************************************************
