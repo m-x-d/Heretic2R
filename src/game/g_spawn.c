@@ -1,5 +1,6 @@
 #include "c_actors.h" //mxd
 #include "g_items.h" //mxd
+#include "g_misc.h" //mxd
 #include "g_Shrine.h" //mxd
 #include "g_breakable.h" //mxd
 #include "g_env.h" //mxd
@@ -22,10 +23,7 @@ void SP_func_door_secret (edict_t *ent);
 void SP_func_door_rotating (edict_t *ent);
 void SP_func_water (edict_t *ent);
 void SP_func_train (edict_t *ent);
-void SP_func_wall (edict_t *self);
-void SP_func_object (edict_t *self);
 void SP_func_timer (edict_t *self);
-void SP_func_areaportal (edict_t *ent);
 void SP_func_monsterspawner (edict_t *ent);
 
 void SP_trigger_Activate(edict_t *self);
@@ -34,7 +32,6 @@ void SP_trigger_Counter (edict_t *ent);
 void SP_trigger_Damage(edict_t *self);
 void SP_trigger_Deactivate(edict_t *self);
 void SP_trigger_Elevator (edict_t *ent);
-//void SP_trigger_flamethrower (edict_t *ent);
 void SP_trigger_fogdensity(edict_t *self);
 void SP_trigger_Gravity(edict_t *self);
 void SP_trigger_mappercentage(edict_t *self);
@@ -69,42 +66,13 @@ void SP_target_earthquake (edict_t *ent);
 void SP_worldspawn (edict_t *ent);
 
 void SP_light (edict_t *self);
-void SP_info_null (edict_t *self);
-void SP_info_notnull (edict_t *self);
-void SP_path_corner (edict_t *self);
-void SP_point_combat (edict_t *self);
-
-void SP_misc_teleporter (edict_t *self);
-void SP_misc_teleporter_dest (edict_t *self);
-void misc_update_spawner (edict_t *self);
-void SP_misc_remote_camera (edict_t *self);
-void SP_misc_magic_portal (edict_t *self);
-void SP_misc_fire_sparker (edict_t *ent);
 
 void SP_misc_flag (edict_t *ent);
 void SP_monster_chkroktk (edict_t *self);
 
-void SP_character_corvus3 (edict_t *self);
-void SP_character_corvus4 (edict_t *self);
-void SP_character_corvus5 (edict_t *self);
-void SP_character_corvus6 (edict_t *self);
-void SP_character_corvus7 (edict_t *self);
-void SP_character_corvus8 (edict_t *self);
-void SP_character_corvus9 (edict_t *self);
-void SP_character_dranor (edict_t *self);
-void SP_character_elflord (edict_t *self);
-void SP_character_highpriestess (edict_t *self);
-void SP_character_highpriestess2 (edict_t *self);
-void SP_character_morcalavin (edict_t *self);
 void SP_character_sidhe_guard (edict_t *self);
-void SP_character_siernan1 (edict_t *self);
-void SP_character_siernan2 (edict_t *self);
-void SP_character_ssithra_scout (edict_t *self);
-void SP_character_ssithra_victim (edict_t *self);
-void SP_character_tome (edict_t *self);
 
 void SP_light_walltorch (edict_t *ent);
-//void SP_light_flame (edict_t *ent);
 void SP_light_floortorch (edict_t *ent);
 void SP_light_torch1(edict_t *ent);
 void SP_light_gem2(edict_t *ent);
@@ -125,13 +93,6 @@ void SP_env_water_drip(edict_t *self);
 void SP_env_water_fountain(edict_t *self);
 void SP_env_waterfall_base(edict_t *self);
 void SP_env_sun1(edict_t *ent);
-
-void SP_sound_ambient_silverspring (edict_t *ent);
-void SP_sound_ambient_swampcanyon (edict_t *ent);
-void SP_sound_ambient_andoria (edict_t *ent);
-void SP_sound_ambient_hive (edict_t *ent);
-void SP_sound_ambient_mine (edict_t *ent);
-void SP_sound_ambient_cloudfortress (edict_t *ent);
 
 // Object stuff
 void SP_obj_andwallhanging(edict_t *ent);
@@ -308,8 +269,6 @@ void SP_obj_wheelbarrowdamaged(edict_t *ent);
 void SP_obj_woodpile(edict_t *ent);
 
 void SP_flamethrower(edict_t *ent);
-
-void SP_item_spitter(edict_t *ent);
 
 void SP_script_runner (edict_t *ent);
 
