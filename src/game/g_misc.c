@@ -1384,45 +1384,33 @@ void SP_sound_ambient_silverspring(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED misc_remote_camera (0 0.5 0.8) (-4 -4 -4) (4 4 4) ACTIVATING SCRIPTED NO_DELETE
+#pragma region ========================== misc_remote_camera ==========================
 
-	pathtarget	- holds the name of the camera's owner entity (if any).
-	target		- holds the name of the entity to be looked at.
-	spawnflags	- 1 only the activating client will see the remote camera view.
-	            - 2 this is a scripted camera
-				- 4 don't delete camera
-*/
+#define SF_ACTIVATING	1 //mxd
+#define SF_SCRIPTED		2 //mxd
+#define SF_NO_DELETE	4 //mxd
 
-void remove_camera(edict_t *Self)
+static void MiscRemoteCameraRemove(edict_t* self) //mxd. Named 'remove_camera' in original logic.
 {
-	if(Self->spawnflags&1)
+	if (self->spawnflags & SF_ACTIVATING)
 	{
 		// Just for the activator.
-
-		Self->activator->client->RemoteCameraLockCount--;
+		self->activator->client->RemoteCameraLockCount--;
 	}
 	else
 	{
 		// For all clients.
-
-		int		i;
-		edict_t *cl_ent;
-
-		for(i=0;i<game.maxclients;i++)
+		for (int i = 0; i < game.maxclients; i++)
 		{
-			cl_ent=g_edicts+1+i;
-	
-			if(!cl_ent->inuse)
-				continue;
-	
-			cl_ent->client->RemoteCameraLockCount--;
+			const edict_t* client = &g_edicts[i + 1];
+
+			if (client->inuse)
+				client->client->RemoteCameraLockCount--;
 		}
 	}
 
-	if(!(Self->spawnflags&4))
-	{
-		G_FreeEdict(Self);
-	}
+	if (!(self->spawnflags & SF_NO_DELETE))
+		G_FreeEdict(self);
 }
 
 void misc_remote_camera_think(edict_t *Self)
@@ -1553,7 +1541,7 @@ void misc_remote_camera_think(edict_t *Self)
 		}
 		else
 		{
-			remove_camera(Self);
+			MiscRemoteCameraRemove(Self);
 		}
 	}
 }
@@ -1572,7 +1560,7 @@ void Use_misc_remote_camera(edict_t *Self,edict_t *Other,edict_t *Activator)
 		{
 			// I am a scripted camera, so free myself before returning.
 	
-			remove_camera(Self);
+			MiscRemoteCameraRemove(Self);
 		}
 		
 		return;
@@ -1787,6 +1775,8 @@ void SP_misc_remote_camera(edict_t *Self)
 	
 	gi.linkentity(Self);
 }
+
+#pragma endregion
 
 // Spawns a client model animation
 // spawnflags & 2 is a designer flag whether to animate or not
