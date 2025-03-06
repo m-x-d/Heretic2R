@@ -1692,34 +1692,9 @@ qboolean EntReflecting(const edict_t* ent, const qboolean check_monster, const q
 	return false;
 }
 
-/*void SkyFlyCheck(edict_t *self)
+void SkyFly(edict_t* self) //TODO: replace with G_SetToFree()?
 {
-	if(self->s.origin[2]>3900)
-		G_FreeEdict(self);
-	else
-		self->nextthink = level.time + 0.1;
-}*/
-
-void SkyFly (edict_t *self) //TODO: replace with G_SetToFree()?
-{
-/*	if(deathmatch->value)
-	{*/
-		G_SetToFree(self);
-		return;
-/*	}
-//They're not being drawn, even after this is set- why not?  Did they stop?
-	self->svflags |= SVF_ALWAYS_SEND;
-	self->movetype = PHYSICSTYPE_NOCLIP;
-	self->solid = SOLID_NOT;
-
-	self->touch = NULL;
-	self->isBlocked = NULL;
-	self->isBlocking = NULL;
-	self->bounced = NULL;
-//or just remove self after a time
-	self->think = SkyFlyCheck;
-	self->nextthink = level.time + 0.1;
-*/
+	G_SetToFree(self);
 }
 
 #pragma endregion
