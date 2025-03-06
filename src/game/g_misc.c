@@ -273,67 +273,47 @@ void BecomeDebris(edict_t* self)
 	self->nextthink = level.time + 2.0f;
 }
 
-void SprayDebris(edict_t *self, vec3_t spot, byte NoOfChunks, float damage)
+void SprayDebris(const edict_t* self, const vec3_t spot, byte num_chunks, float damage) //TODO: remove unused arg.
 {
-	byte		magb, mat;
-	float		mag, size;
-	int			flags = 0;
-	int			violence=VIOLENCE_DEFAULT;
-	
-	mag = VectorLength(self->mins);
+	byte b_mat = (byte)self->materialtype;
+	const byte b_mag = (byte)(Clamp(VectorLength(self->mins), 1.0f, 255.0f));
 
-	mat = (byte)(self->materialtype);
-	magb = Clamp(mag, 1.0, 255.0);
-
-	if(mat == MAT_FLESH || mat == MAT_INSECT)
+	if (b_mat == MAT_FLESH || b_mat == MAT_INSECT)
 	{
-		if (blood_level)
-			violence = blood_level->value;
+		const int violence = ((blood_level != NULL) ? (int)blood_level->value : VIOLENCE_DEFAULT); //TODO: why blood_level NULL check? Inited in InitGame(), accessed without NULL check in G_RunFrame()...
 
 		if (violence < VIOLENCE_NORMAL)
 		{
-			mat = MAT_STONE;
+			b_mat = MAT_STONE;
 		}
-		else if(violence > VIOLENCE_NORMAL)
+		else if (violence > VIOLENCE_NORMAL)
 		{
-			NoOfChunks *= (violence - VIOLENCE_NORMAL);
-			if(NoOfChunks > 255)
-				NoOfChunks = 255;
+			num_chunks *= (violence - VIOLENCE_NORMAL); //TODO: doesn't make much sense. Max violence configurable via menus is 3. Should be (violence - VIOLENCE_NORMAL + 1)?
+			num_chunks = min(255, num_chunks);
 		}
 	}
 
+	if (b_mat == MAT_FLESH || b_mat == MAT_INSECT)
+	{
+		int fx_flags = 0;
 
-	if(mat == MAT_FLESH || mat == MAT_INSECT)
-   	{
-		if(self->materialtype == MAT_INSECT)
+		if (self->materialtype == MAT_INSECT)
 		{
-			flags |= CEF_FLAG8;
-			if(!stricmp(self->classname, "monster_tcheckrik_male"))
-				flags |= CEF_FLAG7;//use male insect skin on chunks
+			fx_flags |= CEF_FLAG8;
+
+			if (Q_stricmp(self->classname, "monster_tcheckrik_male") == 0) //mxd. stricmp -> Q_stricmp
+				fx_flags |= CEF_FLAG7; // Use male insect skin on chunks.
 		}
 
-		if(self->fire_damage_time > level.time || self->svflags&SVF_ONFIRE)
-			flags |= CEF_FLAG6;
+		if (self->fire_damage_time > level.time || (self->svflags & SVF_ONFIRE))
+			fx_flags |= CEF_FLAG6;
 
-		gi.CreateEffect(NULL,
-						FX_FLESH_DEBRIS,
-   						flags,
-   						spot,
-   						"bdb",
-   						NoOfChunks, self->mins, magb);
+		gi.CreateEffect(NULL, FX_FLESH_DEBRIS, fx_flags, spot, "bdb", num_chunks, self->mins, b_mag);
 	}
 	else
 	{
-		size = (float)(NoOfChunks/100);
-		NoOfChunks = Clamp(size, 1.0, 255.0);
-
-		gi.CreateEffect(NULL,
-						FX_DEBRIS,
-						flags, spot,
-						"bbdb",
-						NoOfChunks,
-						MAT_STONE,
-						self->mins, magb);
+		num_chunks = (byte)(Clamp((float)num_chunks / 100.0f, 1.0f, 255.0f));
+		gi.CreateEffect(NULL, FX_DEBRIS, 0, spot, "bbdb", num_chunks, MAT_STONE, self->mins, b_mag);
 	}
 }
 
