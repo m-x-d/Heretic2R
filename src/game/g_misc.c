@@ -462,35 +462,31 @@ void SP_path_corner(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED point_combat (0.5 0.3 0) (-8 -8 -8) (8 8 8) Hold
-	
-	Makes this the target of a monster and it will head here
-	when first activated before going after the activator.  If
-	hold is selected, it will stay here.
+#pragma region ========================== point_combat ==========================
 
-  NOTE FROM MG: Probably still works... will test
-*/
-void point_combat_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+#define SF_HOLD	1 //mxd
+
+static void PointCombatTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'point_combat_touch' in original logic.
 {
-	edict_t	*activator;
-
 	if (other->movetarget != self)
-		return;//wasn't purposely heading for me
+		return; // Wasn't purposely heading for me.
 
-	if (self->target)
+	if (self->target != NULL)
 	{
 		other->target = self->target;
 		other->goalentity = other->movetarget = G_PickTarget(other->target);
-		if (!other->goalentity)
+
+		if (other->goalentity == NULL)
 		{
 			gi.dprintf("%s at %s target %s does not exist\n", self->classname, vtos(self->s.origin), self->target);
 			other->movetarget = self;
 		}
+
 		self->target = NULL;
 	}
-	else if ((self->spawnflags & 1) && !(other->flags & (FL_SWIM|FL_FLY)))
-	{//HOLD
-		other->spawnflags |= MSF_FIXED;//stay here forever now
+	else if ((self->spawnflags & SF_HOLD) && !(other->flags & (FL_SWIM | FL_FLY)))
+	{
+		other->spawnflags |= MSF_FIXED; // Stay here forever for now.
 		QPostMessage(other, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 
@@ -502,35 +498,37 @@ void point_combat_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfac
 		other->monsterinfo.aiflags &= ~AI_COMBAT_POINT;
 	}
 
-	if (self->pathtarget)
+	if (self->pathtarget != NULL)
 	{
-		char *savetarget;
-
-		savetarget = self->target;
+		edict_t* activator;
+		char* save_target = self->target;
 		self->target = self->pathtarget;
-		if (other->enemy && other->enemy->client)
+
+		if (other->enemy != NULL && other->enemy->client != NULL)
 			activator = other->enemy;
-		else if (other->oldenemy && other->oldenemy->client)
+		else if (other->oldenemy != NULL && other->oldenemy->client != NULL)
 			activator = other->oldenemy;
-		else if (other->activator && other->activator->client)
+		else if (other->activator != NULL && other->activator->client != NULL)
 			activator = other->activator;
 		else
 			activator = other;
-		G_UseTargets (self, activator);
-		self->target = savetarget;
+
+		G_UseTargets(self, activator);
+		self->target = save_target;
 	}
 }
 
 void SP_point_combat (edict_t *self)
 {
 	self->solid = SOLID_TRIGGER;
-	self->touch = point_combat_touch;
+	self->touch = PointCombatTouch;
 	VectorSet (self->mins, -8, -8, -16);
 	VectorSet (self->maxs, 8, 8, 16);
 	self->svflags = SVF_NOCLIENT;
 	gi.linkentity (self);
 };
 
+#pragma endregion
 
 /*QUAKED info_null (0 0.5 0) (-4 -4 -4) (4 4 4)
 	
