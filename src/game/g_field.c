@@ -109,33 +109,30 @@ void TrigPushStaticsInit(void) //TODO: rename to TriggerPushStaticsInit.
 	classStatics[CID_TRIG_PUSH].msgReceivers[G_MSG_UNSUSPEND] = TriggerPushActivate;
 }
 
-/*QUAKED trigger_push (.5 .5 .5) ? FORCE_ONCE
-Pushes the player
----------KEYS----------
-speed -  how fast the player is pushed (default 500)
-angle - the angle to push the player along the X,Y
-zangle - the up direction to push the player (0 is straight up, 180 is straight down)
-------------------------------------
--------FLAGS---------------
-FORCE_ONCE - pushes once and then goes away
-------------------------------------
-*/
-void SP_trigger_push(edict_t *self)
+// QUAKED trigger_push (.5 .5 .5) ? FORCE_ONCE
+// Pushes the player.
+
+// Spawnflags:
+// FORCE_ONCE - Pushes once and then goes away.
+
+// Variables:
+// speed	- How fast the player is pushed (default 500).
+// angle	- The angle to push the player along the X,Y axis.
+// zangle	- The up direction to push the player (0 is straight up, 180 is straight down).
+void SP_trigger_push(edict_t* self)
 {
 	InitTrigger(self);
+
 	self->solid = SOLID_TRIGGER;
 	self->msgHandler = DefaultMsgHandler;
 	self->classID = CID_TRIG_PUSH;
-
-	if (!self->speed)
-	{
-		self->speed = 500;
-	}
-
 	self->s.angles[2] = st.zangle;
 
-	// Can't really use the normal trigger setup cause it doesn't update velocity often enough
-	self->touch =  TriggerPushTouch;
+	if (self->speed == 0.0f)
+		self->speed = 500;
+
+	// Can't really use the normal trigger setup, because it doesn't update velocity often enough.
+	self->touch = TriggerPushTouch;
 	self->TriggerActivated = TriggerPushActivated;
 }
 
