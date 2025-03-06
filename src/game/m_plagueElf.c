@@ -39,7 +39,7 @@
 #include "m_plagueElf_local.h"
 #include "m_plagueElf_anim.h"
 #include "g_HitLocation.h"
-#include "g_misc.h"
+#include "g_debris.h" //mxd
 #include "angles.h"
 #include "c_ai.h"
 #include "mg_guide.h" //mxd

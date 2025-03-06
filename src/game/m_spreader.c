@@ -25,7 +25,7 @@
 #include "m_spreadermist.h"
 #include "matrix.h"
 #include "Angles.h"
-#include "g_misc.h"
+#include "g_debris.h" //mxd
 #include "g_HitLocation.h"
 #include "mg_guide.h" //mxd
 #include "m_stats.h"
@@ -89,8 +89,6 @@ static animmove_t *animations[NUM_ANIMS] =
 
 static int sounds[NUM_SOUNDS];
 static ClassResourceInfo_t resInfo;
-
-void SprayDebris(edict_t *self, vec3_t spot, byte NoOfChunks, float damage);
 
 /*==========================================================================
 

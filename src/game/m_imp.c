@@ -23,7 +23,7 @@ Copyright 1998 Raven Software
 #include "vector.h"
 #include "fx.h"
 #include "g_HitLocation.h"
-#include "g_misc.h"
+#include "g_debris.h" //mxd
 #include "m_stats.h"
 #include "p_anim_branch.h"
 #include "g_playstats.h"

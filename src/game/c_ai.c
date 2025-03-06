@@ -6,6 +6,7 @@
 
 #include "c_ai.h" //mxd
 #include "c_corvus1_anim.h"
+#include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "g_misc.h"
 #include "g_monster.h"

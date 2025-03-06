@@ -594,6 +594,9 @@
     <ClCompile Include="p_teleport.c">
       <Filter>src\Player</Filter>
     </ClCompile>
+    <ClCompile Include="g_debris.c">
+      <Filter>src\Game objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="decals.h">
@@ -1128,6 +1131,9 @@
       <Filter>src\Game objects</Filter>
     </ClInclude>
     <ClInclude Include="g_env.h">
+      <Filter>src\Game objects</Filter>
+    </ClInclude>
+    <ClInclude Include="g_debris.h">
       <Filter>src\Game objects</Filter>
     </ClInclude>
   </ItemGroup>

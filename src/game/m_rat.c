@@ -52,7 +52,7 @@
 #include "m_rat.h"
 #include "m_rat_local.h"
 #include "m_rat_anim.h"
-#include "g_misc.h"
+#include "g_debris.h" //mxd
 #include "m_stats.h"
 
 #include "g_monster.h"

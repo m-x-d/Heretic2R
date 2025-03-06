@@ -1,11 +1,11 @@
 #include "g_monster.h"
+#include "g_debris.h" //mxd
 #include "m_stats.h"
 #include "g_local.h"
 #include "FX.h"
 #include "g_DefaultMessageHandler.h"
 #include "vector.h"
 #include "g_playstats.h"
-
 #include "random.h"
 
 //JWEIER START INCLUDES

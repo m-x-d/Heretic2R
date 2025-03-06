@@ -61,6 +61,7 @@
     <ClCompile Include="g_ClassStatics.c" />
     <ClCompile Include="g_cmds.c" />
     <ClCompile Include="g_combat.c" />
+    <ClCompile Include="g_debris.c" />
     <ClCompile Include="g_DefaultMessageHandler.c" />
     <ClCompile Include="g_env.c" />
     <ClCompile Include="g_field.c" />
@@ -223,6 +224,7 @@
     <ClInclude Include="g_ClassStatics.h" />
     <ClInclude Include="g_cmds.h" />
     <ClInclude Include="g_combat.h" />
+    <ClInclude Include="g_debris.h" />
     <ClInclude Include="g_DefaultMessageHandler.h" />
     <ClInclude Include="g_Edict.h" />
     <ClInclude Include="g_env.h" />

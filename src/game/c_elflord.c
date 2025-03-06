@@ -7,7 +7,7 @@
 #include "c_elflord.h"
 #include "c_elflord_anim.h"
 #include "c_ai.h"
-#include "g_misc.h"
+#include "g_debris.h" //mxd
 #include "FX.h"
 #include "Matrix.h"
 #include "Vector.h"

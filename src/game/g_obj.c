@@ -8,6 +8,7 @@
 #include "fx.h"
 #include "g_local.h"
 #include "g_misc.h"
+#include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "vector.h"
 #include "m_plagueElf_anim.h"

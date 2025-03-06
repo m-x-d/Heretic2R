@@ -11,7 +11,7 @@
 #include "g_items.h" //mxd
 #include "g_itemstats.h"
 #include "g_main.h" //mxd
-#include "g_misc.h"
+#include "g_debris.h" //mxd
 #include "g_Physics.h"
 #include "g_playstats.h"
 #include "g_Shrine.h" //mxd

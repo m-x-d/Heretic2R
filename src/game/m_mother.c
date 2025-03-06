@@ -25,7 +25,7 @@
 #include "m_mother.h"
 #include "m_mother_local.h"
 #include "m_mother_anim.h"
-#include "g_misc.h"
+#include "g_debris.h" //mxd
 #include "angles.h"
 #include "c_ai.h"
 #include "m_stats.h"

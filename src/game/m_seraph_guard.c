@@ -17,7 +17,7 @@
 #include "g_monster.h"
 #include "Random.h"
 #include "vector.h"
-#include "g_misc.h"
+#include "g_debris.h" //mxd
 #include "fx.h"
 
 #include "g_HitLocation.h"

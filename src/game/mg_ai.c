@@ -34,7 +34,6 @@ void SV_FixCheckBottom (edict_t *ent);
 qboolean clear_visible (edict_t *self, edict_t *other);
 float ai_face_goal (edict_t *self);
 void ai_flee (edict_t *self, float dist);
-void BecomeDebris(edict_t *self);
 qboolean MG_MoveToGoal (edict_t *self, float dist);
 
 // AI Targeting Globals

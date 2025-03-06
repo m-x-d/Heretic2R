@@ -18,7 +18,7 @@
 #include "g_monster.h"
 #include "fx.h"
 #include "random.h"
-#include "buoy.h"
+#include "g_debris.h" //mxd
 #include "vector.h"
 #include "g_Physics.h"
 #include "spl_morph.h"
@@ -30,9 +30,6 @@
 #include "m_chicken_local.h"
 #include "m_chicken_anim.h"
 #include "m_stats.h"
-
-extern void BecomeDebris(edict_t *self);
-extern void ED_CallSpawn (edict_t *ent);
 
 /*----------------------------------------------------------------------
   Chicken Base Info

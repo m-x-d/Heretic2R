@@ -19,7 +19,7 @@
 #include "m_plaguesSithra.h"
 #include "m_plaguesSithra_local.h"
 #include "m_plaguesSithra_anim.h"
-#include "g_misc.h"
+#include "g_debris.h" //mxd
 #include "g_HitLocation.h"
 #include "mg_guide.h" //mxd
 #include "m_stats.h"

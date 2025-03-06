@@ -9,17 +9,16 @@
 
 #include "g_local.h"
 #include "Utilities.h"
+#include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
 #include "fx.h"
 #include "random.h"
-#include "buoy.h"
 #include "vector.h"
 
 #include "m_fish.h"
 #include "m_fish_local.h"
 #include "m_fish_anim.h"
-#include "g_misc.h"
 #include "m_stats.h"
 
 extern void M_MoveFrame (edict_t *self);

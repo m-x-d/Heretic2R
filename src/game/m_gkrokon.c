@@ -16,6 +16,7 @@
 #include "buoy.h"
 #include "vector.h"
 #include "decals.h"
+#include "g_debris.h" //mxd
 #include "g_playstats.h"
 #include "m_gkrokon.h"
 #include "m_gkrokon_local.h"
@@ -55,7 +56,6 @@ static animmove_t *Animations[NUM_ANIMS] =
 	&GkrokonMoveDelay
 };
 
-void ThrowBodyPart(edict_t *self, vec3_t *spot, int BodyPart, float damage, int frame);
 /*
 
 	Spoo functions

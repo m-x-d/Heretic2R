@@ -52,7 +52,7 @@ GORGON
 #include "buoy.h"
 #include "vector.h"
 
-#include "g_misc.h"
+#include "g_debris.h" //mxd
 #include "m_gorgon.h"
 #include "m_gorgon_local.h"
 #include "m_gorgon_anim.h"
@@ -68,7 +68,6 @@ GORGON
 // Definitions
 // *************************************
 
-void BecomeDebris(edict_t *self);
 qboolean ai_have_enemy (edict_t *self);
 qboolean clear_visible (edict_t *self, edict_t *other);
 qboolean EqualAngle(float angle1, float angle2, float leniency);

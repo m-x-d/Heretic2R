@@ -7,8 +7,8 @@
 #include "g_combat.h" //mxd
 #include "g_breakable.h" //mxd
 #include "g_cmds.h" //mxd
+#include "g_debris.h" //mxd
 #include "g_HitLocation.h"
-#include "g_misc.h"
 #include "g_items.h" //mxd
 #include "g_itemstats.h"
 #include "g_monster.h" //mxd
