@@ -406,29 +406,15 @@ static void TriggerGotoBuoyTouch(edict_t* self, edict_t* other, cplane_t* plane,
 	}
 }
 
-void trigger_goto_buoy_use_go (edict_t *self)
+static void TriggerGotoBuoyUseThink(edict_t* self) //mxd. Named 'trigger_goto_buoy_use_go' in original logic.
 {
-	edict_t		*monster = NULL;
-
+	edict_t* monster = NULL;
 	monster = G_Find(monster, FOFS(targetname), self->target);
 
-	if(!monster)
-	{
-		if(BUOY_DEBUG)
-			gi.dprintf("ERROR: trigger_goto_buoy can't find it's target monster %s\n", self->pathtarget);
-		return;
-	}
-
-	if(!(monster->svflags&SVF_MONSTER))
-		return;
-
-	if(monster->health<=0)
-		return;
-
-	if(!(monster->monsterinfo.aiflags&AI_USING_BUOYS))
-		return;
-
-	TriggerGotoBuoyExecute(self, monster, self->activator);
+	if (monster != NULL && monster->health > 0 && (monster->svflags & SVF_MONSTER) && (monster->monsterinfo.aiflags & AI_USING_BUOYS))
+		TriggerGotoBuoyExecute(self, monster, self->activator);
+	else
+		gi.dprintf("ERROR: trigger_goto_buoy can't find it's target monster %s\n", self->pathtarget);
 }
 
 void trigger_goto_buoy_use (edict_t *self, edict_t *other, edict_t *activator)
@@ -440,12 +426,12 @@ void trigger_goto_buoy_use (edict_t *self, edict_t *other, edict_t *activator)
 
 	if(self->delay)
 	{
-		self->think = trigger_goto_buoy_use_go;
+		self->think = TriggerGotoBuoyUseThink;
 		self->nextthink = level.time + self->delay;
 		return;
 	}
 
-	trigger_goto_buoy_use_go(self);
+	TriggerGotoBuoyUseThink(self);
 
 	self->air_finished = level.time + self->wait;
 }
