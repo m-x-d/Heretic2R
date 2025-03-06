@@ -1017,30 +1017,27 @@ static void MiscMagicPortalUse(edict_t* self, edict_t* other, edict_t* activator
 	self->impact_debounce_time = level.time + 4.0f;
 }
 
-#define START_OFF	1
+#define SF_START_OFF	1 //mxd
 
-/*QUAKED misc_magic_portal (1 .5 0) (-16 -16 -32) (16 16 32)  START_OFF
-A magical glowing portal. Triggerable.
--------  FIELDS  ------------------
-START_OFF - portal will start off
------------------------------------
-angles - manipulates the facing of the effect as normal.
-style - 0-blue, 1-red, 2-green
-count - Close after 1-255 seconds.  0 means stay until triggered.
+// QUAKED misc_magic_portal (1 .5 0) (-16 -16 -32) (16 16 32)  START_OFF
+// A magical glowing portal. Triggerable. In order to be functional as a world teleport, it must target a target_changelevel.
 
-In order to be functional as a world teleport,
-  it must target a target_changelevel
+// Spawnflags:
+// START_OFF - Portal will start off.
 
-*/
-void SP_misc_magic_portal (edict_t *self)
+// Variables:
+// angles	- Manipulates the facing of the effect as normal.
+// style	- 0-blue, 1-red, 2-green.
+// count	- Close after 1-255 seconds. 0 means stay until triggered.
+void SP_misc_magic_portal(edict_t* self)
 {
 	// Set up the basics.
-	VectorSet(self->mins, -16, -16, -32);
-	VectorSet(self->maxs, 16, 16, 32);
-	self->s.scale = 1;
+	VectorSet(self->mins, -16.0f, -16.0f, -32.0f);
+	VectorSet(self->maxs,  16.0f,  16.0f,  32.0f);
+	self->s.scale = 1.0f;
 	self->mass = 250;
-	self->friction = 0;
-	self->gravity = 0;
+	self->friction = 0.0f;
+	self->gravity = 0.0f;
 	self->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 	self->svflags |= SVF_ALWAYS_SEND;
 	self->movetype = PHYSICSTYPE_NONE;
@@ -1049,10 +1046,8 @@ void SP_misc_magic_portal (edict_t *self)
 
 	self->use = MiscMagicPortalUse;
 
-	if (!self->spawnflags & START_OFF)
-	{	// Set up the touch function, since this baby is live.
-		MiscMagicPortalUse(self, NULL, NULL);
-	}
+	if (!(self->spawnflags & SF_START_OFF)) //BUGFIX: '!self->spawnflags & SF_START_OFF' in original logic.
+		MiscMagicPortalUse(self, NULL, NULL); // Set up the touch function, since this baby is live.
 
 	gi.linkentity(self);
 }
