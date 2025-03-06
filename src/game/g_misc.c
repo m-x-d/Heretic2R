@@ -19,93 +19,6 @@
 #include "q_shared.h"
 #include "g_local.h"
 
-int AndoriaSoundID[AS_MAX] =
-{
-	AS_NOTHING,
-	AS_SMALLFOUNTAIN,
-	AS_LARGEFOUNTAIN,
-	AS_SEWERWATER,
-	AS_OUTSIDEWATERWAY,
-	AS_WINDCHIME,
-};
-
-int CloudSoundID[AS_MAX] =
-{
-	AS_NOTHING,
-	AS_CAULDRONBUBBLE,
-	AS_WINDEERIE,
-	AS_WINDNOISY,
-	AS_WINDSOFTHI,
-	AS_WINDSOFTLO,
-	AS_WINDSTRONG1,
-	AS_WINDSTRONG2,
-	AS_WINDWHISTLE,
-};
-
-int HiveSoundID[AS_MAX] =
-{
-	AS_NOTHING,
-	AS_GONG,
-	AS_WINDEERIE,
-	AS_WINDNOISY,
-	AS_WINDSOFTHI,
-	AS_WINDSOFTLO,
-	AS_WINDSTRONG1,
-	AS_WINDSTRONG2,
-	AS_WINDWHISTLE,
-};
-
-int MineSoundID[AS_MAX] =
-{
-	AS_NOTHING,
-	AS_MUDPOOL,
-	AS_ROCKS,
-	AS_WINDEERIE,
-	AS_WINDSOFTLO,
-	AS_CONVEYOR,
-	AS_BUCKETCONVEYOR,
-	AS_CAVECREAK,
-};
-
-int SilverSpringSoundID[AS_MAX] =
-{
-	AS_NOTHING,
-	AS_FIRE,
-	AS_WATERLAPPING,	
-	AS_SEAGULLS,
-	AS_OCEAN,
-	AS_BIRDS,
-	AS_CRICKETS,
-	AS_FROGS,
-	AS_CRYING,
-	AS_MOSQUITOES,
-	AS_BUBBLES,
-	AS_BELL,
-	AS_FOOTSTEPS,
-	AS_MOANS,
-	AS_SEWERDRIPS,
-	AS_WATERDRIPS,
-	AS_HEAVYDRIPS,
-	AS_CAULDRONBUBBLE,
-	AS_SPIT,
-};
-
-int SwampCanyonSoundID[AS_MAX] =
-{
-	AS_NOTHING,
-	AS_BIRD1,
-	AS_BIRD2,
-	AS_HUGEWATERFALL,
-	AS_MUDPOOL,
-	AS_WINDEERIE,
-	AS_WINDNOISY,
-	AS_WINDSOFTHI,
-	AS_WINDSOFTLO,
-	AS_WINDSTRONG1,
-	AS_WINDSTRONG2,
-	AS_WINDWHISTLE,
-};
-
 #pragma region ========================== func_areaportal ==========================
 
 static void FuncAreaportalUse(edict_t* ent, edict_t* other, edict_t* activator) //mxd. Named 'Use_Areaportal' in original logic.
@@ -1217,226 +1130,259 @@ static void SoundAmbientInit(edict_t* self) //mxd. Named 'sound_ambient_init' in
 	gi.linkentity(self);
 }
 
-/*QUAKED sound_ambient_cloudfortress (1 0 0) (-4 -4 0) (4 4 4) NON_LOCAL START_OFF
-Generates an ambient sound for cloud fortress levels
--------  FLAGS  ------------------
-NON_LOCAL - sound occurs everywhere in the level - attenuation is not operative with this type of sound
-wait    amount of seconds to wait + or - 50% before spawning sound again (default is 10 seconds)
-START_OFF - starts off, can be triggered on
--------  KEYS  ------------------
-style  
-1 - Cauldron bubbling (looping sound)
-2 - wind, low, eerie (looping)
-3 - wind, low, noisy (looping)
-4 - wind, high, soft (looping)
-5 - wind, low, soft (looping)
-6 - wind, low, strong (looping)
-7 - wind, high, strong (looping)
-8 - wind, whistling, strong (looping)
+// QUAKED sound_ambient_cloudfortress (1 0 0) (-4 -4 0) (4 4 4) NON_LOCAL START_OFF
+// Generates an ambient sound for cloud fortress levels.
 
-attenuation  (how quickly sound drops off from origin)
-   0 - heard over entire level (default)
-   1 - 
-   2 - 
-   3 - diminish very rapidly with distance 
+// Spawnflags:
+// NON_LOCAL - sound occurs everywhere in the level - attenuation is not operative with this type of sound
+// START_OFF - starts off, can be triggered on
 
-volume   range of .1 to 1   (default .5)
-  0 - silent
-  1 - full volume
------------------------------------
-*/
-void SP_sound_ambient_cloudfortress (edict_t *self)
+// Variables:
+// style:
+//		1 - Cauldron bubbling (looping sound).
+//		2 - Wind, low, eerie (looping).
+//		3 - Wind, low, noisy (looping).
+//		4 - Wind, high, soft (looping).
+//		5 - Wind, low, soft (looping).
+//		6 - Wind, low, strong (looping).
+//		7 - Wind, high, strong (looping);
+//		8 - Wind, whistling, strong (looping).
+// attenuation	- How quickly sound drops off from origin. 0 - heard over entire level (default), 3 - diminish very rapidly with distance.
+// volume		- Range of 0.1 to 1.0 (default 0.5); 0 - silent, 1 - full volume.
+// wait			- Amount of seconds to wait + or - 50% before spawning sound again (default is 10 seconds).
+void SP_sound_ambient_cloudfortress(edict_t* self)
 {
-	SoundAmbientInit(self);
+	static const int cloud_sound_ids[AS_MAX] = //mxd. Made local static.
+	{
+		AS_NOTHING,
+		AS_CAULDRONBUBBLE,
+		AS_WINDEERIE,
+		AS_WINDNOISY,
+		AS_WINDSOFTHI,
+		AS_WINDSOFTLO,
+		AS_WINDSTRONG1,
+		AS_WINDSTRONG2,
+		AS_WINDWHISTLE
+	};
 
-	self->style = CloudSoundID[self->style];
+	SoundAmbientInit(self);
+	self->style = cloud_sound_ids[self->style];
 }
 
+// QUAKED sound_ambient_mine (1 0 0) (-4 -4 0) (4 4 4) NON_LOCAL START_OFF
+// Generates an ambient sound for mine levels.
 
-/*QUAKED sound_ambient_mine (1 0 0) (-4 -4 0) (4 4 4) NON_LOCAL START_OFF
-Generates an ambient sound for mine levels
--------  FLAGS  ------------------
-NON_LOCAL - sound occurs everywhere in the level - attenuation is not operative with this type of sound
-wait    amount of seconds to wait + or - 50% before spawning sound again (default is 10 seconds)
-START_OFF - starts off, can be triggered on
--------  KEYS  ------------------
-style  
-1 - Mud pool bubbling (looping)
-2 - Rocks falling (3 sounds)
-3 - wind, low, eerie (looping)
-4 - wind, low, soft (looping)
-5 - conveyor belt (looping)
-6 - bucket conveyor belt (looping)
-7 - three different creaks of heavy timbers
+// Spawnflags:
+// NON_LOCAL - sound occurs everywhere in the level - attenuation is not operative with this type of sound
+// START_OFF - starts off, can be triggered on
 
-attenuation  (how quickly sound drops off from origin)
-   0 - heard over entire level (default)
-   1 - 
-   2 - 
-   3 - diminish very rapidly with distance 
-
-volume   range of .1 to 1   (default .5)
-  0 - silent
-  1 - full volume
------------------------------------
-*/
-void SP_sound_ambient_mine (edict_t *self)
+// Variables:
+// style:
+//		1 - Mud pool bubbling (looping).
+//		2 - Rocks falling (3 sounds).
+//		3 - Wind, low, eerie (looping).
+//		4 - Wind, low, soft (looping).
+//		5 - Conveyor belt (looping).
+//		6 - Bucket conveyor belt (looping).
+//		7 - Three different creaks of heavy timbers.
+// attenuation	- How quickly sound drops off from origin. 0 - heard over entire level (default), 3 - diminish very rapidly with distance.
+// volume		- Range of 0.1 to 1.0 (default 0.5); 0 - silent, 1 - full volume.
+// wait			- Amount of seconds to wait + or - 50% before spawning sound again (default is 10 seconds).
+void SP_sound_ambient_mine(edict_t* self)
 {
-	SoundAmbientInit(self);
+	static const int mine_sound_ids[AS_MAX] = //mxd. Made local static.
+	{
+		AS_NOTHING,
+		AS_MUDPOOL,
+		AS_ROCKS,
+		AS_WINDEERIE,
+		AS_WINDSOFTLO,
+		AS_CONVEYOR,
+		AS_BUCKETCONVEYOR,
+		AS_CAVECREAK
+	};
 
-	self->style = MineSoundID[self->style];
+	SoundAmbientInit(self);
+	self->style = mine_sound_ids[self->style];
 }
 
+// QUAKED sound_ambient_hive (1 0 0) (-4 -4 0) (4 4 4) NON_LOCAL START_OFF
+// Generates an ambient sound for hive levels.
 
-/*QUAKED sound_ambient_hive (1 0 0) (-4 -4 0) (4 4 4) NON_LOCAL  START_OFF
-Generates an ambient sound for hive levels
--------  FLAGS  ------------------
-NON_LOCAL - sound occurs everywhere in the level - attenuation is not operative with this type of sound
-wait    amount of seconds to wait + or - 50% before spawning sound again (default is 10 seconds)
-START_OFF - starts off, can be triggered on
--------  KEYS  ------------------
-style   
-1 - gong
-2 - wind, low, eerie (looping)
-3 - wind, low, noisy (looping)
-4 - wind, high, soft (looping)
-5 - wind, low, soft (looping)
-6 - wind, low, strong (looping)
-7 - wind, high, strong (looping)
-8 - wind, whistling, strong (looping)
+// Spawnflags:
+// NON_LOCAL - sound occurs everywhere in the level - attenuation is not operative with this type of sound
+// START_OFF - starts off, can be triggered on
 
-attenuation  (how quickly sound drops off from origin)
-   0 - heard over entire level (default)
-   1 - 
-   2 - 
-   3 - diminish very rapidly with distance 
-
-volume   range of .1 to 1   (default .5)
-  0 - silent
-  1 - full volume
------------------------------------
-*/
-void SP_sound_ambient_hive (edict_t *self)
+// Variables:
+// style:
+//		1 - Gong.
+//		2 - Wind, low, eerie (looping).
+//		3 - Wind, low, noisy (looping).
+//		4 - Wind, high, soft (looping).
+//		5 - Wind, low, soft (looping).
+//		6 - Wind, low, strong (looping).
+//		7 - Wind, high, strong (looping).
+//		8 - Wind, whistling, strong (looping).
+// attenuation	- How quickly sound drops off from origin. 0 - heard over entire level (default), 3 - diminish very rapidly with distance.
+// volume		- Range of 0.1 to 1.0 (default 0.5); 0 - silent, 1 - full volume.
+// wait			- Amount of seconds to wait + or - 50% before spawning sound again (default is 10 seconds).
+void SP_sound_ambient_hive(edict_t* self)
 {
-	SoundAmbientInit(self);
+	static const int hive_sound_ids[AS_MAX] = //mxd. Made local static.
+	{
+		AS_NOTHING,
+		AS_GONG,
+		AS_WINDEERIE,
+		AS_WINDNOISY,
+		AS_WINDSOFTHI,
+		AS_WINDSOFTLO,
+		AS_WINDSTRONG1,
+		AS_WINDSTRONG2,
+		AS_WINDWHISTLE
+	};
 
-	self->style = HiveSoundID[self->style];
+	SoundAmbientInit(self);
+	self->style = hive_sound_ids[self->style];
 }
 
+// QUAKED sound_ambient_andoria (1 0 0) (-4 -4 0) (4 4 4) NON_LOCAL START_OFF
+// Generates an ambient sound for andoria levels.
 
-/*QUAKED sound_ambient_andoria (1 0 0) (-4 -4 0) (4 4 4) NON_LOCAL  START_OFF
-Generates an ambient sound for andoria levels
--------  FLAGS  ------------------
-NON_LOCAL - sound occurs everywhere in the level - attenuation is not operative with this type of sound
-wait    amount of seconds to wait + or - 50% before spawning sound again (default is 10 seconds)
-START_OFF - starts off, can be triggered on
--------  KEYS  ------------------
-style  
-1 - small fountain (constant loop)
-2 - large fountain (constant loop)
-3 - water running out of sewer (constant loop)
-4 - rushing waterway outside (constant loop)
-5 - wind chime 
+// Spawnflags:
+// NON_LOCAL - sound occurs everywhere in the level - attenuation is not operative with this type of sound
+// START_OFF - starts off, can be triggered on
 
-attenuation  (how quickly sound drops off from origin)
-   0 - heard over entire level (default)
-   1 - 
-   2 - 
-   3 - diminish very rapidly with distance 
-
-volume   range of .1 to 1   (default .5)
-  0 - silent
-  1 - full volume
------------------------------------
-*/
-void SP_sound_ambient_andoria (edict_t *self)
+// Variables:
+// style:
+//		1 - Small fountain (constant loop).
+//		2 - Large fountain (constant loop).
+//		3 - Water running out of sewer (constant loop).
+//		4 - Rushing waterway outside (constant loop).
+//		5 - Wind chime.
+// attenuation	- How quickly sound drops off from origin. 0 - heard over entire level (default), 3 - diminish very rapidly with distance.
+// volume		- Range of 0.1 to 1.0 (default 0.5); 0 - silent, 1 - full volume.
+// wait			- Amount of seconds to wait + or - 50% before spawning sound again (default is 10 seconds).
+void SP_sound_ambient_andoria(edict_t* self)
 {
-	SoundAmbientInit(self);
+	static const int andoria_sound_ids[AS_MAX] = //mxd. Made local static
+	{
+		AS_NOTHING,
+		AS_SMALLFOUNTAIN,
+		AS_LARGEFOUNTAIN,
+		AS_SEWERWATER,
+		AS_OUTSIDEWATERWAY,
+		AS_WINDCHIME
+	};
 
-	self->style = AndoriaSoundID[self->style];
+	SoundAmbientInit(self);
+	self->style = andoria_sound_ids[self->style];
 }
 
-/*QUAKED sound_ambient_swampcanyon (1 0 0) (-4 -4 0) (4 4 4) NON_LOCAL  START_OFF
-Generates an ambient sound for swamp or canyon levels
--------  FLAGS  ------------------
-NON_LOCAL - sound occurs everywhere in the level - attenuation is not operative with this type of sound
-wait    amount of seconds to wait + or - 50% before spawning sound again (default is 10 seconds)
-START_OFF - starts off, can be triggered on
--------  KEYS  ------------------
-style   
-1 - bird, quick, high pitch
-2 - bird, low, medium pitch
-3 - huge waterfall
-4 - mud pool bubbling (looping)
-5 - wind, low, eerie (looping)
-6 - wind, low, noisy (looping)
-7 - wind, high, soft (looping)
-8 - wind, low, soft (looping)
-9 - wind, low, strong (looping)
-10 - wind, high, strong (looping)
-11 - wind, whistling, strong (looping)
+// QUAKED sound_ambient_swampcanyon (1 0 0) (-4 -4 0) (4 4 4) NON_LOCAL START_OFF
+// Generates an ambient sound for swamp or canyon levels.
 
+// Spawnflags:
+// NON_LOCAL - sound occurs everywhere in the level - attenuation is not operative with this type of sound
+// START_OFF - starts off, can be triggered on
 
-attenuation  (how quickly sound drops off from origin)
-   0 - heard over entire level (default)
-   1 - 
-   2 - 
-   3 - diminish very rapidly with distance 
-
-volume   range of .1 to 1   (default .5)
-  0 - silent
-  1 - full volume
------------------------------------
-*/
-void SP_sound_ambient_swampcanyon (edict_t *self)
+// Variables:
+// style:
+//		1 - Bird, quick, high pitch.
+//		2 - Bird, low, medium pitch.
+//		3 - Huge waterfall.
+//		4 - Mud pool bubbling (looping).
+//		5 - Wind, low, eerie (looping).
+//		6 - Wind, low, noisy (looping).
+//		7 - Wind, high, soft (looping).
+//		8 - Wind, low, soft (looping).
+//		9 - Wind, low, strong (looping).
+//		10 - Wind, high, strong (looping).
+//		11 - Wind, whistling, strong (looping).
+// attenuation	- How quickly sound drops off from origin. 0 - heard over entire level (default), 3 - diminish very rapidly with distance.
+// volume		- Range of 0.1 to 1.0 (default 0.5); 0 - silent, 1 - full volume.
+// wait			- Amount of seconds to wait + or - 50% before spawning sound again (default is 10 seconds).
+void SP_sound_ambient_swampcanyon(edict_t* self)
 {
-	self->style = SwampCanyonSoundID[self->style];
+	static const int swamp_canyon_sound_ids[AS_MAX] = //mxd. Made local static.
+	{
+		AS_NOTHING,
+		AS_BIRD1,
+		AS_BIRD2,
+		AS_HUGEWATERFALL,
+		AS_MUDPOOL,
+		AS_WINDEERIE,
+		AS_WINDNOISY,
+		AS_WINDSOFTHI,
+		AS_WINDSOFTLO,
+		AS_WINDSTRONG1,
+		AS_WINDSTRONG2,
+		AS_WINDWHISTLE,
+	};
+
+	self->style = swamp_canyon_sound_ids[self->style];
 	SoundAmbientInit(self);
 }
 
-/*QUAKED sound_ambient_silverspring (1 0 0) (-4 -4 -4) (4 4 4) NON_LOCAL  START_OFF
-Generates an ambient sound for silverspring levels
--------  FLAGS  ------------------
-NON_LOCAL - sound occurs everywhere in the level - attenuation is not operative with this type of sound
-wait    amount of seconds to wait + or - 50% before spawning sound again (default is 10 seconds)
-START_OFF - starts off, can be triggered on
--------  KEYS  ------------------
-style :  
-1 - fire (looping)
-2 - water lapping (looping)
-3 - seagulls (2 random calls)
-4 - ocean
-5 - birds (10 random bird calls)
-6 - crickets (3 random chirps)
-7 - frogs (2 random ribbets)
-8 - distant women/children crying (4 total)
-9 - mosquitoes (2 random sounds)
-10 - bubbles 
-11 - bell tolling
-12 - footsteps (3 random sounds)
-13 - moans/screams/coughing (5 random sounds)
-14 - Sewer drips (3 random sounds)
-15 - Water drips (3 random sounds)
-16 - Solid drips - heavy liquid (3 random sounds)
-17 - Cauldron bubbling (looping sound)
-18 - Creaking for the spit that's holding the elf over a fire
+// QUAKED sound_ambient_silverspring (1 0 0) (-4 -4 0) (4 4 4) NON_LOCAL START_OFF
+// Generates an ambient sound for silverspring levels.
 
-attenuation  (how quickly sound drops off from origin)
-0 - heard over entire level (default)
-1 - 
-2 - 
-3 - diminish very rapidly with distance 
+// Spawnflags:
+// NON_LOCAL - sound occurs everywhere in the level - attenuation is not operative with this type of sound
+// START_OFF - starts off, can be triggered on
 
-volume   range of .1 to 1   (default .5)
-  0 - silent
-  1 - full volume
------------------------------------
-*/
-void SP_sound_ambient_silverspring (edict_t *self)
+// Variables:
+// style:
+//		1 - Fire (looping).
+//		2 - Water lapping (looping).
+//		3 - Seagulls (2 random calls).
+//		4 - Ocean.
+//		5 - Birds (10 random bird calls).
+//		6 - Crickets (3 random chirps).
+//		7 - Frogs (2 random ribbits).
+//		8 - Distant women/children crying (4 total).
+//		9 - Mosquitoes (2 random sounds).
+//		10 - Bubbles.
+//		11 - Bell tolling.
+//		12 - Footsteps (3 random sounds).
+//		13 - Moans/screams/coughing (5 random sounds).
+//		14 - Sewer drips (3 random sounds).
+//		15 - Water drips (3 random sounds).
+//		16 - Solid drips - heavy liquid (3 random sounds).
+//		17 - Cauldron bubbling (looping sound).
+//		18 - Creaking for the spit that's holding the elf over a fire.
+// attenuation	- How quickly sound drops off from origin. 0 - heard over entire level (default), 3 - diminish very rapidly with distance.
+// volume		- Range of 0.1 to 1.0 (default 0.5); 0 - silent, 1 - full volume.
+// wait			- Amount of seconds to wait + or - 50% before spawning sound again (default is 10 seconds).
+void SP_sound_ambient_silverspring(edict_t* self)
 {
-	self->style = SilverSpringSoundID[self->style];
+	static const int silver_spring_sound_ids[AS_MAX] = //mxd. Made local static.
+	{
+		AS_NOTHING,
+		AS_FIRE,
+		AS_WATERLAPPING,
+		AS_SEAGULLS,
+		AS_OCEAN,
+		AS_BIRDS,
+		AS_CRICKETS,
+		AS_FROGS,
+		AS_CRYING,
+		AS_MOSQUITOES,
+		AS_BUBBLES,
+		AS_BELL,
+		AS_FOOTSTEPS,
+		AS_MOANS,
+		AS_SEWERDRIPS,
+		AS_WATERDRIPS,
+		AS_HEAVYDRIPS,
+		AS_CAULDRONBUBBLE,
+		AS_SPIT
+	};
+
+	self->style = silver_spring_sound_ids[self->style];
 	SoundAmbientInit(self);
 }
+
+#pragma endregion
 
 /*QUAKED misc_remote_camera (0 0.5 0.8) (-4 -4 -4) (4 4 4) ACTIVATING SCRIPTED NO_DELETE
 
