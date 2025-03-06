@@ -106,28 +106,6 @@ int SwampCanyonSoundID[AS_MAX] =
 	AS_WINDWHISTLE,
 };
 
-
-typedef struct DebrisSound
-{
-	char	*Name;
-} DebrisSound_t;
-
-DebrisSound_t DebrisSound [NUM_MAT]=
-{
-	"misc/breakstone.wav",	// MAT_STONE
-	"misc/breakstone.wav",	// MAT_GREYSTONE
-	"misc/tearcloth.wav",	// MAT_CLOTH
-	"misc/metalbreak.wav",	// MAT_METAL
-	"misc/fleshbreak.wav",	// MAT_FLESH
-	"misc/potbreak.wav",	// MAT_POTTERY
-	"misc/glassbreak2.wav",	// MAT_GLASS
-	"misc/breakstone.wav",	// MAT_LEAF	FIXME
-	"misc/breakwood.wav",	// MAT_WOOD
-	"misc/breakstone.wav",	// MAT_BROWNSTONE
-	"misc/bushbreak.wav",	// MAT_NONE
-	NULL,					// MAT_INSECT
-};
-
 #pragma region ========================== func_areaportal ==========================
 
 static void FuncAreaportalUse(edict_t* ent, edict_t* other, edict_t* activator) //mxd. Named 'Use_Areaportal' in original logic.
@@ -147,84 +125,77 @@ void SP_func_areaportal(edict_t* ent)
 
 #pragma endregion
 
-void SpawnDebris(edict_t *self, float size, vec3_t origin)
+#pragma region ========================== Spawn debris logic ==========================
+
+static void SpawnDebris(edict_t* self, float size, vec3_t origin)
 {
-	byte		sizeb, magb;
-	vec3_t		halfsize;
-	float		mag;
-	int			flags = 0;
-	int			violence=VIOLENCE_DEFAULT;
+	static const char* debris_sounds[NUM_MAT] = //mxd. Made local static.
+	{
+		"misc/breakstone.wav",	// MAT_STONE
+		"misc/breakstone.wav",	// MAT_GREYSTONE
+		"misc/tearcloth.wav",	// MAT_CLOTH
+		"misc/metalbreak.wav",	// MAT_METAL
+		"misc/fleshbreak.wav",	// MAT_FLESH
+		"misc/potbreak.wav",	// MAT_POTTERY
+		"misc/glassbreak2.wav",	// MAT_GLASS
+		"misc/breakstone.wav",	// MAT_LEAF	FIXME
+		"misc/breakwood.wav",	// MAT_WOOD
+		"misc/breakstone.wav",	// MAT_BROWNSTONE
+		"misc/bushbreak.wav",	// MAT_NONE
+		NULL,					// MAT_INSECT
+	};
 
-	size /=10;
-	sizeb = Clamp(size, 1.0, 255.0);
-	VectorScale(self->size, 0.5, halfsize);
-	mag = VectorLength(halfsize);
-	magb = Clamp(mag, 1.0, 255.0);
+	size /= 10.0f;
+	byte b_size = (byte)(Clamp(size, 1.0f, 255.0f));
 
-	if(self->fire_damage_time > level.time || self->svflags&SVF_ONFIRE)
-		flags |= CEF_FLAG6;
+	vec3_t half_size;
+	VectorScale(self->size, 0.5f, half_size);
+	const byte b_mag = (byte)(Clamp(VectorLength(half_size), 1.0f, 255.0f));
+
+	int fx_flags = 0;
+	if (self->fire_damage_time > level.time || (self->svflags & SVF_ONFIRE))
+		fx_flags |= CEF_FLAG6;
 
 	if (self->materialtype == MAT_FLESH || self->materialtype == MAT_INSECT)
 	{
-		if (blood_level)
-			violence = blood_level->value;
+		const int violence = ((blood_level != NULL) ? (int)blood_level->value : VIOLENCE_DEFAULT); //TODO: why blood_level NULL check? Inited in InitGame(), accessed without NULL check in G_RunFrame()...
 
-		if(violence < VIOLENCE_NORMAL)
+		if (violence < VIOLENCE_NORMAL)
 		{
-			size /= 10;
-			sizeb = Clamp(size, 1.0, 255.0);
-			gi.CreateEffect(NULL,
-							FX_DEBRIS,
-							flags, origin,
-							"bbdb",
-							sizeb,
-							MAT_STONE,
-							halfsize, magb);
+			size /= 10.0f; //TODO: check this. Do we really need to divide by 10 AGAIN?
+			b_size = (byte)(Clamp(size, 1.0f, 255.0f));
+			gi.CreateEffect(NULL, FX_DEBRIS, fx_flags, origin, "bbdb", b_size, MAT_STONE, half_size, b_mag);
 		}
 		else
 		{
-			if(violence > VIOLENCE_NORMAL)
+			if (violence > VIOLENCE_NORMAL)
 			{
-				sizeb *= (violence - VIOLENCE_NORMAL);
-				if(sizeb > 255)
-					sizeb = 255;
+				b_size *= (violence - VIOLENCE_NORMAL); //TODO: doesn't make much sense. Max violence configurable via menus is 3. Should be (violence - VIOLENCE_NORMAL + 1)?
+				b_size = min(255, b_size);
 			}
 
-			if(self->materialtype == MAT_INSECT)
-				flags |= CEF_FLAG8;
+			if (self->materialtype == MAT_INSECT)
+				fx_flags |= CEF_FLAG8;
 
-			if(!stricmp(self->classname, "monster_tcheckrik_male"))
-				flags |= CEF_FLAG7;//use male insect skin on chunks
+			if (Q_stricmp(self->classname, "monster_tcheckrik_male") == 0) //mxd. stricmp -> Q_stricmp
+				fx_flags |= CEF_FLAG7;//use male insect skin on chunks
 
-			gi.CreateEffect(NULL,
-							FX_FLESH_DEBRIS,
-							flags, origin,
-							"bdb",
-							sizeb,
-							halfsize, magb);
+			gi.CreateEffect(NULL, FX_FLESH_DEBRIS, fx_flags, origin, "bdb", b_size, half_size, b_mag);
 		}
 	}
 	else
 	{
-		if(self->s.renderfx & RF_REFLECTION)
-			flags |= CEF_FLAG8;
+		if (self->s.renderfx & RF_REFLECTION)
+			fx_flags |= CEF_FLAG8;
 
-		gi.CreateEffect(NULL,
-						FX_DEBRIS,
-						flags, origin,
-						"bbdb",
-						sizeb,
-						(byte)self->materialtype,
-						halfsize, magb);
+		gi.CreateEffect(NULL, FX_DEBRIS, fx_flags, origin, "bbdb", b_size, (byte)self->materialtype, half_size, b_mag);
 	}
 
-	if(self->classID == CID_OBJECT)
-		if(!strcmp(self->classname, "obj_larvabrokenegg") || !strcmp(self->classname, "obj_larvaegg"))
-			self->materialtype = MAT_POTTERY;
+	if (self->classID == CID_OBJECT && (strcmp(self->classname, "obj_larvabrokenegg") == 0 || strcmp(self->classname, "obj_larvaegg") == 0))
+		self->materialtype = MAT_POTTERY;
 
-	if (DebrisSound[self->materialtype].Name)
-		gi.sound (self, CHAN_VOICE, gi.soundindex(DebrisSound[self->materialtype].Name) , 
-			2, ATTN_NORM, 0);	
+	if (debris_sounds[self->materialtype] != NULL)
+		gi.sound(self, CHAN_VOICE, gi.soundindex(debris_sounds[self->materialtype]), 2.0f, ATTN_NORM, 0.0f); //TODO: why 2.0 volume?
 }
 
 void BecomeDebris2(edict_t *self, float damage)
@@ -407,6 +378,8 @@ void DefaultObjectDieHandler(edict_t *self, G_Message_t *msg)
 
 	BecomeDebris(self);
 }
+
+#pragma endregion
 
 void harpy_take_head(edict_t *self, edict_t *victim, int BodyPart, int frame, int flags);
 void ThrowBodyPart(edict_t *self, vec3_t *spot, int BodyPart, float damage, int frame)
