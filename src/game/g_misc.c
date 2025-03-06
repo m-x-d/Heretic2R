@@ -1703,7 +1703,7 @@ void SkyFly(edict_t* self) //TODO: replace with G_SetToFree()?
 
 #define SF_FIREBALL	1 //mxd
 
-static void MiscFireSparkThink(edict_t* self) //mxd. Named 'fire_spark_think' in original logic.
+static void MiscFireSparkerThink(edict_t* self) //mxd. Named 'fire_spark_think' in original logic.
 {
 	if (self->delay > 0.0f && self->delay < level.time)
 	{
@@ -1711,12 +1711,12 @@ static void MiscFireSparkThink(edict_t* self) //mxd. Named 'fire_spark_think' in
 	}
 	else
 	{
-		self->think = MiscFireSparkThink;
+		self->think = MiscFireSparkerThink;
 		self->nextthink = level.time + 0.1f;
 	}
 }
 
-static void MiscFireSparkRemove(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'fire_spark_gone' in original logic.
+static void MiscFireSparkerRemove(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'fire_spark_gone' in original logic.
 {
 	self->use = NULL;
 	gi.RemoveEffects(&self->s, FX_SPARKS);
@@ -1724,14 +1724,13 @@ static void MiscFireSparkRemove(edict_t* self, edict_t* other, edict_t* activato
 	G_FreeEdict(self);
 }
 
-void fire_spark_use (edict_t *self, edict_t *other, edict_t *activator)
+static void MiscFireSparkerUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'fire_spark_use' in original logic.
 {
-	gi.CreateEffect(&self->s, FX_SPARKS, CEF_FLAG6|CEF_FLAG7|CEF_FLAG8, self->s.origin, "d", vec3_up);
+	gi.CreateEffect(&self->s, FX_SPARKS, CEF_FLAG6 | CEF_FLAG7 | CEF_FLAG8, self->s.origin, "d", vec3_up);
 
-	self->use = MiscFireSparkRemove;
-
-	self->think = MiscFireSparkThink;
-	self->nextthink = level.time + 0.1;
+	self->use = MiscFireSparkerRemove;
+	self->think = MiscFireSparkerThink;
+	self->nextthink = level.time + 0.1f;
 }
 
 /*QUAKED misc_fire_sparker (0 0 0) (-4 -4 0) (4 4 8) FIREBALL
@@ -1755,7 +1754,7 @@ void SP_misc_fire_sparker (edict_t *self)
 	self->movetype = PHYSICSTYPE_NOCLIP;
 	self->clipmask = 0;
 
-	self->use = fire_spark_use;
+	self->use = MiscFireSparkerUse;
 }
 
 #pragma endregion
