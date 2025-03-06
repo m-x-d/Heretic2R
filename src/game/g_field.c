@@ -190,47 +190,41 @@ void TrigDamageStaticsInit(void) //TODO: rename to TriggerDamageStaticsInit.
 	classStatics[CID_TRIG_DAMAGE].msgReceivers[G_MSG_UNSUSPEND] = TriggerDamageActivate;
 }
 
-/*QUAKED trigger_Damage (.5 .5 .5) ? START_OFF TOGGLE SILENT NO_PROTECTION SLOW
-Any entity that Touches this will be Damage.
+// QUAKED trigger_Damage (.5 .5 .5) ? START_OFF TOGGLE SILENT NO_PROTECTION SLOW
+// Any entity that touches this will be damaged. Does dmg points of damage each server frame.
 
-It does dmg points of Damage each server frame
+// Spawnflags:
+// SILENT			- Suppresses playing the sound.
+// SLOW				- Changes the damage rate to once per second.
+// NO_PROTECTION	- NOTHING stops the damage.
 
-SILENT			supresses playing the sound
-SLOW			changes the Damage rate to once per second
-NO_PROTECTION	*nothing* stops the Damage
-
-"dmg"			default 5 (whole numbers only)
-
-*/
-void SP_trigger_Damage(edict_t *self)
+// Variables:
+// dmg - default 5 (whole numbers only).
+void SP_trigger_Damage(edict_t* self) //TODO: rename to SP_trigger_damage.
 {
-	if(deathmatch->value && self->dmg > 100)
+	if (DEATHMATCH && self->dmg > 100)
 	{
 		self->spawnflags = DEATHMATCH_RANDOM;
 		SP_misc_teleporter(self);
+
 		return;
 	}
 
 	InitField(self);
 
-	self->msgHandler = DefaultMsgHandler;
 	self->classID = CID_TRIG_DAMAGE;
-
+	self->movetype = PHYSICSTYPE_NONE;
+	self->msgHandler = DefaultMsgHandler;
 	self->touch = TriggerDamageTouch;
+	self->solid = ((self->spawnflags & SF_START_OFF) ? SOLID_NOT : SOLID_TRIGGER);
 
-	if (!self->dmg)
+	if (self->dmg == 0)
 		self->dmg = 5;
 
-	if (self->spawnflags & 1)
-		self->solid = SOLID_NOT;
-	else
-		self->solid = SOLID_TRIGGER;
-
-	if (self->spawnflags & 2)
+	if (self->spawnflags & SF_TOGGLE)
 		self->use = TriggerDamageUse;
 
-	self->movetype = PHYSICSTYPE_NONE;
-	gi.linkentity (self);
+	gi.linkentity(self);
 }
 
 #pragma endregion
