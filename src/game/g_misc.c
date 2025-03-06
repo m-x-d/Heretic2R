@@ -864,18 +864,21 @@ static void MiscTeleporterCreateEffect(edict_t* self) //mxd. Added to reduce cod
 		effect->PersistantCFX = gi.CreatePersistantEffect(&effect->s, FX_TELEPORT_PAD, CEF_BROADCAST, fx_origin, "");
 }
 
-void Teleporter_Deactivate(edict_t *self, G_Message_t *msg)
+static void MiscTeleporterDeactivate(edict_t* self, G_Message_t* msg) //mxd. Named 'Teleporter_Deactivate' in original logic.
 {
 	self->touch = NULL;
-	// if there's an effect out there, kill it
-	if (self->enemy)
+
+	// If there's an effect out there, kill it.
+	if (self->enemy != NULL)
 	{
 		gi.RemoveEffects(&self->enemy->s, FX_TELEPORT_PAD);
-		if (self->enemy->PersistantCFX)
+
+		if (self->enemy->PersistantCFX > 0)
 		{
 			gi.RemovePersistantEffect(self->enemy->PersistantCFX, REMOVE_TELEPORT_PAD);
 			self->enemy->PersistantCFX = 0;
 		}
+
 		self->enemy = NULL;
 	}
 }
@@ -909,7 +912,7 @@ void Teleporter_Activate(edict_t *self, G_Message_t *msg)
 
 void TeleporterStaticsInit()
 {
-	classStatics[CID_TELEPORTER].msgReceivers[G_MSG_SUSPEND] = Teleporter_Deactivate;
+	classStatics[CID_TELEPORTER].msgReceivers[G_MSG_SUSPEND] = MiscTeleporterDeactivate;
 	classStatics[CID_TELEPORTER].msgReceivers[G_MSG_UNSUSPEND] = Teleporter_Activate;
 }
 
