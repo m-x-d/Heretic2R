@@ -966,32 +966,23 @@ void SP_misc_teleporter_dest(edict_t* ent)
 
 #pragma endregion
 
-extern void use_target_changelevel (edict_t *self, edict_t *other, edict_t *activator);
-void misc_magic_portal_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+#pragma region ========================== misc_magic_portal ==========================
+
+extern void use_target_changelevel(edict_t* self, edict_t* other, edict_t* activator); //TODO: move to g_target.h
+
+static void MiscMagicPortalTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'misc_magic_portal_touch' in original logic.
 {
-	edict_t *ent=NULL;
-
-	if (level.time < self->touch_debounce_time)
-		return;
-	
-	if (!other->client)		// Not a player
+	if (level.time < self->touch_debounce_time || other->client == NULL) // Not a player.
 		return;
 
-	ent = G_Find (ent, FOFS(targetname), self->target);
-	if (!ent)
-	{	// No target.  Don't do anything.
-//		Com_Printf("Portal has no target.\n");
-	}
-	else
-	{
+	edict_t* ent = NULL;
+	ent = G_Find(ent, FOFS(targetname), self->target);
+
+	if (ent != NULL)
 		use_target_changelevel(ent, self, other);
-	}
 
-	self->touch_debounce_time = level.time + 4.0;
-
-	return;
+	self->touch_debounce_time = level.time + 4.0f;
 }
-
 
 void misc_magic_portal_use (edict_t *self, edict_t *other, edict_t *activator)
 {
@@ -1001,7 +992,7 @@ void misc_magic_portal_use (edict_t *self, edict_t *other, edict_t *activator)
 	if (self->solid == SOLID_NOT)
 	{	// We aren't engaged yet.  Make solid and start the effect.
 		self->solid = SOLID_TRIGGER;
-		self->touch = misc_magic_portal_touch;
+		self->touch = MiscMagicPortalTouch;
 		self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_MAGIC_PORTAL, CEF_BROADCAST, self->s.origin, 
 								"vbb", self->s.angles, (byte)self->style, (byte)self->count);
 		self->s.effects &= ~EF_DISABLE_EXTRA_FX;
@@ -1067,7 +1058,7 @@ void SP_misc_magic_portal (edict_t *self)
 	gi.linkentity(self);
 }
 
-
+#pragma endregion
 
 void flame_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
