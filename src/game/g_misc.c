@@ -1638,36 +1638,33 @@ void SP_misc_remote_camera(edict_t* self)
 
 #pragma endregion
 
-// Spawns a client model animation
-// spawnflags & 2 is a designer flag whether to animate or not
-// If the model is supposed to animate, the hi bit of the type is set
-// If the model is static, then the default frame stored on the client is used
-// Valid scale ranges from 1/50th to 5
+#pragma region ========================== Utility functions ==========================
 
-void SpawnClientAnim(edict_t *self, byte type, char *sound)
+#define SF_ANIMATED	2 //mxd
+
+// Spawns a client model animation.
+// spawnflags & 2 is a designer flag whether to animate or not.
+// If the model is supposed to animate, the hi bit of the type is set.
+// If the model is static, then the default frame stored on the client is used.
+// Valid scale ranges from 1/50th to 5.
+void SpawnClientAnim(edict_t* self, byte type, const char* sound) //TODO: add declaration to g_misc.h
 {
-	int		scale, skin;
-
-	if (self->spawnflags & 2)	// Animate it
+	if (self->spawnflags & SF_ANIMATED) // Animate it.
 	{
 		type |= 0x80;
-		if(sound)
+
+		if (sound != NULL)
 		{
-			self->s.sound = gi.soundindex(sound);
+			self->s.sound = (byte)gi.soundindex(sound);
 			self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_STATIC;
 		}
 	}
-	scale = (byte)(self->s.scale * 50);
+
+	const int scale = (byte)(self->s.scale * 50.0f);
 	assert((scale > 0) && (scale < 255));
-	skin = (byte)self->s.skinnum;
+	const byte b_skin = (byte)self->s.skinnum;
 
-//	self->svflags |= SVF_ALWAYS_SEND;
-	self->PersistantCFX = gi.CreatePersistantEffect(&self->s,
-							FX_ANIMATE,
-							CEF_BROADCAST,
-							self->s.origin,
-							"bbbv", type, scale, skin, self->s.angles);
-
+	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_ANIMATE, CEF_BROADCAST, self->s.origin, "bbbv", type, (byte)scale, b_skin, self->s.angles);
 	self->s.effects |= EF_ALWAYS_ADD_EFFECTS;
 }
 
@@ -1735,6 +1732,8 @@ void SkyFly (edict_t *self) //TODO: replace with G_SetToFree()?
 	self->nextthink = level.time + 0.1;
 */
 }
+
+#pragma endregion
 
 void fire_spark_think (edict_t *self)
 {
