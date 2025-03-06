@@ -332,49 +332,37 @@ void DefaultObjectDieHandler(edict_t* self, G_Message_t* msg)
 
 #pragma endregion
 
-void harpy_take_head(edict_t *self, edict_t *victim, int BodyPart, int frame, int flags);
-void ThrowBodyPart(edict_t *self, vec3_t *spot, int BodyPart, float damage, int frame)
-{//add blood spew to sever loc and blood trail on flying part
-	float ke = 0;
-	vec3_t	spot2;
-	int	flags;
+#pragma region ========================== Body part / weapon throw logic ==========================
 
-	if (damage)
+void ThrowBodyPart(const edict_t* self, const vec3_t* spot, const int body_part, float damage, const int frame) //TODO: change 'damage' arg type to int.
+{
+	// Add blood spew to sever loc and blood trail on flying part.
+	if (damage > 0.0f)
 	{
-		if (damage>255)
-		{
-			damage = 255;
-		}
-		gi.sound (self, CHAN_VOICE, gi.soundindex("misc/fleshbreak.wav") , 1, ATTN_NORM, 0);
+		damage = min(255.0f, damage);
+		gi.sound(self, CHAN_VOICE, gi.soundindex("misc/fleshbreak.wav"), 1.0f, ATTN_NORM, 0.0f);
 	}
 
-	VectorAdd(self->s.origin, *spot, spot2);
+	vec3_t origin;
+	VectorAdd(self->s.origin, *spot, origin);
 
-	if(self->fire_damage_time > level.time || self->svflags&SVF_ONFIRE)
-		flags = CEF_FLAG6;
+	int	fx_flags = 0;
+
+	if (self->fire_damage_time > level.time || self->svflags & SVF_ONFIRE)
+		fx_flags = CEF_FLAG6;
+
+	if (self->materialtype == MAT_INSECT)
+		fx_flags |= CEF_FLAG8;
+
+	if (give_head_to_harpy != NULL && take_head_from == self)
+	{
+		harpy_take_head(give_head_to_harpy, self, body_part, frame, fx_flags);
+		SprayDebris(self, *spot, 5, damage);
+	}
 	else
-		flags = 0;
-	
-	if(self->materialtype == MAT_INSECT)
-		flags |= CEF_FLAG8;
-
-	if(give_head_to_harpy && take_head_from == self)
 	{
-		harpy_take_head(give_head_to_harpy, self, BodyPart, frame, flags);
-		SprayDebris(self, *spot, 5, damage);		
-		return;
+		gi.CreateEffect(NULL, FX_BODYPART, fx_flags, origin, "ssbbb", (short)frame, (short)body_part, (byte)damage, self->s.modelindex, self->s.number);
 	}
-
-	gi.CreateEffect(NULL,//owner
-					FX_BODYPART,//type
-					flags,//can't mess with this, sends only 1st byte and effects message
-					spot2,//spot,
-					"ssbbb",//int int float byte
-					(short)frame,//only 1 frame, sorry no anim
-					(short)BodyPart,//bitwise - node(s) to leave on
-					(byte)damage,//speed
-					self->s.modelindex,//my modelindex
-					self->s.number);//my number
 }
 
 void ThrowWeapon(edict_t *self, vec3_t *spot, int BodyPart, float damage, int frame) //TODO: change 'damage' arg type to int.
@@ -398,6 +386,8 @@ void ThrowWeapon(edict_t *self, vec3_t *spot, int BodyPart, float damage, int fr
 					self->s.modelindex,//my modelindex
 					self->s.number);//my number
 }
+
+#pragma endregion
 
 /*QUAKED path_corner (.5 .3 0) (-8 -8 -8) (8 8 8) TELEPORT
 ---------KEYS---------------	
