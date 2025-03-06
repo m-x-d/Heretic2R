@@ -16,19 +16,17 @@
 
 void InitTrigger(edict_t* self); //TODO: move to g_trigger.h
 
-void InitField(edict_t *self)
+static void InitField(edict_t* self)
 {
-	if(!Vec3IsZero(self->s.angles))
-	{
+	if (Vec3NotZero(self->s.angles))
 		G_SetMovedir(self->s.angles, self->movedir);
-	}
 
-	self->classID = CID_TRIGGER;	// fields are basically triggers
+	self->classID = CID_TRIGGER; // Fields are basically triggers.
 	self->solid = SOLID_TRIGGER;
 	self->movetype = PHYSICSTYPE_NONE;
-	gi.setmodel (self, self->model);
 	self->svflags = SVF_NOCLIENT;
 
+	gi.setmodel(self, self->model);
 	gi.linkentity(self);
 }
 
