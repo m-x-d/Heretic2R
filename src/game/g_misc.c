@@ -942,28 +942,26 @@ void SP_misc_teleporter(edict_t* ent)
 	}
 }
 
-/*QUAKED misc_teleporter_dest (1 0 0) (-32 -32 -24) (32 32 -16)
-
-	Point teleporters at these.
-*/
-void SP_misc_teleporter_dest (edict_t *ent)
+// QUAKED misc_teleporter_dest (1 0 0) (-32 -32 -24) (32 32 -16)
+// Point teleporters at these.
+void SP_misc_teleporter_dest(edict_t* ent)
 {
-	trace_t		tr;
-	vec3_t		endpos;
-
 	ent->s.skinnum = 0;
 	ent->solid = SOLID_NOT;
-	VectorSet (ent->mins, -32, -32, -24);
-	VectorSet (ent->maxs, 32, 32, -16);
-	gi.linkentity (ent);
+	VectorSet(ent->mins, -32.0f, -32.0f, -24.0f);
+	VectorSet(ent->maxs,  32.0f,  32.0f, -16.0f);
 
-	VectorCopy(ent->s.origin, endpos);
-	endpos[2] -= 500;
-	gi.trace (ent->s.origin, vec3_origin, vec3_origin, endpos, NULL, CONTENTS_WORLD_ONLY|MASK_PLAYERSOLID,&tr);
+	gi.linkentity(ent);
 
-	VectorCopy(tr.endpos,ent->last_org);
+	vec3_t end_pos;
+	VectorCopy(ent->s.origin, end_pos);
+	end_pos[2] -= 500.0f;
+
+	trace_t tr;
+	gi.trace(ent->s.origin, vec3_origin, vec3_origin, end_pos, NULL, CONTENTS_WORLD_ONLY | MASK_PLAYERSOLID, &tr);
+
+	VectorCopy(tr.endpos, ent->last_org);
 	ent->last_org[2] -= player_mins[2];
-
 }
 
 #pragma endregion
