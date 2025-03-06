@@ -654,13 +654,14 @@ static void FuncObjectRelease(edict_t* self) //mxd. Named 'func_object_release' 
 	self->touch = FuncObjectTouch;
 }
 
-void func_object_use (edict_t *self, edict_t *other, edict_t *activator)
+static void FuncObjectUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'func_object_use' in original logic.
 {
 	self->solid = SOLID_BSP;
 	self->svflags &= ~SVF_NOCLIENT;
 	self->use = NULL;
-	KillBox (self);
-	FuncObjectRelease (self);
+
+	KillBox(self);
+	FuncObjectRelease(self);
 }
 
 void SP_func_object (edict_t *self)
@@ -688,7 +689,7 @@ void SP_func_object (edict_t *self)
 	{
 		self->solid = SOLID_NOT;
 		self->movetype = PHYSICSTYPE_PUSH;
-		self->use = func_object_use;
+		self->use = FuncObjectUse;
 		self->svflags |= SVF_NOCLIENT;
 	}
 
