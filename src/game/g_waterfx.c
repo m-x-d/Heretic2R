@@ -1,6 +1,7 @@
 // Water related fx, including
 // 1. Fountain
 
+#include "g_obj.h" //mxd
 #include "g_local.h"
 #include "fx.h"
 #include "random.h"
@@ -10,8 +11,6 @@
 #define OBJ_ANIMATE			2
 #define OBJ_EXPLODING		4
 #define OBJ_NOPUSH			8
-
-void BboxYawAndScale(edict_t *self);
 
 void waterdrip_go(edict_t *self)
 {

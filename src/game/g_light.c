@@ -9,7 +9,7 @@
 #include "effectflags.h"
 #include "g_combat.h" //mxd
 #include "g_local.h"
-#include "g_misc.h"
+#include "g_obj.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "Utilities.h" //mxd
 #include "vector.h"

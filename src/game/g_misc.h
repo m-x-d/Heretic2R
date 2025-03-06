@@ -33,5 +33,3 @@ extern void SP_sound_ambient_cloudfortress(edict_t* self);
 extern void TeleporterStaticsInit(void);
 
 extern void DefaultObjectDieHandler(edict_t* self, struct G_Message_s* msg);
-
-void BboxYawAndScale(edict_t* self); //TODO: move to g_obj.h

@@ -5,6 +5,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include "g_obj.h" //mxd
 #include "fx.h"
 #include "g_local.h"
 #include "g_misc.h"

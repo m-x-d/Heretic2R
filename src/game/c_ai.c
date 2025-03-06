@@ -8,7 +8,7 @@
 #include "c_corvus1_anim.h"
 #include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
-#include "g_misc.h"
+#include "g_obj.h" //mxd
 #include "g_monster.h"
 #include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd

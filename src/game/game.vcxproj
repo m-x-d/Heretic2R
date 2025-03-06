@@ -236,6 +236,7 @@
     <ClInclude Include="g_Message.h" />
     <ClInclude Include="g_misc.h" />
     <ClInclude Include="g_monster.h" />
+    <ClInclude Include="g_obj.h" />
     <ClInclude Include="g_Physics.h" />
     <ClInclude Include="g_PhysicsLocal.h" />
     <ClInclude Include="g_playstats.h" />
