@@ -198,89 +198,69 @@ static void SpawnDebris(edict_t* self, float size, vec3_t origin)
 		gi.sound(self, CHAN_VOICE, gi.soundindex(debris_sounds[self->materialtype]), 2.0f, ATTN_NORM, 0.0f); //TODO: why 2.0 volume?
 }
 
-void BecomeDebris2(edict_t *self, float damage)
+void BecomeDebris(edict_t* self)
 {
-	float		size;
-	int			violence=VIOLENCE_DEFAULT;
+	const int violence = ((blood_level != NULL) ? (int)blood_level->value : VIOLENCE_DEFAULT); //TODO: why blood_level NULL check? Inited in InitGame(), accessed without NULL check in G_RunFrame()...
 
-	if (blood_level)
-		violence = blood_level->value;
-
-	if (violence > VIOLENCE_BLOOD)
+	// Haven't yet thrown parts?
+	if (violence > VIOLENCE_BLOOD && !(self->svflags & SVF_PARTS_GIBBED) && self->monsterinfo.dismember != NULL)
 	{
-		if(!(self->svflags & SVF_PARTS_GIBBED))
-		{//haven't yet thrown parts
-			if(self->monsterinfo.dismember)
-			{//FIXME:have a generic GibParts effect that throws flesh and several body parts- much cheaper?
-				int	i, num_limbs;
+		//FIXME: have a generic GibParts effect that throws flesh and several body parts - much cheaper?
+		int num_limbs = irand(3, 10);
 
-				num_limbs = irand(3, 10);
+		if (violence > VIOLENCE_NORMAL)
+			num_limbs *= (violence - VIOLENCE_NORMAL); //TODO: doesn't make much sense. Max violence configurable via menus is 3. Should be (violence - VIOLENCE_NORMAL + 1)?
 
-				if(violence > VIOLENCE_NORMAL)
-					num_limbs *= (violence - VIOLENCE_NORMAL);
+		for (int i = 0; i < num_limbs; i++)
+			if (self->svflags & SVF_MONSTER)
+				self->monsterinfo.dismember(self, irand(80, 160), hl_MeleeHit | irand(hl_Head, hl_LegLowerRight)); //mxd. flrand() -> irand()
 
-				for(i = 0; i < num_limbs; i++)
-				{
-					if(self->svflags&SVF_MONSTER)
-						self->monsterinfo.dismember(self, flrand(80, 160), irand(hl_Head, hl_LegLowerRight) | hl_MeleeHit);
-				}
-				self->svflags |= SVF_PARTS_GIBBED;
-				self->think = BecomeDebris;
-				self->nextthink = level.time + 0.1;
-				return;
-			}
-		}
+		self->svflags |= SVF_PARTS_GIBBED;
+		self->think = BecomeDebris;
+		self->nextthink = level.time + 0.1f;
+
+		return;
 	}
-	// Set my message handler to the special message handler for dead entities.
-	self->msgHandler=DeadMsgHandler;
 
-	//What the hell is this???
-	if (self->spawnflags & 4 && !(self->svflags&SVF_MONSTER))
-	{   // Need to create an explosion effect for this
- 		if(self->owner)
-		{
-			T_DamageRadius(self, self->owner, self, 60.0,
-						self->dmg, self->dmg/2, DAMAGE_NORMAL|DAMAGE_AVOID_ARMOR,MOD_DIED);
-		}
- 		else
-		{
-			T_DamageRadius(self, self, self, 60.0,
-						self->dmg, self->dmg/2, DAMAGE_NORMAL|DAMAGE_AVOID_ARMOR,MOD_DIED);
-		}
+	// Set my message handler to the special message handler for dead entities.
+	self->msgHandler = DeadMsgHandler;
+
+	// What the hell is this??? //TODO: when is this used?
+	if (self->spawnflags & 4 && !(self->svflags & SVF_MONSTER))
+	{
+		// Need to create an explosion effect for this.
+		edict_t* attacker = ((self->owner != NULL) ? self->owner : self); //mxd
+		T_DamageRadius(self, attacker, self, 60.0f, (float)self->dmg, (float)self->dmg / 2.0f, DAMAGE_NORMAL | DAMAGE_AVOID_ARMOR, MOD_DIED);
 	}
 
 	// A zero mass is well and truly illegal!
-	if (self->mass<0)
-		gi.dprintf("ERROR: %s needs a mass to generate debris",self->classname);
+	if (self->mass < 0)
+		gi.dprintf("ERROR: %s needs a mass to generate debris", self->classname);
 
 	// Create a chunk-spitting client effect and remove me now that I've been chunked.
+	float size;
 
-	// This only yields 4, 8, 12, or 16 chunks, generally seems to yield 16
-	if(self->svflags&SVF_MONSTER && self->classID != CID_MOTHER)
+	// This only yields 4, 8, 12, or 16 chunks, generally seems to yield 16.
+	if ((self->svflags & SVF_MONSTER) && self->classID != CID_MOTHER)
 	{
-		size = VectorLength(self->size);
-		size *= 100;
-		assert(size >= 0);
+		size = VectorLength(self->size) * 100.0f;
 	}
 	else
 	{
+		// Set this brush up as if it were an object, so the debris will be thrown properly.
+		// If I'm a BModel (and therefore don't have an origin), calculate one to use instead and slap that into my origin.
 		if (Vec3IsZero(self->s.origin))
-		{// Set this brush up as if it were an object so the debris will be thrown properly
-		// If I'm a BModel (and therefore don't have an origin), calculate one to use instead and
-		// slap that into my origin.
-//			self->solid = SOLID_NOT;		// This causes the breakable brushes to generate a sound
-			VectorMA(self->absmin,0.5,self->size,self->s.origin);
-		}
-		
-		size = VectorLength(self->size) * 3;
-		
-		if(self->solid == SOLID_BSP)
-			size *= 3;
-		else if(self->classID == CID_MOTHER)
-			size *= 10;
+			VectorMA(self->absmin, 0.5f, self->size, self->s.origin);
 
-		if (!self->mass)
-			self->mass = size / 10;
+		size = VectorLength(self->size) * 3.0f;
+
+		if (self->solid == SOLID_BSP)
+			size *= 3.0f;
+		else if (self->classID == CID_MOTHER)
+			size *= 10.0f;
+
+		if (self->mass == 0)
+			self->mass = (int)(size / 10.0f);
 	}
 
 	SpawnDebris(self, size, self->s.origin);
@@ -290,15 +270,7 @@ void BecomeDebris2(edict_t *self, float damage)
 	self->deadflag = DEAD_DEAD;
 
 	G_SetToFree(self);
-	self->nextthink = level.time + 2;
-}
-
-void BecomeDebris(edict_t *self)
-{
-	if(self->health<0)
-		BecomeDebris2(self, abs(self->health)+10.0f);
-	else
-		BecomeDebris2(self, 10.0f);
+	self->nextthink = level.time + 2.0f;
 }
 
 void SprayDebris(edict_t *self, vec3_t spot, byte NoOfChunks, float damage)
