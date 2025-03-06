@@ -89,25 +89,24 @@ static void TriggerPushActivated(edict_t* self, edict_t* activator) //mxd. Named
 	TriggerPushTouch(self, activator, NULL, NULL);
 }
 
-void TrigPush_Deactivate(edict_t *self, G_Message_t *msg)
+static void TriggerPushDeactivate(edict_t* self, G_Message_t* msg) //mxd. Named 'TrigPush_Deactivate' in original logic.
 {
 	self->solid = SOLID_NOT;
 	self->touch = NULL;
 }
 
-
-void TrigPush_Activate(edict_t *self, G_Message_t *msg)
+static void TriggerPushActivate(edict_t* self, G_Message_t* msg) //mxd. Named 'TrigPush_Activate' in original logic.
 {
 	self->solid = SOLID_TRIGGER;
 	self->touch = TriggerPushTouch;
-	gi.linkentity (self);
-}
 
+	gi.linkentity(self);
+}
 
 void TrigPushStaticsInit()
 {
-	classStatics[CID_TRIG_PUSH].msgReceivers[G_MSG_SUSPEND] = TrigPush_Deactivate;
-	classStatics[CID_TRIG_PUSH].msgReceivers[G_MSG_UNSUSPEND] = TrigPush_Activate;
+	classStatics[CID_TRIG_PUSH].msgReceivers[G_MSG_SUSPEND] = TriggerPushDeactivate;
+	classStatics[CID_TRIG_PUSH].msgReceivers[G_MSG_UNSUSPEND] = TriggerPushActivate;
 }
 
 /*QUAKED trigger_push (.5 .5 .5) ? FORCE_ONCE
