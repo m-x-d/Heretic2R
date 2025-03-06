@@ -30,43 +30,29 @@ static void InitField(edict_t* self)
 	gi.linkentity(self);
 }
 
+#pragma region ========================== trigger_fogdensity ==========================
 
-
-void FogDensity_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void FogDensityTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'FogDensity_touch' in original logic.
 {
-	player_state_t		*ps;
-
 	// Only players can know about fog density changes
-	if(other->client)
-	{
-		ps = &other->client->ps;
-
-		if (!self->target)
-		{
-			ps->fog_density = 0.0;		
-			return;
-		}
-		ps->fog_density = strtod(self->target, NULL);
-	}
+	if (other->client != NULL)
+		other->client->ps.fog_density = ((self->target != NULL) ? (float)strtod(self->target, NULL) : 0.0f);
 }
 
-/*QUAKED trigger_fogdensity (.5 .5 .5) ? 
-Sets the value of r_fog_density
-and the fog color
----------KEY----------------
-target - fog density (.01 - .0001)
-color - red green blue values (0 0 0)
-        range of 1.0 - 0
-----------------------------
-*/
-void SP_trigger_fogdensity(edict_t *self)
+// QUAKED trigger_fogdensity (.5 .5 .5) ?
+// Sets the value of r_fog_density and the fog color. //TODO: doesn't set the fog color!
+// Variables:
+// target	- fog density (.01 - .0001)
+// color	- red green blue values (0 0 0), range of 0.0 - 1.0.
+void SP_trigger_fogdensity(edict_t* self)
 {
 	InitField(self);
 
-	self->touch = FogDensity_touch;
+	self->touch = FogDensityTouch;
 	self->solid = SOLID_TRIGGER;
 }
 
+#pragma endregion
 
 //----------------------------------------------------------------------
 // Force Field
