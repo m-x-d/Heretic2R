@@ -984,25 +984,27 @@ static void MiscMagicPortalTouch(edict_t* self, edict_t* other, cplane_t* plane,
 	self->touch_debounce_time = level.time + 4.0f;
 }
 
-void misc_magic_portal_use (edict_t *self, edict_t *other, edict_t *activator)
+static void MiscMagicPortalUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'misc_magic_portal_use' in original logic.
 {
 	if (level.time < self->impact_debounce_time)
 		return;
-	
+
 	if (self->solid == SOLID_NOT)
-	{	// We aren't engaged yet.  Make solid and start the effect.
+	{
+		// We aren't engaged yet. Make us solid and start the effect.
 		self->solid = SOLID_TRIGGER;
 		self->touch = MiscMagicPortalTouch;
-		self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_MAGIC_PORTAL, CEF_BROADCAST, self->s.origin, 
-								"vbb", self->s.angles, (byte)self->style, (byte)self->count);
+		self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_MAGIC_PORTAL, CEF_BROADCAST, self->s.origin, "vbb", self->s.angles, (byte)self->style, (byte)self->count);
 		self->s.effects &= ~EF_DISABLE_EXTRA_FX;
 	}
 	else
-	{	// We were on, now turn it off.
+	{
+		// We were on, now turn it off.
 		self->solid = SOLID_NOT;
 		self->touch = NULL;
-		// remove the persistant effect
-		if (self->PersistantCFX)
+
+		// Remove the persistent effect.
+		if (self->PersistantCFX > 0)
 		{
 			gi.RemovePersistantEffect(self->PersistantCFX, REMOVE_PORTAL);
 			self->PersistantCFX = 0;
@@ -1012,11 +1014,8 @@ void misc_magic_portal_use (edict_t *self, edict_t *other, edict_t *activator)
 	}
 
 	gi.linkentity(self);
-
-	self->impact_debounce_time = level.time + 4.0;
+	self->impact_debounce_time = level.time + 4.0f;
 }
-
-
 
 #define START_OFF	1
 
@@ -1048,11 +1047,11 @@ void SP_misc_magic_portal (edict_t *self)
 	self->solid = SOLID_NOT;
 	self->touch = NULL;
 
-	self->use = misc_magic_portal_use;
+	self->use = MiscMagicPortalUse;
 
 	if (!self->spawnflags & START_OFF)
 	{	// Set up the touch function, since this baby is live.
-		misc_magic_portal_use(self, NULL, NULL);
+		MiscMagicPortalUse(self, NULL, NULL);
 	}
 
 	gi.linkentity(self);
