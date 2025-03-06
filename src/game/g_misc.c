@@ -586,43 +586,45 @@ static void FuncWallUse(edict_t* self, edict_t* other, edict_t* activator) //mxd
 		self->use = NULL;
 }
 
-void SP_func_wall (edict_t *self)
+// QUAKED func_wall (0 .5 .8) ? TRIGGER_SPAWN TOGGLE START_ON ANIMATED ANIMATED_FAST
+// This is just a solid wall if not inhibited.
+// Spawnflags:
+// TRIGGER_SPAWN	- The wall will not be present until triggered, it will then blink in to existence; it will kill anything that was in it's way.
+// TOGGLE			- Only valid for TRIGGER_SPAWN walls. This allows the wall to be turned on and off.
+// START_ON			- Only valid for TRIGGER_SPAWN walls. The wall will initially be present.
+void SP_func_wall(edict_t* self)
 {
 	self->movetype = PHYSICSTYPE_PUSH;
-	gi.setmodel (self, self->model);
+	gi.setmodel(self, self->model);
 
-	if (self->spawnflags & 8)
+	if (self->spawnflags & SF_ANIMATED)
 		self->s.effects |= EF_ANIM_ALL;
-	if (self->spawnflags & 16)
+
+	if (self->spawnflags & SF_ANIMATED_FAST)
 		self->s.effects |= EF_ANIM_ALLFAST;
 
-	// just a wall
-	if ((self->spawnflags & 7) == 0)
+	// Just a wall?
+	if (!(self->spawnflags & (SF_TRIGGER_SPAWN | SF_TOGGLE | SF_START_ON)))
 	{
 		self->solid = SOLID_BSP;
-		gi.linkentity (self);
+		gi.linkentity(self);
+
 		return;
 	}
 
-	// it must be TRIGGER_SPAWN
-	if (!(self->spawnflags & 1))
-	{
-//		gi.dprintf("func_wall missing TRIGGER_SPAWN\n");
-		self->spawnflags |= 1;
-	}
+	// Must have TRIGGER_SPAWN flag.
+	self->spawnflags |= SF_TRIGGER_SPAWN;
 
-	// yell if the spawnflags are odd
-	if (self->spawnflags & 4)
+	// Yell if the spawnflags are odd.
+	if ((self->spawnflags & SF_START_ON) && !(self->spawnflags & SF_TOGGLE))
 	{
-		if (!(self->spawnflags & 2))
-		{
-			gi.dprintf("func_wall START_ON without TOGGLE\n");
-			self->spawnflags |= 2;
-		}
+		gi.dprintf("func_wall START_ON without TOGGLE\n");
+		self->spawnflags |= SF_TOGGLE;
 	}
 
 	self->use = FuncWallUse;
-	if (self->spawnflags & 4)
+
+	if (self->spawnflags & SF_START_ON)
 	{
 		self->solid = SOLID_BSP;
 	}
@@ -631,7 +633,8 @@ void SP_func_wall (edict_t *self)
 		self->solid = SOLID_NOT;
 		self->svflags |= SVF_NOCLIENT;
 	}
-	gi.linkentity (self);
+
+	gi.linkentity(self);
 }
 
 #pragma endregion
