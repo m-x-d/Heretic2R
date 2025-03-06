@@ -9,3 +9,5 @@
 #include "q_Typedef.h"
 
 extern void BboxYawAndScale(edict_t* self);
+
+extern void DefaultObjectDieHandler(edict_t* self, struct G_Message_s* msg);

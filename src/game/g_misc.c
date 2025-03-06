@@ -35,19 +35,6 @@ void SP_func_areaportal(edict_t* ent)
 
 #pragma endregion
 
-void DefaultObjectDieHandler(edict_t* self, G_Message_t* msg) //TODO: move to g_obj.c?
-{
-	edict_t* inflictor;
-	ParseMsgParms(msg, "ee", &inflictor, &inflictor);
-
-	G_UseTargets(self, inflictor);
-
-	if (self->target_ent != NULL)
-		BecomeDebris(self->target_ent);
-
-	BecomeDebris(self);
-}
-
 #pragma region ========================== path_corner ==========================
 
 static void PathCornerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'path_corner_touch' in original logic.

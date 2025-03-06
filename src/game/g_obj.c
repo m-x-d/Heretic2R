@@ -24,6 +24,19 @@
 
 void SpawnFlame(edict_t *self,vec3_t origin);
 
+void DefaultObjectDieHandler(edict_t* self, G_Message_t* msg) //mxd. Originally defined in g_misc.c
+{
+	edict_t* inflictor;
+	ParseMsgParms(msg, "ee", &inflictor, &inflictor);
+
+	G_UseTargets(self, inflictor);
+
+	if (self->target_ent != NULL)
+		BecomeDebris(self->target_ent);
+
+	BecomeDebris(self);
+}
+
 void ObjectStaticsInit(void) 
 {
 	classStatics[CID_OBJECT].msgReceivers[MSG_DEATH] = DefaultObjectDieHandler;
