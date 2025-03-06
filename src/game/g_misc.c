@@ -558,36 +558,31 @@ void SP_info_notnull(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED func_wall (0 .5 .8) ? TRIGGER_SPAWN TOGGLE START_ON ANIMATED ANIMATED_FAST
-	
-	This is just a solid wall if not inhibited
+#pragma region ========================== func_wall ==========================
 
-	TRIGGER_SPAWN	the wall will not be present until triggered
-					it will then blink in to existance; it will
-					kill anything that was in it's way
+#define SF_TRIGGER_SPAWN	1 //mxd
+#define SF_TOGGLE			2 //mxd
+#define SF_START_ON			4 //mxd
+#define SF_ANIMATED			8 //mxd
+#define SF_ANIMATED_FAST	16 //mxd
 
-	TOGGLE			only valid for TRIGGER_SPAWN walls
-					this allows the wall to be turned on and off
-
-	START_ON		only valid for TRIGGER_SPAWN walls
-					the wall will initially be present
-*/
-void func_wall_use (edict_t *self, edict_t *other, edict_t *activator)
+static void FuncWallUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'func_wall_use' in original logic.
 {
 	if (self->solid == SOLID_NOT)
 	{
 		self->solid = SOLID_BSP;
 		self->svflags &= ~SVF_NOCLIENT;
-		KillBox (self);
+		KillBox(self);
 	}
 	else
 	{
 		self->solid = SOLID_NOT;
 		self->svflags |= SVF_NOCLIENT;
 	}
-	gi.linkentity (self);
 
-	if (!(self->spawnflags & 2))
+	gi.linkentity(self);
+
+	if (!(self->spawnflags & SF_TOGGLE))
 		self->use = NULL;
 }
 
@@ -626,7 +621,7 @@ void SP_func_wall (edict_t *self)
 		}
 	}
 
-	self->use = func_wall_use;
+	self->use = FuncWallUse;
 	if (self->spawnflags & 4)
 	{
 		self->solid = SOLID_BSP;
@@ -639,6 +634,7 @@ void SP_func_wall (edict_t *self)
 	gi.linkentity (self);
 }
 
+#pragma endregion
 
 /*QUAKED func_object (0 .5 .8) ? TRIGGER_SPAWN ANIMATED ANIMATED_FAST
 	
