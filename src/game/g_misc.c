@@ -639,27 +639,19 @@ void SP_func_wall(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED func_object (0 .5 .8) ? TRIGGER_SPAWN ANIMATED ANIMATED_FAST
-	
-	This is solid bmodel that will fall if it's support it removed.
-*/
+#pragma region ========================== func_object ==========================
 
-void func_object_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void FuncObjectTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'func_object_touch' in original logic.
 {
-	// only squash thing we fall on top of
-	if (!plane)
-		return;
-	if (plane->normal[2] < 1.0)
-		return;
-	if (other->takedamage == DAMAGE_NO)
-		return;
-	T_Damage (other, self, self, vec3_origin, self->s.origin, vec3_origin, self->dmg, 1, DAMAGE_AVOID_ARMOR,MOD_DIED);
+	// Only squash thing we fall on top of.
+	if (plane != NULL && plane->normal[2] == 1.0f && other->takedamage != DAMAGE_NO)
+		T_Damage(other, self, self, vec3_origin, self->s.origin, vec3_origin, self->dmg, 1, DAMAGE_AVOID_ARMOR, MOD_DIED);
 }
 
 void func_object_release (edict_t *self)
 {
 	self->movetype = PHYSICSTYPE_STEP;
-	self->touch = func_object_touch;
+	self->touch = FuncObjectTouch;
 }
 
 void func_object_use (edict_t *self, edict_t *other, edict_t *activator)
@@ -710,6 +702,7 @@ void SP_func_object (edict_t *self)
 	gi.linkentity (self);
 }
 
+#pragma endregion
 
 void ItemSpitterSpit(edict_t *self,edict_t *owner,edict_t *attacker)
 {
