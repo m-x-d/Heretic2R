@@ -436,35 +436,6 @@ static void TriggerGotoBuoyUse(edict_t* self, edict_t* other, edict_t* activator
 	self->air_finished = level.time + self->wait; //TODO: add dedicated edict_t property instead of hijacking 'air_finished'?
 }
 
-void trigger_goto_buoy_find_target(edict_t *self)
-{
-	qboolean	found = false;
-	buoy_t		*found_buoy = NULL;
-	int			i;
-
-	self->think = NULL;
-	self->nextthink = -1;
-
-
-	for(i = 0; i < level.active_buoys; i++)
-	{
-		if(!stricmp(level.buoy_list[i].targetname, self->pathtarget))
-		{
-			found = true;
-			break;
-		}
-	}
-
-	if(!found)
-	{
-		vec3_t	org;
-
-		VectorMA(self->mins, 0.5, self->maxs, org);
-		gi.dprintf("trigger_goto_buoy at %s can't find it's pathtargeted buoy %s\n", vtos(org), self->pathtarget);
-		return;
-	}
-}
-
 /*QUAKED trigger_goto_buoy (.5 .5 .5) ? Touch IgnoreEnemy TeleportSafe TeleportUnSafe FIXED STAND WANDER
 A monster touching this trigger will find the buoy with the "pathtarget" targetname and head for it if it can.
 
@@ -504,11 +475,6 @@ void SP_trigger_goto_buoy(edict_t *self)
 		gi.dprintf("trigger_goto_buoy with no pathtarget!\n");
 		G_FreeEdict(self);
 		return;
-	}
-	else if(BUOY_DEBUG)
-	{
-		self->think = trigger_goto_buoy_find_target;
-		self->nextthink = level.time + 0.5;
 	}
 
 	if(self->spawnflags&SF_BUOY_TOUCH)
