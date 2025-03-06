@@ -577,6 +577,10 @@ static void FuncObjectUse(edict_t* self, edict_t* other, edict_t* activator) //m
 	FuncObjectRelease(self);
 }
 
+//mxd. Avoid compiler warnings...
+#undef SF_ANIMATED
+#undef SF_ANIMATED_FAST
+
 #define SF_TRIGGER_SPAWN	1 //mxd
 #define SF_ANIMATED			2 //mxd
 #define SF_ANIMATED_FAST	4 //mxd
@@ -930,6 +934,7 @@ static void MiscMagicPortalUse(edict_t* self, edict_t* other, edict_t* activator
 	self->impact_debounce_time = level.time + 4.0f;
 }
 
+#undef SF_START_OFF //mxd. Avoid compiler warnings...
 #define SF_START_OFF	1 //mxd
 
 // QUAKED misc_magic_portal (1 .5 0) (-16 -16 -32) (16 16 32)  START_OFF
@@ -968,6 +973,8 @@ void SP_misc_magic_portal(edict_t* self)
 #pragma endregion
 
 #pragma region ========================== sound_ambient_xxx ==========================
+
+#undef SF_START_OFF //mxd. Avoid compiler warnings...
 
 #define SF_NON_LOCAL	1 //mxd
 #define SF_START_OFF	2 //mxd
