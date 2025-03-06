@@ -258,17 +258,11 @@ void SP_trigger_Gravity(edict_t* self) //TODO: rename to SP_trigger_gravity.
 
 #pragma endregion
 
-//----------------------------------------------------------------------
-// Monster Jump Field
-//----------------------------------------------------------------------
+#pragma region ========================== trigger_monsterjump ==========================
 
-void MonsterJumpField_Touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void TriggerMonsterJumpTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'MonsterJumpField_Touch' in original logic.
 {
-	if (other->flags & (FL_FLY | FL_SWIM) )
-		return;
-	if (other->svflags & SVF_DEADMONSTER)
-		return;
-	if ( !(other->svflags & SVF_MONSTER))
+	if ((other->flags & (FL_FLY | FL_SWIM)) || (other->svflags & SVF_DEADMONSTER) || !(other->svflags & SVF_MONSTER))
 		return;
 
 	VectorMA(other->velocity, self->speed, self->movedir, other->velocity);
@@ -297,8 +291,10 @@ void SP_trigger_MonsterJump(edict_t *self)
 	else
 		self->accel = st.height;
 
-	self->touch = MonsterJumpField_Touch;
+	self->touch = TriggerMonsterJumpTouch;
 }
+
+#pragma endregion
 
 //----------------------------------------------------------------------
 // Monster Go to Buoy Trigger
