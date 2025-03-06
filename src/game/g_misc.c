@@ -136,16 +136,13 @@ static void FuncAreaportalUse(edict_t* ent, edict_t* other, edict_t* activator) 
 	gi.SetAreaPortalState(ent->style, ent->count);
 }
 
-/*QUAKED func_areaportal (0 0 0) ?
-
-	This is a non-visible object that divides the world into
-	areas that are seperated when this portal is not activated.
-	Usually enclosed in the middle of a door.
-*/
-void SP_func_areaportal (edict_t *ent)
+// QUAKED func_areaportal (0 0 0) ?
+// This is a non-visible object that divides the world into areas that are separated when this portal is not activated.
+// Usually enclosed in the middle of a door.
+void SP_func_areaportal(edict_t* ent)
 {
 	ent->use = FuncAreaportalUse;
-	ent->count = 0;		// allways start closed;
+	ent->count = 0; // Always start closed.
 }
 
 #pragma endregion
