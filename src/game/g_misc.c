@@ -707,71 +707,50 @@ void SP_func_object(edict_t* self)
 
 #pragma endregion
 
-void ItemSpitterSpit(edict_t *self,edict_t *owner,edict_t *attacker)
+#pragma region ========================== item_spitter ==========================
+
+#define SF_NOFLASH	1 //mxd
+
+static void ItemSpitterUse(edict_t* self, edict_t* owner, edict_t* attacker) //mxd. Named 'ItemSpitterSpit' in original logic.
 {
-	int i1;
-	gitem_t	*item;
-	edict_t *newitem;
-	vec3_t forward, holdangles,holdorigin;
-	float delta;
-	
-	if ((!self->target) || (!self->style))
-	{
+	if (self->target == NULL || self->style == 0)
 		return;
-	}
 
-	self->style = 0;	// Show spitter has been used
+	self->style = 0; // Mark spitter as used.
 
-	delta =(float) 360 / self->count;
-	VectorCopy(owner->s.angles,holdangles);
-	holdangles[YAW]= 0;
+	const float delta = 360.0f / (float)self->count;
+	vec3_t hold_angles = { owner->s.angles[0], 0.0f, owner->s.angles[2] };
+	gitem_t* item = P_FindItemByClassname(self->target);
 
-	for (i1 = 0;i1 < self->count;++i1)
+	for (int i = 0; i < self->count; i++)
 	{
-		item = P_FindItemByClassname(self->target);
+		edict_t* new_item = G_Spawn();
 
-		if (!item)	// Must be an object not an item
+		vec3_t forward;
+		AngleVectors(hold_angles, forward, NULL, NULL);
+
+		VectorCopy(self->s.origin, new_item->s.origin);
+		VectorMA(new_item->s.origin, self->dmg_radius, forward, new_item->s.origin);
+
+		if (self->mass != 0)
+			new_item->spawnflags |= self->mass;
+
+		if (item == NULL) // Must be an object, not an item.
 		{
-			newitem = G_Spawn();
-			newitem->classname = ED_NewString(self->target);
-
-			AngleVectors(holdangles,forward,NULL,NULL);
-
-			VectorCopy(self->s.origin,newitem->s.origin);
-			VectorMA(newitem->s.origin, self->dmg_radius, forward, newitem->s.origin);
-
-			if (self->mass)
-				newitem->spawnflags |= self->mass;
-
-			ED_CallSpawn(newitem);
-
-			VectorCopy(newitem->s.origin,holdorigin);
-			if (!(self->spawnflags & 1))
-				gi.CreateEffect(NULL, FX_PICKUP, 0, holdorigin, "");
-
+			new_item->classname = ED_NewString(self->target);
+			ED_CallSpawn(new_item);
 		}
 		else
 		{
-			newitem = G_Spawn();
-			newitem->movetype = PHYSICSTYPE_STEP;
-			AngleVectors(holdangles,forward,NULL,NULL);
-
-			VectorCopy(self->s.origin,newitem->s.origin);
-			VectorMA(newitem->s.origin, self->dmg_radius, forward, newitem->s.origin);
-
-			if (self->mass)
-				newitem->spawnflags |= self->mass;
-
-			SpawnItem(newitem, item);
-
-			VectorCopy(newitem->s.origin,holdorigin);
-			if (!(self->spawnflags & 1))
-				gi.CreateEffect(NULL, FX_PICKUP, 0, holdorigin, "");
+			new_item->movetype = PHYSICSTYPE_STEP;
+			SpawnItem(new_item, item);
 		}
 
-		holdangles[YAW] += delta;
-	}
+		if (!(self->spawnflags & SF_NOFLASH))
+			gi.CreateEffect(NULL, FX_PICKUP, 0, new_item->s.origin, "");
 
+		hold_angles[YAW] += delta;
+	}
 }
 
 /*QUAKED item_spitter (0 .5 .8) (-4 -4 -4)  (4 4 4)	NOFLASH
@@ -793,7 +772,7 @@ void SP_item_spitter(edict_t *self)
 	VectorSet(self->mins,-4,-4,-4);
 	VectorSet(self->maxs,4,4,4);
 
-	self->use = ItemSpitterSpit;
+	self->use = ItemSpitterUse;
 
 	self->solid = SOLID_NOT;
 
@@ -809,7 +788,7 @@ void SP_item_spitter(edict_t *self)
 	gi.linkentity (self);
 }
 
-//=================================================================================
+#pragma endregion
 
 // update the spawner so that we will rematerialise in a different position
 void respawner_touch	(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
