@@ -1054,27 +1054,6 @@ void SP_misc_magic_portal(edict_t* self)
 
 #pragma endregion
 
-void flame_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
-{
-	if (other->damage_debounce_time < level.time)
-	{
-		other->damage_debounce_time = level.time + 0.2;
-
-		T_Damage (other, world, world, other->s.origin, vec3_origin, vec3_origin, 10, 0, DAMAGE_SPELL|DAMAGE_AVOID_ARMOR,MOD_DIED);//Fixme: propper params.
-	}
-}
-
-void flame_think (edict_t *self)
-{
-//	self->s.frame++;
-//	if (self->s.frame > 5)
-//		self->s.frame = 0;
-
-//	self->nextthink = level.time + FRAMETIME;
-	self->nextthink = level.time + 200;
-}
-
-
 void soundambient_think(edict_t *self)
 {
 	byte	style,wait,attenuation,volume;
