@@ -1699,16 +1699,21 @@ void SkyFly(edict_t* self) //TODO: replace with G_SetToFree()?
 
 #pragma endregion
 
-void fire_spark_think (edict_t *self)
+#pragma region ========================== misc_fire_sparker ==========================
+
+#define SF_FIREBALL	1 //mxd
+
+static void MiscFireSparkThink(edict_t* self) //mxd. Named 'fire_spark_think' in original logic.
 {
-	if(self->delay && self->delay < level.time)
+	if (self->delay > 0.0f && self->delay < level.time)
 	{
 		G_FreeEdict(self);
-		return;
 	}
-
-	self->think = fire_spark_think;
-	self->nextthink = level.time + 0.1;//self->wait;
+	else
+	{
+		self->think = MiscFireSparkThink;
+		self->nextthink = level.time + 0.1f;
+	}
 }
 
 void fire_spark_gone (edict_t *self, edict_t *other, edict_t *activator)
@@ -1724,7 +1729,7 @@ void fire_spark_use (edict_t *self, edict_t *other, edict_t *activator)
 
 	self->use = fire_spark_gone;
 
-	self->think = fire_spark_think;
+	self->think = MiscFireSparkThink;
 	self->nextthink = level.time + 0.1;
 }
 
@@ -1752,4 +1757,4 @@ void SP_misc_fire_sparker (edict_t *self)
 	self->use = fire_spark_use;
 }
 
-// end
+#pragma endregion
