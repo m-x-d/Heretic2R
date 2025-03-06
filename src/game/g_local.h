@@ -796,8 +796,6 @@ typedef struct gclient_s
 extern qboolean FindTarget(edict_t* self);
 extern void MG_PostDeathThink(edict_t* self);
 extern qboolean movable(edict_t* ent);
-extern qboolean EntReflecting(const edict_t* ent, qboolean check_monster, qboolean check_player);
-extern void SkyFly(edict_t* self);
 
 // For simplicity of use.. take it out later. //TODO: mxd. Take it out... later?
 #define BUOY_DEBUG			showbuoys->value

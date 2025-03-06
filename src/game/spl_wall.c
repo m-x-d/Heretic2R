@@ -9,6 +9,7 @@
 #include "g_Physics.h"
 #include "g_playstats.h"
 #include "FX.h"
+#include "Utilities.h" //mxd
 #include "Vector.h"
 #include "g_local.h"
 

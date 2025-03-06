@@ -1645,67 +1645,6 @@ void SP_misc_remote_camera(edict_t* self)
 
 #pragma endregion
 
-#pragma region ========================== Utility functions ==========================
-
-#define SF_ANIMATED	2 //mxd
-
-// Spawns a client model animation.
-// spawnflags & 2 is a designer flag whether to animate or not.
-// If the model is supposed to animate, the hi bit of the type is set.
-// If the model is static, then the default frame stored on the client is used.
-// Valid scale ranges from 1/50th to 5.
-void SpawnClientAnim(edict_t* self, byte type, const char* sound) //TODO: add declaration to g_misc.h
-{
-	if (self->spawnflags & SF_ANIMATED) // Animate it.
-	{
-		type |= 0x80;
-
-		if (sound != NULL)
-		{
-			self->s.sound = (byte)gi.soundindex(sound);
-			self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_STATIC;
-		}
-	}
-
-	const int scale = (byte)(self->s.scale * 50.0f);
-	assert((scale > 0) && (scale < 255));
-	const byte b_skin = (byte)self->s.skinnum;
-
-	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_ANIMATE, CEF_BROADCAST, self->s.origin, "bbbv", type, (byte)scale, b_skin, self->s.angles);
-	self->s.effects |= EF_ALWAYS_ADD_EFFECTS;
-}
-
-// A check to see if ent should reflect.
-qboolean EntReflecting(const edict_t* ent, const qboolean check_monster, const qboolean check_player) //TODO: move declaration to g_misc.h
-{
-	if (ent == NULL)
-		return false;
-
-	if (check_monster && (ent->svflags & SVF_MONSTER) && (ent->svflags & SVF_REFLECT))
-		return true;
-
-	if (check_player && ent->client != NULL)
-	{
-		const playerinfo_t* info = &ent->client->playerinfo; //mxd
-
-		if (info->reflect_timer > level.time)
-			return true;
-
-		// Possibly, we might want to reflect this if the player has gold armor.
-		if (info->pers.armortype == ARMOR_TYPE_GOLD && info->pers.armor_count > 0.0f && irand(0, 100) < 30)
-			return true;
-	}
-
-	return false;
-}
-
-void SkyFly(edict_t* self) //TODO: replace with G_SetToFree()?
-{
-	G_SetToFree(self);
-}
-
-#pragma endregion
-
 #pragma region ========================== misc_fire_sparker ==========================
 
 #define SF_FIREBALL	1 //mxd

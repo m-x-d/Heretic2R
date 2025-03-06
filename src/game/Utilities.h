@@ -22,3 +22,8 @@ extern void CalculatePIV(const edict_t* player);
 
 extern qboolean OkToAutotarget(const edict_t* shooter, const edict_t* target);
 extern qboolean ThinkTime(const edict_t* self);
+
+//mxd. Defined in g_misc.c in original logic.
+extern void SpawnClientAnim(edict_t* self, byte type, const char* sound);
+extern qboolean EntReflecting(const edict_t* ent, qboolean check_monster, qboolean check_player);
+extern void SkyFly(edict_t* self);

@@ -11,6 +11,7 @@
 #include "m_beast.h"
 #include "FX.h"
 #include "Random.h"
+#include "Utilities.h" //mxd
 #include "Vector.h"
 #include "g_local.h"
 

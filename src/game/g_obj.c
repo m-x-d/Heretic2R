@@ -18,11 +18,9 @@
 #include "g_combat.h" //mxd
 #include "g_playstats.h"
 #include "m_stats.h"
-
+#include "Utilities.h" //mxd
 
 void SpawnFlame(edict_t *self,vec3_t origin);
-void SpawnClientAnim(edict_t *self, byte type, char *sound);
-
 
 void ObjectStaticsInit(void) 
 {

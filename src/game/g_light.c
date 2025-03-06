@@ -11,6 +11,7 @@
 #include "g_local.h"
 #include "g_misc.h"
 #include "g_DefaultMessageHandler.h"
+#include "Utilities.h" //mxd
 #include "vector.h"
 
 #define LIGHT_STARTOFF	8
@@ -19,7 +20,6 @@
 
 static void TorchUse (edict_t *self, edict_t *other, edict_t *activator);
 static void TorchStart (edict_t *self);
-void SpawnClientAnim(edict_t *self, byte type, char *sound);
 void create_fire_touch (edict_t *owner,vec3_t origin);
 
 void LightStaticsInit()

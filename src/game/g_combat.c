@@ -20,6 +20,7 @@
 #include "p_view.h" //mxd
 #include "FX.h"
 #include "Random.h"
+#include "Utilities.h" //mxd
 #include "Vector.h"
 
 gitem_armor_t silver_armor_info	= { MAX_SILVER_ARMOR, SILVER_HIT_MULT, SILVER_SPELL_MULT };

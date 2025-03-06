@@ -10,6 +10,7 @@
 #include "g_playstats.h"
 #include "p_morph.h" //mxd
 #include "FX.h"
+#include "Utilities.h" //mxd
 #include "Vector.h"
 #include "g_local.h"
 
