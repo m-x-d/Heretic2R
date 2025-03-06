@@ -84,9 +84,9 @@ static void TriggerPushTouch(edict_t* self, edict_t* other, cplane_t* plane, csu
 		G_FreeEdict(self);
 }
 
-void push_touch_trigger(edict_t *self, edict_t *activator)
+static void TriggerPushActivated(edict_t* self, edict_t* activator) //mxd. Named 'push_touch_trigger' in original logic.
 {
-	TriggerPushTouch(self,activator,NULL,NULL);
+	TriggerPushTouch(self, activator, NULL, NULL);
 }
 
 void TrigPush_Deactivate(edict_t *self, G_Message_t *msg)
@@ -137,7 +137,7 @@ void SP_trigger_push(edict_t *self)
 
 	// Can't really use the normal trigger setup cause it doesn't update velocity often enough
 	self->touch =  TriggerPushTouch;
-	self->TriggerActivated = push_touch_trigger;
+	self->TriggerActivated = TriggerPushActivated;
 }
 
 #pragma endregion
