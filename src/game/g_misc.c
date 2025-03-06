@@ -1161,17 +1161,18 @@ static void SoundAmbientThink(edict_t* self) //mxd. Named 'soundambient_think' i
 	self->think = NULL;
 }
 
-void sound_ambient_use (edict_t *self, edict_t *other, edict_t *activator)
+static void SoundAmbientUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'sound_ambient_use' in original logic.
 {
-	if (self->count)	// This is just a flag to show it's on
+	if (self->count != 0) // This is just a flag to show it's on.
 	{
 		self->count = 0;
-		gi.RemoveEffects(&self->s,0);
+		gi.RemoveEffects(&self->s, 0);
 	}
 	else
+	{
 		SoundAmbientThink(self);
+	}
 }
-
 
 void sound_ambient_init(edict_t *self)
 {
@@ -1214,7 +1215,7 @@ void sound_ambient_init(edict_t *self)
 		// if we are here, then this ambient sound should have an origin
 		assert(Vec3NotZero(self->s.origin));
 
-	self->use = sound_ambient_use;
+	self->use = SoundAmbientUse;
 
 	gi.linkentity(self);
 }
