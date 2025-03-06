@@ -317,15 +317,14 @@ void SprayDebris(const edict_t* self, const vec3_t spot, byte num_chunks, float 
 	}
 }
 
-void DefaultObjectDieHandler(edict_t *self, G_Message_t *msg)
+void DefaultObjectDieHandler(edict_t* self, G_Message_t* msg)
 {
-	edict_t *inflictor;
-	
+	edict_t* inflictor;
 	ParseMsgParms(msg, "ee", &inflictor, &inflictor);
 
 	G_UseTargets(self, inflictor);
 
-	if (self->target_ent)		
+	if (self->target_ent != NULL)
 		BecomeDebris(self->target_ent);
 
 	BecomeDebris(self);
