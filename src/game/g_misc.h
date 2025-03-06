@@ -16,7 +16,7 @@ extern void SP_info_notnull(edict_t* self);
 extern void SP_func_wall(edict_t* self);
 extern void SP_func_object(edict_t* self);
 extern void SP_item_spitter(edict_t* self);
-extern void misc_update_spawner(edict_t* ent);
+extern void SP_misc_update_spawner(edict_t* ent);
 extern void SP_misc_teleporter(edict_t* ent);
 extern void SP_misc_teleporter_dest(edict_t* ent);
 extern void SP_misc_magic_portal(edict_t* self);

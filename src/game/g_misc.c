@@ -499,7 +499,7 @@ static void MiscUpdateSpawnerTouch(edict_t* self, edict_t* other, cplane_t* plan
 
 // QUAKED misc_update_spawner (.5 .5 .5) ?
 // This creates the spawner update entity, which updates the spawner position when triggered.
-void misc_update_spawner(edict_t* ent) //TODO: Rename to SP_misc_update_spawner?
+void SP_misc_update_spawner(edict_t* ent)
 {
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;

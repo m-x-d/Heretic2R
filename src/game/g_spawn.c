@@ -344,7 +344,7 @@ spawn_t	spawns[]=
 	//{"misc_actor", SP_misc_actor,-1},
 	{"misc_teleporter", SP_misc_teleporter,CID_TELEPORTER},
 	{"misc_teleporter_dest", SP_misc_teleporter_dest,-1},
-	{"misc_update_spawner", misc_update_spawner, CID_TRIGGER},
+	{"misc_update_spawner", SP_misc_update_spawner, CID_TRIGGER},
 	{"misc_remote_camera", SP_misc_remote_camera,-1},
 	{"misc_magic_portal", SP_misc_magic_portal, -1},
 	{"misc_fire_sparker", SP_misc_fire_sparker, -1},
