@@ -753,39 +753,31 @@ static void ItemSpitterUse(edict_t* self, edict_t* owner, edict_t* attacker) //m
 	}
 }
 
-/*QUAKED item_spitter (0 .5 .8) (-4 -4 -4)  (4 4 4)	NOFLASH
-When targeted it will spit out an number of items in various directions
--------SPAWN FLAGS -----------
-NOFLASH - no flash is created when item is 'spit out'
----------KEYS-----------------
-target - classname of item or object being spit out
-count - number of items being spit out (default 1)
-radius - distance from item_spitter origin that items will be spawned
-spawnflags2 - the spawnflags for the item being created.
-*/
-void SP_item_spitter(edict_t *self)
+// QUAKED item_spitter (0 .5 .8) (-4 -4 -4)  (4 4 4)	NOFLASH
+// When targeted it will spit out an number of items in various directions
+
+// Spawnflags:
+// NOFLASH - No flash is created when item is 'spit out'.
+
+// Variables:
+// target		- Classname of item or object being spit out.
+// count		- Number of items being spit out (default 1).
+// radius		- Distance from item_spitter origin that items will be spawned.
+// spawnflags2	- The spawnflags for the item being created.
+void SP_item_spitter(edict_t* self)
 {
-	self->style = 1;	// To show it hasn't been used yet
-
+	self->style = 1; // To show it hasn't been used yet.
 	self->movetype = PHYSICSTYPE_NONE;
-
-	VectorSet(self->mins,-4,-4,-4);
-	VectorSet(self->maxs,4,4,4);
-
+	self->solid = SOLID_NOT;
+	self->count = max(1, self->count);
+	self->dmg_radius = (float)st.radius;
+	self->mass = st.spawnflags2; //TODO: Why is mass used to store spawnflags? Can't we just use spawnflags for that?..
 	self->use = ItemSpitterUse;
 
-	self->solid = SOLID_NOT;
+	VectorSet(self->mins, -4.0f, -4.0f, -4.0f);
+	VectorSet(self->maxs,  4.0f,  4.0f,  4.0f);
 
-	if (!self->count)
-		self->count = 1;
-
-	self->dmg_radius = st.radius;
-	if (st.spawnflags2)
-		self->mass = st.spawnflags2;
-	else
-		self->mass = 0;
-
-	gi.linkentity (self);
+	gi.linkentity(self);
 }
 
 #pragma endregion
