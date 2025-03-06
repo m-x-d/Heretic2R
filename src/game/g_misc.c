@@ -1507,210 +1507,101 @@ static void MiscRemoteCameraThink(edict_t* self) //mxd. Named 'misc_remote_camer
 	}
 }
 
-void Use_misc_remote_camera(edict_t *Self,edict_t *Other,edict_t *Activator)
+static void MiscRemoteCameraUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'Use_misc_remote_camera' in original logic.
 {
-	vec3_t	Forward;
-
-	// ********************************************************************************************
 	// If I am already active, just return, else flag that I am active.
-	// ********************************************************************************************
-
-	if(Self->count)
+	if (self->count != 0)
 	{
-		if(Self->spawnflags&2)
-		{
-			// I am a scripted camera, so free myself before returning.
-	
-			MiscRemoteCameraRemove(Self);
-		}
-		
+		if (self->spawnflags & SF_SCRIPTED)
+			MiscRemoteCameraRemove(self); // I am a scripted camera, so free myself before returning.
+
 		return;
 	}
 
-	Self->count=1;
+	self->count = 1;
 
-	// ********************************************************************************************
-	// Signal to client(s) that a remote camera view is active,
-	// ********************************************************************************************
-
-	if(Self->spawnflags&1)
+	// Signal to client(s) that a remote camera view is active.
+	if (self->spawnflags & SF_ACTIVATING)
 	{
-		// Signal to just the activator (i.e. person who was ultimately responsible for triggering the
-		// remote camera) that their camera view has changed to a remote camera view..
-
-		Self->activator=Activator;
-
-		Self->activator->client->RemoteCameraLockCount++;
-
-		Self->activator->client->RemoteCameraNumber=Self->s.number;
+		// Signal to just the activator (i.e. person who was ultimately responsible for triggering the remote camera)
+		// that their camera view has changed to a remote camera view.
+		self->activator = activator;
+		self->activator->client->RemoteCameraLockCount++;
+		self->activator->client->RemoteCameraNumber = self->s.number;
 	}
 	else
 	{
 		// Signal to all clients that their camera view has changed to a remote camera view..
-
-		int		i;
-		edict_t *cl_ent;
-	
-		for(i=0;i<game.maxclients;i++)
+		for (int i = 0; i < game.maxclients; i++)
 		{
-			cl_ent=g_edicts+1+i;
-		
-			if(!cl_ent->inuse)
-				continue;
-	
-			cl_ent->client->RemoteCameraLockCount++;
+			const edict_t* client = &g_edicts[i + 1];
 
-			cl_ent->client->RemoteCameraNumber=Self->s.number;
+			if (client->inuse)
+			{
+				client->client->RemoteCameraLockCount++;
+				client->client->RemoteCameraNumber = self->s.number;
+			}
 		}
 	}
 
-	// ********************************************************************************************
-	// Attempt to find my owner entity (i.e. what I'm fixed to). If nothing is found, then I am a
-	// static camera so set up my position here (it will remain unchanged hereafter).
-	// ********************************************************************************************
-
-	if(!Self->pathtarget)
+	// Attempt to find my owner entity (i.e. what I'm fixed to).
+	// If nothing is found, then I am a static camera so set up my position here (it will remain unchanged hereafter).
+	if (self->pathtarget == NULL)
 	{
 		// I am static, so set up my position (which will not change hereafter).
-
-		if(Self->spawnflags&1)
+		if (self->spawnflags & SF_ACTIVATING)
 		{
 			// Just for the activator.
+			self->enemy = NULL;
 
-			int	i;
-
-			Self->enemy=NULL;
-
-			for(i=0;i<3;i++)
-				Self->activator->client->ps.remote_vieworigin[i]=Self->s.origin[i]*8.0;
+			for (int i = 0; i < 3; i++)
+				self->activator->client->ps.remote_vieworigin[i] = self->s.origin[i] * 8.0f;
 		}
 		else
 		{
 			// For all clients.
+			self->enemy = NULL;
 
-			int		i,j;
-			edict_t *cl_ent;
-	
-			Self->enemy=NULL;
-
-			for(i=0;i<game.maxclients;i++)
+			for (int i = 0; i < game.maxclients; i++)
 			{
-				cl_ent=g_edicts+1+i;
-		
-				if(!cl_ent->inuse)
-					continue;
-		
-				for(j=0;j<3;j++)
-					cl_ent->client->ps.remote_vieworigin[j]=Self->s.origin[j]*8.0;
+				const edict_t* client = &g_edicts[i + 1];
+
+				if (client->inuse)
+					for (int j = 0; j < 3; j++)
+						client->client->ps.remote_vieworigin[j] = self->s.origin[j] * 8.0f;
 			}
 		}
 	}
 	else
 	{
-		Self->enemy=G_Find(NULL,FOFS(targetname),Self->pathtarget);
+		self->enemy = G_Find(NULL, FOFS(targetname), self->pathtarget);
 
-		if(Self->enemy||(Self->spawnflags&2))
+		if (self->enemy != NULL || (self->spawnflags & SF_SCRIPTED))
 		{
-			// I am attatched to another (possibly moving) entity, so update my position.
-
-			if(Self->enemy)
-			{
-				VectorCopy(Self->enemy->s.origin,Self->s.origin);
-			}
+			// I am attached to another (possibly moving) entity, so update my position.
+			if (self->enemy != NULL)
+				VectorCopy(self->enemy->s.origin, self->s.origin);
 
 			// Update the position on client(s).
-
-			if(Self->spawnflags&1)
-			{
-				// Just for the activator.
-
-				if(Self->activator->client->RemoteCameraNumber==Self->s.number)
-				{
-					int	i;
-
-					for(i=0;i<3;i++)
-						Self->activator->client->ps.remote_vieworigin[i]=Self->s.origin[i]*8.0;
-				}
-			}	
-			else
-			{
-				// For all clients.
-
-				int		i;
-				edict_t *cl_ent;
-		
-				for(i=0;i<game.maxclients;i++)
-				{
-					cl_ent=g_edicts+1+i;
-			
-					if(!cl_ent->inuse)
-						continue;
-			
-					if(cl_ent->client->RemoteCameraNumber==Self->s.number)
-					{
-						int j;
-
-						for(j=0;j<3;j++)
-							cl_ent->client->ps.remote_vieworigin[j]=Self->s.origin[j]*8.0;
-					}
-				}
-			}
+			MiscRemoteCameraUpdateVieworigin(self); //mxd
 		}
 	}
-	// ********************************************************************************************
-	// Find my target entity and then orientate myself to look at it.
-	// ********************************************************************************************
 
-	Self->targetEnt=G_Find(NULL,FOFS(targetname),Self->target);
-	VectorSubtract(Self->targetEnt->s.origin,Self->s.origin,Forward);
-	VectorNormalize(Forward);
-	vectoangles(Forward,Self->s.angles);
-	Self->s.angles[PITCH]=-Self->s.angles[PITCH];
+	// Find my target entity and then orientate myself to look at it.
+	self->targetEnt = G_Find(NULL, FOFS(targetname), self->target);
+
+	vec3_t forward;
+	VectorSubtract(self->targetEnt->s.origin, self->s.origin, forward);
+	VectorNormalize(forward);
+	vectoangles(forward, self->s.angles);
+	self->s.angles[PITCH] = -self->s.angles[PITCH];
 
 	// Update the angles on client(s).
+	MiscRemoteCameraUpdateViewangles(self); //mxd
 
-	if(Self->spawnflags&1)
-	{
-		// Just for the activator.
-
-		if(Self->activator->client->RemoteCameraNumber==Self->s.number)
-		{
-			int	i;
-
-			for(i=0;i<3;i++)
-				Self->activator->client->ps.remote_viewangles[i]=Self->s.angles[i];
-		}
-	}
-	else
-	{
-		// For all clients.
-
-		int		i;
-		edict_t *cl_ent;
-
-		for(i=0;i<game.maxclients;i++)
-		{
-			cl_ent=g_edicts+1+i;
-	
-			if(!cl_ent->inuse)
-				continue;
-
-			if(cl_ent->client->RemoteCameraNumber==Self->s.number)
-			{
-				int j;
-				
-				for(j=0;j<3;j++)
-					cl_ent->client->ps.remote_viewangles[j]=Self->s.angles[j];
-			}
-		}
-	}
-
-	// ********************************************************************************************
 	// Setup next think stuff.
-	// ********************************************************************************************
-	
-	Self->think=MiscRemoteCameraThink;
-	Self->nextthink=level.time + FRAMETIME;
+	self->think = MiscRemoteCameraThink;
+	self->nextthink = level.time + FRAMETIME;
 }
 
 void SP_misc_remote_camera(edict_t *Self)
@@ -1732,7 +1623,7 @@ void SP_misc_remote_camera(edict_t *Self)
 	VectorSet(Self->maxs,4,4,4);
 	Self->count=0;
 
-	Self->use=Use_misc_remote_camera;
+	Self->use=MiscRemoteCameraUse;
 	
 	gi.linkentity(Self);
 }
