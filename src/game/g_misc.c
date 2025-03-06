@@ -883,37 +883,19 @@ static void MiscTeleporterDeactivate(edict_t* self, G_Message_t* msg) //mxd. Nam
 	}
 }
 
-void Teleporter_Activate(edict_t *self, G_Message_t *msg)
+static void MiscTeleporterActivate(edict_t* self, G_Message_t* msg) //mxd. Named 'Teleporter_Activate' in original logic.
 {
-	vec3_t	real_origin;
-	edict_t	*effect;
-
 	self->touch = teleporter_touch;
 
-	// if there's no effect already, create a new one
-	if (!self->enemy)
-	{
-		effect = G_Spawn();
-		VectorCopy(self->maxs, effect->maxs);
-		VectorCopy(self->mins, effect->mins);
-		effect->solid = SOLID_NOT;
-		effect->s.effects |= EF_NODRAW_ALWAYS_SEND|EF_ALWAYS_ADD_EFFECTS;
-		self->enemy = effect;
-		gi.linkentity (effect);
-
-		real_origin[0] = ((self->maxs[0] - self->mins[0]) / 2.0) + self->mins[0];
-		real_origin[1] = ((self->maxs[1] - self->mins[1]) / 2.0) + self->mins[1];
-		real_origin[2] = ((self->maxs[2] - self->mins[2]) / 2.0) + self->mins[2];
-
-		if (!(self->spawnflags & 1))
-			effect->PersistantCFX = gi.CreatePersistantEffect(&effect->s, FX_TELEPORT_PAD, CEF_BROADCAST, real_origin, "");
-	}
+	// If there's no effect already, create a new one.
+	if (self->enemy == NULL)
+		MiscTeleporterCreateEffect(self); //mxd
 }
 
 void TeleporterStaticsInit()
 {
 	classStatics[CID_TELEPORTER].msgReceivers[G_MSG_SUSPEND] = MiscTeleporterDeactivate;
-	classStatics[CID_TELEPORTER].msgReceivers[G_MSG_UNSUSPEND] = Teleporter_Activate;
+	classStatics[CID_TELEPORTER].msgReceivers[G_MSG_UNSUSPEND] = MiscTeleporterActivate;
 }
 
 /*QUAKED misc_teleporter (1 0 0) ? NO_MODEL DEATHMATCH_RANDOM START_OFF MULT_DEST
