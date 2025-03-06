@@ -554,7 +554,7 @@ static void MiscTeleporterActivate(edict_t* self, G_Message_t* msg) //mxd. Named
 		MiscTeleporterCreateEffect(self); //mxd
 }
 
-void TeleporterStaticsInit(void) //TODO: rename to MiscTeleporterStaticsInit.
+void MiscTeleporterStaticsInit(void)
 {
 	classStatics[CID_TELEPORTER].msgReceivers[G_MSG_SUSPEND] = MiscTeleporterDeactivate;
 	classStatics[CID_TELEPORTER].msgReceivers[G_MSG_UNSUSPEND] = MiscTeleporterActivate;

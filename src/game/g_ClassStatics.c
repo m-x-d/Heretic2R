@@ -49,7 +49,7 @@ void (*classStaticsInits[NUM_CLASSIDS])(void) =
 	SeraphOverlordStaticsInit,
 	SeraphGuardStaticsInit,
 	AssassinStaticsInit,
-	TeleporterStaticsInit,
+	MiscTeleporterStaticsInit,
 	HighPriestessStaticsInit,
 	TcheckrikStaticsInit,
 	ButtonStaticsInit,
