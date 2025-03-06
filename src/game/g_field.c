@@ -184,12 +184,11 @@ static void TriggerDamageActivate(edict_t* self, G_Message_t* msg) //mxd. Named 
 	gi.linkentity(self);
 }
 
-void TrigDamageStaticsInit()
+void TrigDamageStaticsInit(void) //TODO: rename to TriggerDamageStaticsInit.
 {
 	classStatics[CID_TRIG_DAMAGE].msgReceivers[G_MSG_SUSPEND] = TriggerDamageDeactivate;
 	classStatics[CID_TRIG_DAMAGE].msgReceivers[G_MSG_UNSUSPEND] = TriggerDamageActivate;
 }
-
 
 /*QUAKED trigger_Damage (.5 .5 .5) ? START_OFF TOGGLE SILENT NO_PROTECTION SLOW
 Any entity that Touches this will be Damage.
