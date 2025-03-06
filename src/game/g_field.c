@@ -292,103 +292,83 @@ void SP_trigger_MonsterJump(edict_t* self) //TODO: rename to SP_trigger_monsterj
 
 #pragma endregion
 
-//----------------------------------------------------------------------
-// Monster Go to Buoy Trigger
-//----------------------------------------------------------------------
-#define TSF_BUOY_TOUCH				1
-#define TSF_BUOY_IGNORE_ENEMY		2
-#define TSF_BUOY_TELEPORT_SAFE		4
-#define TSF_BUOY_TELEPORT_UNSAFE	8
-#define TSF_BUOY_FIXED				16
-#define TSF_BUOY_STAND				32
-#define TSF_BUOY_WANDER				64
+#pragma region ========================== trigger_goto_buoy ==========================
 
-void trigger_goto_buoy_execute (edict_t *self, edict_t *monster, edict_t *activator)
+#define SF_BUOY_TOUCH			1
+#define SF_BUOY_IGNORE_ENEMY	2
+#define SF_BUOY_TELEPORT_SAFE	4
+#define SF_BUOY_TELEPORT_UNSAFE	8
+#define SF_BUOY_FIXED			16
+#define SF_BUOY_STAND			32
+#define SF_BUOY_WANDER			64
+
+static void TriggerGotoBuoyExecute(const edict_t* self, edict_t* monster, edict_t* activator) //mxd. Named 'trigger_goto_buoy_execute' in original logic.
 {
-	qboolean	found = false;
-	buoy_t		*found_buoy = NULL;
-	int			i;
+	const buoy_t* found_buoy = NULL;
 
-	for(i = 0; i < level.active_buoys; i++)
+	for (int i = 0; i < level.active_buoys; i++)
 	{
 		found_buoy = &level.buoy_list[i];
-		if(found_buoy->targetname)
-		{
-			if(!strcmp(found_buoy->targetname, self->pathtarget))
-			{
-				found = true;
-				break;
-			}
-		}
+
+		if (found_buoy->targetname != NULL && strcmp(found_buoy->targetname, self->pathtarget) == 0)
+			break;
 	}
 
-	if(!found)
+	if (found_buoy == NULL)
 	{
-		vec3_t	org;
-
-		VectorMA(self->mins, 0.5, self->maxs, org);
+		vec3_t org;
+		VectorMA(self->mins, 0.5f, self->maxs, org);
 		gi.dprintf("trigger_goto_buoy at %s can't find it's pathtargeted buoy %s\n", vtos(org), self->pathtarget);
+
 		return;
 	}
 
-	if(self->spawnflags & TSF_BUOY_TELEPORT_SAFE)
+	if (self->spawnflags & SF_BUOY_TELEPORT_SAFE)
 	{
-		if(MG_MonsterAttemptTeleport(monster, found_buoy->origin, false))
-		{
-			if(BUOY_DEBUG)
-				gi.dprintf("%s was teleported(safely) to %s by trigger_goto_buoy\n", monster->classname, found_buoy->targetname);
-		}
-		return;
-	}
-	else if(self->spawnflags & TSF_BUOY_TELEPORT_UNSAFE)
-	{
-		if(MG_MonsterAttemptTeleport(monster, found_buoy->origin, true))
-		{
-			if(BUOY_DEBUG)
-				gi.dprintf("%s was teleported(unsafely) to %s by trigger_goto_buoy\n", monster->classname, found_buoy->targetname);
-		}
+		MG_MonsterAttemptTeleport(monster, found_buoy->origin, false);
 		return;
 	}
 
-	if(BUOY_DEBUG)
-		gi.dprintf("%s forced to go to buoy %s by trigger_goto_buoy\n", monster->classname, self->pathtarget);
-
-	if(self->spawnflags&TSF_BUOY_IGNORE_ENEMY)//make him ignore enemy until gets to dest buoy
+	if (self->spawnflags & SF_BUOY_TELEPORT_UNSAFE)
 	{
-		monster->ai_mood_flags|=AI_MOOD_FLAG_IGNORE_ENEMY;
-		if(BUOY_DEBUG)
-			gi.dprintf("%s forced to ignore enemy by trigger_goto_buoy\n", monster->classname, self->pathtarget);
+		MG_MonsterAttemptTeleport(monster, found_buoy->origin, true);
+		return;
 	}
+
+	if (self->spawnflags & SF_BUOY_IGNORE_ENEMY) // Make him ignore enemy until gets to dest buoy.
+		monster->ai_mood_flags |= AI_MOOD_FLAG_IGNORE_ENEMY;
 
 	monster->spawnflags &= ~MSF_FIXED;
-	monster->ai_mood_flags|=AI_MOOD_FLAG_FORCED_BUOY;
+	monster->ai_mood_flags |= AI_MOOD_FLAG_FORCED_BUOY;
 	monster->forced_buoy = found_buoy->id;
 	monster->ai_mood = AI_MOOD_NAVIGATE;
 
-	if(!monster->enemy)
+	if (monster->enemy == NULL)
 		monster->enemy = activator;
 
 	MG_RemoveBuoyEffects(monster);
 	MG_MakeConnection(monster, NULL, false);
 
-	if(self->spawnflags&TSF_BUOY_FIXED)
-		monster->ai_mood_flags|=AI_MOOD_FLAG_GOTO_FIXED;
-		
-	if(self->spawnflags&TSF_BUOY_STAND)
-		monster->ai_mood_flags|=AI_MOOD_FLAG_GOTO_STAND;
+	if (self->spawnflags & SF_BUOY_FIXED)
+		monster->ai_mood_flags |= AI_MOOD_FLAG_GOTO_FIXED;
 
-	if(self->spawnflags&TSF_BUOY_WANDER)
-		monster->ai_mood_flags|=AI_MOOD_FLAG_GOTO_WANDER;
+	if (self->spawnflags & SF_BUOY_STAND)
+		monster->ai_mood_flags |= AI_MOOD_FLAG_GOTO_STAND;
 
-	//make him check mood NOW and get going! Don't wait for current anim to finish!
-	if(classStatics[monster->classID].msgReceivers[MSG_CHECK_MOOD])
-		QPostMessage(monster, MSG_CHECK_MOOD,PRI_DIRECTIVE, "i", monster->ai_mood);
-	else
-	{//no check mood message handler, just send a run and let him wait, i guess!
-		monster->mood_nextthink = 0;
-		QPostMessage(monster, MSG_RUN,PRI_DIRECTIVE, NULL);
+	if (self->spawnflags & SF_BUOY_WANDER)
+		monster->ai_mood_flags |= AI_MOOD_FLAG_GOTO_WANDER;
+
+	// Make him check mood NOW and get going! Don't wait for current anim to finish!
+	if (classStatics[monster->classID].msgReceivers[MSG_CHECK_MOOD] != NULL)
+	{
+		QPostMessage(monster, MSG_CHECK_MOOD, PRI_DIRECTIVE, "i", monster->ai_mood);
 	}
-
+	else
+	{
+		// No MSG_CHECK_MOOD message handler, just send a run and let him wait, I guess!
+		monster->mood_nextthink = 0;
+		QPostMessage(monster, MSG_RUN, PRI_DIRECTIVE, NULL);
+	}
 }
 
 void trigger_goto_buoy_touch_go (edict_t *self)
@@ -405,7 +385,7 @@ void trigger_goto_buoy_touch_go (edict_t *self)
 	if(!(self->enemy->monsterinfo.aiflags&AI_USING_BUOYS))
 		return;
 
-	trigger_goto_buoy_execute(self, self->enemy, self->activator);
+	TriggerGotoBuoyExecute(self, self->enemy, self->activator);
 }
 
 void trigger_goto_buoy_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
@@ -432,7 +412,7 @@ void trigger_goto_buoy_touch (edict_t *self, edict_t *other, cplane_t *plane, cs
 		return;
 	}
 
-	trigger_goto_buoy_execute(self, other, self->activator);
+	TriggerGotoBuoyExecute(self, other, self->activator);
 
 	if(self->wait == -1)
 	{
@@ -465,7 +445,7 @@ void trigger_goto_buoy_use_go (edict_t *self)
 	if(!(monster->monsterinfo.aiflags&AI_USING_BUOYS))
 		return;
 
-	trigger_goto_buoy_execute(self, monster, self->activator);
+	TriggerGotoBuoyExecute(self, monster, self->activator);
 }
 
 void trigger_goto_buoy_use (edict_t *self, edict_t *other, edict_t *activator)
@@ -562,7 +542,7 @@ void SP_trigger_goto_buoy(edict_t *self)
 		self->nextthink = level.time + 0.5;
 	}
 
-	if(self->spawnflags&TSF_BUOY_TOUCH)
+	if(self->spawnflags&SF_BUOY_TOUCH)
 		self->touch = trigger_goto_buoy_touch;
 
 	if(self->targetname)
