@@ -1733,20 +1733,15 @@ static void MiscFireSparkerUse(edict_t* self, edict_t* other, edict_t* activator
 	self->nextthink = level.time + 0.1f;
 }
 
-/*QUAKED misc_fire_sparker (0 0 0) (-4 -4 0) (4 4 8) FIREBALL
-
-  FIREBALL - more of a poofy fireball trail
-
-  Fires of sparks when used...
-  used a second time removes it
-
-  "delay" - how long to live for... (default is forever)
-*/
-
-void SP_misc_fire_sparker (edict_t *self)
+// QUAKED misc_fire_sparker (0 0 0) (-4 -4 0) (4 4 8) FIREBALL
+// Fires sparks when used. Using a second time removes it.
+// Spawnflags:
+// FIREBALL - More of a poofy fireball trail.
+// Variables:
+// delay - How long to live for (default is forever).
+void SP_misc_fire_sparker(edict_t* self)
 {
-
-	if(self->spawnflags & 1)
+	if (self->spawnflags & SF_FIREBALL)
 		self->s.effects |= EF_MARCUS_FLAG1;
 
 	self->svflags |= SVF_ALWAYS_SEND;
