@@ -26,7 +26,7 @@ static void PhoenixMissileTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 	}
 
 	// Are we reflecting?
-	if (self->reflect_debounce_time && EntReflecting(other, true, true))
+	if (self->reflect_debounce_time > 0 && EntReflecting(other, true, true))
 	{
 		Create_rand_relect_vect(self->velocity, self->velocity);
 		Vec3ScaleAssign(PHOENIX_ARROW_SPEED / 2.0f, self->velocity);
