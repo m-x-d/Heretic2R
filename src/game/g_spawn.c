@@ -4,6 +4,7 @@
 #include "g_Shrine.h" //mxd
 #include "g_breakable.h" //mxd
 #include "g_env.h" //mxd
+#include "g_field.h"
 #include "m_monsters.h" //mxd
 #include "p_client.h" //mxd
 #include "g_local.h"
@@ -29,30 +30,23 @@ void SP_func_monsterspawner (edict_t *ent);
 void SP_trigger_Activate(edict_t *self);
 void SP_trigger_Always (edict_t *ent);
 void SP_trigger_Counter (edict_t *ent);
-void SP_trigger_Damage(edict_t *self);
 void SP_trigger_Deactivate(edict_t *self);
 void SP_trigger_Elevator (edict_t *ent);
-void SP_trigger_fogdensity(edict_t *self);
-void SP_trigger_Gravity(edict_t *self);
 void SP_trigger_mappercentage(edict_t *self);
 void SP_trigger_quit_to_menu(edict_t *self);
 void SP_trigger_mission_give(edict_t *self);
 void SP_trigger_mission_take(edict_t *self);
-void SP_trigger_MonsterJump(edict_t *self);
-void SP_trigger_goto_buoy(edict_t *self);
 void SP_trigger_Multiple (edict_t *ent);
 void SP_trigger_Once (edict_t *ent);
 void SP_trigger_PlayerPushButton (edict_t *ent);
 void SP_trigger_PlayerPushLever (edict_t *ent);
 void SP_trigger_PlayerUsePuzzle (edict_t *ent);
-void SP_trigger_push(edict_t *self);
 void SP_trigger_puzzle (edict_t *ent);
 void SP_trigger_quake (edict_t *ent);
 void SP_trigger_Relay (edict_t *ent);
 void SP_trigger_lightning (edict_t *ent);
 void SP_trigger_farclip (edict_t *ent);
 void SP_trigger_endgame(edict_t *self);
-
 
 void SP_choose_CDTrack(edict_t *self);
 

@@ -228,6 +228,7 @@
     <ClInclude Include="g_DefaultMessageHandler.h" />
     <ClInclude Include="g_Edict.h" />
     <ClInclude Include="g_env.h" />
+    <ClInclude Include="g_field.h" />
     <ClInclude Include="g_HitLocation.h" />
     <ClInclude Include="g_items.h" />
     <ClInclude Include="g_itemstats.h" />

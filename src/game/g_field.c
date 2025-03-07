@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include "g_field.h" //mxd
 #include "g_combat.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "g_misc.h" //mxd

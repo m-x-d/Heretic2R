@@ -7,6 +7,7 @@
 #include "g_ClassStatics.h"
 #include "c_actors.h" //mxd
 #include "g_breakable.h" //mxd
+#include "g_field.h" //mxd
 #include "g_misc.h" //mxd
 #include "m_monsters.h" //mxd
 
@@ -21,8 +22,6 @@ void FuncDoorStaticsInit();
 void ButtonStaticsInit();
 void LeverStaticsInit();
 void FlameThrowerStaticsInit();
-void TrigDamageStaticsInit();
-void TrigPushStaticsInit();
 
 void (*classStaticsInits[NUM_CLASSIDS])(void) = 
 {
