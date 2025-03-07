@@ -402,7 +402,7 @@
     <ClCompile Include="g_func.c">
       <Filter>src\Game objects</Filter>
     </ClCompile>
-    <ClCompile Include="g_flamethrow.c">
+    <ClCompile Include="g_flamethrower.c">
       <Filter>src\Game objects</Filter>
     </ClCompile>
     <ClCompile Include="g_env.c">
