@@ -58,7 +58,7 @@ void (*classStaticsInits[NUM_CLASSIDS])(void) =
 	TBeastStaticsInit,
 	ImpStaticsInit,
 	LeverStaticsInit,
-	FlameThrowerStaticsInit,
+	FlamethrowerStaticsInit,
 
 	MotherStaticsInit,
 	VictimSsithraCinStaticsInit,

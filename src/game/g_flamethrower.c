@@ -96,7 +96,7 @@ static void FlamethrowerActivate(edict_t* self, G_Message_t* msg) //mxd. Named '
 	gi.linkentity(self);
 }
 
-void FlameThrowerStaticsInit(void) //TODO: rename to FlamethrowerStaticsInit
+void FlamethrowerStaticsInit(void)
 {
 	classStatics[CID_FLAMETHROWER].msgReceivers[G_MSG_SUSPEND] = FlamethrowerDeactivate;
 	classStatics[CID_FLAMETHROWER].msgReceivers[G_MSG_UNSUSPEND] = FlamethrowerActivate;

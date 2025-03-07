@@ -9,4 +9,4 @@
 #include "g_Edict.h"
 
 extern void SP_flamethrower(edict_t* self);
-extern void FlameThrowerStaticsInit();
+extern void FlamethrowerStaticsInit(void);
