@@ -101,44 +101,38 @@ void FlameThrowerStaticsInit(void) //TODO: rename to FlamethrowerStaticsInit
 	classStatics[CID_FLAMETHROWER].msgReceivers[G_MSG_UNSUSPEND] = FlamethrowerActivate;
 }
 
-/*QUAKED flamethrower (.5 .5 .5) ? STEAM MONSTERTOUCH
-A jet of flame
+// QUAKED flamethrower (.5 .5 .5) ? STEAM MONSTERTOUCH
+// A jet of flame.
 
-If steam is checked, it is a steam jet
+// Spawnflags:
+// STEAM		- If steam is checked, it is a steam jet.
+// MONSTERTOUCH	- Will allow monsters to set it off.
 
-MONSTERTOUCH - will allow monsters to set it off
-
---------SETUP----------
-
-------KEYS-----------
-dmg - damage per frame (1/10 of a second) (default 2)
-wait - delay between each burst (default 2) (-1 signifies it is a toggled effect)
-angles - Direction burst is to move in
-speed - velocity of the burst (default 400)
-*/
-
-void SP_flamethrower(edict_t *self)
+// Variables:
+// dmg		- Damage per frame (1/10 of a second) (default 2).
+// wait		- Delay between each burst (default 2) (-1 signifies it is a toggled effect).
+// angles	- Direction burst is to move in.
+// speed	- Velocity of the burst (default 400).
+void SP_flamethrower(edict_t* self)
 {
-	self->msgHandler = DefaultMsgHandler;
 	self->classID = CID_FLAMETHROWER;
-
 	self->movetype = PHYSICSTYPE_NONE;
 	self->solid = SOLID_TRIGGER;
+	self->svflags |= SVF_NOCLIENT;
+	self->msgHandler = DefaultMsgHandler;
 
-	if (!self->wait)
-		self->wait = 2;
+	if (self->wait == 0.0f) //TODO: 'wait' is used to both store on/off state and active time duration. Store on/off state in different saveable property (like count or style)?
+		self->wait = 2.0f;
 
-	if (!self->dmg)
+	if (self->dmg == 0)
 		self->dmg = 2;
 
-	if (!self->speed)
+	if (self->speed == 0.0f)
 		self->speed = 400.0f;
 
-	self->svflags |= SVF_NOCLIENT;
-	gi.setmodel (self, self->model);
-	
 	self->use = FlamethrowerUse;
 	self->touch = FlamethrowerTouch;
-	gi.linkentity (self);
-}
 
+	gi.setmodel(self, self->model);
+	gi.linkentity(self);
+}
