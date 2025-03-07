@@ -16,8 +16,6 @@
 #define FLAMETHROWER_ON		(-2.0f) //mxd
 #define FLAMETHROWER_OFF	(-1.0f) //mxd
 
-void flamethrower_touch( edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf );
-
 static void FlamethrowerThink(edict_t* self) //mxd. Named 'flamethrower_trigger' in original logic.
 {
 	vec3_t dir;
@@ -52,6 +50,35 @@ static void FlamethrowerUse(edict_t* self, edict_t* other, edict_t* activator) /
 	FlamethrowerThink(self);
 }
 
+static void FlamethrowerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'flamethrower_touch' in original logic.
+{
+	// Not toggled on, so don't damage.
+	if (self->wait == FLAMETHROWER_OFF)
+		return;
+
+	if (other->client == NULL && (!(other->svflags & SVF_MONSTER) || !(self->spawnflags & SF_MONSTERTOUCH)))
+		return;
+
+	vec3_t dir;
+	AngleVectors(self->s.angles, dir, NULL, NULL);
+
+	if (other->takedamage != DAMAGE_NO)
+	{
+		int dmf_flags = (DAMAGE_AVOID_ARMOR | DAMAGE_NO_BLOOD);
+		if (!(self->spawnflags & SF_STEAM))
+			dmf_flags |= DAMAGE_FIRE | DAMAGE_FIRE_LINGER;
+
+		T_Damage(other, self, self, dir, other->s.origin, plane->normal, self->dmg, 0, dmf_flags, MOD_DIED);
+	}
+
+	if (self->monsterinfo.attack_finished < level.time && self->wait > 0.0f)
+	{
+		const int fx_flags = ((self->spawnflags & SF_STEAM) ? CEF_FLAG6 : 0);
+		gi.CreateEffect(NULL, FX_FLAMETHROWER, fx_flags, self->s.origin, "df", dir, self->speed);
+		self->monsterinfo.attack_finished = level.time + self->wait;
+	}
+}
+
 void FlameThrower_Deactivate(edict_t *self, G_Message_t *msg)
 {
 	self->solid = SOLID_NOT;
@@ -64,7 +91,7 @@ void FlameThrower_Activate(edict_t *self, G_Message_t *msg)
 {
 	self->solid = SOLID_TRIGGER;
 	self->use = FlamethrowerUse;
-	self->touch = flamethrower_touch;
+	self->touch = FlamethrowerTouch;
 	gi.linkentity (self);
 }
 
@@ -73,40 +100,6 @@ void FlameThrowerStaticsInit()
 {
 	classStatics[CID_FLAMETHROWER].msgReceivers[G_MSG_SUSPEND] = FlameThrower_Deactivate;
 	classStatics[CID_FLAMETHROWER].msgReceivers[G_MSG_UNSUSPEND] = FlameThrower_Activate;
-}
-
-void flamethrower_touch( edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf )
-{
-	vec3_t	dir;
-	int flags = 0;
-
-	//Not toggled on, so don't damage
-	if (self->wait == -1)
-		return;
-
-	if (!other->client && (!(other->svflags & SVF_MONSTER) || !(self->spawnflags&SF_MONSTERTOUCH)))
-		return;
-
-	AngleVectors(self->s.angles, dir, NULL, NULL);
-
-	if (other->takedamage)
-	{
-		if (self->spawnflags & SF_STEAM)
-			T_Damage(other, self, self, dir, other->s.origin, plane->normal, self->dmg, 0, 
-					DAMAGE_AVOID_ARMOR|DAMAGE_NO_BLOOD,MOD_DIED);
-		else
-			T_Damage(other, self, self, dir, other->s.origin, plane->normal, self->dmg, 0, 
-					DAMAGE_FIRE|DAMAGE_FIRE_LINGER|DAMAGE_AVOID_ARMOR|DAMAGE_NO_BLOOD,MOD_DIED);
-	}
-
-	if (self->monsterinfo.attack_finished < level.time && (self->wait > 0))
-	{
-		if (self->spawnflags & SF_STEAM)
-			flags |= CEF_FLAG6;
-
-		gi.CreateEffect( NULL, FX_FLAMETHROWER, flags, self->s.origin, "df", dir, self->speed);
-		self->monsterinfo.attack_finished = level.time + self->wait;
-	}
 }
 
 /*QUAKED flamethrower (.5 .5 .5) ? STEAM MONSTERTOUCH
@@ -146,7 +139,7 @@ void SP_flamethrower(edict_t *self)
 	gi.setmodel (self, self->model);
 	
 	self->use = FlamethrowerUse;
-	self->touch = flamethrower_touch;
+	self->touch = FlamethrowerTouch;
 	gi.linkentity (self);
 }
 
