@@ -1,17 +1,20 @@
-// G_flamethrow.c
-// Heretic II
-// 
-// jweier
+//
+// g_flamethrower.c
+//
+// Copyright 1998 Raven Software
+//
 
-#include "g_local.h"
-#include "Vector.h"
-#include "FX.h"
 #include "g_combat.h" //mxd
-#include "g_playstats.h"
 #include "g_DefaultMessageHandler.h"
+#include "FX.h"
+#include "Vector.h"
+#include "g_local.h"
 
-#define FLAMETHROWER_STEAM 1
-#define FLAMETHROWER_MONSTERTOUCH 2
+#define SF_STEAM			1
+#define SF_MONSTERTOUCH		2
+
+#define FLAMETHROWER_ON		(-2.0f) //mxd
+#define FLAMETHROWER_OFF	(-1.0f) //mxd
 
 void flamethrower_use( edict_t *self, edict_t *other, edict_t *activator );
 void flamethrower_touch( edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf );
@@ -47,7 +50,7 @@ void flamethrower_trigger( edict_t *self )
 
 	AngleVectors(self->s.angles, dir, NULL, NULL);
 
-	if (self->spawnflags & FLAMETHROWER_STEAM)
+	if (self->spawnflags & SF_STEAM)
 		flags |= CEF_FLAG6;
 
 	gi.CreateEffect( NULL, FX_FLAMETHROWER, flags, self->s.origin, "df", dir, self->speed);
@@ -100,14 +103,14 @@ void flamethrower_touch( edict_t *self, edict_t *other, cplane_t *plane, csurfac
 	if (self->wait == -1)
 		return;
 
-	if (!other->client && (!(other->svflags & SVF_MONSTER) || !(self->spawnflags&FLAMETHROWER_MONSTERTOUCH)))
+	if (!other->client && (!(other->svflags & SVF_MONSTER) || !(self->spawnflags&SF_MONSTERTOUCH)))
 		return;
 
 	AngleVectors(self->s.angles, dir, NULL, NULL);
 
 	if (other->takedamage)
 	{
-		if (self->spawnflags & FLAMETHROWER_STEAM)
+		if (self->spawnflags & SF_STEAM)
 			T_Damage(other, self, self, dir, other->s.origin, plane->normal, self->dmg, 0, 
 					DAMAGE_AVOID_ARMOR|DAMAGE_NO_BLOOD,MOD_DIED);
 		else
@@ -117,7 +120,7 @@ void flamethrower_touch( edict_t *self, edict_t *other, cplane_t *plane, csurfac
 
 	if (self->monsterinfo.attack_finished < level.time && (self->wait > 0))
 	{
-		if (self->spawnflags & FLAMETHROWER_STEAM)
+		if (self->spawnflags & SF_STEAM)
 			flags |= CEF_FLAG6;
 
 		gi.CreateEffect( NULL, FX_FLAMETHROWER, flags, self->s.origin, "df", dir, self->speed);
