@@ -16,7 +16,6 @@
 #define FLAMETHROWER_ON		(-2.0f) //mxd
 #define FLAMETHROWER_OFF	(-1.0f) //mxd
 
-void flamethrower_use( edict_t *self, edict_t *other, edict_t *activator );
 void flamethrower_touch( edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf );
 
 static void FlamethrowerThink(edict_t* self) //mxd. Named 'flamethrower_trigger' in original logic.
@@ -30,9 +29,27 @@ static void FlamethrowerThink(edict_t* self) //mxd. Named 'flamethrower_trigger'
 	self->monsterinfo.attack_finished = level.time + self->wait;
 
 	if (self->wait == FLAMETHROWER_ON)
+	{
+		self->think = FlamethrowerThink;
 		self->nextthink = level.time + 1.0f;
+	}
 	else
+	{
 		self->think = NULL;
+	}
+}
+
+static void FlamethrowerUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'flamethrower_use' in original logic.
+{
+	if (self->monsterinfo.attack_finished >= level.time)
+		return;
+
+	if (self->wait == FLAMETHROWER_ON)
+		self->wait = FLAMETHROWER_OFF; // Toggle off.
+	else if (self->wait == FLAMETHROWER_OFF)
+		self->wait = FLAMETHROWER_ON; // Denote that we are toggled on.
+
+	FlamethrowerThink(self);
 }
 
 void FlameThrower_Deactivate(edict_t *self, G_Message_t *msg)
@@ -46,7 +63,7 @@ void FlameThrower_Deactivate(edict_t *self, G_Message_t *msg)
 void FlameThrower_Activate(edict_t *self, G_Message_t *msg)
 {
 	self->solid = SOLID_TRIGGER;
-	self->use = flamethrower_use;
+	self->use = FlamethrowerUse;
 	self->touch = flamethrower_touch;
 	gi.linkentity (self);
 }
@@ -56,32 +73,6 @@ void FlameThrowerStaticsInit()
 {
 	classStatics[CID_FLAMETHROWER].msgReceivers[G_MSG_SUSPEND] = FlameThrower_Deactivate;
 	classStatics[CID_FLAMETHROWER].msgReceivers[G_MSG_UNSUSPEND] = FlameThrower_Activate;
-}
-
-void flamethrower_use( edict_t *self, edict_t *other, edict_t *activator )
-{
-	vec3_t	dir;
-	int		flags = 0;
-
-	AngleVectors(self->s.angles, dir, NULL, NULL);
-
-	if (self->monsterinfo.attack_finished < level.time)
-	{
-		//Toggle off?
-		if (self->wait == -2)
-		{
-			//Toggle off
-			self->wait = -1;
-			//gi.RemoveEffects( &self->s, FX_FLAMETHROWER );
-		}
-		else if (self->wait == -1)
-		{
-			//Denote that we are toggled on
-			self->wait = -2;
-		}
-
-		FlamethrowerThink( self );
-	}
 }
 
 void flamethrower_touch( edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf )
@@ -154,7 +145,7 @@ void SP_flamethrower(edict_t *self)
 	self->svflags |= SVF_NOCLIENT;
 	gi.setmodel (self, self->model);
 	
-	self->use = flamethrower_use;
+	self->use = FlamethrowerUse;
 	self->touch = flamethrower_touch;
 	gi.linkentity (self);
 }
