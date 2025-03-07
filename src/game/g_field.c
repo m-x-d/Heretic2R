@@ -104,7 +104,7 @@ static void TriggerPushActivate(edict_t* self, G_Message_t* msg) //mxd. Named 'T
 	gi.linkentity(self);
 }
 
-void TrigPushStaticsInit(void) //TODO: rename to TriggerPushStaticsInit.
+void TriggerPushStaticsInit(void)
 {
 	classStatics[CID_TRIG_PUSH].msgReceivers[G_MSG_SUSPEND] = TriggerPushDeactivate;
 	classStatics[CID_TRIG_PUSH].msgReceivers[G_MSG_UNSUSPEND] = TriggerPushActivate;
@@ -185,13 +185,13 @@ static void TriggerDamageActivate(edict_t* self, G_Message_t* msg) //mxd. Named 
 	gi.linkentity(self);
 }
 
-void TrigDamageStaticsInit(void) //TODO: rename to TriggerDamageStaticsInit.
+void TriggerDamageStaticsInit(void)
 {
 	classStatics[CID_TRIG_DAMAGE].msgReceivers[G_MSG_SUSPEND] = TriggerDamageDeactivate;
 	classStatics[CID_TRIG_DAMAGE].msgReceivers[G_MSG_UNSUSPEND] = TriggerDamageActivate;
 }
 
-// QUAKED trigger_Damage (.5 .5 .5) ? START_OFF TOGGLE SILENT NO_PROTECTION SLOW
+// QUAKED trigger_damage (.5 .5 .5) ? START_OFF TOGGLE SILENT NO_PROTECTION SLOW
 // Any entity that touches this will be damaged. Does dmg points of damage each server frame.
 
 // Spawnflags:
@@ -201,7 +201,7 @@ void TrigDamageStaticsInit(void) //TODO: rename to TriggerDamageStaticsInit.
 
 // Variables:
 // dmg - default 5 (whole numbers only).
-void SP_trigger_Damage(edict_t* self) //TODO: rename to SP_trigger_damage.
+void SP_trigger_damage(edict_t* self)
 {
 	if (DEATHMATCH && self->dmg > 100)
 	{
@@ -238,11 +238,11 @@ static void TriggerGravityTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 	G_UseTargets(self, self);
 }
 
-// QUAKED trigger_Gravity (.5 .5 .5) ?
+// QUAKED trigger_gravity (.5 .5 .5) ?
 // Changes the Touching entities gravity.
 // Variables:
-// gravity	- Target gravity. 1.0 is standard gravity for the level.
-void SP_trigger_Gravity(edict_t* self) //TODO: rename to SP_trigger_gravity.
+// gravity - Target gravity. 1.0 is standard gravity for the level.
+void SP_trigger_gravity(edict_t* self)
 {
 	if (st.gravity == NULL)
 	{
@@ -277,7 +277,7 @@ static void TriggerMonsterJumpTouch(edict_t* self, edict_t* other, cplane_t* pla
 // Variables:
 // speed	- The speed thrown forward (default 200).
 // height	- The speed thrown upwards (default 200).
-void SP_trigger_MonsterJump(edict_t* self) //TODO: rename to SP_trigger_monsterjump.
+void SP_trigger_monsterjump(edict_t* self)
 {
 	if (self->s.angles[YAW] == 0.0f)
 		self->s.angles[YAW] = 360.0f;

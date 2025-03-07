@@ -10,10 +10,10 @@
 
 extern void SP_trigger_fogdensity(edict_t* self);
 extern void SP_trigger_push(edict_t* self);
-extern void SP_trigger_Damage(edict_t* self);
-extern void SP_trigger_Gravity(edict_t* self);
-extern void SP_trigger_MonsterJump(edict_t* self);
+extern void SP_trigger_damage(edict_t* self);
+extern void SP_trigger_gravity(edict_t* self);
+extern void SP_trigger_monsterjump(edict_t* self);
 extern void SP_trigger_goto_buoy(edict_t* self);
 
-extern void TrigPushStaticsInit(void);
-extern void TrigDamageStaticsInit(void);
+extern void TriggerPushStaticsInit(void);
+extern void TriggerDamageStaticsInit(void);
