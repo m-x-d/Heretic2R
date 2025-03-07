@@ -19,6 +19,22 @@
 void flamethrower_use( edict_t *self, edict_t *other, edict_t *activator );
 void flamethrower_touch( edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf );
 
+static void FlamethrowerThink(edict_t* self) //mxd. Named 'flamethrower_trigger' in original logic.
+{
+	vec3_t dir;
+	AngleVectors(self->s.angles, dir, NULL, NULL);
+
+	const int fx_flags = ((self->spawnflags & SF_STEAM) ? CEF_FLAG6 : 0);
+	gi.CreateEffect(NULL, FX_FLAMETHROWER, fx_flags, self->s.origin, "df", dir, self->speed);
+
+	self->monsterinfo.attack_finished = level.time + self->wait;
+
+	if (self->wait == FLAMETHROWER_ON)
+		self->nextthink = level.time + 1.0f;
+	else
+		self->think = NULL;
+}
+
 void FlameThrower_Deactivate(edict_t *self, G_Message_t *msg)
 {
 	self->solid = SOLID_NOT;
@@ -40,32 +56,6 @@ void FlameThrowerStaticsInit()
 {
 	classStatics[CID_FLAMETHROWER].msgReceivers[G_MSG_SUSPEND] = FlameThrower_Deactivate;
 	classStatics[CID_FLAMETHROWER].msgReceivers[G_MSG_UNSUSPEND] = FlameThrower_Activate;
-}
-
-
-void flamethrower_trigger( edict_t *self )
-{
-	vec3_t	dir;
-	int		flags = 0;
-
-	AngleVectors(self->s.angles, dir, NULL, NULL);
-
-	if (self->spawnflags & SF_STEAM)
-		flags |= CEF_FLAG6;
-
-	gi.CreateEffect( NULL, FX_FLAMETHROWER, flags, self->s.origin, "df", dir, self->speed);
-
-	self->monsterinfo.attack_finished = level.time + self->wait;
-
-	if (self->wait == -2)
-	{
-		self->nextthink = level.time + 1;
-		self->think = flamethrower_trigger;
-	}
-	else
-	{
-		self->think = NULL;
-	}
 }
 
 void flamethrower_use( edict_t *self, edict_t *other, edict_t *activator )
@@ -90,7 +80,7 @@ void flamethrower_use( edict_t *self, edict_t *other, edict_t *activator )
 			self->wait = -2;
 		}
 
-		flamethrower_trigger( self );
+		FlamethrowerThink( self );
 	}
 }
 
