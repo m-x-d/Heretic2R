@@ -86,20 +86,19 @@ static void FlamethrowerDeactivate(edict_t* self, G_Message_t* msg) //mxd. Named
 	self->touch = NULL;
 }
 
-
-void FlameThrower_Activate(edict_t *self, G_Message_t *msg)
+static void FlamethrowerActivate(edict_t* self, G_Message_t* msg) //mxd. Named 'FlameThrower_Activate' in original logic.
 {
 	self->solid = SOLID_TRIGGER;
 	self->use = FlamethrowerUse;
 	self->touch = FlamethrowerTouch;
-	gi.linkentity (self);
-}
 
+	gi.linkentity(self);
+}
 
 void FlameThrowerStaticsInit()
 {
 	classStatics[CID_FLAMETHROWER].msgReceivers[G_MSG_SUSPEND] = FlamethrowerDeactivate;
-	classStatics[CID_FLAMETHROWER].msgReceivers[G_MSG_UNSUSPEND] = FlameThrower_Activate;
+	classStatics[CID_FLAMETHROWER].msgReceivers[G_MSG_UNSUSPEND] = FlamethrowerActivate;
 }
 
 /*QUAKED flamethrower (.5 .5 .5) ? STEAM MONSTERTOUCH
