@@ -79,11 +79,11 @@ static void FlamethrowerTouch(edict_t* self, edict_t* other, cplane_t* plane, cs
 	}
 }
 
-void FlameThrower_Deactivate(edict_t *self, G_Message_t *msg)
+static void FlamethrowerDeactivate(edict_t* self, G_Message_t* msg) //mxd. Named 'FlameThrower_Deactivate' in original logic.
 {
 	self->solid = SOLID_NOT;
-	self->touch = NULL;
 	self->use = NULL;
+	self->touch = NULL;
 }
 
 
@@ -98,7 +98,7 @@ void FlameThrower_Activate(edict_t *self, G_Message_t *msg)
 
 void FlameThrowerStaticsInit()
 {
-	classStatics[CID_FLAMETHROWER].msgReceivers[G_MSG_SUSPEND] = FlameThrower_Deactivate;
+	classStatics[CID_FLAMETHROWER].msgReceivers[G_MSG_SUSPEND] = FlamethrowerDeactivate;
 	classStatics[CID_FLAMETHROWER].msgReceivers[G_MSG_UNSUSPEND] = FlameThrower_Activate;
 }
 
