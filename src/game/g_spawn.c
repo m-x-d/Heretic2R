@@ -5,6 +5,7 @@
 #include "g_breakable.h" //mxd
 #include "g_env.h" //mxd
 #include "g_field.h"
+#include "g_flamethrower.h"
 #include "m_monsters.h" //mxd
 #include "p_client.h" //mxd
 #include "g_local.h"
@@ -261,8 +262,6 @@ void SP_obj_web(edict_t *ent);
 void SP_obj_wheelbarrow(edict_t *ent);
 void SP_obj_wheelbarrowdamaged(edict_t *ent);
 void SP_obj_woodpile(edict_t *ent);
-
-void SP_flamethrower(edict_t *ent);
 
 void SP_script_runner (edict_t *ent);
 

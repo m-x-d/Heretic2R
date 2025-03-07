@@ -8,6 +8,7 @@
 #include "c_actors.h" //mxd
 #include "g_breakable.h" //mxd
 #include "g_field.h" //mxd
+#include "g_flamethrower.h" //mxd
 #include "g_misc.h" //mxd
 #include "m_monsters.h" //mxd
 
@@ -21,7 +22,6 @@ void FuncRotateStaticsInit();
 void FuncDoorStaticsInit();
 void ButtonStaticsInit();
 void LeverStaticsInit();
-void FlameThrowerStaticsInit();
 
 void (*classStaticsInits[NUM_CLASSIDS])(void) = 
 {

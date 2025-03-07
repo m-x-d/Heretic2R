@@ -1142,5 +1142,8 @@
     <ClInclude Include="g_field.h">
       <Filter>src\Game objects</Filter>
     </ClInclude>
+    <ClInclude Include="g_flamethrower.h">
+      <Filter>src\Game objects</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
