@@ -602,7 +602,7 @@ static void FuncRotateActivate(edict_t* self, G_Message_t* msg) //mxd. Named 'Fu
 	gi.linkentity(self);
 }
 
-void FuncRotateStaticsInit()
+void FuncRotateStaticsInit(void)
 {
 	classStatics[CID_FUNC_ROTATE].msgReceivers[G_MSG_SUSPEND] = FuncRotateDeactivate;
 	classStatics[CID_FUNC_ROTATE].msgReceivers[G_MSG_UNSUSPEND] = FuncRotateActivate;
