@@ -172,7 +172,7 @@ static void FuncButtonOnDeathMessage(edict_t* self, G_Message_t* msg) //mxd. Nam
 	self->health = self->max_health;
 }
 
-void ButtonStaticsInit(void) //TODO: rename to FuncButtonStaticsInit.
+void FuncButtonStaticsInit(void)
 {
 	classStatics[CID_BUTTON].msgReceivers[MSG_DEATH] = FuncButtonOnDeathMessage;
 }

@@ -51,7 +51,7 @@ void (*classStaticsInits[NUM_CLASSIDS])(void) =
 	MiscTeleporterStaticsInit,
 	HighPriestessStaticsInit,
 	TcheckrikStaticsInit,
-	ButtonStaticsInit,
+	FuncButtonStaticsInit,
 	BeeStaticsInit,
 	Corvus1CinStaticsInit,
 	MorcalavinStaticsInit,
