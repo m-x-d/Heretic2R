@@ -1063,25 +1063,17 @@ static void FuncDoorHitTop(edict_t* self) //mxd. Named 'door_hit_top' in origina
 	}
 }
 
-void door_go_up (edict_t *self, edict_t *activator);
+static void FuncDoorGoUp(edict_t* self, edict_t* activator);
 
-void door_hit_bottom (edict_t *self)
+static void FuncDoorHitBottom(edict_t* self) //mxd. Named 'door_hit_bottom' in original logic.
 {
-	if (!(self->flags & FL_TEAMSLAVE))
-	{
-		if (self->moveinfo.sound_end)
-			gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE, self->moveinfo.sound_end, 1, ATTN_IDLE, 0);
-		self->s.sound = 0;
-	}
+	FuncPlatPlayMoveEndSound(self); //mxd
 	self->moveinfo.state = STATE_BOTTOM;
 
-	if (self->moveinfo.wait == -2)	// Endlessly cycle
-	{
-		door_go_up (self, NULL);
-	}
+	if (self->moveinfo.wait == DOOR_MOVE_LOOP) // Endless cycle.
+		FuncDoorGoUp(self, NULL);
 	else
-		FuncDoorUseAreaportals (self, false);
-
+		FuncDoorUseAreaportals(self, false);
 }
 
 void FuncDoorGoDown (edict_t *self)
@@ -1101,12 +1093,12 @@ void FuncDoorGoDown (edict_t *self)
 	
 	self->moveinfo.state = STATE_DOWN;
 	if (strcmp(self->classname, "func_door") == 0)
-		MoveCalc (self, self->moveinfo.start_origin, door_hit_bottom);
+		MoveCalc (self, self->moveinfo.start_origin, FuncDoorHitBottom);
 	else if (strcmp(self->classname, "func_door_rotating") == 0)
-		AngleMoveCalc (self, door_hit_bottom);
+		AngleMoveCalc (self, FuncDoorHitBottom);
 }
 
-void door_go_up (edict_t *self, edict_t *activator)
+void FuncDoorGoUp (edict_t *self, edict_t *activator)
 {
 	if (self->moveinfo.state == STATE_UP)
 		return;		// already going up
@@ -1216,7 +1208,7 @@ void door_use (edict_t *self, edict_t *other, edict_t *activator)
 	{
 		ent->message = NULL;
 		ent->isBlocking = NULL;
-		door_go_up (ent, activator);
+		FuncDoorGoUp (ent, activator);
 	}
 };
 
@@ -1353,7 +1345,7 @@ void door_blocked  (edict_t *self, edict_t *other)
 		if (self->moveinfo.state == STATE_DOWN)
 		{
 			for (ent = self->teammaster ; ent ; ent = ent->teamchain)
-				door_go_up (ent, ent->activator);
+				FuncDoorGoUp (ent, ent->activator);
 		}
 		else
 		{
