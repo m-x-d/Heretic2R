@@ -917,10 +917,10 @@ static void FuncButtonMove(edict_t* self) //mxd. Named 'button_fire' in original
 	MoveCalc(self, self->moveinfo.end_origin, FuncButtonWait);
 }
 
-void button_use (edict_t *self, edict_t *other, edict_t *activator)
+static void FuncButtonUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'button_use' in original logic.
 {
 	self->activator = activator;
-	FuncButtonMove (self);
+	FuncButtonMove(self);
 }
 
 void button_touch (edict_t *self, trace_t *trace)
@@ -1008,7 +1008,7 @@ void SP_func_button (edict_t *ent)
 	dist = DotProduct(abs_movedir, ent->size) - st.lip;
 	VectorMA (ent->pos1, dist, ent->movedir, ent->pos2);
 
-	ent->use = button_use;
+	ent->use = FuncButtonUse;
 
 	if (ent->health)
 	{
