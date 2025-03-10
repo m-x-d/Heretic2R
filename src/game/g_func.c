@@ -2712,25 +2712,7 @@ void SP_func_monsterspawner(edict_t* self)
 	gi.linkentity(self);
 }
 
-/*QUAK-ED func_killbox (1 0 0) ?
-Kills everything inside when fired, irrespective of protection.
-*/
-/*
-void use_killbox (edict_t *self, edict_t *other, edict_t *activator)
-{
-	KillBox (self);
-}
-*/
-/*
-void SP_func_killbox (edict_t *ent)
-{
-	gi.setmodel (ent, ent->model);
-	ent->use = use_killbox;
-	ent->svflags = SVF_NOCLIENT;
-}
-
-*/
-
+#pragma endregion
 
 //===========================
 //  These are just temp entities until the actual code is written for each monster
