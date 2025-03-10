@@ -934,14 +934,15 @@ static void FuncButtonTouch(edict_t* self, trace_t* trace) //mxd. Named 'button_
 	}
 }
 
-void button_sounds(edict_t *self)
+static void FuncButtonSetSounds(edict_t* self) //mxd. Named 'button_sounds' in original logic.
 {
-	if (self->sounds == 1)
-		self->moveinfo.sound_start = gi.soundindex ("doors/basicbutton.wav");
-	else if (self->sounds == 2)
-		self->moveinfo.sound_start = gi.soundindex ("doors/clankybutton.wav");
-	else if (self->sounds == 3)
-		self->moveinfo.sound_start = gi.soundindex ("doors/steambutton.wav");
+	switch (self->sounds)
+	{
+		case 1: self->moveinfo.sound_start = gi.soundindex("doors/basicbutton.wav"); break;
+		case 2: self->moveinfo.sound_start = gi.soundindex("doors/clankybutton.wav"); break;
+		case 3: self->moveinfo.sound_start = gi.soundindex("doors/steambutton.wav"); break;
+		default: break;
+	}
 }
 
 /*QUAKED func_button (0 .5 .8) ? TOUCH
@@ -974,7 +975,7 @@ void SP_func_button (edict_t *ent)
 	gi.setmodel (ent, ent->model);
 	gi.linkentity(ent);
 
-	button_sounds(ent);
+	FuncButtonSetSounds(ent);
 	
 //	ent->health = 5;
 	if (!ent->speed)
