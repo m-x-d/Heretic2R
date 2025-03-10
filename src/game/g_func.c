@@ -2210,22 +2210,17 @@ static void FuncTimerThink(edict_t* self) //mxd. Named 'func_timer_think' in ori
 	self->nextthink = level.time + self->wait + flrand(-self->random, self->random);
 }
 
-void func_timer_use (edict_t *self, edict_t *other, edict_t *activator)
+static void FuncTimerUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'func_timer_use' in original logic.
 {
 	self->activator = activator;
 
-	// if on, turn it off
-	if (self->nextthink)
-	{
-		self->nextthink = 0;
-		return;
-	}
-
-	// turn it on
-	if (self->delay)
+	// If on, turn it off.
+	if (self->nextthink > 0.0f)
+		self->nextthink = 0.0f;
+	else if (self->delay > 0.0f) // Turn it on.
 		self->nextthink = level.time + self->delay;
 	else
-		FuncTimerThink (self);
+		FuncTimerThink(self);
 }
 
 void SP_func_timer (edict_t *self)
@@ -2233,7 +2228,7 @@ void SP_func_timer (edict_t *self)
 	if (!self->wait)
 		self->wait = 1.0;
 
-	self->use = func_timer_use;
+	self->use = FuncTimerUse;
 	self->think = FuncTimerThink;
 
 	if (self->random >= self->wait)
