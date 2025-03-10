@@ -1287,40 +1287,40 @@ static void FuncDoorSpawnDoorTriggerThink(edict_t* self) //mxd. Named 'Think_Spa
 	gi.linkentity(trigger);
 }
 
-void door_blocked  (edict_t *self, edict_t *other)
+static void FuncDoorBlocked(edict_t* self, edict_t* other) //mxd. Named 'door_blocked' in original logic.
 {
-	edict_t		*ent;
-
-	if ((other->svflags & SVF_MONSTER) && !other->client && !(other->svflags & SVF_BOSS))
+	if ((other->svflags & SVF_MONSTER) && other->client == NULL && !(other->svflags & SVF_BOSS))
 	{
-		// give it a chance to go away on it's own terms (like gibs)
-		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, 3000, 1, DAMAGE_AVOID_ARMOR,MOD_CRUSH);
-		// if it's still there, nuke it
-		if(other->health > 0)
+		// Give it a chance to go away on it's own terms (like gibs).
+		T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, 3000, 1, DAMAGE_AVOID_ARMOR, MOD_CRUSH);
+
+		// If it's still there, nuke it.
+		if (other->health > 0)
 			BecomeDebris(other);
+
 		return;
 	}
 
 	if (self->spawnflags & SF_DOOR_CRUSHER)
 	{
-		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg * 10, 1, 0,MOD_CRUSH);
+		T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg * 10, 1, 0, MOD_CRUSH);
 		return;
 	}
-	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0,MOD_CRUSH);
 
-// if a door has a negative wait, it would never come back if blocked, (unless -2)
-// so let it just squash the object to death real fast
-	if ((self->moveinfo.wait >= 0) || (self->moveinfo.wait == -2)) 
+	T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0, MOD_CRUSH);
+
+	// If a door has a negative wait, it would never come back if blocked, (unless -2) so let it just squash the object to death real fast.
+	if (self->moveinfo.wait >= 0.0f || self->moveinfo.wait == DOOR_MOVE_LOOP)
 	{
 		if (self->moveinfo.state == STATE_DOWN)
 		{
-			for (ent = self->teammaster ; ent ; ent = ent->teamchain)
-				FuncDoorGoUp (ent, ent->activator);
+			for (edict_t* ent = self->teammaster; ent != NULL; ent = ent->teamchain)
+				FuncDoorGoUp(ent, ent->activator);
 		}
 		else
 		{
-			for (ent = self->teammaster ; ent ; ent = ent->teamchain)
-				FuncDoorGoDown (ent);
+			for (edict_t* ent = self->teammaster; ent != NULL; ent = ent->teamchain)
+				FuncDoorGoDown(ent);
 		}
 	}
 }
@@ -1513,7 +1513,7 @@ void SP_func_door (edict_t *self)
 	G_SetMovedir (self->s.angles, self->movedir);
 	self->movetype = PHYSICSTYPE_PUSH;
 	self->solid = SOLID_BSP;
-	self->blocked = door_blocked;
+	self->blocked = FuncDoorBlocked;
 	self->use = FuncDoorUse;
 	
 	self->msgHandler = DefaultMsgHandler;
@@ -1679,7 +1679,7 @@ void SP_func_door_rotating (edict_t *ent)
 
 	ent->movetype = PHYSICSTYPE_PUSH;
 	ent->solid = SOLID_BSP;
-	ent->blocked = door_blocked;
+	ent->blocked = FuncDoorBlocked;
 	ent->use = FuncDoorUse;
 
 	if (!ent->speed)
