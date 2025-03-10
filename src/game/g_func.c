@@ -497,17 +497,11 @@ static void FuncPlatGoDown(edict_t* ent) //mxd. Named 'plat_go_down' in original
 	MoveCalc(ent, ent->moveinfo.end_origin, FuncPlatHitBottom);
 }
 
-void plat_go_up (edict_t *ent)
+static void FuncPlatGoUp(edict_t* ent) //mxd. Named 'plat_go_up' in original logic.
 {
-	if (!(ent->flags & FL_TEAMSLAVE))
-	{
-		if (ent->moveinfo.sound_start)
-			gi.sound (ent, CHAN_NO_PHS_ADD+CHAN_VOICE, ent->moveinfo.sound_start, 1, ATTN_IDLE, 0);
-		ent->s.sound = ent->moveinfo.sound_middle;
-		ent->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_IDLE;
-	}
+	FuncPlatPlayMoveStartSound(ent); //mxd
 	ent->moveinfo.state = STATE_UP;
-	MoveCalc (ent, ent->moveinfo.start_origin, FuncPlatHitTop);
+	MoveCalc(ent, ent->moveinfo.start_origin, FuncPlatHitTop);
 }
 
 void plat_blocked (edict_t *self, edict_t *other)
@@ -532,7 +526,7 @@ void plat_blocked (edict_t *self, edict_t *other)
 	if (self->moveinfo.state == STATE_UP)
 		FuncPlatGoDown (self);
 	else if (self->moveinfo.state == STATE_DOWN)
-		plat_go_up (self);
+		FuncPlatGoUp (self);
 }
 
 
@@ -554,7 +548,7 @@ void Touch_Plat_Center (edict_t *ent, edict_t *other, cplane_t *plane, csurface_
 
 	ent = ent->enemy;	// now point at the plat, not the trigger
 	if (ent->moveinfo.state == STATE_BOTTOM)
-		plat_go_up (ent);
+		FuncPlatGoUp (ent);
 	else if (ent->moveinfo.state == STATE_TOP)
 		ent->nextthink = level.time + 1;	// the player is still on the plat, so delay going down
 }
