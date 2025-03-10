@@ -1348,114 +1348,131 @@ static void FuncDoorTouch(edict_t* self, trace_t* trace) //mxd. Named 'door_kill
 	}
 }
 
-void FuncDoorSetSounds (edict_t *ent)
+static void FuncDoorSetSounds(edict_t* ent) //mxd. Named 'door_sounds' in original logic.
 {
-	switch((DoorSoundID_t)ent->sounds)
+	switch ((DoorSoundID_t)ent->sounds)
 	{
-	case DS_NONE:
-		ent->moveinfo.sound_start = 0;
-		ent->moveinfo.sound_middle = 0;
-		ent->moveinfo.sound_end = 0;
-		break;
-	case DS_GENERIC:
-		ent->moveinfo.sound_start = gi.soundindex  ("doors/gendoorstart.wav");
-		ent->moveinfo.sound_middle = 0;
-		ent->moveinfo.sound_end = gi.soundindex  ("doors/gendoorstop.wav");
-		break;
-	case DS_HEAVYSTONE:
-		ent->moveinfo.sound_start = gi.soundindex  ("doors/stonestart.wav");
-		ent->moveinfo.sound_middle = gi.soundindex  ("doors/stoneloop.wav");
-		ent->moveinfo.sound_end = gi.soundindex  ("doors/stoneend.wav");
-		break;
-	case DS_SWINGARM:
-		ent->moveinfo.sound_start = gi.soundindex  ("doors/bigcreak.wav");
-		break;
-	case DS_SWINGBRIDGE:
-		ent->moveinfo.sound_start = gi.soundindex  ("doors/stoneloop.wav"); 
-		ent->moveinfo.sound_middle = 0; 
-		ent->moveinfo.sound_end = gi.soundindex  ("doors/stoneend.wav");
-		break;
-	case DS_MEDIUMWOOD:
-		ent->moveinfo.sound_start = gi.soundindex  ("doors/kchunk2.wav"); 
-		ent->moveinfo.sound_middle = gi.soundindex  ("doors/creak4.wav"); 
-		ent->moveinfo.sound_end = gi.soundindex  ("doors/doorclose1.wav");
-		break;
-	case DS_HUGEWOOD:
-		ent->moveinfo.sound_start = gi.soundindex  ("doors/kchunk1.wav"); 
-		ent->moveinfo.sound_middle = gi.soundindex  ("doors/creak2.wav"); 
-		ent->moveinfo.sound_end = gi.soundindex  ("doors/doorshut1.wav");
-		break;
-	case DS_MEDIUMSTONE:
-		ent->moveinfo.sound_start = gi.soundindex  ("doors/kchunk7.wav"); 
-		ent->moveinfo.sound_middle = gi.soundindex  ("doors/stndoor.wav"); 
-		ent->moveinfo.sound_end = gi.soundindex  ("doors/thud7.wav");
-		break;
-	case DS_LARGESTONE:
-		ent->moveinfo.sound_start = gi.soundindex  ("doors/kchunk6.wav"); 
-		ent->moveinfo.sound_middle = gi.soundindex  ("doors/stoneloop.wav"); 
-		ent->moveinfo.sound_end = gi.soundindex  ("doors/thud3.wav");
-		break;
-	case DS_MEDIUMMETAL:
-		ent->moveinfo.sound_start = gi.soundindex  ("doors/kchunk3.wav"); 
-		ent->moveinfo.sound_middle = gi.soundindex  ("doors/metal1.wav"); 
-		ent->moveinfo.sound_end = gi.soundindex  ("doors/thud2.wav");
-		break;
-	case DS_FASTSLIDING:
-		ent->moveinfo.sound_start = gi.soundindex  ("doors/fastdoor.wav"); 
-		ent->moveinfo.sound_middle = 0; 
-		ent->moveinfo.sound_end = 0;
-		break;
-	case DS_METALSLIDING:
-		ent->moveinfo.sound_start = gi.soundindex  ("doors/kchunk5.wav"); 
-		ent->moveinfo.sound_middle = 0; 
-		ent->moveinfo.sound_end = gi.soundindex  ("doors/thud2.wav");
-		break;
-	case DS_HUGESTONE:
-		ent->moveinfo.sound_start = gi.soundindex  ("doors/kchunk5.wav"); 
-		ent->moveinfo.sound_middle = gi.soundindex  ("objects/creak2a.wav"); 
-		ent->moveinfo.sound_end = gi.soundindex  ("doors/thud4.wav");
-		break;
-	case DS_HUGEELEVATOR:
-		ent->moveinfo.sound_start = gi.soundindex  ("doors/elevatorstart.wav"); 
-		ent->moveinfo.sound_middle = gi.soundindex  ("doors/elevatormove.wav"); 
-		ent->moveinfo.sound_end = gi.soundindex  ("doors/elevatorstop.wav");
-		break;
-	case DS_CRANEWAREHOUSE:
-		ent->moveinfo.sound_start = gi.soundindex  ("doors/kchunk6.wav"); 
-		ent->moveinfo.sound_middle = gi.soundindex  ("objects/winch2.wav"); 
-		ent->moveinfo.sound_end = gi.soundindex  ("objects/cratedown.wav");
-		break;
-	case DS_HAMMERPUMP:
-		ent->moveinfo.sound_start = gi.soundindex  ("objects/oilpump.wav"); 
-		ent->moveinfo.sound_middle = 0; 
-		ent->moveinfo.sound_end = 0;
-		break;
-	case DS_METALTABLE:
-		ent->moveinfo.sound_start = gi.soundindex  ("objects/slabslide.wav"); 
-		ent->moveinfo.sound_middle = 0; 
-		ent->moveinfo.sound_end = 0;
-		break;
-	case DS_LABTABLE:
-		ent->moveinfo.sound_start = gi.soundindex  ("objects/globebottomstart.wav"); 
-		ent->moveinfo.sound_end = gi.soundindex  ("objects/globebottomend.wav");
-		break;
-	case DS_PISTON:
-		ent->moveinfo.sound_start = gi.soundindex  ("objects/piston.wav"); 
-		break;
-	case DS_CLANG:
-		ent->moveinfo.sound_start = gi.soundindex  ("objects/klang.wav"); 
-		break;
-	case DS_UNDERWATER:
-		ent->moveinfo.sound_start = gi.soundindex  ("objects/submerge.wav"); 
-		break;
-	case DS_BAM:
-		ent->moveinfo.sound_start = gi.soundindex  ("objects/bam1.wav"); 
-		break;
-	default:
-		ent->moveinfo.sound_start = 0;
-		ent->moveinfo.sound_middle = 0;
-		ent->moveinfo.sound_end = 0;
-		break;
+		case DS_GENERIC:
+			ent->moveinfo.sound_start = gi.soundindex("doors/gendoorstart.wav");
+			ent->moveinfo.sound_middle = 0;
+			ent->moveinfo.sound_end = gi.soundindex("doors/gendoorstop.wav");
+			break;
+
+		case DS_HEAVYSTONE:
+			ent->moveinfo.sound_start = gi.soundindex("doors/stonestart.wav");
+			ent->moveinfo.sound_middle = gi.soundindex("doors/stoneloop.wav");
+			ent->moveinfo.sound_end = gi.soundindex("doors/stoneend.wav");
+			break;
+
+		case DS_SWINGARM:
+			ent->moveinfo.sound_start = gi.soundindex("doors/bigcreak.wav");
+			break;
+
+		case DS_SWINGBRIDGE:
+			ent->moveinfo.sound_start = gi.soundindex("doors/stoneloop.wav");
+			ent->moveinfo.sound_middle = 0;
+			ent->moveinfo.sound_end = gi.soundindex("doors/stoneend.wav");
+			break;
+
+		case DS_MEDIUMWOOD:
+			ent->moveinfo.sound_start = gi.soundindex("doors/kchunk2.wav");
+			ent->moveinfo.sound_middle = gi.soundindex("doors/creak4.wav");
+			ent->moveinfo.sound_end = gi.soundindex("doors/doorclose1.wav");
+			break;
+
+		case DS_HUGEWOOD:
+			ent->moveinfo.sound_start = gi.soundindex("doors/kchunk1.wav");
+			ent->moveinfo.sound_middle = gi.soundindex("doors/creak2.wav");
+			ent->moveinfo.sound_end = gi.soundindex("doors/doorshut1.wav");
+			break;
+
+		case DS_MEDIUMSTONE:
+			ent->moveinfo.sound_start = gi.soundindex("doors/kchunk7.wav");
+			ent->moveinfo.sound_middle = gi.soundindex("doors/stndoor.wav");
+			ent->moveinfo.sound_end = gi.soundindex("doors/thud7.wav");
+			break;
+
+		case DS_LARGESTONE:
+			ent->moveinfo.sound_start = gi.soundindex("doors/kchunk6.wav");
+			ent->moveinfo.sound_middle = gi.soundindex("doors/stoneloop.wav");
+			ent->moveinfo.sound_end = gi.soundindex("doors/thud3.wav");
+			break;
+
+		case DS_MEDIUMMETAL:
+			ent->moveinfo.sound_start = gi.soundindex("doors/kchunk3.wav");
+			ent->moveinfo.sound_middle = gi.soundindex("doors/metal1.wav");
+			ent->moveinfo.sound_end = gi.soundindex("doors/thud2.wav");
+			break;
+
+		case DS_FASTSLIDING:
+			ent->moveinfo.sound_start = gi.soundindex("doors/fastdoor.wav");
+			ent->moveinfo.sound_middle = 0;
+			ent->moveinfo.sound_end = 0;
+			break;
+
+		case DS_METALSLIDING:
+			ent->moveinfo.sound_start = gi.soundindex("doors/kchunk5.wav");
+			ent->moveinfo.sound_middle = 0;
+			ent->moveinfo.sound_end = gi.soundindex("doors/thud2.wav");
+			break;
+
+		case DS_HUGESTONE:
+			ent->moveinfo.sound_start = gi.soundindex("doors/kchunk5.wav");
+			ent->moveinfo.sound_middle = gi.soundindex("objects/creak2a.wav");
+			ent->moveinfo.sound_end = gi.soundindex("doors/thud4.wav");
+			break;
+
+		case DS_HUGEELEVATOR:
+			ent->moveinfo.sound_start = gi.soundindex("doors/elevatorstart.wav");
+			ent->moveinfo.sound_middle = gi.soundindex("doors/elevatormove.wav");
+			ent->moveinfo.sound_end = gi.soundindex("doors/elevatorstop.wav");
+			break;
+
+		case DS_CRANEWAREHOUSE:
+			ent->moveinfo.sound_start = gi.soundindex("doors/kchunk6.wav");
+			ent->moveinfo.sound_middle = gi.soundindex("objects/winch2.wav");
+			ent->moveinfo.sound_end = gi.soundindex("objects/cratedown.wav");
+			break;
+
+		case DS_HAMMERPUMP:
+			ent->moveinfo.sound_start = gi.soundindex("objects/oilpump.wav");
+			ent->moveinfo.sound_middle = 0;
+			ent->moveinfo.sound_end = 0;
+			break;
+
+		case DS_METALTABLE:
+			ent->moveinfo.sound_start = gi.soundindex("objects/slabslide.wav");
+			ent->moveinfo.sound_middle = 0;
+			ent->moveinfo.sound_end = 0;
+			break;
+
+		case DS_LABTABLE:
+			ent->moveinfo.sound_start = gi.soundindex("objects/globebottomstart.wav");
+			ent->moveinfo.sound_end = gi.soundindex("objects/globebottomend.wav");
+			break;
+
+		case DS_PISTON:
+			ent->moveinfo.sound_start = gi.soundindex("objects/piston.wav");
+			break;
+
+		case DS_CLANG:
+			ent->moveinfo.sound_start = gi.soundindex("objects/klang.wav");
+			break;
+
+		case DS_UNDERWATER:
+			ent->moveinfo.sound_start = gi.soundindex("objects/submerge.wav");
+			break;
+
+		case DS_BAM:
+			ent->moveinfo.sound_start = gi.soundindex("objects/bam1.wav");
+			break;
+
+		case DS_NONE:
+		default:
+			ent->moveinfo.sound_start = 0;
+			ent->moveinfo.sound_middle = 0;
+			ent->moveinfo.sound_end = 0;
+			break;
 	}
 }
 
