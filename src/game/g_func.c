@@ -1476,133 +1476,142 @@ static void FuncDoorSetSounds(edict_t* ent) //mxd. Named 'door_sounds' in origin
 	}
 }
 
-/*QUAKED func_door (0 .5 .8) ? START_OPEN x CRUSHER NOMONSTER ANIMATED TOGGLE ANIMATED_FAST
-TOGGLE		wait in both the start and end states for a trigger event.
-START_OPEN	the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
-NOMONSTER	monsters will not trigger this door
+// QUAKED func_door (0 .5 .8) ? START_OPEN x CRUSHER NOMONSTER ANIMATED TOGGLE ANIMATED_FAST
 
-"message"	is printed when the door is touched if it is a trigger door and it hasn't been fired yet
-"angle"		determines the opening direction
-"targetname" if set, no touch field will be spawned and a remote button or trigger field activates the door.
-"health"	if set, door must be shot open
-"height"    if set, tells how far up door opens
-"speed"		movement speed (100 default)
-"wait"		wait before returning (3 default, -1 = never return,-2 = never stop cycle)
-"lip"		lip remaining at end of move (8 default)
-"dmg"		damage to inflict when blocked (2 default)
-"sounds"
-0)	silent
-1)	generic door
-2)	heavy stone door
-3)  for swing arm on palace level
-4)  for stone bridge in palace level
-5)  small/medium wood door swinging
-6)  large/huge wood door swinging
-7)  medium sized stone/wood door sliding
-8)  large stone/wood sliding door or portcullis
-9)  average metal door swinging
-10) Fast sliding doors
-11) Hive, Metal, Multipaneled sliding
-12) Huge stone door swinging
-13) Medium/large elevator
-14) Crane (warehouse)
-15) hammerlike pump in oglemine1
-16) sliding metal table in cloudlabs
-17) lab table which rotates up to ceiling - cloublabs
-18) piston sound
-19) short, sharp metal clang
-20) something going under water
-21) the bam sound
-  */
-void SP_func_door (edict_t *self)
+// Spawnflags:
+// START_OPEN	- The door to moves to its destination when spawned, and operate in reverse.
+//				  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
+// NOMONSTER	- Monsters will not trigger this door.
+// TOGGLE		- Wait in both the start and end states for a trigger event.
+
+// Variables:
+// message		- Is printed when the door is touched if it is a trigger door and it hasn't been fired yet.
+// angle		- Determines the opening direction.
+// targetname	- If set, no touch field will be spawned and a remote button or trigger field activates the door.
+// health		- If set, door must be shot open.
+// height		- If set, tells how far up door opens.
+// speed		- Movement speed (default 100).
+// wait			- Wait before returning (default 3, -1 = never return,-2 = never stop cycle).
+// lip			- Lip remaining at end of move (default 8).
+// dmg			- Damage to inflict when blocked (default 2).
+// sounds:
+//		0)	Silent.
+//		1)	Generic door.
+//		2)	Heavy stone door.
+//		3)  For swing arm on palace level.
+//		4)  For stone bridge in palace level.
+//		5)  Small/medium wood door swinging.
+//		6)  Large/huge wood door swinging.
+//		7)  Medium sized stone/wood door sliding.
+//		8)  Large stone/wood sliding door or portcullis.
+//		9)  Average metal door swinging.
+//		10) Fast sliding doors.
+//		11) Hive, Metal, Multipaneled sliding.
+//		12) Huge stone door swinging.
+//		13) Medium/large elevator.
+//		14) Crane (warehouse).
+//		15) Hammer-like pump in oglemine1.
+//		16) Sliding metal table in cloudlabs.
+//		17) Lab table which rotates up to ceiling - cloublabs.
+//		18) Piston sound.
+//		19) Short, sharp metal clang.
+//		20) Something going under water.
+//		21) The bam sound.
+void SP_func_door(edict_t* self)
 {
-	vec3_t	abs_movedir;
-
 	FuncDoorSetSounds(self);
+	G_SetMovedir(self->s.angles, self->movedir);
 
-	G_SetMovedir (self->s.angles, self->movedir);
+	self->classID = CID_FUNC_DOOR;
+	self->msgHandler = DefaultMsgHandler;
+
 	self->movetype = PHYSICSTYPE_PUSH;
 	self->solid = SOLID_BSP;
 	self->blocked = FuncDoorBlocked;
 	self->use = FuncDoorUse;
-	
-	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_FUNC_DOOR;
 
-	gi.setmodel (self, self->model);
-	gi.linkentity (self);
+	gi.setmodel(self, self->model);
+	gi.linkentity(self);
 
-	if (!self->speed)
-		self->speed = 100;
-	if (!self->accel)
+	if (self->speed == 0.0f)
+		self->speed = 100.0f;
+
+	if (self->accel == 0.0f)
 		self->accel = self->speed;
-	if (!self->decel)
+
+	if (self->decel == 0.0f)
 		self->decel = self->speed;
 
-	if (!self->wait)
-		self->wait = 3;
-	if (!st.lip)
+	if (self->wait == 0.0f)
+		self->wait = 3.0f;
+
+	if (st.lip == 0)
 		st.lip = 8;
-	if (!self->dmg)
+
+	if (self->dmg == 0)
 		self->dmg = 2;
 
-	// calculate second position
-	VectorCopy (self->s.origin, self->pos1);
+	// Calculate second position.
+	VectorCopy(self->s.origin, self->pos1);
+
+	vec3_t abs_movedir;
 	VectorAbs(self->movedir, abs_movedir);
 
-	if (!st.height)
-		self->moveinfo.distance = DotProduct(abs_movedir, self->size) - st.lip;
+	if (st.height == 0)
+		self->moveinfo.distance = DotProduct(abs_movedir, self->size) - (float)st.lip;
 	else
-		self->moveinfo.distance = abs_movedir[0] * self->size[0] + abs_movedir[1] * self->size[1] + abs_movedir[2] * st.height;
+		self->moveinfo.distance = abs_movedir[0] * self->size[0] + abs_movedir[1] * self->size[1] + abs_movedir[2] * (float)st.height;
 
-	VectorMA (self->pos1, self->moveinfo.distance, self->movedir, self->pos2);
+	VectorMA(self->pos1, self->moveinfo.distance, self->movedir, self->pos2);
 
-	// if it starts open, switch the positions
+	// If it starts open, switch the positions.
 	if (self->spawnflags & SF_DOOR_START_OPEN)
 	{
-		VectorCopy (self->pos2, self->s.origin);
-		VectorCopy (self->pos1, self->pos2);
-		VectorCopy (self->s.origin, self->pos1);
+		VectorCopy(self->pos2, self->s.origin);
+		VectorCopy(self->pos1, self->pos2);
+		VectorCopy(self->s.origin, self->pos1);
 	}
 
 	self->moveinfo.state = STATE_BOTTOM;
 
-	if (self->health)
+	if (self->health > 0)
 	{
 		self->takedamage = DAMAGE_YES;
 		self->die = FuncDoorKilled;
 		self->max_health = self->health;
 	}
-	else if (self->targetname && self->message)
+	else if (self->targetname != NULL && self->message != NULL)
 	{
-		gi.soundindex ("misc/talk.wav");
+		gi.soundindex("misc/talk.wav");
 		self->isBlocking = FuncDoorTouch;
 	}
-	
+
 	self->moveinfo.speed = self->speed;
 	self->moveinfo.accel = self->accel;
 	self->moveinfo.decel = self->decel;
 	self->moveinfo.wait = self->wait;
-	VectorCopy (self->pos1, self->moveinfo.start_origin);
-	VectorCopy (self->s.angles, self->moveinfo.start_angles);
-	VectorCopy (self->pos2, self->moveinfo.end_origin);
-	VectorCopy (self->s.angles, self->moveinfo.end_angles);
+	VectorCopy(self->pos1, self->moveinfo.start_origin);
+	VectorCopy(self->s.angles, self->moveinfo.start_angles);
+	VectorCopy(self->pos2, self->moveinfo.end_origin);
+	VectorCopy(self->s.angles, self->moveinfo.end_angles);
 
 	VectorSubtract(self->maxs, self->mins, self->s.bmodel_origin);
-	Vec3ScaleAssign(0.5, self->s.bmodel_origin);
+	Vec3ScaleAssign(0.5f, self->s.bmodel_origin);
 	VectorAdd(self->mins, self->s.bmodel_origin, self->s.bmodel_origin);
 
 	if (self->spawnflags & 16)
 		self->s.effects |= EF_ANIM_ALL;
+
 	if (self->spawnflags & 64)
 		self->s.effects |= EF_ANIM_ALLFAST;
 
-	// to simplify logic elsewhere, make non-teamed doors into a team of one
-	if (!self->team)
+	// To simplify logic elsewhere, make non-teamed doors into a team of one.
+	if (self->team == NULL)
 		self->teammaster = self;
 
 	self->nextthink = level.time + FRAMETIME;
-	if (self->health || self->targetname)
+
+	if (self->health > 0 || self->targetname != NULL)
 		self->think = FuncDoorCalcMoveSpeedThink;
 	else
 		self->think = FuncDoorSpawnDoorTriggerThink;
