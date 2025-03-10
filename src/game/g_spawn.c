@@ -7,6 +7,7 @@
 #include "g_field.h"
 #include "g_flamethrower.h"
 #include "g_func_MonsterSpawner.h" //mxd
+#include "g_func_Timer.h" //mxd
 #include "m_monsters.h" //mxd
 #include "p_client.h" //mxd
 #include "g_local.h"
@@ -26,7 +27,6 @@ void SP_func_door_secret (edict_t *ent);
 void SP_func_door_rotating (edict_t *ent);
 void SP_func_water (edict_t *ent);
 void SP_func_train (edict_t *ent);
-void SP_func_timer (edict_t *self);
 
 void SP_trigger_Activate(edict_t *self);
 void SP_trigger_Always (edict_t *ent);
