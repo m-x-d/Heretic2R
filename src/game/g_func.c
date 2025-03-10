@@ -533,12 +533,10 @@ static void FuncPlatBlocked(edict_t* self, edict_t* other) //mxd. Named 'plat_bl
 		FuncPlatGoUp(self);
 }
 
-
-void Use_Plat (edict_t *ent, edict_t *other, edict_t *activator)
-{ 
-	if (ent->think)
-		return;		// already down
-	FuncPlatGoDown (ent);
+static void FuncPlatUse(edict_t* ent, edict_t* other, edict_t* activator) //mxd. Named 'Use_Plat' in original logic.
+{
+	if (ent->think == NULL) // Already down otherwise.
+		FuncPlatGoDown(ent);
 }
 
 
@@ -688,7 +686,7 @@ void SP_func_plat (edict_t *ent)
 	ent->movetype = PHYSICSTYPE_PUSH;
 	ent->clipmask = MASK_PLAYERSOLID;
 	ent->blocked = FuncPlatBlocked;
-	ent->use = Use_Plat;
+	ent->use = FuncPlatUse;
 
 	if (!ent->speed)
 		ent->speed = 20;
