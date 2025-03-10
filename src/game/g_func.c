@@ -146,10 +146,8 @@ static int cid_for_spawner_style[] =
 // action when used -- disabled?
 // auto trigger spawning
 
-#define PLAT_LOW_TRIGGER	1 //TODO: remove
-
-#define	STATE_TOP			0
-#define	STATE_BOTTOM		1
+#define STATE_TOP			0
+#define STATE_BOTTOM		1
 #define STATE_UP			2
 #define STATE_DOWN			3
 
@@ -448,6 +446,33 @@ static void AccelMoveThink(edict_t* ent) //mxd. Named 'Think_AccelMove' in origi
 
 #pragma endregion
 
+#pragma region ========================== func_plat ==========================
+
+#define SF_PLAT_LOW_TRIGGER	1 //mxd
+
+static void FuncPlatPlayMoveStartSound(edict_t* ent) //mxd. Added to reduce code duplication.
+{
+	if (!(ent->flags & FL_TEAMSLAVE))
+	{
+		if (ent->moveinfo.sound_start > 0)
+			gi.sound(ent, CHAN_NO_PHS_ADD + CHAN_VOICE, ent->moveinfo.sound_start, 1.0f, ATTN_IDLE, 0.0f);
+
+		ent->s.sound = (byte)ent->moveinfo.sound_middle;
+		ent->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_IDLE;
+	}
+}
+
+static void FuncPlatPlayMoveEndSound(edict_t* ent) //mxd. Added to reduce code duplication.
+{
+	if (!(ent->flags & FL_TEAMSLAVE))
+	{
+		if (ent->moveinfo.sound_end > 0)
+			gi.sound(ent, CHAN_NO_PHS_ADD + CHAN_VOICE, ent->moveinfo.sound_end, 1.0f, ATTN_IDLE, 0.0f);
+
+		ent->s.sound = 0;
+	}
+}
+
 void plat_go_down (edict_t *ent);
 
 void plat_hit_top (edict_t *ent)
@@ -575,7 +600,7 @@ void plat_spawn_inside_trigger (edict_t *ent)
 
 	tmin[2] = tmax[2] - (ent->pos1[2] - ent->pos2[2] + st.lip);
 
-	if (ent->spawnflags & PLAT_LOW_TRIGGER)
+	if (ent->spawnflags & SF_PLAT_LOW_TRIGGER)
 		tmax[2] = tmin[2] + 8;
 	
 	if (tmax[0] - tmin[0] <= 0)
@@ -743,6 +768,8 @@ void SP_func_plat (edict_t *ent)
 	plat_spawn_inside_trigger (ent);	// the "start moving" trigger	
 
 }
+
+#pragma endregion
 
 void rotate_sounds (edict_t *ent)
 {
