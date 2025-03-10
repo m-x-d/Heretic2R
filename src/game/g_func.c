@@ -876,7 +876,7 @@ void ButtonStaticsInit(void) //TODO: rename to FuncButtonStaticsInit.
 	classStatics[CID_BUTTON].msgReceivers[MSG_DEATH] = FuncButtonOnDeathMessage;
 }
 
-void button_done (edict_t *self)
+static void FuncButtonDone(edict_t* self) //mxd. Named 'button_done' in original logic.
 {
 	self->moveinfo.state = STATE_BOTTOM;
 	self->s.frame = 0;
@@ -886,7 +886,7 @@ void button_return (edict_t *self)
 {
 	self->moveinfo.state = STATE_DOWN;
 
-	MoveCalc (self, self->moveinfo.start_origin, button_done);
+	MoveCalc (self, self->moveinfo.start_origin, FuncButtonDone);
 
 	self->s.frame = 0;
 
