@@ -2345,23 +2345,25 @@ static void FuncDoorSecretDone(edict_t* self) //mxd. Named 'door_secret_done' in
 	FuncDoorUseAreaportals(self, false);
 }
 
-void door_secret_blocked  (edict_t *self, edict_t *other)
+static void FuncDoorSecretBlocked(edict_t* self, edict_t* other) //mxd. Named 'door_secret_blocked' in original logic.
 {
-	if ((other->svflags & SVF_MONSTER) && (!other->client) && !(other->svflags & SVF_BOSS))
+	if ((other->svflags & SVF_MONSTER) && other->client == NULL && !(other->svflags & SVF_BOSS))
 	{
-		// give it a chance to go away on it's own terms (like gibs)
-		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, 3000, 1, DAMAGE_AVOID_ARMOR,MOD_CRUSH);
-		// if it's still there, nuke it
-		if(other->health > 0)
+		// Give it a chance to go away on it's own terms (like gibs).
+		T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, 3000, 1, DAMAGE_AVOID_ARMOR, MOD_CRUSH);
+
+		// If it's still there, nuke it.
+		if (other->health > 0)
 			BecomeDebris(other);
+
 		return;
 	}
 
-	if (level.time < self->touch_debounce_time)
-		return;
-	self->touch_debounce_time = level.time + 0.5;
-
-	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0,MOD_CRUSH);
+	if (level.time >= self->touch_debounce_time)
+	{
+		self->touch_debounce_time = level.time + 0.5f;
+		T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0, MOD_CRUSH);
+	}
 }
 
 int door_secret_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
@@ -2390,7 +2392,7 @@ void SP_func_door_secret (edict_t *ent)
 	gi.setmodel (ent, ent->model);
 	gi.linkentity (ent);
 
-	ent->blocked = door_secret_blocked;
+	ent->blocked = FuncDoorSecretBlocked;
 	ent->use = FuncDoorSecretUse;
 
 	if (!(ent->targetname) || (ent->spawnflags & SF_SECRET_ALWAYS_SHOOT))
