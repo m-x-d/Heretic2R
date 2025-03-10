@@ -1879,129 +1879,76 @@ static void FuncTrainAnimBackwards(edict_t* self) //mxd. Named 'train_animbackwa
 	}
 }
 
-/*QUAKED func_train (0 .5 .8) ? START_ON TOGGLE BLOCK_STOPS HASORIGIN NO_CLIP PUSHPULL
-Trains are moving platforms that players can ride.
-The targets origin specifies the min point of the train at each corner.
-The train spawns at the first target it is pointing at.
-If the train is the target of a button or trigger, it will not begin moving until activated. This means if it has a targetname it won't move unless triggered.
-
--------KEYS------
-NO_CLIP - train will not block anything.
-
-----------SPAWNFLAGS-----------
-HASORIGIN - makes train move from an origin brush rather than the lower left point of the train.
------KEYS-------
-
-speed -	default 100
-dmg	  -	default	2
-noise -	looping file to play when the train is in motion
-- objects/piston.wav for large steam pistons in ogle2 and cloudlabs
-- objects/winch2.wav for wooden ore hauler going across river  
-
-rotate - speed train should rotate at
-wait - -1 : stop and don't move again until triggered
-       -3 : stop and explode
-	   -4 : go through animations (only if a model)
-file - specifies the train is a model.  This is the exact directory of the model.
-count - number of frames in animation (only if a model)
-example   models/objects/broom/tris.fm
-materialtype - 
-	0 = MAT_WOOD
-	1 = MAT_GREYSTONE (default)
-	2 = MAT_CLOTH
-	3 = MAT_METAL
-
-	9 = MAT_BROWNSTONE
-	10 = MAT_NONE - just makes smoke
-
-*/
-void train_blocked (edict_t *self, edict_t *other)
+static void FuncTrainBlocked(edict_t* self, edict_t* other) //mxd. Named 'train_blocked' in original logic.
 {
-	if ((other->svflags & SVF_MONSTER) && (!other->client) && !(other->svflags & SVF_BOSS))
+	if ((other->svflags & SVF_MONSTER) && other->client == NULL && !(other->svflags & SVF_BOSS))
 	{
-		// give it a chance to go away on it's own terms (like gibs)
-		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, 3000, 1, DAMAGE_AVOID_ARMOR,MOD_CRUSH);
-		// if it's still there, nuke it
-		if(other->health > 0)
+		// Give it a chance to go away on it's own terms (like gibs).
+		T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, 3000, 1, DAMAGE_AVOID_ARMOR, MOD_CRUSH);
+
+		// If it's still there, nuke it.
+		if (other->health > 0)
 			BecomeDebris(other);
-		return;
 	}
-
-	if (level.time < self->touch_debounce_time)
-		return;
-
-	if (!self->dmg)
-		return;
-	self->touch_debounce_time = level.time + 0.5;
-	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0,MOD_CRUSH);
+	else if (self->dmg > 0 && level.time >= self->touch_debounce_time)
+	{
+		self->touch_debounce_time = level.time + 0.5f;
+		T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0, MOD_CRUSH);
+	}
 }
 
-void train_wait (edict_t *self)
+static void FuncTrainWait(edict_t* self) //mxd. Named 'train_wait' in original logic.
 {
+	if (self->target_ent->moveinfo.sound_middle > 0)
+		gi.sound(self->target_ent, CHAN_VOICE, self->target_ent->moveinfo.sound_middle, 1.0f, ATTN_NORM, 0.0f);
 
-	if (self->target_ent->moveinfo.sound_middle)
-		gi.sound(self->target_ent, CHAN_VOICE, self->target_ent->moveinfo.sound_middle, 1, ATTN_NORM, 0);
-
-	if (self->target_ent->pathtarget)
+	if (self->target_ent->pathtarget != NULL)
 	{
-		char	*savetarget;
-		edict_t	*ent;
-
-		ent = self->target_ent;
-		savetarget = ent->target;
+		edict_t* ent = self->target_ent;
+		char* save_target = ent->target;
 		ent->target = ent->pathtarget;
 
-		G_UseTargets (ent, self->activator);
-		ent->target = savetarget;
+		G_UseTargets(ent, self->activator);
+		ent->target = save_target;
 
-		// make sure we didn't get killed by a killtarget
+		// Make sure we didn't get killed by a killtarget.
 		if (!self->inuse)
 			return;
 	}
 
-	if (self->moveinfo.wait)
+	if (self->moveinfo.wait != 0.0f)
 	{
-		if (self->moveinfo.wait > 0)
+		if (self->moveinfo.wait > 0.0f)
 		{
 			self->nextthink = level.time + self->moveinfo.wait;
 			self->think = FuncTrainNext;
 		}
-		else if (self->moveinfo.wait == -3)
+		else if (self->moveinfo.wait == -3.0f)
 		{
 			BecomeDebris(self);
 			return;
 		}
-		else if (self->moveinfo.wait == -4)	// Make model animate
+		else if (self->moveinfo.wait == -4.0f)	// Make model animate.
 		{
-			if ((self->s.frame + 1)  < self->count)
-			{
+			if (self->s.frame + 1 < self->count)
 				FuncTrainAnim(self);
-			}
 			else
-			{
 				FuncTrainAnimBackwards(self);
-			}
 		}
-		else if (self->spawnflags & SF_TRAIN_TOGGLE)  // && wait < 0
+		else if (self->spawnflags & SF_TRAIN_TOGGLE) // && wait < 0
 		{
-			FuncTrainNext (self);
+			FuncTrainNext(self);
 			self->spawnflags &= ~SF_TRAIN_START_ON;
-			VectorClear (self->velocity);
-			self->nextthink = 0;
+			VectorClear(self->velocity);
+			self->nextthink = 0.0f;
 		}
 
-		if (!(self->flags & FL_TEAMSLAVE))
-		{
-			if (self->moveinfo.sound_end)
-				gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE, self->moveinfo.sound_end, 1, ATTN_IDLE, 0);
-			self->s.sound = 0;
-		}
+		FuncPlatPlayMoveEndSound(self); //mxd
 	}
 	else
 	{
-		FuncTrainNext (self);
+		FuncTrainNext(self);
 	}
-	
 }
 
 void FuncTrainNext (edict_t *self)
@@ -2068,7 +2015,7 @@ again:
 		self->moveinfo.accel = self->moveinfo.decel = self->moveinfo.speed;
 	}
 
-	MoveCalc (self, dest, train_wait);
+	MoveCalc (self, dest, FuncTrainWait);
 
 	self->spawnflags |= SF_TRAIN_START_ON;
 
@@ -2089,7 +2036,7 @@ void train_resume (edict_t *self)
 	self->moveinfo.state = STATE_TOP;
 	VectorCopy (self->s.origin, self->moveinfo.start_origin);
 	VectorCopy (dest, self->moveinfo.end_origin);
-	MoveCalc (self, dest, train_wait);
+	MoveCalc (self, dest, FuncTrainWait);
 	self->spawnflags |= SF_TRAIN_START_ON;
 }
 
@@ -2164,7 +2111,7 @@ void SP_func_train (edict_t *self)
 
 	self->movetype = PHYSICSTYPE_PUSH;
 
-	self->blocked = train_blocked;
+	self->blocked = FuncTrainBlocked;
 	if (self->spawnflags & SF_TRAIN_BLOCK_STOPS)
 		self->dmg = 0;
 	else
