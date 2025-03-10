@@ -1094,36 +1094,32 @@ static void FuncDoorGoDown(edict_t* self) //mxd. Named 'door_go_down' in origina
 		AngleMoveCalc(self, FuncDoorHitBottom);
 }
 
-void FuncDoorGoUp (edict_t *self, edict_t *activator)
+static void FuncDoorGoUp(edict_t* self, edict_t* activator) //mxd. Named 'door_go_up' in original logic.
 {
 	if (self->moveinfo.state == STATE_UP)
-		return;		// already going up
+		return; // Already going up.
 
 	if (self->moveinfo.state == STATE_TOP)
-	{	// reset top wait time
+	{
+		// Reset top wait time.
 		if (self->moveinfo.wait >= 0)
 			self->nextthink = level.time + self->moveinfo.wait;
-		else if (self->moveinfo.wait == -2)
+		else if (self->moveinfo.wait == DOOR_MOVE_LOOP)
 			self->nextthink = level.time;
 
 		return;
 	}
-	
-	if (!(self->flags & FL_TEAMSLAVE))
-	{
-		if (self->moveinfo.sound_start)
-			gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE, self->moveinfo.sound_start, 1, ATTN_IDLE, 0);
-		self->s.sound = self->moveinfo.sound_middle;
-		self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_IDLE;
-	}
-	self->moveinfo.state = STATE_UP;
-	if (strcmp(self->classname, "func_door") == 0)
-		MoveCalc (self, self->moveinfo.end_origin, FuncDoorHitTop);
-	else if (strcmp(self->classname, "func_door_rotating") == 0)
-		AngleMoveCalc (self, FuncDoorHitTop);
 
-	G_UseTargets (self, activator);
-	FuncDoorUseAreaportals (self, true);
+	FuncPlatPlayMoveStartSound(self); //mxd
+	self->moveinfo.state = STATE_UP;
+
+	if (strcmp(self->classname, "func_door") == 0)
+		MoveCalc(self, self->moveinfo.end_origin, FuncDoorHitTop);
+	else if (strcmp(self->classname, "func_door_rotating") == 0)
+		AngleMoveCalc(self, FuncDoorHitTop);
+
+	G_UseTargets(self, activator);
+	FuncDoorUseAreaportals(self, true);
 }
 
 /* 
