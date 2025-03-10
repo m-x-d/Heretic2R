@@ -8,6 +8,7 @@
 #include "g_flamethrower.h"
 #include "g_func_Door.h" //mxd
 #include "g_func_MonsterSpawner.h" //mxd
+#include "g_func_Plat.h" //mxd
 #include "g_func_Timer.h" //mxd
 #include "g_func_Train.h" //mxd
 #include "m_monsters.h" //mxd
@@ -21,7 +22,6 @@ typedef struct
 	int		CID;
 } spawn_t;
 
-void SP_func_plat (edict_t *ent);
 void SP_func_rotating (edict_t *ent);
 void SP_func_button (edict_t *ent);
 
