@@ -173,9 +173,9 @@ static void MoveDone(edict_t* ent) //mxd. Named 'Move_Done' in original logic.
 		ent->moveinfo.endfunc(ent);
 }
 
-void Move_Final (edict_t *ent)
+static void MoveFinal(edict_t* ent) //mxd. Named 'Move_Final' in original logic.
 {
-	VectorScale (ent->moveinfo.dir, ent->moveinfo.remaining_distance / FRAMETIME, ent->velocity);
+	VectorScale(ent->moveinfo.dir, ent->moveinfo.remaining_distance / FRAMETIME, ent->velocity);
 
 	ent->think = MoveDone;
 	ent->nextthink = level.time + FRAMETIME;
@@ -187,14 +187,14 @@ void Move_Begin (edict_t *ent)
 
 	if ((ent->moveinfo.speed * FRAMETIME) >= ent->moveinfo.remaining_distance)
 	{
-		Move_Final (ent);
+		MoveFinal (ent);
 		return;
 	}
 	VectorScale (ent->moveinfo.dir, ent->moveinfo.speed, ent->velocity);
 	frames = floor((ent->moveinfo.remaining_distance / ent->moveinfo.speed) / FRAMETIME);
 	ent->moveinfo.remaining_distance -= frames * ent->moveinfo.speed * FRAMETIME;
 	ent->nextthink = level.time + (frames * FRAMETIME);
-	ent->think = Move_Final;
+	ent->think = MoveFinal;
 }
 
 void Think_AccelMove (edict_t *ent);
@@ -483,7 +483,7 @@ void Think_AccelMove (edict_t *ent)
 	// will the entire move complete on next frame?
 	if (ent->moveinfo.remaining_distance <= ent->moveinfo.current_speed)
 	{
-		Move_Final (ent);
+		MoveFinal (ent);
 		return;
 	}
 
