@@ -490,17 +490,11 @@ static void FuncPlatHitBottom(edict_t* ent) //mxd. Named 'plat_hit_bottom' in or
 	ent->moveinfo.state = STATE_BOTTOM;
 }
 
-void FuncPlatGoDown (edict_t *ent)
+static void FuncPlatGoDown(edict_t* ent) //mxd. Named 'plat_go_down' in original logic.
 {
-	if (!(ent->flags & FL_TEAMSLAVE))
-	{
-		if (ent->moveinfo.sound_start)
-			gi.sound (ent, CHAN_NO_PHS_ADD+CHAN_VOICE, ent->moveinfo.sound_start, 1, ATTN_IDLE, 0);
-		ent->s.sound = ent->moveinfo.sound_middle;
-		ent->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_IDLE;
-	}
+	FuncPlatPlayMoveStartSound(ent); //mxd
 	ent->moveinfo.state = STATE_DOWN;
-	MoveCalc (ent, ent->moveinfo.end_origin, FuncPlatHitBottom);
+	MoveCalc(ent, ent->moveinfo.end_origin, FuncPlatHitBottom);
 }
 
 void plat_go_up (edict_t *ent)
