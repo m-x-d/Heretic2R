@@ -1951,78 +1951,70 @@ static void FuncTrainWait(edict_t* self) //mxd. Named 'train_wait' in original l
 	}
 }
 
-void FuncTrainNext (edict_t *self)
+static void FuncTrainNext(edict_t* self) //mxd. Named 'train_next' in original logic.
 {
-	edict_t		*ent;
-	vec3_t		dest;
-	qboolean	first;
-
-	first = true;
-again:
-	if (!self->target)
+	for (int i = 0; i < 2; i++)
 	{
-		return;
-	}
+		if (self->target == NULL)
+			return;
 
-	ent = G_PickTarget (self->target);
-	if (!ent)
-	{
-		gi.dprintf ("train_next: bad target %s\n", self->target);
-		return;
-	}
+		edict_t* ent = G_PickTarget(self->target);
 
-	self->target = ent->target;
-
-	// check for a teleport path_corner
-	if (ent->spawnflags & 1)
-	{
-		if (!first)
+		if (ent == NULL)
 		{
-			gi.dprintf ("connected teleport path_corners, see %s at %s\n", ent->classname, vtos(ent->s.origin));
+			gi.dprintf("train_next: bad target %s\n", self->target);
 			return;
 		}
-		first = false;
-		VectorSubtract (ent->s.origin, self->mins, self->s.origin);
-		VectorCopy (self->s.origin, self->s.old_origin);
-		gi.linkentity (self);
-		goto again;
+
+		self->target = ent->target;
+
+		// Check for SF_TELEPORT path_corner spawnflag.
+		if (ent->spawnflags & 1)
+		{
+			if (i > 0)
+			{
+				gi.dprintf("connected teleport path_corners, see %s at %s\n", ent->classname, vtos(ent->s.origin));
+				return;
+			}
+
+			VectorSubtract(ent->s.origin, self->mins, self->s.origin);
+			VectorCopy(self->s.origin, self->s.old_origin);
+			gi.linkentity(self);
+
+			continue;
+		}
+
+		self->moveinfo.wait = ent->wait;
+		self->target_ent = ent;
+
+		FuncPlatPlayMoveStartSound(ent); //mxd
+
+		vec3_t dest;
+		if (self->spawnflags & SF_TRAIN_HAS_ORIGIN)
+			VectorCopy(ent->s.origin, dest);
+		else
+			VectorSubtract(ent->s.origin, self->mins, dest);
+
+		self->moveinfo.state = STATE_TOP;
+
+		VectorCopy(self->s.origin, self->moveinfo.start_origin);
+		VectorCopy(dest, self->moveinfo.end_origin);
+
+		if (ent->speed > 0.0f)
+		{
+			self->moveinfo.speed = self->speed = ent->speed;
+			self->moveinfo.accel = self->moveinfo.decel = self->moveinfo.speed;
+		}
+
+		MoveCalc(self, dest, FuncTrainWait);
+
+		self->spawnflags |= SF_TRAIN_START_ON;
+
+		VectorCopy(self->moveinfo.end_angles, self->s.angles); // Snap the train to the last ending angle.
+		FuncTrainAngleMoveCalc(self, ent, dest); // Recalculate new angles.
+
+		return;
 	}
-
-	self->moveinfo.wait = ent->wait;
-	self->target_ent = ent;
-
-	if (!(self->flags & FL_TEAMSLAVE))
-	{
-		if (self->moveinfo.sound_start)
-			gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE, self->moveinfo.sound_start, 1, ATTN_IDLE, 0);
-		self->s.sound = self->moveinfo.sound_middle;
-		self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_IDLE;
-	}
-
-
-	if (self->spawnflags & 8)	// Has an origin
-		VectorCopy (ent->s.origin, dest);   
-	else						// No origin
-		VectorSubtract (ent->s.origin, self->mins, dest);
-	self->moveinfo.state = STATE_TOP;
-
-	VectorCopy (self->s.origin, self->moveinfo.start_origin);
-	VectorCopy (dest, self->moveinfo.end_origin);
-
-	if (ent->speed)
-	{
-		self->moveinfo.speed = self->speed = ent->speed;
-		self->moveinfo.accel = self->moveinfo.decel = self->moveinfo.speed;
-	}
-
-	MoveCalc (self, dest, FuncTrainWait);
-
-	self->spawnflags |= SF_TRAIN_START_ON;
-
-	// Snap the train to the last ending angle
-	VectorCopy(self->moveinfo.end_angles, self->s.angles);
-	// Recalc new angles
-	FuncTrainAngleMoveCalc(self, ent, dest);
 }
 
 void train_resume (edict_t *self)
