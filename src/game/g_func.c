@@ -882,15 +882,13 @@ static void FuncButtonDone(edict_t* self) //mxd. Named 'button_done' in original
 	self->s.frame = 0;
 }
 
-void button_return (edict_t *self)
+static void FuncButtonReturn(edict_t* self) //mxd. Named 'button_return' in original logic.
 {
 	self->moveinfo.state = STATE_DOWN;
-
-	MoveCalc (self, self->moveinfo.start_origin, FuncButtonDone);
-
+	MoveCalc(self, self->moveinfo.start_origin, FuncButtonDone);
 	self->s.frame = 0;
 
-	if (self->health)
+	if (self->health > 0)
 		self->takedamage = DAMAGE_YES;
 }
 
@@ -902,7 +900,7 @@ void button_wait (edict_t *self)
 	if (self->moveinfo.wait >= 0)
 	{
 		self->nextthink = level.time + self->moveinfo.wait;
-		self->think = button_return;
+		self->think = FuncButtonReturn;
 	}
 }
 
