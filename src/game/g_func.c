@@ -1188,12 +1188,9 @@ static void FuncDoorUse(edict_t* self, edict_t* other, edict_t* activator) //mxd
 	}
 }
 
-void Touch_DoorTrigger (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void FuncDoorTriggerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'Touch_DoorTrigger' in original logic.
 {
-	if (other->health <= 0)
-		return;
-
-	if (!(other->svflags & SVF_MONSTER) && (!other->client))
+	if (other->health <= 0 || (!(other->svflags & SVF_MONSTER) && other->client == NULL))
 		return;
 
 	if ((self->owner->spawnflags & SF_DOOR_NOMONSTER) && (other->svflags & SVF_MONSTER))
@@ -1201,9 +1198,9 @@ void Touch_DoorTrigger (edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 	if (level.time < self->touch_debounce_time)
 		return;
-	self->touch_debounce_time = level.time + 1.0;
 
-	FuncDoorUse (self->owner, other, other);
+	self->touch_debounce_time = level.time + 1.0f;
+	FuncDoorUse(self->owner, other, other);
 }
 
 void Think_CalcMoveSpeed (edict_t *self)
@@ -1283,7 +1280,7 @@ void Think_SpawnDoorTrigger (edict_t *ent)
 	other->owner = ent;
 	other->solid = SOLID_TRIGGER;
 	other->movetype = PHYSICSTYPE_NONE;
-	other->touch = Touch_DoorTrigger;
+	other->touch = FuncDoorTriggerTouch;
 
 	if (ent->spawnflags & SF_DOOR_START_OPEN)
 		FuncDoorUseAreaportals (ent, true);
