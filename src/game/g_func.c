@@ -905,15 +905,16 @@ static void FuncButtonWait(edict_t* self) //mxd. Named 'button_wait' in original
 	}
 }
 
-void FuncButtonMove (edict_t *self)
+static void FuncButtonMove(edict_t* self) //mxd. Named 'button_fire' in original logic.
 {
 	if (self->moveinfo.state == STATE_UP || self->moveinfo.state == STATE_TOP)
 		return;
 
+	if (self->moveinfo.sound_start > 0 && !(self->flags & FL_TEAMSLAVE))
+		gi.sound(self, CHAN_NO_PHS_ADD + CHAN_VOICE, self->moveinfo.sound_start, 1.0f, ATTN_IDLE, 0.0f);
+
 	self->moveinfo.state = STATE_UP;
-	if (self->moveinfo.sound_start && !(self->flags & FL_TEAMSLAVE))
-		gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE, self->moveinfo.sound_start, 1, ATTN_IDLE, 0);
-	MoveCalc (self, self->moveinfo.end_origin, FuncButtonWait);
+	MoveCalc(self, self->moveinfo.end_origin, FuncButtonWait);
 }
 
 void button_use (edict_t *self, edict_t *other, edict_t *activator)
