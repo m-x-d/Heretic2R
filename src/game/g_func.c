@@ -1,16 +1,19 @@
-#include "g_local.h"
+//
+// g_func.c
+//
+// Copyright 1998 Raven Software
+//
+
+#include "g_combat.h" //mxd
 #include "g_debris.h" //mxd
-#include "FX.h"
-#include "Random.h"
-#include "vector.h"
 #include "g_DefaultMessageHandler.h"
 #include "m_stats.h"
-#include "buoy.h"
 #include "mg_guide.h" //mxd
-#include "g_combat.h" //mxd
+#include "FX.h"
+#include "Random.h"
+#include "Vector.h"
+#include "g_local.h"
 
-void ED_CallSpawn (edict_t *ent);
-void TrainAngleMove_Calc (edict_t *self,edict_t *targ,vec3_t dest);
 void door_sounds (edict_t *ent);
 
 #define	DSF_SWINGAWAY		0x00002000//8192
