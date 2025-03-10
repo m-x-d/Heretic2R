@@ -1337,20 +1337,15 @@ static int FuncDoorKilled(edict_t* self, edict_t* inflictor, edict_t* attacker, 
 	return 0;
 }
 
-void door_touch (edict_t *self, trace_t *trace)
+static void FuncDoorTouch(edict_t* self, trace_t* trace) //mxd. Named 'door_killed' in original logic.
 {
-	edict_t		*other;
+	const edict_t* other = trace->ent;
 
-	other = trace->ent;
-
-	if (!other->client)
-		return;
-
-	if (level.time < self->touch_debounce_time)
-		return;
-
-	self->touch_debounce_time = level.time + 5.0;
-	gi.levelmsg_centerprintf (other, (short)atoi(self->message));
+	if (other->client != NULL && level.time >= self->touch_debounce_time)
+	{
+		self->touch_debounce_time = level.time + 5.0f;
+		gi.levelmsg_centerprintf(other, (short)Q_atoi(self->message));
+	}
 }
 
 void FuncDoorSetSounds (edict_t *ent)
@@ -1564,7 +1559,7 @@ void SP_func_door (edict_t *self)
 	else if (self->targetname && self->message)
 	{
 		gi.soundindex ("misc/talk.wav");
-		self->isBlocking = door_touch;
+		self->isBlocking = FuncDoorTouch;
 	}
 	
 	self->moveinfo.speed = self->speed;
@@ -1713,7 +1708,7 @@ void SP_func_door_rotating (edict_t *ent)
 	if (ent->targetname && ent->message)
 	{
 		gi.soundindex ("misc/talk.wav");
-		ent->isBlocking = door_touch;
+		ent->isBlocking = FuncDoorTouch;
 	}
 
 	ent->moveinfo.state = STATE_BOTTOM;
@@ -2524,7 +2519,7 @@ void SP_func_door_secret (edict_t *ent)
 	else if (ent->targetname && ent->message)
 	{
 		gi.soundindex ("misc/talk.wav");
-		ent->isBlocking = door_touch;
+		ent->isBlocking = FuncDoorTouch;
 	}
 	
 	ent->classname = "func_door";
