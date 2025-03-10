@@ -1862,24 +1862,22 @@ static void FuncTrainAnim(edict_t* self) //mxd. Named 'train_anim' in original l
 	}
 }
 
-void train_animbackwards(edict_t *self)
+static void FuncTrainAnimBackwards(edict_t* self) //mxd. Named 'train_animbackwards' in original logic.
 {
-
-	if (((self->s.frame + 1) == self->count) && (self->moveinfo.sound_middle))   // Start sound if there is one
-		gi.sound(self, CHAN_VOICE, self->moveinfo.sound_middle, 1, ATTN_NORM, 0);
+	if (self->s.frame + 1 == self->count && self->moveinfo.sound_middle > 0) // Start sound if there is one.
+		gi.sound(self, CHAN_VOICE, self->moveinfo.sound_middle, 1.0f, ATTN_NORM, 0.0f);
 
 	if (self->s.frame > 0)
 	{
-		--self->s.frame;
+		self->s.frame--;
 		self->nextthink = level.time + FRAMETIME;
-		self->think = train_animbackwards;
+		self->think = FuncTrainAnimBackwards;
 	}
 	else
-		FuncTrainNext (self);
+	{
+		FuncTrainNext(self);
+	}
 }
-#define TRAIN_START_ON		1
-#define TRAIN_TOGGLE		2
-#define TRAIN_BLOCK_STOPS	4
 
 /*QUAKED func_train (0 .5 .8) ? START_ON TOGGLE BLOCK_STOPS HASORIGIN NO_CLIP PUSHPULL
 Trains are moving platforms that players can ride.
@@ -1981,13 +1979,13 @@ void train_wait (edict_t *self)
 			}
 			else
 			{
-				train_animbackwards(self);
+				FuncTrainAnimBackwards(self);
 			}
 		}
-		else if (self->spawnflags & TRAIN_TOGGLE)  // && wait < 0
+		else if (self->spawnflags & SF_TRAIN_TOGGLE)  // && wait < 0
 		{
 			FuncTrainNext (self);
-			self->spawnflags &= ~TRAIN_START_ON;
+			self->spawnflags &= ~SF_TRAIN_START_ON;
 			VectorClear (self->velocity);
 			self->nextthink = 0;
 		}
@@ -2072,7 +2070,7 @@ again:
 
 	MoveCalc (self, dest, train_wait);
 
-	self->spawnflags |= TRAIN_START_ON;
+	self->spawnflags |= SF_TRAIN_START_ON;
 
 	// Snap the train to the last ending angle
 	VectorCopy(self->moveinfo.end_angles, self->s.angles);
@@ -2092,7 +2090,7 @@ void train_resume (edict_t *self)
 	VectorCopy (self->s.origin, self->moveinfo.start_origin);
 	VectorCopy (dest, self->moveinfo.end_origin);
 	MoveCalc (self, dest, train_wait);
-	self->spawnflags |= TRAIN_START_ON;
+	self->spawnflags |= SF_TRAIN_START_ON;
 }
 
 void func_train_find (edict_t *self)
@@ -2121,9 +2119,9 @@ void func_train_find (edict_t *self)
 
 	// if not triggered, start immediately
 	if (!self->targetname)
-		self->spawnflags |= TRAIN_START_ON;
+		self->spawnflags |= SF_TRAIN_START_ON;
 
-	if (self->spawnflags & TRAIN_START_ON)
+	if (self->spawnflags & SF_TRAIN_START_ON)
 	{
 		self->nextthink = level.time + FRAMETIME;
 		self->think = FuncTrainNext;
@@ -2142,11 +2140,11 @@ void train_use (edict_t *self, edict_t *other, edict_t *activator)
 	if (Vec3NotZero(self->velocity))
 		return;
 
-	if (self->spawnflags & TRAIN_START_ON)
+	if (self->spawnflags & SF_TRAIN_START_ON)
 	{
-		if (!(self->spawnflags & TRAIN_TOGGLE))
+		if (!(self->spawnflags & SF_TRAIN_TOGGLE))
 			return;
-		self->spawnflags &= ~TRAIN_START_ON;
+		self->spawnflags &= ~SF_TRAIN_START_ON;
 		VectorClear (self->velocity);
 		self->nextthink = 0;
 	}
@@ -2167,7 +2165,7 @@ void SP_func_train (edict_t *self)
 	self->movetype = PHYSICSTYPE_PUSH;
 
 	self->blocked = train_blocked;
-	if (self->spawnflags & TRAIN_BLOCK_STOPS)
+	if (self->spawnflags & SF_TRAIN_BLOCK_STOPS)
 		self->dmg = 0;
 	else
 	{
