@@ -331,15 +331,12 @@ static void AngleMoveCalc(edict_t* ent, void(*func)(edict_t*)) //mxd. Named 'Ang
 
 #pragma endregion
 
-/*
-==============
-Think_AccelMove
+#pragma region ========================== ThinkAccelMove ==========================
 
-The team has completed a frame of movement, so
-change the speed for the next frame
-==============
-*/
-#define AccelerationDistance(target, rate)	(target * ((target / rate) + 1) / 2)
+static float AccelerationDistance(const float target, const float rate) //mxd. #define in original logic.
+{
+	return target * ((target / rate) + 1.0f) / 2.0f;
+}
 
 void plat_CalcAcceleratedMove(moveinfo_t *moveinfo)
 {
@@ -461,6 +458,7 @@ void ThinkAccelMove (edict_t *ent)
 	ent->think = ThinkAccelMove;
 }
 
+#pragma endregion
 
 void plat_go_down (edict_t *ent);
 
