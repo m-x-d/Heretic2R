@@ -2648,111 +2648,69 @@ static void FuncMonsterSpawnerUse(edict_t* self, edict_t* other, edict_t* activa
 	FuncMonsterSpawnerGo(self);
 }
 
-/*QUAKED func_monsterspawner (0 .5 .8) (-8 -8 -8) (8 8 8) ONDEATH RANDOMBUOY PEACEFUL
-Triggerable monster spawner
------SPAWNFLAGS--------------
-ONDEATH - the next monster will not spawn until the current one is dead  
-RANDOMBUOY - the monster will be teleported to a random buoy that the player cannot see
-PEACEFUL - Monsters are NOT spawned agry at ent that triggered spawner (monstrers will spawn angry only if the spawner was triggered by a player)
------------KEYS--------------
-count - number of monsters to spawn before stopping (default 1)
-distance - radius which monster can spawn from monsterspawner
-style - type of monster to spawn
- 0 - nothing will spawn
- 1 - RAT,
- 2 - PLAGUEELF,
- 3 - SPREADER,
- 4 - GORGON,
- 5 - CHKROKTK,
- 6 - TCHEKRIK_MALE,
- 7 - TCHEKRIK_FEMALE,
- 8 - TCHEKRIK_MOTHERS,
- 9 - HIGH_PRIESTESS,
-10 - OGLE,
-11 - SERAPH_OVERLORD,
-12 - SERAPH_GUARD,
-13 - ASSASSIN,
-14 - MORCALAVIN,
-15 - DRANOR,
-16 - SIDHE_GUARD,
-17 - SIERNAN,
-18 - SSITHRA_SCOUT,
-19 - SSITHRA_VICTIM,
-20 - Mutant Ssithra
-21 - Harpy
-22 - Fish
-23 - Chicken
-24 - Plague Ssithra
-25 - Gkrokon
-26 - Giant Rat
-27 - Palace Plague Guard
-28 - Invisible Palace Plague Guard
+// QUAKED func_monsterspawner (0 .5 .8) (-8 -8 -8) (8 8 8) ONDEATH RANDOMBUOY PEACEFUL
+// Triggerable monster spawner.
 
+// Spawnflags:
+// ONDEATH		- The next monster will not spawn until the current one is dead.
+// RANDOMBUOY	- The monster will be teleported to a random buoy that the player cannot see.
+// PEACEFUL		- Monsters are NOT spawned angry at ent that triggered spawner (monsters will spawn angry only if the spawner was triggered by a player).
 
+// Variables:
+// count	- Number of monsters to spawn before stopping (default 1).
+// distance	- Radius which monster can spawn from monsterspawner.
+// style	- Type of monster to spawn (see MonsterSpawnerID_t).
+// wait		- Time to wait between spawnings (default 10).
 
-wait - time to wait between spawnings (default 10)
+// The following fields can be applied to the func_monsterspawner so that the monsters spawned from it will have the values you give them.
+// The defaults are the monster's normal defaults. Monsters who do not use buoys may not use all of these fields (ie: rats, harpies, fish, imps, etc.).
 
-
-The following fields can be applied to the func_monsterspawner so that the monsters spawned from it will have the values you give them.  The defaults are the monster's normal defaults.  Monsters who do not use buoys may not use all of these fields (ie: rats, harpies, fish, imps, etc.)
-
-mintel - monster intelligence- this basically tells a monster how many buoys away an enemy has to be for it to give up.
-
-melee_range - How close the player has to be, maximum, for the monster to go into melee.  If this is zero, the monster will never melee.  If it is negative, the monster will try to keep this distance from the player.  If the monster has a backup, he'll use it if too clode, otherwise, a negative value here means the monster will just stop running at the player at this distance.
-	Examples:
-		melee_range = 60 - monster will start swinging it player is closer than 60
-		melee_range = 0 - monster will never do a mele attack
-		melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close
-
-missile_range - Maximum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-min_missile_range - Minimum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-bypass_missile_chance - Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot.  This, in effect, will make the monster come in more often than hang back and fire.  A percentage (0 = always fire/never close in, 100 = never fire/always close in).- must be whole number
-
-jump_chance - every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time)- must be whole number
-
-wakeup_distance - How far (max) the player can be away from the monster before it wakes up.  This just means that if the monster can see the player, at what distance should the monster actually notice him and go for him.
-*/
-void SP_func_monsterspawner (edict_t *self)
+// mintel		- Monster intelligence - this basically tells a monster how many buoys away an enemy has to be for it to give up.
+// melee_range	- How close the player has to be, maximum, for the monster to go into melee.
+//				  If this is zero, the monster will never melee. If it is negative, the monster will try to keep this distance from the player.
+//				  If the monster has a backup, he'll use it if too close, otherwise, a negative value here means the monster will just stop running at the player at this distance.
+//				Examples:
+//					melee_range = 60 - monster will start swinging it player is closer than 60.
+//					melee_range = 0 - monster will never do a melee attack.
+//					melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close.
+// missile_range			- Maximum distance the player can be from the monster to be allowed to use it's ranged attack.
+// min_missile_range		- Minimum distance the player can be from the monster to be allowed to use it's ranged attack.
+// bypass_missile_chance	- Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot.
+//							  This, in effect, will make the monster come in more often than hang back and fire.
+//							  A percentage (0 = always fire/never close in, 100 = never fire/always close in).- must be whole number.
+// jump_chance				- Every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time) - must be whole number.
+// wakeup_distance			- How far (max) the player can be away from the monster before it wakes up.
+//							  This just means that if the monster can see the player, at what distance should the monster actually notice him and go for him.
+void SP_func_monsterspawner(edict_t* self)
 {
-
 	self->solid = SOLID_NOT;
+	self->maxrange = (float)st.distance;
+	self->enemy = NULL;
 
-	if (self->style == MS_NOTHING)
-	{
-		gi.dprintf ("func_monsterspawner with a style of 0 at %s\n", vtos(self->s.origin));
-	}
-	else if (self->style >= MS_MAX)
-	{
-		gi.dprintf ("func_monsterspawner with a bad style of %d at %s\n",
-			self->style, vtos(self->s.origin));
-	}
+	if (self->style <= MS_NOTHING || self->style >= MS_MAX)
+		gi.dprintf("func_monsterspawner with a bad style of %d at %s\n", self->style, vtos(self->s.origin));
 
-	if (!self->count)
+	if (self->count == 0)
 		self->count = 1;
 
-	if (!self->wait)
-		self->wait = 10;
+	if (self->wait == 0.0f)
+		self->wait = 10.0f;
 
-	if(!self->s.scale)
+	if (self->s.scale == 0.0f) //TODO: why scale check?
 		self->s.scale = 1.0f;
 
-	if (self->targetname)
+	if (self->targetname != NULL)
+	{
 		self->use = FuncMonsterSpawnerUse;
+	}
 	else
 	{
 		self->think = FuncMonsterSpawnerGo;
 		self->nextthink = level.time + self->wait;
 	}
 
-	self->maxrange = st.distance;
-
-	self->enemy = NULL;
-
-	gi.linkentity (self);
-
+	gi.linkentity(self);
 }
-
 
 /*QUAK-ED func_killbox (1 0 0) ?
 Kills everything inside when fired, irrespective of protection.
