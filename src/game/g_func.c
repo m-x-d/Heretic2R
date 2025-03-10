@@ -2297,15 +2297,16 @@ static void FuncDoorSecretMove2(edict_t* self) //mxd. Named 'door_secret_move2' 
 	MoveCalc(self, self->pos2, FuncDoorSecretMove3);
 }
 
-void FuncDoorSecretMove3 (edict_t *self)
+static void FuncDoorSecretMove3(edict_t* self) //mxd. Named 'door_secret_move3' in original logic.
 {
-	if (self->moveinfo.sound_end)
-		gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE, self->moveinfo.sound_end, 1, ATTN_IDLE, 0);
+	if (self->moveinfo.sound_end > 0)
+		gi.sound(self, CHAN_NO_PHS_ADD + CHAN_VOICE, self->moveinfo.sound_end, 1.0f, ATTN_IDLE, 0.0f);
 
-	if (self->wait == -1)
-		return;
-	self->nextthink = level.time + self->wait;
-	self->think = FuncDoorSecretMove4;
+	if (self->wait != -1.0f)
+	{
+		self->nextthink = level.time + self->wait;
+		self->think = FuncDoorSecretMove4;
+	}
 }
 
 void FuncDoorSecretMove4 (edict_t *self)
