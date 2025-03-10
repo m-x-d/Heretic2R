@@ -862,7 +862,7 @@ void SP_func_rotating(edict_t* ent)
 
 #define SF_TOUCH	1 //mxd
 
-static void FuncButtonMove(edict_t* self);
+static void FuncButtonMove(edict_t* self); //TODO: move to header.
 
 static void FuncButtonOnDeathMessage(edict_t* self, G_Message_t* msg) //mxd. Named 'button_killed2' in original logic.
 {
@@ -1041,31 +1041,28 @@ static void FuncDoorUseAreaportals(const edict_t* self, const qboolean open) //m
 			gi.SetAreaPortalState(target->style, open);
 }
 
-void door_go_down (edict_t *self);
+static void FuncDoorGoDown(edict_t* self); //TODO: move to header.
 
-void door_hit_top (edict_t *self)
+static void FuncDoorHitTop(edict_t* self) //mxd. Named 'door_hit_top' in original logic.
 {
-	if (!(self->flags & FL_TEAMSLAVE))
-	{
-		if (self->moveinfo.sound_end)
-			gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE, self->moveinfo.sound_end, 1, ATTN_IDLE, 0);
-		self->s.sound = 0;
-	}
+	FuncPlatPlayMoveEndSound(self); //mxd
 	self->moveinfo.state = STATE_TOP;
+
 	if (self->spawnflags & SF_DOOR_TOGGLE)
 		return;
-	if (self->moveinfo.wait >= 0)
+
+	if (self->moveinfo.wait >= 0.0f)
 	{
-		self->think = door_go_down;
+		self->think = FuncDoorGoDown;
 		self->nextthink = level.time + self->moveinfo.wait;
 	}
-	else if (self->moveinfo.wait == -2)
+	else if (self->moveinfo.wait == DOOR_MOVE_LOOP)
 	{
-		self->think = door_go_down;
-		self->nextthink = level.time + FRAMETIME;	// Next frame is soon enough to fire this off
+		self->think = FuncDoorGoDown;
+		self->nextthink = level.time + FRAMETIME; // Next frame is soon enough to fire this off.
 	}
-
 }
+
 void door_go_up (edict_t *self, edict_t *activator);
 
 void door_hit_bottom (edict_t *self)
@@ -1087,7 +1084,7 @@ void door_hit_bottom (edict_t *self)
 
 }
 
-void door_go_down (edict_t *self)
+void FuncDoorGoDown (edict_t *self)
 {
 	if (!(self->flags & FL_TEAMSLAVE))
 	{
@@ -1133,9 +1130,9 @@ void door_go_up (edict_t *self, edict_t *activator)
 	}
 	self->moveinfo.state = STATE_UP;
 	if (strcmp(self->classname, "func_door") == 0)
-		MoveCalc (self, self->moveinfo.end_origin, door_hit_top);
+		MoveCalc (self, self->moveinfo.end_origin, FuncDoorHitTop);
 	else if (strcmp(self->classname, "func_door_rotating") == 0)
-		AngleMoveCalc (self, door_hit_top);
+		AngleMoveCalc (self, FuncDoorHitTop);
 
 	G_UseTargets (self, activator);
 	FuncDoorUseAreaportals (self, true);
@@ -1208,7 +1205,7 @@ void door_use (edict_t *self, edict_t *other, edict_t *activator)
 			{
 				ent->message = NULL;
 				ent->isBlocking = NULL;
-				door_go_down (ent);
+				FuncDoorGoDown (ent);
 			}
 			return;
 		}
@@ -1361,7 +1358,7 @@ void door_blocked  (edict_t *self, edict_t *other)
 		else
 		{
 			for (ent = self->teammaster ; ent ; ent = ent->teamchain)
-				door_go_down (ent);
+				FuncDoorGoDown (ent);
 		}
 	}
 }
