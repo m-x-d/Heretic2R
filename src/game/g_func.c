@@ -273,19 +273,16 @@ static void AngleMoveDone(edict_t* ent) //mxd. Named 'AngleMove_Done' in origina
 		ent->moveinfo.endfunc(ent);
 }
 
-void AngleMove_Final (edict_t *ent)
+static void AngleMoveFinal(edict_t* ent) //mxd. Named 'AngleMove_Final' in original logic.
 {
-	vec3_t	move;
+	vec3_t move;
+	const vec3_t* src_angles = ((ent->moveinfo.state == STATE_UP) ? &ent->moveinfo.end_angles : &ent->moveinfo.start_angles); //mxd
+	VectorSubtract(*src_angles, ent->s.angles, move);
 
-	if (ent->moveinfo.state == STATE_UP)
-		VectorSubtract (ent->moveinfo.end_angles, ent->s.angles, move);
-	else
-		VectorSubtract (ent->moveinfo.start_angles, ent->s.angles, move);
+	VectorScale(move, 1.0f / FRAMETIME, ent->avelocity);
 
-	VectorScale (move, 1.0 / FRAMETIME, ent->avelocity);
-
-	ent->think = AngleMoveDone;
 	ent->nextthink = level.time + FRAMETIME;
+	ent->think = AngleMoveDone;
 }
 
 void AngleMove_Begin (edict_t *ent)
@@ -309,7 +306,7 @@ void AngleMove_Begin (edict_t *ent)
 
 	if (traveltime < FRAMETIME)
 	{
-		AngleMove_Final (ent);
+		AngleMoveFinal (ent);
 		return;
 	}
 
@@ -320,7 +317,7 @@ void AngleMove_Begin (edict_t *ent)
 
 	// set nextthink to trigger a think when dest is reached
 	ent->nextthink = level.time + frames * FRAMETIME;
-	ent->think = AngleMove_Final;
+	ent->think = AngleMoveFinal;
 }
 
 void AngleMove_Calc (edict_t *ent, void(*func)(edict_t*))
