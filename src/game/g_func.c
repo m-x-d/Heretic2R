@@ -1617,123 +1617,122 @@ void SP_func_door(edict_t* self)
 		self->think = FuncDoorSpawnDoorTriggerThink;
 }
 
-/*QUAKED func_door_rotating (0 .5 .8) ? START_OPEN REVERSE CRUSHER NOMONSTER ANIMATED TOGGLE X_AXIS Y_AXIS SWINGAWAY x x x x x x x
-TOGGLE causes the door to wait in both the start and end states for a trigger event.
+// QUAKED func_door_rotating (0 .5 .8) ? START_OPEN REVERSE CRUSHER NOMONSTER ANIMATED TOGGLE X_AXIS Y_AXIS SWINGAWAY
+// You need to have an origin brush as part of this entity. The center of that brush will be the point around which it is rotated.
+// It will rotate around the Z axis by default. You can check either the X_AXIS or Y_AXIS box to change that.
 
-START_OPEN	the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
-NOMONSTER	monsters will not trigger this door
+// Spawnflags:
+// START_OPEN	- The door to moves to its destination when spawned, and operate in reverse.
+//				  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
+// REVERSE		- Will cause the door to rotate in the opposite direction.
+// NOMONSTER	- Monsters will not trigger this door.
+// TOGGLE		- Wait in both the start and end states for a trigger event.
+// SWINGAWAY	- Door will always swing away from the activator.
 
-You need to have an origin brush as part of this entity.  The center of that brush will be
-the point around which it is rotated. It will rotate around the Z axis by default.  You can
-check either the X_AXIS or Y_AXIS box to change that.
-
-"distance" is how many degrees the door will be rotated.
-"speed" determines how fast the door moves; default value is 100.
-
-REVERSE will cause the door to rotate in the opposite direction.
-
-SWINGAWAY door will always swing away from the activator...
-
-"message"	is printed when the door is touched if it is a trigger door and it hasn't been fired yet
-"angle"		determines the opening direction
-"targetname" if set, no touch field will be spawned and a remote button or trigger field activates the door.
-"health"	if set, door must be shot open
-"speed"		movement speed (100 default)
-"wait"		wait before returning (3 default, -1 = never return,-2 = never stop cycle)
-"dmg"		damage to inflict when blocked (2 default)
-"sounds"
-0)	silent
-1)	generic door
-2)	heavy stone door
-3)  for swing arm on palace level
-4)  for stone bridge in palace level
-5)  small/medium wood door swinging
-6)  large/huge wood door swinging
-7)  medium sized stone/wood door sliding
-8)  large stone/wood sliding door or portcullis
-9)  average metal door swinging
-10) Fast sliding doors
-11) Hive, Metal, Multipaneled sliding
-12) Huge stone door swinging
-13) Medium/large elevator
-14) Crane (warehouse)
-15) hammerlike pump in oglemine1
-16) sliding metal table in cloudlabs
-17) lab table which rotates up to ceiling - cloublabs
-18) piston sound
-19) short, sharp metal clang
-20) something going under water
-21) the bam sound
-*/
-
-void SP_func_door_rotating (edict_t *ent)
+// Variables:
+// distance		- How many degrees the door will be rotated.
+// message		- Is printed when the door is touched if it is a trigger door and it hasn't been fired yet.
+// angle		- Determines the opening direction.
+// targetname	- If set, no touch field will be spawned and a remote button or trigger field activates the door.
+// health		- If set, door must be shot open.
+// speed		- Movement speed (default 100).
+// wait			- Wait before returning (default 3, -1 = never return,-2 = never stop cycle).
+// dmg			- Damage to inflict when blocked (default 2).
+// sounds:
+//		0)	Silent.
+//		1)	Generic door.
+//		2)	Heavy stone door.
+//		3)  For swing arm on palace level.
+//		4)  For stone bridge in palace level.
+//		5)  Small/medium wood door swinging.
+//		6)  Large/huge wood door swinging.
+//		7)  Medium sized stone/wood door sliding.
+//		8)  Large stone/wood sliding door or portcullis.
+//		9)  Average metal door swinging.
+//		10) Fast sliding doors.
+//		11) Hive, Metal, Multipaneled sliding.
+//		12) Huge stone door swinging.
+//		13) Medium/large elevator.
+//		14) Crane (warehouse).
+//		15) Hammer-like pump in oglemine1.
+//		16) Sliding metal table in cloudlabs.
+//		17) Lab table which rotates up to ceiling - cloublabs.
+//		18) Piston sound.
+//		19) Short, sharp metal clang.
+//		20) Something going under water.
+//		21) The bam sound.
+void SP_func_door_rotating(edict_t* ent)
 {
-	VectorClear (ent->s.angles);
+	VectorClear(ent->s.angles);
 
-	// set the axis of rotation
+	// Set the axis of rotation.
 	VectorClear(ent->movedir);
+
 	if (ent->spawnflags & SF_DOOR_X_AXIS)
-		ent->movedir[2] = 1.0;
+		ent->movedir[2] = 1.0f;
 	else if (ent->spawnflags & SF_DOOR_Y_AXIS)
-		ent->movedir[0] = 1.0;
+		ent->movedir[0] = 1.0f;
 	else // Z_AXIS
-		ent->movedir[1] = 1.0;
+		ent->movedir[1] = 1.0f;
 
-	// check for reverse rotation
+	// Check for reverse rotation.
 	if (ent->spawnflags & SF_DOOR_REVERSE)
-		VectorNegate (ent->movedir, ent->movedir);
+		VectorNegate(ent->movedir, ent->movedir);
 
-	if (!st.distance)
+	if (st.distance == 0)
 	{
 		gi.dprintf("%s at %s with no distance set\n", ent->classname, vtos(ent->s.origin));
 		st.distance = 90;
 	}
 
-	gi.setmodel (ent, ent->model);
-	gi.linkentity (ent);
+	gi.setmodel(ent, ent->model);
+	gi.linkentity(ent);
 
-	VectorCopy (ent->s.angles, ent->pos1);
-	VectorMA (ent->s.angles, st.distance, ent->movedir, ent->pos2);
-	ent->moveinfo.distance = st.distance;
+	VectorCopy(ent->s.angles, ent->pos1);
+	VectorMA(ent->s.angles, (float)st.distance, ent->movedir, ent->pos2);
+	ent->moveinfo.distance = (float)st.distance;
 
 	ent->movetype = PHYSICSTYPE_PUSH;
 	ent->solid = SOLID_BSP;
 	ent->blocked = FuncDoorBlocked;
 	ent->use = FuncDoorUse;
 
-	if (!ent->speed)
+	if (ent->speed == 0.0f)
 		ent->speed = 100;
-	if (!ent->accel)
+
+	if (ent->accel == 0.0f)
 		ent->accel = ent->speed;
-	if (!ent->decel)
+
+	if (ent->decel == 0.0f)
 		ent->decel = ent->speed;
 
-	if (!ent->wait)
-		ent->wait = 3;
-	if (!ent->dmg)
+	if (ent->wait == 0.0f)
+		ent->wait = 3.0f;
+
+	if (ent->dmg == 0)
 		ent->dmg = 2;
 
 	FuncDoorSetSounds(ent);
 
-	// if it starts open, switch the positions
+	// If it starts open, switch the positions.
 	if (ent->spawnflags & SF_DOOR_START_OPEN)
 	{
-		VectorCopy (ent->pos2, ent->s.angles);
-		VectorCopy (ent->pos1, ent->pos2);
-		VectorCopy (ent->s.angles, ent->pos1);
-		VectorNegate (ent->movedir, ent->movedir);
+		VectorCopy(ent->pos2, ent->s.angles);
+		VectorCopy(ent->pos1, ent->pos2);
+		VectorCopy(ent->s.angles, ent->pos1);
+		VectorNegate(ent->movedir, ent->movedir);
 	}
 
-	if (ent->health)
+	if (ent->health > 0)
 	{
 		ent->takedamage = DAMAGE_YES;
 		ent->die = FuncDoorKilled;
 		ent->max_health = ent->health;
 	}
-	
-	if (ent->targetname && ent->message)
+
+	if (ent->targetname != NULL && ent->message != NULL)
 	{
-		gi.soundindex ("misc/talk.wav");
+		gi.soundindex("misc/talk.wav");
 		ent->isBlocking = FuncDoorTouch;
 	}
 
@@ -1742,25 +1741,25 @@ void SP_func_door_rotating (edict_t *ent)
 	ent->moveinfo.accel = ent->accel;
 	ent->moveinfo.decel = ent->decel;
 	ent->moveinfo.wait = ent->wait;
-	VectorCopy (ent->s.origin, ent->moveinfo.start_origin);
-	VectorCopy (ent->pos1, ent->moveinfo.start_angles);
-	VectorCopy (ent->s.origin, ent->moveinfo.end_origin);
-	VectorCopy (ent->pos2, ent->moveinfo.end_angles);
+	VectorCopy(ent->s.origin, ent->moveinfo.start_origin);
+	VectorCopy(ent->pos1, ent->moveinfo.start_angles);
+	VectorCopy(ent->s.origin, ent->moveinfo.end_origin);
+	VectorCopy(ent->pos2, ent->moveinfo.end_angles);
 
 	VectorSubtract(ent->maxs, ent->mins, ent->s.bmodel_origin);
-	Vec3ScaleAssign(0.5, ent->s.bmodel_origin);
+	Vec3ScaleAssign(0.5f, ent->s.bmodel_origin);
 	VectorAdd(ent->mins, ent->s.bmodel_origin, ent->s.bmodel_origin);
 
 	if (ent->spawnflags & 16)
 		ent->s.effects |= EF_ANIM_ALL;
 
 	ent->nextthink = level.time + FRAMETIME;
+
 	if (ent->health || ent->targetname)
 		ent->think = FuncDoorCalcMoveSpeedThink;
 	else
 		ent->think = FuncDoorSpawnDoorTriggerThink;
 }
-
 
 /*QUAKED func_water (0 .5 .8) ? START_OPEN
 func_water is a moveable water brush.  It must be targeted to operate.  Use a non-water texture at your own risk.
