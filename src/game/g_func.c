@@ -858,30 +858,22 @@ void SP_func_rotating(edict_t* ent)
 
 #pragma endregion
 
-/*
-======================================================================
+#pragma region ========================== func_button ==========================
 
-BUTTONS
+#define SF_TOUCH	1 //mxd
 
-======================================================================
-*/
+static void FuncButtonMove(edict_t* self);
 
-
-void button_fire (edict_t *self);
-
-void button_killed2(edict_t *self, G_Message_t *msg)
+static void FuncButtonOnDeathMessage(edict_t* self, G_Message_t* msg) //mxd. Named 'button_killed2' in original logic.
 {
-
 	self->activator = self->enemy;
-	button_fire (self);
+	FuncButtonMove(self);
 	self->health = self->max_health;
-
 }
-
 
 void ButtonStaticsInit()
 {
-	classStatics[CID_BUTTON].msgReceivers[MSG_DEATH] = button_killed2;
+	classStatics[CID_BUTTON].msgReceivers[MSG_DEATH] = FuncButtonOnDeathMessage;
 }
 
 void button_done (edict_t *self)
@@ -914,7 +906,7 @@ void button_wait (edict_t *self)
 	}
 }
 
-void button_fire (edict_t *self)
+void FuncButtonMove (edict_t *self)
 {
 	if (self->moveinfo.state == STATE_UP || self->moveinfo.state == STATE_TOP)
 		return;
@@ -928,7 +920,7 @@ void button_fire (edict_t *self)
 void button_use (edict_t *self, edict_t *other, edict_t *activator)
 {
 	self->activator = activator;
-	button_fire (self);
+	FuncButtonMove (self);
 }
 
 void button_touch (edict_t *self, trace_t *trace)
@@ -944,7 +936,7 @@ void button_touch (edict_t *self, trace_t *trace)
 		return;
 
 	self->activator = other;
-	button_fire (self);
+	FuncButtonMove (self);
 }
 
 int button_killed (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
@@ -952,7 +944,7 @@ int button_killed (edict_t *self, edict_t *inflictor, edict_t *attacker, int dam
 	self->activator = attacker;
 	self->health = self->max_health;
 	self->takedamage = DAMAGE_NO;
-	button_fire (self);
+	FuncButtonMove (self);
 	return(0);
 }
 
@@ -1043,6 +1035,8 @@ void SP_func_button (edict_t *ent)
 
 	ent->msgHandler = DefaultMsgHandler;
 }
+
+#pragma endregion
 
 /*
 ======================================================================
