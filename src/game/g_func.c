@@ -2017,18 +2017,18 @@ static void FuncTrainNext(edict_t* self) //mxd. Named 'train_next' in original l
 	}
 }
 
-void train_resume (edict_t *self)
+void FuncTrainResume(edict_t* self) //mxd. Named 'train_next' in original logic. //TODO: add to header.
 {
-	edict_t	*ent;
-	vec3_t	dest;
+	const edict_t* ent = self->target_ent;
 
-	ent = self->target_ent;
+	vec3_t dest;
+	VectorSubtract(ent->s.origin, self->mins, dest);
 
-	VectorSubtract (ent->s.origin, self->mins, dest);
 	self->moveinfo.state = STATE_TOP;
-	VectorCopy (self->s.origin, self->moveinfo.start_origin);
-	VectorCopy (dest, self->moveinfo.end_origin);
-	MoveCalc (self, dest, FuncTrainWait);
+	VectorCopy(self->s.origin, self->moveinfo.start_origin);
+	VectorCopy(dest, self->moveinfo.end_origin);
+
+	MoveCalc(self, dest, FuncTrainWait);
 	self->spawnflags |= SF_TRAIN_START_ON;
 }
 
@@ -2090,7 +2090,7 @@ void train_use (edict_t *self, edict_t *other, edict_t *activator)
 	else
 	{
 		if (self->target_ent)
-			train_resume(self);
+			FuncTrainResume(self);
 		else
 			FuncTrainNext(self);
 	}

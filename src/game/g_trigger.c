@@ -543,9 +543,10 @@ void SP_trigger_Elevator (edict_t *self)
 	self->nextthink = level.time + FRAMETIME;
 }
 
+extern void FuncTrainResume(edict_t* self); //TODO: remove.
+
 void trigger_elevator_use (edict_t *self, edict_t *other, edict_t *activator)
 {
-	void train_resume (edict_t *self);
 	edict_t *target;
 
 	if (self->movetarget->nextthink)
@@ -572,7 +573,7 @@ void trigger_elevator_use (edict_t *self, edict_t *other, edict_t *activator)
 	}
 
 	self->movetarget->target_ent = target;
-	train_resume (self->movetarget);
+	FuncTrainResume(self->movetarget);
 }
 
 void trigger_elevator_init (edict_t *self)
