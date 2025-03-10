@@ -945,80 +945,81 @@ static void FuncButtonSetSounds(edict_t* self) //mxd. Named 'button_sounds' in o
 	}
 }
 
-/*QUAKED func_button (0 .5 .8) ? TOUCH
-When a button is touched, it moves some distance in the direction of it's angle, triggers all of it's targets, waits some time, then returns to it's original position where it can be triggered again.
+// QUAKED func_button (0 .5 .8) ? TOUCH
+// When a button is touched, it moves some distance in the direction of it's angle, triggers all of it's targets,
+// waits "wait" time, then returns to it's original position where it can be triggered again.
 
-"angle"		determines the opening direction
-"target"	all entities with a matching targetname will be used
-"speed"		override the default 40 speed
-"wait"		override the default 1 second wait (-1 = never return)
-"lip"		override the default 4 pixel lip remaining at end of move
-"health"	if set, the button must be killed instead of touched
-"sounds"
-0) silent
-1) Basic Button
-2) Clanky Button
-3) Steam Button
+// Spawnflags:
+// TOUCH - Player can touch button to set it off.
 
---------SPAWNFLAGS--------
-TOUCH - player can touch button to set it off
-*/
-void SP_func_button (edict_t *ent)
+// Variables:
+// angle	- Determines the opening direction.
+// target	- All entities with a matching targetname will be used.
+// speed	- Override the default 40 speed.
+// wait		- Override the default 1 second wait (-1 = never return).
+// lip		- Override the default 4 pixel lip remaining at end of move.
+// health	- If set, the button must be killed instead of touched.
+// sounds:
+//		0) Silent.
+//		1) Basic Button.
+//		2) Clanky Button.
+//		3) Steam Button.
+void SP_func_button(edict_t* ent)
 {
-	vec3_t	abs_movedir;
-	float	dist;
-
-	G_SetMovedir (ent->s.angles, ent->movedir);
+	G_SetMovedir(ent->s.angles, ent->movedir);
 	ent->movetype = PHYSICSTYPE_STOP;
 	ent->solid = SOLID_BSP;
-  	ent->takedamage = DAMAGE_NO;
-	gi.setmodel (ent, ent->model);
+	ent->takedamage = DAMAGE_NO;
+
+	gi.setmodel(ent, ent->model);
 	gi.linkentity(ent);
 
 	FuncButtonSetSounds(ent);
-	
-//	ent->health = 5;
-	if (!ent->speed)
-		ent->speed = 40;
-	if (!ent->accel)
+
+	if (ent->speed == 0.0f)
+		ent->speed = 40.0f;
+
+	if (ent->accel == 0.0f)
 		ent->accel = ent->speed;
-	if (!ent->decel)
+
+	if (ent->decel == 0.0f)
 		ent->decel = ent->speed;
 
-	if (!ent->wait)
-		ent->wait = 3;
-	if (!st.lip)
+	if (ent->wait == 0.0f)
+		ent->wait = 3.0f;
+
+	if (st.lip == 0)
 		st.lip = 4;
 
-	VectorCopy (ent->s.origin, ent->pos1);
+	VectorCopy(ent->s.origin, ent->pos1);
+
+	vec3_t abs_movedir;
 	VectorAbs(ent->movedir, abs_movedir);
-	dist = DotProduct(abs_movedir, ent->size) - st.lip;
-	VectorMA (ent->pos1, dist, ent->movedir, ent->pos2);
+
+	const float dist = DotProduct(abs_movedir, ent->size) - (float)st.lip;
+	VectorMA(ent->pos1, dist, ent->movedir, ent->pos2);
 
 	ent->use = FuncButtonUse;
 
-	if (ent->health)
+	if (ent->health > 0)
 	{
 		ent->max_health = ent->health;
-//		ent->die = button_killed;
 		ent->takedamage = DAMAGE_YES;
 	}
 
-	if ((! ent->targetname) || (ent->spawnflags & 1))
-	{
+	if (ent->targetname == NULL || (ent->spawnflags & SF_TOUCH))
 		ent->isBlocking = FuncButtonTouch;
-	}
 
 	ent->moveinfo.state = STATE_BOTTOM;
-
 	ent->moveinfo.speed = ent->speed;
 	ent->moveinfo.accel = ent->accel;
 	ent->moveinfo.decel = ent->decel;
 	ent->moveinfo.wait = ent->wait;
-	VectorCopy (ent->pos1, ent->moveinfo.start_origin);
-	VectorCopy (ent->s.angles, ent->moveinfo.start_angles);
-	VectorCopy (ent->pos2, ent->moveinfo.end_origin);
-	VectorCopy (ent->s.angles, ent->moveinfo.end_angles);
+
+	VectorCopy(ent->pos1, ent->moveinfo.start_origin);
+	VectorCopy(ent->s.angles, ent->moveinfo.start_angles);
+	VectorCopy(ent->pos2, ent->moveinfo.end_origin);
+	VectorCopy(ent->s.angles, ent->moveinfo.end_angles);
 
 	ent->msgHandler = DefaultMsgHandler;
 }
