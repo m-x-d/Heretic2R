@@ -9,6 +9,7 @@
 #include "g_breakable.h" //mxd
 #include "g_field.h" //mxd
 #include "g_flamethrower.h" //mxd
+#include "g_func_Button.h" //mxd
 #include "g_func_Door.h" //mxd
 #include "g_func_Rotating.h" //mxd
 #include "g_misc.h" //mxd
@@ -20,7 +21,6 @@ int Cid_init[NUM_CLASSIDS];
 void ObjectStaticsInit();
 void LightStaticsInit();
 void TriggerStaticsInit();
-void ButtonStaticsInit();
 void LeverStaticsInit();
 
 void (*classStaticsInits[NUM_CLASSIDS])(void) = 

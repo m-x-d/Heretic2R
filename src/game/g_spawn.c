@@ -6,6 +6,7 @@
 #include "g_env.h" //mxd
 #include "g_field.h"
 #include "g_flamethrower.h"
+#include "g_func_Button.h" //mxd
 #include "g_func_Door.h" //mxd
 #include "g_func_MonsterSpawner.h" //mxd
 #include "g_func_Plat.h" //mxd
@@ -22,8 +23,6 @@ typedef struct
 	void	(*spawn)(edict_t *ent);
 	int		CID;
 } spawn_t;
-
-void SP_func_button (edict_t *ent);
 
 void SP_trigger_Activate(edict_t *self);
 void SP_trigger_Always (edict_t *ent);

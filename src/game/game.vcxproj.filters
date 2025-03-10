@@ -399,9 +399,6 @@
     <ClCompile Include="g_breakable.c">
       <Filter>src\Game objects</Filter>
     </ClCompile>
-    <ClCompile Include="g_func.c">
-      <Filter>src\Game objects</Filter>
-    </ClCompile>
     <ClCompile Include="g_flamethrower.c">
       <Filter>src\Game objects</Filter>
     </ClCompile>
@@ -616,6 +613,9 @@
       <Filter>src\Game objects</Filter>
     </ClCompile>
     <ClCompile Include="g_func_Rotating.c">
+      <Filter>src\Game objects</Filter>
+    </ClCompile>
+    <ClCompile Include="g_func_Button.c">
       <Filter>src\Game objects</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1185,6 +1185,9 @@
       <Filter>src\Game objects</Filter>
     </ClInclude>
     <ClInclude Include="g_func_Rotating.h">
+      <Filter>src\Game objects</Filter>
+    </ClInclude>
+    <ClInclude Include="g_func_Button.h">
       <Filter>src\Game objects</Filter>
     </ClInclude>
   </ItemGroup>

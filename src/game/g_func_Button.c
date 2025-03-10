@@ -1,34 +1,17 @@
 //
-// g_func.c
+// g_func_Button.c -- Originally part of g_func.c
 //
 // Copyright 1998 Raven Software
 //
 
-#include "g_func_Utility.h" //mxd
-#include "g_func_Door.h" //mxd
-#include "g_combat.h" //mxd
+#include "g_func_Button.h"
 #include "g_DefaultMessageHandler.h"
-#include "FX.h"
+#include "g_func_Utility.h"
 #include "Vector.h"
-#include "g_local.h"
 
 #pragma region ========================== func_button ==========================
 
 #define SF_TOUCH	1 //mxd
-
-static void FuncButtonMove(edict_t* self); //TODO: move to header.
-
-static void FuncButtonOnDeathMessage(edict_t* self, G_Message_t* msg) //mxd. Named 'button_killed2' in original logic.
-{
-	self->activator = self->enemy;
-	FuncButtonMove(self);
-	self->health = self->max_health;
-}
-
-void ButtonStaticsInit(void) //TODO: rename to FuncButtonStaticsInit.
-{
-	classStatics[CID_BUTTON].msgReceivers[MSG_DEATH] = FuncButtonOnDeathMessage;
-}
 
 static void FuncButtonDone(edict_t* self) //mxd. Named 'button_done' in original logic.
 {
@@ -176,6 +159,22 @@ void SP_func_button(edict_t* ent)
 	VectorCopy(ent->s.angles, ent->moveinfo.end_angles);
 
 	ent->msgHandler = DefaultMsgHandler;
+}
+
+#pragma endregion
+
+#pragma region ========================== func_button support logic ==========================
+
+static void FuncButtonOnDeathMessage(edict_t* self, G_Message_t* msg) //mxd. Named 'button_killed2' in original logic.
+{
+	self->activator = self->enemy;
+	FuncButtonMove(self);
+	self->health = self->max_health;
+}
+
+void ButtonStaticsInit(void) //TODO: rename to FuncButtonStaticsInit.
+{
+	classStatics[CID_BUTTON].msgReceivers[MSG_DEATH] = FuncButtonOnDeathMessage;
 }
 
 #pragma endregion
