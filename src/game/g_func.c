@@ -608,27 +608,11 @@ void FuncRotateStaticsInit(void)
 	classStatics[CID_FUNC_ROTATE].msgReceivers[G_MSG_UNSUSPEND] = FuncRotateActivate;
 }
 
-
-
-void FuncDoor_Deactivate(edict_t *self, G_Message_t *msg)
-{
-	VectorClear(self->velocity);
-	VectorClear(self->avelocity);
-}
-
-void FuncDoor_Activate(edict_t *self, G_Message_t *msg)
-{
-	self->use(self,NULL,NULL);
-	gi.linkentity (self);
-}
-
-void FuncDoorStaticsInit()
+void FuncDoorStaticsInit(void)
 {
 	classStatics[CID_FUNC_DOOR].msgReceivers[G_MSG_SUSPEND] = FuncRotateDeactivate;
 	classStatics[CID_FUNC_DOOR].msgReceivers[G_MSG_UNSUSPEND] = FuncRotateActivate;
 }
-
-
 
 /*QUAKED func_plat (0 .5 .8) ? PLAT_LOW_TRIGGER
 speed	default 150
