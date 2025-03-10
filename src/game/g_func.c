@@ -783,62 +783,77 @@ static void FuncRotatingUse(edict_t* self, edict_t* other, edict_t* activator) /
 	}
 }
 
-void SP_func_rotating (edict_t *ent)
-{
+// QUAKED func_rotating (0 .5 .8) ? START_ON REVERSE X_AXIS Y_AXIS TOUCH_PAIN STOP ANIMATED ANIMATED_FAST CRUSHER
+// You need to have an origin brush as part of this entity. The center of that brush will be the point around which it is rotated.
+// It will rotate around the Z axis by default. You can check either the X_AXIS or Y_AXIS box to change that.
 
-	ent->msgHandler = DefaultMsgHandler;
+// Spawnflags:
+// REVERSE	- Will cause the it to rotate in the opposite direction.
+// STOP		- Mean it will stop moving instead of pushing entities.
+
+// Variables:
+// speed	- Determines how fast it moves (default 100).
+// dmg		- Damage to inflict when blocked (default 2).
+// sounds:
+//		0 - Silent.
+//		1 - Generic rotate.
+//		2 - Huge wheel ogles push in cloudlabs.
+//		3 - Rock crusher which turns at end of conveyor on ogle2.
+//		4 - 'Spanking' paddles on gauntlet.
+void SP_func_rotating(edict_t* ent)
+{
 	ent->classID = CID_FUNC_ROTATE;
+	ent->msgHandler = DefaultMsgHandler;
 
 	ent->solid = SOLID_BSP;
-	if (ent->spawnflags & 32)
-		ent->movetype = PHYSICSTYPE_STOP;
-	else
-		ent->movetype = PHYSICSTYPE_PUSH;
+	ent->movetype = ((ent->spawnflags & SF_STOP) ? PHYSICSTYPE_STOP : PHYSICSTYPE_PUSH);
 
 	FuncRotatingSetSounds(ent);
 
-	// set the axis of rotation
+	// Set the axis of rotation.
 	VectorClear(ent->movedir);
-	if (ent->spawnflags & 4)
-		ent->movedir[2] = 1.0;
-	else if (ent->spawnflags & 8)
-		ent->movedir[0] = 1.0;
+
+	if (ent->spawnflags & SF_X_AXIS)
+		ent->movedir[2] = 1.0f;
+	else if (ent->spawnflags & SF_Y_AXIS)
+		ent->movedir[0] = 1.0f;
 	else // Z_AXIS
-		ent->movedir[1] = 1.0;
+		ent->movedir[1] = 1.0f;
 
-	// check for reverse rotation
-	if (ent->spawnflags & 2)
-		VectorNegate (ent->movedir, ent->movedir);
+	// Check for reverse rotation.
+	if (ent->spawnflags & SF_REVERSE)
+		VectorNegate(ent->movedir, ent->movedir);
 
-	if (!ent->speed)
-		ent->speed = 100;
-	if (!ent->dmg)
+	if (ent->speed == 0.0f)
+		ent->speed = 100.0f;
+
+	if (ent->dmg == 0)
 		ent->dmg = 2;
-
-//	ent->moveinfo.sound_middle = "doors/hydro1.wav";
 
 	ent->use = FuncRotatingUse;
 
-	if (ent->dmg)
+	if (ent->dmg > 0)
 		ent->blocked = FuncRotatingBlocked;
 
-	if (ent->spawnflags & 1)
-		ent->use (ent, NULL, NULL);
+	if (ent->spawnflags & SF_START_ON)
+		ent->use(ent, NULL, NULL);
 
-	if (ent->spawnflags & 64)
+	if (ent->spawnflags & SF_ANIMATED)
 		ent->s.effects |= EF_ANIM_ALL;
-	if (ent->spawnflags & 128)
+
+	if (ent->spawnflags & SF_ANIMATED_FAST)
 		ent->s.effects |= EF_ANIM_ALLFAST;
 
-	if (ent->spawnflags & 256) // Because of a mixup in flags
-		ent->spawnflags |= 4;
+	//TODO: neither SF_CRUSHER nor SF_DOOR_CRUSHER flags seem to be used by func_rotating logic...
+	if (ent->spawnflags & SF_CRUSHER) // Because of a mixup in flags.
+		ent->spawnflags |= SF_DOOR_CRUSHER;
 
 	VectorSubtract(ent->maxs, ent->mins, ent->s.bmodel_origin);
-	Vec3ScaleAssign(0.5, ent->s.bmodel_origin);
+	Vec3ScaleAssign(0.5f, ent->s.bmodel_origin);
 	VectorAdd(ent->mins, ent->s.bmodel_origin, ent->s.bmodel_origin);
-	
-	gi.setmodel (ent, ent->model);
-	gi.linkentity (ent);
+
+	gi.setmodel(ent, ent->model);
+	gi.linkentity(ent);
 }
 
 #pragma endregion
