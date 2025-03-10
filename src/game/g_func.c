@@ -923,20 +923,15 @@ static void FuncButtonUse(edict_t* self, edict_t* other, edict_t* activator) //m
 	FuncButtonMove(self);
 }
 
-void button_touch (edict_t *self, trace_t *trace)
+static void FuncButtonTouch(edict_t* self, trace_t* trace) //mxd. Named 'button_touch' in original logic.
 {
-	edict_t		*other;
+	edict_t* other = trace->ent;
 
-	other = trace->ent;
-
-	if (!other->client)
-		return;
-
-	if (other->health <= 0)
-		return;
-
-	self->activator = other;
-	FuncButtonMove (self);
+	if (other->client != NULL && other->health > 0)
+	{
+		self->activator = other;
+		FuncButtonMove(self);
+	}
 }
 
 int button_killed (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
@@ -1019,7 +1014,7 @@ void SP_func_button (edict_t *ent)
 
 	if ((! ent->targetname) || (ent->spawnflags & 1))
 	{
-		ent->isBlocking = button_touch;
+		ent->isBlocking = FuncButtonTouch;
 	}
 
 	ent->moveinfo.state = STATE_BOTTOM;
