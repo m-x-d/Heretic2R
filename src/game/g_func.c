@@ -504,29 +504,33 @@ static void FuncPlatGoUp(edict_t* ent) //mxd. Named 'plat_go_up' in original log
 	MoveCalc(ent, ent->moveinfo.start_origin, FuncPlatHitTop);
 }
 
-void plat_blocked (edict_t *self, edict_t *other)
+static void FuncPlatBlocked(edict_t* self, edict_t* other) //mxd. Named 'plat_blocked' in original logic.
 {
-	if ((other->svflags & SVF_MONSTER) && (!other->client) && !(other->svflags & SVF_MONSTER))
+	//TODO: invalid logic? Checks for both presence and absence of SVF_MONSTER flag! Last check is '!(other->svflags & SVF_BOSS)' in FuncDoorBlocked().
+	if ((other->svflags & SVF_MONSTER) && other->client == NULL && !(other->svflags & SVF_MONSTER))
 	{
-		// give it a chance to go away on it's own terms (like gibs)
-		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, 3000, 1, DAMAGE_AVOID_ARMOR,MOD_CRUSH);
-		// if it's still there, nuke it
-		if(other->health > 0)
+		// Give it a chance to go away on it's own terms (like gibs).
+		T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, 3000, 1, DAMAGE_AVOID_ARMOR, MOD_CRUSH);
+
+		// If it's still there, nuke it.
+		if (other->health > 0)
 			BecomeDebris(other);
+
 		return;
 	}
 
 	if (self->spawnflags & SF_DOOR_CRUSHER)
 	{
-		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg * 10, 1, 0,MOD_CRUSH);
+		T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg * 10, 1, 0, MOD_CRUSH);
 		return;
 	}
-	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0,MOD_CRUSH);
+
+	T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0, MOD_CRUSH);
 
 	if (self->moveinfo.state == STATE_UP)
-		FuncPlatGoDown (self);
+		FuncPlatGoDown(self);
 	else if (self->moveinfo.state == STATE_DOWN)
-		FuncPlatGoUp (self);
+		FuncPlatGoUp(self);
 }
 
 
@@ -683,7 +687,7 @@ void SP_func_plat (edict_t *ent)
 	ent->solid = SOLID_BSP;
 	ent->movetype = PHYSICSTYPE_PUSH;
 	ent->clipmask = MASK_PLAYERSOLID;
-	ent->blocked = plat_blocked;
+	ent->blocked = FuncPlatBlocked;
 	ent->use = Use_Plat;
 
 	if (!ent->speed)
