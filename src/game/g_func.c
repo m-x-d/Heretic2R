@@ -724,35 +724,32 @@ void SP_func_plat(edict_t* ent)
 
 #pragma endregion
 
-void rotate_sounds (edict_t *ent)
+#pragma region ========================== func_rotating ==========================
+
+#define SF_START_ON			1 //mxd
+#define SF_REVERSE			2 //mxd
+#define SF_X_AXIS			4 //mxd
+#define SF_Y_AXIS			8 //mxd
+#define SF_TOUCH_PAIN		16 //mxd
+#define SF_STOP				32 //mxd
+#define SF_ANIMATED			64 //mxd
+#define SF_ANIMATED_FAST	128 //mxd
+#define SF_CRUSHER			256 //mxd
+
+static void FuncRotatingSetSounds(edict_t* ent) //mxd. Named 'rotate_sounds' in original logic.
 {
-	if (ent->sounds == 0)
+	switch (ent->sounds)
 	{
-		ent->moveinfo.sound_start = 0;
-		ent->moveinfo.sound_middle = 0;
-		ent->moveinfo.sound_end = 0;
-	}
-	else if (ent->sounds == 1)
-	{
-		ent->moveinfo.sound_middle = gi.soundindex  ("doors/stoneloop.wav");
-	}
-	else if (ent->sounds == 2)
-	{
-		ent->moveinfo.sound_middle = gi.soundindex  ("objects/hugewheel.wav");
-	}
-	else if (ent->sounds == 3)
-	{
-		ent->moveinfo.sound_middle = gi.soundindex  ("objects/pizzawheel.wav");
-	}
-	else if (ent->sounds == 4)
-	{
-		ent->moveinfo.sound_start = gi.soundindex  ("objects/spankers.wav");
-	}
-	else 
-	{
-		ent->moveinfo.sound_start = 0;
-		ent->moveinfo.sound_middle = 0;
-		ent->moveinfo.sound_end = 0;
+		case 1: ent->moveinfo.sound_middle = gi.soundindex("doors/stoneloop.wav"); break;
+		case 2: ent->moveinfo.sound_middle = gi.soundindex("objects/hugewheel.wav"); break;
+		case 3: ent->moveinfo.sound_middle = gi.soundindex("objects/pizzawheel.wav"); break;
+		case 4: ent->moveinfo.sound_middle = gi.soundindex("objects/spankers.wav"); break;
+
+		default:
+			ent->moveinfo.sound_start = 0;
+			ent->moveinfo.sound_middle = 0;
+			ent->moveinfo.sound_end = 0;
+			break;
 	}
 }
 
@@ -817,7 +814,7 @@ void SP_func_rotating (edict_t *ent)
 	else
 		ent->movetype = PHYSICSTYPE_PUSH;
 
-	rotate_sounds(ent);
+	FuncRotatingSetSounds(ent);
 
 	// set the axis of rotation
 	VectorClear(ent->movedir);
@@ -862,6 +859,8 @@ void SP_func_rotating (edict_t *ent)
 	gi.setmodel (ent, ent->model);
 	gi.linkentity (ent);
 }
+
+#pragma endregion
 
 /*
 ======================================================================
