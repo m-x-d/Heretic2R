@@ -2103,84 +2103,98 @@ static void FuncTrainUse(edict_t* self, edict_t* other, edict_t* activator) //mx
 	}
 }
 
-void SP_func_train (edict_t *self)
+// QUAKED func_train (0 .5 .8) ? START_ON TOGGLE BLOCK_STOPS HASORIGIN NO_CLIP PUSHPULL
+// Trains are moving platforms that players can ride. The targets origin specifies the min point of the train at each corner.
+// The train spawns at the first target it is pointing at. If the train is the target of a button or trigger, it will not begin moving until activated.
+// This means if it has a targetname it won't move unless triggered.
+
+// Spawnflags:
+// HASORIGIN	- Makes train move from an origin brush rather than the lower left point of the train.
+// NO_CLIP		- Train will not block anything.
+
+// Variables:
+// speed	- default 100.
+// dmg		- default 2.
+// noise	- Looping file to play when the train is in motion.
+//			- objects/piston.wav for large steam pistons in ogle2 and cloudlabs.
+//			- objects/winch2.wav for wooden ore hauler going across river.
+// rotate	- Speed train should rotate at.
+// wait		- -1: Stop and don't move again until triggered.
+//			  -3: Stop and explode.
+//			  -4: Go through animations (only if a model)
+// file		- Specifies the train is a model. This is the exact directory of the model (example: models/objects/broom/tris.fm).
+// count	- Number of frames in animation (only if a model)
+// materialtype:
+//			0 = MAT_WOOD
+//			1 = MAT_GREYSTONE (default)
+//			2 = MAT_CLOTH
+//			3 = MAT_METAL
+//			9 = MAT_BROWNSTONE
+//			10 = MAT_NONE - just makes smoke.
+void SP_func_train(edict_t* self)
 {
-	vec3_t space;
-	float spacecube;
-
 	self->movetype = PHYSICSTYPE_PUSH;
+	self->solid = ((self->spawnflags & SF_TRAIN_NO_CLIP) ? SOLID_NOT : SOLID_BBOX);
 
-	self->blocked = FuncTrainBlocked;
 	if (self->spawnflags & SF_TRAIN_BLOCK_STOPS)
 		self->dmg = 0;
-	else
-	{
-		if (!self->dmg)
-		{
-			self->dmg = 100;
-		}
-	}
+	else if (self->dmg == 0)
+		self->dmg = 100;
 
-	if (st.file)
+	if (st.file != NULL)
 	{
-		if (self->spawnflags & 16)   // Non-blocking?
-			self->solid = SOLID_NOT;
-		else
-			self->solid = SOLID_BBOX;
-		self->s.modelindex = gi.modelindex(st.file);
-		VectorCopy(self->s.angles,self->moveinfo.end_angles);
+		self->s.modelindex = (byte)gi.modelindex(st.file);
+		VectorCopy(self->s.angles, self->moveinfo.end_angles);
 	}
 	else
 	{
-		VectorClear (self->s.angles);
-		if (self->spawnflags & 16)   // Non-blocking?
-			self->solid = SOLID_NOT;
-		else
-			self->solid = SOLID_BSP;
-		gi.setmodel (self, self->model);
+		VectorClear(self->s.angles);
+		gi.setmodel(self, self->model);
 	}
 
-	if (st.noise)
-		self->moveinfo.sound_middle = gi.soundindex  (st.noise);
+	if (st.noise != NULL)
+		self->moveinfo.sound_middle = gi.soundindex(st.noise);
 
-	if (!self->speed)
-		self->speed = 100;
+	if (self->speed == 0.0f)
+		self->speed = 100.0f;
 
-	if (!self->materialtype)
+	if (self->materialtype == 0) //TODO: MAT_STONE (0) can't be set...
 		self->materialtype = MAT_GREYSTONE;
 
 	self->moveinfo.speed = self->speed;
-	self->moveinfo.accel = self->moveinfo.decel = self->moveinfo.speed;
+	self->moveinfo.accel = self->speed;
+	self->moveinfo.decel = self->speed;
 
+	self->blocked = FuncTrainBlocked;
 	self->use = FuncTrainUse;
 
 	VectorClear(self->movedir);
 
-	if (st.rotate)
-		VectorScale (self->movedir, st.rotate, self->avelocity);
+	if (st.rotate != 0)
+		VectorScale(self->movedir, (float)st.rotate, self->avelocity);
 	else
 		VectorClear(self->avelocity);
 
+	vec3_t space;
 	VectorSubtract(self->maxs, self->mins, space);
-	spacecube = space[0] * space[1] * space[2];
-	self->mass = spacecube / 64;   // 
+	const float space_cube = space[0] * space[1] * space[2];
+	self->mass = (int)(space_cube / 64.0f);
 
 	VectorSubtract(self->maxs, self->mins, self->s.bmodel_origin);
-	Vec3ScaleAssign(0.5, self->s.bmodel_origin);
+	Vec3ScaleAssign(0.5f, self->s.bmodel_origin);
 	VectorAdd(self->mins, self->s.bmodel_origin, self->s.bmodel_origin);
 
-	gi.linkentity (self);
+	gi.linkentity(self);
 
-	if (self->target)
+	if (self->target != NULL)
 	{
-		// start trains on the second frame, to make sure their targets have had
-		// a chance to spawn
+		// Start trains on the second frame, to make sure their targets have had a chance to spawn.
 		self->nextthink = level.time + FRAMETIME;
 		self->think = FuncTrainFind;
 	}
 	else
 	{
-		gi.dprintf ("func_train without a target at %s\n", vtos(self->absmin));
+		gi.dprintf("func_train without a target at %s\n", vtos(self->absmin));
 	}
 }
 
