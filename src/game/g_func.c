@@ -2642,7 +2642,7 @@ static void FuncMonsterSpawnerGo(edict_t* self) //mxd. Named 'monsterspawner_go'
 	}
 }
 
-void monsterspawner_use(edict_t *self, edict_t *other, edict_t *activator)
+static void FuncMonsterSpawnerUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'monsterspawner_use' in original logic. 
 {
 	self->enemy = activator;
 	FuncMonsterSpawnerGo(self);
@@ -2738,7 +2738,7 @@ void SP_func_monsterspawner (edict_t *self)
 		self->s.scale = 1.0f;
 
 	if (self->targetname)
-		self->use = monsterspawner_use;
+		self->use = FuncMonsterSpawnerUse;
 	else
 	{
 		self->think = FuncMonsterSpawnerGo;
