@@ -934,15 +934,6 @@ static void FuncButtonTouch(edict_t* self, trace_t* trace) //mxd. Named 'button_
 	}
 }
 
-int button_killed (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
-{
-	self->activator = attacker;
-	self->health = self->max_health;
-	self->takedamage = DAMAGE_NO;
-	FuncButtonMove (self);
-	return(0);
-}
-
 void button_sounds(edict_t *self)
 {
 	if (self->sounds == 1)
