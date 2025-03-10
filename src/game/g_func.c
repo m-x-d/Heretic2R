@@ -2485,168 +2485,155 @@ void SP_func_door_secret(edict_t* ent)
 
 #pragma endregion
 
-void monsterspawner_go (edict_t *self)
-{
-	edict_t	*monster;
-	vec3_t angle,holdorigin;
-	vec3_t forward;
-	trace_t trace;
-	edict_t	*victim = NULL;
-	buoy_t	*start_buoy, *end_buoy;
-	int		end_buoy_index;
-	int		num_attempts = 0;
-	byte	o_mintel;
-	vec3_t	buoydist;
+#pragma region ========================== func_monsterspawner ==========================
 
-	if (self->count<=0)
+#define SF_ONDEATH		1 //mxd
+#define SF_RANDOMBUOY	2 //mxd
+#define SF_PEACEFUL		4 //mxd //TODO: not implemented.
+
+static void FuncMonsterSpawnerGo(edict_t* self) //mxd. Named 'monsterspawner_go' in original logic.
+{
+	if (self->count <= 0)
 	{
 		self->think = NULL;
 		return;
 	}
 
-	VectorCopy(self->s.origin,holdorigin);
-	holdorigin[2] -= 8;
+	vec3_t hold_origin;
+	VectorCopy(self->s.origin, hold_origin);
+	hold_origin[2] -= 8.0f;
 
-	gi.trace(self->s.origin,self->mins, self->maxs, holdorigin, self, MASK_MONSTERSOLID,&trace);
-	if (trace.fraction != 1)
+	trace_t trace;
+	gi.trace(self->s.origin, self->mins, self->maxs, hold_origin, self, MASK_MONSTERSOLID, &trace);
+
+	if (trace.fraction != 1.0f)
 		return;
 
-	monster = G_Spawn();
+	edict_t* monster = G_Spawn();
 	monster->classname = ED_NewString(monster_spawner_classnames[self->style]);
 
-//copy my designer-modified fields to the monster to overrride defaults
+	// Copy my designer-modified fields to the monster to override defaults.
 	monster->classID = cid_for_spawner_style[self->style];
-	if(self->mintel)
-		monster->mintel = self->mintel;
-	else
-		monster->mintel = MaxBuoysForClass[monster->classID];
+	monster->mintel = ((self->mintel > 0) ? self->mintel : MaxBuoysForClass[monster->classID]);
 	monster->melee_range = self->melee_range;
 	monster->missile_range = self->missile_range;
 	monster->min_missile_range = self->min_missile_range;
 	monster->bypass_missile_chance = self->bypass_missile_chance;
 	monster->jump_chance = self->jump_chance;
 	monster->wakeup_distance = self->wakeup_distance;
-	
+
 	monster->s.scale = self->s.scale;
 
 	VectorScale(STDMinsForClass[monster->classID], monster->s.scale, monster->mins);
 	VectorScale(STDMaxsForClass[monster->classID], monster->s.scale, monster->maxs);
 
-	if (self->maxrange)
+	if (self->maxrange > 0.0f)
 	{
-		VectorClear(angle);
-		angle[0] = flrand(0,360);
+		const vec3_t angle = { flrand(0.0f, 360.0f), 0.0f, 0.0f };
+
+		vec3_t forward;
 		AngleVectors(angle, forward, NULL, NULL);
 		VectorMA(self->s.origin, self->maxrange, forward, monster->s.origin);
 	}
-	else if(self->spawnflags & 2)//randombuoy
+	else if (self->spawnflags & SF_RANDOMBUOY)
 	{
-		//STEP 0: who are we after?
-		if(self->enemy)
-		{
-			if(self->enemy->client)
-			{
-				victim = self->enemy;
-			}
-		}
+		edict_t* victim = NULL;
 
-		if(!victim)
+		// STEP 0: Who are we after?
+		if (self->enemy != NULL && self->enemy->client != NULL)
+			victim = self->enemy;
+
+		if (victim == NULL)
 			victim = level.sight_client;
 
-		if(!victim)//no players
+		if (victim == NULL) // No players.
 		{
 			G_FreeEdict(monster);
 			return;
 		}
-		
-pickbuoy:
-		num_attempts++;//avoid infinite loops
-		if(num_attempts>100)
+
+		for (int num_attempts = 0; ; num_attempts++)
 		{
-			G_FreeEdict(monster);
-			return;//can't find any buoys close enough
-		}
-
-		//step1: pick a random buoy
-		start_buoy = &level.buoy_list[irand(0, level.active_buoys - 1)];
-
-		//step2: make sure the buoy is within a certain range of the player (500)
-
-		VectorSubtract(start_buoy->origin, victim->s.origin, buoydist);
-
-		if(VectorLengthSquared(buoydist) >  250000)//more than 500 away
-			goto pickbuoy;
-
-		//step3: make sure the buoy is not visible to the player (unless assassin)
-		if(monster->classID != CID_ASSASSIN)
-		{
-			if(visible_pos(victim, start_buoy->origin))
-				goto pickbuoy;
-		}
-		//step4: if the player_buoy is defined, pick it, if not, find player's buoy
-		if(level.player_buoy[victim->s.number] > NULL_BUOY)//could use player_last_buoy, but may not be reliable, and don't want to spend the time checking
-			end_buoy = &level.buoy_list[level.player_buoy[victim->s.number]];
-		else
-		{
-			end_buoy_index = MG_SetFirstBuoy(victim);
-			if(end_buoy_index == NULL_BUOY)
+			if (num_attempts == 100) // Avoid infinite loops.
 			{
 				G_FreeEdict(monster);
-				return;//can't find a buoy for player
+				return; // Can't find any buoys close enough.
 			}
-			
-			end_buoy = &level.buoy_list[end_buoy_index];
-		}
 
-		//step5: make sure the buoy is within 1/2 the mintel (no more than 10) buoys of the player's buoy
-		monster->lastbuoy = NULL_BUOY;
-		
-		if(monster->mintel > 7)
-			o_mintel = 7;
-		else if(monster->mintel < 3)
-			o_mintel = 3;
-		else			
-			o_mintel = monster->mintel;
+			// STEP 1: Pick a random buoy.
+			buoy_t* start_buoy = &level.buoy_list[irand(0, level.active_buoys - 1)];
 
-		monster->mintel = ceil(monster->mintel * 0.5);
-		if(!FindNextBuoy(monster, start_buoy->id, end_buoy->id))
-		{
+			// STEP 2: Make sure the buoy is within a certain range of the player (500).
+			vec3_t buoy_dist;
+			VectorSubtract(start_buoy->origin, victim->s.origin, buoy_dist);
+
+			if (VectorLengthSquared(buoy_dist) > 250000) // More than 500 away.
+				continue;
+
+			// STEP 3: Make sure the buoy is not visible to the player (unless assassin).
+			if (monster->classID != CID_ASSASSIN && visible_pos(victim, start_buoy->origin))
+				continue;
+
+			// STEP 4: If the player_buoy is defined, pick it, if not, find player's buoy.
+			buoy_t* end_buoy;
+			if (level.player_buoy[victim->s.number] > NULL_BUOY) // Could use player_last_buoy, but may not be reliable, and don't want to spend the time checking.
+			{
+				end_buoy = &level.buoy_list[level.player_buoy[victim->s.number]];
+			}
+			else
+			{
+				const int end_buoy_index = MG_SetFirstBuoy(victim);
+				if (end_buoy_index == NULL_BUOY)
+				{
+					G_FreeEdict(monster);
+					return; // Can't find a buoy for player.
+				}
+
+				end_buoy = &level.buoy_list[end_buoy_index];
+			}
+
+			// STEP 5: Make sure the buoy is within 1/2 the mintel (no more than 10) buoys of the player's buoy.
+			const byte o_mintel = (byte)ClampI(monster->mintel, 3, 7);
+			monster->lastbuoy = NULL_BUOY;
+			monster->mintel = (byte)(ceilf((float)monster->mintel * 0.5f));
+
+			const qboolean next_buoy_found = (FindNextBuoy(monster, start_buoy->id, end_buoy->id) != NULL); //mxd
 			monster->mintel = o_mintel;
-			goto pickbuoy;//can't make connection within 1/2 mintel steps
-		}
-		monster->mintel = o_mintel;
-			
-		//step6: make sure nothing blocking is standing there
-		monster->clipmask = MASK_MONSTERSOLID;
-		if(!MG_MonsterAttemptTeleport(monster, start_buoy->origin, true))//ignorLOS since we checked above and can't see smonster at this point yet
-			goto pickbuoy;//can't teleport there, there's something obstructing that spot- try another
 
-		if(BUOY_DEBUG)
-			gi.dprintf("%s monsterspawn-teleported to buoy %s\n", monster->classname, start_buoy->targetname);
-		//step7: ok, put them there, let's continue
+			if (!next_buoy_found) // Can't make connection within 1/2 mintel steps.
+				continue;
+
+			// STEP 6: Make sure nothing blocking is standing there.
+			monster->clipmask = MASK_MONSTERSOLID;
+
+			// STEP 7: OK, put them there.
+			if (MG_MonsterAttemptTeleport(monster, start_buoy->origin, true)) // ignore_los since we checked above and can't see monster at this point yet.
+				break;
+		}
 	}
 	else
+	{
 		VectorCopy(self->s.origin, monster->s.origin);
+	}
 
 	VectorCopy(self->s.angles, monster->s.angles);
 	ED_CallSpawn(monster);
 
-	--self->count;
-	if (self->count > 0)
+	if (--self->count > 0)
 		monster->owner = self;
 
-	if(self->enemy && !(self->spawnflags & 1))
-	{//was activated
-		if(self->enemy->client)
-		{//monster_start_go will check their enemy and do a FoundTarget
-			monster->enemy = self->enemy;
-		}
+	if (self->enemy != NULL && !(self->spawnflags & SF_ONDEATH))
+	{
+		// Was activated.
+		if (self->enemy->client != NULL) //TODO: skip if SF_PEACEFUL is set?
+			monster->enemy = self->enemy; // monster_start_go will check their enemy and do a FoundTarget.
+
 		self->enemy = NULL;
 	}
 
-	if ((self->count > 0) && !(self->spawnflags & 1))//this ! was inside quotes, ! is before & in order of operations
+	if (self->count > 0 && !(self->spawnflags & SF_ONDEATH)) // This ! was inside quotes, ! is before & in order of operations.
 	{
-		self->think = monsterspawner_go;
+		self->think = FuncMonsterSpawnerGo;
 		self->nextthink = level.time + self->wait;
 	}
 	else
@@ -2658,7 +2645,7 @@ pickbuoy:
 void monsterspawner_use(edict_t *self, edict_t *other, edict_t *activator)
 {
 	self->enemy = activator;
-	monsterspawner_go(self);
+	FuncMonsterSpawnerGo(self);
 }
 
 /*QUAKED func_monsterspawner (0 .5 .8) (-8 -8 -8) (8 8 8) ONDEATH RANDOMBUOY PEACEFUL
@@ -2754,7 +2741,7 @@ void SP_func_monsterspawner (edict_t *self)
 		self->use = monsterspawner_use;
 	else
 	{
-		self->think = monsterspawner_go;
+		self->think = FuncMonsterSpawnerGo;
 		self->nextthink = level.time + self->wait;
 	}
 
@@ -2797,7 +2784,7 @@ The  chkroktk
 void SP_monster_chkroktk (edict_t *self)
 {
 	self->style = MS_CHKROKTK;
-	monsterspawner_go(self);
+	FuncMonsterSpawnerGo(self);
 }
 
 
@@ -2808,6 +2795,6 @@ The Sidhe Guard
 void SP_character_sidhe_guard (edict_t *self)
 {
 	self->style = MS_SIDHE_GUARD;
-	monsterspawner_go(self);
+	FuncMonsterSpawnerGo(self);
 }
 
