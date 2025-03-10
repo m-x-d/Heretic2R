@@ -1761,71 +1761,76 @@ void SP_func_door_rotating(edict_t* ent)
 		ent->think = FuncDoorSpawnDoorTriggerThink;
 }
 
-/*QUAKED func_water (0 .5 .8) ? START_OPEN
-func_water is a moveable water brush.  It must be targeted to operate.  Use a non-water texture at your own risk.
+// QUAKED func_water (0 .5 .8) ? START_OPEN
+// func_water is a moveable water brush. It must be targeted to operate. Use a non-water texture at your own risk.
 
-START_OPEN causes the water to move to its destination when spawned and operate in reverse.
+// Spawnflags:
+// START_OPEN - Causes the water to move to its destination when spawned and operate in reverse.
 
-"angle"		determines the opening direction (up or down only)
-"speed"		movement speed (25 default)
-"wait"		wait before returning (-1 default, -1 = TOGGLE)
-"lip"		lip remaining at end of move (0 default)
-"sounds"	(yes, these need to be changed)
-0)	no sound
-1)	water
-2)	lava
-*/
-
-void SP_func_water (edict_t *self)
+// Variables:
+// angle	- Determines the opening direction (up or down only)
+// speed	- Movement speed (default 25).
+// wait		- Wait before returning (default -1, -1 = TOGGLE).
+// lip		- Lip remaining at end of move (default 0).
+// sounds: (yes, these need to be changed)
+//		0)	No sound.
+//		1)	Water.
+//		2)	Lava.
+void SP_func_water(edict_t* self)
 {
-	vec3_t	abs_movedir;
+	G_SetMovedir(self->s.angles, self->movedir);
 
-	G_SetMovedir (self->s.angles, self->movedir);
 	self->movetype = PHYSICSTYPE_PUSH;
 	self->solid = SOLID_BSP;
-	gi.setmodel (self, self->model);
-	gi.linkentity (self);
+	gi.setmodel(self, self->model);
+	gi.linkentity(self);
 
-	// calculate second position
-	VectorCopy (self->s.origin, self->pos1);
+	// Calculate second position.
+	VectorCopy(self->s.origin, self->pos1);
+
+	vec3_t abs_movedir;
 	VectorAbs(self->movedir, abs_movedir);
-	self->moveinfo.distance = DotProduct(abs_movedir, self->size) - st.lip;
-	VectorMA (self->pos1, self->moveinfo.distance, self->movedir, self->pos2);
 
-	// if it starts open, switch the positions
+	self->moveinfo.distance = DotProduct(abs_movedir, self->size) - (float)st.lip;
+	VectorMA(self->pos1, self->moveinfo.distance, self->movedir, self->pos2);
+
+	// If it starts open, switch the positions.
 	if (self->spawnflags & SF_DOOR_START_OPEN)
 	{
-		VectorCopy (self->pos2, self->s.origin);
-		VectorCopy (self->pos1, self->pos2);
-		VectorCopy (self->s.origin, self->pos1);
+		VectorCopy(self->pos2, self->s.origin);
+		VectorCopy(self->pos1, self->pos2);
+		VectorCopy(self->s.origin, self->pos1);
 	}
 
-	VectorCopy (self->pos1, self->moveinfo.start_origin);
-	VectorCopy (self->s.angles, self->moveinfo.start_angles);
-	VectorCopy (self->pos2, self->moveinfo.end_origin);
-	VectorCopy (self->s.angles, self->moveinfo.end_angles);
+	VectorCopy(self->pos1, self->moveinfo.start_origin);
+	VectorCopy(self->s.angles, self->moveinfo.start_angles);
+	VectorCopy(self->pos2, self->moveinfo.end_origin);
+	VectorCopy(self->s.angles, self->moveinfo.end_angles);
 
 	VectorSubtract(self->maxs, self->mins, self->s.bmodel_origin);
-	Vec3ScaleAssign(0.5, self->s.bmodel_origin);
+	Vec3ScaleAssign(0.5f, self->s.bmodel_origin);
 	VectorAdd(self->mins, self->s.bmodel_origin, self->s.bmodel_origin);
 
 	self->moveinfo.state = STATE_BOTTOM;
 
-	if (!self->speed)
-		self->speed = 25;
-	self->moveinfo.accel = self->moveinfo.decel = self->moveinfo.speed = self->speed;
+	if (self->speed == 0.0f)
+		self->speed = 25.0f;
 
-	if (!self->wait)
-		self->wait = -1;
+	self->moveinfo.accel = self->speed;
+	self->moveinfo.decel = self->speed;
+	self->moveinfo.speed = self->speed;
+
+	if (self->wait == 0.0f)
+		self->wait = -1.0f;
+
 	self->moveinfo.wait = self->wait;
 
 	self->use = FuncDoorUse;
 
-	if (self->wait == -1)
+	if (self->wait == -1.0f)
 		self->spawnflags |= SF_DOOR_TOGGLE;
 
 	self->classname = "func_door";
-
 }
 
 #pragma endregion
