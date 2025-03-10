@@ -1026,32 +1026,19 @@ void SP_func_button(edict_t* ent)
 
 #pragma endregion
 
-/*
-======================================================================
+#pragma region ========================== func_door, func_door_rotating, func_water ==========================
 
-DOORS
+#define DOOR_MOVE_LOOP	(-2.0f) //mxd
 
-  spawn a trigger surrounding the entire team unless it is
-  allready targeted by another
-
-======================================================================
-*/
-
-
-void door_use_areaportals (edict_t *self, qboolean open)
+static void FuncDoorUseAreaportals(const edict_t* self, const qboolean open) //mxd. Named 'door_use_areaportals' in original logic.
 {
-	edict_t	*t = NULL;
-
-	if (!self->target)
+	if (self->target == NULL)
 		return;
 
-	while ((t = G_Find (t, FOFS(targetname), self->target)))
-	{
-		if (Q_stricmp(t->classname, "func_areaportal") == 0)
-		{
-			gi.SetAreaPortalState (t->style, open);
-		}
-	}
+	edict_t* target = NULL;
+	while ((target = G_Find(target, FOFS(targetname), self->target)) != NULL)
+		if (Q_stricmp(target->classname, "func_areaportal") == 0)
+			gi.SetAreaPortalState(target->style, open);
 }
 
 void door_go_down (edict_t *self);
@@ -1096,7 +1083,7 @@ void door_hit_bottom (edict_t *self)
 		door_go_up (self, NULL);
 	}
 	else
-		door_use_areaportals (self, false);
+		FuncDoorUseAreaportals (self, false);
 
 }
 
@@ -1151,7 +1138,7 @@ void door_go_up (edict_t *self, edict_t *activator)
 		AngleMoveCalc (self, door_hit_top);
 
 	G_UseTargets (self, activator);
-	door_use_areaportals (self, true);
+	FuncDoorUseAreaportals (self, true);
 }
 
 /* 
@@ -1334,7 +1321,7 @@ void Think_SpawnDoorTrigger (edict_t *ent)
 	other->touch = Touch_DoorTrigger;
 
 	if (ent->spawnflags & SF_DOOR_START_OPEN)
-		door_use_areaportals (ent, true);
+		FuncDoorUseAreaportals (ent, true);
 
 	Think_CalcMoveSpeed (ent);
 
@@ -1863,6 +1850,8 @@ void SP_func_water (edict_t *self)
 	self->classname = "func_door";
 
 }
+
+#pragma endregion
 
 void train_next (edict_t *self);
 
@@ -2423,7 +2412,7 @@ void door_secret_use (edict_t *self, edict_t *other, edict_t *activator)
 		gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE, self->moveinfo.sound_start, 1, ATTN_IDLE, 0);
 
 	MoveCalc (self, self->pos1, door_secret_move1);
-	door_use_areaportals (self, true);
+	FuncDoorUseAreaportals (self, true);
 }
 
 void door_secret_move1 (edict_t *self)
@@ -2483,7 +2472,7 @@ void door_secret_done (edict_t *self)
 		self->health = 0;
 		self->takedamage = DAMAGE_YES;
 	}
-	door_use_areaportals (self, false);
+	FuncDoorUseAreaportals (self, false);
 }
 
 void door_secret_blocked  (edict_t *self, edict_t *other)
