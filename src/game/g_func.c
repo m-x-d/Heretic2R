@@ -264,20 +264,13 @@ static void FuncTrainAngleMoveCalc(edict_t* self, const edict_t* ent, const vec3
 	VectorAdd(self->s.angles, angles, self->moveinfo.end_angles);
 }
 
-//
-// Support routines for angular movement (changes in angle using avelocity)
-//
-
-void AngleMove_Done (edict_t *ent)
+static void AngleMoveDone(edict_t* ent) //mxd. Named 'AngleMove_Done' in original logic.
 {
-	VectorClear (ent->avelocity);
-
+	VectorClear(ent->avelocity);
 	ent->think = NULL;
 
-	if (ent->moveinfo.endfunc)
-	{
-		ent->moveinfo.endfunc (ent);
-	}
+	if (ent->moveinfo.endfunc != NULL)
+		ent->moveinfo.endfunc(ent);
 }
 
 void AngleMove_Final (edict_t *ent)
@@ -291,7 +284,7 @@ void AngleMove_Final (edict_t *ent)
 
 	VectorScale (move, 1.0 / FRAMETIME, ent->avelocity);
 
-	ent->think = AngleMove_Done;
+	ent->think = AngleMoveDone;
 	ent->nextthink = level.time + FRAMETIME;
 }
 
