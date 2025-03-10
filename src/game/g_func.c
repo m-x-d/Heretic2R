@@ -230,52 +230,36 @@ static void MoveCalc(edict_t* ent, const vec3_t dest, void(*func)(edict_t*)) //m
 
 #pragma endregion
 
-//
-// Support routines for angular movement of trains (changes in angle using avelocity)
-//
+#pragma region ================== Support routines for angular movement of trains (changes in angle using avelocity) ==================
 
-void TrainAngleMove_Calc(edict_t *self, edict_t *ent, vec3_t dest)
+static void FuncTrainAngleMoveCalc(edict_t* self, const edict_t* ent, const vec3_t dest) //mxd. Named 'TrainAngleMove_Calc' in original logic.
 {
-	float	len;
-	float	traveltime;
-	float	holdtime;
-	vec3_t	angles;
-
 	VectorClear(self->avelocity);
 
-	if (!ent)
-	{
+	if (ent == NULL || Vec3IsZero(ent->s.angles))
 		return;
-	}
-	
-	if (Vec3IsZero(ent->s.angles))
+
+	// Put angles into wacky order (required).
+	const vec3_t angles = { ent->s.angles[1], ent->s.angles[2], ent->s.angles[0] };
+
+	// Length to travel.
+	const float len = VectorSeparation(self->s.origin, dest);
+
+	// Divide by speed to get time to reach dest.
+	const float travel_time = (len / self->moveinfo.speed) + self->moveinfo.wait;
+
+	if (travel_time < FRAMETIME)
 	{
-		return;
+		VectorScale(angles, 1.0f / FRAMETIME, self->avelocity);
 	}
-
-	// Put angles into wacky order (required)
-	angles[0] = ent->s.angles[1];
-	angles[1] = ent->s.angles[2];
-	angles[2] = ent->s.angles[0];
-
-	// length to travel
-	len = VectorSeparation (self->s.origin, dest);
-	// divide by speed to get time to reach dest
-	traveltime = (len / self->moveinfo.speed) + self->moveinfo.wait;
-
-	if (traveltime < FRAMETIME)
+	else
 	{
-		VectorScale (angles, 1.0 / FRAMETIME, self->avelocity);
-		VectorAdd(self->s.angles, angles, self->moveinfo.end_angles);
-		return;
+		// Scale the destdelta vector by the time spent traveling to get velocity.
+		// 0.97 is used because we want the train to change angles a little slow, that way it never overshoots the angle it should be at.
+		// In train_next the final angle is set using en_angles.
+		const float hold_time = 0.97f / travel_time;
+		VectorScale(angles, hold_time, self->avelocity);
 	}
-
-	// scale the destdelta vector by the time spent traveling to get velocity
-	// .95 is used because we want the train to change angles a little slow, that
-	// way it never over shoots the angle it should be at. In train_next the final
-	// angle is set using en_angles.
-	holdtime =  0.97 / traveltime;
-	VectorScale (angles, holdtime, self->avelocity);
 
 	VectorAdd(self->s.angles, angles, self->moveinfo.end_angles);
 }
@@ -361,6 +345,7 @@ void AngleMove_Calc (edict_t *ent, void(*func)(edict_t*))
 	}
 }
 
+#pragma endregion
 
 /*
 ==============
@@ -2185,7 +2170,7 @@ again:
 	// Snap the train to the last ending angle
 	VectorCopy(self->moveinfo.end_angles, self->s.angles);
 	// Recalc new angles
-	TrainAngleMove_Calc(self, ent, dest);
+	FuncTrainAngleMoveCalc(self, ent, dest);
 }
 
 void train_resume (edict_t *self)
