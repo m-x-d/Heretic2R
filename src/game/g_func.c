@@ -2334,14 +2334,15 @@ static void FuncDoorSecretMove6(edict_t* self) //mxd. Named 'door_secret_move6' 
 	MoveCalc(self, vec3_origin, FuncDoorSecretDone);
 }
 
-void FuncDoorSecretDone (edict_t *self)
+static void FuncDoorSecretDone(edict_t* self) //mxd. Named 'door_secret_done' in original logic.
 {
-	if (!(self->targetname) || (self->spawnflags & SF_SECRET_ALWAYS_SHOOT))
+	if (self->targetname == NULL || (self->spawnflags & SF_SECRET_ALWAYS_SHOOT))
 	{
 		self->health = 0;
 		self->takedamage = DAMAGE_YES;
 	}
-	FuncDoorUseAreaportals (self, false);
+
+	FuncDoorUseAreaportals(self, false);
 }
 
 void door_secret_blocked  (edict_t *self, edict_t *other)
