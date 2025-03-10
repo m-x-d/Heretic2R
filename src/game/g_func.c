@@ -753,29 +753,9 @@ static void FuncRotatingSetSounds(edict_t* ent) //mxd. Named 'rotate_sounds' in 
 	}
 }
 
-//====================================================================
-
-/*QUAKED func_rotating (0 .5 .8) ? START_ON REVERSE X_AXIS Y_AXIS TOUCH_PAIN STOP ANIMATED ANIMATED_FAST CRUSHER
-You need to have an origin brush as part of this entity.  The center of that brush will be
-the point around which it is rotated. It will rotate around the Z axis by default.  You can
-check either the X_AXIS or Y_AXIS box to change that.
-----------KEYS-------------
-"speed" determines how fast it moves; default value is 100.
-"dmg"	damage to inflict when blocked (2 default)
-"sounds"
-0 -	silent
-1 -	generic rotate
-2 - huge wheel ogles push in cloudlabs
-3 - rock crusher which turns at end of conveyor on ogle2
-4 - 'spanking' paddles on gauntlet
---------SPAWNFLAGS------------
-REVERSE will cause the it to rotate in the opposite direction.
-STOP mean it will stop moving instead of pushing entities
-*/
-
-void rotating_blocked (edict_t *self, edict_t *other)
+static void FuncRotatingBlocked(edict_t* self, edict_t* other) //mxd. Named 'rotating_blocked' in original logic.
 {
-	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0,MOD_CRUSH);
+	T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0, MOD_CRUSH);
 }
 
 void rotating_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
@@ -839,7 +819,7 @@ void SP_func_rotating (edict_t *ent)
 	ent->use = rotating_use;
 
 	if (ent->dmg)
-		ent->blocked = rotating_blocked;
+		ent->blocked = FuncRotatingBlocked;
 
 	if (ent->spawnflags & 1)
 		ent->use (ent, NULL, NULL);
