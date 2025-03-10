@@ -764,20 +764,21 @@ static void FuncRotatingTouch(edict_t* self, edict_t* other, cplane_t* plane, cs
 		FuncRotatingBlocked(self, other);
 }
 
-void rotating_use (edict_t *self, edict_t *other, edict_t *activator)
+static void FuncRotatingUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'rotating_use' in original logic.
 {
-	if (!VectorCompare (self->avelocity, vec3_origin))
+	if (Vec3NotZero(self->avelocity))
 	{
 		self->s.sound = 0;
-		VectorClear (self->avelocity);
+		VectorClear(self->avelocity);
 		self->touch = NULL;
 	}
 	else
 	{
-		self->s.sound = self->moveinfo.sound_middle;
+		self->s.sound = (byte)self->moveinfo.sound_middle;
 		self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_IDLE;
-		VectorScale (self->movedir, self->speed, self->avelocity);
-		if (self->spawnflags & 16)
+		VectorScale(self->movedir, self->speed, self->avelocity);
+
+		if (self->spawnflags & SF_TOUCH_PAIN)
 			self->touch = FuncRotatingTouch;
 	}
 }
@@ -816,7 +817,7 @@ void SP_func_rotating (edict_t *ent)
 
 //	ent->moveinfo.sound_middle = "doors/hydro1.wav";
 
-	ent->use = rotating_use;
+	ent->use = FuncRotatingUse;
 
 	if (ent->dmg)
 		ent->blocked = FuncRotatingBlocked;
