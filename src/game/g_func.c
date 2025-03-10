@@ -2032,32 +2032,37 @@ void FuncTrainResume(edict_t* self) //mxd. Named 'train_next' in original logic.
 	self->spawnflags |= SF_TRAIN_START_ON;
 }
 
-void func_train_find (edict_t *self)
+static void FuncTrainFind(edict_t* self) //mxd. Named 'func_train_find' in original logic.
 {
-	edict_t *ent;
+	if (self->target == NULL)
+	{
+		gi.dprintf("train_find: no target\n");
+		self->think = NULL;
 
-	if (!self->target)
-	{
-		gi.dprintf ("train_find: no target\n");
-		self->think = NULL;
 		return;
 	}
-	ent = G_PickTarget (self->target);
-	if (!ent)
+
+	const edict_t* ent = G_PickTarget(self->target);
+
+	if (ent == NULL)
 	{
-		gi.dprintf ("train_find: target %s not found\n", self->target);
+		gi.dprintf("train_find: target %s not found\n", self->target);
 		self->think = NULL;
+
 		return;
 	}
+
 	self->target = ent->target;
-	if (Vec3NotZero(self->s.origin))
-		VectorCopy (ent->s.origin, self->s.origin);
-	else 
-		VectorSubtract (ent->s.origin, self->mins, self->s.origin);
-	gi.linkentity (self);
 
-	// if not triggered, start immediately
-	if (!self->targetname)
+	if (Vec3NotZero(self->s.origin))
+		VectorCopy(ent->s.origin, self->s.origin);
+	else
+		VectorSubtract(ent->s.origin, self->mins, self->s.origin);
+
+	gi.linkentity(self);
+
+	// If not triggered, start immediately.
+	if (self->targetname == NULL)
 		self->spawnflags |= SF_TRAIN_START_ON;
 
 	if (self->spawnflags & SF_TRAIN_START_ON)
@@ -2169,7 +2174,7 @@ void SP_func_train (edict_t *self)
 		// start trains on the second frame, to make sure their targets have had
 		// a chance to spawn
 		self->nextthink = level.time + FRAMETIME;
-		self->think = func_train_find;
+		self->think = FuncTrainFind;
 	}
 	else
 	{
