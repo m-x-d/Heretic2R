@@ -181,17 +181,17 @@ static void MoveFinal(edict_t* ent) //mxd. Named 'Move_Final' in original logic.
 	ent->nextthink = level.time + FRAMETIME;
 }
 
-void Move_Begin (edict_t *ent)
+static void MoveBegin(edict_t* ent) //mxd. Named 'Move_Begin' in original logic.
 {
-	float	frames;
-
 	if ((ent->moveinfo.speed * FRAMETIME) >= ent->moveinfo.remaining_distance)
 	{
-		MoveFinal (ent);
+		MoveFinal(ent);
 		return;
 	}
-	VectorScale (ent->moveinfo.dir, ent->moveinfo.speed, ent->velocity);
-	frames = floor((ent->moveinfo.remaining_distance / ent->moveinfo.speed) / FRAMETIME);
+
+	VectorScale(ent->moveinfo.dir, ent->moveinfo.speed, ent->velocity);
+
+	const float frames = floorf(ent->moveinfo.remaining_distance / ent->moveinfo.speed / FRAMETIME);
 	ent->moveinfo.remaining_distance -= frames * ent->moveinfo.speed * FRAMETIME;
 	ent->nextthink = level.time + (frames * FRAMETIME);
 	ent->think = MoveFinal;
@@ -211,12 +211,12 @@ void Move_Calc (edict_t *ent, vec3_t dest, void(*func)(edict_t*))
 	{
 		if (level.current_entity == ((ent->flags & FL_TEAMSLAVE) ? ent->teammaster : ent))
 		{
-			Move_Begin (ent);
+			MoveBegin (ent);
 		}
 		else
 		{
 			ent->nextthink = level.time + FRAMETIME;
-			ent->think = Move_Begin;
+			ent->think = MoveBegin;
 		}
 	}
 	else
