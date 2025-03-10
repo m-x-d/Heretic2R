@@ -70,6 +70,7 @@
     <ClCompile Include="g_func_Door.c" />
     <ClCompile Include="g_func_MonsterSpawner.c" />
     <ClCompile Include="g_func_Plat.c" />
+    <ClCompile Include="g_func_Rotating.c" />
     <ClCompile Include="g_func_Timer.c" />
     <ClCompile Include="g_func_Train.c" />
     <ClCompile Include="g_func_Utility.c" />
@@ -239,6 +240,7 @@
     <ClInclude Include="g_func_Door.h" />
     <ClInclude Include="g_func_MonsterSpawner.h" />
     <ClInclude Include="g_func_Plat.h" />
+    <ClInclude Include="g_func_Rotating.h" />
     <ClInclude Include="g_func_Timer.h" />
     <ClInclude Include="g_func_Train.h" />
     <ClInclude Include="g_func_Utility.h" />
