@@ -54,7 +54,7 @@ static void FuncPlatGoDown(edict_t* ent); //TODO: move to g_funcs.h
 
 static void FuncPlatHitTop(edict_t* ent) //mxd. Named 'plat_hit_top' in original logic.
 {
-	FuncPlatPlayMoveEndSound(ent); //mxd
+	FuncPlayMoveEndSound(ent); //mxd
 
 	ent->moveinfo.state = STATE_TOP;
 	ent->think = FuncPlatGoDown;
@@ -63,20 +63,20 @@ static void FuncPlatHitTop(edict_t* ent) //mxd. Named 'plat_hit_top' in original
 
 static void FuncPlatHitBottom(edict_t* ent) //mxd. Named 'plat_hit_bottom' in original logic.
 {
-	FuncPlatPlayMoveEndSound(ent); //mxd
+	FuncPlayMoveEndSound(ent); //mxd
 	ent->moveinfo.state = STATE_BOTTOM;
 }
 
 static void FuncPlatGoDown(edict_t* ent) //mxd. Named 'plat_go_down' in original logic.
 {
-	FuncPlatPlayMoveStartSound(ent); //mxd
+	FuncPlayMoveStartSound(ent); //mxd
 	ent->moveinfo.state = STATE_DOWN;
 	MoveCalc(ent, ent->moveinfo.end_origin, FuncPlatHitBottom);
 }
 
 static void FuncPlatGoUp(edict_t* ent) //mxd. Named 'plat_go_up' in original logic.
 {
-	FuncPlatPlayMoveStartSound(ent); //mxd
+	FuncPlayMoveStartSound(ent); //mxd
 	ent->moveinfo.state = STATE_UP;
 	MoveCalc(ent, ent->moveinfo.start_origin, FuncPlatHitTop);
 }
@@ -624,7 +624,7 @@ static void FuncDoorGoDown(edict_t* self); //TODO: move to header.
 
 static void FuncDoorHitTop(edict_t* self) //mxd. Named 'door_hit_top' in original logic.
 {
-	FuncPlatPlayMoveEndSound(self); //mxd
+	FuncPlayMoveEndSound(self); //mxd
 	self->moveinfo.state = STATE_TOP;
 
 	if (self->spawnflags & SF_DOOR_TOGGLE)
@@ -646,7 +646,7 @@ static void FuncDoorGoUp(edict_t* self, edict_t* activator); //TODO: move to hea
 
 static void FuncDoorHitBottom(edict_t* self) //mxd. Named 'door_hit_bottom' in original logic.
 {
-	FuncPlatPlayMoveEndSound(self); //mxd
+	FuncPlayMoveEndSound(self); //mxd
 	self->moveinfo.state = STATE_BOTTOM;
 
 	if (self->moveinfo.wait == DOOR_MOVE_LOOP) // Endless cycle.
@@ -657,7 +657,7 @@ static void FuncDoorHitBottom(edict_t* self) //mxd. Named 'door_hit_bottom' in o
 
 static void FuncDoorGoDown(edict_t* self) //mxd. Named 'door_go_down' in original logic.
 {
-	FuncPlatPlayMoveStartSound(self); //mxd
+	FuncPlayMoveStartSound(self); //mxd
 
 	if (self->max_health > 0)
 	{
@@ -689,7 +689,7 @@ static void FuncDoorGoUp(edict_t* self, edict_t* activator) //mxd. Named 'door_g
 		return;
 	}
 
-	FuncPlatPlayMoveStartSound(self); //mxd
+	FuncPlayMoveStartSound(self); //mxd
 	self->moveinfo.state = STATE_UP;
 
 	if (strcmp(self->classname, "func_door") == 0)

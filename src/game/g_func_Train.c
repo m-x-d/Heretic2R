@@ -115,7 +115,7 @@ static void FuncTrainWait(edict_t* self) //mxd. Named 'train_wait' in original l
 			self->nextthink = 0.0f;
 		}
 
-		FuncPlatPlayMoveEndSound(self); //mxd
+		FuncPlayMoveEndSound(self); //mxd
 	}
 	else
 	{
@@ -159,7 +159,7 @@ static void FuncTrainNext(edict_t* self) //mxd. Named 'train_next' in original l
 		self->moveinfo.wait = ent->wait;
 		self->target_ent = ent;
 
-		FuncPlatPlayMoveStartSound(ent); //mxd
+		FuncPlayMoveStartSound(ent); //mxd
 
 		vec3_t dest;
 		if (self->spawnflags & SF_TRAIN_HAS_ORIGIN)

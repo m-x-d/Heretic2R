@@ -293,7 +293,7 @@ static void AccelMoveThink(edict_t* ent) //mxd. Named 'Think_AccelMove' in origi
 
 #pragma region ====================== Movement sounds ======================
 
-void FuncPlatPlayMoveStartSound(edict_t* ent) //mxd. Added to reduce code duplication.
+void FuncPlayMoveStartSound(edict_t* ent) //mxd. Added to reduce code duplication.
 {
 	if (!(ent->flags & FL_TEAMSLAVE))
 	{
@@ -305,7 +305,7 @@ void FuncPlatPlayMoveStartSound(edict_t* ent) //mxd. Added to reduce code duplic
 	}
 }
 
-void FuncPlatPlayMoveEndSound(edict_t* ent) //mxd. Added to reduce code duplication.
+void FuncPlayMoveEndSound(edict_t* ent) //mxd. Added to reduce code duplication.
 {
 	if (!(ent->flags & FL_TEAMSLAVE))
 	{
