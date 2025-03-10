@@ -162,28 +162,22 @@ static int cid_for_spawner_style[] =
 #define SF_DOOR_Y_AXIS		128
 #define SF_DOOR_SWINGAWAY	8192
 
-//
-// Support routines for movement (changes in origin using velocity)
-//
+#pragma region ====================== Support routines for movement (changes in origin using velocity) ======================
 
-void Move_Done (edict_t *ent)
+static void MoveDone(edict_t* ent) //mxd. Named 'Move_Done' in original logic.
 {
-	VectorClear (ent->velocity);
-//	VectorClear (ent->avelocity);
-
+	VectorClear(ent->velocity);
 	ent->think = NULL;
 
-	if (ent->moveinfo.endfunc)
-	{
-		ent->moveinfo.endfunc (ent);
-	}
+	if (ent->moveinfo.endfunc != NULL)
+		ent->moveinfo.endfunc(ent);
 }
 
 void Move_Final (edict_t *ent)
 {
 	VectorScale (ent->moveinfo.dir, ent->moveinfo.remaining_distance / FRAMETIME, ent->velocity);
 
-	ent->think = Move_Done;
+	ent->think = MoveDone;
 	ent->nextthink = level.time + FRAMETIME;
 }
 
@@ -233,6 +227,8 @@ void Move_Calc (edict_t *ent, vec3_t dest, void(*func)(edict_t*))
 		ent->nextthink = level.time + FRAMETIME;
 	}
 }
+
+#pragma endregion
 
 //
 // Support routines for angular movement of trains (changes in angle using avelocity)
