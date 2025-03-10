@@ -1063,7 +1063,7 @@ static void FuncDoorHitTop(edict_t* self) //mxd. Named 'door_hit_top' in origina
 	}
 }
 
-static void FuncDoorGoUp(edict_t* self, edict_t* activator);
+static void FuncDoorGoUp(edict_t* self, edict_t* activator); //TODO: move to header.
 
 static void FuncDoorHitBottom(edict_t* self) //mxd. Named 'door_hit_bottom' in original logic.
 {
@@ -1835,22 +1835,31 @@ void SP_func_water(edict_t* self)
 
 #pragma endregion
 
-void train_next (edict_t *self);
+#pragma region ========================== func_train ==========================
 
-void train_anim(edict_t *self)
+#define SF_TRAIN_START_ON		1
+#define SF_TRAIN_TOGGLE			2
+#define SF_TRAIN_BLOCK_STOPS	4
+#define SF_TRAIN_HAS_ORIGIN		8 //mxd
+#define SF_TRAIN_NO_CLIP		16 //mxd
+
+static void FuncTrainNext(edict_t* self); //TODO: move to header.
+
+static void FuncTrainAnim(edict_t* self) //mxd. Named 'train_anim' in original logic.
 {
+	if (self->s.frame == 0 && self->moveinfo.sound_middle > 0) // Start sound if there is one.
+		gi.sound(self, CHAN_VOICE, self->moveinfo.sound_middle, 1.0f, ATTN_NORM, 0.0f);
 
-	if ((self->s.frame == 0)  && (self->moveinfo.sound_middle))   // Start sound if there is one
-		gi.sound(self, CHAN_VOICE, self->moveinfo.sound_middle, 1, ATTN_NORM, 0);
-
-	if ((self->s.frame + 1)  < self->count)
+	if (self->s.frame + 1 < self->count)
 	{
-		++self->s.frame;
+		self->s.frame++;
 		self->nextthink = level.time + FRAMETIME;
-		self->think = train_anim;
+		self->think = FuncTrainAnim;
 	}
 	else
-		train_next (self);
+	{
+		FuncTrainNext(self);
+	}
 }
 
 void train_animbackwards(edict_t *self)
@@ -1866,7 +1875,7 @@ void train_animbackwards(edict_t *self)
 		self->think = train_animbackwards;
 	}
 	else
-		train_next (self);
+		FuncTrainNext (self);
 }
 #define TRAIN_START_ON		1
 #define TRAIN_TOGGLE		2
@@ -1957,7 +1966,7 @@ void train_wait (edict_t *self)
 		if (self->moveinfo.wait > 0)
 		{
 			self->nextthink = level.time + self->moveinfo.wait;
-			self->think = train_next;
+			self->think = FuncTrainNext;
 		}
 		else if (self->moveinfo.wait == -3)
 		{
@@ -1968,7 +1977,7 @@ void train_wait (edict_t *self)
 		{
 			if ((self->s.frame + 1)  < self->count)
 			{
-				train_anim(self);
+				FuncTrainAnim(self);
 			}
 			else
 			{
@@ -1977,7 +1986,7 @@ void train_wait (edict_t *self)
 		}
 		else if (self->spawnflags & TRAIN_TOGGLE)  // && wait < 0
 		{
-			train_next (self);
+			FuncTrainNext (self);
 			self->spawnflags &= ~TRAIN_START_ON;
 			VectorClear (self->velocity);
 			self->nextthink = 0;
@@ -1992,12 +2001,12 @@ void train_wait (edict_t *self)
 	}
 	else
 	{
-		train_next (self);
+		FuncTrainNext (self);
 	}
 	
 }
 
-void train_next (edict_t *self)
+void FuncTrainNext (edict_t *self)
 {
 	edict_t		*ent;
 	vec3_t		dest;
@@ -2117,7 +2126,7 @@ void func_train_find (edict_t *self)
 	if (self->spawnflags & TRAIN_START_ON)
 	{
 		self->nextthink = level.time + FRAMETIME;
-		self->think = train_next;
+		self->think = FuncTrainNext;
 		self->activator = self;
 	}
 	else
@@ -2146,7 +2155,7 @@ void train_use (edict_t *self, edict_t *other, edict_t *activator)
 		if (self->target_ent)
 			train_resume(self);
 		else
-			train_next(self);
+			FuncTrainNext(self);
 	}
 }
 
@@ -2230,6 +2239,8 @@ void SP_func_train (edict_t *self)
 		gi.dprintf ("func_train without a target at %s\n", vtos(self->absmin));
 	}
 }
+
+#pragma endregion
 
 /*QUAKED func_timer (0.3 0.1 0.6) (-8 -8 -8) (8 8 8) START_ON
 "wait"			base time between triggering all targets, default is 1
