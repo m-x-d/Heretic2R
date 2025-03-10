@@ -1203,46 +1203,42 @@ static void FuncDoorTriggerTouch(edict_t* self, edict_t* other, cplane_t* plane,
 	FuncDoorUse(self->owner, other, other);
 }
 
-void Think_CalcMoveSpeed (edict_t *self)
+static void FuncDoorCalcMoveSpeedThink(edict_t* self) //mxd. Named 'Think_CalcMoveSpeed' in original logic.
 {
-	edict_t	*ent;
-	float	min;
-	float	time;
-	float	newspeed;
-	float	ratio;
-	float	dist;
-
 	if (self->flags & FL_TEAMSLAVE)
 	{
 		self->think = NULL;
-		return;		// only the team master does this
+		return; // Only the team master does this.
 	}
 
-	// find the smallest distance any member of the team will be moving
-	min = Q_fabs(self->moveinfo.distance);
-	for (ent = self->teamchain; ent; ent = ent->teamchain)
+	// Find the smallest distance any member of the team will be moving.
+	float min_dist = Q_fabs(self->moveinfo.distance);
+
+	for (const edict_t* ent = self->teamchain; ent != NULL; ent = ent->teamchain)
 	{
-		dist = Q_fabs(ent->moveinfo.distance);
-		if (dist < min)
-			min = dist;
+		const float dist = Q_fabs(ent->moveinfo.distance);
+		min_dist = min(dist, min_dist);
 	}
 
-	time = min / self->moveinfo.speed;
+	const float time = min_dist / self->moveinfo.speed;
 
-	// adjust speeds so they will all complete at the same time
-	for (ent = self; ent; ent = ent->teamchain)
+	// Adjust speeds so they will all complete at the same time.
+	for (edict_t* ent = self; ent != NULL; ent = ent->teamchain)
 	{
-		newspeed = Q_fabs(ent->moveinfo.distance) / time;
-		ratio = newspeed / ent->moveinfo.speed;
+		const float new_speed = Q_fabs(ent->moveinfo.distance) / time;
+		const float ratio = new_speed / ent->moveinfo.speed;
+
 		if (ent->moveinfo.accel == ent->moveinfo.speed)
-			ent->moveinfo.accel = newspeed;
+			ent->moveinfo.accel = new_speed;
 		else
 			ent->moveinfo.accel *= ratio;
+
 		if (ent->moveinfo.decel == ent->moveinfo.speed)
-			ent->moveinfo.decel = newspeed;
+			ent->moveinfo.decel = new_speed;
 		else
 			ent->moveinfo.decel *= ratio;
-		ent->moveinfo.speed = newspeed;
+
+		ent->moveinfo.speed = new_speed;
 	}
 
 	gi.linkentity(self);
@@ -1285,7 +1281,7 @@ void Think_SpawnDoorTrigger (edict_t *ent)
 	if (ent->spawnflags & SF_DOOR_START_OPEN)
 		FuncDoorUseAreaportals (ent, true);
 
-	Think_CalcMoveSpeed (ent);
+	FuncDoorCalcMoveSpeedThink (ent);
 
 	gi.linkentity (other);
 }
@@ -1596,7 +1592,7 @@ void SP_func_door (edict_t *self)
 
 	self->nextthink = level.time + FRAMETIME;
 	if (self->health || self->targetname)
-		self->think = Think_CalcMoveSpeed;
+		self->think = FuncDoorCalcMoveSpeedThink;
 	else
 		self->think = Think_SpawnDoorTrigger;
 }
@@ -1740,7 +1736,7 @@ void SP_func_door_rotating (edict_t *ent)
 
 	ent->nextthink = level.time + FRAMETIME;
 	if (ent->health || ent->targetname)
-		ent->think = Think_CalcMoveSpeed;
+		ent->think = FuncDoorCalcMoveSpeedThink;
 	else
 		ent->think = Think_SpawnDoorTrigger;
 }
