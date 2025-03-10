@@ -285,37 +285,30 @@ static void AngleMoveFinal(edict_t* ent) //mxd. Named 'AngleMove_Final' in origi
 	ent->think = AngleMoveDone;
 }
 
-void AngleMove_Begin (edict_t *ent)
+static void AngleMoveBegin(edict_t* ent) //mxd. Named 'AngleMove_Begin' in original logic.
 {
-	vec3_t	destdelta;
-	float	len;
-	float	traveltime;
-	float	frames;
+	// Set dest_delta to the vector needed to move.
+	vec3_t dest_delta;
+	const vec3_t* src_angles = ((ent->moveinfo.state == STATE_UP) ? &ent->moveinfo.end_angles : &ent->moveinfo.start_angles); //mxd
+	VectorSubtract(*src_angles, ent->s.angles, dest_delta);
 
-	// set destdelta to the vector needed to move
-	if (ent->moveinfo.state == STATE_UP)
-		VectorSubtract (ent->moveinfo.end_angles, ent->s.angles, destdelta);
-	else
-		VectorSubtract (ent->moveinfo.start_angles, ent->s.angles, destdelta);
-	
-	// calculate length of vector
-	len = VectorLength (destdelta);
-	
-	// divide by speed to get time to reach dest
-	traveltime = len / ent->moveinfo.speed;
+	// Calculate length of vector.
+	const float len = VectorLength(dest_delta);
 
-	if (traveltime < FRAMETIME)
+	// Divide by speed to get time to reach dest.
+	const float travel_time = len / ent->moveinfo.speed;
+
+	if (travel_time < FRAMETIME)
 	{
-		AngleMoveFinal (ent);
+		AngleMoveFinal(ent);
 		return;
 	}
 
-	frames = floor(traveltime / FRAMETIME);
+	// Scale the dest_delta vector by the time spent traveling to get velocity.
+	VectorScale(dest_delta, 1.0f / travel_time, ent->avelocity);
 
-	// scale the destdelta vector by the time spent traveling to get velocity
-	VectorScale (destdelta, 1.0 / traveltime, ent->avelocity);
-
-	// set nextthink to trigger a think when dest is reached
+	// Set nextthink to trigger a think when dest is reached.
+	const float frames = floorf(travel_time / FRAMETIME);
 	ent->nextthink = level.time + frames * FRAMETIME;
 	ent->think = AngleMoveFinal;
 }
@@ -326,12 +319,12 @@ void AngleMove_Calc (edict_t *ent, void(*func)(edict_t*))
 	ent->moveinfo.endfunc = func;
 	if (level.current_entity == ((ent->flags & FL_TEAMSLAVE) ? ent->teammaster : ent))
 	{
-		AngleMove_Begin (ent);
+		AngleMoveBegin (ent);
 	}
 	else
 	{
 		ent->nextthink = level.time + FRAMETIME;
-		ent->think = AngleMove_Begin;
+		ent->think = AngleMoveBegin;
 	}
 }
 
