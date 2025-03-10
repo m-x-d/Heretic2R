@@ -338,33 +338,28 @@ static float AccelerationDistance(const float target, const float rate) //mxd. #
 	return target * ((target / rate) + 1.0f) / 2.0f;
 }
 
-void plat_CalcAcceleratedMove(moveinfo_t *moveinfo)
+static void FuncPlatCalcAcceleratedMove(moveinfo_t* info) //mxd. Named 'plat_CalcAcceleratedMove' in original logic.
 {
-	float	accel_dist;
-	float	decel_dist;
+	info->move_speed = info->speed;
 
-	moveinfo->move_speed = moveinfo->speed;
-
-	if (moveinfo->remaining_distance < moveinfo->accel)
+	if (info->remaining_distance < info->accel)
 	{
-		moveinfo->current_speed = moveinfo->remaining_distance;
+		info->current_speed = info->remaining_distance;
 		return;
 	}
 
-	accel_dist = AccelerationDistance (moveinfo->speed, moveinfo->accel);
-	decel_dist = AccelerationDistance (moveinfo->speed, moveinfo->decel);
+	const float accel_dist = AccelerationDistance(info->speed, info->accel);
+	float decel_dist = AccelerationDistance(info->speed, info->decel);
 
-	if ((moveinfo->remaining_distance - accel_dist - decel_dist) < 0)
+	if ((info->remaining_distance - accel_dist - decel_dist) < 0.0f)
 	{
-		float	f;
-
-		f = (moveinfo->accel + moveinfo->decel) / (moveinfo->accel * moveinfo->decel);
-		moveinfo->move_speed = (-2 + sqrt(4 - 4 * f * (-2 * moveinfo->remaining_distance))) / (2 * f);
-		decel_dist = AccelerationDistance (moveinfo->move_speed, moveinfo->decel);
+		const float f = (info->accel + info->decel) / (info->accel * info->decel);
+		info->move_speed = (-2.0f + sqrtf(4.0f - (4.0f * f) * (-2.0f * info->remaining_distance))) / (2.0f * f);
+		decel_dist = AccelerationDistance(info->move_speed, info->decel);
 	}
 
-	moveinfo->decel_distance = decel_dist;
-};
+	info->decel_distance = decel_dist;
+}
 
 void plat_Accelerate (moveinfo_t *moveinfo)
 {
@@ -442,7 +437,7 @@ void ThinkAccelMove (edict_t *ent)
 	ent->moveinfo.remaining_distance -= ent->moveinfo.current_speed;
 
 	if (ent->moveinfo.current_speed == 0)		// starting or blocked
-		plat_CalcAcceleratedMove(&ent->moveinfo);
+		FuncPlatCalcAcceleratedMove(&ent->moveinfo);
 
 	plat_Accelerate (&ent->moveinfo);
 
