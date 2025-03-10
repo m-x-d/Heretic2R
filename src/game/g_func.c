@@ -1325,18 +1325,16 @@ static void FuncDoorBlocked(edict_t* self, edict_t* other) //mxd. Named 'door_bl
 	}
 }
 
-int door_killed (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
+static int FuncDoorKilled(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'door_killed' in original logic.
 {
-	edict_t	*ent;
-
-	for (ent = self->teammaster ; ent ; ent = ent->teamchain)
+	for (edict_t* ent = self->teammaster; ent != NULL; ent = ent->teamchain)
 	{
 		ent->health = ent->max_health;
 		ent->takedamage = DAMAGE_NO;
 	}
-	FuncDoorUse (self->teammaster, attacker, attacker);
-	return(0);
 
+	FuncDoorUse(self->teammaster, attacker, attacker);
+	return 0;
 }
 
 void door_touch (edict_t *self, trace_t *trace)
@@ -1560,7 +1558,7 @@ void SP_func_door (edict_t *self)
 	if (self->health)
 	{
 		self->takedamage = DAMAGE_YES;
-		self->die = door_killed;
+		self->die = FuncDoorKilled;
 		self->max_health = self->health;
 	}
 	else if (self->targetname && self->message)
@@ -1708,7 +1706,7 @@ void SP_func_door_rotating (edict_t *ent)
 	if (ent->health)
 	{
 		ent->takedamage = DAMAGE_YES;
-		ent->die = door_killed;
+		ent->die = FuncDoorKilled;
 		ent->max_health = ent->health;
 	}
 	
@@ -2520,7 +2518,7 @@ void SP_func_door_secret (edict_t *ent)
 	if (ent->health)
 	{
 		ent->takedamage = DAMAGE_YES;
-		ent->die = door_killed;
+		ent->die = FuncDoorKilled;
 		ent->max_health = ent->health;
 	}
 	else if (ent->targetname && ent->message)
