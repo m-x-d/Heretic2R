@@ -361,76 +361,67 @@ static void FuncPlatCalcAcceleratedMove(moveinfo_t* info) //mxd. Named 'plat_Cal
 	info->decel_distance = decel_dist;
 }
 
-void plat_Accelerate (moveinfo_t *moveinfo)
+static void FuncPlatAccelerate(moveinfo_t* info) //mxd. Named 'plat_Accelerate' in original logic.
 {
-	// are we decelerating?
-	if (moveinfo->remaining_distance <= moveinfo->decel_distance)
+	// Are we decelerating?
+	if (info->remaining_distance <= info->decel_distance)
 	{
-		if (moveinfo->remaining_distance < moveinfo->decel_distance)
+		if (info->remaining_distance < info->decel_distance)
 		{
-			if (moveinfo->next_speed)
+			if (info->next_speed != 0.0f)
 			{
-				moveinfo->current_speed = moveinfo->next_speed;
-				moveinfo->next_speed = 0;
-				return;
+				info->current_speed = info->next_speed;
+				info->next_speed = 0.0f;
 			}
-			if (moveinfo->current_speed > moveinfo->decel)
-				moveinfo->current_speed -= moveinfo->decel;
+			else if (info->current_speed > info->decel)
+			{
+				info->current_speed -= info->decel;
+			}
 		}
+
 		return;
 	}
 
-	// are we at full speed and need to start decelerating during this move?
-	if (moveinfo->current_speed == moveinfo->move_speed)
-		if ((moveinfo->remaining_distance - moveinfo->current_speed) < moveinfo->decel_distance)
-		{
-			float	p1_distance;
-			float	p2_distance;
-			float	distance;
-
-			p1_distance = moveinfo->remaining_distance - moveinfo->decel_distance;
-			p2_distance = moveinfo->move_speed * (1.0 - (p1_distance / moveinfo->move_speed));
-			distance = p1_distance + p2_distance;
-			moveinfo->current_speed = moveinfo->move_speed;
-			moveinfo->next_speed = moveinfo->move_speed - moveinfo->decel * (p2_distance / distance);
-			return;
-		}
-
-	// are we accelerating?
-	if (moveinfo->current_speed < moveinfo->speed)
+	// Are we at full speed and need to start decelerating during this move?
+	if (info->current_speed == info->move_speed)
 	{
-		float	old_speed;
-		float	p1_distance;
-		float	p1_speed;
-		float	p2_distance;
-		float	distance;
+		if ((info->remaining_distance - info->current_speed) < info->decel_distance)
+		{
+			const float p1_distance = info->remaining_distance - info->decel_distance;
+			const float p2_distance = info->move_speed * (1.0f - (p1_distance / info->move_speed));
+			const float distance = p1_distance + p2_distance;
+			info->current_speed = info->move_speed;
+			info->next_speed = info->move_speed - info->decel * (p2_distance / distance);
 
-		old_speed = moveinfo->current_speed;
-
-		// figure simple acceleration up to move_speed
-		moveinfo->current_speed += moveinfo->accel;
-		if (moveinfo->current_speed > moveinfo->speed)
-			moveinfo->current_speed = moveinfo->speed;
-
-		// are we accelerating throughout this entire move?
-		if ((moveinfo->remaining_distance - moveinfo->current_speed) >= moveinfo->decel_distance)
 			return;
-
-		// during this move we will accelrate from current_speed to move_speed
-		// and cross over the decel_distance; figure the average speed for the
-		// entire move
-		p1_distance = moveinfo->remaining_distance - moveinfo->decel_distance;
-		p1_speed = (old_speed + moveinfo->move_speed) / 2.0;
-		p2_distance = moveinfo->move_speed * (1.0 - (p1_distance / p1_speed));
-		distance = p1_distance + p2_distance;
-		moveinfo->current_speed = (p1_speed * (p1_distance / distance)) + (moveinfo->move_speed * (p2_distance / distance));
-		moveinfo->next_speed = moveinfo->move_speed - moveinfo->decel * (p2_distance / distance);
-		return;
+		}
 	}
 
-	// we are at constant velocity (move_speed)
-	return;
-};
+	// Are we accelerating?
+	if (info->current_speed < info->speed)
+	{
+		const float old_speed = info->current_speed;
+
+		// Figure simple acceleration up to move_speed.
+		info->current_speed += info->accel;
+		info->current_speed = min(info->speed, info->current_speed);
+
+		// Are we accelerating throughout this entire move?
+		if (info->remaining_distance - info->current_speed >= info->decel_distance)
+			return;
+
+		// During this move we will accelerate from current_speed to move_speed and cross over the decel_distance;
+		// Figure the average speed for the entire move.
+		const float p1_distance = info->remaining_distance - info->decel_distance;
+		const float p1_speed = (old_speed + info->move_speed) / 2.0f;
+		const float p2_distance = info->move_speed * (1.0f - (p1_distance / p1_speed));
+		const float distance = p1_distance + p2_distance;
+		info->current_speed = (p1_speed * (p1_distance / distance)) + (info->move_speed * (p2_distance / distance));
+		info->next_speed = info->move_speed - info->decel * (p2_distance / distance);
+	}
+
+	// We are at constant velocity (move_speed).
+}
 
 void ThinkAccelMove (edict_t *ent)
 {
@@ -439,7 +430,7 @@ void ThinkAccelMove (edict_t *ent)
 	if (ent->moveinfo.current_speed == 0)		// starting or blocked
 		FuncPlatCalcAcceleratedMove(&ent->moveinfo);
 
-	plat_Accelerate (&ent->moveinfo);
+	FuncPlatAccelerate (&ent->moveinfo);
 
 	// will the entire move complete on next frame?
 	if (ent->moveinfo.remaining_distance <= ent->moveinfo.current_speed)
