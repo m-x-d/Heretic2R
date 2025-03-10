@@ -290,3 +290,30 @@ static void AccelMoveThink(edict_t* ent) //mxd. Named 'Think_AccelMove' in origi
 }
 
 #pragma endregion
+
+#pragma region ====================== Movement sounds ======================
+
+void FuncPlatPlayMoveStartSound(edict_t* ent) //mxd. Added to reduce code duplication.
+{
+	if (!(ent->flags & FL_TEAMSLAVE))
+	{
+		if (ent->moveinfo.sound_start > 0)
+			gi.sound(ent, CHAN_NO_PHS_ADD + CHAN_VOICE, ent->moveinfo.sound_start, 1.0f, ATTN_IDLE, 0.0f);
+
+		ent->s.sound = (byte)ent->moveinfo.sound_middle;
+		ent->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_IDLE;
+	}
+}
+
+void FuncPlatPlayMoveEndSound(edict_t* ent) //mxd. Added to reduce code duplication.
+{
+	if (!(ent->flags & FL_TEAMSLAVE))
+	{
+		if (ent->moveinfo.sound_end > 0)
+			gi.sound(ent, CHAN_NO_PHS_ADD + CHAN_VOICE, ent->moveinfo.sound_end, 1.0f, ATTN_IDLE, 0.0f);
+
+		ent->s.sound = 0;
+	}
+}
+
+#pragma endregion

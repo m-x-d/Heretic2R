@@ -69,6 +69,7 @@
     <ClCompile Include="g_func.c" />
     <ClCompile Include="g_func_MonsterSpawner.c" />
     <ClCompile Include="g_func_Timer.c" />
+    <ClCompile Include="g_func_Train.c" />
     <ClCompile Include="g_func_Utility.c" />
     <ClCompile Include="g_HitLocation.c" />
     <ClCompile Include="g_items.c" />
@@ -235,6 +236,7 @@
     <ClInclude Include="g_flamethrower.h" />
     <ClInclude Include="g_func_MonsterSpawner.h" />
     <ClInclude Include="g_func_Timer.h" />
+    <ClInclude Include="g_func_Train.h" />
     <ClInclude Include="g_func_Utility.h" />
     <ClInclude Include="g_HitLocation.h" />
     <ClInclude Include="g_items.h" />

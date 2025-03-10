@@ -606,6 +606,9 @@
     <ClCompile Include="g_func_Utility.c">
       <Filter>src\Game objects</Filter>
     </ClCompile>
+    <ClCompile Include="g_func_Train.c">
+      <Filter>src\Game objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="decals.h">
@@ -1161,6 +1164,9 @@
       <Filter>src\Game objects</Filter>
     </ClInclude>
     <ClInclude Include="g_func_Utility.h">
+      <Filter>src\Game objects</Filter>
+    </ClInclude>
+    <ClInclude Include="g_func_Train.h">
       <Filter>src\Game objects</Filter>
     </ClInclude>
   </ItemGroup>

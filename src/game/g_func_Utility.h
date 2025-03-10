@@ -16,6 +16,8 @@
 extern void MoveCalc(edict_t* ent, const vec3_t dest, void(*func)(edict_t*));
 extern void AngleMoveCalc(edict_t* ent, void(*func)(edict_t*));
 extern void FuncTrainAngleMoveCalc(edict_t* self, const edict_t* ent, const vec3_t dest);
+extern void FuncPlatPlayMoveStartSound(edict_t* ent); //mxd
+extern void FuncPlatPlayMoveEndSound(edict_t* ent); //mxd
 
 //mxd. Local forward declarations for g_func_Utility.c:
 static void AccelMoveThink(edict_t* ent);

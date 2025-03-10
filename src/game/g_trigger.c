@@ -4,6 +4,7 @@
 #include "fx.h"
 #include "g_playstats.h"
 #include "cl_strings.h"
+#include "g_func_Train.h" //mxd
 
 #define TRIGGER_MONSTER		1
 #define TRIGGER_NOT_PLAYER	2
@@ -542,8 +543,6 @@ void SP_trigger_Elevator (edict_t *self)
 	self->think = trigger_elevator_init;
 	self->nextthink = level.time + FRAMETIME;
 }
-
-extern void FuncTrainResume(edict_t* self); //TODO: remove.
 
 void trigger_elevator_use (edict_t *self, edict_t *other, edict_t *activator)
 {
