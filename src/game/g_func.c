@@ -2366,12 +2366,12 @@ static void FuncDoorSecretBlocked(edict_t* self, edict_t* other) //mxd. Named 'd
 	}
 }
 
-int door_secret_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
+static int FuncDoorSecretDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'door_secret_die' in original logic.
 {
 	self->takedamage = DAMAGE_NO;
-	FuncDoorSecretUse (self, attacker, attacker);
-	return(0);
+	FuncDoorSecretUse(self, attacker, attacker);
 
+	return 0;
 }
 
 void SP_func_door_secret (edict_t *ent)
@@ -2399,7 +2399,7 @@ void SP_func_door_secret (edict_t *ent)
 	{
 		ent->health = 0;
 		ent->takedamage = DAMAGE_YES;
-		ent->die = door_secret_die;
+		ent->die = FuncDoorSecretDie;
 	}
 
 	if (!ent->dmg)
