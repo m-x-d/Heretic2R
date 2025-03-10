@@ -1245,45 +1245,46 @@ static void FuncDoorCalcMoveSpeedThink(edict_t* self) //mxd. Named 'Think_CalcMo
 	self->think = NULL;
 }
 
-void Think_SpawnDoorTrigger (edict_t *ent)
+static void FuncDoorSpawnDoorTriggerThink(edict_t* self) //mxd. Named 'Think_SpawnDoorTrigger' in original logic.
 {
-	edict_t		*other;
-	vec3_t		mins, maxs;
+	self->think = NULL;
 
-	ent->think = NULL;
+	if (self->flags & FL_TEAMSLAVE)
+		return; // Only the team leader spawns a trigger.
 
-	if (ent->flags & FL_TEAMSLAVE)
-		return;		// only the team leader spawns a trigger
+	vec3_t mins;
+	vec3_t maxs;
+	VectorCopy(self->absmin, mins);
+	VectorCopy(self->absmax, maxs);
 
-	VectorCopy (ent->absmin, mins);
-	VectorCopy (ent->absmax, maxs);
-
-	for (other = ent->teamchain ; other ; other=other->teamchain)
+	for (const edict_t* ent = self->teamchain; ent != NULL; ent = ent->teamchain)
 	{
-		AddPointToBounds (other->absmin, mins, maxs);
-		AddPointToBounds (other->absmax, mins, maxs);
+		AddPointToBounds(ent->absmin, mins, maxs);
+		AddPointToBounds(ent->absmax, mins, maxs);
 	}
 
-	// expand 
-	mins[0] -= 60;
-	mins[1] -= 60;
-	maxs[0] += 60;
-	maxs[1] += 60;
+	// Expand on XY axis.
+	for (int i = 0; i < 2; i++)
+	{
+		mins[i] -= 60.0f;
+		maxs[i] += 60.0f;
+	}
 
-	other = G_Spawn ();
-	VectorCopy (mins, other->mins);
-	VectorCopy (maxs, other->maxs);
-	other->owner = ent;
-	other->solid = SOLID_TRIGGER;
-	other->movetype = PHYSICSTYPE_NONE;
-	other->touch = FuncDoorTriggerTouch;
+	edict_t* trigger = G_Spawn();
 
-	if (ent->spawnflags & SF_DOOR_START_OPEN)
-		FuncDoorUseAreaportals (ent, true);
+	VectorCopy(mins, trigger->mins);
+	VectorCopy(maxs, trigger->maxs);
+	trigger->owner = self;
+	trigger->solid = SOLID_TRIGGER;
+	trigger->movetype = PHYSICSTYPE_NONE;
+	trigger->touch = FuncDoorTriggerTouch;
 
-	FuncDoorCalcMoveSpeedThink (ent);
+	if (self->spawnflags & SF_DOOR_START_OPEN)
+		FuncDoorUseAreaportals(self, true);
 
-	gi.linkentity (other);
+	FuncDoorCalcMoveSpeedThink(self);
+
+	gi.linkentity(trigger);
 }
 
 void door_blocked  (edict_t *self, edict_t *other)
@@ -1594,7 +1595,7 @@ void SP_func_door (edict_t *self)
 	if (self->health || self->targetname)
 		self->think = FuncDoorCalcMoveSpeedThink;
 	else
-		self->think = Think_SpawnDoorTrigger;
+		self->think = FuncDoorSpawnDoorTriggerThink;
 }
 
 /*QUAKED func_door_rotating (0 .5 .8) ? START_OPEN REVERSE CRUSHER NOMONSTER ANIMATED TOGGLE X_AXIS Y_AXIS SWINGAWAY x x x x x x x
@@ -1738,7 +1739,7 @@ void SP_func_door_rotating (edict_t *ent)
 	if (ent->health || ent->targetname)
 		ent->think = FuncDoorCalcMoveSpeedThink;
 	else
-		ent->think = Think_SpawnDoorTrigger;
+		ent->think = FuncDoorSpawnDoorTriggerThink;
 }
 
 
