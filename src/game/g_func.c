@@ -2283,9 +2283,9 @@ static void FuncDoorSecretUse(edict_t* self, edict_t* other, edict_t* activator)
 	FuncDoorUseAreaportals(self, true);
 }
 
-void FuncDoorSecretMove1 (edict_t *self)
+static void FuncDoorSecretMove1(edict_t* self) //mxd. Named 'door_secret_move1' in original logic.
 {
-	self->nextthink = level.time + 1.0;
+	self->nextthink = level.time + 1.0f;
 	self->think = FuncDoorSecretMove2;
 }
 
