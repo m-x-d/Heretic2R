@@ -2077,7 +2077,7 @@ static void FuncTrainFind(edict_t* self) //mxd. Named 'func_train_find' in origi
 	}
 }
 
-void train_use (edict_t *self, edict_t *other, edict_t *activator)
+static void FuncTrainUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'train_use' in original logic.
 {
 	self->activator = activator;
 
@@ -2088,16 +2088,18 @@ void train_use (edict_t *self, edict_t *other, edict_t *activator)
 	{
 		if (!(self->spawnflags & SF_TRAIN_TOGGLE))
 			return;
+
 		self->spawnflags &= ~SF_TRAIN_START_ON;
-		VectorClear (self->velocity);
-		self->nextthink = 0;
+		VectorClear(self->velocity);
+		self->nextthink = 0.0f;
+	}
+	else if (self->target_ent != NULL)
+	{
+		FuncTrainResume(self);
 	}
 	else
 	{
-		if (self->target_ent)
-			FuncTrainResume(self);
-		else
-			FuncTrainNext(self);
+		FuncTrainNext(self);
 	}
 }
 
@@ -2150,7 +2152,7 @@ void SP_func_train (edict_t *self)
 	self->moveinfo.speed = self->speed;
 	self->moveinfo.accel = self->moveinfo.decel = self->moveinfo.speed;
 
-	self->use = train_use;
+	self->use = FuncTrainUse;
 
 	VectorClear(self->movedir);
 
