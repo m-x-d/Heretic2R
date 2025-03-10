@@ -9,6 +9,7 @@
 #include "g_breakable.h" //mxd
 #include "g_field.h" //mxd
 #include "g_flamethrower.h" //mxd
+#include "g_func_Door.h" //mxd
 #include "g_misc.h" //mxd
 #include "m_monsters.h" //mxd
 
@@ -19,7 +20,6 @@ void ObjectStaticsInit();
 void LightStaticsInit();
 void TriggerStaticsInit();
 void FuncRotateStaticsInit();
-void FuncDoorStaticsInit();
 void ButtonStaticsInit();
 void LeverStaticsInit();
 

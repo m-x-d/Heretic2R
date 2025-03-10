@@ -67,6 +67,7 @@
     <ClCompile Include="g_field.c" />
     <ClCompile Include="g_flamethrower.c" />
     <ClCompile Include="g_func.c" />
+    <ClCompile Include="g_func_Door.c" />
     <ClCompile Include="g_func_MonsterSpawner.c" />
     <ClCompile Include="g_func_Timer.c" />
     <ClCompile Include="g_func_Train.c" />
@@ -234,6 +235,7 @@
     <ClInclude Include="g_env.h" />
     <ClInclude Include="g_field.h" />
     <ClInclude Include="g_flamethrower.h" />
+    <ClInclude Include="g_func_Door.h" />
     <ClInclude Include="g_func_MonsterSpawner.h" />
     <ClInclude Include="g_func_Timer.h" />
     <ClInclude Include="g_func_Train.h" />

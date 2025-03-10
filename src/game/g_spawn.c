@@ -6,6 +6,7 @@
 #include "g_env.h" //mxd
 #include "g_field.h"
 #include "g_flamethrower.h"
+#include "g_func_Door.h" //mxd
 #include "g_func_MonsterSpawner.h" //mxd
 #include "g_func_Timer.h" //mxd
 #include "g_func_Train.h" //mxd
@@ -23,10 +24,6 @@ typedef struct
 void SP_func_plat (edict_t *ent);
 void SP_func_rotating (edict_t *ent);
 void SP_func_button (edict_t *ent);
-void SP_func_door (edict_t *ent);
-void SP_func_door_secret (edict_t *ent);
-void SP_func_door_rotating (edict_t *ent);
-void SP_func_water (edict_t *ent);
 
 void SP_trigger_Activate(edict_t *self);
 void SP_trigger_Always (edict_t *ent);
