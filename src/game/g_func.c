@@ -313,13 +313,14 @@ static void AngleMoveBegin(edict_t* ent) //mxd. Named 'AngleMove_Begin' in origi
 	ent->think = AngleMoveFinal;
 }
 
-void AngleMove_Calc (edict_t *ent, void(*func)(edict_t*))
+static void AngleMoveCalc(edict_t* ent, void(*func)(edict_t*)) //mxd. Named 'AngleMove_Calc' in original logic.
 {
-	VectorClear (ent->avelocity);
+	VectorClear(ent->avelocity);
 	ent->moveinfo.endfunc = func;
+
 	if (level.current_entity == ((ent->flags & FL_TEAMSLAVE) ? ent->teammaster : ent))
 	{
-		AngleMoveBegin (ent);
+		AngleMoveBegin(ent);
 	}
 	else
 	{
@@ -1175,7 +1176,7 @@ void door_go_down (edict_t *self)
 	if (strcmp(self->classname, "func_door") == 0)
 		MoveCalc (self, self->moveinfo.start_origin, door_hit_bottom);
 	else if (strcmp(self->classname, "func_door_rotating") == 0)
-		AngleMove_Calc (self, door_hit_bottom);
+		AngleMoveCalc (self, door_hit_bottom);
 }
 
 void door_go_up (edict_t *self, edict_t *activator)
@@ -1204,7 +1205,7 @@ void door_go_up (edict_t *self, edict_t *activator)
 	if (strcmp(self->classname, "func_door") == 0)
 		MoveCalc (self, self->moveinfo.end_origin, door_hit_top);
 	else if (strcmp(self->classname, "func_door_rotating") == 0)
-		AngleMove_Calc (self, door_hit_top);
+		AngleMoveCalc (self, door_hit_top);
 
 	G_UseTargets (self, activator);
 	door_use_areaportals (self, true);
