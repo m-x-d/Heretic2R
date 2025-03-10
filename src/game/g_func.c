@@ -2374,76 +2374,113 @@ static int FuncDoorSecretDie(edict_t* self, edict_t* inflictor, edict_t* attacke
 	return 0;
 }
 
-void SP_func_door_secret (edict_t *ent)
+// QUAKED func_door_secret (0 .5 .8) ? ALWAYS_SHOOT 1ST_LEFT 1ST_DOWN
+// A secret door. Slide back and then to the side.
+
+// Spawnflags:
+// ALWAYS_SHOOT	- Door is shooteable even if targeted.
+// 1ST_LEFT		- 1-st move is left of arrow.
+// 1ST_DOWN		- 1-st move is down from arrow.
+
+// Variables:
+// angle	- Determines the direction.
+// dmg		- Damage to inflict when blocked (default 2).
+// wait		- How long to hold in the open position (default 5, -1 means hold).
+// sounds:
+//		0)	Silent.
+//		1)	Generic door.
+//		2)	Heavy stone door.
+//		3)  For swing arm on palace level.
+//		4)  For stone bridge in palace level.
+//		5)  Small/medium wood door swinging.
+//		6)  Large/huge wood door swinging.
+//		7)  Medium sized stone/wood door sliding.
+//		8)  Large stone/wood sliding door or portcullis.
+//		9)  Average metal door swinging.
+//		10) Fast sliding doors.
+//		11) Hive, Metal, Multipaneled sliding.
+//		12) Huge stone door swinging.
+//		13) Medium/large elevator.
+//		14) Crane (warehouse).
+//		15) Hammer-like pump in oglemine1.
+//		16) Sliding metal table in cloudlabs.
+//		17) Lab table which rotates up to ceiling - cloublabs.
+//		18) Piston sound.
+//		19) Short, sharp metal clang.
+//		20) Something going under water.
+//		21) The bam sound.
+void SP_func_door_secret(edict_t* ent)
 {
-	vec3_t	forward, right, up;
-	float	side;
-	float	width;
-	float	length;
-
 	FuncDoorSetSounds(ent);
-
-//	ent->moveinfo.sound_start = gi.soundindex  ("doors/stonestart.wav");
-//	ent->moveinfo.sound_middle = gi.soundindex  ("doors/stoneloop.wav");
-//	ent->moveinfo.sound_end = gi.soundindex  ("doors/stoneend.wav");
 
 	ent->movetype = PHYSICSTYPE_PUSH;
 	ent->solid = SOLID_BSP;
-	gi.setmodel (ent, ent->model);
-	gi.linkentity (ent);
+	gi.setmodel(ent, ent->model);
+	gi.linkentity(ent);
 
 	ent->blocked = FuncDoorSecretBlocked;
 	ent->use = FuncDoorSecretUse;
 
-	if (!(ent->targetname) || (ent->spawnflags & SF_SECRET_ALWAYS_SHOOT))
+	if (ent->targetname == NULL || (ent->spawnflags & SF_SECRET_ALWAYS_SHOOT))
 	{
 		ent->health = 0;
 		ent->takedamage = DAMAGE_YES;
 		ent->die = FuncDoorSecretDie;
 	}
 
-	if (!ent->dmg)
+	if (ent->dmg == 0)
 		ent->dmg = 2;
 
-	if (!ent->wait)
-		ent->wait = 5;
+	if (ent->wait == 0.0f)
+		ent->wait = 5.0f;
 
-	ent->moveinfo.accel =
-	ent->moveinfo.decel =
-	ent->moveinfo.speed = 50;
+	ent->moveinfo.accel = 50.0f;
+	ent->moveinfo.decel = 50.0f;
+	ent->moveinfo.speed = 50.0f;
 
-	// calculate positions
-	AngleVectors (ent->s.angles, forward, right, up);
-	VectorClear (ent->s.angles);
-	side = 1.0 - (ent->spawnflags & SF_SECRET_1ST_LEFT);
+	// Calculate positions.
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(ent->s.angles, forward, right, up);
+	VectorClear(ent->s.angles);
+
+	float width;
 	if (ent->spawnflags & SF_SECRET_1ST_DOWN)
 		width = Q_fabs(DotProduct(up, ent->size));
 	else
 		width = Q_fabs(DotProduct(right, ent->size));
-	length = Q_fabs(DotProduct(forward, ent->size));
+
+	float length = Q_fabs(DotProduct(forward, ent->size));
+
 	if (ent->spawnflags & SF_SECRET_1ST_DOWN)
-		VectorMA (ent->s.origin, -1 * width, up, ent->pos1);
+	{
+		VectorMA(ent->s.origin, -width, up, ent->pos1);
+	}
 	else
-		VectorMA (ent->s.origin, side * width, right, ent->pos1);
+	{
+		const float side = ((ent->spawnflags & SF_SECRET_1ST_LEFT) ? -1.0f : 1.0f);
+		VectorMA(ent->s.origin, side * width, right, ent->pos1);
+	}
 
-	if (st.lip)
-		length = length - st.lip;
+	if (st.lip > 0)
+		length -= (float)st.lip;
 
-	VectorMA (ent->pos1, length, forward, ent->pos2);
-	if (ent->health)
+	VectorMA(ent->pos1, length, forward, ent->pos2);
+
+	if (ent->health > 0)
 	{
 		ent->takedamage = DAMAGE_YES;
 		ent->die = FuncDoorKilled;
 		ent->max_health = ent->health;
 	}
-	else if (ent->targetname && ent->message)
+	else if (ent->targetname != NULL && ent->message != NULL)
 	{
-		gi.soundindex ("misc/talk.wav");
+		gi.soundindex("misc/talk.wav");
 		ent->isBlocking = FuncDoorTouch;
 	}
-	
-	ent->classname = "func_door";
 
+	ent->classname = "func_door";
 }
 
 #pragma endregion
