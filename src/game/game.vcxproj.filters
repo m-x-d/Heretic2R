@@ -597,6 +597,9 @@
     <ClCompile Include="g_debris.c">
       <Filter>src\Game objects</Filter>
     </ClCompile>
+    <ClCompile Include="g_func_MonsterSpawner.c">
+      <Filter>src\Game objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="decals.h">
@@ -1143,6 +1146,9 @@
       <Filter>src\Game objects</Filter>
     </ClInclude>
     <ClInclude Include="g_flamethrower.h">
+      <Filter>src\Game objects</Filter>
+    </ClInclude>
+    <ClInclude Include="g_func_MonsterSpawner.h">
       <Filter>src\Game objects</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,6 +6,7 @@
 #include "g_env.h" //mxd
 #include "g_field.h"
 #include "g_flamethrower.h"
+#include "g_func_MonsterSpawner.h" //mxd
 #include "m_monsters.h" //mxd
 #include "p_client.h" //mxd
 #include "g_local.h"
@@ -26,7 +27,6 @@ void SP_func_door_rotating (edict_t *ent);
 void SP_func_water (edict_t *ent);
 void SP_func_train (edict_t *ent);
 void SP_func_timer (edict_t *self);
-void SP_func_monsterspawner (edict_t *ent);
 
 void SP_trigger_Activate(edict_t *self);
 void SP_trigger_Always (edict_t *ent);
@@ -63,9 +63,6 @@ void SP_worldspawn (edict_t *ent);
 void SP_light (edict_t *self);
 
 void SP_misc_flag (edict_t *ent);
-void SP_monster_chkroktk (edict_t *self);
-
-void SP_character_sidhe_guard (edict_t *self);
 
 void SP_light_walltorch (edict_t *ent);
 void SP_light_floortorch (edict_t *ent);
