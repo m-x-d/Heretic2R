@@ -758,10 +758,10 @@ static void FuncRotatingBlocked(edict_t* self, edict_t* other) //mxd. Named 'rot
 	T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0, MOD_CRUSH);
 }
 
-void rotating_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void FuncRotatingTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'rotating_touch' in original logic.
 {
-	if (self->avelocity[0] || self->avelocity[1] || self->avelocity[2])
-		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0,MOD_CRUSH);
+	if (Vec3NotZero(self->avelocity))
+		FuncRotatingBlocked(self, other);
 }
 
 void rotating_use (edict_t *self, edict_t *other, edict_t *activator)
@@ -778,7 +778,7 @@ void rotating_use (edict_t *self, edict_t *other, edict_t *activator)
 		self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_IDLE;
 		VectorScale (self->movedir, self->speed, self->avelocity);
 		if (self->spawnflags & 16)
-			self->touch = rotating_touch;
+			self->touch = FuncRotatingTouch;
 	}
 }
 
