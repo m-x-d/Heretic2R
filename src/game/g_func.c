@@ -473,20 +473,15 @@ static void FuncPlatPlayMoveEndSound(edict_t* ent) //mxd. Added to reduce code d
 	}
 }
 
-void plat_go_down (edict_t *ent);
+static void FuncPlatGoDown(edict_t* ent); //TODO: move to g_funcs.h
 
-void plat_hit_top (edict_t *ent)
+static void FuncPlatHitTop(edict_t* ent) //mxd. Named 'plat_hit_top' in original logic.
 {
-	if (!(ent->flags & FL_TEAMSLAVE))
-	{
-		if (ent->moveinfo.sound_end)
-			gi.sound (ent, CHAN_NO_PHS_ADD+CHAN_VOICE, ent->moveinfo.sound_end, 1, ATTN_IDLE, 0);
-		ent->s.sound = 0;
-	}
-	ent->moveinfo.state = STATE_TOP;
+	FuncPlatPlayMoveEndSound(ent); //mxd
 
-	ent->think = plat_go_down;
-	ent->nextthink = level.time + 3;
+	ent->moveinfo.state = STATE_TOP;
+	ent->think = FuncPlatGoDown;
+	ent->nextthink = level.time + 3.0f;
 }
 
 void plat_hit_bottom (edict_t *ent)
@@ -500,7 +495,7 @@ void plat_hit_bottom (edict_t *ent)
 	ent->moveinfo.state = STATE_BOTTOM;
 }
 
-void plat_go_down (edict_t *ent)
+void FuncPlatGoDown (edict_t *ent)
 {
 	if (!(ent->flags & FL_TEAMSLAVE))
 	{
@@ -523,7 +518,7 @@ void plat_go_up (edict_t *ent)
 		ent->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_IDLE;
 	}
 	ent->moveinfo.state = STATE_UP;
-	MoveCalc (ent, ent->moveinfo.start_origin, plat_hit_top);
+	MoveCalc (ent, ent->moveinfo.start_origin, FuncPlatHitTop);
 }
 
 void plat_blocked (edict_t *self, edict_t *other)
@@ -546,7 +541,7 @@ void plat_blocked (edict_t *self, edict_t *other)
 	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0,MOD_CRUSH);
 
 	if (self->moveinfo.state == STATE_UP)
-		plat_go_down (self);
+		FuncPlatGoDown (self);
 	else if (self->moveinfo.state == STATE_DOWN)
 		plat_go_up (self);
 }
@@ -556,7 +551,7 @@ void Use_Plat (edict_t *ent, edict_t *other, edict_t *activator)
 { 
 	if (ent->think)
 		return;		// already down
-	plat_go_down (ent);
+	FuncPlatGoDown (ent);
 }
 
 
