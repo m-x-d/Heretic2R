@@ -1153,51 +1153,40 @@ static qboolean FuncDoorSmartSideCheck(const edict_t* self, const edict_t* activ
 	return DotProduct(normal, to_player) < 0.0f;
 }
 
-void door_use (edict_t *self, edict_t *other, edict_t *activator)
+static void FuncDoorUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'smart_door_side_check' in original logic.
 {
-	edict_t	*ent;
-
-	if(Vec3IsZero(self->avelocity))
+	if (Vec3IsZero(self->avelocity) && strcmp(self->classname, "func_door_rotating") == 0 && (self->spawnflags & SF_DOOR_SWINGAWAY))
 	{
-		if (strcmp(self->classname, "func_door_rotating") == 0)
+		if (FuncDoorSmartSideCheck(self, activator))
 		{
-			if(self->spawnflags & SF_DOOR_SWINGAWAY)
-			{
-				if(FuncDoorSmartSideCheck(self, activator))
-				{
-					VectorNegate(self->movedir, self->movedir);
-					VectorNegate(self->moveinfo.end_angles, self->moveinfo.end_angles);
-				}
-			}
+			VectorNegate(self->movedir, self->movedir);
+			VectorNegate(self->moveinfo.end_angles, self->moveinfo.end_angles);
 		}
 	}
-	
+
 	if (self->flags & FL_TEAMSLAVE)
 		return;
 
-	if (self->spawnflags & SF_DOOR_TOGGLE)
+	// Trigger all paired doors.
+	if ((self->spawnflags & SF_DOOR_TOGGLE) && (self->moveinfo.state == STATE_UP || self->moveinfo.state == STATE_TOP))
 	{
-		if (self->moveinfo.state == STATE_UP || self->moveinfo.state == STATE_TOP)
+		for (edict_t* ent = self; ent != NULL; ent = ent->teamchain)
 		{
-			// trigger all paired doors
-			for (ent = self ; ent ; ent = ent->teamchain)
-			{
-				ent->message = NULL;
-				ent->isBlocking = NULL;
-				FuncDoorGoDown (ent);
-			}
-			return;
+			ent->message = NULL;
+			ent->isBlocking = NULL;
+			FuncDoorGoDown(ent);
 		}
 	}
-	
-	// trigger all paired doors
-	for (ent = self ; ent ; ent = ent->teamchain)
+	else
 	{
-		ent->message = NULL;
-		ent->isBlocking = NULL;
-		FuncDoorGoUp (ent, activator);
+		for (edict_t* ent = self; ent != NULL; ent = ent->teamchain)
+		{
+			ent->message = NULL;
+			ent->isBlocking = NULL;
+			FuncDoorGoUp(ent, activator);
+		}
 	}
-};
+}
 
 void Touch_DoorTrigger (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
@@ -1214,7 +1203,7 @@ void Touch_DoorTrigger (edict_t *self, edict_t *other, cplane_t *plane, csurface
 		return;
 	self->touch_debounce_time = level.time + 1.0;
 
-	door_use (self->owner, other, other);
+	FuncDoorUse (self->owner, other, other);
 }
 
 void Think_CalcMoveSpeed (edict_t *self)
@@ -1351,7 +1340,7 @@ int door_killed (edict_t *self, edict_t *inflictor, edict_t *attacker, int damag
 		ent->health = ent->max_health;
 		ent->takedamage = DAMAGE_NO;
 	}
-	door_use (self->teammaster, attacker, attacker);
+	FuncDoorUse (self->teammaster, attacker, attacker);
 	return(0);
 
 }
@@ -1531,7 +1520,7 @@ void SP_func_door (edict_t *self)
 	self->movetype = PHYSICSTYPE_PUSH;
 	self->solid = SOLID_BSP;
 	self->blocked = door_blocked;
-	self->use = door_use;
+	self->use = FuncDoorUse;
 	
 	self->msgHandler = DefaultMsgHandler;
 	self->classID = CID_FUNC_DOOR;
@@ -1697,7 +1686,7 @@ void SP_func_door_rotating (edict_t *ent)
 	ent->movetype = PHYSICSTYPE_PUSH;
 	ent->solid = SOLID_BSP;
 	ent->blocked = door_blocked;
-	ent->use = door_use;
+	ent->use = FuncDoorUse;
 
 	if (!ent->speed)
 		ent->speed = 100;
@@ -1818,7 +1807,7 @@ void SP_func_water (edict_t *self)
 		self->wait = -1;
 	self->moveinfo.wait = self->wait;
 
-	self->use = door_use;
+	self->use = FuncDoorUse;
 
 	if (self->wait == -1)
 		self->spawnflags |= SF_DOOR_TOGGLE;
