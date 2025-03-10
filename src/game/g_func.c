@@ -1076,26 +1076,22 @@ static void FuncDoorHitBottom(edict_t* self) //mxd. Named 'door_hit_bottom' in o
 		FuncDoorUseAreaportals(self, false);
 }
 
-void FuncDoorGoDown (edict_t *self)
+static void FuncDoorGoDown(edict_t* self) //mxd. Named 'door_go_down' in original logic.
 {
-	if (!(self->flags & FL_TEAMSLAVE))
-	{
-		if (self->moveinfo.sound_start)
-			gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE, self->moveinfo.sound_start, 1, ATTN_IDLE, 0);
-		self->s.sound = self->moveinfo.sound_middle;
-		self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_IDLE;
-	}
-	if (self->max_health)
+	FuncPlatPlayMoveStartSound(self); //mxd
+
+	if (self->max_health > 0)
 	{
 		self->takedamage = DAMAGE_YES;
 		self->health = self->max_health;
 	}
-	
+
 	self->moveinfo.state = STATE_DOWN;
+
 	if (strcmp(self->classname, "func_door") == 0)
-		MoveCalc (self, self->moveinfo.start_origin, FuncDoorHitBottom);
+		MoveCalc(self, self->moveinfo.start_origin, FuncDoorHitBottom);
 	else if (strcmp(self->classname, "func_door_rotating") == 0)
-		AngleMoveCalc (self, FuncDoorHitBottom);
+		AngleMoveCalc(self, FuncDoorHitBottom);
 }
 
 void FuncDoorGoUp (edict_t *self, edict_t *activator)
