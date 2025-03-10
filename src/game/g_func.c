@@ -16,7 +16,7 @@
 
 void door_sounds (edict_t *ent);
 
-#define	DSF_SWINGAWAY		0x00002000//8192
+#pragma region ========================== CID to classname ==========================
 
 typedef enum MonsterSpawnerID_e
 {
@@ -49,13 +49,11 @@ typedef enum MonsterSpawnerID_e
 	MS_RAT_GIANT,
 	MS_PALACE_PLAGUE_GUARD,
 	MS_INVISIBLE_PALACE_PLAGUE_GUARD,
+
 	MS_MAX
 } MonsterSpawnerID_t;
 
-struct 
-{
-	char	*name;
-} MonsterSpawnerClassname [] = 
+static char* monster_spawner_classnames[] =
 {
 	"monster_nothing",
 	"monster_rat",				// MS_RAT
@@ -88,7 +86,7 @@ struct
 	"monster_palace_plague_guard_invisible", //MS_INVISIBLE_PALACE_PLAGUE_GUARD,
 };
 
-int CIDForSpawnerStyle[MS_MAX] = 
+static int cid_for_spawner_style[] =
 {
 	CID_NONE,
 	CID_RAT,
@@ -121,55 +119,48 @@ int CIDForSpawnerStyle[MS_MAX] =
 	CID_PLAGUEELF,
 };
 
-/*
-=========================================================
+#pragma endregion
 
-  PLATS
+// PLATS
+// Movement options:
 
-  movement options:
+// linear
+// smooth start, hard stop
+// smooth start, smooth stop
 
-  linear
-  smooth start, hard stop
-  smooth start, smooth stop
+// start
+// end
+// acceleration
+// speed
+// deceleration
+// begin sound
+// end sound
+// target fired when reaching end
+// wait at end
 
-  start
-  end
-  acceleration
-  speed
-  deceleration
-  begin sound
-  end sound
-  target fired when reaching end
-  wait at end
+// Object characteristics that use move segments:
 
-  object characteristics that use move segments
-  ---------------------------------------------
-  PHYSICSTYPE_PUSH, or PHYSICSTYPE_STOP
-  action when touched
-  action when blocked
-  action when used
-	disabled?
-  auto trigger spawning
+// PHYSICSTYPE_PUSH, or PHYSICSTYPE_STOP
+// action when touched
+// action when blocked
+// action when used -- disabled?
+// auto trigger spawning
 
-
-=========================================================
-*/
-
-#define PLAT_LOW_TRIGGER	1
+#define PLAT_LOW_TRIGGER	1 //TODO: remove
 
 #define	STATE_TOP			0
 #define	STATE_BOTTOM		1
 #define STATE_UP			2
 #define STATE_DOWN			3
 
-#define DOOR_START_OPEN		1
-#define DOOR_REVERSE		2
-#define DOOR_CRUSHER		4
-#define DOOR_NOMONSTER		8
-#define DOOR_TOGGLE			32
-#define DOOR_X_AXIS			64
-#define DOOR_Y_AXIS			128
-
+#define SF_DOOR_START_OPEN	1
+#define SF_DOOR_REVERSE		2
+#define SF_DOOR_CRUSHER		4
+#define SF_DOOR_NOMONSTER	8
+#define SF_DOOR_TOGGLE		32
+#define SF_DOOR_X_AXIS		64
+#define SF_DOOR_Y_AXIS		128
+#define SF_DOOR_SWINGAWAY	8192
 
 //
 // Support routines for movement (changes in origin using velocity)
@@ -571,7 +562,7 @@ void plat_blocked (edict_t *self, edict_t *other)
 		return;
 	}
 
-	if (self->spawnflags & DOOR_CRUSHER)
+	if (self->spawnflags & SF_DOOR_CRUSHER)
 	{
 		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg * 10, 1, 0,MOD_CRUSH);
 		return;
@@ -1166,7 +1157,7 @@ void door_hit_top (edict_t *self)
 		self->s.sound = 0;
 	}
 	self->moveinfo.state = STATE_TOP;
-	if (self->spawnflags & DOOR_TOGGLE)
+	if (self->spawnflags & SF_DOOR_TOGGLE)
 		return;
 	if (self->moveinfo.wait >= 0)
 	{
@@ -1299,7 +1290,7 @@ void door_use (edict_t *self, edict_t *other, edict_t *activator)
 	{
 		if (strcmp(self->classname, "func_door_rotating") == 0)
 		{
-			if(self->spawnflags & DSF_SWINGAWAY)
+			if(self->spawnflags & SF_DOOR_SWINGAWAY)
 			{
 				if(smart_door_side_check(self, activator))
 				{
@@ -1313,7 +1304,7 @@ void door_use (edict_t *self, edict_t *other, edict_t *activator)
 	if (self->flags & FL_TEAMSLAVE)
 		return;
 
-	if (self->spawnflags & DOOR_TOGGLE)
+	if (self->spawnflags & SF_DOOR_TOGGLE)
 	{
 		if (self->moveinfo.state == STATE_UP || self->moveinfo.state == STATE_TOP)
 		{
@@ -1345,7 +1336,7 @@ void Touch_DoorTrigger (edict_t *self, edict_t *other, cplane_t *plane, csurface
 	if (!(other->svflags & SVF_MONSTER) && (!other->client))
 		return;
 
-	if ((self->owner->spawnflags & DOOR_NOMONSTER) && (other->svflags & SVF_MONSTER))
+	if ((self->owner->spawnflags & SF_DOOR_NOMONSTER) && (other->svflags & SVF_MONSTER))
 		return;
 
 	if (level.time < self->touch_debounce_time)
@@ -1434,7 +1425,7 @@ void Think_SpawnDoorTrigger (edict_t *ent)
 	other->movetype = PHYSICSTYPE_NONE;
 	other->touch = Touch_DoorTrigger;
 
-	if (ent->spawnflags & DOOR_START_OPEN)
+	if (ent->spawnflags & SF_DOOR_START_OPEN)
 		door_use_areaportals (ent, true);
 
 	Think_CalcMoveSpeed (ent);
@@ -1456,7 +1447,7 @@ void door_blocked  (edict_t *self, edict_t *other)
 		return;
 	}
 
-	if (self->spawnflags & DOOR_CRUSHER)
+	if (self->spawnflags & SF_DOOR_CRUSHER)
 	{
 		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg * 10, 1, 0,MOD_CRUSH);
 		return;
@@ -1703,7 +1694,7 @@ void SP_func_door (edict_t *self)
 	VectorMA (self->pos1, self->moveinfo.distance, self->movedir, self->pos2);
 
 	// if it starts open, switch the positions
-	if (self->spawnflags & DOOR_START_OPEN)
+	if (self->spawnflags & SF_DOOR_START_OPEN)
 	{
 		VectorCopy (self->pos2, self->s.origin);
 		VectorCopy (self->pos1, self->pos2);
@@ -1808,15 +1799,15 @@ void SP_func_door_rotating (edict_t *ent)
 
 	// set the axis of rotation
 	VectorClear(ent->movedir);
-	if (ent->spawnflags & DOOR_X_AXIS)
+	if (ent->spawnflags & SF_DOOR_X_AXIS)
 		ent->movedir[2] = 1.0;
-	else if (ent->spawnflags & DOOR_Y_AXIS)
+	else if (ent->spawnflags & SF_DOOR_Y_AXIS)
 		ent->movedir[0] = 1.0;
 	else // Z_AXIS
 		ent->movedir[1] = 1.0;
 
 	// check for reverse rotation
-	if (ent->spawnflags & DOOR_REVERSE)
+	if (ent->spawnflags & SF_DOOR_REVERSE)
 		VectorNegate (ent->movedir, ent->movedir);
 
 	if (!st.distance)
@@ -1852,7 +1843,7 @@ void SP_func_door_rotating (edict_t *ent)
 	door_sounds(ent);
 
 	// if it starts open, switch the positions
-	if (ent->spawnflags & DOOR_START_OPEN)
+	if (ent->spawnflags & SF_DOOR_START_OPEN)
 	{
 		VectorCopy (ent->pos2, ent->s.angles);
 		VectorCopy (ent->pos1, ent->pos2);
@@ -1930,7 +1921,7 @@ void SP_func_water (edict_t *self)
 	VectorMA (self->pos1, self->moveinfo.distance, self->movedir, self->pos2);
 
 	// if it starts open, switch the positions
-	if (self->spawnflags & DOOR_START_OPEN)
+	if (self->spawnflags & SF_DOOR_START_OPEN)
 	{
 		VectorCopy (self->pos2, self->s.origin);
 		VectorCopy (self->pos1, self->pos2);
@@ -1959,7 +1950,7 @@ void SP_func_water (edict_t *self)
 	self->use = door_use;
 
 	if (self->wait == -1)
-		self->spawnflags |= DOOR_TOGGLE;
+		self->spawnflags |= SF_DOOR_TOGGLE;
 
 	self->classname = "func_door";
 
@@ -2713,10 +2704,10 @@ void monsterspawner_go (edict_t *self)
 		return;
 
 	monster = G_Spawn();
-	monster->classname = ED_NewString(MonsterSpawnerClassname[self->style].name);
+	monster->classname = ED_NewString(monster_spawner_classnames[self->style]);
 
 //copy my designer-modified fields to the monster to overrride defaults
-	monster->classID = CIDForSpawnerStyle[self->style];
+	monster->classID = cid_for_spawner_style[self->style];
 	if(self->mintel)
 		monster->mintel = self->mintel;
 	else
