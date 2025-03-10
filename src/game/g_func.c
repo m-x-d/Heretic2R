@@ -590,7 +590,7 @@ static void FuncPlatSpawnInsideTrigger(edict_t* ent) //mxd. Named 'plat_spawn_in
 	gi.linkentity(trigger);
 }
 
-void FuncRotate_Deactivate(edict_t *self, G_Message_t *msg)
+static void FuncRotateDeactivate(edict_t* self, G_Message_t* msg) //mxd. Named 'FuncRotate_Deactivate' in original logic.
 {
 	VectorClear(self->velocity);
 	VectorClear(self->avelocity);
@@ -604,7 +604,7 @@ void FuncRotate_Activate(edict_t *self, G_Message_t *msg)
 
 void FuncRotateStaticsInit()
 {
-	classStatics[CID_FUNC_ROTATE].msgReceivers[G_MSG_SUSPEND] = FuncRotate_Deactivate;
+	classStatics[CID_FUNC_ROTATE].msgReceivers[G_MSG_SUSPEND] = FuncRotateDeactivate;
 	classStatics[CID_FUNC_ROTATE].msgReceivers[G_MSG_UNSUSPEND] = FuncRotate_Activate;
 }
 
@@ -624,7 +624,7 @@ void FuncDoor_Activate(edict_t *self, G_Message_t *msg)
 
 void FuncDoorStaticsInit()
 {
-	classStatics[CID_FUNC_DOOR].msgReceivers[G_MSG_SUSPEND] = FuncRotate_Deactivate;
+	classStatics[CID_FUNC_DOOR].msgReceivers[G_MSG_SUSPEND] = FuncRotateDeactivate;
 	classStatics[CID_FUNC_DOOR].msgReceivers[G_MSG_UNSUSPEND] = FuncRotate_Activate;
 }
 
