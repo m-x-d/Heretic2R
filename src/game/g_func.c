@@ -2200,23 +2200,13 @@ void SP_func_train(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED func_timer (0.3 0.1 0.6) (-8 -8 -8) (8 8 8) START_ON
-"wait"			base time between triggering all targets, default is 1
-"random"		wait variance, default is 0
+#pragma region ========================== func_timer ==========================
 
-so, the basic time between firing is a random time between
-(wait - random) and (wait + random)
+#define SF_START_ON	1 //mxd
 
-"delay"			delay before first firing when turned on, default is 0
-
-"pausetime"		additional delay used only the very first time
-				and only if spawned with START_ON
-
-These can used but not touched.
-*/
-void func_timer_think (edict_t *self)
+static void FuncTimerThink(edict_t* self) //mxd. Named 'func_timer_think' in original logic.
 {
-	G_UseTargets (self, self->activator);
+	G_UseTargets(self, self->activator);
 	self->nextthink = level.time + self->wait + flrand(-self->random, self->random);
 }
 
@@ -2235,7 +2225,7 @@ void func_timer_use (edict_t *self, edict_t *other, edict_t *activator)
 	if (self->delay)
 		self->nextthink = level.time + self->delay;
 	else
-		func_timer_think (self);
+		FuncTimerThink (self);
 }
 
 void SP_func_timer (edict_t *self)
@@ -2244,7 +2234,7 @@ void SP_func_timer (edict_t *self)
 		self->wait = 1.0;
 
 	self->use = func_timer_use;
-	self->think = func_timer_think;
+	self->think = FuncTimerThink;
 
 	if (self->random >= self->wait)
 	{
@@ -2261,6 +2251,7 @@ void SP_func_timer (edict_t *self)
 	self->svflags = SVF_NOCLIENT;
 }
 
+#pragma endregion
 
 /*QUAK-ED func_conveyor (0 .5 .8) ? START_ON TOGGLE
 Conveyors are stationary brushes that move what's on them.
