@@ -1122,40 +1122,35 @@ static void FuncDoorGoUp(edict_t* self, edict_t* activator) //mxd. Named 'door_g
 	FuncDoorUseAreaportals(self, true);
 }
 
-/* 
-qboolean smart_door_side_check (edict_t *self, edict_t *activator)
-
-  By Dan Kramer, da Man.  Stolen wholesale from SoF (No Kill I, Rick!)
-
-  Checks to see if a rotating door will get in activator's way when it opens
-  */
-
-qboolean smart_door_side_check (edict_t *self, edict_t *activator)
+// Checks to see if a rotating door will get in activator's way when it opens.
+static qboolean FuncDoorSmartSideCheck(const edict_t* self, const edict_t* activator) //mxd. Named 'smart_door_side_check' in original logic.
 {
-	vec3_t		doorpoints[3], inplane[2], normal, toplayer;
-
-	if (!activator)
-	{
+	if (activator == NULL)
 		return false;
-	}
 
-//		make a plane containing the origins of the origin brush, the door, and a point
-//		which is the sum of movedir (slightly rearranged   (x, z, y)) and one of the others
-	VectorCopy(self->s.origin, doorpoints[0]); // origin brush origin
-	VectorAdd(self->s.origin, self->mins, doorpoints[1]);
-	VectorMA(doorpoints[1], .5, self->size, doorpoints[1]); // door center
-	doorpoints[2][0] = self->s.origin[0] + self->movedir[2];
-	doorpoints[2][1] = self->s.origin[1] + self->movedir[0];
-	doorpoints[2][2] = self->s.origin[2] + self->movedir[1]; // third point
-	VectorSubtract(doorpoints[1],doorpoints[0],inplane[0]);
-	VectorSubtract(doorpoints[2],doorpoints[0],inplane[1]);
-	CrossProduct(inplane[0], inplane[1], normal);
-	VectorSubtract(activator->s.origin, doorpoints[1], toplayer);
-	if ( DotProduct(normal, toplayer) < 0 )
-	{
-		return true;
-	}
-	return false;
+	// Make a plane containing the origins of the origin brush, the door, and a point which is the sum of movedir
+	// (slightly rearranged (x, z, y)) and one of the others.
+
+	vec3_t door_points[3];
+	VectorCopy(self->s.origin, door_points[0]); // Origin brush origin.
+	VectorAdd(self->s.origin, self->mins, door_points[1]);
+	VectorMA(door_points[1], 0.5f, self->size, door_points[1]); // Door center.
+
+	door_points[2][0] = self->s.origin[0] + self->movedir[2];
+	door_points[2][1] = self->s.origin[1] + self->movedir[0];
+	door_points[2][2] = self->s.origin[2] + self->movedir[1]; // Third point.
+
+	vec3_t in_plane[2];
+	VectorSubtract(door_points[1], door_points[0], in_plane[0]);
+	VectorSubtract(door_points[2], door_points[0], in_plane[1]);
+
+	vec3_t normal;
+	CrossProduct(in_plane[0], in_plane[1], normal);
+
+	vec3_t to_player;
+	VectorSubtract(activator->s.origin, door_points[1], to_player);
+
+	return DotProduct(normal, to_player) < 0.0f;
 }
 
 void door_use (edict_t *self, edict_t *other, edict_t *activator)
@@ -1168,7 +1163,7 @@ void door_use (edict_t *self, edict_t *other, edict_t *activator)
 		{
 			if(self->spawnflags & SF_DOOR_SWINGAWAY)
 			{
-				if(smart_door_side_check(self, activator))
+				if(FuncDoorSmartSideCheck(self, activator))
 				{
 					VectorNegate(self->movedir, self->movedir);
 					VectorNegate(self->moveinfo.end_angles, self->moveinfo.end_angles);
