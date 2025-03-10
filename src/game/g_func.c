@@ -197,7 +197,7 @@ static void MoveBegin(edict_t* ent) //mxd. Named 'Move_Begin' in original logic.
 	ent->think = MoveFinal;
 }
 
-static void ThinkAccelMove(edict_t* ent); //TODO: move to g_funcs.h
+static void AccelMoveThink(edict_t* ent); //TODO: move to g_funcs.h
 
 static void MoveCalc(edict_t* ent, const vec3_t dest, void(*func)(edict_t*)) //mxd. Named 'Move_Calc' in original logic.
 {
@@ -224,7 +224,7 @@ static void MoveCalc(edict_t* ent, const vec3_t dest, void(*func)(edict_t*)) //m
 		// Accelerative.
 		ent->moveinfo.current_speed = 0.0f;
 		ent->nextthink = level.time + FRAMETIME;
-		ent->think = ThinkAccelMove;
+		ent->think = AccelMoveThink;
 	}
 }
 
@@ -331,7 +331,7 @@ static void AngleMoveCalc(edict_t* ent, void(*func)(edict_t*)) //mxd. Named 'Ang
 
 #pragma endregion
 
-#pragma region ========================== ThinkAccelMove ==========================
+#pragma region ========================== AccelMoveThink ==========================
 
 static float AccelerationDistance(const float target, const float rate) //mxd. #define in original logic.
 {
@@ -423,25 +423,27 @@ static void FuncPlatAccelerate(moveinfo_t* info) //mxd. Named 'plat_Accelerate' 
 	// We are at constant velocity (move_speed).
 }
 
-void ThinkAccelMove (edict_t *ent)
+// The team has completed a frame of movement, so change the speed for the next frame.
+static void AccelMoveThink(edict_t* ent) //mxd. Named 'Think_AccelMove' in original logic.
 {
 	ent->moveinfo.remaining_distance -= ent->moveinfo.current_speed;
 
-	if (ent->moveinfo.current_speed == 0)		// starting or blocked
+	if (ent->moveinfo.current_speed == 0.0f) // Starting or blocked.
 		FuncPlatCalcAcceleratedMove(&ent->moveinfo);
 
-	FuncPlatAccelerate (&ent->moveinfo);
+	FuncPlatAccelerate(&ent->moveinfo);
 
-	// will the entire move complete on next frame?
+	// Will the entire move complete on next frame?
 	if (ent->moveinfo.remaining_distance <= ent->moveinfo.current_speed)
 	{
-		MoveFinal (ent);
-		return;
+		MoveFinal(ent);
 	}
-
-	VectorScale (ent->moveinfo.dir, ent->moveinfo.current_speed*10, ent->velocity);
-	ent->nextthink = level.time + FRAMETIME;
-	ent->think = ThinkAccelMove;
+	else
+	{
+		VectorScale(ent->moveinfo.dir, ent->moveinfo.current_speed * 10.0f, ent->velocity);
+		ent->nextthink = level.time + FRAMETIME;
+		ent->think = AccelMoveThink;
+	}
 }
 
 #pragma endregion
