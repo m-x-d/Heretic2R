@@ -2714,27 +2714,18 @@ void SP_func_monsterspawner(edict_t* self)
 
 #pragma endregion
 
-//===========================
-//  These are just temp entities until the actual code is written for each monster
-//===========================
-
-/*QUAKED monster_chkroktk (1 .5 0) (-16 -16 -26) (16 16 26) AMBUSH ASLEEP
-The  chkroktk
-*/
-void SP_monster_chkroktk (edict_t *self)
+// QUAKED monster_chkroktk (1 .5 0) (-16 -16 -26) (16 16 26) AMBUSH ASLEEP
+// Temp entity until the actual code is written for monster.
+void SP_monster_chkroktk(edict_t* self)
 {
 	self->style = MS_CHKROKTK;
 	FuncMonsterSpawnerGo(self);
 }
 
-
-
-/*QUAKED character_sidhe_guard (1 .5 0) (-16 -16 -26) (16 16 26) AMBUSH ASLEEP
-The Sidhe Guard
-*/
-void SP_character_sidhe_guard (edict_t *self)
+// QUAKED character_sidhe_guard (1 .5 0) (-16 -16 -26) (16 16 26) AMBUSH ASLEEP
+// Temp entity until the actual code is written for monster.
+void SP_character_sidhe_guard(edict_t* self)
 {
 	self->style = MS_SIDHE_GUARD;
 	FuncMonsterSpawnerGo(self);
 }
-
