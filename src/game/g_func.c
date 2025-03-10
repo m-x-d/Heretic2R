@@ -539,20 +539,17 @@ static void FuncPlatUse(edict_t* ent, edict_t* other, edict_t* activator) //mxd.
 		FuncPlatGoDown(ent);
 }
 
-
-void Touch_Plat_Center (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void FuncPlatCenterTouch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'Touch_Plat_Center' in original logic.
 {
-	if (!other->client)
-		return;
-		
-	if (other->health <= 0)
+	if (other->client == NULL || other->health <= 0)
 		return;
 
-	ent = ent->enemy;	// now point at the plat, not the trigger
+	ent = ent->enemy; // Now point at the plat, not the trigger.
+
 	if (ent->moveinfo.state == STATE_BOTTOM)
-		FuncPlatGoUp (ent);
+		FuncPlatGoUp(ent);
 	else if (ent->moveinfo.state == STATE_TOP)
-		ent->nextthink = level.time + 1;	// the player is still on the plat, so delay going down
+		ent->nextthink = level.time + 1.0f; // The player is still on the plat, so delay going down.
 }
 
 void plat_spawn_inside_trigger (edict_t *ent)
@@ -565,7 +562,7 @@ void plat_spawn_inside_trigger (edict_t *ent)
 //	
 	trigger = G_Spawn();
 
-	trigger->touch = Touch_Plat_Center;
+	trigger->touch = FuncPlatCenterTouch;
 	trigger->movetype = PHYSICSTYPE_NONE;
 	trigger->solid = SOLID_TRIGGER;
 	trigger->enemy = ent;
