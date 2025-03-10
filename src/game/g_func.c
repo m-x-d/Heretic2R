@@ -596,16 +596,16 @@ static void FuncRotateDeactivate(edict_t* self, G_Message_t* msg) //mxd. Named '
 	VectorClear(self->avelocity);
 }
 
-void FuncRotate_Activate(edict_t *self, G_Message_t *msg)
+static void FuncRotateActivate(edict_t* self, G_Message_t* msg) //mxd. Named 'FuncRotate_Activate' in original logic.
 {
-	self->use(self,NULL,NULL);
-	gi.linkentity (self);
+	self->use(self, NULL, NULL);
+	gi.linkentity(self);
 }
 
 void FuncRotateStaticsInit()
 {
 	classStatics[CID_FUNC_ROTATE].msgReceivers[G_MSG_SUSPEND] = FuncRotateDeactivate;
-	classStatics[CID_FUNC_ROTATE].msgReceivers[G_MSG_UNSUSPEND] = FuncRotate_Activate;
+	classStatics[CID_FUNC_ROTATE].msgReceivers[G_MSG_UNSUSPEND] = FuncRotateActivate;
 }
 
 
@@ -625,7 +625,7 @@ void FuncDoor_Activate(edict_t *self, G_Message_t *msg)
 void FuncDoorStaticsInit()
 {
 	classStatics[CID_FUNC_DOOR].msgReceivers[G_MSG_SUSPEND] = FuncRotateDeactivate;
-	classStatics[CID_FUNC_DOOR].msgReceivers[G_MSG_UNSUSPEND] = FuncRotate_Activate;
+	classStatics[CID_FUNC_DOOR].msgReceivers[G_MSG_UNSUSPEND] = FuncRotateActivate;
 }
 
 
