@@ -2256,82 +2256,48 @@ void SP_func_timer(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED func_door_secret (0 .5 .8) ? always_shoot 1st_left 1st_down
-A secret door.  Slide back and then to the side.
+#pragma region ========================== func_door_secret ==========================
 
-open_once		doors never closes
-1st_left		1st move is left of arrow
-1st_down		1st move is down from arrow
-always_shoot	door is shootebale even if targeted
+#define SF_SECRET_ALWAYS_SHOOT	1
+#define SF_SECRET_1ST_LEFT		2
+#define SF_SECRET_1ST_DOWN		4
 
-"angle"		determines the direction
-"dmg"		damage to inflic when blocked (default 2)
-"wait"		how long to hold in the open position (default 5, -1 means hold)
-"sounds"
-0)	silent
-1)	generic door
-2)	heavy stone door
-3)  for swing arm on palace level
-4)  for stone bridge in palace level
-5)  small/medium wood door swinging
-6)  large/huge wood door swinging
-7)  medium sized stone/wood door sliding
-8)  large stone/wood sliding door or portcullis
-9)  average metal door swinging
-10) Fast sliding doors
-11) Hive, Metal, Multipaneled sliding
-12) Huge stone door swinging
-13) Medium/large elevator
-14) Crane (warehouse)
-15) hammerlike pump in oglemine1
-16) sliding metal table in cloudlabs
-17) lab table which rotates up to ceiling - cloublabs
-18) piston sound
-19) short, sharp metal clang
-20) something going under water
-21) the bam sound
-*/
+static void FuncDoorSecretMove1(edict_t* self);
+static void FuncDoorSecretMove2(edict_t* self);
+static void FuncDoorSecretMove3(edict_t* self);
+static void FuncDoorSecretMove4(edict_t* self);
+static void FuncDoorSecretMove5(edict_t* self);
+static void FuncDoorSecretMove6(edict_t* self);
+static void FuncDoorSecretDone(edict_t* self);
 
-#define SECRET_ALWAYS_SHOOT	1
-#define SECRET_1ST_LEFT		2
-#define SECRET_1ST_DOWN		4
-
-void door_secret_move1 (edict_t *self);
-void door_secret_move2 (edict_t *self);
-void door_secret_move3 (edict_t *self);
-void door_secret_move4 (edict_t *self);
-void door_secret_move5 (edict_t *self);
-void door_secret_move6 (edict_t *self);
-void door_secret_done (edict_t *self);
-
-void door_secret_use (edict_t *self, edict_t *other, edict_t *activator)
+static void FuncDoorSecretUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'door_secret_use' in original logic.
 {
-	// make sure we're not already moving
+	// Make sure we're not already moving.
 	if (!VectorCompare(self->s.origin, vec3_origin))
 		return;
 
-	if (self->moveinfo.sound_start)
-		gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE, self->moveinfo.sound_start, 1, ATTN_IDLE, 0);
+	if (self->moveinfo.sound_start > 0)
+		gi.sound(self, CHAN_NO_PHS_ADD + CHAN_VOICE, self->moveinfo.sound_start, 1.0f, ATTN_IDLE, 0.0f);
 
-	MoveCalc (self, self->pos1, door_secret_move1);
-	FuncDoorUseAreaportals (self, true);
+	MoveCalc(self, self->pos1, FuncDoorSecretMove1);
+	FuncDoorUseAreaportals(self, true);
 }
 
-void door_secret_move1 (edict_t *self)
+void FuncDoorSecretMove1 (edict_t *self)
 {
 	self->nextthink = level.time + 1.0;
-	self->think = door_secret_move2;
+	self->think = FuncDoorSecretMove2;
 }
 
-void door_secret_move2 (edict_t *self)
+void FuncDoorSecretMove2 (edict_t *self)
 {
 	if (self->moveinfo.sound_middle)
 		gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE, self->moveinfo.sound_middle, 1, ATTN_IDLE, 0);
 
-	MoveCalc (self, self->pos2, door_secret_move3);
+	MoveCalc (self, self->pos2, FuncDoorSecretMove3);
 }
 
-void door_secret_move3 (edict_t *self)
+void FuncDoorSecretMove3 (edict_t *self)
 {
 	if (self->moveinfo.sound_end)
 		gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE, self->moveinfo.sound_end, 1, ATTN_IDLE, 0);
@@ -2339,37 +2305,37 @@ void door_secret_move3 (edict_t *self)
 	if (self->wait == -1)
 		return;
 	self->nextthink = level.time + self->wait;
-	self->think = door_secret_move4;
+	self->think = FuncDoorSecretMove4;
 }
 
-void door_secret_move4 (edict_t *self)
+void FuncDoorSecretMove4 (edict_t *self)
 {
 	if (self->moveinfo.sound_middle)
 		gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE, self->moveinfo.sound_middle, 1, ATTN_IDLE, 0);
 
-	MoveCalc (self, self->pos1, door_secret_move5);
+	MoveCalc (self, self->pos1, FuncDoorSecretMove5);
 }
 
-void door_secret_move5 (edict_t *self)
+void FuncDoorSecretMove5 (edict_t *self)
 {
 	if (self->moveinfo.sound_end)
 		gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE, self->moveinfo.sound_end, 1, ATTN_IDLE, 0);
 
 	self->nextthink = level.time + 1.0;
-	self->think = door_secret_move6;
+	self->think = FuncDoorSecretMove6;
 }
 
-void door_secret_move6 (edict_t *self)
+void FuncDoorSecretMove6 (edict_t *self)
 {
 	if (self->moveinfo.sound_start)
 		gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE, self->moveinfo.sound_start, 1, ATTN_IDLE, 0);
 
-	MoveCalc (self, vec3_origin, door_secret_done);
+	MoveCalc (self, vec3_origin, FuncDoorSecretDone);
 }
 
-void door_secret_done (edict_t *self)
+void FuncDoorSecretDone (edict_t *self)
 {
-	if (!(self->targetname) || (self->spawnflags & SECRET_ALWAYS_SHOOT))
+	if (!(self->targetname) || (self->spawnflags & SF_SECRET_ALWAYS_SHOOT))
 	{
 		self->health = 0;
 		self->takedamage = DAMAGE_YES;
@@ -2399,7 +2365,7 @@ void door_secret_blocked  (edict_t *self, edict_t *other)
 int door_secret_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
 	self->takedamage = DAMAGE_NO;
-	door_secret_use (self, attacker, attacker);
+	FuncDoorSecretUse (self, attacker, attacker);
 	return(0);
 
 }
@@ -2423,9 +2389,9 @@ void SP_func_door_secret (edict_t *ent)
 	gi.linkentity (ent);
 
 	ent->blocked = door_secret_blocked;
-	ent->use = door_secret_use;
+	ent->use = FuncDoorSecretUse;
 
-	if (!(ent->targetname) || (ent->spawnflags & SECRET_ALWAYS_SHOOT))
+	if (!(ent->targetname) || (ent->spawnflags & SF_SECRET_ALWAYS_SHOOT))
 	{
 		ent->health = 0;
 		ent->takedamage = DAMAGE_YES;
@@ -2445,13 +2411,13 @@ void SP_func_door_secret (edict_t *ent)
 	// calculate positions
 	AngleVectors (ent->s.angles, forward, right, up);
 	VectorClear (ent->s.angles);
-	side = 1.0 - (ent->spawnflags & SECRET_1ST_LEFT);
-	if (ent->spawnflags & SECRET_1ST_DOWN)
+	side = 1.0 - (ent->spawnflags & SF_SECRET_1ST_LEFT);
+	if (ent->spawnflags & SF_SECRET_1ST_DOWN)
 		width = Q_fabs(DotProduct(up, ent->size));
 	else
 		width = Q_fabs(DotProduct(right, ent->size));
 	length = Q_fabs(DotProduct(forward, ent->size));
-	if (ent->spawnflags & SECRET_1ST_DOWN)
+	if (ent->spawnflags & SF_SECRET_1ST_DOWN)
 		VectorMA (ent->s.origin, -1 * width, up, ent->pos1);
 	else
 		VectorMA (ent->s.origin, side * width, right, ent->pos1);
@@ -2475,6 +2441,8 @@ void SP_func_door_secret (edict_t *ent)
 	ent->classname = "func_door";
 
 }
+
+#pragma endregion
 
 void monsterspawner_go (edict_t *self)
 {
