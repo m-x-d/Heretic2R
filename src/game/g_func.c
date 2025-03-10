@@ -892,11 +892,12 @@ static void FuncButtonReturn(edict_t* self) //mxd. Named 'button_return' in orig
 		self->takedamage = DAMAGE_YES;
 }
 
-void button_wait (edict_t *self)
+static void FuncButtonWait(edict_t* self) //mxd. Named 'button_wait' in original logic.
 {
 	self->moveinfo.state = STATE_TOP;
-	G_UseTargets (self, self->activator);
+	G_UseTargets(self, self->activator);
 	self->s.frame = 1;
+
 	if (self->moveinfo.wait >= 0)
 	{
 		self->nextthink = level.time + self->moveinfo.wait;
@@ -912,7 +913,7 @@ void FuncButtonMove (edict_t *self)
 	self->moveinfo.state = STATE_UP;
 	if (self->moveinfo.sound_start && !(self->flags & FL_TEAMSLAVE))
 		gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE, self->moveinfo.sound_start, 1, ATTN_IDLE, 0);
-	MoveCalc (self, self->moveinfo.end_origin, button_wait);
+	MoveCalc (self, self->moveinfo.end_origin, FuncButtonWait);
 }
 
 void button_use (edict_t *self, edict_t *other, edict_t *activator)
