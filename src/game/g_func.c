@@ -14,8 +14,6 @@
 #include "Vector.h"
 #include "g_local.h"
 
-void door_sounds (edict_t *ent);
-
 #pragma region ========================== CID to classname ==========================
 
 typedef enum MonsterSpawnerID_e
@@ -614,47 +612,47 @@ void FuncDoorStaticsInit(void)
 	classStatics[CID_FUNC_DOOR].msgReceivers[G_MSG_UNSUSPEND] = FuncRotateActivate;
 }
 
-/*QUAKED func_plat (0 .5 .8) ? PLAT_LOW_TRIGGER
-speed	default 150
+static void FuncDoorSetSounds(edict_t* ent); //TODO: move to g_funcs.h
 
-Plats are always drawn in the extended position, so they will light correctly.
+// QUAKED func_plat (0 .5 .8) ? PLAT_LOW_TRIGGER
+// Plats are always drawn in the extended position, so they will light correctly.
+// If the plat is the target of another trigger or button, it will start out disabled in the extended position until it is triggered,
+// when it will lower and become a normal plat.
 
-If the plat is the target of another trigger or button, it will start out disabled in the extended position until it is trigger, when it will lower and become a normal plat.
+// Spawnflags:
+// PLAT_LOW_TRIGGER - When set, platform trigger height is 8.
 
-"speed"	overrides default 200.
-"accel" overrides default 500
-"lip"	overrides default 8 pixel lip
-
-If the "height" key is set, that will determine the amount the plat moves, instead of being implicitly determoveinfoned by the model's height.
-
-"sounds"
-0)	silent
-1)	generic door
-2)	heavy stone door
-3)  for swing arm on palace level
-4)  for stone bridge in palace level
-5)  small/medium wood door swinging
-6)  large/huge wood door swinging
-7)  medium sized stone/wood door sliding
-8)  large stone/wood sliding door or portcullis
-9)  average metal door swinging
-10) Fast sliding doors
-11) Hive, Metal, Multipaneled sliding
-12) Huge stone door swinging
-13) Medium/large elevator
-14) Crane (warehouse)
-15) hammerlike pump in oglemine1
-16) sliding metal table in cloudlabs
-17) lab table which rotates up to ceiling - cloublabs
-18) piston sound
-19) short, sharp metal clang
-20) something going under water
-21) the bam sound
-
-*/
-void SP_func_plat (edict_t *ent)
+// Variables:
+// speed	- overrides default 200.
+// accel	- overrides default 500.
+// lip		- overrides default 8 pixel lip.
+// height	- is set, that will determine the amount the plat moves, instead of being implicitly determined by the model's height.
+// sounds:
+//		0)	Silent.
+//		1)	Generic door.
+//		2)	Heavy stone door.
+//		3)  For swing arm on palace level.
+//		4)  For stone bridge in palace level.
+//		5)  Small/medium wood door swinging.
+//		6)  Large/huge wood door swinging.
+//		7)  Medium sized stone/wood door sliding.
+//		8)  Large stone/wood sliding door or portcullis.
+//		9)  Average metal door swinging.
+//		10) Fast sliding doors.
+//		11) Hive, Metal, Multipaneled sliding.
+//		12) Huge stone door swinging.
+//		13) Medium/large elevator.
+//		14) Crane (warehouse).
+//		15) Hammer-like pump in oglemine1.
+//		16) Sliding metal table in cloudlabs.
+//		17) Lab table which rotates up to ceiling - cloublabs.
+//		18) Piston sound.
+//		19) Short, sharp metal clang.
+//		20) Something going under water.
+//		21) The bam sound.
+void SP_func_plat(edict_t* ent)
 {
-	VectorClear (ent->s.angles);
+	VectorClear(ent->s.angles);
 
 	ent->solid = SOLID_BSP;
 	ent->movetype = PHYSICSTYPE_PUSH;
@@ -662,65 +660,66 @@ void SP_func_plat (edict_t *ent)
 	ent->blocked = FuncPlatBlocked;
 	ent->use = FuncPlatUse;
 
-	if (!ent->speed)
-		ent->speed = 20;
+	if (ent->speed == 0.0f)
+		ent->speed = 20.0f;
 	else
-		ent->speed *= 0.1;
+		ent->speed *= 0.1f;
 
-	if (!ent->accel)
-		ent->accel = 5;
+	if (ent->accel == 0.0f)
+		ent->accel = 5.0f;
 	else
-		ent->accel *= 0.1;
+		ent->accel *= 0.1f;
 
-	if (!ent->decel)
-		ent->decel = 5;
+	if (ent->decel == 0.0f)
+		ent->decel = 5.0f;
 	else
-		ent->decel *= 0.1;
+		ent->decel *= 0.1f;
 
-	if (!ent->dmg)
+	if (ent->dmg == 0)
 		ent->dmg = 2;
 
-	if (!st.lip)
+	if (st.lip == 0)
 		st.lip = 8;
 
 	// pos1 is the top position, pos2 is the bottom
-	VectorCopy (ent->s.origin, ent->pos1);
-	VectorCopy (ent->s.origin, ent->pos2);
-	if (st.height)
-		ent->pos2[2] -= st.height;
-	else
-		ent->pos2[2] -= (ent->maxs[2] - ent->mins[2]) - st.lip;
+	VectorCopy(ent->s.origin, ent->pos1);
+	VectorCopy(ent->s.origin, ent->pos2);
 
-	if (ent->targetname)
+	if (st.height > 0)
+		ent->pos2[2] -= (float)st.height;
+	else
+		ent->pos2[2] -= ent->maxs[2] - ent->mins[2] - (float)st.lip;
+
+	if (ent->targetname != NULL)
 	{
 		ent->moveinfo.state = STATE_UP;
 	}
 	else
 	{
-		VectorCopy (ent->pos2, ent->s.origin);
 		ent->moveinfo.state = STATE_BOTTOM;
+		VectorCopy(ent->pos2, ent->s.origin);
 	}
-	ent->moveinfo.speed = ent->speed;			 
+
+	ent->moveinfo.speed = ent->speed;
 	ent->moveinfo.accel = ent->accel;
 	ent->moveinfo.decel = ent->decel;
 	ent->moveinfo.wait = ent->wait;
 
-	VectorCopy (ent->pos1, ent->moveinfo.start_origin);
-	VectorCopy (ent->s.angles, ent->moveinfo.start_angles);
-	VectorCopy (ent->pos2, ent->moveinfo.end_origin);
-	VectorCopy (ent->s.angles, ent->moveinfo.end_angles);
+	VectorCopy(ent->pos1, ent->moveinfo.start_origin);
+	VectorCopy(ent->s.angles, ent->moveinfo.start_angles);
+	VectorCopy(ent->pos2, ent->moveinfo.end_origin);
+	VectorCopy(ent->s.angles, ent->moveinfo.end_angles);
 
 	VectorSubtract(ent->maxs, ent->mins, ent->s.bmodel_origin);
-	Vec3ScaleAssign(0.5, ent->s.bmodel_origin);
+	Vec3ScaleAssign(0.5f, ent->s.bmodel_origin);
 	VectorAdd(ent->mins, ent->s.bmodel_origin, ent->s.bmodel_origin);
 
-	door_sounds (ent);
+	FuncDoorSetSounds(ent);
 
-	gi.setmodel (ent, ent->model);
-	gi.linkentity (ent);
+	gi.setmodel(ent, ent->model);
+	gi.linkentity(ent);
 
-	FuncPlatSpawnInsideTrigger (ent);	// the "start moving" trigger	
-
+	FuncPlatSpawnInsideTrigger(ent); // The "start moving" trigger.
 }
 
 #pragma endregion
@@ -1433,7 +1432,7 @@ void door_touch (edict_t *self, trace_t *trace)
 	gi.levelmsg_centerprintf (other, (short)atoi(self->message));
 }
 
-void door_sounds (edict_t *ent)
+void FuncDoorSetSounds (edict_t *ent)
 {
 	switch((DoorSoundID_t)ent->sounds)
 	{
@@ -1586,7 +1585,7 @@ void SP_func_door (edict_t *self)
 {
 	vec3_t	abs_movedir;
 
-	door_sounds(self);
+	FuncDoorSetSounds(self);
 
 	G_SetMovedir (self->s.angles, self->movedir);
 	self->movetype = PHYSICSTYPE_PUSH;
@@ -1772,7 +1771,7 @@ void SP_func_door_rotating (edict_t *ent)
 	if (!ent->dmg)
 		ent->dmg = 2;
 
-	door_sounds(ent);
+	FuncDoorSetSounds(ent);
 
 	// if it starts open, switch the positions
 	if (ent->spawnflags & SF_DOOR_START_OPEN)
@@ -2544,7 +2543,7 @@ void SP_func_door_secret (edict_t *ent)
 	float	width;
 	float	length;
 
-	door_sounds(ent);
+	FuncDoorSetSounds(ent);
 
 //	ent->moveinfo.sound_start = gi.soundindex  ("doors/stonestart.wav");
 //	ent->moveinfo.sound_middle = gi.soundindex  ("doors/stoneloop.wav");
