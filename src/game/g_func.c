@@ -552,49 +552,42 @@ static void FuncPlatCenterTouch(edict_t* ent, edict_t* other, cplane_t* plane, c
 		ent->nextthink = level.time + 1.0f; // The player is still on the plat, so delay going down.
 }
 
-void plat_spawn_inside_trigger (edict_t *ent)
+static void FuncPlatSpawnInsideTrigger(edict_t* ent) //mxd. Named 'plat_spawn_inside_trigger' in original logic.
 {
-	edict_t	*trigger;
-	vec3_t	tmin, tmax;
-
-//
-// middle trigger
-//	
-	trigger = G_Spawn();
+	// Middle trigger.
+	edict_t* trigger = G_Spawn();
 
 	trigger->touch = FuncPlatCenterTouch;
 	trigger->movetype = PHYSICSTYPE_NONE;
 	trigger->solid = SOLID_TRIGGER;
 	trigger->enemy = ent;
-	
-	tmin[0] = ent->mins[0] + 25;
-	tmin[1] = ent->mins[1] + 25;
-	tmin[2] = ent->mins[2];
 
-	tmax[0] = ent->maxs[0] - 25;
-	tmax[1] = ent->maxs[1] - 25;
-	tmax[2] = ent->maxs[2] + 8;
+	vec3_t t_maxs;
+	t_maxs[0] = ent->maxs[0] - 25.0f;
+	t_maxs[1] = ent->maxs[1] - 25.0f;
+	t_maxs[2] = ent->maxs[2] + 8.0f;
 
-	tmin[2] = tmax[2] - (ent->pos1[2] - ent->pos2[2] + st.lip);
+	vec3_t t_mins;
+	t_mins[0] = ent->mins[0] + 25.0f;
+	t_mins[1] = ent->mins[1] + 25.0f;
+	t_mins[2] = t_maxs[2] - (ent->pos1[2] - ent->pos2[2] + (float)st.lip);
 
 	if (ent->spawnflags & SF_PLAT_LOW_TRIGGER)
-		tmax[2] = tmin[2] + 8;
-	
-	if (tmax[0] - tmin[0] <= 0)
-	{
-		tmin[0] = (ent->mins[0] + ent->maxs[0]) *0.5;
-		tmax[0] = tmin[0] + 1;
-	}
-	if (tmax[1] - tmin[1] <= 0)
-	{
-		tmin[1] = (ent->mins[1] + ent->maxs[1]) *0.5;
-		tmax[1] = tmin[1] + 1;
-	}
-	
-	VectorCopy (tmin, trigger->mins);
-	VectorCopy (tmax, trigger->maxs);
+		t_maxs[2] = t_mins[2] + 8.0f;
 
-	gi.linkentity (trigger);
+	for (int i = 0; i < 2; i++)
+	{
+		if (t_maxs[i] - t_mins[i] <= 0.0f)
+		{
+			t_mins[i] = (ent->mins[i] + ent->maxs[i]) * 0.5f;
+			t_maxs[i] = t_mins[i] + 1.0f;
+		}
+	}
+
+	VectorCopy(t_mins, trigger->mins);
+	VectorCopy(t_maxs, trigger->maxs);
+
+	gi.linkentity(trigger);
 }
 
 void FuncRotate_Deactivate(edict_t *self, G_Message_t *msg)
@@ -742,7 +735,7 @@ void SP_func_plat (edict_t *ent)
 	gi.setmodel (ent, ent->model);
 	gi.linkentity (ent);
 
-	plat_spawn_inside_trigger (ent);	// the "start moving" trigger	
+	FuncPlatSpawnInsideTrigger (ent);	// the "start moving" trigger	
 
 }
 
