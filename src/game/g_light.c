@@ -81,24 +81,13 @@ static void SpawnFlameDamager(edict_t* owner, vec3_t origin) //mxd. Named 'creat
 	owner->enemy = damager;
 }
 
-void SpawnFlame(edict_t *self,vec3_t origin)
+void SpawnFlame(edict_t* self, vec3_t origin) //TODO: add to header.
 {
-	byte scale;
+	// NOTE - limit on scale is x8.
+	const byte b_scale = (byte)(min(self->s.scale, 8.0f) * 32.0f);
+	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_FIRE, CEF_BROADCAST, origin, "b", b_scale);
 
-	// NOTE - LIMIT ON SCALE is x 8.
-	
-	if (self->s.scale >= 8.0)
-		scale = 255;
-	else
-		scale = self->s.scale * 32;
-
-	self->PersistantCFX = gi.CreatePersistantEffect(&self->s,
-								FX_FIRE,
-								CEF_BROADCAST,
-								origin,
-								"b",scale);
-
-	SpawnFlameDamager (self,origin);
+	SpawnFlameDamager(self, origin);
 }
 
 #pragma endregion
