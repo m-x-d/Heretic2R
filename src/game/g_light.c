@@ -487,32 +487,28 @@ void SP_light_lantern2(edict_t* self)
 	TorchInit(self);
 }
 
-/*QUAKED light_lantern3 (1 .5 0) (-6 -6 -12) (6 6 11)  INVULNERABLE ANIMATE EXPLODING STARTOFF  NOHALO
-Ceiling lantern
--------  FIELDS  ------------------
-INVULNERABLE - N/A
-ANIMATE - N/A
-EXPLODING - N/A
-STARTOFF - Light will start off if targeted (default is on)
-NOHALO - turns off halo effect
------------------------------------
-*/
-void SP_light_lantern3 (edict_t *self)
+// QUAKED light_lantern3 (1 .5 0) (-6 -6 -12) (6 6 11) x x x STARTOFF NOHALO
+// Ceiling lantern.
+// Spawnflags:
+// STARTOFF	- Light will start off if targeted (default is on).
+// NOHALO	- Turns off halo effect.
+void SP_light_lantern3(edict_t* self)
 {
-	vec3_t origin;
+	self->s.modelindex = (byte)gi.modelindex("models/objects/lights/lantern-3/tris.fm");
 
-	self->s.modelindex = gi.modelindex("models/objects/lights/lantern-3/tris.fm");
-
-	VectorSet(self->mins, -6, -6,-12);
-	VectorSet(self->maxs, 6, 6, 11);
+	VectorSet(self->mins, -6.0f, -6.0f, -12.0f);
+	VectorSet(self->maxs, 6.0f, 6.0f, 11.0f);
 
 	LightInit(self);
 
-	VectorCopy(self->s.origin, origin);
-	origin[2] -=2;
-
 	if (!(self->spawnflags & SF_TORCH_NOHALO))
+	{
+		vec3_t origin;
+		VectorCopy(self->s.origin, origin);
+		origin[2] -= 2.0f;
+
 		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, 0, origin, "");
+	}
 
 	TorchInit(self);
 }
