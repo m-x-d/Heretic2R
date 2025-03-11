@@ -170,17 +170,10 @@ static void EnvFireUse(edict_t* self, edict_t* other, edict_t* activator) //mxd.
 	}
 }
 
-void firemove_think(edict_t *self)
+static void EnvFireMoveThink(edict_t* self) //mxd. Named 'firemove_think' in original logic.
 {
-	byte scale;
-
- 	scale = self->s.scale * 8;
-
-	self->PersistantCFX = gi.CreatePersistantEffect(&self->s,
-				FX_FIRE_ON_ENTITY,
-				CEF_BROADCAST | CEF_OWNERS_ORIGIN,
-				self->s.origin,
-				"bbb",scale,0,1);
+	const byte b_scale = (byte)(self->s.scale * 8.0f);
+	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_FIRE_ON_ENTITY, CEF_BROADCAST | CEF_OWNERS_ORIGIN, self->s.origin, "bbb", b_scale, 0, 1);
 
 	self->think = NULL;
 }
@@ -263,7 +256,7 @@ void SP_env_fire (edict_t *self)
 
 	if (self->spawnflags & SF_ENV_FIRE_MOVEABLE)
 	{
-		self->think = firemove_think;
+		self->think = EnvFireMoveThink;
 		self->nextthink = level.time + 2;
 	}
 
