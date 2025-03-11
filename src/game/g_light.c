@@ -61,34 +61,24 @@ static void FlameDamagerTouch(edict_t* self, edict_t* other, cplane_t* plane, cs
 	}
 }
 
-#define OBJ_NOPUSH			8
-
-// This creates an entity that will burn the player if he's standing in the fire.
-
-void create_fire_touch (edict_t *owner,vec3_t origin)
+// This creates an invisible entity that will burn the player if he's standing in the fire.
+static void SpawnFlameDamager(edict_t* owner, vec3_t origin) //mxd. Named 'create_fire_touch' in original logic.
 {
-	edict_t *flame;
+	edict_t* damager = G_Spawn();
 
-	// Now create the flame.
+	damager->s.scale = owner->s.scale;
+	damager->dmg = (int)(owner->s.scale * 3.0f);
+	damager->spawnflags |= OBJ_NOPUSH; // Used by ObjectInit() to set movetype...
+	damager->movetype = PHYSICSTYPE_NONE;
+	damager->touch = FlameDamagerTouch;
 
-	flame = G_Spawn();
+	VectorCopy(origin, damager->s.origin);
+	VectorSet(damager->mins, -8.0f, -8.0f, -2.0f);
+	VectorSet(damager->maxs, 8.0f, 8.0f, 14.0f);
 
-	VectorCopy(origin,flame->s.origin);
+	ObjectInit(damager, 2, 2, MAT_NONE, SOLID_TRIGGER);
 
-	flame->s.scale = owner->s.scale;
-	flame->dmg = 3 * owner->s.scale;
-
-	VectorSet(flame->mins, -8, -8, -2);
-	VectorSet(flame->maxs, 8, 8, 14);
-
-	flame->spawnflags |= OBJ_NOPUSH;
-
-	flame->movetype = PHYSICSTYPE_NONE;
-	flame->touch = FlameDamagerTouch;
-
-	ObjectInit(flame,2,2,MAT_NONE,SOLID_TRIGGER);
-
-	owner->enemy = flame;
+	owner->enemy = damager;
 }
 
 void SpawnFlame(edict_t *self,vec3_t origin)
@@ -108,7 +98,7 @@ void SpawnFlame(edict_t *self,vec3_t origin)
 								origin,
 								"b",scale);
 
-	create_fire_touch (self,origin);
+	SpawnFlameDamager (self,origin);
 }
 
 #pragma endregion
@@ -177,7 +167,7 @@ void fire_use (edict_t *self, edict_t *other, edict_t *activator)
 					self->s.origin,
 					"b",scale);
 
-		create_fire_touch (self,self->s.origin);
+		SpawnFlameDamager (self,self->s.origin);
 
 		if (self->s.scale < 1)
 			self->s.sound = gi.soundindex("ambient/smallfire.wav");
@@ -310,7 +300,7 @@ void SP_env_fire (edict_t *self)
 						self->s.origin,
 						"b",scale);
 
-	create_fire_touch (self,self->s.origin);
+	SpawnFlameDamager (self,self->s.origin);
 }
 
 static void TorchUse (edict_t *self, edict_t *other, edict_t *activator)
