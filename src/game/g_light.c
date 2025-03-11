@@ -52,18 +52,13 @@ static void TorchInit(edict_t* self)
 	}
 }
 
-void fire_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void FlameDamagerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'fire_touch' in original logic.
 {
-	if (!other->client)
-		return;
-
-	if (self->touch_debounce_time > level.time)
-		return;
-
-	self->touch_debounce_time = level.time + 1;
-
-	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 0, 
-			DAMAGE_AVOID_ARMOR|DAMAGE_FIRE|DAMAGE_FIRE_LINGER, MOD_BURNT);
+	if (other->client != NULL && self->touch_debounce_time <= level.time)
+	{
+		self->touch_debounce_time = level.time + 1.0f;
+		T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 0, DAMAGE_AVOID_ARMOR | DAMAGE_FIRE | DAMAGE_FIRE_LINGER, MOD_BURNT);
+	}
 }
 
 #define OBJ_NOPUSH			8
@@ -89,7 +84,7 @@ void create_fire_touch (edict_t *owner,vec3_t origin)
 	flame->spawnflags |= OBJ_NOPUSH;
 
 	flame->movetype = PHYSICSTYPE_NONE;
-	flame->touch = fire_touch;
+	flame->touch = FlameDamagerTouch;
 
 	ObjectInit(flame,2,2,MAT_NONE,SOLID_TRIGGER);
 
