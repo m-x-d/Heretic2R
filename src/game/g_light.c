@@ -277,37 +277,32 @@ static void TorchStart(edict_t* self)
 	self->think = NULL;
 }
 
-/*QUAKED light_walltorch (1 .5 0) (-16 -10 -12) (10 10 12)  INVULNERABLE ANIMATE EXPLODING STARTOFF
-A torch that sticks out of a wall
--------  FIELDS  ------------------
-INVULNERABLE - N/A
-ANIMATE - Places a flame on it
-EXPLODING - N/A
-STARTOFF - Light will start off if targeted (default is on)
------------------------------------
-*/
-void SP_light_walltorch (edict_t *self)
+// QUAKED light_walltorch (1 .5 0) (-16 -10 -12) (10 10 12) x ANIMATE x STARTOFF
+// A torch that sticks out of a wall.
+// Spawnflags:
+// ANIMATE	- Places a flame on it.
+// STARTOFF	- Light will start off if targeted (default is on).
+void SP_light_walltorch(edict_t* self)
 {
-	vec3_t holdorigin;
-
-	self->s.modelindex = gi.modelindex("models/objects/lights/walltorch/tris.fm");
-	self->s.sound = gi.soundindex("ambient/smallfire.wav");
+	self->s.modelindex = (byte)gi.modelindex("models/objects/lights/walltorch/tris.fm");
+	self->s.sound = (byte)gi.soundindex("ambient/smallfire.wav");
 	self->s.sound_data = (127 & ENT_VOL_MASK) | ATTN_STATIC;
 
-	VectorSet(self->mins, -16, -10, -12);
-	VectorSet(self->maxs, 10, 10, 12);
+	VectorSet(self->mins, -16.0f, -10.0f, -12.0f);
+	VectorSet(self->maxs, 10.0f, 10.0f, 12.0f);
 
 	LightInit(self);
 
-	if (self->spawnflags & 2)	// Animate it
+	if (self->spawnflags & SF_TORCH_ANIMATE) // Animate it.
 	{
-		VectorCopy(self->s.origin,holdorigin);
-		holdorigin[2] += 28;
-		SpawnFlame(self,holdorigin);		
+		vec3_t hold_origin;
+		VectorCopy(self->s.origin, hold_origin);
+		hold_origin[2] += 28.0f;
+
+		SpawnFlame(self, hold_origin);
 	}
 
 	TorchInit(self);
-
 }
 
 /*QUAKED light_floortorch (1 .5 0) (-14 -14 -17) (14 14 17)  INVULNERABLE ANIMATE EXPLODING STARTOFF
