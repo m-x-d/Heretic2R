@@ -389,26 +389,20 @@ void SP_light_gem2(edict_t* self)
 	TorchInit(self);
 }
 
-/*QUAKED light_chandelier1 (1 .5 0) (-36 -36 -43) (34 34 43)  INVULNERABLE ANIMATE EXPLODING STARTOFF
-A big gold chandelier for the great hall
--------  FIELDS  ------------------
-INVULNERABLE - N/A
-ANIMATE - N/A
-EXPLODING - N/A
-STARTOFF - Light will start off if targeted (default is on)
------------------------------------
-*/
-void SP_light_chandelier1 (edict_t *self)
+// QUAKED light_chandelier1 (1 .5 0) (-36 -36 -43) (34 34 43) x x x STARTOFF
+// A big gold chandelier for the great hall.
+// Spawnflags:
+// STARTOFF - Light will start off if targeted (default is on).
+void SP_light_chandelier1(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/chandelier/chan1/tris.fm");
+	self->s.modelindex = (byte)gi.modelindex("models/objects/chandelier/chan1/tris.fm");
 
-	VectorSet(self->mins, -36, -36,-43);
-	VectorSet(self->maxs, 36, 36, 43);
+	VectorSet(self->mins, -36.0f, -36.0f, -43.0f);
+	VectorSet(self->maxs, 36.0f, 36.0f, 43.0f);
 
 	LightInit(self);
 	TorchInit(self);
 }
-
 
 /*QUAKED light_chandelier2 (1 .5 0) (-18 -18 -40) (18 18 40)  INVULNERABLE ANIMATE EXPLODING  STARTOFF
 A very heavy chandelier that doesn't have a skin yet.
