@@ -110,22 +110,23 @@ static void LightUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. N
 	}
 }
 
-void SP_light (edict_t *self)
+// QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) START_OFF
+// Non-displayed light. If targeted, will toggle between on and off.
+// Default light value is 300.
+// Default style is 0.
+// Default _cone value is 10 (used to set size of light for spotlights)
+void SP_light(edict_t* self)
 {
-	// no targeted lights in deathmatch, because they cause global messages
-	if (!self->targetname || deathmatch->value)
+	// No targeted lights in deathmatch, because they cause global messages.
+	if (self->targetname == NULL || DEATHMATCH)
 	{
-		G_FreeEdict (self);
-		return;
+		G_FreeEdict(self);
 	}
-
-	if (self->style >= 32)
+	else if (self->style >= 32)
 	{
 		self->use = LightUse;
-		if (self->spawnflags & SF_LIGHT_START_OFF)
-			gi.configstring (CS_LIGHTS+self->style, "a");
-		else
-			gi.configstring (CS_LIGHTS+self->style, "m");
+		const char* str = ((self->spawnflags & SF_LIGHT_START_OFF) ? "a" : "m"); //mxd
+		gi.configstring(CS_LIGHTS + self->style, str);
 	}
 }
 
