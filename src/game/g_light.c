@@ -420,24 +420,18 @@ void SP_light_chandelier2(edict_t* self)
 	TorchInit(self);
 }
 
-/*QUAKED light_chandelier3 (1 .5 0) (-34 -34 -80) (34 34 0)  INVULNERABLE ANIMATE EXPLODING STARTOFF
-A  thin gold chandelier 
--------  FIELDS  ------------------
-INVULNERABLE - N/A
-ANIMATE - N/A
-EXPLODING - N/A
-STARTOFF - Light will start off if targeted (default is on)
------------------------------------
-*/
-void SP_light_chandelier3 (edict_t *self)
+// QUAKED light_chandelier3 (1 .5 0) (-34 -34 -80) (34 34 0) x x x STARTOFF
+// A thin gold chandelier.
+// Spawnflags:
+// STARTOFF	- Light will start off if targeted (default is on).
+void SP_light_chandelier3(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/chandelier/chan3/tris.fm");
+	self->s.modelindex = (byte)gi.modelindex("models/objects/chandelier/chan3/tris.fm");
 
-	VectorSet(self->mins, -34, -34,-80);
-	VectorSet(self->maxs, 34, 34, 0);
+	VectorSet(self->mins, -34.0f, -34.0f, -80.0f);
+	VectorSet(self->maxs, 34.0f, 34.0f, 0.0f);
 
 	LightInit(self);
-
 	TorchInit(self);
 }
 
