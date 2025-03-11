@@ -404,19 +404,15 @@ void SP_light_chandelier1(edict_t* self)
 	TorchInit(self);
 }
 
-/*QUAKED light_chandelier2 (1 .5 0) (-18 -18 -40) (18 18 40)  INVULNERABLE ANIMATE EXPLODING  STARTOFF
-A very heavy chandelier that doesn't have a skin yet.
--------  FIELDS  ------------------
-INVULNERABLE - N/A
-ANIMATE - The flame flickers
-EXPLODING - N/A
-STARTOFF - Light will start off if targeted (default is on)
------------------------------------
-*/
-void SP_light_chandelier2 (edict_t *self)
+// QUAKED light_chandelier2 (1 .5 0) (-18 -18 -40) (18 18 40) x ANIMATE x STARTOFF
+// A very heavy chandelier that doesn't have a skin yet.
+// Spawnflags:
+// ANIMATE	- The flame flickers.
+// STARTOFF	- Light will start off if targeted (default is on).
+void SP_light_chandelier2(edict_t* self)
 {
-	VectorSet(self->mins, -18, -18, -40);
-	VectorSet(self->maxs, 18, 18, 40);
+	VectorSet(self->mins, -18.0f, -18.0f, -40.0f);
+	VectorSet(self->maxs, 18.0f, 18.0f, 40.0f);
 
 	SpawnClientAnim(self, FX_ANIM_CHANDELIER2, NULL);
 
