@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include "g_light.h" //mxd
 #include "g_combat.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "g_obj.h" //mxd
@@ -13,9 +14,6 @@
 #include "g_local.h"
 
 #pragma region ========================== Light support logic ==========================
-
-static void TorchUse(edict_t* self, edict_t* other, edict_t* activator); //TODO: move to header.
-static void TorchStart(edict_t* self); //TODO: move to header.
 
 void LightStaticsInit(void) //TODO: remove?
 {
@@ -59,7 +57,7 @@ static void FlameDamagerTouch(edict_t* self, edict_t* other, cplane_t* plane, cs
 }
 
 // This creates an invisible entity that will burn the player if he's standing in the fire.
-static void SpawnFlameDamager(edict_t* owner, vec3_t origin) //mxd. Named 'create_fire_touch' in original logic.
+static void SpawnFlameDamager(edict_t* owner, const vec3_t origin) //mxd. Named 'create_fire_touch' in original logic.
 {
 	edict_t* damager = G_Spawn();
 
@@ -78,7 +76,7 @@ static void SpawnFlameDamager(edict_t* owner, vec3_t origin) //mxd. Named 'creat
 	owner->enemy = damager;
 }
 
-void SpawnFlame(edict_t* self, vec3_t origin) //TODO: add to header.
+void SpawnFlame(edict_t* self, const vec3_t origin)
 {
 	// NOTE - limit on scale is x8.
 	const byte b_scale = (byte)(min(self->s.scale, 8.0f) * 32.0f);

@@ -18,11 +18,10 @@
 #include "angles.h"
 #include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
+#include "g_light.h" //mxd
 #include "g_playstats.h"
 #include "m_stats.h"
 #include "Utilities.h" //mxd
-
-void SpawnFlame(edict_t *self,vec3_t origin);
 
 void DefaultObjectDieHandler(edict_t* self, G_Message_t* msg) //mxd. Originally defined in g_misc.c
 {

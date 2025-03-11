@@ -1190,5 +1190,8 @@
     <ClInclude Include="g_func_Button.h">
       <Filter>src\Game objects</Filter>
     </ClInclude>
+    <ClInclude Include="g_light.h">
+      <Filter>src\Game objects</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

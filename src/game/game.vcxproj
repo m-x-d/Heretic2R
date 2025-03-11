@@ -248,6 +248,7 @@
     <ClInclude Include="g_HitLocation.h" />
     <ClInclude Include="g_items.h" />
     <ClInclude Include="g_itemstats.h" />
+    <ClInclude Include="g_light.h" />
     <ClInclude Include="g_local.h" />
     <ClInclude Include="g_main.h" />
     <ClInclude Include="g_Message.h" />

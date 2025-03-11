@@ -12,6 +12,7 @@
 #include "g_func_Button.h" //mxd
 #include "g_func_Door.h" //mxd
 #include "g_func_Rotating.h" //mxd
+#include "g_light.h" //mxd
 #include "g_misc.h" //mxd
 #include "m_monsters.h" //mxd
 
@@ -19,7 +20,6 @@ G_ClassStatics_t classStatics[NUM_CLASSIDS];
 int Cid_init[NUM_CLASSIDS];
 
 void ObjectStaticsInit();
-void LightStaticsInit();
 void TriggerStaticsInit();
 void LeverStaticsInit();
 

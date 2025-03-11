@@ -13,6 +13,7 @@
 #include "g_func_Rotating.h" //mxd
 #include "g_func_Timer.h" //mxd
 #include "g_func_Train.h" //mxd
+#include "g_light.h" //mxd
 #include "m_monsters.h" //mxd
 #include "p_client.h" //mxd
 #include "g_local.h"
@@ -56,25 +57,8 @@ void SP_target_earthquake (edict_t *ent);
 
 void SP_worldspawn (edict_t *ent);
 
-void SP_light (edict_t *self);
-
 void SP_misc_flag (edict_t *ent);
 
-void SP_light_walltorch (edict_t *ent);
-void SP_light_floortorch (edict_t *ent);
-void SP_light_torch1(edict_t *ent);
-void SP_light_gem2(edict_t *ent);
-void SP_light_chandelier1 (edict_t *ent);
-void SP_light_chandelier2 (edict_t *ent);
-void SP_light_chandelier3 (edict_t *ent);
-void SP_light_lantern1 (edict_t *ent);
-void SP_light_lantern2 (edict_t *ent);
-void SP_light_lantern3 (edict_t *ent);
-void SP_light_lantern4 (edict_t *ent);
-void SP_light_lantern5 (edict_t *ent);
-void SP_light_buglight (edict_t *ent);
-
-void SP_env_fire (edict_t *self);
 void SP_env_mist(edict_t *self);
 void SP_env_bubbler(edict_t *self);
 void SP_env_water_drip(edict_t *self);
