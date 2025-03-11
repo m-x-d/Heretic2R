@@ -12,9 +12,6 @@
 #include "Vector.h"
 #include "g_local.h"
 
-#define SF_TORCH_STARTOFF	8
-#define SF_TORCH_NOHALO		16
-
 #pragma region ========================== Light support logic ==========================
 
 static void TorchUse(edict_t* self, edict_t* other, edict_t* activator); //TODO: move to header.
@@ -252,16 +249,22 @@ void SP_env_fire(edict_t* self)
 
 #pragma endregion
 
-static void TorchUse (edict_t *self, edict_t *other, edict_t *activator)
+#pragma region ========================== Many variants of light_torch... ==========================
+
+#define SF_TORCH_ANIMATE	2 //mxd
+#define SF_TORCH_STARTOFF	8
+#define SF_TORCH_NOHALO		16
+
+static void TorchUse(edict_t* self, edict_t* other, edict_t* activator)
 {
 	if (self->spawnflags & SF_TORCH_STARTOFF)
 	{
-		gi.configstring (CS_LIGHTS+self->style, "m");
+		gi.configstring(CS_LIGHTS + self->style, "m");
 		self->spawnflags &= ~SF_TORCH_STARTOFF;
 	}
 	else
 	{
-		gi.configstring (CS_LIGHTS+self->style, "a");
+		gi.configstring(CS_LIGHTS + self->style, "a");
 		self->spawnflags |= SF_TORCH_STARTOFF;
 	}
 }
@@ -685,6 +688,7 @@ void SP_light_buglight (edict_t *self)
 	TorchInit(self);
 }
 
+#pragma endregion
 
 /*QUAKED env_sun1 (1 .5 0) (-12 -12 0) (12 12 38) INVULNERABLE ANIMATE  EXPLODING  
 Places two suns in the world and attaches a lens flare to them.
