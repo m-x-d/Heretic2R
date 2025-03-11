@@ -333,31 +333,6 @@ void SP_light_floortorch(edict_t* self)
 	TorchInit(self);
 }
 
-/*QUAK-ED light_flame (1 .5 0) (-16 -16 0) (16 16 34)  INVULNERABLE ANIMATE EXPLODING  STARTOFF
-A 30 frame flame.
--------  FIELDS  ------------------
-INVULNERABLE - N/A
-ANIMATE - N/A
-EXPLODING - N/A
-STARTOFF - Light will start off if targeted (default is on)
------------------------------------
-*/
-/*void SP_light_flame (edict_t *self)
-{
-	VectorSet(self->mins, -16, -16, -34);
-	VectorSet(self->maxs, 16, 16, 0);
-
-	self->nextthink = level.time + 2;
-	self->think = flamethink;
-
-	LightInit(self);
-
-	TorchInit(self);
-}
-*/
-
-
-
 /*QUAKED light_torch1 (1 .5 0) (-4 -6 -5) (6 6 20)  INVULNERABLE  ANIMATE   EXPLODING  STARTOFF  NOHALO
 Wall torch that uses a blue gem
 -------  FIELDS  ------------------
