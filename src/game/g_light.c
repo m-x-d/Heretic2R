@@ -92,28 +92,21 @@ void SpawnFlame(edict_t* self, vec3_t origin) //TODO: add to header.
 
 #pragma endregion
 
-/*QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) START_OFF
+#pragma region ========================== light ==========================
 
-	Non-displayed light.
-	Default light value is 300.
-	Default style is 0.
-	If targeted, will toggle between on and off.
-	Default _cone value is 10 (used to set size of light for spotlights)
-*/
+#define SF_LIGHT_START_OFF	1
 
-#define START_OFF	1
-
-static void light_use (edict_t *self, edict_t *other, edict_t *activator)
+static void LightUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'light_use' in original logic.
 {
-	if (self->spawnflags & START_OFF)
+	if (self->spawnflags & SF_LIGHT_START_OFF)
 	{
-		gi.configstring (CS_LIGHTS+self->style, "m");
-		self->spawnflags &= ~START_OFF;
+		gi.configstring(CS_LIGHTS + self->style, "m");
+		self->spawnflags &= ~SF_LIGHT_START_OFF;
 	}
 	else
 	{
-		gi.configstring (CS_LIGHTS+self->style, "a");
-		self->spawnflags |= START_OFF;
+		gi.configstring(CS_LIGHTS + self->style, "a");
+		self->spawnflags |= SF_LIGHT_START_OFF;
 	}
 }
 
@@ -128,13 +121,15 @@ void SP_light (edict_t *self)
 
 	if (self->style >= 32)
 	{
-		self->use = light_use;
-		if (self->spawnflags & START_OFF)
+		self->use = LightUse;
+		if (self->spawnflags & SF_LIGHT_START_OFF)
 			gi.configstring (CS_LIGHTS+self->style, "a");
 		else
 			gi.configstring (CS_LIGHTS+self->style, "m");
 	}
 }
+
+#pragma endregion
 
 #define FIRE_OFF 8
 #define FIRE_MOVEABLE 16
