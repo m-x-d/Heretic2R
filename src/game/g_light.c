@@ -333,36 +333,33 @@ void SP_light_floortorch(edict_t* self)
 	TorchInit(self);
 }
 
-/*QUAKED light_torch1 (1 .5 0) (-4 -6 -5) (6 6 20)  INVULNERABLE  ANIMATE   EXPLODING  STARTOFF  NOHALO
-Wall torch that uses a blue gem
--------  FIELDS  ------------------
-INVULNERABLE - N/A
-ANIMATE - N/A
-EXPLODING - N/A
-STARTOFF - Light will start off if targeted (default is on)
-NOHALO - turns off halo effect
------------------------------------
-*/
-void SP_light_torch1 (edict_t *self)
+// QUAKED light_torch1 (1 .5 0) (-4 -6 -5) (6 6 20) x x x STARTOFF NOHALO
+// Wall torch that uses a blue gem.
+// Spawnflags:
+// STARTOFF	- Light will start off if targeted (default is on).
+// NOHALO	- Turns off halo effect.
+void SP_light_torch1(edict_t* self)
 {
-	vec3_t origin, vf;
+	self->s.modelindex = (byte)gi.modelindex("models/objects/lights/sinkcity/light-3/tris.fm");
 
-	self->s.modelindex=gi.modelindex("models/objects/lights/sinkcity/light-3/tris.fm");
-
-	VectorSet(self->mins, -4, -6, -5);
-	VectorSet(self->maxs, 6, 6, 20);
+	VectorSet(self->mins, -4.0f, -6.0f, -5.0f);
+	VectorSet(self->maxs, 6.0f, 6.0f, 20.0f);
 
 	LightInit(self);
 
-	VectorCopy(self->s.origin, origin);
-
-	AngleVectors(self->s.angles, vf, NULL, NULL);
-	VectorMA(origin, 2, vf, origin);
-
-	origin[2] += 16;
-
 	if (!(self->spawnflags & SF_TORCH_NOHALO))
-		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, CEF_FLAG6|CEF_FLAG7, origin, "");
+	{
+		vec3_t origin;
+		VectorCopy(self->s.origin, origin);
+
+		vec3_t vf;
+		AngleVectors(self->s.angles, vf, NULL, NULL);
+		VectorMA(origin, 2.0f, vf, origin);
+
+		origin[2] += 16.0f;
+
+		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, CEF_FLAG6 | CEF_FLAG7, origin, "");
+	}
 
 	TorchInit(self);
 }
