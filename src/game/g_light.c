@@ -578,14 +578,3 @@ void SP_light_buglight(edict_t* self)
 }
 
 #pragma endregion
-
-// QUAKED env_sun1 (1 .5 0) (-12 -12 0) (12 12 38)
-// Places two suns in the world and attaches a lens flare to them. One sun is blue, the other is yellow.
-void SP_env_sun1(edict_t* self) //TODO: move to g_env.c?
-{
-	self->solid = SOLID_NOT;
-	self->movetype = PHYSICSTYPE_NONE;
-
-	const vec3_t origin = { 200.0f, -100.0f, 4000.0f }; //TODO: get sun direction from info_null instead? Get color from _color field?..
-	gi.CreatePersistantEffect(NULL, FX_LENSFLARE, CEF_FLAG7 | CEF_FLAG6, origin, "bbbf", 128, 108, 64, 0.75f);
-}

@@ -145,3 +145,18 @@ void SP_env_smoke(edict_t* self)
 }
 
 #pragma endregion
+
+#pragma region ========================== env_sun1 ==========================
+
+// QUAKED env_sun1 (1 .5 0) (-12 -12 0) (12 12 38)
+// Lens flare effect (unfinished).
+void SP_env_sun1(edict_t* self)
+{
+	self->solid = SOLID_NOT;
+	self->movetype = PHYSICSTYPE_NONE;
+
+	const vec3_t origin = { 200.0f, -100.0f, 4000.0f }; //TODO: get sun direction from info_null instead? Get color from _color field?..
+	gi.CreatePersistantEffect(NULL, FX_LENSFLARE, CEF_FLAG7 | CEF_FLAG6, origin, "bbbf", 128, 108, 64, 0.75f);
+}
+
+#pragma endregion

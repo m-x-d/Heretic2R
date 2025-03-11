@@ -11,3 +11,4 @@
 extern void SP_env_dust(edict_t* self);
 extern void SP_env_muck(edict_t* self);
 extern void SP_env_smoke(edict_t* self);
+extern void SP_env_sun1(edict_t* self);

@@ -80,7 +80,6 @@ void SP_env_bubbler(edict_t *self);
 void SP_env_water_drip(edict_t *self);
 void SP_env_water_fountain(edict_t *self);
 void SP_env_waterfall_base(edict_t *self);
-void SP_env_sun1(edict_t *ent);
 
 // Object stuff
 void SP_obj_andwallhanging(edict_t *ent);
