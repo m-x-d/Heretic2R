@@ -24,7 +24,7 @@ void LightStaticsInit(void) //TODO: remove?
 {
 }
 
-void LightInit(edict_t *self)
+static void LightInit(edict_t* self)
 {
 	self->movetype = PHYSICSTYPE_NONE;
 	self->solid = SOLID_BBOX;
@@ -34,7 +34,7 @@ void LightInit(edict_t *self)
 
 	BboxYawAndScale(self);
 
-	gi.linkentity (self);
+	gi.linkentity(self);
 }
 
 void TorchInit (edict_t *self)
