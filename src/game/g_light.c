@@ -132,50 +132,43 @@ void SP_light(edict_t* self)
 
 #pragma endregion
 
-#define FIRE_OFF 8
-#define FIRE_MOVEABLE 16
+#pragma region ========================== env_fire ==========================
 
-void fire_use (edict_t *self, edict_t *other, edict_t *activator)
+#define SF_ENV_FIRE_OFF			8
+#define SF_ENV_FIRE_MOVEABLE	16
+#define SF_ENV_FIRE_LIGHT_ON	32 //mxd
+
+static void EnvFireUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'fire_use' in original logic.
 {
-	byte scale;
-	if (self->spawnflags & FIRE_OFF)
+	if (self->spawnflags & SF_ENV_FIRE_OFF)
 	{
-		// NOTE - LIMIT ON SCALE is x 8
-		if (self->s.scale >= 8.0)
-			scale = 255;
-		else
-			scale = self->s.scale * 32;
+		// NOTE - limit on scale is x8.
+		const byte b_scale = (byte)(min(self->s.scale, 8.0f) * 32.0f);
+		self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_FIRE, CEF_BROADCAST, self->s.origin, "b", b_scale);
 
-		self->PersistantCFX = gi.CreatePersistantEffect(&self->s,
-					FX_FIRE,
-					CEF_BROADCAST,
-					self->s.origin,
-					"b",scale);
+		SpawnFlameDamager(self, self->s.origin);
 
-		SpawnFlameDamager (self,self->s.origin);
-
-		if (self->s.scale < 1)
-			self->s.sound = gi.soundindex("ambient/smallfire.wav");
-		else
-			self->s.sound = gi.soundindex("ambient/fireplace.wav");
+		const char* snd_name = ((self->s.scale < 1.0f) ? "ambient/smallfire.wav" : "ambient/fireplace.wav"); //mxd
+		self->s.sound = (byte)gi.soundindex(snd_name);
 		self->s.sound_data = (127 & ENT_VOL_MASK) | ATTN_STATIC;
-		self->spawnflags &= ~FIRE_OFF;
+
+		self->spawnflags &= ~SF_ENV_FIRE_OFF;
 	}
 	else
 	{
-		if (self->PersistantCFX)
+		if (self->PersistantCFX > 0)
 		{
 			gi.RemovePersistantEffect(self->PersistantCFX, REMOVE_FIRE);
 			self->PersistantCFX = 0;
 		}
+
 		self->s.sound = 0;
 		gi.RemoveEffects(&self->s, FX_FIRE);
-		self->spawnflags |= FIRE_OFF;
-		G_FreeEdict(self->enemy);
+		self->spawnflags |= SF_ENV_FIRE_OFF;
 
+		G_FreeEdict(self->enemy); // Remove FireDamager ent.
 	}
 }
-
 
 void firemove_think(edict_t *self)
 {
@@ -216,7 +209,7 @@ void SP_env_fire (edict_t *self)
 
 	if (self->targetname)
 	{
-		self->use = fire_use;
+		self->use = EnvFireUse;
 		controller = G_Find(NULL, FOFS(target), self->targetname);
 		if(controller)
 		{//set it up to throw firey chunks
@@ -228,7 +221,7 @@ void SP_env_fire (edict_t *self)
 	}
 
 
-	if (self->spawnflags & FIRE_MOVEABLE)
+	if (self->spawnflags & SF_ENV_FIRE_MOVEABLE)
 	{
 		VectorSet(self->mins, -2, -2, -2);
 		VectorSet(self->maxs, 2, 2, 2);
@@ -253,7 +246,7 @@ void SP_env_fire (edict_t *self)
 
 	gi.linkentity(self);
 
-	if (self->spawnflags & FIRE_OFF)
+	if (self->spawnflags & SF_ENV_FIRE_OFF)
 		return;
 
 	if (self->s.scale < 1)
@@ -268,7 +261,7 @@ void SP_env_fire (edict_t *self)
 	else
 	 	scale = self->s.scale * 32;
 
-	if (self->spawnflags & FIRE_MOVEABLE)
+	if (self->spawnflags & SF_ENV_FIRE_MOVEABLE)
 	{
 		self->think = firemove_think;
 		self->nextthink = level.time + 2;
