@@ -364,38 +364,27 @@ void SP_light_torch1(edict_t* self)
 	TorchInit(self);
 }
 
-/*QUAKED light_gem2 (1 .5 0) (-1 -6 -8) (4 6 8)  INVULNERABLE  ANIMATE   EXPLODING  STARTOFF  NOHALO
-A yellow gem in an octogonal frame
--------  FIELDS  ------------------
-INVULNERABLE - N/A
-ANIMATE - N/A
-EXPLODING - N/A
-STARTOFF - Light will start off if targeted (default is on)
-NOHALO - turns off halo effect							
------------------------------------
-style 
-- 0 yellow light
-- 1 green light
-
-*/
-void SP_light_gem2 (edict_t *self)
+// QUAKED light_gem2 (1 .5 0) (-1 -6 -8) (4 6 8) x x x STARTOFF NOHALO
+// A yellow gem in an octogonal frame.
+// Spawnflags:
+// STARTOFF	- Light will start off if targeted (default is on).
+// NOHALO	- Turns off halo effect.
+// Variables:
+// style	- 0 yellow light, 1 green light.
+void SP_light_gem2(edict_t* self)
 {
-	vec3_t origin;
+	self->s.modelindex = (byte)gi.modelindex("models/objects/lights/sinkcity/light-2/tris.fm");
 
-	self->s.modelindex = gi.modelindex("models/objects/lights/sinkcity/light-2/tris.fm");
-
-	VectorSet(self->mins, -1, -6, -8);
-	VectorSet(self->maxs, 4, 6, 8);
+	VectorSet(self->mins, -1.0f, -6.0f, -8.0f);
+	VectorSet(self->maxs, 4.0f, 6.0f, 8.0f);
 
 	if (self->style == 1)
 		self->s.skinnum = 1;
 
 	LightInit(self);
 
-	VectorCopy(self->s.origin, origin);
-
 	if (!(self->spawnflags & SF_TORCH_NOHALO))
-		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, CEF_FLAG6|CEF_FLAG8, origin, "");
+		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, CEF_FLAG6 | CEF_FLAG8, self->s.origin, "");
 
 	TorchInit(self);
 }
