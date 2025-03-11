@@ -15,12 +15,13 @@
 #define SF_TORCH_STARTOFF	8
 #define SF_TORCH_NOHALO		16
 
-static void TorchUse (edict_t *self, edict_t *other, edict_t *activator);
-static void TorchStart (edict_t *self);
+#pragma region ========================== Light support logic ==========================
 
-void LightStaticsInit()
+static void TorchUse(edict_t* self, edict_t* other, edict_t* activator); //TODO: move to header.
+static void TorchStart(edict_t* self); //TODO: move to header.
+
+void LightStaticsInit(void) //TODO: remove?
 {
-
 }
 
 void LightInit(edict_t *self)
@@ -118,6 +119,7 @@ void SpawnFlame(edict_t *self,vec3_t origin)
 	create_fire_touch (self,origin);
 }
 
+#pragma endregion
 
 /*QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) START_OFF
 
