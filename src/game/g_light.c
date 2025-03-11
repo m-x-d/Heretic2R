@@ -12,8 +12,8 @@
 #include "Vector.h"
 #include "g_local.h"
 
-#define LIGHT_STARTOFF	8
-#define LIGHT_NOHALO	16
+#define SF_TORCH_STARTOFF	8
+#define SF_TORCH_NOHALO		16
 
 static void TorchUse (edict_t *self, edict_t *other, edict_t *activator);
 static void TorchStart (edict_t *self);
@@ -321,21 +321,21 @@ void SP_env_fire (edict_t *self)
 
 static void TorchUse (edict_t *self, edict_t *other, edict_t *activator)
 {
-	if (self->spawnflags & LIGHT_STARTOFF)
+	if (self->spawnflags & SF_TORCH_STARTOFF)
 	{
 		gi.configstring (CS_LIGHTS+self->style, "m");
-		self->spawnflags &= ~LIGHT_STARTOFF;
+		self->spawnflags &= ~SF_TORCH_STARTOFF;
 	}
 	else
 	{
 		gi.configstring (CS_LIGHTS+self->style, "a");
-		self->spawnflags |= LIGHT_STARTOFF;
+		self->spawnflags |= SF_TORCH_STARTOFF;
 	}
 }
 
 static void TorchStart (edict_t *self)
 {
-	if (self->spawnflags & LIGHT_STARTOFF)
+	if (self->spawnflags & SF_TORCH_STARTOFF)
 	{
 		gi.configstring (CS_LIGHTS+self->style, "a");
 	}
@@ -467,7 +467,7 @@ void SP_light_torch1 (edict_t *self)
 
 	origin[2] += 16;
 
-	if (!(self->spawnflags & LIGHT_NOHALO))
+	if (!(self->spawnflags & SF_TORCH_NOHALO))
 		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, CEF_FLAG6|CEF_FLAG7, origin, "");
 
 	TorchInit(self);
@@ -503,7 +503,7 @@ void SP_light_gem2 (edict_t *self)
 
 	VectorCopy(self->s.origin, origin);
 
-	if (!(self->spawnflags & LIGHT_NOHALO))
+	if (!(self->spawnflags & SF_TORCH_NOHALO))
 		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, CEF_FLAG6|CEF_FLAG8, origin, "");
 
 	TorchInit(self);
@@ -595,7 +595,7 @@ void SP_light_lantern1 (edict_t *self)
 	VectorCopy(self->s.origin, origin);
 	origin[2] -=10;
 
-	if (!(self->spawnflags & LIGHT_NOHALO))
+	if (!(self->spawnflags & SF_TORCH_NOHALO))
 		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, 0, origin, "");
 
 	TorchInit(self);
@@ -625,7 +625,7 @@ void SP_light_lantern2 (edict_t *self)
 	VectorCopy(self->s.origin, origin);
 	origin[2] -=10;
 
-	if (!(self->spawnflags & LIGHT_NOHALO))
+	if (!(self->spawnflags & SF_TORCH_NOHALO))
 		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, 0, origin, "");
 
 	TorchInit(self);
@@ -655,7 +655,7 @@ void SP_light_lantern3 (edict_t *self)
 	VectorCopy(self->s.origin, origin);
 	origin[2] -=2;
 
-	if (!(self->spawnflags & LIGHT_NOHALO))
+	if (!(self->spawnflags & SF_TORCH_NOHALO))
 		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, 0, origin, "");
 
 	TorchInit(self);
@@ -684,7 +684,7 @@ void SP_light_lantern4 (edict_t *self)
 
 	VectorCopy(self->s.origin, origin);
 
-	if (!(self->spawnflags & LIGHT_NOHALO))
+	if (!(self->spawnflags & SF_TORCH_NOHALO))
 		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, 0, origin, "");
 
 	TorchInit(self);
@@ -714,7 +714,7 @@ void SP_light_lantern5 (edict_t *self)
 	VectorCopy(self->s.origin, origin);
 	self->s.frame = 1;
 
-	if (!(self->spawnflags & LIGHT_NOHALO))
+	if (!(self->spawnflags & SF_TORCH_NOHALO))
 		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, 0, origin, "");
 
 	TorchInit(self);
@@ -746,7 +746,7 @@ void SP_light_buglight (edict_t *self)
 	VectorCopy(self->s.origin, origin);
 	self->s.frame = 1;
 
-	if (!(self->spawnflags & LIGHT_NOHALO))
+	if (!(self->spawnflags & SF_TORCH_NOHALO))
 		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_HALO, 0, origin, "");
 
 	TorchInit(self);
