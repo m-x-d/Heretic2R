@@ -178,101 +178,79 @@ static void EnvFireMoveThink(edict_t* self) //mxd. Named 'firemove_think' in ori
 	self->think = NULL;
 }
 
-/*QUAKED env_fire (1 .5 0) (0 -10 -24) (20 10 0)  INVULNERABLE ANIMATE EXPLODING  FIRE_OFF MOVEABLE LIGHT_ON
-A fire about the size of a campfire. Triggerable.
--------  FIELDS  ------------------
-INVULNERABLE - N/A
-ANIMATE -  N/A
-EXPLODING - N/A
-FIRE_OFF - fire will start off
-MOVEABLE - fire will move if given a velocity
-LIGHT_ON - fire will have light attached to it - if moveable, not required
------------------------------------
-scale - size of flame (default 1) (no bigger than 8)
-*/
-void SP_env_fire (edict_t *self)
+// QUAKED env_fire (1 .5 0) (0 -10 -24) (20 10 0)  x x x  FIRE_OFF MOVEABLE LIGHT_ON
+// A fire about the size of a campfire. Triggerable.
+
+// Spawnflags:
+// FIRE_OFF - Fire will start off.
+// MOVEABLE - Fire will move if given a velocity.
+// LIGHT_ON - Fire will have light attached to it - if moveable, not required.
+
+// Variables:
+// scale - Size of flame (default 1) (no bigger than 8).
+void SP_env_fire(edict_t* self)
 {
-	byte scale;
-	int	flags;
-	edict_t	*controller;
+	if (self->s.scale == 0.0f)
+		self->s.scale = 1.0f;
 
-
-	if (!self->s.scale)
-		self->s.scale = 1;
-
-	if (self->targetname)
+	if (self->targetname != NULL)
 	{
 		self->use = EnvFireUse;
-		controller = G_Find(NULL, FOFS(target), self->targetname);
-		if(controller)
-		{//set it up to throw firey chunks
-			if(controller->materialtype == MAT_WOOD)
-			{
-				controller->svflags |= SVF_ONFIRE;
-			}
-		}
-	}
+		edict_t* controller = G_Find(NULL, FOFS(target), self->targetname);
 
+		if (controller != NULL && controller->materialtype == MAT_WOOD)
+			controller->svflags |= SVF_ONFIRE; // Set it up to throw firey chunks.
+	}
 
 	if (self->spawnflags & SF_ENV_FIRE_MOVEABLE)
 	{
-		VectorSet(self->mins, -2, -2, -2);
-		VectorSet(self->maxs, 2, 2, 2);
+		VectorSet(self->mins, -2.0f, -2.0f, -2.0f);
+		VectorSet(self->maxs, 2.0f, 2.0f, 2.0f);
+
 		self->mass = 250;
-		self->friction = 0;
-		self->gravity = 0;
-		self->s.effects |= EF_NODRAW_ALWAYS_SEND|EF_ALWAYS_ADD_EFFECTS;
-//		self->svflags |= SVF_ALWAYS_SEND;
+		self->friction = 0.0f;
+		self->gravity = 0.0f;
 		self->movetype = PHYSICSTYPE_FLY;
 
 		self->model = 0;
 		self->solid = SOLID_NOT;
 		self->clipmask = MASK_MONSTERSOLID;
-
 	}
 	else
 	{
-		VectorSet(self->mins, 0, -10, -24);
-		VectorSet(self->maxs, 20, 10, 0);
-		self->s.effects |= EF_NODRAW_ALWAYS_SEND|EF_ALWAYS_ADD_EFFECTS;
+		VectorSet(self->mins, 0.0f, -10.0f, -24.0f);
+		VectorSet(self->maxs, 20.0f, 10.0f, 0.0f);
 	}
 
+	self->s.effects |= (EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS);
 	gi.linkentity(self);
 
 	if (self->spawnflags & SF_ENV_FIRE_OFF)
 		return;
 
-	if (self->s.scale < 1)
-		self->s.sound = gi.soundindex("ambient/smallfire.wav");
-	else
-		self->s.sound = gi.soundindex("ambient/fireplace.wav");
+	const char* snd_name = ((self->s.scale < 1.0f) ? "ambient/smallfire.wav" : "ambient/fireplace.wav"); //mxd
+	self->s.sound = (byte)gi.soundindex(snd_name);
 	self->s.sound_data = (127 & ENT_VOL_MASK) | ATTN_STATIC;
-
-	// NOTE - LIMIT ON SCALE is x 8
-	if (self->s.scale >= 8.0)
-	 	scale = 255;
-	else
-	 	scale = self->s.scale * 32;
 
 	if (self->spawnflags & SF_ENV_FIRE_MOVEABLE)
 	{
 		self->think = EnvFireMoveThink;
-		self->nextthink = level.time + 2;
+		self->nextthink = level.time + 2.0f;
 	}
 
-	// add a light or no ?
-	flags = CEF_BROADCAST;
-	if (self->spawnflags & 32)
-		flags |= CEF_FLAG6;
+	// Add a light or no?
+	int fx_flags = CEF_BROADCAST;
+	if (self->spawnflags & SF_ENV_FIRE_LIGHT_ON)
+		fx_flags |= CEF_FLAG6;
 
-	self->PersistantCFX = gi.CreatePersistantEffect(&self->s,
-						FX_FIRE,
-						flags,
-						self->s.origin,
-						"b",scale);
+	// NOTE - limit on scale is x8.
+	const byte b_scale = (byte)(min(self->s.scale, 8.0f) * 32.0f);
+	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_FIRE, fx_flags, self->s.origin, "b", b_scale);
 
-	SpawnFlameDamager (self,self->s.origin);
+	SpawnFlameDamager(self, self->s.origin);
 }
+
+#pragma endregion
 
 static void TorchUse (edict_t *self, edict_t *other, edict_t *activator)
 {
