@@ -37,21 +37,18 @@ static void LightInit(edict_t* self)
 	gi.linkentity(self);
 }
 
-void TorchInit (edict_t *self)
+static void TorchInit(edict_t* self)
 {
-	// no targeted lights in deathmatch, because they cause global messages
-	if (self->targetname && deathmatch->value)
+	// No targeted lights in deathmatch, because they cause global messages.
+	if (self->targetname != NULL && DEATHMATCH)
 	{
-		G_FreeEdict (self);
-		return;
+		G_FreeEdict(self);
 	}
-
-	if (self->style >= 32)
+	else if (self->style >= 32)
 	{
 		self->use = TorchUse;
-
-		self->nextthink = level.time + 1.5;		// If you don't wait a little they don't light right
 		self->think = TorchStart;
+		self->nextthink = level.time + 1.5f; // If you don't wait a little they don't light right.
 	}
 }
 
