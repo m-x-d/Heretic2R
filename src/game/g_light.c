@@ -1,26 +1,22 @@
 //
 // g_light.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
-#include "fx.h"
-#include "effectflags.h"
 #include "g_combat.h" //mxd
-#include "g_local.h"
-#include "g_obj.h" //mxd
 #include "g_DefaultMessageHandler.h"
+#include "g_obj.h" //mxd
+#include "FX.h"
 #include "Utilities.h" //mxd
-#include "vector.h"
+#include "Vector.h"
+#include "g_local.h"
 
 #define LIGHT_STARTOFF	8
-
 #define LIGHT_NOHALO	16
 
 static void TorchUse (edict_t *self, edict_t *other, edict_t *activator);
 static void TorchStart (edict_t *self);
-void create_fire_touch (edict_t *owner,vec3_t origin);
 
 void LightStaticsInit()
 {
