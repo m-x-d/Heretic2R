@@ -269,20 +269,13 @@ static void TorchUse(edict_t* self, edict_t* other, edict_t* activator)
 	}
 }
 
-static void TorchStart (edict_t *self)
+static void TorchStart(edict_t* self)
 {
-	if (self->spawnflags & SF_TORCH_STARTOFF)
-	{
-		gi.configstring (CS_LIGHTS+self->style, "a");
-	}
-	else
-	{
-		gi.configstring (CS_LIGHTS+self->style, "m");
-	}
+	const char* str = ((self->spawnflags & SF_TORCH_STARTOFF) ? "a" : "m"); //mxd
+	gi.configstring(CS_LIGHTS + self->style, str);
 
 	self->think = NULL;
 }
-
 
 /*QUAKED light_walltorch (1 .5 0) (-16 -10 -12) (10 10 12)  INVULNERABLE ANIMATE EXPLODING STARTOFF
 A torch that sticks out of a wall
