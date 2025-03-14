@@ -378,7 +378,9 @@ static void EntityThink(edict_t* self)
 	if (ThinkTime(self))
 	{
 		self->think(self);
-		assert(!self->inuse || self->think == NULL || think_time != self->nextthink);
+
+		// We expect that either ent is removed, ent->think callback is cleared or ent nextthink time is updated as a result of calling ent->think().
+		assert(!self->inuse || !self->think || think_time != self->nextthink); //TODO: shouldn't we check for nextthink > think_time or nextthink > level.time instead? 
 	}
 }
 
