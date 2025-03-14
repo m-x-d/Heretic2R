@@ -106,50 +106,37 @@ static void PushableObjectTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 	}
 }
 
-void ObjectInit(edict_t *self,int health,int mass, int materialtype,int solid)
+void ObjectInit(edict_t* self, const int health, const int mass, const int materialtype, const int solid) //TODO: move declaration to g_obj.h
 {
-	self->movetype = PHYSICSTYPE_NONE;
 	self->solid = solid;
 	self->msgHandler = DefaultMsgHandler;
-	self->takedamage = DAMAGE_YES;
+	self->takedamage = ((self->spawnflags & OBJ_INVULNERABLE) ? DAMAGE_NO : DAMAGE_YES);
 	self->clipmask = MASK_MONSTERSOLID;
 
-	if (!self->health)
+	if (self->health == 0)
 		self->health = health;
 
-	if (!self->mass)
-	{
-		self->mass = mass;
-		if (!mass)	// Needs a mass if it breaks up
-			self->mass = 10;
-	}
+	if (self->mass == 0)
+		self->mass = ((mass == 0) ? 10 : mass); // Needs a mass if it breaks up.
 
-	if (!self->materialtype)
+	if (self->materialtype == 0)
 		self->materialtype = materialtype;
-
-	if (self->spawnflags & OBJ_INVULNERABLE)	// Invulnerable
-	{
-		self->takedamage = DAMAGE_NO;
-	}
-	else
-	{
-		self->takedamage = DAMAGE_YES;
-	}
 
 	BboxYawAndScale(self);
 
-	if (!(self->spawnflags & OBJ_NOPUSH))	// PUSHABLE
+	if (!(self->spawnflags & OBJ_NOPUSH)) // PUSHABLE.
 	{
 		self->movetype = PHYSICSTYPE_STOP;
 		self->monsterinfo.aiflags = AI_NOSTEP;
 		self->touch = PushableObjectTouch;
 
 		self->think = M_droptofloor;
-		self->nextthink = level.time + (2 * FRAMETIME);
+		self->nextthink = level.time + (FRAMETIME * 2.0f);
 	}
 	else
 	{
-		gi.linkentity (self);
+		self->movetype = PHYSICSTYPE_NONE;
+		gi.linkentity(self);
 	}
 }
 
