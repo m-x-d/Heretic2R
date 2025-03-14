@@ -3436,59 +3436,55 @@ void SP_obj_lab_tray(edict_t* self)
 
 #pragma endregion
 
-void ogle_moan (edict_t *self)
+#pragma region ========================== obj_hanging_ogle ==========================
+
+static void ObjHangingOgleMoan(edict_t* self) //mxd. Named 'ogle_moan' in original logic.
 {
-	gi.sound(self, CHAN_VOICE, gi.soundindex(va("monsters/ogle/oglemoan%c.wav", irand('1', '2'))), 1, ATTN_IDLE, 0);
-	self->think = ogle_moan;
-	self->nextthink = level.time + irand (3, 10);
+	gi.sound(self, CHAN_VOICE, gi.soundindex(va("monsters/ogle/oglemoan%i.wav", irand(1, 2))), 1.0f, ATTN_IDLE, 0.0f);
+	self->nextthink = level.time + flrand(3.0f, 10.0f); //mxd. irand() in original logic.
 }
 
-/*QUAKED obj_hanging_ogle (1 .5 0) (-8 -16 -34) (8 16 34) INVULNERABLE ANIMATE EXPLODING NOPUSH
-Poor little hanging ogle
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A (thing always animates)
-EXPLODING - N/A
-NOPUSH - N/A  (can't be pushed)
------------------------------------
-*/
-void SP_obj_hanging_ogle (edict_t *self)
+// QUAKED obj_hanging_ogle (1 .5 0) (-8 -16 -34) (8 16 34) INVULNERABLE
+// Poor little hanging ogle.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_hanging_ogle(edict_t* self)
 {
-	edict_t *ring;
-	vec3_t forward;
+	VectorSet(self->mins, -8.0f, -16.0f, -34.0f);
+	VectorSet(self->maxs, 8.0f, 16.0f, 34.0f);
 
-	VectorSet(self->mins, -8, -16, -34);
-	VectorSet(self->maxs,  8, 16, 34);
-
-	self->spawnflags |= OBJ_NOPUSH | OBJ_ANIMATE;
+	self->spawnflags |= (OBJ_NOPUSH | OBJ_ANIMATE);
 
 	SpawnClientAnim(self, FX_ANIM_HANGING_OGLE, NULL);
-	ObjectInit(self,100,200,MAT_FLESH,SOLID_BBOX);
+	ObjectInit(self, 100, 200, MAT_FLESH, SOLID_BBOX);
 
+	self->think = ObjHangingOgleMoan;
+	self->nextthink = level.time + flrand(3.0f, 10.0f); //mxd. irand() in original logic.
 
-	ring = G_Spawn();
-	VectorCopy(self->s.origin,ring->s.origin);
-	ring->s.origin[2] += 27;
+	// Spawn plaque.
+	edict_t* plaque = G_Spawn();
 
+	VectorCopy(self->s.origin, plaque->s.origin);
+	plaque->s.origin[2] += 27.0f;
+
+	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
-	VectorMA(ring->s.origin, -9, forward, ring->s.origin);
+	VectorMA(plaque->s.origin, -9.0f, forward, plaque->s.origin);
 
-	VectorCopy(self->s.angles,ring->s.angles);
-	ring->s.modelindex = gi.modelindex("models/objects/torture/plaque2/tris.fm");
-	ring->movetype = PHYSICSTYPE_NONE;
-	ring->solid = SOLID_NOT;
-	ring->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	ring->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
+	VectorCopy(self->s.angles, plaque->s.angles);
 
-	BboxYawAndScale(ring);
-	gi.linkentity (ring);
+	plaque->s.modelindex = (byte)gi.modelindex("models/objects/torture/plaque2/tris.fm");
+	plaque->movetype = PHYSICSTYPE_NONE;
+	plaque->solid = SOLID_NOT;
+	plaque->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	self->target_ent = ring;
+	BboxYawAndScale(plaque);
+	gi.linkentity(plaque);
 
-	self->think = ogle_moan;
-	self->nextthink = level.time + irand (3, 10);
+	self->target_ent = plaque; // Set, so plaque is removed when ogle is killed. //TODO: don't remove? 
 }
 
+#pragma endregion
 
 /*QUAKED obj_ring_plaque2 (1 .5 0) (-2 -24 -20) (2 24 20) INVULNERABLE ANIMATE EXPLODING NOPUSH
 More rings mounted into a wall plate
