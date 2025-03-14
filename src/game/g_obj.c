@@ -41,6 +41,20 @@ void ObjectStaticsInit(void)
 
 #pragma endregion
 
+#pragma region ========================== LeverStaticsInit ==========================
+
+static void ObjLeverUsed(edict_t* self, G_Message_t* msg) //mxd. Named 'lever_used' in original logic.
+{
+	self->activator = self->enemy;
+}
+
+void LeverStaticsInit(void)
+{
+	classStatics[CID_LEVER].msgReceivers[MSG_DEATH] = ObjLeverUsed;
+}
+
+#pragma endregion
+
 #pragma region ========================== Utility functions ==========================
 
 // It is assumed all bounding boxes for objects were initially implemented as if the objects yaw was 0.
@@ -1944,18 +1958,6 @@ void SP_obj_lever3 (edict_t *self)
 
 	self->use = lever3_use;
 }
-void lever_used(edict_t *self, G_Message_t *msg)
-{
-	self->activator = self->enemy;
-//	button_fire (self);
-}
-
-void LeverStaticsInit()
-{
-	classStatics[CID_LEVER].msgReceivers[MSG_DEATH] = lever_used;
-}
-
-
 
 
 
