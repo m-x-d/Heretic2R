@@ -311,23 +311,27 @@ void SP_obj_chair3(edict_t* self)
 
 #pragma endregion
 
-void chest1_anim (edict_t *self)
+#pragma region ========================== obj_chest1, obj_chest2, obj_chest3 ==========================
+
+static void ObjChest1Anim(edict_t* self) //mxd. Named 'chest1_anim' in original logic.
 {
 	if (self->s.frame < 10)
 	{
-		++self->s.frame;
-		self->think = chest1_anim;
+		self->s.frame++;
+		self->think = ObjChest1Anim;
 		self->nextthink = level.time + FRAMETIME;
 	}
 	else
+	{
 		self->think = NULL;
+	}
 }
 
 void chest1_use (edict_t *self, edict_t *other, edict_t *activator)
 {
 	gi.sound (self, CHAN_VOICE, gi.soundindex("objects/chest.wav"), 1, ATTN_NORM, 0);
 
-	chest1_anim(self);
+	ObjChest1Anim(self);
 }
 
 /*QUAKED obj_chest1 (1 .5 0) (-10 -18 -19) (10 18 19) INVULNERABLE ANIMATE EXPLODING NOPUSH
@@ -394,6 +398,8 @@ void SP_obj_chest3 (edict_t *self)
 	ObjectInit(self,60,150,MAT_WOOD,SOLID_BBOX);
 
 }
+
+#pragma endregion
 
 void cog1_anim (edict_t *self)
 {
