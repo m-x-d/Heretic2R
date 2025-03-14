@@ -1761,23 +1761,18 @@ void SP_obj_flagonpole(edict_t* self)
 
 static void ObjLever1DownThink(edict_t* self) //mxd. Named 'lever1downthink' in original logic.
 {
-	if (++self->s.frame < 6)
+	if (++self->s.frame <= 5)
 		self->nextthink = level.time + FRAMETIME;
 	else
 		self->think = NULL;
 }
 
-void lever1upthink(edict_t *self)
+static void ObjLever1UpThink(edict_t* self) //mxd. Named 'lever1upthink' in original logic.
 {
-	if (self->s.frame > 0)
-	{
-		--self->s.frame;
+	if (--self->s.frame >= 0)
 		self->nextthink = level.time + FRAMETIME;
-	}
 	else
-	{
 		self->think = NULL;
-	}
 }
 
 void lever1_use (edict_t *self, edict_t *other, edict_t *activator)
@@ -1791,7 +1786,7 @@ void lever1_use (edict_t *self, edict_t *other, edict_t *activator)
 	else if (self->s.frame == 5)
 	{
 		gi.sound (self, CHAN_BODY, gi.soundindex ("objects/lever1.wav"), 1, ATTN_NORM, 0);
-		self->think = lever1upthink;
+		self->think = ObjLever1UpThink;
 		self->nextthink = level.time + FRAMETIME;
 	}
 	G_UseTargets(self, activator);
