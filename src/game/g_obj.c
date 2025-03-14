@@ -2459,23 +2459,17 @@ static void ObjHivePriestessSymbolThink(edict_t* self) //mxd. Named 'symbolthink
 	}
 }
 
-void hivepriestesssymbol_use (edict_t *self, edict_t *other, edict_t *activator)
+static void ObjHivePriestessSymbolUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'hivepriestesssymbol_use' in original logic.
 {
-	self->s.modelindex = gi.modelindex("models/items/puzzles/hiveidol/tris.fm");
+	self->s.modelindex = (byte)gi.modelindex("models/items/puzzles/hiveidol/tris.fm");
+	self->solid = SOLID_BBOX;
 
-	VectorSet(self->mins,   -4, -4, -13);
-	VectorSet(self->maxs,    4,  4,  13);
-
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-	ObjectInit(self,75,125,MAT_GREYSTONE,SOLID_BBOX);
-
-	self->velocity[2] = -1;
-
-	self->touch_debounce_time = level.time + 5;
+	// So it can lower alongside lowering platform in hivepriestess.bsp...
+	self->velocity[2] = -1.0f;
+	self->touch_debounce_time = level.time + 5.0f;
 
 	self->think = ObjHivePriestessSymbolThink;
 	self->nextthink = level.time + FRAMETIME;
-
 }
 
 /*QUAKED obj_hivepriestessssymbol (1 .5 0) ( -4 -4 -13) (4 4 13) INVULNERABLE ANIMATE EXPLODING NOPUSH
@@ -2495,7 +2489,7 @@ void SP_obj_hivepriestessssymbol (edict_t *self)
 
 	VectorSet(self->mins,   -4, -4, -13);
 	VectorSet(self->maxs,    4,  4,  13);
-	self->use = hivepriestesssymbol_use;
+	self->use = ObjHivePriestessSymbolUse;
 
 	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
 	ObjectInit(self,75,125,MAT_GREYSTONE,SOLID_NOT);
