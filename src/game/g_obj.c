@@ -2988,25 +2988,23 @@ void SP_obj_statue_sithraguard(edict_t* self) //TODO: rename to 'SP_obj_statue_s
 
 #pragma endregion
 
-void ironmaiden_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
+#pragma region ========================== obj_torture_ironmaiden ==========================
 
-void ironmaiden_open (edict_t *self)
+static void ObjTortureIronmaidenTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf); //TODO: move to header.
+
+static void ObjTortureIronmaidenOpen(edict_t* self) //mxd. Named 'ironmaiden_open' in original logic.
 {
-
 	if (self->s.frame == 9)
-		gi.sound (self, CHAN_BODY, gi.soundindex ("items/ironmaiden.wav"), 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_BODY, gi.soundindex("items/ironmaiden.wav"), 1.0f, ATTN_NORM, 0.0f);
 
-	if (self->s.frame > 0)
+	if (--self->s.frame >= 0)
 	{
-		--self->s.frame;
-		self->think = ironmaiden_open;
 		self->nextthink = level.time + FRAMETIME;
 	}
 	else
 	{
-		self->s.frame = 0;
 		self->think = NULL;
-		self->touch = ironmaiden_touch;
+		self->touch = ObjTortureIronmaidenTouch;
 	}
 }
 
@@ -3020,7 +3018,7 @@ void ironmaiden_close (edict_t *self)
 	}
 	else
 	{
-		self->think = ironmaiden_open;
+		self->think = ObjTortureIronmaidenOpen;
 		self->nextthink = level.time + FRAMETIME * 30;	// Open up in 30 seconds
 	}
 }
@@ -3039,7 +3037,7 @@ void ironmaiden_use (edict_t *self, edict_t *other, edict_t *activator)
 
 
 // Cactus will hurt player 
-void ironmaiden_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+void ObjTortureIronmaidenTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	vec3_t		source, vf;
 	trace_t			trace;
@@ -3084,12 +3082,13 @@ void SP_obj_torture_ironmaiden (edict_t *self)
 
 	self->s.frame = 0;
 	self->use = ironmaiden_use;
-	self->touch = ironmaiden_touch;
+	self->touch = ObjTortureIronmaidenTouch;
 
 	ObjectInit(self,250,200,MAT_METAL,SOLID_BBOX);
 
 }
 
+#pragma endregion
 
 /*QUAKED obj_torture_rack (1 .5 0) (-22 -46 -19) (22 46 19) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A rack 
