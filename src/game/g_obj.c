@@ -1979,14 +1979,13 @@ void SP_obj_cactus3(edict_t* self)
 	self->touch = ObjCactusTouch;
 }
 
-void cactus_close(edict_t *self)
+static void ObjCactus4CloseThink(edict_t* self) //mxd. Named 'cactus_close' in original logic.
 {
-	if (self->s.frame > 0)
-	{
-		self->s.frame--;
-		self->think=cactus_close;
-	}
-	self->nextthink=level.time + FRAMETIME;
+	//mxd. Rewritten logic to remove think callback on animation finish.
+	if (--self->s.frame >= 0)
+		self->nextthink = level.time + FRAMETIME;
+	else
+		self->think = NULL;
 }
 
 void cactus_open(edict_t *self)
@@ -2012,7 +2011,7 @@ void cactus4_use (edict_t *self, edict_t *other, edict_t *activator)
 	else if (self->s.frame == 16)
 	{
 		gi.sound (self, CHAN_BODY, gi.soundindex ("objects/lever1.wav"), 1, ATTN_NORM, 0);
-		self->think = cactus_close;
+		self->think = ObjCactus4CloseThink;
 	}
 	self->nextthink = level.time + FRAMETIME;
 }
