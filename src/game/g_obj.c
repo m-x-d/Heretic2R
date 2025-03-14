@@ -1110,16 +1110,15 @@ static void ObjSeasonglobeBottomUse(edict_t* self, edict_t* other, edict_t* acti
 	self->nextthink = level.time + FRAMETIME;
 }
 
-void globetop_use (edict_t *self, edict_t *other, edict_t *activator)
+static void ObjSeasonglobeTopUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'globetop_use' in original logic.
 {
-	if (self->monsterinfo.idle_time)
+	if (self->monsterinfo.idle_time == GLOBE_ENABLED)
 		return;
 
-	gi.sound (self, CHAN_BODY, gi.soundindex ("objects/globetop.wav"), 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_BODY, gi.soundindex("objects/globetop.wav"), 1.0f, ATTN_NORM, 0.0f);
 
-	self->monsterinfo.idle_time = 1;
-
-	self->ideal_yaw = 270;
+	self->monsterinfo.idle_time = GLOBE_ENABLED;
+	self->ideal_yaw = 270.0f;
 
 	self->think = ObjSeasonglobeTopThink;
 	self->nextthink = level.time + FRAMETIME;
@@ -1168,7 +1167,7 @@ void SP_obj_seasonglobe (edict_t *bottom)
 
 	bottom->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
 	top->targetname = "globetop";
-	top->use = globetop_use;
+	top->use = ObjSeasonglobeTopUse;
 	top->yaw_speed = 2.5;
 	top->target = bottom->target;
 	VectorSet(top->s.angles, 0, 120, 0);
