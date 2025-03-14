@@ -3138,156 +3138,112 @@ static void ObjBiotankTouch(edict_t* self, edict_t* other, cplane_t* plane, csur
 	self->target_ent->ideal_yaw = anglemod(other->s.angles[YAW] + 180.0f);
 }
 
-/*QUAKED obj_biotank (1 .5 0) (-20 -33 -52) (20 33 52) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A biotank
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
--------  KEYS  ------------------
-style - what's in the biotank
-0 - empty
-1 - ET's head
-2 - hairless Critter
-3 - three fish
-4 - wasp
-*/
-void SP_obj_biotank (edict_t *self) 
+static void ObjBiotankAddGlass(const edict_t* self, const float scale_forward, const float scale_right, const float yaw_offset) //mxd. Added to reduce code duplication.
 {
-	edict_t *fish,*glass;
-	vec3_t forward,right;
+	edict_t* glass = G_Spawn();
 
-	VectorSet(self->mins, -21, -34, -52);
-	VectorSet(self->maxs,  21, 34, 52);
+	glass->s.modelindex = (byte)gi.modelindex("models/objects/labs/bioglass2/tris.fm");
 
-	self->s.modelindex = gi.modelindex("models/objects/labs/biotank/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
+	VectorSet(glass->mins, -1.0f, -1.0f, -1.0f);
+	VectorSet(glass->maxs, 1.0f, 1.0f, 1.0f);
 
-	ObjectInit(self,250,200,MAT_GREYSTONE,SOLID_BBOX);
-				 
-	glass = G_Spawn();
-	VectorSet(glass->mins, -1, -1, -1);
-	VectorSet(glass->maxs,  1, 1, 1);
+	VectorCopy(self->s.origin, glass->s.origin);
 
-	VectorCopy(self->s.origin,glass->s.origin);
+	vec3_t forward;
+	vec3_t right;
 	AngleVectors(self->s.angles, forward, right, NULL);
-	VectorMA(glass->s.origin, (-8 * self->s.scale), right, glass->s.origin);
-	VectorCopy(self->s.angles,glass->s.angles);
+
+	if (scale_forward != 0.0f)
+		VectorMA(glass->s.origin, self->s.scale * scale_forward, forward, glass->s.origin);
+
+	if (scale_right != 0.0f)
+		VectorMA(glass->s.origin, self->s.scale * scale_right, right, glass->s.origin);
+
+	VectorCopy(self->s.angles, glass->s.angles);
 	glass->s.scale = self->s.scale;
-	glass->s.angles[1] += 90.0f;
+	glass->s.angles[YAW] += yaw_offset;
 	glass->s.renderfx |= RF_TRANSLUCENT;
-	glass->s.modelindex = gi.modelindex("models/objects/labs/bioglass2/tris.fm");
-	glass->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	glass->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
+	glass->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	ObjectInit(glass,250,200,MAT_GLASS,SOLID_NOT);
-	
+	ObjectInit(glass, 250, 200, MAT_GLASS, SOLID_NOT);
+}
 
-	glass = G_Spawn();
-	VectorSet(glass->mins, -1, -1, -1);
-	VectorSet(glass->maxs,  1, 1, 1);
+// QUAKED obj_biotank (1 .5 0) (-20 -33 -52) (20 33 52)
+// A biotank.
+// Variables:
+// style - What's in the biotank:
+//		0 - Empty.
+//		1 - ET's head.
+//		2 - Hairless Critter.
+//		3 - Three fishes.
+//		4 - Wasp.
+void SP_obj_biotank(edict_t* self)
+{
+	VectorSet(self->mins, -21.0f, -34.0f, -52.0f);
+	VectorSet(self->maxs, 21.0f, 34.0f, 52.0f);
 
-	VectorCopy(self->s.origin,glass->s.origin);
-	AngleVectors(self->s.angles, forward, right, NULL);
-	VectorMA(glass->s.origin, (26 * self->s.scale), right, glass->s.origin);
-	VectorCopy(self->s.angles,glass->s.angles);
-	glass->s.scale = self->s.scale;
-	glass->s.angles[1] += 270.0f;
-	glass->s.renderfx |= RF_TRANSLUCENT;
-	glass->s.modelindex = gi.modelindex("models/objects/labs/bioglass2/tris.fm");
-	glass->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	glass->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
+	self->s.modelindex = (byte)gi.modelindex("models/objects/labs/biotank/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	ObjectInit(glass,250,200,MAT_GLASS,SOLID_NOT);
+	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_BBOX);
 
-	glass = G_Spawn();
-	VectorSet(glass->mins, -1, -1, -1);
-	VectorSet(glass->maxs,  1, 1, 1);
+	// Spawn biotank glasses.
+	ObjBiotankAddGlass(self, 0.0f, -8.0f, 90.0f); //mxd
+	ObjBiotankAddGlass(self, 0.0f, 26.0f, 270.0f); //mxd
+	ObjBiotankAddGlass(self, -17.0f, 9.0f, 0.0f); //mxd
+	ObjBiotankAddGlass(self, 17.0f, 9.0f, 180.0f); //mxd
 
-	VectorCopy(self->s.origin,glass->s.origin);
-	AngleVectors(self->s.angles, forward, right, NULL);
-	VectorMA(glass->s.origin, (9 * self->s.scale), right, glass->s.origin);
-	VectorMA(glass->s.origin, (-17 * self->s.scale), forward, glass->s.origin);
-	VectorCopy(self->s.angles,glass->s.angles);
-	glass->s.scale = self->s.scale;
-	glass->s.renderfx |= RF_TRANSLUCENT;
-	glass->s.modelindex = gi.modelindex("models/objects/labs/bioglass2/tris.fm");
-	glass->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	glass->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	ObjectInit(glass,250,200,MAT_GLASS,SOLID_NOT);
-
-	glass = G_Spawn();
-	VectorSet(glass->mins, -1, -1, -1);
-	VectorSet(glass->maxs,  1, 1, 1);
-
-	VectorCopy(self->s.origin,glass->s.origin);
-	AngleVectors(self->s.angles, forward, right, NULL);
-	VectorMA(glass->s.origin, (9 * self->s.scale), right, glass->s.origin);
-	VectorMA(glass->s.origin, (17 * self->s.scale), forward, glass->s.origin);
-	glass->s.scale = self->s.scale;
-	VectorCopy(self->s.angles,glass->s.angles);
-	glass->s.angles[1] += 180.0f;
-	glass->s.renderfx |= RF_TRANSLUCENT;
-	glass->s.modelindex = gi.modelindex("models/objects/labs/bioglass2/tris.fm");
-	glass->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	glass->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-	
-	ObjectInit(glass,250,200,MAT_GLASS,SOLID_NOT);
-
-	if (!self->style)
+	// Spawn biotank contents.
+	if (self->style == 0)
 		return;
 
-	fish = G_Spawn();
+	edict_t* fish = G_Spawn();
 
-	VectorCopy(self->s.origin,fish->s.origin);
-	fish->s.origin[2] -= 8;
+	VectorCopy(self->s.origin, fish->s.origin);
+	fish->s.origin[2] -= 8.0f;
 	fish->movetype = PHYSICSTYPE_FLY;
 	fish->solid = SOLID_NOT;
-	fish->gravity = 0;
+	fish->gravity = 0.0f;
 
-	fish->yaw_speed = 4;
+	fish->yaw_speed = 4.0f;
 	fish->ideal_yaw = self->s.angles[YAW];
 
-	AngleVectors(self->s.angles, forward, right, NULL);
-	VectorMA(fish->s.origin, 9, right, fish->s.origin);
+	vec3_t right;
+	AngleVectors(self->s.angles, NULL, right, NULL);
+	VectorMA(fish->s.origin, 9.0f, right, fish->s.origin);
 
-	if (self->style==1)
+	if (self->style == 1)
 	{
-		fish->s.modelindex = gi.modelindex("models/objects/labs/labfish/tris.fm");
+		fish->s.modelindex = (byte)gi.modelindex("models/objects/labs/labfish/tris.fm");
 		fish->count = 30;
-		self->s.sound = gi.soundindex("objects/slowbubbles.wav");
-		self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_STATIC;
+		self->s.sound = (byte)gi.soundindex("objects/slowbubbles.wav");
 	}
-	else if (self->style==2)
+	else if (self->style == 2)
 	{
-		fish->s.modelindex = gi.modelindex("models/objects/labs/labfish2/tris.fm");
+		fish->s.modelindex = (byte)gi.modelindex("models/objects/labs/labfish2/tris.fm");
 		fish->count = 60;
-		self->s.sound = gi.soundindex("objects/slowbubbles.wav");
-		self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_STATIC;
+		self->s.sound = (byte)gi.soundindex("objects/slowbubbles.wav");
 	}
-	else if (self->style==3)
+	else if (self->style == 3)
 	{
-		fish->s.modelindex = gi.modelindex("models/objects/labs/labfish3/tris.fm");
+		fish->s.modelindex = (byte)gi.modelindex("models/objects/labs/labfish3/tris.fm");
 		fish->count = 100;
-		self->s.sound = gi.soundindex("objects/fastbubbles.wav");
-		self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_STATIC;
+		self->s.sound = (byte)gi.soundindex("objects/fastbubbles.wav");
 	}
-	else 
+	else
 	{
-		fish->s.modelindex = gi.modelindex("models/monsters/bee/tris.fm");
+		fish->s.modelindex = (byte)gi.modelindex("models/monsters/bee/tris.fm");
 		fish->count = 60;
-		fish->s.scale = 2;
-		self->s.sound = gi.soundindex("objects/fastbubbles.wav");
-		self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_STATIC;
+		fish->s.scale = 2.0f;
+		self->s.sound = (byte)gi.soundindex("objects/fastbubbles.wav");
 	}
+
+	self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_STATIC;
 
 	BboxYawAndScale(fish);
 	fish->s.angles[YAW] = self->s.angles[YAW];
 
-	gi.linkentity (fish);
+	gi.linkentity(fish);
 
 	fish->think = ObjBiotankContentsAnimThink;
 	fish->nextthink = level.time + FRAMETIME;
