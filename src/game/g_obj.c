@@ -1931,18 +1931,16 @@ void SP_obj_bush2(edict_t* self)
 
 #pragma endregion
 
-// Cactus will hurt player 
-void cactus_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+#pragma region ========================== obj_cactus, obj_cactus3, obj_cactus4 ==========================
+
+// Cactus will hurt player.
+static void ObjCactusTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'cactus_touch' in original logic.
 {
-	if (!other->client)
-		return;
-
-	if (self->touch_debounce_time > level.time)
-		return;
-
-	self->touch_debounce_time = level.time + 5;
-
-	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, 1, 0, DAMAGE_AVOID_ARMOR,MOD_DIED);
+	if (other->client != NULL && self->touch_debounce_time <= level.time)
+	{
+		self->touch_debounce_time = level.time + 5.0f;
+		T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, 1, 0, DAMAGE_AVOID_ARMOR, MOD_DIED);
+	}
 }
 
 /*QUAKED obj_cactus (1 .5 0) (-18 -18 -44) (18 18 44)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
@@ -1966,7 +1964,7 @@ void SP_obj_cactus (edict_t *self)
 	ObjectInit(self,50,125,MAT_NONE,SOLID_BBOX);
 
 	self->touch_debounce_time = level.time;
-	self->touch = cactus_touch;
+	self->touch = ObjCactusTouch;
 }
 
 /*QUAKED obj_cactus3 (1 .5 0) (-14 -14 -32) (14 14 32)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
@@ -1990,7 +1988,7 @@ void SP_obj_cactus3 (edict_t *self)
 	ObjectInit(self,50,125,MAT_NONE,SOLID_BBOX);
 
 	self->touch_debounce_time = level.time;
-	self->touch = cactus_touch;
+	self->touch = ObjCactusTouch;
 }
 
 void cactus_close(edict_t *self)
@@ -2053,8 +2051,10 @@ void SP_obj_cactus4 (edict_t *self)
 	self->use = cactus4_use;
 
 	self->touch_debounce_time = level.time;
-	self->touch = cactus_touch;
+	self->touch = ObjCactusTouch;
 }
+
+#pragma endregion
 
 /*QUAKED obj_basket (1 .5 0) (-13 -13 -21) (13 13 21)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
 A tall basket with a lid on it.
