@@ -1879,28 +1879,18 @@ static void ObjLever3Use(edict_t* self, edict_t* other, edict_t* activator) //mx
 	}
 }
 
-/*QUAKED obj_lever3 (1 .5 0) (-4 -6 -16) (4 6 16)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
-A lever for the wall...and it's triggerable.
--------  FIELDS  ------------------
-INVULNERABLE - always invulnerable
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (obj_lever3 can't be moved)
------------------------------------
-*/
-void SP_obj_lever3 (edict_t *self)
+// QUAKED obj_lever3 (1 .5 0) (-4 -6 -16) (4 6 16)
+// A lever for the wall... and it's triggerable.
+void SP_obj_lever3(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/levers/lever3/tris.fm");
+	VectorSet(self->mins, -6.0f, -4.0f, -16.0f);
+	VectorSet(self->maxs, 6.0f, 4.0f, 16.0f);
 
-	VectorSet(self->mins, -6, -4, -16);
-	VectorSet(self->maxs, 6, 4, 16);
-
-	self->spawnflags |= OBJ_INVULNERABLE;	// Always indestructible
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	ObjectInit(self,150,125,MAT_WOOD,SOLID_BBOX);
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/levers/lever3/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->use = ObjLever3Use;
+
+	ObjectInit(self, 150, 125, MAT_WOOD, SOLID_BBOX);
 }
 
 #pragma endregion
