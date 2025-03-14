@@ -3254,91 +3254,73 @@ void SP_obj_biotank(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_tapper (1 .5 0) (-2 -5 -2) (2 5 2) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A tapper for a keg 
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_tapper (edict_t *self) 
+#pragma region ========================== obj_tapper, obj_wallringplaque, obj_hangingdude ==========================
+
+// QUAKED obj_tapper (1 .5 0) (-2 -5 -2) (2 5 2) INVULNERABLE
+// A tapper for a keg.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_tapper(edict_t* self)
 {
-	VectorSet(self->mins, -2, -5, -2);
-	VectorSet(self->maxs,  2, 5, 2);
+	VectorSet(self->mins, -2.0f, -5.0f, -2.0f);
+	VectorSet(self->maxs, 2.0f, 5.0f, 2.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/tapper/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
+	self->s.modelindex = (byte)gi.modelindex("models/objects/tapper/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	ObjectInit(self,250,200,MAT_GREYSTONE,SOLID_NOT);
-
+	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_NOT);
 }
 
-
-/*QUAKED obj_wallringplaque (1 .5 0) (-3 -20 -55) (3 20 55) INVULNERABLE ANIMATE EXPLODING NOPUSH
-An iron plaque with rings hanging from it.  Great for hanging half corpses from 
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_wallringplaque (edict_t *self) 
+// QUAKED obj_wallringplaque (1 .5 0) (-3 -20 -55) (3 20 55)
+// An iron plaque with rings hanging from it. Great for hanging half corpses from.
+void SP_obj_wallringplaque(edict_t* self)
 {
-	VectorSet(self->mins, -3, -20, -55);
-	VectorSet(self->maxs,  3,  20,  55);
+	VectorSet(self->mins, -3.0f, -20.0f, -55.0f);
+	VectorSet(self->maxs, 3.0f, 20.0f, 55.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/torture/plaque/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
+	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/plaque/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	ObjectInit(self,250,200,MAT_GREYSTONE,SOLID_BBOX);
+	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-/*QUAKED obj_hangingdude (1 .5 0) (-3 -20 -55) (3 20 55) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A half a dude hanging from a wall ring plaque
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_hangingdude (edict_t *self) 
+// QUAKED obj_hangingdude (1 .5 0) (-3 -20 -55) (3 20 55) INVULNERABLE
+// Half a dude hanging from a wall ring plaque.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_hangingdude(edict_t* self)
 {
-	edict_t *ring;
+	VectorSet(self->mins, -3.0f, -20.0f, -55.0f);
+	VectorSet(self->maxs, 3.0f, 20.0f, 55.0f);
 
-
-	VectorSet(self->mins, -3, -20, -55);
-	VectorSet(self->maxs,  3,  20,  55);
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/guy1/tris.fm");
 	self->movetype = PHYSICSTYPE_NONE;
 	self->solid = SOLID_BBOX;
-	self->s.modelindex = gi.modelindex("models/objects/torture/guy1/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->s.frame = 0;
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->targetname = "guy1"; //TODO: why hardcoded targetname?
+
 	BboxYawAndScale(self);
-	self->targetname = "guy1";
-	gi.linkentity (self);
+	gi.linkentity(self);
 
+	// Spawn plaque.
+	edict_t* plaque = G_Spawn();
 
-	ring = G_Spawn();
-	VectorCopy(self->s.origin,ring->s.origin);
-	VectorCopy(self->s.angles,ring->s.angles);
-	ring->s.modelindex = gi.modelindex("models/objects/torture/plaque/tris.fm");
-	ring->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	ring->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-	ring->movetype = PHYSICSTYPE_NONE;
-	ring->solid = SOLID_BBOX;
-	VectorSet(ring->mins, -3, -20, -55);
-	VectorSet(ring->maxs,  3,  20,  55);
+	VectorSet(plaque->mins, -3.0f, -20.0f, -55.0f);
+	VectorSet(plaque->maxs, 3.0f, 20.0f, 55.0f);
 
-	BboxYawAndScale(ring);
-	gi.linkentity (ring);
+	VectorCopy(self->s.origin, plaque->s.origin);
+	VectorCopy(self->s.angles, plaque->s.angles);
 
+	plaque->s.modelindex = (byte)gi.modelindex("models/objects/torture/plaque/tris.fm");
+	plaque->movetype = PHYSICSTYPE_NONE;
+	plaque->solid = SOLID_BBOX;
+	plaque->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+
+	BboxYawAndScale(plaque);
+	gi.linkentity(plaque);
 }
+
+#pragma endregion
 
 /*QUAKED obj_frypan (1 .5 0) (-1 -3 -10) (1 3 10) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A pan which is hanging on a nail
