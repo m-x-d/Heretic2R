@@ -1757,17 +1757,14 @@ void SP_obj_flagonpole(edict_t* self)
 
 #pragma endregion
 
-void lever1downthink(edict_t *self)
+#pragma region ========================== obj_lever1 ==========================
+
+static void ObjLever1DownThink(edict_t* self) //mxd. Named 'lever1downthink' in original logic.
 {
-	if (self->s.frame < 5)
-	{
-		++self->s.frame;
+	if (++self->s.frame < 6)
 		self->nextthink = level.time + FRAMETIME;
-	}
 	else
-	{
 		self->think = NULL;
-	}
 }
 
 void lever1upthink(edict_t *self)
@@ -1788,7 +1785,7 @@ void lever1_use (edict_t *self, edict_t *other, edict_t *activator)
 	if (!self->s.frame)
 	{
 		gi.sound (self, CHAN_BODY, gi.soundindex ("objects/lever1.wav"), 1, ATTN_NORM, 0);
-		self->think = lever1downthink;
+		self->think = ObjLever1DownThink;
 		self->nextthink = level.time + FRAMETIME;
 	}
 	else if (self->s.frame == 5)
@@ -1825,7 +1822,7 @@ void SP_obj_lever1 (edict_t *self)
 	self->use = lever1_use;
 }
 
-
+#pragma endregion
 
 void lever2downthink(edict_t *self)
 {
