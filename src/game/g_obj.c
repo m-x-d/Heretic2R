@@ -246,92 +246,70 @@ void SP_obj_barrel(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_broom (1 .5 0) (-2 -2 -25) (2 2 25) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A broom.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_broom (edict_t *self)
+#pragma region ========================== obj_broom, obj_chair1, obj_chair2, obj_chair3 ==========================
+
+// QUAKED obj_broom (1 .5 0) (-2 -2 -25) (2 2 25) INVULNERABLE
+// A broom.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_broom(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/broom/tris.fm");
+	VectorSet(self->mins, -2.0f, -2.0f, -25.0f);
+	VectorSet(self->maxs, 2.0f, 2.0f, 25.0f);
 
-	VectorSet(self->mins, -2, -2, -25);
-	VectorSet(self->maxs, 2, 2, 25);
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/broom/tris.fm");
 	self->spawnflags |= OBJ_NOPUSH;
 
-	ObjectInit(self,10,40,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 10, 40, MAT_WOOD, SOLID_BBOX);
 }
 
-
-/*QUAKED obj_chair1 (1 .5 0) (-12 -8 -26) (12 8 26)  INVULNERABLE ANIMATE EXPLODING NOPUSH  
-A highback wooden chair with a triangle at the top.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_chair1 (edict_t *self)
+// QUAKED obj_chair1 (1 .5 0) (-12 -8 -26) (12 8 26)  INVULNERABLE x x NOPUSH
+// A highback wooden chair with a triangle at the top.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_chair1(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/chairs/chair1/tris.fm");
+	VectorSet(self->mins, -12.0f, -8.0f, -26.0f);
+	VectorSet(self->maxs, 12.0f, 8.0f, 26.0f);
 
-	VectorSet(self->mins, -12, -8, -26);
-	VectorSet(self->maxs, 12, 8, 26);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/chairs/chair1/tris.fm");
 
-	ObjectInit(self,20,50,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 20, 50, MAT_WOOD, SOLID_BBOX);
 }
 
-
-/*QUAKED obj_chair2 (1 .5 0) (-18 -29 -30) (18 29 30)  INVULNERABLE ANIMATE EXPLODING NOPUSH 
-A thick chair with slanted sides
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_chair2 (edict_t *self)
+// QUAKED obj_chair2 (1 .5 0) (-18 -29 -30) (18 29 30)  INVULNERABLE
+// A thick chair with slanted sides
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_chair2(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/chairs/chair2/tris.fm");
+	VectorSet(self->mins, -18.0f, -29.0f, -30.0f);
+	VectorSet(self->maxs, 18.0f, 29.0f, 30.0f);
 
-	VectorSet(self->mins, -18, -29, -30);
-	VectorSet(self->maxs, 18, 29, 30);
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/chairs/chair2/tris.fm");
 	self->spawnflags |= OBJ_NOPUSH;
 
-	ObjectInit(self,20,50,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 20, 50, MAT_WOOD, SOLID_BBOX);
 }
 
-
-/*QUAKED obj_chair3 (1 .5 0) (-14 -21 -28) (14 21 28)  INVULNERABLE ANIMATE EXPLODING NOPUSH
-A big stone throne.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_chair3 (edict_t *self)
+// QUAKED obj_chair3 (1 .5 0) (-14 -21 -28) (14 21 28)
+// A big stone throne.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_chair3(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/chairs/chair3/tris.fm");
+	VectorSet(self->mins, -14.0f, -21.0f, -28.0f);
+	VectorSet(self->maxs, 14.0f, 21.0f, 28.0f);
 
-	VectorSet(self->mins, -14, -21, -28);
-	VectorSet(self->maxs, 14, 21, 28);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/chairs/chair3/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	ObjectInit(self,20,50,MAT_GREYSTONE,SOLID_BBOX);
+	ObjectInit(self, 20, 50, MAT_GREYSTONE, SOLID_BBOX);
 }
 
+#pragma endregion
 
 void chest1_anim (edict_t *self)
 {
