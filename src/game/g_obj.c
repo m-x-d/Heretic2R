@@ -3640,23 +3640,22 @@ void SP_obj_larva(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_bloodsplat (1 .5 0) (-8 -8 -2) (8 8 2) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A red blood splat
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A 
-EXPLODING - N/A
-NOPUSH - can be pushed
------------------------------------
-*/
-void SP_obj_bloodsplat (edict_t *self)
+#pragma region ========================== obj_bloodsplat ==========================
+
+// QUAKED obj_bloodsplat (1 .5 0) (-8 -8 -2) (8 8 2) INVULNERABLE x x NOPUSH
+// A red blood splat.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_bloodsplat(edict_t* self)
 {
-	VectorSet(self->mins, -8, -8, -2);
-	VectorSet(self->maxs,  8,  8,  2);
+	VectorSet(self->mins, -8.0f, -8.0f, -2.0f);
+	VectorSet(self->maxs, 8.0f, 8.0f, 2.0f);
 
-	self->s.modelindex = gi.modelindex("sprites/fx/bsplat.sp2");
-	self->flags |= RF_FIXED | RF_ALPHA_TEXTURE;
+	self->s.modelindex = (byte)gi.modelindex("sprites/fx/bsplat.sp2");
+	self->flags |= (RF_FIXED | RF_ALPHA_TEXTURE);
 
-	ObjectInit(self,2,100,MAT_FLESH,SOLID_NOT);
-
+	ObjectInit(self, 2, 100, MAT_FLESH, SOLID_NOT);
 }
+
+#pragma endregion
