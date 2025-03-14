@@ -593,58 +593,58 @@ static void ObjDyingElfIdle(edict_t* self) //mxd. Named 'dying_elf_idle' in orig
 	self->nextthink = level.time + FRAMETIME;
 }
 
-void dying_elf_reach_anim(edict_t *self)
+static void ObjDyingElfReachAnim(edict_t* self) //mxd. Named 'dying_elf_reach_anim' in original logic.
 {
-	if (self->touch_debounce_time < level.time)	// First time through reach anim
+	if (self->touch_debounce_time < level.time) // First time through reach anim.
 	{
 		self->s.frame = FRAME_reach1;
-		self->touch_debounce_time = level.time + (FRAMETIME * 60);
+		self->touch_debounce_time = level.time + (FRAMETIME * 60.0f);
 	}
-	else if (!self->count)	// Reaching
+	else if (self->count == 0) // Reaching.
 	{
-		++self->s.frame;
-
+		self->s.frame++;
 		self->think = ObjDyingElfIdle;
-		self->nextthink = level.time + FRAMETIME;
 	}
 
-	if (self->s.frame > FRAME_reach38)	// All done, stay down for a bit
+	if (self->s.frame > FRAME_reach38) // All done, stay down for a bit.
 	{
 		self->s.frame = FRAME_fetal1;
 		self->think = ObjDyingElfIdle;
-	}
-	else
-	{
-		self->think = dying_elf_reach_anim;
 	}
 
 	self->nextthink = level.time + FRAMETIME;
 }
 
-void dying_elf_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void ObjDyingElfTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'dying_elf_touch' in original logic.
 {
-	if (self->touch_debounce_time < level.time)	// First time through reach anim
+	if (self->touch_debounce_time < level.time) // First time through reach anim.
 	{
-		if (irand(1,3) == 1 || self->touch_debounce_time == -1)
+		if (irand(1, 3) == 1 || self->touch_debounce_time == -1.0f)
 		{
 			self->enemy = other;
-			dying_elf_reach_anim(self);
-			if (self->enemy->client || self->enemy->svflags & SVF_MONSTER)
+			self->think = ObjDyingElfReachAnim;
+			self->nextthink = level.time + FRAMETIME;
+
+			if (self->enemy->client != NULL || (self->enemy->svflags & SVF_MONSTER))
 				dying_elf_sounds(self, DYING_ELF_TOUCH_VOICE);
 		}
 		else
-			self->touch_debounce_time = level.time + (FRAMETIME * 20);
+		{
+			self->touch_debounce_time = level.time + (FRAMETIME * 20.0f);
+		}
 	}
 }
 
-int dying_elf_pain (edict_t *self, edict_t *other, float kick, int damage)
+static int ObjDyingElfPain(edict_t* self, edict_t* other, float kick, int damage) //mxd. Named 'dying_elf_pain' in original logic.
 {
 	self->enemy = other;
-	dying_elf_reach_anim(self);
-	if (self->enemy->client || self->enemy->svflags & SVF_MONSTER)
+	self->think = ObjDyingElfReachAnim;
+	self->nextthink = level.time + FRAMETIME;
+
+	if (self->enemy->client != NULL || (self->enemy->svflags & SVF_MONSTER))
 		dying_elf_sounds(self, DYING_ELF_PAIN_VOICE);
 
-	return true;
+	return 1;
 }
 
 int dying_elf_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
@@ -697,8 +697,8 @@ void SP_obj_dying_elf(edict_t *self)
 	self->movetype = PHYSICSTYPE_STEP;
 
 	self->touch_debounce_time = -1;
-	self->touch = dying_elf_touch;
-	self->pain = dying_elf_pain;
+	self->touch = ObjDyingElfTouch;
+	self->pain = ObjDyingElfPain;
 	self->die = dying_elf_die;
 
 	ObjectInit(self, 40, 60, MAT_FLESH, SOLID_BBOX);
