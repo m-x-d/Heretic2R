@@ -2491,52 +2491,37 @@ void SP_obj_hivepriestessssymbol(edict_t* self) //TODO: rename to 'SP_obj_hivepr
 
 #pragma endregion
 
-/*QUAKED obj_queenthrone (1 .5 0) ( -40 -56 -49) (40 56 49) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A throne for the queen
-For the HIVE levels
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_queenthrone (edict_t *self)
+#pragma region ========================== obj_queenthrone, obj_queenchair ==========================
+
+// QUAKED obj_queenthrone (1 .5 0) ( -40 -56 -49) (40 56 49)
+// A throne for the queen. For the HIVE levels.
+void SP_obj_queenthrone(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/chairs/queen/tris.fm");
+	VectorSet(self->mins, -40.0f, -56.0f, -49.0f);
+	VectorSet(self->maxs, 40.0f, 56.0f, 49.0f);
 
-	VectorSet(self->mins,   -40, -56, -49);
-	VectorSet(self->maxs,    40,  56,  49);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/chairs/queen/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	ObjectInit(self,75,125,MAT_GREYSTONE,SOLID_BBOX);
-
+	ObjectInit(self, 75, 125, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-/*QUAKED obj_queenchair (1 .5 0) ( -30 -28 -31) (30 28 31) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A chair to go by the queen throne
-For the HIVE levels
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_queenchair (edict_t *self)
+// QUAKED obj_queenchair (1 .5 0) ( -30 -28 -31) (30 28 31) INVULNERABLE
+// A chair to go by the queen throne. For the HIVE levels.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_queenchair(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/chairs/smallchair/tris.fm");
+	VectorSet(self->mins, -30.0f, -28.0f, -31.0f);
+	VectorSet(self->maxs, 30.0f, 28.0f, 31.0f);
 
-	VectorSet(self->mins,   -30, -28, -31);
-	VectorSet(self->maxs,    30,  28,  31);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/chairs/smallchair/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	ObjectInit(self,75,125,MAT_GREYSTONE,SOLID_BBOX);
-
+	ObjectInit(self, 75, 125, MAT_GREYSTONE, SOLID_BBOX);
 }
+
+#pragma endregion
 
 /*QUAKED obj_shrine (1 .5 0) ( -26 -38 -38) (26 38 38) INVULNERABLE ANIMATE EXPLODING NOPUSH
 Its a shrine
