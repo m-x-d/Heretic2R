@@ -690,76 +690,51 @@ void SP_obj_dying_elf(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_sign1 (1 .5 0) (-29 -4 -16) (29 4 16)   INVULNERABLE ANIMATE EXPLODING NOPUSH
-A square sign coming out of a wall.
---------KEYS-------------------
-style -
-0 - sign with a dragon
-1 - sign with two steins
-2 - sign with a fish
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (sign1 can't be pushed)
------------------------------------
-*/
-void SP_obj_sign1 (edict_t *self)
+#pragma region ========================== obj_sign1, obj_sign4 ==========================
+
+// QUAKED obj_sign1 (1 .5 0) (-29 -4 -16) (29 4 16) INVULNERABLE
+// A square sign coming out of a wall.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// Variables:
+// style:
+//		0 - Sign with a dragon.
+//		1 - Sign with two steins.
+//		2 - Sign with a fish.
+void SP_obj_sign1(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/signs/sign1/tris.fm");
+	VectorSet(self->mins, -29.0f, -4.0f, -16.0f);
+	VectorSet(self->maxs, 29.0f, 4.0f, 16.0f);
 
-	VectorSet(self->mins, -29, -4,-16);
-	VectorSet(self->maxs, 29,  4, 16);
-
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	ObjectInit(self,40,150,MAT_WOOD,SOLID_BBOX);
-
-	if (self->style==0)
-		self->s.skinnum = 0;
-	else if (self->style==1)
-		self->s.skinnum = 1;
-	else if (self->style==2)
-		self->s.skinnum = 2;
-	else
-		self->s.skinnum = 0;
-	
+	self->s.modelindex = (byte)gi.modelindex("models/objects/signs/sign1/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->s.skinnum = ClampI(self->style, 0, 2); //mxd
 	self->s.frame = 3;
 
+	ObjectInit(self, 40, 150, MAT_WOOD, SOLID_BBOX);
 }
 
-
-/*QUAKED obj_sign4 (1 .5 0) (-8 -18 -29) (8 18 29)   INVULNERABLE ANIMATE EXPLODING NOPUSH
-A square sign that is on top of a post. It is leaning badly.
-For the MINE or DESERT areas.
-style - 
-0 for the Andorian skin
-1 for the Tchecktrik skin
-
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (sign4 can't be pushed)
------------------------------------
-*/
-void SP_obj_sign4 (edict_t *self)
+// QUAKED obj_sign4 (1 .5 0) (-8 -18 -29) (8 18 29) INVULNERABLE
+// A square sign that is on top of a post. It is leaning badly. For the MINE or DESERT areas.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// Variables:
+// style:
+//		0 - Andorian skin.
+//		1 - Tchecktrik skin.
+void SP_obj_sign4(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/signs/sign4/tris.fm");
+	VectorSet(self->mins, -8.0f, -18.0f, -29.0f);
+	VectorSet(self->maxs, 8.0f, 18.0f, 29.0f);
 
-	VectorSet(self->mins, -8, -18, -29);
-	VectorSet(self->maxs,  8,  18,  29);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/signs/sign4/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed
+	self->s.skinnum = ClampI(self->style, 0, 1); //mxd
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	if (self->style==0)
-		self->s.skinnum = 0;
-	else if (self->style==1)
-		self->s.skinnum = 1;
-
-
-	ObjectInit(self,40,150,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 40, 150, MAT_WOOD, SOLID_BBOX);
 }
+
+#pragma endregion
 
 /*QUAK-ED obj_stalagmite1 (1 .5 0) (-32 -32 -200) (32 32 0) INVULNERABLE ANIMATE EXPLODING DARKSKIN
 A big long thick stalagmite.These point up.
