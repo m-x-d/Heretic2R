@@ -3533,65 +3533,59 @@ void SP_obj_pushcart(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_bookopen (1 .5 0) (-8 -16 -2) (8 16 2) INVULNERABLE ANIMATE EXPLODING NOPUSH
-An open book
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A 
-EXPLODING - N/A
-NOPUSH - can be pushed
------------------------------------
-*/
-void SP_obj_bookopen (edict_t *self)
+#pragma region ========================== obj_bookopen, obj_bookclosed ==========================
+
+// QUAKED obj_bookopen (1 .5 0) (-8 -16 -2) (8 16 2) INVULNERABLE x x NOPUSH
+// An open book.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_bookopen(edict_t* self)
 {
-	VectorSet(self->mins, -8, -16, -2);
-	VectorSet(self->maxs,  8, 16, 2);
+	VectorSet(self->mins, -8.0f, -16.0f, -2.0f);
+	VectorSet(self->maxs, 8.0f, 16.0f, 2.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/books/bookopen/tris.fm");
+	self->s.modelindex = (byte)gi.modelindex("models/objects/books/bookopen/tris.fm");
 
-	ObjectInit(self,250,200,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 250, 200, MAT_WOOD, SOLID_BBOX);
 }
 
-
-/*QUAKED obj_bookclosed (1 .5 0) (-8 -8 -2) (8 8 2) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A closed book standing up
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A 
-EXPLODING - N/A
-NOPUSH - can be pushed
------------------------------------
-*/
-void SP_obj_bookclosed (edict_t *self)
+// QUAKED obj_bookclosed (1 .5 0) (-8 -8 -2) (8 8 2) INVULNERABLE x x NOPUSH
+// A closed book standing up.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_bookclosed(edict_t* self)
 {
-	VectorSet(self->mins, -8, -8, -2);
-	VectorSet(self->maxs,  8, 8, 2);
+	VectorSet(self->mins, -8.0f, -8.0f, -2.0f);
+	VectorSet(self->maxs, 8.0f, 8.0f, 2.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/books/bookclosed/tris.fm");
+	self->s.modelindex = (byte)gi.modelindex("models/objects/books/bookclosed/tris.fm");
 
-	ObjectInit(self,250,200,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 250, 200, MAT_WOOD, SOLID_BBOX);
 }
 
+#pragma endregion
 
-/*QUAKED obj_web (1 .5 0) (-2 -18 -20) (2 18 20) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A cobweb
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A 
-EXPLODING - N/A
-NOPUSH - can be pushed
------------------------------------
-*/
-void SP_obj_web (edict_t *self)
+#pragma region ========================== obj_web ==========================
+
+// QUAKED obj_web (1 .5 0) (-2 -18 -20) (2 18 20) INVULNERABLE x x NOPUSH
+// A cobweb.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_web(edict_t* self) //TODO: has 20 unused frames of idle animation.
 {
-	VectorSet(self->mins, -2, -18, -20);
-	VectorSet(self->maxs,  2,  18,  20);
+	VectorSet(self->mins, -2.0f, -18.0f, -20.0f);
+	VectorSet(self->maxs, 2.0f, 18.0f, 20.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/web/web/tris.fm");
+	self->s.modelindex = (byte)gi.modelindex("models/objects/web/web/tris.fm");
 	self->s.renderfx |= RF_TRANSLUCENT;
 
-	ObjectInit(self,250,200,MAT_WOOD,SOLID_NOT);
+	ObjectInit(self, 250, 200, MAT_WOOD, SOLID_NOT);
 }
+
+#pragma endregion
 
 #define FAST_TWITCH 16
 
