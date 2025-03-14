@@ -3133,9 +3133,9 @@ static void ObjBiotankContentsAnimThink(edict_t* self) //mxd. Named 'fish_anim' 
 	self->nextthink = level.time + FRAMETIME;
 }
 
-void biotank_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void ObjBiotankTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'biotank_touch' in original logic.
 {
-	self->target_ent->ideal_yaw = anglemod(other->s.angles[YAW] + 180);
+	self->target_ent->ideal_yaw = anglemod(other->s.angles[YAW] + 180.0f);
 }
 
 /*QUAKED obj_biotank (1 .5 0) (-20 -33 -52) (20 33 52) INVULNERABLE ANIMATE EXPLODING NOPUSH
@@ -3293,7 +3293,7 @@ void SP_obj_biotank (edict_t *self)
 	fish->nextthink = level.time + FRAMETIME;
 
 	self->target_ent = fish;
-	self->touch = biotank_touch;
+	self->touch = ObjBiotankTouch;
 }
 
 #pragma endregion
