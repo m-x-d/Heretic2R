@@ -2030,199 +2030,143 @@ void SP_obj_cactus4(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_basket (1 .5 0) (-13 -13 -21) (13 13 21)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
-A tall basket with a lid on it.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_basket (edict_t *self)
+#pragma region == obj_basket, obj_claybowl, obj_clayjar, obj_gorgonbones, obj_grass, obj_swampflat_top, obj_swampflat_bottom, obj_treestump, obj_jawbone ==
+
+// QUAKED obj_basket (1 .5 0) (-13 -13 -21) (13 13 21) INVULNERABLE x x NOPUSH
+// A tall basket with a lid on it.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_basket(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/pots/basket/tris.fm");
+	VectorSet(self->mins, -13.0f, -13.0f, -21.0f);
+	VectorSet(self->maxs, 13.0f, 13.0f, 21.0f);
 
-	VectorSet(self->mins, -13, -13, -21);
-	VectorSet(self->maxs, 13, 13, 21);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/basket/tris.fm");
 
-	ObjectInit(self,50,70,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 50, 70, MAT_WOOD, SOLID_BBOX);
 }
 
-/*QUAKED obj_claybowl (1 .5 0) (-6 -6 -2) (6 6 2)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
-A bowl made of clay
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_claybowl (edict_t *self)
+// QUAKED obj_claybowl (1 .5 0) (-6 -6 -2) (6 6 2) INVULNERABLE x x NOPUSH
+// A bowl made of clay.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_claybowl(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/pots/claybowl/tris.fm");
+	VectorSet(self->mins, -6.0f, -6.0f, -2.0f);
+	VectorSet(self->maxs, 6.0f, 6.0f, 2.0f);
 
-	VectorSet(self->mins, -6, -6, -2);
-	VectorSet(self->maxs, 6, 6, 2);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/claybowl/tris.fm");
 
-	ObjectInit(self,5,5,MAT_POTTERY,SOLID_BBOX);
+	ObjectInit(self, 5, 5, MAT_POTTERY, SOLID_BBOX);
 }
 
-/*QUAKED obj_clayjar (1 .5 0) (-15 -15 -24) (15 15 24)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
-A big honking urn made of clay
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_clayjar (edict_t *self)
+// QUAKED obj_clayjar (1 .5 0) (-15 -15 -24) (15 15 24) INVULNERABLE x x NOPUSH
+// A big honking urn made of clay.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_clayjar(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/pots/clayjar/tris.fm");
+	VectorSet(self->mins, -15.0f, -15.0f, -24.0f);
+	VectorSet(self->maxs, 15.0f, 15.0f, 24.0f);
 
-	VectorSet(self->mins, -15, -15, -24);
-	VectorSet(self->maxs, 15, 15, 24);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/clayjar/tris.fm");
 
-	ObjectInit(self,25,125,MAT_POTTERY,SOLID_BBOX);
+	ObjectInit(self, 25, 125, MAT_POTTERY, SOLID_BBOX);
 }
 
-/*QUAKED obj_gorgonbones (1 .5 0) (-18 -38 -9) (18 38 1)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
-The bones of a dead gorgon.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (obj_gorgonbones can't be moved)
------------------------------------
-*/
-void SP_obj_gorgonbones (edict_t *self)
+// QUAKED obj_gorgonbones (1 .5 0) (-18 -38 -9) (18 38 1) INVULNERABLE
+// The bones of a dead gorgon.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_gorgonbones(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/bones/gorgon/tris.fm");
+	VectorSet(self->mins, -18.0f, -38.0f, -9.0f);
+	VectorSet(self->maxs, 18.0f, 38.0f, 1.0f);
 
-	VectorSet(self->mins, -18, -38, -9);
-	VectorSet(self->maxs,  18,  38, 1);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/bones/gorgon/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	ObjectInit(self,50,125,MAT_NONE,SOLID_BBOX);
+	ObjectInit(self, 50, 125, MAT_NONE, SOLID_BBOX);
 }
 
-/*QUAKED obj_grass (1 .5 0) (-8 -8 -10) (8 8 10)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
-A clump of grass
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (obj_grass can't be moved)
------------------------------------
-*/
-void SP_obj_grass (edict_t *self)
+// QUAKED obj_grass (1 .5 0) (-8 -8 -10) (8 8 10) INVULNERABLE
+// A clump of grass.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_grass(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/plants/grass/tris.fm");
+	VectorSet(self->mins, -8.0f, -8.0f, -10.0f);
+	VectorSet(self->maxs, 8.0f, 8.0f, 10.0f);
 
-	VectorSet(self->mins,  -8, -8, -10);
-	VectorSet(self->maxs,  8,  8, 10);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/grass/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->s.effects |= EF_CAMERA_NO_CLIP;
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	ObjectInit(self,50,125,MAT_WOOD,SOLID_NOT);
-	
-	self->s.effects|=EF_CAMERA_NO_CLIP;
+	ObjectInit(self, 50, 125, MAT_WOOD, SOLID_NOT); //TODO: should use MAT_LEAF instead?
 }
 
-/*QUAKED obj_swampflat_top (1 .5 0) (0 -100 -48) (2 100 48)  INVULNERABLE  ANIMATE EXPLODING NOPUSH
-A flat poly to be used on the outer edge of swamp levels. Vegetation growing up.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_swampflat_top (edict_t *self)
+// QUAKED obj_swampflat_top (1 .5 0) (0 -100 -48) (2 100 48)
+// A flat poly to be used on the outer edge of swamp levels. Vegetation growing up.
+void SP_obj_swampflat_top(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/plants/swampflat/tris.fm");
+	VectorSet(self->mins, 0.0f, -100.0f, -48.0f);
+	VectorSet(self->maxs, 2.0f, 100.0f, 48.0f);
 
-	VectorSet(self->mins,  0, -100, -48);
-	VectorSet(self->maxs,   2, 100,  48);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/swampflat/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	ObjectInit(self,75,125,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX);
 }
 
-/*QUAKED obj_swampflat_bottom (1 .5 0) (0 -100 -48) (2 100 48)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
-A flat poly to be used on the outer edge of swamp levels. Vegetation hanging down.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_swampflat_bottom (edict_t *self)
+// QUAKED obj_swampflat_bottom (1 .5 0) (0 -100 -48) (2 100 48)
+// A flat poly to be used on the outer edge of swamp levels. Vegetation hanging down.
+void SP_obj_swampflat_bottom(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/plants/swampflat/tris.fm");
+	VectorSet(self->mins, 0.0f, -100.0f, -48.0f);
+	VectorSet(self->maxs, 2.0f, 100.0f, 48.0f);
 
-	VectorSet(self->mins,  0, -100, -48);
-	VectorSet(self->maxs,   2, 100,  48);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/swampflat/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->s.skinnum = 1; //TODO: ignored: model has only skin 0. Should set angles[ROLL] to 180 instead?
 
-	self->s.skinnum = 1;
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	ObjectInit(self,75,125,MAT_WOOD,SOLID_BBOX);
-
+	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX);
 }
 
-/*QUAKED obj_treestump (1 .5 0) (-18 -18 -16) (18 18 16)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
-A short tree stump  
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_treestump (edict_t *self)
+// QUAKED obj_treestump (1 .5 0) (-18 -18 -16) (18 18 16)
+// A short tree stump.
+void SP_obj_treestump(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/plants/treestump/tris.fm");
+	VectorSet(self->mins, -18.0f, -18.0f, -16.0f);
+	VectorSet(self->maxs, 18.0f, 18.0f, 16.0f);
 
-	VectorSet(self->mins,  -18, -18, -16);
-	VectorSet(self->maxs,   18,  18,  16);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/treestump/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->s.skinnum = 1; //TODO: ignored: model has only skin 0.
 
-	self->s.skinnum = 1;
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	ObjectInit(self,75,125,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX);
 }
 
-/*QUAKED obj_jawbone (1 .5 0) (-11 -11 -12) (11 11 12)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
-The jaws of a fish. 
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_jawbone (edict_t *self)
+// QUAKED obj_jawbone (1 .5 0) (-11 -11 -12) (11 11 12) INVULNERABLE x x NOPUSH
+// The jaws of a fish.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_jawbone(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/bones/jaws/tris.fm");
+	VectorSet(self->mins, -11.0f, -11.0f, -12.0f);
+	VectorSet(self->maxs, 11.0f, 11.0f, 12.0f);
 
-	VectorSet(self->mins,  -11, -11, -12);
-	VectorSet(self->maxs,   11,  11,  12);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/bones/jaws/tris.fm");
+	self->s.effects |= EF_CAMERA_NO_CLIP;
+	self->s.skinnum = 1; //TODO: ignored: model has only skin 0.
 
-	self->s.effects|=EF_CAMERA_NO_CLIP;
-
-	ObjectInit(self,25,125,MAT_NONE,SOLID_BBOX);
-	
-	self->s.skinnum = 1;
-
+	ObjectInit(self, 25, 125, MAT_NONE, SOLID_BBOX);
 }
+
+#pragma endregion
 
 /*QUAKED obj_barrel_metal (1 .5 0) (-11 -12 -18) (11 12 18)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
 A metal barrel. 
