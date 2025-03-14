@@ -388,7 +388,7 @@ edict_t* G_Spawn(void)
 		if (!ent->inuse && ent->freetime <= level.time)
 		{
 			G_InitEdict(ent);
-			++ent->s.usageCount;
+			ent->s.usageCount++;
 
 			return ent;
 		}
