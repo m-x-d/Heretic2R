@@ -2442,17 +2442,20 @@ void SP_obj_rocks2(edict_t* self)
 
 #pragma endregion
 
-void symbolthink(edict_t *self)
+#pragma region ========================== obj_hivepriestessssymbol ==========================
+
+static void ObjHivePriestessSymbolThink(edict_t* self) //mxd. Named 'symbolthink' in original logic.
 {
-	M_droptofloor(self);
+	M_droptofloor(self); // Clears self->think callback!
 
-	self->think = symbolthink;
-	self->nextthink = level.time + FRAMETIME;
-
-	if (self->touch_debounce_time < level.time)
+	if (self->touch_debounce_time >= level.time)
 	{
-		self->think = NULL;
-		self->nextthink = -1;		
+		self->think = ObjHivePriestessSymbolThink;
+		self->nextthink = level.time + FRAMETIME;
+	}
+	else
+	{
+		self->nextthink = -1.0f;
 	}
 }
 
@@ -2470,7 +2473,7 @@ void hivepriestesssymbol_use (edict_t *self, edict_t *other, edict_t *activator)
 
 	self->touch_debounce_time = level.time + 5;
 
-	self->think = symbolthink;
+	self->think = ObjHivePriestessSymbolThink;
 	self->nextthink = level.time + FRAMETIME;
 
 }
@@ -2498,6 +2501,8 @@ void SP_obj_hivepriestessssymbol (edict_t *self)
 	ObjectInit(self,75,125,MAT_GREYSTONE,SOLID_NOT);
 
 }
+
+#pragma endregion
 
 /*QUAKED obj_queenthrone (1 .5 0) ( -40 -56 -49) (40 56 49) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A throne for the queen
