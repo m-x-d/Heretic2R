@@ -2323,43 +2323,39 @@ void SP_obj_minecart3(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_andwallhanging (1 .5 0) ( 0 -19 -24) (4 19 24) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A circular Andorian wall hanging.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_andwallhanging (edict_t *self)
+#pragma region ========================== obj_andwallhanging, obj_pick ==========================
+
+// QUAKED obj_andwallhanging (1 .5 0) ( 0 -19 -24) (4 19 24) INVULNERABLE x x NOPUSH
+// A circular Andorian wall hanging.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_andwallhanging(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/andwallhang/tris.fm");
+	VectorSet(self->mins, 0.0f, -19.0f, -24.0f);
+	VectorSet(self->maxs, 4.0f, 19.0f, 24.0f);
 
-	VectorSet(self->mins,   0, -19, -24);
-	VectorSet(self->maxs,   4,  19,  24);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/andwallhang/tris.fm");
 
-	ObjectInit(self,75,100,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 75, 100, MAT_WOOD, SOLID_BBOX);
 }
 
-/*QUAKED obj_pick (1 .5 0) ( -12 -13 -2) (12 13 2) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A tool that is a pick.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_pick (edict_t *self)
+// QUAKED obj_pick (1 .5 0) ( -12 -13 -2) (12 13 2) INVULNERABLE x x NOPUSH
+// A tool that is a pick.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_pick(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/tools/pick/tris.fm");
+	VectorSet(self->mins, -12.0f, -13.0f, -2.0f);
+	VectorSet(self->maxs, 12.0f, 13.0f, 2.0f);
 
-	VectorSet(self->mins,   -12, -13, -2);
-	VectorSet(self->maxs,    12,  13,  2);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/tools/pick/tris.fm");
 
-	ObjectInit(self,75,125,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX);
 }
+
+#pragma endregion
 
 /*QUAKED obj_metalchunk1 (1 .5 0) ( -10 -26 -4) (10 26 4) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A chunk of twisted metal.
