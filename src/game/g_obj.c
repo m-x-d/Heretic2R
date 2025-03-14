@@ -655,39 +655,29 @@ static int ObjDyingElfDie(edict_t* self, edict_t* inflictor, edict_t* attacker, 
 	return 0;
 }
 
-/*QUAKED obj_dying_elf (1 .5 0) (-30 -12 0) (30 12 5) INVULNERABLE ANIMATE EXPLODING NOPUSH
-Plague elf lying on the ground shaking.
----------- KEYS -----------------  
-style - skin to use
-0 - 
-1 - 
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (corpse can't be pushed)
------------------------------------
-*/
-void SP_obj_dying_elf(edict_t *self)
+// QUAKED obj_dying_elf (1 .5 0) (-30 -12 0) (30 12 5) INVULNERABLE
+// Plague elf lying on the ground shaking.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// Variables:
+// style - Skin to use.
+void SP_obj_dying_elf(edict_t* self)
 {
+	VectorSet(self->mins, -32.0f, -32.0f, -2.0f);
+	VectorSet(self->maxs, 32.0f, 32.0f, 6.0f);
 
-	VectorSet(self->mins,-32,-32,-2);
-	VectorSet(self->maxs,32,32,6);
+	self->s.modelindex = (byte)gi.modelindex("models/monsters/plaguelf/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->movetype = PHYSICSTYPE_STEP; //TODO: ignored: ObjectInit() below will re-set this to PHYSICSTYPE_NONE.
 
-	self->s.modelindex = gi.modelindex("models/monsters/plaguelf/tris.fm");
-
-
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->movetype = PHYSICSTYPE_STEP;
-
-	self->touch_debounce_time = -1;
+	self->touch_debounce_time = -1.0f;
 	self->touch = ObjDyingElfTouch;
 	self->pain = ObjDyingElfPain;
 	self->die = ObjDyingElfDie;
 
 	ObjectInit(self, 40, 60, MAT_FLESH, SOLID_BBOX);
 
-	// No weapons
+	// No weapons.
 	self->s.fmnodeinfo[MESH__HOE].flags |= FMNI_NO_DRAW;
 	self->s.fmnodeinfo[MESH__GAFF].flags |= FMNI_NO_DRAW;
 	self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
