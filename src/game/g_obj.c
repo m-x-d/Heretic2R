@@ -525,11 +525,13 @@ void SP_obj_corpse2(edict_t* self)
 
 #pragma endregion
 
+#pragma region ========================== obj_dying_elf ==========================
+
 #define PELF_NUM_PAIN_VOICES	4
 #define PELF_NUM_IDLE_VOICES	4
 #define PELF_NUM_TOUCH_VOICES	7
 
-static const char *dying_pelf_touch_voices[PELF_NUM_TOUCH_VOICES] =
+static const char* dying_pelf_touch_voices[PELF_NUM_TOUCH_VOICES] =
 {
 	"voices/helpe.wav",
 	"voices/helpk.wav",
@@ -540,7 +542,7 @@ static const char *dying_pelf_touch_voices[PELF_NUM_TOUCH_VOICES] =
 	"voices/nomrj.wav",
 };
 
-static const char *dying_pelf_pain_voices[PELF_NUM_PAIN_VOICES] =
+static const char* dying_pelf_pain_voices[PELF_NUM_PAIN_VOICES] =
 {
 	"voices/getawayb.wav",
 	"voices/leavemeb.wav",
@@ -548,7 +550,7 @@ static const char *dying_pelf_pain_voices[PELF_NUM_PAIN_VOICES] =
 	"voices/nomrj.wav",
 };
 
-static const char *dying_pelf_idle_voices[PELF_NUM_IDLE_VOICES] =
+static const char* dying_pelf_idle_voices[PELF_NUM_IDLE_VOICES] =
 {
 	"pelfgasp.wav",
 	"pelfpant.wav",
@@ -556,26 +558,27 @@ static const char *dying_pelf_idle_voices[PELF_NUM_IDLE_VOICES] =
 	"pelfsigh.wav",
 };
 
-void dying_elf_sounds (edict_t *self, int type)
+void dying_elf_sounds(edict_t* self, const int type) //TODO: rename to PlagueElfDyingSound, move to m_plagueElf.c?
 {
-	char	sound_string[1024];
+	char sound_string[1024];
+	strcpy_s(sound_string, sizeof(sound_string), "monsters/plagueElf/"); //mxd. strcpy -> strcpy_s
 
-	strcpy(sound_string, "monsters/plagueElf/");
-
-	switch(type)
+	switch (type)
 	{
-	case DYING_ELF_PAIN_VOICE:
-		strcat(sound_string, dying_pelf_pain_voices[irand(0, PELF_NUM_PAIN_VOICES - 1)]);
-		gi.sound (self, CHAN_VOICE, gi.soundindex(sound_string), 1, ATTN_NORM, 0);
-		break;
-	case DYING_ELF_IDLE_VOICE:
-		strcat(sound_string, dying_pelf_idle_voices[irand(0, PELF_NUM_IDLE_VOICES - 1)]);
-		gi.sound (self, CHAN_VOICE, gi.soundindex(sound_string), 1, ATTN_IDLE, 0);
-		break;
-	case DYING_ELF_TOUCH_VOICE:
-		strcat(sound_string, dying_pelf_touch_voices[irand(0, PELF_NUM_TOUCH_VOICES - 1)]);
-		gi.sound (self, CHAN_VOICE, gi.soundindex(sound_string), 1, ATTN_NORM, 0);
-		break;
+		case DYING_ELF_PAIN_VOICE:
+			strcat_s(sound_string, sizeof(sound_string), dying_pelf_pain_voices[irand(0, PELF_NUM_PAIN_VOICES - 1)]); //mxd. strcat -> strcat_s
+			gi.sound(self, CHAN_VOICE, gi.soundindex(sound_string), 1.0f, ATTN_NORM, 0.0f);
+			break;
+
+		case DYING_ELF_IDLE_VOICE:
+			strcat_s(sound_string, sizeof(sound_string), dying_pelf_idle_voices[irand(0, PELF_NUM_IDLE_VOICES - 1)]); //mxd. strcat -> strcat_s
+			gi.sound(self, CHAN_VOICE, gi.soundindex(sound_string), 1.0f, ATTN_IDLE, 0.0f);
+			break;
+
+		case DYING_ELF_TOUCH_VOICE:
+			strcat_s(sound_string, sizeof(sound_string), dying_pelf_touch_voices[irand(0, PELF_NUM_TOUCH_VOICES - 1)]); //mxd. strcat -> strcat_s
+			gi.sound(self, CHAN_VOICE, gi.soundindex(sound_string), 1.0f, ATTN_NORM, 0.0f);
+			break;
 	}
 }
 
@@ -716,6 +719,7 @@ void SP_obj_dying_elf(edict_t *self)
 	self->nextthink = level.time + FRAMETIME;
 }
 
+#pragma endregion
 
 /*QUAKED obj_sign1 (1 .5 0) (-29 -4 -16) (29 4 16)   INVULNERABLE ANIMATE EXPLODING NOPUSH
 A square sign coming out of a wall.
