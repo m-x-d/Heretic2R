@@ -7,6 +7,7 @@
 #include "random.h"
 #include "vector.h"
 
+//TODO: remove. Already defined in g_local.h (to be moved to g_obj.h).
 #define OBJ_INVULNERABLE	1
 #define OBJ_ANIMATE			2
 #define OBJ_EXPLODING		4

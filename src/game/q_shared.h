@@ -543,7 +543,7 @@ typedef struct
 #define RF_FULLBRIGHT		0x00000008		// Always draw full intensity.
 #define RF_DEPTHHACK		0x00000010		// For view weapon Z crunching.
 #define RF_TRANSLUCENT		0x00000020
-#define RF_FRAMELERP		0x00000040
+#define RF_FRAMELERP		0x00000040 //TODO: set, but never used. Frame interpolation is always on.
 #define RF_CUSTOMSKIN		0x00000080		// Skin is an index in image_precache.
 #define RF_GLOW				0x00000100		// Pulse lighting for bonus items.
 #define RF_SCALE_XYZ		0x00000200

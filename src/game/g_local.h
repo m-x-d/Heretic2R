@@ -409,7 +409,7 @@ typedef struct
 #define C_ANIM_DONE				4
 #define C_ANIM_IDLE				8
 
-// Flags for object entities
+// Flags for object entities //TODO: move to g_obj.h
 #define OBJ_INVULNERABLE		1
 #define OBJ_ANIMATE				2
 #define OBJ_EXPLODING			4
@@ -688,7 +688,7 @@ extern void M_MoveAwayFromGoal(edict_t* ent, float dist);
 extern void G_RunEntity(edict_t* ent);
 
 // g_obj.c
-extern void ObjectInit(edict_t* self, int health, int mass, int materialtype, int solid);
+extern void ObjectInit(edict_t* self, int health, int mass, int materialtype, int solid); //TODO: move to g_obj.h
 
 // g_spawnf.c
 //sfs--this is used to get a classname for guys spawned while game is running
