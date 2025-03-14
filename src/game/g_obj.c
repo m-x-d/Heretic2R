@@ -2685,32 +2685,20 @@ static void ObjStatueTecheckrikTombUse(edict_t* self, edict_t* other, edict_t* a
 	self->s.frame = (short)(!self->s.frame); // Flip between 2 frames of animation. //TODO: would be nice to disable frame interpolation on this (would require implementing new FX_ flag)...
 }
 
-/*QUAKED obj_statue_techeckriktomb (1 .5 0) ( -41 -11 -14) (41 11 14) INVULNERABLE ANIMATE EXPLODING NOPUSH
-The statue of the techeckrik laying down.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_statue_techeckriktomb (edict_t *self)
+// QUAKED obj_statue_techeckriktomb (1 .5 0) ( -41 -11 -14) (41 11 14)
+// The statue of the techeckrik laying down.
+void SP_obj_statue_techeckriktomb(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/statue/tomb/tris.fm");
+	VectorSet(self->mins, -41.0f, -11.0f, -14.0f);
+	VectorSet(self->maxs, 41.0f, 11.0f, 14.0f);
 
-	VectorSet(self->mins,   -41, -11, -14);
-	VectorSet(self->maxs,    41,  11,  14);
-
-	self->spawnflags |= OBJ_INVULNERABLE;	// Always indestructible
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	ObjectInit(self,75,125,MAT_GREYSTONE,SOLID_BBOX);
-
-	self->s.frame = 1;
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/tomb/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->s.frame = 1; // Staff in hand.
 	self->use = ObjStatueTecheckrikTombUse;
-}
 
+	ObjectInit(self, 75, 125, MAT_GREYSTONE, SOLID_BBOX);
+}
 
 void tcheckrik_use (edict_t *self, edict_t *other, edict_t *activator)
 {
