@@ -67,7 +67,7 @@ void BboxYawAndScale(edict_t* self)
 
 	// Find min and max points.
 	vec3_t min_point = { FLT_MAX, FLT_MAX, 0.0f };
-	vec3_t max_point = { FLT_MIN, FLT_MIN, 0.0f };
+	vec3_t max_point = { -FLT_MAX, -FLT_MAX, 0.0f }; //mxd. Because FLT_MIN is min normalized POSITIVE value...
 	
 	for (int i = 0; i < 4; i++)
 	{
