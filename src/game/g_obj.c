@@ -426,107 +426,104 @@ void SP_obj_cog1(edict_t* self)
 
 #pragma endregion
 
-void SpawnCorpse(edict_t *self)
+#pragma region ========================== obj_corpse1, obj_corpse2 ==========================
+
+static void ObjCorpseInit(edict_t* self) //mxd. Named 'SpawnCorpse' in original logic.
 {
-	int chance;
+	self->s.modelindex = (byte)gi.modelindex("models/monsters/plaguelf/tris.fm");
+	self->style = ClampI(self->style, 0, 4); //mxd
 
-	self->s.modelindex = gi.modelindex("models/monsters/plaguelf/tris.fm");
-
-	if ((self->style > 4) || (self->style < 0))
-		self->style = 0;
-
-	if (self->style == 0)
-		self->s.frame = FRAME_death13end;
-	else if (self->style == 1)
-		self->s.frame = FRAME_deathb13end;
-	else if (self->style == 2)
-		self->s.frame = FRAME_deathc13end;
-	else if (self->style == 3)
-		self->s.frame = FRAME_deathd13end;
-	else if (self->style == 4)
+	switch (self->style)
 	{
-		self->s.frame = FRAME_skewered;
+		case 0:
+			self->s.frame = FRAME_death13end;
+			break;
+
+		case 1:
+			self->s.frame = FRAME_deathb13end;
+			break;
+
+		case 2:
+			self->s.frame = FRAME_deathc13end;
+			break;
+
+		case 3:
+			self->s.frame = FRAME_deathd13end;
+			break;
+
+		case 4:
+			self->s.frame = FRAME_skewered;
+			self->s.fmnodeinfo[MESH__HOE].flags |= FMNI_NO_DRAW;
+			self->s.fmnodeinfo[MESH__GAFF].flags |= FMNI_NO_DRAW;
+			self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
+			self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
+			break;
+	}
+
+	const int chance = irand(0, 3); //TODO: the gaff has 2x chance to show up (cause irand() max is inclusive). Also, not needed with style 4.
+
+	if (chance == 0)
+	{
+		// Show the hammer.
 		self->s.fmnodeinfo[MESH__HOE].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__GAFF].flags |= FMNI_NO_DRAW;
-		self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
-		self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
 	}
-
-	chance = irand(0, 3);
-	if(chance < 1)
+	else if (chance == 1)
 	{
-		//show the hammer
-		self->s.fmnodeinfo[MESH__HOE].flags |= FMNI_NO_DRAW;
-		self->s.fmnodeinfo[MESH__GAFF].flags |= FMNI_NO_DRAW;
-	}
-	else if(chance < 2)
-	{
-		//show the hoe
+		// Show the hoe.
 		self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__GAFF].flags |= FMNI_NO_DRAW;
 	}
-	else	
+	else
 	{
-		//show the gaff (that hook thingie)
+		// Show the gaff (that hook thingie).
 		self->s.fmnodeinfo[MESH__HAMMER].flags |= FMNI_NO_DRAW;
 		self->s.fmnodeinfo[MESH__HOE].flags |= FMNI_NO_DRAW;
 	}
 
-	VectorSet(self->mins,-30,-12,-2);
-	VectorSet(self->maxs,30,12,2);
+	VectorSet(self->mins, -30.0f, -12.0f, -2.0f);
+	VectorSet(self->maxs, 30.0f, 12.0f, 2.0f);
 
 	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->svflags |= SVF_DEADMONSTER;//doesn't block walking
+	self->svflags |= SVF_DEADMONSTER; // Doesn't block walking.
 
-	ObjectInit(self,40,60,MAT_FLESH,SOLID_BBOX);
+	ObjectInit(self, 40, 60, MAT_FLESH, SOLID_BBOX);
 }
 
-/*QUAKED obj_corpse1 (1 .5 0) (-30 -12 0) (30 12 5) INVULNERABLE ANIMATE EXPLODING NOPUSH
-Plague elf dead.
----------- KEYS -----------------  
-style - (default 0)
-   0 - both arms above head	
-   1 - on side	
-   2 - arm over face
-   3 - arms out to side
-   4 - skewered
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (corpse can't be pushed)
------------------------------------
-*/
-void SP_obj_corpse1(edict_t *self)
+// QUAKED obj_corpse1 (1 .5 0) (-30 -12 0) (30 12 5) INVULNERABLE
+// Dead plague elf.
+// Spawnflags:
+// INVULNERABLE - It can't be hurt.
+// Variables:
+// style - (default 0)
+//		0 - Both arms above head.
+//		1 - On side.
+//		2 - Arm over face.
+//		3 - Arms out to side.
+//		4 - Skewered.
+void SP_obj_corpse1(edict_t* self)
 {
-	SpawnCorpse(self);
-
-	self->s.skinnum = 0;
+	ObjCorpseInit(self);
 }
 
-
-/*QUAKED obj_corpse2 (1 .5 0) (-30 -12 0) (30 12 5)  INVULNERABLE ANIMATE EXPLODING NOPUSH
-Plague elf dead with a different skin
----------- KEYS -----------------  
-style - (default 0)
-   0 - both arms above head	
-   1 - on side	
-   2 - arm over face
-   3 - arms out to side
-   4 - skewered
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (corpse can't be pushed)
------------------------------------
-*/
-void SP_obj_corpse2(edict_t *self)
+// QUAKED obj_corpse2 (1 .5 0) (-30 -12 0) (30 12 5) INVULNERABLE
+// Dead plague elf with a different skin
+// Spawnflags:
+// INVULNERABLE - It can't be hurt.
+// Variables:
+// style - (default 0)
+//		0 - Both arms above head.
+//		1 - On side.
+//		2 - Arm over face.
+//		3 - Arms out to side.
+//		4 - Skewered.
+void SP_obj_corpse2(edict_t* self)
 {
-	SpawnCorpse(self);
-
+	ObjCorpseInit(self);
 	self->s.skinnum = 1;
 }
+
+#pragma endregion
 
 #define PELF_NUM_PAIN_VOICES	4
 #define PELF_NUM_IDLE_VOICES	4
