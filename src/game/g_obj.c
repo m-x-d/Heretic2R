@@ -3072,71 +3072,50 @@ void SP_obj_torture_ironmaiden(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_torture_rack (1 .5 0) (-22 -46 -19) (22 46 19) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A rack 
--------  FIELDS  ------------------
-INVULNERABLE - N/A (can't be hurt)
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_torture_rack (edict_t *self) 
+#pragma region ========================== obj_torture_rack, obj_torture_bed, obj_statue_saraphbust ==========================
+
+// QUAKED obj_torture_rack (1 .5 0) (-22 -46 -19) (22 46 19)
+// A torture rack.
+void SP_obj_torture_rack(edict_t* self)
 {
-	VectorSet(self->mins, -22, -46, -19);
-	VectorSet(self->maxs, 22, 46, 19);
+	VectorSet(self->mins, -22.0f, -46.0f, -19.0f);
+	VectorSet(self->maxs, 22.0f, 46.0f, 19.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/torture/rack/tris.fm");
-	self->spawnflags |= OBJ_INVULNERABLE; 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
+	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/rack/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	ObjectInit(self,250,200,MAT_WOOD,SOLID_BBOX);
-
+	ObjectInit(self, 250, 200, MAT_WOOD, SOLID_BBOX);
 }
 
-/*QUAKED obj_torture_bed (1 .5 0) (-21 -43 -94) (21 43 94) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A bed of spikes that falls from the ceiling.
--------  FIELDS  ------------------
-INVULNERABLE - N/A (can't be hurt)
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_torture_bed (edict_t *self) 
+// QUAKED obj_torture_bed (1 .5 0) (-21 -43 -94) (21 43 94)
+// A bed of spikes that falls from the ceiling.
+void SP_obj_torture_bed(edict_t* self)
 {
-	VectorSet(self->mins, -21, -43, -94);
-	VectorSet(self->maxs, 21, 43, 94);
+	VectorSet(self->mins, -21.0f, -43.0f, -94.0f);
+	VectorSet(self->maxs, 21.0f, 43.0f, 94.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/torture/bed/tris.fm");
-	self->spawnflags |= OBJ_INVULNERABLE; 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
+	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/bed/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	ObjectInit(self,250,200,MAT_WOOD,SOLID_BBOX);
-
+	ObjectInit(self, 250, 200, MAT_WOOD, SOLID_BBOX);
 }
 
-
-/*QUAKED obj_statue_saraphbust (1 .5 0) (-10 -20 -24) (10 20 24) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A bust of a saraph
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_statue_saraphbust (edict_t *self) 
+// QUAKED obj_statue_saraphbust (1 .5 0) (-10 -20 -24) (10 20 24) INVULNERABLE
+// A bust of a saraph.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_statue_saraphbust(edict_t* self)
 {
-	VectorSet(self->mins, -10, -20, -24);
-	VectorSet(self->maxs,  10, 20, 24);
+	VectorSet(self->mins, -10.0f, -20.0f, -24.0f);
+	VectorSet(self->maxs, 10.0f, 20.0f, 24.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/statue/saraphbust/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
+	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/saraphbust/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	ObjectInit(self,250,200,MAT_GREYSTONE,SOLID_BBOX);
-
+	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
+
+#pragma endregion
 
 #define FISHBOB_HEIGHT		.1
 #define FISHBOB_SPEED		ANGLE_10
