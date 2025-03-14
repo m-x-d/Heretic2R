@@ -3386,64 +3386,55 @@ void SP_obj_choppeddude(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_lab_parts_container (1 .5 0) (-8 -8 -11) (8 8 11) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A container of moving body parts
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A (thing always animates)
-EXPLODING - N/A
-NOPUSH - can't be pushed
------------------------------------
-*/
-void SP_obj_lab_parts_container (edict_t *self)
+#pragma region ========================== obj_lab_parts_container, obj_eyeball_jar, obj_lab_tray ==========================
+
+// QUAKED obj_lab_parts_container (1 .5 0) (-8 -8 -11) (8 8 11) INVULNERABLE x x NOPUSH
+// A container of moving body parts.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_lab_parts_container(edict_t* self)
 {
-	VectorSet(self->mins, -8, -8, -11);
-	VectorSet(self->maxs, 8, 8, 11);
+	VectorSet(self->mins, -8.0f, -8.0f, -11.0f);
+	VectorSet(self->maxs, 8.0f, 8.0f, 11.0f);
 
 	self->spawnflags |= OBJ_ANIMATE;
+
 	SpawnClientAnim(self, FX_ANIM_LABPARTSCONTAINER, NULL);
-	ObjectInit(self,40,200,MAT_GLASS,SOLID_BBOX);
+	ObjectInit(self, 40, 200, MAT_GLASS, SOLID_BBOX);
 }
 
-/*QUAKED obj_eyeball_jar (1 .5 0) (-13 -13 -18) (13 13 18) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A jar full of eyeballs
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A (thing always animates)
-EXPLODING - N/A
-NOPUSH - can't be moved
------------------------------------
-*/
-void SP_obj_eyeball_jar (edict_t *self) 
+// QUAKED obj_eyeball_jar (1 .5 0) (-13 -13 -18) (13 13 18) INVULNERABLE
+// A jar full of eyeballs.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_eyeball_jar(edict_t* self)
 {
-	VectorSet(self->mins, -13, -13, -18);
-	VectorSet(self->maxs,  13,  13, 18);
+	VectorSet(self->mins, -13.0f, -13.0f, -18.0f);
+	VectorSet(self->maxs, 13.0f, 13.0f, 18.0f);
 
-	self->spawnflags |= OBJ_NOPUSH | OBJ_ANIMATE;
+	self->spawnflags |= (OBJ_NOPUSH | OBJ_ANIMATE);
 
 	SpawnClientAnim(self, FX_ANIM_EYEBALLJAR, NULL);
-	ObjectInit(self,50,200,MAT_GLASS,SOLID_BBOX);
+	ObjectInit(self, 50, 200, MAT_GLASS, SOLID_BBOX);
 }
 
-/*QUAKED obj_lab_tray (1 .5 0) (-8 -8 -5) (8 8 5) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A tray with a beating heart and some tools on it.
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A (thing always animates)
-EXPLODING - N/A
-NOPUSH - N/A  (can't be pushed)
------------------------------------
-*/
-void SP_obj_lab_tray (edict_t *self)
+// QUAKED obj_lab_tray (1 .5 0) (-8 -8 -5) (8 8 5) INVULNERABLE
+// A tray with a beating heart and some tools on it.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_lab_tray(edict_t* self)
 {
-	VectorSet(self->mins, -8, -8, -5);
-	VectorSet(self->maxs, 8, 8, 5);
+	VectorSet(self->mins, -8.0f, -8.0f, -5.0f);
+	VectorSet(self->maxs, 8.0f, 8.0f, 5.0f);
 
-	self->spawnflags |= OBJ_NOPUSH | OBJ_ANIMATE;
+	self->spawnflags |= (OBJ_NOPUSH | OBJ_ANIMATE);
+
 	SpawnClientAnim(self, FX_ANIM_LABTRAY, NULL);
-	ObjectInit(self,40,200,MAT_FLESH,SOLID_BBOX);
+	ObjectInit(self, 40, 200, MAT_FLESH, SOLID_BBOX);
 }
 
+#pragma endregion
 
 void ogle_moan (edict_t *self)
 {
