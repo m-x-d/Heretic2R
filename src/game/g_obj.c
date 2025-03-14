@@ -18,6 +18,8 @@
 #include "Utilities.h" //mxd
 #include "Vector.h"
 
+#pragma region ========================== ObjectStaticsInit ==========================
+
 void DefaultObjectDieHandler(edict_t* self, G_Message_t* msg) //mxd. Originally defined in g_misc.c
 {
 	edict_t* inflictor;
@@ -31,29 +33,14 @@ void DefaultObjectDieHandler(edict_t* self, G_Message_t* msg) //mxd. Originally 
 	BecomeDebris(self);
 }
 
-void ObjectStaticsInit(void) 
+void ObjectStaticsInit(void)
 {
 	classStatics[CID_OBJECT].msgReceivers[MSG_DEATH] = DefaultObjectDieHandler;
 }
 
-void objpush_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
-{//FIXME: make player push?
-	float	ratio;
+#pragma endregion
 
-	if ((!other->groundentity) || (other->groundentity == self))
-		return;
-
-	ratio = (float)other->mass / (float)self->mass;
-	if (M_walkmove (self, other->s.angles[YAW], 20 * ratio * FRAMETIME))
-	{
-		if (self->pain_debounce_time < level.time)
-		{
-			// there are going to be more sounds to choose from, dependant on the mass of the object
-			gi.sound (self, CHAN_BODY, gi.soundindex("misc/barrelmove.wav"), 1, ATTN_STATIC, 0);
-			self->pain_debounce_time = level.time + 1.2;
-		}			
-	}
-}
+#pragma region ========================== Utility functions ==========================
 
 /*--------------------------------------
  It is assumed all bounding boxes for objects were initially implimented as if the objects 
@@ -189,6 +176,22 @@ void BboxYawAndScaleAndMoveUp(edict_t *self)
 
 }
 
+static void PushableObjectTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'objpush_touch' in original logic.
+{
+	// FIXME: make player push?
+	if (other->groundentity == NULL || other->groundentity == self)
+		return;
+
+	const float ratio = (float)other->mass / (float)self->mass;
+
+	if (M_walkmove(self, other->s.angles[YAW], 20.0f * ratio * FRAMETIME) && self->pain_debounce_time < level.time)
+	{
+		// There are going to be more sounds to choose from, dependent on the mass of the object.
+		gi.sound(self, CHAN_BODY, gi.soundindex("misc/barrelmove.wav"), 1.0f, ATTN_STATIC, 0.0f);
+		self->pain_debounce_time = level.time + 1.2f;
+	}
+}
+
 void ObjectInit(edict_t *self,int health,int mass, int materialtype,int solid)
 {
 	self->movetype = PHYSICSTYPE_NONE;
@@ -225,7 +228,7 @@ void ObjectInit(edict_t *self,int health,int mass, int materialtype,int solid)
 	{
 		self->movetype = PHYSICSTYPE_STOP;
 		self->monsterinfo.aiflags = AI_NOSTEP;
-		self->touch = objpush_touch;
+		self->touch = PushableObjectTouch;
 
 		self->think = M_droptofloor;
 		self->nextthink = level.time + (2 * FRAMETIME);
@@ -236,7 +239,7 @@ void ObjectInit(edict_t *self,int health,int mass, int materialtype,int solid)
 	}
 }
 
-
+#pragma endregion
 
 //============================================================================
 //
