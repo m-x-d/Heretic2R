@@ -410,30 +410,18 @@ static void ObjCog1Use(edict_t* self, edict_t* other, edict_t* activator) //mxd.
 	self->nextthink = level.time + FRAMETIME * 2.0f;
 }
 
-/*QUAKED obj_cog1 (1 .5 0) (-8 -4 0) (8 4 20) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A cog with spokes coming out the front of it.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (cog can't be pushed)
------------------------------------
-*/
-void SP_obj_cog1 (edict_t *self)
+// QUAKED obj_cog1 (1 .5 0) (-8 -4 0) (8 4 20)
+// A cog with spokes coming out the front of it.
+void SP_obj_cog1(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/cogs/cog1/tris.fm");
+	VectorSet(self->mins, -8.0f, -4.0f, 0.0f);
+	VectorSet(self->maxs, 8.0f, 4.0f, 20.0f);
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	VectorSet(self->mins, -8, -4, 0);
-	VectorSet(self->maxs, 8, 4, 20);
-
-	ObjectInit(self,40,20,MAT_WOOD,SOLID_BBOX);
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/cogs/cog1/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->use = ObjCog1Use;
 
-
+	ObjectInit(self, 40, 20, MAT_WOOD, SOLID_BBOX);
 }
 
 #pragma endregion
