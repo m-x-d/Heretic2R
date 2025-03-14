@@ -3486,68 +3486,52 @@ void SP_obj_hanging_ogle(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_ring_plaque2 (1 .5 0) (-2 -24 -20) (2 24 20) INVULNERABLE ANIMATE EXPLODING NOPUSH
-More rings mounted into a wall plate
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A 
-EXPLODING - N/A
-NOPUSH - N/A  (can't be pushed)
------------------------------------
-*/
-void SP_obj_ring_plaque2 (edict_t *self)
+#pragma region ========================== obj_ring_plaque2, obj_statue_sariph, obj_pushcart ==========================
+
+// QUAKED obj_ring_plaque2 (1 .5 0) (-2 -24 -20) (2 24 20)
+// More rings mounted into a wall plate.
+void SP_obj_ring_plaque2(edict_t* self)
 {
-	VectorSet(self->mins, -2, -24, -20);
-	VectorSet(self->maxs,  2, 24, 20);
+	VectorSet(self->mins, -2.0f, -24.0f, -20.0f);
+	VectorSet(self->maxs, 2.0f, 24.0f, 20.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/torture/plaque2/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
+	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/plaque2/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	ObjectInit(self,250,200,MAT_FLESH,SOLID_BBOX);
+	ObjectInit(self, 250, 200, MAT_FLESH, SOLID_BBOX);
 }
 
-
-/*QUAKED obj_statue_sariph (1 .5 0) (-13 -16 -41) (13 16 41) INVULNERABLE ANIMATE EXPLODING NOPUSH
-Big statue in armor carrying an axe
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A 
-EXPLODING - N/A
-NOPUSH - N/A  (can't be pushed)
------------------------------------
-*/
-void SP_obj_statue_sariph (edict_t *self)
+// QUAKED obj_statue_sariph (1 .5 0) (-13 -16 -41) (13 16 41) INVULNERABLE
+// Big statue in armor carrying an axe.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_statue_sariph(edict_t* self)
 {
-	VectorSet(self->mins, -13, -16, -41);
-	VectorSet(self->maxs,  13, 16, 41);
+	VectorSet(self->mins, -13.0f, -16.0f, -41.0f);
+	VectorSet(self->maxs, 13.0f, 16.0f, 41.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/statue/sariph/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
+	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/sariph/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	ObjectInit(self,250,200,MAT_STONE,SOLID_BBOX);
+	ObjectInit(self, 250, 200, MAT_STONE, SOLID_BBOX);
 }
 
-/*QUAKED obj_pushcart (1 .5 0) (-13 -16 -41) (13 16 41) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A push cart for the ogles to push around
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A 
-EXPLODING - N/A
-NOPUSH - can be pushed
------------------------------------
-*/
-void SP_obj_pushcart (edict_t *self)
+// QUAKED obj_pushcart (1 .5 0) (-13 -16 -41) (13 16 41) INVULNERABLE x x NOPUSH
+// A push cart for the ogles to push around.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_pushcart(edict_t* self)
 {
-	VectorSet(self->mins, -14, -30, -17);
-	VectorSet(self->maxs,  14, 30, 17);
+	VectorSet(self->mins, -14.0f, -30.0f, -17.0f);
+	VectorSet(self->maxs, 14.0f, 30.0f, 17.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/carts/pushcart/tris.fm");
+	self->s.modelindex = (byte)gi.modelindex("models/objects/carts/pushcart/tris.fm");
 
-	ObjectInit(self,250,200,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 250, 200, MAT_WOOD, SOLID_BBOX);
 }
 
-
+#pragma endregion
 
 /*QUAKED obj_bookopen (1 .5 0) (-8 -16 -2) (8 16 2) INVULNERABLE ANIMATE EXPLODING NOPUSH
 An open book
