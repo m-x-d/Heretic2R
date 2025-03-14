@@ -178,35 +178,30 @@ void SP_obj_banneronpole(edict_t* self)
 
 #pragma endregion
 
-/*-----------------------------------------------
-	exploding barrel
------------------------------------------------*/
-void barrel_explode_think(edict_t *self)
+#pragma region ========================== obj_barrel ==========================
+
+static void ObjBarrelExplodeThink(edict_t* self) //mxd. Named 'barrel_explode_think' in original logic.
 {
-	vec3_t loc;
+	vec3_t origin;
+	VectorCopy(self->s.origin, origin);
 
-	VectorCopy(self->s.origin, loc);
-	AlertMonsters (self, self->owner, 3, false);
+	AlertMonsters(self, self->owner, 3.0f, false);
 
-	self->fire_damage_time = level.time + 1.0;
+	self->fire_damage_time = level.time + 1.0f;
 	self->svflags |= SVF_ONFIRE;
 	BecomeDebris(self);
 
-	T_DamageRadiusFromLoc(loc, self->owner, self->owner, NULL, BARREL_EXPLODE_RADIUS, 
-					BARREL_EXPLODE_DMG_MAX, BARREL_EXPLODE_DMG_MIN, 
-					DAMAGE_NORMAL|DAMAGE_FIRE|DAMAGE_EXTRA_KNOCKBACK,MOD_BARREL);
-	
-	// Start the explosion
-	gi.CreateEffect(NULL, FX_BARREL_EXPLODE, CEF_BROADCAST, loc, "");
+	T_DamageRadiusFromLoc(origin, self->owner, self->owner, NULL, BARREL_EXPLODE_RADIUS, BARREL_EXPLODE_DMG_MAX, BARREL_EXPLODE_DMG_MIN, DAMAGE_NORMAL | DAMAGE_FIRE | DAMAGE_EXTRA_KNOCKBACK, MOD_BARREL);
+
+	// Start the explosion.
+	gi.CreateEffect(NULL, FX_BARREL_EXPLODE, CEF_BROADCAST, origin, "");
 
 	G_SetToFree(self);
 }
 
-
-
 int barrel_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
-	self->think = barrel_explode_think;
+	self->think = ObjBarrelExplodeThink;
 	self->nextthink = level.time + FRAMETIME;
 	self->owner = attacker;					// The one to get credit for this should be the one destroying the barrel.
 
@@ -255,6 +250,8 @@ void SP_obj_barrel (edict_t *self)
 		self->s.skinnum = 1;
 	}
 }
+
+#pragma endregion
 
 /*QUAKED obj_broom (1 .5 0) (-2 -2 -25) (2 2 25) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A broom.
