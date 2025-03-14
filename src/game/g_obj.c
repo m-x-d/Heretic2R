@@ -3322,86 +3322,69 @@ void SP_obj_hangingdude(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_frypan (1 .5 0) (-1 -3 -10) (1 3 10) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A pan which is hanging on a nail
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_frypan (edict_t *self) 
+#pragma region ========================== obj_frypan, obj_eggpan, obj_nest, obj_choppeddude ==========================
+
+// QUAKED obj_frypan (1 .5 0) (-1 -3 -10) (1 3 10) INVULNERABLE
+// A pan which is hanging on a nail.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_frypan(edict_t* self)
 {
-	VectorSet(self->mins, -1, -3, -10);
-	VectorSet(self->maxs,  1,  3, 10);
+	VectorSet(self->mins, -1.0f, -3.0f, -10.0f);
+	VectorSet(self->maxs, 1.0f, 3.0f, 10.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/pots/frypan/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
+	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/frypan/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	ObjectInit(self,250,200,MAT_GREYSTONE,SOLID_BBOX);
+	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-/*QUAKED obj_eggpan (1 .5 0) (-4 -10 -1) (4 10 1) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A pan which is laying flat like it was on a stove
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_eggpan (edict_t *self) 
+// QUAKED obj_eggpan (1 .5 0) (-4 -10 -1) (4 10 1) INVULNERABLE
+// A pan which is laying flat like it was on a stove.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_eggpan(edict_t* self)
 {
-	VectorSet(self->mins, -4, -10, -1);
-	VectorSet(self->maxs,  4,  10, 1);
+	VectorSet(self->mins, -4.0f, -10.0f, -1.0f);
+	VectorSet(self->maxs, 4.0f, 10.0f, 1.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/pots/eggpan/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
+	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/eggpan/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	ObjectInit(self,250,200,MAT_GREYSTONE,SOLID_BBOX);
+	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-/*QUAKED obj_nest (1 .5 0) (-25 -25 -4) (25 25 4) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A big bird nest
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_nest (edict_t *self) 
+// QUAKED obj_nest (1 .5 0) (-25 -25 -4) (25 25 4) INVULNERABLE
+// A big bird nest.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_nest(edict_t* self)
 {
-	VectorSet(self->mins, -25, -25, -4);
-	VectorSet(self->maxs,  25,  25, 4);
+	VectorSet(self->mins, -25.0f, -25.0f, -4.0f);
+	VectorSet(self->maxs, 25.0f, 25.0f, 4.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/nest/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
+	self->s.modelindex = (byte)gi.modelindex("models/objects/nest/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	ObjectInit(self,250,200,MAT_GREYSTONE,SOLID_BBOX);
+	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-
-/*QUAKED obj_choppeddude (1 .5 0) (-15 -40 -8) (15 40 8) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A guy who's all chopped up and laying on a table
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_choppeddude (edict_t *self) 
+// QUAKED obj_choppeddude (1 .5 0) (-15 -40 -8) (15 40 8) INVULNERABLE
+// A guy who's all chopped up and laying on a table.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_choppeddude(edict_t* self)
 {
-	VectorSet(self->mins, -15, -40, -8);
-	VectorSet(self->maxs,  15,  40, 8);
+	VectorSet(self->mins, -15.0f, -40.0f, -8.0f);
+	VectorSet(self->maxs, 15.0f, 40.0f, 8.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/torture/guy2/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
+	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/guy2/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	ObjectInit(self,250,200,MAT_FLESH,SOLID_BBOX);
+	ObjectInit(self, 250, 200, MAT_FLESH, SOLID_BBOX);
 }
+
+#pragma endregion
 
 /*QUAKED obj_lab_parts_container (1 .5 0) (-8 -8 -11) (8 8 11) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A container of moving body parts
