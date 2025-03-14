@@ -582,19 +582,14 @@ void dying_elf_sounds(edict_t* self, const int type) //TODO: rename to PlagueElf
 	}
 }
 
-void dying_elf_idle(edict_t *self)
+static void ObjDyingElfIdle(edict_t* self) //mxd. Named 'dying_elf_idle' in original logic.
 {
-	++self->s.frame;
-	if (self->s.frame > FRAME_fetal26)
-	{
-		self->s.frame=FRAME_fetal1;
-		self->nextthink = level.time + FRAMETIME;
-	}
+	if (++self->s.frame > FRAME_fetal26)
+		self->s.frame = FRAME_fetal1;
 
-	if(!irand(0, 50))
+	if (irand(0, 50) == 0)
 		dying_elf_sounds(self, DYING_ELF_IDLE_VOICE);
 
-	self->think = dying_elf_idle;
 	self->nextthink = level.time + FRAMETIME;
 }
 
@@ -609,14 +604,14 @@ void dying_elf_reach_anim(edict_t *self)
 	{
 		++self->s.frame;
 
-		self->think = dying_elf_idle;
+		self->think = ObjDyingElfIdle;
 		self->nextthink = level.time + FRAMETIME;
 	}
 
 	if (self->s.frame > FRAME_reach38)	// All done, stay down for a bit
 	{
 		self->s.frame = FRAME_fetal1;
-		self->think = dying_elf_idle;
+		self->think = ObjDyingElfIdle;
 	}
 	else
 	{
@@ -715,7 +710,7 @@ void SP_obj_dying_elf(edict_t *self)
 	self->s.fmnodeinfo[MESH__HANDLE].flags |= FMNI_NO_DRAW;
 
 	self->s.frame = FRAME_fetal1;
-	self->think = dying_elf_idle;
+	self->think = ObjDyingElfIdle;
 	self->nextthink = level.time + FRAMETIME;
 }
 
