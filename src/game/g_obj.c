@@ -1849,17 +1849,14 @@ void SP_obj_lever2(edict_t* self)
 
 #pragma endregion
 
-void lever3downthink(edict_t *self)
+#pragma region ========================== obj_lever3 ==========================
+
+static void ObjLever3DownThink(edict_t* self) //mxd. Named 'lever3downthink' in original logic.
 {
-	if (self->s.frame < 5)
-	{
-		++self->s.frame;
-	 	self->nextthink = level.time + FRAMETIME;
-	}
+	if (++self->s.frame <= 5)
+		self->nextthink = level.time + FRAMETIME;
 	else
-	{
 		self->think = NULL;
-	}
 }
 
 void lever3upthink(edict_t *self)
@@ -1880,7 +1877,7 @@ void lever3_use (edict_t *self, edict_t *other, edict_t *activator)
 	if (!self->s.frame)
 	{
 		gi.sound (self, CHAN_BODY, gi.soundindex ("objects/lever3.wav"), 1, ATTN_NORM, 0);
-		self->think = lever3downthink;
+		self->think = ObjLever3DownThink;
 	}
 	else if (self->s.frame == 5)
 	{
@@ -1915,7 +1912,7 @@ void SP_obj_lever3 (edict_t *self)
 	self->use = lever3_use;
 }
 
-
+#pragma endregion
 
 void bush_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
