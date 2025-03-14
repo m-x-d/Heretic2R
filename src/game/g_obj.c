@@ -3601,12 +3601,10 @@ static void ObjLarvaAnimThink(edict_t* self) //mxd. Named 'larva_anim' in origin
 	self->nextthink = level.time + FRAMETIME;
 }
 
-void larva_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void ObjLarvaTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'larva_touch' in original logic.
 {
-	if (!other->client)
-		return;
-
-	T_Damage (self, other, other, vec3_origin, self->s.origin, vec3_origin, 10, 0, DAMAGE_AVOID_ARMOR,MOD_DIED);
+	if (other->client != NULL)
+		T_Damage(self, other, other, vec3_origin, self->s.origin, vec3_origin, 10, 0, DAMAGE_AVOID_ARMOR, MOD_DIED);
 }
 
 /*QUAKED obj_larva (1 .5 0) (-8 -8 -2) (8 8 2) INVULNERABLE ANIMATE EXPLODING NOPUSH
@@ -3642,7 +3640,7 @@ void SP_obj_larva (edict_t *self)
 	if (irand(0, 1))
 		self->spawnflags |= LARVA_FAST_TWITCH;
 
-	self->touch = larva_touch;
+	self->touch = ObjLarvaTouch;
 
 
 }
