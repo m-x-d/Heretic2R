@@ -736,67 +736,65 @@ void SP_obj_sign4(edict_t* self)
 
 #pragma endregion
 
-/*QUAK-ED obj_stalagmite1 (1 .5 0) (-32 -32 -200) (32 32 0) INVULNERABLE ANIMATE EXPLODING DARKSKIN
-A big long thick stalagmite.These point up.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-DARKSKIN - if checked it uses the dark skin
------------------------------------
-*/
-void SP_obj_stalagmite1(edict_t *self) 
+#pragma region ========================== obj_stalagmite1, obj_stalagmite2, obj_stalagmite3 ==========================
+
+#define SF_DARKSKIN	8 //mxd
+
+// QUAKED obj_stalagmite1 (1 .5 0) (-32 -32 -200) (32 32 0) INVULNERABLE x x DARKSKIN
+// A big long thick stalagmite. These point up.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// DARKSKIN		- If checked, it uses the dark skin.
+void SP_obj_stalagmite1(edict_t* self)
 {
-	self->s.modelindex=gi.modelindex("models/objects/stalagmite/smite1/tris.fm");
-	
-	VectorSet(self->mins,-32,-32,-200);
-	VectorSet(self->maxs,32,32,0);
-	
-	if (self->spawnflags & 8)
-		self->s.skinnum = 1;
+	VectorSet(self->mins, -32.0f, -32.0f, -200.0f);
+	VectorSet(self->maxs, 32.0f, 32.0f, 0.0f);
 
-	ObjectInit(self,200,300,MAT_BROWNSTONE,SOLID_BBOX);
-	
+	self->s.modelindex = (byte)gi.modelindex("models/objects/stalagmite/smite1/tris.fm"); //TODO: model doesn't exist.
+	self->s.skinnum = ((self->spawnflags & SF_DARKSKIN) ? 1 : 0); //mxd
+
+	//TODO: SF_DARKSKIN will be interpreted by ObjectInit() as OBJ_NOPUSH.
+	ObjectInit(self, 200, 300, MAT_BROWNSTONE, SOLID_BBOX);
 }
 
+#undef SF_DARKSKIN //mxd (UGH!)
+#define SF_DARKSKIN	1 //mxd
 
-/*QUAK-ED obj_stalagmite2 (1 .5 0) (-32 -32 -128) (32 32 0) DARKSKIN
-A big squat stalagmite.These point up.	
--------  FIELDS  ------------------
-DARKSKIN - if checked it uses the dark skin
------------------------------------
-*/
-void SP_obj_stalagmite2(edict_t *self)
+// QUAKED obj_stalagmite2 (1 .5 0) (-32 -32 -128) (32 32 0) DARKSKIN x x NOPUSH
+// A big squat stalagmite. These point up.
+// Spawnflags:
+// DARKSKIN - If checked, it uses the dark skin.
+// NOPUSH	- Can't be moved by player.
+void SP_obj_stalagmite2(edict_t* self)
 {
-	self->s.modelindex=gi.modelindex("models/objects/stalagmite/smite2/tris.fm");
-	
-	VectorSet(self->mins,-32,-32,-128);
-	VectorSet(self->maxs,32,32,0);
-		
-	if (self->spawnflags & 1)
-		self->s.skinnum = 1;
+	VectorSet(self->mins, -32.0f, -32.0f, -128.0f);
+	VectorSet(self->maxs, 32.0f, 32.0f, 0.0f);
 
-	ObjectInit(self,200,300,MAT_BROWNSTONE,SOLID_BBOX);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/stalagmite/smite2/tris.fm"); //TODO: model doesn't exist.
+	self->s.skinnum = ((self->spawnflags & SF_DARKSKIN) ? 1 : 0); //mxd
+
+	//TODO: SF_DARKSKIN will be interpreted by ObjectInit() as OBJ_INVULNERABLE.
+	ObjectInit(self, 200, 300, MAT_BROWNSTONE, SOLID_BBOX);
 }
 
-/*QUAK-ED obj_stalagmite3 (1 .5 0) (-32 -32 -200) (32 32 0)  DARKSKIN
-A long pointy stalagmite. These point up
--------  FIELDS  ------------------
-DARKSKIN - if checked it uses the dark skin
------------------------------------
--*/
-void SP_obj_stalagmite3(edict_t *self)
-{	
-	self->s.modelindex=gi.modelindex("models/objects/stalagmite/smite3/tris.fm");
+// QUAKED obj_stalagmite3 (1 .5 0) (-32 -32 -200) (32 32 0) DARKSKIN x x NOPUSH
+// A long pointy stalagmite. These point up.
+// Spawnflags:
+// DARKSKIN - If checked, it uses the dark skin.
+// NOPUSH	- Can't be moved by player.
+void SP_obj_stalagmite3(edict_t* self)
+{
+	VectorSet(self->mins, -16.0f, -16.0f, -200.0f);
+	VectorSet(self->maxs, 16.0f, 16.0f, 0.0f);
 
-	VectorSet(self->mins,-16,-16,-200);
-	VectorSet(self->maxs,16,16,0);
-		
-	if (self->spawnflags & 1)
-		self->s.skinnum = 1;
+	self->s.modelindex = (byte)gi.modelindex("models/objects/stalagmite/smite3/tris.fm"); //TODO: model doesn't exist.
+	self->s.skinnum = ((self->spawnflags & SF_DARKSKIN) ? 1 : 0); //mxd
 
-	ObjectInit(self,200,200,MAT_BROWNSTONE,SOLID_BBOX);
+	//TODO: SF_DARKSKIN will be interpreted by ObjectInit() as OBJ_INVULNERABLE.
+	ObjectInit(self, 200, 200, MAT_BROWNSTONE, SOLID_BBOX);
 }
+
+#pragma endregion
 
 /*QUAKED obj_statue_corvus (1 .5 0) (-16 -16 0) (16 16 32) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A statue of Corvus.
