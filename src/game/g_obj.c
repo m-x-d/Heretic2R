@@ -2581,137 +2581,100 @@ void SP_obj_shrine(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_larvaegg (1 .5 0) ( -6 -14 -6) (6 14 6) INVULNERABLE ANIMATE EXPLODING NOPUSH
-An egg for the larva
-For the HIVE levels
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_larvaegg (edict_t *self)
+#pragma region ====================== obj_larvaegg, obj_larvabrokenegg, obj_cocoon, obj_cocoonopen, obj_venusflytrap ======================
+
+// QUAKED obj_larvaegg (1 .5 0) ( -6 -14 -6) (6 14 6) INVULNERABLE
+// An egg for the larva. For the HIVE levels.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_larvaegg(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/eggs/eggs/tris.fm");
+	VectorSet(self->mins, -6.0f, -14.0f, -6.0f);
+	VectorSet(self->maxs, 6.0f, 14.0f, 6.0f);
 
-	VectorSet(self->mins,   -6, -14, -6);
-	VectorSet(self->maxs,    6,  14,  6);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/eggs/eggs/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	ObjectInit(self,75,125,MAT_GLASS,SOLID_BBOX);
-
+	ObjectInit(self, 75, 125, MAT_GLASS, SOLID_BBOX); //TODO: should use MAT_INSECT instead?
 }
 
-/*QUAKED obj_larvabrokenegg (1 .5 0) ( -6 -7 -5) (6 7 5) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A broken egg for the larva
-For the HIVE levels
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_larvabrokenegg (edict_t *self)
+// QUAKED obj_larvabrokenegg (1 .5 0) ( -6 -7 -5) (6 7 5) INVULNERABLE
+// A broken egg for the larva. For the HIVE levels
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_larvabrokenegg(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/eggs/brokenegg/tris.fm");
+	VectorSet(self->mins, -6.0f, -7.0f, -5.0f);
+	VectorSet(self->maxs, 6.0f, 7.0f, 5.0f);
 
-	VectorSet(self->mins,   -6, -7, -5);
-	VectorSet(self->maxs,    6,  7,  5);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/eggs/brokenegg/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	ObjectInit(self,75,125,MAT_GLASS,SOLID_BBOX);
-
+	ObjectInit(self, 75, 125, MAT_GLASS, SOLID_BBOX); //TODO: should use MAT_INSECT instead?
 }
 
-/*QUAKED obj_cocoon (1 .5 0) ( -20 -20 -36) (20 20 36) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A cocoon which hangs from the ceiling
-For the HIVE levels
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A (always animates)
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_cocoon (edict_t *self)
+// QUAKED obj_cocoon (1 .5 0) ( -20 -20 -36) (20 20 36) INVULNERABLE
+// A cocoon which hangs from the ceiling. For the HIVE levels.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_cocoon(edict_t* self)
 {
+	VectorSet(self->mins, -20.0f, -20.0f, -36.0f);
+	VectorSet(self->maxs, 20.0f, 20.0f, 36.0f);
 
-	VectorSet(self->mins,   -20, -20, -36);
-	VectorSet(self->maxs,    20,  20,  36);
-
-	// Always animate and can't be pushed
-	self->spawnflags |= OBJ_NOPUSH | OBJ_ANIMATE;
+	// Always animate and can't be pushed.
+	self->spawnflags |= (OBJ_NOPUSH | OBJ_ANIMATE);
 	SpawnClientAnim(self, FX_ANIM_COCOON, NULL);
 
-	ObjectInit(self,75,125,MAT_INSECT,SOLID_BBOX);
+	ObjectInit(self, 75, 125, MAT_INSECT, SOLID_BBOX);
 }
 
-/*QUAKED obj_cocoonopen (1 .5 0) ( -20 -20 -34) (20 20 34) INVULNERABLE ANIMATE EXPLODING NOPUSH
-An open cocoon which hangs from the ceiling
-For the HIVE levels
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_cocoonopen (edict_t *self)
+// QUAKED obj_cocoonopen (1 .5 0) ( -20 -20 -34) (20 20 34) INVULNERABLE
+// An open cocoon which hangs from the ceiling. For the HIVE levels.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_cocoonopen(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/eggs/cocoon/tris.fm");
+	VectorSet(self->mins, -20.0f, -20.0f, -34.0f);
+	VectorSet(self->maxs, 20.0f, 20.0f, 34.0f);
 
-	VectorSet(self->mins,   -20, -20, -34);
-	VectorSet(self->maxs,    20,  20,  34);
-
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/eggs/cocoon/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 	self->s.frame = 20;
 
-	ObjectInit(self,75,125,MAT_INSECT,SOLID_BBOX);
-
+	ObjectInit(self, 75, 125, MAT_INSECT, SOLID_BBOX);
 }
 
-/*QUAKED obj_venusflytrap (1 .5 0) ( -20 -20 -24) (20 20 24) INVULNERABLE ANIMATE EXPLODING NOPUSH
-The venus flytrap - a viscous beast of a plant
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_venusflytrap (edict_t *self)
+// QUAKED obj_venusflytrap (1 .5 0) ( -20 -20 -24) (20 20 24) INVULNERABLE
+// The venus flytrap - a viscous beast of a plant. //TODO: model has 20 unused frames of animation. Could be repurposed as idle animation.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_venusflytrap(edict_t* self)
 {
-	edict_t *leaves;
+	VectorSet(self->mins, -20.0f, -20.0f, -24.0f);
+	VectorSet(self->maxs, 20.0f, 20.0f, 24.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/plants/venus/tris.fm");
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/venus/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	VectorSet(self->mins,   -20, -20, -24);
-	VectorSet(self->maxs,    20,  20,  24);
+	ObjectInit(self, 75, 125, MAT_LEAF, SOLID_BBOX);
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
+	// Spawn leaves.
+	edict_t* leaves = G_Spawn();
 
-	ObjectInit(self,75,125,MAT_LEAF,SOLID_BBOX);
-
-	leaves = G_Spawn();
-
-	VectorCopy(self->s.origin,leaves->s.origin);
-	leaves->s.origin[2] -= 16;
+	leaves->s.modelindex = (byte)gi.modelindex("models/objects/plants/v-plant/tris.fm");
+	VectorCopy(self->s.origin, leaves->s.origin);
+	leaves->s.origin[2] -= 16.0f;
+	leaves->s.angles[YAW] = self->s.angles[YAW]; //BUGFIX: mxd. Was set after calling BboxYawAndScale() in original logic.
 	leaves->movetype = PHYSICSTYPE_NONE;
 	leaves->solid = SOLID_NOT;
-	leaves->s.modelindex = gi.modelindex("models/objects/plants/v-plant/tris.fm");
 	BboxYawAndScale(leaves);
-	leaves->s.angles[YAW] = self->s.angles[YAW];
-	gi.linkentity (leaves);
+	gi.linkentity(leaves);
 
 	self->target_ent = leaves;
-
-
 }
+
+#pragma endregion
 
 void tomb_use (edict_t *self, edict_t *other, edict_t *activator)
 {
