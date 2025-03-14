@@ -2798,111 +2798,82 @@ void SP_obj_spellbook(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_skullpole (1 .5 0) ( -10 -10 -47) (10 10 47) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A pole with skulls on it
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_skullpole (edict_t *self)
+#pragma region ========================== obj_skullpole, obj_pot1, obj_pot2, obj_bottle1, obj_jug1 ==========================
+
+// QUAKED obj_skullpole (1 .5 0) ( -10 -10 -47) (10 10 47)
+// A pole with skulls on it.
+void SP_obj_skullpole(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/flags/totempole/tris.fm");
+	VectorSet(self->mins, -10.0f, -10.0f, -47.0f);
+	VectorSet(self->maxs, 10.0f, 10.0f, 47.0f);
 
-	VectorSet(self->mins,   -10, -10, -47);
-	VectorSet(self->maxs,    10,  10,  47);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/flags/totempole/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	ObjectInit(self,75,125,MAT_POTTERY,SOLID_BBOX);
-
+	ObjectInit(self, 75, 125, MAT_POTTERY, SOLID_BBOX);
 }
 
-/*QUAKED obj_pot1 (1 .5 0) ( -3 -8 -8) (3 8 8) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A cooking pot which hangs from a wall
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_pot1 (edict_t *self)
+// QUAKED obj_pot1 (1 .5 0) ( -3 -8 -8) (3 8 8) INVULNERABLE
+// A cooking pot which hangs from a wall.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_pot1(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/pots/pot/tris.fm");
+	VectorSet(self->mins, -3.0f, -8.0f, -8.0f);
+	VectorSet(self->maxs, 3.0f, 8.0f, 8.0f);
 
-	VectorSet(self->mins,   -3, -8, -8);
-	VectorSet(self->maxs,    3,  8,  8);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/pot/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	ObjectInit(self,75,125,MAT_POTTERY,SOLID_BBOX);
-
+	ObjectInit(self, 75, 125, MAT_POTTERY, SOLID_BBOX);
 }
 
-/*QUAKED obj_pot2 (1 .5 0) ( -7 -7 -3) (7 7 3) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A cooking pot which lays flat on a table
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_pot2 (edict_t *self)
+// QUAKED obj_pot2 (1 .5 0) ( -7 -7 -3) (7 7 3) INVULNERABLE x x NOPUSH
+// A cooking pot which lays flat on a table.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_pot2(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/pots/pot2/tris.fm");
+	VectorSet(self->mins, -7.0f, -7.0f, -3.0f);
+	VectorSet(self->maxs, 7.0f, 7.0f, 3.0f);
 
-	VectorSet(self->mins,   -7, -7, -3);
-	VectorSet(self->maxs,    7,  7,  3);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/pot2/tris.fm");
 
-	ObjectInit(self,75,125,MAT_POTTERY,SOLID_BBOX);
-
+	ObjectInit(self, 75, 125, MAT_POTTERY, SOLID_BBOX);
 }
 
-/*QUAKED obj_bottle1 (1 .5 0) ( -3 -3 -7) (3 3 7) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A bottle that looks like the one Jennie came out of in I Dream of Jennie
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_bottle1 (edict_t *self)
+// QUAKED obj_bottle1 (1 .5 0) ( -3 -3 -7) (3 3 7) INVULNERABLE x x NOPUSH
+// A bottle that looks like the one Jeannie came out of in "I Dream of Jeannie".
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_bottle1(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/jars/bottle/tris.fm");
+	VectorSet(self->mins, -3.0f, -3.0f, -7.0f);
+	VectorSet(self->maxs, 3.0f, 3.0f, 7.0f);
 
-	VectorSet(self->mins,   -3, -3, -7);
-	VectorSet(self->maxs,    3,  3,  7);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/jars/bottle/tris.fm");
 
-	ObjectInit(self,75,125,MAT_POTTERY,SOLID_BBOX);
-
+	ObjectInit(self, 75, 125, MAT_POTTERY, SOLID_BBOX);
 }
 
-/*QUAKED obj_jug1 (1 .5 0) ( -6 -6 -6) (6 6 6) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A wine jug
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_jug1 (edict_t *self)
+// QUAKED obj_jug1 (1 .5 0) ( -6 -6 -6) (6 6 6) INVULNERABLE x x NOPUSH
+// A wine jug.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_jug1(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/jars/jug/tris.fm");
+	VectorSet(self->mins, -6.0f, -6.0f, -6.0f);
+	VectorSet(self->maxs, 6.0f, 6.0f, 6.0f);
 
-	VectorSet(self->mins,   -6, -6, -6);
-	VectorSet(self->maxs,    6,  6,  6);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/jars/jug/tris.fm");
 
-	ObjectInit(self,75,125,MAT_POTTERY,SOLID_BBOX);
-
+	ObjectInit(self, 75, 125, MAT_POTTERY, SOLID_BBOX);
 }
 
+#pragma endregion
 
 /*QUAKED obj_torture_table (1 .5 0) ( -46 -14 -14) (46 14 14) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A table useful for wringing confessions from your broken and pitiful enemies.
