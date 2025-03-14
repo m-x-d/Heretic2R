@@ -2472,28 +2472,21 @@ static void ObjHivePriestessSymbolUse(edict_t* self, edict_t* other, edict_t* ac
 	self->nextthink = level.time + FRAMETIME;
 }
 
-/*QUAKED obj_hivepriestessssymbol (1 .5 0) ( -4 -4 -13) (4 4 13) INVULNERABLE ANIMATE EXPLODING NOPUSH
-The Hive Priestess Symbol was created originally by T'jektaluck back in 14567 AH (After Hive).  It was stolen by Matt Pinkston in 20054.  He was promptly captured and fed Zots until he died from sugar overload.
-It starts off invisible.  When used it appears.
-For the HIVE level
--------  FIELDS  ------------------
-INVULNERABLE - N/A it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_hivepriestessssymbol (edict_t *self)
+// QUAKED obj_hivepriestessssymbol (1 .5 0) ( -4 -4 -13) (4 4 13) x x x NOPUSH
+// The Hive Priestess Symbol was created originally by T'jektaluck back in 14567 AH (After Hive).
+// It was stolen by Matt Pinkston in 20054. He was promptly captured and fed Zots until he died from sugar overload.
+// Starts off invisible, appears when used. For the HIVE level.
+// Spawnflags:
+// NOPUSH - Can't be moved by player.
+void SP_obj_hivepriestessssymbol(edict_t* self) //TODO: rename to 'SP_obj_hivepriestesssymbol'?..
 {
-	self->s.modelindex = 0;
+	VectorSet(self->mins, -4.0f, -4.0f, -13.0f);
+	VectorSet(self->maxs, 4.0f, 4.0f, 13.0f);
 
-	VectorSet(self->mins,   -4, -4, -13);
-	VectorSet(self->maxs,    4,  4,  13);
+	self->spawnflags |= OBJ_INVULNERABLE; // Can't be destroyed.
 	self->use = ObjHivePriestessSymbolUse;
 
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-	ObjectInit(self,75,125,MAT_GREYSTONE,SOLID_NOT);
-
+	ObjectInit(self, 75, 125, MAT_GREYSTONE, SOLID_NOT);
 }
 
 #pragma endregion
