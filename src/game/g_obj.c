@@ -1679,102 +1679,69 @@ void SP_obj_moss5(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_floor_candelabrum (1 .5 0) (-8 -8 -35) (8 8 35) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A floor candelabrum.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be destroyed
-ANIMATE - makes flickering flames appear
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_floor_candelabrum (edict_t *self)
-{
-	VectorSet(self->mins, -8, -8, -35);
-	VectorSet(self->maxs, 8, 8, 35);
+#pragma region ==================== obj_floor_candelabrum, obj_statue_dragonhead, obj_statue_dragon, obj_flagonpole ====================
 
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
+// QUAKED obj_floor_candelabrum (1 .5 0) (-8 -8 -35) (8 8 35) x ANIMATE x NOPUSH
+// A floor candelabrum.
+// Spawnflags:
+// ANIMATE	- Play flame animation. //mxd. Otherwise, the flames are still there, but not animated...
+// NOPUSH	- Can't be moved by player.
+void SP_obj_floor_candelabrum(edict_t* self)
+{
+	VectorSet(self->mins, -8.0f, -8.0f, -35.0f);
+	VectorSet(self->maxs, 8.0f, 8.0f, 35.0f);
+
+	self->spawnflags |= OBJ_INVULNERABLE; // Can't be destroyed.
 
 	SpawnClientAnim(self, FX_ANIM_CANDELABRUM, NULL);
-	ObjectInit(self,40,60,MAT_METAL,SOLID_BBOX);
+	ObjectInit(self, 40, 60, MAT_METAL, SOLID_BBOX);
 }
 
-/*QUAKED obj_statue_dragonhead (1 .5 0) (-76 -28 -46) (76 28 46) INVULNERABLE ANIMATE EXPLODING NOPUSH 
-A statue of a dragon head
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_statue_dragonhead (edict_t *self)
+// QUAKED obj_statue_dragonhead (1 .5 0) (-76 -28 -46) (76 28 46)
+// A statue of a dragon head (very scary!).
+void SP_obj_statue_dragonhead(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/statue/dragonhead/tris.fm");
+	VectorSet(self->mins, -76.0f, -28.0f, -46.0f);
+	VectorSet(self->maxs, 76.0f, 28.0f, 46.0f);
 
-	VectorSet(self->mins, -76, -28, -46);
-	VectorSet(self->maxs, 76, 28, 46);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/dragonhead/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	ObjectInit(self,200,200,MAT_GREYSTONE,SOLID_BBOX);
+	ObjectInit(self, 200, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-/*QUAKED obj_statue_dragon (1 .5 0) (-53 -33 -72) (53 33 72)  INVULNERABLE  ANIMATE  EXPLODING  NOPUSH
-A statue of a dragon
----------- KEYS -----------------  
-style - (default 0)
-   0 - dragon looking left	
-   1 - dragon looking right
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_statue_dragon (edict_t *self)
+// QUAKED obj_statue_dragon (1 .5 0) (-53 -33 -72) (53 33 72)
+// A statue of a dragon.
+// Variables:
+// style - 0: dragon looking left (default); 1: dragon looking right.
+void SP_obj_statue_dragon(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/statue/dragon/tris.fm");
+	VectorSet(self->mins, -53.0f, -33.0f, -72.0f);
+	VectorSet(self->maxs, 53.0f, 33.0f, 72.0f);
 
-	VectorSet(self->mins, -53, -33, -72);
-	VectorSet(self->maxs, 53, 33, 72);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/dragon/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->s.frame = (short)ClampI(self->style, 0, 1); //mxd
 
-	self->spawnflags |= OBJ_NOPUSH;
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	ObjectInit(self,200,400,MAT_GREYSTONE,SOLID_BBOX);
-
-	if (self->style == 0)
-		self->s.frame = 0;
-	else if (self->style == 1)
-		self->s.frame = 1;
-	else 
-		self->s.frame = 0;
-
+	ObjectInit(self, 200, 400, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-/*QUAKED obj_flagonpole (1 .5 0) (-8 -8 0) (8 8 60)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH 
-A flag on a pole
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (flagonpole can't be moved)
------------------------------------
-*/
-void SP_obj_flagonpole (edict_t *self)
+// QUAKED obj_flagonpole (1 .5 0) (-8 -8 0) (8 8 60) x ANIMATE
+// A flag on a pole.
+// Spawnflags:
+// ANIMATE	- Play animation.
+void SP_obj_flagonpole(edict_t* self)
 {
-	VectorSet(self->mins, -8, -28, -30);
-	VectorSet(self->maxs, 8, 28, 30);
+	VectorSet(self->mins, -8.0f, -28.0f, -30.0f);
+	VectorSet(self->maxs, 8.0f, 28.0f, 30.0f);
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	SpawnClientAnim(self, FX_ANIM_FLAGONPOLE, "ambient/bannerflap.wav");
-	ObjectInit(self,40,200,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 40, 200, MAT_WOOD, SOLID_BBOX);
 }
+
+#pragma endregion
 
 void lever1downthink(edict_t *self)
 {
