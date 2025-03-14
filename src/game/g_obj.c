@@ -1602,111 +1602,82 @@ void SP_obj_bigcrystal(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_moss1 (1 .5 0) (-4 -10 -40) (4 10 40) INVULNERABLE ANIMATE EXPLODING NOPUSH
+#pragma region ========================== obj_moss1, obj_moss2, obj_moss3, obj_moss4, obj_moss5 ==========================
 
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (moss1 can't be moved)
------------------------------------
-*/
-void SP_obj_moss1(edict_t *self)
+// QUAKED obj_moss1 (1 .5 0) (-4 -10 -40) (4 10 40)
+void SP_obj_moss1(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/moss/tris.fm");
+	VectorSet(self->mins, -1.0f, -10.0f, -40.0f);
+	VectorSet(self->maxs, 1.0f, 10.0f, 40.0f);
 
-	VectorSet(self->mins, -1, -10, -40);
-	VectorSet(self->maxs, 1, 10, 40);
-	self->s.skinnum = 0;
+	self->s.modelindex = (byte)gi.modelindex("models/objects/moss/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->s.renderfx |= RF_TRANSLUCENT;
-	ObjectInit(self,10,10,MAT_LEAF,SOLID_NOT);
+	ObjectInit(self, 10, 10, MAT_LEAF, SOLID_NOT);
 }
 
-/*QUAKED obj_moss2 (1 .5 0) (-4 -9 -40) (4 9 40)  INVULNERABLE ANIMATE EXPLODING NOPUSH
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (moss2 can't be moved)
------------------------------------
-*/
-void SP_obj_moss2(edict_t *self)
+// QUAKED obj_moss2 (1 .5 0) (-4 -9 -40) (4 9 40)
+void SP_obj_moss2(edict_t* self)
 {
-	self->s.modelindex=gi.modelindex("models/objects/moss/tris.fm");
+	VectorSet(self->mins, -1.0f, -9.0f, -40.0f);
+	VectorSet(self->maxs, 1.0f, 9.0f, 40.0f);
 
-	VectorSet(self->mins,-1,-9,-40);
-	VectorSet(self->maxs,1,9,40);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/moss/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.skinnum = 1;
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->s.renderfx |= RF_TRANSLUCENT;
-	ObjectInit(self,10,10,MAT_LEAF,SOLID_NOT);
+	ObjectInit(self, 10, 10, MAT_LEAF, SOLID_NOT);
 }
 
-/*QUAKED obj_moss3 (1 .5 0) (-4 -15 -40) (4 15 40) INVULNERABLE ANIMATE EXPLODING NOPUSH
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (moss3 can't be moved)
------------------------------------
-*/
-void SP_obj_moss3(edict_t *self)
+// QUAKED obj_moss3 (1 .5 0) (-4 -15 -40) (4 15 40) INVULNERABLE
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_moss3(edict_t* self)
 {
-	self->s.modelindex=gi.modelindex("models/objects/moss/tris.fm");
+	VectorSet(self->mins, -1.0f, -15.0f, -40.0f);
+	VectorSet(self->maxs, 1.0f, 15.0f, 40.0f);
 
-	VectorSet(self->mins,-1,-15,-40);
-	VectorSet(self->maxs,1,15,40);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/moss/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 	self->s.skinnum = 2;
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->s.renderfx |= RF_TRANSLUCENT;
+	self->s.renderfx |= RF_TRANSLUCENT; //TODO: not needed? Makes fx effects and transparent surfaces visible through non-transparent parts.
 
-	ObjectInit(self,10,10,MAT_LEAF,SOLID_NOT);
+	ObjectInit(self, 10, 10, MAT_LEAF, SOLID_NOT);
 }
 
-/*QUAKED obj_moss4 (1 .5 0) (-4 -12 -40) (4 12 40)  INVULNERABLE ANIMATE EXPLODING NOPUSH
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (moss4 can't be moved)
------------------------------------
-*/
-void SP_obj_moss4(edict_t *self)
+// QUAKED obj_moss4 (1 .5 0) (-4 -12 -40) (4 12 40) INVULNERABLE
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_moss4(edict_t* self)
 {
-	self->s.modelindex=gi.modelindex("models/objects/moss/tris.fm");
+	VectorSet(self->mins, -1.0f, -12.0f, -40.0f);
+	VectorSet(self->maxs, 1.0f, 12.0f, 40.0f);
 
-	VectorSet(self->mins,-1,-12,-40);
-	VectorSet(self->maxs,1,12,40);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/moss/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 	self->s.skinnum = 3;
-	self->s.renderfx |= RF_TRANSLUCENT;
+	self->s.renderfx |= RF_TRANSLUCENT; //TODO: not needed? Makes fx effects and transparent surfaces visible through non-transparent parts.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	ObjectInit(self,10,10,MAT_LEAF,SOLID_NOT);
+	ObjectInit(self, 10, 10, MAT_LEAF, SOLID_NOT);
 }
 
-/*QUAKED obj_moss5 (1 .5 0) (-4 -10 -40) (4 10 40) INVULNERABLE ANIMATE EXPLODING NOPUSH
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (moss5 can't be moved)
------------------------------------
-*/
-void SP_obj_moss5(edict_t *self)
+// QUAKED obj_moss5 (1 .5 0) (-4 -10 -40) (4 10 40) INVULNERABLE
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_moss5(edict_t* self)
 {
-	self->s.modelindex=gi.modelindex("models/objects/moss/tris.fm");
+	VectorSet(self->mins, -1.0f, -10.0f, -40.0f);
+	VectorSet(self->maxs, 1.0f, 10.0f, 40.0f);
 
-	VectorSet(self->mins,-1,-10,-40);
-	VectorSet(self->maxs,1,10,40);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/moss/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 	self->s.skinnum = 4;
-	self->s.renderfx |= RF_TRANSLUCENT;
+	self->s.renderfx |= RF_TRANSLUCENT; //TODO: not needed? Makes fx effects and transparent surfaces visible through non-transparent parts.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	ObjectInit(self,10,10,MAT_LEAF,SOLID_NOT);
+	ObjectInit(self, 10, 10, MAT_LEAF, SOLID_NOT);
 }
+
+#pragma endregion
 
 /*QUAKED obj_floor_candelabrum (1 .5 0) (-8 -8 -35) (8 8 35) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A floor candelabrum.
