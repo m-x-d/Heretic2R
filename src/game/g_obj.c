@@ -2168,46 +2168,42 @@ void SP_obj_jawbone(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_barrel_metal (1 .5 0) (-11 -12 -18) (11 12 18)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
-A metal barrel. 
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_barrel_metal (edict_t *self)
+#pragma region ========================== obj_barrel_metal, obj_barrel_explosive ==========================
+
+// QUAKED obj_barrel_metal (1 .5 0) (-11 -12 -18) (11 12 18) INVULNERABLE x x NOPUSH
+// A metal barrel.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_barrel_metal(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/barrel/metal/tris.fm");
+	VectorSet(self->mins, -11.0f, -12.0f, -18.0f);
+	VectorSet(self->maxs, 11.0f, 12.0f, 18.0f);
 
-	VectorSet(self->mins,  -11, -12, -18);
-	VectorSet(self->maxs,   11,  12,  18);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/barrel/metal/tris.fm");
+	self->s.skinnum = 1; //TODO: ignored: model has only skin 0.
 
-	ObjectInit(self,75,125,MAT_METAL,SOLID_BBOX);
-	self->s.skinnum = 1;
+	ObjectInit(self, 75, 125, MAT_METAL, SOLID_BBOX);
 }
 
-/*QUAKED obj_barrel_explosive (1 .5 0) (-11 -12 -18) (11 12 18)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
-A barrel that explodes and does damage. 
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_barrel_explosive (edict_t *self)
+// QUAKED obj_barrel_explosive (1 .5 0) (-11 -12 -18) (11 12 18) INVULNERABLE x x NOPUSH
+// A barrel that explodes and does damage.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_barrel_explosive(edict_t* self) //TODO: explosive barrel doesn't explode...
 {
-	self->s.modelindex = gi.modelindex("models/objects/barrel/normal/tris.fm");
+	VectorSet(self->mins, -11.0f, -12.0f, -18.0f);
+	VectorSet(self->maxs, 11.0f, 12.0f, 18.0f);
 
-	VectorSet(self->mins,  -11, -12, -18);
-	VectorSet(self->maxs,   11,  12,  18);
-
-	ObjectInit(self,75,125,MAT_WOOD,SOLID_BBOX);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/barrel/normal/tris.fm");
 	self->s.skinnum = 1;
 
+	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX);
 }
+
+#pragma endregion
+
 /*QUAKED obj_gascan (1 .5 0) (-8 -9 -13) (8 9 13)  INVULNERABLE ANIMATE EXPLODING NOPUSH
 A metal gas can. 
 -------  FIELDS  ------------------
