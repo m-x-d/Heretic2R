@@ -1124,54 +1124,51 @@ static void ObjSeasonglobeTopUse(edict_t* self, edict_t* other, edict_t* activat
 	self->nextthink = level.time + FRAMETIME;
 }
 
-/*QUAKED obj_seasonglobe (1 .5 0) (-80 -80 0) (80 80 100) INVULNERABLE ANIMATE EXPLODING NOPUSH
-The globe thingy
--------  FIELDS  ------------------
-INVULNERABLE - N/A
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (globe can't be moved)
------------------------------------
-*/
-void SP_obj_seasonglobe (edict_t *bottom)
+// QUAKED obj_seasonglobe (1 .5 0) (-80 -80 0) (80 80 100)
+// The globe thingy. //mxd. Uses hardcoded targetnames and angles for top and bottom parts...
+void SP_obj_seasonglobe(edict_t* bottom)
 {
-	edict_t *top;
+	// Setup bottom part.
+	VectorSet(bottom->mins, -80.0f, -80.0f, 0.0f);
+	VectorSet(bottom->maxs, 80.0f, 80.0f, 320.0f);
 
-	bottom->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
+	bottom->s.modelindex = (byte)gi.modelindex("models/objects/globe/globebottom/tris.fm");
+	bottom->s.frame = 1;
+	bottom->s.scale = 1.75f;
 	bottom->movetype = PHYSICSTYPE_NONE;
 	bottom->solid = SOLID_BBOX;
-	VectorSet(bottom->mins, -80, -80, 0);
-	VectorSet(bottom->maxs, 80, 80, 320);
-	bottom->s.modelindex = gi.modelindex("models/objects/globe/globebottom/tris.fm");
-	bottom->s.frame = 1;
-	bottom->s.scale = 1.75;
+
 	BboxYawAndScale(bottom);
 	bottom->targetname = "globebottom";
 	bottom->use = ObjSeasonglobeBottomUse;
-	bottom->yaw_speed = 2.5;
-	VectorSet(bottom->s.angles, 0, 90, 0);
-	gi.linkentity (bottom);
+	bottom->yaw_speed = 2.5f;
+	VectorSet(bottom->s.angles, 0.0f, 90.0f, 0.0f);
 
-	top = G_Spawn();
+	gi.linkentity(bottom);
 
-	VectorCopy(bottom->s.origin,top->s.origin);
-	top->s.origin[2] += 36;
+	// Setup top part.
+	edict_t* top = G_Spawn();
+
+	VectorSet(top->mins, -80.0f, -80.0f, 0.0f);
+	VectorSet(top->maxs, 80.0f, 80.0f, 100.0f);
+
+	VectorCopy(bottom->s.origin, top->s.origin);
+	top->s.origin[2] += 36.0f;
+
+	top->s.modelindex = (byte)gi.modelindex("models/objects/globe/globetop/tris.fm");
+	top->s.frame = 1;
+	top->s.scale = 1.75f;
 	top->movetype = PHYSICSTYPE_NONE;
 	top->solid = SOLID_BBOX;
-	VectorSet(top->mins, -80, -80, 0);
-	VectorSet(top->maxs, 80, 80, 100);
-	top->s.modelindex = gi.modelindex("models/objects/globe/globetop/tris.fm");
-	top->s.frame = 1;
-	top->s.scale = 1.75;
-	BboxYawAndScale(top);
 
-	bottom->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
+	BboxYawAndScale(top);
 	top->targetname = "globetop";
 	top->use = ObjSeasonglobeTopUse;
-	top->yaw_speed = 2.5;
+	top->yaw_speed = 2.5f;
+	VectorSet(top->s.angles, 0.0f, 120.0f, 0.0f);
 	top->target = bottom->target;
-	VectorSet(top->s.angles, 0, 120, 0);
-	gi.linkentity (top);
+
+	gi.linkentity(top);
 
 	bottom->enemy = top;
 	top->enemy = bottom;
