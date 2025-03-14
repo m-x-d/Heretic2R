@@ -2743,31 +2743,28 @@ void SP_obj_statue_techeckrikleft(edict_t* self)
 
 #pragma endregion
 
-void spellbook_anim (edict_t *self)
-{
-	if (self->s.frame > 0)
-	{
-		--self->s.frame;
+#pragma region ========================== obj_spellbook ==========================
 
-		self->think = spellbook_anim;
+static void ObjSpellbookAnimThink(edict_t* self) //mxd. Named 'spellbook_anim' in original logic.
+{
+	if (--self->s.frame >= 0)
+	{
 		self->nextthink = level.time + FRAMETIME;
 	}
 	else
 	{
-		gi.sound (self, CHAN_BODY, gi.soundindex ("misc/spbkcls.wav"), 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_BODY, gi.soundindex("misc/spbkcls.wav"), 1.0f, ATTN_NORM, 0.0f);
 		self->think = NULL;
 	}
-
 }
 
-void spellbook_use (edict_t *self, edict_t *other, edict_t *activator)
+static void ObjSpellbookUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'spellbook_use' in original logic.
 {
-	spellbook_anim(self);
+	self->think = ObjSpellbookAnimThink;
+	self->nextthink = level.time + FRAMETIME;
 
-	G_FreeEdict(self->target_ent);
-
-	gi.sound (self, CHAN_BODY, gi.soundindex ("misc/spbook.wav"), 1, ATTN_NORM, 0);
-
+	G_FreeEdict(self->target_ent); // Remove beam. //TODO: make it fade-out before deleting it?
+	gi.sound(self, CHAN_BODY, gi.soundindex("misc/spbook.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
 /*QUAKED obj_spellbook (1 .5 0) ( -14 -14 -35) (14 14 40) INVULNERABLE ANIMATE EXPLODING NOPUSH
@@ -2791,7 +2788,7 @@ void SP_obj_spellbook (edict_t *self)
 	self->spawnflags |= OBJ_INVULNERABLE;	// Always indestructible
 	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
 
-	self->use = spellbook_use;
+	self->use = ObjSpellbookUse;
 	ObjectInit(self,75,125,MAT_NONE,SOLID_BBOX);
 	self->s.frame = 20;
 
@@ -2808,6 +2805,8 @@ void SP_obj_spellbook (edict_t *self)
 
 	self->target_ent = beam;
 }
+
+#pragma endregion
 
 /*QUAKED obj_skullpole (1 .5 0) ( -10 -10 -47) (10 10 47) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A pole with skulls on it
