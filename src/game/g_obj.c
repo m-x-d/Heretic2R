@@ -1777,20 +1777,14 @@ static void ObjLever1UpThink(edict_t* self) //mxd. Named 'lever1upthink' in orig
 
 static void ObjLever1Use(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'lever1_use' in original logic.
 {
-	if (self->s.frame == 0)
+	if (self->s.frame == 0 || self->s.frame == 5) //mxd. Rewritten, so G_UseTargets() is only called when not playing animation.
 	{
 		gi.sound(self, CHAN_BODY, gi.soundindex("objects/lever1.wav"), 1.0f, ATTN_NORM, 0.0f);
-		self->think = ObjLever1DownThink;
+		self->think = (self->s.frame == 0 ? ObjLever1DownThink : ObjLever1UpThink);
 		self->nextthink = level.time + FRAMETIME;
-	}
-	else if (self->s.frame == 5)
-	{
-		gi.sound(self, CHAN_BODY, gi.soundindex("objects/lever1.wav"), 1.0f, ATTN_NORM, 0.0f);
-		self->think = ObjLever1UpThink;
-		self->nextthink = level.time + FRAMETIME;
-	}
 
-	G_UseTargets(self, activator);
+		G_UseTargets(self, activator);
+	}
 }
 
 /*QUAKED obj_lever1 (1 .5 0) (-6 -14 -17) (6 14 17)  INVULNERABLE  ANIMATE   EXPLODING   NOPUSH
