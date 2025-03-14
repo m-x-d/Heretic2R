@@ -1096,6 +1096,20 @@ static void ObjSeasonglobeTopThink(edict_t* self) //mxd. Named 'globetop_turn' i
 	}
 }
 
+static void ObjSeasonglobeBottomUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'globebottom_use' in original logic.
+{
+	if (self->monsterinfo.idle_time == GLOBE_ENABLED)
+		return;
+
+	gi.sound(self, CHAN_BODY, gi.soundindex("objects/globebottomstart.wav"), 1.0f, ATTN_NORM, 0.0f);
+
+	self->monsterinfo.idle_time = GLOBE_ENABLED;
+	self->ideal_yaw = 225.0f;
+
+	self->think = ObjSeasonglobeBottomThink;
+	self->nextthink = level.time + FRAMETIME;
+}
+
 void globetop_use (edict_t *self, edict_t *other, edict_t *activator)
 {
 	if (self->monsterinfo.idle_time)
@@ -1108,21 +1122,6 @@ void globetop_use (edict_t *self, edict_t *other, edict_t *activator)
 	self->ideal_yaw = 270;
 
 	self->think = ObjSeasonglobeTopThink;
-	self->nextthink = level.time + FRAMETIME;
-}
-
-void globebottom_use (edict_t *self, edict_t *other, edict_t *activator)
-{
-	if (self->monsterinfo.idle_time)
-		return;
-
-	gi.sound (self, CHAN_BODY, gi.soundindex ("objects/globebottomstart.wav"), 1, ATTN_NORM, 0);
-
-	self->monsterinfo.idle_time = 1;
-
-	self->ideal_yaw = 225;
-
-	self->think = ObjSeasonglobeBottomThink;
 	self->nextthink = level.time + FRAMETIME;
 }
 
@@ -1149,7 +1148,7 @@ void SP_obj_seasonglobe (edict_t *bottom)
 	bottom->s.scale = 1.75;
 	BboxYawAndScale(bottom);
 	bottom->targetname = "globebottom";
-	bottom->use = globebottom_use;
+	bottom->use = ObjSeasonglobeBottomUse;
 	bottom->yaw_speed = 2.5;
 	VectorSet(bottom->s.angles, 0, 90, 0);
 	gi.linkentity (bottom);
