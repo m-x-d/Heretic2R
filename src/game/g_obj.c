@@ -2357,67 +2357,56 @@ void SP_obj_pick(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_metalchunk1 (1 .5 0) ( -10 -26 -4) (10 26 4) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A chunk of twisted metal.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_metalchunk1 (edict_t *self)
+#pragma region ========================== obj_metalchunk1, obj_metalchunk2, obj_metalchunk3 ==========================
+
+// QUAKED obj_metalchunk1 (1 .5 0) ( -10 -26 -4) (10 26 4) INVULNERABLE x x NOPUSH
+// A chunk of twisted metal.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_metalchunk1(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/pipes/metalchunks/tris.fm");
+	VectorSet(self->mins, -10.0f, -26.0f, -4.0f);
+	VectorSet(self->maxs, 10.0f, 26.0f, 4.0f);
 
-	VectorSet(self->mins,   -10, -26, -4);
-	VectorSet(self->maxs,   10,   26,  4);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/pipes/metalchunks/tris.fm");
 
-	ObjectInit(self,75,125,MAT_METAL,SOLID_BBOX);
+	ObjectInit(self, 75, 125, MAT_METAL, SOLID_BBOX);
 }
 
-/*QUAKED obj_metalchunk2 (1 .5 0) ( -10 -26 -7) (10 26 7) INVULNERABLE ANIMATE EXPLODING NOPUSH
-Another chunk of twisted metal.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_metalchunk2 (edict_t *self)
+// QUAKED obj_metalchunk2 (1 .5 0) ( -10 -26 -7) (10 26 7) INVULNERABLE x x NOPUSH
+// Another chunk of twisted metal.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_metalchunk2(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/pipes/metalchunks/tris.fm");
+	VectorSet(self->mins, -10.0f, -26.0f, -7.0f);
+	VectorSet(self->maxs, 10.0f, 26.0f, 7.0f);
 
-	VectorSet(self->mins,   -10, -26, -7);
-	VectorSet(self->maxs,   10,   26,  7);
-
-	ObjectInit(self,75,125,MAT_METAL,SOLID_BBOX);
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/pipes/metalchunks/tris.fm");
 	self->s.frame = 1;
+
+	ObjectInit(self, 75, 125, MAT_METAL, SOLID_BBOX);
 }
 
-
-/*QUAKED obj_metalchunk3 (1 .5 0) ( -9 -30 -4) (9 30 4) INVULNERABLE ANIMATE EXPLODING NOPUSH
-Another chunk of twisted metal.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_metalchunk3 (edict_t *self)
+// QUAKED obj_metalchunk3 (1 .5 0) ( -9 -30 -4) (9 30 4) INVULNERABLE x x NOPUSH
+// Another chunk of twisted metal.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_metalchunk3(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/pipes/metalchunks/tris.fm");
+	VectorSet(self->mins, -9.0f, -30.0f, -4.0f);
+	VectorSet(self->maxs, 9.0f, 30.0f, 4.0f);
 
-	VectorSet(self->mins,   -9, -30, -4);
-	VectorSet(self->maxs,    9,   30, 4);
-
-	ObjectInit(self,75,125,MAT_WOOD,SOLID_BBOX);
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/pipes/metalchunks/tris.fm");
 	self->s.frame = 2;
+
+	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX); //TODO: should be MAT_METAL?
 }
+
+#pragma endregion
 
 /*QUAKED obj_rocks1 (1 .5 0) ( -12 -13 -4) (12 13 4) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A bunch of rocks together
