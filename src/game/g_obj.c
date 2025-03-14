@@ -1943,49 +1943,37 @@ static void ObjCactusTouch(edict_t* self, edict_t* other, cplane_t* plane, csurf
 	}
 }
 
-/*QUAKED obj_cactus (1 .5 0) (-18 -18 -44) (18 18 44)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
-A cactus.  Hurts the player 1 pt every five seconds he is pushes against it.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (obj_cactus can't be moved)
------------------------------------
-*/
-void SP_obj_cactus (edict_t *self)
+// QUAKED obj_cactus (1 .5 0) (-18 -18 -44) (18 18 44) INVULNERABLE
+// A cactus. Hurts the player 1 pt every five seconds he is pushes against it.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_cactus(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/plants/cactus/tris.fm");
+	VectorSet(self->mins, -18.0f, -18.0f, -44.0f);
+	VectorSet(self->maxs, 18.0f, 18.0f, 44.0f);
 
-	VectorSet(self->mins, -18, -18, -44);
-	VectorSet(self->maxs, 18, 18, 44);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/cactus/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	ObjectInit(self,50,125,MAT_NONE,SOLID_BBOX);
+	ObjectInit(self, 50, 125, MAT_NONE, SOLID_BBOX);
 
 	self->touch_debounce_time = level.time;
 	self->touch = ObjCactusTouch;
 }
 
-/*QUAKED obj_cactus3 (1 .5 0) (-14 -14 -32) (14 14 32)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
-A cactus.  Hurts the player 1 pt every five seconds he is pushes against it.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (obj_cactus3 can't be moved)
------------------------------------
-*/
-void SP_obj_cactus3 (edict_t *self)
+// QUAKED obj_cactus3 (1 .5 0) (-14 -14 -32) (14 14 32) INVULNERABLE
+// A cactus. Hurts the player 1 pt every five seconds he is pushes against it.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_cactus3(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/plants/cactus3/tris.fm");
+	VectorSet(self->mins, -14.0f, -14.0f, -32.0f);
+	VectorSet(self->maxs, 14.0f, 14.0f, 32.0f);
 
-	VectorSet(self->mins, -14, -14, -32);
-	VectorSet(self->maxs, 14, 14, 32);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/cactus3/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	ObjectInit(self,50,125,MAT_NONE,SOLID_BBOX);
+	ObjectInit(self, 50, 125, MAT_NONE, SOLID_BBOX);
 
 	self->touch_debounce_time = level.time;
 	self->touch = ObjCactusTouch;
