@@ -2972,31 +2972,18 @@ static void ObjStatueSsithraGuardUse(edict_t* self, edict_t* other, edict_t* act
 	gi.linkentity(shield);
 }
 
-/*QUAKED obj_statue_sithraguard (1 .5 0) (-22 -20 -57) (22 20 57) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A statue of a sithra guard with spear extended.  When used the guard pulls his arm back.
-style - type of statue
--------  FIELDS  ------------------
-INVULNERABLE - N/A (can't be hurt)
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_statue_sithraguard (edict_t *self) 
+// QUAKED obj_statue_sithraguard (1 .5 0) (-22 -20 -57) (22 20 57)
+// A statue of a ssithra guard with spear extended. When used the guard pulls his arm back.
+void SP_obj_statue_sithraguard(edict_t* self) //TODO: rename to 'SP_obj_statue_ssithraguard'?
 {
-	VectorSet(self->mins, -22, -20, -57);
-	VectorSet(self->maxs, 22, 20, 57);
+	VectorSet(self->mins, -22.0f, -20.0f, -57.0f);
+	VectorSet(self->maxs, 22.0f, 20.0f, 57.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/statue/sithraguard/tris.fm");
-	self->spawnflags |= OBJ_INVULNERABLE;	// Always indestructible
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	self->s.frame = 0;
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/sithraguard/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->use = ObjStatueSsithraGuardUse;
 
-	ObjectInit(self,250,200,MAT_GREYSTONE,SOLID_BBOX);
-
+	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
 
 #pragma endregion
