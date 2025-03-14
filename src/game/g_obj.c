@@ -3587,24 +3587,17 @@ void SP_obj_web(edict_t* self) //TODO: has 20 unused frames of idle animation.
 
 #pragma endregion
 
-#define FAST_TWITCH 16
+#pragma region ========================== obj_larva ==========================
 
-void larva_anim (edict_t *self)
+#define LARVA_FAST_TWITCH 16
+
+static void ObjLarvaAnimThink(edict_t* self) //mxd. Named 'larva_anim' in original logic.
 {
-
 	if (self->s.frame < self->count)
-	{
-		++self->s.frame;
-
-		if (self->spawnflags & FAST_TWITCH)	// Some squirm faster
-			++self->s.frame;
-	}
+		self->s.frame += (short)((self->spawnflags & LARVA_FAST_TWITCH) ? 2 : 1); //mxd. Some squirm faster.
 	else
-	{
-		self->s.frame=0;
-	}
+		self->s.frame = 0;
 
-	self->think = larva_anim;
 	self->nextthink = level.time + FRAMETIME;
 }
 
@@ -3637,7 +3630,7 @@ void SP_obj_larva (edict_t *self)
 	self->movetype = PHYSICSTYPE_STEP;
 	self->count = 19;
 
-	self->think = larva_anim;
+	self->think = ObjLarvaAnimThink;
 	self->nextthink = level.time + FRAMETIME;
 	self->nextthink += FRAMETIME * flrand(1, 6);	// Don't all start at the same time
 
@@ -3647,12 +3640,14 @@ void SP_obj_larva (edict_t *self)
 	self->svflags = SVF_ALLOW_AUTO_TARGET;
 
 	if (irand(0, 1))
-		self->spawnflags |= FAST_TWITCH;
+		self->spawnflags |= LARVA_FAST_TWITCH;
 
 	self->touch = larva_touch;
 
 
 }
+
+#pragma endregion
 
 /*QUAKED obj_bloodsplat (1 .5 0) (-8 -8 -2) (8 8 2) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A red blood splat
