@@ -2009,28 +2009,22 @@ static void ObjCactus4Use(edict_t* self, edict_t* other, edict_t* activator) //m
 	}
 }
 
-/*QUAKED obj_cactus4 (1 .5 0) (-11 -11 -11) (11 11 11)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
-A small cactus that open up or closes. Is triggerable.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (obj_cactus4 can't be moved)
------------------------------------
-*/
-void SP_obj_cactus4 (edict_t *self)
+// QUAKED obj_cactus4 (1 .5 0) (-11 -11 -11) (11 11 11) INVULNERABLE
+// A small cactus that open up or closes. Is triggerable.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_cactus4(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/plants/cactus4/tris.fm");
+	VectorSet(self->mins, -11.0f, -11.0f, -11.0f);
+	VectorSet(self->maxs, 11.0f, 11.0f, 11.0f);
 
-	VectorSet(self->mins, -11, -11, -11);
-	VectorSet(self->maxs, 11, 11, 11);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/cactus4/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	ObjectInit(self,75,125,MAT_NONE,SOLID_BBOX);
-	self->use = ObjCactus4Use;
+	ObjectInit(self, 75, 125, MAT_NONE, SOLID_BBOX);
 
 	self->touch_debounce_time = level.time;
+	self->use = ObjCactus4Use;
 	self->touch = ObjCactusTouch;
 }
 
