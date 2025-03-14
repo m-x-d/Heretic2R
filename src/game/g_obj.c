@@ -3021,19 +3021,17 @@ static void ObjTortureIronmaidenClose(edict_t* self) //mxd. Named 'ironmaiden_cl
 	}
 }
 
-void ironmaiden_use (edict_t *self, edict_t *other, edict_t *activator)
+static void ObjTortureIronmaidenUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'ironmaiden_use' in original logic.
 {
-	VectorSet(self->mins, -18, -18, -49);
-	VectorSet(self->maxs, 18, 18, 49);
+	VectorSet(self->mins, -18.0f, -18.0f, -49.0f);
+	VectorSet(self->maxs, 18.0f, 18.0f, 49.0f);
 
-	self->touch  = NULL;
+	self->touch = NULL;
 	self->think = ObjTortureIronmaidenClose;
 	self->nextthink = level.time + FRAMETIME;
 
-	gi.sound (self, CHAN_BODY, gi.soundindex ("items/ironmaiden.wav"), 1, ATTN_NORM, 0);
-
+	gi.sound(self, CHAN_BODY, gi.soundindex("items/ironmaiden.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
-
 
 // Cactus will hurt player 
 void ObjTortureIronmaidenTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
@@ -3057,7 +3055,7 @@ void ObjTortureIronmaidenTouch (edict_t *self, edict_t *other, cplane_t *plane, 
 	if (trace.ent == other)
 		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, 5, 0, DAMAGE_AVOID_ARMOR,MOD_DIED);
 
-	ironmaiden_use(self,NULL,NULL);
+	ObjTortureIronmaidenUse(self,NULL,NULL);
 }
 
 
@@ -3080,7 +3078,7 @@ void SP_obj_torture_ironmaiden (edict_t *self)
 	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
 
 	self->s.frame = 0;
-	self->use = ironmaiden_use;
+	self->use = ObjTortureIronmaidenUse;
 	self->touch = ObjTortureIronmaidenTouch;
 
 	ObjectInit(self,250,200,MAT_METAL,SOLID_BBOX);
