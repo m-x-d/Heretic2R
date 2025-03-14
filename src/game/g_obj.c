@@ -2204,91 +2204,73 @@ void SP_obj_barrel_explosive(edict_t* self) //TODO: explosive barrel doesn't exp
 
 #pragma endregion
 
-/*QUAKED obj_gascan (1 .5 0) (-8 -9 -13) (8 9 13)  INVULNERABLE ANIMATE EXPLODING NOPUSH
-A metal gas can. 
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_gascan (edict_t *self)
+#pragma region ========================== obj_gascan, obj_pipe1, obj_pipe2, obj_pipewheel ==========================
+
+// QUAKED obj_gascan (1 .5 0) (-8 -9 -13) (8 9 13) INVULNERABLE x x NOPUSH
+// A metal gas can.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_gascan(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/barrel/gascan/tris.fm");
+	VectorSet(self->mins, -8.0f, -9.0f, -13.0f);
+	VectorSet(self->maxs, 8.0f, 9.0f, 13.0f);
 
-	VectorSet(self->mins,  -8, -9, -13);
-	VectorSet(self->maxs,   8,  9,  13);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/barrel/gascan/tris.fm");
+	self->s.skinnum = 1; //TODO: ignored: model has only skin 0.
 
-	ObjectInit(self,75,125,MAT_WOOD,SOLID_BBOX);
-	self->s.skinnum = 1;
-
+	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX); //TODO: should be MAT_METAL?
 }
 
-/*QUAKED obj_pipe1 (1 .5 0) (-11 -24 -7) (11 24 7)  INVULNERABLE  ANIMATE   EXPLODING NOPUSH
-A section of pipe with 90 degree bend in it.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_pipe1 (edict_t *self)
+// QUAKED obj_pipe1 (1 .5 0) (-11 -24 -7) (11 24 7) INVULNERABLE x x NOPUSH
+// A section of pipe with 90 degree bend in it.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_pipe1(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/pipes/pipe1/tris.fm");
+	VectorSet(self->mins, -11.0f, -24.0f, -7.0f);
+	VectorSet(self->maxs, 11.0f, 24.0f, 7.0f);
 
-	VectorSet(self->mins,  -11, -24, -7);
-	VectorSet(self->maxs,   11,  24,  7);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/pipes/pipe1/tris.fm");
+	self->s.skinnum = 1; //TODO: ignored: model has only skin 0.
 
-	ObjectInit(self,50,125,MAT_WOOD,SOLID_BBOX);
-	self->s.skinnum = 1;
-
+	ObjectInit(self, 50, 125, MAT_WOOD, SOLID_BBOX); //TODO: should be MAT_METAL?
 }
 
-/*QUAKED obj_pipe2 (1 .5 0) (-6 -25 -4) (6 25 4) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A straight section of pipe.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_pipe2 (edict_t *self)
+// QUAKED obj_pipe2 (1 .5 0) (-6 -25 -4) (6 25 4) INVULNERABLE x x NOPUSH
+// A straight section of pipe.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_pipe2(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/pipes/pipe2/tris.fm");
+	VectorSet(self->mins, -6.0f, -25.0f, -4.0f);
+	VectorSet(self->maxs, 6.0f, 25.0f, 4.0f);
 
-	VectorSet(self->mins,  -6, -25, -4);
-	VectorSet(self->maxs,   6,  25,  4);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/pipes/pipe2/tris.fm");
+	self->s.skinnum = 1; //TODO: ignored: model has only skin 0.
 
-	ObjectInit(self,50,125,MAT_WOOD,SOLID_BBOX);
-	self->s.skinnum = 1;
-
+	ObjectInit(self, 50, 125, MAT_WOOD, SOLID_BBOX); //TODO: should be MAT_METAL?
 }
 
-/*QUAKED obj_pipewheel (1 .5 0) (-14 -14 -12) (14 14 12) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A shutoff valve for pipe.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_pipewheel (edict_t *self)
+// QUAKED obj_pipewheel (1 .5 0) (-14 -14 -12) (14 14 12) INVULNERABLE
+// A shutoff valve for pipe.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_pipewheel(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/pipes/pipewheel/tris.fm");
+	VectorSet(self->mins, -14.0f, -14.0f, -12.0f);
+	VectorSet(self->maxs, 14.0f, 14.0f, 12.0f);
 
-	VectorSet(self->mins,  -14, -14, -12);
-	VectorSet(self->maxs,   14,  14,  12);
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/pipes/pipewheel/tris.fm");
 	self->spawnflags |= OBJ_NOPUSH;
+	self->s.skinnum = 1; //TODO: ignored: model has only skin 0.
 
-	ObjectInit(self,50,125,MAT_WOOD,SOLID_BBOX);
-	self->s.skinnum = 1;
-
+	ObjectInit(self, 50, 125, MAT_WOOD, SOLID_BBOX); //TODO: should be MAT_METAL?
 }
+
+#pragma endregion
 
 /*QUAKED obj_minecart (1 .5 0) (-18 -29 -20) (18 29 20) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A full mine cart used on the mine levels.
