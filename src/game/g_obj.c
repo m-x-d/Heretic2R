@@ -2936,14 +2936,12 @@ void SP_obj_statue_tchecktrik_bust(edict_t* self)
 
 #pragma endregion
 
-void statue_sithraguard_think (edict_t *self)
+#pragma region ========================== obj_statue_sithraguard ==========================
+
+static void ObjStatueSsithraGuardThink(edict_t* self) //mxd. Named 'statue_sithraguard_think' in original logic.
 {
-	if (self->s.frame < 20)
-	{
-		++self->s.frame;
-		self->think = statue_sithraguard_think;
+	if (++self->s.frame <= 20)
 		self->nextthink = level.time + FRAMETIME;
-	}
 	else
 		self->think = NULL;
 }
@@ -2952,7 +2950,9 @@ void statue_sithraguard_use (edict_t *self, edict_t *other, edict_t *activator)
 {
 	edict_t *shield;
 
-	statue_sithraguard_think(self);
+	self->think = ObjStatueSsithraGuardThink;
+	self->nextthink = level.time + FRAMETIME;
+
 	gi.sound (self, CHAN_BODY, gi.soundindex ("items/statuearm.wav"), 1, ATTN_NORM, 0);
 
 	shield = G_Spawn();
@@ -2998,6 +2998,8 @@ void SP_obj_statue_sithraguard (edict_t *self)
 	ObjectInit(self,250,200,MAT_GREYSTONE,SOLID_BBOX);
 
 }
+
+#pragma endregion
 
 void ironmaiden_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
 
