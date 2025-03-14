@@ -3033,31 +3033,27 @@ static void ObjTortureIronmaidenUse(edict_t* self, edict_t* other, edict_t* acti
 	gi.sound(self, CHAN_BODY, gi.soundindex("items/ironmaiden.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
-// Cactus will hurt player 
-void ObjTortureIronmaidenTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void ObjTortureIronmaidenTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'ironmaiden_touch' in original logic.
 {
-	vec3_t		source, vf;
-	trace_t			trace;
-
-	if (!other->client)
+	if (other->client == NULL || self->touch_debounce_time > level.time)
 		return;
 
-	if (self->touch_debounce_time > level.time)
-		return;
+	self->touch_debounce_time = level.time + 5.0f;
 
-	self->touch_debounce_time = level.time + 5;
-
-	VectorCopy(self->s.origin, source);
+	vec3_t vf;
 	AngleVectors(self->s.angles, vf, NULL, NULL);
-	VectorMA(source, 44, vf, source);
 
-	gi.trace (self->s.origin, self->mins, self->maxs, source, self, MASK_PLAYERSOLID,&trace);
+	vec3_t source;
+	VectorMA(self->s.origin, 44.0f, vf, source);
+
+	trace_t trace;
+	gi.trace(self->s.origin, self->mins, self->maxs, source, self, MASK_PLAYERSOLID, &trace);
+
 	if (trace.ent == other)
-		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, 5, 0, DAMAGE_AVOID_ARMOR,MOD_DIED);
+		T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, 5, 0, DAMAGE_AVOID_ARMOR, MOD_DIED);
 
-	ObjTortureIronmaidenUse(self,NULL,NULL);
+	ObjTortureIronmaidenUse(self, NULL, NULL);
 }
-
 
 /*QUAKED obj_torture_ironmaiden (1 .5 0) (-18 -18 -49) (18 18 49) INVULNERABLE ANIMATE EXPLODING NOPUSH
 An iron maiden that closes when used
