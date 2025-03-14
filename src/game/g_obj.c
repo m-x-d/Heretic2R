@@ -2946,30 +2946,30 @@ static void ObjStatueSsithraGuardThink(edict_t* self) //mxd. Named 'statue_sithr
 		self->think = NULL;
 }
 
-void statue_sithraguard_use (edict_t *self, edict_t *other, edict_t *activator)
+static void ObjStatueSsithraGuardUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'statue_sithraguard_use' in original logic.
 {
-	edict_t *shield;
+	if (self->s.frame > 0) //mxd. Add retrigger safeguard.
+		return;
 
 	self->think = ObjStatueSsithraGuardThink;
 	self->nextthink = level.time + FRAMETIME;
 
-	gi.sound (self, CHAN_BODY, gi.soundindex ("items/statuearm.wav"), 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_BODY, gi.soundindex("items/statuearm.wav"), 1.0f, ATTN_NORM, 0.0f);
 
-	shield = G_Spawn();
-	VectorCopy(self->s.origin,shield->s.origin);
-	VectorCopy(self->s.angles,shield->s.angles);
-	shield->s.modelindex = gi.modelindex("models/objects/statue/sithshield/tris.fm");
+	// Spawn shield.
+	edict_t* shield = G_Spawn();
+
+	VectorCopy(self->s.origin, shield->s.origin);
+	VectorCopy(self->s.angles, shield->s.angles);
+
+	shield->s.modelindex = (byte)gi.modelindex("models/objects/statue/sithshield/tris.fm");
 	shield->s.scale = self->s.scale;
-	shield->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	shield->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
+	shield->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 	shield->movetype = PHYSICSTYPE_NONE;
 	shield->solid = SOLID_NOT;
 
 	BboxYawAndScale(shield);
-	gi.linkentity (shield);
-
-
-	
+	gi.linkentity(shield);
 }
 
 /*QUAKED obj_statue_sithraguard (1 .5 0) (-22 -20 -57) (22 20 57) INVULNERABLE ANIMATE EXPLODING NOPUSH
@@ -2993,7 +2993,7 @@ void SP_obj_statue_sithraguard (edict_t *self)
 
 	self->s.frame = 0;
 
-	self->use = statue_sithraguard_use;
+	self->use = ObjStatueSsithraGuardUse;
 
 	ObjectInit(self,250,200,MAT_GREYSTONE,SOLID_BBOX);
 
