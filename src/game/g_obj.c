@@ -647,28 +647,12 @@ static int ObjDyingElfPain(edict_t* self, edict_t* other, float kick, int damage
 	return 1;
 }
 
-int dying_elf_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
+static int ObjDyingElfDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'dying_elf_die' in original logic.
 {
-	int		chance;
-
-	chance = irand(0, 2);
-	switch(chance)
-	{
-	case 0:
-		gi.sound(self, CHAN_VOICE, gi.soundindex("monsters/plagueElf/death1.wav"), 1, ATTN_NORM, 0);
-		break;
-
-	case 1:
-		gi.sound(self, CHAN_VOICE, gi.soundindex("monsters/plagueElf/death2.wav"), 1, ATTN_NORM, 0);
-		break;
-
-	case 2:
-		gi.sound(self, CHAN_VOICE, gi.soundindex("monsters/plagueElf/death3.wav"), 1, ATTN_NORM, 0);
-		break;
-	}
-
+	gi.sound(self, CHAN_VOICE, gi.soundindex(va("monsters/plagueElf/death%i.wav", irand(1, 3))), 1.0f, ATTN_NORM, 0.0f);
 	BecomeDebris(self);
-	return (false);
+
+	return 0;
 }
 
 /*QUAKED obj_dying_elf (1 .5 0) (-30 -12 0) (30 12 5) INVULNERABLE ANIMATE EXPLODING NOPUSH
@@ -699,7 +683,7 @@ void SP_obj_dying_elf(edict_t *self)
 	self->touch_debounce_time = -1;
 	self->touch = ObjDyingElfTouch;
 	self->pain = ObjDyingElfPain;
-	self->die = dying_elf_die;
+	self->die = ObjDyingElfDie;
 
 	ObjectInit(self, 40, 60, MAT_FLESH, SOLID_BBOX);
 
