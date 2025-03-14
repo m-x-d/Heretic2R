@@ -1867,20 +1867,16 @@ static void ObjLever3UpThink(edict_t* self) //mxd. Named 'lever3upthink' in orig
 		self->think = NULL;
 }
 
-void lever3_use (edict_t *self, edict_t *other, edict_t *activator)
+static void ObjLever3Use(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'lever3_use' in original logic.
 {
-	if (!self->s.frame)
+	if (self->s.frame == 0 || self->s.frame == 5) //mxd. Rewritten, so G_UseTargets() is only called when not playing animation.
 	{
-		gi.sound (self, CHAN_BODY, gi.soundindex ("objects/lever3.wav"), 1, ATTN_NORM, 0);
-		self->think = ObjLever3DownThink;
+		gi.sound(self, CHAN_BODY, gi.soundindex("objects/lever3.wav"), 1.0f, ATTN_NORM, 0.0f);
+		self->think = (self->s.frame == 0 ? ObjLever3DownThink : ObjLever3UpThink);
+		self->nextthink = level.time + FRAMETIME; //BUGFIX, kinda. mxd. Was set outside of frame checks in original logic.
+
+		G_UseTargets(self, activator);
 	}
-	else if (self->s.frame == 5)
-	{
-		gi.sound (self, CHAN_BODY, gi.soundindex ("objects/lever3.wav"), 1, ATTN_NORM, 0);
-		self->think = ObjLever3UpThink;
-	}
- 	self->nextthink = level.time + FRAMETIME;
-	G_UseTargets(self, activator);
 }
 
 /*QUAKED obj_lever3 (1 .5 0) (-4 -6 -16) (4 6 16)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
@@ -1904,7 +1900,7 @@ void SP_obj_lever3 (edict_t *self)
 
 	ObjectInit(self,150,125,MAT_WOOD,SOLID_BBOX);
 
-	self->use = lever3_use;
+	self->use = ObjLever3Use;
 }
 
 #pragma endregion
