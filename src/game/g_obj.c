@@ -2408,51 +2408,39 @@ void SP_obj_metalchunk3(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_rocks1 (1 .5 0) ( -12 -13 -4) (12 13 4) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A bunch of rocks together
-For the MINE levels
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_rocks1 (edict_t *self)
+#pragma region ========================== obj_rocks1, obj_rocks2 ==========================
+
+// QUAKED obj_rocks1 (1 .5 0) ( -12 -13 -4) (12 13 4) INVULNERABLE
+// A bunch of rocks together. For the MINE levels.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_rocks1(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/rocks/rock1/tris.fm");
+	VectorSet(self->mins, -12.0f, -13.0f, -4.0f);
+	VectorSet(self->maxs, 12.0f, 13.0f, 4.0f);
 
-	VectorSet(self->mins,   -12, -13, -4);
-	VectorSet(self->maxs,    12,  13,  4);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/rocks/rock1/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	ObjectInit(self,75,125,MAT_GREYSTONE,SOLID_BBOX);
-
+	ObjectInit(self, 75, 125, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-/*QUAKED obj_rocks2 (1 .5 0) ( -9 -30 -4) (9 30 4) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A big rock
-For the MINE levels
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_rocks2 (edict_t *self)
+// QUAKED obj_rocks2 (1 .5 0) ( -9 -30 -4) (9 30 4) INVULNERABLE
+// A big rock. For the MINE levels.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_rocks2(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/rocks/rock2/tris.fm");
+	VectorSet(self->mins, -34.0f, -40.0f, -19.0f);
+	VectorSet(self->maxs, 34.0f, 40.0f, 19.0f);
 
-	VectorSet(self->mins,   -34, -40, -19);
-	VectorSet(self->maxs,    34,  40,  19);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/rocks/rock2/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	ObjectInit(self,75,125,MAT_GREYSTONE,SOLID_BBOX);
-
+	ObjectInit(self, 75, 125, MAT_GREYSTONE, SOLID_BBOX);
 }
+
+#pragma endregion
 
 void symbolthink(edict_t *self)
 {
