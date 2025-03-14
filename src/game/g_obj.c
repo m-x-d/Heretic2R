@@ -2700,10 +2700,11 @@ void SP_obj_statue_techeckriktomb(edict_t* self)
 	ObjectInit(self, 75, 125, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-void tcheckrik_use (edict_t *self, edict_t *other, edict_t *activator)
+static void ObjStatueTecheckrikUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'tcheckrik_use' in original logic.
 {
-	if (self->s.frame > 0)
-		--self->s.frame;
+	//BUGFIX: mxd. Fixed incorrect frame set when triggering obj_statue_techeckrikright multiple times, or even the first time if SF_NOGEM spawnflag was not set.
+	if (self->s.frame == 1 || self->s.frame == 3)
+		self->s.frame--;
 }
 
 /*QUAKED obj_statue_techeckrikright (1 .5 0) ( -26 -40 -50) (26 40 50) INVULNERABLE ANIMATE EXPLODING NOPUSH NOGEM
@@ -2732,7 +2733,7 @@ void SP_obj_statue_techeckrikright (edict_t *self)
 	if (self->spawnflags & 16)	// NOGEM
 		self->s.frame = 3;
 
-	self->use = tcheckrik_use;
+	self->use = ObjStatueTecheckrikUse;
 
 }
 
@@ -2765,7 +2766,7 @@ void SP_obj_statue_techeckrikleft (edict_t *self)
 	if (self->spawnflags & 16)	// NOGEM
 		self->s.frame = 1;
 
-	self->use = tcheckrik_use;
+	self->use = ObjStatueTecheckrikUse;
 
 }
 
