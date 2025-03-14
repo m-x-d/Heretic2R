@@ -219,26 +219,21 @@ static int ObjBarrelDie(edict_t* self, edict_t* inflictor, edict_t* attacker, in
 	return 1;
 }
 
-/*QUAKED obj_barrel (1 .5 0) (-12 -12 -19) (12 12 19) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A barrel.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - the barrel will explode and cause radius damage
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_barrel (edict_t *self)
+// QUAKED obj_barrel (1 .5 0) (-12 -12 -19) (12 12 19) INVULNERABLE x EXPLODING NOPUSH
+// A barrel.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// EXPLODING	- The barrel will explode and cause radius damage.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_barrel(edict_t* self)
 {
+	VectorSet(self->mins, -12.0f, -12.0f, -19.0f);
+	VectorSet(self->maxs, 12.0f, 12.0f, 19.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/barrel/normal/tris.fm");
-
-	VectorSet(self->mins, -12, -12, -19);
-	VectorSet(self->maxs, 12, 12, 19);
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/barrel/normal/tris.fm");
 	self->dmg = 10;
 
-	ObjectInit(self,10,60,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 10, 60, MAT_WOOD, SOLID_BBOX);
 
 	if (self->spawnflags & OBJ_EXPLODING)
 	{
