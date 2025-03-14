@@ -1037,30 +1037,30 @@ void SP_obj_statue_duckbill2(edict_t* self)
 
 #pragma endregion
 
-void globebottom_turn (edict_t *self)
+#pragma region ========================== obj_seasonglobe ==========================
+
+#define GLOBE_ENABLED	1.0f //mxd
+#define GLOBE_DISABLED	0.0f //mxd
+
+static void ObjSeasonglobeBottomThink(edict_t* self) //mxd. Named 'globebottom_turn' in original logic.
 {
-	float current, ideal, move;
-
 	M_ChangeYaw(self);
-	
-	current = anglemod(self->s.angles[YAW]);
-	ideal = self->ideal_yaw;
-	move = ideal - current;
 
-	if (current == ideal || abs(move) < 0.1)
+	const float current = anglemod(self->s.angles[YAW]);
+	const float ideal = self->ideal_yaw;
+
+	if (fabsf(ideal - current) < 0.1f)
 	{
-		self->s.angles[YAW] = ceil(ideal);
-	
-		if (self->s.angles[YAW] == 225 && self->enemy->s.angles[YAW] == 45)
-		{
+		self->s.angles[YAW] = ceilf(ideal);
+
+		if (self->s.angles[YAW] == 225.0f && self->enemy->s.angles[YAW] == 45.0f)
 			G_UseTargets(self, self);
-		}
-		self->monsterinfo.idle_time = 0;
+
+		self->monsterinfo.idle_time = GLOBE_DISABLED;
 		self->think = NULL;
 	}
 	else
 	{
-		self->think = globebottom_turn;
 		self->nextthink = level.time + FRAMETIME;
 	}
 }
@@ -1128,7 +1128,7 @@ void globebottom_use (edict_t *self, edict_t *other, edict_t *activator)
 
 	self->ideal_yaw = 225;
 
-	self->think = globebottom_turn;
+	self->think = ObjSeasonglobeBottomThink;
 	self->nextthink = level.time + FRAMETIME;
 }
 
@@ -1185,7 +1185,7 @@ void SP_obj_seasonglobe (edict_t *bottom)
 	top->enemy = bottom;
 }
 
-
+#pragma endregion
 
 /*QUAKED obj_stein (1 .5 0) (-2 -2 -3) (2 2 3)  INVULNERABLE ANIMATE EXPLODING NOPUSH
 A beer stein.
