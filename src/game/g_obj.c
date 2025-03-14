@@ -1176,86 +1176,67 @@ void SP_obj_seasonglobe(edict_t* bottom)
 
 #pragma endregion
 
-/*QUAKED obj_stein (1 .5 0) (-2 -2 -3) (2 2 3)  INVULNERABLE ANIMATE EXPLODING NOPUSH
-A beer stein.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_stein (edict_t *self)
+#pragma region ========================== obj_stein, obj_scroll, obj_fountain_fish, obj_statue_boulderfish ==========================
+
+// QUAKED obj_stein (1 .5 0) (-2 -2 -3) (2 2 3) INVULNERABLE x x NOPUSH
+// A beer stein.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_stein(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/stein/tris.fm");
+	VectorSet(self->mins, -2.0f, -2.0f, -3.0f);
+	VectorSet(self->maxs, 2.0f, 2.0f, 3.0f);
 
-	VectorSet(self->mins, -2, -2, -3);
-	VectorSet(self->maxs, 2, 2, 3);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/stein/tris.fm");
 
-	ObjectInit(self,15,10,MAT_METAL,SOLID_BBOX);
+	ObjectInit(self, 15, 10, MAT_METAL, SOLID_BBOX);
 }
 
-/*QUAKED obj_scroll (1 .5 0) (-2 -18 -3) (2 18 3)  INVULNERABLE ANIMATE EXPLODING NOPUSH
-A paper scroll
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_scroll (edict_t *self)
+// QUAKED obj_scroll (1 .5 0) (-2 -18 -3) (2 18 3) INVULNERABLE x x NOPUSH
+// A paper scroll.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_scroll(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/scroll/tris.fm");
+	VectorSet(self->mins, -2.0f, -18.0f, -3.0f);
+	VectorSet(self->maxs, 2.0f, 18.0f, 3.0f);
 
-	VectorSet(self->mins, -2, -18, -3);
-	VectorSet(self->maxs, 2, 18, 3);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/scroll/tris.fm");
 
-	ObjectInit(self,10,50,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 10, 50, MAT_WOOD, SOLID_BBOX);
 }
 
-/*QUAKED obj_fountain_fish (1 .5 0) (-52 -34 -48) (52 34 48) INVULNERABLE ANIMATE EXPLODING NOPUSH 
-A two headed fish fountain
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_fountain_fish (edict_t *self)
+// QUAKED obj_fountain_fish (1 .5 0) (-52 -34 -48) (52 34 48)
+// A two-headed fish fountain.
+void SP_obj_fountain_fish(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/fountainfish/tris.fm");
+	VectorSet(self->mins, -52.0f, -34.0f, -48.0f);
+	VectorSet(self->maxs, 52.0f, 34.0f, 48.0f);
 
-	VectorSet(self->mins, -52, -34, -48);
-	VectorSet(self->maxs, 52, 34, 48);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/fountainfish/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	ObjectInit(self,40,50,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 40, 50, MAT_WOOD, SOLID_BBOX);
 }
 
-/*QUAKED obj_statue_boulderfish (1 .5 0) (-26 -16 -27) (26 16 27) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A statue of a fish. The one which raises up a boulder.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_statue_boulderfish (edict_t *self)
+// QUAKED obj_statue_boulderfish (1 .5 0) (-26 -16 -27) (26 16 27) INVULNERABLE
+// A statue of a fish. The one which raises up a boulder.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_statue_boulderfish(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/statue/boulderfish/tris.fm");
+	VectorSet(self->mins, -26.0f, -16.0f, -27.0f);
+	VectorSet(self->maxs, 26.0f, 16.0f, 27.0f);
 
-	VectorSet(self->mins, -26, -16, -27);
-	VectorSet(self->maxs, 26, 16, 27);
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/boulderfish/tris.fm");
 	self->spawnflags |= OBJ_NOPUSH;
 
-	ObjectInit(self,200,150,MAT_GREYSTONE,SOLID_BBOX);
+	ObjectInit(self, 200, 150, MAT_GREYSTONE, SOLID_BBOX);
 }
+
+#pragma endregion
 
 /*QUAKED obj_pottedplant (1 .5 0) (-20 -20 -30) (20 20 30)  INVULNERABLE ANIMATE EXPLODING NOPUSH
 A potted plant with ferns
