@@ -1308,189 +1308,136 @@ void SP_obj_plant3(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_treetop (1 .5 0) (-176 -176 -125) (176 176 125) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A canopy for a tree. 
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (treetop can't be moved)
------------------------------------
-*/
-void SP_obj_treetop (edict_t *self)
+#pragma region ========================== obj_treetop, obj_tree, obj_tree2, obj_tree3, obj_treetall, obj_treefallen ==========================
+
+// QUAKED obj_treetop (1 .5 0) (-176 -176 -125) (176 176 125)
+// A canopy for a tree.
+void SP_obj_treetop(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/plants/treetop/tris.fm");
+	VectorSet(self->mins, -176.0f, -176.0f, -125.0f);
+	VectorSet(self->maxs, 176.0f, 176.0f, 125.0f);
 
-	VectorSet(self->mins, -176, -176, -125);
-	VectorSet(self->maxs,  176,  176,  125);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/treetop/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	ObjectInit(self,40,50,MAT_WOOD,SOLID_NOT);
+	ObjectInit(self, 40, 50, MAT_WOOD, SOLID_NOT);
 }
 
-/*QUAKED obj_tree (1 .5 0) (-100 -100 -120) (100 100 120) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A tree for Matt's level
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (tree can't be moved)
------------------------------------
-*/
-void SP_obj_tree (edict_t *self)
+// QUAKED obj_tree (1 .5 0) (-100 -100 -120) (100 100 120)
+// A tree for Matt's level. //mxd. Unfinished texture.
+void SP_obj_tree(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/plants/tree/tris.fm");
+	VectorSet(self->mins, -100.0f, -100.0f, -120.0f);
+	VectorSet(self->maxs, 100.0f, 100.0f, 120.0f);
 
-	VectorSet(self->mins, -100, -100, -120);
-	VectorSet(self->maxs, 100, 100, 120);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/tree/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	ObjectInit(self,40,50,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 40, 50, MAT_WOOD, SOLID_BBOX);
 }
 
-/*QUAKED obj_tree2 (1 .5 0) (-50 -50 -286) (50 50 286) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A tall spikey tree for the swamps
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (tree2 can't be moved)
------------------------------------
-*/
-void SP_obj_tree2 (edict_t *self)
+// QUAKED obj_tree2 (1 .5 0) (-50 -50 -286) (50 50 286)
+// A tall spikey tree for the swamps.
+void SP_obj_tree2(edict_t* self)
 {
-	edict_t *moss;
+	VectorSet(self->mins, -50.0f, -50.0f, -286.0f);
+	VectorSet(self->maxs, 50.0f, 50.0f, 286.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/plants/tree2/trunk2/tris.fm");
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/tree2/trunk2/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	VectorSet(self->mins, -50, -50, -286);
-	VectorSet(self->maxs, 50, 50, 286);
+	ObjectInit(self, 40, 50, MAT_WOOD, SOLID_BBOX);
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
+	// Spawn moss. //mxd. Why is this a separate model?..
+	edict_t* moss = G_Spawn();
 
-	ObjectInit(self,40,50,MAT_WOOD,SOLID_BBOX);
+	VectorCopy(self->s.origin, moss->s.origin);
+	VectorCopy(self->s.angles, moss->s.angles);
 
-
-	moss = G_Spawn();
-	VectorCopy(self->s.origin,moss->s.origin);
-	VectorCopy(self->s.angles,moss->s.angles);
-	moss->s.modelindex = gi.modelindex("models/objects/plants/tree2/moss2/tris.fm");
+	moss->s.modelindex = (byte)gi.modelindex("models/objects/plants/tree2/moss2/tris.fm");
 	moss->movetype = PHYSICSTYPE_NONE;
 	moss->solid = SOLID_NOT;
 	moss->s.scale = self->s.scale;
 	moss->s.renderfx |= RF_TRANSLUCENT;
-
-
 	BboxYawAndScale(moss);
-	gi.linkentity (moss);
+	gi.linkentity(moss);
 
 	self->target_ent = moss;
 }
 
-/*QUAKED obj_tree3 (1 .5 0) (-50 -50 -286) (50 50 286) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A tall spikey tree with big roots on the bottom.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (tree3 can't be moved)
------------------------------------
-*/
-void SP_obj_tree3 (edict_t *self)
+// QUAKED obj_tree3 (1 .5 0) (-50 -50 -286) (50 50 286)
+// A tall spikey tree with big roots on the bottom.
+void SP_obj_tree3(edict_t* self)
 {
-	edict_t *moss;
+	VectorSet(self->mins, -50.0f, -50.0f, -286.0f);
+	VectorSet(self->maxs, 50.0f, 50.0f, 286.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/plants/tree3/trunk3/tris.fm");
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/tree3/trunk3/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	VectorSet(self->mins, -50, -50, -286);
-	VectorSet(self->maxs, 50, 50, 286);
+	ObjectInit(self, 40, 50, MAT_WOOD, SOLID_BBOX);
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
+	// Spawn moss. //mxd. Why is this a separate model?..
+	edict_t* moss = G_Spawn();
 
-	ObjectInit(self,40,50,MAT_WOOD,SOLID_BBOX);
+	VectorCopy(self->s.origin, moss->s.origin);
+	VectorCopy(self->s.angles, moss->s.angles);
 
-	moss = G_Spawn();
-	VectorCopy(self->s.origin,moss->s.origin);
-	VectorCopy(self->s.angles,moss->s.angles);
-	moss->s.modelindex = gi.modelindex("models/objects/plants/tree3/moss3/tris.fm");
+	moss->s.modelindex = (byte)gi.modelindex("models/objects/plants/tree3/moss3/tris.fm");
 	moss->movetype = PHYSICSTYPE_NONE;
 	moss->solid = SOLID_NOT;
 	moss->s.scale = self->s.scale;
 	moss->s.renderfx |= RF_TRANSLUCENT;
-
 	BboxYawAndScale(moss);
-	gi.linkentity (moss);
+	gi.linkentity(moss);
 
 	self->target_ent = moss;
 }
 
-/*QUAKED obj_treetall (1 .5 0) (-46 -46 -340) (46 46 340) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A very tall tree
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (tree3 can't be moved)
------------------------------------
-*/
-void SP_obj_treetall (edict_t *self)
+// QUAKED obj_treetall (1 .5 0) (-46 -46 -340) (46 46 340)
+// A very tall tree.
+void SP_obj_treetall(edict_t* self)
 {
-	edict_t *moss;
+	VectorSet(self->mins, -46.0f, -46.0f, -340.0f);
+	VectorSet(self->maxs, 46.0f, 46.0f, 340.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/plants/talltree/trunk1/tris.fm");
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/talltree/trunk1/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	VectorSet(self->mins, -46, -46, -340);
-	VectorSet(self->maxs, 46, 46, 340);
+	ObjectInit(self, 40, 50, MAT_WOOD, SOLID_BBOX);
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
+	// Spawn moss. //mxd. Why is this a separate model?..
+	edict_t* moss = G_Spawn();
 
-	ObjectInit(self,40,50,MAT_WOOD,SOLID_BBOX);
+	VectorCopy(self->s.origin, moss->s.origin);
+	VectorCopy(self->s.angles, moss->s.angles);
 
-	moss = G_Spawn();
-	VectorCopy(self->s.origin,moss->s.origin);
-	VectorCopy(self->s.angles,moss->s.angles);
-	moss->s.modelindex = gi.modelindex("models/objects/plants/talltree/moss1/tris.fm");
+	moss->s.modelindex = (byte)gi.modelindex("models/objects/plants/talltree/moss1/tris.fm");
 	moss->movetype = PHYSICSTYPE_NONE;
 	moss->solid = SOLID_NOT;
 	moss->s.renderfx |= RF_TRANSLUCENT;
 	moss->s.scale = self->s.scale;
 	BboxYawAndScale(moss);
-	gi.linkentity (moss);
+	gi.linkentity(moss);
 
 	self->target_ent = moss;
 }
 
-/*QUAKED obj_treefallen (1 .5 0) (-24 -62 -35) (24 62 35) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A tree that is leaning as if it had over. Meant to be partially submerged in water or muck.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (treefallen can't be moved)
------------------------------------
-*/
-void SP_obj_treefallen (edict_t *self)
+// QUAKED obj_treefallen (1 .5 0) (-24 -62 -35) (24 62 35)
+// A cactus tree that is leaning as if it had over. Meant to be partially submerged in water or muck.
+void SP_obj_treefallen(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/plants/cactus/tris.fm");
+	VectorSet(self->mins, -24.0f, -62.0f, -35.0f);
+	VectorSet(self->maxs, 24.0f, 62.0f, 35.0f);
 
-	VectorSet(self->mins, -24, -62, -35);
-	VectorSet(self->maxs, 24, 62, 35);
-
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	ObjectInit(self,40,50,MAT_WOOD,SOLID_BBOX);
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/cactus/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.frame = 1;
+
+	ObjectInit(self, 40, 50, MAT_WOOD, SOLID_BBOX);
 }
 
+#pragma endregion
 
 /*QUAKED obj_shovel (1 .5 0) (-8 -8 -20) (8 8 20)  INVULNERABLE ANIMATE EXPLODING NOPUSH
 A shovel
