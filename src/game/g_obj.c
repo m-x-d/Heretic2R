@@ -199,11 +199,11 @@ static void ObjBarrelExplodeThink(edict_t* self) //mxd. Named 'barrel_explode_th
 	G_SetToFree(self);
 }
 
-int barrel_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
+static int ObjBarrelDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'barrel_explode_think' in original logic.
 {
 	self->think = ObjBarrelExplodeThink;
 	self->nextthink = level.time + FRAMETIME;
-	self->owner = attacker;					// The one to get credit for this should be the one destroying the barrel.
+	self->owner = attacker; // The one to get credit for this should be the one destroying the barrel.
 
 	self->takedamage = DAMAGE_NO;
 	self->movetype = PHYSICSTYPE_NONE;
@@ -218,8 +218,6 @@ int barrel_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage,
 
 	return 1;
 }
-
-
 
 /*QUAKED obj_barrel (1 .5 0) (-12 -12 -19) (12 12 19) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A barrel.
@@ -246,7 +244,7 @@ void SP_obj_barrel (edict_t *self)
 	{
 		// Set this up so we go through die rather than the message.
 		self->classID = CID_NONE;
-		self->die = barrel_die;
+		self->die = ObjBarrelDie;
 		self->s.skinnum = 1;
 	}
 }
