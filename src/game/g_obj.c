@@ -381,34 +381,33 @@ void SP_obj_chest3(edict_t* self)
 
 #pragma endregion
 
-void cog1_anim (edict_t *self)
+#pragma region ========================== obj_cog1 ==========================
+
+static void ObjCog1AnimThink(edict_t* self) //mxd. Named 'cog1_anim' in original logic.
 {
+	if (++self->s.frame > 11)
+		self->s.frame = 1;
 
-	if (self->s.frame < 11)
-		++self->s.frame;
-	else
-		self->s.frame=1;
-
-	if (self->touch_debounce_time > level.time)	// First time through reach anim
+	if (self->touch_debounce_time > level.time) // First time through reach anim.
 	{
-		self->think = cog1_anim;
-		self->nextthink = level.time + FRAMETIME * 2;
+		self->nextthink = level.time + FRAMETIME * 2.0f;
 	}
 	else
 	{
-		gi.sound (self, CHAN_VOICE, gi.soundindex("misc/null.wav"), 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_VOICE, gi.soundindex("misc/null.wav"), 1.0f, ATTN_NORM, 0.0f);
 		self->think = NULL;
 	}
 }
 
-void cog1_use (edict_t *self, edict_t *other, edict_t *activator)
+static void ObjCog1Use(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'cog1_use' in original logic.
 {
-	gi.sound (self, CHAN_VOICE, gi.soundindex("items/cogsturn.wav"), 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_VOICE, gi.soundindex("items/cogsturn.wav"), 1.0f, ATTN_NORM, 0.0f);
 
-	self->touch_debounce_time = level.time + (FRAMETIME * 30);
+	self->touch_debounce_time = level.time + (FRAMETIME * 30.0f);
+	self->s.frame = 1;
 
-	self->s.frame=1;
-	cog1_anim(self);
+	self->think = ObjCog1AnimThink;
+	self->nextthink = level.time + FRAMETIME * 2.0f;
 }
 
 /*QUAKED obj_cog1 (1 .5 0) (-8 -4 0) (8 4 20) INVULNERABLE ANIMATE EXPLODING NOPUSH
@@ -432,11 +431,12 @@ void SP_obj_cog1 (edict_t *self)
 
 	ObjectInit(self,40,20,MAT_WOOD,SOLID_BBOX);
 
-	self->use = cog1_use;
+	self->use = ObjCog1Use;
 
 
 }
 
+#pragma endregion
 
 void SpawnCorpse(edict_t *self)
 {
