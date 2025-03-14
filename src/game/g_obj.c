@@ -1238,105 +1238,75 @@ void SP_obj_statue_boulderfish(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_pottedplant (1 .5 0) (-20 -20 -30) (20 20 30)  INVULNERABLE ANIMATE EXPLODING NOPUSH
-A potted plant with ferns
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_pottedplant (edict_t *self)
+#pragma region ========================== obj_pottedplant, obj_plant1, obj_plant2, obj_plant3 ==========================
+
+// QUAKED obj_pottedplant (1 .5 0) (-20 -20 -30) (20 20 30) INVULNERABLE x x NOPUSH
+// A potted plant with ferns.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_pottedplant(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/pots/plant/tris.fm");
+	VectorSet(self->mins, -20.0f, -20.0f, -30.0f);
+	VectorSet(self->maxs, 20.0f, 20.0f, 30.0f);
 
-	VectorSet(self->mins, -20, -20, -30);
-	VectorSet(self->maxs, 20, 20, 30);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/plant/tris.fm");
 
-	ObjectInit(self,20,50,MAT_POTTERY,SOLID_BBOX);
+	ObjectInit(self, 20, 50, MAT_POTTERY, SOLID_BBOX);
 }
 
-/*QUAKED obj_plant1 (1 .5 0) (-8 -8 -24) (8 8 24) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A clump of tall, thin, plants
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (plant1 can't be moved)
------------------------------------
-*/
-void SP_obj_plant1 (edict_t *self)
+// QUAKED obj_plant1 (1 .5 0) (-8 -8 -24) (8 8 24) INVULNERABLE
+// A clump of tall, thin, plants.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_plant1(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/plants/plant1/tris.fm");
+	VectorSet(self->mins, -8.0f, -8.0f, -24.0f);
+	VectorSet(self->maxs, 8.0f, 8.0f, 24.0f);
 
-	// The bbox in QUAKED comment is bigger than code bbox to show designers how big model is
-	VectorSet(self->mins, -8, -8, -24);
-	VectorSet(self->maxs, 8, 8, 24);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/plant1/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->s.effects |= EF_CAMERA_NO_CLIP;
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	self->s.effects|=EF_CAMERA_NO_CLIP;
-
-	ObjectInit(self,20,50,MAT_LEAF,SOLID_NOT);
-
+	ObjectInit(self, 20, 50, MAT_LEAF, SOLID_NOT);
 }
 
-/*QUAKED obj_plant2 (1 .5 0) (-20 -20 -10) (20 20 20) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A plant with broad leaves.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (plant2 can't be moved)
------------------------------------
-*/
-void SP_obj_plant2 (edict_t *self)
+// QUAKED obj_plant2 (1 .5 0) (-20 -20 -10) (20 20 20) INVULNERABLE
+// A plant with broad leaves.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_plant2(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/plants/plant2/tris.fm");
+	VectorSet(self->mins, -20.0f, -20.0f, -10.0f);
+	VectorSet(self->maxs, 20.0f, 20.0f, 20.0f);
 
-	// The bbox in QUAKED comment is bigger than code bbox to show designers how big model is
-	VectorSet(self->mins, -20, -20, -10);
-	VectorSet(self->maxs, 20, 20, 20);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/plant2/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->s.effects |= EF_CAMERA_NO_CLIP;
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	self->s.effects|=EF_CAMERA_NO_CLIP;
-
-	ObjectInit(self,20,50,MAT_LEAF,SOLID_NOT);
-
+	ObjectInit(self, 20, 50, MAT_LEAF, SOLID_NOT);
 }
 
-/*QUAKED obj_plant3 (1 .5 0) (-8 -8 -12) (8 8 12) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A group of ferns
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (plant3 can't be moved)
------------------------------------
-*/
-void SP_obj_plant3 (edict_t *self)
+// QUAKED obj_plant3 (1 .5 0) (-8 -8 -12) (8 8 12) INVULNERABLE
+// A group of ferns.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// Variables:
+// style - Fern skin (0 - 2).
+void SP_obj_plant3(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/plants/plant3/tris.fm");
+	VectorSet(self->mins, -8.0f, -8.0f, -12.0f);
+	VectorSet(self->maxs, 8.0f, 8.0f, 12.0f);
 
-	VectorSet(self->mins, -8, -8, -12);
-	VectorSet(self->maxs, 8, 8, 12);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/plant3/tris.fm");
+	self->s.skinnum = ClampI(self->style, 0, 2); //mxd
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->s.effects |= EF_CAMERA_NO_CLIP;
 
-	if (self->style==0)
-		self->s.skinnum = 0;
-	else if (self->style==1)
-		self->s.skinnum = 1;
-	else if (self->style==2)
-		self->s.skinnum = 2;
-
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	self->s.effects|=EF_CAMERA_NO_CLIP;
-
-	ObjectInit(self,20,50,MAT_LEAF,SOLID_NOT);
-
+	ObjectInit(self, 20, 50, MAT_LEAF, SOLID_NOT);
 }
+
+#pragma endregion
 
 /*QUAKED obj_treetop (1 .5 0) (-176 -176 -125) (176 176 125) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A canopy for a tree. 
