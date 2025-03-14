@@ -1065,39 +1065,33 @@ static void ObjSeasonglobeBottomThink(edict_t* self) //mxd. Named 'globebottom_t
 	}
 }
 
-void globetop_turn (edict_t *self)
+static void ObjSeasonglobeTopThink(edict_t* self) //mxd. Named 'globetop_turn' in original logic.
 {
-	float current, ideal, move;
-
 	M_ChangeYaw(self);
-	
-	current = anglemod(self->s.angles[YAW]);
-	ideal = self->ideal_yaw;
-	move = ideal - current;
 
-	if (current == ideal || abs(move) < 0.1)
+	const float current = anglemod(self->s.angles[YAW]);
+	const float ideal = self->ideal_yaw;
+
+	if (fabsf(ideal - current) < 0.1f)
 	{
-		self->s.angles[YAW] = ceil(ideal);
+		self->s.angles[YAW] = ceilf(ideal);
 
-		if (self->s.angles[YAW] == 270)	// Because they want it to swing all the way around
+		if (self->s.angles[YAW] == 270.0f) // Because they want it to swing all the way around.
 		{
-			self->ideal_yaw = 45;
-			self->think = globetop_turn;
+			self->ideal_yaw = 45.0f;
 			self->nextthink = level.time + FRAMETIME;
 		}
 		else
 		{
-			if (self->s.angles[YAW] == 45 && self->enemy->s.angles[YAW] == 225)
-			{
+			if (self->s.angles[YAW] == 45.0f && self->enemy->s.angles[YAW] == 225.0f)
 				G_UseTargets(self, self);
-			}
-			self->monsterinfo.idle_time = 0;
+
+			self->monsterinfo.idle_time = GLOBE_DISABLED;
 			self->think = NULL;
 		}
 	}
 	else
 	{
-		self->think = globetop_turn;
 		self->nextthink = level.time + FRAMETIME;
 	}
 }
@@ -1113,7 +1107,7 @@ void globetop_use (edict_t *self, edict_t *other, edict_t *activator)
 
 	self->ideal_yaw = 270;
 
-	self->think = globetop_turn;
+	self->think = ObjSeasonglobeTopThink;
 	self->nextthink = level.time + FRAMETIME;
 }
 
