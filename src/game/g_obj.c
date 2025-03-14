@@ -2909,45 +2909,32 @@ void SP_obj_torture_wallring(edict_t* self)
 
 #pragma endregion
 
-void statue_tchecktrik_bust_use (edict_t *self, edict_t *other, edict_t *activator)
+#pragma region ========================== obj_statue_tchecktrik_bust ==========================
+
+static void ObjStatueTchecktrikBustUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'statue_tchecktrik_bust_use' in original logic.
 {
-	if (self->s.frame)
-		self->s.frame = 0;
-	else
-		self->s.frame = 1;
+	self->s.frame = (short)(!self->s.frame); // Flip between 2 frames of animation. //TODO: would be nice to disable frame interpolation on this (would require implementing new FX_ flag)...
 }
 
-/*QUAKED obj_statue_tchecktrik_bust (1 .5 0) (-8 -12 -15) (8 12 15) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A bust of a tchecktrik.  When used a necklace appears aroundit's neck.
-style - 
-0 - no necklace until used then necklace appears
-1 - necklace until used then necklace disappears
--------  FIELDS  ------------------
-INVULNERABLE - N/A  (can't be hurt)
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_statue_tchecktrik_bust (edict_t *self) 
+// QUAKED obj_statue_tchecktrik_bust (1 .5 0) (-8 -12 -15) (8 12 15)
+// A bust of a tchecktrik. When used, a necklace appears aroundit's neck.
+// style:
+//		0 - No necklace until used.
+//		1 - Necklace until used.
+void SP_obj_statue_tchecktrik_bust(edict_t* self)
 {
-	VectorSet(self->mins, -8, -12, -15);
-	VectorSet(self->maxs, 8, 12, 15);
+	VectorSet(self->mins, -8.0f, -12.0f, -15.0f);
+	VectorSet(self->maxs, 8.0f, 12.0f, 15.0f);
 
-	self->s.modelindex = gi.modelindex("models/items/puzzles/tchecktrikbust/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
+	self->s.modelindex = (byte)gi.modelindex("models/items/puzzles/tchecktrikbust/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->s.frame = (short)(self->style == 0 ? 1 : 0);
+	self->use = ObjStatueTchecktrikBustUse;
 
-	if (!self->style)
-		self->s.frame = 1;
-	else
-		self->s.frame = 0;
-
-	self->use = statue_tchecktrik_bust_use;
-
-	ObjectInit(self,250,200,MAT_GREYSTONE,SOLID_BBOX);
-
+	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
+
+#pragma endregion
 
 void statue_sithraguard_think (edict_t *self)
 {
