@@ -327,10 +327,9 @@ static void ObjChest1Anim(edict_t* self) //mxd. Named 'chest1_anim' in original 
 	}
 }
 
-void chest1_use (edict_t *self, edict_t *other, edict_t *activator)
+static void ObjChest1Use(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'chest1_use' in original logic.
 {
-	gi.sound (self, CHAN_VOICE, gi.soundindex("objects/chest.wav"), 1, ATTN_NORM, 0);
-
+	gi.sound(self, CHAN_VOICE, gi.soundindex("objects/chest.wav"), 1.0f, ATTN_NORM, 0.0f);
 	ObjChest1Anim(self);
 }
 
@@ -352,7 +351,7 @@ void SP_obj_chest1 (edict_t *self)
 
 	ObjectInit(self,60,150,MAT_WOOD,SOLID_BBOX);
 
-	self->use = chest1_use;
+	self->use = ObjChest1Use;
 }
 
 /*QUAKED obj_chest2 (1 .5 0) (-14 -17 -9) (14 17 9) INVULNERABLE ANIMATE EXPLODING NOPUSH
