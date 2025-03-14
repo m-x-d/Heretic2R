@@ -2767,41 +2767,31 @@ static void ObjSpellbookUse(edict_t* self, edict_t* other, edict_t* activator) /
 	gi.sound(self, CHAN_BODY, gi.soundindex("misc/spbook.wav"), 1.0f, ATTN_NORM, 0.0f);
 }
 
-/*QUAKED obj_spellbook (1 .5 0) ( -14 -14 -35) (14 14 40) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A spell book that closes when triggered.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_spellbook (edict_t *self)
+// QUAKED obj_spellbook (1 .5 0) ( -14 -14 -35) (14 14 40)
+// A spell book that closes when triggered.
+void SP_obj_spellbook(edict_t* self)
 {
-	edict_t *beam;
+	VectorSet(self->mins, -14.0f, -14.0f, -35.0f);
+	VectorSet(self->maxs, 14.0f, 14.0f, 40.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/spellbook/book/tris.fm");
-
-	VectorSet(self->mins,   -14, -14, -35);
-	VectorSet(self->maxs,    14,  14,  40);
-
-	self->spawnflags |= OBJ_INVULNERABLE;	// Always indestructible
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/spellbook/book/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->s.frame = 20; // Book is open.
 	self->use = ObjSpellbookUse;
-	ObjectInit(self,75,125,MAT_NONE,SOLID_BBOX);
-	self->s.frame = 20;
 
-	beam = G_Spawn();
+	ObjectInit(self, 75, 125, MAT_NONE, SOLID_BBOX);
 
-	VectorCopy(self->s.origin,beam->s.origin);
-	beam->s.origin[2] += 2;
+	// Spawn beam.
+	edict_t* beam = G_Spawn(); //TODO: add RF_TRANS_ADD renderfx flag?
+
+	beam->s.modelindex = (byte)gi.modelindex("models/objects/spellbook/beam/tris.fm"); //TODO: model has weird 10-frames animation. 
+	VectorCopy(self->s.origin, beam->s.origin);
+	beam->s.origin[2] += 2.0f;
+	beam->s.angles[YAW] = self->s.angles[YAW]; //BUGFIX: mxd. Set after calling BboxYawAndScale() in original logic.
 	beam->movetype = PHYSICSTYPE_NONE;
 	beam->solid = SOLID_NOT;
-	beam->s.modelindex = gi.modelindex("models/objects/spellbook/beam/tris.fm");
 	BboxYawAndScale(beam);
-	beam->s.angles[YAW] = self->s.angles[YAW];
-	gi.linkentity (beam);
+	gi.linkentity(beam);
 
 	self->target_ent = beam;
 }
