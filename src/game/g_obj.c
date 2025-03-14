@@ -2676,12 +2676,15 @@ void SP_obj_venusflytrap(edict_t* self)
 
 #pragma endregion
 
-void tomb_use (edict_t *self, edict_t *other, edict_t *activator)
+#pragma region ========================== obj_statue_techeckriktomb, obj_statue_techeckrikright, obj_statue_techeckrikleft ==========================
+
+#define SF_NOGEM	16 //mxd
+
+static void ObjStatueTecheckrikTombUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'tomb_use' in original logic.
 {
-	--self->s.frame;
-	if (self->s.frame < 0)
-		self->s.frame=1;
+	self->s.frame = (short)(!self->s.frame); // Flip between 2 frames of animation. //TODO: would be nice to disable frame interpolation on this (would require implementing new FX_ flag)...
 }
+
 /*QUAKED obj_statue_techeckriktomb (1 .5 0) ( -41 -11 -14) (41 11 14) INVULNERABLE ANIMATE EXPLODING NOPUSH
 The statue of the techeckrik laying down.
 -------  FIELDS  ------------------
@@ -2705,7 +2708,7 @@ void SP_obj_statue_techeckriktomb (edict_t *self)
 
 	self->s.frame = 1;
 
-	self->use = tomb_use;
+	self->use = ObjStatueTecheckrikTombUse;
 }
 
 
@@ -2778,6 +2781,7 @@ void SP_obj_statue_techeckrikleft (edict_t *self)
 
 }
 
+#pragma endregion
 
 void spellbook_anim (edict_t *self)
 {
