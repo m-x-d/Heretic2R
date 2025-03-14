@@ -3117,25 +3117,19 @@ void SP_obj_statue_saraphbust(edict_t* self)
 
 #pragma endregion
 
-#define FISHBOB_HEIGHT		.1
-#define FISHBOB_SPEED		ANGLE_10
+#pragma region ========================== obj_biotank ==========================
 
-void fish_anim (edict_t *self)
+static void ObjBiotankContentsAnimThink(edict_t* self) //mxd. Named 'fish_anim' in original logic.
 {
+#define FISHBOB_HEIGHT	0.1f
+#define FISHBOB_SPEED	ANGLE_10
 
-  	M_ChangeYaw(self);
+	M_ChangeYaw(self);
 
-	self->s.origin[2] += (cos(self->moveinfo.current_speed) * FISHBOB_HEIGHT); 
+	self->s.origin[2] += cosf(self->moveinfo.current_speed) * FISHBOB_HEIGHT;
 	self->moveinfo.current_speed += FISHBOB_SPEED;
+	self->s.frame = (short)((self->s.frame < self->count) ? self->s.frame + 1 : 0);
 
-	if (self->s.frame < self->count)
-	{
-		++self->s.frame;
-	}
-	else
-		self->s.frame=0;
-
-	self->think = fish_anim;
 	self->nextthink = level.time + FRAMETIME;
 }
 
@@ -3295,13 +3289,14 @@ void SP_obj_biotank (edict_t *self)
 
 	gi.linkentity (fish);
 
-	fish->think = fish_anim;
+	fish->think = ObjBiotankContentsAnimThink;
 	fish->nextthink = level.time + FRAMETIME;
 
 	self->target_ent = fish;
 	self->touch = biotank_touch;
 }
 
+#pragma endregion
 
 /*QUAKED obj_tapper (1 .5 0) (-2 -5 -2) (2 5 2) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A tapper for a keg 
