@@ -2272,69 +2272,56 @@ void SP_obj_pipewheel(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_minecart (1 .5 0) (-18 -29 -20) (18 29 20) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A full mine cart used on the mine levels.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_minecart (edict_t *self)
+#pragma region ========================== obj_minecart, obj_minecart2, obj_minecart3 ==========================
+
+// QUAKED obj_minecart (1 .5 0) (-18 -29 -20) (18 29 20) INVULNERABLE x x NOPUSH
+// A full mine cart used on the mine levels.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_minecart(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/carts/mine/tris.fm");
+	VectorSet(self->mins, -18.0f, -29.0f, -20.0f);
+	VectorSet(self->maxs, 18.0f, 29.0f, 20.0f);
 
-	VectorSet(self->mins,  -18, -29, -20);
-	VectorSet(self->maxs,   18,  29,  20);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/carts/mine/tris.fm");
 
-	ObjectInit(self,75,125,MAT_WOOD,SOLID_BBOX);
-	self->s.frame = 0;
-
+	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX); //TODO: should be MAT_METAL?
 }
 
-/*QUAKED obj_minecart2 (1 .5 0) (-18 -29 -20) (18 29 20) INVULNERABLE ANIMATE EXPLODING NOPUSH
-An empty mine cart used on the mine levels.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_minecart2 (edict_t *self)
+// QUAKED obj_minecart2 (1 .5 0) (-18 -29 -20) (18 29 20) INVULNERABLE x x NOPUSH
+// An empty mine cart used on the mine levels.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_minecart2(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/carts/mine/tris.fm");
+	VectorSet(self->mins, -18.0f, -29, -20.0f);
+	VectorSet(self->maxs, 18.0f, 29.0f, 20.0f);
 
-	VectorSet(self->mins,  -18, -29, -20);
-	VectorSet(self->maxs,   18,  29,  20);
-
-	ObjectInit(self,75,125,MAT_WOOD,SOLID_BBOX);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/carts/mine/tris.fm");
 	self->s.frame = 20;
 
+	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX); //TODO: should be MAT_METAL?
 }
 
-
-/*QUAKED obj_minecart3 (1 .5 0) (-18 -29 -15) (18 29 20) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A busted mine cart used on the mine levels.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_minecart3 (edict_t *self)
+// QUAKED obj_minecart3 (1 .5 0) (-18 -29 -15) (18 29 20) INVULNERABLE x x NOPUSH
+// A busted mine cart used on the mine levels.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_minecart3(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/carts/mine/tris.fm");
+	VectorSet(self->mins, -18.0f, -29.0f, -15.0f);
+	VectorSet(self->maxs, 18.0f, 29.0f, 20.0f);
 
-	VectorSet(self->mins,  -18, -29, -15);
-	VectorSet(self->maxs,   18,  29,  20);
-
-	ObjectInit(self,75,125,MAT_WOOD,SOLID_BBOX);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/carts/mine/tris.fm");
 	self->s.frame = 40;
 
+	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX); //TODO: should be MAT_METAL?
 }
+
+#pragma endregion
 
 /*QUAKED obj_andwallhanging (1 .5 0) ( 0 -19 -24) (4 19 24) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A circular Andorian wall hanging.
