@@ -2875,59 +2875,39 @@ void SP_obj_jug1(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_torture_table (1 .5 0) ( -46 -14 -14) (46 14 14) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A table useful for wringing confessions from your broken and pitiful enemies.
-style - the frame of animation for model
- 0 -table is down
- 1 - table is in upright position
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't ever be moved by player)
------------------------------------
-*/
-void SP_obj_torture_table (edict_t *self)
+#pragma region ========================== obj_torture_table, obj_torture_wallring ==========================
+
+// QUAKED obj_torture_table (1 .5 0) ( -46 -14 -14) (46 14 14)
+// A table useful for wringing confessions from your broken and pitiful enemies.
+// style - The frame of animation for model (0: Table is down, 1: Table is in upright position).
+void SP_obj_torture_table(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/torture/table/tris.fm");
+	VectorSet(self->mins, -46.0f, -14.0f, -14.0f);
+	VectorSet(self->maxs, 46.0f, 14.0f, 14.0f);
 
-	VectorSet(self->mins,   -46, -14, -14);
-	VectorSet(self->maxs,    46,  14,  14);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/table/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->s.frame = (short)ClampI(self->style, 0, 1); //mxd
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	if (self->style < 2)
-		self->s.frame = self->style;
-	else
-		self->s.frame = 0;
-
-	ObjectInit(self,75,125,MAT_WOOD,SOLID_BBOX);
-
+	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX);
 }
 
-
-/*QUAKED obj_torture_wallring (1 .5 0) ( -2 -4 -6) (2 4 6) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A ring that hangs from a wall
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't ever be moved by player)
------------------------------------
-*/
-void SP_obj_torture_wallring (edict_t *self)
+// QUAKED obj_torture_wallring (1 .5 0) ( -2 -4 -6) (2 4 6) INVULNERABLE
+// A ring that hangs from a wall.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_torture_wallring(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/torture/wallring/tris.fm");
+	VectorSet(self->mins, -2.0f, -4.0f, -6.0f);
+	VectorSet(self->maxs, 2.0f, 4.0f, 6.0f);
 
-	VectorSet(self->mins,   -2, -4, -6);
-	VectorSet(self->maxs,    2,  4,  6);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/wallring/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	ObjectInit(self,75,125,MAT_METAL,SOLID_BBOX);
-
+	ObjectInit(self, 75, 125, MAT_METAL, SOLID_BBOX);
 }
+
+#pragma endregion
 
 void statue_tchecktrik_bust_use (edict_t *self, edict_t *other, edict_t *activator)
 {
