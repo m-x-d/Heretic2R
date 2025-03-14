@@ -2523,77 +2523,63 @@ void SP_obj_queenchair(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_shrine (1 .5 0) ( -26 -38 -38) (26 38 38) INVULNERABLE ANIMATE EXPLODING NOPUSH
-Its a shrine
-For all levels
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
----------- KEYS -----------------  
-style - (default 0) type of shrine
-   0 - heal
-   1 - mana
-   2 - lungs
-   3 - light
-   4 - power up
-   5 - armor
-   6 - armor gold
-   7 - random
-   8 - reflection
-   9 - staff
-  10 - ghost
-  11 - speed
------------------------------------
+#pragma region ========================== obj_shrine ==========================
 
-*/
-void SP_obj_shrine (edict_t *self)
+// QUAKED obj_shrine (1 .5 0) ( -26 -38 -38) (26 38 38)
+// Its a shrine. For all levels.
+// Variables:
+// style - Type of shrine effect (matches SHRINEBALL_XXX in fx_shrine.c):
+//		0 - Heal (default).
+//		1 - Mana.
+//		2 - Lungs.
+//		3 - Light.
+//		4 - Power up.
+//		5 - Armor.
+//		6 - Armor gold.
+//		7 - Random.
+//		8 - Reflection.
+//		9 - Staff.
+//		10 - Ghost.
+//		11 - Speed.
+void SP_obj_shrine(edict_t* self)
 {
-	vec3_t	offset2;
-	vec3_t	offset;
-
-	if (deathmatch->value && ((int)dmflags->value & DF_NO_SHRINE))
+	if ((DEATHMATCH && (DMFLAGS & DF_NO_SHRINE)) || (self->style == 11 && (int)no_runshrine->value))
 	{
 		G_SetToFree(self);
 		return;
 	}
 
-	if (self->style == 11 && no_runshrine->value)
+	VectorSet(self->mins, -26.0f, -38.0f, -38.0f);
+	VectorSet(self->maxs, 26.0f, 38.0f, 38.0f);
+
+	self->s.modelindex = (byte)gi.modelindex("models/objects/shrine/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+
+	ObjectInit(self, 75, 125, MAT_GREYSTONE, SOLID_BBOX);
+
+	if (DEATHMATCH && (DMFLAGS & DF_SHRINE_CHAOS))
+		self->style = 7; // Random.
+
+	if (self->style < 0 || self->style > 11) //BUGFIX: mxd. Original logic assumes style 12 is also a valid shrine style.
 	{
-		G_SetToFree(self);
-		return;
+		gi.dprintf("Invalid Shrine type %i at %s!\n", self->style, vtos(self->s.origin)); //mxd. Added sanity check.
+		self->style = 7; //mxd. Make it random, I guess...
 	}
 
-	self->s.modelindex = gi.modelindex("models/objects/shrine/tris.fm");
+	self->style++; //TODO: why these style shenanigans?
+	self->s.effects |= EF_ALWAYS_ADD_EFFECTS; // Make sure we always send the model.
 
-	VectorSet(self->mins,   -26, -38, -38);
-	VectorSet(self->maxs,    26,  38,  38);
+	// Make the ball appear in the middle.
+	vec3_t angles;
+	VectorScale(self->s.angles, ANGLE_TO_RAD, angles);
 
-	self->spawnflags |= OBJ_INVULNERABLE;	// Always indestructible
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
+	vec3_t dir;
+	DirFromAngles(angles, dir);
 
-	ObjectInit(self,75,125,MAT_GREYSTONE,SOLID_BBOX);
-
-	if (deathmatch->value && ((int)dmflags->value & DF_SHRINE_CHAOS))
-		self->style = 7;
-	
-
-	if ((self->style >= 0)  && (self->style <= 12))
-	{
-		++self->style;
-	}
-
-	// make sure we always send the model
-	self->s.effects |= EF_ALWAYS_ADD_EFFECTS;
-
-	// make the ball appear in the middle
-	VectorScale(self->s.angles, ANGLE_TO_RAD, offset);
-	DirFromAngles(offset, offset2);
-	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_SHRINE_BALL, CEF_BROADCAST, self->s.origin, 
-														"db", offset2, (byte)(self->style-1));
-
+	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_SHRINE_BALL, CEF_BROADCAST, self->s.origin, "db", dir, (byte)(self->style - 1));
 }
+
+#pragma endregion
 
 /*QUAKED obj_larvaegg (1 .5 0) ( -6 -14 -6) (6 14 6) INVULNERABLE ANIMATE EXPLODING NOPUSH
 An egg for the larva
