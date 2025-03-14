@@ -1803,17 +1803,14 @@ void SP_obj_lever1(edict_t* self)
 
 #pragma endregion
 
-void lever2downthink(edict_t *self)
+#pragma region ========================== obj_lever2 ==========================
+
+static void ObjLever2DownThink(edict_t* self) //mxd. Named 'lever2downthink' in original logic.
 {
-	if (self->s.frame < 4)
-	{
-		++self->s.frame;
+	if (++self->s.frame <= 4)
 		self->nextthink = level.time + FRAMETIME;
-	}
 	else
-	{
 		self->think = NULL;
-	}
 }
 
 void lever2upthink(edict_t *self)
@@ -1834,7 +1831,7 @@ void lever2_use (edict_t *self, edict_t *other, edict_t *activator)
 	if (!self->s.frame)
 	{
 		gi.sound (self, CHAN_BODY, gi.soundindex ("objects/lever2.wav"), 1, ATTN_NORM, 0);
-		self->think = lever2downthink;
+		self->think = ObjLever2DownThink;
 	}
 	else if (self->s.frame == 4)
 	{
@@ -1868,6 +1865,8 @@ void SP_obj_lever2 (edict_t *self)
 
 	self->use = lever2_use;
 }
+
+#pragma endregion
 
 void lever3downthink(edict_t *self)
 {
