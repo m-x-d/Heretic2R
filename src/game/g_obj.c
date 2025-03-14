@@ -890,68 +890,54 @@ void SP_obj_statue_guardian(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_table1 (1 .5 0) (-28 -54 -18) (28 54 18) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A large wooden dining table with two legs.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_table1 (edict_t *self)
+#pragma region ========================== obj_table1, obj_table2, obj_throne,  ==========================
+
+// QUAKED obj_table1 (1 .5 0) (-28 -54 -18) (28 54 18) INVULNERABLE x x NOPUSH
+// A large wooden dining table with two legs.
+// Spawnflags:
+// INVULNERABLE - It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_table1(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/tables/table1/tris.fm");
+	VectorSet(self->mins, -28.0f, -54.0f, -18.0f);
+	VectorSet(self->maxs, 28.0f, 54.0f, 18.0f);
 
-	VectorSet(self->mins, -28, -54, -18);
-	VectorSet(self->maxs, 28, 54, 18);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/tables/table1/tris.fm");
 
-	ObjectInit(self,40,100,MAT_WOOD,SOLID_BBOX);
-
+	ObjectInit(self, 40, 100, MAT_WOOD, SOLID_BBOX);
 }
 
-/*QUAKED obj_table2 (1 .5 0) (-28 -54 -17) (28 54 17) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A grey stone table.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_table2 (edict_t *self)
+// QUAKED obj_table2 (1 .5 0) (-28 -54 -17) (28 54 17) INVULNERABLE
+// A grey stone table.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_table2(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/tables/table2/tris.fm");
+	VectorSet(self->mins, -28.0f, -54.0f, -17.0f);
+	VectorSet(self->maxs, 28.0f, 54.0f, 17.0f);
 
-	VectorSet(self->mins, -28, -54, -17);
-	VectorSet(self->maxs, 28, 54, 17);
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/tables/table2/tris.fm");
 	self->spawnflags |= OBJ_NOPUSH;
 
-	ObjectInit(self,80,150,MAT_GREYSTONE,SOLID_BBOX);
+	ObjectInit(self, 80, 150, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-/*QUAKED obj_throne (1 .5 0) (-20 -22 -44) (20 22 44) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A highbacked throne.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_throne (edict_t *self)
+// QUAKED obj_throne (1 .5 0) (-20 -22 -44) (20 22 44) INVULNERABLE
+// A highbacked throne.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_throne(edict_t* self)
 {
-	VectorSet(self->mins, -20, -22, -44);
-	VectorSet(self->maxs, 20,22, 44);
+	VectorSet(self->mins, -20.0f, -22.0f, -44.0f);
+	VectorSet(self->maxs, 20.0f, 22.0f, 44.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/chairs/throne/tris.fm");
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/chairs/throne/tris.fm");
 	self->spawnflags |= OBJ_NOPUSH;
 
-	ObjectInit(self,150,200,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 150, 200, MAT_WOOD, SOLID_BBOX);
 }
 
+#pragma endregion
 
 /*QUAKED obj_kettle (1 .5 0) (-8 -8 0) (8 8 10) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A kettle.
