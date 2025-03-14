@@ -1895,68 +1895,41 @@ void SP_obj_lever3(edict_t* self)
 
 #pragma endregion
 
-void bush_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
-{
-	if (self->touch_debounce_time > level.time)
-		return;
+#pragma region ========================== obj_bush1, obj_bush2 ==========================
 
-	//gi.sound (self, CHAN_BODY, gi.soundindex ("objects/bush.wav"), 1, ATTN_NORM, 0);
-	self->touch_debounce_time = level.time + 1;
+// QUAKED obj_bush1 (1 .5 0) (-34 -34 -19) (34 34 19)
+// A dome-shaped bush.
+void SP_obj_bush1(edict_t* self)
+{
+	// The bounding box in the QUAKED comment is bigger to show the designers the true size of the objects.
+	VectorSet(self->mins, -16.0f, -16.0f, -19.0f);
+	VectorSet(self->maxs, 16.0f, 16.0f, 19.0f);
+
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/bush1/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+
+	ObjectInit(self, 25, 25, MAT_WOOD, SOLID_NOT);
+
+	//mxd. Skip non-functional bush_touch() logic. //TODO: re-implement (would require a new sound, "objects/bush.wav" is not present in .paks)?
 }
 
-/*QUAKED obj_bush1 (1 .5 0) (-34 -34 -19) (34 34 19)  INVULNERABLE  ANIMATE  EXPLODING  NOPUSH
-A dome shaped bush
--------  FIELDS  ------------------
-INVULNERABLE - N/A
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (obj_bush1 can't be moved)
------------------------------------
-*/
-void SP_obj_bush1 (edict_t *self)
+// QUAKED obj_bush2 (1 .5 0) (-56 -56 -40) (56 56 40)
+// A larger dome-shaped bush.
+void SP_obj_bush2(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/plants/bush1/tris.fm");
+	// The bounding box in the QUAKED comment is bigger to show the designers the true size of the objects.
+	VectorSet(self->mins, -16.0f, -16.0f, -40.0f);
+	VectorSet(self->maxs, 16.0f, 16.0f, 40.0f);
 
-	// The bounding box in the QUAKED comment is bigger to show the designers the true size of the objects
-	VectorSet(self->mins, -16, -16, -19);
-	VectorSet(self->maxs, 16, 16, 19);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/bush2/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
+	ObjectInit(self, 25, 50, MAT_WOOD, SOLID_BBOX);
 
-	ObjectInit(self,25,25,MAT_WOOD,SOLID_NOT);
-
-	self->touch_debounce_time = level.time;
-	self->touch = bush_touch;
-
+	//mxd. Skip non-functional bush_touch() logic. //TODO: re-implement (would require a new sound, "objects/bush.wav" is not present in .paks)?
 }
 
-/*QUAKED obj_bush2 (1 .5 0) (-56 -56 -40) (56 56 40)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
-A larger dome shaped bush
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (obj_bush2 can't be moved)
------------------------------------
-*/
-void SP_obj_bush2 (edict_t *self)
-{
-	self->s.modelindex = gi.modelindex("models/objects/plants/bush2/tris.fm");
-
-	// The bounding box in the QUAKED comment is bigger to show the designers the true size of the objects
-	VectorSet(self->mins, -16, -16, -40);
-	VectorSet(self->maxs, 16, 16, 40);
-
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	ObjectInit(self,25,50,MAT_WOOD,SOLID_BBOX);
-
-	self->touch_debounce_time = level.time;
-	self->touch = bush_touch;
-
-}
+#pragma endregion
 
 // Cactus will hurt player 
 void cactus_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
