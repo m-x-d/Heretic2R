@@ -142,63 +142,41 @@ void ObjectInit(edict_t* self, const int health, const int mass, const int mater
 
 #pragma endregion
 
-//============================================================================
-//
-//  OBJECTS
-//
-//============================================================================
+#pragma region ========================== obj_banner, obj_banneronpole ==========================
 
-
-/*QUAKED obj_banner (1 .5 0) (-8 -44 -296) (8 44 0) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A really big banner.  
--------  FIELDS  ------------------
-INVULNERABLE - N/A (it can't ever be hurt)
-ANIMATE - makes it flutter in the breeze, just like a...banner
-EXPLODING - N/A
-NOPUSH - N/A (banner can't be pushed)
--------  KEYS  ------------------
-skinnum = 0 : blue
-          1 : red
------------------------------------
-*/
-void SP_obj_banner (edict_t *self)
+// QUAKED obj_banner (1 .5 0) (-8 -44 -296) (8 44 0) x ANIMATE
+// A really big banner.
+// Spawnflags:
+// ANIMATE - Makes it flutter in the breeze, just like a ...banner.
+// Variables:
+// skinnum - 0 : blue, 1 : red.
+void SP_obj_banner(edict_t* self)
 {
+	VectorSet(self->mins, -8.0f, -44.0f, -296.0f);
+	VectorSet(self->maxs, 8.0f, 44.0f, 0.0f);
 
-//	G_FreeEdict(self);
-//	return;
-
-	VectorSet(self->mins, -8, -44, -296);
-	VectorSet(self->maxs, 8, 44, 0);
-
-	self->spawnflags |= OBJ_INVULNERABLE;	// Always indestructible
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	SpawnClientAnim(self, FX_ANIM_BANNER, "ambient/bannerflap.wav");
-	ObjectInit(self,40,200,MAT_CLOTH,SOLID_BBOX);
+	ObjectInit(self, 40, 200, MAT_CLOTH, SOLID_BBOX);
 }
 
-/*QUAKED obj_banneronpole (1 .5 0) (-8 -28 -30) (8 28 30) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A banner on a pole sticking out of a wall.  
--------  FIELDS  ------------------
-INVULNERABLE - can it be hurt
-ANIMATE - makes it flutter in the breeze
-EXPLODING - N/A
-NOPUSH - N/A (banner can't be pushed)
------------------------------------
-*/
-void SP_obj_banneronpole (edict_t *self)
+// QUAKED obj_banneronpole (1 .5 0) (-8 -28 -30) (8 28 30) x ANIMATE
+// A banner on a pole sticking out of a wall.
+// Spawnflags:
+// ANIMATE - Makes it flutter in the breeze.
+void SP_obj_banneronpole(edict_t* self)
 {
-	VectorSet(self->mins, -8, -28, -30);
-	VectorSet(self->maxs, 8, 28, 30);
+	VectorSet(self->mins, -8.0f, -28.0f, -30.0f);
+	VectorSet(self->maxs, 8.0f, 28.0f, 30.0f);
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	SpawnClientAnim(self, FX_ANIM_BANNERONPOLE, "ambient/bannerflap.wav");
-	ObjectInit(self,40,200,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 40, 200, MAT_WOOD, SOLID_BBOX);
 }
 
-
+#pragma endregion
 
 /*-----------------------------------------------
 	exploding barrel
