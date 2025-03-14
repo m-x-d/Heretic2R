@@ -2707,67 +2707,38 @@ static void ObjStatueTecheckrikUse(edict_t* self, edict_t* other, edict_t* activ
 		self->s.frame--;
 }
 
-/*QUAKED obj_statue_techeckrikright (1 .5 0) ( -26 -40 -50) (26 40 50) INVULNERABLE ANIMATE EXPLODING NOPUSH NOGEM
-The statue of the techeckrik with his arms raised up to the right.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
-NOGEM - No gem in the chest  (puzzle)
------------------------------------
-*/
-void SP_obj_statue_techeckrikright (edict_t *self)
+// QUAKED obj_statue_techeckrikright (1 .5 0) ( -26 -40 -50) (26 40 50) x x x x NOGEM
+// The statue of the techeckrik with his arms raised up to the right.
+// Spawnflags:
+// NOGEM - No gem in the chest (puzzle).
+void SP_obj_statue_techeckrikright(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/statue/tcheckrik/tris.fm");
+	VectorSet(self->mins, -26.0f, -40.0f, -50.0f);
+	VectorSet(self->maxs, 26.0f, 40.0f, 50.0f);
 
-	VectorSet(self->mins,   -26, -40, -50);
-	VectorSet(self->maxs,    26,  40,  50);
-
-	self->spawnflags |= OBJ_INVULNERABLE;	// Always indestructible
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	ObjectInit(self,75,125,MAT_GREYSTONE,SOLID_BBOX);
-
-	self->s.frame = 2;
-	if (self->spawnflags & 16)	// NOGEM
-		self->s.frame = 3;
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/tcheckrik/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->s.frame = (short)((self->spawnflags & SF_NOGEM) ? 3 : 2);
 	self->use = ObjStatueTecheckrikUse;
 
+	ObjectInit(self, 75, 125, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-
-
-/*QUAKED obj_statue_techeckrikleft (1 .5 0) ( -26 -40 -50) (26 40 50) INVULNERABLE ANIMATE EXPLODING NOPUSH NOGEM
-The statue of the techeckrik with his arms raised up to the left.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
-NOGEM - No gem in the chest (puzzle)
------------------------------------
-*/
-void SP_obj_statue_techeckrikleft (edict_t *self)
+// QUAKED obj_statue_techeckrikleft (1 .5 0) ( -26 -40 -50) (26 40 50) x x x x NOGEM
+// The statue of the techeckrik with his arms raised up to the left.
+// Spawnflags:
+// NOGEM - No gem in the chest (puzzle).
+void SP_obj_statue_techeckrikleft(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/statue/tcheckrik/tris.fm");
+	VectorSet(self->mins, -26.0f, -40.0f, -50.0f);
+	VectorSet(self->maxs, 26.0f, 40.0f, 50.0f);
 
-	VectorSet(self->mins,   -26, -40, -50);
-	VectorSet(self->maxs,    26,  40,  50);
-
-	self->spawnflags |= OBJ_INVULNERABLE;	// Always indestructible
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	ObjectInit(self,75,125,MAT_GREYSTONE,SOLID_BBOX);
-
-	self->s.frame = 0;
-
-	if (self->spawnflags & 16)	// NOGEM
-		self->s.frame = 1;
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/tcheckrik/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->s.frame = (short)((self->spawnflags & SF_NOGEM) ? 1 : 0);
 	self->use = ObjStatueTecheckrikUse;
 
+	ObjectInit(self, 75, 125, MAT_GREYSTONE, SOLID_BBOX);
 }
 
 #pragma endregion
