@@ -1006,54 +1006,36 @@ void SP_obj_firepot(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_statue_duckbill1 (1 .5 0) (-67 -24 -51) (67 24 51) INVULNERABLE ANIMATE EXPLODING NOPUSH
-The duckbilled thing - tail to the right
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_statue_duckbill1 (edict_t *self)
+#pragma region ========================== obj_statue_duckbill1, obj_statue_duckbill2 ==========================
+
+// QUAKED obj_statue_duckbill1 (1 .5 0) (-67 -24 -51) (67 24 51)
+// The duckbilled thing - tail to the left.
+void SP_obj_statue_duckbill1(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/statue/duckbill/tris.fm");
+	VectorSet(self->mins, -67.0f, -24.0f, -51.0f);
+	VectorSet(self->maxs, 67.0f, 24.0f, 51.0f);
 
-	VectorSet(self->mins, -67, -24, -51);
-	VectorSet(self->maxs, 67, 24, 51);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/duckbill/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	self->s.frame = 0;
-
-	self->spawnflags |= OBJ_NOPUSH;
-	self->spawnflags |= OBJ_INVULNERABLE;	// Always indestructible
-
-	ObjectInit(self,150,100,MAT_GREYSTONE,SOLID_BBOX);
+	ObjectInit(self, 150, 100, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-/*QUAKED obj_statue_duckbill2 (1 .5 0) (-67 -24 -50) (67 24 50) INVULNERABLE ANIMATE EXPLODING NOPUSH
-The duckbilled thing - tail to the left
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_statue_duckbill2 (edict_t *self)
+// QUAKED obj_statue_duckbill2 (1 .5 0) (-67 -24 -50) (67 24 50)
+// The duckbilled thing - tail to the right.
+void SP_obj_statue_duckbill2(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/statue/duckbill/tris.fm");
+	VectorSet(self->mins, -67.0f, -24.0f, -50.0f); //TODO: why z-difference between this and obj_statue_duckbill1?..
+	VectorSet(self->maxs, 67.0f, 24.0f, 50.0f);
 
-	VectorSet(self->mins, -67, -24, -50);
-	VectorSet(self->maxs, 67, 24, 50);
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/duckbill/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.frame = 1;
 
-	self->spawnflags |= OBJ_NOPUSH;
-	self->spawnflags |= OBJ_INVULNERABLE;	// Always indestructible
-
-	ObjectInit(self,150,100,MAT_GREYSTONE,SOLID_BBOX);
+	ObjectInit(self, 150, 100, MAT_GREYSTONE, SOLID_BBOX);
 }
 
+#pragma endregion
 
 void globebottom_turn (edict_t *self)
 {
