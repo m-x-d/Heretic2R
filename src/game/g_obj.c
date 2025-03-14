@@ -1,27 +1,22 @@
 //
 // g_obj.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
 #include "g_obj.h" //mxd
-#include "fx.h"
-#include "g_local.h"
-#include "g_misc.h"
-#include "g_debris.h" //mxd
-#include "g_DefaultMessageHandler.h"
-#include "vector.h"
-#include "m_plagueElf_anim.h"
-//#include "m_plaguessithra_anim.h"		// Can't do this because NUM_MESH_NODES is in all tris headers
-#include "Random.h"
-#include "angles.h"
 #include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
+#include "g_debris.h" //mxd
+#include "g_DefaultMessageHandler.h"
 #include "g_light.h" //mxd
 #include "g_playstats.h"
+#include "m_plagueElf_anim.h"
 #include "m_stats.h"
+#include "FX.h"
+#include "Random.h"
 #include "Utilities.h" //mxd
+#include "Vector.h"
 
 void DefaultObjectDieHandler(edict_t* self, G_Message_t* msg) //mxd. Originally defined in g_misc.c
 {
