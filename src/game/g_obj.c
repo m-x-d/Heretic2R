@@ -3008,18 +3008,16 @@ static void ObjTortureIronmaidenOpen(edict_t* self) //mxd. Named 'ironmaiden_ope
 	}
 }
 
-void ironmaiden_close (edict_t *self)
+static void ObjTortureIronmaidenClose(edict_t* self) //mxd. Named 'ironmaiden_close' in original logic.
 {
-	if (self->s.frame < 10)
+	if (++self->s.frame <= 10)
 	{
-		++self->s.frame;
-		self->think = ironmaiden_close;
 		self->nextthink = level.time + FRAMETIME;
 	}
 	else
 	{
 		self->think = ObjTortureIronmaidenOpen;
-		self->nextthink = level.time + FRAMETIME * 30;	// Open up in 30 seconds
+		self->nextthink = level.time + FRAMETIME * 30.0f; // Open up in 30 seconds.
 	}
 }
 
@@ -3029,8 +3027,9 @@ void ironmaiden_use (edict_t *self, edict_t *other, edict_t *activator)
 	VectorSet(self->maxs, 18, 18, 49);
 
 	self->touch  = NULL;
+	self->think = ObjTortureIronmaidenClose;
+	self->nextthink = level.time + FRAMETIME;
 
-	ironmaiden_close(self);
 	gi.sound (self, CHAN_BODY, gi.soundindex ("items/ironmaiden.wav"), 1, ATTN_NORM, 0);
 
 }
