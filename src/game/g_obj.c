@@ -3055,30 +3055,19 @@ static void ObjTortureIronmaidenTouch(edict_t* self, edict_t* other, cplane_t* p
 	ObjTortureIronmaidenUse(self, NULL, NULL);
 }
 
-/*QUAKED obj_torture_ironmaiden (1 .5 0) (-18 -18 -49) (18 18 49) INVULNERABLE ANIMATE EXPLODING NOPUSH
-An iron maiden that closes when used
--------  FIELDS  ------------------
-INVULNERABLE - N/A (can't be hurt)
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_torture_ironmaiden (edict_t *self) 
+// QUAKED obj_torture_ironmaiden (1 .5 0) (-18 -18 -49) (18 18 49)
+// An iron maiden that closes when used.
+void SP_obj_torture_ironmaiden(edict_t* self)
 {
-	VectorSet(self->mins, -28, -48, -49);
-	VectorSet(self->maxs, 28, 48, 49);
+	VectorSet(self->mins, -28.0f, -48.0f, -49.0f);
+	VectorSet(self->maxs, 28.0f, 48.0f, 49.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/torture/ironmaiden/tris.fm");
-	self->spawnflags |= OBJ_INVULNERABLE; 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-
-	self->s.frame = 0;
+	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/ironmaiden/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->use = ObjTortureIronmaidenUse;
 	self->touch = ObjTortureIronmaidenTouch;
 
-	ObjectInit(self,250,200,MAT_METAL,SOLID_BBOX);
-
+	ObjectInit(self, 250, 200, MAT_METAL, SOLID_BBOX);
 }
 
 #pragma endregion
