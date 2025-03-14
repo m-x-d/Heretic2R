@@ -333,69 +333,50 @@ static void ObjChest1Use(edict_t* self, edict_t* other, edict_t* activator) //mx
 	ObjChest1Anim(self);
 }
 
-/*QUAKED obj_chest1 (1 .5 0) (-10 -18 -19) (10 18 19) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A large chest with a snake carving on top. When used it opens its lid.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_chest1 (edict_t *self)
+// QUAKED obj_chest1 (1 .5 0) (-10 -18 -19) (10 18 19) INVULNERABLE x x NOPUSH
+// A large chest with a snake carving on top. When used it opens its lid.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_chest1(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/chests/chest1/tris.fm");
+	VectorSet(self->mins, -10.0f, -18.0f, -19.0f);
+	VectorSet(self->maxs, 10.0f, 18.0f, 19.0f);
 
-	VectorSet(self->mins, -10, -18, -19);
-	VectorSet(self->maxs, 10, 18, 19);
-
-	ObjectInit(self,60,150,MAT_WOOD,SOLID_BBOX);
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/chests/chest1/tris.fm");
 	self->use = ObjChest1Use;
+
+	ObjectInit(self, 60, 150, MAT_WOOD, SOLID_BBOX);
 }
 
-/*QUAKED obj_chest2 (1 .5 0) (-14 -17 -9) (14 17 9) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A medium sized chest with the top open - for use in the mines
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_chest2 (edict_t *self)
+// QUAKED obj_chest2 (1 .5 0) (-14 -17 -9) (14 17 9) INVULNERABLE
+// A medium sized chest with the top open - for use in the mines.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_chest2(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/chests/chest2/tris.fm");
+	VectorSet(self->mins, -14.0f, -17.0f, -9.0f);
+	VectorSet(self->maxs, 14.0f, 17.0f, 9.0f);
 
-	VectorSet(self->mins, -14, -17, -9);
-	VectorSet(self->maxs, 14, 17, 9);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/chests/chest2/tris.fm");
+	self->spawnflags &= ~OBJ_NOPUSH; //TODO: explicitly pushable. Why?
 
-	self->spawnflags &= ~OBJ_NOPUSH;
-
-	ObjectInit(self,60,150,MAT_WOOD,SOLID_BBOX);
-
+	ObjectInit(self, 60, 150, MAT_WOOD, SOLID_BBOX);
 }
 
-/*QUAKED obj_chest3 (1 .5 0) (-10 -17 -6) (10 17 6) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A medium sized chest with the top closed - for use in the mines
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_chest3 (edict_t *self)
+// QUAKED obj_chest3 (1 .5 0) (-10 -17 -6) (10 17 6) INVULNERABLE
+// A medium sized chest with the top closed - for use in the mines.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_chest3(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/chests/chest3/tris.fm");
+	VectorSet(self->mins, -10.0f, -17.0f, -6.0f);
+	VectorSet(self->maxs, 10.0f, 17.0f, 6.0f);
 
-	VectorSet(self->mins, -10, -17, -6);
-	VectorSet(self->maxs, 10, 17, 6);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/chests/chest3/tris.fm");
+	self->spawnflags &= ~OBJ_NOPUSH; //TODO: explicitly pushable. Why?
 
-	self->spawnflags &= ~OBJ_NOPUSH;
-
-	ObjectInit(self,60,150,MAT_WOOD,SOLID_BBOX);
-
+	ObjectInit(self, 60, 150, MAT_WOOD, SOLID_BBOX);
 }
 
 #pragma endregion
