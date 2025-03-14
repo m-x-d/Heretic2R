@@ -1988,17 +1988,15 @@ static void ObjCactus4CloseThink(edict_t* self) //mxd. Named 'cactus_close' in o
 		self->think = NULL;
 }
 
-void cactus_open(edict_t *self)
+static void ObjCactus4OpenThink(edict_t* self) //mxd. Named 'cactus_open' in original logic.
 {
-	self->s.frame+=4;
-	if (self->s.frame < 16)
-	{
-		self->think=cactus_open;
-	}
-	else
-		self->s.frame = 16;
+	//mxd. Rewritten logic to remove think callback on animation finish.
+	self->s.frame = min(16, self->s.frame + 4);
 
-	self->nextthink=level.time + FRAMETIME;
+	if (self->s.frame < 16)
+		self->nextthink = level.time + FRAMETIME;
+	else
+		self->think = NULL;
 }
 
 void cactus4_use (edict_t *self, edict_t *other, edict_t *activator)
@@ -2006,7 +2004,7 @@ void cactus4_use (edict_t *self, edict_t *other, edict_t *activator)
 	if (!self->s.frame)
 	{
 		gi.sound (self, CHAN_BODY, gi.soundindex ("objects/lever1.wav"), 1, ATTN_NORM, 0);
-		self->think = cactus_open;
+		self->think = ObjCactus4OpenThink;
 	}
 	else if (self->s.frame == 16)
 	{
