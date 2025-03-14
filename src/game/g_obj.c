@@ -1999,19 +1999,14 @@ static void ObjCactus4OpenThink(edict_t* self) //mxd. Named 'cactus_open' in ori
 		self->think = NULL;
 }
 
-void cactus4_use (edict_t *self, edict_t *other, edict_t *activator)
+static void ObjCactus4Use(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'cactus4_use' in original logic.
 {
-	if (!self->s.frame)
+	if (self->s.frame == 0 || self->s.frame == 16)
 	{
-		gi.sound (self, CHAN_BODY, gi.soundindex ("objects/lever1.wav"), 1, ATTN_NORM, 0);
-		self->think = ObjCactus4OpenThink;
+		gi.sound(self, CHAN_BODY, gi.soundindex("objects/lever1.wav"), 1.0f, ATTN_NORM, 0.0f); //TODO: could use a better sound...
+		self->think = (self->s.frame == 0 ? ObjCactus4OpenThink : ObjCactus4CloseThink);
+		self->nextthink = level.time + FRAMETIME;
 	}
-	else if (self->s.frame == 16)
-	{
-		gi.sound (self, CHAN_BODY, gi.soundindex ("objects/lever1.wav"), 1, ATTN_NORM, 0);
-		self->think = ObjCactus4CloseThink;
-	}
-	self->nextthink = level.time + FRAMETIME;
 }
 
 /*QUAKED obj_cactus4 (1 .5 0) (-11 -11 -11) (11 11 11)  INVULNERABLE  ANIMATE   EXPLODING  NOPUSH
@@ -2033,7 +2028,7 @@ void SP_obj_cactus4 (edict_t *self)
 	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
 
 	ObjectInit(self,75,125,MAT_NONE,SOLID_BBOX);
-	self->use = cactus4_use;
+	self->use = ObjCactus4Use;
 
 	self->touch_debounce_time = level.time;
 	self->touch = ObjCactusTouch;
