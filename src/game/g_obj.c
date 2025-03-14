@@ -939,85 +939,72 @@ void SP_obj_throne(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_kettle (1 .5 0) (-8 -8 0) (8 8 10) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A kettle.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_kettle (edict_t *self)
+#pragma region ========================== obj_kettle, obj_cauldron, obj_firepot ==========================
+
+// QUAKED obj_kettle (1 .5 0) (-8 -8 0) (8 8 10) INVULNERABLE x x NOPUSH
+// A kettle.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_kettle(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/pots/kettle/tris.fm");
+	VectorSet(self->mins, -8.0f, -8.0f, 0.0f);
+	VectorSet(self->maxs, 8.0f, 8.0f, 10.0f);
 
-	VectorSet(self->mins, -8, -8, 0);
-	VectorSet(self->maxs, 8, 8, 10);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/kettle/tris.fm");
 
-	ObjectInit(self,40,100,MAT_METAL,SOLID_BBOX);
+	ObjectInit(self, 40, 100, MAT_METAL, SOLID_BBOX);
 }
 
-/*QUAKED obj_cauldron (1 .5 0) (-22 -22 -10) (22 22 10) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A metal cauldron filled with green liquid
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_cauldron (edict_t *self)
+// QUAKED obj_cauldron (1 .5 0) (-22 -22 -10) (22 22 10) INVULNERABLE ANIMATE
+// A metal cauldron filled with green liquid.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// ANIMATE		- Play ambient/cauldronbubble sound.
+void SP_obj_cauldron(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/pots/caldrn/tris.fm");
+	VectorSet(self->mins, -22.0f, -22.0f, -10.0f);
+	VectorSet(self->maxs, 22.0f, 22.0f, 10.0f);
 
-	VectorSet(self->mins, -22, -22, -10);
-	VectorSet(self->maxs, 22, 22, 10);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/caldrn/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	if (self->spawnflags & OBJ_ANIMATE)	// Animate it
+	if (self->spawnflags & OBJ_ANIMATE)	// Animate it.
 	{
-		self->s.sound = gi.soundindex("ambient/cauldronbubble.wav");
+		self->s.sound = (byte)gi.soundindex("ambient/cauldronbubble.wav");
 		self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_STATIC;
 	}
 
-	self->spawnflags |= OBJ_NOPUSH;
-
-	ObjectInit(self,60,100,MAT_METAL,SOLID_BBOX);
+	ObjectInit(self, 60, 100, MAT_METAL, SOLID_BBOX);
 }
 
-
-/*QUAKED obj_firepot (1 .5 0) (-18 -18 -12) (18 18 12) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A grey stone firepot
--------  FIELDS  ------------------
-INVULNERABLE - always invulnerable
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't ever be moved by player)
------------------------------------
-*/
-void SP_obj_firepot (edict_t *self)
+// QUAKED obj_firepot (1 .5 0) (-18 -18 -12) (18 18 12) x ANIMATE
+// A grey stone firepot.
+// Spawnflags:
+// ANIMATE - Spawn fire fx.
+void SP_obj_firepot(edict_t* self)
 {
-	vec3_t holdorigin;
+	VectorSet(self->mins, -18.0f, -18.0f, -12.0f);
+	VectorSet(self->maxs, 18.0f, 18.0f, 12.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/pots/firepot/tris.fm");
-	self->s.sound = gi.soundindex("ambient/fireplace.wav");
+	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/firepot/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->s.sound = (byte)gi.soundindex("ambient/fireplace.wav"); //TODO: play only when OBJ_ANIMATE is set?
 	self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_STATIC;
 
-	VectorSet(self->mins, -18, -18, -12);
-	VectorSet(self->maxs, 18, 18, 12);
+	ObjectInit(self, 140, 100, MAT_GREYSTONE, SOLID_BBOX);
 
-	self->spawnflags |= OBJ_INVULNERABLE;	// Always indestructible
-	self->spawnflags |= OBJ_NOPUSH;	// Cant' be moved
-
-	ObjectInit(self,140,100,MAT_GREYSTONE,SOLID_BBOX);
-
-	if (self->spawnflags & OBJ_ANIMATE)	// Animate it
+	if (self->spawnflags & OBJ_ANIMATE)	// Animate it.
 	{
-		VectorCopy(self->s.origin,holdorigin);
-		holdorigin[2] += 30;
-		SpawnFlame(self,holdorigin);		
+		vec3_t hold_origin;
+		VectorCopy(self->s.origin, hold_origin);
+		hold_origin[2] += 30.0f; //TODO: hovers above firepot. Spawn a bit lower?
+
+		SpawnFlame(self, hold_origin);
 	}
 }
+
+#pragma endregion
 
 /*QUAKED obj_statue_duckbill1 (1 .5 0) (-67 -24 -51) (67 24 51) INVULNERABLE ANIMATE EXPLODING NOPUSH
 The duckbilled thing - tail to the right
