@@ -1439,231 +1439,168 @@ void SP_obj_treefallen(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_shovel (1 .5 0) (-8 -8 -20) (8 8 20)  INVULNERABLE ANIMATE EXPLODING NOPUSH
-A shovel
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_shovel (edict_t *self)
+#pragma region == obj_shovel, obj_woodpile, obj_fishtrap, obj_bench, obj_bucket, obj_ropechain, obj_wheelbarrow, obj_wheelbarrowdamaged, obj_urn, obj_bigcrystal ==
+
+// QUAKED obj_shovel (1 .5 0) (-8 -8 -20) (8 8 20)  INVULNERABLE
+// A shovel.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_shovel(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/shovel/tris.fm");
+	VectorSet(self->mins, -8.0f, -8.0f, -20.0f);
+	VectorSet(self->maxs, 8.0f, 8.0f, 20.0f);
 
-	VectorSet(self->mins, -8, -8, -20);
-	VectorSet(self->maxs, 8, 8, 20);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/shovel/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;
-
-	ObjectInit(self,20,40,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 20, 40, MAT_WOOD, SOLID_BBOX);
 }
 
-/*QUAKED obj_woodpile (1 .5 0) (-12 -20 -7) (12 20 7) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A pile of chopped  wood.
--------  FIELDS  ------------------
-INVULNERABLE - Can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_woodpile (edict_t *self)
+// QUAKED obj_woodpile (1 .5 0) (-12 -20 -7) (12 20 7) INVULNERABLE
+// A pile of chopped wood.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_woodpile(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/wood/tris.fm");
+	VectorSet(self->mins, -12.0f, -20.0f, -7.0f);
+	VectorSet(self->maxs, 12.0f, 20.0f, 7.0f);
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't move
+	self->s.modelindex = (byte)gi.modelindex("models/objects/wood/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed.
+	self->s.scale = 2.0f;
 
-	VectorSet(self->mins, -12, -20, -7);
-	VectorSet(self->maxs, 12, 20, 7);
-	self->s.scale = 2;
-
-	ObjectInit(self,100,150,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 100, 150, MAT_WOOD, SOLID_BBOX);
 }
 
-/*QUAKED obj_fishtrap (1 .5 0) (-14 -28 -13) (14 28 13) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A fishtrap
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_fishtrap (edict_t *self)
+// QUAKED obj_fishtrap (1 .5 0) (-14 -28 -13) (14 28 13) INVULNERABLE x x NOPUSH
+// A fishtrap.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_fishtrap(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/fishtrap/tris.fm");
+	VectorSet(self->mins, -14.0f, -28.0f, -13.0f);
+	VectorSet(self->maxs, 14.0f, 28.0f, 13.0f);
 
-	VectorSet(self->mins, -14, -28, -13);
-	VectorSet(self->maxs, 14, 28, 13);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/fishtrap/tris.fm");
 
-	ObjectInit(self,30,100,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 30, 100, MAT_WOOD, SOLID_BBOX);
 }
 
-/*QUAKED obj_bench (1 .5 0) (-10 -21 -10) (10 21 10)  INVULNERABLE ANIMATE EXPLODING NOPUSH
-A stone bench to sit on
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_bench (edict_t *self)
+// QUAKED obj_bench (1 .5 0) (-10 -21 -10) (10 21 10) INVULNERABLE
+// A stone bench to sit on.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_bench(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/chairs/bench/tris.fm");
+	VectorSet(self->mins, -10.0f, -22.0f, -10.0f);
+	VectorSet(self->maxs, 10.0f, 22.0f, 10.0f);
 
-	VectorSet(self->mins, -10, -22, -10);
-	VectorSet(self->maxs, 10, 22, 10);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/chairs/bench/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;
-
-	ObjectInit(self,3,4,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 3, 4, MAT_WOOD, SOLID_BBOX);
 }
 
-/*QUAKED obj_bucket (1 .5 0) (-8 -8 -9) (8 8 10) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A bucket
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_bucket (edict_t *self)
+// QUAKED obj_bucket (1 .5 0) (-8 -8 -9) (8 8 10) INVULNERABLE
+// A bucket.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_bucket(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/bucket/tris.fm");
+	VectorSet(self->mins, -8.0f, -8.0f, -9.0f);
+	VectorSet(self->maxs, 8.0f, 8.0f, 10.0f);
 
-	VectorSet(self->mins, -8, -8, -9);
-	VectorSet(self->maxs, 8, 8, 10);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/bucket/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;
-
-	ObjectInit(self,3,4,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 3, 4, MAT_WOOD, SOLID_BBOX);
 }
 
-/*QUAKED obj_ropechain (1 .5 0) (-20 -20 -14) (20 20 14) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A pile of rope or chain
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (ropechain can't be moved)
-
-Variables:
-skinnum = 0 : rope
-          1 : chain
------------------------------------
-*/
-void SP_obj_ropechain (edict_t *self)
+// QUAKED obj_ropechain (1 .5 0) (-20 -20 -14) (20 20 14)
+// A pile of rope or chain
+// Variables:
+// skinnum - 0: rope, 1: chain.
+void SP_obj_ropechain(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/rope/tris.fm");
+	VectorSet(self->mins, -20.0f, -20.0f, -14.0f);
+	VectorSet(self->maxs, 20.0f, 20.0f, 14.0f);
 
-	VectorSet(self->mins, -20, -20, -14);
-	VectorSet(self->maxs, 20, 20, 14);
-
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
+	self->s.modelindex = (byte)gi.modelindex("models/objects/rope/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	if (self->s.skinnum == 0)
-		ObjectInit(self,80,100,MAT_WOOD,SOLID_BBOX);
+		ObjectInit(self, 80, 100, MAT_WOOD, SOLID_BBOX);
 	else
-		ObjectInit(self,160,100,MAT_METAL,SOLID_BBOX);
+		ObjectInit(self, 160, 100, MAT_METAL, SOLID_BBOX);
 }
 
-
-/*QUAKED obj_wheelbarrow (1 .5 0) (-37 -20 -21) (37 20 21) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A wheelbarrow  
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_wheelbarrow (edict_t *self)
+// QUAKED obj_wheelbarrow (1 .5 0) (-37 -20 -21) (37 20 21) INVULNERABLE x x NOPUSH
+// A wheelbarrow.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_wheelbarrow(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/wheelbarrow/tris.fm");
+	VectorSet(self->mins, -37.0f, -20.0f, -21.0f);
+	VectorSet(self->maxs, 37.0f, 20.0f, 21.0f);
 
-	VectorSet(self->mins, -37, -20, -21);
-	VectorSet(self->maxs, 37, 20, 21);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/wheelbarrow/tris.fm");
 
-	ObjectInit(self,60,100,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 60, 100, MAT_WOOD, SOLID_BBOX);
 }
 
-/*QUAKED obj_wheelbarrowdamaged (1 .5 0) (-38 -26 -20) (38 26 20) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A wheelbarrow  on it's side missing a wheel
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (wheelbarrowdamaged can't be moved)
------------------------------------
-*/
-void SP_obj_wheelbarrowdamaged (edict_t *self)
+// QUAKED obj_wheelbarrowdamaged (1 .5 0) (-38 -26 -20) (38 26 20) INVULNERABLE
+// A wheelbarrow on it's side missing a wheel.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+void SP_obj_wheelbarrowdamaged(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/wheelbarrow/tris.fm");
+	VectorSet(self->mins, -38.0f, -26.0f, -20.0f);
+	VectorSet(self->maxs, 38.0f, 26.0f, 20.0f);
 
-	VectorSet(self->mins, -38, -26, -20);
-	VectorSet(self->maxs,  38,  26,  20);
-
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
+	self->s.modelindex = (byte)gi.modelindex("models/objects/wheelbarrow/tris.fm");
+	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
 	self->s.frame = 1;
 
-	ObjectInit(self,60,100,MAT_WOOD,SOLID_BBOX);
+	ObjectInit(self, 60, 100, MAT_WOOD, SOLID_BBOX);
 }
 
-
-/*QUAKED obj_urn (1 .5 0) (-8 -8 -27) (8 8 30) INVULNERABLE ANIMATE EXPLODING NOPUSH
-An urn 
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_urn (edict_t *self)
+// QUAKED obj_urn (1 .5 0) (-8 -8 -27) (8 8 30) INVULNERABLE x x NOPUSH
+// An urn.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_urn(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/pots/urn/tris.fm");
+	VectorSet(self->mins, -8.0f, -8.0f, -27.0f);
+	VectorSet(self->maxs, 8.0f, 8.0f, 30.0f);
 
-	VectorSet(self->mins, -8, -8, -27);
-	VectorSet(self->maxs, 8, 8, 30);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/urn/tris.fm");
 
-	ObjectInit(self,50,100,MAT_POTTERY,SOLID_BBOX);
+	ObjectInit(self, 50, 100, MAT_POTTERY, SOLID_BBOX);
 }
 
-
-
-/*QUAKED obj_bigcrystal (1 .5 0) (-35 -35 -50) (35 35 50) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A big circular crystal which rotates.
--------  KEYS  ------------------
-speed - rate of rotation
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_bigcrystal(edict_t *self)
+// QUAKED obj_bigcrystal (1 .5 0) (-35 -35 -50) (35 35 50)
+// A big circular crystal which rotates.
+// Variables:
+// speed - Rate of rotation.
+void SP_obj_bigcrystal(edict_t* self)
 {
-	self->s.modelindex=gi.modelindex("models/objects/crystals/bigcrystal/tris.fm");
+	VectorSet(self->mins, -35.0f, -35.0f, -50.0f);
+	VectorSet(self->maxs, 35.0f, 35.0f, 50.0f);
 
-	VectorSet(self->mins,-35,-35,-50);
-	VectorSet(self->maxs,35,35,50);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/crystals/bigcrystal/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-	ObjectInit(self,350,200,MAT_GREYSTONE,SOLID_BBOX);
+	ObjectInit(self, 350, 200, MAT_GREYSTONE, SOLID_BBOX);
 
-	self->avelocity[1] = self->speed;
-
+	self->avelocity[YAW] = self->speed;
 	self->movetype = PHYSICSTYPE_FLY;
-	self->gravity = 0;
+	self->gravity = 0.0f;
 }
 
+#pragma endregion
 
 /*QUAKED obj_moss1 (1 .5 0) (-4 -10 -40) (4 10 40) INVULNERABLE ANIMATE EXPLODING NOPUSH
 
