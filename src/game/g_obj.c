@@ -1859,17 +1859,12 @@ static void ObjLever3DownThink(edict_t* self) //mxd. Named 'lever3downthink' in 
 		self->think = NULL;
 }
 
-void lever3upthink(edict_t *self)
+static void ObjLever3UpThink(edict_t* self) //mxd. Named 'lever3upthink' in original logic.
 {
-	if (self->s.frame > 0)
-	{
-		--self->s.frame;
- 		self->nextthink = level.time + FRAMETIME;
-	}
+	if (--self->s.frame >= 0)
+		self->nextthink = level.time + FRAMETIME;
 	else
-	{
 		self->think = NULL;
-	}
 }
 
 void lever3_use (edict_t *self, edict_t *other, edict_t *activator)
@@ -1882,7 +1877,7 @@ void lever3_use (edict_t *self, edict_t *other, edict_t *activator)
 	else if (self->s.frame == 5)
 	{
 		gi.sound (self, CHAN_BODY, gi.soundindex ("objects/lever3.wav"), 1, ATTN_NORM, 0);
-		self->think = lever3upthink;
+		self->think = ObjLever3UpThink;
 	}
  	self->nextthink = level.time + FRAMETIME;
 	G_UseTargets(self, activator);
