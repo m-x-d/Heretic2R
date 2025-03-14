@@ -777,7 +777,7 @@ enum
 	SHRINEBALL_MAX
 };
 
-static short shrine_particles[12][2] =
+static short shrine_particles[][2] =
 {
 	{	PART_16x16_SPARK_I,		PART_16x16_LIGHTNING	},	// SHRINEBALL_HEAL,
 	{	PART_16x16_SPARK_G,		PART_16x16_SPARK_B		},	// SHRINEBALL_MANA,
@@ -790,7 +790,7 @@ static short shrine_particles[12][2] =
 	{	PART_8x8_CYAN_DIAMOND,	PART_8x8_CYAN_X			},	// SHRINEBALL_REFLECT,
 	{	PART_16x16_SPARK_C,		PART_32x32_FIREBALL		},	// SHRINEBALL_STAFF
 	{	PART_32x32_WFALL,		PART_16x16_STAR			},	// SHRINEBALL_GHOST,
-	{	PART_32x32_STEAM,		PART_32x32_STEAM		},	// SHRINEBALL_SPEED,
+	{	PART_32x32_STEAM,		PART_32x32_STEAM		},	// SHRINEBALL_SPEED
 };
 
 // Make the shrine glow ball effect shimmer, and give off steam.
@@ -865,8 +865,6 @@ void FXShrineBall(centity_t* owner, const int type, const int flags, vec3_t orig
 // Explode the ball in the middle of the shrine.
 void FXShrineBallExplode(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
-	int part;
-
 	// Get the normalized direction of the shrine object.
 	vec3_t offset;
 	byte shrine_type;
@@ -882,13 +880,15 @@ void FXShrineBallExplode(centity_t* owner, const int type, const int flags, vec3
 	burst->radius = 100.0f;
 	AddEffect(owner, burst);
 
-	assert(shrine_type <= SHRINEBALL_MAX);
+	assert(shrine_type < SHRINEBALL_MAX); //mxd. '<= SHRINEBALL_MAX' in original logic.
 
 	const int count = GetScaledCount(BALL_EX_PART_NUM, 0.4f);
 
 	// Create a bunch of exploding particles.
 	for (int i = 0; i < count; i++)
 	{
+		int part;
+
 		if (shrine_type == SHRINEBALL_RANDOM)
 			part = irand(PART_16x16_SPARK_B, PART_16x16_SPARK_Y);
 		else
