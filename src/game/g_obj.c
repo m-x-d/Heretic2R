@@ -796,145 +796,99 @@ void SP_obj_stalagmite3(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED obj_statue_corvus (1 .5 0) (-16 -16 0) (16 16 32) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A statue of Corvus.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - N/A (can't be moved)
------------------------------------
-*/
-void SP_obj_statue_corvus (edict_t *self) 
+#pragma region ==== obj_statue_corvus, obj_statue_dolphin1, obj_statue_dolphin2, obj_statue_dolphin3, obj_statue_dolphin4, obj_statue_guardian ====
+
+// QUAKED obj_statue_corvus (1 .5 0) (-16 -16 0) (16 16 32)
+// A statue of Corvus.
+void SP_obj_statue_corvus(edict_t* self)
 {
-	VectorSet(self->mins, -16, -16, 0);
-	VectorSet(self->maxs, 16, 16, 128);
+	VectorSet(self->mins, -16.0f, -16.0f, 0.0f);
+	VectorSet(self->maxs, 16.0f, 16.0f, 128.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/statue/corvus/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
-	self->spawnflags |= OBJ_INVULNERABLE;	// Always indestructible
+	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/corvus/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	ObjectInit(self,250,200,MAT_GREYSTONE,SOLID_BBOX);
+	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-/*QUAKED obj_statue_dolphin1 (1 .5 0) (-68 -22 -30) (68 22 30) VULNERABLE ANIMATE EXPLODING NOPUSH
-The dolphin on all fours
--------  FIELDS  ------------------
-VULNERABLE - it can be hurt - default it can't be
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_statue_dolphin1 (edict_t *self)
+#define SF_VULNERABLE	1 //mxd
+
+// QUAKED obj_statue_dolphin1 (1 .5 0) (-68 -22 -30) (68 22 30) VULNERABLE
+// The dolphin on a wall. Head turned to the left.
+// Spawnflags:
+// VULNERABLE - It can be hurt - default it can't be.
+void SP_obj_statue_dolphin1(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/statue/dolphin/tris.fm");
+	VectorSet(self->mins, -68.0f, -22.0f, -30.0f);
+	VectorSet(self->maxs, 68.0f, 22.0f, 30.0f);
 
-	VectorSet(self->mins, -68, -22, -30);
-	VectorSet(self->maxs, 68, 22, 30);
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/dolphin/tris.fm");
 	self->spawnflags |= OBJ_NOPUSH;
-	if (self->spawnflags & OBJ_INVULNERABLE)
-		self->spawnflags &= ~OBJ_INVULNERABLE; // can be destroyed
-	else
-		self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
 
-	ObjectInit(self,300,200,MAT_GREYSTONE,SOLID_BBOX);
+	if (self->spawnflags & SF_VULNERABLE)
+		self->spawnflags &= ~OBJ_INVULNERABLE; // Can be destroyed.
+	else
+		self->spawnflags |= OBJ_INVULNERABLE; // Can't be destroyed.
+
+	ObjectInit(self, 300, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-/*QUAKED obj_statue_dolphin2 (1 .5 0) (-17 -20 -70) (17 20 70) INVULNERABLE ANIMATE EXPLODING NOPUSH
-The dolphin on a wall. Head turned to the right
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_statue_dolphin2 (edict_t *self)
+// QUAKED obj_statue_dolphin2 (1 .5 0) (-17 -20 -70) (17 20 70)
+// The dolphin on all fours.
+void SP_obj_statue_dolphin2(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/statue/dolphin/tris.fm");
+	VectorSet(self->mins, -17.0f, -20.0f, -70.0f);
+	VectorSet(self->maxs, 17.0f, 20.0f, 70.0f);
 
-	VectorSet(self->mins, -17, -20, -70);
-	VectorSet(self->maxs, 17, 20, 70);
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/dolphin/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.frame = 1;
 
-	self->spawnflags |= OBJ_NOPUSH;
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	ObjectInit(self,300,200,MAT_GREYSTONE,SOLID_BBOX);
+	ObjectInit(self, 300, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-/*QUAKED obj_statue_dolphin3 (1 .5 0) (-17 -20 -70) (17 20 70) INVULNERABLE ANIMATE EXPLODING NOPUSH
-The dolphin on a wall. Head turned to the left
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_statue_dolphin3 (edict_t *self)
+// QUAKED obj_statue_dolphin3 (1 .5 0) (-17 -20 -70) (17 20 70)
+// The dolphin up on two legs.
+void SP_obj_statue_dolphin3(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/statue/dolphin/tris.fm");
+	VectorSet(self->mins, -17.0f, -20.0f, -70.0f);
+	VectorSet(self->maxs, 17.0f, 20.0f, 70.0f);
 
-	VectorSet(self->mins, -17, -20, -70);
-	VectorSet(self->maxs, 17, 20, 70);
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/dolphin/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.frame = 3;
 
-	self->spawnflags |= OBJ_NOPUSH;
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	ObjectInit(self,300,200,MAT_GREYSTONE,SOLID_BBOX);
+	ObjectInit(self, 300, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-/*QUAKED obj_statue_dolphin4 (1 .5 0) (-63 -22 -37) (63 22 37) INVULNERABLE ANIMATE EXPLODING NOPUSH
-The dolphin up on two legs
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_statue_dolphin4 (edict_t *self)
+// QUAKED obj_statue_dolphin4 (1 .5 0) (-63 -22 -37) (63 22 37)
+// The dolphin on a wall. Head turned to the right.
+void SP_obj_statue_dolphin4(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/statue/dolphin/tris.fm");
+	VectorSet(self->mins, -63.0f, -22.0f, -37.0f);
+	VectorSet(self->maxs, 63.0f, 22.0f, 37.0f);
 
-	VectorSet(self->mins, -63, -22, -37);
-	VectorSet(self->maxs, 63, 22, 37);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/dolphin/tris.fm");
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.frame = 2;
 
-	self->spawnflags |= OBJ_NOPUSH;
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	ObjectInit(self,300,200,MAT_GREYSTONE,SOLID_BBOX);
+	ObjectInit(self, 300, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-
-/*QUAKED obj_statue_guardian (1 .5 0) (-100 -64 0) (64 64 128) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A big statue of a fish guy on his haunches holding a spear.
--------  FIELDS  ------------------
-INVULNERABLE - it can't be hurt
-ANIMATE - N/A
-EXPLODING - N/A
-NOPUSH - can't be moved by player
------------------------------------
-*/
-void SP_obj_statue_guardian (edict_t *self)
+// QUAKED obj_statue_guardian (1 .5 0) (-100 -64 0) (64 64 128)
+// A big statue of a fish guy on his haunches holding a spear.
+void SP_obj_statue_guardian(edict_t* self)
 {
-	self->s.modelindex = gi.modelindex("models/objects/statue/guardian/tris.fm");
+	VectorSet(self->mins, -100.0f, -64.0f, 0.0f);
+	VectorSet(self->maxs, 64.0f, 64.0f, 128.0f);
 
-	VectorSet(self->mins, -100, -64, 0);
-	VectorSet(self->maxs, 64, 64, 128);
+	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/guardian/tris.fm"); //TODO: has unused second skin. Pick it randomly?
+	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-	self->spawnflags |= OBJ_NOPUSH;
-	self->spawnflags |= OBJ_INVULNERABLE; // can't be destroyed
-
-	ObjectInit(self,400,300,MAT_METAL,SOLID_BBOX);
+	ObjectInit(self, 400, 300, MAT_METAL, SOLID_BBOX);
 }
+
+#pragma endregion
 
 /*QUAKED obj_table1 (1 .5 0) (-28 -54 -18) (28 54 18) INVULNERABLE ANIMATE EXPLODING NOPUSH
 A large wooden dining table with two legs.
