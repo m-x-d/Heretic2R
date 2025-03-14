@@ -313,12 +313,11 @@ void SP_obj_chair3(edict_t* self)
 
 #pragma region ========================== obj_chest1, obj_chest2, obj_chest3 ==========================
 
-static void ObjChest1Anim(edict_t* self) //mxd. Named 'chest1_anim' in original logic.
+static void ObjChest1AnimThink(edict_t* self) //mxd. Named 'chest1_anim' in original logic.
 {
 	if (self->s.frame < 10)
 	{
 		self->s.frame++;
-		self->think = ObjChest1Anim;
 		self->nextthink = level.time + FRAMETIME;
 	}
 	else
@@ -330,7 +329,8 @@ static void ObjChest1Anim(edict_t* self) //mxd. Named 'chest1_anim' in original 
 static void ObjChest1Use(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'chest1_use' in original logic.
 {
 	gi.sound(self, CHAN_VOICE, gi.soundindex("objects/chest.wav"), 1.0f, ATTN_NORM, 0.0f);
-	ObjChest1Anim(self);
+	self->think = ObjChest1AnimThink;
+	self->nextthink = level.time + FRAMETIME;
 }
 
 // QUAKED obj_chest1 (1 .5 0) (-10 -18 -19) (10 18 19) INVULNERABLE x x NOPUSH
