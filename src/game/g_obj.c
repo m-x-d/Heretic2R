@@ -3607,42 +3607,35 @@ static void ObjLarvaTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfa
 		T_Damage(self, other, other, vec3_origin, self->s.origin, vec3_origin, 10, 0, DAMAGE_AVOID_ARMOR, MOD_DIED);
 }
 
-/*QUAKED obj_larva (1 .5 0) (-8 -8 -2) (8 8 2) INVULNERABLE ANIMATE EXPLODING NOPUSH
-A squirming larva
--------  FIELDS  ------------------
-INVULNERABLE - can't be hurt
-ANIMATE - N/A 
-EXPLODING - N/A
-NOPUSH - can be pushed
------------------------------------
-*/
-void SP_obj_larva (edict_t *self)
+// QUAKED obj_larva (1 .5 0) (-8 -8 -2) (8 8 2) INVULNERABLE x x NOPUSH
+// A squirming larva.
+// Spawnflags:
+// INVULNERABLE	- It can't be hurt.
+// NOPUSH		- Can't be moved by player.
+void SP_obj_larva(edict_t* self)
 {
-	VectorSet(self->mins, -8, -12, -2);
-	VectorSet(self->maxs,  8,  12,  2);
+	VectorSet(self->mins, -8.0f, -12.0f, -2.0f);
+	VectorSet(self->maxs, 8.0f, 12.0f, 2.0f);
 
-	self->s.modelindex = gi.modelindex("models/objects/eggs/larva/tris.fm");
+	self->s.modelindex = (byte)gi.modelindex("models/objects/eggs/larva/tris.fm");
 
-	ObjectInit(self,2,100,MAT_INSECT,SOLID_BBOX);
+	ObjectInit(self, 2, 100, MAT_INSECT, SOLID_BBOX);
 
 	self->movetype = PHYSICSTYPE_STEP;
 	self->count = 19;
 
 	self->think = ObjLarvaAnimThink;
-	self->nextthink = level.time + FRAMETIME;
-	self->nextthink += FRAMETIME * flrand(1, 6);	// Don't all start at the same time
+	self->nextthink = level.time + FRAMETIME * flrand(2.0f, 7.0f); // Don't all start at the same time.
 
-	self->s.sound = gi.soundindex("misc/larva.wav");
+	self->s.sound = (byte)gi.soundindex("misc/larva.wav");
 	self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_STATIC;
 
 	self->svflags = SVF_ALLOW_AUTO_TARGET;
 
-	if (irand(0, 1))
+	if (irand(0, 1) == 1)
 		self->spawnflags |= LARVA_FAST_TWITCH;
 
 	self->touch = ObjLarvaTouch;
-
-
 }
 
 #pragma endregion
