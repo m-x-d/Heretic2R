@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include <float.h> //mxd
 #include "g_obj.h" //mxd
 #include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
@@ -42,71 +43,51 @@ void ObjectStaticsInit(void)
 
 #pragma region ========================== Utility functions ==========================
 
-/*--------------------------------------
- It is assumed all bounding boxes for objects were initially implimented as if the objects 
- yaw was 0
-----------------------------------------*/
-void BboxYawAndScale(edict_t *self)
+// It is assumed all bounding boxes for objects were initially implemented as if the objects yaw was 0.
+void BboxYawAndScale(edict_t* self)
 {
-	vec3_t holdmins,holdmaxs;
-	vec3_t	forward, right;
-	vec3_t point[4],minpoint,maxpoint;
-	int i;
-	float scale;
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
 
-	VectorCopy(self->mins,holdmins);
-	VectorCopy(self->maxs,holdmaxs);
+	// Get bbox corners rotated on XY axis.
+	vec3_t rotated_corners[4];
 
-	AngleVectors (self->s.angles,forward, right,NULL);
+	VectorMA(self->s.origin, self->mins[0], forward, rotated_corners[0]);
+	VectorMA(rotated_corners[0], self->mins[1], right, rotated_corners[0]);
 
-	VectorMA (self->s.origin, holdmins[0],forward, point[0]);
-	VectorMA (point[0], holdmins[1],right, point[0]);
+	VectorMA(self->s.origin, self->maxs[0], forward, rotated_corners[1]);
+	VectorMA(rotated_corners[1], self->maxs[1], right, rotated_corners[1]);
 
-	VectorMA (self->s.origin, holdmaxs[0],forward, point[1]);
-	VectorMA (point[1], holdmaxs[1],right, point[1]);
+	VectorMA(self->s.origin, self->mins[0], forward, rotated_corners[2]);
+	VectorMA(rotated_corners[2], self->maxs[1], right, rotated_corners[2]);
 
-	VectorMA (self->s.origin, holdmins[0],forward, point[2]);
-	VectorMA (point[2], holdmaxs[1],right, point[2]);
+	VectorMA(self->s.origin, self->maxs[0], forward, rotated_corners[3]);
+	VectorMA(rotated_corners[3], self->mins[1], right, rotated_corners[3]);
 
-	VectorMA (self->s.origin, holdmaxs[0],forward, point[3]);
-	VectorMA (point[3], holdmins[1],right, point[3]);
-
-	minpoint[0] = point[0][0];
-	minpoint[1] = point[0][1];
-
-	maxpoint[0] = point[0][0];
-	maxpoint[1] = point[0][1];
-
-	// Find max and min point
-	for (i=0;i<4;++i)
+	// Find min and max points.
+	vec3_t min_point = { FLT_MAX, FLT_MAX, 0.0f };
+	vec3_t max_point = { FLT_MIN, FLT_MIN, 0.0f };
+	
+	for (int i = 0; i < 4; i++)
 	{
-		if (point[i][0] < minpoint[0])
-			minpoint[0] = point[i][0];
+		min_point[0] = min(rotated_corners[i][0], min_point[0]);
+		min_point[1] = min(rotated_corners[i][1], min_point[1]);
 
-		if (point[i][1] < minpoint[1])
-			minpoint[1] = point[i][1];
-
-
-		if (point[i][0] > maxpoint[0])
-			maxpoint[0] = point[i][0];
-
-		if (point[i][1] > maxpoint[1])
-			maxpoint[1] = point[i][1];
-
+		max_point[0] = max(rotated_corners[i][0], max_point[0]);
+		max_point[1] = max(rotated_corners[i][1], max_point[1]);
 	}
 
-	scale = self->s.scale;
-	if (scale == 0)
-		scale = 1;
+	// Update ent bbox.
+	const float scale = (self->s.scale == 0.0f ? 1.0f : self->s.scale);
 
-	self->mins[0] = (minpoint[0] - self->s.origin[0]) * scale;
-	self->mins[1] = (minpoint[1] - self->s.origin[1]) * scale;
-	self->mins[2] = self->mins[2] * scale;
+	self->mins[0] = (min_point[0] - self->s.origin[0]) * scale;
+	self->mins[1] = (min_point[1] - self->s.origin[1]) * scale;
+	self->mins[2] *= scale;
 
-	self->maxs[0] = (maxpoint[0] - self->s.origin[0]) * scale;
-	self->maxs[1] = (maxpoint[1] - self->s.origin[1]) * scale;
-	self->maxs[2] = self->maxs[2] * scale;
-
+	self->maxs[0] = (max_point[0] - self->s.origin[0]) * scale;
+	self->maxs[1] = (max_point[1] - self->s.origin[1]) * scale;
+	self->maxs[2] *= scale;
 }
 
 /*--------------------------------------
