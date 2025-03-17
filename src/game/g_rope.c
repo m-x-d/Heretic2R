@@ -650,16 +650,6 @@ static void ObjRopeTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfac
 	}
 }
 
-void grab_think(edict_t *self)
-{
-
-}
-
-void end_think(edict_t *self)
-{
-
-}
-
 void SP_obj_rope(edict_t *self)
 {
 	edict_t		*grab_ent, *end_ent;
