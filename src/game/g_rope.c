@@ -430,56 +430,56 @@ static void TutorialChickenSpawn(edict_t* self) //mxd. Named 'spawn_hanging_chic
 
 #pragma endregion
 
-void rope_think(edict_t *self)
-{//FIXME!!!!  Do a trace down rope to make sure the ropse does not clip through stuff!
-	trace_t	trace;
-	vec3_t	rope_top;
+#pragma region ========================== obj_rope ==========================
 
-	if (!self->enemy)
+static void ObjRopeThink(edict_t* self) //mxd. Named 'rope_think' in original logic.
+{
+	//FIXME!!! Do a trace down rope to make sure the rope does not clip through stuff!
+	if (self->enemy == NULL)
 		return;
 
-	//See if the player has chosen this rope as the one to grab
+	// See if the player has chosen this rope as the one to grab.
 	if (self->enemy->targetEnt == self)
 	{
-		//If he's already grabbed it...
-		if ( (self->enemy->client->playerinfo.flags & PLAYER_FLAG_ONROPE) && (!(self->enemy->client->playerinfo.flags & PLAYER_FLAG_RELEASEROPE)) )
+		// If he's already grabbed it...
+		if ((self->enemy->client->playerinfo.flags & PLAYER_FLAG_ONROPE) && !(self->enemy->client->playerinfo.flags & PLAYER_FLAG_RELEASEROPE))
 		{
-			if (!self->count)
+			if (self->count == 0)
 			{
 				self->count = 1;
 
+				vec3_t rope_top;
 				VectorCopy(self->s.origin, rope_top);
 				rope_top[2] += self->maxs[2];
 
-				//Create the new rope that's attached to the player
+				// Create the new rope that's attached to the player.
 				self->rope_grab->s.effects |= EF_ALTCLIENTFX;
 
-				gi.CreateEffect(&self->enemy->s, 
-								FX_ROPE, CEF_BROADCAST | CEF_OWNERS_ORIGIN | CEF_FLAG6, 
-								rope_top, 
-								"ssbvvv", 
-								self->rope_grab->s.number,	//ID for the grab entity
-								self->rope_end->s.number,	//ID for the end entity
-								self->bloodType,			//Model type
-								rope_top,					//Top of the rope
-								self->rope_grab->s.origin,	//Grab's current origin (???)
-								self->rope_end->s.origin);	//End's current origin	(???)
+				gi.CreateEffect(&self->enemy->s, FX_ROPE, CEF_BROADCAST | CEF_OWNERS_ORIGIN | CEF_FLAG6, rope_top,
+					"ssbvvv",
+					self->rope_grab->s.number,	// ID for the grab entity.
+					self->rope_end->s.number,	// ID for the end entity.
+					self->bloodType,			// Model type.
+					rope_top,					// Top of the rope.
+					self->rope_grab->s.origin,	// Grab's current origin (???).
+					self->rope_end->s.origin);	// End's current origin	(???).
 			}
 
-			gi.trace(self->rope_grab->s.origin, vec3_origin, vec3_origin, self->s.origin, self->enemy, MASK_SOLID,&trace);
-			
-			if ( (trace.fraction == 1) && (!trace.startsolid && !trace.allsolid) )
-				gi.trace(self->enemy->s.origin, self->enemy->mins, self->enemy->maxs, self->rope_grab->s.origin, self->enemy, MASK_PLAYERSOLID,&trace);
-			
-			//If the rope's movement is clear, move the player and the rope
-			if ( (trace.fraction == 1) && (!trace.startsolid && !trace.allsolid) )
+			trace_t trace;
+			gi.trace(self->rope_grab->s.origin, vec3_origin, vec3_origin, self->s.origin, self->enemy, MASK_SOLID, &trace);
+
+			if (trace.fraction == 1.0f && !trace.startsolid && !trace.allsolid)
+				gi.trace(self->enemy->s.origin, self->enemy->mins, self->enemy->maxs, self->rope_grab->s.origin, self->enemy, MASK_PLAYERSOLID, &trace);
+
+			// If the rope's movement is clear, move the player and the rope.
+			if (trace.fraction == 1.0f && !trace.startsolid && !trace.allsolid)
 			{
 				VectorCopy(self->rope_grab->s.origin, self->enemy->s.origin);
 			}
 			else
 			{
-				//Otherwise stop the player and the rope from entering a solid brush
-				VectorScale(self->rope_grab->velocity, -0.5, self->rope_grab->velocity);
+				// Otherwise stop the player and the rope from entering a solid brush.
+				VectorScale(self->rope_grab->velocity, -0.5f, self->rope_grab->velocity);
 				VectorCopy(self->enemy->s.origin, self->rope_grab->s.origin);
 			}
 		}
@@ -491,7 +491,7 @@ void rope_think(edict_t *self)
 	}
 	else
 	{
-		//This grabber is invalid, clear it
+		// This grabber is invalid, clear it.
 		self->enemy = NULL;
 	}
 }
@@ -576,7 +576,7 @@ void rope_sway(edict_t *self)
 
 		VectorCopy(grab_end, grab->s.origin);
 
-		rope_think(self);
+		ObjRopeThink(self);
 
 		self->think = rope_sway;
 		self->nextthink = level.time + FRAMETIME;
@@ -640,7 +640,7 @@ void rope_sway(edict_t *self)
 	//Make the end of the rope come to the end
 	rope_end_think(self);
 
-	rope_think(self);
+	ObjRopeThink(self);
 
 	self->think = rope_sway;
 	self->nextthink = level.time + FRAMETIME;
@@ -774,3 +774,5 @@ void SP_obj_rope(edict_t *self)
 
 	gi.linkentity(self);
 }
+
+#pragma endregion
