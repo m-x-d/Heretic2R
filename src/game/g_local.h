@@ -16,7 +16,6 @@
 
 #include "game.h"
 #include "Player.h"
-#include "FX.h" //mxd
 
 // The "gameversion" client command will print this plus compile date.
 #define GAMEVERSION		"Heretic2v16"
@@ -410,12 +409,6 @@ typedef struct
 #define C_ANIM_DONE				4
 #define C_ANIM_IDLE				8
 
-// Flags for object entities //TODO: move to g_obj.h
-#define OBJ_INVULNERABLE		1
-#define OBJ_ANIMATE				2
-#define OBJ_EXPLODING			4
-#define OBJ_NOPUSH				8
-
 // Type of target acquisition.
 #define SIGHT_SOUND_TARGET		0 // Heard the target make this noise.
 #define SIGHT_VISIBLE_TARGET	1 // Saw this target.
@@ -687,9 +680,6 @@ extern void M_MoveAwayFromGoal(edict_t* ent, float dist);
 
 // g_phys.c
 extern void G_RunEntity(edict_t* ent);
-
-// g_obj.c
-extern void ObjectInit(edict_t* self, int health, int mass, MaterialID_t material_type, int solid); //TODO: move to g_obj.h
 
 // g_spawnf.c
 //sfs--this is used to get a classname for guys spawned while game is running

@@ -9,6 +9,7 @@
 #include "g_ClassStatics.h"
 #include "g_Message.h"
 #include "Message.h"
+#include "FX.h" //mxd
 
 #define MAX_BUOY_BRANCHES	3
 

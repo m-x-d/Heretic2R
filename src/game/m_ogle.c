@@ -14,6 +14,7 @@
 #include "Utilities.h"
 #include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
+#include "g_obj.h" //mxd
 #include "Random.h"
 #include "vector.h"
 #include "fx.h"

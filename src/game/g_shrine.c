@@ -10,6 +10,7 @@
 #include "cl_strings.h"
 #include "g_combat.h" //mxd
 #include "g_itemstats.h"
+#include "g_obj.h" //mxd
 #include "p_anims.h"
 #include "p_client.h" //mxd
 #include "p_main.h"
