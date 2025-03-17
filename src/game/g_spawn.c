@@ -30,7 +30,7 @@ typedef struct
 {
 	char* name;
 	void (*spawn)(edict_t* ent);
-	ClassID_t CID; //mxd. int in original version.
+	ClassID_t classID; //mxd. int in original version.
 } spawn_t;
 
 void SP_trigger_Activate(edict_t* self);
@@ -88,24 +88,24 @@ void SP_script_runner(edict_t* ent);
 static spawn_t spawns[] =
 {
 	// Quake2 specific spawns.
-	{ "info_player_start", SP_info_player_start, -1 }, //TODO: change -1 to CID_NONE.
-	{ "info_player_deathmatch", SP_info_player_deathmatch, -1 },
-	{ "info_player_coop", SP_info_player_coop, -1 },
-	{ "info_player_intermission", SP_info_player_intermission, -1 },
+	{ "info_player_start", SP_info_player_start, CID_NONE },
+	{ "info_player_deathmatch", SP_info_player_deathmatch, CID_NONE },
+	{ "info_player_coop", SP_info_player_coop, CID_NONE},
+	{ "info_player_intermission", SP_info_player_intermission, CID_NONE },
 
-	{ "func_plat", SP_func_plat, -1 },
+	{ "func_plat", SP_func_plat, CID_NONE },
 	{ "func_button", SP_func_button, CID_BUTTON },
 	{ "func_door", SP_func_door, CID_FUNC_DOOR },
-	{ "func_door_secret", SP_func_door_secret, -1 },
+	{ "func_door_secret", SP_func_door_secret, CID_NONE },
 	{ "func_door_rotating", SP_func_door_rotating, CID_FUNC_ROTATE },
 	{ "func_rotating", SP_func_rotating, CID_FUNC_ROTATE },
-	{ "func_train", SP_func_train, -1 },
-	{ "func_water", SP_func_water, -1 },
-	{ "func_areaportal", SP_func_areaportal, -1 },
-	{ "func_monsterspawner", SP_func_monsterspawner, -1 },
-	{ "func_wall", SP_func_wall, -1 },
-	{ "func_object", SP_func_object, -1 },
-	{ "func_timer", SP_func_timer, -1 },
+	{ "func_train", SP_func_train, CID_NONE },
+	{ "func_water", SP_func_water, CID_NONE },
+	{ "func_areaportal", SP_func_areaportal, CID_NONE },
+	{ "func_monsterspawner", SP_func_monsterspawner, CID_NONE },
+	{ "func_wall", SP_func_wall, CID_NONE },
+	{ "func_object", SP_func_object, CID_NONE },
+	{ "func_timer", SP_func_timer, CID_NONE },
 
 	{ "trigger_Activate", SP_trigger_Activate, CID_TRIGGER },
 	{ "trigger_always", SP_trigger_Always, CID_TRIGGER },
@@ -114,14 +114,14 @@ static spawn_t spawns[] =
 	{ "trigger_counter", SP_trigger_Counter, CID_TRIGGER },
 	{ "trigger_elevator", SP_trigger_Elevator, CID_TRIGGER },
 	{ "trigger_fogdensity", SP_trigger_fogdensity, CID_TRIGGER },
-	{ "trigger_Gravity", SP_trigger_gravity, -1 },
+	{ "trigger_Gravity", SP_trigger_gravity, CID_NONE },
 	{ "trigger_lightning", SP_trigger_lightning, CID_TRIGGER },
 	{ "trigger_mappercentage", SP_trigger_mappercentage, CID_TRIGGER },
 	{ "trigger_quit_to_menu", SP_trigger_quit_to_menu, CID_TRIGGER },
 	{ "trigger_mission_give", SP_trigger_mission_give, CID_TRIGGER },
 	{ "trigger_mission_take", SP_trigger_mission_take, CID_TRIGGER },
-	{ "trigger_MonsterJump", SP_trigger_monsterjump, -1 },
-	{ "trigger_goto_buoy", SP_trigger_goto_buoy, -1 },
+	{ "trigger_MonsterJump", SP_trigger_monsterjump, CID_NONE },
+	{ "trigger_goto_buoy", SP_trigger_goto_buoy, CID_NONE },
 	{ "trigger_multiple", SP_trigger_Multiple, CID_TRIGGER },
 	{ "trigger_playerpushbutton", SP_trigger_PlayerPushButton, CID_TRIGGER },
 	{ "trigger_playerpushlever", SP_trigger_PlayerPushLever, CID_TRIGGER },
@@ -134,32 +134,32 @@ static spawn_t spawns[] =
 	{ "trigger_farclip", SP_trigger_farclip, CID_TRIGGER },
 	{ "trigger_endgame", SP_trigger_endgame, CID_TRIGGER },
 
-	{ "choose_CDTrack", SP_choose_CDTrack, -1 },
+	{ "choose_CDTrack", SP_choose_CDTrack, CID_NONE },
 
-	{ "target_explosion", SP_target_explosion, -1 },
-	{ "target_changelevel", SP_target_changelevel, -1 },
-	{ "target_crosslevel_trigger", SP_target_crosslevel_trigger, -1 },
-	{ "target_crosslevel_target", SP_target_crosslevel_target, -1 },
-	{ "target_lightramp", SP_target_lightramp, -1 },
-	{ "target_earthquake", SP_target_earthquake, -1 },
+	{ "target_explosion", SP_target_explosion, CID_NONE },
+	{ "target_changelevel", SP_target_changelevel, CID_NONE },
+	{ "target_crosslevel_trigger", SP_target_crosslevel_trigger, CID_NONE },
+	{ "target_crosslevel_target", SP_target_crosslevel_target, CID_NONE },
+	{ "target_lightramp", SP_target_lightramp, CID_NONE },
+	{ "target_earthquake", SP_target_earthquake, CID_NONE },
 
-	{ "worldspawn", SP_worldspawn, -1 },
+	{ "worldspawn", SP_worldspawn, CID_NONE },
 
-	{ "light", SP_light, -1 },
-	{ "info_null", SP_info_null, -1 },
-	{ "func_group", SP_info_null, -1 },
-	{ "info_notnull", SP_info_notnull, -1 },
-	{ "path_corner", SP_path_corner, -1 },
-	{ "point_combat", SP_point_combat, -1 },
+	{ "light", SP_light, CID_NONE },
+	{ "info_null", SP_info_null, CID_NONE },
+	{ "func_group", SP_info_null, CID_NONE },
+	{ "info_notnull", SP_info_notnull, CID_NONE },
+	{ "path_corner", SP_path_corner, CID_NONE },
+	{ "point_combat", SP_point_combat, CID_NONE },
 
 	{ "misc_teleporter", SP_misc_teleporter, CID_TELEPORTER },
-	{ "misc_teleporter_dest", SP_misc_teleporter_dest, -1 },
+	{ "misc_teleporter_dest", SP_misc_teleporter_dest, CID_NONE },
 	{ "misc_update_spawner", SP_misc_update_spawner, CID_TRIGGER },
-	{ "misc_remote_camera", SP_misc_remote_camera, -1 },
-	{ "misc_magic_portal", SP_misc_magic_portal, -1 },
-	{ "misc_fire_sparker", SP_misc_fire_sparker, -1 },
+	{ "misc_remote_camera", SP_misc_remote_camera, CID_NONE },
+	{ "misc_magic_portal", SP_misc_magic_portal, CID_NONE },
+	{ "misc_fire_sparker", SP_misc_fire_sparker, CID_NONE },
 
-	{ "misc_flag", SP_misc_flag, -1 },
+	{ "misc_flag", SP_misc_flag, CID_NONE },
 
 	{ "monster_gorgon",SP_monster_gorgon, CID_GORGON },
 	{ "monster_rat",SP_monster_rat, CID_RAT },
@@ -241,12 +241,12 @@ static spawn_t spawns[] =
 	{ "env_sun1",SP_env_sun1, CID_OBJECT },
 	{ "env_muck",SP_env_muck, CID_OBJECT },
 
-	{ "sound_ambient_silverspring",SP_sound_ambient_silverspring, -1 },
-	{ "sound_ambient_swampcanyon",SP_sound_ambient_swampcanyon, -1 },
-	{ "sound_ambient_andoria",SP_sound_ambient_andoria, -1 },
-	{ "sound_ambient_hive",SP_sound_ambient_hive, -1 },
-	{ "sound_ambient_mine",SP_sound_ambient_mine, -1 },
-	{ "sound_ambient_cloudfortress",SP_sound_ambient_cloudfortress, -1 },
+	{ "sound_ambient_silverspring",SP_sound_ambient_silverspring, CID_NONE },
+	{ "sound_ambient_swampcanyon",SP_sound_ambient_swampcanyon, CID_NONE },
+	{ "sound_ambient_andoria",SP_sound_ambient_andoria, CID_NONE },
+	{ "sound_ambient_hive",SP_sound_ambient_hive, CID_NONE },
+	{ "sound_ambient_mine",SP_sound_ambient_mine, CID_NONE },
+	{ "sound_ambient_cloudfortress",SP_sound_ambient_cloudfortress, CID_NONE },
 
 	{ "obj_andwallhanging",SP_obj_andwallhanging, CID_OBJECT },
 	{ "obj_banner",SP_obj_banner, CID_OBJECT },
@@ -407,9 +407,9 @@ static spawn_t spawns[] =
 
 	{ "flamethrower",SP_flamethrower, CID_FLAMETHROWER },
 
-	{ "item_spitter", SP_item_spitter, -1 },
+	{ "item_spitter", SP_item_spitter, CID_NONE },
 
-	{ "info_buoy", SP_info_buoy, -1 },
+	{ "info_buoy", SP_info_buoy, CID_NONE },
 
 	{ "shrine_heal", SP_shrine_heal_trigger, CID_TRIGGER },
 	{ "shrine_armor", SP_shrine_armor_silver_trigger, CID_TRIGGER },
@@ -426,7 +426,7 @@ static spawn_t spawns[] =
 
 	{ "script_runner", SP_script_runner, CID_TRIGGER },
 
-	{ NULL, NULL, -1 }
+	{ NULL, NULL, CID_NONE }
 };
 
 #pragma endregion
@@ -454,13 +454,13 @@ void ED_CallSpawn(edict_t* ent)
 			continue;
 
 		// Found it.
-		if (s->CID != -1 && !classStaticsInitialized[s->CID]) // Need to call once per level that item is on.
+		if (s->classID != CID_NONE && !classStaticsInitialized[s->classID]) // Need to call once per level that item is on.
 		{
-			classStaticsInits[s->CID]();
-			classStaticsInitialized[s->CID] = true;
+			classStaticsInits[s->classID]();
+			classStaticsInitialized[s->classID] = true;
 		}
 
-		ent->classID = ((s->CID != -1) ? s->CID : CID_NONE); // Make sure classID is set.
+		ent->classID = s->classID; // Make sure classID is set.
 		s->spawn(ent); // Need to call for every item.
 
 		return;
