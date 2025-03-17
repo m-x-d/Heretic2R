@@ -3438,7 +3438,7 @@ void SP_obj_lab_tray(edict_t* self)
 
 #pragma region ========================== obj_hanging_ogle ==========================
 
-static void ObjHangingOgleMoan(edict_t* self) //mxd. Named 'ogle_moan' in original logic.
+static void ObjHangingOgleMoanThink(edict_t* self) //mxd. Named 'ogle_moan' in original logic.
 {
 	gi.sound(self, CHAN_VOICE, gi.soundindex(va("monsters/ogle/oglemoan%i.wav", irand(1, 2))), 1.0f, ATTN_IDLE, 0.0f);
 	self->nextthink = level.time + flrand(3.0f, 10.0f); //mxd. irand() in original logic.
@@ -3458,7 +3458,7 @@ void SP_obj_hanging_ogle(edict_t* self)
 	SpawnClientAnim(self, FX_ANIM_HANGING_OGLE, NULL);
 	ObjectInit(self, 100, 200, MAT_FLESH, SOLID_BBOX);
 
-	self->think = ObjHangingOgleMoan;
+	self->think = ObjHangingOgleMoanThink;
 	self->nextthink = level.time + flrand(3.0f, 10.0f); //mxd. irand() in original logic.
 
 	// Spawn plaque.
