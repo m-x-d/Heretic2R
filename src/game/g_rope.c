@@ -1,33 +1,28 @@
-//g_rope.c
 //
-// In game, animating rope
+// g_rope.c -- In game, animating rope.
+//
+// Copyright 1998 Raven Software
+//
 
-#include "g_local.h"
-#include "vector.h"
-#include "random.h"
-//#include "timing.h" // for time based sway
+#include "cl_strings.h"
+#include "m_chicken_anim.h"
 #include "p_main.h"
 #include "p_anims.h"
-#include "fx.h"
-#include "p_anim_branch.h"
-#include "utilities.h"
-#include "p_animactor.h"
-#include "m_chicken_anim.h"
-#include "cl_strings.h"
+#include "Vector.h"
+#include "Random.h"
+#include "g_local.h"
 
-#define CHICKEN_KNOCKBACK	1
+#define CHICKEN_KNOCKBACK	1 //TODO: remove.
 
-#define ROPE_SEGMENT_LENGTH 16
-#define ROPE_MAX_SEGMENTS	256
+#define ROPEFLAG_VINE				1 //TODO: add SF_ prefix.
+#define ROPEFLAG_CHAIN				2 //TODO: add SF_ prefix.
+#define ROPEFLAG_TENDRIL			4 //TODO: add SF_ prefix.
+#define ROPEFLAG_HANGING_CHICKEN	8 //TODO: add SF_ prefix.
 
-#define ROPEFLAG_VINE				1
-#define ROPEFLAG_CHAIN				2
-#define ROPEFLAG_TENDRIL			4
-#define ROPEFLAG_HANGING_CHICKEN	8
-
-//Correspondes with the model index on the client side DIRECTLY, ie DON'T CHANGE!
-enum {
-	RM_ROPE	= 0,
+// Corresponds with the model index on the client side DIRECTLY, ie DON'T CHANGE!
+enum
+{
+	RM_ROPE = 0,
 	RM_CHAIN,
 	RM_VINE,
 	RM_TENDRIL
