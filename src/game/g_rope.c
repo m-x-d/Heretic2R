@@ -28,42 +28,21 @@ enum
 	RM_TENDRIL
 };
 
-/*QUAKED obj_rope (.3 .2 .8) ? VINE CHAIN TENDRIL HANGING_CHICKEN
+#pragma region ========================== Sir Nate the Tutorial Chicken ==========================
 
-A rope to climb or swing (default to rope model)
+#define NATE_HEALTH	10000
 
-Place the top of the entity at the top of the rope, and drag
-the bottom of the box to the end of the rope
-
-THE ENTITY MUST HAVE AN ORIGIN BRUSH
-
-------------  FIELDS  -------------
-ROPE (default) 
-VINE - use a vine model
-CHAIN - use a chain model
-TENDRIL - use a tendril model
--------------  KEYS  --------------
------------------------------------
-*/
-
-//============================================
-
-//SIR NATE
-
-//============================================
-
-#define NATE_HEALTH 10000
-
-enum//instructions
+enum // Instructions.
 {
 	NATE_INSTRUCTION_SWIPE = 0,
 	NATE_INSTRUCTION_SPIN,
 	NATE_INSTRUCTION_JUMP_KICK,
 	NATE_INSTRUCTION_FIREBALL,
+
 	NUM_INSTRUCTIONS
 };
 
-enum//sayings
+enum//sayings //TODO: remove.
 {
 	NATE_SAYING_GREETING = 0,
 	NATE_SAYING_INTRO,
@@ -84,44 +63,35 @@ enum//sayings
 	NUM_SAYINGS
 };
 
-qboolean UsedRightAttack(int instruction, edict_t *attacker, edict_t *projectile)
+static qboolean UsedRightAttack(const int instruction, const edict_t* attacker, const edict_t* projectile)
 {
+	if (attacker->client == NULL)
+		return false;
+
 	int sequence;
 
-	if (attacker->client)
-	{
-		if (attacker->client->playerinfo.upperseq == ASEQ_NONE)
-			sequence = attacker->client->playerinfo.lowerseq;
-		else
-			sequence = attacker->client->playerinfo.upperseq;
-	}
+	if (attacker->client->playerinfo.upperseq == ASEQ_NONE)
+		sequence = attacker->client->playerinfo.lowerseq;
+	else
+		sequence = attacker->client->playerinfo.upperseq;
 
-	switch(instruction)
+	switch (instruction)
 	{
 		case NATE_INSTRUCTION_SWIPE:
-			if(sequence == ASEQ_WSWORD_STD1||
-				sequence == ASEQ_WSWORD_STD2||
-				sequence == ASEQ_WSWORD_STEP2||	
-				sequence == ASEQ_WSWORD_STEP)	
-				return (true);
-			break;
-		
+			return (sequence == ASEQ_WSWORD_STD1 || sequence == ASEQ_WSWORD_STD2 || sequence == ASEQ_WSWORD_STEP2 || sequence == ASEQ_WSWORD_STEP);
+
 		case NATE_INSTRUCTION_SPIN:
-			if(sequence == ASEQ_WSWORD_SPIN || sequence == ASEQ_WSWORD_SPIN2)
-				return (true);
-			break;
+			return (sequence == ASEQ_WSWORD_SPIN || sequence == ASEQ_WSWORD_SPIN2);
 
 		case NATE_INSTRUCTION_JUMP_KICK:
-			if(sequence == ASEQ_POLEVAULT2)
-				return (true);
-			break;
-		
+			return (sequence == ASEQ_POLEVAULT2);
+
 		case NATE_INSTRUCTION_FIREBALL:
-			if(!stricmp(projectile->classname, "Spell_FlyingFist"))
-				return (true);
-			break;
+			return (Q_stricmp(projectile->classname, "Spell_FlyingFist") == 0); //mxd. stricmp -> Q_stricmp
+
+		default:
+			return false;
 	}
-	return (false);
 }
 
 int sir_nate_of_the_embarassingly_shortshanks_pain (edict_t *self, edict_t *attacker, float kick, int damage)
@@ -189,6 +159,8 @@ void rope_use (edict_t *self, edict_t *other, edict_t *activator)
 {
 	sir_nate_of_the_embarassingly_shortshanks_use(self, other, activator);
 }
+
+#pragma endregion
 
 void rope_think(edict_t *self)
 {//FIXME!!!!  Do a trace down rope to make sure the ropse does not clip through stuff!
