@@ -120,7 +120,7 @@ static void PushableObjectTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 	}
 }
 
-void ObjectInit(edict_t* self, const int health, const int mass, const MaterialID_t material_type, const int solid) //TODO: move declaration to g_obj.h
+void ObjectInit(edict_t* self, const int health, const int mass, const MaterialID_t material_type, const int solid)
 {
 	self->solid = solid;
 	self->msgHandler = DefaultMsgHandler;
@@ -2931,8 +2931,6 @@ void SP_obj_statue_sithraguard(edict_t* self) //TODO: rename to 'SP_obj_statue_s
 #pragma endregion
 
 #pragma region ========================== obj_torture_ironmaiden ==========================
-
-static void ObjTortureIronmaidenTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf); //TODO: move to header.
 
 static void ObjTortureIronmaidenOpen(edict_t* self) //mxd. Named 'ironmaiden_open' in original logic.
 {

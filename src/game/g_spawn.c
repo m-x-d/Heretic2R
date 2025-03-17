@@ -14,6 +14,7 @@
 #include "g_func_Timer.h" //mxd
 #include "g_func_Train.h" //mxd
 #include "g_light.h" //mxd
+#include "g_obj.h" //mxd
 #include "m_monsters.h" //mxd
 #include "p_client.h" //mxd
 #include "g_local.h"
@@ -66,177 +67,14 @@ void SP_env_water_fountain(edict_t *self);
 void SP_env_waterfall_base(edict_t *self);
 
 // Object stuff
-void SP_obj_andwallhanging(edict_t *ent);
-
-void SP_obj_banner(edict_t *ent);
-void SP_obj_banneronpole(edict_t *ent);
-void SP_obj_barrel(edict_t *ent);
-void SP_obj_barrel_explosive(edict_t *ent);
-void SP_obj_barrel_metal(edict_t *ent);
-void SP_obj_basket(edict_t *ent);
-void SP_obj_bench(edict_t *ent);
-void SP_obj_bigcrystal(edict_t *self);
-void SP_obj_biotank (edict_t *self); 
-void SP_obj_bloodsplat(edict_t *ent);
-void SP_obj_bookclosed(edict_t *ent);
-void SP_obj_bookopen(edict_t *ent);
-void SP_obj_bottle1(edict_t *ent);
-void SP_obj_broom (edict_t *ent);
-void SP_obj_bucket (edict_t *ent);
-void SP_obj_bush1 (edict_t *ent);
-void SP_obj_bush2 (edict_t *ent);
-
-void SP_obj_cactus (edict_t *ent);
-void SP_obj_cactus3 (edict_t *ent);
-void SP_obj_cactus4 (edict_t *ent);
-void SP_obj_cauldron(edict_t *ent);
-void SP_obj_chair1(edict_t *ent);
-void SP_obj_chair2(edict_t *ent);
-void SP_obj_chair3(edict_t *ent);
-void SP_obj_chest1(edict_t *ent);
-void SP_obj_chest2(edict_t *ent);
-void SP_obj_chest3(edict_t *ent);
-void SP_obj_choppeddude(edict_t *ent);
-void SP_obj_claybowl (edict_t *ent);
-void SP_obj_clayjar (edict_t *ent);
-void SP_obj_cocoon(edict_t *ent);
-void SP_obj_cocoonopen(edict_t *ent);
-void SP_obj_cog1(edict_t *ent);
-void SP_obj_corpse1(edict_t *self);
-void SP_obj_corpse2(edict_t *self);
-
-void SP_obj_dying_elf(edict_t *self);
-
-void SP_obj_eggpan(edict_t *ent);
-void SP_obj_eyeball_jar(edict_t *ent);
-
-void SP_obj_firepot(edict_t *ent);
 void SP_obj_fishhead1(edict_t *ent);
 void SP_obj_fishhead2(edict_t *ent);
-void SP_obj_fishtrap (edict_t *ent);
-void SP_obj_flagonpole (edict_t *ent);
-void SP_obj_floor_candelabrum(edict_t *ent);
-void SP_obj_fountain_fish(edict_t *ent);
-void SP_obj_frypan(edict_t *ent);
 
-void SP_obj_gascan(edict_t *ent);
-void SP_obj_gorgonbones(edict_t *ent);
-void SP_obj_grass(edict_t *ent);
-
-void SP_obj_hangingdude(edict_t *ent);
-void SP_obj_hanging_ogle(edict_t *ent);
-void SP_obj_hivepriestessssymbol (edict_t *self);
-
-void SP_obj_jawbone(edict_t *ent);
-void SP_obj_jug1(edict_t *ent);
-
-void SP_obj_kettle(edict_t *ent);
-
-void SP_obj_lab_parts_container(edict_t *ent);
-void SP_obj_lab_tray(edict_t *ent);
-void SP_obj_larva(edict_t *ent);
-void SP_obj_larvabrokenegg(edict_t *ent);
-void SP_obj_larvaegg(edict_t *ent);
-void SP_obj_lever1 (edict_t *ent);
-void SP_obj_lever2 (edict_t *ent);
-void SP_obj_lever3 (edict_t *ent);
-
-void SP_obj_metalchunk1(edict_t *ent);
-void SP_obj_metalchunk2(edict_t *ent);
-void SP_obj_metalchunk3(edict_t *ent);
-void SP_obj_minecart(edict_t *ent);
-void SP_obj_minecart2(edict_t *ent);
-void SP_obj_minecart3(edict_t *ent);
-void SP_obj_moss1(edict_t *self);
-void SP_obj_moss2(edict_t *self);
-void SP_obj_moss3(edict_t *self);
-void SP_obj_moss4(edict_t *self);
-void SP_obj_moss5(edict_t *self);
-
-void SP_obj_nest(edict_t *self);
-
-void SP_obj_pick(edict_t *ent);
-void SP_obj_pipe1(edict_t *ent);
-void SP_obj_pipe2(edict_t *ent);
-void SP_obj_pipewheel(edict_t *ent);
-void SP_obj_plant1(edict_t *ent);
-void SP_obj_plant2(edict_t *ent);
-void SP_obj_plant3(edict_t *ent);
-void SP_obj_pot1(edict_t *ent);
-void SP_obj_pot2(edict_t *ent);
-void SP_obj_pottedplant(edict_t *ent);
-void SP_obj_pushcart(edict_t *ent);
-
-void SP_obj_queenchair(edict_t *ent);
-void SP_obj_queenthrone(edict_t *ent);
-
-void SP_obj_ring_plaque2 (edict_t *ent);
-void SP_obj_rocks1(edict_t *ent);
-void SP_obj_rocks2(edict_t *ent);
 void SP_obj_rope(edict_t *ent);
-void SP_obj_ropechain (edict_t *ent);
 
-void SP_obj_scroll(edict_t *ent);
-void SP_obj_seasonglobe(edict_t *ent);
-void SP_obj_shovel(edict_t *ent);
-void SP_obj_sign1(edict_t *ent);
-void SP_obj_sign4(edict_t *ent);
-void SP_obj_skullpole(edict_t *ent);
-void SP_obj_spellbook(edict_t *ent);
 void SP_obj_stalactite1(edict_t *ent);
 void SP_obj_stalactite2(edict_t *ent);
 void SP_obj_stalactite3(edict_t *ent);
-void SP_obj_stalagmite1(edict_t *ent);
-void SP_obj_stalagmite2(edict_t *ent);
-void SP_obj_stalagmite3(edict_t *ent);
-void SP_obj_statue_corvus (edict_t *ent);
-void SP_obj_statue_boulderfish (edict_t *ent);
-void SP_obj_statue_dolphin1(edict_t *ent);
-void SP_obj_statue_dolphin2(edict_t *ent);
-void SP_obj_statue_dolphin3(edict_t *ent);
-void SP_obj_statue_dolphin4(edict_t *ent);
-void SP_obj_statue_dragon (edict_t *ent);
-void SP_obj_statue_dragonhead (edict_t *ent);
-void SP_obj_statue_duckbill1(edict_t *ent);
-void SP_obj_statue_duckbill2(edict_t *ent);
-void SP_obj_statue_guardian(edict_t *ent);
-void SP_obj_statue_saraphbust(edict_t *ent);
-void SP_obj_statue_sariph(edict_t *ent);
-void SP_obj_statue_sithraguard(edict_t *ent);
-void SP_obj_statue_tchecktrik_bust (edict_t *self);
-void SP_obj_statue_techeckrikleft (edict_t *self);
-void SP_obj_statue_techeckrikright (edict_t *self);
-void SP_obj_statue_techeckriktomb (edict_t *self);
-void SP_obj_stein(edict_t *ent);
-void SP_obj_swampflat_top(edict_t *ent);
-void SP_obj_swampflat_bottom(edict_t *ent);
-
-void SP_obj_table1(edict_t *ent);
-void SP_obj_table2(edict_t *ent);
-void SP_obj_tapper(edict_t *ent);
-void SP_obj_throne (edict_t *ent);
-void SP_obj_torture_bed (edict_t *ent);
-void SP_obj_torture_ironmaiden (edict_t *ent);
-void SP_obj_torture_rack (edict_t *ent);
-void SP_obj_torture_table (edict_t *ent);
-void SP_obj_torture_wallring (edict_t *ent);
-void SP_obj_tree(edict_t *ent);
-void SP_obj_tree2(edict_t *ent);
-void SP_obj_tree3(edict_t *ent);
-void SP_obj_treefallen(edict_t *ent);
-void SP_obj_treestump(edict_t *ent);
-void SP_obj_treetall(edict_t *ent);
-void SP_obj_treetop(edict_t *ent);
-
-void SP_obj_urn (edict_t *ent);
-
-void SP_obj_venusflytrap(edict_t *ent);
-
-void SP_obj_wallringplaque(edict_t *ent);
-void SP_obj_web(edict_t *ent);
-void SP_obj_wheelbarrow(edict_t *ent);
-void SP_obj_wheelbarrowdamaged(edict_t *ent);
-void SP_obj_woodpile(edict_t *ent);
 
 void SP_script_runner (edict_t *ent);
 
