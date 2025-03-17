@@ -6,7 +6,6 @@
 
 #include "g_Shrine.h" //mxd
 #include "g_ShrineLocal.h" //mxd
-#include "g_local.h"
 #include "cl_strings.h"
 #include "g_combat.h" //mxd
 #include "g_itemstats.h"
@@ -18,6 +17,7 @@
 #include "FX.h"
 #include "Random.h"
 #include "Vector.h"
+#include "g_local.h"
 
 #define INVUNERABILITY_TIME 2.0f
 #define SF_PERMANENT		1 //mxd
