@@ -124,7 +124,7 @@ void ObjectInit(edict_t* self, const int health, const int mass, const MaterialI
 {
 	self->solid = solid;
 	self->msgHandler = DefaultMsgHandler;
-	self->takedamage = ((self->spawnflags & OBJ_INVULNERABLE) ? DAMAGE_NO : DAMAGE_YES);
+	self->takedamage = ((self->spawnflags & SF_OBJ_INVULNERABLE) ? DAMAGE_NO : DAMAGE_YES);
 	self->clipmask = MASK_MONSTERSOLID;
 
 	if (self->health == 0)
@@ -138,7 +138,7 @@ void ObjectInit(edict_t* self, const int health, const int mass, const MaterialI
 
 	BboxYawAndScale(self);
 
-	if (!(self->spawnflags & OBJ_NOPUSH)) // PUSHABLE.
+	if (!(self->spawnflags & SF_OBJ_NOPUSH)) // PUSHABLE.
 	{
 		self->movetype = PHYSICSTYPE_STOP;
 		self->monsterinfo.aiflags = AI_NOSTEP;
@@ -169,7 +169,7 @@ void SP_obj_banner(edict_t* self)
 	VectorSet(self->mins, -8.0f, -44.0f, -296.0f);
 	VectorSet(self->maxs, 8.0f, 44.0f, 0.0f);
 
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	SpawnClientAnim(self, FX_ANIM_BANNER, "ambient/bannerflap.wav");
 	ObjectInit(self, 40, 200, MAT_CLOTH, SOLID_BBOX);
@@ -184,7 +184,7 @@ void SP_obj_banneronpole(edict_t* self)
 	VectorSet(self->mins, -8.0f, -28.0f, -30.0f);
 	VectorSet(self->maxs, 8.0f, 28.0f, 30.0f);
 
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	SpawnClientAnim(self, FX_ANIM_BANNERONPOLE, "ambient/bannerflap.wav");
 	ObjectInit(self, 40, 200, MAT_WOOD, SOLID_BBOX);
@@ -249,7 +249,7 @@ void SP_obj_barrel(edict_t* self)
 
 	ObjectInit(self, 10, 60, MAT_WOOD, SOLID_BBOX);
 
-	if (self->spawnflags & OBJ_EXPLODING)
+	if (self->spawnflags & SF_OBJ_EXPLODING)
 	{
 		// Set this up so we go through die rather than the message.
 		self->classID = CID_NONE;
@@ -272,7 +272,7 @@ void SP_obj_broom(edict_t* self)
 	VectorSet(self->maxs, 2.0f, 2.0f, 25.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/broom/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;
+	self->spawnflags |= SF_OBJ_NOPUSH;
 
 	ObjectInit(self, 10, 40, MAT_WOOD, SOLID_BBOX);
 }
@@ -302,7 +302,7 @@ void SP_obj_chair2(edict_t* self)
 	VectorSet(self->maxs, 18.0f, 29.0f, 30.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/chairs/chair2/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;
+	self->spawnflags |= SF_OBJ_NOPUSH;
 
 	ObjectInit(self, 20, 50, MAT_WOOD, SOLID_BBOX);
 }
@@ -318,7 +318,7 @@ void SP_obj_chair3(edict_t* self)
 	VectorSet(self->maxs, 14.0f, 21.0f, 28.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/chairs/chair3/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 20, 50, MAT_GREYSTONE, SOLID_BBOX);
 }
@@ -373,7 +373,7 @@ void SP_obj_chest2(edict_t* self)
 	VectorSet(self->maxs, 14.0f, 17.0f, 9.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/chests/chest2/tris.fm");
-	self->spawnflags &= ~OBJ_NOPUSH; //TODO: explicitly pushable. Why?
+	self->spawnflags &= ~SF_OBJ_NOPUSH; //TODO: explicitly pushable. Why?
 
 	ObjectInit(self, 60, 150, MAT_WOOD, SOLID_BBOX);
 }
@@ -388,7 +388,7 @@ void SP_obj_chest3(edict_t* self)
 	VectorSet(self->maxs, 10.0f, 17.0f, 6.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/chests/chest3/tris.fm");
-	self->spawnflags &= ~OBJ_NOPUSH; //TODO: explicitly pushable. Why?
+	self->spawnflags &= ~SF_OBJ_NOPUSH; //TODO: explicitly pushable. Why?
 
 	ObjectInit(self, 60, 150, MAT_WOOD, SOLID_BBOX);
 }
@@ -432,7 +432,7 @@ void SP_obj_cog1(edict_t* self)
 	VectorSet(self->maxs, 8.0f, 4.0f, 20.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/cogs/cog1/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->use = ObjCog1Use;
 
 	ObjectInit(self, 40, 20, MAT_WOOD, SOLID_BBOX);
@@ -498,7 +498,7 @@ static void ObjCorpseInit(edict_t* self) //mxd. Named 'SpawnCorpse' in original 
 	VectorSet(self->mins, -30.0f, -12.0f, -2.0f);
 	VectorSet(self->maxs, 30.0f, 12.0f, 2.0f);
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
+	self->spawnflags |= SF_OBJ_NOPUSH;	// Can't be pushed
 	self->svflags |= SVF_DEADMONSTER; // Doesn't block walking.
 
 	ObjectInit(self, 40, 60, MAT_FLESH, SOLID_BBOX);
@@ -681,7 +681,7 @@ void SP_obj_dying_elf(edict_t* self)
 	VectorSet(self->maxs, 32.0f, 32.0f, 6.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/monsters/plaguelf/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 	self->movetype = PHYSICSTYPE_STEP; //TODO: ignored: ObjectInit() below will re-set this to PHYSICSTYPE_NONE.
 
 	self->touch_debounce_time = -1.0f;
@@ -721,7 +721,7 @@ void SP_obj_sign1(edict_t* self)
 	VectorSet(self->maxs, 29.0f, 4.0f, 16.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/signs/sign1/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 	self->s.skinnum = ClampI(self->style, 0, 2); //mxd
 	self->s.frame = 3;
 
@@ -742,7 +742,7 @@ void SP_obj_sign4(edict_t* self)
 	VectorSet(self->maxs, 8.0f, 18.0f, 29.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/signs/sign4/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed
 	self->s.skinnum = ClampI(self->style, 0, 1); //mxd
 
 	ObjectInit(self, 40, 150, MAT_WOOD, SOLID_BBOX);
@@ -820,7 +820,7 @@ void SP_obj_statue_corvus(edict_t* self)
 	VectorSet(self->maxs, 16.0f, 16.0f, 128.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/corvus/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
@@ -837,12 +837,12 @@ void SP_obj_statue_dolphin1(edict_t* self)
 	VectorSet(self->maxs, 68.0f, 22.0f, 30.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/dolphin/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;
+	self->spawnflags |= SF_OBJ_NOPUSH;
 
 	if (self->spawnflags & SF_VULNERABLE)
-		self->spawnflags &= ~OBJ_INVULNERABLE; // Can be destroyed.
+		self->spawnflags &= ~SF_OBJ_INVULNERABLE; // Can be destroyed.
 	else
-		self->spawnflags |= OBJ_INVULNERABLE; // Can't be destroyed.
+		self->spawnflags |= SF_OBJ_INVULNERABLE; // Can't be destroyed.
 
 	ObjectInit(self, 300, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
@@ -855,7 +855,7 @@ void SP_obj_statue_dolphin2(edict_t* self)
 	VectorSet(self->maxs, 17.0f, 20.0f, 70.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/dolphin/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.frame = 1;
 
 	ObjectInit(self, 300, 200, MAT_GREYSTONE, SOLID_BBOX);
@@ -869,7 +869,7 @@ void SP_obj_statue_dolphin3(edict_t* self)
 	VectorSet(self->maxs, 17.0f, 20.0f, 70.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/dolphin/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.frame = 3;
 
 	ObjectInit(self, 300, 200, MAT_GREYSTONE, SOLID_BBOX);
@@ -883,7 +883,7 @@ void SP_obj_statue_dolphin4(edict_t* self)
 	VectorSet(self->maxs, 63.0f, 22.0f, 37.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/dolphin/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.frame = 2;
 
 	ObjectInit(self, 300, 200, MAT_GREYSTONE, SOLID_BBOX);
@@ -897,7 +897,7 @@ void SP_obj_statue_guardian(edict_t* self)
 	VectorSet(self->maxs, 64.0f, 64.0f, 128.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/guardian/tris.fm"); //TODO: has unused second skin. Pick it randomly?
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 400, 300, MAT_METAL, SOLID_BBOX);
 }
@@ -931,7 +931,7 @@ void SP_obj_table2(edict_t* self)
 	VectorSet(self->maxs, 28.0f, 54.0f, 17.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/tables/table2/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;
+	self->spawnflags |= SF_OBJ_NOPUSH;
 
 	ObjectInit(self, 80, 150, MAT_GREYSTONE, SOLID_BBOX);
 }
@@ -946,7 +946,7 @@ void SP_obj_throne(edict_t* self)
 	VectorSet(self->maxs, 20.0f, 22.0f, 44.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/chairs/throne/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;
+	self->spawnflags |= SF_OBJ_NOPUSH;
 
 	ObjectInit(self, 150, 200, MAT_WOOD, SOLID_BBOX);
 }
@@ -981,9 +981,9 @@ void SP_obj_cauldron(edict_t* self)
 	VectorSet(self->maxs, 22.0f, 22.0f, 10.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/caldrn/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
-	if (self->spawnflags & OBJ_ANIMATE)	// Animate it.
+	if (self->spawnflags & SF_OBJ_ANIMATE)	// Animate it.
 	{
 		self->s.sound = (byte)gi.soundindex("ambient/cauldronbubble.wav");
 		self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_STATIC;
@@ -1002,13 +1002,13 @@ void SP_obj_firepot(edict_t* self)
 	VectorSet(self->maxs, 18.0f, 18.0f, 12.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/firepot/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.sound = (byte)gi.soundindex("ambient/fireplace.wav"); //TODO: play only when OBJ_ANIMATE is set?
 	self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_STATIC;
 
 	ObjectInit(self, 140, 100, MAT_GREYSTONE, SOLID_BBOX);
 
-	if (self->spawnflags & OBJ_ANIMATE)	// Animate it.
+	if (self->spawnflags & SF_OBJ_ANIMATE)	// Animate it.
 	{
 		vec3_t hold_origin;
 		VectorCopy(self->s.origin, hold_origin);
@@ -1030,7 +1030,7 @@ void SP_obj_statue_duckbill1(edict_t* self)
 	VectorSet(self->maxs, 67.0f, 24.0f, 51.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/duckbill/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 150, 100, MAT_GREYSTONE, SOLID_BBOX);
 }
@@ -1043,7 +1043,7 @@ void SP_obj_statue_duckbill2(edict_t* self)
 	VectorSet(self->maxs, 67.0f, 24.0f, 50.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/duckbill/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.frame = 1;
 
 	ObjectInit(self, 150, 100, MAT_GREYSTONE, SOLID_BBOX);
@@ -1230,7 +1230,7 @@ void SP_obj_fountain_fish(edict_t* self)
 	VectorSet(self->maxs, 52.0f, 34.0f, 48.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/fountainfish/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 40, 50, MAT_WOOD, SOLID_BBOX);
 }
@@ -1245,7 +1245,7 @@ void SP_obj_statue_boulderfish(edict_t* self)
 	VectorSet(self->maxs, 26.0f, 16.0f, 27.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/boulderfish/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;
+	self->spawnflags |= SF_OBJ_NOPUSH;
 
 	ObjectInit(self, 200, 150, MAT_GREYSTONE, SOLID_BBOX);
 }
@@ -1279,7 +1279,7 @@ void SP_obj_plant1(edict_t* self)
 	VectorSet(self->maxs, 8.0f, 8.0f, 24.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/plant1/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 	self->s.effects |= EF_CAMERA_NO_CLIP;
 
 	ObjectInit(self, 20, 50, MAT_LEAF, SOLID_NOT);
@@ -1295,7 +1295,7 @@ void SP_obj_plant2(edict_t* self)
 	VectorSet(self->maxs, 20.0f, 20.0f, 20.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/plant2/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 	self->s.effects |= EF_CAMERA_NO_CLIP;
 
 	ObjectInit(self, 20, 50, MAT_LEAF, SOLID_NOT);
@@ -1314,7 +1314,7 @@ void SP_obj_plant3(edict_t* self)
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/plant3/tris.fm");
 	self->s.skinnum = ClampI(self->style, 0, 2); //mxd
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 	self->s.effects |= EF_CAMERA_NO_CLIP;
 
 	ObjectInit(self, 20, 50, MAT_LEAF, SOLID_NOT);
@@ -1332,7 +1332,7 @@ void SP_obj_treetop(edict_t* self)
 	VectorSet(self->maxs, 176.0f, 176.0f, 125.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/treetop/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 40, 50, MAT_WOOD, SOLID_NOT);
 }
@@ -1345,7 +1345,7 @@ void SP_obj_tree(edict_t* self)
 	VectorSet(self->maxs, 100.0f, 100.0f, 120.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/tree/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 40, 50, MAT_WOOD, SOLID_BBOX);
 }
@@ -1358,7 +1358,7 @@ void SP_obj_tree2(edict_t* self)
 	VectorSet(self->maxs, 50.0f, 50.0f, 286.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/tree2/trunk2/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 40, 50, MAT_WOOD, SOLID_BBOX);
 
@@ -1387,7 +1387,7 @@ void SP_obj_tree3(edict_t* self)
 	VectorSet(self->maxs, 50.0f, 50.0f, 286.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/tree3/trunk3/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 40, 50, MAT_WOOD, SOLID_BBOX);
 
@@ -1416,7 +1416,7 @@ void SP_obj_treetall(edict_t* self)
 	VectorSet(self->maxs, 46.0f, 46.0f, 340.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/talltree/trunk1/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 40, 50, MAT_WOOD, SOLID_BBOX);
 
@@ -1445,7 +1445,7 @@ void SP_obj_treefallen(edict_t* self)
 	VectorSet(self->maxs, 24.0f, 62.0f, 35.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/cactus/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.frame = 1;
 
 	ObjectInit(self, 40, 50, MAT_WOOD, SOLID_BBOX);
@@ -1465,7 +1465,7 @@ void SP_obj_shovel(edict_t* self)
 	VectorSet(self->maxs, 8.0f, 8.0f, 20.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/shovel/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 20, 40, MAT_WOOD, SOLID_BBOX);
 }
@@ -1480,7 +1480,7 @@ void SP_obj_woodpile(edict_t* self)
 	VectorSet(self->maxs, 12.0f, 20.0f, 7.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/wood/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH;	// Can't be pushed.
 	self->s.scale = 2.0f;
 
 	ObjectInit(self, 100, 150, MAT_WOOD, SOLID_BBOX);
@@ -1511,7 +1511,7 @@ void SP_obj_bench(edict_t* self)
 	VectorSet(self->maxs, 10.0f, 22.0f, 10.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/chairs/bench/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 3, 4, MAT_WOOD, SOLID_BBOX);
 }
@@ -1526,7 +1526,7 @@ void SP_obj_bucket(edict_t* self)
 	VectorSet(self->maxs, 8.0f, 8.0f, 10.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/bucket/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 3, 4, MAT_WOOD, SOLID_BBOX);
 }
@@ -1541,7 +1541,7 @@ void SP_obj_ropechain(edict_t* self)
 	VectorSet(self->maxs, 20.0f, 20.0f, 14.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/rope/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	if (self->s.skinnum == 0)
 		ObjectInit(self, 80, 100, MAT_WOOD, SOLID_BBOX);
@@ -1574,7 +1574,7 @@ void SP_obj_wheelbarrowdamaged(edict_t* self)
 	VectorSet(self->maxs, 38.0f, 26.0f, 20.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/wheelbarrow/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 	self->s.frame = 1;
 
 	ObjectInit(self, 60, 100, MAT_WOOD, SOLID_BBOX);
@@ -1605,7 +1605,7 @@ void SP_obj_bigcrystal(edict_t* self)
 	VectorSet(self->maxs, 35.0f, 35.0f, 50.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/crystals/bigcrystal/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 350, 200, MAT_GREYSTONE, SOLID_BBOX);
 
@@ -1625,7 +1625,7 @@ void SP_obj_moss1(edict_t* self)
 	VectorSet(self->maxs, 1.0f, 10.0f, 40.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/moss/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 10, 10, MAT_LEAF, SOLID_NOT);
 }
@@ -1637,7 +1637,7 @@ void SP_obj_moss2(edict_t* self)
 	VectorSet(self->maxs, 1.0f, 9.0f, 40.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/moss/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.skinnum = 1;
 
 	ObjectInit(self, 10, 10, MAT_LEAF, SOLID_NOT);
@@ -1652,7 +1652,7 @@ void SP_obj_moss3(edict_t* self)
 	VectorSet(self->maxs, 1.0f, 15.0f, 40.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/moss/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 	self->s.skinnum = 2;
 	self->s.renderfx |= RF_TRANSLUCENT; //TODO: not needed? Makes fx effects and transparent surfaces visible through non-transparent parts.
 
@@ -1668,7 +1668,7 @@ void SP_obj_moss4(edict_t* self)
 	VectorSet(self->maxs, 1.0f, 12.0f, 40.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/moss/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 	self->s.skinnum = 3;
 	self->s.renderfx |= RF_TRANSLUCENT; //TODO: not needed? Makes fx effects and transparent surfaces visible through non-transparent parts.
 
@@ -1684,7 +1684,7 @@ void SP_obj_moss5(edict_t* self)
 	VectorSet(self->maxs, 1.0f, 10.0f, 40.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/moss/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 	self->s.skinnum = 4;
 	self->s.renderfx |= RF_TRANSLUCENT; //TODO: not needed? Makes fx effects and transparent surfaces visible through non-transparent parts.
 
@@ -1705,7 +1705,7 @@ void SP_obj_floor_candelabrum(edict_t* self)
 	VectorSet(self->mins, -8.0f, -8.0f, -35.0f);
 	VectorSet(self->maxs, 8.0f, 8.0f, 35.0f);
 
-	self->spawnflags |= OBJ_INVULNERABLE; // Can't be destroyed.
+	self->spawnflags |= SF_OBJ_INVULNERABLE; // Can't be destroyed.
 
 	SpawnClientAnim(self, FX_ANIM_CANDELABRUM, NULL);
 	ObjectInit(self, 40, 60, MAT_METAL, SOLID_BBOX);
@@ -1719,7 +1719,7 @@ void SP_obj_statue_dragonhead(edict_t* self)
 	VectorSet(self->maxs, 76.0f, 28.0f, 46.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/dragonhead/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 200, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
@@ -1734,7 +1734,7 @@ void SP_obj_statue_dragon(edict_t* self)
 	VectorSet(self->maxs, 53.0f, 33.0f, 72.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/dragon/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.frame = (short)ClampI(self->style, 0, 1); //mxd
 
 	ObjectInit(self, 200, 400, MAT_GREYSTONE, SOLID_BBOX);
@@ -1749,7 +1749,7 @@ void SP_obj_flagonpole(edict_t* self)
 	VectorSet(self->mins, -8.0f, -28.0f, -30.0f);
 	VectorSet(self->maxs, 8.0f, 28.0f, 30.0f);
 
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	SpawnClientAnim(self, FX_ANIM_FLAGONPOLE, "ambient/bannerflap.wav");
 	ObjectInit(self, 40, 200, MAT_WOOD, SOLID_BBOX);
@@ -1795,7 +1795,7 @@ void SP_obj_lever1(edict_t* self)
 	VectorSet(self->maxs, 6.0f, 14.0f, 17.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/levers/lever1/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->use = ObjLever1Use;
 
 	ObjectInit(self, 150, 125, MAT_WOOD, SOLID_BBOX);
@@ -1841,7 +1841,7 @@ void SP_obj_lever2(edict_t* self)
 	VectorSet(self->maxs, 14, 14, 9);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/levers/lever2/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->use = ObjLever2Use;
 
 	ObjectInit(self, 150, 125, MAT_WOOD, SOLID_BBOX);
@@ -1887,7 +1887,7 @@ void SP_obj_lever3(edict_t* self)
 	VectorSet(self->maxs, 6.0f, 4.0f, 16.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/levers/lever3/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->use = ObjLever3Use;
 
 	ObjectInit(self, 150, 125, MAT_WOOD, SOLID_BBOX);
@@ -1906,7 +1906,7 @@ void SP_obj_bush1(edict_t* self)
 	VectorSet(self->maxs, 16.0f, 16.0f, 19.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/bush1/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 25, 25, MAT_WOOD, SOLID_NOT);
 
@@ -1922,7 +1922,7 @@ void SP_obj_bush2(edict_t* self)
 	VectorSet(self->maxs, 16.0f, 16.0f, 40.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/bush2/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 25, 50, MAT_WOOD, SOLID_BBOX);
 
@@ -1953,7 +1953,7 @@ void SP_obj_cactus(edict_t* self)
 	VectorSet(self->maxs, 18.0f, 18.0f, 44.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/cactus/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 50, 125, MAT_NONE, SOLID_BBOX);
 
@@ -1971,7 +1971,7 @@ void SP_obj_cactus3(edict_t* self)
 	VectorSet(self->maxs, 14.0f, 14.0f, 32.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/cactus3/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 50, 125, MAT_NONE, SOLID_BBOX);
 
@@ -2019,7 +2019,7 @@ void SP_obj_cactus4(edict_t* self)
 	VectorSet(self->maxs, 11.0f, 11.0f, 11.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/cactus4/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 75, 125, MAT_NONE, SOLID_BBOX);
 
@@ -2087,7 +2087,7 @@ void SP_obj_gorgonbones(edict_t* self)
 	VectorSet(self->maxs, 18.0f, 38.0f, 1.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/bones/gorgon/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 50, 125, MAT_NONE, SOLID_BBOX);
 }
@@ -2102,7 +2102,7 @@ void SP_obj_grass(edict_t* self)
 	VectorSet(self->maxs, 8.0f, 8.0f, 10.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/grass/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 	self->s.effects |= EF_CAMERA_NO_CLIP;
 
 	ObjectInit(self, 50, 125, MAT_WOOD, SOLID_NOT); //TODO: should use MAT_LEAF instead?
@@ -2116,7 +2116,7 @@ void SP_obj_swampflat_top(edict_t* self)
 	VectorSet(self->maxs, 2.0f, 100.0f, 48.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/swampflat/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX);
 }
@@ -2129,7 +2129,7 @@ void SP_obj_swampflat_bottom(edict_t* self)
 	VectorSet(self->maxs, 2.0f, 100.0f, 48.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/swampflat/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.skinnum = 1; //TODO: ignored: model has only skin 0. Should set angles[ROLL] to 180 instead?
 
 	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX);
@@ -2143,7 +2143,7 @@ void SP_obj_treestump(edict_t* self)
 	VectorSet(self->maxs, 18.0f, 18.0f, 16.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/treestump/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.skinnum = 1; //TODO: ignored: model has only skin 0.
 
 	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX);
@@ -2264,7 +2264,7 @@ void SP_obj_pipewheel(edict_t* self)
 	VectorSet(self->maxs, 14.0f, 14.0f, 12.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/pipes/pipewheel/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH;
+	self->spawnflags |= SF_OBJ_NOPUSH;
 	self->s.skinnum = 1; //TODO: ignored: model has only skin 0.
 
 	ObjectInit(self, 50, 125, MAT_WOOD, SOLID_BBOX); //TODO: should be MAT_METAL?
@@ -2420,7 +2420,7 @@ void SP_obj_rocks1(edict_t* self)
 	VectorSet(self->maxs, 12.0f, 13.0f, 4.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/rocks/rock1/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 75, 125, MAT_GREYSTONE, SOLID_BBOX);
 }
@@ -2435,7 +2435,7 @@ void SP_obj_rocks2(edict_t* self)
 	VectorSet(self->maxs, 34.0f, 40.0f, 19.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/rocks/rock2/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 75, 125, MAT_GREYSTONE, SOLID_BBOX);
 }
@@ -2483,7 +2483,7 @@ void SP_obj_hivepriestessssymbol(edict_t* self) //TODO: rename to 'SP_obj_hivepr
 	VectorSet(self->mins, -4.0f, -4.0f, -13.0f);
 	VectorSet(self->maxs, 4.0f, 4.0f, 13.0f);
 
-	self->spawnflags |= OBJ_INVULNERABLE; // Can't be destroyed.
+	self->spawnflags |= SF_OBJ_INVULNERABLE; // Can't be destroyed.
 	self->use = ObjHivePriestessSymbolUse;
 
 	ObjectInit(self, 75, 125, MAT_GREYSTONE, SOLID_NOT);
@@ -2501,7 +2501,7 @@ void SP_obj_queenthrone(edict_t* self)
 	VectorSet(self->maxs, 40.0f, 56.0f, 49.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/chairs/queen/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 75, 125, MAT_GREYSTONE, SOLID_BBOX);
 }
@@ -2516,7 +2516,7 @@ void SP_obj_queenchair(edict_t* self)
 	VectorSet(self->maxs, 30.0f, 28.0f, 31.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/chairs/smallchair/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 75, 125, MAT_GREYSTONE, SOLID_BBOX);
 }
@@ -2535,7 +2535,7 @@ void SP_obj_larvaegg(edict_t* self)
 	VectorSet(self->maxs, 6.0f, 14.0f, 6.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/eggs/eggs/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 75, 125, MAT_GLASS, SOLID_BBOX); //TODO: should use MAT_INSECT instead?
 }
@@ -2550,7 +2550,7 @@ void SP_obj_larvabrokenegg(edict_t* self)
 	VectorSet(self->maxs, 6.0f, 7.0f, 5.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/eggs/brokenegg/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 75, 125, MAT_GLASS, SOLID_BBOX); //TODO: should use MAT_INSECT instead?
 }
@@ -2565,7 +2565,7 @@ void SP_obj_cocoon(edict_t* self)
 	VectorSet(self->maxs, 20.0f, 20.0f, 36.0f);
 
 	// Always animate and can't be pushed.
-	self->spawnflags |= (OBJ_NOPUSH | OBJ_ANIMATE);
+	self->spawnflags |= (SF_OBJ_NOPUSH | SF_OBJ_ANIMATE);
 	SpawnClientAnim(self, FX_ANIM_COCOON, NULL);
 
 	ObjectInit(self, 75, 125, MAT_INSECT, SOLID_BBOX);
@@ -2581,7 +2581,7 @@ void SP_obj_cocoonopen(edict_t* self)
 	VectorSet(self->maxs, 20.0f, 20.0f, 34.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/eggs/cocoon/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 	self->s.frame = 20;
 
 	ObjectInit(self, 75, 125, MAT_INSECT, SOLID_BBOX);
@@ -2597,7 +2597,7 @@ void SP_obj_venusflytrap(edict_t* self)
 	VectorSet(self->maxs, 20.0f, 20.0f, 24.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/plants/venus/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 75, 125, MAT_LEAF, SOLID_BBOX);
 
@@ -2635,7 +2635,7 @@ void SP_obj_statue_techeckriktomb(edict_t* self)
 	VectorSet(self->maxs, 41.0f, 11.0f, 14.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/tomb/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.frame = 1; // Staff in hand.
 	self->use = ObjStatueTecheckrikTombUse;
 
@@ -2659,7 +2659,7 @@ void SP_obj_statue_techeckrikright(edict_t* self)
 	VectorSet(self->maxs, 26.0f, 40.0f, 50.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/tcheckrik/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.frame = (short)((self->spawnflags & SF_NOGEM) ? 3 : 2);
 	self->use = ObjStatueTecheckrikUse;
 
@@ -2676,7 +2676,7 @@ void SP_obj_statue_techeckrikleft(edict_t* self)
 	VectorSet(self->maxs, 26.0f, 40.0f, 50.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/tcheckrik/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.frame = (short)((self->spawnflags & SF_NOGEM) ? 1 : 0);
 	self->use = ObjStatueTecheckrikUse;
 
@@ -2717,7 +2717,7 @@ void SP_obj_spellbook(edict_t* self)
 	VectorSet(self->maxs, 14.0f, 14.0f, 40.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/spellbook/book/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.frame = 20; // Book is open.
 	self->use = ObjSpellbookUse;
 
@@ -2750,7 +2750,7 @@ void SP_obj_skullpole(edict_t* self)
 	VectorSet(self->maxs, 10.0f, 10.0f, 47.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/flags/totempole/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 75, 125, MAT_POTTERY, SOLID_BBOX);
 }
@@ -2765,7 +2765,7 @@ void SP_obj_pot1(edict_t* self)
 	VectorSet(self->maxs, 3.0f, 8.0f, 8.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/pot/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 75, 125, MAT_POTTERY, SOLID_BBOX);
 }
@@ -2828,7 +2828,7 @@ void SP_obj_torture_table(edict_t* self)
 	VectorSet(self->maxs, 46.0f, 14.0f, 14.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/table/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.frame = (short)ClampI(self->style, 0, 1); //mxd
 
 	ObjectInit(self, 75, 125, MAT_WOOD, SOLID_BBOX);
@@ -2844,7 +2844,7 @@ void SP_obj_torture_wallring(edict_t* self)
 	VectorSet(self->maxs, 2.0f, 4.0f, 6.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/wallring/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 75, 125, MAT_METAL, SOLID_BBOX);
 }
@@ -2869,7 +2869,7 @@ void SP_obj_statue_tchecktrik_bust(edict_t* self)
 	VectorSet(self->maxs, 8.0f, 12.0f, 15.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/items/puzzles/tchecktrikbust/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->s.frame = (short)(self->style == 0 ? 1 : 0);
 	self->use = ObjStatueTchecktrikBustUse;
 
@@ -2906,7 +2906,7 @@ static void ObjStatueSsithraGuardUse(edict_t* self, edict_t* other, edict_t* act
 
 	shield->s.modelindex = (byte)gi.modelindex("models/objects/statue/sithshield/tris.fm");
 	shield->s.scale = self->s.scale;
-	shield->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	shield->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	shield->movetype = PHYSICSTYPE_NONE;
 	shield->solid = SOLID_NOT;
 
@@ -2922,7 +2922,7 @@ void SP_obj_statue_sithraguard(edict_t* self) //TODO: rename to 'SP_obj_statue_s
 	VectorSet(self->maxs, 22.0f, 20.0f, 57.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/sithraguard/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->use = ObjStatueSsithraGuardUse;
 
 	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_BBOX);
@@ -3005,7 +3005,7 @@ void SP_obj_torture_ironmaiden(edict_t* self)
 	VectorSet(self->maxs, 28.0f, 48.0f, 49.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/ironmaiden/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 	self->use = ObjTortureIronmaidenUse;
 	self->touch = ObjTortureIronmaidenTouch;
 
@@ -3024,7 +3024,7 @@ void SP_obj_torture_rack(edict_t* self)
 	VectorSet(self->maxs, 22.0f, 46.0f, 19.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/rack/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 250, 200, MAT_WOOD, SOLID_BBOX);
 }
@@ -3037,7 +3037,7 @@ void SP_obj_torture_bed(edict_t* self)
 	VectorSet(self->maxs, 21.0f, 43.0f, 94.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/bed/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 250, 200, MAT_WOOD, SOLID_BBOX);
 }
@@ -3052,7 +3052,7 @@ void SP_obj_statue_saraphbust(edict_t* self)
 	VectorSet(self->maxs, 10.0f, 20.0f, 24.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/saraphbust/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
@@ -3105,7 +3105,7 @@ static void ObjBiotankAddGlass(const edict_t* self, const float scale_forward, c
 	glass->s.scale = self->s.scale;
 	glass->s.angles[YAW] += yaw_offset;
 	glass->s.renderfx |= RF_TRANSLUCENT;
-	glass->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	glass->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(glass, 250, 200, MAT_GLASS, SOLID_NOT);
 }
@@ -3125,7 +3125,7 @@ void SP_obj_biotank(edict_t* self)
 	VectorSet(self->maxs, 21.0f, 34.0f, 52.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/labs/biotank/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_BBOX);
 
@@ -3208,7 +3208,7 @@ void SP_obj_tapper(edict_t* self)
 	VectorSet(self->maxs, 2.0f, 5.0f, 2.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/tapper/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_NOT);
 }
@@ -3221,7 +3221,7 @@ void SP_obj_wallringplaque(edict_t* self)
 	VectorSet(self->maxs, 3.0f, 20.0f, 55.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/plaque/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
@@ -3238,7 +3238,7 @@ void SP_obj_hangingdude(edict_t* self)
 	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/guy1/tris.fm");
 	self->movetype = PHYSICSTYPE_NONE;
 	self->solid = SOLID_BBOX;
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 	self->targetname = "guy1"; //TODO: why hardcoded targetname?
 
 	BboxYawAndScale(self);
@@ -3256,7 +3256,7 @@ void SP_obj_hangingdude(edict_t* self)
 	plaque->s.modelindex = (byte)gi.modelindex("models/objects/torture/plaque/tris.fm");
 	plaque->movetype = PHYSICSTYPE_NONE;
 	plaque->solid = SOLID_BBOX;
-	plaque->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	plaque->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	BboxYawAndScale(plaque);
 	gi.linkentity(plaque);
@@ -3276,7 +3276,7 @@ void SP_obj_frypan(edict_t* self)
 	VectorSet(self->maxs, 1.0f, 3.0f, 10.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/frypan/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
@@ -3291,7 +3291,7 @@ void SP_obj_eggpan(edict_t* self)
 	VectorSet(self->maxs, 4.0f, 10.0f, 1.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/pots/eggpan/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
@@ -3306,7 +3306,7 @@ void SP_obj_nest(edict_t* self)
 	VectorSet(self->maxs, 25.0f, 25.0f, 4.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/nest/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 250, 200, MAT_GREYSTONE, SOLID_BBOX);
 }
@@ -3321,7 +3321,7 @@ void SP_obj_choppeddude(edict_t* self)
 	VectorSet(self->maxs, 15.0f, 40.0f, 8.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/guy2/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 250, 200, MAT_FLESH, SOLID_BBOX);
 }
@@ -3340,7 +3340,7 @@ void SP_obj_lab_parts_container(edict_t* self)
 	VectorSet(self->mins, -8.0f, -8.0f, -11.0f);
 	VectorSet(self->maxs, 8.0f, 8.0f, 11.0f);
 
-	self->spawnflags |= OBJ_ANIMATE;
+	self->spawnflags |= SF_OBJ_ANIMATE;
 
 	SpawnClientAnim(self, FX_ANIM_LABPARTSCONTAINER, NULL);
 	ObjectInit(self, 40, 200, MAT_GLASS, SOLID_BBOX);
@@ -3355,7 +3355,7 @@ void SP_obj_eyeball_jar(edict_t* self)
 	VectorSet(self->mins, -13.0f, -13.0f, -18.0f);
 	VectorSet(self->maxs, 13.0f, 13.0f, 18.0f);
 
-	self->spawnflags |= (OBJ_NOPUSH | OBJ_ANIMATE);
+	self->spawnflags |= (SF_OBJ_NOPUSH | SF_OBJ_ANIMATE);
 
 	SpawnClientAnim(self, FX_ANIM_EYEBALLJAR, NULL);
 	ObjectInit(self, 50, 200, MAT_GLASS, SOLID_BBOX);
@@ -3370,7 +3370,7 @@ void SP_obj_lab_tray(edict_t* self)
 	VectorSet(self->mins, -8.0f, -8.0f, -5.0f);
 	VectorSet(self->maxs, 8.0f, 8.0f, 5.0f);
 
-	self->spawnflags |= (OBJ_NOPUSH | OBJ_ANIMATE);
+	self->spawnflags |= (SF_OBJ_NOPUSH | SF_OBJ_ANIMATE);
 
 	SpawnClientAnim(self, FX_ANIM_LABTRAY, NULL);
 	ObjectInit(self, 40, 200, MAT_FLESH, SOLID_BBOX);
@@ -3395,7 +3395,7 @@ void SP_obj_hanging_ogle(edict_t* self)
 	VectorSet(self->mins, -8.0f, -16.0f, -34.0f);
 	VectorSet(self->maxs, 8.0f, 16.0f, 34.0f);
 
-	self->spawnflags |= (OBJ_NOPUSH | OBJ_ANIMATE);
+	self->spawnflags |= (SF_OBJ_NOPUSH | SF_OBJ_ANIMATE);
 
 	SpawnClientAnim(self, FX_ANIM_HANGING_OGLE, NULL);
 	ObjectInit(self, 100, 200, MAT_FLESH, SOLID_BBOX);
@@ -3418,7 +3418,7 @@ void SP_obj_hanging_ogle(edict_t* self)
 	plaque->s.modelindex = (byte)gi.modelindex("models/objects/torture/plaque2/tris.fm");
 	plaque->movetype = PHYSICSTYPE_NONE;
 	plaque->solid = SOLID_NOT;
-	plaque->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	plaque->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	BboxYawAndScale(plaque);
 	gi.linkentity(plaque);
@@ -3438,7 +3438,7 @@ void SP_obj_ring_plaque2(edict_t* self)
 	VectorSet(self->maxs, 2.0f, 24.0f, 20.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/torture/plaque2/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 250, 200, MAT_FLESH, SOLID_BBOX);
 }
@@ -3453,7 +3453,7 @@ void SP_obj_statue_sariph(edict_t* self)
 	VectorSet(self->maxs, 13.0f, 16.0f, 41.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/statue/sariph/tris.fm");
-	self->spawnflags |= OBJ_NOPUSH; // Can't be pushed.
+	self->spawnflags |= SF_OBJ_NOPUSH; // Can't be pushed.
 
 	ObjectInit(self, 250, 200, MAT_STONE, SOLID_BBOX);
 }

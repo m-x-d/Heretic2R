@@ -63,7 +63,7 @@ static void SpawnFlameDamager(edict_t* owner, const vec3_t origin) //mxd. Named 
 
 	damager->s.scale = owner->s.scale;
 	damager->dmg = (int)(owner->s.scale * 3.0f);
-	damager->spawnflags |= OBJ_NOPUSH; // Used by ObjectInit() to set movetype...
+	damager->spawnflags |= SF_OBJ_NOPUSH; // Used by ObjectInit() to set movetype...
 	damager->movetype = PHYSICSTYPE_NONE;
 	damager->touch = FlameDamagerTouch;
 

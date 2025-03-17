@@ -10,10 +10,10 @@
 #include "q_Typedef.h"
 
 // Spawnflags for object entities.
-#define OBJ_INVULNERABLE	1
-#define OBJ_ANIMATE			2
-#define OBJ_EXPLODING		4
-#define OBJ_NOPUSH			8
+#define SF_OBJ_INVULNERABLE		1
+#define SF_OBJ_ANIMATE			2
+#define SF_OBJ_EXPLODING		4
+#define SF_OBJ_NOPUSH			8
 
 extern void BboxYawAndScale(edict_t* self);
 

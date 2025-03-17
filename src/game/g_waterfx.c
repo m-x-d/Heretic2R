@@ -191,8 +191,8 @@ void SP_obj_fishhead1 (edict_t *self)
 		SpawnDripper(self, offset);
 	}
 
-	self->spawnflags |= OBJ_INVULNERABLE;	// Always indestructible
-	self->spawnflags |= OBJ_NOPUSH;	// Cant push it
+	self->spawnflags |= SF_OBJ_INVULNERABLE;	// Always indestructible
+	self->spawnflags |= SF_OBJ_NOPUSH;	// Cant push it
 
 	VectorSet(self->mins, 0, -76, -86);
 	VectorSet(self->maxs, 136, 76, 86);
@@ -230,8 +230,8 @@ void SP_obj_fishhead2 (edict_t *self)
 	VectorSet(self->maxs, 136, 110, 118);
 	self->s.modelindex = gi.modelindex("models/objects/fishheads/fishhead2/tris.fm");
 
-	self->spawnflags |= OBJ_INVULNERABLE;	// Always indestructible
-	self->spawnflags |= OBJ_NOPUSH;	// Cant push it
+	self->spawnflags |= SF_OBJ_INVULNERABLE;	// Always indestructible
+	self->spawnflags |= SF_OBJ_NOPUSH;	// Cant push it
 	self->takedamage = DAMAGE_NO;
 
 	self->movetype = PHYSICSTYPE_NONE;

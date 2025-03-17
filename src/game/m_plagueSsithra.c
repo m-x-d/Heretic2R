@@ -3226,7 +3226,7 @@ void SP_obj_corpse_ssithra(edict_t *self)
 	else
 		self->s.skinnum = 0;
 
-	self->spawnflags |= OBJ_NOPUSH;	// Can't be pushed
+	self->spawnflags |= SF_OBJ_NOPUSH;	// Can't be pushed
 	self->svflags |= SVF_DEADMONSTER;//doesn't block walking
 
 	ObjectInit(self,120,80,MAT_FLESH,SOLID_BBOX);

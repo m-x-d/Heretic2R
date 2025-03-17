@@ -1397,7 +1397,7 @@ void SP_obj_shrine(edict_t* self)
 	VectorSet(self->maxs, 26.0f, 38.0f, 38.0f);
 
 	self->s.modelindex = (byte)gi.modelindex("models/objects/shrine/tris.fm");
-	self->spawnflags |= (OBJ_INVULNERABLE | OBJ_NOPUSH); // Can't be destroyed or pushed.
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
 	ObjectInit(self, 75, 125, MAT_GREYSTONE, SOLID_BBOX);
 
