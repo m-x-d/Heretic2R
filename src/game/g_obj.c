@@ -120,7 +120,7 @@ static void PushableObjectTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 	}
 }
 
-void ObjectInit(edict_t* self, const int health, const int mass, const int materialtype, const int solid) //TODO: move declaration to g_obj.h
+void ObjectInit(edict_t* self, const int health, const int mass, const MaterialID_t material_type, const int solid) //TODO: move declaration to g_obj.h
 {
 	self->solid = solid;
 	self->msgHandler = DefaultMsgHandler;
@@ -134,7 +134,7 @@ void ObjectInit(edict_t* self, const int health, const int mass, const int mater
 		self->mass = ((mass == 0) ? 10 : mass); // Needs a mass if it breaks up.
 
 	if (self->materialtype == 0)
-		self->materialtype = materialtype;
+		self->materialtype = material_type;
 
 	BboxYawAndScale(self);
 

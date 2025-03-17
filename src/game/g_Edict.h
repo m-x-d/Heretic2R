@@ -254,7 +254,7 @@ struct edict_s
 	// What it's made of, i.e. MAT_XXX. Used to determine gibs to throw.
 	// Curently used only by the barrel, but applicable to anything generically gibbable.
 
-	int materialtype;
+	MaterialID_t materialtype; //mxd. int in original logic.
 	int PersistantCFX; // Index to client effect linked to edict.
 	int Leader_PersistantCFX; // None of this should really go in here.. Really it should be in the client, but its 2 in the morning, so fuck it.
 

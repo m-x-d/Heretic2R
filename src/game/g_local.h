@@ -16,6 +16,7 @@
 
 #include "game.h"
 #include "Player.h"
+#include "FX.h" //mxd
 
 // The "gameversion" client command will print this plus compile date.
 #define GAMEVERSION		"Heretic2v16"
@@ -688,7 +689,7 @@ extern void M_MoveAwayFromGoal(edict_t* ent, float dist);
 extern void G_RunEntity(edict_t* ent);
 
 // g_obj.c
-extern void ObjectInit(edict_t* self, int health, int mass, int materialtype, int solid); //TODO: move to g_obj.h
+extern void ObjectInit(edict_t* self, int health, int mass, MaterialID_t material_type, int solid); //TODO: move to g_obj.h
 
 // g_spawnf.c
 //sfs--this is used to get a classname for guys spawned while game is running
