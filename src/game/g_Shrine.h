@@ -25,3 +25,5 @@ extern void SP_shrine_reflect_trigger(edict_t* ent);
 extern void SP_shrine_powerup_trigger(edict_t* ent);
 extern void SP_shrine_speed_trigger(edict_t* ent);
 extern void SP_shrine_random_trigger(edict_t* ent);
+
+extern void SP_obj_shrine(edict_t* self);

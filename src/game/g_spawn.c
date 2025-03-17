@@ -179,7 +179,6 @@ void SP_obj_ropechain (edict_t *ent);
 void SP_obj_scroll(edict_t *ent);
 void SP_obj_seasonglobe(edict_t *ent);
 void SP_obj_shovel(edict_t *ent);
-void SP_obj_shrine(edict_t *ent);
 void SP_obj_sign1(edict_t *ent);
 void SP_obj_sign4(edict_t *ent);
 void SP_obj_skullpole(edict_t *ent);
