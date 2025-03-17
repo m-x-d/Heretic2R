@@ -11,3 +11,5 @@
 extern void BboxYawAndScale(edict_t* self);
 
 extern void DefaultObjectDieHandler(edict_t* self, struct G_Message_s* msg);
+extern void ObjectStaticsInit(void);
+extern void LeverStaticsInit(void);

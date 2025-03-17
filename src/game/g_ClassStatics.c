@@ -14,14 +14,13 @@
 #include "g_func_Rotating.h" //mxd
 #include "g_light.h" //mxd
 #include "g_misc.h" //mxd
+#include "g_obj.h" //mxd
 #include "m_monsters.h" //mxd
 
 G_ClassStatics_t classStatics[NUM_CLASSIDS];
 int Cid_init[NUM_CLASSIDS];
 
-void ObjectStaticsInit();
 void TriggerStaticsInit();
-void LeverStaticsInit();
 
 void (*classStaticsInits[NUM_CLASSIDS])(void) = 
 {
