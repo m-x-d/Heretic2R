@@ -12,12 +12,10 @@
 #include "Random.h"
 #include "g_local.h"
 
-#define CHICKEN_KNOCKBACK	1 //TODO: remove.
-
-#define ROPEFLAG_VINE				1 //TODO: add SF_ prefix.
-#define ROPEFLAG_CHAIN				2 //TODO: add SF_ prefix.
-#define ROPEFLAG_TENDRIL			4 //TODO: add SF_ prefix.
-#define ROPEFLAG_HANGING_CHICKEN	8 //TODO: add SF_ prefix.
+#define SF_VINE				1
+#define SF_CHAIN			2
+#define SF_TENDRIL			4
+#define SF_HANGING_CHICKEN	8
 
 // Corresponds with the model index on the client side DIRECTLY, ie DON'T CHANGE!
 enum
@@ -40,27 +38,6 @@ enum // Instructions.
 	NATE_INSTRUCTION_FIREBALL,
 
 	NUM_INSTRUCTIONS
-};
-
-enum//sayings //TODO: remove.
-{
-	NATE_SAYING_GREETING = 0,
-	NATE_SAYING_INTRO,
-	NATE_SAYING_FAILURE,
-	NATE_SAYING_SUCCESS,
-	NATE_SAYING_FINISHED,
-	NATE_SAYING_HITME_AGAIN1,//5
-	NATE_SAYING_HITME_AGAIN2,
-	NATE_SAYING_HITME_AGAIN3,
-	NATE_SAYING_HITME_AGAIN4,
-	NATE_SAYING_HITME_AGAIN5,
-	NATE_SAYING_HITME_AGAIN6,
-	NATE_SAYING_HITME_AGAIN7,
-	NATE_SAYING_HITME_AGAIN8,
-	NATE_SAYING_HITME_AGAIN9,
-	NATE_SAYING_HITME_AGAIN10,
-	NATE_SAYING_END_LEVEL,
-	NUM_SAYINGS
 };
 
 static qboolean UsedRightAttack(const int instruction, const edict_t* attacker, const edict_t* projectile)
@@ -661,7 +638,7 @@ static void ObjRopeTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfac
 // TENDRIL	- Use a tendril model.
 void SP_obj_rope(edict_t* self)
 {
-	if (self->spawnflags & ROPEFLAG_HANGING_CHICKEN)
+	if (self->spawnflags & SF_HANGING_CHICKEN)
 	{
 		if (self->targetname != NULL)
 			self->use = TutorialChickenUse;
@@ -722,11 +699,11 @@ void SP_obj_rope(edict_t* self)
 	self->rope_grab = grab_ent;
 
 	byte model_type;
-	if (self->spawnflags & ROPEFLAG_CHAIN)
+	if (self->spawnflags & SF_CHAIN)
 		model_type = RM_CHAIN;
-	else if (self->spawnflags & ROPEFLAG_VINE)
+	else if (self->spawnflags & SF_VINE)
 		model_type = RM_VINE;
-	else if (self->spawnflags & ROPEFLAG_TENDRIL)
+	else if (self->spawnflags & SF_TENDRIL)
 		model_type = RM_TENDRIL;
 	else
 		model_type = RM_ROPE;
