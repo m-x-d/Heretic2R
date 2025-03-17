@@ -151,6 +151,30 @@ static void TutorialChickenUse(edict_t* self, edict_t* other, edict_t* activator
 	}
 }
 
+static int TutorialChickenPain(edict_t* self, edict_t* other, float kick, int damage) //mxd. Named 'hanging_chicken_pain' in original logic.
+{
+	self->health = NATE_HEALTH;
+	self->svflags &= ~SVF_ONFIRE;
+
+	VectorCopy(self->targetEnt->s.origin, self->s.origin);
+	VectorClear(self->knockbackvel);
+
+	self->velocity[2] = 0.0f;
+	VectorCopy(self->velocity, self->targetEnt->velocity);
+	VectorClear(self->velocity);
+
+	TutorialChickenHandleAttackSequence(self, other, damage);
+
+	int fx_flags = CEF_OWNERS_ORIGIN; //mxd
+	if (damage < 100)
+		fx_flags |= CEF_FLAG6;
+
+	gi.CreateEffect(&self->s, FX_CHICKEN_EXPLODE, fx_flags, NULL, "");
+	gi.sound(self, CHAN_AUTO, gi.soundindex(va("monsters/chicken/pain%i.wav", irand(1, 2))), 1.0f, ATTN_NORM, 0.0f);
+
+	return 1;
+}
+
 #pragma endregion
 
 void rope_think(edict_t *self)
@@ -470,33 +494,6 @@ void end_think(edict_t *self)
 
 }
 
-int hanging_chicken_pain(edict_t *self, edict_t *other, float kick, int damage)
-{
-	self->health = 10000;
-	VectorCopy(self->targetEnt->s.origin, self->s.origin);
-	self->velocity[2] = 0;
-
-	VectorCopy(self->velocity, self->targetEnt->velocity);
-	VectorClear(self->velocity);
-	VectorClear(self->knockbackvel);
-	
-	self->svflags &= ~SVF_ONFIRE;
-
-	TutorialChickenHandleAttackSequence(self, other, damage);
-	
-	if (damage < 100)
-		gi.CreateEffect(&self->s, FX_CHICKEN_EXPLODE, CEF_OWNERS_ORIGIN|CEF_FLAG6, NULL, "" ); 
-	else
-		gi.CreateEffect(&self->s, FX_CHICKEN_EXPLODE, CEF_OWNERS_ORIGIN, NULL, "" ); 
-
-	if (irand(0,1))
-		gi.sound (self, CHAN_AUTO, gi.soundindex("monsters/chicken/pain1.wav"), 1, ATTN_NORM, 0);
-	else
-		gi.sound (self, CHAN_AUTO, gi.soundindex("monsters/chicken/pain2.wav"), 1, ATTN_NORM, 0);
-
-	return true;
-}
-
 void hanging_chicken_think(edict_t *self)
 {
 	vec3_t		vec, angles;
@@ -716,7 +713,7 @@ void spawn_hanging_chicken(edict_t *self)
 	
 	//Hanging by feet
 	chicken->s.angles[PITCH] += 180;
-	chicken->pain = hanging_chicken_pain;
+	chicken->pain = TutorialChickenPain;
 	chicken->classID = 0;
 	chicken->client = NULL;
 
