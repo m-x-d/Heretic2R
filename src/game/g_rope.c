@@ -632,20 +632,20 @@ static void ObjRopeSwayThink(edict_t* self) //mxd. Named 'rope_sway' in original
 	self->nextthink = level.time + FRAMETIME;
 }
 
-void rope_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void ObjRopeTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'rope_touch' in original logic.
 {
-	if ( !stricmp(other->classname, "player") )
+	if (Q_stricmp(other->classname, "player") == 0) //mxd. stricmp -> Q_stricmp
 	{
-		//If the player is already on a rope, forget him as a valid grabber
-		if ( (other->targetEnt) && (other->client->playerinfo.flags & PLAYER_FLAG_ONROPE) )
+		// If the player is already on a rope, forget him as a valid grabber
+		if (other->targetEnt != NULL && (other->client->playerinfo.flags & PLAYER_FLAG_ONROPE))
 			return;
 
-		//If we've got a player on the rope, and this guy isn't it, then don't let him grab
-		if (self->enemy && other != self->enemy)
+		// If we've got a player on the rope, and this guy isn't it, then don't let him grab.
+		if (self->enemy != NULL && self->enemy != other)
 			return;
-		
+
 		self->enemy = other;
-		self->viewheight = other->s.origin[2];
+		self->viewheight = (int)other->s.origin[2];
 		other->targetEnt = self;
 	}
 }
@@ -689,7 +689,7 @@ void SP_obj_rope(edict_t *self)
 
 	self->movetype = PHYSICSTYPE_NONE;
 	self->solid = SOLID_TRIGGER;
-	self->touch = rope_touch;
+	self->touch = ObjRopeTouch;
 
 	VectorClear(self->velocity);
 
