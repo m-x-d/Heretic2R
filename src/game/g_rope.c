@@ -496,51 +496,47 @@ static void ObjRopeThink(edict_t* self) //mxd. Named 'rope_think' in original lo
 	}
 }
 
-/*-----------------------------------------------
-	rope_end_think
------------------------------------------------*/
-
-void rope_end_think( edict_t *self )
+static void ObjRopeEndThink(edict_t* self) //mxd. Named 'rope_end_think' in original logic.
 {
-	edict_t	*grab = self->rope_end;
-	vec3_t	rope_end, rope_top, end_rest, end_vel, end_vec, end_dest;
-	float	grab_len,  mag, end_len;
+	edict_t* grab = self->rope_end;
 
-	//Setup the top of the rope entity (the rope's attach point)
+	// Setup the top of the rope entity (the rope's attach point).
+	vec3_t rope_top;
 	VectorCopy(self->rope_grab->s.origin, rope_top);
 
-	//Find the length of the end segment
-	grab_len = Q_fabs(self->maxs[2]+self->mins[2]) - self->rope_grab->viewheight;
+	// Find the length of the end segment.
+	const float grab_len = Q_fabs(self->maxs[2] + self->mins[2]) - (float)self->rope_grab->viewheight;
 
-	//Find the vector to the rope's point of rest
+	// Find the vector to the rope's point of rest.
+	vec3_t end_rest;
 	VectorCopy(rope_top, end_rest);
 	end_rest[2] -= grab_len;
 
-	//Find the vector towards the middle, and that distance (disregarding height)
+	// Find the vector towards the middle, and that distance (disregarding height).
+	vec3_t end_vec;
 	VectorSubtract(end_rest, grab->s.origin, end_vec);
 	VectorNormalize(end_vec);
-	end_len = vhlen(end_rest, grab->s.origin);
+	const float end_len = vhlen(end_rest, grab->s.origin);
 
-	//Subtract away from the rope's velocity based on that distance
+	// Subtract away from the rope's velocity based on that distance.
 	VectorScale(end_vec, -end_len, end_vec);
-	VectorSubtract(grab->velocity, end_vec, grab->velocity);	
-	VectorScale(grab->velocity, 0.95, grab->velocity);
+	VectorSubtract(grab->velocity, end_vec, grab->velocity);
+	VectorScale(grab->velocity, 0.95f, grab->velocity);
 
-	//Move the rope based on the new velocity
+	// Move the rope based on the new velocity.
+	vec3_t end_vel;
 	VectorCopy(grab->velocity, end_vel);
 
-	mag = VectorNormalize(end_vel);
+	vec3_t end_dest;
+	const float mag = VectorNormalize(end_vel);
 	VectorMA(grab->s.origin, FRAMETIME * mag, end_vel, end_dest);
 
-	//Find the angle between the top of the rope and the bottom
+	// Find the angle between the top of the rope and the bottom.
 	VectorSubtract(end_dest, rope_top, end_vel);
 	VectorNormalize(end_vel);
 
-	//Move the length of the rope in that direction from the top
-	VectorMA(rope_top, grab_len, end_vel, rope_end);
-		
-	//You're done
-	VectorCopy(rope_end, grab->s.origin);
+	// Move the length of the rope in that direction from the top.
+	VectorMA(rope_top, grab_len, end_vel, grab->s.origin);
 }
 
 /*-----------------------------------------------
@@ -638,7 +634,7 @@ void rope_sway(edict_t *self)
 	VectorCopy(grab_end, self->pos1);
 
 	//Make the end of the rope come to the end
-	rope_end_think(self);
+	ObjRopeEndThink(self);
 
 	ObjRopeThink(self);
 
