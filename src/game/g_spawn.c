@@ -28,9 +28,9 @@
 
 typedef struct
 {
-	char	*name;
-	void	(*spawn)(edict_t *ent);
-	int		CID;
+	char* name;
+	void (*spawn)(edict_t* ent);
+	ClassID_t CID; //mxd. int in original version.
 } spawn_t;
 
 void SP_trigger_Activate(edict_t *self);
