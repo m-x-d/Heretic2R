@@ -94,51 +94,49 @@ static qboolean UsedRightAttack(const int instruction, const edict_t* attacker, 
 	}
 }
 
-int sir_nate_of_the_embarassingly_shortshanks_pain (edict_t *self, edict_t *attacker, float kick, int damage)
+static void TutorialChickenHandleAttackSequence(edict_t* self, const edict_t* attacker, const int damage) //mxd. Removed unused 'kick' arg and return type. Named 'sir_nate_of_the_embarassingly_shortshanks_pain' in original logic.
 {
-	short msg;
-
 	self->health = NATE_HEALTH;
-
 	VectorClear(self->velocity);
 
-	if(self->enemy->use)//still waiting to be triggered
-		return false;
+	if (self->enemy->use != NULL || attacker->client == NULL) // Still waiting to be triggered.
+		return;
 
-	if(!attacker->client)
-		return false;
-	
-	if(self->count == NUM_INSTRUCTIONS)
+	if (self->count == NUM_INSTRUCTIONS)
 	{
 		gi.gamemsg_centerprintf(attacker, GM_SIR_NATE_END);
 		self->count++;
+
+		return;
 	}
-	else if(self->count > NUM_INSTRUCTIONS)
+
+	if (self->count > NUM_INSTRUCTIONS)
 	{
-		msg = (short)(irand(NATE_SAYING_HITME_AGAIN1, NATE_SAYING_HITME_AGAIN10)  - 5 + GM_SIR_NATE_HIT_AGAIN0);
-		gi.msgvar_centerprintf(attacker, msg, damage);
+		gi.msgvar_centerprintf(attacker, (short)irand(GM_SIR_NATE_HIT_AGAIN0, GM_SIR_NATE_HIT_AGAIN9), damage);
+		return;
 	}
-	else if(UsedRightAttack(self->count, attacker, self->activator))
+
+	if (UsedRightAttack(self->count, attacker, self->activator))
 	{
-		if(self->damage_debounce_time>level.time)
-			return false;
+		if (self->damage_debounce_time > level.time)
+			return;
 
 		self->count++;
-		if(self->count == NUM_INSTRUCTIONS)
+
+		if (self->count == NUM_INSTRUCTIONS)
 		{
 			gi.gamemsg_centerprintf(attacker, GM_SIR_NATE_FINISH);
 		}
 		else
 		{
 			gi.msgdual_centerprintf(attacker, GM_SIR_NATE_SUCCESS, (short)(self->count + GM_SIR_NATE_INSTRUCTIONS0));
-			self->damage_debounce_time = level.time + 1.0;
+			self->damage_debounce_time = level.time + 1.0f;
 		}
 	}
 	else
 	{
-  		gi.msgdual_centerprintf(attacker, GM_SIR_NATE_FAILURE, (short)(self->count + GM_SIR_NATE_INSTRUCTIONS0));
+		gi.msgdual_centerprintf(attacker, GM_SIR_NATE_FAILURE, (short)(self->count + GM_SIR_NATE_INSTRUCTIONS0));
 	}
-	return false;
 }
 
 void sir_nate_of_the_embarassingly_shortshanks_use(edict_t *self, edict_t *other, edict_t *activator)
@@ -491,7 +489,7 @@ int hanging_chicken_pain(edict_t *self, edict_t *other, float kick, int damage)
 	
 	self->svflags &= ~SVF_ONFIRE;
 
-	sir_nate_of_the_embarassingly_shortshanks_pain(self, other, kick, damage);
+	TutorialChickenHandleAttackSequence(self, other, damage);
 	
 	if (damage < 100)
 		gi.CreateEffect(&self->s, FX_CHICKEN_EXPLODE, CEF_OWNERS_ORIGIN|CEF_FLAG6, NULL, "" ); 
