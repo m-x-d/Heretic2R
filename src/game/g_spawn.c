@@ -454,10 +454,10 @@ void ED_CallSpawn(edict_t* ent)
 			continue;
 
 		// Found it.
-		if (s->CID != -1 && !Cid_init[s->CID]) // Need to call once per level that item is on.
+		if (s->CID != -1 && !classStaticsInitialized[s->CID]) // Need to call once per level that item is on.
 		{
 			classStaticsInits[s->CID]();
-			Cid_init[s->CID] = -1;
+			classStaticsInitialized[s->CID] = true;
 		}
 
 		ent->classID = ((s->CID != -1) ? s->CID : CID_NONE); // Make sure classID is set.

@@ -866,10 +866,10 @@ void ReadLevel(char* filename)
 			gi.linkentity(ent);
 
 		// Force the monsters just loaded to point at the right anim.
-		if (ent->classID > CID_NONE && ent->classID < NUM_CLASSIDS && !Cid_init[ent->classID]) // Need to call once per level that item is on.
+		if (ent->classID > CID_NONE && ent->classID < NUM_CLASSIDS && !classStaticsInitialized[ent->classID]) // Need to call once per level that item is on.
 		{
 			classStaticsInits[ent->classID]();
-			Cid_init[ent->classID] = -1;
+			classStaticsInitialized[ent->classID] = true;
 		}
 
 		//TODO: ent->curAnimID 0 is NOT 'no animation'! Do we need this check?

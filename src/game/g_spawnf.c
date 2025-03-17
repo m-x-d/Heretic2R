@@ -339,7 +339,7 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint, qboolean lo
 	memset(skeletalJoints, 0, sizeof(skeletalJoints));
 	memset(jointNodes, 0, sizeof(jointNodes));
 	memset(classStatics, 0, sizeof(classStatics));
-	memset(Cid_init, 0, sizeof(Cid_init));
+	memset(classStaticsInitialized, false, sizeof(classStaticsInitialized));
 
 	strncpy (level.mapname, mapname, sizeof(level.mapname)-1);
 	strncpy (game.spawnpoint, spawnpoint, sizeof(game.spawnpoint)-1);

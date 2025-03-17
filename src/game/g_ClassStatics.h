@@ -128,5 +128,5 @@ typedef struct G_ClassStatics_s
 } G_ClassStatics_t;
 
 extern G_ClassStatics_t classStatics[NUM_CLASSIDS];
-extern int Cid_init[NUM_CLASSIDS]; //TODO: change type to qboolean.
+extern qboolean classStaticsInitialized[NUM_CLASSIDS]; //mxd. int Cid_init[] in original version.
 extern void (*classStaticsInits[NUM_CLASSIDS])(void);

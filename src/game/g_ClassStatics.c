@@ -18,7 +18,7 @@
 #include "m_monsters.h" //mxd
 
 G_ClassStatics_t classStatics[NUM_CLASSIDS];
-int Cid_init[NUM_CLASSIDS];
+qboolean classStaticsInitialized[NUM_CLASSIDS];
 
 void TriggerStaticsInit();
 
