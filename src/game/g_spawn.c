@@ -431,55 +431,40 @@ static spawn_t spawns[] =
 
 #pragma endregion
 
-/*
-===============
-ED_CallSpawn
-
-Finds the spawn function for the entity and calls it
-===============
-*/
-void ED_CallSpawn (edict_t *ent)
+// Finds the spawn function for the entity and calls it.
+void ED_CallSpawn(edict_t* ent)
 {
-	extern qboolean loadingBaseEnts;
-
-	spawn_t	*s;
-	gitem_t	*item;
-
-	if (!ent->classname)
+	if (ent->classname == NULL)
 	{
-		gi.dprintf ("ED_CallSpawn: NULL classname\n");
+		gi.dprintf("ED_CallSpawn: NULL classname\n");
 		return;
 	}
 
-	if(item = IsItem(ent))
+	gitem_t* item = IsItem(ent);
+	if (item != NULL)
 	{
 		SpawnItem(ent, item);
+		return;
+	}
+
+	// Check normal spawn functions.
+	for (const spawn_t* s = &spawns[0]; s->name != NULL; s++)
+	{
+		if (strcmp(s->name, ent->classname) != 0)
+			continue;
+
+		// Found it.
+		if (s->CID != -1 && !Cid_init[s->CID]) // Need to call once per level that item is on.
+		{
+			classStaticsInits[s->CID]();
+			Cid_init[s->CID] = -1;
+		}
+
+		ent->classID = ((s->CID != -1) ? s->CID : CID_NONE); // Make sure classID is set.
+		s->spawn(ent); // Need to call for every item.
 
 		return;
 	}
 
-	// check normal spawn functions
-	for (s=spawns ; s->name ; s++)
-	{
-		if (!strcmp(s->name, ent->classname))
-		{	// found it
-			if((s->CID != -1) && !Cid_init[s->CID])	 	// Need to call once per level that item is on
-			{
-				classStaticsInits[s->CID]();	
-				Cid_init[s->CID] = -1;
-				ent->classID = s->CID;						// Make sure classID is set
-			}
-
-			ent->classID = 0;
-			if(s->CID != -1)
-			{
-				ent->classID = s->CID;
-			}
-			s->spawn (ent);								// Need to call for every item
-			return;
-		}
-	}
-	gi.dprintf ("%s doesn't have a spawn function\n", ent->classname);
+	gi.dprintf("%s doesn't have a spawn function\n", ent->classname);
 }
-
-// end
