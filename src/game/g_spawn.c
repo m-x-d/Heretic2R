@@ -1,7 +1,10 @@
+//
+// g_spawn.c
+//
+// Copyright 1998 Raven Software
+//
+
 #include "c_actors.h" //mxd
-#include "g_items.h" //mxd
-#include "g_misc.h" //mxd
-#include "g_Shrine.h" //mxd
 #include "g_breakable.h" //mxd
 #include "g_env.h" //mxd
 #include "g_field.h"
@@ -13,9 +16,12 @@
 #include "g_func_Rotating.h" //mxd
 #include "g_func_Timer.h" //mxd
 #include "g_func_Train.h" //mxd
+#include "g_items.h" //mxd
 #include "g_light.h" //mxd
+#include "g_misc.h" //mxd
 #include "g_obj.h" //mxd
 #include "g_rope.h" //mxd
+#include "g_Shrine.h" //mxd
 #include "m_monsters.h" //mxd
 #include "p_client.h" //mxd
 #include "g_local.h"
