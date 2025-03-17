@@ -539,106 +539,96 @@ static void ObjRopeEndThink(edict_t* self) //mxd. Named 'rope_end_think' in orig
 	VectorMA(rope_top, grab_len, end_vel, grab->s.origin);
 }
 
-/*-----------------------------------------------
-	rope_sway
------------------------------------------------*/
-
-void rope_sway(edict_t *self)
+static void ObjRopeSwayThink(edict_t* self) //mxd. Named 'rope_sway' in original logic.
 {
-	//edict_t	*end  = self->slave;
-	edict_t	*grab = self->rope_grab;
-	vec3_t	rope_end, rope_top, grab_end;
-	vec3_t	v_rope, v_grab, v_dest, rope_rest, v_dir;
-	float	rope_len, grab_len, dist, mag;
+	edict_t* grab = self->rope_grab;
 
-	if ( ((Q_fabs(grab->velocity[0])) < 0.13) && ((Q_fabs(grab->velocity[1])) < 0.13) )
+	// Setup the top of the rope entity (the rope's attach point).
+	vec3_t rope_top;
+	VectorCopy(self->s.origin, rope_top);
+	rope_top[2] += self->maxs[2];
+
+	if (Q_fabs(grab->velocity[0]) < 0.13f && Q_fabs(grab->velocity[1]) < 0.13f)
 	{
-		//The rope isn't moving enough to run all the math, so just make it sway a little
+		// The rope isn't moving enough to run all the math, so just make it sway a little.
+		vec3_t rope_rest;
 		VectorCopy(self->s.origin, rope_rest);
-		rope_rest[2] += self->mins[2];
 
-		rope_rest[0] += (sin((float) level.time * 2)) * 1.25;
-		rope_rest[1] += (cos((float) level.time * 2)) * 1.75;
+		rope_rest[0] += sinf(level.time * 2.0f) * 1.25f;
+		rope_rest[1] += cosf(level.time * 2.0f) * 1.75f;
+		rope_rest[2] += self->mins[2];
 
 		VectorCopy(rope_rest, self->pos1);
 		VectorCopy(rope_rest, self->slave->s.origin);
 
-		VectorCopy(self->s.origin, rope_top);
-		rope_top[2] += self->maxs[2];
-
+		vec3_t v_rope;
 		VectorSubtract(rope_rest, rope_top, v_rope);
 		VectorNormalize(v_rope);
-		VectorMA(rope_top, grab->viewheight, v_rope, grab_end);
 
+		vec3_t grab_end;
+		VectorMA(rope_top, (float)grab->viewheight, v_rope, grab_end);
 		VectorCopy(grab_end, grab->s.origin);
 
 		ObjRopeThink(self);
 
-		self->think = rope_sway;
+		self->think = ObjRopeSwayThink;
 		self->nextthink = level.time + FRAMETIME;
 
 		return;
 	}
 
-	//Setup the top of the rope entity (the rope's attach point)
-	VectorCopy(self->s.origin, rope_top);
-	rope_top[2] += self->maxs[2];
-
-	//Find the length of the grab
+	// Find the length of the grab.
+	vec3_t v_grab;
 	VectorSubtract(rope_top, grab->s.origin, v_grab);
-	grab_len = VectorLength(v_grab);
+	const float grab_len = VectorLength(v_grab);
 
-	//Find the vector to the rope's point of rest
+	// Find the vector to the rope's point of rest.
+	vec3_t rope_rest;
 	VectorCopy(self->s.origin, rope_rest);
 	rope_rest[2] -= grab_len;
 
-	//Find the length of the rope
+	// Find the length of the rope.
+	vec3_t v_rope;
 	VectorSubtract(rope_top, rope_rest, v_rope);
-	rope_len = VectorLength(v_rope);
+	const float rope_len = VectorLength(v_rope);
 
-	//Find the vector towards the middle, and that distance (disregarding height)
+	// Find the vector towards the middle, and that distance (disregarding height).
 	VectorSubtract(rope_rest, grab->s.origin, v_rope);
 	VectorNormalize(v_rope);
-	dist = vhlen(rope_rest, grab->s.origin);
-	
-	//NOTENOTE: There's a fine line between a real pendulum motion here that comes to rest,
-	//			and a chaotic one that builds too much and runs amuck.. so don't monkey with
-	//			the values in here... ok?  --jweier
+	const float dist = vhlen(rope_rest, grab->s.origin);
 
-	//Subtract away from the rope's velocity based on that distance
+	//NOTE: There's a fine line between a real pendulum motion here that comes to rest,
+	// and a chaotic one that builds too much and runs amock... So don't monkey with the values in here... ok?  --jweier
+
+	// Subtract away from the rope's velocity based on that distance.
 	VectorScale(v_rope, -dist, v_rope);
 	VectorSubtract(grab->velocity, v_rope, grab->velocity);
-	VectorScale(grab->velocity, 0.95, grab->velocity);
-	
-	//Move the rope based on the new velocity
+	VectorScale(grab->velocity, 0.95f, grab->velocity);
+
+	// Move the rope based on the new velocity.
+	vec3_t v_dir;
 	VectorCopy(grab->velocity, v_dir);
 
-	mag = VectorNormalize(v_dir);
+	vec3_t v_dest;
+	const float mag = VectorNormalize(v_dir);
 	VectorMA(grab->s.origin, FRAMETIME * mag, v_dir, v_dest);
 
-	//Find the angle between the top of the rope and the bottom
+	// Move the length of the rope in that direction from the top.
 	VectorSubtract(v_dest, rope_top, v_rope);
 	VectorNormalize(v_rope);
 
-	//Move the length of the rope in that direction from the top
-	VectorMA(rope_top, rope_len, v_rope, rope_end);
-	
-	VectorSubtract(v_dest, rope_top, v_rope);
-	VectorNormalize(v_rope);
-	VectorMA(rope_top, grab->viewheight, v_rope, grab_end);
-	
-	//You're done
+	vec3_t grab_end;
+	VectorMA(rope_top, (float)grab->viewheight, v_rope, grab_end);
+
+	// You're done.
 	VectorCopy(grab_end, grab->s.origin);
-
-	//VectorCopy(rope_end, grab->s.origin);
 	VectorCopy(grab_end, self->pos1);
 
-	//Make the end of the rope come to the end
+	// Make the end of the rope come to the end.
 	ObjRopeEndThink(self);
-
 	ObjRopeThink(self);
 
-	self->think = rope_sway;
+	self->think = ObjRopeSwayThink;
 	self->nextthink = level.time + FRAMETIME;
 }
 
@@ -761,11 +751,11 @@ void SP_obj_rope(edict_t *self)
 	VectorCopy(self->s.origin, rope_end);
 	rope_end[2] += self->mins[2];
 
-	rope_sway(self);
+	ObjRopeSwayThink(self);
 	
 	gi.CreatePersistantEffect(&self->s, FX_ROPE, CEF_BROADCAST, self->s.origin, "ssbvvv", grab_id, end_id, model_type, self->s.origin, grab_ent->s.origin, end_ent->s.origin );
 
-	self->think = rope_sway;
+	self->think = ObjRopeSwayThink;
 	self->nextthink = level.time + 1;
 
 	gi.linkentity(self);
