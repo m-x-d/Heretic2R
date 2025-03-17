@@ -299,6 +299,56 @@ static void TutorialChickenThink(edict_t* self) //mxd. Named 'hanging_chicken_th
 	self->nextthink = level.time + 0.1f;
 }
 
+static void TutorialChickenRopeEndThink(edict_t* self) //mxd. Named 'rope_end_think2' in original logic.
+{
+	edict_t* grab = self->rope_end;
+
+	vec3_t end_pos;
+	VectorCopy(grab->velocity, end_pos);
+	float mag = VectorNormalize(end_pos);
+	VectorMA(grab->s.origin, mag * FRAMETIME, end_pos, end_pos);
+
+	// Setup the top of the rope entity (the rope's attach point).
+	vec3_t rope_top;
+	VectorCopy(self->s.origin, rope_top);
+
+	// Find the length of the end segment.
+	const float grab_len = Q_fabs(self->maxs[2] + self->mins[2]);
+
+	// Find the vector to the rope's point of rest.
+	vec3_t end_rest;
+	VectorCopy(rope_top, end_rest);
+	end_rest[2] -= grab_len;
+
+	// Find the vector towards the middle, and that distance (disregarding height).
+	vec3_t end_vec;
+	VectorSubtract(end_rest, grab->s.origin, end_vec);
+	VectorNormalize(end_vec);
+	const float end_len = vhlen(end_rest, grab->s.origin);
+
+	// Subtract away from the rope's velocity based on that distance.
+	VectorScale(end_vec, -end_len * 0.75f, end_vec);
+	VectorSubtract(grab->velocity, end_vec, grab->velocity);
+	VectorScale(grab->velocity, 0.99f, grab->velocity);
+
+	// Move the rope based on the new velocity.
+	vec3_t end_vel;
+	VectorCopy(grab->velocity, end_vel);
+
+	vec3_t end_dest;
+	mag = VectorNormalize(end_vel);
+	VectorMA(grab->s.origin, FRAMETIME * mag, end_vel, end_dest);
+
+	// Find the angle between the top of the rope and the bottom.
+	VectorSubtract(end_dest, rope_top, end_vel);
+	VectorNormalize(end_vel);
+
+	// Move the length of the rope in that direction from the top.
+	VectorMA(rope_top, grab_len, end_vel, grab->s.origin);
+
+	self->nextthink = level.time + 0.1f;
+}
+
 #pragma endregion
 
 void rope_think(edict_t *self)
@@ -365,79 +415,6 @@ void rope_think(edict_t *self)
 		//This grabber is invalid, clear it
 		self->enemy = NULL;
 	}
-}
-
-/*-----------------------------------------------
-	rope_end_think2
------------------------------------------------*/
-
-void rope_end_think2( edict_t *self )
-{
-	edict_t	*grab = self->rope_end;
-	trace_t	trace;
-	vec3_t	rope_end, rope_top, end_rest, end_vel, end_vec, end_dest;
-	float	grab_len,  mag, end_len;
-
-	vec3_t	end_pos;
-
-	VectorCopy(grab->velocity, end_pos);
-	mag = VectorNormalize(end_pos);
-	VectorMA(grab->s.origin, (mag*FRAMETIME), end_pos, end_pos);
-
-	if(!CHICKEN_KNOCKBACK)
-	{//otherwise, done in hanging_chicken_think
-		gi.trace(grab->s.origin, self->targetEnt->mins, self->targetEnt->maxs, end_pos, self->targetEnt, MASK_MONSTERSOLID,&trace);
-
-		if ((trace.fraction < 1 || trace.startsolid || trace.allsolid) && trace.ent != self)
-		{
-			if ( (trace.ent) && (stricmp(trace.ent->classname, "worldspawn")) )
-			{
-				VectorScale(grab->velocity, -0.5, grab->velocity);		
-			}
-			else
-			{
-				VectorScale(grab->velocity, -0.5, grab->velocity);
-			}
-		}
-	}
-
-	//Setup the top of the rope entity (the rope's attach point)
-	VectorCopy(self->s.origin, rope_top);
-
-	//Find the length of the end segment
-	grab_len = Q_fabs(self->maxs[2]+self->mins[2]);
-
-	//Find the vector to the rope's point of rest
-	VectorCopy(rope_top, end_rest);
-	end_rest[2] -= grab_len;
-
-	//Find the vector towards the middle, and that distance (disregarding height)
-	VectorSubtract(end_rest, grab->s.origin, end_vec);
-	VectorNormalize(end_vec);
-	end_len = vhlen(end_rest, grab->s.origin);
-
-	//Subtract away from the rope's velocity based on that distance
-	VectorScale(end_vec, -end_len*0.75, end_vec);
-	VectorSubtract(grab->velocity, end_vec, grab->velocity);	
-	VectorScale(grab->velocity, 0.99, grab->velocity);
-
-	//Move the rope based on the new velocity
-	VectorCopy(grab->velocity, end_vel);
-
-	mag = VectorNormalize(end_vel);
-	VectorMA(grab->s.origin, FRAMETIME * mag, end_vel, end_dest);
-
-	//Find the angle between the top of the rope and the bottom
-	VectorSubtract(end_dest, rope_top, end_vel);
-	VectorNormalize(end_vel);
-
-	//Move the length of the rope in that direction from the top
-	VectorMA(rope_top, grab_len, end_vel, rope_end);
-		
-	//You're done
-	VectorCopy(rope_end, grab->s.origin);
-
-	self->nextthink = level.time + 0.1;
 }
 
 /*-----------------------------------------------
@@ -671,7 +648,7 @@ void spawn_hanging_chicken(edict_t *self)
 
 	gi.CreatePersistantEffect(&self->s, FX_ROPE, CEF_BROADCAST, self->s.origin, "ssbvvv", end_id, end_id, model_type, end_ent->s.origin, end_ent->s.origin, end_ent->s.origin );
 
-	self->think = rope_end_think2;
+	self->think = TutorialChickenRopeEndThink;
 	self->nextthink = level.time + 0.1;
 	
 	gi.linkentity(self);
