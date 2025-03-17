@@ -139,23 +139,16 @@ static void TutorialChickenHandleAttackSequence(edict_t* self, const edict_t* at
 	}
 }
 
-void sir_nate_of_the_embarassingly_shortshanks_use(edict_t *self, edict_t *other, edict_t *activator)
+static void TutorialChickenUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'sir_nate_of_the_embarassingly_shortshanks_use' in original logic.
 {
-	
-	if(!activator->client)
-		return;
-	
-	gi.gamemsg_centerprintf(activator, (short)(self->dmg_radius+GM_SIR_NATE_GREETING));
+	if (activator->client != NULL)
+	{
+		gi.gamemsg_centerprintf(activator, (short)(GM_SIR_NATE_GREETING + self->dmg_radius));
 
-	self->dmg_radius++;
-
-	if(self->dmg_radius == 2)//last opening message
-		self->use = NULL;
-}
-
-void rope_use (edict_t *self, edict_t *other, edict_t *activator)
-{
-	sir_nate_of_the_embarassingly_shortshanks_use(self, other, activator);
+		self->dmg_radius++;
+		if (self->dmg_radius == 2.0f) // Last opening message.
+			self->use = NULL;
+	}
 }
 
 #pragma endregion
@@ -764,7 +757,7 @@ void SP_obj_rope(edict_t *self)
 	if (self->spawnflags & ROPEFLAG_HANGING_CHICKEN)
 	{
 		if(self->targetname)
-			self->use = rope_use;
+			self->use = TutorialChickenUse;
 		else
 			gi.dprintf("Chicken on a Rope with no targetname...\n");
 		spawn_hanging_chicken(self);
