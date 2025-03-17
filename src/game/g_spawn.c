@@ -33,55 +33,55 @@ typedef struct
 	ClassID_t CID; //mxd. int in original version.
 } spawn_t;
 
-void SP_trigger_Activate(edict_t *self);
-void SP_trigger_Always (edict_t *ent);
-void SP_trigger_Counter (edict_t *ent);
-void SP_trigger_Deactivate(edict_t *self);
-void SP_trigger_Elevator (edict_t *ent);
-void SP_trigger_mappercentage(edict_t *self);
-void SP_trigger_quit_to_menu(edict_t *self);
-void SP_trigger_mission_give(edict_t *self);
-void SP_trigger_mission_take(edict_t *self);
-void SP_trigger_Multiple (edict_t *ent);
-void SP_trigger_Once (edict_t *ent);
-void SP_trigger_PlayerPushButton (edict_t *ent);
-void SP_trigger_PlayerPushLever (edict_t *ent);
-void SP_trigger_PlayerUsePuzzle (edict_t *ent);
-void SP_trigger_puzzle (edict_t *ent);
-void SP_trigger_quake (edict_t *ent);
-void SP_trigger_Relay (edict_t *ent);
-void SP_trigger_lightning (edict_t *ent);
-void SP_trigger_farclip (edict_t *ent);
-void SP_trigger_endgame(edict_t *self);
+void SP_trigger_Activate(edict_t* self);
+void SP_trigger_Always(edict_t* ent);
+void SP_trigger_Counter(edict_t* ent);
+void SP_trigger_Deactivate(edict_t* self);
+void SP_trigger_Elevator(edict_t* ent);
+void SP_trigger_mappercentage(edict_t* self);
+void SP_trigger_quit_to_menu(edict_t* self);
+void SP_trigger_mission_give(edict_t* self);
+void SP_trigger_mission_take(edict_t* self);
+void SP_trigger_Multiple(edict_t* ent);
+void SP_trigger_Once(edict_t* ent);
+void SP_trigger_PlayerPushButton(edict_t* ent);
+void SP_trigger_PlayerPushLever(edict_t* ent);
+void SP_trigger_PlayerUsePuzzle(edict_t* ent);
+void SP_trigger_puzzle(edict_t* ent);
+void SP_trigger_quake(edict_t* ent);
+void SP_trigger_Relay(edict_t* ent);
+void SP_trigger_lightning(edict_t* ent);
+void SP_trigger_farclip(edict_t* ent);
+void SP_trigger_endgame(edict_t* self);
 
-void SP_choose_CDTrack(edict_t *self);
+void SP_choose_CDTrack(edict_t* self);
 
-void SP_target_explosion (edict_t *ent);
-void SP_target_changelevel (edict_t *ent);
-void SP_target_crosslevel_trigger (edict_t *ent);
-void SP_target_crosslevel_target (edict_t *ent);
-void SP_target_lightramp (edict_t *self);
-void SP_target_earthquake (edict_t *ent);
+void SP_target_explosion(edict_t* ent);
+void SP_target_changelevel(edict_t* ent);
+void SP_target_crosslevel_trigger(edict_t* ent);
+void SP_target_crosslevel_target(edict_t* ent);
+void SP_target_lightramp(edict_t* self);
+void SP_target_earthquake(edict_t* ent);
 
-void SP_worldspawn (edict_t *ent);
+void SP_worldspawn(edict_t* ent);
 
-void SP_misc_flag (edict_t *ent);
+void SP_misc_flag(edict_t* ent);
 
-void SP_env_mist(edict_t *self);
-void SP_env_bubbler(edict_t *self);
-void SP_env_water_drip(edict_t *self);
-void SP_env_water_fountain(edict_t *self);
-void SP_env_waterfall_base(edict_t *self);
+void SP_env_mist(edict_t* self);
+void SP_env_bubbler(edict_t* self);
+void SP_env_water_drip(edict_t* self);
+void SP_env_water_fountain(edict_t* self);
+void SP_env_waterfall_base(edict_t* self);
 
 // Object stuff
-void SP_obj_fishhead1(edict_t *ent);
-void SP_obj_fishhead2(edict_t *ent);
+void SP_obj_fishhead1(edict_t* ent);
+void SP_obj_fishhead2(edict_t* ent);
 
-void SP_obj_stalactite1(edict_t *ent);
-void SP_obj_stalactite2(edict_t *ent);
-void SP_obj_stalactite3(edict_t *ent);
+void SP_obj_stalactite1(edict_t* ent);
+void SP_obj_stalactite2(edict_t* ent);
+void SP_obj_stalactite3(edict_t* ent);
 
-void SP_script_runner (edict_t *ent);
+void SP_script_runner(edict_t* ent);
 
 spawn_t	spawns[]= 
 {
