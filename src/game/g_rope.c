@@ -175,6 +175,130 @@ static int TutorialChickenPain(edict_t* self, edict_t* other, float kick, int da
 	return 1;
 }
 
+static void TutorialChickenThink(edict_t* self) //mxd. Named 'hanging_chicken_think' in original logic.
+{
+	vec3_t vel_xy;
+	VectorCopy(self->targetEnt->velocity, vel_xy);
+	vel_xy[2] = 0.0f;
+
+	if (VectorLength(vel_xy) > 100.0f)
+	{
+		self->dmg++;
+		self->dmg = self->dmg & ((FRAME_cluck18 - FRAME_cluck14) - 1);
+		self->s.frame = (short)(FRAME_cluck14 + self->dmg);
+	}
+	else
+	{
+		if (++self->dmg > (FRAME_wait6 - FRAME_wait1))
+			self->dmg = 0;
+
+		self->s.frame = (short)(FRAME_wait1 + self->dmg);
+	}
+
+	// Knockback.
+	trace_t trace;
+	gi.trace(self->s.origin, self->mins, self->maxs, self->targetEnt->s.origin, self, self->clipmask, &trace);
+
+	if (trace.ent != NULL && movable(trace.ent))
+	{
+		vec3_t k_diff;
+		VectorSubtract(self->targetEnt->s.origin, self->s.origin, k_diff);
+
+		float force = VectorNormalize(k_diff);
+		const float mass = VectorLength(trace.ent->size) * 3.0f;
+
+		force = 600.0f * force / mass;
+
+		// Players are not as affected by velocities when they are on the ground, so increase what players experience.
+		if (trace.ent->client != NULL)
+		{
+			if (trace.ent->groundentity != NULL)
+				force *= 4.0f;
+			else
+				force *= 0.25f;	// Too much knockback.
+		}
+
+		force = min(512.0f, force); // Cap this speed so it doesn't get insane.
+
+		vec3_t k_vel;
+		VectorScale(k_diff, force, k_vel);
+
+		const float upvel = (trace.ent->client != NULL ? 30.0f : 120.0f); // Don't force players up quite so much as monsters.
+
+		// Now if the player isn't being forced DOWN very far, let's force them UP a bit.
+		if ((k_diff[2] > -0.5f || trace.ent->groundentity != NULL) && k_vel[2] < upvel && force > 30.0f)
+			k_vel[2] = min(force, upvel); // Don't knock UP the player more than we do across...
+
+		VectorAdd(trace.ent->velocity, k_vel, trace.ent->velocity);
+
+		if (trace.ent->client != NULL) // If player, then set the player flag that will affect this.
+		{
+			trace.ent->client->playerinfo.flags |= PLAYER_FLAG_USE_ENT_POS;
+
+			float knockback_time;
+
+			// The knockback_time indicates how long this knockback affects the player.
+			if (force > 200.0f && trace.ent->health > 0 && trace.ent->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN && infront(trace.ent, self))
+			{
+				if (self->evade_debounce_time < level.time)
+				{
+					gi.sound(self, CHAN_BODY, gi.soundindex("monsters/pssithra/land.wav"), 1.0f, ATTN_NORM, 0.0f);
+					self->evade_debounce_time = level.time + 3.0f;
+				}
+
+				P_PlayerAnimSetLowerSeq(&trace.ent->client->playerinfo, ASEQ_KNOCKDOWN);
+				P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo, ASEQ_NONE);
+				P_TurnOffPlayerEffects(&trace.ent->client->playerinfo);
+
+				VectorMA(trace.ent->velocity, 3.0f, k_vel, trace.ent->velocity);
+				knockback_time = level.time + 3.0f;
+			}
+			else if (force > 500)
+			{
+				knockback_time = level.time + 1.25f;
+			}
+			else
+			{
+				knockback_time = level.time + (force / 400.0f);
+			}
+
+			trace.ent->client->playerinfo.knockbacktime = max(knockback_time, trace.ent->client->playerinfo.knockbacktime);
+		}
+
+		if (force > 100.0f)
+		{
+			VectorMA(trace.endpos, -force / 5.0f, k_diff, self->targetEnt->s.origin);
+			VectorScale(self->enemy->rope_end->velocity, -0.5f * force / 400.0f, self->enemy->rope_end->velocity);
+		}
+		else
+		{
+			VectorScale(self->enemy->rope_end->velocity, -0.5f, self->enemy->rope_end->velocity);
+		}
+	}
+
+	VectorCopy(self->targetEnt->s.origin, self->s.origin);
+
+	vec3_t diff;
+	VectorSubtract(self->targetEnt->owner->s.origin, self->s.origin, diff);
+	VectorNormalize(diff);
+
+	vec3_t angles;
+	vectoangles(diff, angles);
+
+	// Interpolate the yaw. //TODO: why yaw only?
+	const float delta_yaw = angles[YAW] - self->s.angles[YAW];
+	if (Q_fabs(delta_yaw) > 8.0f)
+		self->s.angles[YAW] -= 8.0f * Q_signf(delta_yaw);
+
+	if (irand(0, 100) == 0)
+		gi.sound(self, CHAN_AUTO, gi.soundindex(va("monsters/chicken/cluck%i.wav", irand(1, 2))), 1.0f, ATTN_NORM, 0.0f);
+
+	VectorClear(self->velocity);
+
+	gi.linkentity(self);
+	self->nextthink = level.time + 0.1f;
+}
+
 #pragma endregion
 
 void rope_think(edict_t *self)
@@ -494,157 +618,6 @@ void end_think(edict_t *self)
 
 }
 
-void hanging_chicken_think(edict_t *self)
-{
-	vec3_t		vec, angles;
-	float		d_ang, knockbacktime;
-	int			i, mag;
-	qboolean	knockback = true;
-	trace_t		trace;
-
-	VectorCopy(self->targetEnt->velocity, vec);
-	vec[2] = 0;
-	mag = VectorLength(vec);
-	
-	if (mag > 100)
-	{
-		self->dmg++;	
-		self->dmg = self->dmg & ((FRAME_cluck18-FRAME_cluck14)-1);
-		self->s.frame = FRAME_cluck14 + self->dmg;
-	}
-	else
-	{
-		if (++self->dmg > (FRAME_wait6-FRAME_wait1))
-			self->dmg = 0;
-
-		self->s.frame = FRAME_wait1 + self->dmg;
-	}
-
-	//knockback
-	if(CHICKEN_KNOCKBACK)
-	{
-		gi.trace(self->s.origin, self->mins, self->maxs, self->targetEnt->s.origin, self, self->clipmask,&trace);
-		if(trace.ent)
-		{
-			if(movable(trace.ent))
-			{
-				vec3_t	kvel;
-				float	mass, force, upvel;
-
-				VectorSubtract(self->targetEnt->s.origin, self->s.origin, vec);
-
-				force = VectorNormalize(vec);
-				mass = VectorLength(trace.ent->size) * 3;
-
-				force = 600.0 * force / mass;
-
-				// Players are not as affected by velocities when they are on the ground, so increase what players experience.
-				if (trace.ent->client && trace.ent->groundentity)
-					force *= 4.0;
-				else if (trace.ent->client)	// && !(targ->groundentity)
-					force *= 0.25;	// Too much knockback
-
-				if (force > 512)	// Cap this speed so it doesn't get insane
-					force=512;
-				VectorScale (vec, force, kvel);
-
-				if (trace.ent->client)	// Don't force players up quite so much as monsters.
-					upvel=30;
-				else
-					upvel=120;
-				// Now if the player isn't being forced DOWN very far, let's force them UP a bit.
-				if ((vec[2] > -0.5 || trace.ent->groundentity) && kvel[2] < upvel && force > 30)
-				{	// Don't knock UP the player more than we do across...
-					if (force < upvel)
-						kvel[2] = force;
-					else
-						kvel[2] = upvel;
-				}
-
-				VectorAdd (trace.ent->velocity, kvel, trace.ent->velocity);
-
-				if (trace.ent->client)	// If player, then set the player flag that will affect this.
-				{
-					trace.ent->client->playerinfo.flags |= PLAYER_FLAG_USE_ENT_POS;
-					// The knockbacktime indicates how long this knockback affects the player.
-					if (force>200 && trace.ent->health>0 && trace.ent->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN && infront(trace.ent, self))
-					{
-						if(self->evade_debounce_time<level.time)
-						{
-							gi.sound(self, CHAN_BODY, gi.soundindex("monsters/pssithra/land.wav") ,1, ATTN_NORM , 0);
-							self->evade_debounce_time = level.time + 3.0;
-						}
-						P_PlayerAnimSetLowerSeq(&trace.ent->client->playerinfo,ASEQ_KNOCKDOWN);
-						P_PlayerAnimSetUpperSeq(&trace.ent->client->playerinfo,ASEQ_NONE);
-						P_TurnOffPlayerEffects(&trace.ent->client->playerinfo);
-						VectorMA (trace.ent->velocity, 3, kvel, trace.ent->velocity);
-						knockbacktime = level.time + 3.0;
-					}
-					else if(force > 500)
-						knockbacktime = level.time + 1.25;
-					else
-						knockbacktime = level.time + (force/400.0);
-
-					if (knockbacktime > trace.ent->client->playerinfo.knockbacktime)
-						trace.ent->client->playerinfo.knockbacktime = knockbacktime;
-				} 
-
-				if(force>100)
-				{
-					VectorMA(trace.endpos, -force/5, vec, self->targetEnt->s.origin);
-					VectorScale(self->enemy->rope_end->velocity, -0.5 * force/400 , self->enemy->rope_end->velocity);
-				}
-				else
-					VectorScale(self->enemy->rope_end->velocity, -0.5, self->enemy->rope_end->velocity);
-			}
-		}
-	}
-	VectorCopy(self->targetEnt->s.origin, self->s.origin);
-	VectorSubtract(self->targetEnt->owner->s.origin, self->s.origin, vec);
-	VectorNormalize(vec);
-	vectoangles(vec, angles);
-	
-	//interpolate the angles
-	for (i=0;i<2;i++)
-	{
-		d_ang = (angles[i]-self->s.angles[i]);
-		
-		if (i==PITCH)
-			continue;
-
-		if (d_ang == 0)
-			continue;
-		
-		if (d_ang > 0)
-		{
-			if (Q_fabs(d_ang) > 8)
-				self->s.angles[i] -= 8;
-			else
-				self->s.angles[i] = angles[i];
-		}
-		else
-		{
-			if (Q_fabs(d_ang) > 8)
-				self->s.angles[i] += 8;
-			else
-				self->s.angles[i] = angles[i];
-		}
-	}
-
-	if (!irand(0,100))
-	{
-		if (irand(0,1))
-			gi.sound (self, CHAN_AUTO, gi.soundindex("monsters/chicken/cluck1.wav"), 1, ATTN_NORM, 0);
-		else
-			gi.sound (self, CHAN_AUTO, gi.soundindex("monsters/chicken/cluck2.wav"), 1, ATTN_NORM, 0);
-	}
-
-	VectorClear(self->velocity);
-
-	gi.linkentity(self);
-	self->nextthink = level.time + 0.1;
-}
-
 void spawn_hanging_chicken(edict_t *self)
 {
 	edict_t		*end_ent;
@@ -735,7 +708,7 @@ void spawn_hanging_chicken(edict_t *self)
 	
 	chicken->s.scale = 1;
 	chicken->classname = "NATE";
-	chicken->think = hanging_chicken_think;
+	chicken->think = TutorialChickenThink;
 	chicken->nextthink = level.time + 0.1;
 	chicken->materialtype = MAT_FLESH;
 
