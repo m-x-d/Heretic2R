@@ -650,32 +650,37 @@ static void ObjRopeTouch(edict_t* self, edict_t* other, cplane_t* plane, csurfac
 	}
 }
 
-void SP_obj_rope(edict_t *self)
+// QUAKED obj_rope (.3 .2 .8) ? VINE CHAIN TENDRIL HANGING_CHICKEN
+// A rope to climb or swing (default to rope model).
+// Place the top of the entity at the top of the rope, and drag the bottom of the box to the end of the rope.
+// THE ENTITY MUST HAVE AN ORIGIN BRUSH.
+// Spawnflags:
+// ROPE		- Default.
+// VINE		- Use a vine model.
+// CHAIN	- Use a chain model.
+// TENDRIL	- Use a tendril model.
+void SP_obj_rope(edict_t* self)
 {
-	edict_t		*grab_ent, *end_ent;
-	vec3_t		rope_end;
-	short		grab_id, end_id;
-	byte		model_type;
-	
 	if (self->spawnflags & ROPEFLAG_HANGING_CHICKEN)
 	{
-		if(self->targetname)
+		if (self->targetname != NULL)
 			self->use = TutorialChickenUse;
 		else
 			gi.dprintf("Chicken on a Rope with no targetname...\n");
+
 		TutorialChickenSpawn(self);
 		return;
 	}
 
 	gi.setmodel(self, self->model);
 	self->svflags |= SVF_NOCLIENT;
- 
-	//We only need the vertical size from the designer
-	self->maxs[0] = 32;
-	self->maxs[1] = 32;
 
-	self->mins[0] = -32;
-	self->mins[1] = -32;
+	// We only need the vertical size from the designer.
+	self->maxs[0] = 32.0f;
+	self->maxs[1] = 32.0f;
+
+	self->mins[0] = -32.0f;
+	self->mins[1] = -32.0f;
 
 	self->movetype = PHYSICSTYPE_NONE;
 	self->solid = SOLID_TRIGGER;
@@ -683,11 +688,13 @@ void SP_obj_rope(edict_t *self)
 
 	VectorClear(self->velocity);
 
-	end_ent	 = G_Spawn();
+	// Create rope end entity.
+	edict_t* end_ent = G_Spawn();
+
 	end_ent->movetype = PHYSICSTYPE_NONE;
 	end_ent->solid = SOLID_NOT;
 	end_ent->svflags |= SVF_ALWAYS_SEND;
-	end_id	 = end_ent->s.number;
+	const short end_id = end_ent->s.number;
 
 	VectorCopy(self->s.origin, end_ent->s.origin);
 	end_ent->s.origin[2] += self->mins[2];
@@ -695,58 +702,45 @@ void SP_obj_rope(edict_t *self)
 	VectorClear(end_ent->velocity);
 
 	gi.linkentity(end_ent);
-	
-	//gi.setmodel(end_ent, "models/objects/barrel/normal/tris.fm");
 
 	self->rope_end = end_ent;
 
-	grab_ent = G_Spawn();
+	// Create rope grab entity.
+	edict_t* grab_ent = G_Spawn();
+
 	grab_ent->movetype = PHYSICSTYPE_NONE;
 	grab_ent->solid = SOLID_NOT;
 	grab_ent->svflags |= SVF_ALWAYS_SEND;
-	grab_id	 = grab_ent->s.number;
+	const short grab_id = grab_ent->s.number;
+
 	VectorClear(grab_ent->velocity);
+	VectorCopy(self->s.origin, grab_ent->s.origin);
+	grab_ent->s.origin[2] += self->maxs[2] + 4.0f;
 
 	gi.linkentity(grab_ent);
 
-	//gi.setmodel(grab_ent, "models/objects/barrel/normal/tris.fm");
-	
-	VectorCopy(self->s.origin, grab_ent->s.origin);
-	grab_ent->s.origin[2] += self->maxs[2] + 4;
-
 	self->rope_grab = grab_ent;
 
-	VectorCopy(self->s.origin, rope_end);
-	rope_end[2] += self->mins[2];
-			
+	byte model_type;
 	if (self->spawnflags & ROPEFLAG_CHAIN)
-	{
 		model_type = RM_CHAIN;
-	}
 	else if (self->spawnflags & ROPEFLAG_VINE)
-	{
 		model_type = RM_VINE;
-	}
 	else if (self->spawnflags & ROPEFLAG_TENDRIL)
-	{
 		model_type = RM_TENDRIL;
-	}
 	else
-	{
 		model_type = RM_ROPE;
-	}
-	
-	self->bloodType = grab_ent->bloodType = end_ent->bloodType = model_type;
-	
-	VectorCopy(self->s.origin, rope_end);
-	rope_end[2] += self->mins[2];
+
+	self->bloodType = model_type;
+	grab_ent->bloodType = model_type;
+	end_ent->bloodType = model_type;
 
 	ObjRopeSwayThink(self);
-	
-	gi.CreatePersistantEffect(&self->s, FX_ROPE, CEF_BROADCAST, self->s.origin, "ssbvvv", grab_id, end_id, model_type, self->s.origin, grab_ent->s.origin, end_ent->s.origin );
+
+	gi.CreatePersistantEffect(&self->s, FX_ROPE, CEF_BROADCAST, self->s.origin, "ssbvvv", grab_id, end_id, model_type, self->s.origin, grab_ent->s.origin, end_ent->s.origin);
 
 	self->think = ObjRopeSwayThink;
-	self->nextthink = level.time + 1;
+	self->nextthink = level.time + 1.0f;
 
 	gi.linkentity(self);
 }
