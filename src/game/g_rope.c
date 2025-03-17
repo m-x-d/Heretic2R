@@ -349,6 +349,85 @@ static void TutorialChickenRopeEndThink(edict_t* self) //mxd. Named 'rope_end_th
 	self->nextthink = level.time + 0.1f;
 }
 
+static void TutorialChickenSpawn(edict_t* self) //mxd. Named 'spawn_hanging_chicken' in original logic.
+{
+	gi.setmodel(self, self->model);
+	self->svflags |= SVF_NOCLIENT;
+
+	// We only need the vertical size from the designer.
+	self->maxs[0] = 32.0f;
+	self->maxs[1] = 32.0f;
+
+	self->mins[0] = -32.0f;
+	self->mins[1] = -32.0f;
+
+	self->movetype = PHYSICSTYPE_NONE;
+	self->solid = SOLID_NOT;
+
+	VectorClear(self->velocity);
+
+	// Spawn rope end.
+	edict_t* end_ent = G_Spawn();
+
+	end_ent->movetype = PHYSICSTYPE_NONE;
+	end_ent->solid = SOLID_NOT;
+	end_ent->svflags |= SVF_ALWAYS_SEND;
+	end_ent->owner = self;
+	const short end_id = end_ent->s.number;
+
+	VectorCopy(self->s.origin, end_ent->s.origin);
+	end_ent->s.origin[2] += self->mins[2];
+
+	VectorClear(end_ent->velocity);
+
+	gi.linkentity(end_ent);
+
+	self->rope_end = end_ent;
+
+	self->bloodType = RM_ROPE;
+	end_ent->bloodType = RM_ROPE;
+
+	gi.CreatePersistantEffect(&self->s, FX_ROPE, CEF_BROADCAST, self->s.origin, "ssbvvv", end_id, end_id, RM_ROPE, end_ent->s.origin, end_ent->s.origin, end_ent->s.origin);
+
+	self->think = TutorialChickenRopeEndThink;
+	self->nextthink = level.time + 0.1f;
+
+	gi.linkentity(self);
+
+	// Now spawn the poor chicken.
+	edict_t* chicken = G_Spawn();
+
+	gi.setmodel(chicken, "models/monsters/chicken2/tris.fm");
+
+	// Hanging by feet.
+	chicken->s.angles[PITCH] += 180.0f;
+	chicken->health = NATE_HEALTH;
+	VectorSet(chicken->mins, -16.0f, -16.0f, -8.0f);
+	VectorSet(chicken->maxs, 16.0f, 16.0f, 16.0f);
+
+	chicken->classname = "NATE"; //TODO: add as a define to g_rope.h (also used in T_Damage())? 
+	chicken->materialtype = MAT_FLESH;
+	chicken->movetype = PHYSICSTYPE_STEP;
+	chicken->gravity = 0.0f;
+	chicken->solid = SOLID_BBOX;
+	chicken->takedamage = DAMAGE_YES;
+	chicken->clipmask = MASK_MONSTERSOLID;
+	chicken->svflags = (SVF_DO_NO_IMPACT_DMG | SVF_ALLOW_AUTO_TARGET);
+	chicken->s.effects = EF_CAMERA_NO_CLIP;
+
+	VectorCopy(self->rope_end->s.origin, chicken->s.origin);
+
+	chicken->pain = TutorialChickenPain;
+	chicken->think = TutorialChickenThink;
+	chicken->nextthink = level.time + 0.1f;
+
+	chicken->enemy = self;
+	chicken->targetEnt = self->rope_end;
+	self->targetEnt = chicken;
+
+	gi.linkentity(chicken);
+}
+
 #pragma endregion
 
 void rope_think(edict_t *self)
@@ -595,105 +674,6 @@ void end_think(edict_t *self)
 
 }
 
-void spawn_hanging_chicken(edict_t *self)
-{
-	edict_t		*end_ent;
-	edict_t		*chicken;
-	vec3_t		rope_end;
-	short		end_id;
-	byte		model_type;
-
-	gi.setmodel(self, self->model);
-	self->svflags |= SVF_NOCLIENT;
- 
-	//We only need the vertical size from the designer
-	self->maxs[0] = 32;
-	self->maxs[1] = 32;
-
-	self->mins[0] = -32;
-	self->mins[1] = -32;
-
-	self->movetype = PHYSICSTYPE_NONE;
-	self->solid = SOLID_NOT;
-
-	VectorClear(self->velocity);
-
-	end_ent	 = G_Spawn();
-	end_ent->movetype = PHYSICSTYPE_NONE;
-	end_ent->solid = SOLID_NOT;
-	end_ent->svflags |= SVF_ALWAYS_SEND;
-	end_ent->owner = self;
-	end_id	 = end_ent->s.number;
-	
-	VectorCopy(self->s.origin, end_ent->s.origin);
-	end_ent->s.origin[2] += self->mins[2];
-
-	VectorClear(end_ent->velocity);
-
-	gi.linkentity(end_ent);
-	
-	//gi.setmodel(end_ent, "models/objects/barrel/normal/tris.fm");
-
-	self->rope_end = end_ent;
-	
-	VectorCopy(self->s.origin, rope_end);
-	rope_end[2] += self->mins[2];
-			
-	model_type = RM_ROPE;
-
-	self->bloodType = end_ent->bloodType = model_type;
-	
-	VectorCopy(self->s.origin, rope_end);
-	rope_end[2] += self->mins[2];
-
-	gi.CreatePersistantEffect(&self->s, FX_ROPE, CEF_BROADCAST, self->s.origin, "ssbvvv", end_id, end_id, model_type, end_ent->s.origin, end_ent->s.origin, end_ent->s.origin );
-
-	self->think = TutorialChickenRopeEndThink;
-	self->nextthink = level.time + 0.1;
-	
-	gi.linkentity(self);
-
-	/////////////////////////////////////////////
-	//Now spawn the poor chicken
-	
-	chicken = G_Spawn();
-	
-	gi.setmodel(chicken, "models/monsters/chicken2/tris.fm");
-	chicken->enemy = self;
-	
-	//Hanging by feet
-	chicken->s.angles[PITCH] += 180;
-	chicken->pain = TutorialChickenPain;
-	chicken->classID = 0;
-	chicken->client = NULL;
-
-	chicken->health = 10000;
-	VectorSet(chicken->mins, -16, -16, -8);
-	VectorSet(chicken->maxs,  16,  16, 16);
-
-	chicken->movetype = PHYSICSTYPE_STEP;
-	chicken->gravity = 0;
-	chicken->solid = SOLID_BBOX;
-	chicken->takedamage = DAMAGE_YES;
-	chicken->clipmask = MASK_MONSTERSOLID;
-	chicken->svflags = SVF_DO_NO_IMPACT_DMG | SVF_ALLOW_AUTO_TARGET;
-	chicken->s.effects = EF_CAMERA_NO_CLIP;
-	
-	VectorCopy(self->rope_end->s.origin, chicken->s.origin);
-
-	chicken->targetEnt = self->rope_end;
-	
-	chicken->s.scale = 1;
-	chicken->classname = "NATE";
-	chicken->think = TutorialChickenThink;
-	chicken->nextthink = level.time + 0.1;
-	chicken->materialtype = MAT_FLESH;
-
-	self->targetEnt = chicken;
-
-	gi.linkentity(chicken);
-}
-
 void SP_obj_rope(edict_t *self)
 {
 	edict_t		*grab_ent, *end_ent;
@@ -707,7 +687,7 @@ void SP_obj_rope(edict_t *self)
 			self->use = TutorialChickenUse;
 		else
 			gi.dprintf("Chicken on a Rope with no targetname...\n");
-		spawn_hanging_chicken(self);
+		TutorialChickenSpawn(self);
 		return;
 	}
 
