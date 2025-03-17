@@ -259,6 +259,7 @@
     <ClInclude Include="g_PhysicsLocal.h" />
     <ClInclude Include="g_playstats.h" />
     <ClInclude Include="g_ResourceManagers.h" />
+    <ClInclude Include="g_rope.h" />
     <ClInclude Include="g_save.h" />
     <ClInclude Include="g_Shrine.h" />
     <ClInclude Include="g_ShrineLocal.h" />

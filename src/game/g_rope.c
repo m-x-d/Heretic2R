@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include "g_rope.h" //mxd
 #include "cl_strings.h"
 #include "m_chicken_anim.h"
 #include "p_main.h"
@@ -382,7 +383,7 @@ static void TutorialChickenSpawn(edict_t* self) //mxd. Named 'spawn_hanging_chic
 	VectorSet(chicken->mins, -16.0f, -16.0f, -8.0f);
 	VectorSet(chicken->maxs, 16.0f, 16.0f, 16.0f);
 
-	chicken->classname = "NATE"; //TODO: add as a define to g_rope.h (also used in T_Damage())? 
+	chicken->classname = TUTORIAL_CHICKEN_CLASSNAME;
 	chicken->materialtype = MAT_FLESH;
 	chicken->movetype = PHYSICSTYPE_STEP;
 	chicken->gravity = 0.0f;

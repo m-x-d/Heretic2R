@@ -15,6 +15,7 @@
 #include "g_func_Train.h" //mxd
 #include "g_light.h" //mxd
 #include "g_obj.h" //mxd
+#include "g_rope.h" //mxd
 #include "m_monsters.h" //mxd
 #include "p_client.h" //mxd
 #include "g_local.h"
@@ -69,8 +70,6 @@ void SP_env_waterfall_base(edict_t *self);
 // Object stuff
 void SP_obj_fishhead1(edict_t *ent);
 void SP_obj_fishhead2(edict_t *ent);
-
-void SP_obj_rope(edict_t *ent);
 
 void SP_obj_stalactite1(edict_t *ent);
 void SP_obj_stalactite2(edict_t *ent);

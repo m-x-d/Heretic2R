@@ -13,6 +13,7 @@
 #include "g_itemstats.h"
 #include "g_monster.h" //mxd
 #include "g_playstats.h"
+#include "g_rope.h" //mxd
 #include "m_stats.h"
 #include "mg_guide.h" //mxd
 #include "p_main.h"
@@ -926,7 +927,7 @@ void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, const vec3
 	{
 		if (target->classID == CID_NONE || classStatics[target->classID].msgReceivers[MSG_PAIN] == NULL)
 		{
-			if (Q_stricmp(target->classname, "NATE") == 0) //mxd. Classname of chicken spawned in spawn_hanging_chicken()...
+			if (Q_stricmp(target->classname, TUTORIAL_CHICKEN_CLASSNAME) == 0)
 				target->activator = inflictor;
 
 			target->pain(target, attacker, (float)knockback, dmg_take); // Pass spot too.
