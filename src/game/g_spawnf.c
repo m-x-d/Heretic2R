@@ -1,55 +1,58 @@
+//
+// g_spawnf.c
+//
+// Copyright 1998 Raven Software
+//
+
 #include "g_spawnf.h" //mxd
-#include "g_Skeletons.h"
 #include "g_items.h" //mxd
 #include "g_save.h" //mxd
-#include "q_Physics.h"
-#include "q_shared.h"
-#include "g_local.h"
+#include "g_Skeletons.h"
 #include "p_client.h" //mxd
 #include "p_hud.h" //mxd
-
-void ED_CallSpawn (edict_t *ent);
-void Cvar_SetValue (char *var_name, float value);
+#include "q_Physics.h"
+#include "qcommon.h"
+#include "g_local.h"
 
 typedef struct
 {
-	char	*level_name;
-	int		default_preset;
+	char* level_name;
+	int default_preset;
 } eax_level_info_t;
 
 #define MAX_CURRENT_LEVELS	29
 
-eax_level_info_t	eax_level_info[MAX_CURRENT_LEVELS] = 
+static eax_level_info_t eax_level_info[MAX_CURRENT_LEVELS] =
 {
-	{"ssdocks",			EAX_CITY_AND_SEWERS},
-	{"sswarehouse",		EAX_CITY_AND_SEWERS},
-	{"sstown",			EAX_CITY_AND_ALLEYS},
-	{"sspalace",		EAX_CITY_AND_ALLEYS},
-	{"dmireswamp",		EAX_CITY_AND_SEWERS},
-	{"andhealer",		EAX_CITY_AND_SEWERS},
-	{"andplaza",		EAX_CITY_AND_SEWERS},
-	{"andslums",		EAX_CITY_AND_SEWERS},
-	{"andacademic",		EAX_CITY_AND_SEWERS},
-	{"kellcaves",		EAX_ALL_STONE},
-	{"canyon",			EAX_ALL_STONE},
-	{"hive1",			EAX_ALL_STONE},
-	{"hive2",			EAX_ALL_STONE},
-	{"gauntlet",		EAX_ALL_STONE},
-	{"hivetrialpit",	EAX_ARENA},
-	{"hivepriestess",	EAX_ALL_STONE},
-	{"oglemine1",		EAX_ALL_STONE},
-	{"oglemine2",		EAX_ALL_STONE},
-	{"dungeon",			EAX_CITY_AND_ALLEYS},
-	{"cloudhub",		EAX_CITY_AND_ALLEYS},
-	{"cloudlabs",		EAX_CITY_AND_ALLEYS},
-	{"cloudquarters",	EAX_CITY_AND_ALLEYS},
-	{"cloudsanctum",	EAX_CITY_AND_ALLEYS},
-	{"tutorial",		EAX_CITY_AND_ALLEYS},
-	{"tutorial2",		EAX_CITY_AND_ALLEYS},
-	{"dmandoria",		EAX_CITY_AND_ALLEYS},
-	{"dmhive",			EAX_ALL_STONE},
-	{"dmcanyon",		EAX_ALL_STONE},
-	{"dmcloud",			EAX_CITY_AND_ALLEYS},
+	{ "ssdocks",		EAX_CITY_AND_SEWERS },
+	{ "sswarehouse",	EAX_CITY_AND_SEWERS },
+	{ "sstown",			EAX_CITY_AND_ALLEYS },
+	{ "sspalace",		EAX_CITY_AND_ALLEYS },
+	{ "dmireswamp",		EAX_CITY_AND_SEWERS },
+	{ "andhealer",		EAX_CITY_AND_SEWERS },
+	{ "andplaza",		EAX_CITY_AND_SEWERS },
+	{ "andslums",		EAX_CITY_AND_SEWERS },
+	{ "andacademic",	EAX_CITY_AND_SEWERS },
+	{ "kellcaves",		EAX_ALL_STONE },
+	{ "canyon",			EAX_ALL_STONE },
+	{ "hive1",			EAX_ALL_STONE },
+	{ "hive2",			EAX_ALL_STONE },
+	{ "gauntlet",		EAX_ALL_STONE },
+	{ "hivetrialpit",	EAX_ARENA },
+	{ "hivepriestess",	EAX_ALL_STONE },
+	{ "oglemine1",		EAX_ALL_STONE },
+	{ "oglemine2",		EAX_ALL_STONE },
+	{ "dungeon",		EAX_CITY_AND_ALLEYS },
+	{ "cloudhub",		EAX_CITY_AND_ALLEYS },
+	{ "cloudlabs",		EAX_CITY_AND_ALLEYS },
+	{ "cloudquarters",	EAX_CITY_AND_ALLEYS },
+	{ "cloudsanctum",	EAX_CITY_AND_ALLEYS },
+	{ "tutorial",		EAX_CITY_AND_ALLEYS },
+	{ "tutorial2",		EAX_CITY_AND_ALLEYS },
+	{ "dmandoria",		EAX_CITY_AND_ALLEYS },
+	{ "dmhive",			EAX_ALL_STONE },
+	{ "dmcanyon",		EAX_ALL_STONE },
+	{ "dmcloud",		EAX_CITY_AND_ALLEYS },
 };
 
 
