@@ -38,19 +38,21 @@ void SP_target_temp_entity(edict_t* ent) //mxd. Unused in original logic.
 
 #pragma endregion
 
-void target_explosion_explode (edict_t *self)
-{
-	float		save;
+#pragma region ========================== target_explosion ==========================
 
+static void TargetExplosionExplodeThink(edict_t* self) //mxd. Named 'target_explosion_explode' in original logic.
+{
 	gi.CreateEffect(NULL, FX_EXPLOSION1, 0, self->s.origin, NULL);
 
-	T_DamageRadius(self, self->activator, NULL, self->dmg+40, 
-					self->dmg, self->dmg/4, DAMAGE_NORMAL,MOD_DIED);
+	const float damage = (float)self->dmg;
+	T_DamageRadius(self, self->activator, NULL, damage + 40.0f, damage, damage / 4.0f, DAMAGE_NORMAL, MOD_DIED);
 
-	save = self->delay;
-	self->delay = 0;
-	G_UseTargets (self, self->activator);
-	self->delay = save;
+	const float delay = self->delay;
+	self->delay = 0.0f;
+	G_UseTargets(self, self->activator);
+	self->delay = delay;
+
+	//TODO: will trigger assert in EntityThink() when self->delay > 0...
 }
 
 void use_target_explosion (edict_t *self, edict_t *other, edict_t *activator)
@@ -59,11 +61,11 @@ void use_target_explosion (edict_t *self, edict_t *other, edict_t *activator)
 
 	if (!self->delay)
 	{
-		target_explosion_explode (self);
+		TargetExplosionExplodeThink (self);
 		return;
 	}
 
-	self->think = target_explosion_explode;
+	self->think = TargetExplosionExplodeThink;
 	self->nextthink = level.time + self->delay;
 }
 
@@ -73,6 +75,7 @@ void SP_target_explosion (edict_t *ent)
 	ent->svflags = SVF_NOCLIENT;
 }
 
+#pragma endregion
 
 //==========================================================
 
