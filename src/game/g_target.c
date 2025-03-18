@@ -318,16 +318,15 @@ static void TargetEarthquakeThink(edict_t* self) //mxd. Named 'target_earthquake
 		self->nextthink = level.time + FRAMETIME;
 }
 
-void target_earthquake_use (edict_t *self, edict_t *other, edict_t *activator)
+static void TargetEarthquakeUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'target_earthquake_use' in original logic.
 {
-
-	if (sv_jumpcinematic->value)	// Don't do this if jumping a cinematic
+	if ((int)sv_jumpcinematic->value) // Don't do this if jumping a cinematic.
 		return;
 
-	self->timestamp = level.time + self->count;
-	self->nextthink = level.time + FRAMETIME;
 	self->activator = activator;
-	self->last_move_time = 0;
+	self->last_move_time = 0.0f;
+	self->timestamp = level.time + (float)self->count;
+	self->nextthink = level.time + FRAMETIME;
 }
 
 void SP_target_earthquake (edict_t *self)
@@ -343,7 +342,7 @@ void SP_target_earthquake (edict_t *self)
 
 	self->svflags |= SVF_NOCLIENT;
 	self->think = TargetEarthquakeThink;
-	self->use = target_earthquake_use;
+	self->use = TargetEarthquakeUse;
 
 	self->noise_index = gi.soundindex ("world/quake.wav");
 }
