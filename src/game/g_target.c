@@ -223,27 +223,6 @@ static void TargetLightrampThink(edict_t* self) //mxd. Named 'target_lightramp_t
 
 static void TargetLightrampUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'target_lightramp_use' in original logic.
 {
-	if (self->enemy == NULL) //TODO: do this check in SP_target_lightramp() instead?
-	{
-		// Check all the targets.
-		edict_t* light = NULL;
-		while ((light = G_Find(light, FOFS(targetname), self->target)) != NULL)
-		{
-			if (strcmp(light->classname, "light") == 0)
-				self->enemy = light;
-			else
-				gi.dprintf("%s at %s target %s (%s at %s) is not a light\n", self->classname, vtos(self->s.origin), self->target, light->classname, vtos(light->s.origin));
-		}
-
-		if (self->enemy == NULL)
-		{
-			gi.dprintf("%s target %s not found at %s\n", self->classname, self->target, vtos(self->s.origin));
-			G_FreeEdict(self);
-
-			return;
-		}
-	}
-
 	self->timestamp = level.time;
 	TargetLightrampThink(self);
 }
@@ -273,6 +252,24 @@ void SP_target_lightramp(edict_t* self)
 	if (self->target == NULL)
 	{
 		gi.dprintf("%s with no target at %s\n", self->classname, vtos(self->s.origin));
+		G_FreeEdict(self);
+
+		return;
+	}
+
+	//mxd. Check all the targets. (originally done in TargetLightrampUse()).
+	edict_t* light = NULL;
+	while ((light = G_Find(light, FOFS(targetname), self->target)) != NULL)
+	{
+		if (strcmp(light->classname, "light") == 0)
+			self->enemy = light;
+		else
+			gi.dprintf("%s at %s target %s (%s at %s) is not a light\n", self->classname, vtos(self->s.origin), self->target, light->classname, vtos(light->s.origin));
+	}
+
+	if (self->enemy == NULL)
+	{
+		gi.dprintf("%s target %s not found at %s\n", self->classname, self->target, vtos(self->s.origin));
 		G_FreeEdict(self);
 
 		return;
