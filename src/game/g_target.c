@@ -1,10 +1,15 @@
-#include "g_local.h"
-#include "FX.h"
-#include "Random.h"
-#include "vector.h"
+//
+// g_target.c
+//
+// Copyright 1998 Raven Software
+//
+
+#include "g_target.h" //mxd
 #include "cl_strings.h"
 #include "g_combat.h" //mxd
 #include "p_hud.h" //mxd
+#include "Random.h"
+#include "g_local.h"
 
 #define CROSSLEVEL_TRIGGER_SF_MASK	0x000000ff //mxd. Originally defined in g_local.h. Mask for TRIGGER1 - TRIGGER8 spawnflags.
 
