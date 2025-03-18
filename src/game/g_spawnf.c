@@ -55,38 +55,30 @@ static eax_level_info_t eax_level_info[MAX_CURRENT_LEVELS] =
 	{ "dmcloud",		EAX_CITY_AND_ALLEYS },
 };
 
-
-/*
-=============
-ED_NewString
-=============
-*/
-char *ED_NewString (char *string)
+char* ED_NewString(const char* string)
 {
-	char	*newb, *new_p;
-	int		i,l;
-	
-	l = strlen(string) + 1;
+	const int len = (int)strlen(string) + 1;
+	char* buffer = gi.TagMalloc(len, TAG_LEVEL);
+	char* buf_p = buffer;
 
-	newb = gi.TagMalloc (l, TAG_LEVEL);
-
-	new_p = newb;
-
-	for (i=0 ; i< l ; i++)
+	for (int i = 0; i < len; i++)
 	{
-		if (string[i] == '\\' && i < l-1)
+		if (string[i] == '\\' && i < len - 1)
 		{
 			i++;
+
 			if (string[i] == 'n')
-				*new_p++ = '\n';
+				*buf_p++ = '\n';
 			else
-				*new_p++ = '\\';
+				*buf_p++ = '\\';
 		}
 		else
-			*new_p++ = string[i];
+		{
+			*buf_p++ = string[i];
+		}
 	}
-	
-	return newb;
+
+	return buffer;
 }
 
 /*
