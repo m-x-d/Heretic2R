@@ -262,120 +262,100 @@ void CheckCoopTimeout(const qboolean been_here_before)
 		Cvar_SetValue("sv_cooptimeout", 0.0f);
 }
 
-/*
-==============
-SpawnEntities
-
-Creates a server's entity / program execution context by
-parsing textual entity definitions out of an ent file.
-==============
-*/
-int loadingBaseEnts;
-
-void SpawnEntities (char *mapname, char *entities, char *spawnpoint, qboolean loadgame)
+// Creates a server's entity / program execution context by parsing textual entity definitions out of an ent file.
+void SpawnEntities(const char* map_name, char* entities, const char* spawn_point, qboolean loadgame) //TODO: remove unused 'loadgame' arg?
 {
-	edict_t		*ent;
-	int			inhibit;
-	char		*com_token;
-	int			i;
-	float		skill_level;
+	float skill_level = floorf(skill->value);
+	skill_level = Clamp(skill_level, SKILL_EASY, SKILL_VERYHARD);
 
-	loadingBaseEnts = loadgame;
-
-	skill_level = floor (skill->value);
-	if (skill_level < 0)
-		skill_level = 0;
-	if (skill_level > 3)
-		skill_level = 3;
 	if (skill->value != skill_level)
 		gi.cvar_forceset("skill", va("%f", skill_level));
 
-	SaveClientData ();
+	SaveClientData();
 
 	ShutdownScripts(false);
-	gi.FreeTags (TAG_LEVEL);
+	gi.FreeTags(TAG_LEVEL);
 
-	memset (&level, 0, sizeof(level));
-	memset (g_edicts, 0, game.maxentities * sizeof (g_edicts[0]));
+	memset(&level, 0, sizeof(level));
+	memset(g_edicts, 0, game.maxentities * sizeof(g_edicts[0]));
 
 	memset(skeletalJoints, 0, sizeof(skeletalJoints));
 	memset(jointNodes, 0, sizeof(jointNodes));
 	memset(classStatics, 0, sizeof(classStatics));
 	memset(classStaticsInitialized, false, sizeof(classStaticsInitialized));
 
-	strncpy (level.mapname, mapname, sizeof(level.mapname)-1);
-	strncpy (game.spawnpoint, spawnpoint, sizeof(game.spawnpoint)-1);
+	strncpy_s(level.mapname, sizeof(level.mapname), map_name, sizeof(level.mapname) - 1); //mxd. strncpy -> strncpy_s
+	strncpy_s(game.spawnpoint, sizeof(game.spawnpoint), spawn_point, sizeof(game.spawnpoint) - 1); //mxd. strncpy -> strncpy_s
 
 	// Set client fields on player ents.
+	for (int i = 0; i < game.maxclients; i++)
+		g_edicts[i + 1].client = &game.clients[i];
 
-	for (i=0 ; i<game.maxclients ; i++)
-		g_edicts[i+1].client = game.clients + i;
+	edict_t* ent = NULL;
+	int num_inhibited = 0;
 
-	ent = NULL;
-	inhibit = 0;
-
-	while (1)
+	while (true)
 	{
-		// parse the opening brace	
-		com_token = COM_Parse (&entities);
-		if (!entities)
+		// Parse the opening brace.
+		char* com_token = COM_Parse(&entities);
+		if (entities == NULL)
 			break;
-		if (com_token[0] != '{')
-			gi.error ("ED_LoadFromFile: found %s when expecting {",com_token);
 
-		if (!ent)
-			ent = g_edicts;
+		if (com_token[0] != '{')
+			gi.error("ED_LoadFromFile: found %s when expecting {", com_token);
+
+		if (ent == NULL)
+			ent = &g_edicts[0];
 		else
-			ent = G_Spawn ();
-		entities = ED_ParseEdict (entities, ent);
-		
-		// remove things (except the world) from different skill levels or deathmatch
-		if (ent != g_edicts)
+			ent = G_Spawn();
+
+		entities = ED_ParseEdict(entities, ent);
+
+		// Remove things (except the world) from different skill levels or deathmatch.
+		if (ent != world)
 		{
-			if (deathmatch->value)
+			if (DEATHMATCH)
 			{
-				if ( ent->spawnflags & SPAWNFLAG_NOT_DEATHMATCH )
+				if (ent->spawnflags & SPAWNFLAG_NOT_DEATHMATCH)
 				{
-					G_FreeEdict (ent);	
-					inhibit++;
+					G_FreeEdict(ent);
+					num_inhibited++;
+
 					continue;
 				}
 			}
 			else
 			{
-				if (((coop->value) && (ent->spawnflags & SPAWNFLAG_NOT_COOP)) ||
-					((skill->value == 0) && (ent->spawnflags & SPAWNFLAG_NOT_EASY)) ||
-					((skill->value == 1) && (ent->spawnflags & SPAWNFLAG_NOT_MEDIUM)) ||
-					((skill->value >= 2) && (ent->spawnflags & SPAWNFLAG_NOT_HARD))
-					)
-					{
-						G_FreeEdict (ent);	
-						inhibit++;
-						continue;
-					}
+				if ((COOP && (ent->spawnflags & SPAWNFLAG_NOT_COOP)) ||
+					(SKILL == SKILL_EASY && (ent->spawnflags & SPAWNFLAG_NOT_EASY)) ||
+					(SKILL == SKILL_MEDIUM && (ent->spawnflags & SPAWNFLAG_NOT_MEDIUM)) ||
+					(SKILL >= SKILL_HARD && (ent->spawnflags & SPAWNFLAG_NOT_HARD)))
+				{
+					G_FreeEdict(ent);
+					num_inhibited++;
+
+					continue;
+				}
 			}
-			
+
 			// Check if it's a monster and if we're nomonster here...
-			if (sv_nomonsters && sv_nomonsters->value && strstr(ent->classname, "monster_"))
+			if ((int)sv_nomonsters->value && strstr(ent->classname, "monster_"))
 			{
-#ifdef _DEVEL
-				gi.dprintf("monster '%s' not spawned.\n", ent->classname);
-#endif
-				G_FreeEdict (ent);
-				inhibit++;
+				G_FreeEdict(ent);
+				num_inhibited++;
+
 				continue;
 			}
 
-			ent->spawnflags &= ~(SPAWNFLAG_NOT_EASY|SPAWNFLAG_NOT_MEDIUM|SPAWNFLAG_NOT_HARD|SPAWNFLAG_NOT_COOP|SPAWNFLAG_NOT_DEATHMATCH);
+			ent->spawnflags &= ~(SPAWNFLAG_NOT_EASY | SPAWNFLAG_NOT_MEDIUM | SPAWNFLAG_NOT_HARD | SPAWNFLAG_NOT_COOP | SPAWNFLAG_NOT_DEATHMATCH);
 		}
 
-		ED_CallSpawn (ent);
-	}	
+		ED_CallSpawn(ent);
+	}
 
-#ifdef _DEVEL
-	gi.dprintf ("%i entities inhibited\n", inhibit);
-#endif
-	G_FindTeams ();
+	memset(&st, 0, sizeof(st)); // YQ2 BUGFIX: in case the last entity in the entstring has spawntemp fields.
+	gi.dprintf("%i entities inhibited\n", num_inhibited);
+	G_FindTeams();
 }
 
 //===================================================================
