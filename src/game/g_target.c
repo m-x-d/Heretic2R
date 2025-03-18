@@ -44,15 +44,18 @@ static void TargetExplosionExplodeThink(edict_t* self) //mxd. Named 'target_expl
 {
 	gi.CreateEffect(NULL, FX_EXPLOSION1, 0, self->s.origin, NULL);
 
-	const float damage = (float)self->dmg;
-	T_DamageRadius(self, self->activator, NULL, damage + 40.0f, damage, damage / 4.0f, DAMAGE_NORMAL, MOD_DIED);
+	if (self->dmg > 0) //mxd. Added self->dmg check.
+	{
+		const float damage = (float)self->dmg;
+		T_DamageRadius(self, self->activator, NULL, damage + 40.0f, damage, damage / 4.0f, DAMAGE_NORMAL, MOD_DIED);
+	}
 
 	const float delay = self->delay;
 	self->delay = 0.0f;
 	G_UseTargets(self, self->activator);
 	self->delay = delay;
 
-	//TODO: will trigger assert in EntityThink() when self->delay > 0...
+	self->think = NULL; //BUGFIX: mxd. Avoid triggering assert in EntityThink() when self->delay > 0...
 }
 
 static void TargetExplosionUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'use_target_explosion' in original logic.
