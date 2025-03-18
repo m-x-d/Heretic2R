@@ -55,23 +55,24 @@ static void TargetExplosionExplodeThink(edict_t* self) //mxd. Named 'target_expl
 	//TODO: will trigger assert in EntityThink() when self->delay > 0...
 }
 
-void use_target_explosion (edict_t *self, edict_t *other, edict_t *activator)
+static void TargetExplosionUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'use_target_explosion' in original logic.
 {
 	self->activator = activator;
 
-	if (!self->delay)
+	if (self->delay > 0.0f)
 	{
-		TargetExplosionExplodeThink (self);
-		return;
+		self->think = TargetExplosionExplodeThink;
+		self->nextthink = level.time + self->delay;
 	}
-
-	self->think = TargetExplosionExplodeThink;
-	self->nextthink = level.time + self->delay;
+	else
+	{
+		TargetExplosionExplodeThink(self);
+	}
 }
 
 void SP_target_explosion (edict_t *ent)
 {
-	ent->use = use_target_explosion;
+	ent->use = TargetExplosionUse;
 	ent->svflags = SVF_NOCLIENT;
 }
 
