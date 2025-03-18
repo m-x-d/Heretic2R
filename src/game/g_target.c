@@ -86,54 +86,38 @@ void SP_target_explosion(edict_t* ent)
 
 #pragma endregion
 
-//==========================================================
+#pragma region ========================== target_changelevel ==========================
 
-/*QUAKED target_changelevel (1 0 0) (-8 -8 -8) (8 8 8)
-Changes map player is on.
-
-map - the map to change to
-     'newmap'$'target'
-
-newmap is the map the player is changing to
-$ - has to be there
-target is the targetname of the info_player_start to go to. 
-
-If an info_player_start is not given a random one on the level is chosen
-
-
-*/
-void TargetChangelevelUse (edict_t *self, edict_t *other, edict_t *activator)
+void TargetChangelevelUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'use_target_changelevel' in original logic.
 {
-	if (level.intermissiontime)
-		return;		// allready activated
+	if (level.intermissiontime > 0.0f)
+		return; // Already activated.
 
-	if (!deathmatch->value && !coop->value)
-	{
-		if (g_edicts[1].health <= 0)
-			return;
-	}
-
-	// if noexit, do a ton of damage to other
-	if (deathmatch->value && !( (int)dmflags->value & DF_ALLOW_EXIT) && other != world)
-	{
-		T_Damage (activator, self, self, vec3_origin, other->s.origin, vec3_origin, 10000, 10000, DAMAGE_AVOID_ARMOR,MOD_EXIT);
+	// Don't allow dead players to change levels in singleplayer. //TODO: but they can do it in coop?
+	if (!DEATHMATCH && !COOP && g_edicts[1].health <= 0)
 		return;
-	}
 
-	// if multiplayer, let everyone know who hit the exit
-	if (deathmatch->value)
+	if (DEATHMATCH)
 	{
-		if (activator && activator->client)
-			gi.Obituary (PRINT_HIGH, GM_EXIT, activator->s.number, 0);
+		// If noexit, do a ton of damage to other.
+		if (!(DMFLAGS & DF_ALLOW_EXIT) && other != world)
+		{
+			T_Damage(activator, self, self, vec3_origin, other->s.origin, vec3_origin, 10000, 10000, DAMAGE_AVOID_ARMOR, MOD_EXIT);
+			return;
+		}
+
+		// If multiplayer, let everyone know who hit the exit.
+		if (activator != NULL && activator->client != NULL) //TODO: can a non-client activate this?
+			gi.Obituary(PRINT_HIGH, GM_EXIT, activator->s.number, 0);
 	}
 
-	// if going to a new unit, clear cross triggers
-	if (strstr(self->map, "*"))	
-		game.serverflags &= ~(CROSSLEVEL_TRIGGER_SF_MASK);
+	// If going to a new unit, clear cross-level triggers.
+	if (strstr(self->map, "*"))
+		game.serverflags &= ~CROSSLEVEL_TRIGGER_SF_MASK;
 
 	gi.dprintf("***\n*** Unit complete. ***\n***\n");
 
-	BeginIntermission (self);
+	BeginIntermission(self);
 }
 
 void SP_target_changelevel (edict_t *ent)
@@ -148,6 +132,7 @@ void SP_target_changelevel (edict_t *ent)
 	ent->svflags = SVF_NOCLIENT;
 }
 
+#pragma endregion
 
 //==========================================================
 
