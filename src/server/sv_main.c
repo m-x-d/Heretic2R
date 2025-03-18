@@ -647,9 +647,7 @@ static void SV_RunGameFrame(void)
 		do
 		{
 			ge->RunFrame();
-			if (!(int)sv_jumpcinematic->value)
-				break;
-		} while ((int)sv_cinematicfreeze->value);
+		} while ((int)sv_jumpcinematic->value && (int)sv_cinematicfreeze->value);
 
 		// Never get more than one tic behind.
 		if (sv.time < (uint)svs.realtime)
