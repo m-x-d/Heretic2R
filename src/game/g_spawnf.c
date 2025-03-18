@@ -358,210 +358,147 @@ void SpawnEntities(const char* map_name, char* entities, const char* spawn_point
 	G_FindTeams();
 }
 
-//===================================================================
+#pragma region ========================== worldspawn ==========================
 
-/*QUAKED worldspawn (0 0 0) ? NOBODIES
+#define SF_NOBODIES	1 //mxd
 
-Only used for the world.
+// QUAKED worldspawn (0 0 0) ? NOBODIES
+// Only used for the world.
 
-NOBODIES - In DM, no bodies will be left behind by players- for maps with large amounts of visibility
+// Spawnflags:
+// NOBODIES - In DM, no bodies will be left behind by players - for maps with large amounts of visibility.
 
-"sky"			environment map name:
-
-	andoria
-	desert
-	hive
-	sky1	- Night Sky
-	storm
-	swamp
-	town
-
-"skyaxis"		vector axis for rotating sky
-"skyrotate"		speed of rotation in degrees/second
-"sounds"		music cd track number
-"gravity"		800 is default gravity
-"message"		text to print at user logon
-"skinnum"		plague level for corvus: 0-2
-"cooptimeout"	time to wait (in seconds) for all clients to have joined a map in coop (default is 0).
-"scale" 	EAX environment type for this map.
-
- 0 EAX_GENERIC,
- 1 EAX_ALL_STONE,
- 2 EAX_ARENA,
- 3 EAX_CITY_AND_SEWERS,
- 4 EAX_CITY_AND_ALLEYS,
- 5 EAX_FOREST,
- 6 EAX_PSYCHOTIC,
-
-"offensive"		starting offensive weapons (flag bits): 
-
-  1		- swordstaff
-  2		- fireball
-  4		- hellstaff
-  8		- magic missile array
-  16	- red-rain bow
-  32	- sphere of annihlation
-  64	- phoenix bow
-  128	- mace balls
-  256	- firewall
-
-"defensive"		starting defensive weapons (flag bits):
-
-  1		- ring of repulsion
-  2		- lightning shield
-  4		- teleport
-  8		- morph ovum
-  16	- meteor barrier
-
-*/
-
-void SP_worldspawn (edict_t *ent)
+// Variables:
+// sky			- Environment map name: andoria, desert, hive, sky1 (night sky), storm, swamp, town.
+// skyaxis		- Vector axis for rotating sky.
+// skyrotate	- Speed of rotation in degrees/second.
+// sounds		- Music cd track number.
+// gravity		- 800 is default gravity.
+// message		- Text to print at user logon.
+// skinnum		- Plague level for corvus: 0-2.
+// cooptimeout	- Time to wait (in seconds) for all clients to have joined a map in coop (default is 0).
+// scale		- EAX environment type for this map:
+//		0 EAX_GENERIC,
+//		1 EAX_ALL_STONE,
+//		2 EAX_ARENA,
+//		3 EAX_CITY_AND_SEWERS,
+//		4 EAX_CITY_AND_ALLEYS,
+//		5 EAX_FOREST,
+//		6 EAX_PSYCHOTIC,
+// offensive	- Starting offensive weapons (flag bits):
+//		1	- Swordstaff.
+//		2	- Fireball.
+//		4	- Hellstaff.
+//		8	- Magic missile array.
+//		16	- Red-rain bow.
+//		32	- Sphere of annihilation.
+//		64	- Phoenix bow.
+//		128	- Mace balls.
+//		256	- Firewall.
+// defensive	- Starting defensive weapons (flag bits):
+//		1	- Ring of repulsion.
+//		2	- Lightning shield.
+//		4	- Teleport.
+//		8	- Morph ovum.
+//		16	- Meteor barrier.
+void SP_worldspawn(edict_t* ent)
 {
-	int	i;
-
 	ent->movetype = PHYSICSTYPE_PUSH;
 	ent->solid = SOLID_BSP;
-	ent->inuse = true;			// since the world doesn't use G_Spawn()
-	ent->s.modelindex = 1;		// world model is always index 1
-
-	//---------------
+	ent->inuse = true; // Since the world doesn't use G_Spawn().
+	ent->s.modelindex = 1; // World model is always index 1.
 
 	// Reserve some spots for dead player bodies.
+	InitBodyQue();
 
-	InitBodyQue ();
-	
-	if((ent->spawnflags & 1) && (deathmatch->value || coop->value))
+	if ((ent->spawnflags & SF_NOBODIES) && (DEATHMATCH || COOP))
 		level.body_que = -1;
 
 	// Set configstrings for items.
+	SetItemNames();
 
-	SetItemNames ();
-
-	if (st.nextmap)
-		strcpy (level.nextmap, st.nextmap);
+	if (st.nextmap != NULL)
+		strcpy_s(level.nextmap, sizeof(level.nextmap), st.nextmap); //mxd. strcpy -> strcpy_s
 
 	// Make some data visible to the server.
-
-	if (ent->message && ent->message[0])
+	if (ent->message != NULL && ent->message[0] != 0)
 	{
-		gi.configstring (CS_LEVEL_NUMBER, ent->message );
-		gi.configstring (CS_NAME, message_text[atoi(ent->message)].string);
-		strncpy (level.level_name, ent->message, sizeof(level.level_name));
-		gi.dprintf("Unique Level Index : %d\n", atoi(ent->message));
+		gi.configstring(CS_LEVEL_NUMBER, ent->message);
+		gi.configstring(CS_NAME, message_text[Q_atoi(ent->message)].string);
+
+		strncpy_s(level.level_name, sizeof(level.level_name), ent->message, sizeof(level.level_name)); //mxd. strcpy -> strcpy_s
+		gi.dprintf("Unique Level Index : %d\n", Q_atoi(ent->message));
 	}
 	else
 	{
-		if(ent->text_msg)
-			gi.configstring (CS_NAME, ent->text_msg);
-		strncpy (level.level_name, level.mapname, sizeof(level.level_name));
+		if (ent->text_msg != NULL)
+			gi.configstring(CS_NAME, ent->text_msg);
+
+		strncpy_s(level.level_name, sizeof(level.level_name), level.mapname, sizeof(level.level_name)); //mxd. strcpy -> strcpy_s
 		gi.dprintf("Warning : No Unique Level Index\n");
 	}
 
-	// this is a tremendous hack, but given the state of the code at this point, there is no other way to do this.
-	for (i=0 ; i<MAX_CURRENT_LEVELS;i++)
+	// This is a tremendous hack, but given the state of the code at this point, there is no other way to do this.
+	int eax_preset_index;
+	for (eax_preset_index = 0; eax_preset_index < MAX_CURRENT_LEVELS; eax_preset_index++)
 	{
-		// search through all the currently defined world maps, looking for names, so we can set
-		// the EAX default sound type for this level.
-		if (!stricmp(eax_level_info[i].level_name,  level.mapname))
+		// Search through all the currently defined world maps, looking for names, so we can set the EAX default sound type for this level.
+		if (Q_stricmp(eax_level_info[eax_preset_index].level_name, level.mapname) == 0)
 		{
-			Cvar_SetValue("EAX_default", (float)eax_level_info[i].default_preset);	
+			Cvar_SetValue("EAX_default", (float)eax_level_info[eax_preset_index].default_preset);
 			break;
 		}
 	}
-	
-	// if we didn't find it in the current level list, lets just set it to generic
-	if (i == MAX_CURRENT_LEVELS)
+
+	// If we didn't find it in the current level list, lets just set it to generic.
+	if (eax_preset_index == MAX_CURRENT_LEVELS)
 		Cvar_SetValue("EAX_default", ent->s.scale);
-	// just in case
-	ent->s.scale = 0;
 
-	if (st.sky && st.sky[0])
-		gi.configstring (CS_SKY, st.sky);
+	// Just in case.
+	ent->s.scale = 0.0f;
+
+	if (st.sky != NULL && st.sky[0] != 0)
+		gi.configstring(CS_SKY, st.sky);
 	else
-		gi.configstring (CS_SKY, "desert");
+		gi.configstring(CS_SKY, "desert");
 
-	gi.configstring (CS_SKYROTATE, va("%f", st.skyrotate) );
-
-	gi.configstring (CS_SKYAXIS, va("%f %f %f",
-		st.skyaxis[0], st.skyaxis[1], st.skyaxis[2]) );
-
-	gi.configstring (CS_CDTRACK, va("%i", ent->sounds) );
-
-	gi.configstring (CS_MAXCLIENTS, va("%i", (int)(maxclients->value) ) );
+	gi.configstring(CS_SKYROTATE, va("%f", st.skyrotate));
+	gi.configstring(CS_SKYAXIS, va("%f %f %f", st.skyaxis[0], st.skyaxis[1], st.skyaxis[2]));
+	gi.configstring(CS_CDTRACK, va("%i", ent->sounds));
+	gi.configstring(CS_MAXCLIENTS, va("%i", MAXCLIENTS));
 
 	// Status bar program.
-
-	if (deathmatch->value)
-		gi.configstring (CS_STATUSBAR, dm_statusbar);
-	else
-		gi.configstring (CS_STATUSBAR, single_statusbar);
+	gi.configstring(CS_STATUSBAR, (DEATHMATCH ? dm_statusbar : single_statusbar));
 
 	// Starting weapons for players entering a coop game.
-
-	level.offensive_weapons=(!st.offensive)?0:st.offensive;
-	level.defensive_weapons=(!st.defensive)?0:st.defensive;
+	level.offensive_weapons = st.offensive;
+	level.defensive_weapons = st.defensive;
 
 	// Save away cooptimeout so it is accessible to the server (SV_) functions.
+	Cvar_SetValue("sv_cooptimeout", (float)st.cooptimeout);
 
-	Cvar_SetValue("sv_cooptimeout",(!st.cooptimeout)?0:st.cooptimeout);	
+	// Gravity for all games.
+	gi.cvar_set("sv_gravity", (st.gravity != NULL ? st.gravity : GRAVITY_STRING)); //mxd. Use define.
 
-	//---------------
+	// Friction for all games.
+	sv_friction = gi.cvar("sv_friction", FRICTION_STRING, 0);
 
-	// GRAVITY for all games.
+	// Setup light animation tables. 'a' is total darkness, 'z' is double-bright.
+	gi.configstring(CS_LIGHTS + 0, "m");													// 0 - normal.
+	gi.configstring(CS_LIGHTS + 1, "mmnmmommommnonmmonqnmmo");								// 1 FLICKER (first variety).
+	gi.configstring(CS_LIGHTS + 2, "abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba");	// 2 SLOW STRONG PULSE.
+	gi.configstring(CS_LIGHTS + 3, "mmmmmaaaaammmmmaaaaaabcdefgabcdefg");					// 3 CANDLE (first variety).
+	gi.configstring(CS_LIGHTS + 4, "mamamamamama");											// 4 FAST STROBE.
+	gi.configstring(CS_LIGHTS + 5, "jklmnopqrstuvwxyzyxwvutsrqponmlkj");					// 5 GENTLE PULSE 1.
+	gi.configstring(CS_LIGHTS + 6, "nmonqnmomnmomomno");									// 6 FLICKER (second variety).
+	gi.configstring(CS_LIGHTS + 7, "mmmaaaabcdefgmmmmaaaammmaamm");							// 7 CANDLE (second variety).
+	gi.configstring(CS_LIGHTS + 8, "mmmaaammmaaammmabcdefaaaammmmabcdefmmmaaaa");			// 8 CANDLE (third variety).
+	gi.configstring(CS_LIGHTS + 9, "aaaaaaaazzzzzzzz");										// 9 SLOW STROBE (fourth variety).
+	gi.configstring(CS_LIGHTS + 10, "mmamammmmammamamaaamammma");							// 10 FLUORESCENT FLICKER.
+	gi.configstring(CS_LIGHTS + 11, "abcdefghijklmnopqrrqponmlkjihgfedcba");				// 11 SLOW PULSE NOT FADE TO BLACK.
 
-	if (!st.gravity)
-		gi.cvar_set("sv_gravity", GRAVITY_STRING); //mxd. Use define.
-	else
-		gi.cvar_set("sv_gravity", st.gravity);
-
-	// FRICTION for all games.
-
-	sv_friction = gi.cvar ("sv_friction", FRICTION_STRING, 0);
-
-	//
-	// Setup light animation tables. 'a' is total darkness, 'z' is doublebright.
-	//
-
-	// 0 normal
-	gi.configstring(CS_LIGHTS+0, "m");
-	
-	// 1 FLICKER (first variety)
-	gi.configstring(CS_LIGHTS+1, "mmnmmommommnonmmonqnmmo");
-	
-	// 2 SLOW STRONG PULSE
-	gi.configstring(CS_LIGHTS+2, "abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba");
-	
-	// 3 CANDLE (first variety)
-	gi.configstring(CS_LIGHTS+3, "mmmmmaaaaammmmmaaaaaabcdefgabcdefg");
-	
-	// 4 FAST STROBE
-	gi.configstring(CS_LIGHTS+4, "mamamamamama");
-	
-	// 5 GENTLE PULSE 1
-	gi.configstring(CS_LIGHTS+5,"jklmnopqrstuvwxyzyxwvutsrqponmlkj");
-	
-	// 6 FLICKER (second variety)
-	gi.configstring(CS_LIGHTS+6, "nmonqnmomnmomomno");
-	
-	// 7 CANDLE (second variety)
-	gi.configstring(CS_LIGHTS+7, "mmmaaaabcdefgmmmmaaaammmaamm");
-	
-	// 8 CANDLE (third variety)
-	gi.configstring(CS_LIGHTS+8, "mmmaaammmaaammmabcdefaaaammmmabcdefmmmaaaa");
-	
-	// 9 SLOW STROBE (fourth variety)
-	gi.configstring(CS_LIGHTS+9, "aaaaaaaazzzzzzzz");
-	
-	// 10 FLUORESCENT FLICKER
-	gi.configstring(CS_LIGHTS+10, "mmamammmmammamamaaamammma");
-
-	// 11 SLOW PULSE NOT FADE TO BLACK
-	gi.configstring(CS_LIGHTS+11, "abcdefghijklmnopqrrqponmlkjihgfedcba");
-	
-	// styles 32-62 are assigned by the light program for switchable lights
-
-	// 63 testing
-	gi.configstring(CS_LIGHTS+63, "a");
+	// Styles 32-62 are assigned by the light program for switchable lights.
+	gi.configstring(CS_LIGHTS + 63, "a"); // 63 testing.
 }
 
-// end
+#pragma endregion
