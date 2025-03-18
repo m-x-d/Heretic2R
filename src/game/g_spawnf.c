@@ -152,59 +152,47 @@ static void ED_ParseField(char* key, const char* value, edict_t* ent)
 	gi.dprintf("%s is not a field\n", key);
 }
 
-/*
-====================
-ED_ParseEdict
-
-Parses an edict out of the given string, returning the new position
-ed should be a properly initialized empty edict.
-====================
-*/
-char *ED_ParseEdict (char *data, edict_t *ent)
+// Parses an edict out of the given string, returning the new position. 'ent' should be a properly initialized empty edict.
+static char* ED_ParseEdict(char* data, edict_t* ent)
 {
-	qboolean	init;
-	char		keyname[256];
-	char		*com_token;
+	qboolean ent_initialized = false;
+	memset(&st, 0, sizeof(st));
 
-	init = false;
-	memset (&st, 0, sizeof(st));
-
-// go through all the dictionary pairs
-	while (1)
-	{	
-	// parse key
-		com_token = COM_Parse (&data);
+	// Go through all the dictionary pairs.
+	while (true)
+	{
+		// Parse key.
+		const char* com_token = COM_Parse(&data);
 		if (com_token[0] == '}')
 			break;
-		if (!data)
-			gi.error ("ED_ParseEntity: EOF without closing brace");
 
-		strncpy (keyname, com_token, sizeof(keyname)-1);
-		
-	// parse value	
-		com_token = COM_Parse (&data);
-		if (!data)
-			gi.error ("ED_ParseEntity: EOF without closing brace");
+		if (data == NULL)
+			gi.error("ED_ParseEntity: EOF without closing brace");
+
+		char keyname[256];
+		strncpy_s(keyname, sizeof(keyname), com_token, sizeof(keyname) - 1); //mxd. strncpy -> strncpy_s
+
+		// Parse value.
+		com_token = COM_Parse(&data);
+
+		if (data == NULL)
+			gi.error("ED_ParseEntity: EOF without closing brace");
 
 		if (com_token[0] == '}')
-			gi.error ("ED_ParseEntity: closing brace without data");
+			gi.error("ED_ParseEntity: closing brace without data");
 
-		init = true;	
+		ent_initialized = true;
 
-	// keynames with a leading underscore are used for utility comments,
-	// and are immediately discarded by quake
-		if (keyname[0] == '_')
-			continue;
-
-		ED_ParseField (keyname, com_token, ent);
+		// Keynames with a leading underscore are used for utility comments, and are immediately discarded.
+		if (keyname[0] != '_')
+			ED_ParseField(keyname, com_token, ent);
 	}
 
-	if (!init)
-		memset (ent, 0, sizeof(*ent));
+	if (!ent_initialized)
+		memset(ent, 0, sizeof(*ent));
 
 	return data;
 }
-
 
 /*
 ================
