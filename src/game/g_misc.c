@@ -9,6 +9,7 @@
 #include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
 #include "g_items.h" //mxd
+#include "g_target.h" //mxd
 #include "m_stats.h"
 #include "p_client.h" //mxd
 #include "p_teleport.h" //mxd
@@ -630,8 +631,6 @@ void SP_misc_teleporter_dest(edict_t* ent)
 
 #pragma region ========================== misc_magic_portal ==========================
 
-extern void use_target_changelevel(edict_t* self, edict_t* other, edict_t* activator); //TODO: move to g_target.h
-
 static void MiscMagicPortalTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'misc_magic_portal_touch' in original logic.
 {
 	if (level.time < self->touch_debounce_time || other->client == NULL) // Not a player.
@@ -641,7 +640,7 @@ static void MiscMagicPortalTouch(edict_t* self, edict_t* other, cplane_t* plane,
 	ent = G_Find(ent, FOFS(targetname), self->target);
 
 	if (ent != NULL)
-		use_target_changelevel(ent, self, other);
+		TargetChangelevelUse(ent, self, other);
 
 	self->touch_debounce_time = level.time + 4.0f;
 }

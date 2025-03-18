@@ -75,7 +75,7 @@ If an info_player_start is not given a random one on the level is chosen
 
 
 */
-void use_target_changelevel (edict_t *self, edict_t *other, edict_t *activator)
+void TargetChangelevelUse (edict_t *self, edict_t *other, edict_t *activator)
 {
 	if (level.intermissiontime)
 		return;		// allready activated
@@ -117,7 +117,7 @@ void SP_target_changelevel (edict_t *ent)
 		G_FreeEdict (ent);
 		return;
 	}
-	ent->use = use_target_changelevel;
+	ent->use = TargetChangelevelUse;
 	ent->svflags = SVF_NOCLIENT;
 }
 

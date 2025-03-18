@@ -1196,5 +1196,8 @@
     <ClInclude Include="g_rope.h">
       <Filter>src\Game objects</Filter>
     </ClInclude>
+    <ClInclude Include="g_target.h">
+      <Filter>src\Game objects</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
