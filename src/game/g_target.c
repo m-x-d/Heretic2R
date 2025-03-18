@@ -120,16 +120,26 @@ void TargetChangelevelUse(edict_t* self, edict_t* other, edict_t* activator) //m
 	BeginIntermission(self);
 }
 
-void SP_target_changelevel (edict_t *ent)
+// QUAKED target_changelevel (1 0 0) (-8 -8 -8) (8 8 8)
+// Changes map player is on.
+// Variables:
+// map - The map to change to. Format: 'newmap'$'target'.
+//		'newmap' is the map the player is changing to.
+//		'$' - has to be there.
+//		'target' is the targetname of the info_player_start to go to.
+// If an info_player_start is not given, a random one on the level is chosen.
+void SP_target_changelevel(edict_t* ent)
 {
-	if (!ent->map)
+	if (ent->map != NULL)
+	{
+		ent->use = TargetChangelevelUse;
+		ent->svflags = SVF_NOCLIENT;
+	}
+	else
 	{
 		gi.dprintf("target_changelevel with no map at %s\n", vtos(ent->s.origin));
-		G_FreeEdict (ent);
-		return;
+		G_FreeEdict(ent);
 	}
-	ent->use = TargetChangelevelUse;
-	ent->svflags = SVF_NOCLIENT;
 }
 
 #pragma endregion
