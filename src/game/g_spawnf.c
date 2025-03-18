@@ -236,25 +236,20 @@ static void G_FindTeams(void)
 
 void ConstructEntities(void)
 {
-	edict_t *ent;
-	int		i;
-
-	// Create message queues for entites.
-
-	for(i = 0, ent = g_edicts; i < maxentities->value ; i++, ent++)
+	// Create message queues for entities.
+	edict_t* ent = &g_edicts[0];
+	for (int i = 0; i < (int)maxentities->value; i++, ent++)
 	{
 		SLList_DefaultCon(&ent->msgQ.msgs);
 		ent->s.skeletalType = SKEL_NULL;
 	}
 
 	// Allocate skeletons for clients only.
-
-	for (i=0 ; i<game.maxclients ; i++)
+	for (int i = 0; i < game.maxclients; i++)
 	{
-		edict_t *ent;
-		ent=&globals.edicts[1+i];
-		ent->s.skeletalType=SKEL_CORVUS;
-		ent->s.rootJoint = CreateSkeleton(ent->s.skeletalType);
+		edict_t* cl = &globals.edicts[i + 1];
+		cl->s.skeletalType = SKEL_CORVUS;
+		cl->s.rootJoint = (short)CreateSkeleton(cl->s.skeletalType);
 	}
 
 	game.entitiesSpawned = true;
