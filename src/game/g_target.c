@@ -221,44 +221,31 @@ static void TargetLightrampThink(edict_t* self) //mxd. Named 'target_lightramp_t
 	//TODO: will trigger assert in EntityThink() when we get here...
 }
 
-void target_lightramp_use (edict_t *self, edict_t *other, edict_t *activator)
+static void TargetLightrampUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'target_lightramp_use' in original logic.
 {
-	if (!self->enemy)
+	if (self->enemy == NULL) //TODO: do this check in SP_target_lightramp() instead?
 	{
-		edict_t		*e;
-
-		// check all the targets
-		e = NULL;
-		while (1)
+		// Check all the targets.
+		edict_t* light = NULL;
+		while ((light = G_Find(light, FOFS(targetname), self->target)) != NULL)
 		{
-			e = G_Find (e, FOFS(targetname), self->target);
-			if (!e)
-				break;
-			if (strcmp(e->classname, "light") != 0)
-			{
-#ifdef _DEVEL
-				gi.dprintf("%s at %s ", self->classname, vtos(self->s.origin));
-				gi.dprintf("target %s (%s at %s) is not a light\n", self->target, e->classname, vtos(e->s.origin));
-#endif
-			}
+			if (strcmp(light->classname, "light") == 0)
+				self->enemy = light;
 			else
-			{
-				self->enemy = e;
-			}
+				gi.dprintf("%s at %s target %s (%s at %s) is not a light\n", self->classname, vtos(self->s.origin), self->target, light->classname, vtos(light->s.origin));
 		}
 
-		if (!self->enemy)
+		if (self->enemy == NULL)
 		{
-#ifdef _DEVEL
 			gi.dprintf("%s target %s not found at %s\n", self->classname, self->target, vtos(self->s.origin));
-#endif
-			G_FreeEdict (self);
+			G_FreeEdict(self);
+
 			return;
 		}
 	}
 
 	self->timestamp = level.time;
-	TargetLightrampThink (self);
+	TargetLightrampThink(self);
 }
 
 void SP_target_lightramp (edict_t *self)
@@ -288,7 +275,7 @@ void SP_target_lightramp (edict_t *self)
 	}
 
 	self->svflags |= SVF_NOCLIENT;
-	self->use = target_lightramp_use;
+	self->use = TargetLightrampUse;
 	self->think = TargetLightrampThink;
 
 	self->movedir[0] = self->message[0] - 'a';
