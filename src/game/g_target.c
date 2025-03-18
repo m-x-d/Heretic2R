@@ -202,7 +202,7 @@ static void TargetLightrampThink(edict_t* self) //mxd. Named 'target_lightramp_t
 {
 	char style[2];
 
-	style[0] = 'a' + (char)self->movedir[0] + (char)((level.time - self->timestamp) / FRAMETIME * self->movedir[2]);
+	style[0] = 'a' + (char)(self->movedir[0] + ((level.time - self->timestamp) / FRAMETIME * self->movedir[2]));
 	style[1] = 0;
 	gi.configstring(CS_LIGHTS + self->enemy->style, style);
 
@@ -210,21 +210,25 @@ static void TargetLightrampThink(edict_t* self) //mxd. Named 'target_lightramp_t
 	{
 		self->nextthink = level.time + FRAMETIME;
 	}
-	else if (self->spawnflags & SF_TOGGLE)
+	else
 	{
-		const char temp = (char)self->movedir[0];
-		self->movedir[0] = self->movedir[1];
-		self->movedir[1] = temp;
-		self->movedir[2] *= -1.0f;
-	}
+		if (self->spawnflags & SF_TOGGLE)
+		{
+			const char temp = (char)self->movedir[0];
+			self->movedir[0] = self->movedir[1];
+			self->movedir[1] = temp;
+			self->movedir[2] *= -1.0f;
+		}
 
-	//TODO: will trigger assert in EntityThink() when we get here...
+		self->think = NULL; //BUGFIX: mxd. Avoid triggering assert in EntityThink()...
+	}
 }
 
 static void TargetLightrampUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'target_lightramp_use' in original logic.
 {
 	self->timestamp = level.time;
-	TargetLightrampThink(self);
+	self->think = TargetLightrampThink;
+	self->nextthink = level.time + FRAMETIME;
 }
 
 // QUAKED target_lightramp (0 .5 .8) (-8 -8 -8) (8 8 8) TOGGLE
