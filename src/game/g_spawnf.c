@@ -255,12 +255,11 @@ void ConstructEntities(void)
 	game.entitiesSpawned = true;
 }
 
-void CheckCoopTimeout(qboolean BeenHereBefore)
+void CheckCoopTimeout(const qboolean been_here_before)
 {
 	// Reset to zero cooptimeout if we've already been to the current level (no cinematic to see).
-
-	if(BeenHereBefore)
-		Cvar_SetValue("sv_cooptimeout",0);
+	if (been_here_before)
+		Cvar_SetValue("sv_cooptimeout", 0.0f);
 }
 
 /*
