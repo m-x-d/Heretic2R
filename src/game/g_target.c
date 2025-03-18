@@ -70,7 +70,12 @@ static void TargetExplosionUse(edict_t* self, edict_t* other, edict_t* activator
 	}
 }
 
-void SP_target_explosion (edict_t *ent)
+// QUAKED target_explosion (1 0 0) (-8 -8 -8) (8 8 8)
+// Creates explosion when used.
+// Variables:
+// dmg		- Explosion damage.
+// delay	- Delay before explosion.
+void SP_target_explosion(edict_t* ent)
 {
 	ent->use = TargetExplosionUse;
 	ent->svflags = SVF_NOCLIENT;
