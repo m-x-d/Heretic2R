@@ -194,32 +194,31 @@ void SP_target_crosslevel_target(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED target_lightramp (0 .5 .8) (-8 -8 -8) (8 8 8) TOGGLE
-speed		How many seconds the ramping will take
-message		two letters; starting lightlevel and ending lightlevel
-*/
+#pragma region ========================== target_lightramp ==========================
 
-void target_lightramp_think (edict_t *self)
+#define SF_TOGGLE 1 //mxd
+
+static void TargetLightrampThink(edict_t* self) //mxd. Named 'target_lightramp_think' in original logic.
 {
-	char	style[2];
+	char style[2];
 
-	style[0] = 'a' + self->movedir[0] + (level.time - self->timestamp) / FRAMETIME * self->movedir[2];
+	style[0] = 'a' + (char)self->movedir[0] + (char)((level.time - self->timestamp) / FRAMETIME * self->movedir[2]);
 	style[1] = 0;
-	gi.configstring (CS_LIGHTS+self->enemy->style, style);
+	gi.configstring(CS_LIGHTS + self->enemy->style, style);
 
-	if ((level.time - self->timestamp) < self->speed)
+	if (level.time - self->timestamp < self->speed)
 	{
 		self->nextthink = level.time + FRAMETIME;
 	}
-	else if (self->spawnflags & 1)
+	else if (self->spawnflags & SF_TOGGLE)
 	{
-		char	temp;
-
-		temp = self->movedir[0];
+		const char temp = (char)self->movedir[0];
 		self->movedir[0] = self->movedir[1];
 		self->movedir[1] = temp;
-		self->movedir[2] *= -1;
+		self->movedir[2] *= -1.0f;
 	}
+
+	//TODO: will trigger assert in EntityThink() when we get here...
 }
 
 void target_lightramp_use (edict_t *self, edict_t *other, edict_t *activator)
@@ -259,7 +258,7 @@ void target_lightramp_use (edict_t *self, edict_t *other, edict_t *activator)
 	}
 
 	self->timestamp = level.time;
-	target_lightramp_think (self);
+	TargetLightrampThink (self);
 }
 
 void SP_target_lightramp (edict_t *self)
@@ -290,12 +289,14 @@ void SP_target_lightramp (edict_t *self)
 
 	self->svflags |= SVF_NOCLIENT;
 	self->use = target_lightramp_use;
-	self->think = target_lightramp_think;
+	self->think = TargetLightrampThink;
 
 	self->movedir[0] = self->message[0] - 'a';
 	self->movedir[1] = self->message[1] - 'a';
 	self->movedir[2] = (self->movedir[1] - self->movedir[0]) / (self->speed / FRAMETIME);
 }
+
+#pragma endregion
 
 //==========================================================
 
