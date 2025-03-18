@@ -144,20 +144,24 @@ void SP_target_changelevel(edict_t* ent)
 
 #pragma endregion
 
-/*QUAKED target_crosslevel_trigger (.5 .5 .5) (-8 -8 -8) (8 8 8) trigger1 trigger2 trigger3 trigger4 trigger5 trigger6 trigger7 trigger8
-Once this trigger is touched/used, any trigger_crosslevel_target with the same trigger number is automatically used when a level is started within the same unit.  It is OK to check multiple triggers.  Message, delay, target, and killtarget also work.
-*/
-void trigger_crosslevel_trigger_use (edict_t *self, edict_t *other, edict_t *activator)
+#pragma region ========================== target_crosslevel_trigger ==========================
+
+static void TargetCrosslevelTriggerUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_crosslevel_trigger_use' in original logic.
 {
 	game.serverflags |= self->spawnflags;
-	G_FreeEdict (self);
+	G_FreeEdict(self);
 }
 
-void SP_target_crosslevel_trigger (edict_t *self)
+// QUAKED target_crosslevel_trigger (.5 .5 .5) (-8 -8 -8) (8 8 8) TRIGGER1 TRIGGER2 TRIGGER3 TRIGGER4 TRIGGER5 TRIGGER6 TRIGGER7 TRIGGER8
+// Once this trigger is touched/used, any target_crosslevel_target with the same trigger number is automatically used when a level is started within the same unit.
+// It is OK to check multiple triggers. Message, delay, target, and killtarget also work.
+void SP_target_crosslevel_trigger(edict_t* self)
 {
 	self->svflags = SVF_NOCLIENT;
-	self->use = trigger_crosslevel_trigger_use;
+	self->use = TargetCrosslevelTriggerUse;
 }
+
+#pragma endregion
 
 /*QUAKED target_crosslevel_target (.5 .5 .5) (-8 -8 -8) (8 8 8) trigger1 trigger2 trigger3 trigger4 trigger5 trigger6 trigger7 trigger8
 Triggered by a trigger_crosslevel elsewhere within a unit.  If multiple triggers are checked, all must be true.  Delay, target and
