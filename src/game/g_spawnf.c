@@ -194,47 +194,35 @@ static char* ED_ParseEdict(char* data, edict_t* ent)
 	return data;
 }
 
-/*
-================
-G_FindTeams
-
-Chain together all entities with a matching team field.
-
-All but the first will have the FL_TEAMSLAVE flag set.
-All but the last will have the teamchain field set to the next one
-================
-*/
-void G_FindTeams (void)
+// Chain together all entities with a matching team field.
+// All but the first will have the FL_TEAMSLAVE flag set.
+// All but the last will have the teamchain field set to the next one.
+static void G_FindTeams(void)
 {
-	edict_t	*e, *e2, *chain;
-	int		i, j;
-	int		c, c2;
+	int num_teams = 0;
+	int num_ents = 0;
 
-	c = 0;
-	c2 = 0;
-	for (i=1, e=g_edicts+i ; i < globals.num_edicts ; i++,e++)
+	edict_t* e = &g_edicts[1];
+	for (int i = 1; i < globals.num_edicts; i++, e++)
 	{
-		if (!e->inuse)
+		if (!e->inuse || e->team == NULL || (e->flags & FL_TEAMSLAVE))
 			continue;
-		if (!e->team)
-			continue;
-		if (e->flags & FL_TEAMSLAVE)
-			continue;
-		chain = e;
+
+		edict_t* chain = e;
 		e->teammaster = e;
-		c++;
-		c2++;
-		for (j=i+1, e2=e+1 ; j < globals.num_edicts ; j++,e2++)
+
+		num_teams++;
+		num_ents++;
+
+		edict_t* e2 = &g_edicts[i + 1];
+		for (int j = i + 1; j < globals.num_edicts; j++, e2++)
 		{
-			if (!e2->inuse)
+			if (!e2->inuse || e2->team == NULL || (e2->flags & FL_TEAMSLAVE))
 				continue;
-			if (!e2->team)
-				continue;
-			if (e2->flags & FL_TEAMSLAVE)
-				continue;
-			if (!strcmp(e->team, e2->team))
+
+			if (strcmp(e->team, e2->team) == 0)
 			{
-				c2++;
+				num_ents++;
 				chain->teamchain = e2;
 				e2->teammaster = e;
 				chain = e2;
@@ -243,9 +231,7 @@ void G_FindTeams (void)
 		}
 	}
 
-#ifdef _DEVEL
-	gi.dprintf ("%i teams with %i entities\n", c, c2);
-#endif
+	gi.dprintf("%i teams with %i entities\n", num_teams, num_ents);
 }
 
 void ConstructEntities(void)
