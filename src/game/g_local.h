@@ -120,7 +120,7 @@ typedef enum damage_s
 #define DAMAGE_SLIME				(DAMAGE_NO_KNOCKBACK | DAMAGE_NO_BLOOD | DAMAGE_AVOID_ARMOR)
 #define DAMAGE_BURNING				(DAMAGE_NO_KNOCKBACK | DAMAGE_NO_BLOOD | DAMAGE_FIRE | DAMAGE_AVOID_ARMOR | DAMAGE_ONFIRE)
 
-#define GIB_ORGANIC		1
+#define GIB_ORGANIC		1 //TODO: unused.
 #define BODY_QUEUE_SIZE	8
 
 // RANGE_XXX
@@ -130,17 +130,6 @@ typedef enum damage_s
 #define RANGE_FAR	3
 
 #define MELEE_DISTANCE	80
-
-// game.serverflags values. //TODO: mxd. Only SFL_CROSS_TRIGGER_MASK is used.
-#define SFL_CROSS_TRIGGER_1		0x00000001
-#define SFL_CROSS_TRIGGER_2		0x00000002
-#define SFL_CROSS_TRIGGER_3		0x00000004
-#define SFL_CROSS_TRIGGER_4		0x00000008
-#define SFL_CROSS_TRIGGER_5		0x00000010
-#define SFL_CROSS_TRIGGER_6		0x00000020
-#define SFL_CROSS_TRIGGER_7		0x00000040
-#define SFL_CROSS_TRIGGER_8		0x00000080
-#define SFL_CROSS_TRIGGER_MASK	0x000000ff
 
 // This structure is left intact through an entire game.
 // It should be initialized at game.dll load time and read from / written to the 'server.ssv' file for savegames.

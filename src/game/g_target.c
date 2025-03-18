@@ -6,6 +6,8 @@
 #include "g_combat.h" //mxd
 #include "p_hud.h" //mxd
 
+#define CROSSLEVEL_TRIGGER_SF_MASK	0x000000ff //mxd. Originally defined in g_local.h. Mask for TRIGGER1 - TRIGGER8 spawnflags.
+
 /*QUAK-ED target_temp_entity (1 0 0) (-8 -8 -8) (8 8 8)
 Fire an origin based temp entity event to the clients.
 "style"		type byte
@@ -100,7 +102,7 @@ void use_target_changelevel (edict_t *self, edict_t *other, edict_t *activator)
 
 	// if going to a new unit, clear cross triggers
 	if (strstr(self->map, "*"))	
-		game.serverflags &= ~(SFL_CROSS_TRIGGER_MASK);
+		game.serverflags &= ~(CROSSLEVEL_TRIGGER_SF_MASK);
 
 	gi.dprintf("***\n*** Unit complete. ***\n***\n");
 
@@ -267,7 +269,7 @@ killtarget also work.
 */
 void target_crosslevel_target_think (edict_t *self)
 {
-	if (self->spawnflags == (game.serverflags & SFL_CROSS_TRIGGER_MASK & self->spawnflags))
+	if (self->spawnflags == (game.serverflags & CROSSLEVEL_TRIGGER_SF_MASK & self->spawnflags))
 	{
 		G_UseTargets (self, self);
 		G_FreeEdict (self);
