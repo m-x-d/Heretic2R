@@ -13,20 +13,30 @@
 
 #define CROSSLEVEL_TRIGGER_SF_MASK	0x000000ff //mxd. Originally defined in g_local.h. Mask for TRIGGER1 - TRIGGER8 spawnflags.
 
-/*QUAK-ED target_temp_entity (1 0 0) (-8 -8 -8) (8 8 8)
-Fire an origin based temp entity event to the clients.
-"style"		type byte
-*/
-void Use_Target_Tent (edict_t *ent, edict_t *other, edict_t *activator)
+#pragma region ========================== target_temp_entity ==========================
+
+static void TargetTempEntityUse(edict_t* ent, edict_t* other, edict_t* activator) //mxd. Named 'Use_Target_Tent' in original logic.
 {
+	if (ent->style <= FX_REMOVE_EFFECTS || ent->style >= NUM_FX) //mxd. Added sanity check.
+	{
+		gi.dprintf("target_temp_entity with invalid effect index %i at %s\n", ent->style, vtos(ent->s.origin));
+		return;
+	}
+
+	//TODO: many effects have args...
 	gi.CreateEffect(NULL, ent->style, 0, ent->s.origin, NULL);
 }
 
-void SP_target_temp_entity (edict_t *ent)
+// QUAKED target_temp_entity (1 0 0) (-8 -8 -8) (8 8 8)
+// Fire an origin based temp entity event to the clients.
+// Variables:
+// style - Effect type.
+void SP_target_temp_entity(edict_t* ent) //mxd. Unused in original logic.
 {
-	ent->use = Use_Target_Tent;
+	ent->use = TargetTempEntityUse;
 }
 
+#pragma endregion
 
 void target_explosion_explode (edict_t *self)
 {
