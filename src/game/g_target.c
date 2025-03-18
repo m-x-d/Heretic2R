@@ -281,7 +281,6 @@ void SP_target_lightramp(edict_t* self)
 
 	self->svflags |= SVF_NOCLIENT;
 	self->use = TargetLightrampUse;
-	self->think = TargetLightrampThink;
 
 	self->movedir[0] = (float)(self->message[0] - 'a');
 	self->movedir[1] = (float)(self->message[1] - 'a');
@@ -294,28 +293,33 @@ void SP_target_lightramp(edict_t* self)
 
 static void TargetEarthquakeThink(edict_t* self) //mxd. Named 'target_earthquake_think' in original logic.
 {
-	if ((int)sv_jumpcinematic->value) // Don't do this if jumping a cinematic //TODO: this will trigger assert in EntityThink()...
+	if ((int)sv_jumpcinematic->value) // Don't do this if jumping a cinematic
+	{
+		self->think = NULL; //BUGFIX: mxd. Avoid triggering assert in EntityThink()...
 		return;
+	}
 
 	if (self->last_move_time < level.time)
 	{
-		gi.positioned_sound(self->s.origin, self, CHAN_AUTO, self->noise_index, 1.0f, ATTN_NONE, 0.0f);
-		self->last_move_time = level.time + FRAMETIME * 5.0f; //mxd. '+ 0.5f' in original logic.
+		gi.positioned_sound(self->s.origin, self, CHAN_AUTO, self->noise_index, 1.0f, ATTN_NONE, 0.0f); //TODO: the sound never stops! Should be manually stopped instead?
+		self->last_move_time = level.time + FRAMETIME * 5.0f; //mxd. '+ 0.5f' in original logic. //TODO: use bigger delay? Sound is ~2 seconds long! 
 	}
 
-	edict_t* e = &g_edicts[1];
-	for (int i = 1; i < globals.num_edicts; i++, e++)
+	edict_t* cl = &g_edicts[1];
+	for (int i = 1; i < globals.num_edicts; i++, cl++)
 	{
-		if (e->inuse && e->client != NULL && e->groundentity != NULL)
+		if (cl->inuse && cl->client != NULL && cl->groundentity != NULL) //TODO: this doesn't affect player in any way... //TODO: also affect monsters (mentioned in SP_target_earthquake() description). 
 		{
-			e->velocity[0] += flrand(-150.0f, 150.0f);
-			e->velocity[1] += flrand(-150.0f, 150.0f);
-			e->velocity[2] = self->speed * (100.0f / (float)e->mass);
+			cl->velocity[0] += flrand(-150.0f, 150.0f);
+			cl->velocity[1] += flrand(-150.0f, 150.0f);
+			cl->velocity[2] += self->speed * (100.0f / (float)cl->mass);
 		}
 	}
 
-	if (level.time < self->timestamp) //TODO: otherwise trigger assert in EntityThink()...
+	if (level.time < self->timestamp)
 		self->nextthink = level.time + FRAMETIME;
+	else
+		self->think = NULL; //BUGFIX: mxd. Avoid triggering assert in EntityThink()...
 }
 
 static void TargetEarthquakeUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'target_earthquake_use' in original logic.
@@ -326,11 +330,13 @@ static void TargetEarthquakeUse(edict_t* self, edict_t* other, edict_t* activato
 	self->activator = activator;
 	self->last_move_time = 0.0f;
 	self->timestamp = level.time + (float)self->count;
+
+	self->think = TargetEarthquakeThink;
 	self->nextthink = level.time + FRAMETIME;
 }
 
 // QUAKED target_earthquake (1 0 0) (-8 -8 -8) (8 8 8)
-// When triggered, this initiates a level-wide earthquake. All players are affected.
+// When triggered, this initiates a level-wide earthquake. All players and monsters are affected.
 // Variables:
 // speed - Severity of the quake (default 200).
 // count - Duration of the quake (default 5).
@@ -347,7 +353,6 @@ void SP_target_earthquake(edict_t* self)
 
 	self->noise_index = gi.soundindex("world/quake.wav");
 	self->svflags |= SVF_NOCLIENT;
-	self->think = TargetEarthquakeThink;
 	self->use = TargetEarthquakeUse;
 }
 
