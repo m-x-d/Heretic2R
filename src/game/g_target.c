@@ -329,22 +329,26 @@ static void TargetEarthquakeUse(edict_t* self, edict_t* other, edict_t* activato
 	self->nextthink = level.time + FRAMETIME;
 }
 
-void SP_target_earthquake (edict_t *self)
+// QUAKED target_earthquake (1 0 0) (-8 -8 -8) (8 8 8)
+// When triggered, this initiates a level-wide earthquake. All players are affected.
+// Variables:
+// speed - Severity of the quake (default 200).
+// count - Duration of the quake (default 5).
+void SP_target_earthquake(edict_t* self)
 {
-	if (!self->targetname)
+	if (self->targetname == NULL)
 		gi.dprintf("untargeted %s at %s\n", self->classname, vtos(self->s.origin));
 
-	if (!self->count)
+	if (self->count == 0)
 		self->count = 5;
 
-	if (!self->speed)
-		self->speed = 200;
+	if (self->speed == 0.0f)
+		self->speed = 200.0f;
 
+	self->noise_index = gi.soundindex("world/quake.wav");
 	self->svflags |= SVF_NOCLIENT;
 	self->think = TargetEarthquakeThink;
 	self->use = TargetEarthquakeUse;
-
-	self->noise_index = gi.soundindex ("world/quake.wav");
 }
 
 #pragma endregion
