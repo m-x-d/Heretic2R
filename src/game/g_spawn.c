@@ -22,6 +22,7 @@
 #include "g_obj.h" //mxd
 #include "g_rope.h" //mxd
 #include "g_Shrine.h" //mxd
+#include "g_spawnf.h" //mxd
 #include "m_monsters.h" //mxd
 #include "p_client.h" //mxd
 #include "g_local.h"
@@ -62,8 +63,6 @@ void SP_target_crosslevel_trigger(edict_t* ent);
 void SP_target_crosslevel_target(edict_t* ent);
 void SP_target_lightramp(edict_t* self);
 void SP_target_earthquake(edict_t* ent);
-
-void SP_worldspawn(edict_t* ent);
 
 void SP_misc_flag(edict_t* ent);
 

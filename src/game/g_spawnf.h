@@ -8,6 +8,8 @@
 
 #include "q_Typedef.h"
 
-extern void SpawnEntities(char* mapname, char* entities, char* spawnpoint, qboolean loadgame);
+extern void SpawnEntities(const char* map_name, char* entities, const char* spawn_point, qboolean loadgame);
 extern void ConstructEntities(void);
-extern void CheckCoopTimeout(qboolean BeenHereBefore);
+extern void CheckCoopTimeout(qboolean been_here_before);
+
+extern void SP_worldspawn(edict_t* ent);

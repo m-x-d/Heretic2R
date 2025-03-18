@@ -687,7 +687,7 @@ extern void G_RunEntity(edict_t* ent);
 extern "C"
 {
 #endif
-	extern char* ED_NewString(char* string);
+	extern char* ED_NewString(const char* string);
 	extern void ED_CallSpawn(edict_t* ent);
 #ifdef __cplusplus
 }
