@@ -248,29 +248,33 @@ static void TargetLightrampUse(edict_t* self, edict_t* other, edict_t* activator
 	TargetLightrampThink(self);
 }
 
-void SP_target_lightramp (edict_t *self)
+// QUAKED target_lightramp (0 .5 .8) (-8 -8 -8) (8 8 8) TOGGLE
+// Spawnflags:
+// TOGGLE - Reverse ramping direction each time used.
+// Variables:
+// speed	- How many seconds the ramping will take.
+// message	- Two letters: starting lightlevel and ending lightlevel.
+void SP_target_lightramp(edict_t* self)
 {
-	if (!self->message || strlen(self->message) != 2 || self->message[0] < 'a' || self->message[0] > 'z' || self->message[1] < 'a' || self->message[1] > 'z' || self->message[0] == self->message[1])
+	if (self->message == NULL || strlen(self->message) != 2 || self->message[0] < 'a' || self->message[0] > 'z' || self->message[1] < 'a' || self->message[1] > 'z' || self->message[0] == self->message[1])
 	{
-#ifdef _DEVEL
 		gi.dprintf("target_lightramp has bad ramp (%s) at %s\n", self->message, vtos(self->s.origin));
-#endif
-		G_FreeEdict (self);
+		G_FreeEdict(self);
+
 		return;
 	}
 
-	if (deathmatch->value)
+	if (DEATHMATCH)
 	{
-		G_FreeEdict (self);
+		G_FreeEdict(self);
 		return;
 	}
 
-	if (!self->target)
+	if (self->target == NULL)
 	{
-#ifdef _DEVEL
 		gi.dprintf("%s with no target at %s\n", self->classname, vtos(self->s.origin));
-#endif
-		G_FreeEdict (self);
+		G_FreeEdict(self);
+
 		return;
 	}
 
@@ -278,8 +282,8 @@ void SP_target_lightramp (edict_t *self)
 	self->use = TargetLightrampUse;
 	self->think = TargetLightrampThink;
 
-	self->movedir[0] = self->message[0] - 'a';
-	self->movedir[1] = self->message[1] - 'a';
+	self->movedir[0] = (float)(self->message[0] - 'a');
+	self->movedir[1] = (float)(self->message[1] - 'a');
 	self->movedir[2] = (self->movedir[1] - self->movedir[0]) / (self->speed / FRAMETIME);
 }
 
