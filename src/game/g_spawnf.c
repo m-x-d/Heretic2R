@@ -81,76 +81,75 @@ char* ED_NewString(const char* string)
 	return buffer;
 }
 
-/*
-===============
-ED_ParseField
-
-Takes a key/value pair and sets the binary values
-in an edict
-===============
-*/
-void ED_ParseField (char *key, char *value, edict_t *ent)
+// Takes a key/value pair and sets the binary values in an edict.
+static void ED_ParseField(char* key, const char* value, edict_t* ent)
 {
-	field_t	*f;
-	byte	*b;
-	float	v;
-	vec3_t	vec;
-	int color[4];
-
-	for (f=fields ; f->name ; f++)
+	for (const field_t* f = &fields[0]; f->name != NULL; f++)
 	{
-		if (!Q_stricmp(f->name, key))
-		{	// found it
-			if (f->flags & FFL_SPAWNTEMP)
-				b = (byte *)&st;
-			else
-				b = (byte *)ent;
+		if (Q_stricmp(f->name, key) != 0)
+			continue;
 
-			switch (f->type)
-			{
+		// Found it.
+		byte* b = ((f->flags & FFL_SPAWNTEMP) ? (byte*)&st : (byte*)ent);
+
+		switch (f->type)
+		{
 			case F_LSTRING:
-				*(char **)(b+f->ofs) = ED_NewString (value);
+				*(char**)(b + f->ofs) = ED_NewString(value);
 				break;
+
 			case F_VECTOR:
-				sscanf (value, "%f %f %f", &vec[0], &vec[1], &vec[2]);
-				((float *)(b+f->ofs))[0] = vec[0];
-				((float *)(b+f->ofs))[1] = vec[1];
-				((float *)(b+f->ofs))[2] = vec[2];
-				break;
+			{
+				vec3_t vec;
+				sscanf_s(value, "%f %f %f", &vec[0], &vec[1], &vec[2]); //mxd. sscanf -> sscanf_s
+				((float*)(b + f->ofs))[0] = vec[0];
+				((float*)(b + f->ofs))[1] = vec[1];
+				((float*)(b + f->ofs))[2] = vec[2];
+			} break;
+
 			case F_INT:
-				*(int *)(b+f->ofs) = atoi(value);
+				*(int*)(b + f->ofs) = Q_atoi(value);
 				break;
+
 			case F_FLOAT:
-				*(float *)(b+f->ofs) = atof(value);
+				*(float*)(b + f->ofs) = (float)strtod(value, NULL); //mxd. atof -> strtod
 				break;
+
 			case F_ANGLEHACK:
-				v = atof(value);
-				((float *)(b+f->ofs))[0] = 0;
-				((float *)(b+f->ofs))[1] = v;
-				((float *)(b+f->ofs))[2] = 0;
-				break;
-			case F_IGNORE:
-				break;
+			{
+				const float v = (float)strtod(value, NULL); //mxd. atof -> strtod
+				((float*)(b + f->ofs))[0] = 0.0f;
+				((float*)(b + f->ofs))[1] = v;
+				((float*)(b + f->ofs))[2] = 0.0f;
+			} break;
+
 			case F_RGBA:
-				sscanf(value, "%i %i %i %i", color, color + 1, color + 2, color + 3);
-				((byte *)(b+f->ofs))[0] = color[0];
-				((byte *)(b+f->ofs))[1] = color[1];
-				((byte *)(b+f->ofs))[2] = color[2];
-				((byte *)(b+f->ofs))[3] = color[3];
-				break;
+			{
+				int color[4];
+				sscanf_s(value, "%i %i %i %i", color, color + 1, color + 2, color + 3); //mxd. sscanf -> sscanf_s
+				((byte*)(b + f->ofs))[0] = (byte)color[0];
+				((byte*)(b + f->ofs))[1] = (byte)color[1];
+				((byte*)(b + f->ofs))[2] = (byte)color[2];
+				((byte*)(b + f->ofs))[3] = (byte)color[3];
+			} break;
+
 			case F_RGB:
-				sscanf(value, "%i %i %i", color, color + 1, color + 2);
-				((byte *)(b+f->ofs))[0] = color[0];
-				((byte *)(b+f->ofs))[1] = color[1];
-				((byte *)(b+f->ofs))[2] = color[2];
+			{
+				int color[3];
+				sscanf_s(value, "%i %i %i", color, color + 1, color + 2); //mxd. sscanf -> sscanf_s
+				((byte*)(b + f->ofs))[0] = (byte)color[0];
+				((byte*)(b + f->ofs))[1] = (byte)color[1];
+				((byte*)(b + f->ofs))[2] = (byte)color[2];
+			} break;
+
+			default:
 				break;
-			}
-			return;
 		}
+
+		return;
 	}
-#ifdef _DEVEL
-	gi.dprintf ("%s is not a field\n", key);
-#endif
+
+	gi.dprintf("%s is not a field\n", key);
 }
 
 /*
