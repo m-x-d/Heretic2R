@@ -290,45 +290,31 @@ void SP_target_lightramp(edict_t* self)
 
 #pragma endregion
 
-//==========================================================
+#pragma region ========================== target_earthquake ==========================
 
-/*QUAK-ED target_earthquake (1 0 0) (-8 -8 -8) (8 8 8)
-When triggered, this initiates a level-wide earthquake.
-All players and monsters are affected.
-"speed"		severity of the quake (default:200)
-"count"		duration of the quake (default:5)
-*/
-
-void target_earthquake_think (edict_t *self)
+static void TargetEarthquakeThink(edict_t* self) //mxd. Named 'target_earthquake_think' in original logic.
 {
-	int		i;
-	edict_t	*e;
-
-	if (sv_jumpcinematic->value)	// Don't do this if jumping a cinematic
+	if ((int)sv_jumpcinematic->value) // Don't do this if jumping a cinematic //TODO: this will trigger assert in EntityThink()...
 		return;
 
 	if (self->last_move_time < level.time)
 	{
-		gi.positioned_sound (self->s.origin, self, CHAN_AUTO, self->noise_index, 1.0, ATTN_NONE, 0);
-		self->last_move_time = level.time + 0.5;
+		gi.positioned_sound(self->s.origin, self, CHAN_AUTO, self->noise_index, 1.0f, ATTN_NONE, 0.0f);
+		self->last_move_time = level.time + FRAMETIME * 5.0f; //mxd. '+ 0.5f' in original logic.
 	}
 
-	for (i=1, e=g_edicts+i; i < globals.num_edicts; i++,e++)
+	edict_t* e = &g_edicts[1];
+	for (int i = 1; i < globals.num_edicts; i++, e++)
 	{
-		if (!e->inuse)
-			continue;
-		if (!e->client)
-			continue;
-		if (!e->groundentity)
-			continue;
-
-//		e->groundentity = NULL;
-		e->velocity[0] += flrand(-150.0F, 150.0F);
-		e->velocity[1] += flrand(-150.0F, 150.0F);
-		e->velocity[2] = self->speed * (100.0 / e->mass);
+		if (e->inuse && e->client != NULL && e->groundentity != NULL)
+		{
+			e->velocity[0] += flrand(-150.0f, 150.0f);
+			e->velocity[1] += flrand(-150.0f, 150.0f);
+			e->velocity[2] = self->speed * (100.0f / (float)e->mass);
+		}
 	}
 
-	if (level.time < self->timestamp)
+	if (level.time < self->timestamp) //TODO: otherwise trigger assert in EntityThink()...
 		self->nextthink = level.time + FRAMETIME;
 }
 
@@ -356,8 +342,10 @@ void SP_target_earthquake (edict_t *self)
 		self->speed = 200;
 
 	self->svflags |= SVF_NOCLIENT;
-	self->think = target_earthquake_think;
+	self->think = TargetEarthquakeThink;
 	self->use = target_earthquake_use;
 
 	self->noise_index = gi.soundindex ("world/quake.wav");
 }
+
+#pragma endregion
