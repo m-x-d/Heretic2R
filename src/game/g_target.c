@@ -163,31 +163,36 @@ void SP_target_crosslevel_trigger(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED target_crosslevel_target (.5 .5 .5) (-8 -8 -8) (8 8 8) trigger1 trigger2 trigger3 trigger4 trigger5 trigger6 trigger7 trigger8
-Triggered by a trigger_crosslevel elsewhere within a unit.  If multiple triggers are checked, all must be true.  Delay, target and
-killtarget also work.
+#pragma region ========================== target_crosslevel_target ==========================
 
-"delay"		delay before using targets if the trigger has been activated (default 1)
-*/
-void target_crosslevel_target_think (edict_t *self)
+static void TargetCrosslevelTargetThink(edict_t* self) //mxd. Named 'target_crosslevel_target_think' in original logic.
 {
-	if (self->spawnflags == (game.serverflags & CROSSLEVEL_TRIGGER_SF_MASK & self->spawnflags))
+	if ((self->spawnflags & (game.serverflags & CROSSLEVEL_TRIGGER_SF_MASK)) == self->spawnflags)
 	{
-		G_UseTargets (self, self);
-		G_FreeEdict (self);
+		G_UseTargets(self, self);
+		G_FreeEdict(self);
 	}
+
 	self->nextthink = level.time + FRAMETIME;
 }
 
-void SP_target_crosslevel_target (edict_t *self)
+// QUAKED target_crosslevel_target (.5 .5 .5) (-8 -8 -8) (8 8 8) TRIGGER1 TRIGGER2 TRIGGER3 TRIGGER4 TRIGGER5 TRIGGER6 TRIGGER7 TRIGGER8
+// Triggered by a trigger_crosslevel elsewhere within a unit. If multiple triggers are checked, all must be true.
+// Delay, target and killtarget also work.
+// Variables:
+// delay - Delay before using targets if the trigger has been activated (default 1).
+void SP_target_crosslevel_target(edict_t* self)
 {
-	if (! self->delay)
-		self->delay = 1;
+	if (self->delay == 0.0f)
+		self->delay = 1.0f;
+
 	self->svflags = SVF_NOCLIENT;
 
-	self->think = target_crosslevel_target_think;
+	self->think = TargetCrosslevelTargetThink;
 	self->nextthink = level.time + self->delay;
 }
+
+#pragma endregion
 
 //==========================================================
 
