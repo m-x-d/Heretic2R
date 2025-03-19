@@ -19,8 +19,7 @@
 #define SF_PUZZLE_SHOW_NO_INVENTORY	16
 #define SF_PUZZLE_DONT_REMOVE		32
 
-void trigger_enable(edict_t *self, edict_t *other, edict_t *activator);
-void TriggerMultipleUse(edict_t *self, edict_t *other, edict_t *activator);
+void TriggerMultipleUse(edict_t *self, edict_t *other, edict_t *activator); //TODO: add to header.
 
 #pragma region ========================== TriggerStaticsInit ==========================
 
@@ -115,6 +114,13 @@ void TriggerMultipleUse(edict_t* self, edict_t* other, edict_t* activator) //mxd
 	TriggerActivated(self);
 }
 
+static void TriggerEnable(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_enable' in original logic.
+{
+	self->solid = SOLID_TRIGGER;
+	self->use = TriggerMultipleUse;
+	gi.linkentity(self);
+}
+
 void InitTrigger(edict_t *self)
 {
 	self->msgHandler = DefaultMsgHandler;
@@ -133,7 +139,7 @@ void InitTrigger(edict_t *self)
 	if(self->spawnflags & SF_TRIGGER_TRIGGERED)
 	{
 		self->solid = SOLID_NOT;
-		self->use = trigger_enable;
+		self->use = TriggerEnable;
 	}
 	else
 	{
@@ -190,13 +196,6 @@ void SP_trigger_Multiple(edict_t *self)
 
 	Trigger_Sounds(self);
 
-}
-
-void trigger_enable(edict_t *self, edict_t *other, edict_t *activator)
-{
-	self->solid = SOLID_TRIGGER;
-	self->use = TriggerMultipleUse;
-	gi.linkentity (self);
 }
 
 //----------------------------------------------------------------------
