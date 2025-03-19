@@ -561,48 +561,37 @@ void SP_trigger_Deactivate(edict_t* self)
 
 #pragma endregion
 
-//----------------------------------------------------------------------
-// Unsuspend Trigger
-//----------------------------------------------------------------------
+#pragma region ========================== trigger_activate ==========================
 
-void ActivateTrigger_Activated(edict_t *self, edict_t *activator);
-
-/*QUAKED trigger_Activate (.5 .5 .5) ? MONSTER NOT_PLAYER TRIGGERED ANY
-Variable sized repeatable trigger, which posts a UNSUSPEND message to its target.
-Must be targeted at one or more entities.
--------SPAWN FLAGS-------------
-MONSTER - only a monster will trigger it
-NOT_PLAYER -  can't be triggered by player
-TRIGGERED - starts trigger deactivated
-ANY - anything can activate it
-------KEYS-----------
-delay - If set, the trigger waits this amount after activating before firing.
-wait  - Seconds between triggerings. (.2 default)
-message - text string displayed when triggered
-*/
-void SP_trigger_Activate(edict_t *self)
+static void TriggerActivateActivated(edict_t* self, edict_t* activator) //mxd. Named 'ActivateTrigger_Activated' in original logic.
 {
-	TriggerInit(self);
-
-	self->TriggerActivated = ActivateTrigger_Activated;
-}
-
-void ActivateTrigger_Activated(edict_t *self, edict_t *activator)
-{
-	edict_t		*t;
-
 	assert(self->target);
 
-//
-// Activate all targets
-//
-	t = NULL;
-	while ((t = G_Find (t, FOFS(targetname), self->target)))
-	{
-		if (t->msgHandler)
-			QPostMessage(t, G_MSG_UNSUSPEND, PRI_ORDER, "f", self->time);
-	}
+	// Activate all targets.
+	edict_t* target = NULL;
+	while ((target = G_Find(target, FOFS(targetname), self->target)) != NULL)
+		if (target->msgHandler != NULL)
+			QPostMessage(target, G_MSG_UNSUSPEND, PRI_ORDER, "f", self->time);
 }
+
+// QUAKED trigger_Activate (.5 .5 .5) ? MONSTER NOT_PLAYER TRIGGERED ANY
+// Variable sized repeatable trigger, which posts a UNSUSPEND message to its target. Must be targeted at one or more entities.
+// Spawnflags:
+// MONSTER		- Only a monster will trigger it.
+// NOT_PLAYER	- Can't be triggered by player.
+// TRIGGERED	- Starts trigger deactivated.
+// ANY			- Anything can activate it.
+// Variables:
+// delay	- Time to wait after activating before firing.
+// message	- Text string to display when activated.
+// wait		- Seconds between re-triggering. (default 0.2).
+void SP_trigger_Activate(edict_t* self)
+{
+	TriggerInit(self);
+	self->TriggerActivated = TriggerActivateActivated;
+}
+
+#pragma endregion
 
 // make every active client out there change CD track.
 void everyone_play_track(int track, int loop)
