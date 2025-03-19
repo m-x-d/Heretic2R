@@ -951,30 +951,22 @@ void SP_trigger_mission_take(edict_t* self)
 
 #pragma endregion
 
-void ClipDistance_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
-{
-	char temp[10];
-	cvar_t *r_farclipdist;
-	r_farclipdist = gi.cvar("r_farclipdist", FAR_CLIP_DIST, 0);
+#pragma region ========================== trigger_farclip ==========================
 
-	// if we aren't a player, forget it
-	if (!other->client)
+static void TriggerFarclipTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'ClipDistance_touch' in original logic.
+{
+	// If we aren't a player, forget it.
+	if (other->client == NULL || self->pain_debounce_time >= level.time)
 		return;
 
-	if (self->pain_debounce_time < level.time)
-	{
-		if (r_farclipdist->value == FAR_CLIP_DIST_VAL)
-		{
-			sprintf(temp, "%f", self->s.scale);
-			gi.cvar_set("r_farclipdist", temp);
+	const cvar_t* r_farclipdist = gi.cvar("r_farclipdist", FAR_CLIP_DIST, 0);
 
-		}
-		else
-		{
-			gi.cvar_set("r_farclipdist", FAR_CLIP_DIST);
-		}
-		self->pain_debounce_time = level.time + 0.5;
-	}
+	if (r_farclipdist->value == FAR_CLIP_DIST_VAL)
+		gi.cvar_set("r_farclipdist", va("%f", self->s.scale)); //mxd. sprintf -> va
+	else
+		gi.cvar_set("r_farclipdist", FAR_CLIP_DIST);
+
+	self->pain_debounce_time = level.time + 0.5f;
 }
 
 /*QUAKED trigger_farclip (0.5 0.5 0.5) ? 
@@ -990,10 +982,12 @@ void SP_trigger_farclip (edict_t *self)
 {
 	TriggerInit(self);
 
-	self->touch = ClipDistance_touch;
+	self->touch = TriggerFarclipTouch;
 	self->solid = SOLID_TRIGGER;
 
 }
+
+#pragma endregion
 
 void trigger_endgame_think(edict_t *self)
 {
