@@ -697,26 +697,24 @@ static void TriggerMappercentageUse(edict_t* self, edict_t* other) //mxd. Named 
 	}
 }
 
-/*QUAKED trigger_mappercentage (0.3 0.1 0.6) ?  MONSTER NOT_PLAYER TRIGGERED ANY
-When triggered it updates Player with the percentage of the level completed.
---------FLAGS----------------
-MONSTER - only a monster will trigger it
-NOT_PLAYER -  can't be triggered by player
-TRIGGERED - starts trigger deactivated
-ANY - anything can activate it
-----------KEYS---------------
-count - amount of level completed
-*/
-void SP_trigger_mappercentage (edict_t *self)
+// QUAKED trigger_mappercentage (0.3 0.1 0.6) ? MONSTER NOT_PLAYER TRIGGERED ANY
+// When triggered it updates Player with the percentage of the level completed.
+// Spawnflags:
+// MONSTER		- Only a monster will trigger it.
+// NOT_PLAYER	- Can't be triggered by player.
+// TRIGGERED	- Starts trigger deactivated.
+// ANY			- Anything can activate it.
+// Variables:
+// count - Amount of level completed.
+void SP_trigger_mappercentage(edict_t* self)
 {
 	TriggerInit(self);
 
+	self->count = ClampI(self->count, 0, 100); //mxd. Clamp lower bound too.
 	self->TriggerActivated = TriggerMappercentageUse;
-
-	if (self->count > 100)
-		self->count = 100;
 }
 
+#pragma endregion
 
 void lightning_use (edict_t *self, edict_t *other)
 {
