@@ -593,21 +593,19 @@ void SP_trigger_Activate(edict_t* self)
 
 #pragma endregion
 
-// make every active client out there change CD track.
-void everyone_play_track(int track, int loop)
-{
-	int j;
-	edict_t	*other;
+#pragma region ========================== choose_CDTrack ==========================
 
-	// play the track  - make sure everyone gets sent this over the next in the client messages
-	for (j = 1; j <= game.maxclients; j++)
+#define SF_NO_LOOP	1 //mxd
+
+// Make every active client out there change CD track.
+static void ChooseCDTrackPlayTrack(const int track, const int loop) //mxd. Named 'everyone_play_track' in original logic.
+{
+	for (int i = 1; i <= game.maxclients; i++)
 	{
-		other = &g_edicts[j];
-		if (!other->inuse)
-			continue;
-		if (!other->client)
-			continue;
-		gi.changeCDtrack(other, track, loop);
+		const edict_t* cl = &g_edicts[i];
+
+		if (cl->inuse && cl->client != NULL)
+			gi.changeCDtrack(cl, track, loop);
 	}
 }
 
@@ -618,7 +616,7 @@ void choose_CDTrack_touch(edict_t *self, edict_t *other, cplane_t *plane, csurfa
 		return;
 	
 	// make everyone play this track
-	everyone_play_track(self->style, self->spawnflags);
+	ChooseCDTrackPlayTrack(self->style, self->spawnflags);
 	// kill this trigger
 	G_SetToFree(self);
 }
@@ -626,7 +624,7 @@ void choose_CDTrack_touch(edict_t *self, edict_t *other, cplane_t *plane, csurfa
 void choose_CDTrack_use (edict_t *self, edict_t *other, edict_t *activator)
 {
 	// make everyone play this track
-	everyone_play_track(self->style, self->spawnflags);
+	ChooseCDTrackPlayTrack(self->style, self->spawnflags);
 	// kill this trigger
 	G_SetToFree(self);
 }
@@ -664,6 +662,9 @@ void SP_choose_CDTrack(edict_t *self)
 	gi.linkentity(self);
 
 }
+
+#pragma endregion
+
 void M_Menu_Quit_f (void);
 
 void trigger_quit_to_menu_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
