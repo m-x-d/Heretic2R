@@ -747,32 +747,29 @@ static void TriggerLightningUse(edict_t* self, edict_t* other, edict_t* activato
 	TriggerLightningActivated(self, other);
 }
 
-/*QUAKED trigger_lightning (0.3 0.1 0.6) ? MONSTER NOT_PLAYER TRIGGERED ANY
-Triggers a lightning bolt
--------SPAWN FLAGS-------------
-MONSTER - only a monster will trigger it
-NOT_PLAYER -  can't be triggered by player
-TRIGGERED - starts trigger deactivated
-ANY - anything can activate it
--------KEYS--------------------
-origin-- Starting point.
-target-- Ending point entity.  
-         There may be more than one with a given targetname.
-delay-- (0-25.5) Sec. duration of lightning.  
-         Leave this at zero for a normal strike
-materialtype-- 0=blue, 1=red
-style-- Width of bolt.  Red rain uses 6.
-wait - amount of time until it will become active again (default 10).
-*/
-void SP_trigger_lightning (edict_t *self)
+// QUAKED trigger_lightning (0.3 0.1 0.6) ? MONSTER NOT_PLAYER TRIGGERED ANY
+// Triggers a lightning bolt.
+// Spawnflags:
+// MONSTER		- Only a monster will trigger it.
+// NOT_PLAYER	- Can't be triggered by player.
+// TRIGGERED	- Starts trigger deactivated.
+// ANY			- Anything can activate it.
+// Variables:
+// origin		- Starting point.
+// target		- Ending point entity (must be 'info_notnull'). There may be more than one with a given targetname.
+// delay		- Duration of lightning (in seconds) (0.0 - 25.5). Leave this at zero for a normal strike.
+// materialtype	- 0: blue, 1: red.
+// style		- Width of bolt. Red rain uses 6.
+// wait			- Amount of time until it will become active again (default 10).
+void SP_trigger_lightning(edict_t* self)
 {
 	TriggerInit(self);
 
-	if (!self->wait)
-		self->wait = 10;
+	if (self->wait == 0.0f)
+		self->wait = 10.0f;
 
 	self->TriggerActivated = TriggerLightningActivated;
-	self->use = TriggerLightningUse;	// This is so a trigger_relay can use it.
+	self->use = TriggerLightningUse; // This is so a trigger_relay can use it.
 }
 
 #pragma endregion
