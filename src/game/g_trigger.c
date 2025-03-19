@@ -774,11 +774,14 @@ void SP_trigger_lightning(edict_t* self)
 
 #pragma endregion
 
-void quake_quiet(edict_t *self)
+#pragma region ========================== trigger_quake ==========================
+
+static void KillSoundThink(edict_t* self) //mxd. Named 'quake_quiet' in original logic.
 {
-	gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE,self->moveinfo.sound_end, 2, ATTN_NORM, 0);
-	self->nextthink = level.time + FRAMETIME;
+	gi.sound(self, CHAN_NO_PHS_ADD + CHAN_VOICE, self->moveinfo.sound_end, 2.0f, ATTN_NORM, 0.0f); //TODO: why 2.0 volume?
+
 	self->think = G_FreeEdict;
+	self->nextthink = level.time + FRAMETIME;
 }
 
 void quake_use (edict_t *self, edict_t *other)
@@ -813,7 +816,7 @@ void quake_use (edict_t *self, edict_t *other)
 	VectorCopy(self->s.origin,killsound->s.origin);
 	killsound->moveinfo.sound_end = self->moveinfo.sound_end;
 	killsound->nextthink = level.time + self->time;
-	killsound->think = quake_quiet;
+	killsound->think = KillSoundThink;
 }
 
 /*QUAKED trigger_quake (0.3 0.1 0.6) ? MONSTER NOT_PLAYER TRIGGERED ANY
@@ -854,6 +857,8 @@ void SP_trigger_quake (edict_t *self)
 
 	self->TriggerActivated = quake_use;
 }
+
+#pragma endregion
 
 void trig_done(edict_t *self)
 {
