@@ -363,26 +363,21 @@ static void TriggerCounterUse(edict_t* self, edict_t* other, edict_t* activator)
 	}
 }
 
-/*QUAKED trigger_counter (.5 .5 .5) ? NOMESSAGE
-Acts as an intermediary for an action that takes multiple inputs.
-
-If NOMESSAGE is not set, t will print "1 more.. " etc when triggered and "sequence complete" when finished.
-
-After the counter has been triggered "count" times (default 2), it will fire all of it's targets and remove itself.
-*/
-void SP_trigger_Counter(edict_t *self)
+// QUAKED trigger_counter (.5 .5 .5) ? NOMESSAGE
+// Acts as an intermediary for an action that takes multiple inputs.
+// Spawnflags:
+// NOMESSAGE - When not set, it will print "Find N more" when triggered and "You completed the sequence!" when finished.
+// Variables:
+// count - After the trigger_counter has been triggered this many times (default 2), it will fire all of it's targets and remove itself.
+void SP_trigger_Counter(edict_t* self)
 {
 	self->classID = CID_TRIGGER;
+	self->wait = -1.0f;
 
-	self->wait = -1;
-
-	if (!self->count)
-	{
+	if (self->count == 0) //TODO: will print unrelated messages when count > 11...
 		self->count = 2;
-	}
 
 	self->use = TriggerCounterUse;
-
 	self->TriggerActivated = G_UseTargets;
 }
 
