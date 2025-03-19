@@ -1,18 +1,23 @@
-#include "g_local.h"
-#include "Vector.h"
-#include "g_DefaultMessageHandler.h"
-#include "fx.h"
-#include "g_playstats.h"
+//
+// g_trigger.c
+//
+// Copyright 1998 Raven Software
+//
+
 #include "cl_strings.h"
+#include "g_DefaultMessageHandler.h"
 #include "g_func_Train.h" //mxd
+#include "g_playstats.h"
+#include "Vector.h"
+#include "g_local.h"
 
-#define TRIGGER_MONSTER		1
-#define TRIGGER_NOT_PLAYER	2
-#define TRIGGER_TRIGGERED	4
-#define TRIGGER_ANY			8
+#define SF_TRIGGER_MONSTER		1
+#define SF_TRIGGER_NOT_PLAYER	2
+#define SF_TRIGGER_TRIGGERED	4
+#define SF_TRIGGER_ANY			8
 
-#define PUZZLE_SHOWNO_INVENTORY 16
-#define PUZZLE_DONT_REMOVE		32	
+#define SF_PUZZLE_SHOW_NO_INVENTORY	16
+#define SF_PUZZLE_DONT_REMOVE		32
 
 void Trigger_Deactivate(edict_t *self, G_Message_t *msg);
 void Trigger_Activate(edict_t *self, G_Message_t *msg);
@@ -66,13 +71,13 @@ void TriggerActivated(edict_t *self)
 void Touch_Multi(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	// Monsters or players can trigger it
-	if ((self->spawnflags & TRIGGER_ANY) && ((strcmp(other->classname, "player") == 0) ||
+	if ((self->spawnflags & SF_TRIGGER_ANY) && ((strcmp(other->classname, "player") == 0) ||
 		(other->svflags & SVF_MONSTER)))
 		;
 	// Player cannot trigger it
 	else if(strcmp(other->classname, "player") == 0)
 	{
-		if(self->spawnflags & TRIGGER_NOT_PLAYER)
+		if(self->spawnflags & SF_TRIGGER_NOT_PLAYER)
 		{
 			return;
 		}
@@ -80,7 +85,7 @@ void Touch_Multi(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *sur
 	// Just monster will trigger it
 	else if(other->svflags & SVF_MONSTER)
 	{
-		if(!(self->spawnflags & TRIGGER_MONSTER))
+		if(!(self->spawnflags & SF_TRIGGER_MONSTER))
 		{
 			return;
 		}
@@ -122,7 +127,7 @@ void InitTrigger(edict_t *self)
 	self->movetype = PHYSICSTYPE_NONE;
 	self->svflags |= SVF_NOCLIENT;
 
-	if(self->spawnflags & TRIGGER_TRIGGERED)
+	if(self->spawnflags & SF_TRIGGER_TRIGGERED)
 	{
 		self->solid = SOLID_NOT;
 		self->use = trigger_enable;
@@ -370,7 +375,7 @@ void trigger_key_use(edict_t *self, edict_t *other, edict_t *activator)
 
 	self->use = NULL;
 
-	if (!(other->spawnflags & PUZZLE_DONT_REMOVE))	// Get rid of it.
+	if (!(other->spawnflags & SF_PUZZLE_DONT_REMOVE))	// Get rid of it.
 	{
 		G_SetToFree(other);
 		activator->target_ent=activator->client->playerinfo.target_ent = 0;
@@ -463,7 +468,7 @@ void SP_trigger_Always(edict_t *self)
 
 void trigger_playerusepuzzle(edict_t *self, edict_t *activator)
 {
-	if (!(self->spawnflags & PUZZLE_SHOWNO_INVENTORY))
+	if (!(self->spawnflags & SF_PUZZLE_SHOW_NO_INVENTORY))
 	{
 		if(!strcmp(activator->classname, "player"))
 		{
