@@ -1040,30 +1040,20 @@ void SP_trigger_endgame(edict_t* self)
 
 #pragma endregion
 
-//----------------------------------------------------------------------
-// Player Push Lever Trigger
-//----------------------------------------------------------------------
+#pragma region ========================== trigger_playerpushlever ==========================
 
-//void trigger_playerpushlever(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface)
-void trigger_playerpushlever(edict_t *self, edict_t *other)
+static void TriggerPlayerPushLeverActivated(edict_t* self, edict_t* other) //mxd. Named 'trigger_playerpushlever' in original logic.
 {
-	if(!strcmp(other->classname, "player"))
-	{
+	if (strcmp(other->classname, "player") == 0)
 		other->target = self->target;
-	}
 }
 
-/*QUAKED trigger_playerpushlever (.5 .5 .5) ?  x1 x2 TRIGGERED 
-Triggers player to know he is near a lever.
-*/
-void SP_trigger_PlayerPushLever(edict_t *self)
+// QUAKED trigger_playerpushlever (.5 .5 .5) ?  x1 x2 TRIGGERED
+// Triggers player to know he is near a lever.
+void SP_trigger_PlayerPushLever(edict_t* self)
 {
 	TriggerInit(self);
-
-	self->TriggerActivated = trigger_playerpushlever;
-
+	self->TriggerActivated = TriggerPlayerPushLeverActivated;
 }
 
-//----------------------------------------------------------------------
-// Player Push Lever Trigger
-//----------------------------------------------------------------------
+#pragma endregion
