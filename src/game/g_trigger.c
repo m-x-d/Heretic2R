@@ -658,12 +658,10 @@ static void TriggerQuitToMenuTouch(edict_t* self, edict_t* other, cplane_t* plan
 		gi.AddCommandString("menu_main\n");
 }
 
-void trigger_quit_to_menu_use (edict_t *self, edict_t *other, edict_t *activator)
+static void TriggerQuitToMenuUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_quit_to_menu_use' in original logic.
 {
-	if(!activator->client)
-		return;
-
-	gi.AddCommandString ("menu_main\n");
+	if (activator->client != NULL)
+		gi.AddCommandString("menu_main\n");
 }
 
 /*QUAKED trigger_quit_to_menu (.5 .5 .5) ?
@@ -676,7 +674,7 @@ void SP_trigger_quit_to_menu(edict_t *self)
 	self->classID = CID_TRIGGER;
 
 	self->touch = TriggerQuitToMenuTouch;
-	self->use = trigger_quit_to_menu_use;
+	self->use = TriggerQuitToMenuUse;
 	self->movetype = PHYSICSTYPE_NONE;
 	self->svflags |= SVF_NOCLIENT;
 
