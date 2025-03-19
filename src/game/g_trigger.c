@@ -164,35 +164,32 @@ static void SetTriggerSound(edict_t* self) //mxd. Named 'Trigger_Sounds' in orig
 
 #pragma endregion
 
-//----------------------------------------------------------------------
-// One Time Trigger
-//----------------------------------------------------------------------
+#pragma region ========================== trigger_multiple ==========================
 
-/*QUAKED trigger_multiple (.5 .5 .5) ? MONSTER NOT_PLAYER TRIGGERED ANY
-Variable sized repeatable trigger.  Must be targeted at one or more entities.
--------SPAWN FLAGS-------------
-MONSTER - only a monster will trigger it
-NOT_PLAYER -  can't be triggered by player
-TRIGGERED - starts trigger deactivated
-ANY - anything can activate it
---------KEYS---------
-delay   - Time to wait after activating before firing.
-message - text string to display when activated
-wait    - Seconds between triggerings. (.2 default)
-sounds  - sound made when activating
-1)	secret
-2)	none
-3)	large switch
-*/
-void SP_trigger_Multiple(edict_t *self)
+// QUAKED trigger_multiple (.5 .5 .5) ? MONSTER NOT_PLAYER TRIGGERED ANY
+// Variable sized repeatable trigger. Must be targeted at one or more entities.
+// Spawnflags:
+// MONSTER		- Only a monster will trigger it.
+// NOT_PLAYER	- Can't be triggered by player.
+// TRIGGERED	- Starts trigger deactivated.
+// ANY			- Anything can activate it.
+// Variables:
+// delay   - Time to wait after activating before firing.
+// message - Text string to display when activated.
+// wait    - Seconds between re-triggering. (default 0.2).
+// sounds  - Sound made when activating:
+//		1)	Secret.
+//		2)	None.
+//		3)	Chat message.
+void SP_trigger_Multiple(edict_t* self)
 {
 	TriggerInit(self);
-
-	self->TriggerActivated = G_UseTargets;
-
 	SetTriggerSound(self);
 
+	self->TriggerActivated = G_UseTargets;
 }
+
+#pragma endregion
 
 //----------------------------------------------------------------------
 // One Time Trigger
