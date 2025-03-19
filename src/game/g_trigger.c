@@ -902,32 +902,30 @@ void SP_trigger_mission_give(edict_t* self)
 
 #pragma endregion
 
-#define MISSION_TAKE1 16
-#define MISSION_TAKE2 32
+#pragma region ========================== trigger_mission_take ==========================
 
-void mission_take_use (edict_t *self, edict_t *other)
+#define SF_MISSION_TAKE1	16
+#define SF_MISSION_TAKE2	32
+
+static void TriggerMissionTakeUse(edict_t* self, edict_t* other) //mxd. Named 'mission_take_use' in original logic.
 {
-	player_state_t		*ps;
-	int					i;
-
-	for (i = 1; i <= game.maxclients; i++)
+	for (int i = 1; i <= game.maxclients; i++)
 	{
-		other = &g_edicts[i];
-		if (!other->inuse)
-			continue;
-		if (!other->client)
+		const edict_t* cl = &g_edicts[i];
+
+		if (!cl->inuse || cl->client == NULL)
 			continue;
 
-		ps = &other->client->ps;
+		player_state_t* ps = &cl->client->ps;
 
-		if (self->spawnflags & MISSION_TAKE1)
+		if (self->spawnflags & SF_MISSION_TAKE1)
 			ps->mission_num1 = 0;
 
-		if (self->spawnflags & MISSION_TAKE2)
+		if (self->spawnflags & SF_MISSION_TAKE2)
 			ps->mission_num2 = 0;
 	}
-	G_UseTargets(self, self);
 
+	G_UseTargets(self, self);
 }
 
 /*QUAKED trigger_mission_take (0.3 0.1 0.6) ? MONSTER NOT_PLAYER TRIGGERED ANY TAKE1  TAKE2
@@ -949,7 +947,7 @@ void SP_trigger_mission_take (edict_t *self)
 	if (!self->wait)
 		self->wait = 10;
 
-	self->TriggerActivated = mission_take_use;
+	self->TriggerActivated = TriggerMissionTakeUse;
 }
 
 void ClipDistance_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
