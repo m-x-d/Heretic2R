@@ -664,26 +664,21 @@ static void TriggerQuitToMenuUse(edict_t* self, edict_t* other, edict_t* activat
 		gi.AddCommandString("menu_main\n");
 }
 
-/*QUAKED trigger_quit_to_menu (.5 .5 .5) ?
-Player only, quits to menu
-*/
-
-void SP_trigger_quit_to_menu(edict_t *self)
+// QUAKED trigger_quit_to_menu (.5 .5 .5) ?
+// Player only, quits to menu.
+void SP_trigger_quit_to_menu(edict_t* self)
 {
-	self->msgHandler = DefaultMsgHandler;
 	self->classID = CID_TRIGGER;
-
-	self->touch = TriggerQuitToMenuTouch;
-	self->use = TriggerQuitToMenuUse;
-	self->movetype = PHYSICSTYPE_NONE;
-	self->svflags |= SVF_NOCLIENT;
+	self->msgHandler = DefaultMsgHandler;
 
 	self->solid = SOLID_TRIGGER;
+	self->movetype = PHYSICSTYPE_NONE;
+	self->svflags |= SVF_NOCLIENT;
+	self->touch = TriggerQuitToMenuTouch;
+	self->use = TriggerQuitToMenuUse;
 
-	if(!Vec3IsZero(self->s.angles))
-	{
+	if (Vec3NotZero(self->s.angles))
 		G_SetMovedir(self->s.angles, self->movedir);
-	}
 
 	gi.setmodel(self, self->model);
 	gi.linkentity(self);
