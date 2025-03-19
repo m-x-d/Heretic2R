@@ -109,6 +109,12 @@ static void TriggerMultipleTouch(edict_t* self, edict_t* other, cplane_t* plane,
 	TriggerActivated(self);
 }
 
+void TriggerMultipleUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'Use_Multi' in original logic.
+{
+	self->activator = activator;
+	TriggerActivated(self);
+}
+
 void InitTrigger(edict_t *self)
 {
 	self->msgHandler = DefaultMsgHandler;
@@ -191,12 +197,6 @@ void trigger_enable(edict_t *self, edict_t *other, edict_t *activator)
 	self->solid = SOLID_TRIGGER;
 	self->use = TriggerMultipleUse;
 	gi.linkentity (self);
-}
-
-void TriggerMultipleUse(edict_t *self, edict_t *other, edict_t *activator)
-{
-	self->activator = activator;
-	TriggerActivated(self);
 }
 
 //----------------------------------------------------------------------
