@@ -1026,16 +1026,16 @@ static void TriggerEndgameTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 		TriggerEndgameUse(self, other, other); //mxd
 }
 
-/*QUAKED trigger_endgame (.5 .5 .5) ?
-End game trigger. once used, game over
-*/
-void SP_trigger_endgame(edict_t *self)
+// QUAKED trigger_endgame (.5 .5 .5) ?
+// End game trigger. Once used, game over.
+void SP_trigger_endgame(edict_t* self)
 {
 	TriggerInit(self);
-	self->touch = TriggerEndgameTouch;
+
 	self->solid = SOLID_TRIGGER;
+	self->count = 0;
+	self->touch = TriggerEndgameTouch;
 	self->use = TriggerEndgameUse;
-	self->count=0;
 }
 
 #pragma endregion
