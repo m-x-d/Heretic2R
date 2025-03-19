@@ -985,10 +985,11 @@ void SP_trigger_farclip(edict_t* self)
 
 #pragma endregion
 
-void trigger_endgame_think(edict_t *self)
-{
-	gi.AddCommandString ("newcoopgame\n");
+#pragma region ========================== trigger_endgame ==========================
 
+static void TriggerEndgameThink(edict_t* self) //mxd. Named 'trigger_endgame_think' in original logic.
+{
+	gi.AddCommandString("newcoopgame\n");
 	G_SetToFree(self);
 }
 
@@ -1022,7 +1023,7 @@ void Touch_endgame(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *s
 				gi.gamemsg_centerprintf(ent,GM_COOP_RESTARTING);
 		}
 
-		self->think=trigger_endgame_think;
+		self->think=TriggerEndgameThink;
 		self->nextthink=level.time+1.0;
 	}
 	else
@@ -1058,7 +1059,7 @@ void Use_endgame (edict_t *self, edict_t *other, edict_t *activator)
 				gi.gamemsg_centerprintf(ent,GM_COOP_RESTARTING);
 		}
 
-		self->think=trigger_endgame_think;
+		self->think=TriggerEndgameThink;
 		self->nextthink=level.time+1.0;
 	}
 	else
@@ -1082,6 +1083,8 @@ void SP_trigger_endgame(edict_t *self)
 	self->use = Use_endgame;
 	self->count=0;
 }
+
+#pragma endregion
 
 //----------------------------------------------------------------------
 // Player Push Lever Trigger
