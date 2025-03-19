@@ -650,14 +650,12 @@ void SP_choose_CDTrack(edict_t* self)
 
 #pragma endregion
 
-void M_Menu_Quit_f (void);
+#pragma region ========================== trigger_quit_to_menu ==========================
 
-void trigger_quit_to_menu_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void TriggerQuitToMenuTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'trigger_quit_to_menu_touch' in original logic.
 {
-	if(!other->client)
-		return;
-
-	gi.AddCommandString ("menu_main\n");
+	if (other->client != NULL)
+		gi.AddCommandString("menu_main\n");
 }
 
 void trigger_quit_to_menu_use (edict_t *self, edict_t *other, edict_t *activator)
@@ -677,7 +675,7 @@ void SP_trigger_quit_to_menu(edict_t *self)
 	self->msgHandler = DefaultMsgHandler;
 	self->classID = CID_TRIGGER;
 
-	self->touch = trigger_quit_to_menu_touch;
+	self->touch = TriggerQuitToMenuTouch;
 	self->use = trigger_quit_to_menu_use;
 	self->movetype = PHYSICSTYPE_NONE;
 	self->svflags |= SVF_NOCLIENT;
@@ -692,6 +690,8 @@ void SP_trigger_quit_to_menu(edict_t *self)
 	gi.setmodel(self, self->model);
 	gi.linkentity(self);
 }
+
+#pragma endregion
 
 void mappercentage_use (edict_t *self, edict_t *other)
 {
