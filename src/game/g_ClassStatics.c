@@ -15,12 +15,11 @@
 #include "g_light.h" //mxd
 #include "g_misc.h" //mxd
 #include "g_obj.h" //mxd
+#include "g_trigger.h" //mxd
 #include "m_monsters.h" //mxd
 
 G_ClassStatics_t classStatics[NUM_CLASSIDS];
 qboolean classStaticsInitialized[NUM_CLASSIDS];
-
-void TriggerStaticsInit();
 
 void (*classStaticsInits[NUM_CLASSIDS])(void) = 
 {

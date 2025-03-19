@@ -24,6 +24,7 @@
 #include "g_Shrine.h" //mxd
 #include "g_spawnf.h" //mxd
 #include "g_target.h" //mxd
+#include "g_trigger.h" //mxd
 #include "m_monsters.h" //mxd
 #include "p_client.h" //mxd
 #include "g_local.h"
@@ -34,29 +35,6 @@ typedef struct
 	void (*spawn)(edict_t* ent);
 	ClassID_t classID; //mxd. int in original version.
 } spawn_t;
-
-void SP_trigger_Activate(edict_t* self);
-void SP_trigger_Always(edict_t* ent);
-void SP_trigger_Counter(edict_t* ent);
-void SP_trigger_Deactivate(edict_t* self);
-void SP_trigger_Elevator(edict_t* ent);
-void SP_trigger_mappercentage(edict_t* self);
-void SP_trigger_quit_to_menu(edict_t* self);
-void SP_trigger_mission_give(edict_t* self);
-void SP_trigger_mission_take(edict_t* self);
-void SP_trigger_Multiple(edict_t* ent);
-void SP_trigger_Once(edict_t* ent);
-void SP_trigger_PlayerPushButton(edict_t* ent);
-void SP_trigger_PlayerPushLever(edict_t* ent);
-void SP_trigger_PlayerUsePuzzle(edict_t* ent);
-void SP_trigger_puzzle(edict_t* ent);
-void SP_trigger_quake(edict_t* ent);
-void SP_trigger_Relay(edict_t* ent);
-void SP_trigger_lightning(edict_t* ent);
-void SP_trigger_farclip(edict_t* ent);
-void SP_trigger_endgame(edict_t* self);
-
-void SP_choose_CDTrack(edict_t* self);
 
 void SP_misc_flag(edict_t* ent);
 

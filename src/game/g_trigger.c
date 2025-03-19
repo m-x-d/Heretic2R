@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include "g_trigger.h" //mxd
 #include "cl_strings.h"
 #include "g_DefaultMessageHandler.h"
 #include "g_func_Train.h" //mxd
@@ -18,8 +19,6 @@
 
 #define SF_PUZZLE_SHOW_NO_INVENTORY	16
 #define SF_PUZZLE_DONT_REMOVE		32
-
-void TriggerMultipleUse(edict_t *self, edict_t *other, edict_t *activator); //TODO: add to header.
 
 #pragma region ========================== TriggerStaticsInit ==========================
 
@@ -121,7 +120,7 @@ static void TriggerEnable(edict_t* self, edict_t* other, edict_t* activator) //m
 	gi.linkentity(self);
 }
 
-void TriggerInit(edict_t* self) //mxd. Named 'InitTrigger' in original logic. //TODO: add to header.
+void TriggerInit(edict_t* self) //mxd. Named 'InitTrigger' in original logic.
 {
 	self->classID = CID_TRIGGER;
 	self->msgHandler = DefaultMsgHandler;
