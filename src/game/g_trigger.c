@@ -742,9 +742,9 @@ static void TriggerLightningActivated(edict_t* self, edict_t* other) //mxd. Name
 	}
 }
 
-void lightning_go (edict_t *self, edict_t *other, edict_t *activator)
+static void TriggerLightningUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'lightning_go' in original logic.
 {
-	TriggerLightningActivated (self,other);
+	TriggerLightningActivated(self, other);
 }
 
 /*QUAKED trigger_lightning (0.3 0.1 0.6) ? MONSTER NOT_PLAYER TRIGGERED ANY
@@ -772,7 +772,7 @@ void SP_trigger_lightning (edict_t *self)
 		self->wait = 10;
 
 	self->TriggerActivated = TriggerLightningActivated;
-	self->use = lightning_go;	// This is so a trigger_relay can use it.
+	self->use = TriggerLightningUse;	// This is so a trigger_relay can use it.
 }
 
 #pragma endregion
