@@ -195,7 +195,7 @@ edict_t* G_PickTarget(const char* targetname)
 	return NULL;
 }
 
-static void Delay_Think(edict_t* ent) //mxd. Named 'Think_Delay' in original version.
+static void DelayThink(edict_t* ent) //mxd. Named 'Think_Delay' in original version.
 {
 	G_UseTargets(ent, ent->activator);
 	G_FreeEdict(ent);
@@ -222,7 +222,7 @@ void G_UseTargets(edict_t* ent, edict_t* activator)
 		delay->movetype = PHYSICSTYPE_NONE;
 		delay->classname = "DelayedUse";
 		delay->nextthink = level.time + ent->delay;
-		delay->think = Delay_Think;
+		delay->think = DelayThink;
 		delay->activator = activator;
 		delay->message = ent->message;
 		delay->text_msg = ent->text_msg;
