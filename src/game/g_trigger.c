@@ -484,7 +484,33 @@ static void TriggerElevatorUse(edict_t* self, edict_t* other, edict_t* activator
 	FuncTrainResume(self->movetarget);
 }
 
-void trigger_elevator_init (edict_t *self);
+static void TriggerElevatorInitThink(edict_t* self) //mxd. Named 'trigger_elevator_init' in original logic.
+{
+	if (self->target == NULL)
+	{
+		gi.dprintf("trigger_elevator at %s has no target\n", vtos(self->s.origin)); //mxd. Print trigger coords.
+		return; //TODO: this will cause assert in EntityThink()...
+	}
+
+	self->movetarget = G_PickTarget(self->target);
+
+	if (self->movetarget == NULL)
+	{
+		gi.dprintf("trigger_elevator at %s unable to find target %s\n", vtos(self->s.origin), self->target); //mxd. Print trigger coords.
+		return; //TODO: this will cause assert in EntityThink()...
+	}
+
+	if (strcmp(self->movetarget->classname, "func_train") != 0)
+	{
+		gi.dprintf("trigger_elevator at %s: target %s is not a func_train\n", vtos(self->s.origin), self->target); //mxd. Print trigger coords.
+		return; //TODO: this will cause assert in EntityThink()...
+	}
+
+	self->use = TriggerElevatorUse;
+	self->svflags = SVF_NOCLIENT;
+
+	//TODO: this will cause assert in EntityThink()...
+}
 
 /*QUAKED trigger_elevator (0.3 0.1 0.6) (-8 -8 -8) (8 8 8)
 */
@@ -492,37 +518,8 @@ void SP_trigger_Elevator (edict_t *self)
 {
 	self->classID = CID_TRIGGER;
 
-	self->think = trigger_elevator_init;
+	self->think = TriggerElevatorInitThink;
 	self->nextthink = level.time + FRAMETIME;
-}
-
-void trigger_elevator_init (edict_t *self)
-{
-	if (!self->target)
-	{
-#ifdef _DEVEL
-		gi.dprintf("trigger_elevator has no target\n");
-#endif
-		return;
-	}
-	self->movetarget = G_PickTarget (self->target);
-	if (!self->movetarget)
-	{
-#ifdef _DEVEL
-		gi.dprintf("trigger_elevator unable to find target %s\n", self->target);
-#endif
-		return;
-	}
-	if (strcmp(self->movetarget->classname, "func_train") != 0)
-	{
-#ifdef _DEVEL
-		gi.dprintf("trigger_elevator target %s is not a train\n", self->target);
-#endif
-		return;
-	}
-
-	self->use = TriggerElevatorUse;
-	self->svflags = SVF_NOCLIENT;
 }
 
 #pragma endregion
