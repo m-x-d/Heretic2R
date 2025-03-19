@@ -342,13 +342,27 @@ void SP_trigger_puzzle(edict_t* self)
 
 #pragma endregion
 
-//----------------------------------------------------------------------
-// Counter Trigger
-//----------------------------------------------------------------------
+#pragma region ========================== trigger_counter ==========================
 
-void trigger_counter_use(edict_t *self, edict_t *other, edict_t *activator);
+#define SF_NOMESSAGE	1
 
-#define TRIGGER_COUNTER_NOMESSAGE	1
+static void TriggerCounterUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_counter_use' in original logic.
+{
+	if (self->count == 0)
+		return;
+
+	self->count--;
+
+	if (!(self->spawnflags & SF_NOMESSAGE))
+		gi.gamemsg_centerprintf(activator, (short)(GM_SEQCOMPLETE + self->count));
+
+	if (self->count == 0)
+	{
+		self->activator = activator;
+		TriggerActivated(self);
+	}
+}
+
 /*QUAKED trigger_counter (.5 .5 .5) ? NOMESSAGE
 Acts as an intermediary for an action that takes multiple inputs.
 
@@ -367,40 +381,12 @@ void SP_trigger_Counter(edict_t *self)
 		self->count = 2;
 	}
 
-	self->use = trigger_counter_use;
+	self->use = TriggerCounterUse;
 
 	self->TriggerActivated = G_UseTargets;
 }
 
-void trigger_counter_use(edict_t *self, edict_t *other, edict_t *activator)
-{
-	if (self->count == 0)
-	{
-		return;
-	}
-	
-	self->count--;
-
-	if (self->count)
-	{
-		if (! (self->spawnflags & TRIGGER_COUNTER_NOMESSAGE))
-		{
-			gi.gamemsg_centerprintf(activator, (short)(self->count + GM_SEQCOMPLETE));
-//			gi.sound (activator, CHAN_AUTO, gi.soundindex ("misc/talk1.wav"), 1, ATTN_NORM, 0);
-		}
-		return;
-	}
-	
-	if (! (self->spawnflags & TRIGGER_COUNTER_NOMESSAGE))
-	{
-		gi.gamemsg_centerprintf(activator, GM_SEQCOMPLETE);
-//		gi.sound (activator, CHAN_AUTO, gi.soundindex ("misc/talk1.wav"), 1, ATTN_NORM, 0);
-	}
-
-	self->activator = activator;
-
-	TriggerActivated(self);
-}
+#pragma endregion
 
 //----------------------------------------------------------------------
 // Always Trigger
