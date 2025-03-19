@@ -152,13 +152,13 @@ void TriggerInit(edict_t* self) //mxd. Named 'InitTrigger' in original logic. //
 	gi.linkentity(self);
 }
 
-void Trigger_Sounds(edict_t *self)
+static void SetTriggerSound(edict_t* self) //mxd. Named 'Trigger_Sounds' in original logic.
 {
 	if (self->sounds == 1)
-		self->noise_index = gi.soundindex ("misc/secret.wav");
+		self->noise_index = gi.soundindex("misc/secret.wav"); //TODO: missing sound!
 	else if (self->sounds == 3)
-		self->noise_index = gi.soundindex ("misc/talk.wav");
-	else 
+		self->noise_index = gi.soundindex("misc/talk.wav");
+	else
 		self->noise_index = 0;
 }
 
@@ -190,7 +190,7 @@ void SP_trigger_Multiple(edict_t *self)
 
 	self->TriggerActivated = G_UseTargets;
 
-	Trigger_Sounds(self);
+	SetTriggerSound(self);
 
 }
 
@@ -223,7 +223,7 @@ void SP_trigger_Once(edict_t *self)
 
 	self->wait = -1;
 
-	Trigger_Sounds(self);
+	SetTriggerSound(self);
 
 }
 
