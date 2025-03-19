@@ -45,14 +45,15 @@ void TriggerStaticsInit(void)
 
 #pragma endregion
 
-// the wait time has passed, so set back up for another activation
-void multi_wait(edict_t *self)
+#pragma region ========================== Utility functions ==========================
+
+// The wait time has passed, so set back up for another activation.
+static void TriggerMultipleWaitThink(edict_t* self) //mxd. Named 'multi_wait' in original logic.
 {
 	self->think = NULL;
-	if(self->activator)
-	{
+
+	if (self->activator != NULL)
 		self->activator->target_ent = NULL;
-	}
 }
 
 // the trigger was just activated
@@ -71,7 +72,7 @@ void TriggerActivated(edict_t *self)
 
 	if(self->wait > 0)
 	{
-		self->think = multi_wait;
+		self->think = TriggerMultipleWaitThink;
 		self->nextthink = level.time + self->wait;
 	}
 	else
@@ -170,6 +171,8 @@ void Trigger_Sounds(edict_t *self)
 	else 
 		self->noise_index = 0;
 }
+
+#pragma endregion
 
 //----------------------------------------------------------------------
 // One Time Trigger
