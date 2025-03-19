@@ -815,40 +815,35 @@ static void TriggerQuakeActivated(edict_t* self, edict_t* other) //mxd. Named 'q
 	kill_sound->think = KillSoundThink;
 }
 
-/*QUAKED trigger_quake (0.3 0.1 0.6) ? MONSTER NOT_PLAYER TRIGGERED ANY
-Triggers an earth quake
--------SPAWN FLAGS-------------
-MONSTER - only a monster will trigger it
-NOT_PLAYER -  can't be triggered by player
-TRIGGERED - starts trigger deactivated
-ANY - anything can activate it
---------KEYS---------------------
-wait - amount of time until it will become active again (default 10). -1 makes it go away for ever.
-count - max number of pixels to shake screen (default 20)
-time - duration to the tenth of a second  (range 0 - 12.8) (default 2)
-style - direction of shake
-1 - SHAKE_LATERAL   
-2 - SHAKE_VERTICAL  
-4 - SHAKE_DEPTH     
-7 - SHAKE_ALL_DIR  (default)
-*/
-void SP_trigger_quake (edict_t *self)
+// QUAKED trigger_quake (0.3 0.1 0.6) ? MONSTER NOT_PLAYER TRIGGERED ANY
+// Triggers an earth quake.
+// Spawnflags:
+// MONSTER		- Only a monster will trigger it.
+// NOT_PLAYER	- Can't be triggered by player.
+// TRIGGERED	- Starts trigger deactivated.
+// ANY			- Anything can activate it.
+// Variables:
+// wait		- Amount of time until it will become active again (default 10). -1 makes it go away for ever.
+// count	- Max number of pixels to shake screen (default 20).
+// time		- Duration to the tenth of a second (range 0 - 12.8) (default 2).
+// style	- Direction of shake: 1: SHAKE_LATERAL, 2: SHAKE_VERTICAL, 4: SHAKE_DEPTH, 7: SHAKE_ALL_DIR (default).
+void SP_trigger_quake(edict_t* self)
 {
-	if (!self->wait)
-		self->wait = 10;
+	if (self->wait == 0.0f)
+		self->wait = 10.0f;
 
-	self->moveinfo.sound_middle = gi.soundindex ("world/quake.wav");
-	self->moveinfo.sound_end = gi.soundindex ("world/quakend.wav");
+	self->moveinfo.sound_middle = gi.soundindex("world/quake.wav");
+	self->moveinfo.sound_end = gi.soundindex("world/quakend.wav");
 
 	TriggerInit(self);
 
-	if (!self->count)	// Amount of shake
+	if (self->count == 0) // Amount of shake.
 		self->count = 20;
 
-	if (!self->time)	// Duration
-		self->time = 2.0;
+	if (self->time == 0.0f) // Duration.
+		self->time = 2.0f;
 
-	if (!self->style)
+	if (self->style == 0)
 		self->style = SHAKE_ALL_DIR;
 
 	self->TriggerActivated = TriggerQuakeActivated;
