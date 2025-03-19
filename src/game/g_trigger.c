@@ -615,16 +615,11 @@ static void ChooseCDTrackUse(edict_t* self, edict_t* other, edict_t* activator) 
 	G_SetToFree(self); // Kill this trigger. //TODO: don't kill this trigger? Advertised as repeatable in entity description.
 }
 
-void choose_CDTrack_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void ChooseCDTrackTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'choose_CDTrack_touch' in original logic.
 {
-	// if we aren't a player, forget it
-	if (!other->client)
-		return;
-	
-	// make everyone play this track
-	ChooseCDTrackPlayTrack(self->style, self->spawnflags);
-	// kill this trigger
-	G_SetToFree(self);
+	// If we aren't a player, forget it.
+	if (other->client != NULL)
+		ChooseCDTrackUse(self, other, other);
 }
 
 /*QUAKED choose_CDTrack (.5 .5 .5) ? NO_LOOP
@@ -651,7 +646,7 @@ void SP_choose_CDTrack(edict_t *self)
 	}
 
 	// Triggers still use the touch function even with the new physics
-	self->touch = choose_CDTrack_touch;
+	self->touch = ChooseCDTrackTouch;
 	self->movetype = PHYSICSTYPE_NONE;
 	self->svflags |= SVF_NOCLIENT;
 	self->solid = SOLID_TRIGGER;
