@@ -880,23 +880,22 @@ static void TriggerMissionGiveUse(edict_t* self, edict_t* other) //mxd. Named 'm
 	G_UseTargets(self, self);
 }
 
-/*QUAKED trigger_mission_give (0.3 0.1 0.6) ? MONSTER NOT_PLAYER TRIGGERED ANY
-Gives player(s) the current mission objectives
--------SPAWN FLAGS-------------
-MONSTER - only a monster will trigger it
-NOT_PLAYER -  can't be triggered by player
-TRIGGERED - starts trigger deactivated
-ANY - anything can activate it
--------KEYS--------------------
-message - number of line from strings.txt, put in objectives
-wait - amount of time until it will become active again (default 10).
-*/
-void SP_trigger_mission_give (edict_t *self)
+// QUAKED trigger_mission_give (0.3 0.1 0.6) ? MONSTER NOT_PLAYER TRIGGERED ANY
+// Gives player(s) the current mission objectives.
+// Spawnflags:
+// MONSTER		- Only a monster will trigger it.
+// NOT_PLAYER	- Can't be triggered by player.
+// TRIGGERED	- Starts trigger deactivated.
+// ANY			- Anything can activate it.
+// Variables:
+// message	- Line number from strings.txt, put in objectives.
+// wait		- Amount of time until it will become active again (default 10).
+void SP_trigger_mission_give(edict_t* self)
 {
 	TriggerInit(self);
 
-	if (!self->wait)
-		self->wait = 10;
+	if (self->wait == 0.0f)
+		self->wait = 10.0f;
 
 	self->TriggerActivated = TriggerMissionGiveUse;
 }
