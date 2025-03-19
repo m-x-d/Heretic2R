@@ -383,25 +383,19 @@ void SP_trigger_Counter(edict_t* self)
 
 #pragma endregion
 
-//----------------------------------------------------------------------
-// Always Trigger
-//----------------------------------------------------------------------
+#pragma region ========================== trigger_always ==========================
 
-/*QUAKED trigger_always (.5 .5 .5) (-8 -8 -8) (8 8 8)
-This trigger will always fire.  It is activated by the world.
-*/
-void SP_trigger_Always(edict_t *self)
+// QUAKED trigger_always (.5 .5 .5) (-8 -8 -8) (8 8 8)
+// This trigger will always fire. It is activated by the world.
+void SP_trigger_Always(edict_t* self)
 {
 	self->classID = CID_TRIGGER;
-
-	// we must have some delay to make sure our use targets are present
-	if (self->delay < 0.2)
-	{
-		self->delay = 0.2;
-	}
+	self->delay = max(0.2f, self->delay); // We must have some delay to make sure our use targets are present.
 
 	G_UseTargets(self, self);
 }
+
+#pragma endregion
 
 //----------------------------------------------------------------------
 // Player Use Item
