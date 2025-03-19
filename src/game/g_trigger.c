@@ -219,24 +219,21 @@ void SP_trigger_Once(edict_t* self)
 
 #pragma endregion
 
-//----------------------------------------------------------------------
-// Relay Trigger
-//----------------------------------------------------------------------
+#pragma region ========================== trigger_relay ==========================
 
-void trigger_relay_use(edict_t *self, edict_t *other, edict_t *activator);
-
-/*QUAKED trigger_relay (.5 .5 .5) (-8 -8 -8) (8 8 8)
-This fixed size trigger cannot be touched, it can only be fired by other events.
-*/
-void SP_trigger_Relay(edict_t *self)
+static void TriggerRelayUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_relay_use' in original logic.
 {
-	self->use = trigger_relay_use;
+	G_UseTargets(self, activator);
 }
 
-void trigger_relay_use(edict_t *self, edict_t *other, edict_t *activator)
+// QUAKED trigger_relay (.5 .5 .5) (-8 -8 -8) (8 8 8)
+// This fixed size trigger cannot be touched, it can only be fired by other events.
+void SP_trigger_Relay(edict_t* self)
 {
-	G_UseTargets (self, activator);
+	self->use = TriggerRelayUse;
 }
+
+#pragma endregion
 
 //----------------------------------------------------------------------
 // Key Trigger
