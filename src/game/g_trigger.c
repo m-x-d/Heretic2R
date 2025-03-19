@@ -622,38 +622,30 @@ static void ChooseCDTrackTouch(edict_t* self, edict_t* other, cplane_t* plane, c
 		ChooseCDTrackUse(self, other, other);
 }
 
-/*QUAKED choose_CDTrack (.5 .5 .5) ? NO_LOOP
-Variable sized repeatable trigger which chooses a CD track.
-------KEYS-----------
-style - # of CD track to play
-NO_LOOP - allows you to set the track to play not to loop
-*/
-void SP_choose_CDTrack(edict_t *self)
+// QUAKED choose_CDTrack (.5 .5 .5) ? NO_LOOP
+// Variable sized repeatable trigger which chooses a CD track.
+// Spawnflags:
+// NO_LOOP - Allows you to set the track to play not to loop.
+// Variables:
+// style - # of CD track to play.
+void SP_choose_CDTrack(edict_t* self)
 {
-	self->msgHandler = DefaultMsgHandler;
 	self->classID = CID_TRIGGER;
+	self->msgHandler = DefaultMsgHandler;
+	self->spawnflags = ((self->spawnflags & SF_NO_LOOP) ? FALSE : TRUE);
 
-	self->use = ChooseCDTrackUse;
+	if (self->wait == 0.0f)
+		self->wait = 0.2f;
 
-	if (self->spawnflags & 1)
-		self->spawnflags = FALSE;
-	else
-		self->spawnflags = TRUE;
-
-	if(!self->wait)
-	{
-		self->wait = 0.2;
-	}
-
-	// Triggers still use the touch function even with the new physics
+	// Triggers still use the touch function even with the new physics.
 	self->touch = ChooseCDTrackTouch;
+	self->use = ChooseCDTrackUse;
 	self->movetype = PHYSICSTYPE_NONE;
 	self->svflags |= SVF_NOCLIENT;
 	self->solid = SOLID_TRIGGER;
 
 	gi.setmodel(self, self->model);
 	gi.linkentity(self);
-
 }
 
 #pragma endregion
