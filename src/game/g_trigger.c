@@ -993,6 +993,33 @@ static void TriggerEndgameThink(edict_t* self) //mxd. Named 'trigger_endgame_thi
 	G_SetToFree(self);
 }
 
+static void TriggerEndgameUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'Use_endgame' in original logic.
+{
+	if (DEATHMATCH || self->count) // Not valid on DM play / Already used.
+		return;
+
+	self->count = true;
+
+	// Single player - just end, coop - restart if sv_loopcoop is set.
+	if (COOP && (int)(gi.cvar_variablevalue("sv_loopcoop")))
+	{
+		for (int i = 0; i < MAXCLIENTS; i++)
+		{
+			const edict_t* ent = &g_edicts[i + 1];
+			if (ent->inuse)
+				gi.gamemsg_centerprintf(ent, GM_COOP_RESTARTING);
+		}
+
+		self->think = TriggerEndgameThink;
+		self->nextthink = level.time + 1.0f;
+	}
+	else // Single player.
+	{
+		gi.AddCommandString("endgame\n");
+		G_SetToFree(self);
+	}
+}
+
 void Touch_endgame(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	if(self->count)
@@ -1034,44 +1061,6 @@ void Touch_endgame(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *s
 	}
 }
 
-void Use_endgame (edict_t *self, edict_t *other, edict_t *activator)
-{
-	if(self->count)
-		return;
-
-	self->count++;
-
-	// Not valid on DM play.
-
-	if (deathmatch->value)
-		return;
-
-	// Single player - just end, coop - restart if sv_loopcoop is set.
-
-	if(gi.cvar_variablevalue("sv_loopcoop") && coop->value)
-	{
-		int		i;
-		edict_t *ent;
-
-		for(i=0;i<maxclients->value;i++)
-		{
-			if((ent=(&g_edicts[i+1]))->inuse)	
-				gi.gamemsg_centerprintf(ent,GM_COOP_RESTARTING);
-		}
-
-		self->think=TriggerEndgameThink;
-		self->nextthink=level.time+1.0;
-	}
-	else
-	{
-		gi.AddCommandString ("endgame\n");
-
-		G_SetToFree(self);
-	}
-
-}
-
-
 /*QUAKED trigger_endgame (.5 .5 .5) ?
 End game trigger. once used, game over
 */
@@ -1080,7 +1069,7 @@ void SP_trigger_endgame(edict_t *self)
 	TriggerInit(self);
 	self->touch = Touch_endgame;
 	self->solid = SOLID_TRIGGER;
-	self->use = Use_endgame;
+	self->use = TriggerEndgameUse;
 	self->count=0;
 }
 
