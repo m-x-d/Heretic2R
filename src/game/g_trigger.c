@@ -397,23 +397,19 @@ void SP_trigger_Always(edict_t* self)
 
 #pragma endregion
 
-//----------------------------------------------------------------------
-// Player Use Item
-//----------------------------------------------------------------------
+#pragma region ========================== trigger_playerusepuzzle ==========================
 
-void trigger_playerusepuzzle(edict_t *self, edict_t *activator)
+static void TriggerPlayerUsePuzzleActivated(edict_t* self, edict_t* activator) //mxd. Named 'trigger_playerusepuzzle' in original logic.
 {
-	if (!(self->spawnflags & SF_PUZZLE_SHOW_NO_INVENTORY))
+	if (self->spawnflags & SF_PUZZLE_SHOW_NO_INVENTORY)
 	{
-		if(!strcmp(activator->classname, "player"))
-		{
-			activator->target_ent = self;
-			self->activator = activator;
-		}
+		G_UseTargets(self, activator);
 	}
-	else
-		G_UseTargets(self,activator);
-
+	else if (strcmp(activator->classname, "player") == 0)
+	{
+		activator->target_ent = self;
+		self->activator = activator;
+	}
 }
 
 /*QUAKED trigger_playerusepuzzle (.5 .5 .5) ?  MONSTER NOT_PLAYER TRIGGERED ANY NO_INVENTORY DONT_REMOVE
@@ -432,11 +428,13 @@ void SP_trigger_PlayerUsePuzzle(edict_t *self)
 	TriggerInit(self);
 
 	self->wait = 1.0;
-	self->TriggerActivated = trigger_playerusepuzzle;
+	self->TriggerActivated = TriggerPlayerUsePuzzleActivated;
 
 	gi.setmodel (self, self->model);
 	gi.linkentity (self);
 }
+
+#pragma endregion
 
 //----------------------------------------------------------------------
 // Player Push Button Trigger
