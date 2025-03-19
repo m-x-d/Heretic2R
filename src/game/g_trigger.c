@@ -191,38 +191,33 @@ void SP_trigger_Multiple(edict_t* self)
 
 #pragma endregion
 
-//----------------------------------------------------------------------
-// One Time Trigger
-//----------------------------------------------------------------------
+#pragma region ========================== trigger_once ==========================
 
-/*QUAKED trigger_once (.5 .5 .5) ? MONSTER NOT_PLAYER TRIGGERED ANY
-Triggers once, then removes itself.
-You must set the key "target" to the name of another object in the level that has a matching "targetname".
--------SPAWN FLAGS-------------
-MONSTER - only a monster will trigger it
-NOT_PLAYER -  can't be triggered by player
-TRIGGERED - starts trigger deactivated
-ANY - anything can activate it
-
-sounds
- 1)	secret
- 2)	no sound
- 3)	large switch
-
-"message"	string to be displayed when triggered
-*/
-
-void SP_trigger_Once(edict_t *self)
+// QUAKED trigger_once (.5 .5 .5) ? MONSTER NOT_PLAYER TRIGGERED ANY
+// Triggers once, then removes itself.
+// You must set the key "target" to the name of another object in the level that has a matching "targetname".
+// Spawnflags:
+// MONSTER		- Only a monster will trigger it.
+// NOT_PLAYER	- Can't be triggered by player.
+// TRIGGERED	- Starts trigger deactivated.
+// ANY			- Anything can activate it.
+// Variables:
+// delay	- Time to wait after activating before firing.
+// message	- Text string to display when activated.
+// sounds	- Sound made when activating:
+//		1)	Secret.
+//		2)	None.
+//		3)	Chat message.
+void SP_trigger_Once(edict_t* self)
 {
 	TriggerInit(self);
-
-	self->TriggerActivated = G_UseTargets;
-
-	self->wait = -1;
-
 	SetTriggerSound(self);
 
+	self->TriggerActivated = G_UseTargets;
+	self->wait = -1.0f;
 }
+
+#pragma endregion
 
 //----------------------------------------------------------------------
 // Relay Trigger
