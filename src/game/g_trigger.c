@@ -19,17 +19,31 @@
 #define SF_PUZZLE_SHOW_NO_INVENTORY	16
 #define SF_PUZZLE_DONT_REMOVE		32
 
-void Trigger_Deactivate(edict_t *self, G_Message_t *msg);
-void Trigger_Activate(edict_t *self, G_Message_t *msg);
-
 void trigger_enable(edict_t *self, edict_t *other, edict_t *activator);
 void TriggerMultipleUse(edict_t *self, edict_t *other, edict_t *activator);
 
-void TriggerStaticsInit()
+#pragma region ========================== TriggerStaticsInit ==========================
+
+static void TriggerDeactivate(edict_t* self, G_Message_t* msg) //mxd. Named 'Trigger_Deactivate' in original logic.
 {
-	classStatics[CID_TRIGGER].msgReceivers[G_MSG_SUSPEND] = Trigger_Deactivate;
-	classStatics[CID_TRIGGER].msgReceivers[G_MSG_UNSUSPEND] = Trigger_Activate;
+	self->solid = SOLID_NOT;
+	self->use = NULL;
 }
+
+static void TriggerActivate(edict_t* self, G_Message_t* msg) //mxd. Named 'Trigger_Activate' in original logic.
+{
+	self->solid = SOLID_TRIGGER;
+	self->use = TriggerMultipleUse;
+	gi.linkentity(self);
+}
+
+void TriggerStaticsInit(void)
+{
+	classStatics[CID_TRIGGER].msgReceivers[G_MSG_SUSPEND] = TriggerDeactivate;
+	classStatics[CID_TRIGGER].msgReceivers[G_MSG_UNSUSPEND] = TriggerActivate;
+}
+
+#pragma endregion
 
 // the wait time has passed, so set back up for another activation
 void multi_wait(edict_t *self)
@@ -145,19 +159,6 @@ void InitTrigger(edict_t *self)
 
 	gi.setmodel(self, self->model);
 	gi.linkentity(self);
-}
-
-void Trigger_Deactivate(edict_t *self, G_Message_t *msg)
-{
-	self->solid = SOLID_NOT;
-	self->use = NULL;
-}
-
-void Trigger_Activate(edict_t *self, G_Message_t *msg)
-{
-	self->solid = SOLID_TRIGGER;
-	self->use = TriggerMultipleUse;
-	gi.linkentity (self);
 }
 
 void Trigger_Sounds(edict_t *self)
