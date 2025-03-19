@@ -306,32 +306,32 @@ static void TriggerPuzzleUse(edict_t* self, edict_t* other, edict_t* activator) 
 	}
 }
 
-/*QUAKED trigger_puzzle (.5 .5 .5) (-8 -8 -8) (8 8 8)  NO_TEXT  NO_TAKE
-A relay trigger that only fires it's targets if player has the proper puzzle item.
-------KEYS--------------
-NO_TEXT - won't generate the "You need..." text when triggered
-NO_TAKE - don't take puzzle item from player inventory
-------FIELDS------------
-Use "item" to specify the required puzzle item, for example "key_data_cd"
-*/
-void SP_trigger_puzzle(edict_t *self)
+// QUAKED trigger_puzzle (.5 .5 .5) (-8 -8 -8) (8 8 8) NO_TEXT NO_TAKE
+// A relay trigger that only fires it's targets if player has the proper puzzle item.
+// Spawnflags:
+// NO_TEXT - Won't generate the "You need..." text when triggered.
+// NO_TAKE - Don't take puzzle item from player inventory.
+// Variables:
+// item - Classname of the required puzzle item, for example "key_data_cd".
+void SP_trigger_puzzle(edict_t* self)
 {
 	self->classID = CID_TRIGGER;
 
-	if (!st.item)
+	if (st.item == NULL)
 	{
 		gi.dprintf("no key item for trigger_key at %s\n", vtos(self->s.origin));
 		return;
 	}
-	self->item = P_FindItemByClassname (st.item);
 
-	if (!self->item)
+	self->item = P_FindItemByClassname(st.item);
+
+	if (self->item == NULL)
 	{
 		gi.dprintf("item %s not found for trigger_key at %s\n", st.item, vtos(self->s.origin));
 		return;
 	}
 
-	if (!self->target)
+	if (self->target == NULL)
 	{
 		gi.dprintf("%s at %s has no target\n", self->classname, vtos(self->s.origin));
 		return;
