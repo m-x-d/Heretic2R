@@ -512,12 +512,11 @@ static void TriggerElevatorInitThink(edict_t* self) //mxd. Named 'trigger_elevat
 	//TODO: this will cause assert in EntityThink()...
 }
 
-/*QUAKED trigger_elevator (0.3 0.1 0.6) (-8 -8 -8) (8 8 8)
-*/
-void SP_trigger_Elevator (edict_t *self)
+// QUAKED trigger_elevator (0.3 0.1 0.6) (-8 -8 -8) (8 8 8)
+// Special func_train trigger (or not trigger, if func_train is moving). Not used in any H2 maps -- mxd.
+void SP_trigger_Elevator(edict_t* self)
 {
 	self->classID = CID_TRIGGER;
-
 	self->think = TriggerElevatorInitThink;
 	self->nextthink = level.time + FRAMETIME;
 }
