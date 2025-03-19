@@ -969,22 +969,18 @@ static void TriggerFarclipTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 	self->pain_debounce_time = level.time + 0.5f;
 }
 
-/*QUAKED trigger_farclip (0.5 0.5 0.5) ? 
-Allows the console var Farclip to be reset - this is a toggle function - if triggered
-and far-clip is set to the default, it will be reset to the value passed in. If its the
-value passed in, its reset to the default. Be aware that there must be no teleport
-destinations within the area that has a reset far-clip.
--------SPAWN FLAGS-------------
--------KEYS--------------------
-scale - distance to set far clip to. Default of farclip is 4096.0
-*/
-void SP_trigger_farclip (edict_t *self)
+// QUAKED trigger_farclip (0.5 0.5 0.5) ?
+// Allows the r_farclipdist cvar to be reset. This is a toggle function.
+// If triggered and far-clip is set to the default, it will be set to the value passed in.
+// If its the value passed in, its reset to the default.
+// Be aware that there must be no teleport destinations within the area that has a reset far-clip.
+// Variables:
+// scale - Distance to set far clip to (default 4096.0).
+void SP_trigger_farclip(edict_t* self)
 {
 	TriggerInit(self);
-
-	self->touch = TriggerFarclipTouch;
 	self->solid = SOLID_TRIGGER;
-
+	self->touch = TriggerFarclipTouch;
 }
 
 #pragma endregion
