@@ -79,47 +79,33 @@ static void TriggerActivated(edict_t* self)
 	}
 }
 
-void Touch_Multi(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void TriggerMultipleTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'Touch_Multi' in original logic.
 {
-	// Monsters or players can trigger it
-	if ((self->spawnflags & SF_TRIGGER_ANY) && ((strcmp(other->classname, "player") == 0) ||
-		(other->svflags & SVF_MONSTER)))
-		;
-	// Player cannot trigger it
-	else if(strcmp(other->classname, "player") == 0)
-	{
-		if(self->spawnflags & SF_TRIGGER_NOT_PLAYER)
-		{
-			return;
-		}
-	}
-	// Just monster will trigger it
-	else if(other->svflags & SVF_MONSTER)
-	{
-		if(!(self->spawnflags & SF_TRIGGER_MONSTER))
-		{
-			return;
-		}
-	}
-	else
-	{
+	const qboolean is_player = (strcmp(other->classname, "player") == 0); //mxd
+	const qboolean is_monster = (other->svflags & SVF_MONSTER); //mxd
+
+	// Monsters or players can trigger it.
+	if ((self->spawnflags & SF_TRIGGER_ANY) && !is_player && !is_monster)
 		return;
-	}
 
-	if(!Vec3IsZero(self->movedir))
+	// Player can't trigger it.
+	if ((self->spawnflags & SF_TRIGGER_NOT_PLAYER) && is_player)
+		return;
+
+	// Monsters can trigger it.
+	if ((self->spawnflags & SF_TRIGGER_MONSTER) && !is_monster)
+		return;
+
+	if (Vec3NotZero(self->movedir))
 	{
-		vec3_t	forward;
-
+		vec3_t forward;
 		AngleVectors(other->s.angles, forward, NULL, NULL);
 
-		if(DotProduct(forward, self->movedir) < 0)
-		{
+		if (DotProduct(forward, self->movedir) < 0.0f)
 			return;
-		}
 	}
 
 	self->activator = other;
-
 	TriggerActivated(self);
 }
 
@@ -134,7 +120,7 @@ void InitTrigger(edict_t *self)
 	}
 
 	// Triggers still use the touch function even with the new physics
-	self->touch = Touch_Multi;
+	self->touch = TriggerMultipleTouch;
 	self->movetype = PHYSICSTYPE_NONE;
 	self->svflags |= SVF_NOCLIENT;
 
