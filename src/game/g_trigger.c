@@ -23,7 +23,7 @@ void Trigger_Deactivate(edict_t *self, G_Message_t *msg);
 void Trigger_Activate(edict_t *self, G_Message_t *msg);
 
 void trigger_enable(edict_t *self, edict_t *other, edict_t *activator);
-void Use_Multi(edict_t *self, edict_t *other, edict_t *activator);
+void TriggerMultipleUse(edict_t *self, edict_t *other, edict_t *activator);
 
 void TriggerStaticsInit()
 {
@@ -135,7 +135,7 @@ void InitTrigger(edict_t *self)
 	else
 	{
 		self->solid = SOLID_TRIGGER;
-		self->use = Use_Multi;
+		self->use = TriggerMultipleUse;
 	}
 
 	if(!Vec3IsZero(self->s.angles))
@@ -156,7 +156,7 @@ void Trigger_Deactivate(edict_t *self, G_Message_t *msg)
 void Trigger_Activate(edict_t *self, G_Message_t *msg)
 {
 	self->solid = SOLID_TRIGGER;
-	self->use = Use_Multi;
+	self->use = TriggerMultipleUse;
 	gi.linkentity (self);
 }
 
@@ -203,11 +203,11 @@ void SP_trigger_Multiple(edict_t *self)
 void trigger_enable(edict_t *self, edict_t *other, edict_t *activator)
 {
 	self->solid = SOLID_TRIGGER;
-	self->use = Use_Multi;
+	self->use = TriggerMultipleUse;
 	gi.linkentity (self);
 }
 
-void Use_Multi(edict_t *self, edict_t *other, edict_t *activator)
+void TriggerMultipleUse(edict_t *self, edict_t *other, edict_t *activator)
 {
 	self->activator = activator;
 	TriggerActivated(self);

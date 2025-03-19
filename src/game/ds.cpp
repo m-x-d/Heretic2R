@@ -24,7 +24,7 @@ template<class T> size_t tRead(T *ptr,FILE *FH,int n=1)
 extern "C"
 {
 #endif
-	extern void Use_Multi(edict_t *self, edict_t *other, edict_t *activator);
+	extern void TriggerMultipleUse(edict_t *self, edict_t *other, edict_t *activator);
 	extern cvar_t 	*Cvar_Set (const char *var_name, const char *value);
 #ifdef _HERETIC2_
 }
@@ -3564,7 +3564,7 @@ void CScript::HandleTrigger(bool Enable)
 		if (Enable)
 		{
 			trigger_ent->solid = SOLID_TRIGGER;
-			trigger_ent->use = Use_Multi;
+			trigger_ent->use = TriggerMultipleUse;
 			gi.linkentity (trigger_ent);
 		}
 		else
