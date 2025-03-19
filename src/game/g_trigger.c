@@ -609,20 +609,18 @@ static void ChooseCDTrackPlayTrack(const int track, const int loop) //mxd. Named
 	}
 }
 
+static void ChooseCDTrackUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'choose_CDTrack_use' in original logic.
+{
+	ChooseCDTrackPlayTrack(self->style, self->spawnflags);
+	G_SetToFree(self); // Kill this trigger. //TODO: don't kill this trigger? Advertised as repeatable in entity description.
+}
+
 void choose_CDTrack_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	// if we aren't a player, forget it
 	if (!other->client)
 		return;
 	
-	// make everyone play this track
-	ChooseCDTrackPlayTrack(self->style, self->spawnflags);
-	// kill this trigger
-	G_SetToFree(self);
-}
-
-void choose_CDTrack_use (edict_t *self, edict_t *other, edict_t *activator)
-{
 	// make everyone play this track
 	ChooseCDTrackPlayTrack(self->style, self->spawnflags);
 	// kill this trigger
@@ -640,7 +638,7 @@ void SP_choose_CDTrack(edict_t *self)
 	self->msgHandler = DefaultMsgHandler;
 	self->classID = CID_TRIGGER;
 
-	self->use = choose_CDTrack_use;
+	self->use = ChooseCDTrackUse;
 
 	if (self->spawnflags & 1)
 		self->spawnflags = FALSE;
