@@ -474,6 +474,7 @@ static void TriggerElevatorUse(edict_t* self, edict_t* other, edict_t* activator
 	}
 
 	edict_t* target = G_PickTarget(other->pathtarget);
+
 	if (target == NULL)
 	{
 		gi.dprintf("trigger_elevator at %s used with bad pathtarget: %s\n", vtos(self->s.origin), other->pathtarget); //mxd. Print trigger coords.
@@ -489,7 +490,9 @@ static void TriggerElevatorInitThink(edict_t* self) //mxd. Named 'trigger_elevat
 	if (self->target == NULL)
 	{
 		gi.dprintf("trigger_elevator at %s has no target\n", vtos(self->s.origin)); //mxd. Print trigger coords.
-		return; //TODO: this will cause assert in EntityThink()...
+		self->think = NULL; //BUGFIX: mxd. Avoid triggering assert in EntityThink().
+
+		return;
 	}
 
 	self->movetarget = G_PickTarget(self->target);
@@ -497,19 +500,22 @@ static void TriggerElevatorInitThink(edict_t* self) //mxd. Named 'trigger_elevat
 	if (self->movetarget == NULL)
 	{
 		gi.dprintf("trigger_elevator at %s unable to find target %s\n", vtos(self->s.origin), self->target); //mxd. Print trigger coords.
-		return; //TODO: this will cause assert in EntityThink()...
+		self->think = NULL; //BUGFIX: mxd. Avoid triggering assert in EntityThink().
+
+		return;
 	}
 
 	if (strcmp(self->movetarget->classname, "func_train") != 0)
 	{
 		gi.dprintf("trigger_elevator at %s: target %s is not a func_train\n", vtos(self->s.origin), self->target); //mxd. Print trigger coords.
-		return; //TODO: this will cause assert in EntityThink()...
+		self->think = NULL; //BUGFIX: mxd. Avoid triggering assert in EntityThink().
+
+		return;
 	}
 
+	self->think = NULL; //BUGFIX: mxd. Avoid triggering assert in EntityThink().
 	self->use = TriggerElevatorUse;
 	self->svflags = SVF_NOCLIENT;
-
-	//TODO: this will cause assert in EntityThink()...
 }
 
 // QUAKED trigger_elevator (0.3 0.1 0.6) (-8 -8 -8) (8 8 8)
