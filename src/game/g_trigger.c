@@ -928,27 +928,28 @@ static void TriggerMissionTakeUse(edict_t* self, edict_t* other) //mxd. Named 'm
 	G_UseTargets(self, self);
 }
 
-/*QUAKED trigger_mission_take (0.3 0.1 0.6) ? MONSTER NOT_PLAYER TRIGGERED ANY TAKE1  TAKE2
-Removes player(s) the current mission objectives
--------SPAWN FLAGS-------------
-MONSTER - only a monster will trigger it
-NOT_PLAYER -  can't be triggered by player
-TRIGGERED - starts trigger deactivated
-ANY - anything can activate it
-TAKE1 mission statement 1
-TAKE2 mission statement 2
--------KEYS--------------------
-wait - amount of time until it will become active again (default 10).
-*/
-void SP_trigger_mission_take (edict_t *self)
+// QUAKED trigger_mission_take (0.3 0.1 0.6) ? MONSTER NOT_PLAYER TRIGGERED ANY TAKE1 TAKE2
+// Removes player(s) current mission objectives.
+// Spawnflags:
+// MONSTER		- Only a monster will trigger it.
+// NOT_PLAYER	- Can't be triggered by player.
+// TRIGGERED	- Starts trigger deactivated.
+// ANY			- Anything can activate it.
+// TAKE1		- Mission statement 1.
+// TAKE2		- Mission statement 2.
+// Variables:
+// wait - Amount of time until it will become active again (default 10).
+void SP_trigger_mission_take(edict_t* self)
 {
 	TriggerInit(self);
 
-	if (!self->wait)
-		self->wait = 10;
+	if (self->wait == 0.0f)
+		self->wait = 10.0f;
 
 	self->TriggerActivated = TriggerMissionTakeUse;
 }
+
+#pragma endregion
 
 void ClipDistance_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
