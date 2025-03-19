@@ -784,39 +784,35 @@ static void KillSoundThink(edict_t* self) //mxd. Named 'quake_quiet' in original
 	self->nextthink = level.time + FRAMETIME;
 }
 
-void quake_use (edict_t *self, edict_t *other)
+static void TriggerQuakeActivated(edict_t* self, edict_t* other) //mxd. Named 'quake_use' in original logic.
 {
-	edict_t *killsound;
-	int count,time;
-
 	if (self->touch_debounce_time > level.time)
 		return;
 
 	self->touch_debounce_time = level.time + self->wait;
 
-	count = (byte)self->count;
-	time = (byte) self->time * 10;
+	const byte b_count = (byte)self->count;
+	const byte b_time = (byte)(self->time * 10.0f);
 
-	gi.CreateEffect(&self->s, FX_QUAKE, CEF_BROADCAST, self->s.origin,"bbb",count,time,self->style);
+	gi.CreateEffect(&self->s, FX_QUAKE, CEF_BROADCAST, self->s.origin, "bbb", b_count, b_time, self->style);
 
 	G_UseTargets(self, self);
 
-	if (self->wait==-1)
+	if (self->wait == -1.0f)
 	{
 		self->touch = NULL;
-		self->nextthink = level.time + FRAMETIME;
 		self->think = G_FreeEdict;
-	}	 
+		self->nextthink = level.time + FRAMETIME;
+	}
 
-	// Because nextthink is multi_use for a trigger I have to create a new entity with the sound
-	// so I can then kill the sound at the right time
-	killsound = G_Spawn();
+	// Because nextthink is multi_use for a trigger I have to create a new entity with the sound so I can then kill the sound at the right time.
+	edict_t* kill_sound = G_Spawn();
 
-	gi.sound (killsound, CHAN_NO_PHS_ADD+CHAN_VOICE,self->moveinfo.sound_middle, 2, ATTN_NORM, 0);
-	VectorCopy(self->s.origin,killsound->s.origin);
-	killsound->moveinfo.sound_end = self->moveinfo.sound_end;
-	killsound->nextthink = level.time + self->time;
-	killsound->think = KillSoundThink;
+	gi.sound(kill_sound, CHAN_NO_PHS_ADD + CHAN_VOICE, self->moveinfo.sound_middle, 2.0f, ATTN_NORM, 0.0f); //TODO: why 2.0 volume?
+	VectorCopy(self->s.origin, kill_sound->s.origin);
+	kill_sound->moveinfo.sound_end = self->moveinfo.sound_end;
+	kill_sound->nextthink = level.time + self->time;
+	kill_sound->think = KillSoundThink;
 }
 
 /*QUAKED trigger_quake (0.3 0.1 0.6) ? MONSTER NOT_PLAYER TRIGGERED ANY
@@ -855,7 +851,7 @@ void SP_trigger_quake (edict_t *self)
 	if (!self->style)
 		self->style = SHAKE_ALL_DIR;
 
-	self->TriggerActivated = quake_use;
+	self->TriggerActivated = TriggerQuakeActivated;
 }
 
 #pragma endregion
