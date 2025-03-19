@@ -235,11 +235,76 @@ void SP_trigger_Relay(edict_t* self)
 
 #pragma endregion
 
-//----------------------------------------------------------------------
-// Key Trigger
-//----------------------------------------------------------------------
+#pragma region ========================== trigger_puzzle ==========================
 
-void trigger_key_use(edict_t *self, edict_t *other, edict_t *activator);
+#define SF_NO_TEXT	1 //mxd
+#define SF_NO_TAKE	2 //mxd
+
+static void TriggerPuzzleUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_key_use' in original logic.
+{
+	if (self->item == NULL || activator->client == NULL)
+		return;
+
+	const int item_index = ITEM_INDEX(self->item);
+
+	// Does activating player have required item?
+	if (activator->client->playerinfo.pers.inventory.Items[item_index] == 0)
+	{
+		if (level.time >= self->touch_debounce_time)
+		{
+			self->touch_debounce_time = level.time + 5.0f;
+
+			if (!(self->spawnflags & SF_NO_TEXT))
+				gi.gamemsg_centerprintf(activator, self->item->msg_nouse);
+		}
+
+		return;
+	}
+
+	// Clear out the puzzle piece from all clients.
+	if (!(self->spawnflags & SF_NO_TAKE))
+	{
+		if (COOP) // If COOP, remove model from world if puzzle item is used.
+		{
+			edict_t* puzzle = NULL;
+			puzzle = G_Find(puzzle, FOFS(classname), self->item->classname);
+
+			if (puzzle != NULL)
+			{
+				gi.sound(puzzle, CHAN_ITEM, gi.soundindex(self->item->pickup_sound), 1.0f, ATTN_NORM, 0.0f);
+				gi.CreateEffect(NULL, FX_PICKUP, 0, puzzle->s.origin, "");
+				puzzle->solid = SOLID_NOT;
+
+				// Once picked up, the item is gone forever, so remove it's client effect(s).
+				gi.RemoveEffects(&puzzle->s, 0);
+
+				// The persistent part is removed from the server here.
+				G_SetToFree(puzzle);
+			}
+		}
+
+		for (int i = 0; i < MAXCLIENTS; i++)
+		{
+			const edict_t* ent = &g_edicts[i + 1];
+
+			if (ent->inuse)
+				ent->client->playerinfo.pers.inventory.Items[item_index] = 0;
+		}
+	}
+
+	gi.sound(self, CHAN_AUTO, gi.soundindex("player/useobject.wav"), 2.0f, ATTN_NORM, 0.0f); //TODO: why 2.0 volume?
+
+	G_UseTargets(self, activator);
+	self->use = NULL;
+
+	if (!(other->spawnflags & SF_PUZZLE_DONT_REMOVE)) // Get rid of it.
+	{
+		G_SetToFree(other);
+
+		activator->target_ent = NULL;
+		activator->client->playerinfo.target_ent = NULL;
+	}
+}
 
 /*QUAKED trigger_puzzle (.5 .5 .5) (-8 -8 -8) (8 8 8)  NO_TEXT  NO_TAKE
 A relay trigger that only fires it's targets if player has the proper puzzle item.
@@ -272,85 +337,10 @@ void SP_trigger_puzzle(edict_t *self)
 		return;
 	}
 
-	self->use = trigger_key_use;
+	self->use = TriggerPuzzleUse;
 }
 
-void trigger_key_use(edict_t *self, edict_t *other, edict_t *activator)
-{
-	int	index;
-	edict_t *puzzle;
-
-	if (!self->item)
-		return;
-	if (!activator->client)
-		return;
-
-	index = ITEM_INDEX(self->item);
-
-	if (!activator->client->playerinfo.pers.inventory.Items[index])
-	{
-		if (level.time < self->touch_debounce_time)
-			return;
-		self->touch_debounce_time = level.time + 5.0;
-		if (!(self->spawnflags & 1))
-			gi.gamemsg_centerprintf (activator, self->item->msg_nouse);
-
-		return;
-	}
-
-	// Clear out the puzzle piece from all clients.
-
-	if (!(self->spawnflags & 2))
-	{
-		int		i;
-		edict_t	*ent;
-
-		if (coop->value)	// If COOP remove model from world if puzzle item is used.
-		{
-			puzzle = NULL;
-
-			puzzle = G_Find(puzzle, FOFS(classname), (char *) self->item->classname);
-
-			if (puzzle)
-			{
-				gi.sound(puzzle, CHAN_ITEM, gi.soundindex(self->item->pickup_sound), 1, ATTN_NORM, 0);
-
-				gi.CreateEffect(NULL, FX_PICKUP, 0, puzzle->s.origin, "");
-
-				puzzle->solid = SOLID_NOT;
-
-				// Once picked up, the item is gone forever, so remove it's client effect(s).
-				gi.RemoveEffects(&puzzle->s,0);
-
-				// The persistent part is removed from the server here.
-				G_SetToFree(puzzle);
-			}
-		}
-
-
-		for (i=0 ; i<maxclients->value ; i++)
-		{
-			ent = g_edicts + 1 + i;
-		
-			if (!ent->inuse)
-				continue;
-			
-			ent->client->playerinfo.pers.inventory.Items[index]=0;	
-		}
-	}
-
-	gi.sound (self, CHAN_AUTO, gi.soundindex ("player/useobject.wav"), 2, ATTN_NORM, 0);
-
-	G_UseTargets (self, activator);
-
-	self->use = NULL;
-
-	if (!(other->spawnflags & SF_PUZZLE_DONT_REMOVE))	// Get rid of it.
-	{
-		G_SetToFree(other);
-		activator->target_ent=activator->client->playerinfo.target_ent = 0;
-	}
-}
+#pragma endregion
 
 //----------------------------------------------------------------------
 // Counter Trigger
