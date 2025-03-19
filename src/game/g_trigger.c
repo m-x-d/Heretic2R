@@ -1020,45 +1020,10 @@ static void TriggerEndgameUse(edict_t* self, edict_t* other, edict_t* activator)
 	}
 }
 
-void Touch_endgame(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void TriggerEndgameTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'Touch_endgame' in original logic.
 {
-	if(self->count)
-		return;
-
-	self->count++;
-
-	// If we aren't a player, forget it.
-
-	if (!other->client)
-		return;
-
-	// Not valid on DM play.
-
-	if (deathmatch->value)
-		return;
-	
-	// Single player - just end, coop - restart if sv_loopcoop is set.
-
-	if(gi.cvar_variablevalue("sv_loopcoop") && coop->value )
-	{	
-		int		i;
-		edict_t	*ent;
-
-		for(i=0;i<maxclients->value;i++)
-		{
-			if((ent=(&g_edicts[i+1]))->inuse)	
-				gi.gamemsg_centerprintf(ent,GM_COOP_RESTARTING);
-		}
-
-		self->think=TriggerEndgameThink;
-		self->nextthink=level.time+1.0;
-	}
-	else
-	{
-		gi.AddCommandString ("endgame\n");
-		
-		G_SetToFree(self);
-	}
+	if (other->client != NULL) // If we aren't a player, forget it.
+		TriggerEndgameUse(self, other, other); //mxd
 }
 
 /*QUAKED trigger_endgame (.5 .5 .5) ?
@@ -1067,7 +1032,7 @@ End game trigger. once used, game over
 void SP_trigger_endgame(edict_t *self)
 {
 	TriggerInit(self);
-	self->touch = Touch_endgame;
+	self->touch = TriggerEndgameTouch;
 	self->solid = SOLID_TRIGGER;
 	self->use = TriggerEndgameUse;
 	self->count=0;
