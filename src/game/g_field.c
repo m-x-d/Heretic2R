@@ -15,7 +15,7 @@
 #include "Vector.h"
 #include "g_local.h"
 
-void InitTrigger(edict_t* self); //TODO: move to g_trigger.h
+void TriggerInit(edict_t* self); //TODO: move to g_trigger.h
 
 static void InitField(edict_t* self)
 {
@@ -122,7 +122,7 @@ void TriggerPushStaticsInit(void)
 // zangle	- The up direction to push the player (0 is straight up, 180 is straight down).
 void SP_trigger_push(edict_t* self)
 {
-	InitTrigger(self);
+	TriggerInit(self);
 
 	self->solid = SOLID_TRIGGER;
 	self->msgHandler = DefaultMsgHandler;

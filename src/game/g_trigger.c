@@ -121,22 +121,20 @@ static void TriggerEnable(edict_t* self, edict_t* other, edict_t* activator) //m
 	gi.linkentity(self);
 }
 
-void InitTrigger(edict_t *self)
+void TriggerInit(edict_t* self) //mxd. Named 'InitTrigger' in original logic. //TODO: add to header.
 {
-	self->msgHandler = DefaultMsgHandler;
 	self->classID = CID_TRIGGER;
+	self->msgHandler = DefaultMsgHandler;
 
-	if(!self->wait)
-	{
-		self->wait = 0.2;
-	}
+	if (self->wait == 0.0f)
+		self->wait = 0.2f;
 
-	// Triggers still use the touch function even with the new physics
+	// Triggers still use the touch function even with the new physics.
 	self->touch = TriggerMultipleTouch;
 	self->movetype = PHYSICSTYPE_NONE;
 	self->svflags |= SVF_NOCLIENT;
 
-	if(self->spawnflags & SF_TRIGGER_TRIGGERED)
+	if (self->spawnflags & SF_TRIGGER_TRIGGERED)
 	{
 		self->solid = SOLID_NOT;
 		self->use = TriggerEnable;
@@ -147,10 +145,8 @@ void InitTrigger(edict_t *self)
 		self->use = TriggerMultipleUse;
 	}
 
-	if(!Vec3IsZero(self->s.angles))
-	{
+	if (Vec3NotZero(self->s.angles))
 		G_SetMovedir(self->s.angles, self->movedir);
-	}
 
 	gi.setmodel(self, self->model);
 	gi.linkentity(self);
@@ -190,7 +186,7 @@ sounds  - sound made when activating
 */
 void SP_trigger_Multiple(edict_t *self)
 {
-	InitTrigger(self);
+	TriggerInit(self);
 
 	self->TriggerActivated = G_UseTargets;
 
@@ -221,7 +217,7 @@ sounds
 
 void SP_trigger_Once(edict_t *self)
 {
-	InitTrigger(self);
+	TriggerInit(self);
 
 	self->TriggerActivated = G_UseTargets;
 
@@ -479,7 +475,7 @@ DONT_REMOVE - entity won't remove itself after one use
 
 void SP_trigger_PlayerUsePuzzle(edict_t *self)
 {
-	InitTrigger(self);
+	TriggerInit(self);
 
 	self->wait = 1.0;
 	self->TriggerActivated = trigger_playerusepuzzle;
@@ -615,7 +611,7 @@ message - text string displayed when triggered
 */
 void SP_trigger_Deactivate(edict_t *self)
 {
-	InitTrigger(self);
+	TriggerInit(self);
 
 	self->TriggerActivated = SuspendTrigger_Activated;
 }
@@ -658,7 +654,7 @@ message - text string displayed when triggered
 */
 void SP_trigger_Activate(edict_t *self)
 {
-	InitTrigger(self);
+	TriggerInit(self);
 
 	self->TriggerActivated = ActivateTrigger_Activated;
 }
@@ -820,7 +816,7 @@ count - amount of level completed
 */
 void SP_trigger_mappercentage (edict_t *self)
 {
-	InitTrigger(self);
+	TriggerInit(self);
 
 	self->TriggerActivated = mappercentage_use;
 
@@ -886,7 +882,7 @@ wait - amount of time until it will become active again (default 10).
 */
 void SP_trigger_lightning (edict_t *self)
 {
-	InitTrigger(self);
+	TriggerInit(self);
 
 	if (!self->wait)
 		self->wait = 10;
@@ -962,7 +958,7 @@ void SP_trigger_quake (edict_t *self)
 	self->moveinfo.sound_middle = gi.soundindex ("world/quake.wav");
 	self->moveinfo.sound_end = gi.soundindex ("world/quakend.wav");
 
-	InitTrigger(self);
+	TriggerInit(self);
 
 	if (!self->count)	// Amount of shake
 		self->count = 20;
@@ -1025,7 +1021,7 @@ wait - amount of time until it will become active again (default 10).
 */
 void SP_trigger_mission_give (edict_t *self)
 {
-	InitTrigger(self);
+	TriggerInit(self);
 
 	if (!self->wait)
 		self->wait = 10;
@@ -1075,7 +1071,7 @@ wait - amount of time until it will become active again (default 10).
 */
 void SP_trigger_mission_take (edict_t *self)
 {
-	InitTrigger(self);
+	TriggerInit(self);
 
 	if (!self->wait)
 		self->wait = 10;
@@ -1120,7 +1116,7 @@ scale - distance to set far clip to. Default of farclip is 4096.0
 */
 void SP_trigger_farclip (edict_t *self)
 {
-	InitTrigger(self);
+	TriggerInit(self);
 
 	self->touch = ClipDistance_touch;
 	self->solid = SOLID_TRIGGER;
@@ -1218,7 +1214,7 @@ End game trigger. once used, game over
 */
 void SP_trigger_endgame(edict_t *self)
 {
-	InitTrigger(self);
+	TriggerInit(self);
 	self->touch = Touch_endgame;
 	self->solid = SOLID_TRIGGER;
 	self->use = Use_endgame;
@@ -1243,7 +1239,7 @@ Triggers player to know he is near a lever.
 */
 void SP_trigger_PlayerPushLever(edict_t *self)
 {
-	InitTrigger(self);
+	TriggerInit(self);
 
 	self->TriggerActivated = trigger_playerpushlever;
 
