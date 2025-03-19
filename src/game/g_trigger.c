@@ -56,21 +56,17 @@ static void TriggerMultipleWaitThink(edict_t* self) //mxd. Named 'multi_wait' in
 		self->activator->target_ent = NULL;
 }
 
-// the trigger was just activated
-// self->activator should be set to the activator so it can be held through a delay
-// so wait for the delay time before firing
-void TriggerActivated(edict_t *self)
+// The trigger was just activated.
+// self->activator should be set to the activator so it can be held through a delay, so wait for the delay time before firing.
+static void TriggerActivated(edict_t* self)
 {
-	if(self->think)
-	{
-		return;		// already been triggered
-	}
+	if (self->think != NULL)
+		return; // Already been triggered.
 
 	assert(self->TriggerActivated);
-
 	self->TriggerActivated(self, self->activator);
 
-	if(self->wait > 0)
+	if (self->wait > 0.0f)
 	{
 		self->think = TriggerMultipleWaitThink;
 		self->nextthink = level.time + self->wait;
@@ -78,8 +74,8 @@ void TriggerActivated(edict_t *self)
 	else
 	{
 		self->touch = NULL;
-		self->nextthink = level.time + FRAMETIME;
 		self->think = G_FreeEdict;
+		self->nextthink = level.time + FRAMETIME;
 	}
 }
 
