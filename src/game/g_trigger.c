@@ -851,39 +851,32 @@ void SP_trigger_quake(edict_t* self)
 
 #pragma endregion
 
-void trig_done(edict_t *self)
-{
-	self = self;
-}
+#pragma region ========================== trigger_mission_give ==========================
 
-void mission_give_use (edict_t *self, edict_t *other)
+static void TriggerMissionGiveUse(edict_t* self, edict_t* other) //mxd. Named 'mission_give_use' in original logic.
 {
-	int				num, i;
-	player_state_t	*ps;
+	const short num = (short)Q_atoi(self->message);
 
-	num = atoi(self->message);
-	for (i = 1; i <= game.maxclients; i++)
+	for (int i = 1; i <= game.maxclients; i++)
 	{
-		other = &g_edicts[i];
-		if (!other->inuse)
-			continue;
-		if (!other->client)
+		const edict_t* cl = &g_edicts[i];
+
+		if (!cl->inuse || cl->client == NULL)
 			continue;
 
-		ps = &other->client->ps;
-		if((ps->mission_num1 != num) && (ps->mission_num2 != num))
-		{
-			if (!ps->mission_num1)
-			{
-				ps->mission_num1 = num;
-			}
-			else
-			{
-				ps->mission_num2 = num;
-			}
-			gi.gamemsg_centerprintf(other, GM_NEWOBJ);
-		}
+		player_state_t* ps = &cl->client->ps;
+
+		if (ps->mission_num1 == num || ps->mission_num2 == num)
+			continue;
+
+		if (ps->mission_num1 == 0)
+			ps->mission_num1 = num;
+		else
+			ps->mission_num2 = num;
+
+		gi.gamemsg_centerprintf(cl, GM_NEWOBJ);
 	}
+
 	G_UseTargets(self, self);
 }
 
@@ -905,8 +898,10 @@ void SP_trigger_mission_give (edict_t *self)
 	if (!self->wait)
 		self->wait = 10;
 
-	self->TriggerActivated = mission_give_use;
+	self->TriggerActivated = TriggerMissionGiveUse;
 }
+
+#pragma endregion
 
 #define MISSION_TAKE1 16
 #define MISSION_TAKE2 32
