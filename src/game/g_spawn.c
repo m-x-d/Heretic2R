@@ -209,7 +209,6 @@ static spawn_t spawns[] =
 	// Heretic2 specific spawns.
 	{ "breakable_brush", SP_breakable_brush, CID_BBRUSH },
 
-
 	{ "light_walltorch", SP_light_walltorch, CID_LIGHT },
 	{ "light_floortorch", SP_light_floortorch, CID_LIGHT },
 	{ "light_torch1", SP_light_torch1, CID_LIGHT },

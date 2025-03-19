@@ -42,7 +42,7 @@ void SP_target_temp_entity(edict_t* ent) //mxd. Unused in original logic.
 
 static void TargetExplosionExplodeThink(edict_t* self) //mxd. Named 'target_explosion_explode' in original logic.
 {
-	gi.CreateEffect(NULL, FX_EXPLOSION1, 0, self->s.origin, NULL);
+	gi.CreateEffect(NULL, FX_EXPLOSION1, 0, self->s.origin, NULL); //TODO: sfx is kinda lame... Use whatever obj_barrel uses.
 
 	if (self->dmg > 0) //mxd. Added self->dmg check.
 	{
@@ -340,7 +340,7 @@ static void TargetEarthquakeUse(edict_t* self, edict_t* other, edict_t* activato
 // Variables:
 // speed - Severity of the quake (default 200).
 // count - Duration of the quake (default 5).
-void SP_target_earthquake(edict_t* self)
+void SP_target_earthquake(edict_t* self) //TODO: non-functional. Also, there's trigger_quake.
 {
 	if (self->targetname == NULL)
 		gi.dprintf("untargeted %s at %s\n", self->classname, vtos(self->s.origin));
