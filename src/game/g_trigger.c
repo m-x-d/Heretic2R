@@ -412,26 +412,24 @@ static void TriggerPlayerUsePuzzleActivated(edict_t* self, edict_t* activator) /
 	}
 }
 
-/*QUAKED trigger_playerusepuzzle (.5 .5 .5) ?  MONSTER NOT_PLAYER TRIGGERED ANY NO_INVENTORY DONT_REMOVE
-Player can 'use' puzzle items within this entity.  Will remove itself after one use.
--------SPAWN FLAGS-------------
-MONSTER - only a monster will trigger it
-NOT_PLAYER -  can't be triggered by player
-TRIGGERED - starts trigger deactivated
-ANY - anything can activate it
-NO_INVENTORY - don't show inventory bar, don't take puzzle piece
-DONT_REMOVE - entity won't remove itself after one use
-*/
-
-void SP_trigger_PlayerUsePuzzle(edict_t *self)
+// QUAKED trigger_playerusepuzzle (.5 .5 .5) ? MONSTER NOT_PLAYER TRIGGERED ANY NO_INVENTORY DONT_REMOVE
+// Player can 'use' puzzle items within this entity. Will remove itself after one use.
+// Spawnflags:
+// MONSTER		- Only a monster will trigger it.
+// NOT_PLAYER	- Can't be triggered by player.
+// TRIGGERED	- Starts trigger deactivated.
+// ANY			- Anything can activate it.
+// NO_INVENTORY	- Don't show inventory bar, don't take puzzle piece.
+// DONT_REMOVE	- Entity won't remove itself after one use.
+void SP_trigger_PlayerUsePuzzle(edict_t* self)
 {
 	TriggerInit(self);
 
-	self->wait = 1.0;
+	self->wait = 1.0f;
 	self->TriggerActivated = TriggerPlayerUsePuzzleActivated;
 
-	gi.setmodel (self, self->model);
-	gi.linkentity (self);
+	gi.setmodel(self, self->model);
+	gi.linkentity(self);
 }
 
 #pragma endregion
