@@ -460,11 +460,30 @@ void SP_trigger_PlayerPushButton(edict_t* self)
 
 #pragma endregion
 
-//----------------------------------------------------------------------
-// Player Push Button Trigger
-//----------------------------------------------------------------------
+#pragma region ========================== trigger_elevator ==========================
 
-void trigger_elevator_use (edict_t *self, edict_t *other, edict_t *activator);
+static void TriggerElevatorUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'trigger_elevator_use' in original logic.
+{
+	if (self->movetarget->nextthink > 0.0f) // Elevator busy...
+		return;
+
+	if (other->pathtarget == NULL)
+	{
+		gi.dprintf("trigger_elevator at %s used with no pathtarget\n", vtos(self->s.origin)); //mxd. Print trigger coords.
+		return;
+	}
+
+	edict_t* target = G_PickTarget(other->pathtarget);
+	if (target == NULL)
+	{
+		gi.dprintf("trigger_elevator at %s used with bad pathtarget: %s\n", vtos(self->s.origin), other->pathtarget); //mxd. Print trigger coords.
+		return;
+	}
+
+	self->movetarget->target_ent = target;
+	FuncTrainResume(self->movetarget);
+}
+
 void trigger_elevator_init (edict_t *self);
 
 /*QUAKED trigger_elevator (0.3 0.1 0.6) (-8 -8 -8) (8 8 8)
@@ -475,37 +494,6 @@ void SP_trigger_Elevator (edict_t *self)
 
 	self->think = trigger_elevator_init;
 	self->nextthink = level.time + FRAMETIME;
-}
-
-void trigger_elevator_use (edict_t *self, edict_t *other, edict_t *activator)
-{
-	edict_t *target;
-
-	if (self->movetarget->nextthink)
-	{
-//		gi.dprintf("elevator busy\n");
-		return;
-	}
-
-	if (!other->pathtarget)
-	{
-#ifdef _DEVEL
-		gi.dprintf("elevator used with no pathtarget\n");
-#endif
-		return;
-	}
-
-	target = G_PickTarget (other->pathtarget);
-	if (!target)
-	{
-#ifdef _DEVEL
-		gi.dprintf("elevator used with bad pathtarget: %s\n", other->pathtarget);
-#endif
-		return;
-	}
-
-	self->movetarget->target_ent = target;
-	FuncTrainResume(self->movetarget);
 }
 
 void trigger_elevator_init (edict_t *self)
@@ -533,9 +521,11 @@ void trigger_elevator_init (edict_t *self)
 		return;
 	}
 
-	self->use = trigger_elevator_use;
+	self->use = TriggerElevatorUse;
 	self->svflags = SVF_NOCLIENT;
 }
+
+#pragma endregion
 
 //----------------------------------------------------------------------
 // Suspend Trigger
