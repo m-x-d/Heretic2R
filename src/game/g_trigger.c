@@ -686,18 +686,15 @@ void SP_trigger_quit_to_menu(edict_t* self)
 
 #pragma endregion
 
-void mappercentage_use (edict_t *self, edict_t *other)
+#pragma region ========================== trigger_mappercentage ==========================
+
+static void TriggerMappercentageUse(edict_t* self, edict_t* other) //mxd. Named 'mappercentage_use' in original logic.
 {
-	if (!other->client)	// Only players use these
-		return;
-
-	other->client->ps.map_percentage = (byte) self->count;
-
-	G_UseTargets(self, self);
-
-#ifdef _DEVEL
-	gi.dprintf("Map percentage updated to %d\n", (byte) self->count);
-#endif
+	if (other->client != NULL) // Only players use these.
+	{
+		other->client->ps.map_percentage = (byte)self->count;
+		G_UseTargets(self, self);
+	}
 }
 
 /*QUAKED trigger_mappercentage (0.3 0.1 0.6) ?  MONSTER NOT_PLAYER TRIGGERED ANY
@@ -714,7 +711,7 @@ void SP_trigger_mappercentage (edict_t *self)
 {
 	TriggerInit(self);
 
-	self->TriggerActivated = mappercentage_use;
+	self->TriggerActivated = TriggerMappercentageUse;
 
 	if (self->count > 100)
 		self->count = 100;
