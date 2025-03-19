@@ -716,42 +716,35 @@ void SP_trigger_mappercentage(edict_t* self)
 
 #pragma endregion
 
-void lightning_use (edict_t *self, edict_t *other)
-{
-	edict_t *target=NULL;
-	byte	width, duration;
+#pragma region ========================== trigger_lightning ==========================
 
-	width=self->style;
-	if (width<1) width=6;
-	duration=(byte)(self->delay*10);
-	
+static void TriggerLightningActivated(edict_t* self, edict_t* other) //mxd. Named 'lightning_use' in original logic.
+{
+	byte b_width = (byte)self->style;
+	if (b_width == 0)
+		b_width = 6;
+
+	const byte b_duration = (byte)(self->delay * 10);
+	const int fx_flags = ((self->materialtype == 1) ? CEF_FLAG6 : 0); //mxd. Red lightning?
+
 	G_UseTargets(self, self);
 
 	// Find the entities targeted by this entity.
-	while ((target = G_Find (target, FOFS(targetname), self->target)) != NULL)
-	{
-		if (target->classname)
-		{
-			if (strcmp(target->classname, "info_notnull") == 0)
-			{
-				// Found another with this target.
-				if (self->materialtype)	// Red lightning
-					gi.CreateEffect(NULL, FX_LIGHTNING, CEF_FLAG6, self->s.origin, "vbb", target->s.origin, width, duration);
-				else
-					gi.CreateEffect(NULL, FX_LIGHTNING, 0, self->s.origin, "vbb", target->s.origin, width, duration);
-			}
-		}
-	}
+	edict_t* target = NULL;
+	while ((target = G_Find(target, FOFS(targetname), self->target)) != NULL)
+		if (target->classname != NULL && strcmp(target->classname, "info_notnull") == 0)
+			gi.CreateEffect(NULL, FX_LIGHTNING, fx_flags, self->s.origin, "vbb", target->s.origin, b_width, b_duration);
 
 	if (self->pain_debounce_time < level.time)
 	{
-		self->pain_debounce_time = level.time + 2;
-		gi.sound (self, CHAN_AUTO, gi.soundindex ("world/lightningloop.wav"), 1, ATTN_NORM, 0);
+		self->pain_debounce_time = level.time + 2.0f;
+		gi.sound(self, CHAN_AUTO, gi.soundindex("world/lightningloop.wav"), 1.0f, ATTN_NORM, 0.0f);
 	}
 }
+
 void lightning_go (edict_t *self, edict_t *other, edict_t *activator)
 {
-	lightning_use (self,other);
+	TriggerLightningActivated (self,other);
 }
 
 /*QUAKED trigger_lightning (0.3 0.1 0.6) ? MONSTER NOT_PLAYER TRIGGERED ANY
@@ -778,9 +771,11 @@ void SP_trigger_lightning (edict_t *self)
 	if (!self->wait)
 		self->wait = 10;
 
-	self->TriggerActivated = lightning_use;
+	self->TriggerActivated = TriggerLightningActivated;
 	self->use = lightning_go;	// This is so a trigger_relay can use it.
 }
+
+#pragma endregion
 
 void quake_quiet(edict_t *self)
 {
