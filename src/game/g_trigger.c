@@ -434,34 +434,31 @@ void SP_trigger_PlayerUsePuzzle(edict_t* self)
 
 #pragma endregion
 
-//----------------------------------------------------------------------
-// Player Push Button Trigger
-//----------------------------------------------------------------------
+#pragma region ========================== trigger_playerpushbutton ==========================
 
-void trigger_playerpushbutton(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface)
+static void TriggerPlayerPushButtonTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'trigger_playerpushbutton' in original logic.
 {
-	if(!strcmp(other->classname, "player"))
-	{
+	if (strcmp(other->classname, "player") == 0)
 		other->target = self->target;
-	}
 }
 
-/*QUAKED trigger_playerpushbutton (.5 .5 .5) ?
-Triggers player to know he is near a button. 
-*/
-void SP_trigger_PlayerPushButton(edict_t *self)
+// QUAKED trigger_playerpushbutton (.5 .5 .5) ?
+// Triggers player to know he is near a button.
+void SP_trigger_PlayerPushButton(edict_t* self)
 {
 	self->classID = CID_TRIGGER;
 
 	self->wait = FRAMETIME;
-	self->touch = trigger_playerpushbutton;
+	self->touch = TriggerPlayerPushButtonTouch;
 	self->movetype = PHYSICSTYPE_NONE;
 	self->svflags |= SVF_NOCLIENT;
 	self->solid = SOLID_TRIGGER;
 
-	gi.setmodel (self, self->model);
-	gi.linkentity (self);
+	gi.setmodel(self, self->model);
+	gi.linkentity(self);
 }
+
+#pragma endregion
 
 //----------------------------------------------------------------------
 // Player Push Button Trigger
