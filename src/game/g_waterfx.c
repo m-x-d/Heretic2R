@@ -55,31 +55,30 @@ void SP_env_water_drip(edict_t* self)
 
 #pragma endregion
 
-#define FOUNTAIN_OFF 32
+#pragma region ========================== env_water_fountain ==========================
 
-void fountain_use (edict_t *self, edict_t *other, edict_t *activator)
+#define SF_START_OFF	32
+
+static void EnvWaterFountainUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'fountain_use' in original logic.
 {
-	byte		frame;
-	short	drop;
-
-	drop = -self->delay * 8.0;
-	frame = 0;
-	if (self->spawnflags & FOUNTAIN_OFF)
+	if (self->spawnflags & SF_START_OFF) // Enable effect.
 	{
-		self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_FOUNTAIN, CEF_BROADCAST, self->s.origin, "vsb", self->s.angles, drop, frame);
-		self->s.sound = gi.soundindex("ambient/fountainloop.wav");
+		const short s_drop = (short)(-self->delay * 8.0f); // At the time of creation of this effect, I thought positive z was down, hence the MINUS sign for the distance to fall.
+		self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_FOUNTAIN, CEF_BROADCAST, self->s.origin, "vsb", self->s.angles, s_drop, 0);
+		self->s.sound = (byte)gi.soundindex("ambient/fountainloop.wav");
 		self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_STATIC;
-		self->spawnflags &= ~FOUNTAIN_OFF;
+		self->spawnflags &= ~SF_START_OFF;
 	}
-	else
+	else // Disable effect.
 	{
-		if (self->PersistantCFX)
+		if (self->PersistantCFX > 0)
 		{
 			gi.RemovePersistantEffect(self->PersistantCFX, REMOVE_WATER);
 			self->PersistantCFX = 0;
 		}
+
 		gi.RemoveEffects(&self->s, FX_FOUNTAIN);
-		self->spawnflags |= FOUNTAIN_OFF;
+		self->spawnflags |= SF_START_OFF;
 		self->s.sound = 0;
 	}
 }
@@ -107,13 +106,13 @@ void SP_env_water_fountain(edict_t *self)
 
 	if (self->targetname) 
 	{
-		self->use = fountain_use;
+		self->use = EnvWaterFountainUse;
 	}
 
 	self->s.effects |= EF_NODRAW_ALWAYS_SEND|EF_ALWAYS_ADD_EFFECTS;
 	gi.linkentity(self);
 
-	if (self->spawnflags & FOUNTAIN_OFF)	// Start off
+	if (self->spawnflags & SF_START_OFF)	// Start off
 	{
 		return;
 	}
@@ -124,6 +123,8 @@ void SP_env_water_fountain(edict_t *self)
 	self->s.sound = gi.soundindex("ambient/fountainloop.wav");
 	self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_STATIC;
 }
+
+#pragma endregion
 
 void SpawnDripper(edict_t *self, vec3_t offset)
 {
