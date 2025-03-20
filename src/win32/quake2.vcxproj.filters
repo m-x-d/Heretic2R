@@ -461,12 +461,6 @@
     <ClInclude Include="..\game\game.h">
       <Filter>game</Filter>
     </ClInclude>
-    <ClInclude Include="..\game\g_BoundingForm.h">
-      <Filter>game</Filter>
-    </ClInclude>
-    <ClInclude Include="..\game\g_NewSystem.h">
-      <Filter>game</Filter>
-    </ClInclude>
     <ClInclude Include="..\server\sv_effects.h">
       <Filter>server</Filter>
     </ClInclude>
