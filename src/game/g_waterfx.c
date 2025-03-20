@@ -1,11 +1,12 @@
-// Water related fx, including
-// 1. Fountain
+//
+// g_waterfx.c -- Water-related fx, including at least 1 fountain.
+//
+// Copyright 1998 Raven Software
+//
 
 #include "g_obj.h" //mxd
+#include "Vector.h"
 #include "g_local.h"
-#include "fx.h"
-#include "random.h"
-#include "vector.h"
 
 void waterdrip_go(edict_t *self)
 {
