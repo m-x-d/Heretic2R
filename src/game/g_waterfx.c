@@ -19,15 +19,16 @@ static void EnvWaterDripThink(edict_t* self) //mxd. Named 'waterdrip_go' in orig
 	self->think = NULL;
 }
 
-void waterdrip_use (edict_t *self, edict_t *other, edict_t *activator)
+static void EnvWaterDripUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'waterdrip_use' in original logic.
 {
-
-	if (!self->PersistantCFX)
-		EnvWaterDripThink(self);
+	if (self->PersistantCFX > 0)
+	{
+		gi.RemoveEffects(&self->s, 0);
+		self->PersistantCFX = 0;
+	}
 	else
 	{
-		gi.RemoveEffects(&self->s,0);
-		self->PersistantCFX = 0;
+		EnvWaterDripThink(self);
 	}
 }
 
@@ -50,7 +51,7 @@ void SP_env_water_drip(edict_t *self)
 		self->count = 20;
 	}
 
-	self->use = waterdrip_use;
+	self->use = EnvWaterDripUse;
 	self->solid = SOLID_NOT;
 	self->s.effects |= EF_NODRAW_ALWAYS_SEND;
 	gi.linkentity(self);
