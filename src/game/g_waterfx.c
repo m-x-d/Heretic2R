@@ -241,37 +241,26 @@ void SP_obj_stalactite1(edict_t* self)
 	gi.linkentity(self);
 }
 
-/*QUAK-ED obj_stalactite2 (1 .5 0) (-60 -60 -64) (60 60 64)  DRIP  DARKSKIN
-
-	A big short stalactite. These point down.
-
-	DARKSKIN - if checked it uses the dark skin
-	Also spawns a drip at the end
-	Use the "count" field as number of drips per min
-*/
-void SP_obj_stalactite2(edict_t *self)
+// QUAKED obj_stalactite2 (1 .5 0) (-60 -60 -64) (60 60 64) DRIP DARKSKIN
+// A big short stalactite. These point down.
+// Spawnflags:
+// DRIP		- Spawn drips at the end. //TODO: why do we need both spawnflag and field for this?..
+// DARKSKIN	- Use the dark skin.
+// Variables:
+// count - number of drips per minute.
+void SP_obj_stalactite2(edict_t* self)
 {
-	vec3_t	origin;
+	StalactiteInitDripper(self, 128.0f); //mxd
 
-	if(self->spawnflags & 1)
-	{
-		if(!self->count)
-			self->count = 20;
-
-		VectorCopy(self->s.origin, origin);
-		origin[2] += 128.0F;
-		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_DRIPPER, 0, origin, "bb", self->count, 2);
-	}
-
+	self->s.modelindex = (byte)gi.modelindex("models/objects/stalactite/stalact2/tris.fm");
 	self->movetype = PHYSICSTYPE_NONE;
 	self->solid = SOLID_BBOX;
-	
-	VectorSet(self->mins,-60,-60,-64);
-	VectorSet(self->maxs,60,60,64);
-	
-	self->s.modelindex = gi.modelindex("models/objects/stalactite/stalact2/tris.fm");
-	if (self->spawnflags & 2)
+
+	if (self->spawnflags & SF_DARKSKIN)
 		self->s.skinnum = 1;
+
+	VectorSet(self->mins, -60.0f, -60.0f, -64.0f);
+	VectorSet(self->maxs, 60.0f, 60.0f, 64.0f);
 
 	gi.linkentity(self);
 }
