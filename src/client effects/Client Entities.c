@@ -95,6 +95,8 @@ client_entity_t* ClientEntity_new(const int type, const int flags, const vec3_t 
 	new_ent->r.rootJoint = NULL_ROOT_JOINT;
 	new_ent->r.swapFrame = -1;
 
+	assert(new_ent->updateTime >= MIN_UPDATE_TIME); //mxd
+
 	return new_ent;
 }
 
