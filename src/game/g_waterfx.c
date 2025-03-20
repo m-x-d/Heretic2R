@@ -197,41 +197,49 @@ void SP_obj_fishhead2(edict_t* self)
 
 #pragma endregion
 
-/*QUAK-ED obj_stalactite1 (1 .5 0) (-24 -24 -99) (24 24 99) DRIP  DARKSKIN
-	
-	A big long thick stalactite. These point down.
+#pragma region ========================== obj_stalactite1, obj_stalactite2, obj_stalactite3 ==========================
 
-	DARKSKIN - if checked it uses the dark skin
-	Also spawns a drip at the end
-	Use the "count" field as number of drips per min
-*/
-void SP_obj_stalactite1(edict_t *self) 
+#define SF_DRIP		1 //mxd
+#define SF_DARKSKIN	2 //mxd
+
+static void StalactiteInitDripper(edict_t* self, const float offset_z) //mxd. Added to reduce code duplication.
 {
-	vec3_t	origin;
+	if (!(self->spawnflags & SF_DRIP))
+		return;
 
-	if(self->spawnflags & 1)
-	{
-		if(!self->count)
-			self->count = 20;
+	if (self->count == 0)
+		self->count = 20;
 
-		VectorCopy(self->s.origin, origin);
-		origin[2] += 200.0F;
-		self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_DRIPPER, 0, origin, "bb", self->count, 2);
-	}
+	vec3_t origin;
+	VectorCopy(self->s.origin, origin);
+	origin[2] += offset_z;
 
+	self->PersistantCFX = gi.CreatePersistantEffect(NULL, FX_DRIPPER, 0, origin, "bb", self->count, 2);
+}
+
+// QUAKED obj_stalactite1 (1 .5 0) (-24 -24 -99) (24 24 99) DRIP DARKSKIN
+// A big long thick stalactite. These point down.
+// Spawnflags:
+// DRIP		- Spawn drips at the end. //TODO: why do we need both spawnflag and field for this?..
+// DARKSKIN	- Use the dark skin.
+// Variables:
+// count - number of drips per minute.
+void SP_obj_stalactite1(edict_t* self)
+{
+	StalactiteInitDripper(self, 200.0f); //mxd
+
+	self->s.modelindex = (byte)gi.modelindex("models/objects/stalactite/stalact1/tris.fm");
 	self->movetype = PHYSICSTYPE_NONE;
 	self->solid = SOLID_BBOX;
-	
-	VectorSet(self->mins, -24, -24, -99);
-	VectorSet(self->maxs, 24, 24, 99);
-	
-	self->s.modelindex = gi.modelindex("models/objects/stalactite/stalact1/tris.fm");
-	if (self->spawnflags & 2)
+
+	if (self->spawnflags & SF_DARKSKIN)
 		self->s.skinnum = 1;
+
+	VectorSet(self->mins, -24.0f, -24.0f, -99.0f);
+	VectorSet(self->maxs, 24.0f, 24.0f, 99.0f);
 
 	gi.linkentity(self);
 }
-
 
 /*QUAK-ED obj_stalactite2 (1 .5 0) (-60 -60 -64) (60 60 64)  DRIP  DARKSKIN
 
@@ -302,6 +310,8 @@ void SP_obj_stalactite3(edict_t *self)
 	
 	gi.linkentity(self);
 }
+
+#pragma endregion
 
 /*QUAKED env_mist (1 .5 0) (-64 -1 -32) (64 1 32)
 scale sets the scale
