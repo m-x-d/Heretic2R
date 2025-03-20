@@ -129,10 +129,13 @@ void SP_env_waterfall_base(edict_t* self)
 
 #pragma endregion
 
-void SpawnDripper(edict_t *self, vec3_t offset)
-{
-	vec3_t		origin;
+#pragma region ========================== obj_fishhead1, obj_fishhead2 ==========================
 
+#define SF_NODRIP	1 //mxd
+
+static void SpawnDripper(const edict_t* self, const vec3_t offset)
+{
+	vec3_t origin;
 	VectorAdd(self->s.origin, offset, origin);
 	gi.CreatePersistantEffect(NULL, FX_DRIPPER, 0, origin, "bb", self->count, 2);
 }
@@ -217,6 +220,8 @@ void SP_obj_fishhead2 (edict_t *self)
 	gi.linkentity(self);
 //	ObjectInit(self,100,500,MAT_GREYSTONE,SOLID_BBOX);
 }
+
+#pragma endregion
 
 /*QUAK-ED obj_stalactite1 (1 .5 0) (-24 -24 -99) (24 24 99) DRIP  DARKSKIN
 	
