@@ -8,19 +8,14 @@
 #include "Vector.h"
 #include "g_local.h"
 
-void waterdrip_go(edict_t *self)
+#pragma region ========================== env_water_drip ==========================
+
+#define SF_YELLOW	1 //mxd
+
+static void EnvWaterDripThink(edict_t* self) //mxd. Named 'waterdrip_go' in original logic.
 {
-	byte	frame;
-
-	frame = 0;
-	if(self->spawnflags & 1)
-	{
-		frame = 1;
-	}
-
-	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_DRIPPER, CEF_BROADCAST, 
-		self->s.origin, "bb", self->count, frame);
-
+	const byte b_frame = ((self->spawnflags & SF_YELLOW) ? 1 : 0);
+	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_DRIPPER, CEF_BROADCAST, self->s.origin, "bb", self->count, b_frame);
 	self->think = NULL;
 }
 
@@ -28,7 +23,7 @@ void waterdrip_use (edict_t *self, edict_t *other, edict_t *activator)
 {
 
 	if (!self->PersistantCFX)
-		waterdrip_go(self);
+		EnvWaterDripThink(self);
 	else
 	{
 		gi.RemoveEffects(&self->s,0);
@@ -60,10 +55,12 @@ void SP_env_water_drip(edict_t *self)
 	self->s.effects |= EF_NODRAW_ALWAYS_SEND;
 	gi.linkentity(self);
 
-	self->think = waterdrip_go;
+	self->think = EnvWaterDripThink;
 	self->nextthink = level.time + 4;
 
 }
+
+#pragma endregion
 
 #define FOUNTAIN_OFF 32
 
