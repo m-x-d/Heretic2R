@@ -32,33 +32,25 @@ static void EnvWaterDripUse(edict_t* self, edict_t* other, edict_t* activator) /
 	}
 }
 
-/*QUAKED env_water_drip (1 .5 0) (-4 -4 0) (4 4 4) YELLOW
-Spawns a drip of water which falls straight down
----- SPAWN FLAGS ------
-if YELLOW set.. uses a yellow drip
-------- KEYS ----------
-count - drips per minute (default 20)
-*/
-
-// This really ought to be sent over as a flag
-// but its a persistant effect, so not critical
-
-void SP_env_water_drip(edict_t *self)
+// QUAKED env_water_drip (1 .5 0) (-4 -4 0) (4 4 4) YELLOW
+// Spawns a drip of water which falls straight down.
+// Spawnflags:
+// YELLOW - Use a yellow drip. //TODO: This really ought to be sent over as a flag (like CEF_FLAG6), but its a persistent effect, so not critical.
+// Variables:
+// count - Drips per minute (default 20).
+void SP_env_water_drip(edict_t* self)
 {
-
-	if(!self->count)
-	{
+	if (self->count == 0)
 		self->count = 20;
-	}
 
-	self->use = EnvWaterDripUse;
 	self->solid = SOLID_NOT;
 	self->s.effects |= EF_NODRAW_ALWAYS_SEND;
-	gi.linkentity(self);
-
+	
+	self->use = EnvWaterDripUse;
 	self->think = EnvWaterDripThink;
-	self->nextthink = level.time + 4;
+	self->nextthink = level.time + 4.0f;
 
+	gi.linkentity(self);
 }
 
 #pragma endregion
