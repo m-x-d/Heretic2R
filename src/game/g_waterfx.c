@@ -310,22 +310,24 @@ void SP_env_mist(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED env_bubbler (1 .5 0) (-4 -4 0) (4 4 4)
-Makes bubbles
----------KEYS--------
-count - bubbles spawned per minute
-*/
-void SP_env_bubbler(edict_t *self)
-{	
-	if(!self->count)
-		self->count = 120;
-	VectorSet(self->mins, -5, -5, -5);
-	VectorSet(self->maxs, 5, 5, 5);
+#pragma region ========================== env_bubbler ==========================
 
+// QUAKED env_bubbler (1 .5 0) (-4 -4 0) (4 4 4)
+// Makes bubbles.
+// Variables:
+// count - Bubbles spawned per minute (default 120).
+void SP_env_bubbler(edict_t* self)
+{
 	self->s.effects |= EF_ALWAYS_ADD_EFFECTS;
+
+	VectorSet(self->mins, -5.0f, -5.0f, -5.0f);
+	VectorSet(self->maxs, 5.0f, 5.0f, 5.0f);
+
+	if (self->count == 0)
+		self->count = 120;
+
 	gi.CreatePersistantEffect(&self->s, FX_BUBBLER, CEF_BROADCAST, self->s.origin, "b", self->count);
 	gi.linkentity(self);
 }
 
-// end
-
+#pragma endregion
