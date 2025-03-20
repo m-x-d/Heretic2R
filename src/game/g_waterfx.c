@@ -83,45 +83,29 @@ static void EnvWaterFountainUse(edict_t* self, edict_t* other, edict_t* activato
 	}
 }
 
-/*QUAKED env_water_fountain (1 .5 0) (-4 -4 0) (4 4 4) RED GREEN BLUE DARK DARKER START_OFF
--------SPAWN FLAGS--------
-START_OFF - fountain will be off until triggered
-
---------KEYS-----------
-angles - xyz velocity of spawned particles
-delay  - the distance from emitter to ground (128 is Okay, max is 256)
-
-If targeted it can be turned on/off but it will start on unless START_OFF
-
-*/
-
-
-// At the time of creation of this effect, I thought +ve z was down
-// Hence the MINUS sign for the distance to fall
-
-void SP_env_water_fountain(edict_t *self)
+// QUAKED env_water_fountain (1 .5 0) (-4 -4 0) (4 4 4) RED GREEN BLUE DARK DARKER START_OFF
+// If targeted it can be turned on/off but it will start on unless START_OFF.
+// Spawnflags:
+// START_OFF - Fountain will be off until triggered.
+// Variables:
+// angles	- xyz velocity of spawned particles.
+// delay	- The distance from emitter to ground (128 is OK, max is 256). 
+void SP_env_water_fountain(edict_t* self)
 {
-	byte	frame;
-	short	drop;
-
-	if (self->targetname) 
-	{
+	if (self->targetname != NULL)
 		self->use = EnvWaterFountainUse;
-	}
 
-	self->s.effects |= EF_NODRAW_ALWAYS_SEND|EF_ALWAYS_ADD_EFFECTS;
+	if (self->delay == 0.0f) //mxd. Set default delay. //TODO: use gi.trace() to set this up automatically?..
+		self->delay = 64.0f;
+
+	self->s.effects |= (EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS);
 	gi.linkentity(self);
 
-	if (self->spawnflags & SF_START_OFF)	// Start off
+	if (!(self->spawnflags & SF_START_OFF)) // Enable?
 	{
-		return;
+		self->spawnflags |= SF_START_OFF;
+		EnvWaterFountainUse(self, NULL, NULL); //mxd
 	}
-
-	drop = -self->delay * 8.0;
-	frame = 0;
-	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_FOUNTAIN, CEF_BROADCAST, self->s.origin, "vsb", self->s.angles, drop, frame);
-	self->s.sound = gi.soundindex("ambient/fountainloop.wav");
-	self->s.sound_data = (255 & ENT_VOL_MASK) | ATTN_STATIC;
 }
 
 #pragma endregion
