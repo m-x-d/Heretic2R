@@ -291,21 +291,24 @@ void SP_obj_stalactite3(edict_t* self)
 
 #pragma endregion
 
-/*QUAKED env_mist (1 .5 0) (-64 -1 -32) (64 1 32)
-scale sets the scale
-*/
-void SP_env_mist(edict_t *self)
+#pragma region ========================== env_mist ==========================
+
+// QUAKED env_mist (1 .5 0) (-64 -1 -32) (64 1 32)
+// Variables:
+// scale - Sets mist scale (max. 25).
+void SP_env_mist(edict_t* self)
 {
-	byte		scale;
-
 	self->s.effects |= EF_ALWAYS_ADD_EFFECTS;
-	scale = Q_ftol(self->s.scale * 10.0);
-	VectorSet(self->mins, -5, -5, -5);
-	VectorSet(self->maxs, 5, 5, 5);
 
-	gi.CreatePersistantEffect(&self->s, FX_MIST, CEF_BROADCAST, self->s.origin, "b", scale);
+	VectorSet(self->mins, -5.0f, -5.0f, -5.0f);
+	VectorSet(self->maxs, 5.0f, 5.0f, 5.0f);
+
+	const byte b_scale = (byte)(Q_ftol(self->s.scale * 10.0f));
+	gi.CreatePersistantEffect(&self->s, FX_MIST, CEF_BROADCAST, self->s.origin, "b", b_scale);
 	gi.linkentity(self);
 }
+
+#pragma endregion
 
 /*QUAKED env_bubbler (1 .5 0) (-4 -4 0) (4 4 4)
 Makes bubbles
