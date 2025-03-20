@@ -4,8 +4,6 @@
 #include "random.h"
 #include "vector.h"
 
-#define	STEPSIZE	18
-
 /*
 =============
 M_CheckBottom
@@ -53,7 +51,7 @@ realcheck:
 // the midpoint must be within 16 of the bottom
 	start[0] = stop[0] = (mins[0] + maxs[0])*0.5;
 	start[1] = stop[1] = (mins[1] + maxs[1])*0.5;
-	stop[2] = start[2] - 2*STEPSIZE;
+	stop[2] = start[2] - 2*STEP_SIZE;
 	gi.trace (start, vec3_origin, vec3_origin, stop, ent, MASK_MONSTERSOLID,&trace);
 
 	if (trace.fraction == 1.0)
@@ -71,7 +69,7 @@ realcheck:
 			
 			if (trace.fraction != 1.0 && trace.endpos[2] > bottom)
 				bottom = trace.endpos[2];
-			if (trace.fraction == 1.0 || mid - trace.endpos[2] > STEPSIZE)
+			if (trace.fraction == 1.0 || mid - trace.endpos[2] > STEP_SIZE)
 				return false;
 		}
 
@@ -231,7 +229,7 @@ qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink)
 
 // push down from a step height above the wished position
 	if (!(ent->monsterinfo.aiflags & AI_NOSTEP))
-		stepsize = STEPSIZE;
+		stepsize = STEP_SIZE;
 	else
 		stepsize = 1;
 

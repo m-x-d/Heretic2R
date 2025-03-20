@@ -25,6 +25,9 @@
 #define YAW					1		// left / right
 #define ROLL				2		// fall over
 
+//mxd. Player/monster step size. Used by pmove.c, m_move.c and mg_ai.c...
+#define STEP_SIZE			18.0f
+
 #define MAX_STRING_CHARS	1024	// Max length of a string passed to Cmd_TokenizeString.
 #define MAX_STRING_TOKENS	80		// Max tokens resulting from Cmd_TokenizeString.
 #define MAX_TOKEN_CHARS		128		// Max length of an individual token.

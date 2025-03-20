@@ -22,7 +22,6 @@
 #include "g_playstats.h"
 #include "fx.h"
 
-#define	STEPSIZE 18
 #define YAW_IDEAL		1
 #define YAW_BEST_MOVE	0
 
@@ -183,7 +182,7 @@ qboolean MG_CheckBottom (edict_t *ent)
 			maxs[1] = 16;
 
 		if(ent->maxs[0] > maxs[0])
-			stepsize = STEPSIZE + (ent->maxs[0] - maxs[0]);
+			stepsize = STEP_SIZE + (ent->maxs[0] - maxs[0]);
 
 		VectorAdd (ent->s.origin, mins, mins);
 		VectorAdd (ent->s.origin, maxs, maxs);
@@ -423,10 +422,10 @@ trace_t MG_MoveStep (edict_t *self, vec3_t move, qboolean relink)
 		if(self->classID==CID_TBEAST)
 		{
 			clipmask = MASK_SOLID;
-			stepsize = STEPSIZE * 3;
+			stepsize = STEP_SIZE * 3;
 		}
 		else
-			stepsize = STEPSIZE;
+			stepsize = STEP_SIZE;
 	}
 	else
 		stepsize = 1;
@@ -2179,9 +2178,9 @@ qboolean MG_MoveToGoal (edict_t *self, float dist)
 	float		stepsize, goal_dist, oby;
 
 	if(self->classID == CID_TBEAST)
-		stepsize = STEPSIZE * 3;
+		stepsize = STEP_SIZE * 3;
 	else
-		stepsize = STEPSIZE;
+		stepsize = STEP_SIZE;
 
 	if(!self->groundentity&&!(self->flags&FL_SWIM)&&!(self->flags&FL_FLY))
 		return false;//in air!

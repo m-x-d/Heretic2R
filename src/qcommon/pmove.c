@@ -46,7 +46,6 @@ static pml_t pml;
 #define PM_FRICTION		6.0f
 #define PM_WATERSPEED	400.0f
 
-#define	STEPSIZE		18.0f
 #define MIN_STEP_NORMAL	0.7f // Can't step up onto very steep slopes.
 #define MAX_CLIP_PLANES	5
 
@@ -363,7 +362,7 @@ LAB_NotSolid:
 			if (trace.plane.normal[2] <= MIN_STEP_NORMAL)
 			{
 				qboolean have_trace_ent = (pml.server && (trace.ent->solid == SOLID_BSP || trace.ent->solid == SOLID_BBOX)) || (!pml.server && trace.ent != NULL); //mxd
-				if (have_trace_ent && PM_CanMoveToPos(STEPSIZE, time_left, &trace))
+				if (have_trace_ent && PM_CanMoveToPos(STEP_SIZE, time_left, &trace))
 					break;
 			}
 
