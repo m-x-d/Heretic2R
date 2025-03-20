@@ -110,36 +110,31 @@ void SP_env_water_fountain(edict_t* self)
 
 #pragma endregion
 
+#pragma region ========================== env_waterfall_base ==========================
+
+// QUAKED env_waterfall_base (1 1 0) (-8 -8 -8) (8 8 8)
+// Variables:
+// angles - [x radius, yaw, y radius].
+void SP_env_waterfall_base(edict_t* self)
+{
+	self->s.effects |= (EF_NODRAW_ALWAYS_SEND | EF_ALWAYS_ADD_EFFECTS);
+
+	gi.linkentity(self);
+
+	const short xrad = (short)Q_ftol(self->s.angles[0]);
+	const short yrad = (short)Q_ftol(self->s.angles[2]);
+	const byte yaw = (byte)Q_ftol((self->s.angles[1] * 256.0f) / 360.0f);
+	gi.CreatePersistantEffect(&self->s, FX_WATERFALLBASE, CEF_BROADCAST, self->s.origin, "bbb", xrad, yrad, yaw);
+}
+
+#pragma endregion
+
 void SpawnDripper(edict_t *self, vec3_t offset)
 {
 	vec3_t		origin;
 
 	VectorAdd(self->s.origin, offset, origin);
 	gi.CreatePersistantEffect(NULL, FX_DRIPPER, 0, origin, "bb", self->count, 2);
-}
-
-/*QUAKED env_waterfall_base (1 1 0) (-8 -8 -8) (8 8 8)
-angles - this first field is the x radius
-         second is the yaw
-		 third is the y radius
-*/
-
-void SP_env_waterfall_base(edict_t *self)
-{
-	short	xrad, yrad;
-	byte	yaw;
-
-	self->s.effects |= EF_NODRAW_ALWAYS_SEND|EF_ALWAYS_ADD_EFFECTS;
-
-	self->svflags = 0;
-
-	xrad = Q_ftol(self->s.angles[0]);
-	yrad = Q_ftol(self->s.angles[2]);
-	yaw = Q_ftol((self->s.angles[1] * 256.0) / 360.0);
-
-	gi.linkentity(self);
-	gi.CreatePersistantEffect(&self->s, FX_WATERFALLBASE, CEF_BROADCAST, self->s.origin, "bbb", xrad, yrad, yaw);
-
 }
 
 /*QUAKED obj_fishhead1 (1 .5 0) (0 -76 -86) (136 76 86)  NODRIP
