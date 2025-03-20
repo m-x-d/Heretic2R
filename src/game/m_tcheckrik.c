@@ -1649,7 +1649,6 @@ void SP_monster_tcheckrik_male (edict_t *self)
 		return;					// Failed initialization
 		
 	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_TCHECKRIK;
 	self->think = walkmonster_start_go;
 	self->monsterinfo.dismember = insect_dismember;
 
@@ -1810,7 +1809,6 @@ void SP_monster_tcheckrik_female (edict_t *self)
 		return;					// Failed initialization
 		
 	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_TCHECKRIK;
 	self->think = walkmonster_start_go;
 	self->monsterinfo.dismember = insect_dismember;
 

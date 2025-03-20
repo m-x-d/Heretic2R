@@ -742,7 +742,6 @@ void SP_monster_mssithra (edict_t *self)
 		return;
 
 	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_MSSITHRA;
 	self->materialtype = MAT_FLESH;
 	self->flags |= FL_IMMUNE_SLIME;
 	if(self->flags&FL_INWATER||

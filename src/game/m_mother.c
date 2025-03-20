@@ -128,9 +128,6 @@ Momma egg layer
 */
 void SP_monster_tcheckrik_mothers (edict_t *self)
 {
-
-	self->classID = CID_MOTHER;
-
 	if (!monster_start(self))
 		return;					// Failed initialization
 		

@@ -2735,7 +2735,6 @@ void SP_monster_trial_beast (edict_t *self)
 		return;
 
 	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_TBEAST;
 	self->monsterinfo.aiflags |= AI_BRUTAL|AI_AGRESSIVE|AI_SHOVE;
 	self->monsterinfo.otherenemyname = "monster_tcheckrik_male";
 

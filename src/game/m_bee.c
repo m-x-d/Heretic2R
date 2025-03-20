@@ -79,7 +79,7 @@ void SP_monster_bee(edict_t *self)
 
 //	walkmonster_start(self);
 	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_BEE;
+	//self->classID = CID_BEE;
 
 	if (!self->health)
 		self->health = BEE_HEALTH;

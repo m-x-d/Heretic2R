@@ -115,7 +115,6 @@ static void LinkBreakables(edict_t* self)
 //					6 = GLASS; 7 = LEAF; 8 = WOOD; 9 = BROWNSTONE; 10 = NONE - just makes smoke.
 void SP_breakable_brush(edict_t* ent)
 {
-	ent->classID = CID_BBRUSH;
 	ent->msgHandler = DefaultMsgHandler;
 
 	if (ent->materialtype == 0) //TODO: it's impossible to set STONE (0) materialtype! Can't be fixed without either adjusting vanilla maps or adding vanilla map-fixing logic similar to Q2...

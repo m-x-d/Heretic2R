@@ -116,7 +116,6 @@ void FlamethrowerStaticsInit(void)
 // speed	- Velocity of the burst (default 400).
 void SP_flamethrower(edict_t* self)
 {
-	self->classID = CID_FLAMETHROWER;
 	self->movetype = PHYSICSTYPE_NONE;
 	self->solid = SOLID_TRIGGER;
 	self->svflags |= SVF_NOCLIENT;

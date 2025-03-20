@@ -804,7 +804,6 @@ void SP_monster_elflord (edict_t *self)
 		return;							// Failed initialization
 
 	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_ELFLORD;
 
 	if (!self->health)
 		self->health = ELFLORD_HEALTH;

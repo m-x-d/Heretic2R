@@ -1208,8 +1208,6 @@ void SP_monster_seraph_guard(edict_t *self)
 {
 	if (self->spawnflags & SERAPH_FLAG_GOLEM)
 	{
-		self->classID = CID_SERAPH_GUARD;
-
 		self->clipmask = MASK_MONSTERSOLID;
 
 		if (!self->health)
@@ -1252,8 +1250,6 @@ void SP_monster_seraph_guard(edict_t *self)
 	}
 	else
 	{
-		self->classID = CID_SERAPH_GUARD;
-
 		if (!monster_start(self))		
 			return;					// Failed initialization
 

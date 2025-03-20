@@ -2211,7 +2211,7 @@ void SP_monster_gorgon_leader (edict_t *self)
 		return;					// Failed initialization
 
 	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_GORGON;
+	//self->classID = CID_GORGON;
 	self->think = walkmonster_start_go;
 	self->monsterinfo.aiflags |= AI_BRUTAL|AI_AGRESSIVE|AI_SHOVE;
 
@@ -2328,7 +2328,6 @@ void SP_monster_gorgon (edict_t *self)
 		return;
 
 	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_GORGON;
 	self->materialtype = MAT_FLESH;
 	self->touch = M_Touch;
 

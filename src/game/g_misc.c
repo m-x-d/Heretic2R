@@ -584,7 +584,6 @@ void SP_misc_teleporter(edict_t* ent)
 	}
 
 	ent->msgHandler = DefaultMsgHandler;
-	ent->classID = CID_TELEPORTER;
 
 	ent->movetype = PHYSICSTYPE_NONE;
 	ent->svflags |= SVF_NOCLIENT;

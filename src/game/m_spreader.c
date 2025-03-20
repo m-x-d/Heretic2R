@@ -1351,8 +1351,6 @@ void SP_monster_spreader (edict_t *self)
 		self->spawnflags &= ~MSF_WALKING;
 	}
 
-	self->classID = CID_SPREADER;
-
 	if (!monster_start(self))
 		return;					// Failed initialization
 		

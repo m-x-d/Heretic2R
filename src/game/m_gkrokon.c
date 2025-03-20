@@ -1081,7 +1081,6 @@ void SP_Monster_Gkrokon(edict_t *self)
 		return;
 
 	self->msgHandler=DefaultMsgHandler;
-	self->classID=CID_GKROKON;
 
 	if (!self->health)
 		self->health=GKROKON_HEALTH;

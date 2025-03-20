@@ -21,10 +21,10 @@ void LightStaticsInit(void) //TODO: remove?
 
 static void LightInit(edict_t* self)
 {
+	self->msgHandler = DefaultMsgHandler;
+
 	self->movetype = PHYSICSTYPE_NONE;
 	self->solid = SOLID_BBOX;
-	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_LIGHT;
 	self->takedamage = DAMAGE_NO;
 
 	BboxYawAndScale(self);

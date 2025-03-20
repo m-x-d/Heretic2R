@@ -376,7 +376,6 @@ void SP_func_door(edict_t* self)
 	FuncDoorSetSounds(self);
 	G_SetMovedir(self->s.angles, self->movedir);
 
-	self->classID = CID_FUNC_DOOR;
 	self->msgHandler = DefaultMsgHandler;
 
 	self->movetype = PHYSICSTYPE_PUSH;

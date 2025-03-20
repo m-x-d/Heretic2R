@@ -85,14 +85,14 @@ static spawn_t spawns[] =
 	{ "trigger_counter", SP_trigger_Counter, CID_TRIGGER },
 	{ "trigger_elevator", SP_trigger_Elevator, CID_TRIGGER },
 	{ "trigger_fogdensity", SP_trigger_fogdensity, CID_TRIGGER },
-	{ "trigger_Gravity", SP_trigger_gravity, CID_NONE },
+	{ "trigger_Gravity", SP_trigger_gravity, CID_TRIGGER }, //mxd. CID_NONE in original logic.
 	{ "trigger_lightning", SP_trigger_lightning, CID_TRIGGER },
 	{ "trigger_mappercentage", SP_trigger_mappercentage, CID_TRIGGER },
 	{ "trigger_quit_to_menu", SP_trigger_quit_to_menu, CID_TRIGGER },
 	{ "trigger_mission_give", SP_trigger_mission_give, CID_TRIGGER },
 	{ "trigger_mission_take", SP_trigger_mission_take, CID_TRIGGER },
-	{ "trigger_MonsterJump", SP_trigger_monsterjump, CID_NONE },
-	{ "trigger_goto_buoy", SP_trigger_goto_buoy, CID_NONE },
+	{ "trigger_MonsterJump", SP_trigger_monsterjump, CID_TRIGGER }, //mxd. CID_NONE in original logic.
+	{ "trigger_goto_buoy", SP_trigger_goto_buoy, CID_TRIGGER }, //mxd. CID_NONE in original logic.
 	{ "trigger_multiple", SP_trigger_Multiple, CID_TRIGGER },
 	{ "trigger_playerpushbutton", SP_trigger_PlayerPushButton, CID_TRIGGER },
 	{ "trigger_playerpushlever", SP_trigger_PlayerPushLever, CID_TRIGGER },
@@ -105,7 +105,7 @@ static spawn_t spawns[] =
 	{ "trigger_farclip", SP_trigger_farclip, CID_TRIGGER },
 	{ "trigger_endgame", SP_trigger_endgame, CID_TRIGGER },
 
-	{ "choose_CDTrack", SP_choose_CDTrack, CID_NONE },
+	{ "choose_CDTrack", SP_choose_CDTrack, CID_TRIGGER }, //mxd. CID_NONE in original logic.
 
 	{ "target_temp_entity", SP_target_temp_entity, CID_NONE }, //mxd
 	{ "target_explosion", SP_target_explosion, CID_NONE },

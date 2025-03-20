@@ -122,7 +122,6 @@ static void TriggerEnable(edict_t* self, edict_t* other, edict_t* activator) //m
 
 void TriggerInit(edict_t* self) //mxd. Named 'InitTrigger' in original logic.
 {
-	self->classID = CID_TRIGGER;
 	self->msgHandler = DefaultMsgHandler;
 
 	if (self->wait == 0.0f)
@@ -314,8 +313,6 @@ static void TriggerPuzzleUse(edict_t* self, edict_t* other, edict_t* activator) 
 // item - Classname of the required puzzle item, for example "key_data_cd".
 void SP_trigger_puzzle(edict_t* self)
 {
-	self->classID = CID_TRIGGER;
-
 	if (st.item == NULL)
 	{
 		gi.dprintf("no key item for trigger_key at %s\n", vtos(self->s.origin));
@@ -370,7 +367,6 @@ static void TriggerCounterUse(edict_t* self, edict_t* other, edict_t* activator)
 // count - After the trigger_counter has been triggered this many times (default 2), it will fire all of it's targets and remove itself.
 void SP_trigger_Counter(edict_t* self)
 {
-	self->classID = CID_TRIGGER;
 	self->wait = -1.0f;
 
 	if (self->count == 0) //TODO: will print unrelated messages when count > 11...
@@ -388,9 +384,7 @@ void SP_trigger_Counter(edict_t* self)
 // This trigger will always fire. It is activated by the world.
 void SP_trigger_Always(edict_t* self)
 {
-	self->classID = CID_TRIGGER;
 	self->delay = max(0.2f, self->delay); // We must have some delay to make sure our use targets are present.
-
 	G_UseTargets(self, self);
 }
 
@@ -445,8 +439,6 @@ static void TriggerPlayerPushButtonTouch(edict_t* self, edict_t* other, cplane_t
 // Triggers player to know he is near a button.
 void SP_trigger_PlayerPushButton(edict_t* self)
 {
-	self->classID = CID_TRIGGER;
-
 	self->wait = FRAMETIME;
 	self->touch = TriggerPlayerPushButtonTouch;
 	self->movetype = PHYSICSTYPE_NONE;
@@ -521,7 +513,6 @@ static void TriggerElevatorInitThink(edict_t* self) //mxd. Named 'trigger_elevat
 // Special func_train trigger (or not trigger, if func_train is moving). Not used in any H2 maps -- mxd.
 void SP_trigger_Elevator(edict_t* self)
 {
-	self->classID = CID_TRIGGER;
 	self->think = TriggerElevatorInitThink;
 	self->nextthink = level.time + FRAMETIME;
 }
@@ -629,7 +620,6 @@ static void ChooseCDTrackTouch(edict_t* self, edict_t* other, cplane_t* plane, c
 // style - # of CD track to play.
 void SP_choose_CDTrack(edict_t* self)
 {
-	self->classID = CID_TRIGGER;
 	self->msgHandler = DefaultMsgHandler;
 	self->spawnflags = ((self->spawnflags & SF_NO_LOOP) ? FALSE : TRUE);
 
@@ -667,7 +657,6 @@ static void TriggerQuitToMenuUse(edict_t* self, edict_t* other, edict_t* activat
 // Player only, quits to menu.
 void SP_trigger_quit_to_menu(edict_t* self)
 {
-	self->classID = CID_TRIGGER;
 	self->msgHandler = DefaultMsgHandler;
 
 	self->solid = SOLID_TRIGGER;
@@ -1032,7 +1021,6 @@ void SP_trigger_endgame(edict_t* self)
 	TriggerInit(self);
 
 	self->solid = SOLID_TRIGGER;
-	self->count = 0;
 	self->touch = TriggerEndgameTouch;
 	self->use = TriggerEndgameUse;
 }

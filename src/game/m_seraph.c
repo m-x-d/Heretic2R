@@ -1051,8 +1051,6 @@ NOTE: A value of zero will result in defaults, if you actually want zero as the 
 */
 void SP_monster_seraph_overlord(edict_t *self)
 {
-	self->classID = CID_SERAPH_OVERLORD;
-
 	if (!monster_start(self))			// Failed initialization
 		return;
 	

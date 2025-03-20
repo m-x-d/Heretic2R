@@ -2899,7 +2899,6 @@ void SP_monster_assassin (edict_t *self)
 		return;
 		
 	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_ASSASSIN;
 	self->monsterinfo.dismember = assassin_dismember;
 
 	if(!self->health)

@@ -89,7 +89,6 @@ static void FuncRotatingUse(edict_t* self, edict_t* other, edict_t* activator) /
 //		4 - 'Spanking' paddles on gauntlet.
 void SP_func_rotating(edict_t* ent)
 {
-	ent->classID = CID_FUNC_ROTATE;
 	ent->msgHandler = DefaultMsgHandler;
 
 	ent->solid = SOLID_BSP;

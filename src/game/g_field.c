@@ -21,7 +21,6 @@ static void InitField(edict_t* self)
 	if (Vec3NotZero(self->s.angles))
 		G_SetMovedir(self->s.angles, self->movedir);
 
-	self->classID = CID_TRIGGER; // Fields are basically triggers.
 	self->solid = SOLID_TRIGGER;
 	self->movetype = PHYSICSTYPE_NONE;
 	self->svflags = SVF_NOCLIENT;
@@ -124,8 +123,6 @@ void SP_trigger_push(edict_t* self)
 	TriggerInit(self);
 
 	self->solid = SOLID_TRIGGER;
-	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_TRIG_PUSH;
 	self->s.angles[2] = st.zangle;
 
 	if (self->speed == 0.0f)
@@ -205,6 +202,7 @@ void SP_trigger_damage(edict_t* self)
 	if (DEATHMATCH && self->dmg > 100)
 	{
 		self->spawnflags = DEATHMATCH_RANDOM;
+		self->classID = CID_TELEPORTER;
 		SP_misc_teleporter(self);
 
 		return;
@@ -212,7 +210,6 @@ void SP_trigger_damage(edict_t* self)
 
 	InitField(self);
 
-	self->classID = CID_TRIG_DAMAGE;
 	self->movetype = PHYSICSTYPE_NONE;
 	self->msgHandler = DefaultMsgHandler;
 	self->touch = TriggerDamageTouch;

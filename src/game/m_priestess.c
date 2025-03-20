@@ -1649,7 +1649,6 @@ void SP_monster_high_priestess (edict_t *self)
 		return;
 
 	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_HIGHPRIESTESS;
 
 	if (!self->health)
 	{

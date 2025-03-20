@@ -1415,7 +1415,6 @@ void SP_monster_imp(edict_t *self)
 		return;				// Failed initialization
 
 	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_IMP;
 
 	if (!self->health)
 		self->health = IMP_HEALTH;

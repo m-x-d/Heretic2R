@@ -1097,7 +1097,6 @@ void SP_monster_fish (edict_t *self)
 	self->oldenemy_debounce_time = -1;
 	
 	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_FISH;
 	self->think = fish_check_distance;
 	self->nextthink = level.time + FRAMETIME;
 

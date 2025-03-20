@@ -3065,7 +3065,6 @@ void SP_monster_plague_ssithra (edict_t *self)
 
 	self->msgHandler = DefaultMsgHandler;
 	self->monsterinfo.alert = ssithraAlerted;
-	self->classID = CID_SSITHRA;
 	self->think = walkmonster_start_go;
 	self->monsterinfo.dismember = ssithra_dismember;
 

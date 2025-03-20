@@ -1900,8 +1900,6 @@ void SP_monster_morcalavin (edict_t *self)
 		return;
 
 	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_MORK;
-
 	self->classname = "monster_morcalavin";
 
 	if (!self->health)

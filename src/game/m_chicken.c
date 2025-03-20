@@ -111,7 +111,6 @@ void SP_monster_chicken (edict_t *self)
 		return;
 
 	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_CHICKEN;
 	self->think = walkmonster_start_go;
 	self->materialtype = MAT_FLESH;
 

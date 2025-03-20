@@ -1656,7 +1656,6 @@ void SP_monster_harpy(edict_t *self)
 		return;				// Failed initialization
 
 	self->msgHandler = DefaultMsgHandler;
-	self->classID = CID_HARPY;
 	self->monsterinfo.dismember = harpy_dismember;
 
 	if (!self->health)

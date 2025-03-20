@@ -1972,8 +1972,6 @@ void SP_monster_plagueElf (edict_t *self)
 		self->spawnflags &= ~MSF_WALKING;
 	}
 
-	self->classID = CID_PLAGUEELF;
-
 	if (!walkmonster_start(self))		// Failed initialization
 		return;
 		

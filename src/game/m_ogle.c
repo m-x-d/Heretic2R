@@ -1698,8 +1698,6 @@ void SP_monster_ogle(edict_t *self)
 		return;
 	}
 
-	self->classID = CID_OGLE;
-
 	self->monsterinfo.ogleflags = self->spawnflags;
 	self->spawnflags = 0;//don't want incorrect handling due to weird ogle spawnflags!
 
