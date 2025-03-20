@@ -133,92 +133,66 @@ void SP_env_waterfall_base(edict_t* self)
 
 #define SF_NODRIP	1 //mxd
 
-static void SpawnDripper(const edict_t* self, const vec3_t offset)
+static void SpawnDrippers(edict_t* self) //mxd. Added to reduce code duplication.
 {
-	vec3_t origin;
-	VectorAdd(self->s.origin, offset, origin);
-	gi.CreatePersistantEffect(NULL, FX_DRIPPER, 0, origin, "bb", self->count, 2);
+	static const vec3_t offsets[] = //mxd
+	{
+		{ -20.0f, -60.0f, -50.0f },
+		{  55.0f,  30.0f, -70.0f },
+		{  0.0f,   60.0f, -70.0f },
+		{  65.0f, -7.0f,  -60.0f },
+	};
+
+	if (self->spawnflags & SF_NODRIP)
+		return;
+
+	if (self->count == 0)
+		self->count = 20;
+
+	for (uint i = 0; i < ARRAYSIZE(offsets); i++)
+	{
+		vec3_t origin;
+		VectorAdd(self->s.origin, offsets[i], origin);
+		gi.CreatePersistantEffect(NULL, FX_DRIPPER, 0, origin, "bb", self->count, 2);
+	}
 }
 
-/*QUAKED obj_fishhead1 (1 .5 0) (0 -76 -86) (136 76 86)  NODRIP
- Large fish head fountain. No teeth in mouth and the fins on top are connected. Also spawns 4 drips frame 0
--------  FIELDS  ------------------
-NODRIP - won't drip
------------------------------------
-*/
-void SP_obj_fishhead1 (edict_t *self)
+// QUAKED obj_fishhead1 (1 .5 0) (0 -76 -86) (136 76 86) NODRIP
+// Large fish head fountain. No teeth in mouth and the fins on top are connected. Also spawns 4 drips frame 0.
+// Spawnflags:
+// NODRIP - Won't drip.
+// Variables:
+// count - number of drips per minute (default 20).
+void SP_obj_fishhead1(edict_t* self)
 {
-	vec3_t		offset;
+	SpawnDrippers(self); //mxd
 
-	if (!(self->spawnflags & 1))
-	{
-		if(!self->count)
-			self->count = 20;
+	self->s.modelindex = (byte)gi.modelindex("models/objects/fishheads/fishhead1/tris.fm");
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-		VectorSet(offset, -20, -60, -50);
-		SpawnDripper(self, offset);
-		VectorSet(offset, 55, 30, -70);
-		SpawnDripper(self, offset);
-		VectorSet(offset, 0, 60, -70);
-		SpawnDripper(self, offset);
-		VectorSet(offset, 65, -7, -60);
-		SpawnDripper(self, offset);
-	}
+	VectorSet(self->mins, 0.0f, -76.0f, -86.0f);
+	VectorSet(self->maxs, 136.0f, 76.0f, 86.0f);
 
-	self->spawnflags |= SF_OBJ_INVULNERABLE;	// Always indestructible
-	self->spawnflags |= SF_OBJ_NOPUSH;	// Cant push it
-
-	VectorSet(self->mins, 0, -76, -86);
-	VectorSet(self->maxs, 136, 76, 86);
-	self->s.modelindex = gi.modelindex("models/objects/fishheads/fishhead1/tris.fm");
-
-	ObjectInit(self,100,500,MAT_GREYSTONE,SOLID_BBOX);
+	ObjectInit(self, 100, 500, MAT_GREYSTONE, SOLID_BBOX);
 }
 
-/*QUAKED obj_fishhead2 (1 .5 0) (0 -110 -118) (136 110 118) NODRIP
-Large fish head fountain. The mouth has teeth. The fins on top are not conntected. Also spawns 4 drips frame 0
--------  FIELDS  ------------------
-NODRIP - won't drip
------------------------------------
-*/
-void SP_obj_fishhead2 (edict_t *self)
+// QUAKED obj_fishhead2 (1 .5 0) (0 -110 -118) (136 110 118) NODRIP
+// Large fish head fountain. The mouth has teeth. The fins on top are not connected. Also spawns 4 drips frame 0.
+// Spawnflags:
+// NODRIP - Won't drip.
+// Variables:
+// count - number of drips per minute (default 20).
+void SP_obj_fishhead2(edict_t* self)
 {
-	vec3_t		offset;
+	SpawnDrippers(self); //mxd
 
-	if (!(self->spawnflags & 1))
-	{
-		if(!self->count)
-			self->count = 20;
+	self->s.modelindex = (byte)gi.modelindex("models/objects/fishheads/fishhead2/tris.fm");
+	self->spawnflags |= (SF_OBJ_INVULNERABLE | SF_OBJ_NOPUSH); // Can't be destroyed or pushed.
 
-		VectorSet(offset, -20, -60, -50);
-		SpawnDripper(self, offset);
-		VectorSet(offset, 55, 30, -70);
-		SpawnDripper(self, offset);
-		VectorSet(offset, 0, 60, -70);
-		SpawnDripper(self, offset);
-		VectorSet(offset, 65, -7, -60);
-		SpawnDripper(self, offset);
-	}
+	VectorSet(self->mins, 0.0f, -110.0f, -118.0f);
+	VectorSet(self->maxs, 136.0f, 110.0f, 118.0f);
 
-	VectorSet(self->mins, 0, -110, -118);
-	VectorSet(self->maxs, 136, 110, 118);
-	self->s.modelindex = gi.modelindex("models/objects/fishheads/fishhead2/tris.fm");
-
-	self->spawnflags |= SF_OBJ_INVULNERABLE;	// Always indestructible
-	self->spawnflags |= SF_OBJ_NOPUSH;	// Cant push it
-	self->takedamage = DAMAGE_NO;
-
-	self->movetype = PHYSICSTYPE_NONE;
-	self->solid = SOLID_BBOX;
-	self->takedamage = DAMAGE_NO;
-	self->clipmask = MASK_MONSTERSOLID;
-
-	BboxYawAndScale(self);
-
-
-
-	gi.linkentity(self);
-//	ObjectInit(self,100,500,MAT_GREYSTONE,SOLID_BBOX);
+	ObjectInit(self, 100, 500, MAT_GREYSTONE, SOLID_BBOX); //mxd
 }
 
 #pragma endregion
