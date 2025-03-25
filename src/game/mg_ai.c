@@ -1137,32 +1137,25 @@ void ai_run(edict_t* self, const float dist) //TODO: rename to MGAI_Run.
 		MG_CheckEvade(self); // Check if going to be hit and evade.
 }
 
-void mg_ai_charge (edict_t *self, float dist)
+void mg_ai_charge(edict_t* self, const float dist) //TODO: rename to MGAI_Charge.
 {
-	vec3_t	v;
+	if (self->enemy == NULL)
+		return; //FIXME: send stand MSG?
 
-	if(!self->enemy)
-	{
-#ifdef _DEVEL
-		gi.dprintf("ERROR: AI_CHARGE at a NULL enemy!\n");
-#endif
-		return;//send stand MSG?
-	}
+	vec3_t diff;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
 
-	VectorSubtract (self->enemy->s.origin, self->s.origin, v);
+	self->ideal_yaw = VectorYaw(diff);
 
-	self->ideal_yaw = VectorYaw(v);
+	MG_ChangeYaw(self);
 
-	MG_ChangeYaw (self);
+	assert(dist >= 0.0f); //mxd. Original logic used 'if(dist)' check below, so...
 
-	if (dist)
-		MG_WalkMove (self, self->s.angles[YAW], dist);
+	if (dist > 0.0f)
+		MG_WalkMove(self, self->s.angles[YAW], dist);
 
-	if(self->classID!=CID_ASSASSIN)//does his own checks
-		if(classStatics[self->classID].msgReceivers[MSG_EVADE])
-		{//check for if going to be hit and evade
-			MG_CheckEvade(self);
-		}
+	if (self->classID != CID_ASSASSIN && classStatics[self->classID].msgReceivers[MSG_EVADE] != NULL) // Assassin does his own checks. //TODO: mg_ai_charge is used ONLY by CID_ASSASSIN!
+		MG_CheckEvade(self); // Check if going to be hit and evade.
 }
 
 qboolean canmove (edict_t *self)
