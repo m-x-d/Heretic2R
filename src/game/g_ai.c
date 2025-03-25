@@ -2207,7 +2207,7 @@ void ai_flee (edict_t *self, float dist)
 		self->ideal_yaw = VectorYaw(vec);
 		self->ideal_yaw = anglemod(self->ideal_yaw + self->best_move_yaw);
 		M_ChangeYaw(self);
-		if(!M_walkmove(self, self->s.angles[YAW], dist) && EqualAngle(self->s.angles[YAW], self->ideal_yaw, 5))
+		if(!M_walkmove(self, self->s.angles[YAW], dist) && AnglesEqual(self->s.angles[YAW], self->ideal_yaw, 5))
 			self->best_move_yaw = flrand(60, 300);
 		else
 			self->best_move_yaw = 180;

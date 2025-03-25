@@ -23,7 +23,7 @@ extern void MG_InAirMove(edict_t* self, float forward_speed, float up_speed, flo
 extern void MG_ApplyJump(edict_t* self);
 extern void MG_SetNoBlocking(edict_t* self);
 extern qboolean MG_TryGetTargetOrigin(edict_t* self, vec3_t target_origin);
-extern qboolean EqualAngle(float angle1, float angle2, float leniency);
+extern qboolean AnglesEqual(float angle1, float angle2, float leniency);
 
 extern qboolean MG_IsAheadOf(const edict_t* self, const edict_t* other);
 extern qboolean MG_IsVisiblePos(const edict_t* self, const vec3_t pos);

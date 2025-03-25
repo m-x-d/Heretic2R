@@ -637,7 +637,7 @@ void rat_ai_run (edict_t *self, float dist)
 		self->ideal_yaw = VectorYaw(vec);
 		self->ideal_yaw = anglemod(self->ideal_yaw + self->count);
 		M_ChangeYaw(self);
-		if(!M_walkmove(self, self->s.angles[YAW], dist) && EqualAngle(self->s.angles[YAW], self->ideal_yaw, 5))
+		if(!M_walkmove(self, self->s.angles[YAW], dist) && AnglesEqual(self->s.angles[YAW], self->ideal_yaw, 5))
 			self->count = flrand(60, 300);
 	}
 	else

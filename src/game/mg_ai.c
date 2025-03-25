@@ -1568,7 +1568,7 @@ qboolean MG_TryGetTargetOrigin(edict_t* self, vec3_t target_origin) //mxd. Named
 }
 
 // Sees if the two angles are within leniency degrees of each other.
-qboolean EqualAngle(float angle1, float angle2, const float leniency) //TODO: rename to IsEqualAngle?
+qboolean AnglesEqual(float angle1, float angle2, const float leniency) //mxd. Named 'EqualAngle' in original logic.
 {
 	if (angle1 < -180.0f)
 		angle1 += 360.0f;
@@ -1599,7 +1599,7 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 		MG_FaceGoal(self, false); // Get ideal yaw, but don't turn.
 
 	// Are we very close to our goal? Problem: what if something in between?
-	if (!EqualAngle(self->s.angles[YAW], self->ideal_yaw, self->yaw_speed))
+	if (!AnglesEqual(self->s.angles[YAW], self->ideal_yaw, self->yaw_speed))
 	{
 		// We aren't really facing our ideal yet.
 		if (self->monsterinfo.searchType == SEARCH_BUOY || self->ai_mood == AI_MOOD_NAVIGATE)
@@ -1644,7 +1644,7 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 	else if (self->monsterinfo.idle_time > level.time)
 	{
 		// Using best_move_yaw. Do a test move in the direction I would like to go.
-		if (EqualAngle(self->s.angles[YAW], self->best_move_yaw, 5.0f) && MG_TestMove(self, self->ideal_yaw, dist))
+		if (AnglesEqual(self->s.angles[YAW], self->best_move_yaw, 5.0f) && MG_TestMove(self, self->ideal_yaw, dist))
 		{
 			// Keep turning towards ideal until facing it.
 			if (Q_fabs(MG_ChangeWhichYaw(self, YAW_IDEAL)) < 1.0f)
@@ -1768,7 +1768,7 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 	self->best_move_yaw = anglemod(self->ideal_yaw + 180.0f);
 
 	// If hit a wall and close to ideal yaw (within 5 deg.), try a new dir.
-	if (Vec3NotZero(trace.plane.normal) && EqualAngle(self->s.angles[YAW], self->ideal_yaw, 5.0f))
+	if (Vec3NotZero(trace.plane.normal) && AnglesEqual(self->s.angles[YAW], self->ideal_yaw, 5.0f))
 	{
 		// If facing a wall, turn faster, more facing the wall, faster the turn.
 		const float save_yaw_speed = self->yaw_speed;
@@ -1877,7 +1877,7 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 		MG_FaceGoal(self, false); // Get ideal yaw, but don't turn.
 
 	// Are we very close to our goal? Problem: what if something in between?
-	if (!EqualAngle(self->s.angles[YAW], self->ideal_yaw, self->yaw_speed))
+	if (!AnglesEqual(self->s.angles[YAW], self->ideal_yaw, self->yaw_speed))
 	{
 		// We aren't really facing our ideal yet.
 		if (self->monsterinfo.searchType == SEARCH_BUOY || self->ai_mood == AI_MOOD_NAVIGATE)
@@ -1917,7 +1917,7 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 	else if (self->monsterinfo.idle_time > level.time)
 	{
 		// Using best_move_yaw. Do a test move in the direction I would like to go.
-		if (EqualAngle(self->s.angles[YAW], self->best_move_yaw, 5.0f) && MG_TestMove(self, self->ideal_yaw, dist))
+		if (AnglesEqual(self->s.angles[YAW], self->best_move_yaw, 5.0f) && MG_TestMove(self, self->ideal_yaw, dist))
 		{
 			// Keep turning towards ideal until facing it.
 			if (Q_fabs(MG_ChangeWhichYaw(self, YAW_IDEAL)) < 1.0f)
@@ -2017,7 +2017,7 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 	self->best_move_yaw = anglemod(self->ideal_yaw + 180.0f);
 
 	// If hit a wall and close to ideal yaw (within 5 deg.), try a new dir.
-	if (Vec3NotZero(trace.plane.normal) && EqualAngle(self->s.angles[YAW], self->ideal_yaw, 5.0f))
+	if (Vec3NotZero(trace.plane.normal) && AnglesEqual(self->s.angles[YAW], self->ideal_yaw, 5.0f))
 	{
 		// If facing a wall, turn faster, more facing the wall, faster the turn.
 		const float save_yaw_speed = self->yaw_speed;
