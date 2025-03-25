@@ -625,7 +625,6 @@ extern edict_t* G_PickTarget(const char* targetname);
 extern int range(edict_t* self, edict_t* other);
 extern qboolean clear_visible(edict_t* self, edict_t* other);
 extern qboolean visible(edict_t* self, edict_t* other);
-extern qboolean visible_pos(edict_t* self, vec3_t spot2);
 extern qboolean infront(edict_t* self, edict_t* other);
 extern qboolean infront_pos(edict_t* self, vec3_t pos);
 

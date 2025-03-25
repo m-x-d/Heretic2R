@@ -9,6 +9,7 @@
 //FIXME: way to handle lots of monsters gathered around the same buoy... The one that is at it can't get out, the others can't get to it, they just crowd it.
 
 #include "mg_guide.h"
+#include "mg_ai.h" //mxd
 #include "g_monster.h"
 #include "m_assassin.h" //mxd
 #include "m_stats.h"

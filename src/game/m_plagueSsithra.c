@@ -29,7 +29,6 @@
 
 void extrapolateFiredir (edict_t *self,vec3_t p1,float pspeed,edict_t *targ,float accept,vec3_t vec2);
 void ssithra_blocked (edict_t *self, trace_t *trace);
-qboolean visible_pos (edict_t *self, vec3_t spot2);
 void create_ssith_arrow(edict_t *Arrow);
 qboolean ssithraCheckInWater (edict_t *self);
 
