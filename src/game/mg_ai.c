@@ -22,34 +22,24 @@ void ssithraCheckJump(edict_t* self); //TODO: move to m_plagueSsithra.h.
 void SV_FixCheckBottom(edict_t* ent); //TODO: move to m_move.h
 float ai_face_goal(edict_t* self); //TODO: move to g_ai.h
 
-//============================================================================
-
-/*
-=============
-ahead
-
-returns 1 if the entity is in front (dot > 0.8) of self
-=============
-*/
-qboolean ahead (edict_t *self, edict_t *other)
+// Returns true if the entity is in front (dot > 0.8) of self.
+qboolean ahead(const edict_t* self, const edict_t* other) //TODO: rename to MG_IsAheadOf?
 {
-	vec3_t	vec;
-	float	dot;
-	vec3_t	forward, check_angles;
-	
-	if(Vec3NotZero(self->v_angle_ofs))
-		VectorAdd(self->v_angle_ofs,self->s.angles,check_angles);
+	vec3_t check_angles;
+
+	if (Vec3NotZero(self->v_angle_ofs))
+		VectorAdd(self->v_angle_ofs, self->s.angles, check_angles);
 	else
-		VectorCopy(self->s.angles,check_angles);
-	
-	AngleVectors (check_angles, forward, NULL, NULL);
-	VectorSubtract (other->s.origin, self->s.origin, vec);
-	VectorNormalize (vec);
-	dot = DotProduct (vec, forward);
-	
-	if (dot > 0.8)
-		return true;
-	return false;
+		VectorCopy(self->s.angles, check_angles);
+
+	vec3_t forward;
+	AngleVectors(check_angles, forward, NULL, NULL);
+
+	vec3_t vec;
+	VectorSubtract(other->s.origin, self->s.origin, vec);
+	VectorNormalize(vec);
+
+	return (DotProduct(vec, forward) > 0.8f);
 }
 
 /*
