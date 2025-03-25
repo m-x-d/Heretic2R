@@ -15,6 +15,7 @@
 // ADD ANY ADDITIONAL FILES BELOW
 
 #include "c_ai.h"
+#include "mg_ai.h" //mxd
 #include "m_assassin_anim.h"
 #include "m_assassin_local.h"
 #include "g_monster.h"

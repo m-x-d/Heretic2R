@@ -174,7 +174,6 @@ void assassinUndoCrouched (edict_t *self);
 void assassinGoJump (edict_t *self, float upspd,float fwdspd,float rtspd);
 void assassinStop (edict_t *self);
 void assassin_go_run(edict_t *self, float dist);
-void mg_ai_charge (edict_t *self, float dist);
 void assassinCheckLoop (edict_t *self, float frame);
 void assassinCheckLanded (edict_t *self, float nextanim);
 void assassin_go_inair(edict_t *self);
