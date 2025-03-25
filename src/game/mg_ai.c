@@ -1158,19 +1158,6 @@ void mg_ai_charge(edict_t* self, const float dist) //TODO: rename to MGAI_Charge
 		MG_CheckEvade(self); // Check if going to be hit and evade.
 }
 
-void mg_remove_body(edict_t *self)
-{
-	vec3_t	origin;
-	int		flag = 0;
-
-	VectorCopy(self->s.origin, origin);
-	origin[2] += (self->mins[2] + 8.0f);
-	if(self->classID == CID_RAT)
-		flag |= CEF_FLAG6;
-	gi.CreateEffect(NULL, FX_CORPSE_REMOVE, flag, origin, "");
-	G_SetToFree(self);
-}
-
 void body_phase_out (edict_t *self)
 {
 	int	interval = 30;
