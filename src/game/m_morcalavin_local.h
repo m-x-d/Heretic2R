@@ -115,7 +115,6 @@ void mork_ai_hover (edict_t *self, float dist);
 void morcalavin_ground_attack( edict_t *self );
 void morcalavin_quake_pause( edict_t *self );
 void morcalavin_init_phase_out (edict_t *self);
-void MG_CheckEvade (edict_t *self);
 void morcalavin_fade_out(edict_t *self);
 void morcalavin_taunt_shot(edict_t *self);
 

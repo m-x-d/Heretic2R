@@ -91,4 +91,3 @@ void elflord_FixAngles(edict_t *self);
 
 void ai_charge2(edict_t *self, float dist);
 float ai_face_goal(edict_t *self);
-void MG_CheckEvade (edict_t *self);

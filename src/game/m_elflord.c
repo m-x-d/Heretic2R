@@ -20,6 +20,7 @@
 #include "m_elflord_local.h"
 #include "m_elflord_anims.h"
 #include "g_monster.h"
+#include "mg_ai.h" //mxd
 #include "m_stats.h"
 #include "g_HitLocation.h"
 #include "spl_sphereofannihlation.h" //mxd

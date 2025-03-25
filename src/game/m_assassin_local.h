@@ -197,7 +197,6 @@ void assassinDeCloak (edict_t *self);
 void assassinReadyTeleport (edict_t *self);
 void assassinUnCrouch (edict_t *self);
 void assassinSkipFrameSkillCheck (edict_t *self);
-void MG_CheckEvade (edict_t *self);
 void FoundTarget (edict_t *self, qboolean setsightent);
 void assasin_walk_loop_go (edict_t *self);
 void assassin_ai_walk (edict_t *self, float dist);

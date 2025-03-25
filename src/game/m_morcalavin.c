@@ -22,6 +22,7 @@
 #include "g_misc.h"
 #include "m_stats.h"
 #include "g_playstats.h"
+#include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
 #include "p_actions.h"
 
