@@ -212,7 +212,7 @@ typedef struct client_persistant_s
 	byte helltype;		// Current skin on the hellstaff.
 	byte handfxtype;	// Current spell effect Corvus has attached to his refpoints.
 	float armor_count;	// Not used on client.
-	short skintype;		// Skin index that reflects plague stages and alternate skins
+	short skintype;		// Skin index that reflects plague stages and alternate skins.
 	uint altparts;		// Missing hands, heads etc.
 
 	// Inventory.
@@ -241,24 +241,24 @@ typedef struct client_persistant_s
 // FL_XXX
 // Held in 'edict_t'->flags.
 #define FL_FLY				0x00000001
-#define FL_SWIM				0x00000002	// Implied immunity to drowining
+#define FL_SWIM				0x00000002	// Implied immunity to drowining.
 #define FL_SUSPENDED		0x00000004
 #define FL_INWATER			0x00000008
 #define FL_GODMODE			0x00000010
 #define FL_NOTARGET			0x00000020
 #define FL_IMMUNE_SLIME		0x00000040
 #define FL_IMMUNE_LAVA		0x00000080
-#define FL_PARTIALGROUND	0x00000100	// Not all corners are valid
-#define FL_INLAVA			0x00000200	// INWATER is set when in lava, but this is a modifier so we know when we leave
-#define FL_TEAMSLAVE		0x00000400	// Not the first on the team
+#define FL_PARTIALGROUND	0x00000100	// Not all corners are valid.
+#define FL_INLAVA			0x00000200	// INWATER is set when in lava, but this is a modifier so we know when we leave.
+#define FL_TEAMSLAVE		0x00000400	// Not the first on the team.
 #define FL_NO_KNOCKBACK		0x00000800
-#define FL_INSLIME			0x00001000	// INWATER is set when in muck, but this is a modifier so we know when we leave
-#define FL_LOCKMOVE			0x00002000	// Move updates should not process, actor can only move explicitly
-#define FL_DONTANIMATE		0x00004000	// Stop animating
+#define FL_INSLIME			0x00001000	// INWATER is set when in muck, but this is a modifier so we know when we leave.
+#define FL_LOCKMOVE			0x00002000	// Move updates should not process, actor can only move explicitly.
+#define FL_DONTANIMATE		0x00004000	// Stop animating.
 #define FL_AVERAGE_CHICKEN	0x00008000	// Currently a chicken.
-#define FL_AMPHIBIAN		0x00010000	// Does not drown on land or in water, but is damaged by muck and lava
+#define FL_AMPHIBIAN		0x00010000	// Does not drown on land or in water, but is damaged by muck and lava.
 #define FL_SUPER_CHICKEN	0x00020000	// Ah yeah...
-#define FL_RESPAWN			0x80000000	// Used for item respawning
+#define FL_RESPAWN			0x80000000	// Used for item respawning.
 
 #define FL_CHICKEN (FL_AVERAGE_CHICKEN | FL_SUPER_CHICKEN)
 
