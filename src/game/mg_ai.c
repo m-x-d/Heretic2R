@@ -1523,15 +1523,12 @@ void MG_InAirMove(edict_t* self, const float forward_speed, const float up_speed
 	}
 }
 
-void MG_ApplyJump (edict_t *self)
+void MG_ApplyJump(edict_t* self)
 {
-	self->jump_time = level.time + 0.5;
 	VectorCopy(self->movedir, self->velocity);
 	VectorNormalize(self->movedir);
-#ifdef _DEVEL
-	if(MGAI_DEBUG)
-		gi.dprintf("Jump velocity will be: %4.2f %4.2f %4.2f\n", self->velocity[0], self->velocity[1], self->velocity[2]);
-#endif
+
+	self->jump_time = level.time + 0.5f;
 	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
 }
 
