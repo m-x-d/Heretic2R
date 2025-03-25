@@ -1039,74 +1039,56 @@ static qboolean MG_TestMove(edict_t* self, float yaw, const float dist) //TODO: 
 	return trace.succeeded;
 }
 
-void MG_CheckEvade (edict_t *self)
-{//FIXME: only check my enemy?  See if he's fired (last_attack) recently?
-	int hl;
-	float ent_dist, proj_offset;
-	vec3_t proj_dir, endpos, bad_dir;
-	trace_t trace;
-	edict_t	*ent = NULL;
-	vec3_t	total_dist;
-	float	eta;
-	
-	if(!skill->value)
+void MG_CheckEvade(edict_t* self)
+{
+	//FIXME: only check my enemy? See if he's fired (last_attack) recently?
+	if (SKILL == SKILL_EASY)
 		return;
-	//else if(flrand(0, 3) > skill->value)
-	//	return;
 
-	while(ent = FindInRadius(ent, self->s.origin, 500))
+	edict_t* ent = NULL;
+	while ((ent = FindInRadius(ent, self->s.origin, 500.0f)) != NULL)
 	{
-		if(ent->movetype == MOVETYPE_FLYMISSILE && ent->solid && ent->owner!=self)
-		{
-#ifdef _DEVEL
-			if(MGAI_DEBUG)
-				gi.dprintf("Monster checking evade from %s projectile\n", ent->classname);
-#endif
-			if(Vec3IsZero(ent->velocity))
-			{
-#ifdef _DEVEL
-				if(MGAI_DEBUG)
-					gi.dprintf("ERROR: NULL velocity on %s projectile!\n", ent->classname);
-#endif
-			}
-			else
-			{
-				VectorCopy(ent->velocity, proj_dir);
-				VectorNormalize(proj_dir);
-				VectorMA(ent->s.origin, 600, proj_dir, endpos);
+		if (ent->movetype != MOVETYPE_FLYMISSILE || ent->solid == SOLID_NOT || ent->owner == self || Vec3IsZero(ent->velocity))
+			continue; // Not an evadeable projectile.
 
-				gi.trace(ent->s.origin, ent->mins, ent->maxs, endpos, ent, MASK_MONSTERSOLID,&trace);
-				if(trace.ent == self)
-				{//going to get hit!
-					hl = MG_GetHitLocation(self, ent, trace.endpos, vec3_origin);
-					VectorSubtract(trace.endpos, ent->s.origin, total_dist);
-					eta = VectorLength(total_dist)/VectorLength(ent->velocity);
-					QPostMessage(self, MSG_EVADE, PRI_DIRECTIVE, "eif", ent, hl, eta);
-				}
-				else if(!irand(0,2))
-				{
-					VectorSubtract(self->s.origin, ent->s.origin, bad_dir);
-					ent_dist = VectorNormalize(bad_dir);
-					proj_offset = DotProduct(bad_dir, proj_dir);
-#ifdef _DEVEL
-					if(MGAI_DEBUG)
-						gi.dprintf("Proj dot prod: %f\n", proj_offset);
-#endif
-					if(proj_offset > ent_dist/600)//farther it is, smaller angle deviation allowed for evasion
-					{//coming pretty close
-						VectorMA(ent->s.origin, ent_dist, proj_dir, endpos);//extrapolate to close to me
-						gi.trace(endpos, ent->mins, ent->maxs, self->s.origin, ent, MASK_MONSTERSOLID,&trace);
-						if(trace.ent == self)
-						{
-							hl = MG_GetHitLocation(self, ent, trace.endpos, vec3_origin);
-							VectorSubtract(trace.endpos, ent->s.origin, total_dist);
-							eta = VectorLength(total_dist)/VectorLength(ent->velocity);
-							QPostMessage(self, MSG_EVADE, PRI_DIRECTIVE, "eif", ent, hl, eta);
-						}
-					}
-				}
+		vec3_t proj_dir;
+		VectorCopy(ent->velocity, proj_dir);
+		VectorNormalize(proj_dir);
+
+		vec3_t end_pos;
+		VectorMA(ent->s.origin, 600.0f, proj_dir, end_pos);
+
+		trace_t trace;
+		gi.trace(ent->s.origin, ent->mins, ent->maxs, end_pos, ent, MASK_MONSTERSOLID, &trace);
+
+		if (trace.ent != self && irand(0, 2) == 0) //TODO: scale irand chance by difficulty?
+		{
+			vec3_t ent_dir;
+			VectorSubtract(self->s.origin, ent->s.origin, ent_dir);
+			const float ent_dist = VectorNormalize(ent_dir);
+			const float proj_offset = DotProduct(ent_dir, proj_dir);
+
+			if (proj_offset > ent_dist / 600.0f) // Farther it is, smaller angle deviation allowed for evasion.
+			{
+				// Coming pretty close.
+				vec3_t ent_pos;
+				VectorMA(ent->s.origin, ent_dist, proj_dir, ent_pos); // Extrapolate to close to me.
+
+				gi.trace(ent_pos, ent->mins, ent->maxs, self->s.origin, ent, MASK_MONSTERSOLID, &trace);
 			}
 		}
+
+		if (trace.ent != self)
+			continue;
+
+		// Perform evasive maneuvers.
+		const HitLocation_t hit_loc = MG_GetHitLocation(self, ent, trace.endpos, vec3_origin);
+
+		vec3_t total_dist;
+		VectorSubtract(trace.endpos, ent->s.origin, total_dist);
+
+		const float eta = VectorLength(total_dist) / VectorLength(ent->velocity);
+		QPostMessage(self, MSG_EVADE, PRI_DIRECTIVE, "eif", ent, hit_loc, eta);
 	}
 }
 
