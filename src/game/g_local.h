@@ -628,7 +628,6 @@ extern qboolean visible(edict_t* self, edict_t* other);
 extern qboolean visible_pos(edict_t* self, vec3_t spot2);
 extern qboolean infront(edict_t* self, edict_t* other);
 extern qboolean infront_pos(edict_t* self, vec3_t pos);
-extern qboolean ahead(edict_t* self, edict_t* other);
 
 extern void G_UseTargets(edict_t* ent, edict_t* activator);
 extern void G_SetMovedir(vec3_t angles, vec3_t movedir);
