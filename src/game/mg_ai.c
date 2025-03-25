@@ -1137,7 +1137,7 @@ void MG_AI_Run(edict_t* self, const float dist) //mxd. Named 'ai_run' in origina
 		MG_CheckEvade(self); // Check if going to be hit and evade.
 }
 
-void mg_ai_charge(edict_t* self, const float dist) //TODO: rename to MG_AI_Charge.
+void MG_AI_Charge(edict_t* self, const float dist) //mxd. Named 'mg_ai_charge' in original logic.
 {
 	if (self->enemy == NULL)
 		return; //FIXME: send stand MSG?
