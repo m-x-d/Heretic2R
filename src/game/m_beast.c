@@ -29,6 +29,7 @@ TBEAST
 #include "g_Physics.h"
 #include "g_debris.h" //mxd
 #include "m_beast.h"
+#include "mg_ai.h" //mxd
 #include "m_beast_local.h"
 #include "m_beast_anim.h"
 #include "m_stats.h"
@@ -40,7 +41,6 @@ TBEAST
 // *************************************
 
 qboolean clear_visible (edict_t *self, edict_t *other);
-qboolean MG_MoveToGoal (edict_t *self, float dist);
 trace_t MG_WalkMove (edict_t *self, float yaw, float dist, qboolean *succeeded);
 int tbeast_inwalkframes(edict_t *self);
 

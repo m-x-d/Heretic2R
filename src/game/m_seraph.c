@@ -20,6 +20,7 @@
 #include "fx.h"
 #include "g_HitLocation.h"
 #include "g_debris.h" //mxd
+#include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
 #include "m_stats.h"
 
@@ -214,8 +215,6 @@ void seraph_done_get2work(edict_t *self)
 //Special walk code for going to yell at an ogle
 void seraph_ai_walk(edict_t *self, float dist)
 {
-	qboolean MG_MoveToGoal (edict_t *self, float dist);
-
 	if (self->enemy && M_DistanceToTarget(self, self->enemy) < 72)
 	{
 		self->ai_mood = AI_MOOD_STAND;
