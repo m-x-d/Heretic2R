@@ -148,7 +148,6 @@ void spreaderApplyJump (edict_t *self);
 void spreader_land(edict_t *self);
 void spreader_jump (edict_t *self, G_Message_t *msg);
 void spreader_go_inair (edict_t *self);
-void MG_CheckLanded (edict_t *self, float next_anim);
 
 edict_t *RadiusDamageEnt(edict_t *posowner, edict_t *dmgowner, int damage, float d_damage, float radius, float d_radius, int dflags, float lifetime, float thinkIncrement, vec3_t origin, vec3_t offset, float attach);
 

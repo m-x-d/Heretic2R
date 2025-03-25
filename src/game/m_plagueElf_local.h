@@ -219,7 +219,6 @@ void pelf_init_phase_in (edict_t *self);
 void pelf_check_too_close(edict_t *self);
 void pelf_land(edict_t *self);
 void pelf_go_inair(edict_t *self);
-void MG_CheckLanded (edict_t *self, float next_anim);
 void plagueElf_go_run(edict_t *self);
 
 

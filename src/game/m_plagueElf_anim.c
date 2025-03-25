@@ -19,6 +19,7 @@
 
 #include "g_monster.h"
 #include "c_ai.h"
+#include "mg_ai.h" //mxd
 
 //all of the anim frames that used to live in m_plagueElf.h
 

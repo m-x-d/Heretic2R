@@ -123,7 +123,6 @@ extern void insect_c_pause (edict_t *self, G_Message_t *msg);
 extern void insect_c_reallydead (edict_t *self);
 extern void insect_c_go_inair (edict_t *self);
 
-void MG_CheckLanded (edict_t *self, float next_anim);
 void MG_InAirMove (edict_t *self, float fwdspd,float upspd,float rtspd);
 void MG_ApplyJump (edict_t *self);
 

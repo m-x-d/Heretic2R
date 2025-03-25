@@ -17,6 +17,7 @@
 #include "m_tcheckrik_anim.h"
 #include "m_tcheckrik_local.h"
 #include "c_ai.h"
+#include "mg_ai.h" //mxd
 #include "g_monster.h"
 
 //all of the anim frames that used to live in m_insect.h

@@ -142,13 +142,8 @@ extern animmove_t assassin_move_c_run1;
 extern animmove_t assassin_move_c_attack1;
 extern animmove_t assassin_move_c_attack2;
 
-
-
-void MG_CheckLanded (edict_t *self, float next_anim);
 void MG_InAirMove (edict_t *self, float fwdspd,float upspd,float rtspd);
 void MG_ApplyJump (edict_t *self);
-
-
 
 void assassin_blocked(edict_t *self, G_Message_t *msg);
 void assassin_death(edict_t *self, G_Message_t *msg);
