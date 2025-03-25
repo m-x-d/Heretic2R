@@ -1177,29 +1177,29 @@ static void BodyPhaseOutPostThink(edict_t* self) //mxd. Named 'body_phase_out' i
 	}
 }
 
-trace_t MG_AirMove(edict_t *self, vec3_t goalpos, float dist)
+static trace_t MG_AirMove(edict_t* self, const vec3_t goal_pos, const float dist)
 {
-	trace_t		trace;
-	vec3_t		endpos, movedir;
+	vec3_t move_dir;
+	VectorSubtract(goal_pos, self->s.origin, move_dir);
+	VectorNormalize(move_dir);
 
-	VectorSubtract(goalpos, self->s.origin, movedir);
-	VectorNormalize(movedir);
+	vec3_t end_pos;
+	VectorMA(self->s.origin, dist, move_dir, end_pos);
 
-	VectorMA(self->s.origin, dist, movedir, endpos);
+	trace_t trace;
+	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
 
-	gi.trace(self->s.origin, self->mins, self->maxs, endpos, self, MASK_MONSTERSOLID, &trace);
-
-	if(trace.allsolid || trace.startsolid || trace.fraction <= 0.01)
+	if (trace.allsolid || trace.startsolid || trace.fraction <= 0.01f)
 	{
 		trace.succeeded = false;
-		return trace;
+	}
+	else
+	{
+		trace.succeeded = true;
+		VectorCopy(trace.endpos, self->s.origin);
+		gi.linkentity(self);
 	}
 
-	VectorCopy(trace.endpos, self->s.origin);
-
-	gi.linkentity(self);
-
-	trace.succeeded = true;
 	return trace;
 }
 
