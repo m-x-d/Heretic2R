@@ -42,22 +42,13 @@ qboolean ahead(const edict_t* self, const edict_t* other) //TODO: rename to MG_I
 	return (DotProduct(vec, forward) > 0.8f);
 }
 
-/*
-=============
-LOS
-
-returns true if there is an unobstructed spot from point1 to point2
-=============
-*/
-qboolean LOS (edict_t *self, vec3_t point1, vec3_t point2)
+// Returns true if there is an unobstructed spot from start to end.
+static qboolean HaveLOS(const edict_t* self, const vec3_t start, const vec3_t end) //mxd. Named 'LOS' in original logic.
 {
-	trace_t	trace;
+	trace_t trace;
+	gi.trace(start, vec3_origin, vec3_origin, end, self, MASK_SOLID, &trace);
 
-	gi.trace (point1, vec3_origin, vec3_origin, point2, self, MASK_SOLID,&trace);
-	
-	if (trace.fraction == 1.0)
-		return true;
-	return false;
+	return (trace.fraction == 1.0f);
 }
 
 /*
@@ -1233,7 +1224,7 @@ qboolean MG_CheckJump (edict_t *self)
 		return false;
 	}
 	//sfs--save the trace line for after the easy checks
-    else if(!clear_visible_pos(self, targ_org)&&!LOS(self, vis_check_spot, spot2))
+    else if(!clear_visible_pos(self, targ_org)&&!HaveLOS(self, vis_check_spot, spot2))
 	{
 #ifdef _DEVEL
 		if(MGAI_DEBUG)
