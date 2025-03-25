@@ -436,53 +436,29 @@ trace_t MG_MoveStep(edict_t* self, vec3_t move, const qboolean relink)
 	return MG_MoveStep_Walk(self, move, relink); //mxd
 }
 
-/*
-===============
-MG_ChangeYaw
-
-===============
-*/
-float MG_ChangeWhichYaw (edict_t *self, qboolean ideal_yaw)
+float MG_ChangeWhichYaw(edict_t* self, const qboolean ideal_yaw)
 {
-	float	ideal;
-	float	current;
-	float	move;
-	float	speed;
-	
-	current = anglemod(self->s.angles[YAW]);
-	if(ideal_yaw)
-		ideal = self->ideal_yaw;
-	else
-		ideal = self->best_move_yaw;
+	const float current = anglemod(self->s.angles[YAW]);
+	const float ideal = (ideal_yaw ? self->ideal_yaw : self->best_move_yaw);
+	float move = ideal - current;
 
-	if (current == ideal)
-		return false;
+	if (FloatIsZeroEpsilon(move)) //mxd. Use FloatIsZeroEpsilon() instead of direct comparison.
+		return 0.0f;
 
-	move = ideal - current;
-	speed = self->yaw_speed;
 	if (ideal > current)
 	{
-		if (move >= 180)
-			move = move - 360;
+		if (move >= 180.0f)
+			move -= 360.0f;
 	}
 	else
 	{
-		if (move <= -180)
-			move = move + 360;
+		if (move <= -180.0f)
+			move += 360.0f;
 	}
-	if (move > 0)
-	{
-		if (move > speed)
-			move = speed;
-	}
-	else
-	{
-		if (move < -speed)
-			move = -speed;
-	}
-	
-	//normal anglemod doesn't have the precision I need to slide along walls
-	self->s.angles[YAW] = anglemod_old(current + move);
+
+	move = Clamp(move, -self->yaw_speed, self->yaw_speed);
+	self->s.angles[YAW] = anglemod_old(current + move); // Normal anglemod doesn't have the precision I need to slide along walls.
+
 	return move;
 }
 
