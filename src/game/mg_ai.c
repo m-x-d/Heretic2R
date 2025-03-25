@@ -998,34 +998,24 @@ static qboolean MG_CheckJump(edict_t* self)
 	return true; // Can jump.
 }
 
-/*
-===============
-MG_WalkMove
-
-  Tries to step forward dist, returns the trace
-===============
-*/
-trace_t MG_WalkMove (edict_t *self, float yaw, float dist)
+// Tries to step forward dist, returns the trace.
+trace_t MG_WalkMove(edict_t* self, float yaw, const float dist)
 {
-	vec3_t	move, endpos;
-	trace_t trace;
-	
-	yaw = yaw*M_PI*2 / 360;
-	
-	move[0] = cos(yaw)*dist;
-	move[1] = sin(yaw)*dist;
-	move[2] = 0;
+	yaw *= ANGLE_TO_RAD;
+	vec3_t move = { cosf(yaw) * dist, sinf(yaw) * dist, 0.0f };
+	trace_t trace = MG_MoveStep(self, move, true);
 
-	trace = MG_MoveStep(self, move, true);
-	if(trace.succeeded)
+	if (!trace.succeeded)
 	{
-		return trace;
+		// Failed? Find what's in front of us.
+		vec3_t end_pos;
+		VectorAdd(self->s.origin, move, end_pos);
+
+		// Up mins for stairs?
+		gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
+		trace.succeeded = false;
 	}
-//FaileD? ok, so what's in front of us
-	VectorAdd(self->s.origin, move, endpos);
-	//up mins for stairs?
-	gi.trace(self->s.origin, self->mins, self->maxs, endpos, self, MASK_MONSTERSOLID,&trace);
-	trace.succeeded = false;
+
 	return trace;
 }
 
