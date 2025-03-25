@@ -123,8 +123,6 @@ extern void insect_c_pause (edict_t *self, G_Message_t *msg);
 extern void insect_c_reallydead (edict_t *self);
 extern void insect_c_go_inair (edict_t *self);
 
-void MG_ApplyJump (edict_t *self);
-
 void SpellCastInsectStaff(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir,qboolean power);
 void SpellCastGlobeOfOuchiness(edict_t *Caster,vec3_t StartPos,vec3_t AimAngles,vec3_t AimDir);
 void insectReleaseSpell (edict_t *self);
