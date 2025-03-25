@@ -113,8 +113,6 @@ void seraph_back (edict_t *self, float dist);
 void seraph_sound_scold2(edict_t *self);
 void seraph2idle (edict_t *self);
 
-qboolean MG_BoolWalkMove (edict_t *self, float yaw, float dist);
-
 #define BIT_BASEBIN		0
 #define BIT_PITHEAD		1
 #define BIT_SHOULDPAD	2

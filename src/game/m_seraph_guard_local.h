@@ -72,9 +72,6 @@ void seraphGuardApplyJump (edict_t *self);
 void seraph_guard_back (edict_t *self, float dist);
 void seraph_guard_fire (edict_t *self);
 
-qboolean MG_BoolWalkMove (edict_t *self, float yaw, float dist);
-
-
 #define BIT_BASEBIN		0
 #define BIT_PITHEAD		1
 #define BIT_SHOULDPAD	2
