@@ -22,30 +22,6 @@ void ssithraCheckJump(edict_t* self); //TODO: move to m_plagueSsithra.h.
 void SV_FixCheckBottom(edict_t* ent); //TODO: move to m_move.h
 float ai_face_goal(edict_t* self); //TODO: move to g_ai.h
 
-vec3_t JUMP_MINS = {-8, -8, 0};
-vec3_t JUMP_MAXS = {8, 8, 4};
-
-char *HitLocName [hl_Max] =
-{
-	"NonSpecific",//0
-	"Head",//1
-	"TorsoFront",
-	"TorsoBack",
-	"ArmUpperLeft",
-	"ArmLowerLeft",
-	"ArmUpperRight",
-	"ArmLowerRight",
-	"LegUpperLeft",
-	"LegLowerLeft",
-	"LegUpperRight",
-	"LegLowerRight",
-	"BipedPoints",
-	"WingedPoints",
-	"extra14",
-	"extra15",
-	"MeleeHit",//16
-};
-
 //============================================================================
 
 /*
@@ -1121,6 +1097,9 @@ water or lava, the monster will attempt to jump the distance.
 */
 qboolean MG_CheckJump (edict_t *self)
 {
+	static const vec3_t jump_mins = { -8.0f, -8.0f, 0.0f }; //mxd. Made local static.
+	static const vec3_t jump_maxs = { 8.0f,  8.0f, 4.0f }; //mxd. Made local static.
+
 	vec3_t spot1, spot2, jumpdir, forward, right, targ_absmin;
 	vec3_t up, cont_spot, vis_check_spot, end_spot, targ_org;
 	float jump_height, sub_len;
@@ -1325,7 +1304,7 @@ qboolean MG_CheckJump (edict_t *self)
 		}
 		VectorMA(spot1, 64, jumpdir, end_spot);
 		end_spot[2] -= 500;
-		gi.trace(spot1, JUMP_MINS, JUMP_MAXS, end_spot, self, MASK_MONSTERSOLID,&trace);
+		gi.trace(spot1, jump_mins, jump_maxs, end_spot, self, MASK_MONSTERSOLID,&trace);
 //	        traceline(spot1,spot1+jumpdir*64 - '0 0 500',false,self);
 
 		contents = gi.pointcontents(trace.endpos);
@@ -1499,10 +1478,6 @@ void MG_CheckEvade (edict_t *self)
 				gi.trace(ent->s.origin, ent->mins, ent->maxs, endpos, ent, MASK_MONSTERSOLID,&trace);
 				if(trace.ent == self)
 				{//going to get hit!
-#ifdef _DEVEL
-					if(MGAI_DEBUG)
-						gi.dprintf("Dodging projectile impact, going to hit %s\n", HitLocName[hl]);
-#endif
 					hl = MG_GetHitLocation(self, ent, trace.endpos, vec3_origin);
 					VectorSubtract(trace.endpos, ent->s.origin, total_dist);
 					eta = VectorLength(total_dist)/VectorLength(ent->velocity);
@@ -1523,10 +1498,6 @@ void MG_CheckEvade (edict_t *self)
 						gi.trace(endpos, ent->mins, ent->maxs, self->s.origin, ent, MASK_MONSTERSOLID,&trace);
 						if(trace.ent == self)
 						{
-#ifdef _DEVEL
-							if(MGAI_DEBUG)
-								gi.dprintf("Dodging projectile close pass, going to hit %s\n", HitLocName[hl]);
-#endif
 							hl = MG_GetHitLocation(self, ent, trace.endpos, vec3_origin);
 							VectorSubtract(trace.endpos, ent->s.origin, total_dist);
 							eta = VectorLength(total_dist)/VectorLength(ent->velocity);
