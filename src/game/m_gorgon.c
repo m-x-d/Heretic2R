@@ -60,6 +60,7 @@ GORGON
 #include "p_anim_branch.h"
 #include "p_anims.h"
 #include "g_HitLocation.h"
+#include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
 #include "p_actions.h"
 
@@ -72,7 +73,6 @@ qboolean ai_have_enemy (edict_t *self);
 qboolean clear_visible (edict_t *self, edict_t *other);
 qboolean EqualAngle(float angle1, float angle2, float leniency);
 qboolean ok_to_wake (edict_t *monster, qboolean gorgon_roar, qboolean ignore_ambush);
-float MG_ChangeWhichYaw (edict_t *self, qboolean ideal_yaw);
 qboolean gorgon_check_jump (edict_t *self);
 
 #define TRYSTEP_OK			0
