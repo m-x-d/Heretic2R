@@ -467,59 +467,46 @@ float MG_ChangeYaw(edict_t* self)
 	return MG_ChangeWhichYaw(self, YAW_IDEAL);
 }
 
-qboolean MG_GetGoalPos (edict_t *self, vec3_t goalpos)
+static qboolean MG_GetGoalPos(edict_t* self, vec3_t goal_pos)
 {
-	qboolean	charge_enemy = false;
-	
-	if(self->monsterinfo.aiflags&AI_STRAIGHT_TO_ENEMY && self->enemy)
-		charge_enemy = true;
+	const qboolean charge_enemy = ((self->monsterinfo.aiflags & AI_STRAIGHT_TO_ENEMY) && self->enemy != NULL);
 
-	if (self->monsterinfo.searchType == SEARCH_BUOY && !charge_enemy)
+	if (!charge_enemy)
 	{
-		if(self->buoy_index < 0 || self->buoy_index > level.active_buoys)
+		if (self->monsterinfo.searchType == SEARCH_BUOY)
 		{
-#ifdef _DEVEL
-			gi.dprintf("Error: SEARCH_BUOY but invalid index!!!\n");
-#endif
-			return false;
+			if (self->buoy_index < 0 || self->buoy_index > level.active_buoys)
+				return false;
+
+			VectorCopy(level.buoy_list[self->buoy_index].origin, self->monsterinfo.nav_goal);
+			VectorCopy(self->monsterinfo.nav_goal, goal_pos);
+
+			return true;
 		}
-		
-		VectorCopy(level.buoy_list[self->buoy_index].origin, self->monsterinfo.nav_goal);
-		VectorCopy(self->monsterinfo.nav_goal, goalpos);
+
+		if (self->goalentity != NULL)
+		{
+			if (self->goalentity == self->enemy && (self->ai_mood_flags & AI_MOOD_FLAG_PREDICT) && !(self->spawnflags & MSF_FIXED))
+				M_PredictTargetPosition(self->enemy, self->enemy->velocity, 8.0f, goal_pos); // Predict where he's going.
+			else
+				VectorCopy(self->goalentity->s.origin, goal_pos);
+
+			return true;
+		}
 	}
-	else if(self->goalentity && !charge_enemy)
+
+	if (self->enemy != NULL)
 	{
-		if(self->goalentity == self->enemy && self->ai_mood_flags & AI_MOOD_FLAG_PREDICT && !(self->spawnflags & MSF_FIXED))
-		{//predict where he's goin
-			M_PredictTargetPosition( self->enemy, self->enemy->velocity, 8, goalpos);
-		}
+		if ((self->ai_mood_flags & AI_MOOD_FLAG_PREDICT) && !(self->spawnflags & MSF_FIXED))
+			M_PredictTargetPosition(self->enemy, self->enemy->velocity, 8.0f, goal_pos); // Predict where he's going.
 		else
-		{
-			VectorCopy(self->goalentity->s.origin, goalpos);
-		}
+			VectorCopy(self->enemy->s.origin, goal_pos);
+
+		return true;
 	}
-	else if(self->enemy)
-	{
-		if (self->ai_mood_flags & AI_MOOD_FLAG_PREDICT && !(self->spawnflags & MSF_FIXED))
-		{//predict where he's goin
-			M_PredictTargetPosition( self->enemy, self->enemy->velocity, 8, goalpos);
-		}
-		else
-		{
-			VectorCopy(self->enemy->s.origin, goalpos);
-		}
-	}
-	else
-	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("No goal to face!\n");
-#endif		
-		VectorClear(goalpos);
-		return false;
-	}
-	
-	return true;
+
+	VectorClear(goal_pos);
+	return false;
 }
 
 float MG_FaceGoal (edict_t *self, qboolean doturn)
