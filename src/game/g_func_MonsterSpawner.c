@@ -6,6 +6,7 @@
 
 #include "g_func_MonsterSpawner.h"
 #include "g_ClassStatics.h"
+#include "mg_ai.h"
 #include "mg_guide.h"
 #include "m_stats.h"
 #include "Random.h"
@@ -192,7 +193,7 @@ static void FuncMonsterSpawnerGo(edict_t* self) //mxd. Named 'monsterspawner_go'
 			}
 
 			// STEP 1: Pick a random buoy.
-			buoy_t* start_buoy = &level.buoy_list[irand(0, level.active_buoys - 1)];
+			const buoy_t* start_buoy = &level.buoy_list[irand(0, level.active_buoys - 1)];
 
 			// STEP 2: Make sure the buoy is within a certain range of the player (500).
 			vec3_t buoy_dist;
@@ -202,7 +203,7 @@ static void FuncMonsterSpawnerGo(edict_t* self) //mxd. Named 'monsterspawner_go'
 				continue;
 
 			// STEP 3: Make sure the buoy is not visible to the player (unless assassin).
-			if (monster->classID != CID_ASSASSIN && visible_pos(victim, start_buoy->origin))
+			if (monster->classID != CID_ASSASSIN && MG_IsVisiblePos(victim, start_buoy->origin))
 				continue;
 
 			// STEP 4: If the player_buoy is defined, pick it, if not, find player's buoy.

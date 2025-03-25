@@ -489,7 +489,7 @@ void ssithra_check_namor(edict_t *self)
 
 	if(!enemy_inwater)
 	{
-		if(visible_pos(self, targ_org))
+		if(MG_IsVisiblePos(self, targ_org))
 		{
 			if(ssithraWaterLedgeNearEnemy(self))
 			{

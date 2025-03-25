@@ -913,7 +913,7 @@ static qboolean MG_CheckClearPathToSpot(edict_t* self, const vec3_t spot)
 		vec3_t enemy_diff;
 		VectorSubtract(spot, trace.endpos, enemy_diff);
 
-		if (VectorLength(enemy_diff) > 48.0f || !visible_pos(self, spot))
+		if (VectorLength(enemy_diff) > 48.0f || !MG_IsVisiblePos(self, spot))
 			return false; // Couldn't even get close to a visible enemy.
 	}
 

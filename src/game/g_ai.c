@@ -864,7 +864,7 @@ alertloop:
 	{//alerter not a monster, a projectile or player
 		//can I see (even through translucent brushes) the owner of the alert?
 		//if so, ok even if I'm an ambush monster
-		saw_it = visible_pos(self, e_spot);
+		saw_it = MG_IsVisiblePos(self, e_spot);
 
 		if(!saw_it&&!(self->spawnflags&MSF_AMBUSH))
 		{//no line of sight and not an ambush monster

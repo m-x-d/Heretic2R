@@ -52,7 +52,7 @@ static qboolean HaveLOS(const edict_t* self, const vec3_t start, const vec3_t en
 }
 
 // Returns true if the entity is visible to self, even if not infront().
-qboolean visible_pos(const edict_t* self, const vec3_t pos) //TODO: rename to MG_IsVisiblePos?
+qboolean MG_IsVisiblePos(const edict_t* self, const vec3_t pos) //mxd. Named 'visible_pos' in original logic.
 {
 	vec3_t start;
 	VectorCopy(self->s.origin, start);
