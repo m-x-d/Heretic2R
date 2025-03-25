@@ -1391,7 +1391,7 @@ void MG_PostDeathThink(edict_t* self)
 			}
 			else
 			{
-				pitch_roll_for_slope(self, &trace1.plane.normal); //TODO: should pass trace1.plane.normal instead of pointer to it?
+				pitch_roll_for_slope(self, trace1.plane.normal); //BUGFIX: mxd. Original logic passes pointer to normal.
 				self->friction = trace1.plane.normal[2] * 0.1f;
 			}
 
@@ -1407,7 +1407,7 @@ void MG_PostDeathThink(edict_t* self)
 			}
 			else
 			{
-				pitch_roll_for_slope(self, &trace2.plane.normal); //TODO: should pass trace1.plane.normal instead of pointer to it?
+				pitch_roll_for_slope(self, trace2.plane.normal); //BUGFIX: mxd. Original logic passes pointer to normal.
 				self->friction = trace2.plane.normal[2] * 0.1f;
 			}
 
@@ -1423,7 +1423,7 @@ void MG_PostDeathThink(edict_t* self)
 			}
 			else
 			{
-				pitch_roll_for_slope(self, &trace3.plane.normal); //TODO: should pass trace1.plane.normal instead of pointer to it?
+				pitch_roll_for_slope(self, trace3.plane.normal); //BUGFIX: mxd. Original logic passes pointer to normal.
 				self->friction = trace3.plane.normal[2] * 0.1f;
 			}
 
@@ -1439,7 +1439,7 @@ void MG_PostDeathThink(edict_t* self)
 			}
 			else
 			{
-				pitch_roll_for_slope(self, &trace4.plane.normal); //TODO: should pass trace1.plane.normal instead of pointer to it?
+				pitch_roll_for_slope(self, trace4.plane.normal); //BUGFIX: mxd. Original logic passes pointer to normal.
 				self->friction = trace4.plane.normal[2] * 0.1f;
 			}
 
