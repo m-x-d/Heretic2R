@@ -1203,298 +1203,289 @@ static trace_t MG_AirMove(edict_t* self, const vec3_t goal_pos, const float dist
 	return trace;
 }
 
-static int FRONT = 0;
-static int BACK	= 1;
-static int RIGHT = 2;
-static int LEFT	= 3;
-static float MIN_DROP_DIST = 0.125f;
-
-void MG_PostDeathThink (edict_t *self)
+void MG_PostDeathThink(edict_t* self)
 {
-	float	mostdist;
-	trace_t trace1, trace2, trace3, trace4, movetrace;
-	vec3_t	org, endpos, startpos, forward, right;
-	int		whichtrace = 0;
-	float	cornerdist[4];
-	qboolean	frontbackbothclear = false;
-	qboolean	rightleftbothclear = false;
+#define FRONT			0
+#define BACK			1
+#define RIGHT			2
+#define LEFT			3
+#define MIN_DROP_DIST	0.125f
 
 	self->post_think = BodyPhaseOutPostThink;
-	self->next_post_think = level.time + 10;
+	self->next_post_think = level.time + 10.0f;
 
-	if(!self->groundentity || Vec3NotZero(self->velocity))
+	if (self->groundentity == NULL || Vec3NotZero(self->velocity))
 	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("Falling!\n");
-#endif
-		if(self->groundentity&&self->friction == 1.0)//check avelocity?
+		if (self->groundentity != NULL && self->friction == 1.0f) //FIXME: check avelocity?
 			pitch_roll_for_slope(self, NULL);
 
 		self->post_think = MG_PostDeathThink;
-		self->next_post_think = level.time + 0.1;
+		self->next_post_think = level.time + 0.1f;
+
 		return;
 	}
 
-	cornerdist[FRONT] = cornerdist[BACK] = cornerdist[RIGHT] = cornerdist[LEFT] = 0.0f;
+	float cornerdist[4] = { 0 };
+	float most_dist = MIN_DROP_DIST;
+	int which_trace = 0;
 
-	mostdist = MIN_DROP_DIST;
-
+	vec3_t forward;
+	vec3_t right;
 	AngleVectors(self->s.angles, forward, right, NULL);
-	VectorCopy(self->s.origin, org);
-	org[2]+=self->mins[2];
 
-	VectorMA(org, self->dead_size, forward, startpos);
-	VectorCopy(startpos, endpos);
-	endpos[2]-=128;
-	gi.trace(startpos, vec3_origin, vec3_origin, endpos, self, MASK_SOLID,&trace1);
-	if(!trace1.allsolid&&!trace1.startsolid)
+	vec3_t org;
+	VectorCopy(self->s.origin, org);
+	org[2] += self->mins[2];
+
+	// Trace forwards.
+	vec3_t start_pos;
+	VectorMA(org, self->dead_size, forward, start_pos);
+
+	vec3_t end_pos;
+	VectorCopy(start_pos, end_pos);
+	end_pos[2] -= 128.0f;
+
+	trace_t trace1;
+	gi.trace(start_pos, vec3_origin, vec3_origin, end_pos, self, MASK_SOLID, &trace1);
+
+	if (!trace1.allsolid && !trace1.startsolid)
 	{
 		cornerdist[FRONT] = trace1.fraction;
-		if(trace1.fraction>mostdist)
+
+		if (trace1.fraction > most_dist)
 		{
-			mostdist = trace1.fraction;
-			whichtrace = 1;
+			most_dist = trace1.fraction;
+			which_trace = 1;
 		}
 	}
 
-	VectorMA(org, -self->dead_size, forward, startpos);
-	VectorCopy(startpos, endpos);
-	endpos[2]-=128;
-	gi.trace(startpos, vec3_origin, vec3_origin, endpos, self, MASK_SOLID,&trace2);
-	if(!trace2.allsolid&&!trace2.startsolid)
+	// Trace backwards.
+	VectorMA(org, -self->dead_size, forward, start_pos);
+	VectorCopy(start_pos, end_pos);
+	end_pos[2] -= 128.0f;
+
+	trace_t trace2;
+	gi.trace(start_pos, vec3_origin, vec3_origin, end_pos, self, MASK_SOLID, &trace2);
+
+	if (!trace2.allsolid && !trace2.startsolid)
 	{
 		cornerdist[BACK] = trace2.fraction;
-		if(trace2.fraction>mostdist)
+
+		if (trace2.fraction > most_dist)
 		{
-			mostdist = trace2.fraction;
-			whichtrace = 2;
+			most_dist = trace2.fraction;
+			which_trace = 2;
 		}
 	}
 
-	VectorMA(org, self->dead_size/2, right, startpos);
-	VectorCopy(startpos, endpos);
-	endpos[2]-=128;
-	gi.trace(startpos, vec3_origin, vec3_origin, endpos, self, MASK_SOLID,&trace3);
-	if(!trace3.allsolid&&!trace3.startsolid)
+	// Trace right.
+	VectorMA(org, self->dead_size / 2.0f, right, start_pos);
+	VectorCopy(start_pos, end_pos);
+	end_pos[2] -= 128.0f;
+
+	trace_t trace3;
+	gi.trace(start_pos, vec3_origin, vec3_origin, end_pos, self, MASK_SOLID, &trace3);
+
+	if (!trace3.allsolid && !trace3.startsolid)
 	{
 		cornerdist[RIGHT] = trace3.fraction;
-		if(trace3.fraction>mostdist)
+
+		if (trace3.fraction > most_dist)
 		{
-			mostdist = trace3.fraction;
-			whichtrace = 3;
+			most_dist = trace3.fraction;
+			which_trace = 3;
 		}
 	}
 
-	VectorMA(org, -self->dead_size/2, right, startpos);
-	VectorCopy(startpos, endpos);
-	endpos[2]-=128;
-	gi.trace(startpos, vec3_origin, vec3_origin, endpos, self, MASK_SOLID,&trace4);
-	if(!trace4.allsolid&&!trace4.startsolid)
+	// Trace left.
+	VectorMA(org, -self->dead_size / 2.0f, right, start_pos);
+	VectorCopy(start_pos, end_pos);
+	end_pos[2] -= 128.0f;
+
+	trace_t trace4;
+	gi.trace(start_pos, vec3_origin, vec3_origin, end_pos, self, MASK_SOLID, &trace4);
+
+	if (!trace4.allsolid && !trace4.startsolid)
 	{
 		cornerdist[LEFT] = trace4.fraction;
-		if(trace4.fraction>mostdist)
+
+		if (trace4.fraction > most_dist)
 		{
-			mostdist = trace4.fraction;
-			whichtrace = 4;
+			most_dist = trace4.fraction;
+			which_trace = 4;
 		}
 	}
-	
-	//OK!  Now if two opposite sides are hanging, use a third if any, else, do nothing
-	if(cornerdist[FRONT] > MIN_DROP_DIST && cornerdist[BACK] > MIN_DROP_DIST)
-		frontbackbothclear = true;
 
-	if(cornerdist[RIGHT] > MIN_DROP_DIST && cornerdist[LEFT] > MIN_DROP_DIST)
-		rightleftbothclear = true;
+	// OK! Now if two opposite sides are hanging, use a third if any, else, do nothing.
+	qboolean front_back_both_clear = (cornerdist[FRONT] > MIN_DROP_DIST && cornerdist[BACK] > MIN_DROP_DIST);
+	qboolean right_left_both_clear = (cornerdist[RIGHT] > MIN_DROP_DIST && cornerdist[LEFT] > MIN_DROP_DIST);
 
-	if(frontbackbothclear && rightleftbothclear)
+	if (front_back_both_clear && right_left_both_clear)
 		return;
 
-	if(frontbackbothclear)
+	if (front_back_both_clear)
 	{
-		if(cornerdist[RIGHT] > MIN_DROP_DIST)
-			whichtrace = 3;
-		else if(cornerdist[LEFT] > MIN_DROP_DIST)
-			whichtrace = 4;
+		if (cornerdist[RIGHT] > MIN_DROP_DIST)
+			which_trace = 3;
+		else if (cornerdist[LEFT] > MIN_DROP_DIST)
+			which_trace = 4;
 		else
 			return;
 	}
 
-	if(rightleftbothclear)
+	if (right_left_both_clear)
 	{
-		if(cornerdist[FRONT] > MIN_DROP_DIST)
-			whichtrace = 1;
-		else if(cornerdist[BACK] > MIN_DROP_DIST)
-			whichtrace = 2;
+		if (cornerdist[FRONT] > MIN_DROP_DIST)
+			which_trace = 1;
+		else if (cornerdist[BACK] > MIN_DROP_DIST)
+			which_trace = 2;
 		else
 			return;
 	}
-	
-	switch(whichtrace)
-	{//check for stuck
-	case 1:
-		VectorMA(self->s.origin, self->maxs[0], forward, endpos);
-		gi.trace(self->s.origin, self->mins, self->maxs, endpos, self, MASK_MONSTERSOLID,&movetrace);
-		if(movetrace.allsolid||movetrace.startsolid||movetrace.fraction<1.0)
-			if(movable(movetrace.ent))
-				whichtrace = -1;
-			else
-				whichtrace = 0;
-		break;
-	case 2:
-		VectorMA(self->s.origin, -self->maxs[0], forward, endpos);
-		gi.trace(self->s.origin, self->mins, self->maxs, endpos, self, MASK_MONSTERSOLID,&movetrace);
-		if(movetrace.allsolid||movetrace.startsolid||movetrace.fraction<1.0)
-			if(movable(movetrace.ent))
-				whichtrace = -1;
-			else
-				whichtrace = 0;
-		break;
-	case 3:
-		VectorMA(self->s.origin, self->maxs[0], right, endpos);
-		gi.trace(self->s.origin, self->mins, self->maxs, endpos, self, MASK_MONSTERSOLID,&movetrace);
-		if(movetrace.allsolid||movetrace.startsolid||movetrace.fraction<1.0)
-			if(movable(movetrace.ent))
-				whichtrace = -1;
-			else
-				whichtrace = 0;
-		break;
-	case 4:
-		VectorMA(self->s.origin, -self->maxs[0], right, endpos);
-		gi.trace(self->s.origin, self->mins, self->maxs, endpos, self, MASK_MONSTERSOLID,&movetrace);
-		if(movetrace.allsolid||movetrace.startsolid||movetrace.fraction<1.0)
-			if(movable(movetrace.ent))
-				whichtrace = -1;
-			else
-				whichtrace = 0;
-		break;
-	}
-	
-	switch(whichtrace)
+
+	switch (which_trace)
 	{
-	case 1:
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("Forward trace %f\n", trace1.fraction);
-#endif
-		VectorMA(self->velocity, 200, forward, self->velocity);
-		if(trace1.fraction >= 0.9)
+		// Check for stuck.
+		case 1: // Front.
 		{
-//can't anymore, origin not in center of deathframe!
-//			self->avelocity[PITCH] = -300;
-			self->friction = 1.0;
-		}
-		else
+			VectorMA(self->s.origin, self->maxs[0], forward, end_pos);
+
+			trace_t move_trace;
+			gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &move_trace);
+
+			if (move_trace.allsolid || move_trace.startsolid || move_trace.fraction < 1.0f)
+				which_trace = (movable(move_trace.ent) ? -1 : 0);
+		} break;
+
+		case 2: // Back.
 		{
-			pitch_roll_for_slope(self, &trace1.plane.normal);
-			self->friction = trace1.plane.normal[2] * 0.1;
-		}
-		self->post_think = MG_PostDeathThink;
-		self->next_post_think = level.time + 0.1;
-		return;
-		break;
-		
-	case 2:
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("back trace %f\n", trace2.fraction);
-#endif
-		VectorMA(self->velocity, -200, forward, self->velocity);
-		if(trace2.fraction >= 0.9)
+			VectorMA(self->s.origin, -self->maxs[0], forward, end_pos);
+
+			trace_t move_trace;
+			gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &move_trace);
+
+			if (move_trace.allsolid || move_trace.startsolid || move_trace.fraction < 1.0f)
+				which_trace = (movable(move_trace.ent) ? -1 : 0);
+		} break;
+
+		case 3: // Right.
 		{
-//can't anymore, origin not in center of deathframe!
-//			self->avelocity[PITCH] = 300;
-			self->friction = 1.0;
-		}
-		else
+			VectorMA(self->s.origin, self->maxs[0], right, end_pos);
+
+			trace_t move_trace;
+			gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &move_trace);
+
+			if (move_trace.allsolid || move_trace.startsolid || move_trace.fraction < 1.0f)
+				which_trace = (movable(move_trace.ent) ? -1 : 0);
+		} break;
+
+		case 4: // Left.
 		{
-			pitch_roll_for_slope(self, &trace2.plane.normal);
-			self->friction = trace2.plane.normal[2] * 0.1;
-		}
-		self->post_think = MG_PostDeathThink;
-		self->next_post_think = level.time + 0.1;
-		return;
-		break;
-		
-	case 3:
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("Right trace %f\n", trace3.fraction);
-#endif
-		VectorMA(self->velocity, 200, right, self->velocity);
-		if(trace3.fraction >= 0.9)
-		{
-//can't anymore, origin not in center of deathframe!
-//			self->avelocity[ROLL] = -300;
-			self->friction = 1.0;
-		}
-		else
-		{
-			pitch_roll_for_slope(self, &trace3.plane.normal);
-			self->friction = trace3.plane.normal[2] * 0.1;
-		}
-		self->post_think = MG_PostDeathThink;
-		self->next_post_think = level.time + 0.1;
-		return;
-		break;
-		
-	case 4:
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("Left trace %f\n", trace4.fraction);
-#endif
-		VectorMA(self->velocity, -200, right, self->velocity);
-		if(trace4.fraction >= 0.9)
-		{
-//can't anymore, origin not in center of deathframe!
-//			self->avelocity[ROLL] = 300;
-			self->friction = 1.0;
-		}
-		else
-		{
-			pitch_roll_for_slope(self, &trace4.plane.normal);
-			self->friction = trace4.plane.normal[2] * 0.1;
-		}
-		self->post_think = MG_PostDeathThink;
-		self->next_post_think = level.time + 0.1;
-		return;
-		break;
+			VectorMA(self->s.origin, -self->maxs[0], right, end_pos);
+
+			trace_t move_trace;
+			gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &move_trace);
+
+			if (move_trace.allsolid || move_trace.startsolid || move_trace.fraction < 1.0f)
+				which_trace = (movable(move_trace.ent) ? -1 : 0);
+		} break;
 	}
-	//on solid ground
-	if(whichtrace == -1)
+
+	switch (which_trace)
 	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("Deadmonster slide = stuck! (size is %4.2f)\n", self->dead_size);
-#endif
+		case 1: // Forward.
+			VectorMA(self->velocity, 200.0f, forward, self->velocity);
+			if (trace1.fraction >= 0.9f)
+			{
+				self->friction = 1.0f;
+			}
+			else
+			{
+				pitch_roll_for_slope(self, &trace1.plane.normal); //TODO: should pass trace1.plane.normal instead of pointer to it?
+				self->friction = trace1.plane.normal[2] * 0.1f;
+			}
+
+			self->post_think = MG_PostDeathThink;
+			self->next_post_think = level.time + 0.1f;
+			return;
+
+		case 2: // Back.
+			VectorMA(self->velocity, -200.0f, forward, self->velocity);
+			if (trace2.fraction >= 0.9f)
+			{
+				self->friction = 1.0f;
+			}
+			else
+			{
+				pitch_roll_for_slope(self, &trace2.plane.normal); //TODO: should pass trace1.plane.normal instead of pointer to it?
+				self->friction = trace2.plane.normal[2] * 0.1f;
+			}
+
+			self->post_think = MG_PostDeathThink;
+			self->next_post_think = level.time + 0.1f;
+			return;
+
+		case 3: // Right.
+			VectorMA(self->velocity, 200.0f, right, self->velocity);
+			if (trace3.fraction >= 0.9f)
+			{
+				self->friction = 1.0f;
+			}
+			else
+			{
+				pitch_roll_for_slope(self, &trace3.plane.normal); //TODO: should pass trace1.plane.normal instead of pointer to it?
+				self->friction = trace3.plane.normal[2] * 0.1f;
+			}
+			self->post_think = MG_PostDeathThink;
+			self->next_post_think = level.time + 0.1f;
+			return;
+
+		case 4: // Left.
+			VectorMA(self->velocity, -200.0f, right, self->velocity);
+			if (trace4.fraction >= 0.9f)
+			{
+				self->friction = 1.0f;
+			}
+			else
+			{
+				pitch_roll_for_slope(self, &trace4.plane.normal); //TODO: should pass trace1.plane.normal instead of pointer to it?
+				self->friction = trace4.plane.normal[2] * 0.1f;
+			}
+			self->post_think = MG_PostDeathThink;
+			self->next_post_think = level.time + 0.1f;
+			return;
+	}
+
+	// On solid ground.
+	if (which_trace == -1)
+	{
 		self->post_think = MG_PostDeathThink;
-		self->next_post_think = level.time + 2;
+		self->next_post_think = level.time + 2.0f;
+
 		return;
 	}
-#ifdef _DEVEL
-	else if(MGAI_DEBUG)
-		gi.dprintf("Deadmonster slide = On ground (size was %4.2f)\n", self->dead_size);
-#endif
-	self->friction = 1.0;
+
+	self->friction = 1.0f;
 
 	VectorClear(self->avelocity);
 	pitch_roll_for_slope(self, NULL);
 
-	if(!self->s.color.r)
+	if (self->s.color.r == 0)
 		self->s.color.r = 255;
-	if(!self->s.color.g)
+
+	if (self->s.color.g == 0)
 		self->s.color.g = 255;
-	if(!self->s.color.b)
+
+	if (self->s.color.b == 0)
 		self->s.color.b = 255;
+
 	self->s.color.a = 255;
 
 	self->post_think = BodyPhaseOutPostThink;
-	if(self->classID == CID_RAT)
-		self->next_post_think = level.time + flrand(3, 7);
-	else
-		self->next_post_think = level.time + flrand(10, 20);
+	const float delay = (self->classID == CID_RAT ? flrand(3.0f, 7.0f) : flrand(10.0f, 20.0f)); //mxd
+	self->next_post_think = level.time + delay;
 
-	gi.linkentity (self);
+	gi.linkentity(self);
 }
 
 void MG_CheckLanded (edict_t *self, float next_anim)
