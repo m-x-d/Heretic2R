@@ -1507,18 +1507,20 @@ void MG_CheckLanded(edict_t* self, const float next_anim)
 	}
 }
 
-void MG_InAirMove (edict_t *self, float fwdspd,float upspd,float rtspd)
-{//simple addition of velocity, if on ground or not
-	vec3_t up, forward, right;
+// Simple addition of velocity when not on ground.
+void MG_InAirMove(edict_t* self, const float forward_speed, const float up_speed, const float right_speed)
+{
+	if (self->groundentity == NULL)
+	{
+		vec3_t forward;
+		vec3_t right;
+		vec3_t up;
+		AngleVectors(self->s.angles, forward, right, up);
 
-	if(self->groundentity)//on ground
-		return;
-
-	AngleVectors(self->s.angles, forward, right, up);
-	
-	VectorMA(self->velocity, upspd, up, self->velocity);
-	VectorMA(self->velocity, fwdspd, forward, self->velocity);
-	VectorMA(self->velocity, rtspd, right, self->velocity);
+		VectorMA(self->velocity, up_speed, up, self->velocity);
+		VectorMA(self->velocity, forward_speed, forward, self->velocity);
+		VectorMA(self->velocity, right_speed, right, self->velocity);
+	}
 }
 
 void MG_ApplyJump (edict_t *self)
