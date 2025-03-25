@@ -51,25 +51,17 @@ static qboolean HaveLOS(const edict_t* self, const vec3_t start, const vec3_t en
 	return (trace.fraction == 1.0f);
 }
 
-/*
-=============
-visible_pos
-
-returns 1 if the entity is visible to self, even if not infront ()
-=============
-*/
-qboolean visible_pos (edict_t *self, vec3_t spot2)
+// Returns true if the entity is visible to self, even if not infront().
+qboolean visible_pos(const edict_t* self, const vec3_t pos) //TODO: rename to MG_IsVisiblePos?
 {
-	vec3_t	spot1;
-	trace_t	trace;
+	vec3_t start;
+	VectorCopy(self->s.origin, start);
+	start[2] += (float)self->viewheight;
 
-	VectorCopy (self->s.origin, spot1);
-	spot1[2] += self->viewheight;
-	gi.trace (spot1, vec3_origin, vec3_origin, spot2, self, MASK_OPAQUE,&trace);
-	
-	if (trace.fraction == 1.0)
-		return true;
-	return false;
+	trace_t trace;
+	gi.trace(start, vec3_origin, vec3_origin, pos, self, MASK_OPAQUE, &trace);
+
+	return (trace.fraction == 1.0f);
 }
 
 /*
