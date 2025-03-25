@@ -462,7 +462,7 @@ float MG_ChangeWhichYaw(edict_t* self, const qboolean ideal_yaw)
 	return move;
 }
 
-float MG_ChangeYaw (edict_t *self)
+float MG_ChangeYaw(edict_t* self)
 {
 	return MG_ChangeWhichYaw(self, YAW_IDEAL);
 }
