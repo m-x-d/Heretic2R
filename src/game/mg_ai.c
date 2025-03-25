@@ -1158,21 +1158,20 @@ void mg_ai_charge(edict_t* self, const float dist) //TODO: rename to MGAI_Charge
 		MG_CheckEvade(self); // Check if going to be hit and evade.
 }
 
-void body_phase_out (edict_t *self)
+static void BodyPhaseOutPostThink(edict_t* self) //mxd. Named 'body_phase_out' in original logic.
 {
-	int	interval = 30;
+#define PHASE_OUT_STEP	30 //mxd
 
-	if(self->s.color.a > interval)
+	if (self->s.color.a > PHASE_OUT_STEP)
 	{
-		self->s.color.a -= irand(interval/2, interval);
-		self->post_think = body_phase_out;
-		self->next_post_think = level.time + 0.05;
+		self->s.color.a -= irand(PHASE_OUT_STEP / 2, PHASE_OUT_STEP);
+		self->next_post_think = level.time + 0.05f;
 	}
-	else 
+	else
 	{
 		self->s.color.a = 0;
 		self->post_think = NULL;
-		self->next_post_think = -1;
+		self->next_post_think = -1.0f;
 
 		G_SetToFree(self);
 	}
@@ -1220,7 +1219,7 @@ void MG_PostDeathThink (edict_t *self)
 	qboolean	frontbackbothclear = false;
 	qboolean	rightleftbothclear = false;
 
-	self->post_think = body_phase_out;
+	self->post_think = BodyPhaseOutPostThink;
 	self->next_post_think = level.time + 10;
 
 	if(!self->groundentity || Vec3NotZero(self->velocity))
@@ -1489,7 +1488,7 @@ void MG_PostDeathThink (edict_t *self)
 		self->s.color.b = 255;
 	self->s.color.a = 255;
 
-	self->post_think = body_phase_out;
+	self->post_think = BodyPhaseOutPostThink;
 	if(self->classID == CID_RAT)
 		self->next_post_think = level.time + flrand(3, 7);
 	else
