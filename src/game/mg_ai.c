@@ -1538,28 +1538,30 @@ void MG_NoBlocking(edict_t* self) //TODO: rename to MG_SetNoBlocking?
 	self->msgHandler = DeadMsgHandler; // No more messages at all.
 }
 
-qboolean MG_GetTargOrg (edict_t *self, vec3_t targ_org)
+qboolean MG_GetTargOrg(edict_t* self, vec3_t target_origin) //TODO: rename to MG_GetTargetOrigin?
 {
 	if (self->monsterinfo.searchType == SEARCH_BUOY)
 	{
-		if(self->buoy_index < 0 || self->buoy_index > level.active_buoys)
+		if (self->buoy_index < 0 || self->buoy_index > level.active_buoys)
 		{
-			VectorClear(targ_org);
+			VectorClear(target_origin);
 			return false;
 		}
+
 		VectorCopy(level.buoy_list[self->buoy_index].origin, self->monsterinfo.nav_goal);
-		VectorCopy(self->monsterinfo.nav_goal, targ_org);
+		VectorCopy(self->monsterinfo.nav_goal, target_origin);
 	}
 	else
 	{
-		if(!self->goalentity)
+		if (self->goalentity == NULL)
 		{
-			VectorClear(targ_org);
+			VectorClear(target_origin);
 			return false;
 		}
-	
-		VectorCopy(self->goalentity->s.origin, targ_org);
+
+		VectorCopy(self->goalentity->s.origin, target_origin);
 	}
+
 	return true;
 }
 
