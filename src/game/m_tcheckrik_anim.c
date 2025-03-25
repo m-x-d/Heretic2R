@@ -69,7 +69,7 @@ animframe_t insect_frames_deathfr [] =
 	FRAME_deathfr15, NULL, 0, 0, 0, NULL, 0, NULL,    
 	FRAME_deathfr16, NULL, 0, 0, 0, NULL, 0, NULL,  
 	FRAME_deathfr17, NULL, 0, 0, 0, ai_move, 4, NULL,    
-	FRAME_deathfr18, NULL, 0, 0, 0, ai_move, 6, MG_NoBlocking,    
+	FRAME_deathfr18, NULL, 0, 0, 0, ai_move, 6, MG_SetNoBlocking,    
 	FRAME_deathfr19, NULL, 0, 0, 0, ai_move, 12, NULL,    
 	FRAME_deathfr20, insect_sound, CHAN_BODY, SND_THUD, ATTN_NORM, ai_move, 4, NULL,   
 	FRAME_deathfr21, NULL, 0, 0, 0, NULL, 0, NULL,   
@@ -109,7 +109,7 @@ animframe_t insect_frames_knock1_end [] =
 	FRAME_knock12, NULL, 0, 0, 0, ai_move, 0, insect_flyback_move, 
 	FRAME_knock13, NULL, 0, 0, 0, ai_move, 0, insect_flyback_move, 
 	FRAME_knock14, NULL, 0, 0, 0, ai_move, 0, insect_flyback_move, 
-	FRAME_knock15, NULL, 0, 0, 0, ai_move, 0, MG_NoBlocking,
+	FRAME_knock15, NULL, 0, 0, 0, ai_move, 0, MG_SetNoBlocking,
 	FRAME_knock15, NULL, 0, 0, 0, NULL, 0, insect_wait_twitch,
 };
 animmove_t insect_move_knock1_end = { 14, insect_frames_knock1_end, NULL };

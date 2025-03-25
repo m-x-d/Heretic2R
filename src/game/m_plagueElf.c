@@ -299,7 +299,7 @@ void plagueelf_check_land ( edict_t *self )
 	trace_t	trace;
 
 	if(self->s.frame == FRAME_death7)
-		MG_NoBlocking(self);
+		MG_SetNoBlocking(self);
 
 	M_ChangeYaw(self);
 

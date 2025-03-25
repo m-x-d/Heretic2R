@@ -1534,7 +1534,7 @@ void MG_ApplyJump(edict_t* self)
 	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
 }
 
-void MG_NoBlocking(edict_t* self) //TODO: rename to MG_SetNoBlocking?
+void MG_SetNoBlocking(edict_t* self) //mxd. Named 'MG_NoBlocking' in original logic.
 {
 	self->svflags |= SVF_DEADMONSTER; // Now treat as a different content type.
 	self->msgHandler = DeadMsgHandler; // No more messages at all.

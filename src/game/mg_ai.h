@@ -21,7 +21,7 @@ extern void MG_PostDeathThink(edict_t* self);
 extern void MG_CheckLanded(edict_t* self, float next_anim);
 extern void MG_InAirMove(edict_t* self, float forward_speed, float up_speed, float right_speed);
 extern void MG_ApplyJump(edict_t* self);
-extern void MG_NoBlocking(edict_t* self);
+extern void MG_SetNoBlocking(edict_t* self);
 extern qboolean MG_GetTargOrg(edict_t* self, vec3_t target_origin);
 extern qboolean EqualAngle(float angle1, float angle2, float leniency);
 
