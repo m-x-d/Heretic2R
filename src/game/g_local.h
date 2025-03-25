@@ -773,7 +773,6 @@ typedef struct gclient_s
 #endif
 
 extern qboolean FindTarget(edict_t* self);
-extern void MG_PostDeathThink(edict_t* self);
 extern qboolean movable(edict_t* ent);
 
 // For simplicity of use.. take it out later. //TODO: mxd. Take it out... later?

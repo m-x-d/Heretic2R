@@ -20,6 +20,7 @@
 #include "p_client.h" //mxd
 #include "p_view.h" //mxd
 #include "FX.h"
+#include "mg_ai.h" //mxd
 #include "Random.h"
 #include "Utilities.h" //mxd
 #include "Vector.h"
