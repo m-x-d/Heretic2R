@@ -633,32 +633,24 @@ static void MG_NewDir(edict_t* self, const float dist)
 		SV_FixCheckBottom(self);
 }
 
-/*
-=============
-infront_pos
-
-returns 1 if the spot is in front (in sight) of self
-=============
-*/
-qboolean infront_pos (edict_t *self, vec3_t pos)
+// Returns true if the spot is in front (in sight) of self.
+qboolean infront_pos(const edict_t* self, const vec3_t pos) //TODO: rename to MG_IsInforntPos?
 {
-	vec3_t	vec;
-	float	dot;
-	vec3_t	forward, check_angles;
-	
-	if(Vec3NotZero(self->v_angle_ofs))
-		VectorAdd(self->v_angle_ofs,self->s.angles,check_angles);
+	vec3_t check_angles;
+
+	if (Vec3NotZero(self->v_angle_ofs))
+		VectorAdd(self->v_angle_ofs, self->s.angles, check_angles);
 	else
-		VectorCopy(self->s.angles,check_angles);
-	
-	AngleVectors (check_angles, forward, NULL, NULL);
-	VectorSubtract (pos, self->s.origin, vec);
-	VectorNormalize (vec);
-	dot = DotProduct (vec, forward);
-	
-	if (dot > 0.3)
-		return true;
-	return false;
+		VectorCopy(self->s.angles, check_angles);
+
+	vec3_t forward;
+	AngleVectors(check_angles, forward, NULL, NULL);
+
+	vec3_t vec;
+	VectorSubtract(pos, self->s.origin, vec);
+	VectorNormalize(vec);
+
+	return (DotProduct(vec, forward) > 0.3f);
 }
 
 qboolean MG_ExtraCheckJump (edict_t *self)
