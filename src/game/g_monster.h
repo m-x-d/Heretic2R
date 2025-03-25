@@ -27,8 +27,6 @@ extern void pitch_roll_for_slope(edict_t* forwhom, vec3_t pass_slope); //mxd
 
 void DeadMsgHandler(edict_t *self, G_Message_t *msg);
 
-void MG_NoBlocking (edict_t *self);
-
 //JWEIER START HELPER PROTO
 
 qboolean MG_GetTargOrg (edict_t *self, vec3_t targ_org);
