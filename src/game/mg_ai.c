@@ -509,29 +509,17 @@ static qboolean MG_GetGoalPos(edict_t* self, vec3_t goal_pos)
 	return false;
 }
 
-float MG_FaceGoal (edict_t *self, qboolean doturn)
+float MG_FaceGoal(edict_t* self, const qboolean do_turn)
 {
-	vec3_t		vec, goalpos;
-	
-	if(MG_GetGoalPos(self, goalpos))
-	{
-		VectorSubtract(goalpos, self->s.origin, vec);
-	}
-	else
-	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("No goal to face!\n");
-#endif		
-		return false;
-	}
-	
+	vec3_t goal_pos;
+	if (!MG_GetGoalPos(self, goal_pos))
+		return 0.0f;
+
+	vec3_t vec;
+	VectorSubtract(goal_pos, self->s.origin, vec);
 	self->ideal_yaw = VectorYaw(vec);
-	
-	if(doturn)
-		return MG_ChangeYaw(self);
-	
-	return 0;
+
+	return (do_turn ? MG_ChangeYaw(self) : 0.0f);
 }
 
 /*
