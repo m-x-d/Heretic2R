@@ -64,160 +64,125 @@ qboolean visible_pos(const edict_t* self, const vec3_t pos) //TODO: rename to MG
 	return (trace.fraction == 1.0f);
 }
 
-/*
-=============
-MG_CheckBottom
-
-Returns false if any 2 adjacent cornerpoints of the bottom of the
-entity is off an edge that is not a staircase.
-=============
-*/
-qboolean MG_CheckBottom (edict_t *ent)
+// Returns false if any 2 adjacent cornerpoints of the bottom of the entity are off an edge that is not a staircase.
+static qboolean MG_CheckBottom(edict_t* ent)
 {
-	vec3_t	mins, maxs, start, stop;
-	trace_t	trace;
-	int		x, y, corner;
-	float	stepsize;
-
-	qboolean	corner_ok[4];
-	qboolean	easy_ok[2][2];
-	qboolean	realcheck = false;
-	
-//normal corner checking
-	if(ent->classID==CID_TBEAST)
-	{
+	// Normal corner checking.
+	if (ent->classID == CID_TBEAST)
 		return TB_CheckBottom(ent);
-//		VectorAdd (ent->s.origin, ent->mins, mins);
-//		VectorAdd (ent->s.origin, ent->maxs, maxs);
-//		stepsize = 54;//ent->size[2];//very lenient for stepping off stuff
-	}
-	else//lenient, max 16 corner checking
+
+	// Lenient, max 16 corner checking.
+	vec3_t mins;
+	vec3_t maxs;
+	VectorCopy(ent->mins, mins);
+	VectorCopy(ent->maxs, maxs);
+
+	// Keep corner checks within 16 of center.
+	for (int i = 0; i < 2; i++)
 	{
-		VectorCopy (ent->mins, mins);
-		VectorCopy (ent->maxs, maxs);
-
-		//some leniency is ok here, no?
-		mins[0] *= 0.75;	
-		mins[1] *= 0.75;	
-		maxs[0] *= 0.75;	
-		maxs[1] *= 0.75;
-
-		//keep corner checks within 16 of center
-		if(mins[0] < -16)
-			mins[0] = -16;
-		if(mins[1] < -16)
-			mins[1] = -16;
-		if(maxs[0] > 16)
-			maxs[0] = 16;
-		if(maxs[1] > 16)
-			maxs[1] = 16;
-
-		if(ent->maxs[0] > maxs[0])
-			stepsize = STEP_SIZE + (ent->maxs[0] - maxs[0]);
-
-		VectorAdd (ent->s.origin, mins, mins);
-		VectorAdd (ent->s.origin, maxs, maxs);
+		// Some leniency is ok here, no?
+		mins[i] = max(-16.0f, mins[i] * 0.75f);
+		maxs[i] = min(16.0f, maxs[i] * 0.75f);
 	}
 
-// if all of the points under the corners are solid world, don't bother
-// with the tougher checks
-// the corners must be within 16 of the midpoint
+	float step_size = 0.0f;
 
-	start[2] = mins[2] - 1;
-	corner = 0;
-	for	(x=0 ; x<=1 ; x++)//0, 0; 0, 1; 1, 0; 1, 1;
+	if (ent->maxs[0] > maxs[0])
+		step_size = STEP_SIZE + (ent->maxs[0] - maxs[0]);
+
+	VectorAdd(ent->s.origin, mins, mins);
+	VectorAdd(ent->s.origin, maxs, maxs);
+
+	// If all of the points under the corners are solid world, don't bother with the tougher checks.
+	qboolean corner_ok[4];
+	qboolean easy_ok[2][2];
+	qboolean do_real_check = false;
+
+	vec3_t check_pos = { 0.0f, 0.0f, mins[2] - 1.0f };
+
+	// The corners must be within 16 of the midpoint.
+	int corner_index = 0;
+
+	for (int x = 0; x < 2; x++) // 0, 0; 0, 1; 1, 0; 1, 1;
 	{
-		for	(y=0 ; y<=1 ; y++)
+		for (int y = 0; y < 2; y++)
 		{
-			start[0] = x ? maxs[0] : mins[0];
-			start[1] = y ? maxs[1] : mins[1];
-			if (gi.pointcontents (start) != CONTENTS_SOLID)
-			{//only do realcheck if two adjecent corners off ledge
-				switch(corner)
+			check_pos[0] = (x == 1 ? maxs[0] : mins[0]);
+			check_pos[1] = (y == 1 ? maxs[1] : mins[1]);
+
+			if (gi.pointcontents(check_pos) != CONTENTS_SOLID)
+			{
+				// Only do real_check if two adjacent corners are off-ledge.
+				if (((corner_index == 1 || corner_index == 2) && !corner_ok[0]) ||
+					(corner_index == 3 && (!corner_ok[1] || !corner_ok[2])))
 				{
-				case 0:
-					break;
-				case 1:
-				case 2:
-					if(!corner_ok[0])
-						realcheck = true;
-					break;
-				case 3:
-					if(!corner_ok[2] || !corner_ok[1])
-						realcheck = true;
-					break;
+					do_real_check = true;
 				}
-				easy_ok[x][y] = corner_ok[corner] = false;
+
+				easy_ok[x][y] = false;
+				corner_ok[corner_index] = false;
 			}
 			else
 			{
-//				if(ent->classID==CID_TBEAST)
-//				{
-//					ent->groundentity = world;
-//					return true;//super hack- let big guy go up slopes
-//				}
-				//check them all to make realcheck faster
-				easy_ok[x][y] = corner_ok[corner] = true;
+				// Check them all to make real_check faster.
+				easy_ok[x][y] = true;
+				corner_ok[corner_index] = true;
 			}
 
-			corner++;
+			corner_index++;
 		}
 	}
 
-	if(!realcheck)
-		return true;		// we got out easy
+	if (!do_real_check)
+		return true; // We got out easy.
 
-//
-// check it for real...
-//
-	start[2] = mins[2];//bottom
-	stop[2] = start[2] - stepsize + 1;//2*STEPSIZE;//bottom - 36
-	
-// the corners must be within 16 of the midpoint	
-	corner = 0;
-	for	(x=0 ; x<=1 ; x++)
+	// Check it for real...
+	vec3_t start = { 0.0f, 0.0f, mins[2] }; // Bottom.
+	vec3_t stop = { 0.0f, 0.0f, start[2] - step_size + 1.0f };
+
+	// The corners must be within 16 of the midpoint.
+	corner_index = 0;
+
+	for (int x = 0; x < 2; x++)
 	{
-		for	(y=0 ; y<=1 ; y++)
+		for (int y = 0; y < 2; y++)
 		{
-			if(!easy_ok[x][y])
-			{//don't trace the ones that were ok in the easy check
-				start[0] = stop[0] = x ? maxs[0] : mins[0];
-				start[1] = stop[1] = y ? maxs[1] : mins[1];
-				
-				gi.trace (start, vec3_origin, vec3_origin, stop, ent, MASK_MONSTERSOLID,&trace);
-				
-				if (trace.fraction >= 1.0)// || start[2] - trace.endpos[2] > STEPSIZE)
-				{//this point is off too high of a step
-					switch(corner)
-					{
-					case 0:
-						break;
-					case 1:
-					case 2:
-						if(!corner_ok[0])
-							return false;
-						break;
-					case 3:
-						if(!corner_ok[2] || !corner_ok[1])
-							return false;
-						break;
-					}
-					corner_ok[corner] = false;
-				}
-				else//only return false if two adjacent corners off a ledge
+			if (easy_ok[x][y])
+			{
+				corner_ok[corner_index] = true;
+				continue;
+			}
+
+			// Don't trace the ones that were ok in the easy check.
+			start[0] = (x == 1 ? maxs[0] : mins[0]);
+			start[1] = (y == 1 ? maxs[1] : mins[1]);
+			stop[0] = start[0];
+			stop[1] = start[1];
+
+			trace_t	trace;
+			gi.trace(start, vec3_origin, vec3_origin, stop, ent, MASK_MONSTERSOLID, &trace);
+
+			if (trace.fraction == 1.0f) //mxd. '>= 1.0f' in original logic.
+			{
+				// This point is off too high of a step.
+				if (((corner_index == 1 || corner_index == 2) && !corner_ok[0]) ||
+					(corner_index == 3 && (!corner_ok[1] || !corner_ok[2])))
 				{
-					if(ent->classID==CID_TBEAST)
-					{
-//						ent->groundentity = trace.ent;
-						return true;//super hack- let big guy go up slopes
-					}
-					corner_ok[corner] = true;
+					return false;
 				}
+
+				corner_ok[corner_index] = false;
 			}
 			else
-				corner_ok[corner] = true;
+			{
+				// Only return false if two adjacent corners are off-ledge.
+				if (ent->classID == CID_TBEAST)
+					return true; // Super hack - let big guy go up slopes.
 
-			corner++;
+				corner_ok[corner_index] = true;
+			}
+
+			corner_index++;
 		}
 	}
 
