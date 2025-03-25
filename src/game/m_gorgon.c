@@ -71,7 +71,6 @@ GORGON
 
 qboolean ai_have_enemy (edict_t *self);
 qboolean clear_visible (edict_t *self, edict_t *other);
-qboolean EqualAngle(float angle1, float angle2, float leniency);
 qboolean ok_to_wake (edict_t *monster, qboolean gorgon_roar, qboolean ignore_ambush);
 qboolean gorgon_check_jump (edict_t *self);
 

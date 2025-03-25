@@ -622,7 +622,6 @@ void rat_ai_eat(edict_t *self, float dist)
 	}
 }
 
-qboolean EqualAngle(float angle1, float angle2, float leniency);
 void rat_ai_run (edict_t *self, float dist)
 {
 	vec3_t		vec;

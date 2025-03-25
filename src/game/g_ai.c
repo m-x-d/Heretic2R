@@ -26,9 +26,6 @@ void seraph_startle(edict_t *self);
 void SV_FixCheckBottom (edict_t *ent);
 qboolean clear_visible (edict_t *self, edict_t *other);
 qboolean ok_to_wake (edict_t *monster, qboolean gorgon_roar, qboolean ignore_ambush);
-qboolean EqualAngle(float angle1, float angle2, float leniency);
-
-
 
 // AI Targeting Globals
 qboolean	enemy_vis;		// TRUE if enemy is visible
