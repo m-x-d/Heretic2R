@@ -1019,31 +1019,14 @@ trace_t MG_WalkMove(edict_t* self, float yaw, const float dist)
 	return trace;
 }
 
-/*
-===============
-MG_BoolWalkMove
-
-  Tries to step forward dist, returns true/false
-===============
-*/
-qboolean MG_BoolWalkMove (edict_t *self, float yaw, float dist)
+// Tries to step forward dist, returns true/false.
+qboolean MG_BoolWalkMove(edict_t* self, float yaw, const float dist)
 {
-	vec3_t	move;
-	trace_t trace;
-	
-	yaw = yaw*M_PI*2 / 360;
-	
-	move[0] = cos(yaw)*dist;
-	move[1] = sin(yaw)*dist;
-	move[2] = 0;
+	yaw *= ANGLE_TO_RAD;
+	vec3_t move = { cosf(yaw) * dist, sinf(yaw) * dist, 0.0f };
+	const trace_t trace = MG_MoveStep(self, move, true);
 
-	trace = MG_MoveStep(self, move, true);
-	if(trace.succeeded)
-	{
-		return true;
-	}
-
-	return false;
+	return trace.succeeded;
 }
 
 /*
