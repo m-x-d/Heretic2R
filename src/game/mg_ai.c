@@ -1588,34 +1588,6 @@ qboolean EqualAngle(float angle1, float angle2, const float leniency) //TODO: re
 	return (fabsf(diff) <= leniency);
 }
 
-/*
-qboolean ok_to_break (edict_t *target)
-
-  Ok to just smash this damn thing in my way?
-*/
-qboolean ok_to_break (edict_t *target)
-{
-	if(!target)
-		return false;
-
-	if(!target->takedamage)
-		return false;
-
-	if(target->health>MAX_BLOCKING_THING_HEALTH)//general damage for pots, barrels, etc. 
-		return false;
-
-	if(target->targetname)//supposed to be triggered for some reason
-		return false;
-
-	if(target->svflags&SVF_MONSTER)//another monster
-		return false;
-
-	if(Vec3IsZero(target->s.origin))//breakable_brushes have no origin
-		return false;
-
-	return true;//break it!
-}
-
 qboolean MG_MoveToGoal (edict_t *self, float dist)
 {
 	trace_t trace;
