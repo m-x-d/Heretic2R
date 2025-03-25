@@ -56,6 +56,7 @@
 #include "m_stats.h"
 
 #include "g_monster.h"
+#include "mg_ai.h" //mxd
 
 void ai_runaway (edict_t *self, float dist);
 
@@ -568,8 +569,6 @@ void rat_touch(edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
 
 void rat_ai_stand(edict_t *self, float dist)
 {
-	float MG_FaceGoal (edict_t *self, qboolean doturn);
-
 	if (M_ValidTarget(self, self->enemy))
 	{
 		//Find the number of rats around us (-1 denotes it hasn't check previously)

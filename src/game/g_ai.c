@@ -26,7 +26,6 @@ void seraph_startle(edict_t *self);
 void SV_FixCheckBottom (edict_t *ent);
 qboolean clear_visible (edict_t *self, edict_t *other);
 trace_t MG_WalkMove (edict_t *self, float yaw, float dist);
-float MG_FaceGoal (edict_t *self, qboolean doturn);
 qboolean ok_to_wake (edict_t *monster, qboolean gorgon_roar, qboolean ignore_ambush);
 qboolean EqualAngle(float angle1, float angle2, float leniency);
 

@@ -116,7 +116,6 @@ void GkrokonSpooTouch(edict_t *self,edict_t *Other,cplane_t *Plane,csurface_t *S
 trace_t trace_dir(edict_t *self, vec3_t source, vec3_t angles, float dist);
 
 void beetle_ai_stand(edict_t *self, float dist);
-float MG_FaceGoal (edict_t *self, qboolean doturn);
 void beetle_idle_sound(edict_t *self);
 void beetle_to_stand (edict_t *self);
 void beetle_to_crouch (edict_t *self);

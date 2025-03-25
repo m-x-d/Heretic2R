@@ -22,6 +22,7 @@
 #include "g_debris.h" //mxd
 #include "g_HitLocation.h"
 #include "g_obj.h" //mxd
+#include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
 #include "m_stats.h"
 

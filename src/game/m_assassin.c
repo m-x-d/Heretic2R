@@ -42,6 +42,7 @@
 #include "g_debris.h" //mxd
 #include "angles.h"
 #include "c_ai.h"
+#include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
 #include "p_anim_branch.h"
 #include "p_anims.h"

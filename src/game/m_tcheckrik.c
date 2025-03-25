@@ -43,6 +43,7 @@
 #include "angles.h"
 #include "g_HitLocation.h"
 #include "c_ai.h"
+#include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
 #include "m_stats.h"
 

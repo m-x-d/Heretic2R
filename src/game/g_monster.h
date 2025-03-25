@@ -52,7 +52,6 @@ void M_ShowLifeMeter( edict_t *self, int value, int max_value );
 
 int M_PredictTargetEvasion( edict_t *attacker, edict_t *target, vec3_t pursue_vel, vec3_t evade_vel, float strike_dist, float pred_frames );
 int M_FindSupport( edict_t *self, int range );
-float MG_FaceGoal (edict_t *self, qboolean doturn);
 
 //JWEIER END HELPER PROTO
 

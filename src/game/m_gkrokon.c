@@ -23,6 +23,7 @@
 #include "m_gkrokon_anim.h"
 #include "m_stats.h"
 #include "g_HitLocation.h"
+#include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
 
 static int sounds[NUM_SOUNDS];
