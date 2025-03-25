@@ -1565,36 +1565,27 @@ qboolean MG_GetTargOrg(edict_t* self, vec3_t target_origin) //TODO: rename to MG
 	return true;
 }
 
-/*
-qboolean EqualAngle(float angle1, float angle2, float leniency)
-
-Sees if the two angles are within leniency degrees of each other
-*/
-qboolean EqualAngle(float angle1, float angle2, float leniency)
+// Sees if the two angles are within leniency degrees of each other.
+qboolean EqualAngle(float angle1, float angle2, const float leniency) //TODO: rename to IsEqualAngle?
 {
-	float diff;
+	if (angle1 < -180.0f)
+		angle1 += 360.0f;
+	else if (angle1 > 180.0f)
+		angle1 -= 360.0f;
 
-	if(angle1 < -180)
-		angle1 += 360;
-	else if(angle1 > 180)
-		angle1 -= 360;
+	if (angle2 < -180.0f)
+		angle2 += 360.0f;
+	else if (angle2 > 180.0f)
+		angle2 -= 360.0f;
 
-	if(angle2 < -180)
-		angle2 += 360;
-	else if(angle2 > 180)
-		angle2 -= 360;
+	float diff = angle1 - angle2;
 
-	diff = angle1 - angle2;
+	if (diff < -180.0f)
+		diff += 360.0f;
+	else if (diff > 180.0f)
+		diff -= 360.0f;
 
-	if(diff < -180)
-		diff += 360;
-	else if(diff > 180)
-		diff -= 360;
-
-	if(fabs(diff) > leniency)
-		return false;
-
-	return true;
+	return (fabsf(diff) <= leniency);
 }
 
 /*
