@@ -9,3 +9,4 @@
 #include "q_shared.h"
 
 extern trace_t MG_MoveStep(edict_t* self, vec3_t move, qboolean relink);
+extern qboolean MG_MoveToGoal(edict_t* self, float dist);

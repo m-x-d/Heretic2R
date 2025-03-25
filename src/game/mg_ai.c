@@ -1,47 +1,29 @@
-/*
-==============================
+//
+// mg_ai.c -- New low-level movement code.
+//
+// Copyright 1998 Raven Software
+//
 
-  MG AI
-  NEW LOW-LEVEL MOVEMENT CODE
-
-==============================
-*/
-
-#include <assert.h>
 #include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
-#include "g_local.h"
 #include "g_monster.h"
-#include "Random.h"
-#include "vector.h"
-#include "buoy.h"
 #include "g_HitLocation.h"
-#include "Utilities.h"
 #include "m_beast.h" //mxd
 #include "m_stats.h"
-#include "g_playstats.h"
-#include "fx.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_local.h"
 
-#define YAW_IDEAL		1
-#define YAW_BEST_MOVE	0
+#define YAW_IDEAL		true
+#define YAW_BEST_MOVE	false
 
-extern cvar_t	*maxclients;
+void ssithraCheckJump(edict_t* self); //TODO: move to m_plagueSsithra.h.
+void SV_FixCheckBottom(edict_t* ent); //TODO: move to m_move.h
+float ai_face_goal(edict_t* self); //TODO: move to g_ai.h
 
-//void gkrokon_maintain_waypoints(edict_t *self, float mintel, float foo1, float foo2);
-void ssithraCheckJump (edict_t *self);
-void SV_FixCheckBottom (edict_t *ent);
-qboolean clear_visible (edict_t *self, edict_t *other);
-float ai_face_goal (edict_t *self);
-void ai_flee (edict_t *self, float dist);
-qboolean MG_MoveToGoal (edict_t *self, float dist);
-
-// AI Targeting Globals
-qboolean	enemy_vis;		// TRUE if enemy is visible
-qboolean	enemy_infront;	// TRUE if enemy is in front 
-int			enemy_range;	// range from enemy RANGE_MELEE, RANGE_NEAR, RANGE_MID, RANGE_FAR
-float		enemy_yaw;		// ideal yaw to face enemy
-vec3_t	JUMP_MINS = {-8, -8, 0};
-vec3_t	JUMP_MAXS = {8, 8, 4};
+vec3_t JUMP_MINS = {-8, -8, 0};
+vec3_t JUMP_MAXS = {8, 8, 4};
 
 char *HitLocName [hl_Max] =
 {
