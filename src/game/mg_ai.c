@@ -1532,10 +1532,10 @@ void MG_ApplyJump(edict_t* self)
 	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
 }
 
-void MG_NoBlocking (edict_t *self)
+void MG_NoBlocking(edict_t* self) //TODO: rename to MG_SetNoBlocking?
 {
-	self->svflags |= SVF_DEADMONSTER;	// now treat as a different content type
-	self->msgHandler = DeadMsgHandler;	// no more messages at all
+	self->svflags |= SVF_DEADMONSTER; // Now treat as a different content type.
+	self->msgHandler = DeadMsgHandler; // No more messages at all.
 }
 
 qboolean MG_GetTargOrg (edict_t *self, vec3_t targ_org)
