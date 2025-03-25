@@ -1869,341 +1869,237 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 	return false;
 }
 
-qboolean MG_SwimFlyToGoal (edict_t *self, float dist)
+qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by PlagueSsithra.
 {
-	trace_t		trace;
-	float		turnamt, distloss, adj_dist, save_yaw, save_yaw_speed, WallDot;//, save_ideal_yaw;
-	vec3_t		mins, maxs, source, goal_dir, goalpos;//, vec, save_org;
-	qboolean	goal_vis=false, hitworld = false, new_best_yaw = false;
-	float		goal_dist, oby;
+	if (self->classID != CID_GORGON) // They do their own yawing.
+		MG_FaceGoal(self, false); // Get ideal yaw, but don't turn.
 
-	trace.succeeded = false;
-
-	if(self->classID != CID_GORGON)//they do their own yawing
-		MG_FaceGoal(self, false);//get ideal yaw, but don't turn
-
-	//are we very close to our goal? problem: what if something in between?
-	if(!EqualAngle(self->s.angles[YAW], self->ideal_yaw, self->yaw_speed))
-	{//we aren't really facing our ideal yet
-		if(self->monsterinfo.searchType == SEARCH_BUOY||self->ai_mood == AI_MOOD_NAVIGATE)
+	// Are we very close to our goal? Problem: what if something in between?
+	if (!EqualAngle(self->s.angles[YAW], self->ideal_yaw, self->yaw_speed))
+	{
+		// We aren't really facing our ideal yet.
+		if (self->monsterinfo.searchType == SEARCH_BUOY || self->ai_mood == AI_MOOD_NAVIGATE)
 		{
+			vec3_t goal_dir;
 			VectorSubtract(self->monsterinfo.nav_goal, self->s.origin, goal_dir);
-			goal_dist = VectorNormalize(goal_dir);
-			if(goal_dist < (self->maxs[0] + 24 + dist))
-			{//we're close to our goal
+
+			if (VectorNormalize(goal_dir) < self->maxs[0] + dist + 24.0f)
+			{
+				// We're close to our goal.
 				MG_ChangeWhichYaw(self, YAW_IDEAL);
-				return true;//so close to enemy, just turn, no movement - not if rat?
+				return true; // So close to enemy, just turn, no movement - not if rat?
 			}
 		}
-		else if(self->enemy)
+		else if (self->enemy != NULL)
 		{
+			vec3_t goal_dir;
 			VectorSubtract(self->monsterinfo.nav_goal, self->s.origin, goal_dir);
-			goal_dist = VectorNormalize(goal_dir);
-			if(goal_dist < (self->maxs[0] + self->enemy->maxs[0] + dist*2))
-			{//we're close to our goal
+
+			if (VectorNormalize(goal_dir) < self->maxs[0] + self->enemy->maxs[0] + dist * 2.0f)
+			{
+				// We're close to our goal.
 				MG_ChangeWhichYaw(self, YAW_IDEAL);
-				return true;//so close to enemy, just turn, no movement - not if rat?
+				return true; // So close to enemy, just turn, no movement - not if rat?
 			}
 		}
 	}
 
-	if(self->monsterinfo.idle_time == -1)
-	{//have been told to just turn to ideal_yaw
-		turnamt = Q_fabs(MG_ChangeWhichYaw(self, YAW_IDEAL));
-		//keep turning towards ideal until facing it
-		if(turnamt < 1)
-			self->monsterinfo.idle_time = 0;
+	if (self->monsterinfo.idle_time == -1.0f)
+	{
+		// Keep turning towards ideal until facing it.
+		if (Q_fabs(MG_ChangeWhichYaw(self, YAW_IDEAL)) < 1.0f)
+			self->monsterinfo.idle_time = 0.0f;
 		else
 			return true;
 	}
-	else if(self->monsterinfo.idle_time > level.time)
-	{//using best_move_yaw
-		if(EqualAngle(self->s.angles[YAW], self->best_move_yaw, 5))
-		{//do a test move in the direction I would like to go:
-			if(MG_TestMove(self, self->ideal_yaw, dist))
-			{//can move in that dir turn there for rest of this
-#ifdef _DEVEL
-				if(MGAI_DEBUG)
-					gi.dprintf("Move in ideal tested true while using best_move...!\n");
-#endif
-				turnamt = Q_fabs(MG_ChangeWhichYaw(self, YAW_IDEAL));
-				//keep turning towards ideal until facing it
-				if(turnamt < 1)
-					self->monsterinfo.idle_time = 0;
-				else
+	else if (self->monsterinfo.idle_time > level.time)
+	{
+		// Using best_move_yaw. Do a test move in the direction I would like to go.
+		if (EqualAngle(self->s.angles[YAW], self->best_move_yaw, 5.0f) && MG_TestMove(self, self->ideal_yaw, dist))
+		{
+			// Keep turning towards ideal until facing it.
+			if (Q_fabs(MG_ChangeWhichYaw(self, YAW_IDEAL)) < 1.0f)
+			{
+				self->monsterinfo.idle_time = 0.0f;
+			}
+			else
+			{
+				self->monsterinfo.idle_time = -1.0f;
+				return true;
+			}
+		}
+
+		MG_ChangeWhichYaw(self, YAW_BEST_MOVE); // Turn to temp yaw.
+	}
+	else
+	{
+		// Using ideal_yaw.
+		MG_ChangeWhichYaw(self, YAW_IDEAL);
+	}
+
+	vec3_t goal_pos;
+	MG_GetGoalPos(self, goal_pos);
+
+	trace_t trace = MG_AirMove(self, goal_pos, dist);
+
+	if (trace.succeeded)
+		return true;
+
+	qboolean new_best_yaw = false;
+	float old_best_yaw;
+
+	// If facing best_move_yaw and can't move that way, stop trying in that dir now.
+	if (self->monsterinfo.idle_time > level.time && self->s.angles[YAW] == self->best_move_yaw)
+	{
+		new_best_yaw = true;
+		old_best_yaw = self->best_move_yaw;
+		self->monsterinfo.idle_time = 0.0f;
+	}
+
+	qboolean hit_world = false;
+
+	// Bumped into something.
+	if (trace.ent != NULL)
+	{
+		hit_world = (Q_stricmp(trace.ent->classname, "worldspawn") == 0); //mxd. stricmp -> Q_stricmp
+
+		if (trace.ent == self->enemy)
+		{
+			// Bumped into enemy, go get him!
+			if (!(self->monsterinfo.aiflags & AI_COWARD) && !(self->monsterinfo.aiflags & AI_NO_MELEE) && !(self->ai_mood_flags & AI_MOOD_FLAG_IGNORE_ENEMY) &&
+				(!(self->monsterinfo.aiflags & AI_FLEE) || self->monsterinfo.flee_finished < level.time))
+			{
+				if (classStatics[self->classID].msgReceivers[MSG_MELEE] != NULL && infront(self, self->enemy))
 				{
-					self->monsterinfo.idle_time = -1;
+					QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 					return true;
 				}
 			}
 		}
-		turnamt = Q_fabs(MG_ChangeWhichYaw(self, YAW_BEST_MOVE));//turn to temp yaw
-	}
-	else
-	{//using ideal_yaw
-		turnamt = Q_fabs(MG_ChangeWhichYaw(self, YAW_IDEAL));
-	}
-
-	distloss = turnamt/self->yaw_speed * 0.8;//0.3;
-	adj_dist = dist - (dist * distloss);
-	
-	MG_GetGoalPos(self, goalpos);
-
-	trace = MG_AirMove(self, goalpos, dist);
-	if(trace.succeeded)
-	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("Move forward succeeded!\n");
-#endif
-		return true;
-	}
-
-//if facing best_move_yaw and can't move that way, stop trying in that dir now.
-	if(self->monsterinfo.idle_time > level.time && self->s.angles[YAW] == self->best_move_yaw)
-	{
-		new_best_yaw = true;
-		oby = self->best_move_yaw;
-		self->monsterinfo.idle_time = 0;
-	}
-
-//bumped into something
-	if(trace.ent)
-	{
-		if(!stricmp(trace.ent->classname, "worldspawn"))
-			hitworld = true;
-		else
-			hitworld = false;
-		
-		if(trace.ent == self->enemy)
-		{//bumped into enemy, go get him!
-			if(!(self->monsterinfo.aiflags & AI_COWARD) &&
-				(!(self->monsterinfo.aiflags&AI_FLEE) || self->monsterinfo.flee_finished < level.time))
-			{
-				if(!(self->monsterinfo.aiflags&AI_NO_MELEE))
-				{
-					if(!(self->ai_mood_flags&AI_MOOD_FLAG_IGNORE_ENEMY))
-					{
-						if(classStatics[self->classID].msgReceivers[MSG_MELEE] && infront(self, self->enemy))
-						{
-							QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-							return true;
-						}
-					}
-				}
-			}
-		}
-		else if(trace.ent->svflags & SVF_MONSTER)
-		{//if bumped into a monster that's not after an enemy but not ambushing, bring him along
-			if(!trace.ent->enemy)
-			{
-				if(trace.ent->health>0 && !trace.ent->monsterinfo.awake)
-				{
-					if(!(trace.ent->spawnflags & MSF_AMBUSH))
-					{
-						if(self->enemy)
-						{
-							if(self->enemy->client)
-							{
-								trace.ent->enemy = self->enemy;
-								FoundTarget(trace.ent, false);
-							}
-						}
-					}
-				}
-			}
-		}
-
-		if(!hitworld)
+		else if (trace.ent->svflags & SVF_MONSTER)
 		{
-			if(self->monsterinfo.idle_time < level.time)
-			{//not already following a weird dir
-#ifdef _DEVEL
-				if(MGAI_DEBUG)
-					gi.dprintf("Move forward hit wall, newdir\n");
-#endif
-				self->monsterinfo.idle_time = level.time + flrand(0.5, 1.2);
-				self->best_move_yaw = anglemod(180 + self->ideal_yaw);
+			//if bumped into a monster that's not after an enemy but not ambushing, bring him along
+			if (trace.ent->enemy == NULL && trace.ent->health > 0 && !trace.ent->monsterinfo.awake && !(trace.ent->spawnflags & MSF_AMBUSH))
+			{
+				if (self->enemy != NULL && self->enemy->client != NULL)
+				{
+					trace.ent->enemy = self->enemy;
+					FoundTarget(trace.ent, false);
+				}
+			}
+		}
+
+		if (!hit_world)
+		{
+			if (self->monsterinfo.idle_time < level.time)
+			{
+				// Not already following a weird dir
+				self->monsterinfo.idle_time = level.time + flrand(0.5f, 1.2f);
+				self->best_move_yaw = anglemod(self->ideal_yaw + 180.0f);
 				MG_NewDir(self, dist);
 			}
+
 			return false;
 		}
-#ifdef _DEVEL
-		else if(MGAI_DEBUG)
-			gi.dprintf("Bumped world - t_f: %f t_allsolid: %d, t_startsolid %d\n",trace.fraction, trace.allsolid, trace.startsolid);
-#endif
 	}
 
-//Ledge?
-/*	if(trace.fraction >= 0.5 + distloss && !trace.allsolid && !trace.startsolid)//a ledge
-	{//why not tracefraction == 1.0?
-		if(trace.fraction >= 0.5)//even assassins skip this
-		{
-			if(MGAI_DEBUG)
-				gi.dprintf("Can't jump off, getting newdir\n");
+	// FROM HERE ON, ONLY CHANGES DIR, WILL NOT MOVE!
 
-			if(self->monsterinfo.idle_time < level.time)
-			{//not already following some other dir, pick one
-				self->monsterinfo.idle_time = level.time + flrand(1, 2);
-				self->best_move_yaw = anglemod(180 + self->ideal_yaw);
-				MG_NewDir(self, dist);//what if this fails to set one?
-			}
-			return false;
-		}
-	}*/
+	// Lock into this new yaw for a bit.
+	if (self->monsterinfo.idle_time > level.time)
+		return false; // Heading somewhere for a few secs, turn here.
 
-#ifdef _DEVEL
-	if(MGAI_DEBUG)
-		if(trace.allsolid || trace.startsolid)
-			gi.dprintf("Move forward allsolid or startsolid!\n");
-#endif
-	//FROM HERE ON, ONLY CHANGES DIR, WILL NOT MOVE!
+	// Otherwise, go around it...
+	const float delay = ((hit_world || irand(0, 10) < 6) ? flrand(1.0f, 2.0f) : flrand(0.5f, 1.25f)); //mxd
+	self->monsterinfo.idle_time = level.time + delay;
+	self->best_move_yaw = anglemod(self->ideal_yaw + 180.0f);
 
-	//otherwise, go around it... this ONLY???
-	//lock into this new yaw for a bit
-	if(self->monsterinfo.idle_time > level.time)
-	{//heading somewhere for a few secs, turn here
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("Turning to newdir, not bumping\n");
-#endif
-		/*		turnamt = Q_fabs(MG_ChangeWhichYaw(self, YAW_BEST_MOVE));
-		distloss = turnamt/self->yaw_speed * 0.3;
-		dist -= (dist * distloss);*/
-		return false;
-	}
+	// If hit a wall and close to ideal yaw (within 5 deg.), try a new dir.
+	if (Vec3NotZero(trace.plane.normal) && EqualAngle(self->s.angles[YAW], self->ideal_yaw, 5.0f))
+	{
+		// If facing a wall, turn faster, more facing the wall, faster the turn.
+		const float save_yaw_speed = self->yaw_speed;
 
-	if((hitworld || irand(0,10)<6)&&!goal_vis)
-		self->monsterinfo.idle_time = level.time + flrand(1, 2);
-	else
-		self->monsterinfo.idle_time = level.time + flrand(0.5, 1.25);
-
-	self->best_move_yaw = anglemod(180 + self->ideal_yaw);
-
-	//if hit a wall and close to ideal yaw (with 5), try a new dir
-	if(Vec3NotZero(trace.plane.normal)&&
-		EqualAngle(self->s.angles[YAW], self->ideal_yaw, 5))
-	{//a wall?
-		vec3_t	wall_angles, wall_right, self_forward, new_forward, vf;
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("Move forward hit wall, checking left/right/back...\n");
-#endif
-		//If facing a wall, turn faster, more facing the wall, faster the turn
-		save_yaw_speed = self->yaw_speed;
+		vec3_t self_forward;
 		AngleVectors(self->s.angles, self_forward, NULL, NULL);
-		WallDot = DotProduct(trace.plane.normal, self_forward);
-		if(WallDot>0)
-			WallDot = 0;//-1 to 0
-		self->yaw_speed *= 1.25 - WallDot;//facing wall head-on = 2.25 times normal yaw speed
 
+		float wall_dot = DotProduct(trace.plane.normal, self_forward);
+		wall_dot = min(0.0f, wall_dot); // -1 to 0.
+
+		self->yaw_speed *= 1.25f - wall_dot; // Facing wall head-on = 2.25 times normal yaw speed.
+
+		vec3_t wall_angles;
 		vectoangles(trace.plane.normal, wall_angles);
+
+		vec3_t wall_right;
 		AngleVectors(wall_angles, NULL, wall_right, NULL);
-		
-		if(goal_vis)
-		{//can see goal, turn towards IT first
-			VectorSubtract(self->goalentity->s.origin, self->s.origin, self_forward);
-			VectorNormalize(self_forward);
-		}
-		
-		//Get closest angle off that wall to move in
-		if(DotProduct(wall_right,self_forward)>0)
-		{
-#ifdef _DEVEL
-			if(MGAI_DEBUG)
-				gi.dprintf("turning left\n");
-#endif
+
+		// Get closest angle off that wall to move in.
+		vec3_t new_forward;
+		if (DotProduct(wall_right, self_forward) > 0.0f)
 			VectorCopy(wall_right, new_forward);
-		}
 		else
+			VectorScale(wall_right, -1.0f, new_forward);
+
+		if (irand(0, 10) < 3) // 30% chance of trying other way first.
+			VectorScale(new_forward, -1.0f, new_forward);
+
+		self->best_move_yaw = VectorYaw(new_forward);
+
+		if (new_best_yaw && self->best_move_yaw == old_best_yaw)
 		{
-#ifdef _DEVEL
-			if(MGAI_DEBUG)
-				gi.dprintf("turning right\n");
-#endif
-			VectorScale(wall_right, -1, new_forward);
+			VectorScale(new_forward, -1.0f, new_forward);
+			self->best_move_yaw = VectorYaw(new_forward);
 		}
 
-		if(irand(0,10)<3)//30% chance of trying other way first
-			VectorScale(new_forward, -1, new_forward);
-		
-		self->best_move_yaw=VectorYaw(new_forward);
+		// Make sure we can move in chosen dir.
+		const float save_yaw = self->s.angles[YAW]; // Remember yaw in case all these fail!
 
-		if(new_best_yaw && self->best_move_yaw == oby)
-		{
-			VectorScale(new_forward, -1, new_forward);
-		
-			self->best_move_yaw=VectorYaw(new_forward);
-		}
+		// Haven't yawed yet, so this is okay.
+		float turn_amount = Q_fabs(MG_ChangeWhichYaw(self, YAW_BEST_MOVE));
+		float dist_loss = turn_amount / self->yaw_speed * 0.8f;
+		float adj_dist = dist - (dist * dist_loss);
 
-		//make sure we can move in chosen dir
-		//set up mins and maxes for these moves
-		VectorCopy(self->mins, mins);
-		VectorCopy(self->maxs, maxs);
-
-		//remember yaw in case all these fail!
-		save_yaw = self->s.angles[YAW];
-
-		//Haven't yawed yet, so this is okay
-		turnamt = Q_fabs(MG_ChangeWhichYaw(self, YAW_BEST_MOVE));
-		distloss = turnamt/self->yaw_speed * 0.8;//0.3;
-		adj_dist = dist - (dist * distloss);
-		
-		VectorCopy(new_forward, vf);
-		//AngleVectors(self->s.angles, vf, NULL, NULL);
-
+		vec3_t source;
 		VectorCopy(self->s.origin, source);
-		VectorMA(source, adj_dist, vf, source);
-		
-		gi.trace (self->s.origin, mins, self->maxs, source, self, MASK_SOLID,&trace);//was MASK_SHOT
+		VectorMA(source, adj_dist, new_forward, source);
 
-		if (trace.fraction < 1||trace.allsolid||trace.startsolid)
-		{//Uh oh, try other way
-#ifdef _DEVEL
-			if(MGAI_DEBUG)
-				gi.dprintf("turn other way\n");
-#endif
-			VectorScale(new_forward, -1, new_forward);
-			self->best_move_yaw=VectorYaw(new_forward);			
-			//restore yaw
-			self->s.angles[YAW] = save_yaw;
-			//try new dir
-			turnamt = Q_fabs(MG_ChangeWhichYaw(self, YAW_BEST_MOVE));
-			distloss = turnamt/self->yaw_speed * 0.8;//0.3;
-			adj_dist = dist - (dist * distloss);
+		gi.trace(self->s.origin, self->mins, self->maxs, source, self, MASK_SOLID, &trace); // Was MASK_SHOT.
 
-			VectorCopy(new_forward, vf);
-			//AngleVectors(self->s.angles, vf, NULL, NULL);
-	
-			VectorMA(source, adj_dist, vf, source);
+		if (trace.fraction < 1.0f || trace.allsolid || trace.startsolid)
+		{
+			// Try other way.
+			VectorScale(new_forward, -1.0f, new_forward);
+			self->best_move_yaw = VectorYaw(new_forward);
+			self->s.angles[YAW] = save_yaw; // Restore yaw.
 
-			gi.trace (self->s.origin, mins, self->maxs, source, self, MASK_SOLID,&trace);//was MASK_SHOT
-			if (trace.fraction < 1||trace.allsolid||trace.startsolid)
-			{//Uh oh!  Go straight away from wall
-#ifdef _DEVEL
-				if(MGAI_DEBUG)
-					gi.dprintf("turn all the way around\n");
-#endif
-				self->best_move_yaw=wall_angles[YAW];
-				//restore yaw
-				self->s.angles[YAW] = save_yaw;
-				//start turning this move, but don't actually move until next time
+			// Try new dir.
+			turn_amount = Q_fabs(MG_ChangeWhichYaw(self, YAW_BEST_MOVE));
+			dist_loss = turn_amount / self->yaw_speed * 0.8f;
+			adj_dist = dist - (dist * dist_loss);
+
+			VectorMA(source, adj_dist, new_forward, source);
+
+			gi.trace(self->s.origin, self->mins, self->maxs, source, self, MASK_SOLID, &trace); // Was MASK_SHOT.
+
+			if (trace.fraction < 1.0f || trace.allsolid || trace.startsolid)
+			{
+				// Go straight away from wall.
+				self->best_move_yaw = wall_angles[YAW];
+				self->s.angles[YAW] = save_yaw; // Restore yaw.
+
+				// Start turning this move, but don't actually move until next time.
 				MG_ChangeWhichYaw(self, YAW_BEST_MOVE);
 			}
 		}
-		self->yaw_speed = save_yaw_speed;
-		return false;
-	}
-	else//keep turning to ideal
-		self->monsterinfo.idle_time = 0;
 
-	//Must have bumped into something very strange (other monster?)
-	//just pick a new random dir
-#ifdef _DEVEL
-	if(MGAI_DEBUG)
-		gi.dprintf("Don't know what I hit, choosing newdir for a second\n");
-#endif
-	
-	MG_NewDir(self, dist);
+		self->yaw_speed = save_yaw_speed;
+	}
+	else
+	{
+		self->monsterinfo.idle_time = 0.0f; // Keep turning to ideal.
+		MG_NewDir(self, dist); // Must have bumped into something very strange (other monster?). Just pick a new random dir.
+	}
+
 	return false;
 }
