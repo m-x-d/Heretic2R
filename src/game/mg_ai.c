@@ -1488,23 +1488,21 @@ void MG_PostDeathThink(edict_t* self)
 	gi.linkentity(self);
 }
 
-void MG_CheckLanded (edict_t *self, float next_anim)
+void MG_CheckLanded(edict_t* self, const float next_anim)
 {
-	vec3_t pos;
-	
-#ifdef _DEVEL
-	if(MGAI_DEBUG)
-		gi.dprintf("self->velocity %f %f %f\n", self->velocity[0], self->velocity[1], self->velocity[2]);
-#endif
-
-	if(self->groundentity)
-		SetAnim(self, (int)next_anim);
-	else if(self->velocity[2]<0)
+	if (self->groundentity != NULL)
 	{
+		SetAnim(self, (int)next_anim);
+	}
+	else if (self->velocity[2] < 0.0f)
+	{
+		vec3_t pos;
 		VectorCopy(self->s.origin, pos);
 		pos[2] += self->mins[2];
-		VectorMA(pos, 0.5, self->velocity, pos);
-		if(gi.pointcontents(pos)&CONTENTS_SOLID)
+
+		VectorMA(pos, 0.5f, self->velocity, pos);
+
+		if (gi.pointcontents(pos) & CONTENTS_SOLID)
 			SetAnim(self, (int)next_anim);
 	}
 }
