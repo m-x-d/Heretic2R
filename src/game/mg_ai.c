@@ -653,295 +653,190 @@ qboolean infront_pos(const edict_t* self, const vec3_t pos) //TODO: rename to MG
 	return (DotProduct(vec, forward) > 0.3f);
 }
 
-qboolean MG_ExtraCheckJump (edict_t *self)
+static void MG_PostJump(edict_t* self) //mxd. Added to reduce code duplication.
 {
-	vec3_t		vf, source, source2, targ_org, targ_mins;
-	vec3_t		maxs, mins, save_org;
-	trace_t		trace;
-	float		hgt_diff, jump_fdist;
-	qboolean	jump_up_check = false;
-	qboolean	check_down = false;
-	qboolean	can_move = false;
+	if (classStatics[self->classID].msgReceivers[MSG_JUMP])
+	{
+		if (self->classID != CID_RAT && self->classID != CID_SSITHRA)
+		{
+			// Save velocity so can crouch first.
+			VectorCopy(self->velocity, self->movedir);
+			VectorClear(self->velocity);
+		}
 
-#ifdef _DEVEL
-	if(MGAI_DEBUG)
-		gi.dprintf("Extra Check Jump\n");
-#endif
+		QPostMessage(self, MSG_JUMP, PRI_DIRECTIVE, NULL);
+		self->nextthink = level.time + 0.01f;
+	}
+	else
+	{
+		self->nextthink = level.time + 0.3f;
+	}
+}
+
+static qboolean MG_AssassinCheckJump(edict_t* self) //mxd. Named 'MG_ExtraCheckJump' in original logic.
+{
+	vec3_t targ_org;
+	vec3_t targ_mins;
+
 	if (self->monsterinfo.searchType == SEARCH_BUOY)
 	{
-		if(self->buoy_index < 0 || self->buoy_index > level.active_buoys)
+		if (self->buoy_index < 0 || self->buoy_index > level.active_buoys)
 			return false;
 
 		VectorCopy(level.buoy_list[self->buoy_index].origin, targ_org);
 
-		if (!(infront_pos(self, targ_org)))
+		if (!infront_pos(self, targ_org))
 			return false;
 
-		if (targ_org[2] < self->s.origin[2] - 28)
-		{
-			check_down = true;
-		}
-		else
-		{
-			check_down = false;
-		}
 		VectorClear(targ_mins);
 	}
 	else
 	{
-		if(!self->goalentity)
+		if (self->goalentity == NULL || !infront(self, self->goalentity))
 			return false;
-		
-		if (!(infront(self, self->goalentity)))
-			return false;
-		
-		if (self->goalentity->s.origin[2] < self->s.origin[2] - 28)
-		{
-			check_down = true;
-		}
-		else
-		{
-			check_down = false;
-		}
 
 		VectorCopy(self->goalentity->s.origin, targ_org);
 		VectorCopy(self->goalentity->mins, targ_mins);
 	}
 
-	if (check_down)
-	{//jumping down
-		//Setup the trace
-		int inwater;
+	const qboolean check_down = (targ_org[2] < self->s.origin[2] - 28.0f);
 
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("check jump down\n");
-#endif
-		inwater = (gi.pointcontents(self->s.origin) & CONTENTS_WATER);
-
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("checking jump down: ");
-#endif
-		if(inwater)
-		{
-#ifdef _DEVEL
-			if(MGAI_DEBUG)
-				gi.dprintf("checkdown allsolid\n");
-#endif
-			return false;
-		}
-
-		VectorCopy(self->maxs, maxs);
-		VectorCopy(self->s.origin, source);
-		AngleVectors(self->s.angles, vf, NULL, NULL);
-		jump_fdist = vhlen(targ_org, self->s.origin);
-		if(jump_fdist > 128)
-			jump_fdist = 128;
-
-		VectorMA(source, 128, vf, source);
-
-		maxs[2] += 16;
-		gi.trace (self->s.origin, self->mins, maxs, source, self, MASK_MONSTERSOLID,&trace);
-
-		if (trace.fraction == 1)
-		{//clear ahead and above
-			VectorCopy(source, source2);
-
-			source2[2] -= 1024;
-			//trace down
-			gi.trace (source, self->mins, self->maxs, source2, self, MASK_ALL,&trace);
-			
-			if (trace.allsolid || trace.startsolid)
-			{
-#ifdef _DEVEL
-				if(MGAI_DEBUG)
-					gi.dprintf("checkdown allsolid\n");
-#endif
-				return false;
-			}
-
-			if (trace.fraction == 1)
-			{
-#ifdef _DEVEL
-				if(MGAI_DEBUG)
-					gi.dprintf("checkdown- too far\n");
-#endif
-				return false;
-			}
-			else
-			{
-				if (trace.contents != CONTENTS_SOLID && trace.ent != self->enemy)
-				{//didn't hit ground
-					return false;
-				}
-				else
-				{
-#ifdef _DEVEL
-					if(MGAI_DEBUG)
-						gi.dprintf("checkjump down->whichjump\n");
-#endif
-					VectorSubtract(trace.endpos, self->s.origin, source2);
-					VectorNormalize(source2);
-					self->ideal_yaw = VectorYaw(source2);
-					
-					VectorMA(self->velocity, 300, vf, self->velocity);
-					self->velocity[2]+=150;
-
-					if(classStatics[self->classID].msgReceivers[MSG_JUMP])
-					{
-						if(self->classID != CID_RAT && self->classID != CID_SSITHRA)
-						{//save vel so can crouch first
-							VectorCopy(self->velocity, self->movedir);
-							VectorClear(self->velocity);
-						}
-						QPostMessage(self, MSG_JUMP, PRI_DIRECTIVE, NULL);
-						self->nextthink = level.time + 0.01;
-					}
-					else
-						self->nextthink = level.time + 0.3;
-
-					self->monsterinfo.jump_time = level.time + 1;
-#ifdef _DEVEL
-					if(MGAI_DEBUG)
-						gi.dprintf("Extra jump down\n");
-#endif
-				}
-			}
-		}
-#ifdef _DEVEL
-		else if(MGAI_DEBUG)
-			gi.dprintf("checkdown: not clear infront\n");
-#endif
-	}
-	else
+	if (check_down) // Jumping down.
 	{
-		VectorCopy(self->s.origin, save_org);
-		can_move = M_walkmove (self, self->s.angles[YAW], 64);
-		VectorCopy(save_org, self->s.origin);
-		
-		if(can_move)
+		if (gi.pointcontents(self->s.origin) & CONTENTS_WATER) // Don't jump down when in water!
 			return false;
-		else
-		{//check to jump over something
 
-#ifdef _DEVEL
-			if(MGAI_DEBUG)
-				gi.dprintf("check jump over\n");
-#endif
-			AngleVectors(self->s.angles, vf, NULL, NULL);
-			VectorCopy(self->s.origin, source);
-			VectorMA(source, 128, vf, source2);
-			VectorCopy(self->mins, mins);
-			mins[2]+=24;//can clear it
-			gi.trace(source, mins, self->maxs, source2, self, MASK_SOLID,&trace);
-			
-			if((!trace.allsolid&&!trace.startsolid&&trace.fraction==1.0) || trace.ent == self->enemy)
-			{//Go for it!
-				
-				VectorMA(self->velocity, 500*trace.fraction, vf, self->velocity);
-				self->velocity[2] += 225;
+		// Setup the trace.
+		vec3_t source;
+		VectorCopy(self->s.origin, source);
 
-				if(classStatics[self->classID].msgReceivers[MSG_JUMP])
-				{
-					if(self->classID != CID_RAT && self->classID != CID_SSITHRA)
-					{//save vel so can crouch first
-						VectorCopy(self->velocity, self->movedir);
-						VectorClear(self->velocity);
-					}
-					QPostMessage(self, MSG_JUMP, PRI_DIRECTIVE, NULL);
-					self->nextthink = level.time + 0.01;
-				}
-				else
-					self->nextthink = level.time + 0.3;
-#ifdef _DEVEL
-				if(MGAI_DEBUG)
-					gi.dprintf("Extra jump over\n");
-#endif
+		vec3_t forward;
+		AngleVectors(self->s.angles, forward, NULL, NULL);
+		VectorMA(source, 128.0f, forward, source);
+
+		vec3_t maxs;
+		VectorCopy(self->maxs, maxs);
+		maxs[2] += 16.0f;
+
+		trace_t trace;
+		gi.trace(self->s.origin, self->mins, maxs, source, self, MASK_MONSTERSOLID, &trace);
+
+		if (trace.fraction < 1.0f)
+			return true; //TODO: MGAI_DEBUG: "checkdown: not clear infront" -- should return false?
+
+		// Clear ahead and above.
+		vec3_t source_bottom;
+		VectorCopy(source, source_bottom);
+		source_bottom[2] -= 1024.0f;
+
+		// Trace down.
+		gi.trace(source, self->mins, self->maxs, source_bottom, self, MASK_ALL, &trace);
+
+		if (trace.allsolid || trace.startsolid)
+			return false;
+
+		if (trace.fraction == 1.0f || (trace.contents != CONTENTS_SOLID && trace.ent != self->enemy)) // Ground too far down...
+			return false;
+
+		VectorSubtract(trace.endpos, self->s.origin, source_bottom);
+		VectorNormalize(source_bottom);
+		self->ideal_yaw = VectorYaw(source_bottom);
+
+		VectorMA(self->velocity, 300.0f, forward, self->velocity);
+		self->velocity[2] += 150.0f;
+
+		MG_PostJump(self); //mxd
+		self->monsterinfo.jump_time = level.time + 1.0f;
+	}
+	else // Jumping over something.
+	{
+		vec3_t save_org;
+		VectorCopy(self->s.origin, save_org);
+		const qboolean can_move = M_walkmove(self, self->s.angles[YAW], 64.0f);
+		VectorCopy(save_org, self->s.origin);
+
+		if (can_move) // Can walk, no jumping required.
+			return false;
+
+		// Check to jump over something.
+		vec3_t forward;
+		AngleVectors(self->s.angles, forward, NULL, NULL);
+
+		vec3_t source;
+		VectorCopy(self->s.origin, source);
+
+		vec3_t source2;
+		VectorMA(source, 128.0f, forward, source2);
+
+		vec3_t mins;
+		VectorCopy(self->mins, mins);
+		mins[2] += 24.0f; // Can clear it.
+
+		trace_t trace;
+		gi.trace(source, mins, self->maxs, source2, self, MASK_SOLID, &trace);
+
+		if ((!trace.allsolid && !trace.startsolid && trace.fraction == 1.0f) || trace.ent == self->enemy)
+		{
+			// Go for it!
+			VectorMA(self->velocity, trace.fraction * 500.0f, forward, self->velocity);
+			self->velocity[2] += 225.0f;
+
+			MG_PostJump(self); //mxd
+			//TODO: should also set self->monsterinfo.jump_time here?
+		}
+		else // Check jump up.
+		{
+			const float height_diff = (targ_org[2] + targ_mins[2]) - (self->s.origin[2] + self->mins[2]) + 32.0f;
+
+			vec3_t pos_top;
+			VectorCopy(self->s.origin, pos_top);
+			pos_top[2] += height_diff;
+
+			gi.trace(self->s.origin, self->mins, self->maxs, pos_top, self, MASK_MONSTERSOLID, &trace);
+
+			if (trace.fraction == 1.0f)
+			{
+				// Clear above.
+				vec3_t pos_fwd;
+				VectorCopy(pos_top, pos_fwd);
+
+				AngleVectors(self->s.angles, forward, NULL, NULL);
+				VectorMA(pos_top, 64.0f, forward, pos_fwd);
+				pos_fwd[2] -= 24.0f;
+
+				// Trace forward and down a little.
+				gi.trace(pos_top, self->mins, self->maxs, pos_fwd, self, MASK_ALL, &trace);
+
+				if (trace.allsolid || trace.startsolid)
+					return false;
+
+				if (trace.fraction < 0.1f)
+					return false; // Can't jump up, no ledge.
+
+				vec3_t jump_dir;
+				VectorSubtract(trace.endpos, self->s.origin, jump_dir);
+				jump_dir[2] = 0.0f;
+				VectorNormalize(jump_dir);
+				self->ideal_yaw = VectorYaw(jump_dir);
+
+				VectorMA(self->s.origin, 64.0f, jump_dir, pos_fwd);
+
+				// Trace directly forward to determine velocity.
+				gi.trace(self->s.origin, vec3_origin, vec3_origin, pos_fwd, self, MASK_SOLID, &trace);
+
+				VectorScale(jump_dir, trace.fraction * 480.0f, self->velocity);
+				self->velocity[2] = height_diff * 3.0f + 200.0f;
+
+				MG_PostJump(self); //mxd
+				self->monsterinfo.jump_time = level.time + 1.0f;
 			}
 			else
 			{
-#ifdef _DEVEL
-				if(MGAI_DEBUG)
-					gi.dprintf("check jump up\n");
-#endif
-				VectorCopy(self->maxs, maxs);
-				VectorCopy(self->s.origin, source);
-
-				hgt_diff = (targ_org[2] + targ_mins[2]) - (self->s.origin[2] + self->mins[2]) + 32;
-				source[2] += hgt_diff;
-				gi.trace (self->s.origin, self->mins, self->maxs, source, self, MASK_MONSTERSOLID,&trace);
-
-				if (trace.fraction == 1)
-				{//clear above
-					VectorCopy(source, source2);
-
-					AngleVectors(self->s.angles, vf, NULL, NULL);
-					VectorMA(source, 64, vf, source2);
-					source2[2] -= 24;
-					//trace forward and down a little
-					gi.trace (source, self->mins, self->maxs, source2, self, MASK_ALL,&trace);
-					
-					if (trace.allsolid || trace.startsolid)
-						return false;
-
-					if (trace.fraction < 0.1)
-					{
-#ifdef _DEVEL
-						if(MGAI_DEBUG)
-							gi.dprintf("Can't jump up, no ledge\n");
-#endif
-						return false;
-					}
-		//			{
-		//				if (stricmp(trace.ent->classname, "worldspawn"))
-		//					return;
-		//			}
-					else
-					{
-						VectorSubtract(trace.endpos, self->s.origin, source2);
-						source2[2] = 0;
-						VectorNormalize(source2);
-						self->ideal_yaw = VectorYaw(source2);
-						
-						VectorMA(self->s.origin, 64, source2, source);
-						gi.trace(self->s.origin, vec3_origin, vec3_origin, source, self, MASK_SOLID,&trace);
-
-						VectorScale(source2, 480*trace.fraction, self->velocity);
-						self->velocity[2] = hgt_diff*3 + 200;
-
-						if(classStatics[self->classID].msgReceivers[MSG_JUMP])
-						{
-							if(self->classID != CID_RAT && self->classID != CID_SSITHRA)
-							{//save vel so can crouch first
-								VectorCopy(self->velocity, self->movedir);
-								VectorClear(self->velocity);
-							}
-							QPostMessage(self, MSG_JUMP, PRI_DIRECTIVE, NULL);
-							self->nextthink = level.time + 0.01;
-						}
-						else
-							self->nextthink = level.time + 0.3;
-						self->monsterinfo.jump_time = level.time + 1;
-#ifdef _DEVEL
-						if(MGAI_DEBUG)
-							gi.dprintf("Extra jump up\n");
-#endif
-					}
-				}
-				else
-				{
-#ifdef _DEVEL
-					if(MGAI_DEBUG)
-						gi.dprintf("Can't jump up, blocked\n");
-#endif
-					return false;
-				}
-
+				return false; // Can't jump up, blocked.
 			}
 		}
-
 	}
+
 	return true;
 }
 
@@ -2199,7 +2094,7 @@ qboolean MG_MoveToGoal (edict_t *self, float dist)
 			}
 			else if(self->classID == CID_ASSASSIN)
 			{
-				if(MG_ExtraCheckJump(self))
+				if(MG_AssassinCheckJump(self))
 				{
 #ifdef _DEVEL
 					if(MGAI_DEBUG)
