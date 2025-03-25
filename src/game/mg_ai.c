@@ -1540,7 +1540,7 @@ void MG_SetNoBlocking(edict_t* self) //mxd. Named 'MG_NoBlocking' in original lo
 	self->msgHandler = DeadMsgHandler; // No more messages at all.
 }
 
-qboolean MG_GetTargOrg(edict_t* self, vec3_t target_origin) //TODO: rename to MG_GetTargetOrigin?
+qboolean MG_TryGetTargetOrigin(edict_t* self, vec3_t target_origin) //mxd. Named 'MG_GetTargOrg' in original logic.
 {
 	if (self->monsterinfo.searchType == SEARCH_BUOY)
 	{

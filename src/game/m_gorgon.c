@@ -446,7 +446,7 @@ void gorgon_walk(edict_t *self, G_Message_t *msg)
 	float	delta;
 	vec3_t targ_org;
 
-	if(!MG_GetTargOrg(self, targ_org))
+	if(!MG_TryGetTargetOrigin(self, targ_org))
 		return;
 
 
@@ -639,7 +639,7 @@ void gorgon_run(edict_t *self, G_Message_t *msg)
 	if(!ai_have_enemy(self))
 		return;
 
-	if(!MG_GetTargOrg(self, targ_org))
+	if(!MG_TryGetTargetOrigin(self, targ_org))
 		return;
 
 	if(self->flags & FL_INWATER)
@@ -1193,7 +1193,7 @@ qboolean gorgon_check_jump (edict_t *self)
 	if(self->jump_chance < irand(0, 100))
 		return false;
 
-	if(!MG_GetTargOrg(self, landing_spot))
+	if(!MG_TryGetTargetOrigin(self, landing_spot))
 	{
 		return false;
 	}
@@ -1291,7 +1291,7 @@ void gorgon_jump (edict_t *self)
 	float	len;
 	trace_t	trace;
 
-	if(!MG_GetTargOrg(self, landing_spot))
+	if(!MG_TryGetTargetOrigin(self, landing_spot))
 	{
 		if(!irand(0,3))
 			SetAnim(self, ANIM_ROAR2);

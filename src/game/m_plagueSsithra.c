@@ -460,7 +460,7 @@ qboolean ssithraWaterLedgeNearEnemy (edict_t *self)
 	if(self->spawnflags & MSF_FIXED)
 		return false;
 
-	if(!MG_GetTargOrg(self, targ_org))
+	if(!MG_TryGetTargetOrigin(self, targ_org))
 		return false;
 
 	VectorSubtract(targ_org,self->s.origin,enemy_dir);
@@ -482,7 +482,7 @@ void ssithra_check_namor(edict_t *self)
 	if(self->spawnflags & MSF_FIXED)
 		return;
 
-	if(!MG_GetTargOrg(self, targ_org))
+	if(!MG_TryGetTargetOrigin(self, targ_org))
 		return;
 	
 	enemy_inwater = (gi.pointcontents(targ_org)&CONTENTS_WATER);
@@ -511,7 +511,7 @@ void ssithraWhichJump(edict_t *self)
 	if(self->spawnflags & MSF_FIXED)
 		return;
 
-	if(!MG_GetTargOrg(self, targ_org))
+	if(!MG_TryGetTargetOrigin(self, targ_org))
 		return;
 
 	if(ssithraCheckInWater(self)&&!(gi.pointcontents(targ_org)&CONTENTS_WATER))
@@ -721,7 +721,7 @@ void ssithraNamorJump (edict_t *self)
 	if(self->spawnflags & MSF_FIXED)
 		return;
 
-	if(!MG_GetTargOrg(self, targ_org))
+	if(!MG_TryGetTargetOrigin(self, targ_org))
 		return;
 
 	if(MGAI_DEBUG)

@@ -405,7 +405,7 @@ void tbeast_walk(edict_t *self, G_Message_t *msg)
 	float	delta;
 	vec3_t targ_org;
 
-	if(!MG_GetTargOrg(self, targ_org))
+	if(!MG_TryGetTargetOrigin(self, targ_org))
 		return;
 
 
@@ -553,7 +553,7 @@ void tbeast_run(edict_t *self, G_Message_t *msg)
 	if(!M_ValidTarget(self, self->enemy))
 		return;
 
-	if(!MG_GetTargOrg(self, targ_org))
+	if(!MG_TryGetTargetOrigin(self, targ_org))
 		return;
 
 	if(!self->dmg)
