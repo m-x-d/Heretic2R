@@ -29,7 +29,6 @@ void DeadMsgHandler(edict_t *self, G_Message_t *msg);
 
 //JWEIER START HELPER PROTO
 
-qboolean infront_pos (edict_t *self, vec3_t pos);
 qboolean M_ValidTarget( edict_t *self, edict_t *target );
 qboolean M_CheckAlert( edict_t *self, int range );
 
