@@ -522,37 +522,29 @@ float MG_FaceGoal(edict_t* self, const qboolean do_turn)
 	return (do_turn ? MG_ChangeYaw(self) : 0.0f);
 }
 
-/*
-======================
-MG_StepDirection
-
-Turns to the movement direction, and walks the current distance if
-facing it.
-
-======================
-*/
-qboolean MG_StepDirection (edict_t *self, float yaw, float dist)
+// Turns to the movement direction, and walks the current distance if facing it.
+static qboolean MG_StepDirection(edict_t* self, const float yaw, const float distance)
 {
-	vec3_t		move, forward, test_angles;
-	trace_t		trace;
-	
-	//find vector offset (move to add to origin)
-	test_angles[PITCH] = test_angles[ROLL] = 0;
-	test_angles[YAW] = yaw;
-	AngleVectors(test_angles, forward, NULL, NULL);
-	VectorScale(forward, dist, move);
+	// Find vector offset (move to add to origin).
+	const vec3_t test_angles = { 0.0f, yaw, 0.0f };
 
-	//see if can move that way, but don't actually move
-	trace = MG_MoveStep (self, move, false);
+	vec3_t forward;
+	AngleVectors(test_angles, forward, NULL, NULL);
+
+	vec3_t move;
+	VectorScale(forward, distance, move);
+
+	// See if can move that way, but don't actually move.
+	const trace_t trace = MG_MoveStep(self, move, false);
 
 	if (trace.succeeded)
-	{//move was allowed
-		self->best_move_yaw = yaw;//new
-		self->monsterinfo.idle_time = level.time + flrand(0.5, 1.25);
-//		MG_ChangeWhichYaw (self, YAW_BEST_MOVE);//new
-		return true;
+	{
+		// Move was allowed.
+		self->best_move_yaw = yaw;
+		self->monsterinfo.idle_time = level.time + flrand(0.5f, 1.25f);
 	}
-	return false;
+
+	return trace.succeeded;
 }
 
 /*
