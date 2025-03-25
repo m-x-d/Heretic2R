@@ -1436,6 +1436,7 @@ void MG_PostDeathThink(edict_t* self)
 				pitch_roll_for_slope(self, &trace3.plane.normal); //TODO: should pass trace1.plane.normal instead of pointer to it?
 				self->friction = trace3.plane.normal[2] * 0.1f;
 			}
+
 			self->post_think = MG_PostDeathThink;
 			self->next_post_think = level.time + 0.1f;
 			return;
@@ -1451,6 +1452,7 @@ void MG_PostDeathThink(edict_t* self)
 				pitch_roll_for_slope(self, &trace4.plane.normal); //TODO: should pass trace1.plane.normal instead of pointer to it?
 				self->friction = trace4.plane.normal[2] * 0.1f;
 			}
+
 			self->post_think = MG_PostDeathThink;
 			self->next_post_think = level.time + 0.1f;
 			return;
