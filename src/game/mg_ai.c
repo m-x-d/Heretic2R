@@ -547,98 +547,90 @@ static qboolean MG_StepDirection(edict_t* self, const float yaw, const float dis
 	return trace.succeeded;
 }
 
-/*
-================
-MG_NewDir
-
-================
-*/
-#define	DI_NODIR	-1
-void MG_NewDir (edict_t *self, float dist)
+static void MG_NewDir(edict_t* self, const float dist)
 {
-	float	deltax, deltay;
-	float	d[3];
-	float	test_ideal_yaw, old_yaw, turnaround;//, save_yaw;
-	vec3_t	goal_org;
+#define DI_NODIR	(-1.0f)
 
-	//FIXME: how did we get here with no enemy
-	if(!MG_GetGoalPos (self, goal_org))
+	vec3_t goal_org;
+	if (!MG_GetGoalPos(self, goal_org)) //FIXME: how did we get here with no enemy?
 		return;
 
-	old_yaw = anglemod( (int)(self->ideal_yaw/45)*45 );
-	turnaround = anglemod(old_yaw - 180);
+	const float old_yaw = anglemod((float)((int)(self->ideal_yaw / 45.0f) * 45));
+	const float turn_around = anglemod(old_yaw - 180.0f);
 
-	deltax = goal_org[0] - self->s.origin[0];
-	deltay = goal_org[1] - self->s.origin[1];
-	if (deltax>10)
-		d[1]= 0;
-	else if (deltax<-10)
-		d[1]= 180;
-	else
-		d[1]= DI_NODIR;
-	if (deltay<-10)
-		d[2]= 270;
-	else if (deltay>10)
-		d[2]= 90;
-	else
-		d[2]= DI_NODIR;
+	const float delta_x = goal_org[0] - self->s.origin[0];
+	const float delta_y = goal_org[1] - self->s.origin[1];
 
-// try direct route
+	float d[3];
+
+	if (delta_x > 10.0f)
+		d[1] = 0.0f;
+	else if (delta_x < -10.0f)
+		d[1] = 180.0f;
+	else
+		d[1] = DI_NODIR;
+
+	if (delta_y < -10.0f)
+		d[2] = 270.0f;
+	else if (delta_y > 10.0f)
+		d[2] = 90.0f;
+	else
+		d[2] = DI_NODIR;
+
+	// Try direct route.
 	if (d[1] != DI_NODIR && d[2] != DI_NODIR)
 	{
-		if (d[1] == 0)
-			test_ideal_yaw = d[2] == 90 ? 45 : 315;
+		float target_yaw;
+
+		if (d[1] == 0.0f)
+			target_yaw = (d[2] == 90.0f ? 45.0f : 315.0f);
 		else
-			test_ideal_yaw = d[2] == 90 ? 135 : 215;
-			
-		if (test_ideal_yaw != turnaround && MG_StepDirection(self, test_ideal_yaw, dist))
+			target_yaw = (d[2] == 90.0f ? 135.0f : 215.0f);
+
+		if (target_yaw != turn_around && MG_StepDirection(self, target_yaw, dist))
 			return;
 	}
 
-// try other directions
-	if ( irand(0, 1) ||  abs(deltay)>abs(deltax))
+	// Try other directions.
+	if (irand(0, 1) == 1 || fabsf(delta_y) > fabsf(delta_x))
 	{
-		test_ideal_yaw=d[1];
-		d[1]=d[2];
-		d[2]=test_ideal_yaw;
+		const float tmp = d[1];
+		d[1] = d[2];
+		d[2] = tmp;
 	}
 
-	if (d[1]!=DI_NODIR && d[1]!=turnaround 
-	&& MG_StepDirection(self, d[1], dist))
-			return;
+	if (d[1] != DI_NODIR && d[1] != turn_around && MG_StepDirection(self, d[1], dist))
+		return;
 
-	if (d[2]!=DI_NODIR && d[2]!=turnaround
-	&& MG_StepDirection(self, d[2], dist))
-			return;
+	if (d[2] != DI_NODIR && d[2] != turn_around && MG_StepDirection(self, d[2], dist))
+		return;
 
-/* there is no direct path to the player, so pick another direction */
+	// There is no direct path to the player, so pick another direction.
+	if (old_yaw != DI_NODIR && MG_StepDirection(self, old_yaw, dist))
+		return;
 
-	if (old_yaw!=DI_NODIR && MG_StepDirection(self, old_yaw, dist))
-			return;
-
-	if (irand(0, 1)) 	/*randomly determine direction of search*/
+	// Randomly determine direction of search.
+	if (irand(0, 1) == 1)
 	{
-		for (test_ideal_yaw=0 ; test_ideal_yaw<=315 ; test_ideal_yaw += 45)
-			if (test_ideal_yaw!=turnaround && MG_StepDirection(self, test_ideal_yaw, dist) )
-					return;
+		for (int yaw = 0; yaw <= 315; yaw += 45)
+			if ((float)yaw != turn_around && MG_StepDirection(self, (float)yaw, dist))
+				return;
 	}
 	else
 	{
-		for (test_ideal_yaw=315 ; test_ideal_yaw >=0 ; test_ideal_yaw -= 45)
-			if (test_ideal_yaw!=turnaround && MG_StepDirection(self, test_ideal_yaw, dist) )
-					return;
+		for (int yaw = 315; yaw >= 0; yaw -= 45)
+			if ((float)yaw != turn_around && MG_StepDirection(self, (float)yaw, dist))
+				return;
 	}
 
-	if (turnaround != DI_NODIR && MG_StepDirection(self, turnaround, dist) )
-			return;
+	if (turn_around != DI_NODIR && MG_StepDirection(self, turn_around, dist))
+		return;
 
-	// can't move, restore yaw?
+	// Can't move, restore yaw?
 
-// if a bridge was pulled out from underneath a monster, it may not have
-// a valid standing position at all
-
-	if (!MG_CheckBottom (self))// && self->classID!=CID_TBEAST)
-		SV_FixCheckBottom (self);
+	// If a bridge was pulled out from underneath a monster, it may not have a valid standing position at all.
+	if (!MG_CheckBottom(self))
+		SV_FixCheckBottom(self);
 }
 
 /*
