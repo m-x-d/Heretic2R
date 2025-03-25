@@ -1158,14 +1158,6 @@ void mg_ai_charge(edict_t* self, const float dist) //TODO: rename to MGAI_Charge
 		MG_CheckEvade(self); // Check if going to be hit and evade.
 }
 
-qboolean canmove (edict_t *self)
-{
-	if(	self->movetype!=PHYSICSTYPE_NONE &&
-		self->movetype!=PHYSICSTYPE_PUSH)
-		return true;
-	return false;
-}
-
 void mg_remove_body(edict_t *self)
 {
 	vec3_t	origin;
@@ -1358,7 +1350,7 @@ void MG_PostDeathThink (edict_t *self)
 		VectorMA(self->s.origin, self->maxs[0], forward, endpos);
 		gi.trace(self->s.origin, self->mins, self->maxs, endpos, self, MASK_MONSTERSOLID,&movetrace);
 		if(movetrace.allsolid||movetrace.startsolid||movetrace.fraction<1.0)
-			if(canmove(movetrace.ent))
+			if(movable(movetrace.ent))
 				whichtrace = -1;
 			else
 				whichtrace = 0;
@@ -1367,7 +1359,7 @@ void MG_PostDeathThink (edict_t *self)
 		VectorMA(self->s.origin, -self->maxs[0], forward, endpos);
 		gi.trace(self->s.origin, self->mins, self->maxs, endpos, self, MASK_MONSTERSOLID,&movetrace);
 		if(movetrace.allsolid||movetrace.startsolid||movetrace.fraction<1.0)
-			if(canmove(movetrace.ent))
+			if(movable(movetrace.ent))
 				whichtrace = -1;
 			else
 				whichtrace = 0;
@@ -1376,7 +1368,7 @@ void MG_PostDeathThink (edict_t *self)
 		VectorMA(self->s.origin, self->maxs[0], right, endpos);
 		gi.trace(self->s.origin, self->mins, self->maxs, endpos, self, MASK_MONSTERSOLID,&movetrace);
 		if(movetrace.allsolid||movetrace.startsolid||movetrace.fraction<1.0)
-			if(canmove(movetrace.ent))
+			if(movable(movetrace.ent))
 				whichtrace = -1;
 			else
 				whichtrace = 0;
@@ -1385,7 +1377,7 @@ void MG_PostDeathThink (edict_t *self)
 		VectorMA(self->s.origin, -self->maxs[0], right, endpos);
 		gi.trace(self->s.origin, self->mins, self->maxs, endpos, self, MASK_MONSTERSOLID,&movetrace);
 		if(movetrace.allsolid||movetrace.startsolid||movetrace.fraction<1.0)
-			if(canmove(movetrace.ent))
+			if(movable(movetrace.ent))
 				whichtrace = -1;
 			else
 				whichtrace = 0;
