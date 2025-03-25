@@ -15,7 +15,7 @@ extern float MG_ChangeWhichYaw(edict_t* self, qboolean ideal_yaw);
 extern float MG_ChangeYaw(edict_t* self);
 extern float MG_FaceGoal(edict_t* self, qboolean do_turn);
 extern trace_t MG_WalkMove(edict_t* self, float yaw, float dist);
-extern qboolean MG_BoolWalkMove(edict_t* self, float yaw, float dist);
+extern qboolean MG_TryWalkMove(edict_t* self, float yaw, float dist, qboolean do_relink);
 extern void MG_CheckEvade(edict_t* self);
 extern void MG_PostDeathThink(edict_t* self);
 extern void MG_CheckLanded(edict_t* self, float next_anim);

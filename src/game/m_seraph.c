@@ -741,7 +741,7 @@ int Bit_for_MeshNode_so [NUM_MESH_NODES] =
 
 void seraph_back (edict_t *self, float dist)
 {
-	if(!MG_BoolWalkMove(self, self->s.angles[YAW] + 180, dist))
+	if(!MG_TryWalkMove(self, self->s.angles[YAW] + 180, dist, true))
 	{
 		if(!irand(0, 1000))
 		{

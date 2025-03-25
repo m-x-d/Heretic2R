@@ -1020,21 +1020,11 @@ trace_t MG_WalkMove(edict_t* self, float yaw, const float dist)
 }
 
 // Tries to step forward dist, returns true/false.
-qboolean MG_BoolWalkMove(edict_t* self, float yaw, const float dist) //TODO: merge with below func as MG_TryWalkMove, add 'do_relink' arg.
+qboolean MG_TryWalkMove(edict_t* self, float yaw, const float dist, const qboolean do_relink) //mxd. Named 'MG_BoolWalkMove' in original logic.
 {
 	yaw *= ANGLE_TO_RAD;
 	vec3_t move = { cosf(yaw) * dist, sinf(yaw) * dist, 0.0f };
-	const trace_t trace = MG_MoveStep(self, move, true);
-
-	return trace.succeeded;
-}
-
-// Checks if it can step dist in yaw, but doesn't do the move.
-static qboolean MG_TestMove(edict_t* self, float yaw, const float dist) //TODO: same as above, except 'relink' MG_MoveStep arg.
-{
-	yaw *= ANGLE_TO_RAD;
-	vec3_t move = { cosf(yaw) * dist, sinf(yaw) * dist, 0.0f };
-	const trace_t trace = MG_MoveStep(self, move, false);
+	const trace_t trace = MG_MoveStep(self, move, do_relink);
 
 	return trace.succeeded;
 }
@@ -1644,7 +1634,7 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 	else if (self->monsterinfo.idle_time > level.time)
 	{
 		// Using best_move_yaw. Do a test move in the direction I would like to go.
-		if (AnglesEqual(self->s.angles[YAW], self->best_move_yaw, 5.0f) && MG_TestMove(self, self->ideal_yaw, dist))
+		if (AnglesEqual(self->s.angles[YAW], self->best_move_yaw, 5.0f) && MG_TryWalkMove(self, self->ideal_yaw, dist, false))
 		{
 			// Keep turning towards ideal until facing it.
 			if (Q_fabs(MG_ChangeWhichYaw(self, YAW_IDEAL)) < 1.0f)
@@ -1917,7 +1907,7 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 	else if (self->monsterinfo.idle_time > level.time)
 	{
 		// Using best_move_yaw. Do a test move in the direction I would like to go.
-		if (AnglesEqual(self->s.angles[YAW], self->best_move_yaw, 5.0f) && MG_TestMove(self, self->ideal_yaw, dist))
+		if (AnglesEqual(self->s.angles[YAW], self->best_move_yaw, 5.0f) && MG_TryWalkMove(self, self->ideal_yaw, dist, false))
 		{
 			// Keep turning towards ideal until facing it.
 			if (Q_fabs(MG_ChangeWhichYaw(self, YAW_IDEAL)) < 1.0f)
