@@ -1029,29 +1029,14 @@ qboolean MG_BoolWalkMove(edict_t* self, float yaw, const float dist)
 	return trace.succeeded;
 }
 
-/*
-===============
-MG_TestMove
-
-  Sees if it can step dist in yaw, but doesn't do the move
-===============
-*/
-qboolean MG_TestMove (edict_t *self, float yaw, float dist)
+// Checks if it can step dist in yaw, but doesn't do the move.
+static qboolean MG_TestMove(edict_t* self, float yaw, const float dist) //TODO: same as above, except 'relink' MG_MoveStep arg.
 {
-	vec3_t	move;
-	trace_t trace;
-	
-	yaw = yaw*M_PI*2 / 360;
-	
-	move[0] = cos(yaw)*dist;
-	move[1] = sin(yaw)*dist;
-	move[2] = 0;
+	yaw *= ANGLE_TO_RAD;
+	vec3_t move = { cosf(yaw) * dist, sinf(yaw) * dist, 0.0f };
+	const trace_t trace = MG_MoveStep(self, move, false);
 
-	trace = MG_MoveStep(self, move, false);
-	if(trace.succeeded)
-		return true;
-
-	return false;
+	return trace.succeeded;
 }
 
 void MG_CheckEvade (edict_t *self)
