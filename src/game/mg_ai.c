@@ -23,7 +23,7 @@ void SV_FixCheckBottom(edict_t* ent); //TODO: move to m_move.h
 float ai_face_goal(edict_t* self); //TODO: move to g_ai.h
 
 // Returns true if the entity is in front (dot > 0.8) of self.
-qboolean ahead(const edict_t* self, const edict_t* other) //TODO: rename to MG_IsAheadOf?
+qboolean MG_IsAheadOf(const edict_t* self, const edict_t* other) //mxd. Named 'ahead' in original logic.
 {
 	vec3_t check_angles;
 
@@ -1020,7 +1020,7 @@ trace_t MG_WalkMove(edict_t* self, float yaw, const float dist)
 }
 
 // Tries to step forward dist, returns true/false.
-qboolean MG_BoolWalkMove(edict_t* self, float yaw, const float dist)
+qboolean MG_BoolWalkMove(edict_t* self, float yaw, const float dist) //TODO: merge with below func as MG_TryWalkMove, add 'do_relink' arg.
 {
 	yaw *= ANGLE_TO_RAD;
 	vec3_t move = { cosf(yaw) * dist, sinf(yaw) * dist, 0.0f };
@@ -1093,7 +1093,7 @@ void MG_CheckEvade(edict_t* self)
 }
 
 // The monster has an enemy it is trying to kill or the monster is fleeing.
-void ai_run(edict_t* self, const float dist) //TODO: rename to MGAI_Run.
+void ai_run(edict_t* self, const float dist) //TODO: rename to MG_AI_Run.
 {
 	// Skip when fleeing and can't use buoys...
 	if ((DEACTIVATE_BUOYS || !(self->monsterinfo.aiflags & AI_USING_BUOYS)) &&
@@ -1137,7 +1137,7 @@ void ai_run(edict_t* self, const float dist) //TODO: rename to MGAI_Run.
 		MG_CheckEvade(self); // Check if going to be hit and evade.
 }
 
-void mg_ai_charge(edict_t* self, const float dist) //TODO: rename to MGAI_Charge.
+void mg_ai_charge(edict_t* self, const float dist) //TODO: rename to MG_AI_Charge.
 {
 	if (self->enemy == NULL)
 		return; //FIXME: send stand MSG?

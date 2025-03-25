@@ -2597,7 +2597,7 @@ void ssithraCheckDuckArrow (edict_t *self)
 {
 	if(M_ValidTarget(self, self->enemy))
 	{
-		if(ahead(self, self->enemy))
+		if(MG_IsAheadOf(self, self->enemy))
 		{
 //			if(M_DistanceToTarget(self, self->enemy)<self->missile_range)
 //			{

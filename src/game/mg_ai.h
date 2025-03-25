@@ -26,7 +26,7 @@ extern void MG_NoBlocking(edict_t* self);
 extern qboolean MG_GetTargOrg(edict_t* self, vec3_t target_origin);
 extern qboolean EqualAngle(float angle1, float angle2, float leniency);
 
-extern qboolean ahead(const edict_t* self, const edict_t* other);
+extern qboolean MG_IsAheadOf(const edict_t* self, const edict_t* other);
 extern qboolean visible_pos(const edict_t* self, const vec3_t pos);
 extern qboolean infront_pos(const edict_t* self, const vec3_t pos);
 extern void ai_run(edict_t* self, float dist);

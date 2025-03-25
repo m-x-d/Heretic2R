@@ -447,7 +447,7 @@ void tbeast_walk(edict_t *self, G_Message_t *msg)
 void tbeast_init_charge (edict_t *self)
 {
 //	gi.dprintf("Beast CHARGE!\n");
-	if(!ahead(self, self->enemy) || !irand(0,3))
+	if(!MG_IsAheadOf(self, self->enemy) || !irand(0,3))
 		SetAnim(self, ANIM_QUICK_CHARGE);
 	else
 		SetAnim(self, ANIM_CHARGE);
@@ -518,7 +518,7 @@ void tbeast_melee(edict_t *self, G_Message_t *msg)
 		SetAnim(self,ANIM_WALKATK);
 	}
 
-	if (self->enemy->classID != CID_TCHECKRIK && ((irand(0, 1) && infront(self, self->enemy)) || ahead(self, self->enemy)) && shoulder_room_ahead(self))
+	if (self->enemy->classID != CID_TCHECKRIK && ((irand(0, 1) && infront(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && shoulder_room_ahead(self))
 	{
 		tbeast_init_charge(self);
 	}
@@ -529,7 +529,7 @@ void tbeast_melee(edict_t *self, G_Message_t *msg)
 void tbeast_start_charge(edict_t *self, G_Message_t *msg)
 {
 	MG_ChangeYaw(self);
-	if(self->enemy->classID != CID_TCHECKRIK && ((irand(0, 1) && infront(self, self->enemy)) || ahead(self, self->enemy)) && shoulder_room_ahead(self))
+	if(self->enemy->classID != CID_TCHECKRIK && ((irand(0, 1) && infront(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && shoulder_room_ahead(self))
 	{
 		tbeast_init_charge(self);
 	}
@@ -585,7 +585,7 @@ void tbeast_run(edict_t *self, G_Message_t *msg)
 		}
 	}*/
 
-	if (self->enemy->classID != CID_TCHECKRIK && enemy_vis && ((irand(0, 1) && infront(self, self->enemy)) || ahead(self, self->enemy)) && shoulder_room_ahead(self))
+	if (self->enemy->classID != CID_TCHECKRIK && enemy_vis && ((irand(0, 1) && infront(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && shoulder_room_ahead(self))
 	{
 		tbeast_init_charge(self);
 	}
@@ -907,7 +907,7 @@ void tbeast_pause (edict_t *self)
 	vec3_t	v;
 	float	len;
 	
-	if(self->enemy && self->enemy->classID != CID_TCHECKRIK && self->curAnimID == ANIM_STUN && self->pain_debounce_time > level.time + 7 && ahead(self, self->enemy))
+	if(self->enemy && self->enemy->classID != CID_TCHECKRIK && self->curAnimID == ANIM_STUN && self->pain_debounce_time > level.time + 7 && MG_IsAheadOf(self, self->enemy))
 	{
 		tbeast_init_charge(self);
 		return;
@@ -1067,7 +1067,7 @@ void tbeast_roar_knockdown(edict_t *self)
 
 	while(found = FindInRadius(found, self->s.origin, 512))
 	{
-		if(found->client && ahead(self, found))
+		if(found->client && MG_IsAheadOf(self, found))
 		{
 			if(found->health > 0 && found->groundentity)
 			{
@@ -1207,7 +1207,7 @@ qboolean TB_CheckJump (edict_t *self)//, edict_t *other)
 
 	if(self->enemy)
 	{
-		if(!ahead(self, self->enemy))
+		if(!MG_IsAheadOf(self, self->enemy))
 			return false;
 
 		if(vhlen(self->enemy->s.origin, self->s.origin)<200)

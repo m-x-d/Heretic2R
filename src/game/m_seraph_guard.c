@@ -186,7 +186,7 @@ void guard_beam( edict_t *self)
 	VectorMA(proj->s.origin, 16, vr, proj->s.origin);
 	proj->s.origin[2] += 10;
 
-	if(!ahead(self, self->enemy))
+	if(!MG_IsAheadOf(self, self->enemy))
 		VectorCopy(vf, Forward);
 	else
 	{
@@ -688,7 +688,7 @@ void seraph_guard_missile(edict_t *self, G_Message_t *msg)
 			else
 				SetAnim(self, ANIM_MELEE2);	
 		}
-		else if(ahead(self, self->enemy))
+		else if(MG_IsAheadOf(self, self->enemy))
 			SetAnim(self, ANIM_MISSILE);
 
 		return;
