@@ -840,274 +840,162 @@ static qboolean MG_AssassinCheckJump(edict_t* self) //mxd. Named 'MG_ExtraCheckJ
 	return true;
 }
 
-/*
-==================================================================
-MG_CheckJump()
-Checks to see if the enemy is not at the same level as monster
-or something is blocking the path of the monster.  If there is 
-a clear jump arc to the enemy and the monster will not land in
-water or lava, the monster will attempt to jump the distance.
-==================================================================
-*/
-qboolean MG_CheckJump (edict_t *self)
+// Checks to see if the enemy is not at the same level as monster or something is blocking the path of the monster.
+// If there is a clear jump arc to the enemy and the monster will not land in water or lava, the monster will attempt to jump the distance.
+static qboolean MG_CheckJump(edict_t* self)
 {
+#define JUMP_HEIGHT	16.0f //mxd
+
 	static const vec3_t jump_mins = { -8.0f, -8.0f, 0.0f }; //mxd. Made local static.
-	static const vec3_t jump_maxs = { 8.0f,  8.0f, 4.0f }; //mxd. Made local static.
+	static const vec3_t jump_maxs = {  8.0f,  8.0f, 4.0f }; //mxd. Made local static.
 
-	vec3_t spot1, spot2, jumpdir, forward, right, targ_absmin;
-	vec3_t up, cont_spot, vis_check_spot, end_spot, targ_org;
-	float jump_height, sub_len;
-	int	contents;
-	qboolean ignore_height;
-	qboolean jumpup = false;
-	trace_t trace;
-
-	if(irand(1,100) > self->jump_chance)//JumpChanceForClass[self->classID])
+	if (irand(1, 100) > self->jump_chance)
 		return false;
 
-	if(self->classID == CID_TBEAST)
+	if (self->classID == CID_TBEAST)
 		return TB_CheckJump(self);
 
-#ifdef _DEVEL
-	if(MGAI_DEBUG)
-		gi.dprintf("Check Jump\n");
-#endif
-	//FIXME: Allow jump in/out of water if not too deep
-	if(self->flags & FL_INWATER)// && !(self->flags&FL_AMPHIBIAN))?
-	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("Can't jump- inwater\n");
-#endif
-		return false;
-	}
+	//FIXME: Allow jump in/out of water if not too deep (also check for '!(self->flags & FL_AMPHIBIAN)')?
+	if (self->flags & FL_INWATER)
+		return false; // Can't jump while in water.
+
+	vec3_t targ_org;
+	vec3_t targ_mins;
 
 	if (self->monsterinfo.searchType == SEARCH_BUOY)
 	{
-		if(self->buoy_index < 0 || self->buoy_index > level.active_buoys)
+		if (self->buoy_index < 0 || self->buoy_index > level.active_buoys)
 			return false;
 
 		VectorCopy(level.buoy_list[self->buoy_index].origin, targ_org);
-		VectorCopy(targ_org, targ_absmin);
 
-		if (!(infront_pos(self, targ_org)))
+		if (!infront_pos(self, targ_org))
 			return false;
+
+		VectorCopy(targ_org, targ_mins);
 	}
 	else
 	{
-		if(!self->goalentity)
+		if (self->goalentity == NULL || !infront(self, self->goalentity))
 			return false;
-		
-		if (!(infront(self, self->goalentity)))
-			return false;
-		
-		if(!self->goalentity->groundentity && self->classID != CID_GORGON)
-		{
-#ifdef _DEVEL
-			if(MGAI_DEBUG)
-				gi.dprintf("goalentity in air\n");
-#endif
-			return false;
-		}
+
+		if (self->goalentity->groundentity == NULL && self->classID != CID_GORGON)
+			return false; // goalentity in air.
 
 		VectorCopy(self->goalentity->s.origin, targ_org);
-		VectorAdd(targ_org, self->goalentity->mins, targ_absmin);
+		VectorAdd(targ_org, self->goalentity->mins, targ_mins);
 	}
 
-	AngleVectors(self->s.angles, forward, right, up);
-	VectorSubtract(targ_org, self->s.origin, jumpdir);
-	VectorNormalize(jumpdir);
-	jumpdir[2] = 0;
-	jump_height=DotProduct(jumpdir, forward);
+	vec3_t forward;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, NULL, up);
 
-	if(jump_height<0.3)
-	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("jump direction more than 60 degrees off of forward\n");
-#endif
-		return false;
-	}
+	vec3_t jump_dir;
+	VectorSubtract(targ_org, self->s.origin, jump_dir);
+	VectorNormalize(jump_dir);
+	jump_dir[2] = 0.0f;
 
-    VectorCopy(self->s.origin, spot1);
-    VectorCopy(targ_org, spot2);
+	if (DotProduct(jump_dir, forward) < 0.3f)
+		return false; // Jump direction more than 60 degrees off of forward.
 
-	jump_height = 16;
+	vec3_t spot1;
+	VectorCopy(self->s.origin, spot1);
 
-	VectorMA(spot1, 24, forward, cont_spot);
-	cont_spot[2] -= 10;
-	if(!(gi.pointcontents(cont_spot)&CONTENTS_SOLID))
-		ignore_height = true;
+	vec3_t spot2;
+	VectorCopy(targ_org, spot2);
 
-	sub_len = vhlen(spot1, spot2);
-//	if(self->classname!="monster_mezzoman"&&!self->spiderType&&self->model!="models/yakman.mdl")
-	if(sub_len > 256)
+	vec3_t contents_spot;
+	VectorMA(spot1, 24.0f, forward, contents_spot);
+	contents_spot[2] -= 10.0f;
+
+	qboolean ignore_height = !(gi.pointcontents(contents_spot) & CONTENTS_SOLID);
+
+	const float spot_diff = vhlen(spot1, spot2);
+	if (spot_diff > 256.0f)
 		ignore_height = false;
 
-	VectorMA(spot1, self->size[0] * 2, forward, vis_check_spot);
-	VectorMA(vis_check_spot, self->size[2] * 1.5, up, vis_check_spot);
-//also check to make sure you can't walkmove forward
-    if(self->monsterinfo.jump_time > level.time)            //Don't jump too many times in a row
-	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("just jumped\n");
-#endif
+	// Also check to make sure you can't walkmove forward.
+	if (self->monsterinfo.jump_time > level.time) // Don't jump too many times in a row.
 		return false;
-	}
-    else if(!ignore_height&&targ_absmin[2]+36>=self->absmin[2])//&&self->think!=SpiderJumpBegin&&self->classname!="monster_mezzoman"&&self->model!="models/yakman.mdl")
+
+	if (!ignore_height && targ_mins[2] + 36.0f >= self->absmin[2])
+		return false; // Jump target too high.
+
+	if (self->groundentity == NULL)
+		return false; // Can't jump when not on ground.
+
+	if (!ignore_height && spot_diff > 777.0f)
+		return false; // Jump target too far away.
+
+	if (spot_diff <= 100.0f)
+		return false; // Jump target too close.
+
+	//sfs -- Sure, it's just a dotproduct, but the other checks are a little cheaper.
+	if (!infront_pos(self, targ_org))
+		return false; // Goalentity not in front.
+
+	//sfs -- Save the trace line for after the easy checks.
+	if (!clear_visible_pos(self, targ_org))
 	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("not above goalentity, and not spider\n");
-#endif
-		return false;
-	}
-    else if(!self->groundentity)//flags&FL_ONGROUND)
-	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("not on ground\n");
-#endif
-		return false;
-	}
-    else if(sub_len>777 && !ignore_height)
-	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("too far away\n");
-#endif
-		return false;
-	}
-    else if(sub_len <= 100)//&&self->think!=SpiderMeleeBegin)
-	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("too close & not spider\n");
-#endif
-		return false;
-	}
-	//sfs--sure, it's just a dotproduct, but the other checks are a little cheaper
-    else if(!infront_pos(self, targ_org))
-	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("goalentity not in front\n");
-#endif
-		return false;
-	}
-	//sfs--save the trace line for after the easy checks
-    else if(!clear_visible_pos(self, targ_org)&&!HaveLOS(self, vis_check_spot, spot2))
-	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("can't see goalentity\n");
-#endif
-		return false;
+		vec3_t vis_check_spot;
+		VectorMA(spot1, self->size[0] * 2.0f, forward, vis_check_spot);
+		VectorMA(vis_check_spot, self->size[2] * 1.5f, up, vis_check_spot);
+
+		if (!HaveLOS(self, vis_check_spot, spot2))
+			return false; // Can't see goalentity.
 	}
 
-	//sfs--holding off on the point contents too
-	contents = gi.pointcontents(spot2);
-	if(!(self->monsterinfo.aiflags&AI_SWIM_OK)&&
-		(contents&CONTENTS_WATER||contents&CONTENTS_SLIME||contents&CONTENTS_LAVA))
-	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("goalentity in water or lava\n");
-#endif
-		return false;
-	}
+	if (!(self->monsterinfo.aiflags & AI_SWIM_OK) && (gi.pointcontents(spot2) & MASK_WATER))
+		return false; // Goalentity in water, slime or lava.
 
-	VectorCopy(self->s.origin, spot1);
-	//	spot1=self->s.origin;
-	spot1[2] += self->maxs[2];
-    //spot1_z=self->absmax_z;
-	VectorCopy(spot1, spot2);
-	//spot2=spot1;
-	spot2[2] += 36;
-	//spot2_z+=36;
+	vec3_t start;
+	VectorCopy(self->s.origin, start);
+	start[2] += self->maxs[2];
 
-    gi.trace(spot1, self->mins, self->maxs, spot2, self, MASK_MONSTERSOLID,&trace);
+	vec3_t end;
+	VectorCopy(start, end);
+	end[2] += 36.0f;
 
-    if(trace.fraction<1.0||trace.allsolid||trace.startsolid)
-	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("not enough room above\n");
-#endif
-		return false;
-	}
+	trace_t trace;
+	gi.trace(start, self->mins, self->maxs, end, self, MASK_MONSTERSOLID, &trace);
 
-	if(!jumpup)		// This variable is used without being initialised
-	{
-//	        spot1+=normalize(v_forward)*((self->maxs_x+self->maxs_y)*0.5);
-	    VectorMA(spot1, (self->maxs[0]+self->maxs[1])*0.5, jumpdir, spot1);
-		//spot1+=jumpdir*((self->maxs_x+self->maxs_y)*0.5);
-		VectorCopy(spot1, end_spot);
-		end_spot[2] += 36;
+	if (trace.fraction < 1.0f || trace.allsolid || trace.startsolid)
+		return false; // Not enough room above.
 
-		gi.trace(self->s.origin, self->mins, self->maxs, end_spot, self, MASK_MONSTERSOLID,&trace);
+	VectorMA(start, (self->maxs[0] + self->maxs[1]) * 0.5f, jump_dir, start);
 
-	    if(trace.fraction<1.0||trace.allsolid||trace.startsolid)
-		{
-#ifdef _DEVEL
-			if(MGAI_DEBUG)
-				gi.dprintf("not enough room in front\n");
-#endif
-			return false;
-		}
-		VectorMA(spot1, 64, jumpdir, end_spot);
-		end_spot[2] -= 500;
-		gi.trace(spot1, jump_mins, jump_maxs, end_spot, self, MASK_MONSTERSOLID,&trace);
-//	        traceline(spot1,spot1+jumpdir*64 - '0 0 500',false,self);
+	vec3_t end_spot;
+	VectorCopy(start, end_spot);
+	end_spot[2] += 36.0f;
 
-		contents = gi.pointcontents(trace.endpos);
-		if(contents&CONTENTS_WATER||contents&CONTENTS_SLIME||contents&CONTENTS_LAVA)
-		{
-#ifdef _DEVEL
-			if(MGAI_DEBUG)
-				gi.dprintf("won't jump in water\n");
-#endif
-			return false;
-		}
-	}
+	gi.trace(self->s.origin, self->mins, self->maxs, end_spot, self, MASK_MONSTERSOLID, &trace);
+
+	if (trace.fraction < 1.0f || trace.allsolid || trace.startsolid)
+		return false; // Not enough room in front.
+
+	VectorMA(start, 64.0f, jump_dir, end_spot);
+	end_spot[2] -= 500.0f;
+
+	gi.trace(start, jump_mins, jump_maxs, end_spot, self, MASK_MONSTERSOLID, &trace);
+
+	if (gi.pointcontents(trace.endpos) & MASK_WATER)
+		return false; // Won't jump in water.
 
 	MG_FaceGoal(self, true);
-//FIXME: make them do whatever jump function they have if they have one
-	self->monsterinfo.jump_time = level.time + 2;        //Only try to jump once every 7 seconds
-	if(!self->s.scale)
-		self->s.scale = 1.0;
-	if(!jumpup)
-	{
-		VectorScale(jumpdir, jump_height*18*self->s.scale, self->velocity);
-		//self->velocity=jumpdir*jump_height*18*self->scale;//was 18
-		self->velocity[2] = jump_height*14*self->s.scale;//was 12
-	}
-	else
-	{
-		VectorScale(jumpdir, jump_height*14*self->s.scale, self->velocity);
-		//self->velocity=jumpdir*jump_height*14*self->scale;//was 10
-		self->velocity[2] = jump_height*17*self->s.scale;//was 14
-	}
-	//self->groundentity = NULL?
-	if(classStatics[self->classID].msgReceivers[MSG_JUMP])
-	{
-		if(self->classID != CID_RAT && self->classID != CID_SSITHRA)
-		{//save vel so can crouch first
-			VectorCopy(self->velocity, self->movedir);
-			VectorClear(self->velocity);
-		}
-		QPostMessage(self, MSG_JUMP, PRI_DIRECTIVE, NULL);
-		self->nextthink = level.time + 0.01;
-	}
-	else
-		self->nextthink = level.time + 0.3;
-	
-#ifdef _DEVEL
-	if(MGAI_DEBUG)
-		gi.dprintf("JUMP!!!\n");
-#endif
-	return true;
+
+	//FIXME: make them do whatever jump function they have if they have one.
+	self->monsterinfo.jump_time = level.time + 2.0f; // Only try to jump once every 2 seconds.
+
+	assert(self->s.scale != 0.0f); //mxd. Does this ever happen?
+	if (self->s.scale == 0.0f) //TODO: why set scale here, of all places?..
+		self->s.scale = 1.0f;
+
+	VectorScale(jump_dir, JUMP_HEIGHT * 18.0f * self->s.scale, self->velocity);
+	self->velocity[2] = JUMP_HEIGHT * 14.0f * self->s.scale;
+
+	MG_PostJump(self); //mxd
+
+	return true; // Can jump.
 }
 
 /*
