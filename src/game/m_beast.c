@@ -41,7 +41,6 @@ TBEAST
 // *************************************
 
 qboolean clear_visible (edict_t *self, edict_t *other);
-trace_t MG_WalkMove (edict_t *self, float yaw, float dist, qboolean *succeeded);
 int tbeast_inwalkframes(edict_t *self);
 
 static vec3_t GetLeftFootOffsetForFrameIndex[18] =
@@ -294,7 +293,6 @@ void tbeast_charge (edict_t *self, float force)
 {
 	vec3_t	forward, enemy_dir;
 	float	save_v2;
-	qboolean	succeeded = false;
 
 	if(!M_ValidTarget(self, self->enemy))
 	{
@@ -309,7 +307,7 @@ void tbeast_charge (edict_t *self, float force)
 	if(DotProduct(forward, enemy_dir) < 0.75)//enemy not generally ahead
 		ai_charge(self, 0);
 
-	MG_WalkMove (self, self->s.angles[YAW], force, &succeeded);
+	MG_WalkMove (self, self->s.angles[YAW], force);
 
 	if(self->groundentity)
 	{

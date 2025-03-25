@@ -25,7 +25,6 @@ void ssithraLookRight (edict_t *self);
 void seraph_startle(edict_t *self);
 void SV_FixCheckBottom (edict_t *ent);
 qboolean clear_visible (edict_t *self, edict_t *other);
-trace_t MG_WalkMove (edict_t *self, float yaw, float dist);
 qboolean ok_to_wake (edict_t *monster, qboolean gorgon_roar, qboolean ignore_ambush);
 qboolean EqualAngle(float angle1, float angle2, float leniency);
 
