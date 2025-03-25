@@ -153,7 +153,7 @@ qboolean visible_to_client (edict_t *self)
 				SHORT2ANGLE(ent->client->playerinfo.pcmd.camera_viewangles[1]), 
 				SHORT2ANGLE(ent->client->playerinfo.pcmd.camera_viewangles[2]));
 
-			if(infront_pos(temp, self->s.origin) && gi.inPVS(temp->s.origin, self->s.origin))
+			if(MG_IsInforntPos(temp, self->s.origin) && gi.inPVS(temp->s.origin, self->s.origin))
 			{
 				G_FreeEdict(temp);
 				return true;

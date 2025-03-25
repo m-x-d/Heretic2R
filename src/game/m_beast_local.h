@@ -126,7 +126,6 @@ void tbeast_dead(edict_t *self);
 void tbeast_charge (edict_t *self, float force);
 void tbeast_done_gore (edict_t *self);
 void tbeast_run_think (edict_t *self, float dist);
-qboolean MG_CheckBottom (edict_t *ent);
 void tbeast_check_landed (edict_t *self);
 void tbeast_inair (edict_t *self);
 void tbeast_gcheck_landed (edict_t *self);

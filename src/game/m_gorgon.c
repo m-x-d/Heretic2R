@@ -678,7 +678,7 @@ void gorgon_run(edict_t *self, G_Message_t *msg)
 			}
 		}
 		// Enemy is within range and far enough above or below to warrant a jump
-		if(infront_pos(self, targ_org))
+		if(MG_IsInforntPos(self, targ_org))
 		{
 			if ((len > 40) && (len < 600) && ((self->s.origin[2] < targ_org[2] - 24) || 
 				(self->s.origin[2] > targ_org[2] + 24)))
@@ -1198,7 +1198,7 @@ qboolean gorgon_check_jump (edict_t *self)
 		return false;
 	}
 
-	if(!infront_pos(self, landing_spot))
+	if(!MG_IsInforntPos(self, landing_spot))
 		return false;
 
 	VectorSubtract(self->s.origin, landing_spot, v);

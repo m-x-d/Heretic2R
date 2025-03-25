@@ -634,7 +634,7 @@ static void MG_NewDir(edict_t* self, const float dist)
 }
 
 // Returns true if the spot is in front (in sight) of self.
-qboolean infront_pos(const edict_t* self, const vec3_t pos) //TODO: rename to MG_IsInforntPos?
+qboolean MG_IsInforntPos(const edict_t* self, const vec3_t pos) //mxd. Named 'infront_pos' in original logic.
 {
 	vec3_t check_angles;
 
@@ -685,7 +685,7 @@ static qboolean MG_AssassinCheckJump(edict_t* self) //mxd. Named 'MG_ExtraCheckJ
 
 		VectorCopy(level.buoy_list[self->buoy_index].origin, targ_org);
 
-		if (!infront_pos(self, targ_org))
+		if (!MG_IsInforntPos(self, targ_org))
 			return false;
 
 		VectorClear(targ_mins);
@@ -869,7 +869,7 @@ static qboolean MG_CheckJump(edict_t* self)
 
 		VectorCopy(level.buoy_list[self->buoy_index].origin, targ_org);
 
-		if (!infront_pos(self, targ_org))
+		if (!MG_IsInforntPos(self, targ_org))
 			return false;
 
 		VectorCopy(targ_org, targ_mins);
@@ -931,7 +931,7 @@ static qboolean MG_CheckJump(edict_t* self)
 		return false; // Jump target too close.
 
 	//sfs -- Sure, it's just a dotproduct, but the other checks are a little cheaper.
-	if (!infront_pos(self, targ_org))
+	if (!MG_IsInforntPos(self, targ_org))
 		return false; // Goalentity not in front.
 
 	//sfs -- Save the trace line for after the easy checks.

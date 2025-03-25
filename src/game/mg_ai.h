@@ -28,5 +28,5 @@ extern qboolean EqualAngle(float angle1, float angle2, float leniency);
 
 extern qboolean MG_IsAheadOf(const edict_t* self, const edict_t* other);
 extern qboolean MG_IsVisiblePos(const edict_t* self, const vec3_t pos);
-extern qboolean infront_pos(const edict_t* self, const vec3_t pos);
+extern qboolean MG_IsInforntPos(const edict_t* self, const vec3_t pos);
 extern void ai_run(edict_t* self, float dist);

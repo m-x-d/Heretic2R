@@ -640,7 +640,7 @@ void ssithraDiveCheck (edict_t *self)
 		return;
 	}
 
-	if(!infront_pos(self, targ_org))
+	if(!MG_IsInforntPos(self, targ_org))
 		return;
 
 	//make sure the enemy isn't right here and accessible before diving in
@@ -781,7 +781,7 @@ void ssithraCheckJump (edict_t *self)
 		VectorCopy(self->goalentity->mins, targ_mins);
 	}
 
-	if (!(infront_pos(self, targ_org)))
+	if (!(MG_IsInforntPos(self, targ_org)))
 		return;
 
 	if (targ_org[2] < self->s.origin[2] - 28)
@@ -2857,7 +2857,7 @@ qboolean ssithraAlerted (edict_t *self, alertent_t *alerter, edict_t *enemy)
 	}
 
 	//the alert action happened in front of me, but the enemy is behind or the alert is behind me
-	if(!infront_pos(self, alerter->origin))
+	if(!MG_IsInforntPos(self, alerter->origin))
 	{
 		if(irand(0, 1)&&self->curAnimID!=ANIM_IDLEBASIC)
 		{//50% chance of startling them up if not already in startle anim
@@ -2870,7 +2870,7 @@ qboolean ssithraAlerted (edict_t *self, alertent_t *alerter, edict_t *enemy)
 			VectorClear(self->v_angle_ofs);
 			self->v_angle_ofs[YAW]=-90;
 
-			if(infront_pos(self, alerter->origin))//fancy way of seeing if explosion was to right
+			if(MG_IsInforntPos(self, alerter->origin))//fancy way of seeing if explosion was to right
 			{
 				VectorCopy(saveangles,self->v_angle_ofs);
 				ssithraLookRight(self);//fixme: if already looking right, see you
