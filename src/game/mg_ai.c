@@ -1092,35 +1092,23 @@ void MG_CheckEvade(edict_t* self)
 	}
 }
 
-/*
-=============
-ai_run
-
-The monster has an enemy it is trying to kill or the monster is fleeing
-=============
-*/
-void old_ai_run (edict_t *self, float dist);
-void ai_run (edict_t *self, float dist)
+// The monster has an enemy it is trying to kill or the monster is fleeing.
+void ai_run(edict_t* self, const float dist) //TODO: rename to MGAI_Run.
 {
-	float	turnamt, i;
-	
-	//if dumb fleeing or fleeing and can't use buoys...
-	if((DEACTIVATE_BUOYS||!(self->monsterinfo.aiflags & AI_USING_BUOYS))
-				&&
-				(self->monsterinfo.aiflags & AI_COWARD || 
-					(self->monsterinfo.aiflags&AI_FLEE
-					&&
-					self->monsterinfo.flee_finished >= level.time)
-				)
-			)
+	// Skip when fleeing and can't use buoys...
+	if ((DEACTIVATE_BUOYS || !(self->monsterinfo.aiflags & AI_USING_BUOYS)) &&
+		((self->monsterinfo.aiflags & AI_COWARD) || ((self->monsterinfo.aiflags & AI_FLEE) && self->monsterinfo.flee_finished >= level.time)))
 	{
 		ai_flee(self, dist);
 		return;
 	}
-	else if(self->ai_mood_flags & AI_MOOD_FLAG_DUMB_FLEE)
+
+	if (self->ai_mood_flags & AI_MOOD_FLAG_DUMB_FLEE)
 	{
-		if(MG_GoToRandomBuoy(self))
+		if (MG_GoToRandomBuoy(self))
+		{
 			self->monsterinfo.searchType = SEARCH_BUOY;
+		}
 		else
 		{
 			ai_flee(self, dist);
@@ -1128,53 +1116,25 @@ void ai_run (edict_t *self, float dist)
 		}
 	}
 
-	if(!DEACTIVATE_BUOYS)
+	if (!DEACTIVATE_BUOYS && (self->monsterinfo.aiflags & AI_USING_BUOYS) && !(self->monsterinfo.aiflags & AI_STRAIGHT_TO_ENEMY) && self->pathfind_nextthink <= level.time)
 	{
-		if(self->monsterinfo.aiflags & AI_USING_BUOYS)
-		{
-			if(!(self->monsterinfo.aiflags&AI_STRAIGHT_TO_ENEMY))
-			{
-				if(self->pathfind_nextthink<=level.time)
-				{
-					MG_BuoyNavigate(self);
-					self->pathfind_nextthink = level.time + 0.1;//0.3;-maybe TOO optimized, trying every frame again, take out of generic mood think?
-					//don't pathfind for the next 3 frames.
-				}
-			}
-		}
+		MG_BuoyNavigate(self);
+		self->pathfind_nextthink = level.time + FRAMETIME;
 	}
 
 	if (self->monsterinfo.aiflags & AI_STAND_GROUND)
-	{//just face enemy
-		turnamt = Q_fabs(ai_face_goal(self));
+	{
+		ai_face_goal(self); // Just face thy enemy.
 		return;
 	}
-	
-#ifdef _DEVEL
-	if(self->goalentity == self->enemy)
-	{
-		//sfs--only do this visibility check when debugging (gets expensive at big distances)
-		if(MGAI_DEBUG && !visible(self, self->enemy))
-		{
-			gi.dprintf("ERROR: goal is invis enemy!\n");
-		}
-	}
-#endif
 
-	if(dist)
-		if(!MG_MoveToGoal (self, dist))
-		{
-			if(self->classID == CID_SSITHRA)
-				ssithraCheckJump(self);
-		}
-		else
-			i = 0;
-	
-	if(self->classID!=CID_ASSASSIN)//does his own checks
-		if(classStatics[self->classID].msgReceivers[MSG_EVADE])
-		{//check for if going to be hit and evade
-			MG_CheckEvade(self);
-		}
+	assert(dist >= 0.0f); //mxd. Original logic used 'if(dist)' check below, so...
+
+	if (dist > 0.0f && !MG_MoveToGoal(self, dist) && self->classID == CID_SSITHRA)
+		ssithraCheckJump(self);
+
+	if (self->classID != CID_ASSASSIN && classStatics[self->classID].msgReceivers[MSG_EVADE] != NULL) // Assassin does his own checks.
+		MG_CheckEvade(self); // Check if going to be hit and evade.
 }
 
 void mg_ai_charge (edict_t *self, float dist)
