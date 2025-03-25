@@ -1360,7 +1360,7 @@ void mork_ai_run (edict_t *self, float dist)
 
 	if(self->curAnimID!=ANIM_FLY)
 	{
-		ai_run(self, dist);
+		MG_AI_Run(self, dist);
 		if(!self->groundentity)
 		{
 			if(self->curAnimID == ANIM_WALK)

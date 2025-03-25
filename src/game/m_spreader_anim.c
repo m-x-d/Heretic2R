@@ -77,19 +77,19 @@ animmove_t spreader_move_attack2 = { 14, spreader_frames_attack2, spreader_pause
 -------------------------------------------------------------------*/
 animframe_t spreader_frames_backattack1 [] = 
 {	
-	FRAME_bkatck1, spreader_mist, 14.4, 10.24, 16, ai_run, -5, spreader_miststartsound,
-	FRAME_bkatck2, spreader_mist, 14.22, 10.03, 16, ai_run, -5, NULL,
-	FRAME_bkatck3, spreader_mist, 13.79, 9.79, 16, ai_run, -5, NULL,
-	FRAME_bkatck4, spreader_mist, 13.62, 9.63, 16, ai_run, -5, NULL,
-	FRAME_bkatck5, spreader_mist, 13.84, 9.64, 16, ai_run, -5, NULL,
-	FRAME_bkatck6, spreader_mist, 14.23, 9.75, 16,  ai_run, -5, NULL,
-	FRAME_bkatck7, spreader_mist, 14.59, 9.85, 16, ai_run, -5, NULL,
-	FRAME_bkatck8, spreader_mist, 14.15, 9.75, 16,  ai_run, -5, NULL,
-	FRAME_bkatck9, spreader_mist, 13.83, 9.66, 16, ai_run, -5, NULL,
-	FRAME_bkatck10, spreader_mist, 13.58, 9.65, 16,  ai_run, -5, NULL,
-	FRAME_bkatck11, spreader_mist, 13.82, 9.82, 16, ai_run, -5, NULL,
-	FRAME_bkatck12, spreader_mist, 14.2, 10.06, 16, ai_run, -5, NULL,
-	FRAME_bkatck13, spreader_mist, 14.47, 10.38, 16, ai_run, -5, spreader_miststopsound
+	FRAME_bkatck1, spreader_mist, 14.4, 10.24, 16, MG_AI_Run, -5, spreader_miststartsound,
+	FRAME_bkatck2, spreader_mist, 14.22, 10.03, 16, MG_AI_Run, -5, NULL,
+	FRAME_bkatck3, spreader_mist, 13.79, 9.79, 16, MG_AI_Run, -5, NULL,
+	FRAME_bkatck4, spreader_mist, 13.62, 9.63, 16, MG_AI_Run, -5, NULL,
+	FRAME_bkatck5, spreader_mist, 13.84, 9.64, 16, MG_AI_Run, -5, NULL,
+	FRAME_bkatck6, spreader_mist, 14.23, 9.75, 16,  MG_AI_Run, -5, NULL,
+	FRAME_bkatck7, spreader_mist, 14.59, 9.85, 16, MG_AI_Run, -5, NULL,
+	FRAME_bkatck8, spreader_mist, 14.15, 9.75, 16,  MG_AI_Run, -5, NULL,
+	FRAME_bkatck9, spreader_mist, 13.83, 9.66, 16, MG_AI_Run, -5, NULL,
+	FRAME_bkatck10, spreader_mist, 13.58, 9.65, 16,  MG_AI_Run, -5, NULL,
+	FRAME_bkatck11, spreader_mist, 13.82, 9.82, 16, MG_AI_Run, -5, NULL,
+	FRAME_bkatck12, spreader_mist, 14.2, 10.06, 16, MG_AI_Run, -5, NULL,
+	FRAME_bkatck13, spreader_mist, 14.47, 10.38, 16, MG_AI_Run, -5, spreader_miststopsound
 };
 animmove_t spreader_move_backattack1 = { 13, spreader_frames_backattack1, spreader_pause };
 
@@ -98,19 +98,19 @@ animmove_t spreader_move_backattack1 = { 13, spreader_frames_backattack1, spread
 -------------------------------------------------------------------*/
 animframe_t spreader_frames_backup1 [] = 
 {	
-	FRAME_backup1, NULL, 0, 0, 0, ai_run, -5, NULL,
-	FRAME_backup2, NULL, 0, 0, 0, ai_run, -5, NULL,
-	FRAME_backup3, NULL, 0, 0, 0, ai_run, -5, NULL,
-	FRAME_backup4, NULL, 0, 0, 0, ai_run, -5, NULL,
-	FRAME_backup5, NULL, 0, 0, 0, ai_run, -5, NULL,
-	FRAME_backup6, NULL, 0, 0, 0, ai_run, -5, spreader_pause,
-	FRAME_backup7, NULL, 0, 0, 0, ai_run, -5, NULL,
-	FRAME_backup8, NULL, 0, 0, 0, ai_run, -5, NULL,
-	FRAME_backup9, NULL, 0, 0, 0, ai_run, -5, NULL,
-	FRAME_backup10, NULL, 0, 0, 0, ai_run, -5, NULL,
-	FRAME_backup11, NULL, 0, 0, 0, ai_run, -5, spreader_pause,
-	FRAME_backup12, NULL, 0, 0, 0, ai_run, -5, NULL,
-	FRAME_backup13, NULL, 0, 0, 0, ai_run, -5, NULL
+	FRAME_backup1, NULL, 0, 0, 0, MG_AI_Run, -5, NULL,
+	FRAME_backup2, NULL, 0, 0, 0, MG_AI_Run, -5, NULL,
+	FRAME_backup3, NULL, 0, 0, 0, MG_AI_Run, -5, NULL,
+	FRAME_backup4, NULL, 0, 0, 0, MG_AI_Run, -5, NULL,
+	FRAME_backup5, NULL, 0, 0, 0, MG_AI_Run, -5, NULL,
+	FRAME_backup6, NULL, 0, 0, 0, MG_AI_Run, -5, spreader_pause,
+	FRAME_backup7, NULL, 0, 0, 0, MG_AI_Run, -5, NULL,
+	FRAME_backup8, NULL, 0, 0, 0, MG_AI_Run, -5, NULL,
+	FRAME_backup9, NULL, 0, 0, 0, MG_AI_Run, -5, NULL,
+	FRAME_backup10, NULL, 0, 0, 0, MG_AI_Run, -5, NULL,
+	FRAME_backup11, NULL, 0, 0, 0, MG_AI_Run, -5, spreader_pause,
+	FRAME_backup12, NULL, 0, 0, 0, MG_AI_Run, -5, NULL,
+	FRAME_backup13, NULL, 0, 0, 0, MG_AI_Run, -5, NULL
 };
 animmove_t spreader_move_backup1 = { 13, spreader_frames_backup1, spreader_pause };
 
@@ -311,14 +311,14 @@ animmove_t spreader_move_pvtrt1 = { 5, spreader_frames_pvtrt1, spreader_pause };
 -------------------------------------------------------------------*/
 animframe_t spreader_frames_run1 [] =
 {
-	FRAME_run1, NULL, 0, 0, 0,  ai_run, 20, spreader_pause, 
-	FRAME_run2, NULL, 0, 0, 0,  ai_run, 18, NULL, 
-	FRAME_run3, NULL, 0, 0, 0,  ai_run, 16, NULL, 
-	FRAME_run4, NULL, 0, 0, 0,  ai_run, 18, spreader_pause,	//foot down
-	FRAME_run5, NULL, 0, 0, 0,  ai_run, 20, NULL, 
-	FRAME_run6, NULL, 0, 0, 0,  ai_run, 18, NULL,
-	FRAME_run7, NULL, 0, 0, 0,  ai_run, 16, NULL,
-	FRAME_run8, NULL, 0, 0, 0,  ai_run, 18, NULL	//foot down
+	FRAME_run1, NULL, 0, 0, 0,  MG_AI_Run, 20, spreader_pause, 
+	FRAME_run2, NULL, 0, 0, 0,  MG_AI_Run, 18, NULL, 
+	FRAME_run3, NULL, 0, 0, 0,  MG_AI_Run, 16, NULL, 
+	FRAME_run4, NULL, 0, 0, 0,  MG_AI_Run, 18, spreader_pause,	//foot down
+	FRAME_run5, NULL, 0, 0, 0,  MG_AI_Run, 20, NULL, 
+	FRAME_run6, NULL, 0, 0, 0,  MG_AI_Run, 18, NULL,
+	FRAME_run7, NULL, 0, 0, 0,  MG_AI_Run, 16, NULL,
+	FRAME_run8, NULL, 0, 0, 0,  MG_AI_Run, 18, NULL	//foot down
 };
 animmove_t spreader_move_run1 = { 8, spreader_frames_run1, spreader_pause };
 
@@ -374,14 +374,14 @@ animmove_t spreader_move_fjump = {15, spreader_frames_fjump, spreader_go_inair};
 -------------------------------------------------------------------*/
 animframe_t spreader_frames_rnatck1 [] =
 {
-	FRAME_rnatck1, spreader_mist_fast, 38.0*2,  5, 16,  ai_run, 20, spreader_miststartsound, 
-	FRAME_rnatck2, spreader_mist_fast, 39.27*2, 5, 16, ai_run, 18, NULL, 
-	FRAME_rnatck3, spreader_mist_fast, 37.43*2, 5, 16,  ai_run, 16, NULL, 
-	FRAME_rnatck4, spreader_mist_fast, 36.68*2, 5, 16, ai_run, 18, spreader_pause, 
-	FRAME_rnatck5, spreader_mist_fast, 37.02*2, 5, 16, ai_run, 20, NULL, 
-	FRAME_rnatck6, spreader_mist_fast, 36.41*2, 5, 16, ai_run, 18, NULL, 
-	FRAME_rnatck7, spreader_mist_fast, 35.69*2, 5, 16, ai_run, 16, spreader_pause, 
-	FRAME_rnatck8, spreader_mist_fast, 35.68*2, 5, 16,  ai_run, 18, spreader_pause,//spreader_mist_faststopsound		
+	FRAME_rnatck1, spreader_mist_fast, 38.0*2,  5, 16,  MG_AI_Run, 20, spreader_miststartsound, 
+	FRAME_rnatck2, spreader_mist_fast, 39.27*2, 5, 16, MG_AI_Run, 18, NULL, 
+	FRAME_rnatck3, spreader_mist_fast, 37.43*2, 5, 16,  MG_AI_Run, 16, NULL, 
+	FRAME_rnatck4, spreader_mist_fast, 36.68*2, 5, 16, MG_AI_Run, 18, spreader_pause, 
+	FRAME_rnatck5, spreader_mist_fast, 37.02*2, 5, 16, MG_AI_Run, 20, NULL, 
+	FRAME_rnatck6, spreader_mist_fast, 36.41*2, 5, 16, MG_AI_Run, 18, NULL, 
+	FRAME_rnatck7, spreader_mist_fast, 35.69*2, 5, 16, MG_AI_Run, 16, spreader_pause, 
+	FRAME_rnatck8, spreader_mist_fast, 35.68*2, 5, 16,  MG_AI_Run, 18, spreader_pause,//spreader_mist_faststopsound		
 };
 animmove_t spreader_move_rnatck1 = { 8, spreader_frames_rnatck1, spreader_pause };
 
@@ -411,19 +411,19 @@ animmove_t spreader_move_walk1 = { 13, spreader_frames_walk1, spreader_pause };
 -------------------------------------------------------------------*/
 animframe_t spreader_frames_walk2 [] =
 {
-	FRAME_walk1, NULL, 0, 0, 0,  ai_run, 6, spreader_pause, 
-	FRAME_walk2, NULL, 0, 0, 0,  ai_run, 6, spreader_pause, 
-	FRAME_walk3, NULL, 0, 0, 0,  ai_run, 6, spreader_pause, 
-	FRAME_walk4, NULL, 0, 0, 0,  ai_run, 6, spreader_pause, 
-	FRAME_walk5, NULL, 0, 0, 0,  ai_run, 6, spreader_pause, 
-	FRAME_walk6, NULL, 0, 0, 0,  ai_run, 6, spreader_pause, 
-	FRAME_walk7, NULL, 0, 0, 0,  ai_run, 6, spreader_pause, 
-	FRAME_walk8, NULL, 0, 0, 0,  ai_run, 6, spreader_pause, 
-	FRAME_walk9, NULL, 0, 0, 0,  ai_run, 6, spreader_pause, 
-	FRAME_walk10, NULL, 0, 0, 0,  ai_run, 6, spreader_pause, 
-	FRAME_walk11, NULL, 0, 0, 0,  ai_run, 6, spreader_pause, 	
-	FRAME_walk12, NULL, 0, 0, 0,  ai_run, 6, spreader_pause, 
-	FRAME_walk13, NULL, 0, 0, 0,  ai_run, 6, spreader_pause 	
+	FRAME_walk1, NULL, 0, 0, 0,  MG_AI_Run, 6, spreader_pause, 
+	FRAME_walk2, NULL, 0, 0, 0,  MG_AI_Run, 6, spreader_pause, 
+	FRAME_walk3, NULL, 0, 0, 0,  MG_AI_Run, 6, spreader_pause, 
+	FRAME_walk4, NULL, 0, 0, 0,  MG_AI_Run, 6, spreader_pause, 
+	FRAME_walk5, NULL, 0, 0, 0,  MG_AI_Run, 6, spreader_pause, 
+	FRAME_walk6, NULL, 0, 0, 0,  MG_AI_Run, 6, spreader_pause, 
+	FRAME_walk7, NULL, 0, 0, 0,  MG_AI_Run, 6, spreader_pause, 
+	FRAME_walk8, NULL, 0, 0, 0,  MG_AI_Run, 6, spreader_pause, 
+	FRAME_walk9, NULL, 0, 0, 0,  MG_AI_Run, 6, spreader_pause, 
+	FRAME_walk10, NULL, 0, 0, 0,  MG_AI_Run, 6, spreader_pause, 
+	FRAME_walk11, NULL, 0, 0, 0,  MG_AI_Run, 6, spreader_pause, 	
+	FRAME_walk12, NULL, 0, 0, 0,  MG_AI_Run, 6, spreader_pause, 
+	FRAME_walk13, NULL, 0, 0, 0,  MG_AI_Run, 6, spreader_pause 	
 };
 animmove_t spreader_move_walk2 = { 13, spreader_frames_walk2, spreader_pause };
 

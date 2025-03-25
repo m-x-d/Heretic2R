@@ -9,6 +9,7 @@
 
 #include "g_local.h"
 #include "g_ai.h" //mxd
+#include "mg_ai.h" //mxd
 
 #include "m_mssithra_anim.h"
 #include "m_mssithra_local.h"
@@ -71,22 +72,22 @@ animmove_t mssithra_move_walk1 = {16, mssithra_frames_walk1, NULL};//mssithraChe
 -----------------------------------------------------------------------*/
 animframe_t mssithra_frames_run1 [] =
 {
-	FRAME_walk1, 	NULL, 0, 0, 0,  ai_run, 8, NULL,
-	FRAME_walk2, 	NULL, 0, 0, 0,  ai_run, 8, NULL,
-	FRAME_walk3, 	NULL, 0, 0, 0,  ai_run, 8, NULL,
-	FRAME_walk4, 	NULL, 0, 0, 0,  ai_run, 8, NULL,
-	FRAME_walk5, 	NULL, 0, 0, 0,  ai_run, 9, NULL,
-	FRAME_walk6, 	NULL, 0, 0, 0,  ai_run, 9, NULL,
-	FRAME_walk7, 	NULL, 0, 0, 0,  ai_run, 9, NULL,
-	FRAME_walk8, 	NULL, 0, 0, 0,  ai_run, 9, NULL,
-	FRAME_walk9, 	NULL, 0, 0, 0,  ai_run, 10, NULL,
-	FRAME_walk10, 	NULL, 0, 0, 0,  ai_run, 10, NULL,
-	FRAME_walk11, 	NULL, 0, 0, 0,  ai_run, 10, NULL,
-	FRAME_walk12, 	NULL, 0, 0, 0,  ai_run, 10, NULL,
-	FRAME_walk13, 	NULL, 0, 0, 0,  ai_run, 9, NULL,
-	FRAME_walk14, 	NULL, 0, 0, 0,  ai_run, 9, NULL,
-	FRAME_walk15, 	NULL, 0, 0, 0,  ai_run, 9, NULL,
-	FRAME_walk16, 	NULL, 0, 0, 0,  ai_run, 9, NULL,
+	FRAME_walk1, 	NULL, 0, 0, 0,  MG_AI_Run, 8, NULL,
+	FRAME_walk2, 	NULL, 0, 0, 0,  MG_AI_Run, 8, NULL,
+	FRAME_walk3, 	NULL, 0, 0, 0,  MG_AI_Run, 8, NULL,
+	FRAME_walk4, 	NULL, 0, 0, 0,  MG_AI_Run, 8, NULL,
+	FRAME_walk5, 	NULL, 0, 0, 0,  MG_AI_Run, 9, NULL,
+	FRAME_walk6, 	NULL, 0, 0, 0,  MG_AI_Run, 9, NULL,
+	FRAME_walk7, 	NULL, 0, 0, 0,  MG_AI_Run, 9, NULL,
+	FRAME_walk8, 	NULL, 0, 0, 0,  MG_AI_Run, 9, NULL,
+	FRAME_walk9, 	NULL, 0, 0, 0,  MG_AI_Run, 10, NULL,
+	FRAME_walk10, 	NULL, 0, 0, 0,  MG_AI_Run, 10, NULL,
+	FRAME_walk11, 	NULL, 0, 0, 0,  MG_AI_Run, 10, NULL,
+	FRAME_walk12, 	NULL, 0, 0, 0,  MG_AI_Run, 10, NULL,
+	FRAME_walk13, 	NULL, 0, 0, 0,  MG_AI_Run, 9, NULL,
+	FRAME_walk14, 	NULL, 0, 0, 0,  MG_AI_Run, 9, NULL,
+	FRAME_walk15, 	NULL, 0, 0, 0,  MG_AI_Run, 9, NULL,
+	FRAME_walk16, 	NULL, 0, 0, 0,  MG_AI_Run, 9, NULL,
 };
 animmove_t mssithra_move_run1 = {16, mssithra_frames_run1, NULL};//mssithra_decide_gallop};
 

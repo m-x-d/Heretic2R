@@ -9,6 +9,7 @@
 
 #include "g_local.h"
 #include "g_ai.h" //mxd
+#include "mg_ai.h" //mxd
 
 #pragma hdrstop("g_local.pch")
 // PRECOMPILED HEADER ABOVE
@@ -16,6 +17,7 @@
 // ADD ANY ADDITIONAL FILES BELOW
 
 #include "m_chicken_anim.h"
+
 #include "m_chicken_local.h"
 
 #define ENEMY_WALK_SPEED  32
@@ -44,12 +46,12 @@ animmove_t chicken_move_stand1 = {6, chicken_frames_stand1, chicken_pause};
 -----------------------------------------------------------------------*/
 animframe_t chicken_frames_run [] =
 {
-	FRAME_run1,	NULL, 0, 0, 0,  ai_run, ENEMY_RUN_SPEED, chicken_check,
-	FRAME_run2,	NULL, 0, 0, 0,  ai_run, ENEMY_RUN_SPEED, NULL,
-	FRAME_run3,	chickenSound, CHAN_BODY, SND_CLAW, ATTN_NORM,  ai_run, ENEMY_RUN_SPEED, NULL,
-	FRAME_run4,	NULL, 0, 0, 0,  ai_run, ENEMY_RUN_SPEED, chicken_check,
-	FRAME_run5,	NULL, 0, 0, 0,  ai_run, ENEMY_RUN_SPEED, NULL,
-	FRAME_run6,	chickenSound, CHAN_BODY, SND_CLAW, ATTN_NORM,  ai_run, ENEMY_RUN_SPEED, NULL,
+	FRAME_run1,	NULL, 0, 0, 0,  MG_AI_Run, ENEMY_RUN_SPEED, chicken_check,
+	FRAME_run2,	NULL, 0, 0, 0,  MG_AI_Run, ENEMY_RUN_SPEED, NULL,
+	FRAME_run3,	chickenSound, CHAN_BODY, SND_CLAW, ATTN_NORM,  MG_AI_Run, ENEMY_RUN_SPEED, NULL,
+	FRAME_run4,	NULL, 0, 0, 0,  MG_AI_Run, ENEMY_RUN_SPEED, chicken_check,
+	FRAME_run5,	NULL, 0, 0, 0,  MG_AI_Run, ENEMY_RUN_SPEED, NULL,
+	FRAME_run6,	chickenSound, CHAN_BODY, SND_CLAW, ATTN_NORM,  MG_AI_Run, ENEMY_RUN_SPEED, NULL,
 };
 animmove_t chicken_move_run = {6, chicken_frames_run, chicken_pause};
 

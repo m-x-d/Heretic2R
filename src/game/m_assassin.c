@@ -1624,7 +1624,7 @@ void assassin_go_run(edict_t *self, float dist)
 		assassinUndoCrouched (self);
 
 	if(self->enemy)
-		ai_run(self, dist);
+		MG_AI_Run(self, dist);
 	else
 		ai_walk(self, dist);
 }

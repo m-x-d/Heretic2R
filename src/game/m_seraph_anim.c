@@ -3,6 +3,7 @@
 #include "m_seraph_anim.h"
 #include "g_monster.h"
 #include "m_stats.h"
+#include "mg_ai.h" //mxd
 
 /*----------------------------------------------------
 	seraph idles
@@ -321,14 +322,14 @@ animmove_t seraph_move_point1 = {21,seraph_frames_point1, seraph_idle};
 
 animframe_t seraph_frames_run1[] =
 {
-	FRAME_run1,   NULL, 0, 0, 0, ai_run, 20, NULL,
-	FRAME_run2,   NULL, 0, 0, 0, ai_run, 16, NULL,
-	FRAME_run3,   NULL, 0, 0, 0, ai_run, 16, seraph_pause,
-	FRAME_run4,   NULL, 0, 0, 0, ai_run, 16, NULL,
-	FRAME_run5,   NULL, 0, 0, 0, ai_run, 20, NULL,
-	FRAME_run6,   NULL, 0, 0, 0, ai_run, 16, seraph_pause,
-	FRAME_run7,   NULL, 0, 0, 0, ai_run, 16, NULL,
-	FRAME_run8,   NULL, 0, 0, 0, ai_run, 16, NULL,
+	FRAME_run1,   NULL, 0, 0, 0, MG_AI_Run, 20, NULL,
+	FRAME_run2,   NULL, 0, 0, 0, MG_AI_Run, 16, NULL,
+	FRAME_run3,   NULL, 0, 0, 0, MG_AI_Run, 16, seraph_pause,
+	FRAME_run4,   NULL, 0, 0, 0, MG_AI_Run, 16, NULL,
+	FRAME_run5,   NULL, 0, 0, 0, MG_AI_Run, 20, NULL,
+	FRAME_run6,   NULL, 0, 0, 0, MG_AI_Run, 16, seraph_pause,
+	FRAME_run7,   NULL, 0, 0, 0, MG_AI_Run, 16, NULL,
+	FRAME_run8,   NULL, 0, 0, 0, MG_AI_Run, 16, NULL,
 };
 animmove_t seraph_move_run1 = {8,seraph_frames_run1, seraph_pause};
 
@@ -425,22 +426,22 @@ animframe_t seraph_frames_get2work[] =
 	FRAME_swipe3,		NULL, 0, 0, 0, NULL, 0, seraph_enforce_ogle,
 	FRAME_swipe4,		NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_swipe5,		NULL, 0, 0, 0, NULL, 0, NULL,
-	FRAME_backup1,		NULL, 0, 0, 0, ai_run, -8, NULL,//can't this use ai_move or ai_walk?
-	FRAME_backup2,		NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup3,		NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup4,		NULL, 0, 0, 0, ai_run, -7, NULL,
-	FRAME_backup5,		NULL, 0, 0, 0, ai_run, -6, NULL,
-	FRAME_backup6,		NULL, 0, 0, 0, ai_run, -7, NULL,
-	FRAME_backup7,		NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup8,		NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup9,		NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup10,		NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup11,		NULL, 0, 0, 0, ai_run, -7, NULL,
-	FRAME_backup12,		NULL, 0, 0, 0, ai_run, -6, NULL,
-	FRAME_backup13,		NULL, 0, 0, 0, ai_run, -7, NULL,
-	FRAME_backup14,		NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup15,		NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup16,		NULL, 0, 0, 0, ai_run, -8, NULL,
+	FRAME_backup1,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,//can't this use ai_move or ai_walk?
+	FRAME_backup2,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup3,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup4,		NULL, 0, 0, 0, MG_AI_Run, -7, NULL,
+	FRAME_backup5,		NULL, 0, 0, 0, MG_AI_Run, -6, NULL,
+	FRAME_backup6,		NULL, 0, 0, 0, MG_AI_Run, -7, NULL,
+	FRAME_backup7,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup8,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup9,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup10,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup11,		NULL, 0, 0, 0, MG_AI_Run, -7, NULL,
+	FRAME_backup12,		NULL, 0, 0, 0, MG_AI_Run, -6, NULL,
+	FRAME_backup13,		NULL, 0, 0, 0, MG_AI_Run, -7, NULL,
+	FRAME_backup14,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup15,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup16,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
 };
 animmove_t seraph_move_get2work = {47,seraph_frames_get2work, seraph_done_get2work};
 
@@ -494,22 +495,22 @@ animframe_t seraph_frames_get2work2[] =
 	FRAME_whip15,		NULL, 0, 0, 0, NULL, 0, seraph_enforce,
 	FRAME_whip16,		NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_whip17,		NULL, 0, 0, 0, NULL, 0, NULL,
-	FRAME_backup1,		NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup2,		NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup3,		NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup4,		NULL, 0, 0, 0, ai_run, -7, NULL,
-	FRAME_backup5,		NULL, 0, 0, 0, ai_run, -6, NULL,
-	FRAME_backup6,		NULL, 0, 0, 0, ai_run, -7, NULL,
-	FRAME_backup7,		NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup8,		NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup9,		NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup10,		NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup11,		NULL, 0, 0, 0, ai_run, -7, NULL,
-	FRAME_backup12,		NULL, 0, 0, 0, ai_run, -6, NULL,
-	FRAME_backup13,		NULL, 0, 0, 0, ai_run, -7, NULL,
-	FRAME_backup14,		NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup15,		NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup16,		NULL, 0, 0, 0, ai_run, -8, NULL,
+	FRAME_backup1,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup2,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup3,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup4,		NULL, 0, 0, 0, MG_AI_Run, -7, NULL,
+	FRAME_backup5,		NULL, 0, 0, 0, MG_AI_Run, -6, NULL,
+	FRAME_backup6,		NULL, 0, 0, 0, MG_AI_Run, -7, NULL,
+	FRAME_backup7,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup8,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup9,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup10,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup11,		NULL, 0, 0, 0, MG_AI_Run, -7, NULL,
+	FRAME_backup12,		NULL, 0, 0, 0, MG_AI_Run, -6, NULL,
+	FRAME_backup13,		NULL, 0, 0, 0, MG_AI_Run, -7, NULL,
+	FRAME_backup14,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup15,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup16,		NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
 };
 animmove_t seraph_move_get2work2 = {57,seraph_frames_get2work2, seraph_done_get2work};
 

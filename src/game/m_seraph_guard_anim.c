@@ -1,5 +1,6 @@
 #include "g_local.h"
 #include "g_ai.h" //mxd
+#include "mg_ai.h" //mxd
 #include "m_seraph_guard_local.h"
 #include "m_seraph_guard_anim.h"
 #include "m_stats.h"
@@ -90,14 +91,14 @@ animmove_t seraph_guard_move_runmelee = {8,seraph_guard_frames_runmelee, seraph_
 
 animframe_t seraph_guard_frames_run[] =
 {
-	FRAME_run1, NULL, 0, 0, 0, ai_run, 24, seraph_guard_pause,
-	FRAME_run2, NULL, 0, 0, 0, ai_run, 20, seraph_guard_pause,
-	FRAME_run3, NULL, 0, 0, 0, ai_run, 20, seraph_guard_pause,
-	FRAME_run4, NULL, 0, 0, 0, ai_run, 20, seraph_guard_pause,
-	FRAME_run5, NULL, 0, 0, 0, ai_run, 24, seraph_guard_pause,
-	FRAME_run6, NULL, 0, 0, 0, ai_run, 20, seraph_guard_pause,
-	FRAME_run7, NULL, 0, 0, 0, ai_run, 20, seraph_guard_pause,
-	FRAME_run8, NULL, 0, 0, 0, ai_run, 20, seraph_guard_pause,
+	FRAME_run1, NULL, 0, 0, 0, MG_AI_Run, 24, seraph_guard_pause,
+	FRAME_run2, NULL, 0, 0, 0, MG_AI_Run, 20, seraph_guard_pause,
+	FRAME_run3, NULL, 0, 0, 0, MG_AI_Run, 20, seraph_guard_pause,
+	FRAME_run4, NULL, 0, 0, 0, MG_AI_Run, 20, seraph_guard_pause,
+	FRAME_run5, NULL, 0, 0, 0, MG_AI_Run, 24, seraph_guard_pause,
+	FRAME_run6, NULL, 0, 0, 0, MG_AI_Run, 20, seraph_guard_pause,
+	FRAME_run7, NULL, 0, 0, 0, MG_AI_Run, 20, seraph_guard_pause,
+	FRAME_run8, NULL, 0, 0, 0, MG_AI_Run, 20, seraph_guard_pause,
 };
 animmove_t seraph_guard_move_run = {8,seraph_guard_frames_run, seraph_guard_pause};
 

@@ -282,17 +282,17 @@ animmove_t insect_move_painc = {6, insect_frames_painc, insect_pause};
 -----------------------------------------------------------------------*/
 animframe_t insect_frames_run [] =
 {
-	FRAME_Run1,	NULL, 0, 0, 0, ai_run, 12, insectgrowl,
-	FRAME_Run2,	NULL, 0, 0, 0, ai_run, 13, insect_pause,
-	FRAME_Run3,	NULL, 0, 0, 0, ai_run, 14, insect_pause,
-	FRAME_Run4,	NULL, 0, 0, 0, ai_run, 14, insect_pause,
-	FRAME_Run5,	NULL, 0, 0, 0, ai_run, 14, insect_pause,
-	FRAME_Run6,	NULL, 0, 0, 0, ai_run, 14, insect_pause,
-	FRAME_Run7,	NULL, 0, 0, 0, ai_run, 14, insect_pause,
-	FRAME_Run8,	NULL, 0, 0, 0, ai_run, 11, insect_pause,
-	FRAME_Run9,	NULL, 0, 0, 0, ai_run, 14, insect_pause,
-	FRAME_Run10, NULL, 0, 0, 0, ai_run, 14, insect_pause,
-	FRAME_Run10, NULL, 0, 0, 0, ai_run, 14, insect_pause
+	FRAME_Run1,	NULL, 0, 0, 0, MG_AI_Run, 12, insectgrowl,
+	FRAME_Run2,	NULL, 0, 0, 0, MG_AI_Run, 13, insect_pause,
+	FRAME_Run3,	NULL, 0, 0, 0, MG_AI_Run, 14, insect_pause,
+	FRAME_Run4,	NULL, 0, 0, 0, MG_AI_Run, 14, insect_pause,
+	FRAME_Run5,	NULL, 0, 0, 0, MG_AI_Run, 14, insect_pause,
+	FRAME_Run6,	NULL, 0, 0, 0, MG_AI_Run, 14, insect_pause,
+	FRAME_Run7,	NULL, 0, 0, 0, MG_AI_Run, 14, insect_pause,
+	FRAME_Run8,	NULL, 0, 0, 0, MG_AI_Run, 11, insect_pause,
+	FRAME_Run9,	NULL, 0, 0, 0, MG_AI_Run, 14, insect_pause,
+	FRAME_Run10, NULL, 0, 0, 0, MG_AI_Run, 14, insect_pause,
+	FRAME_Run10, NULL, 0, 0, 0, MG_AI_Run, 14, insect_pause
 };
 animmove_t insect_move_run = {11, insect_frames_run, insect_pause};
 

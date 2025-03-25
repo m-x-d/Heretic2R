@@ -72,9 +72,9 @@ void gorgon_ai_run (edict_t *self, float dist)
 	}
 
 	if(self->spawnflags & MSF_GORGON_SPEEDY)
-		ai_run(self, dist*1.25);
+		MG_AI_Run(self, dist*1.25);
 	else
-		ai_run(self, dist*0.75);
+		MG_AI_Run(self, dist*0.75);
 }
 
 /*----------------------------------------------------------------------

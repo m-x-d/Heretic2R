@@ -4,6 +4,7 @@
 
 #include "g_monster.h"
 #include "c_ai.h"
+#include "mg_ai.h" //mxd
 
 /*----------------------------------------------------
 	ogle standing - temp
@@ -19,14 +20,14 @@ animmove_t ogle_move_stand1 = {1,ogle_frames_stand1, ogle_pause};
 ----------------------------------------------------*/
 animframe_t ogle_frames_walk1[] =
 {
-	FRAME_walk1, NULL, 0, 0, 0, ai_run, 2, NULL,
-	FRAME_walk2, NULL, 0, 0, 0, ai_run, 2, NULL,
-	FRAME_walk3, NULL, 0, 0, 0, ai_run, 2, NULL,
-	FRAME_walk4, NULL, 0, 0, 0, ai_run, 2, NULL,
-	FRAME_walk5, NULL, 0, 0, 0, ai_run, 2, NULL,
-	FRAME_walk6, NULL, 0, 0, 0, ai_run, 2, NULL,
-	FRAME_walk7, NULL, 0, 0, 0, ai_run, 2, NULL,
-	FRAME_walk8, NULL, 0, 0, 0, ai_run, 2, NULL,
+	FRAME_walk1, NULL, 0, 0, 0, MG_AI_Run, 2, NULL,
+	FRAME_walk2, NULL, 0, 0, 0, MG_AI_Run, 2, NULL,
+	FRAME_walk3, NULL, 0, 0, 0, MG_AI_Run, 2, NULL,
+	FRAME_walk4, NULL, 0, 0, 0, MG_AI_Run, 2, NULL,
+	FRAME_walk5, NULL, 0, 0, 0, MG_AI_Run, 2, NULL,
+	FRAME_walk6, NULL, 0, 0, 0, MG_AI_Run, 2, NULL,
+	FRAME_walk7, NULL, 0, 0, 0, MG_AI_Run, 2, NULL,
+	FRAME_walk8, NULL, 0, 0, 0, MG_AI_Run, 2, NULL,
 };
 animmove_t ogle_move_walk1 = {8,ogle_frames_walk1, ogle_pause};
 
@@ -425,66 +426,66 @@ animmove_t ogle_move_celebrate5 = {4, ogle_frames_celebrate5, ogle_celebrate};
 
 animframe_t ogle_frames_charge1[] =
 {
-	FRAME_charga1,  NULL, 0, 0, 0, ai_run, 10, NULL,
-	FRAME_charga2,  NULL, 0, 0, 0, ai_run, 9,  NULL,
-	FRAME_charga3,  NULL, 0, 0, 0, ai_run, 8,  NULL,
-	FRAME_charga4,  NULL, 0, 0, 0, ai_run, 9,  NULL,
-	FRAME_charga5,  NULL, 0, 0, 0, ai_run, 10, NULL,
-	FRAME_charga6,  NULL, 0, 0, 0, ai_run, 9,  NULL,
-	FRAME_charga7,  NULL, 0, 0, 0, ai_run, 8,  NULL,
-	FRAME_charga8,  NULL, 0, 0, 0, ai_run, 10, NULL,
+	FRAME_charga1,  NULL, 0, 0, 0, MG_AI_Run, 10, NULL,
+	FRAME_charga2,  NULL, 0, 0, 0, MG_AI_Run, 9,  NULL,
+	FRAME_charga3,  NULL, 0, 0, 0, MG_AI_Run, 8,  NULL,
+	FRAME_charga4,  NULL, 0, 0, 0, MG_AI_Run, 9,  NULL,
+	FRAME_charga5,  NULL, 0, 0, 0, MG_AI_Run, 10, NULL,
+	FRAME_charga6,  NULL, 0, 0, 0, MG_AI_Run, 9,  NULL,
+	FRAME_charga7,  NULL, 0, 0, 0, MG_AI_Run, 8,  NULL,
+	FRAME_charga8,  NULL, 0, 0, 0, MG_AI_Run, 10, NULL,
 };
 animmove_t ogle_move_charge1 = {8, ogle_frames_charge1, ogle_pause};
 
 animframe_t ogle_frames_charge2[] =
 {
-	FRAME_chargb1,  NULL, 0, 0, 0, ai_run, 10, NULL,
-	FRAME_chargb2,  NULL, 0, 0, 0, ai_run, 9,  NULL,
-	FRAME_chargb3,  NULL, 0, 0, 0, ai_run, 8,  NULL,
-	FRAME_chargb4,  NULL, 0, 0, 0, ai_run, 9,  NULL,
-	FRAME_chargb5,  NULL, 0, 0, 0, ai_run, 10, NULL,
-	FRAME_chargb6,  NULL, 0, 0, 0, ai_run, 9,  NULL,
-	FRAME_chargb7,  NULL, 0, 0, 0, ai_run, 8,  NULL,
-	FRAME_chargb8,  NULL, 0, 0, 0, ai_run, 10, NULL,
+	FRAME_chargb1,  NULL, 0, 0, 0, MG_AI_Run, 10, NULL,
+	FRAME_chargb2,  NULL, 0, 0, 0, MG_AI_Run, 9,  NULL,
+	FRAME_chargb3,  NULL, 0, 0, 0, MG_AI_Run, 8,  NULL,
+	FRAME_chargb4,  NULL, 0, 0, 0, MG_AI_Run, 9,  NULL,
+	FRAME_chargb5,  NULL, 0, 0, 0, MG_AI_Run, 10, NULL,
+	FRAME_chargb6,  NULL, 0, 0, 0, MG_AI_Run, 9,  NULL,
+	FRAME_chargb7,  NULL, 0, 0, 0, MG_AI_Run, 8,  NULL,
+	FRAME_chargb8,  NULL, 0, 0, 0, MG_AI_Run, 10, NULL,
 };
 animmove_t ogle_move_charge2 = {8, ogle_frames_charge2, ogle_pause};
 
 animframe_t ogle_frames_charge3[] =
 {
-	FRAME_chargc1,  NULL, 0, 0, 0, ai_run, 10, NULL,
-	FRAME_chargc2,  NULL, 0, 0, 0, ai_run, 9,  NULL,
-	FRAME_chargc3,  NULL, 0, 0, 0, ai_run, 8,  NULL,
-	FRAME_chargc4,  NULL, 0, 0, 0, ai_run, 9,  NULL,
-	FRAME_chargc5,  NULL, 0, 0, 0, ai_run, 10, NULL,
-	FRAME_chargc6,  NULL, 0, 0, 0, ai_run, 9,  NULL,
-	FRAME_chargc7,  NULL, 0, 0, 0, ai_run, 8,  NULL,
-	FRAME_chargc8,  NULL, 0, 0, 0, ai_run, 10, NULL,
+	FRAME_chargc1,  NULL, 0, 0, 0, MG_AI_Run, 10, NULL,
+	FRAME_chargc2,  NULL, 0, 0, 0, MG_AI_Run, 9,  NULL,
+	FRAME_chargc3,  NULL, 0, 0, 0, MG_AI_Run, 8,  NULL,
+	FRAME_chargc4,  NULL, 0, 0, 0, MG_AI_Run, 9,  NULL,
+	FRAME_chargc5,  NULL, 0, 0, 0, MG_AI_Run, 10, NULL,
+	FRAME_chargc6,  NULL, 0, 0, 0, MG_AI_Run, 9,  NULL,
+	FRAME_chargc7,  NULL, 0, 0, 0, MG_AI_Run, 8,  NULL,
+	FRAME_chargc8,  NULL, 0, 0, 0, MG_AI_Run, 10, NULL,
 };
 animmove_t ogle_move_charge3 = {8, ogle_frames_charge3, ogle_pause};
 
 animframe_t ogle_frames_charge4[] =
 {
-	FRAME_chargd1,  NULL, 0, 0, 0, ai_run, 10, NULL,
-	FRAME_chargd2,  NULL, 0, 0, 0, ai_run, 9,  NULL,
-	FRAME_chargd3,  NULL, 0, 0, 0, ai_run, 8,  NULL,
-	FRAME_chargd4,  NULL, 0, 0, 0, ai_run, 9,  NULL,
-	FRAME_chargd5,  NULL, 0, 0, 0, ai_run, 10, NULL,
-	FRAME_chargd6,  NULL, 0, 0, 0, ai_run, 9,  NULL,
-	FRAME_chargd7,  NULL, 0, 0, 0, ai_run, 8,  NULL,
-	FRAME_chargd8,  NULL, 0, 0, 0, ai_run, 10, NULL,
+	FRAME_chargd1,  NULL, 0, 0, 0, MG_AI_Run, 10, NULL,
+	FRAME_chargd2,  NULL, 0, 0, 0, MG_AI_Run, 9,  NULL,
+	FRAME_chargd3,  NULL, 0, 0, 0, MG_AI_Run, 8,  NULL,
+	FRAME_chargd4,  NULL, 0, 0, 0, MG_AI_Run, 9,  NULL,
+	FRAME_chargd5,  NULL, 0, 0, 0, MG_AI_Run, 10, NULL,
+	FRAME_chargd6,  NULL, 0, 0, 0, MG_AI_Run, 9,  NULL,
+	FRAME_chargd7,  NULL, 0, 0, 0, MG_AI_Run, 8,  NULL,
+	FRAME_chargd8,  NULL, 0, 0, 0, MG_AI_Run, 10, NULL,
 };
 animmove_t ogle_move_charge4 = {8, ogle_frames_charge4, ogle_pause};
 
 animframe_t ogle_frames_charge5[] =
 {
-	FRAME_charge1,  NULL, 0, 0, 0, ai_run,	10, NULL,
-	FRAME_charge2,  NULL, 0, 0, 0, ai_run,	9,  NULL,
-	FRAME_charge3,  NULL, 0, 0, 0, ai_run,	8,  NULL,
-	FRAME_charge4,  NULL, 0, 0, 0, ai_run,	9,  NULL,
-	FRAME_charge5,  NULL, 0, 0, 0, ai_run,	10, NULL,
-	FRAME_charge6,  NULL, 0, 0, 0, ai_run,	9,  NULL,
-	FRAME_charge7,  NULL, 0, 0, 0, ai_run,	8,  NULL,
-	FRAME_charge8,  NULL, 0, 0, 0, ai_run,	10, NULL,
+	FRAME_charge1,  NULL, 0, 0, 0, MG_AI_Run,	10, NULL,
+	FRAME_charge2,  NULL, 0, 0, 0, MG_AI_Run,	9,  NULL,
+	FRAME_charge3,  NULL, 0, 0, 0, MG_AI_Run,	8,  NULL,
+	FRAME_charge4,  NULL, 0, 0, 0, MG_AI_Run,	9,  NULL,
+	FRAME_charge5,  NULL, 0, 0, 0, MG_AI_Run,	10, NULL,
+	FRAME_charge6,  NULL, 0, 0, 0, MG_AI_Run,	9,  NULL,
+	FRAME_charge7,  NULL, 0, 0, 0, MG_AI_Run,	8,  NULL,
+	FRAME_charge8,  NULL, 0, 0, 0, MG_AI_Run,	10, NULL,
 };
 animmove_t ogle_move_charge5 = {8, ogle_frames_charge5, ogle_pause};
 

@@ -23,7 +23,6 @@
 #include "vector.h"
 
 void old_ai_run (edict_t *self, float dist);
-void ai_run (edict_t *self, float dist);
 void ai_charge2 (edict_t *self, float dist);
 qboolean ssithraCheckInWater (edict_t *self);
 
@@ -35,7 +34,7 @@ void ssithra_ai_run (edict_t *self, float dist)
 		MG_Pathfind(self, false);
 	}
 	else
-		ai_run(self, dist);
+		MG_AI_Run(self, dist);
 }
 
 /*----------------------------------------------------------------------

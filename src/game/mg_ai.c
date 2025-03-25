@@ -1093,7 +1093,7 @@ void MG_CheckEvade(edict_t* self)
 }
 
 // The monster has an enemy it is trying to kill or the monster is fleeing.
-void ai_run(edict_t* self, const float dist) //TODO: rename to MG_AI_Run.
+void MG_AI_Run(edict_t* self, const float dist) //mxd. Named 'ai_run' in original logic.
 {
 	// Skip when fleeing and can't use buoys...
 	if ((DEACTIVATE_BUOYS || !(self->monsterinfo.aiflags & AI_USING_BUOYS)) &&

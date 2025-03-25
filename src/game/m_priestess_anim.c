@@ -1,5 +1,6 @@
 #include "g_local.h"
 #include "g_ai.h" //mxd
+#include "mg_ai.h" //mxd
 #include "m_priestess_local.h"
 #include "m_priestess_anim.h"
 
@@ -103,18 +104,18 @@ animmove_t priestess_move_pounce_attack = {9,priestess_frames_pounce_attack, pri
 
 animframe_t priestess_frames_backup[] =
 {
-	FRAME_backup3,  NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup4,  NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup5,  NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup6,  NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup7,  NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup8,  NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup9,  NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup10, NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup11, NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup12, NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup13, NULL, 0, 0, 0, ai_run, -8, NULL,
-	FRAME_backup14, NULL, 0, 0, 0, ai_run, -8, NULL,
+	FRAME_backup3,  NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup4,  NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup5,  NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup6,  NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup7,  NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup8,  NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup9,  NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup10, NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup11, NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup12, NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup13, NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
+	FRAME_backup14, NULL, 0, 0, 0, MG_AI_Run, -8, NULL,
 };
 animmove_t priestess_move_backup = {12,priestess_frames_backup, priestess_pause};
 
@@ -434,22 +435,22 @@ animmove_t priestess_move_dodge_right = {11,priestess_frames_dodge_right, priest
 
 animframe_t priestess_frames_walk[] =
 {
-	FRAME_walk1,  NULL, 0, 0, 0, ai_run, 6, NULL,
-	FRAME_walk2,  NULL, 0, 0, 0, ai_run, 8, NULL,
-	FRAME_walk3,  NULL, 0, 0, 0, ai_run, 8, NULL,
-	FRAME_walk4,  NULL, 0, 0, 0, ai_run, 8, NULL,
-	FRAME_walk5,  NULL, 0, 0, 0, ai_run, 8, NULL,
-	FRAME_walk6,  NULL, 0, 0, 0, ai_run, 6, NULL,
-	FRAME_walk7,  NULL, 0, 0, 0, ai_run, 6, NULL,
-	FRAME_walk8,  NULL, 0, 0, 0, ai_run, 4, NULL,
-	FRAME_walk9,  NULL, 0, 0, 0, ai_run, 6, NULL,
-	FRAME_walk10, NULL, 0, 0, 0, ai_run, 8, NULL,
-	FRAME_walk11, NULL, 0, 0, 0, ai_run, 8, NULL,
-	FRAME_walk12, NULL, 0, 0, 0, ai_run, 8, NULL,
-	FRAME_walk13, NULL, 0, 0, 0, ai_run, 8, NULL,
-	FRAME_walk14, NULL, 0, 0, 0, ai_run, 6, NULL,
-	FRAME_walk15, NULL, 0, 0, 0, ai_run, 6, NULL,
-	FRAME_walk16, NULL, 0, 0, 0, ai_run, 4, NULL,
+	FRAME_walk1,  NULL, 0, 0, 0, MG_AI_Run, 6, NULL,
+	FRAME_walk2,  NULL, 0, 0, 0, MG_AI_Run, 8, NULL,
+	FRAME_walk3,  NULL, 0, 0, 0, MG_AI_Run, 8, NULL,
+	FRAME_walk4,  NULL, 0, 0, 0, MG_AI_Run, 8, NULL,
+	FRAME_walk5,  NULL, 0, 0, 0, MG_AI_Run, 8, NULL,
+	FRAME_walk6,  NULL, 0, 0, 0, MG_AI_Run, 6, NULL,
+	FRAME_walk7,  NULL, 0, 0, 0, MG_AI_Run, 6, NULL,
+	FRAME_walk8,  NULL, 0, 0, 0, MG_AI_Run, 4, NULL,
+	FRAME_walk9,  NULL, 0, 0, 0, MG_AI_Run, 6, NULL,
+	FRAME_walk10, NULL, 0, 0, 0, MG_AI_Run, 8, NULL,
+	FRAME_walk11, NULL, 0, 0, 0, MG_AI_Run, 8, NULL,
+	FRAME_walk12, NULL, 0, 0, 0, MG_AI_Run, 8, NULL,
+	FRAME_walk13, NULL, 0, 0, 0, MG_AI_Run, 8, NULL,
+	FRAME_walk14, NULL, 0, 0, 0, MG_AI_Run, 6, NULL,
+	FRAME_walk15, NULL, 0, 0, 0, MG_AI_Run, 6, NULL,
+	FRAME_walk16, NULL, 0, 0, 0, MG_AI_Run, 4, NULL,
 };
 animmove_t priestess_move_walk = {16,priestess_frames_walk, priestess_pause};
 

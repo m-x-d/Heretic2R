@@ -185,14 +185,14 @@ animmove_t plagueElf_move_missile = {7, plagueElf_frames_missile, plagueElf_paus
 -----------------------------------------------------------------------*/
 animframe_t plagueElf_frames_run1 [] =
 {
-	FRAME_runA1,	NULL, 0, 0, 0, ai_run, 12, plagueElfgrowl,
-	FRAME_runA2,	NULL, 0, 0, 0, ai_run, 13, plagueElf_pause,
-	FRAME_runA3,	NULL, 0, 0, 0, ai_run, 14, plagueElf_pause,
-	FRAME_runA4,	NULL, 0, 0, 0, ai_run, 14, plagueElf_pause,
-	FRAME_runA5,	NULL, 0, 0, 0, ai_run, 14, plagueElf_pause,
-	FRAME_runA6,	NULL, 0, 0, 0, ai_run, 14, plagueElf_pause,
-	FRAME_runA7,	NULL, 0, 0, 0, ai_run, 14, plagueElf_pause,
-	FRAME_runA8,	NULL, 0, 0, 0, ai_run, 11, plagueElf_pause
+	FRAME_runA1,	NULL, 0, 0, 0, MG_AI_Run, 12, plagueElfgrowl,
+	FRAME_runA2,	NULL, 0, 0, 0, MG_AI_Run, 13, plagueElf_pause,
+	FRAME_runA3,	NULL, 0, 0, 0, MG_AI_Run, 14, plagueElf_pause,
+	FRAME_runA4,	NULL, 0, 0, 0, MG_AI_Run, 14, plagueElf_pause,
+	FRAME_runA5,	NULL, 0, 0, 0, MG_AI_Run, 14, plagueElf_pause,
+	FRAME_runA6,	NULL, 0, 0, 0, MG_AI_Run, 14, plagueElf_pause,
+	FRAME_runA7,	NULL, 0, 0, 0, MG_AI_Run, 14, plagueElf_pause,
+	FRAME_runA8,	NULL, 0, 0, 0, MG_AI_Run, 11, plagueElf_pause
 };
 animmove_t plagueElf_move_run1 = {8, plagueElf_frames_run1, plagueElf_pause};
 
@@ -462,34 +462,34 @@ animmove_t plagueElf_move_kdeath_end = {9, plagueElf_frames_kdeath_end, M_EndDea
 
 animframe_t plagueElf_frames_crazy_A [] =
 {
-	FRAME_crazyA1,  NULL, 0, 0, 0, ai_run, 16, NULL, 
+	FRAME_crazyA1,  NULL, 0, 0, 0, MG_AI_Run, 16, NULL, 
 //	FRAME_crazyA2,  NULL, 0, 0, 0, ai_run, 8, NULL, 
-	FRAME_crazyA3,  NULL, 0, 0, 0, ai_run, 16, NULL, 
+	FRAME_crazyA3,  NULL, 0, 0, 0, MG_AI_Run, 16, NULL, 
 //	FRAME_crazyA4,  NULL, 0, 0, 0, ai_run, 8, NULL, 
-	FRAME_crazyA5,  NULL, 0, 0, 0, ai_run, 16, NULL, 
+	FRAME_crazyA5,  NULL, 0, 0, 0, MG_AI_Run, 16, NULL, 
 //	FRAME_crazyA6,  NULL, 0, 0, 0, ai_run, 8, NULL, 
-	FRAME_crazyA7,  NULL, 0, 0, 0, ai_run, 16, NULL, 
+	FRAME_crazyA7,  NULL, 0, 0, 0, MG_AI_Run, 16, NULL, 
 //	FRAME_crazyA8,  NULL, 0, 0, 0, ai_run, 8, NULL, 
-	FRAME_crazyA9,  NULL, 0, 0, 0, ai_run, 16, NULL, 
+	FRAME_crazyA9,  NULL, 0, 0, 0, MG_AI_Run, 16, NULL, 
 //	FRAME_crazyA10,  NULL, 0, 0, 0, ai_run, 8, NULL, 
-	FRAME_crazyA11,  NULL, 0, 0, 0, ai_run, 16, NULL, 
+	FRAME_crazyA11,  NULL, 0, 0, 0, MG_AI_Run, 16, NULL, 
 //	FRAME_crazyA12,  NULL, 0, 0, 0, ai_run, 8, NULL, 
 };
 animmove_t plagueElf_crazy_A = { 6, plagueElf_frames_crazy_A, plagueElf_pause};
 
 animframe_t plagueElf_frames_crazy_B [] =
 {
-	FRAME_crazyB1,  NULL, 0, 0, 0, ai_run, 16, NULL, 
+	FRAME_crazyB1,  NULL, 0, 0, 0, MG_AI_Run, 16, NULL, 
 //	FRAME_crazyB2,  NULL, 0, 0, 0, ai_run, 8, NULL, 
-	FRAME_crazyB3,  NULL, 0, 0, 0, ai_run, 16, NULL, 
+	FRAME_crazyB3,  NULL, 0, 0, 0, MG_AI_Run, 16, NULL, 
 //	FRAME_crazyB4,  NULL, 0, 0, 0, ai_run, 8, NULL, 
-	FRAME_crazyB5,  NULL, 0, 0, 0, ai_run, 16, NULL, 
+	FRAME_crazyB5,  NULL, 0, 0, 0, MG_AI_Run, 16, NULL, 
 //	FRAME_crazyB6,  NULL, 0, 0, 0, ai_run, 8, NULL, 
-	FRAME_crazyB7,  NULL, 0, 0, 0, ai_run, 16, NULL, 
+	FRAME_crazyB7,  NULL, 0, 0, 0, MG_AI_Run, 16, NULL, 
 //	FRAME_crazyB8,  NULL, 0, 0, 0, ai_run, 8, NULL, 
-	FRAME_crazyB9,  NULL, 0, 0, 0, ai_run, 16, NULL, 
+	FRAME_crazyB9,  NULL, 0, 0, 0, MG_AI_Run, 16, NULL, 
 //	FRAME_crazyB10,  NULL, 0, 0, 0, ai_run, 8, NULL, 
-	FRAME_crazyB11,  NULL, 0, 0, 0, ai_run, 16, NULL, 
+	FRAME_crazyB11,  NULL, 0, 0, 0, MG_AI_Run, 16, NULL, 
 //	FRAME_crazyB12,  NULL, 0, 0, 0, ai_run, 8, NULL, 
 };
 animmove_t plagueElf_crazy_B = { 6, plagueElf_frames_crazy_B, plagueElf_pause};

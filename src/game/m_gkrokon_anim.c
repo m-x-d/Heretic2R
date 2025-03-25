@@ -9,6 +9,7 @@
 
 #include "g_local.h"
 #include "g_ai.h" //mxd
+#include "mg_ai.h" //mxd
 
 #pragma hdrstop("g_local.pch")
 // PRECOMPILED HEADER ABOVE
@@ -172,12 +173,12 @@ animmove_t GkrokonMoveWalk1={8,GkrokonFramesWalk1,GkrokonPause};
 
 animframe_t GkrokonFramesRun1[]=
 {
-	FRAME_gallop1,	NULL, 0, 0, 0, ai_run,	16,	NULL,
-	FRAME_gallop2,	NULL, 0, 0, 0, ai_run,	24,	NULL,
-	FRAME_gallop3,	NULL, 0, 0, 0, ai_run,	22,	NULL,
-	FRAME_gallop4,	NULL, 0, 0, 0, ai_run,	18,	gkrokonRandomWalkSound,
-	FRAME_gallop5,	NULL, 0, 0, 0, ai_run,	16,	NULL,
-	FRAME_gallop6,	NULL, 0, 0, 0, ai_run,	24,	NULL,
+	FRAME_gallop1,	NULL, 0, 0, 0, MG_AI_Run,	16,	NULL,
+	FRAME_gallop2,	NULL, 0, 0, 0, MG_AI_Run,	24,	NULL,
+	FRAME_gallop3,	NULL, 0, 0, 0, MG_AI_Run,	22,	NULL,
+	FRAME_gallop4,	NULL, 0, 0, 0, MG_AI_Run,	18,	gkrokonRandomWalkSound,
+	FRAME_gallop5,	NULL, 0, 0, 0, MG_AI_Run,	16,	NULL,
+	FRAME_gallop6,	NULL, 0, 0, 0, MG_AI_Run,	24,	NULL,
 };
 
 animmove_t GkrokonMoveRun1={6,GkrokonFramesRun1, GkrokonPause};//GkrokonOrderRun};
@@ -188,24 +189,24 @@ animmove_t GkrokonMoveRun1={6,GkrokonFramesRun1, GkrokonPause};//GkrokonOrderRun
 
 animframe_t GkrokonFramesRun2[]=
 {
-	FRAME_skittr1,	NULL, 0, 0, 0, ai_run,	12,	NULL,
-	FRAME_skittr2,	NULL, 0, 0, 0, ai_run,	12,	NULL,
-	FRAME_skittr3,	NULL, 0, 0, 0, ai_run,	12,	gkrokonRandomWalkSound,
-	FRAME_skittr4,	NULL, 0, 0, 0, ai_run,	12,	NULL,
+	FRAME_skittr1,	NULL, 0, 0, 0, MG_AI_Run,	12,	NULL,
+	FRAME_skittr2,	NULL, 0, 0, 0, MG_AI_Run,	12,	NULL,
+	FRAME_skittr3,	NULL, 0, 0, 0, MG_AI_Run,	12,	gkrokonRandomWalkSound,
+	FRAME_skittr4,	NULL, 0, 0, 0, MG_AI_Run,	12,	NULL,
 };
 
 animmove_t GkrokonMoveRun2={4,GkrokonFramesRun2, GkrokonPause};//GkrokonOrderRun};
 
 animframe_t GkrokonFramesRunAway[]=
 {
-	FRAME_skittr4,	gkrokonSound, CHAN_VOICE, SND_FLEE, ATTN_NORM, ai_run,	-14,	NULL,
-	FRAME_skittr3,	NULL, 0, 0, 0, ai_run,	-16,	NULL,
-	FRAME_skittr2,	NULL, 0, 0, 0, ai_run,	-14,	gkrokonRandomWalkSound,
-	FRAME_skittr1,	NULL, 0, 0, 0, ai_run,	-12,	NULL,
-	FRAME_skittr4,	NULL, 0, 0, 0, ai_run,	-14,	NULL,
-	FRAME_skittr3,	NULL, 0, 0, 0, ai_run,	-16,	NULL,
-	FRAME_skittr2,	NULL, 0, 0, 0, ai_run,	-14,	gkrokonRandomWalkSound,
-	FRAME_skittr1,	NULL, 0, 0, 0, ai_run,	-12,	NULL,
+	FRAME_skittr4,	gkrokonSound, CHAN_VOICE, SND_FLEE, ATTN_NORM, MG_AI_Run,	-14,	NULL,
+	FRAME_skittr3,	NULL, 0, 0, 0, MG_AI_Run,	-16,	NULL,
+	FRAME_skittr2,	NULL, 0, 0, 0, MG_AI_Run,	-14,	gkrokonRandomWalkSound,
+	FRAME_skittr1,	NULL, 0, 0, 0, MG_AI_Run,	-12,	NULL,
+	FRAME_skittr4,	NULL, 0, 0, 0, MG_AI_Run,	-14,	NULL,
+	FRAME_skittr3,	NULL, 0, 0, 0, MG_AI_Run,	-16,	NULL,
+	FRAME_skittr2,	NULL, 0, 0, 0, MG_AI_Run,	-14,	gkrokonRandomWalkSound,
+	FRAME_skittr1,	NULL, 0, 0, 0, MG_AI_Run,	-12,	NULL,
 };
 
 animmove_t GkrokonMoveRunAway={8,GkrokonFramesRunAway, GkrokonPause};//GkrokonOrderRun};

@@ -642,7 +642,7 @@ void rat_ai_run (edict_t *self, float dist)
 	}
 	else
 	{
-		ai_run(self, dist);
+		MG_AI_Run(self, dist);
 	}
 }
 
