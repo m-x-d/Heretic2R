@@ -183,7 +183,6 @@ void gorgonLerpOn(edict_t* self);
 void gorgonCheckSlip(edict_t* self);
 void gorgonSlide(edict_t* self, float force);
 qboolean gorgonCheckMood(edict_t* self);
-void ai_goal_charge(edict_t* self, float dist); //TODO: move to appropriate header!
 void gorgonApplyJump(edict_t* self);
 void gorgonRoar(edict_t* self);
 void gorgon_roar_sound(edict_t* self);
