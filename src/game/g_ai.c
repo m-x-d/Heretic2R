@@ -131,54 +131,42 @@ void ai_stand(edict_t* self, const float dist) //mxd. 'dist' is always 0.
 	}
 }
 
-
-/*
-=============
-ai_walk
-
-The monster is walking it's beat
-=============
-*/
-void ai_walk (edict_t *self, float dist)
+// The monster is walking it's beat.
+void ai_walk(edict_t* self, const float dist)
 {
-	if (FindTarget (self))
+	if (FindTarget(self))
 	{
 		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
-	
-	if(self->monsterinfo.searchType == SEARCH_BUOY)
+	if (self->monsterinfo.searchType == SEARCH_BUOY)
 	{
-		if(!(self->monsterinfo.aiflags&AI_STRAIGHT_TO_ENEMY))
+		if (!(self->monsterinfo.aiflags & AI_STRAIGHT_TO_ENEMY))
 		{
-			MG_BuoyNavigate(self);//only called if already wandering
+			MG_BuoyNavigate(self); // Only called if already wandering.
 			MG_Pathfind(self, false);
 		}
 	}
-	else if(!self->enemy && !self->pathtarget)
+	else if (self->enemy == NULL && self->pathtarget == NULL)
 	{
-		if(self->movetarget)
+		if (self->movetarget != NULL)
 		{
-			if(self->movetarget->classname && strcmp(self->movetarget->classname, "path_corner"))
+			if (self->movetarget->classname != NULL && strcmp(self->movetarget->classname, "path_corner") != 0 && MG_ReachedBuoy(self, self->movetarget->s.origin))
 			{
-				if(MG_ReachedBuoy(self, self->movetarget->s.origin))
-				{
-					self->movetarget = NULL;
-					QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-				}
+				self->movetarget = NULL;
+				QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			}
 		}
-		else if(!irand(0, 30) || (Vec3NotZero(self->monsterinfo.nav_goal) && MG_ReachedBuoy(self, self->monsterinfo.nav_goal)))
+		else if (irand(0, 30) == 0 || (Vec3NotZero(self->monsterinfo.nav_goal) && MG_ReachedBuoy(self, self->monsterinfo.nav_goal)))
 		{
-			self->monsterinfo.pausetime = 0;
+			self->monsterinfo.pausetime = 0.0f;
 			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		}
 	}
 
-	MG_MoveToGoal (self, dist);
+	MG_MoveToGoal(self, dist);
 }
-
 
 /*
 =============
