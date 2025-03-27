@@ -1288,7 +1288,7 @@ void AlertMonsters(const edict_t* self, edict_t* enemy, float lifetime, const qb
 	level.num_alert_ents++;
 }
 
-void ai_spin (edict_t *self, float amount)
+void ai_spin(edict_t* self, const float amount)
 {
 	self->s.angles[YAW] += amount;
 }
