@@ -43,15 +43,6 @@
 #define SPREADER_FAR 		300
 #define SPREADER_TOO_FAR 	600
 
-#ifndef TRYSTEP_OK
-#define TRYSTEP_OK			0
-#define TRYSTEP_ALLSOLID	1
-#define TRYSTEP_STARTSOLID	2
-#define TRYSTEP_OFFEDGE		3
-#define TRYSTEP_NOSUPPORT	4
-#define TRYSTEP_INWATER		5
-#endif
-
 /*---------------------------------------------------------------
 	spreader Base Info
 ---------------------------------------------------------------*/

@@ -74,12 +74,6 @@ qboolean clear_visible (edict_t *self, edict_t *other);
 qboolean ok_to_wake (edict_t *monster, qboolean gorgon_roar, qboolean ignore_ambush);
 qboolean gorgon_check_jump (edict_t *self);
 
-#define TRYSTEP_OK			0
-#define TRYSTEP_ALLSOLID	1
-#define TRYSTEP_STARTSOLID	2
-#define TRYSTEP_OFFEDGE		3
-#define TRYSTEP_NOSUPPORT	4
-#define TRYSTEP_INWATER		5
 #define GORGON_STD_MELEE_RNG	48
 #define GORGON_STD_MAXHOP_RNG	200
 

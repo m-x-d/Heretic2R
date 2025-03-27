@@ -678,14 +678,6 @@ extern "C"
 }
 #endif
 
-// Used for ai_trystep (g_ai).
-#define TRYSTEP_OK			0
-#define TRYSTEP_ALLSOLID	1
-#define TRYSTEP_STARTSOLID	2
-#define TRYSTEP_OFFEDGE		3
-#define TRYSTEP_NOSUPPORT	4
-#define TRYSTEP_INWATER		5
-
 // Client data that stays across deathmatch respawns.
 typedef struct
 {
