@@ -849,100 +849,70 @@ static qboolean FacingIdeal(const edict_t* self)
 	return (delta <= 45.0f || delta >= 315.0f);
 }
 
-
-//=============================================================================
-
-qboolean M_CheckAttack (edict_t *self)
+qboolean M_CheckAttack(edict_t* self) //TODO: move to g_monster.c, make static.
 {
-	vec3_t	spot1, spot2;
-	float	chance;
-	trace_t	tr;
-
 	if (self->enemy->health > 0)
 	{
-	// see if any entities are in the way of the shot
-		VectorCopy (self->s.origin, spot1);
-		spot1[2] += self->viewheight;
-		VectorCopy (self->enemy->s.origin, spot2);
-		spot2[2] += self->enemy->viewheight;
+		// See if any entities are in the way of the shot.
+		vec3_t self_pos;
+		VectorCopy(self->s.origin, self_pos);
+		self_pos[2] += (float)self->viewheight;
 
-		gi.trace (spot1, vec3_origin, vec3_origin, spot2, self, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA,&tr);
+		vec3_t enemy_pos;
+		VectorCopy(self->enemy->s.origin, enemy_pos);
+		enemy_pos[2] += (float)self->enemy->viewheight;
 
-		// do we have a clear shot?
-		if (tr.ent != self->enemy)
+		trace_t trace;
+		gi.trace(self_pos, vec3_origin, vec3_origin, enemy_pos, self, CONTENTS_SOLID | CONTENTS_MONSTER | CONTENTS_SLIME | CONTENTS_LAVA, &trace);
+
+		// Do we have a clear shot?
+		if (trace.ent != self->enemy)
 			return false;
 	}
-	
-	// melee attack
-	
+
+	// Melee attack.
 	if (enemy_range == RANGE_MELEE)
 	{
-		// don't always melee in easy mode
-		if (skill->value == 0 && irand(0, 3) )
+		// Don't always melee in easy mode.
+		if (SKILL == SKILL_EASY && irand(0, 3) != 0)
 			return false;
 
-		if (classStatics[self->classID].msgReceivers[MSG_MELEE])
-		{
-			self->monsterinfo.attack_state = AS_MELEE;
-		}
-		else
-		{
-			self->monsterinfo.attack_state = AS_MISSILE;
-		}
+		self->monsterinfo.attack_state = ((classStatics[self->classID].msgReceivers[MSG_MELEE] != NULL) ? AS_MELEE : AS_MISSILE);
 		return true;
 	}
-	
-	// missile attack
 
-	if (!classStatics[self->classID].msgReceivers[MSG_MISSILE])
+	// Missile attack.
+	if (classStatics[self->classID].msgReceivers[MSG_MISSILE] == NULL || level.time < self->monsterinfo.attack_finished || enemy_range == RANGE_FAR)
 		return false;
-		
-	if (level.time < self->monsterinfo.attack_finished)
-		return false;
-		
-	if (enemy_range == RANGE_FAR)
-		return false;
+
+	float chance;
 
 	if (self->monsterinfo.aiflags & AI_STAND_GROUND)
-	{
-		chance = 0.4;
-	}
+		chance = 0.4f;
 	else if (enemy_range == RANGE_MELEE)
-	{
-		chance = 0.2;
-	}
+		chance = 0.2f;
 	else if (enemy_range == RANGE_NEAR)
-	{
-		chance = 0.1;
-	}
+		chance = 0.1f;
 	else if (enemy_range == RANGE_MID)
-	{
-		chance = 0.02;
-	}
+		chance = 0.02f;
 	else
-	{
 		return false;
-	}
 
-	if (skill->value == 0)
-		chance *= 0.5;
-	else if (skill->value >= 2)
-		chance *= 2;
+	if (SKILL == SKILL_EASY)
+		chance *= 0.5f;
+	else if (SKILL >= SKILL_HARD)
+		chance *= 2.0f;
 
-	if (flrand(0.0, 1.0) < chance)
+	if (flrand(0.0f, 1.0f) < chance)
 	{
 		self->monsterinfo.attack_state = AS_MISSILE;
-		self->monsterinfo.attack_finished = level.time + flrand(0.0, 2.0);
+		self->monsterinfo.attack_finished = level.time + flrand(0.0f, 2.0f);
+
 		return true;
 	}
 
 	if (self->flags & FL_FLY)
-	{
-		if (!irand(0, 2))
-			self->monsterinfo.attack_state = AS_SLIDING;
-		else
-			self->monsterinfo.attack_state = AS_STRAIGHT;
-	}
+		self->monsterinfo.attack_state = (irand(0, 2) ? AS_STRAIGHT : AS_SLIDING); // 66% chance of AS_STRAIGHT. // TODO: scale by skill?
 
 	return false;
 }
