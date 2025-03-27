@@ -214,23 +214,13 @@ void ai_moveright(edict_t* self, const float dist)
 	}
 }
 
-/*
-=============
-ai_goal_charge
-
-Turns towards target and advances
-Use this call with a distnace of 0 to replace ai_face
-==============
-*/
-void ai_goal_charge (edict_t *self, float dist)
+// Turns towards target and advances. Use this call with a distance of 0 to replace ai_face.
+void ai_goal_charge(edict_t* self, const float dist)
 {
 	MG_FaceGoal(self, true);
 
-	if(self->spawnflags&MSF_FIXED)
-		return;
-
-	if (dist)
-		MG_WalkMove (self, self->s.angles[YAW], dist);
+	if (!(self->spawnflags & MSF_FIXED) && dist != 0.0f)
+		MG_WalkMove(self, self->s.angles[YAW], dist);
 }
 
 /*
