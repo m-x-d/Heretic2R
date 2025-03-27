@@ -1202,5 +1202,8 @@
     <ClInclude Include="g_trigger.h">
       <Filter>src\Game objects</Filter>
     </ClInclude>
+    <ClInclude Include="g_ai_local.h">
+      <Filter>src\Monsters</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,37 +1,24 @@
+//
 // g_ai.c
+//
+// Copyright 1998 Raven Software
+//
 
-#include <assert.h>
 #include "g_ai.h" //mxd
-#include "g_monster.h"
-#include "Random.h"
-#include "vector.h"
-#include "buoy.h"
+#include "g_ai_local.h" //mxd
 #include "mg_ai.h" //mxd
 #include "mg_guide.h"
 #include "m_stats.h"
 #include "p_anims.h"
+#include "Random.h"
+#include "Vector.h"
 
-qboolean FindTarget (edict_t *self);
-extern cvar_t	*maxclients;
+void SV_NewChaseDir(edict_t* actor, edict_t* enemy, float dist); //TODO: add to m_move.h
+void ssithraCheckJump(edict_t* self); //TODO: add to m_plagueSsithra.h
 
-qboolean ai_checkattack (edict_t *self, float dist);
-//void gkrokon_maintain_waypoints(edict_t *self, float mintel, float foo1, float foo2);
-void SV_NewChaseDir (edict_t *actor, edict_t *enemy, float dist);
-
-//void gkrokon_hopdown(edict_t *self);
-void ssithraCheckJump (edict_t *self);
-void ssithraStartle (edict_t *self);
-void ssithraLookRight (edict_t *self);
-void seraph_startle(edict_t *self);
-void SV_FixCheckBottom (edict_t *ent);
-qboolean clear_visible (edict_t *self, edict_t *other);
-qboolean ok_to_wake (edict_t *monster, qboolean gorgon_roar, qboolean ignore_ambush);
-
-// AI Targeting Globals
-qboolean	enemy_vis;		// TRUE if enemy is visible
-qboolean	enemy_infront;	// TRUE if enemy is in front 
-int			enemy_range;	// range from enemy RANGE_MELEE, RANGE_NEAR, RANGE_MID, RANGE_FAR
-float		enemy_yaw;		// ideal yaw to face enemy
+// AI targeting globals.
+static int enemy_range; // Range from enemy RANGE_MELEE, RANGE_NEAR, RANGE_MID, RANGE_FAR.
+static float enemy_yaw; // Ideal yaw to face enemy.
 
 //============================================================================
 
@@ -1625,9 +1612,7 @@ qboolean ai_checkattack (edict_t *self, float dist)
 		return false;
 	}
 
-	enemy_vis = false;
-
-// see if the enemy is dead
+	// see if the enemy is dead
 	hesDeadJim = false;
 	if ((!self->enemy) || (!self->enemy->inuse))
 	{
@@ -1680,7 +1665,7 @@ qboolean ai_checkattack (edict_t *self, float dist)
 	self->show_hostile = level.time + 1;		// wake up other monsters
 
 // check knowledge of enemy
-	enemy_vis = clear_visible(self, self->enemy);
+	qboolean enemy_vis = clear_visible(self, self->enemy);
 	if (enemy_vis)
 	{
 		self->monsterinfo.search_time = level.time + 5;
@@ -1694,7 +1679,6 @@ qboolean ai_checkattack (edict_t *self, float dist)
 //			return true;
 //	}
 
-	enemy_infront = infront(self, self->enemy);
 	enemy_range = range(self, self->enemy);
 	VectorSubtract (self->enemy->s.origin, self->s.origin, temp);
 	enemy_yaw = VectorYaw(temp);
