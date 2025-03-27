@@ -20,103 +20,90 @@ void ssithraCheckJump(edict_t* self); //TODO: add to m_plagueSsithra.h
 static int enemy_range; // Range from enemy RANGE_MELEE, RANGE_NEAR, RANGE_MID, RANGE_FAR.
 static float enemy_yaw; // Ideal yaw to face enemy.
 
-//============================================================================
-
-// ****************************************************************************
-// ai_trystep
-//
-// Like other functions to attempt a step, but this will return exactly
-// what happened to make it fail.
-// ****************************************************************************
-int ai_trystep(edict_t *ent, vec3_t move)
+// Like other functions to attempt a step, but this will return exactly what happened to make it fail.
+static int AI_TryStep(edict_t* ent, vec3_t move) //mxd. Named 'ai_trystep' in original logic.
 {
-	vec3_t		oldorg, neworg, copyorg, end, inf_mins, inf_maxs;
-	trace_t		trace;
-	float		stepsize = 18;
-	vec3_t		test;
-	int			contents;
+	// Try the move.
+	vec3_t old_org;
+	VectorCopy(ent->s.origin, old_org);
 
-	// try the move	
-	VectorCopy (ent->s.origin, oldorg);
-	VectorCopy (ent->s.origin, copyorg);
+	vec3_t new_org;
+	VectorAdd(ent->s.origin, move, new_org);
 
-	VectorCopy (ent->mins, inf_mins);
-	VectorCopy (ent->maxs, inf_maxs);
+	// Push down from a step height above the wished position.
+	new_org[2] += STEP_SIZE; //mxd. Use define.
 
-	VectorAdd (ent->s.origin, move, neworg);
+	vec3_t end;
+	VectorCopy(new_org, end);
+	end[2] -= STEP_SIZE * 2.0f; //mxd. Use define.
 
-	VectorScale(inf_mins, 2, inf_mins);
-	VectorScale(inf_maxs, 2, inf_maxs);
+	vec3_t inf_mins;
+	vec3_t inf_maxs;
+	VectorCopy(ent->mins, inf_mins);
+	VectorCopy(ent->maxs, inf_maxs);
 
-	// push down from a step height above the wished position
-	neworg[2] += stepsize;
-	VectorCopy (neworg, end);
-	end[2] -= stepsize*2;
+	VectorScale(inf_mins, 2.0f, inf_mins);
+	VectorScale(inf_maxs, 2.0f, inf_maxs);
 
-	gi.trace (neworg, inf_mins, inf_maxs, end, ent, MASK_MONSTERSOLID,&trace);
+	trace_t trace;
+	gi.trace(new_org, inf_mins, inf_maxs, end, ent, MASK_MONSTERSOLID, &trace);
 
 	if (trace.allsolid)
 		return TRYSTEP_ALLSOLID;
 
 	if (trace.startsolid)
 	{
-		neworg[2] -= stepsize;
-		gi.trace (neworg, ent->mins, ent->maxs, end, ent, MASK_MONSTERSOLID,&trace);
+		new_org[2] -= STEP_SIZE; //mxd. Use define.
+
+		gi.trace(new_org, ent->mins, ent->maxs, end, ent, MASK_MONSTERSOLID, &trace);
+
 		if (trace.allsolid || trace.startsolid)
 			return TRYSTEP_STARTSOLID;
 	}
 
-	// don't go in to water unless only 40% hieght deep
+	// Don't go in to water unless only 40% height deep.
 	if (ent->waterlevel == 0)
 	{
-		test[0] = trace.endpos[0];
-		test[1] = trace.endpos[1];
-		test[2] = trace.endpos[2] + ent->mins[2];// + 1;
-		test[2] += (ent->maxs[2] - ent->mins[2]) * 0.4;
-		contents = gi.pointcontents(test);
+		vec3_t test;
+		VectorCopy(trace.endpos, test);
+		test[2] += ent->mins[2] + (ent->maxs[2] - ent->mins[2]) * 0.4f;
 
-		if (contents & MASK_WATER)
+		if (gi.pointcontents(test) & MASK_WATER)
 			return TRYSTEP_INWATER;
 	}
 
-	if (trace.fraction == 1)
+	if (trace.fraction == 1.0f)
 	{
-		// if monster had the ground pulled out, go ahead and fall
-		if ( ent->flags & FL_PARTIALGROUND )
+		// If monster had the ground pulled out, go ahead and fall.
+		if (ent->flags & FL_PARTIALGROUND)
 		{
-			VectorAdd (ent->s.origin, move, ent->s.origin);
+			VectorAdd(ent->s.origin, move, ent->s.origin);
 			ent->groundentity = NULL;
+
 			return TRYSTEP_OK;
 		}
-	
-		// walked off an edge
+
+		// Walked off an edge.
 		return TRYSTEP_OFFEDGE;
 	}
 
-	
-	// check point traces down for dangling corners
-	VectorCopy (trace.endpos, ent->s.origin);
-	
-	if (!M_CheckBottom (ent))
+	// Check point traces down for dangling corners.
+	VectorCopy(trace.endpos, ent->s.origin);
+
+	if (!M_CheckBottom(ent))
 	{
-		if ( ent->flags & FL_PARTIALGROUND )
-		{
-			VectorCopy (oldorg, ent->s.origin);
-			return TRYSTEP_OK;
-		}
-	
-		VectorCopy (oldorg, ent->s.origin);		
-		return TRYSTEP_NOSUPPORT;
+		VectorCopy(old_org, ent->s.origin);
+		return ((ent->flags & FL_PARTIALGROUND) ? TRYSTEP_OK : TRYSTEP_NOSUPPORT);
 	}
 
-	if ( ent->flags & FL_PARTIALGROUND )
+	if (ent->flags & FL_PARTIALGROUND)
 		ent->flags &= ~FL_PARTIALGROUND;
 
 	ent->groundentity = trace.ent;
 	ent->groundentity_linkcount = trace.ent->linkcount;
 
-	VectorCopy (oldorg, ent->s.origin);
-	
+	VectorCopy(old_org, ent->s.origin);
+
 	return TRYSTEP_OK;
 }
 
@@ -1801,7 +1788,7 @@ void ai_runaway (edict_t *self, float dist)
 			move[1] = sin(yaw)*dist * 4;
 			move[2] = 0;
 
-			ret = ai_trystep(self, move);
+			ret = AI_TryStep(self, move);
 
 			if ((ret != TRYSTEP_OK) && (self->monsterinfo.idle_time < level.time))
 			{
@@ -1843,7 +1830,7 @@ void ai_runaway (edict_t *self, float dist)
 			move[1] = sin(yaw)*dist;
 			move[2] = 0;
 
-			ret = ai_trystep(self, move);
+			ret = AI_TryStep(self, move);
 
 			if ((ret != TRYSTEP_OK) && (self->monsterinfo.idle_time < level.time))
 			{
@@ -2076,7 +2063,7 @@ void old_ai_run (edict_t *self, float dist)
 			move[1] = sin(yaw)*dist * 2;//4
 			move[2] = 0;
 
-			ret = ai_trystep(self, move);
+			ret = AI_TryStep(self, move);
 
 			if ((ret != TRYSTEP_OK) && (self->monsterinfo.idle_time < level.time))
 			{
@@ -2122,7 +2109,7 @@ void old_ai_run (edict_t *self, float dist)
 			move[1] = sin(yaw)*dist;
 			move[2] = 0;
 
-			ret = ai_trystep(self, move);
+			ret = AI_TryStep(self, move);
 
 			if ((ret != TRYSTEP_OK) && (self->monsterinfo.idle_time < level.time))
 			{
