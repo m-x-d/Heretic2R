@@ -455,7 +455,7 @@ void spreader_melee(edict_t *self, G_Message_t *msg)
 						{
 							if(self->enemy->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
 							{
-								if(infront(self->enemy, self))
+								if(AI_IsInfrontOf(self->enemy, self))
 								{
 									P_KnockDownPlayer(&self->enemy->client->playerinfo);
 								}

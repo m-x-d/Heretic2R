@@ -315,7 +315,7 @@ qboolean AI_IsClearlyVisible(const edict_t* self, const edict_t* other) //mxd. N
 }
 
 // Returns true if the entity is in front (in sight) of self.
-qboolean infront(const edict_t* self, const edict_t* other)
+qboolean AI_IsInfrontOf(const edict_t* self, const edict_t* other) //mxd. Named 'infront' in original logic.
 {
 	vec3_t check_angles;
 
@@ -747,7 +747,7 @@ qboolean FindTarget(edict_t* self)
 			continue;
 		}
 
-		const qboolean enemy_infront = ((self->classID == CID_ASSASSIN) ? true : infront(self, client)); //mxd
+		const qboolean enemy_infront = ((self->classID == CID_ASSASSIN) ? true : AI_IsInfrontOf(self, client)); //mxd
 
 		if (!enemy_infront && client->client != NULL && PlayerIsCreeping(&client->client->playerinfo))
 			continue;

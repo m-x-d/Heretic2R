@@ -2557,7 +2557,7 @@ void ssithraCheckLoop (edict_t *self)
 	if(!AI_IsVisible(self, self->enemy))
 		return;
 
-	if(!infront(self, self->enemy))
+	if(!AI_IsInfrontOf(self, self->enemy))
 		return;
 
 	if(irand(0, 100) < self->bypass_missile_chance)
@@ -2569,7 +2569,7 @@ void ssithraCheckLoop (edict_t *self)
 	jump_range = 128;
 	min_seperation = self->maxs[0] + self->enemy->maxs[0];
 
-	if (infront(self, self->enemy))
+	if (AI_IsInfrontOf(self, self->enemy))
 	{//don't loop if enemy close enough
 		if (len < min_seperation + melee_range)
 		{
@@ -2883,7 +2883,7 @@ qboolean ssithraAlerted (edict_t *self, alertent_t *alerter, edict_t *enemy)
 		else//spin around and wake up!
 			self->spawnflags |= MSF_SSITHRA_SPIN;
 	}
-	else if(!infront(self,enemy))
+	else if(!AI_IsInfrontOf(self,enemy))
 	{
 		if(irand(0, 1)&&self->curAnimID!=ANIM_IDLEBASIC)
 		{//50% chance of startling them up if not already in startle anim
@@ -2893,7 +2893,7 @@ qboolean ssithraAlerted (edict_t *self, alertent_t *alerter, edict_t *enemy)
 			VectorClear(self->v_angle_ofs);
 			self->v_angle_ofs[YAW]=-90;
 
-			if(infront(self, enemy))//fancy way of seeing if explosion was to right
+			if(AI_IsInfrontOf(self, enemy))//fancy way of seeing if explosion was to right
 			{
 				VectorCopy(saveangles,self->v_angle_ofs);
 				ssithraLookRight(self);//fixme: if already looking right, see you

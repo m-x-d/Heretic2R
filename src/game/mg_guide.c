@@ -1710,7 +1710,7 @@ check_attacks:
 			{
 				self->ai_mood_flags &= ~AI_MOOD_FLAG_BACKSTAB;
 			}
-			else if (infront(self->enemy, self))
+			else if (AI_IsInfrontOf(self->enemy, self))
 			{
 				self->ai_mood = AI_MOOD_DELAY;
 				return;
@@ -1718,7 +1718,7 @@ check_attacks:
 		}
 	}
 
-	const qboolean enemy_infront = infront(self, self->enemy);
+	const qboolean enemy_infront = AI_IsInfrontOf(self, self->enemy);
 
 	// What if too close - backpedal or flee for a bit?
 	// Also, need a chance of closing in anyway - a bypass_missile_chance?

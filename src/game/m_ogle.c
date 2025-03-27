@@ -969,7 +969,7 @@ void ogle_pain (edict_t *self, G_Message_t *msg)
 			return;
 		}
 		*/
-		if(attacker && !infront(self, attacker))
+		if(attacker && !AI_IsInfrontOf(self, attacker))
 			SetAnim(self, ANIM_PAIN3);
 		else if (chance < 33)
 			SetAnim(self, ANIM_PAIN1);

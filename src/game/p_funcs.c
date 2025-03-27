@@ -10,6 +10,7 @@
 #include "p_main.h"
 #include "p_morph.h" //mxd
 #include "p_teleport.h" //mxd
+#include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
 #include "g_playstats.h"
 #include "g_Skeletons.h"
@@ -821,7 +822,7 @@ void G_PlayerVaultKick(const playerinfo_t* info)
 	tr.ent->velocity[2] = 150.0f;
 
 	// Knock down player we kicked?
-	if (tr.ent->client != NULL && tr.ent->health > 0 && infront(tr.ent, self) && irand(0, 2) == 0)
+	if (tr.ent->client != NULL && tr.ent->health > 0 && AI_IsInfrontOf(tr.ent, self) && irand(0, 2) == 0)
 		P_KnockDownPlayer(&tr.ent->client->playerinfo);
 }
 

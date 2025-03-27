@@ -696,7 +696,7 @@ qboolean seraphAlerted (edict_t *self, alertent_t *alerter, edict_t *enemy)
 			}
 		}
 
-		if(!infront(self,enemy))
+		if(!AI_IsInfrontOf(self,enemy))
 		{
 			if(alerter->lifetime < level.time + 2)
 				self->alert_time = level.time + 2;//be ready for 2 seconds to wake up if alerted again

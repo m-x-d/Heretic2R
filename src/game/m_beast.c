@@ -517,7 +517,7 @@ void tbeast_melee(edict_t *self, G_Message_t *msg)
 		SetAnim(self,ANIM_WALKATK);
 	}
 
-	if (self->enemy->classID != CID_TCHECKRIK && ((irand(0, 1) && infront(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && shoulder_room_ahead(self))
+	if (self->enemy->classID != CID_TCHECKRIK && ((irand(0, 1) && AI_IsInfrontOf(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && shoulder_room_ahead(self))
 	{
 		tbeast_init_charge(self);
 	}
@@ -528,7 +528,7 @@ void tbeast_melee(edict_t *self, G_Message_t *msg)
 void tbeast_start_charge(edict_t *self, G_Message_t *msg)
 {
 	MG_ChangeYaw(self);
-	if(self->enemy->classID != CID_TCHECKRIK && ((irand(0, 1) && infront(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && shoulder_room_ahead(self))
+	if(self->enemy->classID != CID_TCHECKRIK && ((irand(0, 1) && AI_IsInfrontOf(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && shoulder_room_ahead(self))
 	{
 		tbeast_init_charge(self);
 	}
@@ -584,7 +584,7 @@ void tbeast_run(edict_t *self, G_Message_t *msg)
 		}
 	}*/
 
-	if (self->enemy->classID != CID_TCHECKRIK && enemy_vis && ((irand(0, 1) && infront(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && shoulder_room_ahead(self))
+	if (self->enemy->classID != CID_TCHECKRIK && enemy_vis && ((irand(0, 1) && AI_IsInfrontOf(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && shoulder_room_ahead(self))
 	{
 		tbeast_init_charge(self);
 	}
@@ -2066,7 +2066,7 @@ void tbeast_fake_impact(edict_t *self, trace_t *trace, qboolean crush)
 		}
 		else if(Vec3NotZero(self->velocity) && trace->fraction < 0.7)
 		{
-			if(infront(self, trace->ent))
+			if(AI_IsInfrontOf(self, trace->ent))
 			{
 				if(trace->ent->targetname && !stricmp(trace->ent->targetname, "pillar"))
 				{//FIXME: In higher skills, less chance of breaking it?  Or debounce time?

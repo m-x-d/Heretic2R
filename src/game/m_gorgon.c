@@ -165,7 +165,7 @@ void gorgon_blocked (edict_t *self, trace_t *trace)
 			{
 				if(trace->ent->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
 				{
-					if(infront(trace->ent, self))
+					if(AI_IsInfrontOf(trace->ent, self))
 					{
 						P_KnockDownPlayer(&trace->ent->client->playerinfo);
 					}
@@ -464,7 +464,7 @@ void gorgon_walk(edict_t *self, G_Message_t *msg)
 		}
 	}
 
-	if(AI_IsClearlyVisible(self, self->enemy) && infront(self, self->enemy))
+	if(AI_IsClearlyVisible(self, self->enemy) && AI_IsInfrontOf(self, self->enemy))
 	{
 		VectorSubtract (self->s.origin, targ_org, v);
 		len = VectorLength (v);
@@ -654,7 +654,7 @@ void gorgon_run(edict_t *self, G_Message_t *msg)
 	{//JUMP
 		if(self->enemy && irand(0, 4) && self->damage_debounce_time < level.time && !self->monsterinfo.roared)
 		{//should we do this the first time we see player?
-			if(infront(self, self->enemy))
+			if(AI_IsInfrontOf(self, self->enemy))
 			{
 				if(gorgonFindAsleepGorgons(self))
 				{
@@ -1957,7 +1957,7 @@ void gorgon_ai_swim (edict_t *self, float dist)
 			{
 				if(AI_IsClearlyVisible(self, self->enemy))
 				{
-					if(infront(self, self->enemy))
+					if(AI_IsInfrontOf(self, self->enemy))
 					{
 						VectorSubtract(self->enemy->s.origin, self->s.origin, dir);
 						dist = VectorLength(dir);

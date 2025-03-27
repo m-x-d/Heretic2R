@@ -1258,7 +1258,7 @@ void insect_pause (edict_t *self)
 				{
 					if(M_DistanceToTarget(self, self->enemy) > 250)
 					{
-						if(infront(self, self->enemy))
+						if(AI_IsInfrontOf(self, self->enemy))
 						{
 							self->ai_mood = AI_MOOD_ATTACK;
 							self->monsterinfo.flee_finished = -1;
@@ -1472,7 +1472,7 @@ void insectCheckLoop (edict_t *self, float frame)
 	if(!AI_IsVisible(self, self->enemy))
 		return;
 
-	if(!infront(self, self->enemy))
+	if(!AI_IsInfrontOf(self, self->enemy))
 		return;
 
 	ai_charge2(self, 0);
@@ -1489,7 +1489,7 @@ void insectCheckLoop (edict_t *self, float frame)
 	missile_range = 384;
 	min_seperation = self->maxs[0] + self->enemy->maxs[0];
 
-	if (infront(self, self->enemy))
+	if (AI_IsInfrontOf(self, self->enemy))
 	{//don't loop if enemy close enough
 		if (len < min_seperation + melee_range)
 			return;

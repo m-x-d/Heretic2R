@@ -271,7 +271,7 @@ void mssithraSwipe (edict_t *self)
 
 	if (len < (self->maxs[0] + self->enemy->maxs[0] + 45)  )	// A hit
 	{	
-		if (infront(self, self->enemy))
+		if (AI_IsInfrontOf(self, self->enemy))
 		{
 			gi.sound (self, CHAN_WEAPON, Sounds[SND_SWIPEHIT], 1, ATTN_NORM, 0);
 			VectorSet(off, 35.0, 0.0, 32.0);
@@ -533,7 +533,7 @@ void mssithraCheckLoop (edict_t *self, float frame)
 	if(!AI_IsVisible(self, self->enemy))
 		return;
 
-	if(!infront(self, self->enemy))
+	if(!AI_IsInfrontOf(self, self->enemy))
 		return;
 
 	if(irand(0,10)<5)
@@ -545,7 +545,7 @@ void mssithraCheckLoop (edict_t *self, float frame)
 	jump_range = 128;
 	min_seperation = self->maxs[0] + self->enemy->maxs[0];
 
-	if (infront(self, self->enemy))
+	if (AI_IsInfrontOf(self, self->enemy))
 	{//don't loop if enemy close enough
 		if (len < min_seperation + melee_range)
 			return;

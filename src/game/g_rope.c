@@ -6,6 +6,7 @@
 
 #include "g_rope.h" //mxd
 #include "cl_strings.h"
+#include "g_ai.h" //mxd
 #include "m_chicken_anim.h"
 #include "p_main.h"
 #include "p_anims.h"
@@ -216,7 +217,7 @@ static void TutorialChickenThink(edict_t* self) //mxd. Named 'hanging_chicken_th
 			float knockback_time;
 
 			// The knockback_time indicates how long this knockback affects the player.
-			if (force > 200.0f && trace.ent->health > 0 && trace.ent->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN && infront(trace.ent, self))
+			if (force > 200.0f && trace.ent->health > 0 && trace.ent->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN && AI_IsInfrontOf(trace.ent, self))
 			{
 				if (self->evade_debounce_time < level.time)
 				{

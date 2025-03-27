@@ -691,7 +691,7 @@ static qboolean MG_AssassinCheckJump(edict_t* self) //mxd. Named 'MG_ExtraCheckJ
 	}
 	else
 	{
-		if (self->goalentity == NULL || !infront(self, self->goalentity))
+		if (self->goalentity == NULL || !AI_IsInfrontOf(self, self->goalentity))
 			return false;
 
 		VectorCopy(self->goalentity->s.origin, targ_org);
@@ -875,7 +875,7 @@ static qboolean MG_CheckJump(edict_t* self)
 	}
 	else
 	{
-		if (self->goalentity == NULL || !infront(self, self->goalentity))
+		if (self->goalentity == NULL || !AI_IsInfrontOf(self, self->goalentity))
 			return false;
 
 		if (self->goalentity->groundentity == NULL && self->classID != CID_GORGON)
@@ -1688,7 +1688,7 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 			if (!(self->monsterinfo.aiflags & AI_COWARD) && !(self->monsterinfo.aiflags & AI_NO_MELEE) && !(self->ai_mood_flags & AI_MOOD_FLAG_IGNORE_ENEMY) &&
 				(!(self->monsterinfo.aiflags & AI_FLEE) || self->monsterinfo.flee_finished < level.time))
 			{
-				if (classStatics[self->classID].msgReceivers[MSG_MELEE] != NULL && infront(self, self->enemy))
+				if (classStatics[self->classID].msgReceivers[MSG_MELEE] != NULL && AI_IsInfrontOf(self, self->enemy))
 				{
 					QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 					return true;
@@ -1960,7 +1960,7 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 			if (!(self->monsterinfo.aiflags & AI_COWARD) && !(self->monsterinfo.aiflags & AI_NO_MELEE) && !(self->ai_mood_flags & AI_MOOD_FLAG_IGNORE_ENEMY) &&
 				(!(self->monsterinfo.aiflags & AI_FLEE) || self->monsterinfo.flee_finished < level.time))
 			{
-				if (classStatics[self->classID].msgReceivers[MSG_MELEE] != NULL && infront(self, self->enemy))
+				if (classStatics[self->classID].msgReceivers[MSG_MELEE] != NULL && AI_IsInfrontOf(self, self->enemy))
 				{
 					QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 					return true;

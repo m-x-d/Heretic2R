@@ -466,7 +466,7 @@ void assassindagger (edict_t *self, float right_ofs)
 
 	if (len <= (self->maxs[0] + self->enemy->maxs[0] + 56)  )	// A hit
 	{	
-		if (infront(self, self->enemy))
+		if (AI_IsInfrontOf(self, self->enemy))
 		{
 			if (1)//one or two hands?
 				gi.sound (self, CHAN_WEAPON, Sounds[SND_SLASH1], 1, ATTN_NORM, 0);
@@ -483,7 +483,7 @@ void assassindagger (edict_t *self, float right_ofs)
 
 			if(skill->value >= 2)
 			{
-				if(!infront(self->enemy, self))
+				if(!AI_IsInfrontOf(self->enemy, self))
 				{//backstab!
 					damage = self->enemy->health + irand(-20, 10);
 					if(damage<ASSASSIN_MAX_DAMAGE)
@@ -1743,7 +1743,7 @@ void assassin_ai_walk (edict_t *self, float dist)
 	{
 		if(self->enemy)
 		{
-			if(vhlen(self->s.origin, self->enemy->s.origin) < 48 && infront(self, self->enemy))
+			if(vhlen(self->s.origin, self->enemy->s.origin) < 48 && AI_IsInfrontOf(self, self->enemy))
 			{
 				assassinNodeOn (self, MESH__LKNIFE);
 				SetAnim(self, ANIM_CROUCH_TRANS);
@@ -1752,7 +1752,7 @@ void assassin_ai_walk (edict_t *self, float dist)
 		}
 		else if(self->oldenemy)
 		{
-			if(vhlen(self->s.origin, self->oldenemy->s.origin) < 48 && infront(self, self->oldenemy))
+			if(vhlen(self->s.origin, self->oldenemy->s.origin) < 48 && AI_IsInfrontOf(self, self->oldenemy))
 			{
 				assassinNodeOn (self, MESH__LKNIFE);
 				SetAnim(self, ANIM_CROUCH_TRANS);
@@ -2066,7 +2066,7 @@ void assassinCrouchedCheckAttack (edict_t *self, float attack)
 	if(!AI_IsClearlyVisible(self, self->enemy))
 		return;
 
-	if(!infront(self, self->enemy))
+	if(!AI_IsInfrontOf(self, self->enemy))
 		return;
 
 	if(irand(0,10)<5)
@@ -2154,7 +2154,7 @@ void assassinCheckLoop (edict_t *self, float frame)
 	if(!AI_IsClearlyVisible(self, self->enemy))
 		return;
 
-	if(!infront(self, self->enemy))
+	if(!AI_IsInfrontOf(self, self->enemy))
 		return;
 
 	if(irand(0, 100) < self->bypass_missile_chance)
@@ -2172,7 +2172,7 @@ void assassinCheckLoop (edict_t *self, float frame)
 	jump_range = 128;
 	min_seperation = self->maxs[0] + self->enemy->maxs[0];
 
-	if (infront(self, self->enemy))
+	if (AI_IsInfrontOf(self, self->enemy))
 	{//don't loop if enemy close enough
 		if (len < min_seperation + melee_range)
 			return;
@@ -2405,7 +2405,7 @@ qboolean assassinCheckCloak (edict_t *self)
 	if(!self->enemy)
 		return (false);
 
-	if(infront(self->enemy, self))
+	if(AI_IsInfrontOf(self->enemy, self))
 		chance = -3;
 
 	if(irand(0, 10 - skill->value + chance) <= 0)
@@ -2436,7 +2436,7 @@ qboolean assassinCheckDeCloak (edict_t *self)
 	if(dist<ASSASSIN_MIN_CLOAK_RANGE)
 		return (true);
 
-	if(!infront(self->enemy, self))
+	if(!AI_IsInfrontOf(self->enemy, self))
 		chance = -3;
 
 	if(irand(0, 10 + skill->value * 2 + chance) <= 0)
@@ -2553,7 +2553,7 @@ void assassinCloakThink (edict_t *self)
 					{
 						if(M_DistanceToTarget(self, self->enemy) < 128)
 						{
-							if(infront(self->enemy, self))
+							if(AI_IsInfrontOf(self->enemy, self))
 							{
 								//is he using his staff or jumping into me?
 								lowerseq = found->client->playerinfo.lowerseq;
