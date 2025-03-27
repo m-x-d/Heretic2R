@@ -50,7 +50,6 @@
 #include "p_actions.h"
 
 qboolean clear_visible (edict_t *self, edict_t *other);
-void extrapolateFiredir (edict_t *self,vec3_t p1,float pspeed,edict_t *targ,float accept,vec3_t vec2);
 void create_assassin_dagger(edict_t *Arrow);
 void assassinInitDeCloak (edict_t *self);
 

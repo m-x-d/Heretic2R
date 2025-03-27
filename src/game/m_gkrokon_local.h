@@ -106,8 +106,6 @@ void gkrokonRandomWalkSound (edict_t *self);
 void GkrokonSpoo(edict_t *self);
 void GkrokonDead(edict_t *self);
 
-void extrapolateFiredir (edict_t *self,vec3_t p1,float pspeed,edict_t *targ,float accept,vec3_t vec2);
-
 void create_gkrokon_spoo(edict_t *Spoo);
 
 void GkrokonSpooThink(edict_t *self);

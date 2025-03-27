@@ -27,7 +27,6 @@
 #include "mg_guide.h" //mxd
 #include "p_actions.h"
 
-void extrapolateFiredir (edict_t *self,vec3_t p1,float pspeed,edict_t *targ,float accept,vec3_t vec2);
 void create_ssithra_arrow(edict_t *Arrow);
 
 #define MSSITHRA_JUMP_VELOCITY	300.0
