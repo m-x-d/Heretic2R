@@ -645,7 +645,6 @@ extern void AttackFinished(edict_t* self, float time);
 extern void PauseTime(edict_t* self, float time);
 extern void monster_death_use(edict_t* self);
 extern void M_CatagorizePosition(edict_t* ent);
-extern qboolean M_CheckAttack(edict_t* self);
 extern void M_CheckGround(edict_t* ent);
 
 // g_svcmds.c
