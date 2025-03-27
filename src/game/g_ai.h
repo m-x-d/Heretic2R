@@ -10,7 +10,7 @@
 
 extern void AlertMonsters(const edict_t* self, edict_t* enemy, float lifetime, qboolean ignore_shadows);
 extern void AI_SetSightClient(void);
-extern void FoundTarget(edict_t* self, qboolean set_sight_ent);
+extern void AI_FoundTarget(edict_t* self, qboolean set_sight_ent);
 extern qboolean M_CheckAttack(edict_t* self);
 extern void ExtrapolateFireDirection(const edict_t* self, const vec3_t origin, float proj_speed, const edict_t* target, float accepted_dot, vec3_t out_pos);
 extern void AI_Flee(edict_t* self, float dist);

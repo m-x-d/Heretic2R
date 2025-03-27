@@ -1703,7 +1703,7 @@ qboolean MG_MoveToGoal(edict_t* self, const float dist)
 				if (self->enemy != NULL && self->enemy->client != NULL)
 				{
 					trace.ent->enemy = self->enemy;
-					FoundTarget(trace.ent, false);
+					AI_FoundTarget(trace.ent, false);
 				}
 			}
 		}
@@ -1975,7 +1975,7 @@ qboolean MG_SwimFlyToGoal(edict_t* self, const float dist) //mxd. Used only by P
 				if (self->enemy != NULL && self->enemy->client != NULL)
 				{
 					trace.ent->enemy = self->enemy;
-					FoundTarget(trace.ent, false);
+					AI_FoundTarget(trace.ent, false);
 				}
 			}
 		}

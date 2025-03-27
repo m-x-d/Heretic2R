@@ -712,7 +712,7 @@ qboolean seraphAlerted (edict_t *self, alertent_t *alerter, edict_t *enemy)
 	else
 		self->enemy = enemy;
 
-	FoundTarget(self, true);
+	AI_FoundTarget(self, true);
 
 	return true;
 }

@@ -520,7 +520,7 @@ void rat_eatorder(edict_t *self)
 void rat_use(edict_t *self, edict_t *other, edict_t *activator)
 {
 	self->enemy = activator;
-	FoundTarget(self, 1);
+	AI_FoundTarget(self, 1);
 }
 
 void rat_touch(edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
@@ -576,7 +576,7 @@ void rat_ai_stand(edict_t *self, float dist)
 		//We've got an enemy, now see if we have enough support to attack it
 		if (self->monsterinfo.supporters >= MAX_RAT_ATTACK)
 		{
-			FoundTarget(self, true);
+			AI_FoundTarget(self, true);
 		}
 		else
 		{
@@ -586,7 +586,7 @@ void rat_ai_stand(edict_t *self, float dist)
 				if (self->s.scale < 2.0 || irand(0,1))
 				{
 					//Just attack him
-					FoundTarget(self, true);
+					AI_FoundTarget(self, true);
 				}
 				else
 				{

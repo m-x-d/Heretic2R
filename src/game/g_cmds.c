@@ -895,7 +895,7 @@ static void Cmd_CrazyMonsters_f(const edict_t* ent)
 				enemy = &g_edicts[irand(0, globals.num_edicts - 1)]; //BUGFIX: mxd. irand(0, globals.num_edicts) in original logic, which can potentially cause array overrun.
 
 			e->enemy = enemy;
-			FoundTarget(e, false);
+			AI_FoundTarget(e, false);
 		}
 	}
 }
@@ -909,7 +909,7 @@ static void Cmd_AngerMonsters_f(edict_t* ent)
 		if (e->inuse && e->svflags & SVF_MONSTER)
 		{
 			e->enemy = ent;
-			FoundTarget(e, false);
+			AI_FoundTarget(e, false);
 		}
 	}
 }

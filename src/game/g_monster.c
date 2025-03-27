@@ -553,7 +553,7 @@ void monster_use (edict_t *self, edict_t *other, edict_t *activator)
 // delay reaction so if the monster is teleported, its sound is still heard
 	//self->targetname = "";//so can only be used once...???
 	self->enemy = activator;
-	FoundTarget (self, true);
+	AI_FoundTarget (self, true);
 }
 
 
@@ -580,14 +580,14 @@ void monster_triggered_spawn (edict_t *self)
 
 	if((self->classID==CID_ASSASSIN) && (self->spawnflags & MSF_ASS_TPORTAMBUSH))
 	{
-		FoundTarget (self, true);
+		AI_FoundTarget (self, true);
 		VectorCopy(self->s.origin, pos);
 		pos[2]+=self->mins[2];
 		gi.CreateEffect(NULL, FX_TPORTSMOKE, 0, pos, "");
 	}
 	else if (self->enemy && !(self->spawnflags & MSF_AMBUSH) && !(self->enemy->flags & FL_NOTARGET))
 	{
-		FoundTarget (self, true);
+		AI_FoundTarget (self, true);
 	}
 	else
 	{
@@ -831,7 +831,7 @@ void monster_start_go (edict_t *self)
 	self->monsterinfo.pausetime = -1;
 	if(self->enemy)
 	{//spawned mad
-		FoundTarget(self, false);
+		AI_FoundTarget(self, false);
 	}
 	else
 	{
@@ -1466,7 +1466,7 @@ qboolean M_ValidTarget( edict_t *self, edict_t *target )
 						self->oldenemy = self->enemy;
 
 					self->enemy = newenemy;
-					FoundTarget(self, false);
+					AI_FoundTarget(self, false);
 					self->monsterinfo.searchType = SEARCH_COMMON;
 				}
 			}
@@ -1800,7 +1800,7 @@ qboolean defaultMonsterAlerted (edict_t *self, alertent_t *alerter, edict_t *ene
 	else
 		self->enemy = enemy;
 
-	FoundTarget(self, true);
+	AI_FoundTarget(self, true);
 	return true;
 }
 

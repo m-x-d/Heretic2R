@@ -2525,7 +2525,7 @@ void assassinCloakThink (edict_t *self)
 							if(found->owner)
 							{
 								self->enemy = found->owner;
-								FoundTarget(self, false);
+								AI_FoundTarget(self, false);
 							}
 						}
 						if(assassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
@@ -2542,7 +2542,7 @@ void assassinCloakThink (edict_t *self)
 							if(found->owner)
 							{
 								self->enemy = found->owner;
-								FoundTarget(self, false);
+								AI_FoundTarget(self, false);
 							}
 						}
 						if(assassinChooseTeleportDestination(self, ASS_TP_ANY, true, false))

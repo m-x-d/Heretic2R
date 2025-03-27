@@ -1257,7 +1257,7 @@ qboolean ogle_findtarget (edict_t *self)
 		if(found->classID == CID_SERAPH_OVERLORD && found->health > 0 && (found->health<SERAPH_HEALTH/2 || found->ai_mood == AI_MOOD_FLEE))
 		{
 			self->enemy = found;
-			FoundTarget(self, false);
+			AI_FoundTarget(self, false);
 			return true;
 		}
 	}
@@ -1317,7 +1317,7 @@ qboolean ogle_findtarget (edict_t *self)
 						else
 						{
 							self->enemy = found->enemy;
-							FoundTarget(self, false);
+							AI_FoundTarget(self, false);
 							return true;
 						}
 					}

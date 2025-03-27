@@ -476,7 +476,7 @@ static void PlaySightSound(edict_t* self) //mxd. Added to reduce code duplicatio
 }
 
 // A target has been found, let other monsters know this. Then hunt it.
-void FoundTarget(edict_t* self, const qboolean set_sight_ent)
+void AI_FoundTarget(edict_t* self, const qboolean set_sight_ent) //mxd. Named 'FoundTarget' in original logic.
 {
 	// Let other monsters see this monster for a while.
 	if (self->enemy == NULL)
@@ -737,7 +737,7 @@ qboolean FindTarget(edict_t* self)
 					continue;
 
 				self->enemy = (ANARCHY ? client : client->enemy);
-				FoundTarget(self, client->ai_mood != AI_FLEE); // When AI_FLEE, let them stay the sight entity; otherwise make me the sight entity. 
+				AI_FoundTarget(self, client->ai_mood != AI_FLEE); // When AI_FLEE, let them stay the sight entity; otherwise make me the sight entity. 
 
 				return true;
 			}
@@ -824,7 +824,7 @@ qboolean FindTarget(edict_t* self)
 		}
 
 		// Got one.
-		FoundTarget(self, true);
+		AI_FoundTarget(self, true);
 
 		// Break the loop.
 		return true;

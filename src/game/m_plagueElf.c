@@ -258,7 +258,7 @@ void plagueElf_c_anims(edict_t *self, G_Message_t *msg)
 		case MSG_C_THINKAGAIN:			// Think for yourself, elf.
 			self->monsterinfo.c_mode = 0;
 			self->enemy = self->monsterinfo.c_ent;
-			FoundTarget(self, true);
+			AI_FoundTarget(self, true);
 //			self->takedamage = DAMAGE_YES;
 			curr_anim = ANIM_C_THINKAGAIN;
 			break;
@@ -1637,7 +1637,7 @@ void pelf_PollResponse ( edict_t *self, int sound_event, int sound_id, float tim
 		if(!ent->enemy)
 		{
 			ent->enemy = self->enemy;
-			FoundTarget(ent, false);
+			AI_FoundTarget(ent, false);
 		}
 
 		//This is the elf to respond, so post the message

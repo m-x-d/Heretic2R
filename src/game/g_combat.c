@@ -297,7 +297,7 @@ static void M_ReactToDamage(edict_t* target, edict_t* attacker)
 		target->ai_mood_flags &= ~AI_MOOD_FLAG_BACKSTAB;
 
 		if (!target->monsterinfo.awake)
-			FoundTarget(target, true);
+			AI_FoundTarget(target, true);
 
 		return;
 	}
@@ -316,7 +316,7 @@ static void M_ReactToDamage(edict_t* target, edict_t* attacker)
 			target->oldenemy = target->enemy;
 
 		target->enemy = attacker;
-		FoundTarget(target, true);
+		AI_FoundTarget(target, true);
 
 		return;
 	}
@@ -324,7 +324,7 @@ static void M_ReactToDamage(edict_t* target, edict_t* attacker)
 	if (attacker->client == NULL && (target->monsterinfo.aiflags & AI_GOOD_GUY) && !(attacker->monsterinfo.aiflags & AI_GOOD_GUY))
 	{
 		target->enemy = attacker;
-		FoundTarget(target, true);
+		AI_FoundTarget(target, true);
 
 		return;
 	}
@@ -338,7 +338,7 @@ static void M_ReactToDamage(edict_t* target, edict_t* attacker)
 			target->oldenemy = target->enemy;
 
 		target->enemy = attacker;
-		FoundTarget(target, true);
+		AI_FoundTarget(target, true);
 
 		return;
 	}
@@ -364,7 +364,7 @@ static void M_ReactToDamage(edict_t* target, edict_t* attacker)
 			}
 
 			target->enemy = attacker;
-			FoundTarget(target, true);
+			AI_FoundTarget(target, true);
 		}
 		else if (attacker->enemy != target && (target->enemy == NULL || target->enemy->health <= 0))
 		{
@@ -373,7 +373,7 @@ static void M_ReactToDamage(edict_t* target, edict_t* attacker)
 				target->oldenemy = target->enemy;
 
 			target->enemy = attacker->enemy;
-			FoundTarget(target, true);
+			AI_FoundTarget(target, true);
 		}
 		else if ((attacker->classID != target->classID && !irand(0, 2)) || ANARCHY)
 		{
@@ -382,7 +382,7 @@ static void M_ReactToDamage(edict_t* target, edict_t* attacker)
 				target->oldenemy = target->enemy;
 
 			target->enemy = attacker;
-			FoundTarget(target, true);
+			AI_FoundTarget(target, true);
 		}
 
 		return;
@@ -390,7 +390,7 @@ static void M_ReactToDamage(edict_t* target, edict_t* attacker)
 
 	// Attacker's on crack, kill him.
 	target->enemy = attacker;
-	FoundTarget(target, true);
+	AI_FoundTarget(target, true);
 }
 
 static qboolean IsFlammable(const edict_t* target)

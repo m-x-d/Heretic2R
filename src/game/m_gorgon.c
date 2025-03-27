@@ -239,7 +239,7 @@ void gorgonRoar (edict_t *self)
 								{
 									found->monsterinfo.roared = true;
 									found->enemy = self->enemy;
-									FoundTarget(found, false);
+									AI_FoundTarget(found, false);
 									QPostMessage(found, MSG_VOICE_POLL, PRI_DIRECTIVE, "");
 								}
 							}
@@ -2042,7 +2042,7 @@ void gorgon_ai_eat(edict_t *self, float crap)
 			{
 				self->spawnflags &= ~MSF_EATING;
 				self->monsterinfo.aiflags &= ~AI_EATING;
-				FoundTarget(self, true);
+				AI_FoundTarget(self, true);
 				return;
 			}
 		}

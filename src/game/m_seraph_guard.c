@@ -1153,7 +1153,7 @@ void golem_awaken (edict_t *self, edict_t *other, edict_t *activator)
 	self->melee_range *= self->s.scale;
 
 	self->enemy = activator;
-	FoundTarget(self, false);
+	AI_FoundTarget(self, false);
 }
 
 
