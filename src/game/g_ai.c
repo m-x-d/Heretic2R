@@ -62,73 +62,71 @@ void ai_move(edict_t* self, const float dist)
 	MG_WalkMove(self, self->s.angles[YAW], dist);
 }
 
-/*
-=============
-ai_stand
-
-Used for standing around and looking for players
-Distance is for slight position adjustments needed by the animations
-==============
-*/
-void ai_stand (edict_t *self, float dist)
+// Used for standing around and looking for players. Distance is for slight position adjustments needed by the animations.
+void ai_stand(edict_t* self, const float dist) //mxd. 'dist' is always 0.
 {
-	vec3_t	v;
+	if (dist != 0.0f)
+		M_walkmove(self, self->s.angles[YAW], dist);
 
-	if (dist)
-		M_walkmove (self, self->s.angles[YAW], dist);
-
-	if(self->enemy)
+	if (self->enemy != NULL) //TODO: move below AI_STAND_GROUND check?
 		return;
 
 	if (self->monsterinfo.aiflags & AI_STAND_GROUND)
 	{
-		if (self->enemy)
+		if (self->enemy != NULL) //TODO: never executed: already returned if have enemy!
 		{
-			VectorSubtract (self->enemy->s.origin, self->s.origin, v);
-			self->ideal_yaw = VectorYaw(v);
-			if (self->s.angles[YAW] != self->ideal_yaw && self->monsterinfo.aiflags & AI_TEMP_STAND_GROUND)
+			vec3_t diff;
+			VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
+			self->ideal_yaw = VectorYaw(diff);
+
+			if (self->s.angles[YAW] != self->ideal_yaw && (self->monsterinfo.aiflags & AI_TEMP_STAND_GROUND))
 			{
 				self->monsterinfo.aiflags &= ~(AI_STAND_GROUND | AI_TEMP_STAND_GROUND);
 				QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			}
-			M_ChangeYaw (self);
-			ai_checkattack (self, 0);
+
+			M_ChangeYaw(self);
+			ai_checkattack(self, 0.0f);
 		}
 		else
-			FindTarget (self);
+		{
+			FindTarget(self);
+		}
+
 		return;
 	}
 
-	if (FindTarget (self))
+	if (FindTarget(self))
 		return;
-	
 
-	//FIXME: walking a beat monsters, but that may not be working, need to test!
-	//check for target also?
-	if (self->monsterinfo.pausetime == -1)
+	//FIXME: 'walking a beat' monsters, but that may not be working, need to test! Check for target also?
+	if (self->monsterinfo.pausetime == -1.0f)
 	{
 		self->spawnflags |= MSF_WANDER;
 		self->ai_mood = AI_MOOD_WANDER;
 		QPostMessage(self, MSG_CHECK_MOOD, PRI_DIRECTIVE, "i", AI_MOOD_WANDER);
-		return;
-	}
-	else if (level.time > self->monsterinfo.pausetime)
-	{
-		self->ai_mood = AI_MOOD_WALK;
-		QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+
 		return;
 	}
 
-	if (!(self->spawnflags & MSF_AMBUSH) && (self->monsterinfo.idle) && (level.time > self->monsterinfo.idle_time))
+	if (level.time > self->monsterinfo.pausetime)
 	{
-		if (self->monsterinfo.idle_time)
+		self->ai_mood = AI_MOOD_WALK;
+		QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+
+		return;
+	}
+
+	if (!(self->spawnflags & MSF_AMBUSH) && self->monsterinfo.idle != NULL && level.time > self->monsterinfo.idle_time)
+	{
+		if (self->monsterinfo.idle_time > 0.0f)
 		{
-			self->monsterinfo.idle (self);
-			self->monsterinfo.idle_time = level.time + flrand(15.0F, 30.0F);
+			self->monsterinfo.idle(self);
+			self->monsterinfo.idle_time = level.time + flrand(15.0f, 30.0f);
 		}
 		else
 		{
-			self->monsterinfo.idle_time = level.time + flrand(0.0F, 15.0F);
+			self->monsterinfo.idle_time = level.time + flrand(0.0f, 15.0f);
 		}
 	}
 }
