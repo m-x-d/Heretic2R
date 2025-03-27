@@ -561,24 +561,15 @@ void FoundTarget(edict_t* self, const qboolean set_sight_ent)
 	PlaySightSound(self); //mxd
 }
 
-/*
-qboolean ok_to_wake (edict_t *monster, qboolean gorgon_roar)
-
-Can this monster be woken up by something other than direct line of sight to player
-*/
-
-qboolean ok_to_wake (edict_t *monster, qboolean gorgon_roar, qboolean ignore_ambush)
+// Can this monster be woken up by something other than direct line of sight to player?
+qboolean ok_to_wake(const edict_t* monster, const qboolean gorgon_roar, const qboolean ignore_ambush)
 {
-	if(gorgon_roar)
-	{
-		if(monster->monsterinfo.c_mode)
-			return false;
-	}
-	else if(monster->monsterinfo.aiflags & AI_EATING ||//eating or perching
-		monster->targetname ||//a monster that's supposed to be triggered - problem, one a monster is used and woken up, won't respond to alerts like others...?
-		monster->monsterinfo.c_mode ||//cinematic
-		monster->spawnflags & MSF_ASLEEP ||//shouldn't happen, but just in case
-		(monster->spawnflags & MSF_AMBUSH && !ignore_ambush))
+	if (gorgon_roar)
+		return !monster->monsterinfo.c_mode;
+
+	// When targetname is set: a monster that's supposed to be triggered - problem, one a monster is used and woken up, won't respond to alerts like others...?
+	if ((monster->monsterinfo.aiflags & AI_EATING) || monster->targetname != NULL ||
+		monster->monsterinfo.c_mode || (monster->spawnflags & MSF_ASLEEP) || (monster->spawnflags & MSF_AMBUSH && !ignore_ambush))
 		return false;
 
 	return true;
