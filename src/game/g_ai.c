@@ -474,107 +474,91 @@ static void HuntTarget(edict_t* self)
 		AttackFinished(self, 1.0f);
 }
 
-/*
-===========
-FoundTarget - a target has been found, let other monsters know this. Then hunt it
-============
-*/
-void FoundTarget (edict_t *self, qboolean setsightent)
+static void PlaySightSound(edict_t* self) //mxd. Added to reduce code duplication.
 {
-	char	*o_target;
-	// let other monsters see this monster for a while
-	if (!self->enemy)
+	if (self->oldenemy == NULL)
+	{
+		const byte snd_type = ((self->monsterinfo.aiflags & AI_SOUND_TARGET) ? SIGHT_VISIBLE_TARGET : SIGHT_SOUND_TARGET); //mxd. //TODO: logic should be inverted?
+		QPostMessage(self, MSG_VOICE_SIGHT, PRI_DIRECTIVE, "be", snd_type, self->enemy);
+	}
+
+	self->spawnflags &= ~MSF_AMBUSH;
+}
+
+// A target has been found, let other monsters know this. Then hunt it.
+void FoundTarget(edict_t* self, const qboolean set_sight_ent)
+{
+	// Let other monsters see this monster for a while.
+	if (self->enemy == NULL)
 		return;
 
-	if(self->classID == CID_OGLE)
-		self->spawnflags = 0;
+	if (self->classID == CID_OGLE)
+		self->spawnflags = 0; //TODO: what does this do?
 
 	self->monsterinfo.awake = true;
 	self->spawnflags &= ~MSF_AMBUSH;
 	self->targetname = NULL;
-	self->monsterinfo.pausetime = -1;//was 0;
+	self->monsterinfo.pausetime = -1.0f;
 
-	if(self->wakeup_target)
+	if (self->wakeup_target != NULL)
 	{
-		o_target = self->target;
+		char* save_target = self->target;
 		self->target = self->wakeup_target;
 		G_UseTargets(self, self->enemy);
-		self->target = o_target;
+		self->target = save_target;
 		self->wakeup_target = NULL;
 	}
 
-	if (self->enemy->client && setsightent)
+	if (set_sight_ent && self->enemy->client != NULL)
 	{
 		level.sight_entity = self;
 		level.sight_entity_framenum = level.framenum;
 		level.sight_entity->light_level = 128;
 	}
 
-	self->show_hostile = level.time + 1;		// wake up other monsters
-
+	self->show_hostile = level.time + 1.0f; // Wake up other monsters.
 	VectorCopy(self->enemy->s.origin, self->monsterinfo.last_sighting);
 
-	if (!self->combattarget )	// Not going for a combat point?
+	if (self->combattarget == NULL) // Not going for a combat point?
 	{
-		// dont want to do this if we are a fish
+		// Don't want to do this if we are a fish.
 		if (self->classID != CID_FISH)
-			HuntTarget (self);
+			HuntTarget(self);
 
-		if (!self->oldenemy)
-		{
-			if (!(self->monsterinfo.aiflags & AI_SOUND_TARGET) )
-				QPostMessage(self, MSG_VOICE_SIGHT, PRI_DIRECTIVE, "be", SIGHT_SOUND_TARGET, self->enemy);
-			else
-				QPostMessage(self, MSG_VOICE_SIGHT, PRI_DIRECTIVE, "be", SIGHT_VISIBLE_TARGET, self->enemy);
-		}
+		PlaySightSound(self); //mxd
 
-		self->spawnflags &= ~MSF_AMBUSH;
 		return;
 	}
 
-	self->goalentity = self->movetarget = G_PickTarget(self->combattarget);
-	
-	if (!self->movetarget)
-	{
-		self->goalentity = self->movetarget = self->enemy;
-		// dont want to do this if we are a fish
-		if (self->classID != CID_FISH)
-			HuntTarget (self);
-		
-		if (!self->oldenemy)
-		{
-			if (!(self->monsterinfo.aiflags & AI_SOUND_TARGET) )
-				QPostMessage(self, MSG_VOICE_SIGHT, PRI_DIRECTIVE, "be", SIGHT_SOUND_TARGET, self->enemy);
-			else
-				QPostMessage(self, MSG_VOICE_SIGHT, PRI_DIRECTIVE, "be", SIGHT_VISIBLE_TARGET, self->enemy);
-		}
+	self->goalentity = G_PickTarget(self->combattarget);
+	self->movetarget = self->goalentity;
 
-//		gi.dprintf("%s at %s, combattarget %s not found\n", self->classname, vtos(self->s.origin), self->combattarget);
-		self->spawnflags &= ~MSF_AMBUSH;
+	if (self->movetarget == NULL)
+	{
+		self->goalentity = self->enemy;
+		self->movetarget = self->enemy;
+
+		// Don't want to do this if we are a fish.
+		if (self->classID != CID_FISH)
+			HuntTarget(self);
+
+		PlaySightSound(self); //mxd
+
 		return;
 	}
 
-	// clear out our combattarget, these are a one shot deal
+	// Clear out our combattarget, these are a one shot deal.
 	self->combattarget = NULL;
 	self->monsterinfo.aiflags |= AI_COMBAT_POINT;
 
-	// clear the targetname, that point is ours!
+	// Clear the targetname, that point is ours!
 	self->movetarget->targetname = NULL;
 
-	// run for it , assuming we aren't a fish
+	// Run for it, assuming we aren't a fish.
 	if (self->classID != CID_FISH)
 		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 
-	//Make a sight sound
-	if (!self->oldenemy)
-	{
-		if (!(self->monsterinfo.aiflags & AI_SOUND_TARGET) )
-			QPostMessage(self, MSG_VOICE_SIGHT, PRI_DIRECTIVE, "be", SIGHT_SOUND_TARGET, self->enemy);
-		else
-			QPostMessage(self, MSG_VOICE_SIGHT, PRI_DIRECTIVE, "be", SIGHT_VISIBLE_TARGET, self->enemy);
-	}
-	
-	self->spawnflags &= ~MSF_AMBUSH;
+	PlaySightSound(self); //mxd
 }
 
 /*
