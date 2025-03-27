@@ -233,71 +233,37 @@ void ai_turn(edict_t* self, const float dist)
 		M_ChangeYaw(self);
 }
 
-
-/*
-
-.enemy
-Will be world if not currently angry at anyone.
-
-.movetarget
-The next path spot to walk toward.  If .enemy, ignore .movetarget.
-When an enemy is killed, the monster will try to return to it's path.
-
-.hunt_time
-Set to time + something when the player is in sight, but movement straight for
-him is blocked.  This causes the monster to use wall following code for
-movement direction instead of sighting on the player.
-
-.ideal_yaw
-A yaw angle of the intended direction, which will be turned towards at up
-to 45 deg / state.  If the enemy is in view and hunt_time is not active,
-this will be the exact line towards the enemy.
-
-.pausetime
-A monster will leave it's stand state and head towards it's .movetarget when
-time > .pausetime.
-
-walkmove(angle, speed) primitive is all or nothing
-*/
-
-int categorize_range (edict_t *self, edict_t *other, float len)
+static int CategorizeRange(const edict_t* self, const edict_t* other, const float len) //mxd. Named 'categorize_range' in original logic.
 {
-	float	dist;
-
-	if (self->monsterinfo.aiflags & AI_EATING) // Eating
+	// Eating.
+	if (self->monsterinfo.aiflags & AI_EATING)
 	{
-		if (len < MELEE_DISTANCE)	// Melee distance
-		{
-			if ( len < (self->maxs[0] + other->maxs[0] + 15))
-				return RANGE_MELEE;
-		}
+		if (len < MELEE_DISTANCE && len < self->maxs[0] + other->maxs[0] + 15.0f) // Melee distance.
+			return RANGE_MELEE;
 
-		if (len < 175)				// Attacking distance
-			return RANGE_NEAR;
-		if (len < 350)				// Hissing distance
-			return RANGE_MID;
-		return RANGE_FAR;
-	}
-	else				// Not eating
-	{
-		if (len < MELEE_DISTANCE)
-		{
-			if ( len < (self->maxs[0] + other->maxs[0] + 25))
-				return RANGE_MELEE;
-		}
-		if (len < 500)
+		if (len < 175.0f) // Attacking distance.
 			return RANGE_NEAR;
 
-		if(self->wakeup_distance)
-			dist = self->wakeup_distance;
-		else
-			dist = MAX_SIGHT_PLAYER_DIST;
-
-		if (len < dist)
+		if (len < 350.0f) // Hissing distance.
 			return RANGE_MID;
+
 		return RANGE_FAR;
 	}
+
+	// Not eating.
+	if (len < MELEE_DISTANCE && len < self->maxs[0] + other->maxs[0] + 25.0f) // Melee distance.
+		return RANGE_MELEE;
+
+	if (len < 500.0f) // Attacking distance.
+		return RANGE_NEAR;
+
+	const float dist = ((self->wakeup_distance > 0.0f ? self->wakeup_distance : MAX_SIGHT_PLAYER_DIST)); //mxd
+	if (len < dist) // Hissing distance.
+		return RANGE_MID;
+
+	return RANGE_FAR;
 }
+
 /*
 =============
 range
@@ -317,7 +283,7 @@ int range (edict_t *self, edict_t *other)
 	VectorSubtract (self->s.origin, other->s.origin, v);
 	len = VectorLength (v);
 	
-	return categorize_range(self, other, len);
+	return CategorizeRange(self, other, len);
 }
 
 /*
@@ -984,7 +950,7 @@ startcheck:
 		if(dist > self->wakeup_distance)
 			goto nextcheck;
 
-		r = categorize_range (self, client, dist);
+		r = CategorizeRange (self, client, dist);
 
 		if (r == RANGE_FAR)
 			goto nextcheck;
