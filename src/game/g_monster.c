@@ -722,7 +722,7 @@ qboolean monster_start (edict_t *self)
 	if(self->classID!=CID_TBEAST)
 		self->s.effects|=EF_CAMERA_NO_CLIP;
 
-	if (G_MonsterShadow[self->classID].useShadow)
+	if (G_MonsterShadow[self->classID].use_shadow)
 	{
 		gi.CreateEffect(&self->s,
 						FX_SHADOW,
