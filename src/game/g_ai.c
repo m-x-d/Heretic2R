@@ -267,7 +267,7 @@ static int GetRange(const edict_t* self, const edict_t* other) //mxd. Named 'ran
 }
 
 // Returns true if the entity is visible to self, even if not infront().
-qboolean visible(const edict_t* self, const edict_t* other) //TODO: rename to AI_Visible.
+qboolean AI_IsVisible(const edict_t* self, const edict_t* other) //mxd. Named 'visible' in original logic.
 {
 	if (self == NULL || other == NULL)
 		return false;
@@ -733,7 +733,7 @@ qboolean FindTarget(edict_t* self)
 				if (client->enemy != NULL && (client->enemy->flags & FL_NOTARGET))
 					continue;
 
-				if (!visible(self, client))
+				if (!AI_IsVisible(self, client))
 					continue;
 
 				self->enemy = (ANARCHY ? client : client->enemy);
@@ -793,7 +793,7 @@ qboolean FindTarget(edict_t* self)
 
 		//sfs -- This check is much less trivial than infront: probably wasn't a noticeable deal, since RANGE_FAR was first rejection check,
 		// but it's still better to try the dotproduct before the traceline.
-		if (!visible(self, client))
+		if (!AI_IsVisible(self, client))
 			continue;
 
 		self->enemy = client;

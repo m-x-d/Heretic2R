@@ -2039,7 +2039,7 @@ void gorgon_ai_eat(edict_t *self, float crap)
 		edist = VectorNormalize(v);
 		if(edist<self->wakeup_distance)
 		{
-			if(visible(self, self->enemy))
+			if(AI_IsVisible(self, self->enemy))
 			{
 				self->spawnflags &= ~MSF_EATING;
 				self->monsterinfo.aiflags &= ~AI_EATING;
@@ -2049,7 +2049,7 @@ void gorgon_ai_eat(edict_t *self, float crap)
 		}
 		else if(self->curAnimID == ANIM_EAT_LOOP && !irand(0, 5))
 		{
-			if(visible(self, self->enemy))
+			if(AI_IsVisible(self, self->enemy))
 			{
 				AngleVectors(self->s.angles, forward, right, NULL);
 				fdot = DotProduct(v, forward);

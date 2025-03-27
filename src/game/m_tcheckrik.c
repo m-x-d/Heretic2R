@@ -1254,7 +1254,7 @@ void insect_pause (edict_t *self)
 		{
 			if(self->enemy->classID == CID_TBEAST)
 			{
-				if(visible(self, self->enemy))
+				if(AI_IsVisible(self, self->enemy))
 				{
 					if(M_DistanceToTarget(self, self->enemy) > 250)
 					{
@@ -1469,7 +1469,7 @@ void insectCheckLoop (edict_t *self, float frame)
 	if(self->enemy->health <= 0)
 		return;
 
-	if(!visible(self, self->enemy))
+	if(!AI_IsVisible(self, self->enemy))
 		return;
 
 	if(!infront(self, self->enemy))

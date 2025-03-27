@@ -530,7 +530,7 @@ void mssithraCheckLoop (edict_t *self, float frame)
 
 	ai_charge2(self, 0);
 
-	if(!visible(self, self->enemy))
+	if(!AI_IsVisible(self, self->enemy))
 		return;
 
 	if(!infront(self, self->enemy))

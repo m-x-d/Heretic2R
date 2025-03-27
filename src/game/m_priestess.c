@@ -173,7 +173,7 @@ void priestess_teleport_move ( edict_t *self )
 		if (startDist < 64)
 			continue;
 
-		if ( (dist < bestDist) && (visible(moveLocation, self->enemy)) )
+		if ( (dist < bestDist) && (AI_IsVisible(moveLocation, self->enemy)) )
 		{
 			VectorCopy(moveLocation->s.origin, testPos);
 			testPos[2] += 36;
@@ -1365,7 +1365,7 @@ void priestess_pause( edict_t *self )
 	{
 		len = M_DistanceToTarget(self, self->enemy);
 
-		clear_LOS = visible(self, self->enemy);
+		clear_LOS = AI_IsVisible(self, self->enemy);
 
 		if (!clear_LOS && chance < 75)
 		{

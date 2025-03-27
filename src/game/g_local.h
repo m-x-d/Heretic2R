@@ -621,7 +621,6 @@ extern edict_t* G_PickTarget(const char* targetname);
 
 // Commonly used functions.
 extern qboolean clear_visible(edict_t* self, edict_t* other);
-extern qboolean visible(edict_t* self, edict_t* other);
 extern qboolean infront(edict_t* self, edict_t* other);
 
 extern void G_UseTargets(edict_t* ent, edict_t* activator);

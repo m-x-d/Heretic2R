@@ -1358,7 +1358,7 @@ qboolean M_ValidOldEnemy (edict_t *self)
 		return false;
 
 	if(self->monsterinfo.last_successful_enemy_tracking_time + MONSTER_SEARCH_TIME < level.time)
-		if(!visible(self, self->oldenemy))
+		if(!AI_IsVisible(self, self->oldenemy))
 			return false;
 
 	self->monsterinfo.aiflags &= ~AI_STRAIGHT_TO_ENEMY;
@@ -1452,7 +1452,7 @@ qboolean M_ValidTarget( edict_t *self, edict_t *target )
 					if(c_dist[i] < e_dist)
 					{
 						client = &g_edicts[i];
-						if(visible(self, client))
+						if(AI_IsVisible(self, client))
 						{
 							newenemy = client;
 							e_dist = c_dist[i];

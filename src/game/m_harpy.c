@@ -535,7 +535,7 @@ void harpy_ai_pirch(edict_t *self)
 	if (!M_ValidTarget(self, self->enemy))
 		return;
 
-	if(!visible(self, self->enemy))
+	if(!AI_IsVisible(self, self->enemy))
 		return;
 
 	VectorSubtract(self->enemy->s.origin, self->s.origin, vec);

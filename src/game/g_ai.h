@@ -16,7 +16,7 @@ extern void ExtrapolateFireDirection(const edict_t* self, const vec3_t origin, f
 extern void AI_Flee(edict_t* self, float dist);
 extern float AI_FaceGoal(edict_t* self);
 extern qboolean AI_HaveEnemy(edict_t* self);
-extern qboolean visible(const edict_t* self, const edict_t* other);
+extern qboolean AI_IsVisible(const edict_t* self, const edict_t* other);
 extern qboolean clear_visible(const edict_t* self, const edict_t* other);
 extern qboolean infront(const edict_t* self, const edict_t* other);
 extern qboolean movable(const edict_t* ent);

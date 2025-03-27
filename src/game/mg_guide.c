@@ -847,7 +847,7 @@ qboolean MG_CheckClearPathToEnemy(edict_t* self)
 		vec3_t enemy_diff;
 		VectorSubtract(self->enemy->s.origin, trace.endpos, enemy_diff);
 
-		if (VectorLength(enemy_diff) > 48.0f || !visible(self, self->enemy))
+		if (VectorLength(enemy_diff) > 48.0f || !AI_IsVisible(self, self->enemy))
 			return false; // Couldn't even get close to a visible enemy.
 	}
 
@@ -1695,7 +1695,7 @@ check_attacks:
 			can_attack_melee = true;
 	}
 
-	const qboolean enemy_visible = visible(self, self->enemy);
+	const qboolean enemy_visible = AI_IsVisible(self, self->enemy);
 
 	if (enemy_visible)
 	{

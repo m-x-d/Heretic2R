@@ -216,7 +216,7 @@ void gorgon_melee5check (edict_t *self)
 
 void gorgon_ai_charge2 (edict_t *self, float dist)
 {
-	if(!visible(self, self->enemy))
+	if(!AI_IsVisible(self, self->enemy))
 		return;
 
 	ai_charge2(self, dist);

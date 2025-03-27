@@ -2554,7 +2554,7 @@ void ssithraCheckLoop (edict_t *self)
 	if(!self->enemy)
 		return;
 
-	if(!visible(self, self->enemy))
+	if(!AI_IsVisible(self, self->enemy))
 		return;
 
 	if(!infront(self, self->enemy))
