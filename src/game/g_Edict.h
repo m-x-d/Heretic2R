@@ -184,7 +184,7 @@ struct edict_s
 
 	union
 	{
-		qboolean show_hostile; // Only used by monsters (or g_ai.c at least) - not really sure what for.
+		qboolean show_hostile; // Only used by monsters (or g_ai.c at least) - not really sure what for. //TODO: used as float. Split into 'float wakeup_time' and 'qboolean sphere_of_annihilation_released'.
 		void (*TriggerActivated)(edict_t* self, edict_t* activator);
 	};
 
