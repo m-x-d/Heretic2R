@@ -324,32 +324,24 @@ qboolean clear_visible(const edict_t* self, const edict_t* other) //TODO: rename
 	return (trace.fraction == 1.0f);
 }
 
-/*
-=============
-infront
-
-returns 1 if the entity is in front (in sight) of self
-=============
-*/
-qboolean infront (edict_t *self, edict_t *other)
+// Returns true if the entity is in front (in sight) of self.
+qboolean infront(const edict_t* self, const edict_t* other)
 {
-	vec3_t	vec;
-	float	dot;
-	vec3_t	forward, check_angles;
-	
-	if(Vec3NotZero(self->v_angle_ofs))
-		VectorAdd(self->v_angle_ofs,self->s.angles,check_angles);
+	vec3_t check_angles;
+
+	if (Vec3NotZero(self->v_angle_ofs))
+		VectorAdd(self->v_angle_ofs, self->s.angles, check_angles);
 	else
-		VectorCopy(self->s.angles,check_angles);
-	
-	AngleVectors (check_angles, forward, NULL, NULL);
-	VectorSubtract (other->s.origin, self->s.origin, vec);
-	VectorNormalize (vec);
-	dot = DotProduct (vec, forward);
-	
-	if (dot > 0.3)
-		return true;
-	return false;
+		VectorCopy(self->s.angles, check_angles);
+
+	vec3_t forward;
+	AngleVectors(check_angles, forward, NULL, NULL);
+
+	vec3_t diff;
+	VectorSubtract(other->s.origin, self->s.origin, diff);
+	VectorNormalize(diff);
+
+	return (DotProduct(diff, forward) > 0.3f);
 }
 
 
