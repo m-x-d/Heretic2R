@@ -107,47 +107,31 @@ static int AI_TryStep(edict_t* ent, vec3_t move) //mxd. Named 'ai_trystep' in or
 	return TRYSTEP_OK;
 }
 
-/*
-=================
-AI_SetSightClient
-
-Called once each frame to set level.sight_client to the
-player to be checked for in findtarget.
-
-If all clients are either dead or in notarget, sight_client
-will be null.
-
-In coop games, sight_client will cycle between the clients.
-=================
-*/
-void AI_SetSightClient (void)
+// Called once each frame to set level.sight_client to the player to be checked for in findtarget.
+// If all clients are either dead or in notarget, sight_client will be null.
+// In coop games, sight_client will cycle between the clients.
+void AI_SetSightClient(void)
 {
-	edict_t	*ent;
-	int		start, check;
+	const int start = ((level.sight_client == NULL) ? 1 : level.sight_client - g_edicts);
+	int check = start;
 
-	if (level.sight_client == NULL)
-		start = 1;
-	else
-		start = level.sight_client - g_edicts;
-
-	check = start;
-	while (1)
+	while (true)
 	{
-		check++;
-		if (check > game.maxclients)
+		if (++check > game.maxclients)
 			check = 1;
-		ent = &g_edicts[check];
-		if (ent->inuse
-			&& ent->health > 0
-			&& !(ent->flags & FL_NOTARGET) )
+
+		edict_t* ent = &g_edicts[check];
+
+		if (ent->inuse && ent->health > 0 && !(ent->flags & FL_NOTARGET))
 		{
 			level.sight_client = ent;
-			return;		// got one
+			return; // Got one.
 		}
+
 		if (check == start)
 		{
 			level.sight_client = NULL;
-			return;		// nobody to see
+			return; // Nobody to see.
 		}
 	}
 }
