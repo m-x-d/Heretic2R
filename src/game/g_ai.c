@@ -223,24 +223,14 @@ void ai_goal_charge(edict_t* self, const float dist)
 		MG_WalkMove(self, self->s.angles[YAW], dist);
 }
 
-/*
-=============
-ai_turn
-
-don't move, but turn towards ideal_yaw
-Distance is for slight position adjustments needed by the animations
-=============
-*/
-void ai_turn (edict_t *self, float dist)
+// Don't move, but turn towards ideal_yaw. Distance is for slight position adjustments needed by the animations.
+void ai_turn(edict_t* self, const float dist)
 {
-	if(!(self->spawnflags&MSF_FIXED))
-		if (dist)
-			M_walkmove (self, self->s.angles[YAW], dist);
+	if (!(self->spawnflags & MSF_FIXED) && dist != 0.0f)
+		M_walkmove(self, self->s.angles[YAW], dist);
 
-	if (FindTarget (self))
-		return;
-	
-	M_ChangeYaw (self);
+	if (!FindTarget(self))
+		M_ChangeYaw(self);
 }
 
 
