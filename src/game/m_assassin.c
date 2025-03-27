@@ -391,7 +391,7 @@ void assassinThrowDagger(edict_t *self, float right_ofs)
 	VectorCopy (self->movedir, Arrow->movedir);
 	vectoangles (Forward, Arrow->s.angles);
 
-	extrapolateFiredir (self, Arrow->s.origin, ASSASSIN_DAGGER_SPEED, self->enemy, 0.3, check_lead);
+	ExtrapolateFireDirection (self, Arrow->s.origin, ASSASSIN_DAGGER_SPEED, self->enemy, 0.3, check_lead);
 
 	VectorSubtract(enemy_pos, Arrow->s.origin, enemy_dir);
 	enemy_dist = VectorNormalize(enemy_dir);

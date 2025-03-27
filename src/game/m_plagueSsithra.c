@@ -2326,7 +2326,7 @@ void ssithraDoArrow(edict_t *self, float z_offs)
 	VectorClear(check_lead);
 	if(skill->value > 1)
 	{
-		extrapolateFiredir(self, Arrow->s.origin,
+		ExtrapolateFireDirection(self, Arrow->s.origin,
 			SSITHRA_SPOO_SPEED, self->enemy, 0.3, check_lead);
 	}
 	else
@@ -2405,7 +2405,7 @@ void ssithraDoDuckArrow(edict_t *self, float z_offs)
 	VectorClear(check_lead);
 	if(skill->value > 1)
 	{
-		extrapolateFiredir(self, Arrow->s.origin,
+		ExtrapolateFireDirection(self, Arrow->s.origin,
 			SSITHRA_SPOO_SPEED, self->enemy, 0.3, check_lead);
 	}
 	else

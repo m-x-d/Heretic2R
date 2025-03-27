@@ -1054,7 +1054,7 @@ void AI_Flee(edict_t* self, const float dist) //mxd. Named 'ai_flee' in original
 // Will set "out_pos" to '0 0 0' if there is not a clear line of fire to the spot or if the new vector is out of the acceptable range
 // (based on dot product of original vec and the new vec).
 // PROPOSAL: Factor in skill->value? 0 = no leading, 4 = perfect leading, 1-3 inaccuracy levels for leading.
-void extrapolateFiredir(const edict_t* self, const vec3_t origin, const float proj_speed, const edict_t* target, const float accepted_dot, vec3_t out_pos) //TODO: rename to ExtrapolateFireDirection.
+void ExtrapolateFireDirection(const edict_t* self, const vec3_t origin, const float proj_speed, const edict_t* target, const float accepted_dot, vec3_t out_pos) //mxd. Named 'extrapolateFiredir' in original logic.
 {
 	if (target == NULL)
 	{

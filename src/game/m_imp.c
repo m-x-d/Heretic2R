@@ -1306,7 +1306,7 @@ void imp_fireball (edict_t *self)
 		gi.sound(proj, CHAN_BODY, gi.soundindex("monsters/imp/fireball.wav"), 1, ATTN_NORM, 0);
 	}
 
-	extrapolateFiredir (self, proj->s.origin, 666, self->enemy, 0.3, check_lead);
+	ExtrapolateFireDirection (self, proj->s.origin, 666, self->enemy, 0.3, check_lead);
 	if(Vec3IsZero(check_lead))
 	{
 		VectorScale(vf, 666, proj->velocity);
