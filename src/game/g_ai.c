@@ -223,16 +223,6 @@ void ai_goal_charge(edict_t* self, const float dist)
 		MG_WalkMove(self, self->s.angles[YAW], dist);
 }
 
-// Don't move, but turn towards ideal_yaw. Distance is for slight position adjustments needed by the animations.
-void ai_turn(edict_t* self, const float dist)
-{
-	if (!(self->spawnflags & MSF_FIXED) && dist != 0.0f)
-		M_walkmove(self, self->s.angles[YAW], dist);
-
-	if (!FindTarget(self))
-		M_ChangeYaw(self);
-}
-
 static int CategorizeRange(const edict_t* self, const edict_t* other, const float len) //mxd. Named 'categorize_range' in original logic.
 {
 	// Eating.
