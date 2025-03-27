@@ -529,8 +529,6 @@ extern cvar_t* sv_maxvelocity;
 extern cvar_t* sv_cheats;
 extern cvar_t* sv_nomonsters;
 extern cvar_t* blood_level;
-extern cvar_t* showbuoys;
-extern cvar_t* showlitebuoys;
 extern cvar_t* mgai_debug;
 extern cvar_t* deactivate_buoys;
 extern cvar_t* anarchy;
@@ -764,9 +762,7 @@ typedef struct gclient_s
 extern qboolean FindTarget(edict_t* self);
 extern qboolean movable(edict_t* ent);
 
-// For simplicity of use.. take it out later. //TODO: mxd. Take it out... later?
-#define BUOY_DEBUG			showbuoys->value
-#define BUOY_DEBUG_LITE		showlitebuoys->value
+// For simplicity of use... take it out later. //TODO: mxd. Take it out... later?
 #define MGAI_DEBUG			mgai_debug->value
 #define DEACTIVATE_BUOYS	deactivate_buoys->value
 #define ANARCHY				anarchy->value
