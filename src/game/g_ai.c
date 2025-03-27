@@ -187,6 +187,22 @@ void ai_charge(edict_t* self, const float dist)
 		MG_WalkMove(self, self->s.angles[YAW], dist);
 }
 
+// Turns towards target and advances. Use this call with a distance of 0 to replace ai_face.
+void ai_charge2(edict_t* self, const float dist) //mxd. Same ai_charge(), except extra MG_FaceGoal() call when no enemy...
+{
+	if (self->enemy == NULL)
+		return;
+
+	vec3_t diff;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
+	self->ideal_yaw = VectorYaw(diff);
+
+	MG_ChangeYaw(self);
+
+	if (!(self->spawnflags & MSF_FIXED) && dist != 0.0f)
+		MG_WalkMove(self, self->s.angles[YAW], dist);
+}
+
 /*
 =============
 ai_moveright
@@ -223,32 +239,6 @@ Use this call with a distnace of 0 to replace ai_face
 void ai_goal_charge (edict_t *self, float dist)
 {
 	MG_FaceGoal(self, true);
-
-	if(self->spawnflags&MSF_FIXED)
-		return;
-
-	if (dist)
-		MG_WalkMove (self, self->s.angles[YAW], dist);
-}
-
-/*
-=============
-ai_charge2
-
-Turns towards target and advances
-Use this call with a distnace of 0 to replace ai_face
-==============
-*/
-void ai_charge2 (edict_t *self, float dist)
-{
-	vec3_t	v;
-
-	if(!self->enemy)
-		return;
-
-	VectorSubtract (self->enemy->s.origin, self->s.origin, v);
-	self->ideal_yaw = VectorYaw(v);
-	MG_ChangeYaw (self);
 
 	if(self->spawnflags&MSF_FIXED)
 		return;
