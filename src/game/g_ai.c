@@ -1041,33 +1041,21 @@ float ai_face_goal(edict_t* self)
 	return M_ChangeYaw(self);
 }
 
-/*
-=============
-ai_flee
-
-The monster has an enemy it is trying to get away from
-=============
-*/
-void ai_flee (edict_t *self, float dist)
+// The monster has an enemy it is trying to get away from.
+void ai_flee(edict_t* self, const float dist)
 {
-	vec3_t	vec;
-
-	if (self->enemy)
+	if (self->enemy != NULL)
 	{
-		VectorSubtract (self->enemy->s.origin, self->s.origin, vec);
-		self->ideal_yaw = VectorYaw(vec);
+		vec3_t diff;
+		VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
+		self->ideal_yaw = VectorYaw(diff);
 		self->ideal_yaw = anglemod(self->ideal_yaw + self->best_move_yaw);
 		M_ChangeYaw(self);
-		if(!M_walkmove(self, self->s.angles[YAW], dist) && AnglesEqual(self->s.angles[YAW], self->ideal_yaw, 5))
-			self->best_move_yaw = flrand(60, 300);
-		else
-			self->best_move_yaw = 180;
 
-		/*
-		VectorSubtract(self->s.origin, self->enemy->s.origin, vec);
-		self->ideal_yaw = vectoyaw(vec);
-		M_ChangeYaw(self);
-		M_MoveAwayFromGoal (self, dist);*/
+		if (!M_walkmove(self, self->s.angles[YAW], dist) && AnglesEqual(self->s.angles[YAW], self->ideal_yaw, 5.0f))
+			self->best_move_yaw = flrand(60.0f, 300.0f);
+		else
+			self->best_move_yaw = 180.0f;
 	}
 }
 
