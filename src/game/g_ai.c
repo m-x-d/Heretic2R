@@ -276,41 +276,32 @@ int range(const edict_t* self, const edict_t* other)
 	return CategorizeRange(self, other, VectorLength(diff));
 }
 
-/*
-=============
-visible
-
-returns 1 if the entity is visible to self, even if not infront ()
-=============
-*/
-qboolean visible (edict_t *self, edict_t *other)
+// Returns true if the entity is visible to self, even if not infront().
+qboolean visible(const edict_t* self, const edict_t* other)
 {
-	vec3_t	spot1;
-	vec3_t	spot2;
-	trace_t	trace;
-
-	if (!other)
+	if (self == NULL || other == NULL)
 		return false;
 
-	if (!self)
-		return false;
+	vec3_t self_pos;
+	VectorCopy(self->s.origin, self_pos);
+	self_pos[2] += (float)self->viewheight;
 
-	VectorCopy (self->s.origin, spot1);
-	spot1[2] += self->viewheight;
-	if(self->classID == CID_TBEAST)
+	if (self->classID == CID_TBEAST)
 	{
-		vec3_t	forward;
-	
+		vec3_t forward;
 		AngleVectors(self->s.angles, forward, NULL, NULL);
-		VectorMA(spot1, self->maxs[0], forward, spot1);
+
+		VectorMA(self_pos, self->maxs[0], forward, self_pos);
 	}
-	VectorCopy (other->s.origin, spot2);
-	spot2[2] += other->viewheight;
-	gi.trace (spot1, vec3_origin, vec3_origin, spot2, self, MASK_OPAQUE,&trace);
-	
-	if (trace.fraction == 1.0)
-		return true;
-	return false;
+
+	vec3_t other_pos;
+	VectorCopy(other->s.origin, other_pos);
+	other_pos[2] += (float)other->viewheight;
+
+	trace_t trace;
+	gi.trace(self_pos, vec3_origin, vec3_origin, other_pos, self, MASK_OPAQUE, &trace);
+
+	return (trace.fraction == 1.0f);
 }
 
 /*
