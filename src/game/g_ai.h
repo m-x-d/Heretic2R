@@ -8,16 +8,28 @@
 
 #include "q_Typedef.h"
 
-extern void AlertMonsters(edict_t* self, edict_t* enemy, float lifetime, qboolean ignore_shadows);
+extern void AlertMonsters(const edict_t* self, edict_t* enemy, float lifetime, qboolean ignore_shadows);
 extern void AI_SetSightClient(void);
-extern void FoundTarget(edict_t* self, qboolean setsightent);
+extern void FoundTarget(edict_t* self, qboolean set_sight_ent);
+extern qboolean M_CheckAttack(edict_t* self);
+extern void extrapolateFiredir(const edict_t* self, const vec3_t origin, float proj_speed, const edict_t* target, float accepted_dot, vec3_t out_pos);
+extern void ai_flee(edict_t* self, float dist);
+extern float ai_face_goal(edict_t* self);
+extern qboolean ai_have_enemy(edict_t* self);
+extern int range(const edict_t* self, const edict_t* other);
+extern qboolean visible(const edict_t* self, const edict_t* other);
+extern qboolean clear_visible(const edict_t* self, const edict_t* other);
+extern qboolean infront(const edict_t* self, const edict_t* other);
+extern qboolean movable(const edict_t* ent);
+extern qboolean ok_to_wake(const edict_t* monster, qboolean gorgon_roar, qboolean ignore_ambush);
 
+// Action functions.
 extern void ai_stand(edict_t* self, float dist);
 extern void ai_move(edict_t* self, float dist);
 extern void ai_walk(edict_t* self, float dist);
-extern void ai_turn(edict_t* self, float dist);
 extern void ai_charge(edict_t* self, float dist);
+extern void ai_charge2(edict_t* self, float dist);
 extern void ai_eat(edict_t* self, float dist);
-extern void ai_flee(edict_t* self, float dist);
-
-extern qboolean ok_to_wake(const edict_t* monster, qboolean gorgon_roar, qboolean ignore_ambush);
+extern void ai_spin(edict_t* self, float amount);
+extern void ai_moveright(edict_t* self, float dist);
+extern void ai_goal_charge(edict_t* self, float dist);
