@@ -1310,11 +1310,7 @@ qboolean ai_have_enemy(edict_t* self) //TODO: rename to AI_HaveEnemy.
 	return false;
 }
 
-qboolean movable (edict_t *ent)
+qboolean movable(const edict_t* ent) //TODO: rename to AI_IsMoveable?
 {
-	if(	ent->movetype!=PHYSICSTYPE_NONE &&
-		ent->movetype!=PHYSICSTYPE_PUSH)
-		return true;
-
-	return false;
+	return (ent->movetype != PHYSICSTYPE_NONE && ent->movetype != PHYSICSTYPE_PUSH);
 }
