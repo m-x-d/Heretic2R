@@ -935,7 +935,7 @@ void projectile_homethink (edict_t *self)
 
 void morcalavin_proj1_think( edict_t *self )
 {
-	if(clear_visible(self, self->enemy))
+	if(AI_IsClearlyVisible(self, self->enemy))
 		projectile_homethink(self);
 
 	self->nextthink = level.time + 0.1;

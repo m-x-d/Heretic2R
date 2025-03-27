@@ -17,7 +17,7 @@ extern void AI_Flee(edict_t* self, float dist);
 extern float AI_FaceGoal(edict_t* self);
 extern qboolean AI_HaveEnemy(edict_t* self);
 extern qboolean AI_IsVisible(const edict_t* self, const edict_t* other);
-extern qboolean clear_visible(const edict_t* self, const edict_t* other);
+extern qboolean AI_IsClearlyVisible(const edict_t* self, const edict_t* other);
 extern qboolean infront(const edict_t* self, const edict_t* other);
 extern qboolean movable(const edict_t* ent);
 extern qboolean ok_to_wake(const edict_t* monster, qboolean gorgon_roar, qboolean ignore_ambush);

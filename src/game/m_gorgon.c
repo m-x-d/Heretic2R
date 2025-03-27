@@ -69,7 +69,6 @@ GORGON
 // Definitions
 // *************************************
 
-qboolean clear_visible (edict_t *self, edict_t *other);
 qboolean ok_to_wake (edict_t *monster, qboolean gorgon_roar, qboolean ignore_ambush);
 qboolean gorgon_check_jump (edict_t *self);
 
@@ -330,7 +329,7 @@ qboolean gorgon_check_attack(edict_t *self)
 	if(!M_ValidTarget(self, self->enemy))
 		return false;
 
-	if (!clear_visible(self, self->enemy))
+	if (!AI_IsClearlyVisible(self, self->enemy))
 		return false;
 	
 	VectorSubtract(self->enemy->s.origin, self->s.origin, v);
@@ -465,7 +464,7 @@ void gorgon_walk(edict_t *self, G_Message_t *msg)
 		}
 	}
 
-	if(clear_visible(self, self->enemy) && infront(self, self->enemy))
+	if(AI_IsClearlyVisible(self, self->enemy) && infront(self, self->enemy))
 	{
 		VectorSubtract (self->s.origin, targ_org, v);
 		len = VectorLength (v);
@@ -646,7 +645,7 @@ void gorgon_run(edict_t *self, G_Message_t *msg)
 	if(self->ai_mood == AI_MOOD_PURSUE)
 	{
 //		gi.dprintf("Running gorgon after player...\n");
-		enemy_vis = clear_visible(self, self->enemy);
+		enemy_vis = AI_IsClearlyVisible(self, self->enemy);
 	}
 	else
 		enemy_vis = clear_visible_pos(self, self->monsterinfo.nav_goal);
@@ -1956,7 +1955,7 @@ void gorgon_ai_swim (edict_t *self, float dist)
 		{
 			if(M_ValidTarget(self, self->enemy))
 			{
-				if(clear_visible(self, self->enemy))
+				if(AI_IsClearlyVisible(self, self->enemy))
 				{
 					if(infront(self, self->enemy))
 					{

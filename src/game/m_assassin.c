@@ -49,7 +49,6 @@
 #include "m_stats.h"
 #include "p_actions.h"
 
-qboolean clear_visible (edict_t *self, edict_t *other);
 void create_assassin_dagger(edict_t *Arrow);
 void assassinInitDeCloak (edict_t *self);
 
@@ -2064,7 +2063,7 @@ void assassin_evade (edict_t *self, G_Message_t *msg)
 
 void assassinCrouchedCheckAttack (edict_t *self, float attack)
 {
-	if(!clear_visible(self, self->enemy))
+	if(!AI_IsClearlyVisible(self, self->enemy))
 		return;
 
 	if(!infront(self, self->enemy))
@@ -2152,7 +2151,7 @@ void assassinCheckLoop (edict_t *self, float frame)
 
 	ai_charge2(self, 0);
 
-	if(!clear_visible(self, self->enemy))
+	if(!AI_IsClearlyVisible(self, self->enemy))
 		return;
 
 	if(!infront(self, self->enemy))

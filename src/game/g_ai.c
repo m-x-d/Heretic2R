@@ -295,7 +295,7 @@ qboolean AI_IsVisible(const edict_t* self, const edict_t* other) //mxd. Named 'v
 }
 
 // Returns true if the entity is visible, but not through transparencies.
-qboolean clear_visible(const edict_t* self, const edict_t* other) //TODO: rename to AI_ClearlyVisible.
+qboolean AI_IsClearlyVisible(const edict_t* self, const edict_t* other) //mxd. Named 'clear_visible' in original logic.
 {
 	if (self == NULL || other == NULL)
 		return false;
@@ -978,7 +978,7 @@ static qboolean AI_CheckAttack(edict_t* self) //mxd. Removed unused 'dist' arg. 
 	self->show_hostile = level.time + 1.0f; // Wake up other monsters.
 
 	// Check knowledge of enemy.
-	const qboolean enemy_vis = clear_visible(self, self->enemy);
+	const qboolean enemy_vis = AI_IsClearlyVisible(self, self->enemy);
 
 	if (enemy_vis)
 	{

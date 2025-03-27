@@ -40,7 +40,6 @@ TBEAST
 // Definitions
 // *************************************
 
-qboolean clear_visible (edict_t *self, edict_t *other);
 int tbeast_inwalkframes(edict_t *self);
 
 static vec3_t GetLeftFootOffsetForFrameIndex[18] =
@@ -355,7 +354,7 @@ void tbeast_stand(edict_t *self, G_Message_t *msg)
 
 	if (self->enemy)
 	{
-		if (clear_visible(self, self->enemy))
+		if (AI_IsClearlyVisible(self, self->enemy))
 			return;
 	
 		VectorSubtract(self->enemy->s.origin, self->s.origin, v);
@@ -566,7 +565,7 @@ void tbeast_run(edict_t *self, G_Message_t *msg)
 	VectorSubtract (self->s.origin, targ_org, v);
 	len = VectorLength (v);
 
-	enemy_vis = clear_visible(self, self->enemy);
+	enemy_vis = AI_IsClearlyVisible(self, self->enemy);
 /*	if(enemy_vis && ahead(self, self->enemy))
 	{
 		// Enemy is within range and far enough above or below to warrant a jump
@@ -919,7 +918,7 @@ void tbeast_pause (edict_t *self)
 	if(!M_ValidTarget(self, self->enemy))
 		return;
 	
-	if(clear_visible(self, self->enemy))
+	if(AI_IsClearlyVisible(self, self->enemy))
 	{
 		VectorSubtract (self->s.origin, self->enemy->s.origin, v);
 		len = VectorLength (v);
