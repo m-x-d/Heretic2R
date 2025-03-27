@@ -1226,66 +1226,63 @@ static alertent_t* GetFirstEmptyAlertInList(void)
 	return NULL;
 }
 
-/*
-AlertMonsters
-
-allots an alertent monsters will check during FindTarget to see if they should be alerted by it
-
-self = used for sv_flags info and positioning of the alert entity
-enemy = entity to make the monsters mad at if they're alerted
-(float)lifetime = how many seconds the alert exists for
-(qboolean)ignore_shadows = this alert gives away enemy's position, even if he is in shadows (I use this for staff hits on the floor and any other effect the player makes at his own location(like shooting a weapon), not for projectiles impacting)
-*/
-void AlertMonsters (edict_t *self, edict_t *enemy, float lifetime, qboolean ignore_shadows)
-{//FIXME: if  and stick new one at the end
-	alertent_t	*alerter = level.alert_entity;
-	alertent_t	*last_alert = NULL;
-
-	if (deathmatch->value)		// Don't need this if no monsters...
+// Allots an alertent monsters will check during FindTarget to see if they should be alerted by it.
+// self				- Used for sv_flags info and positioning of the alert entity.
+// enemy			- Entity to make the monsters mad at if they're alerted.
+// lifetime			- How many seconds the alert exists for.
+// ignore_shadows	- This alert gives away enemy's position, even if he is in shadows
+//					  (I use this for staff hits on the floor and any other effect the player makes at his own location
+//					  (like shooting a weapon), not for projectiles impacting).
+void AlertMonsters(const edict_t* self, edict_t* enemy, float lifetime, const qboolean ignore_shadows)
+{
+	if (DEATHMATCH) // Don't need this if no monsters...
 		return;
 
-	if(!lifetime)
-		lifetime = 1.0;//stick around for 1 second
+	if (lifetime == 0.0f)
+		lifetime = 1.0f; // Stick around for 1 second.
 
-	//stick into the level's alerter chain
-	if(alerter)
-	{//go down the list and find an empty slot
-		//fixme: just store the entnum?
-		while(alerter->next_alert)
+	alertent_t* alerter = level.alert_entity;
+	alertent_t* last_alert = NULL;
+
+	// Stick into the level's alerter chain.
+	if (alerter)
+	{
+		// Go down the list and find an empty slot.	//FIXME: just store the entnum?
+		while (alerter->next_alert != NULL)
 		{
 			last_alert = alerter;
 			alerter = alerter->next_alert;
 		}
-		level.last_alert = alerter = GetFirstEmptyAlertInList();
-	}
-	else//we're the first one!
-		level.alert_entity = level.last_alert = alerter = GetFirstEmptyAlertInList();
 
-	if(!alerter)
+		alerter = GetFirstEmptyAlertInList();
+		level.last_alert = alerter;
+	}
+	else // We're the first one!
 	{
-#ifdef _DEVEL
-		gi.dprintf("Error: out of alerts and can't find any empty slots!\n");
-#endif
-		return;
+		alerter = GetFirstEmptyAlertInList();
+		level.last_alert = alerter;
+		level.alert_entity = alerter;
 	}
 
-	//I'm active, don't let my slot be used until I'm freed
-	alerter->inuse = true;
-	//point to the previous alerter, if any
-	alerter->prev_alert = last_alert;
-	//make the previous alerter point to me as the next one
-	if(alerter->prev_alert)
+	if (alerter == NULL)
+		return; // Out of alerts and can't find any empty slots.
+
+	alerter->inuse = true; // I'm active, don't let my slot be used until I'm freed.
+	alerter->prev_alert = last_alert; // Point to the previous alerter, if any.
+
+	// Make the previous alerter point to me as the next one.
+	if (alerter->prev_alert != NULL)
 		alerter->prev_alert->next_alert = alerter;
-	//put me in the "self"'s spot
-	VectorCopy(self->s.origin, alerter->origin);
+
+	VectorCopy(self->s.origin, alerter->origin); // Put me in the "self"'s spot.
 	alerter->enemy = enemy;
-	//should we keep track of owner in case they move to move the alert with them?  Only for monsters
-	//alerter->owner = self;
 	alerter->alert_svflags = self->svflags;
-	if(ignore_shadows)//whatever happened would give away enemy's position, even in shadows
+
+	// Whatever happened would give away enemy's position, even in shadows.
+	if (ignore_shadows)
 		alerter->alert_svflags |= SVF_ALERT_NO_SHADE;
 
-	//stick around until after this point in time
+	// Stick around until after this point in time.
 	alerter->lifetime = level.time + lifetime;
 
 	level.num_alert_ents++;
