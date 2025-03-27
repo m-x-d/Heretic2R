@@ -344,148 +344,109 @@ qboolean infront(const edict_t* self, const edict_t* other)
 	return (DotProduct(diff, forward) > 0.3f);
 }
 
-
-//============================================================================
-
-/*
-Alerted
-
-Checks and see if an alert entity is capable of waking up a monster
-*/
-void alert_timed_out(alertent_t *self);
-qboolean Alerted (edict_t *self)
-{//This alert entity wakes up monsters, let's see what's up...
-	edict_t		*enemy = NULL;
-	alertent_t	*alerter;
-	vec3_t		e_spot, viewspot, dir;
-	qboolean	saw_it = false;
-	float		dist;
-	
-	if(self->monsterinfo.aiflags&AI_NO_ALERT)
+// Checks and see if an alert entity is capable of waking up a monster.
+static qboolean AI_IsAlerted(edict_t* self) //mxd. Named 'Alerted' in original logic.
+{
+	// This alert entity wakes up monsters, let's see what's up...
+	if ((self->monsterinfo.aiflags & AI_NO_ALERT) || self->enemy != NULL || self->monsterinfo.alert == NULL) //mxd. Moved alert() check outside the loop.
 		return false;
 
-	//start the search from the most recent alert to the oldest
-	alerter = level.last_alert;//OOPS, SKIPS LAST
-	
-alertloop:
+	// Get my view spot. //mxd. Moved outside the loop.
+	vec3_t view_pos;
+	VectorCopy(self->s.origin, view_pos);
+	view_pos[2] += (float)self->viewheight;
 
-	if(self->enemy)
-		goto loopagain;
-	
-	//alerter is gone
-	if(!alerter)
-		goto loopagain;
+	// Start the search from the most recent alert to the oldest.
+	alertent_t* alerter = level.last_alert; // OOPS, SKIPS LAST.
+	qboolean first_step = true; //mxd
 
-	if(!alerter->inuse)//loading a saved game invalidates all alerts
-		goto loopagain;
-
-	if(alerter->lifetime < level.time)
-	{//alert timed out, remove from list
-		alert_timed_out(alerter);
-		goto loopagain;
-	}
-
-	if(self->last_alert)//don't be woken up by the same alert twice
+	// The loop.
+	while (true)
 	{
-		if(self->last_alert->inuse)
+		if (first_step)
+			first_step = false;
+		else if (alerter != NULL)
+			alerter = alerter->prev_alert;
+
+		if (alerter == NULL)
+			return false;
+
+		// Loading a saved game invalidates all alerts.
+		if (!alerter->inuse)
+			continue;
+
+		// Alert timed out, remove from list.
+		if (alerter->lifetime < level.time)
 		{
-			if(alerter == self->last_alert && self->last_alert->inuse)
-				goto loopagain;
+			alert_timed_out(alerter);
+			continue;
+		}
+
+		if (self->last_alert != NULL)
+		{
+			// Don't be woken up by the same alert twice.
+			if (self->last_alert == alerter)
+				continue;
+
+			self->last_alert = NULL;
+		}
+
+		// Alerter's enemy is gone.
+		if (alerter->enemy == NULL)
+			continue;
+
+		// No alerts for notarget players.
+		if (alerter->enemy->client != NULL && (alerter->enemy->flags & FL_NOTARGET))
+			continue;
+
+		if (!(self->svflags & SVF_MONSTER) || self->health <= 0)
+			continue;
+
+		// Eating or in a cinematic or not awake, leave them alone.
+		if (!ok_to_wake(self, false, true))
+			continue;
+
+		vec3_t dir;
+		VectorSubtract(self->s.origin, alerter->origin, dir);
+		const float dist = VectorLength(dir);
+
+		// If monster's wakeup_distance is shorter than distance to alerter, leave it alone.
+		if (dist > self->wakeup_distance)
+			continue;
+
+		// Closer means better chance to alert. Problem: different alerts might be more likely to be heard/seen...
+		if (dist > flrand(100.0f, self->wakeup_distance)) // If within 100 always wake up?
+			continue;
+
+		// If not a player, a player's missile or a monster, continue loop?
+
+		// Get center of alert enemy.
+		edict_t* enemy = alerter->enemy;
+
+		vec3_t enemy_pos;
+		VectorAdd(enemy->s.origin, enemy->mins, enemy_pos);
+		VectorMA(enemy_pos, 0.5f, enemy->size, enemy_pos);
+
+		// If being alerted by a monster and not waiting to ambush.
+		if ((alerter->alert_svflags & SVF_MONSTER) && !(self->spawnflags & MSF_AMBUSH))
+		{
+			// Can "see" the owner of the alert even around a corner.
+			if (!gi.inPVS(enemy_pos, view_pos))
+				continue;
 		}
 		else
-			self->last_alert = NULL;
-	}
-
-	//alerter's enemy is gone
-	if(!alerter->enemy)
-		goto loopagain;
-
-	if(alerter->enemy->client)
-	{//no alerts for notarget players
-		if(alerter->enemy->flags & FL_NOTARGET)
-			goto loopagain;
-	}
-
-	//NEVER alert ambush monsters?
-	//if(!(self->spawnflags & MSF_AMBUSH))
-	//	goto loopagain;
-	 
-	 if(!(self->svflags&SVF_MONSTER))
-		goto loopagain;
-	
-	if(self->health<=0)
-		goto loopagain;
-
-	//eating or in a cinematic or not awake, leave them alone
-	if(!ok_to_wake(self, false, true))
-		goto loopagain;
-		
-	//should we keep track of owner in case they move to move the alert with them?  Only for monsters
-	//if(alerter->owner)
-	//	VectorCopy(alerter->owner->s.origin, alerter->s.origin);
-
-	VectorSubtract(self->s.origin, alerter->origin, dir);
-	dist = VectorLength(dir);
-
-	//if monster's wakeup_distance is shorter than dist to alerter, leave it alone
-	if(dist > self->wakeup_distance)
-		goto loopagain;
-
-	//closer means better chance to alert
-	//problem - different alerts might be more likely to be heard/seen...
-	if(dist > flrand(100, self->wakeup_distance))//if within 100 always wake up?
-		goto loopagain;
-	
-	//if not a player, a player's missile or a monster, goto loopagain?
-	//get center of alert enemy
-	enemy = alerter->enemy;
-
-	VectorAdd(enemy->s.origin, enemy->mins, e_spot);
-	VectorMA(e_spot, 0.5, enemy->size, e_spot);
-
-	//get my view spot
-	VectorCopy(self->s.origin, viewspot);
-	viewspot[2] += self->viewheight;
-	
-	//if being alerted by a monster and not waiting to ambush
-	if(alerter->alert_svflags&SVF_MONSTER && !(self->spawnflags&MSF_AMBUSH))
-	{//can "see" the owner of the alert even around a corner
-		saw_it = gi.inPVS(e_spot, viewspot);
-	}
-	else
-	{//alerter not a monster, a projectile or player
-		//can I see (even through translucent brushes) the owner of the alert?
-		//if so, ok even if I'm an ambush monster
-		saw_it = MG_IsVisiblePos(self, e_spot);
-
-		if(!saw_it&&!(self->spawnflags&MSF_AMBUSH))
-		{//no line of sight and not an ambush monster
-			if(gi.inPVS(viewspot, alerter->origin))
-			{//25% chance will see impact(alerter) and detect alert owner anyway
-				if(!irand(0,3))
-					saw_it = true;//go ahead and go for it
-			}
+		{
+			// No line of sight and not an ambush monster.
+			if (!MG_IsVisiblePos(self, enemy_pos) && !(self->spawnflags & MSF_AMBUSH) && gi.inPVS(view_pos, alerter->origin))
+				if (irand(0, 3) != 0) // 25% chance will see impact (alerter) and detect alert owner anyway.
+					continue;
 		}
-	}
-	
-	if(!saw_it)
-		goto loopagain;
 
-	if(!self->monsterinfo.alert)
-		goto loopagain;
-	
-	self->last_alert = alerter;
-	return self->monsterinfo.alert(self, alerter, enemy);
+		self->last_alert = alerter;
 
-loopagain:
-	if(alerter)
-	{
-		alerter = alerter->prev_alert;
-		if(alerter)
-			goto alertloop;
+		// Break the loop.
+		return self->monsterinfo.alert(self, alerter, enemy);
 	}
-	
-	return false;
 }
 
 /*
@@ -779,7 +740,7 @@ startcheck:
 					return false;
 				}
 			}
-			else if (Alerted(self))
+			else if (AI_IsAlerted(self))
 			{//picked up an enemy from an alert
 				return true;
 			}
