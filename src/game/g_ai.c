@@ -943,34 +943,6 @@ static void ai_run_missile(edict_t* self) //mxd. Never used as action function.
 	}
 }
 
-
-/*
-=============
-ai_run_slide
-
-Strafe sideways, but stay at aproximately the same range
-=============
-*/
-void ai_run_slide(edict_t *self, float distance)
-{
-	float	ofs;
-	
-	self->ideal_yaw = enemy_yaw;
-	M_ChangeYaw (self);
-
-	if (self->monsterinfo.lefty)
-		ofs = 90;
-	else
-		ofs = -90;
-	
-	if (M_walkmove (self, self->ideal_yaw + ofs, distance))
-		return;
-		
-	self->monsterinfo.lefty = 1 - self->monsterinfo.lefty;
-	M_walkmove (self, self->ideal_yaw - ofs, distance);
-}
-
-
 /*
 =============
 ai_checkattack
