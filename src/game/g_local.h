@@ -620,7 +620,6 @@ extern edict_t* FindInBounds(const edict_t* from, const vec3_t min, const vec3_t
 extern edict_t* G_PickTarget(const char* targetname);
 
 // Commonly used functions.
-extern int range(edict_t* self, edict_t* other);
 extern qboolean clear_visible(edict_t* self, edict_t* other);
 extern qboolean visible(edict_t* self, edict_t* other);
 extern qboolean infront(edict_t* self, edict_t* other);

@@ -259,7 +259,7 @@ static int CategorizeRange(const edict_t* self, const edict_t* other, const floa
 // RANGE_NEAR (1)	- Visible and infront, or visible and show hostile.
 // RANGE_MID (2)	- Infront and show hostile.
 // RANGE_FAR (3)	- Only triggered by damage.
-int range(const edict_t* self, const edict_t* other)
+static int GetRange(const edict_t* self, const edict_t* other) //mxd. Named 'range' in original logic.
 {
 	vec3_t diff;
 	VectorSubtract(self->s.origin, other->s.origin, diff);
@@ -450,7 +450,7 @@ static void HuntTarget(edict_t* self)
 	}
 	else
 	{
-		const int r = range(self, self->enemy);
+		const int r = GetRange(self, self->enemy);
 		const G_MsgID_t id = (((self->monsterinfo.aiflags & AI_EATING) && r == RANGE_MID) ? MSG_WATCH : MSG_RUN); //mxd. //TODO: range check is strange. Should be 'r >= RANGE_MID'?
 		QPostMessage(self, id, PRI_DIRECTIVE, NULL);
 	}
@@ -986,7 +986,7 @@ static qboolean AI_CheckAttack(edict_t* self) //mxd. Removed unused 'dist' arg. 
 		VectorCopy(self->enemy->s.origin, self->monsterinfo.last_sighting);
 	}
 
-	enemy_range = range(self, self->enemy);
+	enemy_range = GetRange(self, self->enemy);
 
 	vec3_t diff;
 	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
