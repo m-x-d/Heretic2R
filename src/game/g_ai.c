@@ -1212,25 +1212,17 @@ static void AlertTimedOut(alertent_t* self) //mxd. Named 'alert_timed_out' in or
 	level.num_alert_ents--;
 }
 
-/*
-GetFirstEmptyAlertInList
-
-returns the first alert in the level.alertents list that isn;t in use
-*/
-alertent_t *GetFirstEmptyAlertInList(void)
+// Returns the first alert in the level.alertents list that isn't in use.
+static alertent_t* GetFirstEmptyAlertInList(void)
 {
-	int	i;
-	//have max number of alerts, remove the first one
-	if(level.num_alert_ents >= MAX_ALERT_ENTS)
+	// Have max number of alerts, remove the first one.
+	if (level.num_alert_ents >= MAX_ALERT_ENTS)
 		AlertTimedOut(level.alert_entity);
-	
-	for(i = 0; i < MAX_ALERT_ENTS; i++)
-	{
-		if(!level.alertents[i].inuse)
-		{
+
+	for (int i = 0; i < MAX_ALERT_ENTS; i++)
+		if (!level.alertents[i].inuse)
 			return &level.alertents[i];
-		}
-	}
+
 	return NULL;
 }
 
