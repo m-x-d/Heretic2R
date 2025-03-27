@@ -277,7 +277,7 @@ int range(const edict_t* self, const edict_t* other)
 }
 
 // Returns true if the entity is visible to self, even if not infront().
-qboolean visible(const edict_t* self, const edict_t* other)
+qboolean visible(const edict_t* self, const edict_t* other) //TODO: rename to AI_Visible.
 {
 	if (self == NULL || other == NULL)
 		return false;
@@ -304,34 +304,24 @@ qboolean visible(const edict_t* self, const edict_t* other)
 	return (trace.fraction == 1.0f);
 }
 
-/*
-=============
-clear_visible
-
-returns 1 if the entity is visible, but not through transparencies
-=============
-*/
-qboolean clear_visible (edict_t *self, edict_t *other)
+// Returns true if the entity is visible, but not through transparencies.
+qboolean clear_visible(const edict_t* self, const edict_t* other) //TODO: rename to AI_ClearlyVisible.
 {
-	vec3_t	spot1;
-	vec3_t	spot2;
-	trace_t	trace;
-
-	if (!other)
+	if (self == NULL || other == NULL)
 		return false;
 
-	if (!self)
-		return false;
+	vec3_t self_pos;
+	VectorCopy(self->s.origin, self_pos);
+	self_pos[2] += (float)self->viewheight;
 
-	VectorCopy (self->s.origin, spot1);
-	spot1[2] += self->viewheight;
-	VectorCopy (other->s.origin, spot2);
-	spot2[2] += other->viewheight;
-	gi.trace (spot1, vec3_origin, vec3_origin, spot2, self, MASK_SOLID,&trace);
-	
-	if (trace.fraction == 1.0)
-		return true;
-	return false;
+	vec3_t other_pos;
+	VectorCopy(other->s.origin, other_pos);
+	other_pos[2] += (float)other->viewheight;
+
+	trace_t trace;
+	gi.trace(self_pos, vec3_origin, vec3_origin, other_pos, self, MASK_SOLID, &trace);
+
+	return (trace.fraction == 1.0f);
 }
 
 /*
