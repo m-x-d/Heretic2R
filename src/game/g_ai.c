@@ -50,7 +50,7 @@ void AI_SetSightClient(void)
 }
 
 // Monster will eat until harm is done to him or the player moves within range.
-void ai_eat(edict_t* self, float dist) //TODO: rename to AI_Eat?
+void ai_eat(edict_t* self, float dist)
 {
 	self->enemy = NULL;
 	FindTarget(self);
@@ -1283,7 +1283,7 @@ void ai_spin(edict_t* self, const float amount)
 	self->s.angles[YAW] += amount;
 }
 
-qboolean ai_have_enemy(edict_t* self) //TODO: rename to AI_HaveEnemy.
+qboolean AI_HaveEnemy(edict_t* self) //mxd. Named 'ai_have_enemy' in original logic.
 {
 	if (self->enemy != NULL && self->enemy->health > 0)
 		return true;

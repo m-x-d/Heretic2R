@@ -69,7 +69,6 @@ GORGON
 // Definitions
 // *************************************
 
-qboolean ai_have_enemy (edict_t *self);
 qboolean clear_visible (edict_t *self, edict_t *other);
 qboolean ok_to_wake (edict_t *monster, qboolean gorgon_roar, qboolean ignore_ambush);
 qboolean gorgon_check_jump (edict_t *self);
@@ -510,7 +509,7 @@ void gorgon_melee(edict_t *self, G_Message_t *msg)
 	if(self->ai_mood == AI_MOOD_NAVIGATE)
 		return;
 
-	if(!ai_have_enemy(self))
+	if(!AI_HaveEnemy(self))
 		return;
 
 	AngleVectors(self->s.angles,forward, NULL, up);
@@ -630,7 +629,7 @@ void gorgon_run(edict_t *self, G_Message_t *msg)
 	qboolean enemy_vis;
 	vec3_t targ_org;
 
-	if(!ai_have_enemy(self))
+	if(!AI_HaveEnemy(self))
 		return;
 
 	if(!MG_TryGetTargetOrigin(self, targ_org))
@@ -941,7 +940,7 @@ void gorgonbite (edict_t *self)
 		return;
 
 	//fixme: do a checkenemy that checks oldenemy & posts messages
-	if(!ai_have_enemy(self))
+	if(!AI_HaveEnemy(self))
 		return;
 
 	AngleVectors(self->s.angles,forward, NULL, up);
@@ -1554,7 +1553,7 @@ void gorgon_ready_catch (edict_t *self)
 {
 	float enemy_zdist, ok_zdist;
 
-	if(!ai_have_enemy(self))
+	if(!AI_HaveEnemy(self))
 	{
 		SetAnim(self,ANIM_CATCH);
 		return;
