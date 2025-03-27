@@ -28,7 +28,6 @@
 
 void gorgon_land(edict_t *self);
 void M_movetoside (edict_t *self,float yaw, float dist);
-void ai_charge2 (edict_t *self, float dist);
 void ai_moveright (edict_t *self, float dist);
 
 #define GORGON_STEPS		20//number of steps for whole swerve

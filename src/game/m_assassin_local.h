@@ -159,7 +159,6 @@ void assassinbite(edict_t *self);
 void assassin_think_pain(edict_t *self);
 void assassin_pause (edict_t *self);
 void assassin_dropweapon (edict_t *self, int whichknives);
-void ai_charge2 (edict_t *self, float dist);
 void assassinCrouchedCheckAttack (edict_t *self, float attack);
 void assassinSetCrouched (edict_t *self);
 void assassinUndoCrouched (edict_t *self);

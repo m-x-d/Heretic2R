@@ -88,5 +88,3 @@ void elflord_SlideMeter( edict_t *self );
 void elflord_soa_go(edict_t *self);
 void elflord_soa_charge(edict_t *self);
 void elflord_FixAngles(edict_t *self);
-
-void ai_charge2(edict_t *self, float dist);

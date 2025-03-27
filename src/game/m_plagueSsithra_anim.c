@@ -22,7 +22,6 @@
 #include "mg_guide.h" //mxd
 #include "vector.h"
 
-void ai_charge2 (edict_t *self, float dist);
 qboolean ssithraCheckInWater (edict_t *self);
 
 void ssithra_ai_run (edict_t *self, float dist)

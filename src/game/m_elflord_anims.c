@@ -15,8 +15,6 @@
 void elflord_finish_death(edict_t *self);
 void elflord_soa_loop(edict_t *self);
 void elflord_soa_end(edict_t *self);
-void ai_charge2 (edict_t *self, float dist);
-
 
 /*----------------------------------------------------------------------
   Idle - Sit and float

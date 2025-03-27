@@ -195,7 +195,6 @@ void plagueElf_strike(edict_t *self);
 void plagueElf_think_pain(edict_t *self);
 void plagueElf_pause (edict_t *self);
 qboolean plagueElf_dropweapon (edict_t *self, int damage);
-void ai_charge2 (edict_t *self, float dist);
 void plagueElfattack(edict_t *self);
 
 void plagueelf_death_loop( edict_t *self );

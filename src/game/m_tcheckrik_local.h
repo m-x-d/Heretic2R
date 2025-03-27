@@ -151,7 +151,6 @@ void insect_think_pain(edict_t *self);
 void insect_pause (edict_t *self);
 void insect_dropweapon (edict_t *self, int weapon);
 void insect_go_inair(edict_t *self);
-void ai_charge2 (edict_t *self, float dist);
 void insect_sound(edict_t *self, float channel, float soundnum, float attn);
 void insect_wait_twitch (edict_t *self);
 void insect_flyback_loop(edict_t *self);

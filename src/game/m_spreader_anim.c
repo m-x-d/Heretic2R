@@ -20,8 +20,6 @@
 #include "m_spreadermist.h"
 #include "m_spreader_local.h"
 
-void ai_charge2 (edict_t *self, float dist);
-
 /*------------------------------------------------------------------
 	spreader attack 1 -- the throw
 -------------------------------------------------------------------*/
