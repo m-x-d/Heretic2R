@@ -1059,116 +1059,100 @@ void ai_flee(edict_t* self, const float dist)
 	}
 }
 
-/*
-=============================================================
-void extrapolateFiredir (edict_t *self,vec3_t p1,float pspeed,edict_t *targ,float accept,vec3_t vec2) 
-
-MG
-
-Estimates where the "targ" will be by the time a projectile
-travelling at "pspeed" leaving "org" arrives at "targ"'s origin.
-It then calculates a new spot to shoot at so that the
-projectile will arrive at such spot at the same time as
-"targ".  Will return '0 0 0' (FALSE) if there is not a clear
-line of fire to the spot or if the new vector is out of the
-acceptable range (based on dot product of original vec and
-the new vec).
-
-PROPOSAL: Factor in skill->value? 0 = no leading, 4 = perfect leading, 1-3 innaccuracy levels for leading
-=============================================================
-*/
-void extrapolateFiredir (edict_t *self,vec3_t p1,float pspeed,edict_t *targ,float accept,vec3_t vec2) 
+// Estimates where the "target" will be by the time a projectile traveling at "proj_speed" leaving "origin" arrives at "target"'s origin.
+// It then calculates a new spot to shoot at so that the projectile will arrive at such spot at the same time as "target".
+// Will set "out_pos" to '0 0 0' if there is not a clear line of fire to the spot or if the new vector is out of the acceptable range
+// (based on dot product of original vec and the new vec).
+// PROPOSAL: Factor in skill->value? 0 = no leading, 4 = perfect leading, 1-3 inaccuracy levels for leading.
+void extrapolateFiredir(const edict_t* self, const vec3_t origin, const float proj_speed, const edict_t* target, const float accepted_dot, vec3_t out_pos) //TODO: rename to ExtrapolateFireDirection.
 {
-	float dist1, dist2, tspeed, dot, eta1, eta2, eta_delta, tdist;
-	qboolean failed = false;
-	vec3_t p2, p3, targ_dir, vec1, tempv;
+	if (target == NULL)
+	{
+		VectorClear(out_pos);
+		return;
+	}
+
+	const float targ_dist = vhlen(target->s.origin, self->s.origin);
+
+	if (SKILL == SKILL_EASY)
+	{
+		// Poor shot, take forward and screw it up.
+		vec3_t forward;
+		AngleVectors(self->s.angles, forward, NULL, NULL);
+
+		vec3_t expected_pos;
+		VectorMA(origin, proj_speed, forward, expected_pos);
+
+		float offset = 48.0f;
+		if (targ_dist < 128.0f)
+			offset *= targ_dist / 128.0f;
+
+		expected_pos[0] += flrand(-offset, offset);
+		expected_pos[1] += flrand(-offset, offset);
+		expected_pos[2] += flrand(-offset / 2.0f, offset * 0.666f);
+
+		VectorSubtract(expected_pos, origin, out_pos);
+		VectorNormalize(out_pos);
+
+		return;
+	}
+
+	float offset = 2.0f - skill->value; // skill >= 2 - perfect aim, skill 1 is very poor.
+
+	if (targ_dist < 128.0f)
+		offset *= targ_dist / 128.0f;
+
+	offset = max(0.0f, offset);
+
+	// Modify by player's light level?
+	if (SKILL < SKILL_HARD && !(self->monsterinfo.aiflags & AI_NIGHTVISION) && target->client != NULL)
+		offset += (float)(target->light_level / 32);
+
+	vec3_t target_pos;
+	VectorCopy(target->s.origin, target_pos);
+
+	if (offset > 0.0f)
+	{
+		target_pos[0] += flrand(-offset * 12.0f, offset * 12.0f);
+		target_pos[1] += flrand(-offset * 12.0f, offset * 12.0f);
+		target_pos[2] += flrand(-offset * 8.0f,  offset * 8.0f);
+	}
+
+	vec3_t diff;
+	VectorSubtract(target_pos, origin, diff);
+
+	const float targ_dist1 = VectorNormalize(diff);
+
+	vec3_t targ_vel;
+	VectorCopy(target->velocity, targ_vel);
+
+	const float targ_speed = VectorNormalize(targ_vel);
+	const float eta1 = targ_dist1 / proj_speed; // Estimated time of arrival of projectile to target_pos.
+
+	vec3_t expected_pos;
+	VectorMA(target_pos, targ_speed * eta1, targ_vel, expected_pos);
+
+	vec3_t targ_dir;
+	VectorSubtract(expected_pos, origin, targ_dir);
+
+	const float dist2 = VectorNormalize(targ_dir);
+	const float eta2 = dist2 / proj_speed; // Estimated time of arrival of projectile to expected_pos.
+	const float eta_delta = eta2 - eta1; // Change in ETA's.
+
+	VectorMA(expected_pos, targ_speed * eta_delta * flrand(0.0f, 1.0f), targ_vel, expected_pos);
+	// Careful, above version does not modify targ_vel.
+
 	trace_t trace;
-	float offset;
-	
-	if(!targ)
+	gi.trace(origin, vec3_origin, vec3_origin, expected_pos, self, MASK_SOLID, &trace);
+
+	if (trace.fraction < 1.0f || DotProduct(diff, out_pos) < accepted_dot) // Change if dir too great.
 	{
-		VectorClear(vec2);
-		return;
+		VectorClear(out_pos);
 	}
-
-	tdist = vhlen(targ->s.origin, self->s.origin);
-	if(!skill->value)
-	{//poor shot, take forward and screw it up
-		AngleVectors(self->s.angles, tempv, NULL, NULL);
-		VectorMA(p1, pspeed, tempv, p2);
-		
-		if(tdist < 128)
-			offset = 48 * tdist/128;
-		else
-			offset = 48;
-
-		p2[0] += flrand(-offset, offset);
-		p2[1] += flrand(-offset, offset);
-		p2[2] += flrand(-offset/2, offset * 0.666);
-		VectorSubtract(p2, p1, vec2);
-		VectorNormalize(vec2);
-		return;
-	}
-
-	offset = 2 - skill->value;//skill >= 2 = perfect aim, skill 1 is very poor
-	
-	if(tdist < 128)
-		offset *= tdist/128;
-
-	if(offset<0)
-		offset = 0;
-
-	if(skill->value < 2.0 && !(self->monsterinfo.aiflags & AI_NIGHTVISION))
+	else
 	{
-		if(targ->client)
-		{
-			offset += targ->light_level/32;
-		}
-	}
-
-	VectorCopy(targ->s.origin, p2);
-	if(offset)
-	{
-		p2[0] += flrand(-offset*12, offset*12);
-		p2[1] += flrand(-offset*12, offset*12);
-		p2[2] += flrand(-offset*8, offset*8);
-	}
-
-	VectorSubtract(p2, p1, vec1);
-
-	dist1 = VectorNormalize(vec1);
-	
-	VectorCopy(targ->velocity, targ_dir);
-	
-	tspeed = VectorNormalize(targ_dir);
-	eta1 = dist1/pspeed;					//Estimated time of arrival of projectile to p2
-	
-	VectorMA(p2, tspeed*eta1, targ_dir, p3);
-	VectorSubtract(p3, p1, tempv);
-	
-	dist2 = VectorNormalize(tempv);
-	eta2 = dist2/pspeed;					//ETA of projectile to p3
-	eta_delta = eta2-eta1;				//change in ETA's
-	
-	VectorMA(p3, tspeed*eta_delta*flrand(0, 1), targ_dir, p3);
-//careful,  above version does not modify targ_dir
-	
-	gi.trace(p1, vec3_origin, vec3_origin, p3, self, MASK_SOLID,&trace);
-	if(trace.fraction<1.0)
-		failed = true;
-
-	VectorSubtract(p3, p1, vec2);
-	VectorNormalize(vec2);
-
-	dot  =  DotProduct(vec1, vec2);
-
-	if(dot<accept)						//Change in dir too great
-	{
-		failed = true;
-	}
-	if(failed)
-	{
-		VectorClear(vec2);
+		VectorSubtract(expected_pos, origin, out_pos);
+		VectorNormalize(out_pos);
 	}
 }
 
