@@ -4,6 +4,7 @@
 // Copyright 1998 Raven Software
 //
 
+#include "g_waterfx.h" //mxd
 #include "g_obj.h" //mxd
 #include "Vector.h"
 #include "g_local.h"

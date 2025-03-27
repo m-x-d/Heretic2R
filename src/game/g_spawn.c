@@ -25,6 +25,7 @@
 #include "g_spawnf.h" //mxd
 #include "g_target.h" //mxd
 #include "g_trigger.h" //mxd
+#include "g_waterfx.h" //mxd
 #include "m_monsters.h" //mxd
 #include "p_client.h" //mxd
 #include "g_local.h"
@@ -37,21 +38,6 @@ typedef struct
 } spawn_t;
 
 void SP_misc_flag(edict_t* ent);
-
-void SP_env_mist(edict_t* self);
-void SP_env_bubbler(edict_t* self);
-void SP_env_water_drip(edict_t* self);
-void SP_env_water_fountain(edict_t* self);
-void SP_env_waterfall_base(edict_t* self);
-
-// Object stuff
-void SP_obj_fishhead1(edict_t* ent);
-void SP_obj_fishhead2(edict_t* ent);
-
-void SP_obj_stalactite1(edict_t* ent);
-void SP_obj_stalactite2(edict_t* ent);
-void SP_obj_stalactite3(edict_t* ent);
-
 void SP_script_runner(edict_t* ent);
 
 #pragma region ========================== spawns array ==========================

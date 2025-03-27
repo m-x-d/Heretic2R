@@ -269,6 +269,7 @@
     <ClInclude Include="g_spawnf.h" />
     <ClInclude Include="g_target.h" />
     <ClInclude Include="g_trigger.h" />
+    <ClInclude Include="g_waterfx.h" />
     <ClInclude Include="p_teleport.h" />
     <ClInclude Include="spl_teleport.h" />
     <ClInclude Include="g_weapon.h" />
