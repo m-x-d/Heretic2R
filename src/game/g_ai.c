@@ -168,37 +168,23 @@ void ai_walk(edict_t* self, const float dist)
 	MG_MoveToGoal(self, dist);
 }
 
-/*
-=============
-ai_charge
-
-Turns towards enemy and advances
-Use this call with a distnace of 0 to replace ai_face
-==============
-*/
-void ai_charge (edict_t *self, float dist)
+// Turns towards enemy and advances. Use this call with a distance of 0 to replace ai_face.
+void ai_charge(edict_t* self, const float dist)
 {
-	vec3_t	v;
-
-	if(!self->enemy)
+	if (self->enemy == NULL)
 	{
-		if(MGAI_DEBUG)
-			gi.dprintf("ERROR: AI_CHARGE at a NULL enemy!\n");
-		MG_FaceGoal(self, true);//get ideal yaw and turn
-		return;//send stand MSG?
+		MG_FaceGoal(self, true); // Get ideal yaw and turn.
+		return; //FIXME: send stand MSG?
 	}
 
-	VectorSubtract (self->enemy->s.origin, self->s.origin, v);
+	vec3_t diff;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
+	self->ideal_yaw = VectorYaw(diff);
 
-	self->ideal_yaw = VectorYaw(v);
+	MG_ChangeYaw(self);
 
-	MG_ChangeYaw (self);
-
-	if(self->spawnflags&MSF_FIXED)
-		return;
-
-	if (dist)
-		MG_WalkMove (self, self->s.angles[YAW], dist);
+	if (!(self->spawnflags & MSF_FIXED) && dist != 0.0f)
+		MG_WalkMove(self, self->s.angles[YAW], dist);
 }
 
 /*
