@@ -86,7 +86,7 @@ void ai_stand(edict_t* self, const float dist) //mxd. 'dist' is always 0.
 			}
 
 			M_ChangeYaw(self);
-			ai_checkattack(self, 0.0f);
+			AI_CheckAttack(self);
 		}
 		else
 		{
@@ -943,114 +943,82 @@ static void ai_run_missile(edict_t* self) //mxd. Never used as action function.
 	}
 }
 
-/*
-=============
-ai_checkattack
-
-Decides if we're going to attack or do something else
-used by ai_run, and ai_stand
-=============
-*/
-qboolean ai_checkattack (edict_t *self, float dist)
+// Decides if we're going to attack or do something else. Used by ai_run, and ai_stand.
+static qboolean AI_CheckAttack(edict_t* self) //mxd. Removed unused 'dist' arg. Named 'ai_checkattack' in original logic.
 {
-	vec3_t		temp;
-	qboolean	hesDeadJim;
-
-	if ((self->monsterinfo.aiflags & AI_FLEE)||(self->monsterinfo.aiflags & AI_COWARD))	// He's running away, not attacking
-	{
+	if ((self->monsterinfo.aiflags & AI_FLEE) || (self->monsterinfo.aiflags & AI_COWARD)) // He's running away, not attacking.
 		return false;
-	}
 
-	// see if the enemy is dead
-	hesDeadJim = false;
-	if ((!self->enemy) || (!self->enemy->inuse))
-	{
-		hesDeadJim = true;
-	}
-	else
-	{
-		if (self->monsterinfo.aiflags & AI_BRUTAL)
-		{
-			if (self->enemy->health <= -80)
-				hesDeadJim = true;
-		}
-		else
-		{
-			if (self->enemy->health <= 0)
-				hesDeadJim = true;
-		}
-	}
+	// See if the enemy is dead.
+	qboolean enemy_dead = false;
 
-	if (hesDeadJim)
+	if (self->enemy == NULL || !self->enemy->inuse || self->enemy->health <= ((self->monsterinfo.aiflags & AI_BRUTAL) ? -80 : 0))
+		enemy_dead = true;
+
+	if (enemy_dead)
 	{
 		self->enemy = NULL;
-	// FIXME: look all around for other targets
-		if (self->oldenemy && self->oldenemy->health > 0)
+
+		// FIXME: look all around for other targets.
+		if (self->oldenemy != NULL && self->oldenemy->health > 0)
 		{
 			self->enemy = self->oldenemy;
 			self->oldenemy = NULL;
-			HuntTarget (self);
+			HuntTarget(self);
 		}
 		else
 		{
-			if (self->movetarget)
+			if (self->movetarget != NULL)
 			{
 				self->goalentity = self->movetarget;
 				QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 			}
 			else
 			{
-				// we need the pausetime otherwise the stand code
-				// will just revert to walking with no target and
-				// the monsters will wonder around aimlessly trying
-				// to hunt the world entity
-				self->monsterinfo.pausetime = level.time + 100000000;
+				// We need the pausetime, otherwise the stand code will just revert to walking with no target
+				// and the monsters will wonder around aimlessly trying to hunt the world entity.
+				self->monsterinfo.pausetime = level.time + 100000000.0f;
 				QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			}
+
 			return true;
 		}
 	}
 
-	self->show_hostile = level.time + 1;		// wake up other monsters
+	self->show_hostile = level.time + 1.0f; // Wake up other monsters.
 
-// check knowledge of enemy
-	qboolean enemy_vis = clear_visible(self, self->enemy);
+	// Check knowledge of enemy.
+	const qboolean enemy_vis = clear_visible(self, self->enemy);
+
 	if (enemy_vis)
 	{
-		self->monsterinfo.search_time = level.time + 5;
-		VectorCopy (self->enemy->s.origin, self->monsterinfo.last_sighting);
+		self->monsterinfo.search_time = level.time + 5.0f;
+		VectorCopy(self->enemy->s.origin, self->monsterinfo.last_sighting);
 	}
-
-// look for other coop players here
-//	if (coop && self->monsterinfo.search_time < level.time)
-//	{
-//		if (FindTarget (self))
-//			return true;
-//	}
 
 	enemy_range = range(self, self->enemy);
-	VectorSubtract (self->enemy->s.origin, self->s.origin, temp);
-	enemy_yaw = VectorYaw(temp);
 
+	vec3_t diff;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
+	enemy_yaw = VectorYaw(diff);
 
-	// JDC self->ideal_yaw = enemy_yaw;
-	
 	if (self->monsterinfo.attack_state == AS_MISSILE)
 	{
-		ai_run_missile (self);
+		ai_run_missile(self);
 		return true;
 	}
+
 	if (self->monsterinfo.attack_state == AS_MELEE)
 	{
-		ai_run_melee (self);
+		ai_run_melee(self);
 		return true;
 	}
 
-	// if enemy is not currently visible, we will never attack
-	if (!enemy_vis)
-		return false;
+	// If enemy is not currently visible, we will never attack.
+	if (enemy_vis)
+		return self->monsterinfo.checkattack(self);
 
-	return self->monsterinfo.checkattack (self);
+	return false;
 }
 
 float ai_face_goal (edict_t *self)
