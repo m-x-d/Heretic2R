@@ -90,4 +90,3 @@ void elflord_soa_charge(edict_t *self);
 void elflord_FixAngles(edict_t *self);
 
 void ai_charge2(edict_t *self, float dist);
-float ai_face_goal(edict_t *self);

@@ -20,7 +20,6 @@
 
 void ssithraCheckJump(edict_t* self); //TODO: move to m_plagueSsithra.h.
 void SV_FixCheckBottom(edict_t* ent); //TODO: move to m_move.h
-float ai_face_goal(edict_t* self); //TODO: move to g_ai.h
 
 // Returns true if the entity is in front (dot > 0.8) of self.
 qboolean MG_IsAheadOf(const edict_t* self, const edict_t* other) //mxd. Named 'ahead' in original logic.
@@ -1114,7 +1113,7 @@ void MG_AI_Run(edict_t* self, const float dist) //mxd. Named 'ai_run' in origina
 
 	if (self->monsterinfo.aiflags & AI_STAND_GROUND)
 	{
-		ai_face_goal(self); // Just face thy enemy.
+		AI_FaceGoal(self); // Just face thy enemy.
 		return;
 	}
 

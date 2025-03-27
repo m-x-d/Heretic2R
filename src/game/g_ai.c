@@ -1011,7 +1011,7 @@ static qboolean AI_CheckAttack(edict_t* self) //mxd. Removed unused 'dist' arg. 
 	return false;
 }
 
-float ai_face_goal(edict_t* self)
+float AI_FaceGoal(edict_t* self) //mxd. Named 'ai_face_goal' in original logic.
 {
 	if (self->monsterinfo.idle_time >= level.time)
 		return false;
@@ -1032,7 +1032,7 @@ float ai_face_goal(edict_t* self)
 }
 
 // The monster has an enemy it is trying to get away from.
-void AI_Flee(edict_t* self, const float dist)
+void AI_Flee(edict_t* self, const float dist) //mxd. Named 'ai_flee' in original logic.
 {
 	if (self->enemy != NULL)
 	{
