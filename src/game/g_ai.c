@@ -1293,33 +1293,20 @@ void ai_spin(edict_t* self, const float amount)
 	self->s.angles[YAW] += amount;
 }
 
-qboolean ai_have_enemy (edict_t *self)
+qboolean ai_have_enemy(edict_t* self) //TODO: rename to AI_HaveEnemy.
 {
-	qboolean enemy_gone = false;
-
-	if(!self->enemy)
-		enemy_gone = true;
-	else if(self->enemy->health <= 0)
-		enemy_gone = true;
-
-	if(!enemy_gone)
+	if (self->enemy != NULL && self->enemy->health > 0)
 		return true;
-	else 
+
+	if (self->oldenemy != NULL && self->oldenemy->health > 0)
 	{
-		if(self->oldenemy)
-		{
-			if(self->oldenemy->health>0)
-			{
-				self->enemy=self->oldenemy;
-				self->oldenemy = NULL;
-//				gi.dprintf("Going for old enemy\n");
-				return true;
-			}
-		}
+		self->enemy = self->oldenemy;
+		self->oldenemy = NULL;
+
+		return true;
 	}
-	
+
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-//	gi.dprintf("Lost enemies\n");
 	return false;
 }
 
