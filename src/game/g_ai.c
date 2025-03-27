@@ -264,26 +264,16 @@ static int CategorizeRange(const edict_t* self, const edict_t* other, const floa
 	return RANGE_FAR;
 }
 
-/*
-=============
-range
-
-returns the range catagorization of an entity reletive to self
-0	melee range, will become hostile even if back is turned
-1	visibility and infront, or visibility and show hostile
-2	infront and show hostile
-3	only triggered by damage
-=============
-*/
-int range (edict_t *self, edict_t *other)
+// Returns the range categorization of an entity relative to self:
+// RANGE_MELEE (0)	- Melee range, will become hostile even if back is turned.
+// RANGE_NEAR (1)	- Visible and infront, or visible and show hostile.
+// RANGE_MID (2)	- Infront and show hostile.
+// RANGE_FAR (3)	- Only triggered by damage.
+int range(const edict_t* self, const edict_t* other)
 {
-	vec3_t	v;
-	float	len;
-
-	VectorSubtract (self->s.origin, other->s.origin, v);
-	len = VectorLength (v);
-	
-	return CategorizeRange(self, other, len);
+	vec3_t diff;
+	VectorSubtract(self->s.origin, other->s.origin, diff);
+	return CategorizeRange(self, other, VectorLength(diff));
 }
 
 /*
