@@ -136,66 +136,6 @@ void AI_SetSightClient(void)
 	}
 }
 
-
-// ****************************************************************************
-// ai_maintain_waypoints
-//
-// checks all waypoints and corrects all buoys
-// ****************************************************************************
-
-void ai_maintain_waypoints(edict_t *self, float mintel, float foo1, float foo2)
-{
-	vec3_t	vec;
-	float	len;
-
-	if (self->enemy)
-	{
-		if (visible(self, self->enemy))
-		{
-			VectorCopy(self->pos1, self->pos2);
-			VectorCopy(self->enemy->s.origin, self->pos1);
-		}
-	}
-
-	if (self->monsterinfo.searchType == SEARCH_COMMON)
-		return;
-	else if (self->monsterinfo.searchType == SEARCH_BUOY)
-	{
-		VectorSubtract(self->s.origin, self->monsterinfo.nav_goal, vec);
-		len = VectorLength(vec);
-
-		if (len < 24)
-		{
-			//gi.dprintf("gkrokon_maintain_waypoints: arrived at target buoy\n");
-
-			if ((self->monsterinfo.stepState == PATHDIR_FORWARD && self->goalentity->enemy == NULL) || 
-				(self->monsterinfo.stepState == PATHDIR_BACKWARD && self->goalentity->owner == NULL))
-			{
-				//gi.dprintf("gkrokon_maintain_waypoints: path exhausted, seeking target");
-				FindTarget(self);
-				self->monsterinfo.searchType = SEARCH_COMMON;
-				
-				return;
-			}
-			
-			if (self->monsterinfo.stepState == PATHDIR_FORWARD)
-			{
-				//gi.dprintf("gkrokon_maintain_waypoints: forward targetting %s\n", self->goalentity->targetname);
-				self->enemy = self->movetarget = self->goalentity = self->goalentity->enemy;
-				VectorCopy(self->goalentity->s.origin, self->monsterinfo.nav_goal);
-			}
-			else if (self->monsterinfo.stepState == PATHDIR_BACKWARD)
-			{
-				//gi.dprintf("gkrokon_maintain_waypoints: reverse targetting %s\n", self->goalentity->owner->targetname);
-				self->enemy = self->movetarget = self->goalentity = self->goalentity->owner;
-				VectorCopy(self->goalentity->s.origin, self->monsterinfo.nav_goal);
-			}
-			/*else
-				gi.dprintf("gkrokon_maintain_waypoints: volatile assignment\n");*/
-		}
-	}
-}
-
 // ****************************************************************************
 // ai_hopdown
 //
