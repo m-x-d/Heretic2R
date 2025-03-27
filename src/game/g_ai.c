@@ -56,20 +56,11 @@ void ai_eat(edict_t* self, float dist) //TODO: rename to AI_Eat?
 	FindTarget(self);
 }
 
-
-/*
-=============
-ai_move
-
-Move the specified distance at current facing.
-This replaces the QC functions: ai_forward, ai_back, ai_pain, and ai_painforward
-==============
-*/
-void ai_move (edict_t *self, float dist)
+// Move the specified distance at current facing.
+void ai_move(edict_t* self, const float dist)
 {
-	MG_WalkMove (self, self->s.angles[YAW], dist);
+	MG_WalkMove(self, self->s.angles[YAW], dist);
 }
-
 
 /*
 =============
