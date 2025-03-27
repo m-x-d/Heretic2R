@@ -575,34 +575,24 @@ qboolean ok_to_wake(const edict_t* monster, const qboolean gorgon_roar, const qb
 	return true;
 }
 
-qboolean PlayerCreeping(playerinfo_t *playerinfo)
+static qboolean PlayerIsCreeping(const playerinfo_t* info) //mxd. Named 'PlayerCreeping' in original logic.
 {
-	if(playerinfo->upperseq == ASEQ_CREEPF ||
-		playerinfo->upperseq == ASEQ_STAND ||
-		playerinfo->upperseq == ASEQ_CREEPB ||
-		playerinfo->upperseq == ASEQ_CREEPB_END ||
-		playerinfo->upperseq == ASEQ_CROUCH_GO ||
-		playerinfo->upperseq == ASEQ_CROUCH ||
-		playerinfo->upperseq == ASEQ_CROUCH_END ||
-		playerinfo->upperseq == ASEQ_CROUCH_WALK_F ||
-		playerinfo->upperseq == ASEQ_CROUCH_WALK_B ||
-		playerinfo->upperseq == ASEQ_CROUCH_WALK_L ||
-		playerinfo->upperseq == ASEQ_CROUCH_WALK_R ||
-		playerinfo->lowerseq == ASEQ_CREEPF ||
-		playerinfo->lowerseq == ASEQ_STAND ||
-		playerinfo->lowerseq == ASEQ_CREEPB ||
-		playerinfo->lowerseq == ASEQ_CREEPB_END ||
-		playerinfo->lowerseq == ASEQ_CROUCH_GO ||
-		playerinfo->lowerseq == ASEQ_CROUCH ||
-		playerinfo->lowerseq == ASEQ_CROUCH_END||
-		playerinfo->lowerseq == ASEQ_CROUCH_WALK_F ||
-		playerinfo->lowerseq == ASEQ_CROUCH_WALK_B ||
-		playerinfo->lowerseq == ASEQ_CROUCH_WALK_L ||
-		playerinfo->lowerseq == ASEQ_CROUCH_WALK_R)
-		return (true);
+	static const int creep_seq[] = //mxd
+	{
+		ASEQ_STAND,
+		ASEQ_CREEPF, ASEQ_CREEPB, ASEQ_CREEPB_END,
+		ASEQ_CROUCH_GO, ASEQ_CROUCH, ASEQ_CROUCH_END,
+		ASEQ_CROUCH_WALK_F, ASEQ_CROUCH_WALK_B,
+		ASEQ_CROUCH_WALK_L, ASEQ_CROUCH_WALK_R
+	};
 
-	return (false);
+	for (uint i = 0; i < ARRAYSIZE(creep_seq); i++)
+		if (info->upperseq == creep_seq[i] || info->lowerseq == creep_seq[i])
+			return true;
+
+	return false;
 }
+
 /*
 ===========
 FindTarget
@@ -829,7 +819,7 @@ startcheck:
 
 		if(!e_infront && client->client)
 		{
-			if(PlayerCreeping(&client->client->playerinfo))
+			if(PlayerIsCreeping(&client->client->playerinfo))
 				goto nextcheck;
 		}
 
