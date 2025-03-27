@@ -843,22 +843,10 @@ qboolean FindTarget(edict_t* self)
 	return false;
 }
 
-//=============================================================================
-
-/*
-============
-FacingIdeal
-
-============
-*/
-qboolean FacingIdeal(edict_t *self)
+static qboolean FacingIdeal(const edict_t* self)
 {
-	float	delta;
-
-	delta = anglemod(self->s.angles[YAW] - self->ideal_yaw);
-	if (delta > 45 && delta < 315)
-		return false;
-	return true;
+	const float delta = anglemod(self->s.angles[YAW] - self->ideal_yaw);
+	return (delta <= 45.0f || delta >= 315.0f);
 }
 
 
