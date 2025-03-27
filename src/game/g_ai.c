@@ -449,39 +449,29 @@ static qboolean AI_IsAlerted(edict_t* self) //mxd. Named 'Alerted' in original l
 	}
 }
 
-/*
-===========
-HuntTarget - a target has been found, it is visible, so do we attack it, watch it, or stand there?
-
-============
-*/
-void HuntTarget (edict_t *self)
+// A target has been found, it is visible, so do we attack it, watch it, or stand there?
+static void HuntTarget(edict_t* self)
 {
-	vec3_t	vec;
-	int r;
-
 	self->goalentity = self->enemy;
+
 	if (self->monsterinfo.aiflags & AI_STAND_GROUND)
 	{
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 	else
 	{
-		r = range(self,self->enemy);
-		if ((self->monsterinfo.aiflags & AI_EATING) && (r == RANGE_MID))
-		{
-			QPostMessage(self, MSG_WATCH, PRI_DIRECTIVE, NULL);
-		}
-		else
-		{
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-		}
+		const int r = range(self, self->enemy);
+		const G_MsgID_t id = (((self->monsterinfo.aiflags & AI_EATING) && r == RANGE_MID) ? MSG_WATCH : MSG_RUN); //mxd. //TODO: range check is strange. Should be 'r >= RANGE_MID'?
+		QPostMessage(self, id, PRI_DIRECTIVE, NULL);
 	}
-	VectorSubtract (self->enemy->s.origin, self->s.origin, vec);
-	self->ideal_yaw = VectorYaw(vec);
-	// wait a while before first attack
+
+	vec3_t diff;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
+	self->ideal_yaw = VectorYaw(diff);
+
+	// Wait a while before first attack.
 	if (!(self->monsterinfo.aiflags & AI_STAND_GROUND))
-		AttackFinished (self, 1);
+		AttackFinished(self, 1.0f);
 }
 
 /*
