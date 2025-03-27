@@ -24,19 +24,9 @@
 #include "mg_guide.h" //mxd
 #include "m_stats.h"
 
-#define OGLE_WORKER_CHISEL 1
-#define OGLE_WORKER_HAMMER 2
-#define OGLE_WORKER_PICK   4
-
-#define OF_PUSHING		1
-#define OF_PICK_UP		4
-#define OF_PICK_DOWN	8
-#define OF_CHISEL_UP	16
-#define OF_CHISEL_DOWN	32
-#define OF_HAMMER_UP	64
-#define OF_HAMMER_DOWN	128
-#define OF_SONG_LEADER	256
-#define	OF_CINEMATIC	8448
+#define OGLE_WORKER_CHISEL 1 //TODO: unused.
+#define OGLE_WORKER_HAMMER 2 //TODO: unused.
+#define OGLE_WORKER_PICK   4 //TODO: unused.
 
 //#define OGLE_RADIUS 1000 //FIXME: Tweak this out, activation range
 
