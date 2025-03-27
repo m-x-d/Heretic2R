@@ -917,18 +917,11 @@ qboolean M_CheckAttack(edict_t* self) //TODO: move to g_monster.c, make static.
 	return false;
 }
 
-
-/*
-=============
-ai_run_melee
-
-Turn and close until within an angle to launch a melee attack
-=============
-*/
-void ai_run_melee(edict_t *self)
+// Turn and close until within an angle to launch a melee attack.
+static void ai_run_melee(edict_t* self) //mxd. Never used as action function.
 {
 	self->ideal_yaw = enemy_yaw;
-	M_ChangeYaw (self);
+	M_ChangeYaw(self);
 
 	if (FacingIdeal(self))
 	{
@@ -937,25 +930,18 @@ void ai_run_melee(edict_t *self)
 	}
 }
 
-
-/*
-=============
-ai_run_missile
-
-Turn in place until within an angle to launch a missile attack
-=============
-*/
-void ai_run_missile(edict_t *self)
+// Turn in place until within an angle to launch a missile attack.
+static void ai_run_missile(edict_t* self) //mxd. Never used as action function.
 {
 	self->ideal_yaw = enemy_yaw;
-	M_ChangeYaw (self);
+	M_ChangeYaw(self);
 
 	if (FacingIdeal(self))
 	{
 		QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
 		self->monsterinfo.attack_state = AS_STRAIGHT;
 	}
-};
+}
 
 
 /*
