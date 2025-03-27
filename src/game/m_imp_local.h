@@ -67,7 +67,6 @@ extern animmove_t imp_move_ddown;
 qboolean SV_StepDirection (edict_t *ent, float yaw, float dist);
 qboolean SV_FlyDirection (edict_t *ent, vec3_t  *attitude, float dist);
 qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink);
-qboolean ai_checkattack (edict_t *self, float dist);
 void SV_NewChaseDir (edict_t *actor, edict_t *enemy, float dist);
 void extrapolateFiredir (edict_t *self,vec3_t p1,float pspeed,edict_t *targ,float accept,vec3_t vec2);;
 

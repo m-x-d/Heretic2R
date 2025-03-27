@@ -166,7 +166,6 @@ void ssithraCheckLeaveWaterSplash (edict_t *self);
 void ssithraCheckHitWaterSplash (edict_t *self);
 void ssithraNamorJump (edict_t *self);
 void ssithraCheckRipple (edict_t *self);
-qboolean ai_checkattack (edict_t *self, float dist);
 void ai_spin (edict_t *self, float amount);
 void ssithra_spinright_go(edict_t *self);
 void ssithra_spinleft_go(edict_t *self);
