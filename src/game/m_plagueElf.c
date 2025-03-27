@@ -1624,7 +1624,7 @@ void pelf_PollResponse ( edict_t *self, int sound_event, int sound_id, float tim
 		if (ent->health <= 0)
 			continue;
 
-		if(!ok_to_wake(ent, false, false))
+		if(!AI_OkToWake(ent, false, false))
 			continue;
 
 		//Save this as valid!

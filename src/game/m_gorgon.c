@@ -69,7 +69,6 @@ GORGON
 // Definitions
 // *************************************
 
-qboolean ok_to_wake (edict_t *monster, qboolean gorgon_roar, qboolean ignore_ambush);
 qboolean gorgon_check_jump (edict_t *self);
 
 #define GORGON_STD_MELEE_RNG	48
@@ -235,7 +234,7 @@ void gorgonRoar (edict_t *self)
 						{
 							if(gi.inPHS(self->s.origin, found->s.origin))
 							{//make sure they can hear me
-								if(ok_to_wake(found, true, true))
+								if(AI_OkToWake(found, true, true))
 								{
 									found->monsterinfo.roared = true;
 									found->enemy = self->enemy;

@@ -393,7 +393,7 @@ static qboolean AI_IsAlerted(edict_t* self) //mxd. Named 'Alerted' in original l
 			continue;
 
 		// Eating or in a cinematic or not awake, leave them alone.
-		if (!ok_to_wake(self, false, true))
+		if (!AI_OkToWake(self, false, true))
 			continue;
 
 		vec3_t dir;
@@ -552,7 +552,7 @@ void AI_FoundTarget(edict_t* self, const qboolean set_sight_ent) //mxd. Named 'F
 }
 
 // Can this monster be woken up by something other than direct line of sight to player?
-qboolean ok_to_wake(const edict_t* monster, const qboolean gorgon_roar, const qboolean ignore_ambush)
+qboolean AI_OkToWake(const edict_t* monster, const qboolean gorgon_roar, const qboolean ignore_ambush) //mxd. Named 'ok_to_wake' in original logic.
 {
 	if (gorgon_roar)
 		return !monster->monsterinfo.c_mode;
@@ -723,7 +723,7 @@ qboolean FindTarget(edict_t* self)
 				if (!ANARCHY)
 				{
 					// Eating or in a cinematic or not awake or targeted, leave them alone.
-					if (ok_to_wake(self, false, true))
+					if (AI_OkToWake(self, false, true))
 						continue;
 
 					if (client->enemy == NULL || client->enemy->health < 0)
