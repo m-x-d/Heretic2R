@@ -22,9 +22,6 @@
 
 //all of the anim frames that used to live in m_assassin.h
 
-void ai_moveright(edict_t *self, float dist);
-
-
 //==========================================================================
 
 //ATTACKS
