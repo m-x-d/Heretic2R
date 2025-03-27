@@ -553,7 +553,7 @@ void assassin_Touch(edict_t *self, trace_t *trace)
 
 		if(strength > 50)
 		{
-			if(movable(other) && (other->svflags&SVF_MONSTER || other->client))
+			if(AI_IsMovable(other) && (other->svflags&SVF_MONSTER || other->client))
 			{
 
 				VectorCopy(self->velocity, dir);

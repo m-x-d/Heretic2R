@@ -178,7 +178,7 @@ static void TutorialChickenThink(edict_t* self) //mxd. Named 'hanging_chicken_th
 	trace_t trace;
 	gi.trace(self->s.origin, self->mins, self->maxs, self->targetEnt->s.origin, self, self->clipmask, &trace);
 
-	if (trace.ent != NULL && movable(trace.ent))
+	if (trace.ent != NULL && AI_IsMovable(trace.ent))
 	{
 		vec3_t k_diff;
 		VectorSubtract(self->targetEnt->s.origin, self->s.origin, k_diff);

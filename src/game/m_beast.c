@@ -218,7 +218,7 @@ void tbeast_blocked (edict_t *self, trace_t *trace)
 			gi.sound(self, CHAN_ITEM, sounds[SND_SLAM], 1, ATTN_NORM, 0);
 			if(trace->ent)
 			{
-				if(!movable(trace->ent)&&!trace->ent->takedamage && trace->plane.normal[2] < 0.5)
+				if(!AI_IsMovable(trace->ent)&&!trace->ent->takedamage && trace->plane.normal[2] < 0.5)
 					stop = true;
 			}
 		}
@@ -1334,7 +1334,7 @@ void tbeast_run_think (edict_t *self, float dist)
 		gi.trace(start, mins, self->maxs, end, self, MASK_SOLID,&trace);
 		if(trace.ent)
 		{
-			if(movable(trace.ent) || trace.ent->solid!=SOLID_BSP)
+			if(AI_IsMovable(trace.ent) || trace.ent->solid!=SOLID_BSP)
 			{
 				return;
 			}
@@ -1465,7 +1465,7 @@ void tbeast_check_snatch(edict_t *self, float ofsf, float ofsr, float ofsu)
 	{//if missed or health is low, just chomp it now
 		while(found = FindInRadius(found, startpos, ok_dist))
 		{
-			if(found->takedamage&&movable(found))
+			if(found->takedamage&&AI_IsMovable(found))
 			{
 				if(found->health<=0)
 					T_Damage (found, self, self, endpos, found->s.origin, endpos, 2000, 300, DAMAGE_DISMEMBER,MOD_DIED);
@@ -2059,7 +2059,7 @@ void tbeast_fake_impact(edict_t *self, trace_t *trace, qboolean crush)
 			VectorNormalize(dir);
 		}
 
-		if(movable(trace->ent) || trace->ent->takedamage)
+		if(AI_IsMovable(trace->ent) || trace->ent->takedamage)
 		{
 			if(throwthem)
 				VectorScale(dir, 200, trace->ent->velocity);
@@ -2379,7 +2379,7 @@ void tbeast_fake_touch(edict_t *self)
 
 		if(self->curAnimID != ANIM_CHARGE && self->curAnimID != ANIM_QUICK_CHARGE)
 		{
-			if(leg_check_index > -1 && other->takedamage && movable(other))
+			if(leg_check_index > -1 && other->takedamage && AI_IsMovable(other))
 			{//Hey!  Check and see if they're close to my mouth and chomp 'em!
 				if(vhlen (other->s.origin, melee_point) < 100)
 				{

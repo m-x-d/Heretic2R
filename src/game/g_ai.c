@@ -1300,7 +1300,7 @@ qboolean AI_HaveEnemy(edict_t* self) //mxd. Named 'ai_have_enemy' in original lo
 	return false;
 }
 
-qboolean movable(const edict_t* ent) //TODO: rename to AI_IsMoveable?
+qboolean AI_IsMovable(const edict_t* ent) //mxd. Named 'movable' in original logic.
 {
 	return (ent->movetype != PHYSICSTYPE_NONE && ent->movetype != PHYSICSTYPE_PUSH);
 }

@@ -1343,7 +1343,7 @@ void MG_PostDeathThink(edict_t* self)
 			gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &move_trace);
 
 			if (move_trace.allsolid || move_trace.startsolid || move_trace.fraction < 1.0f)
-				which_trace = (movable(move_trace.ent) ? -1 : 0);
+				which_trace = (AI_IsMovable(move_trace.ent) ? -1 : 0);
 		} break;
 
 		case 2: // Back.
@@ -1354,7 +1354,7 @@ void MG_PostDeathThink(edict_t* self)
 			gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &move_trace);
 
 			if (move_trace.allsolid || move_trace.startsolid || move_trace.fraction < 1.0f)
-				which_trace = (movable(move_trace.ent) ? -1 : 0);
+				which_trace = (AI_IsMovable(move_trace.ent) ? -1 : 0);
 		} break;
 
 		case 3: // Right.
@@ -1365,7 +1365,7 @@ void MG_PostDeathThink(edict_t* self)
 			gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &move_trace);
 
 			if (move_trace.allsolid || move_trace.startsolid || move_trace.fraction < 1.0f)
-				which_trace = (movable(move_trace.ent) ? -1 : 0);
+				which_trace = (AI_IsMovable(move_trace.ent) ? -1 : 0);
 		} break;
 
 		case 4: // Left.
@@ -1376,7 +1376,7 @@ void MG_PostDeathThink(edict_t* self)
 			gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &move_trace);
 
 			if (move_trace.allsolid || move_trace.startsolid || move_trace.fraction < 1.0f)
-				which_trace = (movable(move_trace.ent) ? -1 : 0);
+				which_trace = (AI_IsMovable(move_trace.ent) ? -1 : 0);
 		} break;
 	}
 

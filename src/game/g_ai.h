@@ -19,7 +19,7 @@ extern qboolean AI_HaveEnemy(edict_t* self);
 extern qboolean AI_IsVisible(const edict_t* self, const edict_t* other);
 extern qboolean AI_IsClearlyVisible(const edict_t* self, const edict_t* other);
 extern qboolean AI_IsInfrontOf(const edict_t* self, const edict_t* other);
-extern qboolean movable(const edict_t* ent);
+extern qboolean AI_IsMovable(const edict_t* ent);
 extern qboolean ok_to_wake(const edict_t* monster, qboolean gorgon_roar, qboolean ignore_ambush);
 
 // Action functions.
