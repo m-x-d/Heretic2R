@@ -378,7 +378,7 @@ static qboolean AI_IsAlerted(edict_t* self) //mxd. Named 'Alerted' in original l
 		// Alert timed out, remove from list.
 		if (alerter->lifetime < level.time)
 		{
-			alert_timed_out(alerter);
+			AlertTimedOut(alerter);
 			continue;
 		}
 
@@ -1165,42 +1165,47 @@ static void ClearLastAlerts(const alertent_t* self)
 			ent->last_alert = NULL;
 }
 
-/*
-alert_timed_out
-
-clears out all the fields for an alert, removes it from the linked list and sets it's slot to being empty to make room for insertion of others later
-*/
-void alert_timed_out(alertent_t *self)
+// Clears out all the fields for an alert, removes it from the linked list and sets it's slot to being empty to make room for insertion of others later.
+static void AlertTimedOut(alertent_t* self) //mxd. Named 'alert_timed_out' in original logic.
 {
-	if (self==NULL)
+	if (self == NULL)
 		return;
 
-	//take self out of alert chain
-	if(self->prev_alert)
+	// Take self out of alert chain.
+	if (self->prev_alert != NULL)
 	{
-		if(self->next_alert)
+		if (self->next_alert != NULL)
+		{
 			self->prev_alert->next_alert = self->next_alert;
+		}
 		else
-		{//I'm the last one!
+		{
+			// I'm the last one!
 			level.last_alert = self->prev_alert;
 			self->prev_alert->next_alert = NULL;
 		}
 	}
 	else
-	{//I'm the first one!
-		if(self->next_alert)
+	{
+		// I'm the first one!
+		if (self->next_alert != NULL)
+		{
 			level.alert_entity = self->next_alert;
+		}
 		else
-			level.last_alert = level.alert_entity = NULL;
+		{
+			level.last_alert = NULL;
+			level.alert_entity = NULL;
+		}
 	}
 
-	//Clear out all fields
+	// Clear out all fields.
 	self->next_alert = NULL;
 	self->prev_alert = NULL;
 	self->enemy = NULL;
 	VectorClear(self->origin);
 	self->alert_svflags = 0;
-	self->lifetime = 0;
+	self->lifetime = 0.0f;
 	self->inuse = false;
 	ClearLastAlerts(self);
 
@@ -1217,7 +1222,7 @@ alertent_t *GetFirstEmptyAlertInList(void)
 	int	i;
 	//have max number of alerts, remove the first one
 	if(level.num_alert_ents >= MAX_ALERT_ENTS)
-		alert_timed_out(level.alert_entity);
+		AlertTimedOut(level.alert_entity);
 	
 	for(i = 0; i < MAX_ALERT_ENTS; i++)
 	{

@@ -10,4 +10,4 @@
 
 //mxd. Local forward declarations for g_ai.c:
 static qboolean AI_CheckAttack(edict_t* self);
-static void alert_timed_out(alertent_t* self);
+static void AlertTimedOut(alertent_t* self);
