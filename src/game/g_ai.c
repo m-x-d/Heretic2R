@@ -1156,25 +1156,13 @@ void extrapolateFiredir(const edict_t* self, const vec3_t origin, const float pr
 	}
 }
 
-/*
-ClearLastAlerts
-
-takes last alerts away from any monster who's last alert was the "self" alert
-*/
-void ClearLastAlerts(alertent_t *self)
+// Takes last alerts away from any monster who's last alert was the "self" alert.
+static void ClearLastAlerts(const alertent_t* self)
 {
-	int	i;
-
-	for(i = 0; i < game.maxentities; i++)
-	{
-		if(g_edicts[i].svflags & SVF_MONSTER)
-		{
-			if(g_edicts[i].last_alert == self)
-			{
-				g_edicts[i].last_alert = NULL;
-			}
-		}
-	}
+	edict_t* ent = &g_edicts[0];
+	for (int i = 0; i < game.maxentities; i++, ent++)
+		if ((ent->svflags & SVF_MONSTER) && ent->last_alert == self)
+			ent->last_alert = NULL;
 }
 
 /*
