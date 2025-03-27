@@ -19,3 +19,5 @@ extern void ai_turn(edict_t* self, float dist);
 extern void ai_charge(edict_t* self, float dist);
 extern void ai_eat(edict_t* self, float dist);
 extern void ai_flee(edict_t* self, float dist);
+
+extern qboolean ok_to_wake(const edict_t* monster, qboolean gorgon_roar, qboolean ignore_ambush);
