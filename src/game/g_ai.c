@@ -203,29 +203,15 @@ void ai_charge2(edict_t* self, const float dist) //mxd. Same ai_charge(), except
 		MG_WalkMove(self, self->s.angles[YAW], dist);
 }
 
-/*
-=============
-ai_moveright
-
-simple sliding right (or left if dist <0)
-==============
-*/
-void ai_moveright (edict_t *self, float dist)
+// Simple sliding right (or left if dist < 0).
+void ai_moveright(edict_t* self, const float dist)
 {
-	vec3_t	right;
-	float	movedir;
-
-	if(self->spawnflags&MSF_FIXED)
-		return;
-
-	if (!dist)
-		return;
-
-	AngleVectors (self->s.angles, NULL, right, NULL);
-
-	movedir = VectorYaw(right);
-
-	MG_WalkMove (self, movedir, dist);
+	if (!(self->spawnflags & MSF_FIXED) && dist != 0.0f)
+	{
+		vec3_t right;
+		AngleVectors(self->s.angles, NULL, right, NULL);
+		MG_WalkMove(self, VectorYaw(right), dist);
+	}
 }
 
 /*
