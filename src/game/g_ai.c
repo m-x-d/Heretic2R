@@ -49,21 +49,11 @@ void AI_SetSightClient(void)
 	}
 }
 
-//============================================================================
-
-/*
-=============
-ai_eat
-
-Monster will eat until harm is done to him or the player moves within range 
-==============
-*/
-void ai_eat (edict_t *self, float dist)
+// Monster will eat until harm is done to him or the player moves within range.
+void ai_eat(edict_t* self, float dist) //TODO: rename to AI_Eat?
 {
-
 	self->enemy = NULL;
-
-	FindTarget (self);
+	FindTarget(self);
 }
 
 
