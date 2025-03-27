@@ -593,343 +593,255 @@ static qboolean PlayerIsCreeping(const playerinfo_t* info) //mxd. Named 'PlayerC
 	return false;
 }
 
-/*
-===========
-FindTarget
+extern qboolean ogle_findtarget(edict_t* self); //TODO: add to m_ogle.h
 
-Self is currently not attacking anything, so try to find a target
-
-Returns TRUE if an enemy was sighted
-
-When a player fires a missile or does other things to make noise, the 
-point of impact becomes an alertent so that monsters that see the
-impact will respond as if they had seen the player.
-
-Since FindTarget is not called every frame for monsters (average
-about once every 3 frames per monster), this does two potential checks.
-
-First it checks against the current sight_client which cycles through
-the players.
-
-If that check fails, it will check for all the secondary alerts and
-enemies.  if it can't find any, it will check for another player if
-it can find one other than the first one it checked.
-============
-*/
-qboolean ogle_findtarget (edict_t *self);
-qboolean FindTarget (edict_t *self)
+// Self is currently not attacking anything, so try to find a target.
+// Returns TRUE if an enemy was sighted.
+// When a player fires a missile or does other things to make noise, the point of impact becomes an alertent
+// so that monsters that see the impact will respond as if they had seen the player.
+// Since FindTarget is not called every frame for monsters (average about once every 3 frames per monster), this does two potential checks.
+// First it checks against the current sight_client which cycles through the players.
+// If that check fails, it will check for all the secondary alerts and enemies.
+// If it can't find any, it will check for another player.
+qboolean FindTarget(edict_t* self)
 {
-	edict_t		*client, *firstclient;
-	qboolean	heardit = false;
-	int			r;
-	edict_t		*ent;
-	int			flag;
-	qboolean	clientonly = true;
-	qboolean	e_infront = false;
-	vec3_t		v;
-	float		dist;
-
-//FIXME: wakeup_distance -1 never look?
-	if(self->classID == CID_OGLE)
+	//FIXME: wakeup_distance -1 never look?
+	if (self->classID == CID_OGLE)
 		return ogle_findtarget(self);
 
 	if (self->monsterinfo.aiflags & AI_GOOD_GUY)
-	{
-		if (self->goalentity)
-		{
-			if (strcmp(self->goalentity->classname, "target_actor") == 0)
-				return false;
-		}
+		return false; //FIXME: look for monsters? //mxd. Skip unnecessary self->goalentity->classname == "target_actor" check.
 
-		//FIXME look for monsters?
-		return false;
-	}
-
-	// if we're going to a combat point, just proceed
+	// If we're going to a combat point, just proceed.
 	if (self->monsterinfo.aiflags & AI_COMBAT_POINT)
 		return false;
 
-	if(self->ai_mood_flags&AI_MOOD_FLAG_IGNORE_ENEMY)
-	{//being forced to use buoys, and ignore enemy until get to forced_buoy
+	// Being forced to use buoys, and ignore enemy until get to forced_buoy.
+	if (self->ai_mood_flags & AI_MOOD_FLAG_IGNORE_ENEMY)
 		return false;
-	}
 
-// if the first spawnflag bit is set, the monster will only wake up on
-// really seeing the player, not another monster getting angry or hearing
-// something
+	// If the first spawnflag bit is set, the monster will only wake up on really seeing the player,
+	// not another monster getting angry or hearing something.
+	// Revised behavior so they will wake up if they "see" a player make a noise, but not weapon impact/explosion noises.
 
-// revised behavior so they will wake up if they "see" a player make a noise
-// but not weapon impact/explosion noises
+	const edict_t* first_client = NULL;
 
-startcheck:
-	flag = 1;
-	if(clientonly)
-	{//look oly at the level.sight_client
-		firstclient = client = level.sight_client;
-	}
-	else
+	// The loop.
+	for (int i = 0; i < 2; i++)
 	{
-		if(ANARCHY)
-		{//crazy monsters mode
-			int	checkcnt = 0;
-			client = self;
-			while((!client || !client->inuse || !(client->svflags & SVF_MONSTER)||client->health<=0||client == self) && checkcnt < globals.num_edicts)
-			{
-				client = &g_edicts[irand(0, globals.num_edicts)];
-				checkcnt++;
-			}
+		edict_t* client;
+		qboolean is_primary_enemy = true;
+
+		if (i == 0)
+		{
+			// Look only at the level.sight_client.
+			first_client = level.sight_client;
+			client = level.sight_client;
 		}
 		else
 		{
-			if(level.sight_entity == self)
+			if (ANARCHY)
 			{
-				level.sight_entity = NULL;
-				return false;
-			}
+				// Crazy monsters mode.
+				int	check_count = 0;
+				client = self;
 
-			if (level.sight_entity && (level.sight_entity_framenum >= (level.framenum - 1)) && !(self->spawnflags & MSF_AMBUSH) )
-			{//go after the enemy another monster saw saw, but only if not in ambush
-				client = level.sight_entity;
-				if (client->enemy == self->enemy)
+				while ((client == NULL || !client->inuse || !(client->svflags & SVF_MONSTER) || client->health <= 0 || client == self) && check_count < globals.num_edicts)
 				{
+					client = &g_edicts[irand(0, globals.num_edicts)];
+					check_count++;
+				}
+			}
+			else
+			{
+				if (level.sight_entity == self)
+				{
+					level.sight_entity = NULL;
 					return false;
 				}
-			}
-			else if (AI_IsAlerted(self))
-			{//picked up an enemy from an alert
-				return true;
-			}
-			else
-			{
-				client = NULL;
-				// Looking for secondary enemies
-				if ((self->monsterinfo.otherenemyname) && (self->monsterinfo.chase_finished < level.time))
+
+				if (level.sight_entity != NULL && level.sight_entity_framenum >= level.framenum - 1 && !(self->spawnflags & MSF_AMBUSH))
 				{
-					ent = NULL;
-					while((ent=FindInRadius(ent,self->s.origin,175)) != NULL)
+					// Go after the enemy another monster saw saw, but only if not in ambush.
+					client = level.sight_entity;
+
+					if (client->enemy == self->enemy)
+						return false;
+				}
+				else if (AI_IsAlerted(self))
+				{
+					return true; // Picked up an enemy from an alert.
+				}
+				else
+				{
+					client = NULL;
+
+					// Looking for secondary enemies.
+					if (self->monsterinfo.otherenemyname != NULL && self->monsterinfo.chase_finished < level.time)
 					{
-						if (!strcmp(ent->classname,self->monsterinfo.otherenemyname)&&ent!=self)
+						edict_t* ent = NULL;
+						while ((ent = FindInRadius(ent, self->s.origin, 175.0f)) != NULL)
 						{
-							flag = 0;
-							client = ent;
-							break;
+							if (strcmp(ent->classname, self->monsterinfo.otherenemyname) == 0 && ent != self)
+							{
+								is_primary_enemy = false;
+								client = ent;
+
+								break;
+							}
 						}
 					}
-				}
 
-				//  Look at the sight client
-				if (!client)
-				{//found no non-clients, cycle to next client and check it for second check
-					AI_SetSightClient();
-					if(firstclient == level.sight_client)
-						return false;//same as first check, and that failed if we're here, so return.
-					client = level.sight_client;
+					//  Look at the sight client.
+					if (client == NULL)
+					{
+						// Found no non-clients, cycle to next client and check it for second check.
+						AI_SetSightClient();
+
+						if (first_client == level.sight_client)
+							return false; // Same as first check, and that failed if we're here, so return.
+
+						client = level.sight_client;
+					}
 				}
 			}
 		}
-	}
-	if (!client)
-		goto nextcheck;	// no clients to get mad at
 
-	// if the entity went away, forget it
-	if (!client->inuse)
-		goto nextcheck;
+		if (client == NULL || !client->inuse || client == self)
+			continue; // No clients to get mad at.
 
-	if (client == self)
-		goto nextcheck;	//????
-
-	if (client == self->enemy)
-		return true;	// JDC false;
-
-	if (self->monsterinfo.otherenemyname)
-	{
-		if (!strcmp(client->classname,self->monsterinfo.otherenemyname))
-			client->light_level = 128; // Let it be seen
-	}
-
-	// if we are a fish - is the target in the water - have to be at least waist deep?
-	if (self->classID == CID_FISH && client->waterlevel < 2)
-		goto nextcheck;	//????
-
-	if (client->client)
-	{
-		if (client->flags & FL_NOTARGET)
-			goto nextcheck;
-	}
-	else if (client->svflags & SVF_MONSTER)
-	{
-		if(flag)
-		{//not a secondary enemy
-			if(!ANARCHY)
-			{
-				if (ok_to_wake(self, false, true))
-				{//eating or in a cinematic or not awake or targeted, leave them alone
-					goto nextcheck;
-				}
-			}
-
-			if (!client->enemy)
-			{
-				if(!ANARCHY)
-					goto nextcheck;
-			}
-			else
-			{
-				if (client->enemy->health<0 && !ANARCHY)
-					goto nextcheck;
-
-				if (client->enemy->flags & FL_NOTARGET)
-					goto nextcheck;  
-			}
-
-			if(!visible(self, client))
-				goto nextcheck;
-
-			if(!ANARCHY)
-				self->enemy = client->enemy;
-			else
-				self->enemy = client;
-
-			if(client->ai_mood == AI_FLEE)
-				FoundTarget(self, false);//let them stay the sight entity
-			else
-				FoundTarget(self, true);//make me the sight entity
-
-			/*if (!(self->monsterinfo.aiflags & AI_SOUND_TARGET))
-				QPostMessage(self, MSG_VOICE_SIGHT, PRI_DIRECTIVE, "e", self->enemy);*/
-				//self->monsterinfo.sight (self, self->enemy);
-
+		if (client == self->enemy)
 			return true;
-		}
-	}
-	else if (heardit)
-	{
-		if (client->owner->flags & FL_NOTARGET)
-			goto nextcheck;
-	}
-	else
-		goto nextcheck;
 
-	if (!heardit)
-	{
-		if(self->classID == CID_ASSASSIN)
-			e_infront = true;
-		else
-			e_infront = infront(self, client);
+		if (self->monsterinfo.otherenemyname != NULL && strcmp(client->classname, self->monsterinfo.otherenemyname) == 0)
+			client->light_level = 128; // Let it be seen.
 
-		if(!e_infront && client->client)
+		// If we are a fish - is the target in the water - have to be at least waist deep?
+		if (self->classID == CID_FISH && client->waterlevel < 2)
+			continue; //???
+
+		if (client->client != NULL)
 		{
-			if(PlayerIsCreeping(&client->client->playerinfo))
-				goto nextcheck;
+			if (client->flags & FL_NOTARGET)
+				continue;
+		}
+		else if (client->svflags & SVF_MONSTER)
+		{
+			// Not a secondary enemy.
+			if (is_primary_enemy)
+			{
+				if (!ANARCHY)
+				{
+					// Eating or in a cinematic or not awake or targeted, leave them alone.
+					if (ok_to_wake(self, false, true))
+						continue;
+
+					if (client->enemy == NULL || client->enemy->health < 0)
+						continue;
+				}
+
+				if (client->enemy != NULL && (client->enemy->flags & FL_NOTARGET))
+					continue;
+
+				if (!visible(self, client))
+					continue;
+
+				self->enemy = (ANARCHY ? client : client->enemy);
+				FoundTarget(self, client->ai_mood != AI_FLEE); // When AI_FLEE, let them stay the sight entity; otherwise make me the sight entity. 
+
+				return true;
+			}
+		}
+		else
+		{
+			continue;
 		}
 
-		VectorSubtract(client->s.origin, self->s.origin, v);
-		dist = VectorLength(v);
+		const qboolean enemy_infront = ((self->classID == CID_ASSASSIN) ? true : infront(self, client)); //mxd
 
-		if(dist > self->wakeup_distance)
-			goto nextcheck;
+		if (!enemy_infront && client->client != NULL && PlayerIsCreeping(&client->client->playerinfo))
+			continue;
 
-		r = CategorizeRange (self, client, dist);
+		vec3_t diff;
+		VectorSubtract(client->s.origin, self->s.origin, diff);
+		const float dist = VectorLength(diff);
+
+		if (dist > self->wakeup_distance)
+			continue;
+
+		const int r = CategorizeRange(self, client, dist);
 
 		if (r == RANGE_FAR)
-			goto nextcheck;
+			continue;
 
-		if ((self->monsterinfo.aiflags & AI_EATING) && (r > RANGE_MID))  
+		if ((self->monsterinfo.aiflags & AI_EATING) && r > RANGE_MID)
 		{
 			self->enemy = client;
-			goto nextcheck;
+			continue;
 		}
 
-// this is where we would check invisibility
+		// This is where we would check invisibility.
 
-		// is client in an spot too dark to be seen?
+		// Is client in an spot too dark to be seen?
 		if (client->light_level <= 5)
-			goto nextcheck;
+			continue;
 
-		if(self->svflags&SVF_MONSTER && client->client)
-		{
-			if(skill->value < 2.0 && !(self->monsterinfo.aiflags & AI_NIGHTVISION))
-			{
-				if(client->light_level < flrand(6, 77))
-				{
-					goto nextcheck;
-				}
-			}
-		}
+		if ((self->svflags & SVF_MONSTER) && client->client != NULL)
+			if (SKILL < SKILL_HARD && !(self->monsterinfo.aiflags & AI_NIGHTVISION) && client->light_level < irand(6, 77))
+				continue;
 
 		if (r == RANGE_NEAR)
 		{
-			if (client->show_hostile < level.time && !e_infront)
-			{
-				goto nextcheck;
-			}
+			if (!enemy_infront && client->show_hostile < level.time)
+				continue;
 		}
 		else if (r == RANGE_MID)
 		{
-			if (!e_infront)
-			{
-				goto nextcheck;
-			}
+			if (!enemy_infront)
+				continue;
 		}
 
-		//sfs--this check is much less trivial than infront: prolly wasn't a noticeable deal,
-		//		since RANGE_FAR was first rejection check, but it's still better to try the
-		//		dotproduct before the traceline
-		if (!visible (self, client))
-		{
-			goto nextcheck;
-		}
+		//sfs -- This check is much less trivial than infront: probably wasn't a noticeable deal, since RANGE_FAR was first rejection check,
+		// but it's still better to try the dotproduct before the traceline.
+		if (!visible(self, client))
+			continue;
 
 		self->enemy = client;
+		is_primary_enemy = true;
 
-		flag=1;
-		if (self->monsterinfo.otherenemyname)
+
+		if (self->monsterinfo.otherenemyname != NULL && strcmp(self->enemy->classname, self->monsterinfo.otherenemyname) == 0)
 		{
-			if (strcmp(self->enemy->classname, self->monsterinfo.otherenemyname) == 0)	// This is a secondary enemy
-			{
-				self->monsterinfo.chase_finished = level.time + 15;
-				flag=0;
-			}
-		}	
+			// This is a secondary enemy.
+			self->monsterinfo.chase_finished = level.time + 15.0f;
+			is_primary_enemy = false;
+		}
 
-		if (flag)	// This is not a secondary enemy
+		if (is_primary_enemy) // This is not a secondary enemy.
 		{
 			self->monsterinfo.aiflags &= ~AI_SOUND_TARGET;
 
-			if (!self->enemy->client)
+			if (self->enemy->client == NULL)
 			{
 				self->enemy = self->enemy->enemy;
-				if (!self->enemy->client)
+
+				if (self->enemy->client == NULL)
 				{
 					self->enemy = NULL;
-					goto nextcheck;
+					continue;
 				}
 			}
 		}
+
+		// Got one.
+		FoundTarget(self, true);
+
+		// Break the loop.
+		return true;
 	}
-	else	// heardit
-	{
-		goto nextcheck;
 
-	}
-
-//
-// got one
-//
-	FoundTarget (self, true);
-
-	return true;
-
-nextcheck:
-	if(clientonly)
-	{
-		clientonly = false;
-		goto startcheck;
-	}
-	else
-		return false;
+	return false;
 }
-
 
 //=============================================================================
 
