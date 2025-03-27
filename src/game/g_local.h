@@ -122,7 +122,7 @@ typedef enum damage_s
 
 #define BODY_QUEUE_SIZE	8
 
-// RANGE_XXX
+// RANGE_XXX //TODO: convert to enum?
 #define RANGE_MELEE	0
 #define RANGE_NEAR	1
 #define RANGE_MID	2
@@ -356,7 +356,7 @@ typedef struct
 // Monster AI flags.
 #define AI_STAND_GROUND			0x00000001
 #define AI_TEMP_STAND_GROUND	0x00000002
-#define AI_SOUND_TARGET			0x00000004
+#define AI_SOUND_TARGET			0x00000004 //TODO: used, but never set?
 #define AI_LOST_SIGHT			0x00000008
 #define AI_PURSUIT_LAST_SEEN	0x00000010
 #define AI_PURSUE_NEXT			0x00000020
@@ -398,9 +398,9 @@ typedef struct
 #define C_ANIM_IDLE				8
 
 // Type of target acquisition.
-#define SIGHT_SOUND_TARGET		0 // Heard the target make this noise.
-#define SIGHT_VISIBLE_TARGET	1 // Saw this target.
-#define SIGHT_ANNOUNCED_TARGET	2 // Target was announced by another monster.
+#define SIGHT_SOUND_TARGET		0 // Heard the target make this noise. //TODO: set, but never used by sight processing message logic.
+#define SIGHT_VISIBLE_TARGET	1 // Saw this target. //TODO: set, but never used by sight processing message logic.
+#define SIGHT_ANNOUNCED_TARGET	2 // Target was announced by another monster. //TODO: unused.
 
 typedef struct
 {
