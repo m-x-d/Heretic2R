@@ -1032,7 +1032,7 @@ float ai_face_goal(edict_t* self)
 }
 
 // The monster has an enemy it is trying to get away from.
-void ai_flee(edict_t* self, const float dist)
+void AI_Flee(edict_t* self, const float dist)
 {
 	if (self->enemy != NULL)
 	{

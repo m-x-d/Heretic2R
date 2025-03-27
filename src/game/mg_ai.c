@@ -1089,7 +1089,7 @@ void MG_AI_Run(edict_t* self, const float dist) //mxd. Named 'ai_run' in origina
 	if ((DEACTIVATE_BUOYS || !(self->monsterinfo.aiflags & AI_USING_BUOYS)) &&
 		((self->monsterinfo.aiflags & AI_COWARD) || ((self->monsterinfo.aiflags & AI_FLEE) && self->monsterinfo.flee_finished >= level.time)))
 	{
-		ai_flee(self, dist);
+		AI_Flee(self, dist);
 		return;
 	}
 
@@ -1101,7 +1101,7 @@ void MG_AI_Run(edict_t* self, const float dist) //mxd. Named 'ai_run' in origina
 		}
 		else
 		{
-			ai_flee(self, dist);
+			AI_Flee(self, dist);
 			return;
 		}
 	}
