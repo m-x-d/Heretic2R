@@ -1021,26 +1021,24 @@ static qboolean AI_CheckAttack(edict_t* self) //mxd. Removed unused 'dist' arg. 
 	return false;
 }
 
-float ai_face_goal (edict_t *self)
+float ai_face_goal(edict_t* self)
 {
-	vec3_t vec;
+	if (self->monsterinfo.idle_time >= level.time)
+		return false;
+
+	vec3_t diff;
 
 	if (self->monsterinfo.searchType == SEARCH_BUOY)
-		VectorSubtract(self->monsterinfo.nav_goal, self->s.origin, vec);
-	else if(self->goalentity)
-		VectorSubtract(self->goalentity->s.origin, self->s.origin, vec);
-	else if(self->enemy)
-		VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
+		VectorSubtract(self->monsterinfo.nav_goal, self->s.origin, diff);
+	else if (self->goalentity != NULL)
+		VectorSubtract(self->goalentity->s.origin, self->s.origin, diff);
+	else if (self->enemy != NULL)
+		VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
 	else
 		return false;
 
-	if (self->monsterinfo.idle_time < level.time)
-	{
-		self->ideal_yaw = VectorYaw(vec);
-		return M_ChangeYaw(self);
-	}
-	else
-		return false;
+	self->ideal_yaw = VectorYaw(diff);
+	return M_ChangeYaw(self);
 }
 
 /*
