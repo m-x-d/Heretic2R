@@ -78,134 +78,25 @@ static qboolean M_CheckBottom(const edict_t* ent)
 	return true;
 }
 
-/*
-=============
-SV_movestep
-
-Called by monster program code.
-The move will be adjusted for slopes and stairs, but if the move isn't
-possible, no move is done, false is returned, and
-pr_global_struct->trace_normal is set to the normal of the blocking wall
-=============
-*/
-//FIXME since we need to test end position contents here, can we avoid doing
-//it again later in catagorize position?
-qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink)
+static qboolean SV_MoveStep_Walk(edict_t* ent, const vec3_t move, const qboolean relink) //mxd. Split from SV_movestep().
 {
-	float		dz;
-	vec3_t		oldorg, neworg, end;
-	trace_t		trace;
-	int			i;
-	float		stepsize;
-	vec3_t		test;
-	int			contents;
+	// Try the move.
+	vec3_t initial_org;
+	VectorCopy(ent->s.origin, initial_org);
 
-// try the move	
-	VectorCopy (ent->s.origin, oldorg);
-	VectorAdd (ent->s.origin, move, neworg);
+	// Push down from a step height above the wished position.
+	const float step_size = ((ent->monsterinfo.aiflags & AI_NOSTEP) ? 1.0f : STEP_SIZE);
 
-	if(ent->monsterinfo.scale)
-	{//scale here, not before!
-		VectorScale(move, ent->monsterinfo.scale, move);
-	}
+	vec3_t new_org;
+	VectorAdd(ent->s.origin, move, new_org);
+	new_org[2] += step_size;
 
-	// flying monsters don't step up
-	if ( ent->flags & (FL_SWIM | FL_FLY) )
-	{
-	// try one move with vertical motion, then one without
-		for (i=0 ; i<2 ; i++)
-		{
-			VectorAdd (ent->s.origin, move, neworg);
-			if (i == 0 && ent->enemy)
-			{
-				if (!ent->goalentity)
-					ent->goalentity = ent->enemy;
-				dz = ent->s.origin[2] - ent->goalentity->s.origin[2];
-				if (ent->goalentity->client)
-				{
-					if (dz > 40)
-						neworg[2] -= 8;
-					if (!((ent->flags & FL_SWIM) && (ent->waterlevel < 2)))
-						if (dz < 30)
-							neworg[2] += 8;
-				}
-				else
-				{
-					if (dz > 8)
-						neworg[2] -= 8;
-					else if (dz > 0)
-						neworg[2] -= dz;
-					else if (dz < -8)
-						neworg[2] += 8;
-					else
-						neworg[2] += dz;
-				}
-			}
-			gi.trace (ent->s.origin, ent->mins, ent->maxs, neworg, ent, MASK_MONSTERSOLID,&trace);
-	
-			// fly monsters don't enter water voluntarily
-			if (ent->flags & FL_FLY)
-			{
-				if (!ent->waterlevel)
-				{
-					test[0] = trace.endpos[0];
-					test[1] = trace.endpos[1];
-					test[2] = trace.endpos[2] + ent->mins[2] + 1;
-					contents = gi.pointcontents(test);
-					if (contents & MASK_WATER)
-					{
-						QPostMessage(ent, MSG_BLOCKED, PRI_DIRECTIVE, NULL);
-						return false;
-					}
-				}
-			}
+	vec3_t end;
+	VectorCopy(new_org, end);
+	end[2] -= step_size * 2.0f;
 
-			// swim monsters don't exit water voluntarily
-			if (ent->flags & FL_SWIM)
-			{
-				if (ent->waterlevel < 2)
-				{
-					test[0] = trace.endpos[0];
-					test[1] = trace.endpos[1];
-					test[2] = trace.endpos[2] + ent->mins[2] + 1;
-					contents = gi.pointcontents(test);
-					if (!(contents & MASK_WATER))
-					{
-						QPostMessage(ent, MSG_BLOCKED, PRI_DIRECTIVE, NULL);
-						return false;
-					}
-				}
-			}
-
-			if (trace.fraction == 1)
-			{
-				VectorCopy (trace.endpos, ent->s.origin);
-				if (relink)
-				{
-					gi.linkentity (ent);
-					G_TouchTriggers (ent);
-				}
-				return true;
-			}
-			
-			if (!ent->enemy)
-				break;
-		}
-		
-		return false;
-	}
-
-// push down from a step height above the wished position
-	if (!(ent->monsterinfo.aiflags & AI_NOSTEP))
-		stepsize = STEP_SIZE;
-	else
-		stepsize = 1;
-
-	neworg[2] += stepsize;
-	VectorCopy (neworg, end);
-	end[2] -= stepsize*2;
-
-	gi.trace (neworg, ent->mins, ent->maxs, end, ent, MASK_MONSTERSOLID,&trace);
+	trace_t trace;
+	gi.trace(new_org, ent->mins, ent->maxs, end, ent, MASK_MONSTERSOLID, &trace);
 
 	if (trace.allsolid)
 	{
@@ -215,8 +106,10 @@ qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink)
 
 	if (trace.startsolid)
 	{
-		neworg[2] -= stepsize;
-		gi.trace (neworg, ent->mins, ent->maxs, end, ent, MASK_MONSTERSOLID,&trace);
+		// Can't step up, try down.
+		new_org[2] -= step_size;
+		gi.trace(new_org, ent->mins, ent->maxs, end, ent, MASK_MONSTERSOLID, &trace);
+
 		if (trace.allsolid || trace.startsolid)
 		{
 			QPostMessage(ent, MSG_BLOCKED, PRI_DIRECTIVE, NULL);
@@ -224,74 +117,100 @@ qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink)
 		}
 	}
 
-
-	// don't go in to water unless only 40% hieght deep
+	// Don't go in to water unless only 40% height deep.
 	if (ent->waterlevel == 0)
 	{
-		test[0] = trace.endpos[0];
-		test[1] = trace.endpos[1];
-		test[2] = trace.endpos[2] + ent->mins[2];// + 1;
-		test[2] += (ent->maxs[2] - ent->mins[2]) * 0.4;
-		contents = gi.pointcontents(test);
+		// Not currently in water.
+		vec3_t pos;
+		VectorCopy(trace.endpos, pos);
+		pos[2] += ent->mins[2] + (ent->maxs[2] - ent->mins[2]) * 0.4f;
 
-		if (contents & MASK_WATER)
+		if (gi.pointcontents(pos) & MASK_WATER) //TODO: MG_MoveStep_Walk() also checks for FL_AMPHIBIAN here.
 			return false;
 	}
 
-	if (trace.fraction == 1)
+	if (trace.fraction == 1.0f)
 	{
-	// if monster had the ground pulled out, go ahead and fall
-		if ( ent->flags & FL_PARTIALGROUND )
+		// If monster had the ground pulled out, go ahead and fall.
+		if (ent->flags & FL_PARTIALGROUND)
 		{
-			VectorAdd (ent->s.origin, move, ent->s.origin);
+			VectorAdd(ent->s.origin, move, ent->s.origin);
+
 			if (relink)
 			{
-				gi.linkentity (ent);
-				G_TouchTriggers (ent);
+				gi.linkentity(ent);
+				G_TouchTriggers(ent);
 			}
-//			ent->groundentity = NULL;
-//	SV_Printf ("fall down\n"); 
+
 			return true;
 		}
+
 		QPostMessage(ent, MSG_BLOCKED, PRI_DIRECTIVE, NULL);
-		return false;		// walked off an edge
+		return false; // Walked off an edge.
 	}
 
-// check point traces down for dangling corners
-	VectorCopy (trace.endpos, ent->s.origin);
-	
-	if (!M_CheckBottom (ent))
+	// Check point traces down for dangling corners.
+	VectorCopy(trace.endpos, ent->s.origin);
+
+	if (!M_CheckBottom(ent))
 	{
-		if ( ent->flags & FL_PARTIALGROUND )
-		{	// entity had floor mostly pulled out from underneath it
-			// and is trying to correct
+		if (ent->flags & FL_PARTIALGROUND)
+		{
+			// Entity had floor mostly pulled out from underneath it and is trying to correct.
 			if (relink)
 			{
-				gi.linkentity (ent);
-				G_TouchTriggers (ent);
+				gi.linkentity(ent);
+				G_TouchTriggers(ent);
 			}
+
 			return true;
 		}
-		VectorCopy (oldorg, ent->s.origin);
+
+		// Let's not make that move after all.
+		VectorCopy(initial_org, ent->s.origin);
 		QPostMessage(ent, MSG_BLOCKED, PRI_DIRECTIVE, NULL);
+
 		return false;
 	}
 
-	if ( ent->flags & FL_PARTIALGROUND )
-	{
-//		SV_Printf ("back on ground\n"); 
+	if (ent->flags & FL_PARTIALGROUND)
 		ent->flags &= ~FL_PARTIALGROUND;
-	}
+
 	ent->groundentity = trace.ent;
 	ent->groundentity_linkcount = trace.ent->linkcount;
 
-// the move is ok
+	// The move is ok.
 	if (relink)
 	{
-		gi.linkentity (ent);
-		G_TouchTriggers (ent);
+		gi.linkentity(ent);
+		G_TouchTriggers(ent);
 	}
+
 	return true;
+}
+
+// Called by monster program code.
+// The move will be adjusted for slopes and stairs, but if the move isn't possible, no move is done, false is returned,
+// and pr_global_struct->trace_normal is set to the normal of the blocking wall.
+// FIXME since we need to test end position contents here, can we avoid doing it again later in catagorize position?
+//TODO: modifies 'move' vector. Is that intentional?
+qboolean SV_movestep(edict_t* ent, vec3_t move, const qboolean relink)
+{
+	assert(ent->monsterinfo.scale > 0.0f); //mxd. In original version below check is 'if (ent->monsterinfo.scale)', so...
+
+	// Scale here, not before!
+	if (ent->monsterinfo.scale > 0.0f) //TODO: add ' && ent->monsterinfo.scale != 1.0f'?
+		VectorScale(move, ent->monsterinfo.scale, move);
+
+	// // Swim and fly monsters. Flying monsters don't step up.
+	if (ent->flags & (FL_SWIM | FL_FLY))
+	{
+		const trace_t tr = MG_MoveStep_SwimOrFly(ent, move, relink); //mxd. Reuse MG_MoveStep_SwimOrFly() logic.
+		return tr.succeeded;
+	}
+
+	// Walk monsters.
+	return SV_MoveStep_Walk(ent, move, relink); //mxd
 }
 
 
