@@ -13,7 +13,6 @@
 #include "Random.h"
 #include "Vector.h"
 
-void SV_NewChaseDir(edict_t* actor, edict_t* enemy, float dist); //TODO: add to m_move.h
 void ssithraCheckJump(edict_t* self); //TODO: add to m_plagueSsithra.h
 
 // AI targeting globals.
