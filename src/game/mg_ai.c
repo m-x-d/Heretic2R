@@ -251,7 +251,8 @@ static trace_t MG_MoveStep_SwimOrFly(edict_t* self, vec3_t move, const qboolean 
 				G_TouchTriggers(self);
 			}
 
-			return trace; // OK to move. //TODO: should also set trace.succeeded to true?
+			trace.succeeded = true; //BUGFIX: mxd. Original logic doesn't set this.
+			return trace; // OK to move.
 		}
 
 		if (self->enemy == NULL)
@@ -429,7 +430,7 @@ trace_t MG_MoveStep(edict_t* self, vec3_t move, const qboolean relink)
 
 	// Swim and fly monsters. Flying monsters don't step up.
 	if (self->flags & (FL_SWIM | FL_FLY))
-		return MG_MoveStep_SwimOrFly(self, move, relink); //mxd
+		return MG_MoveStep_SwimOrFly(self, move, relink); //mxd //TODO: original logic never sets 'trace.succeeded' to true. Check what this change affects.
 
 	// Walk monsters.
 	return MG_MoveStep_Walk(self, move, relink); //mxd
