@@ -424,8 +424,10 @@ static trace_t MG_MoveStep_Walk(edict_t* self, const vec3_t move, const qboolean
 //TODO: modifies 'move' vector. Is that intentional?
 trace_t MG_MoveStep(edict_t* self, vec3_t move, const qboolean relink)
 {
+	assert(self->monsterinfo.scale > 0.0f); //mxd. In original version below check is 'if (ent->monsterinfo.scale)', so...
+
 	// Scale movement by monster's scale. Scale here, not before since any function can call this.
-	if (self->monsterinfo.scale != 0.0f) //TODO: add ' && self->monsterinfo.scale != 1.0f'?
+	if (self->monsterinfo.scale > 0.0f) //TODO: add ' && self->monsterinfo.scale != 1.0f'?
 		VectorScale(move, self->monsterinfo.scale, move);
 
 	// Swim and fly monsters. Flying monsters don't step up.
