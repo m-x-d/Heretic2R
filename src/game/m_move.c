@@ -239,23 +239,15 @@ float M_ChangeYaw(edict_t* ent) //TODO: VERY similar to MG_ChangeYaw() (the only
 	return move;
 }
 
-/*
-===============
-M_walkmove
-===============
-*/
-qboolean M_walkmove (edict_t *ent, float yaw, float dist)
+qboolean M_walkmove(edict_t* ent, float yaw, const float dist)
 {
-	vec3_t	move;
-	
-	if (!ent->groundentity && !(ent->flags & (FL_FLY|FL_SWIM)))
-		return false;
+	if (ent->groundentity != NULL || (ent->flags & (FL_FLY | FL_SWIM)))
+	{
+		yaw *= ANGLE_TO_RAD;
+		vec3_t move = { cosf(yaw) * dist, sinf(yaw) * dist, 0.0f };
 
-	yaw = yaw*M_PI*2 / 360;
-	
-	move[0] = cos(yaw)*dist;
-	move[1] = sin(yaw)*dist;
-	move[2] = 0;
+		return SV_movestep(ent, move, true);
+	}
 
-	return SV_movestep(ent, move, true);
+	return false;
 }
