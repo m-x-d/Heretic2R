@@ -22,6 +22,7 @@
 #include "g_debris.h" //mxd
 #include "c_ai.h"
 #include "mg_guide.h" //mxd
+#include "m_move.h" //mxd
 #include "m_stats.h"
 
 #define OGLE_WORKER_CHISEL 1 //TODO: unused.
@@ -1502,7 +1503,6 @@ void ogle_start_push (edict_t *self, edict_t *other, edict_t *activator)
 		SetAnim(self, ANIM_PUSH3);
 }
 
-qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink);
 void ogle_push (edict_t *self, float dist)
 {
 	edict_t	*found = NULL;
