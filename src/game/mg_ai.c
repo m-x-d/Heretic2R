@@ -19,7 +19,6 @@
 #define YAW_BEST_MOVE	false
 
 void ssithraCheckJump(edict_t* self); //TODO: move to m_plagueSsithra.h.
-void SV_FixCheckBottom(edict_t* ent); //TODO: move to m_move.h
 
 // Returns true if the entity is in front (dot > 0.8) of self.
 qboolean MG_IsAheadOf(const edict_t* self, const edict_t* other) //mxd. Named 'ahead' in original logic.
@@ -632,7 +631,7 @@ static void MG_NewDir(edict_t* self, const float dist)
 
 	// If a bridge was pulled out from underneath a monster, it may not have a valid standing position at all.
 	if (!MG_CheckBottom(self))
-		SV_FixCheckBottom(self);
+		self->flags |= FL_PARTIALGROUND; //mxd. SV_FixCheckBottom() in original logic.
 }
 
 // Returns true if the spot is in front (in sight) of self.

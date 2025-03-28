@@ -10,5 +10,4 @@
 
 extern qboolean SV_movestep(edict_t* ent, vec3_t move, qboolean relink);
 extern float M_ChangeYaw(edict_t* ent);
-extern void SV_FixCheckBottom(edict_t* ent);
 extern qboolean M_walkmove(edict_t* ent, float yaw, float dist);

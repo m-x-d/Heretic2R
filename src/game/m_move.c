@@ -240,19 +240,6 @@ float M_ChangeYaw(edict_t* ent) //TODO: VERY similar to MG_ChangeYaw() (the only
 }
 
 /*
-======================
-SV_FixCheckBottom
-
-======================
-*/
-void SV_FixCheckBottom (edict_t *ent)
-{
-//	SV_Printf ("SV_FixCheckBottom\n");
-	
-	ent->flags |= FL_PARTIALGROUND;
-}
-
-/*
 ===============
 M_movetoside - move creature to the side determined by the given yaw
 ===============
