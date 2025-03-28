@@ -188,7 +188,7 @@ static qboolean MG_CheckBottom(edict_t* ent)
 	return true;
 }
 
-static trace_t MG_MoveStep_SwimOrFly(edict_t* self, vec3_t move, const qboolean relink) //mxd. Split from MG_MoveStep().
+trace_t MG_MoveStep_SwimOrFly(edict_t* self, const vec3_t move, const qboolean relink) //mxd. Split from MG_MoveStep().
 {
 	trace_t trace = { 0 }; //mxd. Initialize to avoid static analysis warning.
 
@@ -262,7 +262,7 @@ static trace_t MG_MoveStep_SwimOrFly(edict_t* self, vec3_t move, const qboolean 
 	return trace;
 }
 
-static trace_t MG_MoveStep_Walk(edict_t* self, vec3_t move, const qboolean relink) //mxd. Split from MG_MoveStep().
+static trace_t MG_MoveStep_Walk(edict_t* self, const vec3_t move, const qboolean relink) //mxd. Split from MG_MoveStep().
 {
 	vec3_t initial_org;
 	VectorCopy(self->s.origin, initial_org);

@@ -9,6 +9,7 @@
 #include "q_shared.h"
 
 extern trace_t MG_MoveStep(edict_t* self, vec3_t move, qboolean relink);
+extern trace_t MG_MoveStep_SwimOrFly(edict_t* self, const vec3_t move, qboolean relink); //mxd
 extern qboolean MG_MoveToGoal(edict_t* self, float dist);
 extern qboolean MG_SwimFlyToGoal(edict_t* self, float dist);
 extern float MG_ChangeWhichYaw(edict_t* self, qboolean ideal_yaw);
