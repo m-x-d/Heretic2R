@@ -647,13 +647,8 @@ extern void ServerCommand(void);
 extern qboolean SV_FilterPacket(const char* from);
 
 // m_move.c
-extern qboolean M_CheckBottom(edict_t* ent);
-extern qboolean M_CheckTop(edict_t* ent);
 extern qboolean M_walkmove(edict_t* ent, float yaw, float dist);
-extern void M_MoveToGoal(edict_t* ent, float dist);
 extern float M_ChangeYaw(edict_t* ent);
-extern void M_ChangePitch(edict_t* ent);
-extern void M_MoveAwayFromGoal(edict_t* ent, float dist);
 
 // g_phys.c
 extern void G_RunEntity(edict_t* ent);
