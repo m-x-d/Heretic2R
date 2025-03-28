@@ -1208,5 +1208,8 @@
     <ClInclude Include="g_waterfx.h">
       <Filter>src\Game objects</Filter>
     </ClInclude>
+    <ClInclude Include="m_move.h">
+      <Filter>src\Monsters</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

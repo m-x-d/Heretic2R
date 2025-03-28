@@ -1,8 +1,13 @@
-// m_move.c -- monster movement
+//
+// m_move.c -- Monster movement.
+//
+// Copyright 1998 Raven Software
+//
 
+#include "m_move.h" //mxd
+#include "mg_ai.h" //mxd
+#include "Vector.h"
 #include "g_local.h"
-#include "random.h"
-#include "vector.h"
 
 /*
 =============
