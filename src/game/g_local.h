@@ -648,7 +648,6 @@ extern qboolean SV_FilterPacket(const char* from);
 
 // m_move.c
 extern qboolean M_walkmove(edict_t* ent, float yaw, float dist);
-extern float M_ChangeYaw(edict_t* ent);
 
 // g_phys.c
 extern void G_RunEntity(edict_t* ent);

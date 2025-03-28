@@ -11,6 +11,7 @@
 #include "g_local.h" //TODO: remove.
 #include "g_ai.h" //mxd
 #include "g_combat.h" //mxd
+#include "m_move.h" //mxd
 #include "Message.h"
 #include "g_ClassStatics.h"
 

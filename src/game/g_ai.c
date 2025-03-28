@@ -6,6 +6,7 @@
 
 #include "g_ai.h" //mxd
 #include "g_ai_local.h" //mxd
+#include "m_move.h" //mxd
 #include "mg_ai.h" //mxd
 #include "mg_guide.h"
 #include "m_stats.h"

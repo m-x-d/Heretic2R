@@ -10,6 +10,7 @@
 #include "g_DefaultMessageHandler.h"
 #include "g_obj.h" //mxd
 #include "g_monster.h"
+#include "m_move.h" //mxd
 #include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
 #include "FX.h"

@@ -12,6 +12,7 @@
 #include "g_DefaultMessageHandler.h"
 #include "g_light.h" //mxd
 #include "g_playstats.h"
+#include "m_move.h" //mxd
 #include "m_plagueElf_anim.h"
 #include "m_stats.h"
 #include "FX.h"
