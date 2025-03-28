@@ -26,7 +26,6 @@
 #include "m_stats.h"
 
 void gorgon_land(edict_t *self);
-void M_movetoside (edict_t *self,float yaw, float dist);
 
 #define GORGON_STEPS		20//number of steps for whole swerve
 #define GORGON_STEPS_INT1	(GORGON_STEPS/4)
@@ -569,7 +568,7 @@ void gorgondeath1_fall (edict_t *self)
 	if (self->s.frame == FRAME_deatha13)
 		gorgon_smoke(self);
 
-	M_movetoside(self,flrand(180, 345), flrand(0, -8));
+	M_walkmove(self,flrand(180, 345), flrand(0, -8)); //mxd. M_movetoside() in original logic.
 }
 
 animframe_t gorgon_frames_die1 [] =

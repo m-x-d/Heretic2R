@@ -241,16 +241,6 @@ float M_ChangeYaw(edict_t* ent) //TODO: VERY similar to MG_ChangeYaw() (the only
 
 /*
 ===============
-M_movetoside - move creature to the side determined by the given yaw
-===============
-*/
-void M_movetoside (edict_t *self,float yaw, float dist)
-{
-	M_walkmove (self, yaw, dist);
-}
-
-/*
-===============
 M_walkmove
 ===============
 */
