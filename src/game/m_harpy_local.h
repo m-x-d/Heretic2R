@@ -83,9 +83,6 @@ extern animmove_t harpy_move_pirch9_idle;
 
 void harpy_dismember(edict_t *self, int damage, int HitLocation0);
 
-qboolean SV_FlyDirection (edict_t *ent, vec3_t  *attitude, float dist);
-qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink);
-
 void harpy_ai_fly   (edict_t *self, float fd, float rd, float ud);
 void harpy_ai_glide (edict_t *self, float fd, float rd, float ud);
 void harpy_ai_circle (edict_t *self, float fd, float rd, float ud);

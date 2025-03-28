@@ -63,10 +63,6 @@ extern animmove_t imp_move_perch;
 extern animmove_t imp_move_dup;
 extern animmove_t imp_move_ddown;
 
-
-qboolean SV_FlyDirection (edict_t *ent, vec3_t  *attitude, float dist);
-qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink);
-
 void imp_ai_fly   (edict_t *self, float fd, float rd, float ud);
 void imp_ai_pirch (edict_t *self);
 void imp_ai_hover (edict_t *self, float dist);
