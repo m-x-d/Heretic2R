@@ -14,6 +14,7 @@
 #include "p_client.h" //mxd
 #include "p_teleport.h" //mxd
 #include "FX.h"
+#include "Random.h"
 #include "Vector.h"
 #include "g_local.h"
 
@@ -1439,6 +1440,35 @@ void SP_misc_fire_sparker(edict_t* self)
 	self->clipmask = 0;
 
 	self->use = MiscFireSparkerUse;
+}
+
+#pragma endregion
+
+#pragma region ========================== misc_flag ==========================
+
+static void MiscFlagThink(edict_t* self) //mxd. Named 'flag_think' in original logic.
+{
+	if (++self->s.frame > 10)
+		self->s.frame = 0;
+
+	self->nextthink = level.time + FRAMETIME;
+}
+
+// QUAKED misc_flag (1 .5 0) (-10 -10 0) (10 10 80)
+void SP_misc_flag(edict_t* self) //mxd. Defined in m_FMtest.c in original logic.
+{
+	VectorSet(self->mins, -10.0f, -10.0f, 0.0f);
+	VectorSet(self->maxs, 10.0f, 10.0f, 80.0f);
+
+	gi.setmodel(self, "models/rj5/tris.fm"); //TODO: model does not exist.
+
+	self->movetype = PHYSICSTYPE_NONE;
+	self->solid = SOLID_BBOX;
+
+	self->think = MiscFlagThink;
+	self->nextthink = level.time + flrand(0.0f, 1.0f);
+
+	gi.linkentity(self);
 }
 
 #pragma endregion

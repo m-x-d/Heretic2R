@@ -110,7 +110,6 @@
     <ClCompile Include="m_elflord_anims.c" />
     <ClCompile Include="m_fish.c" />
     <ClCompile Include="m_fish_anim.c" />
-    <ClCompile Include="m_FMtest.c" />
     <ClCompile Include="m_gkrokon.c" />
     <ClCompile Include="m_gkrokon_anim.c" />
     <ClCompile Include="m_gorgon.c" />

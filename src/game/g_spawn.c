@@ -37,12 +37,11 @@ typedef struct
 	ClassID_t classID; //mxd. int in original version.
 } spawn_t;
 
-void SP_misc_flag(edict_t* ent);
 void SP_script_runner(edict_t* ent);
 
 #pragma region ========================== spawns array ==========================
 
-static spawn_t spawns[] =
+static const spawn_t spawns[] =
 {
 	// Quake2 specific spawns.
 	{ "info_player_start", SP_info_player_start, CID_NONE },

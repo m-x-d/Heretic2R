@@ -22,6 +22,7 @@ extern void SP_misc_teleporter_dest(edict_t* ent);
 extern void SP_misc_magic_portal(edict_t* self);
 extern void SP_misc_remote_camera(edict_t* self);
 extern void SP_misc_fire_sparker(edict_t* self);
+extern void SP_misc_flag(edict_t* self);
 
 extern void SP_sound_ambient_silverspring(edict_t* self);
 extern void SP_sound_ambient_swampcanyon(edict_t* self);

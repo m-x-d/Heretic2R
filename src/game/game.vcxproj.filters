@@ -363,9 +363,6 @@
     <ClCompile Include="g_ai.c">
       <Filter>src\Monsters</Filter>
     </ClCompile>
-    <ClCompile Include="m_FMtest.c">
-      <Filter>src\Monsters</Filter>
-    </ClCompile>
     <ClCompile Include="m_move.c">
       <Filter>src\Monsters</Filter>
     </ClCompile>
