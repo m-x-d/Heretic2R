@@ -213,52 +213,29 @@ qboolean SV_movestep(edict_t* ent, vec3_t move, const qboolean relink)
 	return SV_MoveStep_Walk(ent, move, relink); //mxd
 }
 
-
-//============================================================================
-
-/*
-===============
-M_ChangeYaw
-
-===============
-*/
-float M_ChangeYaw (edict_t *ent)
+float M_ChangeYaw(edict_t* ent) //TODO: VERY similar to MG_ChangeYaw() (the only difference is anglemod() / anglemod_old() usage). Use MG_ChangeYaw() instead?
 {
-	float	ideal;
-	float	current;
-	float	move;
-	float	speed;
-	
-	current = anglemod(ent->s.angles[YAW]);
-	ideal = ent->ideal_yaw;
+	const float current = anglemod(ent->s.angles[YAW]);
+	const float ideal = ent->ideal_yaw;
+	float move = ideal - current;
 
-	if (current == ideal)
-		return false;
+	if (FloatIsZeroEpsilon(move)) //mxd. Use FloatIsZeroEpsilon() instead of direct comparison.
+		return 0.0f;
 
-	move = ideal - current;
-	speed = ent->yaw_speed;
 	if (ideal > current)
 	{
-		if (move >= 180)
-			move = move - 360;
+		if (move >= 180.0f)
+			move -= 360.0f;
 	}
 	else
 	{
-		if (move <= -180)
-			move = move + 360;
+		if (move <= -180.0f)
+			move += 360.0f;
 	}
-	if (move > 0)
-	{
-		if (move > speed)
-			move = speed;
-	}
-	else
-	{
-		if (move < -speed)
-			move = -speed;
-	}
-	
-	ent->s.angles[YAW] = anglemod (current + move);
+
+	move = Clamp(move, -ent->yaw_speed, ent->yaw_speed);
+	ent->s.angles[YAW] = anglemod(current + move);
+
 	return move;
 }
 
