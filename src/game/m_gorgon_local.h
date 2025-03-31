@@ -200,7 +200,6 @@ void gorgonChooseDeath(edict_t* self);
 void gorgon_ai_eat(edict_t* self, float crap);
 
 //TODO: move to appropriate headers!
-float MG_ChangePitchForZVel(edict_t* self, float speed, float cap_vel, float max_angle); //TODO: unused!
 void MG_SetNormalizeVelToGoal(edict_t* self, vec3_t vec);
 float MG_ChangePitch(edict_t* self, float ideal, float speed);
 void fish_under_water_wake(edict_t* self);
