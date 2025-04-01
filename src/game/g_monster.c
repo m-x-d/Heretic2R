@@ -829,19 +829,13 @@ static void swimmonster_start_go(edict_t* self) //TODO: rename to M_SwimmonsterS
 		M_TriggeredStart(self);
 }
 
-/*-------------------------------------------------------------------------
-	swimmonster_start
--------------------------------------------------------------------------*/
-qboolean swimmonster_start (edict_t *self)
+qboolean swimmonster_start(edict_t* self) //TODO: rename to M_SwimmonsterStart?
 {
 	self->flags |= FL_SWIM;
 	self->think = swimmonster_start_go;
-	M_CatagorizePosition (self);
-	
-	if (!monster_start(self))
-		return false;			// Failed initialization
-	else
-		return true;
+	M_CatagorizePosition(self);
+
+	return monster_start(self);
 }
 
 /*
