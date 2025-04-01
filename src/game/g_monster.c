@@ -785,7 +785,7 @@ void walkmonster_start_go(edict_t* self) //TODO: rename to M_WalkmonsterStartGo?
 		M_TriggeredStart(self);
 }
 
-qboolean walkmonster_start(edict_t* self) //TODO: rename to M_WalkmonsterStart?
+qboolean M_WalkmonsterStart(edict_t* self) //mxd. Named 'walkmonster_start' in original logic.
 {
 	self->think = walkmonster_start_go;
 	return monster_start(self);

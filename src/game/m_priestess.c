@@ -1645,7 +1645,7 @@ void SP_monster_high_priestess (edict_t *self)
 		return;
 	}
 
-	if (!walkmonster_start(self))			// Failed initialization
+	if (!M_WalkmonsterStart(self))			// Failed initialization
 		return;
 
 	self->msgHandler = DefaultMsgHandler;

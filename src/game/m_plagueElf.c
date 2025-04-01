@@ -1973,7 +1973,7 @@ void SP_monster_plagueElf (edict_t *self)
 		self->spawnflags &= ~MSF_WALKING;
 	}
 
-	if (!walkmonster_start(self))		// Failed initialization
+	if (!M_WalkmonsterStart(self))		// Failed initialization
 		return;
 		
 	self->msgHandler = DefaultMsgHandler;

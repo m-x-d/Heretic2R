@@ -2314,7 +2314,7 @@ void SP_monster_gorgon (edict_t *self)
 	}
 
 	// Generic Monster Initialization
-	if (!walkmonster_start(self))		// Failed initialization
+	if (!M_WalkmonsterStart(self))		// Failed initialization
 		return;
 
 	self->msgHandler = DefaultMsgHandler;

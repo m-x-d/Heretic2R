@@ -2894,7 +2894,7 @@ void SP_monster_assassin (edict_t *self)
 	if(self->spawnflags & MSF_ASS_TPORTAMBUSH)
 		self->spawnflags|=MSF_ASLEEP;
 
-	if (!walkmonster_start(self))	// Unsuccessful initialization.
+	if (!M_WalkmonsterStart(self))	// Unsuccessful initialization.
 		return;
 		
 	self->msgHandler = DefaultMsgHandler;

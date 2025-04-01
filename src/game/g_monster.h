@@ -28,7 +28,7 @@ extern void monster_use(struct edict_s* self, struct edict_s* other, struct edic
 extern void monster_death_use(edict_t* self);
 extern qboolean monster_start(edict_t* self);
 
-extern qboolean walkmonster_start(edict_t* self);
+extern qboolean M_WalkmonsterStart(edict_t* self);
 extern void walkmonster_start_go(edict_t* self);
 extern qboolean flymonster_start(edict_t* self);
 extern qboolean swimmonster_start(edict_t* self);

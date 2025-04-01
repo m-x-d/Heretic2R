@@ -1897,7 +1897,7 @@ Morky
 */
 void SP_monster_morcalavin (edict_t *self)
 {
-	if (!walkmonster_start(self))		// Failed initialization
+	if (!M_WalkmonsterStart(self))		// Failed initialization
 		return;
 
 	self->msgHandler = DefaultMsgHandler;

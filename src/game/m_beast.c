@@ -2728,7 +2728,7 @@ void SP_monster_trial_beast (edict_t *self)
 		return;
 	}
 
-	if (!walkmonster_start (self))		// Incomplete initialization
+	if (!M_WalkmonsterStart (self))		// Incomplete initialization
 		return;
 
 	self->msgHandler = DefaultMsgHandler;

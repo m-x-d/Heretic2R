@@ -1078,7 +1078,7 @@ NOTE: A value of zero will result in defaults, if you actually want zero as the 
 
 void SP_Monster_Gkrokon(edict_t *self)
 {
-	if (!walkmonster_start(self))		// Failed initialization
+	if (!M_WalkmonsterStart(self))		// Failed initialization
 		return;
 
 	self->msgHandler=DefaultMsgHandler;
