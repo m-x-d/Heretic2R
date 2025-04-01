@@ -770,7 +770,7 @@ void walkmonster_start_go(edict_t* self) //TODO: rename to M_WalkmonsterStartGo?
 	{
 		M_droptofloor(self);
 
-		if (self->groundentity != NULL && !M_walkmove(self, 0, 0))
+		if (self->groundentity != NULL && !M_walkmove(self, 0.0f, 0.0f))
 			gi.dprintf("%s in solid at %s\n", self->classname, vtos(self->s.origin));
 	}
 
@@ -791,26 +791,22 @@ qboolean walkmonster_start(edict_t* self) //TODO: rename to M_WalkmonsterStart?
 	return monster_start(self);
 }
 
-/*-------------------------------------------------------------------------
-	flymonster_start_go
--------------------------------------------------------------------------*/
-void flymonster_start_go (edict_t *self)
+static void flymonster_start_go(edict_t* self)
 {
-	if (!M_walkmove (self, 0, 0))
-		gi.dprintf ("%s in solid at %s\n", self->classname, vtos(self->s.origin));
+	if (!M_walkmove(self, 0.0f, 0.0f))
+		gi.dprintf("%s in solid at %s\n", self->classname, vtos(self->s.origin));
 
-	if (!self->yaw_speed)
-		self->yaw_speed = 10;
+	if (self->yaw_speed == 0.0f)
+		self->yaw_speed = 10.0f;
 
-	if(!self->viewheight)
+	if (self->viewheight == 0)
 		self->viewheight = 25;
 
-	monster_start_go (self);
+	monster_start_go(self);
 
 	if (self->spawnflags & MSF_ASLEEP)
-		M_TriggeredStart (self);
+		M_TriggeredStart(self);
 }
-
 
 /*-------------------------------------------------------------------------
 	flymonster_start
