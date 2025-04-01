@@ -1405,26 +1405,6 @@ float MG_ChangePitch(edict_t* self, float ideal, const float speed) //TODO: move
 	return move;
 }
 
-float MG_ChangePitchForZVel(edict_t *self, float speed, float cap_vel, float max_angle)
-{
-	float	ideal;
-	
-	ideal = self->velocity[PITCH];
-
-	if(fabs(ideal) > cap_vel)
-	{
-		if(ideal > 0)	
-			ideal = max_angle;
-		else
-			ideal = -max_angle;
-	}
-	else
-		ideal = ideal/cap_vel * max_angle;
-
-	return MG_ChangePitch(self, ideal, 10);
-}
-
-
 /*
 ===============
 MG_SetNormalizeVelToGoal
