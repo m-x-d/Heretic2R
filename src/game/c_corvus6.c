@@ -10,7 +10,7 @@
 #include "Utilities.h"
 
 // Corvus6 cinematic actions.
-static animmove_t* animations[NUM_ANIMS] =
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&corvus6_move_c_action1,
 	&corvus6_move_c_action2,
