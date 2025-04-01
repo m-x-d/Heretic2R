@@ -147,7 +147,7 @@ static void spreader_grenade_explode (edict_t *self)
 	self->think = spreader_grenade_think;
 	gi.sound(self, CHAN_AUTO, classStatics[CID_SPREADER].resInfo->sounds[SND_BOMB],
 		1, ATTN_IDLE, 0);
-	PauseTime(self, SPREADER_GRENADE_TIME);
+	self->monsterinfo.pausetime = level.time + SPREADER_GRENADE_TIME; //mxd. Inlined PauseTime() logic.
 	
 	self->bounced = NULL;
 	self->isBlocked = NULL;

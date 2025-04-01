@@ -59,14 +59,6 @@ void DyingMsgHandler(edict_t* self, G_Message_t* msg)
 }
 
 /*-------------------------------------------------------------------------
-	PauseTime
--------------------------------------------------------------------------*/
-void PauseTime(edict_t *self, float time)
-{
-	self->monsterinfo.pausetime = level.time + time;
-}
-
-/*-------------------------------------------------------------------------
 	AttackFinished
 -------------------------------------------------------------------------*/
 void AttackFinished (edict_t *self, float time)
