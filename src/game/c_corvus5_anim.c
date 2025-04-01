@@ -8,7 +8,7 @@
 #include "c_ai.h"
 
 // Corvus action 1. 
-static animframe_t corvus5_frames_c_action1[] =
+static const animframe_t corvus5_frames_c_action1[] =
 {
 	{ FRAME_youknow1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_youknow2, ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -19,10 +19,10 @@ static animframe_t corvus5_frames_c_action1[] =
 	{ FRAME_youknow7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_youknow8, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_action1 = { 8, corvus5_frames_c_action1, ai_c_cycleend };
+const animmove_t corvus5_move_c_action1 = { 8, corvus5_frames_c_action1, ai_c_cycleend };
 
 // Corvus action 2.
-static animframe_t corvus5_frames_c_action2[] =
+static const animframe_t corvus5_frames_c_action2[] =
 {
 	{ FRAME_who1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_who2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -72,10 +72,10 @@ static animframe_t corvus5_frames_c_action2[] =
 	{ FRAME_who46, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_who47, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_action2 = { 47, corvus5_frames_c_action2, ai_c_cycleend };
+const animmove_t corvus5_move_c_action2 = { 47, corvus5_frames_c_action2, ai_c_cycleend };
 
 // Corvus action 3.
-static animframe_t corvus5_frames_c_action3[] =
+static const animframe_t corvus5_frames_c_action3[] =
 {
 	{ FRAME_spared1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_spared2, ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -85,10 +85,10 @@ static animframe_t corvus5_frames_c_action3[] =
 	{ FRAME_spared6, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_spared7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_action3 = { 7, corvus5_frames_c_action3, ai_c_cycleend };
+const animmove_t corvus5_move_c_action3 = { 7, corvus5_frames_c_action3, ai_c_cycleend };
 
 // Corvus action 4.
-static animframe_t corvus5_frames_c_action4[] =
+static const animframe_t corvus5_frames_c_action4[] =
 {
 	{ FRAME_itsnot1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_itsnot2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -114,10 +114,10 @@ static animframe_t corvus5_frames_c_action4[] =
 	{ FRAME_itsnot22, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_itsnot23, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_action4 = { 23, corvus5_frames_c_action4, ai_c_cycleend };
+const animmove_t corvus5_move_c_action4 = { 23, corvus5_frames_c_action4, ai_c_cycleend };
 
 // Corvus action 5.
-static animframe_t corvus5_frames_c_action5[] =
+static const animframe_t corvus5_frames_c_action5[] =
 {
 	{ FRAME_iwill1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_iwill2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -153,19 +153,19 @@ static animframe_t corvus5_frames_c_action5[] =
 	{ FRAME_iwill32, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_iwill33, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_action5 = { 33, corvus5_frames_c_action5, ai_c_cycleend };
+const animmove_t corvus5_move_c_action5 = { 33, corvus5_frames_c_action5, ai_c_cycleend };
 
 // Corvus action 6.
-static animframe_t corvus5_frames_c_action6[] =
+static const animframe_t corvus5_frames_c_action6[] =
 {
 	{ FRAME_ready1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ready2, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ready3, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_action6 = { 3, corvus5_frames_c_action6, ai_c_cycleend };
+const animmove_t corvus5_move_c_action6 = { 3, corvus5_frames_c_action6, ai_c_cycleend };
 
 // Corvus action 7
-static animframe_t corvus5_frames_c_action7[] =
+static const animframe_t corvus5_frames_c_action7[] =
 {
 	{ FRAME_ready4,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ready5,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -191,19 +191,19 @@ static animframe_t corvus5_frames_c_action7[] =
 	{ FRAME_ready25, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ready26, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_action7 = { 23, corvus5_frames_c_action7, ai_c_cycleend };
+const animmove_t corvus5_move_c_action7 = { 23, corvus5_frames_c_action7, ai_c_cycleend };
 
 // Corvus action 8.
-static animframe_t corvus5_frames_c_action8[] =
+static const animframe_t corvus5_frames_c_action8[] =
 {
 	{ FRAME_ready3, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ready2, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ready1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_action8 = { 3, corvus5_frames_c_action8, ai_c_cycleend };
+const animmove_t corvus5_move_c_action8 = { 3, corvus5_frames_c_action8, ai_c_cycleend };
 
 // Corvus idle 1.
-static animframe_t corvus5_frames_c_idle1[] =
+static const animframe_t corvus5_frames_c_idle1[] =
 {
 	{ FRAME_Breath1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_Breath2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -229,17 +229,17 @@ static animframe_t corvus5_frames_c_idle1[] =
 	{ FRAME_Breath22, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_Breath23, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_idle1 = { 23, corvus5_frames_c_idle1, ai_c_cycleend };
+const animmove_t corvus5_move_c_idle1 = { 23, corvus5_frames_c_idle1, ai_c_cycleend };
 
 // Corvus idle 2.
-static animframe_t corvus5_frames_c_idle2[] =
+static const animframe_t corvus5_frames_c_idle2[] =
 {
 	{ FRAME_who1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_idle2 = { 1, corvus5_frames_c_idle2, ai_c_cycleend };
+const animmove_t corvus5_move_c_idle2 = { 1, corvus5_frames_c_idle2, ai_c_cycleend };
 
 // Corvus idle 3.
-static animframe_t corvus5_frames_c_idle3[] =
+static const animframe_t corvus5_frames_c_idle3[] =
 {
 	{ FRAME_stance1,  ai_c_move, 4, 0, 0, NULL, 0, NULL },
 	{ FRAME_stance2,  ai_c_move, 4, 0, 0, NULL, 0, NULL },
@@ -266,52 +266,52 @@ static animframe_t corvus5_frames_c_idle3[] =
 	{ FRAME_stance23, ai_c_move, 4, 0, 0, NULL, 0, NULL },
 	{ FRAME_stance24, ai_c_move, 4, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_idle3 = { 24, corvus5_frames_c_idle3, ai_c_cycleend };
+const animmove_t corvus5_move_c_idle3 = { 24, corvus5_frames_c_idle3, ai_c_cycleend };
 
 // Corvus - starting his pivot to the left.
-static animframe_t corvus5_frames_c_pivotleftgo[] =
+static const animframe_t corvus5_frames_c_pivotleftgo[] =
 {
 	{ FRAME_Lpivot1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_Lpivot2, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_pivotleftgo = { 2, corvus5_frames_c_pivotleftgo, ai_c_cycleend };
+const animmove_t corvus5_move_c_pivotleftgo = { 2, corvus5_frames_c_pivotleftgo, ai_c_cycleend };
 
-static animframe_t corvus5_frames_c_pivotleft[] =
+static const animframe_t corvus5_frames_c_pivotleft[] =
 {
 	{ FRAME_Lpivot3, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_Lpivot4, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_pivotleft = { 2, corvus5_frames_c_pivotleft, ai_c_cycleend };
+const animmove_t corvus5_move_c_pivotleft = { 2, corvus5_frames_c_pivotleft, ai_c_cycleend };
 
-static animframe_t corvus5_frames_c_pivotleftstop[] =
+static const animframe_t corvus5_frames_c_pivotleftstop[] =
 {
 	{ FRAME_Lpivot4, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_pivotleftstop = { 1, corvus5_frames_c_pivotleftstop, ai_c_cycleend };
+const animmove_t corvus5_move_c_pivotleftstop = { 1, corvus5_frames_c_pivotleftstop, ai_c_cycleend };
 
 // Corvus - starting his pivot to the right.
-static animframe_t corvus5_frames_c_pivotrightgo[] =
+static const animframe_t corvus5_frames_c_pivotrightgo[] =
 {
 	{ FRAME_Lpivot4, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_Lpivot3, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_pivotrightgo = { 2, corvus5_frames_c_pivotrightgo, ai_c_cycleend };
+const animmove_t corvus5_move_c_pivotrightgo = { 2, corvus5_frames_c_pivotrightgo, ai_c_cycleend };
 
-static animframe_t corvus5_frames_c_pivotright[] =
+static const animframe_t corvus5_frames_c_pivotright[] =
 {
 	{ FRAME_Lpivot2, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_Lpivot1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_pivotright = { 2, corvus5_frames_c_pivotright, ai_c_cycleend };
+const animmove_t corvus5_move_c_pivotright = { 2, corvus5_frames_c_pivotright, ai_c_cycleend };
 
-static animframe_t corvus5_frames_c_pivotrightstop[] =
+static const animframe_t corvus5_frames_c_pivotrightstop[] =
 {
 	{ FRAME_Lpivot1, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_pivotrightstop = { 1, corvus5_frames_c_pivotrightstop, ai_c_cycleend };
+const animmove_t corvus5_move_c_pivotrightstop = { 1, corvus5_frames_c_pivotrightstop, ai_c_cycleend };
 
 // Corvus walk 1.
-static animframe_t corvus5_frames_c_walk1[] =
+static const animframe_t corvus5_frames_c_walk1[] =
 {
 	{ FRAME_jog1, ai_c_move, 10, 0, 0, NULL, 0, NULL },
 	{ FRAME_jog2, ai_c_move, 16, 0, 0, NULL, 0, NULL },
@@ -322,10 +322,10 @@ static animframe_t corvus5_frames_c_walk1[] =
 	{ FRAME_jog7, ai_c_move, 15, 0, 0, NULL, 0, NULL },
 	{ FRAME_jog8, ai_c_move, 16, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_walk1 = { 8, corvus5_frames_c_walk1, ai_c_cycleend };
+const animmove_t corvus5_move_c_walk1 = { 8, corvus5_frames_c_walk1, ai_c_cycleend };
 
 // Corvus walk 2.
-static animframe_t corvus5_frames_c_walk2[] =
+static const animframe_t corvus5_frames_c_walk2[] =
 {
 	{ FRAME_cinewalk1,  ai_c_move, 4, 0, 0, NULL, 0, NULL },
 	{ FRAME_cinewalk2,  ai_c_move, 4, 0, 0, NULL, 0, NULL },
@@ -344,28 +344,28 @@ static animframe_t corvus5_frames_c_walk2[] =
 	{ FRAME_cinewalk15, ai_c_move, 4, 0, 0, NULL, 0, NULL },
 	{ FRAME_cinewalk16, ai_c_move, 4, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_walk2 = { 16, corvus5_frames_c_walk2, ai_c_cycleend };
+const animmove_t corvus5_move_c_walk2 = { 16, corvus5_frames_c_walk2, ai_c_cycleend };
 
 // Corvus - starting his walk anims.
-static animframe_t corvus5_frames_c_walkstart[] =
+static const animframe_t corvus5_frames_c_walkstart[] =
 {
 	{ FRAME_gorun2, ai_c_move, 4, 0, 0, NULL, 0, NULL },
 	{ FRAME_gorun3, ai_c_move, 4, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_walkstart = { 2, corvus5_frames_c_walkstart, ai_c_cycleend };
+const animmove_t corvus5_move_c_walkstart = { 2, corvus5_frames_c_walkstart, ai_c_cycleend };
 
 // Corvus - stopping his walk with right foot in front.
-static animframe_t corvus5_frames_c_walkstop1[] =
+static const animframe_t corvus5_frames_c_walkstop1[] =
 {
 	{ FRAME_jog1, ai_c_move, 2, 0, 0, NULL, 0, NULL },
 	{ FRAME_jog2, ai_c_move, 2, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_walkstop1 = { 2, corvus5_frames_c_walkstop1, ai_c_cycleend };
+const animmove_t corvus5_move_c_walkstop1 = { 2, corvus5_frames_c_walkstop1, ai_c_cycleend };
 
 // Corvus - stopping his walk with left foot in front.
-static animframe_t corvus5_frames_c_walkstop2[] =
+static const animframe_t corvus5_frames_c_walkstop2[] =
 {
 	{ FRAME_jog5, ai_c_move, 2, 0, 0, NULL, 0, NULL },
 	{ FRAME_jog6, ai_c_move, 2, 0, 0, NULL, 0, NULL },
 };
-animmove_t corvus5_move_c_walkstop2 = { 2, corvus5_frames_c_walkstop2, ai_c_cycleend };
+const animmove_t corvus5_move_c_walkstop2 = { 2, corvus5_frames_c_walkstop2, ai_c_cycleend };
