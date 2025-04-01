@@ -79,42 +79,33 @@ static void M_CheckGround(edict_t* ent)
 	}
 }
 
-/*-------------------------------------------------------------------------
-	M_CatagorizePosition
--------------------------------------------------------------------------*/
-void M_MonsterCatPos (edict_t *ent)
+static void M_MonsterCatagorizePosition(edict_t* ent) //mxd. Named 'M_MonsterCatPos' in original logic. MonsterCat! =^.^=
 {
-	vec3_t		point;
-	int			cont;
+	// Get waterlevel.
+	vec3_t point = { ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] + ent->mins[2] + 1.0f };
 
-//
-// get waterlevel
-//
-	point[0] = ent->s.origin[0];
-	point[1] = ent->s.origin[1];
-	point[2] = ent->s.origin[2] + ent->mins[2] + 1;	
-	cont = gi.pointcontents (point);
-
-	if (!(cont & MASK_WATER))
+	int content = gi.pointcontents(point);
+	if (!(content & MASK_WATER))
 	{
 		ent->waterlevel = 0;
 		ent->watertype = 0;
 		return;
 	}
 
-	point[2] -= 1;
-	ent->watertype = cont;
-	ent->waterlevel = 1;//below knees
-	point[2] += ent->size[2] * 0.25;// quarter of way up
-	cont = gi.pointcontents (point);
-	if (!(cont & MASK_WATER))
+	ent->watertype = content;
+	ent->waterlevel = 1; // Below knees.
+	point[2] += ent->size[2] * 0.25f - 1.0f;// Quarter of way up.
+
+	content = gi.pointcontents(point);
+	if (!(content & MASK_WATER))
 		return;
 
-	ent->waterlevel = 2;//between knees and head
-	point[2] = ent->absmax[2];//over head
-	cont = gi.pointcontents (point);
-	if (cont & MASK_WATER)
-		ent->waterlevel = 3;//all the way in
+	ent->waterlevel = 2; // Between knees and head.
+	point[2] = ent->absmax[2]; // Over head.
+
+	content = gi.pointcontents(point);
+	if (content & MASK_WATER)
+		ent->waterlevel = 3; // All the way in.
 }
 
 void M_CatagorizePosition (edict_t *ent)
@@ -124,7 +115,7 @@ void M_CatagorizePosition (edict_t *ent)
 
 	if(!ent->client)
 	{
-		M_MonsterCatPos(ent);
+		M_MonsterCatagorizePosition(ent);
 		return;
 	}
 //
