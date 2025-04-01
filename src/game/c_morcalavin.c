@@ -11,7 +11,7 @@
 #include "Vector.h"
 
 // Morcalavin cinematic actions.
-static animmove_t* animations[NUM_ANIMS] =
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&morcalavin_move_c_action1,
 	&morcalavin_move_c_action2,

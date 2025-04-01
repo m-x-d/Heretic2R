@@ -524,10 +524,10 @@ typedef enum AnimID_e
 	NUM_ANIMS
 } AnimID_t;
 
-extern animmove_t morcalavin_move_c_action1;
-extern animmove_t morcalavin_move_c_action2;
-extern animmove_t morcalavin_move_c_action3;
-extern animmove_t morcalavin_move_c_idle1;
-extern animmove_t morcalavin_move_c_idle2;
-extern animmove_t morcalavin_move_c_idle3;
-extern animmove_t morcalavin_move_c_idle4;
+extern const animmove_t morcalavin_move_c_action1;
+extern const animmove_t morcalavin_move_c_action2;
+extern const animmove_t morcalavin_move_c_action3;
+extern const animmove_t morcalavin_move_c_idle1;
+extern const animmove_t morcalavin_move_c_idle2;
+extern const animmove_t morcalavin_move_c_idle3;
+extern const animmove_t morcalavin_move_c_idle4;
