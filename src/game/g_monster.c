@@ -885,74 +885,46 @@ void pitch_roll_for_slope(edict_t* ent, vec3_t pass_slope) //TODO: rename to M_G
 	ent->s.angles[ROLL] = (1.0f - Q_fabs(dot)) * pitch * mod;
 }
 
-//JWEIER START HELPER BLOCK
+#pragma region ========================== Monster Helper Functions ==========================
 
-/*----------------------------------------------------------------------------------------------------------------
-
-	Monster Helper Functions
-
-----------------------------------------------------------------------------------------------------------------*/
-
-/*====================================================================================================================
-
-	void M_Touch
-
-		Tests to see whether the thing touching it is on its head, and if so, it tries to correct that situation.
-
-		Returns:	
-		
-		All parameters are passed to the function from the touch callback
-
-======================================================================================================================*/
-
-void M_Touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+// Tests to see whether the thing touching it is on its head, and if so, it tries to correct that situation.
+void M_Touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf)
 {
-	vec3_t	pos1, pos2, dir;
-	float	zdiff, dropmag;
+	// Skip if other is not monster or player.
+	if (!(other->svflags & SVF_MONSTER) && Q_stricmp(other->classname, "player") != 0) //mxd. stricmp -> Q_stricmp
+		return;
 
-	if ((other->svflags & SVF_MONSTER) || (!stricmp(other->classname, "player")))
+	vec3_t other_bottom;
+	VectorCopy(other->s.origin, other_bottom);
+	other_bottom[2] += other->mins[2];
+
+	vec3_t self_top;
+	VectorCopy(self->s.origin, self_top);
+	self_top[2] += self->maxs[2];
+
+	// Not on top?
+	if (other_bottom[2] - self_top[2] < 0.0f)
+		return;
+
+	vec3_t dir;
+	VectorCopy(other->velocity, dir);
+	VectorNormalize(dir);
+
+	// 10% chance to do damage.
+	if (irand(0, 9) == 0)
 	{
-		VectorCopy(other->s.origin, pos1);
-		pos1[2] += other->mins[2];
-
-		VectorCopy(self->s.origin, pos2);
-		pos2[2] += self->maxs[2];
-
-		zdiff = pos1[2] - pos2[2];
-
-		// On top
-		if (zdiff >= 0 )
-		{
-			//We want the full magnitude of the vector, not just drop magnitude
-			VectorCopy(other->velocity, dir);
-			dropmag = VectorNormalize(dir);
-			
-			//Do damage to the thing getting hit based on how hard the collision was
-//			T_Damage (self, other, other, dir, pos2, vec3_origin, 1 + (dropmag/FALLDAMAGE_MODIFIER), 0, DAMAGE_NO_BLOOD | DAMAGE_NO_KNOCKBACK);
-			if(!irand(0, 9))//10% chance
-			{
-				int damage;
-
-				damage = irand(1, 3);
-#ifdef _DEVEL
-				gi.dprintf("%s doing %d damage to %s by standing on it\n", other->classname, damage, self->classname);
-#endif
-				T_Damage (self, other, other, dir, pos2, vec3_origin, damage, 0, DAMAGE_NO_KNOCKBACK|DAMAGE_AVOID_ARMOR,MOD_DIED);
-			}
-
-			//Setup a random velocity for the first entity
-			other->velocity[0] = flrand(100.0, 150.0);			
-			other->velocity[1] = flrand(100.0, 150.0);
-			other->velocity[2] += 110;
-
-			//Randomly reverse those random numbers
-			if (irand(0,1))
-				VectorScale(other->velocity, -1, other->velocity);
-
-			//Let the other entity move at its velocity
-//			other->groundentity = NULL;
-		}
+		const int damage = irand(1, 3);
+		T_Damage(self, other, other, dir, self_top, vec3_origin, damage, 0, DAMAGE_NO_KNOCKBACK | DAMAGE_AVOID_ARMOR, MOD_DIED);
 	}
+
+	// Setup a random velocity for the top entity.
+	other->velocity[0] = flrand(100.0f, 150.0f);
+	other->velocity[1] = flrand(100.0f, 150.0f);
+	other->velocity[2] += 110.0f;
+
+	// Randomly reverse those random numbers. //TODO: don't reverse Z-axis?
+	if (irand(0, 1) == 1)
+		VectorScale(other->velocity, -1.0f, other->velocity);
 }
 
 /*====================================================================================================================
@@ -1747,3 +1719,4 @@ void M_ShowLifeMeter( edict_t *self, int value, int max_value )
 	}
 }
 
+#pragma endregion
