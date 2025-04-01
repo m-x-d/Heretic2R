@@ -212,7 +212,7 @@ void Killed(edict_t* target, edict_t* inflictor, edict_t* attacker, const int da
 		MG_RemoveBuoyEffects(target);
 
 		// What about if off ledge or on steep slope - slide off?
-		pitch_roll_for_slope(target, NULL);
+		M_GetSlopePitchRoll(target, NULL);
 
 		target->dead_size = Q_fabs(target->maxs[2] - target->mins[2]) * 0.5f;
 		MG_PostDeathThink(target);

@@ -1525,7 +1525,7 @@ void ogle_push (edict_t *self, float dist)
 			move[2] = 0;
 			if(SV_movestep(found, move, true))
 			{
-				pitch_roll_for_slope(found, NULL);
+				M_GetSlopePitchRoll(found, NULL);
 				M_walkmove(self, self->s.angles[YAW], dist);
 				return;
 			}
@@ -1760,7 +1760,7 @@ void SP_monster_ogle(edict_t *self)
 		if(self->targetname && self->target)
 		{
 			if(found = G_Find(NULL, FOFS(targetname), self->target))
-				pitch_roll_for_slope(found, NULL);
+				M_GetSlopePitchRoll(found, NULL);
 
 			skip_inits = true;
 

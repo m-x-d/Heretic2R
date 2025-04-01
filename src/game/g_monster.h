@@ -32,7 +32,7 @@ extern qboolean M_WalkmonsterStart(edict_t* self);
 extern void M_WalkmonsterStartGo(edict_t* self);
 extern qboolean M_FlymonsterStart(edict_t* self);
 
-extern void pitch_roll_for_slope(edict_t* ent, vec3_t pass_slope); //mxd
+extern void M_GetSlopePitchRoll(edict_t* ent, vec3_t pass_slope); //mxd
 
 // JWEIER START HELPER PROTO
 extern qboolean M_ValidTarget(edict_t* self, const edict_t* target);

@@ -819,7 +819,7 @@ qboolean M_FlymonsterStart(edict_t* self) //mxd. Named 'flymonster_start' in ori
 // This will adjust the pitch and roll of a monster to match a given slope.
 // If a non-'0 0 0' slope is passed, it will use that value, otherwise it will use the ground underneath the monster.
 // If it doesn't find a surface, it does nothing and returns.
-void pitch_roll_for_slope(edict_t* ent, vec3_t pass_slope) //TODO: rename to M_GetSlopePitchRoll?
+void M_GetSlopePitchRoll(edict_t* ent, vec3_t pass_slope) //mxd. Named 'pitch_roll_for_slope' in original logic.
 {
 	vec3_t slope;
 

@@ -1234,7 +1234,7 @@ void MG_PostDeathThink(edict_t* self)
 	if (self->groundentity == NULL || Vec3NotZero(self->velocity))
 	{
 		if (self->groundentity != NULL && self->friction == 1.0f) //FIXME: check avelocity?
-			pitch_roll_for_slope(self, NULL);
+			M_GetSlopePitchRoll(self, NULL);
 
 		self->post_think = MG_PostDeathThink;
 		self->next_post_think = level.time + 0.1f;
@@ -1418,7 +1418,7 @@ void MG_PostDeathThink(edict_t* self)
 			}
 			else
 			{
-				pitch_roll_for_slope(self, trace1.plane.normal); //BUGFIX: mxd. Original logic passes pointer to normal.
+				M_GetSlopePitchRoll(self, trace1.plane.normal); //BUGFIX: mxd. Original logic passes pointer to normal.
 				self->friction = trace1.plane.normal[2] * 0.1f;
 			}
 
@@ -1434,7 +1434,7 @@ void MG_PostDeathThink(edict_t* self)
 			}
 			else
 			{
-				pitch_roll_for_slope(self, trace2.plane.normal); //BUGFIX: mxd. Original logic passes pointer to normal.
+				M_GetSlopePitchRoll(self, trace2.plane.normal); //BUGFIX: mxd. Original logic passes pointer to normal.
 				self->friction = trace2.plane.normal[2] * 0.1f;
 			}
 
@@ -1450,7 +1450,7 @@ void MG_PostDeathThink(edict_t* self)
 			}
 			else
 			{
-				pitch_roll_for_slope(self, trace3.plane.normal); //BUGFIX: mxd. Original logic passes pointer to normal.
+				M_GetSlopePitchRoll(self, trace3.plane.normal); //BUGFIX: mxd. Original logic passes pointer to normal.
 				self->friction = trace3.plane.normal[2] * 0.1f;
 			}
 
@@ -1466,7 +1466,7 @@ void MG_PostDeathThink(edict_t* self)
 			}
 			else
 			{
-				pitch_roll_for_slope(self, trace4.plane.normal); //BUGFIX: mxd. Original logic passes pointer to normal.
+				M_GetSlopePitchRoll(self, trace4.plane.normal); //BUGFIX: mxd. Original logic passes pointer to normal.
 				self->friction = trace4.plane.normal[2] * 0.1f;
 			}
 
@@ -1487,7 +1487,7 @@ void MG_PostDeathThink(edict_t* self)
 	self->friction = 1.0f;
 
 	VectorClear(self->avelocity);
-	pitch_roll_for_slope(self, NULL);
+	M_GetSlopePitchRoll(self, NULL);
 
 	if (self->s.color.r == 0)
 		self->s.color.r = 255;

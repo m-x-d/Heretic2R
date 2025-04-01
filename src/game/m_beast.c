@@ -692,7 +692,7 @@ void tbeast_go_die (edict_t *self, edict_t *other, edict_t *activator)
 	self->next_post_think = -1;
 	self->touch = NULL;
 	SetAnim(self, ANIM_DIE);
-	pitch_roll_for_slope(self, NULL);
+	M_GetSlopePitchRoll(self, NULL);
 	G_UseTargets(self, activator);
 }
 
