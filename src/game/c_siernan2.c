@@ -11,7 +11,7 @@
 #include "Vector.h"
 
 // Siernan cinematic actions.
-static animmove_t* animations[NUM_ANIMS] =
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&siernan2_move_c_action1,
 	&siernan2_move_c_action2,
