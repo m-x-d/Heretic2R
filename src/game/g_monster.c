@@ -527,77 +527,63 @@ static void M_CheckInGround(edict_t* self) //mxd. Named 'MG_CheckInGround' in or
 	//FIXME: check against other ents too? Same trace or second one?
 }
 
-/*-------------------------------------------------------------------------
-	monster_start
--------------------------------------------------------------------------*/
-qboolean monster_start (edict_t *self)
+qboolean monster_start(edict_t* self) //TODO: rename to M_MonsterStart.
 {
-	if ((deathmatch->value == 1) && !((int)sv_cheats->value & self_spawn))
+	if (DEATHMATCH && !((int)sv_cheats->value & self_spawn))
 	{
-		G_FreeEdict (self);
+		G_FreeEdict(self);
 		return false;
 	}
 
 	self->monsterinfo.awake = false;
-	self->nextthink = level.time + FRAMETIME;
 	self->svflags |= SVF_MONSTER;
 	self->s.renderfx |= RF_FRAMELERP;
 	self->takedamage = DAMAGE_AIM;
 	self->air_finished = level.time + M_HOLD_BREATH_TIME;
+	self->nextthink = level.time + FRAMETIME;
 
 	self->use = monster_use;
 	self->touch = M_Touch;
-	self->monsterinfo.alert = defaultMonsterAlerted;//I don't understand why I get a warning here...
+	self->monsterinfo.alert = defaultMonsterAlerted; // I don't understand why I get a warning here...
 
 	self->max_health = self->health;
 	self->clipmask = MASK_MONSTERSOLID;
-	if(!self->materialtype)
-		self->materialtype = MAT_FLESH;
-	
-	// Stop the camera clipping with monsters, except the trial beast.
 
-	if(self->classID!=CID_TBEAST)
-		self->s.effects|=EF_CAMERA_NO_CLIP;
+	if (self->materialtype == 0)
+		self->materialtype = MAT_FLESH;
+
+	// Stop the camera clipping with monsters, except the trial beast.
+	if (self->classID != CID_TBEAST)
+		self->s.effects |= EF_CAMERA_NO_CLIP;
 
 	if (G_MonsterShadow[self->classID].use_shadow)
-	{
-		gi.CreateEffect(&self->s,
-						FX_SHADOW,
-						CEF_OWNERS_ORIGIN,
-						self->s.origin,
-						"f",
-						G_MonsterShadow[self->classID].scale);	
-	}
+		gi.CreateEffect(&self->s, FX_SHADOW, CEF_OWNERS_ORIGIN, self->s.origin, "f", G_MonsterShadow[self->classID].scale);
 
-	
 	self->s.skinnum = 0;
 	self->deadflag = DEAD_NO;
 	self->svflags &= ~SVF_DEADMONSTER;
-	self->monsterinfo.thinkinc = MONSTER_THINK_INC;//FRAMETIME;
+	self->monsterinfo.thinkinc = MONSTER_THINK_INC;
 	self->monsterinfo.nextframeindex = -1;
 
-	if (!self->monsterinfo.checkattack)
+	if (self->monsterinfo.checkattack == NULL)
 		self->monsterinfo.checkattack = M_CheckAttack;
-	VectorCopy (self->s.origin, self->s.old_origin);
 
-	if (st.item)
+	VectorCopy(self->s.origin, self->s.old_origin);
+
+	if (st.item != NULL)
 	{
-		self->item = P_FindItemByClassname (st.item);
-		if (!self->item)
+		self->item = P_FindItemByClassname(st.item);
+
+		if (self->item == NULL)
 			gi.dprintf("%s at %s has bad item: %s\n", self->classname, vtos(self->s.origin), st.item);
 	}
 
-	// randomize what frame they start on
-//	if (self->monsterinfo.currentmove)
-//		self->s.frame = self->monsterinfo.currentmove->firstframe + (rand() % (self->monsterinfo.currentmove->lastframe - self->monsterinfo.currentmove->firstframe + 1));
-
-	if (!self->mass)
+	if (self->mass == 0)
 		self->mass = 200;
 
 	self->s.frame = 1;
+	self->oldenemy_debounce_time = -1.0f;
 
-	self->oldenemy_debounce_time = -1;
-	
 	return true;
 }
 
