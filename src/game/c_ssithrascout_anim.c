@@ -8,7 +8,7 @@
 #include "c_ai.h"
 
 // Ssithra scout action 1.
-static animframe_t scout_frames_c_action1[] =
+static const animframe_t scout_frames_c_action1[] =
 {
 	{ FRAME_ss_recover1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_recover2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -50,10 +50,10 @@ static animframe_t scout_frames_c_action1[] =
 	{ FRAME_ss_recover38, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_recover39, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t scout_move_c_action1 = { 39, scout_frames_c_action1, ai_c_cycleend };
+const animmove_t scout_move_c_action1 = { 39, scout_frames_c_action1, ai_c_cycleend };
 
 // Ssithra scout action 2.
-static animframe_t scout_frames_c_action2[] =
+static const animframe_t scout_frames_c_action2[] =
 {
 	{ FRAME_ss_hecured1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_hecured2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -116,10 +116,10 @@ static animframe_t scout_frames_c_action2[] =
 	{ FRAME_ss_hecured59, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_hecured60, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t scout_move_c_action2 = { 60, scout_frames_c_action2, ai_c_cycleend };
+const animmove_t scout_move_c_action2 = { 60, scout_frames_c_action2, ai_c_cycleend };
 
 // Ssithra scout action 3.
-static animframe_t scout_frames_c_action3[] =
+static const animframe_t scout_frames_c_action3[] =
 {
 	{ FRAME_ss_talk1A1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_talk1A2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -208,10 +208,10 @@ static animframe_t scout_frames_c_action3[] =
 	{ FRAME_ss_talk1A85, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_talk1A86, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t scout_move_c_action3 = { 86, scout_frames_c_action3, ai_c_cycleend };
+const animmove_t scout_move_c_action3 = { 86, scout_frames_c_action3, ai_c_cycleend };
 
 // Ssithra scout action 4.
-static animframe_t scout_frames_c_action4[] =
+static const animframe_t scout_frames_c_action4[] =
 {
 	{ FRAME_ss_talk1B1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_talk1B2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -258,10 +258,10 @@ static animframe_t scout_frames_c_action4[] =
 	{ FRAME_ss_talk1B43, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_talk1B44, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t scout_move_c_action4 = { 44, scout_frames_c_action4, ai_c_cycleend };
+const animmove_t scout_move_c_action4 = { 44, scout_frames_c_action4, ai_c_cycleend };
 
 // Ssithra scout action 5.
-static animframe_t scout_frames_c_action5[] =
+static const animframe_t scout_frames_c_action5[] =
 {
 	{ FRAME_ss_coughA1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_coughA2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -290,10 +290,10 @@ static animframe_t scout_frames_c_action5[] =
 	{ FRAME_ss_coughA25, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_coughA26, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t scout_move_c_action5 = { 26, scout_frames_c_action5, ai_c_cycleend };
+const animmove_t scout_move_c_action5 = { 26, scout_frames_c_action5, ai_c_cycleend };
 
 // Ssithra scout action 6.
-static animframe_t scout_frames_c_action6[] =
+static const animframe_t scout_frames_c_action6[] =
 {
 	{ FRAME_ss_noshe1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_noshe2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -330,10 +330,10 @@ static animframe_t scout_frames_c_action6[] =
 	{ FRAME_ss_noshe33, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_noshe34, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t scout_move_c_action6 = { 34, scout_frames_c_action6, ai_c_cycleend };
+const animmove_t scout_move_c_action6 = { 34, scout_frames_c_action6, ai_c_cycleend };
 
 // Ssithra scout action 7.
-static animframe_t scout_frames_c_action7[] =
+static const animframe_t scout_frames_c_action7[] =
 {
 	{ FRAME_ss_talk2A1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_talk2A2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -406,10 +406,10 @@ static animframe_t scout_frames_c_action7[] =
 	{ FRAME_ss_talk2A69, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_talk2A70, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t scout_move_c_action7 = { 70, scout_frames_c_action7, ai_c_cycleend };
+const animmove_t scout_move_c_action7 = { 70, scout_frames_c_action7, ai_c_cycleend };
 
 // Ssithra scout action 8.
-static animframe_t scout_frames_c_action8[] =
+static const animframe_t scout_frames_c_action8[] =
 {
 	{ FRAME_ss_talk2B1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_talk2B2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -474,10 +474,10 @@ static animframe_t scout_frames_c_action8[] =
 	{ FRAME_ss_talk2B61, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_talk2B62, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t scout_move_c_action8 = { 62, scout_frames_c_action8, ai_c_cycleend };
+const animmove_t scout_move_c_action8 = { 62, scout_frames_c_action8, ai_c_cycleend };
 
 // Ssithra scout action 9.
-static animframe_t scout_frames_c_action9[] =
+static const animframe_t scout_frames_c_action9[] =
 {
 	{ FRAME_ss_talk2C1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_talk2C2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -505,10 +505,10 @@ static animframe_t scout_frames_c_action9[] =
 	{ FRAME_ss_talk2C24, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_talk2C25, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t scout_move_c_action9 = { 25, scout_frames_c_action9, ai_c_cycleend };
+const animmove_t scout_move_c_action9 = { 25, scout_frames_c_action9, ai_c_cycleend };
 
 // Ssithra scout action 10.
-static animframe_t scout_frames_c_action10[] =
+static const animframe_t scout_frames_c_action10[] =
 {
 	{ FRAME_ss_coughB1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_coughB2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -530,10 +530,10 @@ static animframe_t scout_frames_c_action10[] =
 	{ FRAME_ss_coughB18, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_coughB19, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t scout_move_c_action10 = { 19, scout_frames_c_action10, ai_c_cycleend };
+const animmove_t scout_move_c_action10 = { 19, scout_frames_c_action10, ai_c_cycleend };
 
 // Ssithra scout death 1.
-static animframe_t scout_frames_c_death1[] =
+static const animframe_t scout_frames_c_death1[] =
 {
 	{ FRAME_ss_death1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_death2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -590,10 +590,10 @@ static animframe_t scout_frames_c_death1[] =
 	{ FRAME_ss_death53, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_death54, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t scout_move_c_death1 = { 54, scout_frames_c_death1, ai_c_cycleend };
+const animmove_t scout_move_c_death1 = { 54, scout_frames_c_death1, ai_c_cycleend };
 
 // Ssithra scout idle 1.
-static animframe_t scout_frames_c_idle1[] =
+static const animframe_t scout_frames_c_idle1[] =
 {
 	{ FRAME_ss_breath1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_breath2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -627,10 +627,10 @@ static animframe_t scout_frames_c_idle1[] =
 	{ FRAME_ss_breath30, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_breath31, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t scout_move_c_idle1 = { 31, scout_frames_c_idle1, ai_c_cycleend };
+const animmove_t scout_move_c_idle1 = { 31, scout_frames_c_idle1, ai_c_cycleend };
 
 // Ssithra scout idle 2.
-static animframe_t scout_frames_c_idle2[] =
+static const animframe_t scout_frames_c_idle2[] =
 {
 	{ FRAME_ss_idleA1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_idleA2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -649,10 +649,10 @@ static animframe_t scout_frames_c_idle2[] =
 	{ FRAME_ss_idleA15, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_idleA16, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t scout_move_c_idle2 = { 16, scout_frames_c_idle2, ai_c_cycleend };
+const animmove_t scout_move_c_idle2 = { 16, scout_frames_c_idle2, ai_c_cycleend };
 
 // Ssithra scout idle 3.
-static animframe_t scout_frames_c_idle3[] =
+static const animframe_t scout_frames_c_idle3[] =
 {
 	{ FRAME_ss_idleB1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_idleB2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -680,4 +680,4 @@ static animframe_t scout_frames_c_idle3[] =
 	{ FRAME_ss_idleB24, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ss_idleB25, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t scout_move_c_idle3 = { 25, scout_frames_c_idle3, ai_c_cycleend };
+const animmove_t scout_move_c_idle3 = { 25, scout_frames_c_idle3, ai_c_cycleend };
