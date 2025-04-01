@@ -13,7 +13,7 @@
 #include "Vector.h"
 
 // Corvus3 cinematic actions.
-static animmove_t* animations[NUM_ANIMS] =
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&corvus3_move_c_action1,
 	&corvus3_move_c_action2,
