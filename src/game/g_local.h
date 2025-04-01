@@ -630,9 +630,6 @@ extern void G_LinkMissile(edict_t* self);
 extern char* vtos(const vec3_t v);
 extern float VectorYaw(const vec3_t v);
 
-// g_monster.c
-extern void M_CatagorizePosition(edict_t* ent);
-
 // g_svcmds.c
 extern void ServerCommand(void);
 extern qboolean SV_FilterPacket(const char* from);
