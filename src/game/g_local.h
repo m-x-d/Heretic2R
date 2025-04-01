@@ -638,7 +638,6 @@ extern qboolean swimmonster_start(edict_t* self);
 extern qboolean flymonster_start(edict_t* self);
 extern void monster_death_use(edict_t* self);
 extern void M_CatagorizePosition(edict_t* ent);
-extern void M_CheckGround(edict_t* ent);
 
 // g_svcmds.c
 extern void ServerCommand(void);

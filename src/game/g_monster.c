@@ -58,50 +58,26 @@ void DyingMsgHandler(edict_t* self, G_Message_t* msg)
 		HandleMessage(self, msg); //mxd
 }
 
-/*-------------------------------------------------------------------------
-	M_CheckGround
--------------------------------------------------------------------------*/
-void M_CheckGround (edict_t *ent)
+static void M_CheckGround(edict_t* ent)
 {
-	vec3_t		point;
-	trace_t		trace;
-
-	if (ent->flags & (FL_SWIM|FL_FLY))
+	if (ent->flags & (FL_SWIM | FL_FLY) || ent->velocity[2] >= 50.0f)
 		return;
 
-	if (ent->velocity[2] >= 50)
+	// If the hull point one-quarter unit down is solid the entity is on ground.
+	const vec3_t point = { ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] - 0.25f };
+
+	trace_t trace;
+	gi.trace(ent->s.origin, ent->mins, ent->maxs, point, ent, MASK_MONSTERSOLID, &trace);
+
+	if (!trace.startsolid && !trace.allsolid && trace.plane.normal[2] >= GROUND_NORMAL) // Check steepness. //mxd. Use define.
 	{
-//		ent->groundentity = NULL;
-		return;
-	}
+		VectorCopy(trace.endpos, ent->s.origin);
 
-// if the hull point one-quarter unit down is solid the entity is on ground
-	point[0] = ent->s.origin[0];
-	point[1] = ent->s.origin[1];
-	point[2] = ent->s.origin[2] - 0.25;
-
-	gi.trace (ent->s.origin, ent->mins, ent->maxs, point, ent, MASK_MONSTERSOLID,&trace);
-
-	// check steepness
-	if ( trace.plane.normal[2] < 0.7 && !trace.startsolid)
-	{
-//		ent->groundentity = NULL;
-		return;
-	}
-
-//	ent->groundentity = trace.ent;
-//	ent->groundentity_linkcount = trace.ent->linkcount;
-//	if (!trace.startsolid && !trace.allsolid)
-//		VectorCopy (trace.endpos, ent->s.origin);
-	if (!trace.startsolid && !trace.allsolid)
-	{
-		VectorCopy (trace.endpos, ent->s.origin);
 		ent->groundentity = trace.ent;
 		ent->groundentity_linkcount = trace.ent->linkcount;
-		ent->velocity[2] = 0;
+		ent->velocity[2] = 0.0f;
 	}
 }
-
 
 /*-------------------------------------------------------------------------
 	M_CatagorizePosition
