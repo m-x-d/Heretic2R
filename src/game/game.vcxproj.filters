@@ -815,7 +815,7 @@
     <ClInclude Include="pcode.h">
       <Filter>src\Scripting</Filter>
     </ClInclude>
-    <ClInclude Include="m_assassin_local.h">
+    <ClInclude Include="m_assassin_shared.h">
       <Filter>src\Monsters\Assassin</Filter>
     </ClInclude>
     <ClInclude Include="m_assassin_anim.h">
@@ -1207,6 +1207,9 @@
     </ClInclude>
     <ClInclude Include="m_move.h">
       <Filter>src\Monsters</Filter>
+    </ClInclude>
+    <ClInclude Include="m_assassin_local.h">
+      <Filter>src\Monsters\Assassin</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
