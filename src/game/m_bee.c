@@ -1,112 +1,24 @@
-//==============================================================================
 //
-// m_bee.
+// m_bee.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//==============================================================================
 
-#include "g_local.h"
-#include "Utilities.h"
-#include "g_DefaultMessageHandler.h"
-#include "g_monster.h"
-#include "g_obj.h" //mxd
-#include "Random.h"
-#include "vector.h"
-#include "fx.h"
-#include "g_HitLocation.h"
-#include "g_misc.h"
 #include "m_bee.h" //mxd
-#include "m_stats.h"
+#include "g_obj.h" //mxd
+#include "Vector.h"
+#include "g_local.h"
 
-static ClassResourceInfo_t resInfo;
+void BeeStaticsInit(void) { } //TODO: remove?
 
-typedef enum SoundID_e
+// QUAKED monster_bee (1 .5 0) (-16 -16 -24) (16 16 16)
+// The unimplemented bee.
+void SP_monster_bee(edict_t* self)
 {
-	SND_BUZZ1,
-	SND_BUZZ2,
-	SND_STING,
-	SND_GIB,
-	NUM_SOUNDS
-} SoundID_t;
+	self->s.modelindex = (byte)gi.modelindex("models/monsters/bee/tris.fm"); //TODO: has unused 60-frame wing flap animation.
 
-static int sounds[NUM_SOUNDS];
-/*
-==========================================================
+	VectorSet(self->mins, -2.0f, -2.0f, -25.0f);
+	VectorSet(self->maxs, 2.0f, 2.0f, 25.0f);
 
-	Bee Spawn functions
-
-==========================================================
-*/
-
-void BeeStaticsInit(void)
-{
-//	classStatics[CID_BEE].msgReceivers[MSG_STAND]		= bee_stand1;
-/*	classStatics[CID_BEE].msgReceivers[MSG_RUN]		= ogle_run1;
-	classStatics[CID_BEE].msgReceivers[MSG_MELEE]		= ogle_melee;
-	classStatics[CID_BEE].msgReceivers[MSG_DISMEMBER]  = ogle_dismember;
-	classStatics[CID_BEE].msgReceivers[MSG_DEATH]		= ogle_death;
-
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations; */
-	resInfo.modelIndex = gi.modelindex("models/monsters/bee/tris.fm");
-
-	sounds[SND_BUZZ1] = gi.soundindex ("monsters/bee/buzz1.wav");	
-	sounds[SND_BUZZ2] = gi.soundindex ("monsters/bee/buzz2.wav");	
-	sounds[SND_STING] = gi.soundindex ("monsters/bee/sting.wav");	
-	sounds[SND_GIB] = gi.soundindex ("monsters/bee/gib.wav");
-
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = sounds;
-
-}
-
-/*QUAKED monster_bee (1 .5 0) (-16 -16 -24) (16 16 16) 
-The bee
-*/
-void SP_monster_bee(edict_t *self)
-{
-
-	self->s.modelindex = gi.modelindex("models/monsters/bee/tris.fm");
-
-	VectorSet(self->mins, -2, -2, -25);
-	VectorSet(self->maxs, 2, 2, 25);
-
-	ObjectInit(self,40,40,MAT_WOOD,SOLID_BBOX);
-
-	return;
-
-//	walkmonster_start(self);
-	self->msgHandler = DefaultMsgHandler;
-	//self->classID = CID_BEE;
-
-	if (!self->health)
-		self->health = BEE_HEALTH;
-
-	self->mass = BEE_MASS;
-	self->yaw_speed = 32;
-
-//	self->movetype = PHYSICSTYPE_STEP;
-	self->solid=SOLID_BBOX;
-
-	VectorSet(self->mins, -16, -16, -24);
-	VectorSet(self->maxs, 16, 16, 16);
-
-	self->materialtype = MAT_INSECT;
-
-	self->s.modelindex = classStatics[CID_BEE].resInfo->modelIndex;
-	self->s.skinnum=0;
-/*
-	if (self->monsterinfo.scale)
-	{
-		self->s.scale = self->monsterinfo.scale = MODEL_SCALE;
-	}
-*/
-	self->monsterinfo.otherenemyname = "monster_rat";	
-
-//	AI_SpawnGuide(self);
-
-//	self->use = ogle_use;
-	
+	ObjectInit(self, 40, 40, MAT_WOOD, SOLID_BBOX); //TODO: why MAT_WOOD?..
 }

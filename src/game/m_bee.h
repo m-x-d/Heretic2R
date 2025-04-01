@@ -6,5 +6,7 @@
 
 #pragma once
 
-void SP_monster_bee(edict_t* self);
-void BeeStaticsInit(void);
+#include "g_Edict.h"
+
+extern void SP_monster_bee(edict_t* self);
+extern void BeeStaticsInit(void);
