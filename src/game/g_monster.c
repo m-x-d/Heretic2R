@@ -612,14 +612,8 @@ static void M_BBoxAndOriginAdjustForScale(edict_t* self) //mxd. Named 'MG_BBoxAn
 	gi.linkentity(self);
 }
 
-/*-------------------------------------------------------------------------
-	monster_start_go
--------------------------------------------------------------------------*/
-void monster_start_go (edict_t *self)
+static void monster_start_go(edict_t* self)
 {
-	vec3_t	v;
-	float	volume;
-
 	self->nextthink = level.time + FRAMETIME;
 
 	if (self->health <= 0)
@@ -628,143 +622,142 @@ void monster_start_go (edict_t *self)
 	M_BBoxAndOriginAdjustForScale(self);
 	M_CheckInGround(self);
 
-	if(!self->mass)
+	if (self->mass == 0)
 		self->mass = 100;
 
-	if(self->s.scale)
-		self->mass *= self->s.scale;
+	assert(self->s.scale >= 0.0f); //mxd. Original logic uses 'if (self->s.scale)' check below, so...
 
-	if(self->spawnflags & MSF_COWARD)//start off running away- FIXME: let them specify a flee_time and use AI_FLEE if one is set?  Would anyone ever use this?!?!?
+	if (self->s.scale > 0.0f)
+		self->mass = (int)((float)self->mass * self->s.scale);
+
+	if (self->spawnflags & MSF_COWARD) // Start off running away. //FIXME: let them specify a flee_time and use AI_FLEE if one is set? Would anyone ever use this?
 		self->monsterinfo.aiflags |= AI_COWARD;
 
-	if(self->spawnflags&MSF_STALK)//stalks enemies- only approaches and attacks from behind
+	if (self->spawnflags & MSF_STALK) // Stalks enemies - only approaches and attacks from behind.
 		self->ai_mood_flags |= AI_MOOD_FLAG_BACKSTAB;
 
-	if(self->spawnflags&MSF_MELEE_LEAD)//lead enemies in melee and tries to cut them off
+	if (self->spawnflags & MSF_MELEE_LEAD) // Lead enemies in melee and tries to cut them off.
 		self->ai_mood_flags |= AI_MOOD_FLAG_PREDICT;
 
-	if(!self->wakeup_distance)
+	if (self->wakeup_distance == 0.0f)
 		self->wakeup_distance = MAX_SIGHT_PLAYER_DIST;
-	
-	volume = VectorLength(self->size);
-	if(volume < 32)
+
+	if (VectorLength(self->size) < 32.0f)
 		self->svflags |= SVF_DO_NO_IMPACT_DMG;
 
-	self->jump_time = level.time + 2;//so they don't take damage from the fall after spawning...
+	self->jump_time = level.time + 2.0f; // So they don't take damage from the fall after spawning...
 
-	// check for target to combat_point and change to combattarget
-	self->monsterinfo.coop_check_debounce_time = 0;
-	self->monsterinfo.pausetime = -1;
-	if(self->enemy)
-	{//spawned mad
-		AI_FoundTarget(self, false);
+	// Check for target to combat_point and change to combattarget.
+	self->monsterinfo.coop_check_debounce_time = 0.0f;
+	self->monsterinfo.pausetime = -1.0f;
+
+	if (self->enemy != NULL)
+	{
+		AI_FoundTarget(self, false); // Spawned mad.
 	}
 	else
 	{
-		if (self->target)
+		// If self->target is point_combat, change it to self->combattarget.
+		if (self->target != NULL)
 		{
-			qboolean	notcombat;
-			qboolean	fixup;
-			edict_t		*target;
+			edict_t* target = NULL;
+			qboolean not_point_combat = false;
+			qboolean clear_target = false;
 
-			target = NULL;
-			notcombat = false;
-			fixup = false;
-			while ((target = G_Find (target, FOFS(targetname), self->target)) != NULL)
+			while ((target = G_Find(target, FOFS(targetname), self->target)) != NULL)
 			{
 				if (strcmp(target->classname, "point_combat") == 0)
 				{
 					self->combattarget = self->target;
-					fixup = true;
+					clear_target = true;
 				}
 				else
 				{
-					notcombat = true;
+					not_point_combat = true;
 				}
 			}
-			if (notcombat && self->combattarget)
+
+			if (not_point_combat && self->combattarget != NULL)
 				gi.dprintf("%s at %s has target with mixed types\n", self->classname, vtos(self->s.origin));
-			if (fixup)
+
+			if (clear_target)
 				self->target = NULL;
 		}
 
-		// validate combattarget
-		if (self->combattarget)
+		// Validate combattarget.
+		if (self->combattarget != NULL)
 		{
-			edict_t		*target;
-
-			target = NULL;
-			while ((target = G_Find (target, FOFS(targetname), self->combattarget)) != NULL)
-			{
+			edict_t* target = NULL;
+			while ((target = G_Find(target, FOFS(targetname), self->combattarget)) != NULL)
 				if (strcmp(target->classname, "point_combat") != 0)
-				{
-					gi.dprintf("%s at (%i %i %i) has a bad combattarget %s : %s at (%i %i %i)\n",
-						self->classname, (int)self->s.origin[0], (int)self->s.origin[1], (int)self->s.origin[2],
-						self->combattarget, target->classname, (int)target->s.origin[0], (int)target->s.origin[1],
-						(int)target->s.origin[2]);
-				}
-			}
+					gi.dprintf("%s at %s has a bad combattarget %s: %s at %s!\n", self->classname, vtos(self->s.origin), self->combattarget, target->classname, vtos(target->s.origin));
 		}
 
-		if (self->target)
+		if (self->target != NULL)
 		{
-			self->goalentity = self->movetarget = G_PickTarget(self->target);
-			if (!self->movetarget)
-			{
-				gi.dprintf ("%s can't find target %s at %s\n", self->classname, self->target, vtos(self->s.origin));
-				self->target = NULL;
-				self->monsterinfo.pausetime = 100000000;
+			self->goalentity = G_PickTarget(self->target);
+			self->movetarget = self->goalentity;
 
-				if (!self->monsterinfo.c_mode)	// Not in cinematic mode
+			if (self->movetarget == NULL)
+			{
+				gi.dprintf("%s can't find target %s at %s\n", self->classname, self->target, vtos(self->s.origin));
+
+				self->target = NULL;
+				self->monsterinfo.pausetime = FLT_MAX; //mxd. 100000000.0f in original logic.
+
+				if (!self->monsterinfo.c_mode) // Not in cinematic mode.
 					QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 				else
-					QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige",0,0,0,NULL,NULL);
+					QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 			}
-			else if (strcmp (self->movetarget->classname, "path_corner") == 0)
+			else if (strcmp(self->movetarget->classname, "path_corner") == 0)
 			{
-				if(self->classID != CID_SERAPH_OVERLORD)
+				if (self->classID != CID_SERAPH_OVERLORD)
 				{
-					VectorSubtract (self->goalentity->s.origin, self->s.origin, v);
-					self->ideal_yaw = self->s.angles[YAW] = VectorYaw(v);
-					gi.dprintf("Monster start go to walk\n");
+					vec3_t diff;
+					VectorSubtract(self->goalentity->s.origin, self->s.origin, diff);
+					self->ideal_yaw = VectorYaw(diff);
+					self->s.angles[YAW] = self->ideal_yaw;
+
 					QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-					self->monsterinfo.pausetime = 0;
+					self->monsterinfo.pausetime = 0.0f;
 				}
 				else
 				{
-					self->goalentity = self->movetarget = NULL;
-					self->monsterinfo.pausetime = 100000000;
-					if (!self->monsterinfo.c_mode)	// Not in cinematic mode
+					self->goalentity = NULL;
+					self->movetarget = NULL;
+					self->monsterinfo.pausetime = FLT_MAX; //mxd. 100000000.0f in original logic.
+
+					if (!self->monsterinfo.c_mode) // Not in cinematic mode.
 						QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 					else
-						QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige",0,0,0,NULL,NULL);
+						QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 				}
+
 				self->target = NULL;
 			}
 			else
 			{
-				self->goalentity = self->movetarget = NULL;
-				self->monsterinfo.pausetime = 100000000;
-				if (!self->monsterinfo.c_mode)	// Not in cinematic mode
+				self->goalentity = NULL;
+				self->movetarget = NULL;
+				self->monsterinfo.pausetime = FLT_MAX; //mxd. 100000000.0f in original logic.
+
+				if (!self->monsterinfo.c_mode) // Not in cinematic mode.
 					QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 				else
-					QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige",0,0,0,NULL,NULL);
+					QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 			}
 		}
 		else
 		{
-			self->monsterinfo.pausetime = 100000000;
-			if (self->monsterinfo.aiflags & AI_EATING) 
-			{
+			self->monsterinfo.pausetime = FLT_MAX; //mxd. 100000000.0f in original logic.
+
+			if (self->monsterinfo.aiflags & AI_EATING)
 				QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
-			}
+			else if (!self->monsterinfo.c_mode) // Not in cinematic mode.
+				QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			else
-			{
-				if (!self->monsterinfo.c_mode)	// Not in cinematic mode
-					QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-				else
-					QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige",0,0,0,NULL,NULL);
-			}
+				QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 		}
 	}
 
