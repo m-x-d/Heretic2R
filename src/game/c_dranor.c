@@ -17,7 +17,7 @@ typedef enum SoundID_e
 } SoundID_t;
 
 // Dranor cinematic actions.
-static animmove_t* animations[NUM_ANIMS] =
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&dranor_move_c_action1,
 	&dranor_move_c_action2,
