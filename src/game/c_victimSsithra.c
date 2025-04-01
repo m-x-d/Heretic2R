@@ -17,7 +17,7 @@ typedef enum SoundID_e
 } SoundID_t;
 
 // Ssithra victim cinematic actions.
-static animmove_t* animations[NUM_ANIMS] =
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&victimSsithra_move_c_action1,
 	&victimSsithra_move_c_action2,
