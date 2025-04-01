@@ -56,5 +56,5 @@ typedef enum AnimID_e
 	NUM_ANIMS
 } AnimID_t;
 
-extern animmove_t tome_move_c_idle1;
-extern animmove_t tome_move_c_idle2;
+extern const animmove_t tome_move_c_idle1;
+extern const animmove_t tome_move_c_idle2;

@@ -11,7 +11,7 @@
 #include "Vector.h"
 
 // Tome of Power cinematic actions.
-static animmove_t* animations[NUM_ANIMS] =
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&tome_move_c_idle1,
 	&tome_move_c_idle2,
