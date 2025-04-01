@@ -1207,39 +1207,27 @@ int M_PredictTargetEvasion(const edict_t* attacker, const edict_t* target, const
 	return VectorLength(diff) <= strike_dist;
 }
 
-/*====================================================================================================================
-
-	vec3_t M_PredictTargetPosition
-
-		Predicts where the target will be a few frames later based on current velocity and facing.
-				
-		NOTE:	Does not detect whether or not a target and attacker will collide during the course of movement, but ai_run will
-				find this for us.
-		 
-		Returns:	Position the target may be at in the predicted period
-
-		target		-   what's being pursued
-		evade_vel	-   target's estimated evade velocity (again, passed as parameter in case you have special knowledge of a movement)
-		pred_frames -	number of frames (1/10th second) to predict over (prediction accuracy decreases over large amounts of time)
-		pTargetPos	-	where the enemy will be
-
-======================================================================================================================*/
-
-void M_PredictTargetPosition( edict_t *target, vec3_t evade_vel, float pred_frames, vec3_t	pTargetPos)
+// Predicts where the target will be a few frames later based on current velocity and facing.
+// NOTE: Does not detect whether or not a target and attacker will collide during the course of movement, but ai_run will find this for us.
+// Returns: position the target may be at in the predicted period.
+// Args:
+// target			- What's being pursued.
+// evade_vel		- Target's estimated evade velocity (again, passed as parameter in case you have special knowledge of a movement).
+// pred_frames		- Number of frames (1/10th second) to predict over (prediction accuracy decreases over large amounts of time).
+// pred_target_pos	- [out arg] Where the enemy will be.
+void M_PredictTargetPosition(const edict_t* target, const vec3_t evade_vel, const float pred_frames, vec3_t pred_target_pos)
 {
-	vec3_t	targetMove;
-	float	targetDist;
-	
-	//Setup the movement directions
-	VectorCopy(evade_vel,  targetMove);
+	// Setup the movement directions.
+	vec3_t target_dir;
+	VectorCopy(evade_vel, target_dir);
 
-	//Setup the distances of attack
-	targetDist = VectorNormalize(targetMove);
-	
-	//Obtain movement per frame, then apply it over the number of predicted frames
-	targetDist = pred_frames * (targetDist * FRAMETIME);
+	// Setup the distances of attack.
+	float target_dist = VectorNormalize(target_dir);
 
-	VectorMA(target->s.origin,   targetDist, targetMove, pTargetPos);
+	// Obtain movement per frame, then apply it over the number of predicted frames.
+	target_dist = pred_frames * (target_dist * FRAMETIME);
+
+	VectorMA(target->s.origin, target_dist, target_dir, pred_target_pos);
 }
 
 /*====================================================================================================================
