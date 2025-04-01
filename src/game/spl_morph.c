@@ -25,7 +25,7 @@ static void MonsterMorphFadeIn(edict_t* self) //mxd. Named 'MorphFadeIn' in orig
 	self->nextthink = level.time + 0.1f;
 
 	if (--self->morph_timer == 0)
-		self->think = walkmonster_start_go;
+		self->think = M_WalkmonsterStartGo;
 }
 
 // Fade out the chicken model till its gone - for MONSTERS only.

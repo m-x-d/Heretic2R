@@ -2202,7 +2202,7 @@ void SP_monster_gorgon_leader (edict_t *self)
 
 	self->msgHandler = DefaultMsgHandler;
 	//self->classID = CID_GORGON;
-	self->think = walkmonster_start_go;
+	self->think = M_WalkmonsterStartGo;
 	self->monsterinfo.aiflags |= AI_BRUTAL|AI_AGRESSIVE|AI_SHOVE;
 
 	if (!self->health)

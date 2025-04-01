@@ -1055,7 +1055,7 @@ void SP_monster_seraph_overlord(edict_t *self)
 	
 	self->msgHandler = DefaultMsgHandler;
 	self->monsterinfo.alert = seraphAlerted;
-	self->think = walkmonster_start_go;
+	self->think = M_WalkmonsterStartGo;
 	self->monsterinfo.dismember = seraph_dismember;
 
 	if (!self->health)

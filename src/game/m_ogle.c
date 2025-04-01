@@ -534,13 +534,13 @@ void ogle_init_overlord(edict_t *self)
 		//Restore what we lost from monsterstart()
 		self->targetEnt = seraph;
 		self->nextthink = level.time + 0.1;
-		self->think = walkmonster_start_go;
+		self->think = M_WalkmonsterStartGo;
 		self->use = ogle_use;
 		return;
 	}		
 
 	self->use = ogle_use;
-	self->think = walkmonster_start_go;
+	self->think = M_WalkmonsterStartGo;
 	self->nextthink = level.time + 0.1;
 }
 
@@ -1866,7 +1866,7 @@ void SP_monster_ogle(edict_t *self)
 	}
 	else
 	{
-		self->think = walkmonster_start_go;
+		self->think = M_WalkmonsterStartGo;
 		self->nextthink = level.time + 0.1;
 	}
 }

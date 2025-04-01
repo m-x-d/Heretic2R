@@ -713,7 +713,7 @@ void SP_monster_rat (edict_t *self)
 		return;	
 
 	self->msgHandler = DefaultMsgHandler;
-	self->think = walkmonster_start_go;
+	self->think = M_WalkmonsterStartGo;
 	self->materialtype = MAT_FLESH;
 
 	if (!self->health)

@@ -3063,7 +3063,7 @@ void SP_monster_plague_ssithra (edict_t *self)
 
 	self->msgHandler = DefaultMsgHandler;
 	self->monsterinfo.alert = ssithraAlerted;
-	self->think = walkmonster_start_go;
+	self->think = M_WalkmonsterStartGo;
 	self->monsterinfo.dismember = ssithra_dismember;
 
 	self->materialtype = MAT_FLESH;

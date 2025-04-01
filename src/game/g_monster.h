@@ -29,7 +29,7 @@ extern void monster_death_use(edict_t* self);
 extern qboolean monster_start(edict_t* self);
 
 extern qboolean M_WalkmonsterStart(edict_t* self);
-extern void walkmonster_start_go(edict_t* self);
+extern void M_WalkmonsterStartGo(edict_t* self);
 extern qboolean M_FlymonsterStart(edict_t* self);
 
 extern void pitch_roll_for_slope(edict_t* ent, vec3_t pass_slope); //mxd

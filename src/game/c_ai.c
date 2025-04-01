@@ -135,7 +135,7 @@ void c_corvus_init(edict_t* self, const int class_id)
 		return;
 
 	self->msgHandler = DefaultMsgHandler;
-	self->think = walkmonster_start_go;
+	self->think = M_WalkmonsterStartGo;
 
 	if (self->health == 0)
 		self->health = 30;
@@ -188,7 +188,7 @@ void c_character_init(edict_t* self, const int class_id)
 		return;
 
 	self->msgHandler = DefaultMsgHandler;
-	self->think = walkmonster_start_go;
+	self->think = M_WalkmonsterStartGo;
 
 	self->viewheight = (int)(self->maxs[2] * 0.8f);
 

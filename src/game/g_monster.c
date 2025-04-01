@@ -764,7 +764,7 @@ static void monster_start_go(edict_t* self)
 	self->think = M_Think;
 }
 
-void walkmonster_start_go(edict_t* self) //TODO: rename to M_WalkmonsterStartGo?
+void M_WalkmonsterStartGo(edict_t* self) //mxd. Named 'walkmonster_start_go' in original logic.
 {
 	if (!(self->spawnflags & MSF_ASLEEP) && level.time < 1.0f)
 	{
@@ -787,7 +787,7 @@ void walkmonster_start_go(edict_t* self) //TODO: rename to M_WalkmonsterStartGo?
 
 qboolean M_WalkmonsterStart(edict_t* self) //mxd. Named 'walkmonster_start' in original logic.
 {
-	self->think = walkmonster_start_go;
+	self->think = M_WalkmonsterStartGo;
 	return monster_start(self);
 }
 

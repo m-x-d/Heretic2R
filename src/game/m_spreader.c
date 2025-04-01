@@ -1347,7 +1347,7 @@ void SP_monster_spreader (edict_t *self)
 		return;					// Failed initialization
 		
 	self->msgHandler = DefaultMsgHandler;
-	self->think = walkmonster_start_go;
+	self->think = M_WalkmonsterStartGo;
 	self->monsterinfo.dismember = spreader_dismember;
 
 	if (!self->health)

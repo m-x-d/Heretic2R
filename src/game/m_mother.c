@@ -132,7 +132,7 @@ void SP_monster_tcheckrik_mothers (edict_t *self)
 		return;					// Failed initialization
 		
 	self->msgHandler = DefaultMsgHandler;
-	self->think = walkmonster_start_go;
+	self->think = M_WalkmonsterStartGo;
 
 	if (!self->health)
 	{
