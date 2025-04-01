@@ -452,18 +452,14 @@ static void M_TriggeredSpawnUse(edict_t* self, edict_t* other, edict_t* activato
 	self->use = monster_use;
 }
 
-/*-------------------------------------------------------------------------
-	monster_triggered_start
--------------------------------------------------------------------------*/
-void monster_triggered_start (edict_t *self)
+static void M_TriggeredStart(edict_t* self) //mxd. Named 'monster_triggered_start' in original logic.
 {
 	self->solid = SOLID_NOT;
 	self->movetype = PHYSICSTYPE_NONE;
 	self->svflags |= SVF_NOCLIENT;
-	self->nextthink = 0;
+	self->nextthink = 0.0f;
 	self->use = M_TriggeredSpawnUse;
 }
-
 
 /*
 ================
@@ -810,7 +806,7 @@ void walkmonster_start_go (edict_t *self)
 	monster_start_go (self);
 
 	if (self->spawnflags & MSF_ASLEEP)
-		monster_triggered_start (self);
+		M_TriggeredStart (self);
 }
 
 /*-------------------------------------------------------------------------
@@ -844,7 +840,7 @@ void flymonster_start_go (edict_t *self)
 	monster_start_go (self);
 
 	if (self->spawnflags & MSF_ASLEEP)
-		monster_triggered_start (self);
+		M_TriggeredStart (self);
 }
 
 
@@ -875,7 +871,7 @@ void swimmonster_start_go (edict_t *self)
 	monster_start_go (self);
 
 	if (self->spawnflags & MSF_ASLEEP)
-		monster_triggered_start (self);
+		M_TriggeredStart (self);
 }
 
 /*-------------------------------------------------------------------------
