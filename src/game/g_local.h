@@ -631,7 +631,6 @@ extern char* vtos(const vec3_t v);
 extern float VectorYaw(const vec3_t v);
 
 // g_monster.c
-extern void monster_death_use(edict_t* self);
 extern void M_CatagorizePosition(edict_t* ent);
 
 // g_svcmds.c

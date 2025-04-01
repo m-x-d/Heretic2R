@@ -250,7 +250,7 @@ void Killed(edict_t* target, edict_t* inflictor, edict_t* attacker, const int da
 	if (target->deadflag != DEAD_DEAD)
 	{
 		target->touch = NULL;
-		monster_death_use(target);
+		M_DeathUse(target);
 	}
 
 	if (target->client != NULL)

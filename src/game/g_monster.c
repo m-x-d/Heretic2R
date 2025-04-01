@@ -462,7 +462,7 @@ static void M_TriggeredStart(edict_t* self) //mxd. Named 'monster_triggered_star
 }
 
 // When a monster dies, it fires all of its targets with the current enemy as activator.
-void monster_death_use(edict_t* self) //TODO: rename to M_DeathUse?
+void M_DeathUse(edict_t* self) //mxd. Named 'monster_death_use' in original logic.
 {
 	self->flags &= ~(FL_FLY | FL_SWIM);
 
