@@ -434,7 +434,7 @@ qboolean ssithraCheckInWater (edict_t *self)
 void ssithraNamorTriggered (edict_t *self, edict_t *other, edict_t *activator)
 {//FIXME: might work anyway?
 	SetAnim(self, ANIM_NAMOR);
-	monster_use(self, other, activator);
+	M_Use(self, other, activator);
 }
 
 void ssithraVOfs(edict_t *self, float pofs, float yofs, float rofs)

@@ -393,7 +393,7 @@ void M_Think(edict_t* self) //mxd. Named 'monster_think' in original logic.
 }
 
 // Using a monster makes it angry at the current activator.
-void monster_use(edict_t* self, edict_t* other, edict_t* activator) //TODO: rename to M_Use.
+void M_Use(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'monster_use' in original logic.
 {
 	if (self->enemy != NULL || self->health <= 0 || (activator->flags & FL_NOTARGET))
 		return;
@@ -449,7 +449,7 @@ static void M_TriggeredSpawnUse(edict_t* self, edict_t* other, edict_t* activato
 	if (activator->client != NULL)
 		self->enemy = activator;
 
-	self->use = monster_use;
+	self->use = M_Use;
 }
 
 static void M_TriggeredStart(edict_t* self) //mxd. Named 'monster_triggered_start' in original logic.
@@ -542,7 +542,7 @@ qboolean monster_start(edict_t* self) //TODO: rename to M_MonsterStart.
 	self->air_finished = level.time + M_HOLD_BREATH_TIME;
 	self->nextthink = level.time + FRAMETIME;
 
-	self->use = monster_use;
+	self->use = M_Use;
 	self->touch = M_Touch;
 	self->monsterinfo.alert = GenericMonsterAlerted; // I don't understand why I get a warning here...
 

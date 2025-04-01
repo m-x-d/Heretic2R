@@ -24,7 +24,7 @@ extern void M_MoveFrame(edict_t* self);
 extern int MonsterHealth(int health);
 
 extern void M_Think(edict_t* self);
-extern void monster_use(struct edict_s* self, struct edict_s* other, struct edict_s* activator);
+extern void M_Use(struct edict_s* self, struct edict_s* other, struct edict_s* activator);
 extern void M_DeathUse(edict_t* self);
 extern qboolean monster_start(edict_t* self);
 
