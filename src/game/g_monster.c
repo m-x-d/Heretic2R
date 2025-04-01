@@ -1338,24 +1338,21 @@ void M_jump(edict_t* self, G_Message_t* msg) //TODO: used only by Rat. Move to m
 	}
 }
 
-// get the dismember message and send it to my dismember code
-
-void MG_parse_dismember_msg(edict_t *self, G_Message_t *msg)
+// Get the dismember message and send it to my dismember code.
+void MG_parse_dismember_msg(edict_t* self, G_Message_t* msg) //TODO: rename to DismemberMsgHandler.
 {
-	HitLocation_t	HitLocation;
-	int			damage;
-
-	if(!self->monsterinfo.dismember)
+	if (self->monsterinfo.dismember != NULL)
 	{
-#ifdef _DEVEL
-		gi.dprintf("ERROR: %s with dismember message handler but no dismember function\n", self->classname);
-#endif
-		return;
+		int damage;
+		HitLocation_t hl;
+		ParseMsgParms(msg, "ii", &damage, &hl);
+
+		self->monsterinfo.dismember(self, damage, hl);
 	}
-
-	ParseMsgParms(msg, "ii", &damage, &HitLocation);
-
-	self->monsterinfo.dismember(self, damage, HitLocation);
+	else
+	{
+		gi.dprintf("ERROR: %s with dismember message handler but no dismember function\n", self->classname);
+	}
 }
 
 /*----------------------------------------------------------------------
