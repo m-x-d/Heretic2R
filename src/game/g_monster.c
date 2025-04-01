@@ -385,23 +385,12 @@ void M_MoveFrame(edict_t* self)
 		assert(self->movetype < NUM_PHYSICSTYPES);
 }
 
-/*-------------------------------------------------------------------------
-	monster_think
--------------------------------------------------------------------------*/
-void monster_think (edict_t *self)
+void monster_think(edict_t* self) //TODO: rename to M_Think?
 {
-	M_MoveFrame (self);
-/*
-	if (self->linkcount != self->monsterinfo.linkcount)
-	{
-		self->monsterinfo.linkcount = self->linkcount;
-		M_CheckGround (self);
-	}
-*/
-	M_CatagorizePosition (self);
-	M_WorldEffects (self);
+	M_MoveFrame(self);
+	M_CatagorizePosition(self);
+	M_WorldEffects(self);
 }
-
 
 /*
 ================
