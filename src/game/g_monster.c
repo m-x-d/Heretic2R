@@ -1288,38 +1288,19 @@ int M_FindSupport(const edict_t* self, const int range)
 	return num_support;
 }
 
-/*====================================================================================================================
-
-	qboolean M_FindSupport
-
-		Look for monsters of a similar race and if they are already trying to alert others
-				
-		Returns:	Whether or not to alert other monsters
-
-		range	-	The radius to check inside
-
-======================================================================================================================*/
-
-qboolean M_CheckAlert( edict_t *self, int range )
+// Look for monsters of a similar race and if they are already trying to alert others.
+// Returns: whether or not to alert other monsters.
+// Args:
+// range - The radius to check inside.
+qboolean M_CheckAlert(const edict_t* self, const int range)
 {
-	edict_t *ent = NULL;
-	int		numSupport = 0;
-
-	while((ent = FindInRadius(ent, self->s.origin, range)) != NULL)
+	edict_t* ent = NULL;
+	while ((ent = FindInRadius(ent, self->s.origin, (float)range)) != NULL)
 	{
-		if (ent==self)
+		if (ent == self || ent->classID != self->classID || ent->enemy != self->enemy || ent->health <= 0)
 			continue;
 
-		if (ent->classID != self->classID)
-			continue;
-
-		if (ent->enemy != self->enemy)
-			continue;
-
-		if (ent->health <= 0)
-			continue;
-
-		if (ent->monsterinfo.sound_finished < level.time || ent->monsterinfo.sound_pending)
+		if (ent->monsterinfo.sound_finished < level.time || ent->monsterinfo.sound_pending > 0)
 			continue;
 
 		return false;
