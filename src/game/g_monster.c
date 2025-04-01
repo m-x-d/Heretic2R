@@ -406,38 +406,32 @@ void monster_use(edict_t* self, edict_t* other, edict_t* activator) //TODO: rena
 	AI_FoundTarget(self, true);
 }
 
-
-void monster_start_go (edict_t *self);
-
-
-/*-------------------------------------------------------------------------
-	monster_triggered_spawn
--------------------------------------------------------------------------*/
-void monster_triggered_spawn (edict_t *self)
+static void M_TriggeredSpawnThink(edict_t* self) //mxd. Named 'monster_triggered_spawn' in original logic.
 {
-	vec3_t	pos;
-
-	self->s.origin[2] += 1;
-	KillBox (self);
+	self->s.origin[2] += 1.0f;
+	KillBox(self);
 
 	self->solid = SOLID_BBOX;
 	self->movetype = PHYSICSTYPE_STEP;
 	self->svflags &= ~SVF_NOCLIENT;
 	self->air_finished = level.time + M_HOLD_BREATH_TIME;
-	gi.linkentity (self);
+	gi.linkentity(self);
 
-	monster_start_go (self);
+	monster_start_go(self);
 
-	if((self->classID==CID_ASSASSIN) && (self->spawnflags & MSF_ASS_TPORTAMBUSH))
+	if (self->classID == CID_ASSASSIN && (self->spawnflags & MSF_ASS_TPORTAMBUSH))
 	{
-		AI_FoundTarget (self, true);
+		AI_FoundTarget(self, true);
+
+		vec3_t pos;
 		VectorCopy(self->s.origin, pos);
-		pos[2]+=self->mins[2];
+		pos[2] += self->mins[2];
+
 		gi.CreateEffect(NULL, FX_TPORTSMOKE, 0, pos, "");
 	}
-	else if (self->enemy && !(self->spawnflags & MSF_AMBUSH) && !(self->enemy->flags & FL_NOTARGET))
+	else if (self->enemy != NULL && !(self->spawnflags & MSF_AMBUSH) && !(self->enemy->flags & FL_NOTARGET))
 	{
-		AI_FoundTarget (self, true);
+		AI_FoundTarget(self, true);
 	}
 	else
 	{
@@ -452,7 +446,7 @@ void monster_triggered_spawn_use (edict_t *self, edict_t *other, edict_t *activa
 {
 	// we have a one frame delay here so we don't telefrag the guy who activated us
 	self->spawnflags &= ~MSF_ASLEEP;
-	self->think = monster_triggered_spawn;
+	self->think = M_TriggeredSpawnThink;
 	self->nextthink = level.time + FRAMETIME;
 	if (activator->client)
 		self->enemy = activator;
