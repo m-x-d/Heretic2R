@@ -1064,30 +1064,25 @@ qboolean M_ValidOldEnemy(edict_t* self)
 	return true;
 }
 
-qboolean M_ValidTarget( edict_t *self, edict_t *target )
+qboolean M_ValidTarget(edict_t* self, const edict_t* target)
 {
-	qboolean	checkold = false;
-
-	if(self->oldenemy_debounce_time > 0)
+	if (self->oldenemy_debounce_time > 0.0f && self->oldenemy_debounce_time < level.time)
 	{
-		if(self->oldenemy_debounce_time < level.time)
-		{
-			self->oldenemy_debounce_time = -1;
-			if(M_ValidOldEnemy(self))
-				return true;
-		}
+		self->oldenemy_debounce_time = -1.0f;
+
+		if (M_ValidOldEnemy(self))
+			return true;
 	}
 
-	if(target == self->enemy)
-		checkold = true;
+	const qboolean check_old = (target == self->enemy);
 
-	if (!target)
+	if (target == NULL)
 	{
 		self->monsterinfo.aiflags &= ~AI_STRAIGHT_TO_ENEMY;
 
-		if(checkold)
-			if(M_ValidOldEnemy(self))
-				return true;
+		// See if there is another valid target to go after.
+		if (check_old && M_ValidOldEnemy(self))
+			return true;
 
 		if (!FindTarget(self))
 			return false;
@@ -1095,78 +1090,72 @@ qboolean M_ValidTarget( edict_t *self, edict_t *target )
 		target = self->enemy;
 	}
 
-	if(!target)
+	if (target == NULL)
 		return false;
-	
-	//See if the target has died
+
+	// See if the target has died.
 	if (target->health <= 0 || target == self)
 	{
 		self->monsterinfo.aiflags &= ~AI_STRAIGHT_TO_ENEMY;
-		//See if there is another valid target to go after
-		if(checkold)
-			if(M_ValidOldEnemy(self))
-				return true;
+
+		// See if there is another valid target to go after.
+		if (check_old && M_ValidOldEnemy(self))
+			return true;
 
 		if (!FindTarget(self))
 		{
-			if(self->enemy)
+			if (self->enemy != NULL)
+			{
 				self->oldenemy = self->enemy;
-			self->enemy = NULL;
+				self->enemy = NULL;
+			}
+
 			return false;
 		}
 	}
 
-	if(coop->value)
+	if (COOP && self->monsterinfo.awake && self->enemy != NULL && self->monsterinfo.coop_check_debounce_time < level.time)
 	{
-		if(self->monsterinfo.awake)
+		float c_dist[MAX_CLIENTS]; //mxd. int[] -> float[].
+
+		// Only do this check once a second per monster.
+		self->monsterinfo.coop_check_debounce_time = level.time + 1.0f;
+
+		for (int i = 0; i <= game.maxclients; i++)
 		{
-			if(self->enemy && self->monsterinfo.coop_check_debounce_time < level.time)
+			const edict_t* client = &g_edicts[i];
+
+			if (client->client != NULL && client->health > 0)
+				c_dist[i] = M_DistanceToTarget(self, client);
+			else
+				c_dist[i] = FLT_MAX; //mxd. Original logic uses 9999999999 here.
+		}
+
+		edict_t* new_enemy = NULL;
+		float enemy_dist = M_DistanceToTarget(self, self->enemy);
+
+		for (int i = 0; i <= game.maxclients; i++)
+		{
+			if (c_dist[i] < enemy_dist)
 			{
-				int		c_dist[MAX_CLIENTS];
-				float	e_dist;
-				int		i;
-				edict_t	*newenemy = NULL;
-				edict_t	*client = NULL;
+				edict_t* client = &g_edicts[i];
 
-				//only do this check once a second per monster
-				self->monsterinfo.coop_check_debounce_time = level.time + 1;
-
-				e_dist = M_DistanceToTarget(self, self->enemy);
-
-				for(i = 0; i <= game.maxclients; i++)
+				if (AI_IsVisible(self, client))
 				{
-					c_dist[i] = 9999999999;
-
-					client = &g_edicts[i];
-					if(client->client && client->health > 0)
-					{
-						c_dist[i] = M_DistanceToTarget(self, client);
-					}
-				}
-
-				for(i = 0; i <= game.maxclients; i++)
-				{
-					if(c_dist[i] < e_dist)
-					{
-						client = &g_edicts[i];
-						if(AI_IsVisible(self, client))
-						{
-							newenemy = client;
-							e_dist = c_dist[i];
-						}
-					}
-				}
-
-				if(newenemy)
-				{
-					if(self->enemy->client && self->enemy->health > 0)
-						self->oldenemy = self->enemy;
-
-					self->enemy = newenemy;
-					AI_FoundTarget(self, false);
-					self->monsterinfo.searchType = SEARCH_COMMON;
+					new_enemy = client;
+					enemy_dist = c_dist[i];
 				}
 			}
+		}
+
+		if (new_enemy != NULL)
+		{
+			if (self->enemy->client != NULL && self->enemy->health > 0)
+				self->oldenemy = self->enemy;
+
+			self->enemy = new_enemy;
+			AI_FoundTarget(self, false);
+			self->monsterinfo.searchType = SEARCH_COMMON;
 		}
 	}
 
