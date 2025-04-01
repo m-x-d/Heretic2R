@@ -145,120 +145,109 @@ void M_CatagorizePosition(edict_t* ent)
 		ent->waterlevel = 3; // All the way in.
 }
 
-
-/*-------------------------------------------------------------------------
-	M_WorldEffects
--------------------------------------------------------------------------*/
-void M_WorldEffects (edict_t *ent)
+void M_WorldEffects(edict_t* ent)
 {
-	int		dmg;
-
+	// Apply drowning/suffocation damage?
 	if (ent->health > 0)
 	{
- 		if (!(ent->flags & FL_SWIM))
+		if (!(ent->flags & FL_SWIM))
 		{
-			if (ent->waterlevel < 3 || (ent->monsterinfo.aiflags&AI_SWIM_OK))
+			if (ent->waterlevel < 3 || (ent->monsterinfo.aiflags & AI_SWIM_OK))
 			{
 				ent->air_finished = level.time + M_HOLD_BREATH_TIME;
 			}
-			else if (ent->air_finished < level.time && !(ent->flags & FL_AMPHIBIAN))
-			{	// drown!
-				if (ent->pain_debounce_time < level.time)
-				{
-					dmg = 2 + 2 * floor(level.time - ent->air_finished);
-					if (dmg > 15)
-						dmg = 15;
-					T_Damage (ent, world, world, vec3_origin, ent->s.origin, vec3_origin, dmg, 0, DAMAGE_SUFFOCATION,MOD_WATER);
-					ent->pain_debounce_time = level.time + 1;
-				}
+			else if (ent->air_finished < level.time && ent->pain_debounce_time < level.time && !(ent->flags & FL_AMPHIBIAN))
+			{
+				// Drown!
+				int dmg = 2 + (int)(floorf(level.time - ent->air_finished)) * 2;
+				dmg = min(15, dmg);
+				T_Damage(ent, world, world, vec3_origin, ent->s.origin, vec3_origin, dmg, 0, DAMAGE_SUFFOCATION, MOD_WATER);
+
+				ent->pain_debounce_time = level.time + 1.0f;
 			}
 		}
-		else 
+		else
 		{
-			if (ent->waterlevel > 0 || (ent->monsterinfo.aiflags&AI_SWIM_OK))
+			if (ent->waterlevel > 0 || (ent->monsterinfo.aiflags & AI_SWIM_OK))
 			{
-				ent->air_finished = level.time + 9;
+				ent->air_finished = level.time + 9.0f;
 			}
-			else if (ent->air_finished < level.time && !(ent->flags & FL_AMPHIBIAN))
-			{	// suffocate!
-				if (ent->pain_debounce_time < level.time)
-				{
-					dmg = 2 + 2 * floor(level.time - ent->air_finished);
-					if (dmg > 15)
-						dmg = 15;
-					T_Damage (ent, world, world, vec3_origin, ent->s.origin, vec3_origin, dmg, 0, DAMAGE_SUFFOCATION,MOD_WATER);
-					ent->pain_debounce_time = level.time + 1;
-				}
+			else if (ent->air_finished < level.time && ent->pain_debounce_time < level.time && !(ent->flags & FL_AMPHIBIAN))
+			{
+				// Suffocate!
+				int dmg = 2 + (int)(floorf(level.time - ent->air_finished)) * 2;
+				dmg = min(15, dmg);
+				T_Damage(ent, world, world, vec3_origin, ent->s.origin, vec3_origin, dmg, 0, DAMAGE_SUFFOCATION, MOD_WATER);
+
+				ent->pain_debounce_time = level.time + 1.0f;
 			}
 		}
 	}
-	
+
+	// Play lava/slime/water exit sound?
 	if (ent->waterlevel == 0)
 	{
-		// INWATER is set whether in lava, slime or water.
+		// FL_INWATER is set whether in lava, slime or water.
 		if (ent->flags & FL_INWATER)
-		{	
+		{
 			if (ent->flags & FL_INLAVA)
 			{
-				gi.sound (ent, CHAN_BODY, gi.soundindex("player/inlava.wav"), 1, ATTN_NORM, 0);
+				gi.sound(ent, CHAN_BODY, gi.soundindex("player/inlava.wav"), 1.0f, ATTN_NORM, 0.0f);
 				ent->flags &= ~FL_INLAVA;
 			}
 			else if (ent->flags & FL_INSLIME)
 			{
-				gi.sound (ent, CHAN_BODY, gi.soundindex("player/muckexit.wav"), 1, ATTN_NORM, 0);
+				gi.sound(ent, CHAN_BODY, gi.soundindex("player/muckexit.wav"), 1.0f, ATTN_NORM, 0.0f);
 				ent->flags &= ~FL_INSLIME;
 			}
-			else 
+			else
 			{
-				gi.sound (ent, CHAN_BODY, gi.soundindex("player/Water Exit.wav"), 1, ATTN_NORM, 0);
+				gi.sound(ent, CHAN_BODY, gi.soundindex("player/Water Exit.wav"), 1.0f, ATTN_NORM, 0.0f);
 			}
 
 			ent->flags &= ~FL_INWATER;
 		}
+
 		return;
 	}
 
-	if ((ent->watertype & CONTENTS_LAVA) && !(ent->flags & FL_IMMUNE_LAVA))
+	// Apply lava damage?
+	if ((ent->watertype & CONTENTS_LAVA) && !(ent->flags & FL_IMMUNE_LAVA) && ent->damage_debounce_time < level.time)
 	{
-		if (ent->damage_debounce_time < level.time)
-		{
-			ent->damage_debounce_time = level.time + 0.2;
-			T_Damage (ent, world, world, vec3_origin, ent->s.origin, vec3_origin, 10*ent->waterlevel, 0, DAMAGE_LAVA,MOD_LAVA);
-		}
+		ent->damage_debounce_time = level.time + 0.2f;
+		T_Damage(ent, world, world, vec3_origin, ent->s.origin, vec3_origin, ent->waterlevel * 10, 0, DAMAGE_LAVA, MOD_LAVA);
 	}
-	if ((ent->watertype & CONTENTS_SLIME) && !(ent->flags & FL_IMMUNE_SLIME))
+
+	// Apply slime damage?
+	if ((ent->watertype & CONTENTS_SLIME) && !(ent->flags & FL_IMMUNE_SLIME) && ent->damage_debounce_time < level.time)
 	{
-		if (ent->damage_debounce_time < level.time)
-		{
-			ent->damage_debounce_time = level.time + 1;
-			T_Damage (ent, world, world, vec3_origin, ent->s.origin, vec3_origin, 4*ent->waterlevel, 0, DAMAGE_SLIME,MOD_SLIME);
-		}
+		ent->damage_debounce_time = level.time + 1.0f;
+		T_Damage(ent, world, world, vec3_origin, ent->s.origin, vec3_origin, ent->waterlevel * 4, 0, DAMAGE_SLIME, MOD_SLIME);
 	}
-	
-	if ( !(ent->flags & FL_INWATER) )
-	{	
+
+	// Play lava/slime/water enter sound?
+	if (!(ent->flags & FL_INWATER))
+	{
 		if (ent->watertype & CONTENTS_LAVA)
 		{
-			gi.sound (ent, CHAN_BODY, gi.soundindex("player/inlava.wav"), 1, ATTN_NORM, 0);
+			gi.sound(ent, CHAN_BODY, gi.soundindex("player/inlava.wav"), 1.0f, ATTN_NORM, 0.0f);
 			ent->flags |= FL_INLAVA;
 		}
-		else 
-			if (ent->watertype & CONTENTS_SLIME)
+		else if (ent->watertype & CONTENTS_SLIME)
 		{
-			gi.sound (ent, CHAN_BODY, gi.soundindex("player/muckin.wav"), 1, ATTN_NORM, 0);
+			gi.sound(ent, CHAN_BODY, gi.soundindex("player/muckin.wav"), 1.0f, ATTN_NORM, 0.0f);
 			ent->flags |= FL_INSLIME;
 		}
-		else 
+		else
 		{
-			gi.sound (ent, CHAN_BODY, gi.soundindex("player/Water Enter.wav"), 1, ATTN_NORM, 0);
+			gi.sound(ent, CHAN_BODY, gi.soundindex("player/Water Enter.wav"), 1.0f, ATTN_NORM, 0.0f);
 		}
 
-		// INWATER is set whether in lava, slime or water.
+		// FL_INWATER is set whether in lava, slime or water.
 		ent->flags |= FL_INWATER;
-		ent->damage_debounce_time = 0;
+		ent->damage_debounce_time = 0.0f;
 	}
 }
-
 
 /*-------------------------------------------------------------------------
 	M_droptofloor
