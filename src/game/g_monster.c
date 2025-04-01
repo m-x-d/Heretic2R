@@ -816,20 +816,17 @@ qboolean flymonster_start(edict_t* self) //TODO: rename to M_FlymonsterStart?
 	return monster_start(self);
 }
 
-
-/*-------------------------------------------------------------------------
-	swimmonster_start_go
--------------------------------------------------------------------------*/
-void swimmonster_start_go (edict_t *self)
+static void swimmonster_start_go(edict_t* self) //TODO: rename to M_SwimmonsterStartGo?
 {
-	if (!self->yaw_speed)
-		self->yaw_speed = 10;
+	if (self->yaw_speed == 0.0f)
+		self->yaw_speed = 10.0f;
+
 	self->viewheight = 10;
 
-	monster_start_go (self);
+	monster_start_go(self);
 
 	if (self->spawnflags & MSF_ASLEEP)
-		M_TriggeredStart (self);
+		M_TriggeredStart(self);
 }
 
 /*-------------------------------------------------------------------------
