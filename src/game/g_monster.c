@@ -261,6 +261,7 @@ void M_DropToFloor(edict_t* ent) //mxd. Named 'M_droptofloor' in original logic.
 		return;
 	}
 
+	//TODO: check if ent->think is M_droptofloor before setting nextthink?
 	ent->nextthink = level.time + FRAMETIME;
 	ent->s.origin[2] += 1.0f;
 
