@@ -1249,41 +1249,28 @@ void M_StartDeath(edict_t* self, int animID) //TODO: remove unused arg.
 	}
 }
 
-/*====================================================================================================================
-
-	void M_EndDeath
-
-		The monster is dead completely.  Set all information to reflect this.
-				
-		Returns:	
-
-		self	-	the entity that is dead
-
-======================================================================================================================*/
-
-void M_EndDeath( edict_t *self)
+// The monster is dead completely. Set all information to reflect this.
+void M_EndDeath(edict_t* self)
 {
-	self->mood_nextthink = -1;//never mood_think again
-	self->maxs[2] = self->mins[2] + 16;
+	self->mood_nextthink = -1.0f; // Never mood_think again.
+	self->maxs[2] = self->mins[2] + 16.0f;
 
 	if (self->s.effects & EF_ON_FIRE)
 	{
 		self->think = M_EndDeath;
-		self->nextthink = level.time + 1.0;
+		self->nextthink = level.time + 1.0f;
 		self->s.effects &= ~EF_ON_FIRE;
 	}
 	else
 	{
 		self->think = NULL;
-		self->nextthink = -1;//stop thinkin'
-
-		gi.RemoveEffects(&self->s, 0);
+		self->nextthink = -1.0f; // Stop thinking.
+		gi.RemoveEffects(&self->s, FX_REMOVE_EFFECTS);
 	}
-	self->s.effects |= EF_DISABLE_EXTRA_FX;
-	
-	gi.linkentity (self);
-}
 
+	self->s.effects |= EF_DISABLE_EXTRA_FX;
+	gi.linkentity(self);
+}
 
 /*====================================================================================================================
 
