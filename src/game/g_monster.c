@@ -27,67 +27,35 @@ int MonsterHealth(int health)
 	return health + (int)((float)health * ((float)(game.maxclients - 1) * 0.25f)); // 175% with 4 players.
 }
 
-/*-------------------------------------------------------------------------
-	DeadMsgHandler
--------------------------------------------------------------------------*/
-void DeadMsgHandler(edict_t *self, G_Message_t *msg)
+static void HandleMessage(edict_t* self, G_Message_t* msg) //mxd. Added to reduce code duplication.
 {
-	G_MsgReceiver_t receiver;
+	G_MsgReceiver_t receiver = classStatics[self->classID].msgReceivers[msg->ID];
 
-	if(msg->ID!=MSG_DEATH_PAIN)
-		return;
-
-	receiver = classStatics[self->classID].msgReceivers[msg->ID];
-
-	if(receiver)
+	if (receiver != NULL)
 	{
 		receiver(self, msg);
+		return;
 	}
-	else
-	{
-		// if and when there are a good number of defaults, change the NULL to be an Empty
-		// function, overall that should be faster to just always call the function then
-		// do the check
-		receiver = DefaultMessageReceivers[msg->ID];
 
-		if(receiver)
-		{
-			DefaultMessageReceivers[msg->ID](self, msg);
-		}
-	}
+	// If and when there are a good number of defaults, change the NULL to be an Empty function,
+	// overall that should be faster to just always call the function then do the check.
+	receiver = DefaultMessageReceivers[msg->ID];
+
+	if (receiver != NULL)
+		DefaultMessageReceivers[msg->ID](self, msg);
 }
 
-/*-------------------------------------------------------------------------
-	DyingMsgHandler
-	
-	Allows only dimemberment to still be called
--------------------------------------------------------------------------*/
-
-void DyingMsgHandler(edict_t *self, G_Message_t *msg)
+void DeadMsgHandler(edict_t* self, G_Message_t* msg)
 {
-	G_MsgReceiver_t receiver;
+	if (msg->ID == MSG_DEATH_PAIN)
+		HandleMessage(self, msg); //mxd
+}
 
-	if(msg->ID!=MSG_DISMEMBER)
-		return;
-
-	receiver = classStatics[self->classID].msgReceivers[msg->ID];
-
-	if(receiver)
-	{
-		receiver(self, msg);
-	}
-	else
-	{
-		// if and when there are a good number of defaults, change the NULL to be an Empty
-		// function, overall that should be faster to just always call the function then
-		// do the check
-		receiver = DefaultMessageReceivers[msg->ID];
-
-		if(receiver)
-		{
-			DefaultMessageReceivers[msg->ID](self, msg);
-		}
-	}
+// Allows only dismemberment messages to still be called.
+void DyingMsgHandler(edict_t* self, G_Message_t* msg)
+{
+	if (msg->ID == MSG_DISMEMBER)
+		HandleMessage(self, msg); //mxd
 }
 
 /*-------------------------------------------------------------------------
