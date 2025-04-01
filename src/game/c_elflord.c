@@ -14,7 +14,7 @@
 #include "Utilities.h"
 
 // Elf lord cinematic actions.
-static animmove_t* animations[NUM_ANIMS] =
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&elflord_move_c_action1,
 	&elflord_move_c_action2,
