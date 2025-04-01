@@ -1044,34 +1044,23 @@ float M_DistanceToTarget(const edict_t* self, const edict_t* target)
 	return VectorLength(diff);
 }
 
-/*====================================================================================================================
-
-	qboolean M_ValidTarget
-
-		Make sure we have a live enemy, and then return a distance to it.
-				
-		Returns:	true if the enemy is valid, false if it is dead.
-
-		self	-	what's attacking
-		target	-	what were looking for
-
-======================================================================================================================*/
-
-qboolean M_ValidOldEnemy (edict_t *self)
+// Make sure we have a live enemy, and then return a distance to it. Returns true if the enemy is valid, false if it is dead.
+// Args:
+// self		- What's attacking.
+// target	- What we're looking for.
+qboolean M_ValidOldEnemy(edict_t* self)
 {
-	if (!self->oldenemy)
-		return false;
-	
-	if (self->oldenemy->health <= 0 || self->oldenemy == self)
+	if (self->oldenemy == NULL || self->oldenemy->health <= 0 || self->oldenemy == self)
 		return false;
 
-	if(self->monsterinfo.last_successful_enemy_tracking_time + MONSTER_SEARCH_TIME < level.time)
-		if(!AI_IsVisible(self, self->oldenemy))
-			return false;
+	if (self->monsterinfo.last_successful_enemy_tracking_time + MONSTER_SEARCH_TIME < level.time && !AI_IsVisible(self, self->oldenemy))
+		return false;
 
 	self->monsterinfo.aiflags &= ~AI_STRAIGHT_TO_ENEMY;
-	self->enemy = self->goalentity = self->oldenemy;
+	self->enemy = self->oldenemy;
+	self->goalentity = self->oldenemy;
 	self->oldenemy = NULL;
+
 	return true;
 }
 
