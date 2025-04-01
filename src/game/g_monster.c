@@ -1030,28 +1030,18 @@ edict_t* M_CheckMeleeLineHit(edict_t* attacker, const vec3_t start, const vec3_t
 	return NULL;
 }
 
-/*====================================================================================================================
-
-	float M_DistanceToTarget
-
-		Make sure we have a live enemy, and then return a distance to him.
-
-		Returns:	distance to target
-				
-		self	-	what's attacking
-		target	-	what were looking for
-
-======================================================================================================================*/
-
-float M_DistanceToTarget ( edict_t *self, edict_t *target )
+// Make sure we have a live enemy, and then return a distance to him. Returns distance to target.
+// Args:
+// self		- What's attacking.
+// target	- What we're looking for.
+float M_DistanceToTarget(const edict_t* self, const edict_t* target)
 {
-	vec3_t	vec;
+	assert(target != NULL);
 
-	assert (target);
+	vec3_t diff;
+	VectorSubtract(target->s.origin, self->s.origin, diff);
 
-	VectorSubtract(target->s.origin, self->s.origin, vec);
-	
-	return VectorLength(vec);
+	return VectorLength(diff);
 }
 
 /*====================================================================================================================
