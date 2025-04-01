@@ -1405,84 +1405,50 @@ float MG_ChangePitch(edict_t* self, float ideal, const float speed) //TODO: move
 	return move;
 }
 
-/*
-===============
-MG_SetNormalizeVelToGoal
-
-===============
-*/
-void MG_SetNormalizeVelToGoal(edict_t *self, vec3_t vec)
+void MG_SetNormalizeVelToGoal(edict_t* self, vec3_t vec)
 {
-	vec3_t		targVec;
-	qboolean	charge_enemy = false;
-	
-	if(self->monsterinfo.aiflags&AI_STRAIGHT_TO_ENEMY && self->enemy)
-		charge_enemy = true;
+	const qboolean charge_enemy = ((self->monsterinfo.aiflags & AI_STRAIGHT_TO_ENEMY) && self->enemy != NULL);
 
 	if (self->monsterinfo.searchType == SEARCH_BUOY && !charge_enemy)
 	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("Vec to navgoal!\n");
-#endif		
-		if(self->buoy_index < 0 || self->buoy_index > level.active_buoys)
+		if (self->buoy_index < 0 || self->buoy_index > level.active_buoys)
 		{
-#ifdef _DEVEL
-			gi.dprintf("Error: SEARCH_BUOY but invalid index!!!\n");
-#endif
 			VectorClear(vec);
 			return;
 		}
-		
+
 		VectorCopy(level.buoy_list[self->buoy_index].origin, self->monsterinfo.nav_goal);
 		VectorSubtract(self->monsterinfo.nav_goal, self->s.origin, vec);
 	}
-	else if(self->goalentity && !charge_enemy)
+	else if (self->goalentity != NULL && !charge_enemy)
 	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("Vec to goalentity!\n");
-#endif
-		
-		if(self->goalentity == self->enemy && self->ai_mood_flags & AI_MOOD_FLAG_PREDICT)
-		{//predict where he's goin
-			M_PredictTargetPosition( self->enemy, self->enemy->velocity, 8, targVec);
-		}
-		else
-		{
-			VectorCopy(self->goalentity->s.origin, targVec);
-		}
+		vec3_t target_pos;
 
-		VectorSubtract(targVec, self->s.origin, vec);
+		if (self->goalentity == self->enemy && (self->ai_mood_flags & AI_MOOD_FLAG_PREDICT))
+			M_PredictTargetPosition(self->enemy, self->enemy->velocity, 8.0f, target_pos); // Predict where he's going.
+		else
+			VectorCopy(self->goalentity->s.origin, target_pos);
+
+		VectorSubtract(target_pos, self->s.origin, vec);
 	}
-	else if(self->enemy)
+	else if (self->enemy != NULL)
 	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("Vec to enemy!\n");
-#endif		
-		if (self->ai_mood_flags & AI_MOOD_FLAG_PREDICT)
-		{//predict where he's goin
-			M_PredictTargetPosition( self->enemy, self->enemy->velocity, 8, targVec);
-		}
-		else
-		{
-			VectorCopy(self->enemy->s.origin, targVec);
-		}
+		vec3_t target_pos;
 
-		VectorSubtract(targVec, self->s.origin, vec);
+		if (self->ai_mood_flags & AI_MOOD_FLAG_PREDICT)
+			M_PredictTargetPosition(self->enemy, self->enemy->velocity, 8.0f, target_pos); // Predict where he's going.
+		else
+			VectorCopy(self->enemy->s.origin, target_pos);
+
+		VectorSubtract(target_pos, self->s.origin, vec);
 	}
 	else
 	{
-#ifdef _DEVEL
-		if(MGAI_DEBUG)
-			gi.dprintf("No goal to face!\n");
-#endif		
 		VectorClear(vec);
 		return;
 	}
 
-	VectorNormalize(vec);	
+	VectorNormalize(vec);
 }
 
 /*====================================================================================================================
