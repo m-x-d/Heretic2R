@@ -23,7 +23,7 @@ extern void M_DropToFloor(edict_t* ent);
 extern void M_MoveFrame(edict_t* self);
 extern int MonsterHealth(int health);
 
-extern void monster_think(edict_t* self);
+extern void M_Think(edict_t* self);
 extern void monster_use(struct edict_s* self, struct edict_s* other, struct edict_s* activator);
 extern void monster_death_use(edict_t* self);
 extern qboolean monster_start(edict_t* self);

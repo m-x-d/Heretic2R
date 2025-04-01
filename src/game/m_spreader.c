@@ -1162,7 +1162,7 @@ void spreaderDropDown (edict_t *self)
 	self->avelocity[2] = irand(-300, 300);
 
 	SetAnim(self, ANIM_FDIE);
-	self->think = monster_think;
+	self->think = M_Think;
 	self->nextthink = level.time + 0.1;
 }
 

@@ -385,7 +385,7 @@ void M_MoveFrame(edict_t* self)
 		assert(self->movetype < NUM_PHYSICSTYPES);
 }
 
-void monster_think(edict_t* self) //TODO: rename to M_Think?
+void M_Think(edict_t* self) //mxd. Named 'monster_think' in original logic.
 {
 	M_MoveFrame(self);
 	M_CatagorizePosition(self);
@@ -761,7 +761,7 @@ static void monster_start_go(edict_t* self)
 		}
 	}
 
-	self->think = monster_think;
+	self->think = M_Think;
 }
 
 void walkmonster_start_go(edict_t* self) //TODO: rename to M_WalkmonsterStartGo?
