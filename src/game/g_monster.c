@@ -1451,34 +1451,23 @@ void MG_SetNormalizeVelToGoal(edict_t* self, vec3_t vec)
 	VectorNormalize(vec);
 }
 
-/*====================================================================================================================
-
-	void M_ShowLifeMeter
-
-		Overides the lung meter and displays the creature's life meter to all clients
-				
-		Returns:	Nothing
-
-======================================================================================================================*/
-
+// Overrides the lung meter and displays the creature's life meter to all clients.
+void M_ShowLifeMeter(edict_t* self, const int value, const int max_value) //TODO: remove unused arg?
+{
 #define LIFEBAR_SCALE 16
 
-void M_ShowLifeMeter( edict_t *self, int value, int max_value )
-{
-	player_state_t		*ps;
-	int					i;
+	// Update all clients.
+	for (int i = 0; i < MAXCLIENTS; i++)
+	{
+		player_state_t* ps = &game.clients[i].ps;
 
-	//Update all clients
-	for (i = 0 ; i < maxclients->value  ; i++)
-	{	
-		ps = &game.clients[i].ps;
+		ps->stats[STAT_LIFEBAR_XSIZE] = (short)(max_value / LIFEBAR_SCALE);
+		ps->stats[STAT_LIFEBAR_YSIZE] = 16;
+		ps->stats[STAT_LIFEBAR_ICON] = (short)gi.imageindex("icons/powerup.m8");
+		ps->stats[STAT_LIFEBAR_BACK] = (short)gi.imageindex("icons/lifebar_back.m8");
 
-		ps->stats[STAT_LIFEBAR_XSIZE]  = (max_value / LIFEBAR_SCALE);
-		ps->stats[STAT_LIFEBAR_YSIZE]  = 16;
-		ps->stats[STAT_LIFEBAR_ICON] = gi.imageindex("icons/powerup.m8");
-		ps->stats[STAT_LIFEBAR_BACK]  = gi.imageindex("icons/lifebar_back.m8");
-		if (max_value)
-			ps->stats[STAT_LIFEBAR_VALUE] = (100 * value) / max_value;
+		if (max_value > 0)
+			ps->stats[STAT_LIFEBAR_VALUE] = (short)(value * 100 / max_value);
 		else
 			ps->stats[STAT_LIFEBAR_VALUE] = 0;
 	}
