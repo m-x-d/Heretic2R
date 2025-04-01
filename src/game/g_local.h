@@ -426,7 +426,7 @@ typedef struct
 	// Not used in new system.
 	char* otherenemyname; // ClassName of secondary enemy (other than player). E.g. a Rat's secondary enemy is a gib.
 
-	animmove_t* currentmove;
+	const animmove_t* currentmove;
 	int aiflags;
 	int aistate;		// Last order given to the monster (ORD_XXX).
 	int currframeindex;	// Index to current monster frame.
