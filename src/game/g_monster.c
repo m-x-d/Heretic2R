@@ -927,51 +927,37 @@ void M_Touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf)
 		VectorScale(other->velocity, -1.0f, other->velocity);
 }
 
-/*====================================================================================================================
-
-	edict_t *M_CheckMeleeHit
-
-		Test a melee strike to see if it has hit its target.
-
-		Returns:	"trace.ent" if a valid entity is struck (may not be intended target)
-					"NULL" if nothing hit
-					"attacker" if hit a wall, but no entity (used for spark effects)
-		
-		attacker	-	the entity attacking
-		max_dist	-	the distance it checks forward
-		trace		-	passed parameter filled with the trace information (can be overkill, or very useful)
-
-======================================================================================================================*/
-
-edict_t	*M_CheckMeleeHit( edict_t *attacker, float max_dist, trace_t *trace )
+// Test a melee strike to see if it has hit its target.
+// Returns:	"trace.ent" if a valid entity is struck (may not be intended target).
+//			"NULL" if nothing hit.
+//			"attacker" if hit a wall, but no entity (used for spark effects). //TODO: that's not what the logic does...
+// Args:
+// attacker	- The entity attacking.
+// max_dist	- The distance it checks forward.
+// trace	- Passed parameter filled with the trace information (can be overkill, or very useful).
+edict_t* M_CheckMeleeHit(edict_t* attacker, const float max_dist, trace_t* trace)
 {
-	vec3_t		targPos, vf;
-	
-	//Trace forward the maximum amount of the melee distance
-	AngleVectors(attacker->s.angles, vf, NULL, NULL);
-	VectorMA(attacker->s.origin, max_dist, vf, targPos);
+	// Trace forward the maximum amount of the melee distance.
+	vec3_t forward;
+	AngleVectors(attacker->s.angles, forward, NULL, NULL);
 
-	gi.trace(attacker->s.origin, attacker->mins, attacker->maxs, targPos, attacker, MASK_MONSTERSOLID,trace);
+	vec3_t tgt_pos;
+	VectorMA(attacker->s.origin, max_dist, forward, tgt_pos);
 
-	//Check to see if the trace was successful (miss)
-	if (trace->fraction < 1)
+	gi.trace(attacker->s.origin, attacker->mins, attacker->maxs, tgt_pos, attacker, MASK_MONSTERSOLID, trace);
+
+	// Check to see if the trace was successful (miss).
+	if (trace->fraction < 1.0f)
 	{
-		//Check an entity collision
-		if (trace->ent)
-		{
-			//Can take damage, so pass it back
-			if (trace->ent->takedamage)
-			{
-				//VectorCopy(trace.endpos, hitPos);		
-				return trace->ent;
-			}
-		}
-		
-		//Wasn't an entity, but we were blocked (world brush)
+		// Check an entity collision.
+		if (trace->ent != NULL && trace->ent->takedamage != DAMAGE_NO)
+			return trace->ent;
+
+		// Hit non-damageable entity or world geometry.
 		return attacker;
 	}
 
-	//Nothing found (missed)
+	// Hit nothing.
 	return NULL;
 }
 
