@@ -816,28 +816,6 @@ qboolean flymonster_start(edict_t* self) //TODO: rename to M_FlymonsterStart?
 	return monster_start(self);
 }
 
-static void swimmonster_start_go(edict_t* self) //TODO: rename to M_SwimmonsterStartGo?
-{
-	if (self->yaw_speed == 0.0f)
-		self->yaw_speed = 10.0f;
-
-	self->viewheight = 10;
-
-	monster_start_go(self);
-
-	if (self->spawnflags & MSF_ASLEEP)
-		M_TriggeredStart(self);
-}
-
-qboolean swimmonster_start(edict_t* self) //TODO: rename to M_SwimmonsterStart?
-{
-	self->flags |= FL_SWIM;
-	self->think = swimmonster_start_go;
-	M_CatagorizePosition(self);
-
-	return monster_start(self);
-}
-
 // This will adjust the pitch and roll of a monster to match a given slope.
 // If a non-'0 0 0' slope is passed, it will use that value, otherwise it will use the ground underneath the monster.
 // If it doesn't find a surface, it does nothing and returns.
