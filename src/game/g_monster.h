@@ -53,5 +53,5 @@ extern void M_ShowLifeMeter(edict_t* self, int value, int max_value);
 extern int M_FindSupport(const edict_t* self, int range);
 
 //mxd. Local forward declarations for g_monster.c:
-static qboolean defaultMonsterAlerted(edict_t* self, alertent_t* alerter, edict_t* enemy);
+static qboolean GenericMonsterAlerted(edict_t* self, alertent_t* alerter, edict_t* enemy);
 static void monster_start_go(edict_t* self);

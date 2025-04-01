@@ -544,7 +544,7 @@ qboolean monster_start(edict_t* self) //TODO: rename to M_MonsterStart.
 
 	self->use = monster_use;
 	self->touch = M_Touch;
-	self->monsterinfo.alert = defaultMonsterAlerted; // I don't understand why I get a warning here...
+	self->monsterinfo.alert = GenericMonsterAlerted; // I don't understand why I get a warning here...
 
 	self->max_health = self->health;
 	self->clipmask = MASK_MONSTERSOLID;
@@ -1355,28 +1355,22 @@ void DismemberMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'MG_parse
 	}
 }
 
-/*----------------------------------------------------------------------
-	Generic Monster Reaction to being alerted
------------------------------------------------------------------------*/
-qboolean defaultMonsterAlerted (edict_t *self, alertent_t *alerter, edict_t *enemy)//I don't understand why I get a warning here...
+// Generic monster reaction to being alerted.
+static qboolean GenericMonsterAlerted(edict_t* self, alertent_t* alerter, edict_t* enemy) // I don't understand why I get a warning here...
 {
-	if(self->alert_time < level.time)
-	{//not already alerted
-		if(!(alerter->alert_svflags&SVF_ALERT_NO_SHADE) && skill->value < 3.0 && !(self->monsterinfo.aiflags & AI_NIGHTVISION))
-		{
-			if(enemy->light_level < flrand(6, 77))
-			{
-				return false;
-			}
-		}
+	// Not already alerted?
+	if (self->alert_time < level.time && SKILL < SKILL_VERYHARD && !(alerter->alert_svflags & SVF_ALERT_NO_SHADE) && !(self->monsterinfo.aiflags & AI_NIGHTVISION))
+	{
+		if (enemy->light_level < irand(6, 77)) //mxd. flrand in original logic.
+			return false;
 	}
 
-	if(alerter->lifetime < level.time + 2)
-		self->alert_time = level.time + 2;//be ready for 2 seconds to wake up if alerted again
+	if (alerter->lifetime < level.time + 2.0f)
+		self->alert_time = level.time + 2.0f; // Be ready for 2 seconds to wake up if alerted again.
 	else
-		self->alert_time = alerter->lifetime;//be alert as long as the alert sticks around
+		self->alert_time = alerter->lifetime; // Bbe alert as long as the alert sticks around.
 
-	if(enemy->svflags&SVF_MONSTER)
+	if (enemy->svflags & SVF_MONSTER)
 		self->enemy = alerter->enemy;
 	else
 		self->enemy = enemy;
