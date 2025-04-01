@@ -19,7 +19,7 @@ extern void DismemberMsgHandler(edict_t* self, G_Message_t* msg);
 extern void M_WorldEffects(struct edict_s* ent);
 extern void M_CatagorizePosition(edict_t* ent);
 extern void MG_SetNormalizedVelToGoal(edict_t* self, vec3_t vec);
-extern void M_droptofloor(edict_t* ent);
+extern void M_DropToFloor(edict_t* ent);
 extern void M_MoveFrame(edict_t* self);
 extern int MonsterHealth(int health);
 

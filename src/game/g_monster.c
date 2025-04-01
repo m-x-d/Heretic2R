@@ -249,13 +249,13 @@ void M_WorldEffects(edict_t* ent)
 	}
 }
 
-void M_droptofloor(edict_t* ent) //TODO: rename to M_DropToFloor.
+void M_DropToFloor(edict_t* ent) //mxd. Named 'M_droptofloor' in original logic.
 {
 	if (Vec3IsZero(ent->mins) && Vec3IsZero(ent->maxs))
 	{
 		gi.dprintf("ERROR: %s at %s called drop to floor before having size set\n", ent->classname, vtos(ent->s.origin));
 
-		if (ent->think == M_droptofloor)
+		if (ent->think == M_DropToFloor)
 			ent->think = NULL; // Don't try again.
 
 		return;
@@ -275,7 +275,7 @@ void M_droptofloor(edict_t* ent) //TODO: rename to M_DropToFloor.
 	{
 		gi.dprintf("ERROR: %s at %s started in solid\n", ent->classname, vtos(ent->s.origin));
 
-		if (ent->think == M_droptofloor)
+		if (ent->think == M_DropToFloor)
 		{
 			ent->think = NULL; // Don't try again.
 			gi.linkentity(ent);
@@ -768,7 +768,7 @@ void walkmonster_start_go(edict_t* self) //TODO: rename to M_WalkmonsterStartGo?
 {
 	if (!(self->spawnflags & MSF_ASLEEP) && level.time < 1.0f)
 	{
-		M_droptofloor(self);
+		M_DropToFloor(self);
 
 		if (self->groundentity != NULL && !M_walkmove(self, 0.0f, 0.0f))
 			gi.dprintf("%s in solid at %s\n", self->classname, vtos(self->s.origin));

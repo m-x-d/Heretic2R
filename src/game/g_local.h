@@ -631,7 +631,6 @@ extern char* vtos(const vec3_t v);
 extern float VectorYaw(const vec3_t v);
 
 // g_monster.c
-extern void M_droptofloor(edict_t* ent);
 extern void monster_think(edict_t* self);
 extern qboolean walkmonster_start(edict_t* self);
 extern qboolean swimmonster_start(edict_t* self);

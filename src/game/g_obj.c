@@ -11,6 +11,7 @@
 #include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "g_light.h" //mxd
+#include "g_monster.h" //mxd
 #include "g_playstats.h"
 #include "m_move.h" //mxd
 #include "m_plagueElf_anim.h"
@@ -145,7 +146,7 @@ void ObjectInit(edict_t* self, const int health, const int mass, const MaterialI
 		self->monsterinfo.aiflags = AI_NOSTEP;
 		self->touch = PushableObjectTouch;
 
-		self->think = M_droptofloor;
+		self->think = M_DropToFloor;
 		self->nextthink = level.time + (FRAMETIME * 2.0f);
 	}
 	else
@@ -2542,7 +2543,7 @@ void SP_obj_rocks2(edict_t* self)
 
 static void ObjHivePriestessSymbolThink(edict_t* self) //mxd. Named 'symbolthink' in original logic.
 {
-	M_droptofloor(self); // Clears self->think callback!
+	M_DropToFloor(self); // Clears self->think callback!
 
 	if (self->touch_debounce_time >= level.time)
 	{
