@@ -1379,47 +1379,29 @@ static qboolean GenericMonsterAlerted(edict_t* self, alertent_t* alerter, edict_
 	return true;
 }
 
-
-/*
-===============
-MG_ChangePitchForZVel
-
-===============
-*/
-float MG_ChangePitch(edict_t *self, float ideal, float speed)
+float MG_ChangePitch(edict_t* self, float ideal, const float speed) //TODO: move to mg_ai.c, below MG_ChangeYaw? 
 {
-	float	current;
-	float	move;
-	
-	current = anglemod(self->s.angles[PITCH]);
+	const float current = anglemod(self->s.angles[PITCH]);
 	ideal = anglemod(ideal);
+	float move = ideal - current;
 
-	if (current == ideal)
+	if (FloatIsZeroEpsilon(move)) //mxd. Use FloatIsZeroEpsilon() instead of direct comparison.
 		return false;
 
-	move = ideal - current;
 	if (ideal > current)
 	{
-		if (move >= 180)
-			move = move - 360;
+		if (move >= 180.0f)
+			move -= 360.0f;
 	}
 	else
 	{
-		if (move <= -180)
-			move = move + 360;
+		if (move <= -180.0f)
+			move += 360.0f;
 	}
-	if (move > 0)
-	{
-		if (move > speed)
-			move = speed;
-	}
-	else
-	{
-		if (move < -speed)
-			move = -speed;
-	}
-	
-	self->s.angles[PITCH] = anglemod (current + move);
+
+	move = Clamp(move, -speed, speed);
+	self->s.angles[PITCH] = anglemod(current + move);
+
 	return move;
 }
 
