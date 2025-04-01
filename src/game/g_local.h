@@ -404,21 +404,21 @@ typedef struct
 
 typedef struct
 {
-	int framenum;
-	void (*movefunc)(edict_t* self, float var1, float var2, float var3);
-	float var1;
-	float var2;
-	float var3;
-	void (*actionfunc)(edict_t* self, float var4);
-	float var4;
-	void (*thinkfunc)(edict_t* self);
+	const int framenum;
+	void (*const movefunc)(edict_t* self, float var1, float var2, float var3);
+	const float var1;
+	const float var2;
+	const float var3;
+	void (*const actionfunc)(edict_t* self, float var4);
+	const float var4;
+	void (*const thinkfunc)(edict_t* self);
 } animframe_t;
 
 typedef struct
 {
-	int numframes;
-	animframe_t* frame;
-	void (*endfunc)(edict_t* self);
+	const int numframes;
+	const animframe_t* frame;
+	void (*const endfunc)(edict_t* self);
 } animmove_t;
 
 typedef struct
