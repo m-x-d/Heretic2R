@@ -1309,42 +1309,33 @@ qboolean M_CheckAlert(const edict_t* self, const int range)
 	return true;
 }
 
-/*----------------------------------------------------------------------
-	Generic Jump
------------------------------------------------------------------------*/
-
-void M_jump(edict_t *self, G_Message_t *msg)
+void M_jump(edict_t* self, G_Message_t* msg) //TODO: used only by Rat. Move to m_rat.c, rename to rat_jump?
 {
-	vec3_t	jvec, fwd;
-	float	dist;
-
-	if (!self->goalentity)
-		return;
-	
-	if(self->spawnflags&MSF_FIXED)
+	if (self->goalentity == NULL || (self->spawnflags & MSF_FIXED) || M_DistanceToTarget(self, self->goalentity) > 256.0f)
 		return;
 
-	dist = M_DistanceToTarget(self, self->goalentity);
+	self->jump_time = level.time + 0.5f;
 
-	if (dist > 256)
-		return;
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
 
-	self->jump_time = level.time + 0.5;
+	vec3_t jump_vec;
+	VectorScale(forward, 256.0f, jump_vec);
+	jump_vec[2] += 101.0f;
 
-	AngleVectors(self->s.angles, fwd, NULL, NULL);
-	VectorScale(fwd, 256, jvec);
-	jvec[2] += 101;
-
-	if(classStatics[self->classID].msgReceivers[MSG_CHECK_MOOD])
+	if (classStatics[self->classID].msgReceivers[MSG_CHECK_MOOD] != NULL)
 	{
-		VectorCopy(jvec, self->movedir);
-		self->ai_mood = AI_MOOD_JUMP;//don't technically need this line
-		self->mood_nextthink = level.time + 0.5;
-		//as an alternative, call self->forced_jump(self);
+		VectorCopy(jump_vec, self->movedir);
+		self->ai_mood = AI_MOOD_JUMP; // Don't technically need this line.
+		self->mood_nextthink = level.time + 0.5f;
+
+		// As an alternative, call self->forced_jump(self);
 		QPostMessage(self, MSG_CHECK_MOOD, PRI_DIRECTIVE, "i", AI_MOOD_JUMP);
 	}
 	else
-		VectorCopy(jvec, self->velocity);
+	{
+		VectorCopy(jump_vec, self->velocity);
+	}
 }
 
 // get the dismember message and send it to my dismember code
