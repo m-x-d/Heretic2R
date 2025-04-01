@@ -461,7 +461,7 @@ static void HuntTarget(edict_t* self)
 
 	// Wait a while before first attack.
 	if (!(self->monsterinfo.aiflags & AI_STAND_GROUND))
-		AttackFinished(self, 1.0f);
+		self->monsterinfo.attack_finished = level.time + 1.0f; //mxd. Inline AttackFinished().
 }
 
 static void PlaySightSound(edict_t* self) //mxd. Added to reduce code duplication.

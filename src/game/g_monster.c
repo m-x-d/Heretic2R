@@ -59,15 +59,6 @@ void DyingMsgHandler(edict_t* self, G_Message_t* msg)
 }
 
 /*-------------------------------------------------------------------------
-	AttackFinished
--------------------------------------------------------------------------*/
-void AttackFinished (edict_t *self, float time)
-{
-	self->monsterinfo.attack_finished = level.time + time;
-}
-
-
-/*-------------------------------------------------------------------------
 	M_CheckGround
 -------------------------------------------------------------------------*/
 void M_CheckGround (edict_t *ent)
