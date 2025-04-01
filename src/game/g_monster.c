@@ -1272,38 +1272,20 @@ void M_EndDeath(edict_t* self)
 	gi.linkentity(self);
 }
 
-/*====================================================================================================================
-
-	int M_FindSupport
-
-		Look for monsters of a similar race around the current position of this monster.
-				
-		Returns:	Number of monsters around the current monster
-
-		range	-	The radius to check inside
-
-======================================================================================================================*/
-
-int M_FindSupport( edict_t *self, int range )
+// Look for monsters of a similar race around the current position of this monster.
+// Returns: number of monsters around the current monster.
+// Args:
+// range - The radius to check inside.
+int M_FindSupport(const edict_t* self, const int range)
 {
-	edict_t *ent = NULL;
-	int		numSupport = 0;
+	int num_support = 0;
 
-	while((ent = FindInRadius(ent, self->s.origin, range)) != NULL)
-	{
-		if (ent==self)
-			continue;
+	edict_t* ent = NULL;
+	while ((ent = FindInRadius(ent, self->s.origin, (float)range)) != NULL)
+		if (ent != self && ent->classID == self->classID && ent->health > 0)
+			num_support++;
 
-		if (ent->classID != self->classID)
-			continue;
-
-		if (ent->health <= 0)
-			continue;
-
-		numSupport++;
-	}
-
-	return numSupport;
+	return num_support;
 }
 
 /*====================================================================================================================
