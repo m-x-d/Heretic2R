@@ -527,7 +527,7 @@ static void M_CheckInGround(edict_t* self) //mxd. Named 'MG_CheckInGround' in or
 	//FIXME: check against other ents too? Same trace or second one?
 }
 
-qboolean monster_start(edict_t* self) //TODO: rename to M_MonsterStart.
+qboolean M_Start(edict_t* self) //mxd. Named 'monster_start' in original logic.
 {
 	if (DEATHMATCH && !((int)sv_cheats->value & self_spawn))
 	{
@@ -788,7 +788,7 @@ void M_WalkmonsterStartGo(edict_t* self) //mxd. Named 'walkmonster_start_go' in 
 qboolean M_WalkmonsterStart(edict_t* self) //mxd. Named 'walkmonster_start' in original logic.
 {
 	self->think = M_WalkmonsterStartGo;
-	return monster_start(self);
+	return M_Start(self);
 }
 
 static void M_FlymonsterStartGo(edict_t* self) //mxd. Named 'flymonster_start_go' in original logic.
@@ -813,7 +813,7 @@ qboolean M_FlymonsterStart(edict_t* self) //mxd. Named 'flymonster_start' in ori
 	self->flags |= FL_FLY;
 	self->think = M_FlymonsterStartGo;
 
-	return monster_start(self);
+	return M_Start(self);
 }
 
 // This will adjust the pitch and roll of a monster to match a given slope.

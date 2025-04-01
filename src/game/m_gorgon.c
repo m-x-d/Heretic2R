@@ -2197,7 +2197,7 @@ void SP_monster_gorgon_leader (edict_t *self)
 	G_SetToFree(self);
 	return;
 	// Generic Monster Initialization
-	if (!monster_start(self))
+	if (!M_Start(self))
 		return;					// Failed initialization
 
 	self->msgHandler = DefaultMsgHandler;

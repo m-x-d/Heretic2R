@@ -1691,7 +1691,7 @@ void SP_monster_ogle(edict_t *self)
 	self->monsterinfo.ogleflags = self->spawnflags;
 	self->spawnflags = 0;//don't want incorrect handling due to weird ogle spawnflags!
 
-	if (!monster_start(self))
+	if (!M_Start(self))
 		return;				// Failed initialization
 
 	self->msgHandler = DefaultMsgHandler;

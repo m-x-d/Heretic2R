@@ -1343,7 +1343,7 @@ void SP_monster_spreader (edict_t *self)
 		self->spawnflags &= ~MSF_WALKING;
 	}
 
-	if (!monster_start(self))
+	if (!M_Start(self))
 		return;					// Failed initialization
 		
 	self->msgHandler = DefaultMsgHandler;

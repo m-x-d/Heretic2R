@@ -128,7 +128,7 @@ Momma egg layer
 */
 void SP_monster_tcheckrik_mothers (edict_t *self)
 {
-	if (!monster_start(self))
+	if (!M_Start(self))
 		return;					// Failed initialization
 		
 	self->msgHandler = DefaultMsgHandler;

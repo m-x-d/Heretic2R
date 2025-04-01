@@ -1141,7 +1141,7 @@ void SeraphGuardStaticsInit(void)
 
 void golem_awaken (edict_t *self, edict_t *other, edict_t *activator)
 {
-	if (!monster_start(self))		// Initialization failed
+	if (!M_Start(self))		// Initialization failed
 		return;
 
 	self->think = M_WalkmonsterStartGo;
@@ -1251,7 +1251,7 @@ void SP_monster_seraph_guard(edict_t *self)
 	}
 	else
 	{
-		if (!monster_start(self))		
+		if (!M_Start(self))		
 			return;					// Failed initialization
 
 		self->think = M_WalkmonsterStartGo;

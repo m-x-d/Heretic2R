@@ -131,7 +131,7 @@ void c_corvus_init(edict_t* self, const int class_id)
 	self->classID = class_id;
 	self->s.modelindex = (byte)classStatics[class_id].resInfo->modelIndex;
 
-	if (!monster_start(self)) // Failed initialization.
+	if (!M_Start(self)) // Failed initialization.
 		return;
 
 	self->msgHandler = DefaultMsgHandler;
@@ -184,7 +184,7 @@ void c_character_init(edict_t* self, const int class_id)
 	self->classID = class_id;
 	self->s.modelindex = (byte)classStatics[class_id].resInfo->modelIndex;
 
-	if (!monster_start(self)) // Failed initialization.
+	if (!M_Start(self)) // Failed initialization.
 		return;
 
 	self->msgHandler = DefaultMsgHandler;

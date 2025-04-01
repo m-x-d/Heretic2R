@@ -1050,7 +1050,7 @@ NOTE: A value of zero will result in defaults, if you actually want zero as the 
 */
 void SP_monster_seraph_overlord(edict_t *self)
 {
-	if (!monster_start(self))			// Failed initialization
+	if (!M_Start(self))			// Failed initialization
 		return;
 	
 	self->msgHandler = DefaultMsgHandler;

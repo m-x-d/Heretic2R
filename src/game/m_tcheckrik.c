@@ -1646,7 +1646,7 @@ void SP_monster_tcheckrik_male (edict_t *self)
 		self->spawnflags &= ~MSF_WALKING;
 	}
 
-	if (!monster_start(self))
+	if (!M_Start(self))
 		return;					// Failed initialization
 		
 	self->msgHandler = DefaultMsgHandler;
@@ -1806,7 +1806,7 @@ void SP_monster_tcheckrik_female (edict_t *self)
 		self->spawnflags &= ~MSF_WALKING;
 	}
 
-	if (!monster_start(self))
+	if (!M_Start(self))
 		return;					// Failed initialization
 		
 	self->msgHandler = DefaultMsgHandler;

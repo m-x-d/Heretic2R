@@ -107,7 +107,7 @@ The chicken
 void SP_monster_chicken (edict_t *self)
 {
 	// Generic Monster Initialization
-	if (!monster_start(self))		// Failed initialization
+	if (!M_Start(self))		// Failed initialization
 		return;
 
 	self->msgHandler = DefaultMsgHandler;

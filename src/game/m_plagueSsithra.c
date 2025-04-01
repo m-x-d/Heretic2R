@@ -3058,7 +3058,7 @@ void SP_monster_plague_ssithra (edict_t *self)
 		self->spawnflags |= MSF_AMBUSH;
 
 	// Generic Monster Initialization
-	if (!monster_start(self))
+	if (!M_Start(self))
 		return;					// Failed initialization
 
 	self->msgHandler = DefaultMsgHandler;

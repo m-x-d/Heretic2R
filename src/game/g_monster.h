@@ -26,7 +26,7 @@ extern int MonsterHealth(int health);
 extern void M_Think(edict_t* self);
 extern void M_Use(struct edict_s* self, struct edict_s* other, struct edict_s* activator);
 extern void M_DeathUse(edict_t* self);
-extern qboolean monster_start(edict_t* self);
+extern qboolean M_Start(edict_t* self);
 
 extern qboolean M_WalkmonsterStart(edict_t* self);
 extern void M_WalkmonsterStartGo(edict_t* self);
