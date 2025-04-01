@@ -785,19 +785,11 @@ void walkmonster_start_go(edict_t* self) //TODO: rename to M_WalkmonsterStartGo?
 		M_TriggeredStart(self);
 }
 
-/*-------------------------------------------------------------------------
-	walkmonster_start
--------------------------------------------------------------------------*/
-qboolean walkmonster_start (edict_t *self)
+qboolean walkmonster_start(edict_t* self) //TODO: rename to M_WalkmonsterStart?
 {
 	self->think = walkmonster_start_go;
-
-	if (!monster_start(self))
-		return false;				// Failed initialization
-	else
-		return true;
+	return monster_start(self);
 }
-
 
 /*-------------------------------------------------------------------------
 	flymonster_start_go
