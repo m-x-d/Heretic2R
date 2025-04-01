@@ -392,28 +392,18 @@ void monster_think(edict_t* self) //TODO: rename to M_Think?
 	M_WorldEffects(self);
 }
 
-/*
-================
-monster_use
-
-Using a monster makes it angry at the current activator
-================
-*/
-void monster_use (edict_t *self, edict_t *other, edict_t *activator)
+// Using a monster makes it angry at the current activator.
+void monster_use(edict_t* self, edict_t* other, edict_t* activator) //TODO: rename to M_Use.
 {
-	if (self->enemy)
+	if (self->enemy != NULL || self->health <= 0 || (activator->flags & FL_NOTARGET))
 		return;
-	if (self->health <= 0)
+
+	if (activator->client == NULL && !(activator->monsterinfo.aiflags & AI_GOOD_GUY))
 		return;
-	if (activator->flags & FL_NOTARGET)
-		return;
-	if (!(activator->client) && !(activator->monsterinfo.aiflags & AI_GOOD_GUY))
-		return;
-	
-// delay reaction so if the monster is teleported, its sound is still heard
-	//self->targetname = "";//so can only be used once...???
+
+	// Delay reaction so if the monster is teleported, its sound is still heard.
 	self->enemy = activator;
-	AI_FoundTarget (self, true);
+	AI_FoundTarget(self, true);
 }
 
 
