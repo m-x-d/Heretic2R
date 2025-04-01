@@ -205,20 +205,20 @@ typedef enum AnimID_e
 	NUM_ANIMS
 } AnimID_t;
 
-extern animmove_t corvus7_move_c_action1;
-extern animmove_t corvus7_move_c_action2;
-extern animmove_t corvus7_move_c_action3;
-extern animmove_t corvus7_move_c_idle1;
-extern animmove_t corvus7_move_c_idle2;
-extern animmove_t corvus7_move_c_idle3;
-extern animmove_t corvus7_move_c_walkstart;
-extern animmove_t corvus7_move_c_walk1;
-extern animmove_t corvus7_move_c_walk2;
-extern animmove_t corvus7_move_c_walkstop1;
-extern animmove_t corvus7_move_c_walkstop2;
-extern animmove_t corvus7_move_c_pivotleftgo;
-extern animmove_t corvus7_move_c_pivotleft;
-extern animmove_t corvus7_move_c_pivotleftstop;
-extern animmove_t corvus7_move_c_pivotrightgo;
-extern animmove_t corvus7_move_c_pivotright;
-extern animmove_t corvus7_move_c_pivotrightstop;
+extern const animmove_t corvus7_move_c_action1;
+extern const animmove_t corvus7_move_c_action2;
+extern const animmove_t corvus7_move_c_action3;
+extern const animmove_t corvus7_move_c_idle1;
+extern const animmove_t corvus7_move_c_idle2;
+extern const animmove_t corvus7_move_c_idle3;
+extern const animmove_t corvus7_move_c_walkstart;
+extern const animmove_t corvus7_move_c_walk1;
+extern const animmove_t corvus7_move_c_walk2;
+extern const animmove_t corvus7_move_c_walkstop1;
+extern const animmove_t corvus7_move_c_walkstop2;
+extern const animmove_t corvus7_move_c_pivotleftgo;
+extern const animmove_t corvus7_move_c_pivotleft;
+extern const animmove_t corvus7_move_c_pivotleftstop;
+extern const animmove_t corvus7_move_c_pivotrightgo;
+extern const animmove_t corvus7_move_c_pivotright;
+extern const animmove_t corvus7_move_c_pivotrightstop;
