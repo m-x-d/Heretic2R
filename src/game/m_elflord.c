@@ -801,7 +801,7 @@ Celestial Watcher
 void SP_monster_elflord (edict_t *self)
 {
 	// Generic Monster Initialization
-	if (!flymonster_start(self))		
+	if (!M_FlymonsterStart(self))		
 		return;							// Failed initialization
 
 	self->msgHandler = DefaultMsgHandler;

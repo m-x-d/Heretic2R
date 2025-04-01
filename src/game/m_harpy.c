@@ -1652,7 +1652,7 @@ CIRCLING - harpy circles around in the air
 */
 void SP_monster_harpy(edict_t *self)
 {
-	if (!flymonster_start(self))
+	if (!M_FlymonsterStart(self))
 		return;				// Failed initialization
 
 	self->msgHandler = DefaultMsgHandler;

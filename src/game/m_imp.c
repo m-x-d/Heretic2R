@@ -1411,7 +1411,7 @@ NOTE: A value of zero will result in defaults, if you actually want zero as the 
 */
 void SP_monster_imp(edict_t *self)
 {
-	if (!flymonster_start(self))
+	if (!M_FlymonsterStart(self))
 		return;				// Failed initialization
 
 	self->msgHandler = DefaultMsgHandler;

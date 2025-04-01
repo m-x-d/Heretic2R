@@ -791,7 +791,7 @@ qboolean M_WalkmonsterStart(edict_t* self) //mxd. Named 'walkmonster_start' in o
 	return monster_start(self);
 }
 
-static void flymonster_start_go(edict_t* self) //TODO: rename to M_FlymonsterStartGo?
+static void M_FlymonsterStartGo(edict_t* self) //mxd. Named 'flymonster_start_go' in original logic.
 {
 	if (!M_walkmove(self, 0.0f, 0.0f))
 		gi.dprintf("%s in solid at %s\n", self->classname, vtos(self->s.origin));
@@ -808,10 +808,10 @@ static void flymonster_start_go(edict_t* self) //TODO: rename to M_FlymonsterSta
 		M_TriggeredStart(self);
 }
 
-qboolean flymonster_start(edict_t* self) //TODO: rename to M_FlymonsterStart?
+qboolean M_FlymonsterStart(edict_t* self) //mxd. Named 'flymonster_start' in original logic.
 {
 	self->flags |= FL_FLY;
-	self->think = flymonster_start_go;
+	self->think = M_FlymonsterStartGo;
 
 	return monster_start(self);
 }
