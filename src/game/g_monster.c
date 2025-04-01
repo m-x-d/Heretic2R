@@ -461,32 +461,24 @@ static void M_TriggeredStart(edict_t* self) //mxd. Named 'monster_triggered_star
 	self->use = M_TriggeredSpawnUse;
 }
 
-/*
-================
-monster_death_use
-
-When a monster dies, it fires all of its targets with the current
-enemy as activator.
-================
-*/
-void monster_death_use (edict_t *self)
+// When a monster dies, it fires all of its targets with the current enemy as activator.
+void monster_death_use(edict_t* self) //TODO: rename to M_DeathUse?
 {
-	self->flags &= ~(FL_FLY|FL_SWIM);
-//	self->monsterinfo.aiflags &= AI_GOOD_GUY;//WHY mask out everything above this flag???
+	self->flags &= ~(FL_FLY | FL_SWIM);
 
-	if (self->item)
+	if (self->item != NULL)
 	{
-		Drop_Item (self, self->item);
+		Drop_Item(self, self->item);
 		self->item = NULL;
 	}
 
-	if (self->target)
-		G_UseTargets (self, self->enemy);
+	if (self->target != NULL)
+		G_UseTargets(self, self->enemy);
 
-	if (self->deathtarget)
+	if (self->deathtarget != NULL)
 	{
 		self->target = self->deathtarget;
-		G_UseTargets (self, self->enemy);
+		G_UseTargets(self, self->enemy);
 	}
 }
 
