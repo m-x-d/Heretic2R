@@ -1,54 +1,57 @@
 //
 // g_monster.h
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
 
-#ifndef G_MONSTER_H
-#define G_MONSTER_H
+#pragma once
 
-#include "g_local.h" //TODO: remove.
 #include "g_ai.h" //mxd
+#include "g_ClassStatics.h"
 #include "g_combat.h" //mxd
 #include "m_move.h" //mxd
-#include "Message.h"
-#include "g_ClassStatics.h"
 
-extern void M_WorldEffects (struct edict_s *ent);
-extern void PM_CatagorizePosition (void);
+// Message handlers.
+extern void DeadMsgHandler(edict_t* self, G_Message_t* msg);
+extern void DyingMsgHandler(edict_t* self, G_Message_t* msg);
+extern void MG_parse_dismember_msg(edict_t* self, G_Message_t* msg);
 
-extern void monster_use (struct edict_s *self, struct edict_s *other, struct edict_s *activator);
+extern void M_WorldEffects(struct edict_s* ent);
+extern void M_CatagorizePosition(edict_t* ent);
+extern void M_droptofloor(edict_t* ent);
+extern void M_MoveFrame(edict_t* self);
+extern int MonsterHealth(int health);
 
-int MonsterHealth(int health);
+extern void monster_think(edict_t* self);
+extern void monster_use(struct edict_s* self, struct edict_s* other, struct edict_s* activator);
+extern void monster_death_use(edict_t* self);
+extern qboolean monster_start(edict_t* self);
 
-qboolean monster_start (edict_t *self);
-void walkmonster_start_go (edict_t *self);
-extern void pitch_roll_for_slope(edict_t* forwhom, vec3_t pass_slope); //mxd
+extern qboolean walkmonster_start(edict_t* self);
+extern void walkmonster_start_go(edict_t* self);
+extern qboolean flymonster_start(edict_t* self);
+extern qboolean swimmonster_start(edict_t* self);
 
-void DeadMsgHandler(edict_t *self, G_Message_t *msg);
+extern void pitch_roll_for_slope(edict_t* ent, vec3_t pass_slope); //mxd
 
-//JWEIER START HELPER PROTO
+// JWEIER START HELPER PROTO
+extern qboolean M_ValidTarget(edict_t* self, const edict_t* target);
+extern qboolean M_CheckAlert(const edict_t* self, int range);
 
-qboolean M_ValidTarget( edict_t *self, edict_t *target );
-qboolean M_CheckAlert( edict_t *self, int range );
+extern edict_t* M_CheckMeleeLineHit(edict_t* attacker, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, trace_t* trace, vec3_t direction);
+extern edict_t* M_CheckMeleeHit(edict_t* attacker, float max_dist, trace_t* trace);
 
-edict_t	*M_CheckMeleeLineHit( edict_t *attacker, vec3_t start, vec3_t end, vec3_t mins, vec3_t maxs, trace_t *trace, vec3_t direction);
-edict_t	*M_CheckMeleeHit( edict_t *attacker, float max_dist, trace_t *trace );
+extern float M_DistanceToTarget(const edict_t* self, const edict_t* target);
 
-float M_DistanceToTarget ( edict_t *self, edict_t *target );
+extern void M_Touch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf);
+extern void M_StartDeath(edict_t* self, int animID);
+extern void M_EndDeath(edict_t* self);
+extern void M_PredictTargetPosition(const edict_t* target, const vec3_t evade_vel, float pred_frames, vec3_t pred_target_pos);
+extern int M_PredictTargetEvasion(const edict_t* attacker, const edict_t* target, const vec3_t pursue_vel, const vec3_t evade_vel, float strike_dist, float pred_frames);
+extern void M_jump(edict_t* self, G_Message_t* msg);
+extern void M_ShowLifeMeter(edict_t* self, int value, int max_value);
+extern int M_FindSupport(const edict_t* self, int range);
 
-void M_Touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
-void M_StartDeath( edict_t *self, int animID);
-void M_EndDeath( edict_t *self);
-void M_PredictTargetPosition( edict_t *target, vec3_t evade_vel, float pred_frames, vec3_t	pTargetPos);
-void M_jump(edict_t *self, G_Message_t *msg);
-void MG_parse_dismember_msg(edict_t *self, G_Message_t *msg);
-void M_ShowLifeMeter( edict_t *self, int value, int max_value );
-
-int M_PredictTargetEvasion( edict_t *attacker, edict_t *target, vec3_t pursue_vel, vec3_t evade_vel, float strike_dist, float pred_frames );
-int M_FindSupport( edict_t *self, int range );
-
-//JWEIER END HELPER PROTO
-
-#endif // G_MONSTER_H
+//mxd. Local forward declarations for g_monster.c:
+static qboolean defaultMonsterAlerted(edict_t* self, alertent_t* alerter, edict_t* enemy);
+static void monster_start_go(edict_t* self);
