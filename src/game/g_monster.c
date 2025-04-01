@@ -1074,14 +1074,14 @@ qboolean M_ValidTarget(edict_t* self, const edict_t* target)
 			return true;
 	}
 
-	const qboolean check_old = (target == self->enemy);
+	const qboolean check_old_enemy = (target == self->enemy);
 
 	if (target == NULL)
 	{
 		self->monsterinfo.aiflags &= ~AI_STRAIGHT_TO_ENEMY;
 
 		// See if there is another valid target to go after.
-		if (check_old && M_ValidOldEnemy(self))
+		if (check_old_enemy && M_ValidOldEnemy(self))
 			return true;
 
 		if (!FindTarget(self))
@@ -1099,7 +1099,7 @@ qboolean M_ValidTarget(edict_t* self, const edict_t* target)
 		self->monsterinfo.aiflags &= ~AI_STRAIGHT_TO_ENEMY;
 
 		// See if there is another valid target to go after.
-		if (check_old && M_ValidOldEnemy(self))
+		if (check_old_enemy && M_ValidOldEnemy(self))
 			return true;
 
 		if (!FindTarget(self))
@@ -1162,59 +1162,49 @@ qboolean M_ValidTarget(edict_t* self, const edict_t* target)
 	return true;
 }
 
-/*====================================================================================================================
-
-	int M_PredictTargetEvasion
-
-		Predicts where the target will be a few frames later based on current velocity and facing, and predicts where
-		the attacker will be at that same time.  It then decides whether or not it will be able to melee from there.
-		This is necessary for melee striking creatures who tend to run up to the player, swing, then stand for a few 
-		frames while the player backs up.
-				
-		NOTE:	Does not detect whether or not a target and attacker will collide during the course of movement, but ai_run will
-				find this for us.
-		 
-		Returns:	0 - target will be out of range at end of movements (suggest: run after)
-					1 - target will be within range at the end of the movements at current velocities (suggest: continue motion)
-
-		attacker	-	the entity pursuing the target
-		target		-   what's being pursued
-		pursue_vel  -	attacker's desired movement velocity (passed as parameter so an average velocity for frames can be used)
-		evade_vel	-   target's estimated evade velocity (again, passed as parameter in case you have special knowledge of a movement)
-		strike_dist	-	maximum distance a melee attack can occur at, this is the range checked at the end of prediction
-		pred_frames -	number of frames (1/10th second) to predict over (prediction accuracy decreases over large amounts of time)
-
-======================================================================================================================*/
-
-int M_PredictTargetEvasion( edict_t *attacker, edict_t *target, vec3_t pursue_vel, vec3_t evade_vel, float strike_dist, float pred_frames )
+// Predicts where the target will be a few frames later based on current velocity and facing, and predicts where
+// the attacker will be at that same time. It then decides whether or not it will be able to melee from there.
+// This is necessary for melee striking creatures who tend to run up to the player, swing, then stand for a few
+// frames while the player backs up.
+// NOTE: Does not detect whether or not a target and attacker will collide during the course of movement, but ai_run will find this for us.
+// Returns:	0 - target will be out of range at end of movements (suggest: run after).
+//			1 - target will be within range at the end of the movements at current velocities (suggest: continue motion).
+// Args:
+// attacker		- The entity pursuing the target.
+// target		- What's being pursued.
+// pursue_vel	- Attacker's desired movement velocity (passed as parameter so an average velocity for frames can be used).
+// evade_vel	- Target's estimated evade velocity (again, passed as parameter in case you have special knowledge of a movement).
+// strike_dist	- Maximum distance a melee attack can occur at, this is the range checked at the end of prediction.
+// pred_frames	- Number of frames (1/10th second) to predict over (prediction accuracy decreases over large amounts of time).
+int M_PredictTargetEvasion(const edict_t* attacker, const edict_t* target, const vec3_t pursue_vel, const vec3_t evade_vel, const float strike_dist, const float pred_frames) //TODO: change return type to qboolean?
 {
-	vec3_t		pTargetPos, pAttackPos, targetMove, attackMove, vec;
-	float		dist, targetDist, attackDist;
-	
-	//Setup the movement directions
-	VectorCopy(pursue_vel, attackMove);
-	VectorCopy(evade_vel,  targetMove);
+	// Setup the movement directions.
+	vec3_t attack_dir;
+	VectorCopy(pursue_vel, attack_dir);
 
-	//Setup the distances of attack
-	attackDist = VectorNormalize(attackMove);
-	targetDist = VectorNormalize(targetMove);
-	
-	//Obtain movement per frame, then apply it over the number of predicted frames
-	attackDist = pred_frames * (attackDist * FRAMETIME);
-	targetDist = pred_frames * (targetDist * FRAMETIME);
+	vec3_t target_dir;
+	VectorCopy(evade_vel, target_dir);
 
-	VectorMA(attacker->s.origin, attackDist, attackMove, pAttackPos);
-	VectorMA(target->s.origin,   targetDist, targetMove, pTargetPos);
+	// Setup the distances of attack.
+	float attack_dist = VectorNormalize(attack_dir);
+	float target_dist = VectorNormalize(target_dir);
 
-	//Find the distance between them
-	VectorSubtract(pAttackPos, pTargetPos, vec);
-	dist = VectorLength(vec);
+	// Obtain movement per frame, then apply it over the number of predicted frames.
+	attack_dist = pred_frames * (attack_dist * FRAMETIME);
+	target_dist = pred_frames * (target_dist * FRAMETIME);
 
-	//If dist is too far, we won't hit
-	if (dist > strike_dist)
-		return 0;
+	vec3_t pred_attack_pos;
+	VectorMA(attacker->s.origin, attack_dist, attack_dir, pred_attack_pos);
 
-	return 1;
+	vec3_t pred_target_pos;
+	VectorMA(target->s.origin, target_dist, target_dir, pred_target_pos);
+
+	// Find the distance between them.
+	vec3_t diff;
+	VectorSubtract(pred_attack_pos, pred_target_pos, diff);
+
+	// If dist is too far, we won't hit.
+	return VectorLength(diff) <= strike_dist;
 }
 
 /*====================================================================================================================
