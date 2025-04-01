@@ -587,24 +587,27 @@ qboolean monster_start(edict_t* self) //TODO: rename to M_MonsterStart.
 	return true;
 }
 
-void MG_BBoxAndOriginAdjustForScale (edict_t *self)
+static void M_BBoxAndOriginAdjustForScale(edict_t* self) //mxd. Named 'MG_BBoxAndOriginAdjustForScale' in original logic.
 {
-	float	o_mins2;
-
-	if(!self->s.scale)
+	if (self->s.scale == 0.0f)
 	{
-		if(!self->monsterinfo.scale)
-			self->s.scale = self->monsterinfo.scale = 1.0f;
+		if (self->monsterinfo.scale == 0.0f)
+		{
+			self->s.scale = 1.0f;
+			self->monsterinfo.scale = 1.0f;
+		}
 	}
-	else if(!self->monsterinfo.scale)
+	else if (self->monsterinfo.scale == 0.0f)
+	{
 		self->monsterinfo.scale = self->s.scale;
+	}
 
-	o_mins2 = self->mins[2];
+	const float mins_z = self->mins[2];
 
 	Vec3ScaleAssign(self->s.scale, self->mins);
 	Vec3ScaleAssign(self->s.scale, self->maxs);
 
-	self->s.origin[2] += o_mins2 - self->mins[2];
+	self->s.origin[2] += mins_z - self->mins[2];
 
 	gi.linkentity(self);
 }
@@ -622,7 +625,7 @@ void monster_start_go (edict_t *self)
 	if (self->health <= 0)
 		return;
 
-	MG_BBoxAndOriginAdjustForScale(self);
+	M_BBoxAndOriginAdjustForScale(self);
 	M_CheckInGround(self);
 
 	if(!self->mass)
