@@ -1,24 +1,23 @@
+//
+// g_monster.c
+//
+// Copyright 1998 Raven Software
+//
+
+#include <float.h> //mxd
 #include "g_monster.h"
 #include "g_debris.h" //mxd
-#include "m_stats.h"
-#include "g_local.h"
-#include "FX.h"
 #include "g_DefaultMessageHandler.h"
-#include "vector.h"
-#include "g_playstats.h"
-#include "random.h"
-
-//JWEIER START INCLUDES
-#include "g_misc.h"
-#include "utilities.h"
-//JWEIER END INCLUDES
 #include "g_HitLocation.h"
 #include "g_items.h" //mxd
+#include "g_playstats.h"
+#include "m_stats.h"
 #include "mg_guide.h"
+#include "q_Physics.h" //mxd
+#include "Random.h"
+#include "Vector.h"
+#include "g_local.h"
 
-#define FALLDAMAGE_MODIFIER	8
-
-qboolean defaultMonsterAlerted (edict_t *self, alertent_t *alerter, edict_t *enemy);
 // ************************************************************************************************
 // MonsterHealth
 // -------------
