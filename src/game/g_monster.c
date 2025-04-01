@@ -18,18 +18,13 @@
 #include "Vector.h"
 #include "g_local.h"
 
-// ************************************************************************************************
-// MonsterHealth
-// -------------
 // Returns the modified health for a monster based on the number of players who will be in a game.
-// ************************************************************************************************
-
 int MonsterHealth(int health)
 {
-	if (skill->value > 1.0)
-		health += (int)((float)health * (skill->value - 1.0) / 2.0);	// 150% on Armageddon (skill 3)
+	if (SKILL > SKILL_MEDIUM)
+		health += (int)((float)health * (skill->value - 1.0f) / 2.0f); // 150% on Armageddon (skill 3).
 
-	return(health+(health*((game.maxclients-1)*0.25)));		// 175% with 4 players.
+	return health + (int)((float)health * ((float)(game.maxclients - 1) * 0.25f)); // 175% with 4 players.
 }
 
 /*-------------------------------------------------------------------------
