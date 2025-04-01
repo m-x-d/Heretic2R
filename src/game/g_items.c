@@ -5,6 +5,7 @@
 //
 
 #include "g_local.h"
+#include "p_client.h" //mxd
 #include "p_dll.h" //mxd
 #include "p_item.h"
 #include "g_items.h"
