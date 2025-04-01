@@ -301,114 +301,89 @@ void M_droptofloor(edict_t* ent) //TODO: rename to M_DropToFloor.
 	ent->think = NULL; //TODO: check if ent->think is M_droptofloor before clearing it?
 }
 
-/* ------------------------------------------------------------------------------
-	M_MoveFrame - unless a nextframe is specified, advance to the next frame listed in 
-	the Animation Frame Array.   Execute any aifunction or think function specified
-	with the given frame.
- --------------------------------------------------------------------------------*/
-void M_MoveFrame (edict_t *self)
+// Unless a nextframe is specified, advance to the next frame listed in the Animation Frame Array.
+// Execute any aifunction or think function specified with the given frame.
+void M_MoveFrame(edict_t* self)
 {
-	animmove_t	*move;
-	int		index;
-	qboolean wasnewphys = false;
+	const qboolean was_new_phys = (self->movetype < NUM_PHYSICSTYPES);
+	const animmove_t* move = self->monsterinfo.currentmove;
 
-	
-	if(self->movetype < NUM_PHYSICSTYPES)
-		wasnewphys = true;
-
-	move = self->monsterinfo.currentmove;
 	if (move == NULL)
-	{	// if move is NULL, then this monster needs to have an anim set on it or all is lost.
-#ifdef _DEVEL
-		gi.dprintf("MONSTER: '%s', at %s has no move pointer.  Setting to move zero.\n", self->classname, self->s.origin);
-#endif
+	{
+		// If move is NULL, then this monster needs to have an anim set on it or all is lost.
 		self->think = NULL;
-		self->nextthink = -1;
+		self->nextthink = -1.0f;
+
 		return;
 	}
 
 	self->nextthink = level.time + self->monsterinfo.thinkinc;
 
-	//There is a voice sound waiting to play
-	if (self->monsterinfo.sound_pending && self->monsterinfo.sound_start <= level.time)
+	// There is a voice sound waiting to play.
+	if (self->monsterinfo.sound_pending != 0 && self->monsterinfo.sound_start <= level.time)
 	{
-		//Post a message and make the monster speak
 		QPostMessage(self, MSG_VOICE_PUPPET, PRI_DIRECTIVE, "i", self->monsterinfo.sound_pending);
-		
-		//Sound queue is free
 		self->monsterinfo.sound_pending = 0;
 	}
 
-	// If this is set, the monster runs absolutely no animations or ai
-	if (sv_freezemonsters->value != 0)
+	// If this is set, the monster runs absolutely no animations or ai.
+	if (SV_FREEZEMONSTERS)
 		return;
 
-	// Forcing the next frame index - usually the start of an animation
-	if (self->monsterinfo.nextframeindex > -1)   
+	// Forcing the next frame index - usually the start of an animation.
+	if (self->monsterinfo.nextframeindex > -1)
 	{
 		self->monsterinfo.currframeindex = self->monsterinfo.nextframeindex;
 		self->monsterinfo.nextframeindex = -1;
 	}
 	else
 	{
+		// Advance animation frame index.
 		if (!(self->monsterinfo.aiflags & AI_HOLD_FRAME))
 		{
-			++self->monsterinfo.currframeindex;
+			self->monsterinfo.currframeindex++;
+
 			if (self->monsterinfo.currframeindex >= move->numframes)
 				self->monsterinfo.currframeindex = 0;
 		}
 
-		// 
-		if (self->monsterinfo.currframeindex == (move->numframes - 1))
+		// Call endfunc?
+		if (self->monsterinfo.currframeindex == move->numframes - 1 && move->endfunc != NULL)
 		{
-			if (move->endfunc)
-			{
-				move->endfunc (self);
+			move->endfunc(self);
+			move = self->monsterinfo.currentmove; // Re-grab move, endfunc is very likely to change it.
 
-				// regrab move, endfunc is very likely to change it
-				move = self->monsterinfo.currentmove;
-
-				// check for death
-				if (self->svflags & SVF_DEADMONSTER)
-					return;
-			}
+			// Check for death.
+			if (self->svflags & SVF_DEADMONSTER)
+				return;
 		}
 	}
 
-	index = self->monsterinfo.currframeindex;
-	self->s.frame = move->frame[index].framenum;
+	// Apply animation frame index.
+	const int index = self->monsterinfo.currframeindex;
+	const animframe_t* frame = &move->frame[index]; //mxd
+	self->s.frame = (short)frame->framenum;
 
-	//this is consistent with the animmove_t in the monster anims.
-	//currently all of the *real* movement happens in the 
-	//"actionfunc" instead of the move func
-	if(!(self->monsterinfo.aiflags & AI_DONT_THINK))
+	// This is consistent with the animmove_t in the monster anims.
+	// Currently all of the *real* movement happens in the "actionfunc" instead of the move func.
+	if (!(self->monsterinfo.aiflags & AI_DONT_THINK))
 	{
-		if(move->frame[index].movefunc)
-		{	
-			move->frame[index].movefunc(self, move->frame[index].var1, move->frame[index].var2, 
-				move->frame[index].var3);
-		}
+		if (frame->movefunc != NULL)
+			frame->movefunc(self, frame->var1, frame->var2, frame->var3);
 
-		if (move->frame[index].actionfunc)
+		if (frame->actionfunc != NULL)
 		{
-			if (!(self->monsterinfo.aiflags & AI_HOLD_FRAME))
-			{//Put scaling into SV_Movestep since this isn't ALWAYS the movement function
-				move->frame[index].actionfunc (self, move->frame[index].var4);//* self->monsterinfo.scale);
-			}
-			else
-				move->frame[index].actionfunc (self, 0);
+			const float var4 = ((self->monsterinfo.aiflags & AI_HOLD_FRAME) ? 0.0f : move->frame[index].var4); //mxd // Put scaling into SV_Movestep since this isn't ALWAYS the movement function.
+			move->frame[index].actionfunc(self, var4);
 		}
 
-		if (move->frame[index].thinkfunc)
-			move->frame[index].thinkfunc (self);
+		if (frame->thinkfunc != NULL)
+			frame->thinkfunc(self);
 	}
 
-	if(wasnewphys)
-	{
+	if (was_new_phys)
 		assert(self->movetype < NUM_PHYSICSTYPES);
-	}
 }
-
 
 /*-------------------------------------------------------------------------
 	monster_think
