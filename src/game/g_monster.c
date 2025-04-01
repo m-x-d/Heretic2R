@@ -439,17 +439,16 @@ static void M_TriggeredSpawnThink(edict_t* self) //mxd. Named 'monster_triggered
 	}
 }
 
-/*-------------------------------------------------------------------------
-	monster_triggered_spawn_use
--------------------------------------------------------------------------*/
-void monster_triggered_spawn_use (edict_t *self, edict_t *other, edict_t *activator)
+static void M_TriggeredSpawnUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'monster_triggered_spawn_use' in original logic.
 {
-	// we have a one frame delay here so we don't telefrag the guy who activated us
+	// We have a one frame delay here so we don't telefrag the guy who activated us.
 	self->spawnflags &= ~MSF_ASLEEP;
 	self->think = M_TriggeredSpawnThink;
 	self->nextthink = level.time + FRAMETIME;
-	if (activator->client)
+
+	if (activator->client != NULL)
 		self->enemy = activator;
+
 	self->use = monster_use;
 }
 
@@ -462,7 +461,7 @@ void monster_triggered_start (edict_t *self)
 	self->movetype = PHYSICSTYPE_NONE;
 	self->svflags |= SVF_NOCLIENT;
 	self->nextthink = 0;
-	self->use = monster_triggered_spawn_use;
+	self->use = M_TriggeredSpawnUse;
 }
 
 
