@@ -764,29 +764,25 @@ static void monster_start_go(edict_t* self)
 	self->think = monster_think;
 }
 
-
-/*-------------------------------------------------------------------------
-	walkmonster_start_go
--------------------------------------------------------------------------*/
-void walkmonster_start_go (edict_t *self)
+void walkmonster_start_go(edict_t* self) //TODO: rename to M_WalkmonsterStartGo?
 {
-	if (!(self->spawnflags & MSF_ASLEEP) && level.time < 1)
+	if (!(self->spawnflags & MSF_ASLEEP) && level.time < 1.0f)
 	{
-		M_droptofloor (self);
+		M_droptofloor(self);
 
-		if (self->groundentity)
-			if (!M_walkmove (self, 0, 0))
-				gi.dprintf ("%s in solid at %s\n", self->classname, vtos(self->s.origin));
+		if (self->groundentity != NULL && !M_walkmove(self, 0, 0))
+			gi.dprintf("%s in solid at %s\n", self->classname, vtos(self->s.origin));
 	}
-	
-	if (!self->yaw_speed)
-		self->yaw_speed = 20;
+
+	if (self->yaw_speed == 0.0f)
+		self->yaw_speed = 20.0f;
+
 	self->viewheight = 25;
 
-	monster_start_go (self);
+	monster_start_go(self);
 
 	if (self->spawnflags & MSF_ASLEEP)
-		M_TriggeredStart (self);
+		M_TriggeredStart(self);
 }
 
 /*-------------------------------------------------------------------------
