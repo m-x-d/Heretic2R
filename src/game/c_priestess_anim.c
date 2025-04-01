@@ -8,7 +8,7 @@
 #include "c_ai.h"
 
 // High priestess action 1.
-static animframe_t priestess_frames_c_action1[] =
+static const animframe_t priestess_frames_c_action1[] =
 {
 	{ FRAME_hltalk1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hltalk2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -41,10 +41,10 @@ static animframe_t priestess_frames_c_action1[] =
 	{ FRAME_hltalk29, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hltalk30, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_action1 = { 30, priestess_frames_c_action1, ai_c_cycleend };
+const animmove_t priestess_move_c_action1 = { 30, priestess_frames_c_action1, ai_c_cycleend };
 
 // High priestess action 2.
-static animframe_t priestess_frames_c_action2[] =
+static const animframe_t priestess_frames_c_action2[] =
 {
 	{ FRAME_hlidle1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hlidle2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -82,10 +82,10 @@ static animframe_t priestess_frames_c_action2[] =
 	{ FRAME_hlidle34, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hlidle35, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_action2 = { 35, priestess_frames_c_action2, ai_c_cycleend };
+const animmove_t priestess_move_c_action2 = { 35, priestess_frames_c_action2, ai_c_cycleend };
 
 // High priestess action 3.
-static animframe_t priestess_frames_c_action3[] =
+static const animframe_t priestess_frames_c_action3[] =
 {
 	{ FRAME_hltalk1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hltalk2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -240,10 +240,10 @@ static animframe_t priestess_frames_c_action3[] =
 	{ FRAME_hltalk70, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hltalk71, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_action3 = { 151, priestess_frames_c_action3, ai_c_cycleend };
+const animmove_t priestess_move_c_action3 = { 151, priestess_frames_c_action3, ai_c_cycleend };
 
 // High priestess action 4.
-static animframe_t priestess_frames_c_action4[] =
+static const animframe_t priestess_frames_c_action4[] =
 {
 	{ FRAME_hlidle1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hlidle2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -466,10 +466,10 @@ static animframe_t priestess_frames_c_action4[] =
 	{ FRAME_hltalk12, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hltalk13, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_action4 = { 216, priestess_frames_c_action4, ai_c_cycleend };
+const animmove_t priestess_move_c_action4 = { 216, priestess_frames_c_action4, ai_c_cycleend };
 
 // High priestess action 5.
-static animframe_t priestess_frames_c_action5[] =
+static const animframe_t priestess_frames_c_action5[] =
 {
 	{ FRAME_hlrtran1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hlrtran2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -673,10 +673,10 @@ static animframe_t priestess_frames_c_action5[] =
 	{ FRAME_hridle27, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hridle28, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_action5 = { 196, priestess_frames_c_action5, ai_c_cycleend };
+const animmove_t priestess_move_c_action5 = { 196, priestess_frames_c_action5, ai_c_cycleend };
 
 // High priestess action 6.
-static animframe_t priestess_frames_c_action6[] =
+static const animframe_t priestess_frames_c_action6[] =
 {
 	{ FRAME_hridle1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hridle2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -691,10 +691,10 @@ static animframe_t priestess_frames_c_action6[] =
 	{ FRAME_hridle10, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hridle11, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_action6 = { 11, priestess_frames_c_action6, ai_c_cycleend };
+const animmove_t priestess_move_c_action6 = { 11, priestess_frames_c_action6, ai_c_cycleend };
 
 // High priestess action 7.
-static animframe_t priestess_frames_c_action7[] =
+static const animframe_t priestess_frames_c_action7[] =
 {
 	{ FRAME_hbutyou1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hbutyou2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -708,10 +708,10 @@ static animframe_t priestess_frames_c_action7[] =
 	{ FRAME_hbutyou10, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hbutyou11, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_action7 = { 11, priestess_frames_c_action7, ai_c_cycleend };
+const animmove_t priestess_move_c_action7 = { 11, priestess_frames_c_action7, ai_c_cycleend };
 
 // High priestess action 8.
-static animframe_t priestess_frames_c_action8[] =
+static const animframe_t priestess_frames_c_action8[] =
 {
 	{ FRAME_hbutyou12, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hbutyou13, ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -779,10 +779,10 @@ static animframe_t priestess_frames_c_action8[] =
 	{ FRAME_hbutyou75, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hbutyou76, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_action8 = { 65, priestess_frames_c_action8, ai_c_cycleend };
+const animmove_t priestess_move_c_action8 = { 65, priestess_frames_c_action8, ai_c_cycleend };
 
 // High priestess action 9.
-static animframe_t priestess_frames_c_action9[] =
+static const animframe_t priestess_frames_c_action9[] =
 {
 	{ FRAME_hbutyou77, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hbutyou78, ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -888,10 +888,10 @@ static animframe_t priestess_frames_c_action9[] =
 	{ FRAME_hlidle7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hlidle8, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_action9 = { 102, priestess_frames_c_action9, ai_c_cycleend };
+const animmove_t priestess_move_c_action9 = { 102, priestess_frames_c_action9, ai_c_cycleend };
 
 // High priestess action 10.
-static animframe_t priestess_frames_c_action10[] =
+static const animframe_t priestess_frames_c_action10[] =
 {
 	{ FRAME_hlidle1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hlidle2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -934,10 +934,10 @@ static animframe_t priestess_frames_c_action10[] =
 	{ FRAME_hlidle39, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hlidle40, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_action10 = { 40, priestess_frames_c_action10, ai_c_cycleend };
+const animmove_t priestess_move_c_action10 = { 40, priestess_frames_c_action10, ai_c_cycleend };
 
 // High priestess action 11.
-static animframe_t priestess_frames_c_action11[] =
+static const animframe_t priestess_frames_c_action11[] =
 {
 	{ FRAME_hnotfully1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hnotfully2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -1121,10 +1121,10 @@ static animframe_t priestess_frames_c_action11[] =
 	{ FRAME_hlidle7, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hlidle8, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_action11 = { 179, priestess_frames_c_action11, ai_c_cycleend };
+const animmove_t priestess_move_c_action11 = { 179, priestess_frames_c_action11, ai_c_cycleend };
 
 // High priestess action 12.
-static animframe_t priestess_frames_c_action12[] =
+static const animframe_t priestess_frames_c_action12[] =
 {
 	{ FRAME_hlidle1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hlidle2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -1181,10 +1181,10 @@ static animframe_t priestess_frames_c_action12[] =
 	{ FRAME_hlidle12, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hlidle13, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_action12 = { 53, priestess_frames_c_action12, ai_c_cycleend };
+const animmove_t priestess_move_c_action12 = { 53, priestess_frames_c_action12, ai_c_cycleend };
 
 // High priestess action 13.
-static animframe_t priestess_frames_c_action13[] =
+static const animframe_t priestess_frames_c_action13[] =
 {
 	{ FRAME_hltalk1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hltalk2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -1245,10 +1245,10 @@ static animframe_t priestess_frames_c_action13[] =
 	{ FRAME_hltalk57, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hltalk58, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_action13 = { 58, priestess_frames_c_action13, ai_c_cycleend };
+const animmove_t priestess_move_c_action13 = { 58, priestess_frames_c_action13, ai_c_cycleend };
 
 // High priestess action 14.
-static animframe_t priestess_frames_c_action14[] =
+static const animframe_t priestess_frames_c_action14[] =
 {
 	{ FRAME_hlidle1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hlidle2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -1264,10 +1264,10 @@ static animframe_t priestess_frames_c_action14[] =
 	{ FRAME_hlidle12, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hlidle13, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_action14 = { 13, priestess_frames_c_action14, ai_c_cycleend };
+const animmove_t priestess_move_c_action14 = { 13, priestess_frames_c_action14, ai_c_cycleend };
 
 // High priestess action 15.
-static animframe_t priestess_frames_c_action15[] =
+static const animframe_t priestess_frames_c_action15[] =
 {
 	{ FRAME_hrtalk1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hrtalk2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -1413,10 +1413,10 @@ static animframe_t priestess_frames_c_action15[] =
 	{ FRAME_hrtalk61, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hrtalk62, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_action15 = { 142, priestess_frames_c_action15, ai_c_cycleend };
+const animmove_t priestess_move_c_action15 = { 142, priestess_frames_c_action15, ai_c_cycleend };
 
 // High priestess action 16.
-static animframe_t priestess_frames_c_action16[] =
+static const animframe_t priestess_frames_c_action16[] =
 {
 	{ FRAME_hridle1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hridle2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -1592,10 +1592,10 @@ static animframe_t priestess_frames_c_action16[] =
 	{ FRAME_hcast71, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hcast71, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_action16 = { 169, priestess_frames_c_action16, ai_c_cycleend };
+const animmove_t priestess_move_c_action16 = { 169, priestess_frames_c_action16, ai_c_cycleend };
 
 // High priestess idle 1.
-static animframe_t priestess_frames_c_idle1[] =
+static const animframe_t priestess_frames_c_idle1[] =
 {
 	{ FRAME_idle1,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_idle2,  ai_c_move, 0, 0, 0, NULL, 0, NULL },
@@ -1616,17 +1616,17 @@ static animframe_t priestess_frames_c_idle1[] =
 	{ FRAME_idle17, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_idle18, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_idle1 = { 18, priestess_frames_c_idle1, ai_c_cycleend };
+const animmove_t priestess_move_c_idle1 = { 18, priestess_frames_c_idle1, ai_c_cycleend };
 
 // High priestess idle 2.
-static animframe_t priestess_frames_c_idle2[] =
+static const animframe_t priestess_frames_c_idle2[] =
 {
 	{ FRAME_hpstart1, ai_c_move, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_idle2 = { 1, priestess_frames_c_idle2, ai_c_cycleend };
+const animmove_t priestess_move_c_idle2 = { 1, priestess_frames_c_idle2, ai_c_cycleend };
 
 // High priestess walk 1.
-static animframe_t priestess_frames_c_walk1[] =
+static const animframe_t priestess_frames_c_walk1[] =
 {
 	{ FRAME_walk1,  ai_c_move, 6, 0, 0, NULL, 0, NULL },
 	{ FRAME_walk2,  ai_c_move, 8, 0, 0, NULL, 0, NULL },
@@ -1645,10 +1645,10 @@ static animframe_t priestess_frames_c_walk1[] =
 	{ FRAME_walk15, ai_c_move, 6, 0, 0, NULL, 0, NULL },
 	{ FRAME_walk16, ai_c_move, 4, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_walk1 = { 16, priestess_frames_c_walk1, ai_c_cycleend };
+const animmove_t priestess_move_c_walk1 = { 16, priestess_frames_c_walk1, ai_c_cycleend };
 
 // High priestess backpedal 1.
-static animframe_t priestess_frames_c_backpedal1[] =
+static const animframe_t priestess_frames_c_backpedal1[] =
 {
 	{ FRAME_backup3,  ai_c_move, -8, 0, 0, NULL, 0, NULL },
 	{ FRAME_backup4,  ai_c_move, -8, 0, 0, NULL, 0, NULL },
@@ -1663,4 +1663,4 @@ static animframe_t priestess_frames_c_backpedal1[] =
 	{ FRAME_backup13, ai_c_move, -8, 0, 0, NULL, 0, NULL },
 	{ FRAME_backup14, ai_c_move, -8, 0, 0, NULL, 0, NULL },
 };
-animmove_t priestess_move_c_backpedal1 = { 12, priestess_frames_c_backpedal1, ai_c_cycleend };
+const animmove_t priestess_move_c_backpedal1 = { 12, priestess_frames_c_backpedal1, ai_c_cycleend };

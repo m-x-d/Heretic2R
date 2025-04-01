@@ -11,7 +11,7 @@
 #include "Vector.h"
 
 // High priestess cinematic actions.
-static animmove_t* animations[NUM_ANIMS] =
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&priestess_move_c_action1,
 	&priestess_move_c_action2,
