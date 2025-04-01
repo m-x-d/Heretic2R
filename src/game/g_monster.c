@@ -838,73 +838,51 @@ qboolean swimmonster_start(edict_t* self) //TODO: rename to M_SwimmonsterStart?
 	return monster_start(self);
 }
 
-/*
-====================================================================
-void pitch_roll_for_slope (edict_t *forwhom, vec3_t *slope)
-
-MG
-
-This will adjust the pitch and roll of a monster to match
-a given slope - if a non-'0 0 0' slope is passed, it will
-use that value, otherwise it will use the ground underneath
-the monster.  If it doesn't find a surface, it does nothinh\g
-and returns.
-====================================================================
-*/
-void pitch_roll_for_slope (edict_t *forwhom, vec3_t pass_slope)
+// This will adjust the pitch and roll of a monster to match a given slope.
+// If a non-'0 0 0' slope is passed, it will use that value, otherwise it will use the ground underneath the monster.
+// If it doesn't find a surface, it does nothing and returns.
+void pitch_roll_for_slope(edict_t* ent, vec3_t pass_slope) //TODO: rename to M_GetSlopePitchRoll?
 {
-	vec3_t	slope;
-	vec3_t	nvf, ovf, ovr, startspot, endspot, new_angles = { 0, 0, 0 };
-	float	pitch, mod, dot;
+	vec3_t slope;
 
-	if(!pass_slope)
+	if (pass_slope == NULL)
 	{
+		vec3_t end;
+		VectorCopy(ent->s.origin, end);
+		end[2] += ent->mins[2] - 300.0f;
+
 		trace_t trace;
+		gi.trace(ent->s.origin, vec3_origin, vec3_origin, end, ent, MASK_SOLID, &trace);
 
-		VectorCopy(forwhom->s.origin, startspot);
-		startspot[2] += forwhom->mins[2];
-		VectorCopy(startspot, endspot);
-		endspot[2] -= 300;
-		gi.trace(forwhom->s.origin, vec3_origin, vec3_origin, endspot, forwhom, MASK_SOLID,&trace);
-//		if(trace_fraction>0.05&&forwhom.movetype==MOVETYPE_STEP)
-//			forwhom.flags(-)FL_ONGROUND;
-
-		if(trace.fraction==1.0)
-			return;
-
-		if(!(&trace.plane))
-			return;
-
-		if(Vec3IsZero(trace.plane.normal))
+		if (trace.fraction == 1.0f || Vec3IsZero(trace.plane.normal))
 			return;
 
 		VectorCopy(trace.plane.normal, slope);
 	}
 	else
+	{
 		VectorCopy(pass_slope, slope);
+	}
 
+	vec3_t old_fwd;
+	vec3_t old_right;
+	AngleVectors(ent->s.angles, old_fwd, old_right, NULL);
 
-//C stuff
-
-	AngleVectors(forwhom->s.angles, ovf, ovr, NULL);
-
+	vec3_t new_angles;
 	vectoangles(slope, new_angles);
-	pitch = new_angles[PITCH] - 90;
-	new_angles[ROLL] = new_angles[PITCH] = 0;
+	const float pitch = new_angles[PITCH] - 90.0f;
 
-	AngleVectors(new_angles, nvf, NULL, NULL);
+	new_angles[PITCH] = 0.0f;
+	new_angles[ROLL] = 0.0f;
 
-	mod = DotProduct(nvf, ovr);
+	vec3_t new_fwd;
+	AngleVectors(new_angles, new_fwd, NULL, NULL);
 
-	if(mod<0)
-		mod = -1;
-	else
-		mod = 1;
+	const float mod = Q_signf(DotProduct(new_fwd, old_right));
+	const float dot = DotProduct(new_fwd, old_fwd);
 
-	dot = DotProduct(nvf, ovf);
-
-	forwhom->s.angles[PITCH] = dot * pitch;
-	forwhom->s.angles[ROLL] = (1-Q_fabs(dot)) * pitch * mod;
+	ent->s.angles[PITCH] = dot * pitch;
+	ent->s.angles[ROLL] = (1.0f - Q_fabs(dot)) * pitch * mod;
 }
 
 //JWEIER START HELPER BLOCK
