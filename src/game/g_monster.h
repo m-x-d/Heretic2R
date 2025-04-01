@@ -14,7 +14,7 @@
 // Message handlers.
 extern void DeadMsgHandler(edict_t* self, G_Message_t* msg);
 extern void DyingMsgHandler(edict_t* self, G_Message_t* msg);
-extern void MG_parse_dismember_msg(edict_t* self, G_Message_t* msg);
+extern void DismemberMsgHandler(edict_t* self, G_Message_t* msg);
 
 extern void M_WorldEffects(struct edict_s* ent);
 extern void M_CatagorizePosition(edict_t* ent);

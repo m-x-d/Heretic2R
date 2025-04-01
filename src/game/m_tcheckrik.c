@@ -329,7 +329,7 @@ void insect_dead_pain (edict_t *self, G_Message_t *msg)
 {
 	if(msg)
 		if(!(self->svflags & SVF_PARTS_GIBBED))
-			MG_parse_dismember_msg(self, msg);
+			DismemberMsgHandler(self, msg);
 
 	if(self->curAnimID!=ANIM_TWITCH&&self->deadState!=DEAD_DEAD)
 		return;//still dying
@@ -1524,7 +1524,7 @@ void TcheckrikStaticsInit(void)
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_PAIN] = insect_pain;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DEATH] = insect_death;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_FALLBACK] = insect_backpedal;
-	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DISMEMBER] = MG_parse_dismember_msg;
+	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_JUMP] = insect_jump;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_DEATH_PAIN] = insect_dead_pain;
 	classStatics[CID_TCHECKRIK].msgReceivers[MSG_CHECK_MOOD] = insect_check_mood;

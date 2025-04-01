@@ -2733,7 +2733,7 @@ void AssassinStaticsInit(void)
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_MISSILE] = assassin_missile;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_PAIN] = assassin_pain;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_DEATH] = assassin_death;
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_DISMEMBER] = MG_parse_dismember_msg;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_JUMP] = assassin_jump;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_EVADE] = assassin_evade;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_DEATH_PAIN] = assassin_dead_pain;

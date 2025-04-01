@@ -1186,7 +1186,7 @@ void ogle_death_pain(edict_t *self, G_Message_t *msg)
 		return;
 	}
 	else if(msg)
-		MG_parse_dismember_msg(self, msg);
+		DismemberMsgHandler(self, msg);
 }
 
 void ogle_death(edict_t *self, G_Message_t *msg)
@@ -1557,7 +1557,7 @@ void OgleStaticsInit(void)
 	classStatics[CID_OGLE].msgReceivers[MSG_STAND]		= ogle_stand1;
 	classStatics[CID_OGLE].msgReceivers[MSG_RUN]		= ogle_run1;
 	classStatics[CID_OGLE].msgReceivers[MSG_MELEE]		= ogle_melee;
-	classStatics[CID_OGLE].msgReceivers[MSG_DISMEMBER]  = MG_parse_dismember_msg;
+	classStatics[CID_OGLE].msgReceivers[MSG_DISMEMBER]  = DismemberMsgHandler;
 	classStatics[CID_OGLE].msgReceivers[MSG_DEATH]		= ogle_death;
 	classStatics[CID_OGLE].msgReceivers[MSG_PAIN]		= ogle_pain;
 	classStatics[CID_OGLE].msgReceivers[MSG_DEATH_PAIN]		= ogle_death_pain;

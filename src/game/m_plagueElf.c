@@ -899,7 +899,7 @@ void plagueElf_dead_pain (edict_t *self, G_Message_t *msg)
 {
 	if(msg)
 		if(!(self->svflags & SVF_PARTS_GIBBED))
-			MG_parse_dismember_msg(self, msg);
+			DismemberMsgHandler(self, msg);
 }
 
 //THROWS weapon, turns off those nodes, sets that weapon as gone
@@ -1818,7 +1818,7 @@ void PlagueElfStaticsInit(void)
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_PAIN] = plagueElf_pain;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DEATH] = plagueElf_death;
 //	classStatics[CID_PLAGUEELF].msgReceivers[MSG_BLOCKED] = plagueElf_blocked;
-	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DISMEMBER] = MG_parse_dismember_msg;
+	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_JUMP] = pelf_jump;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_DEATH_PAIN] = plagueElf_dead_pain;
 	classStatics[CID_PLAGUEELF].msgReceivers[MSG_FALLBACK] = plagueElf_run;//away

@@ -1105,7 +1105,7 @@ void SeraphGuardStaticsInit(void)
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH]	= seraph_guard_death;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DEATH_PAIN]	= seraph_guard_death_pain;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_CHECK_MOOD] = seraph_guard_check_mood;
-	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DISMEMBER] = MG_parse_dismember_msg;
+	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_SERAPH_GUARD].msgReceivers[MSG_VOICE_SIGHT] = ser_grd_SightSound;
 
 	resInfo.numAnims = NUM_ANIMS;

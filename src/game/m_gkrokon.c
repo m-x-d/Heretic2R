@@ -970,7 +970,7 @@ void beetle_dead_pain (edict_t *self, G_Message_t *msg)
 
 	if(msg)
 		if(!(self->svflags & SVF_PARTS_GIBBED))
-			MG_parse_dismember_msg(self, msg);
+			DismemberMsgHandler(self, msg);
 }
 
 // ****************************************************************************
@@ -990,7 +990,7 @@ void GkrokonStaticsInit(void)
 	classStatics[CID_GKROKON].msgReceivers[MSG_EAT]=beetle_eat;
 	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH]=beetle_death;
 	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH_PAIN] = beetle_dead_pain;
-	classStatics[CID_GKROKON].msgReceivers[MSG_DISMEMBER] = MG_parse_dismember_msg;
+	classStatics[CID_GKROKON].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 
 	resInfo.numAnims=NUM_ANIMS;
 	resInfo.animations=Animations;

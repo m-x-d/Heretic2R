@@ -1339,7 +1339,7 @@ void M_jump(edict_t* self, G_Message_t* msg) //TODO: used only by Rat. Move to m
 }
 
 // Get the dismember message and send it to my dismember code.
-void MG_parse_dismember_msg(edict_t* self, G_Message_t* msg) //TODO: rename to DismemberMsgHandler.
+void DismemberMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'MG_parse_dismember_msg' in original logic.
 {
 	if (self->monsterinfo.dismember != NULL)
 	{

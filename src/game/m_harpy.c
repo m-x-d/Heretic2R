@@ -720,7 +720,7 @@ void harpy_dead_pain(edict_t *self, G_Message_t *msg)
 		return;
 	}
 	else if(msg)
-		MG_parse_dismember_msg(self, msg);
+		DismemberMsgHandler(self, msg);
 
 }
 
@@ -1606,7 +1606,7 @@ void HarpyStaticsInit(void)
 	classStatics[CID_HARPY].msgReceivers[MSG_STAND] = harpy_stand;
 	classStatics[CID_HARPY].msgReceivers[MSG_RUN] = harpy_hover;
 	classStatics[CID_HARPY].msgReceivers[MSG_PAIN] = harpy_pain;
-	classStatics[CID_HARPY].msgReceivers[MSG_DISMEMBER] = MG_parse_dismember_msg;
+	classStatics[CID_HARPY].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_HARPY].msgReceivers[MSG_WATCH] = harpy_perch;
 	classStatics[CID_HARPY].msgReceivers[MSG_DEATH_PAIN] = harpy_dead_pain;
 	classStatics[CID_HARPY].msgReceivers[MSG_EVADE] = harpy_evade;

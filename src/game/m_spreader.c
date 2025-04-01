@@ -773,7 +773,7 @@ void spreader_dead_pain (edict_t *self, G_Message_t *msg)
 {
 	if(msg)
 		if(!(self->svflags & SVF_PARTS_GIBBED))
-			MG_parse_dismember_msg(self, msg);
+			DismemberMsgHandler(self, msg);
 }
 
 void spreader_dismember(edict_t *self, int damage, int HitLocation)
@@ -1254,7 +1254,7 @@ void SpreaderStaticsInit(void)
 	classStatics[CID_SPREADER].msgReceivers[MSG_WALK] = spreader_walk;
 	classStatics[CID_SPREADER].msgReceivers[MSG_MELEE] = spreader_melee;
 	classStatics[CID_SPREADER].msgReceivers[MSG_MISSILE] = spreader_missile;
-	classStatics[CID_SPREADER].msgReceivers[MSG_DISMEMBER] = MG_parse_dismember_msg;
+	classStatics[CID_SPREADER].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_SPREADER].msgReceivers[MSG_JUMP] = spreader_jump;
 	classStatics[CID_SPREADER].msgReceivers[MSG_EVADE] = spreader_evade;
 	classStatics[CID_SPREADER].msgReceivers[MSG_FALLBACK] = spreader_fallback;
