@@ -1918,7 +1918,7 @@ void gorgon_ai_swim (edict_t *self, float dist)
 	self->mood_think(self);
 //	MG_Pathfind(self, false);
 
-	MG_SetNormalizeVelToGoal(self, dir);
+	MG_SetNormalizedVelToGoal(self, dir);
 
 	if(Vec3IsZero(dir))
 	{

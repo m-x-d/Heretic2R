@@ -200,5 +200,4 @@ void gorgonChooseDeath(edict_t* self);
 void gorgon_ai_eat(edict_t* self, float crap);
 
 //TODO: move to appropriate headers!
-void MG_SetNormalizeVelToGoal(edict_t* self, vec3_t vec);
 void fish_under_water_wake(edict_t* self);

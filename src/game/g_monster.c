@@ -1379,7 +1379,7 @@ static qboolean GenericMonsterAlerted(edict_t* self, alertent_t* alerter, edict_
 	return true;
 }
 
-void MG_SetNormalizeVelToGoal(edict_t* self, vec3_t vec)
+void MG_SetNormalizedVelToGoal(edict_t* self, vec3_t vec) //mxd. Named 'MG_SetNormalizeVelToGoal' in original logic.
 {
 	const qboolean charge_enemy = ((self->monsterinfo.aiflags & AI_STRAIGHT_TO_ENEMY) && self->enemy != NULL);
 
