@@ -961,78 +961,72 @@ edict_t* M_CheckMeleeHit(edict_t* attacker, const float max_dist, trace_t* trace
 	return NULL;
 }
 
-/*====================================================================================================================
-
-	edict_t *M_CheckMeleeLineHit
-
-		Test a melee attack along a directed line.
-				
-		Returns:	"trace.ent" if a valid entity is struck (may not be intended target)
-					"NULL" if nothing hit
-					"attacker" if hit a wall, but no entity (used for spark effects)
-
-		attacker	-	what's attacking
-		start		-	starting position of the attack (offsets from the character (f,r,u)
-		end			-	ending position of the attack (offsets from the character (f,r,u)
-		mins, maxs	-	the size of the box to trace by
-		trace		-	passed parameter filled with the trace information (can be overkill, or very useful)
-
-======================================================================================================================*/
-
-edict_t	*M_CheckMeleeLineHit( edict_t *attacker, vec3_t start, vec3_t end, vec3_t mins, vec3_t maxs, trace_t *trace, vec3_t direction)
+// Test a melee attack along a directed line.
+// Returns:	"trace.ent" if a valid entity is struck (may not be intended target).
+//			"NULL" if nothing hit.
+//			"attacker" if hit a wall, but no entity (used for spark effects).
+// Args:
+// attacker		- What's attacking.
+// start		- Starting position of the attack (offsets from the character (f,r,u).
+// end			- Ending position of the attack (offsets from the character (f,r,u).
+// mins, maxs	- The size of the box to trace by
+// trace		- Passed parameter filled with the trace information (can be overkill, or very useful)
+// direction	- [out arg] Swipe direction.
+edict_t* M_CheckMeleeLineHit(edict_t* attacker, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, trace_t* trace, vec3_t direction)
 {
-	vec3_t		startv, endv, midv, swipedir,
-				vf, vr, vu;
+	// Apply the offsets to the positions passed.
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(attacker->s.angles, forward, right, up);
 
-	//Apply the offsets to the positions passed
-	AngleVectors(attacker->s.angles, vf, vr, vu);
-	
-	VectorMA(attacker->s.origin, start[0], vf, startv);
-	VectorMA(startv, start[1], vr, startv);
-	VectorMA(startv, start[2], vu, startv);
-	
-	VectorMA(attacker->s.origin, end[0], vf, endv);
-	VectorMA(endv, end[1], vr, endv);
-	VectorMA(endv, end[2], vu, endv);
+	vec3_t start_pos;
+	VectorMA(attacker->s.origin, start[0], forward, start_pos);
+	VectorMA(start_pos, start[1], right, start_pos);
+	VectorMA(start_pos, start[2], up, start_pos);
 
-	VectorSubtract(endv, startv, swipedir);
-	//make sure line to start of swipe is clear
-	gi.trace(attacker->s.origin, mins, maxs, startv, attacker, MASK_SHOT,trace);
+	vec3_t end_pos;
+	VectorMA(attacker->s.origin, end[0], forward, end_pos);
+	VectorMA(end_pos, end[1], right, end_pos);
+	VectorMA(end_pos, end[2], up, end_pos);
 
-	if(trace->fraction == 1.0)//line to start of trace not blocked
-		gi.trace(startv, mins, maxs, endv, attacker, MASK_SHOT,trace);//MASK_MONSTERSOLID);
+	vec3_t swipe_dir;
+	VectorSubtract(end_pos, start_pos, swipe_dir);
 
-	if(trace->fraction == 1.0)
-	{//hit nothing, trace to middle of line from origin to see if reached too far
-		VectorMA(startv, 0.5, swipedir, midv);
-		gi.trace(attacker->s.origin, mins, maxs, midv, attacker, MASK_SHOT,trace);
-	}
+	// Make sure line to start of swipe is clear.
+	gi.trace(attacker->s.origin, mins, maxs, start_pos, attacker, MASK_SHOT, trace);
 
-	if(trace->fraction == 1.0)
-	{//Last Chance: trace to end of swipe from origin to see if reached too far
-		gi.trace(attacker->s.origin, mins, maxs, endv, attacker, MASK_SHOT,trace);
-	}
+	if (trace->fraction == 1.0f) // Line to start of trace not blocked.
+		gi.trace(start_pos, mins, maxs, end_pos, attacker, MASK_SHOT, trace);
 
-	VectorNormalize(swipedir);
-	if(direction)
-		VectorCopy(swipedir, direction);
-
-	//Check to see if the trace was successful (miss)
-	if (trace->fraction < 1 || trace->startsolid || trace->allsolid)
+	if (trace->fraction == 1.0f)
 	{
-		//Check an entity collision
-		if (trace->ent)
-		{
-			//Can take damage, so pass it back
-			if (trace->ent->takedamage)
-				return trace->ent;
-		}
-		
-		//Wasn't an entity, but we were blocked (world brush)
+		// Hit nothing, trace to middle of line from origin to see if reached too far.
+		vec3_t mid_pos;
+		VectorMA(start_pos, 0.5f, swipe_dir, mid_pos);
+		gi.trace(attacker->s.origin, mins, maxs, mid_pos, attacker, MASK_SHOT, trace);
+	}
+
+	if (trace->fraction == 1.0f) // Last chance: trace to end of swipe from origin to see if reached too far.
+		gi.trace(attacker->s.origin, mins, maxs, end_pos, attacker, MASK_SHOT, trace);
+
+	VectorNormalize(swipe_dir);
+
+	if (direction != NULL)
+		VectorCopy(swipe_dir, direction);
+
+	// Check to see if the trace was successful (miss).
+	if (trace->fraction < 1.0f || trace->startsolid || trace->allsolid)
+	{
+		// Check an entity collision.
+		if (trace->ent != NULL && trace->ent->takedamage != DAMAGE_NO)
+			return trace->ent;
+
+		// Hit non-damageable entity or world geometry.
 		return attacker;
 	}
 
-	//Nothing found (missed)
+	// Nothing found (missed).
 	return NULL;
 }
 
