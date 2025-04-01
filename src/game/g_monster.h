@@ -54,4 +54,4 @@ extern int M_FindSupport(const edict_t* self, int range);
 
 //mxd. Local forward declarations for g_monster.c:
 static qboolean GenericMonsterAlerted(edict_t* self, alertent_t* alerter, edict_t* enemy);
-static void monster_start_go(edict_t* self);
+static void M_MonsterStartGo(edict_t* self);

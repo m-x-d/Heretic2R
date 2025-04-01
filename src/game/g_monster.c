@@ -418,7 +418,7 @@ static void M_TriggeredSpawnThink(edict_t* self) //mxd. Named 'monster_triggered
 	self->air_finished = level.time + M_HOLD_BREATH_TIME;
 	gi.linkentity(self);
 
-	monster_start_go(self);
+	M_MonsterStartGo(self);
 
 	if (self->classID == CID_ASSASSIN && (self->spawnflags & MSF_ASS_TPORTAMBUSH))
 	{
@@ -613,7 +613,7 @@ static void M_BBoxAndOriginAdjustForScale(edict_t* self) //mxd. Named 'MG_BBoxAn
 	gi.linkentity(self);
 }
 
-static void monster_start_go(edict_t* self)
+static void M_MonsterStartGo(edict_t* self) //mxd. Named 'monster_start_go' in original logic.
 {
 	self->nextthink = level.time + FRAMETIME;
 
@@ -780,7 +780,7 @@ void M_WalkmonsterStartGo(edict_t* self) //mxd. Named 'walkmonster_start_go' in 
 
 	self->viewheight = 25;
 
-	monster_start_go(self);
+	M_MonsterStartGo(self);
 
 	if (self->spawnflags & MSF_ASLEEP)
 		M_TriggeredStart(self);
@@ -803,7 +803,7 @@ static void M_FlymonsterStartGo(edict_t* self) //mxd. Named 'flymonster_start_go
 	if (self->viewheight == 0)
 		self->viewheight = 25;
 
-	monster_start_go(self);
+	M_MonsterStartGo(self);
 
 	if (self->spawnflags & MSF_ASLEEP)
 		M_TriggeredStart(self);
