@@ -1230,43 +1230,22 @@ void M_PredictTargetPosition(const edict_t* target, const vec3_t evade_vel, cons
 	VectorMA(target->s.origin, target_dist, target_dir, pred_target_pos);
 }
 
-/*====================================================================================================================
-
-	void M_StartDeath
-
-		Sets various states and sets up the monster to play his death frames.  Passing -1 in the sound field will
-		skip the sound playing
-				
-		Returns:	
-
-		self	-	the entity dying
-		sound	-	the sound ID to play, -1 if no sound
-
-======================================================================================================================*/
-
-void M_StartDeath( edict_t *self,  int animID)
+// Sets various states and sets up the monster to play his death frames.
+void M_StartDeath(edict_t* self, int animID) //TODO: remove unused arg.
 {
 	self->msgHandler = DeadMsgHandler;
 
-	/*if(self->monsterinfo.aiflags & AI_DONT_THINK)
-	{
-		SetAnim(self, animID);
-		return;
-	}*/
-
-	//Dead but still being hit	
-	if(self->deadflag == DEAD_DEAD)
+	// Dead but still being hit.
+	if (self->deadflag == DEAD_DEAD)
 		return;
 
 	self->deadflag = DEAD_DEAD;
 
-	//gib death
-	if(self->health <= -80)
+	// Gib death?
+	if (self->health <= -80)
 	{
-		//The monster much check and play its own sound if a gib occured
-		self->think = BecomeDebris;
+		self->think = BecomeDebris; // The monster must check and play its own sound if a gib occured.
 		self->nextthink = level.time + FRAMETIME;
-		return;
 	}
 }
 
