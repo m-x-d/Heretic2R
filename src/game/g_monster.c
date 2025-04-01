@@ -1379,32 +1379,6 @@ static qboolean GenericMonsterAlerted(edict_t* self, alertent_t* alerter, edict_
 	return true;
 }
 
-float MG_ChangePitch(edict_t* self, float ideal, const float speed) //TODO: move to mg_ai.c, below MG_ChangeYaw? 
-{
-	const float current = anglemod(self->s.angles[PITCH]);
-	ideal = anglemod(ideal);
-	float move = ideal - current;
-
-	if (FloatIsZeroEpsilon(move)) //mxd. Use FloatIsZeroEpsilon() instead of direct comparison.
-		return false;
-
-	if (ideal > current)
-	{
-		if (move >= 180.0f)
-			move -= 360.0f;
-	}
-	else
-	{
-		if (move <= -180.0f)
-			move += 360.0f;
-	}
-
-	move = Clamp(move, -speed, speed);
-	self->s.angles[PITCH] = anglemod(current + move);
-
-	return move;
-}
-
 void MG_SetNormalizeVelToGoal(edict_t* self, vec3_t vec)
 {
 	const qboolean charge_enemy = ((self->monsterinfo.aiflags & AI_STRAIGHT_TO_ENEMY) && self->enemy != NULL);

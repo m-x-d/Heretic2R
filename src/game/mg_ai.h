@@ -14,6 +14,7 @@ extern qboolean MG_MoveToGoal(edict_t* self, float dist);
 extern qboolean MG_SwimFlyToGoal(edict_t* self, float dist);
 extern float MG_ChangeWhichYaw(edict_t* self, qboolean ideal_yaw);
 extern float MG_ChangeYaw(edict_t* self);
+extern float MG_ChangePitch(edict_t* self, float ideal, float speed);
 extern float MG_FaceGoal(edict_t* self, qboolean do_turn);
 extern trace_t MG_WalkMove(edict_t* self, float yaw, float dist);
 extern qboolean MG_TryWalkMove(edict_t* self, float yaw, float dist, qboolean do_relink);

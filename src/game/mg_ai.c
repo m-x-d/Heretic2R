@@ -468,6 +468,32 @@ float MG_ChangeYaw(edict_t* self)
 	return MG_ChangeWhichYaw(self, YAW_IDEAL);
 }
 
+float MG_ChangePitch(edict_t* self, float ideal, const float speed) //mxd. Originally defined in g_monster.c.
+{
+	const float current = anglemod(self->s.angles[PITCH]);
+	ideal = anglemod(ideal);
+	float move = ideal - current;
+
+	if (FloatIsZeroEpsilon(move)) //mxd. Use FloatIsZeroEpsilon() instead of direct comparison.
+		return false;
+
+	if (ideal > current)
+	{
+		if (move >= 180.0f)
+			move -= 360.0f;
+	}
+	else
+	{
+		if (move <= -180.0f)
+			move += 360.0f;
+	}
+
+	move = Clamp(move, -speed, speed);
+	self->s.angles[PITCH] = anglemod(current + move);
+
+	return move;
+}
+
 static qboolean MG_GetGoalPos(edict_t* self, vec3_t goal_pos)
 {
 	const qboolean charge_enemy = ((self->monsterinfo.aiflags & AI_STRAIGHT_TO_ENEMY) && self->enemy != NULL);
