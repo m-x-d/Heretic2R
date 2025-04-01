@@ -249,59 +249,56 @@ void M_WorldEffects(edict_t* ent)
 	}
 }
 
-/*-------------------------------------------------------------------------
-	M_droptofloor
--------------------------------------------------------------------------*/
-void M_droptofloor (edict_t *ent)
+void M_droptofloor(edict_t* ent) //TODO: rename to M_DropToFloor.
 {
-	vec3_t		end;
-	trace_t		trace;
-
-	if(Vec3IsZero(ent->mins)&&Vec3IsZero(ent->maxs))
+	if (Vec3IsZero(ent->mins) && Vec3IsZero(ent->maxs))
 	{
-		gi.dprintf("ERROR : %s at %s called drop to floor before having size set\n", ent->classname, vtos(ent->s.origin));
-		if(ent->think == M_droptofloor)
-			ent->think = NULL;//don't try again
+		gi.dprintf("ERROR: %s at %s called drop to floor before having size set\n", ent->classname, vtos(ent->s.origin));
+
+		if (ent->think == M_droptofloor)
+			ent->think = NULL; // Don't try again.
+
 		return;
 	}
 
 	ent->nextthink = level.time + FRAMETIME;
+	ent->s.origin[2] += 1.0f;
 
-	ent->s.origin[2] += 1.0;
-	VectorCopy (ent->s.origin, end);
-	end[2] -= 256;
-	
-	gi.trace (ent->s.origin, ent->mins, ent->maxs, end, ent, MASK_MONSTERSOLID,&trace);
+	vec3_t end;
+	VectorCopy(ent->s.origin, end);
+	end[2] -= 256.0f;
 
-	if(trace.allsolid||trace.startsolid)
+	trace_t trace;
+	gi.trace(ent->s.origin, ent->mins, ent->maxs, end, ent, MASK_MONSTERSOLID, &trace);
+
+	if (trace.allsolid || trace.startsolid)
 	{
-		gi.dprintf("ERROR : Object (%s) at %s started in solid\n", ent->classname, vtos(ent->s.origin));
-		if(ent->think == M_droptofloor)
+		gi.dprintf("ERROR: %s at %s started in solid\n", ent->classname, vtos(ent->s.origin));
+
+		if (ent->think == M_droptofloor)
 		{
-			ent->think = NULL;//don't try again
-			gi.linkentity (ent);
-			M_CatagorizePosition (ent);
+			ent->think = NULL; // Don't try again.
+			gi.linkentity(ent);
+			M_CatagorizePosition(ent);
 		}
+
 		return;
 	}
 
-	if(trace.fraction == 1.0)
+	if (trace.fraction == 1.0f)
 	{
-		gi.dprintf("ERROR : Object (%s) more than 256 off ground, waiting to fall\n", ent->classname);
-		return;
+		gi.dprintf("ERROR: %s at %s more than 256 off ground, waiting to fall\n", ent->classname, vtos(ent->s.origin)); //mxd. Print origin.
+		return; //TODO: in this case, ent will stay floating in the air. Still copy trace.endpos to ent->s.origin, but don't clear think callback? Increase end offset?
 	}
 
-	if(MGAI_DEBUG)
-		gi.dprintf("%s at %s dropped to floor at %s\n", ent->classname, vtos(ent->s.origin), vtos(trace.endpos));
+	VectorCopy(trace.endpos, ent->s.origin);
 
-	VectorCopy (trace.endpos, ent->s.origin);
+	gi.linkentity(ent);
+	M_CheckGround(ent);
+	M_CatagorizePosition(ent);
 
-	gi.linkentity (ent);
-	M_CheckGround (ent);
-	M_CatagorizePosition (ent);
-
-	// No need to think anymore if on the ground
-	ent->think = NULL;
+	// No need to think anymore if on the ground.
+	ent->think = NULL; //TODO: check if ent->think is M_droptofloor before clearing it?
 }
 
 /* ------------------------------------------------------------------------------
