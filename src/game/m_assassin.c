@@ -91,7 +91,7 @@ static ClassResourceInfo_t res_info;
 
 #pragma endregion
 
-#pragma region ========================== Utility functions ==========================
+#pragma region ========================== Dagger utility functions ==========================
 
 edict_t* AssassinDaggerReflect(edict_t* self, edict_t* other, const vec3_t vel) //mxd. Named 'AssassinArrowReflect' in original logic.
 {
@@ -171,10 +171,6 @@ static void AssassinDaggerTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 
 	G_FreeEdict(self);
 }
-
-#pragma endregion
-
-#pragma region ========================== Action functions ==========================
 
 // Create the guts of the dagger.
 static void AssassinDaggerInit(edict_t* dagger) //mxd. Named 'create_assassin_dagger' in original logic.
@@ -257,6 +253,415 @@ static void AssassinThrowDagger(edict_t* self, const float right_ofs) //mxd. Nam
 	G_LinkMissile(dagger);
 }
 
+#pragma endregion
+
+#pragma region ========================== Cloaking utility functions ==========================
+
+static qboolean AssassinCheckCloak(const edict_t* self) //mxd. Named 'assassinCheckCloak' in original logic.
+{
+	if (!self->monsterinfo.awake || self->monsterinfo.misc_debounce_time > level.time || (self->spawnflags & MSF_ASS_NOSHADOW)) // misc_debounce_time == Cloak debounce time.
+		return false;
+
+	if (self->ai_mood == AI_MOOD_FLEE)
+		return true;
+
+	if (self->enemy == NULL)
+		return false;
+
+	const int chance = (AI_IsInfrontOf(self->enemy, self) ? -3 : 0);
+
+	return (irand(0, 10 - SKILL + chance) <= 0);
+}
+
+static qboolean AssassinCheckDeCloak(const edict_t* self) //mxd. Named 'assassinCheckDeCloak' in original logic.
+{
+	if (!self->monsterinfo.awake || self->monsterinfo.misc_debounce_time > level.time) // misc_debounce_time == Cloak debounce time.
+		return false;
+
+	if (self->enemy == NULL)
+		return !(self->spawnflags & MSF_ASS_STARTSHADOW);
+
+	if (M_DistanceToTarget(self, self->enemy) < ASSASSIN_MIN_CLOAK_RANGE)
+		return true;
+
+	const int chance = (AI_IsInfrontOf(self->enemy, self) ? 0 : -3);
+
+	return (irand(0, 10 + SKILL * 2 + chance) <= 0);
+}
+
+static void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThink' in original logic.
+{
+	self->next_pre_think = level.time + FRAMETIME;
+
+	// Check cloak or decloak.
+	if (!(self->s.renderfx & RF_ALPHA_TEXTURE))
+	{
+		// Not cloaked.
+		if (AssassinCheckCloak(self))
+		{
+			self->monsterinfo.misc_debounce_time = level.time + 7.0f; // 7 seconds before will willingly uncloak.
+			assassin_init_cloak(self);
+		}
+	}
+	else
+	{
+		// Cloaked.
+		if (AssassinCheckDeCloak(self))
+			AssassinInitDeCloak(self);
+	}
+
+	// Check to teleport.
+
+	// Dumbed down.
+	if (SKILL == SKILL_EASY && self->touch_debounce_time > level.time) // Was skill->value < 2.
+		return;
+
+	if (self->waterlevel == 3 && self->air_finished <= level.time) // Going to drown!
+	{
+		// Pick either last buoy or my startspot.
+		vec3_t teleport_dest;
+
+		if (self->lastbuoy > NULL_BUOY && !(gi.pointcontents(level.buoy_list[self->lastbuoy].origin) & MASK_WATER))
+			VectorCopy(level.buoy_list[self->lastbuoy].origin, teleport_dest);
+		else
+			VectorCopy(self->pos1, teleport_dest);
+
+		vec3_t start_pos;
+		VectorCopy(teleport_dest, start_pos);
+
+		vec3_t end_pos; //TODO: UNINITIALIZED! Should be self.origin?
+
+		vec3_t mins;
+		VectorCopy(self->mins, mins);
+		mins[2] = 0.0f;
+
+		vec3_t maxs;
+		VectorCopy(self->maxs, maxs);
+		maxs[2] = 1.0f;
+
+		start_pos[2] -= self->size[2];
+
+		trace_t trace;
+		gi.trace(start_pos, mins, maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
+
+		if (!trace.allsolid && !trace.startsolid)
+		{
+			VectorCopy(trace.endpos, start_pos);
+			start_pos[2] += self->size[2];
+
+			VectorCopy(trace.endpos, end_pos);
+
+			gi.trace(start_pos, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
+
+			if (trace.fraction == 1.0f && !trace.allsolid && !trace.startsolid)
+			{
+				AssassinPrepareTeleportDestination(self, trace.endpos, false);
+				return;
+			}
+		}
+	}
+
+	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
+	{
+		// Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard.
+		if (!(self->spawnflags & MSF_ASS_NOTELEPORT) && !(self->spawnflags & MSF_FIXED) && self->groundentity != NULL && irand(0, 4 - SKILL) <= 0)
+		{
+			// Easy is 40% chance per second, hard is 60% chance to check per second.
+			edict_t* found = NULL;
+			while ((found = FindInRadius(found, self->s.origin, 200.0f + skill->value * 50.0f)) != NULL)
+			{
+				if (Q_stricmp(found->classname, "Spell_Maceball") == 0) //mxd. stricmp -> Q_stricmp
+				{
+					if (self->enemy == NULL && found->owner != NULL)
+					{
+						self->enemy = found->owner;
+						AI_FoundTarget(self, false);
+					}
+
+					if (AssassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
+						return;
+				}
+				else if (Q_stricmp(found->classname, "Spell_RedRain") == 0 || Q_stricmp(found->classname, "Spell_PhoenixArrow") == 0 ||
+					Q_stricmp(found->classname, "Spell_FireWall") == 0 || Q_stricmp(found->classname, "Spell_SphereOfAnnihilation") == 0) //mxd. stricmp -> Q_stricmp
+				{
+					if (self->enemy == NULL && found->owner != NULL)
+					{
+						self->enemy = found->owner;
+						AI_FoundTarget(self, false);
+					}
+
+					if (AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, false))
+						return;
+				}
+
+				if (found == self->enemy && found->client != NULL && M_DistanceToTarget(self, self->enemy) < 128.0f)
+				{
+					if (AI_IsInfrontOf(self->enemy, self))
+					{
+						// Is he using his staff or jumping into me?
+						switch (found->client->playerinfo.lowerseq)
+						{
+							case ASEQ_WSWORD_SPIN:
+							case ASEQ_WSWORD_SPIN2:
+							case ASEQ_WSWORD_STEP2:
+							case ASEQ_WSWORD_STEP:
+							case ASEQ_POLEVAULT2:
+							case ASEQ_POLEVAULT1_W:
+							case ASEQ_POLEVAULT1_R:
+								if (AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, true))
+									return;
+								break;
+							default:
+								break;
+						}
+
+						switch (found->client->playerinfo.upperseq) //TODO: why do we need to check both lowerseq and upperseq?..
+						{
+							case ASEQ_WSWORD_SPIN:
+							case ASEQ_WSWORD_SPIN2:
+							case ASEQ_WSWORD_STEP2:
+							case ASEQ_WSWORD_STEP:
+							case ASEQ_POLEVAULT2:
+							case ASEQ_POLEVAULT1_W:
+							case ASEQ_POLEVAULT1_R:
+								if (AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, true))
+									return;
+								break;
+
+							default:
+								break;
+						}
+					}
+
+					if (found->client->playerinfo.shield_timer > level.time && AssassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
+						return;
+				}
+			} // while loop end.
+		}
+	}
+
+	if (self->evade_debounce_time < level.time)
+		MG_CheckEvade(self);
+}
+
+static void AssassinCloakFadePreThink(edict_t* self) //mxd. Named 'assassinCloak' in original logic.
+{
+#define FADE_INCREMENT	15 //mxd
+
+	for (int i = 0; i < 3; i++) // Fade out RGB.
+		if (self->s.color.c_array[i] > 50)
+			self->s.color.c_array[i] -= irand(0, FADE_INCREMENT * 3);
+
+	if (self->s.color.a > 150) // Fade out Alpha.
+		self->s.color.a -= irand(0, FADE_INCREMENT);
+
+	if (self->s.color.r <= 50 && self->s.color.g <= 50 && self->s.color.b <= 50 && self->s.color.a <= 150)
+		self->pre_think = AssassinCloakPreThink;
+
+	self->next_pre_think = level.time + FRAMETIME;
+
+	if (self->evade_debounce_time < level.time)
+		MG_CheckEvade(self);
+}
+
+static void AssassinDeCloakFadePreThink(edict_t* self) //mxd. Named 'assassinDeCloak' in original logic.
+{
+	if (!(self->s.renderfx & RF_ALPHA_TEXTURE))
+		return;
+
+	for (int i = 0; i < 3; i++) // Fade in RGB.
+	{
+		if (self->s.color.c_array[i] < 255 - 10)
+			self->s.color.c_array[i] += 10;
+		else
+			self->s.color.c_array[i] = 255;
+	}
+
+	if (self->s.color.a < 255 - 5) // Fade in Alpha.
+		self->s.color.a += 5;
+	else
+		self->s.color.a = 255;
+
+	// Fade-in complete?
+	if (self->s.color.c == 0xffffffff)
+	{
+		self->svflags &= ~SVF_NO_AUTOTARGET;
+		self->s.renderfx &= ~RF_ALPHA_TEXTURE;
+
+		if (self->health > 0)
+		{
+			self->pre_think = AssassinCloakPreThink;
+			self->next_pre_think = level.time + FRAMETIME;
+		}
+		else
+		{
+			self->pre_think = NULL;
+			self->next_pre_think = -1.0f;
+		}
+	}
+	else
+	{
+		self->pre_think = AssassinDeCloakFadePreThink;
+		self->next_pre_think = level.time + FRAMETIME;
+	}
+
+	if (self->evade_debounce_time < level.time)
+		MG_CheckEvade(self);
+}
+
+static void AssassinInitDeCloak(edict_t* self) //mxd. Named 'assassinInitDeCloak' in original logic.
+{
+	gi.sound(self, CHAN_AUTO, sounds[SND_DECLOAK], 1.0f, ATTN_NORM, 0.0f);
+
+	self->pre_think = AssassinDeCloakFadePreThink;
+	self->next_pre_think = level.time + FRAMETIME;
+}
+
+#pragma endregion
+
+static void AssassinSmoke(const edict_t* self) //mxd. Named 'assassinSmoke' in original logic.
+{
+	vec3_t pos;
+	VectorCopy(self->s.origin, pos);
+	pos[2] += self->mins[2];
+
+	gi.CreateEffect(NULL, FX_TPORTSMOKE, 0, pos, "");
+}
+
+#pragma region ========================== Teleport utility functions ==========================
+
+void AssassinPrepareTeleportDestination(edict_t* self, const vec3_t spot, const qboolean instant) //mxd. Named 'assassinPrepareTeleportDest' in original logic.
+{
+	if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != AssassinDeCloakFadePreThink)
+	{
+		AssassinInitDeCloak(self);
+		self->monsterinfo.misc_debounce_time = level.time + 3.0f;
+	}
+
+	VectorCopy(spot, self->pos2);
+
+	self->placeholder = G_Spawn();
+	VectorCopy(self->pos2, self->placeholder->s.origin);
+	self->placeholder->solid = SOLID_BBOX;
+	VectorCopy(self->mins, self->placeholder->mins);
+	VectorCopy(self->maxs, self->placeholder->maxs);
+	self->placeholder->think = G_FreeEdict;
+	self->placeholder->nextthink = level.time + 2.0f; // Just in case.
+
+	// Dumbed down.
+	if (instant && SKILL > SKILL_MEDIUM)
+	{
+		assassin_ready_teleport(self);
+		assassin_gone(self);
+	}
+	else
+	{
+		SetAnim(self, ANIM_TELEPORT);
+	}
+}
+
+static qboolean AssassinChooseTeleportDestination(edict_t* self, const int type, const qboolean imperative, const qboolean instant) //mxd. Named 'assassinChooseTeleportDestination' in original logic.
+{
+	if (self->enemy == NULL || (self->spawnflags & MSF_FIXED)) //FIXME: choose my spot?
+		return false;
+
+	const int num_tries = (imperative ? (SKILL + 1) * 10 : 1);
+
+	for (int i = 0; i < num_tries; i++)
+	{
+		int	chance;
+
+		if (type == ASS_TP_OFF)
+			chance = irand(0, 66);
+		else if (type == ASS_TP_DEF)
+			chance = irand(33, 100);
+		else // ASS_TP_ANY
+			chance = irand(0, 100);
+
+		vec3_t start_pos;
+		vec3_t end_pos;
+		edict_t* noblock_ent;
+		float trace_dist;
+
+		if (chance < 33)
+		{
+			// ANY, OFF to behind enemy.
+			vec3_t forward;
+			const vec3_t teleport_angles = { 0.0f, anglemod(self->enemy->s.angles[YAW] + flrand(-90.0f, 90.0f)), 0.0f };
+			AngleVectors(teleport_angles, forward, NULL, NULL);
+
+			VectorCopy(self->enemy->s.origin, start_pos);
+			start_pos[2] += self->enemy->mins[2] - self->mins[2];
+
+			trace_dist = flrand(self->min_missile_range, self->missile_range); //mxd. irand() in original logic.
+			VectorMA(start_pos, -trace_dist, forward, end_pos);
+			noblock_ent = self->enemy;
+		}
+		else if (chance < 66)
+		{
+			// ANY to anywhere around enemy.
+			vec3_t forward;
+			const vec3_t teleport_angles = { 0.0f, anglemod(flrand(0.0f, 360.0f)), 0.0f }; //TODO: should be flrand(0.0f, 359.0f)?
+			AngleVectors(teleport_angles, forward, NULL, NULL);
+
+			VectorCopy(self->enemy->s.origin, start_pos);
+			start_pos[2] += self->enemy->mins[2] - self->mins[2];
+
+			trace_dist = flrand(self->min_missile_range, self->missile_range); //mxd. irand() in original logic.
+			VectorMA(start_pos, -trace_dist, forward, end_pos);
+			noblock_ent = self->enemy;
+		}
+		else
+		{
+			// ANY, DEF to anywhere around me.
+			vec3_t forward;
+			const vec3_t teleport_angles = { 0.0f, anglemod(flrand(0.0f, 360.0f)), 0.0f }; //TODO: should be flrand(0.0f, 359.0f)?
+			AngleVectors(teleport_angles, forward, NULL, NULL);
+
+			VectorCopy(self->s.origin, start_pos);
+
+			trace_dist = flrand(self->min_missile_range, self->missile_range / 2.0f); //mxd. irand() in original logic.
+			VectorMA(start_pos, -trace_dist, forward, end_pos);
+			noblock_ent = self;
+		}
+
+		trace_t trace;
+		gi.trace(start_pos, self->mins, self->maxs, end_pos, noblock_ent, MASK_MONSTERSOLID, &trace);
+
+		if (trace.allsolid || trace.startsolid || trace.fraction * trace_dist < 100.0f) // Minimum origin lerp distance.
+			continue;
+
+		if (vhlen(trace.endpos, self->enemy->s.origin) >= self->min_missile_range)
+		{
+			VectorCopy(trace.endpos, start_pos);
+			VectorCopy(trace.endpos, end_pos);
+			end_pos[2] -= 64.0f;
+
+			gi.trace(start_pos, self->mins, self->maxs, end_pos, noblock_ent, MASK_MONSTERSOLID, &trace);
+
+			if (trace.fraction < 1.0f && !trace.allsolid && !trace.startsolid) // The last two should be false if trace.fraction is < 1.0 but doesn't hurt to check.
+			{
+				AssassinPrepareTeleportDestination(self, trace.endpos, instant);
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+static qboolean AssassinCheckTeleport(edict_t* self, const int type) //mxd. Named 'assassinCheckTeleport' in original logic.
+{
+	if ((self->spawnflags & (MSF_ASS_NOTELEPORT | MSF_FIXED)) || self->groundentity == NULL || !M_ValidTarget(self, self->enemy))
+		return false;
+
+	return AssassinChooseTeleportDestination(self, type, false, false);
+}
+
+#pragma endregion
+
+#pragma region ========================== Action functions ==========================
+
 // Do melee or ranged attack.
 void assassin_attack(edict_t* self, const float flags) //mxd. Named 'assassindagger' in original logic.
 {
@@ -334,45 +739,6 @@ void assassin_attack(edict_t* self, const float flags) //mxd. Named 'assassindag
 	}
 }
 
-// Assigned to 'isBlocked' and 'bounce' callbacks.
-static void AssassinBounce(edict_t* self, trace_t* trace) //mxd. Named 'assassin_Touch' in original logic.
-{
-	if (self->health <= 0 || trace == NULL)
-		return;
-
-	edict_t* other = trace->ent;
-
-	if ((self->groundentity != NULL && self->groundentity != other) || Vec3IsZero(self->velocity))
-		return;
-
-	const float strength = VectorLength(self->velocity);
-
-	if (strength > 50 && AI_IsMovable(other) && (other->svflags & SVF_MONSTER || other->client != NULL))
-	{
-		if (self->s.origin[2] + self->mins[2] > other->s.origin[2] + other->maxs[2] * 0.8f)
-		{
-			if (other->client != NULL)
-				P_KnockDownPlayer(&other->client->playerinfo);
-
-			gi.sound(self, CHAN_BODY, sounds[SND_LANDF], 1.0f, ATTN_NORM, 0.0f);
-
-			if (other->takedamage != DAMAGE_NO)
-			{
-				vec3_t dir;
-				VectorCopy(self->velocity, dir);
-				dir[2] = max(0.0f, dir[2]);
-				VectorNormalize(dir);
-
-				const int damage = min(5, (int)strength);
-				T_Damage(other, self, self, dir, trace->endpos, dir, damage, damage * 4, 0, MOD_DIED);
-			}
-
-			SetAnim(self, ANIM_EVFRONTFLIP);
-		}
-	}
-	//FIXME: else backflip off walls! Too late to implement.
-}
-
 void assassin_dead(edict_t* self)
 {
 	self->msgHandler = DeadMsgHandler;
@@ -386,34 +752,6 @@ void assassin_growl(edict_t* self) //mxd. Named 'assassingrowl' in original logi
 		gi.sound(self, CHAN_AUTO, sounds[irand(SND_GROWL1, SND_GROWL3)], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-static void AssassinSetRandomAttackAnim(edict_t* self) //mxd. Named 'assassin_random_attack' in original logic.
-{
-	const int chance = irand(0, 3);
-	const qboolean have_left_arm = !(self->s.fmnodeinfo[MESH__L4ARM].flags & FMNI_NO_DRAW); //mxd
-	const qboolean have_right_arm = !(self->s.fmnodeinfo[MESH__R4ARM].flags & FMNI_NO_DRAW); //mxd
-	int anim_id;
-
-	if ((chance < 1 && have_left_arm) || (!have_right_arm && have_left_arm))
-	{
-		anim_id = ANIM_DAGGERL;
-	}
-	else if ((chance < 2 && have_right_arm) || (have_right_arm && !have_left_arm))
-	{
-		anim_id = (irand(0, 1) == 1 ? ANIM_DAGGERR : ANIM_NEWDAGGER);
-	}
-	else if (!(self->s.fmnodeinfo[MESH__R4ARM].flags & FMNI_NO_DRAW) && !(self->s.fmnodeinfo[MESH__L4ARM].flags & FMNI_NO_DRAW))
-	{
-		anim_id = (irand(0, 1) == 1 ? ANIM_DAGGERB : ANIM_NEWDAGGERB);
-	}
-	else
-	{
-		self->monsterinfo.aiflags |= AI_COWARD;
-		anim_id = ANIM_RUN;
-	}
-
-	SetAnim(self, anim_id);
-}
-
 void assassin_post_pain(edict_t* self)
 {
 	if (self->fire_damage_time < level.time && AssassinCheckTeleport(self, ASS_TP_ANY)) // Don't teleport if burning.
@@ -421,6 +759,363 @@ void assassin_post_pain(edict_t* self)
 
 	assassin_pause(self);
 }
+
+void assassin_skip_frame_skill_check(edict_t* self) //mxd. Named 'assassinSkipFrameSkillCheck' in original logic.
+{
+	if (irand(0, 3) < SKILL)
+		self->s.frame++;
+}
+
+void assassin_pause(edict_t* self)
+{
+	// This gets stuck on, sometimes.
+	self->s.fmnodeinfo[MESH__LKNIFE].flags |= FMNI_NO_DRAW;
+	self->s.fmnodeinfo[MESH__RKNIFE].flags |= FMNI_NO_DRAW;
+
+	if (self->monsterinfo.aiflags & AI_OVERRIDE_GUIDE)
+		return;
+
+	if ((self->spawnflags & MSF_FIXED) && self->curAnimID == ANIM_DELAY && self->enemy != NULL)
+	{
+		self->monsterinfo.searchType = SEARCH_COMMON;
+		MG_FaceGoal(self, true);
+	}
+
+	self->mood_think(self);
+
+	switch (self->ai_mood)
+	{
+		case AI_MOOD_NORMAL:
+		{
+			FindTarget(self);
+
+			if (self->enemy != NULL)
+			{
+				vec3_t diff;
+				VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
+
+				const int anim_id = ((VectorLength(diff) > 80.0f || (self->monsterinfo.aiflags & AI_FLEE)) ? MSG_RUN : MSG_MELEE);
+				QPostMessage(self, anim_id, PRI_DIRECTIVE, NULL);
+			}
+		} break;
+
+		case AI_MOOD_ATTACK:
+		{
+			const int anim_id = ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE); //mxd
+			QPostMessage(self, anim_id, PRI_DIRECTIVE, NULL);
+		} break;
+
+		case AI_MOOD_PURSUE:
+		case AI_MOOD_NAVIGATE:
+			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_STAND:
+			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_WALK:
+			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_DELAY:
+			SetAnim(self, ANIM_DELAY);
+			break;
+
+		case AI_MOOD_WANDER:
+			if (self->spawnflags & MSF_FIXED)
+				SetAnim(self, ANIM_DELAY);
+			else
+				QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_JUMP:
+		{
+			const int anim_id = ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_FJUMP); // ANIM_FJUMP will apply the movedir when he's ready.
+			SetAnim(self, anim_id);
+		} break;
+
+		default:
+			break;
+	}
+}
+
+void assassin_run(edict_t* self, float dist) //mxd. Named 'assassin_go_run' in original logic.
+{
+	if (self->maxs[2] == 0.0f)
+		assassin_unset_crouched(self);
+
+	if (self->enemy != NULL)
+		MG_AI_Run(self, dist);
+	else
+		ai_walk(self, dist);
+}
+
+void assassin_crouch_idle_decision(edict_t* self)
+{
+	//FIXME: need to uncrouch.
+	const int chance = irand(0, 100);
+
+	switch (self->curAnimID)
+	{
+		case ANIM_CROUCH_IDLE:
+			if (chance < 55)
+				SetAnim(self, ANIM_CROUCH_IDLE);
+			else if (chance < 75)
+				SetAnim(self, ANIM_CROUCH_POKE);
+			else if (chance < 85)
+				SetAnim(self, ANIM_CROUCH_LOOK_RIGHT);
+			else if (chance < 95)
+				SetAnim(self, ANIM_CROUCH_LOOK_LEFT);
+			else
+				SetAnim(self, ANIM_CROUCH_END);
+			break;
+
+		case ANIM_CROUCH_LOOK_RIGHT:
+		case ANIM_CROUCH_LOOK_RIGHT_IDLE:
+		case ANIM_CROUCH_LOOK_L2R:
+			if (chance < 60)
+				SetAnim(self, ANIM_CROUCH_LOOK_RIGHT_IDLE);
+			else if (chance < 85)
+				SetAnim(self, ANIM_CROUCH_LOOK_R2C);
+			else
+				SetAnim(self, ANIM_CROUCH_LOOK_R2L);
+			break;
+
+		case ANIM_CROUCH_LOOK_LEFT:
+		case ANIM_CROUCH_LOOK_LEFT_IDLE:
+		case ANIM_CROUCH_LOOK_R2L:
+			if (chance < 60)
+				SetAnim(self, ANIM_CROUCH_LOOK_LEFT_IDLE);
+			else if (chance < 85)
+				SetAnim(self, ANIM_CROUCH_LOOK_L2C);
+			else
+				SetAnim(self, ANIM_CROUCH_LOOK_L2R);
+			break;
+
+		case ANIM_CROUCH_TRANS:
+			self->monsterinfo.pausetime = FLT_MAX; //mxd. 99999999 in original logic.
+			SetAnim(self, ANIM_CROUCH_IDLE);
+			break;
+
+		case ANIM_CROUCH_LOOK_R2C:
+		case ANIM_CROUCH_LOOK_L2C:
+		case ANIM_CROUCH_POKE:
+			SetAnim(self, ANIM_CROUCH_IDLE);
+			break;
+
+		case ANIM_CROUCH_END:
+			self->damage_debounce_time = level.time + 10.0f;
+			self->monsterinfo.pausetime = -1.0f;
+			SetAnim(self, ANIM_STAND);
+			break;
+
+		default:
+			SetAnim(self, ANIM_CROUCH_END);
+			break;
+	}
+}
+
+void assassin_ai_walk(edict_t* self, float dist)
+{
+	if (self->damage_debounce_time < level.time)
+	{
+		const edict_t* target = ((self->enemy != NULL) ? self->enemy : self->oldenemy); //mxd
+
+		if (target != NULL && vhlen(self->s.origin, target->s.origin) < 48.0f && AI_IsInfrontOf(self, target))
+		{
+			assassin_enable_fmnode(self, MESH__LKNIFE);
+			SetAnim(self, ANIM_CROUCH_TRANS);
+
+			return;
+		}
+	}
+
+	ai_walk(self, dist);
+}
+
+void assassin_walk_loop_go(edict_t* self) //mxd. Named 'assasin_walk_loop_go' in original logic.
+{
+	SetAnim(self, ANIM_WALK_LOOP);
+}
+
+void assassin_crouched_check_attack(edict_t* self, float attack) //mxd. Named 'assassinCrouchedCheckAttack' in original logic.
+{
+	if (irand(0, 10) < 5 || !AI_IsClearlyVisible(self, self->enemy) || !AI_IsInfrontOf(self, self->enemy))
+		return;
+
+	if (attack == 1.0f)
+		assassin_attack(self, BIT_RKNIFE);
+	else if (attack == 2.0f) // Start crouched attack animation.
+		SetAnim(self, ANIM_DAGGERC);
+	else // Loop back inside that anim.
+		self->monsterinfo.currframeindex = 2;
+}
+
+void assassin_enable_fmnode(edict_t* self, float node) //mxd. Named 'assassinNodeOn' in original logic.
+{
+	self->s.fmnodeinfo[(int)node].flags &= ~FMNI_NO_DRAW;
+}
+
+void assassin_stop(edict_t* self) //mxd. Named 'assassinStop' in original logic.
+{
+	if (self->evade_debounce_time - level.time > 0.1f)
+		self->nextthink = level.time + (self->evade_debounce_time - level.time);
+}
+
+void assassin_set_crouched(edict_t* self) //mxd. Named 'assassinSetCrouched' in original logic.
+{
+	VectorSet(self->maxs, 16.0f, 16.0f, 0.0f);
+	self->viewheight = 0;
+}
+
+void assassin_unset_crouched(edict_t* self) //mxd. Named 'assassinUndoCrouched' in original logic.
+{
+	VectorSet(self->maxs, 16.0f, 16.0f, 48.0f);
+	self->viewheight = 40;
+}
+
+void assassin_sound(edict_t* self, float channel, float sound_num, float attenuation)
+{
+	gi.sound(self, (int)channel, sounds[(int)sound_num], 1.0f, attenuation, 0.0f);
+}
+
+void assassin_jump_go(edict_t* self, float forward_speed, float up_speed, float right_speed) //mxd. Named 'assassinGoJump' in original logic.
+{
+	//FIXME: do checks and traces first.
+	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
+	assassin_sound(self, CHAN_VOICE, SND_JUMP, ATTN_NORM);
+
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, right, up);
+
+	VectorMA(self->velocity, up_speed, up, self->velocity);
+	VectorMA(self->velocity, forward_speed, forward, self->velocity);
+	VectorMA(self->velocity, right_speed, right, self->velocity);
+}
+
+void assassin_inair_go(edict_t* self) //mxd. Named 'assassin_go_inair' in original logic.
+{
+	SetAnim(self, ANIM_INAIR);
+}
+
+void assassin_evade_inair_go(edict_t* self) //mxd. Named 'assassin_go_evinair' in original logic.
+{
+	SetAnim(self, ANIM_EVINAIR);
+}
+
+void assassin_fwdflip_inair_go(edict_t* self) //mxd. Named 'assassin_go_ffinair' in original logic.
+{
+	SetAnim(self, ANIM_FFINAIR);
+}
+
+void assassin_backflip_inair_go(edict_t* self) //mxd. Named 'assassin_go_bfinair' in original logic.
+{
+	SetAnim(self, ANIM_BFINAIR);
+}
+
+void assassin_check_loop(edict_t* self, float frame) //mxd. Named 'assassin_go_bfinair' in original logic.
+{
+#define MELEE_RANGE	64.0f //mxd //TODO: move to m_stats.h?
+#define JUMP_RANGE	128.0f //mxd //TODO: move to m_stats.h?
+
+	// See if should fire again.
+	if (self->enemy == NULL)
+		return;
+
+	ai_charge2(self, 0);
+
+	if (!AI_IsClearlyVisible(self, self->enemy) || !AI_IsInfrontOf(self, self->enemy))
+		return;
+
+	if (irand(0, 100) < self->bypass_missile_chance)
+	{
+		self->monsterinfo.attack_finished = level.time + 3.0f - skill->value;
+		return;
+	}
+
+	if (self->ai_mood_flags & AI_MOOD_FLAG_BACKSTAB)
+		return;
+
+	vec3_t diff;
+	VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
+
+	const float dist = VectorLength(diff);
+	const float min_separation = self->maxs[0] + self->enemy->maxs[0];
+
+	//mxd. Skip unnecessary AI_IsInfrontOf() check (already checked above).
+
+	// Don't loop if enemy close enough.
+	if (dist < min_separation + MELEE_RANGE)
+		return;
+
+	if (dist < min_separation + JUMP_RANGE && irand(0, 10) < 3)
+		return;
+
+	self->monsterinfo.currframeindex = (int)frame;
+}
+
+void assassin_gone(edict_t* self) //mxd. Named 'assassinGone' in original logic.
+{
+	if (self->placeholder != NULL)
+		G_FreeEdict(self->placeholder);
+
+	VectorCopy(self->pos2, self->s.origin);
+
+	if (self->enemy != NULL)
+	{
+		// Face enemy.
+		vec3_t enemy_dir;
+		VectorSubtract(self->enemy->s.origin, self->s.origin, enemy_dir);
+		self->s.angles[YAW] = anglemod(VectorYaw(enemy_dir));
+	}
+
+	AssassinSmoke(self);
+
+	vec3_t pos;
+	VectorCopy(self->pos2, pos);
+	pos[2] += 100.0f;
+
+	if (gi.pointcontents(pos) == CONTENTS_EMPTY && irand(0, 3) == 0)
+		SetAnim(self, ANIM_EVFRONTFLIP); //mxd. Inline assassinFrontFlip().
+	else
+		SetAnim(self, ANIM_UNCROUCH);
+
+	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
+	self->svflags &= ~SVF_NO_AUTOTARGET;
+	self->touch_debounce_time = level.time + (10.0f - skill->value * 3.0f); // Dumbed down.
+
+	// Should we clear velocity too?
+	gi.linkentity(self);
+}
+
+void assassin_ready_teleport(edict_t* self) //mxd. Named 'assassinReadyTeleport' in original logic.
+{
+	AssassinSmoke(self);
+	self->svflags |= SVF_NO_AUTOTARGET;
+}
+
+void assassin_uncrouch(edict_t* self) //mxd. Named 'assassinUnCrouch' in original logic.
+{
+	SetAnim(self, ANIM_UNCROUCH);
+}
+
+void assassin_init_cloak(edict_t* self) //mxd. Named 'assassinInitCloak' in original logic.
+{
+	gi.sound(self, CHAN_AUTO, sounds[SND_CLOAK], 1.0f, ATTN_NORM, 0.0f);
+
+	self->svflags |= SVF_NO_AUTOTARGET;
+	self->s.renderfx |= RF_ALPHA_TEXTURE;
+	self->s.color.c = 0xffffffff;
+	self->pre_think = AssassinCloakFadePreThink;
+	self->next_pre_think = level.time + FRAMETIME;
+}
+
+#pragma endregion
+
+#pragma region ========================== AssassinDismember logic ==========================
 
 static qboolean CanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_as' in original logic.
 {
@@ -523,10 +1218,6 @@ static HitLocation_t AssassinConvertDeadHitLocation(const HitLocation_t hl) //mx
 			return irand(hl_Head, hl_LegLowerRight);
 	}
 }
-
-#pragma endregion
-
-#pragma region ========================== DISMEMGER LOGIC ==========================
 
 static qboolean AssassinThrowHead(edict_t* self, float damage, const qboolean dismember_ok) //mxd. Split from AssassinDismember() to simplify logic.
 {
@@ -852,84 +1543,34 @@ static void AssassinDismember(edict_t* self, const int damage, HitLocation_t hl)
 
 #pragma endregion
 
-void assassin_skip_frame_skill_check(edict_t* self) //mxd. Named 'assassinSkipFrameSkillCheck' in original logic.
+#pragma region ========================== Message handler utility functions ==========================
+
+static void AssassinSetRandomAttackAnim(edict_t* self) //mxd. Named 'assassin_random_attack' in original logic.
 {
-	if (irand(0, 3) < SKILL)
-		self->s.frame++;
-}
+	const int chance = irand(0, 3);
+	const qboolean have_left_arm = !(self->s.fmnodeinfo[MESH__L4ARM].flags & FMNI_NO_DRAW); //mxd
+	const qboolean have_right_arm = !(self->s.fmnodeinfo[MESH__R4ARM].flags & FMNI_NO_DRAW); //mxd
+	int anim_id;
 
-void assassin_pause(edict_t* self)
-{
-	// This gets stuck on, sometimes.
-	self->s.fmnodeinfo[MESH__LKNIFE].flags |= FMNI_NO_DRAW;
-	self->s.fmnodeinfo[MESH__RKNIFE].flags |= FMNI_NO_DRAW;
-
-	if (self->monsterinfo.aiflags & AI_OVERRIDE_GUIDE)
-		return;
-
-	if ((self->spawnflags & MSF_FIXED) && self->curAnimID == ANIM_DELAY && self->enemy != NULL)
+	if ((chance < 1 && have_left_arm) || (!have_right_arm && have_left_arm))
 	{
-		self->monsterinfo.searchType = SEARCH_COMMON;
-		MG_FaceGoal(self, true);
+		anim_id = ANIM_DAGGERL;
+	}
+	else if ((chance < 2 && have_right_arm) || (have_right_arm && !have_left_arm))
+	{
+		anim_id = (irand(0, 1) == 1 ? ANIM_DAGGERR : ANIM_NEWDAGGER);
+	}
+	else if (!(self->s.fmnodeinfo[MESH__R4ARM].flags & FMNI_NO_DRAW) && !(self->s.fmnodeinfo[MESH__L4ARM].flags & FMNI_NO_DRAW))
+	{
+		anim_id = (irand(0, 1) == 1 ? ANIM_DAGGERB : ANIM_NEWDAGGERB);
+	}
+	else
+	{
+		self->monsterinfo.aiflags |= AI_COWARD;
+		anim_id = ANIM_RUN;
 	}
 
-	self->mood_think(self);
-
-	switch (self->ai_mood)
-	{
-		case AI_MOOD_NORMAL:
-		{
-			FindTarget(self);
-
-			if (self->enemy != NULL)
-			{
-				vec3_t diff;
-				VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
-
-				const int anim_id = ((VectorLength(diff) > 80.0f || (self->monsterinfo.aiflags & AI_FLEE)) ? MSG_RUN : MSG_MELEE);
-				QPostMessage(self, anim_id, PRI_DIRECTIVE, NULL);
-			}
-		} break;
-
-		case AI_MOOD_ATTACK:
-		{
-			const int anim_id = ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE); //mxd
-			QPostMessage(self, anim_id, PRI_DIRECTIVE, NULL);
-		} break;
-
-		case AI_MOOD_PURSUE:
-		case AI_MOOD_NAVIGATE:
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_STAND:
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_WALK:
-			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_DELAY:
-			SetAnim(self, ANIM_DELAY);
-			break;
-
-		case AI_MOOD_WANDER:
-			if (self->spawnflags & MSF_FIXED)
-				SetAnim(self, ANIM_DELAY);
-			else
-				QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_JUMP:
-		{
-			const int anim_id = ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_FJUMP); // ANIM_FJUMP will apply the movedir when he's ready.
-			SetAnim(self, anim_id);
-		} break;
-
-		default:
-			break;
-	}
+	SetAnim(self, anim_id);
 }
 
 static void AssassinChooseJumpAmbush(edict_t* self) //mxd. Named 'assassinChooseJumpAmbush' in original logic.
@@ -982,675 +1623,7 @@ static qboolean AssassinChooseSideJumpAmbush(edict_t* self) //mxd. Named 'assass
 	return true;
 }
 
-void assassin_run(edict_t* self, float dist) //mxd. Named 'assassin_go_run' in original logic.
-{
-	if (self->maxs[2] == 0.0f)
-		assassin_unset_crouched(self);
-
-	if (self->enemy != NULL)
-		MG_AI_Run(self, dist);
-	else
-		ai_walk(self, dist);
-}
-
-void assassin_crouch_idle_decision(edict_t* self)
-{
-	//FIXME: need to uncrouch.
-	const int chance = irand(0, 100);
-
-	switch (self->curAnimID)
-	{
-		case ANIM_CROUCH_IDLE:
-			if (chance < 55)
-				SetAnim(self, ANIM_CROUCH_IDLE);
-			else if (chance < 75)
-				SetAnim(self, ANIM_CROUCH_POKE);
-			else if (chance < 85)
-				SetAnim(self, ANIM_CROUCH_LOOK_RIGHT);
-			else if (chance < 95)
-				SetAnim(self, ANIM_CROUCH_LOOK_LEFT);
-			else
-				SetAnim(self, ANIM_CROUCH_END);
-			break;
-
-		case ANIM_CROUCH_LOOK_RIGHT:
-		case ANIM_CROUCH_LOOK_RIGHT_IDLE:
-		case ANIM_CROUCH_LOOK_L2R:
-			if (chance < 60)
-				SetAnim(self, ANIM_CROUCH_LOOK_RIGHT_IDLE);
-			else if (chance < 85)
-				SetAnim(self, ANIM_CROUCH_LOOK_R2C);
-			else
-				SetAnim(self, ANIM_CROUCH_LOOK_R2L);
-			break;
-
-		case ANIM_CROUCH_LOOK_LEFT:
-		case ANIM_CROUCH_LOOK_LEFT_IDLE:
-		case ANIM_CROUCH_LOOK_R2L:
-			if (chance < 60)
-				SetAnim(self, ANIM_CROUCH_LOOK_LEFT_IDLE);
-			else if (chance < 85)
-				SetAnim(self, ANIM_CROUCH_LOOK_L2C);
-			else
-				SetAnim(self, ANIM_CROUCH_LOOK_L2R);
-			break;
-
-		case ANIM_CROUCH_TRANS:
-			self->monsterinfo.pausetime = FLT_MAX; //mxd. 99999999 in original logic.
-			SetAnim(self, ANIM_CROUCH_IDLE);
-			break;
-
-		case ANIM_CROUCH_LOOK_R2C:
-		case ANIM_CROUCH_LOOK_L2C:
-		case ANIM_CROUCH_POKE:
-			SetAnim(self, ANIM_CROUCH_IDLE);
-			break;
-
-		case ANIM_CROUCH_END:
-			self->damage_debounce_time = level.time + 10.0f;
-			self->monsterinfo.pausetime = -1.0f;
-			SetAnim(self, ANIM_STAND);
-			break;
-
-		default:
-			SetAnim(self, ANIM_CROUCH_END);
-			break;
-	}
-}
-
-void assassin_ai_walk(edict_t* self, float dist)
-{
-	if (self->damage_debounce_time < level.time)
-	{
-		const edict_t* target = ((self->enemy != NULL) ? self->enemy : self->oldenemy); //mxd
-
-		if (target != NULL && vhlen(self->s.origin, target->s.origin) < 48.0f && AI_IsInfrontOf(self, target))
-		{
-			assassin_enable_fmnode(self, MESH__LKNIFE);
-			SetAnim(self, ANIM_CROUCH_TRANS);
-
-			return;
-		}
-	}
-
-	ai_walk(self, dist);
-}
-
-void assassin_walk_loop_go(edict_t* self) //mxd. Named 'assasin_walk_loop_go' in original logic.
-{
-	SetAnim(self, ANIM_WALK_LOOP);
-}
-
-void assassin_crouched_check_attack(edict_t* self, float attack) //mxd. Named 'assassinCrouchedCheckAttack' in original logic.
-{
-	if (irand(0, 10) < 5 || !AI_IsClearlyVisible(self, self->enemy) || !AI_IsInfrontOf(self, self->enemy))
-		return;
-
-	if (attack == 1.0f)
-		assassin_attack(self, BIT_RKNIFE);
-	else if (attack == 2.0f) // Start crouched attack animation.
-		SetAnim(self, ANIM_DAGGERC);
-	else // Loop back inside that anim.
-		self->monsterinfo.currframeindex = 2;
-}
-
-void assassin_enable_fmnode(edict_t* self, float node) //mxd. Named 'assassinNodeOn' in original logic.
-{
-	self->s.fmnodeinfo[(int)node].flags &= ~FMNI_NO_DRAW;
-}
-
-void assassin_stop(edict_t* self) //mxd. Named 'assassinStop' in original logic.
-{
-	if (self->evade_debounce_time - level.time > 0.1f)
-		self->nextthink = level.time + (self->evade_debounce_time - level.time);
-}
-
-void assassin_set_crouched(edict_t* self) //mxd. Named 'assassinSetCrouched' in original logic.
-{
-	VectorSet(self->maxs, 16.0f, 16.0f, 0.0f);
-	self->viewheight = 0;
-}
-
-void assassin_unset_crouched(edict_t* self) //mxd. Named 'assassinUndoCrouched' in original logic.
-{
-	VectorSet(self->maxs, 16.0f, 16.0f, 48.0f);
-	self->viewheight = 40;
-}
-
-void assassin_sound(edict_t* self, float channel, float sound_num, float attenuation)
-{
-	gi.sound(self, (int)channel, sounds[(int)sound_num], 1.0f, attenuation, 0.0f);
-}
-
-void assassin_jump_go(edict_t* self, float forward_speed, float up_speed, float right_speed) //mxd. Named 'assassinGoJump' in original logic.
-{
-	//FIXME: do checks and traces first.
-	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
-	assassin_sound(self, CHAN_VOICE, SND_JUMP, ATTN_NORM);
-
-	vec3_t forward;
-	vec3_t right;
-	vec3_t up;
-	AngleVectors(self->s.angles, forward, right, up);
-
-	VectorMA(self->velocity, up_speed, up, self->velocity);
-	VectorMA(self->velocity, forward_speed, forward, self->velocity);
-	VectorMA(self->velocity, right_speed, right, self->velocity);
-}
-
-void assassin_inair_go(edict_t* self) //mxd. Named 'assassin_go_inair' in original logic.
-{
-	SetAnim(self, ANIM_INAIR);
-}
-
-void assassin_evade_inair_go(edict_t* self) //mxd. Named 'assassin_go_evinair' in original logic.
-{
-	SetAnim(self, ANIM_EVINAIR);
-}
-
-void assassin_fwdflip_inair_go(edict_t* self) //mxd. Named 'assassin_go_ffinair' in original logic.
-{
-	SetAnim(self, ANIM_FFINAIR);
-}
-
-void assassin_backflip_inair_go(edict_t* self) //mxd. Named 'assassin_go_bfinair' in original logic.
-{
-	SetAnim(self, ANIM_BFINAIR);
-}
-
-void assassin_check_loop(edict_t* self, float frame) //mxd. Named 'assassin_go_bfinair' in original logic.
-{
-#define MELEE_RANGE	64.0f //mxd //TODO: move to m_stats.h?
-#define JUMP_RANGE	128.0f //mxd //TODO: move to m_stats.h?
-
-	// See if should fire again.
-	if (self->enemy == NULL)
-		return;
-
-	ai_charge2(self, 0);
-
-	if (!AI_IsClearlyVisible(self, self->enemy) || !AI_IsInfrontOf(self, self->enemy))
-		return;
-
-	if (irand(0, 100) < self->bypass_missile_chance)
-	{
-		self->monsterinfo.attack_finished = level.time + 3.0f - skill->value;
-		return;
-	}
-
-	if (self->ai_mood_flags & AI_MOOD_FLAG_BACKSTAB)
-		return;
-
-	vec3_t diff;
-	VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
-
-	const float dist = VectorLength(diff);
-	const float min_separation = self->maxs[0] + self->enemy->maxs[0];
-
-	//mxd. Skip unnecessary AI_IsInfrontOf() check (already checked above).
-
-	// Don't loop if enemy close enough.
-	if (dist < min_separation + MELEE_RANGE)
-		return;
-
-	if (dist < min_separation + JUMP_RANGE && irand(0, 10) < 3)
-		return;
-
-	self->monsterinfo.currframeindex = (int)frame;
-}
-
-static void AssassinSmoke(const edict_t* self) //mxd. Named 'assassinSmoke' in original logic.
-{
-	vec3_t pos;
-	VectorCopy(self->s.origin, pos);
-	pos[2] += self->mins[2];
-
-	gi.CreateEffect(NULL, FX_TPORTSMOKE, 0, pos, "");
-}
-
-void assassin_gone(edict_t* self) //mxd. Named 'assassinGone' in original logic.
-{
-	if (self->placeholder != NULL)
-		G_FreeEdict(self->placeholder);
-
-	VectorCopy(self->pos2, self->s.origin);
-
-	if (self->enemy != NULL)
-	{
-		// Face enemy.
-		vec3_t enemy_dir;
-		VectorSubtract(self->enemy->s.origin, self->s.origin, enemy_dir);
-		self->s.angles[YAW] = anglemod(VectorYaw(enemy_dir));
-	}
-
-	AssassinSmoke(self);
-
-	vec3_t pos;
-	VectorCopy(self->pos2, pos);
-	pos[2] += 100.0f;
-
-	if (gi.pointcontents(pos) == CONTENTS_EMPTY && irand(0, 3) == 0)
-		SetAnim(self, ANIM_EVFRONTFLIP); //mxd. Inline assassinFrontFlip().
-	else
-		SetAnim(self, ANIM_UNCROUCH);
-
-	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
-	self->svflags &= ~SVF_NO_AUTOTARGET;
-	self->touch_debounce_time = level.time + (10.0f - skill->value * 3.0f); // Dumbed down.
-
-	// Should we clear velocity too?
-	gi.linkentity(self);
-}
-
-void AssassinPrepareTeleportDestination(edict_t* self, const vec3_t spot, const qboolean instant) //mxd. Named 'assassinPrepareTeleportDest' in original logic.
-{
-	if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != AssassinDeCloakFadePreThink)
-	{
-		AssassinInitDeCloak(self);
-		self->monsterinfo.misc_debounce_time = level.time + 3.0f;
-	}
-
-	VectorCopy(spot, self->pos2);
-
-	self->placeholder = G_Spawn();
-	VectorCopy(self->pos2, self->placeholder->s.origin);
-	self->placeholder->solid = SOLID_BBOX;
-	VectorCopy(self->mins, self->placeholder->mins);
-	VectorCopy(self->maxs, self->placeholder->maxs);
-	self->placeholder->think = G_FreeEdict;
-	self->placeholder->nextthink = level.time + 2.0f; // Just in case.
-
-	// Dumbed down.
-	if (instant && SKILL > SKILL_MEDIUM)
-	{
-		assassin_ready_teleport(self);
-		assassin_gone(self);
-	}
-	else
-	{
-		SetAnim(self, ANIM_TELEPORT);
-	}
-}
-
-static qboolean AssassinChooseTeleportDestination(edict_t* self, const int type, const qboolean imperative, const qboolean instant) //mxd. Named 'assassinChooseTeleportDestination' in original logic.
-{
-	if (self->enemy == NULL || (self->spawnflags & MSF_FIXED)) //FIXME: choose my spot?
-		return false;
-
-	const int num_tries = (imperative ? (SKILL + 1) * 10 : 1);
-
-	for (int i = 0; i < num_tries; i++)
-	{
-		int	chance;
-
-		if (type == ASS_TP_OFF)
-			chance = irand(0, 66);
-		else if (type == ASS_TP_DEF)
-			chance = irand(33, 100);
-		else // ASS_TP_ANY
-			chance = irand(0, 100);
-
-		vec3_t start_pos;
-		vec3_t end_pos;
-		edict_t* noblock_ent;
-		float trace_dist;
-
-		if (chance < 33)
-		{
-			// ANY, OFF to behind enemy.
-			vec3_t forward;
-			const vec3_t teleport_angles = { 0.0f, anglemod(self->enemy->s.angles[YAW] + flrand(-90.0f, 90.0f)), 0.0f };
-			AngleVectors(teleport_angles, forward, NULL, NULL);
-
-			VectorCopy(self->enemy->s.origin, start_pos);
-			start_pos[2] += self->enemy->mins[2] - self->mins[2];
-
-			trace_dist = flrand(self->min_missile_range, self->missile_range); //mxd. irand() in original logic.
-			VectorMA(start_pos, -trace_dist, forward, end_pos);
-			noblock_ent = self->enemy;
-		}
-		else if (chance < 66)
-		{
-			// ANY to anywhere around enemy.
-			vec3_t forward;
-			const vec3_t teleport_angles = { 0.0f, anglemod(flrand(0.0f, 360.0f)), 0.0f }; //TODO: should be flrand(0.0f, 359.0f)?
-			AngleVectors(teleport_angles, forward, NULL, NULL);
-
-			VectorCopy(self->enemy->s.origin, start_pos);
-			start_pos[2] += self->enemy->mins[2] - self->mins[2];
-
-			trace_dist = flrand(self->min_missile_range, self->missile_range); //mxd. irand() in original logic.
-			VectorMA(start_pos, -trace_dist, forward, end_pos);
-			noblock_ent = self->enemy;
-		}
-		else
-		{
-			// ANY, DEF to anywhere around me.
-			vec3_t forward;
-			const vec3_t teleport_angles = { 0.0f, anglemod(flrand(0.0f, 360.0f)), 0.0f }; //TODO: should be flrand(0.0f, 359.0f)?
-			AngleVectors(teleport_angles, forward, NULL, NULL);
-
-			VectorCopy(self->s.origin, start_pos);
-
-			trace_dist = flrand(self->min_missile_range, self->missile_range / 2.0f); //mxd. irand() in original logic.
-			VectorMA(start_pos, -trace_dist, forward, end_pos);
-			noblock_ent = self;
-		}
-
-		trace_t trace;
-		gi.trace(start_pos, self->mins, self->maxs, end_pos, noblock_ent, MASK_MONSTERSOLID, &trace);
-
-		if (trace.allsolid || trace.startsolid || trace.fraction * trace_dist < 100.0f) // Minimum origin lerp distance.
-			continue;
-
-		if (vhlen(trace.endpos, self->enemy->s.origin) >= self->min_missile_range)
-		{
-			VectorCopy(trace.endpos, start_pos);
-			VectorCopy(trace.endpos, end_pos);
-			end_pos[2] -= 64.0f;
-
-			gi.trace(start_pos, self->mins, self->maxs, end_pos, noblock_ent, MASK_MONSTERSOLID, &trace);
-
-			if (trace.fraction < 1.0f && !trace.allsolid && !trace.startsolid) // The last two should be false if trace.fraction is < 1.0 but doesn't hurt to check.
-			{
-				AssassinPrepareTeleportDestination(self, trace.endpos, instant);
-				return true;
-			}
-		}
-	}
-
-	return false;
-}
-
-void assassin_ready_teleport(edict_t* self) //mxd. Named 'assassinReadyTeleport' in original logic.
-{
-	AssassinSmoke(self);
-	self->svflags |= SVF_NO_AUTOTARGET;
-}
-
-static qboolean AssassinCheckTeleport(edict_t* self, const int type) //mxd. Named 'assassinCheckTeleport' in original logic.
-{
-	if ((self->spawnflags & (MSF_ASS_NOTELEPORT | MSF_FIXED)) || self->groundentity == NULL || !M_ValidTarget(self, self->enemy))
-		return false;
-
-	return AssassinChooseTeleportDestination(self, type, false, false);
-}
-
-void assassin_uncrouch(edict_t* self) //mxd. Named 'assassinUnCrouch' in original logic.
-{
-	SetAnim(self, ANIM_UNCROUCH);
-}
-
-static qboolean AssassinCheckCloak(const edict_t* self) //mxd. Named 'assassinCheckCloak' in original logic.
-{
-	if (!self->monsterinfo.awake || self->monsterinfo.misc_debounce_time > level.time || (self->spawnflags & MSF_ASS_NOSHADOW)) // misc_debounce_time == Cloak debounce time.
-		return false;
-
-	if (self->ai_mood == AI_MOOD_FLEE)
-		return true;
-
-	if (self->enemy == NULL)
-		return false;
-
-	const int chance = (AI_IsInfrontOf(self->enemy, self) ? -3 : 0);
-
-	return (irand(0, 10 - SKILL + chance) <= 0);
-}
-
-static qboolean AssassinCheckDeCloak(const edict_t* self) //mxd. Named 'assassinCheckDeCloak' in original logic.
-{
-	if (!self->monsterinfo.awake || self->monsterinfo.misc_debounce_time > level.time) // misc_debounce_time == Cloak debounce time.
-		return false;
-
-	if (self->enemy == NULL)
-		return !(self->spawnflags & MSF_ASS_STARTSHADOW);
-
-	if (M_DistanceToTarget(self, self->enemy) < ASSASSIN_MIN_CLOAK_RANGE)
-		return true;
-
-	const int chance = (AI_IsInfrontOf(self->enemy, self) ? 0 : -3);
-
-	return (irand(0, 10 + SKILL * 2 + chance) <= 0);
-}
-
-static void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThink' in original logic.
-{
-	self->next_pre_think = level.time + FRAMETIME;
-
-	// Check cloak or decloak.
-	if (!(self->s.renderfx & RF_ALPHA_TEXTURE))
-	{
-		// Not cloaked.
-		if (AssassinCheckCloak(self))
-		{
-			self->monsterinfo.misc_debounce_time = level.time + 7.0f; // 7 seconds before will willingly uncloak.
-			assassin_init_cloak(self);
-		}
-	}
-	else
-	{
-		// Cloaked.
-		if (AssassinCheckDeCloak(self))
-			AssassinInitDeCloak(self);
-	}
-
-	// Check to teleport.
-
-	// Dumbed down.
-	if (SKILL == SKILL_EASY && self->touch_debounce_time > level.time) // Was skill->value < 2.
-		return;
-
-	if (self->waterlevel == 3 && self->air_finished <= level.time) // Going to drown!
-	{
-		// Pick either last buoy or my startspot.
-		vec3_t teleport_dest;
-
-		if (self->lastbuoy > NULL_BUOY && !(gi.pointcontents(level.buoy_list[self->lastbuoy].origin) & MASK_WATER))
-			VectorCopy(level.buoy_list[self->lastbuoy].origin, teleport_dest);
-		else
-			VectorCopy(self->pos1, teleport_dest);
-
-		vec3_t start_pos;
-		VectorCopy(teleport_dest, start_pos);
-
-		vec3_t end_pos; //TODO: UNINITIALIZED! Should be self.origin?
-
-		vec3_t mins;
-		VectorCopy(self->mins, mins);
-		mins[2] = 0.0f;
-
-		vec3_t maxs;
-		VectorCopy(self->maxs, maxs);
-		maxs[2] = 1.0f;
-
-		start_pos[2] -= self->size[2];
-
-		trace_t trace;
-		gi.trace(start_pos, mins, maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
-
-		if (!trace.allsolid && !trace.startsolid)
-		{
-			VectorCopy(trace.endpos, start_pos);
-			start_pos[2] += self->size[2];
-
-			VectorCopy(trace.endpos, end_pos);
-
-			gi.trace(start_pos, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
-
-			if (trace.fraction == 1.0f && !trace.allsolid && !trace.startsolid)
-			{
-				AssassinPrepareTeleportDestination(self, trace.endpos, false);
-				return;
-			}
-		}
-	}
-
-	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
-	{
-		// Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard.
-		if (!(self->spawnflags & MSF_ASS_NOTELEPORT) && !(self->spawnflags & MSF_FIXED) && self->groundentity != NULL && irand(0, 4 - SKILL) <= 0)
-		{
-			// Easy is 40% chance per second, hard is 60% chance to check per second.
-			edict_t* found = NULL;
-			while ((found = FindInRadius(found, self->s.origin, 200.0f + skill->value * 50.0f)) != NULL)
-			{
-				if (Q_stricmp(found->classname, "Spell_Maceball") == 0) //mxd. stricmp -> Q_stricmp
-				{
-					if (self->enemy == NULL && found->owner != NULL)
-					{
-						self->enemy = found->owner;
-						AI_FoundTarget(self, false);
-					}
-
-					if (AssassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
-						return;
-				}
-				else if (Q_stricmp(found->classname, "Spell_RedRain") == 0 || Q_stricmp(found->classname, "Spell_PhoenixArrow") == 0 ||
-					Q_stricmp(found->classname, "Spell_FireWall") == 0 || Q_stricmp(found->classname, "Spell_SphereOfAnnihilation") == 0) //mxd. stricmp -> Q_stricmp
-				{
-					if (self->enemy == NULL && found->owner != NULL)
-					{
-						self->enemy = found->owner;
-						AI_FoundTarget(self, false);
-					}
-
-					if (AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, false))
-						return;
-				}
-
-				if (found == self->enemy && found->client != NULL && M_DistanceToTarget(self, self->enemy) < 128.0f)
-				{
-					if (AI_IsInfrontOf(self->enemy, self))
-					{
-						// Is he using his staff or jumping into me?
-						switch (found->client->playerinfo.lowerseq)
-						{
-							case ASEQ_WSWORD_SPIN:
-							case ASEQ_WSWORD_SPIN2:
-							case ASEQ_WSWORD_STEP2:
-							case ASEQ_WSWORD_STEP:
-							case ASEQ_POLEVAULT2:
-							case ASEQ_POLEVAULT1_W:
-							case ASEQ_POLEVAULT1_R:
-								if (AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, true))
-									return;
-								break;
-							default:
-								break;
-						}
-
-						switch (found->client->playerinfo.upperseq) //TODO: why do we need to check both lowerseq and upperseq?..
-						{
-							case ASEQ_WSWORD_SPIN:
-							case ASEQ_WSWORD_SPIN2:
-							case ASEQ_WSWORD_STEP2:
-							case ASEQ_WSWORD_STEP:
-							case ASEQ_POLEVAULT2:
-							case ASEQ_POLEVAULT1_W:
-							case ASEQ_POLEVAULT1_R:
-								if (AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, true))
-									return;
-								break;
-
-							default:
-								break;
-						}
-					}
-
-					if (found->client->playerinfo.shield_timer > level.time && AssassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
-						return;
-				}
-			} // while loop end.
-		}
-	}
-
-	if (self->evade_debounce_time < level.time)
-		MG_CheckEvade(self);
-}
-
-static void AssassinCloakFadePreThink(edict_t* self) //mxd. Named 'assassinCloak' in original logic.
-{
-#define FADE_INCREMENT	15 //mxd
-
-	for (int i = 0; i < 3; i++) // Fade out RGB.
-		if (self->s.color.c_array[i] > 50)
-			self->s.color.c_array[i] -= irand(0, FADE_INCREMENT * 3);
-
-	if (self->s.color.a > 150) // Fade out Alpha.
-		self->s.color.a -= irand(0, FADE_INCREMENT);
-
-	if (self->s.color.r <= 50 && self->s.color.g <= 50 && self->s.color.b <= 50 && self->s.color.a <= 150)
-		self->pre_think = AssassinCloakPreThink;
-
-	self->next_pre_think = level.time + FRAMETIME;
-
-	if (self->evade_debounce_time < level.time)
-		MG_CheckEvade(self);
-}
-
-static void AssassinDeCloakFadePreThink(edict_t* self) //mxd. Named 'assassinDeCloak' in original logic.
-{
-	if (!(self->s.renderfx & RF_ALPHA_TEXTURE))
-		return;
-
-	for (int i = 0; i < 3; i++) // Fade in RGB.
-	{
-		if (self->s.color.c_array[i] < 255 - 10)
-			self->s.color.c_array[i] += 10;
-		else
-			self->s.color.c_array[i] = 255;
-	}
-
-	if (self->s.color.a < 255 - 5) // Fade in Alpha.
-		self->s.color.a += 5;
-	else
-		self->s.color.a = 255;
-
-	// Fade-in complete?
-	if (self->s.color.c == 0xffffffff)
-	{
-		self->svflags &= ~SVF_NO_AUTOTARGET;
-		self->s.renderfx &= ~RF_ALPHA_TEXTURE;
-
-		if (self->health > 0)
-		{
-			self->pre_think = AssassinCloakPreThink;
-			self->next_pre_think = level.time + FRAMETIME;
-		}
-		else
-		{
-			self->pre_think = NULL;
-			self->next_pre_think = -1.0f;
-		}
-	}
-	else
-	{
-		self->pre_think = AssassinDeCloakFadePreThink;
-		self->next_pre_think = level.time + FRAMETIME;
-	}
-
-	if (self->evade_debounce_time < level.time)
-		MG_CheckEvade(self);
-}
-
-static void AssassinInitDeCloak(edict_t* self) //mxd. Named 'assassinInitDeCloak' in original logic.
-{
-	gi.sound(self, CHAN_AUTO, sounds[SND_DECLOAK], 1.0f, ATTN_NORM, 0.0f);
-
-	self->pre_think = AssassinDeCloakFadePreThink;
-	self->next_pre_think = level.time + FRAMETIME;
-}
-
-void assassin_init_cloak(edict_t* self) //mxd. Named 'assassinInitCloak' in original logic.
-{
-	gi.sound(self, CHAN_AUTO, sounds[SND_CLOAK], 1.0f, ATTN_NORM, 0.0f);
-
-	self->svflags |= SVF_NO_AUTOTARGET;
-	self->s.renderfx |= RF_ALPHA_TEXTURE;
-	self->s.color.c = 0xffffffff;
-	self->pre_think = AssassinCloakFadePreThink;
-	self->next_pre_think = level.time + FRAMETIME;
-}
+#pragma endregion
 
 #pragma region ========================== Message handlers ==========================
 
@@ -2091,6 +2064,62 @@ static void AssassinCinematicAnimsMsgHandler(edict_t* self, G_Message_t* msg) //
 
 #pragma endregion
 
+#pragma region ========================== Think callbacks ==========================
+
+// Assigned to 'isBlocked' and 'bounce' callbacks.
+static void AssassinBounce(edict_t* self, trace_t* trace) //mxd. Named 'assassin_Touch' in original logic.
+{
+	if (self->health <= 0 || trace == NULL)
+		return;
+
+	edict_t* other = trace->ent;
+
+	if ((self->groundentity != NULL && self->groundentity != other) || Vec3IsZero(self->velocity))
+		return;
+
+	const float strength = VectorLength(self->velocity);
+
+	if (strength > 50 && AI_IsMovable(other) && (other->svflags & SVF_MONSTER || other->client != NULL))
+	{
+		if (self->s.origin[2] + self->mins[2] > other->s.origin[2] + other->maxs[2] * 0.8f)
+		{
+			if (other->client != NULL)
+				P_KnockDownPlayer(&other->client->playerinfo);
+
+			gi.sound(self, CHAN_BODY, sounds[SND_LANDF], 1.0f, ATTN_NORM, 0.0f);
+
+			if (other->takedamage != DAMAGE_NO)
+			{
+				vec3_t dir;
+				VectorCopy(self->velocity, dir);
+				dir[2] = max(0.0f, dir[2]);
+				VectorNormalize(dir);
+
+				const int damage = min(5, (int)strength);
+				T_Damage(other, self, self, dir, trace->endpos, dir, damage, damage * 4, 0, MOD_DIED);
+			}
+
+			SetAnim(self, ANIM_EVFRONTFLIP);
+		}
+	}
+	//FIXME: else backflip off walls! Too late to implement.
+}
+
+static void AssassinCheckDefenseThink(edict_t* self, float enemy_dist, qboolean enemy_vis, qboolean enemy_infront) //mxd. Named 'assassinCheckDefense' in original logic.
+{
+	if (!enemy_infront && enemy_vis && enemy_dist < self->melee_range)
+	{
+		AssassinCheckTeleport(self, ASS_TP_DEF);
+	}
+	else if (!enemy_vis && self->monsterinfo.last_successful_enemy_tracking_time + 6.0f - skill->value < level.time)
+	{
+		if (irand(0, 10) > 10 - (SKILL + 1) * 3) // Hard = 90%, medium is 40%, easy is 30%.
+			AssassinCheckTeleport(self, ASS_TP_OFF);
+	}
+}
+
+#pragma endregion
+
 void AssassinStaticsInit(void)
 {
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_STAND] = AssassinStandMsgHandler;
@@ -2142,19 +2171,6 @@ void AssassinStaticsInit(void)
 	res_info.sounds = sounds;
 
 	classStatics[CID_ASSASSIN].resInfo = &res_info;
-}
-
-static void AssassinCheckDefenseThink(edict_t* self, float enemy_dist, qboolean enemy_vis, qboolean enemy_infront) //mxd. Named 'assassinCheckDefense' in original logic.
-{
-	if (!enemy_infront && enemy_vis && enemy_dist < self->melee_range)
-	{
-		AssassinCheckTeleport(self, ASS_TP_DEF);
-	}
-	else if (!enemy_vis && self->monsterinfo.last_successful_enemy_tracking_time + 6.0f - skill->value < level.time)
-	{
-		if (irand(0, 10) > 10 - (SKILL + 1) * 3) // Hard = 90%, medium is 40%, easy is 30%.
-			AssassinCheckTeleport(self, ASS_TP_OFF);
-	}
 }
 
 // QUAKED monster_assassin (1 .5 0) (-16 -16 -32) (16 16 48) AMBUSH ASLEEP WALKING JUMPAMBUSH NOSHADOW NOTELEPORT CINEMATIC FIXED WANDER MELEE_LEAD STALK COWARD TPORTAMBUSH STARTSHADOW SIDEJUMPAMBUSH TELEPORTDODGE
