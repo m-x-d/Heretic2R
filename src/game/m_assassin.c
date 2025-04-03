@@ -417,22 +417,11 @@ static void AssassinBounce(edict_t* self, trace_t* trace) //mxd. Named 'assassin
 	//FIXME: else backflip off walls! Too late to implement.
 }
 
-/*-------------------------------------------------------------------------
-	assassin_dead
--------------------------------------------------------------------------*/
-void assassin_dead(edict_t *self)
+void assassin_dead(edict_t* self)
 {
 	self->msgHandler = DeadMsgHandler;
 	self->deadState = DEAD_DEAD;
 	M_EndDeath(self);
-}
-
-/*-------------------------------------------------------------------------
-	assassin_death
--------------------------------------------------------------------------*/
-void assassin_random_death_sound (edict_t *self)
-{
-	gi.sound(self, CHAN_VOICE, sounds[SND_DIE1], 1, ATTN_NORM, 0);
 }
 
 void assassin_death(edict_t *self, G_Message_t *msg)
@@ -487,7 +476,7 @@ void assassin_death(edict_t *self, G_Message_t *msg)
 	}
 	else
 	{
-		assassin_random_death_sound(self);
+		gi.sound(self, CHAN_VOICE, sounds[SND_DIE1], 1, ATTN_NORM, 0);
 		self->msgHandler = DyingMsgHandler;
 	}
 	
