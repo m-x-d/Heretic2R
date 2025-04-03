@@ -1528,7 +1528,7 @@ void assassin_enable_fmnode(edict_t* self, float node) //mxd. Named 'assassinNod
 	self->s.fmnodeinfo[(int)node].flags &= ~FMNI_NO_DRAW;
 }
 
-void assassinStop(edict_t* self) //TODO: rename to assassin_stop?
+void assassin_stop(edict_t* self) //mxd. Named 'assassinStop' in original logic.
 {
 	if (self->evade_debounce_time - level.time > 0.1f)
 		self->nextthink = level.time + (self->evade_debounce_time - level.time);

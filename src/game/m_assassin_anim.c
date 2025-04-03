@@ -144,7 +144,7 @@ static const animframe_t assassin_frames_crouch[] =
 {
 	{ FRAME_jump14,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinSetCrouched },
 	{ FRAME_jump15,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
-	{ FRAME_jump16,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinStop },
+	{ FRAME_jump16,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_stop },
 };
 const animmove_t assassin_move_crouch = { 3, assassin_frames_crouch, assassin_pause };
 
