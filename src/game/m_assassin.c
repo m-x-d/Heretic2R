@@ -572,35 +572,37 @@ void assassin_post_pain(edict_t* self)
 	assassin_pause(self);
 }
 
-int Bit_for_MeshNode_as [16] =
+static qboolean CanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_as' in original logic.
 {
-	BIT_DADDYNULL,	
-	BIT_TORSOFT,	
-	BIT_TORSOBK,	
-	BIT_HEAD,		
-	BIT_LKNIFE,	
-	BIT_RKNIFE,	
-	BIT_R4ARM,		
-	BIT_L4ARM,		
-	BIT_HIPS,		
-	BIT_LCALF,		
-	BIT_RCALF,	
-	BIT_RTHIGH,	
-	BIT_LTHIGH,	
-	BIT_KNIFES,	
-	BIT_LUPARM,	
-	BIT_RUPARM	
-};
-
-qboolean canthrownode_as (edict_t *self, int BP, int *throw_nodes)
-{//see if it's on, if so, add it to throw_nodes
-	//turn it off on thrower
-	if(!(self->s.fmnodeinfo[BP].flags & FMNI_NO_DRAW))
+	static const int bit_for_mesh_node[] = //mxd. Made local static.
 	{
-		*throw_nodes |= Bit_for_MeshNode_as[BP];
-		self->s.fmnodeinfo[BP].flags |= FMNI_NO_DRAW;
+		BIT_DADDYNULL,
+		BIT_TORSOFT,
+		BIT_TORSOBK,
+		BIT_HEAD,
+		BIT_LKNIFE,
+		BIT_RKNIFE,
+		BIT_R4ARM,
+		BIT_L4ARM,
+		BIT_HIPS,
+		BIT_LCALF,
+		BIT_RCALF,
+		BIT_RTHIGH,
+		BIT_LTHIGH,
+		BIT_KNIFES,
+		BIT_LUPARM,
+		BIT_RUPARM
+	};
+
+	// See if it's on, if so, add it to throw_nodes. Turn it off on thrower.
+	if (!(self->s.fmnodeinfo[node_id].flags & FMNI_NO_DRAW))
+	{
+		*throw_nodes |= bit_for_mesh_node[node_id];
+		self->s.fmnodeinfo[node_id].flags |= FMNI_NO_DRAW;
+
 		return true;
 	}
+
 	return false;
 }
 
@@ -754,7 +756,7 @@ void assassin_dismember(edict_t *self, int damage, int HitLocation)
 				damage*=1.5;//greater chance to cut off if previously damaged
 			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
 			{
-				canthrownode_as(self, MESH__HEAD,&throw_nodes);
+				CanThrowNode(self, MESH__HEAD,&throw_nodes);
 
 				gore_spot[2]+=18;
 				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_prtfly);
@@ -785,14 +787,14 @@ void assassin_dismember(edict_t *self, int damage, int HitLocation)
 			{
 				gore_spot[2]+=12;
 
-				canthrownode_as(self, MESH__TORSOFT,&throw_nodes);
-				canthrownode_as(self, MESH__TORSOBK,&throw_nodes);
-				canthrownode_as(self, MESH__HEAD,&throw_nodes);
-				canthrownode_as(self, MESH__R4ARM,&throw_nodes);
-				canthrownode_as(self, MESH__L4ARM,&throw_nodes);
-				canthrownode_as(self, MESH__KNIFES,&throw_nodes);
-				canthrownode_as(self, MESH__LUPARM,&throw_nodes);
-				canthrownode_as(self, MESH__RUPARM,&throw_nodes);
+				CanThrowNode(self, MESH__TORSOFT,&throw_nodes);
+				CanThrowNode(self, MESH__TORSOBK,&throw_nodes);
+				CanThrowNode(self, MESH__HEAD,&throw_nodes);
+				CanThrowNode(self, MESH__R4ARM,&throw_nodes);
+				CanThrowNode(self, MESH__L4ARM,&throw_nodes);
+				CanThrowNode(self, MESH__KNIFES,&throw_nodes);
+				CanThrowNode(self, MESH__LUPARM,&throw_nodes);
+				CanThrowNode(self, MESH__RUPARM,&throw_nodes);
 
 				assassin_dropweapon (self, BIT_LKNIFE|BIT_RKNIFE);
 				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_torsofly);
@@ -823,14 +825,14 @@ void assassin_dismember(edict_t *self, int damage, int HitLocation)
 			{
 				gore_spot[2]+=12;
 
-				canthrownode_as(self, MESH__TORSOFT,&throw_nodes);
-				canthrownode_as(self, MESH__TORSOBK,&throw_nodes);
-				canthrownode_as(self, MESH__HEAD,&throw_nodes);
-				canthrownode_as(self, MESH__R4ARM,&throw_nodes);
-				canthrownode_as(self, MESH__L4ARM,&throw_nodes);
-				canthrownode_as(self, MESH__KNIFES,&throw_nodes);
-				canthrownode_as(self, MESH__LUPARM,&throw_nodes);
-				canthrownode_as(self, MESH__RUPARM,&throw_nodes);
+				CanThrowNode(self, MESH__TORSOFT,&throw_nodes);
+				CanThrowNode(self, MESH__TORSOBK,&throw_nodes);
+				CanThrowNode(self, MESH__HEAD,&throw_nodes);
+				CanThrowNode(self, MESH__R4ARM,&throw_nodes);
+				CanThrowNode(self, MESH__L4ARM,&throw_nodes);
+				CanThrowNode(self, MESH__KNIFES,&throw_nodes);
+				CanThrowNode(self, MESH__LUPARM,&throw_nodes);
+				CanThrowNode(self, MESH__RUPARM,&throw_nodes);
 
 				assassin_dropweapon (self, BIT_LKNIFE|BIT_RKNIFE);
 				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_torsofly);
@@ -862,8 +864,8 @@ void assassin_dismember(edict_t *self, int damage, int HitLocation)
 //				assassin_dropweapon (self, (int)damage);
 			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
 			{
-				canthrownode_as(self, MESH__L4ARM, &throw_nodes);
-				if(canthrownode_as(self, MESH__LUPARM, &throw_nodes))
+				CanThrowNode(self, MESH__L4ARM, &throw_nodes);
+				if(CanThrowNode(self, MESH__LUPARM, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -885,7 +887,7 @@ void assassin_dismember(edict_t *self, int damage, int HitLocation)
 				damage*=1.5;//greater chance to cut off if previously damaged
 			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
 			{
-				if(canthrownode_as(self, MESH__L4ARM, &throw_nodes))
+				if(CanThrowNode(self, MESH__L4ARM, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -905,8 +907,8 @@ void assassin_dismember(edict_t *self, int damage, int HitLocation)
 				break;
 			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
 			{
-				canthrownode_as(self, MESH__R4ARM, &throw_nodes);
-				if(canthrownode_as(self, MESH__RUPARM, &throw_nodes))
+				CanThrowNode(self, MESH__R4ARM, &throw_nodes);
+				if(CanThrowNode(self, MESH__RUPARM, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -926,7 +928,7 @@ void assassin_dismember(edict_t *self, int damage, int HitLocation)
 				break;
 			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
 			{
-				if(canthrownode_as(self, MESH__R4ARM, &throw_nodes))
+				if(CanThrowNode(self, MESH__R4ARM, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -955,8 +957,8 @@ void assassin_dismember(edict_t *self, int damage, int HitLocation)
 			{
 				if(self->s.fmnodeinfo[MESH__LTHIGH].flags & FMNI_NO_DRAW)
 					break;
-				canthrownode_as(self, MESH__LCALF, &throw_nodes);
-				if(canthrownode_as(self, MESH__LTHIGH, &throw_nodes))
+				CanThrowNode(self, MESH__LCALF, &throw_nodes);
+				if(CanThrowNode(self, MESH__LTHIGH, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -978,7 +980,7 @@ void assassin_dismember(edict_t *self, int damage, int HitLocation)
 			{
 				if(self->s.fmnodeinfo[MESH__LCALF].flags & FMNI_NO_DRAW)
 					break;
-				if(canthrownode_as(self, MESH__LCALF, &throw_nodes))
+				if(CanThrowNode(self, MESH__LCALF, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -1001,8 +1003,8 @@ void assassin_dismember(edict_t *self, int damage, int HitLocation)
 			{
 				if(self->s.fmnodeinfo[MESH__RTHIGH].flags & FMNI_NO_DRAW)
 					break;
-				canthrownode_as(self, MESH__RCALF, &throw_nodes);
-				if(canthrownode_as(self, MESH__RTHIGH, &throw_nodes))
+				CanThrowNode(self, MESH__RCALF, &throw_nodes);
+				if(CanThrowNode(self, MESH__RTHIGH, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -1024,7 +1026,7 @@ void assassin_dismember(edict_t *self, int damage, int HitLocation)
 			{
 				if(self->s.fmnodeinfo[MESH__RCALF].flags & FMNI_NO_DRAW)
 					break;
-				if(canthrownode_as(self, MESH__RCALF, &throw_nodes))
+				if(CanThrowNode(self, MESH__RCALF, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
