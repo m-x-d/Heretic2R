@@ -1378,10 +1378,11 @@ static void AssassinWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	}
 }
 
-void assasin_walk_loop_go (edict_t *self)
+void assasin_walk_loop_go(edict_t* self)
 {
 	SetAnim(self, ANIM_WALK_LOOP);
 }
+
 //=============================================================
 
 // EVASION
