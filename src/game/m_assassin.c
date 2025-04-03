@@ -1016,47 +1016,44 @@ static void AssassinDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. 
 	AssassinDismember(self, damage, hl);
 }
 
-void assassin_pain(edict_t *self, G_Message_t *msg)
+static void AssassinPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_pain' in original logic.
 {
-	edict_t			*attacker, *inflictor;
-	int				damage, temp;
-	qboolean		force_pain;
-	
-	if(self->curAnimID == ANIM_TELEPORT)
+	if (self->curAnimID == ANIM_TELEPORT)
 		return;
 
+	edict_t* inflictor;
+	edict_t* attacker;
+	qboolean force_pain;
+	int damage;
+	int temp;
 	ParseMsgParms(msg, "eeiii", &inflictor, &attacker, &force_pain, &damage, &temp);
 
-	if(inflictor == attacker || !stricmp(inflictor->classname, "Spell_RedRain")||!stricmp(inflictor->classname, "Spell_Hellbolt"))
-	{//melee hit or contant effect, don't stick around!
-		if(!(self->spawnflags&MSF_ASS_NOTELEPORT)&&
-			!(self->spawnflags&MSF_FIXED)&&
-			self->groundentity)
-		{
-			if(assassinChooseTeleportDestination(self, ASS_TP_ANY, true, false))
-				return;
-		}
-	}
-				
-	if(!force_pain)
-		if(flrand(0,self->health)>damage)
+	if (inflictor == attacker || Q_stricmp(inflictor->classname, "Spell_RedRain") == 0 || Q_stricmp(inflictor->classname, "Spell_Hellbolt") == 0) //mxd. stricmp -> Q_stricmp
+	{
+		// Melee hit or constant effect, don't stick around!
+		if (!(self->spawnflags & MSF_ASS_NOTELEPORT) && !(self->spawnflags & MSF_FIXED) && self->groundentity != NULL && assassinChooseTeleportDestination(self, ASS_TP_ANY, true, false))
 			return;
+	}
+
+	if (!force_pain && irand(0, self->health) > damage) //mxd. flrand() in original logic.
+		return;
 
 	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
 
-	if(!self->maxs[2])
-		assassinUndoCrouched (self);
+	if (self->maxs[2] == 0.0f)
+		assassinUndoCrouched(self);
 
 	//mxd. Inlined assassin_random_pain_sound().
 	gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
 
-	if (self->pain_debounce_time < level.time||force_pain)
+	if (force_pain || self->pain_debounce_time < level.time)
 	{
-		self->pain_debounce_time = level.time + skill->value + 2;
+		self->pain_debounce_time = level.time + skill->value + 2.0f;
 		SetAnim(self, ANIM_PAIN2);
-		if(irand(0, 10) > skill->value)
+
+		if (irand(0, 10) > SKILL)
 		{
-			self->monsterinfo.misc_debounce_time = level.time + 3;//3 seconds before can re-cloak
+			self->monsterinfo.misc_debounce_time = level.time + 3.0f; // 3 seconds before can re-cloak.
 			assassinInitDeCloak(self);
 		}
 	}
@@ -2400,7 +2397,7 @@ void AssassinStaticsInit(void)
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_RUN] = assassin_run;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_MELEE] = AssassinMeleeMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_MISSILE] = AssassinMissileMsgHandler;
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_PAIN] = assassin_pain;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_PAIN] = AssassinPainMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_DEATH] = AssassinDeathMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_JUMP] = AssassinJumpMsgHandler;
