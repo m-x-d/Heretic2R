@@ -1676,15 +1676,12 @@ void assassinGone(edict_t* self) //TODO: rename to assassin_gone?
 	gi.linkentity(self);
 }
 
-void assassinPrepareTeleportDest(edict_t *self, vec3_t spot, qboolean instant)
+void assassinPrepareTeleportDest(edict_t* self, const vec3_t spot, const qboolean instant) //TODO: rename to AssassinPrepareTeleportDestination?
 {
-	if(self->s.renderfx & RF_ALPHA_TEXTURE)
+	if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != assassinDeCloak)
 	{
-		if(self->pre_think != assassinDeCloak)
-		{
-			assassinInitDeCloak(self);
-			self->monsterinfo.misc_debounce_time = level.time + 3;
-		}
+		assassinInitDeCloak(self);
+		self->monsterinfo.misc_debounce_time = level.time + 3.0f;
 	}
 
 	VectorCopy(spot, self->pos2);
@@ -1695,10 +1692,10 @@ void assassinPrepareTeleportDest(edict_t *self, vec3_t spot, qboolean instant)
 	VectorCopy(self->mins, self->placeholder->mins);
 	VectorCopy(self->maxs, self->placeholder->maxs);
 	self->placeholder->think = G_FreeEdict;
-	self->placeholder->nextthink = level.time + 2;//just in case
+	self->placeholder->nextthink = level.time + 2.0f; // Just in case.
 
-	//dumbed down
-	if(instant && skill->value > 1)
+	// Dumbed down.
+	if (instant && SKILL > SKILL_MEDIUM)
 	{
 		assassinReadyTeleport(self);
 		assassinGone(self);
