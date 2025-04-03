@@ -2075,15 +2075,13 @@ static void AssassinInitDeCloak(edict_t* self) //mxd. Named 'assassinInitDeCloak
 	self->next_pre_think = level.time + FRAMETIME;
 }
 
-void assassinInitCloak (edict_t *self)
+void assassinInitCloak(edict_t* self) //TODO: rename to assassin_init_cloak?
 {
-	self->s.renderfx |= RF_ALPHA_TEXTURE;
+	gi.sound(self, CHAN_AUTO, sounds[SND_CLOAK], 1.0f, ATTN_NORM, 0.0f);
+
 	self->svflags |= SVF_NO_AUTOTARGET;
-	gi.sound(self,CHAN_AUTO,sounds[SND_CLOAK],1,ATTN_NORM,0);
-	self->s.color.r = 255;
-	self->s.color.g = 255;
-	self->s.color.b = 255;
-	self->s.color.a = 255;
+	self->s.renderfx |= RF_ALPHA_TEXTURE;
+	self->s.color.c = 0xffffffff;
 	self->pre_think = AssassinCloakFadePreThink;
 	self->next_pre_think = level.time + FRAMETIME;
 }
