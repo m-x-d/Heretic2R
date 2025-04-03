@@ -1556,17 +1556,20 @@ void assassin_sound(edict_t* self, float channel, float sound_num, float attenua
 	gi.sound(self, (int)channel, sounds[(int)sound_num], 1.0f, attenuation, 0.0f);
 }
 
-void assassinGoJump (edict_t *self, float fwdspd,float upspd,float rtspd)
-{//fixme: do checks and traces first
-	vec3_t up, forward, right;
-
+void assassinGoJump(edict_t* self, float forward_speed, float up_speed, float right_speed) //TODO: rename to assassin_jump_go?
+{
+	//FIXME: do checks and traces first.
 	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
 	assassin_sound(self, CHAN_VOICE, SND_JUMP, ATTN_NORM);
+
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
 	AngleVectors(self->s.angles, forward, right, up);
-	
-	VectorMA(self->velocity, upspd, up, self->velocity);
-	VectorMA(self->velocity, fwdspd, forward, self->velocity);
-	VectorMA(self->velocity, rtspd, right, self->velocity);
+
+	VectorMA(self->velocity, up_speed, up, self->velocity);
+	VectorMA(self->velocity, forward_speed, forward, self->velocity);
+	VectorMA(self->velocity, right_speed, right, self->velocity);
 }
 
 void assassin_go_inair(edict_t *self)
