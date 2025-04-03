@@ -378,80 +378,44 @@ void assassindagger(edict_t* self, const float flags) //TODO: rename to assassin
 	}
 }
 
-void assassin_Touch(edict_t *self, trace_t *trace)
+// Assigned to 'isBlocked' and 'bounce' callbacks.
+static void AssassinBounce(edict_t* self, trace_t* trace) //mxd. Named 'assassin_Touch' in original logic.
 {
-	vec3_t	dir;
-	float	strength;
-	edict_t *other;
-
-	other = trace->ent;
-
-	if(self->health <= 0)
+	if (self->health <= 0 || trace == NULL)
 		return;
 
-	if(!trace)
+	edict_t* other = trace->ent;
+
+	if ((self->groundentity != NULL && self->groundentity != other) || Vec3IsZero(self->velocity))
 		return;
 
-	if((!self->groundentity||self->groundentity==other) && Vec3NotZero(self->velocity))
+	const float strength = VectorLength(self->velocity);
+
+	if (strength > 50 && AI_IsMovable(other) && (other->svflags & SVF_MONSTER || other->client != NULL))
 	{
-		strength = VectorLength(self->velocity);
-
-		if(strength > 50)
+		if (self->s.origin[2] + self->mins[2] > other->s.origin[2] + other->maxs[2] * 0.8f)
 		{
-			if(AI_IsMovable(other) && (other->svflags&SVF_MONSTER || other->client))
-			{
+			if (other->client != NULL)
+				P_KnockDownPlayer(&other->client->playerinfo);
 
+			gi.sound(self, CHAN_BODY, sounds[SND_LANDF], 1.0f, ATTN_NORM, 0.0f);
+
+			if (other->takedamage != DAMAGE_NO)
+			{
+				vec3_t dir;
 				VectorCopy(self->velocity, dir);
-				if(dir[2] < 0)
-					dir[2] = 0;
+				dir[2] = max(0.0f, dir[2]);
 				VectorNormalize(dir);
 
-	//			VectorAdd(other->velocity, dir, other->knockbackvel);
-
-				if(self->s.origin[2]+self->mins[2] > other->s.origin[2] + other->maxs[2] * 0.8)
-				{
-					if(other->client)
-						P_KnockDownPlayer(&other->client->playerinfo);
-
-					gi.sound(self, CHAN_BODY, sounds[SND_LANDF], 1, ATTN_NORM, 0);
-	/*
-					VectorMA(other->velocity, strength, dir, other->velocity);
-					other->groundentity = NULL;
-					other->velocity[2] = 101;
-	*/
-
-					if(other->takedamage)
-					{
-						if(strength>5)
-							strength = 5;
-						T_Damage(other, self, self, dir, trace->endpos, dir, strength, strength*4, 0,MOD_DIED);
-					}
-
-					SetAnim(self, ANIM_EVFRONTFLIP);
-				}
+				const int damage = min(5, (int)strength);
+				T_Damage(other, self, self, dir, trace->endpos, dir, damage, damage * 4, 0, MOD_DIED);
 			}
+
+			SetAnim(self, ANIM_EVFRONTFLIP);
 		}
-		/*
-		//backflip off walls!  Too late to implement
-		else if(trace->plane)
-		{
-			if(Vec3NotZero(trace->plane.normal))
-			{
-				if(trace->plane.normal[2] < 0.75)
-				{
-					VectorCopy(self->velocity, dir);
-					VectorNormalize(dir);
-					if(DotProduct(dir, trace->plane.normal) < -0.3)
-					{
-						SetAnim(self, ANIM_EVBACKFLIP);
-					}
-				}
-			}
-		}
-		*/
 	}
+	//FIXME: else backflip off walls! Too late to implement.
 }
-
 
 /*-------------------------------------------------------------------------
 	assassin_dead
@@ -2762,7 +2726,7 @@ void SP_monster_assassin (edict_t *self)
 	VectorCopy(STDMaxsForClass[self->classID], self->maxs);	
 	self->viewheight = 40;
 	
-	self->isBlocked = self->bounced = assassin_Touch;
+	self->isBlocked = self->bounced = AssassinBounce;
 
 	self->s.modelindex = classStatics[CID_ASSASSIN].resInfo->modelIndex;
 
