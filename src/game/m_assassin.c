@@ -23,28 +23,27 @@
 #include "Utilities.h"
 #include "Vector.h"
 
-/*----------------------------------------------------------------------
-  assassin Base Info
------------------------------------------------------------------------*/
-static animmove_t *animations[ NUM_ANIMS] =
+#pragma region ========================== Assassin base info ==========================
+
+static const animmove_t* animations[NUM_ANIMS] =
 {
-	&assassin_move_daggerl,// = {14, assassin_frames_daggerl, assassin_pause},
-	&assassin_move_daggerr,//= {15, assassin_frames_daggerr, assassin_pause},
-	&assassin_move_daggerb,// = {15, assassin_frames_daggerb, assassin_pause},
-	&assassin_move_daggerc,// = {11, assassin_frames_daggerc, assassin_pause},
+	&assassin_move_daggerl,
+	&assassin_move_daggerr,
+	&assassin_move_daggerb,
+	&assassin_move_daggerc,
 	&assassin_move_newdagger,
 	&assassin_move_newdaggerb,
-	&assassin_move_backflip,// = {16, assassin_frames_backflip, assassin_pause},
-	&assassin_move_frontflip,// = {16, assassin_frames_frontflip, assassin_pause},
-	&assassin_move_dodge_right,// = {10, assassin_frames_dodge_right, assassin_pause},
-	&assassin_move_dodge_left,// = {10, assassin_frames_dodge_left, assassin_pause},
-	&assassin_move_deatha,// = {14, assassin_frames_deatha, assassin_dead},
-	&assassin_move_deathb,// = {14, assassin_frames_deathb, assassin_dead},
-	&assassin_move_jump,// = {17, assassin_frames_jump, assassin_pause},
-	&assassin_move_run,// = {10, assassin_frames_run, assassin_pause},
-	&assassin_move_pain1,// = {5, assassin_frames_pain1, assassin_pause},
-	&assassin_move_pain2,// = {4, assassin_frames_pain2, assassin_pause},
-	&assassin_move_delay,// = {1, assassin_frames_delay, assassin_pause},
+	&assassin_move_backflip,
+	&assassin_move_frontflip,
+	&assassin_move_dodge_right,
+	&assassin_move_dodge_left,
+	&assassin_move_deatha,
+	&assassin_move_deathb,
+	&assassin_move_jump,
+	&assassin_move_run,
+	&assassin_move_pain1,
+	&assassin_move_pain2,
+	&assassin_move_delay,
 	&assassin_move_stand,
 	&assassin_move_crouch,
 	&assassin_move_uncrouch,
@@ -65,7 +64,8 @@ static animmove_t *animations[ NUM_ANIMS] =
 	&assassin_move_walk,
 	&assassin_move_walk_loop,
 	&assassin_move_backspring,
-//crouches
+
+	// Crouches.
 	&assassin_move_crouch_trans,
 	&assassin_move_crouch_idle,
 	&assassin_move_crouch_look_right,
@@ -79,16 +79,17 @@ static animmove_t *animations[ NUM_ANIMS] =
 	&assassin_move_crouch_poke,
 	&assassin_move_crouch_end,
 
-	// Cinematic Anims
+	// Cinematic animations.
 	&assassin_move_c_idle1,
 	&assassin_move_c_run1,
 	&assassin_move_c_attack1,
 	&assassin_move_c_attack2,
 };
 
-static int Sounds[NUM_SOUNDS];
-static ClassResourceInfo_t resInfo;
+static int sounds[NUM_SOUNDS];
+static ClassResourceInfo_t res_info;
 
+#pragma endregion
 
 /*-------------------------------------------------------------------------
 	assassin_c_anims
@@ -289,9 +290,9 @@ void assassinDaggerTouch (edict_t *self, edict_t *other, cplane_t *plane, csurfa
 	if(other->takedamage)
 	{
 		if(other->materialtype == MAT_FLESH||other->client)
-			gi.sound(self,CHAN_AUTO,Sounds[SND_DAGHITF],1,ATTN_NORM,0);
+			gi.sound(self,CHAN_AUTO,sounds[SND_DAGHITF],1,ATTN_NORM,0);
 		else
-			gi.sound(self,CHAN_AUTO,Sounds[SND_DAGHITW],1,ATTN_NORM,0);
+			gi.sound(self,CHAN_AUTO,sounds[SND_DAGHITW],1,ATTN_NORM,0);
 		damage = flrand(ASSASSIN_MIN_DAMAGE,ASSASSIN_MAX_DAMAGE);
 		if(skill->value >= 2 && Q_fabs(self->s.angles[PITCH])<45)//up to extra 10 pts damage if pointed correctly AND on hard skill
 			damage += 45/(45 - Q_fabs(self->s.angles[PITCH])) * 10;
@@ -305,7 +306,7 @@ void assassinDaggerTouch (edict_t *self, edict_t *other, cplane_t *plane, csurfa
 		else
 			VectorSet(hitangles, 0, 0, 90);
 		gi.CreateEffect(NULL, FX_SPARKS, 0, self->s.origin, "d", hitangles);
-		gi.sound(self,CHAN_AUTO,Sounds[SND_DAGHITW],1,ATTN_NORM,0);
+		gi.sound(self,CHAN_AUTO,sounds[SND_DAGHITW],1,ATTN_NORM,0);
 	}
 
 	G_FreeEdict(self);
@@ -440,9 +441,9 @@ void assassindagger (edict_t *self, float right_ofs)
 		if (AI_IsInfrontOf(self, self->enemy))
 		{
 			if (1)//one or two hands?
-				gi.sound (self, CHAN_WEAPON, Sounds[SND_SLASH1], 1, ATTN_NORM, 0);
+				gi.sound (self, CHAN_WEAPON, sounds[SND_SLASH1], 1, ATTN_NORM, 0);
 			else 
-				gi.sound (self, CHAN_WEAPON, Sounds[SND_SLASH2], 1, ATTN_NORM, 0);	
+				gi.sound (self, CHAN_WEAPON, sounds[SND_SLASH2], 1, ATTN_NORM, 0);	
 
 			VectorSet(off, 35.0, 0.0, 32.0);
 			VectorGetOffsetOrigin(off, self->s.origin, self->s.angles[YAW], org);
@@ -497,9 +498,9 @@ void assassindagger (edict_t *self, float right_ofs)
 		}
 
 		if(thrownum>1)
-			gi.sound (self, CHAN_WEAPON, Sounds[SND_THROW2], 1, ATTN_NORM, 0);
+			gi.sound (self, CHAN_WEAPON, sounds[SND_THROW2], 1, ATTN_NORM, 0);
 		else if(thrownum>0)
-			gi.sound (self, CHAN_WEAPON, Sounds[SND_THROW1], 1, ATTN_NORM, 0);
+			gi.sound (self, CHAN_WEAPON, sounds[SND_THROW1], 1, ATTN_NORM, 0);
 	}
 }
 
@@ -539,7 +540,7 @@ void assassin_Touch(edict_t *self, trace_t *trace)
 					if(other->client)
 						P_KnockDownPlayer(&other->client->playerinfo);
 
-					gi.sound(self, CHAN_BODY, Sounds[SND_LANDF], 1, ATTN_NORM, 0);
+					gi.sound(self, CHAN_BODY, sounds[SND_LANDF], 1, ATTN_NORM, 0);
 	/*
 					VectorMA(other->velocity, strength, dir, other->velocity);
 					other->groundentity = NULL;
@@ -594,7 +595,7 @@ void assassin_dead(edict_t *self)
 -------------------------------------------------------------------------*/
 void assassin_random_death_sound (edict_t *self)
 {
-	gi.sound(self, CHAN_VOICE, Sounds[SND_DIE1], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_VOICE, sounds[SND_DIE1], 1, ATTN_NORM, 0);
 }
 
 void assassin_death(edict_t *self, G_Message_t *msg)
@@ -624,7 +625,7 @@ void assassin_death(edict_t *self, G_Message_t *msg)
 
 	if(self->health <= -80) //gib death
 	{
-		gi.sound(self, CHAN_BODY, Sounds[SND_GIB], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1, ATTN_NORM, 0);
 		if(irand(0,10)<5)
 		{
 			self->s.fmnodeinfo[MESH__TORSOFT].flags |= FMNI_NO_DRAW;
@@ -680,11 +681,11 @@ void assassingrowl (edict_t *self)
 	{
 		chance = irand(0, 9);
 		if (chance < 3)
-			gi.sound (self, CHAN_AUTO, Sounds[SND_GROWL1], 1, ATTN_IDLE, 0);
+			gi.sound (self, CHAN_AUTO, sounds[SND_GROWL1], 1, ATTN_IDLE, 0);
 		else if (chance < 6)
-			gi.sound(self, CHAN_AUTO, Sounds[SND_GROWL2], 1, ATTN_IDLE, 0);
+			gi.sound(self, CHAN_AUTO, sounds[SND_GROWL2], 1, ATTN_IDLE, 0);
 		else 
-			gi.sound(self, CHAN_AUTO, Sounds[SND_GROWL3], 1, ATTN_IDLE, 0);
+			gi.sound(self, CHAN_AUTO, sounds[SND_GROWL3], 1, ATTN_IDLE, 0);
 	}
 }
 
@@ -1314,9 +1315,9 @@ void assassin_dead_pain (edict_t *self, G_Message_t *msg)
 void assassin_random_pain_sound (edict_t *self)
 {
 	if(irand(0,1))
-		gi.sound(self, CHAN_VOICE, Sounds[SND_PAIN1], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN1], 1, ATTN_NORM, 0);
 	else
-		gi.sound(self, CHAN_VOICE, Sounds[SND_PAIN2], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN2], 1, ATTN_NORM, 0);
 }
 
 void assassin_pain(edict_t *self, G_Message_t *msg)
@@ -2076,7 +2077,7 @@ void assassinUndoCrouched (edict_t *self)
 
 void assassin_sound(edict_t *self, float channel, float soundnum, float attn)
 {
-	gi.sound (self, (int)(channel), Sounds[(int)(soundnum)], 1, (int)(attn), 0);
+	gi.sound (self, (int)(channel), sounds[(int)(soundnum)], 1, (int)(attn), 0);
 }
 
 void assassinGoJump (edict_t *self, float fwdspd,float upspd,float rtspd)
@@ -2666,7 +2667,7 @@ void assassinDeCloak (edict_t *self)
 
 void assassinInitDeCloak (edict_t *self)
 {
-	gi.sound(self,CHAN_AUTO,Sounds[SND_DECLOAK],1,ATTN_NORM,0);
+	gi.sound(self,CHAN_AUTO,sounds[SND_DECLOAK],1,ATTN_NORM,0);
 	self->pre_think = assassinDeCloak;
 	self->next_pre_think = level.time + FRAMETIME;
 }
@@ -2675,7 +2676,7 @@ void assassinInitCloak (edict_t *self)
 {
 	self->s.renderfx |= RF_ALPHA_TEXTURE;
 	self->svflags |= SVF_NO_AUTOTARGET;
-	gi.sound(self,CHAN_AUTO,Sounds[SND_CLOAK],1,ATTN_NORM,0);
+	gi.sound(self,CHAN_AUTO,sounds[SND_CLOAK],1,ATTN_NORM,0);
 	self->s.color.r = 255;
 	self->s.color.g = 255;
 	self->s.color.b = 255;
@@ -2715,37 +2716,37 @@ void AssassinStaticsInit(void)
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_ATTACK1] = assassin_c_anims;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_ATTACK2] = assassin_c_anims;
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
 	
 	//note that the name is different in the path
-	resInfo.modelIndex = gi.modelindex("models/monsters/assassin/tris.fm");
+	res_info.modelIndex = gi.modelindex("models/monsters/assassin/tris.fm");
 
-	Sounds[SND_PAIN1]=gi.soundindex("monsters/assassin/pain1.wav");
-	Sounds[SND_PAIN2]=gi.soundindex("monsters/assassin/pain2.wav");
-	Sounds[SND_DIE1]=gi.soundindex("monsters/assassin/death1.wav");
-	Sounds[SND_GIB]=gi.soundindex("monsters/assassin/gib.wav");
-	Sounds[SND_THROW1]=gi.soundindex("monsters/assassin/throw1.wav");
-	Sounds[SND_THROW2]=gi.soundindex("monsters/assassin/throw2.wav");
-	Sounds[SND_DAGHITF]=gi.soundindex("monsters/assassin/daghitf.wav");
-	Sounds[SND_DAGHITW]=gi.soundindex("monsters/assassin/daghitw.wav");
-	Sounds[SND_JUMP]=gi.soundindex("monsters/assassin/jump.wav");
-	Sounds[SND_FLIP]=gi.soundindex("monsters/assassin/flip.wav");
-	Sounds[SND_LAND]=gi.soundindex("monsters/assassin/land.wav");
-	Sounds[SND_LANDF]=gi.soundindex("monsters/assassin/landf.wav");
-	Sounds[SND_SLIDE]=gi.soundindex("monsters/assassin/slide.wav");
-	Sounds[SND_SLASH1]=gi.soundindex("monsters/assassin/slash1.wav");
-	Sounds[SND_SLASH2]=gi.soundindex("monsters/assassin/slash2.wav");
-	Sounds[SND_GROWL1] = gi.soundindex ("monsters/assassin/growl1.wav");
-	Sounds[SND_GROWL2]=gi.soundindex("monsters/assassin/growl2.wav");
-	Sounds[SND_GROWL3] = gi.soundindex ("monsters/assassin/growl3.wav");
-	Sounds[SND_CLOAK]=gi.soundindex("monsters/assassin/cloak.wav");
-	Sounds[SND_DECLOAK] = gi.soundindex ("monsters/assassin/decloak.wav");
+	sounds[SND_PAIN1]=gi.soundindex("monsters/assassin/pain1.wav");
+	sounds[SND_PAIN2]=gi.soundindex("monsters/assassin/pain2.wav");
+	sounds[SND_DIE1]=gi.soundindex("monsters/assassin/death1.wav");
+	sounds[SND_GIB]=gi.soundindex("monsters/assassin/gib.wav");
+	sounds[SND_THROW1]=gi.soundindex("monsters/assassin/throw1.wav");
+	sounds[SND_THROW2]=gi.soundindex("monsters/assassin/throw2.wav");
+	sounds[SND_DAGHITF]=gi.soundindex("monsters/assassin/daghitf.wav");
+	sounds[SND_DAGHITW]=gi.soundindex("monsters/assassin/daghitw.wav");
+	sounds[SND_JUMP]=gi.soundindex("monsters/assassin/jump.wav");
+	sounds[SND_FLIP]=gi.soundindex("monsters/assassin/flip.wav");
+	sounds[SND_LAND]=gi.soundindex("monsters/assassin/land.wav");
+	sounds[SND_LANDF]=gi.soundindex("monsters/assassin/landf.wav");
+	sounds[SND_SLIDE]=gi.soundindex("monsters/assassin/slide.wav");
+	sounds[SND_SLASH1]=gi.soundindex("monsters/assassin/slash1.wav");
+	sounds[SND_SLASH2]=gi.soundindex("monsters/assassin/slash2.wav");
+	sounds[SND_GROWL1] = gi.soundindex ("monsters/assassin/growl1.wav");
+	sounds[SND_GROWL2]=gi.soundindex("monsters/assassin/growl2.wav");
+	sounds[SND_GROWL3] = gi.soundindex ("monsters/assassin/growl3.wav");
+	sounds[SND_CLOAK]=gi.soundindex("monsters/assassin/cloak.wav");
+	sounds[SND_DECLOAK] = gi.soundindex ("monsters/assassin/decloak.wav");
 
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = Sounds;
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
 
-	classStatics[CID_ASSASSIN].resInfo = &resInfo;
+	classStatics[CID_ASSASSIN].resInfo = &res_info;
 }
 
 void assassinCheckDefense(edict_t *self, float enemydist, qboolean enemyvis, qboolean enemyinfront)
