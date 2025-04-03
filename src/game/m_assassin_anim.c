@@ -84,7 +84,7 @@ static const animframe_t assassin_frames_daggerc[] =
 	{ FRAME_lndatk5,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL }, // Loop in from an attack, no windup.
 	{ FRAME_lndatk6,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_lndatk7,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
-	{ FRAME_lndatk8,	NULL, 0.0f, 0.0f, 0.0f, assassinCrouchedCheckAttack, true, NULL },
+	{ FRAME_lndatk8,	NULL, 0.0f, 0.0f, 0.0f, assassinCrouchedCheckAttack, 1.0f, NULL },
 	{ FRAME_lndatk9,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_lndatk10,	NULL, 0.0f, 0.0f, 0.0f, assassinCrouchedCheckAttack, 0.0f, NULL }, // Check for loop to other attack.
 	{ FRAME_lndatk11,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL }
