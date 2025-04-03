@@ -1041,7 +1041,7 @@ static void AssassinPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
 
 	if (self->maxs[2] == 0.0f)
-		assassinUndoCrouched(self);
+		assassin_unset_crouched(self);
 
 	//mxd. Inlined assassin_random_pain_sound().
 	gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
@@ -1254,7 +1254,7 @@ static void AssassinRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 void assassin_run(edict_t* self, float dist) //mxd. Named 'assassin_go_run' in original logic.
 {
 	if (self->maxs[2] == 0.0f)
-		assassinUndoCrouched(self);
+		assassin_unset_crouched(self);
 
 	if (self->enemy != NULL)
 		MG_AI_Run(self, dist);
@@ -1540,7 +1540,7 @@ void assassin_set_crouched(edict_t* self) //mxd. Named 'assassinSetCrouched' in 
 	self->viewheight = 0;
 }
 
-void assassinUndoCrouched(edict_t* self) //TODO: rename to assassin_undo_crouched?
+void assassin_unset_crouched(edict_t* self) //mxd. Named 'assassinUndoCrouched' in original logic.
 {
 	VectorSet(self->maxs, 16.0f, 16.0f, 48.0f);
 	self->viewheight = 40;

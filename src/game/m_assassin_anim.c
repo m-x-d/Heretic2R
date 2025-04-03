@@ -151,7 +151,7 @@ const animmove_t assassin_move_crouch = { 3, assassin_frames_crouch, assassin_pa
 // Assassin uncrouch.
 static const animframe_t assassin_frames_uncrouch[] =
 {
-	{ FRAME_jump17,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinUndoCrouched }
+	{ FRAME_jump17,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_unset_crouched }
 };
 const animmove_t assassin_move_uncrouch = { 1, assassin_frames_uncrouch, assassin_pause };
 
@@ -176,7 +176,7 @@ static const animframe_t assassin_frames_land[] =
 	{ FRAME_jump14,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_set_crouched },
 	{ FRAME_jump15,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_jump16,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
-	{ FRAME_jump17,	NULL, 0.0f, 0.0f, 0.0f, assassin_crouched_check_attack, 2.0f, assassinUndoCrouched }
+	{ FRAME_jump17,	NULL, 0.0f, 0.0f, 0.0f, assassin_crouched_check_attack, 2.0f, assassin_unset_crouched }
 };
 const animmove_t assassin_move_land = { 5, assassin_frames_land, assassin_pause };
 
