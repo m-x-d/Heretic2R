@@ -135,7 +135,7 @@ edict_t* AssassinArrowReflect(edict_t* self, edict_t* other, const vec3_t vel) /
 {
 	edict_t* dagger = G_Spawn();
 
-	create_assassin_dagger(dagger);
+	AssassinDaggerInit(dagger);
 
 	dagger->s.modelindex = self->s.modelindex;
 	VectorCopy(self->s.origin, dagger->s.origin);
@@ -220,22 +220,23 @@ static void AssassinJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	self->monsterinfo.aiflags |= AI_OVERRIDE_GUIDE;
 }
 
-// create the guts of the dagger
-void create_assassin_dagger(edict_t *Arrow)
+// Create the guts of the dagger.
+static void AssassinDaggerInit(edict_t* dagger) //mxd. Named 'create_assassin_dagger' in original logic.
 {
-	Arrow->movetype=MOVETYPE_FLYMISSILE;
-	Arrow->solid=SOLID_BBOX;
-	Arrow->classname="Assassin_Dagger";
-	Arrow->touch=AssassinDaggerTouch;
-	Arrow->gravity = 0.0f;
-	Arrow->clipmask=MASK_SHOT;
-	Arrow->s.effects |= EF_CAMERA_NO_CLIP;
-	Arrow->svflags |= SVF_ALWAYS_SEND;
-	Arrow->s.scale = 0.5;
-	Arrow->think=G_FreeEdict;//ssithraArrowThink;
+	dagger->movetype = MOVETYPE_FLYMISSILE;
+	dagger->solid = SOLID_BBOX;
+	dagger->classname = "Assassin_Dagger";
+	dagger->gravity = 0.0f;
+	dagger->clipmask = MASK_SHOT;
+	dagger->s.effects |= EF_CAMERA_NO_CLIP;
+	dagger->svflags |= SVF_ALWAYS_SEND;
+	dagger->s.scale = 0.5f;
 
-	VectorSet(Arrow->mins, -1.0, -1.0, -1.0);	
-	VectorSet(Arrow->maxs, 1.0, 1.0, 1.0);
+	dagger->touch = AssassinDaggerTouch;
+	dagger->think = G_FreeEdict;
+
+	VectorSet(dagger->mins, -1.0f, -1.0f, -1.0f);
+	VectorSet(dagger->maxs,  1.0f,  1.0f,  1.0f);
 }
 
 void assassinThrowDagger(edict_t *self, float right_ofs)
@@ -253,7 +254,7 @@ void assassinThrowDagger(edict_t *self, float right_ofs)
 	self->monsterinfo.attack_finished = level.time + 0.4;
 	Arrow = G_Spawn();
 
-	create_assassin_dagger(Arrow);
+	AssassinDaggerInit(Arrow);
 
 	Arrow->reflect_debounce_time = MAX_REFLECT;
 	Arrow->nextthink=level.time+3;
