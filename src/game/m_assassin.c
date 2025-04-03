@@ -1139,35 +1139,32 @@ void assassin_pause(edict_t* self)
 	}
 }
 
-void assassinChooseJumpAmbush(edict_t *self)
+static void AssassinChooseJumpAmbush(edict_t* self) //mxd. Named 'assassinChooseJumpAmbush' in original logic.
 {
-	float	dot;
-	vec3_t	forward, enemy_dir;
-
-	if(!self->enemy)
+	if (self->enemy == NULL)
 	{
-		if(irand(0, 10)<4)
-			SetAnim(self, ANIM_JUMP);
-		else
-			SetAnim(self, ANIM_FRONTFLIP);
+		const int anim_id = ((irand(0, 10) < 4) ? ANIM_JUMP : ANIM_FRONTFLIP); //mxd
+		SetAnim(self, anim_id);
+
 		return;
 	}
 
+	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
+
+	vec3_t enemy_dir;
 	VectorSubtract(self->enemy->s.origin, self->s.origin, enemy_dir);
 	VectorNormalize(enemy_dir);
-	dot = DotProduct(forward, enemy_dir);
-	if(dot<0)
-	{//behind
-		SetAnim(self, ANIM_BACKFLIP);
-		return;
-	}
 
-	if(!irand(0, 3))
-		SetAnim(self, ANIM_JUMP);
+	if (DotProduct(forward, enemy_dir) < 0.0f) // Behind.
+	{
+		SetAnim(self, ANIM_BACKFLIP);
+	}
 	else
-		SetAnim(self, ANIM_FRONTFLIP);
-	return;
+	{
+		const int anim_id = ((irand(0, 3) == 0) ? ANIM_JUMP : ANIM_FRONTFLIP); //mxd
+		SetAnim(self, anim_id);
+	}
 }
 
 qboolean assassinChooseSideJumpAmbush(edict_t *self)
@@ -1214,7 +1211,7 @@ void assassin_run(edict_t *self, G_Message_t *msg)
 		if(self->spawnflags&MSF_ASS_JUMPAMBUSH)//jump out
 		{
 			self->spawnflags &= ~MSF_ASS_JUMPAMBUSH;
-			assassinChooseJumpAmbush(self);
+			AssassinChooseJumpAmbush(self);
 			return;
 		}
 
