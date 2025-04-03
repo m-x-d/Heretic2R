@@ -27,7 +27,7 @@ static const animframe_t assassin_frames_daggerl[] =
 	{ FRAME_ataka9,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_ataka10,	NULL, 0.0f, 0.0f, 0.0f, assassin_attack, BIT_LKNIFE, NULL },
 	{ FRAME_ataka11,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
-	{ FRAME_ataka12,	NULL, 0.0f, 0.0f, 0.0f, assassinCheckLoop, 2.0f, NULL }, // Check for loop to other attack.
+	{ FRAME_ataka12,	NULL, 0.0f, 0.0f, 0.0f, assassin_check_loop, 2.0f, NULL }, // Check for loop to other attack.
 	{ FRAME_ataka13,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_ataka14,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL }
 };
@@ -48,7 +48,7 @@ static const animframe_t assassin_frames_daggerr[] =
 	{ FRAME_atakb10,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_atakb11,	NULL, 0.0f, 0.0f, 0.0f, assassin_attack, BIT_RKNIFE, NULL },
 	{ FRAME_atakb12,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
-	{ FRAME_atakb13,	NULL, 0.0f, 0.0f, 0.0f, assassinCheckLoop, 2.0f, NULL }, // Check for loop to other attack.
+	{ FRAME_atakb13,	NULL, 0.0f, 0.0f, 0.0f, assassin_check_loop, 2.0f, NULL }, // Check for loop to other attack.
 	{ FRAME_atakb14,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_atakb15,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL }
 };
@@ -69,7 +69,7 @@ static const animframe_t assassin_frames_daggerb[] =
 	{ FRAME_atakc10,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_atakc11,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_atakc12,	NULL, 0.0f, 0.0f, 0.0f, assassin_attack, BIT_LKNIFE | BIT_RKNIFE, NULL },
-	{ FRAME_atakc13,	NULL, 0.0f, 0.0f, 0.0f, assassinCheckLoop, 2.0f, NULL }, // Check for loop to other attack.
+	{ FRAME_atakc13,	NULL, 0.0f, 0.0f, 0.0f, assassin_check_loop, 2.0f, NULL }, // Check for loop to other attack.
 	{ FRAME_atakc14,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 };
 const animmove_t assassin_move_daggerb = { 14, assassin_frames_daggerb, assassin_pause };
@@ -131,7 +131,7 @@ static const animframe_t assassin_frames_newdaggerb[] =
 	{ FRAME_newattackB14,	NULL, 0.0f, 0.0f, 0.0f, assassin_attack, BIT_LKNIFE, NULL },
 	{ FRAME_newattackB15,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackB16,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
-	{ FRAME_newattackB17,	NULL, 0.0f, 0.0f, 0.0f, assassinCheckLoop, 4, NULL },
+	{ FRAME_newattackB17,	NULL, 0.0f, 0.0f, 0.0f, assassin_check_loop, 4, NULL },
 };
 const animmove_t assassin_move_newdaggerb = { 17, assassin_frames_newdaggerb, assassin_pause };
 

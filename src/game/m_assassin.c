@@ -1587,7 +1587,7 @@ void assassin_backflip_inair_go(edict_t* self) //mxd. Named 'assassin_go_bfinair
 	SetAnim(self, ANIM_BFINAIR);
 }
 
-void assassinCheckLoop(edict_t* self, float frame) //TODO: rename to assassin_check_loop?
+void assassin_check_loop(edict_t* self, float frame) //mxd. Named 'assassin_go_bfinair' in original logic.
 {
 #define MELEE_RANGE	64.0f //mxd //TODO: move to m_stats.h?
 #define JUMP_RANGE	128.0f //mxd //TODO: move to m_stats.h?
