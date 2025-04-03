@@ -239,85 +239,66 @@ static void AssassinDaggerInit(edict_t* dagger) //mxd. Named 'create_assassin_da
 	VectorSet(dagger->maxs,  1.0f,  1.0f,  1.0f);
 }
 
-void assassinThrowDagger(edict_t *self, float right_ofs)
-{//fixme; adjust for up/down
-	vec3_t	Forward,check_lead, right, enemy_pos, enemy_dir;//, up;
-	edict_t	*Arrow;
-	float	   enemy_dist, eta;//, spoo_arc;
-	
+static void AssassinThrowDagger(edict_t* self, const float right_ofs) //mxd. Named 'assassinThrowDagger' in original logic.
+{
+	//FIXME: adjust for up/down.
+	self->monsterinfo.attack_finished = level.time + 0.4f;
 
-//	if(self->s.fmnodeinfo[MESH__RIGHTARM].flags&FMNI_NO_DRAW)
-//		return;
+	edict_t* dagger = G_Spawn();
 
+	AssassinDaggerInit(dagger);
 
-//	gi.sound(self,CHAN_WEAPON,Sounds[SND_ARROW1],1,ATTN_NORM,0);
-	self->monsterinfo.attack_finished = level.time + 0.4;
-	Arrow = G_Spawn();
+	dagger->reflect_debounce_time = MAX_REFLECT;
+	dagger->nextthink = level.time + 3.0f;
+	dagger->enemy = self->enemy;
+	dagger->owner = self;
 
-	AssassinDaggerInit(Arrow);
-
-	Arrow->reflect_debounce_time = MAX_REFLECT;
-	Arrow->nextthink=level.time+3;
-	Arrow->enemy=self->enemy;
-	Arrow->owner=self;
+	vec3_t enemy_pos;
 	VectorCopy(self->enemy->s.origin, enemy_pos);
-	enemy_pos[2] += self->enemy->viewheight;
+	enemy_pos[2] += (float)self->enemy->viewheight;
 
-	AngleVectors (self->s.angles, Forward, right, NULL);
-	VectorCopy (self->s.origin, Arrow->s.origin);
-	Arrow->s.origin[2] += 8;
-	VectorMA (Arrow->s.origin, 8, Forward, Arrow->s.origin);
-	VectorMA (Arrow->s.origin, right_ofs, right, Arrow->s.origin);
-	VectorCopy (self->movedir, Arrow->movedir);
-	vectoangles (Forward, Arrow->s.angles);
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
 
-	ExtrapolateFireDirection (self, Arrow->s.origin, ASSASSIN_DAGGER_SPEED, self->enemy, 0.3, check_lead);
+	VectorCopy(self->s.origin, dagger->s.origin);
+	dagger->s.origin[2] += 8.0f;
 
-	VectorSubtract(enemy_pos, Arrow->s.origin, enemy_dir);
-	enemy_dist = VectorNormalize(enemy_dir);
-	if(Vec3IsZero(check_lead))
+	VectorMA(dagger->s.origin, 8.0f, forward, dagger->s.origin);
+	VectorMA(dagger->s.origin, right_ofs, right, dagger->s.origin);
+	VectorCopy(self->movedir, dagger->movedir);
+	vectoangles(forward, dagger->s.angles);
+
+	vec3_t check_lead;
+	ExtrapolateFireDirection(self, dagger->s.origin, ASSASSIN_DAGGER_SPEED, self->enemy, 0.3f, check_lead);
+
+	vec3_t enemy_dir;
+	VectorSubtract(enemy_pos, dagger->s.origin, enemy_dir);
+	const float enemy_dist = VectorNormalize(enemy_dir);
+
+	if (Vec3IsZero(check_lead))
 	{
-		if(DotProduct(enemy_dir, Forward)>0.3)
-			VectorScale(enemy_dir, ASSASSIN_DAGGER_SPEED, Arrow->velocity);
+		if (DotProduct(enemy_dir, forward) > 0.3f)
+			VectorScale(enemy_dir, ASSASSIN_DAGGER_SPEED, dagger->velocity);
 		else
-			VectorScale(Forward, ASSASSIN_DAGGER_SPEED, Arrow->velocity);
+			VectorScale(forward, ASSASSIN_DAGGER_SPEED, dagger->velocity);
 	}
 	else
 	{
-		VectorScale(check_lead, ASSASSIN_DAGGER_SPEED, Arrow->velocity);
+		VectorScale(check_lead, ASSASSIN_DAGGER_SPEED, dagger->velocity);
 	}
 
-	VectorCopy(Arrow->velocity, Arrow->movedir);
-	VectorNormalize(Arrow->movedir);
-	vectoangles(Arrow->movedir, Arrow->s.angles);
-	Arrow->s.angles[PITCH] = -90;
+	VectorCopy(dagger->velocity, dagger->movedir);
+	VectorNormalize(dagger->movedir);
+	vectoangles(dagger->movedir, dagger->s.angles);
+	dagger->s.angles[PITCH] = -90.0f;
 
-	eta = enemy_dist / ASSASSIN_DAGGER_SPEED;//eta
+	const float eta = enemy_dist / ASSASSIN_DAGGER_SPEED;
+	dagger->avelocity[PITCH] = -1.0f / eta * (360.0f * 3.0f + 30.0f + flrand(-10.0f, 10.0f)); // Ideally, spin @1110 degrees in 1 sec.
 
-//	gi.dprintf("ETA: %f\n", eta);
-	//ideally, spin @1110 degrees in 1 sec
-	Arrow->avelocity[PITCH] = -1/eta * (360*3 +30 + flrand(-10,10));
-//	gi.dprintf("avel: %f\n", Arrow->avelocity[PITCH]);
-//	gi.dprintf("final rotation: %f\n", Arrow->avelocity[PITCH]*eta);
-//	gi.dprintf("final angle: %f\n", anglemod(Arrow->s.angles[PITCH]+Arrow->avelocity[PITCH]*eta));
+	gi.CreateEffect(&dagger->s, FX_M_EFFECTS, 0, dagger->avelocity, "bv", FX_ASS_DAGGER, dagger->velocity);
 
-/*
-//doesn't make desired effect
-	if(right_ofs>0)
-		Arrow->s.angles[ROLL] = flrand(0, 35);
-	else if(right_ofs<0)
-		Arrow->s.angles[ROLL] = flrand(-35, 0);
-*/
-
-	gi.CreateEffect(&Arrow->s,
-				FX_M_EFFECTS,
-				0,
-				Arrow->avelocity,
-				"bv",
-				FX_ASS_DAGGER,
-				Arrow->velocity);
-
-	G_LinkMissile(Arrow); 
+	G_LinkMissile(dagger);
 }
 
 /*-------------------------------------------------------------------------
@@ -392,7 +373,7 @@ void assassindagger (edict_t *self, float right_ofs)
 			if(!(self->s.fmnodeinfo[MESH__RKNIFE].flags & FMNI_NO_DRAW))
 			{
 				self->s.fmnodeinfo[MESH__RKNIFE].flags |= FMNI_NO_DRAW;
-				assassinThrowDagger(self, 12);
+				AssassinThrowDagger(self, 12);
 			}
 		}
 		
@@ -402,7 +383,7 @@ void assassindagger (edict_t *self, float right_ofs)
 			if(!(self->s.fmnodeinfo[MESH__LKNIFE].flags & FMNI_NO_DRAW))
 			{
 				self->s.fmnodeinfo[MESH__LKNIFE].flags |= FMNI_NO_DRAW;
-				assassinThrowDagger(self, -12);
+				AssassinThrowDagger(self, -12);
 			}
 		}
 
