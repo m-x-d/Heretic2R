@@ -632,62 +632,46 @@ static void AssassinDropWeapon(edict_t* self, const int knife_flags) //mxd. Name
 	}
 }
 
-int assassin_convert_hitloc_dead(int hl)
+static HitLocation_t AssassinConvertDeadHitLocation(const HitLocation_t hl) //mxd. Named 'assassin_convert_hitloc_dead' in original logic. //mxd. Changed arg and return type from int.
 {
-	switch(hl)
+	switch (hl)
 	{
 		case hl_Head:
 			return hl_TorsoFront;
-			break;
-		
-		case hl_TorsoFront://split in half?
-			if(!irand(0,1))
-				return hl_LegUpperRight;
-			else
-				return hl_LegUpperLeft;
-			break;
-		
-		case hl_TorsoBack://split in half?
+
+		case hl_TorsoFront: // Split in half?
+			return (irand(0, 1) == 0 ? hl_LegUpperRight : hl_LegUpperLeft);
+
+		case hl_TorsoBack: // Split in half?
 			return hl_Head;
-			break;
-		
+
 		case hl_ArmUpperLeft:
 			return hl_ArmLowerLeft;
-			break;
-		
-		case hl_ArmLowerLeft://left arm
+
+		case hl_ArmLowerLeft: // Left arm.
 			return hl_ArmUpperLeft;
-			break;
-		
+
 		case hl_ArmUpperRight:
 			return hl_ArmLowerRight;
-			break;
-		
-		case hl_ArmLowerRight://right arm
+
+		case hl_ArmLowerRight: // Right arm.
 			return hl_ArmUpperRight;
-			break;
 
 		case hl_LegUpperLeft:
 			return hl_LegLowerLeft;
-			break;
-		
-		case hl_LegLowerLeft://left leg
+
+		case hl_LegLowerLeft: // Left leg.
 			return hl_LegUpperLeft;
-			break;
-		
+
 		case hl_LegUpperRight:
 			return hl_LegLowerRight;
-			break;
-		
-		case hl_LegLowerRight://right leg
+
+		case hl_LegLowerRight: // Right leg.
 			return hl_LegUpperRight;
-			break;
 
 		default:
 			return irand(hl_Head, hl_LegLowerRight);
-			break;
 	}
-
 }
 
 #pragma endregion
@@ -747,7 +731,7 @@ void assassin_dismember(edict_t *self, int damage, int HitLocation)
 			HitLocation = hl_Head;//Decap
 	}
 	else
-		HitLocation = assassin_convert_hitloc_dead(HitLocation);
+		HitLocation = AssassinConvertDeadHitLocation(HitLocation);
 
 	VectorClear(gore_spot);
 	switch(HitLocation)
