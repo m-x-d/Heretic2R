@@ -1057,7 +1057,7 @@ qboolean MG_MonsterAttemptTeleport(edict_t* self, const vec3_t destination, cons
 
 			if (self->classID == CID_ASSASSIN)
 			{
-				assassinPrepareTeleportDest(self, bottom, false);
+				AssassinPrepareTeleportDestination(self, bottom, false);
 			}
 			else
 			{

@@ -1671,7 +1671,7 @@ void assassin_gone(edict_t* self) //mxd. Named 'assassinGone' in original logic.
 	gi.linkentity(self);
 }
 
-void assassinPrepareTeleportDest(edict_t* self, const vec3_t spot, const qboolean instant) //TODO: rename to AssassinPrepareTeleportDestination?
+void AssassinPrepareTeleportDestination(edict_t* self, const vec3_t spot, const qboolean instant) //mxd. Named 'assassinPrepareTeleportDest' in original logic.
 {
 	if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != AssassinDeCloakFadePreThink)
 	{
@@ -1782,7 +1782,7 @@ static qboolean AssassinChooseTeleportDestination(edict_t* self, const int type,
 
 			if (trace.fraction < 1.0f && !trace.allsolid && !trace.startsolid) // The last two should be false if trace.fraction is < 1.0 but doesn't hurt to check.
 			{
-				assassinPrepareTeleportDest(self, trace.endpos, instant);
+				AssassinPrepareTeleportDestination(self, trace.endpos, instant);
 				return true;
 			}
 		}
@@ -1908,7 +1908,7 @@ static void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThin
 
 			if (trace.fraction == 1.0f && !trace.allsolid && !trace.startsolid)
 			{
-				assassinPrepareTeleportDest(self, trace.endpos, false);
+				AssassinPrepareTeleportDestination(self, trace.endpos, false);
 				return;
 			}
 		}
