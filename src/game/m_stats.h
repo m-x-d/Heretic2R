@@ -118,9 +118,9 @@ extern struct MonsterShadow_s G_MonsterShadow[NUM_CLASSIDS];
 #define ASSASSIN_MAX_DAMAGE			13
 #define ASSASSIN_MIN_CLOAK_RANGE	100
 #define ASSASSIN_DAGGER_SPEED		500.0f
-#define ASS_TP_OFF					1
-#define ASS_TP_ANY					2
-#define ASS_TP_DEF					3
+#define ASS_TP_OFF					1 //TODO: rename to ASSASSIN_TELEPORT_OFFENSIVE
+#define ASS_TP_ANY					2 //TODO: rename to ASSASSIN_TELEPORT_ANY
+#define ASS_TP_DEF					3 //TODO: rename to ASSASSIN_TELEPORT_DEFENSIVE
 
 // TRIAL BEAST
 #define TB_HEALTH				7000
