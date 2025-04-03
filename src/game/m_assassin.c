@@ -1262,11 +1262,6 @@ void assassin_run(edict_t* self, float dist) //mxd. Named 'assassin_go_run' in o
 		ai_walk(self, dist);
 }
 
-void assassinsqueal(edict_t* self) //TODO: remove?
-{
-
-}
-
 static void AssassinStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_stand' in original logic.
 {
 	if (self->ai_mood == AI_MOOD_DELAY)

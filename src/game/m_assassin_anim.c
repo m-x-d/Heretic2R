@@ -480,14 +480,14 @@ const animmove_t assassin_move_walk_loop = { 11, assassin_frames_walk_loop, assa
 // Assassin Pain - assassin gets hit.
 static const animframe_t assassin_frames_pain1[] =
 {
-	{ FRAME_painb1,	NULL, 0.0f, 0.0f, 0.0f, ai_move, -16.0f, assassinsqueal },
+	{ FRAME_painb1,	NULL, 0.0f, 0.0f, 0.0f, ai_move, -16.0f, NULL },
 };
 const animmove_t assassin_move_pain1 = { 1, assassin_frames_pain1, assassin_post_pain };
 
 // Assassin Pain - assassin gets hit.
 static const animframe_t assassin_frames_pain2[] =
 {
-	{ FRAME_painb1,	NULL, 0.0f, 0.0f, 0.0f, ai_move, -10.0f, assassinsqueal },
+	{ FRAME_painb1,	NULL, 0.0f, 0.0f, 0.0f, ai_move, -10.0f, NULL },
 	{ FRAME_painb2,	NULL, 0.0f, 0.0f, 0.0f, ai_move, -8.0f, NULL },
 	{ FRAME_painb3,	NULL, 0.0f, 0.0f, 0.0f, ai_move, -6.0f, NULL },
 	{ FRAME_painb4,	NULL, 0.0f, 0.0f, 0.0f, ai_move, -3.0f, NULL },
