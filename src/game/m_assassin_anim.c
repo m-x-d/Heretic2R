@@ -16,7 +16,7 @@
 // Assassin daggerL - assassin attacking left hand.
 static const animframe_t assassin_frames_daggerl[] =
 {
-	{ FRAME_ataka1,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, assassingrowl },
+	{ FRAME_ataka1,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, assassin_growl },
 	{ FRAME_ataka2,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_ataka3,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_ataka4,		NULL, 0.0f, 0.0f, 0.0f, assassinNodeOn, MESH__LKNIFE, NULL }, // Loop in from an attack, no windup.
@@ -36,7 +36,7 @@ const animmove_t assassin_move_daggerl = { 14, assassin_frames_daggerl, assassin
 // Assassin daggerR - assassin attacking right hand.
 static const animframe_t assassin_frames_daggerr[] =
 {
-	{ FRAME_atakb1,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, assassingrowl },
+	{ FRAME_atakb1,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, assassin_growl },
 	{ FRAME_atakb2,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_atakb3,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_atakb4,		NULL, 0.0f, 0.0f, 0.0f, assassinNodeOn, MESH__RKNIFE, NULL },
@@ -57,7 +57,7 @@ const animmove_t assassin_move_daggerr = { 15, assassin_frames_daggerr, assassin
 // Assassin daggerB - assassin attacking left hand.
 static const animframe_t assassin_frames_daggerb[] =
 {
-	{ FRAME_atakc1,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, assassingrowl },
+	{ FRAME_atakc1,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, assassin_growl },
 	{ FRAME_atakc2,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_atakc3,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_atakc4,		NULL, 0.0f, 0.0f, 0.0f, assassinNodeOn, MESH__LKNIFE, NULL },
@@ -77,7 +77,7 @@ const animmove_t assassin_move_daggerb = { 14, assassin_frames_daggerb, assassin
 // Assassin daggerC - assassin attacking crouched.
 static const animframe_t assassin_frames_daggerc[] =
 {
-	{ FRAME_lndatk1,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, assassingrowl },
+	{ FRAME_lndatk1,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, assassin_growl },
 	{ FRAME_lndatk2,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_lndatk3,	NULL, 0.0f, 0.0f, 0.0f, assassinNodeOn, MESH__RKNIFE, NULL },
 	{ FRAME_lndatk4,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
@@ -94,7 +94,7 @@ const animmove_t assassin_move_daggerc = { 11, assassin_frames_daggerc, assassin
 // Assassin newdagger.
 static const animframe_t assassin_frames_newdagger[] =
 {
-	{ FRAME_newattackA1,	NULL, 0.0f, 0.0f, 0.0f, assassinNodeOn, MESH__RKNIFE, assassingrowl },
+	{ FRAME_newattackA1,	NULL, 0.0f, 0.0f, 0.0f, assassinNodeOn, MESH__RKNIFE, assassin_growl },
 	{ FRAME_newattackA2,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackA3,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackA4,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
@@ -115,7 +115,7 @@ const animmove_t assassin_move_newdagger = { 15, assassin_frames_newdagger, assa
 // Assassin newdaggerB.
 static const animframe_t assassin_frames_newdaggerb[] =
 {
-	{ FRAME_newattackB1,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, assassingrowl },
+	{ FRAME_newattackB1,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, assassin_growl },
 	{ FRAME_newattackB2,	NULL, 0.0f, 0.0f, 0.0f, assassinNodeOn, MESH__RKNIFE, NULL },
 	{ FRAME_newattackB3,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackB4,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL }, // Loop in from an attack, no windup.
@@ -183,7 +183,7 @@ const animmove_t assassin_move_land = { 5, assassin_frames_land, assassin_pause 
 // Assassin jump.
 static const animframe_t assassin_frames_evade_jump[] =
 {
-	{ FRAME_jump7,	assassinGoJump, 100.0f, 400.0f, 0.0f, ai_charge, 0.0f, assassingrowl },
+	{ FRAME_jump7,	assassinGoJump, 100.0f, 400.0f, 0.0f, ai_charge, 0.0f, assassin_growl },
 	{ FRAME_jump8,	NULL, 0.0f, 0.0f, 0.0f, ai_charge, 0.0f, NULL },
 	{ FRAME_jump9,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_jump10,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
@@ -194,7 +194,7 @@ const animmove_t assassin_move_evade_jump = { 5, assassin_frames_evade_jump, ass
 // Assassin backflipping.
 static const animframe_t assassin_frames_evade_backflip[] =
 {
-	{ FRAME_bkflp6,		assassinGoJump, -150.0f, 400.0f, 0.0f, NULL, 0.0f, assassingrowl },
+	{ FRAME_bkflp6,		assassinGoJump, -150.0f, 400.0f, 0.0f, NULL, 0.0f, assassin_growl },
 	{ FRAME_bkflp7,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_bkflp8,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_bkflp9,		assassin_sound, CHAN_ITEM, SND_FLIP, ATTN_NORM, NULL, 0.0f, NULL },
@@ -207,7 +207,7 @@ const animmove_t assassin_move_evade_backflip = { 7, assassin_frames_evade_backf
 // Assassin front flipping.
 static const animframe_t assassin_frames_evade_frontflip[] =
 {
-	{ FRAME_fntflp6,	assassinGoJump, 150.0f, 400.0f, 0.0f, NULL, 0.0f, assassingrowl },
+	{ FRAME_fntflp6,	assassinGoJump, 150.0f, 400.0f, 0.0f, NULL, 0.0f, assassin_growl },
 	{ FRAME_fntflp7,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_fntflp8,	assassin_sound, CHAN_ITEM, SND_FLIP, ATTN_NORM, NULL, 0.0f, NULL },
 	{ FRAME_fntflp9,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_FFLAND, NULL },
@@ -299,7 +299,7 @@ static const animframe_t assassin_frames_jump[] =
 	{ FRAME_jump4,	NULL, 0.0f, 0.0f, 0.0f, ai_charge, 0.0f, NULL },
 	{ FRAME_jump5,	NULL, 0.0f, 0.0f, 0.0f, ai_charge, 0.0f, NULL },
 	{ FRAME_jump6,	NULL, 0.0f, 0.0f, 0.0f, ai_charge, 0.0f, NULL },
-	{ FRAME_jump7,	assassinGoJump, 50.0f, 500.0f, 0.0f, ai_charge, 0.0f, assassingrowl },
+	{ FRAME_jump7,	assassinGoJump, 50.0f, 500.0f, 0.0f, ai_charge, 0.0f, assassin_growl },
 	{ FRAME_jump8,	NULL, 0.0f, 0.0f, 0.0f, ai_charge, 0.0f, NULL },
 	{ FRAME_jump9,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_jump10,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
@@ -365,7 +365,7 @@ static const animframe_t assassin_frames_backflip[] =
 	{ FRAME_bkflp3,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_bkflp4,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_bkflp5,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
-	{ FRAME_bkflp6,		assassinGoJump, -150.0f, 400.0f, 0.0f, NULL, 0.0f, assassingrowl },
+	{ FRAME_bkflp6,		assassinGoJump, -150.0f, 400.0f, 0.0f, NULL, 0.0f, assassin_growl },
 	{ FRAME_bkflp7,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_bkflp8,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_bkflp9,		assassin_sound, CHAN_ITEM, SND_FLIP, ATTN_NORM, NULL, 0.0f, NULL },
@@ -378,7 +378,7 @@ const animmove_t assassin_move_backflip = { 12, assassin_frames_backflip, assass
 // Assassin backspring.
 static const animframe_t assassin_frames_backspring[] =
 {
-	{ FRAME_newbackspring1,		NULL, 0.0f, 0.0f, 0.0f, ai_charge2, -4.0f,  assassingrowl },
+	{ FRAME_newbackspring1,		NULL, 0.0f, 0.0f, 0.0f, ai_charge2, -4.0f,  assassin_growl },
 	{ FRAME_newbackspring2,		NULL, 0.0f, 0.0f, 0.0f, ai_charge2, -8.0f,  NULL },
 	{ FRAME_newbackspring3,		NULL, 0.0f, 0.0f, 0.0f, ai_charge2, -12.0f, NULL },
 	{ FRAME_newbackspring4,		NULL, 0.0f, 0.0f, 0.0f, ai_charge2, -12.0f, NULL },
@@ -422,7 +422,7 @@ static const animframe_t assassin_frames_frontflip[] =
 	{ FRAME_fntflp3,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_fntflp4,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_fntflp5,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
-	{ FRAME_fntflp6,	assassinGoJump, 150.0f, 400.0f, 0.0f, NULL, 0.0f, assassingrowl },
+	{ FRAME_fntflp6,	assassinGoJump, 150.0f, 400.0f, 0.0f, NULL, 0.0f, assassin_growl },
 	{ FRAME_fntflp7,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_fntflp8,	assassin_sound, CHAN_ITEM, SND_FLIP, ATTN_NORM, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_fntflp9,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
@@ -434,7 +434,7 @@ const animmove_t assassin_move_frontflip = { 10, assassin_frames_frontflip, assa
 static const animframe_t assassin_frames_run[] =
 {
 	// Recalculate movement values with new anim.
-	{ FRAME_run1,	NULL, 0.0f, 0.0f, 0.0f, assassin_go_run, 20.0f, assassingrowl },
+	{ FRAME_run1,	NULL, 0.0f, 0.0f, 0.0f, assassin_go_run, 20.0f, assassin_growl },
 	{ FRAME_run2,	NULL, 0.0f, 0.0f, 0.0f, assassin_go_run, 18.0f, assassin_pause },
 	{ FRAME_run3,	NULL, 0.0f, 0.0f, 0.0f, assassin_go_run, 12.0f, assassin_pause },
 	{ FRAME_run4,	NULL, 0.0f, 0.0f, 0.0f, assassin_go_run, 16.0f, assassin_pause },
@@ -459,7 +459,7 @@ const animmove_t assassin_move_walk = { 3, assassin_frames_walk, assassin_walk_l
 // Assassin walking loop.
 static const animframe_t assassin_frames_walk_loop[] =
 {
-	{ FRAME_newwalk4,	NULL, 0.0f, 0.0f, 0.0f, assassin_ai_walk, 8.0f, assassingrowl },
+	{ FRAME_newwalk4,	NULL, 0.0f, 0.0f, 0.0f, assassin_ai_walk, 8.0f, assassin_growl },
 	{ FRAME_newwalk5,	NULL, 0.0f, 0.0f, 0.0f, assassin_ai_walk, 8.0f, NULL },
 	{ FRAME_newwalk6,	NULL, 0.0f, 0.0f, 0.0f, assassin_ai_walk, 8.0f, NULL },
 	{ FRAME_newwalk7,	NULL, 0.0f, 0.0f, 0.0f, assassin_ai_walk, 8.0f, NULL },
@@ -502,7 +502,7 @@ const animmove_t assassin_move_pain2 = { 5, assassin_frames_pain2, assassin_post
 // Assassin chillin out.
 static const animframe_t assassin_frames_stand[] =
 {
-	{ FRAME_newidle1,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassingrowl },
+	{ FRAME_newidle1,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassin_growl },
 	{ FRAME_newidle2,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 	{ FRAME_newidle3,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newidle4,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
@@ -549,7 +549,7 @@ const animmove_t assassin_move_crouch_trans = { 5, assassin_frames_crouch_trans,
 // Assassin crouch idle.
 static const animframe_t assassin_frames_crouch_idle[] =
 {
-	{ FRAME_newcrouchidle1,		NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassingrowl },
+	{ FRAME_newcrouchidle1,		NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassin_growl },
 	{ FRAME_newcrouchidle2,		NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 	{ FRAME_newcrouchidle3,		NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newcrouchidle4,		NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
@@ -567,7 +567,7 @@ const animmove_t assassin_move_crouch_idle = { 12, assassin_frames_crouch_idle, 
 // Assassin crouch - look left.
 static const animframe_t assassin_frames_crouch_look_right[] =
 {
-	{ FRAME_newcrchlkrit1,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassingrowl },
+	{ FRAME_newcrchlkrit1,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassin_growl },
 	{ FRAME_newcrchlkrit2,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 	{ FRAME_newcrchlkrit3,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newcrchlkrit4,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
@@ -585,7 +585,7 @@ const animmove_t assassin_move_crouch_look_right = { 12, assassin_frames_crouch_
 // Assassin crouch idle - look left.
 static const animframe_t assassin_frames_crouch_look_right_idle[] =
 {
-	{ FRAME_newcrhlkrtidle1,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassingrowl },
+	{ FRAME_newcrhlkrtidle1,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassin_growl },
 	{ FRAME_newcrhlkrtidle2,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 	{ FRAME_newcrhlkrtidle3,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newcrhlkrtidle4,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
@@ -603,7 +603,7 @@ const animmove_t assassin_move_crouch_look_right_idle = { 12, assassin_frames_cr
 // Assassin crouch idle - look left to right.
 static const animframe_t assassin_frames_crouch_look_l2r[] =
 {
-	{ FRAME_newcrchlklr1,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassingrowl },
+	{ FRAME_newcrchlklr1,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassin_growl },
 	{ FRAME_newcrchlklr2,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 	{ FRAME_newcrchlklr3,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newcrchlklr4,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
@@ -621,7 +621,7 @@ const animmove_t assassin_move_crouch_look_l2r = { 12, assassin_frames_crouch_lo
 // Assassin crouch - look left.
 static const animframe_t assassin_frames_crouch_look_left[] =
 {
-	{ FRAME_newcrchlklft1,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassingrowl },
+	{ FRAME_newcrchlklft1,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassin_growl },
 	{ FRAME_newcrchlklft2,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 	{ FRAME_newcrchlklft3,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newcrchlklft4,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
@@ -639,7 +639,7 @@ const animmove_t assassin_move_crouch_look_left = { 12, assassin_frames_crouch_l
 // Assassin crouch - look left idle.
 static const animframe_t assassin_frames_crouch_look_left_idle[] =
 {
-	{ FRAME_newlkleftidle1,		NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassingrowl },
+	{ FRAME_newlkleftidle1,		NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassin_growl },
 	{ FRAME_newlkleftidle2,		NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 	{ FRAME_newlkleftidle3,		NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newlkleftidle4,		NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
@@ -657,7 +657,7 @@ const animmove_t assassin_move_crouch_look_left_idle = { 12, assassin_frames_cro
 // Assassin crouch - look right to left.
 static const animframe_t assassin_frames_crouch_look_r2l[] =
 {
-	{ FRAME_newcrchlklr12,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassingrowl },
+	{ FRAME_newcrchlklr12,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassin_growl },
 	{ FRAME_newcrchlklr11,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 	{ FRAME_newcrchlklr10,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newcrchlklr9,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
@@ -675,7 +675,7 @@ const animmove_t assassin_move_crouch_look_r2l = { 12, assassin_frames_crouch_lo
 // Assassin crouch - look right to center.
 static const animframe_t assassin_frames_crouch_look_r2c[] =
 {
-	{ FRAME_newcrchlkrit12,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassingrowl },
+	{ FRAME_newcrchlkrit12,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassin_growl },
 	{ FRAME_newcrchlkrit11,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 	{ FRAME_newcrchlkrit10,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newcrchlkrit9,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
@@ -693,7 +693,7 @@ const animmove_t assassin_move_crouch_look_r2c = { 12, assassin_frames_crouch_lo
 // Assassin crouch - look left to center.
 static const animframe_t assassin_frames_crouch_look_l2c[] =
 {
-	{ FRAME_newcrchlklft12,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassingrowl },
+	{ FRAME_newcrchlklft12,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassin_growl },
 	{ FRAME_newcrchlklft11,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 	{ FRAME_newcrchlklft10,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_newcrchlklft9,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
@@ -722,7 +722,7 @@ const animmove_t assassin_move_crouch_end = { 5, assassin_frames_crouch_end, ass
 // Assassin crouch poke.
 static const animframe_t assassin_frames_crouch_poke[] =
 {
-	{ FRAME_poke1,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassingrowl },
+	{ FRAME_poke1,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, assassin_growl },
 	{ FRAME_poke2,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
 	{ FRAME_poke3,	NULL, 0.0f, 0.0f, 0.0f, ai_stand,	0.0f, NULL },
 	{ FRAME_poke4,	NULL, 0.0f, 0.0f, 0.0f, NULL,		0.0f, NULL },
@@ -793,7 +793,7 @@ const animmove_t assassin_move_c_idle1 = { 7, assassin_frames_c_idle1, ai_c_cycl
 // Assassin running.
 static const animframe_t assassin_frames_c_run1[] =
 {
-	{ FRAME_run1,	ai_c_move, 20, 0.0f, 0.0f, NULL, 0.0f, assassingrowl },
+	{ FRAME_run1,	ai_c_move, 20, 0.0f, 0.0f, NULL, 0.0f, assassin_growl },
 	{ FRAME_run2,	ai_c_move, 18, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_run3,	ai_c_move, 12, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_run4,	ai_c_move, 16, 0.0f, 0.0f, NULL, 0.0f, NULL },
@@ -836,7 +836,7 @@ static const animframe_t assassin_frames_c_attack2[] =
 	{ FRAME_atakb5,		ai_c_move, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_atakb6,		ai_c_move, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_atakb7,		ai_c_move, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
-	{ FRAME_atakb8,		ai_c_move, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassingrowl },
+	{ FRAME_atakb8,		ai_c_move, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_growl },
 	{ FRAME_atakb9,		ai_c_move, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_atakb10,	ai_c_move, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_atakb11,	ai_c_move, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },

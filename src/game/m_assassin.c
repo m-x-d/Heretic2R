@@ -489,7 +489,7 @@ static void AssassinDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 		AssassinInitDeCloak(self);
 }
 
-void assassingrowl(edict_t* self) //TODO: rename to assassin_growl?
+void assassin_growl(edict_t* self) //mxd. Named 'assassingrowl' in original logic.
 {
 	if (irand(0, 20) == 0)
 		gi.sound(self, CHAN_AUTO, sounds[irand(SND_GROWL1, SND_GROWL3)], 1.0f, ATTN_IDLE, 0.0f);
