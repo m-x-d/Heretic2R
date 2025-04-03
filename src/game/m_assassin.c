@@ -527,7 +527,7 @@ static void AssassinMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 {
 	if (M_ValidTarget(self, self->enemy))
 	{
-		if (irand(0, 7) == 0 && assassinCheckTeleport(self, ASS_TP_OFF)) // 12.5% chance to try to get away.
+		if (irand(0, 7) == 0 && AssassinCheckTeleport(self, ASS_TP_OFF)) // 12.5% chance to try to get away.
 			return;
 
 		AssassinSetRandomAttackAnim(self);
@@ -546,7 +546,7 @@ static void AssassinMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 		{
 			if (irand(0, 2) == 0) // 25% chance to teleport. //TODO: 0-2 is actually 33.3%. Change to 0-3?
 			{
-				if (assassinCheckTeleport(self, ASS_TP_OFF))
+				if (AssassinCheckTeleport(self, ASS_TP_OFF))
 					return;
 			}
 			else if (!(self->s.renderfx & RF_ALPHA_TEXTURE) && !(self->spawnflags & MSF_ASS_NOSHADOW)) // 75% chance to cloak.
@@ -566,7 +566,7 @@ static void AssassinMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 
 void assassin_post_pain(edict_t* self)
 {
-	if (self->fire_damage_time < level.time && assassinCheckTeleport(self, ASS_TP_ANY)) // Don't teleport if burning.
+	if (self->fire_damage_time < level.time && AssassinCheckTeleport(self, ASS_TP_ANY)) // Don't teleport if burning.
 		return;
 
 	assassin_pause(self);
@@ -1232,7 +1232,7 @@ static void AssassinRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	{
 		if (irand(0, 7) == 0)
 		{
-			if (assassinCheckTeleport(self, ASS_TP_OFF))
+			if (AssassinCheckTeleport(self, ASS_TP_OFF))
 				return;
 
 			if (irand(0, 3) == 0 && !(self->s.renderfx & RF_ALPHA_TEXTURE) && !(self->spawnflags & MSF_ASS_NOSHADOW))
@@ -1802,25 +1802,10 @@ void assassinReadyTeleport(edict_t* self) //TODO: rename to assassin_ready_telep
 	self->svflags |= SVF_NO_AUTOTARGET;
 }
 
-qboolean assassinCheckTeleport (edict_t *self, int type)
+static qboolean AssassinCheckTeleport(edict_t* self, const int type) //mxd. Named 'assassinCheckTeleport' in original logic.
 {
-	if(self->spawnflags&MSF_ASS_NOTELEPORT)
+	if ((self->spawnflags & (MSF_ASS_NOTELEPORT | MSF_FIXED)) || self->groundentity == NULL || !M_ValidTarget(self, self->enemy))
 		return false;
-
-	if(self->spawnflags&MSF_FIXED)
-		return false;
-
-	if(!self->groundentity)
-		return false;
-
-	if(!M_ValidTarget(self, self->enemy))
-		return false;
-
-/*	if(!infront(self->enemy, self))
-		return false;
-
-	if(!visible(self->enemy, self))
-		return false;*/
 
 	return AssassinChooseTeleportDestination(self, type, false, false);
 }
@@ -2226,7 +2211,7 @@ void assassinCheckDefense(edict_t *self, float enemydist, qboolean enemyvis, qbo
 	if(!enemyinfront&&enemyvis&&enemydist<self->melee_range)
 	{
 #ifdef _DEVEL
-		if(assassinCheckTeleport(self, ASS_TP_DEF))
+		if(AssassinCheckTeleport(self, ASS_TP_DEF))
 			gi.dprintf("defense->teleport\n");
 #else
 		assassinCheckTeleport(self, ASS_TP_DEF);
@@ -2239,7 +2224,7 @@ void assassinCheckDefense(edict_t *self, float enemydist, qboolean enemyvis, qbo
 #ifdef _DEVEL
 			gi.dprintf("Assassin trying to teleport to %s since can't find them...\n", self->classname, self->enemy->classname);
 #endif
-			assassinCheckTeleport(self, ASS_TP_OFF);
+			AssassinCheckTeleport(self, ASS_TP_OFF);
 		}
 	}
 }
