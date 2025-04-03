@@ -485,7 +485,7 @@ static void AssassinDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	self->pre_think = NULL;
 	self->next_pre_think = -1.0f;
 
-	if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != assassinDeCloak)
+	if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != AssassinDeCloakFadePreThink)
 		assassinInitDeCloak(self);
 }
 
@@ -1275,7 +1275,7 @@ static void AssassinStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	}
 	else
 	{
-		if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != assassinDeCloak)
+		if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != AssassinDeCloakFadePreThink)
 			assassinInitDeCloak(self);
 
 		SetAnim(self, ANIM_STAND);
@@ -1678,7 +1678,7 @@ void assassinGone(edict_t* self) //TODO: rename to assassin_gone?
 
 void assassinPrepareTeleportDest(edict_t* self, const vec3_t spot, const qboolean instant) //TODO: rename to AssassinPrepareTeleportDestination?
 {
-	if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != assassinDeCloak)
+	if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != AssassinDeCloakFadePreThink)
 	{
 		assassinInitDeCloak(self);
 		self->monsterinfo.misc_debounce_time = level.time + 3.0f;
@@ -2022,39 +2022,31 @@ static void AssassinCloakFadePreThink(edict_t* self) //mxd. Named 'assassinCloak
 		MG_CheckEvade(self);
 }
 
-void assassinDeCloak (edict_t *self)
+static void AssassinDeCloakFadePreThink(edict_t* self) //mxd. Named 'assassinDeCloak' in original logic.
 {
-	if(!(self->s.renderfx & RF_ALPHA_TEXTURE))
+	if (!(self->s.renderfx & RF_ALPHA_TEXTURE))
 		return;
 
-	if(self->s.color.r<255 - 10)
-		self->s.color.r += 10;
-	else
-		self->s.color.r = 255;
+	for (int i = 0; i < 3; i++) // Fade in RGB.
+	{
+		if (self->s.color.c_array[i] < 255 - 10)
+			self->s.color.c_array[i] += 10;
+		else
+			self->s.color.c_array[i] = 255;
+	}
 
-	if(self->s.color.g<255 - 10)
-		self->s.color.g += 10;
-	else
-		self->s.color.g = 255;
-	
-	if(self->s.color.b<255 - 10)
-		self->s.color.b += 10;
-	else
-		self->s.color.b = 255;
-	
-	if(self->s.color.a<255 - 5)
+	if (self->s.color.a < 255 - 5) // Fade in Alpha.
 		self->s.color.a += 5;
 	else
 		self->s.color.a = 255;
 
-	if(self->s.color.r == 255&&
-		self->s.color.g == 255&&
-		self->s.color.b == 255&&
-		self->s.color.a == 255)
+	// Fade-in complete?
+	if (self->s.color.c == 0xffffffff)
 	{
 		self->svflags &= ~SVF_NO_AUTOTARGET;
 		self->s.renderfx &= ~RF_ALPHA_TEXTURE;
-		if(self->health > 0)
+
+		if (self->health > 0)
 		{
 			self->pre_think = AssassinCloakPreThink;
 			self->next_pre_think = level.time + FRAMETIME;
@@ -2062,23 +2054,23 @@ void assassinDeCloak (edict_t *self)
 		else
 		{
 			self->pre_think = NULL;
-			self->next_pre_think = -1;
+			self->next_pre_think = -1.0f;
 		}
 	}
 	else
 	{
-		self->pre_think = assassinDeCloak;
+		self->pre_think = AssassinDeCloakFadePreThink;
 		self->next_pre_think = level.time + FRAMETIME;
 	}
 
-	if(self->evade_debounce_time < level.time)
+	if (self->evade_debounce_time < level.time)
 		MG_CheckEvade(self);
 }
 
 void assassinInitDeCloak (edict_t *self)
 {
 	gi.sound(self,CHAN_AUTO,sounds[SND_DECLOAK],1,ATTN_NORM,0);
-	self->pre_think = assassinDeCloak;
+	self->pre_think = AssassinDeCloakFadePreThink;
 	self->next_pre_think = level.time + FRAMETIME;
 }
 

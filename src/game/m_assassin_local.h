@@ -14,4 +14,4 @@ static qboolean AssassinCheckTeleport(edict_t* self, int type);
 static qboolean AssassinChooseTeleportDestination(edict_t* self, int type, qboolean imperative, qboolean instant);
 static void AssassinCloakFadePreThink(edict_t* self);
 static void assassinInitDeCloak(edict_t* self);
-static void assassinDeCloak(edict_t* self);
+static void AssassinDeCloakFadePreThink(edict_t* self);
