@@ -1031,7 +1031,7 @@ static void AssassinPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	if (inflictor == attacker || Q_stricmp(inflictor->classname, "Spell_RedRain") == 0 || Q_stricmp(inflictor->classname, "Spell_Hellbolt") == 0) //mxd. stricmp -> Q_stricmp
 	{
 		// Melee hit or constant effect, don't stick around!
-		if (!(self->spawnflags & MSF_ASS_NOTELEPORT) && !(self->spawnflags & MSF_FIXED) && self->groundentity != NULL && assassinChooseTeleportDestination(self, ASS_TP_ANY, true, false))
+		if (!(self->spawnflags & MSF_ASS_NOTELEPORT) && !(self->spawnflags & MSF_FIXED) && self->groundentity != NULL && AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, false))
 			return;
 	}
 
@@ -1429,7 +1429,7 @@ static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 			Q_stricmp(projectile->classname, "Spell_SphereOfAnnihilation") == 0 ||
 			Q_stricmp(projectile->classname, "Spell_Maceball") == 0) //mxd. stricmp -> Q_stricmp
 		{
-			if (assassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
+			if (AssassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
 				return;
 		}
 	}
@@ -1441,7 +1441,7 @@ static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
 	{
 		// Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard.
-		if (chance > 8 && !(self->spawnflags & MSF_ASS_NOTELEPORT) && assassinChooseTeleportDestination(self, ASS_TP_DEF, false, false))
+		if (chance > 8 && !(self->spawnflags & MSF_ASS_NOTELEPORT) && AssassinChooseTeleportDestination(self, ASS_TP_DEF, false, false))
 			return;
 	}
 
@@ -1508,7 +1508,7 @@ static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
 	{
 		// Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard.
-		if (!(self->spawnflags & MSF_ASS_NOTELEPORT) && assassinChooseTeleportDestination(self, ASS_TP_DEF, false, false))
+		if (!(self->spawnflags & MSF_ASS_NOTELEPORT) && AssassinChooseTeleportDestination(self, ASS_TP_DEF, false, false))
 			return;
 	}
 
@@ -1706,95 +1706,93 @@ void assassinPrepareTeleportDest(edict_t* self, const vec3_t spot, const qboolea
 	}
 }
 
-qboolean assassinChooseTeleportDestination(edict_t *self, int type, qboolean imperative, qboolean instant)
-{//FIXME: don't teleport into area with red rain or ripper balls!
-	vec3_t	teleport_angles, forward, endpos, startpos;
-	trace_t trace;
-	int	chance, num_tries, i;
-	edict_t	*noblockent;
-	float	tracedist;
-
-	//Instead of chance, do around self if evade, around other if ambush
-
-	if(!self->enemy)//fixme- choose my spot?
+static qboolean AssassinChooseTeleportDestination(edict_t* self, const int type, const qboolean imperative, const qboolean instant) //mxd. Named 'assassinChooseTeleportDestination' in original logic.
+{
+	if (self->enemy == NULL || (self->spawnflags & MSF_FIXED)) //FIXME: choose my spot?
 		return false;
 
-	if(self->spawnflags&MSF_FIXED)
-		return false;
+	const int num_tries = (imperative ? (SKILL + 1) * 10 : 1);
 
-	if(imperative)
-		num_tries = (skill->value + 1) * 10;
-	else
-		num_tries = 1;
-
-	for(i = 0; i < num_tries; i++)
+	for (int i = 0; i < num_tries; i++)
 	{
-		switch(type)
-		{
-		case ASS_TP_OFF:
-			chance = irand(0, 66);
-			break;
-		case ASS_TP_ANY:
-			chance = irand(0, 100);
-			break;
-		case ASS_TP_DEF:
-			chance = irand(33, 100);
-			break;
-		}
+		int	chance;
 
-		if(chance<33)
-		{//ANY, OFF to behind enemy
-			VectorSet(teleport_angles, 0, anglemod(self->enemy->s.angles[YAW] + flrand(-90, 90)), 0);
+		if (type == ASS_TP_OFF)
+			chance = irand(0, 66);
+		else if (type == ASS_TP_DEF)
+			chance = irand(33, 100);
+		else // ASS_TP_ANY
+			chance = irand(0, 100);
+
+		vec3_t start_pos;
+		vec3_t end_pos;
+		edict_t* noblock_ent;
+		float trace_dist;
+
+		if (chance < 33)
+		{
+			// ANY, OFF to behind enemy.
+			vec3_t forward;
+			const vec3_t teleport_angles = { 0.0f, anglemod(self->enemy->s.angles[YAW] + flrand(-90.0f, 90.0f)), 0.0f };
 			AngleVectors(teleport_angles, forward, NULL, NULL);
-			VectorCopy(self->enemy->s.origin, startpos);
-			startpos[2]+=self->enemy->mins[2];
-			startpos[2]-=self->mins[2];
-			tracedist = irand(self->min_missile_range, self->missile_range);
-			VectorMA(startpos, -tracedist, forward, endpos);
-			noblockent = self->enemy;
+
+			VectorCopy(self->enemy->s.origin, start_pos);
+			start_pos[2] += self->enemy->mins[2] - self->mins[2];
+
+			trace_dist = flrand(self->min_missile_range, self->missile_range); //mxd. irand() in original logic.
+			VectorMA(start_pos, -trace_dist, forward, end_pos);
+			noblock_ent = self->enemy;
 		}
-		else if(chance<66)
-		{//ANY to anywhere around enemy
-			VectorSet(teleport_angles, 0, anglemod(flrand(0, 360)), 0);
+		else if (chance < 66)
+		{
+			// ANY to anywhere around enemy.
+			vec3_t forward;
+			const vec3_t teleport_angles = { 0.0f, anglemod(flrand(0.0f, 360.0f)), 0.0f }; //TODO: should be flrand(0.0f, 359.0f)?
 			AngleVectors(teleport_angles, forward, NULL, NULL);
-			VectorCopy(self->enemy->s.origin, startpos);
-			startpos[2]+=self->enemy->mins[2];
-			startpos[2]-=self->mins[2];
-			tracedist = irand(self->min_missile_range, self->missile_range);
-			VectorMA(startpos, -tracedist, forward, endpos);
-			noblockent = self->enemy;
+
+			VectorCopy(self->enemy->s.origin, start_pos);
+			start_pos[2] += self->enemy->mins[2] - self->mins[2];
+
+			trace_dist = flrand(self->min_missile_range, self->missile_range); //mxd. irand() in original logic.
+			VectorMA(start_pos, -trace_dist, forward, end_pos);
+			noblock_ent = self->enemy;
 		}
 		else
-		{//ANY, DEF to anywhere around me
-			VectorSet(teleport_angles, 0, anglemod(flrand(0, 360)), 0);
+		{
+			// ANY, DEF to anywhere around me.
+			vec3_t forward;
+			const vec3_t teleport_angles = { 0.0f, anglemod(flrand(0.0f, 360.0f)), 0.0f }; //TODO: should be flrand(0.0f, 359.0f)?
 			AngleVectors(teleport_angles, forward, NULL, NULL);
-			VectorCopy(self->s.origin, startpos);
-			tracedist = irand(self->min_missile_range, self->missile_range/2);
-			VectorMA(startpos, -tracedist, forward, endpos);
-			noblockent = self;
+
+			VectorCopy(self->s.origin, start_pos);
+
+			trace_dist = flrand(self->min_missile_range, self->missile_range / 2.0f); //mxd. irand() in original logic.
+			VectorMA(start_pos, -trace_dist, forward, end_pos);
+			noblock_ent = self;
 		}
-		
-		gi.trace(startpos, self->mins, self->maxs, endpos, noblockent, MASK_MONSTERSOLID,&trace);
-		
-		if(trace.fraction*tracedist < 100)//min origin lerp dist
+
+		trace_t trace;
+		gi.trace(start_pos, self->mins, self->maxs, end_pos, noblock_ent, MASK_MONSTERSOLID, &trace);
+
+		if (trace.allsolid || trace.startsolid || trace.fraction * trace_dist < 100.0f) // Minimum origin lerp distance.
 			continue;
 
-		if(trace.allsolid || trace.startsolid)
-			continue;
-		
-		if(vhlen(trace.endpos, self->enemy->s.origin)>=self->min_missile_range)
+		if (vhlen(trace.endpos, self->enemy->s.origin) >= self->min_missile_range)
 		{
-			VectorCopy(trace.endpos, startpos);
-			VectorCopy(trace.endpos, endpos);
-			endpos[2] -=64;
-			gi.trace(startpos, self->mins, self->maxs, endpos, noblockent, MASK_MONSTERSOLID,&trace);
-			if(trace.fraction<1.0 && !trace.allsolid && !trace.startsolid)//the last two should be false if trace.fraction is < 1.0 but doesn't hurt to check
+			VectorCopy(trace.endpos, start_pos);
+			VectorCopy(trace.endpos, end_pos);
+			end_pos[2] -= 64.0f;
+
+			gi.trace(start_pos, self->mins, self->maxs, end_pos, noblock_ent, MASK_MONSTERSOLID, &trace);
+
+			if (trace.fraction < 1.0f && !trace.allsolid && !trace.startsolid) // The last two should be false if trace.fraction is < 1.0 but doesn't hurt to check.
 			{
 				assassinPrepareTeleportDest(self, trace.endpos, instant);
 				return true;
 			}
 		}
 	}
+
 	return false;
 }
 
@@ -1824,7 +1822,7 @@ qboolean assassinCheckTeleport (edict_t *self, int type)
 	if(!visible(self->enemy, self))
 		return false;*/
 
-	return assassinChooseTeleportDestination(self, type, false, false);
+	return AssassinChooseTeleportDestination(self, type, false, false);
 }
 
 void assassinUnCrouch (edict_t *self)
@@ -1974,7 +1972,7 @@ void assassinCloakThink (edict_t *self)
 								AI_FoundTarget(self, false);
 							}
 						}
-						if(assassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
+						if(AssassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
 							return;
 					}
 
@@ -1991,7 +1989,7 @@ void assassinCloakThink (edict_t *self)
 								AI_FoundTarget(self, false);
 							}
 						}
-						if(assassinChooseTeleportDestination(self, ASS_TP_ANY, true, false))
+						if(AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, false))
 							return;
 					}
 
@@ -2012,7 +2010,7 @@ void assassinCloakThink (edict_t *self)
 								case ASEQ_POLEVAULT2:
 								case ASEQ_POLEVAULT1_W:
 								case ASEQ_POLEVAULT1_R:
-									if(assassinChooseTeleportDestination(self, ASS_TP_ANY, true, true))
+									if(AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, true))
 										return;
 									break;
 								default:
@@ -2029,7 +2027,7 @@ void assassinCloakThink (edict_t *self)
 								case ASEQ_POLEVAULT2:
 								case ASEQ_POLEVAULT1_W:
 								case ASEQ_POLEVAULT1_R:
-									if(assassinChooseTeleportDestination(self, ASS_TP_ANY, true, true))
+									if(AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, true))
 										return;
 									break;
 								default:
@@ -2039,7 +2037,7 @@ void assassinCloakThink (edict_t *self)
 					
 							if(found->client->playerinfo.shield_timer > level.time)
 							{
-								if(assassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
+								if(AssassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
 									return;
 							}
 						}
