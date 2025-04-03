@@ -91,44 +91,6 @@ static ClassResourceInfo_t res_info;
 
 #pragma endregion
 
-static void AssassinCinematicAnimsMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_c_anims' in original logic.
-{
-	int curr_anim;
-
-	ai_c_readmessage(self, msg);
-	self->monsterinfo.c_anim_flag = 0;
-
-	switch (msg->ID)
-	{
-		case MSG_C_ATTACK1:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
-			curr_anim = ANIM_C_ATTACK1;
-			break;
-
-		case MSG_C_ATTACK2:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
-			curr_anim = ANIM_C_ATTACK2;
-			break;
-
-		case MSG_C_IDLE1:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
-			curr_anim = ANIM_C_IDLE1;
-			break;
-
-		case MSG_C_RUN1:
-			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
-			curr_anim = ANIM_C_RUN1;
-			break;
-
-		default:
-			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
-			curr_anim = ANIM_C_IDLE1;
-			break;
-	}
-
-	SetAnim(self, curr_anim);
-}
-
 #pragma region ========================== Utility functions ==========================
 
 edict_t* AssassinDaggerReflect(edict_t* self, edict_t* other, const vec3_t vel) //mxd. Named 'AssassinArrowReflect' in original logic.
@@ -213,12 +175,6 @@ static void AssassinDaggerTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 #pragma endregion
 
 #pragma region ========================== Action functions ==========================
-
-static void AssassinJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_jump' in original logic.
-{
-	SetAnim(self, ANIM_FORCED_JUMP);
-	self->monsterinfo.aiflags |= AI_OVERRIDE_GUIDE;
-}
 
 // Create the guts of the dagger.
 static void AssassinDaggerInit(edict_t* dagger) //mxd. Named 'create_assassin_dagger' in original logic.
@@ -424,71 +380,6 @@ void assassin_dead(edict_t* self)
 	M_EndDeath(self);
 }
 
-static void AssassinDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_death' in original logic.
-{
-	if (self->monsterinfo.aiflags & AI_DONT_THINK)
-	{
-		const int anim_id = ((irand(0, 10) < 5) ? ANIM_DEATHB : ANIM_DEATHA); //mxd
-		SetAnim(self, anim_id);
-
-		return;
-	}
-
-	self->msgHandler = DeadMsgHandler;
-
-	if (self->deadflag == DEAD_DEAD) // Dead but still being hit.
-		return;
-
-	self->deadflag = DEAD_DEAD;
-
-	self->isBlocked = NULL;
-	self->bounced = NULL;
-
-	AssassinDropWeapon(self, BIT_LKNIFE | BIT_RKNIFE);
-
-	if (self->health <= -80) // Gib death?
-	{
-		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1.0f, ATTN_NORM, 0.0f);
-
-		if (irand(0, 10) < 5)
-		{
-			self->s.fmnodeinfo[MESH__TORSOFT].flags |= FMNI_NO_DRAW;
-			self->s.fmnodeinfo[MESH__TORSOBK].flags |= FMNI_NO_DRAW;
-			self->s.fmnodeinfo[MESH__HEAD].flags |= FMNI_NO_DRAW;
-			self->s.fmnodeinfo[MESH__R4ARM].flags |= FMNI_NO_DRAW;
-			self->s.fmnodeinfo[MESH__L4ARM].flags |= FMNI_NO_DRAW;
-			self->s.fmnodeinfo[MESH__KNIFES].flags |= FMNI_NO_DRAW;
-			self->s.fmnodeinfo[MESH__LUPARM].flags |= FMNI_NO_DRAW;
-			self->s.fmnodeinfo[MESH__RUPARM].flags |= FMNI_NO_DRAW;
-			self->s.fmnodeinfo[MESH__LKNIFE].flags |= FMNI_NO_DRAW;
-			self->s.fmnodeinfo[MESH__RKNIFE].flags |= FMNI_NO_DRAW;
-
-			SprayDebris(self, self->s.origin, 12, 100.0f);
-		}
-		else
-		{
-			self->think = BecomeDebris;
-			self->nextthink = level.time + FRAMETIME;
-
-			return;
-		}
-	}
-	else
-	{
-		gi.sound(self, CHAN_VOICE, sounds[SND_DIE1], 1.0f, ATTN_NORM, 0.0f); //mxd. Inlined assassin_random_death_sound(). Not very random after all...
-		self->msgHandler = DyingMsgHandler;
-	}
-
-	const int anim_id = ((self->health <= -80 && irand(0, 10) < 5) ? ANIM_DEATHA : ANIM_DEATHB); //mxd
-	SetAnim(self, anim_id);
-
-	self->pre_think = NULL;
-	self->next_pre_think = -1.0f;
-
-	if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != AssassinDeCloakFadePreThink)
-		AssassinInitDeCloak(self);
-}
-
 void assassin_growl(edict_t* self) //mxd. Named 'assassingrowl' in original logic.
 {
 	if (irand(0, 20) == 0)
@@ -521,47 +412,6 @@ static void AssassinSetRandomAttackAnim(edict_t* self) //mxd. Named 'assassin_ra
 	}
 
 	SetAnim(self, anim_id);
-}
-
-static void AssassinMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_melee' in original logic.
-{
-	if (M_ValidTarget(self, self->enemy))
-	{
-		if (irand(0, 7) == 0 && AssassinCheckTeleport(self, ASS_TP_OFF)) // 12.5% chance to try to get away.
-			return;
-
-		AssassinSetRandomAttackAnim(self);
-	}
-	else
-	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-	}
-}
-
-static void AssassinMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_missile' in original logic.
-{
-	if (M_ValidTarget(self, self->enemy))
-	{
-		if (irand(0, 10) == 0) // 10% chance try special action. //TODO: 0-10 is actually ~9%. Change to 0-9?
-		{
-			if (irand(0, 2) == 0) // 25% chance to teleport. //TODO: 0-2 is actually 33.3%. Change to 0-3?
-			{
-				if (AssassinCheckTeleport(self, ASS_TP_OFF))
-					return;
-			}
-			else if (!(self->s.renderfx & RF_ALPHA_TEXTURE) && !(self->spawnflags & MSF_ASS_NOSHADOW)) // 75% chance to cloak.
-			{
-				SetAnim(self, ANIM_CLOAK);
-				return;
-			}
-		}
-
-		AssassinSetRandomAttackAnim(self);
-	}
-	else
-	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-	}
 }
 
 void assassin_post_pain(edict_t* self)
@@ -1002,63 +852,6 @@ static void AssassinDismember(edict_t* self, const int damage, HitLocation_t hl)
 
 #pragma endregion
 
-static void AssassinDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_dead_pain' in original logic.
-{
-	if (msg == NULL || (self->svflags & SVF_PARTS_GIBBED))
-		return;
-
-	//mxd. Inlined assassin_dismember_msg().
-	//FIXME: make part fly dir the vector from hit loc to sever loc. Remember - turn on caps!
-	int damage;
-	HitLocation_t hl;
-	ParseMsgParms(msg, "ii", &damage, &hl);
-
-	AssassinDismember(self, damage, hl);
-}
-
-static void AssassinPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_pain' in original logic.
-{
-	if (self->curAnimID == ANIM_TELEPORT)
-		return;
-
-	edict_t* inflictor;
-	edict_t* attacker;
-	qboolean force_pain;
-	int damage;
-	int temp;
-	ParseMsgParms(msg, "eeiii", &inflictor, &attacker, &force_pain, &damage, &temp);
-
-	if (inflictor == attacker || Q_stricmp(inflictor->classname, "Spell_RedRain") == 0 || Q_stricmp(inflictor->classname, "Spell_Hellbolt") == 0) //mxd. stricmp -> Q_stricmp
-	{
-		// Melee hit or constant effect, don't stick around!
-		if (!(self->spawnflags & MSF_ASS_NOTELEPORT) && !(self->spawnflags & MSF_FIXED) && self->groundentity != NULL && AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, false))
-			return;
-	}
-
-	if (!force_pain && irand(0, self->health) > damage) //mxd. flrand() in original logic.
-		return;
-
-	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
-
-	if (self->maxs[2] == 0.0f)
-		assassin_unset_crouched(self);
-
-	//mxd. Inlined assassin_random_pain_sound().
-	gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
-
-	if (force_pain || self->pain_debounce_time < level.time)
-	{
-		self->pain_debounce_time = level.time + skill->value + 2.0f;
-		SetAnim(self, ANIM_PAIN2);
-
-		if (irand(0, 10) > SKILL)
-		{
-			self->monsterinfo.misc_debounce_time = level.time + 3.0f; // 3 seconds before can re-cloak.
-			AssassinInitDeCloak(self);
-		}
-	}
-}
-
 void assassin_skip_frame_skill_check(edict_t* self) //mxd. Named 'assassinSkipFrameSkillCheck' in original logic.
 {
 	if (irand(0, 3) < SKILL)
@@ -1189,68 +982,6 @@ static qboolean AssassinChooseSideJumpAmbush(edict_t* self) //mxd. Named 'assass
 	return true;
 }
 
-static void AssassinRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_run' in original logic.
-{
-	if (self->enemy == NULL && (self->spawnflags & MSF_WANDER))
-	{
-		SetAnim(self, ANIM_RUN);
-		return;
-	}
-
-	if (self->spawnflags & MSF_ASS_STARTSHADOW) // De-cloak.
-	{
-		//FIXME: should I wait until infront of enemy and visible to him?
-		self->spawnflags &= ~MSF_ASS_STARTSHADOW;
-		assassin_init_cloak(self);
-	}
-
-	if (!(self->spawnflags & MSF_FIXED))
-	{
-		if (self->spawnflags & MSF_ASS_JUMPAMBUSH) // Jump out.
-		{
-			self->spawnflags &= ~MSF_ASS_JUMPAMBUSH;
-			AssassinChooseJumpAmbush(self);
-
-			return;
-		}
-
-		if (self->spawnflags & MSF_ASS_SIDEJUMPAMBUSH) // Side-jump out.
-		{
-			self->spawnflags &= ~MSF_ASS_SIDEJUMPAMBUSH;
-			if (AssassinChooseSideJumpAmbush(self))
-				return;
-		}
-	}
-
-	if (self->curAnimID >= ANIM_CROUCH_IDLE && self->curAnimID < ANIM_CROUCH_END)
-	{
-		SetAnim(self, ANIM_CROUCH_END);
-		return;
-	}
-
-	if (M_ValidTarget(self, self->enemy))
-	{
-		if (irand(0, 7) == 0)
-		{
-			if (AssassinCheckTeleport(self, ASS_TP_OFF))
-				return;
-
-			if (irand(0, 3) == 0 && !(self->s.renderfx & RF_ALPHA_TEXTURE) && !(self->spawnflags & MSF_ASS_NOSHADOW))
-			{
-				SetAnim(self, ANIM_CLOAK);
-				return;
-			}
-		}
-
-		const int anim_id = ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_RUN); //mxd
-		SetAnim(self, anim_id);
-	}
-	else
-	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-	}
-}
-
 void assassin_run(edict_t* self, float dist) //mxd. Named 'assassin_go_run' in original logic.
 {
 	if (self->maxs[2] == 0.0f)
@@ -1260,21 +991,6 @@ void assassin_run(edict_t* self, float dist) //mxd. Named 'assassin_go_run' in o
 		MG_AI_Run(self, dist);
 	else
 		ai_walk(self, dist);
-}
-
-static void AssassinStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_stand' in original logic.
-{
-	if (self->ai_mood == AI_MOOD_DELAY)
-	{
-		SetAnim(self, ANIM_DELAY);
-	}
-	else
-	{
-		if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != AssassinDeCloakFadePreThink)
-			AssassinInitDeCloak(self);
-
-		SetAnim(self, ANIM_STAND);
-	}
 }
 
 void assassin_crouch_idle_decision(edict_t* self)
@@ -1360,154 +1076,9 @@ void assassin_ai_walk(edict_t* self, float dist)
 	ai_walk(self, dist);
 }
 
-static void AssassinWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_walk' in original logic.
-{
-	if (self->spawnflags & MSF_FIXED)
-	{
-		SetAnim(self, ANIM_DELAY);
-	}
-	else
-	{
-		const int anim_id = ((self->curAnimID == ANIM_WALK_LOOP) ? ANIM_WALK_LOOP : ANIM_WALK); //mxd
-		SetAnim(self, anim_id);
-	}
-}
-
 void assassin_walk_loop_go(edict_t* self) //mxd. Named 'assasin_walk_loop_go' in original logic.
 {
 	SetAnim(self, ANIM_WALK_LOOP);
-}
-
-static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_evade' in original logic.
-{
-	typedef struct EvadeChance_s //mxd
-	{
-		int duck_chance;
-		int dodgeleft_chance;
-		int dodgeright_chance;
-		int jump_chance;
-		int backflip_chance;
-		int frontflip_chance;
-	} EvadeChance_t;
-
-	static const EvadeChance_t evade_chances[] = //mxd. Use struct.
-	{
-		{.duck_chance = 20, .dodgeleft_chance = 10, .dodgeright_chance = 10, .jump_chance = 10, .backflip_chance = 10, .frontflip_chance = 10 }, // hl_NoneSpecific
-		{.duck_chance = 95, .dodgeleft_chance = 50, .dodgeright_chance = 50, .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_Head
-		{.duck_chance = 85, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 60, .frontflip_chance = 0  }, // hl_TorsoFront
-		{.duck_chance = 80, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 0,  .frontflip_chance = 60 }, // hl_TorsoBack
-		{.duck_chance = 75, .dodgeleft_chance = 0,  .dodgeright_chance = 90, .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmUpperLeft
-		{.duck_chance = 75, .dodgeleft_chance = 0,  .dodgeright_chance = 80, .jump_chance = 30, .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmLowerLeft
-		{.duck_chance = 60, .dodgeleft_chance = 90, .dodgeright_chance = 0,  .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmUpperRight
-		{.duck_chance = 20, .dodgeleft_chance = 80, .dodgeright_chance = 0,  .jump_chance = 30, .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmLowerRight
-		{.duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 60, .jump_chance = 50, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegUpperLeft
-		{.duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 30, .jump_chance = 80, .backflip_chance = 40, .frontflip_chance = 40 }, // hl_LegLowerLeft
-		{.duck_chance = 0,  .dodgeleft_chance = 60, .dodgeright_chance = 0,  .jump_chance = 50, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegUpperRight
-		{.duck_chance = 0,  .dodgeleft_chance = 30, .dodgeright_chance = 0,  .jump_chance = 80, .backflip_chance = 40, .frontflip_chance = 40 }, // hl_LegLowerRight
-	};
-
-	if (self->groundentity == NULL)
-		return;
-
-	edict_t* projectile;
-	HitLocation_t hl;
-	float eta;
-	ParseMsgParms(msg, "eif", &projectile, &hl, &eta);
-
-	self->evade_debounce_time = level.time + min(eta, 2.0f);
-
-	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
-	{
-		// Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard.
-		if (Q_stricmp(projectile->classname, "Spell_PhoenixArrow") == 0 ||
-			Q_stricmp(projectile->classname, "Spell_FireWall") == 0 ||
-			Q_stricmp(projectile->classname, "Spell_SphereOfAnnihilation") == 0 ||
-			Q_stricmp(projectile->classname, "Spell_Maceball") == 0) //mxd. stricmp -> Q_stricmp
-		{
-			if (AssassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
-				return;
-		}
-	}
-
-	if (irand(0, 100) < SKILL * 10 && self->pre_think != AssassinCloakFadePreThink)
-		assassin_init_cloak(self);
-
-	int chance = irand(0, 10);
-	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
-	{
-		// Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard.
-		if (chance > 8 && !(self->spawnflags & MSF_ASS_NOTELEPORT) && AssassinChooseTeleportDestination(self, ASS_TP_DEF, false, false))
-			return;
-	}
-
-	//mxd. Get evade info.
-	if (hl < hl_NoneSpecific || hl > hl_LegLowerRight)
-		hl = hl_NoneSpecific;
-
-	const EvadeChance_t* ec = &evade_chances[hl];
-
-	chance = irand(0, 100);
-	if (chance < ec->frontflip_chance)
-	{
-		SetAnim(self, ANIM_EVFRONTFLIP); //mxd. Inline assassinFrontFlip().
-		return;
-	}
-
-	chance = irand(0, 100);
-	if (chance < ec->backflip_chance)
-	{
-		if (self->curAnimID == ANIM_RUN && irand(0, 3) > 0) // Running, do the front flip.
-			SetAnim(self, ANIM_EVFRONTFLIP); //mxd. Inline assassinFrontFlip().
-		else if (irand(0, 1) == 1)
-			SetAnim(self, ANIM_BACKSPRING); //mxd. Inline assassinBackSprings().
-		else
-			SetAnim(self, ANIM_EVBACKFLIP); //mxd. Inline assassinBackFlip().
-
-		return;
-	}
-
-	chance = irand(0, 100);
-	if (chance < ec->duck_chance)
-	{
-		self->evade_debounce_time = level.time + eta + 2.0f - skill->value;
-		SetAnim(self, ANIM_CROUCH); //mxd. Inline assassinCrouch().
-
-		return;
-	}
-
-	chance = irand(0, 100);
-	if (chance < ec->dodgeleft_chance)
-	{
-		SetAnim(self, ANIM_DODGE_LEFT); //mxd. Inline assassinDodgeLeft().
-		return;
-	}
-
-	chance = irand(0, 100);
-	if (chance < ec->dodgeright_chance)
-	{
-		SetAnim(self, ANIM_DODGE_RIGHT); //mxd. Inline assassinDodgeRight().
-		return;
-	}
-
-	chance = irand(0, 100);
-	if (chance < ec->jump_chance)
-	{
-		if (self->curAnimID == ANIM_RUN && irand(0, 4) > 0) // Running, do the front flip.
-			SetAnim(self, ANIM_EVFRONTFLIP); //mxd. Inline assassinFrontFlip().
-		else
-			SetAnim(self, ANIM_EVJUMP); //mxd. Inline assassinJump().
-
-		return;
-	}
-
-	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
-	{
-		// Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard.
-		if (!(self->spawnflags & MSF_ASS_NOTELEPORT) && AssassinChooseTeleportDestination(self, ASS_TP_DEF, false, false))
-			return;
-	}
-
-	self->evade_debounce_time = 0.0f;
 }
 
 void assassin_crouched_check_attack(edict_t* self, float attack) //mxd. Named 'assassinCrouchedCheckAttack' in original logic.
@@ -2081,11 +1652,444 @@ void assassin_init_cloak(edict_t* self) //mxd. Named 'assassinInitCloak' in orig
 	self->next_pre_think = level.time + FRAMETIME;
 }
 
+#pragma region ========================== Message handlers ==========================
+
+static void AssassinStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_stand' in original logic.
+{
+	if (self->ai_mood == AI_MOOD_DELAY)
+	{
+		SetAnim(self, ANIM_DELAY);
+	}
+	else
+	{
+		if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != AssassinDeCloakFadePreThink)
+			AssassinInitDeCloak(self);
+
+		SetAnim(self, ANIM_STAND);
+	}
+}
+
+static void AssassinWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_walk' in original logic.
+{
+	if (self->spawnflags & MSF_FIXED)
+	{
+		SetAnim(self, ANIM_DELAY);
+	}
+	else
+	{
+		const int anim_id = ((self->curAnimID == ANIM_WALK_LOOP) ? ANIM_WALK_LOOP : ANIM_WALK); //mxd
+		SetAnim(self, anim_id);
+	}
+}
+
+static void AssassinRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_run' in original logic.
+{
+	if (self->enemy == NULL && (self->spawnflags & MSF_WANDER))
+	{
+		SetAnim(self, ANIM_RUN);
+		return;
+	}
+
+	if (self->spawnflags & MSF_ASS_STARTSHADOW) // De-cloak.
+	{
+		//FIXME: should I wait until infront of enemy and visible to him?
+		self->spawnflags &= ~MSF_ASS_STARTSHADOW;
+		assassin_init_cloak(self);
+	}
+
+	if (!(self->spawnflags & MSF_FIXED))
+	{
+		if (self->spawnflags & MSF_ASS_JUMPAMBUSH) // Jump out.
+		{
+			self->spawnflags &= ~MSF_ASS_JUMPAMBUSH;
+			AssassinChooseJumpAmbush(self);
+
+			return;
+		}
+
+		if (self->spawnflags & MSF_ASS_SIDEJUMPAMBUSH) // Side-jump out.
+		{
+			self->spawnflags &= ~MSF_ASS_SIDEJUMPAMBUSH;
+			if (AssassinChooseSideJumpAmbush(self))
+				return;
+		}
+	}
+
+	if (self->curAnimID >= ANIM_CROUCH_IDLE && self->curAnimID < ANIM_CROUCH_END)
+	{
+		SetAnim(self, ANIM_CROUCH_END);
+		return;
+	}
+
+	if (M_ValidTarget(self, self->enemy))
+	{
+		if (irand(0, 7) == 0)
+		{
+			if (AssassinCheckTeleport(self, ASS_TP_OFF))
+				return;
+
+			if (irand(0, 3) == 0 && !(self->s.renderfx & RF_ALPHA_TEXTURE) && !(self->spawnflags & MSF_ASS_NOSHADOW))
+			{
+				SetAnim(self, ANIM_CLOAK);
+				return;
+			}
+		}
+
+		const int anim_id = ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_RUN); //mxd
+		SetAnim(self, anim_id);
+	}
+	else
+	{
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	}
+}
+
+static void AssassinMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_melee' in original logic.
+{
+	if (M_ValidTarget(self, self->enemy))
+	{
+		if (irand(0, 7) == 0 && AssassinCheckTeleport(self, ASS_TP_OFF)) // 12.5% chance to try to get away.
+			return;
+
+		AssassinSetRandomAttackAnim(self);
+	}
+	else
+	{
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	}
+}
+
+static void AssassinMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_missile' in original logic.
+{
+	if (M_ValidTarget(self, self->enemy))
+	{
+		if (irand(0, 10) == 0) // 10% chance try special action. //TODO: 0-10 is actually ~9%. Change to 0-9?
+		{
+			if (irand(0, 2) == 0) // 25% chance to teleport. //TODO: 0-2 is actually 33.3%. Change to 0-3?
+			{
+				if (AssassinCheckTeleport(self, ASS_TP_OFF))
+					return;
+			}
+			else if (!(self->s.renderfx & RF_ALPHA_TEXTURE) && !(self->spawnflags & MSF_ASS_NOSHADOW)) // 75% chance to cloak.
+			{
+				SetAnim(self, ANIM_CLOAK);
+				return;
+			}
+		}
+
+		AssassinSetRandomAttackAnim(self);
+	}
+	else
+	{
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	}
+}
+
+static void AssassinPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_pain' in original logic.
+{
+	if (self->curAnimID == ANIM_TELEPORT)
+		return;
+
+	edict_t* inflictor;
+	edict_t* attacker;
+	qboolean force_pain;
+	int damage;
+	int temp;
+	ParseMsgParms(msg, "eeiii", &inflictor, &attacker, &force_pain, &damage, &temp);
+
+	if (inflictor == attacker || Q_stricmp(inflictor->classname, "Spell_RedRain") == 0 || Q_stricmp(inflictor->classname, "Spell_Hellbolt") == 0) //mxd. stricmp -> Q_stricmp
+	{
+		// Melee hit or constant effect, don't stick around!
+		if (!(self->spawnflags & MSF_ASS_NOTELEPORT) && !(self->spawnflags & MSF_FIXED) && self->groundentity != NULL && AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, false))
+			return;
+	}
+
+	if (!force_pain && irand(0, self->health) > damage) //mxd. flrand() in original logic.
+		return;
+
+	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
+
+	if (self->maxs[2] == 0.0f)
+		assassin_unset_crouched(self);
+
+	//mxd. Inlined assassin_random_pain_sound().
+	gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
+
+	if (force_pain || self->pain_debounce_time < level.time)
+	{
+		self->pain_debounce_time = level.time + skill->value + 2.0f;
+		SetAnim(self, ANIM_PAIN2);
+
+		if (irand(0, 10) > SKILL)
+		{
+			self->monsterinfo.misc_debounce_time = level.time + 3.0f; // 3 seconds before can re-cloak.
+			AssassinInitDeCloak(self);
+		}
+	}
+}
+
+static void AssassinDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_death' in original logic.
+{
+	if (self->monsterinfo.aiflags & AI_DONT_THINK)
+	{
+		const int anim_id = ((irand(0, 10) < 5) ? ANIM_DEATHB : ANIM_DEATHA); //mxd
+		SetAnim(self, anim_id);
+
+		return;
+	}
+
+	self->msgHandler = DeadMsgHandler;
+
+	if (self->deadflag == DEAD_DEAD) // Dead but still being hit.
+		return;
+
+	self->deadflag = DEAD_DEAD;
+
+	self->isBlocked = NULL;
+	self->bounced = NULL;
+
+	AssassinDropWeapon(self, BIT_LKNIFE | BIT_RKNIFE);
+
+	if (self->health <= -80) // Gib death?
+	{
+		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1.0f, ATTN_NORM, 0.0f);
+
+		if (irand(0, 10) < 5)
+		{
+			self->s.fmnodeinfo[MESH__TORSOFT].flags |= FMNI_NO_DRAW;
+			self->s.fmnodeinfo[MESH__TORSOBK].flags |= FMNI_NO_DRAW;
+			self->s.fmnodeinfo[MESH__HEAD].flags |= FMNI_NO_DRAW;
+			self->s.fmnodeinfo[MESH__R4ARM].flags |= FMNI_NO_DRAW;
+			self->s.fmnodeinfo[MESH__L4ARM].flags |= FMNI_NO_DRAW;
+			self->s.fmnodeinfo[MESH__KNIFES].flags |= FMNI_NO_DRAW;
+			self->s.fmnodeinfo[MESH__LUPARM].flags |= FMNI_NO_DRAW;
+			self->s.fmnodeinfo[MESH__RUPARM].flags |= FMNI_NO_DRAW;
+			self->s.fmnodeinfo[MESH__LKNIFE].flags |= FMNI_NO_DRAW;
+			self->s.fmnodeinfo[MESH__RKNIFE].flags |= FMNI_NO_DRAW;
+
+			SprayDebris(self, self->s.origin, 12, 100.0f);
+		}
+		else
+		{
+			self->think = BecomeDebris;
+			self->nextthink = level.time + FRAMETIME;
+
+			return;
+		}
+	}
+	else
+	{
+		gi.sound(self, CHAN_VOICE, sounds[SND_DIE1], 1.0f, ATTN_NORM, 0.0f); //mxd. Inlined assassin_random_death_sound(). Not very random after all...
+		self->msgHandler = DyingMsgHandler;
+	}
+
+	const int anim_id = ((self->health <= -80 && irand(0, 10) < 5) ? ANIM_DEATHA : ANIM_DEATHB); //mxd
+	SetAnim(self, anim_id);
+
+	self->pre_think = NULL;
+	self->next_pre_think = -1.0f;
+
+	if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != AssassinDeCloakFadePreThink)
+		AssassinInitDeCloak(self);
+}
+
+static void AssassinDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_dead_pain' in original logic.
+{
+	if (msg == NULL || (self->svflags & SVF_PARTS_GIBBED))
+		return;
+
+	//mxd. Inlined assassin_dismember_msg().
+	//FIXME: make part fly dir the vector from hit loc to sever loc. Remember - turn on caps!
+	int damage;
+	HitLocation_t hl;
+	ParseMsgParms(msg, "ii", &damage, &hl);
+
+	AssassinDismember(self, damage, hl);
+}
+
+static void AssassinJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_jump' in original logic.
+{
+	SetAnim(self, ANIM_FORCED_JUMP);
+	self->monsterinfo.aiflags |= AI_OVERRIDE_GUIDE;
+}
+
+static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_evade' in original logic.
+{
+	typedef struct EvadeChance_s //mxd
+	{
+		int duck_chance;
+		int dodgeleft_chance;
+		int dodgeright_chance;
+		int jump_chance;
+		int backflip_chance;
+		int frontflip_chance;
+	} EvadeChance_t;
+
+	static const EvadeChance_t evade_chances[] = //mxd. Use struct.
+	{
+		{.duck_chance = 20, .dodgeleft_chance = 10, .dodgeright_chance = 10, .jump_chance = 10, .backflip_chance = 10, .frontflip_chance = 10 }, // hl_NoneSpecific
+		{.duck_chance = 95, .dodgeleft_chance = 50, .dodgeright_chance = 50, .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_Head
+		{.duck_chance = 85, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 60, .frontflip_chance = 0  }, // hl_TorsoFront
+		{.duck_chance = 80, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 0,  .frontflip_chance = 60 }, // hl_TorsoBack
+		{.duck_chance = 75, .dodgeleft_chance = 0,  .dodgeright_chance = 90, .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmUpperLeft
+		{.duck_chance = 75, .dodgeleft_chance = 0,  .dodgeright_chance = 80, .jump_chance = 30, .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmLowerLeft
+		{.duck_chance = 60, .dodgeleft_chance = 90, .dodgeright_chance = 0,  .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmUpperRight
+		{.duck_chance = 20, .dodgeleft_chance = 80, .dodgeright_chance = 0,  .jump_chance = 30, .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmLowerRight
+		{.duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 60, .jump_chance = 50, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegUpperLeft
+		{.duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 30, .jump_chance = 80, .backflip_chance = 40, .frontflip_chance = 40 }, // hl_LegLowerLeft
+		{.duck_chance = 0,  .dodgeleft_chance = 60, .dodgeright_chance = 0,  .jump_chance = 50, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegUpperRight
+		{.duck_chance = 0,  .dodgeleft_chance = 30, .dodgeright_chance = 0,  .jump_chance = 80, .backflip_chance = 40, .frontflip_chance = 40 }, // hl_LegLowerRight
+	};
+
+	if (self->groundentity == NULL)
+		return;
+
+	edict_t* projectile;
+	HitLocation_t hl;
+	float eta;
+	ParseMsgParms(msg, "eif", &projectile, &hl, &eta);
+
+	self->evade_debounce_time = level.time + min(eta, 2.0f);
+
+	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
+	{
+		// Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard.
+		if (Q_stricmp(projectile->classname, "Spell_PhoenixArrow") == 0 ||
+			Q_stricmp(projectile->classname, "Spell_FireWall") == 0 ||
+			Q_stricmp(projectile->classname, "Spell_SphereOfAnnihilation") == 0 ||
+			Q_stricmp(projectile->classname, "Spell_Maceball") == 0) //mxd. stricmp -> Q_stricmp
+		{
+			if (AssassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
+				return;
+		}
+	}
+
+	if (irand(0, 100) < SKILL * 10 && self->pre_think != AssassinCloakFadePreThink)
+		assassin_init_cloak(self);
+
+	int chance = irand(0, 10);
+	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
+	{
+		// Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard.
+		if (chance > 8 && !(self->spawnflags & MSF_ASS_NOTELEPORT) && AssassinChooseTeleportDestination(self, ASS_TP_DEF, false, false))
+			return;
+	}
+
+	//mxd. Get evade info.
+	if (hl < hl_NoneSpecific || hl > hl_LegLowerRight)
+		hl = hl_NoneSpecific;
+
+	const EvadeChance_t* ec = &evade_chances[hl];
+
+	chance = irand(0, 100);
+	if (chance < ec->frontflip_chance)
+	{
+		SetAnim(self, ANIM_EVFRONTFLIP); //mxd. Inline assassinFrontFlip().
+		return;
+	}
+
+	chance = irand(0, 100);
+	if (chance < ec->backflip_chance)
+	{
+		if (self->curAnimID == ANIM_RUN && irand(0, 3) > 0) // Running, do the front flip.
+			SetAnim(self, ANIM_EVFRONTFLIP); //mxd. Inline assassinFrontFlip().
+		else if (irand(0, 1) == 1)
+			SetAnim(self, ANIM_BACKSPRING); //mxd. Inline assassinBackSprings().
+		else
+			SetAnim(self, ANIM_EVBACKFLIP); //mxd. Inline assassinBackFlip().
+
+		return;
+	}
+
+	chance = irand(0, 100);
+	if (chance < ec->duck_chance)
+	{
+		self->evade_debounce_time = level.time + eta + 2.0f - skill->value;
+		SetAnim(self, ANIM_CROUCH); //mxd. Inline assassinCrouch().
+
+		return;
+	}
+
+	chance = irand(0, 100);
+	if (chance < ec->dodgeleft_chance)
+	{
+		SetAnim(self, ANIM_DODGE_LEFT); //mxd. Inline assassinDodgeLeft().
+		return;
+	}
+
+	chance = irand(0, 100);
+	if (chance < ec->dodgeright_chance)
+	{
+		SetAnim(self, ANIM_DODGE_RIGHT); //mxd. Inline assassinDodgeRight().
+		return;
+	}
+
+	chance = irand(0, 100);
+	if (chance < ec->jump_chance)
+	{
+		if (self->curAnimID == ANIM_RUN && irand(0, 4) > 0) // Running, do the front flip.
+			SetAnim(self, ANIM_EVFRONTFLIP); //mxd. Inline assassinFrontFlip().
+		else
+			SetAnim(self, ANIM_EVJUMP); //mxd. Inline assassinJump().
+
+		return;
+	}
+
+	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
+	{
+		// Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard.
+		if (!(self->spawnflags & MSF_ASS_NOTELEPORT) && AssassinChooseTeleportDestination(self, ASS_TP_DEF, false, false))
+			return;
+	}
+
+	self->evade_debounce_time = 0.0f;
+}
+
 static void AssassinCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_check_mood' in original logic.
 {
 	ParseMsgParms(msg, "i", &self->ai_mood);
 	assassin_pause(self);
 }
+
+static void AssassinCinematicAnimsMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_c_anims' in original logic.
+{
+	int curr_anim;
+
+	ai_c_readmessage(self, msg);
+	self->monsterinfo.c_anim_flag = 0;
+
+	switch (msg->ID)
+	{
+		case MSG_C_ATTACK1:
+			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			curr_anim = ANIM_C_ATTACK1;
+			break;
+
+		case MSG_C_ATTACK2:
+			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			curr_anim = ANIM_C_ATTACK2;
+			break;
+
+		case MSG_C_IDLE1:
+			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			curr_anim = ANIM_C_IDLE1;
+			break;
+
+		case MSG_C_RUN1:
+			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
+			curr_anim = ANIM_C_RUN1;
+			break;
+
+		default:
+			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
+			curr_anim = ANIM_C_IDLE1;
+			break;
+	}
+
+	SetAnim(self, curr_anim);
+}
+
+#pragma endregion
 
 void AssassinStaticsInit(void)
 {
