@@ -1378,7 +1378,7 @@ static void AssassinWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	}
 }
 
-void assasin_walk_loop_go(edict_t* self)
+void assassin_walk_loop_go(edict_t* self) //mxd. Named 'assasin_walk_loop_go' in original logic.
 {
 	SetAnim(self, ANIM_WALK_LOOP);
 }

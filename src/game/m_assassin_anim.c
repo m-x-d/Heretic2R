@@ -454,7 +454,7 @@ static const animframe_t assassin_frames_walk[] =
 	{ FRAME_newwalk2, NULL, 0.0f, 0.0f, 0.0f, ai_walk, 6.0f, NULL },
 	{ FRAME_newwalk3, NULL, 0.0f, 0.0f, 0.0f, ai_walk, 6.0f, NULL },
 };
-const animmove_t assassin_move_walk = { 3, assassin_frames_walk, assasin_walk_loop_go };
+const animmove_t assassin_move_walk = { 3, assassin_frames_walk, assassin_walk_loop_go };
 
 // Assassin walking loop.
 static const animframe_t assassin_frames_walk_loop[] =
