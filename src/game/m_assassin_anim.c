@@ -305,7 +305,7 @@ static const animframe_t assassin_frames_jump[] =
 	{ FRAME_jump10,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_jump11,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 };
-const animmove_t assassin_move_jump = { 11, assassin_frames_jump, assassin_go_inair };
+const animmove_t assassin_move_jump = { 11, assassin_frames_jump, assassin_inair_go };
 
 // Assassin forced jump.
 static const animframe_t assassin_frames_forcedjump[] =
@@ -322,7 +322,7 @@ static const animframe_t assassin_frames_forcedjump[] =
 	{ FRAME_jump10,	MG_InAirMove, 50.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_jump11,	MG_InAirMove, 50.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 };
-const animmove_t assassin_move_forcedjump = { 11, assassin_frames_forcedjump, assassin_go_inair };
+const animmove_t assassin_move_forcedjump = { 11, assassin_frames_forcedjump, assassin_inair_go };
 
 // Assassin forced jump.
 static const animframe_t assassin_frames_fjump[] =

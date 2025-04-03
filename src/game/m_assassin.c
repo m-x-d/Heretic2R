@@ -1567,7 +1567,7 @@ void assassin_jump_go(edict_t* self, float forward_speed, float up_speed, float 
 	VectorMA(self->velocity, right_speed, right, self->velocity);
 }
 
-void assassin_go_inair(edict_t* self) //TODO: rename to assassin_inair_go?
+void assassin_inair_go(edict_t* self) //mxd. Named 'assassin_go_inair' in original logic.
 {
 	SetAnim(self, ANIM_INAIR);
 }
