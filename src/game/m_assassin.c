@@ -181,67 +181,6 @@ void assassin_jump(edict_t *self, G_Message_t *msg)
 	self->monsterinfo.aiflags |= AI_OVERRIDE_GUIDE;
 }
 
-// The blocked function isn't currently used.
-/*
-void assassinDaggerBlocked (edict_t *self, trace_t *trace)
-{
-	float damage;
-	vec3_t	hitangles;
-	edict_t *Other;
-	Other = trace->ent;
-
-	if(Other==self->owner||Other->owner == self->owner)
-	{
-		return;
-	}
-
-	// are we reflecting ?
-	if(EntReflecting(trace->ent, true, true))
-	{
-		Create_rand_relect_vect(self->velocity, self->velocity);
-		Vec3ScaleAssign(ASSASSIN_DAGGER_SPEED / 2, self->velocity);
-		AssassinArrowReflect(self, Other, self->velocity);
-
-		return;
-	}
-
-	if(trace->surface&&(trace->surface->flags&SURF_SKY))
-	{
-		SkyFly(self);
-		return;
-	}
-
-//take into account if angle is within 45 of 0?
-	if(Other->takedamage)
-	{
-		if(Other->materialtype == MAT_FLESH||Other->client)
-			gi.sound(self,CHAN_AUTO,Sounds[SND_DAGHITF],1,ATTN_NORM,0);
-		else
-			gi.sound(self,CHAN_AUTO,Sounds[SND_DAGHITW],1,ATTN_NORM,0);
-		if(skill->value < 2)
-			damage = flrand(ASSASSIN_MIN_DAMAGE * 0.5, ASSASSIN_MAX_DAMAGE * 0.5);
-		else
-		{
-			damage = flrand(ASSASSIN_MIN_DAMAGE,ASSASSIN_MAX_DAMAGE);
-			if(Q_fabs(self->s.angles[PITCH])<45)//up to extra 10 pts damage if pointed correctly
-				damage += 45/(45 - Q_fabs(self->s.angles[PITCH])) * 10;
-		}
-		T_Damage(Other,self,self->owner,self->movedir,self->s.origin,trace->plane.normal, damage, 0, 0,MOD_DIED);
-	}
-	else//spark
-	{
-		if(Vec3NotZero(trace->plane.normal))
-			vectoangles(trace->plane.normal, hitangles);
-		else
-			VectorSet(hitangles, 0, 0, 90);
-		gi.CreateEffect(NULL, FX_SPARKS, 0, self->s.origin, "d", hitangles);
-		gi.sound(self,CHAN_AUTO,Sounds[SND_DAGHITW],1,ATTN_NORM,0);
-	}
-
-	G_FreeEdict(self);
-}
-*/
-
 void assassinDaggerTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface)
 {
 	float damage;
