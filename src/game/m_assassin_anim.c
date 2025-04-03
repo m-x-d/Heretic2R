@@ -771,7 +771,7 @@ static const animframe_t assassin_frames_cloak[] =
 	{ FRAME_jump15,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_jump16,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinInitCloak },
 };
-const animmove_t assassin_move_cloak = { 3, assassin_frames_cloak, assassinUnCrouch };
+const animmove_t assassin_move_cloak = { 3, assassin_frames_cloak, assassin_uncrouch };
 
 #pragma endregion
 

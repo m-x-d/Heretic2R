@@ -1805,7 +1805,7 @@ static qboolean AssassinCheckTeleport(edict_t* self, const int type) //mxd. Name
 	return AssassinChooseTeleportDestination(self, type, false, false);
 }
 
-void assassinUnCrouch(edict_t* self) //TODO: rename to assassin_uncrouch.
+void assassin_uncrouch(edict_t* self) //mxd. Named 'assassinUnCrouch' in original logic.
 {
 	SetAnim(self, ANIM_UNCROUCH);
 }
