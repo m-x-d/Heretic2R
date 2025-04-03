@@ -495,40 +495,32 @@ void assassingrowl(edict_t* self) //TODO: rename to assassin_growl?
 		gi.sound(self, CHAN_AUTO, sounds[irand(SND_GROWL1, SND_GROWL3)], 1.0f, ATTN_IDLE, 0.0f);
 }
 
-void assassin_random_attack(edict_t *self)
+static void AssassinSetRandomAttackAnim(edict_t* self) //mxd. Named 'assassin_random_attack' in original logic.
 {
-	int chance;
+	const int chance = irand(0, 3);
+	const qboolean have_left_arm = !(self->s.fmnodeinfo[MESH__L4ARM].flags & FMNI_NO_DRAW); //mxd
+	const qboolean have_right_arm = !(self->s.fmnodeinfo[MESH__R4ARM].flags & FMNI_NO_DRAW); //mxd
+	int anim_id;
 
-	chance = irand(0,3);
-
-
-	if((chance < 1&&!(self->s.fmnodeinfo[MESH__L4ARM].flags&FMNI_NO_DRAW)) ||
-		(self->s.fmnodeinfo[MESH__R4ARM].flags&FMNI_NO_DRAW&&!(self->s.fmnodeinfo[MESH__L4ARM].flags&FMNI_NO_DRAW)) )
+	if ((chance < 1 && have_left_arm) || (!have_right_arm && have_left_arm))
 	{
-		SetAnim(self, ANIM_DAGGERL);		
+		anim_id = ANIM_DAGGERL;
 	}
-	else if((chance < 2&&!(self->s.fmnodeinfo[MESH__R4ARM].flags&FMNI_NO_DRAW)) ||
-		(!(self->s.fmnodeinfo[MESH__R4ARM].flags&FMNI_NO_DRAW)&&self->s.fmnodeinfo[MESH__L4ARM].flags&FMNI_NO_DRAW) )
+	else if ((chance < 2 && have_right_arm) || (have_right_arm && !have_left_arm))
 	{
-		if(irand(0, 1))
-			SetAnim(self, ANIM_DAGGERR);		
-		else
-			SetAnim(self, ANIM_NEWDAGGER);		
+		anim_id = (irand(0, 1) == 1 ? ANIM_DAGGERR : ANIM_NEWDAGGER);
 	}
-	else if(!(self->s.fmnodeinfo[MESH__R4ARM].flags&FMNI_NO_DRAW)&&
-		!(self->s.fmnodeinfo[MESH__L4ARM].flags&FMNI_NO_DRAW))
+	else if (!(self->s.fmnodeinfo[MESH__R4ARM].flags & FMNI_NO_DRAW) && !(self->s.fmnodeinfo[MESH__L4ARM].flags & FMNI_NO_DRAW))
 	{
-		if(irand(0, 1))
-			SetAnim(self, ANIM_DAGGERB);
-		else
-			SetAnim(self, ANIM_NEWDAGGERB);		
+		anim_id = (irand(0, 1) == 1 ? ANIM_DAGGERB : ANIM_NEWDAGGERB);
 	}
 	else
 	{
-//		gi.dprintf("Can't attack!  Run away!\n");
 		self->monsterinfo.aiflags |= AI_COWARD;
-		SetAnim(self, ANIM_RUN);
+		anim_id = ANIM_RUN;
 	}
+
+	SetAnim(self, anim_id);
 }
 
 /*-------------------------------------------------------------------------
@@ -558,7 +550,7 @@ void assassin_melee(edict_t *self, G_Message_t *msg)
 				return;//try to get away
 			}
 		}
-		assassin_random_attack(self);
+		AssassinSetRandomAttackAnim(self);
 	}
 	else
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
@@ -588,7 +580,7 @@ void assassin_missile(edict_t *self, G_Message_t *msg)
 			}//else uncloak - unncloak when die
 		}
 		//need to check for if behind player- diff behaviour- get close and backstab?
-		assassin_random_attack(self);
+		AssassinSetRandomAttackAnim(self);
 	}
 	else
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
