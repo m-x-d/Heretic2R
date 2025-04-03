@@ -1251,16 +1251,17 @@ static void AssassinRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	}
 }
 
-void assassin_go_run(edict_t *self, float dist)
+void assassin_go_run(edict_t* self, float dist) //TODO: rename to assassin_run_go?
 {
-	if(!self->maxs[2])
-		assassinUndoCrouched (self);
+	if (self->maxs[2] == 0.0f)
+		assassinUndoCrouched(self);
 
-	if(self->enemy)
+	if (self->enemy != NULL)
 		MG_AI_Run(self, dist);
 	else
 		ai_walk(self, dist);
 }
+
 /*----------------------------------------------------------------------
   assassin runorder - order the assassin to choose an run animation
 -----------------------------------------------------------------------*/
