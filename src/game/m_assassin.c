@@ -538,35 +538,32 @@ static void AssassinMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	}
 }
 
-void assassin_missile(edict_t *self, G_Message_t *msg)
+static void AssassinMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_missile' in original logic.
 {
 	if (M_ValidTarget(self, self->enemy))
 	{
-		if(!irand(0, 10))
-		{//10% chance try special action
-			if(!irand(0, 2))
-			{//25% chance teleport
-				if(assassinCheckTeleport(self, ASS_TP_OFF))
-				{
-//					gi.dprintf("missile->teleport\n");
+		if (irand(0, 10) == 0) // 10% chance try special action. //TODO: 0-10 is actually ~9%. Change to 0-9?
+		{
+			if (irand(0, 2) == 0) // 25% chance to teleport. //TODO: 0-2 is actually 33.3%. Change to 0-3?
+			{
+				if (assassinCheckTeleport(self, ASS_TP_OFF))
 					return;
-				}
 			}
-			else if(!(self->s.renderfx & RF_ALPHA_TEXTURE))
-			{//75% cloak	
-				if(!(self->spawnflags&MSF_ASS_NOSHADOW))
-				{	
-					SetAnim(self, ANIM_CLOAK);
-					return;
-				}
-			}//else uncloak - unncloak when die
+			else if (!(self->s.renderfx & RF_ALPHA_TEXTURE) && !(self->spawnflags & MSF_ASS_NOSHADOW)) // 75% chance to cloak.
+			{
+				SetAnim(self, ANIM_CLOAK);
+				return;
+			}
 		}
-		//need to check for if behind player- diff behaviour- get close and backstab?
+
 		AssassinSetRandomAttackAnim(self);
 	}
 	else
+	{
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	}
 }
+
 /*-------------------------------------------------------------------------
 	assassin_pain
 -------------------------------------------------------------------------*/
@@ -2484,7 +2481,7 @@ void AssassinStaticsInit(void)
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_WALK] = assassin_walk;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_RUN] = assassin_run;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_MELEE] = AssassinMeleeMsgHandler;
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_MISSILE] = assassin_missile;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_MISSILE] = AssassinMissileMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_PAIN] = assassin_pain;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_DEATH] = AssassinDeathMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
