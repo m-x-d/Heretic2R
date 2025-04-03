@@ -302,7 +302,7 @@ static void AssassinThrowDagger(edict_t* self, const float right_ofs) //mxd. Nam
 }
 
 // Do melee or ranged attack.
-void assassindagger(edict_t* self, const float flags) //TODO: rename to assassin_attack.
+void assassin_attack(edict_t* self, const float flags) //mxd. Named 'assassindagger' in original logic.
 {
 	if (self->enemy == NULL || self->enemy->health < 0)
 	{
@@ -1521,7 +1521,7 @@ void assassinCrouchedCheckAttack(edict_t* self, float attack) //TODO: rename to 
 		return;
 
 	if (attack == 1.0f)
-		assassindagger(self, BIT_RKNIFE);
+		assassin_attack(self, BIT_RKNIFE);
 	else if (attack == 2.0f) // Start crouched attack animation.
 		SetAnim(self, ANIM_DAGGERC);
 	else // Loop back inside that anim.

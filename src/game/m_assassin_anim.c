@@ -25,7 +25,7 @@ static const animframe_t assassin_frames_daggerl[] =
 	{ FRAME_ataka7,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_ataka8,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_ataka9,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
-	{ FRAME_ataka10,	NULL, 0.0f, 0.0f, 0.0f, assassindagger, BIT_LKNIFE, NULL },
+	{ FRAME_ataka10,	NULL, 0.0f, 0.0f, 0.0f, assassin_attack, BIT_LKNIFE, NULL },
 	{ FRAME_ataka11,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_ataka12,	NULL, 0.0f, 0.0f, 0.0f, assassinCheckLoop, 2.0f, NULL }, // Check for loop to other attack.
 	{ FRAME_ataka13,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
@@ -46,7 +46,7 @@ static const animframe_t assassin_frames_daggerr[] =
 	{ FRAME_atakb8,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_atakb9,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_atakb10,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
-	{ FRAME_atakb11,	NULL, 0.0f, 0.0f, 0.0f, assassindagger, BIT_RKNIFE, NULL },
+	{ FRAME_atakb11,	NULL, 0.0f, 0.0f, 0.0f, assassin_attack, BIT_RKNIFE, NULL },
 	{ FRAME_atakb12,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_atakb13,	NULL, 0.0f, 0.0f, 0.0f, assassinCheckLoop, 2.0f, NULL }, // Check for loop to other attack.
 	{ FRAME_atakb14,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
@@ -68,7 +68,7 @@ static const animframe_t assassin_frames_daggerb[] =
 	{ FRAME_atakc9,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_atakc10,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_atakc11,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
-	{ FRAME_atakc12,	NULL, 0.0f, 0.0f, 0.0f, assassindagger, BIT_LKNIFE | BIT_RKNIFE, NULL },
+	{ FRAME_atakc12,	NULL, 0.0f, 0.0f, 0.0f, assassin_attack, BIT_LKNIFE | BIT_RKNIFE, NULL },
 	{ FRAME_atakc13,	NULL, 0.0f, 0.0f, 0.0f, assassinCheckLoop, 2.0f, NULL }, // Check for loop to other attack.
 	{ FRAME_atakc14,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 };
@@ -102,7 +102,7 @@ static const animframe_t assassin_frames_newdagger[] =
 	{ FRAME_newattackA6,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackA7,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackA8,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
-	{ FRAME_newattackA9,	NULL, 0.0f, 0.0f, 0.0f, assassindagger, BIT_RKNIFE, NULL },
+	{ FRAME_newattackA9,	NULL, 0.0f, 0.0f, 0.0f, assassin_attack, BIT_RKNIFE, NULL },
 	{ FRAME_newattackA10,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackA11,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackA12,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
@@ -122,13 +122,13 @@ static const animframe_t assassin_frames_newdaggerb[] =
 	{ FRAME_newattackB5,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackB6,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackB7,	NULL, 0.0f, 0.0f, 0.0f, assassinNodeOn, MESH__LKNIFE, NULL },
-	{ FRAME_newattackB8,	NULL, 0.0f, 0.0f, 0.0f, assassindagger, BIT_RKNIFE, NULL },
+	{ FRAME_newattackB8,	NULL, 0.0f, 0.0f, 0.0f, assassin_attack, BIT_RKNIFE, NULL },
 	{ FRAME_newattackB9,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackB10,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackB11,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackB12,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL }, // Check for loop to other attack.
 	{ FRAME_newattackB13,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
-	{ FRAME_newattackB14,	NULL, 0.0f, 0.0f, 0.0f, assassindagger, BIT_LKNIFE, NULL },
+	{ FRAME_newattackB14,	NULL, 0.0f, 0.0f, 0.0f, assassin_attack, BIT_LKNIFE, NULL },
 	{ FRAME_newattackB15,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackB16,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackB17,	NULL, 0.0f, 0.0f, 0.0f, assassinCheckLoop, 4, NULL },
