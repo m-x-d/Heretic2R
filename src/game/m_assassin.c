@@ -1637,7 +1637,7 @@ static void AssassinSmoke(const edict_t* self) //mxd. Named 'assassinSmoke' in o
 	gi.CreateEffect(NULL, FX_TPORTSMOKE, 0, pos, "");
 }
 
-void assassinGone(edict_t* self) //TODO: rename to assassin_gone?
+void assassin_gone(edict_t* self) //mxd. Named 'assassinGone' in original logic.
 {
 	if (self->placeholder != NULL)
 		G_FreeEdict(self->placeholder);
@@ -1693,7 +1693,7 @@ void assassinPrepareTeleportDest(edict_t* self, const vec3_t spot, const qboolea
 	if (instant && SKILL > SKILL_MEDIUM)
 	{
 		assassinReadyTeleport(self);
-		assassinGone(self);
+		assassin_gone(self);
 	}
 	else
 	{

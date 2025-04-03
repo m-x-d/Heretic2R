@@ -762,7 +762,7 @@ static const animframe_t assassin_frames_teleport[] =
 	{ FRAME_ataka10,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinReadyTeleport },
 	{ FRAME_ataka11,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 };
-const animmove_t assassin_move_teleport = { 9, assassin_frames_teleport, assassinGone };
+const animmove_t assassin_move_teleport = { 9, assassin_frames_teleport, assassin_gone };
 
 // Assassin clock.
 static const animframe_t assassin_frames_cloak[] =
