@@ -434,16 +434,16 @@ const animmove_t assassin_move_frontflip = { 10, assassin_frames_frontflip, assa
 static const animframe_t assassin_frames_run[] =
 {
 	// Recalculate movement values with new anim.
-	{ FRAME_run1,	NULL, 0.0f, 0.0f, 0.0f, assassin_go_run, 20.0f, assassin_growl },
-	{ FRAME_run2,	NULL, 0.0f, 0.0f, 0.0f, assassin_go_run, 18.0f, assassin_pause },
-	{ FRAME_run3,	NULL, 0.0f, 0.0f, 0.0f, assassin_go_run, 12.0f, assassin_pause },
-	{ FRAME_run4,	NULL, 0.0f, 0.0f, 0.0f, assassin_go_run, 16.0f, assassin_pause },
-	{ FRAME_run5,	NULL, 0.0f, 0.0f, 0.0f, assassin_go_run, 24.0f, assassin_pause },
-	{ FRAME_run6,	NULL, 0.0f, 0.0f, 0.0f, assassin_go_run, 18.0f, assassin_pause },
-	{ FRAME_run7,	NULL, 0.0f, 0.0f, 0.0f, assassin_go_run, 16.0f, assassin_pause },
-	{ FRAME_run8,	NULL, 0.0f, 0.0f, 0.0f, assassin_go_run, 12.0f, assassin_pause },
-	{ FRAME_run9,	NULL, 0.0f, 0.0f, 0.0f, assassin_go_run, 18.0f, assassin_pause },
-	{ FRAME_run10,	NULL, 0.0f, 0.0f, 0.0f, assassin_go_run, 26.0f, assassin_pause }
+	{ FRAME_run1,	NULL, 0.0f, 0.0f, 0.0f, assassin_run, 20.0f, assassin_growl },
+	{ FRAME_run2,	NULL, 0.0f, 0.0f, 0.0f, assassin_run, 18.0f, assassin_pause },
+	{ FRAME_run3,	NULL, 0.0f, 0.0f, 0.0f, assassin_run, 12.0f, assassin_pause },
+	{ FRAME_run4,	NULL, 0.0f, 0.0f, 0.0f, assassin_run, 16.0f, assassin_pause },
+	{ FRAME_run5,	NULL, 0.0f, 0.0f, 0.0f, assassin_run, 24.0f, assassin_pause },
+	{ FRAME_run6,	NULL, 0.0f, 0.0f, 0.0f, assassin_run, 18.0f, assassin_pause },
+	{ FRAME_run7,	NULL, 0.0f, 0.0f, 0.0f, assassin_run, 16.0f, assassin_pause },
+	{ FRAME_run8,	NULL, 0.0f, 0.0f, 0.0f, assassin_run, 12.0f, assassin_pause },
+	{ FRAME_run9,	NULL, 0.0f, 0.0f, 0.0f, assassin_run, 18.0f, assassin_pause },
+	{ FRAME_run10,	NULL, 0.0f, 0.0f, 0.0f, assassin_run, 26.0f, assassin_pause }
 };
 const animmove_t assassin_move_run = { 10, assassin_frames_run, assassin_pause };
 

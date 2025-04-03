@@ -158,7 +158,7 @@ extern void assassin_go_inair(edict_t* self);
 extern void assassin_go_evinair(edict_t* self);
 extern void assassin_go_bfinair(edict_t* self);
 extern void assassin_go_ffinair(edict_t* self);
-extern void assassin_go_run(edict_t* self, float dist);
+extern void assassin_run(edict_t* self, float dist);
 extern void assassin_walk_loop_go(edict_t* self);
 extern void assassin_ai_walk(edict_t* self, float dist);
 extern void assassin_post_pain(edict_t* self);

@@ -1251,7 +1251,7 @@ static void AssassinRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	}
 }
 
-void assassin_go_run(edict_t* self, float dist) //TODO: rename to assassin_run_go?
+void assassin_run(edict_t* self, float dist) //mxd. Named 'assassin_go_run' in original logic.
 {
 	if (self->maxs[2] == 0.0f)
 		assassinUndoCrouched(self);
