@@ -1201,7 +1201,7 @@ static void AssassinRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	{
 		//FIXME: should I wait until infront of enemy and visible to him?
 		self->spawnflags &= ~MSF_ASS_STARTSHADOW;
-		assassinInitCloak(self);
+		assassin_init_cloak(self);
 	}
 
 	if (!(self->spawnflags & MSF_FIXED))
@@ -1430,7 +1430,7 @@ static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	}
 
 	if (irand(0, 100) < SKILL * 10 && self->pre_think != AssassinCloakFadePreThink)
-		assassinInitCloak(self);
+		assassin_init_cloak(self);
 
 	int chance = irand(0, 10);
 	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
@@ -1853,7 +1853,7 @@ static void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThin
 		if (AssassinCheckCloak(self))
 		{
 			self->monsterinfo.misc_debounce_time = level.time + 7.0f; // 7 seconds before will willingly uncloak.
-			assassinInitCloak(self);
+			assassin_init_cloak(self);
 		}
 	}
 	else
@@ -2070,7 +2070,7 @@ static void AssassinInitDeCloak(edict_t* self) //mxd. Named 'assassinInitDeCloak
 	self->next_pre_think = level.time + FRAMETIME;
 }
 
-void assassinInitCloak(edict_t* self) //TODO: rename to assassin_init_cloak?
+void assassin_init_cloak(edict_t* self) //mxd. Named 'assassinInitCloak' in original logic.
 {
 	gi.sound(self, CHAN_AUTO, sounds[SND_CLOAK], 1.0f, ATTN_NORM, 0.0f);
 
@@ -2262,7 +2262,7 @@ void SP_monster_assassin(edict_t* self)
 	else
 	{
 		if (self->spawnflags & MSF_ASS_STARTSHADOW)
-			assassinInitCloak(self);
+			assassin_init_cloak(self);
 
 		self->pre_think = AssassinCloakPreThink;
 		self->next_pre_think = level.time + FRAMETIME;

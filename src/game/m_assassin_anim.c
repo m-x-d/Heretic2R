@@ -769,7 +769,7 @@ static const animframe_t assassin_frames_cloak[] =
 {
 	{ FRAME_jump14,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_set_crouched },
 	{ FRAME_jump15,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
-	{ FRAME_jump16,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinInitCloak },
+	{ FRAME_jump16,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_init_cloak },
 };
 const animmove_t assassin_move_cloak = { 3, assassin_frames_cloak, assassin_uncrouch };
 
