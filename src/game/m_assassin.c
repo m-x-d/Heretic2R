@@ -2145,26 +2145,16 @@ void AssassinStaticsInit(void)
 	classStatics[CID_ASSASSIN].resInfo = &res_info;
 }
 
-void assassinCheckDefense(edict_t *self, float enemydist, qboolean enemyvis, qboolean enemyinfront)
+static void AssassinCheckDefenseThink(edict_t* self, float enemy_dist, qboolean enemy_vis, qboolean enemy_infront) //mxd. Named 'assassinCheckDefense' in original logic.
 {
-	if(!enemyinfront&&enemyvis&&enemydist<self->melee_range)
+	if (!enemy_infront && enemy_vis && enemy_dist < self->melee_range)
 	{
-#ifdef _DEVEL
-		if(AssassinCheckTeleport(self, ASS_TP_DEF))
-			gi.dprintf("defense->teleport\n");
-#else
-		assassinCheckTeleport(self, ASS_TP_DEF);
-#endif
+		AssassinCheckTeleport(self, ASS_TP_DEF);
 	}
-	else if(!enemyvis && self->monsterinfo.last_successful_enemy_tracking_time + 6 - skill->value < level.time)
+	else if (!enemy_vis && self->monsterinfo.last_successful_enemy_tracking_time + 6.0f - skill->value < level.time)
 	{
-		if(irand(0, 10) > 10 - (3 * (skill->value + 1)))//hard = 90%, med is 40%, easy is 30%
-		{
-#ifdef _DEVEL
-			gi.dprintf("Assassin trying to teleport to %s since can't find them...\n", self->classname, self->enemy->classname);
-#endif
+		if (irand(0, 10) > 10 - (SKILL + 1) * 3) // Hard = 90%, medium is 40%, easy is 30%.
 			AssassinCheckTeleport(self, ASS_TP_OFF);
-		}
 	}
 }
 
@@ -2296,7 +2286,7 @@ void SP_monster_assassin (edict_t *self)
 	MG_InitMoods(self);
 	if(!irand(0,2))
 		self->ai_mood_flags |= AI_MOOD_FLAG_PREDICT;
-	self->cant_attack_think = assassinCheckDefense;
+	self->cant_attack_think = AssassinCheckDefenseThink;
 
 	self->monsterinfo.aiflags |= AI_NIGHTVISION;
 
