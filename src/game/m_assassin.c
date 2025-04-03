@@ -1189,41 +1189,40 @@ static qboolean AssassinChooseSideJumpAmbush(edict_t* self) //mxd. Named 'assass
 	return true;
 }
 
-/*-------------------------------------------------------------------------
-	assassin_run
--------------------------------------------------------------------------*/
-void assassin_run(edict_t *self, G_Message_t *msg)
+static void AssassinRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_run' in original logic.
 {
-	if(!self->enemy&&self->spawnflags&MSF_WANDER)
+	if (self->enemy == NULL && (self->spawnflags & MSF_WANDER))
 	{
 		SetAnim(self, ANIM_RUN);
 		return;
 	}
 
-	if(self->spawnflags&MSF_ASS_STARTSHADOW)//decloak
-	{//FIXME: should I wait until infront of enemy and visible to him?
+	if (self->spawnflags & MSF_ASS_STARTSHADOW) // De-cloak.
+	{
+		//FIXME: should I wait until infront of enemy and visible to him?
 		self->spawnflags &= ~MSF_ASS_STARTSHADOW;
 		assassinInitCloak(self);
 	}
 
-	if(!(self->spawnflags&MSF_FIXED))
+	if (!(self->spawnflags & MSF_FIXED))
 	{
-		if(self->spawnflags&MSF_ASS_JUMPAMBUSH)//jump out
+		if (self->spawnflags & MSF_ASS_JUMPAMBUSH) // Jump out.
 		{
 			self->spawnflags &= ~MSF_ASS_JUMPAMBUSH;
 			AssassinChooseJumpAmbush(self);
+
 			return;
 		}
 
-		if(self->spawnflags&MSF_ASS_SIDEJUMPAMBUSH)//side-jump out
+		if (self->spawnflags & MSF_ASS_SIDEJUMPAMBUSH) // Side-jump out.
 		{
 			self->spawnflags &= ~MSF_ASS_SIDEJUMPAMBUSH;
-			if(AssassinChooseSideJumpAmbush(self))
+			if (AssassinChooseSideJumpAmbush(self))
 				return;
 		}
 	}
 
-	if(self->curAnimID >= ANIM_CROUCH_IDLE && self->curAnimID < ANIM_CROUCH_END)
+	if (self->curAnimID >= ANIM_CROUCH_IDLE && self->curAnimID < ANIM_CROUCH_END)
 	{
 		SetAnim(self, ANIM_CROUCH_END);
 		return;
@@ -1231,34 +1230,26 @@ void assassin_run(edict_t *self, G_Message_t *msg)
 
 	if (M_ValidTarget(self, self->enemy))
 	{
-		if(!irand(0, 7))
+		if (irand(0, 7) == 0)
 		{
-			if(assassinCheckTeleport(self, ASS_TP_OFF))
+			if (assassinCheckTeleport(self, ASS_TP_OFF))
+				return;
+
+			if (irand(0, 3) == 0 && !(self->s.renderfx & RF_ALPHA_TEXTURE) && !(self->spawnflags & MSF_ASS_NOSHADOW))
 			{
-//				gi.dprintf("run->teleport\n");
+				SetAnim(self, ANIM_CLOAK);
 				return;
 			}
-			else if(!irand(0, 3))
-			{
-				if(!(self->s.renderfx & RF_ALPHA_TEXTURE))
-				{	
-					if(!(self->spawnflags&MSF_ASS_NOSHADOW))
-					{	
-						SetAnim(self, ANIM_CLOAK);
-						return;
-					}
-				}//else uncloak - unncloak when die
-			}
 		}
-		if(!(self->spawnflags&MSF_FIXED))
-			SetAnim(self, ANIM_RUN);
-		else
-			SetAnim(self, ANIM_DELAY);
+
+		const int anim_id = ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_RUN); //mxd
+		SetAnim(self, anim_id);
 	}
 	else
+	{
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	}
 }
-
 
 void assassin_go_run(edict_t *self, float dist)
 {
@@ -2372,7 +2363,7 @@ void AssassinStaticsInit(void)
 {
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_STAND] = assassin_stand;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_WALK] = assassin_walk;
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_RUN] = assassin_run;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_RUN] = AssassinRunMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_MELEE] = AssassinMeleeMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_MISSILE] = AssassinMissileMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_PAIN] = AssassinPainMsgHandler;
