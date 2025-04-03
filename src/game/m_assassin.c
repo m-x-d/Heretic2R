@@ -1847,166 +1847,158 @@ static qboolean AssassinCheckDeCloak(const edict_t* self) //mxd. Named 'assassin
 	return (irand(0, 10 + SKILL * 2 + chance) <= 0);
 }
 
-void assassinCloakThink (edict_t *self)
+static void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThink' in original logic.
 {
-	edict_t *found = NULL;
-	int		lowerseq, upperseq;
-	vec3_t	mins, maxs, startpos, endpos, tport_dest;
-	trace_t	trace;
-
-	self->pre_think = assassinCloakThink;
 	self->next_pre_think = level.time + FRAMETIME;
-//check cloak or decloak
-	if(!(self->s.renderfx & RF_ALPHA_TEXTURE))
-	{//not cloaked
-		if(AssassinCheckCloak(self))
+
+	// Check cloak or decloak.
+	if (!(self->s.renderfx & RF_ALPHA_TEXTURE))
+	{
+		// Not cloaked.
+		if (AssassinCheckCloak(self))
 		{
-			self->monsterinfo.misc_debounce_time = level.time + 7;//10 seconds before will willingly uncloak
+			self->monsterinfo.misc_debounce_time = level.time + 7.0f; // 7 seconds before will willingly uncloak.
 			assassinInitCloak(self);
 		}
 	}
 	else
-	{//cloaked
-		if(AssassinCheckDeCloak(self))
+	{
+		// Cloaked.
+		if (AssassinCheckDeCloak(self))
 			assassinInitDeCloak(self);
 	}
-//check to teleport
 
-	//dumbed down
-	if(!skill->value)//was < 2 
+	// Check to teleport.
+
+	// Dumbed down.
+	if (SKILL == SKILL_EASY && self->touch_debounce_time > level.time) // Was skill->value < 2.
+		return;
+
+	if (self->waterlevel == 3 && self->air_finished <= level.time) // Going to drown!
 	{
-		if(self->touch_debounce_time > level.time)
-		{
-			return;
-		}
-	}
+		// Pick either last buoy or my startspot.
+		vec3_t teleport_dest;
 
-	if(self->waterlevel == 3 && self->air_finished <= level.time)//going to drown!
-	{//pick either last buoy or my startspot
-		VectorCopy(self->pos1, tport_dest);
-		if(self->lastbuoy>NULL_BUOY)
-		{
-			if(!(gi.pointcontents(level.buoy_list[self->lastbuoy].origin) & MASK_WATER))
-				VectorCopy(level.buoy_list[self->lastbuoy].origin, tport_dest);
-		}
+		if (self->lastbuoy > NULL_BUOY && !(gi.pointcontents(level.buoy_list[self->lastbuoy].origin) & MASK_WATER))
+			VectorCopy(level.buoy_list[self->lastbuoy].origin, teleport_dest);
+		else
+			VectorCopy(self->pos1, teleport_dest);
 
-		VectorCopy(tport_dest, startpos);
+		vec3_t start_pos;
+		VectorCopy(teleport_dest, start_pos);
+
+		vec3_t end_pos; //TODO: UNINITIALIZED! Should be self.origin?
+
+		vec3_t mins;
 		VectorCopy(self->mins, mins);
-		mins[2] = 0;
-		VectorCopy(self->maxs, maxs);
-		maxs[2] = 1;
-		startpos[2] -= self->size[2];
+		mins[2] = 0.0f;
 
-		gi.trace(startpos, mins, maxs, endpos, self, MASK_MONSTERSOLID,&trace);
-		if(!trace.allsolid && !trace.startsolid)
+		vec3_t maxs;
+		VectorCopy(self->maxs, maxs);
+		maxs[2] = 1.0f;
+
+		start_pos[2] -= self->size[2];
+
+		trace_t trace;
+		gi.trace(start_pos, mins, maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
+
+		if (!trace.allsolid && !trace.startsolid)
 		{
-			VectorCopy(trace.endpos, startpos);
-			VectorCopy(trace.endpos, endpos);
-			startpos[2] +=self->size[2];
-			gi.trace(startpos, self->mins, self->maxs, endpos, self, MASK_MONSTERSOLID,&trace);
-			if(trace.fraction == 1.0 && !trace.allsolid && !trace.startsolid)
+			VectorCopy(trace.endpos, start_pos);
+			start_pos[2] += self->size[2];
+
+			VectorCopy(trace.endpos, end_pos);
+
+			gi.trace(start_pos, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
+
+			if (trace.fraction == 1.0f && !trace.allsolid && !trace.startsolid)
 			{
 				assassinPrepareTeleportDest(self, trace.endpos, false);
 				return;
 			}
 		}
 	}
-	
-	if(skill->value || self->spawnflags & MSF_ASS_TELEPORTDODGE)
-	{//Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard
-		if(!(self->spawnflags & MSF_ASS_NOTELEPORT) && !(self->spawnflags&MSF_FIXED) && self->groundentity)
+
+	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
+	{
+		// Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard.
+		if (!(self->spawnflags & MSF_ASS_NOTELEPORT) && !(self->spawnflags & MSF_FIXED) && self->groundentity != NULL && irand(0, 4 - SKILL) <= 0)
 		{
-			if(irand(0, 4 - skill->value) <= 0)
-			{//easy is 40% chance per second, hard is 60% chance to check per second
-				while(found = FindInRadius(found, self->s.origin, 200 + skill->value * 50))
+			// Easy is 40% chance per second, hard is 60% chance to check per second.
+			edict_t* found = NULL;
+			while ((found = FindInRadius(found, self->s.origin, 200.0f + skill->value * 50.0f)) != NULL)
+			{
+				if (Q_stricmp(found->classname, "Spell_Maceball") == 0) //mxd. stricmp -> Q_stricmp
 				{
-					if(!stricmp(found->classname, "Spell_Maceball"))
+					if (self->enemy == NULL && found->owner != NULL)
 					{
-						if(!self->enemy)
-						{
-							if(found->owner)
-							{
-								self->enemy = found->owner;
-								AI_FoundTarget(self, false);
-							}
-						}
-						if(AssassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
-							return;
+						self->enemy = found->owner;
+						AI_FoundTarget(self, false);
 					}
 
-					if(!stricmp(found->classname, "Spell_RedRain") ||
-						!stricmp(found->classname, "Spell_PhoenixArrow") ||
-						!stricmp(found->classname, "Spell_FireWall") ||
-						!stricmp(found->classname, "Spell_SphereOfAnnihilation"))
-					{
-						if(!self->enemy)
-						{
-							if(found->owner)
-							{
-								self->enemy = found->owner;
-								AI_FoundTarget(self, false);
-							}
-						}
-						if(AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, false))
-							return;
-					}
-
-					if(found==self->enemy && found->client)
-					{
-						if(M_DistanceToTarget(self, self->enemy) < 128)
-						{
-							if(AI_IsInfrontOf(self->enemy, self))
-							{
-								//is he using his staff or jumping into me?
-								lowerseq = found->client->playerinfo.lowerseq;
-								switch(lowerseq)
-								{
-								case ASEQ_WSWORD_SPIN:
-								case ASEQ_WSWORD_SPIN2:
-								case ASEQ_WSWORD_STEP2:
-								case ASEQ_WSWORD_STEP:
-								case ASEQ_POLEVAULT2:
-								case ASEQ_POLEVAULT1_W:
-								case ASEQ_POLEVAULT1_R:
-									if(AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, true))
-										return;
-									break;
-								default:
-									break;
-								}
-
-								upperseq = found->client->playerinfo.upperseq;
-								switch(upperseq)
-								{
-								case ASEQ_WSWORD_SPIN:
-								case ASEQ_WSWORD_SPIN2:
-								case ASEQ_WSWORD_STEP2:
-								case ASEQ_WSWORD_STEP:
-								case ASEQ_POLEVAULT2:
-								case ASEQ_POLEVAULT1_W:
-								case ASEQ_POLEVAULT1_R:
-									if(AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, true))
-										return;
-									break;
-								default:
-									break;
-								}
-							}
-					
-							if(found->client->playerinfo.shield_timer > level.time)
-							{
-								if(AssassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
-									return;
-							}
-						}
-
-					}
+					if (AssassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
+						return;
 				}
-			}
+				else if (Q_stricmp(found->classname, "Spell_RedRain") == 0 || Q_stricmp(found->classname, "Spell_PhoenixArrow") == 0 ||
+					Q_stricmp(found->classname, "Spell_FireWall") == 0 || Q_stricmp(found->classname, "Spell_SphereOfAnnihilation") == 0) //mxd. stricmp -> Q_stricmp
+				{
+					if (self->enemy == NULL && found->owner != NULL)
+					{
+						self->enemy = found->owner;
+						AI_FoundTarget(self, false);
+					}
+
+					if (AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, false))
+						return;
+				}
+
+				if (found == self->enemy && found->client != NULL && M_DistanceToTarget(self, self->enemy) < 128.0f)
+				{
+					if (AI_IsInfrontOf(self->enemy, self))
+					{
+						// Is he using his staff or jumping into me?
+						switch (found->client->playerinfo.lowerseq)
+						{
+							case ASEQ_WSWORD_SPIN:
+							case ASEQ_WSWORD_SPIN2:
+							case ASEQ_WSWORD_STEP2:
+							case ASEQ_WSWORD_STEP:
+							case ASEQ_POLEVAULT2:
+							case ASEQ_POLEVAULT1_W:
+							case ASEQ_POLEVAULT1_R:
+								if (AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, true))
+									return;
+								break;
+							default:
+								break;
+						}
+
+						switch (found->client->playerinfo.upperseq) //TODO: why do we need to check both lowerseq and upperseq?..
+						{
+							case ASEQ_WSWORD_SPIN:
+							case ASEQ_WSWORD_SPIN2:
+							case ASEQ_WSWORD_STEP2:
+							case ASEQ_WSWORD_STEP:
+							case ASEQ_POLEVAULT2:
+							case ASEQ_POLEVAULT1_W:
+							case ASEQ_POLEVAULT1_R:
+								if (AssassinChooseTeleportDestination(self, ASS_TP_ANY, true, true))
+									return;
+								break;
+
+							default:
+								break;
+						}
+					}
+
+					if (found->client->playerinfo.shield_timer > level.time && AssassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
+						return;
+				}
+			} // while loop end.
 		}
 	}
-	
-	if(self->evade_debounce_time < level.time)
+
+	if (self->evade_debounce_time < level.time)
 		MG_CheckEvade(self);
 }
 
@@ -2034,7 +2026,7 @@ void assassinCloak (edict_t *self)
 	}
 	else
 	{
-		self->pre_think = assassinCloakThink;
+		self->pre_think = AssassinCloakPreThink;
 		self->next_pre_think = level.time + FRAMETIME;
 	}
 
@@ -2076,7 +2068,7 @@ void assassinDeCloak (edict_t *self)
 		self->s.renderfx &= ~RF_ALPHA_TEXTURE;
 		if(self->health > 0)
 		{
-			self->pre_think = assassinCloakThink;
+			self->pre_think = AssassinCloakPreThink;
 			self->next_pre_think = level.time + FRAMETIME;
 		}
 		else
@@ -2348,7 +2340,7 @@ void SP_monster_assassin (edict_t *self)
 		if(self->spawnflags&MSF_ASS_STARTSHADOW)
 			assassinInitCloak (self);
 
-		self->pre_think = assassinCloakThink;
+		self->pre_think = AssassinCloakPreThink;
 		self->next_pre_think = level.time + FRAMETIME;
 
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
