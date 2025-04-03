@@ -523,37 +523,19 @@ static void AssassinSetRandomAttackAnim(edict_t* self) //mxd. Named 'assassin_ra
 	SetAnim(self, anim_id);
 }
 
-/*-------------------------------------------------------------------------
-	assassin_melee
--------------------------------------------------------------------------*/
-void assassin_melee(edict_t *self, G_Message_t *msg)
+static void AssassinMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_melee' in original logic.
 {
 	if (M_ValidTarget(self, self->enemy))
 	{
-		if(!irand(0,7))
-		{
-			/*if(self->s.renderfx & RF_ALPHA_TEXTURE)
-			{
-				if(self->pre_think != assassinDeCloak)
-				{
-					gi.sound(self,CHAN_AUTO,Sounds[SND_DECLOAK],1,ATTN_NORM,0);
-					self->pre_think = assassinDeCloak;
-					self->next_pre_think = level.time + FRAMETIME;
-					assassin_pause(self);
-					return;
-				}
-			}*/
-			
-			if(assassinCheckTeleport(self, ASS_TP_OFF))
-			{
-//				gi.dprintf("melee->teleport\n");
-				return;//try to get away
-			}
-		}
+		if (irand(0, 7) == 0 && assassinCheckTeleport(self, ASS_TP_OFF)) // 12.5% chance to try to get away.
+			return;
+
 		AssassinSetRandomAttackAnim(self);
 	}
 	else
+	{
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	}
 }
 
 void assassin_missile(edict_t *self, G_Message_t *msg)
@@ -2501,7 +2483,7 @@ void AssassinStaticsInit(void)
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_STAND] = assassin_stand;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_WALK] = assassin_walk;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_RUN] = assassin_run;
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_MELEE] = assassin_melee;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_MELEE] = AssassinMeleeMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_MISSILE] = assassin_missile;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_PAIN] = assassin_pain;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_DEATH] = AssassinDeathMsgHandler;
