@@ -129,6 +129,38 @@ static void AssassinCinematicAnimsMsgHandler(edict_t* self, G_Message_t* msg) //
 	SetAnim(self, curr_anim);
 }
 
+#pragma region ========================== Utility functions ==========================
+
+edict_t* AssassinArrowReflect(edict_t* self, edict_t* other, const vec3_t vel) //TODO: rename to AssassinDaggerReflect?
+{
+	edict_t* dagger = G_Spawn();
+
+	create_assassin_dagger(dagger);
+
+	dagger->s.modelindex = self->s.modelindex;
+	VectorCopy(self->s.origin, dagger->s.origin);
+	dagger->owner = other;
+	dagger->enemy = self->owner;
+	dagger->nextthink = self->nextthink;
+	VectorScale(self->avelocity, -0.5f, dagger->avelocity);
+	VectorCopy(vel, dagger->velocity);
+	VectorNormalize2(vel, dagger->movedir);
+	AnglesFromDir(dagger->movedir, dagger->s.angles);
+	dagger->reflect_debounce_time = self->reflect_debounce_time - 1;
+	dagger->reflected_time = self->reflected_time;
+
+	gi.CreateEffect(&dagger->s, FX_M_EFFECTS, 0, dagger->avelocity, "bv", FX_ASS_DAGGER, dagger->velocity);
+
+	G_LinkMissile(dagger);
+	G_SetToFree(self);
+
+	gi.CreateEffect(&dagger->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", vel);
+
+	return dagger;
+}
+
+#pragma endregion
+
 /*----------------------------------------------------------------------
   Action Functions for the monster
 -----------------------------------------------------------------------*/
@@ -148,43 +180,6 @@ void assassin_jump(edict_t *self, G_Message_t *msg)
 	SetAnim(self, ANIM_FORCED_JUMP);
 	self->monsterinfo.aiflags |= AI_OVERRIDE_GUIDE;
 }
-
-edict_t *AssassinArrowReflect(edict_t *self, edict_t *other, vec3_t vel)
-{
-	edict_t	*Arrow;
-
-	Arrow = G_Spawn();
-
-	create_assassin_dagger(Arrow);
-	Arrow->s.modelindex = self->s.modelindex;
-	VectorCopy(self->s.origin, Arrow->s.origin);
-	Arrow->owner = other;
-	Arrow->enemy = self->owner;
-	Arrow->nextthink=self->nextthink;
-	VectorScale(self->avelocity, -0.5, Arrow->avelocity);
-	VectorCopy(vel, Arrow->velocity);
-	VectorNormalize2(vel, Arrow->movedir);
-	AnglesFromDir(Arrow->movedir, Arrow->s.angles);
-	Arrow->reflect_debounce_time = self->reflect_debounce_time -1;
-	Arrow->reflected_time=self->reflected_time;
-
-	gi.CreateEffect(&Arrow->s,
-				FX_M_EFFECTS,
-				0,
-				Arrow->avelocity,
-				"bv",
-				FX_ASS_DAGGER,
-				Arrow->velocity);
-
-	G_LinkMissile(Arrow); 
-
-	G_SetToFree(self);
-
-	gi.CreateEffect(&Arrow->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", vel);
-
-	return(Arrow);
-}
-
 
 // The blocked function isn't currently used.
 /*
