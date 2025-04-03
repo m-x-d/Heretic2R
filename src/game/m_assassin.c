@@ -486,7 +486,7 @@ static void AssassinDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	self->next_pre_think = -1.0f;
 
 	if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != AssassinDeCloakFadePreThink)
-		assassinInitDeCloak(self);
+		AssassinInitDeCloak(self);
 }
 
 void assassingrowl(edict_t* self) //TODO: rename to assassin_growl?
@@ -1054,7 +1054,7 @@ static void AssassinPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 		if (irand(0, 10) > SKILL)
 		{
 			self->monsterinfo.misc_debounce_time = level.time + 3.0f; // 3 seconds before can re-cloak.
-			assassinInitDeCloak(self);
+			AssassinInitDeCloak(self);
 		}
 	}
 }
@@ -1276,7 +1276,7 @@ static void AssassinStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	else
 	{
 		if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != AssassinDeCloakFadePreThink)
-			assassinInitDeCloak(self);
+			AssassinInitDeCloak(self);
 
 		SetAnim(self, ANIM_STAND);
 	}
@@ -1680,7 +1680,7 @@ void assassinPrepareTeleportDest(edict_t* self, const vec3_t spot, const qboolea
 {
 	if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != AssassinDeCloakFadePreThink)
 	{
-		assassinInitDeCloak(self);
+		AssassinInitDeCloak(self);
 		self->monsterinfo.misc_debounce_time = level.time + 3.0f;
 	}
 
@@ -1865,7 +1865,7 @@ static void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThin
 	{
 		// Cloaked.
 		if (AssassinCheckDeCloak(self))
-			assassinInitDeCloak(self);
+			AssassinInitDeCloak(self);
 	}
 
 	// Check to teleport.
@@ -2067,9 +2067,10 @@ static void AssassinDeCloakFadePreThink(edict_t* self) //mxd. Named 'assassinDeC
 		MG_CheckEvade(self);
 }
 
-void assassinInitDeCloak (edict_t *self)
+static void AssassinInitDeCloak(edict_t* self) //mxd. Named 'assassinInitDeCloak' in original logic.
 {
-	gi.sound(self,CHAN_AUTO,sounds[SND_DECLOAK],1,ATTN_NORM,0);
+	gi.sound(self, CHAN_AUTO, sounds[SND_DECLOAK], 1.0f, ATTN_NORM, 0.0f);
+
 	self->pre_think = AssassinDeCloakFadePreThink;
 	self->next_pre_think = level.time + FRAMETIME;
 }

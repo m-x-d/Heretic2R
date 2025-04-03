@@ -13,5 +13,5 @@ static void AssassinDropWeapon(edict_t* self, int whichknives);
 static qboolean AssassinCheckTeleport(edict_t* self, int type);
 static qboolean AssassinChooseTeleportDestination(edict_t* self, int type, qboolean imperative, qboolean instant);
 static void AssassinCloakFadePreThink(edict_t* self);
-static void assassinInitDeCloak(edict_t* self);
+static void AssassinInitDeCloak(edict_t* self);
 static void AssassinDeCloakFadePreThink(edict_t* self);
