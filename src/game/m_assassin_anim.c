@@ -214,7 +214,7 @@ static const animframe_t assassin_frames_evade_frontflip[] =
 	{ FRAME_fntflp10,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_FFLAND, NULL },
 	{ FRAME_fntflp11,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_FFLAND, NULL },
 };
-const animmove_t assassin_move_evade_frontflip = { 6, assassin_frames_evade_frontflip, assassin_go_ffinair };
+const animmove_t assassin_move_evade_frontflip = { 6, assassin_frames_evade_frontflip, assassin_fwdflip_inair_go };
 
 // Assassin dodging right.
 static const animframe_t assassin_frames_dodge_right[] =
@@ -428,7 +428,7 @@ static const animframe_t assassin_frames_frontflip[] =
 	{ FRAME_fntflp9,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_fntflp10,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 };
-const animmove_t assassin_move_frontflip = { 10, assassin_frames_frontflip, assassin_go_ffinair };
+const animmove_t assassin_move_frontflip = { 10, assassin_frames_frontflip, assassin_fwdflip_inair_go };
 
 // Assassin running.
 static const animframe_t assassin_frames_run[] =
