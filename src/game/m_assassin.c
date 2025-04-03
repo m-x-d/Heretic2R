@@ -1572,7 +1572,7 @@ void assassin_inair_go(edict_t* self) //mxd. Named 'assassin_go_inair' in origin
 	SetAnim(self, ANIM_INAIR);
 }
 
-void assassin_go_evinair(edict_t* self) //TODO: rename to assassin_evade_inair_go?
+void assassin_evade_inair_go(edict_t* self) //mxd. Named 'assassin_go_evinair' in original logic.
 {
 	SetAnim(self, ANIM_EVINAIR);
 }
