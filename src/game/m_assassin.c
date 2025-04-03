@@ -2086,13 +2086,11 @@ void assassinInitCloak(edict_t* self) //TODO: rename to assassin_init_cloak?
 	self->next_pre_think = level.time + FRAMETIME;
 }
 
-void assassin_check_mood (edict_t *self, G_Message_t *msg)
+static void AssassinCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_check_mood' in original logic.
 {
 	ParseMsgParms(msg, "i", &self->ai_mood);
-
 	assassin_pause(self);
 }
-//=============================================================
 
 /*-------------------------------------------------------------------------
 	AssassinStaticsInit
@@ -2110,7 +2108,7 @@ void AssassinStaticsInit(void)
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_JUMP] = AssassinJumpMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_EVADE] = AssassinEvadeMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_DEATH_PAIN] = AssassinDeathPainMsgHandler;
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_CHECK_MOOD] = assassin_check_mood;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_CHECK_MOOD] = AssassinCheckMoodMsgHandler;
 
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_IDLE1] = AssassinCinematicAnimsMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_RUN1] = AssassinCinematicAnimsMsgHandler;
