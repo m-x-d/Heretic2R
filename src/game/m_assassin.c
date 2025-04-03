@@ -301,99 +301,82 @@ static void AssassinThrowDagger(edict_t* self, const float right_ofs) //mxd. Nam
 	G_LinkMissile(dagger);
 }
 
-/*-------------------------------------------------------------------------
-	assassin dagger
--------------------------------------------------------------------------*/
-void assassindagger (edict_t *self, float right_ofs)
+// Do melee or ranged attack.
+void assassindagger(edict_t* self, const float flags) //TODO: rename to assassin_attack.
 {
-	vec3_t	v, off, dir, org, ang;
-	float	len;
-	int		damage;
-	int		thrownum = 0;
-	
-	if(!self->enemy)
+	if (self->enemy == NULL || self->enemy->health < 0)
 	{
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
-	if(self->enemy->health<0)
+	vec3_t diff;
+	VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
+	const float dist = VectorLength(diff);
+
+	if (dist <= (self->maxs[0] + self->enemy->maxs[0] + 56.0f)) // Do melee attack?
 	{
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-		return;
-	}
-
-	VectorSubtract (self->s.origin, self->enemy->s.origin, v);
-	len = VectorLength (v);
-
-	if (len <= (self->maxs[0] + self->enemy->maxs[0] + 56)  )	// A hit
-	{	
 		if (AI_IsInfrontOf(self, self->enemy))
 		{
-			if (1)//one or two hands?
-				gi.sound (self, CHAN_WEAPON, sounds[SND_SLASH1], 1, ATTN_NORM, 0);
-			else 
-				gi.sound (self, CHAN_WEAPON, sounds[SND_SLASH2], 1, ATTN_NORM, 0);	
+			//TODO: play sound regardless of whether AI_IsInfrontOf() check succeeds?
+			const int snd_id = (irand(0, 3) == 0 ? SND_SLASH2 : SND_SLASH1); //mxd. 25% chance of SND_SLASH2. Original logic uses only SND_SLASH1. //TODO: use SND_SLASH2 for backstab attack only?
+			gi.sound(self, CHAN_WEAPON, sounds[snd_id], 1.0f, ATTN_NORM, 0.0f);
 
-			VectorSet(off, 35.0, 0.0, 32.0);
-			VectorGetOffsetOrigin(off, self->s.origin, self->s.angles[YAW], org);
-			VectorCopy(self->s.angles, ang);
-			ang[YAW] += DEGREE_90;
-			AngleVectors(ang, dir, NULL, NULL);
-			//4 to 8
-			damage = irand(ASSASSIN_MIN_DAMAGE, ASSASSIN_MAX_DAMAGE);
+			vec3_t origin;
+			const vec3_t offset = { 35.0f, 0.0f, 32.0f };
+			VectorGetOffsetOrigin(offset, self->s.origin, self->s.angles[YAW], origin);
 
-			if(skill->value >= 2)
+			vec3_t angles;
+			VectorCopy(self->s.angles, angles);
+			angles[YAW] += DEGREE_90;
+
+			vec3_t forward;
+			AngleVectors(angles, forward, NULL, NULL);
+
+			int damage = irand(ASSASSIN_MIN_DAMAGE, ASSASSIN_MAX_DAMAGE);
+
+			if (SKILL >= SKILL_HARD && !AI_IsInfrontOf(self->enemy, self))
 			{
-				if(!AI_IsInfrontOf(self->enemy, self))
-				{//backstab!
-					damage = self->enemy->health + irand(-20, 10);
-					if(damage<ASSASSIN_MAX_DAMAGE)
-						damage = ASSASSIN_MAX_DAMAGE;
-				}
+				// Backstab!
+				damage = self->enemy->health + irand(-20, 10);
+				damage = max(ASSASSIN_MAX_DAMAGE, damage);
 			}
 
-			/*			if(self->s.fmnodeinfo[MESH__HANDLE].flags & FMNI_NO_DRAW)
-				damage-=5;
-			else if(self->s.fmnodeinfo[MESH__HOE].flags & FMNI_NO_DRAW)
-				damage+=5;
-			else if(self->s.fmnodeinfo[MESH__GAFF].flags & FMNI_NO_DRAW)
-				damage+=7;
-			else if(self->s.fmnodeinfo[MESH__HAMMER].flags & FMNI_NO_DRAW)
-				damage+=10;*/
-
-			T_Damage (self->enemy, self, self, dir, org, vec3_origin, damage, 0, 0,MOD_DIED);
+			T_Damage(self->enemy, self, self, forward, origin, vec3_origin, damage, 0, 0, MOD_DIED);
 		}
 	}
-	else			// A misssss
+	else // Do ranged attack?
 	{
-		if((int)right_ofs & BIT_RKNIFE)
-		{//turn off dagger
-			thrownum++;
-			if(!(self->s.fmnodeinfo[MESH__RKNIFE].flags & FMNI_NO_DRAW))
+		int throw_num = 0;
+
+		if ((int)flags & BIT_RKNIFE)
+		{
+			throw_num++;
+
+			// Turn off right dagger model?
+			if (!(self->s.fmnodeinfo[MESH__RKNIFE].flags & FMNI_NO_DRAW))
 			{
 				self->s.fmnodeinfo[MESH__RKNIFE].flags |= FMNI_NO_DRAW;
-				AssassinThrowDagger(self, 12);
+				AssassinThrowDagger(self, 12.0f);
 			}
 		}
-		
-		if((int)right_ofs & BIT_LKNIFE)
+
+		if ((int)flags & BIT_LKNIFE)
 		{
-			thrownum++;
-			if(!(self->s.fmnodeinfo[MESH__LKNIFE].flags & FMNI_NO_DRAW))
+			throw_num++;
+
+			// Turn off left dagger model?
+			if (!(self->s.fmnodeinfo[MESH__LKNIFE].flags & FMNI_NO_DRAW))
 			{
 				self->s.fmnodeinfo[MESH__LKNIFE].flags |= FMNI_NO_DRAW;
-				AssassinThrowDagger(self, -12);
+				AssassinThrowDagger(self, -12.0f);
 			}
 		}
 
-		if(thrownum>1)
-			gi.sound (self, CHAN_WEAPON, sounds[SND_THROW2], 1, ATTN_NORM, 0);
-		else if(thrownum>0)
-			gi.sound (self, CHAN_WEAPON, sounds[SND_THROW1], 1, ATTN_NORM, 0);
+		const int snd_id = (throw_num > 1 ? SND_THROW2 : SND_THROW1); //mxd
+		gi.sound(self, CHAN_WEAPON, sounds[snd_id], 1.0f, ATTN_NORM, 0.0f);
 	}
 }
-
 
 void assassin_Touch(edict_t *self, trace_t *trace)
 {
