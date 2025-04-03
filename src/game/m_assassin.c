@@ -1,56 +1,27 @@
-//==============================================================================
 //
 // m_assassin.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//
-//	AI :
-//
-//	STAND1		: Looking straight ahead
-//	
-//	WALK1       : a normal straight line
-//  WALK2       : another normal straight line
-//
-//	MELEE1      : Attack 
-//	MELEE2      : Attack 
-//
-//  RUNATTACK   : Running and swinging
-//	RUN1        : chasing an enemy straight ahead
-//  SHAKE		: stand and spaz
-//	DIE1		: Fall back dead
-//  LEAN1       : lean agains the wall
-//  FIST1       : Beat against the wall in rage and desperation
-//
-//
-//==============================================================================
 
+#include <float.h>
 #include "m_assassin.h"
-#include "m_assassin_local.h"
-#include "m_assassin_shared.h"
-#include "Utilities.h"
-#include "g_DefaultMessageHandler.h"
-#include "g_monster.h"
-#include "fx.h"
-#include "random.h"
-#include "buoy.h"
-#include "vector.h"
-#include "g_playstats.h"
+#include "m_assassin_local.h" //mxd
+#include "m_assassin_shared.h" //mxd
 #include "m_assassin_anim.h"
-#include "g_HitLocation.h"
-#include "g_debris.h" //mxd
-#include "angles.h"
 #include "c_ai.h"
 #include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
-#include "p_anim_branch.h"
-#include "p_anims.h"
+#include "g_debris.h" //mxd
+#include "g_DefaultMessageHandler.h"
+#include "g_HitLocation.h"
+#include "g_monster.h"
+#include "g_playstats.h"
 #include "m_stats.h"
-#include "p_actions.h"
-
-void create_assassin_dagger(edict_t *Arrow);
-void assassinInitDeCloak (edict_t *self);
+#include "p_anims.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
 
 /*----------------------------------------------------------------------
   assassin Base Info
