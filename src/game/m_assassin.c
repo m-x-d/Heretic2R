@@ -1383,284 +1383,136 @@ void assasin_walk_loop_go(edict_t* self)
 	SetAnim(self, ANIM_WALK_LOOP);
 }
 
-//=============================================================
-
-// EVASION
-
-//=============================================================
-
-void assassinDodgeLeft (edict_t *self)
+static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_evade' in original logic.
 {
-	SetAnim(self, ANIM_DODGE_LEFT);
-}
+	typedef struct EvadeChance_s //mxd
+	{
+		int duck_chance;
+		int dodgeleft_chance;
+		int dodgeright_chance;
+		int jump_chance;
+		int backflip_chance;
+		int frontflip_chance;
+	} EvadeChance_t;
 
-void assassinDodgeRight (edict_t *self)
-{
-	SetAnim(self, ANIM_DODGE_RIGHT);
-}
+	static const EvadeChance_t evade_chances[] = //mxd. Use struct.
+	{
+		{.duck_chance = 20, .dodgeleft_chance = 10, .dodgeright_chance = 10, .jump_chance = 10, .backflip_chance = 10, .frontflip_chance = 10 }, // hl_NoneSpecific
+		{.duck_chance = 95, .dodgeleft_chance = 50, .dodgeright_chance = 50, .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_Head
+		{.duck_chance = 85, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 60,	.frontflip_chance = 0  }, // hl_TorsoFront
+		{.duck_chance = 80, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 0,  .frontflip_chance = 60 }, // hl_TorsoBack
+		{.duck_chance = 75, .dodgeleft_chance = 0,  .dodgeright_chance = 90, .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmUpperLeft
+		{.duck_chance = 75, .dodgeleft_chance = 0,  .dodgeright_chance = 80, .jump_chance = 30, .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmLowerLeft
+		{.duck_chance = 60, .dodgeleft_chance = 90, .dodgeright_chance = 0,  .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmUpperRight
+		{.duck_chance = 20, .dodgeleft_chance = 80, .dodgeright_chance = 0,  .jump_chance = 30, .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmLowerRight
+		{.duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 60, .jump_chance = 50, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegUpperLeft
+		{.duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 30, .jump_chance = 80, .backflip_chance = 40, .frontflip_chance = 40 }, // hl_LegLowerLeft
+		{.duck_chance = 0,  .dodgeleft_chance = 60, .dodgeright_chance = 0,  .jump_chance = 50, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegUpperRight
+		{.duck_chance = 0,  .dodgeleft_chance = 30, .dodgeright_chance = 0,  .jump_chance = 80, .backflip_chance = 40, .frontflip_chance = 40 }, // hl_LegLowerRight
+	};
 
-void assassinFrontFlip (edict_t *self)
-{
-	SetAnim(self, ANIM_EVFRONTFLIP);
-}
+	if (self->groundentity == NULL)
+		return;
 
-void assassinBackFlip (edict_t *self)
-{
-	SetAnim(self, ANIM_EVBACKFLIP);
-}
-
-void assassinBackSprings (edict_t *self)
-{
-	SetAnim(self, ANIM_BACKSPRING);
-}
-
-void assassinJump (edict_t *self)
-{
-	SetAnim(self, ANIM_EVJUMP);
-}
-
-void assassinCrouch (edict_t *self)
-{
-	SetAnim(self, ANIM_CROUCH);
-}
-
-void assassinCrouchedAttack (edict_t *self)
-{
-	SetAnim(self, ANIM_DAGGERC);
-}
-
-void assassin_evade (edict_t *self, G_Message_t *msg)
-{
-	edict_t			*projectile;
-	HitLocation_t	HitLocation;
-	int duck_chance, dodgeleft_chance, dodgeright_chance, jump_chance, backflip_chance, frontflip_chance;
-	int chance;
+	edict_t* projectile;
+	HitLocation_t hl;
 	float eta;
+	ParseMsgParms(msg, "eif", &projectile, &hl, &eta);
 
-	if(!self->groundentity)
-		return;
+	self->evade_debounce_time = level.time + min(eta, 2.0f);
 
-	ParseMsgParms(msg, "eif", &projectile, &HitLocation, &eta);
-	
-	if(eta < 2)
-		self->evade_debounce_time = level.time + eta;
-	else
-		self->evade_debounce_time = level.time + 2;
-
-	if(skill->value || self->spawnflags & MSF_ASS_TELEPORTDODGE)
-	{//Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard
-		if(!stricmp(projectile->classname, "Spell_PhoenixArrow") ||
-			!stricmp(projectile->classname, "Spell_FireWall") ||
-			!stricmp(projectile->classname, "Spell_SphereOfAnnihilation") ||
-			!stricmp(projectile->classname, "Spell_Maceball"))
+	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
+	{
+		// Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard.
+		if (Q_stricmp(projectile->classname, "Spell_PhoenixArrow") == 0 ||
+			Q_stricmp(projectile->classname, "Spell_FireWall") == 0 ||
+			Q_stricmp(projectile->classname, "Spell_SphereOfAnnihilation") == 0 ||
+			Q_stricmp(projectile->classname, "Spell_Maceball") == 0) //mxd. stricmp -> Q_stricmp
 		{
-			if(assassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
+			if (assassinChooseTeleportDestination(self, ASS_TP_OFF, true, true))
 				return;
 		}
 	}
 
-	switch(HitLocation)
+	if (irand(0, 100) < SKILL * 10 && self->pre_think != assassinCloak)
+		assassinInitCloak(self);
+
+	int chance = irand(0, 10);
+	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
 	{
-		case hl_Head:
-			duck_chance = 95;
-			dodgeleft_chance = 50;
-			dodgeright_chance = 50;
-			jump_chance = 0;
-			backflip_chance = 20;
-			frontflip_chance = 20;
-		break;
-		case hl_TorsoFront://split in half?
-			duck_chance = 85;
-			dodgeleft_chance = 40;
-			dodgeright_chance = 40;
-			jump_chance = 0;
-			backflip_chance = 60;
-			frontflip_chance = 0;
-		break;
-		case hl_TorsoBack://split in half?
-			duck_chance = 80;
-			dodgeleft_chance = 40;
-			dodgeright_chance = 40;
-			jump_chance = 0;
-			backflip_chance = 0;
-			frontflip_chance = 60;
-		break;
-		case hl_ArmUpperLeft:
-			duck_chance = 75;
-			dodgeleft_chance = 0;
-			dodgeright_chance = 90;
-			jump_chance = 0;
-			backflip_chance = 20;
-			frontflip_chance = 20;
-		break;
-		case hl_ArmLowerLeft://left arm
-			duck_chance = 75;
-			dodgeleft_chance = 0;
-			dodgeright_chance = 80;
-			jump_chance = 30;
-			backflip_chance = 20;
-			frontflip_chance = 20;
-		break;
-		case hl_ArmUpperRight:
-			duck_chance = 60;
-			dodgeleft_chance = 90;
-			dodgeright_chance = 0;
-			jump_chance = 0;
-			backflip_chance = 20;
-			frontflip_chance = 20;
-		break;
-		case hl_ArmLowerRight://right arm
-			duck_chance = 20;
-			dodgeleft_chance = 80;
-			dodgeright_chance = 0;
-			jump_chance = 30;
-			backflip_chance = 20;
-			frontflip_chance = 20;
-		break;
-		case hl_LegUpperLeft:
-			duck_chance = 0;
-			dodgeleft_chance = 0;
-			dodgeright_chance = 60;
-			jump_chance = 50;
-			backflip_chance = 30;
-			frontflip_chance = 30;
-		break;
-		case hl_LegLowerLeft://left leg
-			duck_chance = 0;
-			dodgeleft_chance = 0;
-			dodgeright_chance = 30;
-			jump_chance = 80;
-			backflip_chance = 40;
-			frontflip_chance = 40;
-		break;
-		case hl_LegUpperRight:
-			duck_chance = 0;
-			dodgeleft_chance = 60;
-			dodgeright_chance = 0;
-			jump_chance = 50;
-			backflip_chance = 30;
-			frontflip_chance = 30;
-		break;
-		case hl_LegLowerRight://right leg
-			duck_chance = 0;
-			dodgeleft_chance = 30;
-			dodgeright_chance = 0;
-			jump_chance = 80;
-			backflip_chance = 40;
-			frontflip_chance = 40;
-		break;
-		default:
-			duck_chance = 20;
-			dodgeleft_chance = 10;
-			dodgeright_chance = 10;
-			jump_chance = 10;
-			backflip_chance = 10;
-			frontflip_chance = 10;
-		break;
+		// Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard.
+		if (chance > 8 && !(self->spawnflags & MSF_ASS_NOTELEPORT) && assassinChooseTeleportDestination(self, ASS_TP_DEF, false, false))
+			return;
 	}
 
-	if(irand(0, 100) < skill->value * 10)
-	{
-		if(self->pre_think != assassinCloak)
-			assassinInitCloak(self);
-	}
+	//mxd. Get evade info.
+	if (hl < hl_NoneSpecific || hl > hl_LegLowerRight)
+		hl = hl_NoneSpecific;
 
-	chance = irand(0, 10);
-	if(skill->value || self->spawnflags & MSF_ASS_TELEPORTDODGE)
-	{//Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard
-		if(chance > 8 && !(self->spawnflags&MSF_ASS_NOTELEPORT))
-			if(assassinChooseTeleportDestination(self, ASS_TP_DEF, false, false))
-			{
-//				gi.dprintf("Assassin teleport evade\n");
-				return;
-			}
-	}
+	const EvadeChance_t* ec = &evade_chances[hl];
 
 	chance = irand(0, 100);
-	if(chance < frontflip_chance)
+	if (chance < ec->frontflip_chance)
 	{
-//		gi.dprintf("Assassin fflip evade\n");
-		assassinFrontFlip(self);
+		SetAnim(self, ANIM_EVFRONTFLIP); //mxd. Inline assassinFrontFlip().
 		return;
 	}
 
 	chance = irand(0, 100);
-	if(chance < backflip_chance)
+	if (chance < ec->backflip_chance)
 	{
-		if(self->curAnimID == ANIM_RUN && irand(0, 3))//running, do the front flip
-		{
-//			gi.dprintf("Assassin fflip evade\n");
-			assassinFrontFlip(self);
-		}
+		if (self->curAnimID == ANIM_RUN && irand(0, 3) > 0) // Running, do the front flip.
+			SetAnim(self, ANIM_EVFRONTFLIP); //mxd. Inline assassinFrontFlip().
+		else if (irand(0, 1) == 1)
+			SetAnim(self, ANIM_BACKSPRING); //mxd. Inline assassinBackSprings().
 		else
-		{
-			if(irand(0, 1))
-			{
-//				gi.dprintf("Assassin bspring evade\n");
-				assassinBackSprings(self);
-			}
-			else
-			{
-//				gi.dprintf("Assassin bflip evade\n");
-				assassinBackFlip(self);
-			}
-		}
+			SetAnim(self, ANIM_EVBACKFLIP); //mxd. Inline assassinBackFlip().
+
 		return;
 	}
 
 	chance = irand(0, 100);
-	if(chance < duck_chance)
+	if (chance < ec->duck_chance)
 	{
-		self->evade_debounce_time = level.time + eta + 2 - skill->value;
-//		gi.dprintf("Assassin crouch evade\n");
-		assassinCrouch(self);
+		self->evade_debounce_time = level.time + eta + 2.0f - skill->value;
+		SetAnim(self, ANIM_CROUCH); //mxd. Inline assassinCrouch().
+
 		return;
 	}
 
 	chance = irand(0, 100);
-	if(chance < dodgeleft_chance)
+	if (chance < ec->dodgeleft_chance)
 	{
-//		gi.dprintf("Assassin dleft evade\n");
-		assassinDodgeLeft(self);
+		SetAnim(self, ANIM_DODGE_LEFT); //mxd. Inline assassinDodgeLeft().
 		return;
 	}
-	
+
 	chance = irand(0, 100);
-	if(chance < dodgeright_chance)
+	if (chance < ec->dodgeright_chance)
 	{
-//		gi.dprintf("Assassin dright evade\n");
-		assassinDodgeRight(self);
+		SetAnim(self, ANIM_DODGE_RIGHT); //mxd. Inline assassinDodgeRight().
 		return;
 	}
-	
+
 	chance = irand(0, 100);
-	if(chance < jump_chance)
+	if (chance < ec->jump_chance)
 	{
-		if(self->curAnimID == ANIM_RUN && irand(0, 4))//running, do the front flip
-		{
-//			gi.dprintf("Assassin fflip evade\n");
-			assassinFrontFlip(self);
-		}
+		if (self->curAnimID == ANIM_RUN && irand(0, 4) > 0) // Running, do the front flip.
+			SetAnim(self, ANIM_EVFRONTFLIP); //mxd. Inline assassinFrontFlip().
 		else
-		{
-//			gi.dprintf("Assassin jump evade\n");
-			assassinJump(self);
-		}
+			SetAnim(self, ANIM_EVJUMP); //mxd. Inline assassinJump().
+
 		return;
 	}
 
-	if(skill->value || self->spawnflags & MSF_ASS_TELEPORTDODGE)
-	{//Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard
-		if(!(self->spawnflags&MSF_ASS_NOTELEPORT))
-			if(assassinChooseTeleportDestination(self, ASS_TP_DEF, false, false))
-			{
-//				gi.dprintf("Assassin tport(desperate) evade\n");
-				return;
-			}
+	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
+	{
+		// Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard.
+		if (!(self->spawnflags & MSF_ASS_NOTELEPORT) && assassinChooseTeleportDestination(self, ASS_TP_DEF, false, false))
+			return;
 	}
 
-	self->evade_debounce_time = 0;
-//	gi.dprintf("Assassin failed to evade\n");
+	self->evade_debounce_time = 0.0f;
 }
 
 void assassinCrouchedCheckAttack (edict_t *self, float attack)
@@ -1814,7 +1666,7 @@ void assassinGone(edict_t *self)
 	VectorCopy(self->pos2, enemy_dir);//reuse
 	enemy_dir[2] += 100;
 	if(gi.pointcontents(enemy_dir) == CONTENTS_EMPTY&&!irand(0,3))
-		assassinFrontFlip(self);
+		SetAnim(self, ANIM_EVFRONTFLIP); //mxd. Inline assassinFrontFlip().
 	else
 		SetAnim(self, ANIM_UNCROUCH);
 
@@ -2337,7 +2189,7 @@ void AssassinStaticsInit(void)
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_DEATH] = AssassinDeathMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_JUMP] = AssassinJumpMsgHandler;
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_EVADE] = assassin_evade;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_EVADE] = AssassinEvadeMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_DEATH_PAIN] = AssassinDeathPainMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_CHECK_MOOD] = assassin_check_mood;
 
