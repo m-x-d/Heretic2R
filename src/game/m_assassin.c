@@ -159,6 +159,57 @@ edict_t* AssassinArrowReflect(edict_t* self, edict_t* other, const vec3_t vel) /
 	return dagger;
 }
 
+static void AssassinDaggerTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface) //mxd. Named 'assassinDaggerTouch' in original logic.
+{
+	if (other == self->owner || other->owner == self->owner)
+		return;
+
+	// Are we reflecting?
+	if (EntReflecting(other, true, true) && self->reflect_debounce_time > 0)
+	{
+		Create_rand_relect_vect(self->velocity, self->velocity);
+		Vec3ScaleAssign(ASSASSIN_DAGGER_SPEED / 2.0f, self->velocity);
+		AssassinArrowReflect(self, other, self->velocity);
+
+		return;
+	}
+
+	if (surface != NULL && (surface->flags & SURF_SKY))
+	{
+		SkyFly(self);
+		return;
+	}
+
+	// Take into account if angle is within 45 of 0?
+	vec3_t normal;
+	VectorCopy(vec3_up, normal);
+
+	if (plane != NULL && Vec3NotZero(plane->normal)) //BUGFIX: mxd. Use Vec3NotZero() instead of always-true plane->normal NULL check.
+		VectorCopy(plane->normal, normal);
+
+	if (other->takedamage != DAMAGE_NO)
+	{
+		const int snd_id = ((other->materialtype == MAT_FLESH || other->client != NULL) ? SND_DAGHITF : SND_DAGHITW);
+		gi.sound(self, CHAN_AUTO, sounds[snd_id], 1.0f, ATTN_NORM, 0.0f);
+
+		float damage = flrand(ASSASSIN_MIN_DAMAGE, ASSASSIN_MAX_DAMAGE);
+		if (SKILL >= SKILL_HARD && Q_fabs(self->s.angles[PITCH]) < 45.0f) // Up to extra 10 pts damage if pointed correctly AND on hard skill.
+			damage += 45.0f / (45 - Q_fabs(self->s.angles[PITCH])) * 10;
+
+		T_Damage(other, self, self->owner, self->movedir, self->s.origin, normal, (int)damage, 0, 0, MOD_DIED);
+	}
+	else // Spark.
+	{
+		vec3_t hit_angles;
+		vectoangles(normal, hit_angles); //mxd. Removed unnecessary Vec3NotZero() normal check (already done above).
+
+		gi.CreateEffect(NULL, FX_SPARKS, 0, self->s.origin, "d", hit_angles);
+		gi.sound(self, CHAN_AUTO, sounds[SND_DAGHITW], 1.0f, ATTN_NORM, 0.0f);
+	}
+
+	G_FreeEdict(self);
+}
+
 #pragma endregion
 
 /*----------------------------------------------------------------------
@@ -181,74 +232,13 @@ void assassin_jump(edict_t *self, G_Message_t *msg)
 	self->monsterinfo.aiflags |= AI_OVERRIDE_GUIDE;
 }
 
-void assassinDaggerTouch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surface)
-{
-	float damage;
-	vec3_t	hitangles, normal;
-
-	if(other==self->owner||other->owner == self->owner)
-	{
-		return;
-	}
-
-	// are we reflecting ?
-	if(EntReflecting(other, true, true) && self->reflect_debounce_time)
-	{
-		Create_rand_relect_vect(self->velocity, self->velocity);
-		Vec3ScaleAssign(ASSASSIN_DAGGER_SPEED / 2, self->velocity);
-		AssassinArrowReflect(self, other, self->velocity);
-
-		return;
-	}
-
-	if(surface&&(surface->flags&SURF_SKY))
-	{
-		SkyFly(self);
-		return;
-	}
-
-//take into account if angle is within 45 of 0?
-	VectorSet(normal, 0, 0, 1);
-	if(plane)
-	{
-		if(plane->normal)
-		{
-			VectorCopy(plane->normal, normal);
-		}
-	}
-
-	if(other->takedamage)
-	{
-		if(other->materialtype == MAT_FLESH||other->client)
-			gi.sound(self,CHAN_AUTO,sounds[SND_DAGHITF],1,ATTN_NORM,0);
-		else
-			gi.sound(self,CHAN_AUTO,sounds[SND_DAGHITW],1,ATTN_NORM,0);
-		damage = flrand(ASSASSIN_MIN_DAMAGE,ASSASSIN_MAX_DAMAGE);
-		if(skill->value >= 2 && Q_fabs(self->s.angles[PITCH])<45)//up to extra 10 pts damage if pointed correctly AND on hard skill
-			damage += 45/(45 - Q_fabs(self->s.angles[PITCH])) * 10;
-
-		T_Damage(other,self,self->owner,self->movedir,self->s.origin,normal, damage, 0, 0,MOD_DIED);
-	}
-	else//spark
-	{
-		if(Vec3NotZero(normal))
-			vectoangles(normal, hitangles);
-		else
-			VectorSet(hitangles, 0, 0, 90);
-		gi.CreateEffect(NULL, FX_SPARKS, 0, self->s.origin, "d", hitangles);
-		gi.sound(self,CHAN_AUTO,sounds[SND_DAGHITW],1,ATTN_NORM,0);
-	}
-
-	G_FreeEdict(self);
-}
-
 // create the guts of the dagger
 void create_assassin_dagger(edict_t *Arrow)
 {
 	Arrow->movetype=MOVETYPE_FLYMISSILE;
 	Arrow->solid=SOLID_BBOX;
 	Arrow->classname="Assassin_Dagger";
-	Arrow->touch=assassinDaggerTouch;
+	Arrow->touch=AssassinDaggerTouch;
 	Arrow->gravity = 0.0f;
 	Arrow->clipmask=MASK_SHOT;
 	Arrow->s.effects |= EF_CAMERA_NO_CLIP;
