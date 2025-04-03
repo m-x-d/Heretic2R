@@ -131,7 +131,7 @@ static void AssassinCinematicAnimsMsgHandler(edict_t* self, G_Message_t* msg) //
 
 #pragma region ========================== Utility functions ==========================
 
-edict_t* AssassinArrowReflect(edict_t* self, edict_t* other, const vec3_t vel) //TODO: rename to AssassinDaggerReflect?
+edict_t* AssassinDaggerReflect(edict_t* self, edict_t* other, const vec3_t vel) //mxd. Named 'AssassinArrowReflect' in original logic.
 {
 	edict_t* dagger = G_Spawn();
 
@@ -169,7 +169,7 @@ static void AssassinDaggerTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 	{
 		Create_rand_relect_vect(self->velocity, self->velocity);
 		Vec3ScaleAssign(ASSASSIN_DAGGER_SPEED / 2.0f, self->velocity);
-		AssassinArrowReflect(self, other, self->velocity);
+		AssassinDaggerReflect(self, other, self->velocity);
 
 		return;
 	}

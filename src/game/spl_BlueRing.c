@@ -170,7 +170,7 @@ static void RingThink(edict_t* self)
 		}
 		else if (strcmp(ent->classname, "Assassin_Dagger") == 0)
 		{
-			reflect = AssassinArrowReflect;
+			reflect = AssassinDaggerReflect;
 		}
 		else if (strcmp(ent->classname, "Gkrokon_Spoo") == 0)
 		{
