@@ -1016,14 +1016,6 @@ static void AssassinDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. 
 	AssassinDismember(self, damage, hl);
 }
 
-void assassin_random_pain_sound (edict_t *self)
-{
-	if(irand(0,1))
-		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN1], 1, ATTN_NORM, 0);
-	else
-		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN2], 1, ATTN_NORM, 0);
-}
-
 void assassin_pain(edict_t *self, G_Message_t *msg)
 {
 	edict_t			*attacker, *inflictor;
@@ -1055,7 +1047,8 @@ void assassin_pain(edict_t *self, G_Message_t *msg)
 	if(!self->maxs[2])
 		assassinUndoCrouched (self);
 
-	assassin_random_pain_sound(self);
+	//mxd. Inlined assassin_random_pain_sound().
+	gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
 
 	if (self->pain_debounce_time < level.time||force_pain)
 	{
