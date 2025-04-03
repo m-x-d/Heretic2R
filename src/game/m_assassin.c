@@ -91,47 +91,43 @@ static ClassResourceInfo_t res_info;
 
 #pragma endregion
 
-/*-------------------------------------------------------------------------
-	assassin_c_anims
--------------------------------------------------------------------------*/
-void assassin_c_anims(edict_t *self, G_Message_t *msg)
+static void AssassinCinematicAnimsMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_c_anims' in original logic.
 {
-	int int_msg;
 	int curr_anim;
 
 	ai_c_readmessage(self, msg);
-	int_msg = (int) msg->ID;
+	self->monsterinfo.c_anim_flag = 0;
 
-	self->monsterinfo.c_anim_flag = 0; 
-
-	switch(int_msg)
+	switch (msg->ID)
 	{
 		case MSG_C_ATTACK1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ATTACK1;
 			break;
+
 		case MSG_C_ATTACK2:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_ATTACK2;
 			break;
+
 		case MSG_C_IDLE1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_IDLE1;
 			break;
+
 		case MSG_C_RUN1:
 			self->monsterinfo.c_anim_flag |= C_ANIM_MOVE;
 			curr_anim = ANIM_C_RUN1;
 			break;
+
 		default:
 			self->monsterinfo.c_anim_flag |= C_ANIM_REPEAT;
 			curr_anim = ANIM_C_IDLE1;
 			break;
-	} 
+	}
 
 	SetAnim(self, curr_anim);
 }
-
-
 
 /*----------------------------------------------------------------------
   Action Functions for the monster
@@ -2711,10 +2707,10 @@ void AssassinStaticsInit(void)
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_DEATH_PAIN] = assassin_dead_pain;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_CHECK_MOOD] = assassin_check_mood;
 
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_IDLE1] = assassin_c_anims;
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_RUN1] = assassin_c_anims;
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_ATTACK1] = assassin_c_anims;
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_ATTACK2] = assassin_c_anims;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_IDLE1] = AssassinCinematicAnimsMsgHandler;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_RUN1] = AssassinCinematicAnimsMsgHandler;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_ATTACK1] = AssassinCinematicAnimsMsgHandler;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_ATTACK2] = AssassinCinematicAnimsMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;
