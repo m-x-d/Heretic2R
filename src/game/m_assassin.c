@@ -1434,7 +1434,7 @@ static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 		}
 	}
 
-	if (irand(0, 100) < SKILL * 10 && self->pre_think != assassinCloak)
+	if (irand(0, 100) < SKILL * 10 && self->pre_think != AssassinCloakFadePreOutThink)
 		assassinInitCloak(self);
 
 	int chance = irand(0, 10);
@@ -2002,35 +2002,23 @@ static void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThin
 		MG_CheckEvade(self);
 }
 
-void assassinCloak (edict_t *self)
+static void AssassinCloakFadePreOutThink(edict_t* self) //mxd. Named 'assassinCloak' in original logic.
 {
-	int	interval = 15;
-	
-	if(self->s.color.r > 50)
-		self->s.color.r += irand(-interval*3, 0);
-	if(self->s.color.g > 50)
-		self->s.color.g += irand(-interval*3, 0);
-	if(self->s.color.b > 50)
-		self->s.color.b += irand(-interval*3, 0);
+#define FADE_INCREMENT	15 //mxd
 
-	if(self->s.color.a > 150)
-		self->s.color.a += irand(-interval, 0);
+	for (int i = 0; i < 3; i++) // Fade out RGB.
+		if (self->s.color.c_array[i] > 50)
+			self->s.color.c_array[i] -= irand(0, FADE_INCREMENT * 3);
 
-	if(self->s.color.r > 50||
-		self->s.color.g > 50||
-		self->s.color.b > 50||
-		self->s.color.a > 150)
-	{
-		self->pre_think = assassinCloak;
-		self->next_pre_think = level.time + FRAMETIME;
-	}
-	else
-	{
+	if (self->s.color.a > 150) // Fade out Alpha.
+		self->s.color.a -= irand(0, FADE_INCREMENT);
+
+	if (self->s.color.r <= 50 && self->s.color.g <= 50 && self->s.color.b <= 50 && self->s.color.a <= 150)
 		self->pre_think = AssassinCloakPreThink;
-		self->next_pre_think = level.time + FRAMETIME;
-	}
 
-	if(self->evade_debounce_time < level.time)
+	self->next_pre_think = level.time + FRAMETIME;
+
+	if (self->evade_debounce_time < level.time)
 		MG_CheckEvade(self);
 }
 
@@ -2103,7 +2091,7 @@ void assassinInitCloak (edict_t *self)
 	self->s.color.g = 255;
 	self->s.color.b = 255;
 	self->s.color.a = 255;
-	self->pre_think = assassinCloak;
+	self->pre_think = AssassinCloakFadePreOutThink;
 	self->next_pre_think = level.time + FRAMETIME;
 }
 
