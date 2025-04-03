@@ -177,7 +177,7 @@ extern void assassin_jump_go(edict_t* self, float forward_speed, float up_speed,
 extern void assassin_skip_frame_skill_check(edict_t* self);
 extern void assassin_gone(edict_t* self);
 extern void assassin_enable_fmnode(edict_t* self, float node);
-extern void assassinReadyTeleport(edict_t* self);
+extern void assassin_ready_teleport(edict_t* self);
 extern void assassinInitCloak(edict_t* self);
 
 #define BIT_DADDYNULL	0

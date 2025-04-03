@@ -759,7 +759,7 @@ static const animframe_t assassin_frames_teleport[] =
 	{ FRAME_ataka7,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_skip_frame_skill_check },
 	{ FRAME_ataka8,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_skip_frame_skill_check },
 	{ FRAME_ataka9,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
-	{ FRAME_ataka10,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinReadyTeleport },
+	{ FRAME_ataka10,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_ready_teleport },
 	{ FRAME_ataka11,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 };
 const animmove_t assassin_move_teleport = { 9, assassin_frames_teleport, assassin_gone };

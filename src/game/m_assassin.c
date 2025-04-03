@@ -1692,7 +1692,7 @@ void AssassinPrepareTeleportDestination(edict_t* self, const vec3_t spot, const 
 	// Dumbed down.
 	if (instant && SKILL > SKILL_MEDIUM)
 	{
-		assassinReadyTeleport(self);
+		assassin_ready_teleport(self);
 		assassin_gone(self);
 	}
 	else
@@ -1791,7 +1791,7 @@ static qboolean AssassinChooseTeleportDestination(edict_t* self, const int type,
 	return false;
 }
 
-void assassinReadyTeleport(edict_t* self) //TODO: rename to assassin_ready_teleport.
+void assassin_ready_teleport(edict_t* self) //mxd. Named 'assassinReadyTeleport' in original logic.
 {
 	AssassinSmoke(self);
 	self->svflags |= SVF_NO_AUTOTARGET;
