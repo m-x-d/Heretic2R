@@ -153,7 +153,7 @@ extern const animmove_t assassin_move_c_attack2;
 
 //mxd. Forward declarations for m_assassin_anim.c:
 extern void assassin_pause(edict_t* self);
-extern void assassin_sound(edict_t* self, float channel, float soundnum, float attn);
+extern void assassin_sound(edict_t* self, float channel, float sound_num, float attenuation);
 extern void assassin_go_inair(edict_t* self);
 extern void assassin_go_evinair(edict_t* self);
 extern void assassin_go_bfinair(edict_t* self);
@@ -167,14 +167,14 @@ extern void assassin_crouch_idle_decision(edict_t* self);
 
 extern void assassingrowl(edict_t* self);
 extern void assassinsqueal(edict_t* self);
-extern void assassindagger(edict_t* self, float right_ofs);
+extern void assassindagger(edict_t* self, float flags);
 extern void assassinCheckLoop(edict_t* self, float frame);
 extern void assassinSetCrouched(edict_t* self);
 extern void assassinCrouchedCheckAttack(edict_t* self, float attack);
 extern void assassinUnCrouch(edict_t* self);
 extern void assassinUndoCrouched(edict_t* self);
 extern void assassinStop(edict_t* self);
-extern void assassinGoJump(edict_t* self, float fwdspd, float upspd, float rtspd);
+extern void assassinGoJump(edict_t* self, float forward_speed, float up_speed, float right_speed);
 extern void assassinSkipFrameSkillCheck(edict_t* self);
 extern void assassinGone(edict_t* self);
 extern void assassinNodeOn(edict_t* self, float node);

@@ -9,7 +9,7 @@
 #include "q_Typedef.h"
 
 static void AssassinDaggerInit(edict_t* dagger);
-static void AssassinDropWeapon(edict_t* self, int whichknives);
+static void AssassinDropWeapon(edict_t* self, int knife_flags);
 static qboolean AssassinCheckTeleport(edict_t* self, int type);
 static qboolean AssassinChooseTeleportDestination(edict_t* self, int type, qboolean imperative, qboolean instant);
 static void AssassinCloakFadePreThink(edict_t* self);
