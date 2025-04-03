@@ -1167,28 +1167,28 @@ static void AssassinChooseJumpAmbush(edict_t* self) //mxd. Named 'assassinChoose
 	}
 }
 
-qboolean assassinChooseSideJumpAmbush(edict_t *self)
-{//OR: turn and jump?
-	float	dot;
-	vec3_t	right, enemy_dir;
-
-	if(!self->enemy)
+static qboolean AssassinChooseSideJumpAmbush(edict_t* self) //mxd. Named 'assassinChooseSideJumpAmbush' in original logic.
+{
+	//OR: turn and jump?
+	if (self->enemy == NULL)
 		return false;
 
+	vec3_t right;
 	AngleVectors(self->s.angles, NULL, right, NULL);
+
+	vec3_t enemy_dir;
 	VectorSubtract(self->enemy->s.origin, self->s.origin, enemy_dir);
 	VectorNormalize(enemy_dir);
 
-	dot = DotProduct(right, enemy_dir);
-	if(dot>0)
-		VectorScale(right, 300, self->movedir);
-	else
-		VectorScale(right, -300, self->movedir);
+	const float side = ((DotProduct(right, enemy_dir) > 0.0f) ? 1.0f : -1.0f); //mxd
+	VectorScale(right, 300.0f * side, self->movedir);
 
-	self->movedir[2] = 200;
+	self->movedir[2] = 200.0f;
 	SetAnim(self, ANIM_FJUMP);
+
 	return true;
 }
+
 /*-------------------------------------------------------------------------
 	assassin_run
 -------------------------------------------------------------------------*/
@@ -1218,7 +1218,7 @@ void assassin_run(edict_t *self, G_Message_t *msg)
 		if(self->spawnflags&MSF_ASS_SIDEJUMPAMBUSH)//side-jump out
 		{
 			self->spawnflags &= ~MSF_ASS_SIDEJUMPAMBUSH;
-			if(assassinChooseSideJumpAmbush(self))
+			if(AssassinChooseSideJumpAmbush(self))
 				return;
 		}
 	}
