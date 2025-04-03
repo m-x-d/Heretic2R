@@ -821,7 +821,7 @@
     <ClInclude Include="m_assassin_anim.h">
       <Filter>src\Monsters\Assassin</Filter>
     </ClInclude>
-    <ClInclude Include="m_beast_local.h">
+    <ClInclude Include="m_beast_shared.h">
       <Filter>src\Monsters\Beast</Filter>
     </ClInclude>
     <ClInclude Include="m_beast_anim.h">

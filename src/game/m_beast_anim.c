@@ -5,7 +5,7 @@
 //
 
 #include "m_beast_anim.h"
-#include "m_beast_local.h"
+#include "m_beast_shared.h"
 #include "g_monster.h"
 #include "g_local.h"
 

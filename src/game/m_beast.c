@@ -13,6 +13,9 @@ TBEAST
 ==============================================================================
 */
 
+#include "m_beast.h"
+#include "m_beast_shared.h"
+#include "m_beast_anim.h"
 #include "g_local.h"
 #include "Utilities.h"
 #include "g_DefaultMessageHandler.h"
@@ -21,17 +24,13 @@ TBEAST
 #include "random.h"
 #include "buoy.h"
 #include "vector.h"
-
 #include "p_actions.h"
 #include "p_anims.h"
 #include "p_anim_branch.h"
 #include "q_Physics.h"
 #include "g_Physics.h"
 #include "g_debris.h" //mxd
-#include "m_beast.h"
 #include "mg_ai.h" //mxd
-#include "m_beast_local.h"
-#include "m_beast_anim.h"
 #include "m_stats.h"
 #include "mg_guide.h" //mxd
 

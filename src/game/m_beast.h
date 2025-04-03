@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "g_Edict.h"
+
 void SP_monster_trial_beast(edict_t* self);
 qboolean TB_CheckBottom(edict_t* self);
 qboolean TB_CheckJump(edict_t* self);
