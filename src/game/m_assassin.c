@@ -1528,32 +1528,32 @@ void assassinCrouchedCheckAttack(edict_t* self, float attack) //TODO: rename to 
 		self->monsterinfo.currframeindex = 2;
 }
 
-void assassinNodeOn (edict_t *self, float node)
+void assassinNodeOn(edict_t* self, float node) //TODO: rename to assassin_enable_fmnode?
 {
 	self->s.fmnodeinfo[(int)node].flags &= ~FMNI_NO_DRAW;
 }
 
-void assassinStop (edict_t *self)
+void assassinStop(edict_t* self) //TODO: rename to assassin_stop?
 {
-	if(self->evade_debounce_time - level.time> 0.1f)
+	if (self->evade_debounce_time - level.time > 0.1f)
 		self->nextthink = level.time + (self->evade_debounce_time - level.time);
 }
 
-void assassinSetCrouched (edict_t *self)
+void assassinSetCrouched(edict_t* self) //TODO: rename to assassin_set_crouched?
 {
-	VectorSet (self->maxs, 16, 16, 0);	
+	VectorSet(self->maxs, 16.0f, 16.0f, 0.0f);
 	self->viewheight = 0;
 }
 
-void assassinUndoCrouched (edict_t *self)
+void assassinUndoCrouched(edict_t* self) //TODO: rename to assassin_undo_crouched?
 {
-	VectorSet (self->maxs, 16, 16, 48);	
+	VectorSet(self->maxs, 16.0f, 16.0f, 48.0f);
 	self->viewheight = 40;
 }
 
-void assassin_sound(edict_t *self, float channel, float soundnum, float attn)
+void assassin_sound(edict_t* self, float channel, float sound_num, float attenuation)
 {
-	gi.sound (self, (int)(channel), sounds[(int)(soundnum)], 1, (int)(attn), 0);
+	gi.sound(self, (int)channel, sounds[(int)sound_num], 1.0f, attenuation, 0.0f);
 }
 
 void assassinGoJump (edict_t *self, float fwdspd,float upspd,float rtspd)
