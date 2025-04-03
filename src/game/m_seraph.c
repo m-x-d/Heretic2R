@@ -959,7 +959,6 @@ void SeraphOverlordStaticsInit(void)
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DISMEMBER]	= DismemberMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DEATH_PAIN]	= seraph_death_pain;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_CHECK_MOOD] = seraph_check_mood;
-	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_SERAPH_OVERLORD].msgReceivers[MSG_VOICE_SIGHT] = ser_ovl_SightSound;
 
 	resInfo.numAnims = NUM_ANIMS;
