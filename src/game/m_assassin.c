@@ -1815,32 +1815,20 @@ void assassinUnCrouch(edict_t* self) //TODO: rename to assassin_uncrouch.
 	SetAnim(self, ANIM_UNCROUCH);
 }
 
-qboolean assassinCheckCloak (edict_t *self)
+static qboolean AssassinCheckCloak(const edict_t* self) //mxd. Named 'assassinCheckCloak' in original logic.
 {
-	int	chance = 0;
+	if (!self->monsterinfo.awake || self->monsterinfo.misc_debounce_time > level.time || (self->spawnflags & MSF_ASS_NOSHADOW)) // misc_debounce_time == Cloak debounce time.
+		return false;
 
-	if(!self->monsterinfo.awake)
-		return (false);
+	if (self->ai_mood == AI_MOOD_FLEE)
+		return true;
 
-	if(self->monsterinfo.misc_debounce_time > level.time)//cloak debounce time
-		return (false);
+	if (self->enemy == NULL)
+		return false;
 
-	if(self->spawnflags & MSF_ASS_NOSHADOW)
-		return (false);
+	const int chance = (AI_IsInfrontOf(self->enemy, self) ? -3 : 0);
 
-	if(self->ai_mood == AI_MOOD_FLEE)
-		return (true);
-
-	if(!self->enemy)
-		return (false);
-
-	if(AI_IsInfrontOf(self->enemy, self))
-		chance = -3;
-
-	if(irand(0, 10 - skill->value + chance) <= 0)
-		return (true);
-
-	return (false);
+	return (irand(0, 10 - SKILL + chance) <= 0);
 }
 
 qboolean assassinCheckDeCloak (edict_t *self)
@@ -1886,7 +1874,7 @@ void assassinCloakThink (edict_t *self)
 //check cloak or decloak
 	if(!(self->s.renderfx & RF_ALPHA_TEXTURE))
 	{//not cloaked
-		if(assassinCheckCloak(self))
+		if(AssassinCheckCloak(self))
 		{
 			self->monsterinfo.misc_debounce_time = level.time + 7;//10 seconds before will willingly uncloak
 			assassinInitCloak(self);
