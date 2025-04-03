@@ -169,7 +169,7 @@ extern void assassin_growl(edict_t* self);
 extern void assassin_attack(edict_t* self, float flags);
 extern void assassinCheckLoop(edict_t* self, float frame);
 extern void assassinSetCrouched(edict_t* self);
-extern void assassinCrouchedCheckAttack(edict_t* self, float attack);
+extern void assassin_crouched_check_attack(edict_t* self, float attack);
 extern void assassinUnCrouch(edict_t* self);
 extern void assassinUndoCrouched(edict_t* self);
 extern void assassinStop(edict_t* self);

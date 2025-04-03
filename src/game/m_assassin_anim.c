@@ -84,9 +84,9 @@ static const animframe_t assassin_frames_daggerc[] =
 	{ FRAME_lndatk5,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL }, // Loop in from an attack, no windup.
 	{ FRAME_lndatk6,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_lndatk7,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
-	{ FRAME_lndatk8,	NULL, 0.0f, 0.0f, 0.0f, assassinCrouchedCheckAttack, 1.0f, NULL },
+	{ FRAME_lndatk8,	NULL, 0.0f, 0.0f, 0.0f, assassin_crouched_check_attack, 1.0f, NULL },
 	{ FRAME_lndatk9,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
-	{ FRAME_lndatk10,	NULL, 0.0f, 0.0f, 0.0f, assassinCrouchedCheckAttack, 0.0f, NULL }, // Check for loop to other attack.
+	{ FRAME_lndatk10,	NULL, 0.0f, 0.0f, 0.0f, assassin_crouched_check_attack, 0.0f, NULL }, // Check for loop to other attack.
 	{ FRAME_lndatk11,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL }
 };
 const animmove_t assassin_move_daggerc = { 11, assassin_frames_daggerc, assassin_pause };
@@ -176,7 +176,7 @@ static const animframe_t assassin_frames_land[] =
 	{ FRAME_jump14,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinSetCrouched },
 	{ FRAME_jump15,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_jump16,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
-	{ FRAME_jump17,	NULL, 0.0f, 0.0f, 0.0f, assassinCrouchedCheckAttack, 2.0f, assassinUndoCrouched }
+	{ FRAME_jump17,	NULL, 0.0f, 0.0f, 0.0f, assassin_crouched_check_attack, 2.0f, assassinUndoCrouched }
 };
 const animmove_t assassin_move_land = { 5, assassin_frames_land, assassin_pause };
 

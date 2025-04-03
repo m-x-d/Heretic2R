@@ -1510,7 +1510,7 @@ static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	self->evade_debounce_time = 0.0f;
 }
 
-void assassinCrouchedCheckAttack(edict_t* self, float attack) //TODO: rename to assassin_crouched_check_attack?
+void assassin_crouched_check_attack(edict_t* self, float attack) //mxd. Named 'assassinCrouchedCheckAttack' in original logic.
 {
 	if (irand(0, 10) < 5 || !AI_IsClearlyVisible(self, self->enemy) || !AI_IsInfrontOf(self, self->enemy))
 		return;
