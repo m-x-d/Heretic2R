@@ -15,6 +15,7 @@
 #define GAME_INCLUDE
 
 #include "game.h"
+#include "g_HitLocation.h" //mxd
 #include "Player.h"
 
 // The "gameversion" client command will print this plus compile date.
@@ -439,7 +440,7 @@ typedef struct
 	void (*dodge)(edict_t* self, edict_t* other, float eta);
 	int (*attack)(edict_t* self);
 	void (*sight)(edict_t* self, edict_t* other);
-	void (*dismember)(edict_t* self, int damage, int HitLocation);
+	void (*dismember)(edict_t* self, int damage, HitLocation_t hl); //mxd. Changed 'hl' arg type from int.
 	qboolean(*alert)(edict_t* self, alertent_t* alerter, edict_t* enemy);
 	qboolean(*checkattack)(edict_t* self);
 
