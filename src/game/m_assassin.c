@@ -1592,44 +1592,43 @@ void assassin_go_bfinair(edict_t* self) //TODO: rename to assassin_backflip_inai
 	SetAnim(self, ANIM_BFINAIR);
 }
 
-void assassinCheckLoop (edict_t *self, float frame)
-{//see if should fire again
-	vec3_t	v;
-	float	len, melee_range, min_seperation, jump_range;
+void assassinCheckLoop(edict_t* self, float frame) //TODO: rename to assassin_check_loop?
+{
+#define MELEE_RANGE	64.0f //mxd //TODO: move to m_stats.h?
+#define JUMP_RANGE	128.0f //mxd //TODO: move to m_stats.h?
 
-	if(!self->enemy)
+	// See if should fire again.
+	if (self->enemy == NULL)
 		return;
 
 	ai_charge2(self, 0);
 
-	if(!AI_IsClearlyVisible(self, self->enemy))
+	if (!AI_IsClearlyVisible(self, self->enemy) || !AI_IsInfrontOf(self, self->enemy))
 		return;
 
-	if(!AI_IsInfrontOf(self, self->enemy))
-		return;
-
-	if(irand(0, 100) < self->bypass_missile_chance)
+	if (irand(0, 100) < self->bypass_missile_chance)
 	{
-		self->monsterinfo.attack_finished = level.time + 3 - skill->value;
+		self->monsterinfo.attack_finished = level.time + 3.0f - skill->value;
 		return;
 	}
 
-	if(self->ai_mood_flags&AI_MOOD_FLAG_BACKSTAB)
+	if (self->ai_mood_flags & AI_MOOD_FLAG_BACKSTAB)
 		return;
 
-	VectorSubtract (self->s.origin, self->enemy->s.origin, v);
-	len = VectorLength (v);
-	melee_range = 64;
-	jump_range = 128;
-	min_seperation = self->maxs[0] + self->enemy->maxs[0];
+	vec3_t diff;
+	VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
 
-	if (AI_IsInfrontOf(self, self->enemy))
-	{//don't loop if enemy close enough
-		if (len < min_seperation + melee_range)
-			return;
-		else if (len < min_seperation + jump_range && irand(0,10)<3)
-			return;
-	}
+	const float dist = VectorLength(diff);
+	const float min_separation = self->maxs[0] + self->enemy->maxs[0];
+
+	//mxd. Skip unnecessary AI_IsInfrontOf() check (already checked above).
+
+	// Don't loop if enemy close enough.
+	if (dist < min_separation + MELEE_RANGE)
+		return;
+
+	if (dist < min_separation + JUMP_RANGE && irand(0, 10) < 3)
+		return;
 
 	self->monsterinfo.currframeindex = (int)frame;
 }
