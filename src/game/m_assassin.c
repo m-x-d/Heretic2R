@@ -1267,26 +1267,20 @@ void assassinsqueal(edict_t* self) //TODO: remove?
 
 }
 
-/*-------------------------------------------------------------------------
-	assassin_stand
--------------------------------------------------------------------------*/
-void assassin_stand(edict_t *self, G_Message_t *msg)
-{	
+static void AssassinStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_stand' in original logic.
+{
 	if (self->ai_mood == AI_MOOD_DELAY)
+	{
 		SetAnim(self, ANIM_DELAY);
+	}
 	else
 	{
-		if(self->s.renderfx & RF_ALPHA_TEXTURE)
-		{
-			if(self->pre_think != assassinDeCloak)
-				assassinInitDeCloak(self);
-		}
+		if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != assassinDeCloak)
+			assassinInitDeCloak(self);
+
 		SetAnim(self, ANIM_STAND);
 	}
-
-	return;
 }
-
 
 /*-------------------------------------------------------------------------
 	assassin_walk
@@ -2345,7 +2339,7 @@ void assassin_check_mood (edict_t *self, G_Message_t *msg)
 -------------------------------------------------------------------------*/
 void AssassinStaticsInit(void)
 {
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_STAND] = assassin_stand;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_STAND] = AssassinStandMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_WALK] = assassin_walk;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_RUN] = AssassinRunMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_MELEE] = AssassinMeleeMsgHandler;
