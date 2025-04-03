@@ -676,368 +676,331 @@ static HitLocation_t AssassinConvertDeadHitLocation(const HitLocation_t hl) //mx
 
 #pragma endregion
 
-void assassin_dismember(edict_t *self, int damage, int HitLocation)
-{
-	int			throw_nodes = 0;
-	vec3_t		gore_spot, right;
-	qboolean	dismember_ok = false;
+#pragma region ========================== DISMEMGER LOGIC ==========================
 
-	if(HitLocation & hl_MeleeHit)
+static qboolean AssassinThrowHead(edict_t* self, float damage, const qboolean dismember_ok) //mxd. Split from AssassinDismember() to simplify logic.
+{
+	// Head already gone?
+	if (self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_NO_DRAW)
+		return false;
+
+	if (self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	if (dismember_ok && flrand(0.0f, (float)self->health) < damage * 0.3f)
 	{
-		dismember_ok = true;
-		HitLocation &= ~hl_MeleeHit;
+		int throw_nodes = 0;
+		CanThrowNode(self, MESH__HEAD, &throw_nodes);
+
+		vec3_t gore_spot = { 0.0f, 0.0f, 18.0f };
+		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_prtfly);
+
+		VectorAdd(self->s.origin, gore_spot, gore_spot);
+		SprayDebris(self, gore_spot, 8, damage);
+
+		if (self->health > 0)
+		{
+			self->health = 1;
+			T_Damage(self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20, 0, MOD_DIED);
+		}
+
+		return true;
 	}
 
-	if(HitLocation<1)
-		return;
+	// Switch head node to damaged skin.
+	self->s.fmnodeinfo[MESH__HEAD].flags |= FMNI_USE_SKIN;
+	self->s.fmnodeinfo[MESH__HEAD].skin = self->s.skinnum + 1;
 
-	if(HitLocation>hl_Max)
-		return;
-//	gi.dprintf("HL: %d",HitLocation);
+	return false;
+}
 
-	if(self->health>0)
+static qboolean AssassinThrowTorso(edict_t* self, float damage, const int mesh_part, const qboolean dismember_ok) //mxd. Split from AssassinDismember() to simplify logic.
+{
+	// Torso already gone?
+	if (self->s.fmnodeinfo[mesh_part].flags & FMNI_NO_DRAW)
+		return false;
+
+	if (self->s.fmnodeinfo[mesh_part].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	if (dismember_ok && flrand(0.0f, (float)self->health) < damage * 0.3f)
 	{
-		if(self->curAnimID==ANIM_DAGGERL||(self->curAnimID==ANIM_DAGGERB&&irand(0,2)<1))
-		{//Hit chest during melee, may have hit arms
-			if(HitLocation == hl_TorsoFront&&irand(0,10)<4)
-			{
-				if(irand(0,10)<7)
-					HitLocation = hl_ArmLowerRight;
-				else
-					HitLocation = hl_ArmLowerLeft;
-			}
+		int throw_nodes = 0;
+		CanThrowNode(self, MESH__TORSOFT, &throw_nodes);
+		CanThrowNode(self, MESH__TORSOBK, &throw_nodes);
+		CanThrowNode(self, MESH__HEAD, &throw_nodes);
+		CanThrowNode(self, MESH__R4ARM, &throw_nodes);
+		CanThrowNode(self, MESH__L4ARM, &throw_nodes);
+		CanThrowNode(self, MESH__KNIFES, &throw_nodes);
+		CanThrowNode(self, MESH__LUPARM, &throw_nodes);
+		CanThrowNode(self, MESH__RUPARM, &throw_nodes);
+
+		AssassinDropWeapon(self, BIT_LKNIFE | BIT_RKNIFE);
+
+		vec3_t gore_spot = { 0.0f, 0.0f, 12.0f };
+		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_torsofly);
+		VectorAdd(self->s.origin, gore_spot, gore_spot);
+		SprayDebris(self, gore_spot, 12, damage);
+
+		if (self->health > 0)
+		{
+			self->health = 1;
+			T_Damage(self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20, 0, MOD_DIED);
 		}
 
-		if(self->curAnimID==ANIM_DAGGERR||self->curAnimID==ANIM_DAGGERC||(self->curAnimID==ANIM_DAGGERB&&irand(0,2)<1))
-		{//Hit chest during melee, may have hit arms
-			if(HitLocation == hl_TorsoFront&&irand(0,10)<4)
-			{
-				if(irand(0,10)<7)
-					HitLocation = hl_ArmLowerRight;
-				else
-					HitLocation = hl_ArmLowerLeft;
-			}
-		}
+		return true;
+	}
 
-		if(
-			(HitLocation == hl_ArmUpperLeft&& self->s.fmnodeinfo[MESH__LUPARM].flags & FMNI_NO_DRAW) ||
-			(HitLocation == hl_ArmUpperRight&& self->s.fmnodeinfo[MESH__RUPARM].flags & FMNI_NO_DRAW)||
-			(
-				(HitLocation == hl_TorsoFront|| HitLocation == hl_TorsoBack) &&
-				self->s.fmnodeinfo[MESH__LUPARM].flags & FMNI_NO_DRAW &&
-				self->s.fmnodeinfo[MESH__RUPARM].flags & FMNI_NO_DRAW &&
-				irand(0,10)<4)
-			)
-			HitLocation = hl_Head;//Decap
+	// Switch torso node to damaged skin.
+	self->s.fmnodeinfo[mesh_part].flags |= FMNI_USE_SKIN;
+	self->s.fmnodeinfo[mesh_part].skin = self->s.skinnum + 1;
+
+	return false;
+}
+
+static void AssassinThrowUpperArm(edict_t* self, float damage, const int mesh_part, const qboolean dismember_ok) //mxd. Split from AssassinDismember() to simplify logic.
+{
+	// Arm already gone?
+	if (self->s.fmnodeinfo[mesh_part].flags & FMNI_NO_DRAW)
+		return;
+
+	const qboolean is_left_arm = (mesh_part == MESH__LUPARM); //mxd
+
+	if (is_left_arm && (self->s.fmnodeinfo[mesh_part].flags & FMNI_USE_SKIN))
+		damage *= 1.5f; // Greater chance to cut off left arm if previously damaged.
+
+	if (dismember_ok && flrand(0.0f, (float)self->health) < damage * 0.75f)
+	{
+		int throw_nodes = 0;
+		const int forearm_part = (is_left_arm ? MESH__L4ARM : MESH__R4ARM); //mxd
+		CanThrowNode(self, forearm_part, &throw_nodes);
+
+		if (CanThrowNode(self, mesh_part, &throw_nodes))
+		{
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+			const float side = (is_left_arm ? -1.0f : 1.0f);
+			VectorMA(gore_spot, 10.0f * side, right, gore_spot);
+
+			const int knife_flag = (is_left_arm ? BIT_LKNIFE : BIT_RKNIFE); //mxd
+			AssassinDropWeapon(self, knife_flag);
+			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_prtfly);
+		}
 	}
 	else
-		HitLocation = AssassinConvertDeadHitLocation(HitLocation);
+	{
+		// Switch arm node to damaged skin.
+		self->s.fmnodeinfo[mesh_part].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[mesh_part].skin = self->s.skinnum + 1;
+	}
+}
 
-	VectorClear(gore_spot);
-	switch(HitLocation)
+static void AssassinThrowLowerArm(edict_t* self, float damage, const int mesh_part, const qboolean dismember_ok) //mxd. Split from AssassinDismember() to simplify logic.
+{
+	if (self->s.fmnodeinfo[mesh_part].flags & FMNI_NO_DRAW)
+		return;
+
+	const qboolean is_left_arm = (mesh_part == MESH__L4ARM); //mxd
+
+	if (is_left_arm && self->s.fmnodeinfo[mesh_part].flags & FMNI_USE_SKIN)
+		damage *= 1.5f; // Greater chance to cut off left arm if previously damaged.
+
+	if (dismember_ok && flrand(0.0f, (float)self->health) < damage * 0.75f)
+	{
+		int throw_nodes = 0;
+
+		if (CanThrowNode(self, mesh_part, &throw_nodes))
+		{
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+			const float side = (is_left_arm ? -1.0f : 1.0f);
+			VectorMA(gore_spot, 10.0f * side, right, gore_spot);
+
+			const int knife_flag = (is_left_arm ? BIT_LKNIFE : BIT_RKNIFE); //mxd
+			AssassinDropWeapon(self, knife_flag);
+			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_prtfly);
+		}
+	}
+	else
+	{
+		// Switch arm node to damaged skin.
+		self->s.fmnodeinfo[mesh_part].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[mesh_part].skin = self->s.skinnum + 1;
+	}
+}
+
+static void AssassinThrowUpperLeg(edict_t* self, const float damage, const int mesh_part) //mxd. Split from AssassinDismember() to simplify logic.
+{
+	if (self->health > 0)
+	{
+		if (self->s.fmnodeinfo[mesh_part].flags & FMNI_USE_SKIN)
+			return;
+
+		self->s.fmnodeinfo[mesh_part].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[mesh_part].skin = self->s.skinnum + 1;
+	}
+	else
+	{
+		if (self->s.fmnodeinfo[mesh_part].flags & FMNI_NO_DRAW)
+			return;
+
+		const qboolean is_left_leg = (mesh_part == MESH__LTHIGH); //mxd
+
+		int throw_nodes = 0;
+		const int calf_part = (is_left_leg ? MESH__LCALF : MESH__RCALF); //mxd
+		CanThrowNode(self, calf_part, &throw_nodes);
+
+		if (CanThrowNode(self, mesh_part, &throw_nodes))
+		{
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+			const float side = (is_left_leg ? -1.0f : 1.0f);
+			VectorMA(gore_spot, 10.0f * side, right, gore_spot);
+
+			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+		}
+	}
+}
+
+static void AssassinThrowLowerLeg(edict_t* self, const float damage, const int mesh_part) //mxd. Split from AssassinDismember() to simplify logic.
+{
+	if (self->health > 0)
+	{
+		if (self->s.fmnodeinfo[mesh_part].flags & FMNI_USE_SKIN)
+			return;
+
+		self->s.fmnodeinfo[mesh_part].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[mesh_part].skin = self->s.skinnum + 1;
+	}
+	else
+	{
+		if (self->s.fmnodeinfo[mesh_part].flags & FMNI_NO_DRAW)
+			return;
+
+		int throw_nodes = 0;
+
+		if (CanThrowNode(self, mesh_part, &throw_nodes))
+		{
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+			const float side = (mesh_part == MESH__LCALF ? -1.0f : 1.0f);
+			VectorMA(gore_spot, 10.0f * side, right, gore_spot);
+
+			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+		}
+	}
+}
+
+static void AssassinDismember(edict_t* self, const int damage, HitLocation_t hl) //mxd. Named 'assassin_dismember' in original logic.
+{
+	qboolean dismember_ok = false;
+
+	if (hl & hl_MeleeHit)
+	{
+		dismember_ok = true;
+		hl &= ~hl_MeleeHit;
+	}
+
+	if (hl <= hl_NoneSpecific || hl >= hl_Max) //mxd. 'hl > hl_Max' in original logic.
+		return;
+
+	if (self->health > 0)
+	{
+		if (self->curAnimID == ANIM_DAGGERL || (self->curAnimID == ANIM_DAGGERB && irand(0, 2) < 1))
+		{
+			// Hit chest during melee, may have hit arms.
+			if (hl == hl_TorsoFront && irand(0, 10) < 4)
+				hl = ((irand(0, 10) < 7) ? hl_ArmLowerRight : hl_ArmLowerLeft);
+		}
+
+		if (self->curAnimID == ANIM_DAGGERR || self->curAnimID == ANIM_DAGGERC || (self->curAnimID == ANIM_DAGGERB && irand(0, 2) < 1))
+		{
+			// Hit chest during melee, may have hit arms.
+			if (hl == hl_TorsoFront && irand(0, 10) < 4)
+				hl = ((irand(0, 10) < 7) ? hl_ArmLowerRight : hl_ArmLowerLeft);
+		}
+
+		const qboolean no_left_arm = (self->s.fmnodeinfo[MESH__LUPARM].flags & FMNI_NO_DRAW); //mxd
+		const qboolean no_right_arm = (self->s.fmnodeinfo[MESH__RUPARM].flags & FMNI_NO_DRAW); //mxd
+
+		if ((hl == hl_ArmUpperLeft && no_left_arm) || (hl == hl_ArmUpperRight && no_right_arm) ||
+			((hl == hl_TorsoFront || hl == hl_TorsoBack) && no_left_arm && no_right_arm && irand(0, 10) < 4))
+			hl = hl_Head; // Decapitate.
+	}
+	else
+	{
+		hl = AssassinConvertDeadHitLocation(hl);
+	}
+
+	switch (hl)
 	{
 		case hl_Head:
-			if(self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
-			{
-				CanThrowNode(self, MESH__HEAD,&throw_nodes);
-
-				gore_spot[2]+=18;
-				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_prtfly);
-
-				VectorAdd(self->s.origin, gore_spot, gore_spot);
-				SprayDebris(self,gore_spot,8,damage);
-
-				if(self->health>0)
-				{
-					self->health = 1;
-					T_Damage (self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20,0,MOD_DIED);
-				}
+			if (AssassinThrowHead(self, (float)damage, dismember_ok))
 				return;
-			}
-			else
-			{
-				self->s.fmnodeinfo[MESH__HEAD].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__HEAD].skin = self->s.skinnum+1;
-			}
 			break;
 
-		case hl_TorsoFront://split in half?
-			if(self->s.fmnodeinfo[MESH__TORSOFT].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__TORSOFT].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
-			{
-				gore_spot[2]+=12;
-
-				CanThrowNode(self, MESH__TORSOFT,&throw_nodes);
-				CanThrowNode(self, MESH__TORSOBK,&throw_nodes);
-				CanThrowNode(self, MESH__HEAD,&throw_nodes);
-				CanThrowNode(self, MESH__R4ARM,&throw_nodes);
-				CanThrowNode(self, MESH__L4ARM,&throw_nodes);
-				CanThrowNode(self, MESH__KNIFES,&throw_nodes);
-				CanThrowNode(self, MESH__LUPARM,&throw_nodes);
-				CanThrowNode(self, MESH__RUPARM,&throw_nodes);
-
-				AssassinDropWeapon (self, BIT_LKNIFE|BIT_RKNIFE);
-				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_torsofly);
-				VectorAdd(self->s.origin, gore_spot, gore_spot);
-				SprayDebris(self,gore_spot,12,damage);
-
-				if(self->health>0)
-				{
-					self->health = 1;
-					T_Damage (self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20,0,MOD_DIED);
-				}
+		case hl_TorsoFront: // Split in half?
+			if (AssassinThrowTorso(self, (float)damage, MESH__TORSOFT, dismember_ok))
 				return;
-			}
-			else
-			{
-//				if(flrand(0,self->health)<damage*0.5)
-//					assassin_dropweapon (self, (int)damage);
-				self->s.fmnodeinfo[MESH__TORSOFT].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__TORSOFT].skin = self->s.skinnum+1;
-			}
 			break;
-		case hl_TorsoBack://split in half?
-			if(self->s.fmnodeinfo[MESH__TORSOBK].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__TORSOBK].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.3&&dismember_ok)
-			{
-				gore_spot[2]+=12;
 
-				CanThrowNode(self, MESH__TORSOFT,&throw_nodes);
-				CanThrowNode(self, MESH__TORSOBK,&throw_nodes);
-				CanThrowNode(self, MESH__HEAD,&throw_nodes);
-				CanThrowNode(self, MESH__R4ARM,&throw_nodes);
-				CanThrowNode(self, MESH__L4ARM,&throw_nodes);
-				CanThrowNode(self, MESH__KNIFES,&throw_nodes);
-				CanThrowNode(self, MESH__LUPARM,&throw_nodes);
-				CanThrowNode(self, MESH__RUPARM,&throw_nodes);
-
-				AssassinDropWeapon (self, BIT_LKNIFE|BIT_RKNIFE);
-				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_torsofly);
-				VectorAdd(self->s.origin, gore_spot, gore_spot);
-				SprayDebris(self,gore_spot,12,damage);
-
-				if(self->health>0)
-				{
-					self->health = 1;
-					T_Damage (self, self, self, vec3_origin, vec3_origin, vec3_origin, 10, 20,0,MOD_DIED);
-				}
+		case hl_TorsoBack: // Split in half?
+			if (AssassinThrowTorso(self, (float)damage, MESH__TORSOBK, dismember_ok))
 				return;
-			}
-			else
-			{
-//				if(flrand(0,self->health)<damage*0.5)
-//					assassin_dropweapon (self, (int)damage);
-				self->s.fmnodeinfo[MESH__TORSOBK].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__TORSOBK].skin = self->s.skinnum+1;
-			}
 			break;
 
 		case hl_ArmUpperLeft:
-			if(self->s.fmnodeinfo[MESH__LUPARM].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__LUPARM].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-//			if(flrand(0,self->health)<damage*0.4)
-//				assassin_dropweapon (self, (int)damage);
-			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
-			{
-				CanThrowNode(self, MESH__L4ARM, &throw_nodes);
-				if(CanThrowNode(self, MESH__LUPARM, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					AssassinDropWeapon (self, BIT_LKNIFE);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_prtfly);
-				}
-			}
-			else
-			{
-				self->s.fmnodeinfo[MESH__LUPARM].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__LUPARM].skin = self->s.skinnum+1;
-			}
+			AssassinThrowUpperArm(self, (float)damage, MESH__LUPARM, dismember_ok);
 			break;
-		case hl_ArmLowerLeft://left arm
-			if(self->s.fmnodeinfo[MESH__L4ARM].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__L4ARM].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
-			{
-				if(CanThrowNode(self, MESH__L4ARM, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					AssassinDropWeapon (self, BIT_LKNIFE);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_prtfly);
-				}
-			}
-			else
-			{
-				self->s.fmnodeinfo[MESH__L4ARM].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__L4ARM].skin = self->s.skinnum+1;
-			}
+
+		case hl_ArmLowerLeft: // Left arm.
+			AssassinThrowLowerArm(self, (float)damage, MESH__L4ARM, dismember_ok);
 			break;
+
 		case hl_ArmUpperRight:
-			if(self->s.fmnodeinfo[MESH__RUPARM].flags & FMNI_NO_DRAW)
-				break;
-			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
-			{
-				CanThrowNode(self, MESH__R4ARM, &throw_nodes);
-				if(CanThrowNode(self, MESH__RUPARM, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,10,right,gore_spot);
-					AssassinDropWeapon (self, BIT_RKNIFE);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_prtfly);
-				}
-			}
-			else
-			{
-				self->s.fmnodeinfo[MESH__RUPARM].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__RUPARM].skin = self->s.skinnum+1;
-			}
+			AssassinThrowUpperArm(self, (float)damage, MESH__RUPARM, dismember_ok);
 			break;
-		case hl_ArmLowerRight://right arm
-			if(self->s.fmnodeinfo[MESH__R4ARM].flags & FMNI_NO_DRAW)
-				break;
-			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
-			{
-				if(CanThrowNode(self, MESH__R4ARM, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,10,right,gore_spot);
-					AssassinDropWeapon (self, BIT_RKNIFE);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_prtfly);
-				}
-			}
-			else
-			{
-				self->s.fmnodeinfo[MESH__R4ARM].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__R4ARM].skin = self->s.skinnum+1;
-			}
+
+		case hl_ArmLowerRight: // Right arm.
+			AssassinThrowLowerArm(self, (float)damage, MESH__R4ARM, dismember_ok);
 			break;
 
 		case hl_LegUpperLeft:
-			if(self->health>0)
-			{
-				if(self->s.fmnodeinfo[MESH__LTHIGH].flags & FMNI_USE_SKIN)
-					break;
-				self->s.fmnodeinfo[MESH__LTHIGH].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__LTHIGH].skin = self->s.skinnum+1;
-				break;
-			}
-			else
-			{
-				if(self->s.fmnodeinfo[MESH__LTHIGH].flags & FMNI_NO_DRAW)
-					break;
-				CanThrowNode(self, MESH__LCALF, &throw_nodes);
-				if(CanThrowNode(self, MESH__LTHIGH, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-				break;
-			}
-		case hl_LegLowerLeft://left leg
-			if(self->health>0)
-			{
-				if(self->s.fmnodeinfo[MESH__LCALF].flags & FMNI_USE_SKIN)
-					break;
-				self->s.fmnodeinfo[MESH__LCALF].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__LCALF].skin = self->s.skinnum+1;
-				break;
-			}
-			else
-			{
-				if(self->s.fmnodeinfo[MESH__LCALF].flags & FMNI_NO_DRAW)
-					break;
-				if(CanThrowNode(self, MESH__LCALF, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-				break;
-			}
+			AssassinThrowUpperLeg(self, (float)damage, MESH__LTHIGH);
+			break;
+
+		case hl_LegLowerLeft: // Left leg.
+			AssassinThrowLowerLeg(self, (float)damage, MESH__LCALF);
+			break;
 
 		case hl_LegUpperRight:
-			if(self->health>0)
-			{
-				if(self->s.fmnodeinfo[MESH__RTHIGH].flags & FMNI_USE_SKIN)
-					break;
-				self->s.fmnodeinfo[MESH__RTHIGH].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__RTHIGH].skin = self->s.skinnum+1;
-				break;
-			}
-			else
-			{
-				if(self->s.fmnodeinfo[MESH__RTHIGH].flags & FMNI_NO_DRAW)
-					break;
-				CanThrowNode(self, MESH__RCALF, &throw_nodes);
-				if(CanThrowNode(self, MESH__RTHIGH, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-				break;
-			}
-		case hl_LegLowerRight://right leg
-			if(self->health>0)
-			{
-				if(self->s.fmnodeinfo[MESH__RCALF].flags & FMNI_USE_SKIN)
-					break;
-				self->s.fmnodeinfo[MESH__RCALF].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__RCALF].skin = self->s.skinnum+1;
-				break;
-			}
-			else
-			{
-				if(self->s.fmnodeinfo[MESH__RCALF].flags & FMNI_NO_DRAW)
-					break;
-				if(CanThrowNode(self, MESH__RCALF, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-				break;
-			}
+			AssassinThrowUpperLeg(self, (float)damage, MESH__RTHIGH);
+			break;
+
+		case hl_LegLowerRight: // Right leg.
+			AssassinThrowLowerLeg(self, (float)damage, MESH__RCALF);
+			break;
 
 		default:
-			if(flrand(0,self->health)<damage*0.25)
-				AssassinDropWeapon (self, (int)damage);
+			if (flrand(0.0f, (float)self->health) < (float)damage * 0.25f)
+				AssassinDropWeapon(self, damage); //TODO: 2-nd arg is expected to be knife flags, not damage. Pass BIT_LKNIFE | BIT_RKNIFE instead?..
 			break;
 	}
 
-	if(self->s.fmnodeinfo[MESH__L4ARM].flags&FMNI_NO_DRAW&&
-		self->s.fmnodeinfo[MESH__R4ARM].flags&FMNI_NO_DRAW)			
-	{
-		self->monsterinfo.aiflags |= AI_COWARD;
-		self->monsterinfo.aiflags |= AI_NO_MELEE;
-		self->monsterinfo.aiflags |= AI_NO_MISSILE;
-	}
-//	gi.dprintf(" done\n");
+	// Can't fight without arms...
+	if ((self->s.fmnodeinfo[MESH__L4ARM].flags & FMNI_NO_DRAW) && (self->s.fmnodeinfo[MESH__R4ARM].flags & FMNI_NO_DRAW))
+		self->monsterinfo.aiflags |= (AI_COWARD | AI_NO_MELEE | AI_NO_MISSILE);
 }
+
+#pragma endregion
 
 void assassin_dismember_msg(edict_t *self, G_Message_t *msg)
 {//fixme: throw current weapon
@@ -1047,7 +1010,7 @@ void assassin_dismember_msg(edict_t *self, G_Message_t *msg)
 	HitLocation_t	HitLocation;
 
 	ParseMsgParms(msg, "ii", &damage, &HitLocation);
-	assassin_dismember(self, damage, HitLocation);
+	AssassinDismember(self, damage, HitLocation);
 }
 
 void assassin_dead_pain (edict_t *self, G_Message_t *msg)
@@ -2615,7 +2578,7 @@ void SP_monster_assassin (edict_t *self)
 		return;
 		
 	self->msgHandler = DefaultMsgHandler;
-	self->monsterinfo.dismember = assassin_dismember;
+	self->monsterinfo.dismember = AssassinDismember;
 
 	if(!self->health)
 		self->health = ASSASSIN_HEALTH * (skill->value + 1)/3;
