@@ -1399,7 +1399,7 @@ static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	{
 		{.duck_chance = 20, .dodgeleft_chance = 10, .dodgeright_chance = 10, .jump_chance = 10, .backflip_chance = 10, .frontflip_chance = 10 }, // hl_NoneSpecific
 		{.duck_chance = 95, .dodgeleft_chance = 50, .dodgeright_chance = 50, .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_Head
-		{.duck_chance = 85, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 60,	.frontflip_chance = 0  }, // hl_TorsoFront
+		{.duck_chance = 85, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 60, .frontflip_chance = 0  }, // hl_TorsoFront
 		{.duck_chance = 80, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 0,  .frontflip_chance = 60 }, // hl_TorsoBack
 		{.duck_chance = 75, .dodgeleft_chance = 0,  .dodgeright_chance = 90, .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmUpperLeft
 		{.duck_chance = 75, .dodgeleft_chance = 0,  .dodgeright_chance = 80, .jump_chance = 30, .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmLowerLeft
@@ -1515,22 +1515,16 @@ static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	self->evade_debounce_time = 0.0f;
 }
 
-void assassinCrouchedCheckAttack (edict_t *self, float attack)
+void assassinCrouchedCheckAttack(edict_t* self, float attack) //TODO: rename to assassin_crouched_check_attack?
 {
-	if(!AI_IsClearlyVisible(self, self->enemy))
+	if (irand(0, 10) < 5 || !AI_IsClearlyVisible(self, self->enemy) || !AI_IsInfrontOf(self, self->enemy))
 		return;
 
-	if(!AI_IsInfrontOf(self, self->enemy))
-		return;
-
-	if(irand(0,10)<5)
-		return;
-
-	if(attack == true)
+	if (attack == 1.0f)
 		assassindagger(self, BIT_RKNIFE);
-	else if(attack == 2)//start crouched attack anim
+	else if (attack == 2.0f) // Start crouched attack animation.
 		SetAnim(self, ANIM_DAGGERC);
-	else//loop back inside that anim
+	else // Loop back inside that anim.
 		self->monsterinfo.currframeindex = 2;
 }
 
