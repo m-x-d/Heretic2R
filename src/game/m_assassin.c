@@ -1434,7 +1434,7 @@ static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 		}
 	}
 
-	if (irand(0, 100) < SKILL * 10 && self->pre_think != AssassinCloakFadePreOutThink)
+	if (irand(0, 100) < SKILL * 10 && self->pre_think != AssassinCloakFadePreThink)
 		assassinInitCloak(self);
 
 	int chance = irand(0, 10);
@@ -2002,7 +2002,7 @@ static void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThin
 		MG_CheckEvade(self);
 }
 
-static void AssassinCloakFadePreOutThink(edict_t* self) //mxd. Named 'assassinCloak' in original logic.
+static void AssassinCloakFadePreThink(edict_t* self) //mxd. Named 'assassinCloak' in original logic.
 {
 #define FADE_INCREMENT	15 //mxd
 
@@ -2091,7 +2091,7 @@ void assassinInitCloak (edict_t *self)
 	self->s.color.g = 255;
 	self->s.color.b = 255;
 	self->s.color.a = 255;
-	self->pre_think = AssassinCloakFadePreOutThink;
+	self->pre_think = AssassinCloakFadePreThink;
 	self->next_pre_think = level.time + FRAMETIME;
 }
 
