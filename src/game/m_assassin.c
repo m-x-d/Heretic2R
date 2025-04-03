@@ -2158,151 +2158,116 @@ static void AssassinCheckDefenseThink(edict_t* self, float enemy_dist, qboolean 
 	}
 }
 
-/*QUAKED monster_assassin (1 .5 0) (-16 -16 -32) (16 16 48) AMBUSH ASLEEP WALKING FwdJumpAmbush NoCloak NoTeleport CINEMATIC FIXED WANDER MELEE_LEAD STALK COWARD TeleportAmbush CloakAmbush SideJumpAmbush TeleportDodge
+// QUAKED monster_assassin (1 .5 0) (-16 -16 -32) (16 16 48) AMBUSH ASLEEP WALKING JUMPAMBUSH NOSHADOW NOTELEPORT CINEMATIC FIXED WANDER MELEE_LEAD STALK COWARD TPORTAMBUSH STARTSHADOW SIDEJUMPAMBUSH TELEPORTDODGE
+// The assassin.
 
-The assassin 
+// Spawnflags:
+// AMBUSH			- Will not be woken up by other monsters or shots from player.
+// ASLEEP			- Will not appear until triggered.
+// WALKING			- Use WANDER instead.
+// JUMPAMBUSH		- Will jump out front or back when triggered (depending on whether player is in front or behind him).
+// NOSHADOW			- Can't turn into a shadow.
+// NOTELEPORT		- Can't use smoke grenades to trick player and teleport.
+// CINEMATIC		- Puts monster into cinematic mode for scripting.
+// FIXED			- Will stand in place and attack from afar. Never moves.
+// WANDER			- Monster will wander around aimlessly (but follows buoys).
+// MELEE_LEAD		- Monster will try to cut you off when you're running and fighting him, works well if there are a few monsters in a group, half doing this, half not.
+// STALK			- Monster will only approach and attack from behind. If you're facing the monster it will just stand there.
+//					  Once the monster takes pain, it will stop this behaviour and attack normally.
+// COWARD			- Monster starts off in flee mode - runs away from you when woken up.
+// TPORTAMBUSH		- Will teleport into his origin when triggered (before triggered, is not anywhere at all, like "ASLEEP").
+// STARTSHADOW		- Start as a shadow and de-cloak when wakes up.
+// SIDEJUMPAMBUSH	- Will jump out to left or right (depending on which side of the assassin the player is).
+// TELEPORTDODGE	- Can use teleporting to dodge attacks.
 
-SPAWNFLAGS:
-
-AMBUSH - Will not be woken up by other monsters or shots from player
-
-ASLEEP - will not appear until triggered
-
-WALKING - use WANDER instead
-
-FwdJumpAmbush - will jump out front or back when triggered (depending on whether player is in front or behind him)
-
-NoCloak - can't turn into a shadow
-
-NoTeleport - can't use smoke grenades to trick player and teleport
-
-CINEMATIC - puts monster into cinematic mode for scripting
-
-FIXED - Will stand in place and attack from afar.  Never moves.
-
-WANDER - Monster will wander around aimlessly (but follows buoys)
-
-MELEE_LEAD - Monster will tryto cut you off when you're running and fighting him, works well if there are a few monsters in a group, half doing this, half not
-
-STALK - Monster will only approach and attack from behind- if you're facing the monster it will just stand there.  Once the monster takes pain, however, it will stop this behaviour and attack normally
-
-COWARD - Monster starts off in flee mode- runs away from you when woken up
-
-TeleportAmbush - Will teleport into his origin when triggered (before triggered, is not anywhere at all, like "ASLEEP")
-
-CloakAmbush - Start as a shadow and decloak when wakes up
-
-SideJumpAmbush - Will jump out to left or right (depending on which side of the assassin the player is)
-
-TeleportDodge - Can use teleporting to dodge attacks
-
-FIELDS:
-
-"homebuoy" - monsters will head to this buoy if they don't have an enemy ("homebuoy" should be targetname of the buoy you want them to go to)
-
-"wakeup_target" - monsters will fire this target the first time it wakes up (only once)
-
-"pain_target" - monsters will fire this target the first time it gets hurt (only once)
-
-mintel - monster intelligence- this basically tells a monster how many buoys away an enemy has to be for it to give up.
-
-melee_range - How close the player has to be, maximum, for the monster to go into melee.  If this is zero, the monster will never melee.  If it is negative, the monster will try to keep this distance from the player.  If the monster has a backup, he'll use it if too clode, otherwise, a negative value here means the monster will just stop running at the player at this distance.
-	Examples:
-		melee_range = 60 - monster will start swinging it player is closer than 60
-		melee_range = 0 - monster will never do a mele attack
-		melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close
-
-missile_range - Maximum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-min_missile_range - Minimum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-bypass_missile_chance - Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot.  This, in effect, will make the monster come in more often than hang back and fire.  A percentage (0 = always fire/never close in, 100 = never fire/always close in).- must be whole number
-
-jump_chance - every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time)- must be whole number
-
-wakeup_distance - How far (max) the player can be away from the monster before it wakes up.  This just means that if the monster can see the player, at what distance should the monster actually notice him and go for him.
-
-DEFAULTS:
-mintel					= 64
-melee_range				= 48
-missile_range			= 1024
-min_missile_range		= 64
-bypass_missile_chance	= 10
-jump_chance				= 100
-wakeup_distance			= 1024
-
-NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1
-*/
-/*-------------------------------------------------------------------------
-	SP_monster_assassin
--------------------------------------------------------------------------*/
-void SP_monster_assassin (edict_t *self)
+// Variables:
+// homebuoy					- Monsters will head to this buoy if they don't have an enemy ("homebuoy" should be targetname of the buoy you want them to go to).
+// wakeup_target			- Monsters will fire this target the first time it wakes up (only once).
+// pain_target				- Monsters will fire this target the first time it gets hurt (only once).
+// mintel					- Monster intelligence - this basically tells a monster how many buoys away an enemy has to be for it to give up (default 64).
+// melee_range				- How close the player has to be for the monster to go into melee. If this is zero, the monster will never melee.
+//							  If it is negative, the monster will try to keep this distance from the player.
+//							  If the monster has a backup, he'll use it if too close, otherwise, a negative value here means the monster will just stop
+//							  running at the player at this distance (default 48).
+//							 Examples:
+//								melee_range = 60 - monster will start swinging it player is closer than 60.
+//								melee_range = 0 - monster will never do a melee attack.
+//								melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close.
+// missile_range			- Maximum distance the player can be from the monster to be allowed to use it's ranged attack (default 1024).
+// min_missile_range		- Minimum distance the player can be from the monster to be allowed to use it's ranged attack (default 64).
+// bypass_missile_chance	- Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot. This, in effect, will make the monster
+//							  come in more often than hang back and fire. A percentage (0 = always fire/never close in, 100 = never fire/always close in) - must be whole number (default 10).
+// jump_chance				- Every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time) - must be whole number (default 100).
+// wakeup_distance			- How far (max) the player can be away from the monster before it wakes up. This means that if the monster can see the player,
+//							  at what distance should the monster actually notice him and go for him (default 1024).
+// NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1.
+void SP_monster_assassin(edict_t* self)
 {
-	if(self->spawnflags & MSF_WALKING)
+	if (self->spawnflags & MSF_WALKING)
 	{
 		self->spawnflags |= MSF_WANDER;
 		self->spawnflags &= ~MSF_WALKING;
 	}
 
-	if(self->spawnflags&MSF_ASS_JUMPAMBUSH||
-		self->spawnflags&MSF_ASS_SIDEJUMPAMBUSH||
-		self->spawnflags&MSF_ASS_STARTSHADOW)
+	if (self->spawnflags & (MSF_ASS_JUMPAMBUSH | MSF_ASS_SIDEJUMPAMBUSH | MSF_ASS_STARTSHADOW))
 		self->spawnflags |= MSF_AMBUSH;
 
-	if(self->spawnflags & MSF_ASS_TPORTAMBUSH)
-		self->spawnflags|=MSF_ASLEEP;
+	if (self->spawnflags & MSF_ASS_TPORTAMBUSH)
+		self->spawnflags |= MSF_ASLEEP;
 
-	if (!M_WalkmonsterStart(self))	// Unsuccessful initialization.
+	if (!M_WalkmonsterStart(self)) // Unsuccessful initialization.
 		return;
-		
+
 	self->msgHandler = DefaultMsgHandler;
 	self->monsterinfo.dismember = AssassinDismember;
 
-	if(!self->health)
-		self->health = ASSASSIN_HEALTH * (skill->value + 1)/3;
+	if (self->health == 0)
+		self->health = ASSASSIN_HEALTH * (SKILL + 1) / 3;
 
 	self->mass = ASSASSIN_MASS;
-	self->yaw_speed = 20;
+	self->yaw_speed = 20.0f;
 
 	self->movetype = PHYSICSTYPE_STEP;
 	VectorClear(self->knockbackvel);
-	
-	self->solid=SOLID_BBOX;
+
+	self->solid = SOLID_BBOX;
 
 	VectorCopy(STDMinsForClass[self->classID], self->mins);
-	VectorCopy(STDMaxsForClass[self->classID], self->maxs);	
+	VectorCopy(STDMaxsForClass[self->classID], self->maxs);
 	self->viewheight = 40;
-	
-	self->isBlocked = self->bounced = AssassinBounce;
 
-	self->s.modelindex = classStatics[CID_ASSASSIN].resInfo->modelIndex;
+	self->isBlocked = AssassinBounce;
+	self->bounced = AssassinBounce;
 
+	self->s.modelindex = (byte)classStatics[CID_ASSASSIN].resInfo->modelIndex;
 	self->materialtype = MAT_FLESH;
 
-	//FIXME (somewhere: otherenemy should be more than just *one* kind
+	//FIXME: otherenemy should be more than just *one* kind.
 	self->monsterinfo.otherenemyname = "monster_rat";
 
-	//set up my mood function
+	// Set up my mood function.
 	MG_InitMoods(self);
-	if(!irand(0,2))
-		self->ai_mood_flags |= AI_MOOD_FLAG_PREDICT;
-	self->cant_attack_think = AssassinCheckDefenseThink;
 
 	self->monsterinfo.aiflags |= AI_NIGHTVISION;
 
-	if(self->spawnflags & MSF_WANDER)
+	if (irand(0, 2) == 0)
+		self->ai_mood_flags |= AI_MOOD_FLAG_PREDICT;
+
+	self->cant_attack_think = AssassinCheckDefenseThink;
+
+	if (self->spawnflags & MSF_WANDER)
 	{
 		QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 	}
-	else if(self->spawnflags & MSF_ASS_CINEMATIC)
+	else if (self->spawnflags & MSF_ASS_CINEMATIC)
 	{
-		self->monsterinfo.c_mode = 1;
-		QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige",0,0,0,NULL,NULL);
+		self->monsterinfo.c_mode = true;
+		QPostMessage(self, MSG_C_IDLE1, PRI_DIRECTIVE, "iiige", 0, 0, 0, NULL, NULL);
 	}
 	else
 	{
-		if(self->spawnflags&MSF_ASS_STARTSHADOW)
-			assassinInitCloak (self);
+		if (self->spawnflags & MSF_ASS_STARTSHADOW)
+			assassinInitCloak(self);
 
 		self->pre_think = AssassinCloakPreThink;
 		self->next_pre_think = level.time + FRAMETIME;
@@ -2311,9 +2276,7 @@ void SP_monster_assassin (edict_t *self)
 	}
 
 	self->svflags |= SVF_WAIT_NOTSOLID;
-
 	self->s.fmnodeinfo[MESH__KNIFES].flags |= FMNI_NO_DRAW;
 
 	VectorCopy(self->s.origin, self->pos1);
 }
-
