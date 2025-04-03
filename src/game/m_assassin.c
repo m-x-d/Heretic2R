@@ -564,33 +564,10 @@ static void AssassinMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 	}
 }
 
-/*-------------------------------------------------------------------------
-	assassin_pain
--------------------------------------------------------------------------*/
-void assassin_post_pain (edict_t *self)
+void assassin_post_pain(edict_t* self)
 {
-	/*if(self->s.renderfx & RF_ALPHA_TEXTURE)
-	{
-		if(!irand(0,4))
-		{
-			if(self->pre_think != assassinDeCloak)
-			{
-				gi.sound(self,CHAN_AUTO,Sounds[SND_DECLOAK],1,ATTN_NORM,0);
-				self->pre_think = assassinDeCloak;
-				self->next_pre_think = level.time + FRAMETIME;
-				assassin_pause(self);
-				return;
-			}
-		}
-	}*/
-	if(self->fire_damage_time < level.time)//don't teleport if burning
-	{
-		if(assassinCheckTeleport(self, ASS_TP_ANY))
-		{
-//			gi.dprintf("pain->teleport\n");
-			return;
-		}
-	}
+	if (self->fire_damage_time < level.time && assassinCheckTeleport(self, ASS_TP_ANY)) // Don't teleport if burning.
+		return;
 
 	assassin_pause(self);
 }
