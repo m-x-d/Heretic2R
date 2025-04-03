@@ -214,9 +214,8 @@ static void AssassinDaggerTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 
 #pragma region ========================== Action functions ==========================
 
-void assassin_jump(edict_t *self, G_Message_t *msg)
+static void AssassinJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_jump' in original logic.
 {
-//	gi.dprintf("Assassin Jumping from AI RUN!\n");
 	SetAnim(self, ANIM_FORCED_JUMP);
 	self->monsterinfo.aiflags |= AI_OVERRIDE_GUIDE;
 }
@@ -2617,7 +2616,7 @@ void AssassinStaticsInit(void)
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_PAIN] = assassin_pain;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_DEATH] = assassin_death;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_JUMP] = assassin_jump;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_JUMP] = AssassinJumpMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_EVADE] = assassin_evade;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_DEATH_PAIN] = assassin_dead_pain;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_CHECK_MOOD] = assassin_check_mood;
