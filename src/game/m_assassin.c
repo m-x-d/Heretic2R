@@ -1262,15 +1262,6 @@ void assassin_go_run(edict_t* self, float dist) //TODO: rename to assassin_run_g
 		ai_walk(self, dist);
 }
 
-/*----------------------------------------------------------------------
-  assassin runorder - order the assassin to choose an run animation
------------------------------------------------------------------------*/
-void assassin_runorder(edict_t *self)
-{
-	QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-}
-
-
 /*-------------------------------------------------------------------------
 	assassinsqueal
 -------------------------------------------------------------------------*/
