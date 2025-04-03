@@ -1796,7 +1796,7 @@ static qboolean AssassinChooseTeleportDestination(edict_t* self, const int type,
 	return false;
 }
 
-void assassinReadyTeleport (edict_t *self)
+void assassinReadyTeleport(edict_t* self) //TODO: rename to assassin_ready_teleport.
 {
 	AssassinSmoke(self);
 	self->svflags |= SVF_NO_AUTOTARGET;
