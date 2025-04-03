@@ -156,7 +156,7 @@ extern void assassin_pause(edict_t* self);
 extern void assassin_sound(edict_t* self, float channel, float sound_num, float attenuation);
 extern void assassin_inair_go(edict_t* self);
 extern void assassin_evade_inair_go(edict_t* self);
-extern void assassin_go_bfinair(edict_t* self);
+extern void assassin_backflip_inair_go(edict_t* self);
 extern void assassin_fwdflip_inair_go(edict_t* self);
 extern void assassin_run(edict_t* self, float dist);
 extern void assassin_walk_loop_go(edict_t* self);

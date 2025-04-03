@@ -202,7 +202,7 @@ static const animframe_t assassin_frames_evade_backflip[] =
 	{ FRAME_bkflp11,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_BFLAND, NULL },
 	{ FRAME_bkflp12,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_BFLAND, NULL },
 };
-const animmove_t assassin_move_evade_backflip = { 7, assassin_frames_evade_backflip, assassin_go_bfinair };
+const animmove_t assassin_move_evade_backflip = { 7, assassin_frames_evade_backflip, assassin_backflip_inair_go };
 
 // Assassin front flipping.
 static const animframe_t assassin_frames_evade_frontflip[] =
@@ -373,7 +373,7 @@ static const animframe_t assassin_frames_backflip[] =
 	{ FRAME_bkflp11,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_BFLAND, NULL },
 	{ FRAME_bkflp12,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_BFLAND, NULL },
 };
-const animmove_t assassin_move_backflip = { 12, assassin_frames_backflip, assassin_go_bfinair };
+const animmove_t assassin_move_backflip = { 12, assassin_frames_backflip, assassin_backflip_inair_go };
 
 // Assassin backspring.
 static const animframe_t assassin_frames_backspring[] =
