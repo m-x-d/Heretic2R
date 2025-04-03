@@ -1642,38 +1642,37 @@ static void AssassinSmoke(const edict_t* self) //mxd. Named 'assassinSmoke' in o
 	gi.CreateEffect(NULL, FX_TPORTSMOKE, 0, pos, "");
 }
 
-void assassinGone(edict_t *self)
+void assassinGone(edict_t* self) //TODO: rename to assassin_gone?
 {
-	vec3_t enemy_dir;
-
-	if(self->placeholder)
+	if (self->placeholder != NULL)
 		G_FreeEdict(self->placeholder);
 
 	VectorCopy(self->pos2, self->s.origin);
-	
-	if(self->enemy)
-	{//face enemy
+
+	if (self->enemy != NULL)
+	{
+		// Face enemy.
+		vec3_t enemy_dir;
 		VectorSubtract(self->enemy->s.origin, self->s.origin, enemy_dir);
 		self->s.angles[YAW] = anglemod(VectorYaw(enemy_dir));
 	}
 
 	AssassinSmoke(self);
 
-	VectorCopy(self->pos2, enemy_dir);//reuse
-	enemy_dir[2] += 100;
-	if(gi.pointcontents(enemy_dir) == CONTENTS_EMPTY&&!irand(0,3))
+	vec3_t pos;
+	VectorCopy(self->pos2, pos);
+	pos[2] += 100.0f;
+
+	if (gi.pointcontents(pos) == CONTENTS_EMPTY && irand(0, 3) == 0)
 		SetAnim(self, ANIM_EVFRONTFLIP); //mxd. Inline assassinFrontFlip().
 	else
 		SetAnim(self, ANIM_UNCROUCH);
 
 	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
 	self->svflags &= ~SVF_NO_AUTOTARGET;
+	self->touch_debounce_time = level.time + (10.0f - skill->value * 3.0f); // Dumbed down.
 
-	//dumbed down
-	self->touch_debounce_time = level.time + (10 - skill->value*3);
-
-	//Should we clear velocity too?
-	//VectorClear(self->velocity);
+	// Should we clear velocity too?
 	gi.linkentity(self);
 }
 
