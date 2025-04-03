@@ -424,35 +424,33 @@ void assassin_dead(edict_t* self)
 	M_EndDeath(self);
 }
 
-void assassin_death(edict_t *self, G_Message_t *msg)
+static void AssassinDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_death' in original logic.
 {
-	int chance;
-	
-	if(self->monsterinfo.aiflags&AI_DONT_THINK)
+	if (self->monsterinfo.aiflags & AI_DONT_THINK)
 	{
-		if (irand(0,10) < 5)  // Big enough death to be thrown back
-			SetAnim(self, ANIM_DEATHB);//gib?
-		else 
-			SetAnim(self, ANIM_DEATHA);
+		const int anim_id = ((irand(0, 10) < 5) ? ANIM_DEATHB : ANIM_DEATHA); //mxd
+		SetAnim(self, anim_id);
+
 		return;
 	}
 
-//	gi.dprintf("Dead\n");
 	self->msgHandler = DeadMsgHandler;
 
-	if(self->deadflag == DEAD_DEAD) //Dead but still being hit	
+	if (self->deadflag == DEAD_DEAD) // Dead but still being hit.
 		return;
-
-	self->isBlocked = self->bounced = NULL;
 
 	self->deadflag = DEAD_DEAD;
 
-	assassin_dropweapon (self, BIT_LKNIFE|BIT_RKNIFE);
+	self->isBlocked = NULL;
+	self->bounced = NULL;
 
-	if(self->health <= -80) //gib death
+	assassin_dropweapon(self, BIT_LKNIFE | BIT_RKNIFE);
+
+	if (self->health <= -80) // Gib death?
 	{
-		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1, ATTN_NORM, 0);
-		if(irand(0,10)<5)
+		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1.0f, ATTN_NORM, 0.0f);
+
+		if (irand(0, 10) < 5)
 		{
 			self->s.fmnodeinfo[MESH__TORSOFT].flags |= FMNI_NO_DRAW;
 			self->s.fmnodeinfo[MESH__TORSOBK].flags |= FMNI_NO_DRAW;
@@ -465,36 +463,31 @@ void assassin_death(edict_t *self, G_Message_t *msg)
 			self->s.fmnodeinfo[MESH__LKNIFE].flags |= FMNI_NO_DRAW;
 			self->s.fmnodeinfo[MESH__RKNIFE].flags |= FMNI_NO_DRAW;
 
-			SprayDebris(self, self->s.origin, 12, 100);
+			SprayDebris(self, self->s.origin, 12, 100.0f);
 		}
 		else
 		{
 			self->think = BecomeDebris;
 			self->nextthink = level.time + FRAMETIME;
+
 			return;
 		}
 	}
 	else
 	{
-		gi.sound(self, CHAN_VOICE, sounds[SND_DIE1], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_VOICE, sounds[SND_DIE1], 1.0f, ATTN_NORM, 0.0f); //mxd. Inlined assassin_random_death_sound(). Not very random after all...
 		self->msgHandler = DyingMsgHandler;
 	}
-	
 
-	chance = irand(0,10);
-	if(chance < 5 && self->health <= -80)
-		SetAnim(self, ANIM_DEATHA);
-	else
-		SetAnim(self, ANIM_DEATHB);
+	const int anim_id = ((self->health <= -80 && irand(0, 10) < 5) ? ANIM_DEATHA : ANIM_DEATHB); //mxd
+	SetAnim(self, anim_id);
 
 	self->pre_think = NULL;
-	self->next_pre_think = -1;
+	self->next_pre_think = -1.0f;
 
-	if(self->s.renderfx & RF_ALPHA_TEXTURE)
-		if(self->pre_think != assassinDeCloak)
-			assassinInitDeCloak(self);
+	if ((self->s.renderfx & RF_ALPHA_TEXTURE) && self->pre_think != assassinDeCloak)
+		assassinInitDeCloak(self);
 }
-
 
 /*-------------------------------------------------------------------------
 	assassingrowl
@@ -2532,7 +2525,7 @@ void AssassinStaticsInit(void)
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_MELEE] = assassin_melee;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_MISSILE] = assassin_missile;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_PAIN] = assassin_pain;
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_DEATH] = assassin_death;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_DEATH] = AssassinDeathMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_JUMP] = AssassinJumpMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_EVADE] = assassin_evade;
