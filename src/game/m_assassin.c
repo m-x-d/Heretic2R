@@ -1365,18 +1365,17 @@ void assassin_ai_walk(edict_t* self, float dist)
 	ai_walk(self, dist);
 }
 
-void assassin_walk(edict_t *self, G_Message_t *msg)
+static void AssassinWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_walk' in original logic.
 {
-	if(self->spawnflags&MSF_FIXED)
+	if (self->spawnflags & MSF_FIXED)
 	{
 		SetAnim(self, ANIM_DELAY);
-		return;
 	}
-	if(self->curAnimID == ANIM_WALK_LOOP)
-		SetAnim(self, ANIM_WALK_LOOP);
 	else
-		SetAnim(self, ANIM_WALK);
-	return;	
+	{
+		const int anim_id = ((self->curAnimID == ANIM_WALK_LOOP) ? ANIM_WALK_LOOP : ANIM_WALK); //mxd
+		SetAnim(self, anim_id);
+	}
 }
 
 void assasin_walk_loop_go (edict_t *self)
@@ -2329,7 +2328,7 @@ void assassin_check_mood (edict_t *self, G_Message_t *msg)
 void AssassinStaticsInit(void)
 {
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_STAND] = AssassinStandMsgHandler;
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_WALK] = assassin_walk;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_WALK] = AssassinWalkMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_RUN] = AssassinRunMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_MELEE] = AssassinMeleeMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_MISSILE] = AssassinMissileMsgHandler;
