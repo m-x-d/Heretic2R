@@ -173,7 +173,7 @@ extern void assassin_crouched_check_attack(edict_t* self, float attack);
 extern void assassinUnCrouch(edict_t* self);
 extern void assassin_unset_crouched(edict_t* self);
 extern void assassin_stop(edict_t* self);
-extern void assassinGoJump(edict_t* self, float forward_speed, float up_speed, float right_speed);
+extern void assassin_jump_go(edict_t* self, float forward_speed, float up_speed, float right_speed);
 extern void assassin_skip_frame_skill_check(edict_t* self);
 extern void assassinGone(edict_t* self);
 extern void assassin_enable_fmnode(edict_t* self, float node);

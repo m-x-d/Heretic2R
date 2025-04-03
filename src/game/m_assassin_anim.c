@@ -183,7 +183,7 @@ const animmove_t assassin_move_land = { 5, assassin_frames_land, assassin_pause 
 // Assassin jump.
 static const animframe_t assassin_frames_evade_jump[] =
 {
-	{ FRAME_jump7,	assassinGoJump, 100.0f, 400.0f, 0.0f, ai_charge, 0.0f, assassin_growl },
+	{ FRAME_jump7,	assassin_jump_go, 100.0f, 400.0f, 0.0f, ai_charge, 0.0f, assassin_growl },
 	{ FRAME_jump8,	NULL, 0.0f, 0.0f, 0.0f, ai_charge, 0.0f, NULL },
 	{ FRAME_jump9,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_jump10,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
@@ -194,7 +194,7 @@ const animmove_t assassin_move_evade_jump = { 5, assassin_frames_evade_jump, ass
 // Assassin backflipping.
 static const animframe_t assassin_frames_evade_backflip[] =
 {
-	{ FRAME_bkflp6,		assassinGoJump, -150.0f, 400.0f, 0.0f, NULL, 0.0f, assassin_growl },
+	{ FRAME_bkflp6,		assassin_jump_go, -150.0f, 400.0f, 0.0f, NULL, 0.0f, assassin_growl },
 	{ FRAME_bkflp7,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_bkflp8,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_bkflp9,		assassin_sound, CHAN_ITEM, SND_FLIP, ATTN_NORM, NULL, 0.0f, NULL },
@@ -207,7 +207,7 @@ const animmove_t assassin_move_evade_backflip = { 7, assassin_frames_evade_backf
 // Assassin front flipping.
 static const animframe_t assassin_frames_evade_frontflip[] =
 {
-	{ FRAME_fntflp6,	assassinGoJump, 150.0f, 400.0f, 0.0f, NULL, 0.0f, assassin_growl },
+	{ FRAME_fntflp6,	assassin_jump_go, 150.0f, 400.0f, 0.0f, NULL, 0.0f, assassin_growl },
 	{ FRAME_fntflp7,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_fntflp8,	assassin_sound, CHAN_ITEM, SND_FLIP, ATTN_NORM, NULL, 0.0f, NULL },
 	{ FRAME_fntflp9,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_FFLAND, NULL },
@@ -299,7 +299,7 @@ static const animframe_t assassin_frames_jump[] =
 	{ FRAME_jump4,	NULL, 0.0f, 0.0f, 0.0f, ai_charge, 0.0f, NULL },
 	{ FRAME_jump5,	NULL, 0.0f, 0.0f, 0.0f, ai_charge, 0.0f, NULL },
 	{ FRAME_jump6,	NULL, 0.0f, 0.0f, 0.0f, ai_charge, 0.0f, NULL },
-	{ FRAME_jump7,	assassinGoJump, 50.0f, 500.0f, 0.0f, ai_charge, 0.0f, assassin_growl },
+	{ FRAME_jump7,	assassin_jump_go, 50.0f, 500.0f, 0.0f, ai_charge, 0.0f, assassin_growl },
 	{ FRAME_jump8,	NULL, 0.0f, 0.0f, 0.0f, ai_charge, 0.0f, NULL },
 	{ FRAME_jump9,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_jump10,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },
@@ -365,7 +365,7 @@ static const animframe_t assassin_frames_backflip[] =
 	{ FRAME_bkflp3,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_bkflp4,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_bkflp5,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
-	{ FRAME_bkflp6,		assassinGoJump, -150.0f, 400.0f, 0.0f, NULL, 0.0f, assassin_growl },
+	{ FRAME_bkflp6,		assassin_jump_go, -150.0f, 400.0f, 0.0f, NULL, 0.0f, assassin_growl },
 	{ FRAME_bkflp7,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_bkflp8,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_bkflp9,		assassin_sound, CHAN_ITEM, SND_FLIP, ATTN_NORM, NULL, 0.0f, NULL },
@@ -422,7 +422,7 @@ static const animframe_t assassin_frames_frontflip[] =
 	{ FRAME_fntflp3,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_fntflp4,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_fntflp5,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
-	{ FRAME_fntflp6,	assassinGoJump, 150.0f, 400.0f, 0.0f, NULL, 0.0f, assassin_growl },
+	{ FRAME_fntflp6,	assassin_jump_go, 150.0f, 400.0f, 0.0f, NULL, 0.0f, assassin_growl },
 	{ FRAME_fntflp7,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_fntflp8,	assassin_sound, CHAN_ITEM, SND_FLIP, ATTN_NORM, MG_CheckLanded, ANIM_LAND, NULL },
 	{ FRAME_fntflp9,	NULL, 0.0f, 0.0f, 0.0f, MG_CheckLanded, ANIM_LAND, NULL },

@@ -1551,7 +1551,7 @@ void assassin_sound(edict_t* self, float channel, float sound_num, float attenua
 	gi.sound(self, (int)channel, sounds[(int)sound_num], 1.0f, attenuation, 0.0f);
 }
 
-void assassinGoJump(edict_t* self, float forward_speed, float up_speed, float right_speed) //TODO: rename to assassin_jump_go?
+void assassin_jump_go(edict_t* self, float forward_speed, float up_speed, float right_speed) //mxd. Named 'assassinGoJump' in original logic.
 {
 	//FIXME: do checks and traces first.
 	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
