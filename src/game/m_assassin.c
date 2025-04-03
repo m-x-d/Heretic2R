@@ -212,18 +212,7 @@ static void AssassinDaggerTouch(edict_t* self, edict_t* other, cplane_t* plane, 
 
 #pragma endregion
 
-/*----------------------------------------------------------------------
-  Action Functions for the monster
------------------------------------------------------------------------*/
-
-void assassinApplyJump (edict_t *self)
-{
-	self->jump_time = level.time + 2;
-	VectorCopy(self->movedir, self->velocity);
-	VectorNormalize(self->movedir);
-//	gi.dprintf("Jump velocity will be: %4.2f %4.2f %4.2f\n", self->velocity[0], self->velocity[1], self->velocity[2]);
-	self->monsterinfo.aiflags &= ~AI_OVERRIDE_GUIDE;
-}
+#pragma region ========================== Action functions ==========================
 
 void assassin_jump(edict_t *self, G_Message_t *msg)
 {
@@ -850,6 +839,8 @@ int assassin_convert_hitloc_dead(int hl)
 	}
 
 }
+
+#pragma endregion
 
 void assassin_dismember(edict_t *self, int damage, int HitLocation)
 {
