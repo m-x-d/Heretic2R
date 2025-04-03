@@ -1059,7 +1059,7 @@ static void AssassinPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	}
 }
 
-void assassinSkipFrameSkillCheck(edict_t* self) //TODO: rename to assassin_skip_frame_skill_check.
+void assassin_skip_frame_skill_check(edict_t* self) //mxd. Named 'assassinSkipFrameSkillCheck' in original logic.
 {
 	if (irand(0, 3) < SKILL)
 		self->s.frame++;

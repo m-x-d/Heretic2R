@@ -752,12 +752,12 @@ const animmove_t assassin_move_crouch_poke = { 24, assassin_frames_crouch_poke, 
 // Assassin teleport - throws smoke bomb, then gone.
 static const animframe_t assassin_frames_teleport[] =
 {
-	{ FRAME_ataka3,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinSkipFrameSkillCheck },
-	{ FRAME_ataka4,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinSkipFrameSkillCheck },
-	{ FRAME_ataka5,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinSkipFrameSkillCheck },
-	{ FRAME_ataka6,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinSkipFrameSkillCheck },
-	{ FRAME_ataka7,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinSkipFrameSkillCheck },
-	{ FRAME_ataka8,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinSkipFrameSkillCheck },
+	{ FRAME_ataka3,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_skip_frame_skill_check },
+	{ FRAME_ataka4,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_skip_frame_skill_check },
+	{ FRAME_ataka5,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_skip_frame_skill_check },
+	{ FRAME_ataka6,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_skip_frame_skill_check },
+	{ FRAME_ataka7,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_skip_frame_skill_check },
+	{ FRAME_ataka8,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_skip_frame_skill_check },
 	{ FRAME_ataka9,		NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_ataka10,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinReadyTeleport },
 	{ FRAME_ataka11,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
