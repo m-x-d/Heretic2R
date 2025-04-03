@@ -1633,13 +1633,13 @@ void assassinCheckLoop(edict_t* self, float frame) //TODO: rename to assassin_ch
 	self->monsterinfo.currframeindex = (int)frame;
 }
 
-void assassinSmoke(edict_t *self)
+static void AssassinSmoke(const edict_t* self) //mxd. Named 'assassinSmoke' in original logic.
 {
 	vec3_t pos;
 	VectorCopy(self->s.origin, pos);
-	pos[2]+=self->mins[2];
-	gi.CreateEffect(NULL, FX_TPORTSMOKE, 0, pos, "");//, "db", hitangles, 5);
-	//gi.CreateEffect(&self->s, FX_DUST_PUFF, CEF_OWNERS_ORIGIN, self->s.origin, NULL);
+	pos[2] += self->mins[2];
+
+	gi.CreateEffect(NULL, FX_TPORTSMOKE, 0, pos, "");
 }
 
 void assassinGone(edict_t *self)
@@ -1657,7 +1657,7 @@ void assassinGone(edict_t *self)
 		self->s.angles[YAW] = anglemod(VectorYaw(enemy_dir));
 	}
 
-	assassinSmoke(self);
+	AssassinSmoke(self);
 
 	VectorCopy(self->pos2, enemy_dir);//reuse
 	enemy_dir[2] += 100;
@@ -1804,7 +1804,7 @@ qboolean assassinChooseTeleportDestination(edict_t *self, int type, qboolean imp
 
 void assassinReadyTeleport (edict_t *self)
 {
-	assassinSmoke(self);
+	AssassinSmoke(self);
 	self->svflags |= SVF_NO_AUTOTARGET;
 }
 
