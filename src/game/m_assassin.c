@@ -1347,29 +1347,21 @@ void assassin_crouch_idle_decision(edict_t* self)
 	}
 }
 
-void assassin_ai_walk (edict_t *self, float dist)
+void assassin_ai_walk(edict_t* self, float dist)
 {
-	if(self->damage_debounce_time < level.time)
+	if (self->damage_debounce_time < level.time)
 	{
-		if(self->enemy)
+		const edict_t* target = ((self->enemy != NULL) ? self->enemy : self->oldenemy); //mxd
+
+		if (target != NULL && vhlen(self->s.origin, target->s.origin) < 48.0f && AI_IsInfrontOf(self, target))
 		{
-			if(vhlen(self->s.origin, self->enemy->s.origin) < 48 && AI_IsInfrontOf(self, self->enemy))
-			{
-				assassinNodeOn (self, MESH__LKNIFE);
-				SetAnim(self, ANIM_CROUCH_TRANS);
-				return;
-			}
-		}
-		else if(self->oldenemy)
-		{
-			if(vhlen(self->s.origin, self->oldenemy->s.origin) < 48 && AI_IsInfrontOf(self, self->oldenemy))
-			{
-				assassinNodeOn (self, MESH__LKNIFE);
-				SetAnim(self, ANIM_CROUCH_TRANS);
-				return;
-			}
+			assassinNodeOn(self, MESH__LKNIFE);
+			SetAnim(self, ANIM_CROUCH_TRANS);
+
+			return;
 		}
 	}
+
 	ai_walk(self, dist);
 }
 
