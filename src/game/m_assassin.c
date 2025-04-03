@@ -1572,22 +1572,22 @@ void assassinGoJump(edict_t* self, float forward_speed, float up_speed, float ri
 	VectorMA(self->velocity, right_speed, right, self->velocity);
 }
 
-void assassin_go_inair(edict_t *self)
+void assassin_go_inair(edict_t* self) //TODO: rename to assassin_inair_go?
 {
 	SetAnim(self, ANIM_INAIR);
 }
 
-void assassin_go_evinair(edict_t *self)
+void assassin_go_evinair(edict_t* self) //TODO: rename to assassin_evade_inair_go?
 {
 	SetAnim(self, ANIM_EVINAIR);
 }
 
-void assassin_go_ffinair(edict_t *self)
+void assassin_go_ffinair(edict_t* self) //TODO: rename to assassin_fwdflip_inair_go?
 {
 	SetAnim(self, ANIM_FFINAIR);
 }
 
-void assassin_go_bfinair(edict_t *self)
+void assassin_go_bfinair(edict_t* self) //TODO: rename to assassin_backflip_inair_go?
 {
 	SetAnim(self, ANIM_BFINAIR);
 }
