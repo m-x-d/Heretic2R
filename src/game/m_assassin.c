@@ -1002,22 +1002,18 @@ static void AssassinDismember(edict_t* self, const int damage, HitLocation_t hl)
 
 #pragma endregion
 
-void assassin_dismember_msg(edict_t *self, G_Message_t *msg)
-{//fixme: throw current weapon
-//fixme - make part fly dir the vector from hit loc to sever loc
-//remember- turn on caps!
-	int				damage;
-	HitLocation_t	HitLocation;
-
-	ParseMsgParms(msg, "ii", &damage, &HitLocation);
-	AssassinDismember(self, damage, HitLocation);
-}
-
-void assassin_dead_pain (edict_t *self, G_Message_t *msg)
+static void AssassinDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_dead_pain' in original logic.
 {
-	if(msg)
-		if(!(self->svflags & SVF_PARTS_GIBBED))
-			assassin_dismember_msg(self, msg);
+	if (msg == NULL || (self->svflags & SVF_PARTS_GIBBED))
+		return;
+
+	//mxd. Inlined assassin_dismember_msg().
+	//FIXME: make part fly dir the vector from hit loc to sever loc. Remember - turn on caps!
+	int damage;
+	HitLocation_t hl;
+	ParseMsgParms(msg, "ii", &damage, &hl);
+
+	AssassinDismember(self, damage, hl);
 }
 
 void assassin_random_pain_sound (edict_t *self)
@@ -2416,7 +2412,7 @@ void AssassinStaticsInit(void)
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_JUMP] = AssassinJumpMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_EVADE] = assassin_evade;
-	classStatics[CID_ASSASSIN].msgReceivers[MSG_DEATH_PAIN] = assassin_dead_pain;
+	classStatics[CID_ASSASSIN].msgReceivers[MSG_DEATH_PAIN] = AssassinDeathPainMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_CHECK_MOOD] = assassin_check_mood;
 
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_C_IDLE1] = AssassinCinematicAnimsMsgHandler;
