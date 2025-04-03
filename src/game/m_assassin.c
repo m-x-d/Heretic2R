@@ -1831,35 +1831,20 @@ static qboolean AssassinCheckCloak(const edict_t* self) //mxd. Named 'assassinCh
 	return (irand(0, 10 - SKILL + chance) <= 0);
 }
 
-qboolean assassinCheckDeCloak (edict_t *self)
+static qboolean AssassinCheckDeCloak(const edict_t* self) //mxd. Named 'assassinCheckDeCloak' in original logic.
 {
-	float	dist;
-	int		chance = 0;
+	if (!self->monsterinfo.awake || self->monsterinfo.misc_debounce_time > level.time) // misc_debounce_time == Cloak debounce time.
+		return false;
 
-	if(!self->monsterinfo.awake)
-		return (false);
+	if (self->enemy == NULL)
+		return !(self->spawnflags & MSF_ASS_STARTSHADOW);
 
-	if(self->monsterinfo.misc_debounce_time > level.time)//cloak debounce time
-		return (false);
+	if (M_DistanceToTarget(self, self->enemy) < ASSASSIN_MIN_CLOAK_RANGE)
+		return true;
 
-	if(!self->enemy)
-	{
-		if(!(self->spawnflags & MSF_ASS_STARTSHADOW))
-			return (true);
-		return (false);
-	}
+	const int chance = (AI_IsInfrontOf(self->enemy, self) ? 0 : -3);
 
-	dist = M_DistanceToTarget(self, self->enemy);
-	if(dist<ASSASSIN_MIN_CLOAK_RANGE)
-		return (true);
-
-	if(!AI_IsInfrontOf(self->enemy, self))
-		chance = -3;
-
-	if(irand(0, 10 + skill->value * 2 + chance) <= 0)
-		return (true);
-
-	return (false);
+	return (irand(0, 10 + SKILL * 2 + chance) <= 0);
 }
 
 void assassinCloakThink (edict_t *self)
@@ -1882,7 +1867,7 @@ void assassinCloakThink (edict_t *self)
 	}
 	else
 	{//cloaked
-		if(assassinCheckDeCloak(self))
+		if(AssassinCheckDeCloak(self))
 			assassinInitDeCloak(self);
 	}
 //check to teleport
