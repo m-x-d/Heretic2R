@@ -1350,7 +1350,7 @@ void assassin_ai_walk(edict_t* self, float dist)
 
 		if (target != NULL && vhlen(self->s.origin, target->s.origin) < 48.0f && AI_IsInfrontOf(self, target))
 		{
-			assassinNodeOn(self, MESH__LKNIFE);
+			assassin_enable_fmnode(self, MESH__LKNIFE);
 			SetAnim(self, ANIM_CROUCH_TRANS);
 
 			return;
@@ -1523,7 +1523,7 @@ void assassin_crouched_check_attack(edict_t* self, float attack) //mxd. Named 'a
 		self->monsterinfo.currframeindex = 2;
 }
 
-void assassinNodeOn(edict_t* self, float node) //TODO: rename to assassin_enable_fmnode?
+void assassin_enable_fmnode(edict_t* self, float node) //mxd. Named 'assassinNodeOn' in original logic.
 {
 	self->s.fmnodeinfo[(int)node].flags &= ~FMNI_NO_DRAW;
 }

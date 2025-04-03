@@ -19,7 +19,7 @@ static const animframe_t assassin_frames_daggerl[] =
 	{ FRAME_ataka1,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, assassin_growl },
 	{ FRAME_ataka2,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_ataka3,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
-	{ FRAME_ataka4,		NULL, 0.0f, 0.0f, 0.0f, assassinNodeOn, MESH__LKNIFE, NULL }, // Loop in from an attack, no windup.
+	{ FRAME_ataka4,		NULL, 0.0f, 0.0f, 0.0f, assassin_enable_fmnode, MESH__LKNIFE, NULL }, // Loop in from an attack, no windup.
 	{ FRAME_ataka5,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_ataka6,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_ataka7,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
@@ -39,7 +39,7 @@ static const animframe_t assassin_frames_daggerr[] =
 	{ FRAME_atakb1,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, assassin_growl },
 	{ FRAME_atakb2,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_atakb3,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
-	{ FRAME_atakb4,		NULL, 0.0f, 0.0f, 0.0f, assassinNodeOn, MESH__RKNIFE, NULL },
+	{ FRAME_atakb4,		NULL, 0.0f, 0.0f, 0.0f, assassin_enable_fmnode, MESH__RKNIFE, NULL },
 	{ FRAME_atakb5,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_atakb6,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL }, // Loop in from an attack, no windup.
 	{ FRAME_atakb7,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
@@ -60,8 +60,8 @@ static const animframe_t assassin_frames_daggerb[] =
 	{ FRAME_atakc1,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, assassin_growl },
 	{ FRAME_atakc2,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_atakc3,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
-	{ FRAME_atakc4,		NULL, 0.0f, 0.0f, 0.0f, assassinNodeOn, MESH__LKNIFE, NULL },
-	{ FRAME_atakc5,		NULL, 0.0f, 0.0f, 0.0f, assassinNodeOn, MESH__RKNIFE, NULL },
+	{ FRAME_atakc4,		NULL, 0.0f, 0.0f, 0.0f, assassin_enable_fmnode, MESH__LKNIFE, NULL },
+	{ FRAME_atakc5,		NULL, 0.0f, 0.0f, 0.0f, assassin_enable_fmnode, MESH__RKNIFE, NULL },
 	{ FRAME_atakc6,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_atakc7,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL }, // Loop in from an attack, no windup.
 	{ FRAME_atakc8,		NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
@@ -79,7 +79,7 @@ static const animframe_t assassin_frames_daggerc[] =
 {
 	{ FRAME_lndatk1,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, assassin_growl },
 	{ FRAME_lndatk2,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
-	{ FRAME_lndatk3,	NULL, 0.0f, 0.0f, 0.0f, assassinNodeOn, MESH__RKNIFE, NULL },
+	{ FRAME_lndatk3,	NULL, 0.0f, 0.0f, 0.0f, assassin_enable_fmnode, MESH__RKNIFE, NULL },
 	{ FRAME_lndatk4,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_lndatk5,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL }, // Loop in from an attack, no windup.
 	{ FRAME_lndatk6,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
@@ -94,7 +94,7 @@ const animmove_t assassin_move_daggerc = { 11, assassin_frames_daggerc, assassin
 // Assassin newdagger.
 static const animframe_t assassin_frames_newdagger[] =
 {
-	{ FRAME_newattackA1,	NULL, 0.0f, 0.0f, 0.0f, assassinNodeOn, MESH__RKNIFE, assassin_growl },
+	{ FRAME_newattackA1,	NULL, 0.0f, 0.0f, 0.0f, assassin_enable_fmnode, MESH__RKNIFE, assassin_growl },
 	{ FRAME_newattackA2,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackA3,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackA4,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
@@ -116,12 +116,12 @@ const animmove_t assassin_move_newdagger = { 15, assassin_frames_newdagger, assa
 static const animframe_t assassin_frames_newdaggerb[] =
 {
 	{ FRAME_newattackB1,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, assassin_growl },
-	{ FRAME_newattackB2,	NULL, 0.0f, 0.0f, 0.0f, assassinNodeOn, MESH__RKNIFE, NULL },
+	{ FRAME_newattackB2,	NULL, 0.0f, 0.0f, 0.0f, assassin_enable_fmnode, MESH__RKNIFE, NULL },
 	{ FRAME_newattackB3,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackB4,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL }, // Loop in from an attack, no windup.
 	{ FRAME_newattackB5,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackB6,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
-	{ FRAME_newattackB7,	NULL, 0.0f, 0.0f, 0.0f, assassinNodeOn, MESH__LKNIFE, NULL },
+	{ FRAME_newattackB7,	NULL, 0.0f, 0.0f, 0.0f, assassin_enable_fmnode, MESH__LKNIFE, NULL },
 	{ FRAME_newattackB8,	NULL, 0.0f, 0.0f, 0.0f, assassin_attack, BIT_RKNIFE, NULL },
 	{ FRAME_newattackB9,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
 	{ FRAME_newattackB10,	NULL, 0.0f, 0.0f, 0.0f, MG_AI_Charge, 0.0f, NULL },
