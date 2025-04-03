@@ -1065,22 +1065,16 @@ void assassinSkipFrameSkillCheck(edict_t* self) //TODO: rename to assassin_skip_
 		self->s.frame++;
 }
 
-/*-------------------------------------------------------------------------
-	assassin_pause
--------------------------------------------------------------------------*/
-void assassin_pause (edict_t *self)
+void assassin_pause(edict_t* self)
 {
-	vec3_t	v;
-	float	len;
-
-//this gets stuck on, sometimes
+	// This gets stuck on, sometimes.
 	self->s.fmnodeinfo[MESH__LKNIFE].flags |= FMNI_NO_DRAW;
 	self->s.fmnodeinfo[MESH__RKNIFE].flags |= FMNI_NO_DRAW;
 
-	if(self->monsterinfo.aiflags&AI_OVERRIDE_GUIDE)
+	if (self->monsterinfo.aiflags & AI_OVERRIDE_GUIDE)
 		return;
 
-	if(self->spawnflags & MSF_FIXED && self->curAnimID == ANIM_DELAY && self->enemy)
+	if ((self->spawnflags & MSF_FIXED) && self->curAnimID == ANIM_DELAY && self->enemy != NULL)
 	{
 		self->monsterinfo.searchType = SEARCH_COMMON;
 		MG_FaceGoal(self, true);
@@ -1088,39 +1082,33 @@ void assassin_pause (edict_t *self)
 
 	self->mood_think(self);
 
-	if (self->ai_mood == AI_MOOD_NORMAL)
+	switch (self->ai_mood)
 	{
-		FindTarget(self);
-
-		if(self->enemy)
+		case AI_MOOD_NORMAL:
 		{
-			VectorSubtract (self->s.origin, self->enemy->s.origin, v);
-			len = VectorLength (v);
+			FindTarget(self);
 
-			if ((len > 80) || (self->monsterinfo.aiflags & AI_FLEE))  // Far enough to run after
+			if (self->enemy != NULL)
 			{
-				QPostMessage(self, MSG_RUN,PRI_DIRECTIVE, NULL);
+				vec3_t diff;
+				VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
+
+				const int anim_id = ((VectorLength(diff) > 80.0f || (self->monsterinfo.aiflags & AI_FLEE)) ? MSG_RUN : MSG_MELEE);
+				QPostMessage(self, anim_id, PRI_DIRECTIVE, NULL);
 			}
-			else	// Close enough to Attack 
-			{
-				QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-			}
-		}
-	}
-	else
-	{
-		switch (self->ai_mood)
-		{
+		} break;
+
 		case AI_MOOD_ATTACK:
-			if(self->ai_mood_flags & AI_MOOD_FLAG_MISSILE)
-				QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
-			else
-				QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-			break;
+		{
+			const int anim_id = ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE); //mxd
+			QPostMessage(self, anim_id, PRI_DIRECTIVE, NULL);
+		} break;
+
 		case AI_MOOD_PURSUE:
 		case AI_MOOD_NAVIGATE:
 			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			break;
+
 		case AI_MOOD_STAND:
 			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			break;
@@ -1134,27 +1122,20 @@ void assassin_pause (edict_t *self)
 			break;
 
 		case AI_MOOD_WANDER:
-			if(self->spawnflags&MSF_FIXED)
-			{
+			if (self->spawnflags & MSF_FIXED)
 				SetAnim(self, ANIM_DELAY);
-				return;
-			}
-			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			else
+				QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_JUMP:
-			if(self->spawnflags&MSF_FIXED)
-				SetAnim(self, ANIM_DELAY);
-			else
-				SetAnim(self, ANIM_FJUMP);//fjump will apply the movedir when he's ready
-			break;
+		{
+			const int anim_id = ((self->spawnflags & MSF_FIXED) ? ANIM_DELAY : ANIM_FJUMP); // ANIM_FJUMP will apply the movedir when he's ready.
+			SetAnim(self, anim_id);
+		} break;
 
-		default :
-#ifdef _DEVEL
-			gi.dprintf("assassin: Unusable mood %d!\n", self->ai_mood);
-#endif
+		default:
 			break;
-		}
 	}
 }
 
