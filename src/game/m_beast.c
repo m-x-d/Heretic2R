@@ -86,7 +86,7 @@ static vec3_t GetRightFootOffsetForFrameIndex[18] =
 	 -128.00F,  32.00F,  -2.00F,		// 18
 };
 
-static animmove_t *animations[NUM_ANIMS] =
+static const animmove_t *animations[NUM_ANIMS] =
 {
 	&tbeast_move_biteup,
 	&tbeast_move_bitelow,
@@ -1110,7 +1110,7 @@ void tbeast_eatorder (edict_t *self)
 	QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 }
 
-void tbeast_apply_jump (edict_t *self)
+void tbeast_apply_jump (edict_t *self) //TODO: unused
 {
 //	gi.dprintf("Jump from TB_CheckJump\n");
 //	self->gravity = TB_JUMP_GRAV;

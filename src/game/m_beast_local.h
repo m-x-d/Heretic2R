@@ -1,3 +1,12 @@
+//
+// m_beast_shared.h -- Data and function declarations shared between m_beast.c and m_beast_anim.c.
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
+
+#include "g_local.h" //mxd
 
 typedef enum AnimID_e
 {
@@ -31,6 +40,7 @@ typedef enum AnimID_e
 	ANIM_BITELOW_SFIN,
 	ANIM_BITEUP2_SFIN,
 	ANIM_QUICK_CHARGE,
+
 	NUM_ANIMS
 } AnimID_t;
 
@@ -67,74 +77,73 @@ typedef enum SoundID_e
 	SND_CORVUS_SCREAM2,
 	SND_CORVUS_SCREAM3,
 	SND_CORVUS_DIE,
+
 	NUM_SOUNDS
 } SoundID_t;
 
-extern animmove_t tbeast_move_biteup;
-extern animmove_t tbeast_move_bitelow;
-extern animmove_t tbeast_move_biteup2;
-extern animmove_t tbeast_move_eating_twitch;
-extern animmove_t tbeast_move_eating;
-extern animmove_t tbeast_move_eatdown;
-extern animmove_t tbeast_move_walk;
-extern animmove_t tbeast_move_walkleft;
-extern animmove_t tbeast_move_walkrt;
-extern animmove_t tbeast_move_jump;
-extern animmove_t tbeast_move_forced_jump;
-extern animmove_t tbeast_move_inair;
-extern animmove_t tbeast_move_land;
-extern animmove_t tbeast_move_ginair;
-extern animmove_t tbeast_move_gland;
-extern animmove_t tbeast_move_stand;
-extern animmove_t tbeast_move_delay;
-extern animmove_t tbeast_move_die;
-extern animmove_t tbeast_move_die_norm;
-extern animmove_t tbeast_move_charge;
-extern animmove_t tbeast_move_roar;
-extern animmove_t tbeast_move_walkatk;
-extern animmove_t tbeast_move_stun;
-extern animmove_t tbeast_move_snatch;
-extern animmove_t tbeast_move_ready_catch;
-extern animmove_t tbeast_move_catch;
-extern animmove_t tbeast_move_biteup_sfin;
-extern animmove_t tbeast_move_bitelow_sfin;
-extern animmove_t tbeast_move_biteup2_sfin;
-extern animmove_t tbeast_move_quick_charge;
+extern const animmove_t tbeast_move_biteup;
+extern const animmove_t tbeast_move_bitelow;
+extern const animmove_t tbeast_move_biteup2;
+extern const animmove_t tbeast_move_eating_twitch;
+extern const animmove_t tbeast_move_eating;
+extern const animmove_t tbeast_move_eatdown;
+extern const animmove_t tbeast_move_walk;
+extern const animmove_t tbeast_move_walkleft;
+extern const animmove_t tbeast_move_walkrt;
+extern const animmove_t tbeast_move_jump;
+extern const animmove_t tbeast_move_forced_jump;
+extern const animmove_t tbeast_move_inair;
+extern const animmove_t tbeast_move_land;
+extern const animmove_t tbeast_move_ginair;
+extern const animmove_t tbeast_move_gland;
+extern const animmove_t tbeast_move_stand;
+extern const animmove_t tbeast_move_delay;
+extern const animmove_t tbeast_move_die;
+extern const animmove_t tbeast_move_die_norm;
+extern const animmove_t tbeast_move_charge;
+extern const animmove_t tbeast_move_roar;
+extern const animmove_t tbeast_move_walkatk;
+extern const animmove_t tbeast_move_stun;
+extern const animmove_t tbeast_move_snatch;
+extern const animmove_t tbeast_move_ready_catch;
+extern const animmove_t tbeast_move_catch;
+extern const animmove_t tbeast_move_biteup_sfin;
+extern const animmove_t tbeast_move_bitelow_sfin;
+extern const animmove_t tbeast_move_biteup2_sfin;
+extern const animmove_t tbeast_move_quick_charge;
 
-
-void tbeast_snort (edict_t *self);
-void tbeast_growl (edict_t *self);
-qboolean tbeastCheckMood(edict_t *self);
-void tbeast_pause (edict_t *self);
-void tbeastbite (edict_t *self, float ofsf, float ofsr, float ofsu);
-void tbeast_land(edict_t *self);
-void tbeast_roar(edict_t *self);
-void tbeast_jump (edict_t *self);
-void tbeast_apply_jump (edict_t *self);
-void tbeast_ready_catch (edict_t *self);
-void tbeast_throw_toy(edict_t *self);
-void tbeast_toy_ofs(edict_t *self, float ofsf, float ofsr, float ofsu);
-void tbeast_check_snatch(edict_t *self, float ofsf, float ofsr, float ofsu);
-void tbeast_gore_toy(edict_t *self, float jumpht);
-void tbeast_anger_sound (edict_t *self);
-void tbeast_leap (edict_t *self, float fwdf, float rghtf, float upf);
-void tbeast_eatorder (edict_t *self);
-void tbeast_footstep (edict_t *self);
-void tbeast_walkorder (edict_t *self);
-void tbeast_standorder (edict_t *self);
-void tbeast_dead(edict_t *self);
-void tbeast_charge (edict_t *self, float force);
-void tbeast_done_gore (edict_t *self);
-void tbeast_run_think (edict_t *self, float dist);
-void tbeast_check_landed (edict_t *self);
-void tbeast_inair (edict_t *self);
-void tbeast_gcheck_landed (edict_t *self);
-void tbeast_ginair (edict_t *self);
-void tbeast_go_snatch (edict_t *self);
-void tbeast_check_impacts(edict_t *self);
-void tbeast_roar_knockdown(edict_t *self);
-void tbeast_roar_short(edict_t *self);
-void tbeast_gibs(edict_t *self);
+void tbeast_snort(edict_t* self);
+void tbeast_growl(edict_t* self);
+qboolean tbeastCheckMood(edict_t* self);
+void tbeast_pause(edict_t* self);
+void tbeastbite(edict_t* self, float ofsf, float ofsr, float ofsu);
+void tbeast_land(edict_t* self);
+void tbeast_roar(edict_t* self);
+void tbeast_apply_jump(edict_t* self);
+void tbeast_ready_catch(edict_t* self);
+void tbeast_throw_toy(edict_t* self);
+void tbeast_toy_ofs(edict_t* self, float ofsf, float ofsr, float ofsu);
+void tbeast_check_snatch(edict_t* self, float ofsf, float ofsr, float ofsu);
+void tbeast_gore_toy(edict_t* self, float jumpht);
+void tbeast_anger_sound(edict_t* self);
+void tbeast_leap(edict_t* self, float fwdf, float rghtf, float upf);
+void tbeast_eatorder(edict_t* self);
+void tbeast_footstep(edict_t* self);
+void tbeast_walkorder(edict_t* self);
+void tbeast_standorder(edict_t* self);
+void tbeast_dead(edict_t* self);
+void tbeast_charge(edict_t* self, float force);
+void tbeast_done_gore(edict_t* self);
+void tbeast_run_think(edict_t* self, float dist);
+void tbeast_check_landed(edict_t* self);
+void tbeast_inair(edict_t* self);
+void tbeast_gcheck_landed(edict_t* self);
+void tbeast_ginair(edict_t* self);
+void tbeast_go_snatch(edict_t* self);
+void tbeast_check_impacts(edict_t* self);
+void tbeast_roar_knockdown(edict_t* self);
+void tbeast_roar_short(edict_t* self);
+void tbeast_gibs(edict_t* self);
 
 //mxd. Mirrored in fx_tbeast.c.
 enum
@@ -143,22 +152,19 @@ enum
 	FX_TB_SNORT, //TODO: unused.
 };
 
-#define TB_HIBITE_F	150
-#define TB_HIBITE_R	0
-#define TB_HIBITE_U	108
+#define TB_HIBITE_F		150
+#define TB_HIBITE_R		0
+#define TB_HIBITE_U		108
 
-#define TB_LOBITE_F	150
-#define TB_LOBITE_R	0
-#define TB_LOBITE_U	36
+#define TB_LOBITE_F		150
+#define TB_LOBITE_R		0
+#define TB_LOBITE_U		36
 
 #define TB_WLKBITE_F	224
 #define TB_WLKBITE_U	72
 
 #define TBEAST_STD_MELEE_RNG	128
-#define TBEAST_STD_MAXHOP_RNG	600
 
-#define TB_JUMP_GRAV	0.8
-
-#define TB_FWD_OFFSET	-64//-32
-#define TB_UP_OFFSET	-32
-#define TB_RT_OFFSET	-24
+#define TB_FWD_OFFSET	(-64)
+#define TB_UP_OFFSET	(-32)
+#define TB_RT_OFFSET	(-24)
