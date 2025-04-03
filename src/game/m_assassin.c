@@ -1534,7 +1534,7 @@ void assassin_stop(edict_t* self) //mxd. Named 'assassinStop' in original logic.
 		self->nextthink = level.time + (self->evade_debounce_time - level.time);
 }
 
-void assassinSetCrouched(edict_t* self) //TODO: rename to assassin_set_crouched?
+void assassin_set_crouched(edict_t* self) //mxd. Named 'assassinSetCrouched' in original logic.
 {
 	VectorSet(self->maxs, 16.0f, 16.0f, 0.0f);
 	self->viewheight = 0;

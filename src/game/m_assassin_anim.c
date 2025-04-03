@@ -142,7 +142,7 @@ const animmove_t assassin_move_newdaggerb = { 17, assassin_frames_newdaggerb, as
 // Assassin crouch.
 static const animframe_t assassin_frames_crouch[] =
 {
-	{ FRAME_jump14,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinSetCrouched },
+	{ FRAME_jump14,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_set_crouched },
 	{ FRAME_jump15,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_jump16,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_stop },
 };
@@ -173,7 +173,7 @@ const animmove_t assassin_move_inair = { 1, assassin_frames_inair, NULL };
 static const animframe_t assassin_frames_land[] =
 {
 	{ FRAME_jump13,	assassin_sound, CHAN_BODY, SND_LAND, ATTN_NORM, NULL, 0.0f, NULL },
-	{ FRAME_jump14,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinSetCrouched },
+	{ FRAME_jump14,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_set_crouched },
 	{ FRAME_jump15,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_jump16,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_jump17,	NULL, 0.0f, 0.0f, 0.0f, assassin_crouched_check_attack, 2.0f, assassinUndoCrouched }
@@ -767,7 +767,7 @@ const animmove_t assassin_move_teleport = { 9, assassin_frames_teleport, assassi
 // Assassin clock.
 static const animframe_t assassin_frames_cloak[] =
 {
-	{ FRAME_jump14,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinSetCrouched },
+	{ FRAME_jump14,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassin_set_crouched },
 	{ FRAME_jump15,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, NULL },
 	{ FRAME_jump16,	NULL, 0.0f, 0.0f, 0.0f, NULL, 0.0f, assassinInitCloak },
 };
