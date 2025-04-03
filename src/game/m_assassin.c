@@ -1262,17 +1262,9 @@ void assassin_go_run(edict_t* self, float dist) //TODO: rename to assassin_run_g
 		ai_walk(self, dist);
 }
 
-/*-------------------------------------------------------------------------
-	assassinsqueal
--------------------------------------------------------------------------*/
-void assassinsqueal (edict_t *self)
+void assassinsqueal(edict_t* self) //TODO: remove?
 {
-/*
-	if(irand(0, 1))
-		gi.sound(self, CHAN_WEAPON, Sounds[SND_PAIN1], 1, ATTN_NORM, 0);
-	else
-		gi.sound(self, CHAN_WEAPON, Sounds[SND_PAIN2], 1, ATTN_NORM, 0);
-*/
+
 }
 
 /*-------------------------------------------------------------------------
