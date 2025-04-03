@@ -489,23 +489,10 @@ static void AssassinDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 		assassinInitDeCloak(self);
 }
 
-/*-------------------------------------------------------------------------
-	assassingrowl
--------------------------------------------------------------------------*/
-void assassingrowl (edict_t *self)
+void assassingrowl(edict_t* self) //TODO: rename to assassin_growl?
 {
-	int chance;	
-
-	if (!irand(0, 20))
-	{
-		chance = irand(0, 9);
-		if (chance < 3)
-			gi.sound (self, CHAN_AUTO, sounds[SND_GROWL1], 1, ATTN_IDLE, 0);
-		else if (chance < 6)
-			gi.sound(self, CHAN_AUTO, sounds[SND_GROWL2], 1, ATTN_IDLE, 0);
-		else 
-			gi.sound(self, CHAN_AUTO, sounds[SND_GROWL3], 1, ATTN_IDLE, 0);
-	}
+	if (irand(0, 20) == 0)
+		gi.sound(self, CHAN_AUTO, sounds[irand(SND_GROWL1, SND_GROWL3)], 1.0f, ATTN_IDLE, 0.0f);
 }
 
 void assassin_random_attack(edict_t *self)
