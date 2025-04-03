@@ -1282,71 +1282,68 @@ static void AssassinStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	}
 }
 
-/*-------------------------------------------------------------------------
-	assassin_walk
--------------------------------------------------------------------------*/
-void assassin_crouch_idle_decision (edict_t *self)
-{//FIXME: need to uncrouch
-	int	chance;
+void assassin_crouch_idle_decision(edict_t* self)
+{
+	//FIXME: need to uncrouch.
+	const int chance = irand(0, 100);
 
-	chance = irand(0, 100);
-	switch(self->curAnimID)
+	switch (self->curAnimID)
 	{
-	case ANIM_CROUCH_IDLE:
-		if(chance < 55)
+		case ANIM_CROUCH_IDLE:
+			if (chance < 55)
+				SetAnim(self, ANIM_CROUCH_IDLE);
+			else if (chance < 75)
+				SetAnim(self, ANIM_CROUCH_POKE);
+			else if (chance < 85)
+				SetAnim(self, ANIM_CROUCH_LOOK_RIGHT);
+			else if (chance < 95)
+				SetAnim(self, ANIM_CROUCH_LOOK_LEFT);
+			else
+				SetAnim(self, ANIM_CROUCH_END);
+			break;
+
+		case ANIM_CROUCH_LOOK_RIGHT:
+		case ANIM_CROUCH_LOOK_RIGHT_IDLE:
+		case ANIM_CROUCH_LOOK_L2R:
+			if (chance < 60)
+				SetAnim(self, ANIM_CROUCH_LOOK_RIGHT_IDLE);
+			else if (chance < 85)
+				SetAnim(self, ANIM_CROUCH_LOOK_R2C);
+			else
+				SetAnim(self, ANIM_CROUCH_LOOK_R2L);
+			break;
+
+		case ANIM_CROUCH_LOOK_LEFT:
+		case ANIM_CROUCH_LOOK_LEFT_IDLE:
+		case ANIM_CROUCH_LOOK_R2L:
+			if (chance < 60)
+				SetAnim(self, ANIM_CROUCH_LOOK_LEFT_IDLE);
+			else if (chance < 85)
+				SetAnim(self, ANIM_CROUCH_LOOK_L2C);
+			else
+				SetAnim(self, ANIM_CROUCH_LOOK_L2R);
+			break;
+
+		case ANIM_CROUCH_TRANS:
+			self->monsterinfo.pausetime = FLT_MAX; //mxd. 99999999 in original logic.
 			SetAnim(self, ANIM_CROUCH_IDLE);
-		else if(chance < 75)
-			SetAnim(self, ANIM_CROUCH_POKE);
-		else if(chance < 85)
-			SetAnim(self, ANIM_CROUCH_LOOK_RIGHT);
-		else if(chance < 95)
-			SetAnim(self, ANIM_CROUCH_LOOK_LEFT);
-		else
+			break;
+
+		case ANIM_CROUCH_LOOK_R2C:
+		case ANIM_CROUCH_LOOK_L2C:
+		case ANIM_CROUCH_POKE:
+			SetAnim(self, ANIM_CROUCH_IDLE);
+			break;
+
+		case ANIM_CROUCH_END:
+			self->damage_debounce_time = level.time + 10.0f;
+			self->monsterinfo.pausetime = -1.0f;
+			SetAnim(self, ANIM_STAND);
+			break;
+
+		default:
 			SetAnim(self, ANIM_CROUCH_END);
-		break;
-	
-	case ANIM_CROUCH_LOOK_RIGHT:
-	case ANIM_CROUCH_LOOK_RIGHT_IDLE:
-	case ANIM_CROUCH_LOOK_L2R:
-		if(chance < 60)
-			SetAnim(self, ANIM_CROUCH_LOOK_RIGHT_IDLE);
-		else if(chance < 85)
-			SetAnim(self, ANIM_CROUCH_LOOK_R2C);
-		else
-			SetAnim(self, ANIM_CROUCH_LOOK_R2L);
-		break;
-	
-	case ANIM_CROUCH_LOOK_LEFT:
-	case ANIM_CROUCH_LOOK_LEFT_IDLE:
-	case ANIM_CROUCH_LOOK_R2L:
-		if(chance < 60)
-			SetAnim(self, ANIM_CROUCH_LOOK_LEFT_IDLE);
-		else if(chance < 85)
-			SetAnim(self, ANIM_CROUCH_LOOK_L2C);
-		else
-			SetAnim(self, ANIM_CROUCH_LOOK_L2R);
-		break;
-	
-	case ANIM_CROUCH_TRANS:
-		self->monsterinfo.pausetime = 99999999;
-		SetAnim(self, ANIM_CROUCH_IDLE);
-		break;
-
-	case ANIM_CROUCH_LOOK_R2C:
-	case ANIM_CROUCH_LOOK_L2C:
-	case ANIM_CROUCH_POKE:
-		SetAnim(self, ANIM_CROUCH_IDLE);
-		break;
-
-	case ANIM_CROUCH_END:
-		self->damage_debounce_time = level.time + 10;
-		self->monsterinfo.pausetime = -1;
-		SetAnim(self, ANIM_STAND);
-		break;
-	
-	default:
-		SetAnim(self, ANIM_CROUCH_END);
-		break;
+			break;
 	}
 }
 
