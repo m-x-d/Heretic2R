@@ -1587,22 +1587,10 @@ qboolean MG_TryGetTargetOrigin(edict_t* self, vec3_t target_origin) //mxd. Named
 // Sees if the two angles are within leniency degrees of each other.
 qboolean AnglesEqual(float angle1, float angle2, const float leniency) //mxd. Named 'EqualAngle' in original logic.
 {
-	if (angle1 < -180.0f)
-		angle1 += 360.0f;
-	else if (angle1 > 180.0f)
-		angle1 -= 360.0f;
+	angle1 = NormalizeAngleDeg(angle1);
+	angle2 = NormalizeAngleDeg(angle2);
 
-	if (angle2 < -180.0f)
-		angle2 += 360.0f;
-	else if (angle2 > 180.0f)
-		angle2 -= 360.0f;
-
-	float diff = angle1 - angle2;
-
-	if (diff < -180.0f)
-		diff += 360.0f;
-	else if (diff > 180.0f)
-		diff -= 360.0f;
+	const float diff = NormalizeAngleDeg(angle1 - angle2);
 
 	return (fabsf(diff) <= leniency);
 }
