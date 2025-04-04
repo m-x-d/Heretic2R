@@ -10,6 +10,9 @@
 
 #define KNOCK_BACK_MULTIPLIER 1000.0f
 
+extern float NormalizeAngleRad(float angle); //mxd
+extern float NormalizeAngleDeg(float angle); //mxd
+
 extern edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t finder_angles,
 	float near_dist, float far_dist, float h_fov, float v_fov, const vec3_t los_start_pos, const vec3_t bb_min, const vec3_t bb_max);
 

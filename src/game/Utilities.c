@@ -194,7 +194,7 @@ static void GetEdictCenter(const edict_t* self, vec3_t out)
 }
 
 //mxd. Copy of ClampAngleRad() from netmsg_write.c...
-static float NormalizeAngle(float angle)
+float NormalizeAngleRad(float angle) //TODO: never used. Remove?
 {
 	// Returns the remainder.
 	angle = fmodf(angle, ANGLE_360);
@@ -205,6 +205,22 @@ static float NormalizeAngle(float angle)
 
 	if (angle <= -ANGLE_180)
 		angle += ANGLE_360;
+
+	return angle;
+}
+
+//mxd. Degrees version of ClampAngleRad() from netmsg_write.c...
+float NormalizeAngleDeg(float angle)
+{
+	// Returns the remainder.
+	angle = fmodf(angle, 360.0f);
+
+	// Makes the angle signed.
+	if (angle > 180.0f)
+		angle -= 360.0f;
+
+	if (angle < -180.0f)
+		angle += 360.0f;
 
 	return angle;
 }
@@ -280,7 +296,7 @@ edict_t* FindNearestVisibleActorInFrustum(const edict_t* finder, const vec3_t fi
 	const float min_vert_fov = -v_fov * 0.5f;
 	const float max_vert_fov = -min_vert_fov;
 
-	const float base_yaw = NormalizeAngle(finder_angles[YAW] * ANGLE_TO_RAD);
+	const float base_yaw = NormalizeAngleDeg(finder_angles[YAW]) * ANGLE_TO_RAD;
 	edict_t* best = NULL;
 
 	const edict_t* end = &g_edicts[globals.num_edicts];
