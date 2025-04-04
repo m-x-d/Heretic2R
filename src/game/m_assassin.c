@@ -2067,7 +2067,7 @@ static void AssassinCinematicAnimsMsgHandler(edict_t* self, G_Message_t* msg) //
 #pragma region ========================== Think callbacks ==========================
 
 // Assigned to 'isBlocked' and 'bounce' callbacks.
-static void AssassinBounce(edict_t* self, trace_t* trace) //mxd. Named 'assassin_Touch' in original logic.
+static void AssassinBlocked(edict_t* self, trace_t* trace) //mxd. Named 'assassin_Touch' in original logic.
 {
 	if (self->health <= 0 || trace == NULL)
 		return;
@@ -2251,8 +2251,8 @@ void SP_monster_assassin(edict_t* self)
 	VectorCopy(STDMaxsForClass[self->classID], self->maxs);
 	self->viewheight = 40;
 
-	self->isBlocked = AssassinBounce;
-	self->bounced = AssassinBounce;
+	self->isBlocked = AssassinBlocked;
+	self->bounced = AssassinBlocked;
 
 	self->s.modelindex = (byte)classStatics[CID_ASSASSIN].resInfo->modelIndex;
 	self->materialtype = MAT_FLESH;
