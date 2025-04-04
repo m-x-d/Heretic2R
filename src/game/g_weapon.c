@@ -26,6 +26,7 @@
 #include "Matrix.h"
 #include "Random.h"
 #include "Reference.h"
+#include "Utilities.h" //mxd
 #include "Vector.h"
 #include "g_local.h"
 
@@ -235,13 +236,7 @@ void WeaponThink_SwordStaff(edict_t* caster, char* format, ...)
 				vectoangles(hit_dir, hit_angles);
 
 				vec3_t diff_angles;
-				diff_angles[YAW] = hit_angles[YAW] - trace.ent->client->aimangles[YAW];
-
-				if (diff_angles[YAW] > 180.0f)
-					diff_angles[YAW] -= 360.0f;
-				else if (diff_angles[YAW] < -180.0f)
-					diff_angles[YAW] += 360.0f;
-
+				diff_angles[YAW] = NormalizeAngleDeg(hit_angles[YAW] - trace.ent->client->aimangles[YAW]);
 				diff_angles[PITCH] = hit_angles[PITCH] - trace.ent->client->aimangles[PITCH];
 
 				if (diff_angles[YAW] > -60.0f && diff_angles[YAW] < 60.0f && diff_angles[PITCH] > -45.0f && diff_angles[PITCH] < 75.0f)
