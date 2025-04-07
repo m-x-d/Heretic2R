@@ -194,6 +194,83 @@ void chicken_bite(edict_t* self)
 	}
 }
 
+void chicken_pause(edict_t* self)
+{
+	self->mood_think(self);
+
+	if (self->ai_mood == AI_MOOD_NORMAL)
+	{
+		FindTarget(self);
+
+		if (self->enemy != NULL)
+		{
+			vec3_t diff;
+			VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
+
+			if (VectorLength(diff) > 60.0f || (self->monsterinfo.aiflags & AI_FLEE)) // Far enough to run after.
+				QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			else // Close enough to attack.
+				QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+		}
+
+		return;
+	}
+
+	// If we can attack, then we do that, no question.
+	if (self->ai_mood == AI_MOOD_ATTACK)
+	{
+		QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+		return;
+	}
+
+	// Decide if we will do a random action.
+	const int random_action = irand(0, 10);
+
+	// A chance to cluck.
+	if (random_action == 0)
+	{
+		QPostMessage(self, MSG_WATCH, PRI_DIRECTIVE, NULL);
+		return;
+	}
+
+	// A chance to peck.
+	if (random_action == 1)
+	{
+		QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+		return;
+	}
+
+	// Otherwise run or track the player target.
+	switch (self->ai_mood)
+	{
+		case AI_MOOD_PURSUE:
+			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_NAVIGATE:
+			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_STAND:
+			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_JUMP:
+			VectorCopy(self->movedir, self->velocity);
+			VectorNormalize(self->movedir);
+			SetAnim(self, ANIM_JUMP);
+			break;
+
+		case AI_MOOD_EAT:
+			QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+			break;
+
+		default:
+			gi.dprintf("Unhandled chicken mood %d!\n", self->ai_mood);
+			break;
+	}
+}
+
 #pragma endregion
 
 void ChickenStaticsInit(void)
@@ -287,87 +364,6 @@ void SP_monster_chicken (edict_t *self)
 
 	gi.linkentity(self); 
 
-}
-
-/*-------------------------------------------------------------------------
-	chicken_pause
--------------------------------------------------------------------------*/
-void chicken_pause (edict_t *self)
-{
-	vec3_t	v;
-	float	len;
-	int		random_action;
-
-	self->mood_think(self);
-
-	if (self->ai_mood == AI_MOOD_NORMAL)
-	{
-		FindTarget(self);
-
-		if(self->enemy)
-		{
-			VectorSubtract (self->s.origin, self->enemy->s.origin, v);
-			len = VectorLength (v);
-
-			if ((len > 60) || (self->monsterinfo.aiflags & AI_FLEE))  // Far enough to run after
-			{
-				QPostMessage(self, MSG_RUN,PRI_DIRECTIVE, NULL);
-			}
-			else	// Close enough to Attack 
-			{
-				QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-			}
-		}
-	}
-	else
-	{
-		// decide if we will do a random action
-		random_action = (irand(0,10));
-		// ok, if we can attack, then we do that, no question
-		if (self->ai_mood == AI_MOOD_ATTACK)
-			QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-		// else, one chance in a remote time, we will just go "cluck"
-		else if (!random_action)
-			// make us cluck
-			QPostMessage(self, MSG_WATCH, PRI_DIRECTIVE, NULL);
-		else
-		{
-			random_action--;
-			if (!random_action)
-				// make us peck
-				QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
-			// otherwise run or track the player target
-			else
-			{
-				switch (self->ai_mood)
-				{
-				case AI_MOOD_PURSUE:
-					QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-					break;
-				case AI_MOOD_NAVIGATE:
-					QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-					break;
-				case AI_MOOD_STAND:
-					QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-					break;
-				case AI_MOOD_JUMP:
-					VectorCopy(self->movedir, self->velocity);
-					VectorNormalize(self->movedir);
-					SetAnim(self, ANIM_JUMP);
-					break;
-				case AI_MOOD_EAT:
-					QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
-					break;
-
-				default :
-#ifdef _DEVEL
-					gi.dprintf("Chicken Unusable mood %d!\n", self->ai_mood);
-#endif
-					break;
-				}
-			}
-		}
-	}
 }
 
 /*-------------------------------------------------------------------------
