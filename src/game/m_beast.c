@@ -846,43 +846,6 @@ void tbeast_apply_jump(edict_t* self)
 	VectorNormalize(self->movedir);
 }
 
-qboolean CheckMoveFoot (edict_t *self, edict_t *foot, vec3_t dest) //TODO: unused
-{
-	vec3_t	dir;
-	trace_t	trace;
-	
-	VectorSubtract(dest, foot->s.origin, dir);
-	VectorNormalize(dir);
-
-	gi.trace(foot->s.origin, foot->mins, foot->maxs, dest, foot, MASK_MONSTERSOLID,&trace);
-
-	if(trace.ent)
-	{
-		if(trace.ent->takedamage)
-		{
-			T_Damage(trace.ent, self, self, dir, trace.endpos, dir, 1000, 250, DAMAGE_DISMEMBER,MOD_DIED);
-			VectorCopy(foot->s.origin, foot->last_org);
-			VectorCopy(dest, foot->s.origin);
-//			VectorCopy(trace.endpos, foot->s.origin);
-			return true;
-		}
-//		else
-//			return false;
-	}
-
-//	if(trace.allsolid||trace.startsolid)
-//		return false;
-
-//	if(trace.fraction<0.9)
-//		return false;
-
-	VectorCopy(foot->s.origin, foot->last_org);
-	VectorCopy(dest, foot->s.origin);
-//	VectorCopy(trace.endpos, foot->s.origin);
-
-	return true;
-}
-
 qboolean TB_CheckBottom (edict_t *self)
 {
 	vec3_t	end;
