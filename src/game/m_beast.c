@@ -819,17 +819,19 @@ void tbeast_roar(edict_t* self)
 	gi.sound(self, CHAN_VOICE, sounds[SND_ROAR2], 1.0f, ATTN_NONE, 0.0f);
 }
 
-void tbeast_roar_short(edict_t *self)
+void tbeast_roar_short(edict_t* self)
 {
-	if(!self->delay)
+	if (self->delay == 0.0f)
 	{
 		self->monsterinfo.currframeindex = 25;
 		self->monsterinfo.nextframeindex = 26;
 		self->s.frame = FRAME_charge1;
-		self->delay = true;
+		self->delay = 1.0f;
 	}
 	else
-		gi.sound(self, CHAN_VOICE, sounds[SND_ROAR], 1, ATTN_NONE, 0);
+	{
+		gi.sound(self, CHAN_VOICE, sounds[SND_ROAR], 1.0f, ATTN_NONE, 0.0f);
+	}
 }
 
 void tbeast_eatorder (edict_t *self)
