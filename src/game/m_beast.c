@@ -2083,40 +2083,41 @@ static void TBeastPostThink(edict_t* self) //mxd. Named 'tbeast_post_think' in o
 	self->next_post_think = level.time + 0.1f;
 }
 
-edict_t *TB_CheckHit(const vec3_t start, vec3_t end) //mxd. Named 'check_hit_beast' in original logic.
+edict_t* TB_CheckHit(const vec3_t start, vec3_t end) //mxd. Named 'check_hit_beast' in original logic. //TODO: rename to TBeastCheckHit. 
 {
-	edict_t	*found = NULL;
-	int		i = 0;
-	vec3_t	shot_dir, beast_dir, checkpos, diffvec;
-	float	diff1, diff2;
-
+	vec3_t shot_dir;
 	VectorSubtract(end, start, shot_dir);
-	diff1 = VectorNormalize(shot_dir);
+	const float shot_dist = VectorNormalize(shot_dir);
 
-	while(found = G_Find(found, FOFS(classname), "monster_trial_beast"))
+	edict_t* found = NULL;
+	while ((found = G_Find(found, FOFS(classname), "monster_trial_beast")) != NULL)
 	{
+		vec3_t beast_dir;
 		VectorSubtract(found->s.origin, start, beast_dir);
-		diff2 = VectorLength(beast_dir) - 128;
+		const float beast_dist = VectorLength(beast_dir) - 128.0f;
 
-		if(diff2 > diff1)
+		if (beast_dist > shot_dist)
 			continue;
 
-		//beast closer than trace endpos, let's do an incremental check
+		// Beast closer than trace endpos, let's do an incremental check.
+		vec3_t check_pos;
+		VectorCopy(start, check_pos);
 
-		VectorCopy(start, checkpos);
-		
-		for(i = 16; i < diff1; i+=16)
+		for (int i = 16; i < (int)shot_dist; i += 16)
 		{
-			VectorMA(checkpos, 16, shot_dir, checkpos);
-			VectorSubtract(checkpos, found->s.origin, diffvec);
-			if(VectorLengthSquared(diffvec) < 16384)//128 squared
-			{//this spot is within 128 of beast origin, so you hit him, ok?
-				VectorCopy(checkpos, end);
+			vec3_t diff_vec;
+			VectorMA(check_pos, 16.0f, shot_dir, check_pos);
+			VectorSubtract(check_pos, found->s.origin, diff_vec);
+
+			if (VectorLengthSquared(diff_vec) < 16384) // 128 squared.
+			{
+				// This spot is within 128 of beast origin, so you hit him, ok?
+				VectorCopy(check_pos, end);
 				return found;
 			}
 		}
 	}
-	
+
 	return NULL;
 }
 
