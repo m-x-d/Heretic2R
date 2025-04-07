@@ -1282,35 +1282,25 @@ void tbeast_anger_sound(edict_t* self)
 	}
 }
 
-void tbeast_gibs(edict_t *self)
-{//FIXME: keep making gubs
-	vec3_t		spot, mins, forward;
-	byte		numchunks;
-	int			flags = 0;
+void tbeast_gibs(edict_t* self)
+{
+	//FIXME: keep making gibs.
+	const int material_id = (int)self->wait; //mxd
 
-	if(!self->wait)
+	if (material_id == 0)
 		return;
 
+	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
-	VectorMA(self->s.origin, 56, forward, spot);
-	spot[2] -= 8;
 
-	if(self->wait == MAT_INSECT)
-	{
-		flags |= CEF_FLAG8;
-		flags |= CEF_FLAG7;//use male insect skin on chunks
-	}
+	vec3_t spot;
+	VectorMA(self->s.origin, 56.0f, forward, spot);
+	spot[2] -= 8.0f;
 
-	numchunks = (byte)(irand(3, 7));
-	VectorSet(mins, -1, -1, -1);
-	gi.CreateEffect(NULL,
-					FX_FLESH_DEBRIS,
-   					flags,
-   					spot,
-   					"bdb",
-   					numchunks, self->mins, 16);
+	const int fx_flags = (material_id == MAT_INSECT ? CEF_FLAG7 | CEF_FLAG8 : 0); // Use male insect skin on chunks.
+	gi.CreateEffect(NULL, FX_FLESH_DEBRIS, fx_flags, spot, "bdb", (byte)irand(3, 7), self->mins, 16);
 
-	tbeast_anger_sound (self);
+	tbeast_anger_sound(self);
 }
 
 void tbeast_done_gore (edict_t *self)
