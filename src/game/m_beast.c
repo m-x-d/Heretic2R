@@ -840,14 +840,11 @@ void tbeast_eat_order(edict_t* self) //mxd. Named 'tbeast_eatorder' in original 
 		QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 }
 
-void tbeast_apply_jump (edict_t *self) //TODO: unused
+void tbeast_apply_jump(edict_t* self)
 {
-//	gi.dprintf("Jump from TB_CheckJump\n");
-//	self->gravity = TB_JUMP_GRAV;
 	VectorCopy(self->movedir, self->velocity);
 	VectorNormalize(self->movedir);
 }
-
 
 qboolean CheckMoveFoot (edict_t *self, edict_t *foot, vec3_t dest) //TODO: unused
 {
