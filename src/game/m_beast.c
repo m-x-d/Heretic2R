@@ -1186,7 +1186,7 @@ void tbeast_check_snatch(edict_t* self, float forward_offset, float right_offset
 	VectorClear(found->avelocity);
 }
 
-void tbeast_go_snatch (edict_t *self)
+void tbeast_snatch_go(edict_t* self) //mxd. Named 'tbeast_go_snatch' in original logic.
 {
 	SetAnim(self, ANIM_SNATCH);
 }

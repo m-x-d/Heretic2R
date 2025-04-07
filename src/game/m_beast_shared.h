@@ -139,7 +139,7 @@ void tbeast_check_landed(edict_t* self);
 void tbeast_inair(edict_t* self);
 void tbeast_gcheck_landed(edict_t* self);
 void tbeast_ginair(edict_t* self);
-void tbeast_go_snatch(edict_t* self);
+void tbeast_snatch_go(edict_t* self);
 void tbeast_check_impacts(edict_t* self);
 void tbeast_roar_knockdown(edict_t* self);
 void tbeast_roar_short(edict_t* self);

@@ -541,7 +541,7 @@ static const animframe_t tbeast_frames_biteup2_sfin[] =
 	{ FRAME_atkc6, tbeast_shake_toy, 160, -12, 80,  NULL, 0, NULL },
 	{ FRAME_atkc7, tbeast_shake_toy, 152, -4,  72,  NULL, 0, NULL },
 };
-const animmove_t tbeast_move_biteup2_sfin = { 4, tbeast_frames_biteup2_sfin, tbeast_go_snatch };
+const animmove_t tbeast_move_biteup2_sfin = { 4, tbeast_frames_biteup2_sfin, tbeast_snatch_go };
 
 // TB bite up success finish.
 static const animframe_t tbeast_frames_biteup_sfin[] =
@@ -551,7 +551,7 @@ static const animframe_t tbeast_frames_biteup_sfin[] =
 	{ FRAME_atka6, tbeast_shake_toy, 160, -12, 80,  NULL, 0, NULL },
 	{ FRAME_atka7, tbeast_shake_toy, 152, -4,  72,  NULL, 0, NULL },
 };
-const animmove_t tbeast_move_biteup_sfin = { 4, tbeast_frames_biteup_sfin, tbeast_go_snatch };
+const animmove_t tbeast_move_biteup_sfin = { 4, tbeast_frames_biteup_sfin, tbeast_snatch_go };
 
 // TB bite low success finish.
 static const animframe_t tbeast_frames_bitelow_sfin[] =
@@ -563,7 +563,7 @@ static const animframe_t tbeast_frames_bitelow_sfin[] =
 	{ FRAME_atkb9,	tbeast_shake_toy, 176, 2,  60, NULL, 0, tbeast_anger_sound },
 	{ FRAME_atkb10,	tbeast_shake_toy, 178, 10, 64, NULL, 0, NULL },
 };
-const animmove_t tbeast_move_bitelow_sfin = { 6, tbeast_frames_bitelow_sfin, tbeast_go_snatch };
+const animmove_t tbeast_move_bitelow_sfin = { 6, tbeast_frames_bitelow_sfin, tbeast_snatch_go };
 
 // TB snatch throw & catch.
 static const animframe_t tbeast_frames_snatch[] =
