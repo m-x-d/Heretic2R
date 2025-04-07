@@ -243,31 +243,31 @@ static void TBeastBlocked(edict_t* self, trace_t* trace) //mxd. Named 'tbeast_bl
 	}
 }
 
-void tbeast_charge (edict_t *self, float force)
+void tbeast_charge(edict_t* self, float force)
 {
-	vec3_t	forward, enemy_dir;
-	float	save_v2;
-
-	if(!M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 	{
 		SetAnim(self, ANIM_WALK);
 		return;
 	}
 
+	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
+
+	vec3_t enemy_dir;
 	VectorSubtract(self->enemy->s.origin, self->s.origin, enemy_dir);
 	VectorNormalize(enemy_dir);
-	
-	if(DotProduct(forward, enemy_dir) < 0.75)//enemy not generally ahead
+
+	if (DotProduct(forward, enemy_dir) < 0.75f) // Enemy not generally ahead.
 		ai_charge(self, 0);
 
-	MG_WalkMove (self, self->s.angles[YAW], force);
+	MG_WalkMove(self, self->s.angles[YAW], force);
 
-	if(self->groundentity)
+	if (self->groundentity != NULL)
 	{
-		save_v2 = self->velocity[2];
-		VectorScale(forward, force * 10 * 2, self->velocity);
-		self->velocity[2] = save_v2;
+		const float vel_z = self->velocity[2];
+		VectorScale(forward, force * 20.0f, self->velocity);
+		self->velocity[2] = vel_z;
 	}
 }
 
