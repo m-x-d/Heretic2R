@@ -767,14 +767,15 @@ void tbeast_bite(edict_t* self, float forward_offset, float right_offset, float 
 	}
 }
 
-void tbeast_dead(edict_t *self)
+void tbeast_dead(edict_t* self)
 {
 	self->movetype = PHYSICSTYPE_NONE;
 	self->deadState = DEAD_DEAD;
 	self->think = NULL;
-	self->nextthink = 0;
+	self->nextthink = 0.0f;
+
 	level.fighting_beast = false;
-	gi.linkentity (self);
+	gi.linkentity(self);
 }
 
 void tbeast_land(edict_t *self)
