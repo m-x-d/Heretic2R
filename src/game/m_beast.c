@@ -1447,167 +1447,129 @@ static int TBeastGetWalkFrame(const edict_t* self) //mxd. Named 'tbeast_inwalkfr
 	return -1;
 }
 
-/*
-
-  LevelToGround
-
-  I'm a big guy, level me out
-	What slope am I on
-	?
-*/
-void LevelToGround (edict_t *self, float fscale, float rscale, qboolean z_adjust)
+// I'm a big guy, level me out. What slope am I on?
+static void LevelToGround(edict_t* self) //mxd. Removed unused args.
 {
-	vec3_t		forward, right, backpos, frontpos, leftpos, rightpos, dir, angles, bottom1, bottom2;
-	vec3_t		lfootoffset, rfootoffset, up;
-	trace_t		trace;
-	qboolean	right_front;
-	int			leg_check_index;
-	int			count = 0;
+	const int leg_check_index = TBeastGetWalkFrame(self);
 
+	if (leg_check_index == -1)
+		return;
+
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
 	AngleVectors(self->s.angles, forward, right, up);
-	
-	leg_check_index = TBeastGetWalkFrame(self);
 
-	if(leg_check_index > -1)
-	{//set up leg checks - only if in these frames
-		if(leg_check_index > 5 && leg_check_index < 15)
-			right_front = true;
-		else
-			right_front = false;
+	// Setup leg checks - only if in these frames.
+	const qboolean right_front = (leg_check_index > 5 && leg_check_index < 15);
+	vec3_t foot_offset;
 
-	//left leg
-		VectorCopy(left_foot_offset_for_frame_index[leg_check_index], lfootoffset);
-		VectorMA(self->s.origin, lfootoffset[0] + TB_FWD_OFFSET, forward, leftpos);
-		VectorMA(leftpos, lfootoffset[1] + TB_RT_OFFSET, right, leftpos);
-		VectorMA(leftpos, lfootoffset[2] + TB_UP_OFFSET, up, leftpos);
-		
-	//right leg
-		VectorCopy(right_foot_offset_for_frame_index[leg_check_index], rfootoffset);
-		VectorMA(self->s.origin, rfootoffset[0] + TB_FWD_OFFSET, forward, rightpos);
-		VectorMA(rightpos, rfootoffset[1] + TB_RT_OFFSET, right, rightpos);
-		VectorMA(rightpos, rfootoffset[2] + TB_UP_OFFSET, up, rightpos);
+	// Left leg.
+	vec3_t left_pos;
+	VectorCopy(left_foot_offset_for_frame_index[leg_check_index], foot_offset);
+	VectorMA(self->s.origin, foot_offset[0] + TB_FWD_OFFSET, forward, left_pos);
+	VectorMA(left_pos, foot_offset[1] + TB_RT_OFFSET, right, left_pos);
+	VectorMA(left_pos, foot_offset[2] + TB_UP_OFFSET, up, left_pos);
 
-		if(right_front)
-		{//this is also the front check
-			VectorCopy(rightpos, frontpos);	
-			VectorCopy(leftpos, backpos);	
-		}
-		else
-		{
-			VectorCopy(leftpos, frontpos);	
-			VectorCopy(rightpos, backpos);	
-		}
-	}
-	else return;
-	/*{
-		VectorCopy(self->s.origin, backpos);
-		backpos[2] += self->mins[2] + 10;
-	
-		VectorMA(backpos, self->maxs[0] * fscale, forward, frontpos);
-		VectorMA(backpos, self->mins[0] * fscale, forward, backpos);
+	// Right leg.
+	vec3_t right_pos;
+	VectorCopy(right_foot_offset_for_frame_index[leg_check_index], foot_offset);
+	VectorMA(self->s.origin, foot_offset[0] + TB_FWD_OFFSET, forward, right_pos);
+	VectorMA(right_pos, foot_offset[1] + TB_RT_OFFSET, right, right_pos);
+	VectorMA(right_pos, foot_offset[2] + TB_UP_OFFSET, up, right_pos);
 
-		VectorCopy(self->s.origin, leftpos);
-		leftpos[2] += self->mins[2] + 10;
-		
-		VectorMA(leftpos, self->maxs[0] * rscale, right, rightpos);
-		VectorMA(leftpos, self->mins[0] * rscale, right, leftpos);
-	}*/
-	
-	VectorCopy(frontpos, bottom1);
-	bottom1[2] -= self->size[2] * 2;
-	gi.trace(frontpos, vec3_origin, vec3_origin, bottom1, self, MASK_SOLID,&trace);
-	if(trace.fraction == 1.0)
+	vec3_t front_pos;
+	vec3_t back_pos;
+
+	if (right_front)
 	{
-		self->s.angles[PITCH] = LerpAngleChange (self->s.angles[PITCH], 0, 8);
+		// This is also the front check.
+		VectorCopy(right_pos, front_pos);
+		VectorCopy(left_pos, back_pos);
+	}
+	else
+	{
+		VectorCopy(left_pos, front_pos);
+		VectorCopy(right_pos, back_pos);
+	}
+
+	// Set pitch.
+	vec3_t bottom1;
+	VectorCopy(front_pos, bottom1);
+	bottom1[2] -= self->size[2] * 2.0f;
+
+	trace_t trace;
+	gi.trace(front_pos, vec3_origin, vec3_origin, bottom1, self, MASK_SOLID, &trace);
+
+	if (trace.fraction == 1.0f)
+	{
+		self->s.angles[PITCH] = LerpAngleChange(self->s.angles[PITCH], 0.0f, 8.0f);
 	}
 	else
 	{
 		VectorCopy(trace.endpos, bottom1);
 
-		VectorCopy(backpos, bottom2);
-		bottom2[2] -= self->size[2] * 2;
-		gi.trace(backpos, vec3_origin, vec3_origin, bottom2, self, MASK_SOLID,&trace);
-		if(trace.fraction == 1.0)
+		vec3_t bottom2;
+		VectorCopy(back_pos, bottom2);
+		bottom2[2] -= self->size[2] * 2.0f;
+
+		gi.trace(back_pos, vec3_origin, vec3_origin, bottom2, self, MASK_SOLID, &trace);
+
+		if (trace.fraction == 1.0f)
 		{
-			self->s.angles[PITCH] = LerpAngleChange (self->s.angles[PITCH], 0, 8);
+			self->s.angles[PITCH] = LerpAngleChange(self->s.angles[PITCH], 0.0f, 8.0f);
 		}
 		else
 		{
 			VectorCopy(trace.endpos, bottom2);
 
+			vec3_t dir;
 			VectorSubtract(bottom1, bottom2, dir);
+
+			vec3_t angles;
 			vectoangles(dir, angles);
 
-			self->s.angles[PITCH] = LerpAngleChange (self->s.angles[PITCH], angles[PITCH], 8);
+			self->s.angles[PITCH] = LerpAngleChange(self->s.angles[PITCH], angles[PITCH], 8.0f);
 		}
 	}
 
-	VectorCopy(rightpos, bottom1);
-	bottom1[2] -= self->size[2] * 2;
-	gi.trace(rightpos, vec3_origin, vec3_origin, bottom1, self, MASK_SOLID,&trace);
-	if(trace.fraction == 1.0)
+	// Set roll.
+	VectorCopy(right_pos, bottom1);
+	bottom1[2] -= self->size[2] * 2.0f;
+
+	gi.trace(right_pos, vec3_origin, vec3_origin, bottom1, self, MASK_SOLID, &trace);
+
+	if (trace.fraction == 1.0f)
 	{
-		self->s.angles[ROLL] = LerpAngleChange (self->s.angles[ROLL], 0, 8);
+		self->s.angles[ROLL] = LerpAngleChange(self->s.angles[ROLL], 0.0f, 8.0f);
 	}
 	else
 	{
 		VectorCopy(trace.endpos, bottom1);
 
-		VectorCopy(leftpos, bottom2);
-		bottom2[2] -= self->size[2] * 2;
-		gi.trace(leftpos, vec3_origin, vec3_origin, bottom2, self, MASK_SOLID,&trace);
-		if(trace.fraction == 1.0)
+		vec3_t bottom2;
+		VectorCopy(left_pos, bottom2);
+		bottom2[2] -= self->size[2] * 2.0f;
+
+		gi.trace(left_pos, vec3_origin, vec3_origin, bottom2, self, MASK_SOLID, &trace);
+
+		if (trace.fraction == 1.0f)
 		{
-			self->s.angles[ROLL] = LerpAngleChange (self->s.angles[ROLL], 0, 8);
+			self->s.angles[ROLL] = LerpAngleChange(self->s.angles[ROLL], 0.0f, 8.0f);
 		}
 		else
 		{
 			VectorCopy(trace.endpos, bottom2);
 
+			vec3_t dir;
 			VectorSubtract(bottom1, bottom2, dir);
+
+			vec3_t angles;
 			vectoangles(dir, angles);
 
-			self->s.angles[ROLL] = LerpAngleChange (self->s.angles[ROLL], angles[PITCH], 8);
+			self->s.angles[ROLL] = LerpAngleChange(self->s.angles[ROLL], angles[PITCH], 8.0f);
 		}
 	}
-
-	/*
-	if(z_adjust)
-	{
-		if((gi.pointcontents(rightpos) & MASK_SOLID) ||	(gi.pointcontents(leftpos) & MASK_SOLID))
-		{
-			gi.dprintf("Beast feet in ground, raising up\n");
-			while(((gi.pointcontents(rightpos) & MASK_SOLID) ||
-				(gi.pointcontents(leftpos) & MASK_SOLID)) && count < 10)
-			{
-				self->mins[2]++;
-				self->s.origin[2]++;
-				rightpos[2]++;
-				leftpos[2]++;
-				count++;
-			}
-			gi.linkentity(self);
-		}
-		else
-		{
-			leftpos[2] -= 4;
-			rightpos[2] -= 4;
-			if(!(gi.pointcontents(rightpos) & MASK_SOLID) && !(gi.pointcontents(leftpos) & MASK_SOLID))
-			{
-				gi.dprintf("Beast feet not on ground, lowering\n");
-				while(!(gi.pointcontents(rightpos) & MASK_SOLID) &&
-					!(gi.pointcontents(leftpos) & MASK_SOLID) && count < 10)
-				{
-					self->mins[2]--;
-					self->s.origin[2]--;
-					rightpos[2]--;
-					leftpos[2]--;
-					count++;
-				}
-				gi.linkentity(self);
-			}
-		}
-	}*/
 }
 
 void tbeast_fake_impact(edict_t *self, trace_t *trace, qboolean crush)
@@ -2109,7 +2071,7 @@ void tbeast_post_think (edict_t *self)
 	}
 
 	if(self->s.origin[0] != self->s.old_origin[0] || self->s.origin[1] != self->s.old_origin[1])
-		LevelToGround(self, 0.5, 0.25, true);
+		LevelToGround(self);
 
 	if(Q_fabs(self->s.angles[PITCH])>45 || Q_fabs(self->s.angles[ROLL])>45)
 		go_jump = true;
