@@ -368,15 +368,3 @@ void SP_monster_chicken(edict_t* self)
 
 	gi.linkentity(self);
 }
-
-void chickensqueal (edict_t *self)
-{
-	if(!irand(0, 1))
-		gi.sound (self, CHAN_WEAPON, sounds[SND_PAIN1], 1, ATTN_NORM, 0);
-	else
-		gi.sound (self, CHAN_WEAPON, sounds[SND_PAIN2], 1, ATTN_NORM, 0);
-}
-
-void ChickenGlide ( playerinfo_t *playerinfo )
-{
-}
