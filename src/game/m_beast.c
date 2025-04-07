@@ -139,28 +139,22 @@ static qboolean IsVisibleToClient(const edict_t* self) //mxd. Named 'visible_to_
 	return false;
 }
 
-qboolean shoulder_room_ahead (edict_t *self)
+static qboolean HaveShoulderRoomAhead(const edict_t* self) //mxd. Named 'shoulder_room_ahead' in original logic.
 {
-	vec3_t	mins, maxs, endpos, angles, forward;
-	trace_t	trace;
-
-	VectorSet(angles, 0, self->s.angles[YAW], 0);
+	vec3_t forward;
+	const vec3_t angles = { 0.0f, self->s.angles[YAW], 0.0f };
 	AngleVectors(angles, forward, NULL, NULL);
-	VectorMA(self->s.origin, 128, forward, endpos);
-	VectorCopy(self->mins, mins);
-	VectorCopy(self->maxs, maxs);
-	mins[2] = 0;
-	maxs[2] = 1;
 
-	gi.trace(self->s.origin, mins, maxs, endpos, self, MASK_SOLID, &trace);
+	vec3_t end_pos;
+	VectorMA(self->s.origin, 128.0f, forward, end_pos);
 
-	if(trace.allsolid || trace.startsolid || trace.fraction < 1.0)
-	{
-//		gi.dprintf("No shoulder room ahead for beast to charge!\n");
-		return (false);
-	}
+	const vec3_t mins = { self->mins[0], self->mins[1], 0.0f };
+	const vec3_t maxs = { self->maxs[0], self->maxs[1], 1.0f };
 
-	return (true);
+	trace_t trace;
+	gi.trace(self->s.origin, mins, maxs, end_pos, self, MASK_SOLID, &trace);
+
+	return (!trace.allsolid && !trace.startsolid && trace.fraction == 1.0f);
 }
 
 void tbeast_blocked (edict_t *self, trace_t *trace)
@@ -492,7 +486,7 @@ void tbeast_melee(edict_t *self, G_Message_t *msg)
 		SetAnim(self,ANIM_WALKATK);
 	}
 
-	if (self->enemy->classID != CID_TCHECKRIK && ((irand(0, 1) && AI_IsInfrontOf(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && shoulder_room_ahead(self))
+	if (self->enemy->classID != CID_TCHECKRIK && ((irand(0, 1) && AI_IsInfrontOf(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && HaveShoulderRoomAhead(self))
 	{
 		tbeast_init_charge(self);
 	}
@@ -503,7 +497,7 @@ void tbeast_melee(edict_t *self, G_Message_t *msg)
 void tbeast_start_charge(edict_t *self, G_Message_t *msg)
 {
 	MG_ChangeYaw(self);
-	if(self->enemy->classID != CID_TCHECKRIK && ((irand(0, 1) && AI_IsInfrontOf(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && shoulder_room_ahead(self))
+	if(self->enemy->classID != CID_TCHECKRIK && ((irand(0, 1) && AI_IsInfrontOf(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && HaveShoulderRoomAhead(self))
 	{
 		tbeast_init_charge(self);
 	}
@@ -559,7 +553,7 @@ void tbeast_run(edict_t *self, G_Message_t *msg)
 		}
 	}*/
 
-	if (self->enemy->classID != CID_TCHECKRIK && enemy_vis && ((irand(0, 1) && AI_IsInfrontOf(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && shoulder_room_ahead(self))
+	if (self->enemy->classID != CID_TCHECKRIK && enemy_vis && ((irand(0, 1) && AI_IsInfrontOf(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && HaveShoulderRoomAhead(self))
 	{
 		tbeast_init_charge(self);
 	}
