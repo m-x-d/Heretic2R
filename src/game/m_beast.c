@@ -606,43 +606,46 @@ void tbeast_growl(edict_t* self)
 		gi.sound(self, CHAN_VOICE, sounds[SND_GROWL3], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void tbeast_snort (edict_t *self)
+void tbeast_snort(edict_t* self)
 {
-	int chance;
-	vec3_t	forward, right, spot, spot2, vec;
+	const int chance = irand(0, 20);
 
-	chance = irand(0, 20);
-	if (chance < 2)
-	{
-		if(!irand(0,1))
-			gi.sound(self, CHAN_WEAPON, sounds[SND_SNORT1], 1, ATTN_NORM, 0);
-		else
-			gi.sound(self, CHAN_WEAPON, sounds[SND_SNORT2], 1, ATTN_NORM, 0);
-		//make snort effect from nose
-		AngleVectors(self->s.angles, forward, right, NULL);
+	if (chance > 1)
+		return;
 
-		VectorCopy(self->s.origin, spot);
-		spot[2] += 36;
+	gi.sound(self, CHAN_WEAPON, sounds[irand(SND_SNORT1, SND_SNORT2)], 1.0f, ATTN_NORM, 0.0f);
 
-		VectorMA(spot, 100, forward, spot2);
+	// Make snort effect from nose.
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
 
-		VectorMA(spot2, 64, right, spot2);//more than we want to get a nice vec
-		VectorSubtract(spot2, spot, vec);
-		VectorNormalize(vec);
-		VectorMA(spot2, -56, right, spot2);//back to + 8
+	vec3_t spot;
+	VectorCopy(self->s.origin, spot);
+	spot[2] += 36.0f;
 
-		gi.CreateEffect(NULL, FX_FLAMETHROWER, CEF_FLAG6|CEF_FLAG7, spot2, "df", vec, 100.0f);
+	vec3_t spot2;
+	VectorMA(spot, 100.0f, forward, spot2);
 
+	VectorMA(spot2, 64.0f, right, spot2); // More than we want to get a nice vec.
 
-		Vec3ScaleAssign(-1, right);
-		
-		VectorMA(spot2, 72, right, spot2);//more than we want to get a nice vec
-		VectorSubtract(spot2, spot, vec);
-		VectorNormalize(vec);
-		VectorMA(spot2, -56, right, spot2);//back to +16
+	vec3_t fx_dir;
+	VectorSubtract(spot2, spot, fx_dir);
+	VectorNormalize(fx_dir);
 
-		gi.CreateEffect(NULL, FX_FLAMETHROWER, CEF_FLAG6|CEF_FLAG7, spot2, "df", vec, 100.0f);
-	}
+	VectorMA(spot2, -56.0f, right, spot2); // Back to +8.
+
+	gi.CreateEffect(NULL, FX_FLAMETHROWER, CEF_FLAG6 | CEF_FLAG7, spot2, "df", fx_dir, 100.0f);
+
+	Vec3ScaleAssign(-1.0f, right);
+
+	VectorMA(spot2, 72.0f, right, spot2); // More than we want to get a nice vec.
+	VectorSubtract(spot2, spot, fx_dir);
+	VectorNormalize(fx_dir);
+
+	VectorMA(spot2, -56.0f, right, spot2); // Back to +16.
+
+	gi.CreateEffect(NULL, FX_FLAMETHROWER, CEF_FLAG6 | CEF_FLAG7, spot2, "df", fx_dir, 100.0f);
 }
 
 qboolean tbeastCheckMood(edict_t *self)
