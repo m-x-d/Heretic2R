@@ -463,36 +463,25 @@ static void TBeastRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 't
 		SetAnim(self, ANIM_WALK); // Run on.
 }
 
-void tbeast_pain(edict_t *self, G_Message_t *msg)
+static void TBeastPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'tbeast_pain' in original logic.
 {
-	edict_t		*tempent;
-	int			temp, damage;
-	qboolean	force_pain;
-	
-	if(self->health < 1000)
+	if (self->health < 1000 || self->groundentity == NULL || self->pain_debounce_time > level.time)
 		return;
 
-	if(!self->groundentity)
-		return;
+	edict_t* temp_ent;
+	qboolean force_pain;
+	int damage;
+	int	temp;
+	ParseMsgParms(msg, "eeiii", &temp_ent, &temp_ent, &force_pain, &damage, &temp);
 
-	if(self->pain_debounce_time > level.time)
-		return;
+	if (damage >= irand(100, 200))
+	{
+		self->pain_debounce_time = level.time + 10.0f;
+		gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
 
-	ParseMsgParms(msg, "eeiii", &tempent, &tempent, &force_pain, &damage, &temp);
-
-	if(damage < irand(100, 200))
-		return;
-
-	self->pain_debounce_time = level.time + 10;
-
-	if (!irand(0,1))
-		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN1], 1, ATTN_NORM, 0);
-	else
-		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN2], 1, ATTN_NORM, 0);
-
-	SetAnim(self, ANIM_STUN);
+		SetAnim(self, ANIM_STUN);
+	}
 }
-
 
 /*----------------------------------------------------------------------
   TBeast Die - choose death 
@@ -2489,7 +2478,7 @@ void TBeastStaticsInit(void)
 	classStatics[CID_TBEAST].msgReceivers[MSG_MELEE] = TBeastMeleeMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_MISSILE] = TBeastMissileMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_WATCH] = TBeastWalkMsgHandler;
-	classStatics[CID_TBEAST].msgReceivers[MSG_PAIN] = tbeast_pain;
+	classStatics[CID_TBEAST].msgReceivers[MSG_PAIN] = TBeastPainMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_DEATH] = tbeast_death;
 
 	res_info.numAnims = NUM_ANIMS;
