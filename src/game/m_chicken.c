@@ -281,6 +281,11 @@ void chicken_eat_again(edict_t* self)
 		chicken_pause(self);
 }
 
+void chickenSound(edict_t* self, float channel, float sound_index, float attenuation) //TODO: rename to chicken_sound.
+{
+	gi.sound(self, (int)channel, sounds[(int)sound_index], 1.0f, attenuation, 0.0f);
+}
+
 #pragma endregion
 
 void ChickenStaticsInit(void)
@@ -386,9 +391,4 @@ void chickensqueal (edict_t *self)
 
 void ChickenGlide ( playerinfo_t *playerinfo )
 {
-}
-
-void chickenSound (edict_t *self, float channel, float sndindex, float atten)
-{
-	gi.sound(self, channel, sounds[(int)(sndindex)], 1, atten, 0);
 }

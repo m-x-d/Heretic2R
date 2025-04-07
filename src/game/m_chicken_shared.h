@@ -87,4 +87,4 @@ void chicken_check(edict_t* self);
 void chicken_eat_again(edict_t* self);
 void chicken_bite(edict_t* self);
 
-void chickenSound(edict_t* self, float channel, float sndindex, float atten);
+void chickenSound(edict_t* self, float channel, float sound_index, float attenuation);
