@@ -333,19 +333,14 @@ void ChickenStaticsInit(void)
 	classStatics[CID_CHICKEN].resInfo = &res_info;
 }
 
-/*QUAKED monster_chicken (1 .5 0) (-16 -16 -0) (16 16 32) AMBUSH ASLEEP EATING
-
-The chicken 
-
-"wakeup_target" - monsters will fire this target the first time it wakes up (only once)
-
-"pain_target" - monsters will fire this target the first time it gets hurt (only once)
-
-*/
-void SP_monster_chicken (edict_t *self)
+// QUAKED monster_chicken (1 .5 0) (-16 -16 -0) (16 16 32) AMBUSH ASLEEP EATING
+// The chicken.
+// wakeup_target	- Monsters will fire this target the first time it wakes up (only once).
+// pain_target		- Monsters will fire this target the first time it gets hurt (only once).
+void SP_monster_chicken(edict_t* self)
 {
-	// Generic Monster Initialization
-	if (!M_Start(self))		// Failed initialization
+	// Generic monster initialization.
+	if (!M_Start(self)) // Failed initialization.
 		return;
 
 	self->msgHandler = DefaultMsgHandler;
@@ -354,31 +349,24 @@ void SP_monster_chicken (edict_t *self)
 
 	self->health = CHICKEN_HEALTH;
 	self->mass = CHICKEN_MASS;
-	self->yaw_speed = 20;
+	self->yaw_speed = 20.0f;
 
 	self->movetype = PHYSICSTYPE_STEP;
+	self->solid = SOLID_BBOX;
 	VectorClear(self->knockbackvel);
 
-	self->solid=SOLID_BBOX;
+	VectorSet(self->mins, -12.0f, -12.0f, -16.0f);
+	VectorSet(self->maxs,  12.0f,  12.0f,  16.0f);
 
-	VectorSet(self->mins,-12,-12,-16);
-	VectorSet(self->maxs,12,12,16);
-
-	self->s.modelindex = classStatics[CID_CHICKEN].resInfo->modelIndex;
-
+	self->s.modelindex = (byte)classStatics[CID_CHICKEN].resInfo->modelIndex;
 	self->s.skinnum = 0;
 	self->monsterinfo.scale = MODEL_SCALE;
+	self->monsterinfo.otherenemyname = "obj_barrel"; //TODO: why?
 
-	self->monsterinfo.otherenemyname = "obj_barrel";
-
-	//Spawn off the guide
-//	self->guide = AI_SpawnGuide(self);
 	MG_InitMoods(self);
+	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 
- 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-
-	gi.linkentity(self); 
-
+	gi.linkentity(self);
 }
 
 void chickensqueal (edict_t *self)
