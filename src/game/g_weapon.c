@@ -208,7 +208,7 @@ void WeaponThink_SwordStaff(edict_t* caster, char* format, ...)
 
 	if (level.fighting_beast)
 	{
-		edict_t* ent = TB_CheckHit(start_pos, trace.endpos);
+		edict_t* ent = TBeastCheckHit(start_pos, trace.endpos);
 
 		if (ent != NULL)
 			trace.ent = ent;

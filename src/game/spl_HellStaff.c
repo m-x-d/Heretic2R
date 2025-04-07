@@ -192,7 +192,7 @@ void SpellCastHellstaff(edict_t* caster, const vec3_t loc, vec3_t aim_angles)
 
 		if (level.fighting_beast)
 		{
-			edict_t* ent = TB_CheckHit(caster->s.origin, trace.endpos);
+			edict_t* ent = TBeastCheckHit(caster->s.origin, trace.endpos);
 
 			if (ent != NULL)
 				trace.ent = ent;
@@ -228,7 +228,7 @@ void SpellCastHellstaff(edict_t* caster, const vec3_t loc, vec3_t aim_angles)
 
 				if (level.fighting_beast)
 				{
-					edict_t* ent = TB_CheckHit(caster->s.origin, trace.endpos);
+					edict_t* ent = TBeastCheckHit(caster->s.origin, trace.endpos);
 
 					if (ent != NULL)
 						trace.ent = ent;

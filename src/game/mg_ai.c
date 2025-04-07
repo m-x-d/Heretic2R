@@ -67,7 +67,7 @@ static qboolean MG_CheckBottom(edict_t* ent)
 {
 	// Normal corner checking.
 	if (ent->classID == CID_TBEAST)
-		return TB_CheckBottom(ent);
+		return TBeastCheckBottom(ent);
 
 	// Lenient, max 16 corner checking.
 	vec3_t mins;
@@ -880,7 +880,7 @@ static qboolean MG_CheckJump(edict_t* self)
 		return false;
 
 	if (self->classID == CID_TBEAST)
-		return TB_CheckJump(self);
+		return TBeastCheckJump(self);
 
 	//FIXME: Allow jump in/out of water if not too deep (also check for '!(self->flags & FL_AMPHIBIAN)')?
 	if (self->flags & FL_INWATER)

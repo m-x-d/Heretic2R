@@ -109,7 +109,7 @@ static ClassResourceInfo_t res_info; //mxd. Named 'resInfo' in original logic.
 
 #pragma region ========================== Public utility functions ==========================
 
-qboolean TB_CheckBottom(edict_t* self) //TODO: rename to TBeastCheckBottom.
+qboolean TBeastCheckBottom(edict_t* self)
 {
 	vec3_t end;
 	VectorCopy(self->s.origin, end);
@@ -129,7 +129,7 @@ qboolean TB_CheckBottom(edict_t* self) //TODO: rename to TBeastCheckBottom.
 	return false;
 }
 
-qboolean TB_CheckJump(edict_t* self) //TODO: rename to TBeastCheckJump. 
+qboolean TBeastCheckJump(edict_t* self)
 {
 	qboolean skip_low = false;
 
@@ -244,7 +244,7 @@ qboolean TB_CheckJump(edict_t* self) //TODO: rename to TBeastCheckJump.
 	return false;
 }
 
-edict_t* TB_CheckHit(const vec3_t start, vec3_t end) //mxd. Named 'check_hit_beast' in original logic. //TODO: rename to TBeastCheckHit. 
+edict_t* TBeastCheckHit(const vec3_t start, vec3_t end) //mxd. Named 'check_hit_beast' in original logic.
 {
 	vec3_t shot_dir;
 	VectorSubtract(end, start, shot_dir);
@@ -1237,7 +1237,7 @@ static void TBeastPostThink(edict_t* self) //mxd. Named 'tbeast_post_think' in o
 	}
 
 	if (go_jump)
-		TB_CheckJump(self);
+		TBeastCheckJump(self);
 
 	TBeastFakeTouch(self);
 	self->next_post_think = level.time + 0.1f;
@@ -1783,7 +1783,7 @@ void tbeast_run(edict_t* self, float dist) //mxd. Named 'tbeast_run_think' in or
 	}
 
 	// See if I'm on ground.
-	TB_CheckBottom(self);
+	TBeastCheckBottom(self);
 
 	if (self->monsterinfo.aiflags & AI_USING_BUOYS)
 		MG_Pathfind(self, false);
@@ -1809,7 +1809,7 @@ void tbeast_run(edict_t* self, float dist) //mxd. Named 'tbeast_run_think' in or
 		return;
 
 	if (trace.fraction == 1.0f || (!Vec3IsZero(trace.plane.normal) && trace.plane.normal[2] < GROUND_NORMAL)) // Nothing there || Not a slope can go up.
-		TB_CheckJump(self); // Enemy was ahead!
+		TBeastCheckJump(self); // Enemy was ahead!
 }
 
 void tbeast_ready_catch(edict_t* self)
@@ -2113,7 +2113,7 @@ void tbeast_inair(edict_t* self)
 
 void tbeast_check_landed(edict_t* self)
 {
-	if (TB_CheckBottom(self))
+	if (TBeastCheckBottom(self))
 		SetAnim(self, ANIM_LAND);
 }
 
@@ -2124,13 +2124,13 @@ void tbeast_ginair(edict_t* self)
 
 void tbeast_gcheck_landed(edict_t* self)
 {
-	if (TB_CheckBottom(self))
+	if (TBeastCheckBottom(self))
 		SetAnim(self, ANIM_GLAND);
 }
 
 void tbeast_leap(edict_t* self, float forward_offset, float right_offset, float up_offset)
 {
-	if (self->groundentity == NULL && !TB_CheckBottom(self))
+	if (self->groundentity == NULL && !TBeastCheckBottom(self))
 		return;
 
 	if (self->s.frame == FRAME_jumpb7)

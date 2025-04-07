@@ -40,7 +40,7 @@ void SpellCastBlast(edict_t* caster, const vec3_t start_pos, const vec3_t aim_an
 
 		if (level.fighting_beast)
 		{
-			edict_t* ent = TB_CheckHit(start_pos, trace.endpos);
+			edict_t* ent = TBeastCheckHit(start_pos, trace.endpos);
 
 			if (ent != NULL)
 				trace.ent = ent;

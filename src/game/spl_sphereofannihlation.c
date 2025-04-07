@@ -228,7 +228,7 @@ static void SpherePowerLaserThink(edict_t* self)
 
 		if (level.fighting_beast)
 		{
-			edict_t* ent = TB_CheckHit(start_pos, tr.endpos);
+			edict_t* ent = TBeastCheckHit(start_pos, tr.endpos);
 
 			if (ent != NULL)
 				tr.ent = ent;
