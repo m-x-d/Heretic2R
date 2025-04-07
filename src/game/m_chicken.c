@@ -172,6 +172,28 @@ void chicken_check(edict_t* self) //TODO: rename to chicken_check_unmorph.
 	VectorClear(self->velocity);
 }
 
+// In Soviet Russia, chicken bites YOU!
+void chicken_bite(edict_t* self)
+{
+	// In case we try pecking at someone that's not there.
+	if (self->enemy == NULL)
+		return;
+
+	vec3_t diff;
+	VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
+
+	// Determine if we've actually bitten the player, or just missed.
+	if (VectorLength(diff) <= self->maxs[0] + self->enemy->maxs[0] + 24.0f)	// A hit.
+	{
+		vec3_t point;
+		const vec3_t offset = { 20.0f, 0.0f, 5.0f };
+		VectorGetOffsetOrigin(offset, self->s.origin, self->s.angles[YAW], point);
+
+		T_Damage(self->enemy, self, self, NULL, point, vec3_origin, 1, 0, 0, MOD_DIED);
+		gi.sound(self, CHAN_VOICE, sounds[irand(SND_BITE1, SND_BITE2)], 1.0f, ATTN_NORM, 0.0f);
+	}
+}
+
 #pragma endregion
 
 void ChickenStaticsInit(void)
@@ -265,38 +287,6 @@ void SP_monster_chicken (edict_t *self)
 
 	gi.linkentity(self); 
 
-}
-
-/*-------------------------------------------------------------------------
-	chicken_bites you
--------------------------------------------------------------------------*/
-void chicken_bite (edict_t *self)
-{
-	vec3_t	v, off, dir, org;
-	float	len;
-
-	// incase we try pecking at someone thats not there.
-	if (!self->enemy)
-		return;
-
-	VectorSubtract (self->s.origin, self->enemy->s.origin, v);
-	len = VectorLength (v);
-
-	// determine if we've actually bitten the player, or just missed
-	if (len <= (self->maxs[0] + self->enemy->maxs[0] + 24)  )	// A hit
-	{	
-		VectorSet(off, 20.0, 0.0, 5.0);
-		VectorGetOffsetOrigin(off, self->s.origin, self->s.angles[YAW], org);
-		// this is not apparently used for anything ?
-		VectorClear(dir);
-		// cause us some damage.
-	 	T_Damage (self->enemy, self, self, dir, org, vec3_origin, 1, 0, 0,MOD_DIED);
-		
-		if(!irand(0,1))
-			gi.sound(self, CHAN_VOICE, sounds[SND_BITE1], 1, ATTN_NORM, 0);
-		else
-			gi.sound(self, CHAN_VOICE, sounds[SND_BITE2], 1, ATTN_NORM, 0);
-	}
 }
 
 /*-------------------------------------------------------------------------
