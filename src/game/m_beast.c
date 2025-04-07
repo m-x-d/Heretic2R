@@ -846,44 +846,23 @@ void tbeast_apply_jump(edict_t* self)
 	VectorNormalize(self->movedir);
 }
 
-qboolean TB_CheckBottom (edict_t *self)
+qboolean TB_CheckBottom(edict_t* self) //TODO: rename to TBeastCheckBottom.
 {
-	vec3_t	end;
-	trace_t	trace;
-	vec3_t other_top, down, up;
-
+	vec3_t end;
 	VectorCopy(self->s.origin, end);
-	end[2] -= 1;
-	gi.trace(self->s.origin, self->mins, self->maxs, end, self, MASK_ALL,&trace);
+	end[2] -= 1.0f;
 
-	if(trace.ent && stricmp(trace.ent->classname, "worldspawn"))
-	{
-		if(trace.ent->takedamage)
-		{
-			VectorCopy(trace.ent->s.origin, other_top);
-			other_top[2] += trace.ent->maxs[2];
-			VectorSubtract(trace.ent->s.origin, self->s.origin, down);
-			VectorScale(down, -1, up);
-//			gi.dprintf("CheckBottom damaging %s\n", trace.ent->classname);
-//			T_Damage(trace.ent, self, self, down, other_top, up, 1000, 0, DAMAGE_DISMEMBER);
-		}
-	}
+	trace_t trace;
+	gi.trace(self->s.origin, self->mins, self->maxs, end, self, MASK_ALL, &trace);
 
-	if(trace.fraction < 1.0 || trace.startsolid || trace.allsolid)
+	//mxd. Skip non-functional stomping damage logic.
+
+	if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
 	{
-		/*if(&trace.plane)
-		{
-			if(!Vec3IsZero(trace.plane.normal))
-			{
-				if(trace.plane.normal[2]>=0.5&&trace.plane.normal[2]<=1)//not a slope can go up
-				{//raise him up if on flat ground, lower is on slope - to keep feet on ground;
-					self->mins[2] = (1 - trace.plane.normal[2]) * 72 - 8 + TB_UP_OFFSET;
-				}
-			}
-		}*/
 		self->groundentity = trace.ent;
 		return true;
 	}
+
 	return false;
 }
 
