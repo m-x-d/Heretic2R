@@ -84,7 +84,7 @@ extern const animmove_t chickenp_move_jump_loop;
 extern const animmove_t chickenp_move_attack;
 
 void chicken_pause(edict_t* self);
-void chicken_check(edict_t* self);
+void chicken_check_unmorph(edict_t* self);
 void chicken_eat_again(edict_t* self);
 void chicken_bite(edict_t* self);
 void chicken_sound(edict_t* self, float channel, float sound_index, float attenuation);

@@ -154,7 +154,7 @@ static void ChickenJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 #pragma region ========================== Action functions ==========================
 
 // Check if its time to return to our original shape.
-void chicken_check(edict_t* self) //TODO: rename to chicken_check_unmorph.
+void chicken_check_unmorph(edict_t* self)
 {
 	// Are we done yet?
 	if (self->time > level.time)
