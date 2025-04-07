@@ -537,33 +537,29 @@ void tbeast_walk_order(edict_t* self) //mxd. Named 'tbeast_walkorder' in origina
 		QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 }
 
-void tbeast_footstep (edict_t *self)
+void tbeast_footstep(edict_t* self)
 {
-	vec3_t		forward, right, pos, up, lfootoffset, rfootoffset, bottom;
-	int			leg_check_index;
-	trace_t		trace;
-
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
 	AngleVectors(self->s.angles, forward, right, up);
-	
-	leg_check_index = tbeast_inwalkframes(self);
 
-	if(leg_check_index > -1)
-	{//set up leg checks - only if in these frames
-	//left leg
-		if(leg_check_index < 6 || leg_check_index > 14)
-		{
-			VectorCopy(left_foot_offset_for_frame_index[leg_check_index], lfootoffset);
-			VectorMA(self->s.origin, lfootoffset[0] + TB_FWD_OFFSET, forward, pos);
-			VectorMA(pos, lfootoffset[1] + TB_RT_OFFSET, right, pos);
-			VectorMA(pos, lfootoffset[2] + TB_UP_OFFSET, up, pos);
-		}
+	vec3_t pos;
+	const int leg_check_index = tbeast_inwalkframes(self);
+
+	if (leg_check_index > -1)
+	{
+		vec3_t foot_offset;
+
+		// Setup leg checks - only if in these frames.
+		if (leg_check_index < 6 || leg_check_index > 14)
+			VectorCopy(left_foot_offset_for_frame_index[leg_check_index], foot_offset); // Left leg.
 		else
-		{//right leg
-			VectorCopy(right_foot_offset_for_frame_index[leg_check_index], rfootoffset);
-			VectorMA(self->s.origin, rfootoffset[0] + TB_FWD_OFFSET, forward, pos);
-			VectorMA(pos, rfootoffset[1] + TB_RT_OFFSET, right, pos);
-			VectorMA(pos, rfootoffset[2] + TB_UP_OFFSET, up, pos);
-		}
+			VectorCopy(right_foot_offset_for_frame_index[leg_check_index], foot_offset); // Right leg.
+
+		VectorMA(self->s.origin, foot_offset[0] + TB_FWD_OFFSET, forward, pos);
+		VectorMA(pos, foot_offset[1] + TB_RT_OFFSET, right, pos);
+		VectorMA(pos, foot_offset[2] + TB_UP_OFFSET, up, pos);
 	}
 	else
 	{
@@ -571,49 +567,31 @@ void tbeast_footstep (edict_t *self)
 		VectorMA(pos, self->maxs[0], forward, pos);
 		pos[2] += self->mins[2];
 
-		if(self->monsterinfo.currframeindex  == FRAME_walk11 ||
-			self->monsterinfo.currframeindex  == FRAME_wlkrt11 ||
-			self->monsterinfo.currframeindex  == FRAME_wlklft11)
-		{
-			VectorMA(pos, -32, right, pos);
-		}
+		if (self->monsterinfo.currframeindex == FRAME_walk11 || self->monsterinfo.currframeindex == FRAME_wlkrt11 || self->monsterinfo.currframeindex == FRAME_wlklft11)
+			VectorMA(pos, -32.0f, right, pos);
 		else
-		{
-			VectorMA(pos, 32, right, pos);
-		}
+			VectorMA(pos, 32.0f, right, pos);
 	}
 
+	vec3_t bottom;
 	VectorCopy(pos, bottom);
-	bottom[2]-=128;
+	bottom[2] -= 128.0f;
+
+	trace_t trace;
 	gi.trace(pos, vec3_origin, vec3_origin, bottom, self, MASK_SOLID, &trace);
-	if(trace.fraction < 1.0)
+
+	if (trace.fraction < 1.0f)
 		VectorCopy(trace.endpos, pos);
 
-	pos[2] += 10;
-	gi.CreateEffect(NULL,
-					FX_TB_EFFECTS,
-					0,
-					pos,
-					"bv",
-					FX_TB_PUFF,
-					vec3_origin);
+	pos[2] += 10.0f;
 
-	VectorSet(up, flrand(-20, 20), flrand(-20, 20), flrand(20, 100));
-	gi.CreateEffect(NULL, FX_OGLE_HITPUFF, 0, pos, "v", up);
+	gi.CreateEffect(NULL, FX_TB_EFFECTS, 0, pos, "bv", FX_TB_PUFF, vec3_origin);
 
-	gi.CreateEffect(&self->s,
-				FX_QUAKE,
-				0,
-				vec3_origin,
-				"bbb",
-				3,
-				1,
-				2);
-	
-	if (!irand(0,1))
-		gi.sound(self, CHAN_BODY, sounds[SND_STEP1], 1, ATTN_NORM, 0);
-	else
-		gi.sound(self, CHAN_BODY, sounds[SND_STEP2], 1, ATTN_NORM, 0);
+	vec3_t fx_dir = { flrand(-20.0f, 20.0f), flrand(-20.0f, 20.0f), flrand(20.0f, 100.0f) }; //mxd
+	gi.CreateEffect(NULL, FX_OGLE_HITPUFF, 0, pos, "v", fx_dir);
+	gi.CreateEffect(&self->s, FX_QUAKE, 0, vec3_origin, "bbb", 3, 1, 2);
+
+	gi.sound(self, CHAN_BODY, sounds[irand(SND_STEP1, SND_STEP2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
 void tbeast_growl (edict_t *self)
