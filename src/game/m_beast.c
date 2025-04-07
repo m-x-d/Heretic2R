@@ -1109,67 +1109,57 @@ void tbeast_shake_toy(edict_t* self, float forward_offset, float right_offset, f
 	}
 }
 
-void tbeast_check_snatch(edict_t *self, float ofsf, float ofsr, float ofsu)
+void tbeast_check_snatch(edict_t* self, float forward_offset, float right_offset, float up_offset)
 {
-	float enemy_dist, ok_dist;
-	vec3_t forward, right, up, startpos, endpos;
-	edict_t	*found = NULL;
-//	trace_t trace;
-
-	if(!self->enemy)
+	if (self->enemy == NULL)
 		return;
 
-	ok_dist = 64;
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, right, up);
 
-	AngleVectors(self->s.angles,forward,right,up);
-	VectorMA(self->s.origin, ofsf  + TB_FWD_OFFSET, forward, startpos);
-	VectorMA(startpos, ofsr, right, startpos);
-	VectorMA(startpos, ofsu + TB_UP_OFFSET, up, startpos);
+	vec3_t start_pos;
+	VectorMA(self->s.origin, forward_offset + TB_FWD_OFFSET, forward, start_pos);
+	VectorMA(start_pos, right_offset, right, start_pos);
+	VectorMA(start_pos, up_offset + TB_UP_OFFSET, up, start_pos);
 
-	VectorSubtract(self->enemy->s.origin, startpos, endpos);
+	vec3_t end_pos;
+	VectorSubtract(self->enemy->s.origin, start_pos, end_pos);
 
-	enemy_dist = VectorLength(endpos);
-	if(enemy_dist>ok_dist || flrand(0, 50)>self->enemy->health)
-	{//if missed or health is low, just chomp it now
-		while(found = FindInRadius(found, startpos, ok_dist))
+	edict_t* found = NULL;
+	const float enemy_dist = VectorLength(end_pos);
+
+	if (enemy_dist > MAX_CHOMP_DIST || irand(0, 50) > self->enemy->health) //mxd. Original logic uses flrand() here.
+	{
+		// If missed or health is low, just chomp it now.
+		while ((found = FindInRadius(found, start_pos, MAX_CHOMP_DIST)) != NULL)
 		{
-			if(found->takedamage&&AI_IsMovable(found))
+			if (found->takedamage != DAMAGE_NO && AI_IsMovable(found))
 			{
-				if(found->health<=0)
-					T_Damage (found, self, self, endpos, found->s.origin, endpos, 2000, 300, DAMAGE_DISMEMBER,MOD_DIED);
+				if (found->health <= 0)
+					T_Damage(found, self, self, end_pos, found->s.origin, end_pos, 2000, 300, DAMAGE_DISMEMBER, MOD_DIED);
 				else
-					break;	
+					break;
 			}
 		}
 
-		if(!found)
+		if (found == NULL)
 		{
-//			gi.dprintf("Snatch missed by %4.2f!\n", enemy_dist - ok_dist);
 			self->msgHandler = DefaultMsgHandler;
-			/*
-			if(!stricmp(self->enemy->classname,"player"))
-			{
-				if(self->oldenemy)
-				{
-					if(self->oldenemy->health>0)
-					{
-						self->oldenemy = NULL;
-						self->enemy = self->oldenemy;
-					}
-				}
-			}*/
 			return;
 		}
 	}
 	else
+	{
 		found = self->enemy;
+	}
 
 	self->msgHandler = DeadMsgHandler;
-//	gi.dprintf("SNAGGED!\n");
 
-	if(ofsu == TB_HIBITE_U + 128)
+	if (up_offset == TB_HIBITE_U + 128.0f)
 		SetAnim(self, ANIM_BITEUP2_SFIN);
-	else if(ofsu == TB_HIBITE_U)
+	else if (up_offset == TB_HIBITE_U)
 		SetAnim(self, ANIM_BITEUP_SFIN);
 	else
 		SetAnim(self, ANIM_BITELOW_SFIN);
@@ -1178,21 +1168,18 @@ void tbeast_check_snatch(edict_t *self, float ofsf, float ofsr, float ofsu)
 	self->targetEnt->flags |= FL_FLY;
 	self->targetEnt->movetype = PHYSICSTYPE_FLY;
 
-	if(!found->client)
+	if (found->client != NULL)
 	{
-		found->monsterinfo.aiflags |= AI_DONT_THINK;
+		found->nextthink = level.time + 10.0f; // Stuck for 10 seconds.
+
+		if (found->health > 0 && found->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
+			P_KnockDownPlayer(&found->client->playerinfo);
+
+		gi.sound(found, CHAN_VOICE, sounds[irand(SND_CORVUS_SCREAM1, SND_CORVUS_SCREAM3)], 1.0f, ATTN_NORM, 0.0f);
 	}
 	else
 	{
-		found->nextthink = level.time + 10;//stuck for 10 seconds.
-		if(found->health > 0)
-		{
-			if(found->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
-			{
-				P_KnockDownPlayer(&found->client->playerinfo);
-			}
-		}
-		gi.sound(found, CHAN_VOICE, sounds[irand(SND_CORVUS_SCREAM1, SND_CORVUS_SCREAM3)], 1, ATTN_NORM, 0);
+		found->monsterinfo.aiflags |= AI_DONT_THINK;
 	}
 
 	VectorClear(found->velocity);
