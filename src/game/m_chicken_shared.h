@@ -17,6 +17,7 @@ typedef enum AnimID_e
 	ANIM_ATTACK,
 	ANIM_EAT,
 	ANIM_JUMP,
+
 	NUM_ANIMS
 } AnimID_t;
 
@@ -30,8 +31,8 @@ typedef enum SoundID_e
 	SND_CLAW,
 
 	// For getting hit - even though right now, it dies immediately - they want this changed.
-	SND_PAIN1,
-	SND_PAIN2,
+	SND_PAIN1, //TODO: unused.
+	SND_PAIN2, //TODO: unused.
 
 	// For dying - we only ever get gibbed, so no other sound is required.
 	SND_DIE,
@@ -39,7 +40,7 @@ typedef enum SoundID_e
 	// For biting the player.
 	SND_BITE1,
 	SND_BITE2,
-	SND_BITE3,
+	SND_BITE3, //TODO: unused, no sound file.
 
 	// For pecking the ground.
 	SND_PECK1,

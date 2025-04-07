@@ -308,8 +308,8 @@ void ChickenStaticsInit(void)
 	sounds[SND_CLUCK2] = gi.soundindex("monsters/chicken/cluck2.wav");
 
 	// For getting hit - even though right now, it dies immediately - they want this changed.
-	sounds[SND_PAIN1] = gi.soundindex("monsters/chicken/pain1.wav");
-	sounds[SND_PAIN2] = gi.soundindex("monsters/chicken/pain2.wav");
+	//sounds[SND_PAIN1] = gi.soundindex("monsters/chicken/pain1.wav"); //mxd. Unused.
+	//sounds[SND_PAIN2] = gi.soundindex("monsters/chicken/pain2.wav"); //mxd. Unused.
 
 	// For dying - we only ever get gibbed, so no other sound is required.
 	sounds[SND_DIE] = gi.soundindex("monsters/chicken/die.wav");
