@@ -1708,89 +1708,97 @@ static qboolean BBoxesOverlap(const vec3_t mins1, const vec3_t maxs1, const vec3
 	return true;
 }
 
-void tbeast_check_impacts(edict_t *self)
-{//Used by Trial Beast for Simulated Complex Bounding Box Collision
-
-	vec3_t		forward, right, up, start, end, mins, maxs, lfootoffset, rfootoffset;
-	vec3_t		lstart, lend, rstart, rend, lfootmins, lfootmaxs, rfootmins, rfootmaxs, fmins, fmaxs;
-	int			leg_check_index;
-	qboolean	hitme = true;
-	qboolean	hitother = false;
-	trace_t		trace;
-
+static void TBeastCheckImpacts(edict_t* self) //mxd. Named 'tbeast_check_impacts' in original logic.
+{
+	// Used by Trial Beast for Simulated Complex Bounding Box Collision.
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
 	AngleVectors(self->s.angles, forward, right, up);
 
-	//set up body check
+	// Setup body check.
+	vec3_t start;
 	VectorCopy(self->s.origin, start);
-	start[2] += 64 + TB_UP_OFFSET;//bottom of torso
-	start[2] += 61;//halfway up to the top of torso
-	VectorMA(start, 150 + TB_FWD_OFFSET, forward, end);
-	VectorMA(start, -120, forward, start);// + TB_FWD_OFFSET???
-	VectorSet(mins, -50, -50, -61);
-	VectorSet(maxs, 50, 50, 70);
+	start[2] += 64.0f + TB_UP_OFFSET; // Bottom of torso.
+	start[2] += 61.0f; // Halfway up to the top of torso.
 
-	leg_check_index = TBeastGetWalkFrame(self);
+	vec3_t end;
+	VectorMA(start, 150.0f + TB_FWD_OFFSET, forward, end);
 
-	if(leg_check_index > -1)
-	{//set up leg checks - FIXME: trace from last footpos to current one
-		VectorSet(fmins, -8, -8, 0);
-		VectorSet(fmaxs, 8, 8, 1);
+	VectorMA(start, -120.0f, forward, start); // + TB_FWD_OFFSET???
 
-	//left leg
-		VectorCopy(left_foot_offset_for_frame_index[leg_check_index], lfootoffset);
-		VectorMA(self->s.origin, lfootoffset[0] + TB_FWD_OFFSET, forward, lend);
-		VectorMA(lend, lfootoffset[1] + TB_RT_OFFSET, right, lend);
-		VectorMA(lend, lfootoffset[2] + TB_UP_OFFSET, up, lend);
-		VectorCopy(lend, lstart);
-		lstart[2]+=63;
-		
-		VectorAdd(lend, fmins, lfootmins);
-		VectorCopy(lfootmins, lfootmaxs);
-		lfootmaxs[2] += 64;
+	const int leg_check_index = TBeastGetWalkFrame(self);
 
-	//right leg
-		VectorCopy(right_foot_offset_for_frame_index[leg_check_index], rfootoffset);
-		VectorMA(self->s.origin, rfootoffset[0] + TB_FWD_OFFSET, forward, rend);
-		VectorMA(rend, rfootoffset[1] + TB_RT_OFFSET, right, rend);
-		VectorMA(rend, rfootoffset[2] + TB_UP_OFFSET, up, rend);
-		VectorCopy(rend, rstart);
-		rstart[2]+=63;
+	vec3_t left_start;
+	vec3_t left_end;
+	vec3_t right_start;
+	vec3_t right_end;
+	vec3_t foot_mins;
+	vec3_t foot_maxs;
 
-		VectorAdd(rend, fmins, rfootmins);
-		VectorCopy(rfootmins, rfootmaxs);
-		rfootmaxs[2] += 64;
+	if (leg_check_index > -1)
+	{
+		vec3_t foot_offset;
+
+		// Setup leg checks - FIXME: trace from last footpos to current one.
+		VectorSet(foot_mins, -8.0f, -8.0f, 0.0f);
+		VectorSet(foot_maxs,  8.0f,  8.0f, 1.0f);
+
+		// Left leg.
+		VectorCopy(left_foot_offset_for_frame_index[leg_check_index], foot_offset);
+		VectorMA(self->s.origin, foot_offset[0] + TB_FWD_OFFSET, forward, left_end);
+		VectorMA(left_end, foot_offset[1] + TB_RT_OFFSET, right, left_end);
+		VectorMA(left_end, foot_offset[2] + TB_UP_OFFSET, up, left_end);
+		VectorCopy(left_end, left_start);
+		left_start[2] += 63.0f;
+
+		// Right leg.
+		VectorCopy(right_foot_offset_for_frame_index[leg_check_index], foot_offset);
+		VectorMA(self->s.origin, foot_offset[0] + TB_FWD_OFFSET, forward, right_end);
+		VectorMA(right_end, foot_offset[1] + TB_RT_OFFSET, right, right_end);
+		VectorMA(right_end, foot_offset[2] + TB_UP_OFFSET, up, right_end);
+		VectorCopy(right_end, right_start);
+		right_start[2] += 63.0f;
 	}
 
-//BODY
-	//Fix me: continue the trace if less than 1.0 or save for next touch?
-	gi.trace(start, mins, maxs, end, self, MASK_MONSTERSOLID,&trace);
-	//Hey!  Check and see if they're close to my mouth and chomp 'em!
+	// Do body checks.
+
+	vec3_t mins = { -50.0f, -50.0f, -61.0f };
+	vec3_t maxs = {  50.0f,  50.0f,  70.0f };
+
+	trace_t trace;
+	gi.trace(start, mins, maxs, end, self, MASK_MONSTERSOLID, &trace); //FIXME: continue the trace if less than 1.0 or save for next touch?
+
+	// Check and see if they're close to my mouth and chomp 'em!
 	TBeastFakeImpact(self, &trace, false);
 
-	if(leg_check_index == -1)
+	if (leg_check_index > -1)
+	{
+		// Do leg checks.
+
+		// Left leg.
+		gi.trace(left_start, foot_mins, foot_maxs, left_end, self, MASK_MONSTERSOLID, &trace); //FIXME: continue the trace if less than 1.0 or save for next touch?
+		TBeastFakeImpact(self, &trace, true);
+
+		// Right leg.
+		//FIXME: continue the trace if less than 1.0 or save for next touch?
+		gi.trace(right_start, foot_mins, foot_maxs, right_end, self, MASK_MONSTERSOLID, &trace); //FIXME: continue the trace if less than 1.0 or save for next touch?
+		TBeastFakeImpact(self, &trace, true);
+	}
+	else
 	{
 		VectorCopy(self->s.origin, end);
 		end[2] += self->mins[2];
+
 		VectorCopy(end, start);
-		start[2] += 63;
-		VectorSet(mins, -32, -32, 0);
-		VectorSet(maxs, 32, 32, 1);
+		start[2] += 63.0f;
 
-		gi.trace(start, mins, maxs, end, self, MASK_MONSTERSOLID,&trace);
+		VectorSet(mins, -32.0f, -32.0f, 0.0f);
+		VectorSet(maxs, 32.0f, 32.0f, 1.0f);
+
+		gi.trace(start, mins, maxs, end, self, MASK_MONSTERSOLID, &trace);
 		TBeastFakeImpact(self, &trace, false);
-		return;
 	}
-
-//Do leg checks
-//left leg
-	//Fix me: continue the trace if less than 1.0 or save for next touch?
-	gi.trace(lstart, fmins, fmaxs, lend, self, MASK_MONSTERSOLID,&trace);
-	TBeastFakeImpact(self, &trace, true);
-
-//right leg
-	//Fix me: continue the trace if less than 1.0 or save for next touch?
-	gi.trace(rstart, fmins, fmaxs, rend, self, MASK_MONSTERSOLID,&trace);
-	TBeastFakeImpact(self, &trace, true);
 }
 
 void tbeast_fake_touch(edict_t *self)
@@ -1984,7 +1992,7 @@ void tbeast_fake_touch(edict_t *self)
 	}
 
 finish:
-	tbeast_check_impacts(self);
+	TBeastCheckImpacts(self);
 
 	for (i=0 ; i<num ; i++)
 	{
