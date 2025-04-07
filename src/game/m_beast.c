@@ -418,13 +418,13 @@ static void TBeastMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 		SetAnim(self, ANIM_WALK);
 }
 
-void tbeast_start_charge(edict_t *self, G_Message_t *msg)
+// Try to start charge attack.
+static void TBeastMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'tbeast_start_charge' in original logic.
 {
 	MG_ChangeYaw(self);
-	if(self->enemy->classID != CID_TCHECKRIK && ((irand(0, 1) && AI_IsInfrontOf(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && HaveShoulderRoomAhead(self))
-	{
+
+	if (TBeastCanCharge(self)) //mxd. Use function.
 		TBeastInitCharge(self);
-	}
 	else
 		SetAnim(self, ANIM_WALK);
 }
@@ -2532,7 +2532,7 @@ void TBeastStaticsInit(void)
 	classStatics[CID_TBEAST].msgReceivers[MSG_RUN] = tbeast_run;
 	classStatics[CID_TBEAST].msgReceivers[MSG_EAT] = TBeastEatMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_MELEE] = TBeastMeleeMsgHandler;
-	classStatics[CID_TBEAST].msgReceivers[MSG_MISSILE] = tbeast_start_charge;
+	classStatics[CID_TBEAST].msgReceivers[MSG_MISSILE] = TBeastMissileMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_WATCH] = TBeastWalkMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_PAIN] = tbeast_pain;
 	classStatics[CID_TBEAST].msgReceivers[MSG_DEATH] = tbeast_death;
