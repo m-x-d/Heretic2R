@@ -1253,32 +1253,30 @@ void tbeast_gore_toy(edict_t* self, float jump_height)
 	}
 }
 
-void tbeast_anger_sound (edict_t *self)
+void tbeast_anger_sound(edict_t* self)
 {
-	byte chance;
+	const byte chance = (byte)irand(0, 100);
 
-	chance = irand(0,100);
 	if (chance < 10)
-		gi.sound(self, CHAN_WEAPON, sounds[SND_SNORT1], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_WEAPON, sounds[SND_SNORT1], 1.0f, ATTN_NORM, 0.0f);
 	else if (chance < 20)
-		gi.sound(self, CHAN_WEAPON, sounds[SND_SNORT2], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_WEAPON, sounds[SND_SNORT2], 1.0f, ATTN_NORM, 0.0f);
 	else if (chance < 30)
-		gi.sound(self, CHAN_ITEM, sounds[SND_TEAR1], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_ITEM, sounds[SND_TEAR1], 1.0f, ATTN_NORM, 0.0f);
 	else if (chance < 40)
-		gi.sound(self, CHAN_ITEM, sounds[SND_TEAR2], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_ITEM, sounds[SND_TEAR2], 1.0f, ATTN_NORM, 0.0f);
 	else if (chance < 50)
-		gi.sound(self, CHAN_WEAPON, sounds[SND_CHOMP], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_WEAPON, sounds[SND_CHOMP], 1.0f, ATTN_NORM, 0.0f);
 	else if (chance < 60)
 		tbeast_growl(self);
 
-	if(self->targetEnt)
+	if (self->targetEnt != NULL)
 	{
-		chance = (byte)irand(1,3);
+		SprayDebris(self->targetEnt, self->targetEnt->s.origin, (byte)irand(1, 3), 100.0f);
 
-		SprayDebris(self->targetEnt, self->targetEnt->s.origin, chance, 100);
-		if(!self->targetEnt->client)
+		if (self->targetEnt->client == NULL)
 		{
-			QPostMessage(self->targetEnt, MSG_DISMEMBER, PRI_DIRECTIVE, "ii", self->targetEnt->health*0.5, irand(1,13));//do I need last three if not sending them?
+			QPostMessage(self->targetEnt, MSG_DISMEMBER, PRI_DIRECTIVE, "ii", self->targetEnt->health / 2, irand(1, 13)); // Do I need last three if not sending them?
 			QPostMessage(self->targetEnt, MSG_PAIN, PRI_DIRECTIVE, "eeiii", self, self, true, 200, 0);
 		}
 	}
