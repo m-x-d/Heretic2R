@@ -18,7 +18,7 @@ typedef enum AnimID_e
 	ANIM_EATDOWN,
 	ANIM_WALK,
 	ANIM_WALKLEFT,
-	ANIM_WALKRT,
+	ANIM_WALKRT, //TODO: rename to ANIM_WALKRIGHT?
 	ANIM_JUMP,
 	ANIM_FJUMP,
 	ANIM_INAIR,
@@ -59,15 +59,15 @@ typedef enum SoundID_e
 	SND_GROWL2,
 	SND_GROWL3,
 
-	SND_SWIPE,
+	SND_SWIPE, //TODO: unused, no sound file.
 	SND_SLAM,
 	SND_SNATCH,
 	SND_CHOMP,
 	SND_TEAR1,
 	SND_TEAR2,
-	SND_THROW,
+	SND_THROW, //TODO: unused.
 	SND_CATCH,
-	SND_SWALLOW,
+	SND_SWALLOW, //TODO: unused, no sound file.
 
 	SND_PAIN1,
 	SND_PAIN2,
@@ -116,17 +116,17 @@ void tbeast_snort(edict_t* self);
 void tbeast_growl(edict_t* self);
 void tbeast_check_mood(edict_t* self); //mxd
 void tbeast_pause(edict_t* self);
-void tbeast_bite(edict_t* self, float ofsf, float ofsr, float ofsu);
+void tbeast_bite(edict_t* self, float forward_offset, float right_offset, float up_offset);
 void tbeast_land(edict_t* self);
 void tbeast_roar(edict_t* self);
 void tbeast_apply_jump(edict_t* self);
 void tbeast_ready_catch(edict_t* self);
 void tbeast_throw_toy(edict_t* self);
-void tbeast_shake_toy(edict_t* self, float ofsf, float ofsr, float ofsu);
-void tbeast_check_snatch(edict_t* self, float ofsf, float ofsr, float ofsu);
-void tbeast_gore_toy(edict_t* self, float jumpht);
+void tbeast_shake_toy(edict_t* self, float forward_offset, float right_offset, float up_offset);
+void tbeast_check_snatch(edict_t* self, float forward_offset, float right_offset, float up_offset);
+void tbeast_gore_toy(edict_t* self, float jump_height);
 void tbeast_anger_sound(edict_t* self);
-void tbeast_leap(edict_t* self, float fwdf, float rghtf, float upf);
+void tbeast_leap(edict_t* self, float forward_offset, float right_offset, float up_offset);
 void tbeast_eat_order(edict_t* self);
 void tbeast_footstep(edict_t* self);
 void tbeast_walk_order(edict_t* self);
