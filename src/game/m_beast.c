@@ -1019,27 +1019,17 @@ void tbeast_run(edict_t* self, float dist) //mxd. Named 'tbeast_run_think' in or
 		TB_CheckJump(self); // Enemy was ahead!
 }
 
-/*
-========================================
-TBEAST PICK UP AND GORE SOMETHING
-========================================
-*/
-void tbeast_ready_catch (edict_t *self)
+void tbeast_ready_catch(edict_t* self)
 {
-	float enemy_zdist, ok_zdist;
-
-	if(!self->targetEnt)
+	if (self->targetEnt == NULL)
 		return;
-	
-	ok_zdist = 128;
-	if(ok_zdist<48)
-		ok_zdist = 48;
 
-	enemy_zdist = (self->targetEnt->s.origin[2] + self->targetEnt->mins[2]) - self->s.origin[2];
-	if(enemy_zdist<=self->maxs[2] + ok_zdist && self->targetEnt->velocity[2]<=-60)
-		SetAnim(self,ANIM_CATCH);
+	const float enemy_zdist = (self->targetEnt->s.origin[2] + self->targetEnt->mins[2]) - self->s.origin[2];
+
+	if (enemy_zdist <= self->maxs[2] + 128.0f && self->targetEnt->velocity[2] <= -60.0f)
+		SetAnim(self, ANIM_CATCH);
 	else
-		SetAnim(self,ANIM_READY_CATCH);
+		SetAnim(self, ANIM_READY_CATCH);
 }
 
 void tbeast_throw_toy(edict_t *self)
