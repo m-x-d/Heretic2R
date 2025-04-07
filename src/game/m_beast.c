@@ -500,35 +500,30 @@ static void TBeastDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	SetAnim(self, ANIM_DIE_NORM);
 }
 
-void tbeast_go_die (edict_t *self, edict_t *other, edict_t *activator)
+static void TBeastDie_UseCallback(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'tbeast_go_die' in original logic. //TODO: group with tbeast_go_charge?
 {
 	M_ShowLifeMeter(self, 0, 0);
 
+	gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1.0f, ATTN_NONE, 0.0f);
+
 	self->msgHandler = DeadMsgHandler;
-	gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1, ATTN_NONE, 0);
 	self->deadflag = DEAD_DEAD;
 	self->takedamage = DAMAGE_NO;
-	
 	self->solid = SOLID_NOT;
 	self->movetype = PHYSICSTYPE_NONE;
 	self->clipmask = 0;
+	self->health = 0;
+	self->post_think = NULL;
+	self->next_post_think = -1.0f;
+	self->touch = NULL;
+
 	VectorClear(self->mins);
 	VectorClear(self->maxs);
 
-//	self->s.origin[2] += -8 - self->mins[2];
-//	self->mins[2] = -8;
-//	self->maxs[2] = self->mins[2] + 24;
-//	self->svflags |= SVF_DEADMONSTER;
-	
-	self->health = 0;
-	self->post_think = NULL;
-	self->next_post_think = -1;
-	self->touch = NULL;
 	SetAnim(self, ANIM_DIE);
 	M_GetSlopePitchRoll(self, NULL);
 	G_UseTargets(self, activator);
 }
-
 
 /*----------------------------------------------------------------------
 
@@ -2464,7 +2459,7 @@ void tbeast_go_charge (edict_t *self, edict_t *other, edict_t *activator)
 	//do a FoundTarget(self, false);?
 	self->dmg = true;
 	SetAnim(self, ANIM_CHARGE);
-	self->use = tbeast_go_die;
+	self->use = TBeastDie_UseCallback;
 }
 
 void TBeastStaticsInit(void)
