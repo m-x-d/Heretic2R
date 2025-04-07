@@ -2182,117 +2182,93 @@ void TBeastStaticsInit(void)
 	classStatics[CID_TBEAST].resInfo = &res_info;
 }
 
-/*QUAKED monster_trial_beast (1 .5 0) (-100 -100 -36) (100 100 150) ?
-
-The Trial Beastie
-
-"wakeup_target" - monsters will fire this target the first time it wakes up (only once)
-
-"pain_target" - monsters will fire this target the first time it gets hurt (only once)
-
-mintel - monster intelligence- this basically tells a monster how many buoys away an enemy has to be for it to give up.
-
-melee_range - How close the player has to be, maximum, for the monster to go into melee.  If this is zero, the monster will never melee.  If it is negative, the monster will try to keep this distance from the player.  If the monster has a backup, he'll use it if too clode, otherwise, a negative value here means the monster will just stop running at the player at this distance.
-	Examples:
-		melee_range = 60 - monster will start swinging it player is closer than 60
-		melee_range = 0 - monster will never do a mele attack
-		melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close
-
-missile_range - Maximum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-min_missile_range - Minimum distance the player can be from the monster to be allowed to use it's ranged attack.
-
-bypass_missile_chance - Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot.  This, in effect, will make the monster come in more often than hang back and fire.  A percentage (0 = always fire/never close in, 100 = never fire/always close in).- must be whole number
-
-jump_chance - every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time)- must be whole number
-
-wakeup_distance - How far (max) the player can be away from the monster before it wakes up.  This just means that if the monster can see the player, at what distance should the monster actually notice him and go for him.
-
-DEFAULTS:
-mintel					= 100
-melee_range				= 400 (bite)
-missile_range			= 1500 (charge)
-min_missile_range		= 100
-bypass_missile_chance	= 77
-jump_chance				= 100
-wakeup_distance			= 3000
-
-NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1
-*/
-void SP_monster_trial_beast (edict_t *self)
+// QUAKED monster_trial_beast (1 .5 0) (-100 -100 -36) (100 100 150) ?
+// The Trial Beastie
+// wakeup_target			- Monsters will fire this target the first time it wakes up (only once).
+// pain_target				- Monsters will fire this target the first time it gets hurt (only once).
+// mintel					- Monster intelligence - this basically tells a monster how many buoys away an enemy has to be for it to give up (default 100).
+// melee_range				- How close the player has to be for the monster to go into melee. If this is zero, the monster will never melee.
+//							  If it is negative, the monster will try to keep this distance from the player.
+//							  If the monster has a backup, he'll use it if too close, otherwise, a negative value here means the monster will just stop
+//							  running at the player at this distance (default 400 (bite)).
+//							 Examples:
+//								melee_range = 60 - monster will start swinging it player is closer than 60.
+//								melee_range = 0 - monster will never do a melee attack.
+//								melee_range = -100 - monster will never do a melee attack and will back away (if it has that ability) when player gets too close.
+// missile_range			- Maximum distance the player can be from the monster to be allowed to use it's ranged attack (default 1500 (charge)).
+// min_missile_range		- Minimum distance the player can be from the monster to be allowed to use it's ranged attack (default 100).
+// bypass_missile_chance	- Chance that a monster will NOT fire it's ranged attack, even when it has a clear shot. This, in effect, will make the monster
+//							  come in more often than hang back and fire. A percentage (0 = always fire/never close in, 100 = never fire/always close in) - must be whole number (default 77).
+// jump_chance				- Every time the monster has the opportunity to jump, what is the chance (out of 100) that he will... (100 = jump every time) - must be whole number (default 100).
+// wakeup_distance			- How far (max) the player can be away from the monster before it wakes up. This means that if the monster can see the player,
+//							  at what distance should the monster actually notice him and go for him (default 3000).
+// NOTE: A value of zero will result in defaults, if you actually want zero as the value, use -1.
+void SP_monster_trial_beast(edict_t* self)
 {
-	// Generic Monster Initialization
-	if ((deathmatch->value == 1) && !((int)sv_cheats->value & self_spawn))
+	// Generic Monster Initialization.
+	if (DEATHMATCH && !((int)sv_cheats->value & self_spawn))
 	{
 		G_FreeEdict(self);
 		return;
 	}
 
-	if (!M_WalkmonsterStart (self))		// Incomplete initialization
+	if (!M_WalkmonsterStart(self)) // Incomplete initialization.
 		return;
 
 	self->msgHandler = DefaultMsgHandler;
-	self->monsterinfo.aiflags |= AI_BRUTAL|AI_AGRESSIVE|AI_SHOVE;
+	self->monsterinfo.aiflags |= (AI_BRUTAL | AI_AGRESSIVE | AI_SHOVE);
 	self->monsterinfo.otherenemyname = "monster_tcheckrik_male";
 
-	self->health = TB_HEALTH * (skill->value + 1) / 3;
+	self->health = TB_HEALTH * (SKILL + 1) / 3;
 
 	self->mass = TB_MASS;
-	self->yaw_speed = 10;
+	self->yaw_speed = 10.0f;
 	self->isBlocked = TBeastBlocked;
 	self->bounced = TBeastBlocked;
 
-	self->movetype=PHYSICSTYPE_STEP;
+	self->movetype = PHYSICSTYPE_STEP;
 	VectorClear(self->knockbackvel);
 
-	//problem- staff won't work on him!
-	self->solid=SOLID_TRIGGER;//BBOX;
+	// Problem: staff won't work on him!
+	self->solid = SOLID_TRIGGER;
 	self->materialtype = MAT_FLESH;
 
-//	VectorSet(self->mins, -116, -116, -4);
-//	VectorSet(self->maxs, 116, 116, 182);
-	VectorSet(self->mins, -100, -100, -36);
-	VectorSet(self->maxs, 100, 100, 150);
+	VectorSet(self->mins, -100.0f, -100.0f, -36.0f);
+	VectorSet(self->maxs, 100.0f, 100.0f, 150.0f);
 
 	self->viewheight = 104 + TB_UP_OFFSET;
+	self->s.modelindex = (byte)classStatics[CID_TBEAST].resInfo->modelIndex;
 
-	self->s.modelindex = classStatics[CID_TBEAST].resInfo->modelIndex;
-
-	//Big guy can be stood on top of perhaps?
-	//self->touch = M_Touch;
-
-	if(!self->wakeup_distance)
-		self->wakeup_distance = 3000;
+	// Big guy can be stood on top of perhaps?
+	if (self->wakeup_distance == 0.0f)
+		self->wakeup_distance = 3000.0f;
 
 	MG_InitMoods(self);
-
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-	
-	self->dmg = false;
 
-	self->svflags|=(SVF_BOSS|SVF_NO_AUTOTARGET);
+	self->dmg = false; // Not in charge mode initially.
+	self->svflags |= (SVF_BOSS | SVF_NO_AUTOTARGET);
 
-//	self->monsterinfo.aiflags &= ~AI_USING_BUOYS;
-
-	if(!irand(0,1))
+	if (irand(0, 1) == 0)
 		self->ai_mood_flags |= AI_MOOD_FLAG_PREDICT;
 
 	self->monsterinfo.aiflags |= AI_NIGHTVISION;
 
 	self->touch = TBeastTouch;
 	self->post_think = TBeastPostThink;
-	self->next_post_think = level.time + 0.1;
+	self->next_post_think = level.time + 0.1f;
 	self->elasticity = ELASTICITY_SLIDE;
-	self->count = self->sounds = 0;
+	self->count = 0;
+	self->sounds = 0;
 	self->clipmask = CONTENTS_SOLID;
-	self->solid = SOLID_TRIGGER;//WHY IS HE BEING PUSHED BY BSP entities now???!
-	self->red_rain_count = 0;//pillar init
+	self->solid = SOLID_TRIGGER; // WHY IS HE BEING PUSHED BY BSP ENTITIES NOW?!
+	self->red_rain_count = 0; // Pillar init.
 	self->use = TBeastUse;
-	self->delay = true;
-	
-	self->max_health = self->health;
-	self->volume = 0;
-	self->wait = 0;
+	self->delay = 1.0f;
 
-	level.fighting_beast = true;//sorry, only one beast per level
+	self->max_health = self->health;
+	self->volume = 0.0f; // Initial healthbar buildup progress.
+	self->wait = 0.0f; // Initialize material id.
+
+	level.fighting_beast = true; // Sorry, only one beast per level
 }
