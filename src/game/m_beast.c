@@ -157,101 +157,87 @@ static qboolean HaveShoulderRoomAhead(const edict_t* self) //mxd. Named 'shoulde
 	return (!trace.allsolid && !trace.startsolid && trace.fraction == 1.0f);
 }
 
-void tbeast_blocked (edict_t *self, trace_t *trace)
-{//fake_touch does all the actual damage, this is just a check for the charge stuff
-	vec3_t		dir, start, forward, end, mins, maxs;
-	float		speed;
-	trace_t		tr;
-	qboolean	playsound = true;
-	qboolean	stop = false;
-	edict_t		*pillar = NULL;
-
-	if(self->curAnimID==ANIM_CHARGE || (self->curAnimID==ANIM_QUICK_CHARGE && self->s.frame >= FRAME_charge1 && self->s.frame <= FRAME_charge10))
+// Assigned to 'isBlocked' and 'bounce' callbacks.
+static void TBeastBlocked(edict_t* self, trace_t* trace) //mxd. Named 'tbeast_blocked' in original logic.
+{
+	// fake_touch does all the actual damage, this is just a check for the charge stuff.
+	if (self->curAnimID == ANIM_CHARGE || (self->curAnimID == ANIM_QUICK_CHARGE && self->s.frame >= FRAME_charge1 && self->s.frame <= FRAME_charge10))
 	{
-		if(trace->ent == world)
+		qboolean stop = false;
+		const qboolean hit_slope = (trace->ent == world && !Vec3IsZero(trace->plane.normal) && trace->plane.normal[2] > GROUND_NORMAL); //mxd. Use define.
+
+		if (!hit_slope)
 		{
-			if(&trace->plane)
-			{
-				if(!Vec3IsZero(trace->plane.normal))
-				{
-					if(trace->plane.normal[2]>0.7)
-					{//it's just a slope
-						playsound = false;
-					}
-				}
-			}
+			gi.sound(self, CHAN_ITEM, sounds[SND_SLAM], 1.0f, ATTN_NORM, 0.0f);
+
+			if (trace->ent != NULL && !AI_IsMovable(trace->ent) && trace->ent->takedamage == DAMAGE_NO && trace->plane.normal[2] < 0.5f)
+				stop = true;
 		}
 
-		if(playsound)
-		{
-			gi.sound(self, CHAN_ITEM, sounds[SND_SLAM], 1, ATTN_NORM, 0);
-			if(trace->ent)
-			{
-				if(!AI_IsMovable(trace->ent)&&!trace->ent->takedamage && trace->plane.normal[2] < 0.5)
-					stop = true;
-			}
-		}
+		edict_t* pillar;
 
-		if(trace->ent && trace->ent->targetname && !stricmp(trace->ent->targetname, "pillar"))
+		if (trace->ent != NULL && trace->ent->targetname != NULL && Q_stricmp(trace->ent->targetname, "pillar") == 0) //mxd. stricmp -> Q_stricmp
+		{
 			pillar = trace->ent;
+		}
 		else
 		{
+			vec3_t start;
 			VectorCopy(self->s.origin, start);
-			AngleVectors(self->s.angles, forward, NULL, NULL);
-			start[2] = self->absmin[2] + self->size[2] * 0.8 + TB_UP_OFFSET;
-			VectorMA(start, self->maxs[0] * 0.8 + TB_FWD_OFFSET, forward, start);
-			VectorMA(start, 150, forward, end);
+			start[2] = self->absmin[2] + self->size[2] * 0.8f + TB_UP_OFFSET;
 
-			VectorSet(mins, -24, -24, -1);
-			VectorSet(maxs, 24, 24, 1);
-			gi.trace(start, mins, maxs, end, self, MASK_SOLID,&tr);
-			if(tr.fraction<1.0 && tr.ent && tr.ent->targetname)
-			{
-				if(!stricmp(tr.ent->targetname, "pillar"))
-					pillar = tr.ent;
-			}
+			vec3_t forward;
+			AngleVectors(self->s.angles, forward, NULL, NULL);
+
+			VectorMA(start, self->maxs[0] * 0.8f + TB_FWD_OFFSET, forward, start);
+
+			vec3_t end;
+			VectorMA(start, 150.0f, forward, end);
+
+			const vec3_t mins = { -24.0f, -24.0f, -1.0f };
+			const vec3_t maxs = { 24.0f,  24.0f,  1.0f };
+
+			trace_t tr;
+			gi.trace(start, mins, maxs, end, self, MASK_SOLID, &tr);
+
+			if (tr.fraction < 1.0f && tr.ent != NULL && tr.ent->targetname != NULL && Q_stricmp(tr.ent->targetname, "pillar") == 0) //mxd. stricmp -> Q_stricmp
+				pillar = tr.ent;
+			else
+				pillar = NULL;
 		}
 
-		if(pillar)
-		{//FIXME: In higher skills, less chance of breaking it?  Or debounce time?
-//			gi.dprintf("Hit a Pillar!\n");
-
-			if(IsVisibleToClient(self))
+		if (pillar != NULL)
+		{
+			//FIXME: In higher skills, less chance of breaking it? Or debounce time?
+			if (IsVisibleToClient(self))
 			{
 				self->red_rain_count++;
-				if(self->red_rain_count >= 2)//got both pillars, now die
+
+				if (self->red_rain_count >= 2) // Got both pillars, now die.
 				{
-					//self->clipmask = 0;
 					self->solid = SOLID_NOT;
 					self->takedamage = DAMAGE_NO;
 				}
-				G_UseTargets (pillar, self);
-				pillar->targetname = "";//so we don't hit them again
-				pillar->target = "stop";//so it doesn't fire the target when it's broken later
 
-				self->monsterinfo.attack_finished = level.time + 3;
+				G_UseTargets(pillar, self);
+				pillar->targetname = ""; // So we don't hit them again.
+				pillar->target = "stop"; // So it doesn't fire the target when it's broken later.
+
+				self->monsterinfo.attack_finished = level.time + 3.0f;
 			}
 
 			stop = true;
 		}
 
-		if(stop)
+		if (stop)
 		{
-			gi.CreateEffect(&self->s,
-							FX_QUAKE,
-							0,
-							vec3_origin,
-							"bbb",
-							4,
-							3,
-							7);
+			gi.CreateEffect(&self->s, FX_QUAKE, 0, vec3_origin, "bbb", 4, 3, 7);
 
-			VectorCopy(self->velocity, dir);
-			speed = VectorNormalize(dir);
-
-			self->velocity[0] = self->velocity[1] = 0;
+			self->velocity[0] = 0.0f;
+			self->velocity[1] = 0.0f;
 			self->sounds++;
-			if(self->sounds!=2 && irand(0, 1))
+
+			if (self->sounds != 2 && irand(0, 1) == 1)
 				SetAnim(self, ANIM_STUN);
 		}
 	}
@@ -2713,8 +2699,8 @@ void SP_monster_trial_beast (edict_t *self)
 
 	self->mass = TB_MASS;
 	self->yaw_speed = 10;
-	self->isBlocked = tbeast_blocked;
-	self->bounced = tbeast_blocked;
+	self->isBlocked = TBeastBlocked;
+	self->bounced = TBeastBlocked;
 
 	self->movetype=PHYSICSTYPE_STEP;
 	VectorClear(self->knockbackvel);
