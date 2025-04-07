@@ -21,56 +21,55 @@
 #include "Utilities.h"
 #include "Vector.h"
 
+#pragma region ========================== Trial Beast base info ==========================
 
-// *************************************
-// Definitions
-// *************************************
+#define MAX_CHOMP_DIST	64.0f //mxd
 
-static vec3_t GetLeftFootOffsetForFrameIndex[18] =
-{//		x		y		z
-	 160.00F,  -64.00F,  0.00F,		// 1
-	 144.00F,  -60.00F,  0.00F,		// 2
-	 96.00F,  -56.00F,  0.00F,		// 3
-	 64.00F,  -52.00F,  0.00F,		// 4
-	 16.00F,  -48.00F,  -2.00F,		// 5
-	 -48.00F,  -44.00F,  -4.00F,		// 6
-	 -80.00F,  -40.00F,  -2.00F,		// 7
-	 -112.00F,  -40.00F,  0.00F,		// 8
-	 -160.00F,  -40.00F,  -4.00F,		// 9
-	 -192.00F,  -40.00F,  0.00F,		// 10
-	 -120.00F,  -42.00F,  2.00F,		// 11
-	 -48.00F,  -44.00F,  6.00F,		// 12
-	 0.00F,  -44.00F,  14.00F,		// 13
-	 24.00F,  -42.00F,  10.00F,		// 14
-	 28.00F,  -48.00F,  16.00F,		// 15
-	 34.00F,  -48.00F,  14.00F,		// 16
-	 110.00F,  -58.00F,  0.00F,		// 17
-	 144.00F,  -72.00F,  8.00F,		// 18
+static vec3_t left_foot_offset_for_frame_index[18] = //mxd. Named 'GetLeftFootOffsetForFrameIndex' in original logic.
+{
+	{  160.0f, -64.0f,  0.0f },
+	{  144.0f, -60.0f,  0.0f },
+	{  96.0f,  -56.0f,  0.0f },
+	{  64.0f,  -52.0f,  0.0f },
+	{  16.0f,  -48.0f, -2.0f },
+	{ -48.0f,  -44.0f, -4.0f },
+	{ -80.0f,  -40.0f, -2.0f },
+	{ -112.0f, -40.0f,  0.0f },
+	{ -160.0f, -40.0f, -4.0f },
+	{ -192.0f, -40.0f,  0.0f },
+	{ -120.0f, -42.0f,  2.0f },
+	{ -48.0f,  -44.0f,  6.0f },
+	{  0.0f,   -44.0f,  14.0f },
+	{  24.0f,  -42.0f,  10.0f },
+	{  28.0f,  -48.0f,  16.0f },
+	{  34.0f,  -48.0f,  14.0f },
+	{  110.0f, -58.0f,  0.0f },
+	{  144.0f, -72.0f,  8.0f },
 };
 
-static vec3_t GetRightFootOffsetForFrameIndex[18] =
-{//		x		y		z
-	 -160.00F,  32.00F,  0.00F,		// 1
-	 -144.00F,  32.00F,  12.00F,		// 2
-	 -96.00F,  28.00F,  14.00F,		// 3
-	 -64.00F,  28.00F,  18.00F,		// 4
-	 -16.00F,  28.00F,  22.00F,		// 5
-	 32.00F,  32.00F,  28.00F,		// 6
-	 64.00F,  38.00F,  28.00F,		// 7
-	 104.00F,  40.00F,  24.00F,		// 8
-	 160.00F,  48.00F,  -4.00F,		// 9
-	 128.00F,  52.00F,  -8.00F,		// 10
-	 112.00F,  54.00F,  0.00F,		// 11
-	 108.00F,  52.00F,  0.00F,		// 12
-	 72.00F,  48.00F,  -2.00F,		// 13
-	 32.00F,  40.00F,  0.00F,		// 14
-	 -4.00F,  36.00F,  0.00F,		// 15
-	 -24.00F,  34.00F,  0.00F,		// 16
-	 -80.00F,  32.00F,  2.00F,		// 17
-	 -128.00F,  32.00F,  -2.00F,		// 18
+static vec3_t right_foot_offset_for_frame_index[18] = //mxd. Named 'GetRightFootOffsetForFrameIndex' in original logic.
+{
+	{ -160.0f, 32.0f,  0.0f },
+	{ -144.0f, 32.0f,  12.0f },
+	{ -96.0f,  28.0f,  14.0f },
+	{ -64.0f,  28.0f,  18.0f },
+	{ -16.0f,  28.0f,  22.0f },
+	{  32.0f,  32.0f,  28.0f },
+	{  64.0f,  38.0f,  28.0f },
+	{  104.0f, 40.0f,  24.0f },
+	{  160.0f, 48.0f, -4.0f },
+	{  128.0f, 52.0f, -8.0f },
+	{  112.0f, 54.0f,  0.0f },
+	{  108.0f, 52.0f,  0.0f },
+	{  72.0f,  48.0f, -2.0f },
+	{  32.0f,  40.0f,  0.0f },
+	{ -4.0f,   36.0f,  0.0f },
+	{ -24.0f,  34.0f,  0.0f },
+	{ -80.0f,  32.0f,  2.0f },
+	{ -128.0f, 32.0f, -2.0f },
 };
 
-static const animmove_t *animations[NUM_ANIMS] =
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&tbeast_move_biteup,
 	&tbeast_move_bitelow,
@@ -105,11 +104,9 @@ static const animmove_t *animations[NUM_ANIMS] =
 };
 
 static int sounds[NUM_SOUNDS];
+static ClassResourceInfo_t res_info; //mxd. Named 'resInfo' in original logic.
 
-static ClassResourceInfo_t resInfo;
-
-void tbeast_watch(edict_t *self, G_Message_t *msg);
-
+#pragma endregion
 
 qboolean visible_to_client (edict_t *self)
 {
@@ -716,14 +713,14 @@ void tbeast_footstep (edict_t *self)
 	//left leg
 		if(leg_check_index < 6 || leg_check_index > 14)
 		{
-			VectorCopy(GetLeftFootOffsetForFrameIndex[leg_check_index], lfootoffset);
+			VectorCopy(left_foot_offset_for_frame_index[leg_check_index], lfootoffset);
 			VectorMA(self->s.origin, lfootoffset[0] + TB_FWD_OFFSET, forward, pos);
 			VectorMA(pos, lfootoffset[1] + TB_RT_OFFSET, right, pos);
 			VectorMA(pos, lfootoffset[2] + TB_UP_OFFSET, up, pos);
 		}
 		else
 		{//right leg
-			VectorCopy(GetRightFootOffsetForFrameIndex[leg_check_index], rfootoffset);
+			VectorCopy(right_foot_offset_for_frame_index[leg_check_index], rfootoffset);
 			VectorMA(self->s.origin, rfootoffset[0] + TB_FWD_OFFSET, forward, pos);
 			VectorMA(pos, rfootoffset[1] + TB_RT_OFFSET, right, pos);
 			VectorMA(pos, rfootoffset[2] + TB_UP_OFFSET, up, pos);
@@ -1876,13 +1873,13 @@ void LevelToGround (edict_t *self, float fscale, float rscale, qboolean z_adjust
 			right_front = false;
 
 	//left leg
-		VectorCopy(GetLeftFootOffsetForFrameIndex[leg_check_index], lfootoffset);
+		VectorCopy(left_foot_offset_for_frame_index[leg_check_index], lfootoffset);
 		VectorMA(self->s.origin, lfootoffset[0] + TB_FWD_OFFSET, forward, leftpos);
 		VectorMA(leftpos, lfootoffset[1] + TB_RT_OFFSET, right, leftpos);
 		VectorMA(leftpos, lfootoffset[2] + TB_UP_OFFSET, up, leftpos);
 		
 	//right leg
-		VectorCopy(GetRightFootOffsetForFrameIndex[leg_check_index], rfootoffset);
+		VectorCopy(right_foot_offset_for_frame_index[leg_check_index], rfootoffset);
 		VectorMA(self->s.origin, rfootoffset[0] + TB_FWD_OFFSET, forward, rightpos);
 		VectorMA(rightpos, rfootoffset[1] + TB_RT_OFFSET, right, rightpos);
 		VectorMA(rightpos, rfootoffset[2] + TB_UP_OFFSET, up, rightpos);
@@ -2225,7 +2222,7 @@ void tbeast_check_impacts(edict_t *self)
 		VectorSet(fmaxs, 8, 8, 1);
 
 	//left leg
-		VectorCopy(GetLeftFootOffsetForFrameIndex[leg_check_index], lfootoffset);
+		VectorCopy(left_foot_offset_for_frame_index[leg_check_index], lfootoffset);
 		VectorMA(self->s.origin, lfootoffset[0] + TB_FWD_OFFSET, forward, lend);
 		VectorMA(lend, lfootoffset[1] + TB_RT_OFFSET, right, lend);
 		VectorMA(lend, lfootoffset[2] + TB_UP_OFFSET, up, lend);
@@ -2237,7 +2234,7 @@ void tbeast_check_impacts(edict_t *self)
 		lfootmaxs[2] += 64;
 
 	//right leg
-		VectorCopy(GetRightFootOffsetForFrameIndex[leg_check_index], rfootoffset);
+		VectorCopy(right_foot_offset_for_frame_index[leg_check_index], rfootoffset);
 		VectorMA(self->s.origin, rfootoffset[0] + TB_FWD_OFFSET, forward, rend);
 		VectorMA(rend, rfootoffset[1] + TB_RT_OFFSET, right, rend);
 		VectorMA(rend, rfootoffset[2] + TB_UP_OFFSET, up, rend);
@@ -2318,7 +2315,7 @@ void tbeast_fake_touch(edict_t *self)
 		VectorSet(fmaxs, 8, 8, 1);
 
 	//left leg
-		VectorCopy(GetLeftFootOffsetForFrameIndex[leg_check_index], lfootoffset);
+		VectorCopy(left_foot_offset_for_frame_index[leg_check_index], lfootoffset);
 		VectorMA(self->s.origin, lfootoffset[0] + TB_FWD_OFFSET, forward, lend);
 		VectorMA(lend, lfootoffset[1] + TB_RT_OFFSET, right, lend);
 		VectorMA(lend, lfootoffset[2] + TB_UP_OFFSET, up, lend);
@@ -2330,7 +2327,7 @@ void tbeast_fake_touch(edict_t *self)
 		lfootmaxs[2] += 64;
 
 	//right leg
-		VectorCopy(GetRightFootOffsetForFrameIndex[leg_check_index], rfootoffset);
+		VectorCopy(right_foot_offset_for_frame_index[leg_check_index], rfootoffset);
 		VectorMA(self->s.origin, rfootoffset[0] + TB_FWD_OFFSET, forward, rend);
 		VectorMA(rend, rfootoffset[1] + TB_RT_OFFSET, right, rend);
 		VectorMA(rend, rfootoffset[2] + TB_UP_OFFSET, up, rend);
@@ -2628,9 +2625,9 @@ void TBeastStaticsInit(void)
 	classStatics[CID_TBEAST].msgReceivers[MSG_PAIN] = tbeast_pain;
 	classStatics[CID_TBEAST].msgReceivers[MSG_DEATH] = tbeast_death;
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	resInfo.modelIndex = gi.modelindex("models/monsters/beast/tris.fm");
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/beast/tris.fm");
 
 	sounds[SND_ROAR]  = gi.soundindex ("monsters/tbeast/roar.wav");	
 	sounds[SND_ROAR2]  = gi.soundindex ("monsters/tbeast/roar2.wav");	
@@ -2664,10 +2661,10 @@ void TBeastStaticsInit(void)
 	sounds[SND_CORVUS_SCREAM3] = gi.soundindex ("corvus/bdeath3.wav");
 	sounds[SND_CORVUS_DIE] = gi.soundindex ("player/falldeath1.wav");
 
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = sounds;
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
 
-	classStatics[CID_TBEAST].resInfo = &resInfo;
+	classStatics[CID_TBEAST].resInfo = &res_info;
 }
 
 
