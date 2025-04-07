@@ -527,13 +527,13 @@ static void TBeastDie_UseCallback(edict_t* self, edict_t* other, edict_t* activa
 
 void tbeast_stand_order(edict_t* self) //mxd. Named 'tbeast_standorder' in original logic.
 {
-	if (!tbeastCheckMood(self))
+	if (!TBeastCheckMood(self))
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
 void tbeast_walk_order(edict_t* self) //mxd. Named 'tbeast_walkorder' in original logic.
 {
-	if (!tbeastCheckMood(self))
+	if (!TBeastCheckMood(self))
 		QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 }
 
@@ -648,50 +648,42 @@ void tbeast_snort(edict_t* self)
 	gi.CreateEffect(NULL, FX_FLAMETHROWER, CEF_FLAG6 | CEF_FLAG7, spot2, "df", fx_dir, 100.0f);
 }
 
-qboolean tbeastCheckMood(edict_t *self)
+static qboolean TBeastCheckMood(edict_t* self) //mxd. Named 'tbeastCheckMood' in original logic.
 {
 	self->mood_think(self);
 
-	if(self->ai_mood == AI_MOOD_NORMAL)
+	if (self->ai_mood == AI_MOOD_NORMAL)
 		return false;
 
 	switch (self->ai_mood)
 	{
 		case AI_MOOD_ATTACK:
-			if(self->ai_mood_flags&AI_MOOD_FLAG_MISSILE)
-				QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
-			else
-				QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-			break;
-		
+		{
+			const int msg_id = ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE); //mxd
+			QPostMessage(self, msg_id, PRI_DIRECTIVE, NULL);
+		} break;
+
 		case AI_MOOD_PURSUE:
-			self->wait = 0;
+			self->wait = 0.0f;
 			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			break;
-		
+
 		case AI_MOOD_NAVIGATE:
 			SetAnim(self, ANIM_WALK);
 			break;
 
 		case AI_MOOD_STAND:
-			if (self->monsterinfo.aiflags & AI_EATING)
-				QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
-			else
-				QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-			break;
-		
+		{
+			const int msg_id = ((self->monsterinfo.aiflags & AI_EATING) ? MSG_EAT : MSG_STAND); //mxd
+			QPostMessage(self, msg_id, PRI_DIRECTIVE, NULL);
+		} break;
+
 		case AI_MOOD_DELAY:
 			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			break;
 
 		case AI_MOOD_EAT:
 			QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
-			break;
-
-		default :
-#ifdef _DEVEL
-			gi.dprintf("beast: Unusable mood %d!\n", self->ai_mood);
-#endif
 			break;
 	}
 
@@ -700,7 +692,7 @@ qboolean tbeastCheckMood(edict_t *self)
 
 void tbeast_check_mood(edict_t* self) //mxd. Added action function version.
 {
-	tbeastCheckMood(self);
+	TBeastCheckMood(self);
 }
 
 /*----------------------------------------------------------------------
@@ -717,7 +709,7 @@ void tbeast_pause (edict_t *self)
 		return;
 	}
 
-	if(tbeastCheckMood(self))
+	if(TBeastCheckMood(self))
 		return;
 
 	if(!M_ValidTarget(self, self->enemy))
@@ -744,7 +736,7 @@ void tbeast_pause (edict_t *self)
 
 void tbeast_runorder (edict_t *self)
 {
-	if(tbeastCheckMood(self))
+	if(TBeastCheckMood(self))
 		return;
 
 	QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
@@ -909,7 +901,7 @@ void tbeast_roar_short(edict_t *self)
 
 void tbeast_eatorder (edict_t *self)
 {
-	if(tbeastCheckMood(self))
+	if(TBeastCheckMood(self))
 		return;
 
 	QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
