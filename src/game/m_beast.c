@@ -1996,9 +1996,9 @@ static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in o
 			touch[i]->svflags &= ~SVF_TOUCHED_BEAST;
 }
 
-void tbeast_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void TBeastTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'tbeast_touch' in original logic.
 {
-	TBeastFakeTouch(self);	
+	TBeastFakeTouch(self);
 }
 
 void tbeast_post_think (edict_t *self)
@@ -2285,7 +2285,7 @@ void SP_monster_trial_beast (edict_t *self)
 
 	self->monsterinfo.aiflags |= AI_NIGHTVISION;
 
-	self->touch = tbeast_touch;
+	self->touch = TBeastTouch;
 	self->post_think = tbeast_post_think;
 	self->next_post_think = level.time + 0.1;
 	self->elasticity = ELASTICITY_SLIDE;
