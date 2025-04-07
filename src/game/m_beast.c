@@ -726,14 +726,6 @@ void tbeast_pause(edict_t* self)
 		QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 }
 
-void tbeast_runorder (edict_t *self)
-{
-	if(TBeastCheckMood(self))
-		return;
-
-	QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-}
-
 void tbeastbite (edict_t *self, float ofsf, float ofsr, float ofsu)
 {
 	vec3_t	v;
