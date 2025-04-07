@@ -52,9 +52,6 @@
     <Filter Include="src\Monsters\Assassin">
       <UniqueIdentifier>{54bbcc2d-96dd-4e28-926b-39609434217e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Monsters\Beast">
-      <UniqueIdentifier>{75ca9218-f238-4915-9629-a0c0058dfde9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="qcommon">
       <UniqueIdentifier>{742b7e2f-e06d-4b00-8c4c-3cd808a7334d}</UniqueIdentifier>
     </Filter>
@@ -126,6 +123,9 @@
     </Filter>
     <Filter Include="src\Monsters\Chicken">
       <UniqueIdentifier>{7e39085b-506b-4971-bce6-54902faa621a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\Trial Beast">
+      <UniqueIdentifier>{75ca9218-f238-4915-9629-a0c0058dfde9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -439,10 +439,10 @@
       <Filter>src\Monsters\Assassin</Filter>
     </ClCompile>
     <ClCompile Include="m_beast.c">
-      <Filter>src\Monsters\Beast</Filter>
+      <Filter>src\Monsters\Trial Beast</Filter>
     </ClCompile>
     <ClCompile Include="m_beast_anim.c">
-      <Filter>src\Monsters\Beast</Filter>
+      <Filter>src\Monsters\Trial Beast</Filter>
     </ClCompile>
     <ClCompile Include="..\qcommon\Message.c">
       <Filter>qcommon</Filter>
@@ -822,10 +822,10 @@
       <Filter>src\Monsters\Assassin</Filter>
     </ClInclude>
     <ClInclude Include="m_beast_shared.h">
-      <Filter>src\Monsters\Beast</Filter>
+      <Filter>src\Monsters\Trial Beast</Filter>
     </ClInclude>
     <ClInclude Include="m_beast_anim.h">
-      <Filter>src\Monsters\Beast</Filter>
+      <Filter>src\Monsters\Trial Beast</Filter>
     </ClInclude>
     <ClInclude Include="..\qcommon\Message.h">
       <Filter>qcommon</Filter>
@@ -990,7 +990,7 @@
       <Filter>src\Monsters\Assassin</Filter>
     </ClInclude>
     <ClInclude Include="m_beast.h">
-      <Filter>src\Monsters\Beast</Filter>
+      <Filter>src\Monsters\Trial Beast</Filter>
     </ClInclude>
     <ClInclude Include="m_bee.h">
       <Filter>src\Monsters\Bee</Filter>
@@ -1210,6 +1210,9 @@
     </ClInclude>
     <ClInclude Include="m_assassin_local.h">
       <Filter>src\Monsters\Assassin</Filter>
+    </ClInclude>
+    <ClInclude Include="m_beast_local.h">
+      <Filter>src\Monsters\Trial Beast</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

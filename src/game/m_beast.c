@@ -1,45 +1,30 @@
-/*
-==============================================================================
-
-// m_tbeast.c
 //
-// Heretic II
+// m_beast.c
+//
 // Copyright 1998 Raven Software
+//
 
-
-TBEAST
-
-
-==============================================================================
-*/
-
+#include <float.h>
 #include "m_beast.h"
+#include "m_beast_local.h" //mxd
 #include "m_beast_shared.h"
 #include "m_beast_anim.h"
-#include "g_local.h"
-#include "Utilities.h"
+#include "mg_ai.h" //mxd
+#include "mg_guide.h" //mxd
+#include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
-#include "fx.h"
-#include "random.h"
-#include "buoy.h"
-#include "vector.h"
-#include "p_actions.h"
-#include "p_anims.h"
-#include "p_anim_branch.h"
-#include "q_Physics.h"
 #include "g_Physics.h"
-#include "g_debris.h" //mxd
-#include "mg_ai.h" //mxd
 #include "m_stats.h"
-#include "mg_guide.h" //mxd
+#include "p_anims.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
 
 
 // *************************************
 // Definitions
 // *************************************
-
-int tbeast_inwalkframes(edict_t *self);
 
 static vec3_t GetLeftFootOffsetForFrameIndex[18] =
 {//		x		y		z
@@ -895,6 +880,11 @@ qboolean tbeastCheckMood(edict_t *self)
 	}
 
 	return true;
+}
+
+void tbeast_check_mood(edict_t* self) //mxd. Added action function version.
+{
+	tbeastCheckMood(self);
 }
 
 /*----------------------------------------------------------------------

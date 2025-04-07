@@ -114,7 +114,7 @@ extern const animmove_t tbeast_move_quick_charge;
 
 void tbeast_snort(edict_t* self);
 void tbeast_growl(edict_t* self);
-qboolean tbeastCheckMood(edict_t* self);
+void tbeast_check_mood(edict_t* self); //mxd
 void tbeast_pause(edict_t* self);
 void tbeastbite(edict_t* self, float ofsf, float ofsr, float ofsu);
 void tbeast_land(edict_t* self);
