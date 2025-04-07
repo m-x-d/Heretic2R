@@ -1,41 +1,27 @@
-//==============================================================================
 //
 // m_chicken.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//
-//	AI :
-//
-//	STAND1		: Looking straight ahead
-//
-//==============================================================================
-
-#include "g_local.h"
-#include "Utilities.h"
-#include "g_DefaultMessageHandler.h"
-#include "g_monster.h"
-#include "fx.h"
-#include "random.h"
-#include "g_debris.h" //mxd
-#include "vector.h"
-#include "g_Physics.h"
-#include "spl_morph.h"
-#include "g_Skeletons.h"
-#include "p_anims.h"
 
 #include "m_chicken.h"
-#include "mg_guide.h" //mxd
-#include "m_chicken_shared.h"
 #include "m_chicken_anim.h"
+#include "m_chicken_shared.h"
+#include "g_debris.h" //mxd
+#include "g_DefaultMessageHandler.h"
+#include "g_monster.h"
+#include "g_Physics.h"
 #include "m_stats.h"
+#include "mg_guide.h" //mxd
+#include "spl_morph.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_local.h"
 
-/*----------------------------------------------------------------------
-  Chicken Base Info
------------------------------------------------------------------------*/
+#pragma region ========================== Chicken base info ==========================
 
-static const animmove_t *animations[NUM_ANIMS] =
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&chicken_move_stand1,
 	&chicken_move_walk,
@@ -47,8 +33,9 @@ static const animmove_t *animations[NUM_ANIMS] =
 };
 
 static int sounds[NUM_SOUNDS];
+static ClassResourceInfo_t res_info;
 
-static ClassResourceInfo_t resInfo;
+#pragma endregion
 
 void ChickenStaticsInit(void)
 {
@@ -61,9 +48,9 @@ void ChickenStaticsInit(void)
 	classStatics[CID_CHICKEN].msgReceivers[MSG_EAT] = chicken_eat;
 	classStatics[CID_CHICKEN].msgReceivers[MSG_JUMP] = chicken_jump;
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	resInfo.modelIndex = gi.modelindex("models/monsters/chicken2/tris.fm");
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/chicken2/tris.fm");
 
 	//for the cluck animation
 	sounds[SND_CLUCK1]= gi.soundindex ("monsters/chicken/cluck1.wav");	
@@ -89,10 +76,10 @@ void ChickenStaticsInit(void)
 	sounds[SND_JUMP2]= gi.soundindex ("monsters/chicken/jump2.wav");	
 	sounds[SND_JUMP3]= gi.soundindex ("monsters/chicken/jump3.wav");	
 
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = sounds;
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
 
-	classStatics[CID_CHICKEN].resInfo = &resInfo;
+	classStatics[CID_CHICKEN].resInfo = &res_info;
 }
 
 /*QUAKED monster_chicken (1 .5 0) (-16 -16 -0) (16 16 32) AMBUSH ASLEEP EATING
