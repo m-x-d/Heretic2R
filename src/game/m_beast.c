@@ -531,11 +531,10 @@ void tbeast_stand_order(edict_t* self) //mxd. Named 'tbeast_standorder' in origi
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
-void tbeast_walkorder (edict_t *self)
+void tbeast_walk_order(edict_t* self) //mxd. Named 'tbeast_walkorder' in original logic.
 {
-	if(tbeastCheckMood(self))
-		return;
-	QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+	if (!tbeastCheckMood(self))
+		QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 }
 
 void tbeast_footstep (edict_t *self)

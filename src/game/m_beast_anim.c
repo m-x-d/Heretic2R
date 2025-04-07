@@ -122,7 +122,7 @@ static const animframe_t tbeast_frames_walk[] =
 	{ FRAME_walk17,	NULL, 0, 0, 0, tbeast_run_think, 16, NULL },
 	{ FRAME_walk18,	NULL, 0, 0, 0, tbeast_run_think, 24, NULL },
 };
-const animmove_t tbeast_move_walk = { 18, tbeast_frames_walk, tbeast_walkorder };
+const animmove_t tbeast_move_walk = { 18, tbeast_frames_walk, tbeast_walk_order };
 
 // TB turning left while walking.
 static const animframe_t tbeast_frames_walkleft[] =
@@ -146,7 +146,7 @@ static const animframe_t tbeast_frames_walkleft[] =
 	{ FRAME_wlklft17,	NULL, 0, 0, 0, tbeast_run_think, 16, tbeast_growl },
 	{ FRAME_wlklft18,	NULL, 0, 0, 0, tbeast_run_think, 24, NULL },
 };
-const animmove_t tbeast_move_walkleft = { 18, tbeast_frames_walkleft, tbeast_walkorder };
+const animmove_t tbeast_move_walkleft = { 18, tbeast_frames_walkleft, tbeast_walk_order };
 
 // TB turning right while walking.
 static const animframe_t tbeast_frames_walkrt[] =
@@ -170,7 +170,7 @@ static const animframe_t tbeast_frames_walkrt[] =
 	{ FRAME_wlkrt17,	NULL, 0, 0, 0, tbeast_run_think, 16, NULL },
 	{ FRAME_wlkrt18,	NULL, 0, 0, 0, tbeast_run_think, 24, tbeast_snort },
 };
-const animmove_t tbeast_move_walkrt = { 18, tbeast_frames_walkrt, tbeast_walkorder };
+const animmove_t tbeast_move_walkrt = { 18, tbeast_frames_walkrt, tbeast_walk_order };
 
 // TB while jumping.
 static const animframe_t tbeast_frames_inair[] =
@@ -414,9 +414,9 @@ static const animframe_t tbeast_frames_charge[] =
 	{ FRAME_charge7,	NULL, 0, 0, 0, tbeast_charge, 28, tbeast_footstep },
 	{ FRAME_charge8,	NULL, 0, 0, 0, tbeast_charge, 12, NULL },
 	{ FRAME_charge9,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
-	{ FRAME_charge10,	NULL, 0, 0, 0, tbeast_charge, 24, tbeast_walkorder },
+	{ FRAME_charge10,	NULL, 0, 0, 0, tbeast_charge, 24, tbeast_walk_order },
 };
-const animmove_t tbeast_move_charge = { 75, tbeast_frames_charge, tbeast_walkorder };
+const animmove_t tbeast_move_charge = { 75, tbeast_frames_charge, tbeast_walk_order };
 
 // TB roar.
 static const animframe_t tbeast_frames_roar[] =
@@ -695,6 +695,6 @@ static const animframe_t tbeast_frames_quick_charge[] =
 	{ FRAME_charge7,	NULL, 0, 0, 0, tbeast_charge, 28, tbeast_footstep },
 	{ FRAME_charge8,	NULL, 0, 0, 0, tbeast_charge, 12, NULL },
 	{ FRAME_charge9,	NULL, 0, 0, 0, tbeast_charge, 16, NULL },
-	{ FRAME_charge10,	NULL, 0, 0, 0, tbeast_charge, 24, tbeast_walkorder },
+	{ FRAME_charge10,	NULL, 0, 0, 0, tbeast_charge, 24, tbeast_walk_order },
 };
-const animmove_t tbeast_move_quick_charge = { 50, tbeast_frames_quick_charge, tbeast_walkorder };
+const animmove_t tbeast_move_quick_charge = { 50, tbeast_frames_quick_charge, tbeast_walk_order };
