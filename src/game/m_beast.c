@@ -324,54 +324,27 @@ static void TBeastStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 		SetAnim(self, ANIM_EATING);
 }
 
-
-/*----------------------------------------------------------------------
-  TBeast Walk -decide which walk animations to use
------------------------------------------------------------------------*/
-void tbeast_walk(edict_t *self, G_Message_t *msg)
+// Decide which walk animations to use.
+static void TBeastWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'tbeast_walk' in original logic.
 {
-//	vec3_t	v;
-//	float	len;
-	float	delta;
-	vec3_t targ_org;
-
-	if(!MG_TryGetTargetOrigin(self, targ_org))
+	vec3_t target_origin;
+	if (!MG_TryGetTargetOrigin(self, target_origin))
 		return;
 
-
-	if (!self->enemy)//?goal?
+	if (self->enemy == NULL) // ?goal?
 	{
 		SetAnim(self, ANIM_WALK);
 		return;
 	}
 
-/*	if(clear_visible(self, self->enemy) && ahead(self, self->enemy))
-	{
-		VectorSubtract (self->s.origin, targ_org, v);
-		len = VectorLength (v);
-		// targ_org is within range and far enough above or below to warrant a jump
-		if ((len > 40) && (len < 600) && ((self->s.origin[2] < targ_org[2] - 18) || 
-			(self->s.origin[2] > targ_org[2] + 18)))
-		{
-			gi.dprintf("Jump from walk at enemy\n");
-			SetAnim(self,ANIM_JUMP);
-			return;
-		}
-	}*/
+	const float delta = anglemod(self->s.angles[YAW] - self->ideal_yaw);
 
-	delta = anglemod(self->s.angles[YAW] - self->ideal_yaw);
-	if (delta > 25 && delta <= 180)
-	{
+	if (delta > 25.0f && delta <= 180.0f)
 		SetAnim(self, ANIM_WALKRT);
-	}
-	else if (delta > 180 && delta < 335)
-	{
+	else if (delta > 180.0f && delta < 335.0f)
 		SetAnim(self, ANIM_WALKLEFT);
-	}
 	else
-	{
 		SetAnim(self, ANIM_WALK);
-	}
 }
 
 void tbeast_init_charge (edict_t *self)
@@ -2566,12 +2539,12 @@ void tbeast_go_charge (edict_t *self, edict_t *other, edict_t *activator)
 void TBeastStaticsInit(void)
 {
 	classStatics[CID_TBEAST].msgReceivers[MSG_STAND] = TBeastStandMsgHandler;
-	classStatics[CID_TBEAST].msgReceivers[MSG_WALK] = tbeast_walk;
+	classStatics[CID_TBEAST].msgReceivers[MSG_WALK] = TBeastWalkMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_RUN] = tbeast_run;
 	classStatics[CID_TBEAST].msgReceivers[MSG_EAT] = TBeastEatMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_MELEE] = tbeast_melee;
 	classStatics[CID_TBEAST].msgReceivers[MSG_MISSILE] = tbeast_start_charge;
-	classStatics[CID_TBEAST].msgReceivers[MSG_WATCH] = tbeast_walk;
+	classStatics[CID_TBEAST].msgReceivers[MSG_WATCH] = TBeastWalkMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_PAIN] = tbeast_pain;
 	classStatics[CID_TBEAST].msgReceivers[MSG_DEATH] = tbeast_death;
 
