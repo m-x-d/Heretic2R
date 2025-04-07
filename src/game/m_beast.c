@@ -803,26 +803,15 @@ void tbeast_land(edict_t* self)
 			P_KnockDownPlayer(&e->client->playerinfo);
 }
 
-void tbeast_roar_knockdown(edict_t *self)
+void tbeast_roar_knockdown(edict_t* self)
 {
-	edict_t *found = NULL;
-
-	if(irand(0, 2))
+	if (irand(0, 2) > 0)
 		return;
 
-	while(found = FindInRadius(found, self->s.origin, 512))
-	{
-		if(found->client && MG_IsAheadOf(self, found))
-		{
-			if(found->health > 0 && found->groundentity)
-			{
-				if(found->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
-				{
-					P_KnockDownPlayer(&found->client->playerinfo);
-				}
-			}
-		}
-	}
+	edict_t* e = NULL;
+	while ((e = FindInRadius(e, self->s.origin, 512.0f)) != NULL)
+		if (e->client != NULL && e->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN && MG_IsAheadOf(self, e) && e->health > 0 && e->groundentity != NULL)
+			P_KnockDownPlayer(&e->client->playerinfo);
 }
 
 void tbeast_roar(edict_t *self)
