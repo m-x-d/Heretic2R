@@ -1392,51 +1392,19 @@ void tbeast_leap(edict_t* self, float forward_offset, float right_offset, float 
 	VectorMA(self->velocity, up_offset, up, self->velocity);
 }
 
-/*========================
-
-  Hacky Trial Beast fake collision and slope-standing code
-
-  ========================*/
-
-/*
-
-  LerpAngleChange
-
-  */
-
-float LerpAngleChange (float curangle, float endangle, float step)
+// Hacky Trial Beast fake collision and slope-standing code.
+static float LerpAngleChange(float cur_angle, float end_angle, const float step)
 {
-	float final, diff;
+	cur_angle = NormalizeAngleDeg(anglemod(cur_angle));
+	end_angle = NormalizeAngleDeg(anglemod(end_angle));
 
-	curangle = anglemod(curangle);
-	endangle = anglemod(endangle);
+	float diff = end_angle - cur_angle;
 
-	if(curangle>180)
-		curangle-=360;
-	else if(curangle<-180)
-		curangle+=360;
+	if (FloatIsZeroEpsilon(diff)) //mxd. Avoid direct floats comparison. 
+		return 0.0f;
 
-	if(endangle>180)
-		endangle-=360;
-	else if(endangle<-180)
-		endangle+=360;
-
-	if(curangle == endangle)
-		return 0;
-
-	diff = endangle - curangle;
-
-	if(diff > 180)
-		diff -= 360;
-	else if(diff < -180)
-		diff += 360;
-
-	final = anglemod(curangle + diff/step);
-
-	if(final>180)
-		final-=360;
-	else if(final<-180)
-		final+=360;
+	diff = NormalizeAngleDeg(diff);
+	const float final = NormalizeAngleDeg(anglemod(cur_angle + diff / step));
 
 	return final;
 }
