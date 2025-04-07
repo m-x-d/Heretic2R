@@ -37,6 +37,20 @@ static ClassResourceInfo_t res_info;
 
 #pragma endregion
 
+#pragma region ========================== Utility functions ==========================
+
+// Fade the original monster back in again.
+static void MorphOriginalIn(edict_t* self)
+{
+	self->s.color.a += MORPH_TELE_FADE;
+	self->nextthink = level.time + FRAMETIME;
+
+	if (--self->morph_timer == 0)
+		self->think = self->oldthink;
+}
+
+#pragma endregion
+
 void ChickenStaticsInit(void)
 {
 	classStatics[CID_CHICKEN].msgReceivers[MSG_STAND] = chicken_stand;
@@ -142,17 +156,6 @@ void chicken_death(edict_t *self, G_Message_t *msg)
 	BecomeDebris(self);
 	gi.CreateEffect(&self->s, FX_CHICKEN_EXPLODE, CEF_OWNERS_ORIGIN, NULL, "" ); 
 
-}
-
-// fade the original monster back in again
-void MorphOriginalIn(edict_t *self)
-{
-	self->s.color.a += MORPH_TELE_FADE;
-	self->nextthink = level.time + FRAMETIME;
-	if (!(--self->morph_timer))
-	{
-		self->think = self->oldthink;
-	}
 }
 
 //Fade out the existing model till its gone
