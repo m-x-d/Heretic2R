@@ -1054,51 +1054,58 @@ void tbeast_throw_toy(edict_t* self)
 	//TODO: play SND_THROW?
 }
 
-void tbeast_toy_ofs(edict_t *self, float ofsf, float ofsr, float ofsu)
+void tbeast_shake_toy(edict_t* self, float forward_offset, float right_offset, float up_offset) //mxd. Named 'tbeast_toy_ofs' in original logic.
 {
-	vec3_t enemy_ofs, forward, right, up, blooddir, enemy_face;
-
-	if(!self->enemy)
+	if (self->enemy == NULL)
 		return;
 
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
 	AngleVectors(self->s.angles, forward, right, up);
-	VectorMA(self->s.origin, ofsf + TB_FWD_OFFSET - 32, forward, enemy_ofs);
-	VectorMA(enemy_ofs, ofsr, right, enemy_ofs);
-	VectorMA(enemy_ofs, ofsu + TB_UP_OFFSET, up, self->targetEnt->s.origin);
-	VectorSubtract(self->targetEnt->s.origin, self->s.origin, blooddir);
-	
-	VectorScale(blooddir, -1, enemy_face);
-	enemy_face[2]/=10;
-	vectoangles(enemy_face, self->targetEnt->s.angles);
 
-	switch(self->targetEnt->count)
+	vec3_t enemy_offset;
+	VectorMA(self->s.origin, forward_offset + TB_FWD_OFFSET - 32.0f, forward, enemy_offset);
+	VectorMA(enemy_offset, right_offset, right, enemy_offset);
+	VectorMA(enemy_offset, up_offset + TB_UP_OFFSET, up, self->targetEnt->s.origin);
+
+	vec3_t blood_dir;
+	VectorSubtract(self->targetEnt->s.origin, self->s.origin, blood_dir);
+
+	vec3_t enemy_dir;
+	VectorScale(blood_dir, -1.0f, enemy_dir);
+	enemy_dir[2] /= 10.0f;
+	vectoangles(enemy_dir, self->targetEnt->s.angles);
+
+	switch (self->targetEnt->count) //TODO: where is targetEnt->count assigned?..
 	{
 		case 1:
-			self->targetEnt->s.angles[PITCH]=anglemod(self->targetEnt->s.angles[PITCH]+90);//can't do roll?
+			self->targetEnt->s.angles[PITCH] = anglemod(self->targetEnt->s.angles[PITCH] + 90); // Can't do roll?
 			break;
+
 		case 2:
-			self->targetEnt->s.angles[PITCH]=anglemod(self->targetEnt->s.angles[PITCH]-90);//can't do roll?
+			self->targetEnt->s.angles[PITCH] = anglemod(self->targetEnt->s.angles[PITCH] - 90); // Can't do roll?
 			break;
+
 		case 3:
-			self->targetEnt->s.angles[ROLL]=anglemod(self->targetEnt->s.angles[ROLL]+90);//can't do roll?
+			self->targetEnt->s.angles[ROLL] = anglemod(self->targetEnt->s.angles[ROLL] + 90); // Can't do roll?
 			break;
+
 		case 4:
-			self->targetEnt->s.angles[ROLL]=anglemod(self->targetEnt->s.angles[ROLL]-90);//can't do roll?
+			self->targetEnt->s.angles[ROLL] = anglemod(self->targetEnt->s.angles[ROLL] - 90); // Can't do roll?
 			break;
+
 		default:
 			break;
 	}
 
-
 	VectorClear(self->targetEnt->velocity);
 	VectorClear(self->targetEnt->avelocity);
 
-	if(flrand(0,1)<0.5)
+	if (flrand(0.0f, 1.0f) < 0.5f)
 	{
-		if(self->targetEnt->materialtype == MAT_INSECT)
-			gi.CreateEffect(&self->targetEnt->s, FX_BLOOD, CEF_FLAG8, self->targetEnt->s.origin, "ub", blooddir, 200);
-		else
-			gi.CreateEffect(&self->targetEnt->s, FX_BLOOD, 0, self->targetEnt->s.origin, "ub", blooddir, 200);
+		const int fx_flags = ((self->targetEnt->materialtype == MAT_INSECT) ? CEF_FLAG8 : 0); //mxd
+		gi.CreateEffect(&self->targetEnt->s, FX_BLOOD, fx_flags, self->targetEnt->s.origin, "ub", blood_dir, 200);
 	}
 }
 

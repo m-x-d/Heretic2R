@@ -122,7 +122,7 @@ void tbeast_roar(edict_t* self);
 void tbeast_apply_jump(edict_t* self);
 void tbeast_ready_catch(edict_t* self);
 void tbeast_throw_toy(edict_t* self);
-void tbeast_toy_ofs(edict_t* self, float ofsf, float ofsr, float ofsu);
+void tbeast_shake_toy(edict_t* self, float ofsf, float ofsr, float ofsu);
 void tbeast_check_snatch(edict_t* self, float ofsf, float ofsr, float ofsu);
 void tbeast_gore_toy(edict_t* self, float jumpht);
 void tbeast_anger_sound(edict_t* self);

@@ -536,62 +536,62 @@ const animmove_t tbeast_move_stun = { 28, tbeast_frames_stun, tbeast_pause };
 // TB bite way up success finish
 static const animframe_t tbeast_frames_biteup2_sfin[] =
 {
-	{ FRAME_atkc4, tbeast_toy_ofs, 200,  0,  132, NULL, 0, tbeast_anger_sound },
-	{ FRAME_atkc5, tbeast_toy_ofs, 176, -4,  96,  NULL, 0, NULL },
-	{ FRAME_atkc6, tbeast_toy_ofs, 160, -12, 80,  NULL, 0, NULL },
-	{ FRAME_atkc7, tbeast_toy_ofs, 152, -4,  72,  NULL, 0, NULL },
+	{ FRAME_atkc4, tbeast_shake_toy, 200,  0,  132, NULL, 0, tbeast_anger_sound },
+	{ FRAME_atkc5, tbeast_shake_toy, 176, -4,  96,  NULL, 0, NULL },
+	{ FRAME_atkc6, tbeast_shake_toy, 160, -12, 80,  NULL, 0, NULL },
+	{ FRAME_atkc7, tbeast_shake_toy, 152, -4,  72,  NULL, 0, NULL },
 };
 const animmove_t tbeast_move_biteup2_sfin = { 4, tbeast_frames_biteup2_sfin, tbeast_go_snatch };
 
 // TB bite up success finish.
 static const animframe_t tbeast_frames_biteup_sfin[] =
 {
-	{ FRAME_atka4, tbeast_toy_ofs, 200,  0,  132, NULL, 0, tbeast_anger_sound },
-	{ FRAME_atka5, tbeast_toy_ofs, 176, -4,  96,  NULL, 0, NULL },
-	{ FRAME_atka6, tbeast_toy_ofs, 160, -12, 80,  NULL, 0, NULL },
-	{ FRAME_atka7, tbeast_toy_ofs, 152, -4,  72,  NULL, 0, NULL },
+	{ FRAME_atka4, tbeast_shake_toy, 200,  0,  132, NULL, 0, tbeast_anger_sound },
+	{ FRAME_atka5, tbeast_shake_toy, 176, -4,  96,  NULL, 0, NULL },
+	{ FRAME_atka6, tbeast_shake_toy, 160, -12, 80,  NULL, 0, NULL },
+	{ FRAME_atka7, tbeast_shake_toy, 152, -4,  72,  NULL, 0, NULL },
 };
 const animmove_t tbeast_move_biteup_sfin = { 4, tbeast_frames_biteup_sfin, tbeast_go_snatch };
 
 // TB bite low success finish.
 static const animframe_t tbeast_frames_bitelow_sfin[] =
 {
-	{ FRAME_atkb5,	tbeast_toy_ofs, 216, 0,  64, NULL, 0, NULL },
-	{ FRAME_atkb6,	tbeast_toy_ofs, 208, 0,  62, NULL, 0, tbeast_anger_sound },
-	{ FRAME_atkb7,	tbeast_toy_ofs, 196, 0,  56, NULL, 0, NULL },
-	{ FRAME_atkb8,	tbeast_toy_ofs, 184, 0,  54, NULL, 0, NULL },
-	{ FRAME_atkb9,	tbeast_toy_ofs, 176, 2,  60, NULL, 0, tbeast_anger_sound },
-	{ FRAME_atkb10,	tbeast_toy_ofs, 178, 10, 64, NULL, 0, NULL },
+	{ FRAME_atkb5,	tbeast_shake_toy, 216, 0,  64, NULL, 0, NULL },
+	{ FRAME_atkb6,	tbeast_shake_toy, 208, 0,  62, NULL, 0, tbeast_anger_sound },
+	{ FRAME_atkb7,	tbeast_shake_toy, 196, 0,  56, NULL, 0, NULL },
+	{ FRAME_atkb8,	tbeast_shake_toy, 184, 0,  54, NULL, 0, NULL },
+	{ FRAME_atkb9,	tbeast_shake_toy, 176, 2,  60, NULL, 0, tbeast_anger_sound },
+	{ FRAME_atkb10,	tbeast_shake_toy, 178, 10, 64, NULL, 0, NULL },
 };
 const animmove_t tbeast_move_bitelow_sfin = { 6, tbeast_frames_bitelow_sfin, tbeast_go_snatch };
 
 // TB snatch throw & catch.
 static const animframe_t tbeast_frames_snatch[] =
 {
-	{ FRAME_eatinga6,	tbeast_toy_ofs, 164, -16,  94,  NULL, 0,  NULL },
-	{ FRAME_eatinga7,	tbeast_toy_ofs, 152, -68,  60,  NULL, 0,  NULL },
-	{ FRAME_eatinga8,	tbeast_toy_ofs, 112, -88,  56,  NULL, 0,  tbeast_anger_sound },
-	{ FRAME_eatinga9,	tbeast_toy_ofs, 104, -80,  64,  NULL, 0,  NULL },
-	{ FRAME_eatinga10,	tbeast_toy_ofs, 128, -64,  80,  NULL, 0,  NULL },
-	{ FRAME_eatinga11,	tbeast_toy_ofs, 160, -16,  84,  NULL, 0,  NULL },
-	{ FRAME_eatinga12,	tbeast_toy_ofs, 152,  104, 112, NULL, 0,  tbeast_anger_sound },
-	{ FRAME_eatinga13,	tbeast_toy_ofs, 128,  116, 128, NULL, 0,  NULL },
-	{ FRAME_eatinga14,	tbeast_toy_ofs, 136,  124, 132, NULL, 0,  NULL },
-	{ FRAME_eatinga15,	tbeast_toy_ofs, 160,  48,  124, NULL, 0,  NULL },
-	{ FRAME_eatinga16,	tbeast_toy_ofs, 168, -56,  98,  NULL, 0,  tbeast_anger_sound },
-	{ FRAME_eatinga17,	tbeast_toy_ofs, 136, -100, 56,  NULL, 0,  NULL },
-	{ FRAME_eatinga18,	tbeast_toy_ofs, 104, -96,  52,  NULL, 0,  NULL },
-	{ FRAME_eatinga19,	tbeast_toy_ofs, 88,  -92,  49,  NULL, 0,  NULL },
-	{ FRAME_eatinga20,	tbeast_toy_ofs, 96,  -88,  64,  NULL, 0,  tbeast_anger_sound },
-	{ FRAME_eatinga21,	tbeast_toy_ofs, 126, -80,  64,  NULL, 0,  NULL },
-	{ FRAME_eatinga22,	tbeast_toy_ofs, 142, -56,  53,  NULL, 0,  NULL },
-	{ FRAME_eatinga23,	tbeast_toy_ofs, 146, -18,  34,  NULL, 0,  tbeast_anger_sound },
-	{ FRAME_eatinga24,	tbeast_toy_ofs, 136,  24,  16,  NULL, 0,  NULL },
-	{ FRAME_eatinga25,	tbeast_toy_ofs, 120,  48, -8,   NULL, 0,  NULL },
-	{ FRAME_jumpb21,	tbeast_toy_ofs, 96,  -32,  8,   NULL, 0, tbeast_anger_sound },
-	{ FRAME_jumpb20,	tbeast_toy_ofs, 128, -34,  12,  NULL, 0, tbeast_anger_sound },
-	{ FRAME_jumpb19,	tbeast_toy_ofs, 164,  0,   128, NULL, 0, tbeast_anger_sound },
-	{ FRAME_jumpb18,	tbeast_toy_ofs, 148,  0,   216, NULL, 0, tbeast_throw_toy },
+	{ FRAME_eatinga6,	tbeast_shake_toy, 164, -16,  94,  NULL, 0,  NULL },
+	{ FRAME_eatinga7,	tbeast_shake_toy, 152, -68,  60,  NULL, 0,  NULL },
+	{ FRAME_eatinga8,	tbeast_shake_toy, 112, -88,  56,  NULL, 0,  tbeast_anger_sound },
+	{ FRAME_eatinga9,	tbeast_shake_toy, 104, -80,  64,  NULL, 0,  NULL },
+	{ FRAME_eatinga10,	tbeast_shake_toy, 128, -64,  80,  NULL, 0,  NULL },
+	{ FRAME_eatinga11,	tbeast_shake_toy, 160, -16,  84,  NULL, 0,  NULL },
+	{ FRAME_eatinga12,	tbeast_shake_toy, 152,  104, 112, NULL, 0,  tbeast_anger_sound },
+	{ FRAME_eatinga13,	tbeast_shake_toy, 128,  116, 128, NULL, 0,  NULL },
+	{ FRAME_eatinga14,	tbeast_shake_toy, 136,  124, 132, NULL, 0,  NULL },
+	{ FRAME_eatinga15,	tbeast_shake_toy, 160,  48,  124, NULL, 0,  NULL },
+	{ FRAME_eatinga16,	tbeast_shake_toy, 168, -56,  98,  NULL, 0,  tbeast_anger_sound },
+	{ FRAME_eatinga17,	tbeast_shake_toy, 136, -100, 56,  NULL, 0,  NULL },
+	{ FRAME_eatinga18,	tbeast_shake_toy, 104, -96,  52,  NULL, 0,  NULL },
+	{ FRAME_eatinga19,	tbeast_shake_toy, 88,  -92,  49,  NULL, 0,  NULL },
+	{ FRAME_eatinga20,	tbeast_shake_toy, 96,  -88,  64,  NULL, 0,  tbeast_anger_sound },
+	{ FRAME_eatinga21,	tbeast_shake_toy, 126, -80,  64,  NULL, 0,  NULL },
+	{ FRAME_eatinga22,	tbeast_shake_toy, 142, -56,  53,  NULL, 0,  NULL },
+	{ FRAME_eatinga23,	tbeast_shake_toy, 146, -18,  34,  NULL, 0,  tbeast_anger_sound },
+	{ FRAME_eatinga24,	tbeast_shake_toy, 136,  24,  16,  NULL, 0,  NULL },
+	{ FRAME_eatinga25,	tbeast_shake_toy, 120,  48, -8,   NULL, 0,  NULL },
+	{ FRAME_jumpb21,	tbeast_shake_toy, 96,  -32,  8,   NULL, 0, tbeast_anger_sound },
+	{ FRAME_jumpb20,	tbeast_shake_toy, 128, -34,  12,  NULL, 0, tbeast_anger_sound },
+	{ FRAME_jumpb19,	tbeast_shake_toy, 164,  0,   128, NULL, 0, tbeast_anger_sound },
+	{ FRAME_jumpb18,	tbeast_shake_toy, 148,  0,   216, NULL, 0, tbeast_throw_toy },
 	{ FRAME_jumpb19,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jumpb1,		NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jumpb2,		NULL, 0, 0, 0, NULL, 0, NULL },
