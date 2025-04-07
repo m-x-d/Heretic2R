@@ -1303,7 +1303,7 @@ void tbeast_gibs(edict_t* self)
 	tbeast_anger_sound(self);
 }
 
-void tbeast_done_gore (edict_t *self)
+void tbeast_done_gore(edict_t* self)
 {
 	self->msgHandler = DefaultMsgHandler;
 	self->count = 0;
