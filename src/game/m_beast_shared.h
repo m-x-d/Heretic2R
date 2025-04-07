@@ -127,7 +127,7 @@ void tbeast_check_snatch(edict_t* self, float ofsf, float ofsr, float ofsu);
 void tbeast_gore_toy(edict_t* self, float jumpht);
 void tbeast_anger_sound(edict_t* self);
 void tbeast_leap(edict_t* self, float fwdf, float rghtf, float upf);
-void tbeast_eatorder(edict_t* self);
+void tbeast_eat_order(edict_t* self);
 void tbeast_footstep(edict_t* self);
 void tbeast_walk_order(edict_t* self);
 void tbeast_stand_order(edict_t* self);

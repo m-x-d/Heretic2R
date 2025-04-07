@@ -834,12 +834,10 @@ void tbeast_roar_short(edict_t* self)
 	}
 }
 
-void tbeast_eatorder (edict_t *self)
+void tbeast_eat_order(edict_t* self) //mxd. Named 'tbeast_eatorder' in original logic.
 {
-	if(TBeastCheckMood(self))
-		return;
-
-	QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+	if (!TBeastCheckMood(self))
+		QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 }
 
 void tbeast_apply_jump (edict_t *self) //TODO: unused

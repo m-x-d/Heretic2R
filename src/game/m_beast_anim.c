@@ -67,7 +67,7 @@ static const animframe_t tbeast_frames_eating_twitch[] =
 	{ FRAME_eatingb7, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_eatingb8, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t tbeast_move_eating_twitch = { 8, tbeast_frames_eating_twitch, tbeast_eatorder };
+const animmove_t tbeast_move_eating_twitch = { 8, tbeast_frames_eating_twitch, tbeast_eat_order };
 
 // TB eating.
 static const animframe_t tbeast_frames_eating[] =
@@ -79,7 +79,7 @@ static const animframe_t tbeast_frames_eating[] =
 	{ FRAME_eatingc5, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_eatingc6, NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t tbeast_move_eating = { 6, tbeast_frames_eating, tbeast_eatorder };
+const animmove_t tbeast_move_eating = { 6, tbeast_frames_eating, tbeast_eat_order };
 
 // TB bending down, eating.
 static const animframe_t tbeast_frames_eatdown[] =
@@ -98,7 +98,7 @@ static const animframe_t tbeast_frames_eatdown[] =
 	{ FRAME_eatran12,	NULL, 0, 0, 0, NULL, 0, tbeast_gibs },
 	{ FRAME_eatran13,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t tbeast_move_eatdown = { 13, tbeast_frames_eatdown, tbeast_eatorder };
+const animmove_t tbeast_move_eatdown = { 13, tbeast_frames_eatdown, tbeast_eat_order };
 
 // TB walking.
 static const animframe_t tbeast_frames_walk[] =
