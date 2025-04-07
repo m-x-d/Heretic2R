@@ -814,14 +814,9 @@ void tbeast_roar_knockdown(edict_t* self)
 			P_KnockDownPlayer(&e->client->playerinfo);
 }
 
-void tbeast_roar(edict_t *self)
+void tbeast_roar(edict_t* self)
 {
-/*	vec3_t forward, endpos;
-
-	AngleVectors(self->s.angles, forward, NULL, NULL);
-	VectorMA(self->s.origin, 128, forward, endpos);
-	gi.CreateEffect( NULL, FX_FLAMETHROWER, 0, endpos, "df", forward, 200);*/
-	gi.sound(self, CHAN_VOICE, sounds[SND_ROAR2], 1, ATTN_NONE, 0);
+	gi.sound(self, CHAN_VOICE, sounds[SND_ROAR2], 1.0f, ATTN_NONE, 0.0f);
 }
 
 void tbeast_roar_short(edict_t *self)
