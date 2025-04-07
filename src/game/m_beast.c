@@ -1699,25 +1699,11 @@ static void TBeastFakeImpact(edict_t* self, trace_t* trace, const qboolean crush
 	}
 }
 
-qboolean boxes_overlap(vec3_t mins1, vec3_t maxs1, vec3_t mins2, vec3_t maxs2)
+static qboolean BBoxesOverlap(const vec3_t mins1, const vec3_t maxs1, const vec3_t mins2, const vec3_t maxs2) //mxd. Named 'boxes_overlap' in original logic.
 {
-	if(mins1[0]>maxs2[0])
-		return false;
-
-	if(mins1[1]>maxs2[1])
-		return false;
-
-	if(mins1[2]>maxs2[2])
-		return false;
-
-	if(maxs1[0]<mins2[0])
-		return false;
-
-	if(maxs1[1]<mins2[1])
-		return false;
-
-	if(maxs1[2]<mins2[2])
-		return false;
+	for (int i = 0; i < 3; i++)
+		if (mins1[i] > maxs2[i] || maxs1[i] < mins2[i])
+			return false;
 
 	return true;
 }
@@ -1965,9 +1951,9 @@ void tbeast_fake_touch(edict_t *self)
 				{
 					VectorAdd(other->s.origin, other->mins, omins);
 					VectorAdd(other->s.origin, other->maxs, omaxs);
-					if(boxes_overlap(omins, omaxs, lfootmins, lfootmaxs))
+					if(BBoxesOverlap(omins, omaxs, lfootmins, lfootmaxs))
 						hitme = true;
-					else if(boxes_overlap(omins, omaxs, rfootmins, rfootmaxs))
+					else if(BBoxesOverlap(omins, omaxs, rfootmins, rfootmaxs))
 						hitme = true;
 				}
 			}
