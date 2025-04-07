@@ -35,7 +35,7 @@
   Chicken Base Info
 -----------------------------------------------------------------------*/
 
-static animmove_t *animations[NUM_ANIMS] =
+static const animmove_t *animations[NUM_ANIMS] =
 {
 	&chicken_move_stand1,
 	&chicken_move_walk,
