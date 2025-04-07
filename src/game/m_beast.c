@@ -545,7 +545,7 @@ void tbeast_footstep(edict_t* self)
 	AngleVectors(self->s.angles, forward, right, up);
 
 	vec3_t pos;
-	const int leg_check_index = tbeast_inwalkframes(self);
+	const int leg_check_index = TBeastGetWalkFrame(self);
 
 	if (leg_check_index > -1)
 	{
@@ -1409,61 +1409,39 @@ static float LerpAngleChange(float cur_angle, float end_angle, const float step)
 	return final;
 }
 
-int tbeast_inwalkframes(edict_t *self)
+static int TBeastGetWalkFrame(const edict_t* self) //mxd. Named 'tbeast_inwalkframes' in original logic.
 {
-	if(self->curAnimID == ANIM_CHARGE||self->curAnimID==ANIM_QUICK_CHARGE)
+	if (self->curAnimID == ANIM_CHARGE || self->curAnimID == ANIM_QUICK_CHARGE)
 	{
-		switch(self->s.frame)
+		switch (self->s.frame)
 		{
-		case FRAME_charge1:
-			return 2;
-			break;
-		case FRAME_charge2:
-			return 4;
-			break;
-		case FRAME_charge3:
-			return 6;
-			break;
-		case FRAME_charge4:
-			return 8;
-			break;
-		case FRAME_charge5:
-			return 9;
-			break;
-		case FRAME_charge6:
-			return 7;
-			break;
-		case FRAME_charge7:
-			return 13;
-			break;
-		case FRAME_charge8:
-			return 15;
-			break;
-		case FRAME_charge9:
-			return 1;
-			break;
-		case FRAME_charge10:
-			return 0;
-			break;
-		default:
-			return -1;
-			break;
+			case FRAME_charge1: return 2;
+			case FRAME_charge2: return 4;
+			case FRAME_charge3: return 6;
+			case FRAME_charge4: return 8;
+			case FRAME_charge5: return 9;
+			case FRAME_charge6: return 7;
+			case FRAME_charge7: return 13;
+			case FRAME_charge8: return 15;
+			case FRAME_charge9: return 1;
+			case FRAME_charge10: return 0;
+			default: return -1;
 		}
 	}
 
-	if(self->s.frame>=FRAME_walk1 && self->s.frame<=FRAME_walk18)
+	if (self->s.frame >= FRAME_walk1 && self->s.frame <= FRAME_walk18)
 		return self->monsterinfo.currframeindex;
 
-	if(self->s.frame>=FRAME_wlklft1 && self->s.frame<=FRAME_wlklft18)
-		return self->monsterinfo.currframeindex;
-	
-	if(self->s.frame>=FRAME_wlkrt1 && self->s.frame<=FRAME_wlkrt18)
+	if (self->s.frame >= FRAME_wlklft1 && self->s.frame <= FRAME_wlklft18)
 		return self->monsterinfo.currframeindex;
 
-	if(self->s.frame>=FRAME_wlkatk1 && self->s.frame<=FRAME_wlkatk18)
+	if (self->s.frame >= FRAME_wlkrt1 && self->s.frame <= FRAME_wlkrt18)
 		return self->monsterinfo.currframeindex;
 
-	if(self->s.frame>=FRAME_wait1 && self->s.frame<=FRAME_wait14)
+	if (self->s.frame >= FRAME_wlkatk1 && self->s.frame <= FRAME_wlkatk18)
+		return self->monsterinfo.currframeindex;
+
+	if (self->s.frame >= FRAME_wait1 && self->s.frame <= FRAME_wait14)
 		return 16;
 
 	return -1;
@@ -1488,7 +1466,7 @@ void LevelToGround (edict_t *self, float fscale, float rscale, qboolean z_adjust
 
 	AngleVectors(self->s.angles, forward, right, up);
 	
-	leg_check_index = tbeast_inwalkframes(self);
+	leg_check_index = TBeastGetWalkFrame(self);
 
 	if(leg_check_index > -1)
 	{//set up leg checks - only if in these frames
@@ -1839,7 +1817,7 @@ void tbeast_check_impacts(edict_t *self)
 	VectorSet(mins, -50, -50, -61);
 	VectorSet(maxs, 50, 50, 70);
 
-	leg_check_index = tbeast_inwalkframes(self);
+	leg_check_index = TBeastGetWalkFrame(self);
 
 	if(leg_check_index > -1)
 	{//set up leg checks - FIXME: trace from last footpos to current one
@@ -1927,7 +1905,7 @@ void tbeast_fake_touch(edict_t *self)
 
 	AngleVectors(self->s.angles, forward, right, up);
 
-	leg_check_index = tbeast_inwalkframes(self);
+	leg_check_index = TBeastGetWalkFrame(self);
 
 	if(leg_check_index > -1)
 	{//set up leg checks - FIXME: trace from last footpos to current one

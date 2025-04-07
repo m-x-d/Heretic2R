@@ -9,4 +9,4 @@
 #include "q_Typedef.h"
 
 static qboolean TBeastCheckMood(edict_t* self);
-static int tbeast_inwalkframes(const edict_t* self);
+static int TBeastGetWalkFrame(const edict_t* self);
