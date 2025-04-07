@@ -429,76 +429,39 @@ static void TBeastMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 		SetAnim(self, ANIM_WALK);
 }
 
-#define TBEAST_SBAR_SIZE	3500
-
-/*----------------------------------------------------------------------
-  TBeast Run -decide which run animations to use
------------------------------------------------------------------------*/
-void tbeast_run(edict_t *self, G_Message_t *msg)
+// Decide which run animation to use.
+static void TBeastRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'tbeast_run' in original logic.
 {
-	vec3_t	v;
-	float	len;
-	float	delta;
-	qboolean enemy_vis;
-	vec3_t targ_org;
-
-	if(!M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 		return;
 
-	if(!MG_TryGetTargetOrigin(self, targ_org))
+	vec3_t target_origin;
+	if (!MG_TryGetTargetOrigin(self, target_origin))
 		return;
 
-	if(!self->dmg)
+	if (!self->dmg)
 	{
 		self->dmg = true;
 		SetAnim(self, ANIM_CHARGE);
+
 		return;
 	}
 
-	VectorSubtract (self->s.origin, targ_org, v);
-	len = VectorLength (v);
-
-	enemy_vis = AI_IsClearlyVisible(self, self->enemy);
-/*	if(enemy_vis && ahead(self, self->enemy))
-	{
-		// Enemy is within range and far enough above or below to warrant a jump
-		if ((len > 40) && (len < 600) && ((self->s.origin[2] < self->enemy->s.origin[2] - 40) || 
-			(self->s.origin[2] > self->enemy->s.origin[2] + 40)))
-		{
-			if (abs(self->s.origin[2] - self->enemy->s.origin[2] - 40) < 200) // Can't jump more than 200 high
-			{
-				if (!irand(0, 2))
-				{
-					gi.dprintf("Jump from run at enemy\n");
-					SetAnim(self, ANIM_JUMP);
-					return;
-				}
-			}
-		}
-	}*/
-
-	if (self->enemy->classID != CID_TCHECKRIK && enemy_vis && ((irand(0, 1) && AI_IsInfrontOf(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && HaveShoulderRoomAhead(self))
+	if (AI_IsClearlyVisible(self, self->enemy) && TBeastCanCharge(self))
 	{
 		TBeastInitCharge(self);
+		return;
 	}
-	else// if ((len < 200) && (self->monsterinfo.currframeindex == 0))
-	{
-		delta = anglemod(self->s.angles[YAW] - self->ideal_yaw);
-		if (delta > 45 && delta <= 180)
-		{
-			SetAnim(self, ANIM_WALKRT);		// Turn right
-		}
-		else if (delta > 180 && delta < 315)
-		{
-			SetAnim(self, ANIM_WALKLEFT);		// Turn left
-		}
-		else
-		{
-			SetAnim(self, ANIM_WALK);		// Run on 
-		}
-	}
-}
 
+	const float delta = anglemod(self->s.angles[YAW] - self->ideal_yaw);
+
+	if (delta > 45.0f && delta <= 180.0f)
+		SetAnim(self, ANIM_WALKRT); // Turn right.
+	else if (delta > 180.0f && delta < 315.0f)
+		SetAnim(self, ANIM_WALKLEFT); // Turn left.
+	else
+		SetAnim(self, ANIM_WALK); // Run on.
+}
 
 /*----------------------------------------------------------------------
   TBeast Pain - make the decision between pains 1, 2, or 3
@@ -2397,6 +2360,8 @@ void tbeast_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *s
 
 void tbeast_post_think (edict_t *self)
 {
+#define TBEAST_SBAR_SIZE	3500
+
 	trace_t		trace;
 	vec3_t		end, mins, maxs;
 	float		omins2;
@@ -2529,7 +2494,7 @@ void TBeastStaticsInit(void)
 {
 	classStatics[CID_TBEAST].msgReceivers[MSG_STAND] = TBeastStandMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_WALK] = TBeastWalkMsgHandler;
-	classStatics[CID_TBEAST].msgReceivers[MSG_RUN] = tbeast_run;
+	classStatics[CID_TBEAST].msgReceivers[MSG_RUN] = TBeastRunMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_EAT] = TBeastEatMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_MELEE] = TBeastMeleeMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_MISSILE] = TBeastMissileMsgHandler;
