@@ -2001,90 +2001,86 @@ static void TBeastTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface
 	TBeastFakeTouch(self);
 }
 
-void tbeast_post_think (edict_t *self)
+static void TBeastPostThink(edict_t* self) //mxd. Named 'tbeast_post_think' in original logic.
 {
 #define TBEAST_SBAR_SIZE	3500
 
-	trace_t		trace;
-	vec3_t		end, mins, maxs;
-	float		omins2;
-	qboolean	go_jump = false;
-
-	if(self->monsterinfo.awake)
+	if (self->monsterinfo.awake)
 	{
-		if(self->volume < (float)(self->max_health))
+		if (self->volume < (float)self->max_health)
 		{
-			M_ShowLifeMeter(self, (int)(ceil(self->volume/self->max_health*TBEAST_SBAR_SIZE)), (int)(ceil(self->volume/self->max_health*TBEAST_SBAR_SIZE)));
-			self->volume += (float)(self->max_health) / 10;
+			// Initial healthbar buildup. //TODO: was broken in original logic. Check animation speed... 
+			M_ShowLifeMeter(self, (int)(ceilf(self->volume / (float)self->max_health * TBEAST_SBAR_SIZE)), TBEAST_SBAR_SIZE); //BUGFIX: mxd. Original logic uses the same value for 'value' and 'max_value' args.
+			self->volume += (float)self->max_health / 10.0f;
 		}
-		else if(self->health > 0)
+		else if (self->health > 0)
 		{
-			M_ShowLifeMeter(self, (int)(ceil((float)(self->health)/(float)(self->max_health)*TBEAST_SBAR_SIZE)), TBEAST_SBAR_SIZE);
+			M_ShowLifeMeter(self, (int)(ceilf((float)self->health / (float)self->max_health * TBEAST_SBAR_SIZE)), TBEAST_SBAR_SIZE);
 		}
 	}
 
-	if(self->s.origin[0] != self->s.old_origin[0] || self->s.origin[1] != self->s.old_origin[1])
+	const qboolean moved = (FloatIsZeroEpsilon(self->s.origin[0] - self->s.old_origin[0]) || FloatIsZeroEpsilon(self->s.origin[1] - self->s.old_origin[1])); //mxd. Avoid direct floats comparison.
+
+	if (moved)
 		LevelToGround(self);
 
-	if(Q_fabs(self->s.angles[PITCH])>45 || Q_fabs(self->s.angles[ROLL])>45)
-		go_jump = true;
-	else
+	qboolean go_jump = false;
+
+	if (Q_fabs(self->s.angles[PITCH]) > 45.0f || Q_fabs(self->s.angles[ROLL]) > 45.0f)
 	{
-		//raise him up if on flat ground, lower is on slope - to keep feet on ground!
+		go_jump = true;
+	}
+	else if (moved)
+	{
+		// Raise him up if on flat ground, lower is on slope - to keep feet on ground!
 		//FIXME - use checkbottom plane instead?
-		
-		if(self->s.origin[0] != self->s.old_origin[0] || self->s.origin[1] != self->s.old_origin[1])
+		float mins_z = self->mins[2];
+		self->mins[2] = ((Q_fabs(self->s.angles[PITCH]) + Q_fabs(self->s.angles[ROLL])) * 0.5f) / 45.0f * 144.0f - 6.0f + TB_UP_OFFSET;
+		mins_z -= self->mins[2];
+
+		if (mins_z != 0.0f)
 		{
-			omins2 = self->mins[2];
-			self->mins[2] = ((Q_fabs(self->s.angles[PITCH]) + Q_fabs(self->s.angles[ROLL]))*0.5)/45 * 144 - 6 + TB_UP_OFFSET;
-			omins2 -= self->mins[2];
-			if(omins2)
-			{
-				VectorCopy(self->s.origin, end);
-				end[2] += omins2;
-				gi.trace(self->s.origin, self->mins, self->maxs, end, self, MASK_SOLID,&trace);
-				VectorCopy(trace.endpos, self->s.origin);
-			}
-			gi.linkentity(self);
+			vec3_t end;
+			VectorCopy(self->s.origin, end);
+			end[2] += mins_z;
+
+			trace_t trace;
+			gi.trace(self->s.origin, self->mins, self->maxs, end, self, MASK_SOLID, &trace);
+			VectorCopy(trace.endpos, self->s.origin);
 		}
+
+		gi.linkentity(self);
 	}
 
 	VectorCopy(self->s.origin, self->s.old_origin);
-//	if(!TB_CheckBottom(self))
-//	{
-//		gi.dprintf("Beast not on ground jump!\n");
-//		SetAnim(self, ANIM_JUMP);
-//	}
 
-	if(!irand(0, 10))
+	if (irand(0, 10) == 0)
 	{
-		if(self->curAnimID == ANIM_WALK ||
+		if (self->curAnimID == ANIM_WALK ||
 			self->curAnimID == ANIM_WALKLEFT ||
 			self->curAnimID == ANIM_WALKRT ||
 			self->curAnimID == ANIM_WALKATK)
 		{
+			vec3_t end;
 			VectorCopy(self->s.origin, end);
-			end[2] -= 64;
+			end[2] -= 64.0f;
 
-			VectorSet(mins, -8, -8, 0);
-			VectorSet(maxs, 8, 8, 2);
+			const vec3_t mins = { -8.0f, -8.0f, 0.0f };
+			const vec3_t maxs = {  8.0f,  8.0f, 2.0f };
 
-			gi.trace(self->s.origin, mins, maxs, end, self, MASK_SOLID,&trace);
-			if(trace.fraction == 1.0 && !trace.startsolid && !trace.allsolid)
+			trace_t trace;
+			gi.trace(self->s.origin, mins, maxs, end, self, MASK_SOLID, &trace);
+
+			if (trace.fraction == 1.0f && !trace.startsolid && !trace.allsolid)
 				go_jump = true;
 		}
 	}
-	
-	if(go_jump)
-	{
-//		gi.dprintf("Beast not on ground jump!\n");
-		TB_CheckJump (self);
-		//SetAnim(self, ANIM_JUMP);
-	}
+
+	if (go_jump)
+		TB_CheckJump(self);
 
 	TBeastFakeTouch(self);
-
-	self->next_post_think = level.time + 0.1;
+	self->next_post_think = level.time + 0.1f;
 }
 
 edict_t *TB_CheckHit(const vec3_t start, vec3_t end) //mxd. Named 'check_hit_beast' in original logic.
@@ -2286,7 +2282,7 @@ void SP_monster_trial_beast (edict_t *self)
 	self->monsterinfo.aiflags |= AI_NIGHTVISION;
 
 	self->touch = TBeastTouch;
-	self->post_think = tbeast_post_think;
+	self->post_think = TBeastPostThink;
 	self->next_post_think = level.time + 0.1;
 	self->elasticity = ELASTICITY_SLIDE;
 	self->count = self->sounds = 0;
