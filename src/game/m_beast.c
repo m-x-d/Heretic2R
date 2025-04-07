@@ -594,17 +594,16 @@ void tbeast_footstep(edict_t* self)
 	gi.sound(self, CHAN_BODY, sounds[irand(SND_STEP1, SND_STEP2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void tbeast_growl (edict_t *self)
+void tbeast_growl(edict_t* self)
 {
-	int chance;
+	const int chance = irand(0, 200);
 
-	chance = irand(0, 200);
 	if (chance < 10)
-		gi.sound(self, CHAN_VOICE, sounds[SND_GROWL1], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_VOICE, sounds[SND_GROWL1], 1.0f, ATTN_NORM, 0.0f);
 	else if (chance < 20)
-		gi.sound(self, CHAN_VOICE, sounds[SND_GROWL2], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_VOICE, sounds[SND_GROWL2], 1.0f, ATTN_NORM, 0.0f);
 	else if (chance < 30)
-		gi.sound(self, CHAN_VOICE, sounds[SND_GROWL3], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_VOICE, sounds[SND_GROWL3], 1.0f, ATTN_NORM, 0.0f);
 }
 
 void tbeast_snort (edict_t *self)
