@@ -1253,11 +1253,6 @@ void tbeast_gore_toy(edict_t* self, float jump_height)
 	}
 }
 
-void tbeast_miss_sound (edict_t *self)
-{
-	gi.sound(self, CHAN_WEAPON, sounds[SND_SNATCH], 1, ATTN_NORM, 0);
-}
-
 void tbeast_anger_sound (edict_t *self)
 {
 	byte chance;
