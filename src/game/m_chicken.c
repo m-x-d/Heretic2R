@@ -151,6 +151,29 @@ static void ChickenJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 
 #pragma endregion
 
+#pragma region ========================== Action functions ==========================
+
+// Check if its time to return to our original shape.
+void chicken_check(edict_t* self) //TODO: rename to chicken_check_unmorph.
+{
+	// Are we done yet?
+	if (self->time > level.time)
+		return;
+
+	// Make that pretty effect around us.
+	gi.CreateEffect(&self->s, FX_PLAYER_TELEPORT_OUT, CEF_OWNERS_ORIGIN, NULL, "");
+
+	// Deal with the existing chicken.
+	self->think = MorphChickenOut;
+	self->nextthink = level.time + FRAMETIME;
+	self->touch = NULL;
+	self->morph_timer = MORPH_TELE_TIME;
+
+	VectorClear(self->velocity);
+}
+
+#pragma endregion
+
 void ChickenStaticsInit(void)
 {
 	classStatics[CID_CHICKEN].msgReceivers[MSG_STAND] = ChickenStandMsgHandler;
@@ -243,34 +266,6 @@ void SP_monster_chicken (edict_t *self)
 	gi.linkentity(self); 
 
 }
-
-/*-------------------------------------------------------------------------
-	chicken checks to see if we are still a chicken, or is it time to return to 
-	our original shape ?
--------------------------------------------------------------------------*/
-void chicken_check (edict_t *self)
-{
-
-	// are we done yet ?
-	if (self->time > level.time)
-		return;
-
-	//	make that pretty effect around us
-	gi.CreateEffect(&self->s, FX_PLAYER_TELEPORT_OUT, CEF_OWNERS_ORIGIN, NULL, "" ); 
-
-	// deal with the existing chicken
-	self->think = MorphChickenOut;
-	self->nextthink = level.time + FRAMETIME;
-	self->touch = NULL;
-	self->morph_timer = MORPH_TELE_TIME;
-	VectorClear(self->velocity);
-
-	// wipe out the guide, so we don't do anything else
-//	G_FreeEdict(self->guide);
-
-}
-
-
 
 /*-------------------------------------------------------------------------
 	chicken_bites you
