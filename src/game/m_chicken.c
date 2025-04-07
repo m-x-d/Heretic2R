@@ -303,29 +303,29 @@ void ChickenStaticsInit(void)
 	res_info.animations = animations;
 	res_info.modelIndex = gi.modelindex("models/monsters/chicken2/tris.fm");
 
-	//for the cluck animation
-	sounds[SND_CLUCK1]= gi.soundindex ("monsters/chicken/cluck1.wav");	
-	sounds[SND_CLUCK2]= gi.soundindex ("monsters/chicken/cluck2.wav");	
+	// For the cluck animation.
+	sounds[SND_CLUCK1] = gi.soundindex("monsters/chicken/cluck1.wav");
+	sounds[SND_CLUCK2] = gi.soundindex("monsters/chicken/cluck2.wav");
 
-	//for getting hit - even though right now, it dies immediately - they want this changed
-	sounds[SND_PAIN1]= gi.soundindex ("monsters/chicken/pain1.wav");	
-	sounds[SND_PAIN2]= gi.soundindex ("monsters/chicken/pain2.wav");	
+	// For getting hit - even though right now, it dies immediately - they want this changed.
+	sounds[SND_PAIN1] = gi.soundindex("monsters/chicken/pain1.wav");
+	sounds[SND_PAIN2] = gi.soundindex("monsters/chicken/pain2.wav");
 
-	//for dying - we only ever get gibbed, so no other sound is required
-	sounds[SND_DIE]= gi.soundindex ("monsters/chicken/die.wav");	
+	// For dying - we only ever get gibbed, so no other sound is required.
+	sounds[SND_DIE] = gi.soundindex("monsters/chicken/die.wav");
 
-	//for biting the player
-	sounds[SND_BITE1]= gi.soundindex ("monsters/chicken/bite1.wav");	
-	sounds[SND_BITE2]= gi.soundindex ("monsters/chicken/bite2.wav");	
+	// For biting the player.
+	sounds[SND_BITE1] = gi.soundindex("monsters/chicken/bite1.wav");
+	sounds[SND_BITE2] = gi.soundindex("monsters/chicken/bite2.wav");
 
-	//for pecking the ground
-	sounds[SND_PECK1]= gi.soundindex ("monsters/chicken/peck1.wav");	
-	sounds[SND_PECK2]= gi.soundindex ("monsters/chicken/peck2.wav");	
+	// For pecking the ground.
+	sounds[SND_PECK1] = gi.soundindex("monsters/chicken/peck1.wav");
+	sounds[SND_PECK2] = gi.soundindex("monsters/chicken/peck2.wav");
 
-	//and lastly, I thought it might be cool to have some cries for when the chicken jumps
-	sounds[SND_JUMP1]= gi.soundindex ("monsters/chicken/jump1.wav");	
-	sounds[SND_JUMP2]= gi.soundindex ("monsters/chicken/jump2.wav");	
-	sounds[SND_JUMP3]= gi.soundindex ("monsters/chicken/jump3.wav");	
+	// And lastly, I thought it might be cool to have some cries for when the chicken jumps.
+	sounds[SND_JUMP1] = gi.soundindex("monsters/chicken/jump1.wav");
+	sounds[SND_JUMP2] = gi.soundindex("monsters/chicken/jump2.wav");
+	sounds[SND_JUMP3] = gi.soundindex("monsters/chicken/jump3.wav");
 
 	res_info.numSounds = NUM_SOUNDS;
 	res_info.sounds = sounds;
