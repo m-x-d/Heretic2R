@@ -5,7 +5,7 @@
 //
 
 #include "m_chicken_anim.h"
-#include "m_chicken_local.h"
+#include "m_chicken_shared.h"
 #include "g_ai.h" //mxd
 #include "mg_ai.h" //mxd
 #include "g_local.h"

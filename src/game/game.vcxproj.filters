@@ -830,7 +830,7 @@
     <ClInclude Include="..\qcommon\Message.h">
       <Filter>qcommon</Filter>
     </ClInclude>
-    <ClInclude Include="m_chicken_local.h">
+    <ClInclude Include="m_chicken_shared.h">
       <Filter>src\Monsters\Chicken</Filter>
     </ClInclude>
     <ClInclude Include="m_chicken_anim.h">
