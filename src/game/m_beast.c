@@ -463,16 +463,6 @@ static void TBeastRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 't
 		SetAnim(self, ANIM_WALK); // Run on.
 }
 
-/*----------------------------------------------------------------------
-  TBeast Pain - make the decision between pains 1, 2, or 3
------------------------------------------------------------------------*/
-
-int tbeast_foot_damaged(edict_t *self, edict_t *attacker, float knockback, int take)
-{
-	QPostMessage(self->owner, MSG_PAIN, PRI_DIRECTIVE, "eeiii", self->owner, attacker, knockback, take, 0);
-	return false;
-}
-
 void tbeast_pain(edict_t *self, G_Message_t *msg)
 {
 	edict_t		*tempent;
