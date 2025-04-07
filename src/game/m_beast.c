@@ -525,17 +525,10 @@ static void TBeastDie_UseCallback(edict_t* self, edict_t* other, edict_t* activa
 	G_UseTargets(self, activator);
 }
 
-/*----------------------------------------------------------------------
-
-  ACTION FUNCTIONS FOR THE MONSTER
-
------------------------------------------------------------------------*/
-
-void tbeast_standorder (edict_t *self)
+void tbeast_stand_order(edict_t* self) //mxd. Named 'tbeast_standorder' in original logic.
 {
-	if(tbeastCheckMood(self))
-		return;
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+	if (!tbeastCheckMood(self))
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
 void tbeast_walkorder (edict_t *self)

@@ -252,7 +252,7 @@ static const animframe_t tbeast_frames_stand[] =
 	{ FRAME_wait13,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 	{ FRAME_wait14,	NULL, 0, 0, 0, ai_stand, 0, NULL },
 };
-const animmove_t tbeast_move_stand = { 14, tbeast_frames_stand, tbeast_standorder };
+const animmove_t tbeast_move_stand = { 14, tbeast_frames_stand, tbeast_stand_order };
 
 // TB waiting.
 static const animframe_t tbeast_frames_delay[] =

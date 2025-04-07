@@ -130,7 +130,7 @@ void tbeast_leap(edict_t* self, float fwdf, float rghtf, float upf);
 void tbeast_eatorder(edict_t* self);
 void tbeast_footstep(edict_t* self);
 void tbeast_walkorder(edict_t* self);
-void tbeast_standorder(edict_t* self);
+void tbeast_stand_order(edict_t* self);
 void tbeast_dead(edict_t* self);
 void tbeast_charge(edict_t* self, float force);
 void tbeast_done_gore(edict_t* self);
