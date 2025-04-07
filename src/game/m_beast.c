@@ -1313,25 +1313,25 @@ void tbeast_done_gore(edict_t* self)
 	SetAnim(self, ANIM_EATDOWN);
 }
 
-void tbeast_inair (edict_t *self)
+void tbeast_inair(edict_t* self)
 {
 	SetAnim(self, ANIM_INAIR);
 }
 
-void tbeast_check_landed (edict_t *self)
+void tbeast_check_landed(edict_t* self)
 {
-	if(TB_CheckBottom(self))
+	if (TB_CheckBottom(self))
 		SetAnim(self, ANIM_LAND);
 }
 
-void tbeast_ginair (edict_t *self)
+void tbeast_ginair(edict_t* self)
 {
 	SetAnim(self, ANIM_GINAIR);
 }
 
-void tbeast_gcheck_landed (edict_t *self)
+void tbeast_gcheck_landed(edict_t* self)
 {
-	if(TB_CheckBottom(self))
+	if (TB_CheckBottom(self))
 		SetAnim(self, ANIM_GLAND);
 }
 
