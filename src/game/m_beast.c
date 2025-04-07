@@ -279,14 +279,6 @@ static void TBeastEatMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 't
 }
 
 /*----------------------------------------------------------------------
-  TBeast Watch  -decide which standing animations to use
------------------------------------------------------------------------*/
-void tbeast_watch(edict_t *self, G_Message_t *msg)
-{
-	SetAnim(self, ANIM_STAND);
-}
-
-/*----------------------------------------------------------------------
   TBeast Stand  -decide which standing animations to use
 -----------------------------------------------------------------------*/
 void tbeast_stand(edict_t *self, G_Message_t *msg)
