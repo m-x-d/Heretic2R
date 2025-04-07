@@ -271,6 +271,16 @@ void chicken_pause(edict_t* self)
 	}
 }
 
+// Chicken eats again, possibly. Can happen after clucking too.
+void chicken_eat_again(edict_t* self)
+{
+	// One in three chance we will peck again :) //TODO: 2 in 3 chances, actually. Should change?
+	if (irand(0, 2) != 0)
+		QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+	else
+		chicken_pause(self);
+}
+
 #pragma endregion
 
 void ChickenStaticsInit(void)
@@ -364,18 +374,6 @@ void SP_monster_chicken (edict_t *self)
 
 	gi.linkentity(self); 
 
-}
-
-/*-------------------------------------------------------------------------
-	chicken_eat again, possibly
--------------------------------------------------------------------------*/
-void chicken_eat_again (edict_t *self)
-{
-	// a one in three chance we will peck again :) 
-	if (irand(0,2))
-	 		QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
-	else
-		chicken_pause(self);
 }
 
 void chickensqueal (edict_t *self)
