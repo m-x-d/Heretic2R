@@ -483,19 +483,17 @@ static void TBeastPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 	}
 }
 
-/*----------------------------------------------------------------------
-  TBeast Die - choose death 
------------------------------------------------------------------------*/
-void tbeast_death(edict_t *self, G_Message_t *msg)
+static void TBeastDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'tbeast_death' in original logic.
 {
 	self->msgHandler = DeadMsgHandler;
 
-	if (self->deadflag == DEAD_DEAD)  // Dead but still being hit
+	if (self->deadflag == DEAD_DEAD) // Dead but still being hit.
 		return;
 
 	M_ShowLifeMeter(self, 0, 0);
-	// regular death
-	gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1, ATTN_NONE, 0);
+
+	// Regular death.
+	gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1.0f, ATTN_NONE, 0.0f);
 	self->deadflag = DEAD_DEAD;
 	self->takedamage = DAMAGE_YES;
 
@@ -2479,7 +2477,7 @@ void TBeastStaticsInit(void)
 	classStatics[CID_TBEAST].msgReceivers[MSG_MISSILE] = TBeastMissileMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_WATCH] = TBeastWalkMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_PAIN] = TBeastPainMsgHandler;
-	classStatics[CID_TBEAST].msgReceivers[MSG_DEATH] = tbeast_death;
+	classStatics[CID_TBEAST].msgReceivers[MSG_DEATH] = TBeastDeathMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;
