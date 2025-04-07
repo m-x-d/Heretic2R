@@ -1191,61 +1191,64 @@ void tbeast_snatch_go(edict_t* self) //mxd. Named 'tbeast_go_snatch' in original
 	SetAnim(self, ANIM_SNATCH);
 }
 
-void tbeast_gore_toy(edict_t *self, float jumpht)
+void tbeast_gore_toy(edict_t* self, float jump_height)
 {
-	float enemy_zdist, ok_zdist;
-	byte num_chunks;
-	vec3_t dir, forward;
+	const qboolean last_frame = (jump_height == -1.0f); //mxd
 
-	if(jumpht!=-1)
+	if (!last_frame)
 	{
-		self->velocity[2] += jumpht;
-		if(self->groundentity)
+		self->velocity[2] += jump_height;
+
+		if (self->groundentity != NULL)
 		{
+			vec3_t forward;
 			AngleVectors(self->s.angles, forward, NULL, NULL);
-			VectorMA(self->velocity, -100, forward, self->velocity);
+			VectorMA(self->velocity, -100.0f, forward, self->velocity);
 		}
 	}
 	else
+	{
 		self->count = 0;
+	}
 
-	if(!self->targetEnt)
+	if (self->targetEnt == NULL || self->targetEnt->health < 0 || self->count > 0)
 		return;
 
-	if(self->targetEnt->health<0)
-		return;
+	const float enemy_zdist = self->targetEnt->s.origin[2] - self->s.origin[2];
 
-	if(self->count)
-		return;
-
-	ok_zdist = 128;
-	enemy_zdist = self->targetEnt->s.origin[2] - self->s.origin[2];
-	if(enemy_zdist <= self->maxs[2] + ok_zdist || jumpht == -1)
-	{//FIXME: waits grabs it too low, waits too long
+	if (last_frame || enemy_zdist <= self->maxs[2] + 128.0f)
+	{
+		//FIXME: waits grabs it too low, waits too long.
 		self->wait = self->targetEnt->materialtype;
 
-		gi.sound(self, CHAN_WEAPON, sounds[SND_SNATCH], 1, ATTN_NORM, 0);
-		if(jumpht!=-1)
-			self->count = 1;
-		VectorCopy(self->velocity,dir);
-		VectorNormalize(dir);
-		num_chunks = (byte)(self->targetEnt->health/4);
-		if(num_chunks>15)
-			num_chunks = 15;
-		SprayDebris(self->targetEnt, self->targetEnt->s.origin, num_chunks, self->targetEnt->health*4);//self->enemy is thingtype wood?!
+		gi.sound(self, CHAN_WEAPON, sounds[SND_SNATCH], 1.0f, ATTN_NORM, 0.0f);
 
-		if(stricmp(self->targetEnt->classname,"player"))
+		if (!last_frame)
+			self->count = 1;
+
+		vec3_t dir;
+		VectorCopy(self->velocity, dir);
+		VectorNormalize(dir);
+
+		byte num_chunks = (byte)(self->targetEnt->health / 4);
+		num_chunks = min(15, num_chunks);
+
+		SprayDebris(self->targetEnt, self->targetEnt->s.origin, num_chunks, (float)self->targetEnt->health * 4.0f); //self->enemy is thingtype wood?!
+
+		if (Q_stricmp(self->targetEnt->classname, "player") != 0) //mxd. stricmp -> Q_stricmp //TODO: check for targetEnt->client instead?
 		{
-			gi.sound(self->targetEnt, CHAN_WEAPON, sounds[SND_CATCH], 1, ATTN_NORM, 0);
+			gi.sound(self->targetEnt, CHAN_WEAPON, sounds[SND_CATCH], 1.0f, ATTN_NORM, 0.0f);
 			BecomeDebris(self->targetEnt);
 		}
 		else
 		{
 			self->targetEnt->nextthink = level.time;
-			T_Damage (self->targetEnt, self, self, self->velocity, self->targetEnt->s.origin, dir, 2000, 300, DAMAGE_DISMEMBER|DAMAGE_NO_PROTECTION,MOD_DIED);
+			T_Damage(self->targetEnt, self, self, self->velocity, self->targetEnt->s.origin, dir, 2000, 300, DAMAGE_DISMEMBER | DAMAGE_NO_PROTECTION, MOD_DIED);
 		}
-		if(self->enemy == self->targetEnt)
+
+		if (self->enemy == self->targetEnt)
 			self->enemy = NULL;
+
 		self->targetEnt = NULL;
 	}
 }
