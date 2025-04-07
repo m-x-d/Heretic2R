@@ -1572,166 +1572,130 @@ static void LevelToGround(edict_t* self) //mxd. Removed unused args.
 	}
 }
 
-void tbeast_fake_impact(edict_t *self, trace_t *trace, qboolean crush)
+static void TBeastFakeImpact(edict_t* self, trace_t* trace, const qboolean crush) //mxd. Named 'tbeast_fake_impact' in original logic.
 {
-	trace_t	tr;
-	vec3_t	dir, bottom;
-	qboolean	throwthem = true;
-
-	if(trace->ent->svflags & SVF_TOUCHED_BEAST)
+	if (trace->ent == NULL || (trace->ent->svflags & SVF_TOUCHED_BEAST) || trace->ent == self->targetEnt) //mxd. Added trace->ent NULL check (was done below in original logic).
 		return;
 
-	if(trace->ent == self->targetEnt)
+	if (trace->ent->classID == CID_FUNC_DOOR || trace->ent->classID == CID_TCHECKRIK) // We want to pick up and eat insects.
 		return;
 
-	if(trace->ent->classID == CID_FUNC_DOOR)
+	if (trace->ent == world || trace->ent->movetype == PHYSICSTYPE_NONE) //mxd. Skip redundant ent->classname check.
 		return;
 
-	if(trace->ent->classID == CID_TCHECKRIK)
-		return;//we want to pick up and eat insects
+	qboolean throw_them = true;
 
-	if(trace->ent  && trace->ent->movetype && trace->ent !=world && stricmp(trace->ent->classname, "worldspawn"))
+	if ((trace->ent->client != NULL || (trace->ent->svflags & SVF_MONSTER)) && trace->ent->s.origin[2] > self->absmax[2] - 10.0f)
 	{
-		if(trace->ent->client||trace->ent->svflags&SVF_MONSTER)
-		{
-			if(trace->ent->s.origin[2] > self->absmax[2] - 10)
-			{//FIXME: chance of throwing them off
-				trace->ent->s.origin[2] = self->absmax[2];
-				trace->ent->velocity[2] = 0;
-				trace->ent->groundentity = self;
-				throwthem = false;
-			}
-		}
-		if(throwthem)
-		{
-			VectorCopy(self->s.origin, bottom);
-			bottom[2] += self->mins[2];
-			VectorSubtract(trace->ent->s.origin, bottom, dir);
-			VectorNormalize(dir);
-		}
+		//FIXME: chance of throwing them off.
+		trace->ent->s.origin[2] = self->absmax[2];
+		trace->ent->velocity[2] = 0.0f;
+		trace->ent->groundentity = self;
 
-		if(AI_IsMovable(trace->ent) || trace->ent->takedamage)
+		throw_them = false;
+	}
+
+	vec3_t dir;
+
+	if (throw_them)
+	{
+		vec3_t bottom;
+		VectorCopy(self->s.origin, bottom);
+		bottom[2] += self->mins[2];
+
+		VectorSubtract(trace->ent->s.origin, bottom, dir);
+		VectorNormalize(dir);
+	}
+
+	if (trace->ent->takedamage != DAMAGE_NO || AI_IsMovable(trace->ent))
+	{
+		if (throw_them)
+			VectorScale(dir, 200.0f, trace->ent->velocity);
+	}
+	else if (Vec3NotZero(self->velocity) && trace->fraction < GROUND_NORMAL && AI_IsInfrontOf(self, trace->ent)) //mxd. Use define.
+	{
+		// Hit pillar?
+		if (trace->ent->targetname != NULL && Q_stricmp(trace->ent->targetname, "pillar") == 0) //mxd. stricmp -> Q_stricmp
 		{
-			if(throwthem)
-				VectorScale(dir, 200, trace->ent->velocity);
-		}
-		else if(Vec3NotZero(self->velocity) && trace->fraction < 0.7)
-		{
-			if(AI_IsInfrontOf(self, trace->ent))
+			//FIXME: In higher skills, less chance of breaking it? Or debounce time?
+			if (IsVisibleToClient(self))
 			{
-				if(trace->ent->targetname && !stricmp(trace->ent->targetname, "pillar"))
-				{//FIXME: In higher skills, less chance of breaking it?  Or debounce time?
+				G_UseTargets(trace->ent, self);
 
-					if(IsVisibleToClient(self))
-					{
-//						gi.dprintf("Beast hit pillar!\n");
-						G_UseTargets (trace->ent, self);
-						trace->ent->targetname = "";//so we don't hit them again
-						trace->ent->target = "stop";//so it doesn't fire the target when it's broken later
-						self->monsterinfo.attack_finished = level.time + 3;
+				trace->ent->targetname = ""; // So we don't hit them again.
+				trace->ent->target = "stop"; // So it doesn't fire the target when it's broken later.
+				self->monsterinfo.attack_finished = level.time + 3.0f;
 
-						self->velocity[0] = self->velocity[1] = 0;
-						self->sounds++;
-					
-						self->red_rain_count++;
+				self->velocity[0] = 0.0f;
+				self->velocity[1] = 0.0f;
 
-						if(self->red_rain_count >= 2)//got both pillars, now die
-						{
-							//self->clipmask = 0;
-							self->solid = SOLID_NOT;
-							self->takedamage = DAMAGE_NO;
-						}
-					}
-					gi.CreateEffect(&self->s,
-						FX_QUAKE,
-						0,
-						vec3_origin,
-						"bbb",
-						4,
-						3,
-						7);
+				self->sounds++;
+				self->red_rain_count++;
 
-					if(self->sounds!=2 && irand(0, 1))
-						SetAnim(self, ANIM_STUN);
-				}
-			}
-		}
-		
-		if(trace->ent->touch&&trace->ent->solid!=SOLID_NOT)
-			trace->ent->touch (trace->ent, self, &trace->plane, trace->surface);
-
-		if(trace->ent->isBlocked&&trace->ent->solid!=SOLID_NOT)
-		{
-			tr = *trace;
-			tr.ent = self;
-			trace->ent->isBlocked(trace->ent, &tr);
-		}
-
-		if(throwthem && trace->ent->takedamage)
-		{
-			float	damage;
-
-			if(Vec3NotZero(self->velocity))
-			{
-				if(trace->ent->client)
+				if (self->red_rain_count >= 2) // Got both pillars, now die.
 				{
-					if(trace->ent->health > 30)
-						DoImpactDamage(self, trace);
-
-					if(trace->ent->groundentity && trace->ent->health)
-					{
-						if(trace->ent->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
-						{
-							P_KnockDownPlayer(&trace->ent->client->playerinfo);
-						}
-					}
+					self->solid = SOLID_NOT;
+					self->takedamage = DAMAGE_NO;
 				}
-				else
+			}
+
+			gi.CreateEffect(&self->s, FX_QUAKE, 0, vec3_origin, "bbb", 4, 3, 7);
+
+			if (self->sounds != 2 && irand(0, 1) == 1)
+				SetAnim(self, ANIM_STUN);
+		}
+	}
+
+	if (trace->ent->touch != NULL && trace->ent->solid != SOLID_NOT)
+		trace->ent->touch(trace->ent, self, &trace->plane, trace->surface);
+
+	if (trace->ent->isBlocked != NULL && trace->ent->solid != SOLID_NOT)
+	{
+		trace_t tr = *trace;
+		tr.ent = self;
+		trace->ent->isBlocked(trace->ent, &tr);
+	}
+
+	if (throw_them && trace->ent->takedamage != DAMAGE_NO)
+	{
+		if (Vec3NotZero(self->velocity))
+		{
+			// Knock down player?
+			if (trace->ent->client != NULL)
+			{
+				if (trace->ent->health > 30)
 					DoImpactDamage(self, trace);
+
+				if (trace->ent->groundentity != NULL && trace->ent->health > 0 && trace->ent->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
+					P_KnockDownPlayer(&trace->ent->client->playerinfo);
 			}
 			else
 			{
-				if(trace->ent->client)
-				{
-					if(crush)
-						damage = flrand(20, 100);
-					else if(trace->ent->health > 30)
-						damage = flrand(10, 30) * skill->value/2;
-					else
-						damage = 0;
-
-					if(!irand(0, 5) || (crush && !irand(0,1)))
-					{
-						if(trace->ent->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
-							P_KnockDownPlayer(&trace->ent->client->playerinfo);
-					}
-					if(damage)
-						T_Damage(trace->ent, self, self, dir, trace->endpos, dir, 
-								flrand(TB_DMG_IMPACT_MIN, TB_DMG_IMPACT_MAX), TB_DMG_IMPACT_KB, 0,MOD_DIED);
-				}
-				else
-				{
-					if(crush)
-						damage = flrand(1000, 3000);
-					else
-						damage = flrand(20, 100);
-					T_Damage(trace->ent, self, self, dir, trace->endpos, dir, 1000, 250, 0,MOD_DIED);
-				}
+				DoImpactDamage(self, trace);
 			}
 		}
 		else
 		{
-			if(trace->ent->client)
+			if (trace->ent->client != NULL)
 			{
-				if(trace->ent->groundentity && trace->ent->health)
-				{
-					if(trace->ent->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
-					{
+				if (irand(0, 5) == 0 || (crush && irand(0, 1) == 0))
+					if (trace->ent->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
 						P_KnockDownPlayer(&trace->ent->client->playerinfo);
-					}
-				}
+
+				if (crush || trace->ent->health > 30)
+					T_Damage(trace->ent, self, self, dir, trace->endpos, dir, irand(TB_DMG_IMPACT_MIN, TB_DMG_IMPACT_MAX), TB_DMG_IMPACT_KB, 0, MOD_DIED);
+			}
+			else
+			{
+				T_Damage(trace->ent, self, self, dir, trace->endpos, dir, 1000, 250, 0, MOD_DIED);
 			}
 		}
+	}
+	else
+	{
+		// Knock down player?
+		if (trace->ent->client != NULL && trace->ent->groundentity != NULL && trace->ent->health > 0 && trace->ent->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
+			P_KnockDownPlayer(&trace->ent->client->playerinfo);
 	}
 }
 
@@ -1815,7 +1779,7 @@ void tbeast_check_impacts(edict_t *self)
 	//Fix me: continue the trace if less than 1.0 or save for next touch?
 	gi.trace(start, mins, maxs, end, self, MASK_MONSTERSOLID,&trace);
 	//Hey!  Check and see if they're close to my mouth and chomp 'em!
-	tbeast_fake_impact(self, &trace, false);
+	TBeastFakeImpact(self, &trace, false);
 
 	if(leg_check_index == -1)
 	{
@@ -1827,7 +1791,7 @@ void tbeast_check_impacts(edict_t *self)
 		VectorSet(maxs, 32, 32, 1);
 
 		gi.trace(start, mins, maxs, end, self, MASK_MONSTERSOLID,&trace);
-		tbeast_fake_impact(self, &trace, false);
+		TBeastFakeImpact(self, &trace, false);
 		return;
 	}
 
@@ -1835,12 +1799,12 @@ void tbeast_check_impacts(edict_t *self)
 //left leg
 	//Fix me: continue the trace if less than 1.0 or save for next touch?
 	gi.trace(lstart, fmins, fmaxs, lend, self, MASK_MONSTERSOLID,&trace);
-	tbeast_fake_impact(self, &trace, true);
+	TBeastFakeImpact(self, &trace, true);
 
 //right leg
 	//Fix me: continue the trace if less than 1.0 or save for next touch?
 	gi.trace(rstart, fmins, fmaxs, rend, self, MASK_MONSTERSOLID,&trace);
-	tbeast_fake_impact(self, &trace, true);
+	TBeastFakeImpact(self, &trace, true);
 }
 
 void tbeast_fake_touch(edict_t *self)
@@ -2026,7 +1990,7 @@ void tbeast_fake_touch(edict_t *self)
 				}
 				if(other && other == trace.ent)
 				{//if other still valid, do my impact with it
-					tbeast_fake_impact(self, &trace, false);
+					TBeastFakeImpact(self, &trace, false);
 					other->svflags |= SVF_TOUCHED_BEAST;//so check_impacts doesn't do anything with it
 				}
 			}
