@@ -866,106 +866,118 @@ qboolean TB_CheckBottom(edict_t* self) //TODO: rename to TBeastCheckBottom.
 	return false;
 }
 
-qboolean TB_CheckJump (edict_t *self)//, edict_t *other)
+qboolean TB_CheckJump(edict_t* self) //TODO: rename to TBeastCheckJump. 
 {
-	vec3_t	forward, start, end, start2, end2, mins, maxs;
-	trace_t	trace;
-	float	z_diff;
-	qboolean	skiplow = false;
+	qboolean skip_low = false;
 
-	if(self->enemy)
+	if (self->enemy != NULL)
 	{
-		if(!MG_IsAheadOf(self, self->enemy))
+		if (!MG_IsAheadOf(self, self->enemy))
 			return false;
 
-		if(vhlen(self->enemy->s.origin, self->s.origin)<200)
+		if (vhlen(self->enemy->s.origin, self->s.origin) < 200.0f)
 		{
-			z_diff = self->s.origin[2] + TB_HIBITE_U + TB_UP_OFFSET - self->enemy->s.origin[2];
-			if(z_diff < -128)
+			const float z_diff = self->s.origin[2] + TB_HIBITE_U + TB_UP_OFFSET - self->enemy->s.origin[2];
+
+			if (z_diff < -128.0f)
 			{
 				SetAnim(self, ANIM_BITEUP2);
 				return true;
 			}
-			else if(Q_fabs(z_diff)<=32)
+
+			if (Q_fabs(z_diff) <= 32.0f)
 			{
 				SetAnim(self, ANIM_BITEUP);
 				return true;
 			}
-			else if(z_diff < -32 && z_diff > -200)
-				skiplow = true;
-			else if(z_diff > 40 && z_diff < -24)
+
+			if (z_diff < -32.0f && z_diff > -200.0f)
+			{
+				skip_low = true;
+			}
+			else if (z_diff > 40.0f && z_diff < -24.0f)
 			{
 				SetAnim(self, ANIM_BITELOW);
 				return true;
 			}
 		}
 
-		if(self->enemy->s.origin[2] < self->s.origin[2])
+		if (self->enemy->s.origin[2] < self->s.origin[2])
 			return false;
 	}
 
-	if(self->monsterinfo.jump_time > level.time)
+	if (self->monsterinfo.jump_time > level.time)
 		return false;
 
+	vec3_t start;
 	VectorCopy(self->s.origin, start);
-	VectorCopy(start, end);
 
-//try a jump of 186
-	end[2] += self->size[2];
-	
-	if(!skiplow)
+	vec3_t end;
+	VectorCopy(start, end);
+	end[2] += self->size[2]; // Try a jump of 186.
+
+	if (!skip_low)
 	{
-		gi.trace(start, self->mins, self->maxs, end, self, MASK_SOLID,&trace);
-		
-		if(trace.fraction == 1.0 && !trace.startsolid && !trace.allsolid)
+		trace_t tr_low;
+		gi.trace(start, self->mins, self->maxs, end, self, MASK_SOLID, &tr_low);
+
+		if (tr_low.fraction == 1.0f && !tr_low.startsolid && !tr_low.allsolid)
 		{
+			vec3_t forward;
 			AngleVectors(self->s.angles, forward, NULL, NULL);
-			
+
+			vec3_t start2;
 			VectorCopy(end, start2);
-			VectorMA(end, 64, forward, end2);
-			VectorScale(self->maxs, 0.5, maxs);
-			VectorCopy(self->mins, mins);
-			mins[0]*=0.5;
-			mins[1]*=0.5;
-			gi.trace(start2, self->mins, self->maxs, end2, self, MASK_SOLID,&trace);
-			if(trace.fraction == 1.0 && !trace.startsolid && !trace.allsolid)
+
+			vec3_t end2;
+			VectorMA(end, 64.0f, forward, end2);
+
+			gi.trace(start2, self->mins, self->maxs, end2, self, MASK_SOLID, &tr_low);
+
+			if (tr_low.fraction == 1.0f && !tr_low.startsolid && !tr_low.allsolid)
 			{
-//				gi.dprintf("Beast blocked low jump!\n");
-				VectorScale(forward, 250, self->movedir);
-				self->movedir[2] = 400;
-				self->monsterinfo.jump_time = level.time + 7;
+				// Beast blocked low jump!
+				VectorScale(forward, 250.0f, self->movedir);
+				self->movedir[2] = 400.0f;
+				self->monsterinfo.jump_time = level.time + 7.0f;
 				SetAnim(self, ANIM_FJUMP);
+
 				return true;
 			}
 		}
 	}
 
-//try a jump of 372
+	// Try a jump of 372.
 	end[2] += self->size[2];
-	
-	gi.trace(start, self->mins, self->maxs, end, self, MASK_SOLID,&trace);
-	
-	if(trace.fraction == 1.0 && !trace.startsolid && !trace.allsolid)
+
+	trace_t trace;
+	gi.trace(start, self->mins, self->maxs, end, self, MASK_SOLID, &trace);
+
+	if (trace.fraction == 1.0f && !trace.startsolid && !trace.allsolid)
 	{
+		vec3_t forward;
 		AngleVectors(self->s.angles, forward, NULL, NULL);
-		
+
+		vec3_t start2;
 		VectorCopy(end, start2);
-		VectorMA(end, 64, forward, end2);
-		VectorScale(self->maxs, 0.5, maxs);
-		VectorCopy(self->mins, mins);
-		mins[0]*=0.5;
-		mins[1]*=0.5;
-		gi.trace(start2, self->mins, self->maxs, end2, self, MASK_SOLID,&trace);
-		if(trace.fraction == 1.0 && !trace.startsolid && !trace.allsolid)
+
+		vec3_t end2;
+		VectorMA(end, 64.0f, forward, end2);
+
+		gi.trace(start2, self->mins, self->maxs, end2, self, MASK_SOLID, &trace);
+
+		if (trace.fraction == 1.0f && !trace.startsolid && !trace.allsolid)
 		{
-//			gi.dprintf("Beast blocked high jump!\n");
-			VectorScale(forward, 300, self->movedir);
-			self->movedir[2] = 600;
-			self->monsterinfo.jump_time = level.time + 7;
+			// Beast blocked high jump!
+			VectorScale(forward, 300.0f, self->movedir);
+			self->movedir[2] = 600.0f;
+			self->monsterinfo.jump_time = level.time + 7.0f;
 			SetAnim(self, ANIM_FJUMP);
+
 			return true;
 		}
 	}
+
 	return false;
 }
 
