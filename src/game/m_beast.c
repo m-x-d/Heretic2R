@@ -347,6 +347,11 @@ static void TBeastWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 		SetAnim(self, ANIM_WALK);
 }
 
+static qboolean TBeastCanCharge(const edict_t* self) //mxd.
+{
+	return (self->enemy->classID != CID_TCHECKRIK && ((irand(0, 1) == 1 && AI_IsInfrontOf(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && HaveShoulderRoomAhead(self));
+}
+
 static void TBeastInitCharge(edict_t* self) //mxd. Named 'tbeast_init_charge' in original logic.
 {
 	if (!MG_IsAheadOf(self, self->enemy) || irand(0, 3) == 0)
@@ -355,33 +360,31 @@ static void TBeastInitCharge(edict_t* self) //mxd. Named 'tbeast_init_charge' in
 		SetAnim(self, ANIM_CHARGE);
 }
 
-/*----------------------------------------------------------------------
-  TBeast Melee - decide which melee animations to use
------------------------------------------------------------------------*/
-void tbeast_melee(edict_t *self, G_Message_t *msg)
+// Decide which melee animations to use.
+static void TBeastMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'tbeast_melee' in original logic.
 {
-	vec3_t	v, melee_point, forward, up;
-	float	len, seperation;
-	float	chance;
-
-	if(!M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 	{
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
-	AngleVectors(self->s.angles,forward, NULL, up);
-	VectorMA(self->s.origin, self->maxs[2]*0.5 + TB_UP_OFFSET, up, melee_point);
-	VectorMA(melee_point, 150 + TB_FWD_OFFSET, forward, melee_point);
+	vec3_t forward;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, NULL, up);
 
-	VectorSubtract (self->enemy->s.origin, melee_point, v);
-	len = VectorLength (v);
+	vec3_t melee_point;
+	VectorMA(self->s.origin, self->maxs[2] * 0.5f + TB_UP_OFFSET, up, melee_point);
+	VectorMA(melee_point, 150.0f + TB_FWD_OFFSET, forward, melee_point);
 
-	seperation = self->enemy->maxs[0];
-	
-	if ((len > 250 || !skill->value) && self->monsterinfo.attack_finished > level.time)
-	{//too soon to attack again
-		if (flrand(0, 1) < 0.9 && !skill->value)
+	vec3_t diff;
+	VectorSubtract(self->enemy->s.origin, melee_point, diff);
+	const float dist = VectorLength(diff);
+
+	if ((dist > 250.0f || SKILL == SKILL_EASY) && self->monsterinfo.attack_finished > level.time)
+	{
+		// Too soon to attack again.
+		if (flrand(0.0f, 1.0f) < 0.9f && SKILL == SKILL_EASY)
 			SetAnim(self, ANIM_STAND);
 		else
 			SetAnim(self, ANIM_ROAR);
@@ -389,41 +392,28 @@ void tbeast_melee(edict_t *self, G_Message_t *msg)
 		return;
 	}
 
-	//ok to attack
-	if(len - seperation < 100)
-	{//melee
-//		gi.dprintf("Biting: ");
-		chance = flrand(0, 1);
-		
-		if(self->enemy->absmin[2] > melee_point[2] + 128)
-		{
-//			gi.dprintf(" snatch extra high\n");
-			SetAnim(self,ANIM_BITEUP2);
-		}
-		else if(self->enemy->absmin[2] > melee_point[2])
-		{
-//			gi.dprintf(" snatch high\n");
-			SetAnim(self,ANIM_BITEUP);
-		}
+	const float attack_range = dist - self->enemy->maxs[0]; //mxd
+
+	// OK to attack.
+	if (attack_range < 100.0f)
+	{
+		// Do bite attack.
+		if (self->enemy->absmin[2] > melee_point[2] + 128.0f)
+			SetAnim(self, ANIM_BITEUP2);
+		else if (self->enemy->absmin[2] > melee_point[2])
+			SetAnim(self, ANIM_BITEUP);
 		else
-		{
-//			gi.dprintf(" snatch low\n");
-			SetAnim(self,ANIM_BITELOW);
-		}
-		
-		self->monsterinfo.attack_finished = level.time + flrand(2, 3);
+			SetAnim(self, ANIM_BITELOW);
+
+		self->monsterinfo.attack_finished = level.time + flrand(2.0f, 3.0f);
 		return;
 	}
-	else if(len - seperation < self->melee_range && !irand(0,2))
-	{
-//		gi.dprintf("walk attack\n");
-		SetAnim(self,ANIM_WALKATK);
-	}
 
-	if (self->enemy->classID != CID_TCHECKRIK && ((irand(0, 1) && AI_IsInfrontOf(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && HaveShoulderRoomAhead(self))
-	{
+	if (attack_range < self->melee_range && irand(0, 2) == 0)
+		SetAnim(self, ANIM_WALKATK); //TODO: always ignored. Should return here?
+
+	if (TBeastCanCharge(self)) //mxd. Use function.
 		TBeastInitCharge(self);
-	}
 	else
 		SetAnim(self, ANIM_WALK);
 }
@@ -2541,7 +2531,7 @@ void TBeastStaticsInit(void)
 	classStatics[CID_TBEAST].msgReceivers[MSG_WALK] = TBeastWalkMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_RUN] = tbeast_run;
 	classStatics[CID_TBEAST].msgReceivers[MSG_EAT] = TBeastEatMsgHandler;
-	classStatics[CID_TBEAST].msgReceivers[MSG_MELEE] = tbeast_melee;
+	classStatics[CID_TBEAST].msgReceivers[MSG_MELEE] = TBeastMeleeMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_MISSILE] = tbeast_start_charge;
 	classStatics[CID_TBEAST].msgReceivers[MSG_WATCH] = TBeastWalkMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_PAIN] = tbeast_pain;
