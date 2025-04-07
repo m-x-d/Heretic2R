@@ -1335,38 +1335,42 @@ void tbeast_gcheck_landed(edict_t* self)
 		SetAnim(self, ANIM_GLAND);
 }
 
-void tbeast_chomp(edict_t *self, float ofsf, float ofsr, float ofsu)
+static void TBeastChomp(edict_t* self, float forward_offset, float right_offset, float up_offset) //mxd. Named 'tbeast_chomp' in original logic.
 {
-	float enemy_dist, ok_dist, damage;
-	vec3_t forward, right, up, startpos, endpos, v;
-
-	if(!self->enemy)
+	if (self->enemy == NULL)
 		return;
 
-	ok_dist = 64;
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, right, up);
 
-	AngleVectors(self->s.angles,forward,right,up);
-	VectorMA(self->s.origin, ofsf + TB_FWD_OFFSET, forward, startpos);
-	VectorMA(startpos, ofsr, right, startpos);
-	VectorMA(startpos, ofsu + TB_UP_OFFSET, up, startpos);
+	vec3_t start_pos;
+	VectorMA(self->s.origin, forward_offset + TB_FWD_OFFSET, forward, start_pos);
+	VectorMA(start_pos, right_offset, right, start_pos);
+	VectorMA(start_pos, up_offset + TB_UP_OFFSET, up, start_pos);
 
-	VectorSubtract(self->enemy->s.origin, startpos, endpos);
+	vec3_t end_pos;
+	VectorSubtract(self->enemy->s.origin, start_pos, end_pos);
 
-	enemy_dist = VectorLength(endpos);
-	if(enemy_dist>ok_dist)
-	{//if missed or health is low, just chomp it now
-//		gi.dprintf("Chomp missed by %4.2f!\n", enemy_dist - ok_dist);
-		if(enemy_dist - ok_dist < 64)
-		{//let them know it was close and we tried - spittle effect?
-			gi.sound(self, CHAN_WEAPON, sounds[SND_SNATCH], 1, ATTN_NORM, 0);
-		}
-		return;
+	const float enemy_dist = VectorLength(end_pos);
+
+	if (enemy_dist <= MAX_CHOMP_DIST)
+	{
+		gi.sound(self, CHAN_WEAPON, sounds[SND_CHOMP], 1.0f, ATTN_NORM, 0.0f);
+
+		vec3_t normal;
+		VectorSubtract(self->enemy->s.origin, self->s.origin, normal);
+		VectorNormalize(normal);
+
+		const int damage = irand(TB_DMG_BITE_MIN, TB_DMG_BITE_MAX);
+		T_Damage(self->enemy, self, self, forward, end_pos, normal, damage, damage / 2, DAMAGE_DISMEMBER, MOD_DIED);
 	}
-	gi.sound(self, CHAN_WEAPON, sounds[SND_CHOMP], 1, ATTN_NORM, 0);
-	VectorSubtract(self->enemy->s.origin, self->s.origin, v);
-	VectorNormalize(v);
-	damage = irand(TB_DMG_BITE_MIN, TB_DMG_BITE_MAX);
-	T_Damage (self->enemy, self, self, forward, endpos, v, damage, damage/2, DAMAGE_DISMEMBER,MOD_DIED);
+	else if (enemy_dist + 64.0f < MAX_CHOMP_DIST)
+	{
+		// Let them know it was close and we tried - spittle effect?
+		gi.sound(self, CHAN_WEAPON, sounds[SND_SNATCH], 1.0f, ATTN_NORM, 0.0f);
+	}
 }
 
 void tbeast_leap (edict_t *self, float fwdf, float rghtf, float upf)
@@ -1380,7 +1384,7 @@ void tbeast_leap (edict_t *self, float fwdf, float rghtf, float upf)
 	}
 
 	if(self->s.frame == FRAME_jumpb7)
-		tbeast_chomp(self, 36, 0, 232);
+		TBeastChomp(self, 36, 0, 232);
 
 //	self->gravity = TB_JUMP_GRAV;
 	VectorSet(angles, 0, self->s.angles[YAW], 0);
