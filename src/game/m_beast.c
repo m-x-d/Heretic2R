@@ -726,47 +726,44 @@ void tbeast_pause(edict_t* self)
 		QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 }
 
-void tbeastbite (edict_t *self, float ofsf, float ofsr, float ofsu)
+void tbeast_bite(edict_t* self, float forward_offset, float right_offset, float up_offset) //mxd. Named 'tbeastbite' in original logic.
 {
-	vec3_t	v;
-	float	damage;
-	float	melee_range;
-	vec3_t	temp, forward, right, up, melee_point, bite_endpos;
+	//FIXME: do a checkenemy that checks oldenemy & posts messages.
+	if (self->ai_mood == AI_MOOD_NAVIGATE || !M_ValidTarget(self, self->enemy))
+		return;
+
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, right, up);
+
+	vec3_t melee_point;
+	VectorMA(self->s.origin, up_offset + TB_UP_OFFSET, up, melee_point);
+	VectorMA(melee_point, forward_offset + TB_FWD_OFFSET, forward, melee_point);
+	VectorMA(melee_point, right_offset, right, melee_point);
+
+	// Give extra range.
+	vec3_t bite_end_pos;
+	VectorMA(melee_point, TBEAST_STD_MELEE_RNG, forward, bite_end_pos);
+
+	// Let's do this the right way.
 	trace_t trace;
+	gi.trace(melee_point, vec3_origin, vec3_origin, bite_end_pos, self, MASK_SHOT, &trace);
 
-	if(self->ai_mood == AI_MOOD_NAVIGATE)
-		return;
-
-	//fixme: do a checkenemy that checks oldenemy & posts messages
-	if(!M_ValidTarget(self, self->enemy))
-		return;
-
-	AngleVectors(self->s.angles,forward, right, up);
-	VectorMA(self->s.origin, ofsu + TB_UP_OFFSET, up, melee_point);
-	VectorMA(melee_point, ofsf + TB_FWD_OFFSET, forward, melee_point);
-	VectorMA(melee_point, ofsr, right, melee_point);
-
-	melee_range = TBEAST_STD_MELEE_RNG;//give axtra range
-	VectorMA(melee_point, melee_range, forward, bite_endpos);
-
-	//let's do this the right way
-	gi.trace(melee_point, vec3_origin, vec3_origin, bite_endpos, self, MASK_SHOT,&trace);
-	if (trace.fraction < 1 && !trace.startsolid && !trace.allsolid && trace.ent->takedamage)// A hit
+	if (trace.fraction < 1.0f && !trace.startsolid && !trace.allsolid && trace.ent->takedamage != DAMAGE_NO) // A hit.
 	{
-		gi.sound(self, CHAN_WEAPON, sounds[SND_CHOMP], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_WEAPON, sounds[SND_CHOMP], 1.0f, ATTN_NORM, 0.0f);
 
-		VectorCopy (self->enemy->s.origin, temp);
-		temp[2] += 5;
+		vec3_t normal;
+		VectorSubtract(self->enemy->s.origin, self->s.origin, normal);
+		VectorNormalize(normal);
 
-		VectorSubtract(self->enemy->s.origin, self->s.origin, v);
-		VectorNormalize(v);
-
-		damage = irand(TB_DMG_BITE_MIN, TB_DMG_BITE_MAX);
-		T_Damage (self->enemy, self, self, forward, trace.endpos, v, damage, damage/2, DAMAGE_DISMEMBER,MOD_DIED);
+		const int damage = irand(TB_DMG_BITE_MIN, TB_DMG_BITE_MAX);
+		T_Damage(self->enemy, self, self, forward, trace.endpos, normal, damage, damage / 2, DAMAGE_DISMEMBER, MOD_DIED);
 	}
-	else			// A misssss
+	else // A miss.
 	{
-		gi.sound(self, CHAN_WEAPON, sounds[SND_SNATCH], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_WEAPON, sounds[SND_SNATCH], 1.0f, ATTN_NORM, 0.0f);
 	}
 }
 
