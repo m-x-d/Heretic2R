@@ -271,18 +271,11 @@ void tbeast_charge(edict_t* self, float force)
 	}
 }
 
-//----------------------------------------------------------------------
-//  TBeast Eat - decide which eating animations to use
-//----------------------------------------------------------------------
-void tbeast_eat(edict_t *self, G_Message_t *msg)
+// Decide which eating animations to use.
+static void TBeastEatMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'tbeast_eat' in original logic.
 {
-	if(FindTarget(self))
-		return;
-
-	if(!irand(0,1))
-		SetAnim(self, ANIM_EATING_TWITCH);
-	else
-		SetAnim(self, ANIM_EATING);
+	if (!FindTarget(self))
+		SetAnim(self, irand(ANIM_EATING_TWITCH, ANIM_EATING));
 }
 
 /*----------------------------------------------------------------------
@@ -2592,7 +2585,7 @@ void TBeastStaticsInit(void)
 	classStatics[CID_TBEAST].msgReceivers[MSG_STAND] = tbeast_stand;
 	classStatics[CID_TBEAST].msgReceivers[MSG_WALK] = tbeast_walk;
 	classStatics[CID_TBEAST].msgReceivers[MSG_RUN] = tbeast_run;
-	classStatics[CID_TBEAST].msgReceivers[MSG_EAT] = tbeast_eat;
+	classStatics[CID_TBEAST].msgReceivers[MSG_EAT] = TBeastEatMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_MELEE] = tbeast_melee;
 	classStatics[CID_TBEAST].msgReceivers[MSG_MISSILE] = tbeast_start_charge;
 	classStatics[CID_TBEAST].msgReceivers[MSG_WATCH] = tbeast_walk;
