@@ -82,15 +82,6 @@ extern const animmove_t chickenp_move_rjumpb;
 extern const animmove_t chickenp_move_jump_loop;
 extern const animmove_t chickenp_move_attack;
 
-void chicken_stand(edict_t* self, G_Message_t* msg);
-void chicken_walk(edict_t* self, G_Message_t* msg);
-void chicken_run(edict_t* self, G_Message_t* msg);
-void chicken_attack(edict_t* self, G_Message_t* msg);
-void chicken_death(edict_t* self, G_Message_t* msg);
-void chicken_eat(edict_t* self, G_Message_t* msg);
-void chicken_cluck(edict_t* self, G_Message_t* msg);
-void chicken_jump(edict_t* self, G_Message_t* msg);
-
 void chicken_pause(edict_t* self);
 void chicken_check(edict_t* self);
 void chicken_eat_again(edict_t* self);

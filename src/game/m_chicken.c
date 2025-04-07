@@ -94,16 +94,73 @@ static void MorphChickenOut(edict_t* self)
 
 #pragma endregion
 
+#pragma region ========================== Message handlers ==========================
+
+// Decide which standing animations to use.
+static void ChickenStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'chicken_stand' in original logic.
+{
+	SetAnim(self, ANIM_STAND1);
+}
+
+// Choose a walk animation to use.
+static void ChickenWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'chicken_walk' in original logic.
+{
+	SetAnim(self, ANIM_WALK);
+}
+
+// Choose a run animation to use.
+static void ChickenRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'chicken_run' in original logic.
+{
+	SetAnim(self, ANIM_RUN);
+}
+
+// Chicken attack - peck us to death.
+static void ChickenAttackMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'chicken_attack' in original logic.
+{
+	SetAnim(self, ANIM_ATTACK);
+}
+
+static void ChickenDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'chicken_death' in original logic.
+{
+	self->msgHandler = DeadMsgHandler;
+
+	gi.sound(self, CHAN_BODY, sounds[SND_DIE], 1.0f, ATTN_NORM, 0.0f);
+	self->deadflag = DEAD_DEAD;
+
+	BecomeDebris(self);
+	gi.CreateEffect(&self->s, FX_CHICKEN_EXPLODE, CEF_OWNERS_ORIGIN, NULL, "");
+}
+
+static void ChickenCluckMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'chicken_cluck' in original logic.
+{
+	gi.sound(self, CHAN_VOICE, sounds[irand(SND_CLUCK1, SND_CLUCK2)], 1.0f, ATTN_NORM, 0.0f);
+	SetAnim(self, ANIM_CLUCK);
+}
+
+static void ChickenEatMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'chicken_eat' in original logic.
+{
+	gi.sound(self, CHAN_VOICE, sounds[irand(SND_PECK1, SND_PECK2)], 1.0f, ATTN_NORM, 0.0f);
+	SetAnim(self, ANIM_EAT);
+}
+
+static void ChickenJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'chicken_jump' in original logic.
+{
+	gi.sound(self, CHAN_VOICE, sounds[irand(SND_JUMP1, SND_JUMP3)], 1.0f, ATTN_NORM, 0.0f);
+	SetAnim(self, ANIM_JUMP);
+}
+
+#pragma endregion
+
 void ChickenStaticsInit(void)
 {
-	classStatics[CID_CHICKEN].msgReceivers[MSG_STAND] = chicken_stand;
-	classStatics[CID_CHICKEN].msgReceivers[MSG_WALK] = chicken_walk;
-	classStatics[CID_CHICKEN].msgReceivers[MSG_RUN] = chicken_run;
-	classStatics[CID_CHICKEN].msgReceivers[MSG_MELEE] = chicken_attack;
-	classStatics[CID_CHICKEN].msgReceivers[MSG_DEATH] = chicken_death;
-	classStatics[CID_CHICKEN].msgReceivers[MSG_WATCH] = chicken_cluck;
-	classStatics[CID_CHICKEN].msgReceivers[MSG_EAT] = chicken_eat;
-	classStatics[CID_CHICKEN].msgReceivers[MSG_JUMP] = chicken_jump;
+	classStatics[CID_CHICKEN].msgReceivers[MSG_STAND] = ChickenStandMsgHandler;
+	classStatics[CID_CHICKEN].msgReceivers[MSG_WALK] = ChickenWalkMsgHandler;
+	classStatics[CID_CHICKEN].msgReceivers[MSG_RUN] = ChickenRunMsgHandler;
+	classStatics[CID_CHICKEN].msgReceivers[MSG_MELEE] = ChickenAttackMsgHandler;
+	classStatics[CID_CHICKEN].msgReceivers[MSG_DEATH] = ChickenDeathMsgHandler;
+	classStatics[CID_CHICKEN].msgReceivers[MSG_WATCH] = ChickenCluckMsgHandler;
+	classStatics[CID_CHICKEN].msgReceivers[MSG_EAT] = ChickenEatMsgHandler;
+	classStatics[CID_CHICKEN].msgReceivers[MSG_JUMP] = ChickenJumpMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;
@@ -184,20 +241,6 @@ void SP_monster_chicken (edict_t *self)
  	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 
 	gi.linkentity(self); 
-
-}
-
-void chicken_death(edict_t *self, G_Message_t *msg)
-{
-	self->msgHandler = DeadMsgHandler;
-
-	// if we have a use, fire it off.
-//	monster_death_use (self);
-
-	gi.sound (self, CHAN_BODY, sounds[SND_DIE], 1, ATTN_NORM, 0);
-	self->deadflag = DEAD_DEAD;
-	BecomeDebris(self);
-	gi.CreateEffect(&self->s, FX_CHICKEN_EXPLODE, CEF_OWNERS_ORIGIN, NULL, "" ); 
 
 }
 
@@ -352,77 +395,6 @@ void chicken_eat_again (edict_t *self)
 	 		QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 	else
 		chicken_pause(self);
-}
-
-//----------------------------------------------------------------------
-//  Chicken attack - peck us to death
-//----------------------------------------------------------------------
-void chicken_attack(edict_t *self, G_Message_t *msg)
-{
-	SetAnim(self, ANIM_ATTACK);
-}
-
-//----------------------------------------------------------------------
-//  Chicken jump 
-//----------------------------------------------------------------------
-void chicken_jump(edict_t *self, G_Message_t *msg)
-{
-	if(!irand(0,2))
-		gi.sound(self, CHAN_VOICE, sounds[SND_JUMP1], 1, ATTN_NORM, 0);
-	else if (!irand(0, 1))
-		gi.sound(self, CHAN_VOICE, sounds[SND_JUMP2], 1, ATTN_NORM, 0);
-	else
-		gi.sound(self, CHAN_VOICE, sounds[SND_JUMP3], 1, ATTN_NORM, 0);
-	SetAnim(self, ANIM_JUMP);
-}
-
-//----------------------------------------------------------------------
-//  Chicken Cluck 
-//----------------------------------------------------------------------
-void chicken_eat(edict_t *self, G_Message_t *msg)
-{
-	if (!irand(0, 1))
-		gi.sound(self, CHAN_VOICE, sounds[SND_PECK1], 1, ATTN_NORM, 0);
-	else
-		gi.sound(self, CHAN_VOICE, sounds[SND_PECK2], 1, ATTN_NORM, 0);
-	SetAnim(self, ANIM_EAT);
-}
-
-//----------------------------------------------------------------------
-//  Chicken Cluck 
-//----------------------------------------------------------------------
-void chicken_cluck(edict_t *self, G_Message_t *msg)
-{
-	if (!irand(0, 1))
-		gi.sound(self, CHAN_VOICE, sounds[SND_CLUCK1], 1, ATTN_NORM, 0);
-	else
-		gi.sound(self, CHAN_VOICE, sounds[SND_CLUCK2], 1, ATTN_NORM, 0);
-
-	SetAnim(self, ANIM_CLUCK);
-}
-
-//----------------------------------------------------------------------
-//  Chicken Run - choose a run to use
-//----------------------------------------------------------------------
-void chicken_run(edict_t *self, G_Message_t *msg)
-{
-	SetAnim(self, ANIM_RUN);
-}
-
-//----------------------------------------------------------------------
-//  Chicken Walk - choose a walk to use
-//----------------------------------------------------------------------
-void chicken_walk(edict_t *self, G_Message_t *msg)
-{
-	SetAnim(self, ANIM_WALK);
-}
-
-//----------------------------------------------------------------------
-//  Chicken Stand -decide which standing animations to use
-//----------------------------------------------------------------------
-void chicken_stand(edict_t *self, G_Message_t *msg)
-{
-	SetAnim(self, ANIM_STAND1);
 }
 
 void chickensqueal (edict_t *self)
