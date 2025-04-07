@@ -1211,8 +1211,5 @@
     <ClInclude Include="m_assassin_local.h">
       <Filter>src\Monsters\Assassin</Filter>
     </ClInclude>
-    <ClInclude Include="m_beast_local.h">
-      <Filter>src\Monsters\Trial Beast</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
