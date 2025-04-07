@@ -1373,25 +1373,23 @@ static void TBeastChomp(edict_t* self, float forward_offset, float right_offset,
 	}
 }
 
-void tbeast_leap (edict_t *self, float fwdf, float rghtf, float upf)
+void tbeast_leap(edict_t* self, float forward_offset, float right_offset, float up_offset)
 {
-	vec3_t	forward, right, up, angles;
+	if (self->groundentity == NULL && !TB_CheckBottom(self))
+		return;
 
-	if(!self->groundentity)
-	{
-		if(!TB_CheckBottom(self))
-			return;
-	}
+	if (self->s.frame == FRAME_jumpb7)
+		TBeastChomp(self, 36.0f, 0.0f, 232.0f);
 
-	if(self->s.frame == FRAME_jumpb7)
-		TBeastChomp(self, 36, 0, 232);
-
-//	self->gravity = TB_JUMP_GRAV;
-	VectorSet(angles, 0, self->s.angles[YAW], 0);
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	const vec3_t angles = { 0.0f, self->s.angles[YAW], 0.0f };
 	AngleVectors(angles, forward, right, up);
-	VectorScale(forward, fwdf, self->velocity);
-	VectorMA(self->velocity, rghtf, right, self->velocity);
-	VectorMA(self->velocity, upf, up, self->velocity);
+
+	VectorScale(forward, forward_offset, self->velocity);
+	VectorMA(self->velocity, right_offset, right, self->velocity);
+	VectorMA(self->velocity, up_offset, up, self->velocity);
 }
 
 /*========================
