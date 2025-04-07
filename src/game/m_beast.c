@@ -278,59 +278,50 @@ static void TBeastEatMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 't
 		SetAnim(self, irand(ANIM_EATING_TWITCH, ANIM_EATING));
 }
 
-/*----------------------------------------------------------------------
-  TBeast Stand  -decide which standing animations to use
------------------------------------------------------------------------*/
-void tbeast_stand(edict_t *self, G_Message_t *msg)
+// Decide which standing animations to use.
+static void TBeastStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'tbeast_stand' in original logic.
 {
-	vec3_t	v;
-	float	len;
-
 	if (self->ai_mood == AI_MOOD_DELAY)
 	{
 		SetAnim(self, ANIM_DELAY);
 		return;
 	}
 
-	if (self->enemy)
+	if (self->enemy == NULL)
 	{
-		if (AI_IsClearlyVisible(self, self->enemy))
-			return;
-	
-		VectorSubtract(self->enemy->s.origin, self->s.origin, v);
-		len = VectorNormalize(v);
-
-		if (len < 200)
-		{
-			self->show_hostile = level.time + 1;		// wake up other monsters		
-			QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-
-			return;
-		}
-		else if (len < 400)
-		{
-			if (!irand(0, 3))
-			{
-				tbeast_growl(self);
-			}
-		}
-		
-		if (!irand(0, 3))
-		{
-			tbeast_growl(self);
-			SetAnim(self, ANIM_STAND);
-			return;
-		}
-		else
-		{
-			if (self->monsterinfo.aiflags & AI_EATING)
-				SetAnim(self, ANIM_EATING);
-	
-			return;
-		}
+		SetAnim(self, ANIM_STAND);
+		return;
 	}
 
-	SetAnim(self, ANIM_STAND);
+	if (AI_IsClearlyVisible(self, self->enemy))
+		return;
+
+	vec3_t diff;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
+	const float dist = VectorNormalize(diff);
+
+	if (dist < 200.0f)
+	{
+		self->show_hostile = level.time + 1.0f; // Wake up other monsters.
+		QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+
+		return;
+	}
+
+	if (irand(0, 3) == 0)
+	{
+		tbeast_growl(self);
+		SetAnim(self, ANIM_STAND);
+
+		return;
+	}
+
+	//mxd. Moved below previous 'if' check to avoid a slight chance to play growl sound twice in the same call.
+	if (dist < 400.0f && irand(0, 3) == 0)
+		tbeast_growl(self);
+
+	if (self->monsterinfo.aiflags & AI_EATING)
+		SetAnim(self, ANIM_EATING);
 }
 
 
@@ -2574,7 +2565,7 @@ void tbeast_go_charge (edict_t *self, edict_t *other, edict_t *activator)
 
 void TBeastStaticsInit(void)
 {
-	classStatics[CID_TBEAST].msgReceivers[MSG_STAND] = tbeast_stand;
+	classStatics[CID_TBEAST].msgReceivers[MSG_STAND] = TBeastStandMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_WALK] = tbeast_walk;
 	classStatics[CID_TBEAST].msgReceivers[MSG_RUN] = tbeast_run;
 	classStatics[CID_TBEAST].msgReceivers[MSG_EAT] = TBeastEatMsgHandler;
