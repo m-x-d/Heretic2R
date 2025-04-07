@@ -1801,209 +1801,204 @@ static void TBeastCheckImpacts(edict_t* self) //mxd. Named 'tbeast_check_impacts
 	}
 }
 
-void tbeast_fake_touch(edict_t *self)
-{//Used by Trial Beast for Simulated Complex Bounding Box Collision
+static void TBeastFakeTouch(edict_t* self) //mxd. Named 'tbeast_fake_touch' in original logic.
+{
+	// Used by Trial Beast for Simulated Complex Bounding Box Collision.
+	edict_t* touch[MAX_EDICTS];
+	const int num_touching = gi.BoxEdicts(self->absmin, self->absmax, touch, MAX_EDICTS, AREA_SOLID);
+	// Be careful, it is possible to have an entity in this list removed before we get to it (killtriggered).
 
-	vec3_t		forward, right, up, start, end, dir, mins, maxs;
-	vec3_t		lfootoffset, rfootoffset, omins, omaxs;
-	vec3_t		lstart, lend, rstart, rend, lfootmins, lfootmaxs, rfootmins, rfootmaxs, fmins, fmaxs;
-	vec3_t		melee_point;
-	int			leg_check_index;
-	qboolean	hitme = true;
-	qboolean	hitother = false;
-	trace_t		trace;
-	int			osolid, ocm;
-	int			i, num;
-	edict_t		*touch[MAX_EDICTS], *other;
-
-	num = gi.BoxEdicts (self->absmin, self->absmax, touch, MAX_EDICTS, AREA_SOLID);
-	// be careful, it is possible to have an entity in this
-	// list removed before we get to it (killtriggered)
-
-	if(!touch[0])
-		goto finish;
-
-	AngleVectors(self->s.angles, forward, right, up);
-
-	leg_check_index = TBeastGetWalkFrame(self);
-
-	if(leg_check_index > -1)
-	{//set up leg checks - FIXME: trace from last footpos to current one
-		
-		//Walking, Check melee point in front
-		VectorMA(self->s.origin, self->maxs[2]*0.5 + TB_UP_OFFSET, up, melee_point);
-		VectorMA(melee_point, 150 + TB_FWD_OFFSET, forward, melee_point);
-
-		VectorSet(fmins, -8, -8, 0);
-		VectorSet(fmaxs, 8, 8, 1);
-
-	//left leg
-		VectorCopy(left_foot_offset_for_frame_index[leg_check_index], lfootoffset);
-		VectorMA(self->s.origin, lfootoffset[0] + TB_FWD_OFFSET, forward, lend);
-		VectorMA(lend, lfootoffset[1] + TB_RT_OFFSET, right, lend);
-		VectorMA(lend, lfootoffset[2] + TB_UP_OFFSET, up, lend);
-		VectorCopy(lend, lstart);
-		lstart[2]+=63;
-		
-		VectorAdd(lend, fmins, lfootmins);
-		VectorCopy(lfootmins, lfootmaxs);
-		lfootmaxs[2] += 64;
-
-	//right leg
-		VectorCopy(right_foot_offset_for_frame_index[leg_check_index], rfootoffset);
-		VectorMA(self->s.origin, rfootoffset[0] + TB_FWD_OFFSET, forward, rend);
-		VectorMA(rend, rfootoffset[1] + TB_RT_OFFSET, right, rend);
-		VectorMA(rend, rfootoffset[2] + TB_UP_OFFSET, up, rend);
-		VectorCopy(rend, rstart);
-		rstart[2]+=63;
-
-		VectorAdd(rend, fmins, rfootmins);
-		VectorCopy(rfootmins, rfootmaxs);
-		rfootmaxs[2] += 64;
+	if (num_touching == 0) //mxd. 'if (touch[0] == NULL)' in original logic.
+	{
+		TBeastCheckImpacts(self);
+		return;
 	}
 
-	//set up body check
-	VectorCopy(self->s.origin, start);
-	start[2] += 64 + TB_UP_OFFSET;//bottom of torso
-	start[2] += 35;//halfway up to the top of torso
-	VectorMA(start, 150 + TB_FWD_OFFSET, forward, end);
-	VectorMA(start, -120, forward, start);// + TB_FWD_OFFSET???
-	VectorSet(mins, -50, -50, -61);
-	VectorSet(maxs, 50, 50, 70);
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, right, up);
 
-	for (i=0 ; i<num ; i++)
+	const int leg_check_index = TBeastGetWalkFrame(self);
+
+	vec3_t melee_point;
+	vec3_t left_foot_mins;
+	vec3_t left_foot_maxs;
+	vec3_t right_foot_mins;
+	vec3_t right_foot_maxs;
+
+	if (leg_check_index > -1)
 	{
-		other = touch[i];
-		if (!other->inuse)
-			continue;
-		
-		if(other==self)
+		// Setup leg checks - FIXME: trace from last footpos to current one.
+
+		// Walking, check melee point in front.
+		VectorMA(self->s.origin, self->maxs[2] * 0.5f + TB_UP_OFFSET, up, melee_point);
+		VectorMA(melee_point, 150.0f + TB_FWD_OFFSET, forward, melee_point);
+
+		vec3_t foot_offset;
+		const vec3_t foot_mins = { -8.0f, -8.0f, 0.0f };
+		const vec3_t foot_maxs = {  8.0f,  8.0f, 1.0f }; //TODO: unused! Should add to left_foot_maxs / right_foot_maxs?..
+
+		// Left leg.
+		VectorCopy(left_foot_offset_for_frame_index[leg_check_index], foot_offset);
+
+		vec3_t left_end;
+		VectorMA(self->s.origin, foot_offset[0] + TB_FWD_OFFSET, forward, left_end);
+		VectorMA(left_end, foot_offset[1] + TB_RT_OFFSET, right, left_end);
+		VectorMA(left_end, foot_offset[2] + TB_UP_OFFSET, up, left_end);
+
+		VectorAdd(left_end, foot_mins, left_foot_mins);
+		VectorCopy(left_foot_mins, left_foot_maxs);
+		left_foot_maxs[2] += 64.0f;
+
+		// Right leg.
+		VectorCopy(right_foot_offset_for_frame_index[leg_check_index], foot_offset);
+
+		vec3_t right_end;
+		VectorMA(self->s.origin, foot_offset[0] + TB_FWD_OFFSET, forward, right_end);
+		VectorMA(right_end, foot_offset[1] + TB_RT_OFFSET, right, right_end);
+		VectorMA(right_end, foot_offset[2] + TB_UP_OFFSET, up, right_end);
+
+		VectorAdd(right_end, foot_mins, right_foot_mins);
+		VectorCopy(right_foot_mins, right_foot_maxs);
+		right_foot_maxs[2] += 64.0f;
+	}
+
+	// Setup body check.
+	vec3_t start;
+	VectorCopy(self->s.origin, start);
+	start[2] += 64.0f + TB_UP_OFFSET; // Bottom of torso.
+	start[2] += 35.0f; // Halfway up to the top of torso.
+
+	vec3_t end;
+	VectorMA(start, 150.0f + TB_FWD_OFFSET, forward, end);
+	VectorMA(start, -120.0f, forward, start); // + TB_FWD_OFFSET???
+
+	const vec3_t mins = { -50.0f, -50.0f, -61.0f };
+	const vec3_t maxs = {  50.0f,  50.0f,  70.0f };
+
+	for (int i = 0; i < num_touching; i++)
+	{
+		edict_t* other = touch[i];
+
+		if (other == NULL || !other->inuse || other == self || other == self->targetEnt || Q_stricmp(other->classname, "worldspawn") == 0) //mxd. Added 'other' NULL check. stricmp -> Q_stricmp //TODO: replace Q_stricmp with world check?
 			continue;
 
-		if(!stricmp(other->classname, "worldspawn"))
-			continue;
-
-		if(other == self->targetEnt)
-			continue;
-
-		if(self->curAnimID != ANIM_CHARGE && self->curAnimID != ANIM_QUICK_CHARGE)
+		if (self->curAnimID != ANIM_CHARGE && self->curAnimID != ANIM_QUICK_CHARGE)
 		{
-			if(leg_check_index > -1 && other->takedamage && AI_IsMovable(other))
-			{//Hey!  Check and see if they're close to my mouth and chomp 'em!
-				if(vhlen (other->s.origin, melee_point) < 100)
+			if (leg_check_index > -1 && other->takedamage != DAMAGE_NO && AI_IsMovable(other))
+			{
+				// Check and see if they're close to my mouth and chomp 'em!
+				if (vhlen(other->s.origin, melee_point) < 100.0f)
 				{
 					self->oldenemy = self->enemy;
 					self->enemy = other;
 					QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-					goto finish;
+
+					break;
 				}
 			}
 		}
 
-		if(other->classID == CID_TCHECKRIK)
-			continue;//we want to pick up and eat insects
+		if (other->classID == CID_TCHECKRIK)
+			continue; // We want to pick up and eat insects.
 
-		//make other solid and size temp for trace
-		ocm = other->clipmask;
-		osolid = other->solid;
-		if(!Vec3IsZero(other->mins))
-			VectorCopy(other->mins, omins);
-		else
-		{
-			VectorCopy(other->mins, omins);
-			VectorSet(other->mins, -1, -1, -1);
-		}
+		// Make other solid and size temp for trace.
+		const int other_clipmask = other->clipmask;
+		const int other_solid = other->solid;
 
-		if(!Vec3IsZero(other->maxs))
-			VectorCopy(other->maxs, omaxs);
+		vec3_t other_mins;
+		if (Vec3NotZero(other->mins))
+			VectorCopy(other->mins, other_mins);
 		else
-		{
-			VectorCopy(other->maxs, omaxs);
-			VectorSet(other->maxs, 1, 1, 1);
-		}
+			VectorSet(other->mins, -1.0f, -1.0f, -1.0f);
+
+		vec3_t other_maxs;
+		if (Vec3NotZero(other->maxs))
+			VectorCopy(other->maxs, other_maxs);
+		else
+			VectorSet(other->maxs, 1.0f, 1.0f, 1.0f);
 
 		other->solid = SOLID_BBOX;
 		other->clipmask = MASK_ALL;
-//BODY
-		//Fix me: continue the trace if less than 1.0 or save for next touch?
-		gi.trace(start, mins, maxs, end, self, MASK_MONSTERSOLID,&trace);
-		//put other back to normal
-		other->solid = osolid;
-		other->clipmask = ocm;
-		VectorCopy(omins, other->mins);
-		VectorCopy(omaxs, other->maxs);
-		
-		if(trace.ent==other)//hit something with BODY , touch it
-			hitother = true;//hit other!
 
-		if(!hitother && other->absmin[2]>self->absmax[2] - 10)
+		// BODY
+
+		trace_t trace;
+		gi.trace(start, mins, maxs, end, self, MASK_MONSTERSOLID, &trace); //FIXME: continue the trace if less than 1.0 or save for next touch?
+
+		// Put other back to normal.
+		other->solid = other_solid;
+		other->clipmask = other_clipmask;
+		VectorCopy(other_mins, other->mins);
+		VectorCopy(other_maxs, other->maxs);
+
+		const qboolean hit_other = (trace.ent == other); // If hit something with BODY, touch it. //BUGFIX: mxd. When this check succeeds, original logic enables hit_other for all subsequent checks.
+
+		if (!hit_other && other->absmin[2] > self->absmax[2] - 10.0f)
 		{
-			if(!irand(0,10))
+			if (irand(0, 10) == 0)
 			{
-//				gi.dprintf("Jump to throw off something\n");
+				// Jump to throw off something.
 				SetAnim(self, ANIM_JUMP);
+
+				vec3_t dir;
 				VectorSubtract(other->s.origin, self->s.origin, dir);
 				VectorNormalize(dir);
-				VectorScale(dir, 500, other->velocity);
-//				other->groundentity = NULL;
+
+				VectorScale(dir, 500.0f, other->velocity);
 			}
 		}
 		else
 		{
-			if(hitother)
-				hitme = true;
-			else
+			qboolean hit_me = hit_other;
+
+			if (!hit_me && leg_check_index > -1)
 			{
-				hitme = false;
-				if(leg_check_index > -1)
-				{
-					VectorAdd(other->s.origin, other->mins, omins);
-					VectorAdd(other->s.origin, other->maxs, omaxs);
-					if(BBoxesOverlap(omins, omaxs, lfootmins, lfootmaxs))
-						hitme = true;
-					else if(BBoxesOverlap(omins, omaxs, rfootmins, rfootmaxs))
-						hitme = true;
-				}
+				VectorAdd(other->s.origin, other->mins, other_mins);
+				VectorAdd(other->s.origin, other->maxs, other_maxs);
+
+				hit_me = (BBoxesOverlap(other_mins, other_maxs, left_foot_mins, left_foot_maxs) || BBoxesOverlap(other_mins, other_maxs, right_foot_mins, right_foot_maxs));
 			}
 
-			if(hitme)
+			if (hit_me)
 			{
-				if(other->isBlocked&&other->solid!=SOLID_NOT)
+				if (other->isBlocked != NULL && other->solid != SOLID_NOT)
 				{
-					gi.trace(other->s.origin, vec3_origin, vec3_origin, self->s.origin, other, MASK_ALL,&trace);
+					gi.trace(other->s.origin, vec3_origin, vec3_origin, self->s.origin, other, MASK_ALL, &trace);
 					trace.ent = self;
 					VectorCopy(other->s.origin, trace.endpos);
 					other->isBlocked(other, &trace);
 				}
-				if(other->touch&&other->solid!=SOLID_NOT)
+
+				if (other->touch != NULL && other->solid != SOLID_NOT)
 				{
-					gi.trace(other->s.origin, vec3_origin, vec3_origin, self->s.origin, other, MASK_ALL,&trace);
+					gi.trace(other->s.origin, vec3_origin, vec3_origin, self->s.origin, other, MASK_ALL, &trace);
 					trace.ent = self;
 					VectorCopy(other->s.origin, trace.endpos);
-					other->touch (other, self, &trace.plane, trace.surface);
+					other->touch(other, self, &trace.plane, trace.surface);
 				}
-				if(other && other == trace.ent)
-				{//if other still valid, do my impact with it
+
+				if (other == trace.ent)
+				{
+					// If other still valid, do my impact with it.
 					TBeastFakeImpact(self, &trace, false);
-					other->svflags |= SVF_TOUCHED_BEAST;//so check_impacts doesn't do anything with it
+					other->svflags |= SVF_TOUCHED_BEAST; // So check_impacts doesn't do anything with it.
 				}
 			}
 		}
 	}
 
-finish:
 	TBeastCheckImpacts(self);
 
-	for (i=0 ; i<num ; i++)
-	{
-		touch[i]->svflags &= ~SVF_TOUCHED_BEAST;
-	}
-
+	for (int i = 0; i < num_touching; i++)
+		if (touch[i] != NULL) //mxd. Added NULL check.
+			touch[i]->svflags &= ~SVF_TOUCHED_BEAST;
 }
 
 void tbeast_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
-	tbeast_fake_touch(self);	
+	TBeastFakeTouch(self);	
 }
 
 void tbeast_post_think (edict_t *self)
@@ -2087,7 +2082,7 @@ void tbeast_post_think (edict_t *self)
 		//SetAnim(self, ANIM_JUMP);
 	}
 
-	tbeast_fake_touch(self);
+	TBeastFakeTouch(self);
 
 	self->next_post_think = level.time + 0.1;
 }
