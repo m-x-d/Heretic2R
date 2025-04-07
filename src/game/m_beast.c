@@ -2121,11 +2121,11 @@ edict_t* TB_CheckHit(const vec3_t start, vec3_t end) //mxd. Named 'check_hit_bea
 	return NULL;
 }
 
-void tbeast_go_charge (edict_t *self, edict_t *other, edict_t *activator)
+static void TBeastUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'tbeast_go_charge' in original logic.
 {
-	self->enemy = activator;//are we certain activator is client?
-	//do a FoundTarget(self, false);?
-	self->dmg = true;
+	self->enemy = activator; // Are we certain activator is client?
+	//FIXME: do a FoundTarget(self, false);?
+	self->dmg = true; // Activate charge mode.
 	SetAnim(self, ANIM_CHARGE);
 	self->use = TBeastDie_UseCallback;
 }
@@ -2290,7 +2290,7 @@ void SP_monster_trial_beast (edict_t *self)
 	self->clipmask = CONTENTS_SOLID;
 	self->solid = SOLID_TRIGGER;//WHY IS HE BEING PUSHED BY BSP entities now???!
 	self->red_rain_count = 0;//pillar init
-	self->use = tbeast_go_charge;
+	self->use = TBeastUse;
 	self->delay = true;
 	
 	self->max_health = self->health;
