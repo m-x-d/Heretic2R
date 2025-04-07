@@ -108,40 +108,34 @@ static ClassResourceInfo_t res_info; //mxd. Named 'resInfo' in original logic.
 
 #pragma endregion
 
-qboolean visible_to_client (edict_t *self)
+static qboolean IsVisibleToClient(const edict_t* self) //mxd. Named 'visible_to_client' in original logic.
 {
-	edict_t *ent = NULL;
-	int		i;
-
-	for(i = 0; i <= game.maxclients; i++)
+	for (int i = 1; i <= game.maxclients; i++) //mxd. 'i = 0' in original logic.
 	{
-		ent = &g_edicts[i];
+		const edict_t* cl = &g_edicts[i];
 
-		if(ent->client)
-		{
-			edict_t	*temp;
+		if (cl->client == NULL)
+			continue;
 
-			temp = G_Spawn();
+		edict_t* temp = G_Spawn();
 
-			VectorSet(temp->s.origin,
-				ent->client->playerinfo.pcmd.camera_vieworigin[0] * 0.125,
-				ent->client->playerinfo.pcmd.camera_vieworigin[1] * 0.125,
-				ent->client->playerinfo.pcmd.camera_vieworigin[2] * 0.125);
+		VectorSet(temp->s.origin,
+			(float)cl->client->playerinfo.pcmd.camera_vieworigin[0] * 0.125f,
+			(float)cl->client->playerinfo.pcmd.camera_vieworigin[1] * 0.125f,
+			(float)cl->client->playerinfo.pcmd.camera_vieworigin[2] * 0.125f);
 
-			VectorSet(temp->s.angles,
-				SHORT2ANGLE(ent->client->playerinfo.pcmd.camera_viewangles[0]), 
-				SHORT2ANGLE(ent->client->playerinfo.pcmd.camera_viewangles[1]), 
-				SHORT2ANGLE(ent->client->playerinfo.pcmd.camera_viewangles[2]));
+		VectorSet(temp->s.angles,
+			SHORT2ANGLE(cl->client->playerinfo.pcmd.camera_viewangles[0]),
+			SHORT2ANGLE(cl->client->playerinfo.pcmd.camera_viewangles[1]),
+			SHORT2ANGLE(cl->client->playerinfo.pcmd.camera_viewangles[2]));
 
-			if(MG_IsInforntPos(temp, self->s.origin) && gi.inPVS(temp->s.origin, self->s.origin))
-			{
-				G_FreeEdict(temp);
-				return true;
-			}
+		const qboolean is_visible = (MG_IsInforntPos(temp, self->s.origin) && gi.inPVS(temp->s.origin, self->s.origin));
+		G_FreeEdict(temp);
 
-			G_FreeEdict(temp);
-		}
+		if (is_visible)
+			return true;
 	}
+
 	return false;
 }
 
@@ -228,7 +222,7 @@ void tbeast_blocked (edict_t *self, trace_t *trace)
 		{//FIXME: In higher skills, less chance of breaking it?  Or debounce time?
 //			gi.dprintf("Hit a Pillar!\n");
 
-			if(visible_to_client(self))
+			if(IsVisibleToClient(self))
 			{
 				self->red_rain_count++;
 				if(self->red_rain_count >= 2)//got both pillars, now die
@@ -2057,7 +2051,7 @@ void tbeast_fake_impact(edict_t *self, trace_t *trace, qboolean crush)
 				if(trace->ent->targetname && !stricmp(trace->ent->targetname, "pillar"))
 				{//FIXME: In higher skills, less chance of breaking it?  Or debounce time?
 
-					if(visible_to_client(self))
+					if(IsVisibleToClient(self))
 					{
 //						gi.dprintf("Beast hit pillar!\n");
 						G_UseTargets (trace->ent, self);
