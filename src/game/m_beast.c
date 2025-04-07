@@ -778,63 +778,30 @@ void tbeast_dead(edict_t* self)
 	gi.linkentity(self);
 }
 
-void tbeast_land(edict_t *self)
+void tbeast_land(edict_t* self)
 {
-	vec3_t up, pos;
-	edict_t	*found = NULL;
+	gi.CreateEffect(&self->s, FX_QUAKE, 0, vec3_origin, "bbb", 7, 7, 7);
 
-//	self->gravity = 1.0;
+	vec3_t up = { flrand(-50.0f, 50.0f), flrand(-50.0f, 50.0f), flrand(50.0f, 300.0f) };
 
-	gi.CreateEffect(&self->s,
-					FX_QUAKE,
-					0,
-					vec3_origin,
-					"bbb",
-					7,
-					7,
-					7);
-
-
-	VectorSet(up, flrand(-50,50), flrand(-50,50), flrand(50,300));
-	
-	VectorCopy(self->s.origin, pos);
-	pos[0] += flrand(-50,50);
-	pos[1] += flrand(-50,50);
-	pos[2] += self->mins[2];
-	gi.CreateEffect(NULL, FX_OGLE_HITPUFF, 0, pos, "v", up);
-	VectorCopy(self->s.origin, pos);
-	pos[0] += flrand(-50,50);
-	pos[1] += flrand(-50,50);
-	pos[2] += self->mins[2];
-	gi.CreateEffect(NULL, FX_OGLE_HITPUFF, 0, pos, "v", up);
-	VectorCopy(self->s.origin, pos);
-	pos[0] += flrand(-50,50);
-	pos[1] += flrand(-50,50);
-	pos[2] += self->mins[2];
-	gi.CreateEffect(NULL, FX_OGLE_HITPUFF, 0, pos, "v", up);
-	VectorCopy(self->s.origin, pos);
-	pos[0] += flrand(-50,50);
-	pos[1] += flrand(-50,50);
-	pos[2] += self->mins[2];
-	gi.CreateEffect(NULL, FX_OGLE_HITPUFF, 0, pos, "v", up);
-	
-	gi.sound(self, CHAN_ITEM, sounds[SND_LAND], 1, ATTN_NORM, 0);
-
-	while(found = FindInRadius(found, self->s.origin, 512))
+	for (int i = 0; i < 4; i++)
 	{
-		if(found->client)
-		{
-			if(found->health > 0 && found->groundentity)
-			{
-				if(found->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
-				{
-					P_KnockDownPlayer(&found->client->playerinfo);
-				}
-			}
-		}
-	}
-}
+		vec3_t pos;
+		VectorCopy(self->s.origin, pos);
+		pos[0] += flrand(-50.0f, 50.0f);
+		pos[1] += flrand(-50.0f, 50.0f);
+		pos[2] += self->mins[2];
 
+		gi.CreateEffect(NULL, FX_OGLE_HITPUFF, 0, pos, "v", up); //TODO: randomize 'up' vector on each iteration?
+	}
+
+	gi.sound(self, CHAN_ITEM, sounds[SND_LAND], 1.0f, ATTN_NORM, 0.0f);
+
+	edict_t* e = NULL;
+	while ((e = FindInRadius(e, self->s.origin, 512.0f)) != NULL)
+		if (e->client != NULL && e->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN && e->health > 0 && e->groundentity != NULL)
+			P_KnockDownPlayer(&e->client->playerinfo);
+}
 
 void tbeast_roar_knockdown(edict_t *self)
 {
