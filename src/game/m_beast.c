@@ -695,44 +695,36 @@ void tbeast_check_mood(edict_t* self) //mxd. Added action function version.
 	TBeastCheckMood(self);
 }
 
-/*----------------------------------------------------------------------
-  TBeast Pause - decide what to do after attacking
------------------------------------------------------------------------*/
-void tbeast_pause (edict_t *self)
+// Decide what to do after attacking.
+void tbeast_pause(edict_t* self)
 {
-	vec3_t	v;
-	float	len;
-	
-	if(self->enemy && self->enemy->classID != CID_TCHECKRIK && self->curAnimID == ANIM_STUN && self->pain_debounce_time > level.time + 7 && MG_IsAheadOf(self, self->enemy))
+	if (self->enemy != NULL && self->enemy->classID != CID_TCHECKRIK && self->curAnimID == ANIM_STUN && self->pain_debounce_time > level.time + 7.0f && MG_IsAheadOf(self, self->enemy))
 	{
 		TBeastInitCharge(self);
 		return;
 	}
 
-	if(TBeastCheckMood(self))
+	if (TBeastCheckMood(self) || !M_ValidTarget(self, self->enemy))
 		return;
 
-	if(!M_ValidTarget(self, self->enemy))
-		return;
-	
-	if(AI_IsClearlyVisible(self, self->enemy))
+	float dist;
+
+	if (AI_IsClearlyVisible(self, self->enemy))
 	{
-		VectorSubtract (self->s.origin, self->enemy->s.origin, v);
-		len = VectorLength (v);
+		vec3_t diff;
+		VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
+		dist = VectorLength(diff);
 	}
 	else
-		len = 999999;
-	
-	if (len > 120)  // Far enough to run after
 	{
-		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+		dist = FLT_MAX; //mxd. 999999 in original logic.
 	}
-	else	// Close enough to Attack or Hop
-	{
-		QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-	}
-}
 
+	if (dist > 120.0f) // Far enough to run after.
+		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+	else // Close enough to Attack or Hop.
+		QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+}
 
 void tbeast_runorder (edict_t *self)
 {
