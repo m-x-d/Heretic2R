@@ -981,57 +981,44 @@ qboolean TB_CheckJump(edict_t* self) //TODO: rename to TBeastCheckJump.
 	return false;
 }
 
-void tbeast_run_think (edict_t *self, float dist)
+void tbeast_run(edict_t* self, float dist) //mxd. Named 'tbeast_run_think' in original logic.
 {
-	vec3_t	angles, forward, start, end, mins;
-	trace_t	trace;
-/*
-	matrix3_t	RotationMatrix;
-	vec3_t		lfootoffset, rfootoffset, newlfootpos, newrfootpos;
-	vec3_t		save_lf_org, save_rf_org, save_my_org;
-	float		save_yaw;*/
-
-	if(!M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy))
 	{
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 		return;
 	}
 
-//see if I'm on ground
+	// See if I'm on ground.
 	TB_CheckBottom(self);
 
-	if(self->monsterinfo.aiflags &AI_USING_BUOYS)
+	if (self->monsterinfo.aiflags & AI_USING_BUOYS)
 		MG_Pathfind(self, false);
 
-	if(!MG_MoveToGoal (self, dist))
-	{
-		VectorSet(angles, 0, self->s.angles[YAW], 0);
-		AngleVectors(angles, forward, NULL, NULL);
+	if (MG_MoveToGoal(self, dist))
+		return;
 
-		VectorCopy(self->s.origin, start);
-		VectorMA(start, 128, forward, end);
-		VectorCopy(self->mins, mins);
-		mins[2]+=54;//his step height
-		gi.trace(start, mins, self->maxs, end, self, MASK_SOLID,&trace);
-		if(trace.ent)
-		{
-			if(AI_IsMovable(trace.ent) || trace.ent->solid!=SOLID_BSP)
-			{
-				return;
-			}
-		}
-		if(trace.fraction == 1.0 || //nothing there - ledge
-			(&trace.plane && !Vec3IsZero(trace.plane.normal) && trace.plane.normal[2]<0.7))//not a slope can go up
-		{
-#ifdef _DEVEL
-			if(TB_CheckJump(self))
-				gi.dprintf("Enemy was ahead!\n");
-#else
-			TB_CheckJump(self);
-#endif
-		}
-	}
+	vec3_t forward;
+	const vec3_t angles = { 0.0f, self->s.angles[YAW], 0.0f };
+	AngleVectors(angles, forward, NULL, NULL);
+
+	vec3_t end;
+	VectorMA(self->s.origin, 128.0f, forward, end);
+
+	vec3_t mins;
+	VectorCopy(self->mins, mins);
+	mins[2] += 54.0f; // His step height.
+
+	trace_t trace;
+	gi.trace(self->s.origin, mins, self->maxs, end, self, MASK_SOLID, &trace);
+
+	if (trace.ent != NULL && (AI_IsMovable(trace.ent) || trace.ent->solid != SOLID_BSP))
+		return;
+
+	if (trace.fraction == 1.0f || (!Vec3IsZero(trace.plane.normal) && trace.plane.normal[2] < GROUND_NORMAL)) // Nothing there || Not a slope can go up.
+		TB_CheckJump(self); // Enemy was ahead!
 }
+
 /*
 ========================================
 TBEAST PICK UP AND GORE SOMETHING

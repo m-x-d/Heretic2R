@@ -134,7 +134,7 @@ void tbeast_stand_order(edict_t* self);
 void tbeast_dead(edict_t* self);
 void tbeast_charge(edict_t* self, float force);
 void tbeast_done_gore(edict_t* self);
-void tbeast_run_think(edict_t* self, float dist);
+void tbeast_run(edict_t* self, float dist);
 void tbeast_check_landed(edict_t* self);
 void tbeast_inair(edict_t* self);
 void tbeast_gcheck_landed(edict_t* self);
