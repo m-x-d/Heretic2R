@@ -1032,23 +1032,26 @@ void tbeast_ready_catch(edict_t* self)
 		SetAnim(self, ANIM_READY_CATCH);
 }
 
-void tbeast_throw_toy(edict_t *self)
+void tbeast_throw_toy(edict_t* self)
 {
-	if(!self->targetEnt)
+	if (self->targetEnt == NULL)
 		return;
 
 	self->targetEnt->flags &= ~FL_FLY;
-	self->targetEnt->velocity[0] = self->targetEnt->velocity[1] = 0;
-	self->targetEnt->velocity[2] = 500;
-	if(self->targetEnt->movetype>NUM_PHYSICSTYPES)
+	VectorSet(self->targetEnt->velocity, 0.0f, 0.0f, 500.0f);
+
+	if (self->targetEnt->movetype > NUM_PHYSICSTYPES) //TODO: Eh? Should check for PHYSICSTYPE_FLY instead?..
 		self->targetEnt->movetype = PHYSICSTYPE_STEP;
-	VectorRandomCopy(vec3_origin,self->targetEnt->avelocity,300);
-	
-	if(stricmp(self->targetEnt->classname,"player"))
+
+	VectorRandomCopy(vec3_origin, self->targetEnt->avelocity, 300.0f);
+
+	if (Q_stricmp(self->targetEnt->classname, "player") != 0) //TODO: strange way to check for non-players. Should check self->targetEnt->client instead?..
 		QPostMessage(self->targetEnt, MSG_DEATH, PRI_DIRECTIVE, NULL);
 
-	if(self->targetEnt->client)
-		gi.sound(self->targetEnt, CHAN_VOICE, sounds[SND_CORVUS_DIE], 1, ATTN_NORM, 0);
+	if (self->targetEnt->client != NULL)
+		gi.sound(self->targetEnt, CHAN_VOICE, sounds[SND_CORVUS_DIE], 1.0f, ATTN_NORM, 0.0f);
+
+	//TODO: play SND_THROW?
 }
 
 void tbeast_toy_ofs(edict_t *self, float ofsf, float ofsr, float ofsu)
