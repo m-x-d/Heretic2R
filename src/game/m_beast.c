@@ -347,10 +347,9 @@ static void TBeastWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 		SetAnim(self, ANIM_WALK);
 }
 
-void tbeast_init_charge (edict_t *self)
+static void TBeastInitCharge(edict_t* self) //mxd. Named 'tbeast_init_charge' in original logic.
 {
-//	gi.dprintf("Beast CHARGE!\n");
-	if(!MG_IsAheadOf(self, self->enemy) || !irand(0,3))
+	if (!MG_IsAheadOf(self, self->enemy) || irand(0, 3) == 0)
 		SetAnim(self, ANIM_QUICK_CHARGE);
 	else
 		SetAnim(self, ANIM_CHARGE);
@@ -423,7 +422,7 @@ void tbeast_melee(edict_t *self, G_Message_t *msg)
 
 	if (self->enemy->classID != CID_TCHECKRIK && ((irand(0, 1) && AI_IsInfrontOf(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && HaveShoulderRoomAhead(self))
 	{
-		tbeast_init_charge(self);
+		TBeastInitCharge(self);
 	}
 	else
 		SetAnim(self, ANIM_WALK);
@@ -434,7 +433,7 @@ void tbeast_start_charge(edict_t *self, G_Message_t *msg)
 	MG_ChangeYaw(self);
 	if(self->enemy->classID != CID_TCHECKRIK && ((irand(0, 1) && AI_IsInfrontOf(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && HaveShoulderRoomAhead(self))
 	{
-		tbeast_init_charge(self);
+		TBeastInitCharge(self);
 	}
 	else
 		SetAnim(self, ANIM_WALK);
@@ -490,7 +489,7 @@ void tbeast_run(edict_t *self, G_Message_t *msg)
 
 	if (self->enemy->classID != CID_TCHECKRIK && enemy_vis && ((irand(0, 1) && AI_IsInfrontOf(self, self->enemy)) || MG_IsAheadOf(self, self->enemy)) && HaveShoulderRoomAhead(self))
 	{
-		tbeast_init_charge(self);
+		TBeastInitCharge(self);
 	}
 	else// if ((len < 200) && (self->monsterinfo.currframeindex == 0))
 	{
@@ -817,7 +816,7 @@ void tbeast_pause (edict_t *self)
 	
 	if(self->enemy && self->enemy->classID != CID_TCHECKRIK && self->curAnimID == ANIM_STUN && self->pain_debounce_time > level.time + 7 && MG_IsAheadOf(self, self->enemy))
 	{
-		tbeast_init_charge(self);
+		TBeastInitCharge(self);
 		return;
 	}
 
