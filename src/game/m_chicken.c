@@ -49,6 +49,49 @@ static void MorphOriginalIn(edict_t* self)
 		self->think = self->oldthink;
 }
 
+// Fade out the existing model till its gone.
+static void MorphChickenOut(edict_t* self)
+{
+	self->s.color.a -= MORPH_TELE_FADE;
+	self->nextthink = level.time + FRAMETIME;
+
+	if (self->morph_timer < (int)level.time)
+	{
+		// Create the original bad guy.
+		edict_t* new_ent = G_Spawn();
+
+		new_ent->classname = self->map;
+		VectorCopy(self->s.origin, new_ent->s.origin);
+		VectorCopy(self->s.angles, new_ent->s.angles);
+		new_ent->enemy = self->enemy;
+
+		ED_CallSpawn(new_ent);
+
+		new_ent->s.color.c = 0xffffff;
+		new_ent->oldthink = new_ent->think;
+		new_ent->think = MorphOriginalIn; //TODO: should also set new_ent->nextthink?
+		new_ent->morph_timer = MORPH_TELE_TIME;
+		new_ent->target = self->target;
+
+		// Make physics expand the bounding box for us, so the player doesn't get stuck inside the new bad guys box.
+
+		// Store the old mins max's
+		VectorCopy(new_ent->mins, new_ent->intentMins);
+		VectorCopy(new_ent->maxs, new_ent->intentMaxs);
+
+		VectorCopy(self->mins, new_ent->mins);
+		VectorCopy(self->maxs, new_ent->maxs);
+
+		new_ent->physicsFlags |= PF_RESIZE;
+
+		// Do the teleport sound and effect.
+		gi.sound(new_ent, CHAN_WEAPON, gi.soundindex("weapons/teleport.wav"), 1.0f, ATTN_NORM, 0.0f);
+		gi.CreateEffect(&new_ent->s, FX_PLAYER_TELEPORT_IN, CEF_OWNERS_ORIGIN, NULL, "");
+
+		G_FreeEdict(self);
+	}
+}
+
 #pragma endregion
 
 void ChickenStaticsInit(void)
@@ -157,49 +200,6 @@ void chicken_death(edict_t *self, G_Message_t *msg)
 	gi.CreateEffect(&self->s, FX_CHICKEN_EXPLODE, CEF_OWNERS_ORIGIN, NULL, "" ); 
 
 }
-
-//Fade out the existing model till its gone
-void MorphChickenOut(edict_t *self)
-{
-	edict_t	*newent;
-
-	self->s.color.a -= MORPH_TELE_FADE;
-	self->nextthink = level.time + FRAMETIME;
-	if (self->morph_timer < level.time)
-	{
-		// create the original bad guy
-		newent = G_Spawn();
-		newent->classname = self->map;
-		VectorCopy(self->s.origin, newent->s.origin);
-		VectorCopy(self->s.angles, newent->s.angles);
-		newent->enemy = self->enemy;
-		ED_CallSpawn(newent);
-		newent->s.color.c = 0xffffff;
-		newent->oldthink = newent->think;
-		newent->think = MorphOriginalIn;
-		newent->morph_timer = MORPH_TELE_TIME;
-		newent->target = self->target;
-
-		// make physics expand the bounding box for us, so the player doesn't get stuck inside the new bad guys box.
-
-		// store the old mins max's
-
-		VectorCopy(newent->mins,newent->intentMins);
-		VectorCopy(newent->maxs,newent->intentMaxs);
-
-		VectorCopy(self->mins,newent->mins);
-		VectorCopy(self->maxs,newent->maxs);
-
-		newent->physicsFlags |= PF_RESIZE;
-
-		// do the teleport sound
-		gi.sound(newent,CHAN_WEAPON,gi.soundindex("weapons/teleport.wav"),1,ATTN_NORM,0);
-		// do the teleport effect
-		gi.CreateEffect(&newent->s, FX_PLAYER_TELEPORT_IN, CEF_OWNERS_ORIGIN, NULL, "" ); 
-		G_FreeEdict(self);
-	}
-}
-
 
 /*-------------------------------------------------------------------------
 	chicken checks to see if we are still a chicken, or is it time to return to 
