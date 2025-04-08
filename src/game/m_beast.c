@@ -1751,8 +1751,8 @@ void tbeast_roar_short(edict_t* self)
 {
 	if (self->delay == 0.0f)
 	{
-		self->monsterinfo.currframeindex = 25;
-		self->monsterinfo.nextframeindex = 26;
+		self->monsterinfo.currframeindex = FRAME_atkc6; //mxd. Use define.
+		self->monsterinfo.nextframeindex = FRAME_atkc7; //mxd. Use define.
 		self->s.frame = FRAME_charge1;
 		self->delay = 1.0f;
 	}

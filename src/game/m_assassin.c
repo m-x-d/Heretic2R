@@ -949,7 +949,7 @@ void assassin_crouched_check_attack(edict_t* self, float attack) //mxd. Named 'a
 	else if (attack == 2.0f) // Start crouched attack animation.
 		SetAnim(self, ANIM_DAGGERC);
 	else // Loop back inside that anim.
-		self->monsterinfo.currframeindex = FRAME_ataka1;
+		self->monsterinfo.currframeindex = FRAME_ataka1; //mxd. Use define.
 }
 
 void assassin_enable_fmnode(edict_t* self, float node) //mxd. Named 'assassinNodeOn' in original logic.
