@@ -530,7 +530,7 @@ static void M_CheckInGround(edict_t* self) //mxd. Named 'MG_CheckInGround' in or
 
 qboolean M_Start(edict_t* self) //mxd. Named 'monster_start' in original logic.
 {
-	if (DEATHMATCH && !((int)sv_cheats->value & self_spawn))
+	if (DEATHMATCH && !(SV_CHEATS & self_spawn))
 	{
 		G_FreeEdict(self);
 		return false;

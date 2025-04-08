@@ -354,7 +354,7 @@ void InitGame(void)
 	globals.max_edicts = game.maxentities;
 
 	// Initialize all clients for this game.
-	game.maxclients = (int)maxclients->value;
+	game.maxclients = MAXCLIENTS;
 	game.clients = gi.TagMalloc(game.maxclients * (int)sizeof(game.clients[0]), TAG_GAME);
 	globals.num_edicts = game.maxclients + 1;
 

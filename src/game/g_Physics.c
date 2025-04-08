@@ -336,7 +336,7 @@ void DoImpactDamage(edict_t* self, trace_t* trace)
 	// Damage other.
 	if (other_damage >= 1.0f && trace->ent->takedamage != DAMAGE_NO && !(trace->ent->svflags & SVF_TAKE_NO_IMPACT_DMG) && !(trace->ent->svflags & SVF_BOSS))
 	{
-		if (skill->value < SKILL_HARD && (self->svflags & SVF_MONSTER) && trace->ent->client != NULL)
+		if (SKILL < SKILL_HARD && (self->svflags & SVF_MONSTER) && trace->ent->client != NULL)
 			other_damage = ceilf(other_damage * 0.5f); // Monsters do a bit less damage to player on normal and easy skill.
 
 		if (other_damage >= 1.0f)
@@ -355,7 +355,7 @@ void DoImpactDamage(edict_t* self, trace_t* trace)
 	// Damage self.
 	if (self_damage >= 1.0f && self->takedamage != DAMAGE_NO && (speed > 600.0f || self->health <= 0) && !(self->svflags & SVF_TAKE_NO_IMPACT_DMG) && !(self->svflags & SVF_BOSS) && self->jump_time < level.time)
 	{
-		if (skill->value > SKILL_EASY && self->client != NULL && trace->ent->solid == SOLID_BSP)
+		if (SKILL > SKILL_EASY && self->client != NULL && trace->ent->solid == SOLID_BSP)
 			self_damage = floorf((float)self->dmg * 1.5f); // More damage to player from falls. //TODO: why self->dmg?.. Should be self_damage * 1.5 instead?
 
 		if ((self_damage >= 3.0f && (self->classID != CID_ASSASSIN && self->classID != CID_SSITHRA)) || self->health <= 0) // But what about ring of repulsion?

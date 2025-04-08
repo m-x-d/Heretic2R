@@ -2225,7 +2225,7 @@ void TBeastStaticsInit(void)
 void SP_monster_trial_beast(edict_t* self)
 {
 	// Generic Monster Initialization.
-	if (DEATHMATCH && !((int)sv_cheats->value & self_spawn))
+	if (DEATHMATCH && !(SV_CHEATS & self_spawn))
 	{
 		G_FreeEdict(self);
 		return;

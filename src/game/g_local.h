@@ -583,6 +583,7 @@ extern cvar_t* flood_killdelay;
 #define COOP				((int)coop->value)
 #define DEATHMATCH			((int)deathmatch->value)
 #define DMFLAGS				((int)dmflags->value)
+#define FRAGLIMIT			((int)fraglimit->value)
 #define SKILL				((int)skill->value)
 #define DEDICATED			((int)dedicated->value)
 #define SV_CINEMATICFREEZE	((int)sv_cinematicfreeze->value)

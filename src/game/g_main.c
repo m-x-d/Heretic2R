@@ -192,7 +192,7 @@ static void EndDMLevel(void)
 	static const char* delimiters = " ,\n\r";
 
 	// Stay on same level flag.
-	if ((int)dmflags->value & DF_SAME_LEVEL)
+	if (DMFLAGS & DF_SAME_LEVEL)
 	{
 		BeginIntermission(CreateTargetChangeLevel(level.mapname));
 		return;
@@ -257,7 +257,7 @@ static void EndDMLevel(void)
 
 static void CheckDMRules(void)
 {
-	if (level.intermissiontime > 0.0f || !(int)deathmatch->value)
+	if (level.intermissiontime > 0.0f || !DEATHMATCH)
 		return;
 
 	if (timelimit->value > 0.0f && level.time >= timelimit->value * 60.0f)
@@ -268,16 +268,16 @@ static void CheckDMRules(void)
 		return;
 	}
 
-	if (!(int)fraglimit->value)
+	if (FRAGLIMIT == 0)
 		return;
 
-	for (int i = 0; i < (int)maxclients->value; i++)
+	for (int i = 0; i < MAXCLIENTS; i++)
 	{
 		if (!g_edicts[i + 1].inuse)
 			continue;
 
 		const gclient_t* cl = &game.clients[i];
-		if (cl->resp.score >= (int)fraglimit->value)
+		if (cl->resp.score >= FRAGLIMIT)
 		{
 			gi.Obituary(PRINT_HIGH, GM_FRAGLIMIT, 0, 0);
 			EndDMLevel();
@@ -434,8 +434,8 @@ static void UpdatePlayerBuoys(void)
 // Advances the world by 0.1 seconds.
 static void G_RunFrame(void)
 {
-	if ((int)deathmatch->value || (int)coop->value)
-		Clamp(blood_level->value, VIOLENCE_NONE, VIOLENCE_NORMAL);
+	if (DEATHMATCH || COOP)
+		Clamp(BLOOD_LEVEL, VIOLENCE_NONE, VIOLENCE_NORMAL);
 
 	// Update server ticks.
 	level.framenum++;
@@ -455,7 +455,7 @@ static void G_RunFrame(void)
 	UpdateSkeletons();
 
 	// Keep track of player buoys.
-	if ((int)deathmatch->value)
+	if (DEATHMATCH)
 		SetNumPlayers(); // For shrines and pick-ups.
 	else
 		UpdatePlayerBuoys();
@@ -464,7 +464,7 @@ static void G_RunFrame(void)
 	edict_t* ent = &g_edicts[0];
 	for (int i = 0; i < globals.num_edicts; i++, ent++)
 	{
-		if ((int)sv_cinematicfreeze->value && (ent->svflags & SVF_MONSTER) && !ent->monsterinfo.c_mode)
+		if (SV_CINEMATICFREEZE && (ent->svflags & SVF_MONSTER) && !ent->monsterinfo.c_mode)
 			continue;
 
 		// If entity not in use - don't process.
@@ -502,7 +502,7 @@ static void G_RunFrame(void)
 			}
 		}
 
-		if (i > 0 && i <= (int)maxclients->value)
+		if (i > 0 && i <= MAXCLIENTS)
 		{
 			ClientBeginServerFrame(ent);
 

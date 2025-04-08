@@ -1043,7 +1043,7 @@ int player_die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage,
 			{
 				P_PlayerAnimSetLowerSeq(&self->client->playerinfo, ASEQ_DEATH_B);
 
-				const char* snd_name = ((blood_level != NULL && (int)(blood_level->value) <= VIOLENCE_BLOOD) ? "*death1.wav" : "*firedeath.wav"); //mxd
+				const char* snd_name = ((blood_level != NULL && (int)(blood_level->value) <= VIOLENCE_BLOOD) ? "*death1.wav" : "*firedeath.wav"); //mxd //TODO: why blood_level NULL check? Inited in InitGame(), accessed without NULL check in G_RunFrame()...
 				gi.sound(self, CHAN_BODY, gi.soundindex(snd_name), 1.0f, ATTN_NORM, 0.0f);
 			}
 			else // "Normal" deaths.

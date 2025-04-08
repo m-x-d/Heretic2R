@@ -1733,7 +1733,7 @@ check_attacks:
 				self->ai_mood = AI_MOOD_ATTACK;
 				self->ai_mood_flags &= ~AI_MOOD_FLAG_MELEE;
 				self->ai_mood_flags |= AI_MOOD_FLAG_MISSILE;
-				self->attack_debounce_time = level.time + (3 - skill->value) / 2;
+				self->attack_debounce_time = level.time + (3.0f - skill->value) / 2.0f;
 
 				return;
 			}
