@@ -17,6 +17,7 @@
 #define OVUM_SPEED		400.0f
 #define OVUM_RADIUS		2.0f
 #define ANGLE_INC		(360.0f / NUM_OF_OVUMS)
+#define MORPH_TIME		20.0f //mxd
 
 // Fade in the chicken - for MONSTERS only.
 static void MonsterMorphFadeIn(edict_t* self) //mxd. Named 'MorphFadeIn' in original version.
@@ -54,7 +55,7 @@ static void MonsterMorphFadeOut(edict_t* self) //mxd. Named 'MorphFadeOut' in or
 	chicken->target = self->target;
 
 	// Time we stay a chicken.
-	chicken->time = level.time + 20.0f;
+	chicken->time = level.time + MORPH_TIME; //mxd. Use define.
 
 	ED_CallSpawn(chicken);
 
