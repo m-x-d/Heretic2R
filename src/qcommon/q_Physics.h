@@ -31,12 +31,12 @@ typedef struct FormMove_s
 {
 	vec3_t mins;
 	vec3_t maxs;
-	float* start;
-	float* end;
-	void* pass_entity;
+	const float* start;
+	const float* end;
+	const edict_t* pass_entity; //mxd. void* in original logic.
 	int clipmask;
 	trace_t trace;
 } FormMove_t;
 
 H2COMMON_API void BounceVelocity(const vec3_t in, const vec3_t normal, vec3_t out, float elasticity);
-H2COMMON_API qboolean BoundVelocity(float *vel);
+H2COMMON_API qboolean BoundVelocity(float* vel);
