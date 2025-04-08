@@ -672,7 +672,7 @@ void SV_TraceBoundingForm(FormMove_t* formMove) // H2
 	if (clip.trace->fraction == 0.0f)
 		return;
 
-	clip.passedict = (const edict_t*)formMove->pass_entity;
+	clip.passedict = formMove->pass_entity;
 	clip.contentmask = formMove->clipmask;
 	clip.start = start;
 	clip.end = end;
@@ -707,7 +707,7 @@ qboolean SV_ResizeBoundingForm(edict_t* self, FormMove_t* formMove) // H2
 	form.pass_entity = self;
 	form.clipmask = self->clipmask;
 	form.start = start;
-	form.end = end;
+	form.end = end; //mxd. 'end' is uninitialized here.
 
 	for (int i = 0; i < 6; i++)
 	{
@@ -740,7 +740,7 @@ qboolean SV_ResizeBoundingForm(edict_t* self, FormMove_t* formMove) // H2
 			sign = -1.0f;
 		}
 
-		float offset = *v_dst[axis] - *v_src[axis];
+		float offset = (*v_dst)[axis] - (*v_src)[axis];
 
 		if (offset * sign > 0.0f)
 		{
@@ -784,7 +784,7 @@ qboolean SV_ResizeBoundingForm(edict_t* self, FormMove_t* formMove) // H2
 			}
 		}
 
-		*v_src[axis] = *v_dst[axis];
+		(*v_src)[axis] = (*v_dst)[axis];
 	}
 
 	VectorCopy(start, self->s.origin);
