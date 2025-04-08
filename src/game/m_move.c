@@ -196,7 +196,7 @@ static qboolean SV_MoveStep_Walk(edict_t* ent, const vec3_t move, const qboolean
 //TODO: modifies 'move' vector. Is that intentional?
 qboolean SV_movestep(edict_t* ent, vec3_t move, const qboolean relink)
 {
-	assert(ent->monsterinfo.scale > 0.0f); //mxd. In original version below check is 'if (ent->monsterinfo.scale)', so...
+	assert(ent->monsterinfo.scale >= 0.0f); //mxd. In original version below check is 'if (ent->monsterinfo.scale)', so...
 
 	// Scale here, not before!
 	if (ent->monsterinfo.scale > 0.0f) //TODO: add ' && ent->monsterinfo.scale != 1.0f'?
