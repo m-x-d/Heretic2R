@@ -204,14 +204,10 @@ void elfLordGoCharge(edict_t* self) //TODO: rename to elflord_charge?
 	SetAnim(self, ANIM_CHARGE);
 }
 
-/*-----------------------------------------------
-	elflord_soa_end
------------------------------------------------*/
-
-void elflord_soa_end(edict_t *self)
+void elflord_soa_end(edict_t* self)
 {
 	self->show_hostile = false;
-	gi.sound(self, CHAN_WEAPON, sounds[SND_SAFIRE], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_SAFIRE], 1.0f, ATTN_NORM, 0.0f);
 	SetAnim(self, ANIM_ATTACK_SOA_END);
 }
 
