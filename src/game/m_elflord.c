@@ -500,11 +500,7 @@ static qboolean CheckAttack(edict_t* self) //mxd. Named 'elfLordCheckAttack' in 
 	return false;
 }
 
-/*-----------------------------------------------
-	elfLordPause
------------------------------------------------*/
-
-void elfLordPause(edict_t *self) //TODO: rename to elflord_check_attack()?
+void elfLordPause(edict_t* self) //TODO: rename to elflord_check_attack()?
 {
 	CheckAttack(self);
 }
