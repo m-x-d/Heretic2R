@@ -2063,7 +2063,7 @@ static void AssassinCinematicAnimsMsgHandler(edict_t* self, G_Message_t* msg) //
 
 #pragma endregion
 
-#pragma region ========================== Think callbacks ==========================
+#pragma region ========================== Edict callbacks ==========================
 
 // Assigned to 'isBlocked' and 'bounce' callbacks.
 static void AssassinBlocked(edict_t* self, trace_t* trace) //mxd. Named 'assassin_Touch' in original logic.
