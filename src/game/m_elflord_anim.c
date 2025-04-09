@@ -79,7 +79,7 @@ static const animframe_t elflord_frames_charge_trans[] =
 	{ FRAME_charge1,	NULL, 0, 0, 0, elflord_flymove, 8, NULL },
 	{ FRAME_charge2,	NULL, 0, 0, 0, elflord_flymove, 8, NULL },
 };
-const animmove_t elflord_move_charge_trans = { 2, elflord_frames_charge_trans, elfLordGoCharge };
+const animmove_t elflord_move_charge_trans = { 2, elflord_frames_charge_trans, elflord_charge };
 
 // Float backwards.
 static const animframe_t elflord_frames_floatback[] =

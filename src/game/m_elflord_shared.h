@@ -73,7 +73,7 @@ void elflord_decelerate(edict_t* self, float value);
 void elflord_flymove(edict_t* self, float dist);
 void elfLordPause(edict_t* self);
 void elflord_finish_death(edict_t* self); //mxd
-void elfLordGoCharge(edict_t* self);
+void elflord_charge(edict_t* self);
 void elflord_soa_end(edict_t* self);
 
 void elflord_start_beam(edict_t* self);
