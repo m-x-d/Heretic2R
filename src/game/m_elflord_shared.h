@@ -82,7 +82,7 @@ void elflord_attack(edict_t* self);
 
 void elflord_try_charge(edict_t* self);
 void elflord_track(edict_t* self);
-void elflord_SlideMeter(edict_t* self);
+void elflord_update_charge_meter(edict_t* self);
 void elflord_soa_go(edict_t* self);
 void elflord_soa_charge(edict_t* self);
 void elflord_reset_pitch(edict_t* self);

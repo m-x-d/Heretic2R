@@ -511,7 +511,7 @@ void elflord_try_charge(edict_t* self)
 		ai_charge2(self, 0.0f);
 }
 
-void elflord_SlideMeter(edict_t* self) //TODO: rename to elflord_update_charge_meter.
+void elflord_update_charge_meter(edict_t* self)
 {
 	self->velocity[2] = 32.0f;
 
