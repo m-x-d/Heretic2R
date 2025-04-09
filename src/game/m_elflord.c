@@ -47,7 +47,7 @@ static int sounds[NUM_SOUNDS];
 static const vec3_t projectile_mins = { -2.0f, -2.0f, -2.0f }; //mxd
 static const vec3_t projectile_maxs = {  2.0f,  2.0f,  2.0f }; //mxd
 
-static qboolean elfLordCheckAttack(edict_t* self); //TODO: remove.
+static qboolean CheckAttack(edict_t* self); //TODO: remove.
 
 #pragma endregion
 
@@ -235,7 +235,7 @@ void elflord_flymove(edict_t* self, float dist)
 	VectorMA(self->velocity, dist, forward, self->velocity);
 	self->velocity[2] = self->enemy->s.origin[2] + 100.0f - self->absmin[2];
 
-	if (!elfLordCheckAttack(self))
+	if (!CheckAttack(self))
 		MG_CheckEvade(self);
 }
 
@@ -411,92 +411,90 @@ static void MoveToFinalPosition(edict_t* self) //mxd. Named 'elflord_MoveToFinal
 	}
 }
 
-/*-----------------------------------------------
-	elfLordCheckAttack
------------------------------------------------*/
-
-static qboolean elfLordCheckAttack (edict_t *self)
+static qboolean CheckAttack(edict_t* self) //mxd. Named 'elfLordCheckAttack' in original logic. //TODO: always returns false!
 {
-	int		chance, 
-			p_chance = 0, 
-			soa_chance = 0,  
-			beam_chance = 0, 
-			move_chance = 0;
-
 	if (!M_ValidTarget(self, self->enemy))
 	{
 		SetAnim(self, ANIM_HOVER);
 		return false;
 	}
 
-	elflord_decell(self, 0.8);
+	elflord_decell(self, 0.8f);
 
-	if (self->count < self->max_health)
+	if (self->elflord_charge_meter < self->max_health)
 	{
 		VectorClear(self->velocity);
 		SetAnim(self, ANIM_COME_TO_LIFE);
+
 		return false;
 	}
 
+	int projectile_chance;
+	int soa_chance;
+	int beam_chance;
+
 	if (self->health < self->max_health / 3)
-	{//Last stage
-		if (!self->dmg)
+	{
+		// Last stage.
+		if (!self->elflord_last_stage)
 		{
 			MoveToFinalPosition(self);
 			SetAnim(self, ANIM_MOVE);
-			self->dmg = 1;
+			self->elflord_last_stage = true;
+
 			return false;
 		}
 
-		if (coop->value)
+		if (COOP)
 		{
-			p_chance	= 50;
-			soa_chance	= 50;
+			projectile_chance = 50;
+			soa_chance = 50;
 			beam_chance = 0;
 		}
 		else
 		{
-			p_chance	= 5;
-			soa_chance	= 5;
+			projectile_chance = 5;
+			soa_chance = 5;
 			beam_chance = 90;
 		}
 	}
-	else if (self->health < self->max_health / 1.5)
-	{//Second stage
-		p_chance	= 25;
-		soa_chance	= 75;
+	else if (self->health < (int)((float)self->max_health / 1.5f))
+	{
+		// Second stage.
+		projectile_chance = 25;
+		soa_chance = 75;
 		beam_chance = 0;
 	}
 	else
-	{//First stage
-		p_chance	= 90;
-		soa_chance	= 0;
+	{
+		// First stage.
+		projectile_chance = 90;
+		soa_chance = 0;
 		beam_chance = 0;
 	}
 
-	chance = irand(0,100);
-
-	if(irand(0,100) < p_chance)
+	if (irand(0, 100) < projectile_chance)
 	{
 		SetAnim(self, ANIM_ATTACK);
-		return false;
-	}
-	else if(irand(0,100) < beam_chance)
-	{
-		SetAnim(self, ANIM_ATTACK_LS);
-		return false;
-	}
-	else if(irand(0,100) < soa_chance)
-	{
-		SetAnim(self, ANIM_ATTACK_SOA_BTRANS);
-		return false;
+		return false; //TODO: return true?
 	}
 
-	if (!self->dmg)
+	if (irand(0, 100) < beam_chance)
+	{
+		SetAnim(self, ANIM_ATTACK_LS);
+		return false; //TODO: return true?
+	}
+
+	if (irand(0, 100) < soa_chance)
+	{
+		SetAnim(self, ANIM_ATTACK_SOA_BTRANS);
+		return false; //TODO: return true?
+	}
+
+	if (!self->elflord_last_stage)
 	{
 		FindMoveTarget(self);
 		SetAnim(self, ANIM_MOVE);
-		return false;
 	}
 
 	return false;
@@ -508,7 +506,7 @@ static qboolean elfLordCheckAttack (edict_t *self)
 
 void elfLordPause(edict_t *self) //TODO: rename to elflord_check_attack()?
 {
-	elfLordCheckAttack(self);
+	CheckAttack(self);
 }
 
 /*-----------------------------------------------
