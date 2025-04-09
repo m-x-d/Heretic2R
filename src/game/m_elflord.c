@@ -527,18 +527,12 @@ void elflord_SlideMeter(edict_t* self) //TODO: rename to elflord_update_charge_m
 	}
 }
 
-/*-----------------------------------------------
-	elflord_PreThink
------------------------------------------------*/
-
-void elflord_PreThink( edict_t *self )
+static void ElfLordPreThink(edict_t* self) //mxd. Named 'elflord_PreThink' in original logic.
 {
-	if (self->enemy && self->count >= self->max_health)
-	{
-		M_ShowLifeMeter( self, self->health, self->max_health);
-	}
+	if (self->enemy != NULL && self->elflord_charge_meter >= self->max_health)
+		M_ShowLifeMeter(self, self->health, self->max_health);
 
-	self->next_pre_think = level.time + 0.1;
+	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
 }
 
 /*-----------------------------------------------
@@ -620,7 +614,7 @@ void SP_monster_elflord (edict_t *self)
 	self->s.modelindex = classStatics[CID_ELFLORD].resInfo->modelIndex;
 
 	self->dmg = 0;
-	self->pre_think = elflord_PreThink;
+	self->pre_think = ElfLordPreThink;
 	self->s.skinnum = 0;
 	self->monsterinfo.scale = 2.0;
 
