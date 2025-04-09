@@ -59,7 +59,7 @@ static void MorphChickenOut(edict_t* self)
 		// Create the original bad guy.
 		edict_t* new_ent = G_Spawn();
 
-		new_ent->classname = self->map;
+		new_ent->classname = self->morph_classname;
 		VectorCopy(self->s.origin, new_ent->s.origin);
 		VectorCopy(self->s.angles, new_ent->s.angles);
 		new_ent->enemy = self->enemy;
@@ -67,6 +67,7 @@ static void MorphChickenOut(edict_t* self)
 		ED_CallSpawn(new_ent);
 
 		new_ent->s.color.c = 0xffffff;
+		new_ent->s.frame = (short)self->morph_animation_frame; //mxd. Restore animation frame (stored in MonsterMorphFadeOut()).
 		new_ent->oldthink = new_ent->think;
 		new_ent->think = MorphOriginalIn; //TODO: should also set new_ent->nextthink?
 		new_ent->morph_timer = MORPH_TELE_TIME;

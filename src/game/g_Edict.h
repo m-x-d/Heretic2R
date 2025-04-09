@@ -188,7 +188,12 @@ struct edict_s
 		void (*TriggerActivated)(edict_t* self, edict_t* activator);
 	};
 
-	char* map;
+	union
+	{
+		char* map;
+		char* morph_classname; //mxd. Used by Morph spell.
+	};
+	
 
 	int viewheight; // Height above origin where eyesight is determined used by anything which can "see", player and monsters.
 	float reflected_time; // Used by objects to tell if they've been repulsed by something.
@@ -207,6 +212,7 @@ struct edict_s
 	{
 		int count; // Used by polys, triggers and items.
 		int curr_model; // Used by player during cinematics.
+		int morph_animation_frame; //mxd. Used by Morph spell.
 	};
 
 	int targeted; // Used by Ogle to denote a targeted action queued up.
