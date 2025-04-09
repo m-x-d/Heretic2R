@@ -171,14 +171,10 @@ void elflord_StartBeam(edict_t* self) //TODO: rename to elflord_start_beam.
 	self->elflord_beam = beam;
 }
 
-/*-----------------------------------------------
-	elflord_EndBeam
------------------------------------------------*/
-
-void elflord_EndBeam(edict_t *self)
+void elflord_EndBeam(edict_t* self) //TODO: rename to elflord_end_beam.
 {
-	self->targetEnt->think = G_FreeEdict;
-	self->targetEnt->nextthink = level.time + 0.1;
+	self->elflord_beam->think = G_FreeEdict;
+	self->elflord_beam->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 /*-----------------------------------------------
