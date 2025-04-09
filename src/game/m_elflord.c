@@ -535,13 +535,9 @@ static void ElfLordPreThink(edict_t* self) //mxd. Named 'elflord_PreThink' in or
 	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
 }
 
-/*-----------------------------------------------
-	ElflordStaticsInit
------------------------------------------------*/
-
 void ElflordStaticsInit(void)
 {
-	static ClassResourceInfo_t resInfo;
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
 	classStatics[CID_ELFLORD].msgReceivers[MSG_STAND] = ElfLordStandMsgHandler;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_RUN] = ElfLordRunMsgHandler;
@@ -551,26 +547,26 @@ void ElflordStaticsInit(void)
 	classStatics[CID_ELFLORD].msgReceivers[MSG_PAIN] = ElfLordPainMsgHandler;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_SIGHT] = ElfLordSightMsgHandler;
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	resInfo.modelIndex = gi.modelindex("models/monsters/elflord/tris.fm");
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/elflord/tris.fm");
 
-	sounds[SND_PAIN1] = gi.soundindex ("monsters/elflord/pain1.wav");	
-	sounds[SND_PAIN2] = gi.soundindex ("monsters/elflord/pain2.wav");	
-	sounds[SND_DIE] = gi.soundindex ("monsters/elflord/death1.wav");	
+	sounds[SND_PAIN1] = gi.soundindex("monsters/elflord/pain1.wav");
+	sounds[SND_PAIN2] = gi.soundindex("monsters/elflord/pain2.wav");
+	sounds[SND_DIE] = gi.soundindex("monsters/elflord/death1.wav");
 
-	//use sphere sounds
-	sounds[SND_SACHARGE] = gi.soundindex ("weapons/SphereGrow.wav");
-	sounds[SND_SAFIRE] = gi.soundindex ("weapons/SphereFire.wav");
-	sounds[SND_SAHIT] = gi.soundindex ("weapons/SphereImpact.wav");
+	// Use sphere sounds.
+	sounds[SND_SACHARGE] = gi.soundindex("weapons/SphereGrow.wav");
+	sounds[SND_SAFIRE] = gi.soundindex("weapons/SphereFire.wav");
+	sounds[SND_SAHIT] = gi.soundindex("weapons/SphereImpact.wav");
 
-	sounds[SND_PROJ1] = gi.soundindex ("monsters/elflord/shoot.wav");
-	sounds[SND_BEAM] = gi.soundindex ("monsters/elflord/beam.wav");
+	sounds[SND_PROJ1] = gi.soundindex("monsters/elflord/shoot.wav");
+	sounds[SND_BEAM] = gi.soundindex("monsters/elflord/beam.wav");
 
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = sounds;
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
 
-	classStatics[CID_ELFLORD].resInfo = &resInfo;
+	classStatics[CID_ELFLORD].resInfo = &res_info;
 }
 
 /*QUAKED SP_monster_elflord (0.5 0.5 1) (-24 -24 -64) (24 24 16)
