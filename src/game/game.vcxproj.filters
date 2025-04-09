@@ -465,7 +465,7 @@
     <ClCompile Include="m_elflord.c">
       <Filter>src\Monsters\ElfLord</Filter>
     </ClCompile>
-    <ClCompile Include="m_elflord_anims.c">
+    <ClCompile Include="m_elflord_anim.c">
       <Filter>src\Monsters\ElfLord</Filter>
     </ClCompile>
     <ClCompile Include="m_fish.c">
@@ -848,10 +848,10 @@
     <ClInclude Include="..\qcommon\Vector.h">
       <Filter>qcommon</Filter>
     </ClInclude>
-    <ClInclude Include="m_elflord_local.h">
+    <ClInclude Include="m_elflord_shared.h">
       <Filter>src\Monsters\ElfLord</Filter>
     </ClInclude>
-    <ClInclude Include="m_elflord_anims.h">
+    <ClInclude Include="m_elflord_anim.h">
       <Filter>src\Monsters\ElfLord</Filter>
     </ClInclude>
     <ClInclude Include="m_fish_local.h">

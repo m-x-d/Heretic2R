@@ -17,8 +17,8 @@
 #include "vector.h"
 #include "g_playstats.h"
 #include "m_elflord.h"
-#include "m_elflord_local.h"
-#include "m_elflord_anims.h"
+#include "m_elflord_shared.h"
+#include "m_elflord_anim.h"
 #include "g_monster.h"
 #include "mg_ai.h" //mxd
 #include "m_stats.h"

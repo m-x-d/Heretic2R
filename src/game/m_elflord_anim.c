@@ -9,8 +9,8 @@
 
 #include "g_local.h"
 #include "g_monster.h"
-#include "m_elflord_anims.h"
-#include "m_elflord_local.h"
+#include "m_elflord_anim.h"
+#include "m_elflord_shared.h"
 
 void elflord_finish_death(edict_t *self);
 void elflord_soa_loop(edict_t *self);

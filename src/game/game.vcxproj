@@ -107,7 +107,7 @@
     <ClCompile Include="m_chicken.c" />
     <ClCompile Include="m_chicken_anim.c" />
     <ClCompile Include="m_elflord.c" />
-    <ClCompile Include="m_elflord_anims.c" />
+    <ClCompile Include="m_elflord_anim.c" />
     <ClCompile Include="m_fish.c" />
     <ClCompile Include="m_fish_anim.c" />
     <ClCompile Include="m_gkrokon.c" />
@@ -289,8 +289,8 @@
     <ClInclude Include="m_chicken_shared.h" />
     <ClInclude Include="m_chicken_anim.h" />
     <ClInclude Include="m_elflord.h" />
-    <ClInclude Include="m_elflord_local.h" />
-    <ClInclude Include="m_elflord_anims.h" />
+    <ClInclude Include="m_elflord_shared.h" />
+    <ClInclude Include="m_elflord_anim.h" />
     <ClInclude Include="m_fish.h" />
     <ClInclude Include="m_fish_local.h" />
     <ClInclude Include="m_fish_anim.h" />
