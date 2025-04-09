@@ -199,11 +199,7 @@ void elflord_finish_death(edict_t* self)
 	SetAnim(self, ANIM_DIE_LOOP);
 }
 
-/*-----------------------------------------------
-	elfLordGoCharge
------------------------------------------------*/
-
-void elfLordGoCharge(edict_t *self)
+void elfLordGoCharge(edict_t* self) //TODO: rename to elflord_charge?
 {
 	SetAnim(self, ANIM_CHARGE);
 }
