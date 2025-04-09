@@ -569,61 +569,54 @@ void ElflordStaticsInit(void)
 	classStatics[CID_ELFLORD].resInfo = &res_info;
 }
 
-/*QUAKED SP_monster_elflord (0.5 0.5 1) (-24 -24 -64) (24 24 16)
-
-Celestial Watcher
-
-"wakeup_target" - monsters will fire this target the first time it wakes up (only once)
-
-"pain_target" - monsters will fire this target the first time it gets hurt (only once)
-
-*/
-void SP_monster_elflord (edict_t *self)
+// QUAKED SP_monster_elflord (0.5 0.5 1) (-24 -24 -64) (24 24 16)
+// Celestial Watcher.
+// wakeup_target	- Monsters will fire this target the first time it wakes up (only once).
+// pain_target		- Monsters will fire this target the first time it gets hurt (only once).
+void SP_monster_elflord(edict_t* self)
 {
-	// Generic Monster Initialization
-	if (!M_FlymonsterStart(self))		
-		return;							// Failed initialization
+	// Generic Monster Initialization.
+	if (!M_FlymonsterStart(self))
+		return; // Failed initialization.
 
 	self->msgHandler = DefaultMsgHandler;
 
-	if (!self->health)
+	if (self->health == 0)
 		self->health = ELFLORD_HEALTH;
 
-	self->max_health = self->health = MonsterHealth(self->health);
+	self->health = MonsterHealth(self->health);
+	self->max_health = self->health;
 
 	self->mass = ELFLORD_MASS;
-	self->yaw_speed = 20;
+	self->yaw_speed = 20.0f;
 
-	self->movetype=PHYSICSTYPE_STEP;
+	self->movetype = PHYSICSTYPE_STEP;
 	self->flags |= FL_FLY;
-	self->gravity = 0.0;
-	self->clipmask= MASK_MONSTERSOLID;
-	self->svflags |= SVF_ALWAYS_SEND|SVF_BOSS|SVF_TAKE_NO_IMPACT_DMG;
+	self->gravity = 0.0f;
+	self->clipmask = MASK_MONSTERSOLID;
+	self->svflags |= (SVF_ALWAYS_SEND | SVF_BOSS | SVF_TAKE_NO_IMPACT_DMG);
 	self->materialtype = MAT_FLESH;
-	self->solid=SOLID_BBOX;
+	self->solid = SOLID_BBOX;
 
-	VectorSet(self->mins, -24, -24, -64);
-	VectorSet(self->maxs,  24,  24, 16);
+	VectorSet(self->mins, -24.0f, -24.0f, -64.0f);
+	VectorSet(self->maxs, 24.0f, 24.0f, 16.0f);
 
 	VectorClear(self->velocity);
 
-	self->s.modelindex = classStatics[CID_ELFLORD].resInfo->modelIndex;
+	self->s.modelindex = (byte)classStatics[CID_ELFLORD].resInfo->modelIndex;
 
-	self->dmg = 0;
-	self->pre_think = ElfLordPreThink;
+	self->elflord_last_stage = false;
 	self->s.skinnum = 0;
-	self->monsterinfo.scale = 2.0;
+	self->s.renderfx |= RF_GLOW;
+	self->s.scale = MODEL_SCALE;
+	self->monsterinfo.scale = MODEL_SCALE;
 
-	self->count = 1;
+	self->elflord_charge_meter = 1;
 	self->monsterinfo.otherenemyname = "player";
-
-	self->s.scale = 2.0;
+	self->pre_think = ElfLordPreThink;
+	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
 
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-
-	self->next_pre_think = level.time + 0.1;
-
-	self->s.renderfx |= RF_GLOW;
 
 	gi.linkentity(self);
 }
