@@ -144,13 +144,6 @@ void tbeast_roar_knockdown(edict_t* self);
 void tbeast_roar_short(edict_t* self);
 void tbeast_gibs(edict_t* self);
 
-//mxd. Mirrored in fx_tbeast.c.
-enum
-{
-	FX_TB_PUFF,
-	FX_TB_SNORT, //TODO: unused.
-};
-
 #define TB_HIBITE_F		150
 #define TB_HIBITE_R		0
 #define TB_HIBITE_U		108

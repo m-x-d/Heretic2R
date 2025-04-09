@@ -17,38 +17,6 @@
 #include "q_Sprite.h"
 #include "g_playstats.h"
 
-//mxd. Mirrored in m_stats.h
-enum
-{
-	// Offensive
-	FX_M_BEAM,
-
-	// Impacts
-	FX_M_MISC_EXPLODE,
-
-	// Other
-	FX_IMP_FIRE,
-	FX_IMP_FBEXPL,
-	FX_CW_STARS, //TODO: unused?
-	FX_BUOY,
-	FX_BUOY_PATH,
-	FX_M_MOBLUR, //TODO: unused?
-	FX_ASS_DAGGER,
-	FX_UNDER_WATER_WAKE,
-
-	// jweier
-	FX_QUAKE_RING,
-	FX_GROUND_ATTACK,
-	FX_MORK_BEAM, //TODO: unused?
-	FX_MORK_MISSILE,
-	FX_MORK_MISSILE_HIT,
-	FX_MORK_TRACKING_MISSILE,
-
-	FX_MSSITHRA_EXPLODE,
-	FX_MSSITHRA_ARROW,
-	FX_MSSITHRA_ARROW_CHARGE,
-};
-
 static struct model_s* mork_projectile_models[4];
 static struct model_s* mork_lightning_models[3];
 static struct model_s* mork_projectile_core_model;

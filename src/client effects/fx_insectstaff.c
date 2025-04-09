@@ -24,21 +24,6 @@
 #define FX_GLOBE_AURA_SCALE			0.8f
 #define NUM_SPEAR_EXPLODES			8
 
-//mxd. Mirrored in m_tcheckirk.h
-enum
-{
-	FX_I_SWORD,
-	FX_I_SPEAR,
-	FX_I_SP_MSL_HIT,
-	FX_I_GLOBE,
-	FX_I_GLOW,
-	FX_I_STAFF,
-	FX_I_ST_MSL_HIT,
-	FX_I_RREFS,
-	FX_I_SPEAR2,
-	FX_I_SP_MSL_HIT2
-};
-
 static struct model_s* insect_model;
 static struct model_s* sword_model;
 static struct model_s* globe_models[5];

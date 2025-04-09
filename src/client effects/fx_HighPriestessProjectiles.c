@@ -16,29 +16,6 @@
 
 #define PRIESTESS_TELEPORT_LINEHEIGHT 764
 
-//mxd. Mirrored in m_morcalavin.c. //TODO: most of these seem unused there!
-enum
-{
-	HPMISSILE1,
-	HPMISSILE2,
-	HPMISSILE3,
-	HPMISSILE4,
-	HPMISSILE5,
-	HPMISSILE1_EXPLODE,
-	HPMISSILE2_EXPLODE,
-	HPMISSILE3_EXPLODE,
-	HPMISSILE4_EXPLODE,
-	HPMISSILE5_EXPLODE,
-	HPMISSILE1_LIGHT,
-	HPMISSILE2_LIGHT,
-	HPMISSILE3_LIGHT,
-	HPMISSILE4_LIGHT,
-	HPMISSILE5_LIGHT,
-	HPTELEPORT_START,
-	HPTELEPORT_END,
-	HPLIGHTNING_BOLT,
-};
-
 static struct model_s* hpproj_models[11];
 
 void PreCacheHPMissile(void)
@@ -793,13 +770,13 @@ static void SpawnHPTeleportEnd(const int type, const vec3_t origin) //mxd
 void FXHPMissile(centity_t* owner, const int type, const int flags, vec3_t origin)
 {
 	vec3_t velocity;
-	byte effect_type;
-	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_HP_MISSILE].formatString, &velocity, &effect_type);
+	byte fx_type;
+	fxi.GetEffect(owner, flags, clientEffectSpawners[FX_HP_MISSILE].formatString, &velocity, &fx_type);
 
 	const paletteRGBA_t	light_color = { .r = 0, .g = 0, .b = 255, .a = 255 };
 	const paletteRGBA_t	bug_color = { .r = 229, .g = 250, .b = 88, .a = 255 };
 
-	switch (effect_type)
+	switch (fx_type)
 	{
 		case HPMISSILE1: // Blue swirling, homing missiles.
 			SpawnHPMissile1(owner, type, origin, velocity, light_color); //mxd
@@ -856,7 +833,7 @@ void FXHPMissile(centity_t* owner, const int type, const int flags, vec3_t origi
 			break;
 
 		default:
-			Com_DPrintf("ERROR FXHPMissile: No available effect processor! (EFFECT ID %d)\n", effect_type);
+			Com_DPrintf("ERROR FXHPMissile: No available effect processor! (EFFECT ID %d)\n", fx_type);
 			break;
 	}
 }

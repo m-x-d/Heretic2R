@@ -365,5 +365,8 @@
     <ClInclude Include="fx_PhoenixLocal.h">
       <Filter>src\Effects</Filter>
     </ClInclude>
+    <ClInclude Include="..\qcommon\FX.h">
+      <Filter>qcommon</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

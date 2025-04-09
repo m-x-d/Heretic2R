@@ -236,3 +236,120 @@ enum
 
 	MAX_REMOVE
 };
+
+#pragma region ========================== CLFX.DLL / GAME.DLL shared effect types ==========================
+
+//mxd. Defined in fx_cwatcher.c / m_elflord.c in original logic.
+enum cwatcher_fxid_e
+{
+	CW_STAR,
+	CW_STAR_HIT,
+	CW_BEAM,
+	CW_BEAM_START //mxd. Was named CW_METEOR in m_elflord.c. //TODO: unused by game.dll.
+};
+
+//mxd. Defined in fx_HighPriestessProjectiles.c / m_priestess.c / m_morcalavin.c in original logic.
+enum high_priestess_projectile_fxid_e
+{
+	HPMISSILE1,
+	HPMISSILE2,
+	HPMISSILE3,
+	HPMISSILE4,
+	HPMISSILE5,
+	HPMISSILE1_EXPLODE,
+	HPMISSILE2_EXPLODE,
+	HPMISSILE3_EXPLODE,
+	HPMISSILE4_EXPLODE, //TODO: unused.
+	HPMISSILE5_EXPLODE, //TODO: unused.
+	HPMISSILE1_LIGHT,
+	HPMISSILE2_LIGHT,
+	HPMISSILE3_LIGHT,
+	HPMISSILE4_LIGHT,
+	HPMISSILE5_LIGHT, //TODO: unused.
+	HPTELEPORT_START,
+	HPTELEPORT_END,
+	HPLIGHTNING_BOLT //TODO: unused.
+};
+
+//mxd. Defined in fx_HighPriestessStaff.c / m_priestess.c in original logic.
+enum high_priestess_staff_fxid_e
+{
+	HP_STAFF_INIT,
+	HP_STAFF_TRAIL //TODO: unused.
+};
+
+//mxd. Defined in fx_InsectStaff.c / m_tcheckirk.h in original logic.
+enum insect_staff_fxid_e
+{
+	FX_I_SWORD, //TODO: unused by game.dll.
+	FX_I_SPEAR,
+	FX_I_SP_MSL_HIT,
+	FX_I_GLOBE,
+	FX_I_GLOW,
+	FX_I_STAFF,
+	FX_I_ST_MSL_HIT,
+	FX_I_RREFS,
+	FX_I_SPEAR2,
+	FX_I_SP_MSL_HIT2
+};
+
+//mxd. Defined in fx_mork.h / m_stats.h in original logic.
+enum morkalavin_fxid_e
+{
+	// Offensive
+	FX_M_BEAM,
+
+	// Impacts
+	FX_M_MISC_EXPLODE,
+
+	// Other
+	FX_IMP_FIRE,
+	FX_IMP_FBEXPL,
+	FX_CW_STARS, //TODO: unused by game.dll.
+	FX_BUOY, //TODO: unused by game.dll.
+	FX_BUOY_PATH, //TODO: unused by game.dll.
+	FX_M_MOBLUR, //TODO: unused by game.dll.
+	FX_ASS_DAGGER, //TODO: rename to FX_ASSASSIN_DAGGER.
+	FX_UNDER_WATER_WAKE,
+
+	// jweier
+	FX_QUAKE_RING,
+	FX_GROUND_ATTACK,
+	FX_MORK_BEAM, //TODO: unused by game.dll.
+	FX_MORK_MISSILE,
+	FX_MORK_MISSILE_HIT,
+	FX_MORK_TRACKING_MISSILE,
+
+	FX_MSSITHRA_EXPLODE,
+	FX_MSSITHRA_ARROW,
+	FX_MSSITHRA_ARROW_CHARGE
+};
+
+//mxd. Defined in fx_PlagueElfSpells.c / m_plagueElf.h in original logic.
+enum plague_elf_spell_fxid_e
+{
+	FX_PE_MAKE_SPELL,
+	FX_PE_EXPLODE_SPELL,
+	FX_PE_MAKE_SPELL2,
+	FX_PE_EXPLODE_SPELL2,
+	FX_PE_MAKE_SPELL3,
+	FX_PE_EXPLODE_SPELL3
+};
+
+//mxd. Defined in fx_ssithra.c / m_plagueSsithra.c in original logic.
+enum plague_ssithra_arrow_fxid_e
+{
+	FX_SS_MAKE_ARROW,
+	FX_SS_MAKE_ARROW2,
+	FX_SS_EXPLODE_ARROW, //TODO: unused by game.dll.
+	FX_SS_EXPLODE_ARROW2
+};
+
+//mxd. Defined in fx_tbeast.c / m_beast.c in original logic.
+enum trial_beast_fxid_e
+{
+	FX_TB_PUFF,
+	FX_TB_SNORT //TODO: unused.
+};
+
+#pragma endregion

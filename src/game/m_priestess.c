@@ -28,27 +28,6 @@ static ClassResourceInfo_t resInfo;
 void create_priestess_proj(edict_t *self,edict_t *proj);
 
 enum {
-	HPMISSILE1,
-	HPMISSILE2,
-	HPMISSILE3,
-	HPMISSILE4,
-	HPMISSILE5,
-	HPMISSILE1_EXPLODE,
-	HPMISSILE2_EXPLODE,
-	HPMISSILE3_EXPLODE,
-	HPMISSILE4_EXPLODE,
-	HPMISSILE5_EXPLODE,
-	HPMISSILE1_LIGHT,
-	HPMISSILE2_LIGHT,
-	HPMISSILE3_LIGHT,
-	HPMISSILE4_LIGHT,
-	HPMISSILE5_LIGHT,
-	HPTELEPORT_START,
-	HPTELEPORT_END,
-	HPLIGHTNING_BOLT,
-};
-
-enum {
 	AS_QUEENS_FURY,
 	AS_BROODS_SACRIFICE,
 	AS_HEAVENS_RAIN,
@@ -57,12 +36,6 @@ enum {
 	AS_JUMP_RIGHT,
 	AS_JUMP_LEFT,
 } HighPriestessAttackStates_e;
-
-enum 
-{
-	HP_STAFF_INIT,
-	HP_STAFF_TRAIL,
-} HighPriestessStaff_e;
 
 static animmove_t *animations[NUM_ANIMS] =
 {

@@ -30,15 +30,6 @@ void ssithra_blocked (edict_t *self, trace_t *trace);
 void create_ssith_arrow(edict_t *Arrow);
 qboolean ssithraCheckInWater (edict_t *self);
 
-//mxd. Mirrored in fx_ssithra.c.
-enum 
-{
-	FX_SS_MAKE_ARROW,
-	FX_SS_MAKE_ARROW2,
-	FX_SS_EXPLODE_ARROW,
-	FX_SS_EXPLODE_ARROW2
-};
-
 int Bit_for_MeshNode [16] =
 {
 	BIT_POLY,

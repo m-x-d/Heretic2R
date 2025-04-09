@@ -31,28 +31,6 @@ static ClassResourceInfo_t resInfo;
 
 void create_morcalavin_proj(edict_t *self,edict_t *proj);
 
-//mxd. Mirrored in fx_HighPriestessProjectiles.c.
-enum {
-	HPMISSILE1,
-	HPMISSILE2,
-	HPMISSILE3,
-	HPMISSILE4,
-	HPMISSILE5,
-	HPMISSILE1_EXPLODE,
-	HPMISSILE2_EXPLODE,
-	HPMISSILE3_EXPLODE,
-	HPMISSILE4_EXPLODE,
-	HPMISSILE5_EXPLODE,
-	HPMISSILE1_LIGHT,
-	HPMISSILE2_LIGHT,
-	HPMISSILE3_LIGHT,
-	HPMISSILE4_LIGHT,
-	HPMISSILE5_LIGHT,
-	HPTELEPORT_START,
-	HPTELEPORT_END,
-	HPLIGHTNING_BOLT,
-};
-
 static animmove_t *animations[NUM_ANIMS] =
 {
 	&morcalavin_move_float,

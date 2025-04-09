@@ -112,17 +112,6 @@ typedef enum SoundID_e
 
 #define NUM_VOICES	((NUM_SOUNDS - FIRST_SIGHT_GROUP) - 3)
 
-//mxd. Mirrored in fx_PlagueElfSpells.c.
-enum
-{
-	FX_PE_MAKE_SPELL,
-	FX_PE_EXPLODE_SPELL,
-	FX_PE_MAKE_SPELL2,
-	FX_PE_EXPLODE_SPELL2,
-	FX_PE_MAKE_SPELL3,
-	FX_PE_EXPLODE_SPELL3,
-};
-
 typedef struct pelfConversation_s
 {
 	float	responseDelay;

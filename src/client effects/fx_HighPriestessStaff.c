@@ -17,12 +17,6 @@ void PreCacheHPStaff(void)
 	hpstaff_model = fxi.RegisterModel("sprites/fx/hpproj1_2.sp2"); // Staff Trail.
 }
 
-enum HighPriestessStaff_e
-{
-	HP_STAFF_INIT,
-	HP_STAFF_TRAIL,
-};
-
 static qboolean HPStaffTrailThink(struct client_entity_s* self, centity_t* owner)
 {
 	const centity_t* actual_owner = (centity_t*)self->extra;

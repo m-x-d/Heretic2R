@@ -13,15 +13,6 @@
 
 #define SSARROW_TRAIL_SCALE		0.25f
 
-//mxd. Mirrored in m_plagueSsithra.c.
-enum
-{
-	FX_SS_MAKE_ARROW,
-	FX_SS_MAKE_ARROW2,
-	FX_SS_EXPLODE_ARROW,
-	FX_SS_EXPLODE_ARROW2
-};
-
 static struct model_s* arrow_models[3];
 
 void PrecacheSsithraArrow(void)

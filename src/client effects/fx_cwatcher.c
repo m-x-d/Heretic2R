@@ -23,14 +23,6 @@ enum cwatcher_model_index_e
 	NUM_CW_MODELS
 };
 
-enum cwatcher_effect_id_e
-{
-	CW_STAR,
-	CW_STAR_HIT,
-	CW_BEAM,
-	CW_BEAM_START
-};
-
 static struct model_s* cwmodels[NUM_CW_MODELS];
 
 void PreCacheCWModels(void)

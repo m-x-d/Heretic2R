@@ -14,17 +14,6 @@
 
 #define SPELL_SCALE		0.25f
 
-//mxd. Mirrored in m_plagueElf.h.
-enum
-{
-	FX_PE_MAKE_SPELL,
-	FX_PE_EXPLODE_SPELL,
-	FX_PE_MAKE_SPELL2,
-	FX_PE_EXPLODE_SPELL2,
-	FX_PE_MAKE_SPELL3,
-	FX_PE_EXPLODE_SPELL3,
-};
-
 static struct model_s* spell_models[5];
 
 void PrecachePESpell(void)

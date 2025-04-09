@@ -8,13 +8,6 @@
 #include "Random.h"
 #include "Vector.h"
 
-//mxd. Mirrored in m_beast.c.
-enum
-{
-	FX_TB_PUFF,
-	FX_TB_SNORT //TODO: unused.
-};
-
 static struct model_s* tb_dustpuff_model;
 
 void PreCacheTB(void)

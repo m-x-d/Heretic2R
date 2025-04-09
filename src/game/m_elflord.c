@@ -28,15 +28,6 @@
 /*QUAKED monster_elflord (1 .5 0) (-16 -16 -0) (16 16 32)
 */
 
-//Mirrored on client side
-enum
-{
-	CW_STAR,
-	CW_STAR_HIT,
-	CW_BEAM,
-	CW_METEOR,
-} cwatcher_effect_id_t;
-
 /*----------------------------------------------------------------------
   Elf Lord Base Info
 -----------------------------------------------------------------------*/
