@@ -208,7 +208,7 @@ void elfLordGoCharge(edict_t* self) //TODO: rename to elflord_charge?
 
 void elflord_soa_end(edict_t* self)
 {
-	self->show_hostile = false;
+	self->elflord_soa_charging = false;
 	gi.sound(self, CHAN_WEAPON, sounds[SND_SAFIRE], 1.0f, ATTN_NORM, 0.0f);
 	SetAnim(self, ANIM_ATTACK_SOA_END);
 }
@@ -250,12 +250,12 @@ static void ElfLordMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 		return;
 
 	gi.sound(self, CHAN_VOICE, sounds[SND_SACHARGE], 1.0f, ATTN_NORM, 0.0f);
-	self->show_hostile = true;
+	self->elflord_soa_charging = true;
 
 	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
 
-	SpellCastSphereOfAnnihilation(self, self->s.origin, self->s.angles, forward, &self->show_hostile);
+	SpellCastSphereOfAnnihilation(self, self->s.origin, self->s.angles, forward, &self->elflord_soa_charging);
 	SetAnim(self, ANIM_ATTACK_SOA_BTRANS);
 }
 
@@ -267,12 +267,12 @@ void elflord_soa_charge(edict_t* self)
 void elflord_soa_go(edict_t* self) //TODO: rename to elflord_soa_release?
 {
 	gi.sound(self, CHAN_VOICE, sounds[SND_SAFIRE], 1.0f, ATTN_NORM, 0.0f);
-	self->show_hostile = false;
+	self->elflord_soa_charging = false;
 
 	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
 
-	SpellCastSphereOfAnnihilation(self, self->s.origin, self->s.angles, forward, &self->show_hostile);
+	SpellCastSphereOfAnnihilation(self, self->s.origin, self->s.angles, forward, &self->elflord_soa_charging);
 }
 
 static void ElfLordDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elflord_death_start' in original logic.
