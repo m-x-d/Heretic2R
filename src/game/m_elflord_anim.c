@@ -71,7 +71,7 @@ static const animframe_t elflord_frames_charge[] =
 	{ FRAME_charge12,	NULL, 0, 0, 0, elflord_flymove, 12, NULL },
 	{ FRAME_charge13,	NULL, 0, 0, 0, elflord_flymove, 12, NULL },
 };
-const animmove_t elflord_move_charge = { 11, elflord_frames_charge, elfLordPause };
+const animmove_t elflord_move_charge = { 11, elflord_frames_charge, elflord_check_attack };
 
 // Transition to charge.
 static const animframe_t elflord_frames_charge_trans[] =
@@ -96,7 +96,7 @@ static const animframe_t elflord_frames_floatback[] =
 	{ FRAME_ftback10,	NULL, 0, 0, 0, elflord_flymove, -2,  NULL },
 	{ FRAME_ftback11,	NULL, 0, 0, 0, elflord_flymove, -1,  NULL },
 };
-const animmove_t elflord_move_floatback = { 11, elflord_frames_floatback, elfLordPause };
+const animmove_t elflord_move_floatback = { 11, elflord_frames_floatback, elflord_check_attack };
 
 // Dodge right.
 static const animframe_t elflord_frames_dodgeright[] =
@@ -109,7 +109,7 @@ static const animframe_t elflord_frames_dodgeright[] =
 	{ FRAME_dgrite6,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_dgrite7,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t elflord_move_dodgeright = { 7, elflord_frames_dodgeright, elfLordPause };
+const animmove_t elflord_move_dodgeright = { 7, elflord_frames_dodgeright, elflord_check_attack };
 
 // Dodge left.
 static const animframe_t elflord_frames_dodgeleft[] =
@@ -122,7 +122,7 @@ static const animframe_t elflord_frames_dodgeleft[] =
 	{ FRAME_dgleft6,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_dgleft7,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t elflord_move_dodgeleft = { 7, elflord_frames_dodgeleft, elfLordPause };
+const animmove_t elflord_move_dodgeleft = { 7, elflord_frames_dodgeleft, elflord_check_attack };
 
 // Attack 1 (lightning sphere) beginning.
 static const animframe_t elflord_frames_soa_begin[] =
@@ -148,7 +148,7 @@ static const animframe_t elflord_frames_soa_begin[] =
 	{ FRAME_attkb19,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_attkb20,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t elflord_move_soa_begin = { 20, elflord_frames_soa_begin, elfLordPause };
+const animmove_t elflord_move_soa_begin = { 20, elflord_frames_soa_begin, elflord_check_attack };
 
 // Attack 1 (lightning sphere) loop.
 static const animframe_t elflord_frames_soa_loop[] =
@@ -162,7 +162,7 @@ static const animframe_t elflord_frames_soa_end[] =
 {
 	{ FRAME_attka1,		NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t elflord_move_soa_end = { 2, elflord_frames_soa_end, elfLordPause };
+const animmove_t elflord_move_soa_end = { 2, elflord_frames_soa_end, elflord_check_attack };
 
 // Attack 2 (light surge).
 static const animframe_t elflord_frames_ls[] =
@@ -223,7 +223,7 @@ static const animframe_t elflord_frames_ls[] =
 	{ FRAME_attkb19,	NULL, 0, 0, 0, NULL, 0, elflord_end_beam },
 	{ FRAME_attkb20,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t elflord_move_ls = { 50, elflord_frames_ls, elfLordPause };
+const animmove_t elflord_move_ls = { 50, elflord_frames_ls, elflord_check_attack };
 
 // Pain.
 static const animframe_t elflord_frames_pain[] =
@@ -236,7 +236,7 @@ static const animframe_t elflord_frames_pain[] =
 	{ FRAME_pain6,		NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_pain7,		NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t elflord_move_pain = { 7, elflord_frames_pain, elfLordPause };
+const animmove_t elflord_move_pain = { 7, elflord_frames_pain, elflord_check_attack };
 
 // Death beginning.
 static const animframe_t elflord_frames_death_btrans[] =
@@ -293,7 +293,7 @@ static const animframe_t elflord_frames_shield[] =
 	{ FRAME_shield22,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_shield23,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t elflord_move_shield = { 23, elflord_frames_shield, elfLordPause };
+const animmove_t elflord_move_shield = { 23, elflord_frames_shield, elflord_check_attack };
 
 // Attack.
 static const animframe_t elflord_frames_attack[] =
@@ -315,7 +315,7 @@ static const animframe_t elflord_frames_attack[] =
 	{ FRAME_newatk15,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_newatk16,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t elflord_move_attack = { 16, elflord_frames_attack, elfLordPause };
+const animmove_t elflord_move_attack = { 16, elflord_frames_attack, elflord_check_attack };
 
 #define ELFLORD_DECELERATE	0.8f
 
@@ -347,7 +347,7 @@ static const animframe_t elflord_frames_move[] =
 	{ FRAME_idle23,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
 	{ FRAME_idle24,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
 };
-const animmove_t elflord_move_move = { 24, elflord_frames_move, elfLordPause };
+const animmove_t elflord_move_move = { 24, elflord_frames_move, elflord_check_attack };
 
 // Idle - sit and float.
 static const animframe_t elflord_frames_wait[] =
@@ -356,28 +356,28 @@ static const animframe_t elflord_frames_wait[] =
 	{ FRAME_idle2,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_idle3,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_idle4,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
-	{ FRAME_idle5,		NULL, 0, 0, 0, ai_charge2, 0, elfLordPause },
+	{ FRAME_idle5,		NULL, 0, 0, 0, ai_charge2, 0, elflord_check_attack },
 	{ FRAME_idle6,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_idle7,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_idle8,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_idle9,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
-	{ FRAME_idle10,		NULL, 0, 0, 0, ai_charge2, 0, elfLordPause },
+	{ FRAME_idle10,		NULL, 0, 0, 0, ai_charge2, 0, elflord_check_attack },
 	{ FRAME_idle11,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_idle12,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_idle13,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_idle14,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
-	{ FRAME_idle15,		NULL, 0, 0, 0, ai_charge2, 0, elfLordPause },
+	{ FRAME_idle15,		NULL, 0, 0, 0, ai_charge2, 0, elflord_check_attack },
 	{ FRAME_idle16,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_idle17,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_idle18,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_idle19,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
-	{ FRAME_idle20,		NULL, 0, 0, 0, ai_charge2, 0, elfLordPause },
+	{ FRAME_idle20,		NULL, 0, 0, 0, ai_charge2, 0, elflord_check_attack },
 	{ FRAME_idle21,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_idle22,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_idle23,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_idle24,		NULL, 0, 0, 0, ai_charge2, 0, NULL },
 };
-const animmove_t elflord_move_wait = { 24, elflord_frames_wait, elfLordPause };
+const animmove_t elflord_move_wait = { 24, elflord_frames_wait, elflord_check_attack };
 
 static const animframe_t elflord_frames_come_to_life[] =
 {
@@ -421,4 +421,4 @@ static const animframe_t elflord_frames_come_to_life[] =
 	{ FRAME_attka14,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_attka15,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t elflord_move_come_to_life = { 35, elflord_frames_come_to_life, elfLordPause };
+const animmove_t elflord_move_come_to_life = { 35, elflord_frames_come_to_life, elflord_check_attack };
