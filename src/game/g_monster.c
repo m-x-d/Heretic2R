@@ -1405,7 +1405,7 @@ void MG_SetNormalizedVelToGoal(edict_t* self, vec3_t vec) //mxd. Named 'MG_SetNo
 }
 
 // Overrides the lung meter and displays the creature's life meter to all clients.
-void M_ShowLifeMeter(edict_t* self, const int value, const int max_value) //TODO: remove unused arg?
+void M_ShowLifeMeter(const int value, const int max_value) //mxd. Removed unused 'self' arg.
 {
 #define LIFEBAR_SCALE 16
 

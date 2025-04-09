@@ -158,7 +158,7 @@ void mssithra_death(edict_t *self, G_Message_t *msg)
 	SetAnim(self, ANIM_DEATH1);
 
 	//Remove the life bar once dead
-	M_ShowLifeMeter( self, 0, 0);
+	M_ShowLifeMeter(0, 0);
 	self->post_think = NULL;
 	self->next_post_think = -1;
 }
@@ -604,12 +604,12 @@ void mssithra_postthink(edict_t *self)
 	{
 		if (self->dmg < self->max_health)
 		{
-			M_ShowLifeMeter( self, self->dmg, self->dmg);
+			M_ShowLifeMeter(self->dmg, self->dmg);
 			self->dmg+=50;
 		}
 		else
 		{
-			M_ShowLifeMeter( self, self->health, self->max_health);
+			M_ShowLifeMeter(self->health, self->max_health);
 		}
 	}
 

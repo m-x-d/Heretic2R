@@ -1466,7 +1466,7 @@ void priestess_death( edict_t *self, G_Message_t *msg )
 	self->health = 0;
 	self->max_health = 0;
 
-	M_ShowLifeMeter( self, 0, 0);
+	M_ShowLifeMeter(0, 0);
 	
 	SetAnim(self, ANIM_DEATH);
 }
@@ -1545,12 +1545,12 @@ void priestess_postthink(edict_t *self)
 	{
 		if (self->dmg < self->max_health)
 		{
-			M_ShowLifeMeter( self, self->dmg, self->dmg);
+			M_ShowLifeMeter(self->dmg, self->dmg);
 			self->dmg+=50;
 		}
 		else
 		{
-			M_ShowLifeMeter( self, self->health, self->max_health);
+			M_ShowLifeMeter(self->health, self->max_health);
 		}
 	}
 

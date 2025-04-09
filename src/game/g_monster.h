@@ -49,7 +49,7 @@ extern void M_EndDeath(edict_t* self);
 extern void M_PredictTargetPosition(const edict_t* target, const vec3_t evade_vel, float pred_frames, vec3_t pred_target_pos);
 extern int M_PredictTargetEvasion(const edict_t* attacker, const edict_t* target, const vec3_t pursue_vel, const vec3_t evade_vel, float strike_dist, float pred_frames);
 extern void M_jump(edict_t* self, G_Message_t* msg);
-extern void M_ShowLifeMeter(edict_t* self, int value, int max_value);
+extern void M_ShowLifeMeter(int value, int max_value);
 extern int M_FindSupport(const edict_t* self, int range);
 
 //mxd. Local forward declarations for g_monster.c:

@@ -1123,7 +1123,7 @@ static void TBeastBlocked(edict_t* self, trace_t* trace) //mxd. Named 'tbeast_bl
 
 static void TBeastDieUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'tbeast_go_die' in original logic.
 {
-	M_ShowLifeMeter(self, 0, 0);
+	M_ShowLifeMeter(0, 0);
 
 	gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1.0f, ATTN_NONE, 0.0f);
 
@@ -1169,12 +1169,12 @@ static void TBeastPostThink(edict_t* self) //mxd. Named 'tbeast_post_think' in o
 		if (self->volume < (float)self->max_health)
 		{
 			// Initial healthbar buildup. //TODO: was broken in original logic. Check animation speed... 
-			M_ShowLifeMeter(self, (int)(ceilf(self->volume / (float)self->max_health * TBEAST_SBAR_SIZE)), TBEAST_SBAR_SIZE); //BUGFIX: mxd. Original logic uses the same value for 'value' and 'max_value' args.
+			M_ShowLifeMeter((int)(ceilf(self->volume / (float)self->max_health * TBEAST_SBAR_SIZE)), TBEAST_SBAR_SIZE); //BUGFIX: mxd. Original logic uses the same value for 'value' and 'max_value' args.
 			self->volume += (float)self->max_health / 10.0f;
 		}
 		else if (self->health > 0)
 		{
-			M_ShowLifeMeter(self, (int)(ceilf((float)self->health / (float)self->max_health * TBEAST_SBAR_SIZE)), TBEAST_SBAR_SIZE);
+			M_ShowLifeMeter((int)(ceilf((float)self->health / (float)self->max_health * TBEAST_SBAR_SIZE)), TBEAST_SBAR_SIZE);
 		}
 	}
 
@@ -1452,7 +1452,7 @@ static void TBeastDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	if (self->deadflag == DEAD_DEAD) // Dead but still being hit.
 		return;
 
-	M_ShowLifeMeter(self, 0, 0);
+	M_ShowLifeMeter(0, 0);
 
 	// Regular death.
 	gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1.0f, ATTN_NONE, 0.0f);

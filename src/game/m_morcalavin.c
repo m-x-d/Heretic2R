@@ -1655,12 +1655,12 @@ void morcalavin_postthink(edict_t *self)
 	{
 		if (self->dmg < self->max_health)
 		{
-			M_ShowLifeMeter( self, self->dmg, self->dmg);
+			M_ShowLifeMeter(self->dmg, self->dmg);
 			self->dmg+=50;
 		}
 		else
 		{
-			M_ShowLifeMeter( self, self->health, self->max_health);
+			M_ShowLifeMeter(self->health, self->max_health);
 			mork_check_killed_enemy(self->enemy);
 		}
 	}

@@ -232,7 +232,7 @@ static void ElfLordDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 
 	self->health = 0;
 	self->max_health = 0;
-	M_ShowLifeMeter(self, 0, 0);
+	M_ShowLifeMeter(0, 0);
 
 	self->think = G_FreeEdict;
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
@@ -291,7 +291,7 @@ static void ElfLordProjectileBlocked(edict_t* self, trace_t* trace) //mxd. Named
 static void ElfLordPreThink(edict_t* self) //mxd. Named 'elflord_PreThink' in original logic.
 {
 	if (self->enemy != NULL && self->elflord_charge_meter >= self->max_health)
-		M_ShowLifeMeter(self, self->health, self->max_health);
+		M_ShowLifeMeter(self->health, self->max_health);
 
 	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
 }
@@ -537,7 +537,7 @@ void elflord_update_charge_meter(edict_t* self)
 
 	if (self->elflord_charge_meter < self->max_health)
 	{
-		M_ShowLifeMeter(self, self->elflord_charge_meter, self->max_health); //BUGFIX: mxd. Original logic passes self->count as max_value.
+		M_ShowLifeMeter(self->elflord_charge_meter, self->max_health); //BUGFIX: mxd. Original logic passes self->count as max_value.
 		self->elflord_charge_meter += self->max_health / 20;
 	}
 }
