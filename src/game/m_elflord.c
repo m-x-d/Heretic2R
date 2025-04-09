@@ -194,14 +194,7 @@ void elflord_ai_stand(edict_t* self, float dist) //TODO: replace with ai_stand?
 	ai_stand(self, 0.0f);
 }
 
-
-/**************************************/
-
-/*-----------------------------------------------
-	elflord_finish_death
------------------------------------------------*/
-
-void elflord_finish_death(edict_t *self)
+void elflord_finish_death(edict_t* self)
 {
 	SetAnim(self, ANIM_DIE_LOOP);
 }
