@@ -69,73 +69,67 @@ static void ElfLordProjectileBlocked(edict_t* self, trace_t* trace) //mxd. Named
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-/*-----------------------------------------------
-	elford_Attack
------------------------------------------------*/
-
-void elford_Attack( edict_t *self )
+void elford_Attack(edict_t* self) //TODO: rename to elflord_attack.
 {
-	edict_t *projectile;
-	vec3_t	aim, vf, vr, ang, org;
-	float	len, yaw_ofs = -20;
-	int		i;
-
 	if (!M_ValidTarget(self, self->enemy))
 		return;
 
-	for(i=0;i<3;i++)
+	float yaw_offset = -20.0f;
+
+	for (int i = 0; i < 3; i++)
 	{
-		projectile = G_Spawn();
+		edict_t* projectile = G_Spawn();
 
 		projectile->classname = "elflord_projectile";
 		projectile->solid = SOLID_BBOX;
 		projectile->movetype = PHYSICSTYPE_FLY;
 		projectile->clipmask = MASK_SHOT;
-		
-		AngleVectors(self->s.angles, vf, vr, NULL);
-		VectorCopy(self->s.origin, projectile->s.origin);
-		VectorMA(projectile->s.origin, 48, vf, projectile->s.origin);
-		VectorMA(projectile->s.origin, 16, vr, projectile->s.origin);
-		projectile->s.origin[2] += 8;
+		projectile->gravity = 0.0f;
 
-		VectorSet(projectile->mins, -2, -2, -2);
-		VectorSet(projectile->maxs,  2,  2,  2);
-		
+		vec3_t forward;
+		vec3_t right;
+		AngleVectors(self->s.angles, forward, right, NULL);
+
+		VectorCopy(self->s.origin, projectile->s.origin);
+		VectorMA(projectile->s.origin, 48.0f, forward, projectile->s.origin);
+		VectorMA(projectile->s.origin, 16.0f, right, projectile->s.origin);
+		projectile->s.origin[2] += 8.0f;
+
+		VectorCopy(projectile_mins, projectile->mins);
+		VectorCopy(projectile_maxs, projectile->maxs);
+
 		projectile->owner = self;
 		projectile->svflags |= SVF_ALWAYS_SEND;
-		
-		VectorCopy(self->enemy->s.origin, org);
-		
-		M_PredictTargetPosition(self->enemy, self->enemy->velocity, skill->value * 2, org);
 
-		org[2] += self->enemy->viewheight;
+		vec3_t origin;
+		VectorCopy(self->enemy->s.origin, origin);
+		M_PredictTargetPosition(self->enemy, self->enemy->velocity, skill->value * 2.0f, origin);
+		origin[2] += (float)self->enemy->viewheight;
 
-		VectorSubtract(org, projectile->s.origin, aim);
-		len = VectorNormalize(aim);
-		vectoangles(aim, ang);
-		ang[YAW] += yaw_ofs;
-		ang[PITCH] *= -1;
-		yaw_ofs += 20;
-		AngleVectors(ang, aim, NULL, NULL);
+		vec3_t dir;
+		VectorSubtract(origin, projectile->s.origin, dir);
+		VectorNormalize(dir);
 
-		VectorScale(aim, (600 + (skill->value * 100)), projectile->velocity);
+		vec3_t angles;
+		vectoangles(dir, angles);
+		angles[PITCH] *= -1.0f;
+		angles[YAW] += yaw_offset;
 
-		projectile->gravity = 0;
+		vec3_t velocity;
+		AngleVectors(angles, velocity, NULL, NULL);
+		VectorScale(velocity, 600.0f + skill->value * 100.0f, projectile->velocity);
+
+		projectile->isBlocking = ElfLordProjectileBlocked;
+		projectile->isBlocked = ElfLordProjectileBlocked;
+		projectile->bounced = ElfLordProjectileBlocked;
 
 		gi.linkentity(projectile);
+		gi.CreateEffect(&projectile->s, FX_CWATCHER, CEF_OWNERS_ORIGIN, projectile->s.origin, "bv", CW_STAR, self->s.origin);
 
-		gi.CreateEffect(	&projectile->s, 
-							FX_CWATCHER, 
-							CEF_OWNERS_ORIGIN,
-							projectile->s.origin,
-							"bv",
-							CW_STAR,
-							self->s.origin);
-		
-		projectile->isBlocking = projectile->bounced = projectile->isBlocked = ElfLordProjectileBlocked;
+		yaw_offset += 20.0f;
 	}
 
-	gi.sound(self, CHAN_WEAPON, sounds[SND_PROJ1], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_PROJ1], 1.0f, ATTN_NORM, 0.0f);
 }
 
 /*-----------------------------------------------
