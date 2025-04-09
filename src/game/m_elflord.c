@@ -242,27 +242,18 @@ static void ElfLordRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 	SetAnim(self, ANIM_FLOAT_FORWARD);
 }
 
-/*-----------------------------------------------
-	elflord_soa_start
------------------------------------------------*/
-
-void elflord_soa_start(edict_t *self, G_Message_t *msg)
+static void ElfLordMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elflord_soa_start' in original logic.
 {
-	vec3_t	forward, startpos;
-
 	if (!M_ValidTarget(self, self->enemy))
 		return;
 
-	gi.sound(self, CHAN_VOICE, sounds[SND_SACHARGE], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_VOICE, sounds[SND_SACHARGE], 1.0f, ATTN_NORM, 0.0f);
 	self->show_hostile = true;
 
+	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
-	VectorCopy(self->s.origin, startpos);
-	SpellCastSphereOfAnnihilation(self,
-								 startpos,
-								 self->s.angles,		//v_angle,
-								 forward,
-								 &self->show_hostile);
+
+	SpellCastSphereOfAnnihilation(self, self->s.origin, self->s.angles, forward, &self->show_hostile);
 	SetAnim(self, ANIM_ATTACK_SOA_BTRANS);
 }
 
@@ -647,7 +638,7 @@ void ElflordStaticsInit(void)
 	classStatics[CID_ELFLORD].msgReceivers[MSG_RUN] = ElfLordRunMsgHandler;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_FLY] = ElfLordRunMsgHandler;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_DEATH] = elflord_death_start;
-	classStatics[CID_ELFLORD].msgReceivers[MSG_MISSILE] = elflord_soa_start;
+	classStatics[CID_ELFLORD].msgReceivers[MSG_MISSILE] = ElfLordMissileMsgHandler;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_PAIN] = elflord_pain;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_SIGHT] = elfLordWakeUp;
 
