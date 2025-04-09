@@ -32,7 +32,7 @@
   Elf Lord Base Info
 -----------------------------------------------------------------------*/
 
-static animmove_t *animations[] =
+static const animmove_t *animations[] =
 {
 	&elflord_move_idle,
 	&elflord_move_run,

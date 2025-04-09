@@ -67,9 +67,6 @@
     <Filter Include="src\Game objects">
       <UniqueIdentifier>{d5d6041f-cc6d-47cf-b097-f9e4d0ee5788}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Monsters\ElfLord">
-      <UniqueIdentifier>{d8b3975d-98e0-4063-a7e7-918af778babe}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Monsters\Fish">
       <UniqueIdentifier>{1d8beaa6-c16a-43ae-a701-21d8cc5f7b88}</UniqueIdentifier>
     </Filter>
@@ -126,6 +123,9 @@
     </Filter>
     <Filter Include="src\Monsters\Trial Beast">
       <UniqueIdentifier>{75ca9218-f238-4915-9629-a0c0058dfde9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\Elf Lord">
+      <UniqueIdentifier>{d8b3975d-98e0-4063-a7e7-918af778babe}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -463,10 +463,10 @@
       <Filter>qcommon</Filter>
     </ClCompile>
     <ClCompile Include="m_elflord.c">
-      <Filter>src\Monsters\ElfLord</Filter>
+      <Filter>src\Monsters\Elf Lord</Filter>
     </ClCompile>
     <ClCompile Include="m_elflord_anim.c">
-      <Filter>src\Monsters\ElfLord</Filter>
+      <Filter>src\Monsters\Elf Lord</Filter>
     </ClCompile>
     <ClCompile Include="m_fish.c">
       <Filter>src\Monsters\Fish</Filter>
@@ -849,10 +849,10 @@
       <Filter>qcommon</Filter>
     </ClInclude>
     <ClInclude Include="m_elflord_shared.h">
-      <Filter>src\Monsters\ElfLord</Filter>
+      <Filter>src\Monsters\Elf Lord</Filter>
     </ClInclude>
     <ClInclude Include="m_elflord_anim.h">
-      <Filter>src\Monsters\ElfLord</Filter>
+      <Filter>src\Monsters\Elf Lord</Filter>
     </ClInclude>
     <ClInclude Include="m_fish_local.h">
       <Filter>src\Monsters\Fish</Filter>
@@ -999,7 +999,7 @@
       <Filter>src\Monsters\Chicken</Filter>
     </ClInclude>
     <ClInclude Include="m_elflord.h">
-      <Filter>src\Monsters\ElfLord</Filter>
+      <Filter>src\Monsters\Elf Lord</Filter>
     </ClInclude>
     <ClInclude Include="m_fish.h">
       <Filter>src\Monsters\Fish</Filter>
