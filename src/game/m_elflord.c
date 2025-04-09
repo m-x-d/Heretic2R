@@ -375,13 +375,9 @@ void elflord_track(edict_t* self)
 	VectorCopy(new_dir, self->elflord_beam_direction);
 }
 
-/*-----------------------------------------------
-	elflord_FixAngles
------------------------------------------------*/
-
-void elflord_FixAngles(edict_t *self)
+void elflord_FixAngles(edict_t* self) //TODO: rename to elflord_reset_pitch.
 {
-	self->s.angles[PITCH] = 0;
+	self->s.angles[PITCH] = 0.0f;
 }
 
 /*-----------------------------------------------
