@@ -46,8 +46,6 @@ static const animmove_t *animations[] =
 
 static int sounds[NUM_SOUNDS];
 
-static ClassResourceInfo_t resInfo;
-
 /*-----------------------------------------------
 	elflord_projectile_blocked
 -----------------------------------------------*/
@@ -702,8 +700,6 @@ void elflord_face(edict_t *self)
 	ai_charge2(self, 0);
 }
 
-static ClassResourceInfo_t resInfo;
-
 /*-----------------------------------------------
 	elflord_SlideMeter
 -----------------------------------------------*/
@@ -739,6 +735,8 @@ void elflord_PreThink( edict_t *self )
 
 void ElflordStaticsInit(void)
 {
+	static ClassResourceInfo_t resInfo;
+
 	classStatics[CID_ELFLORD].msgReceivers[MSG_STAND] = elflord_stand;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_RUN] = elflord_run;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_FLY] = elflord_run;
