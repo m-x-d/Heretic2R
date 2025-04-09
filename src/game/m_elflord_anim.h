@@ -179,7 +179,7 @@
 #define FRAME_newatk15        	170
 #define FRAME_newatk16        	171
 
-#define MODEL_SCALE			1.0f //TODO: unused. Change to 2.0f and use in SP_monster_elflord()?
+#define MODEL_SCALE			2.0f //mxd. 1.0 and unused in original version.
 
 #define NUM_MESH_NODES		7 //TODO: unused.
 
