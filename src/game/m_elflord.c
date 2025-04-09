@@ -17,11 +17,9 @@
 #include "Vector.h"
 #include "g_local.h"
 
-/*----------------------------------------------------------------------
-  Elf Lord Base Info
------------------------------------------------------------------------*/
+#pragma region ========================== Elf Lord base info ==========================
 
-static const animmove_t *animations[] =
+static const animmove_t* animations[] =
 {
 	&elflord_move_idle,
 	&elflord_move_run,
@@ -41,10 +39,15 @@ static const animmove_t *animations[] =
 	&elflord_move_attack,
 	&elflord_move_move,
 	&elflord_move_wait,
-	&elflord_move_come_to_life,
+	&elflord_move_come_to_life
 };
 
 static int sounds[NUM_SOUNDS];
+
+static const vec3_t projectile_mins = { -2.0f, -2.0f, -2.0f }; //mxd
+static const vec3_t projectile_maxs = {  2.0f,  2.0f,  2.0f }; //mxd
+
+#pragma endregion
 
 /*-----------------------------------------------
 	elflord_projectile_blocked
