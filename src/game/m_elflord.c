@@ -1,32 +1,21 @@
-//==============================================================================
 //
 // m_elflord.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//==============================================================================
 
-#include "g_local.h"
-#include "Utilities.h"
-#include "g_DefaultMessageHandler.h"
-#include "g_monster.h"
-#include "fx.h"
-#include "random.h"
-#include "buoy.h"
-#include "vector.h"
-#include "g_playstats.h"
 #include "m_elflord.h"
+#include "m_elflord_anim.h" //mxd
 #include "m_elflord_shared.h"
-#include "m_elflord_anim.h"
+#include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
 #include "mg_ai.h" //mxd
 #include "m_stats.h"
-#include "g_HitLocation.h"
 #include "spl_sphereofannihlation.h" //mxd
-
-/*QUAKED monster_elflord (1 .5 0) (-16 -16 -0) (16 16 32)
-*/
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_local.h"
 
 /*----------------------------------------------------------------------
   Elf Lord Base Info
