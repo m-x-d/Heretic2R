@@ -293,58 +293,42 @@ static void ElfLordPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 		gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-/*-----------------------------------------------
-	elflord_FindMoveTarget
------------------------------------------------*/
-
-void elflord_FindMoveTarget (edict_t *self)
+static void FindMoveTarget(edict_t* self) //mxd. Named 'elflord_FindMoveTarget' in original logic.
 {
-	edict_t *movetarg = NULL, *lastvalid = NULL;
-	vec3_t	vel, target;
-	float	len;
+	const edict_t* move_target = NULL;
 
-	while((movetarg = FindInRadius_Old(movetarg, self->s.origin, 640)) != NULL)
+	edict_t* e = NULL;
+	while ((e = FindInRadius_Old(e, self->s.origin, 640.0f)) != NULL)
 	{
-		//Must be a path_corner
-		if (strcmp(movetarg->classname, "path_corner"))
+		// Must be a path_corner.
+		if (strcmp(e->classname, "path_corner") != 0)
 			continue;
 
-		//Must be a specified path_corner too
-		if (movetarg->targetname && strcmp(movetarg->targetname, "elflord"))
+		// Must be a specified path_corner too.
+		if (e->targetname == NULL || strcmp(e->targetname, "elflord") != 0) //BUGFIX: mxd. 'e->targetname && strcmp(...)' in original logic. 
 			continue;
 
-		if (vhlen(movetarg->s.origin, self->s.origin) < 64)
+		if (vhlen(e->s.origin, self->s.origin) < 64.0f)
 			continue;
 
-		lastvalid = movetarg;
+		move_target = e;
 
-		if (irand(0,1))
-			continue;
-		
-		//TODO: Determine a velocity to get us here
-		VectorCopy(movetarg->s.origin, target);
-		target[2] = self->s.origin[2];
-
-		VectorSubtract(target, self->s.origin, vel);
-		len = VectorNormalize(vel);
-
-		len = ( ((len / 10) / FRAMETIME) * 2 );
-
-		VectorScale(vel, len, self->velocity);
-
-		return;
+		if (irand(0, 1) == 0)
+			break;
 	}
 
-	//We randomly skipped the last possible spot, so just use that
-	if (lastvalid)
+	if (move_target != NULL)
 	{
-		VectorCopy(lastvalid->s.origin, target);
+		//FIXME: Determine a velocity to get us here.
+		vec3_t target;
+		VectorCopy(move_target->s.origin, target);
 		target[2] = self->s.origin[2];
 
+		vec3_t vel;
 		VectorSubtract(target, self->s.origin, vel);
-		len = VectorNormalize(vel);
+		float len = VectorNormalize(vel);
 
-		len = ( ((len / 10) / FRAMETIME) * 2 );
+		len /= 10.0f / FRAMETIME * 2.0f;
 
 		VectorScale(vel, len, self->velocity);
 	}
@@ -525,7 +509,7 @@ qboolean elfLordCheckAttack (edict_t *self)
 
 	if (!self->dmg)
 	{
-		elflord_FindMoveTarget(self);
+		FindMoveTarget(self);
 		SetAnim(self, ANIM_MOVE);
 		return false;
 	}
