@@ -105,7 +105,8 @@ struct edict_s
 		edict_t* teamchain;
 		edict_t* targetEnt;
 		edict_t* slavechain; //TODO: unused.
-		edict_t* rope_grab; //Used to by the rope to hold the part of the rope which the player is holding.
+		edict_t* rope_grab; // Used to by the rope to hold the part of the rope which the player is holding.
+		edict_t* elflord_beam; //mxd
 	};
 
 	union
@@ -203,7 +204,12 @@ struct edict_s
 	// Unless something will do both normal and radius damage, we only need one field.
 	// In fact we may want to move this into class statics or something.
 
-	int dmg; // The damage something does.
+	union
+	{
+		int dmg; // The damage something does.
+		qboolean elflord_last_stage; //mxd
+	};
+	
 	float dmg_radius; // The radius of damage.
 
 	int sounds; // Used by a trigger and a splash, could be a class static.
@@ -213,6 +219,7 @@ struct edict_s
 		int count; // Used by polys, triggers and items.
 		int curr_model; // Used by player during cinematics.
 		int morph_animation_frame; //mxd. Used by Morph spell.
+		int elflord_charge_meter; //mxd
 	};
 
 	int targeted; // Used by Ogle to denote a targeted action queued up.
@@ -331,8 +338,17 @@ struct edict_s
 		float old_yaw; // Used by the Seraph to return to his exact position and angles.
 	};
 
-	vec3_t pos1;
-	vec3_t pos2;
+	union
+	{
+		vec3_t pos1;
+		vec3_t elflord_beam_direction; //mxd
+	};
+
+	union
+	{
+		vec3_t pos2;
+		vec3_t elflord_beam_start; //mxd
+	};
 
 	// Common data blocks.
 	moveinfo_t moveinfo;		// 120 bytes
