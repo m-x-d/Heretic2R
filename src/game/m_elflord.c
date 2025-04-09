@@ -237,11 +237,7 @@ void elflord_flymove(edict_t* self, float dist)
 		MG_CheckEvade(self);
 }
 
-/*-----------------------------------------------
-	elflord_run
------------------------------------------------*/
-
-void elflord_run(edict_t *self, G_Message_t *msg)
+static void ElfLordRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elflord_run' in original logic.
 {
 	SetAnim(self, ANIM_FLOAT_FORWARD);
 }
@@ -648,8 +644,8 @@ void ElflordStaticsInit(void)
 	static ClassResourceInfo_t resInfo;
 
 	classStatics[CID_ELFLORD].msgReceivers[MSG_STAND] = ElfLordStandMsgHandler;
-	classStatics[CID_ELFLORD].msgReceivers[MSG_RUN] = elflord_run;
-	classStatics[CID_ELFLORD].msgReceivers[MSG_FLY] = elflord_run;
+	classStatics[CID_ELFLORD].msgReceivers[MSG_RUN] = ElfLordRunMsgHandler;
+	classStatics[CID_ELFLORD].msgReceivers[MSG_FLY] = ElfLordRunMsgHandler;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_DEATH] = elflord_death_start;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_MISSILE] = elflord_soa_start;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_PAIN] = elflord_pain;
