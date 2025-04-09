@@ -294,15 +294,6 @@ static void ElfLordPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 }
 
 /*-----------------------------------------------
-	elflordSound
------------------------------------------------*/
-
-void elflordSound(edict_t *self, float channel, float sndindex, float atten)
-{
-	gi.sound(self, channel, sounds[(int)(sndindex)], 1, atten, 0);
-}
-
-/*-----------------------------------------------
 	elflord_FindMoveTarget
 -----------------------------------------------*/
 

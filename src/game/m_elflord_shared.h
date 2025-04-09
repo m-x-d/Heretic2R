@@ -73,7 +73,6 @@ qboolean elfLordCheckAttack(edict_t* self);
 
 void elflord_decell(edict_t* self, float value);
 void elflord_ai_stand(edict_t* self, float dist);
-void elflordSound(edict_t* self, float channel, float sndindex, float atten);
 void elflord_flymove(edict_t* self, float dist);
 void elfLordPause(edict_t* self);
 void elflord_finish_death(edict_t* self); //mxd
