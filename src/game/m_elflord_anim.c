@@ -182,7 +182,7 @@ static const animframe_t elflord_frames_ls[] =
 	{ FRAME_attkb13,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_attkb14,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_attkb15,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_attkb16,	NULL, 0, 0, 0, NULL, 0, elflord_StartBeam },
+	{ FRAME_attkb16,	NULL, 0, 0, 0, NULL, 0, elflord_start_beam },
 
 	// Held for 3 seconds (30 frames).
 	{ FRAME_attkb16,	NULL, 0, 0, 0, NULL, 0, elflord_track },
@@ -220,7 +220,7 @@ static const animframe_t elflord_frames_ls[] =
 
 	{ FRAME_attkb17,	NULL, 0, 0, 0, NULL, 0, elflord_FixAngles },
 	{ FRAME_attkb18,	NULL, 0, 0, 0, NULL, 0, elflord_FixAngles },
-	{ FRAME_attkb19,	NULL, 0, 0, 0, NULL, 0, elflord_EndBeam },
+	{ FRAME_attkb19,	NULL, 0, 0, 0, NULL, 0, elflord_end_beam },
 	{ FRAME_attkb20,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
 const animmove_t elflord_move_ls = { 50, elflord_frames_ls, elfLordPause };

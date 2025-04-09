@@ -77,8 +77,8 @@ void elflord_finish_death(edict_t* self); //mxd
 void elfLordGoCharge(edict_t* self);
 void elflord_soa_end(edict_t* self);
 
-void elflord_StartBeam(edict_t* self);
-void elflord_EndBeam(edict_t* self);
+void elflord_start_beam(edict_t* self);
+void elflord_end_beam(edict_t* self);
 void elflord_attack(edict_t* self);
 
 void elflord_face(edict_t* self);

@@ -134,7 +134,7 @@ void elflord_attack(edict_t* self)
 	gi.sound(self, CHAN_WEAPON, sounds[SND_PROJ1], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void elflord_StartBeam(edict_t* self) //TODO: rename to elflord_start_beam.
+void elflord_start_beam(edict_t* self)
 {
 	if (!M_ValidTarget(self, self->enemy))
 		return;
@@ -173,7 +173,7 @@ void elflord_StartBeam(edict_t* self) //TODO: rename to elflord_start_beam.
 	self->elflord_beam = beam;
 }
 
-void elflord_EndBeam(edict_t* self) //TODO: rename to elflord_end_beam.
+void elflord_end_beam(edict_t* self)
 {
 	self->elflord_beam->think = G_FreeEdict;
 	self->elflord_beam->nextthink = level.time + FRAMETIME; //mxd. Use define.
