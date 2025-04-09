@@ -334,53 +334,45 @@ static void FindMoveTarget(edict_t* self) //mxd. Named 'elflord_FindMoveTarget' 
 	}
 }
 
-/*-----------------------------------------------
-	elflord_track
------------------------------------------------*/
-
-void elflord_track(edict_t *self)
+void elflord_track(edict_t* self)
 {
-	trace_t	trace;
-	vec3_t	dir, newdir, endpos;
-	vec3_t  mins = {-2, -2, -2};
-	vec3_t  maxs = { 2,  2,  2};
-
 	if (!M_ValidTarget(self, self->enemy))
 	{
-		//Remove the beam
-		self->targetEnt->think = G_FreeEdict;
-		self->targetEnt->nextthink = level.time + 0.1;
-		
-		//Don't finish what we were doing
+		// Remove the beam.
+		self->elflord_beam->think = G_FreeEdict;
+		self->elflord_beam->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
+		// Don't finish what we were doing.
 		SetAnim(self, ANIM_HOVER);
+
 		return;
 	}
 
-	VectorSubtract(self->enemy->s.origin, self->pos2, dir);
+	vec3_t dir;
+	VectorSubtract(self->enemy->s.origin, self->elflord_beam_start, dir);
 	VectorNormalize(dir);
 
-	VectorScale(self->pos1, 3 - (skill->value * 0.5), newdir);
-	VectorAdd(newdir, dir, newdir);
-	VectorScale(newdir, 1 / ((3 - (skill->value * 0.5)) + 1), newdir);
+	vec3_t new_dir;
+	VectorScale(self->elflord_beam_direction, 3.0f - skill->value * 0.5f, new_dir);
+	VectorAdd(new_dir, dir, new_dir);
+	VectorScale(new_dir, 1.0f / ((3.0f - skill->value * 0.5f) + 1.0f), new_dir);
+	VectorNormalize(new_dir);
 
-	VectorNormalize(newdir);
+	vec3_t end_pos;
+	VectorMA(self->s.origin, 640.0f, new_dir, end_pos);
 
-	VectorMA(self->s.origin, 640, newdir, endpos);
+	trace_t trace;
+	gi.trace(self->s.origin, projectile_mins, projectile_maxs, end_pos, self, MASK_SHOT, &trace);
 
-	gi.trace(self->s.origin, mins, maxs, endpos, self, MASK_SHOT, &trace);
+	if (trace.ent != NULL && trace.ent->takedamage != DAMAGE_NO)
+		T_Damage(trace.ent, self, self, new_dir, trace.endpos, trace.plane.normal, irand(ELFLORD_BEAM_MIN_DAMAGE, ELFLORD_BEAM_MAX_DAMAGE), 0, DAMAGE_NORMAL, MOD_DIED);
 
-	if (trace.ent && trace.ent->takedamage)
-	{ 
-		T_Damage(trace.ent, self, self, newdir, trace.endpos, trace.plane.normal, irand(ELFLORD_BEAM_MIN_DAMAGE, ELFLORD_BEAM_MAX_DAMAGE), 0, DAMAGE_NORMAL, MOD_DIED);
-	}
+	VectorCopy(trace.endpos, self->elflord_beam->s.origin);
+	vectoangles(new_dir, self->s.angles);
 
-	VectorCopy(trace.endpos, self->targetEnt->s.origin);
-	
-	vectoangles(newdir, self->s.angles);
+	ai_charge2(self, 0.0f);
 
-	ai_charge2(self, 0);
-
-	VectorCopy(newdir, self->pos1);
+	VectorCopy(new_dir, self->elflord_beam_direction);
 }
 
 /*-----------------------------------------------
