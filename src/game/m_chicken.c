@@ -33,7 +33,6 @@ static const animmove_t* animations[NUM_ANIMS] =
 };
 
 static int sounds[NUM_SOUNDS];
-static ClassResourceInfo_t res_info;
 
 #pragma endregion
 
@@ -290,6 +289,8 @@ void chicken_sound(edict_t* self, float channel, float sound_index, float attenu
 
 void ChickenStaticsInit(void)
 {
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
+
 	classStatics[CID_CHICKEN].msgReceivers[MSG_STAND] = ChickenStandMsgHandler;
 	classStatics[CID_CHICKEN].msgReceivers[MSG_WALK] = ChickenWalkMsgHandler;
 	classStatics[CID_CHICKEN].msgReceivers[MSG_RUN] = ChickenRunMsgHandler;
