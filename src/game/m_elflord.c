@@ -205,15 +205,6 @@ void elfLordGoCharge(edict_t* self) //TODO: rename to elflord_charge?
 }
 
 /*-----------------------------------------------
-	elflord_soa_loop
------------------------------------------------*/
-
-void elflord_soa_loop(edict_t *self)
-{
-	SetAnim(self, ANIM_ATTACK_SOA_LOOP);
-}
-
-/*-----------------------------------------------
 	elflord_soa_end
 -----------------------------------------------*/
 

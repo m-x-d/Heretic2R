@@ -84,7 +84,6 @@ void elflord_flymove(edict_t* self, float dist);
 void elfLordPause(edict_t* self);
 void elflord_finish_death(edict_t* self); //mxd
 void elfLordGoCharge(edict_t* self);
-void elflord_soa_loop(edict_t* self);
 void elflord_soa_end(edict_t* self);
 
 void elflord_StartBeam(edict_t* self);
