@@ -189,17 +189,9 @@ void elflord_decell(edict_t* self, float scaler) //TODO: rename to elflord_decel
 	}
 }
 
-/*-----------------------------------------------
-	elflord_ai_stand
------------------------------------------------*/
-
-void elflord_ai_stand (edict_t *self, float dist)
+void elflord_ai_stand(edict_t* self, float dist) //TODO: replace with ai_stand?
 {
-	ai_stand(self, 0);
-	if (M_ValidTarget(self, self->enemy))
-	{
-		return;
-	}
+	ai_stand(self, 0.0f);
 }
 
 
