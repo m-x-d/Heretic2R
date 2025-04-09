@@ -218,8 +218,8 @@ static const animframe_t elflord_frames_ls[] =
 	{ FRAME_attkb16,	NULL, 0, 0, 0, NULL, 0, elflord_track },
 	{ FRAME_attkb16,	NULL, 0, 0, 0, NULL, 0, elflord_track },
 
-	{ FRAME_attkb17,	NULL, 0, 0, 0, NULL, 0, elflord_FixAngles },
-	{ FRAME_attkb18,	NULL, 0, 0, 0, NULL, 0, elflord_FixAngles },
+	{ FRAME_attkb17,	NULL, 0, 0, 0, NULL, 0, elflord_reset_pitch },
+	{ FRAME_attkb18,	NULL, 0, 0, 0, NULL, 0, elflord_reset_pitch },
 	{ FRAME_attkb19,	NULL, 0, 0, 0, NULL, 0, elflord_end_beam },
 	{ FRAME_attkb20,	NULL, 0, 0, 0, NULL, 0, NULL },
 };

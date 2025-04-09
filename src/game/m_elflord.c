@@ -259,7 +259,7 @@ void elflord_soa_charge(edict_t* self)
 	gi.sound(self, CHAN_VOICE, sounds[SND_SACHARGE], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void elflord_soa_go(edict_t* self) //TODO: rename to elflord_soa_release?
+void elflord_soa_go(edict_t* self)
 {
 	gi.sound(self, CHAN_VOICE, sounds[SND_SAFIRE], 1.0f, ATTN_NORM, 0.0f);
 	self->elflord_soa_charging = false;
@@ -372,7 +372,7 @@ void elflord_track(edict_t* self)
 	VectorCopy(new_dir, self->elflord_beam_direction);
 }
 
-void elflord_FixAngles(edict_t* self) //TODO: rename to elflord_reset_pitch.
+void elflord_reset_pitch(edict_t* self)
 {
 	self->s.angles[PITCH] = 0.0f;
 }

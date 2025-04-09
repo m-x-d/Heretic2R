@@ -85,4 +85,4 @@ void elflord_track(edict_t* self);
 void elflord_SlideMeter(edict_t* self);
 void elflord_soa_go(edict_t* self);
 void elflord_soa_charge(edict_t* self);
-void elflord_FixAngles(edict_t* self);
+void elflord_reset_pitch(edict_t* self);
