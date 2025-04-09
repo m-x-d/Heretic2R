@@ -47,9 +47,226 @@ static int sounds[NUM_SOUNDS];
 static const vec3_t projectile_mins = { -2.0f, -2.0f, -2.0f }; //mxd
 static const vec3_t projectile_maxs = {  2.0f,  2.0f,  2.0f }; //mxd
 
-static qboolean CheckAttack(edict_t* self); //TODO: remove.
+#pragma endregion
+
+#pragma region ========================== Utility functions =========================
+
+static void FindMoveTarget(edict_t* self) //mxd. Named 'elflord_FindMoveTarget' in original logic.
+{
+	const edict_t* move_target = NULL;
+
+	edict_t* e = NULL;
+	while ((e = FindInRadius_Old(e, self->s.origin, 640.0f)) != NULL)
+	{
+		// Must be a path_corner.
+		if (strcmp(e->classname, "path_corner") != 0)
+			continue;
+
+		// Must be a specified path_corner too.
+		if (e->targetname == NULL || strcmp(e->targetname, "elflord") != 0) //BUGFIX: mxd. 'e->targetname && strcmp(...)' in original logic. 
+			continue;
+
+		if (vhlen(e->s.origin, self->s.origin) < 64.0f)
+			continue;
+
+		move_target = e;
+
+		if (irand(0, 1) == 0)
+			break;
+	}
+
+	if (move_target != NULL)
+	{
+		//FIXME: Determine a velocity to get us here.
+		vec3_t target;
+		VectorCopy(move_target->s.origin, target);
+		target[2] = self->s.origin[2];
+
+		vec3_t vel;
+		VectorSubtract(target, self->s.origin, vel);
+		float len = VectorNormalize(vel);
+
+		len /= 10.0f / FRAMETIME * 2.0f;
+
+		VectorScale(vel, len, self->velocity);
+	}
+}
+
+static void MoveToFinalPosition(edict_t* self) //mxd. Named 'elflord_MoveToFinalPosition' in original logic.
+{
+	edict_t* e = NULL;
+	while ((e = FindInRadius_Old(e, self->s.origin, 640.0f)) != NULL)
+	{
+		// Must be a path_corner.
+		if (strcmp(e->classname, "path_corner") != 0)
+			continue;
+
+		// Must be a specified path_corner too.
+		if (e->targetname == NULL || strcmp(e->targetname, "elflord_final") != 0) //BUGFIX: mxd. 'e->targetname && strcmp(...)' in original logic.
+			continue;
+
+		vec3_t target;
+		VectorCopy(e->s.origin, target);
+		target[2] = self->s.origin[2];
+
+		vec3_t vel;
+		VectorSubtract(target, self->s.origin, vel);
+		float len = VectorNormalize(vel);
+
+		len /= 10.0f / FRAMETIME * 2.0f;
+
+		VectorScale(vel, len, self->velocity);
+
+		return;
+	}
+}
+
+static qboolean CheckAttack(edict_t* self) //mxd. Named 'elfLordCheckAttack' in original logic. //TODO: always returns false!
+{
+	if (!M_ValidTarget(self, self->enemy))
+	{
+		SetAnim(self, ANIM_HOVER);
+		return false;
+	}
+
+	elflord_decelerate(self, 0.8f);
+
+	if (self->elflord_charge_meter < self->max_health)
+	{
+		VectorClear(self->velocity);
+		SetAnim(self, ANIM_COME_TO_LIFE);
+
+		return false;
+	}
+
+	int projectile_chance;
+	int soa_chance;
+	int beam_chance;
+
+	if (self->health < self->max_health / 3)
+	{
+		// Last stage.
+		if (!self->elflord_last_stage)
+		{
+			MoveToFinalPosition(self);
+			SetAnim(self, ANIM_MOVE);
+			self->elflord_last_stage = true;
+
+			return false;
+		}
+
+		if (COOP)
+		{
+			projectile_chance = 50;
+			soa_chance = 50;
+			beam_chance = 0;
+		}
+		else
+		{
+			projectile_chance = 5;
+			soa_chance = 5;
+			beam_chance = 90;
+		}
+	}
+	else if (self->health < (int)((float)self->max_health / 1.5f))
+	{
+		// Second stage.
+		projectile_chance = 25;
+		soa_chance = 75;
+		beam_chance = 0;
+	}
+	else
+	{
+		// First stage.
+		projectile_chance = 90;
+		soa_chance = 0;
+		beam_chance = 0;
+	}
+
+	if (irand(0, 100) < projectile_chance)
+	{
+		SetAnim(self, ANIM_ATTACK);
+		return false; //TODO: return true?
+	}
+
+	if (irand(0, 100) < beam_chance)
+	{
+		SetAnim(self, ANIM_ATTACK_LS);
+		return false; //TODO: return true?
+	}
+
+	if (irand(0, 100) < soa_chance)
+	{
+		SetAnim(self, ANIM_ATTACK_SOA_BTRANS);
+		return false; //TODO: return true?
+	}
+
+	if (!self->elflord_last_stage)
+	{
+		FindMoveTarget(self);
+		SetAnim(self, ANIM_MOVE);
+	}
+
+	return false;
+}
 
 #pragma endregion
+
+#pragma region ========================== Message handlers ==========================
+
+static void ElfLordStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elflord_stand' in original logic.
+{
+	SetAnim(self, ANIM_HOVER);
+}
+
+static void ElfLordRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elflord_run' in original logic.
+{
+	SetAnim(self, ANIM_FLOAT_FORWARD);
+}
+
+static void ElfLordDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elflord_death_start' in original logic.
+{
+	// Turn off a beam if it's on.
+	if (self->elflord_beam != NULL)
+		G_FreeEdict(self->elflord_beam);
+
+	self->health = 0;
+	self->max_health = 0;
+	M_ShowLifeMeter(self, 0, 0);
+
+	self->think = G_FreeEdict;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+}
+
+static void ElfLordMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elflord_soa_start' in original logic.
+{
+	if (!M_ValidTarget(self, self->enemy))
+		return;
+
+	gi.sound(self, CHAN_VOICE, sounds[SND_SACHARGE], 1.0f, ATTN_NORM, 0.0f);
+	self->elflord_soa_charging = true;
+
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
+
+	SpellCastSphereOfAnnihilation(self, self->s.origin, self->s.angles, forward, &self->elflord_soa_charging);
+	SetAnim(self, ANIM_ATTACK_SOA_BTRANS);
+}
+
+static void ElfLordPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elflord_pain' in original logic.
+{
+	if (irand(0, 9) == 0)
+		gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
+}
+
+static void ElfLordSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elfLordWakeUp' in original logic.
+{
+	SetAnim(self, ANIM_COME_TO_LIFE);
+}
+
+#pragma endregion
+
+#pragma region ========================== Edict callbacks ==========================
 
 static void ElfLordProjectileBlocked(edict_t* self, trace_t* trace) //mxd. Named 'elflord_projectile_blocked' in original logic.
 {
@@ -70,6 +287,18 @@ static void ElfLordProjectileBlocked(edict_t* self, trace_t* trace) //mxd. Named
 	self->think = G_FreeEdict;
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
+
+static void ElfLordPreThink(edict_t* self) //mxd. Named 'elflord_PreThink' in original logic.
+{
+	if (self->enemy != NULL && self->elflord_charge_meter >= self->max_health)
+		M_ShowLifeMeter(self, self->health, self->max_health);
+
+	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
+}
+
+#pragma endregion
+
+#pragma region ========================== Action functions ==========================
 
 void elflord_attack(edict_t* self)
 {
@@ -208,11 +437,6 @@ void elflord_soa_end(edict_t* self)
 	SetAnim(self, ANIM_ATTACK_SOA_END);
 }
 
-static void ElfLordStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elflord_stand' in original logic.
-{
-	SetAnim(self, ANIM_HOVER);
-}
-
 void elflord_flymove(edict_t* self, float dist)
 {
 	if (!M_ValidTarget(self, self->enemy))
@@ -234,26 +458,6 @@ void elflord_flymove(edict_t* self, float dist)
 		MG_CheckEvade(self);
 }
 
-static void ElfLordRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elflord_run' in original logic.
-{
-	SetAnim(self, ANIM_FLOAT_FORWARD);
-}
-
-static void ElfLordMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elflord_soa_start' in original logic.
-{
-	if (!M_ValidTarget(self, self->enemy))
-		return;
-
-	gi.sound(self, CHAN_VOICE, sounds[SND_SACHARGE], 1.0f, ATTN_NORM, 0.0f);
-	self->elflord_soa_charging = true;
-
-	vec3_t forward;
-	AngleVectors(self->s.angles, forward, NULL, NULL);
-
-	SpellCastSphereOfAnnihilation(self, self->s.origin, self->s.angles, forward, &self->elflord_soa_charging);
-	SetAnim(self, ANIM_ATTACK_SOA_BTRANS);
-}
-
 void elflord_soa_charge(edict_t* self)
 {
 	gi.sound(self, CHAN_VOICE, sounds[SND_SACHARGE], 1.0f, ATTN_NORM, 0.0f);
@@ -268,67 +472,6 @@ void elflord_soa_go(edict_t* self)
 	AngleVectors(self->s.angles, forward, NULL, NULL);
 
 	SpellCastSphereOfAnnihilation(self, self->s.origin, self->s.angles, forward, &self->elflord_soa_charging);
-}
-
-static void ElfLordDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elflord_death_start' in original logic.
-{
-	// Turn off a beam if it's on.
-	if (self->elflord_beam != NULL)
-		G_FreeEdict(self->elflord_beam);
-
-	self->health = 0;
-	self->max_health = 0;
-	M_ShowLifeMeter(self, 0, 0);
-
-	self->think = G_FreeEdict;
-	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
-}
-
-static void ElfLordPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elflord_pain' in original logic.
-{
-	if (irand(0, 9) == 0)
-		gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
-}
-
-static void FindMoveTarget(edict_t* self) //mxd. Named 'elflord_FindMoveTarget' in original logic.
-{
-	const edict_t* move_target = NULL;
-
-	edict_t* e = NULL;
-	while ((e = FindInRadius_Old(e, self->s.origin, 640.0f)) != NULL)
-	{
-		// Must be a path_corner.
-		if (strcmp(e->classname, "path_corner") != 0)
-			continue;
-
-		// Must be a specified path_corner too.
-		if (e->targetname == NULL || strcmp(e->targetname, "elflord") != 0) //BUGFIX: mxd. 'e->targetname && strcmp(...)' in original logic. 
-			continue;
-
-		if (vhlen(e->s.origin, self->s.origin) < 64.0f)
-			continue;
-
-		move_target = e;
-
-		if (irand(0, 1) == 0)
-			break;
-	}
-
-	if (move_target != NULL)
-	{
-		//FIXME: Determine a velocity to get us here.
-		vec3_t target;
-		VectorCopy(move_target->s.origin, target);
-		target[2] = self->s.origin[2];
-
-		vec3_t vel;
-		VectorSubtract(target, self->s.origin, vel);
-		float len = VectorNormalize(vel);
-
-		len /= 10.0f / FRAMETIME * 2.0f;
-
-		VectorScale(vel, len, self->velocity);
-	}
 }
 
 void elflord_track(edict_t* self)
@@ -377,132 +520,9 @@ void elflord_reset_pitch(edict_t* self)
 	self->s.angles[PITCH] = 0.0f;
 }
 
-static void MoveToFinalPosition(edict_t* self) //mxd. Named 'elflord_MoveToFinalPosition' in original logic.
-{
-	edict_t* e = NULL;
-	while ((e = FindInRadius_Old(e, self->s.origin, 640.0f)) != NULL)
-	{
-		// Must be a path_corner.
-		if (strcmp(e->classname, "path_corner") != 0)
-			continue;
-
-		// Must be a specified path_corner too.
-		if (e->targetname == NULL || strcmp(e->targetname, "elflord_final") != 0) //BUGFIX: mxd. 'e->targetname && strcmp(...)' in original logic.
-			continue;
-
-		vec3_t target;
-		VectorCopy(e->s.origin, target);
-		target[2] = self->s.origin[2];
-
-		vec3_t vel;
-		VectorSubtract(target, self->s.origin, vel);
-		float len = VectorNormalize(vel);
-
-		len /= 10.0f / FRAMETIME * 2.0f;
-
-		VectorScale(vel, len, self->velocity);
-
-		return;
-	}
-}
-
-static qboolean CheckAttack(edict_t* self) //mxd. Named 'elfLordCheckAttack' in original logic. //TODO: always returns false!
-{
-	if (!M_ValidTarget(self, self->enemy))
-	{
-		SetAnim(self, ANIM_HOVER);
-		return false;
-	}
-
-	elflord_decelerate(self, 0.8f);
-
-	if (self->elflord_charge_meter < self->max_health)
-	{
-		VectorClear(self->velocity);
-		SetAnim(self, ANIM_COME_TO_LIFE);
-
-		return false;
-	}
-
-	int projectile_chance;
-	int soa_chance;
-	int beam_chance;
-
-	if (self->health < self->max_health / 3)
-	{
-		// Last stage.
-		if (!self->elflord_last_stage)
-		{
-			MoveToFinalPosition(self);
-			SetAnim(self, ANIM_MOVE);
-			self->elflord_last_stage = true;
-
-			return false;
-		}
-
-		if (COOP)
-		{
-			projectile_chance = 50;
-			soa_chance = 50;
-			beam_chance = 0;
-		}
-		else
-		{
-			projectile_chance = 5;
-			soa_chance = 5;
-			beam_chance = 90;
-		}
-	}
-	else if (self->health < (int)((float)self->max_health / 1.5f))
-	{
-		// Second stage.
-		projectile_chance = 25;
-		soa_chance = 75;
-		beam_chance = 0;
-	}
-	else
-	{
-		// First stage.
-		projectile_chance = 90;
-		soa_chance = 0;
-		beam_chance = 0;
-	}
-
-	if (irand(0, 100) < projectile_chance)
-	{
-		SetAnim(self, ANIM_ATTACK);
-		return false; //TODO: return true?
-	}
-
-	if (irand(0, 100) < beam_chance)
-	{
-		SetAnim(self, ANIM_ATTACK_LS);
-		return false; //TODO: return true?
-	}
-
-	if (irand(0, 100) < soa_chance)
-	{
-		SetAnim(self, ANIM_ATTACK_SOA_BTRANS);
-		return false; //TODO: return true?
-	}
-
-	if (!self->elflord_last_stage)
-	{
-		FindMoveTarget(self);
-		SetAnim(self, ANIM_MOVE);
-	}
-
-	return false;
-}
-
 void elflord_check_attack(edict_t* self)
 {
 	CheckAttack(self);
-}
-
-static void ElfLordSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elfLordWakeUp' in original logic.
-{
-	SetAnim(self, ANIM_COME_TO_LIFE);
 }
 
 void elflord_try_charge(edict_t* self)
@@ -522,13 +542,7 @@ void elflord_update_charge_meter(edict_t* self)
 	}
 }
 
-static void ElfLordPreThink(edict_t* self) //mxd. Named 'elflord_PreThink' in original logic.
-{
-	if (self->enemy != NULL && self->elflord_charge_meter >= self->max_health)
-		M_ShowLifeMeter(self, self->health, self->max_health);
-
-	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
-}
+#pragma endregion
 
 void ElflordStaticsInit(void)
 {
