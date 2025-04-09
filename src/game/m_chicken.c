@@ -69,7 +69,8 @@ static void MorphChickenOut(edict_t* self)
 		new_ent->s.color.c = 0xffffff;
 		new_ent->s.frame = (short)self->morph_animation_frame; //mxd. Restore animation frame (stored in MonsterMorphFadeOut()).
 		new_ent->oldthink = new_ent->think;
-		new_ent->think = MorphOriginalIn; //TODO: should also set new_ent->nextthink?
+		new_ent->think = MorphOriginalIn;
+		new_ent->nextthink = level.time + FRAMETIME; //mxd. Not set in original logic (expected monster spawn function to set it?).
 		new_ent->morph_timer = MORPH_TELE_TIME;
 		new_ent->target = self->target;
 
