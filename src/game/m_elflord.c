@@ -211,11 +211,7 @@ void elflord_soa_end(edict_t* self)
 	SetAnim(self, ANIM_ATTACK_SOA_END);
 }
 
-/*-----------------------------------------------
-	elflord_stand
------------------------------------------------*/
-
-void elflord_stand(edict_t *self, G_Message_t *msg)
+static void ElfLordStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elflord_stand' in original logic.
 {
 	SetAnim(self, ANIM_HOVER);
 }
@@ -665,7 +661,7 @@ void ElflordStaticsInit(void)
 {
 	static ClassResourceInfo_t resInfo;
 
-	classStatics[CID_ELFLORD].msgReceivers[MSG_STAND] = elflord_stand;
+	classStatics[CID_ELFLORD].msgReceivers[MSG_STAND] = ElfLordStandMsgHandler;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_RUN] = elflord_run;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_FLY] = elflord_run;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_DEATH] = elflord_death_start;

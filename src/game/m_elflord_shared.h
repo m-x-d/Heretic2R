@@ -74,7 +74,6 @@ qboolean elfLordCheckAttack(edict_t* self);
 void elflord_decell(edict_t* self, float value);
 void elflord_decide_movement(edict_t* self);
 void elflord_ai_stand(edict_t* self, float dist);
-void elflord_stand(edict_t* self, G_Message_t* msg);
 void elflord_run(edict_t* self, G_Message_t* msg);
 void elflord_death_start(edict_t* self, G_Message_t* msg);
 void elflord_soa_start(edict_t* self, G_Message_t* msg);
