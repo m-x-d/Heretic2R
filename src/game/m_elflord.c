@@ -49,35 +49,24 @@ static const vec3_t projectile_maxs = {  2.0f,  2.0f,  2.0f }; //mxd
 
 #pragma endregion
 
-/*-----------------------------------------------
-	elflord_projectile_blocked
------------------------------------------------*/
-
-void elflord_projectile_blocked( edict_t *self, trace_t *trace )
+static void ElfLordProjectileBlocked(edict_t* self, trace_t* trace) //mxd. Named 'elflord_projectile_blocked' in original logic.
 {
-	vec3_t vel;
-
-	if ( (!stricmp(trace->ent->classname, "elflord_projectile")) || (trace->ent == self->owner) )
+	if (Q_stricmp(trace->ent->classname, "elflord_projectile") == 0 || trace->ent == self->owner) //mxd. stricmp -> Q_stricmp
 		return;
-	
-	VectorNormalize2(self->velocity, vel);
 
-	if (trace->ent && trace->ent->takedamage)
+	if (trace->ent != NULL && trace->ent->takedamage != DAMAGE_NO)
 	{
-		T_Damage(trace->ent, self->owner, self->owner, vel, trace->endpos, trace->plane.normal, irand(ELFLORD_STAR_MIN_DAMAGE, ELFLORD_STAR_MAX_DAMAGE), 0, DAMAGE_NORMAL, MOD_DIED);
+		vec3_t dir;
+		VectorNormalize2(self->velocity, dir);
+
+		T_Damage(trace->ent, self->owner, self->owner, dir, trace->endpos, trace->plane.normal, irand(ELFLORD_STAR_MIN_DAMAGE, ELFLORD_STAR_MAX_DAMAGE), 0, DAMAGE_NORMAL, MOD_DIED);
 	}
 
-	//Create the star explosion
-	gi.CreateEffect(	NULL, 
-						FX_CWATCHER, 
-						0,
-						trace->endpos,
-						"bv",
-						CW_STAR_HIT,
-						trace->plane.normal);
-	
+	// Create the star explosion.
+	gi.CreateEffect(NULL, FX_CWATCHER, 0, trace->endpos, "bv", CW_STAR_HIT, trace->plane.normal);
+
 	self->think = G_FreeEdict;
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 /*-----------------------------------------------
@@ -143,7 +132,7 @@ void elford_Attack( edict_t *self )
 							CW_STAR,
 							self->s.origin);
 		
-		projectile->isBlocking = projectile->bounced = projectile->isBlocked = elflord_projectile_blocked;
+		projectile->isBlocking = projectile->bounced = projectile->isBlocked = ElfLordProjectileBlocked;
 	}
 
 	gi.sound(self, CHAN_WEAPON, sounds[SND_PROJ1], 1, ATTN_NORM, 0);
