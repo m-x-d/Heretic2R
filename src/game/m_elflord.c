@@ -516,18 +516,14 @@ void elflord_face(edict_t* self) //TODO: rename to elflord_try_charge?
 		ai_charge2(self, 0.0f);
 }
 
-/*-----------------------------------------------
-	elflord_SlideMeter
------------------------------------------------*/
-
-void elflord_SlideMeter( edict_t *self )
+void elflord_SlideMeter(edict_t* self) //TODO: rename to elflord_update_charge_meter.
 {
-	self->velocity[2] = 32;
+	self->velocity[2] = 32.0f;
 
-	if (self->count < self->max_health)
+	if (self->elflord_charge_meter < self->max_health)
 	{
-		M_ShowLifeMeter( self, self->count, self->count);
-		self->count += self->max_health / 20;
+		M_ShowLifeMeter(self, self->elflord_charge_meter, self->max_health); //BUGFIX: mxd. Original logic passes self->count as max_value.
+		self->elflord_charge_meter += self->max_health / 20;
 	}
 }
 
