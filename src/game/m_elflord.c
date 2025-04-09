@@ -380,33 +380,28 @@ void elflord_FixAngles(edict_t* self) //TODO: rename to elflord_reset_pitch.
 	self->s.angles[PITCH] = 0.0f;
 }
 
-/*-----------------------------------------------
-	elflord_MoveToFinalPosition
------------------------------------------------*/
-
-void elflord_MoveToFinalPosition( edict_t *self )
+static void MoveToFinalPosition(edict_t* self) //mxd. Named 'elflord_MoveToFinalPosition' in original logic.
 {
-	edict_t *movetarg = NULL;
-	vec3_t	vel, target;
-	float	len;
-
-	while((movetarg = FindInRadius_Old(movetarg, self->s.origin, 640)) != NULL)
+	edict_t* e = NULL;
+	while ((e = FindInRadius_Old(e, self->s.origin, 640.0f)) != NULL)
 	{
-		//Must be a path_corner
-		if (strcmp(movetarg->classname, "path_corner"))
+		// Must be a path_corner.
+		if (strcmp(e->classname, "path_corner") != 0)
 			continue;
 
-		//Must be a specified path_corner too
-		if (movetarg->targetname && strcmp(movetarg->targetname, "elflord_final"))
+		// Must be a specified path_corner too.
+		if (e->targetname == NULL || strcmp(e->targetname, "elflord_final") != 0) //BUGFIX: mxd. 'e->targetname && strcmp(...)' in original logic.
 			continue;
 
-		VectorCopy(movetarg->s.origin, target);
+		vec3_t target;
+		VectorCopy(e->s.origin, target);
 		target[2] = self->s.origin[2];
 
+		vec3_t vel;
 		VectorSubtract(target, self->s.origin, vel);
-		len = VectorNormalize(vel);
+		float len = VectorNormalize(vel);
 
-		len = ( ((len / 10) / FRAMETIME) * 2 );
+		len /= 10.0f / FRAMETIME * 2.0f;
 
 		VectorScale(vel, len, self->velocity);
 
@@ -445,7 +440,7 @@ qboolean elfLordCheckAttack (edict_t *self)
 	{//Last stage
 		if (!self->dmg)
 		{
-			elflord_MoveToFinalPosition(self);
+			MoveToFinalPosition(self);
 			SetAnim(self, ANIM_MOVE);
 			self->dmg = 1;
 			return false;
