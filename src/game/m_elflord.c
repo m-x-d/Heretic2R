@@ -177,24 +177,15 @@ void elflord_EndBeam(edict_t* self) //TODO: rename to elflord_end_beam.
 	self->elflord_beam->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-/*-----------------------------------------------
-	elflord_decell
------------------------------------------------*/
-
-void elflord_decell(edict_t *self, float value)
+void elflord_decell(edict_t* self, float scaler) //TODO: rename to elflord_decelerate.
 {
-	if (self->velocity[0] != 0.0 || self->velocity[1] != 0.0 || self->velocity[2] != 0.0)
+	if (Vec3NotZero(self->velocity))
 	{
-		self->velocity[0] *= value;
-		self->velocity[1] *= value;
-		self->velocity[2] *= value;
+		Vec3ScaleAssign(scaler, self->velocity);
 
-		if (abs(self->velocity[0]) < 1.0) 
-			self->velocity[0] = 0.0;
-		if (abs(self->velocity[1]) < 1.0) 
-			self->velocity[1] = 0.0;
-		if (abs(self->velocity[2]) < 1.0) 
-			self->velocity[2] = 0.0;
+		for (int i = 0; i < 3; i++)
+			if (fabsf(self->velocity[i]) < 1.0f)
+				self->velocity[i] = 0.0f;
 	}
 }
 
