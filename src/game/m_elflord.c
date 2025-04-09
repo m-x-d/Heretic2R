@@ -132,56 +132,43 @@ void elford_Attack(edict_t* self) //TODO: rename to elflord_attack.
 	gi.sound(self, CHAN_WEAPON, sounds[SND_PROJ1], 1.0f, ATTN_NORM, 0.0f);
 }
 
-/*-----------------------------------------------
-	elflord_StartBeam
------------------------------------------------*/
-
-void elflord_StartBeam(edict_t *self)
+void elflord_StartBeam(edict_t* self) //TODO: rename to elflord_start_beam.
 {
-	edict_t *beam;
-	trace_t	trace;
-	vec3_t	endpos, ang, vr;
-	vec3_t  mins = {-2, -2, -2};
-	vec3_t  maxs = { 2,  2,  2};
-
 	if (!M_ValidTarget(self, self->enemy))
 		return;
 
-	beam = G_Spawn();
+	edict_t* beam = G_Spawn();
 
-	VectorCopy(self->s.angles, ang);
-	ang[PITCH] *= -1;
-	AngleVectors(ang, self->pos1, vr, NULL);
+	vec3_t angles;
+	VectorCopy(self->s.angles, angles);
+	angles[PITCH] *= -1.0f;
 
-	VectorMA(self->s.origin, 32, self->pos1, self->pos2);
-	self->pos2[2] -= 32;
+	vec3_t right;
+	AngleVectors(angles, self->elflord_beam_direction, right, NULL);
+
+	VectorMA(self->s.origin, 32.0f, self->elflord_beam_direction, self->elflord_beam_start);
+	self->elflord_beam_start[2] -= 32.0f;
 
 	beam->classname = "elflord_Beam";
 	beam->solid = SOLID_NOT;
 	beam->movetype = PHYSICSTYPE_NONE;
 	beam->owner = self;
 	beam->svflags |= SVF_ALWAYS_SEND;
-	
-	VectorMA(self->s.origin, 640, self->pos1, endpos);
-	gi.trace(self->s.origin, mins, maxs, endpos, self, MASK_SHOT, &trace);
+	beam->pain_debounce_time = level.time + 5.0f;
 
+	vec3_t end_pos;
+	VectorMA(self->s.origin, 640.0f, self->elflord_beam_direction, end_pos);
+
+	trace_t	trace;
+	gi.trace(self->s.origin, projectile_mins, projectile_maxs, end_pos, self, MASK_SHOT, &trace);
 	VectorCopy(trace.endpos, beam->s.origin);
-
-	beam->pain_debounce_time = level.time + 5;
 
 	gi.linkentity(beam);
 
-	gi.CreateEffect(	&beam->s, 
-						FX_CWATCHER, 
-						CEF_OWNERS_ORIGIN,
-						beam->s.origin,
-						"bv",
-						CW_BEAM,
-						self->pos2);
-	
-	gi.sound(self, CHAN_VOICE, sounds[SND_BEAM], 0.5, ATTN_NONE, 0);
+	gi.CreateEffect(&beam->s, FX_CWATCHER, CEF_OWNERS_ORIGIN, beam->s.origin, "bv", CW_BEAM, self->elflord_beam_start);
+	gi.sound(self, CHAN_VOICE, sounds[SND_BEAM], 0.5f, ATTN_NONE, 0.0f);
 
-	self->targetEnt = beam;
+	self->elflord_beam = beam;
 }
 
 /*-----------------------------------------------
