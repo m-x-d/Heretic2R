@@ -22,7 +22,7 @@
 
 #pragma region ========================== SAVE FIELDS ==========================
 
-field_t fields[] =
+const field_t fields[] =
 {
 	{ "classname",		FOFS(classname),	F_LSTRING,	0 },
 	{ "origin",			FOFS(s.origin),		F_VECTOR,	0 },
@@ -122,7 +122,7 @@ field_t fields[] =
 // All pointer fields should be listed here, or savegames won't work properly (they will crash and burn).
 // This wasn't just tacked on to the fields array, because these don't need names, we wouldn't want map fields
 // using some of these, and if one were accidentally present twice, it would double swizzle (fuck) the pointer.
-static field_t savefields[] =
+static const field_t savefields[] =
 {
 	{ "", FOFS(classname),			F_LSTRING,	0 },
 	{ "", FOFS(target),				F_LSTRING,	0 },
@@ -160,7 +160,7 @@ static field_t savefields[] =
 	{ NULL, 0, F_INT, 0 }
 };
 
-static field_t levelfields[] =
+static const field_t levelfields[] =
 {
 	{ "", LLOFS(changemap),		F_LSTRING,	0 },
 	{ "", LLOFS(sight_client),	F_EDICT,	0 },
@@ -169,7 +169,7 @@ static field_t levelfields[] =
 	{ NULL, 0, F_INT, 0 }
 };
 
-static field_t bouyfields[] =
+static const field_t bouyfields[] =
 {
 	{ "", BYOFS(pathtarget),	F_LSTRING,	0 },
 	{ "", BYOFS(target),		F_LSTRING,	0 },
@@ -179,7 +179,7 @@ static field_t bouyfields[] =
 	{ NULL, 0, F_INT, 0 }
 };
 
-static field_t clientfields[] =
+static const field_t clientfields[] =
 {
 	{ "", CLOFS(playerinfo.pers.weapon),		F_ITEM,	0 },
 	{ "", CLOFS(playerinfo.pers.lastweapon),	F_ITEM,	0 },

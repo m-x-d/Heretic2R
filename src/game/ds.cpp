@@ -2472,7 +2472,7 @@ Variable *CScript::HandleSpawn(void)
 	edict_t		*ent;
 	Variable	*Name;
 	Variable	*Value;
-	field_t		*f;
+	const field_t	*f;
 	const char	*NameValue;
 	byte		*b;
 

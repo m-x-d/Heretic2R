@@ -39,7 +39,7 @@ typedef struct
 extern "C"
 {
 #endif
-	extern field_t fields[];
+	extern const field_t fields[];
 #ifdef __cplusplus
 }
 #endif
