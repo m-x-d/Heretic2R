@@ -262,23 +262,15 @@ void elflord_soa_charge(edict_t* self)
 	gi.sound(self, CHAN_VOICE, sounds[SND_SACHARGE], 1.0f, ATTN_NORM, 0.0f);
 }
 
-/*-----------------------------------------------
-	elflord_soa_go
------------------------------------------------*/
-
-void elflord_soa_go(edict_t *self)
+void elflord_soa_go(edict_t* self) //TODO: rename to elflord_soa_release?
 {
-	vec3_t forward;
-	
-	gi.sound(self, CHAN_VOICE, sounds[SND_SAFIRE], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_VOICE, sounds[SND_SAFIRE], 1.0f, ATTN_NORM, 0.0f);
 	self->show_hostile = false;
 
+	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
-	SpellCastSphereOfAnnihilation(self,
-								 self->s.origin,
-								 self->s.angles,		//v_angle,
-								 forward,
-								 &self->show_hostile);
+
+	SpellCastSphereOfAnnihilation(self, self->s.origin, self->s.angles, forward, &self->show_hostile);
 }
 
 /*-----------------------------------------------
