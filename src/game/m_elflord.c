@@ -505,7 +505,7 @@ static void ElfLordSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	SetAnim(self, ANIM_COME_TO_LIFE);
 }
 
-void elflord_face(edict_t* self) //TODO: rename to elflord_try_charge?
+void elflord_try_charge(edict_t* self)
 {
 	if (M_ValidTarget(self, self->enemy))
 		ai_charge2(self, 0.0f);

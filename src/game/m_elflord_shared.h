@@ -80,7 +80,7 @@ void elflord_start_beam(edict_t* self);
 void elflord_end_beam(edict_t* self);
 void elflord_attack(edict_t* self);
 
-void elflord_face(edict_t* self);
+void elflord_try_charge(edict_t* self);
 void elflord_track(edict_t* self);
 void elflord_SlideMeter(edict_t* self);
 void elflord_soa_go(edict_t* self);
