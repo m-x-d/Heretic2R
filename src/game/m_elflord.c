@@ -47,6 +47,8 @@ static int sounds[NUM_SOUNDS];
 static const vec3_t projectile_mins = { -2.0f, -2.0f, -2.0f }; //mxd
 static const vec3_t projectile_maxs = {  2.0f,  2.0f,  2.0f }; //mxd
 
+static qboolean elfLordCheckAttack(edict_t* self); //TODO: remove.
+
 #pragma endregion
 
 static void ElfLordProjectileBlocked(edict_t* self, trace_t* trace) //mxd. Named 'elflord_projectile_blocked' in original logic.
@@ -413,7 +415,7 @@ static void MoveToFinalPosition(edict_t* self) //mxd. Named 'elflord_MoveToFinal
 	elfLordCheckAttack
 -----------------------------------------------*/
 
-qboolean elfLordCheckAttack (edict_t *self)
+static qboolean elfLordCheckAttack (edict_t *self)
 {
 	int		chance, 
 			p_chance = 0, 
@@ -504,7 +506,7 @@ qboolean elfLordCheckAttack (edict_t *self)
 	elfLordPause
 -----------------------------------------------*/
 
-void elfLordPause(edict_t *self)
+void elfLordPause(edict_t *self) //TODO: rename to elflord_check_attack()?
 {
 	elfLordCheckAttack(self);
 }

@@ -69,8 +69,6 @@ extern const animmove_t elflord_move_move;
 extern const animmove_t elflord_move_wait;
 extern const animmove_t elflord_move_come_to_life;
 
-qboolean elfLordCheckAttack(edict_t* self);
-
 void elflord_decell(edict_t* self, float value);
 void elflord_ai_stand(edict_t* self, float dist);
 void elflord_flymove(edict_t* self, float dist);
