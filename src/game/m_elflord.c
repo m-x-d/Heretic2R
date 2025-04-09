@@ -505,11 +505,7 @@ void elfLordPause(edict_t* self) //TODO: rename to elflord_check_attack()?
 	CheckAttack(self);
 }
 
-/*-----------------------------------------------
-	elfLordWakeUp
------------------------------------------------*/
-
-void elfLordWakeUp (edict_t *self, G_Message_t *msg)
+static void ElfLordSightMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elfLordWakeUp' in original logic.
 {
 	SetAnim(self, ANIM_COME_TO_LIFE);
 }
@@ -569,7 +565,7 @@ void ElflordStaticsInit(void)
 	classStatics[CID_ELFLORD].msgReceivers[MSG_DEATH] = ElfLordDeathMsgHandler;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_MISSILE] = ElfLordMissileMsgHandler;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_PAIN] = ElfLordPainMsgHandler;
-	classStatics[CID_ELFLORD].msgReceivers[MSG_SIGHT] = elfLordWakeUp;
+	classStatics[CID_ELFLORD].msgReceivers[MSG_SIGHT] = ElfLordSightMsgHandler;
 
 	resInfo.numAnims = NUM_ANIMS;
 	resInfo.animations = animations;
