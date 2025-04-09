@@ -71,7 +71,7 @@ static void ElfLordProjectileBlocked(edict_t* self, trace_t* trace) //mxd. Named
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-void elford_Attack(edict_t* self) //TODO: rename to elflord_attack.
+void elflord_attack(edict_t* self)
 {
 	if (!M_ValidTarget(self, self->enemy))
 		return;

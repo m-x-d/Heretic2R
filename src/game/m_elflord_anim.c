@@ -309,7 +309,7 @@ static const animframe_t elflord_frames_attack[] =
 	{ FRAME_newatk9,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_newatk10,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_newatk11,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
-	{ FRAME_newatk12,	NULL, 0, 0, 0, ai_charge2, 0, elford_Attack },
+	{ FRAME_newatk12,	NULL, 0, 0, 0, ai_charge2, 0, elflord_attack },
 	{ FRAME_newatk13,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_newatk14,	NULL, 0, 0, 0, ai_charge2, 0, NULL },
 	{ FRAME_newatk15,	NULL, 0, 0, 0, ai_charge2, 0, NULL },

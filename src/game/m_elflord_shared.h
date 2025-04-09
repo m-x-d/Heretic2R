@@ -79,7 +79,7 @@ void elflord_soa_end(edict_t* self);
 
 void elflord_StartBeam(edict_t* self);
 void elflord_EndBeam(edict_t* self);
-void elford_Attack(edict_t* self);
+void elflord_attack(edict_t* self);
 
 void elflord_face(edict_t* self);
 void elflord_track(edict_t* self);
