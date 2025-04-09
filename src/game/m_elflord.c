@@ -216,30 +216,24 @@ static void ElfLordStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	SetAnim(self, ANIM_HOVER);
 }
 
-/*-----------------------------------------------
-	elflord_flymove
------------------------------------------------*/
-
-void elflord_flymove (edict_t *self, float dist)
+void elflord_flymove(edict_t* self, float dist)
 {
-	vec3_t forward;
-
 	if (!M_ValidTarget(self, self->enemy))
 		return;
 
-	VectorSubtract(self->enemy->s.origin, self->s.origin, forward);
-	
-	self->ideal_yaw = VectorYaw(forward);
-	
-	M_ChangeYaw(self);
-	
-	AngleVectors(self->s.angles, forward, NULL, NULL);
-	
-	VectorMA(self->velocity, dist, forward, self->velocity);
-	
-	self->velocity[2] = self->enemy->s.origin[2] + 100 - self->absmin[2];
+	vec3_t dir;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, dir);
+	self->ideal_yaw = VectorYaw(dir);
 
-	if(!elfLordCheckAttack(self))
+	M_ChangeYaw(self);
+
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
+
+	VectorMA(self->velocity, dist, forward, self->velocity);
+	self->velocity[2] = self->enemy->s.origin[2] + 100.0f - self->absmin[2];
+
+	if (!elfLordCheckAttack(self))
 		MG_CheckEvade(self);
 }
 
