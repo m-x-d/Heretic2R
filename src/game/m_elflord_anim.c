@@ -317,35 +317,35 @@ static const animframe_t elflord_frames_attack[] =
 };
 const animmove_t elflord_move_attack = { 16, elflord_frames_attack, elfLordPause };
 
-#define ELFLORD_DECELL	0.8f
+#define ELFLORD_DECELERATE	0.8f
 
 // Move - hover to a nearby waypoint.
 static const animframe_t elflord_frames_move[] =
 {
-	{ FRAME_idle1,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle2,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle3,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle4,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle5,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle6,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle7,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle8,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle9,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle10,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle11,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle12,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle13,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle14,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle15,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle16,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle17,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle18,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle19,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle20,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle21,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle22,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle23,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
-	{ FRAME_idle24,		NULL, 0, 0, 0, elflord_decell, ELFLORD_DECELL, elflord_face },
+	{ FRAME_idle1,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle2,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle3,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle4,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle5,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle6,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle7,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle8,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle9,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle10,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle11,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle12,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle13,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle14,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle15,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle16,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle17,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle18,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle19,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle20,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle21,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle22,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle23,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
+	{ FRAME_idle24,		NULL, 0, 0, 0, elflord_decelerate, ELFLORD_DECELERATE, elflord_face },
 };
 const animmove_t elflord_move_move = { 24, elflord_frames_move, elfLordPause };
 

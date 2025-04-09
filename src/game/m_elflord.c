@@ -179,7 +179,7 @@ void elflord_end_beam(edict_t* self)
 	self->elflord_beam->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-void elflord_decell(edict_t* self, float scaler) //TODO: rename to elflord_decelerate.
+void elflord_decelerate(edict_t* self, float scaler)
 {
 	if (Vec3NotZero(self->velocity))
 	{
@@ -419,7 +419,7 @@ static qboolean CheckAttack(edict_t* self) //mxd. Named 'elfLordCheckAttack' in 
 		return false;
 	}
 
-	elflord_decell(self, 0.8f);
+	elflord_decelerate(self, 0.8f);
 
 	if (self->elflord_charge_meter < self->max_health)
 	{
