@@ -257,13 +257,9 @@ static void ElfLordMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 	SetAnim(self, ANIM_ATTACK_SOA_BTRANS);
 }
 
-/*-----------------------------------------------
-	elflord_soa_charge
------------------------------------------------*/
-
-void elflord_soa_charge(edict_t *self)
+void elflord_soa_charge(edict_t* self)
 {
-	gi.sound(self, CHAN_VOICE, sounds[SND_SACHARGE], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_VOICE, sounds[SND_SACHARGE], 1.0f, ATTN_NORM, 0.0f);
 }
 
 /*-----------------------------------------------
