@@ -103,7 +103,6 @@ static const animmove_t* animations[NUM_ANIMS] =
 };
 
 static int sounds[NUM_SOUNDS];
-static ClassResourceInfo_t res_info; //mxd. Named 'resInfo' in original logic.
 
 #pragma endregion
 
@@ -2151,6 +2150,8 @@ void tbeast_leap(edict_t* self, float forward_offset, float right_offset, float 
 
 void TBeastStaticsInit(void)
 {
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
+
 	classStatics[CID_TBEAST].msgReceivers[MSG_STAND] = TBeastStandMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_WALK] = TBeastWalkMsgHandler;
 	classStatics[CID_TBEAST].msgReceivers[MSG_RUN] = TBeastRunMsgHandler;

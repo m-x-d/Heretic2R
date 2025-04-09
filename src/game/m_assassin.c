@@ -87,7 +87,6 @@ static const animmove_t* animations[NUM_ANIMS] =
 };
 
 static int sounds[NUM_SOUNDS];
-static ClassResourceInfo_t res_info;
 
 #pragma endregion
 
@@ -2122,6 +2121,8 @@ static void AssassinCheckDefenseThink(edict_t* self, float enemy_dist, qboolean 
 
 void AssassinStaticsInit(void)
 {
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
+
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_STAND] = AssassinStandMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_WALK] = AssassinWalkMsgHandler;
 	classStatics[CID_ASSASSIN].msgReceivers[MSG_RUN] = AssassinRunMsgHandler;
