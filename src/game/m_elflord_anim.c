@@ -43,15 +43,15 @@ const animmove_t elflord_move_idle = { 24, elflord_frames_idle, NULL };
 static const animframe_t elflord_frames_run[] =
 {
 	{ FRAME_ftforwd1,	NULL, 0, 0, 0, elflord_flymove, 7, NULL },
-	{ FRAME_ftforwd2,	NULL, 0, 0, 0, elflord_flymove, 7, elflordRandomRushSound },
+	{ FRAME_ftforwd2,	NULL, 0, 0, 0, elflord_flymove, 7, NULL }, //mxd. Removed elflordRandomRushSound() thinkfunc.
 	{ FRAME_ftforwd3,	NULL, 0, 0, 0, elflord_flymove, 7, NULL },
 	{ FRAME_ftforwd4,	NULL, 0, 0, 0, elflord_flymove, 8, NULL },
-	{ FRAME_ftforwd5,	NULL, 0, 0, 0, elflord_flymove, 8, elflordRandomRushSound },
+	{ FRAME_ftforwd5,	NULL, 0, 0, 0, elflord_flymove, 8, NULL }, //mxd. Removed elflordRandomRushSound() thinkfunc.
 	{ FRAME_ftforwd6,	NULL, 0, 0, 0, elflord_flymove, 8, NULL },
 	{ FRAME_ftforwd7,	NULL, 0, 0, 0, elflord_flymove, 8, NULL },
-	{ FRAME_ftforwd8,	NULL, 0, 0, 0, elflord_flymove, 7, elflordRandomRushSound },
+	{ FRAME_ftforwd8,	NULL, 0, 0, 0, elflord_flymove, 7, NULL }, //mxd. Removed elflordRandomRushSound() thinkfunc.
 	{ FRAME_ftforwd9,	NULL, 0, 0, 0, elflord_flymove, 7, NULL },
-	{ FRAME_ftforwd10,	NULL, 0, 0, 0, elflord_flymove, 7, elflordRandomRushSound },
+	{ FRAME_ftforwd10,	NULL, 0, 0, 0, elflord_flymove, 7, NULL }, //mxd. Removed elflordRandomRushSound() thinkfunc.
 	{ FRAME_ftforwd11,	NULL, 0, 0, 0, elflord_flymove, 7, NULL },
 };
 const animmove_t elflord_move_run = { 11, elflord_frames_run, NULL };

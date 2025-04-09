@@ -77,7 +77,6 @@ void elflord_ai_stand(edict_t* self, float dist);
 void elflord_run(edict_t* self, G_Message_t* msg);
 void elflord_death_start(edict_t* self, G_Message_t* msg);
 void elflord_soa_start(edict_t* self, G_Message_t* msg);
-void elflordRandomRushSound(edict_t* self);
 void elflordSound(edict_t* self, float channel, float sndindex, float atten);
 void elflord_flymove(edict_t* self, float dist);
 void elfLordPause(edict_t* self);

@@ -238,14 +238,6 @@ void elflord_flymove(edict_t* self, float dist)
 }
 
 /*-----------------------------------------------
-	elflordRandomRushSound
------------------------------------------------*/
-
-void elflordRandomRushSound(edict_t *self)
-{
-}
-
-/*-----------------------------------------------
 	elflord_run
 -----------------------------------------------*/
 
