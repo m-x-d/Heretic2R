@@ -287,19 +287,10 @@ static void ElfLordDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-/*-----------------------------------------------
-	elflord_pain
------------------------------------------------*/
-
-void elflord_pain (edict_t *self, G_Message_t *msg)
+static void ElfLordPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elflord_pain' in original logic.
 {
-	if (irand(0,9))
-		return;
-
-	if(!irand(0, 1))
-		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN1], 1, ATTN_NORM, 0);
-	else
-		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN2], 1, ATTN_NORM, 0);
+	if (irand(0, 9) == 0)
+		gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
 /*-----------------------------------------------
@@ -623,7 +614,7 @@ void ElflordStaticsInit(void)
 	classStatics[CID_ELFLORD].msgReceivers[MSG_FLY] = ElfLordRunMsgHandler;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_DEATH] = ElfLordDeathMsgHandler;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_MISSILE] = ElfLordMissileMsgHandler;
-	classStatics[CID_ELFLORD].msgReceivers[MSG_PAIN] = elflord_pain;
+	classStatics[CID_ELFLORD].msgReceivers[MSG_PAIN] = ElfLordPainMsgHandler;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_SIGHT] = elfLordWakeUp;
 
 	resInfo.numAnims = NUM_ANIMS;
