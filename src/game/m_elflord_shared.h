@@ -72,9 +72,7 @@ extern const animmove_t elflord_move_come_to_life;
 qboolean elfLordCheckAttack(edict_t* self);
 
 void elflord_decell(edict_t* self, float value);
-void elflord_decide_movement(edict_t* self);
 void elflord_ai_stand(edict_t* self, float dist);
-void elflord_death_start(edict_t* self, G_Message_t* msg);
 void elflordSound(edict_t* self, float channel, float sndindex, float atten);
 void elflord_flymove(edict_t* self, float dist);
 void elfLordPause(edict_t* self);

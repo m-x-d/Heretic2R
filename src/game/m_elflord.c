@@ -273,22 +273,18 @@ void elflord_soa_go(edict_t* self) //TODO: rename to elflord_soa_release?
 	SpellCastSphereOfAnnihilation(self, self->s.origin, self->s.angles, forward, &self->show_hostile);
 }
 
-/*-----------------------------------------------
-	elflord_death_start
------------------------------------------------*/
-
-void elflord_death_start(edict_t *self, G_Message_t *msg)
+static void ElfLordDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'elflord_death_start' in original logic.
 {
-	//Turn off a beam if it's on
-	if (self->targetEnt)
-		G_FreeEdict(self->targetEnt);
+	// Turn off a beam if it's on.
+	if (self->elflord_beam != NULL)
+		G_FreeEdict(self->elflord_beam);
 
 	self->health = 0;
 	self->max_health = 0;
-	M_ShowLifeMeter( self, 0, 0);
+	M_ShowLifeMeter(self, 0, 0);
 
 	self->think = G_FreeEdict;
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 /*-----------------------------------------------
@@ -625,7 +621,7 @@ void ElflordStaticsInit(void)
 	classStatics[CID_ELFLORD].msgReceivers[MSG_STAND] = ElfLordStandMsgHandler;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_RUN] = ElfLordRunMsgHandler;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_FLY] = ElfLordRunMsgHandler;
-	classStatics[CID_ELFLORD].msgReceivers[MSG_DEATH] = elflord_death_start;
+	classStatics[CID_ELFLORD].msgReceivers[MSG_DEATH] = ElfLordDeathMsgHandler;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_MISSILE] = ElfLordMissileMsgHandler;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_PAIN] = elflord_pain;
 	classStatics[CID_ELFLORD].msgReceivers[MSG_SIGHT] = elfLordWakeUp;
