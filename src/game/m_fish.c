@@ -548,31 +548,6 @@ static void FishPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'fi
 }
 
 //----------------------------------------------------------------------
-//  Fish Melee - choose a melee to use
-//----------------------------------------------------------------------
-void fish_melee(edict_t *self, G_Message_t *msg)
-{
-
-	if (self->enemy->health <= 0)
-	{
-		if (!FindTarget(self))
-		{
-			SetAnim(self, ANIM_STAND1);
-			return;
-		}
-	}
-
-	SetAnim(self, ANIM_MELEE);
-}
-
-/*----------------------------------------------------------------------
-
-  ACTION FUNCTIONS FOR THE FISH
-
-	Death stuff
-
------------------------------------------------------------------------*/
-//----------------------------------------------------------------------
 //  Fish Deadbob - (not really sure I like the name of this one)
 //----------------------------------------------------------------------
 void fish_deadbob(edict_t *self)
