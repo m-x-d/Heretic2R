@@ -348,34 +348,25 @@ static void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic
 	M_WorldEffects(self);
 }
 
-void fish_under_water_wake (edict_t *self)
+void fish_under_water_wake(edict_t* self)
 {
 	gi.CreateEffect(&self->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, self->s.origin, "bv", FX_UNDER_WATER_WAKE, vec3_origin);
 }
 
-void fish_swim_sound (edict_t *self, float fast)
+void fish_swim_sound(edict_t* self, float fast)
 {
-	if(fast)
+	if (fast != 0.0f)
 	{
-		if(irand(0, 1))
-			return;
-
-		if(irand(0,1))
-			gi.sound (self, CHAN_BODY, sounds[SND_FAST_SWIM1], 0.75, ATTN_IDLE, 0);
-		else
-			gi.sound (self, CHAN_BODY, sounds[SND_FAST_SWIM2], 0.75, ATTN_IDLE, 0);
+		if (irand(0, 1) == 0)
+			gi.sound(self, CHAN_BODY, sounds[irand(SND_FAST_SWIM1, SND_FAST_SWIM2)], 0.75f, ATTN_IDLE, 0.0f);
 	}
 	else
 	{
-		if(irand(0, 4))
-			return;
-
-		if(irand(0,1))
-			gi.sound (self, CHAN_BODY, sounds[SND_SLOW_SWIM1], 0.5, ATTN_IDLE, 0);
-		else
-			gi.sound (self, CHAN_BODY, sounds[SND_SLOW_SWIM2], 0.5, ATTN_IDLE, 0);
+		if (irand(0, 4) == 0)
+			gi.sound(self, CHAN_BODY, sounds[irand(SND_SLOW_SWIM1, SND_SLOW_SWIM2)], 0.5f, ATTN_IDLE, 0.0f);
 	}
 }
+
 /*-------------------------------------------------------------------------
 	The fish hit something
 -------------------------------------------------------------------------*/
