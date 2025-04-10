@@ -753,38 +753,6 @@ void fish_chase(edict_t* self)
 		fish_hunt(self);
 }
 
-/*----------------------------------------------------------------------
-
-  SOUND FUNCTIONS FOR THE FISH
-
------------------------------------------------------------------------*/
-
-// random growl
-void fish_growl (edict_t *self)
-{
-	int chance;
-
-	return;
-	chance = irand(0, 200);
-
-	if (chance > 60)
-	{
-	}
-	else if (chance < 20 )
-	{
-		gi.sound (self, CHAN_WEAPON, sounds[SND_GROWL1], 1, ATTN_NORM, 0);
-	}
-	else if (chance < 40)
-	{
-		gi.sound (self, CHAN_WEAPON, sounds[SND_GROWL2], 1, ATTN_NORM, 0);
-	}
-	else
-	{
-		gi.sound (self, CHAN_WEAPON, sounds[SND_GROWL3], 1, ATTN_NORM, 0);
-	}
-}
-
-
 void FishStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
