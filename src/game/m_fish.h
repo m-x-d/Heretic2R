@@ -6,5 +6,7 @@
 
 #pragma once
 
+#include "g_Edict.h"
+
 void SP_monster_fish(edict_t* self);
 void FishStaticsInit(void);

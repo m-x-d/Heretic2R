@@ -1,3 +1,13 @@
+//
+// m_fish_shared.h -- Data and function declarations shared between m_fish.c and m_fish_anim.c.
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
+
+#include "g_local.h" //mxd
+
 typedef enum AnimID_e
 {
 	ANIM_BITE,
@@ -11,6 +21,7 @@ typedef enum AnimID_e
 	ANIM_STAND1,
 	ANIM_PAIN1,
 	ANIM_DEATH1,
+
 	NUM_ANIMS
 } AnimID_t;
 
@@ -32,39 +43,37 @@ typedef enum SoundID_e
 	SND_SLOW_SWIM2,
 	SND_FAST_SWIM1,
 	SND_FAST_SWIM2,
+
 	NUM_SOUNDS
 } SoundID_t;
 
+extern const animmove_t fish_move_bite;
+extern const animmove_t fish_move_melee;
+extern const animmove_t fish_move_run1;
+extern const animmove_t fish_move_run2;
+extern const animmove_t fish_move_run3;
+extern const animmove_t fish_move_walk1;
+extern const animmove_t fish_move_walk2;
+extern const animmove_t fish_move_walk3;
+extern const animmove_t fish_move_stand1;
+extern const animmove_t fish_move_pain1;
+extern const animmove_t fish_move_death;
 
-extern animmove_t fish_move_bite;
-extern animmove_t fish_move_melee;
-extern animmove_t fish_move_run1;
-extern animmove_t fish_move_run2;
-extern animmove_t fish_move_run3;
-extern animmove_t fish_move_walk1;
-extern animmove_t fish_move_walk2;
-extern animmove_t fish_move_walk3;
-extern animmove_t fish_move_stand1;
-extern animmove_t fish_move_pain1;
-extern animmove_t fish_move_death;
+void fish_pain(edict_t* self, G_Message_t* msg);
+void fish_death(edict_t* self, G_Message_t* msg);
 
-void fish_pain(edict_t *self, G_Message_t *msg);
-void fish_death(edict_t *self, G_Message_t *msg);
-
-void fish_dead(edict_t *self);
-void fish_growl (edict_t *self);
-void fishbite (edict_t *self);
-void fish_idle(edict_t *self);
-void finished_swim(edict_t *self);
-void finished_runswim(edict_t *self);
-void fish_walk(edict_t *self);
-void fish_run(edict_t *self);
-void finished_fish_pain(edict_t *self);
-void fish_update_yaw(edict_t *self);
-void fish_pause(edict_t *self);
-void fish_chase(edict_t *self);
-void fish_target(edict_t *self);
-void fish_swim_sound (edict_t *self, float fast);
-void fish_under_water_wake (edict_t *self);
-
-
+void fish_dead(edict_t* self);
+void fish_growl(edict_t* self);
+void fishbite(edict_t* self);
+void fish_idle(edict_t* self);
+void finished_swim(edict_t* self);
+void finished_runswim(edict_t* self);
+void fish_walk(edict_t* self);
+void fish_run(edict_t* self);
+void finished_fish_pain(edict_t* self);
+void fish_update_yaw(edict_t* self);
+void fish_pause(edict_t* self);
+void fish_chase(edict_t* self);
+void fish_target(edict_t* self);
+void fish_swim_sound(edict_t* self, float fast);
+void fish_under_water_wake(edict_t* self);
