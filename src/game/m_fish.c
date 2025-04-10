@@ -640,7 +640,7 @@ void fish_bite(edict_t* self) //mxd. Named 'fishbite' in original logic.
 	}
 }
 
-void fish_target(edict_t* self) //TODO: rename to fish_update_target_movedir?
+void fish_update_target_movedir(edict_t* self) //mxd. Named 'fish_target' in original logic.
 {
 	if (self->enemy == NULL)
 		return;
@@ -675,7 +675,7 @@ static void fish_hunt(edict_t* self) //TODO: rename to FishMoveToTarget?
 		return;
 	}
 
-	fish_target(self);
+	fish_update_target_movedir(self);
 
 	// Set movement type.
 	self->ai_mood = AI_MOOD_PURSUE;

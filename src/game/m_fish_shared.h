@@ -70,6 +70,6 @@ void fish_pain_finished(edict_t* self);
 void fish_update_yaw(edict_t* self);
 void fish_pause(edict_t* self);
 void fish_chase(edict_t* self);
-void fish_target(edict_t* self);
+void fish_update_target_movedir(edict_t* self);
 void fish_swim_sound(edict_t* self, float fast);
 void fish_under_water_wake(edict_t* self);
