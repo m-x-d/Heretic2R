@@ -765,17 +765,17 @@ void FishStaticsInit(void)
 	res_info.animations = animations;
 	res_info.modelIndex = gi.modelindex("models/monsters/fish/tris.fm");
 
-	sounds[SND_PAIN1] = gi.soundindex ("monsters/fish/pain1.wav");	
-	sounds[SND_PAIN2] = gi.soundindex ("monsters/fish/pain2.wav");	
-	sounds[SND_DIE] = gi.soundindex ("monsters/fish/death1.wav");	
-	sounds[SND_GIB] = gi.soundindex ("monsters/fish/gib.wav");
-	sounds[SND_BITEHIT1] = gi.soundindex ("monsters/fish/meleehit1.wav");	
-	sounds[SND_BITEHIT2] = gi.soundindex ("monsters/fish/meleehit2.wav");	
-	sounds[SND_BITEMISS1] = gi.soundindex ("monsters/fish/meleemiss1.wav");	
-	sounds[SND_BITEMISS2] = gi.soundindex ("monsters/fish/meleemiss2.wav");	
-	sounds[SND_GROWL1] = gi.soundindex ("monsters/fish/growl1.wav");	
-	sounds[SND_GROWL2] = gi.soundindex ("monsters/fish/growl2.wav");	
-	sounds[SND_GROWL3] = gi.soundindex ("monsters/fish/growl3.wav");
+	sounds[SND_PAIN1] = gi.soundindex("monsters/fish/pain1.wav");
+	sounds[SND_PAIN2] = gi.soundindex("monsters/fish/pain2.wav");
+	sounds[SND_DIE] = gi.soundindex("monsters/fish/death1.wav");
+	sounds[SND_GIB] = gi.soundindex("monsters/fish/gib.wav");
+	sounds[SND_BITEHIT1] = gi.soundindex("monsters/fish/meleehit1.wav");
+	sounds[SND_BITEHIT2] = gi.soundindex("monsters/fish/meleehit2.wav");
+	sounds[SND_BITEMISS1] = gi.soundindex("monsters/fish/meleemiss1.wav");
+	sounds[SND_BITEMISS2] = gi.soundindex("monsters/fish/meleemiss2.wav");
+	//sounds[SND_GROWL1] = gi.soundindex("monsters/fish/growl1.wav"); //mxd. Unused.
+	//sounds[SND_GROWL2] = gi.soundindex("monsters/fish/growl2.wav"); //mxd. Unused.
+	//sounds[SND_GROWL3] = gi.soundindex("monsters/fish/growl3.wav"); //mxd. Unused.
 	sounds[SND_SPLASH] = gi.soundindex("player/breaststroke.wav");
 
 	sounds[SND_SLOW_SWIM1] = gi.soundindex("monsters/fish/fishmov3.wav");
