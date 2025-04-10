@@ -34,10 +34,9 @@ static void fish_think(edict_t *self); //TODO: remove
 #define FISH_SKIN1				0
 #define FISH_SKIN2				2
 
-/*----------------------------------------------------------------------
-  Fish Base Info
------------------------------------------------------------------------*/
-static const animmove_t *animations[NUM_ANIMS] =
+#pragma region ========================== Fish base info ==========================
+
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&fish_move_bite,
 	&fish_move_melee,
@@ -54,7 +53,7 @@ static const animmove_t *animations[NUM_ANIMS] =
 
 static int sounds[NUM_SOUNDS];
 
-static ClassResourceInfo_t resInfo;
+#pragma endregion
 
 // bring all our movedir angles up positive again
 void reset_fish_movedir(edict_t *self)
@@ -1000,13 +999,15 @@ void fish_growl (edict_t *self)
 
 void FishStaticsInit(void)
 {
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
+
 	classStatics[CID_FISH].msgReceivers[MSG_PAIN] = fish_pain;
 	classStatics[CID_FISH].msgReceivers[MSG_DEATH] = fish_death;
 	classStatics[CID_FISH].msgReceivers[MSG_DEATH_PAIN] = fish_dead_pain;
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	resInfo.modelIndex = gi.modelindex("models/monsters/fish/tris.fm");
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/fish/tris.fm");
 
 	sounds[SND_PAIN1] = gi.soundindex ("monsters/fish/pain1.wav");	
 	sounds[SND_PAIN2] = gi.soundindex ("monsters/fish/pain2.wav");	
@@ -1026,10 +1027,10 @@ void FishStaticsInit(void)
 	sounds[SND_FAST_SWIM1] = gi.soundindex("monsters/fish/fishmov1.wav");
 	sounds[SND_FAST_SWIM2] = gi.soundindex("monsters/fish/fishmov2.wav");
 
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = sounds;
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
 
-	classStatics[CID_FISH].resInfo = &resInfo;
+	classStatics[CID_FISH].resInfo = &res_info;
 }
 
 /*QUAKED monster_fish (1 .5 0) (-25 -25 -14) (25 25 14) 
