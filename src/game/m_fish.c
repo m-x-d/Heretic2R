@@ -69,36 +69,30 @@ static void FishResetMovedir(edict_t* self) //mxd. Named 'reset_fish_movedir' in
 	}
 }
 
-//----------------------------------------------------------------------
-//  Fish Run - choose a run to use
-//----------------------------------------------------------------------
-void fish_run(edict_t *self)
+// Choose a run animation to use.
+void fish_run(edict_t* self)
 {
-	float	delta;
+	const float delta = anglemod(self->s.angles[YAW] - self->movedir[YAW]);
 
-	delta = anglemod(self->s.angles[YAW] - self->movedir[YAW]);
-	if (delta > 70 && delta <= 180)			// Look right
+	if (delta > 70.0f && delta <= 180.0f) // Look right.
 	{
-		// tell the think function we are doing the turn, so don't play with the yaw
+		// Tell the think function we are doing the turn, so don't play with the yaw.
 		self->ai_mood_flags = 1;
 		self->best_move_yaw = -FISH_RUN_TURN_ANGLE;
 		SetAnim(self, ANIM_RUN3);
-		return;
 	}
-	else if (delta > 180 && delta < 290)  // Look left
+	else if (delta > 180.0f && delta < 290.0f) // Look left.
 	{
-		// tell the think function we are doing the turn, so don't play with the yaw
+		// Tell the think function we are doing the turn, so don't play with the yaw.
 		self->ai_mood_flags = 1;
 		self->best_move_yaw = FISH_RUN_TURN_ANGLE;
 		SetAnim(self, ANIM_RUN2);
-		return;
 	}
 	else
 	{
-		// tell the think function we are NOT doing the turn
+		// Tell the think function we are NOT doing the turn.
 		self->ai_mood_flags = 0;
 		SetAnim(self, ANIM_RUN1);
-		return;
 	}
 }
 
