@@ -428,35 +428,26 @@ static void FishIsBlocked(edict_t* self, struct trace_s* trace) //mxd. Named 'fi
 	}
 }
 
-/*-------------------------------------------------------------------------
-	The fish finished a swim cycle, shall we just randomly change direction
-	or perhaps target a player or a bad guy ? Or maybe just idle a bit
--------------------------------------------------------------------------*/
-void finished_swim(edict_t *self)
+// The fish finished a walk swim cycle, shall we just randomly change direction or perhaps target a player or a bad guy? Or maybe just idle a bit.
+void finished_swim(edict_t* self) //TODO: rename to fish_walkswim_finished.
 {
-	int	temp;
-
 	if (self->ai_mood == AI_MOOD_PURSUE)
 	{
 		fish_hunt(self);
 		return;
 	}
 
-	temp = irand(0,10);
-	if (temp <= 3)
+	const int chance = irand(0, 10);
+
+	if (chance < 4)
 	{
-		// randomly, we might like to run somewhere
-		if (!(irand(0,3)))
-			self->ai_mood = AI_MOOD_WANDER;
-		else
-			self->ai_mood = AI_MOOD_STAND;
+		self->ai_mood = ((irand(0, 3) == 0) ? AI_MOOD_WANDER : AI_MOOD_STAND);
 		FishPickNewDirection(self);
 	}
-	else
-	if (temp <= 5)
+	else if (chance < 6)
 	{
-		self->speed = 20;
-	  	self->ai_mood = AI_MOOD_STAND;
+		self->speed = FISH_SPEED_DEFAULT;
+		self->ai_mood = AI_MOOD_STAND;
 		SetAnim(self, ANIM_STAND1);
 	}
 }
