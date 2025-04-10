@@ -615,7 +615,7 @@ void fish_dead(edict_t* self)
 }
 
 // Fish bit the player - decide what to do.
-void fishbite(edict_t* self) //TODO: rename to fish_bite.
+void fish_bite(edict_t* self) //mxd. Named 'fishbite' in original logic.
 {
 	if (self->enemy == NULL || SV_CINEMATICFREEZE)
 		return;

@@ -16,12 +16,12 @@ static const animframe_t fish_frames_melee[] =
 	{ FRAME_attfrnzy2,	NULL, 0, 0, 0, NULL, 0, fish_target },
 	{ FRAME_attfrnzy3,	NULL, 0, 0, 0, NULL, 0, fish_target },
 	{ FRAME_attfrnzy4,	NULL, 0, 0, 0, NULL, 0, fish_target },
-	{ FRAME_attfrnzy5,	NULL, 0, 0, 0, NULL, 0, fishbite },
+	{ FRAME_attfrnzy5,	NULL, 0, 0, 0, NULL, 0, fish_bite },
 	{ FRAME_attfrnzy6,	NULL, 0, 0, 0, NULL, 0, fish_target },
 	{ FRAME_attfrnzy7,	NULL, 0, 0, 0, NULL, 0, fish_target },
 	{ FRAME_attfrnzy8,	NULL, 0, 0, 0, NULL, 0, fish_target },
 	{ FRAME_attfrnzy9,	NULL, 0, 0, 0, NULL, 0, fish_target },
-	{ FRAME_attfrnzy10,	NULL, 0, 0, 0, NULL, 0, fishbite },
+	{ FRAME_attfrnzy10,	NULL, 0, 0, 0, NULL, 0, fish_bite },
 	{ FRAME_attfrnzy11,	NULL, 0, 0, 0, NULL, 0, fish_target },
 	{ FRAME_attfrnzy12,	NULL, 0, 0, 0, NULL, 0, fish_target },
 	{ FRAME_attfrnzy13,	NULL, 0, 0, 0, NULL, 0, fish_target },
@@ -37,7 +37,7 @@ static const animframe_t fish_frames_bite[] =
 	{ FRAME_attbite3,	NULL, 0, 0, 0, NULL, 0, fish_target },
 	{ FRAME_attbite4,	NULL, 0, 0, 0, NULL, 0, fish_target },
 	{ FRAME_attbite5,	NULL, 0, 0, 0, NULL, 0, fish_target },
-	{ FRAME_attbite6,	NULL, 0, 0, 0, NULL, 0, fishbite },
+	{ FRAME_attbite6,	NULL, 0, 0, 0, NULL, 0, fish_bite },
 	{ FRAME_attbite7,	NULL, 0, 0, 0, NULL, 0, fish_target },
 };
 const animmove_t fish_move_bite = { 7, fish_frames_bite, fish_pause };

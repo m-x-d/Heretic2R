@@ -60,7 +60,7 @@ extern const animmove_t fish_move_pain1;
 extern const animmove_t fish_move_death;
 
 void fish_dead(edict_t* self);
-void fishbite(edict_t* self);
+void fish_bite(edict_t* self);
 void fish_idle(edict_t* self);
 void fish_walkswim_finished(edict_t* self);
 void fish_runswim_finished(edict_t* self);
