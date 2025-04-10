@@ -640,22 +640,22 @@ void fishbite(edict_t* self) //TODO: rename to fish_bite.
 	}
 }
 
-void fish_target(edict_t *self)
+void fish_target(edict_t* self) //TODO: rename to fish_update_target_movedir?
 {
-	vec3_t	dir;
+	if (self->enemy == NULL)
+		return;
 
-	if (self->enemy)
-	{
-		// figure out the vector from the fish to the target
-		VectorSubtract(self->enemy->s.origin, self->s.origin, dir);
-		// normalise it
-		Vec3Normalize(dir);
-		if(Vec3IsZero(dir))
-			return;
-		// figure out the angles we want
-		AnglesFromDir(dir, self->movedir);
-		VectorRadiansToDegrees (self->movedir, self->movedir);
-	}
+	// Figure out the vector from the fish to the target.
+	vec3_t dir;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, dir);
+	Vec3Normalize(dir); // Normalise it.
+
+	if (Vec3IsZero(dir))
+		return;
+
+	// Figure out the angles we want.
+	AnglesFromDir(dir, self->movedir);
+	VectorRadiansToDegrees(self->movedir, self->movedir);
 }
 
 // figure out where our prey is, and go get him
