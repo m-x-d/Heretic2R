@@ -526,40 +526,26 @@ static void FishDeadMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'fi
 	}
 }
 
-//----------------------------------------------------------------------
-//  Fish Pain - choose a pain to use
-//----------------------------------------------------------------------
-void fish_pain(edict_t *self, G_Message_t *msg)
+static void FishPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'fish_pain' in original logic.
 {
-	int				temp, damage;
-	qboolean		force_pain;
-	
+	int temp;
+	int damage;
+	qboolean force_pain;
 	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
-	if(!force_pain)
-		if(!flrand(0,3))
-			return;
-
+	if (!force_pain && irand(0, 3) == 0) //mxd. flrand() in original logic.
+		return;
 
 	SetAnim(self, ANIM_PAIN1);
 	VectorClear(self->velocity);
 	self->deadflag = DEAD_DYING;
 
-	if(!irand(0,2))
-		if(self->s.skinnum == FISH_SKIN1 || self->s.skinnum == FISH_SKIN2)
-			self->s.skinnum += 1;
+	// Switch to damaged skin?
+	if (irand(0, 2) == 0 && (self->s.skinnum == FISH_SKIN1 || self->s.skinnum == FISH_SKIN2))
+		self->s.skinnum += 1;
 
-	if (irand(0, 1))
-	{
-		gi.sound (self, CHAN_WEAPON, sounds[SND_PAIN1], 1, ATTN_NORM, 0);
-	}
-	else
-	{
-		gi.sound (self, CHAN_WEAPON, sounds[SND_PAIN2], 1, ATTN_NORM, 0);
-	}
-
+	gi.sound(self, CHAN_WEAPON, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
 }
-
 
 //----------------------------------------------------------------------
 //  Fish Melee - choose a melee to use
@@ -873,7 +859,7 @@ void FishStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	classStatics[CID_FISH].msgReceivers[MSG_PAIN] = fish_pain;
+	classStatics[CID_FISH].msgReceivers[MSG_PAIN] = FishPainMsgHandler;
 	classStatics[CID_FISH].msgReceivers[MSG_DEATH] = FishDeadMsgHandler;
 	classStatics[CID_FISH].msgReceivers[MSG_DEATH_PAIN] = FishDeadPainMsgHandler;
 
