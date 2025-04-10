@@ -114,7 +114,7 @@ static const animframe_t fish_frames_walk1[] =
 	{ FRAME_fishpat23,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_fishpat24,	NULL, 0, 0, 0, NULL, 0, fish_chase },
 };
-const animmove_t fish_move_walk1 = { 24, fish_frames_walk1, finished_swim };
+const animmove_t fish_move_walk1 = { 24, fish_frames_walk1, fish_walkswim_finished };
 
 // Fish walk 2 - swim to the left.
 static const animframe_t fish_frames_walk2[] =

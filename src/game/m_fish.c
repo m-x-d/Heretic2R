@@ -429,7 +429,7 @@ static void FishIsBlocked(edict_t* self, struct trace_s* trace) //mxd. Named 'fi
 }
 
 // The fish finished a walk swim cycle, shall we just randomly change direction or perhaps target a player or a bad guy? Or maybe just idle a bit.
-void finished_swim(edict_t* self) //TODO: rename to fish_walkswim_finished.
+void fish_walkswim_finished(edict_t* self) //mxd. Named 'finished_swim' in original logic.
 {
 	if (self->ai_mood == AI_MOOD_PURSUE)
 	{
