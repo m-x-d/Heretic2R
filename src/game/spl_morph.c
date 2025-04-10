@@ -54,6 +54,7 @@ static void MonsterMorphFadeOut(edict_t* self) //mxd. Named 'MorphFadeOut' in or
 	chicken->morph_classname = self->classname;
 	chicken->target = self->target;
 	chicken->morph_animation_frame = self->s.frame; //mxd. Store animation frame (restored in MorphChickenOut()).
+	//TODO: also store health and skinnum?
 
 	// Time we stay a chicken.
 	chicken->time = level.time + MORPH_TIME; //mxd. Use define.
