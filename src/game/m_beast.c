@@ -674,9 +674,9 @@ static void TBeastFakeImpact(edict_t* self, trace_t* trace, const qboolean crush
 				self->velocity[1] = 0.0f;
 
 				self->sounds++;
-				self->red_rain_count++;
+				self->tbeast_pillars_destroyed++;
 
-				if (self->red_rain_count >= 2) // Got both pillars, now die.
+				if (self->tbeast_pillars_destroyed >= 2) // Got both pillars, now die.
 				{
 					self->solid = SOLID_NOT;
 					self->takedamage = DAMAGE_NO;
@@ -1089,9 +1089,9 @@ static void TBeastBlocked(edict_t* self, trace_t* trace) //mxd. Named 'tbeast_bl
 			//FIXME: In higher skills, less chance of breaking it? Or debounce time?
 			if (IsVisibleToClient(self))
 			{
-				self->red_rain_count++;
+				self->tbeast_pillars_destroyed++;
 
-				if (self->red_rain_count >= 2) // Got both pillars, now die.
+				if (self->tbeast_pillars_destroyed >= 2) // Got both pillars, now die.
 				{
 					self->solid = SOLID_NOT;
 					self->takedamage = DAMAGE_NO;
@@ -1748,7 +1748,7 @@ void tbeast_roar(edict_t* self)
 
 void tbeast_roar_short(edict_t* self)
 {
-	if (self->delay == 0.0f)
+	if (self->delay == 0.0f) //TODO: never used? Initialized to 1.0 in SP_monster_trial_beast().
 	{
 		self->monsterinfo.currframeindex = FRAME_atkc6; //mxd. Use define.
 		self->monsterinfo.nextframeindex = FRAME_atkc7; //mxd. Use define.
@@ -2282,7 +2282,7 @@ void SP_monster_trial_beast(edict_t* self)
 	self->sounds = 0;
 	self->clipmask = CONTENTS_SOLID;
 	self->solid = SOLID_TRIGGER; // WHY IS HE BEING PUSHED BY BSP ENTITIES NOW?!
-	self->red_rain_count = 0; // Pillar init.
+	self->tbeast_pillars_destroyed = 0; // Pillar init. //BUGFIX: mxd. Original logic stores this in 'red_rain_count', which is NOT a saveable field.
 	self->use = TBeastUse;
 	self->delay = 1.0f;
 

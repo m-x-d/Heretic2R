@@ -245,6 +245,7 @@ struct edict_s
 	{
 		float attenuation;	// Used only by target_speaker. //TODO: unused!
 		float maxrange;		// Used for ai.
+		int tbeast_pillars_destroyed; //mxd
 	};
 
 	// Timing variables.
