@@ -501,26 +501,29 @@ void fish_idle(edict_t* self)
 static void FishDeadPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'fish_dead_pain' in original logic.
 {
 	if (self->health < -60)
-		BecomeDebris(self);
+		BecomeDebris(self); //TODO: also play SND_GIB sound?
 }
 
-void fish_death(edict_t *self, G_Message_t *msg)
+static void FishDeadMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'fish_death' in original logic.
 {
 	VectorClear(self->velocity);
- 	self->deadflag = DEAD_DEAD;
-	if(self->health<-60)
+	self->deadflag = DEAD_DEAD;
+
+	if (self->health < -60)
 	{
-		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1.0f, ATTN_NORM, 0.0f);
 		BecomeDebris(self);
-		return;
 	}
+	else
+	{
+		gi.sound(self, CHAN_WEAPON, sounds[SND_DIE], 1.0f, ATTN_NORM, 0.0f);
 
-	gi.sound (self, CHAN_WEAPON, sounds[SND_DIE], 1, ATTN_NORM, 0);
+		// Switch to damaged skin?
+		if (self->s.skinnum == FISH_SKIN1 || self->s.skinnum == FISH_SKIN2)
+			self->s.skinnum += 1;
 
-	if(self->s.skinnum == FISH_SKIN1 || self->s.skinnum == FISH_SKIN2)
-		self->s.skinnum += 1;
-
-	SetAnim(self, ANIM_DEATH1);
+		SetAnim(self, ANIM_DEATH1);
+	}
 }
 
 //----------------------------------------------------------------------
@@ -871,7 +874,7 @@ void FishStaticsInit(void)
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
 	classStatics[CID_FISH].msgReceivers[MSG_PAIN] = fish_pain;
-	classStatics[CID_FISH].msgReceivers[MSG_DEATH] = fish_death;
+	classStatics[CID_FISH].msgReceivers[MSG_DEATH] = FishDeadMsgHandler;
 	classStatics[CID_FISH].msgReceivers[MSG_DEATH_PAIN] = FishDeadPainMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
