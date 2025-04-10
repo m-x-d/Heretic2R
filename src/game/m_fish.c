@@ -1,29 +1,23 @@
-//==============================================================================
 //
 // m_fish.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//==============================================================================
-
-#include "g_local.h"
-#include "Utilities.h"
-#include "g_debris.h" //mxd
-#include "g_DefaultMessageHandler.h"
-#include "g_monster.h"
-#include "fx.h"
-#include "random.h"
-#include "vector.h"
 
 #include "m_fish.h"
 #include "m_fish_shared.h"
 #include "m_fish_anim.h"
 #include "m_stats.h"
+#include "g_debris.h" //mxd
+#include "g_DefaultMessageHandler.h"
+#include "g_monster.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_local.h"
 
-extern void M_MoveFrame (edict_t *self);
-void fish_hunt(edict_t *self);
-void fish_think(edict_t *self);
+static void fish_hunt(edict_t *self); //TODO: remove
+static void fish_think(edict_t *self); //TODO: remove
 
 #define WALK_TURN_ANGLE 40
 #define RUN_TURN_ANGLE 70
@@ -316,7 +310,7 @@ void fish_check_distance(edict_t *self)
 /*-------------------------------------------------------------------------
 	monster_think
 -------------------------------------------------------------------------*/
-void fish_think (edict_t *self)
+static void fish_think (edict_t *self)
 {
 	vec3_t	angles;
 	vec3_t	top, bottom;
@@ -858,7 +852,7 @@ void fish_target(edict_t *self)
 }
 
 // figure out where our prey is, and go get him
-void fish_hunt(edict_t *self)
+static void fish_hunt(edict_t *self)
 {
 
 	// make sure we still have a target - bouncing off stuff tends to clear it out
