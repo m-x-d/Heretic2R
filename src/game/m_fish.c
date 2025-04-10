@@ -789,107 +789,86 @@ void FishStaticsInit(void)
 	classStatics[CID_FISH].resInfo = &res_info;
 }
 
-/*QUAKED monster_fish (1 .5 0) (-25 -25 -14) (25 25 14) 
-
-The fish
-
-"wakeup_target" - monsters will fire this target the first time it wakes up (only once)
-
-"pain_target" - monsters will fire this target the first time it gets hurt (only once)
-*/
-
-void SP_monster_fish (edict_t *self)
+// QUAKED monster_fish (1 .5 0) (-25 -25 -14) (25 25 14)
+// The fish.
+// wakeup_target	- Monsters will fire this target the first time it wakes up (only once).
+// pain_target		- Monsters will fire this target the first time it gets hurt (only once).
+void SP_monster_fish(edict_t* self)
 {
-	if ((deathmatch->value == 1) && !((int)sv_cheats->value & self_spawn))
+	if (DEATHMATCH && !(SV_CHEATS & self_spawn))
 	{
-		G_FreeEdict (self);
+		G_FreeEdict(self);
 		return;
 	}
 
-	// Generic Monster Initialization
-
-	if (!self->health)
+	// Generic monster initialization.
+	if (self->health == 0)
 		self->health = FISH_HEALTH;
 
-	//Apply to the end result (whether designer set or not)
-	self->max_health = self->health = MonsterHealth(self->health);
+	// Apply to the end result (whether designer set or not).
+	self->health = MonsterHealth(self->health);
+	self->max_health = self->health;
 
-	self->nextthink = level.time + FRAMETIME;
-	self->svflags |= SVF_MONSTER | SVF_TAKE_NO_IMPACT_DMG | SVF_DO_NO_IMPACT_DMG;
+	self->svflags |= (SVF_MONSTER | SVF_TAKE_NO_IMPACT_DMG | SVF_DO_NO_IMPACT_DMG);
 	self->svflags &= ~SVF_DEADMONSTER;
 	self->s.renderfx |= RF_FRAMELERP;
+	self->s.effects |= EF_CAMERA_NO_CLIP;
 	self->takedamage = DAMAGE_AIM;
-	self->max_health = self->health;
 	self->clipmask = MASK_MONSTERSOLID;
 	self->materialtype = MAT_FLESH;
-	self->flags |= FL_SWIM|FL_NO_KNOCKBACK;
-	
-	self->s.effects|=EF_CAMERA_NO_CLIP;
-
-	// random skin of three
-	if(irand(0, 1))
-		self->s.skinnum = FISH_SKIN1;
-	else
-		self->s.skinnum = FISH_SKIN2;
-
+	self->flags |= (FL_SWIM | FL_NO_KNOCKBACK);
+	self->s.skinnum = (irand(0, 1) == 1 ? FISH_SKIN1 : FISH_SKIN2);
 	self->deadflag = DEAD_NO;
-	self->isBlocked = FishIsBlocked;
+
 	self->ai_mood = AI_MOOD_STAND;
-	self->ai_mood_flags = 0;
-	self->gravity = self->best_move_yaw = 0;
-	self->wakeup_distance = 1024;
-	self->monsterinfo.aiflags |= AI_NIGHTVISION;
+	self->ai_mood_flags = 0; //TODO: use saveable var, add custom name (qboolean fish_is_turning ?).
+	self->gravity = 0.0f;
+	self->best_move_yaw = 0.0f;
+	self->wakeup_distance = 1024.0f;
+	self->monsterinfo.aiflags |= (AI_NIGHTVISION | AI_NO_ALERT); // Pay no attention to alert ents.
 
-	self->monsterinfo.aiflags |= AI_NO_ALERT;//pay no attention to alert ents
+	VectorCopy(self->s.origin, self->s.old_origin); //TODO: not needed?
+	VectorCopy(self->s.angles, self->movedir);
 
-	VectorCopy (self->s.origin, self->s.old_origin);
-	VectorCopy (self->s.angles, self->movedir);
-
-	if (!self->mass)
+	if (self->mass == 0)
 		self->mass = FISH_MASS;
 
 	self->s.frame = 0;
+	self->oldenemy_debounce_time = -1.0f;
 
-	self->oldenemy_debounce_time = -1;
-	
 	self->msgHandler = DefaultMsgHandler;
+	self->isBlocked = FishIsBlocked;
 	self->think = FishThink;
 	self->nextthink = level.time + FRAMETIME;
 
-	self->yaw_speed = 11;
-	self->dmg_radius = 4;
-	// random(ish) speed
-	self->old_yaw = flrand(0.65,1.0); //TODO: part of union, add fish-specific name?
+	self->yaw_speed = 11.0f;
+	self->dmg_radius = 4.0f; //TODO: add 'fish_pitch_speed' name.
+	self->old_yaw = flrand(0.65f, 1.0f); // Random(ish) speed. //TODO: part of union, add fish-specific name?
+	self->shrine_type = 0; //TODO: part of union, add fish-specific name?
 
-	self->movetype=PHYSICSTYPE_STEP;
+	self->movetype = PHYSICSTYPE_STEP;
 	VectorClear(self->knockbackvel);
 
-	self->solid=SOLID_BBOX;
+	self->solid = SOLID_BBOX;
+	self->s.modelindex = (byte)classStatics[CID_FISH].resInfo->modelIndex;
 
-	self->s.modelindex = classStatics[CID_FISH].resInfo->modelIndex;
+	if (self->s.scale == 1.0f)
+	{
+		self->s.scale = MODEL_SCALE * flrand(0.5f, 1.0f);
+		self->monsterinfo.scale = self->s.scale;
+	}
 
-	self->shrine_type = 0;
-	
-	if (self->s.scale == 1)
-		self->s.scale = self->monsterinfo.scale = MODEL_SCALE * flrand(0.5,1.0);
+	VectorSet(self->mins, -16.0f, -16.0f, -8.0f);
+	VectorSet(self->maxs, 16.0f, 16.0f, 8.0f);
 
-	VectorSet(self->mins, -16, -16, -8);
-	VectorSet(self->maxs, 16, 16, 8);
-
-	// scale the max's and mins according to scale of model
+	// Scale the maxs and mins according to scale of model.
 	Vec3ScaleAssign(self->s.scale, self->mins);
 	Vec3ScaleAssign(self->s.scale, self->maxs);
 
-	// give us the bubble spawner
- 	self->PersistantCFX = gi.CreatePersistantEffect(&self->s,
- 												FX_WATER_BUBBLE,
- 												CEF_OWNERS_ORIGIN | CEF_BROADCAST,
- 												NULL,
-												"");
+	// Give us the bubble spawner.
+	self->PersistantCFX = gi.CreatePersistantEffect(&self->s, FX_WATER_BUBBLE, CEF_OWNERS_ORIGIN | CEF_BROADCAST, NULL, "");
 
 	SetAnim(self, ANIM_STAND1);
-
-	gi.linkentity(self); 
-
+	gi.linkentity(self);
 	M_CatagorizePosition(self);
 }
