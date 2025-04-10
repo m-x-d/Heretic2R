@@ -155,30 +155,32 @@ static void FishPickNewDirection(edict_t* self) //mxd. Named 'fish_new_direction
 	}
 }
 
-//	generic 'hit something' reaction - make us bounce off in a new direction
-void fish_bounce_direction(edict_t *self)
+// Generic 'hit something' reaction - make us bounce off in a new direction.
+static void FishPickBounceDirection(edict_t* self) //mxd. Named 'fish_bounce_direction' in original logic.
 {
-	// reverse our direction with some randomness in the angles too
+	// Reverse our direction with some randomness in the angles too.
 	VectorCopy(self->s.angles, self->movedir);
-	// reverse our direction
-	self->movedir[YAW] += 180;
-	self->movedir[PITCH] = 0-self->movedir[PITCH];
-	// give us some randomness to my return
-	self->movedir[YAW] += (irand(-15,15));
-	self->movedir[PITCH] += (irand(-5,5));
 
-	// bring all our movedir angles up positive again
+	// Reverse our direction.
+	self->movedir[YAW] += 180.0f;
+	self->movedir[PITCH] *= -1.0f;
+
+	// Add some randomness.
+	self->movedir[YAW] += flrand(-15.0f, 15.0f); //mxd. irand() in original logic.
+	self->movedir[PITCH] += flrand(-5.0f, 5.0f); //mxd. irand() in original logic.
+
+	// Bring all our movedir angles up positive again.
 	FishResetMovedir(self);
 
-	// decide which animation to use
+	// Decide which animation to use.
 	if (self->ai_mood == AI_MOOD_WANDER)
 	{
-		self->speed = FISH_SPEED_FAST * self->old_yaw;
+		self->speed = self->old_yaw * FISH_SPEED_FAST;
 		fish_run(self);
 	}
 	else
 	{
-		self->speed = FISH_SPEED_SLOW * self->old_yaw;
+		self->speed = self->old_yaw * FISH_SPEED_SLOW;
 		fish_walk(self);
 	}
 }
@@ -459,7 +461,7 @@ void fish_blocked(edict_t *self, struct trace_s *trace)
 	{
 		// hit another fish - send us on our way
 		if (trace->ent->classID == CID_FISH)
-			fish_bounce_direction(self);
+			FishPickBounceDirection(self);
 		//we didn't, shall we attack this entity ?
 		//we would be able to bite him, then sure, otherwise, just bounce us off and set him as the enemy
 		else
@@ -467,7 +469,7 @@ void fish_blocked(edict_t *self, struct trace_s *trace)
 			// first decide if this guy is dead 
 			if (trace->ent->deadflag == DEAD_DEAD)
 			{
-			  	fish_bounce_direction(self);
+			  	FishPickBounceDirection(self);
 				self->enemy = NULL;
 			}
 			// nope, so lets BITE THE BASTARD :)
@@ -497,13 +499,13 @@ void fish_blocked(edict_t *self, struct trace_s *trace)
 	{
 		// did we hit a model of some type ?
 		if (trace->ent)
-			fish_bounce_direction(self);
+			FishPickBounceDirection(self);
 		else
 		// did we hit the same wall as last time ? cos if we did, we already dealt with it
 		if ((int)trace->surface != (int)self->shrine_type)
 		{
 			self->shrine_type = (int)trace->surface;
-			fish_bounce_direction(self);
+			FishPickBounceDirection(self);
 		}
 	}
 }
@@ -876,7 +878,7 @@ void fish_pause (edict_t *self)
 	{
 		self->enemy = NULL;
 		self->ai_mood = AI_MOOD_WANDER;
-		fish_bounce_direction(self);
+		FishPickBounceDirection(self);
 		return;//right?  crashes if not!
 	}
 
@@ -906,7 +908,7 @@ void fish_pause (edict_t *self)
 			{
 				self->enemy = NULL;
 				self->ai_mood = AI_MOOD_WANDER;
-				fish_bounce_direction(self);
+				FishPickBounceDirection(self);
 			}
 		}
 	}
@@ -921,7 +923,7 @@ void fish_pause (edict_t *self)
 		{
 		  	self->enemy = NULL;
 			self->ai_mood = AI_MOOD_WANDER;
-			fish_bounce_direction(self);
+			FishPickBounceDirection(self);
 		}
 	}
 }
