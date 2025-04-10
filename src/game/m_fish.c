@@ -55,25 +55,19 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
-// bring all our movedir angles up positive again
-void reset_fish_movedir(edict_t *self)
+// Bring all our movedir angles up positive again.
+static void FishResetMovedir(edict_t* self) //mxd. Named 'reset_fish_movedir' in original logic.
 {
-	while (self->movedir[0] > 360)
-		self->movedir[0] -= 360;
-	while (self->movedir[0] < 0)
-		self->movedir[0] += 360;
+	for (int i = 0; i < 3; i++)
+	{
+		// Returns the remainder.
+		self->movedir[i] = fmodf(self->movedir[i], 360.0f);
 
-	while (self->movedir[1] > 360)
-		self->movedir[1] -= 360;
-	while (self->movedir[1] < 0)
-		self->movedir[1] += 360;
-
-	while (self->movedir[2] > 360)
-		self->movedir[2] -= 360;
-	while (self->movedir[2] < 0)
-		self->movedir[2] += 360;
+		// Make the angle unsigned.
+		if (self->movedir[i] < 0.0f)
+			self->movedir[i] += 360.0f;
+	}
 }
-
 
 //----------------------------------------------------------------------
 //  Fish Run - choose a run to use
@@ -158,7 +152,7 @@ void fish_new_direction(edict_t *self)
 		self->movedir[0] = 0;
 	self->movedir[1] += flrand(-45.0, 45.0);
 	// bring all our movedir angles up positive again
-	reset_fish_movedir(self);
+	FishResetMovedir(self);
 
 	// if we change direction, we might hit the same poly we just last collided with
 	self->shrine_type = 0; //TODO: part of union, add fish-specific prop?
@@ -189,7 +183,7 @@ void fish_bounce_direction(edict_t *self)
 	self->movedir[PITCH] += (irand(-5,5));
 
 	// bring all our movedir angles up positive again
-	reset_fish_movedir(self);
+	FishResetMovedir(self);
 
 	// decide which animation to use
 	if (self->ai_mood == AI_MOOD_WANDER)
@@ -400,7 +394,7 @@ static void fish_think (edict_t *self)
 	if ((self->movedir[0] < 0 || self->movedir[0] > 360)||
 		 (self->movedir[1] < 0 || self->movedir[1] > 360)||
 		 (self->movedir[2] < 0 || self->movedir[2] > 360))
-		reset_fish_movedir(self);
+		FishResetMovedir(self);
 
 	// move us from one angle to another slowly - unless we are moving through the "turn" anims,
 	// which case, the anim takes care of the YAW
