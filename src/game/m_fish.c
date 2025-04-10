@@ -452,6 +452,30 @@ void finished_swim(edict_t* self) //TODO: rename to fish_walkswim_finished.
 	}
 }
 
+// The fish finished a run swim cycle, shall we just randomly change direction or perhaps target a player or a bad guy? Or maybe just idle a bit.
+void finished_runswim(edict_t* self) //TODO: rename to fish_runswim_finished.
+{
+	if (self->ai_mood == AI_MOOD_PURSUE)
+	{
+		fish_hunt(self);
+		return;
+	}
+
+	const int chance = irand(0, 10);
+
+	if (chance < 4)
+	{
+		self->ai_mood = ((irand(0, 3) == 0) ? AI_MOOD_STAND : AI_MOOD_WANDER); //TODO: the only difference between this and finished_swim().
+		FishPickNewDirection(self);
+	}
+	else if (chance < 6)
+	{
+		self->speed = FISH_SPEED_DEFAULT;
+		self->ai_mood = AI_MOOD_STAND;
+		SetAnim(self, ANIM_STAND1);
+	}
+}
+
 /*-------------------------------------------------------------------------
 	The fish finished a swim cycle, shall we just randomly change direction
 	or perhaps target a player or a bad guy ? Or maybe just idle a bit
@@ -464,39 +488,6 @@ void finished_fish_pain(edict_t *self)
 
 	if(self->waterlevel == 3)
 		fish_hunt(self);
-}
-
-/*-------------------------------------------------------------------------
-	The fish finished a run swim cycle, shall we just randomly change direction
-	or perhaps target a player or a bad guy ? Or maybe just idle a bit
--------------------------------------------------------------------------*/
-void finished_runswim(edict_t *self)
-{
-	int	temp;
-
-	if (self->ai_mood == AI_MOOD_PURSUE)
-	{
-		fish_hunt(self);
-		return;
-	}
-
-	temp = irand(0,10);
-	if (temp <= 3)
-	{
-		// randomly, we might like to run somewhere
-		if (!(irand(0,3)))
-			self->ai_mood = AI_MOOD_STAND;
-		else
-			self->ai_mood = AI_MOOD_WANDER;
-		FishPickNewDirection(self);
-	}
-	else
-	if (temp <= 5)
-	{
-		self->speed = 20;
-	  	self->ai_mood = AI_MOOD_STAND;
-		SetAnim(self, ANIM_STAND1);
-	}
 }
 
 //----------------------------------------------------------------------
