@@ -96,36 +96,30 @@ void fish_run(edict_t* self)
 	}
 }
 
-//----------------------------------------------------------------------
-//  Fish Walk - choose a walk to use
-//----------------------------------------------------------------------
-void fish_walk(edict_t *self)
+// Choose a walk animation to use.
+void fish_walk(edict_t* self)
 {
-	float	delta;
+	const float delta = anglemod(self->s.angles[YAW] - self->movedir[YAW]);
 
-	delta = anglemod(self->s.angles[YAW] - self->movedir[YAW]);
-	if (delta > 40 && delta <= 180)			// Look right
+	if (delta > 40.0f && delta <= 180.0f) // Look right.
 	{
-		// tell the think function we are doing the turn, so don't play with the yaw
+		// tell the think function we are doing the turn, so don't play with the yaw.
 		self->ai_mood_flags = 1;
 		self->best_move_yaw = -FISH_WALK_TURN_ANGLE;
 		SetAnim(self, ANIM_WALK3);
-		return;
 	}
-	else if (delta > 180 && delta < 20)  // Look left
+	else if (delta > 180.0f && delta < 320.0f) // Look left. //BUGFIX: mxd. 'delta > 180 && delta < 20' in original logic (e.g. never).
 	{
-		// tell the think function we are doing the turn, so don't play with the yaw
+		// Tell the think function we are doing the turn, so don't play with the yaw.
 		self->ai_mood_flags = 1;
 		self->best_move_yaw = FISH_WALK_TURN_ANGLE;
 		SetAnim(self, ANIM_WALK2);
-		return;
 	}
 	else
 	{
-		// tell the think function we are NOT doing the turn
+		// Tell the think function we are NOT doing the turn.
 		self->ai_mood_flags = 0;
 		SetAnim(self, ANIM_WALK1);
-		return;
 	}
 }
 
