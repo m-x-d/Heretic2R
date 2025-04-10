@@ -498,12 +498,9 @@ void fish_idle(edict_t* self)
 		FishPickNewDirection(self);
 }
 
-//----------------------------------------------------------------------
-//  Fish Death - choose a death to use
-//----------------------------------------------------------------------
-void fish_dead_pain(edict_t *self, G_Message_t *msg)
+static void FishDeadPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'fish_dead_pain' in original logic.
 {
-	if(self->health<-60)
+	if (self->health < -60)
 		BecomeDebris(self);
 }
 
@@ -875,7 +872,7 @@ void FishStaticsInit(void)
 
 	classStatics[CID_FISH].msgReceivers[MSG_PAIN] = fish_pain;
 	classStatics[CID_FISH].msgReceivers[MSG_DEATH] = fish_death;
-	classStatics[CID_FISH].msgReceivers[MSG_DEATH_PAIN] = fish_dead_pain;
+	classStatics[CID_FISH].msgReceivers[MSG_DEATH_PAIN] = FishDeadPainMsgHandler;
 
 	res_info.numAnims = NUM_ANIMS;
 	res_info.animations = animations;
