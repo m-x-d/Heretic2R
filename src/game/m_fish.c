@@ -123,11 +123,11 @@ void fish_walk(edict_t* self)
 	}
 }
 
-// update the yaw on the first frame of a new animation -stop jittering
-void fish_update_yaw(edict_t *self)
+// Update the yaw on the first frame of a new animation - stop jittering.
+void fish_update_yaw(edict_t* self)
 {
- 	self->s.angles[YAW] += self->best_move_yaw;
- 	self->best_move_yaw = 0;
+	self->s.angles[YAW] += self->best_move_yaw;
+	self->best_move_yaw = 0.0f;
 }
 
 // Generic 'decided on a new direction' reaction - make us select a new direction.
