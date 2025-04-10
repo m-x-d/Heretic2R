@@ -239,11 +239,16 @@ struct edict_s
 	edict_t* last_buoyed_enemy; // Used by monsters.
 
 	int noise_index; // Used only by targets.
-	float volume; //TODO: hijacked by m_beast, never used for intended purpose.
 
 	union
 	{
-		float attenuation;	// Used only by target_speaker. //TODO: unused!
+		float volume;
+		int tbeast_healthbar_buildup; //mxd
+	};
+
+	union
+	{
+		float attenuation;	// Used only by sound_ambient_nnn.
 		float maxrange;		// Used for ai.
 		int tbeast_pillars_destroyed; //mxd
 	};

@@ -1166,11 +1166,11 @@ static void TBeastPostThink(edict_t* self) //mxd. Named 'tbeast_post_think' in o
 
 	if (self->monsterinfo.awake)
 	{
-		if (self->volume < (float)self->max_health)
+		if (self->tbeast_healthbar_buildup < self->max_health)
 		{
 			// Initial healthbar buildup. //TODO: was broken in original logic. Check animation speed... 
-			M_ShowLifeMeter((int)(ceilf(self->volume / (float)self->max_health * TBEAST_SBAR_SIZE)), TBEAST_SBAR_SIZE); //BUGFIX: mxd. Original logic uses the same value for 'value' and 'max_value' args.
-			self->volume += (float)self->max_health / 10.0f;
+			M_ShowLifeMeter((int)(ceilf((float)self->tbeast_healthbar_buildup / (float)self->max_health * TBEAST_SBAR_SIZE)), TBEAST_SBAR_SIZE); //BUGFIX: mxd. Original logic uses the same value for 'value' and 'max_value' args.
+			self->tbeast_healthbar_buildup += self->max_health / 10;
 		}
 		else if (self->health > 0)
 		{
@@ -2285,7 +2285,7 @@ void SP_monster_trial_beast(edict_t* self)
 	self->delay = 1.0f;
 
 	self->max_health = self->health;
-	self->volume = 0.0f; // Initial healthbar buildup progress.
+	self->tbeast_healthbar_buildup = 0; // Initial healthbar buildup progress.
 	self->tbeast_toy_materialtype = 0; // Initialize material id.
 
 	level.fighting_beast = true; // Sorry, only one beast per level
