@@ -50,7 +50,7 @@ void AI_SetSightClient(void)
 }
 
 // Monster will eat until harm is done to him or the player moves within range.
-void ai_eat(edict_t* self, float dist)
+void ai_eat(edict_t* self, float dist) //TODO: used only in m_gkrokon_anim.c. Move to m_gkrokon.c as gkrokon_eat()?
 {
 	self->enemy = NULL;
 	FindTarget(self);
