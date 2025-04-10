@@ -210,8 +210,12 @@ struct edict_s
 		int dmg; // The damage something does.
 		qboolean elflord_last_stage; //mxd
 	};
-	
-	float dmg_radius; // The radius of damage.
+
+	union
+	{
+		float dmg_radius; // The radius of damage.
+		float fish_max_pitch_speed; //mxd
+	};
 
 	int sounds; // Used by a trigger and a splash, could be a class static.
 

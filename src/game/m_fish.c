@@ -230,7 +230,7 @@ static float FishChangePitch(edict_t* self) //mxd. Named 'M_ChangeFishPitch' in 
 			move += 360.0f;
 	}
 
-	move = Clamp(move, -self->dmg_radius, self->dmg_radius);
+	move = Clamp(move, -self->fish_max_pitch_speed, self->fish_max_pitch_speed);
 	self->s.angles[PITCH] = anglemod(current + move);
 
 	return move;
@@ -270,7 +270,7 @@ static void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic
 		// If we break water - don't let us target anyone anymore.
 		self->enemy = NULL;
 		self->ai_mood = AI_MOOD_WANDER;
-		self->dmg_radius = 10;
+		self->fish_max_pitch_speed = 10.0f;
 
 		// Make us go down good sir!
 		self->movedir[PITCH] = flrand(-35.0f, -15.0f);
@@ -312,7 +312,7 @@ static void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic
 	else
 	{
 		self->count = 0;
-		self->dmg_radius = 4;
+		self->fish_max_pitch_speed = 4.0f;
 	}
 
 	// Make sure that the movedir angles are between 0-359, or we are in trouble on the pitch and yaw routines.
@@ -400,7 +400,7 @@ static void FishIsBlocked(edict_t* self, struct trace_s* trace) //mxd. Named 'fi
 		VectorSubtract(self->s.origin, trace->ent->s.origin, diff);
 		const float dist = VectorLength(diff);
 
-		if (dist < self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE + 50.0f && (self->dmg_radius == 4)) // Within 20 of bounding box & not out of water.
+		if (dist < self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE + 50.0f && self->fish_max_pitch_speed == 4.0f) // Within 20 of bounding box & not out of water.
 		{
 			SetAnim(self, ANIM_BITE);
 			self->ai_mood = AI_MOOD_ATTACK;
@@ -842,7 +842,7 @@ void SP_monster_fish(edict_t* self)
 	self->nextthink = level.time + FRAMETIME;
 
 	self->yaw_speed = 11.0f;
-	self->dmg_radius = 4.0f; //TODO: add 'fish_pitch_speed' name.
+	self->fish_max_pitch_speed = 4.0f;
 	self->old_yaw = flrand(0.65f, 1.0f); // Random(ish) speed. //TODO: part of union, add fish-specific name?
 	self->shrine_type = 0; //TODO: part of union, add fish-specific name?
 
