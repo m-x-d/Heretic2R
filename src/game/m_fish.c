@@ -17,7 +17,6 @@
 #include "g_local.h"
 
 static void fish_hunt(edict_t *self); //TODO: remove
-static void fish_think(edict_t *self); //TODO: remove
 
 //TODO: move to m_stats.h?
 #define FISH_WALK_TURN_ANGLE	40.0f //mxd. Named WALK_TURN_ANGLE in original logic.
@@ -237,96 +236,76 @@ static float FishChangePitch(edict_t* self) //mxd. Named 'M_ChangeFishPitch' in 
 	return move;
 }
 
-// fish check to see if we are within ACTIVATE_DIST of the player
-void fish_check_distance(edict_t *self)
+static void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic.
 {
-	self->nextthink = level.time + 2.0;
-
-	// determine if we are too far from the camera to warrant animating or ai
-	if (gi.CheckDistances(self->s.origin, FISH_ACTIVATE_DISTANCE))
+	// Determine if we are too far from the camera to warrant animating or AI.
+	if (!gi.CheckDistances(self->s.origin, FISH_ACTIVATE_DISTANCE)) //mxd. Merged fish_check_distance() logic.
 	{
-	 	self->nextthink = level.time + FRAMETIME;
-	 	self->think = fish_think;
-	}
-
-}
-
-
-/*-------------------------------------------------------------------------
-	monster_think
--------------------------------------------------------------------------*/
-static void fish_think (edict_t *self)
-{
-	vec3_t	angles;
-	vec3_t	top, bottom;
-	vec3_t	dir;
-	trace_t trace;
-	byte	angle_byte;
-
-	self->nextthink = level.time + FRAMETIME;
-
-	if(!self->enemy)
-		FindTarget(self);
-
-	if(self->enemy)
-	{//let's not hunt things out of water!
-		if(!self->enemy->waterlevel)
-			self->enemy = NULL;
-	}
-	// determine if we are too far from the camera to warrant animating or ai
-	if (!gi.CheckDistances(self->s.origin, FISH_ACTIVATE_DISTANCE))
-	{
-	 	self->think = fish_check_distance;
 		VectorClear(self->velocity);
+		self->nextthink = level.time + 2.0f;
+
 		return;
 	}
 
-	// animate us
-	M_MoveFrame (self);
-
 	self->nextthink = level.time + FRAMETIME;
 
-	// we are already dead or getting hit, we don't need to do anything
-	if ((self->deadflag & DEAD_DEAD) || (self->deadflag & DEAD_DYING) )
+	if (self->enemy == NULL)
+		FindTarget(self);
+
+	if (self->enemy != NULL && self->enemy->waterlevel == 0) // Let's not hunt things out of water!
+		self->enemy = NULL;
+
+	// Animate us.
+	M_MoveFrame(self);
+
+	// We are already dead or getting hit, we don't need to do anything.
+	if ((self->deadflag & DEAD_DEAD) || (self->deadflag & DEAD_DYING))
 		return;
 
 	M_CatagorizePosition(self);
 
-	// did we break the surface ?
+	// Did we break the water surface?
 	if (self->waterlevel < 3)
 	{
-		// if we break water - don't let us target anyone anymore
+		// If we break water - don't let us target anyone anymore.
 		self->enemy = NULL;
 		self->ai_mood = AI_MOOD_WANDER;
 		self->dmg_radius = 10;
 
-		// make us go down good sir !
-		self->movedir[0] = flrand(-35.0, -15.0);
+		// Make us go down good sir!
+		self->movedir[PITCH] = flrand(-35.0f, -15.0f);
 
-		// only allow one of these every second for this fish
-		if (!self->count)
+		// Only allow one of these every second for this fish.
+		if (self->count == 0) //TODO: Add 'fish_ripple_spawned' name.
 		{
-			// create a ripple
+			// Create a ripple.
+			vec3_t top;
 			VectorCopy(self->s.origin, top);
-			VectorCopy(top, bottom);
-			top[2] += self->maxs[2] * 0.75;
+			top[2] += self->maxs[2] * 0.75f;
+
+			vec3_t bottom;
+			VectorCopy(self->s.origin, bottom);
 			bottom[2] += self->mins[2];
 
-			gi.trace(top, vec3_origin, vec3_origin, bottom, self, MASK_WATER,&trace);
+			trace_t trace;
+			gi.trace(top, vec3_origin, vec3_origin, bottom, self, MASK_WATER, &trace);
 
-			if(trace.fraction <= 1.0)
+			if (trace.fraction <= 1.0f)
 			{
-				AngleVectors(self->s.angles,dir,NULL,NULL);
-				VectorScale(dir,200,dir);
-				angle_byte = Q_ftol(((self->s.angles[YAW] + DEGREE_180)/360.0) * 255.0);
+				// No ripples while in cinematics.
+				if (!SV_CINEMATICFREEZE)
+				{
+					vec3_t dir;
+					AngleVectors(self->s.angles, dir, NULL, NULL);
+					VectorScale(dir, 200.0f, dir);
 
-				// no ripples while in cinematics
-				if (!sv_cinematicfreeze->value)
-					gi.CreateEffect(NULL, FX_WATER_WAKE, 0,	trace.endpos, "sbv", self->s.number,
-						angle_byte, dir);
+					const byte b_angle = (byte)Q_ftol((self->s.angles[YAW] + DEGREE_180) / 360.0f * 255.0f);
 
-				gi.sound (self, CHAN_WEAPON, sounds[SND_SPLASH], 1, ATTN_NORM, 0);
-				self->count = 6;
+					gi.CreateEffect(NULL, FX_WATER_WAKE, 0, trace.endpos, "sbv", self->s.number, b_angle, dir);
+				}
+
+				gi.sound(self, CHAN_WEAPON, sounds[SND_SPLASH], 1.0f, ATTN_NORM, 0.0f);
+				self->count = 1;
 			}
 		}
 	}
@@ -336,45 +315,38 @@ static void fish_think (edict_t *self)
 		self->dmg_radius = 4;
 	}
 
-	// make sure that the movedir angles are between 0-359, or we are in trouble on the pitch and yaw routines
-	// messy, but the best way to be safe
-	if ((self->movedir[0] < 0 || self->movedir[0] > 360)||
-		 (self->movedir[1] < 0 || self->movedir[1] > 360)||
-		 (self->movedir[2] < 0 || self->movedir[2] > 360))
-		FishResetMovedir(self);
+	// Make sure that the movedir angles are between 0-359, or we are in trouble on the pitch and yaw routines.
+	FishResetMovedir(self);
 
-	// move us from one angle to another slowly - unless we are moving through the "turn" anims,
-	// which case, the anim takes care of the YAW
-
-	// move us in pitch if we should
+	// Change pitch if we should.
 	FishChangePitch(self);
 
+	// Move us from one angle to another slowly - unless we are moving through the "turn" anims, in which case the anim takes care of the YAW.
+	vec3_t angles;
 	VectorDegreesToRadians(self->s.angles, angles);
 
 	if (!self->ai_mood_flags)
 	{
-		// update Yaw
+		// Update yaw.
 		FishChangeYaw(self);
-		// update velocity
+
+		// Update velocity.
 		DirFromAngles(angles, self->velocity);
 		Vec3ScaleAssign(self->speed, self->velocity);
 	}
 	else
 	{
-		// update velocity
+		// Update velocity
 		DirFromAngles(angles, self->velocity);
-		// we aren't updating Yaw, remember ? - no updating yaw velocities
-		self->velocity[0] = 0;
-		self->velocity[1] = 0;
+
+		// We aren't updating yaw.
+		self->velocity[PITCH] = 0.0f;
+		self->velocity[YAW] = 0.0f;
 		Vec3ScaleAssign(self->speed, self->velocity);
 	}
 
-	// need this for rebounds
-	VectorCopy(self->velocity, self->pos1);
-
 	M_WorldEffects(self);
 }
-
 
 void fish_under_water_wake (edict_t *self)
 {
@@ -1038,7 +1010,7 @@ void SP_monster_fish (edict_t *self)
 	self->oldenemy_debounce_time = -1;
 	
 	self->msgHandler = DefaultMsgHandler;
-	self->think = fish_check_distance;
+	self->think = FishThink;
 	self->nextthink = level.time + FRAMETIME;
 
 	self->yaw_speed = 11;
