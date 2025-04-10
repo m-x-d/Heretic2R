@@ -211,49 +211,29 @@ static float FishChangeYaw(edict_t* self) //mxd. Named 'M_ChangeFishYaw' in orig
 	return move;
 }
 
-/*
-===============
-M_ChangeFishPitch
-
-===============
-*/
-float M_ChangeFishPitch (edict_t *ent)
+static float FishChangePitch(edict_t* self) //mxd. Named 'M_ChangeFishPitch' in original logic. Very similar to MG_ChangeWhichYaw().
 {
-	float	ideal;
-	float	current;
-	float	move;
-	float	speed;
-	
-	current = anglemod(ent->s.angles[PITCH]);
-	ideal = ent->movedir[PITCH];
+	const float current = anglemod(self->s.angles[PITCH]);
+	const float ideal = self->movedir[PITCH];
+	float move = ideal - current;
 
-	if (current == ideal)
-		return false;
+	if (FloatIsZeroEpsilon(move)) //mxd. Avoid direct float comparison.
+		return 0.0f;
 
-	move = ideal - current;
-	speed = ent->dmg_radius;
 	if (ideal > current)
 	{
-		if (move >= 180)
-			move = move - 360;
+		if (move >= 180.0f)
+			move -= 360.0f;
 	}
 	else
 	{
-		if (move <= -180)
-			move = move + 360;
+		if (move <= -180.0f)
+			move += 360.0f;
 	}
-	if (move > 0)
-	{
-		if (move > speed)
-			move = speed;
-	}
-	else
-	{
-		if (move < -speed)
-			move = -speed;
-	}
-	
-	ent->s.angles[PITCH] = anglemod (current + move);
+
+	move = Clamp(move, -self->dmg_radius, self->dmg_radius);
+	self->s.angles[PITCH] = anglemod(current + move);
+
 	return move;
 }
 
@@ -367,7 +347,7 @@ static void fish_think (edict_t *self)
 	// which case, the anim takes care of the YAW
 
 	// move us in pitch if we should
-	M_ChangeFishPitch(self);
+	FishChangePitch(self);
 
 	VectorDegreesToRadians(self->s.angles, angles);
 
