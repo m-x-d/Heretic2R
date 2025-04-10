@@ -1840,13 +1840,13 @@ void ssithra_dead(edict_t *self)
 }
 
 float hold_z;
-void fish_deadfloat(edict_t *self);
+void FishDeadFloatThink(edict_t *self);
 void ssithraWaterDead(edict_t *self)
 {
 	self->deadflag = DEAD_DEAD;
 	self->takedamage = DAMAGE_YES;
 			
-	self->think = fish_deadfloat; //TODO: add our own version of fish_deadfloat?
+	self->think = FishDeadFloatThink; //TODO: add our own version of fish_deadfloat?
 	self->nextthink = level.time + 0.1;
 
 	gi.linkentity (self);

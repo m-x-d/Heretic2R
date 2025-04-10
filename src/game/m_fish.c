@@ -564,7 +564,7 @@ static void FishDeadBobThink(edict_t* self) //mxd. Named 'fish_deadbob' in origi
 }
 
 // Make the fish float to the surface.
-void fish_deadfloat(edict_t* self) //TODO: rename to FishDeadFloatThink.
+void FishDeadFloatThink(edict_t* self) //mxd. Named 'fish_deadfloat' in original logic.
 {
 	M_CatagorizePosition(self);
 
@@ -601,7 +601,7 @@ void fish_dead(edict_t *self)
 
 	VectorClear(self->velocity);
 
-	self->think = fish_deadfloat;
+	self->think = FishDeadFloatThink;
 	self->nextthink = level.time + 0.1;
 			
 	// stop the fish making bubbles
