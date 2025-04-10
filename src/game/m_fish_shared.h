@@ -35,9 +35,9 @@ typedef enum SoundID_e
 	SND_BITEHIT2,
 	SND_BITEMISS1,
 	SND_BITEMISS2,
-	SND_GROWL1,
-	SND_GROWL2,
-	SND_GROWL3,
+	SND_GROWL1, //mxd. Unused.
+	SND_GROWL2, //mxd. Unused.
+	SND_GROWL3, //mxd. Unused.
 	SND_SPLASH,
 	SND_SLOW_SWIM1,
 	SND_SLOW_SWIM2,
@@ -58,9 +58,6 @@ extern const animmove_t fish_move_walk3;
 extern const animmove_t fish_move_stand1;
 extern const animmove_t fish_move_pain1;
 extern const animmove_t fish_move_death;
-
-void fish_pain(edict_t* self, G_Message_t* msg);
-void fish_death(edict_t* self, G_Message_t* msg);
 
 void fish_dead(edict_t* self);
 void fish_growl(edict_t* self);
