@@ -340,6 +340,7 @@ struct edict_s
 		int morph_timer;
 		int buoy_index;
 		qboolean* sphere_charging_ptr; //mxd. Used by Sphere of Annihilation spell.
+		csurface_t* fish_last_collision_surface; //mxd
 	};
 
 	// Only set in trigger_push_touch and probably only on players.

@@ -139,7 +139,7 @@ static void FishPickNewDirection(edict_t* self) //mxd. Named 'fish_new_direction
 	FishResetMovedir(self);
 
 	// If we change direction, we might hit the same poly we just collided with.
-	self->shrine_type = 0;
+	self->fish_last_collision_surface = NULL;
 
 	// Decide which animation to use.
 	if (self->ai_mood == AI_MOOD_WANDER)
@@ -421,9 +421,9 @@ static void FishIsBlocked(edict_t* self, struct trace_s* trace) //mxd. Named 'fi
 	}
 
 	// Did we hit the same wall as last time? Because if we did, we already dealt with it.
-	if ((int)trace->surface != self->shrine_type)
+	if (trace->surface != self->fish_last_collision_surface)
 	{
-		self->shrine_type = (int)trace->surface;
+		self->fish_last_collision_surface = trace->surface;
 		FishPickBounceDirection(self);
 	}
 }
@@ -844,7 +844,7 @@ void SP_monster_fish(edict_t* self)
 	self->yaw_speed = 11.0f;
 	self->fish_max_pitch_speed = 4.0f;
 	self->fish_speed_scaler = flrand(0.65f, 1.0f); // Random(ish) speed.
-	self->shrine_type = 0; //TODO: part of union, add fish-specific name?
+	self->fish_last_collision_surface = NULL;
 
 	self->movetype = PHYSICSTYPE_STEP;
 	VectorClear(self->knockbackvel);
