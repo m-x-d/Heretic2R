@@ -988,7 +988,7 @@ animmove_t gorgon_move_to_swim = {5, gorgon_frames_to_swim, gorgonGoSwim};
 
 animframe_t gorgon_frames_swim [] =
 { //FIXME: add wake and bubbles and sploosh swim sounds
-	FRAME_swim6,	NULL, 0, 0, 0, gorgon_ai_swim, 31, fish_under_water_wake,
+	FRAME_swim6,	NULL, 0, 0, 0, gorgon_ai_swim, 31, fish_under_water_wake, //TODO: add our own version of fish_under_water_wake.
 	FRAME_swim7,	NULL, 0, 0, 0, gorgon_ai_swim, 32, NULL,
 	FRAME_swim8,	NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
 	FRAME_swim9,	NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
