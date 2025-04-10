@@ -323,7 +323,7 @@ static void AssassinCloakPreThink(edict_t* self) //mxd. Named 'assassinCloakThin
 		if (self->lastbuoy > NULL_BUOY && !(gi.pointcontents(level.buoy_list[self->lastbuoy].origin) & MASK_WATER))
 			VectorCopy(level.buoy_list[self->lastbuoy].origin, teleport_dest);
 		else
-			VectorCopy(self->pos1, teleport_dest);
+			VectorCopy(self->assassin_spawn_pos, teleport_dest);
 
 		vec3_t start_pos;
 		VectorCopy(teleport_dest, start_pos);
@@ -537,10 +537,10 @@ void AssassinPrepareTeleportDestination(edict_t* self, const vec3_t spot, const 
 		self->monsterinfo.misc_debounce_time = level.time + 3.0f;
 	}
 
-	VectorCopy(spot, self->pos2);
+	VectorCopy(spot, self->assassin_teleport_pos); //TODO: pos2/assassin_teleport_pos is not a saveable field!
 
 	self->placeholder = G_Spawn();
-	VectorCopy(self->pos2, self->placeholder->s.origin);
+	VectorCopy(self->assassin_teleport_pos, self->placeholder->s.origin);
 	self->placeholder->solid = SOLID_BBOX;
 	VectorCopy(self->mins, self->placeholder->mins);
 	VectorCopy(self->maxs, self->placeholder->maxs);
@@ -1061,7 +1061,7 @@ void assassin_gone(edict_t* self) //mxd. Named 'assassinGone' in original logic.
 	if (self->placeholder != NULL)
 		G_FreeEdict(self->placeholder);
 
-	VectorCopy(self->pos2, self->s.origin);
+	VectorCopy(self->assassin_teleport_pos, self->s.origin);
 
 	if (self->enemy != NULL)
 	{
@@ -1074,7 +1074,7 @@ void assassin_gone(edict_t* self) //mxd. Named 'assassinGone' in original logic.
 	AssassinSmoke(self);
 
 	vec3_t pos;
-	VectorCopy(self->pos2, pos);
+	VectorCopy(self->assassin_teleport_pos, pos);
 	pos[2] += 100.0f;
 
 	if (gi.pointcontents(pos) == CONTENTS_EMPTY && irand(0, 3) == 0)
@@ -2294,5 +2294,5 @@ void SP_monster_assassin(edict_t* self)
 	self->svflags |= SVF_WAIT_NOTSOLID;
 	self->s.fmnodeinfo[MESH__KNIFES].flags |= FMNI_NO_DRAW;
 
-	VectorCopy(self->s.origin, self->pos1);
+	VectorCopy(self->s.origin, self->assassin_spawn_pos); //TODO: pos1/assassin_spawn_pos is not a saveable field!
 }

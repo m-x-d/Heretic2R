@@ -354,12 +354,14 @@ struct edict_s
 	union
 	{
 		vec3_t pos1;
+		vec3_t assassin_spawn_pos; //mxd
 		vec3_t elflord_beam_direction; //mxd
 	};
 
 	union
 	{
 		vec3_t pos2;
+		vec3_t assassin_teleport_pos; //mxd
 		vec3_t elflord_beam_start; //mxd
 	};
 
