@@ -614,47 +614,29 @@ void fish_dead(edict_t* self)
 	gi.linkentity(self);
 }
 
-// he bit the player - decide what to do
-void fishbite (edict_t *self)
+// Fish bit the player - decide what to do.
+void fishbite(edict_t* self) //TODO: rename to fish_bite.
 {
-	vec3_t	v;
-	float	scale;
-	float	len;
-
-	if (!self->enemy || sv_cinematicfreeze->value)
+	if (self->enemy == NULL || SV_CINEMATICFREEZE)
 		return;
 
-	VectorSubtract (self->s.origin, self->enemy->s.origin, v);
-	len = VectorLength (v);
+	vec3_t diff;
+	VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
+	const float dist = VectorLength(diff);
 
-	if (len < (self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE))	// Within 20 of bounding box
+	if (dist < self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE) // Within 20 of bounding box.
 	{
-		if (irand(0, 1))
-		{
-			gi.sound (self, CHAN_WEAPON, sounds[SND_BITEHIT1], 1, ATTN_NORM, 0);
-		}	
-		else
-		{
-			gi.sound (self, CHAN_WEAPON, sounds[SND_BITEHIT2], 1, ATTN_NORM, 0);
-		}
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_BITEHIT1, SND_BITEHIT2)], 1.0f, ATTN_NORM, 0.0f);
 
-		scale = -3;
-		VectorScale(v, scale, v);
-		VectorAdd (self->enemy->velocity, v, self->enemy->velocity);
+		VectorScale(diff, -3.0f, diff);
+		VectorAdd(self->enemy->velocity, diff, self->enemy->velocity);
 
-		T_Damage (self->enemy, self, self, vec3_origin, self->enemy->s.origin, vec3_origin, irand(FISH_DMG_BITE_MIN, FISH_DMG_BITE_MAX) , 0, DAMAGE_DISMEMBER,MOD_DIED);
+		T_Damage(self->enemy, self, self, vec3_origin, self->enemy->s.origin, vec3_origin, irand(FISH_DMG_BITE_MIN, FISH_DMG_BITE_MAX), 0, DAMAGE_DISMEMBER, MOD_DIED);
 
 	}
-	else			// A misssss
+	else // A miss.
 	{
-		if (irand(0, 1))
-		{
-			gi.sound (self, CHAN_WEAPON, sounds[SND_BITEMISS1], 1, ATTN_NORM, 0);
-		}
-		else
-		{
-			gi.sound (self, CHAN_WEAPON, sounds[SND_BITEMISS2], 1, ATTN_NORM, 0);
-		}
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_BITEMISS1, SND_BITEMISS2)], 1.0f, ATTN_NORM, 0.0f);
 	}
 }
 
