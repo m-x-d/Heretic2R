@@ -786,9 +786,7 @@ void assassin_pause(edict_t* self)
 	{
 		case AI_MOOD_NORMAL:
 		{
-			FindTarget(self);
-
-			if (self->enemy != NULL)
+			if (FindTarget(self))
 			{
 				vec3_t diff;
 				VectorSubtract(self->s.origin, self->enemy->s.origin, diff);

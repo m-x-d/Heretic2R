@@ -201,9 +201,7 @@ void chicken_pause(edict_t* self)
 
 	if (self->ai_mood == AI_MOOD_NORMAL)
 	{
-		FindTarget(self);
-
-		if (self->enemy != NULL)
+		if (FindTarget(self))
 		{
 			vec3_t diff;
 			VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
