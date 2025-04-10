@@ -130,30 +130,27 @@ void fish_update_yaw(edict_t *self)
  	self->best_move_yaw = 0;
 }
 
-
-//	generic 'decided on a new direction' reaction - make us select a new direction
-void fish_new_direction(edict_t *self)
+// Generic 'decided on a new direction' reaction - make us select a new direction.
+static void FishPickNewDirection(edict_t* self) //mxd. Named 'fish_new_direction' in original logic.
 {
-	if (!(irand(0,1)))
-		self->movedir[0] = flrand(-30.0, 30.0);
-	else
-		self->movedir[0] = 0;
-	self->movedir[1] += flrand(-45.0, 45.0);
-	// bring all our movedir angles up positive again
+	self->movedir[PITCH] = ((irand(0, 1) == 0) ? flrand(-30.0f, 30.0f) : 0.0f);
+	self->movedir[YAW] += flrand(-45.0f, 45.0f);
+
+	// Bring all our movedir angles up positive again.
 	FishResetMovedir(self);
 
-	// if we change direction, we might hit the same poly we just last collided with
-	self->shrine_type = 0; //TODO: part of union, add fish-specific prop?
+	// If we change direction, we might hit the same poly we just collided with.
+	self->shrine_type = 0;
 
-	// decide which animation to use
+	// Decide which animation to use.
 	if (self->ai_mood == AI_MOOD_WANDER)
 	{
-		self->speed = FISH_SPEED_FAST * self->old_yaw;
+		self->speed = self->old_yaw * FISH_SPEED_FAST;
 		fish_run(self);
 	}
 	else
 	{
-		self->speed = FISH_SPEED_SLOW * self->old_yaw;
+		self->speed = self->old_yaw * FISH_SPEED_SLOW;
 		fish_walk(self);
 	}
 }
@@ -533,7 +530,7 @@ void finished_swim(edict_t *self)
 			self->ai_mood = AI_MOOD_WANDER;
 		else
 			self->ai_mood = AI_MOOD_STAND;
-		fish_new_direction(self);
+		FishPickNewDirection(self);
 	}
 	else
 	if (temp <= 5)
@@ -580,7 +577,7 @@ void finished_runswim(edict_t *self)
 			self->ai_mood = AI_MOOD_STAND;
 		else
 			self->ai_mood = AI_MOOD_WANDER;
-		fish_new_direction(self);
+		FishPickNewDirection(self);
 	}
 	else
 	if (temp <= 5)
@@ -601,7 +598,7 @@ void fish_idle(edict_t *self)
 		if (!(irand(0,3)))
 			SetAnim(self, ANIM_STAND1);
 		else
-			fish_new_direction(self);
+			FishPickNewDirection(self);
 	}
 	else
 		fish_hunt(self);
