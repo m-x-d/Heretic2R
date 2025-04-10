@@ -563,38 +563,32 @@ static void FishDeadBobThink(edict_t* self) //mxd. Named 'fish_deadbob' in origi
 	self->nextthink = level.time + 0.2f;
 }
 
-//----------------------------------------------------------------------
-//  Fish float - make the fish float to the surface
-//----------------------------------------------------------------------
-
-
-void fish_deadfloat(edict_t *self)
+// Make the fish float to the surface.
+void fish_deadfloat(edict_t* self) //TODO: rename to FishDeadFloatThink.
 {
-	self->think = fish_deadfloat;
-	self->nextthink = level.time + .1;
-
 	M_CatagorizePosition(self);
 
-	if(self->waterlevel == 3)
+	if (self->waterlevel == 3) // Below water surface.
 	{
-		if(self->velocity[2]<10)
-			self->velocity[2]+=10;
+		if (self->velocity[2] < 10.0f)
+			self->velocity[2] += 10.0f;
 		else
-			self->velocity[2] = 20;	// Just in case somethimg blocked it going up
+			self->velocity[2] = 20.0f; // Just in case something blocked it going up.
 	}
-	else if(self->waterlevel < 2)
+	else if (self->waterlevel < 2) // Above water surface.
 	{
-		if(self->velocity[2] > -150)
-			self->velocity[2] -= 50;	// Fall back in now!
+		if (self->velocity[2] > -150.0f)
+			self->velocity[2] -= 50.0f; // Fall back in now!
 		else
-			self->velocity[2] = -200;
+			self->velocity[2] = -200.0f;
 	}
-	else
+	else // // On water surface (waterlevel == 2).
 	{
-		self->monsterinfo.misc_debounce_time = self->s.origin[2];
+		self->monsterinfo.misc_debounce_time = self->s.origin[2]; //TODO: use edict_s prop, add custom name.
 		self->think = FishDeadBobThink;
-		self->nextthink = level.time + .1;
 	}
+
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 //----------------------------------------------------------------------
