@@ -185,49 +185,29 @@ static void FishPickBounceDirection(edict_t* self) //mxd. Named 'fish_bounce_dir
 	}
 }
 
-/*
-===============
-M_ChangeFishYaw
-
-===============
-*/
-float M_ChangeFishYaw (edict_t *ent)
+static float FishChangeYaw(edict_t* self) //mxd. Named 'M_ChangeFishYaw' in original logic. Very similar to MG_ChangeWhichYaw().
 {
-	float	ideal;
-	float	current;
-	float	move;
-	float	speed;
-	
-	current = anglemod(ent->s.angles[YAW]);
-	ideal = ent->movedir[YAW];
+	const float current = anglemod(self->s.angles[YAW]);
+	const float ideal = self->movedir[YAW];
+	float move = ideal - current;
 
-	if (current == ideal)
-		return false;
+	if (FloatIsZeroEpsilon(move)) //mxd. Avoid direct float comparison.
+		return 0.0f;
 
-	move = ideal - current;
-	speed = ent->yaw_speed;
 	if (ideal > current)
 	{
-		if (move >= 180)
-			move = move - 360;
+		if (move >= 180.0f)
+			move -= 360.0f;
 	}
 	else
 	{
-		if (move <= -180)
-			move = move + 360;
+		if (move <= -180.0f)
+			move += 360.0f;
 	}
-	if (move > 0)
-	{
-		if (move > speed)
-			move = speed;
-	}
-	else
-	{
-		if (move < -speed)
-			move = -speed;
-	}
-	
-	ent->s.angles[YAW] = anglemod (current + move);
+
+	move = Clamp(move, -self->yaw_speed, self->yaw_speed);
+	self->s.angles[YAW] = anglemod(current + move);
+
 	return move;
 }
 
@@ -394,7 +374,7 @@ static void fish_think (edict_t *self)
 	if (!self->ai_mood_flags)
 	{
 		// update Yaw
-		M_ChangeFishYaw(self);
+		FishChangeYaw(self);
 		// update velocity
 		DirFromAngles(angles, self->velocity);
 		Vec3ScaleAssign(self->speed, self->velocity);
