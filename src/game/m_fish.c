@@ -745,19 +745,11 @@ void fish_pause(edict_t* self)
 	FishPickBounceDirection(self);
 }
 
-// shall we chase after someone ?
-void fish_chase(edict_t *self)
+// Shall we chase after someone?
+void fish_chase(edict_t* self)
 {
-
-	// shall we hunt someone ?
-	if (irand(0,1))
-		return;
-
-	// find a target to chase after
-	FindTarget(self);
-
-	// if we got one..
-	if (self->enemy)
+	// Shall we hunt someone?
+	if (irand(0, 1) == 0 && FindTarget(self))
 		fish_hunt(self);
 }
 
