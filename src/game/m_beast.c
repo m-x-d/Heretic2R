@@ -672,8 +672,6 @@ static void TBeastFakeImpact(edict_t* self, trace_t* trace, const qboolean crush
 
 				self->velocity[0] = 0.0f;
 				self->velocity[1] = 0.0f;
-
-				self->sounds++;
 				self->tbeast_pillars_destroyed++;
 
 				if (self->tbeast_pillars_destroyed >= 2) // Got both pillars, now die.
@@ -685,7 +683,7 @@ static void TBeastFakeImpact(edict_t* self, trace_t* trace, const qboolean crush
 
 			gi.CreateEffect(&self->s, FX_QUAKE, 0, vec3_origin, "bbb", 4, 3, 7);
 
-			if (self->sounds != 2 && irand(0, 1) == 1)
+			if (self->tbeast_pillars_destroyed < 2 && irand(0, 1) == 1) //mxd. Use 'tbeast_pillars_destroyed' instead of separate stun counter var.
 				SetAnim(self, ANIM_STUN);
 		}
 	}
@@ -1113,9 +1111,8 @@ static void TBeastBlocked(edict_t* self, trace_t* trace) //mxd. Named 'tbeast_bl
 
 			self->velocity[0] = 0.0f;
 			self->velocity[1] = 0.0f;
-			self->sounds++;
 
-			if (self->sounds != 2 && irand(0, 1) == 1)
+			if (self->tbeast_pillars_destroyed < 2 && irand(0, 1) == 1) //mxd. Use 'tbeast_pillars_destroyed' instead of separate stun counter var.
 				SetAnim(self, ANIM_STUN);
 		}
 	}
@@ -2277,7 +2274,6 @@ void SP_monster_trial_beast(edict_t* self)
 	self->next_post_think = level.time + 0.1f;
 	self->elasticity = ELASTICITY_SLIDE;
 	self->tbeast_grabbed_toy = false;
-	self->sounds = 0;
 	self->clipmask = CONTENTS_SOLID;
 	self->solid = SOLID_TRIGGER; // WHY IS HE BEING PUSHED BY BSP ENTITIES NOW?!
 	self->tbeast_pillars_destroyed = 0; // Pillar init. //BUGFIX: mxd. Original logic stores this in 'red_rain_count', which is NOT a saveable field.
