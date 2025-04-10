@@ -547,25 +547,20 @@ static void FishPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'fi
 	gi.sound(self, CHAN_WEAPON, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-//----------------------------------------------------------------------
-//  Fish Deadbob - (not really sure I like the name of this one)
-//----------------------------------------------------------------------
-void fish_deadbob(edict_t *self)
+static void FishDeadBobThink(edict_t* self) //mxd. Named 'fish_deadbob' in original logic.
 {
-
-	if (self->velocity[2] > 0)
+	if (self->velocity[2] > 0.0f)
 	{
-		if (self->s.origin[2] > self->monsterinfo.misc_debounce_time + flrand(3.0, 6.0))	// So it doesn't always go to the same height
-			self->velocity[2] = flrand(-7.0, -2.0);
+		if (self->s.origin[2] > self->monsterinfo.misc_debounce_time + flrand(3.0f, 6.0f)) // So it doesn't always go to the same height.
+			self->velocity[2] = flrand(-7.0f, -2.0f);
 	}
 	else
 	{
 		if (self->s.origin[2] < self->monsterinfo.misc_debounce_time)
-			self->velocity[2] = flrand(2.0, 7.0);
+			self->velocity[2] = flrand(2.0f, 7.0f);
 	}
 
-	self->think = fish_deadbob;
-	self->nextthink = level.time + .2;
+	self->nextthink = level.time + 0.2f;
 }
 
 //----------------------------------------------------------------------
@@ -597,7 +592,7 @@ void fish_deadfloat(edict_t *self)
 	else
 	{
 		self->monsterinfo.misc_debounce_time = self->s.origin[2];
-		self->think = fish_deadbob;
+		self->think = FishDeadBobThink;
 		self->nextthink = level.time + .1;
 	}
 }
