@@ -250,6 +250,7 @@ struct edict_s
 	{
 		float volume;
 		int tbeast_healthbar_buildup; //mxd
+		float fish_water_surface_z; //mxd
 	};
 
 	union

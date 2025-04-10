@@ -551,12 +551,12 @@ static void FishDeadBobThink(edict_t* self) //mxd. Named 'fish_deadbob' in origi
 {
 	if (self->velocity[2] > 0.0f)
 	{
-		if (self->s.origin[2] > self->monsterinfo.misc_debounce_time + flrand(3.0f, 6.0f)) // So it doesn't always go to the same height.
+		if (self->s.origin[2] > self->fish_water_surface_z + flrand(3.0f, 6.0f)) // So it doesn't always go to the same height.
 			self->velocity[2] = flrand(-7.0f, -2.0f);
 	}
 	else
 	{
-		if (self->s.origin[2] < self->monsterinfo.misc_debounce_time)
+		if (self->s.origin[2] < self->fish_water_surface_z)
 			self->velocity[2] = flrand(2.0f, 7.0f);
 	}
 
@@ -584,7 +584,7 @@ void FishDeadFloatThink(edict_t* self) //mxd. Named 'fish_deadfloat' in original
 	}
 	else // On water surface (waterlevel == 2).
 	{
-		self->monsterinfo.misc_debounce_time = self->s.origin[2]; //TODO: use edict_s prop, add custom name.
+		self->fish_water_surface_z = self->s.origin[2];
 		self->think = FishDeadBobThink;
 	}
 
