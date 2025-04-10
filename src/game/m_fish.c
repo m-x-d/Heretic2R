@@ -16,7 +16,7 @@
 #include "Vector.h"
 #include "g_local.h"
 
-static void fish_hunt(edict_t *self); //TODO: remove
+static void FishMoveToTarget(edict_t *self); //TODO: remove
 
 //TODO: move to m_stats.h?
 #define FISH_WALK_TURN_ANGLE	40.0f //mxd. Named WALK_TURN_ANGLE in original logic.
@@ -407,7 +407,7 @@ static void FishIsBlocked(edict_t* self, struct trace_s* trace) //mxd. Named 'fi
 		}
 		else
 		{
-			fish_hunt(self);
+			FishMoveToTarget(self);
 		}
 
 		return;
@@ -433,7 +433,7 @@ void fish_walkswim_finished(edict_t* self) //mxd. Named 'finished_swim' in origi
 {
 	if (self->ai_mood == AI_MOOD_PURSUE)
 	{
-		fish_hunt(self);
+		FishMoveToTarget(self);
 		return;
 	}
 
@@ -457,7 +457,7 @@ void fish_runswim_finished(edict_t* self) //mxd. Named 'barrel_explode_think' in
 {
 	if (self->ai_mood == AI_MOOD_PURSUE)
 	{
-		fish_hunt(self);
+		FishMoveToTarget(self);
 		return;
 	}
 
@@ -484,14 +484,14 @@ void fish_pain_finished(edict_t* self) //mxd. Named 'finished_fish_pain' in orig
 	self->deadflag = DEAD_NO;
 
 	if (self->waterlevel == 3)
-		fish_hunt(self);
+		FishMoveToTarget(self);
 }
 
 // Decide whether to stay idling, or go walking somewhere.
 void fish_idle(edict_t* self)
 {
 	if (self->ai_mood == AI_MOOD_PURSUE)
-		fish_hunt(self);
+		FishMoveToTarget(self);
 	else if (irand(0, 3) == 0)
 		SetAnim(self, ANIM_STAND1);
 	else
@@ -659,7 +659,7 @@ void fish_update_target_movedir(edict_t* self) //mxd. Named 'fish_target' in ori
 }
 
 // Figure out where our prey is, and go get him.
-static void fish_hunt(edict_t* self) //TODO: rename to FishMoveToTarget?
+static void FishMoveToTarget(edict_t* self) //mxd. Named 'fish_hunt' in original logic.
 {
 	// Make sure we still have a target - bouncing off stuff tends to clear it out.
 	if (self->enemy == NULL && !FindTarget(self))
@@ -735,7 +735,7 @@ void fish_pause(edict_t* self)
 	// Close enough to just zoom in on.
 	if (dist < 120.0f)
 	{
-		fish_hunt(self);
+		FishMoveToTarget(self);
 		return;
 	}
 
@@ -750,7 +750,7 @@ void fish_chase(edict_t* self)
 {
 	// Shall we hunt someone?
 	if (irand(0, 1) == 0 && FindTarget(self))
-		fish_hunt(self);
+		FishMoveToTarget(self);
 }
 
 void FishStaticsInit(void)
