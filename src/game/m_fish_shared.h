@@ -66,7 +66,7 @@ void fish_walkswim_finished(edict_t* self);
 void fish_runswim_finished(edict_t* self);
 void fish_walk(edict_t* self);
 void fish_run(edict_t* self);
-void finished_fish_pain(edict_t* self);
+void fish_pain_finished(edict_t* self);
 void fish_update_yaw(edict_t* self);
 void fish_pause(edict_t* self);
 void fish_chase(edict_t* self);

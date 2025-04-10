@@ -477,7 +477,7 @@ void fish_runswim_finished(edict_t* self) //mxd. Named 'barrel_explode_think' in
 }
 
 // The fish finished a pain cycle, shall we just randomly change direction or perhaps target a player or a bad guy? Or maybe just idle a bit.
-void finished_fish_pain(edict_t* self) //TODO: rename to fish_pain_finished.
+void fish_pain_finished(edict_t* self) //mxd. Named 'finished_fish_pain' in original logic.
 {
 	// Run the hell away.
 	self->ai_mood = AI_MOOD_WANDER;

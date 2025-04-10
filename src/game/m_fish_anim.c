@@ -187,7 +187,7 @@ static const animframe_t fish_frames_pain1[] =
 	{ FRAME_pain6,		NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_pain7,		NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t fish_move_pain1 = { 7, fish_frames_pain1, finished_fish_pain };
+const animmove_t fish_move_pain1 = { 7, fish_frames_pain1, fish_pain_finished };
 
 // Fish death.
 static const animframe_t fish_frames_death[] =
