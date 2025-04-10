@@ -658,31 +658,29 @@ void fish_target(edict_t* self) //TODO: rename to fish_update_target_movedir?
 	VectorRadiansToDegrees(self->movedir, self->movedir);
 }
 
-// figure out where our prey is, and go get him
-static void fish_hunt(edict_t *self)
+// Figure out where our prey is, and go get him.
+static void fish_hunt(edict_t* self) //TODO: rename to FishMoveToTarget?
 {
-
-	// make sure we still have a target - bouncing off stuff tends to clear it out
-	if (!self->enemy)
+	// Make sure we still have a target - bouncing off stuff tends to clear it out.
+	if (self->enemy == NULL && !FindTarget(self))
 	{
-		FindTarget(self);
-		// if we can't find one, let him just swim on alone..
-		if (!self->enemy)
+		// If we can't find one, let him just swim on alone...
+		if (self->curAnimID == ANIM_PAIN1)
 		{
-			if(self->curAnimID == ANIM_PAIN1)
-			{
-				self->speed = 20;
-	  			self->ai_mood = AI_MOOD_STAND;
-				SetAnim(self, ANIM_STAND1);
-			}
-			return;
+			self->speed = FISH_SPEED_DEFAULT;
+			self->ai_mood = AI_MOOD_STAND;
+			SetAnim(self, ANIM_STAND1);
 		}
+
+		return;
 	}
 
 	fish_target(self);
-	// set movement type
+
+	// Set movement type.
 	self->ai_mood = AI_MOOD_PURSUE;
-	//	make us run after it
+
+	// Make us run after it.
 	self->speed = FISH_SPEED_HUNT * self->old_yaw;
 	fish_run(self);
 }
