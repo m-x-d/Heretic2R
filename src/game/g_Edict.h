@@ -250,7 +250,12 @@ struct edict_s
 
 	// Timing variables.
 
-	float wait;		// Used by polys, triggers and targets.
+	union
+	{
+		float wait;	// Used by polys, triggers and targets.
+		int tbeast_toy_materialtype; //mxd
+	};
+	
 	float delay;	// Delay before firing targets. Used by a few polys and targets.
 	float random;	// Used by func_timer and spl_meteorbarrier.
 

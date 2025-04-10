@@ -350,7 +350,7 @@ static qboolean TBeastCheckMood(edict_t* self) //mxd. Named 'tbeastCheckMood' in
 		} break;
 
 		case AI_MOOD_PURSUE:
-			self->wait = 0.0f;
+			self->tbeast_toy_materialtype = 0;
 			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			break;
 
@@ -2011,7 +2011,7 @@ void tbeast_gore_toy(edict_t* self, float jump_height)
 	if (last_frame || enemy_zdist <= self->maxs[2] + 128.0f)
 	{
 		//FIXME: waits grabs it too low, waits too long.
-		self->wait = self->targetEnt->materialtype;
+		self->tbeast_toy_materialtype = self->targetEnt->materialtype;
 
 		gi.sound(self, CHAN_WEAPON, sounds[SND_SNATCH], 1.0f, ATTN_NORM, 0.0f);
 
@@ -2077,9 +2077,7 @@ void tbeast_anger_sound(edict_t* self)
 void tbeast_gibs(edict_t* self)
 {
 	//FIXME: keep making gibs.
-	const int material_id = (int)self->wait; //mxd
-
-	if (material_id == 0)
+	if (self->tbeast_toy_materialtype == 0)
 		return;
 
 	vec3_t forward;
@@ -2089,7 +2087,7 @@ void tbeast_gibs(edict_t* self)
 	VectorMA(self->s.origin, 56.0f, forward, spot);
 	spot[2] -= 8.0f;
 
-	const int fx_flags = (material_id == MAT_INSECT ? CEF_FLAG7 | CEF_FLAG8 : 0); // Use male insect skin on chunks.
+	const int fx_flags = (self->tbeast_toy_materialtype == MAT_INSECT ? CEF_FLAG7 | CEF_FLAG8 : 0); // Use male insect skin on chunks.
 	gi.CreateEffect(NULL, FX_FLESH_DEBRIS, fx_flags, spot, "bdb", (byte)irand(3, 7), self->mins, 16);
 
 	tbeast_anger_sound(self);
@@ -2288,7 +2286,7 @@ void SP_monster_trial_beast(edict_t* self)
 
 	self->max_health = self->health;
 	self->volume = 0.0f; // Initial healthbar buildup progress.
-	self->wait = 0.0f; // Initialize material id.
+	self->tbeast_toy_materialtype = 0; // Initialize material id.
 
 	level.fighting_beast = true; // Sorry, only one beast per level
 }
