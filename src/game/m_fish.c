@@ -487,22 +487,16 @@ void finished_fish_pain(edict_t* self) //TODO: rename to fish_pain_finished.
 		fish_hunt(self);
 }
 
-//----------------------------------------------------------------------
-//  Fish Idle - decide whether to stay idling, or go walking somewhere
-//----------------------------------------------------------------------
-void fish_idle(edict_t *self)
+// Decide whether to stay idling, or go walking somewhere.
+void fish_idle(edict_t* self)
 {
-	if (self->ai_mood != AI_MOOD_PURSUE)
-	{
-		if (!(irand(0,3)))
-			SetAnim(self, ANIM_STAND1);
-		else
-			FishPickNewDirection(self);
-	}
-	else
+	if (self->ai_mood == AI_MOOD_PURSUE)
 		fish_hunt(self);
+	else if (irand(0, 3) == 0)
+		SetAnim(self, ANIM_STAND1);
+	else
+		FishPickNewDirection(self);
 }
-
 
 //----------------------------------------------------------------------
 //  Fish Death - choose a death to use
