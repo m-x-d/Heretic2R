@@ -685,70 +685,65 @@ static void fish_hunt(edict_t* self) //TODO: rename to FishMoveToTarget?
 	fish_run(self);
 }
 
-// we are done attacking.. what do we do now ? attack again ?
-void fish_pause (edict_t *self)
+// We are done attacking. What do we do now? Attack again?
+void fish_pause(edict_t* self)
 {
-	vec3_t	v;
-	float	len;
-
-	FindTarget(self);
-
-	// is the target either not there or already dead ?
-	if (!self->enemy || self->enemy->deadflag == DEAD_DEAD)
+	// Is the target either not there or already dead?
+	if (!FindTarget(self) || self->enemy->deadflag == DEAD_DEAD)
 	{
 		self->enemy = NULL;
 		self->ai_mood = AI_MOOD_WANDER;
 		FishPickBounceDirection(self);
-		return;//right?  crashes if not!
+
+		return;
 	}
 
-	VectorSubtract (self->s.origin, self->enemy->s.origin, v);
-	len = VectorLength (v);
+	vec3_t diff;
+	VectorSubtract(self->s.origin, self->enemy->s.origin, diff);
+	const float dist = VectorLength(diff);
 
-	// we are close	enough to bite
-	if (len < (self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE))	// Within BITE_DIST of bounding box
+	// We are close	enough to bite.
+	if (dist < (self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE))	// Within BITE_DIST of bounding box.
 	{
 		VectorClear(self->velocity);
-		// if he's low on health, eat the bastard..
-		if (self->enemy->health < (self->enemy->max_health / 2))
-		{
-			SetAnim(self, ANIM_MELEE);
-			self->ai_mood = AI_MOOD_ATTACK;
-		}
-		// other wise a quick bite
-		else
-		{
-			// randomly swim off anyway
-			if (!irand(0,4))
-			{
-				self->ai_mood = AI_MOOD_ATTACK;
-				SetAnim(self, ANIM_BITE);
-			}
-			else
-			{
-				self->enemy = NULL;
-				self->ai_mood = AI_MOOD_WANDER;
-				FishPickBounceDirection(self);
-			}
-		}
-	}
 
-	else
-	{
-		if (len < 120)  // close enough to just zoom in on
+		// If he's low on health, eat the bastard.
+		if (self->enemy->health < self->enemy->max_health / 2)
 		{
-			fish_hunt(self);
+			self->ai_mood = AI_MOOD_ATTACK;
+			SetAnim(self, ANIM_MELEE);
+
+			return;
 		}
-		else	// far enough that I break off..
+
+		// Otherwise do a quick bite.
+		if (irand(0, 4) == 0)
 		{
-		  	self->enemy = NULL;
+			self->ai_mood = AI_MOOD_ATTACK;
+			SetAnim(self, ANIM_BITE);
+		}
+		else // Randomly swim off anyway.
+		{
+			self->enemy = NULL;
 			self->ai_mood = AI_MOOD_WANDER;
 			FishPickBounceDirection(self);
 		}
+
+		return;
 	}
+
+	// Close enough to just zoom in on.
+	if (dist < 120.0f)
+	{
+		fish_hunt(self);
+		return;
+	}
+
+	// Far enough that I break off.
+	self->enemy = NULL;
+	self->ai_mood = AI_MOOD_WANDER;
+	FishPickBounceDirection(self);
 }
-
-
 
 // shall we chase after someone ?
 void fish_chase(edict_t *self)
