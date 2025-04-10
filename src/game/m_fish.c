@@ -19,15 +19,20 @@
 static void fish_hunt(edict_t *self); //TODO: remove
 static void fish_think(edict_t *self); //TODO: remove
 
-#define WALK_TURN_ANGLE 40
-#define RUN_TURN_ANGLE 70
-#define BITE_DIST 32
-#define FISH_FAST 160
-#define FISH_HUNT (40 + FISH_FAST)
-#define FISH_SLOW 100
-#define FISH_ACTIVATE_DIST 3000.0
-#define FISH_SKIN1			0
-#define FISH_SKIN2			2
+//TODO: move to m_stats.h?
+#define FISH_WALK_TURN_ANGLE	40.0f //mxd. Named WALK_TURN_ANGLE in original logic.
+#define FISH_RUN_TURN_ANGLE		70.0f //mxd. Named RUN_TURN_ANGLE in original logic.
+
+#define FISH_BITE_DISTANCE		32.0f //mxd. Named BITE_DIST in original logic.
+#define FISH_ACTIVATE_DISTANCE	3000.0f //mxd. Named FISH_ACTIVATE_DIST in original logic.
+
+#define FISH_SPEED_FAST			160.0f //mxd. Named FISH_FAST in original logic.
+#define FISH_SPEED_HUNT			(40.0f + FISH_SPEED_FAST) //mxd. Named FISH_HUNT in original logic.
+#define FISH_SPEED_SLOW			100.0f //mxd. Named FISH_SLOW in original logic.
+#define FISH_SPEED_DEFAULT		20.0f //mxd
+
+#define FISH_SKIN1				0
+#define FISH_SKIN2				2
 
 /*----------------------------------------------------------------------
   Fish Base Info
@@ -83,7 +88,7 @@ void fish_run(edict_t *self)
 	{
 		// tell the think function we are doing the turn, so don't play with the yaw
 		self->ai_mood_flags = 1;
-		self->best_move_yaw = -RUN_TURN_ANGLE;
+		self->best_move_yaw = -FISH_RUN_TURN_ANGLE;
 		SetAnim(self, ANIM_RUN3);
 		return;
 	}
@@ -91,7 +96,7 @@ void fish_run(edict_t *self)
 	{
 		// tell the think function we are doing the turn, so don't play with the yaw
 		self->ai_mood_flags = 1;
-		self->best_move_yaw = RUN_TURN_ANGLE;
+		self->best_move_yaw = FISH_RUN_TURN_ANGLE;
 		SetAnim(self, ANIM_RUN2);
 		return;
 	}
@@ -116,7 +121,7 @@ void fish_walk(edict_t *self)
 	{
 		// tell the think function we are doing the turn, so don't play with the yaw
 		self->ai_mood_flags = 1;
-		self->best_move_yaw = -WALK_TURN_ANGLE;
+		self->best_move_yaw = -FISH_WALK_TURN_ANGLE;
 		SetAnim(self, ANIM_WALK3);
 		return;
 	}
@@ -124,7 +129,7 @@ void fish_walk(edict_t *self)
 	{
 		// tell the think function we are doing the turn, so don't play with the yaw
 		self->ai_mood_flags = 1;
-		self->best_move_yaw = WALK_TURN_ANGLE;
+		self->best_move_yaw = FISH_WALK_TURN_ANGLE;
 		SetAnim(self, ANIM_WALK2);
 		return;
 	}
@@ -162,12 +167,12 @@ void fish_new_direction(edict_t *self)
 	// decide which animation to use
 	if (self->ai_mood == AI_MOOD_WANDER)
 	{
-		self->speed = FISH_FAST * self->old_yaw;
+		self->speed = FISH_SPEED_FAST * self->old_yaw;
 		fish_run(self);
 	}
 	else
 	{
-		self->speed = FISH_SLOW * self->old_yaw;
+		self->speed = FISH_SPEED_SLOW * self->old_yaw;
 		fish_walk(self);
 	}
 }
@@ -190,12 +195,12 @@ void fish_bounce_direction(edict_t *self)
 	// decide which animation to use
 	if (self->ai_mood == AI_MOOD_WANDER)
 	{
-		self->speed = FISH_FAST * self->old_yaw;
+		self->speed = FISH_SPEED_FAST * self->old_yaw;
 		fish_run(self);
 	}
 	else
 	{
-		self->speed = FISH_SLOW * self->old_yaw;
+		self->speed = FISH_SPEED_SLOW * self->old_yaw;
 		fish_walk(self);
 	}
 }
@@ -298,7 +303,7 @@ void fish_check_distance(edict_t *self)
 	self->nextthink = level.time + 2.0;
 
 	// determine if we are too far from the camera to warrant animating or ai
-	if (gi.CheckDistances(self->s.origin, FISH_ACTIVATE_DIST))
+	if (gi.CheckDistances(self->s.origin, FISH_ACTIVATE_DISTANCE))
 	{
 	 	self->nextthink = level.time + FRAMETIME;
 	 	self->think = fish_think;
@@ -329,7 +334,7 @@ static void fish_think (edict_t *self)
 			self->enemy = NULL;
 	}
 	// determine if we are too far from the camera to warrant animating or ai
-	if (!gi.CheckDistances(self->s.origin, FISH_ACTIVATE_DIST))
+	if (!gi.CheckDistances(self->s.origin, FISH_ACTIVATE_DISTANCE))
 	{
 	 	self->think = fish_check_distance;
 		VectorClear(self->velocity);
@@ -494,7 +499,7 @@ void fish_blocked(edict_t *self, struct trace_s *trace)
 				len = VectorLength (v);
 				self->enemy = trace->ent;
 
-				if ((len < (self->maxs[0] + self->enemy->maxs[0] + BITE_DIST + 50)) && (self->dmg_radius ==4))	// Within 20 of bounding box & not out of water
+				if ((len < (self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE + 50)) && (self->dmg_radius ==4))	// Within 20 of bounding box & not out of water
 				{
 					SetAnim(self, ANIM_BITE);
 					self->ai_mood = AI_MOOD_ATTACK;
@@ -802,7 +807,7 @@ void fishbite (edict_t *self)
 	VectorSubtract (self->s.origin, self->enemy->s.origin, v);
 	len = VectorLength (v);
 
-	if (len < (self->maxs[0] + self->enemy->maxs[0] + BITE_DIST))	// Within 20 of bounding box
+	if (len < (self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE))	// Within 20 of bounding box
 	{
 		if (irand(0, 1))
 		{
@@ -876,7 +881,7 @@ static void fish_hunt(edict_t *self)
 	// set movement type
 	self->ai_mood = AI_MOOD_PURSUE;
 	//	make us run after it
-	self->speed = FISH_HUNT * self->old_yaw;
+	self->speed = FISH_SPEED_HUNT * self->old_yaw;
 	fish_run(self);
 }
 
@@ -901,7 +906,7 @@ void fish_pause (edict_t *self)
 	len = VectorLength (v);
 
 	// we are close	enough to bite
-	if (len < (self->maxs[0] + self->enemy->maxs[0] + BITE_DIST))	// Within BITE_DIST of bounding box
+	if (len < (self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE))	// Within BITE_DIST of bounding box
 	{
 		VectorClear(self->velocity);
 		// if he's low on health, eat the bastard..
