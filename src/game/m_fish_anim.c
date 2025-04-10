@@ -15,7 +15,7 @@
 // ADD ANY ADDITIONAL FILES BELOW
 
 #include "m_fish_anim.h"
-#include "m_fish_local.h"
+#include "m_fish_shared.h"
 
 #define FISH_WALK_SPEED 3
 #define FISH_RUN_SPEED 7

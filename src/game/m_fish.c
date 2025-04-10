@@ -17,7 +17,7 @@
 #include "vector.h"
 
 #include "m_fish.h"
-#include "m_fish_local.h"
+#include "m_fish_shared.h"
 #include "m_fish_anim.h"
 #include "m_stats.h"
 

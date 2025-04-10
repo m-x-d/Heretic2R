@@ -292,7 +292,7 @@
     <ClInclude Include="m_elflord_shared.h" />
     <ClInclude Include="m_elflord_anim.h" />
     <ClInclude Include="m_fish.h" />
-    <ClInclude Include="m_fish_local.h" />
+    <ClInclude Include="m_fish_shared.h" />
     <ClInclude Include="m_fish_anim.h" />
     <ClInclude Include="m_gkrokon.h" />
     <ClInclude Include="m_gkrokon_local.h" />

@@ -854,7 +854,7 @@
     <ClInclude Include="m_elflord_anim.h">
       <Filter>src\Monsters\Elf Lord</Filter>
     </ClInclude>
-    <ClInclude Include="m_fish_local.h">
+    <ClInclude Include="m_fish_shared.h">
       <Filter>src\Monsters\Fish</Filter>
     </ClInclude>
     <ClInclude Include="m_fish_anim.h">
