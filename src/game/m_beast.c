@@ -2000,10 +2000,10 @@ void tbeast_gore_toy(edict_t* self, float jump_height)
 	}
 	else
 	{
-		self->count = 0;
+		self->tbeast_grabbed_toy = false;
 	}
 
-	if (self->targetEnt == NULL || self->targetEnt->health < 0 || self->count > 0)
+	if (self->targetEnt == NULL || self->targetEnt->health < 0 || self->tbeast_grabbed_toy)
 		return;
 
 	const float enemy_zdist = self->targetEnt->s.origin[2] - self->s.origin[2];
@@ -2016,7 +2016,7 @@ void tbeast_gore_toy(edict_t* self, float jump_height)
 		gi.sound(self, CHAN_WEAPON, sounds[SND_SNATCH], 1.0f, ATTN_NORM, 0.0f);
 
 		if (!last_frame)
-			self->count = 1;
+			self->tbeast_grabbed_toy = true;
 
 		vec3_t dir;
 		VectorCopy(self->velocity, dir);
@@ -2096,7 +2096,7 @@ void tbeast_gibs(edict_t* self)
 void tbeast_done_gore(edict_t* self)
 {
 	self->msgHandler = DefaultMsgHandler;
-	self->count = 0;
+	self->tbeast_grabbed_toy = false;
 	M_ValidTarget(self, self->enemy);
 
 	self->monsterinfo.aiflags |= AI_EATING;
@@ -2276,7 +2276,7 @@ void SP_monster_trial_beast(edict_t* self)
 	self->post_think = TBeastPostThink;
 	self->next_post_think = level.time + 0.1f;
 	self->elasticity = ELASTICITY_SLIDE;
-	self->count = 0;
+	self->tbeast_grabbed_toy = false;
 	self->sounds = 0;
 	self->clipmask = CONTENTS_SOLID;
 	self->solid = SOLID_TRIGGER; // WHY IS HE BEING PUSHED BY BSP ENTITIES NOW?!
