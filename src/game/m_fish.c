@@ -276,7 +276,7 @@ static void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic
 		self->movedir[PITCH] = flrand(-35.0f, -15.0f);
 
 		// Only allow one of these every second for this fish.
-		if (self->count == 0) //TODO: Add 'fish_ripple_spawned' name.
+		if (!self->fish_ripple_spawned)
 		{
 			// Create a ripple.
 			vec3_t top;
@@ -305,13 +305,13 @@ static void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic
 				}
 
 				gi.sound(self, CHAN_WEAPON, sounds[SND_SPLASH], 1.0f, ATTN_NORM, 0.0f);
-				self->count = 1;
+				self->fish_ripple_spawned = true;
 			}
 		}
 	}
 	else
 	{
-		self->count = 0;
+		self->fish_ripple_spawned = false;
 		self->fish_max_pitch_speed = 4.0f;
 	}
 

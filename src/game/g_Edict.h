@@ -226,6 +226,7 @@ struct edict_s
 		int morph_animation_frame; //mxd. Used by Morph spell.
 		int elflord_charge_meter; //mxd
 		qboolean tbeast_grabbed_toy; //mxd
+		qboolean fish_ripple_spawned; //mxd
 	};
 
 	int targeted; // Used by Ogle to denote a targeted action queued up.
