@@ -367,69 +367,64 @@ void fish_swim_sound(edict_t* self, float fast)
 	}
 }
 
-/*-------------------------------------------------------------------------
-	The fish hit something
--------------------------------------------------------------------------*/
-void fish_blocked(edict_t *self, struct trace_s *trace)
+// The fish hit something.
+static void FishIsBlocked(edict_t* self, struct trace_s* trace) //mxd. Named 'fish_blocked' in original logic.
 {
-	vec3_t	v;
-	float	len;
-
-	// dead fish don't rebound off stuff.
+	// Dead fish don't rebound off stuff.
 	if (self->deadflag == DEAD_DEAD)
 		return;
 
-	// did we hit a monster or player ?
-	if(trace->ent && ((trace->ent->svflags & SVF_MONSTER) || (trace->ent->client)))
+	// Did we hit a monster or player?
+	if (trace->ent != NULL && ((trace->ent->svflags & SVF_MONSTER) || trace->ent->client != NULL))
 	{
-		// hit another fish - send us on our way
+		// Hit another fish - send us on our way.
 		if (trace->ent->classID == CID_FISH)
-			FishPickBounceDirection(self);
-		//we didn't, shall we attack this entity ?
-		//we would be able to bite him, then sure, otherwise, just bounce us off and set him as the enemy
-		else
 		{
-			// first decide if this guy is dead 
-			if (trace->ent->deadflag == DEAD_DEAD)
-			{
-			  	FishPickBounceDirection(self);
-				self->enemy = NULL;
-			}
-			// nope, so lets BITE THE BASTARD :)
-			else
-			{
-				VectorSubtract (self->s.origin, trace->ent->s.origin, v);
-				len = VectorLength (v);
-				self->enemy = trace->ent;
+			FishPickBounceDirection(self);
+			return;
+		}
 
-				if ((len < (self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE + 50)) && (self->dmg_radius ==4))	// Within 20 of bounding box & not out of water
-				{
-					SetAnim(self, ANIM_BITE);
-					self->ai_mood = AI_MOOD_ATTACK;
-				}
-				else
-				{
-					fish_hunt(self);
-				}
-			}
-		}
-			
-	}
-	// we hit a wall, or something
-	// reverse our direction, and the randomise a cone of projection out from that,
-	// and send us on our way
-	else
-	{
-		// did we hit a model of some type ?
-		if (trace->ent)
-			FishPickBounceDirection(self);
-		else
-		// did we hit the same wall as last time ? cos if we did, we already dealt with it
-		if ((int)trace->surface != (int)self->shrine_type)
+		// Check if this guy is dead.
+		if (trace->ent->deadflag == DEAD_DEAD)
 		{
-			self->shrine_type = (int)trace->surface;
 			FishPickBounceDirection(self);
+			self->enemy = NULL;
+
+			return;
 		}
+
+		// Not dead, so lets BITE THE BASTARD :)
+		self->enemy = trace->ent;
+
+		vec3_t diff;
+		VectorSubtract(self->s.origin, trace->ent->s.origin, diff);
+		const float dist = VectorLength(diff);
+
+		if (dist < self->maxs[0] + self->enemy->maxs[0] + FISH_BITE_DISTANCE + 50.0f && (self->dmg_radius == 4)) // Within 20 of bounding box & not out of water.
+		{
+			SetAnim(self, ANIM_BITE);
+			self->ai_mood = AI_MOOD_ATTACK;
+		}
+		else
+		{
+			fish_hunt(self);
+		}
+
+		return;
+	}
+
+	// Did we hit a model of some type?
+	if (trace->ent != NULL)
+	{
+		FishPickBounceDirection(self);
+		return;
+	}
+
+	// Did we hit the same wall as last time? Because if we did, we already dealt with it.
+	if ((int)trace->surface != self->shrine_type)
+	{
+		self->shrine_type = (int)trace->surface;
+		FishPickBounceDirection(self);
 	}
 }
 
@@ -981,7 +976,7 @@ void SP_monster_fish (edict_t *self)
 		self->s.skinnum = FISH_SKIN2;
 
 	self->deadflag = DEAD_NO;
-	self->isBlocked = fish_blocked;
+	self->isBlocked = FishIsBlocked;
 	self->ai_mood = AI_MOOD_STAND;
 	self->ai_mood_flags = 0;
 	self->gravity = self->best_move_yaw = 0;
