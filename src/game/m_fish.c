@@ -582,7 +582,7 @@ void FishDeadFloatThink(edict_t* self) //mxd. Named 'fish_deadfloat' in original
 		else
 			self->velocity[2] = -200.0f;
 	}
-	else // // On water surface (waterlevel == 2).
+	else // On water surface (waterlevel == 2).
 	{
 		self->monsterinfo.misc_debounce_time = self->s.origin[2]; //TODO: use edict_s prop, add custom name.
 		self->think = FishDeadBobThink;
@@ -591,10 +591,8 @@ void FishDeadFloatThink(edict_t* self) //mxd. Named 'fish_deadfloat' in original
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-//----------------------------------------------------------------------
-//  Fish Dead - he's dead, figure how far it is to the top of the water so he can float
-//----------------------------------------------------------------------
-void fish_dead(edict_t *self)
+// Fish's dead, figure how far it is to the top of the water so he can float.
+void fish_dead(edict_t* self)
 {
 	self->deadflag = DEAD_DEAD;
 	self->takedamage = DAMAGE_YES;
@@ -602,17 +600,18 @@ void fish_dead(edict_t *self)
 	VectorClear(self->velocity);
 
 	self->think = FishDeadFloatThink;
-	self->nextthink = level.time + 0.1;
-			
-	// stop the fish making bubbles
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
+	// Stop the fish making bubbles.
 	gi.RemoveEffects(&self->s, FX_WATER_BUBBLE);
-	if (self->PersistantCFX)
+
+	if (self->PersistantCFX > 0)
 	{
 		gi.RemovePersistantEffect(self->PersistantCFX, REMOVE_FISH);
 		self->PersistantCFX = 0;
 	}
 
-	gi.linkentity (self);
+	gi.linkentity(self);
 }
 
 // he bit the player - decide what to do
