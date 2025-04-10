@@ -860,7 +860,7 @@
     <ClInclude Include="m_fish_anim.h">
       <Filter>src\Monsters\Fish</Filter>
     </ClInclude>
-    <ClInclude Include="m_gkrokon_local.h">
+    <ClInclude Include="m_gkrokon_shared.h">
       <Filter>src\Monsters\Gkrokon</Filter>
     </ClInclude>
     <ClInclude Include="m_gkrokon_anim.h">

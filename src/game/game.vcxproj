@@ -295,7 +295,7 @@
     <ClInclude Include="m_fish_shared.h" />
     <ClInclude Include="m_fish_anim.h" />
     <ClInclude Include="m_gkrokon.h" />
-    <ClInclude Include="m_gkrokon_local.h" />
+    <ClInclude Include="m_gkrokon_shared.h" />
     <ClInclude Include="m_gkrokon_anim.h" />
     <ClInclude Include="m_gorgon.h" />
     <ClInclude Include="m_gorgon_anim.h" />

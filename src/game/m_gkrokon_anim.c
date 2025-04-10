@@ -17,7 +17,7 @@
 // ADD ANY ADDITIONAL FILES BELOW
 
 #include "m_gkrokon_anim.h"
-#include "m_gkrokon_local.h"
+#include "m_gkrokon_shared.h"
 
 // ****************************************************************************
 // Stand1 - Laid down, resting, still on the floor.
