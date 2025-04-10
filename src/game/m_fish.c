@@ -476,17 +476,14 @@ void finished_runswim(edict_t* self) //TODO: rename to fish_runswim_finished.
 	}
 }
 
-/*-------------------------------------------------------------------------
-	The fish finished a swim cycle, shall we just randomly change direction
-	or perhaps target a player or a bad guy ? Or maybe just idle a bit
--------------------------------------------------------------------------*/
-void finished_fish_pain(edict_t *self)
+// The fish finished a pain cycle, shall we just randomly change direction or perhaps target a player or a bad guy? Or maybe just idle a bit.
+void finished_fish_pain(edict_t* self) //TODO: rename to fish_pain_finished.
 {
-   // run the hell away
+	// Run the hell away.
 	self->ai_mood = AI_MOOD_WANDER;
 	self->deadflag = DEAD_NO;
 
-	if(self->waterlevel == 3)
+	if (self->waterlevel == 3)
 		fish_hunt(self);
 }
 
