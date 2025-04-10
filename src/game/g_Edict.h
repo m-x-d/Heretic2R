@@ -354,6 +354,7 @@ struct edict_s
 	{
 		float last_move_time; // Only used by target_earthquake (poly/trigger).
 		float old_yaw; // Used by the Seraph to return to his exact position and angles.
+		float fish_speed_scaler; //mxd
 	};
 
 	union

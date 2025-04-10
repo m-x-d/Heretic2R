@@ -144,12 +144,12 @@ static void FishPickNewDirection(edict_t* self) //mxd. Named 'fish_new_direction
 	// Decide which animation to use.
 	if (self->ai_mood == AI_MOOD_WANDER)
 	{
-		self->speed = self->old_yaw * FISH_SPEED_FAST;
+		self->speed = self->fish_speed_scaler * FISH_SPEED_FAST;
 		fish_run(self);
 	}
 	else
 	{
-		self->speed = self->old_yaw * FISH_SPEED_SLOW;
+		self->speed = self->fish_speed_scaler * FISH_SPEED_SLOW;
 		fish_walk(self);
 	}
 }
@@ -174,12 +174,12 @@ static void FishPickBounceDirection(edict_t* self) //mxd. Named 'fish_bounce_dir
 	// Decide which animation to use.
 	if (self->ai_mood == AI_MOOD_WANDER)
 	{
-		self->speed = self->old_yaw * FISH_SPEED_FAST;
+		self->speed = self->fish_speed_scaler * FISH_SPEED_FAST;
 		fish_run(self);
 	}
 	else
 	{
-		self->speed = self->old_yaw * FISH_SPEED_SLOW;
+		self->speed = self->fish_speed_scaler * FISH_SPEED_SLOW;
 		fish_walk(self);
 	}
 }
@@ -681,7 +681,7 @@ static void FishMoveToTarget(edict_t* self) //mxd. Named 'fish_hunt' in original
 	self->ai_mood = AI_MOOD_PURSUE;
 
 	// Make us run after it.
-	self->speed = FISH_SPEED_HUNT * self->old_yaw;
+	self->speed = self->fish_speed_scaler * FISH_SPEED_HUNT;
 	fish_run(self);
 }
 
@@ -843,7 +843,7 @@ void SP_monster_fish(edict_t* self)
 
 	self->yaw_speed = 11.0f;
 	self->fish_max_pitch_speed = 4.0f;
-	self->old_yaw = flrand(0.65f, 1.0f); // Random(ish) speed. //TODO: part of union, add fish-specific name?
+	self->fish_speed_scaler = flrand(0.65f, 1.0f); // Random(ish) speed.
 	self->shrine_type = 0; //TODO: part of union, add fish-specific name?
 
 	self->movetype = PHYSICSTYPE_STEP;
