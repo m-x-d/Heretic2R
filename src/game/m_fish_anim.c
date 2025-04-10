@@ -54,7 +54,7 @@ static const animframe_t fish_frames_run1[] =
 	{ FRAME_swim7,		NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_swim8,		NULL, 0, 0, 0, fish_swim_sound, 1, fish_chase },
 };
-const animmove_t fish_move_run1 = { 8, fish_frames_run1, finished_runswim };
+const animmove_t fish_move_run1 = { 8, fish_frames_run1, fish_runswim_finished };
 
 // Fish swim 2.
 static const animframe_t fish_frames_run2[] =

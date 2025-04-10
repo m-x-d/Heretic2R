@@ -63,7 +63,7 @@ void fish_dead(edict_t* self);
 void fishbite(edict_t* self);
 void fish_idle(edict_t* self);
 void fish_walkswim_finished(edict_t* self);
-void finished_runswim(edict_t* self);
+void fish_runswim_finished(edict_t* self);
 void fish_walk(edict_t* self);
 void fish_run(edict_t* self);
 void finished_fish_pain(edict_t* self);
