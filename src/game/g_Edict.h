@@ -250,7 +250,7 @@ struct edict_s
 	union
 	{
 		float attenuation;	// Used only by sound_ambient_nnn.
-		float maxrange;		// Used for ai.
+		float maxrange;		// Used by env_smoke and func_monsterspawner.
 		int tbeast_pillars_destroyed; //mxd
 	};
 
@@ -343,6 +343,7 @@ struct edict_s
 	{
 		float last_buoy_time;
 		float fly_sound_debounce_time; //TODO: unused.
+		qboolean fish_is_turning; //mxd
 	};
 
 	union
