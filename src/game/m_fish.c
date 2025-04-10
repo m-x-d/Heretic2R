@@ -16,8 +16,6 @@
 #include "Vector.h"
 #include "g_local.h"
 
-static void FishMoveToTarget(edict_t *self); //TODO: remove
-
 //TODO: move to m_stats.h?
 #define FISH_WALK_TURN_ANGLE	40.0f //mxd. Named WALK_TURN_ANGLE in original logic.
 #define FISH_RUN_TURN_ANGLE		70.0f //mxd. Named RUN_TURN_ANGLE in original logic.
@@ -54,6 +52,8 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
+#pragma region ========================== Utility functions =========================
+
 // Bring all our movedir angles up positive again.
 static void FishResetMovedir(edict_t* self) //mxd. Named 'reset_fish_movedir' in original logic.
 {
@@ -66,67 +66,6 @@ static void FishResetMovedir(edict_t* self) //mxd. Named 'reset_fish_movedir' in
 		if (self->movedir[i] < 0.0f)
 			self->movedir[i] += 360.0f;
 	}
-}
-
-// Choose a run animation to use.
-void fish_run(edict_t* self)
-{
-	const float delta = anglemod(self->s.angles[YAW] - self->movedir[YAW]);
-
-	if (delta > 70.0f && delta <= 180.0f) // Look right.
-	{
-		// Tell the think function we are doing the turn, so don't play with the yaw.
-		self->fish_is_turning = true;
-		self->best_move_yaw = -FISH_RUN_TURN_ANGLE;
-		SetAnim(self, ANIM_RUN3);
-	}
-	else if (delta > 180.0f && delta < 290.0f) // Look left.
-	{
-		// Tell the think function we are doing the turn, so don't play with the yaw.
-		self->fish_is_turning = true;
-		self->best_move_yaw = FISH_RUN_TURN_ANGLE;
-		SetAnim(self, ANIM_RUN2);
-	}
-	else
-	{
-		// Tell the think function we are NOT doing the turn.
-		self->fish_is_turning = false;
-		SetAnim(self, ANIM_RUN1);
-	}
-}
-
-// Choose a walk animation to use.
-void fish_walk(edict_t* self)
-{
-	const float delta = anglemod(self->s.angles[YAW] - self->movedir[YAW]);
-
-	if (delta > 40.0f && delta <= 180.0f) // Look right.
-	{
-		// tell the think function we are doing the turn, so don't play with the yaw.
-		self->fish_is_turning = true;
-		self->best_move_yaw = -FISH_WALK_TURN_ANGLE;
-		SetAnim(self, ANIM_WALK3);
-	}
-	else if (delta > 180.0f && delta < 320.0f) // Look left. //BUGFIX: mxd. 'delta > 180 && delta < 20' in original logic (e.g. never).
-	{
-		// Tell the think function we are doing the turn, so don't play with the yaw.
-		self->fish_is_turning = true;
-		self->best_move_yaw = FISH_WALK_TURN_ANGLE;
-		SetAnim(self, ANIM_WALK2);
-	}
-	else
-	{
-		// Tell the think function we are NOT doing the turn.
-		self->fish_is_turning = false;
-		SetAnim(self, ANIM_WALK1);
-	}
-}
-
-// Update the yaw on the first frame of a new animation - stop jittering.
-void fish_update_yaw(edict_t* self)
-{
-	self->s.angles[YAW] += self->best_move_yaw;
-	self->best_move_yaw = 0.0f;
 }
 
 // Generic 'decided on a new direction' reaction - make us select a new direction.
@@ -235,6 +174,90 @@ static float FishChangePitch(edict_t* self) //mxd. Named 'M_ChangeFishPitch' in 
 
 	return move;
 }
+
+// Figure out where our prey is, and go get him.
+static void FishMoveToTarget(edict_t* self) //mxd. Named 'fish_hunt' in original logic.
+{
+	// Make sure we still have a target - bouncing off stuff tends to clear it out.
+	if (self->enemy == NULL && !FindTarget(self))
+	{
+		// If we can't find one, let him just swim on alone...
+		if (self->curAnimID == ANIM_PAIN1)
+		{
+			self->speed = FISH_SPEED_DEFAULT;
+			self->ai_mood = AI_MOOD_STAND;
+			SetAnim(self, ANIM_STAND1);
+		}
+
+		return;
+	}
+
+	fish_update_target_movedir(self);
+
+	// Set movement type.
+	self->ai_mood = AI_MOOD_PURSUE;
+
+	// Make us run after it.
+	self->speed = self->fish_speed_scaler * FISH_SPEED_HUNT;
+	fish_run(self);
+}
+
+#pragma endregion
+
+#pragma region ========================== Message handlers ==========================
+
+static void FishDeadPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'fish_dead_pain' in original logic.
+{
+	if (self->health < -60)
+		BecomeDebris(self); //TODO: also play SND_GIB sound?
+}
+
+static void FishDeadMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'fish_death' in original logic.
+{
+	VectorClear(self->velocity);
+	self->deadflag = DEAD_DEAD;
+
+	if (self->health < -60)
+	{
+		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1.0f, ATTN_NORM, 0.0f);
+		BecomeDebris(self);
+	}
+	else
+	{
+		gi.sound(self, CHAN_WEAPON, sounds[SND_DIE], 1.0f, ATTN_NORM, 0.0f);
+
+		// Switch to damaged skin?
+		if (self->s.skinnum == FISH_SKIN1 || self->s.skinnum == FISH_SKIN2)
+			self->s.skinnum += 1;
+
+		SetAnim(self, ANIM_DEATH1);
+	}
+}
+
+static void FishPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'fish_pain' in original logic.
+{
+	int temp;
+	int damage;
+	qboolean force_pain;
+	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
+
+	if (!force_pain && irand(0, 3) == 0) //mxd. flrand() in original logic.
+		return;
+
+	SetAnim(self, ANIM_PAIN1);
+	VectorClear(self->velocity);
+	self->deadflag = DEAD_DYING;
+
+	// Switch to damaged skin?
+	if (irand(0, 2) == 0 && (self->s.skinnum == FISH_SKIN1 || self->s.skinnum == FISH_SKIN2))
+		self->s.skinnum += 1;
+
+	gi.sound(self, CHAN_WEAPON, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
+}
+
+#pragma endregion
+
+#pragma region ========================== Edict callbacks ===========================
 
 static void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic.
 {
@@ -348,25 +371,6 @@ static void FishThink(edict_t* self) //mxd. Named 'fish_think' in original logic
 	M_WorldEffects(self);
 }
 
-void fish_under_water_wake(edict_t* self)
-{
-	gi.CreateEffect(&self->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, self->s.origin, "bv", FX_UNDER_WATER_WAKE, vec3_origin);
-}
-
-void fish_swim_sound(edict_t* self, float fast)
-{
-	if (fast != 0.0f)
-	{
-		if (irand(0, 1) == 0)
-			gi.sound(self, CHAN_BODY, sounds[irand(SND_FAST_SWIM1, SND_FAST_SWIM2)], 0.75f, ATTN_IDLE, 0.0f);
-	}
-	else
-	{
-		if (irand(0, 4) == 0)
-			gi.sound(self, CHAN_BODY, sounds[irand(SND_SLOW_SWIM1, SND_SLOW_SWIM2)], 0.5f, ATTN_IDLE, 0.0f);
-	}
-}
-
 // The fish hit something.
 static void FishIsBlocked(edict_t* self, struct trace_s* trace) //mxd. Named 'fish_blocked' in original logic.
 {
@@ -425,6 +429,134 @@ static void FishIsBlocked(edict_t* self, struct trace_s* trace) //mxd. Named 'fi
 	{
 		self->fish_last_collision_surface = trace->surface;
 		FishPickBounceDirection(self);
+	}
+}
+
+static void FishDeadBobThink(edict_t* self) //mxd. Named 'fish_deadbob' in original logic.
+{
+	if (self->velocity[2] > 0.0f)
+	{
+		if (self->s.origin[2] > self->fish_water_surface_z + flrand(3.0f, 6.0f)) // So it doesn't always go to the same height.
+			self->velocity[2] = flrand(-7.0f, -2.0f);
+	}
+	else
+	{
+		if (self->s.origin[2] < self->fish_water_surface_z)
+			self->velocity[2] = flrand(2.0f, 7.0f);
+	}
+
+	self->nextthink = level.time + 0.2f;
+}
+
+// Make the fish float to the surface.
+void FishDeadFloatThink(edict_t* self) //mxd. Named 'fish_deadfloat' in original logic.
+{
+	M_CatagorizePosition(self);
+
+	if (self->waterlevel == 3) // Below water surface.
+	{
+		if (self->velocity[2] < 10.0f)
+			self->velocity[2] += 10.0f;
+		else
+			self->velocity[2] = 20.0f; // Just in case something blocked it going up.
+	}
+	else if (self->waterlevel < 2) // Above water surface.
+	{
+		if (self->velocity[2] > -150.0f)
+			self->velocity[2] -= 50.0f; // Fall back in now!
+		else
+			self->velocity[2] = -200.0f;
+	}
+	else // On water surface (waterlevel == 2).
+	{
+		self->fish_water_surface_z = self->s.origin[2];
+		self->think = FishDeadBobThink;
+	}
+
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+}
+
+#pragma endregion
+
+#pragma region ========================== Action functions ==========================
+
+// Choose a run animation to use.
+void fish_run(edict_t* self)
+{
+	const float delta = anglemod(self->s.angles[YAW] - self->movedir[YAW]);
+
+	if (delta > 70.0f && delta <= 180.0f) // Look right.
+	{
+		// Tell the think function we are doing the turn, so don't play with the yaw.
+		self->fish_is_turning = true;
+		self->best_move_yaw = -FISH_RUN_TURN_ANGLE;
+		SetAnim(self, ANIM_RUN3);
+	}
+	else if (delta > 180.0f && delta < 290.0f) // Look left.
+	{
+		// Tell the think function we are doing the turn, so don't play with the yaw.
+		self->fish_is_turning = true;
+		self->best_move_yaw = FISH_RUN_TURN_ANGLE;
+		SetAnim(self, ANIM_RUN2);
+	}
+	else
+	{
+		// Tell the think function we are NOT doing the turn.
+		self->fish_is_turning = false;
+		SetAnim(self, ANIM_RUN1);
+	}
+}
+
+// Choose a walk animation to use.
+void fish_walk(edict_t* self)
+{
+	const float delta = anglemod(self->s.angles[YAW] - self->movedir[YAW]);
+
+	if (delta > 40.0f && delta <= 180.0f) // Look right.
+	{
+		// tell the think function we are doing the turn, so don't play with the yaw.
+		self->fish_is_turning = true;
+		self->best_move_yaw = -FISH_WALK_TURN_ANGLE;
+		SetAnim(self, ANIM_WALK3);
+	}
+	else if (delta > 180.0f && delta < 320.0f) // Look left. //BUGFIX: mxd. 'delta > 180 && delta < 20' in original logic (e.g. never).
+	{
+		// Tell the think function we are doing the turn, so don't play with the yaw.
+		self->fish_is_turning = true;
+		self->best_move_yaw = FISH_WALK_TURN_ANGLE;
+		SetAnim(self, ANIM_WALK2);
+	}
+	else
+	{
+		// Tell the think function we are NOT doing the turn.
+		self->fish_is_turning = false;
+		SetAnim(self, ANIM_WALK1);
+	}
+}
+
+// Update the yaw on the first frame of a new animation - stop jittering.
+void fish_update_yaw(edict_t* self)
+{
+	self->s.angles[YAW] += self->best_move_yaw;
+	self->best_move_yaw = 0.0f;
+}
+
+void fish_under_water_wake(edict_t* self)
+{
+	gi.CreateEffect(&self->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, self->s.origin, "bv", FX_UNDER_WATER_WAKE, vec3_origin);
+}
+
+void fish_swim_sound(edict_t* self, float fast)
+{
+	if (fast != 0.0f)
+	{
+		if (irand(0, 1) == 0)
+			gi.sound(self, CHAN_BODY, sounds[irand(SND_FAST_SWIM1, SND_FAST_SWIM2)], 0.75f, ATTN_IDLE, 0.0f);
+	}
+	else
+	{
+		if (irand(0, 4) == 0)
+			gi.sound(self, CHAN_BODY, sounds[irand(SND_SLOW_SWIM1, SND_SLOW_SWIM2)], 0.5f, ATTN_IDLE, 0.0f);
 	}
 }
 
@@ -498,99 +630,6 @@ void fish_idle(edict_t* self)
 		FishPickNewDirection(self);
 }
 
-static void FishDeadPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'fish_dead_pain' in original logic.
-{
-	if (self->health < -60)
-		BecomeDebris(self); //TODO: also play SND_GIB sound?
-}
-
-static void FishDeadMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'fish_death' in original logic.
-{
-	VectorClear(self->velocity);
-	self->deadflag = DEAD_DEAD;
-
-	if (self->health < -60)
-	{
-		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1.0f, ATTN_NORM, 0.0f);
-		BecomeDebris(self);
-	}
-	else
-	{
-		gi.sound(self, CHAN_WEAPON, sounds[SND_DIE], 1.0f, ATTN_NORM, 0.0f);
-
-		// Switch to damaged skin?
-		if (self->s.skinnum == FISH_SKIN1 || self->s.skinnum == FISH_SKIN2)
-			self->s.skinnum += 1;
-
-		SetAnim(self, ANIM_DEATH1);
-	}
-}
-
-static void FishPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'fish_pain' in original logic.
-{
-	int temp;
-	int damage;
-	qboolean force_pain;
-	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
-
-	if (!force_pain && irand(0, 3) == 0) //mxd. flrand() in original logic.
-		return;
-
-	SetAnim(self, ANIM_PAIN1);
-	VectorClear(self->velocity);
-	self->deadflag = DEAD_DYING;
-
-	// Switch to damaged skin?
-	if (irand(0, 2) == 0 && (self->s.skinnum == FISH_SKIN1 || self->s.skinnum == FISH_SKIN2))
-		self->s.skinnum += 1;
-
-	gi.sound(self, CHAN_WEAPON, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
-}
-
-static void FishDeadBobThink(edict_t* self) //mxd. Named 'fish_deadbob' in original logic.
-{
-	if (self->velocity[2] > 0.0f)
-	{
-		if (self->s.origin[2] > self->fish_water_surface_z + flrand(3.0f, 6.0f)) // So it doesn't always go to the same height.
-			self->velocity[2] = flrand(-7.0f, -2.0f);
-	}
-	else
-	{
-		if (self->s.origin[2] < self->fish_water_surface_z)
-			self->velocity[2] = flrand(2.0f, 7.0f);
-	}
-
-	self->nextthink = level.time + 0.2f;
-}
-
-// Make the fish float to the surface.
-void FishDeadFloatThink(edict_t* self) //mxd. Named 'fish_deadfloat' in original logic.
-{
-	M_CatagorizePosition(self);
-
-	if (self->waterlevel == 3) // Below water surface.
-	{
-		if (self->velocity[2] < 10.0f)
-			self->velocity[2] += 10.0f;
-		else
-			self->velocity[2] = 20.0f; // Just in case something blocked it going up.
-	}
-	else if (self->waterlevel < 2) // Above water surface.
-	{
-		if (self->velocity[2] > -150.0f)
-			self->velocity[2] -= 50.0f; // Fall back in now!
-		else
-			self->velocity[2] = -200.0f;
-	}
-	else // On water surface (waterlevel == 2).
-	{
-		self->fish_water_surface_z = self->s.origin[2];
-		self->think = FishDeadBobThink;
-	}
-
-	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
-}
-
 // Fish's dead, figure how far it is to the top of the water so he can float.
 void fish_dead(edict_t* self)
 {
@@ -656,33 +695,6 @@ void fish_update_target_movedir(edict_t* self) //mxd. Named 'fish_target' in ori
 	// Figure out the angles we want.
 	AnglesFromDir(dir, self->movedir);
 	VectorRadiansToDegrees(self->movedir, self->movedir);
-}
-
-// Figure out where our prey is, and go get him.
-static void FishMoveToTarget(edict_t* self) //mxd. Named 'fish_hunt' in original logic.
-{
-	// Make sure we still have a target - bouncing off stuff tends to clear it out.
-	if (self->enemy == NULL && !FindTarget(self))
-	{
-		// If we can't find one, let him just swim on alone...
-		if (self->curAnimID == ANIM_PAIN1)
-		{
-			self->speed = FISH_SPEED_DEFAULT;
-			self->ai_mood = AI_MOOD_STAND;
-			SetAnim(self, ANIM_STAND1);
-		}
-
-		return;
-	}
-
-	fish_update_target_movedir(self);
-
-	// Set movement type.
-	self->ai_mood = AI_MOOD_PURSUE;
-
-	// Make us run after it.
-	self->speed = self->fish_speed_scaler * FISH_SPEED_HUNT;
-	fish_run(self);
 }
 
 // We are done attacking. What do we do now? Attack again?
@@ -752,6 +764,8 @@ void fish_chase(edict_t* self)
 	if (irand(0, 1) == 0 && FindTarget(self))
 		FishMoveToTarget(self);
 }
+
+#pragma endregion
 
 void FishStaticsInit(void)
 {
@@ -859,7 +873,7 @@ void SP_monster_fish(edict_t* self)
 	}
 
 	VectorSet(self->mins, -16.0f, -16.0f, -8.0f);
-	VectorSet(self->maxs, 16.0f, 16.0f, 8.0f);
+	VectorSet(self->maxs,  16.0f,  16.0f,  8.0f);
 
 	// Scale the maxs and mins according to scale of model.
 	Vec3ScaleAssign(self->s.scale, self->mins);
