@@ -259,27 +259,10 @@ void beetle_ai_stand(edict_t* self, float dist) //TODO: rename to gkrokon_ai_sta
 		MG_FaceGoal(self, true);
 }
 
-/*-----------------------------------------------
-	beetle_idle_sound
------------------------------------------------*/
-
-void beetle_idle_sound(edict_t *self)
+void beetle_idle_sound(edict_t* self) //TODO: rename to gkrokon_idle_sound.
 {
-	int chance = irand(0,20);
-
-	switch (chance)
-	{
-	case 0:
-		gkrokonSound(self, CHAN_BODY, SND_IDLE1, ATTN_NORM);
-		break;
-
-	case 1:
-		gkrokonSound(self, CHAN_BODY, SND_IDLE2, ATTN_NORM);
-		break;
-	
-	default:
-		break;
-	}
+	if (irand(0, 20) < 2)
+		gi.sound(self, CHAN_BODY, sounds[irand(SND_IDLE1, SND_IDLE2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
 /*
