@@ -526,240 +526,181 @@ static qboolean CanThrowNode(edict_t* self, const int node_id, int* throw_nodes)
 	return false;
 }
 
-void beetle_dismember(edict_t *self, int damage, int HitLocation)
+static void GkrokonThrowBodyPart(edict_t* self, const int mesh_id) //mxd. Split from GkrokonDismember() to simplify logic.
 {
-	int			throw_nodes = 0;
-	vec3_t		gore_spot, right;
-	qboolean	dismember_ok = false;
-
-	if(HitLocation & hl_MeleeHit)
+	if (!(self->s.fmnodeinfo[mesh_id].flags & FMNI_NO_DRAW))
 	{
-		dismember_ok = true;
-		HitLocation &= ~hl_MeleeHit;
+		self->s.fmnodeinfo[mesh_id].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[mesh_id].skin = self->s.skinnum + 1;
+	}
+}
+
+static qboolean GkrokonThrowTorsoFront(edict_t* self, const float damage) //mxd. Split from GkrokonDismember() to simplify logic.
+{
+	static const int mesh_ids[] = //mxd
+	{
+		MESH__HEAD_P1,
+		MESH__SPIKE_P1,
+		MESH__RPINCHERA_P1,
+		MESH__LPINCHERA_P1,
+		MESH__RPINCHERB_P1,
+		MESH__LPINCHERB_P1
+	};
+
+	vec3_t gore_spot = { 0 };
+	int throw_nodes = 0;
+
+	for (uint i = 0; i < ARRAYSIZE(mesh_ids); i++)
+	{
+		const int mesh_id = mesh_ids[i];
+
+		if (!(self->s.fmnodeinfo[mesh_id].flags & FMNI_USE_SKIN))
+		{
+			if (irand(0, 4) > 0)
+			{
+				self->s.fmnodeinfo[mesh_id].flags |= FMNI_USE_SKIN;
+				self->s.fmnodeinfo[mesh_id].skin = self->s.skinnum + 1;
+			}
+		}
+		else if (CanThrowNode(self, mesh_id, &throw_nodes))
+		{
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			gore_spot[2] += self->maxs[2] * 0.3f; //TODO: gore_spot[2] is incremented every time this is called. Is that intentional?
+			VectorMA(gore_spot, -10.0f, right, gore_spot); //TODO: use different offsets for each mesh part?
+
+			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+
+			if (mesh_id == MESH__HEAD_P1)
+			{
+				T_Damage(self, self->enemy, self->enemy, vec3_origin, vec3_origin, vec3_origin, 9999, 200, DAMAGE_NORMAL, MOD_DIED);
+				return true;
+			}
+		}
 	}
 
-	if(HitLocation<1)
+	return false;
+}
+
+static void GkrokonThrowArm(edict_t* self, float damage, const int mesh_part, const qboolean dismember_ok) //mxd. Split from GkrokonDismember() to simplify logic.
+{
+	if (self->s.fmnodeinfo[mesh_part].flags & FMNI_NO_DRAW)
 		return;
 
-	if(HitLocation>hl_Max)
+	const qboolean is_left_arm = (mesh_part == MESH__LARM_P1); //mxd
+
+	if (is_left_arm && (self->s.fmnodeinfo[mesh_part].flags & FMNI_USE_SKIN))
+		damage *= 1.5f; // Greater chance to cut off if previously damaged.
+
+	if (dismember_ok && flrand(0, (float)self->health) < damage * 0.75f)
+	{
+		int throw_nodes = 0;
+
+		if (CanThrowNode(self, mesh_part, &throw_nodes))
+		{
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+			const float side = (is_left_arm ? -1.0f : 1.0f);
+			VectorMA(gore_spot, 10.0f * side, right, gore_spot);
+
+			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+		}
+	}
+	else
+	{
+		self->s.fmnodeinfo[mesh_part].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[mesh_part].skin = self->s.skinnum + 1;
+	}
+}
+
+static void GkrokonThrowLeg(edict_t* self, const float damage, const int mesh_part) //mxd. Split from GkrokonDismember() to simplify logic.
+{
+	if (self->health > 0)
+	{
+		if (self->s.fmnodeinfo[mesh_part].flags & FMNI_USE_SKIN)
+			return;
+
+		self->s.fmnodeinfo[mesh_part].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[mesh_part].skin = self->s.skinnum + 1;
+	}
+	else
+	{
+		if (self->s.fmnodeinfo[mesh_part].flags & FMNI_NO_DRAW)
+			return;
+
+		int throw_nodes = 0;
+
+		if (CanThrowNode(self, mesh_part, &throw_nodes))
+		{
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
+
+			vec3_t gore_spot = { 0.0f, 0.0f, self->maxs[2] * 0.3f };
+			const float side = ((mesh_part == MESH__LTHIGH_P1) ? -1.0f : 1.0f);
+			VectorMA(gore_spot, 10.0f * side, right, gore_spot); //BUGFIX: mxd. scaled by -10 for both legs in original logic.
+
+			ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
+		}
+	}
+}
+
+static void GkrokonDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'beetle_dismember' in original logic.
+{
+	qboolean dismember_ok = false;
+
+	if (hl & hl_MeleeHit)
+	{
+		dismember_ok = true;
+		hl &= ~hl_MeleeHit;
+	}
+
+	if (hl <= hl_NoneSpecific || hl >= hl_Max) //mxd. 'hl > hl_Max' in original logic.
 		return;
 
-	VectorClear(gore_spot);
-	switch(HitLocation)
+	switch (hl)
 	{
 		case hl_Head:
-			if(self->s.fmnodeinfo[MESH__SHELLB_P1].flags & FMNI_NO_DRAW)
-				break;
-			self->s.fmnodeinfo[MESH__SHELLB_P1].flags |= FMNI_USE_SKIN;
-			self->s.fmnodeinfo[MESH__SHELLB_P1].skin = self->s.skinnum + 1;
+			GkrokonThrowBodyPart(self, MESH__SHELLB_P1);
 			break;
 
-		case hl_TorsoFront://split in half?
-			if(!(self->s.fmnodeinfo[MESH__HEAD_P1].flags & FMNI_USE_SKIN))
-			{
-				if(irand(0, 4))
-				{
-					self->s.fmnodeinfo[MESH__HEAD_P1].flags |= FMNI_USE_SKIN;			
-					self->s.fmnodeinfo[MESH__HEAD_P1].skin = self->s.skinnum+1;
-				}
-			}
-			else if(CanThrowNode(self, MESH__HEAD_P1, &throw_nodes))
-			{
-				AngleVectors(self->s.angles,NULL,right,NULL);
-				gore_spot[2]+=self->maxs[2]*0.3;
-				VectorMA(gore_spot,-10,right,gore_spot);
-				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				T_Damage(self, self->enemy, self->enemy, vec3_origin, vec3_origin, vec3_origin, 9999, 200, DAMAGE_NORMAL,MOD_DIED);
+		case hl_TorsoFront: // Split in half?
+			if (GkrokonThrowTorsoFront(self, (float)damage))
 				return;
-			}
-
-			if(!(self->s.fmnodeinfo[MESH__SPIKE_P1].flags & FMNI_USE_SKIN))
-			{
-				if(irand(0, 4))
-				{
-					self->s.fmnodeinfo[MESH__SPIKE_P1].flags |= FMNI_USE_SKIN;			
-					self->s.fmnodeinfo[MESH__SPIKE_P1].skin = self->s.skinnum+1;
-				}
-			}
-			else if(CanThrowNode(self, MESH__SPIKE_P1, &throw_nodes))
-			{
-				AngleVectors(self->s.angles,NULL,right,NULL);
-				gore_spot[2]+=self->maxs[2]*0.3;
-				VectorMA(gore_spot,-10,right,gore_spot);
-				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-			}
-	
-			if(!(self->s.fmnodeinfo[MESH__RPINCHERA_P1].flags & FMNI_USE_SKIN))
-			{
-				if(irand(0, 4))
-				{
-					self->s.fmnodeinfo[MESH__RPINCHERA_P1].flags |= FMNI_USE_SKIN;			
-					self->s.fmnodeinfo[MESH__RPINCHERA_P1].skin = self->s.skinnum+1;
-				}
-			}
-			else if(CanThrowNode(self, MESH__RPINCHERA_P1, &throw_nodes))
-			{
-				AngleVectors(self->s.angles,NULL,right,NULL);
-				gore_spot[2]+=self->maxs[2]*0.3;
-				VectorMA(gore_spot,-10,right,gore_spot);
-				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-			}
-			
-			if(!(self->s.fmnodeinfo[MESH__LPINCHERA_P1].flags & FMNI_USE_SKIN))
-			{
-				if(irand(0, 4))
-				{
-					self->s.fmnodeinfo[MESH__LPINCHERA_P1].flags |= FMNI_USE_SKIN;			
-					self->s.fmnodeinfo[MESH__LPINCHERA_P1].skin = self->s.skinnum+1;
-				}
-			}
-			else if(CanThrowNode(self, MESH__LPINCHERA_P1, &throw_nodes))
-			{
-				AngleVectors(self->s.angles,NULL,right,NULL);
-				gore_spot[2]+=self->maxs[2]*0.3;
-				VectorMA(gore_spot,-10,right,gore_spot);
-				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-			}
-			
-			if(!(self->s.fmnodeinfo[MESH__RPINCHERB_P1].flags & FMNI_USE_SKIN))
-			{
-				if(irand(0, 4))
-				{
-					self->s.fmnodeinfo[MESH__RPINCHERB_P1].flags |= FMNI_USE_SKIN;			
-					self->s.fmnodeinfo[MESH__RPINCHERB_P1].skin = self->s.skinnum+1;
-				}
-			}
-			else if(CanThrowNode(self, MESH__RPINCHERB_P1, &throw_nodes))
-			{
-				AngleVectors(self->s.angles,NULL,right,NULL);
-				gore_spot[2]+=self->maxs[2]*0.3;
-				VectorMA(gore_spot,-10,right,gore_spot);
-				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-			}
-
-			if(!(self->s.fmnodeinfo[MESH__LPINCHERB_P1].flags & FMNI_USE_SKIN))
-			{
-				if(irand(0, 4))
-				{
-					self->s.fmnodeinfo[MESH__LPINCHERB_P1].flags |= FMNI_USE_SKIN;			
-					self->s.fmnodeinfo[MESH__LPINCHERB_P1].skin = self->s.skinnum+1;
-				}
-			}
-			else if(CanThrowNode(self, MESH__LPINCHERB_P1, &throw_nodes))
-			{
-				AngleVectors(self->s.angles,NULL,right,NULL);
-				gore_spot[2]+=self->maxs[2]*0.3;
-				VectorMA(gore_spot,-10,right,gore_spot);
-				ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-			}
-			break;
-		case hl_TorsoBack://split in half?
-			if(self->s.fmnodeinfo[MESH__ABDOMEN_P1].flags & FMNI_NO_DRAW)
-				break;
-			self->s.fmnodeinfo[MESH__ABDOMEN_P1].flags |= FMNI_USE_SKIN;			
-			self->s.fmnodeinfo[MESH__ABDOMEN_P1].skin = self->s.skinnum+1;
 			break;
 
-		case hl_ArmLowerLeft://left arm
+		case hl_TorsoBack: // Split in half?
+			GkrokonThrowBodyPart(self, MESH__ABDOMEN_P1);
+			break;
+
+		case hl_ArmLowerLeft: // Left arm.
 		case hl_ArmUpperLeft:
-			if(self->s.fmnodeinfo[MESH__LARM_P1].flags & FMNI_NO_DRAW)
-				break;
-			if(self->s.fmnodeinfo[MESH__LARM_P1].flags & FMNI_USE_SKIN)
-				damage*=1.5;//greater chance to cut off if previously damaged
-			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
-			{
-				if(CanThrowNode(self, MESH__LARM_P1, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-			}
-			else
-			{
-				self->s.fmnodeinfo[MESH__LARM_P1].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__LARM_P1].skin = self->s.skinnum+1;
-			}
+			GkrokonThrowArm(self, (float)damage, MESH__LARM_P1, dismember_ok);
 			break;
 
-		case hl_ArmUpperRight:
-		case hl_ArmLowerRight://right arm
-			if(self->s.fmnodeinfo[MESH__RARM_P1].flags & FMNI_NO_DRAW)
-				break;
-			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
-			{
-				CanThrowNode(self, MESH__RARM_P1, &throw_nodes);
-				if(CanThrowNode(self, MESH__RARM_P1, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-			}
-			else
-			{
-				self->s.fmnodeinfo[MESH__RARM_P1].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__RARM_P1].skin = self->s.skinnum+1;
-			}
+		case hl_ArmUpperRight: // Right arm.
+		case hl_ArmLowerRight:
+			GkrokonThrowArm(self, (float)damage, MESH__RARM_P1, dismember_ok);
 			break;
 
-		case hl_LegUpperLeft:
-		case hl_LegLowerLeft://left leg
-			if(self->health>0)
-			{
-				if(self->s.fmnodeinfo[MESH__LTHIGH_P1].flags & FMNI_USE_SKIN)
-					break;
-				self->s.fmnodeinfo[MESH__LTHIGH_P1].flags |= FMNI_USE_SKIN;			
-				self->s.fmnodeinfo[MESH__LTHIGH_P1].skin = self->s.skinnum+1;
-				break;
-			}
-			else
-			{
-				if(self->s.fmnodeinfo[MESH__LTHIGH_P1].flags & FMNI_NO_DRAW)
-					break;
-				if(CanThrowNode(self, MESH__LTHIGH_P1, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-				break;
-			}
-		case hl_LegUpperRight:
-		case hl_LegLowerRight://right leg
-			if(self->health>0)
-			{
-				if(self->s.fmnodeinfo[MESH__RTHIGH_P1].flags & FMNI_USE_SKIN)
-					break;
-				self->s.fmnodeinfo[MESH__RTHIGH_P1].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MESH__RTHIGH_P1].skin = self->s.skinnum+1;
-			}
-			else
-			{
-				if(self->s.fmnodeinfo[MESH__RTHIGH_P1].flags & FMNI_NO_DRAW)
-					break;
-				if(CanThrowNode(self, MESH__RTHIGH_P1, &throw_nodes))
-				{
-					AngleVectors(self->s.angles,NULL,right,NULL);
-					gore_spot[2]+=self->maxs[2]*0.3;
-					VectorMA(gore_spot,-10,right,gore_spot);
-					ThrowBodyPart(self, &gore_spot, throw_nodes, damage, 0);
-				}
-			}
+		case hl_LegUpperLeft: // Left leg.
+		case hl_LegLowerLeft:
+			GkrokonThrowLeg(self, (float)damage, MESH__LTHIGH_P1);
 			break;
+
+		case hl_LegUpperRight: // Right leg.
+		case hl_LegLowerRight:
+			GkrokonThrowLeg(self, (float)damage, MESH__RTHIGH_P1);
+			break;
+
 		default:
 			break;
 	}
 
-	if(self->s.fmnodeinfo[MESH__SPIKE_P1].flags&FMNI_NO_DRAW)			
-	{
-		self->monsterinfo.aiflags |= AI_COWARD;
-		self->monsterinfo.aiflags |= AI_NO_MELEE;
-		self->monsterinfo.aiflags |= AI_NO_MISSILE;
-	}
+	if (self->s.fmnodeinfo[MESH__SPIKE_P1].flags & FMNI_NO_DRAW)
+		self->monsterinfo.aiflags |= (AI_COWARD | AI_NO_MELEE | AI_NO_MISSILE);
 }
 
 #pragma endregion
@@ -887,7 +828,7 @@ void SP_Monster_Gkrokon(edict_t *self)
 	self->movetype=PHYSICSTYPE_STEP;
 	VectorClear(self->knockbackvel);
 	self->solid=SOLID_BBOX;
-	self->monsterinfo.dismember = beetle_dismember;
+	self->monsterinfo.dismember = GkrokonDismember;
 
 	self->s.renderfx |= RF_FRAMELERP;
 	
