@@ -101,7 +101,7 @@ static const animframe_t gkrokon_frames_crouch2[] =
 	{ FRAME_birth3,		NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_birth4,		NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t gkrokon_move_crouch2 = { 4, gkrokon_frames_crouch2, beetle_to_stand };
+const animmove_t gkrokon_move_crouch2 = { 4, gkrokon_frames_crouch2, gkrokon_set_stand_anim };
 
 // Crouch3 - settling down into crouching position (stalking enemy).
 static const animframe_t gkrokon_frames_crouch3[] =
@@ -111,7 +111,7 @@ static const animframe_t gkrokon_frames_crouch3[] =
 	{ FRAME_birth2,		NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_birth1,		NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t gkrokon_move_crouch3 = { 4, gkrokon_frames_crouch3, beetle_to_crouch };
+const animmove_t gkrokon_move_crouch3 = { 4, gkrokon_frames_crouch3, gkrokon_set_crouch_anim };
 
 // Walk1 - a leisurely ambling gait.
 static const animframe_t gkrokon_frames_walk1[] =

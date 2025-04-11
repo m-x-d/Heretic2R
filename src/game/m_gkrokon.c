@@ -881,13 +881,13 @@ void gkrokon_pause(edict_t* self) //mxd. Named 'GkrokonPause' in original logic.
 	}
 }
 
-void beetle_to_stand(edict_t* self) //TODO: rename to gkrokon_switch_to_stand_anim.
+void gkrokon_set_stand_anim(edict_t* self) //mxd. Named 'beetle_to_stand' in original logic.
 {
 	SetAnim(self, ANIM_STAND3);
 	gkrokon_pause(self);
 }
 
-void beetle_to_crouch(edict_t* self) //TODO: rename to gkrokon_switch_to_crouch_anim.
+void gkrokon_set_crouch_anim(edict_t* self) //mxd. Named 'beetle_to_crouch' in original logic.
 {
 	SetAnim(self, ANIM_CROUCH1);
 	gkrokon_pause(self);
