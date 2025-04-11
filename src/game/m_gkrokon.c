@@ -148,58 +148,47 @@ edict_t* GkrokonSpooReflect(edict_t* self, edict_t* other, vec3_t vel)
 	return spoo;
 }
 
-/*-----------------------------------------------
-	GkrokonSpoo
------------------------------------------------*/
-
-void GkrokonSpoo(edict_t *self)
+void GkrokonSpoo(edict_t* self) //TODO: rename to gkrokon_spoo_attack
 {
-	vec3_t	Forward, up, vf;
-	edict_t	*Spoo;
-	float	edist;
+	if (self->enemy == NULL)
+		return;
 
-	if(!self->enemy)
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
+
+	vec3_t diff;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
+	const float dist = VectorNormalize(diff);
+
+	// Skip when enemy not within 90-deg forward cone.
+	if (DotProduct(diff, forward) < 0.5f) //mxd. Was done in the middle of spoo init logic in original version, before gi.linkentity() call.
 		return;
 
 	// Spawn the spoo globbit.
-	Spoo = G_Spawn();
+	edict_t* spoo = G_Spawn();
 
-	SpooInit(Spoo);
-	Spoo->reflect_debounce_time = MAX_REFLECT;
+	SpooInit(spoo);
 
-	Spoo->s.scale = 0.5;
-	Spoo->enemy=self->enemy;
-	Spoo->owner=self;
-	AngleVectors(self->s.angles,Forward,NULL,up);
-	VectorCopy(self->s.origin,Spoo->s.origin);	
-	VectorMA(Spoo->s.origin,-16,Forward,Spoo->s.origin);
-	Spoo->s.origin[2]+=12.0;
-	VectorCopy(self->movedir,Spoo->movedir);
-	vectoangles(Forward,Spoo->s.angles);
-	
-	VectorSubtract(self->enemy->s.origin, self->s.origin, vf);
-	edist = VectorNormalize(vf);
+	spoo->reflect_debounce_time = MAX_REFLECT;
+	spoo->enemy = self->enemy;
+	spoo->owner = self;
 
-	if (DotProduct(vf, Forward) < 0.5)
-		return;
-	
-	VectorScale(vf,GKROKON_SPOO_SPEED,Spoo->velocity);
-	Spoo->velocity[2] += GKROKON_SPOO_ARC;
-	Spoo->velocity[2] += (edist - 256);
-	vectoangles(Spoo->velocity, Spoo->s.angles);
+	VectorCopy(self->s.origin, spoo->s.origin);
+	VectorMA(spoo->s.origin, -16.0f, forward, spoo->s.origin);
+	spoo->s.origin[2] += 12.0f;
 
-	gi.linkentity(Spoo); 
+	VectorCopy(self->movedir, spoo->movedir);
+	vectoangles(forward, spoo->s.angles);
 
-	gi.sound(Spoo,CHAN_WEAPON,sounds[SND_SPOO],1,ATTN_NORM,0);
+	VectorScale(diff, GKROKON_SPOO_SPEED, spoo->velocity);
+	spoo->velocity[2] += GKROKON_SPOO_ARC + (dist - 256.0f);
+	vectoangles(spoo->velocity, spoo->s.angles);
 
-	gi.CreateEffect(&Spoo->s,
-				FX_SPOO,
-				CEF_OWNERS_ORIGIN,
-				Spoo->s.origin,
-				"");
+	gi.linkentity(spoo);
+	gi.sound(spoo, CHAN_WEAPON, sounds[SND_SPOO], 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(&spoo->s, FX_SPOO, CEF_OWNERS_ORIGIN, spoo->s.origin, "");
 
-
-	self->monsterinfo.misc_debounce_time = level.time + flrand(0.5, 3);
+	self->monsterinfo.misc_debounce_time = level.time + flrand(0.5f, 3.0f);
 }
 
 #pragma endregion
