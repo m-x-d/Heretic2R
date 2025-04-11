@@ -291,18 +291,6 @@ static void GkrokonCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 }
 
 /*-----------------------------------------------
-	beetle_walk
------------------------------------------------*/
-
-void beetle_walk(edict_t *self,G_Message_t *Msg)
-{
-	if(self->spawnflags&MSF_FIXED)
-		SetAnim(self, ANIM_STAND3);
-	else
-		SetAnim(self,ANIM_WALK1);
-}
-
-/*-----------------------------------------------
 	beetle_run
 -----------------------------------------------*/
 
