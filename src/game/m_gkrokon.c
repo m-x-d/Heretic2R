@@ -33,7 +33,6 @@ static void GkrokonSpooTouch(edict_t* self, edict_t* other, cplane_t* plane, csu
 static void GkrokonSpooTouch2(edict_t* self, trace_t* trace); //TODO: remove.
 
 static int sounds[NUM_SOUNDS];
-static ClassResourceInfo_t resInfo;
 
 static const animmove_t *animations[NUM_ANIMS] =
 {
@@ -985,6 +984,8 @@ void beetle_dead_pain (edict_t *self, G_Message_t *msg)
 
 void GkrokonStaticsInit(void)
 {
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
+
 	classStatics[CID_GKROKON].msgReceivers[MSG_STAND]=beetle_stand;
 	classStatics[CID_GKROKON].msgReceivers[MSG_RUN]=beetle_run;	
 	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH_PAIN] = beetle_dead_pain;
@@ -998,9 +999,9 @@ void GkrokonStaticsInit(void)
 	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH_PAIN] = beetle_dead_pain;
 	classStatics[CID_GKROKON].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 
-	resInfo.numAnims=NUM_ANIMS;
-	resInfo.animations=animations;
-	resInfo.modelIndex=gi.modelindex("models/monsters/gkrokon/tris.fm");
+	res_info.numAnims=NUM_ANIMS;
+	res_info.animations=animations;
+	res_info.modelIndex=gi.modelindex("models/monsters/gkrokon/tris.fm");
 
 	sounds[SND_PAIN1]=gi.soundindex("monsters/beetle/pain1.wav");
 	sounds[SND_PAIN2]=gi.soundindex("monsters/beetle/pain2.wav");	
@@ -1020,10 +1021,10 @@ void GkrokonStaticsInit(void)
 	sounds[SND_BITEMISS1]=gi.soundindex("monsters/beetle/meleemiss1.wav");	
 	sounds[SND_BITEMISS2]=gi.soundindex("monsters/beetle/meleemiss2.wav");	
 
-	resInfo.numSounds=NUM_SOUNDS;
-	resInfo.sounds=sounds;
+	res_info.numSounds=NUM_SOUNDS;
+	res_info.sounds=sounds;
 
-	classStatics[CID_GKROKON].resInfo=&resInfo;
+	classStatics[CID_GKROKON].resInfo=&res_info;
 }
 
 // ****************************************************************************
