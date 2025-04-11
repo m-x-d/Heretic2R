@@ -441,16 +441,13 @@ static void GkrokonEatMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 	SetAnim(self, irand(ANIM_EAT1, ANIM_EAT3));
 }
 
-/*-----------------------------------------------
-	beetle_death
------------------------------------------------*/
-
-void beetle_death(edict_t *self,G_Message_t *Msg)
+static void GkrokonDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'beetle_death' in original logic.
 {
-	edict_t	*targ, *inflictor, *attacker;
-	float	damage;
-
-	ParseMsgParms(Msg, "eeei", &targ, &inflictor, &attacker, &damage);
+	edict_t* target;
+	edict_t* inflictor;
+	edict_t* attacker;
+	float damage;
+	ParseMsgParms(msg, "eeei", &target, &inflictor, &attacker, &damage);
 
 	M_StartDeath(self, ANIM_DIE1);
 
@@ -459,27 +456,22 @@ void beetle_death(edict_t *self,G_Message_t *Msg)
 		BecomeDebris(self);
 		return;
 	}
-	else
-	{
-		if(self->health < -10)
-		{
-			vec3_t	forward;
-			int	i, num_limbs;
 
-			num_limbs = irand(3, 10);
-			for(i = 0; i < num_limbs; i++)
-			{
-				if(self->svflags&SVF_MONSTER)
-					self->monsterinfo.dismember(self, flrand(80, 160), irand(hl_Head, hl_LegLowerRight) | hl_MeleeHit);
-			}
-			AngleVectors(self->s.angles, forward, NULL, NULL);
-			VectorMA(self->velocity, -400, forward, self->velocity);
-			self->velocity[2] += 150;
-		}
-		SetAnim(self, ANIM_DIE1);
+	if (self->health < -10)
+	{
+		if (self->svflags & SVF_MONSTER)
+			for (int i = 0; i < irand(3, 10); i++)
+				self->monsterinfo.dismember(self, irand(80, 160), irand(hl_Head, hl_LegLowerRight) | hl_MeleeHit); //mxd. flrand() in original logic.
+
+		vec3_t forward;
+		AngleVectors(self->s.angles, forward, NULL, NULL);
+
+		VectorMA(self->velocity, -400.0f, forward, self->velocity);
+		self->velocity[2] += 150.0f;
 	}
 
-	gi.sound (self, CHAN_BODY, sounds[SND_DIE], 1, ATTN_NORM, 0);
+	SetAnim(self, ANIM_DIE1);
+	gi.sound(self, CHAN_BODY, sounds[SND_DIE], 1.0f, ATTN_NORM, 0.0f);
 }
 
 #pragma endregion
@@ -785,7 +777,7 @@ void GkrokonStaticsInit(void)
 	classStatics[CID_GKROKON].msgReceivers[MSG_MISSILE]=GkrokonMissileMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_PAIN]=GkrokonPainMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_EAT]=GkrokonEatMsgHandler;
-	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH]=beetle_death;
+	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH]=GkrokonDeathMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH_PAIN] = beetle_dead_pain;
 	classStatics[CID_GKROKON].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 
