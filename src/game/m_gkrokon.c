@@ -193,78 +193,6 @@ void gkrokon_spoo_attack(edict_t* self) //mxd. Named 'GkrokonSpoo' in original l
 
 #pragma endregion
 
-void gkrokon_bite(edict_t* self, float right_side) //mxd. Named 'GkrokonBite' in original logic.
-{
-	vec3_t start_offset;
-	vec3_t end_offset;
-
-	// From the right side.
-	if (right_side != 0.0f)
-	{
-		VectorSet(start_offset, 32.0f, 48.0f, 32.0f);
-		VectorSet(end_offset, 32.0f, 16.0f, 24.0f);
-	}
-	else
-	{
-		VectorSet(start_offset, 32.0f, -24.0f, 32.0f);
-		VectorSet(end_offset, 24.0f, 32.0f, 24.0f);
-	}
-
-	const vec3_t mins = { -2.0f, -2.0f, -2.0f };
-	const vec3_t maxs = {  2.0f,  2.0f,  2.0f };
-
-	trace_t trace;
-	vec3_t direction;
-	edict_t* victim = M_CheckMeleeLineHit(self, start_offset, end_offset, mins, maxs, &trace, direction);
-
-	if (victim != NULL && victim != self)
-	{
-		// Hurt whatever we were whacking away at.
-		vec3_t blood_dir;
-		VectorSubtract(start_offset, end_offset, blood_dir);
-		VectorNormalize(blood_dir);
-
-		const int damage = irand(GKROKON_DMG_BITE_MIN, GKROKON_DMG_BITE_MAX);
-		T_Damage(victim, self, self, direction, trace.endpos, blood_dir, damage, damage, DAMAGE_NORMAL, MOD_DIED);
-
-		// Play hit sound.
-		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_BITEHIT1, SND_BITEHIT2)], 1.0f, ATTN_NORM, 0.0f);
-	}
-	else
-	{
-		// Play swoosh sound.
-		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_BITEMISS1, SND_BITEMISS2)], 1.0f, ATTN_NORM, 0.0f);
-	}
-}
-
-void gkrokon_sound(edict_t* self, float channel, float sound_index, float attenuation) //mxd. Named 'gkrokonSound' in original logic.
-{
-	gi.sound(self, (int)channel, sounds[(int)sound_index], 1.0f, attenuation, 0.0f);
-}
-
-void gkrokon_walk_sound(edict_t* self) //mxd. Named 'gkrokonRandomWalkSound' in original logic.
-{
-	if (irand(0, 3) == 0)
-		gi.sound(self, CHAN_BODY, sounds[irand(SND_WALK1, SND_WALK2)], 1.0f, ATTN_NORM, 0.0f);
-}
-
-void gkrokon_idle_sound(edict_t* self) //mxd. Named 'beetle_ai_stand' in original logic.
-{
-	if (irand(0, 20) < 2)
-		gi.sound(self, CHAN_BODY, sounds[irand(SND_IDLE1, SND_IDLE2)], 1.0f, ATTN_NORM, 0.0f);
-}
-
-void gkrokon_dead(edict_t* self) //mxd. Named 'GkrokonDead' in original logic.
-{
-	M_EndDeath(self);
-}
-
-void gkrokon_ai_stand(edict_t* self, float dist) //mxd. Named 'beetle_ai_stand' in original logic.
-{
-	if (M_ValidTarget(self, self->enemy))
-		MG_FaceGoal(self, true);
-}
-
 #pragma region ========================== Message handlers ==========================
 
 static void GkrokonFallbackMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'beetle_skitter' in original logic.
@@ -705,6 +633,146 @@ static void GkrokonDismember(edict_t* self, int damage, HitLocation_t hl) //mxd.
 
 #pragma endregion
 
+#pragma region ========================== Action functions ==========================
+
+void gkrokon_bite(edict_t* self, float right_side) //mxd. Named 'GkrokonBite' in original logic.
+{
+	vec3_t start_offset;
+	vec3_t end_offset;
+
+	// From the right side.
+	if (right_side != 0.0f)
+	{
+		VectorSet(start_offset, 32.0f, 48.0f, 32.0f);
+		VectorSet(end_offset, 32.0f, 16.0f, 24.0f);
+	}
+	else
+	{
+		VectorSet(start_offset, 32.0f, -24.0f, 32.0f);
+		VectorSet(end_offset, 24.0f, 32.0f, 24.0f);
+	}
+
+	const vec3_t mins = { -2.0f, -2.0f, -2.0f };
+	const vec3_t maxs = {  2.0f,  2.0f,  2.0f };
+
+	trace_t trace;
+	vec3_t direction;
+	edict_t* victim = M_CheckMeleeLineHit(self, start_offset, end_offset, mins, maxs, &trace, direction);
+
+	if (victim != NULL && victim != self)
+	{
+		// Hurt whatever we were whacking away at.
+		vec3_t blood_dir;
+		VectorSubtract(start_offset, end_offset, blood_dir);
+		VectorNormalize(blood_dir);
+
+		const int damage = irand(GKROKON_DMG_BITE_MIN, GKROKON_DMG_BITE_MAX);
+		T_Damage(victim, self, self, direction, trace.endpos, blood_dir, damage, damage, DAMAGE_NORMAL, MOD_DIED);
+
+		// Play hit sound.
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_BITEHIT1, SND_BITEHIT2)], 1.0f, ATTN_NORM, 0.0f);
+	}
+	else
+	{
+		// Play swoosh sound.
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_BITEMISS1, SND_BITEMISS2)], 1.0f, ATTN_NORM, 0.0f);
+	}
+}
+
+void gkrokon_sound(edict_t* self, float channel, float sound_index, float attenuation) //mxd. Named 'gkrokonSound' in original logic.
+{
+	gi.sound(self, (int)channel, sounds[(int)sound_index], 1.0f, attenuation, 0.0f);
+}
+
+void gkrokon_walk_sound(edict_t* self) //mxd. Named 'gkrokonRandomWalkSound' in original logic.
+{
+	if (irand(0, 3) == 0)
+		gi.sound(self, CHAN_BODY, sounds[irand(SND_WALK1, SND_WALK2)], 1.0f, ATTN_NORM, 0.0f);
+}
+
+void gkrokon_idle_sound(edict_t* self) //mxd. Named 'beetle_ai_stand' in original logic.
+{
+	if (irand(0, 20) < 2)
+		gi.sound(self, CHAN_BODY, sounds[irand(SND_IDLE1, SND_IDLE2)], 1.0f, ATTN_NORM, 0.0f);
+}
+
+void gkrokon_dead(edict_t* self) //mxd. Named 'GkrokonDead' in original logic.
+{
+	M_EndDeath(self);
+}
+
+void gkrokon_ai_stand(edict_t* self, float dist) //mxd. Named 'beetle_ai_stand' in original logic.
+{
+	if (M_ValidTarget(self, self->enemy))
+		MG_FaceGoal(self, true);
+}
+
+void gkrokon_pause(edict_t* self) //mxd. Named 'GkrokonPause' in original logic.
+{
+	if ((self->spawnflags & MSF_FIXED) && self->curAnimID == ANIM_DELAY && self->enemy != NULL)
+	{
+		self->monsterinfo.searchType = SEARCH_COMMON;
+		MG_FaceGoal(self, true);
+	}
+
+	self->mood_think(self);
+
+	switch (self->ai_mood)
+	{
+		case AI_MOOD_ATTACK:
+			QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_PURSUE:
+		case AI_MOOD_NAVIGATE:
+		case AI_MOOD_FLEE:
+			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_WALK:
+		case AI_MOOD_WANDER:
+			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_BACKUP:
+			QPostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_STAND:
+			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_JUMP:
+			if ((self->spawnflags & MSF_FIXED) || self->jump_chance <= 0)
+				SetAnim(self, ANIM_DELAY);
+			else
+				SetAnim(self, ANIM_FJUMP);
+			break;
+
+		case AI_MOOD_EAT:
+			QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+			break;
+
+		default:
+			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			break;
+	}
+}
+
+void gkrokon_set_stand_anim(edict_t* self) //mxd. Named 'beetle_to_stand' in original logic.
+{
+	SetAnim(self, ANIM_STAND3);
+	gkrokon_pause(self);
+}
+
+void gkrokon_set_crouch_anim(edict_t* self) //mxd. Named 'beetle_to_crouch' in original logic.
+{
+	SetAnim(self, ANIM_CROUCH1);
+	gkrokon_pause(self);
+}
+
+#pragma endregion
+
 void GkrokonStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
@@ -827,68 +895,4 @@ void SP_Monster_Gkrokon(edict_t* self)
 	{
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
-}
-
-void gkrokon_pause(edict_t* self) //mxd. Named 'GkrokonPause' in original logic.
-{
-	if ((self->spawnflags & MSF_FIXED) && self->curAnimID == ANIM_DELAY && self->enemy != NULL)
-	{
-		self->monsterinfo.searchType = SEARCH_COMMON;
-		MG_FaceGoal(self, true);
-	}
-
-	self->mood_think(self);
-
-	switch (self->ai_mood)
-	{
-		case AI_MOOD_ATTACK:
-			QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_PURSUE:
-		case AI_MOOD_NAVIGATE:
-		case AI_MOOD_FLEE:
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_WALK:
-		case AI_MOOD_WANDER:
-			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_BACKUP:
-			QPostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_STAND:
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_JUMP:
-			if ((self->spawnflags & MSF_FIXED) || self->jump_chance <= 0)
-				SetAnim(self, ANIM_DELAY);
-			else
-				SetAnim(self, ANIM_FJUMP);
-			break;
-
-		case AI_MOOD_EAT:
-			QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
-			break;
-
-		default:
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-			break;
-	}
-}
-
-void gkrokon_set_stand_anim(edict_t* self) //mxd. Named 'beetle_to_stand' in original logic.
-{
-	SetAnim(self, ANIM_STAND3);
-	gkrokon_pause(self);
-}
-
-void gkrokon_set_crouch_anim(edict_t* self) //mxd. Named 'beetle_to_crouch' in original logic.
-{
-	SetAnim(self, ANIM_CROUCH1);
-	gkrokon_pause(self);
 }
