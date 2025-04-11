@@ -78,42 +78,28 @@ static void SpooInit(edict_t* spoo) //mxd. Named 'create_gkrokon_spoo' in origin
 	VectorSet(spoo->maxs,  1.0f,  1.0f,  1.0f);
 }
 
-/*-----------------------------------------------
-	reflect_spoo
------------------------------------------------*/
-
-edict_t *GkrokonSpooReflect(edict_t *self, edict_t *other, vec3_t vel)
+edict_t* GkrokonSpooReflect(edict_t* self, edict_t* other, vec3_t vel)
 {
-	edict_t *Spoo;
+	edict_t* spoo = G_Spawn();
 
-	Spoo = G_Spawn();
+	SpooInit(spoo);
 
-	SpooInit(Spoo);
+	spoo->enemy = self->owner;
+	spoo->owner = other;
+	spoo->reflect_debounce_time = self->reflect_debounce_time - 1;
+	spoo->reflected_time = self->reflected_time;
 
-	Spoo->enemy=self->owner;
-	Spoo->owner=other;
-	Spoo->s.scale=self->s.scale;
-	Spoo->dmg = self->dmg;
+	VectorCopy(self->s.origin, spoo->s.origin);
+	VectorCopy(vel, spoo->velocity);
+	VectorNormalize2(vel, spoo->movedir);
+	AnglesFromDir(spoo->movedir, spoo->s.angles);
 
-	VectorCopy(self->s.origin, Spoo->s.origin);
-	VectorCopy(vel, Spoo->velocity);
-	VectorNormalize2(vel, Spoo->movedir);
-	AnglesFromDir(Spoo->movedir, Spoo->s.angles);
-	
-	gi.linkentity(Spoo);
-	
-	gi.CreateEffect(&Spoo->s,
-			FX_SPOO,
-			CEF_OWNERS_ORIGIN,
-			Spoo->s.origin,
-			"");
-
-	Spoo->reflect_debounce_time = self->reflect_debounce_time -1;
-	Spoo->reflected_time=self->reflected_time;
+	gi.linkentity(spoo);
+	gi.CreateEffect(&spoo->s, FX_SPOO, CEF_OWNERS_ORIGIN, spoo->s.origin, "");
 
 	G_SetToFree(self);
 
-	return(Spoo);
+	return spoo;
 }
 
 /*-----------------------------------------------
