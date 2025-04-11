@@ -436,26 +436,9 @@ static void GkrokonPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	}
 }
 
-/*-----------------------------------------------
-	beetle_eat
------------------------------------------------*/
-
-void beetle_eat(edict_t *self,G_Message_t *Msg)
+static void GkrokonEatMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'beetle_eat' in original logic.
 {
-	int chance = irand(0,2);
-
-	switch (chance)
-	{
-	case 0:
-		SetAnim(self, ANIM_EAT1);
-		break;
-	case 1:
-		SetAnim(self, ANIM_EAT2);
-		break;
-	case 2:
-		SetAnim(self, ANIM_EAT3);
-		break;
-	}
+	SetAnim(self, irand(ANIM_EAT1, ANIM_EAT3));
 }
 
 /*-----------------------------------------------
@@ -801,7 +784,7 @@ void GkrokonStaticsInit(void)
 	classStatics[CID_GKROKON].msgReceivers[MSG_MELEE]= GkrokonMissileMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_MISSILE]=GkrokonMissileMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_PAIN]=GkrokonPainMsgHandler;
-	classStatics[CID_GKROKON].msgReceivers[MSG_EAT]=beetle_eat;
+	classStatics[CID_GKROKON].msgReceivers[MSG_EAT]=GkrokonEatMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH]=beetle_death;
 	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH_PAIN] = beetle_dead_pain;
 	classStatics[CID_GKROKON].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
