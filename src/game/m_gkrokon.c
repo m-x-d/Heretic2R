@@ -705,53 +705,48 @@ static void GkrokonDismember(edict_t* self, int damage, HitLocation_t hl) //mxd.
 
 #pragma endregion
 
-// ****************************************************************************
-// GkrokonStaticsInit -
-// ****************************************************************************
-
 void GkrokonStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	classStatics[CID_GKROKON].msgReceivers[MSG_STAND]=GkrokonStandMsgHandler;
-	classStatics[CID_GKROKON].msgReceivers[MSG_RUN]=GkrokonRunMsgHandler;	
-	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH_PAIN] = GkrokonDeathPainMsgHandler;
+	classStatics[CID_GKROKON].msgReceivers[MSG_STAND] = GkrokonStandMsgHandler;
+	classStatics[CID_GKROKON].msgReceivers[MSG_RUN] = GkrokonRunMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_CHECK_MOOD] = GkrokonCheckMoodMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_FALLBACK] = GkrokonFallbackMsgHandler;
-	classStatics[CID_GKROKON].msgReceivers[MSG_MELEE]= GkrokonMissileMsgHandler;
-	classStatics[CID_GKROKON].msgReceivers[MSG_MISSILE]=GkrokonMissileMsgHandler;
-	classStatics[CID_GKROKON].msgReceivers[MSG_PAIN]=GkrokonPainMsgHandler;
-	classStatics[CID_GKROKON].msgReceivers[MSG_EAT]=GkrokonEatMsgHandler;
-	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH]=GkrokonDeathMsgHandler;
+	classStatics[CID_GKROKON].msgReceivers[MSG_MELEE] = GkrokonMissileMsgHandler;
+	classStatics[CID_GKROKON].msgReceivers[MSG_MISSILE] = GkrokonMissileMsgHandler;
+	classStatics[CID_GKROKON].msgReceivers[MSG_PAIN] = GkrokonPainMsgHandler;
+	classStatics[CID_GKROKON].msgReceivers[MSG_EAT] = GkrokonEatMsgHandler;
+	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH] = GkrokonDeathMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH_PAIN] = GkrokonDeathPainMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 
-	res_info.numAnims=NUM_ANIMS;
-	res_info.animations=animations;
-	res_info.modelIndex=gi.modelindex("models/monsters/gkrokon/tris.fm");
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/gkrokon/tris.fm");
 
-	sounds[SND_PAIN1]=gi.soundindex("monsters/beetle/pain1.wav");
-	sounds[SND_PAIN2]=gi.soundindex("monsters/beetle/pain2.wav");	
-	sounds[SND_DIE]=gi.soundindex("monsters/beetle/death.wav");	
-	sounds[SND_GIB]=gi.soundindex("monsters/insect/gib.wav");
-	sounds[SND_SPOO]=gi.soundindex("monsters/beetle/spoo.wav");	
-	sounds[SND_IDLE1]=gi.soundindex("monsters/beetle/idle1.wav");	
-	sounds[SND_IDLE2]=gi.soundindex("monsters/beetle/idle2.wav");	
-	sounds[SND_SIGHT]=gi.soundindex("monsters/beetle/sight.wav");	
-	sounds[SND_WALK1]=gi.soundindex("monsters/beetle/walk1.wav");	
-	sounds[SND_WALK2]=gi.soundindex("monsters/beetle/walk2.wav");	
-	sounds[SND_FLEE]=gi.soundindex("monsters/beetle/flee.wav");	
-	sounds[SND_ANGRY]=gi.soundindex("monsters/beetle/angry.wav");	
-	sounds[SND_EATING]=gi.soundindex("monsters/beetle/eating.wav");	
-	sounds[SND_BITEHIT1]=gi.soundindex("monsters/beetle/meleehit1.wav");	
-	sounds[SND_BITEHIT2]=gi.soundindex("monsters/beetle/meleehit2.wav");	
-	sounds[SND_BITEMISS1]=gi.soundindex("monsters/beetle/meleemiss1.wav");	
-	sounds[SND_BITEMISS2]=gi.soundindex("monsters/beetle/meleemiss2.wav");	
+	sounds[SND_PAIN1] = gi.soundindex("monsters/beetle/pain1.wav");
+	sounds[SND_PAIN2] = gi.soundindex("monsters/beetle/pain2.wav");
+	sounds[SND_DIE] = gi.soundindex("monsters/beetle/death.wav");
+	sounds[SND_GIB] = gi.soundindex("monsters/insect/gib.wav");
+	sounds[SND_SPOO] = gi.soundindex("monsters/beetle/spoo.wav");
+	sounds[SND_IDLE1] = gi.soundindex("monsters/beetle/idle1.wav");
+	sounds[SND_IDLE2] = gi.soundindex("monsters/beetle/idle2.wav");
+	//sounds[SND_SIGHT] = gi.soundindex("monsters/beetle/sight.wav");
+	sounds[SND_WALK1] = gi.soundindex("monsters/beetle/walk1.wav");
+	sounds[SND_WALK2] = gi.soundindex("monsters/beetle/walk2.wav");
+	//sounds[SND_FLEE] = gi.soundindex("monsters/beetle/flee.wav");
+	//sounds[SND_ANGRY] = gi.soundindex("monsters/beetle/angry.wav");
+	//sounds[SND_EATING] = gi.soundindex("monsters/beetle/eating.wav");
+	sounds[SND_BITEHIT1] = gi.soundindex("monsters/beetle/meleehit1.wav");
+	sounds[SND_BITEHIT2] = gi.soundindex("monsters/beetle/meleehit2.wav");
+	sounds[SND_BITEMISS1] = gi.soundindex("monsters/beetle/meleemiss1.wav");
+	sounds[SND_BITEMISS2] = gi.soundindex("monsters/beetle/meleemiss2.wav");
 
-	res_info.numSounds=NUM_SOUNDS;
-	res_info.sounds=sounds;
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
 
-	classStatics[CID_GKROKON].resInfo=&res_info;
+	classStatics[CID_GKROKON].resInfo = &res_info;
 }
 
 // ****************************************************************************
