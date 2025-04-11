@@ -193,27 +193,6 @@ void GkrokonSpoo(edict_t* self) //TODO: rename to gkrokon_spoo_attack
 
 #pragma endregion
 
-/*
-
-	Gkrokon Helper Functions
-
-*/
-
-/*-----------------------------------------------
-	SkitterAway
------------------------------------------------*/
-
-void SkitterAway(edict_t *self)
-{
-	if (irand(0,10) < 2 && self->monsterinfo.attack_finished < level.time)
-	{
-		self->monsterinfo.attack_finished = level.time + 5;
-		SetAnim(self, ANIM_SNEEZE);
-	}
-	else
-		SetAnim(self, ANIM_RUNAWAY);
-}
-
 /*-----------------------------------------------
 	GkrokonBite
 -----------------------------------------------*/
@@ -352,16 +331,21 @@ void beetle_idle_sound(edict_t *self)
 
 */
 
-/*-----------------------------------------------
-	beetle_skitter
------------------------------------------------*/
-
-void beetle_skitter(edict_t *self, G_Message_t *Msg)
+static void GkrokonFallbackMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'beetle_skitter' in original logic.
 {
-	if(self->spawnflags&MSF_FIXED)
+	if (self->spawnflags & MSF_FIXED)
+	{
 		SetAnim(self, ANIM_DELAY);
+	}
+	else if (irand(0, 10) < 2 && self->monsterinfo.attack_finished < level.time) //mxd. Inline SkitterAway().
+	{
+		self->monsterinfo.attack_finished = level.time + 5.0f;
+		SetAnim(self, ANIM_SNEEZE);
+	}
 	else
-		SkitterAway(self);
+	{
+		SetAnim(self, ANIM_RUNAWAY);
+	}
 }
 
 /*-----------------------------------------------
@@ -526,10 +510,7 @@ void beetle_missile(edict_t *self,G_Message_t *Msg)
 		}
 		else
 		{
-			if(self->spawnflags&MSF_FIXED)
-				SetAnim(self, ANIM_DELAY);	
-			else
-				SkitterAway(self);
+			GkrokonFallbackMsgHandler(self, Msg); //mxd
 		}
 		return;
 	}
@@ -929,7 +910,7 @@ void GkrokonStaticsInit(void)
 	classStatics[CID_GKROKON].msgReceivers[MSG_RUN]=beetle_run;	
 	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH_PAIN] = beetle_dead_pain;
 	classStatics[CID_GKROKON].msgReceivers[MSG_CHECK_MOOD] = beetle_check_mood;
-	classStatics[CID_GKROKON].msgReceivers[MSG_FALLBACK] = beetle_skitter;
+	classStatics[CID_GKROKON].msgReceivers[MSG_FALLBACK] = GkrokonFallbackMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_MELEE]=beetle_melee;
 	classStatics[CID_GKROKON].msgReceivers[MSG_MISSILE]=beetle_missile;
 	classStatics[CID_GKROKON].msgReceivers[MSG_PAIN]=beetle_pain;
