@@ -193,67 +193,47 @@ void GkrokonSpoo(edict_t* self) //TODO: rename to gkrokon_spoo_attack
 
 #pragma endregion
 
-/*-----------------------------------------------
-	GkrokonBite
------------------------------------------------*/
-
-void GkrokonBite(edict_t *self, float value)
+void GkrokonBite(edict_t* self, float right_side) //TODO: rename to gkrokon_bite.
 {
-	trace_t	trace;
-	edict_t *victim;
-	vec3_t	soff, eoff, mins, maxs, bloodDir, direction;
-	int		damage = irand(GKROKON_DMG_BITE_MIN, GKROKON_DMG_BITE_MAX);
-	
-	VectorSet(mins, -2, -2, -2);
-	VectorSet(maxs,  2,  2,  2);
+	vec3_t start_offset;
+	vec3_t end_offset;
 
-	//From the right side
-	if (value)
+	// From the right side.
+	if (right_side != 0.0f)
 	{
-		VectorSet(soff, 32, 48, 32);
-		VectorSet(eoff, 32, 16, 24);
+		VectorSet(start_offset, 32.0f, 48.0f, 32.0f);
+		VectorSet(end_offset, 32.0f, 16.0f, 24.0f);
 	}
 	else
 	{
-		VectorSet(soff, 32, -24, 32);
-		VectorSet(eoff, 24,  32, 24);
+		VectorSet(start_offset, 32.0f, -24.0f, 32.0f);
+		VectorSet(end_offset, 24.0f, 32.0f, 24.0f);
 	}
 
-	VectorSubtract(soff, eoff, bloodDir);
-	VectorNormalize(bloodDir);
+	const vec3_t mins = { -2.0f, -2.0f, -2.0f };
+	const vec3_t maxs = {  2.0f,  2.0f,  2.0f };
 
-	victim = M_CheckMeleeLineHit(self, soff, eoff, mins, maxs, &trace, direction);	
+	trace_t trace;
+	vec3_t direction;
+	edict_t* victim = M_CheckMeleeLineHit(self, start_offset, end_offset, mins, maxs, &trace, direction);
 
-	if (victim)
+	if (victim != NULL && victim != self)
 	{
-		if (victim == self)
-		{
-			//Create a puff effect
-			//gi.CreateEffect(NULL, FX_SPARKS, 0, hitPos, "db", vec3_origin, irand(1,3));
-			if (irand(0,1))
-				gi.sound (self, CHAN_WEAPON, sounds[SND_BITEMISS1], 1, ATTN_NORM, 0);
-			else
-				gi.sound (self, CHAN_WEAPON, sounds[SND_BITEMISS2], 1, ATTN_NORM, 0);
-		}
-		else
-		{
-			//Hurt whatever we were whacking away at
-			T_Damage(victim, self, self, direction, trace.endpos, bloodDir, 
-					damage, damage, DAMAGE_NORMAL,MOD_DIED);
+		// Hurt whatever we were whacking away at.
+		vec3_t blood_dir;
+		VectorSubtract(start_offset, end_offset, blood_dir);
+		VectorNormalize(blood_dir);
 
-			if (irand(0,1))
-				gi.sound (self, CHAN_WEAPON, sounds[SND_BITEHIT1], 1, ATTN_NORM, 0);
-			else
-				gi.sound (self, CHAN_WEAPON, sounds[SND_BITEHIT2], 1, ATTN_NORM, 0);
-		}
+		const int damage = irand(GKROKON_DMG_BITE_MIN, GKROKON_DMG_BITE_MAX);
+		T_Damage(victim, self, self, direction, trace.endpos, blood_dir, damage, damage, DAMAGE_NORMAL, MOD_DIED);
+
+		// Play hit sound.
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_BITEHIT1, SND_BITEHIT2)], 1.0f, ATTN_NORM, 0.0f);
 	}
 	else
 	{
-		//Play swoosh sound?
-		if (irand(0,1))
-			gi.sound (self, CHAN_WEAPON, sounds[SND_BITEMISS1], 1, ATTN_NORM, 0);
-		else
-			gi.sound (self, CHAN_WEAPON, sounds[SND_BITEMISS2], 1, ATTN_NORM, 0);
+		// Play swoosh sound.
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_BITEMISS1, SND_BITEMISS2)], 1.0f, ATTN_NORM, 0.0f);
 	}
 }
 
