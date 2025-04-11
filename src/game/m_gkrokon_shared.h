@@ -18,10 +18,10 @@ typedef enum AnimID_e
 	ANIM_CROUCH1,
 	ANIM_CROUCH2,
 	ANIM_CROUCH3,
-	ANIM_WALK1,
+	ANIM_WALK1, //TODO: unused.
 	ANIM_RUN1,
 	ANIM_RUN2,
-	ANIM_JUMP1,
+	ANIM_JUMP1, //TODO: unused.
 	ANIM_FJUMP,
 	ANIM_MELEE1,
 	ANIM_MELEE2,
@@ -31,7 +31,7 @@ typedef enum AnimID_e
 	ANIM_EAT3,
 	ANIM_PAIN1,
 	ANIM_DIE1,
-	ANIM_HOP,
+	ANIM_HOP, //TODO: unused.
 	ANIM_RUNAWAY,
 	ANIM_SNEEZE,
 	ANIM_DELAY,
@@ -49,12 +49,12 @@ typedef enum SoundID_e
 	SND_SPOO,
 	SND_IDLE1,
 	SND_IDLE2,
-	SND_SIGHT,
+	SND_SIGHT, //TODO: unused.
 	SND_WALK1,
 	SND_WALK2,
-	SND_FLEE,
-	SND_ANGRY,
-	SND_EATING,	
+	SND_FLEE, //TODO: unused.
+	SND_ANGRY, //TODO: unused.
+	SND_EATING, //TODO: unused.
 	SND_BITEHIT1,
 	SND_BITEHIT2,
 	SND_BITEMISS1,
@@ -88,23 +88,17 @@ extern const animmove_t gkrokon_move_death1;
 extern const animmove_t gkrokon_move_hop1;
 extern const animmove_t gkrokon_move_delay;
 
-void GkrokonSpooTouch2(edict_t *self,trace_t *trace);
+void GkrokonPause(edict_t* self);
+void gkrokonSound(edict_t* self, float channel, float sound_index, float attenuation);
+void gkrokonRandomWalkSound(edict_t* self);
+void GkrokonSpoo(edict_t* self);
+void GkrokonDead(edict_t* self);
 
-void GkrokonPause(edict_t *self);
-void gkrokonSound(edict_t *self, float channel, float sndindex, float atten);
-void gkrokonRandomWalkSound (edict_t *self);
-void GkrokonSpoo(edict_t *self);
-void GkrokonDead(edict_t *self);
-
-void create_gkrokon_spoo(edict_t *Spoo);
-
-void GkrokonSpooTouch(edict_t *self,edict_t *Other,cplane_t *Plane,csurface_t *Surface);
-
-void beetle_ai_stand(edict_t *self, float dist);
-void beetle_idle_sound(edict_t *self);
-void beetle_to_stand (edict_t *self);
-void beetle_to_crouch (edict_t *self);
-void GkrokonBite(edict_t *self, float value);
+void beetle_ai_stand(edict_t* self, float dist);
+void beetle_idle_sound(edict_t* self);
+void beetle_to_stand(edict_t* self);
+void beetle_to_crouch(edict_t* self);
+void GkrokonBite(edict_t* self, float right_side);
 
 #define BIT_WAIT1			0
 #define BIT_SHELLA_P1		1

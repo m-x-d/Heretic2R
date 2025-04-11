@@ -29,6 +29,9 @@
 #define GKROKON_SPOO_SPEED	450.0f
 #define GKROKON_SPOO_ARC	150.0f
 
+static void GkrokonSpooTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface); //TODO: remove.
+static void GkrokonSpooTouch2(edict_t* self, trace_t* trace); //TODO: remove.
+
 static int sounds[NUM_SOUNDS];
 static ClassResourceInfo_t resInfo;
 
