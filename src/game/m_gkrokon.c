@@ -491,34 +491,38 @@ static void GkrokonDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 }
 
 #pragma endregion
-	
-int Bit_for_MeshNode_gk [NUM_MESH_NODES] =
-{
-	BIT_WAIT1,
-	BIT_SHELLA_P1,
-	BIT_SPIKE_P1,	
-	BIT_HEAD_P1,	
-	BIT_RPINCHERA_P1,
-	BIT_RPINCHERB_P1,
-	BIT_LPINCHERA_P1,
-	BIT_LPINCHERB_P1,
-	BIT_LARM_P1,
-	BIT_RARM_P1,
-	BIT_ABDOMEN_P1,
-	BIT_LTHIGH_P1,
-	BIT_RTHIGH_P1,
-	BIT_SHELLB_P1,
-};
 
-qboolean canthrownode_gk (edict_t *self, int BP, int *throw_nodes)
-{//see if it's on, if so, add it to throw_nodes
-	//turn it off on thrower
-	if(!(self->s.fmnodeinfo[BP].flags & FMNI_NO_DRAW))
+#pragma region ========================== GkrokonDismember logic ==========================
+
+static qboolean CanThrowNode(edict_t* self, const int node_id, int* throw_nodes) //mxd. Named 'canthrownode_gk' in original logic.
+{
+	static const int bit_for_mesh_node[NUM_MESH_NODES] = //mxd. Made local static.
 	{
-		*throw_nodes |= Bit_for_MeshNode_gk[BP];
-		self->s.fmnodeinfo[BP].flags |= FMNI_NO_DRAW;
+		BIT_WAIT1,
+		BIT_SHELLA_P1,
+		BIT_SPIKE_P1,
+		BIT_HEAD_P1,
+		BIT_RPINCHERA_P1,
+		BIT_RPINCHERB_P1,
+		BIT_LPINCHERA_P1,
+		BIT_LPINCHERB_P1,
+		BIT_LARM_P1,
+		BIT_RARM_P1,
+		BIT_ABDOMEN_P1,
+		BIT_LTHIGH_P1,
+		BIT_RTHIGH_P1,
+		BIT_SHELLB_P1,
+	};
+
+	// See if it's on, if so, add it to throw_nodes. Turn it off on thrower.
+	if (!(self->s.fmnodeinfo[node_id].flags & FMNI_NO_DRAW))
+	{
+		*throw_nodes |= bit_for_mesh_node[node_id];
+		self->s.fmnodeinfo[node_id].flags |= FMNI_NO_DRAW;
+
 		return true;
 	}
+
 	return false;
 }
 
@@ -559,7 +563,7 @@ void beetle_dismember(edict_t *self, int damage, int HitLocation)
 					self->s.fmnodeinfo[MESH__HEAD_P1].skin = self->s.skinnum+1;
 				}
 			}
-			else if(canthrownode_gk(self, MESH__HEAD_P1, &throw_nodes))
+			else if(CanThrowNode(self, MESH__HEAD_P1, &throw_nodes))
 			{
 				AngleVectors(self->s.angles,NULL,right,NULL);
 				gore_spot[2]+=self->maxs[2]*0.3;
@@ -577,7 +581,7 @@ void beetle_dismember(edict_t *self, int damage, int HitLocation)
 					self->s.fmnodeinfo[MESH__SPIKE_P1].skin = self->s.skinnum+1;
 				}
 			}
-			else if(canthrownode_gk(self, MESH__SPIKE_P1, &throw_nodes))
+			else if(CanThrowNode(self, MESH__SPIKE_P1, &throw_nodes))
 			{
 				AngleVectors(self->s.angles,NULL,right,NULL);
 				gore_spot[2]+=self->maxs[2]*0.3;
@@ -593,7 +597,7 @@ void beetle_dismember(edict_t *self, int damage, int HitLocation)
 					self->s.fmnodeinfo[MESH__RPINCHERA_P1].skin = self->s.skinnum+1;
 				}
 			}
-			else if(canthrownode_gk(self, MESH__RPINCHERA_P1, &throw_nodes))
+			else if(CanThrowNode(self, MESH__RPINCHERA_P1, &throw_nodes))
 			{
 				AngleVectors(self->s.angles,NULL,right,NULL);
 				gore_spot[2]+=self->maxs[2]*0.3;
@@ -609,7 +613,7 @@ void beetle_dismember(edict_t *self, int damage, int HitLocation)
 					self->s.fmnodeinfo[MESH__LPINCHERA_P1].skin = self->s.skinnum+1;
 				}
 			}
-			else if(canthrownode_gk(self, MESH__LPINCHERA_P1, &throw_nodes))
+			else if(CanThrowNode(self, MESH__LPINCHERA_P1, &throw_nodes))
 			{
 				AngleVectors(self->s.angles,NULL,right,NULL);
 				gore_spot[2]+=self->maxs[2]*0.3;
@@ -625,7 +629,7 @@ void beetle_dismember(edict_t *self, int damage, int HitLocation)
 					self->s.fmnodeinfo[MESH__RPINCHERB_P1].skin = self->s.skinnum+1;
 				}
 			}
-			else if(canthrownode_gk(self, MESH__RPINCHERB_P1, &throw_nodes))
+			else if(CanThrowNode(self, MESH__RPINCHERB_P1, &throw_nodes))
 			{
 				AngleVectors(self->s.angles,NULL,right,NULL);
 				gore_spot[2]+=self->maxs[2]*0.3;
@@ -641,7 +645,7 @@ void beetle_dismember(edict_t *self, int damage, int HitLocation)
 					self->s.fmnodeinfo[MESH__LPINCHERB_P1].skin = self->s.skinnum+1;
 				}
 			}
-			else if(canthrownode_gk(self, MESH__LPINCHERB_P1, &throw_nodes))
+			else if(CanThrowNode(self, MESH__LPINCHERB_P1, &throw_nodes))
 			{
 				AngleVectors(self->s.angles,NULL,right,NULL);
 				gore_spot[2]+=self->maxs[2]*0.3;
@@ -664,7 +668,7 @@ void beetle_dismember(edict_t *self, int damage, int HitLocation)
 				damage*=1.5;//greater chance to cut off if previously damaged
 			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
 			{
-				if(canthrownode_gk(self, MESH__LARM_P1, &throw_nodes))
+				if(CanThrowNode(self, MESH__LARM_P1, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -685,8 +689,8 @@ void beetle_dismember(edict_t *self, int damage, int HitLocation)
 				break;
 			if(flrand(0,self->health)<damage*0.75&&dismember_ok)
 			{
-				canthrownode_gk(self, MESH__RARM_P1, &throw_nodes);
-				if(canthrownode_gk(self, MESH__RARM_P1, &throw_nodes))
+				CanThrowNode(self, MESH__RARM_P1, &throw_nodes);
+				if(CanThrowNode(self, MESH__RARM_P1, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -715,7 +719,7 @@ void beetle_dismember(edict_t *self, int damage, int HitLocation)
 			{
 				if(self->s.fmnodeinfo[MESH__LTHIGH_P1].flags & FMNI_NO_DRAW)
 					break;
-				if(canthrownode_gk(self, MESH__LTHIGH_P1, &throw_nodes))
+				if(CanThrowNode(self, MESH__LTHIGH_P1, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -737,7 +741,7 @@ void beetle_dismember(edict_t *self, int damage, int HitLocation)
 			{
 				if(self->s.fmnodeinfo[MESH__RTHIGH_P1].flags & FMNI_NO_DRAW)
 					break;
-				if(canthrownode_gk(self, MESH__RTHIGH_P1, &throw_nodes))
+				if(CanThrowNode(self, MESH__RTHIGH_P1, &throw_nodes))
 				{
 					AngleVectors(self->s.angles,NULL,right,NULL);
 					gore_spot[2]+=self->maxs[2]*0.3;
@@ -757,6 +761,8 @@ void beetle_dismember(edict_t *self, int damage, int HitLocation)
 		self->monsterinfo.aiflags |= AI_NO_MISSILE;
 	}
 }
+
+#pragma endregion
 
 // ****************************************************************************
 // GkrokonStaticsInit -
