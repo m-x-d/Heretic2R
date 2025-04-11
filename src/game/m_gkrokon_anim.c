@@ -13,83 +13,83 @@
 // Stand1 - laid down, resting, still on the floor.
 static const animframe_t gkrokon_frames_stand1[] =
 {
-	{ FRAME_bwait1,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait2,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait3,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait4,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait5,		NULL, 0, 0, 0, beetle_ai_stand, 0, beetle_idle_sound },
-	{ FRAME_bwait6,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait7,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait8,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait9,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait10,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait11,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait12,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait13,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait14,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait1,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait2,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait3,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait4,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait5,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, beetle_idle_sound },
+	{ FRAME_bwait6,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait7,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait8,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait9,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait10,	NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait11,	NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait12,	NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait13,	NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait14,	NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
 };
 const animmove_t gkrokon_move_stand1 = { 14, gkrokon_frames_stand1, GkrokonPause };
 
 // Stand2 - getting up off the floor.
 static const animframe_t gkrokon_frames_stand2[] =
 {
-	{ FRAME_birth1,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_birth2,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_birth3,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_birth4,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_birth5,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_birth6,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_birth7,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_birth8,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_birth9,		NULL, 0, 0, 0, beetle_ai_stand, 0, beetle_idle_sound },
-	{ FRAME_birth10,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_birth11,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_birth12,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_birth1,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_birth2,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_birth3,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_birth4,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_birth5,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_birth6,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_birth7,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_birth8,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_birth9,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, beetle_idle_sound },
+	{ FRAME_birth10,	NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_birth11,	NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_birth12,	NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
 };
 const animmove_t gkrokon_move_stand2 = { 12, gkrokon_frames_stand2, GkrokonPause };
 
 // Stand3 - standing fairly still, waiting.
 static const animframe_t gkrokon_frames_stand3[] =
 {
-	{ FRAME_wait1,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_wait2,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_wait3,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_wait4,		NULL, 0, 0, 0, beetle_ai_stand, 0, beetle_idle_sound },
-	{ FRAME_wait5,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_wait6,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_wait7,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_wait8,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_wait1,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_wait2,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_wait3,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_wait4,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, beetle_idle_sound },
+	{ FRAME_wait5,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_wait6,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_wait7,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_wait8,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
 };
 const animmove_t gkrokon_move_stand3 = { 8, gkrokon_frames_stand3, GkrokonPause };
 
 // Stand4 - settling down onto the floor.
 static const animframe_t gkrokon_frames_stand4[] =
 {
-	{ FRAME_birth5,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_birth4,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_birth3,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_birth2,		NULL, 0, 0, 0, beetle_ai_stand, 0, beetle_idle_sound },
-	{ FRAME_birth1,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_birth5,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_birth4,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_birth3,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_birth2,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, beetle_idle_sound },
+	{ FRAME_birth1,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
 };
 const animmove_t gkrokon_move_stand4 = { 5, gkrokon_frames_stand4, GkrokonPause };
 
 // Crouch1 - crouched down on the floor (stalking enemy).
 static const animframe_t gkrokon_frames_crouch1[] =
 {
-	{ FRAME_bwait1,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait2,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait3,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait4,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait5,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait6,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait7,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait8,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait9,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait10,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait11,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait12,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait13,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
-	{ FRAME_bwait14,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait1,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait2,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait3,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait4,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait5,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait6,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait7,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait8,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait9,		NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait10,	NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait11,	NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait12,	NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait13,	NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
+	{ FRAME_bwait14,	NULL, 0, 0, 0, gkrokon_ai_stand, 0, NULL },
 };
 const animmove_t gkrokon_move_crouch1 = { 14, gkrokon_frames_crouch1, GkrokonPause };
 
@@ -116,14 +116,14 @@ const animmove_t gkrokon_move_crouch3 = { 4, gkrokon_frames_crouch3, beetle_to_c
 // Walk1 - a leisurely ambling gait.
 static const animframe_t gkrokon_frames_walk1[] =
 {
-	{ FRAME_walkB1,		NULL, 0, 0, 0, beetle_ai_stand, 6, NULL },
-	{ FRAME_walkB2,		NULL, 0, 0, 0, beetle_ai_stand, 7, NULL },
-	{ FRAME_walkB3,		NULL, 0, 0, 0, beetle_ai_stand, 5, NULL },
-	{ FRAME_walkB4,		NULL, 0, 0, 0, beetle_ai_stand, 8, NULL },
-	{ FRAME_walkB5,		NULL, 0, 0, 0, beetle_ai_stand, 7, NULL },
-	{ FRAME_walkB6,		NULL, 0, 0, 0, beetle_ai_stand, 6, gkrokon_walk_sound },
-	{ FRAME_walkB7,		NULL, 0, 0, 0, beetle_ai_stand, 5, NULL },
-	{ FRAME_walkB8,		NULL, 0, 0, 0, beetle_ai_stand, 8, NULL },
+	{ FRAME_walkB1,		NULL, 0, 0, 0, gkrokon_ai_stand, 6, NULL },
+	{ FRAME_walkB2,		NULL, 0, 0, 0, gkrokon_ai_stand, 7, NULL },
+	{ FRAME_walkB3,		NULL, 0, 0, 0, gkrokon_ai_stand, 5, NULL },
+	{ FRAME_walkB4,		NULL, 0, 0, 0, gkrokon_ai_stand, 8, NULL },
+	{ FRAME_walkB5,		NULL, 0, 0, 0, gkrokon_ai_stand, 7, NULL },
+	{ FRAME_walkB6,		NULL, 0, 0, 0, gkrokon_ai_stand, 6, gkrokon_walk_sound },
+	{ FRAME_walkB7,		NULL, 0, 0, 0, gkrokon_ai_stand, 5, NULL },
+	{ FRAME_walkB8,		NULL, 0, 0, 0, gkrokon_ai_stand, 8, NULL },
 };
 const animmove_t gkrokon_move_walk1 = { 8, gkrokon_frames_walk1, GkrokonPause };
 

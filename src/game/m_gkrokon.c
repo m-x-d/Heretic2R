@@ -253,7 +253,7 @@ void gkrokon_dead(edict_t* self) //mxd. Named 'GkrokonDead' in original logic.
 	M_EndDeath(self);
 }
 
-void beetle_ai_stand(edict_t* self, float dist) //TODO: rename to gkrokon_ai_stand.
+void gkrokon_ai_stand(edict_t* self, float dist) //mxd. Named 'beetle_ai_stand' in original logic.
 {
 	if (M_ValidTarget(self, self->enemy))
 		MG_FaceGoal(self, true);

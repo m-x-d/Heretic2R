@@ -94,7 +94,7 @@ void gkrokon_walk_sound(edict_t* self);
 void GkrokonSpoo(edict_t* self);
 void gkrokon_dead(edict_t* self);
 
-void beetle_ai_stand(edict_t* self, float dist);
+void gkrokon_ai_stand(edict_t* self, float dist);
 void beetle_idle_sound(edict_t* self);
 void beetle_to_stand(edict_t* self);
 void beetle_to_crouch(edict_t* self);
