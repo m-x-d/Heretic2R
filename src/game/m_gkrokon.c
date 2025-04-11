@@ -415,11 +415,6 @@ static void GkrokonMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 		GkrokonFallbackMsgHandler(self, msg); //mxd. Use function.
 }
 
-void beetle_melee(edict_t *self,G_Message_t *Msg)
-{
-	GkrokonMissileMsgHandler(self, Msg);
-}
-
 /*-----------------------------------------------
 	beetle_pain
 -----------------------------------------------*/
@@ -811,7 +806,7 @@ void GkrokonStaticsInit(void)
 	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH_PAIN] = beetle_dead_pain;
 	classStatics[CID_GKROKON].msgReceivers[MSG_CHECK_MOOD] = GkrokonCheckMoodMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_FALLBACK] = GkrokonFallbackMsgHandler;
-	classStatics[CID_GKROKON].msgReceivers[MSG_MELEE]=beetle_melee;
+	classStatics[CID_GKROKON].msgReceivers[MSG_MELEE]= GkrokonMissileMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_MISSILE]=GkrokonMissileMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_PAIN]=beetle_pain;
 	classStatics[CID_GKROKON].msgReceivers[MSG_EAT]=beetle_eat;
