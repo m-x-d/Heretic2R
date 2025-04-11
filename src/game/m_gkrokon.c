@@ -248,6 +248,12 @@ void gkrokon_walk_sound(edict_t* self) //mxd. Named 'gkrokonRandomWalkSound' in 
 		gi.sound(self, CHAN_BODY, sounds[irand(SND_WALK1, SND_WALK2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
+void gkrokon_idle_sound(edict_t* self) //mxd. Named 'beetle_ai_stand' in original logic.
+{
+	if (irand(0, 20) < 2)
+		gi.sound(self, CHAN_BODY, sounds[irand(SND_IDLE1, SND_IDLE2)], 1.0f, ATTN_NORM, 0.0f);
+}
+
 void gkrokon_dead(edict_t* self) //mxd. Named 'GkrokonDead' in original logic.
 {
 	M_EndDeath(self);
@@ -257,12 +263,6 @@ void gkrokon_ai_stand(edict_t* self, float dist) //mxd. Named 'beetle_ai_stand' 
 {
 	if (M_ValidTarget(self, self->enemy))
 		MG_FaceGoal(self, true);
-}
-
-void beetle_idle_sound(edict_t* self) //TODO: rename to gkrokon_idle_sound.
-{
-	if (irand(0, 20) < 2)
-		gi.sound(self, CHAN_BODY, sounds[irand(SND_IDLE1, SND_IDLE2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
 #pragma region ========================== Message handlers ==========================
