@@ -415,32 +415,24 @@ static void GkrokonMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 		GkrokonFallbackMsgHandler(self, msg); //mxd. Use function.
 }
 
-/*-----------------------------------------------
-	beetle_pain
------------------------------------------------*/
-
-void beetle_pain(edict_t *self,G_Message_t *Msg)
+static void GkrokonPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'beetle_pain' in original logic.
 {
-	int	temp, damage;
+	int	temp;
+	int damage;
 	int	force_damage;
-	
-	ParseMsgParms(Msg, "eeiii", &temp, &temp, &force_damage, &damage, &temp);
-	
-	//Weighted random based on health compared to the maximum it was at
-	if (force_damage||((flrand(0, self->max_health+50) > self->health) && irand(0,2)))
-	{
-		if(irand(0,1))
-			gi.sound (self, CHAN_WEAPON, sounds[SND_PAIN1], 1, ATTN_NORM, 0);
-		else
-			gi.sound (self, CHAN_WEAPON, sounds[SND_PAIN2], 1, ATTN_NORM, 0);
+	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_damage, &damage, &temp);
 
+	// Weighted random based on health compared to maximum health.
+	if (force_damage || (irand(0, self->max_health + 50) > self->health && irand(0, 2) > 0)) //mxd. flrand() in original logic.
+	{
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
 		SetAnim(self, ANIM_PAIN1);
 	}
 
-	if (!irand(0,2))
+	if (irand(0, 2) == 0)
 	{
 		self->monsterinfo.aiflags |= AI_FLEE;
-		self->monsterinfo.flee_finished = level.time + 15;
+		self->monsterinfo.flee_finished = level.time + 15.0f;
 	}
 }
 
@@ -808,7 +800,7 @@ void GkrokonStaticsInit(void)
 	classStatics[CID_GKROKON].msgReceivers[MSG_FALLBACK] = GkrokonFallbackMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_MELEE]= GkrokonMissileMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_MISSILE]=GkrokonMissileMsgHandler;
-	classStatics[CID_GKROKON].msgReceivers[MSG_PAIN]=beetle_pain;
+	classStatics[CID_GKROKON].msgReceivers[MSG_PAIN]=GkrokonPainMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_EAT]=beetle_eat;
 	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH]=beetle_death;
 	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH_PAIN] = beetle_dead_pain;
