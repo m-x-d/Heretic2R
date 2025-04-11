@@ -248,25 +248,15 @@ void gkrokonRandomWalkSound(edict_t* self) //TODO: rename to gkrokon_random_walk
 		gi.sound(self, CHAN_BODY, sounds[irand(SND_WALK1, SND_WALK2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-/*-----------------------------------------------
-	GkrokonDead
------------------------------------------------*/
-
-void GkrokonDead(edict_t *self)
+void GkrokonDead(edict_t* self) //TODO: rename to gkrokon_dead.
 {
 	M_EndDeath(self);
 }
 
-/*-----------------------------------------------
-	beetle_ai_stand
------------------------------------------------*/
-
-void beetle_ai_stand(edict_t *self, float dist)
+void beetle_ai_stand(edict_t* self, float dist) //TODO: rename to gkrokon_ai_stand.
 {
 	if (M_ValidTarget(self, self->enemy))
-	{
 		MG_FaceGoal(self, true);
-	}
 }
 
 /*-----------------------------------------------
