@@ -90,7 +90,7 @@ extern const animmove_t gkrokon_move_delay;
 
 void GkrokonPause(edict_t* self);
 void gkrokon_sound(edict_t* self, float channel, float sound_index, float attenuation);
-void gkrokonRandomWalkSound(edict_t* self);
+void gkrokon_walk_sound(edict_t* self);
 void GkrokonSpoo(edict_t* self);
 void GkrokonDead(edict_t* self);
 

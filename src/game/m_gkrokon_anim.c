@@ -121,7 +121,7 @@ static const animframe_t gkrokon_frames_walk1[] =
 	{ FRAME_walkB3,		NULL, 0, 0, 0, beetle_ai_stand, 5, NULL },
 	{ FRAME_walkB4,		NULL, 0, 0, 0, beetle_ai_stand, 8, NULL },
 	{ FRAME_walkB5,		NULL, 0, 0, 0, beetle_ai_stand, 7, NULL },
-	{ FRAME_walkB6,		NULL, 0, 0, 0, beetle_ai_stand, 6, gkrokonRandomWalkSound },
+	{ FRAME_walkB6,		NULL, 0, 0, 0, beetle_ai_stand, 6, gkrokon_walk_sound },
 	{ FRAME_walkB7,		NULL, 0, 0, 0, beetle_ai_stand, 5, NULL },
 	{ FRAME_walkB8,		NULL, 0, 0, 0, beetle_ai_stand, 8, NULL },
 };
@@ -133,7 +133,7 @@ static const animframe_t gkrokon_frames_run1[] =
 	{ FRAME_gallop1,	NULL, 0, 0, 0, MG_AI_Run, 16, NULL },
 	{ FRAME_gallop2,	NULL, 0, 0, 0, MG_AI_Run, 24, NULL },
 	{ FRAME_gallop3,	NULL, 0, 0, 0, MG_AI_Run, 22, NULL },
-	{ FRAME_gallop4,	NULL, 0, 0, 0, MG_AI_Run, 18, gkrokonRandomWalkSound },
+	{ FRAME_gallop4,	NULL, 0, 0, 0, MG_AI_Run, 18, gkrokon_walk_sound },
 	{ FRAME_gallop5,	NULL, 0, 0, 0, MG_AI_Run, 16, NULL },
 	{ FRAME_gallop6,	NULL, 0, 0, 0, MG_AI_Run, 24, NULL },
 };
@@ -144,7 +144,7 @@ static const animframe_t gkrokon_frames_run2[] =
 {
 	{ FRAME_skittr1,	NULL, 0, 0, 0, MG_AI_Run, 12, NULL },
 	{ FRAME_skittr2,	NULL, 0, 0, 0, MG_AI_Run, 12, NULL },
-	{ FRAME_skittr3,	NULL, 0, 0, 0, MG_AI_Run, 12, gkrokonRandomWalkSound },
+	{ FRAME_skittr3,	NULL, 0, 0, 0, MG_AI_Run, 12, gkrokon_walk_sound },
 	{ FRAME_skittr4,	NULL, 0, 0, 0, MG_AI_Run, 12, NULL },
 };
 const animmove_t gkrokon_move_run2 = { 4, gkrokon_frames_run2, GkrokonPause };
@@ -154,11 +154,11 @@ static const animframe_t gkrokon_frames_run_away[] =
 {
 	{ FRAME_skittr4,	gkrokon_sound, CHAN_VOICE, SND_FLEE, ATTN_NORM, MG_AI_Run, -14, NULL },
 	{ FRAME_skittr3,	NULL, 0, 0, 0, MG_AI_Run, -16, NULL },
-	{ FRAME_skittr2,	NULL, 0, 0, 0, MG_AI_Run, -14, gkrokonRandomWalkSound },
+	{ FRAME_skittr2,	NULL, 0, 0, 0, MG_AI_Run, -14, gkrokon_walk_sound },
 	{ FRAME_skittr1,	NULL, 0, 0, 0, MG_AI_Run, -12, NULL },
 	{ FRAME_skittr4,	NULL, 0, 0, 0, MG_AI_Run, -14, NULL },
 	{ FRAME_skittr3,	NULL, 0, 0, 0, MG_AI_Run, -16, NULL },
-	{ FRAME_skittr2,	NULL, 0, 0, 0, MG_AI_Run, -14, gkrokonRandomWalkSound },
+	{ FRAME_skittr2,	NULL, 0, 0, 0, MG_AI_Run, -14, gkrokon_walk_sound },
 	{ FRAME_skittr1,	NULL, 0, 0, 0, MG_AI_Run, -12, NULL },
 };
 const animmove_t gkrokon_move_run_away = { 8, gkrokon_frames_run_away, GkrokonPause };
@@ -336,7 +336,7 @@ static const animframe_t gkrokon_frames_hop[] =
 	{ FRAME_birth7,		NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_birth8,		NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_birth9,		NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_birth10,	NULL, 0, 0, 0, NULL, 0, gkrokonRandomWalkSound },
+	{ FRAME_birth10,	NULL, 0, 0, 0, NULL, 0, gkrokon_walk_sound },
 	{ FRAME_birth11,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_birth12,	NULL, 0, 0, 0, NULL, 0, NULL },
 };

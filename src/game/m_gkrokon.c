@@ -242,7 +242,7 @@ void gkrokon_sound(edict_t* self, float channel, float sound_index, float attenu
 	gi.sound(self, (int)channel, sounds[(int)sound_index], 1.0f, attenuation, 0.0f);
 }
 
-void gkrokonRandomWalkSound(edict_t* self) //TODO: rename to gkrokon_random_walk_sound.
+void gkrokon_walk_sound(edict_t* self) //mxd. Named 'gkrokonRandomWalkSound' in original logic.
 {
 	if (irand(0, 3) == 0)
 		gi.sound(self, CHAN_BODY, sounds[irand(SND_WALK1, SND_WALK2)], 1.0f, ATTN_NORM, 0.0f);
