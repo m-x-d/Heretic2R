@@ -237,7 +237,7 @@ void gkrokon_bite(edict_t* self, float right_side) //mxd. Named 'GkrokonBite' in
 	}
 }
 
-void gkrokonSound(edict_t* self, float channel, float sound_index, float attenuation) //TODO: rename to gkrokon_sound.
+void gkrokon_sound(edict_t* self, float channel, float sound_index, float attenuation) //mxd. Named 'gkrokonSound' in original logic.
 {
 	gi.sound(self, (int)channel, sounds[(int)sound_index], 1.0f, attenuation, 0.0f);
 }

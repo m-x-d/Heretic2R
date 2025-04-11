@@ -152,7 +152,7 @@ const animmove_t gkrokon_move_run2 = { 4, gkrokon_frames_run2, GkrokonPause };
 // Run away.
 static const animframe_t gkrokon_frames_run_away[] =
 {
-	{ FRAME_skittr4,	gkrokonSound, CHAN_VOICE, SND_FLEE, ATTN_NORM, MG_AI_Run, -14, NULL },
+	{ FRAME_skittr4,	gkrokon_sound, CHAN_VOICE, SND_FLEE, ATTN_NORM, MG_AI_Run, -14, NULL },
 	{ FRAME_skittr3,	NULL, 0, 0, 0, MG_AI_Run, -16, NULL },
 	{ FRAME_skittr2,	NULL, 0, 0, 0, MG_AI_Run, -14, gkrokonRandomWalkSound },
 	{ FRAME_skittr1,	NULL, 0, 0, 0, MG_AI_Run, -12, NULL },
@@ -166,7 +166,7 @@ const animmove_t gkrokon_move_run_away = { 8, gkrokon_frames_run_away, GkrokonPa
 // Jump1 - jumping.
 static const animframe_t gkrokon_frames_jump1[] =
 {
-	{ FRAME_jump1,		gkrokonSound, CHAN_VOICE, SND_ANGRY, ATTN_NORM, NULL, 0, NULL },
+	{ FRAME_jump1,		gkrokon_sound, CHAN_VOICE, SND_ANGRY, ATTN_NORM, NULL, 0, NULL },
 	{ FRAME_jump2,		NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jump4,		NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_jump6,		NULL, 0, 0, 0, NULL, 0, NULL },
@@ -349,7 +349,7 @@ static const animframe_t gkrokon_frames_delay[] =
 	{ FRAME_bwait2,		NULL, 0, 0, 0, NULL, 0, GkrokonPause },
 	{ FRAME_bwait3,		NULL, 0, 0, 0, NULL, 0, GkrokonPause },
 	{ FRAME_bwait4,		NULL, 0, 0, 0, NULL, 0, GkrokonPause },
-	{ FRAME_bwait5,		gkrokonSound, CHAN_VOICE, SND_IDLE1, ATTN_NORM, NULL, 0, GkrokonPause },
+	{ FRAME_bwait5,		gkrokon_sound, CHAN_VOICE, SND_IDLE1, ATTN_NORM, NULL, 0, GkrokonPause },
 	{ FRAME_bwait6,		NULL, 0, 0, 0, NULL, 0, GkrokonPause },
 	{ FRAME_bwait7,		NULL, 0, 0, 0, NULL, 0, GkrokonPause },
 	{ FRAME_bwait8,		NULL, 0, 0, 0, NULL, 0, GkrokonPause },
