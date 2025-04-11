@@ -107,68 +107,46 @@ static void GkrokonSpooIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'Gk
 	GkrokonSpooTouch(self, trace->ent, &trace->plane, trace->surface);
 }
 
-/*-----------------------------------------------
-	GkrokonSpooTouch
------------------------------------------------*/
-
-void GkrokonSpooTouch(edict_t *self,edict_t *Other,cplane_t *Plane,csurface_t *Surface)
+static void GkrokonSpooTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
-	vec3_t	Origin, ScorchOrigin, planeDir;
-
-	if(Surface&&(Surface->flags&SURF_SKY))
+	if (surface != NULL && (surface->flags & SURF_SKY))
 	{
 		G_FreeEdict(self);
 		return;
 	}
 
-	// are we reflecting ?
-	if (EntReflecting(Other, true, true) && self->reflect_debounce_time)
+	// Are we reflecting?
+	if (EntReflecting(other, true, true) && self->reflect_debounce_time > 0)
 	{
 		Create_rand_relect_vect(self->velocity, self->velocity);
-		Vec3ScaleAssign(GKROKON_SPOO_SPEED/2, self->velocity);
-		GkrokonSpooReflect(self, Other, self->velocity);
+		Vec3ScaleAssign(GKROKON_SPOO_SPEED / 2.0f, self->velocity);
+		GkrokonSpooReflect(self, other, self->velocity);
+
 		return;
 	}
 
-	// Calculate the position for the explosion entity.
-	VectorMA(self->s.origin,-16,self->velocity,Origin);
+	// Apply damage.
+	const int damage = irand(GKROKON_DMG_SPOO_MIN, GKROKON_DMG_SPOO_MAX); //mxd. Don't use self->dmg; Calculate here, so this val is used by T_DamageRadius() even when other->takedamage is DAMAGE_NO.
 
-	if(Other->takedamage)
-	{
-		self->dmg = irand(GKROKON_DMG_SPOO_MIN, GKROKON_DMG_SPOO_MAX);
-		T_Damage(Other,self,self->owner,self->movedir,Other->s.origin,Plane->normal,self->dmg,self->dmg,0,MOD_DIED);
-	}
+	if (other->takedamage != DAMAGE_NO)
+		T_Damage(other, self, self->owner, self->movedir, other->s.origin, plane->normal, damage, damage, 0, MOD_DIED);
 	else
-	{
-		VectorMA(self->s.origin,-16.0,self->movedir,self->s.origin);
-	}
+		VectorMA(self->s.origin, -16.0f, self->movedir, self->s.origin);
 
-	T_DamageRadius(self, self->owner, self, 5.0, 
-					self->dmg, self->dmg/4, DAMAGE_NO_KNOCKBACK|DAMAGE_ATTACKER_IMMUNE,MOD_DIED);
+	T_DamageRadius(self, self->owner, self, 5.0f, (float)damage, (float)damage / 4.0f, DAMAGE_NO_KNOCKBACK | DAMAGE_ATTACKER_IMMUNE, MOD_DIED);
 
-	gi.RemoveEffects(&self->s, 0);	
+	gi.RemoveEffects(&self->s, FX_REMOVE_EFFECTS);
 
-	if(IsDecalApplicable(Other, self->s.origin, Surface, Plane, planeDir))
-	{
-		VectorCopy(self->s.origin, ScorchOrigin);
-		gi.CreateEffect(NULL,
-						FX_SCORCHMARK,
-						0,
-						ScorchOrigin,
-						"d",
-						planeDir);
-	}
+	// Create decal?
+	vec3_t plane_dir;
+	VectorCopy(vec3_up, plane_dir); //mxd. Initialize, so we pass a valid vector when creating FX_SPOO_SPLAT even when IsDecalApplicable() returns false.
+
+	if (IsDecalApplicable(other, self->s.origin, surface, plane, plane_dir))
+		gi.CreateEffect(NULL, FX_SCORCHMARK, 0, self->s.origin, "d", plane_dir);
+
 	// Splatter some spoo over the surface.
-	VectorCopy(self->s.origin, ScorchOrigin);
-
-	gi.CreateEffect(NULL,
-					FX_SPOO_SPLAT,
-					0,
-					ScorchOrigin,
-					"d",
-					planeDir);
-
-	gi.sound(self,CHAN_WEAPON,gi.soundindex("monsters/rat/gib.wav"),1,ATTN_NORM,0);
+	gi.CreateEffect(NULL, FX_SPOO_SPLAT, 0, self->s.origin, "d", plane_dir);
+	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/rat/gib.wav"), 1.0f, ATTN_NORM, 0.0f);
 
 	G_SetToFree(self);
 }
