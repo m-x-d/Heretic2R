@@ -248,7 +248,7 @@ void gkrokon_walk_sound(edict_t* self) //mxd. Named 'gkrokonRandomWalkSound' in 
 		gi.sound(self, CHAN_BODY, sounds[irand(SND_WALK1, SND_WALK2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void GkrokonDead(edict_t* self) //TODO: rename to gkrokon_dead.
+void gkrokon_dead(edict_t* self) //mxd. Named 'GkrokonDead' in original logic.
 {
 	M_EndDeath(self);
 }

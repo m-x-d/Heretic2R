@@ -324,7 +324,7 @@ static const animframe_t gkrokon_frames_death1[] =
 	{ FRAME_death25,	NULL, 0, 0, 0, ai_move,	2, NULL },
 	{ FRAME_death26,	NULL, 0, 0, 0, ai_move,	2, NULL },
 };
-const animmove_t gkrokon_move_death1 = { 26, gkrokon_frames_death1, GkrokonDead };
+const animmove_t gkrokon_move_death1 = { 26, gkrokon_frames_death1, gkrokon_dead };
 
 // Hop.
 static const animframe_t gkrokon_frames_hop[] =
