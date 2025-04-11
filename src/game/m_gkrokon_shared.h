@@ -98,7 +98,7 @@ void beetle_ai_stand(edict_t* self, float dist);
 void beetle_idle_sound(edict_t* self);
 void beetle_to_stand(edict_t* self);
 void beetle_to_crouch(edict_t* self);
-void GkrokonBite(edict_t* self, float right_side);
+void gkrokon_bite(edict_t* self, float right_side);
 
 #define BIT_WAIT1			0
 #define BIT_SHELLA_P1		1

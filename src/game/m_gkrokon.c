@@ -193,7 +193,7 @@ void GkrokonSpoo(edict_t* self) //TODO: rename to gkrokon_spoo_attack
 
 #pragma endregion
 
-void GkrokonBite(edict_t* self, float right_side) //TODO: rename to gkrokon_bite.
+void gkrokon_bite(edict_t* self, float right_side) //mxd. Named 'GkrokonBite' in original logic.
 {
 	vec3_t start_offset;
 	vec3_t end_offset;
@@ -881,13 +881,13 @@ void GkrokonPause(edict_t* self) //TODO: rename to gkrokon_pause.
 	}
 }
 
-void beetle_to_stand (edict_t *self)
+void beetle_to_stand(edict_t* self) //TODO: rename to gkrokon_switch_to_stand_anim.
 {
 	SetAnim(self, ANIM_STAND3);
 	GkrokonPause(self);
 }
 
-void beetle_to_crouch (edict_t *self)
+void beetle_to_crouch(edict_t* self) //TODO: rename to gkrokon_switch_to_crouch_anim.
 {
 	SetAnim(self, ANIM_CROUCH1);
 	GkrokonPause(self);

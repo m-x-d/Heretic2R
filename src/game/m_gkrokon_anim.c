@@ -208,7 +208,7 @@ static const animframe_t gkrokon_frames_melee_attack1[] =
 	{ FRAME_latack4,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_latack5,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_latack6,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_latack7,	NULL, 0, 0, 0, GkrokonBite, 0, NULL },
+	{ FRAME_latack7,	NULL, 0, 0, 0, gkrokon_bite, 0, NULL },
 	{ FRAME_latack8,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
 const animmove_t gkrokon_move_melee_attack1 = { 8, gkrokon_frames_melee_attack1, GkrokonPause };
@@ -222,7 +222,7 @@ static const animframe_t gkrokon_frames_melee_attack2[] =
 	{ FRAME_ratack4,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ratack5,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_ratack6,	NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_ratack7,	NULL, 0, 0, 0, GkrokonBite, 1, NULL },
+	{ FRAME_ratack7,	NULL, 0, 0, 0, gkrokon_bite, 1, NULL },
 	{ FRAME_ratack8,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
 const animmove_t gkrokon_move_melee_attack2 = { 8, gkrokon_frames_melee_attack2, GkrokonPause };
