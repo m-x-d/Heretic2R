@@ -234,7 +234,7 @@ static const animframe_t gkrokon_frames_missile_attack1[] =
 	{ FRAME_spoo2,		NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_spoo3,		NULL, 0, 0, 0, ai_charge, 0, NULL },
 	{ FRAME_spoo4,		NULL, 0, 0, 0, ai_charge, 0, NULL },
-	{ FRAME_spoo5,		NULL, 0, 0, 0, ai_charge, 0, GkrokonSpoo },
+	{ FRAME_spoo5,		NULL, 0, 0, 0, ai_charge, 0, gkrokon_spoo_attack },
 };
 const animmove_t gkrokon_move_missile_attack1 = { 5, gkrokon_frames_missile_attack1, GkrokonPause };
 

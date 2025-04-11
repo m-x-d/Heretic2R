@@ -148,7 +148,7 @@ edict_t* GkrokonSpooReflect(edict_t* self, edict_t* other, vec3_t vel)
 	return spoo;
 }
 
-void GkrokonSpoo(edict_t* self) //TODO: rename to gkrokon_spoo_attack
+void gkrokon_spoo_attack(edict_t* self) //mxd. Named 'GkrokonSpoo' in original logic.
 {
 	if (self->enemy == NULL)
 		return;
