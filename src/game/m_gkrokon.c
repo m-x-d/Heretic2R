@@ -330,16 +330,9 @@ static void GkrokonRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
-/*-----------------------------------------------
-	beetle_stand
------------------------------------------------*/
-
-void beetle_stand(edict_t *self,G_Message_t *Msg)
+static void GkrokonStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'beetle_stand' in original logic.
 {
-	if (self->spawnflags & MSF_EXTRA1)
-		SetAnim(self, ANIM_STAND1);
-	else
-		SetAnim(self, ANIM_STAND3);
+	SetAnim(self, ((self->spawnflags & MSF_EXTRA1) ? ANIM_STAND1 : ANIM_STAND3));
 }
 
 /*-----------------------------------------------
@@ -814,7 +807,7 @@ void GkrokonStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
-	classStatics[CID_GKROKON].msgReceivers[MSG_STAND]=beetle_stand;
+	classStatics[CID_GKROKON].msgReceivers[MSG_STAND]=GkrokonStandMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_RUN]=GkrokonRunMsgHandler;	
 	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH_PAIN] = beetle_dead_pain;
 	classStatics[CID_GKROKON].msgReceivers[MSG_CHECK_MOOD] = GkrokonCheckMoodMsgHandler;
