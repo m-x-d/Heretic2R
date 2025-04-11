@@ -1,30 +1,24 @@
-//==============================================================================
 //
 // m_gkrokon.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//==============================================================================
 
-#include "g_local.h"
-#include "Utilities.h"
-#include "g_DefaultMessageHandler.h"
-#include "g_monster.h"
-#include "fx.h"
-#include "random.h"
-#include "buoy.h"
-#include "vector.h"
-#include "decals.h"
-#include "g_debris.h" //mxd
-#include "g_playstats.h"
 #include "m_gkrokon.h"
 #include "m_gkrokon_shared.h"
 #include "m_gkrokon_anim.h"
+#include "decals.h"
+#include "g_debris.h" //mxd
+#include "g_DefaultMessageHandler.h"
+#include "g_monster.h"
+#include "g_playstats.h"
 #include "m_stats.h"
-#include "g_HitLocation.h"
 #include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_local.h"
 
 #define GKROKON_SPOO_SPEED	450.0f
 #define GKROKON_SPOO_ARC	150.0f
@@ -32,9 +26,9 @@
 static void GkrokonSpooTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface); //TODO: remove.
 static void GkrokonSpooTouch2(edict_t* self, trace_t* trace); //TODO: remove.
 
-static int sounds[NUM_SOUNDS];
+#pragma region ========================== Gkrokon base info ==========================
 
-static const animmove_t *animations[NUM_ANIMS] =
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&gkrokon_move_stand1,
 	&gkrokon_move_stand2,
@@ -61,6 +55,10 @@ static const animmove_t *animations[NUM_ANIMS] =
 	&gkrokon_move_missile_attack2,
 	&gkrokon_move_delay,
 };
+
+static int sounds[NUM_SOUNDS];
+
+#pragma endregion
 
 /*
 
