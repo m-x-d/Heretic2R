@@ -829,9 +829,9 @@ void SP_Monster_Gkrokon(edict_t* self)
 	}
 }
 
-void GkrokonPause(edict_t *self)
+void GkrokonPause(edict_t* self) //TODO: rename to gkrokon_pause.
 {
-	if(self->spawnflags & MSF_FIXED && self->curAnimID == ANIM_DELAY && self->enemy)
+	if ((self->spawnflags & MSF_FIXED) && self->curAnimID == ANIM_DELAY && self->enemy != NULL)
 	{
 		self->monsterinfo.searchType = SEARCH_COMMON;
 		MG_FaceGoal(self, true);
@@ -841,46 +841,43 @@ void GkrokonPause(edict_t *self)
 
 	switch (self->ai_mood)
 	{
-	case AI_MOOD_ATTACK:
-		QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);		
-		break;
-		
-	case AI_MOOD_PURSUE:
-	case AI_MOOD_NAVIGATE:
-	case AI_MOOD_FLEE:
-		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-		break;
+		case AI_MOOD_ATTACK:
+			QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_WALK:
-	case AI_MOOD_WANDER:
-		QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-		break;
+		case AI_MOOD_PURSUE:
+		case AI_MOOD_NAVIGATE:
+		case AI_MOOD_FLEE:
+			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_BACKUP:
-		QPostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
-		break;
+		case AI_MOOD_WALK:
+		case AI_MOOD_WANDER:
+			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_STAND:
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-		break;
+		case AI_MOOD_BACKUP:
+			QPostMessage(self, MSG_FALLBACK, PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_JUMP:
-		if(self->spawnflags&MSF_FIXED || self->jump_chance<=0)
-			SetAnim(self, ANIM_DELAY);
-		else
-			SetAnim(self, ANIM_FJUMP);
-		break;
+		case AI_MOOD_STAND:
+			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			break;
 
-	case AI_MOOD_EAT:
-		QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
-		break;
+		case AI_MOOD_JUMP:
+			if ((self->spawnflags & MSF_FIXED) || self->jump_chance <= 0)
+				SetAnim(self, ANIM_DELAY);
+			else
+				SetAnim(self, ANIM_FJUMP);
+			break;
 
-	default :
-#ifdef _DEVEL
-		gi.dprintf("Unusable mood %d for Gkrokon\n", self->ai_mood);
-#endif
-		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-		break;
+		case AI_MOOD_EAT:
+			QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
+			break;
+
+		default:
+			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			break;
 	}
 }
 
