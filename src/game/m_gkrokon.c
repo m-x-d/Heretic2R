@@ -265,11 +265,7 @@ void beetle_idle_sound(edict_t* self) //TODO: rename to gkrokon_idle_sound.
 		gi.sound(self, CHAN_BODY, sounds[irand(SND_IDLE1, SND_IDLE2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-/*
-
-	Message Handlers
-
-*/
+#pragma region ========================== Message handlers ==========================
 
 static void GkrokonFallbackMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'beetle_skitter' in original logic.
 {
@@ -288,14 +284,9 @@ static void GkrokonFallbackMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 	}
 }
 
-/*-----------------------------------------------
-	beetle_check_mood
------------------------------------------------*/
-
-void beetle_check_mood (edict_t *self, G_Message_t *msg)
+static void GkrokonCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'beetle_check_mood' in original logic.
 {
 	ParseMsgParms(msg, "i", &self->ai_mood);
-
 	GkrokonPause(self);
 }
 
@@ -553,6 +544,8 @@ void beetle_death(edict_t *self,G_Message_t *Msg)
 
 	gi.sound (self, CHAN_BODY, sounds[SND_DIE], 1, ATTN_NORM, 0);
 }
+
+#pragma endregion
 	
 int Bit_for_MeshNode_gk [NUM_MESH_NODES] =
 {
@@ -849,7 +842,7 @@ void GkrokonStaticsInit(void)
 	classStatics[CID_GKROKON].msgReceivers[MSG_STAND]=beetle_stand;
 	classStatics[CID_GKROKON].msgReceivers[MSG_RUN]=beetle_run;	
 	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH_PAIN] = beetle_dead_pain;
-	classStatics[CID_GKROKON].msgReceivers[MSG_CHECK_MOOD] = beetle_check_mood;
+	classStatics[CID_GKROKON].msgReceivers[MSG_CHECK_MOOD] = GkrokonCheckMoodMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_FALLBACK] = GkrokonFallbackMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_MELEE]=beetle_melee;
 	classStatics[CID_GKROKON].msgReceivers[MSG_MISSILE]=beetle_missile;
