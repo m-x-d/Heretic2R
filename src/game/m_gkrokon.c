@@ -26,35 +26,38 @@
 #include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
 
+#define GKROKON_SPOO_SPEED	450.0f
+#define GKROKON_SPOO_ARC	150.0f
+
 static int sounds[NUM_SOUNDS];
 static ClassResourceInfo_t resInfo;
 
-static animmove_t *Animations[NUM_ANIMS] =
+static const animmove_t *animations[NUM_ANIMS] =
 {
-	&GkrokonMoveStand1,
-	&GkrokonMoveStand2,
-	&GkrokonMoveStand3,
-	&GkrokonMoveStand4,
-	&GkrokonMoveCrouch1,
-	&GkrokonMoveCrouch2,
-	&GkrokonMoveCrouch3,
-	&GkrokonMoveWalk1,
-	&GkrokonMoveRun1,
-	&GkrokonMoveRun2,
-	&GkrokonMoveJump1,
-	&GkrokonMoveForcedJump,
-	&GkrokonMoveMeleeAttack1,
-	&GkrokonMoveMeleeAttack2,
-	&GkrokonMoveMissileAttack1,
-	&GkrokonMoveEat1,
-	&GkrokonMoveEat2,
-	&GkrokonMoveEat3,
-	&GkrokonMovePain1,
-	&GkrokonMoveDeath1,
-	&GkrokonMoveHop1,
-	&GkrokonMoveRunAway,
-	&GkrokonMoveMissileAttack2,
-	&GkrokonMoveDelay
+	&gkrokon_move_stand1,
+	&gkrokon_move_stand2,
+	&gkrokon_move_stand3,
+	&gkrokon_move_stand4,
+	&gkrokon_move_crouch1,
+	&gkrokon_move_crouch2,
+	&gkrokon_move_crouch3,
+	&gkrokon_move_walk1,
+	&gkrokon_move_run1,
+	&gkrokon_move_run2,
+	&gkrokon_move_jump1,
+	&gkrokon_move_forced_jump,
+	&gkrokon_move_melee_attack1,
+	&gkrokon_move_melee_attack2,
+	&gkrokon_move_missile_attack1,
+	&gkrokon_move_eat1,
+	&gkrokon_move_eat2,
+	&gkrokon_move_eat3,
+	&gkrokon_move_pain1,
+	&gkrokon_move_death1,
+	&gkrokon_move_hop1,
+	&gkrokon_move_run_away,
+	&gkrokon_move_missile_attack2,
+	&gkrokon_move_delay,
 };
 
 /*
@@ -993,7 +996,7 @@ void GkrokonStaticsInit(void)
 	classStatics[CID_GKROKON].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 
 	resInfo.numAnims=NUM_ANIMS;
-	resInfo.animations=Animations;
+	resInfo.animations=animations;
 	resInfo.modelIndex=gi.modelindex("models/monsters/gkrokon/tris.fm");
 
 	sounds[SND_PAIN1]=gi.soundindex("monsters/beetle/pain1.wav");

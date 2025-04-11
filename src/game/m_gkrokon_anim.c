@@ -1,447 +1,363 @@
-//==============================================================================
 //
 // m_gkrokon_anim.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//==============================================================================
-
-#include "g_local.h"
-#include "g_ai.h" //mxd
-#include "mg_ai.h" //mxd
-
-#pragma hdrstop("g_local.pch")
-// PRECOMPILED HEADER ABOVE
-// WARNING:  DO NOT CHANGE THE ABOVE HEADERS OR THE PRECOMPILED STUFF WILL BREAK!  
-// ADD ANY ADDITIONAL FILES BELOW
 
 #include "m_gkrokon_anim.h"
 #include "m_gkrokon_shared.h"
+#include "g_ai.h" //mxd
+#include "mg_ai.h" //mxd
+#include "g_local.h"
 
-// ****************************************************************************
-// Stand1 - Laid down, resting, still on the floor.
-// ****************************************************************************
-
-animframe_t GkrokonFramesStand1[]=
+// Stand1 - laid down, resting, still on the floor.
+static const animframe_t gkrokon_frames_stand1[] =
 {
-	FRAME_bwait1,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait2,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait3,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait4,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait5,	NULL, 0, 0, 0, beetle_ai_stand,	0,	beetle_idle_sound,
-	FRAME_bwait6,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait7,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait8,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait9,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait10,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait11,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait12,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait13,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait14,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
+	{ FRAME_bwait1,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait2,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait3,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait4,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait5,		NULL, 0, 0, 0, beetle_ai_stand, 0, beetle_idle_sound },
+	{ FRAME_bwait6,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait7,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait8,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait9,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait10,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait11,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait12,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait13,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait14,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
 };
-animmove_t GkrokonMoveStand1={14,GkrokonFramesStand1, GkrokonPause};//GkrokonOrderStand};
+const animmove_t gkrokon_move_stand1 = { 14, gkrokon_frames_stand1, GkrokonPause };
 
-// ****************************************************************************
-// Stand2 - Getting up off the floor.
-// ****************************************************************************
-
-animframe_t GkrokonFramesStand2[]=
+// Stand2 - getting up off the floor.
+static const animframe_t gkrokon_frames_stand2[] =
 {
-	FRAME_birth1,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_birth2,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_birth3,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_birth4,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_birth5,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,	
-	FRAME_birth6,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_birth7,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_birth8,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_birth9,	NULL, 0, 0, 0, beetle_ai_stand,	0,	beetle_idle_sound,	
-	FRAME_birth10,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_birth11,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_birth12,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
+	{ FRAME_birth1,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_birth2,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_birth3,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_birth4,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_birth5,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_birth6,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_birth7,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_birth8,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_birth9,		NULL, 0, 0, 0, beetle_ai_stand, 0, beetle_idle_sound },
+	{ FRAME_birth10,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_birth11,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_birth12,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
 };
+const animmove_t gkrokon_move_stand2 = { 12, gkrokon_frames_stand2, GkrokonPause };
 
-animmove_t GkrokonMoveStand2={12,GkrokonFramesStand2, GkrokonPause};//GkrokonOrderStand};
-
-// ****************************************************************************
-// Stand3 - Standing fairly still, waiting.
-// ****************************************************************************
-
-animframe_t GkrokonFramesStand3[]=
+// Stand3 - standing fairly still, waiting.
+static const animframe_t gkrokon_frames_stand3[] =
 {
-	FRAME_wait1,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_wait2,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_wait3,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_wait4,	NULL, 0, 0, 0, beetle_ai_stand,	0,	beetle_idle_sound,
-	FRAME_wait5,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_wait6,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_wait7,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_wait8,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
+	{ FRAME_wait1,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_wait2,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_wait3,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_wait4,		NULL, 0, 0, 0, beetle_ai_stand, 0, beetle_idle_sound },
+	{ FRAME_wait5,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_wait6,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_wait7,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_wait8,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
 };
+const animmove_t gkrokon_move_stand3 = { 8, gkrokon_frames_stand3, GkrokonPause };
 
-animmove_t GkrokonMoveStand3={8,GkrokonFramesStand3, GkrokonPause};//GkrokonOrderStand};
-
-// ****************************************************************************
-// Stand4 - Settling down onto the floor.
-// ****************************************************************************
-
-animframe_t GkrokonFramesStand4[]=
+// Stand4 - settling down onto the floor.
+static const animframe_t gkrokon_frames_stand4[] =
 {
-	FRAME_birth5,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_birth4,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,	
-	FRAME_birth3,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_birth2,	NULL, 0, 0, 0, beetle_ai_stand,	0,	beetle_idle_sound,
-	FRAME_birth1,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
+	{ FRAME_birth5,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_birth4,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_birth3,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_birth2,		NULL, 0, 0, 0, beetle_ai_stand, 0, beetle_idle_sound },
+	{ FRAME_birth1,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
 };
+const animmove_t gkrokon_move_stand4 = { 5, gkrokon_frames_stand4, GkrokonPause };
 
-animmove_t GkrokonMoveStand4={5,GkrokonFramesStand4, GkrokonPause};//GkrokonOrderStand};
-
-// ****************************************************************************
-// Crouch1 - Crouched down on the floor (stalking enemy).
-// ****************************************************************************
-
-animframe_t GkrokonFramesCrouch1[]=
+// Crouch1 - crouched down on the floor (stalking enemy).
+static const animframe_t gkrokon_frames_crouch1[] =
 {
-	FRAME_bwait1,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait2,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait3,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait4,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait5,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait6,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait7,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait8,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait9,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait10,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait11,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait12,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait13,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
-	FRAME_bwait14,	NULL, 0, 0, 0, beetle_ai_stand,	0,	NULL,
+	{ FRAME_bwait1,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait2,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait3,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait4,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait5,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait6,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait7,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait8,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait9,		NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait10,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait11,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait12,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait13,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
+	{ FRAME_bwait14,	NULL, 0, 0, 0, beetle_ai_stand, 0, NULL },
 };
+const animmove_t gkrokon_move_crouch1 = { 14, gkrokon_frames_crouch1, GkrokonPause };
 
-animmove_t GkrokonMoveCrouch1={14,GkrokonFramesCrouch1, GkrokonPause};//GkrokonOrderCrouch};
-
-// ****************************************************************************
-// Crouch2 - Getting up off the floor from crouching (stalking enemy).
-// ****************************************************************************
-
-animframe_t GkrokonFramesCrouch2[]=
+// Crouch2 - getting up off the floor from crouching (stalking enemy).
+static const animframe_t gkrokon_frames_crouch2[] =
 {
-	FRAME_birth1,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_birth2,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_birth3,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_birth4,	NULL, 0, 0, 0, 	NULL,	0,	NULL,
+	{ FRAME_birth1,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_birth2,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_birth3,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_birth4,		NULL, 0, 0, 0, NULL, 0, NULL },
 };
+const animmove_t gkrokon_move_crouch2 = { 4, gkrokon_frames_crouch2, beetle_to_stand };
 
-animmove_t GkrokonMoveCrouch2={4,GkrokonFramesCrouch2, beetle_to_stand};//GkrokonOrderCrouch};
-
-// ****************************************************************************
-// Crouch3 - Settling down into crouching position (stalking enemy).
-// ****************************************************************************
-
-animframe_t GkrokonFramesCrouch3[]=
+// Crouch3 - settling down into crouching position (stalking enemy).
+static const animframe_t gkrokon_frames_crouch3[] =
 {
-	FRAME_birth4,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_birth3,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_birth2,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_birth1,	NULL, 0, 0, 0, NULL,	0,	NULL,
+	{ FRAME_birth4,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_birth3,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_birth2,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_birth1,		NULL, 0, 0, 0, NULL, 0, NULL },
 };
+const animmove_t gkrokon_move_crouch3 = { 4, gkrokon_frames_crouch3, beetle_to_crouch };
 
-animmove_t GkrokonMoveCrouch3={4,GkrokonFramesCrouch3, beetle_to_crouch};//GkrokonOrderCrouch};
-
-// ****************************************************************************
-// Walk1 - A leisurely ambling gait.
-// ****************************************************************************
-
-animframe_t GkrokonFramesWalk1[]=
+// Walk1 - a leisurely ambling gait.
+static const animframe_t gkrokon_frames_walk1[] =
 {
-	FRAME_walkB1,	NULL, 0, 0, 0, beetle_ai_stand,	6,	NULL,
-	FRAME_walkB2,	NULL, 0, 0, 0, beetle_ai_stand,	7,	NULL,
-	FRAME_walkB3,	NULL, 0, 0, 0, beetle_ai_stand,	5,	NULL,
-	FRAME_walkB4,	NULL, 0, 0, 0, beetle_ai_stand,	8,	NULL,
-	FRAME_walkB5,	NULL, 0, 0, 0, beetle_ai_stand,	7,	NULL,
-	FRAME_walkB6,	NULL, 0, 0, 0, beetle_ai_stand,	6,	gkrokonRandomWalkSound,
-	FRAME_walkB7,	NULL, 0, 0, 0, beetle_ai_stand,	5,	NULL,
-	FRAME_walkB8,	NULL, 0, 0, 0, beetle_ai_stand,	8,	NULL,
+	{ FRAME_walkB1,		NULL, 0, 0, 0, beetle_ai_stand, 6, NULL },
+	{ FRAME_walkB2,		NULL, 0, 0, 0, beetle_ai_stand, 7, NULL },
+	{ FRAME_walkB3,		NULL, 0, 0, 0, beetle_ai_stand, 5, NULL },
+	{ FRAME_walkB4,		NULL, 0, 0, 0, beetle_ai_stand, 8, NULL },
+	{ FRAME_walkB5,		NULL, 0, 0, 0, beetle_ai_stand, 7, NULL },
+	{ FRAME_walkB6,		NULL, 0, 0, 0, beetle_ai_stand, 6, gkrokonRandomWalkSound },
+	{ FRAME_walkB7,		NULL, 0, 0, 0, beetle_ai_stand, 5, NULL },
+	{ FRAME_walkB8,		NULL, 0, 0, 0, beetle_ai_stand, 8, NULL },
 };
+const animmove_t gkrokon_move_walk1 = { 8, gkrokon_frames_walk1, GkrokonPause };
 
-animmove_t GkrokonMoveWalk1={8,GkrokonFramesWalk1,GkrokonPause};
-
-// ****************************************************************************
-// Run1 - A galloping run.
-// ****************************************************************************
-
-animframe_t GkrokonFramesRun1[]=
+// Run1 - a galloping run.
+static const animframe_t gkrokon_frames_run1[] =
 {
-	FRAME_gallop1,	NULL, 0, 0, 0, MG_AI_Run,	16,	NULL,
-	FRAME_gallop2,	NULL, 0, 0, 0, MG_AI_Run,	24,	NULL,
-	FRAME_gallop3,	NULL, 0, 0, 0, MG_AI_Run,	22,	NULL,
-	FRAME_gallop4,	NULL, 0, 0, 0, MG_AI_Run,	18,	gkrokonRandomWalkSound,
-	FRAME_gallop5,	NULL, 0, 0, 0, MG_AI_Run,	16,	NULL,
-	FRAME_gallop6,	NULL, 0, 0, 0, MG_AI_Run,	24,	NULL,
+	{ FRAME_gallop1,	NULL, 0, 0, 0, MG_AI_Run, 16, NULL },
+	{ FRAME_gallop2,	NULL, 0, 0, 0, MG_AI_Run, 24, NULL },
+	{ FRAME_gallop3,	NULL, 0, 0, 0, MG_AI_Run, 22, NULL },
+	{ FRAME_gallop4,	NULL, 0, 0, 0, MG_AI_Run, 18, gkrokonRandomWalkSound },
+	{ FRAME_gallop5,	NULL, 0, 0, 0, MG_AI_Run, 16, NULL },
+	{ FRAME_gallop6,	NULL, 0, 0, 0, MG_AI_Run, 24, NULL },
 };
+const animmove_t gkrokon_move_run1 = { 6, gkrokon_frames_run1, GkrokonPause };
 
-animmove_t GkrokonMoveRun1={6,GkrokonFramesRun1, GkrokonPause};//GkrokonOrderRun};
-
-// ****************************************************************************
-// Run2 - A skittering, insectlike run.
-// ****************************************************************************
-
-animframe_t GkrokonFramesRun2[]=
+// Run2 - a skittering, insectlike run.
+static const animframe_t gkrokon_frames_run2[] =
 {
-	FRAME_skittr1,	NULL, 0, 0, 0, MG_AI_Run,	12,	NULL,
-	FRAME_skittr2,	NULL, 0, 0, 0, MG_AI_Run,	12,	NULL,
-	FRAME_skittr3,	NULL, 0, 0, 0, MG_AI_Run,	12,	gkrokonRandomWalkSound,
-	FRAME_skittr4,	NULL, 0, 0, 0, MG_AI_Run,	12,	NULL,
+	{ FRAME_skittr1,	NULL, 0, 0, 0, MG_AI_Run, 12, NULL },
+	{ FRAME_skittr2,	NULL, 0, 0, 0, MG_AI_Run, 12, NULL },
+	{ FRAME_skittr3,	NULL, 0, 0, 0, MG_AI_Run, 12, gkrokonRandomWalkSound },
+	{ FRAME_skittr4,	NULL, 0, 0, 0, MG_AI_Run, 12, NULL },
 };
+const animmove_t gkrokon_move_run2 = { 4, gkrokon_frames_run2, GkrokonPause };
 
-animmove_t GkrokonMoveRun2={4,GkrokonFramesRun2, GkrokonPause};//GkrokonOrderRun};
-
-animframe_t GkrokonFramesRunAway[]=
+// Run away.
+static const animframe_t gkrokon_frames_run_away[] =
 {
-	FRAME_skittr4,	gkrokonSound, CHAN_VOICE, SND_FLEE, ATTN_NORM, MG_AI_Run,	-14,	NULL,
-	FRAME_skittr3,	NULL, 0, 0, 0, MG_AI_Run,	-16,	NULL,
-	FRAME_skittr2,	NULL, 0, 0, 0, MG_AI_Run,	-14,	gkrokonRandomWalkSound,
-	FRAME_skittr1,	NULL, 0, 0, 0, MG_AI_Run,	-12,	NULL,
-	FRAME_skittr4,	NULL, 0, 0, 0, MG_AI_Run,	-14,	NULL,
-	FRAME_skittr3,	NULL, 0, 0, 0, MG_AI_Run,	-16,	NULL,
-	FRAME_skittr2,	NULL, 0, 0, 0, MG_AI_Run,	-14,	gkrokonRandomWalkSound,
-	FRAME_skittr1,	NULL, 0, 0, 0, MG_AI_Run,	-12,	NULL,
+	{ FRAME_skittr4,	gkrokonSound, CHAN_VOICE, SND_FLEE, ATTN_NORM, MG_AI_Run, -14, NULL },
+	{ FRAME_skittr3,	NULL, 0, 0, 0, MG_AI_Run, -16, NULL },
+	{ FRAME_skittr2,	NULL, 0, 0, 0, MG_AI_Run, -14, gkrokonRandomWalkSound },
+	{ FRAME_skittr1,	NULL, 0, 0, 0, MG_AI_Run, -12, NULL },
+	{ FRAME_skittr4,	NULL, 0, 0, 0, MG_AI_Run, -14, NULL },
+	{ FRAME_skittr3,	NULL, 0, 0, 0, MG_AI_Run, -16, NULL },
+	{ FRAME_skittr2,	NULL, 0, 0, 0, MG_AI_Run, -14, gkrokonRandomWalkSound },
+	{ FRAME_skittr1,	NULL, 0, 0, 0, MG_AI_Run, -12, NULL },
 };
+const animmove_t gkrokon_move_run_away = { 8, gkrokon_frames_run_away, GkrokonPause };
 
-animmove_t GkrokonMoveRunAway={8,GkrokonFramesRunAway, GkrokonPause};//GkrokonOrderRun};
-
-// ****************************************************************************
-// Jump1 - Jumping.
-// ****************************************************************************
-
-animframe_t GkrokonFramesJump1[]=
+// Jump1 - jumping.
+static const animframe_t gkrokon_frames_jump1[] =
 {
-	FRAME_jump1,	gkrokonSound, CHAN_VOICE, SND_ANGRY, ATTN_NORM, NULL,	0,	NULL,
-	FRAME_jump2,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_jump4,	NULL, 0, 0, 0, NULL,	0,	/*GkrokonJump*/NULL,
-	FRAME_jump6,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_jump10,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_jump12,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_jump14,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_jump16,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_jump18,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_jump20,	NULL, 0, 0, 0, NULL,	0,	/*GkrokonBite*/NULL,
-	FRAME_jump22,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_jump23,	NULL, 0, 0, 0, NULL,	0,	NULL,
+	{ FRAME_jump1,		gkrokonSound, CHAN_VOICE, SND_ANGRY, ATTN_NORM, NULL, 0, NULL },
+	{ FRAME_jump2,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump4,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump6,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump10,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump12,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump14,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump16,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump18,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump20,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump22,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump23,		NULL, 0, 0, 0, NULL, 0, NULL },
 };
+const animmove_t gkrokon_move_jump1 = { 12, gkrokon_frames_jump1, GkrokonPause };
 
-animmove_t GkrokonMoveJump1={12,GkrokonFramesJump1, GkrokonPause}; //GkrokonOrderRun};
-
-animframe_t GkrokonFramesForcedJump[]=
+// Forced jump.
+static const animframe_t gkrokon_frames_forced_jump[] =
 {
-	FRAME_jump1,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_jump2,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_jump4,	NULL, 0, 0, 0, NULL,	0,	/*GkrokonJump*/NULL,
-	FRAME_jump6,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_jump10,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_jump12,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_jump14,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_jump16,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_jump18,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_jump20,	NULL, 0, 0, 0, NULL,	0,	/*GkrokonBite*/NULL,
-	FRAME_jump22,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_jump23,	NULL, 0, 0, 0, NULL,	0,	NULL,
+	{ FRAME_jump1,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump2,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump4,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump6,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump10,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump12,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump14,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump16,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump18,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump20,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump22,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_jump23,		NULL, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t GkrokonMoveForcedJump={12,GkrokonFramesForcedJump, GkrokonPause}; //GkrokonOrderRun};
+const animmove_t gkrokon_move_forced_jump = { 12, gkrokon_frames_forced_jump, GkrokonPause };
 
-// ****************************************************************************
-// GkrokonFramesMeleeAttack1 - A bite attack on my enemy.
-// ****************************************************************************
-
-animframe_t GkrokonFramesMeleeAttack1[]=
+// MeleeAttack1 - A left hand attack.
+static const animframe_t gkrokon_frames_melee_attack1[] =
 {
-	FRAME_latack1,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_latack2,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_latack3,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_latack4,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_latack5,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_latack6,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_latack7,	NULL, 0, 0, 0, GkrokonBite,	0, NULL,
-	FRAME_latack8,	NULL, 0, 0, 0, NULL,	0,	NULL,
+	{ FRAME_latack1,	NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_latack2,	NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_latack3,	NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_latack4,	NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_latack5,	NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_latack6,	NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_latack7,	NULL, 0, 0, 0, GkrokonBite, 0, NULL },
+	{ FRAME_latack8,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
+const animmove_t gkrokon_move_melee_attack1 = { 8, gkrokon_frames_melee_attack1, GkrokonPause };
 
-animmove_t GkrokonMoveMeleeAttack1={8,GkrokonFramesMeleeAttack1, GkrokonPause};//GkrokonOrderStand};
-
-animframe_t GkrokonFramesMeleeAttack2[]=
+// MeleeAttack2 - A right hand attack.
+static const animframe_t gkrokon_frames_melee_attack2[] =
 {
-	FRAME_ratack1,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_ratack2,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_ratack3,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_ratack4,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_ratack5,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_ratack6,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_ratack7,	NULL, 0, 0, 0, GkrokonBite,	1, NULL,
-	FRAME_ratack8,	NULL, 0, 0, 0, NULL,	0,	NULL,
+	{ FRAME_ratack1,	NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_ratack2,	NULL, 0, 0, 0, NULL, 0,	NULL },
+	{ FRAME_ratack3,	NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_ratack4,	NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_ratack5,	NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_ratack6,	NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_ratack7,	NULL, 0, 0, 0, GkrokonBite, 1, NULL },
+	{ FRAME_ratack8,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
+const animmove_t gkrokon_move_melee_attack2 = { 8, gkrokon_frames_melee_attack2, GkrokonPause };
 
-animmove_t GkrokonMoveMeleeAttack2={8,GkrokonFramesMeleeAttack2, GkrokonPause};//GkrokonOrderStand};
-
-// ****************************************************************************
-// GkrokonFramesMissileAttack1 - Firing spoo-goo from spoo launcher.
-// ****************************************************************************
-
-animframe_t GkrokonFramesMissileAttack1[]=
+// MissileAttack1 - Firing spoo-goo from spoo launcher.
+static const animframe_t gkrokon_frames_missile_attack1[] =
 {
-	FRAME_spoo1,	NULL, 0, 0, 0, ai_charge,	0,	NULL,
-	FRAME_spoo2,	NULL, 0, 0, 0, ai_charge,	0,	NULL,
-	FRAME_spoo3,	NULL, 0, 0, 0, ai_charge,	0,	NULL,
-	FRAME_spoo4,	NULL, 0, 0, 0, ai_charge,	0,	NULL,
-	FRAME_spoo5,	NULL, 0, 0, 0, ai_charge,	0,	GkrokonSpoo,
+	{ FRAME_spoo1,		NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_spoo2,		NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_spoo3,		NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_spoo4,		NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_spoo5,		NULL, 0, 0, 0, ai_charge, 0, GkrokonSpoo },
 };
-animmove_t GkrokonMoveMissileAttack1={5,GkrokonFramesMissileAttack1, GkrokonPause};//GkrokonOrderRun};
+const animmove_t gkrokon_move_missile_attack1 = { 5, gkrokon_frames_missile_attack1, GkrokonPause };
 
-animframe_t GkrokonFramesMissileAttack2[]=
+// MissileAttack2 - Not firing spoo-goo from spoo launcher. Referenced as ANIM_SNEEZE.
+static const animframe_t gkrokon_frames_missile_attack2[] =
 {
-	FRAME_spoo1,	NULL, 0, 0, 0, ai_charge,	0,	NULL,
-	FRAME_spoo2,	NULL, 0, 0, 0, ai_charge,	0,	NULL,
-	FRAME_spoo3,	NULL, 0, 0, 0, ai_charge,	0,	NULL,
-	FRAME_spoo4,	NULL, 0, 0, 0, ai_charge,	0,	NULL,
-	FRAME_spoo5,	NULL, 0, 0, 0, ai_charge,	0,	NULL,
+	{ FRAME_spoo1,		NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_spoo2,		NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_spoo3,		NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_spoo4,		NULL, 0, 0, 0, ai_charge, 0, NULL },
+	{ FRAME_spoo5,		NULL, 0, 0, 0, ai_charge, 0, NULL },
 };
+const animmove_t gkrokon_move_missile_attack2 = { 5, gkrokon_frames_missile_attack2, GkrokonPause };
 
-animmove_t GkrokonMoveMissileAttack2={5,GkrokonFramesMissileAttack2, GkrokonPause};//GkrokonOrderRun};
-
-// ****************************************************************************
-// GkrokonFramesEat1 - Going from ready to eating.
-// ****************************************************************************
-
-animframe_t GkrokonFramesEat1[]=
+// Eat1 - going from ready to eating.
+static const animframe_t gkrokon_frames_eat1[] =
 {
-	FRAME_eat1,	NULL, 0, 0, 0, ai_eat,	0,	NULL,
-	FRAME_eat2,	NULL, 0, 0, 0, ai_eat,	0,	NULL,
-	FRAME_eat3,	NULL, 0, 0, 0, ai_eat,	0,	NULL,
-	FRAME_eat4,	NULL, 0, 0, 0, ai_eat,	0,	NULL,
+	{ FRAME_eat1,		NULL, 0, 0, 0, ai_eat, 0, NULL },
+	{ FRAME_eat2,		NULL, 0, 0, 0, ai_eat, 0, NULL },
+	{ FRAME_eat3,		NULL, 0, 0, 0, ai_eat, 0, NULL },
+	{ FRAME_eat4,		NULL, 0, 0, 0, ai_eat, 0, NULL },
 };
+const animmove_t gkrokon_move_eat1 = { 4, gkrokon_frames_eat1, GkrokonPause };
 
-animmove_t GkrokonMoveEat1={4,GkrokonFramesEat1, GkrokonPause};//GkrokonOrderEat};
-
-// ****************************************************************************
-// GkrokonFramesEat2 - The eat cycle.
-// ****************************************************************************
-
-animframe_t GkrokonFramesEat2[]=
+// Eat2 - The eat cycle.
+static const animframe_t gkrokon_frames_eat2[] =
 {
-	FRAME_eat5,	NULL, 0, 0, 0, ai_eat,	0,	NULL,
-	FRAME_eat6,	NULL, 0, 0, 0, ai_eat,	0,	NULL,
-	FRAME_eat7,	NULL, 0, 0, 0, ai_eat,	0,	NULL,
-	FRAME_eat8,	NULL, 0, 0, 0, ai_eat,	0,	NULL,
-	FRAME_eat9,	NULL, 0, 0, 0, ai_eat,	0,	NULL,
+	{ FRAME_eat5,		NULL, 0, 0, 0, ai_eat, 0, NULL },
+	{ FRAME_eat6,		NULL, 0, 0, 0, ai_eat, 0, NULL },
+	{ FRAME_eat7,		NULL, 0, 0, 0, ai_eat, 0, NULL },
+	{ FRAME_eat8,		NULL, 0, 0, 0, ai_eat, 0, NULL },
+	{ FRAME_eat9,		NULL, 0, 0, 0, ai_eat, 0, NULL },
 };
+const animmove_t gkrokon_move_eat2 = { 5, gkrokon_frames_eat2, GkrokonPause };
 
-animmove_t GkrokonMoveEat2={5,GkrokonFramesEat2, GkrokonPause};//GkrokonOrderEat};
-
-// ****************************************************************************
-// GkrokonFramesEat3 - Going from eating to ready.
-// ****************************************************************************
-
-animframe_t GkrokonFramesEat3[]=
+// Eat3 - going from eating to ready.
+static const animframe_t gkrokon_frames_eat3[] =
 {
-	FRAME_EATTRANS1,	NULL, 0, 0, 0, ai_eat,	0,	NULL,
-	FRAME_EATTRANS2,	NULL, 0, 0, 0, ai_eat,	0,	NULL,
-	FRAME_EATTRANS3,	NULL, 0, 0, 0, ai_eat,	0,	NULL,
-	FRAME_EATTRANS4,	NULL, 0, 0, 0, ai_eat,	0,	NULL,
+	{ FRAME_EATTRANS1,	NULL, 0, 0, 0, ai_eat, 0, NULL },
+	{ FRAME_EATTRANS2,	NULL, 0, 0, 0, ai_eat, 0, NULL },
+	{ FRAME_EATTRANS3,	NULL, 0, 0, 0, ai_eat, 0, NULL },
+	{ FRAME_EATTRANS4,	NULL, 0, 0, 0, ai_eat, 0, NULL },
 };
+const animmove_t gkrokon_move_eat3 = { 4, gkrokon_frames_eat3, GkrokonPause };
 
-animmove_t GkrokonMoveEat3={4,GkrokonFramesEat3, GkrokonPause};//GkrokonOrderEat};
-
-// ****************************************************************************
-// Pain1 - 
-// ****************************************************************************
-
-animframe_t GkrokonFramesPain1[]=
+// Pain1.
+static const animframe_t gkrokon_frames_pain1[] =
 {
-	FRAME_pain1,	NULL, 0, 0, 0, ai_charge,	-1,	NULL,
-	FRAME_pain2,	NULL, 0, 0, 0, ai_charge,	-1,	NULL,
-	FRAME_pain3,	NULL, 0, 0, 0, ai_charge,	-1,	NULL,
-	FRAME_pain4,	NULL, 0, 0, 0, ai_charge,	-1,	NULL,
-	FRAME_pain5,	NULL, 0, 0, 0, ai_charge,	-1,	NULL,
-	FRAME_pain6,	NULL, 0, 0, 0, ai_charge,	-1,	NULL,
-	FRAME_pain7,	NULL, 0, 0, 0, ai_charge,	-1,	NULL,
-	FRAME_pain8,	NULL, 0, 0, 0, ai_charge,	-1,	NULL,
+	{ FRAME_pain1,		NULL, 0, 0, 0, ai_charge, -1, NULL },
+	{ FRAME_pain2,		NULL, 0, 0, 0, ai_charge, -1, NULL },
+	{ FRAME_pain3,		NULL, 0, 0, 0, ai_charge, -1, NULL },
+	{ FRAME_pain4,		NULL, 0, 0, 0, ai_charge, -1, NULL },
+	{ FRAME_pain5,		NULL, 0, 0, 0, ai_charge, -1, NULL },
+	{ FRAME_pain6,		NULL, 0, 0, 0, ai_charge, -1, NULL },
+	{ FRAME_pain7,		NULL, 0, 0, 0, ai_charge, -1, NULL },
+	{ FRAME_pain8,		NULL, 0, 0, 0, ai_charge, -1, NULL },
 };
+const animmove_t gkrokon_move_pain1 = { 8, gkrokon_frames_pain1, GkrokonPause };
 
-animmove_t GkrokonMovePain1={8,GkrokonFramesPain1, GkrokonPause};//GkrokonOrderRun};
-
-// ****************************************************************************
-// Death1 - 
-// ****************************************************************************
-
-/*
-animframe_t GkrokonFramesDeath_hold[]=
+// Death1.
+static const animframe_t gkrokon_frames_death1[] =
 {
-	FRAME_deathb19,	NULL, 0, 0, 0, NULL,	0,	NULL,
+	{ FRAME_death1,		NULL, 0, 0, 0, NULL,	0, NULL },
+	{ FRAME_death2,		NULL, 0, 0, 0, NULL,	0, NULL },
+	{ FRAME_death3,		NULL, 0, 0, 0, NULL,	0, NULL },
+	{ FRAME_death4,		NULL, 0, 0, 0, NULL,	0, NULL },
+	{ FRAME_death5,		NULL, 0, 0, 0, NULL,	0, NULL },
+	{ FRAME_death6,		NULL, 0, 0, 0, NULL,	0, NULL },
+	{ FRAME_death7,		NULL, 0, 0, 0, NULL,	0, NULL },
+	{ FRAME_death8,		NULL, 0, 0, 0, NULL,	0, NULL },
+	{ FRAME_death9,		NULL, 0, 0, 0, NULL,	0, NULL },
+	{ FRAME_death10,	NULL, 0, 0, 0, NULL,	0, NULL },
+	{ FRAME_death11,	NULL, 0, 0, 0, NULL,	0, NULL },
+	{ FRAME_death12,	NULL, 0, 0, 0, NULL,	0, NULL },
+	{ FRAME_death13,	NULL, 0, 0, 0, NULL,	0, NULL },
+	{ FRAME_death14,	NULL, 0, 0, 0, NULL,	0, NULL },
+	{ FRAME_death15,	NULL, 0, 0, 0, NULL,	0, NULL },
+	{ FRAME_death16,	NULL, 0, 0, 0, ai_move,	2, NULL },
+	{ FRAME_death17,	NULL, 0, 0, 0, ai_move,	2, NULL },
+	{ FRAME_death18,	NULL, 0, 0, 0, ai_move,	2, NULL },
+	{ FRAME_death19,	NULL, 0, 0, 0, ai_move,	2, NULL },
+	{ FRAME_death20,	NULL, 0, 0, 0, ai_move,	2, NULL },
+	{ FRAME_death21,	NULL, 0, 0, 0, ai_move,	2, NULL },
+	{ FRAME_death22,	NULL, 0, 0, 0, ai_move,	2, NULL },
+	{ FRAME_death23,	NULL, 0, 0, 0, ai_move,	2, NULL },
+	{ FRAME_death24,	NULL, 0, 0, 0, ai_move,	2, NULL },
+	{ FRAME_death25,	NULL, 0, 0, 0, ai_move,	2, NULL },
+	{ FRAME_death26,	NULL, 0, 0, 0, ai_move,	2, NULL },
 };
-animmove_t GkrokonMoveDeath_hold={1,GkrokonFramesDeath_hold,NULL};
+const animmove_t gkrokon_move_death1 = { 26, gkrokon_frames_death1, GkrokonDead };
 
-*/
-  animframe_t GkrokonFramesDeath1[]=
+// Hop.
+static const animframe_t gkrokon_frames_hop[] =
 {
-	FRAME_death1,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_death2,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_death3,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_death4,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_death5,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_death6,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_death7,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_death8,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_death9,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_death10,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_death11,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_death12,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_death13,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_death14,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_death15,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_death16,	NULL, 0, 0, 0, ai_move,	2,	NULL,
-	FRAME_death17,	NULL, 0, 0, 0, ai_move,	2,	NULL,
-	FRAME_death18,	NULL, 0, 0, 0, ai_move,	2,	NULL,
-	FRAME_death19,	NULL, 0, 0, 0, ai_move,	2,	NULL,
-	FRAME_death20,	NULL, 0, 0, 0, ai_move,	2,	NULL,
-	FRAME_death21,	NULL, 0, 0, 0, ai_move,	2,	NULL,
-	FRAME_death22,	NULL, 0, 0, 0, ai_move,	2,	NULL,
-	FRAME_death23,	NULL, 0, 0, 0, ai_move,	2,	NULL,
-	FRAME_death24,	NULL, 0, 0, 0, ai_move,	2,	NULL,
-	FRAME_death25,	NULL, 0, 0, 0, ai_move,	2,	NULL,
-	FRAME_death26,	NULL, 0, 0, 0, ai_move,	2,	NULL,
+	{ FRAME_birth5,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_birth4,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_birth5,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_birth6,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_birth7,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_birth8,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_birth9,		NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_birth10,	NULL, 0, 0, 0, NULL, 0, gkrokonRandomWalkSound },
+	{ FRAME_birth11,	NULL, 0, 0, 0, NULL, 0, NULL },
+	{ FRAME_birth12,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-animmove_t GkrokonMoveDeath1={26,GkrokonFramesDeath1,GkrokonDead};
+const animmove_t gkrokon_move_hop1 = { 10, gkrokon_frames_hop, GkrokonPause };
 
-animframe_t GkrokonStartHop[]=
+// Delay - idling while laying on the ground.
+static const animframe_t gkrokon_frames_delay[] =
 {
-	FRAME_birth5,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_birth4,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_birth5,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_birth6,	NULL, 0, 0, 0, NULL,	0,	/*gkrokon_hopdown*/NULL,
-	FRAME_birth7,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_birth8,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_birth9,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_birth10,	NULL, 0, 0, 0, NULL,	0,	gkrokonRandomWalkSound,
-	FRAME_birth11,	NULL, 0, 0, 0, NULL,	0,	NULL,
-	FRAME_birth12,	NULL, 0, 0, 0, NULL,	0,	/*gkrokon_donehop*/NULL,
+	{ FRAME_bwait1,		NULL, 0, 0, 0, NULL, 0, GkrokonPause },
+	{ FRAME_bwait2,		NULL, 0, 0, 0, NULL, 0, GkrokonPause },
+	{ FRAME_bwait3,		NULL, 0, 0, 0, NULL, 0, GkrokonPause },
+	{ FRAME_bwait4,		NULL, 0, 0, 0, NULL, 0, GkrokonPause },
+	{ FRAME_bwait5,		gkrokonSound, CHAN_VOICE, SND_IDLE1, ATTN_NORM, NULL, 0, GkrokonPause },
+	{ FRAME_bwait6,		NULL, 0, 0, 0, NULL, 0, GkrokonPause },
+	{ FRAME_bwait7,		NULL, 0, 0, 0, NULL, 0, GkrokonPause },
+	{ FRAME_bwait8,		NULL, 0, 0, 0, NULL, 0, GkrokonPause },
+	{ FRAME_bwait9,		NULL, 0, 0, 0, NULL, 0, GkrokonPause },
+	{ FRAME_bwait10,	NULL, 0, 0, 0, NULL, 0, GkrokonPause },
+	{ FRAME_bwait11,	NULL, 0, 0, 0, NULL, 0, GkrokonPause },
+	{ FRAME_bwait12,	NULL, 0, 0, 0, NULL, 0, GkrokonPause },
+	{ FRAME_bwait13,	NULL, 0, 0, 0, NULL, 0, GkrokonPause },
+	{ FRAME_bwait14,	NULL, 0, 0, 0, NULL, 0, GkrokonPause },
 };
-
-animmove_t GkrokonMoveHop1={10,GkrokonStartHop,GkrokonPause};
-
-animframe_t GkrokonFramesDelay[]=
-{
-	FRAME_bwait1,	NULL, 0, 0, 0, NULL, 0,	GkrokonPause,
-	FRAME_bwait2,	NULL, 0, 0, 0, NULL, 0,	GkrokonPause,
-	FRAME_bwait3,	NULL, 0, 0, 0, NULL, 0,	GkrokonPause,
-	FRAME_bwait4,	NULL, 0, 0, 0, NULL, 0,	GkrokonPause,
-	FRAME_bwait5,	gkrokonSound, CHAN_VOICE, SND_IDLE1, ATTN_NORM, NULL,	0,	GkrokonPause,
-	FRAME_bwait6,	NULL, 0, 0, 0, NULL, 0,	GkrokonPause,
-	FRAME_bwait7,	NULL, 0, 0, 0, NULL, 0,	GkrokonPause,
-	FRAME_bwait8,	NULL, 0, 0, 0, NULL, 0,	GkrokonPause,
-	FRAME_bwait9,	NULL, 0, 0, 0, NULL, 0,	GkrokonPause,
-	FRAME_bwait10,	NULL, 0, 0, 0, NULL, 0,	GkrokonPause,
-	FRAME_bwait11,	NULL, 0, 0, 0, NULL, 0,	GkrokonPause,
-	FRAME_bwait12,	NULL, 0, 0, 0, NULL, 0,	GkrokonPause,
-	FRAME_bwait13,	NULL, 0, 0, 0, NULL, 0,	GkrokonPause,
-	FRAME_bwait14,	NULL, 0, 0, 0, NULL, 0,	GkrokonPause,
-};
-animmove_t GkrokonMoveDelay={14,GkrokonFramesDelay, GkrokonPause};//GkrokonOrderStand};
+const animmove_t gkrokon_move_delay = { 14, gkrokon_frames_delay, GkrokonPause };

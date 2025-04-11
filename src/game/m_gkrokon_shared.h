@@ -1,22 +1,14 @@
-//==============================================================================
 //
-// m_gkrokon.h
+// m_gkrokon_shared.h -- Data and function declarations shared between m_gkrokon.c and m_gkrokon_anim.c.
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//==============================================================================
 
-#define GKROKON_JUMP_VELOCITY	300.0
-#define GKROKON_HOP_VELOCITY	128.0
+#pragma once
 
-#define GKROKON_SPOO_SPEED 450.0
-#define GKROKON_SPOO_ARC 150.0
+#include "g_local.h" //mxd
 
-// ****************************************************************************
 // The Gkrokon's animations.
-// ****************************************************************************
-
 typedef enum AnimID_e
 {
 	ANIM_STAND1,
@@ -43,13 +35,11 @@ typedef enum AnimID_e
 	ANIM_RUNAWAY,
 	ANIM_SNEEZE,
 	ANIM_DELAY,
+
 	NUM_ANIMS
 } AnimID_t;
 
-// ****************************************************************************
 // The Gkrokon's sounds.
-// ****************************************************************************
-
 typedef enum SoundID_e
 {
 	SND_PAIN1,
@@ -69,34 +59,34 @@ typedef enum SoundID_e
 	SND_BITEHIT2,
 	SND_BITEMISS1,
 	SND_BITEMISS2,
+
 	NUM_SOUNDS
 } SoundID_t;
 
-extern animmove_t GkrokonMoveStand1;
-extern animmove_t GkrokonMoveStand2;
-extern animmove_t GkrokonMoveStand3;
-extern animmove_t GkrokonMoveStand4;
-extern animmove_t GkrokonMoveCrouch1;
-extern animmove_t GkrokonMoveCrouch2;
-extern animmove_t GkrokonMoveCrouch3;
-extern animmove_t GkrokonMoveWalk1;
-extern animmove_t GkrokonMoveRun1;
-extern animmove_t GkrokonMoveRun2;
-extern animmove_t GkrokonMoveRunAway;
-extern animmove_t GkrokonMoveJump1;
-extern animmove_t GkrokonMoveForcedJump;
-extern animmove_t GkrokonMoveMeleeAttack1;
-extern animmove_t GkrokonMoveMeleeAttack2;
-extern animmove_t GkrokonMoveMissileAttack1;
-extern animmove_t GkrokonMoveMissileAttack2;
-extern animmove_t GkrokonMoveEat1;
-extern animmove_t GkrokonMoveEat2;
-extern animmove_t GkrokonMoveEat3;
-extern animmove_t GkrokonMovePain1;
-extern animmove_t GkrokonMoveDeath1;
-//extern animmove_t GkrokonMoveDeath_hold;
-extern animmove_t GkrokonMoveHop1;
-extern animmove_t GkrokonMoveDelay;
+extern const animmove_t gkrokon_move_stand1;
+extern const animmove_t gkrokon_move_stand2;
+extern const animmove_t gkrokon_move_stand3;
+extern const animmove_t gkrokon_move_stand4;
+extern const animmove_t gkrokon_move_crouch1;
+extern const animmove_t gkrokon_move_crouch2;
+extern const animmove_t gkrokon_move_crouch3;
+extern const animmove_t gkrokon_move_walk1;
+extern const animmove_t gkrokon_move_run1;
+extern const animmove_t gkrokon_move_run2;
+extern const animmove_t gkrokon_move_run_away;
+extern const animmove_t gkrokon_move_jump1;
+extern const animmove_t gkrokon_move_forced_jump;
+extern const animmove_t gkrokon_move_melee_attack1;
+extern const animmove_t gkrokon_move_melee_attack2;
+extern const animmove_t gkrokon_move_missile_attack1;
+extern const animmove_t gkrokon_move_missile_attack2;
+extern const animmove_t gkrokon_move_eat1;
+extern const animmove_t gkrokon_move_eat2;
+extern const animmove_t gkrokon_move_eat3;
+extern const animmove_t gkrokon_move_pain1;
+extern const animmove_t gkrokon_move_death1;
+extern const animmove_t gkrokon_move_hop1;
+extern const animmove_t gkrokon_move_delay;
 
 void GkrokonSpooTouch2(edict_t *self,trace_t *trace);
 
@@ -108,10 +98,7 @@ void GkrokonDead(edict_t *self);
 
 void create_gkrokon_spoo(edict_t *Spoo);
 
-void GkrokonSpooThink(edict_t *self);
 void GkrokonSpooTouch(edict_t *self,edict_t *Other,cplane_t *Plane,csurface_t *Surface);
-
-trace_t trace_dir(edict_t *self, vec3_t source, vec3_t angles, float dist);
 
 void beetle_ai_stand(edict_t *self, float dist);
 void beetle_idle_sound(edict_t *self);
