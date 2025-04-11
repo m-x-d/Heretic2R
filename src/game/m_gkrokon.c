@@ -24,7 +24,7 @@
 #define GKROKON_SPOO_ARC	150.0f
 
 static void GkrokonSpooTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface); //TODO: remove.
-static void GkrokonSpooTouch2(edict_t* self, trace_t* trace); //TODO: remove.
+static void GkrokonSpooIsBlocked(edict_t* self, trace_t* trace); //TODO: remove.
 
 #pragma region ========================== Gkrokon base info ==========================
 
@@ -72,7 +72,7 @@ static void SpooInit(edict_t* spoo) //mxd. Named 'create_gkrokon_spoo' in origin
 	spoo->s.effects = EF_CAMERA_NO_CLIP;
 
 	spoo->touch = GkrokonSpooTouch;
-	spoo->isBlocked = GkrokonSpooTouch2;
+	spoo->isBlocked = GkrokonSpooIsBlocked;
 
 	VectorSet(spoo->mins, -1.0f, -1.0f, -1.0f);
 	VectorSet(spoo->maxs,  1.0f,  1.0f,  1.0f);
@@ -102,14 +102,10 @@ edict_t* GkrokonSpooReflect(edict_t* self, edict_t* other, vec3_t vel)
 	return spoo;
 }
 
-/*-----------------------------------------------
-	GkrokonSpooTouch2
------------------------------------------------*/
-
-void GkrokonSpooTouch2(edict_t *self,trace_t *trace)
+static void GkrokonSpooIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'GkrokonSpooTouch2' in original logic.
 {
-	GkrokonSpooTouch(self,trace->ent,(cplane_t *)&trace->plane,(csurface_t *)trace->surface);
-}	
+	GkrokonSpooTouch(self, trace->ent, &trace->plane, trace->surface);
+}
 
 /*-----------------------------------------------
 	GkrokonSpooTouch
