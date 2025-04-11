@@ -60,29 +60,22 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
-/*
+#pragma region ========================== Spoo functions ==========================
 
-	Spoo functions
-
-*/
-
-/*-----------------------------------------------
-	create_gkrokon_spoo
------------------------------------------------*/
-
-void create_gkrokon_spoo(edict_t *Spoo)
+static void SpooInit(edict_t* spoo) //mxd. Named 'create_gkrokon_spoo' in original logic.
 {
-	Spoo->movetype=PHYSICSTYPE_FLY;
-	Spoo->solid=SOLID_BBOX;
-	Spoo->classname="Gkrokon_Spoo";
-	Spoo->touch=GkrokonSpooTouch;
-	Spoo->isBlocked=GkrokonSpooTouch2;
-	Spoo->dmg=1.0;
-	Spoo->clipmask = MASK_SHOT;
-	Spoo->nextthink = level.time + FRAMETIME;
-	VectorSet(Spoo->mins,-1.0,-1.0,-1.0);	
-	VectorSet(Spoo->maxs,1.0,1.0,1.0);
-	Spoo->s.effects = EF_CAMERA_NO_CLIP;
+	spoo->movetype = PHYSICSTYPE_FLY;
+	spoo->solid = SOLID_BBOX;
+	spoo->classname = "Gkrokon_Spoo";
+	spoo->clipmask = MASK_SHOT;
+	spoo->s.scale = 0.5f;
+	spoo->s.effects = EF_CAMERA_NO_CLIP;
+
+	spoo->touch = GkrokonSpooTouch;
+	spoo->isBlocked = GkrokonSpooTouch2;
+
+	VectorSet(spoo->mins, -1.0f, -1.0f, -1.0f);
+	VectorSet(spoo->maxs,  1.0f,  1.0f,  1.0f);
 }
 
 /*-----------------------------------------------
@@ -95,7 +88,7 @@ edict_t *GkrokonSpooReflect(edict_t *self, edict_t *other, vec3_t vel)
 
 	Spoo = G_Spawn();
 
-	create_gkrokon_spoo(Spoo);
+	SpooInit(Spoo);
 
 	Spoo->enemy=self->owner;
 	Spoo->owner=other;
@@ -214,7 +207,7 @@ void GkrokonSpoo(edict_t *self)
 	// Spawn the spoo globbit.
 	Spoo = G_Spawn();
 
-	create_gkrokon_spoo(Spoo);
+	SpooInit(Spoo);
 	Spoo->reflect_debounce_time = MAX_REFLECT;
 
 	Spoo->s.scale = 0.5;
@@ -251,6 +244,8 @@ void GkrokonSpoo(edict_t *self)
 
 	self->monsterinfo.misc_debounce_time = level.time + flrand(0.5, 3);
 }
+
+#pragma endregion
 
 /*
 
