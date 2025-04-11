@@ -290,23 +290,12 @@ static void GkrokonCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. N
 	GkrokonPause(self);
 }
 
-/*-----------------------------------------------
-	beetle_run
------------------------------------------------*/
-
-void beetle_run(edict_t *self, G_Message_t *Msg)
+static void GkrokonRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'beetle_run' in original logic.
 {
-	int		chance;
-	float	dist;
-
-	//Make sure we're not getting up from laying down without the proper animations
-	if(self->ai_mood == AI_MOOD_FLEE)
+	// Make sure we're not getting up from laying down without the proper animations.
+	if (self->ai_mood == AI_MOOD_FLEE)
 	{
-		if(irand(0,1))
-			SetAnim(self, ANIM_RUN1);
-		else
-			SetAnim(self, ANIM_RUN2);
-
+		SetAnim(self, irand(ANIM_RUN1, ANIM_RUN2));
 		return;
 	}
 
@@ -318,12 +307,10 @@ void beetle_run(edict_t *self, G_Message_t *Msg)
 
 	if (M_ValidTarget(self, self->enemy))
 	{
-		dist = M_DistanceToTarget(self, self->enemy);	
-
-		chance = irand(0,100);
-
-		if (dist < 300)
+		if (M_DistanceToTarget(self, self->enemy) < 300.0f)
 		{
+			const int chance = irand(0, 100);
+
 			if (chance < 5)
 				SetAnim(self, ANIM_STAND3);
 			else if (chance < 20)
@@ -339,7 +326,7 @@ void beetle_run(edict_t *self, G_Message_t *Msg)
 		return;
 	}
 
-	//If our enemy is dead, we need to stand
+	// If our enemy is dead, we need to stand.
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 }
 
@@ -828,7 +815,7 @@ void GkrokonStaticsInit(void)
 	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
 	classStatics[CID_GKROKON].msgReceivers[MSG_STAND]=beetle_stand;
-	classStatics[CID_GKROKON].msgReceivers[MSG_RUN]=beetle_run;	
+	classStatics[CID_GKROKON].msgReceivers[MSG_RUN]=GkrokonRunMsgHandler;	
 	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH_PAIN] = beetle_dead_pain;
 	classStatics[CID_GKROKON].msgReceivers[MSG_CHECK_MOOD] = GkrokonCheckMoodMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_FALLBACK] = GkrokonFallbackMsgHandler;
