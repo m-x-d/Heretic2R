@@ -23,9 +23,6 @@
 #define GKROKON_SPOO_SPEED	450.0f
 #define GKROKON_SPOO_ARC	150.0f
 
-static void GkrokonSpooTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface); //TODO: remove.
-static void GkrokonSpooIsBlocked(edict_t* self, trace_t* trace); //TODO: remove.
-
 #pragma region ========================== Gkrokon base info ==========================
 
 static const animmove_t* animations[NUM_ANIMS] =
@@ -61,51 +58,6 @@ static int sounds[NUM_SOUNDS];
 #pragma endregion
 
 #pragma region ========================== Spoo functions ==========================
-
-static void SpooInit(edict_t* spoo) //mxd. Named 'create_gkrokon_spoo' in original logic.
-{
-	spoo->movetype = PHYSICSTYPE_FLY;
-	spoo->solid = SOLID_BBOX;
-	spoo->classname = "Gkrokon_Spoo";
-	spoo->clipmask = MASK_SHOT;
-	spoo->s.scale = 0.5f;
-	spoo->s.effects = EF_CAMERA_NO_CLIP;
-
-	spoo->touch = GkrokonSpooTouch;
-	spoo->isBlocked = GkrokonSpooIsBlocked;
-
-	VectorSet(spoo->mins, -1.0f, -1.0f, -1.0f);
-	VectorSet(spoo->maxs,  1.0f,  1.0f,  1.0f);
-}
-
-edict_t* GkrokonSpooReflect(edict_t* self, edict_t* other, vec3_t vel)
-{
-	edict_t* spoo = G_Spawn();
-
-	SpooInit(spoo);
-
-	spoo->enemy = self->owner;
-	spoo->owner = other;
-	spoo->reflect_debounce_time = self->reflect_debounce_time - 1;
-	spoo->reflected_time = self->reflected_time;
-
-	VectorCopy(self->s.origin, spoo->s.origin);
-	VectorCopy(vel, spoo->velocity);
-	VectorNormalize2(vel, spoo->movedir);
-	AnglesFromDir(spoo->movedir, spoo->s.angles);
-
-	gi.linkentity(spoo);
-	gi.CreateEffect(&spoo->s, FX_SPOO, CEF_OWNERS_ORIGIN, spoo->s.origin, "");
-
-	G_SetToFree(self);
-
-	return spoo;
-}
-
-static void GkrokonSpooIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'GkrokonSpooTouch2' in original logic.
-{
-	GkrokonSpooTouch(self, trace->ent, &trace->plane, trace->surface);
-}
 
 static void GkrokonSpooTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surface)
 {
@@ -149,6 +101,51 @@ static void GkrokonSpooTouch(edict_t* self, edict_t* other, cplane_t* plane, csu
 	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/rat/gib.wav"), 1.0f, ATTN_NORM, 0.0f);
 
 	G_SetToFree(self);
+}
+
+static void GkrokonSpooIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'GkrokonSpooTouch2' in original logic.
+{
+	GkrokonSpooTouch(self, trace->ent, &trace->plane, trace->surface);
+}
+
+static void SpooInit(edict_t* spoo) //mxd. Named 'create_gkrokon_spoo' in original logic. //TODO: rename to GkrokonSpooInit.
+{
+	spoo->movetype = PHYSICSTYPE_FLY;
+	spoo->solid = SOLID_BBOX;
+	spoo->classname = "Gkrokon_Spoo";
+	spoo->clipmask = MASK_SHOT;
+	spoo->s.scale = 0.5f;
+	spoo->s.effects = EF_CAMERA_NO_CLIP;
+
+	spoo->touch = GkrokonSpooTouch;
+	spoo->isBlocked = GkrokonSpooIsBlocked;
+
+	VectorSet(spoo->mins, -1.0f, -1.0f, -1.0f);
+	VectorSet(spoo->maxs, 1.0f, 1.0f, 1.0f);
+}
+
+edict_t* GkrokonSpooReflect(edict_t* self, edict_t* other, vec3_t vel)
+{
+	edict_t* spoo = G_Spawn();
+
+	SpooInit(spoo);
+
+	spoo->enemy = self->owner;
+	spoo->owner = other;
+	spoo->reflect_debounce_time = self->reflect_debounce_time - 1;
+	spoo->reflected_time = self->reflected_time;
+
+	VectorCopy(self->s.origin, spoo->s.origin);
+	VectorCopy(vel, spoo->velocity);
+	VectorNormalize2(vel, spoo->movedir);
+	AnglesFromDir(spoo->movedir, spoo->s.angles);
+
+	gi.linkentity(spoo);
+	gi.CreateEffect(&spoo->s, FX_SPOO, CEF_OWNERS_ORIGIN, spoo->s.origin, "");
+
+	G_SetToFree(self);
+
+	return spoo;
 }
 
 /*-----------------------------------------------
