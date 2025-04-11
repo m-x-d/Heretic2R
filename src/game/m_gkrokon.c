@@ -335,90 +335,89 @@ static void GkrokonStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 	SetAnim(self, ((self->spawnflags & MSF_EXTRA1) ? ANIM_STAND1 : ANIM_STAND3));
 }
 
-/*-----------------------------------------------
-	beetle_melee
------------------------------------------------*/
-
-void beetle_missile(edict_t *self,G_Message_t *Msg)
+static void GkrokonMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'beetle_missile' in original logic.
 {
-	int		chance;
-	float	dist;
-
-	chance = irand(0,100);
-
-	if(self->enemy)
+	if (self->enemy == NULL)
 	{
-		if(self->monsterinfo.misc_debounce_time < level.time)
-		{
-			dist = M_DistanceToTarget(self, self->enemy);
+		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+		return;
+	}
 
-			if(self->spawnflags&MSF_FIXED)
+	if (self->monsterinfo.misc_debounce_time < level.time)
+	{
+		const int chance = irand(0, 100);
+		const float dist = M_DistanceToTarget(self, self->enemy);
+
+		if (self->spawnflags & MSF_FIXED)
+		{
+			if (dist < self->missile_range)
+				SetAnim(self, ANIM_MISSILE1);
+			else if (self->curAnimID == ANIM_CROUCH1 && !irand(0, 2))
+				SetAnim(self, ANIM_CROUCH2); // Go into stand.
+			else if (self->curAnimID == ANIM_STAND3 && !irand(0, 10))
+				SetAnim(self, ANIM_CROUCH3); // Go into a crouch.
+			else
+				SetAnim(self, ANIM_DELAY); // Stand around.
+
+			return;
+		}
+
+		if (dist < 64.0f)
+		{
+			if (chance < 10)
 			{
-				if (dist < self->missile_range)
-					SetAnim(self, ANIM_MISSILE1);
-				else if(self->curAnimID == ANIM_CROUCH1 && !irand(0, 2))
-					SetAnim(self, ANIM_CROUCH2);//go into stand
-				else if(self->curAnimID == ANIM_STAND3 && !irand(0, 10))
-					SetAnim(self, ANIM_CROUCH3);//go into a crouch
-				else
-					SetAnim(self, ANIM_DELAY);//stand around
+				SetAnim(self, ANIM_MISSILE1);
 			}
-			else if (dist < 64)
+			else if (chance < 30)
 			{
-				if (chance < 10)
-					SetAnim(self, ANIM_MISSILE1);
-				else if (chance < 30)
-				{
-					SetAnim(self, ANIM_RUNAWAY);
-					self->monsterinfo.flee_finished = level.time + 1;
-				}
-				else
-				{
-					if (irand(0,1))
-						SetAnim(self, ANIM_MELEE1);
-					else
-						SetAnim(self, ANIM_MELEE2);
-				}
-			}
-			else if ((dist > 64) && (dist < 200))
-			{
-				if (chance < 40)
-					SetAnim(self, ANIM_MISSILE1);
-				else if ((self->monsterinfo.flee_finished < level.time) && (dist > 100))
-					SetAnim(self, ANIM_RUN2);
-				else
-					SetAnim(self, ANIM_STAND3);
-			}
-			else if (dist < 300)
-			{
-				if (chance < 5)
-					SetAnim(self, ANIM_STAND3);
-				else if (chance < 20)
-					SetAnim(self, ANIM_RUN2);
-				else
-					SetAnim(self, ANIM_RUN1);
+				SetAnim(self, ANIM_RUNAWAY);
+				self->monsterinfo.flee_finished = level.time + 1.0f;
 			}
 			else
 			{
-				SetAnim(self, ANIM_RUN1);
+				SetAnim(self, irand(ANIM_MELEE1, ANIM_MELEE2));
 			}
+
+			return;
 		}
-		else if (irand(0,10) < 6)
+
+		if (dist > 64.0f && dist < 200.0f)
 		{
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			if (chance < 40)
+				SetAnim(self, ANIM_MISSILE1);
+			else if (self->monsterinfo.flee_finished < level.time && dist > 100.0f)
+				SetAnim(self, ANIM_RUN2);
+			else
+				SetAnim(self, ANIM_STAND3);
+
+			return;
 		}
-		else
+
+		if (dist < 300.0f)
 		{
-			GkrokonFallbackMsgHandler(self, Msg); //mxd
+			if (chance < 5)
+				SetAnim(self, ANIM_STAND3);
+			else if (chance < 20)
+				SetAnim(self, ANIM_RUN2);
+			else
+				SetAnim(self, ANIM_RUN1);
+
+			return;
 		}
+
+		SetAnim(self, ANIM_RUN1);
 		return;
 	}
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+
+	if (irand(0, 10) < 6)
+		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+	else
+		GkrokonFallbackMsgHandler(self, msg); //mxd. Use function.
 }
 
 void beetle_melee(edict_t *self,G_Message_t *Msg)
 {
-	beetle_missile(self, Msg);
+	GkrokonMissileMsgHandler(self, Msg);
 }
 
 /*-----------------------------------------------
@@ -813,7 +812,7 @@ void GkrokonStaticsInit(void)
 	classStatics[CID_GKROKON].msgReceivers[MSG_CHECK_MOOD] = GkrokonCheckMoodMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_FALLBACK] = GkrokonFallbackMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_MELEE]=beetle_melee;
-	classStatics[CID_GKROKON].msgReceivers[MSG_MISSILE]=beetle_missile;
+	classStatics[CID_GKROKON].msgReceivers[MSG_MISSILE]=GkrokonMissileMsgHandler;
 	classStatics[CID_GKROKON].msgReceivers[MSG_PAIN]=beetle_pain;
 	classStatics[CID_GKROKON].msgReceivers[MSG_EAT]=beetle_eat;
 	classStatics[CID_GKROKON].msgReceivers[MSG_DEATH]=beetle_death;
