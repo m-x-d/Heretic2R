@@ -287,7 +287,7 @@ static void GkrokonFallbackMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 static void GkrokonCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'beetle_check_mood' in original logic.
 {
 	ParseMsgParms(msg, "i", &self->ai_mood);
-	GkrokonPause(self);
+	gkrokon_pause(self);
 }
 
 static void GkrokonRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'beetle_run' in original logic.
@@ -829,7 +829,7 @@ void SP_Monster_Gkrokon(edict_t* self)
 	}
 }
 
-void GkrokonPause(edict_t* self) //TODO: rename to gkrokon_pause.
+void gkrokon_pause(edict_t* self) //mxd. Named 'GkrokonPause' in original logic.
 {
 	if ((self->spawnflags & MSF_FIXED) && self->curAnimID == ANIM_DELAY && self->enemy != NULL)
 	{
@@ -884,11 +884,11 @@ void GkrokonPause(edict_t* self) //TODO: rename to gkrokon_pause.
 void beetle_to_stand(edict_t* self) //TODO: rename to gkrokon_switch_to_stand_anim.
 {
 	SetAnim(self, ANIM_STAND3);
-	GkrokonPause(self);
+	gkrokon_pause(self);
 }
 
 void beetle_to_crouch(edict_t* self) //TODO: rename to gkrokon_switch_to_crouch_anim.
 {
 	SetAnim(self, ANIM_CROUCH1);
-	GkrokonPause(self);
+	gkrokon_pause(self);
 }
