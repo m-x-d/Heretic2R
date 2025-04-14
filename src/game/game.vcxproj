@@ -299,7 +299,7 @@
     <ClInclude Include="m_gkrokon_anim.h" />
     <ClInclude Include="m_gorgon.h" />
     <ClInclude Include="m_gorgon_anim.h" />
-    <ClInclude Include="m_gorgon_local.h" />
+    <ClInclude Include="m_gorgon_shared.h" />
     <ClInclude Include="m_harpy.h" />
     <ClInclude Include="m_harpy_local.h" />
     <ClInclude Include="m_harpy_anim.h" />

@@ -54,7 +54,7 @@ GORGON
 
 #include "g_debris.h" //mxd
 #include "m_gorgon.h"
-#include "m_gorgon_local.h"
+#include "m_gorgon_shared.h"
 #include "m_gorgon_anim.h"
 #include "m_stats.h"
 #include "p_anim_branch.h"

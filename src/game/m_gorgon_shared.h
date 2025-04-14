@@ -1,5 +1,5 @@
 //
-// m_gorgon.h
+// m_gorgon_shared.h
 //
 // Copyright 1998 Raven Software
 //
