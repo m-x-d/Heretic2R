@@ -330,127 +330,97 @@ static void GorgonWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 		SetAnim(self, ANIM_WALK1);
 }
 
-/*----------------------------------------------------------------------
-  Gorgon Melee - decide which melee animations to use
------------------------------------------------------------------------*/
-void gorgon_melee(edict_t *self, G_Message_t *msg)
+// Gorgon Melee - decide which melee animations to use.
+static void GorgonMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_melee' in original logic.
 {
-	trace_t	trace;
-	vec3_t	v, source, melee_point, forward, up;
-	float	len, seperation, melee_range, max_hop_range;
-	float	chance;
-
-	if(self->ai_mood == AI_MOOD_NAVIGATE)
+	if (self->ai_mood == AI_MOOD_NAVIGATE || !AI_HaveEnemy(self))
 		return;
 
-	if(!AI_HaveEnemy(self))
-		return;
+	// Too soon to attack again?
+	if (self->monsterinfo.attack_finished > level.time)
+	{
+		const float chance = flrand(0.0f, 1.0f);
 
-	AngleVectors(self->s.angles,forward, NULL, up);
-	VectorMA(self->s.origin, self->maxs[2]*0.5, up, melee_point);
+		if (chance < 0.6f)
+			SetAnim(self, ANIM_STAND4);
+		else if (chance < 0.7f)
+			SetAnim(self, ANIM_MELEE6); // Hop left.
+		else if (chance < 0.8f)
+			SetAnim(self, ANIM_MELEE7); // Hop right.
+		else
+			SetAnim(self, ANIM_MELEE9); // Hop backward.
+
+		return;
+	}
+
+	vec3_t forward;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, NULL, up);
+
+	vec3_t melee_point;
+	VectorMA(self->s.origin, self->maxs[2] * 0.5f, up, melee_point);
 	VectorMA(melee_point, self->maxs[0], forward, melee_point);
 
-	VectorSubtract (self->enemy->s.origin, melee_point, v);
-	len = VectorLength (v);
+	vec3_t diff;
+	VectorSubtract(self->enemy->s.origin, melee_point, diff);
+	const float dist = VectorLength(diff);
 
-	seperation = self->enemy->maxs[0];
-	melee_range = self->melee_range;
+	const float separation = self->enemy->maxs[0];
 
-	
-	if (self->monsterinfo.attack_finished > level.time)
-	{//too soon to attack again
-//		gi.dprintf("Waiting for next attack\n");
-		chance = flrand(0, 1);
-		if (chance < 0.6)
-			SetAnim(self, ANIM_STAND4);
-		else if (chance < 0.7)
-			SetAnim(self, ANIM_MELEE6);		// Hop left
-		else if (chance < 0.8)
-			SetAnim(self, ANIM_MELEE7);		// Hop right
+	// Ok to do a melee attack?
+	if (dist - separation < self->melee_range)
+	{
+		const float chance = flrand(0.0f, 1.0f);
+
+		if (Q_stricmp(self->enemy->classname, "monster_rat") == 0) //mxd. stricmp -> Q_stricmp.
+			SetAnim(self, (self->enemy->s.origin[2] > self->s.origin[2] ? ANIM_SNATCHHI : ANIM_SNATCHLOW));
+		else if (chance < 0.25f)
+			SetAnim(self, ANIM_MELEE1); // Attack left.
+		else if (chance < 0.5f)
+			SetAnim(self, ANIM_MELEE2); // Attack right.
+		else if (chance < 0.75f)
+			SetAnim(self, ANIM_MELEE3); // Attack up.
 		else
-			SetAnim(self, ANIM_MELEE9);		// Hop backward
+			SetAnim(self, ANIM_MELEE4); // Pull back.
+
+		self->monsterinfo.attack_finished = level.time + flrand(0.0f, 3.0f - skill->value);
 
 		return;
 	}
 
-	//ok to attack
-	if(len - seperation < melee_range)
-	{//melee
-//		gi.dprintf("Biting: ");
-		chance = flrand(0, 1);
-		
-		if(!stricmp(self->enemy->classname,"monster_rat"))
-		{
-			if(self->enemy->s.origin[2] > self->s.origin[2])
-			{
-//				gi.dprintf(" snatch high\n");
-				SetAnim(self,ANIM_SNATCHHI);
-			}
-			else
-			{
-//				gi.dprintf(" snatch low\n");
-				SetAnim(self,ANIM_SNATCHLOW);
-			}
-		}
-		else if (chance < 0.25)
-		{
-//			gi.dprintf(" melee1\n");
-			SetAnim(self, ANIM_MELEE1);		// Attack left
-		}
-		else if (chance < 0.5)
-		{
-//			gi.dprintf(" melee2\n");
-			SetAnim(self, ANIM_MELEE2);		// Attack right
-		}
-		else if (chance < 0.75)
-		{
-//			gi.dprintf(" melee3\n");
-			SetAnim(self, ANIM_MELEE3);		// Attack Up
-		}
-		else
-		{
-//			gi.dprintf(" melee4\n");
-			SetAnim(self, ANIM_MELEE4);		// Pull back
-		}
-		
-		self->monsterinfo.attack_finished = level.time + flrand(0, 3 - skill->value);
-		return;
-	}
-
-	//Out of melee range
-	if (len < 150)// && enemy_vis)
+	// Out of melee range?
+	if (dist < 150.0f)
 	{
 		SetAnim(self, ANIM_MELEE5);
 		return;
 	}
-	max_hop_range = self->s.scale * GORGON_MAX_HOP_RANGE;
-	if (len < max_hop_range)  // Hop forward
-	{//cheacks ahead to see if can hop at it
-//		gi.dprintf(" too far\n");
-		//Setup the trace
-//		gi.dprintf("Hopping forward\n");
-		VectorCopy(self->s.origin, source);
-		VectorMA(source, 64 * self->s.scale, forward, source);
-		
-		gi.trace (self->s.origin, self->mins, self->maxs, source, self, MASK_SHOT,&trace);
-		
-		if (trace.ent == self->enemy || trace.fraction == 1)
-			SetAnim(self, ANIM_MELEE8);
-		else
-		{
-			VectorCopy(self->s.origin, source);
-			VectorMA(source, 32 * self->s.scale, forward, source);
-			
-			gi.trace (self->s.origin, self->mins, self->maxs, source, self, MASK_SHOT,&trace);
 
-			if (trace.fraction == 1)
-				SetAnim(self, ANIM_MELEE7);
-			else
-				SetAnim(self, ANIM_MELEE6);
+	// Hop forward?
+	if (dist < self->s.scale * GORGON_MAX_HOP_RANGE)
+	{
+		// Checks ahead to see if can hop at it.
+		vec3_t hop_pos;
+		VectorCopy(self->s.origin, hop_pos);
+		VectorMA(hop_pos, self->s.scale * 64.0f, forward, hop_pos);
+
+		trace_t	trace;
+		gi.trace(self->s.origin, self->mins, self->maxs, hop_pos, self, MASK_SHOT, &trace);
+
+		if (trace.ent == self->enemy || trace.fraction == 1.0f)
+		{
+			SetAnim(self, ANIM_MELEE8);
+			return;
 		}
+
+		// Try closer position...
+		VectorCopy(self->s.origin, hop_pos);
+		VectorMA(hop_pos, self->s.scale * 32.0f, forward, hop_pos);
+
+		gi.trace(self->s.origin, self->mins, self->maxs, hop_pos, self, MASK_SHOT, &trace);
+
+		SetAnim(self, (trace.fraction == 1.0f ? ANIM_MELEE7 : ANIM_MELEE6));
 	}
 }
-
 
 /*----------------------------------------------------------------------
   Gorgon Run -decide which run animations to use
@@ -1972,8 +1942,8 @@ void GorgonStaticsInit(void)
 	classStatics[CID_GORGON].msgReceivers[MSG_WALK] = GorgonWalkMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_RUN] = gorgon_run;
 	classStatics[CID_GORGON].msgReceivers[MSG_EAT] = GorgonEatMsgHandler;
-	classStatics[CID_GORGON].msgReceivers[MSG_MELEE] = gorgon_melee;
-	classStatics[CID_GORGON].msgReceivers[MSG_MISSILE] = gorgon_melee;
+	classStatics[CID_GORGON].msgReceivers[MSG_MELEE] = GorgonMeleeMsgHandler;
+	classStatics[CID_GORGON].msgReceivers[MSG_MISSILE] = GorgonMeleeMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_WATCH] = GorgonWalkMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_PAIN] = gorgon_pain;
 	classStatics[CID_GORGON].msgReceivers[MSG_DEATH] = gorgon_death;
