@@ -20,7 +20,7 @@
 
 static qboolean GorgonCanJump (edict_t *self); //TODO: remove?
 static qboolean GorgonStartSlipAnimation(edict_t* self, qboolean from_pain); //TODO: remove?
-static void gorgon_prethink(edict_t* self); //TODO: remove?
+static void GorgonPreThink(edict_t* self); //TODO: remove?
 
 #define GORGON_MELEE_RANGE		48.0f //mxd. Named 'GORGON_STD_MELEE_RNG' in original logic.
 #define GORGON_MAX_HOP_RANGE	200.0f //mxd. Named 'GORGON_STD_MAXHOP_RNG' in original logic.
@@ -587,7 +587,7 @@ void gorgon_growl(edict_t* self)
 
 qboolean gorgonCheckMood(edict_t* self) //TODO: rename to GorgonCheckMood(), add action function variant.
 {
-	self->pre_think = gorgon_prethink;
+	self->pre_think = GorgonPreThink;
 	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
 
 	self->mood_think(self);
@@ -1458,8 +1458,8 @@ void gorgon_ai_swim(edict_t* self, float distance)
 {
 	const qboolean do_charge = (distance == -1.0f); //mxd
 
-	gorgon_prethink(self);
-	self->pre_think = gorgon_prethink;
+	GorgonPreThink(self);
+	self->pre_think = GorgonPreThink;
 	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
 
 	self->mood_think(self);
@@ -1515,46 +1515,46 @@ void gorgon_ai_swim(edict_t* self, float distance)
 	}
 }
 
-static void gorgon_prethink (edict_t *self)
-{//also make wake on surface of water?
-	if(self->flags & FL_INWATER)
+static void GorgonPreThink(edict_t* self) //mxd. Named 'gorgon_prethink' in original logic.
+{
+	// Also make wake on surface of water?
+	if (self->flags & FL_INWATER)
 	{
 		self->gravity = 0.0f;
-		self->svflags |= SVF_TAKE_NO_IMPACT_DMG | SVF_DO_NO_IMPACT_DMG;
-	
-		if(!self->wait)
+		self->svflags |= (SVF_TAKE_NO_IMPACT_DMG | SVF_DO_NO_IMPACT_DMG);
+
+		if (!self->wait)
 		{
-			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG7,
-				self->s.origin,	"bd", 128|96, vec3_up);
+			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG7, self->s.origin, "bd", 128 | 96, vec3_up);
 			self->wait = true;
 		}
 
-		if(self->curAnimID == ANIM_INAIR)
+		if (self->curAnimID == ANIM_INAIR)
 			SetAnim(self, ANIM_TO_SWIM);
 	}
 	else
 	{
-		gi.RemoveEffects (&self->s, FX_M_EFFECTS);
+		gi.RemoveEffects(&self->s, FX_M_EFFECTS);
+
 		self->gravity = 1.0f;
 		self->svflags &= ~SVF_TAKE_NO_IMPACT_DMG;
-		if(self->s.scale>0.5)
+
+		if (self->s.scale > 0.5f)
 			self->svflags &= ~SVF_DO_NO_IMPACT_DMG;
 
-		if(self->wait)
+		if (self->wait)
 		{
-			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, 0,
-				self->s.origin,	"bd", 128|96, vec3_up);
+			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, 0, self->s.origin, "bd", 128 | 96, vec3_up);
 			self->wait = false;
 		}
 
-		if(self->curAnimID == ANIM_SWIM ||
-			self->curAnimID == ANIM_SWIM_BITE_A ||
-			self->curAnimID == ANIM_SWIM_BITE_B)
+		if (self->curAnimID == ANIM_SWIM || self->curAnimID == ANIM_SWIM_BITE_A || self->curAnimID == ANIM_SWIM_BITE_B)
 			SetAnim(self, ANIM_RUN1);
 
 		gorgonFixPitch(self);
 	}
-	self->next_pre_think = level.time + 0.1;
+
+	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
 }
 
 void gorgon_ai_eat(edict_t *self, float crap)
@@ -1866,6 +1866,6 @@ void SP_monster_gorgon (edict_t *self)
 	else
 		self->dmg_radius = false;
 
-	self->pre_think = gorgon_prethink;
+	self->pre_think = GorgonPreThink;
 	self->next_pre_think = level.time + 0.1;
 }
