@@ -128,43 +128,28 @@ static void GorgonVoicePollMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 	}
 }
 
-void gorgonRoar (edict_t *self)
-{//finds gorgons in immediate vicinity and wakes them up
-	edict_t *found = NULL;
-
-	if(!self->enemy)
+// Finds gorgons in immediate vicinity and wakes them up.
+void gorgonRoar(edict_t* self) //TODO: rename to gorgon_roar.
+{
+	if (self->enemy == NULL)
 		return;
 
-	while(found = FindInRadius(found, self->s.origin, GORGON_ALERT_DIST))
+	edict_t* found = NULL;
+
+	while ((found = FindInRadius(found, self->s.origin, GORGON_ALERT_DIST)) != NULL)
 	{
-		if(found->health>0)
+		if (found->health > 0 && found->enemy == NULL && (found->svflags & SVF_MONSTER) && found->classID == CID_GORGON && !found->monsterinfo.roared)
 		{
-			if(!found->enemy)
+			// Make sure they can hear me.
+			if (gi.inPHS(self->s.origin, found->s.origin) && AI_OkToWake(found, true, true))
 			{
-				if(found->svflags & SVF_MONSTER)
-				{
-					if(found->classID == CID_GORGON)
-					{
-						if(!found->monsterinfo.roared)
-						{
-							if(gi.inPHS(self->s.origin, found->s.origin))
-							{//make sure they can hear me
-								if(AI_OkToWake(found, true, true))
-								{
-									found->monsterinfo.roared = true;
-									found->enemy = self->enemy;
-									AI_FoundTarget(found, false);
-									QPostMessage(found, MSG_VOICE_POLL, PRI_DIRECTIVE, "");
-								}
-							}
-						}
-					}
-				}
+				found->monsterinfo.roared = true;
+				found->enemy = self->enemy;
+				AI_FoundTarget(found, false);
+				QPostMessage(found, MSG_VOICE_POLL, PRI_DIRECTIVE, "");
 			}
 		}
 	}
-//Not just an alert monsters since we want to wake up gorgons only
-	//	AlertMonsters(self, self->enemy, 5, 1);
 }
 
 qboolean gorgonFindAsleepGorgons (edict_t *self)
