@@ -950,7 +950,7 @@ void gorgon_apply_jump(edict_t* self) //mxd. Named 'gorgonApplyJump' in original
 	}
 }
 
-void gorgonJumpOutWater(edict_t* self) //TODO: rename to gorgon_jump_out_of_water.
+void gorgon_jump_out_of_water(edict_t* self) //mxd. Named 'gorgonJumpOutWater' in original logic.
 {
 	vec3_t end_pos;
 

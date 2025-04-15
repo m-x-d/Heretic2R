@@ -1027,7 +1027,7 @@ static const animframe_t gorgon_frames_outwater [] =
 	FRAME_swimata8,	NULL, 0, 0, 0, gorgon_ai_swim, -1, NULL,
 	FRAME_swimata10,NULL, 0, 0, 0, gorgon_ai_swim, -1, NULL,
 	FRAME_swimata12,NULL, 0, 0, 0, gorgon_ai_swim, -1, gorgon_growl,
-	FRAME_swimata14,NULL, 0, 0, 0, gorgon_ai_swim, -1, gorgonJumpOutWater,
+	FRAME_swimata14,NULL, 0, 0, 0, gorgon_ai_swim, -1, gorgon_jump_out_of_water,
 	FRAME_jumpb5,	NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_jumpb6,	NULL, 0, 0, 0, NULL, 0,  gorgonFixPitch,
 	FRAME_jumpb7,	NULL, 0, 0, 0, NULL, 0,  gorgonFixPitch,
