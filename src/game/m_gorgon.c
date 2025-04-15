@@ -1421,12 +1421,12 @@ void gorgon_set_roll(edict_t* self, float roll_angle) //mxd. Named 'gorgonRoll' 
 	self->s.angles[ROLL] = anglemod(roll_angle); //FIXME: cannot interrupt!!!
 }
 
-void gorgonLerpOff(edict_t* self) //TODO: rename to gorgon_lerp_off.
+void gorgon_lerp_off(edict_t* self) //mxd. Named 'gorgonLerpOff' in original logic.
 {
 	self->s.renderfx &= ~RF_FRAMELERP;
 }
 
-void gorgonLerpOn(edict_t* self) //TODO: rename to gorgon_lerp_on.
+void gorgon_lerp_on(edict_t* self) //mxd. Named 'gorgonLerpOn' in original logic.
 {
 	self->s.renderfx |= RF_FRAMELERP;
 }
