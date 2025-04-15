@@ -179,73 +179,64 @@ static void GorgonEatMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'g
 	self->monsterinfo.misc_debounce_time = level.time + 5.0f;
 }
 
-qboolean gorgon_check_attack(edict_t *self)
+static qboolean GorgonCanAttack(edict_t* self) //mxd. Named 'gorgon_check_attack' in original logic.
 {
-	vec3_t	v, vr, vf;
-	float	dot, dot2, len;
-	int		chance;
-
-	if(!M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy) || !AI_IsClearlyVisible(self, self->enemy))
 		return false;
 
-	if (!AI_IsClearlyVisible(self, self->enemy))
-		return false;
-	
-	VectorSubtract(self->enemy->s.origin, self->s.origin, v);
-	len = VectorNormalize(v);
+	vec3_t diff;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
+	const float dist = VectorNormalize(diff);
 
-	if (len < 200)
+	if (dist < 200.0f)
 	{
-		self->show_hostile = level.time + 1;		// wake up other monsters		
+		self->show_hostile = level.time + 1.0f; // Wake up other monsters.
 		QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 
 		return true;
 	}
-	else if (len < 400)
+
+	if (dist < 400.0f && irand(0, 3) == 0)
 	{
-		if (!irand(0, 3))
+		gorgon_growl(self);
+		return true;
+	}
+
+	if (irand(0, 3) == 0)
+	{
+		vec3_t forward;
+		vec3_t right;
+		AngleVectors(self->s.angles, forward, right, NULL);
+		const float dot = DotProduct(forward, diff);
+
+		if (dot > -0.85f && dot < -0.25f) // Behind and aesthetically correct.
 		{
 			gorgon_growl(self);
-			return true;
-		}
-	}
-	
-	if (!irand(0, 3))
-	{
-		AngleVectors(self->s.angles, vf, vr, NULL);
-		dot  = DotProduct(vf, v);
-		dot2 = DotProduct(vr, v);
-
-		if (dot > -0.85 && dot < -0.25) //Behind and aesthetically correct
-		{
-			gorgon_growl(self);
-
-			if (dot2 > 0) //to the right
-				SetAnim(self, ANIM_STAND3);
-			else  //to the left
-				SetAnim(self, ANIM_STAND2);
+			SetAnim(self, (DotProduct(right, diff) > 0.0f ? ANIM_STAND3 : ANIM_STAND2)); // dot > 0 -> to the right, otherwise to the left.
 
 			return true;
 		}
+
 		return false;
 	}
-	else
+
+	if (self->monsterinfo.aiflags & AI_EATING)
 	{
-		if (self->monsterinfo.aiflags & AI_EATING)
-		{
-			chance = irand(0, 100);
-			if (chance < 10)
-				SetAnim(self, ANIM_EAT_TEAR);
-			else if (chance < 20)
-				SetAnim(self, ANIM_EAT_PULLBACK);
-			else 
-				SetAnim(self, ANIM_EAT_LOOP);
-			return true;
-		}
-		
-		return false;
+		const int chance = irand(0, 100);
+
+		if (chance < 10)
+			SetAnim(self, ANIM_EAT_TEAR);
+		else if (chance < 20)
+			SetAnim(self, ANIM_EAT_PULLBACK);
+		else
+			SetAnim(self, ANIM_EAT_LOOP);
+
+		return true;
 	}
+
+	return false;
 }
+
 /*----------------------------------------------------------------------
   Gorgon Stand  -decide which standing animations to use
 -----------------------------------------------------------------------*/
@@ -259,7 +250,7 @@ void gorgon_stand(edict_t *self, G_Message_t *msg)
 		return;
 	}
 
-	if(gorgon_check_attack(self))
+	if(GorgonCanAttack(self))
 		return;
 
 	if (self->monsterinfo.aiflags & AI_EATING)
@@ -849,7 +840,7 @@ void gorgon_land(edict_t *self)
 
 void gorgon_eatorder (edict_t *self)
 {
-	if(gorgon_check_attack(self))
+	if(GorgonCanAttack(self))
 		return;
 
 	QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
