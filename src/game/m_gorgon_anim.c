@@ -555,22 +555,18 @@ void gorgon_death2_slide (edict_t *self)
 	self->monsterinfo.nextframeindex = 0;
 }
 
-void gorgon_death2throw (edict_t *self)
+void gorgon_death2throw(edict_t* self)
 {
-	vec3_t		forward;
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
 
-	AngleVectors (self->s.angles, forward, NULL, NULL);
-
-	VectorScale (forward, -375, self->velocity);
-	self->velocity[2] = 200;
-//	self->movetype= MOVETYPE_BOUNCE;//elasticity?
+	VectorScale(forward, -375.0f, self->velocity);
+	self->velocity[2] = 200.0f;
 }
 
-void gorgon_death2 (edict_t *self)
+void gorgon_death2(edict_t* self)
 {
-
-//	self->movetype= MOVETYPE_STEP;
-	self->velocity[2] = -120;
+	self->velocity[2] = -120.0f;
 }
 
 static const animframe_t gorgon_frames_die2 [] =
