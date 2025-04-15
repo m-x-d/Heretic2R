@@ -1456,6 +1456,54 @@ void gorgon_slide(edict_t* self, float force) //mxd. Named 'gorgonSlide' in orig
 	self->friction = 0.2f;
 }
 
+void gorgon_ai_run(edict_t* self, float distance) //mxd. Originally defined in m_gorgon_anim.c
+{
+#define GORGON_SWERVE		20 // Degree of swerve.
+#define GORGON_SWERVE_INT1	(GORGON_SWERVE / 4)
+#define GORGON_SWERVE_INT2	(GORGON_SWERVE / 2)
+#define GORGON_SWERVE_INT3	(GORGON_SWERVE - GORGON_SWERVE_INT1)
+#define GORGON_SWERVE_INT4	GORGON_SWERVE
+
+#define GORGON_SWERVE_MULT	(GORGON_SWERVE / GORGON_SWERVE_INT1)
+
+	MG_FaceGoal(self, false);
+
+	if (self->monsterinfo.idle_time != -1.0f && self->monsterinfo.idle_time < level.time)
+	{
+		self->dmg++;
+
+		float offset;
+
+		if (self->dmg < GORGON_SWERVE_INT1)
+		{
+			offset = (float)(self->dmg) * GORGON_SWERVE_MULT;
+		}
+		else if (self->dmg < GORGON_SWERVE_INT2)
+		{
+			offset = GORGON_SWERVE - (((float)(self->dmg) - GORGON_SWERVE_INT1) * GORGON_SWERVE_MULT);
+		}
+		else if (self->dmg < GORGON_SWERVE_INT3)
+		{
+			offset = -(((float)(self->dmg) - GORGON_SWERVE_INT2) * GORGON_SWERVE_MULT);
+		}
+		else if (self->dmg < GORGON_SWERVE_INT4)
+		{
+			offset = -(GORGON_SWERVE - (((float)(self->dmg) - GORGON_SWERVE_INT3) * GORGON_SWERVE_MULT));
+		}
+		else
+		{
+			offset = 0.0f; //mxd. Initialize to avoid compiler warning.
+			self->dmg = 0;
+		}
+
+		if (self->dmg != 0)
+			self->ideal_yaw = anglemod(self->ideal_yaw + offset);
+	}
+
+	const float scaler = ((self->spawnflags & MSF_GORGON_SPEEDY) ? 1.25f : 0.75f); //mxd
+	MG_AI_Run(self, distance * scaler);
+}
+
 void gorgon_ai_swim(edict_t* self, float distance)
 {
 	const qboolean do_charge = (distance == -1.0f); //mxd
@@ -1781,7 +1829,7 @@ void SP_monster_gorgon(edict_t* self)
 
 	self->mass = GORGON_MASS;
 	self->yaw_speed = ((self->spawnflags & MSF_GORGON_SPEEDY) ? 30.0f : 15.0f);
-	self->dmg = 0; // Used for slight turn during run. //TODO: add gorgon_yaw_offset name.
+	self->dmg = 0; // Used for slight turn during run. //TODO: add float gorgon_yaw_offset name.
 	self->count = false; //mxd. Initialize. //TODO: add qboolean gorgon_grabbed_toy name.
 	self->wait = true; //mxd. Initialize. //TODO: check if spawned underwater & set to false? Add qboolean gorgon_over_water_surface name.
 
