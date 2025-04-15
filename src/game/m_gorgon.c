@@ -140,40 +140,6 @@ static ClassResourceInfo_t resInfo;
 void gorgon_watch(edict_t *self, G_Message_t *msg);
 void gorgon_death_pain(edict_t *self, G_Message_t *msg);
 
-void gorgon_blocked (edict_t *self, trace_t *trace)
-{
-	vec3_t dir;
-
-	if(self->velocity[2]>=0)
-		return;
-
-	if(trace->ent->s.origin[2] + trace->ent->maxs[2] > self->s.origin[2] + self->mins[2])
-		return;
-
-	if(!trace->ent->takedamage)
-		return;
-
-	VectorCopy(self->velocity,dir);
-	VectorNormalize(dir);
-	T_Damage (trace->ent, self, self, self->velocity, trace->ent->s.origin, dir, flrand(5, 15), 50, DAMAGE_EXTRA_KNOCKBACK,MOD_DIED);
-	if(trace->ent->health>0)
-	{
-		if(trace->ent->client)
-		{
-			if(!irand(0, 2))
-			{
-				if(trace->ent->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
-				{
-					if(AI_IsInfrontOf(trace->ent, self))
-					{
-						P_KnockDownPlayer(&trace->ent->client->playerinfo);
-					}
-				}
-			}
-		}
-	}
-}
-
 void gorgon_roar_sound (edict_t *self)
 {
 	int chance;
@@ -2179,69 +2145,12 @@ void GorgonStaticsInit(void)
 	classStatics[CID_GORGON].resInfo = &resInfo;
 }
 
-/*QUAKED monster_gorgon_leader (1 .5 0) (-16 -16 -0) (16 16 32) AMBUSH ASLEEP EATING 8 16 32 64 128
-
-The gorgon leader
-
-*/
-void SP_monster_gorgon_leader (edict_t *self)
+// QUAKED monster_gorgon_leader (1 .5 0) (-16 -16 -0) (16 16 32) AMBUSH ASLEEP EATING 8 16 32 64 128
+// The gorgon leader (not implemented).
+void SP_monster_gorgon_leader(edict_t* self)
 {
-	float scale;
-
 	G_SetToFree(self);
-	return;
-	// Generic Monster Initialization
-	if (!M_Start(self))
-		return;					// Failed initialization
-
-	self->msgHandler = DefaultMsgHandler;
-	//self->classID = CID_GORGON;
-	self->think = M_WalkmonsterStartGo;
-	self->monsterinfo.aiflags |= AI_BRUTAL|AI_AGRESSIVE|AI_SHOVE;
-
-	if (!self->health)
-		self->health = GORGON_LEADER_HEALTH;
-
-	self->max_health = self->health = MonsterHealth(self->health);
-
-	self->mass = GORGON_LEADER_MASS;
-	self->yaw_speed = 10;
-	self->isBlocked = gorgon_blocked;
-
-	self->movetype=PHYSICSTYPE_STEP;
-	VectorClear(self->knockbackvel);
-
-	self->solid=SOLID_BBOX;
-	self->materialtype = MAT_FLESH;
-
-	VectorSet(self->mins,-42,-42,0);//-48,-48,0
-	VectorSet(self->maxs,42,42,56);//48,48,64
-	self->viewheight = self->maxs[2]*0.8;
-
-	self->s.modelindex = classStatics[CID_GORGON].resInfo->modelIndex;
-
-	//Big guy can be stood on top of perhaps?
-	//self->touch = M_Touch;
-
-	self->s.skinnum = GORGON_SKIN;
-	
-	scale = 2;//flrand(0.9, 1.4);
-	
-	if (!self->s.scale)
-	{
-		self->monsterinfo.scale = self->s.scale = scale;
-	}
-	
-	self->monsterinfo.aiflags |= AI_NIGHTVISION;
-
-	VectorScale(self->mins, scale, self->mins);
-	VectorScale(self->maxs, scale, self->maxs);
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-	
-	MG_InitMoods(self);
-	self->svflags |= SVF_WAIT_NOTSOLID;
 }
-
 
 /*QUAKED monster_gorgon (1 .5 0) (-16 -16 0) (16 16 32) AMBUSH ASLEEP EATING SPEEDY 16 32 64 128 WANDER MELEE_LEAD STALK COWARD EXTRA1 EXTRA2 EXTRA3 EXTRA4
 
