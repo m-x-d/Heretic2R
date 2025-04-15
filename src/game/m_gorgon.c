@@ -1435,23 +1435,23 @@ void gorgonCheckSlip(edict_t* self) //TODO: rename to gorgon_check_slip.
 		gorgonCheckMood(self);
 }
 
-void gorgonSlide (edict_t *self, float force)
+void gorgonSlide(edict_t* self, float force) //TODO: rename to gorgon_slide.
 {
-	vec3_t right;
+	if (self->groundentity == NULL)
+		return; // Already in air.
 
-	if(!self->groundentity)
-		return;//already in air
-
-	if(force == 0)
+	if (force == 0.0f)
 	{
-		self->friction = 1.0;
+		self->friction = 1.0f;
 		return;
 	}
 
+	vec3_t right;
 	AngleVectors(self->s.angles, NULL, right, NULL);
 	VectorMA(self->velocity, force, right, self->velocity);
-	self->velocity[2] = 50;
-	self->friction = 0.2;
+	self->velocity[2] = 50.0f;
+
+	self->friction = 0.2f;
 }
 
 void gorgon_ai_swim (edict_t *self, float dist)
