@@ -887,6 +887,20 @@ void gorgon_death1_fall(edict_t* self) //mxd. Originally defined in m_gorgon_ani
 	M_walkmove(self, flrand(180.0f, 345.0f), flrand(-8.0f, 0.0f)); //mxd. M_movetoside() in original logic.
 }
 
+void gorgon_death2(edict_t* self) //mxd. Originally defined in m_gorgon_anim.c.
+{
+	self->velocity[2] = -120.0f;
+}
+
+void gorgon_death2_throw(edict_t* self) //mxd. Named 'gorgon_death2throw' in original logic. Originally defined in m_gorgon_anim.c.
+{
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
+
+	VectorScale(forward, -375.0f, self->velocity);
+	self->velocity[2] = 200.0f;
+}
+
 void gorgon_land(edict_t* self)
 {
 	gi.sound(self, CHAN_WEAPON, sounds[SND_LAND], 1.0f, ATTN_NORM, 0.0f);

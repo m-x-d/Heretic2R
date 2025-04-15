@@ -555,24 +555,10 @@ void gorgon_death2_slide (edict_t *self)
 	self->monsterinfo.nextframeindex = 0;
 }
 
-void gorgon_death2throw(edict_t* self)
-{
-	vec3_t forward;
-	AngleVectors(self->s.angles, forward, NULL, NULL);
-
-	VectorScale(forward, -375.0f, self->velocity);
-	self->velocity[2] = 200.0f;
-}
-
-void gorgon_death2(edict_t* self)
-{
-	self->velocity[2] = -120.0f;
-}
-
 static const animframe_t gorgon_frames_die2 [] =
 {
 	FRAME_hit1, NULL, 0, 0, 0, NULL, 0,  NULL,
-	FRAME_hit3, NULL, 0, 0, 0, NULL, 0,  gorgon_death2throw,
+	FRAME_hit3, NULL, 0, 0, 0, NULL, 0,  gorgon_death2_throw,
 	FRAME_hit5, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_hit7, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_hit9, NULL, 0, 0, 0, NULL, 0,  gorgon_death2,

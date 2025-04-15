@@ -159,6 +159,8 @@ void gorgon_bite(edict_t* self);
 void gorgon_footstep(edict_t* self);
 void gorgon_dead(edict_t* self);
 void gorgon_death1_fall(edict_t* self); //mxd
+void gorgon_death2(edict_t* self); //mxd
+void gorgon_death2_throw(edict_t* self); //mxd
 void gorgon_hop(edict_t* self);
 void gorgon_growl(edict_t* self);
 void gorgon_jump(edict_t* self);
