@@ -749,20 +749,19 @@ void gorgon_hop(edict_t* self)
 	self->velocity[2] += 175.0f;
 }
 
-void gorgonApplyJump (edict_t *self)
+void gorgonApplyJump(edict_t* self) //TODO: rename to gorgon_apply_jump.
 {
-	if(Vec3IsZero(self->movedir))
+	if (Vec3IsZero(self->movedir))
 	{
-		vec3_t	forward;
-
-//		gi.dprintf("Gorgon in FJump with no movedir!!!!\n");
+		vec3_t forward;
 		AngleVectors(self->s.angles, forward, NULL, NULL);
-		VectorMA(self->velocity, flrand(200, 400), forward, self->velocity);
-		self->velocity[2] = flrand(100, 200);
+
+		VectorMA(self->velocity, flrand(200.0f, 400.0f), forward, self->velocity);
+		self->velocity[2] = flrand(100.0f, 200.0f);
 	}
 	else
 	{
-		self->jump_time = level.time + 0.5;
+		self->jump_time = level.time + 0.5f;
 		VectorCopy(self->movedir, self->velocity);
 		VectorClear(self->movedir);
 	}
