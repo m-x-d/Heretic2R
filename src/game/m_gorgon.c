@@ -237,46 +237,41 @@ static qboolean GorgonCanAttack(edict_t* self) //mxd. Named 'gorgon_check_attack
 	return false;
 }
 
-/*----------------------------------------------------------------------
-  Gorgon Stand  -decide which standing animations to use
------------------------------------------------------------------------*/
-void gorgon_stand(edict_t *self, G_Message_t *msg)
+// Gorgon Stand - decide which standing animations to use.
+static void GorgonStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_stand' in original logic.
 {
-	int		chance;
-
 	if (self->ai_mood == AI_MOOD_DELAY)
 	{
 		SetAnim(self, ANIM_DELAY);
 		return;
 	}
 
-	if(GorgonCanAttack(self))
+	if (GorgonCanAttack(self))
 		return;
+
+	const int chance = irand(0, 100);
 
 	if (self->monsterinfo.aiflags & AI_EATING)
 	{
-		chance = irand(0, 100);
 		if (chance < 10)
 			SetAnim(self, ANIM_EAT_TEAR);
 		else if (chance < 20)
 			SetAnim(self, ANIM_EAT_PULLBACK);
-		else 
+		else
 			SetAnim(self, ANIM_EAT_LOOP);
 	}
 	else
 	{
-		chance = irand(0, 100);
 		if (chance < 10)
 			SetAnim(self, ANIM_STAND2);
 		else if (chance < 20)
 			SetAnim(self, ANIM_STAND3);
-		else 
+		else
 			SetAnim(self, ANIM_STAND1);
 	}
 
-	self->monsterinfo.misc_debounce_time = level.time + 5;
+	self->monsterinfo.misc_debounce_time = level.time + 5.0f;
 }
-
 
 /*----------------------------------------------------------------------
   Gorgon Walk -decide which walk animations to use
@@ -1983,7 +1978,7 @@ void GorgonStaticsInit(void)
 {
 	static ClassResourceInfo_t resInfo;
 
-	classStatics[CID_GORGON].msgReceivers[MSG_STAND] = gorgon_stand;
+	classStatics[CID_GORGON].msgReceivers[MSG_STAND] = GorgonStandMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_WALK] = gorgon_walk;
 	classStatics[CID_GORGON].msgReceivers[MSG_RUN] = gorgon_run;
 	classStatics[CID_GORGON].msgReceivers[MSG_EAT] = GorgonEatMsgHandler;
