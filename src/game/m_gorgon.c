@@ -74,7 +74,7 @@ qboolean gorgon_check_jump (edict_t *self);
 #define GORGON_STD_MELEE_RNG	48
 #define GORGON_STD_MAXHOP_RNG	200
 
-static animmove_t *animations[NUM_ANIMS] =
+static const animmove_t *animations[NUM_ANIMS] =
 {
 	&gorgon_move_stand1,
 	&gorgon_move_stand2,

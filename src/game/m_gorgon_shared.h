@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "g_local.h" //mxd
+
 typedef enum AnimID_e
 {
 	ANIM_STAND1,
@@ -76,7 +78,7 @@ typedef enum SoundID_e
 {
 	SND_PAIN1,
 	SND_PAIN2,
-	SND_GURGLE,
+	SND_GURGLE, //TODO: unused.
 	SND_DIE,
 	SND_GIB,
 	SND_MELEEHIT1,
@@ -95,88 +97,80 @@ typedef enum SoundID_e
 	NUM_SOUNDS
 } SoundID_t;
 
-extern animmove_t gorgon_move_stand1;
-extern animmove_t gorgon_move_stand2;
-extern animmove_t gorgon_move_stand3;
-extern animmove_t gorgon_move_stand4;
-extern animmove_t gorgon_move_walk;
-extern animmove_t gorgon_move_walk2;
-extern animmove_t gorgon_move_walk3;
-extern animmove_t gorgon_move_melee1;
-extern animmove_t gorgon_move_melee2;
-extern animmove_t gorgon_move_melee3;
-extern animmove_t gorgon_move_melee4;
-extern animmove_t gorgon_move_melee5;
-extern animmove_t gorgon_move_melee6;
-extern animmove_t gorgon_move_melee7;
-extern animmove_t gorgon_move_melee8;
-extern animmove_t gorgon_move_melee9;
-extern animmove_t gorgon_move_melee10;
-extern animmove_t gorgon_move_fjump;
-extern animmove_t gorgon_move_run1;
-extern animmove_t gorgon_move_run2;
-extern animmove_t gorgon_move_run3;
-extern animmove_t gorgon_move_pain1;
-extern animmove_t gorgon_move_pain2;
-extern animmove_t gorgon_move_pain3;
-extern animmove_t gorgon_move_die1;
-extern animmove_t gorgon_move_die2;
-extern animmove_t gorgon_move_catch;
-extern animmove_t gorgon_move_snatch;
-extern animmove_t gorgon_move_miss;
-extern animmove_t gorgon_move_readycatch;
-extern animmove_t gorgon_move_snatchhi;
-extern animmove_t gorgon_move_snatchlow;
-extern animmove_t gorgon_move_slip;
-extern animmove_t gorgon_move_slip_pain;
-extern animmove_t gorgon_move_delay;
-extern animmove_t gorgon_move_roar;
-extern animmove_t gorgon_move_roar2;
-extern animmove_t gorgon_move_land2;
-extern animmove_t gorgon_move_land;
-extern animmove_t gorgon_move_inair;
+extern const animmove_t gorgon_move_stand1;
+extern const animmove_t gorgon_move_stand2;
+extern const animmove_t gorgon_move_stand3;
+extern const animmove_t gorgon_move_stand4;
+extern const animmove_t gorgon_move_walk;
+extern const animmove_t gorgon_move_walk2;
+extern const animmove_t gorgon_move_walk3;
+extern const animmove_t gorgon_move_melee1;
+extern const animmove_t gorgon_move_melee2;
+extern const animmove_t gorgon_move_melee3;
+extern const animmove_t gorgon_move_melee4;
+extern const animmove_t gorgon_move_melee5;
+extern const animmove_t gorgon_move_melee6;
+extern const animmove_t gorgon_move_melee7;
+extern const animmove_t gorgon_move_melee8;
+extern const animmove_t gorgon_move_melee9;
+extern const animmove_t gorgon_move_melee10;
+extern const animmove_t gorgon_move_fjump;
+extern const animmove_t gorgon_move_run1;
+extern const animmove_t gorgon_move_run2;
+extern const animmove_t gorgon_move_run3;
+extern const animmove_t gorgon_move_pain1;
+extern const animmove_t gorgon_move_pain2;
+extern const animmove_t gorgon_move_pain3;
+extern const animmove_t gorgon_move_die1;
+extern const animmove_t gorgon_move_die2;
+extern const animmove_t gorgon_move_catch;
+extern const animmove_t gorgon_move_snatch;
+extern const animmove_t gorgon_move_miss;
+extern const animmove_t gorgon_move_readycatch;
+extern const animmove_t gorgon_move_snatchhi;
+extern const animmove_t gorgon_move_snatchlow;
+extern const animmove_t gorgon_move_slip;
+extern const animmove_t gorgon_move_slip_pain;
+extern const animmove_t gorgon_move_delay;
+extern const animmove_t gorgon_move_roar;
+extern const animmove_t gorgon_move_roar2;
+extern const animmove_t gorgon_move_land2;
+extern const animmove_t gorgon_move_land;
+extern const animmove_t gorgon_move_inair;
 
-extern animmove_t gorgon_move_to_swim;
-extern animmove_t gorgon_move_swim;
-extern animmove_t gorgon_move_swim_bite_a;
-extern animmove_t gorgon_move_swim_bite_b; //BUGFIX: mxd. gorgon_move_swim_bite_a in original logic.
-extern animmove_t gorgon_move_outwater;
+extern const animmove_t gorgon_move_to_swim;
+extern const animmove_t gorgon_move_swim;
+extern const animmove_t gorgon_move_swim_bite_a;
+extern const animmove_t gorgon_move_swim_bite_b; //BUGFIX: mxd. gorgon_move_swim_bite_a in original logic.
+extern const animmove_t gorgon_move_outwater;
 
-extern animmove_t gorgon_move_eat_down;
-extern animmove_t gorgon_move_eat_up;
-extern animmove_t gorgon_move_eat_loop;
-extern animmove_t gorgon_move_eat_tear;
-extern animmove_t gorgon_move_eat_pullback;
-extern animmove_t gorgon_move_look_around;
-extern animmove_t gorgon_move_eat_left;
-extern animmove_t gorgon_move_eat_right;
-extern animmove_t gorgon_move_eat_snap;
-extern animmove_t gorgon_move_eat_react;
+extern const animmove_t gorgon_move_eat_down;
+extern const animmove_t gorgon_move_eat_up;
+extern const animmove_t gorgon_move_eat_loop;
+extern const animmove_t gorgon_move_eat_tear;
+extern const animmove_t gorgon_move_eat_pullback;
+extern const animmove_t gorgon_move_look_around;
+extern const animmove_t gorgon_move_eat_left;
+extern const animmove_t gorgon_move_eat_right;
+extern const animmove_t gorgon_move_eat_snap;
+extern const animmove_t gorgon_move_eat_react;
 
-void gorgon_eat(edict_t* self, G_Message_t* msg);
-void gorgon_stand(edict_t* self, G_Message_t* msg);
-void gorgon_walk(edict_t* self, G_Message_t* msg);
-void gorgon_melee(edict_t* self, G_Message_t* msg);
-void gorgon_run(edict_t* self, G_Message_t* msg);
-void gorgon_pain(edict_t* self, G_Message_t* msg);
-void gorgon_death(edict_t* self, G_Message_t* msg);
 void gorgonbite(edict_t* self);
 void gorgon_footstep(edict_t* self);
-void gorgon_eatorder(edict_t* self);
 void gorgon_dead(edict_t* self);
 void gorgon_hop(edict_t* self);
 void gorgon_growl(edict_t* self);
 void gorgon_jump(edict_t* self);
 void gorgon_ready_catch(edict_t* self);
 void gorgon_throw_toy(edict_t* self);
-void gorgon_toy_ofs(edict_t* self, float ofsf, float ofsr, float ofsu);
-void gorgon_check_snatch(edict_t* self, float ofsf, float ofsr, float ofsu);
-void gorgon_gore_toy(edict_t* self, float jumpht);
+void gorgon_toy_ofs(edict_t* self, float forward_offset, float right_offset, float up_offset);
+void gorgon_check_snatch(edict_t* self, float forward_offset, float right_offset, float up_offset);
+void gorgon_gore_toy(edict_t* self, float jump_height);
 void gorgon_miss_sound(edict_t* self);
 void gorgon_anger_sound(edict_t* self);
 void gorgon_go_snatch(edict_t* self);
 void gorgon_done_gore(edict_t* self);
-void gorgonRoll(edict_t* self, float rollangle);
+void gorgonRoll(edict_t* self, float roll_angle);
 void gorgonLerpOff(edict_t* self);
 void gorgonLerpOn(edict_t* self);
 void gorgonCheckSlip(edict_t* self);
@@ -190,11 +184,11 @@ void gorgon_check_landed(edict_t* self);
 void gorgonJumpOutWater(edict_t* self);
 void gorgonGoSwim(edict_t* self);
 void gorgonCheckInWater(edict_t* self);
-void gorgon_ai_swim(edict_t* self, float dist);
+void gorgon_ai_swim(edict_t* self, float distance);
 void gorgonForward(edict_t* self, float dist);
 void gorgonFixPitch(edict_t* self);
 void gorgonZeroPitch(edict_t* self);
-void gorgon_ai_eat(edict_t* self, float crap);
+void gorgon_ai_eat(edict_t* self, float switch_animation);
 
 //TODO: move to appropriate headers!
 void fish_under_water_wake(edict_t* self);

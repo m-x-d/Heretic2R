@@ -1,33 +1,21 @@
-//==============================================================================
 //
 // m_gorgon_anim.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//==============================================================================
-
-#include "g_local.h"
-
-#pragma hdrstop("g_local.pch")
-// PRECOMPILED HEADER ABOVE
-// WARNING:  DO NOT CHANGE THE ABOVE HEADERS OR THE PRECOMPILED STUFF WILL BREAK!  
-// ADD ANY ADDITIONAL FILES BELOW
 
 #include "m_gorgon_anim.h"
 #include "m_gorgon_shared.h"
-
-#include "Utilities.h"
-#include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
+#include "m_stats.h"
 #include "mg_ai.h" //mxd
 #include "Random.h"
-#include "vector.h"
-#include "m_stats.h"
+#include "Vector.h"
+#include "g_local.h"
 
 void gorgon_land(edict_t *self);
 
-#define GORGON_STEPS		20//number of steps for whole swerve
+#define GORGON_STEPS		20 // Number of steps for whole swerve.
 #define GORGON_STEPS_INT1	(GORGON_STEPS/4)
 #define GORGON_STEPS_INT2	(GORGON_STEPS/2)
 #define GORGON_STEPS_INT3	(GORGON_STEPS - GORGON_STEPS_INT1)
@@ -76,7 +64,7 @@ void gorgon_ai_run (edict_t *self, float dist)
 /*----------------------------------------------------------------------
 	STAND3 -   Gorgon Standing and looking right
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_stand3 [] =
+static const animframe_t gorgon_frames_stand3 [] =
 {
 	FRAME_painc1,	NULL, 0, 0, 0, ai_stand, 0, NULL,
 	FRAME_painc2,	NULL, 0, 0, 0, ai_stand, 0, NULL,
@@ -84,12 +72,12 @@ animframe_t gorgon_frames_stand3 [] =
 	FRAME_painc4,	NULL, 0, 0, 0, ai_stand, 0, NULL,
 	FRAME_painc5,	NULL, 0, 0, 0, ai_stand, 0, NULL
 };
-animmove_t gorgon_move_stand3 = {5, gorgon_frames_stand3, gorgonCheckMood};
+const animmove_t gorgon_move_stand3 = {5, gorgon_frames_stand3, gorgonCheckMood};
 
 /*----------------------------------------------------------------------
 	STAND2 -   Gorgon Standing and looking left
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_stand2 [] =
+static const animframe_t gorgon_frames_stand2 [] =
 {
 	FRAME_painb1,	NULL, 0, 0, 0, ai_stand, 0, NULL,
 	FRAME_painb2,	NULL, 0, 0, 0, ai_stand, 0, NULL,
@@ -97,13 +85,13 @@ animframe_t gorgon_frames_stand2 [] =
 	FRAME_painb4,	NULL, 0, 0, 0, ai_stand, 0, NULL,
 	FRAME_painb5,	NULL, 0, 0, 0, ai_stand, 0, NULL
 };
-animmove_t gorgon_move_stand2 = {5, gorgon_frames_stand2, gorgonCheckMood};
+const animmove_t gorgon_move_stand2 = {5, gorgon_frames_stand2, gorgonCheckMood};
 
 
 /*----------------------------------------------------------------------
 	STAND1 -   Gorgon Standing and wagging it's tail
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_stand1 [] =
+static const animframe_t gorgon_frames_stand1 [] =
 {
 	FRAME_wait1,	NULL, 0, 0, 0, ai_stand, 0, NULL,
 	FRAME_wait2,	NULL, 0, 0, 0, ai_stand, 0, NULL,
@@ -114,12 +102,12 @@ animframe_t gorgon_frames_stand1 [] =
 	FRAME_wait7,	NULL, 0, 0, 0, ai_stand, 0, NULL,
 	FRAME_wait8,	NULL, 0, 0, 0, ai_stand, 0, NULL
 };
-animmove_t gorgon_move_stand1 = {8, gorgon_frames_stand1, gorgonCheckMood};
+const animmove_t gorgon_move_stand1 = {8, gorgon_frames_stand1, gorgonCheckMood};
 
 /*----------------------------------------------------------------------
 	STAND1 -   Gorgon Standing and wagging it's tail
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_stand4 [] =
+static const animframe_t gorgon_frames_stand4 [] =
 {
 	FRAME_wait1,	NULL, 0, 0, 0, ai_stand, 0, NULL,
 	FRAME_wait2,	NULL, 0, 0, 0, ai_stand, 0, NULL,
@@ -130,12 +118,12 @@ animframe_t gorgon_frames_stand4 [] =
 	FRAME_wait7,	NULL, 0, 0, 0, ai_stand, 0, NULL,
 	FRAME_wait8,	NULL, 0, 0, 0, ai_stand, 0, NULL
 };
-animmove_t gorgon_move_stand4 = {8, gorgon_frames_stand4, gorgonCheckMood};
+const animmove_t gorgon_move_stand4 = {8, gorgon_frames_stand4, gorgonCheckMood};
 
 /*----------------------------------------------------------------------
   Gorgon Turning right while running
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_walk3 [] =
+static const animframe_t gorgon_frames_walk3 [] =
 { 
 	FRAME_wlkrt1, NULL, 0, 0, 0, ai_walk, 8,  gorgon_footstep,
 	FRAME_wlkrt2, NULL, 0, 0, 0, ai_walk, 8,  NULL,
@@ -151,13 +139,13 @@ animframe_t gorgon_frames_walk3 [] =
 	FRAME_wlkrt12, NULL, 0, 0, 0, ai_walk, 8,  NULL
 };
 
-animmove_t gorgon_move_walk3 = {12, gorgon_frames_walk3, gorgonCheckMood};
+const animmove_t gorgon_move_walk3 = {12, gorgon_frames_walk3, gorgonCheckMood};
 
 
 /*----------------------------------------------------------------------
   Gorgon Turning left while running
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_walk2 [] =
+static const animframe_t gorgon_frames_walk2 [] =
 { 
 	FRAME_wlklft1,NULL, 0, 0, 0, ai_walk, 8,  gorgon_footstep,
 	FRAME_wlklft2,NULL, 0, 0, 0, ai_walk, 8,  NULL,
@@ -173,12 +161,12 @@ animframe_t gorgon_frames_walk2 [] =
 	FRAME_wlklft12,NULL, 0, 0, 0, ai_walk, 8,  NULL
 };
 
-animmove_t gorgon_move_walk2 = {12, gorgon_frames_walk2, gorgonCheckMood};
+const animmove_t gorgon_move_walk2 = {12, gorgon_frames_walk2, gorgonCheckMood};
 
 /*----------------------------------------------------------------------
   Gorgon Walking
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_walk [] =
+static const animframe_t gorgon_frames_walk [] =
 {
 	FRAME_walk1,  NULL, 0, 0, 0, ai_walk, 7,  gorgon_footstep, 
 	FRAME_walk2,  NULL, 0, 0, 0, ai_walk, 8,  NULL,
@@ -194,7 +182,7 @@ animframe_t gorgon_frames_walk [] =
 	FRAME_walk12, NULL, 0, 0, 0, ai_walk, 6,  gorgon_growl
 };
 
-animmove_t gorgon_move_walk = {12, gorgon_frames_walk, gorgonCheckMood};
+const animmove_t gorgon_move_walk = {12, gorgon_frames_walk, gorgonCheckMood};
 
 /*----------------------------------------------------------------------
   Gorgon  Melee while Running
@@ -221,7 +209,7 @@ void gorgon_ai_charge2 (edict_t *self, float dist)
 /*----------------------------------------------------------------------
 	Forced Jump - jump from a buoy
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_fjump [] =
+static const animframe_t gorgon_frames_fjump [] =
 {      
 	FRAME_jumpb1,NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_jumpb2,NULL, 0, 0, 0, NULL, 0,  NULL,
@@ -238,43 +226,43 @@ animframe_t gorgon_frames_fjump [] =
 	FRAME_jumpb13,NULL, 0, 0, 0, NULL, 0,  gorgon_check_landed,
 	FRAME_jumpb14,NULL, 0, 0, 0, NULL, 0,  gorgon_check_landed,
 };
-animmove_t gorgon_move_fjump = {14, gorgon_frames_fjump, gorgon_go_inair};
+const animmove_t gorgon_move_fjump = {14, gorgon_frames_fjump, gorgon_go_inair};
 
 /*----------------------------------------------------------------------
 	land 1
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_land [] =
+static const animframe_t gorgon_frames_land [] =
 {      
 	FRAME_jumpa15,NULL, 0, 0, 0, NULL, 0,  gorgon_land,
 	FRAME_jumpa16,NULL, 0, 0, 0, NULL, 0,  gorgon_growl,
 	FRAME_jumpa17,NULL, 0, 0, 0, NULL, 0,  NULL
 };
-animmove_t gorgon_move_land = {3, gorgon_frames_land, gorgonCheckMood};
+const animmove_t gorgon_move_land = {3, gorgon_frames_land, gorgonCheckMood};
 
 /*----------------------------------------------------------------------
 	land 2
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_land2 [] =
+static const animframe_t gorgon_frames_land2 [] =
 {      
 	FRAME_jumpa15,NULL, 0, 0, 0, NULL, 0,  gorgon_land,
 	FRAME_jumpa16,NULL, 0, 0, 0, NULL, 0,  gorgon_growl,
 	FRAME_jumpa17,NULL, 0, 0, 0, NULL, 0,  NULL
 };
-animmove_t gorgon_move_land2 = {3, gorgon_frames_land2, gorgonCheckMood};
+const animmove_t gorgon_move_land2 = {3, gorgon_frames_land2, gorgonCheckMood};
 
 /*----------------------------------------------------------------------
 	in air
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_inair [] =
+static const animframe_t gorgon_frames_inair [] =
 {      
 	FRAME_jumpa14,NULL, 0, 0, 0, NULL, 0, gorgon_check_landed,
 };
-animmove_t gorgon_move_inair = {1, gorgon_frames_inair, NULL};
+const animmove_t gorgon_move_inair = {1, gorgon_frames_inair, NULL};
 
 /*----------------------------------------------------------------------
 	MELEE10 - jump up at player
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_melee10 [] =
+static const animframe_t gorgon_frames_melee10 [] =
 {      
 	FRAME_jumpa1,NULL, 0, 0, 0, gorgon_ai_charge2, 0,  NULL,
 	FRAME_jumpa2,NULL, 0, 0, 0, gorgon_ai_charge2, 0,  NULL,
@@ -291,13 +279,13 @@ animframe_t gorgon_frames_melee10 [] =
 	FRAME_jumpa13,NULL, 0, 0, 0, NULL, 0, gorgon_check_landed,
 	FRAME_jumpa14,NULL, 0, 0, 0, NULL, 0, gorgon_check_landed,
 };
-animmove_t gorgon_move_melee10 = {14, gorgon_frames_melee10, gorgon_go_inair};
+const animmove_t gorgon_move_melee10 = {14, gorgon_frames_melee10, gorgon_go_inair};
 
 
 /*----------------------------------------------------------------------
 	MELEE9 - hop backward
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_melee9 [] =
+static const animframe_t gorgon_frames_melee9 [] =
 {
 	FRAME_hop1,  NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
 	FRAME_hop2,  NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
@@ -310,12 +298,12 @@ animframe_t gorgon_frames_melee9 [] =
 	FRAME_hop9,  NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
 	FRAME_hop10, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL
 };
-animmove_t gorgon_move_melee9 = {10, gorgon_frames_melee9, gorgonCheckMood};
+const animmove_t gorgon_move_melee9 = {10, gorgon_frames_melee9, gorgonCheckMood};
 
 /*----------------------------------------------------------------------
 	MELEE8 - hop forward
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_melee8 [] =
+static const animframe_t gorgon_frames_melee8 [] =
 {
 	FRAME_hop1,  NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
 	FRAME_hop2,  NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
@@ -328,12 +316,12 @@ animframe_t gorgon_frames_melee8 [] =
 	FRAME_hop9,  NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
 	FRAME_hop10, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL
 };
-animmove_t gorgon_move_melee8 = {10, gorgon_frames_melee8, gorgonCheckMood};
+const animmove_t gorgon_move_melee8 = {10, gorgon_frames_melee8, gorgonCheckMood};
 
 /*----------------------------------------------------------------------
   MELEE7 - hop right
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_melee7 [] =
+static const animframe_t gorgon_frames_melee7 [] =
 {
 	FRAME_hop1,  NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
 	FRAME_hop2,  NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
@@ -346,12 +334,12 @@ animframe_t gorgon_frames_melee7 [] =
 	FRAME_hop9,  NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
 	FRAME_hop10, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL
 };
-animmove_t gorgon_move_melee7 = {10, gorgon_frames_melee7, gorgonCheckMood};
+const animmove_t gorgon_move_melee7 = {10, gorgon_frames_melee7, gorgonCheckMood};
 
 /*----------------------------------------------------------------------
   MELEE6 - hop left
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_melee6 [] =
+static const animframe_t gorgon_frames_melee6 [] =
 {
 	FRAME_hop1,  NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
 	FRAME_hop2,  NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
@@ -364,13 +352,13 @@ animframe_t gorgon_frames_melee6 [] =
 	FRAME_hop9,  NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
 	FRAME_hop10, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL
 };
-animmove_t gorgon_move_melee6 = {10, gorgon_frames_melee6, gorgonCheckMood};
+const animmove_t gorgon_move_melee6 = {10, gorgon_frames_melee6, gorgonCheckMood};
 
 
 /*----------------------------------------------------------------------
   Melee5 -  running attack
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_melee5 [] =
+static const animframe_t gorgon_frames_melee5 [] =
 { 
 	FRAME_runatk1,  NULL, 0, 0, 0, ai_goal_charge, 20, gorgon_melee5check,
 	FRAME_runatk2,	NULL, 0, 0, 0, ai_goal_charge, 20, NULL,
@@ -383,26 +371,26 @@ animframe_t gorgon_frames_melee5 [] =
 };
 
 
-animmove_t gorgon_move_melee5 = {8, gorgon_frames_melee5, gorgonCheckMood};
+const animmove_t gorgon_move_melee5 = {8, gorgon_frames_melee5, gorgonCheckMood};
 
 
 /*----------------------------------------------------------------------
    Melee4 -   Gorgon Attack Pullback
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_melee4 [] =
+static const animframe_t gorgon_frames_melee4 [] =
 {
 	FRAME_atkc1, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
 	FRAME_atkc2, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
 	FRAME_atkc3, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
 	FRAME_atkc4, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL
 };
-animmove_t gorgon_move_melee4 = {4, gorgon_frames_melee4, gorgonCheckMood};
+const animmove_t gorgon_move_melee4 = {4, gorgon_frames_melee4, gorgonCheckMood};
 
 
 /*----------------------------------------------------------------------
    Melee3 -   Gorgon Attack Up
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_melee3 [] =
+static const animframe_t gorgon_frames_melee3 [] =
 {
 	FRAME_atkd1, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
 	FRAME_atkd2, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
@@ -410,13 +398,13 @@ animframe_t gorgon_frames_melee3 [] =
 	FRAME_atkd4, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL
 };
 
-animmove_t gorgon_move_melee3 = {4, gorgon_frames_melee3, gorgonCheckMood};
+const animmove_t gorgon_move_melee3 = {4, gorgon_frames_melee3, gorgonCheckMood};
 
 
 /*----------------------------------------------------------------------
    Melee2 -   Gorgon Attack Right
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_melee2 [] =
+static const animframe_t gorgon_frames_melee2 [] =
 {
 	FRAME_atkb1,  NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
 	FRAME_atkb2,  NULL, 0, 0, 0, ai_goal_charge, 0,  gorgonbite,
@@ -424,13 +412,13 @@ animframe_t gorgon_frames_melee2 [] =
 	FRAME_atkb4,  NULL, 0, 0, 0, ai_goal_charge, 0,  NULL
 };
 
-animmove_t gorgon_move_melee2 = {4, gorgon_frames_melee2, gorgonCheckMood};
+const animmove_t gorgon_move_melee2 = {4, gorgon_frames_melee2, gorgonCheckMood};
 
 
 /*----------------------------------------------------------------------
    Melee1 -   Gorgon Attack Left
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_melee1 [] =
+static const animframe_t gorgon_frames_melee1 [] =
 {
 	FRAME_atka1, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
 	FRAME_atka2, NULL, 0, 0, 0, ai_goal_charge, 0,  gorgonbite,
@@ -438,13 +426,13 @@ animframe_t gorgon_frames_melee1 [] =
 	FRAME_atka4, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL
 };
 
-animmove_t gorgon_move_melee1 = {4, gorgon_frames_melee1, gorgonCheckMood};
+const animmove_t gorgon_move_melee1 = {4, gorgon_frames_melee1, gorgonCheckMood};
 
 
 /*----------------------------------------------------------------------
   RUN3 - Turning right while running
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_run3 [] =
+static const animframe_t gorgon_frames_run3 [] =
 { 
 	FRAME_wlkrt1, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgon_footstep,
 	FRAME_wlkrt2, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgonCheckSlip,
@@ -460,13 +448,13 @@ animframe_t gorgon_frames_run3 [] =
 	FRAME_wlkrt12, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgon_growl
 };
 
-animmove_t gorgon_move_run3 = {12, gorgon_frames_run3, gorgonCheckMood};
+const animmove_t gorgon_move_run3 = {12, gorgon_frames_run3, gorgonCheckMood};
 
 
 /*----------------------------------------------------------------------
   RUN2 - Turning left while running
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_run2 [] =
+static const animframe_t gorgon_frames_run2 [] =
 { 
 	FRAME_wlklft1,NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgon_footstep,
 	FRAME_wlklft2,NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgonCheckMood,
@@ -482,14 +470,14 @@ animframe_t gorgon_frames_run2 [] =
 	FRAME_wlklft12,NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgon_growl
 };
 
-animmove_t gorgon_move_run2 = {12, gorgon_frames_run2, gorgonCheckMood};
+const animmove_t gorgon_move_run2 = {12, gorgon_frames_run2, gorgonCheckMood};
 
 
 
 /*----------------------------------------------------------------------
   Gorgon Running
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_run1 [] =
+static const animframe_t gorgon_frames_run1 [] =
 { 
 	FRAME_run1, NULL, 0, 0, 0, gorgon_ai_run, 30, gorgon_footstep,
 	FRAME_run2,	NULL, 0, 0, 0, gorgon_ai_run, 31, gorgonCheckMood,
@@ -501,12 +489,12 @@ animframe_t gorgon_frames_run1 [] =
 	FRAME_run8,	NULL, 0, 0, 0, gorgon_ai_run, 34, gorgon_growl
 };
 
-animmove_t gorgon_move_run1 = {8, gorgon_frames_run1, gorgonCheckMood};
+const animmove_t gorgon_move_run1 = {8, gorgon_frames_run1, gorgonCheckMood};
 
 /*----------------------------------------------------------------------
   Gorgon Pain1 - step back while bending head down
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_pain1 [] =
+static const animframe_t gorgon_frames_pain1 [] =
 {
 	FRAME_pain1, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_pain2, NULL, 0, 0, 0, NULL, 0,  NULL,
@@ -518,13 +506,13 @@ animframe_t gorgon_frames_pain1 [] =
 	FRAME_pain8, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_pain9, NULL, 0, 0, 0, NULL, 0,  NULL
 };
-animmove_t gorgon_move_pain1 = {9, gorgon_frames_pain1, gorgonCheckMood};
+const animmove_t gorgon_move_pain1 = {9, gorgon_frames_pain1, gorgonCheckMood};
 
 
 /*----------------------------------------------------------------------
   Gorgon Pain2 - bend head to the left
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_pain2 [] =
+static const animframe_t gorgon_frames_pain2 [] =
 {
 	FRAME_painb1, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_painb2, NULL, 0, 0, 0, NULL, 0,  NULL,
@@ -532,12 +520,12 @@ animframe_t gorgon_frames_pain2 [] =
 	FRAME_painb4, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_painb5, NULL, 0, 0, 0, NULL, 0,  NULL
 };
-animmove_t gorgon_move_pain2 = {5, gorgon_frames_pain2, gorgonCheckMood};
+const animmove_t gorgon_move_pain2 = {5, gorgon_frames_pain2, gorgonCheckMood};
 
 /*----------------------------------------------------------------------
   Gorgon Pain3 - bend head to the right
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_pain3 [] =
+static const animframe_t gorgon_frames_pain3 [] =
 {
 	FRAME_painc1, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_painc2, NULL, 0, 0, 0, NULL, 0,  NULL,
@@ -545,7 +533,7 @@ animframe_t gorgon_frames_pain3 [] =
 	FRAME_painc4, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_painc5, NULL, 0, 0, 0, NULL, 0,  NULL
 };
-animmove_t gorgon_move_pain3 = {5, gorgon_frames_pain3, gorgonCheckMood};
+const animmove_t gorgon_move_pain3 = {5, gorgon_frames_pain3, gorgonCheckMood};
 
 
 
@@ -571,7 +559,7 @@ void gorgondeath1_fall (edict_t *self)
 	M_walkmove(self,flrand(180, 345), flrand(0, -8)); //mxd. M_movetoside() in original logic.
 }
 
-animframe_t gorgon_frames_die1 [] =
+static const animframe_t gorgon_frames_die1 [] =
 {
 	FRAME_deatha1, NULL, 0, 0, 0, ai_move, -8,  NULL,
 	FRAME_deatha2, NULL, 0, 0, 0, ai_move, -8,  NULL,
@@ -594,7 +582,7 @@ animframe_t gorgon_frames_die1 [] =
 	FRAME_deatha19, NULL, 0, 0, 0, ai_move, 0,  NULL
 };
 
-animmove_t gorgon_move_die1 = {19, gorgon_frames_die1, gorgon_dead};
+const animmove_t gorgon_move_die1 = {19, gorgon_frames_die1, gorgon_dead};
 
 /*----------------------------------------------------------------------
   Gorgon Death2 - fly backwards and twitch
@@ -609,16 +597,16 @@ void gorgon_nexttwitch(edict_t *self)
  	self->monsterinfo.thinkinc = FRAMETIME * 4  + flrand(0.0, 4.0);
 }
 
-animframe_t gorgon_frames_death2twitch [] =
+static const animframe_t gorgon_frames_death2twitch [] =
 {
 	FRAME_twitch,  NULL, 0, 0, 0, NULL, 0,  gorgon_starttwitch,
 	FRAME_twitch_1,NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_twitch_2,NULL, 0, 0, 0, NULL, 0,  gorgon_nexttwitch
 };
 
-animmove_t gorgon_move_death2twitch = {3, gorgon_frames_death2twitch, NULL};
+const animmove_t gorgon_move_death2twitch = {3, gorgon_frames_death2twitch, NULL};
 
-animframe_t gorgon_frames_death2slide [] =
+static const animframe_t gorgon_frames_death2slide [] =
 {
 	FRAME_slide1, NULL, 0, 0, 0, ai_move, -16,  NULL,
 	FRAME_slide2, NULL, 0, 0, 0, ai_move, -14,  NULL,
@@ -652,7 +640,7 @@ animframe_t gorgon_frames_death2slide [] =
 	FRAME_slide30, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_slide31, NULL, 0, 0, 0, NULL, 0,  NULL,
 };
-animmove_t gorgon_move_death2slide = {31, gorgon_frames_death2slide, gorgon_dead};
+const animmove_t gorgon_move_death2slide = {31, gorgon_frames_death2slide, gorgon_dead};
 
 void gorgon_death2_slide (edict_t *self)
 {
@@ -679,7 +667,7 @@ void gorgon_death2 (edict_t *self)
 	self->velocity[2] = -120;
 }
 
-animframe_t gorgon_frames_die2 [] =
+static const animframe_t gorgon_frames_die2 [] =
 {
 	FRAME_hit1, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_hit3, NULL, 0, 0, 0, NULL, 0,  gorgon_death2throw,
@@ -689,7 +677,7 @@ animframe_t gorgon_frames_die2 [] =
 	FRAME_hit11, NULL, 0, 0, 0, NULL, 0,  NULL,
 };
 
-animmove_t gorgon_move_die2 = {6, gorgon_frames_die2, gorgon_death2_slide};
+const animmove_t gorgon_move_die2 = {6, gorgon_frames_die2, gorgon_death2_slide};
 
 
 /*
@@ -699,7 +687,7 @@ CHOMP!
 /*----------------------------------------------------------------------
    Melee3 -   Gorgon Attack Up
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_catch [] =
+static const animframe_t gorgon_frames_catch [] =
 {
 	FRAME_jumpb5,NULL, 0, 0, 0, gorgon_gore_toy, 150, NULL,
 	FRAME_jumpb6,NULL, 0, 0, 0, gorgon_gore_toy, 0, NULL,
@@ -717,26 +705,26 @@ animframe_t gorgon_frames_catch [] =
 	FRAME_jumpb18,NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_jumpb19,NULL, 0, 0, 0, NULL, 0,  gorgon_anger_sound,
 };
-animmove_t gorgon_move_catch = {15, gorgon_frames_catch, gorgon_done_gore};
+const animmove_t gorgon_move_catch = {15, gorgon_frames_catch, gorgon_done_gore};
 
 /*----------------------------------------------------------------------
   Gorgon Eat3 - pull back, then bend back down to eat
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_miss [] =
+static const animframe_t gorgon_frames_miss [] =
 {
 	FRAME_eatinga4, NULL, 0, 0, 0, NULL, 0,  gorgon_miss_sound,
 	FRAME_eatinga3, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_eatinga2, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_eatinga1, NULL, 0, 0, 0, NULL, 0,  NULL,
 };
-animmove_t gorgon_move_miss = {4, gorgon_frames_miss, gorgonCheckMood};
+const animmove_t gorgon_move_miss = {4, gorgon_frames_miss, gorgonCheckMood};
 
 /*----------------------------------------------------------------------
   Shake and toss up toy
 
   Chance of throwing it to left or right, maybe carry away?
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_snatch [] =
+static const animframe_t gorgon_frames_snatch [] =
 {
 	FRAME_eatingb5, gorgon_toy_ofs, 70, 0, 66,  NULL, 0,  gorgon_anger_sound,
 	FRAME_eatingb6, gorgon_toy_ofs, 68, -44, 66,  NULL, 0,  NULL,
@@ -766,33 +754,33 @@ animframe_t gorgon_frames_snatch [] =
 	FRAME_jumpa5, gorgon_toy_ofs, 90, 6, 208,  NULL, 0, gorgon_throw_toy,
 	FRAME_jumpb4, NULL, 0, 0, 0, NULL, 0,  NULL,
 };
-animmove_t gorgon_move_snatch = {27, gorgon_frames_snatch, gorgon_ready_catch};
+const animmove_t gorgon_move_snatch = {27, gorgon_frames_snatch, gorgon_ready_catch};
 
 /*----------------------------------------------------------------------
   Gorgon Eat3 - pull back, then bend back down to eat
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_readycatch [] =
+static const animframe_t gorgon_frames_readycatch [] =
 {
 	FRAME_jumpb4, NULL, 0, 0, 0, NULL, 0,  NULL,
 };
-animmove_t gorgon_move_readycatch = {1, gorgon_frames_readycatch, gorgon_ready_catch};
+const animmove_t gorgon_move_readycatch = {1, gorgon_frames_readycatch, gorgon_ready_catch};
 
 /*----------------------------------------------------------------------
   Gorgon 
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_snatchhi [] =
+static const animframe_t gorgon_frames_snatchhi [] =
 {
 	FRAME_atkd1, NULL, 0, 0, 0, gorgon_ai_charge2, 10,  NULL,
 	FRAME_atkd2, NULL, 0, 0, 0, gorgon_ai_charge2, 10,  NULL,
 	FRAME_atkd3, gorgon_check_snatch, 96, 0, 56, NULL, 0,  NULL,
 	FRAME_atkd4, gorgon_toy_ofs, 96, 16, 160, NULL, 0,  NULL
 };
-animmove_t gorgon_move_snatchhi = {4, gorgon_frames_snatchhi, gorgon_go_snatch};
+const animmove_t gorgon_move_snatchhi = {4, gorgon_frames_snatchhi, gorgon_go_snatch};
 
 /*----------------------------------------------------------------------
   Gorgon 
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_snatchlow [] =
+static const animframe_t gorgon_frames_snatchlow [] =
 {
 	FRAME_eatinga1, NULL, 0, 0, 0, gorgon_ai_charge2, 10,  NULL,
 	FRAME_eatinga2, NULL, 0, 0, 0, gorgon_ai_charge2, 10,  NULL,
@@ -804,14 +792,14 @@ animframe_t gorgon_frames_snatchlow [] =
 	FRAME_eatingb3, gorgon_toy_ofs, 48, 0, 20,  NULL, 0,  gorgon_anger_sound,
 	FRAME_eatingb4, gorgon_toy_ofs, 56, 0, 24,  NULL, 0,  NULL,
 };
-animmove_t gorgon_move_snatchlow = {9, gorgon_frames_snatchlow, gorgon_go_snatch};
+const animmove_t gorgon_move_snatchlow = {9, gorgon_frames_snatchlow, gorgon_go_snatch};
 
 
 
 /*----------------
 ?
 -----------------------*/
-animframe_t gorgon_frames_slip [] =
+static const animframe_t gorgon_frames_slip [] =
 {
 	FRAME_deatha1, NULL, 0, 0, 0, gorgonSlide, -200,  NULL,
 	FRAME_deatha2, NULL, 0, 0, 0, NULL, 0,  NULL,
@@ -850,12 +838,12 @@ animframe_t gorgon_frames_slip [] =
 	FRAME_eatinga2, NULL, 0, 0, 0,  NULL, 0,  NULL,
 	FRAME_eatinga1, NULL, 0, 0, 0,  gorgonSlide, 0,  NULL,
 };
-animmove_t gorgon_move_slip = {36, gorgon_frames_slip, gorgonCheckMood};
+const animmove_t gorgon_move_slip = {36, gorgon_frames_slip, gorgonCheckMood};
 
 /*----------------
 ?
 -----------------------*/
-animframe_t gorgon_frames_slip_pain [] =
+static const animframe_t gorgon_frames_slip_pain [] =
 {
 	FRAME_deatha11, NULL, 0, 0, 0, gorgonSlide, -200,  gorgondeath1_fall,  // carnasaur_fall,
 	FRAME_deatha12, NULL, 0, 0, 0, NULL, 0,  gorgondeath1_fall,  // carnasaur_fall,
@@ -884,12 +872,12 @@ animframe_t gorgon_frames_slip_pain [] =
 	FRAME_eatinga2, NULL, 0, 0, 0,  NULL, 0,  NULL,
 	FRAME_eatinga1, NULL, 0, 0, 0,  gorgonSlide, 0,  NULL,
 };
-animmove_t gorgon_move_slip_pain = {26, gorgon_frames_slip_pain, gorgonCheckMood};
+const animmove_t gorgon_move_slip_pain = {26, gorgon_frames_slip_pain, gorgonCheckMood};
 
 /*----------------------------------------------------------------------
 	delay
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_delay [] =
+static const animframe_t gorgon_frames_delay [] =
 {
 	FRAME_wait1,	NULL, 0, 0, 0, NULL, 0, gorgonCheckMood,
 	FRAME_wait2,	NULL, 0, 0, 0, NULL, 0, gorgonCheckMood,
@@ -900,12 +888,12 @@ animframe_t gorgon_frames_delay [] =
 	FRAME_wait7,	NULL, 0, 0, 0, NULL, 0, gorgonCheckMood,
 	FRAME_wait8,	NULL, 0, 0, 0, NULL, 0, gorgonCheckMood,
 };
-animmove_t gorgon_move_delay = {8, gorgon_frames_delay, gorgonCheckMood};
+const animmove_t gorgon_move_delay = {8, gorgon_frames_delay, gorgonCheckMood};
 
 /*----------------------------------------------------------------------
   Gorgon roar- make noise, alert others
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_roar [] =
+static const animframe_t gorgon_frames_roar [] =
 {
 	FRAME_speak1, NULL, 0, 0, 0, NULL, 0,  gorgonRoar,
 	FRAME_speak2, NULL, 0, 0, 0, NULL, 0,  gorgon_roar_sound,
@@ -927,12 +915,12 @@ animframe_t gorgon_frames_roar [] =
 	FRAME_speak18, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_speak19, NULL, 0, 0, 0, NULL, 0,  NULL
 };
-animmove_t gorgon_move_roar = {19, gorgon_frames_roar, gorgonCheckMood};
+const animmove_t gorgon_move_roar = {19, gorgon_frames_roar, gorgonCheckMood};
 
 /*----------------------------------------------------------------------
   Gorgon roar2- make noise in response to main roar
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_roar2 [] =
+static const animframe_t gorgon_frames_roar2 [] =
 {
 	FRAME_speak1, NULL, 0, 0, 0, NULL, 0,  gorgon_roar_sound,
 	FRAME_speak2, NULL, 0, 0, 0, NULL, 0,  NULL,
@@ -954,7 +942,7 @@ animframe_t gorgon_frames_roar2 [] =
 	FRAME_speak18, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_speak19, NULL, 0, 0, 0, NULL, 0,  NULL
 };
-animmove_t gorgon_move_roar2 = {19, gorgon_frames_roar2, gorgonCheckMood};
+const animmove_t gorgon_move_roar2 = {19, gorgon_frames_roar2, gorgonCheckMood};
 
 //=====================================================
 
@@ -965,7 +953,7 @@ animmove_t gorgon_move_roar2 = {19, gorgon_frames_roar2, gorgonCheckMood};
 /*----------------------------------------------------------------------
   Gorgon Swimming
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_to_swim [] =
+static const animframe_t gorgon_frames_to_swim [] =
 { //FIXME: add wake and bubbles and sploosh swim sounds
 	FRAME_swim1,	NULL, 0, 0, 0, NULL, 0, gorgonCheckInWater,
 	FRAME_swim2,	NULL, 0, 0, 0, NULL, 0, gorgonCheckInWater,
@@ -973,9 +961,9 @@ animframe_t gorgon_frames_to_swim [] =
 	FRAME_swim4,	NULL, 0, 0, 0, NULL, 0, gorgonCheckInWater,
 	FRAME_swim5,	NULL, 0, 0, 0, NULL, 0, gorgonCheckInWater,
 };
-animmove_t gorgon_move_to_swim = {5, gorgon_frames_to_swim, gorgonGoSwim};
+const animmove_t gorgon_move_to_swim = {5, gorgon_frames_to_swim, gorgonGoSwim};
 
-animframe_t gorgon_frames_swim [] =
+static const animframe_t gorgon_frames_swim [] =
 { //FIXME: add wake and bubbles and sploosh swim sounds
 	FRAME_swim6,	NULL, 0, 0, 0, gorgon_ai_swim, 31, fish_under_water_wake, //TODO: add our own version of fish_under_water_wake.
 	FRAME_swim7,	NULL, 0, 0, 0, gorgon_ai_swim, 32, NULL,
@@ -991,9 +979,9 @@ animframe_t gorgon_frames_swim [] =
 	FRAME_swim17,	NULL, 0, 0, 0, gorgon_ai_swim, 32, NULL,
 	FRAME_swim18,	NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
 };
-animmove_t gorgon_move_swim = {13, gorgon_frames_swim, NULL};
+const animmove_t gorgon_move_swim = {13, gorgon_frames_swim, NULL};
 
-animframe_t gorgon_frames_swim_bite_a [] =
+static const animframe_t gorgon_frames_swim_bite_a [] =
 { //FIXME: add wake and bubbles and sploosh swim sounds
 	FRAME_swimata1,	NULL, 0, 0, 0, gorgon_ai_swim, 31, fish_under_water_wake,
 	FRAME_swimata2,	NULL, 0, 0, 0, gorgon_ai_swim, 32, NULL,
@@ -1010,9 +998,9 @@ animframe_t gorgon_frames_swim_bite_a [] =
 	FRAME_swimata13,NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
 	FRAME_swimata14,NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
 };
-animmove_t gorgon_move_swim_bite_a = {14, gorgon_frames_swim_bite_a, NULL};
+const animmove_t gorgon_move_swim_bite_a = {14, gorgon_frames_swim_bite_a, NULL};
 
-animframe_t gorgon_frames_swim_bite_b [] =
+static const animframe_t gorgon_frames_swim_bite_b [] =
 { //FIXME: add wake and bubbles and sploosh swim sounds
 	FRAME_swimatb1,	NULL, 0, 0, 0, gorgon_ai_swim, 31, fish_under_water_wake,
 	FRAME_swimatb2,	NULL, 0, 0, 0, gorgon_ai_swim, 32, NULL,
@@ -1029,9 +1017,9 @@ animframe_t gorgon_frames_swim_bite_b [] =
 	FRAME_swimatb13,NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
 	FRAME_swimatb14,NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
 };
-animmove_t gorgon_move_swim_bite_b = {14, gorgon_frames_swim_bite_b, NULL};
+const animmove_t gorgon_move_swim_bite_b = {14, gorgon_frames_swim_bite_b, NULL};
 
-animframe_t gorgon_frames_outwater [] =
+static const animframe_t gorgon_frames_outwater [] =
 { //FIXME: add wake and bubbles and sploosh swim sounds
 	FRAME_swimata1,	NULL, 0, 0, 0, gorgon_ai_swim, -1, NULL,
 	FRAME_swimata3,	NULL, 0, 0, 0, gorgon_ai_swim, -1, NULL,
@@ -1054,7 +1042,7 @@ animframe_t gorgon_frames_outwater [] =
 	FRAME_jumpb16,	NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_jumpb17,	NULL, 0, 0, 0, NULL, 0, NULL
 };
-animmove_t gorgon_move_outwater = {20, gorgon_frames_outwater, gorgonCheckMood};
+const animmove_t gorgon_move_outwater = {20, gorgon_frames_outwater, gorgonCheckMood};
 
 //=============================================================================
 
@@ -1067,31 +1055,31 @@ animmove_t gorgon_move_outwater = {20, gorgon_frames_outwater, gorgonCheckMood};
 /*----------------------------------------------------------------------
 	eating trand to down
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_eat_down [] =
+static const animframe_t gorgon_frames_eat_down [] =
 {
 	FRAME_eatinga1,	NULL, 0, 0, 0, gorgon_ai_eat, 0, NULL,
 	FRAME_eatinga2,	NULL, 0, 0, 0, gorgon_ai_eat, 0, NULL,
 	FRAME_eatinga3,	NULL, 0, 0, 0, gorgon_ai_eat, 0, NULL,
 	FRAME_eatinga4,	NULL, 0, 0, 0, gorgon_ai_eat, -1, NULL,
 };
-animmove_t gorgon_move_eat_down = {4, gorgon_frames_eat_down, NULL};
+const animmove_t gorgon_move_eat_down = {4, gorgon_frames_eat_down, NULL};
 
 /*----------------------------------------------------------------------
 	eating trans to up
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_eat_up [] =
+static const animframe_t gorgon_frames_eat_up [] =
 {
 	FRAME_eatinga4,	NULL, 0, 0, 0, gorgon_ai_eat, 0, NULL,
 	FRAME_eatinga3,	NULL, 0, 0, 0, gorgon_ai_eat, 0, NULL,
 	FRAME_eatinga2,	NULL, 0, 0, 0, gorgon_ai_eat, 0, NULL,
 	FRAME_eatinga1,	NULL, 0, 0, 0, gorgon_ai_eat, -1, NULL,
 };
-animmove_t gorgon_move_eat_up = {4, gorgon_frames_eat_up, NULL};
+const animmove_t gorgon_move_eat_up = {4, gorgon_frames_eat_up, NULL};
 
 /*----------------------------------------------------------------------
   eat cycle
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_eat_loop [] =
+static const animframe_t gorgon_frames_eat_loop [] =
 {
 	FRAME_eatinga5, NULL, 0, 0, 0, gorgon_ai_eat, 0,  NULL,
 	FRAME_eatinga6, NULL, 0, 0, 0, gorgon_ai_eat, 0,  NULL,
@@ -1100,12 +1088,12 @@ animframe_t gorgon_frames_eat_loop [] =
 	FRAME_eatinga9, NULL, 0, 0, 0, gorgon_ai_eat, 0,  NULL,
 	FRAME_eatinga10, NULL, 0, 0, 0, gorgon_ai_eat, -1,  NULL,
 };
-animmove_t gorgon_move_eat_loop = {6, gorgon_frames_eat_loop, NULL};
+const animmove_t gorgon_move_eat_loop = {6, gorgon_frames_eat_loop, NULL};
 
 /*----------------------------------------------------------------------
   eating - tear
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_eat_tear [] =
+static const animframe_t gorgon_frames_eat_tear [] =
 {
 	FRAME_eatingb1, NULL, 0, 0, 0, gorgon_ai_eat, 0,  NULL,
 	FRAME_eatingb2, NULL, 0, 0, 0, gorgon_ai_eat, 0,  NULL,
@@ -1129,13 +1117,13 @@ animframe_t gorgon_frames_eat_tear [] =
 	FRAME_eatingb20, NULL, 0, 0, 0, gorgon_ai_eat, 0,  NULL,
 	FRAME_eatingb21, NULL, 0, 0, 0, gorgon_ai_eat, -1,  NULL,
 };
-animmove_t gorgon_move_eat_tear = {21, gorgon_frames_eat_tear, NULL};
+const animmove_t gorgon_move_eat_tear = {21, gorgon_frames_eat_tear, NULL};
 
 
 /*----------------------------------------------------------------------
   eat- up & down
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_eat_pullback [] =
+static const animframe_t gorgon_frames_eat_pullback [] =
 {
 	FRAME_eatinga5, NULL, 0, 0, 0, gorgon_ai_eat, 0,  NULL,
 	FRAME_eatinga4, NULL, 0, 0, 0, gorgon_ai_eat, 0,  NULL,
@@ -1143,12 +1131,12 @@ animframe_t gorgon_frames_eat_pullback [] =
 	FRAME_eatinga4, NULL, 0, 0, 0, gorgon_ai_eat, 0,  NULL,
 	FRAME_eatinga5, NULL, 0, 0, 0, gorgon_ai_eat, -1,  NULL,
 };
-animmove_t gorgon_move_eat_pullback = {5, gorgon_frames_eat_pullback, NULL};
+const animmove_t gorgon_move_eat_pullback = {5, gorgon_frames_eat_pullback, NULL};
 
 /*----------------------------------------------------------------------
 	look around
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_look_around [] =
+static const animframe_t gorgon_frames_look_around [] =
 {//fixme: modify view_ofs so they actually look behind them
 	FRAME_idleb1,	NULL, 0, 0, 0, gorgon_ai_eat, 0, NULL,
 	FRAME_idleb2,	NULL, 0, 0, 0, gorgon_ai_eat, 0, NULL,
@@ -1172,12 +1160,12 @@ animframe_t gorgon_frames_look_around [] =
 	FRAME_idleb20,	NULL, 0, 0, 0, gorgon_ai_eat, 0, NULL,
 	FRAME_idleb21,	NULL, 0, 0, 0, gorgon_ai_eat, -1, NULL,
 };
-animmove_t gorgon_move_look_around = {21, gorgon_frames_look_around, NULL};
+const animmove_t gorgon_move_look_around = {21, gorgon_frames_look_around, NULL};
 
 /*----------------------------------------------------------------------
 	looking left from eat
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_eat_left [] =
+static const animframe_t gorgon_frames_eat_left [] =
 {
 	FRAME_loklft1,	NULL, 0, 0, 0, gorgon_ai_eat, 0, NULL,
 	FRAME_loklft2,	NULL, 0, 0, 0, gorgon_ai_eat, 0, NULL,
@@ -1223,12 +1211,12 @@ animframe_t gorgon_frames_eat_left [] =
 	FRAME_loklft2,	NULL, 0, 0, 0, gorgon_ai_eat, 0, NULL,
 	FRAME_loklft1,	NULL, 0, 0, 0, gorgon_ai_eat, -1, NULL
 };
-animmove_t gorgon_move_eat_left = {43, gorgon_frames_eat_left, NULL};
+const animmove_t gorgon_move_eat_left = {43, gorgon_frames_eat_left, NULL};
 
 /*----------------------------------------------------------------------
 	looking right from eat
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_eat_right [] =
+static const animframe_t gorgon_frames_eat_right [] =
 {
 	FRAME_lokrt1,	NULL, 0, 0, 0, gorgon_ai_eat, 0, NULL,
 	FRAME_lokrt2,	NULL, 0, 0, 0, gorgon_ai_eat, 0, NULL,
@@ -1270,12 +1258,12 @@ animframe_t gorgon_frames_eat_right [] =
 	FRAME_lokrt2,	NULL, 0, 0, 0, gorgon_ai_eat, 0, NULL,
 	FRAME_lokrt1,	NULL, 0, 0, 0, gorgon_ai_eat, -1, NULL,
 };
-animmove_t gorgon_move_eat_right = {39, gorgon_frames_eat_right, NULL};
+const animmove_t gorgon_move_eat_right = {39, gorgon_frames_eat_right, NULL};
 
 /*----------------------------------------------------------------------
   snap at something to right
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_eat_snap [] =
+static const animframe_t gorgon_frames_eat_snap [] =
 {
 	FRAME_snap1, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_snap2, NULL, 0, 0, 0, NULL, 0,  NULL,
@@ -1285,12 +1273,12 @@ animframe_t gorgon_frames_eat_snap [] =
 	FRAME_snap6, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_snap7, NULL, 0, 0, 0, gorgon_ai_eat, -1,  NULL,
 };
-animmove_t gorgon_move_eat_snap = {7, gorgon_frames_eat_snap, NULL};
+const animmove_t gorgon_move_eat_snap = {7, gorgon_frames_eat_snap, NULL};
 
 /*----------------------------------------------------------------------
   react tp something to left
 -----------------------------------------------------------------------*/
-animframe_t gorgon_frames_eat_react [] =
+static const animframe_t gorgon_frames_eat_react [] =
 {
 	FRAME_react1, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_react2, NULL, 0, 0, 0, NULL, 0,  NULL,
@@ -1303,4 +1291,4 @@ animframe_t gorgon_frames_eat_react [] =
 	FRAME_react9, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_react10, NULL, 0, 0, 0, gorgon_ai_eat, -1,  NULL,
 };
-animmove_t gorgon_move_eat_react = {10, gorgon_frames_eat_react, NULL};
+const animmove_t gorgon_move_eat_react = {10, gorgon_frames_eat_react, NULL};
