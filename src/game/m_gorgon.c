@@ -767,21 +767,24 @@ void gorgonApplyJump(edict_t* self) //TODO: rename to gorgon_apply_jump.
 	}
 }
 
-void gorgonJumpOutWater (edict_t *self)
+void gorgonJumpOutWater(edict_t* self) //TODO: rename to gorgon_jump_out_of_water.
 {
-	vec3_t	endpos, forward;
+	vec3_t end_pos;
 
-	if(!self->enemy)
-		VectorCopy(self->enemy->s.origin, endpos);
+	if (self->enemy != NULL) //BUGFIX: mxd. 'if(!self->enemy)' in original logic.
+	{
+		VectorCopy(self->enemy->s.origin, end_pos);
+	}
 	else
 	{
+		vec3_t forward;
 		AngleVectors(self->s.angles, forward, NULL, NULL);
-		VectorMA(self->s.origin, 100, forward, endpos);
+		VectorMA(self->s.origin, 100.0f, forward, end_pos);
 	}
 
-	endpos[2] += 30;
-	VectorSubtract(endpos, self->s.origin, self->velocity);
-	self->velocity[2] += 200;
+	end_pos[2] += 30.0f;
+	VectorSubtract(end_pos, self->s.origin, self->velocity);
+	self->velocity[2] += 200.0f;
 }
 
 void gorgonForward (edict_t *self, float dist)
