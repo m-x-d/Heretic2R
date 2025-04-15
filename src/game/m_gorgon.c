@@ -1120,28 +1120,24 @@ void gorgon_ready_catch(edict_t* self)
 		SetAnim(self, ANIM_READY_CATCH);
 }
 
-void gorgon_throw_toy(edict_t *self)
+//mxd. Similar to tbeast_throw_toy().
+void gorgon_throw_toy(edict_t* self)
 {
-	if(!self->enemy)
+	if (self->enemy == NULL)
 		return;
 
 	self->enemy->flags &= ~FL_FLY;
-	self->enemy->velocity[0] = self->enemy->velocity[1] = 0;
-	self->enemy->velocity[2] = 500;
-	if(self->enemy->movetype>NUM_PHYSICSTYPES)
+	VectorSet(self->enemy->velocity, 0.0f, 0.0f, 500.0f);
+
+	if (self->enemy->movetype > NUM_PHYSICSTYPES) //TODO: Eh? Should check for PHYSICSTYPE_FLY instead?..
 		self->enemy->movetype = PHYSICSTYPE_STEP;
-	VectorRandomCopy(vec3_origin,self->enemy->avelocity,300);
-	
-	if(stricmp(self->enemy->classname,"player"))
+
+	VectorRandomCopy(vec3_origin, self->enemy->avelocity, 300.0f);
+
+	if (Q_stricmp(self->enemy->classname, "player") != 0) //TODO: strange way to check for non-players. Should check self->targetEnt->client instead?..
 		QPostMessage(self->enemy, MSG_DEATH, PRI_DIRECTIVE, NULL);
 
-	//FIXME: What if I miss?  Set the monster's touch to
-	//	something that restores it's angles and normal thinking (AI_FLEE)
-/*	if(!stricmp(self->enemy->classname,"player"))
-	{
-		PlayerAnimSetUpperSeq(self->enemy, 92);
-		PlayerAnimSetLowerSeq(&self->enemy->client->playerinfo, 92);
-	}*/
+	//TODO: play throw sound?
 }
 
 void gorgon_toy_ofs(edict_t *self, float ofsf, float ofsr, float ofsu)
