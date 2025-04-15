@@ -179,22 +179,6 @@ static void GorgonEatMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'g
 	self->monsterinfo.misc_debounce_time = level.time + 5.0f;
 }
 
-/*----------------------------------------------------------------------
-  Gorgon Watch  -decide which standing animations to use
------------------------------------------------------------------------*/
-void gorgon_watch(edict_t *self, G_Message_t *msg)
-{
-	int	chance;
-	
-	chance = irand(0, 100);
-	if (chance < 10)
-		SetAnim(self, ANIM_STAND2);
-	else if (chance < 20)
-		SetAnim(self, ANIM_STAND3);
-	else 
-		SetAnim(self, ANIM_STAND1);
-}
-
 qboolean gorgon_check_attack(edict_t *self)
 {
 	vec3_t	v, vr, vf;
