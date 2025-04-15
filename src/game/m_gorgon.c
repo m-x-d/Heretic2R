@@ -647,52 +647,42 @@ static void GorgonCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 	gorgonCheckMood(self);
 }
 
-void gorgonbite (edict_t *self)
+void gorgonbite(edict_t* self) //TODO: rename to gorgon_bite.
 {
-	vec3_t	v;
-	float	damage;
-	float	melee_range;
-	vec3_t	temp, forward, up, melee_point, bite_endpos;
-	trace_t trace;
-
-	if(self->ai_mood == AI_MOOD_NAVIGATE)
+	if (self->ai_mood == AI_MOOD_NAVIGATE || !AI_HaveEnemy(self))
 		return;
 
-	//fixme: do a checkenemy that checks oldenemy & posts messages
-	if(!AI_HaveEnemy(self))
-		return;
+	vec3_t forward;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, NULL, up);
 
-	AngleVectors(self->s.angles,forward, NULL, up);
-	VectorMA(self->s.origin, self->maxs[2]*0.5, up, melee_point);
+	vec3_t melee_point;
+	VectorMA(self->s.origin, self->maxs[2] * 0.5f, up, melee_point);
 	VectorMA(melee_point, self->maxs[0], forward, melee_point);
 
-	melee_range = self->s.scale * GORGON_MELEE_RANGE * 1.25;//give axtra range
-	VectorMA(melee_point, melee_range, forward, bite_endpos);
+	const float melee_range = self->s.scale * GORGON_MELEE_RANGE * 1.25f; // Give extra range.
 
-	//let's do this the right way
-	gi.trace(melee_point, vec3_origin, vec3_origin, bite_endpos, self, MASK_SHOT,&trace);
-	if (trace.fraction < 1 && !trace.startsolid && !trace.allsolid && trace.ent->takedamage)// A hit
+	vec3_t bite_end_pos;
+	VectorMA(melee_point, melee_range, forward, bite_end_pos);
+
+	// Let's do this the right way.
+	trace_t trace;
+	gi.trace(melee_point, vec3_origin, vec3_origin, bite_end_pos, self, MASK_SHOT, &trace);
+
+	if (trace.fraction < 1.0f && !trace.startsolid && !trace.allsolid && trace.ent->takedamage) // A hit.
 	{
-		if (irand(0, 1))
-			gi.sound(self, CHAN_WEAPON, sounds[SND_MELEEHIT1], 1, ATTN_NORM, 0);
-		else
-			gi.sound(self, CHAN_WEAPON, sounds[SND_MELEEHIT2], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_MELEEHIT1, SND_MELEEHIT2)], 1.0f, ATTN_NORM, 0.0f);
 
-		VectorCopy (self->enemy->s.origin, temp);
-		temp[2] += 5;
+		vec3_t normal;
+		VectorSubtract(self->enemy->s.origin, self->s.origin, normal);
+		VectorNormalize(normal);
 
-		VectorSubtract(self->enemy->s.origin, self->s.origin, v);
-		VectorNormalize(v);
-
-		damage = irand(GORGON_DMG_MIN, GORGON_DMG_MAX) * self->monsterinfo.scale;
-		T_Damage (self->enemy, self, self, forward, trace.endpos, v, damage, damage/2, DAMAGE_EXTRA_BLOOD,MOD_DIED);
+		const int damage = (int)((float)(irand(GORGON_DMG_MIN, GORGON_DMG_MAX)) * self->monsterinfo.scale);
+		T_Damage(self->enemy, self, self, forward, trace.endpos, normal, damage, damage / 2, DAMAGE_EXTRA_BLOOD, MOD_DIED);
 	}
-	else			// A misssss
+	else // A miss.
 	{
-		if (irand(0, 1))
-			gi.sound(self, CHAN_WEAPON, sounds[SND_MELEEMISS1], 1, ATTN_NORM, 0);
-		else
-			gi.sound(self, CHAN_WEAPON, sounds[SND_MELEEMISS2], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_WEAPON, sounds[irand(SND_MELEEMISS1, SND_MELEEMISS2)], 1.0f, ATTN_NORM, 0.0f);
 	}
 }
 
