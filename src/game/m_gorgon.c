@@ -830,39 +830,30 @@ void gorgonCheckInWater(edict_t* self) //TODO: rename to gorgon_check_in_water.
 		SetAnim(self, ANIM_INAIR);
 }
 
-void gorgon_check_landed (edict_t *self)
+void gorgon_check_landed(edict_t* self)
 {
-	vec3_t pos;
-	float save_yspeed;
-	int	contents;
-	
-	save_yspeed = self->yaw_speed;
-	self->yaw_speed *= 0.33;
+	const float save_yaw_speed = self->yaw_speed;
+	self->yaw_speed *= 0.33f;
 	self->best_move_yaw = VectorYaw(self->velocity);
-	MG_ChangeWhichYaw(self, false);//turn toward best_move_yaw, 1/3 as fast as if on ground
-	self->yaw_speed = save_yspeed;
-	
-	if(self->groundentity)
+	MG_ChangeWhichYaw(self, false); // Turn toward best_move_yaw, 1/3 as fast as if on ground.
+	self->yaw_speed = save_yaw_speed;
+
+	if (self->groundentity != NULL)
 	{
-		if(irand(0, 1))
-			SetAnim(self, ANIM_LAND2);
-		else
-			SetAnim(self, ANIM_LAND);
+		SetAnim(self, irand(ANIM_LAND2, ANIM_LAND));
 	}
-	else if(self->velocity[2]<0)
+	else if (self->velocity[2] < 0.0f)
 	{
+		vec3_t pos;
 		VectorCopy(self->s.origin, pos);
 		pos[2] += self->mins[2];
-		VectorMA(pos, 0.5, self->velocity, pos);
-		contents = gi.pointcontents(pos);
-		if(contents&CONTENTS_SOLID)
-		{
-			if(irand(0, 1))
-				SetAnim(self, ANIM_LAND2);
-			else
-				SetAnim(self, ANIM_LAND);
-		}
-		else if(contents&CONTENTS_WATER)
+		VectorMA(pos, 0.5f, self->velocity, pos);
+
+		const int contents = gi.pointcontents(pos);
+
+		if (contents & CONTENTS_SOLID)
+			SetAnim(self, irand(ANIM_LAND2, ANIM_LAND));
+		else if (contents & CONTENTS_WATER)
 			SetAnim(self, ANIM_TO_SWIM);
 	}
 }
