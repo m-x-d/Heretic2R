@@ -990,7 +990,7 @@ void gorgon_fix_pitch(edict_t* self) //mxd. Named 'gorgonFixPitch' in original l
 	MG_ChangePitch(self, 0.0f, 10.0f);
 }
 
-void gorgonZeroPitch(edict_t* self) //TODO: rename to gorgon_reset_pitch.
+void gorgon_reset_pitch(edict_t* self) //mxd. Named 'gorgonZeroPitch' in original logic.
 {
 	self->s.angles[PITCH] = 0.0f;
 }

@@ -1038,7 +1038,7 @@ static const animframe_t gorgon_frames_outwater [] =
 	FRAME_jumpb12,	NULL, 0, 0, 0, gorgon_forward, 100,  gorgon_fix_pitch,
 	FRAME_jumpb13,	NULL, 0, 0, 0, gorgon_forward, 100,  gorgon_fix_pitch,
 	FRAME_jumpb14,	NULL, 0, 0, 0, gorgon_forward, 100,  gorgon_fix_pitch,
-	FRAME_jumpb15,	NULL, 0, 0, 0, gorgon_forward, 100,  gorgonZeroPitch,
+	FRAME_jumpb15,	NULL, 0, 0, 0, gorgon_forward, 100,  gorgon_reset_pitch,
 	FRAME_jumpb16,	NULL, 0, 0, 0, NULL, 0, NULL,
 	FRAME_jumpb17,	NULL, 0, 0, 0, NULL, 0, NULL
 };
