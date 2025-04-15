@@ -498,48 +498,27 @@ static void GorgonRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'g
 		SetAnim(self, ANIM_RUN1); // Run on.
 }
 
-/*----------------------------------------------------------------------
-  Gorgon Pain - make the decision between pains 1, 2, or 3 or slip
------------------------------------------------------------------------*/
-void gorgon_pain(edict_t *self, G_Message_t *msg)
+// Gorgon Pain - make the decision between pains 1, 2, or 3 or slip.
+static void GorgonPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_pain' in original logic.
 {
-	edict_t		*tempent;
-	int			chance, temp, damage;
-	qboolean	force_pain;
-	
-	ParseMsgParms(msg, "eeiii", &tempent, &tempent, &force_pain, &damage, &temp);
+	edict_t* temp_ent;
+	int temp;
+	int damage;
+	qboolean force_pain;
+	ParseMsgParms(msg, "eeiii", &temp_ent, &temp_ent, &force_pain, &damage, &temp);
 
-	if(!force_pain)
-	{
-		if(!irand(0, 2)||!self->groundentity)
-			return;
+	if (!force_pain && (irand(0, 2) == 0 || self->groundentity == NULL || self->pain_debounce_time > level.time))
+		return;
 
-		if(self->pain_debounce_time > level.time)
-			return;
-	}
+	self->pain_debounce_time = level.time + 0.5f;
+	gi.sound(self, CHAN_VOICE, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f);
 
-	self->pain_debounce_time = level.time + 0.5;
-
-	chance = irand(0, 100);
-	if (chance < 50)
-		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN1], 1, ATTN_NORM, 0);
-	else
-		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN2], 1, ATTN_NORM, 0);
-
-	if(!irand(0, 4))
+	if (irand(0, 4) == 0)
 		self->s.skinnum = GORGON_PAIN_SKIN;
 
-	if(skill->value > 1.0 || !gorgonCheckSlipGo(self, true))
-	{
-		if (chance < 33)
-			SetAnim(self, ANIM_PAIN1);
-		else if (chance < 66)
-			SetAnim(self, ANIM_PAIN2);
-		else
-			SetAnim(self, ANIM_PAIN3);
-	}
+	if (SKILL > SKILL_MEDIUM || !gorgonCheckSlipGo(self, true)) //TODO: Strange skill check: always do pain anims only on Hard+? Should be inverted (or easy-only) instead?
+		SetAnim(self, irand(ANIM_PAIN1, ANIM_PAIN3));
 }
-
 
 /*----------------------------------------------------------------------
   Gorgon Die - choose death 
@@ -1929,7 +1908,7 @@ void GorgonStaticsInit(void)
 	classStatics[CID_GORGON].msgReceivers[MSG_MELEE] = GorgonMeleeMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_MISSILE] = GorgonMeleeMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_WATCH] = GorgonWalkMsgHandler;
-	classStatics[CID_GORGON].msgReceivers[MSG_PAIN] = gorgon_pain;
+	classStatics[CID_GORGON].msgReceivers[MSG_PAIN] = GorgonPainMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_DEATH] = gorgon_death;
 	classStatics[CID_GORGON].msgReceivers[MSG_JUMP]=gorgon_jump_msg;
 	classStatics[CID_GORGON].msgReceivers[MSG_DEATH_PAIN] = gorgon_death_pain;
