@@ -961,7 +961,7 @@ static const animframe_t gorgon_frames_to_swim [] =
 	FRAME_swim4,	NULL, 0, 0, 0, NULL, 0, gorgonCheckInWater,
 	FRAME_swim5,	NULL, 0, 0, 0, NULL, 0, gorgonCheckInWater,
 };
-const animmove_t gorgon_move_to_swim = {5, gorgon_frames_to_swim, gorgonGoSwim};
+const animmove_t gorgon_move_to_swim = {5, gorgon_frames_to_swim, gorgon_swim_go};
 
 static const animframe_t gorgon_frames_swim [] =
 { //FIXME: add wake and bubbles and sploosh swim sounds

@@ -552,7 +552,7 @@ static void GorgonRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'g
 
 	if (self->flags & FL_INWATER)
 	{
-		gorgonGoSwim(self);
+		gorgon_swim_go(self);
 		return;
 	}
 
@@ -995,7 +995,7 @@ void gorgon_reset_pitch(edict_t* self) //mxd. Named 'gorgonZeroPitch' in origina
 	self->s.angles[PITCH] = 0.0f;
 }
 
-void gorgonGoSwim(edict_t* self) //TODO: rename to gorgon_swim_go.
+void gorgon_swim_go(edict_t* self) //mxd. Named 'gorgonGoSwim' in original logic.
 {
 	SetAnim(self, ANIM_SWIM);
 }
@@ -1644,7 +1644,7 @@ void gorgon_check_mood(edict_t* self) //mxd. Named 'gorgonCheckMood' in original
 		case AI_MOOD_WANDER:
 		case AI_MOOD_FLEE:
 			if (self->flags & FL_INWATER)
-				gorgonGoSwim(self);
+				gorgon_swim_go(self);
 			else if (self->curAnimID != ANIM_RUN1 && self->curAnimID != ANIM_RUN2 && self->curAnimID != ANIM_RUN3)
 				SetAnim(self, ANIM_RUN1);
 			break;

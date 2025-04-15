@@ -182,7 +182,7 @@ void gorgon_roar_sound(edict_t* self);
 void gorgon_go_inair(edict_t* self);
 void gorgon_check_landed(edict_t* self);
 void gorgon_jump_out_of_water(edict_t* self);
-void gorgonGoSwim(edict_t* self);
+void gorgon_swim_go(edict_t* self);
 void gorgonCheckInWater(edict_t* self);
 void gorgon_ai_swim(edict_t* self, float distance);
 void gorgon_forward(edict_t* self, float dist);
