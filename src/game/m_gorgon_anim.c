@@ -15,50 +15,52 @@
 
 void gorgon_land(edict_t *self);
 
-#define GORGON_STEPS		20 // Number of steps for whole swerve.
-#define GORGON_STEPS_INT1	(GORGON_STEPS/4)
-#define GORGON_STEPS_INT2	(GORGON_STEPS/2)
-#define GORGON_STEPS_INT3	(GORGON_STEPS - GORGON_STEPS_INT1)
-#define GORGON_STEPS_INT4	GORGON_STEPS
-
-#define GORGON_SWERVE		20//degree of swerve
-#define GORGON_SWERVE_INT1	(GORGON_SWERVE/4)
-#define GORGON_SWERVE_INT2	(GORGON_SWERVE/2)
+void gorgon_ai_run(edict_t* self, float distance)
+{
+#define GORGON_SWERVE		20 // Degree of swerve.
+#define GORGON_SWERVE_INT1	(GORGON_SWERVE / 4)
+#define GORGON_SWERVE_INT2	(GORGON_SWERVE / 2)
 #define GORGON_SWERVE_INT3	(GORGON_SWERVE - GORGON_SWERVE_INT1)
 #define GORGON_SWERVE_INT4	GORGON_SWERVE
 
-#define GORGON_SWERVE_MULT	(GORGON_SWERVE/GORGON_STEPS_INT1)
-
-void gorgon_ai_run (edict_t *self, float dist)
-{
-	float offset;
+#define GORGON_SWERVE_MULT	(GORGON_SWERVE / GORGON_SWERVE_INT1)
 
 	MG_FaceGoal(self, false);
 
-	if(self->monsterinfo.idle_time != -1 && self->monsterinfo.idle_time < level.time)
+	if (self->monsterinfo.idle_time != -1.0f && self->monsterinfo.idle_time < level.time)
 	{
 		self->dmg++;
-		if(self->dmg<GORGON_STEPS_INT1)//<5
-			offset = (float)(self->dmg) * GORGON_SWERVE_MULT;//0->5 * 4 = 0->20
-		else if(self->dmg<GORGON_STEPS_INT2)
-			offset = GORGON_SWERVE - (((float)(self->dmg) - GORGON_SWERVE_INT1) * GORGON_SWERVE_MULT);//20 - ((0->10 - 5) * 4) = 20->0
-		else if(self->dmg<GORGON_STEPS_INT3)
-			offset = -(((float)(self->dmg) - GORGON_SWERVE_INT2) * GORGON_SWERVE_MULT);
-		else if(self->dmg<GORGON_STEPS_INT4)
-			offset = -(GORGON_SWERVE - (((float)(self->dmg) - GORGON_SWERVE_INT3) * GORGON_SWERVE_MULT));
-		else
-			self->dmg = 0;
 
-		if(self->dmg)
+		float offset;
+
+		if (self->dmg < GORGON_SWERVE_INT1)
 		{
-			self->ideal_yaw = anglemod(self->ideal_yaw + offset);
+			offset = (float)(self->dmg) * GORGON_SWERVE_MULT;
 		}
+		else if (self->dmg < GORGON_SWERVE_INT2)
+		{
+			offset = GORGON_SWERVE - (((float)(self->dmg) - GORGON_SWERVE_INT1) * GORGON_SWERVE_MULT);
+		}
+		else if (self->dmg < GORGON_SWERVE_INT3)
+		{
+			offset = -(((float)(self->dmg) - GORGON_SWERVE_INT2) * GORGON_SWERVE_MULT);
+		}
+		else if (self->dmg < GORGON_SWERVE_INT4)
+		{
+			offset = -(GORGON_SWERVE - (((float)(self->dmg) - GORGON_SWERVE_INT3) * GORGON_SWERVE_MULT));
+		}
+		else
+		{
+			offset = 0.0f; //mxd. Initialize to avoid compiler warning.
+			self->dmg = 0;
+		}
+
+		if (self->dmg != 0)
+			self->ideal_yaw = anglemod(self->ideal_yaw + offset);
 	}
 
-	if(self->spawnflags & MSF_GORGON_SPEEDY)
-		MG_AI_Run(self, dist*1.25);
-	else
-		MG_AI_Run(self, dist*0.75);
+	const float scaler = ((self->spawnflags & MSF_GORGON_SPEEDY) ? 1.25f : 0.75f); //mxd
+	MG_AI_Run(self, distance * scaler);
 }
 
 /*----------------------------------------------------------------------
