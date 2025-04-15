@@ -585,7 +585,7 @@ void gorgon_growl(edict_t* self)
 		gi.sound(self, CHAN_WEAPON, sounds[SND_GROWL3], 1.0f, ATTN_NORM, 0.0f);
 }
 
-qboolean gorgonCheckMood(edict_t* self) //TODO: add action function variant.
+qboolean gorgonCheckMood(edict_t* self) //TODO: rename to GorgonCheckMood(), add action function variant.
 {
 	self->pre_think = gorgon_prethink;
 	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
@@ -641,10 +641,9 @@ qboolean gorgonCheckMood(edict_t* self) //TODO: add action function variant.
 	return true;
 }
 
-void gorgon_check_mood (edict_t *self, G_Message_t *msg)
+static void GorgonCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_check_mood' in original logic.
 {
 	ParseMsgParms(msg, "i", &self->ai_mood);
-
 	gorgonCheckMood(self);
 }
 
@@ -1867,7 +1866,7 @@ void GorgonStaticsInit(void)
 	classStatics[CID_GORGON].msgReceivers[MSG_DEATH] = GorgonDeathMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_JUMP]=gorgon_jump_msg;
 	classStatics[CID_GORGON].msgReceivers[MSG_DEATH_PAIN] = GorgonDeathPainMsgHandler;
-	classStatics[CID_GORGON].msgReceivers[MSG_CHECK_MOOD] = gorgon_check_mood;
+	classStatics[CID_GORGON].msgReceivers[MSG_CHECK_MOOD] = GorgonCheckMoodMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_VOICE_POLL] = GorgonVoicePollMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_EVADE] = gorgon_evade;
 
