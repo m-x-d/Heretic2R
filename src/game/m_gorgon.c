@@ -164,27 +164,19 @@ static qboolean GorgonFindAsleepGorgons(const edict_t* self) //mxd. Named 'gorgo
 	return false;
 }
 
-//----------------------------------------------------------------------
-//  Gorgon Eat - decide which eating animations to use
-//----------------------------------------------------------------------
-void gorgon_eat(edict_t *self, G_Message_t *msg)
+// Gorgon Eat - decide which eating animations to use.
+static void GorgonEatMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_eat' in original logic.
 {
-	int chance;
+	const int chance = irand(0, 100);
 
-	chance = irand(0, 100);
-	if (chance < 90)	// Eating
-	{
-		if (chance < 80)
-			SetAnim(self, ANIM_EAT_LOOP);
-		else
-			SetAnim(self, ANIM_EAT_PULLBACK);
-	}
-	else 
-	{
+	if (chance < 80)
+		SetAnim(self, ANIM_EAT_LOOP);
+	else if (chance < 90)
+		SetAnim(self, ANIM_EAT_PULLBACK);
+	else
 		SetAnim(self, ANIM_EAT_TEAR);
-	} 
 
-	self->monsterinfo.misc_debounce_time = level.time + 5;
+	self->monsterinfo.misc_debounce_time = level.time + 5.0f;
 }
 
 /*----------------------------------------------------------------------
@@ -2019,7 +2011,7 @@ void GorgonStaticsInit(void)
 	classStatics[CID_GORGON].msgReceivers[MSG_STAND] = gorgon_stand;
 	classStatics[CID_GORGON].msgReceivers[MSG_WALK] = gorgon_walk;
 	classStatics[CID_GORGON].msgReceivers[MSG_RUN] = gorgon_run;
-	classStatics[CID_GORGON].msgReceivers[MSG_EAT] = gorgon_eat;
+	classStatics[CID_GORGON].msgReceivers[MSG_EAT] = GorgonEatMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_MELEE] = gorgon_melee;
 	classStatics[CID_GORGON].msgReceivers[MSG_MISSILE] = gorgon_melee;
 	classStatics[CID_GORGON].msgReceivers[MSG_WATCH] = gorgon_walk;
