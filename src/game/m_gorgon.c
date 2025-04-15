@@ -817,20 +817,17 @@ void gorgonGoSwim(edict_t* self) //TODO: rename to gorgon_swim_go.
 	SetAnim(self, ANIM_SWIM);
 }
 
-void gorgonCheckInWater (edict_t *self)
+void gorgonCheckInWater(edict_t* self) //TODO: rename to gorgon_check_in_water.
 {
-	trace_t	trace;
-	vec3_t	endpos;
+	vec3_t end_pos;
+	VectorCopy(self->s.origin, end_pos);
+	end_pos[2] -= 32.0f;
 
-	VectorCopy(self->s.origin, endpos);
-	endpos[2] -= 32;
+	trace_t trace;
+	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
 
-	gi.trace(self->s.origin, self->mins, self->maxs, endpos, self, MASK_MONSTERSOLID,&trace);
-	if(trace.fraction < 1.0)
-	{
-		if(trace.contents & CONTENTS_SOLID || trace.contents & CONTENTS_MONSTER)
-			SetAnim(self, ANIM_INAIR);
-	}
+	if (trace.fraction < 1.0f && ((trace.contents & CONTENTS_SOLID) || (trace.contents & CONTENTS_MONSTER)))
+		SetAnim(self, ANIM_INAIR);
 }
 
 void gorgon_check_landed (edict_t *self)
