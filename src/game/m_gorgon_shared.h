@@ -157,48 +157,48 @@ extern const animmove_t gorgon_move_eat_right;
 extern const animmove_t gorgon_move_eat_snap;
 extern const animmove_t gorgon_move_eat_react;
 
-void gorgon_bite(edict_t* self);
-void gorgon_footstep(edict_t* self);
-void gorgon_dead(edict_t* self);
-void gorgon_death1_fall(edict_t* self); //mxd
-void gorgon_death2(edict_t* self); //mxd
-void gorgon_death2_throw(edict_t* self); //mxd
-void gorgon_death2_slide(edict_t* self); //mxd
-void gorgon_start_twitch(edict_t* self); //mxd
-void gorgon_next_twitch(edict_t* self); //mxd
-void gorgon_hop(edict_t* self);
-void gorgon_growl(edict_t* self);
-void gorgon_jump(edict_t* self);
-void gorgon_land(edict_t* self); //mxd
-void gorgon_ready_catch(edict_t* self);
-void gorgon_throw_toy(edict_t* self);
-void gorgon_shake_toy(edict_t* self, float forward_offset, float right_offset, float up_offset);
-void gorgon_check_snatch(edict_t* self, float forward_offset, float right_offset, float up_offset);
-void gorgon_gore_toy(edict_t* self, float jump_height);
-void gorgon_miss_sound(edict_t* self);
-void gorgon_anger_sound(edict_t* self);
-void gorgon_snatch_go(edict_t* self);
-void gorgon_done_gore(edict_t* self);
-void gorgon_set_roll(edict_t* self, float roll_angle);
-void gorgon_lerp_off(edict_t* self);
-void gorgon_lerp_on(edict_t* self);
-void gorgon_check_slip(edict_t* self);
-void gorgon_slide(edict_t* self, float force);
-void gorgon_check_mood(edict_t* self);
-void gorgon_apply_jump(edict_t* self);
-void gorgon_roar(edict_t* self);
-void gorgon_roar_sound(edict_t* self);
-void gorgon_inair_go(edict_t* self);
-void gorgon_check_landed(edict_t* self);
-void gorgon_jump_out_of_water(edict_t* self);
-void gorgon_swim_go(edict_t* self);
-void gorgon_check_in_water(edict_t* self);
-void gorgon_ai_run(edict_t* self, float distance); //mxd
-void gorgon_ai_swim(edict_t* self, float distance);
-void gorgon_forward(edict_t* self, float dist);
-void gorgon_fix_pitch(edict_t* self);
-void gorgon_reset_pitch(edict_t* self);
-void gorgon_ai_eat(edict_t* self, float switch_animation);
-void gorgon_under_water_wake(edict_t* self); //mxd
-void gorgon_melee5check(edict_t* self); //mxd
-void gorgon_ai_charge2(edict_t* self, float distance); //mxd
+extern void gorgon_bite(edict_t* self);
+extern void gorgon_footstep(edict_t* self);
+extern void gorgon_dead(edict_t* self);
+extern void gorgon_death1_fall(edict_t* self); //mxd
+extern void gorgon_death2(edict_t* self); //mxd
+extern void gorgon_death2_throw(edict_t* self); //mxd
+extern void gorgon_death2_slide(edict_t* self); //mxd
+extern void gorgon_start_twitch(edict_t* self); //mxd
+extern void gorgon_next_twitch(edict_t* self); //mxd
+extern void gorgon_hop(edict_t* self);
+extern void gorgon_growl(edict_t* self);
+extern void gorgon_jump(edict_t* self);
+extern void gorgon_land(edict_t* self); //mxd
+extern void gorgon_ready_catch(edict_t* self);
+extern void gorgon_throw_toy(edict_t* self);
+extern void gorgon_shake_toy(edict_t* self, float forward_offset, float right_offset, float up_offset);
+extern void gorgon_check_snatch(edict_t* self, float forward_offset, float right_offset, float up_offset);
+extern void gorgon_gore_toy(edict_t* self, float jump_height);
+extern void gorgon_miss_sound(edict_t* self);
+extern void gorgon_anger_sound(edict_t* self);
+extern void gorgon_snatch_go(edict_t* self);
+extern void gorgon_done_gore(edict_t* self);
+extern void gorgon_set_roll(edict_t* self, float roll_angle);
+extern void gorgon_lerp_off(edict_t* self);
+extern void gorgon_lerp_on(edict_t* self);
+extern void gorgon_check_slip(edict_t* self);
+extern void gorgon_slide(edict_t* self, float force);
+extern void gorgon_check_mood(edict_t* self);
+extern void gorgon_apply_jump(edict_t* self);
+extern void gorgon_roar(edict_t* self);
+extern void gorgon_roar_sound(edict_t* self);
+extern void gorgon_inair_go(edict_t* self);
+extern void gorgon_check_landed(edict_t* self);
+extern void gorgon_jump_out_of_water(edict_t* self);
+extern void gorgon_swim_go(edict_t* self);
+extern void gorgon_check_in_water(edict_t* self);
+extern void gorgon_ai_run(edict_t* self, float distance); //mxd
+extern void gorgon_ai_swim(edict_t* self, float distance);
+extern void gorgon_forward(edict_t* self, float dist);
+extern void gorgon_fix_pitch(edict_t* self);
+extern void gorgon_reset_pitch(edict_t* self);
+extern void gorgon_ai_eat(edict_t* self, float switch_animation);
+extern void gorgon_under_water_wake(edict_t* self); //mxd
+extern void gorgon_melee5check(edict_t* self); //mxd
+extern void gorgon_ai_charge2(edict_t* self, float distance); //mxd
