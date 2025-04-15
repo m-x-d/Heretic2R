@@ -520,17 +520,13 @@ static void GorgonPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 		SetAnim(self, irand(ANIM_PAIN1, ANIM_PAIN3));
 }
 
-/*----------------------------------------------------------------------
-  Gorgon Die - choose death 
------------------------------------------------------------------------*/
-void gorgon_death_pain(edict_t *self, G_Message_t *msg)
+static void GorgonDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_death_pain' in original logic.
 {
 	if (self->health <= -80)
 	{
-		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1.0f, ATTN_NORM, 0.0f);
 		self->deadflag = DEAD_DEAD;
 		BecomeDebris(self);
-		return;
 	}
 }
 
@@ -1911,7 +1907,7 @@ void GorgonStaticsInit(void)
 	classStatics[CID_GORGON].msgReceivers[MSG_PAIN] = GorgonPainMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_DEATH] = gorgon_death;
 	classStatics[CID_GORGON].msgReceivers[MSG_JUMP]=gorgon_jump_msg;
-	classStatics[CID_GORGON].msgReceivers[MSG_DEATH_PAIN] = gorgon_death_pain;
+	classStatics[CID_GORGON].msgReceivers[MSG_DEATH_PAIN] = GorgonDeathPainMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_CHECK_MOOD] = gorgon_check_mood;
 	classStatics[CID_GORGON].msgReceivers[MSG_VOICE_POLL] = GorgonVoicePollMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_EVADE] = gorgon_evade;
