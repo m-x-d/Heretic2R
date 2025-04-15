@@ -701,52 +701,52 @@ void gorgon_land(edict_t* self)
 	gi.sound(self, CHAN_WEAPON, sounds[SND_LAND], 1.0f, ATTN_NORM, 0.0f);
 }
 
-#define JUMP_SCALE 1.5
-
-void gorgon_hop (edict_t *self)
+void gorgon_hop(edict_t* self)
 {
-	vec3_t	forward,right;
-	vec3_t	temp;
+#define JUMP_SCALE 1.5f
 
 	if (self->s.frame == FRAME_hop8)
 	{
 		self->movetype = PHYSICSTYPE_STEP;
-		self->velocity[2] = -10;
-	}
-	else 
-	{
-		if (self->monsterinfo.currentmove == &gorgon_move_melee6)	// hop left 
-		{
-			VectorCopy (self->s.angles, temp);
-			temp[YAW] -= 15;
-			AngleVectors (temp, NULL, right, NULL);
-			VectorScale (right, -40*JUMP_SCALE, self->velocity);
-		}
-		else if (self->monsterinfo.currentmove == &gorgon_move_melee7)  // hop right
-		{
-			VectorCopy (self->s.angles, temp);
-			temp[YAW] += 15;
-			AngleVectors (temp, NULL, right, NULL);
-			VectorScale (right, 40*JUMP_SCALE, self->velocity);
-		}
-		else if (self->monsterinfo.currentmove == &gorgon_move_melee8)  // hop forward
-		{
-			VectorCopy (self->s.angles, temp);
-			AngleVectors (temp, forward, NULL, NULL);
+		self->velocity[2] = -10.0f;
 
-			VectorScale (forward, 50*JUMP_SCALE, self->velocity);
-		}
-		else if (self->monsterinfo.currentmove == &gorgon_move_melee9)  // hop backward
-		{
-			VectorCopy (self->s.angles, temp);
-			AngleVectors (temp, forward, NULL, NULL);
-			VectorScale (forward, -50*JUMP_SCALE, self->velocity);
-		}
-		
-		//self->movetype = PHYSICSTYPE_TOSS;
-		//self->groundentity = self;
-		self->velocity[2] += 175;
+		return;
 	}
+
+	if (self->monsterinfo.currentmove == &gorgon_move_melee6) // Hop left.
+	{
+		vec3_t angles;
+		VectorCopy(self->s.angles, angles);
+		angles[YAW] -= 15.0f;
+
+		vec3_t right;
+		AngleVectors(angles, NULL, right, NULL);
+		VectorScale(right, -40.0f * JUMP_SCALE, self->velocity);
+	}
+	else if (self->monsterinfo.currentmove == &gorgon_move_melee7) // Hop right.
+	{
+		vec3_t angles;
+		VectorCopy(self->s.angles, angles);
+		angles[YAW] += 15.0f;
+
+		vec3_t right;
+		AngleVectors(angles, NULL, right, NULL);
+		VectorScale(right, 40.0f * JUMP_SCALE, self->velocity);
+	}
+	else if (self->monsterinfo.currentmove == &gorgon_move_melee8) // Hop forward.
+	{
+		vec3_t forward;
+		AngleVectors(self->s.angles, forward, NULL, NULL);
+		VectorScale(forward, 50.0f * JUMP_SCALE, self->velocity);
+	}
+	else if (self->monsterinfo.currentmove == &gorgon_move_melee9) // Hop backward.
+	{
+		vec3_t forward;
+		AngleVectors(self->s.angles, forward, NULL, NULL);
+		VectorScale(forward, -50.0f * JUMP_SCALE, self->velocity);
+	}
+
+	self->velocity[2] += 175.0f;
 }
 
 void gorgonApplyJump (edict_t *self)
