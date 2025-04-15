@@ -1394,7 +1394,7 @@ void gorgon_anger_sound(edict_t* self)
 	}
 }
 
-void gorgon_go_snatch(edict_t* self) //TODO: rename to gorgon_snatch_go.
+void gorgon_snatch_go(edict_t* self) //mxd. Named 'gorgon_go_snatch' in original logic.
 {
 	SetAnim(self, ANIM_SNATCH);
 }

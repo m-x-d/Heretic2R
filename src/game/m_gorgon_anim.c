@@ -775,7 +775,7 @@ static const animframe_t gorgon_frames_snatchhi [] =
 	FRAME_atkd3, gorgon_check_snatch, 96, 0, 56, NULL, 0,  NULL,
 	FRAME_atkd4, gorgon_shake_toy, 96, 16, 160, NULL, 0,  NULL
 };
-const animmove_t gorgon_move_snatchhi = {4, gorgon_frames_snatchhi, gorgon_go_snatch};
+const animmove_t gorgon_move_snatchhi = {4, gorgon_frames_snatchhi, gorgon_snatch_go};
 
 /*----------------------------------------------------------------------
   Gorgon 
@@ -792,7 +792,7 @@ static const animframe_t gorgon_frames_snatchlow [] =
 	FRAME_eatingb3, gorgon_shake_toy, 48, 0, 20,  NULL, 0,  gorgon_anger_sound,
 	FRAME_eatingb4, gorgon_shake_toy, 56, 0, 24,  NULL, 0,  NULL,
 };
-const animmove_t gorgon_move_snatchlow = {9, gorgon_frames_snatchlow, gorgon_go_snatch};
+const animmove_t gorgon_move_snatchlow = {9, gorgon_frames_snatchlow, gorgon_snatch_go};
 
 
 

@@ -168,7 +168,7 @@ void gorgon_check_snatch(edict_t* self, float forward_offset, float right_offset
 void gorgon_gore_toy(edict_t* self, float jump_height);
 void gorgon_miss_sound(edict_t* self);
 void gorgon_anger_sound(edict_t* self);
-void gorgon_go_snatch(edict_t* self);
+void gorgon_snatch_go(edict_t* self);
 void gorgon_done_gore(edict_t* self);
 void gorgonRoll(edict_t* self, float roll_angle);
 void gorgonLerpOff(edict_t* self);
