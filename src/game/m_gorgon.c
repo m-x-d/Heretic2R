@@ -1335,32 +1335,27 @@ void gorgon_miss_sound(edict_t* self)
 	gi.sound(self, CHAN_WEAPON, sounds[irand(SND_MELEEMISS1, SND_MELEEMISS2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void gorgon_anger_sound (edict_t *self)
+void gorgon_anger_sound(edict_t* self)
 {
-	byte chance;
-	vec3_t spot;
+	const int chance = irand(0, 100);
 
-	chance = irand(0,100);
 	if (chance < 10)
-		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN1], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN1], 1.0f, ATTN_NORM, 0.0f);
 	else if (chance < 20)
-		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN2], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN2], 1.0f, ATTN_NORM, 0.0f);
 	else if (chance < 30)
-		gi.sound(self, CHAN_WEAPON, sounds[SND_MELEEHIT1], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_WEAPON, sounds[SND_MELEEHIT1], 1.0f, ATTN_NORM, 0.0f);
 	else if (chance < 40)
-		gi.sound(self, CHAN_WEAPON, sounds[SND_MELEEHIT2], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_WEAPON, sounds[SND_MELEEHIT2], 1.0f, ATTN_NORM, 0.0f);
 	else if (chance < 50)
-		gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1.0f, ATTN_NORM, 0.0f);
 	else if (chance < 60)
 		gorgon_growl(self);
 
-	if(self->enemy)
+	if (self->enemy != NULL)
 	{
-		chance = (byte)irand(1,3);
-		VectorCopy(self->enemy->s.origin, spot);
-
-		QPostMessage(self->enemy,MSG_DISMEMBER,PRI_DIRECTIVE,"ii", self->enemy->health*0.5, irand(1,13));//do I need last three if not sending them?
-		QPostMessage(self->enemy,MSG_PAIN,PRI_DIRECTIVE,"ii", self->enemy, self);//do I need last three if not sending them?
+		QPostMessage(self->enemy, MSG_DISMEMBER, PRI_DIRECTIVE, "ii", self->enemy->health / 2, irand(1, 13)); // Do I need last three if not sending them?
+		QPostMessage(self->enemy, MSG_PAIN, PRI_DIRECTIVE, "eeiii", self, self, true, GORGON_DMG_MAX, 0); //BUGFIX. mxd. Original logic sends 'ii' args here. //TODO: check damage amount. Original logic doesn't specify any...
 	}
 }
 
