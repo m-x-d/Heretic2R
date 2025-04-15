@@ -1927,11 +1927,10 @@ static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	if (irand(0, 100) < SKILL * 10 && self->pre_think != AssassinCloakFadePreThink)
 		assassin_init_cloak(self);
 
-	int chance = irand(0, 10);
 	if (SKILL > SKILL_EASY || (self->spawnflags & MSF_ASS_TELEPORTDODGE))
 	{
 		// Pussies were complaining about assassins teleporting away from certain death, so don't do that unless in hard.
-		if (chance > 8 && !(self->spawnflags & MSF_ASS_NOTELEPORT) && AssassinChooseTeleportDestination(self, ASS_TP_DEF, false, false))
+		if (irand(0, 10) > 8 && !(self->spawnflags & MSF_ASS_NOTELEPORT) && AssassinChooseTeleportDestination(self, ASS_TP_DEF, false, false))
 			return;
 	}
 
@@ -1941,15 +1940,13 @@ static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 
 	const EvadeChance_t* ec = &evade_chances[hl];
 
-	chance = irand(0, 100);
-	if (chance < ec->frontflip_chance)
+	if (irand(0, 100) < ec->frontflip_chance)
 	{
 		SetAnim(self, ANIM_EVFRONTFLIP); //mxd. Inline assassinFrontFlip().
 		return;
 	}
 
-	chance = irand(0, 100);
-	if (chance < ec->backflip_chance)
+	if (irand(0, 100) < ec->backflip_chance)
 	{
 		if (self->curAnimID == ANIM_RUN && irand(0, 3) > 0) // Running, do the front flip.
 			SetAnim(self, ANIM_EVFRONTFLIP); //mxd. Inline assassinFrontFlip().
@@ -1961,8 +1958,7 @@ static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 		return;
 	}
 
-	chance = irand(0, 100);
-	if (chance < ec->duck_chance)
+	if (irand(0, 100) < ec->duck_chance)
 	{
 		self->evade_debounce_time = level.time + eta + 2.0f - skill->value;
 		SetAnim(self, ANIM_CROUCH); //mxd. Inline assassinCrouch().
@@ -1970,22 +1966,19 @@ static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 		return;
 	}
 
-	chance = irand(0, 100);
-	if (chance < ec->dodgeleft_chance)
+	if (irand(0, 100) < ec->dodgeleft_chance)
 	{
 		SetAnim(self, ANIM_DODGE_LEFT); //mxd. Inline assassinDodgeLeft().
 		return;
 	}
 
-	chance = irand(0, 100);
-	if (chance < ec->dodgeright_chance)
+	if (irand(0, 100) < ec->dodgeright_chance)
 	{
 		SetAnim(self, ANIM_DODGE_RIGHT); //mxd. Inline assassinDodgeRight().
 		return;
 	}
 
-	chance = irand(0, 100);
-	if (chance < ec->jump_chance)
+	if (irand(0, 100) < ec->jump_chance)
 	{
 		if (self->curAnimID == ANIM_RUN && irand(0, 4) > 0) // Running, do the front flip.
 			SetAnim(self, ANIM_EVFRONTFLIP); //mxd. Inline assassinFrontFlip().
