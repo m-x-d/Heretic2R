@@ -892,13 +892,19 @@ void gorgon_death2(edict_t* self) //mxd. Originally defined in m_gorgon_anim.c.
 	self->velocity[2] = -120.0f;
 }
 
-void gorgon_death2_throw(edict_t* self) //mxd. Named 'gorgon_death2throw' in original logic. Originally defined in m_gorgon_anim.c.
+void gorgon_death2_throw(edict_t* self) //mxd. Originally defined in m_gorgon_anim.c. Named 'gorgon_death2throw' in original logic. 
 {
 	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
 
 	VectorScale(forward, -375.0f, self->velocity);
 	self->velocity[2] = 200.0f;
+}
+
+void gorgon_death2_slide(edict_t* self) //mxd. Originally defined in m_gorgon_anim.c.
+{
+	self->monsterinfo.currentmove = &gorgon_move_death2slide;
+	self->monsterinfo.nextframeindex = 0;
 }
 
 void gorgon_land(edict_t* self)

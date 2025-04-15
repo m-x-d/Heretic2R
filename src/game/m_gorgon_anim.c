@@ -548,13 +548,6 @@ static const animframe_t gorgon_frames_death2slide [] =
 };
 const animmove_t gorgon_move_death2slide = {31, gorgon_frames_death2slide, gorgon_dead};
 
-void gorgon_death2_slide (edict_t *self)
-{
-
-	self->monsterinfo.currentmove = &gorgon_move_death2slide;
-	self->monsterinfo.nextframeindex = 0;
-}
-
 static const animframe_t gorgon_frames_die2 [] =
 {
 	FRAME_hit1, NULL, 0, 0, 0, NULL, 0,  NULL,

@@ -123,6 +123,7 @@ extern const animmove_t gorgon_move_pain2;
 extern const animmove_t gorgon_move_pain3;
 extern const animmove_t gorgon_move_die1;
 extern const animmove_t gorgon_move_die2;
+extern const animmove_t gorgon_move_death2slide; //mxd
 extern const animmove_t gorgon_move_catch;
 extern const animmove_t gorgon_move_snatch;
 extern const animmove_t gorgon_move_miss;
@@ -161,6 +162,7 @@ void gorgon_dead(edict_t* self);
 void gorgon_death1_fall(edict_t* self); //mxd
 void gorgon_death2(edict_t* self); //mxd
 void gorgon_death2_throw(edict_t* self); //mxd
+void gorgon_death2_slide(edict_t* self); //mxd
 void gorgon_hop(edict_t* self);
 void gorgon_growl(edict_t* self);
 void gorgon_jump(edict_t* self);
