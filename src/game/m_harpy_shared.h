@@ -1,9 +1,19 @@
+//
+// m_harpy_shared.h
+//
+// Copyright 1998 Raven Software
+//
+
+#pragma once
+
+#include "g_local.h" //mxd
+
 typedef enum AnimID_e
 {
 	ANIM_DIE,
-	ANIM_FLY1, 
-	ANIM_FLYBACK1, 
-	ANIM_HOVER1, 
+	ANIM_FLY1,
+	ANIM_FLYBACK1,
+	ANIM_HOVER1,
 	ANIM_HOVERSCREAM,
 	ANIM_DIVE_GO,
 	ANIM_DIVE_LOOP,
@@ -15,7 +25,7 @@ typedef enum AnimID_e
 	ANIM_TUMBLE,
 	ANIM_PIRCH1,
 	ANIM_PIRCH2,
-	ANIM_PIRCH3,	
+	ANIM_PIRCH3,
 	ANIM_PIRCH4,
 	ANIM_PIRCH5,
 	ANIM_PIRCH6,
@@ -25,6 +35,7 @@ typedef enum AnimID_e
 	ANIM_TAKEOFF,
 	ANIM_CIRCLING,
 	ANIM_CIRCLING_FLAP,
+
 	NUM_ANIMS
 } AnimID_t;
 
@@ -41,86 +52,88 @@ typedef enum SoundID_e
 	SND_GIB,
 	SND_IDLE1,
 	SND_IDLE2,
+
 	NUM_SOUNDS
 } SoundID_t;
 
-void move_harpy_tumble(edict_t *self);
+void move_harpy_tumble(edict_t* self);
 
-void harpy_flap_noise(edict_t *self);
-void harpy_flap_fast_noise(edict_t *self);
-void harpy_dive_noise(edict_t *self);
-void harpy_death_noise(edict_t *self);
-void harpy_pain1_noise(edict_t *self);
-void harpy_pain2_noise(edict_t *self);
-void harpy_attack_noise(edict_t *self);
+void harpy_flap_noise(edict_t* self);
+void harpy_flap_fast_noise(edict_t* self);
+void harpy_dive_noise(edict_t* self);
+void harpy_death_noise(edict_t* self);
+void harpy_pain1_noise(edict_t* self);
+void harpy_pain2_noise(edict_t* self);
+void harpy_attack_noise(edict_t* self);
 
-extern animmove_t harpy_move_die1;
-extern animmove_t harpy_move_fly1;
-extern animmove_t harpy_move_flyback1;
-extern animmove_t harpy_move_hover1;
-extern animmove_t harpy_move_hoverscream;
-extern animmove_t harpy_move_dive_go;
-extern animmove_t harpy_move_dive_loop;
-extern animmove_t harpy_move_dive_end;
-extern animmove_t harpy_move_pain1;
-extern animmove_t harpy_move_glide;
-extern animmove_t harpy_move_dive_trans;
-extern animmove_t harpy_move_dive_hit_loop;
-extern animmove_t harpy_move_tumble;
-extern animmove_t harpy_move_takeoff;
-extern animmove_t harpy_move_circle;
-extern animmove_t harpy_move_circle_flap;
-//Pirches
-extern animmove_t harpy_move_pirch1_idle;
-extern animmove_t harpy_move_pirch2_idle;
-extern animmove_t harpy_move_pirch3_idle;
-extern animmove_t harpy_move_pirch4_idle;
-extern animmove_t harpy_move_pirch5_idle;
-extern animmove_t harpy_move_pirch6_idle;
-extern animmove_t harpy_move_pirch7_idle;
-extern animmove_t harpy_move_pirch8_idle;
-extern animmove_t harpy_move_pirch9_idle;
+extern const animmove_t harpy_move_die1;
+extern const animmove_t harpy_move_fly1;
+extern const animmove_t harpy_move_flyback1;
+extern const animmove_t harpy_move_hover1;
+extern const animmove_t harpy_move_hoverscream;
+extern const animmove_t harpy_move_dive_go;
+extern const animmove_t harpy_move_dive_loop;
+extern const animmove_t harpy_move_dive_end;
+extern const animmove_t harpy_move_pain1;
+extern const animmove_t harpy_move_glide;
+extern const animmove_t harpy_move_dive_trans;
+extern const animmove_t harpy_move_dive_hit_loop;
+extern const animmove_t harpy_move_tumble;
+extern const animmove_t harpy_move_takeoff;
+extern const animmove_t harpy_move_circle;
+extern const animmove_t harpy_move_circle_flap;
 
-void harpy_dismember(edict_t *self, int damage, int HitLocation0);
+// Pirches.
+extern const animmove_t harpy_move_pirch1_idle;
+extern const animmove_t harpy_move_pirch2_idle;
+extern const animmove_t harpy_move_pirch3_idle;
+extern const animmove_t harpy_move_pirch4_idle;
+extern const animmove_t harpy_move_pirch5_idle;
+extern const animmove_t harpy_move_pirch6_idle;
+extern const animmove_t harpy_move_pirch7_idle;
+extern const animmove_t harpy_move_pirch8_idle;
+extern const animmove_t harpy_move_pirch9_idle;
 
-void harpy_ai_fly   (edict_t *self, float fd, float rd, float ud);
-void harpy_ai_glide (edict_t *self, float fd, float rd, float ud);
-void harpy_ai_circle (edict_t *self, float fd, float rd, float ud);
-void harpy_ai_pirch (edict_t *self);
-void harpy_ai_hover (edict_t *self, float dist);
+void harpy_dismember(edict_t* self, int damage, int HitLocation0);
 
-void harpy_flight_model (edict_t *self);
+void harpy_ai_fly(edict_t* self, float fd, float rd, float ud);
+void harpy_ai_glide(edict_t* self, float fd, float rd, float ud);
+void harpy_ai_circle(edict_t* self, float fd, float rd, float ud);
+void harpy_ai_pirch(edict_t* self);
+void harpy_ai_hover(edict_t* self, float dist);
 
-void harpy_dive_loop(edict_t *self);
-void harpy_hit_loop(edict_t *self);
-void harpy_check_dodge(edict_t *self);
+void harpy_flight_model(edict_t* self);
 
-void harpy_dead (edict_t *self);
-void harpy_hit (edict_t *self);
-void harpy_pause(edict_t *self);
-void harpy_die(edict_t *self, G_Message_t *msg);
-void harpy_fly(edict_t *self, G_Message_t *msg);
-void harpy_fly_attack(edict_t *self, G_Message_t *msg);
-void harpy_flyback(edict_t *self);
-void harpy_hover(edict_t *self, G_Message_t *msg);
-void harpy_stand(edict_t *self, G_Message_t *msg);
-void harpy_hoverscream(edict_t *self, G_Message_t *msg);
-void harpy_dive(edict_t *self, G_Message_t *msg);
-void harpy_pain(edict_t *self, G_Message_t *msg);
-void harpy_perch(edict_t *self, G_Message_t *msg);
+void harpy_dive_loop(edict_t* self);
+void harpy_hit_loop(edict_t* self);
+void harpy_check_dodge(edict_t* self);
+
+void harpy_dead(edict_t* self);
+void harpy_hit(edict_t* self);
+void harpy_pause(edict_t* self);
+void harpy_die(edict_t* self, G_Message_t* msg);
+void harpy_fly(edict_t* self, G_Message_t* msg);
+void harpy_fly_attack(edict_t* self, G_Message_t* msg);
+void harpy_flyback(edict_t* self);
+void harpy_hover(edict_t* self, G_Message_t* msg);
+void harpy_stand(edict_t* self, G_Message_t* msg);
+void harpy_hoverscream(edict_t* self, G_Message_t* msg);
+void harpy_dive(edict_t* self, G_Message_t* msg);
+void harpy_pain(edict_t* self, G_Message_t* msg);
+void harpy_perch(edict_t* self, G_Message_t* msg);
 
 void harpy_init(void);
-void harpy_pain_init(edict_t *self);
+void harpy_pain_init(edict_t* self);
 
-void harpy_fix_angles(edict_t *self);
+void harpy_fix_angles(edict_t* self);
 
-void move_harpy_die(edict_t *self);
-void move_harpy_hover(edict_t *self);
-void move_harpy_fly(edict_t *self);
-void move_harpy_dive(edict_t *self);
-void move_harpy_dive_end(edict_t *self);
+void move_harpy_die(edict_t* self);
+void move_harpy_hover(edict_t* self);
+void move_harpy_fly(edict_t* self);
+void move_harpy_dive(edict_t* self);
+void move_harpy_dive_end(edict_t* self);
 
-void harpy_hover_anim(edict_t *self);
+void harpy_hover_anim(edict_t* self);
 
 #define hl_backspikes		1
 #define hl_head				2
@@ -151,4 +164,3 @@ void harpy_hover_anim(edict_t *self);
 #define BPN_RWING		4096
 #define BPN_LWING		8192
 #define BPN_STINGER		16384
-

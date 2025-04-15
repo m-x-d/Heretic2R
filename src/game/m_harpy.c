@@ -85,7 +85,7 @@ int MESH_for_hitloc [hl_harpy_max] =
 	MESH_RLARM//hl_rightlowerleg
 };
 
-static animmove_t *animations[NUM_ANIMS] =
+static const animmove_t *animations[NUM_ANIMS] =
 {
 	&harpy_move_die1, 
 	&harpy_move_fly1,
@@ -186,7 +186,7 @@ void harpy_head_think (edict_t *self)
 	self->nextthink = level.time + 0.1;
 }
 
-void harpy_take_head(edict_t *self, edict_t *victim, int BodyPart, int frame, int flags)
+void harpy_take_head(edict_t *self, edict_t *victim, int BodyPart, int frame, int flags) //TODO: rename to HarpyTakeHead.
 {
 	edict_t *head;
 	vec3_t	forward, down;
