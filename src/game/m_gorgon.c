@@ -18,7 +18,7 @@
 #include "Vector.h"
 #include "g_local.h"
 
-static qboolean gorgon_check_jump (edict_t *self); //TODO: remove?
+static qboolean GorgonCanJump (edict_t *self); //TODO: remove?
 static qboolean gorgonCheckSlipGo(edict_t* self, qboolean from_pain); //TODO: remove?
 static void gorgon_prethink(edict_t* self); //TODO: remove?
 
@@ -313,7 +313,7 @@ static void GorgonWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 		const float dist = VectorLength(diff);
 
 		// target_origin is within range and far enough above or below to warrant a jump.
-		if (dist > 40.0f && dist < 600.0f && (self->s.origin[2] < target_origin[2] - 18.0f || self->s.origin[2] > target_origin[2] + 18.0f) && gorgon_check_jump(self))
+		if (dist > 40.0f && dist < 600.0f && (self->s.origin[2] < target_origin[2] - 18.0f || self->s.origin[2] > target_origin[2] + 18.0f) && GorgonCanJump(self))
 		{
 			SetAnim(self, ANIM_FJUMP);
 			return;
@@ -478,7 +478,7 @@ static void GorgonRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'g
 			{
 				if (fabsf(self->s.origin[2] - targ_org[2] - 24.0f) < 200.0f) // Can't jump more than 200 high. //mxd. abs() -> fabsf().
 				{
-					if (irand(0, 2) == 0 && (self->ai_mood == AI_MOOD_PURSUE || irand(0, 4) == 0) && gorgon_check_jump(self)) // 20% chance to jump at a buoy.
+					if (irand(0, 2) == 0 && (self->ai_mood == AI_MOOD_PURSUE || irand(0, 4) == 0) && GorgonCanJump(self)) // 20% chance to jump at a buoy.
 					{
 						SetAnim(self, ANIM_FJUMP);
 						return;
@@ -863,104 +863,80 @@ void gorgon_go_inair(edict_t* self) //TODO: rename to gorgon_inair_go.
 	SetAnim(self, ANIM_INAIR);
 }
 
-static qboolean gorgon_check_jump (edict_t *self)
+static qboolean GorgonCanJump(edict_t* self) //mxd. Named 'gorgon_check_jump' in original logic.
 {
-	vec3_t	forward, right, up;
-	vec3_t	landing_spot,arc_spot, test_spot;
-	vec3_t  angles , v, landing_spot_angles;
-	float	hold;
-	float	len;
-	trace_t	trace;
+	vec3_t landing_spot;
 
-	if(self->jump_chance < irand(0, 100))
+	if (self->jump_chance < irand(0, 100) || !MG_TryGetTargetOrigin(self, landing_spot) || !MG_IsInforntPos(self, landing_spot))
 		return false;
 
-	if(!MG_TryGetTargetOrigin(self, landing_spot))
-	{
-		return false;
-	}
+	vec3_t diff;
+	VectorSubtract(self->s.origin, landing_spot, diff);
 
-	if(!MG_IsInforntPos(self, landing_spot))
+	if (VectorLength(diff) > 400.0f)
 		return false;
 
-	VectorSubtract(self->s.origin, landing_spot, v);
-	len = VectorLength(v);
+	vec3_t angles;
 
-	if(len > 400)
-	{
-		return false;
-	}
-
-	if(self->enemy)
-		VectorSet(angles, 0, anglemod(-self->enemy->s.angles[YAW]), 0);
+	if (self->enemy != NULL)
+		VectorSet(angles, 0.0f, anglemod(-self->enemy->s.angles[YAW]), 0.0f);
 	else
 		VectorCopy(self->s.angles, angles);
 
-	//incorporate scale?
+	// Incorporate scale?
 
 	// JUMPING
-	//   Calculate landing spot behind enemy to jump to
-	//   Caclulate arc spot to jump at which will arc the monster to the landing spot
-	//   Calculate velocity to make monster jump to hit arc spot
+	// Calculate landing spot behind enemy to jump to.
+	// Calculate arc spot to jump at which will arc the monster to the landing spot.
+	// Calculate velocity to make monster jump to hit arc spot.
 
-	// choose landing spot behind enemy
-	AngleVectors (angles, forward, right, up);
+	// Choose landing spot behind enemy.
+	vec3_t forward;
+	AngleVectors(angles, forward, NULL, NULL);
 
-	VectorMA (landing_spot, 60, forward, landing_spot);
+	VectorMA(landing_spot, 60.0f, forward, landing_spot);
 
+	vec3_t test_spot;
 	VectorCopy(landing_spot, test_spot);
-	test_spot[2] -= 1024;
+	test_spot[2] -= 1024.0f;
 
-	gi.trace(landing_spot, self->mins, self->maxs, test_spot, self, MASK_MONSTERSOLID|MASK_WATER,&trace);
+	trace_t trace;
+	gi.trace(landing_spot, self->mins, self->maxs, test_spot, self, MASK_MONSTERSOLID | MASK_WATER, &trace);
 
-	if (trace.fraction == 1.0)
-	{
+	if (trace.fraction == 1.0f || !(trace.contents & CONTENTS_SOLID) && !(trace.contents & CONTENTS_WATER))
 		return false;
-	}
-	else
-	{
-		if (!(trace.contents & CONTENTS_SOLID) && !(trace.contents & CONTENTS_WATER))
-		{
-			return false;
-		}
-	}
 
-/*	if (trace.startsolid || trace.allsolid)
-	{
-		if(trace.ent != self->enemy)
-			return;
-	}*/
+	self->jump_time = level.time + 0.5f;
 
-	self->jump_time = level.time + 0.5;
+	// Calculate arc spot (the top of his jump arc) which will land monster at landing spot.
+	vec3_t landing_dir;
+	VectorSubtract(self->s.origin, landing_spot, landing_dir);
 
-	// calculate arc spot (the top of his jump arc) which will land monster at landing spot 
-	VectorSubtract (self->s.origin, landing_spot,  v);
-	landing_spot_angles[PITCH] = 0;
-	landing_spot_angles[ROLL] = 0;
-	landing_spot_angles[YAW] = VectorYaw(v);
+	const vec3_t landing_spot_angles = { 0.0f, VectorYaw(landing_dir), 0.0f };
 
-	AngleVectors (landing_spot_angles, forward, right, up);
+	vec3_t up;
+	AngleVectors(landing_spot_angles, forward, NULL, up);
 
-	VectorMA (landing_spot, 20, forward, arc_spot);
-	VectorMA (landing_spot, 180, up, arc_spot);
+	vec3_t arc_spot;
+	VectorMA(landing_spot, 20.0f, forward, arc_spot);
+	VectorMA(landing_spot, 180.0f, up, arc_spot);
 
-	AngleVectors (self->s.angles, forward, right, up);
+	// Calculate velocity to make monster jump to hit arc spot.
+	vec3_t arc_dir;
+	VectorSubtract(arc_spot, self->s.origin, arc_dir); // Face monster to arc spot.
 
-	// Calculate velocity to make monster jump to hit arc spot
-	VectorSubtract (arc_spot,self->s.origin, v);  // Face monster to arc spot
-	vectoangles(v,angles);
-	self->best_move_yaw = angles[YAW];
-		
-	len = VectorLength (v);
+	vec3_t arc_angles;
+	vectoangles(arc_dir, arc_angles);
+	self->best_move_yaw = arc_angles[YAW];
 
-	hold = len / 200;
+	const float hold_time = VectorLength(arc_dir) / 200.0f;
 
-	AngleVectors (angles, forward, right, up);
-	VectorScale (forward, 300 * hold, self->movedir);
+	AngleVectors(arc_angles, forward, NULL, NULL);
+	VectorScale(forward, hold_time * 300.0f, self->movedir); // Store calculated jump velocity in movedir.
+	self->movedir[2] = hold_time * 200.0f;
 
-	self->movedir[2] = 200 * hold;
+	self->monsterinfo.jump_time = level.time + 3.0f;
 
-	self->monsterinfo.jump_time = level.time + 3;
 	return true;
 }
 
