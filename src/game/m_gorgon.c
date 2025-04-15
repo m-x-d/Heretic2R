@@ -573,17 +573,16 @@ void gorgon_footstep(edict_t* self)
 	gi.sound(self, CHAN_BODY, sounds[irand(SND_STEP1, SND_STEP4)], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void gorgon_growl (edict_t *self)
+void gorgon_growl(edict_t* self)
 {
-	int chance;
+	const int chance = irand(0, 100);
 
-	chance = irand(0, 100);
 	if (chance < 10)
-		gi.sound(self, CHAN_WEAPON, sounds[SND_GROWL1], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_WEAPON, sounds[SND_GROWL1], 1.0f, ATTN_NORM, 0.0f);
 	else if (chance < 20)
-		gi.sound(self, CHAN_WEAPON, sounds[SND_GROWL2], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_WEAPON, sounds[SND_GROWL2], 1.0f, ATTN_NORM, 0.0f);
 	else if (chance < 30)
-		gi.sound(self, CHAN_WEAPON, sounds[SND_GROWL3], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_WEAPON, sounds[SND_GROWL3], 1.0f, ATTN_NORM, 0.0f);
 }
 
 qboolean gorgonCheckMood(edict_t *self)
