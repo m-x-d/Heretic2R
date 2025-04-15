@@ -195,8 +195,6 @@ void gorgon_ai_swim(edict_t* self, float dist);
 void gorgonForward(edict_t* self, float dist);
 void gorgonFixPitch(edict_t* self);
 void gorgonZeroPitch(edict_t* self);
-void gorgon_death2twitch(edict_t* self);
-void gorgonChooseDeath(edict_t* self);
 void gorgon_ai_eat(edict_t* self, float crap);
 
 //TODO: move to appropriate headers!

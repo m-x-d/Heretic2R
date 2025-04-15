@@ -618,17 +618,6 @@ animframe_t gorgon_frames_death2twitch [] =
 
 animmove_t gorgon_move_death2twitch = {3, gorgon_frames_death2twitch, NULL};
 
-void gorgon_death2twitch (edict_t *self)
-{
-	VectorSet(self->mins,-24,-24,0);
-	VectorSet(self->maxs,24,24,18);
-	VectorScale(self->mins, self->s.scale, self->mins);
-	VectorScale(self->maxs, self->s.scale, self->maxs);
-	self->monsterinfo.currentmove = &gorgon_move_death2twitch;
-	self->monsterinfo.nextframeindex = 0;
-}
-
-
 animframe_t gorgon_frames_death2slide [] =
 {
 	FRAME_slide1, NULL, 0, 0, 0, ai_move, -16,  NULL,

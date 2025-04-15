@@ -1900,12 +1900,6 @@ void gorgonSlide (edict_t *self, float force)
 	self->friction = 0.2;
 }
 
-void gorgonChooseDeath (edict_t *self)
-{
-	if(irand(0, 1))
-		gorgon_death2twitch(self);
-}
-
 void gorgon_ai_swim (edict_t *self, float dist)
 {
 	vec3_t	dir = {0, 0, 0};	
