@@ -1140,57 +1140,65 @@ void gorgon_throw_toy(edict_t* self)
 	//TODO: play throw sound?
 }
 
-void gorgon_toy_ofs(edict_t *self, float ofsf, float ofsr, float ofsu)
+//mxd. Similar to tbeast_shake_toy().
+void gorgon_toy_ofs(edict_t* self, float forward_offset, float right_offset, float up_offset) //TODO: rename to gorgon_shake_toy.
 {
-	vec3_t enemy_ofs, forward, right, up, blooddir, enemy_face;
-
-	if(!self->enemy)
+	if (self->enemy == NULL)
 		return;
 
-	//adjust for scale
-	ofsf *= self->s.scale*0.5/2.5;
-	ofsr *= self->s.scale*0.5/2.5;
-	ofsu += self->mins[2];//because origin moved up since those were calced
-	ofsu *= self->s.scale*0.25/2.5;
+	// Adjust for scale.
+	forward_offset *= self->s.scale * 0.5f / 2.5f;
+	right_offset *= self->s.scale * 0.5f / 2.5f;
+	up_offset += self->mins[2]; // Because origin moved up since those were calculated.
+	up_offset *= self->s.scale * 0.25f / 2.5f;
 
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
 	AngleVectors(self->s.angles, forward, right, up);
-	VectorMA(self->s.origin, ofsf, forward, enemy_ofs);
-	VectorMA(enemy_ofs, ofsr, right, enemy_ofs);
-	VectorMA(enemy_ofs, ofsu, up, self->enemy->s.origin);
-	VectorSubtract(self->enemy->s.origin, self->s.origin, blooddir);
-	
-	VectorScale(blooddir, -1, enemy_face);
-	enemy_face[2]/=10;
-	vectoangles(enemy_face, self->enemy->s.angles);
 
-	switch(self->enemy->count)
+	vec3_t enemy_offset;
+	VectorMA(self->s.origin, forward_offset, forward, enemy_offset);
+	VectorMA(enemy_offset, right_offset, right, enemy_offset);
+	VectorMA(enemy_offset, up_offset, up, self->enemy->s.origin);
+
+	vec3_t blood_dir;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, blood_dir);
+
+	vec3_t enemy_dir;
+	VectorScale(blood_dir, -1.0f, enemy_dir);
+	enemy_dir[2] /= 10.0f;
+	vectoangles(enemy_dir, self->enemy->s.angles);
+
+	switch (self->enemy->count)
 	{
 		case 1:
-			self->enemy->s.angles[PITCH]=anglemod(self->enemy->s.angles[PITCH]+90);//can't do roll?
+			self->enemy->s.angles[PITCH] = anglemod(self->enemy->s.angles[PITCH] + 90.0f); // Can't do roll?
 			break;
+
 		case 2:
-			self->enemy->s.angles[PITCH]=anglemod(self->enemy->s.angles[PITCH]-90);//can't do roll?
+			self->enemy->s.angles[PITCH] = anglemod(self->enemy->s.angles[PITCH] - 90.0f); // Can't do roll?
 			break;
+
 		case 3:
-			self->enemy->s.angles[ROLL]=anglemod(self->enemy->s.angles[ROLL]+90);//can't do roll?
+			self->enemy->s.angles[ROLL] = anglemod(self->enemy->s.angles[ROLL] + 90.0f); // Can't do roll?
 			break;
+
 		case 4:
-			self->enemy->s.angles[ROLL]=anglemod(self->enemy->s.angles[ROLL]-90);//can't do roll?
+			self->enemy->s.angles[ROLL] = anglemod(self->enemy->s.angles[ROLL] - 90.0f); // Can't do roll?
 			break;
+
 		default:
 			break;
 	}
 
-
 	VectorClear(self->enemy->velocity);
 	VectorClear(self->enemy->avelocity);
 
-	if(flrand(0,1)<0.5)
+	if (flrand(0.0f, 1.0f) < 0.5f)
 	{
-		if(self->enemy->materialtype == MAT_INSECT)
-			gi.CreateEffect(&self->enemy->s, FX_BLOOD, CEF_FLAG8, self->enemy->s.origin, "ub", blooddir, 200);
-		else
-			gi.CreateEffect(&self->enemy->s, FX_BLOOD, 0, self->enemy->s.origin, "ub", blooddir, 200);
+		const int fx_flags = ((self->enemy->materialtype == MAT_INSECT) ? CEF_FLAG8 : 0); //mxd
+		gi.CreateEffect(&self->enemy->s, FX_BLOOD, fx_flags, self->enemy->s.origin, "ub", blood_dir, 200);
 	}
 }
 
