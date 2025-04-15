@@ -932,7 +932,7 @@ void gorgon_hop(edict_t* self)
 	self->velocity[2] += 175.0f;
 }
 
-void gorgonApplyJump(edict_t* self) //TODO: rename to gorgon_apply_jump.
+void gorgon_apply_jump(edict_t* self) //mxd. Named 'gorgonApplyJump' in original logic.
 {
 	if (Vec3IsZero(self->movedir))
 	{

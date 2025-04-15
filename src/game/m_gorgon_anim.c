@@ -214,7 +214,7 @@ static const animframe_t gorgon_frames_fjump [] =
 	FRAME_jumpb1,NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_jumpb2,NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_jumpb3,NULL, 0, 0, 0, NULL, 0,  gorgon_growl,
-	FRAME_jumpb4,NULL, 0, 0, 0, NULL, 0,  gorgonApplyJump,
+	FRAME_jumpb4,NULL, 0, 0, 0, NULL, 0,  gorgon_apply_jump,
 	FRAME_jumpb5,NULL, 0, 0, 0, NULL, 0,  gorgon_check_landed,
 	FRAME_jumpb6,NULL, 0, 0, 0, NULL, 0,  gorgon_check_landed,
 	FRAME_jumpb7,NULL, 0, 0, 0, NULL, 0,  gorgon_check_landed,
