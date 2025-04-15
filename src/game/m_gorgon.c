@@ -1359,9 +1359,9 @@ void gorgon_anger_sound(edict_t* self)
 	}
 }
 
-void gorgon_go_snatch (edict_t *self)
+void gorgon_go_snatch(edict_t* self) //TODO: rename to gorgon_snatch_go.
 {
-	SetAnim(self,ANIM_SNATCH);
+	SetAnim(self, ANIM_SNATCH);
 }
 
 void gorgon_done_gore (edict_t *self)
