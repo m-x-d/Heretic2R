@@ -701,14 +701,6 @@ void gorgon_land(edict_t* self)
 	gi.sound(self, CHAN_WEAPON, sounds[SND_LAND], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void gorgon_eatorder (edict_t *self)
-{
-	if(GorgonCanAttack(self))
-		return;
-
-	QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
-}
-
 #define JUMP_SCALE 1.5
 
 void gorgon_hop (edict_t *self)
