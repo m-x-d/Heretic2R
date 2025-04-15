@@ -185,7 +185,7 @@ void gorgon_jump_out_of_water(edict_t* self);
 void gorgonGoSwim(edict_t* self);
 void gorgonCheckInWater(edict_t* self);
 void gorgon_ai_swim(edict_t* self, float distance);
-void gorgonForward(edict_t* self, float dist);
+void gorgon_forward(edict_t* self, float dist);
 void gorgonFixPitch(edict_t* self);
 void gorgonZeroPitch(edict_t* self);
 void gorgon_ai_eat(edict_t* self, float switch_animation);

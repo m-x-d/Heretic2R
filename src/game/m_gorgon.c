@@ -970,7 +970,7 @@ void gorgon_jump_out_of_water(edict_t* self) //mxd. Named 'gorgonJumpOutWater' i
 	self->velocity[2] += 200.0f;
 }
 
-void gorgonForward(edict_t* self, float dist) //TODO: rename to gorgon_forward.
+void gorgon_forward(edict_t* self, float dist) //mxd. Named 'gorgonForward' in original logic.
 {
 	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
