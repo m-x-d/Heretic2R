@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "g_Edict.h"
+
 extern edict_t* give_head_to_harpy;
 extern edict_t* take_head_from;
 
