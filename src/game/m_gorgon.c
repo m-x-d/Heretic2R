@@ -787,21 +787,18 @@ void gorgonJumpOutWater(edict_t* self) //TODO: rename to gorgon_jump_out_of_wate
 	self->velocity[2] += 200.0f;
 }
 
-void gorgonForward (edict_t *self, float dist)
+void gorgonForward(edict_t* self, float dist) //TODO: rename to gorgon_forward.
 {
-	vec3_t	forward, fdir;
-	float	dot;
-
+	vec3_t forward;
 	AngleVectors(self->s.angles, forward, NULL, NULL);
 
-	VectorCopy(self->velocity, fdir);
-	VectorNormalize(fdir);
+	vec3_t fwd_dir;
+	VectorCopy(self->velocity, fwd_dir);
+	VectorNormalize(fwd_dir);
 
-	dot = DotProduct(fdir, forward);
+	dist *= 1.0f - DotProduct(fwd_dir, forward);
 
-	dist *= (1 - dot);
-
-	if(dist)
+	if (dist != 0.0f)
 		VectorMA(self->velocity, dist, forward, self->velocity);
 }
 
