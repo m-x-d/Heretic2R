@@ -1029,171 +1029,75 @@ void gorgon_jump(edict_t* self)
 	self->monsterinfo.jump_time = level.time + 3.0f;
 }
 
-//Gorgon Evasion!
-
-void gorgon_evade (edict_t *self, G_Message_t *msg)
+// Gorgon Evasion!
+static void GorgonEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_evade' in original logic.
 {
-	edict_t			*projectile;
-	HitLocation_t	HitLocation;
-	int duck_chance, dodgeleft_chance, dodgeright_chance, jump_chance, backflip_chance, frontflip_chance;
-	int chance;
+	static const EvadeChance_t evade_chances[] = //mxd. Use struct.
+	{
+		{.duck_chance = 5,  .dodgeleft_chance = 10, .dodgeright_chance = 10, .jump_chance = 10, .backflip_chance = 10, .frontflip_chance = 10 }, // hl_NoneSpecific
+		{.duck_chance = 30, .dodgeleft_chance = 50, .dodgeright_chance = 50, .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_Head
+		{.duck_chance = 20, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 80, .frontflip_chance = 0  }, // hl_TorsoFront
+		{.duck_chance = 20, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 0,  .frontflip_chance = 80 }, // hl_TorsoBack
+		{.duck_chance = 10, .dodgeleft_chance = 0,  .dodgeright_chance = 90, .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmUpperLeft
+		{.duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 80, .jump_chance = 30, .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmLowerLeft
+		{.duck_chance = 20, .dodgeleft_chance = 90, .dodgeright_chance = 0,  .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmUpperRight
+		{.duck_chance = 0,  .dodgeleft_chance = 80, .dodgeright_chance = 0,  .jump_chance = 30, .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmLowerRight
+		{.duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 60, .jump_chance = 50, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegUpperLeft
+		{.duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 30, .jump_chance = 90, .backflip_chance = 60, .frontflip_chance = 60 }, // hl_LegLowerLeft
+		{.duck_chance = 0,  .dodgeleft_chance = 60, .dodgeright_chance = 0,  .jump_chance = 50, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegUpperRight
+		{.duck_chance = 0,  .dodgeleft_chance = 30, .dodgeright_chance = 0,  .jump_chance = 90, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegLowerRight
+	};
+
+	edict_t* projectile;
+	HitLocation_t hl;
 	float eta;
+	ParseMsgParms(msg, "eif", &projectile, &hl, &eta);
 
-	ParseMsgParms(msg, "eif", &projectile, &HitLocation, &eta);
-	
-	if(eta<0.3)
-		return;//needs a .3 seconds to respond, minimum
+	if (eta < 0.3f)
+		return; // Needs at least 0.3 seconds to respond.
 
-	switch(HitLocation)
+	//mxd. Get evade info.
+	if (hl < hl_NoneSpecific || hl > hl_LegLowerRight)
+		hl = hl_NoneSpecific;
+
+	const EvadeChance_t* ec = &evade_chances[hl];
+
+	if (irand(0, 100) < ec->frontflip_chance)
 	{
-		case hl_Head:
-			duck_chance = 30;
-			dodgeleft_chance = 50;
-			dodgeright_chance = 50;
-			jump_chance = 0;
-			backflip_chance = 20;
-			frontflip_chance = 20;
-		break;
-		case hl_TorsoFront://split in half?
-			duck_chance = 20;
-			dodgeleft_chance = 40;
-			dodgeright_chance = 40;
-			jump_chance = 0;
-			backflip_chance = 80;
-			frontflip_chance = 0;
-		break;
-		case hl_TorsoBack://split in half?
-			duck_chance = 20;
-			dodgeleft_chance = 40;
-			dodgeright_chance = 40;
-			jump_chance = 0;
-			backflip_chance = 0;
-			frontflip_chance = 80;
-		break;
-		case hl_ArmUpperLeft:
-			duck_chance = 10;
-			dodgeleft_chance = 0;
-			dodgeright_chance = 90;
-			jump_chance = 0;
-			backflip_chance = 20;
-			frontflip_chance = 20;
-		break;
-		case hl_ArmLowerLeft://left arm
-			duck_chance = 0;
-			dodgeleft_chance = 0;
-			dodgeright_chance = 80;
-			jump_chance = 30;
-			backflip_chance = 20;
-			frontflip_chance = 20;
-		break;
-		case hl_ArmUpperRight:
-			duck_chance = 20;
-			dodgeleft_chance = 90;
-			dodgeright_chance = 0;
-			jump_chance = 0;
-			backflip_chance = 20;
-			frontflip_chance = 20;
-		break;
-		case hl_ArmLowerRight://right arm
-			duck_chance = 0;
-			dodgeleft_chance = 80;
-			dodgeright_chance = 0;
-			jump_chance = 30;
-			backflip_chance = 20;
-			frontflip_chance = 20;
-		break;
-		case hl_LegUpperLeft:
-			duck_chance = 0;
-			dodgeleft_chance = 0;
-			dodgeright_chance = 60;
-			jump_chance = 50;
-			backflip_chance = 30;
-			frontflip_chance = 30;
-		break;
-		case hl_LegLowerLeft://left leg
-			duck_chance = 0;
-			dodgeleft_chance = 0;
-			dodgeright_chance = 30;
-			jump_chance = 90;
-			backflip_chance = 60;
-			frontflip_chance = 60;
-		break;
-		case hl_LegUpperRight:
-			duck_chance = 0;
-			dodgeleft_chance = 60;
-			dodgeright_chance = 0;
-			jump_chance = 50;
-			backflip_chance = 30;
-			frontflip_chance = 30;
-		break;
-		case hl_LegLowerRight://right leg
-			duck_chance = 0;
-			dodgeleft_chance = 30;
-			dodgeright_chance = 0;
-			jump_chance = 90;
-			backflip_chance = 30;
-			frontflip_chance = 30;
-		break;
-		default:
-			duck_chance = 5;
-			dodgeleft_chance = 10;
-			dodgeright_chance = 10;
-			jump_chance = 10;
-			backflip_chance = 10;
-			frontflip_chance = 10;
-		break;
-	}
-	if(self->jump_chance < 0)
-		jump_chance = -1;
-
-	chance = irand(0, 100);
-	if(chance < frontflip_chance)
-	{
-		SetAnim(self, ANIM_MELEE8);//hop forward
+		SetAnim(self, ANIM_MELEE8); // Hop forward.
 		return;
 	}
 
-	chance = irand(0, 100);
-	if(chance < backflip_chance)
+	if (irand(0, 100) < ec->backflip_chance)
 	{
-		if(self->curAnimID == ANIM_RUN1&&irand(0,10)<8)//running, do the front jump
-		{
-			SetAnim(self, ANIM_MELEE10);//jump forward
-		}
+		if (self->curAnimID == ANIM_RUN1 && irand(0, 10) < 8) // Running, do the front jump.
+			SetAnim(self, ANIM_MELEE10); // Jump forward.
 		else
-		{
-			SetAnim(self, ANIM_MELEE9);//hop forward
-		}
+			SetAnim(self, ANIM_MELEE9); // Hop forward.
+
 		return;
 	}
 
-	chance = irand(0, 100);
-	if(chance < dodgeleft_chance)
+	if (irand(0, 100) < ec->dodgeleft_chance)
 	{
-		SetAnim(self, ANIM_MELEE6);//hop left
-		return;
-	}
-	
-	chance = irand(0, 100);
-	if(chance < dodgeright_chance)
-	{
-		SetAnim(self, ANIM_MELEE7);//hop left
-		return;
-	}
-	
-	chance = irand(0, 100);
-	if(chance < jump_chance)
-	{
-		SetAnim(self, ANIM_MELEE10);//jump forward
+		SetAnim(self, ANIM_MELEE6); // Hop left.
 		return;
 	}
 
-	chance = irand(0, 100);
-	if(chance < duck_chance)
+	if (irand(0, 100) < ec->dodgeright_chance)
 	{
-		SetAnim(self, ANIM_PAIN1);//jump forward
+		SetAnim(self, ANIM_MELEE7); // Hop right.
 		return;
 	}
+
+	if (self->jump_chance >= 0 && irand(0, 100) < ec->jump_chance)
+	{
+		SetAnim(self, ANIM_MELEE10); // Jump forward.
+		return;
+	}
+
+	if (irand(0, 100) < ec->duck_chance)
+		SetAnim(self, ANIM_PAIN1); // Jump forward.
 }
 
 /*
@@ -1801,7 +1705,7 @@ void GorgonStaticsInit(void)
 	classStatics[CID_GORGON].msgReceivers[MSG_DEATH_PAIN] = GorgonDeathPainMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_CHECK_MOOD] = GorgonCheckMoodMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_VOICE_POLL] = GorgonVoicePollMsgHandler;
-	classStatics[CID_GORGON].msgReceivers[MSG_EVADE] = gorgon_evade;
+	classStatics[CID_GORGON].msgReceivers[MSG_EVADE] = GorgonEvadeMsgHandler;
 
 	resInfo.numAnims = NUM_ANIMS;
 	resInfo.animations = animations;
