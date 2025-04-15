@@ -90,21 +90,19 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
-void gorgon_roar_sound (edict_t *self)
+void gorgon_roar_sound(edict_t* self)
 {
-	int chance;
+	const int chance = irand(0, 100);
 
-	chance = irand(0, 100);
 	if (chance < 20)
-		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN1], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN1], 1.0f, ATTN_NORM, 0.0f);
 	else if (chance < 40)
-		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN2], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN2], 1.0f, ATTN_NORM, 0.0f);
 	else if (chance < 60)
-		gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1, ATTN_NORM, 0);
+		gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1.0f, ATTN_NORM, 0.0f);
 	else
 		gorgon_growl(self);
 }
-
 
 void gorgon_roar_response_go (edict_t *self)
 {
