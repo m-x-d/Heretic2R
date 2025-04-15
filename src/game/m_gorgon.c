@@ -530,49 +530,43 @@ static void GorgonDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 	}
 }
 
-void gorgon_death(edict_t *self, G_Message_t *msg)
+// Gorgon Die - choose  decide which death animation to use.
+static void GorgonDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_death' in original logic.
 {
-	if(self->monsterinfo.aiflags&AI_DONT_THINK)
+	if (self->monsterinfo.aiflags & AI_DONT_THINK)
 	{
-		gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1, ATTN_NORM, 0);
-		if (irand(0,10) < 5)  // Big enough death to be thrown back
-			SetAnim(self, ANIM_DIE2);
-		else 
-			SetAnim(self, ANIM_DIE1);
+		gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1.0f, ATTN_NORM, 0.0f);
+		SetAnim(self, irand(ANIM_DIE1, ANIM_DIE2));
+
 		return;
 	}
+
 	self->msgHandler = DeadMsgHandler;
 
-	// check for gib
+	// Check for gib.
 	if (self->health <= -80)
 	{
-		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1, ATTN_NORM, 0);
-		self->deadflag = DEAD_DEAD;
-		BecomeDebris(self);
+		GorgonDeathPainMsgHandler(self, msg); //mxd. Reuse function.
 		return;
 	}
 
-	if (self->deadflag == DEAD_DEAD)  // Dead but still being hit
+	if (self->deadflag == DEAD_DEAD) // Dead but still being hit.
 		return;
 
+	// Regular death.
 	self->pre_think = NULL;
-	self->next_pre_think = -1;
+	self->next_pre_think = -1.0f;
 
 	self->gravity = 1.0f;
-	self->svflags |= SVF_TAKE_NO_IMPACT_DMG | SVF_DO_NO_IMPACT_DMG;
-	// regular death
+	self->svflags |= (SVF_TAKE_NO_IMPACT_DMG | SVF_DO_NO_IMPACT_DMG);
+
 	self->s.skinnum = GORGON_PAIN_SKIN;
-	gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1.0f, ATTN_NORM, 0.0f);
 	self->deadflag = DEAD_DEAD;
 	self->takedamage = DAMAGE_YES;
 
-	if (self->health <= -10)  // Big enough death to be thrown back
-		SetAnim(self, ANIM_DIE2);
-	else 
-		SetAnim(self, ANIM_DIE1);
+	SetAnim(self, (self->health <= -10 ? ANIM_DIE2 : ANIM_DIE1)); // Big enough death to be thrown back?
 }
-
-
 
 /*----------------------------------------------------------------------
 
@@ -1905,7 +1899,7 @@ void GorgonStaticsInit(void)
 	classStatics[CID_GORGON].msgReceivers[MSG_MISSILE] = GorgonMeleeMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_WATCH] = GorgonWalkMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_PAIN] = GorgonPainMsgHandler;
-	classStatics[CID_GORGON].msgReceivers[MSG_DEATH] = gorgon_death;
+	classStatics[CID_GORGON].msgReceivers[MSG_DEATH] = GorgonDeathMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_JUMP]=gorgon_jump_msg;
 	classStatics[CID_GORGON].msgReceivers[MSG_DEATH_PAIN] = GorgonDeathPainMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_CHECK_MOOD] = gorgon_check_mood;
