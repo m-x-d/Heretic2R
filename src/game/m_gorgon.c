@@ -1202,60 +1202,68 @@ void gorgon_toy_ofs(edict_t* self, float forward_offset, float right_offset, flo
 	}
 }
 
-void gorgon_check_snatch(edict_t *self, float ofsf, float ofsr, float ofsu)
+//mxd. Similar to tbeast_check_snatch().
+void gorgon_check_snatch(edict_t* self, float forward_offset, float right_offset, float up_offset)
 {
-	float enemy_dist, ok_zdist;
-	vec3_t forward, right, up, startpos, endpos;
+	// Adjust for scale.
+	float max_snatch_zdist = 64.0f * (self->s.scale * 0.5f / 2.5f);
+	max_snatch_zdist = max(24.0f, max_snatch_zdist);
+
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, right, up);
+
+	vec3_t start_pos;
+	VectorMA(self->s.origin, self->maxs[0], forward, start_pos);
+	VectorMA(start_pos, self->maxs[2] * 0.5f, up, start_pos);
+
+	vec3_t end_pos;
+	VectorCopy(start_pos, end_pos);
+	VectorMA(end_pos, forward_offset, forward, end_pos);
+	VectorMA(end_pos, right_offset, right, end_pos);
+	VectorMA(end_pos, up_offset, up, end_pos);
+
 	trace_t trace;
+	gi.trace(start_pos, vec3_origin, vec3_origin, end_pos, self, MASK_SHOT, &trace);
+	VectorCopy(trace.endpos, end_pos);
 
-	//adjust for scale
-	ok_zdist = 64 * (self->s.scale*0.5/2.5);
-	if(ok_zdist<24)
-		ok_zdist = 24;
+	vec3_t diff;
+	VectorSubtract(self->enemy->s.origin, end_pos, diff);
 
-	AngleVectors(self->s.angles,forward,right,up);
-	VectorMA(self->s.origin, self->maxs[0], forward, startpos);
-	VectorMA(startpos, self->maxs[2]*0.5, up, startpos);
-	VectorCopy(startpos, endpos);
-	VectorMA(endpos, ofsf, forward, endpos);
-	VectorMA(endpos, ofsr, right, endpos);
-	VectorMA(endpos, ofsu, up, endpos);
-	gi.trace(startpos,vec3_origin,vec3_origin,endpos, self, MASK_SHOT,&trace);
-	VectorCopy(trace.endpos,endpos);
-	
-	VectorSubtract(self->enemy->s.origin, endpos, endpos);
-	enemy_dist = VectorLength(endpos);
-	if(enemy_dist>ok_zdist)
+	if (VectorLength(diff) > max_snatch_zdist)
 	{
-//		gi.dprintf("Snatch missed (%4.2f)\n", enemy_dist);
 		self->msgHandler = DefaultMsgHandler;
-		if(!stricmp(self->enemy->classname,"player"))
-			if(self->oldenemy)
-				if(self->oldenemy->health>0)
-				{
-					self->oldenemy = NULL;
-					self->enemy = self->oldenemy;
-				}
 
-		if(self->curAnimID == ANIM_SNATCHLOW)
-			SetAnim(self,ANIM_MISS);
+		if (Q_stricmp(self->enemy->classname, "player") == 0 && self->oldenemy != NULL && self->oldenemy->health > 0) //TODO: check for self->enemy->client instead of Q_stricmp?
+		{
+			self->oldenemy = NULL;
+			self->enemy = self->oldenemy; //TODO: Ehhhhh? Shouldn't we clear self->oldenemy AFTER we assigned it to self->enemy?..
+		}
+
+		if (self->curAnimID == ANIM_SNATCHLOW)
+			SetAnim(self, ANIM_MISS);
 		else
-			SetAnim(self,ANIM_MELEE2);//?
+			SetAnim(self, ANIM_MELEE2); //?
+
 		return;
 	}
-//	gi.dprintf("SNAGGED!\n");
-	//FIXME: if health is low, just chomp it now
+
+	//FIXME: if health is low, just chomp it now.
 	self->enemy->flags |= FL_FLY;
-	if(self->enemy->movetype>NUM_PHYSICSTYPES)
+
+	if (self->enemy->movetype > NUM_PHYSICSTYPES) //TODO: why this check? tbeast_check_snatch() just assigns movetype.
 		self->enemy->movetype = PHYSICSTYPE_FLY;
 
-	if(stricmp(self->enemy->classname,"player"))
+	if (Q_stricmp(self->enemy->classname, "player") != 0) //TODO: check for !self->enemy->client instead?
 	{
 		self->enemy->monsterinfo.aiflags |= AI_DONT_THINK;
-		self->enemy->count = irand(1,5);
+		self->enemy->count = irand(1, 5);
 	}
 	else
-		self->enemy->nextthink = level.time + 10;//stuck for 10 seconds.
+	{
+		self->enemy->nextthink = level.time + 10.0f; // Stuck for 10 seconds.
+	}
 
 	VectorClear(self->enemy->velocity);
 	VectorClear(self->enemy->avelocity);
