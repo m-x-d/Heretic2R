@@ -1243,7 +1243,7 @@ void gorgon_shake_toy(edict_t* self, float forward_offset, float right_offset, f
 	enemy_dir[2] /= 10.0f;
 	vectoangles(enemy_dir, self->enemy->s.angles);
 
-	switch (self->enemy->count)
+	switch (self->enemy->gorgon_grabbed_toy_shake_mode)
 	{
 		case 1:
 			self->enemy->s.angles[PITCH] = anglemod(self->enemy->s.angles[PITCH] + 90.0f); // Can't do roll?
@@ -1331,7 +1331,7 @@ void gorgon_check_snatch(edict_t* self, float forward_offset, float right_offset
 	if (Q_stricmp(self->enemy->classname, "player") != 0) //TODO: check for !self->enemy->client instead?
 	{
 		self->enemy->monsterinfo.aiflags |= AI_DONT_THINK;
-		self->enemy->count = irand(1, 5);
+		self->enemy->gorgon_grabbed_toy_shake_mode = irand(1, 4); //BUGFIX: mxd. irand(1, 5) in original logic. Case 5 is not handled.
 	}
 	else
 	{
@@ -1361,10 +1361,10 @@ void gorgon_gore_toy(edict_t* self, float jump_height)
 	}
 	else
 	{
-		self->count = false;
+		self->gorgon_grabbed_toy_shake_mode = 0;
 	}
 
-	if (self->enemy == NULL || self->enemy->health < 0 || self->count)
+	if (self->enemy == NULL || self->enemy->health < 0 || self->gorgon_grabbed_toy_shake_mode != 0)
 		return;
 
 	float max_zdist = 56.0f * (self->s.scale * 0.5f / 2.5f);
@@ -1377,7 +1377,7 @@ void gorgon_gore_toy(edict_t* self, float jump_height)
 		gi.sound(self, CHAN_WEAPON, sounds[SND_MELEEMISS2], 1.0f, ATTN_NORM, 0.0f);
 
 		if (!last_frame)
-			self->count = true;
+			self->gorgon_grabbed_toy_shake_mode = 1;
 
 		vec3_t dir;
 		VectorCopy(self->velocity, dir);
@@ -1440,7 +1440,7 @@ void gorgon_snatch_go(edict_t* self) //mxd. Named 'gorgon_go_snatch' in original
 void gorgon_done_gore(edict_t* self)
 {
 	self->msgHandler = DefaultMsgHandler;
-	self->count = false;
+	self->gorgon_grabbed_toy_shake_mode = 0;
 
 	if (self->oldenemy != NULL && self->oldenemy->health > 0)
 	{
@@ -1881,7 +1881,7 @@ void SP_monster_gorgon(edict_t* self)
 	self->mass = GORGON_MASS;
 	self->yaw_speed = ((self->spawnflags & MSF_GORGON_SPEEDY) ? 30.0f : 15.0f);
 	self->gorgon_swerve_step = 0; // Used for slight turn during run.
-	self->count = false; //mxd. Initialize. //TODO: add qboolean gorgon_grabbed_toy name.
+	self->gorgon_grabbed_toy_shake_mode = 0; //mxd. Initialize.
 	self->wait = true; //mxd. Initialize. //TODO: check if spawned underwater & set to false? Add qboolean gorgon_over_water_surface name.
 
 	self->movetype = PHYSICSTYPE_STEP;

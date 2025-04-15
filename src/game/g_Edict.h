@@ -229,6 +229,7 @@ struct edict_s
 		int elflord_charge_meter; //mxd
 		qboolean tbeast_grabbed_toy; //mxd
 		qboolean fish_ripple_spawned; //mxd
+		int gorgon_grabbed_toy_shake_mode; //mxd
 	};
 
 	int targeted; // Used by Ogle to denote a targeted action queued up.
