@@ -363,7 +363,7 @@ static const animframe_t gorgon_frames_melee5 [] =
 	FRAME_runatk1,  NULL, 0, 0, 0, ai_goal_charge, 20, gorgon_melee5check,
 	FRAME_runatk2,	NULL, 0, 0, 0, ai_goal_charge, 20, NULL,
 	FRAME_runatk3,	NULL, 0, 0, 0, ai_goal_charge, 22, NULL,
-	FRAME_runatk4,	NULL, 0, 0, 0, ai_goal_charge, 21, gorgonbite,
+	FRAME_runatk4,	NULL, 0, 0, 0, ai_goal_charge, 21, gorgon_bite,
 	FRAME_runatk5,	NULL, 0, 0, 0, ai_goal_charge, 20, gorgon_melee5check,
 	FRAME_runatk6,	NULL, 0, 0, 0, ai_goal_charge, 20, NULL,
 	FRAME_runatk7,	NULL, 0, 0, 0, ai_goal_charge, 22, NULL,
@@ -394,7 +394,7 @@ static const animframe_t gorgon_frames_melee3 [] =
 {
 	FRAME_atkd1, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
 	FRAME_atkd2, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
-	FRAME_atkd3, NULL, 0, 0, 0, ai_goal_charge, 0,  gorgonbite,
+	FRAME_atkd3, NULL, 0, 0, 0, ai_goal_charge, 0,  gorgon_bite,
 	FRAME_atkd4, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL
 };
 
@@ -407,7 +407,7 @@ const animmove_t gorgon_move_melee3 = {4, gorgon_frames_melee3, gorgon_check_moo
 static const animframe_t gorgon_frames_melee2 [] =
 {
 	FRAME_atkb1,  NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
-	FRAME_atkb2,  NULL, 0, 0, 0, ai_goal_charge, 0,  gorgonbite,
+	FRAME_atkb2,  NULL, 0, 0, 0, ai_goal_charge, 0,  gorgon_bite,
 	FRAME_atkb3,  NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
 	FRAME_atkb4,  NULL, 0, 0, 0, ai_goal_charge, 0,  NULL
 };
@@ -421,7 +421,7 @@ const animmove_t gorgon_move_melee2 = {4, gorgon_frames_melee2, gorgon_check_moo
 static const animframe_t gorgon_frames_melee1 [] =
 {
 	FRAME_atka1, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
-	FRAME_atka2, NULL, 0, 0, 0, ai_goal_charge, 0,  gorgonbite,
+	FRAME_atka2, NULL, 0, 0, 0, ai_goal_charge, 0,  gorgon_bite,
 	FRAME_atka3, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL,
 	FRAME_atka4, NULL, 0, 0, 0, ai_goal_charge, 0,  NULL
 };
@@ -994,7 +994,7 @@ static const animframe_t gorgon_frames_swim_bite_a [] =
 	FRAME_swimata9,	NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
 	FRAME_swimata10,NULL, 0, 0, 0, gorgon_ai_swim, 30, NULL,
 	FRAME_swimata11,NULL, 0, 0, 0, gorgon_ai_swim, 31, NULL,
-	FRAME_swimata12,NULL, 0, 0, 0, gorgon_ai_swim, 32, gorgonbite,
+	FRAME_swimata12,NULL, 0, 0, 0, gorgon_ai_swim, 32, gorgon_bite,
 	FRAME_swimata13,NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
 	FRAME_swimata14,NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
 };
@@ -1007,13 +1007,13 @@ static const animframe_t gorgon_frames_swim_bite_b [] =
 	FRAME_swimatb3,	NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
 	FRAME_swimatb4,	NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
 	FRAME_swimatb5,	NULL, 0, 0, 0, gorgon_ai_swim, 30, NULL,
-	FRAME_swimatb6,	NULL, 0, 0, 0, gorgon_ai_swim, 30, gorgonbite,
+	FRAME_swimatb6,	NULL, 0, 0, 0, gorgon_ai_swim, 30, gorgon_bite,
 	FRAME_swimatb7,	NULL, 0, 0, 0, gorgon_ai_swim, 31, NULL,
 	FRAME_swimatb8,	NULL, 0, 0, 0, gorgon_ai_swim, 32, NULL,
 	FRAME_swimatb9,	NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
 	FRAME_swimatb10,NULL, 0, 0, 0, gorgon_ai_swim, 30, NULL,
 	FRAME_swimatb11,NULL, 0, 0, 0, gorgon_ai_swim, 31, NULL,
-	FRAME_swimatb12,NULL, 0, 0, 0, gorgon_ai_swim, 32, gorgonbite,
+	FRAME_swimatb12,NULL, 0, 0, 0, gorgon_ai_swim, 32, gorgon_bite,
 	FRAME_swimatb13,NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
 	FRAME_swimatb14,NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
 };

@@ -155,7 +155,7 @@ extern const animmove_t gorgon_move_eat_right;
 extern const animmove_t gorgon_move_eat_snap;
 extern const animmove_t gorgon_move_eat_react;
 
-void gorgonbite(edict_t* self);
+void gorgon_bite(edict_t* self);
 void gorgon_footstep(edict_t* self);
 void gorgon_dead(edict_t* self);
 void gorgon_hop(edict_t* self);

@@ -830,7 +830,7 @@ void gorgon_growl(edict_t* self)
 		gi.sound(self, CHAN_WEAPON, sounds[SND_GROWL3], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void gorgonbite(edict_t* self) //TODO: rename to gorgon_bite.
+void gorgon_bite(edict_t* self) //mxd. Named 'gorgonbite' in original logic.
 {
 	if (self->ai_mood == AI_MOOD_NAVIGATE || !AI_HaveEnemy(self))
 		return;
