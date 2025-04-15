@@ -1364,20 +1364,20 @@ void gorgon_go_snatch(edict_t* self) //TODO: rename to gorgon_snatch_go.
 	SetAnim(self, ANIM_SNATCH);
 }
 
-void gorgon_done_gore (edict_t *self)
+void gorgon_done_gore(edict_t* self)
 {
 	self->msgHandler = DefaultMsgHandler;
-	self->count = 0;
-	if(self->oldenemy)
+	self->count = false;
+
+	if (self->oldenemy != NULL && self->oldenemy->health > 0)
 	{
-		if(self->oldenemy->health>0)
-		{
-			self->enemy = self->oldenemy;
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-			return;
-		}
+		self->enemy = self->oldenemy;
+		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 	}
-	SetAnim(self,ANIM_EAT_LOOP);
+	else
+	{
+		SetAnim(self, ANIM_EAT_LOOP);
+	}
 }
 
 /* ========================================
