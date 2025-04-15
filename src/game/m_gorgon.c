@@ -1176,7 +1176,7 @@ void gorgon_throw_toy(edict_t* self)
 }
 
 //mxd. Similar to tbeast_shake_toy().
-void gorgon_toy_ofs(edict_t* self, float forward_offset, float right_offset, float up_offset) //TODO: rename to gorgon_shake_toy.
+void gorgon_shake_toy(edict_t* self, float forward_offset, float right_offset, float up_offset) //mxd. Named 'gorgon_toy_ofs' in original logic.
 {
 	if (self->enemy == NULL)
 		return;

@@ -726,32 +726,32 @@ const animmove_t gorgon_move_miss = {4, gorgon_frames_miss, gorgon_check_mood};
 -----------------------------------------------------------------------*/
 static const animframe_t gorgon_frames_snatch [] =
 {
-	FRAME_eatingb5, gorgon_toy_ofs, 70, 0, 66,  NULL, 0,  gorgon_anger_sound,
-	FRAME_eatingb6, gorgon_toy_ofs, 68, -44, 66,  NULL, 0,  NULL,
-	FRAME_eatingb7, gorgon_toy_ofs, 56, -64, 66,  NULL, 0,  NULL,
-	FRAME_eatingb8, gorgon_toy_ofs, 60, -56, 66,  NULL, 0,  gorgon_anger_sound,
-	FRAME_eatingb9, gorgon_toy_ofs, 68, -24, 66,  NULL, 0,  NULL,
-	FRAME_eatingb10, gorgon_toy_ofs, 72, 40, 66,  NULL, 0,  NULL,
-	FRAME_eatingb11, gorgon_toy_ofs, 60, 70, 66,  NULL, 0,  NULL,
-	FRAME_eatingb12, gorgon_toy_ofs, 70, 48, 66,  NULL, 0,  gorgon_anger_sound,
-	FRAME_eatingb13, gorgon_toy_ofs, 74, -32, 66,  NULL, 0,  NULL,
-	FRAME_eatingb14, gorgon_toy_ofs, 64, -70, 66,  NULL, 0,  NULL,
-	FRAME_eatingb15, gorgon_toy_ofs, 40, -72, 66,  NULL, 0,  NULL,
-	FRAME_eatingb16, gorgon_toy_ofs, 42, -70, 66,  NULL, 0,  gorgon_anger_sound,
-	FRAME_eatingb17, gorgon_toy_ofs, 60, -60, 62,  NULL, 0,  NULL,
-	FRAME_eatingb18, gorgon_toy_ofs, 66, -40, 56,  NULL, 0,  NULL,
-	FRAME_eatingb19, gorgon_toy_ofs, 72, -10, 32,  NULL, 0,  NULL,
-	FRAME_eatingb20, gorgon_toy_ofs, 62, 16, 12,  NULL, 0,  gorgon_anger_sound,
-	FRAME_eatingb21, gorgon_toy_ofs, 56, 32, 0,  NULL, 0,  NULL,
-	FRAME_eatinga4, gorgon_toy_ofs, 48, 16, 64,  NULL, 0,  NULL,
-	FRAME_eatinga3, gorgon_toy_ofs, 50, 14, 96,  NULL, 0,  gorgon_anger_sound,
-	FRAME_eatinga2, gorgon_toy_ofs, 80, 8, 80,  NULL, 0,  NULL,
-	FRAME_eatinga1, gorgon_toy_ofs, 96, 0, 76,  NULL, 0,  NULL,
-	FRAME_jumpa1, gorgon_toy_ofs, 100, 8, 78,  NULL, 0,  gorgon_anger_sound,
-	FRAME_jumpa2, gorgon_toy_ofs, 90, 6, 64,  NULL, 0,  NULL,
-	FRAME_jumpa3, gorgon_toy_ofs, 76, 4, 48,  NULL, 0,  NULL,
-	FRAME_jumpa4, gorgon_toy_ofs, 96, 6, 140,  NULL, 0,  gorgon_anger_sound,
-	FRAME_jumpa5, gorgon_toy_ofs, 90, 6, 208,  NULL, 0, gorgon_throw_toy,
+	FRAME_eatingb5, gorgon_shake_toy, 70, 0, 66,  NULL, 0,  gorgon_anger_sound,
+	FRAME_eatingb6, gorgon_shake_toy, 68, -44, 66,  NULL, 0,  NULL,
+	FRAME_eatingb7, gorgon_shake_toy, 56, -64, 66,  NULL, 0,  NULL,
+	FRAME_eatingb8, gorgon_shake_toy, 60, -56, 66,  NULL, 0,  gorgon_anger_sound,
+	FRAME_eatingb9, gorgon_shake_toy, 68, -24, 66,  NULL, 0,  NULL,
+	FRAME_eatingb10, gorgon_shake_toy, 72, 40, 66,  NULL, 0,  NULL,
+	FRAME_eatingb11, gorgon_shake_toy, 60, 70, 66,  NULL, 0,  NULL,
+	FRAME_eatingb12, gorgon_shake_toy, 70, 48, 66,  NULL, 0,  gorgon_anger_sound,
+	FRAME_eatingb13, gorgon_shake_toy, 74, -32, 66,  NULL, 0,  NULL,
+	FRAME_eatingb14, gorgon_shake_toy, 64, -70, 66,  NULL, 0,  NULL,
+	FRAME_eatingb15, gorgon_shake_toy, 40, -72, 66,  NULL, 0,  NULL,
+	FRAME_eatingb16, gorgon_shake_toy, 42, -70, 66,  NULL, 0,  gorgon_anger_sound,
+	FRAME_eatingb17, gorgon_shake_toy, 60, -60, 62,  NULL, 0,  NULL,
+	FRAME_eatingb18, gorgon_shake_toy, 66, -40, 56,  NULL, 0,  NULL,
+	FRAME_eatingb19, gorgon_shake_toy, 72, -10, 32,  NULL, 0,  NULL,
+	FRAME_eatingb20, gorgon_shake_toy, 62, 16, 12,  NULL, 0,  gorgon_anger_sound,
+	FRAME_eatingb21, gorgon_shake_toy, 56, 32, 0,  NULL, 0,  NULL,
+	FRAME_eatinga4, gorgon_shake_toy, 48, 16, 64,  NULL, 0,  NULL,
+	FRAME_eatinga3, gorgon_shake_toy, 50, 14, 96,  NULL, 0,  gorgon_anger_sound,
+	FRAME_eatinga2, gorgon_shake_toy, 80, 8, 80,  NULL, 0,  NULL,
+	FRAME_eatinga1, gorgon_shake_toy, 96, 0, 76,  NULL, 0,  NULL,
+	FRAME_jumpa1, gorgon_shake_toy, 100, 8, 78,  NULL, 0,  gorgon_anger_sound,
+	FRAME_jumpa2, gorgon_shake_toy, 90, 6, 64,  NULL, 0,  NULL,
+	FRAME_jumpa3, gorgon_shake_toy, 76, 4, 48,  NULL, 0,  NULL,
+	FRAME_jumpa4, gorgon_shake_toy, 96, 6, 140,  NULL, 0,  gorgon_anger_sound,
+	FRAME_jumpa5, gorgon_shake_toy, 90, 6, 208,  NULL, 0, gorgon_throw_toy,
 	FRAME_jumpb4, NULL, 0, 0, 0, NULL, 0,  NULL,
 };
 const animmove_t gorgon_move_snatch = {27, gorgon_frames_snatch, gorgon_ready_catch};
@@ -773,7 +773,7 @@ static const animframe_t gorgon_frames_snatchhi [] =
 	FRAME_atkd1, NULL, 0, 0, 0, gorgon_ai_charge2, 10,  NULL,
 	FRAME_atkd2, NULL, 0, 0, 0, gorgon_ai_charge2, 10,  NULL,
 	FRAME_atkd3, gorgon_check_snatch, 96, 0, 56, NULL, 0,  NULL,
-	FRAME_atkd4, gorgon_toy_ofs, 96, 16, 160, NULL, 0,  NULL
+	FRAME_atkd4, gorgon_shake_toy, 96, 16, 160, NULL, 0,  NULL
 };
 const animmove_t gorgon_move_snatchhi = {4, gorgon_frames_snatchhi, gorgon_go_snatch};
 
@@ -787,10 +787,10 @@ static const animframe_t gorgon_frames_snatchlow [] =
 	FRAME_eatinga3, NULL, 0, 0, 0, gorgon_ai_charge2, 10,  NULL,
 	FRAME_eatinga4, NULL, 0, 0, 0, gorgon_ai_charge2, 10,  NULL,
 	FRAME_eatinga5, gorgon_check_snatch, 64, 0, -48, NULL, 0,  NULL,
-	FRAME_eatingb1, gorgon_toy_ofs, 48, -32, 0, NULL, 0,  gorgon_anger_sound,
-	FRAME_eatingb2, gorgon_toy_ofs, 48, 10, 10,  NULL, 0,  NULL,
-	FRAME_eatingb3, gorgon_toy_ofs, 48, 0, 20,  NULL, 0,  gorgon_anger_sound,
-	FRAME_eatingb4, gorgon_toy_ofs, 56, 0, 24,  NULL, 0,  NULL,
+	FRAME_eatingb1, gorgon_shake_toy, 48, -32, 0, NULL, 0,  gorgon_anger_sound,
+	FRAME_eatingb2, gorgon_shake_toy, 48, 10, 10,  NULL, 0,  NULL,
+	FRAME_eatingb3, gorgon_shake_toy, 48, 0, 20,  NULL, 0,  gorgon_anger_sound,
+	FRAME_eatingb4, gorgon_shake_toy, 56, 0, 24,  NULL, 0,  NULL,
 };
 const animmove_t gorgon_move_snatchlow = {9, gorgon_frames_snatchlow, gorgon_go_snatch};
 

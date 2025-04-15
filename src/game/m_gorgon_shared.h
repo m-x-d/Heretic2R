@@ -163,7 +163,7 @@ void gorgon_growl(edict_t* self);
 void gorgon_jump(edict_t* self);
 void gorgon_ready_catch(edict_t* self);
 void gorgon_throw_toy(edict_t* self);
-void gorgon_toy_ofs(edict_t* self, float forward_offset, float right_offset, float up_offset);
+void gorgon_shake_toy(edict_t* self, float forward_offset, float right_offset, float up_offset);
 void gorgon_check_snatch(edict_t* self, float forward_offset, float right_offset, float up_offset);
 void gorgon_gore_toy(edict_t* self, float jump_height);
 void gorgon_miss_sound(edict_t* self);
