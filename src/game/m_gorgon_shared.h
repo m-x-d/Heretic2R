@@ -177,7 +177,7 @@ void gorgonCheckSlip(edict_t* self);
 void gorgonSlide(edict_t* self, float force);
 void gorgon_check_mood(edict_t* self);
 void gorgonApplyJump(edict_t* self);
-void gorgonRoar(edict_t* self);
+void gorgon_roar(edict_t* self);
 void gorgon_roar_sound(edict_t* self);
 void gorgon_go_inair(edict_t* self);
 void gorgon_check_landed(edict_t* self);

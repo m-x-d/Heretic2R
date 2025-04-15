@@ -790,7 +790,7 @@ void gorgon_roar_sound(edict_t* self)
 }
 
 // Finds gorgons in immediate vicinity and wakes them up.
-void gorgonRoar(edict_t* self) //TODO: rename to gorgon_roar.
+void gorgon_roar(edict_t* self) //mxd. Named 'gorgonRoar' in original logic.
 {
 	if (self->enemy == NULL)
 		return;

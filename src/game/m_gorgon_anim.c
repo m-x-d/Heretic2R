@@ -895,7 +895,7 @@ const animmove_t gorgon_move_delay = {8, gorgon_frames_delay, gorgon_check_mood}
 -----------------------------------------------------------------------*/
 static const animframe_t gorgon_frames_roar [] =
 {
-	FRAME_speak1, NULL, 0, 0, 0, NULL, 0,  gorgonRoar,
+	FRAME_speak1, NULL, 0, 0, 0, NULL, 0,  gorgon_roar,
 	FRAME_speak2, NULL, 0, 0, 0, NULL, 0,  gorgon_roar_sound,
 	FRAME_speak3, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_speak4, NULL, 0, 0, 0, NULL, 0,  NULL,
