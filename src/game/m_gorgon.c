@@ -1429,15 +1429,9 @@ static qboolean GorgonStartSlipAnimation(edict_t* self, const qboolean from_pain
 	return false;
 }
 
-void gorgonCheckSlip (edict_t *self)
+void gorgonCheckSlip(edict_t* self) //TODO: rename to gorgon_check_slip.
 {
-	if(!(self->spawnflags & MSF_GORGON_SPEEDY) && self->s.scale > 0.75)
-	{
-		gorgonCheckMood(self);
-		return;
-	}
-
-	if(!GorgonStartSlipAnimation (self, false))
+	if ((!(self->spawnflags & MSF_GORGON_SPEEDY) && self->s.scale > 0.75f) || !GorgonStartSlipAnimation(self, false))
 		gorgonCheckMood(self);
 }
 
