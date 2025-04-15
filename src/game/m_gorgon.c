@@ -1380,21 +1380,18 @@ void gorgon_done_gore(edict_t* self)
 	}
 }
 
-/* ========================================
-Trip and fall if making too tight a turn, wont work until origin is in center
-========================================== */
-
-void gorgonRoll (edict_t *self, float rollangle)
-{//FIXME: cannot interrupt!!!
-	self->s.angles[ROLL] = anglemod(rollangle);
+// Trip and fall if making too tight a turn, won't work until origin is in center.
+void gorgonRoll(edict_t* self, float roll_angle) //TODO: rename to gorgon_set_roll.
+{
+	self->s.angles[ROLL] = anglemod(roll_angle); //FIXME: cannot interrupt!!!
 }
 
-void gorgonLerpOff (edict_t *self)
+void gorgonLerpOff(edict_t* self) //TODO: rename to gorgon_lerp_off.
 {
 	self->s.renderfx &= ~RF_FRAMELERP;
 }
 
-void gorgonLerpOn (edict_t *self)
+void gorgonLerpOn(edict_t* self) //TODO: rename to gorgon_lerp_on.
 {
 	self->s.renderfx |= RF_FRAMELERP;
 }
