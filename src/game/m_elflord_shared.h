@@ -69,18 +69,18 @@ extern const animmove_t elflord_move_move;
 extern const animmove_t elflord_move_wait;
 extern const animmove_t elflord_move_come_to_life;
 
-void elflord_decelerate(edict_t* self, float scaler);
-void elflord_flymove(edict_t* self, float dist);
-void elflord_check_attack(edict_t* self);
-void elflord_finish_death(edict_t* self); //mxd
-void elflord_charge(edict_t* self);
-void elflord_soa_end(edict_t* self);
-void elflord_start_beam(edict_t* self);
-void elflord_end_beam(edict_t* self);
-void elflord_attack(edict_t* self);
-void elflord_try_charge(edict_t* self);
-void elflord_track(edict_t* self);
-void elflord_update_charge_meter(edict_t* self);
-void elflord_soa_go(edict_t* self);
-void elflord_soa_charge(edict_t* self);
-void elflord_reset_pitch(edict_t* self);
+extern void elflord_decelerate(edict_t* self, float scaler);
+extern void elflord_flymove(edict_t* self, float dist);
+extern void elflord_check_attack(edict_t* self);
+extern void elflord_finish_death(edict_t* self); //mxd
+extern void elflord_charge(edict_t* self);
+extern void elflord_soa_end(edict_t* self);
+extern void elflord_start_beam(edict_t* self);
+extern void elflord_end_beam(edict_t* self);
+extern void elflord_attack(edict_t* self);
+extern void elflord_try_charge(edict_t* self);
+extern void elflord_track(edict_t* self);
+extern void elflord_update_charge_meter(edict_t* self);
+extern void elflord_soa_go(edict_t* self);
+extern void elflord_soa_charge(edict_t* self);
+extern void elflord_reset_pitch(edict_t* self);

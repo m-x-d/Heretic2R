@@ -88,16 +88,16 @@ extern const animmove_t gkrokon_move_death1;
 extern const animmove_t gkrokon_move_hop1;
 extern const animmove_t gkrokon_move_delay;
 
-void gkrokon_pause(edict_t* self);
-void gkrokon_sound(edict_t* self, float channel, float sound_index, float attenuation);
-void gkrokon_walk_sound(edict_t* self);
-void gkrokon_idle_sound(edict_t* self);
-void gkrokon_bite(edict_t* self, float right_side);
-void gkrokon_spoo_attack(edict_t* self);
-void gkrokon_dead(edict_t* self);
-void gkrokon_ai_stand(edict_t* self, float dist);
-void gkrokon_set_stand_anim(edict_t* self);
-void gkrokon_set_crouch_anim(edict_t* self);
+extern void gkrokon_pause(edict_t* self);
+extern void gkrokon_sound(edict_t* self, float channel, float sound_index, float attenuation);
+extern void gkrokon_walk_sound(edict_t* self);
+extern void gkrokon_idle_sound(edict_t* self);
+extern void gkrokon_bite(edict_t* self, float right_side);
+extern void gkrokon_spoo_attack(edict_t* self);
+extern void gkrokon_dead(edict_t* self);
+extern void gkrokon_ai_stand(edict_t* self, float dist);
+extern void gkrokon_set_stand_anim(edict_t* self);
+extern void gkrokon_set_crouch_anim(edict_t* self);
 
 #define BIT_WAIT1			0
 #define BIT_SHELLA_P1		1
