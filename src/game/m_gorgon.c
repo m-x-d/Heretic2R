@@ -158,62 +158,6 @@ static qboolean GorgonCanAttack(edict_t* self) //mxd. Named 'gorgon_check_attack
 	return false;
 }
 
-qboolean gorgonCheckMood(edict_t* self) //TODO: rename to GorgonCheckMood(), add action function variant.
-{
-	self->pre_think = GorgonPreThink;
-	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
-
-	self->mood_think(self);
-
-	if (self->ai_mood == AI_MOOD_NORMAL)
-		return false;
-
-	switch (self->ai_mood)
-	{
-		case AI_MOOD_ATTACK: // Melee and missile handlers are the same.
-			QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_PURSUE:
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_WALK:
-			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_STAND:
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_DELAY:
-			SetAnim(self, ANIM_DELAY);
-			break;
-
-		case AI_MOOD_NAVIGATE:
-		case AI_MOOD_WANDER:
-		case AI_MOOD_FLEE:
-			if (self->flags & FL_INWATER)
-				gorgonGoSwim(self);
-			else if (self->curAnimID != ANIM_RUN1 && self->curAnimID != ANIM_RUN2 && self->curAnimID != ANIM_RUN3)
-				SetAnim(self, ANIM_RUN1);
-			break;
-
-		case AI_MOOD_JUMP:
-			SetAnim(self, ((self->jump_chance < irand(0, 100)) ? ANIM_DELAY : ANIM_FJUMP));
-			break;
-
-		case AI_MOOD_EAT: //FIXME: this is not necessary?
-			gorgon_ai_eat(self, 0);
-			break;
-
-		default:
-			break;
-	}
-
-	return true;
-}
-
 static qboolean GorgonCanJump(edict_t* self) //mxd. Named 'gorgon_check_jump' in original logic.
 {
 	vec3_t landing_spot;
@@ -747,7 +691,7 @@ static void GorgonDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 static void GorgonCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_check_mood' in original logic.
 {
 	ParseMsgParms(msg, "i", &self->ai_mood);
-	gorgonCheckMood(self);
+	gorgon_check_mood(self);
 }
 
 // Gorgon Evasion!
@@ -1490,7 +1434,7 @@ void gorgonLerpOn(edict_t* self) //TODO: rename to gorgon_lerp_on.
 void gorgonCheckSlip(edict_t* self) //TODO: rename to gorgon_check_slip.
 {
 	if ((!(self->spawnflags & MSF_GORGON_SPEEDY) && self->s.scale > 0.75f) || !GorgonStartSlipAnimation(self, false))
-		gorgonCheckMood(self);
+		gorgon_check_mood(self);
 }
 
 void gorgonSlide(edict_t* self, float force) //TODO: rename to gorgon_slide.
@@ -1660,6 +1604,60 @@ void gorgon_ai_eat(edict_t* self, float switch_animation)
 				SetAnim(self, ANIM_EAT_LEFT);
 			else //FIXME: check enemy.
 				SetAnim(self, ANIM_EAT_RIGHT);
+			break;
+	}
+}
+
+void gorgon_check_mood(edict_t* self) //mxd. Named 'gorgonCheckMood' in original logic.
+{
+	self->pre_think = GorgonPreThink;
+	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
+
+	self->mood_think(self);
+
+	if (self->ai_mood == AI_MOOD_NORMAL)
+		return;
+
+	switch (self->ai_mood)
+	{
+		case AI_MOOD_ATTACK: // Melee and missile handlers are the same.
+			QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_PURSUE:
+			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_WALK:
+			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_STAND:
+			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_DELAY:
+			SetAnim(self, ANIM_DELAY);
+			break;
+
+		case AI_MOOD_NAVIGATE:
+		case AI_MOOD_WANDER:
+		case AI_MOOD_FLEE:
+			if (self->flags & FL_INWATER)
+				gorgonGoSwim(self);
+			else if (self->curAnimID != ANIM_RUN1 && self->curAnimID != ANIM_RUN2 && self->curAnimID != ANIM_RUN3)
+				SetAnim(self, ANIM_RUN1);
+			break;
+
+		case AI_MOOD_JUMP:
+			SetAnim(self, ((self->jump_chance < irand(0, 100)) ? ANIM_DELAY : ANIM_FJUMP));
+			break;
+
+		case AI_MOOD_EAT: //FIXME: this is not necessary?
+			gorgon_ai_eat(self, 0);
+			break;
+
+		default:
 			break;
 	}
 }
