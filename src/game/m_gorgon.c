@@ -802,17 +802,17 @@ void gorgonForward(edict_t* self, float dist) //TODO: rename to gorgon_forward.
 		VectorMA(self->velocity, dist, forward, self->velocity);
 }
 
-void gorgonFixPitch (edict_t *self)
+void gorgonFixPitch(edict_t* self) //TODO: rename to gorgon_fix_pitch.
 {
-	MG_ChangePitch(self, 0, 10);
+	MG_ChangePitch(self, 0.0f, 10.0f);
 }
 
-void gorgonZeroPitch (edict_t *self)
+void gorgonZeroPitch(edict_t* self) //TODO: rename to gorgon_reset_pitch.
 {
-	self->s.angles[PITCH] = 0;
+	self->s.angles[PITCH] = 0.0f;
 }
 
-void gorgonGoSwim (edict_t *self)
+void gorgonGoSwim(edict_t* self) //TODO: rename to gorgon_swim_go.
 {
 	SetAnim(self, ANIM_SWIM);
 }
