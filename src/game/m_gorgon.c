@@ -1100,31 +1100,24 @@ static void GorgonEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 		SetAnim(self, ANIM_PAIN1); // Jump forward.
 }
 
-/*
-========================================
-GORGON PICK UP AND GORE SOMETHING
-========================================
-*/
-void gorgon_ready_catch (edict_t *self)
+// Gorgon picks up and gores something.
+void gorgon_ready_catch(edict_t* self)
 {
-	float enemy_zdist, ok_zdist;
-
-	if(!AI_HaveEnemy(self))
+	if (!AI_HaveEnemy(self))
 	{
-		SetAnim(self,ANIM_CATCH);
+		SetAnim(self, ANIM_CATCH);
 		return;
 	}
-	
-	ok_zdist = 128 * (self->s.scale*0.5/2.5);
-	if(ok_zdist<48)
-		ok_zdist = 48;
 
-	enemy_zdist = self->enemy->absmin[2] - self->absmax[2];
+	float max_catch_zdist = 128.0f * (self->s.scale * 0.5f / 2.5f);
+	max_catch_zdist = max(48.0f, max_catch_zdist);
 
-	if(enemy_zdist <= 0 || (enemy_zdist <= ok_zdist && self->enemy->velocity[2] <= -60))
-		SetAnim(self,ANIM_CATCH);
+	const float enemy_zdist = self->enemy->absmin[2] - self->absmax[2];
+
+	if (enemy_zdist <= 0.0f || (enemy_zdist <= max_catch_zdist && self->enemy->velocity[2] <= -60.0f))
+		SetAnim(self, ANIM_CATCH);
 	else
-		SetAnim(self,ANIM_READY_CATCH);
+		SetAnim(self, ANIM_READY_CATCH);
 }
 
 void gorgon_throw_toy(edict_t *self)
