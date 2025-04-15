@@ -89,8 +89,6 @@ static const animmove_t *animations[NUM_ANIMS] =
 
 static int sounds[NUM_SOUNDS];
 
-static ClassResourceInfo_t resInfo;
-
 void gorgon_roar_sound (edict_t *self)
 {
 	int chance;
@@ -2049,6 +2047,8 @@ void gorgon_jump_msg (edict_t *self, G_Message_t *msg)
 
 void GorgonStaticsInit(void)
 {
+	static ClassResourceInfo_t resInfo;
+
 	classStatics[CID_GORGON].msgReceivers[MSG_STAND] = gorgon_stand;
 	classStatics[CID_GORGON].msgReceivers[MSG_WALK] = gorgon_walk;
 	classStatics[CID_GORGON].msgReceivers[MSG_RUN] = gorgon_run;
