@@ -955,11 +955,11 @@ const animmove_t gorgon_move_roar2 = {19, gorgon_frames_roar2, gorgon_check_mood
 -----------------------------------------------------------------------*/
 static const animframe_t gorgon_frames_to_swim [] =
 { //FIXME: add wake and bubbles and sploosh swim sounds
-	FRAME_swim1,	NULL, 0, 0, 0, NULL, 0, gorgonCheckInWater,
-	FRAME_swim2,	NULL, 0, 0, 0, NULL, 0, gorgonCheckInWater,
-	FRAME_swim3,	NULL, 0, 0, 0, NULL, 0, gorgonCheckInWater,
-	FRAME_swim4,	NULL, 0, 0, 0, NULL, 0, gorgonCheckInWater,
-	FRAME_swim5,	NULL, 0, 0, 0, NULL, 0, gorgonCheckInWater,
+	FRAME_swim1,	NULL, 0, 0, 0, NULL, 0, gorgon_check_in_water,
+	FRAME_swim2,	NULL, 0, 0, 0, NULL, 0, gorgon_check_in_water,
+	FRAME_swim3,	NULL, 0, 0, 0, NULL, 0, gorgon_check_in_water,
+	FRAME_swim4,	NULL, 0, 0, 0, NULL, 0, gorgon_check_in_water,
+	FRAME_swim5,	NULL, 0, 0, 0, NULL, 0, gorgon_check_in_water,
 };
 const animmove_t gorgon_move_to_swim = {5, gorgon_frames_to_swim, gorgon_swim_go};
 

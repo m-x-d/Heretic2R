@@ -1000,7 +1000,7 @@ void gorgon_swim_go(edict_t* self) //mxd. Named 'gorgonGoSwim' in original logic
 	SetAnim(self, ANIM_SWIM);
 }
 
-void gorgonCheckInWater(edict_t* self) //TODO: rename to gorgon_check_in_water.
+void gorgon_check_in_water(edict_t* self) //mxd. Named 'gorgonCheckInWater' in original logic.
 {
 	vec3_t end_pos;
 	VectorCopy(self->s.origin, end_pos);
