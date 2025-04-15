@@ -19,7 +19,7 @@
 #include "g_local.h"
 
 static qboolean GorgonCanJump (edict_t *self); //TODO: remove?
-static qboolean gorgonCheckSlipGo(edict_t* self, qboolean from_pain); //TODO: remove?
+static qboolean GorgonStartSlipAnimation(edict_t* self, qboolean from_pain); //TODO: remove?
 static void gorgon_prethink(edict_t* self); //TODO: remove?
 
 #define GORGON_MELEE_RANGE		48.0f //mxd. Named 'GORGON_STD_MELEE_RNG' in original logic.
@@ -516,7 +516,7 @@ static void GorgonPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 	if (irand(0, 4) == 0)
 		self->s.skinnum = GORGON_PAIN_SKIN;
 
-	if (SKILL > SKILL_MEDIUM || !gorgonCheckSlipGo(self, true)) //TODO: Strange skill check: always do pain anims only on Hard+? Should be inverted (or easy-only) instead?
+	if (SKILL > SKILL_MEDIUM || !GorgonStartSlipAnimation(self, true)) //TODO: Strange skill check: always do pain anims only on Hard+? Should be inverted (or easy-only) instead?
 		SetAnim(self, irand(ANIM_PAIN1, ANIM_PAIN3));
 }
 
@@ -1396,31 +1396,36 @@ void gorgonLerpOn(edict_t* self) //TODO: rename to gorgon_lerp_on.
 	self->s.renderfx |= RF_FRAMELERP;
 }
 
-static qboolean gorgonCheckSlipGo (edict_t *self, qboolean frompain)
+static qboolean GorgonStartSlipAnimation(edict_t* self, const qboolean from_pain) //mxd. Named 'gorgonCheckSlipGo' in original logic.
 {
-	vec3_t	v, right;
-
-	if(!self->enemy)
+	if (self->enemy == NULL)
 		return false;
 
-	VectorSubtract (self->enemy->s.origin, self->s.origin, v);
-	VectorNormalize(v);
+	vec3_t dir;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, dir);
+	VectorNormalize(dir);
+
+	vec3_t right;
 	AngleVectors(self->s.angles, NULL, right, NULL);
-	if(DotProduct(right, v) > 0.3 && irand(0, 1))
-	{//fall down, go boom
-		if(frompain)
+
+	if (DotProduct(right, dir) > 0.3f && irand(0, 1) == 1)
+	{
+		// Fall down, go boom.
+		if (from_pain)
 		{
 			SetAnim(self, ANIM_SLIP_PAIN);
 			return true;
 		}
-		else if(self->monsterinfo.misc_debounce_time < level.time && !irand(0, 4))
+
+		if (self->monsterinfo.misc_debounce_time < level.time && irand(0, 4) == 0)
 		{
-			self->monsterinfo.misc_debounce_time = level.time + 7;
+			self->monsterinfo.misc_debounce_time = level.time + 7.0f;
 			SetAnim(self, ANIM_SLIP);
+
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -1432,7 +1437,7 @@ void gorgonCheckSlip (edict_t *self)
 		return;
 	}
 
-	if(!gorgonCheckSlipGo (self, false))
+	if(!GorgonStartSlipAnimation (self, false))
 		gorgonCheckMood(self);
 }
 
