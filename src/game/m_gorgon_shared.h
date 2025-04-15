@@ -191,3 +191,5 @@ void gorgon_fix_pitch(edict_t* self);
 void gorgon_reset_pitch(edict_t* self);
 void gorgon_ai_eat(edict_t* self, float switch_animation);
 void gorgon_under_water_wake(edict_t* self); //mxd
+void gorgon_melee5check(edict_t* self); //mxd
+void gorgon_ai_charge2(edict_t* self, float distance); //mxd

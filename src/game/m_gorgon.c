@@ -1456,7 +1456,7 @@ void gorgon_slide(edict_t* self, float force) //mxd. Named 'gorgonSlide' in orig
 	self->friction = 0.2f;
 }
 
-void gorgon_ai_run(edict_t* self, float distance) //mxd. Originally defined in m_gorgon_anim.c
+void gorgon_ai_run(edict_t* self, float distance) //mxd. Originally defined in m_gorgon_anim.c.
 {
 #define GORGON_SWERVE		20 // Degree of swerve.
 #define GORGON_SWERVE_INT1	(GORGON_SWERVE / 4)
@@ -1656,6 +1656,12 @@ void gorgon_ai_eat(edict_t* self, float switch_animation)
 	}
 }
 
+void gorgon_ai_charge2(edict_t* self, float distance) //mxd. Originally defined in m_gorgon_anim.c.
+{
+	if (AI_IsVisible(self, self->enemy))
+		ai_charge2(self, distance);
+}
+
 void gorgon_check_mood(edict_t* self) //mxd. Named 'gorgonCheckMood' in original logic.
 {
 	self->pre_think = GorgonPreThink;
@@ -1713,6 +1719,13 @@ void gorgon_check_mood(edict_t* self) //mxd. Named 'gorgonCheckMood' in original
 void gorgon_under_water_wake(edict_t* self) //mxd
 {
 	gi.CreateEffect(&self->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, self->s.origin, "bv", FX_UNDER_WATER_WAKE, vec3_origin);
+}
+
+// Gorgon melee while running.
+void gorgon_melee5check(edict_t* self) //mxd. Originally defined in m_gorgon_anim.c.
+{
+	if (self->monsterinfo.currframeindex == FRAME_atka1 || self->monsterinfo.currframeindex == FRAME_atkb1) //TODO: never executed? Called on FRAME_runatk1 and FRAME_runatk5. Replace with gorgon_footstep()?
+		gorgon_footstep(self);
 }
 
 #pragma endregion

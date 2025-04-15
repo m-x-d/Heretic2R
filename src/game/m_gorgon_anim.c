@@ -138,19 +138,6 @@ static const animframe_t gorgon_frames_walk [] =
 
 const animmove_t gorgon_move_walk = {12, gorgon_frames_walk, gorgon_check_mood};
 
-// Gorgon melee while running.
-void gorgon_melee5check(edict_t* self)
-{
-	if (self->monsterinfo.currframeindex == FRAME_atka1 || self->monsterinfo.currframeindex == FRAME_atkb1) //TODO: never executed? Called on FRAME_runatk1 and FRAME_runatk5. Replace with gorgon_footstep()?
-		gorgon_footstep(self);
-}
-
-void gorgon_ai_charge2(edict_t* self, float distance)
-{
-	if (AI_IsVisible(self, self->enemy))
-		ai_charge2(self, distance);
-}
-
 /*----------------------------------------------------------------------
 	Forced Jump - jump from a buoy
 -----------------------------------------------------------------------*/
