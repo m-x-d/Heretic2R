@@ -1557,106 +1557,94 @@ static void GorgonPreThink(edict_t* self) //mxd. Named 'gorgon_prethink' in orig
 	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
 }
 
-void gorgon_ai_eat(edict_t *self, float crap)
-{//fixme: crap will be a yaw mod for view_ofs looking around
-	vec3_t	forward, right, v;
-	float	edist, fdot, rdot;
-
-	if(self->enemy)
+void gorgon_ai_eat(edict_t* self, float switch_animation)
+{
+	//FIXME: 'switch_animation' will be a yaw mod for view_ofs looking around.
+	if (self->enemy != NULL)
 	{
-		VectorSubtract(self->enemy->s.origin, self->s.origin, v);
-		edist = VectorNormalize(v);
-		if(edist<self->wakeup_distance)
+		vec3_t diff;
+		VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
+
+		if (VectorNormalize(diff) < self->wakeup_distance)
 		{
-			if(AI_IsVisible(self, self->enemy))
+			if (AI_IsVisible(self, self->enemy))
 			{
 				self->spawnflags &= ~MSF_EATING;
 				self->monsterinfo.aiflags &= ~AI_EATING;
 				AI_FoundTarget(self, true);
+
 				return;
 			}
 		}
-		else if(self->curAnimID == ANIM_EAT_LOOP && !irand(0, 5))
+		else if (self->curAnimID == ANIM_EAT_LOOP && irand(0, 5) == 0)
 		{
-			if(AI_IsVisible(self, self->enemy))
+			if (AI_IsVisible(self, self->enemy))
 			{
+				vec3_t forward;
+				vec3_t right;
 				AngleVectors(self->s.angles, forward, right, NULL);
-				fdot = DotProduct(v, forward);
-				rdot = DotProduct(v, right);
-				if(fdot < 0)
+				const float fwd_dot = DotProduct(diff, forward);
+
+				if (fwd_dot < 0.0f)
 				{
-					if(rdot > 0.3)
+					const float right_dot = DotProduct(diff, right);
+
+					if (right_dot > 0.3f)
 						SetAnim(self, ANIM_EAT_RIGHT);
-					if(rdot < -0.3)
+					if (right_dot < -0.3f)
 						SetAnim(self, ANIM_EAT_LEFT);
 					else
 						SetAnim(self, ANIM_EAT_UP);
+
 					return;
 				}
 			}
 		}
 	}
 	else
+	{
 		FindTarget(self);
+	}
 
-
-	if(crap != -1)
+	if (switch_animation != -1.0f)
 		return;
 
-	switch(self->curAnimID)
+	switch (self->curAnimID)
 	{
-	case ANIM_EAT_DOWN:
-		SetAnim(self, ANIM_EAT_LOOP);
-		break;
-
-	case ANIM_EAT_UP:
-		SetAnim(self, ANIM_LOOK_AROUND);
-		break;
-	
-	case ANIM_EAT_LOOP:
-		if(irand(0, 1))
+		case ANIM_EAT_DOWN:
+		case ANIM_EAT_TEAR:
+		case ANIM_EAT_PULLBACK:
+		case ANIM_EAT_LEFT:
+		case ANIM_EAT_RIGHT:
+		case ANIM_EAT_SNAP:
+		case ANIM_EAT_REACT:
 			SetAnim(self, ANIM_EAT_LOOP);
-		else if(irand(0, 1))
-			SetAnim(self, ANIM_EAT_PULLBACK);
-		else if(irand(0, 1))
-			SetAnim(self, ANIM_EAT_TEAR);
-		else if(irand(0, 1))//fixme- check gorgon to right
-			SetAnim(self, ANIM_EAT_SNAP);
-		else if(irand(0, 1))//fixme- check if gorgon to left snapped
-			SetAnim(self, ANIM_EAT_REACT);
-		else if(irand(0, 1))//fixme- check enemy
-			SetAnim(self, ANIM_EAT_LEFT);
-		else//fixme- check enemy
-			SetAnim(self, ANIM_EAT_RIGHT);
-		break;
-	
-	case ANIM_EAT_TEAR:
-		SetAnim(self, ANIM_EAT_LOOP);
-		break;
-	
-	case ANIM_EAT_PULLBACK:
-		SetAnim(self, ANIM_EAT_LOOP);
-		break;
-	
-	case ANIM_LOOK_AROUND:
-		SetAnim(self, ANIM_EAT_DOWN);
-		break;
-	
-	case ANIM_EAT_LEFT:
-		SetAnim(self, ANIM_EAT_LOOP);
-		break;
-	
-	case ANIM_EAT_RIGHT:
-		SetAnim(self, ANIM_EAT_LOOP);
-		break;
-	
-	case ANIM_EAT_SNAP:
-		SetAnim(self, ANIM_EAT_LOOP);
-		break;
-	
-	case ANIM_EAT_REACT:
-		SetAnim(self, ANIM_EAT_LOOP);
-		break;
+			break;
+
+		case ANIM_EAT_UP:
+			SetAnim(self, ANIM_LOOK_AROUND);
+			break;
+
+		case ANIM_LOOK_AROUND:
+			SetAnim(self, ANIM_EAT_DOWN);
+			break;
+
+		case ANIM_EAT_LOOP:
+			if (irand(0, 1) == 1)
+				SetAnim(self, ANIM_EAT_LOOP);
+			else if (irand(0, 1) == 1)
+				SetAnim(self, ANIM_EAT_PULLBACK);
+			else if (irand(0, 1) == 1)
+				SetAnim(self, ANIM_EAT_TEAR);
+			else if (irand(0, 1) == 1) //FIXME: check gorgon to right.
+				SetAnim(self, ANIM_EAT_SNAP);
+			else if (irand(0, 1) == 1) //FIXME: check if gorgon to left snapped.
+				SetAnim(self, ANIM_EAT_REACT);
+			else if (irand(0, 1) == 1) //FIXME: check enemy.
+				SetAnim(self, ANIM_EAT_LEFT);
+			else //FIXME: check enemy.
+				SetAnim(self, ANIM_EAT_RIGHT);
+			break;
 	}
 }
 
