@@ -1821,6 +1821,7 @@ void tbeast_ready_catch(edict_t* self)
 		SetAnim(self, ANIM_READY_CATCH);
 }
 
+//mxd. Similar to gorgon_throw_toy().
 void tbeast_throw_toy(edict_t* self)
 {
 	if (self->targetEnt == NULL)
@@ -1843,6 +1844,7 @@ void tbeast_throw_toy(edict_t* self)
 	//TODO: play SND_THROW?
 }
 
+//mxd. Similar to gorgon_shake_toy().
 void tbeast_shake_toy(edict_t* self, float forward_offset, float right_offset, float up_offset) //mxd. Named 'tbeast_toy_ofs' in original logic.
 {
 	if (self->enemy == NULL)
@@ -1866,22 +1868,22 @@ void tbeast_shake_toy(edict_t* self, float forward_offset, float right_offset, f
 	enemy_dir[2] /= 10.0f;
 	vectoangles(enemy_dir, self->targetEnt->s.angles);
 
-	switch (self->targetEnt->count) //TODO: where is targetEnt->count assigned?..
+	switch (self->targetEnt->count) //TODO: never assigned. Assign in tbeast_check_snatch()?
 	{
 		case 1:
-			self->targetEnt->s.angles[PITCH] = anglemod(self->targetEnt->s.angles[PITCH] + 90); // Can't do roll?
+			self->targetEnt->s.angles[PITCH] = anglemod(self->targetEnt->s.angles[PITCH] + 90.0f); // Can't do roll?
 			break;
 
 		case 2:
-			self->targetEnt->s.angles[PITCH] = anglemod(self->targetEnt->s.angles[PITCH] - 90); // Can't do roll?
+			self->targetEnt->s.angles[PITCH] = anglemod(self->targetEnt->s.angles[PITCH] - 90.0f); // Can't do roll?
 			break;
 
 		case 3:
-			self->targetEnt->s.angles[ROLL] = anglemod(self->targetEnt->s.angles[ROLL] + 90); // Can't do roll?
+			self->targetEnt->s.angles[ROLL] = anglemod(self->targetEnt->s.angles[ROLL] + 90.0f); // Can't do roll?
 			break;
 
 		case 4:
-			self->targetEnt->s.angles[ROLL] = anglemod(self->targetEnt->s.angles[ROLL] - 90); // Can't do roll?
+			self->targetEnt->s.angles[ROLL] = anglemod(self->targetEnt->s.angles[ROLL] - 90.0f); // Can't do roll?
 			break;
 
 		default:
@@ -1898,6 +1900,7 @@ void tbeast_shake_toy(edict_t* self, float forward_offset, float right_offset, f
 	}
 }
 
+//mxd. Similar to gorgon_check_snatch().
 void tbeast_check_snatch(edict_t* self, float forward_offset, float right_offset, float up_offset)
 {
 	if (self->enemy == NULL)
@@ -1969,6 +1972,7 @@ void tbeast_check_snatch(edict_t* self, float forward_offset, float right_offset
 	else
 	{
 		found->monsterinfo.aiflags |= AI_DONT_THINK;
+		//TODO: also set found->count (done in gorgon_check_snatch())?
 	}
 
 	VectorClear(found->velocity);
@@ -1980,6 +1984,7 @@ void tbeast_snatch_go(edict_t* self) //mxd. Named 'tbeast_go_snatch' in original
 	SetAnim(self, ANIM_SNATCH);
 }
 
+//mxd. Similar to gorgon_gore_toy().
 void tbeast_gore_toy(edict_t* self, float jump_height)
 {
 	const qboolean last_frame = (jump_height == -1.0f); //mxd
