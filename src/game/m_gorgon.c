@@ -134,52 +134,36 @@ void gorgonRoar(edict_t* self) //TODO: rename to gorgon_roar.
 	if (self->enemy == NULL)
 		return;
 
-	edict_t* found = NULL;
+	edict_t* e = NULL;
 
-	while ((found = FindInRadius(found, self->s.origin, GORGON_ALERT_DIST)) != NULL)
+	while ((e = FindInRadius(e, self->s.origin, GORGON_ALERT_DIST)) != NULL)
 	{
-		if (found->health > 0 && found->enemy == NULL && (found->svflags & SVF_MONSTER) && found->classID == CID_GORGON && !found->monsterinfo.roared)
+		if (e->health > 0 && e->enemy == NULL && (e->svflags & SVF_MONSTER) && e->classID == CID_GORGON && !e->monsterinfo.roared)
 		{
 			// Make sure they can hear me.
-			if (gi.inPHS(self->s.origin, found->s.origin) && AI_OkToWake(found, true, true))
+			if (gi.inPHS(self->s.origin, e->s.origin) && AI_OkToWake(e, true, true))
 			{
-				found->monsterinfo.roared = true;
-				found->enemy = self->enemy;
-				AI_FoundTarget(found, false);
-				QPostMessage(found, MSG_VOICE_POLL, PRI_DIRECTIVE, "");
+				e->monsterinfo.roared = true;
+				e->enemy = self->enemy;
+				AI_FoundTarget(e, false);
+				QPostMessage(e, MSG_VOICE_POLL, PRI_DIRECTIVE, "");
 			}
 		}
 	}
 }
 
-qboolean gorgonFindAsleepGorgons (edict_t *self)
-{//sees if there are any gorgons in range that aren't awake
-	edict_t *found = NULL;
+// Checks if there are any gorgons in range that aren't awake.
+static qboolean GorgonFindAsleepGorgons(const edict_t* self) //mxd. Named 'gorgonFindAsleepGorgons' in original logic.
+{
+	edict_t* e = NULL;
 
-	while(found = FindInRadius(found, self->s.origin, GORGON_ALERT_DIST))
-	{
-		if(found!=self)
-		{
-			if(found->health>0)
-			{
-				if(!found->enemy)
-				{
-					if(found->svflags & SVF_MONSTER)
-					{
-						if(found->classID == CID_GORGON)
-						{
-							if(!found->monsterinfo.roared)
-							{
-								return true;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+	while ((e = FindInRadius(e, self->s.origin, GORGON_ALERT_DIST)) != NULL)
+		if (e != self && e->health > 0 && (e->svflags & SVF_MONSTER) && e->enemy == NULL && e->classID == CID_GORGON && !e->monsterinfo.roared)
+			return true;
+
 	return false;
 }
+
 //----------------------------------------------------------------------
 //  Gorgon Eat - decide which eating animations to use
 //----------------------------------------------------------------------
@@ -555,7 +539,7 @@ void gorgon_run(edict_t *self, G_Message_t *msg)
 		{//should we do this the first time we see player?
 			if(AI_IsInfrontOf(self, self->enemy))
 			{
-				if(gorgonFindAsleepGorgons(self))
+				if(GorgonFindAsleepGorgons(self))
 				{
 					self->damage_debounce_time = level.time + 10;
 					SetAnim(self, ANIM_ROAR);//threaten, brings other monsters
