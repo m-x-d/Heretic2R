@@ -104,17 +104,17 @@ void gorgon_roar_sound(edict_t* self)
 		gorgon_growl(self);
 }
 
-void gorgon_roar_response_go (edict_t *self)
+static void GorgonRoarResponsePreThink(edict_t* self) //mxd. Named 'gorgon_roar_response_go' in original logic.
 {
 	self->pre_think = NULL;
-	self->next_pre_think = -1;
+	self->next_pre_think = -1.0f;
 
-	if(self->ai_mood == AI_MOOD_EAT)
+	if (self->ai_mood == AI_MOOD_EAT)
 		self->ai_mood = AI_MOOD_PURSUE;
 
 	SetAnim(self, ANIM_ROAR2);
 
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define. //TODO: no think callbacks assigned. Not needed? 
 }
 
 void gorgon_roar_response (edict_t *self, G_Message_t *msg)
@@ -122,7 +122,7 @@ void gorgon_roar_response (edict_t *self, G_Message_t *msg)
 	if(!irand(0, 3))
 		return;//25% don't roar back
 
-	self->pre_think = gorgon_roar_response_go;
+	self->pre_think = GorgonRoarResponsePreThink;
 	self->next_pre_think = level.time + flrand (0.5, 2);
 	self->nextthink = level.time + 10;
 }
