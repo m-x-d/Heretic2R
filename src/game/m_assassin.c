@@ -1885,16 +1885,6 @@ static void AssassinJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 
 static void AssassinEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'assassin_evade' in original logic.
 {
-	typedef struct EvadeChance_s //mxd
-	{
-		int duck_chance;
-		int dodgeleft_chance;
-		int dodgeright_chance;
-		int jump_chance;
-		int backflip_chance;
-		int frontflip_chance;
-	} EvadeChance_t;
-
 	static const EvadeChance_t evade_chances[] = //mxd. Use struct.
 	{
 		{.duck_chance = 20, .dodgeleft_chance = 10, .dodgeright_chance = 10, .jump_chance = 10, .backflip_chance = 10, .frontflip_chance = 10 }, // hl_NoneSpecific

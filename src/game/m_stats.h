@@ -22,6 +22,16 @@ typedef struct MonsterShadow_s
 
 extern struct MonsterShadow_s G_MonsterShadow[NUM_CLASSIDS];
 
+typedef struct EvadeChance_s //mxd
+{
+	const int duck_chance;
+	const int dodgeleft_chance;
+	const int dodgeright_chance;
+	const int jump_chance;
+	const int backflip_chance;
+	const int frontflip_chance;
+} EvadeChance_t;
+
 #define ITEM_REWARD_CHANCE		1
 #define MAX_SIGHT_PLAYER_DIST	1000.0f
 
@@ -170,7 +180,7 @@ extern struct MonsterShadow_s G_MonsterShadow[NUM_CLASSIDS];
 #define GORGON_DMG_MAX			10	// Note: This is multiplied by the scale of the creature.
 #define GORGON_LEADER_HEALTH	200 //TODO: unused.
 #define GORGON_LEADER_MASS		300 //TODO: unused.
-#define GORGON_ALERT_DIST		500
+#define GORGON_ALERT_DIST		500.0f
 #define GORGON_SKIN				0
 #define GORGON_PAIN_SKIN		1
 
