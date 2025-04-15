@@ -215,6 +215,7 @@ struct edict_s
 	{
 		float dmg_radius; // The radius of damage.
 		float fish_max_pitch_speed; //mxd
+		qboolean gorgon_wakeup_roar; //mxd
 	};
 
 	int sounds; // Used by a trigger and a splash, could be a class static.

@@ -578,9 +578,9 @@ static void GorgonRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'g
 			}
 
 			// Make a wakeup roar?
-			if (!self->dmg_radius)
+			if (!self->gorgon_wakeup_roar)
 			{
-				self->dmg_radius = true;
+				self->gorgon_wakeup_roar = true;
 				SetAnim(self, ANIM_ROAR2);
 
 				//TODO: should return here? Will be overridden by either jump or walk anim below.
@@ -1939,7 +1939,7 @@ void SP_monster_gorgon(edict_t* self)
 	self->flags |= FL_AMPHIBIAN;
 	self->monsterinfo.aiflags |= AI_SWIM_OK;
 	self->monsterinfo.roared = false;
-	self->dmg_radius = (qboolean)(irand(0, 2) == 0); // 33% chance of not making a wakeup roar. //TODO: add gorgon_wakeup_roar name. 
+	self->gorgon_wakeup_roar = (irand(0, 2) == 0); // 33% chance of not making a wakeup roar.
 
 	self->pre_think = GorgonPreThink;
 	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
