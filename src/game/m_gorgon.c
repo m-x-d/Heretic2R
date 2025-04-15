@@ -568,25 +568,9 @@ static void GorgonDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	SetAnim(self, (self->health <= -10 ? ANIM_DIE2 : ANIM_DIE1)); // Big enough death to be thrown back?
 }
 
-/*----------------------------------------------------------------------
-
-  ACTION FUNCTIONS FOR THE MONSTER
-
------------------------------------------------------------------------*/
-
-void gorgon_footstep (edict_t *self)
+void gorgon_footstep(edict_t* self)
 {
-	int chance;
-
-	chance = irand(0, 100);
-	if (chance < 25)
-		gi.sound(self, CHAN_BODY, sounds[SND_STEP1], 1, ATTN_NORM, 0);
-	else if (chance < 50)
-		gi.sound(self, CHAN_BODY, sounds[SND_STEP2], 1, ATTN_NORM, 0);
-	else if (chance < 75)
-		gi.sound(self, CHAN_BODY, sounds[SND_STEP3], 1, ATTN_NORM, 0);
-	else
-		gi.sound(self, CHAN_BODY, sounds[SND_STEP4], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_BODY, sounds[irand(SND_STEP1, SND_STEP4)], 1.0f, ATTN_NORM, 0.0f);
 }
 
 void gorgon_growl (edict_t *self)
