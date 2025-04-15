@@ -493,21 +493,11 @@ const animmove_t gorgon_move_die1 = {19, gorgon_frames_die1, gorgon_dead};
 /*----------------------------------------------------------------------
   Gorgon Death2 - fly backwards and twitch
 -----------------------------------------------------------------------*/
-void gorgon_starttwitch(edict_t *self)
-{
-	self->monsterinfo.thinkinc = MONSTER_THINK_INC;//FRAMETIME;
-}
-
-void gorgon_nexttwitch(edict_t *self)
-{
- 	self->monsterinfo.thinkinc = FRAMETIME * 4  + flrand(0.0, 4.0);
-}
-
 static const animframe_t gorgon_frames_death2twitch [] =
 {
-	FRAME_twitch,  NULL, 0, 0, 0, NULL, 0,  gorgon_starttwitch,
+	FRAME_twitch,  NULL, 0, 0, 0, NULL, 0,  gorgon_start_twitch,
 	FRAME_twitch_1,NULL, 0, 0, 0, NULL, 0,  NULL,
-	FRAME_twitch_2,NULL, 0, 0, 0, NULL, 0,  gorgon_nexttwitch
+	FRAME_twitch_2,NULL, 0, 0, 0, NULL, 0,  gorgon_next_twitch
 };
 
 const animmove_t gorgon_move_death2twitch = {3, gorgon_frames_death2twitch, NULL};

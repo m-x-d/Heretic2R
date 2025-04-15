@@ -907,6 +907,16 @@ void gorgon_death2_slide(edict_t* self) //mxd. Originally defined in m_gorgon_an
 	self->monsterinfo.nextframeindex = 0;
 }
 
+void gorgon_start_twitch(edict_t* self) //mxd. Originally defined in m_gorgon_anim.c. Named 'gorgon_starttwitch' in original logic.
+{
+	self->monsterinfo.thinkinc = MONSTER_THINK_INC;
+}
+
+void gorgon_next_twitch(edict_t* self) //mxd. Originally defined in m_gorgon_anim.c. Named 'gorgon_nexttwitch' in original logic.
+{
+	self->monsterinfo.thinkinc = FRAMETIME * 4.0f + flrand(0.0f, 4.0f);
+}
+
 void gorgon_land(edict_t* self)
 {
 	gi.sound(self, CHAN_WEAPON, sounds[SND_LAND], 1.0f, ATTN_NORM, 0.0f);
