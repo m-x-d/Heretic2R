@@ -170,7 +170,7 @@ void gorgon_miss_sound(edict_t* self);
 void gorgon_anger_sound(edict_t* self);
 void gorgon_snatch_go(edict_t* self);
 void gorgon_done_gore(edict_t* self);
-void gorgonRoll(edict_t* self, float roll_angle);
+void gorgon_set_roll(edict_t* self, float roll_angle);
 void gorgonLerpOff(edict_t* self);
 void gorgonLerpOn(edict_t* self);
 void gorgonCheckSlip(edict_t* self);

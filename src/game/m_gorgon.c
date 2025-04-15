@@ -1416,7 +1416,7 @@ void gorgon_done_gore(edict_t* self)
 }
 
 // Trip and fall if making too tight a turn, won't work until origin is in center.
-void gorgonRoll(edict_t* self, float roll_angle) //TODO: rename to gorgon_set_roll.
+void gorgon_set_roll(edict_t* self, float roll_angle) //mxd. Named 'gorgonRoll' in original logic.
 {
 	self->s.angles[ROLL] = anglemod(roll_angle); //FIXME: cannot interrupt!!!
 }
