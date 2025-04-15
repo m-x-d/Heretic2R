@@ -117,14 +117,15 @@ static void GorgonRoarResponsePreThink(edict_t* self) //mxd. Named 'gorgon_roar_
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define. //TODO: no think callbacks assigned. Not needed? 
 }
 
-void gorgon_roar_response (edict_t *self, G_Message_t *msg)
-{//respond to call
-	if(!irand(0, 3))
-		return;//25% don't roar back
-
-	self->pre_think = GorgonRoarResponsePreThink;
-	self->next_pre_think = level.time + flrand (0.5, 2);
-	self->nextthink = level.time + 10;
+// Respond to call.
+static void GorgonVoicePollMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_roar_response' in original logic.
+{
+	if (irand(0, 3) > 0) // 25% chance to not roar back.
+	{
+		self->pre_think = GorgonRoarResponsePreThink;
+		self->next_pre_think = level.time + flrand(0.5f, 2.0f);
+		self->nextthink = level.time + 10.0f; //TODO: GorgonRoarResponsePreThink will always override this. No think callbacks assigned. Not needed?
+	}
 }
 
 void gorgonRoar (edict_t *self)
@@ -2058,7 +2059,7 @@ void GorgonStaticsInit(void)
 	classStatics[CID_GORGON].msgReceivers[MSG_JUMP]=gorgon_jump_msg;
 	classStatics[CID_GORGON].msgReceivers[MSG_DEATH_PAIN] = gorgon_death_pain;
 	classStatics[CID_GORGON].msgReceivers[MSG_CHECK_MOOD] = gorgon_check_mood;
-	classStatics[CID_GORGON].msgReceivers[MSG_VOICE_POLL] = gorgon_roar_response;
+	classStatics[CID_GORGON].msgReceivers[MSG_VOICE_POLL] = GorgonVoicePollMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_EVADE] = gorgon_evade;
 
 	resInfo.numAnims = NUM_ANIMS;
