@@ -189,6 +189,4 @@ void gorgon_forward(edict_t* self, float dist);
 void gorgon_fix_pitch(edict_t* self);
 void gorgon_reset_pitch(edict_t* self);
 void gorgon_ai_eat(edict_t* self, float switch_animation);
-
-//TODO: move to appropriate headers!
-void fish_under_water_wake(edict_t* self);
+void gorgon_under_water_wake(edict_t* self); //mxd

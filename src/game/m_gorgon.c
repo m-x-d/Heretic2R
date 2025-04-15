@@ -1662,6 +1662,11 @@ void gorgon_check_mood(edict_t* self) //mxd. Named 'gorgonCheckMood' in original
 	}
 }
 
+void gorgon_under_water_wake(edict_t* self) //mxd
+{
+	gi.CreateEffect(&self->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, self->s.origin, "bv", FX_UNDER_WATER_WAKE, vec3_origin);
+}
+
 #pragma endregion
 
 void GorgonStaticsInit(void)

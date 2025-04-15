@@ -965,7 +965,7 @@ const animmove_t gorgon_move_to_swim = {5, gorgon_frames_to_swim, gorgon_swim_go
 
 static const animframe_t gorgon_frames_swim [] =
 { //FIXME: add wake and bubbles and sploosh swim sounds
-	FRAME_swim6,	NULL, 0, 0, 0, gorgon_ai_swim, 31, fish_under_water_wake, //TODO: add our own version of fish_under_water_wake.
+	FRAME_swim6,	NULL, 0, 0, 0, gorgon_ai_swim, 31, gorgon_under_water_wake, //mxd. Original logic uses fish_under_water_wake() here.
 	FRAME_swim7,	NULL, 0, 0, 0, gorgon_ai_swim, 32, NULL,
 	FRAME_swim8,	NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
 	FRAME_swim9,	NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
@@ -983,7 +983,7 @@ const animmove_t gorgon_move_swim = {13, gorgon_frames_swim, NULL};
 
 static const animframe_t gorgon_frames_swim_bite_a [] =
 { //FIXME: add wake and bubbles and sploosh swim sounds
-	FRAME_swimata1,	NULL, 0, 0, 0, gorgon_ai_swim, 31, fish_under_water_wake,
+	FRAME_swimata1,	NULL, 0, 0, 0, gorgon_ai_swim, 31, gorgon_under_water_wake, //mxd. Original logic uses fish_under_water_wake() here.
 	FRAME_swimata2,	NULL, 0, 0, 0, gorgon_ai_swim, 32, NULL,
 	FRAME_swimata3,	NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
 	FRAME_swimata4,	NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
@@ -1002,7 +1002,7 @@ const animmove_t gorgon_move_swim_bite_a = {14, gorgon_frames_swim_bite_a, NULL}
 
 static const animframe_t gorgon_frames_swim_bite_b [] =
 { //FIXME: add wake and bubbles and sploosh swim sounds
-	FRAME_swimatb1,	NULL, 0, 0, 0, gorgon_ai_swim, 31, fish_under_water_wake,
+	FRAME_swimatb1,	NULL, 0, 0, 0, gorgon_ai_swim, 31, gorgon_under_water_wake, //mxd. Original logic uses fish_under_water_wake() here.
 	FRAME_swimatb2,	NULL, 0, 0, 0, gorgon_ai_swim, 32, NULL,
 	FRAME_swimatb3,	NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
 	FRAME_swimatb4,	NULL, 0, 0, 0, gorgon_ai_swim, 34, NULL,
