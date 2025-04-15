@@ -1,68 +1,22 @@
-/*
-==============================================================================
-
+//
 // m_gorgon.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
+//
 
-
-GORGON
-
-	AI :
-
-	STANDING 1 : Looking straight ahead
-	STANDING 2 : Looking to left
-	STANDING 3 : Looking to the right
-
-	WALK       : a normal straight line
-	WALK RIGHT : if turning to the right while walking
-	WALK LEFT  : if turning to the left while walking
-
-	RUN1       : Running
-	RUN2       : Turning left while running
-	RUN3       : Turning right while running
-
-	MELEE1     : Attack Left
-	MELEE2     : Attack Right
-	MELEE3     : Attack Up
-	MELEE4     : Attack Pullback
-	MELEE5     : Running attack
-	MELEE6     : Hop left
-	MELEE7     : Hop right
-	MELEE8     : Hop forward
-	MELEE9     : Hop backward
-
-	PAIN1      : step back and bow head down
-	PAIN2      : bow head to the left
-	PAIN3      : bow head to the right
-
-	DIE1       : take a few steps backwards and keel over
-	DIE2       : fly backwards and slide to a stop
-
-==============================================================================
-*/
-
-#include "g_local.h"
-#include "Utilities.h"
-#include "g_DefaultMessageHandler.h"
-#include "g_monster.h"
-#include "fx.h"
-#include "random.h"
-#include "buoy.h"
-#include "vector.h"
-
-#include "g_debris.h" //mxd
 #include "m_gorgon.h"
 #include "m_gorgon_shared.h"
 #include "m_gorgon_anim.h"
+#include "g_DefaultMessageHandler.h"
+#include "g_monster.h"
+#include "g_debris.h" //mxd
 #include "m_stats.h"
-#include "p_anim_branch.h"
-#include "p_anims.h"
-#include "g_HitLocation.h"
 #include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
-#include "p_actions.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_local.h"
 
 
 // *************************************
@@ -136,9 +90,6 @@ static const animmove_t *animations[NUM_ANIMS] =
 static int sounds[NUM_SOUNDS];
 
 static ClassResourceInfo_t resInfo;
-
-void gorgon_watch(edict_t *self, G_Message_t *msg);
-void gorgon_death_pain(edict_t *self, G_Message_t *msg);
 
 void gorgon_roar_sound (edict_t *self)
 {
