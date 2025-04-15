@@ -1431,7 +1431,7 @@ void gorgon_lerp_on(edict_t* self) //mxd. Named 'gorgonLerpOn' in original logic
 	self->s.renderfx |= RF_FRAMELERP;
 }
 
-void gorgonCheckSlip(edict_t* self) //TODO: rename to gorgon_check_slip.
+void gorgon_check_slip(edict_t* self) //mxd. Named 'gorgonCheckSlip' in original logic.
 {
 	if ((!(self->spawnflags & MSF_GORGON_SPEEDY) && self->s.scale > 0.75f) || !GorgonStartSlipAnimation(self, false))
 		gorgon_check_mood(self);

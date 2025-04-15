@@ -435,16 +435,16 @@ const animmove_t gorgon_move_melee1 = {4, gorgon_frames_melee1, gorgon_check_moo
 static const animframe_t gorgon_frames_run3 [] =
 { 
 	FRAME_wlkrt1, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgon_footstep,
-	FRAME_wlkrt2, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgonCheckSlip,
-	FRAME_wlkrt3, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgonCheckSlip,
-	FRAME_wlkrt4, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgonCheckSlip,
-	FRAME_wlkrt5, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgonCheckSlip,
-	FRAME_wlkrt6, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgonCheckSlip,
-	FRAME_wlkrt7, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgonCheckSlip,
-	FRAME_wlkrt8, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgonCheckSlip,
-	FRAME_wlkrt9, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgonCheckSlip,
-	FRAME_wlkrt10, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgonCheckSlip,
-	FRAME_wlkrt11, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgonCheckSlip,
+	FRAME_wlkrt2, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgon_check_slip,
+	FRAME_wlkrt3, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgon_check_slip,
+	FRAME_wlkrt4, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgon_check_slip,
+	FRAME_wlkrt5, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgon_check_slip,
+	FRAME_wlkrt6, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgon_check_slip,
+	FRAME_wlkrt7, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgon_check_slip,
+	FRAME_wlkrt8, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgon_check_slip,
+	FRAME_wlkrt9, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgon_check_slip,
+	FRAME_wlkrt10, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgon_check_slip,
+	FRAME_wlkrt11, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgon_check_slip,
 	FRAME_wlkrt12, NULL, 0, 0, 0, gorgon_ai_run, 16,  gorgon_growl
 };
 
