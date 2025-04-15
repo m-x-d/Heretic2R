@@ -1437,7 +1437,7 @@ void gorgon_check_slip(edict_t* self) //mxd. Named 'gorgonCheckSlip' in original
 		gorgon_check_mood(self);
 }
 
-void gorgonSlide(edict_t* self, float force) //TODO: rename to gorgon_slide.
+void gorgon_slide(edict_t* self, float force) //mxd. Named 'gorgonSlide' in original logic.
 {
 	if (self->groundentity == NULL)
 		return; // Already in air.

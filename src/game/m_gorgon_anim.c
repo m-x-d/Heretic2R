@@ -801,7 +801,7 @@ const animmove_t gorgon_move_snatchlow = {9, gorgon_frames_snatchlow, gorgon_sna
 -----------------------*/
 static const animframe_t gorgon_frames_slip [] =
 {
-	FRAME_deatha1, NULL, 0, 0, 0, gorgonSlide, -200,  NULL,
+	FRAME_deatha1, NULL, 0, 0, 0, gorgon_slide, -200,  NULL,
 	FRAME_deatha2, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_deatha3, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_deatha4, NULL, 0, 0, 0, NULL, 0,  NULL,
@@ -836,7 +836,7 @@ static const animframe_t gorgon_frames_slip [] =
 	FRAME_eatinga4, NULL, 0, 0, 0,  NULL, 0,  NULL,
 	FRAME_eatinga3, NULL, 0, 0, 0,  NULL, 0,  gorgon_anger_sound,
 	FRAME_eatinga2, NULL, 0, 0, 0,  NULL, 0,  NULL,
-	FRAME_eatinga1, NULL, 0, 0, 0,  gorgonSlide, 0,  NULL,
+	FRAME_eatinga1, NULL, 0, 0, 0,  gorgon_slide, 0,  NULL,
 };
 const animmove_t gorgon_move_slip = {36, gorgon_frames_slip, gorgon_check_mood};
 
@@ -845,7 +845,7 @@ const animmove_t gorgon_move_slip = {36, gorgon_frames_slip, gorgon_check_mood};
 -----------------------*/
 static const animframe_t gorgon_frames_slip_pain [] =
 {
-	FRAME_deatha11, NULL, 0, 0, 0, gorgonSlide, -200,  gorgondeath1_fall,  // carnasaur_fall,
+	FRAME_deatha11, NULL, 0, 0, 0, gorgon_slide, -200,  gorgondeath1_fall,  // carnasaur_fall,
 	FRAME_deatha12, NULL, 0, 0, 0, NULL, 0,  gorgondeath1_fall,  // carnasaur_fall,
 	FRAME_deatha13, NULL, 0, 0, 0, NULL, 0,  gorgondeath1_fall,  // carnasaur_fall,
 	FRAME_deatha14, NULL, 0, 0, 0, NULL, 0,  gorgondeath1_fall,  // carnasaur_fall,
@@ -870,7 +870,7 @@ static const animframe_t gorgon_frames_slip_pain [] =
 	FRAME_eatinga4, NULL, 0, 0, 0,  NULL, 0,  NULL,
 	FRAME_eatinga3, NULL, 0, 0, 0,  NULL, 0,  gorgon_anger_sound,
 	FRAME_eatinga2, NULL, 0, 0, 0,  NULL, 0,  NULL,
-	FRAME_eatinga1, NULL, 0, 0, 0,  gorgonSlide, 0,  NULL,
+	FRAME_eatinga1, NULL, 0, 0, 0,  gorgon_slide, 0,  NULL,
 };
 const animmove_t gorgon_move_slip_pain = {26, gorgon_frames_slip_pain, gorgon_check_mood};
 

@@ -174,7 +174,7 @@ void gorgon_set_roll(edict_t* self, float roll_angle);
 void gorgon_lerp_off(edict_t* self);
 void gorgon_lerp_on(edict_t* self);
 void gorgon_check_slip(edict_t* self);
-void gorgonSlide(edict_t* self, float force);
+void gorgon_slide(edict_t* self, float force);
 void gorgon_check_mood(edict_t* self);
 void gorgon_apply_jump(edict_t* self);
 void gorgon_roar(edict_t* self);
