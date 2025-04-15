@@ -535,28 +535,12 @@ static const animframe_t gorgon_frames_pain3 [] =
 };
 const animmove_t gorgon_move_pain3 = {5, gorgon_frames_pain3, gorgon_check_mood};
 
-
-
-
-
-void gorgon_smoke(edict_t *self)
+void gorgondeath1_fall(edict_t* self) //TODO: rename to gorgon_death1_fall.
 {
-	//CL_SmokeAndFlash(self->s.origin);
-	gorgon_land(self);
-	//gi.sound(self, CHAN_WEAPON, sounds[SND_GROWL3], 1, ATTN_NORM, 0);
-}
-
-void gorgondeath1_fall (edict_t *self)
-{
-//	vec3_t		forward,right, up,hold_angles;
-
-//	if (self->s.frame == FRAME_deatha11)
-//		carnasaur_noshadow(self);
-
 	if (self->s.frame == FRAME_deatha13)
-		gorgon_smoke(self);
+		gorgon_land(self);
 
-	M_walkmove(self,flrand(180, 345), flrand(0, -8)); //mxd. M_movetoside() in original logic.
+	M_walkmove(self, flrand(180.0f, 345.0f), flrand(-8.0f, 0.0f)); //mxd. M_movetoside() in original logic.
 }
 
 static const animframe_t gorgon_frames_die1 [] =
