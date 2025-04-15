@@ -209,6 +209,7 @@ struct edict_s
 	{
 		int dmg; // The damage something does.
 		qboolean elflord_last_stage; //mxd
+		int gorgon_swerve_step; //mxd
 	};
 
 	union
