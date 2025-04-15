@@ -1648,11 +1648,10 @@ void gorgon_ai_eat(edict_t* self, float switch_animation)
 	}
 }
 
-void gorgon_jump_msg (edict_t *self, G_Message_t *msg)
+static void GorgonJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_jump_msg' in original logic.
 {
-	if(self->jump_chance < irand(0, 100))
-		return;
-	SetAnim(self, ANIM_FJUMP);
+	if (self->jump_chance >= irand(0, 100))
+		SetAnim(self, ANIM_FJUMP);
 }
 
 void GorgonStaticsInit(void)
@@ -1668,7 +1667,7 @@ void GorgonStaticsInit(void)
 	classStatics[CID_GORGON].msgReceivers[MSG_WATCH] = GorgonWalkMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_PAIN] = GorgonPainMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_DEATH] = GorgonDeathMsgHandler;
-	classStatics[CID_GORGON].msgReceivers[MSG_JUMP]=gorgon_jump_msg;
+	classStatics[CID_GORGON].msgReceivers[MSG_JUMP]=GorgonJumpMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_DEATH_PAIN] = GorgonDeathPainMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_CHECK_MOOD] = GorgonCheckMoodMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_VOICE_POLL] = GorgonVoicePollMsgHandler;
