@@ -18,17 +18,16 @@
 #include "Vector.h"
 #include "g_local.h"
 
+static qboolean gorgon_check_jump (edict_t *self); //TODO: remove?
+static qboolean gorgonCheckSlipGo(edict_t* self, qboolean from_pain); //TODO: remove?
+static void gorgon_prethink(edict_t* self); //TODO: remove?
 
-// *************************************
-// Definitions
-// *************************************
+#define GORGON_MELEE_RANGE		48.0f //mxd. Named 'GORGON_STD_MELEE_RNG' in original logic.
+#define GORGON_MAX_HOP_RANGE	200.0f //mxd. Named 'GORGON_STD_MAXHOP_RNG' in original logic.
 
-qboolean gorgon_check_jump (edict_t *self);
+#pragma region ========================== Gorgon base info ==========================
 
-#define GORGON_STD_MELEE_RNG	48
-#define GORGON_STD_MAXHOP_RNG	200
-
-static const animmove_t *animations[NUM_ANIMS] =
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&gorgon_move_stand1,
 	&gorgon_move_stand2,
@@ -88,6 +87,8 @@ static const animmove_t *animations[NUM_ANIMS] =
 };
 
 static int sounds[NUM_SOUNDS];
+
+#pragma endregion
 
 void gorgon_roar_sound (edict_t *self)
 {
@@ -502,7 +503,7 @@ void gorgon_melee(edict_t *self, G_Message_t *msg)
 		SetAnim(self, ANIM_MELEE5);
 		return;
 	}
-	max_hop_range = self->s.scale * GORGON_STD_MAXHOP_RNG;
+	max_hop_range = self->s.scale * GORGON_MAX_HOP_RANGE;
 	if (len < max_hop_range)  // Hop forward
 	{//cheacks ahead to see if can hop at it
 //		gi.dprintf(" too far\n");
@@ -626,7 +627,6 @@ void gorgon_run(edict_t *self, G_Message_t *msg)
 /*----------------------------------------------------------------------
   Gorgon Pain - make the decision between pains 1, 2, or 3 or slip
 -----------------------------------------------------------------------*/
-qboolean gorgonCheckSlipGo (edict_t *self, qboolean frompain);
 void gorgon_pain(edict_t *self, G_Message_t *msg)
 {
 	edict_t		*tempent;
@@ -759,7 +759,6 @@ void gorgon_growl (edict_t *self)
 		gi.sound(self, CHAN_WEAPON, sounds[SND_GROWL3], 1, ATTN_NORM, 0);
 }
 
-void gorgon_prethink (edict_t *self);
 qboolean gorgonCheckMood(edict_t *self)
 {
 	self->pre_think = gorgon_prethink;
@@ -860,7 +859,7 @@ void gorgonbite (edict_t *self)
 	VectorMA(self->s.origin, self->maxs[2]*0.5, up, melee_point);
 	VectorMA(melee_point, self->maxs[0], forward, melee_point);
 
-	melee_range = self->s.scale * GORGON_STD_MELEE_RNG * 1.25;//give axtra range
+	melee_range = self->s.scale * GORGON_MELEE_RANGE * 1.25;//give axtra range
 	VectorMA(melee_point, melee_range, forward, bite_endpos);
 
 	//let's do this the right way
@@ -1087,7 +1086,7 @@ void gorgon_go_inair (edict_t *self)
 	SetAnim(self, ANIM_INAIR);
 }
 
-qboolean gorgon_check_jump (edict_t *self)
+static qboolean gorgon_check_jump (edict_t *self)
 {
 	vec3_t	forward, right, up;
 	vec3_t	landing_spot,arc_spot, test_spot;
@@ -1756,7 +1755,7 @@ void gorgonLerpOn (edict_t *self)
 	self->s.renderfx |= RF_FRAMELERP;
 }
 
-qboolean gorgonCheckSlipGo (edict_t *self, qboolean frompain)
+static qboolean gorgonCheckSlipGo (edict_t *self, qboolean frompain)
 {
 	vec3_t	v, right;
 
@@ -1882,7 +1881,7 @@ void gorgon_ai_swim (edict_t *self, float dist)
 						{
 							if(!(self->enemy->flags & FL_INWATER))
 							{
-								if(dist < GORGON_STD_MAXHOP_RNG * 2)
+								if(dist < GORGON_MAX_HOP_RANGE * 2)
 									SetAnim(self, ANIM_OUT_WATER);
 							}
 						}
@@ -1893,7 +1892,7 @@ void gorgon_ai_swim (edict_t *self, float dist)
 	}
 }
 
-void gorgon_prethink (edict_t *self)
+static void gorgon_prethink (edict_t *self)
 {//also make wake on surface of water?
 	if(self->flags & FL_INWATER)
 	{
