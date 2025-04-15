@@ -1454,80 +1454,63 @@ void gorgonSlide(edict_t* self, float force) //TODO: rename to gorgon_slide.
 	self->friction = 0.2f;
 }
 
-void gorgon_ai_swim (edict_t *self, float dist)
+void gorgon_ai_swim(edict_t* self, float distance)
 {
-	vec3_t	dir = {0, 0, 0};	
-	vec3_t	vec, angles;
+	const qboolean do_charge = (distance == -1.0f); //mxd
 
 	gorgon_prethink(self);
 	self->pre_think = gorgon_prethink;
-	self->next_pre_think = level.time + 0.1;
+	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
 
 	self->mood_think(self);
-//	MG_Pathfind(self, false);
 
+	vec3_t dir;
 	MG_SetNormalizedVelToGoal(self, dir);
 
-	if(Vec3IsZero(dir))
+	if (Vec3IsZero(dir))
 	{
-//		gi.dprintf("swimming gorgon couldn't find a target\n");
-		Vec3ScaleAssign(0.8, self->velocity);
+		Vec3ScaleAssign(0.8f, self->velocity);
 		return;
 	}
 
 	self->ideal_yaw = VectorYaw(dir);
 	MG_ChangeYaw(self);
 
-	if(dist == -1)
-		Vec3ScaleAssign(150, dir);
+	if (do_charge)
+		Vec3ScaleAssign(150.0f, dir);
 	else
-		Vec3ScaleAssign(dist * 3, dir);
+		Vec3ScaleAssign(distance * 3.0f, dir);
 
 	VectorAdd(self->velocity, dir, self->velocity);
 	VectorNormalize(self->velocity);
-	Vec3ScaleAssign(200, self->velocity);
+	Vec3ScaleAssign(200.0f, self->velocity);
 
-	if(!self->enemy)
+	if (self->enemy == NULL)
 		return;
 
-	VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
-	vectoangles(vec, angles);
-	MG_ChangePitch(self, angles[PITCH], 10);
+	vec3_t diff;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
 
-	//MG_ChangePitchForZVel(self, 10, dist * 3, 60);
+	vec3_t angles;
+	vectoangles(diff, angles);
 
-	if(dist != -1)
-	{//-1 = charge
-		if(self->monsterinfo.attack_finished < level.time)
+	MG_ChangePitch(self, angles[PITCH], 10.0f);
+
+	if (do_charge)
+		return;
+
+	if (self->monsterinfo.attack_finished < level.time && M_ValidTarget(self, self->enemy) && AI_IsClearlyVisible(self, self->enemy) && AI_IsInfrontOf(self, self->enemy))
+	{
+		const float dist = VectorLength(diff);
+
+		if (dist < self->melee_range + VectorLength(self->velocity) * 0.1f)
 		{
-			if(M_ValidTarget(self, self->enemy))
-			{
-				if(AI_IsClearlyVisible(self, self->enemy))
-				{
-					if(AI_IsInfrontOf(self, self->enemy))
-					{
-						VectorSubtract(self->enemy->s.origin, self->s.origin, dir);
-						dist = VectorLength(dir);
-
-						if(dist < self->melee_range + VectorLength(self->velocity) * 0.1)
-						{
-							if(irand(0, 1))
-								SetAnim(self, ANIM_SWIM_BITE_A);
-							else
-								SetAnim(self, ANIM_SWIM_BITE_B);
-							self->monsterinfo.attack_finished = level.time + flrand(0, 3 - skill->value);
-						}
-						else if(self->monsterinfo.jump_time < level.time)
-						{
-							if(!(self->enemy->flags & FL_INWATER))
-							{
-								if(dist < GORGON_MAX_HOP_RANGE * 2)
-									SetAnim(self, ANIM_OUT_WATER);
-							}
-						}
-					}
-				}
-			}
+			SetAnim(self, irand(ANIM_SWIM_BITE_A, ANIM_SWIM_BITE_B));
+			self->monsterinfo.attack_finished = level.time + flrand(0.0f, 3.0f - skill->value);
+		}
+		else if (self->monsterinfo.jump_time < level.time && !(self->enemy->flags & FL_INWATER) && dist < GORGON_MAX_HOP_RANGE * 2.0f)
+		{
+			SetAnim(self, ANIM_OUT_WATER);
 		}
 	}
 }
