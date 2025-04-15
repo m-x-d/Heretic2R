@@ -269,6 +269,7 @@ struct edict_s
 	{
 		float wait;	// Used by polys, triggers and targets.
 		int tbeast_toy_materialtype; //mxd
+		qboolean gorgon_over_water_surface; //mxd
 	};
 	
 	float delay;	// Delay before firing targets. Used by a few polys and targets.
