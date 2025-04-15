@@ -1330,12 +1330,9 @@ void gorgon_gore_toy(edict_t* self, float jump_height)
 	}
 }
 
-void gorgon_miss_sound (edict_t *self)
+void gorgon_miss_sound(edict_t* self)
 {
-	if (irand(0, 1))
-		gi.sound(self, CHAN_WEAPON, sounds[SND_MELEEMISS1], 1, ATTN_NORM, 0);
-	else
-		gi.sound(self, CHAN_WEAPON, sounds[SND_MELEEMISS2], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_WEAPON, sounds[irand(SND_MELEEMISS1, SND_MELEEMISS2)], 1.0f, ATTN_NORM, 0.0f);
 }
 
 void gorgon_anger_sound (edict_t *self)
