@@ -686,18 +686,19 @@ void gorgonbite(edict_t* self) //TODO: rename to gorgon_bite.
 	}
 }
 
-void gorgon_dead(edict_t *self)
+void gorgon_dead(edict_t* self)
 {
 	self->pre_think = NULL;
-	self->next_pre_think = -1;
+	self->next_pre_think = -1.0f;
 	self->deadState = DEAD_DEAD;
 	self->svflags |= SVF_DEADMONSTER;
+
 	M_EndDeath(self);
 }
 
-void gorgon_land(edict_t *self)
+void gorgon_land(edict_t* self)
 {
-	gi.sound(self, CHAN_WEAPON, sounds[SND_LAND], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_WEAPON, sounds[SND_LAND], 1.0f, ATTN_NORM, 0.0f);
 }
 
 void gorgon_eatorder (edict_t *self)
