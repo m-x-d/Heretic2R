@@ -13,8 +13,6 @@
 #include "Vector.h"
 #include "g_local.h"
 
-void gorgon_land(edict_t *self); //TODO: remove
-
 /*----------------------------------------------------------------------
 	STAND3 -   Gorgon Standing and looking right
 -----------------------------------------------------------------------*/
@@ -467,14 +465,6 @@ static const animframe_t gorgon_frames_pain3 [] =
 };
 const animmove_t gorgon_move_pain3 = {5, gorgon_frames_pain3, gorgon_check_mood};
 
-void gorgondeath1_fall(edict_t* self) //TODO: rename to gorgon_death1_fall.
-{
-	if (self->s.frame == FRAME_deatha13)
-		gorgon_land(self);
-
-	M_walkmove(self, flrand(180.0f, 345.0f), flrand(-8.0f, 0.0f)); //mxd. M_movetoside() in original logic.
-}
-
 static const animframe_t gorgon_frames_die1 [] =
 {
 	FRAME_deatha1, NULL, 0, 0, 0, ai_move, -8,  NULL,
@@ -486,11 +476,11 @@ static const animframe_t gorgon_frames_die1 [] =
 	FRAME_deatha7, NULL, 0, 0, 0, ai_move, -8,  NULL,
 	FRAME_deatha8, NULL, 0, 0, 0, ai_move, -8,  NULL,
 	FRAME_deatha9, NULL, 0, 0, 0, ai_move, -8,  NULL,
-	FRAME_deatha10, NULL, 0, 0, 0, NULL, 0,  gorgondeath1_fall,
-	FRAME_deatha11, NULL, 0, 0, 0, NULL, 0,  gorgondeath1_fall,  // carnasaur_fall,
-	FRAME_deatha12, NULL, 0, 0, 0, NULL, 0,  gorgondeath1_fall,  // carnasaur_fall,
-	FRAME_deatha13, NULL, 0, 0, 0, NULL, 0,  gorgondeath1_fall,  // carnasaur_fall,
-	FRAME_deatha14, NULL, 0, 0, 0, NULL, 0,  gorgondeath1_fall,  // carnasaur_fall,
+	FRAME_deatha10, NULL, 0, 0, 0, NULL, 0,  gorgon_death1_fall,
+	FRAME_deatha11, NULL, 0, 0, 0, NULL, 0,  gorgon_death1_fall,  // carnasaur_fall,
+	FRAME_deatha12, NULL, 0, 0, 0, NULL, 0,  gorgon_death1_fall,  // carnasaur_fall,
+	FRAME_deatha13, NULL, 0, 0, 0, NULL, 0,  gorgon_death1_fall,  // carnasaur_fall,
+	FRAME_deatha14, NULL, 0, 0, 0, NULL, 0,  gorgon_death1_fall,  // carnasaur_fall,
 	FRAME_deatha15, NULL, 0, 0, 0, ai_move, 0,  NULL,
 	FRAME_deatha16, NULL, 0, 0, 0, ai_move, 0,  NULL,
 	FRAME_deatha17, NULL, 0, 0, 0, ai_move, 0,  NULL,  //carnasaur_drip,
@@ -726,11 +716,11 @@ static const animframe_t gorgon_frames_slip [] =
 	FRAME_deatha7, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_deatha8, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_deatha9, NULL, 0, 0, 0, NULL, 0,  NULL,
-	FRAME_deatha10, NULL, 0, 0, 0, NULL, 0,  gorgondeath1_fall,
-	FRAME_deatha11, NULL, 0, 0, 0, NULL, 0,  gorgondeath1_fall,  // carnasaur_fall,
-	FRAME_deatha12, NULL, 0, 0, 0, NULL, 0,  gorgondeath1_fall,  // carnasaur_fall,
-	FRAME_deatha13, NULL, 0, 0, 0, NULL, 0,  gorgondeath1_fall,  // carnasaur_fall,
-	FRAME_deatha14, NULL, 0, 0, 0, NULL, 0,  gorgondeath1_fall,  // carnasaur_fall,
+	FRAME_deatha10, NULL, 0, 0, 0, NULL, 0,  gorgon_death1_fall,
+	FRAME_deatha11, NULL, 0, 0, 0, NULL, 0,  gorgon_death1_fall,  // carnasaur_fall,
+	FRAME_deatha12, NULL, 0, 0, 0, NULL, 0,  gorgon_death1_fall,  // carnasaur_fall,
+	FRAME_deatha13, NULL, 0, 0, 0, NULL, 0,  gorgon_death1_fall,  // carnasaur_fall,
+	FRAME_deatha14, NULL, 0, 0, 0, NULL, 0,  gorgon_death1_fall,  // carnasaur_fall,
 	FRAME_deatha15, NULL, 0, 0, 0, gorgon_set_roll, -60,  NULL,
 	FRAME_deatha16, NULL, 0, 0, 0, gorgon_set_roll, -120,  NULL,
 	FRAME_deatha17, NULL, 0, 0, 0, gorgon_set_roll, -180,  NULL,  //carnasaur_drip,
@@ -761,10 +751,10 @@ const animmove_t gorgon_move_slip = {36, gorgon_frames_slip, gorgon_check_mood};
 -----------------------*/
 static const animframe_t gorgon_frames_slip_pain [] =
 {
-	FRAME_deatha11, NULL, 0, 0, 0, gorgon_slide, -200,  gorgondeath1_fall,  // carnasaur_fall,
-	FRAME_deatha12, NULL, 0, 0, 0, NULL, 0,  gorgondeath1_fall,  // carnasaur_fall,
-	FRAME_deatha13, NULL, 0, 0, 0, NULL, 0,  gorgondeath1_fall,  // carnasaur_fall,
-	FRAME_deatha14, NULL, 0, 0, 0, NULL, 0,  gorgondeath1_fall,  // carnasaur_fall,
+	FRAME_deatha11, NULL, 0, 0, 0, gorgon_slide, -200,  gorgon_death1_fall,  // carnasaur_fall,
+	FRAME_deatha12, NULL, 0, 0, 0, NULL, 0,  gorgon_death1_fall,  // carnasaur_fall,
+	FRAME_deatha13, NULL, 0, 0, 0, NULL, 0,  gorgon_death1_fall,  // carnasaur_fall,
+	FRAME_deatha14, NULL, 0, 0, 0, NULL, 0,  gorgon_death1_fall,  // carnasaur_fall,
 	FRAME_rollover1, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_rollover2, NULL, 0, 0, 0, NULL, 0,  NULL,
 	FRAME_rollover3, NULL, 0, 0, 0, NULL, 0,  NULL,  //carnasaur_drip,

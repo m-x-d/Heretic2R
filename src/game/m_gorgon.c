@@ -879,6 +879,14 @@ void gorgon_dead(edict_t* self)
 	M_EndDeath(self);
 }
 
+void gorgon_death1_fall(edict_t* self) //mxd. Originally defined in m_gorgon_anim.c. Named 'gorgondeath1_fall' in original logic.
+{
+	if (self->s.frame == FRAME_deatha13)
+		gorgon_land(self);
+
+	M_walkmove(self, flrand(180.0f, 345.0f), flrand(-8.0f, 0.0f)); //mxd. M_movetoside() in original logic.
+}
+
 void gorgon_land(edict_t* self)
 {
 	gi.sound(self, CHAN_WEAPON, sounds[SND_LAND], 1.0f, ATTN_NORM, 0.0f);

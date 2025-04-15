@@ -158,9 +158,11 @@ extern const animmove_t gorgon_move_eat_react;
 void gorgon_bite(edict_t* self);
 void gorgon_footstep(edict_t* self);
 void gorgon_dead(edict_t* self);
+void gorgon_death1_fall(edict_t* self); //mxd
 void gorgon_hop(edict_t* self);
 void gorgon_growl(edict_t* self);
 void gorgon_jump(edict_t* self);
+void gorgon_land(edict_t* self); //mxd
 void gorgon_ready_catch(edict_t* self);
 void gorgon_throw_toy(edict_t* self);
 void gorgon_shake_toy(edict_t* self, float forward_offset, float right_offset, float up_offset);
