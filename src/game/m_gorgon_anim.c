@@ -226,7 +226,7 @@ static const animframe_t gorgon_frames_fjump [] =
 	FRAME_jumpb13,NULL, 0, 0, 0, NULL, 0,  gorgon_check_landed,
 	FRAME_jumpb14,NULL, 0, 0, 0, NULL, 0,  gorgon_check_landed,
 };
-const animmove_t gorgon_move_fjump = {14, gorgon_frames_fjump, gorgon_go_inair};
+const animmove_t gorgon_move_fjump = {14, gorgon_frames_fjump, gorgon_inair_go};
 
 /*----------------------------------------------------------------------
 	land 1
@@ -279,7 +279,7 @@ static const animframe_t gorgon_frames_melee10 [] =
 	FRAME_jumpa13,NULL, 0, 0, 0, NULL, 0, gorgon_check_landed,
 	FRAME_jumpa14,NULL, 0, 0, 0, NULL, 0, gorgon_check_landed,
 };
-const animmove_t gorgon_move_melee10 = {14, gorgon_frames_melee10, gorgon_go_inair};
+const animmove_t gorgon_move_melee10 = {14, gorgon_frames_melee10, gorgon_inair_go};
 
 
 /*----------------------------------------------------------------------

@@ -1041,7 +1041,7 @@ void gorgon_check_landed(edict_t* self)
 	}
 }
 
-void gorgon_go_inair(edict_t* self) //TODO: rename to gorgon_inair_go.
+void gorgon_inair_go(edict_t* self) //mxd. Named 'gorgon_go_inair' in original logic.
 {
 	SetAnim(self, ANIM_INAIR);
 }

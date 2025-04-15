@@ -179,7 +179,7 @@ void gorgon_check_mood(edict_t* self);
 void gorgon_apply_jump(edict_t* self);
 void gorgon_roar(edict_t* self);
 void gorgon_roar_sound(edict_t* self);
-void gorgon_go_inair(edict_t* self);
+void gorgon_inair_go(edict_t* self);
 void gorgon_check_landed(edict_t* self);
 void gorgon_jump_out_of_water(edict_t* self);
 void gorgon_swim_go(edict_t* self);
