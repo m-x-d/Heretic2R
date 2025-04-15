@@ -585,74 +585,56 @@ void gorgon_growl(edict_t* self)
 		gi.sound(self, CHAN_WEAPON, sounds[SND_GROWL3], 1.0f, ATTN_NORM, 0.0f);
 }
 
-qboolean gorgonCheckMood(edict_t *self)
+qboolean gorgonCheckMood(edict_t* self) //TODO: add action function variant.
 {
 	self->pre_think = gorgon_prethink;
-	self->next_pre_think = level.time + 0.1;
+	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
 
 	self->mood_think(self);
 
-	if(self->ai_mood == AI_MOOD_NORMAL)
+	if (self->ai_mood == AI_MOOD_NORMAL)
 		return false;
 
 	switch (self->ai_mood)
 	{
-		case AI_MOOD_ATTACK://melee and missile the same
+		case AI_MOOD_ATTACK: // Melee and missile handlers are the same.
 			QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
 			break;
+
 		case AI_MOOD_PURSUE:
 			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 			break;
+
 		case AI_MOOD_WALK:
 			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
 			break;
-		case AI_MOOD_NAVIGATE:
-			if(self->flags & FL_INWATER)
-			{
-				gorgonGoSwim(self);
-				return true;
-			}
-			if(self->curAnimID == ANIM_RUN1 ||
-				self->curAnimID == ANIM_RUN2||
-				self->curAnimID == ANIM_RUN3)
-				return true;
-			else
-				SetAnim(self, ANIM_RUN1);
-			break;
+
 		case AI_MOOD_STAND:
 			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 			break;
+
 		case AI_MOOD_DELAY:
 			SetAnim(self, ANIM_DELAY);
 			break;
+
+		case AI_MOOD_NAVIGATE:
 		case AI_MOOD_WANDER:
 		case AI_MOOD_FLEE:
-			if(self->flags & FL_INWATER)
-			{
+			if (self->flags & FL_INWATER)
 				gorgonGoSwim(self);
-				return true;
-			}
-			if(self->curAnimID == ANIM_RUN1 ||
-				self->curAnimID == ANIM_RUN2||
-				self->curAnimID == ANIM_RUN3)
-				return true;
-			else
+			else if (self->curAnimID != ANIM_RUN1 && self->curAnimID != ANIM_RUN2 && self->curAnimID != ANIM_RUN3)
 				SetAnim(self, ANIM_RUN1);
 			break;
+
 		case AI_MOOD_JUMP:
-			if(self->jump_chance < irand(0, 100))
-				SetAnim(self, ANIM_DELAY);
-			else
-				SetAnim(self, ANIM_FJUMP);
+			SetAnim(self, ((self->jump_chance < irand(0, 100)) ? ANIM_DELAY : ANIM_FJUMP));
 			break;
-		case AI_MOOD_EAT://FIXME: this is not neccessary?
+
+		case AI_MOOD_EAT: //FIXME: this is not necessary?
 			gorgon_ai_eat(self, 0);
-			//QPostMessage(self, MSG_EAT, PRI_DIRECTIVE, NULL);
 			break;
-		default :
-#ifdef _DEVEL
-			gi.dprintf("gorgon: Unusable mood %d!\n", self->ai_mood);
-#endif
+
+		default:
 			break;
 	}
 
