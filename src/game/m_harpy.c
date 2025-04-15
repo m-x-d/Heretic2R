@@ -14,7 +14,7 @@ Copyright 1998 Raven Software
 
 #include "g_local.h"
 #include "m_harpy.h"
-#include "m_harpy_local.h"
+#include "m_harpy_shared.h"
 #include "m_harpy_anim.h"
 #include "Utilities.h"
 #include "g_DefaultMessageHandler.h"

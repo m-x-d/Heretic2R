@@ -1,6 +1,6 @@
 #include "m_harpy_anim.h"
 #include "g_local.h"
-#include "m_harpy_local.h"
+#include "m_harpy_shared.h"
 
 
 /*----------------------------------------------------
