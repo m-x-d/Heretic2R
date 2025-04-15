@@ -321,7 +321,7 @@ static void GorgonPreThink(edict_t* self) //mxd. Named 'gorgon_prethink' in orig
 		if (self->curAnimID == ANIM_SWIM || self->curAnimID == ANIM_SWIM_BITE_A || self->curAnimID == ANIM_SWIM_BITE_B)
 			SetAnim(self, ANIM_RUN1);
 
-		gorgonFixPitch(self);
+		gorgon_fix_pitch(self);
 	}
 
 	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
@@ -985,7 +985,7 @@ void gorgon_forward(edict_t* self, float dist) //mxd. Named 'gorgonForward' in o
 		VectorMA(self->velocity, dist, forward, self->velocity);
 }
 
-void gorgonFixPitch(edict_t* self) //TODO: rename to gorgon_fix_pitch.
+void gorgon_fix_pitch(edict_t* self) //mxd. Named 'gorgonFixPitch' in original logic.
 {
 	MG_ChangePitch(self, 0.0f, 10.0f);
 }
