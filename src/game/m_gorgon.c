@@ -18,10 +18,6 @@
 #include "Vector.h"
 #include "g_local.h"
 
-static qboolean GorgonCanJump (edict_t *self); //TODO: remove?
-static qboolean GorgonStartSlipAnimation(edict_t* self, qboolean from_pain); //TODO: remove?
-static void GorgonPreThink(edict_t* self); //TODO: remove?
-
 #define GORGON_MELEE_RANGE		48.0f //mxd. Named 'GORGON_STD_MELEE_RNG' in original logic.
 #define GORGON_MAX_HOP_RANGE	200.0f //mxd. Named 'GORGON_STD_MAXHOP_RNG' in original logic.
 
@@ -90,67 +86,7 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
-void gorgon_roar_sound(edict_t* self)
-{
-	const int chance = irand(0, 100);
-
-	if (chance < 20)
-		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN1], 1.0f, ATTN_NORM, 0.0f);
-	else if (chance < 40)
-		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN2], 1.0f, ATTN_NORM, 0.0f);
-	else if (chance < 60)
-		gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1.0f, ATTN_NORM, 0.0f);
-	else
-		gorgon_growl(self);
-}
-
-static void GorgonRoarResponsePreThink(edict_t* self) //mxd. Named 'gorgon_roar_response_go' in original logic.
-{
-	self->pre_think = NULL;
-	self->next_pre_think = -1.0f;
-
-	if (self->ai_mood == AI_MOOD_EAT)
-		self->ai_mood = AI_MOOD_PURSUE;
-
-	SetAnim(self, ANIM_ROAR2);
-
-	self->nextthink = level.time + FRAMETIME; //mxd. Use define. //TODO: no think callbacks assigned. Not needed? 
-}
-
-// Respond to call.
-static void GorgonVoicePollMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_roar_response' in original logic.
-{
-	if (irand(0, 3) > 0) // 25% chance to not roar back.
-	{
-		self->pre_think = GorgonRoarResponsePreThink;
-		self->next_pre_think = level.time + flrand(0.5f, 2.0f);
-		self->nextthink = level.time + 10.0f; //TODO: GorgonRoarResponsePreThink will always override this. No think callbacks assigned. Not needed?
-	}
-}
-
-// Finds gorgons in immediate vicinity and wakes them up.
-void gorgonRoar(edict_t* self) //TODO: rename to gorgon_roar.
-{
-	if (self->enemy == NULL)
-		return;
-
-	edict_t* e = NULL;
-
-	while ((e = FindInRadius(e, self->s.origin, GORGON_ALERT_DIST)) != NULL)
-	{
-		if (e->health > 0 && e->enemy == NULL && (e->svflags & SVF_MONSTER) && e->classID == CID_GORGON && !e->monsterinfo.roared)
-		{
-			// Make sure they can hear me.
-			if (gi.inPHS(self->s.origin, e->s.origin) && AI_OkToWake(e, true, true))
-			{
-				e->monsterinfo.roared = true;
-				e->enemy = self->enemy;
-				AI_FoundTarget(e, false);
-				QPostMessage(e, MSG_VOICE_POLL, PRI_DIRECTIVE, "");
-			}
-		}
-	}
-}
+#pragma region ========================== Utility functions =========================
 
 // Checks if there are any gorgons in range that aren't awake.
 static qboolean GorgonFindAsleepGorgons(const edict_t* self) //mxd. Named 'gorgonFindAsleepGorgons' in original logic.
@@ -162,21 +98,6 @@ static qboolean GorgonFindAsleepGorgons(const edict_t* self) //mxd. Named 'gorgo
 			return true;
 
 	return false;
-}
-
-// Gorgon Eat - decide which eating animations to use.
-static void GorgonEatMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_eat' in original logic.
-{
-	const int chance = irand(0, 100);
-
-	if (chance < 80)
-		SetAnim(self, ANIM_EAT_LOOP);
-	else if (chance < 90)
-		SetAnim(self, ANIM_EAT_PULLBACK);
-	else
-		SetAnim(self, ANIM_EAT_TEAR);
-
-	self->monsterinfo.misc_debounce_time = level.time + 5.0f;
 }
 
 static qboolean GorgonCanAttack(edict_t* self) //mxd. Named 'gorgon_check_attack' in original logic.
@@ -235,6 +156,261 @@ static qboolean GorgonCanAttack(edict_t* self) //mxd. Named 'gorgon_check_attack
 	}
 
 	return false;
+}
+
+qboolean gorgonCheckMood(edict_t* self) //TODO: rename to GorgonCheckMood(), add action function variant.
+{
+	self->pre_think = GorgonPreThink;
+	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
+
+	self->mood_think(self);
+
+	if (self->ai_mood == AI_MOOD_NORMAL)
+		return false;
+
+	switch (self->ai_mood)
+	{
+		case AI_MOOD_ATTACK: // Melee and missile handlers are the same.
+			QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_PURSUE:
+			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_WALK:
+			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_STAND:
+			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_DELAY:
+			SetAnim(self, ANIM_DELAY);
+			break;
+
+		case AI_MOOD_NAVIGATE:
+		case AI_MOOD_WANDER:
+		case AI_MOOD_FLEE:
+			if (self->flags & FL_INWATER)
+				gorgonGoSwim(self);
+			else if (self->curAnimID != ANIM_RUN1 && self->curAnimID != ANIM_RUN2 && self->curAnimID != ANIM_RUN3)
+				SetAnim(self, ANIM_RUN1);
+			break;
+
+		case AI_MOOD_JUMP:
+			SetAnim(self, ((self->jump_chance < irand(0, 100)) ? ANIM_DELAY : ANIM_FJUMP));
+			break;
+
+		case AI_MOOD_EAT: //FIXME: this is not necessary?
+			gorgon_ai_eat(self, 0);
+			break;
+
+		default:
+			break;
+	}
+
+	return true;
+}
+
+static qboolean GorgonCanJump(edict_t* self) //mxd. Named 'gorgon_check_jump' in original logic.
+{
+	vec3_t landing_spot;
+
+	if (self->jump_chance < irand(0, 100) || !MG_TryGetTargetOrigin(self, landing_spot) || !MG_IsInforntPos(self, landing_spot))
+		return false;
+
+	vec3_t diff;
+	VectorSubtract(self->s.origin, landing_spot, diff);
+
+	if (VectorLength(diff) > 400.0f)
+		return false;
+
+	vec3_t angles;
+
+	if (self->enemy != NULL)
+		VectorSet(angles, 0.0f, anglemod(-self->enemy->s.angles[YAW]), 0.0f);
+	else
+		VectorCopy(self->s.angles, angles);
+
+	// Incorporate scale?
+
+	// JUMPING
+	// Calculate landing spot behind enemy to jump to.
+	// Calculate arc spot to jump at which will arc the monster to the landing spot.
+	// Calculate velocity to make monster jump to hit arc spot.
+
+	// Choose landing spot behind enemy.
+	vec3_t forward;
+	AngleVectors(angles, forward, NULL, NULL);
+
+	VectorMA(landing_spot, 60.0f, forward, landing_spot);
+
+	vec3_t test_spot;
+	VectorCopy(landing_spot, test_spot);
+	test_spot[2] -= 1024.0f;
+
+	trace_t trace;
+	gi.trace(landing_spot, self->mins, self->maxs, test_spot, self, MASK_MONSTERSOLID | MASK_WATER, &trace);
+
+	if (trace.fraction == 1.0f || !(trace.contents & CONTENTS_SOLID) && !(trace.contents & CONTENTS_WATER))
+		return false;
+
+	self->jump_time = level.time + 0.5f;
+
+	// Calculate arc spot (the top of his jump arc) which will land monster at landing spot.
+	vec3_t landing_dir;
+	VectorSubtract(self->s.origin, landing_spot, landing_dir);
+
+	const vec3_t landing_spot_angles = { 0.0f, VectorYaw(landing_dir), 0.0f };
+
+	vec3_t up;
+	AngleVectors(landing_spot_angles, forward, NULL, up);
+
+	vec3_t arc_spot;
+	VectorMA(landing_spot, 20.0f, forward, arc_spot);
+	VectorMA(landing_spot, 180.0f, up, arc_spot);
+
+	// Calculate velocity to make monster jump to hit arc spot.
+	vec3_t arc_dir;
+	VectorSubtract(arc_spot, self->s.origin, arc_dir); // Face monster to arc spot.
+
+	vec3_t arc_angles;
+	vectoangles(arc_dir, arc_angles);
+	self->best_move_yaw = arc_angles[YAW];
+
+	const float hold_time = VectorLength(arc_dir) / 200.0f;
+
+	AngleVectors(arc_angles, forward, NULL, NULL);
+	VectorScale(forward, hold_time * 300.0f, self->movedir); // Store calculated jump velocity in movedir.
+	self->movedir[2] = hold_time * 200.0f;
+
+	self->monsterinfo.jump_time = level.time + 3.0f;
+
+	return true;
+}
+
+static qboolean GorgonStartSlipAnimation(edict_t* self, const qboolean from_pain) //mxd. Named 'gorgonCheckSlipGo' in original logic.
+{
+	if (self->enemy == NULL)
+		return false;
+
+	vec3_t dir;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, dir);
+	VectorNormalize(dir);
+
+	vec3_t right;
+	AngleVectors(self->s.angles, NULL, right, NULL);
+
+	if (DotProduct(right, dir) > 0.3f && irand(0, 1) == 1)
+	{
+		// Fall down, go boom.
+		if (from_pain)
+		{
+			SetAnim(self, ANIM_SLIP_PAIN);
+			return true;
+		}
+
+		if (self->monsterinfo.misc_debounce_time < level.time && irand(0, 4) == 0)
+		{
+			self->monsterinfo.misc_debounce_time = level.time + 7.0f;
+			SetAnim(self, ANIM_SLIP);
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+#pragma endregion
+
+#pragma region ========================== Edict callbacks ===========================
+
+static void GorgonRoarResponsePreThink(edict_t* self) //mxd. Named 'gorgon_roar_response_go' in original logic.
+{
+	self->pre_think = NULL;
+	self->next_pre_think = -1.0f;
+
+	if (self->ai_mood == AI_MOOD_EAT)
+		self->ai_mood = AI_MOOD_PURSUE;
+
+	SetAnim(self, ANIM_ROAR2);
+
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define. //TODO: no think callbacks assigned. Not needed? 
+}
+
+static void GorgonPreThink(edict_t* self) //mxd. Named 'gorgon_prethink' in original logic.
+{
+	// Also make wake on surface of water?
+	if (self->flags & FL_INWATER)
+	{
+		self->gravity = 0.0f;
+		self->svflags |= (SVF_TAKE_NO_IMPACT_DMG | SVF_DO_NO_IMPACT_DMG);
+
+		if (!self->wait)
+		{
+			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG7, self->s.origin, "bd", 128 | 96, vec3_up);
+			self->wait = true;
+		}
+
+		if (self->curAnimID == ANIM_INAIR)
+			SetAnim(self, ANIM_TO_SWIM);
+	}
+	else
+	{
+		gi.RemoveEffects(&self->s, FX_M_EFFECTS);
+
+		self->gravity = 1.0f;
+		self->svflags &= ~SVF_TAKE_NO_IMPACT_DMG;
+
+		if (self->s.scale > 0.5f)
+			self->svflags &= ~SVF_DO_NO_IMPACT_DMG;
+
+		if (self->wait)
+		{
+			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, 0, self->s.origin, "bd", 128 | 96, vec3_up);
+			self->wait = false;
+		}
+
+		if (self->curAnimID == ANIM_SWIM || self->curAnimID == ANIM_SWIM_BITE_A || self->curAnimID == ANIM_SWIM_BITE_B)
+			SetAnim(self, ANIM_RUN1);
+
+		gorgonFixPitch(self);
+	}
+
+	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
+}
+
+#pragma endregion
+
+#pragma region ========================== Message handlers ==========================
+
+// Respond to call.
+static void GorgonVoicePollMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_roar_response' in original logic.
+{
+	if (irand(0, 3) > 0) // 25% chance to not roar back.
+	{
+		self->pre_think = GorgonRoarResponsePreThink;
+		self->next_pre_think = level.time + flrand(0.5f, 2.0f);
+		self->nextthink = level.time + 10.0f; //TODO: GorgonRoarResponsePreThink will always override this. No think callbacks assigned. Not needed?
+	}
+}
+
+// Gorgon Eat - decide which eating animations to use.
+static void GorgonEatMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_eat' in original logic.
+{
+	const int chance = irand(0, 100);
+
+	if (chance < 80)
+		SetAnim(self, ANIM_EAT_LOOP);
+	else if (chance < 90)
+		SetAnim(self, ANIM_EAT_PULLBACK);
+	else
+		SetAnim(self, ANIM_EAT_TEAR);
+
+	self->monsterinfo.misc_debounce_time = level.time + 5.0f;
 }
 
 // Gorgon Stand - decide which standing animations to use.
@@ -568,6 +744,131 @@ static void GorgonDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	SetAnim(self, (self->health <= -10 ? ANIM_DIE2 : ANIM_DIE1)); // Big enough death to be thrown back?
 }
 
+static void GorgonCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_check_mood' in original logic.
+{
+	ParseMsgParms(msg, "i", &self->ai_mood);
+	gorgonCheckMood(self);
+}
+
+// Gorgon Evasion!
+static void GorgonEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_evade' in original logic.
+{
+	static const EvadeChance_t evade_chances[] = //mxd. Use struct.
+	{
+		{.duck_chance = 5,  .dodgeleft_chance = 10, .dodgeright_chance = 10, .jump_chance = 10, .backflip_chance = 10, .frontflip_chance = 10 }, // hl_NoneSpecific
+		{.duck_chance = 30, .dodgeleft_chance = 50, .dodgeright_chance = 50, .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_Head
+		{.duck_chance = 20, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 80, .frontflip_chance = 0  }, // hl_TorsoFront
+		{.duck_chance = 20, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 0,  .frontflip_chance = 80 }, // hl_TorsoBack
+		{.duck_chance = 10, .dodgeleft_chance = 0,  .dodgeright_chance = 90, .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmUpperLeft
+		{.duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 80, .jump_chance = 30, .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmLowerLeft
+		{.duck_chance = 20, .dodgeleft_chance = 90, .dodgeright_chance = 0,  .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmUpperRight
+		{.duck_chance = 0,  .dodgeleft_chance = 80, .dodgeright_chance = 0,  .jump_chance = 30, .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmLowerRight
+		{.duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 60, .jump_chance = 50, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegUpperLeft
+		{.duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 30, .jump_chance = 90, .backflip_chance = 60, .frontflip_chance = 60 }, // hl_LegLowerLeft
+		{.duck_chance = 0,  .dodgeleft_chance = 60, .dodgeright_chance = 0,  .jump_chance = 50, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegUpperRight
+		{.duck_chance = 0,  .dodgeleft_chance = 30, .dodgeright_chance = 0,  .jump_chance = 90, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegLowerRight
+	};
+
+	edict_t* projectile;
+	HitLocation_t hl;
+	float eta;
+	ParseMsgParms(msg, "eif", &projectile, &hl, &eta);
+
+	if (eta < 0.3f)
+		return; // Needs at least 0.3 seconds to respond.
+
+	//mxd. Get evade info.
+	if (hl < hl_NoneSpecific || hl > hl_LegLowerRight)
+		hl = hl_NoneSpecific;
+
+	const EvadeChance_t* ec = &evade_chances[hl];
+
+	if (irand(0, 100) < ec->frontflip_chance)
+	{
+		SetAnim(self, ANIM_MELEE8); // Hop forward.
+		return;
+	}
+
+	if (irand(0, 100) < ec->backflip_chance)
+	{
+		if (self->curAnimID == ANIM_RUN1 && irand(0, 10) < 8) // Running, do the front jump.
+			SetAnim(self, ANIM_MELEE10); // Jump forward.
+		else
+			SetAnim(self, ANIM_MELEE9); // Hop forward.
+
+		return;
+	}
+
+	if (irand(0, 100) < ec->dodgeleft_chance)
+	{
+		SetAnim(self, ANIM_MELEE6); // Hop left.
+		return;
+	}
+
+	if (irand(0, 100) < ec->dodgeright_chance)
+	{
+		SetAnim(self, ANIM_MELEE7); // Hop right.
+		return;
+	}
+
+	if (self->jump_chance >= 0 && irand(0, 100) < ec->jump_chance)
+	{
+		SetAnim(self, ANIM_MELEE10); // Jump forward.
+		return;
+	}
+
+	if (irand(0, 100) < ec->duck_chance)
+		SetAnim(self, ANIM_PAIN1); // Jump forward.
+}
+
+static void GorgonJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_jump_msg' in original logic.
+{
+	if (self->jump_chance >= irand(0, 100))
+		SetAnim(self, ANIM_FJUMP);
+}
+
+#pragma endregion
+
+#pragma region ========================== Action functions ==========================
+
+void gorgon_roar_sound(edict_t* self)
+{
+	const int chance = irand(0, 100);
+
+	if (chance < 20)
+		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN1], 1.0f, ATTN_NORM, 0.0f);
+	else if (chance < 40)
+		gi.sound(self, CHAN_VOICE, sounds[SND_PAIN2], 1.0f, ATTN_NORM, 0.0f);
+	else if (chance < 60)
+		gi.sound(self, CHAN_VOICE, sounds[SND_DIE], 1.0f, ATTN_NORM, 0.0f);
+	else
+		gorgon_growl(self);
+}
+
+// Finds gorgons in immediate vicinity and wakes them up.
+void gorgonRoar(edict_t* self) //TODO: rename to gorgon_roar.
+{
+	if (self->enemy == NULL)
+		return;
+
+	edict_t* e = NULL;
+
+	while ((e = FindInRadius(e, self->s.origin, GORGON_ALERT_DIST)) != NULL)
+	{
+		if (e->health > 0 && e->enemy == NULL && (e->svflags & SVF_MONSTER) && e->classID == CID_GORGON && !e->monsterinfo.roared)
+		{
+			// Make sure they can hear me.
+			if (gi.inPHS(self->s.origin, e->s.origin) && AI_OkToWake(e, true, true))
+			{
+				e->monsterinfo.roared = true;
+				e->enemy = self->enemy;
+				AI_FoundTarget(e, false);
+				QPostMessage(e, MSG_VOICE_POLL, PRI_DIRECTIVE, "");
+			}
+		}
+	}
+}
+
 void gorgon_footstep(edict_t* self)
 {
 	gi.sound(self, CHAN_BODY, sounds[irand(SND_STEP1, SND_STEP4)], 1.0f, ATTN_NORM, 0.0f);
@@ -583,68 +884,6 @@ void gorgon_growl(edict_t* self)
 		gi.sound(self, CHAN_WEAPON, sounds[SND_GROWL2], 1.0f, ATTN_NORM, 0.0f);
 	else if (chance < 30)
 		gi.sound(self, CHAN_WEAPON, sounds[SND_GROWL3], 1.0f, ATTN_NORM, 0.0f);
-}
-
-qboolean gorgonCheckMood(edict_t* self) //TODO: rename to GorgonCheckMood(), add action function variant.
-{
-	self->pre_think = GorgonPreThink;
-	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
-
-	self->mood_think(self);
-
-	if (self->ai_mood == AI_MOOD_NORMAL)
-		return false;
-
-	switch (self->ai_mood)
-	{
-		case AI_MOOD_ATTACK: // Melee and missile handlers are the same.
-			QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_PURSUE:
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_WALK:
-			QPostMessage(self, MSG_WALK, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_STAND:
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_DELAY:
-			SetAnim(self, ANIM_DELAY);
-			break;
-
-		case AI_MOOD_NAVIGATE:
-		case AI_MOOD_WANDER:
-		case AI_MOOD_FLEE:
-			if (self->flags & FL_INWATER)
-				gorgonGoSwim(self);
-			else if (self->curAnimID != ANIM_RUN1 && self->curAnimID != ANIM_RUN2 && self->curAnimID != ANIM_RUN3)
-				SetAnim(self, ANIM_RUN1);
-			break;
-
-		case AI_MOOD_JUMP:
-			SetAnim(self, ((self->jump_chance < irand(0, 100)) ? ANIM_DELAY : ANIM_FJUMP));
-			break;
-
-		case AI_MOOD_EAT: //FIXME: this is not necessary?
-			gorgon_ai_eat(self, 0);
-			break;
-
-		default:
-			break;
-	}
-
-	return true;
-}
-
-static void GorgonCheckMoodMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_check_mood' in original logic.
-{
-	ParseMsgParms(msg, "i", &self->ai_mood);
-	gorgonCheckMood(self);
 }
 
 void gorgonbite(edict_t* self) //TODO: rename to gorgon_bite.
@@ -863,83 +1102,6 @@ void gorgon_go_inair(edict_t* self) //TODO: rename to gorgon_inair_go.
 	SetAnim(self, ANIM_INAIR);
 }
 
-static qboolean GorgonCanJump(edict_t* self) //mxd. Named 'gorgon_check_jump' in original logic.
-{
-	vec3_t landing_spot;
-
-	if (self->jump_chance < irand(0, 100) || !MG_TryGetTargetOrigin(self, landing_spot) || !MG_IsInforntPos(self, landing_spot))
-		return false;
-
-	vec3_t diff;
-	VectorSubtract(self->s.origin, landing_spot, diff);
-
-	if (VectorLength(diff) > 400.0f)
-		return false;
-
-	vec3_t angles;
-
-	if (self->enemy != NULL)
-		VectorSet(angles, 0.0f, anglemod(-self->enemy->s.angles[YAW]), 0.0f);
-	else
-		VectorCopy(self->s.angles, angles);
-
-	// Incorporate scale?
-
-	// JUMPING
-	// Calculate landing spot behind enemy to jump to.
-	// Calculate arc spot to jump at which will arc the monster to the landing spot.
-	// Calculate velocity to make monster jump to hit arc spot.
-
-	// Choose landing spot behind enemy.
-	vec3_t forward;
-	AngleVectors(angles, forward, NULL, NULL);
-
-	VectorMA(landing_spot, 60.0f, forward, landing_spot);
-
-	vec3_t test_spot;
-	VectorCopy(landing_spot, test_spot);
-	test_spot[2] -= 1024.0f;
-
-	trace_t trace;
-	gi.trace(landing_spot, self->mins, self->maxs, test_spot, self, MASK_MONSTERSOLID | MASK_WATER, &trace);
-
-	if (trace.fraction == 1.0f || !(trace.contents & CONTENTS_SOLID) && !(trace.contents & CONTENTS_WATER))
-		return false;
-
-	self->jump_time = level.time + 0.5f;
-
-	// Calculate arc spot (the top of his jump arc) which will land monster at landing spot.
-	vec3_t landing_dir;
-	VectorSubtract(self->s.origin, landing_spot, landing_dir);
-
-	const vec3_t landing_spot_angles = { 0.0f, VectorYaw(landing_dir), 0.0f };
-
-	vec3_t up;
-	AngleVectors(landing_spot_angles, forward, NULL, up);
-
-	vec3_t arc_spot;
-	VectorMA(landing_spot, 20.0f, forward, arc_spot);
-	VectorMA(landing_spot, 180.0f, up, arc_spot);
-
-	// Calculate velocity to make monster jump to hit arc spot.
-	vec3_t arc_dir;
-	VectorSubtract(arc_spot, self->s.origin, arc_dir); // Face monster to arc spot.
-
-	vec3_t arc_angles;
-	vectoangles(arc_dir, arc_angles);
-	self->best_move_yaw = arc_angles[YAW];
-
-	const float hold_time = VectorLength(arc_dir) / 200.0f;
-
-	AngleVectors(arc_angles, forward, NULL, NULL);
-	VectorScale(forward, hold_time * 300.0f, self->movedir); // Store calculated jump velocity in movedir.
-	self->movedir[2] = hold_time * 200.0f;
-
-	self->monsterinfo.jump_time = level.time + 3.0f;
-
-	return true;
-}
-
 void gorgon_jump(edict_t* self)
 {
 	vec3_t landing_spot;
@@ -1027,77 +1189,6 @@ void gorgon_jump(edict_t* self)
 	self->velocity[2] = hold_time * 200.0f;
 
 	self->monsterinfo.jump_time = level.time + 3.0f;
-}
-
-// Gorgon Evasion!
-static void GorgonEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_evade' in original logic.
-{
-	static const EvadeChance_t evade_chances[] = //mxd. Use struct.
-	{
-		{.duck_chance = 5,  .dodgeleft_chance = 10, .dodgeright_chance = 10, .jump_chance = 10, .backflip_chance = 10, .frontflip_chance = 10 }, // hl_NoneSpecific
-		{.duck_chance = 30, .dodgeleft_chance = 50, .dodgeright_chance = 50, .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_Head
-		{.duck_chance = 20, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 80, .frontflip_chance = 0  }, // hl_TorsoFront
-		{.duck_chance = 20, .dodgeleft_chance = 40, .dodgeright_chance = 40, .jump_chance = 0,  .backflip_chance = 0,  .frontflip_chance = 80 }, // hl_TorsoBack
-		{.duck_chance = 10, .dodgeleft_chance = 0,  .dodgeright_chance = 90, .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmUpperLeft
-		{.duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 80, .jump_chance = 30, .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmLowerLeft
-		{.duck_chance = 20, .dodgeleft_chance = 90, .dodgeright_chance = 0,  .jump_chance = 0,  .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmUpperRight
-		{.duck_chance = 0,  .dodgeleft_chance = 80, .dodgeright_chance = 0,  .jump_chance = 30, .backflip_chance = 20, .frontflip_chance = 20 }, // hl_ArmLowerRight
-		{.duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 60, .jump_chance = 50, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegUpperLeft
-		{.duck_chance = 0,  .dodgeleft_chance = 0,  .dodgeright_chance = 30, .jump_chance = 90, .backflip_chance = 60, .frontflip_chance = 60 }, // hl_LegLowerLeft
-		{.duck_chance = 0,  .dodgeleft_chance = 60, .dodgeright_chance = 0,  .jump_chance = 50, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegUpperRight
-		{.duck_chance = 0,  .dodgeleft_chance = 30, .dodgeright_chance = 0,  .jump_chance = 90, .backflip_chance = 30, .frontflip_chance = 30 }, // hl_LegLowerRight
-	};
-
-	edict_t* projectile;
-	HitLocation_t hl;
-	float eta;
-	ParseMsgParms(msg, "eif", &projectile, &hl, &eta);
-
-	if (eta < 0.3f)
-		return; // Needs at least 0.3 seconds to respond.
-
-	//mxd. Get evade info.
-	if (hl < hl_NoneSpecific || hl > hl_LegLowerRight)
-		hl = hl_NoneSpecific;
-
-	const EvadeChance_t* ec = &evade_chances[hl];
-
-	if (irand(0, 100) < ec->frontflip_chance)
-	{
-		SetAnim(self, ANIM_MELEE8); // Hop forward.
-		return;
-	}
-
-	if (irand(0, 100) < ec->backflip_chance)
-	{
-		if (self->curAnimID == ANIM_RUN1 && irand(0, 10) < 8) // Running, do the front jump.
-			SetAnim(self, ANIM_MELEE10); // Jump forward.
-		else
-			SetAnim(self, ANIM_MELEE9); // Hop forward.
-
-		return;
-	}
-
-	if (irand(0, 100) < ec->dodgeleft_chance)
-	{
-		SetAnim(self, ANIM_MELEE6); // Hop left.
-		return;
-	}
-
-	if (irand(0, 100) < ec->dodgeright_chance)
-	{
-		SetAnim(self, ANIM_MELEE7); // Hop right.
-		return;
-	}
-
-	if (self->jump_chance >= 0 && irand(0, 100) < ec->jump_chance)
-	{
-		SetAnim(self, ANIM_MELEE10); // Jump forward.
-		return;
-	}
-
-	if (irand(0, 100) < ec->duck_chance)
-		SetAnim(self, ANIM_PAIN1); // Jump forward.
 }
 
 // Gorgon picks up and gores something.
@@ -1396,39 +1487,6 @@ void gorgonLerpOn(edict_t* self) //TODO: rename to gorgon_lerp_on.
 	self->s.renderfx |= RF_FRAMELERP;
 }
 
-static qboolean GorgonStartSlipAnimation(edict_t* self, const qboolean from_pain) //mxd. Named 'gorgonCheckSlipGo' in original logic.
-{
-	if (self->enemy == NULL)
-		return false;
-
-	vec3_t dir;
-	VectorSubtract(self->enemy->s.origin, self->s.origin, dir);
-	VectorNormalize(dir);
-
-	vec3_t right;
-	AngleVectors(self->s.angles, NULL, right, NULL);
-
-	if (DotProduct(right, dir) > 0.3f && irand(0, 1) == 1)
-	{
-		// Fall down, go boom.
-		if (from_pain)
-		{
-			SetAnim(self, ANIM_SLIP_PAIN);
-			return true;
-		}
-
-		if (self->monsterinfo.misc_debounce_time < level.time && irand(0, 4) == 0)
-		{
-			self->monsterinfo.misc_debounce_time = level.time + 7.0f;
-			SetAnim(self, ANIM_SLIP);
-
-			return true;
-		}
-	}
-
-	return false;
-}
-
 void gorgonCheckSlip(edict_t* self) //TODO: rename to gorgon_check_slip.
 {
 	if ((!(self->spawnflags & MSF_GORGON_SPEEDY) && self->s.scale > 0.75f) || !GorgonStartSlipAnimation(self, false))
@@ -1513,48 +1571,6 @@ void gorgon_ai_swim(edict_t* self, float distance)
 			SetAnim(self, ANIM_OUT_WATER);
 		}
 	}
-}
-
-static void GorgonPreThink(edict_t* self) //mxd. Named 'gorgon_prethink' in original logic.
-{
-	// Also make wake on surface of water?
-	if (self->flags & FL_INWATER)
-	{
-		self->gravity = 0.0f;
-		self->svflags |= (SVF_TAKE_NO_IMPACT_DMG | SVF_DO_NO_IMPACT_DMG);
-
-		if (!self->wait)
-		{
-			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, CEF_FLAG7, self->s.origin, "bd", 128 | 96, vec3_up);
-			self->wait = true;
-		}
-
-		if (self->curAnimID == ANIM_INAIR)
-			SetAnim(self, ANIM_TO_SWIM);
-	}
-	else
-	{
-		gi.RemoveEffects(&self->s, FX_M_EFFECTS);
-
-		self->gravity = 1.0f;
-		self->svflags &= ~SVF_TAKE_NO_IMPACT_DMG;
-
-		if (self->s.scale > 0.5f)
-			self->svflags &= ~SVF_DO_NO_IMPACT_DMG;
-
-		if (self->wait)
-		{
-			gi.CreateEffect(NULL, FX_WATER_ENTRYSPLASH, 0, self->s.origin, "bd", 128 | 96, vec3_up);
-			self->wait = false;
-		}
-
-		if (self->curAnimID == ANIM_SWIM || self->curAnimID == ANIM_SWIM_BITE_A || self->curAnimID == ANIM_SWIM_BITE_B)
-			SetAnim(self, ANIM_RUN1);
-
-		gorgonFixPitch(self);
-	}
-
-	self->next_pre_think = level.time + FRAMETIME; //mxd. Use define.
 }
 
 void gorgon_ai_eat(edict_t* self, float switch_animation)
@@ -1648,11 +1664,7 @@ void gorgon_ai_eat(edict_t* self, float switch_animation)
 	}
 }
 
-static void GorgonJumpMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_jump_msg' in original logic.
-{
-	if (self->jump_chance >= irand(0, 100))
-		SetAnim(self, ANIM_FJUMP);
-}
+#pragma endregion
 
 void GorgonStaticsInit(void)
 {

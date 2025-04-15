@@ -11,3 +11,6 @@
 void SP_monster_gorgon(edict_t* self);
 void SP_monster_gorgon_leader(edict_t* self);
 void GorgonStaticsInit(void);
+
+//mxd. Static forward declarations for m_gorgon.c
+static void GorgonPreThink(edict_t* self);
