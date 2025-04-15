@@ -422,97 +422,81 @@ static void GorgonMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	}
 }
 
-/*----------------------------------------------------------------------
-  Gorgon Run -decide which run animations to use
------------------------------------------------------------------------*/
-void gorgon_run(edict_t *self, G_Message_t *msg)
+// Gorgon Run - decide which run animations to use.
+static void GorgonRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_run' in original logic.
 {
-	vec3_t	v;
-	float	len;
-	float	delta;
-	qboolean enemy_vis;
 	vec3_t targ_org;
 
-	if(!AI_HaveEnemy(self))
+	if (!AI_HaveEnemy(self) || !MG_TryGetTargetOrigin(self, targ_org))
 		return;
 
-	if(!MG_TryGetTargetOrigin(self, targ_org))
-		return;
-
-	if(self->flags & FL_INWATER)
+	if (self->flags & FL_INWATER)
 	{
 		gorgonGoSwim(self);
 		return;
 	}
 
-	VectorSubtract (self->s.origin, targ_org, v);
-	len = VectorLength (v);
-	if(self->ai_mood == AI_MOOD_PURSUE)
-	{
-//		gi.dprintf("Running gorgon after player...\n");
-		enemy_vis = AI_IsClearlyVisible(self, self->enemy);
-	}
-	else
-		enemy_vis = clear_visible_pos(self, self->monsterinfo.nav_goal);
+	qboolean enemy_visible;
 
-	if(enemy_vis)
-	{//JUMP
-		if(self->enemy && irand(0, 4) && self->damage_debounce_time < level.time && !self->monsterinfo.roared)
-		{//should we do this the first time we see player?
-			if(AI_IsInfrontOf(self, self->enemy))
+	if (self->ai_mood == AI_MOOD_PURSUE)
+		enemy_visible = AI_IsClearlyVisible(self, self->enemy);
+	else
+		enemy_visible = clear_visible_pos(self, self->monsterinfo.nav_goal);
+
+	if (enemy_visible)
+	{
+		// Roar?
+		if (self->enemy != NULL && irand(0, 4) > 0 && self->damage_debounce_time < level.time && !self->monsterinfo.roared && AI_IsInfrontOf(self, self->enemy))
+		{
+			// Should we do this the first time we see player?
+			if (GorgonFindAsleepGorgons(self))
 			{
-				if(GorgonFindAsleepGorgons(self))
-				{
-					self->damage_debounce_time = level.time + 10;
-					SetAnim(self, ANIM_ROAR);//threaten, brings other monsters
-					return;
-				}
-				else if (!self->dmg_radius)
-				{//make a wakeup roar
-					self->dmg_radius = true;
-					SetAnim(self, ANIM_ROAR2);
-				}
+				self->damage_debounce_time = level.time + 10.0f;
+				SetAnim(self, ANIM_ROAR); // Threaten, brings other monsters.
+
+				return;
+			}
+
+			// Make a wakeup roar?
+			if (!self->dmg_radius)
+			{
+				self->dmg_radius = true;
+				SetAnim(self, ANIM_ROAR2);
+
+				//TODO: should return here? Will be overridden by either jump or walk anim below.
 			}
 		}
-		// Enemy is within range and far enough above or below to warrant a jump
-		if(MG_IsInforntPos(self, targ_org))
+
+		// Enemy is within range and far enough above or below to warrant a jump.
+		if (MG_IsInforntPos(self, targ_org))
 		{
-			if ((len > 40) && (len < 600) && ((self->s.origin[2] < targ_org[2] - 24) || 
-				(self->s.origin[2] > targ_org[2] + 24)))
+			vec3_t diff;
+			VectorSubtract(self->s.origin, targ_org, diff);
+			const float dist = VectorLength(diff);
+
+			if (dist > 40.0f && dist < 600.0f && (self->s.origin[2] < targ_org[2] - 24.0f || self->s.origin[2] > targ_org[2] + 24.0f))
 			{
-				if (abs(self->s.origin[2] - targ_org[2] - 24) < 200) // Can't jump more than 200 high
+				if (fabsf(self->s.origin[2] - targ_org[2] - 24.0f) < 200.0f) // Can't jump more than 200 high. //mxd. abs() -> fabsf().
 				{
-					if (!irand(0, 2))
+					if (irand(0, 2) == 0 && (self->ai_mood == AI_MOOD_PURSUE || irand(0, 4) == 0) && gorgon_check_jump(self)) // 20% chance to jump at a buoy.
 					{
-						if(self->ai_mood == AI_MOOD_PURSUE||!irand(0, 4))
-						{//20% chance to jump at a buoy
-							if(gorgon_check_jump(self))
-							{
-								SetAnim(self, ANIM_FJUMP);
-								return;
-							}
-						}
+						SetAnim(self, ANIM_FJUMP);
+						return;
 					}
 				}
 			}
 		}
 	}
 
-	delta = anglemod(self->s.angles[YAW] - self->ideal_yaw);
-	if (delta > 45 && delta <= 180)
-	{
-		SetAnim(self, ANIM_RUN3);		// Turn right
-	}
-	else if (delta > 180 && delta < 315)
-	{
-		SetAnim(self, ANIM_RUN2);		// Turn left
-	}
-	else
-	{
-		SetAnim(self, ANIM_RUN1);		// Run on 
-	}
-}
+	const float delta = anglemod(self->s.angles[YAW] - self->ideal_yaw);
 
+	if (delta > 45.0f && delta <= 180.0f)
+		SetAnim(self, ANIM_RUN3); // Turn right.
+	else if (delta > 180.0f && delta < 315.0f)
+		SetAnim(self, ANIM_RUN2); // Turn left.
+	else
+		SetAnim(self, ANIM_RUN1); // Run on.
+}
 
 /*----------------------------------------------------------------------
   Gorgon Pain - make the decision between pains 1, 2, or 3 or slip
@@ -1940,7 +1924,7 @@ void GorgonStaticsInit(void)
 
 	classStatics[CID_GORGON].msgReceivers[MSG_STAND] = GorgonStandMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_WALK] = GorgonWalkMsgHandler;
-	classStatics[CID_GORGON].msgReceivers[MSG_RUN] = gorgon_run;
+	classStatics[CID_GORGON].msgReceivers[MSG_RUN] = GorgonRunMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_EAT] = GorgonEatMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_MELEE] = GorgonMeleeMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_MISSILE] = GorgonMeleeMsgHandler;
