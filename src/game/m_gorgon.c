@@ -273,21 +273,15 @@ static void GorgonStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 
 	self->monsterinfo.misc_debounce_time = level.time + 5.0f;
 }
 
-/*----------------------------------------------------------------------
-  Gorgon Walk -decide which walk animations to use
------------------------------------------------------------------------*/
-void gorgon_walk(edict_t *self, G_Message_t *msg)
+// Gorgon Walk - decide which walk animations to use.
+static void GorgonWalkMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'gorgon_walk' in original logic.
 {
-	vec3_t	v;
-	float	len;
-	float	delta;
-	vec3_t targ_org;
+	vec3_t target_origin;
 
-	if(!MG_TryGetTargetOrigin(self, targ_org))
+	if (!MG_TryGetTargetOrigin(self, target_origin))
 		return;
 
-
-	if (!self->enemy)//?goal?
+	if (self->enemy == NULL) // ?goal?
 	{
 		SetAnim(self, ANIM_WALK1);
 		return;
@@ -295,49 +289,45 @@ void gorgon_walk(edict_t *self, G_Message_t *msg)
 
 	if (self->spawnflags & MSF_COWARD)
 	{
-		VectorSubtract (self->s.origin, targ_org, v);
-		len = VectorLength (v);
-		self->ideal_yaw = VectorYaw(v);
+		vec3_t diff;
+		VectorSubtract(self->s.origin, target_origin, diff);
+		const float dist = VectorLength(diff);
+		self->ideal_yaw = VectorYaw(diff);
+
 		M_ChangeYaw(self);
 
-		if (len < 200)
+		if (dist < 200.0f)
 		{
 			self->monsterinfo.aiflags |= AI_FLEE;
-			self->monsterinfo.flee_finished = level.time + flrand(4.0, 7.0);
+			self->monsterinfo.flee_finished = level.time + flrand(4.0f, 7.0f);
 			SetAnim(self, ANIM_RUN1);
+
 			return;
 		}
 	}
 
-	if(AI_IsClearlyVisible(self, self->enemy) && AI_IsInfrontOf(self, self->enemy))
+	if (AI_IsClearlyVisible(self, self->enemy) && AI_IsInfrontOf(self, self->enemy))
 	{
-		VectorSubtract (self->s.origin, targ_org, v);
-		len = VectorLength (v);
-		// targ_org is within range and far enough above or below to warrant a jump
-		if ((len > 40) && (len < 600) && ((self->s.origin[2] < targ_org[2] - 18) || 
-			(self->s.origin[2] > targ_org[2] + 18)))
+		vec3_t diff;
+		VectorSubtract(self->s.origin, target_origin, diff);
+		const float dist = VectorLength(diff);
+
+		// target_origin is within range and far enough above or below to warrant a jump.
+		if (dist > 40.0f && dist < 600.0f && (self->s.origin[2] < target_origin[2] - 18.0f || self->s.origin[2] > target_origin[2] + 18.0f) && gorgon_check_jump(self))
 		{
-			if(gorgon_check_jump(self))
-			{
-				SetAnim(self, ANIM_FJUMP);
-				return;
-			}
+			SetAnim(self, ANIM_FJUMP);
+			return;
 		}
 	}
 
-	delta = anglemod(self->s.angles[YAW] - self->ideal_yaw);
-	if (delta > 25 && delta <= 180)
-	{
+	const float delta = anglemod(self->s.angles[YAW] - self->ideal_yaw);
+
+	if (delta > 25.0f && delta <= 180.0f)
 		SetAnim(self, ANIM_WALK3);
-	}
-	else if (delta > 180 && delta < 335)
-	{
+	else if (delta > 180.0f && delta < 335.0f)
 		SetAnim(self, ANIM_WALK2);
-	}
 	else
-	{
 		SetAnim(self, ANIM_WALK1);
-	}
 }
 
 /*----------------------------------------------------------------------
@@ -1979,12 +1969,12 @@ void GorgonStaticsInit(void)
 	static ClassResourceInfo_t resInfo;
 
 	classStatics[CID_GORGON].msgReceivers[MSG_STAND] = GorgonStandMsgHandler;
-	classStatics[CID_GORGON].msgReceivers[MSG_WALK] = gorgon_walk;
+	classStatics[CID_GORGON].msgReceivers[MSG_WALK] = GorgonWalkMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_RUN] = gorgon_run;
 	classStatics[CID_GORGON].msgReceivers[MSG_EAT] = GorgonEatMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_MELEE] = gorgon_melee;
 	classStatics[CID_GORGON].msgReceivers[MSG_MISSILE] = gorgon_melee;
-	classStatics[CID_GORGON].msgReceivers[MSG_WATCH] = gorgon_walk;
+	classStatics[CID_GORGON].msgReceivers[MSG_WATCH] = GorgonWalkMsgHandler;
 	classStatics[CID_GORGON].msgReceivers[MSG_PAIN] = gorgon_pain;
 	classStatics[CID_GORGON].msgReceivers[MSG_DEATH] = gorgon_death;
 	classStatics[CID_GORGON].msgReceivers[MSG_JUMP]=gorgon_jump_msg;
