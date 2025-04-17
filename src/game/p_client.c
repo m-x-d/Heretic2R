@@ -125,7 +125,7 @@ static qboolean ShouldRepairPlayerNode(const int index) //mxd. Added to reduce c
 			index != MESH__BLADSTF && index != MESH__HELSTF && index != MESH__BOWACTV); // These shouldn't be messed with.
 }
 
-void player_repair_skin(edict_t* self) //TODO: rename to PlayerRepairSkin().
+void PlayerRepairSkin(edict_t* self) //mxd. Named 'player_repair_skin' in original logic.
 {
 	//FIXME: make sure it doesn't turn on a hand without the arm!
 	if (self->client == NULL || self->s.modelindex == 0)

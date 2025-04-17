@@ -362,7 +362,7 @@ static qboolean Pickup_Health(const edict_t* ent, edict_t* other)
 	}
 
 	if (other->client != NULL)
-		player_repair_skin(other);
+		PlayerRepairSkin(other);
 
 	gi.gamemsg_centerprintf(other, ent->item->msg_pickup);
 
