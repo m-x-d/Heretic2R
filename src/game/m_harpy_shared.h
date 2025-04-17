@@ -61,7 +61,6 @@ void move_harpy_tumble(edict_t* self);
 void harpy_flap_noise(edict_t* self);
 void harpy_flap_fast_noise(edict_t* self);
 void harpy_dive_noise(edict_t* self);
-void harpy_death_noise(edict_t* self);
 void harpy_pain1_noise(edict_t* self);
 void harpy_pain2_noise(edict_t* self);
 void harpy_attack_noise(edict_t* self);
@@ -103,12 +102,10 @@ void harpy_ai_hover(edict_t* self, float distance);
 void harpy_dive_loop(edict_t* self);
 void harpy_hit_loop(edict_t* self);
 void harpy_check_dodge(edict_t* self);
-
 void harpy_dead(edict_t* self);
 void harpy_hit(edict_t* self);
 void harpy_pause(edict_t* self);
 void harpy_flyback(edict_t* self);
-
 void harpy_fix_angles(edict_t* self);
 
 void move_harpy_hover(edict_t* self);
