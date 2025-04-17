@@ -771,29 +771,25 @@ static void HarpyWatchMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 	SetAnim(self, ANIM_PIRCH5);
 }
 
-void harpy_hit(edict_t *self)
+void harpy_hit(edict_t* self)
 {
-	trace_t	trace;
-	edict_t	*victim;
-	vec3_t	vf;//, hitPos, mins, maxs;
-	float	movedist, damage;
+	trace_t trace;
+	edict_t* victim = M_CheckMeleeHit(self, VectorLength(self->velocity), &trace);
 
-	AngleVectors(self->s.angles, vf, NULL, NULL);
-	movedist = VectorLength(self->velocity);
+	if (victim == NULL)
+		return;
 
-	victim = M_CheckMeleeHit( self, movedist, &trace);
-
-	if (victim)
+	if (victim == self)
 	{
-		if (victim == self)
-		{
-			SetAnim(self, ANIM_FLYBACK1);
-		}
-		else
-		{
-			damage = irand(HARPY_DMG_MIN, HARPY_DMG_MAX);
-			T_Damage (victim, self, self, vf, self->enemy->s.origin, trace.plane.normal, damage, damage*2, 0,MOD_DIED);
-		}
+		SetAnim(self, ANIM_FLYBACK1);
+	}
+	else
+	{
+		vec3_t forward;
+		AngleVectors(self->s.angles, forward, NULL, NULL);
+
+		const int damage = irand(HARPY_DMG_MIN, HARPY_DMG_MAX);
+		T_Damage(victim, self, self, forward, self->enemy->s.origin, trace.plane.normal, damage, damage * 2, 0, MOD_DIED);
 	}
 }
 
