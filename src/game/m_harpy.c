@@ -231,7 +231,6 @@ static void HarpyIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'harpy_bl
 	}
 }
 
-//TODO: replace these with generic harpy_sound() (copy gkrokon_sound())?
 void harpy_flap_noise(edict_t* self)
 {
 	gi.sound(self, CHAN_BODY, sounds[SND_FLAP], 1.0f, ATTN_NORM, 0.0f);
@@ -388,7 +387,7 @@ void harpy_flyback(edict_t* self)
 	SetAnim(self, ANIM_FLYBACK1);
 }
 
-void harpy_ai_pirch(edict_t* self) //TODO: rename to harpy_ai_perch.
+void harpy_ai_perch(edict_t* self) //mxd. Named 'harpy_ai_pirch' in original logic.
 {
 	if (!M_ValidTarget(self, self->enemy) || !AI_IsVisible(self, self->enemy))
 		return;

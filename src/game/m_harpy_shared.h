@@ -93,7 +93,7 @@ extern const animmove_t harpy_move_perch9_idle;
 void harpy_ai_fly(edict_t* self, float forward_offset, float right_offset, float up_offset);
 void harpy_ai_glide(edict_t* self, float forward_offset, float right_offset, float up_offset);
 void harpy_ai_circle(edict_t* self, float forward_offset, float right_offset, float up_offset);
-void harpy_ai_pirch(edict_t* self);
+void harpy_ai_perch(edict_t* self);
 void harpy_ai_hover(edict_t* self, float distance);
 
 void harpy_dive_loop(edict_t* self);
