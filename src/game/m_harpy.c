@@ -1244,72 +1244,59 @@ void HarpyStaticsInit(void)
 	classStatics[CID_HARPY].resInfo = &res_info;
 }
 
-/*QUAKED monster_harpy(1 .5 0) (-16 -16 -12) (16 16 12) AMBUSH ASLEEP PERCHING CIRCLING
-
-The harpy
-
-AMBUSH - Will not be woken up by other monsters or shots from player
-
-ASLEEP - will not appear until triggered
-
-PERCHING - Will watch player until get too close or get behind the harpy
-
-CIRCLING - harpy circles around in the air
-
-"wakeup_target" - monsters will fire this target the first time it wakes up (only once)
-
-"pain_target" - monsters will fire this target the first time it gets hurt (only once)
-
-*/
-void SP_monster_harpy(edict_t *self)
+// QUAKED monster_harpy(1 .5 0) (-16 -16 -12) (16 16 12) AMBUSH ASLEEP PERCHING CIRCLING
+// The harpy.
+// Spawnflags:
+// AMBUSH	- Will not be woken up by other monsters or shots from player.
+// ASLEEP	- will not appear until triggered.
+// PERCHING	- Will watch player until get too close or get behind the harpy.
+// CIRCLING	- Harpy circles around in the air.
+// Variables:
+// wakeup_target	- Monsters will fire this target the first time it wakes up (only once).
+// pain_target		- Monsters will fire this target the first time it gets hurt (only once).
+void SP_monster_harpy(edict_t* self)
 {
 	if (!M_FlymonsterStart(self))
-		return;				// Failed initialization
+		return; // Failed initialization.
 
-	self->msgHandler = DefaultMsgHandler;
-	self->monsterinfo.dismember = HarpyDismember;
-
-	if (!self->health)
+	if (self->health == 0)
 		self->health = HARPY_HEALTH;
 
-	self->max_health = self->health = MonsterHealth(self->health);
+	self->health = MonsterHealth(self->health);
+	self->max_health = self->health;
 
 	self->mass = HARPY_MASS;
-	self->yaw_speed = 14;
+	self->yaw_speed = 14.0f;
 
 	self->movetype = PHYSICSTYPE_FLY;
-	self->gravity = 0;
+	self->gravity = 0.0f;
 	self->flags |= FL_FLY;
 	self->solid = SOLID_BBOX;
 	self->clipmask = MASK_MONSTERSOLID;
 
 	VectorCopy(STDMinsForClass[self->classID], self->mins);
-	VectorCopy(STDMaxsForClass[self->classID], self->maxs);	
+	VectorCopy(STDMaxsForClass[self->classID], self->maxs);
 
-	self->svflags |= SVF_TAKE_NO_IMPACT_DMG;
-	self->svflags |= SVF_DO_NO_IMPACT_DMG;
-
+	self->svflags |= (SVF_TAKE_NO_IMPACT_DMG | SVF_DO_NO_IMPACT_DMG);
 	self->materialtype = MAT_FLESH;
 
-	self->s.modelindex = classStatics[CID_HARPY].resInfo->modelIndex;
-	self->s.skinnum = 0;
+	self->s.modelindex = (byte)classStatics[CID_HARPY].resInfo->modelIndex;
 
+	self->msgHandler = DefaultMsgHandler;
+	self->monsterinfo.dismember = HarpyDismember;
 	self->isBlocked = HarpyIsBlocked;
 	self->bounced = HarpyIsBlocked;
 
-	if (!self->s.scale)
-	{
-		self->monsterinfo.scale = self->s.scale = flrand(1.25, 1.75);
-	}
+	if (self->s.scale == 0.0f)
+		self->s.scale = flrand(1.25f, 1.75f);
 
-	self->monsterinfo.otherenemyname = "monster_rat";	
-
-	self->monsterinfo.aiflags |= AI_NO_ALERT;//pay no attention to alert ents
+	self->monsterinfo.scale = self->s.scale;
+	self->monsterinfo.otherenemyname = "monster_rat";
+	self->monsterinfo.aiflags |= AI_NO_ALERT; // Pay no attention to alert ents.
 
 	if (self->spawnflags & MSF_PERCHING)
 	{
-		
-		self->s.origin[2] += 4;
+		self->s.origin[2] += 4.0f;
 		SetAnim(self, ANIM_PIRCH5);
 	}
 	else if (self->spawnflags & MSF_SPECIAL1)
@@ -1321,19 +1308,19 @@ void SP_monster_harpy(edict_t *self)
 		QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 	}
 
-	if(irand(0,1))
+	if (irand(0, 1) != 0)
 		self->s.fmnodeinfo[MESH_HORNS].flags |= FMNI_NO_DRAW;
 
-	if(irand(0,1))
+	if (irand(0, 1) != 0)
 		self->s.fmnodeinfo[MESH_HORN].flags |= FMNI_NO_DRAW;
 
-	if(irand(0,1))
+	if (irand(0, 1) != 0)
 		self->s.fmnodeinfo[MESH_BACKSPIKES].flags |= FMNI_NO_DRAW;
 
-	if(irand(0,4))
+	if (irand(0, 4) != 0)
 		self->s.fmnodeinfo[MESH_NECKSPIKES].flags |= FMNI_NO_DRAW;
 
-	if(irand(0,2))
+	if (irand(0, 2) != 0)
 		self->s.fmnodeinfo[MESH_TAILSPIKES].flags |= FMNI_NO_DRAW;
 
 	gi.linkentity(self);
