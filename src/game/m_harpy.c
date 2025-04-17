@@ -819,98 +819,45 @@ void harpy_dead(edict_t* self)
 	M_EndDeath(self);
 }
 
-qboolean harpy_check_directions(edict_t *self, vec3_t goal, vec3_t vf, vec3_t vr, vec3_t vu, float checkdist, vec3_t ret)
+static qboolean HarpyCheckDirections(const edict_t* self, const vec3_t goal, const vec3_t forward, const vec3_t right, const vec3_t up, const float check_dist, vec3_t goal_direction) //mxd. Named 'harpy_check_directions' in original logic.
 {
-	trace_t	trace;
-	vec3_t	goalpos;
+	//mxd. Avoid modifying input vectors.
+	vec3_t directions[3];
+	VectorCopy(forward, directions[0]);
+	VectorCopy(right, directions[1]);
+	VectorCopy(up, directions[2]);
 
-	//Don't always check one direction first (looks mechanical)
-	if (irand(0,1))
-		VectorScale(vr, -1, vr);
+	//mxd. Somewhat randomize axis check order.
+	int axis = irand(10, 12); // Offset from 0, so going in negative direction works correctly.
+	const int increment = Q_sign(irand(-1, 0));
 
-	VectorMA(self->s.origin, checkdist, vr, goalpos);
-
-	gi.trace(goalpos, self->mins, self->maxs, goal, self, MASK_SHOT|MASK_WATER,&trace);
-
-	//We've found somewhere to go
-	if (trace.ent == self->enemy)
+	// Check cardinal directions.
+	for (int i = 0; i < 3; i++, axis += increment)
 	{
-		VectorCopy(vr, ret);
-		return true;
-	}
-	else  //Check the other directions
-	{
-		VectorScale(vr, -1, vr);
-		VectorMA(goalpos, checkdist, vr, goalpos);
+		vec3_t direction;
+		VectorCopy(directions[axis % 3], direction);
 
-		gi.trace(goalpos, self->mins, self->maxs, goal, self, MASK_SHOT|MASK_WATER,&trace);
+		// Don't always check same direction first (looks mechanical).
+		if (irand(0, 1) == 1)
+			Vec3ScaleAssign(-1.0f, direction);
 
-		if (trace.ent == self->enemy)
+		// Check opposite directions.
+		for (int c = 0; c < 2; c++)
 		{
-			VectorCopy(vr, ret);
-			return true;
-		}
-	}
-	
-	//Check up and down
-	VectorCopy(self->s.origin, goalpos);
+			vec3_t start_pos;
+			VectorMA(self->s.origin, check_dist, direction, start_pos);
 
-	//Don't always check one direction first (looks mechanical)
-	if (irand(0,1))
-		VectorScale(vu, -1, vu);
+			trace_t trace;
+			gi.trace(start_pos, self->mins, self->maxs, goal, self, MASK_SHOT | MASK_WATER, &trace);
 
-	VectorMA(goalpos, checkdist, vu, goalpos);
+			// We've found somewhere to go.
+			if (trace.ent == self->enemy)
+			{
+				VectorCopy(direction, goal_direction);
+				return true;
+			}
 
-	gi.trace(goalpos, self->mins, self->maxs, goal, self, MASK_SHOT|MASK_WATER,&trace);
-
-	//We've found somewhere to go
-	if (trace.ent == self->enemy)
-	{
-		VectorCopy(vu, ret);
-		return true;
-	}
-	else  //Check the other directions
-	{
-		VectorScale(vu, -1, vu);
-		VectorMA(goalpos, checkdist, vu, goalpos);
-
-		gi.trace(goalpos, self->mins, self->maxs, goal, self, MASK_SHOT|MASK_WATER,&trace);
-
-		if (trace.ent == self->enemy)
-		{
-			VectorCopy(vu, ret);
-			return true;
-		}
-	}
-		
-	//Check forward and back
-	VectorCopy(self->s.origin, goalpos);
-
-	//Don't always check one direction first (looks mechanical)
-	if (irand(0,1))
-		VectorScale(vf, -1, vf);
-
-	VectorMA(goalpos, checkdist, vf, goalpos);
-
-	gi.trace(goalpos, self->mins, self->maxs, goal, self, MASK_SHOT|MASK_WATER,&trace);
-
-	//We've found somewhere to go
-	if (trace.ent == self->enemy)
-	{
-		VectorCopy(vf, ret);
-		return true;
-	}
-	else  //Check the other directions
-	{
-		VectorScale(vf, -1, vf);
-		VectorMA(goalpos, checkdist, vf, goalpos);
-
-		gi.trace(goalpos, self->mins, self->maxs, goal, self, MASK_SHOT|MASK_WATER,&trace);
-
-		if (trace.ent == self->enemy)
-		{
-			VectorCopy(vf, ret);
-			return true;
+			Vec3ScaleAssign(-1.0f, direction); //BUGFIX: mxd. Original logic checks self->s.origin position instead of check_dist offset from it when checking second direction.
 		}
 	}
 
@@ -1194,7 +1141,7 @@ void move_harpy_hover(edict_t *self)
 			//Setup the directions
 			AngleVectors(self->s.angles, vf, vr, vu);
 
-			canmove = harpy_check_directions(self, self->enemy->s.origin, vf, vr, vu, HARPY_CHECK_DIST, goal);
+			canmove = HarpyCheckDirections(self, self->enemy->s.origin, vf, vr, vu, HARPY_CHECK_DIST, goal);
 			
 			//If we can see him from one of these, go there
 			if (canmove)
