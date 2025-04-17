@@ -904,7 +904,7 @@ void harpy_dive_move(edict_t* self) //mxd. Named 'move_harpy_dive' in original l
 	}
 }
 
-void move_harpy_dive_end(edict_t* self) //TODO: rename to harpy_dive_end_move.
+void harpy_dive_end_move(edict_t* self) //mxd. Named 'move_harpy_dive_end' in original logic.
 {
 	const vec3_t enemy_pos =
 	{

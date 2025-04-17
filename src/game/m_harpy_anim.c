@@ -135,18 +135,18 @@ const animmove_t harpy_move_dive_loop = { 6, harpy_frames_dive_loop, NULL };
 // Harpy transition from dive.
 static const animframe_t harpy_frames_dive_trans[] =
 {
-	{ FRAME_dive13, NULL, 0, 0, 0, NULL, 0, move_harpy_dive_end },
-	{ FRAME_dive14, NULL, 0, 0, 0, NULL, 0, move_harpy_dive_end },
-	{ FRAME_dive15, NULL, 0, 0, 0, NULL, 0, move_harpy_dive_end },
-	{ FRAME_dive16, NULL, 0, 0, 0, NULL, 0, move_harpy_dive_end },
-	{ FRAME_dive17, NULL, 0, 0, 0, NULL, 0, move_harpy_dive_end },
+	{ FRAME_dive13, NULL, 0, 0, 0, NULL, 0, harpy_dive_end_move },
+	{ FRAME_dive14, NULL, 0, 0, 0, NULL, 0, harpy_dive_end_move },
+	{ FRAME_dive15, NULL, 0, 0, 0, NULL, 0, harpy_dive_end_move },
+	{ FRAME_dive16, NULL, 0, 0, 0, NULL, 0, harpy_dive_end_move },
+	{ FRAME_dive17, NULL, 0, 0, 0, NULL, 0, harpy_dive_end_move },
 };
 const animmove_t harpy_move_dive_trans = { 5, harpy_frames_dive_trans, harpy_hit_loop };
 
 // Harpy dive hit loop.
 static const animframe_t harpy_frames_dive_hit_loop[] =
 {
-	{ FRAME_dive18, NULL, 0, 0, 0, NULL, 0, move_harpy_dive_end },
+	{ FRAME_dive18, NULL, 0, 0, 0, NULL, 0, harpy_dive_end_move },
 };
 const animmove_t harpy_move_dive_hit_loop = { 1, harpy_frames_dive_hit_loop, NULL };
 

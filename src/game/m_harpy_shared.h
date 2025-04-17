@@ -107,7 +107,7 @@ void harpy_fix_angles(edict_t* self);
 
 void move_harpy_hover(edict_t* self);
 void harpy_dive_move(edict_t* self);
-void move_harpy_dive_end(edict_t* self);
+void harpy_dive_end_move(edict_t* self);
 
 #define hl_backspikes		1
 #define hl_head				2
