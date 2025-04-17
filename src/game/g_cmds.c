@@ -765,7 +765,7 @@ static void Cmd_Kill_f(edict_t* ent)
 	// Make sure we gib as we don't want bodies lying around everywhere.
 	ent->health = -100000;
 	ent->client->meansofdeath = MOD_SUICIDE;
-	player_die(ent, ent, ent, 100000, vec3_origin);
+	PlayerDie(ent, ent, ent, 100000, vec3_origin);
 
 	// Don't even bother waiting for death frames.
 	ent->deadflag = DEAD_DEAD;

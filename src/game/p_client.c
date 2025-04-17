@@ -656,7 +656,7 @@ void player_decap(edict_t* self, edict_t* other) //TODO: rename to PlayerDecapit
 	{
 		self->health = 0;
 		self->client->meansofdeath = MOD_DECAP;
-		player_die(self, other, other, 100, gore_spot);
+		PlayerDie(self, other, other, 100, gore_spot);
 	}
 
 	Player_UpdateModelAttributes(self); //mxd
@@ -905,7 +905,7 @@ static void PlayerMakeGib(edict_t* self, edict_t* attacker)
 	self->takedamage = DAMAGE_NO;
 }
 
-int player_die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point)
+int PlayerDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'player_die' in original logic.
 {
 	//FIXME: Make sure you can still dismember and gib player while dying.
 	assert(self->client != NULL);
@@ -1637,7 +1637,7 @@ static void PutClientInServer(edict_t* ent)
 	ent->model = "players/male/tris.fm";
 
 	ent->pain = PlayerPain;
-	ent->die = player_die;
+	ent->die = PlayerDie;
 	ent->waterlevel = 0;
 	ent->watertype = 0;
 	ent->flags &= ~FL_NO_KNOCKBACK;

@@ -257,7 +257,7 @@ void Killed(edict_t* target, edict_t* inflictor, edict_t* attacker, const int da
 	{
 		//FIXME: Make sure you can still dismember and gib player while dying.
 		target->client->meansofdeath = mod;
-		player_die(target, inflictor, attacker, damage, point);
+		PlayerDie(target, inflictor, attacker, damage, point);
 	}
 	else
 	{
