@@ -875,7 +875,7 @@
     <ClInclude Include="m_harpy_anim.h">
       <Filter>src\Monsters\Harpy</Filter>
     </ClInclude>
-    <ClInclude Include="m_imp_local.h">
+    <ClInclude Include="m_imp_shared.h">
       <Filter>src\Monsters\Imp</Filter>
     </ClInclude>
     <ClInclude Include="m_imp_anim.h">
