@@ -864,44 +864,32 @@ static qboolean HarpyCheckDirections(const edict_t* self, const vec3_t goal, con
 	return false;
 }
 
-qboolean harpy_check_swoop(edict_t *self, vec3_t goal)
+static qboolean HarpyCheckSwoop(const edict_t* self, const vec3_t goal_pos) //mxd. Named 'harpy_check_swoop' in original logic.
 {
-	trace_t	trace;
-	vec3_t	checkpos;
-	float	zd;
+	// Find the difference in the target's height and the creature's height.
+	float z_diff = Q_fabs(self->enemy->s.origin[2] - self->s.origin[2]);
 
-	//Find the difference in the target's height and the creature's height
-	zd = Q_fabs(self->enemy->s.origin[2] - self->s.origin[2]);
-	
-	if (zd < HARPY_MIN_SWOOP_DIST)
+	if (z_diff < HARPY_MIN_SWOOP_DIST)
 		return false;
 
-	zd -= zd/4;
+	z_diff -= z_diff / 4.0f;
 
-	VectorCopy(self->s.origin, checkpos);
-	checkpos[2] -= zd;
+	vec3_t check_pos;
+	VectorCopy(self->s.origin, check_pos);
+	check_pos[2] -= z_diff;
 
-	//Trace down about that far and about one forth the distance to the target
-	gi.trace(self->s.origin, self->mins, self->maxs, checkpos, self, MASK_SHOT|MASK_WATER,&trace);
+	// Trace down about that far and about one forth the distance to the target.
+	trace_t trace;
+	gi.trace(self->s.origin, self->mins, self->maxs, check_pos, self, MASK_SHOT | MASK_WATER, &trace);
 
-	if (trace.fraction < 1 || trace.startsolid || trace.allsolid)
-	{
-		//gi.dprintf("harpy_check_swoop: failed down check\n");
+	if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
 		return false;
-	}
 
-	//Trace straight to the target
+	// Trace straight to the target.
+	gi.trace(check_pos, self->mins, self->maxs, goal_pos, self, MASK_SHOT | MASK_WATER, &trace);
 
-	gi.trace(checkpos, self->mins, self->maxs, goal, self, MASK_SHOT|MASK_WATER,&trace);
-
-	if (trace.ent != self->enemy)
-	{
-		//gi.dprintf("harpy_check_swoop: failed out check\n");
-		return false;
-	}
-
-	//There's a clear path
-	return true;
+	// If we hit our enemy, there's a clear path.
+	return (trace.ent == self->enemy);
 }
 
 void move_harpy_dive(edict_t *self)
@@ -1210,7 +1198,7 @@ void move_harpy_hover(edict_t *self)
 			}
 
 			//If nothing is happening, check to swoop
-			canmove = harpy_check_swoop(self, self->enemy->s.origin);
+			canmove = HarpyCheckSwoop(self, self->enemy->s.origin);
 
 			//If you can--nail um
 			if (canmove)
