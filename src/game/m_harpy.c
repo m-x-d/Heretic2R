@@ -766,7 +766,7 @@ static void HarpyEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 	}
 }
 
-void harpy_perch(edict_t *self, G_Message_t *msg)
+static void HarpyWatchMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'harpy_perch' in original logic.
 {
 	SetAnim(self, ANIM_PIRCH5);
 }
@@ -1388,7 +1388,7 @@ void HarpyStaticsInit(void)
 	classStatics[CID_HARPY].msgReceivers[MSG_RUN] = HarpyFlyMsgHandler;
 	classStatics[CID_HARPY].msgReceivers[MSG_PAIN] = HarpyPainMsgHandler;
 	classStatics[CID_HARPY].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
-	classStatics[CID_HARPY].msgReceivers[MSG_WATCH] = harpy_perch;
+	classStatics[CID_HARPY].msgReceivers[MSG_WATCH] = HarpyWatchMsgHandler;
 	classStatics[CID_HARPY].msgReceivers[MSG_DEATH_PAIN] = HarpyDeathPainMsgHandler;
 	classStatics[CID_HARPY].msgReceivers[MSG_EVADE] = HarpyEvadeMsgHandler;
 
