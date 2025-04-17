@@ -58,7 +58,7 @@ void MorphChickenToPlayerEnd(edict_t* self) //mxd. Named 'reset_morph_to_elf' in
 
 	// Set the model back to Corvus.
 	self->model = "models/player/corvette/tris.fm"; //TODO: there's no such model!
-	self->pain = player_pain;
+	self->pain = PlayerPain;
 	self->die = player_die;
 	self->flags &= ~FL_NO_KNOCKBACK;
 	self->gravity = 1.0f;

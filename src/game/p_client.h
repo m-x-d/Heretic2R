@@ -22,7 +22,7 @@ extern void ClientDisconnect(edict_t* ent);
 extern void ClientBegin(edict_t* ent);
 extern void ClientBeginServerFrame(edict_t* ent);
 
-extern int player_pain(edict_t* self, edict_t* other, float kick, int damage);
+extern int PlayerPain(edict_t* self, edict_t* other, float kick, int damage);
 extern int player_die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point);
 extern void player_dismember(edict_t* self, edict_t* other, int damage, HitLocation_t hit_location);
 extern void player_decap(edict_t* self, edict_t* other); //mxd

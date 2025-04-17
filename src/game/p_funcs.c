@@ -662,7 +662,7 @@ void PlayerChickenDeath(edict_t* self)
 	self->nextthink = level.time + FRAMETIME;
 
 	self->model = "models/player/corvette/tris.fm"; //TODO: there's no such model!
-	self->pain = player_pain;
+	self->pain = PlayerPain;
 
 	// Reset our skins.
 	self->s.skinnum = 0; // The skinnum stores the skin now.

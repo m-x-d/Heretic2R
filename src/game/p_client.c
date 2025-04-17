@@ -61,7 +61,7 @@ void SP_info_player_coop(edict_t* self)
 void SP_info_player_intermission(edict_t* self) { }
 
 // Player pain is handled at the end of the frame in P_DamageFeedback().
-int player_pain(edict_t* self, edict_t* other, float kick, int damage)
+int PlayerPain(edict_t* self, edict_t* other, float kick, int damage) //mxd. Named 'player_pain' in original logic.
 {
 	return 0;
 }
@@ -1636,7 +1636,7 @@ static void PutClientInServer(edict_t* ent)
 
 	ent->model = "players/male/tris.fm";
 
-	ent->pain = player_pain;
+	ent->pain = PlayerPain;
 	ent->die = player_die;
 	ent->waterlevel = 0;
 	ent->watertype = 0;
