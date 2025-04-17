@@ -577,38 +577,37 @@ static void HarpyDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Nam
 	}
 }
 
-void harpy_die(edict_t *self, G_Message_t *msg)
+static void HarpyDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'harpy_die' in original logic.
 {
-	if(self->monsterinfo.aiflags&AI_DONT_THINK)
+	if (self->monsterinfo.aiflags & AI_DONT_THINK)
 	{
 		SetAnim(self, ANIM_DIE);
 		return;
 	}
 
 	self->movetype = PHYSICSTYPE_STEP;
-	self->gravity = 1;
-	self->elasticity = 1.1;
+	self->gravity = 1.0f;
+	self->elasticity = 1.1f;
 
-	VectorSet(self->mins, -16, -16, 0);
-	VectorSet(self->maxs, 16, 16, 12);
-	
-	if(self->health <= -40) //gib death
+	VectorCopy(dead_harpy_mins, self->mins); //mxd
+	VectorCopy(dead_harpy_maxs, self->maxs); //mxd
+
+	if (self->health <= -40) // Gib death.
 	{
-		//harpy_throw_wings(self);
-		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1, ATTN_NORM, 0);
-		
+		gi.sound(self, CHAN_BODY, sounds[SND_GIB], 1.0f, ATTN_NORM, 0.0f);
+
 		BecomeDebris(self);
-		gi.linkentity (self);
-		return;
+		gi.linkentity(self);
 	}
+	else
+	{
+		self->msgHandler = DeadMsgHandler;
 
-	self->msgHandler = DeadMsgHandler;
+		if (irand(0, 1) == 1)
+			self->svflags &= ~SVF_TAKE_NO_IMPACT_DMG;
 
-	if(irand(0, 1))
-		self->svflags &= ~SVF_TAKE_NO_IMPACT_DMG;
-
-	SetAnim(self, ANIM_DIE);
-	return;
+		SetAnim(self, ANIM_DIE);
+	}
 }
 
 void harpy_dismember(edict_t *self, int damage, int HitLocation)
@@ -1456,7 +1455,7 @@ void HarpyStaticsInit(void)
 {
 	static ClassResourceInfo_t resInfo;
 
-	classStatics[CID_HARPY].msgReceivers[MSG_DEATH] = harpy_die;
+	classStatics[CID_HARPY].msgReceivers[MSG_DEATH] = HarpyDeathMsgHandler;
 	classStatics[CID_HARPY].msgReceivers[MSG_FLY] = harpy_hover;
 	classStatics[CID_HARPY].msgReceivers[MSG_STAND] = harpy_stand;
 	classStatics[CID_HARPY].msgReceivers[MSG_RUN] = harpy_hover;
