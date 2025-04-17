@@ -115,20 +115,20 @@ static const animframe_t harpy_frames_dive_go[] =
 	{ FRAME_dive02, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dive03, NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_dive04, NULL, 0, 0, 0, NULL, 0, NULL },
-	{ FRAME_dive05, NULL, 0, 0, 0, NULL, 0, move_harpy_dive },
-	{ FRAME_dive06, NULL, 0, 0, 0, NULL, 0, move_harpy_dive },
+	{ FRAME_dive05, NULL, 0, 0, 0, NULL, 0, harpy_dive_move },
+	{ FRAME_dive06, NULL, 0, 0, 0, NULL, 0, harpy_dive_move },
 };
 const animmove_t harpy_move_dive_go = { 6, harpy_frames_dive_go, harpy_dive_loop };
 
 // Harpy diving loop.
 static const animframe_t harpy_frames_dive_loop[] =
 {
-	{ FRAME_dive07, NULL, 0, 0, 0, NULL, 0, move_harpy_dive },
-	{ FRAME_dive08, NULL, 0, 0, 0, NULL, 0, move_harpy_dive },
-	{ FRAME_dive09, NULL, 0, 0, 0, NULL, 0, move_harpy_dive },
-	{ FRAME_dive10, NULL, 0, 0, 0, NULL, 0, move_harpy_dive },
-	{ FRAME_dive11, NULL, 0, 0, 0, NULL, 0, move_harpy_dive },
-	{ FRAME_dive12, NULL, 0, 0, 0, NULL, 0, move_harpy_dive },
+	{ FRAME_dive07, NULL, 0, 0, 0, NULL, 0, harpy_dive_move },
+	{ FRAME_dive08, NULL, 0, 0, 0, NULL, 0, harpy_dive_move },
+	{ FRAME_dive09, NULL, 0, 0, 0, NULL, 0, harpy_dive_move },
+	{ FRAME_dive10, NULL, 0, 0, 0, NULL, 0, harpy_dive_move },
+	{ FRAME_dive11, NULL, 0, 0, 0, NULL, 0, harpy_dive_move },
+	{ FRAME_dive12, NULL, 0, 0, 0, NULL, 0, harpy_dive_move },
 };
 const animmove_t harpy_move_dive_loop = { 6, harpy_frames_dive_loop, NULL };
 

@@ -867,7 +867,7 @@ static qboolean HarpyCheckSwoop(const edict_t* self, const vec3_t goal_pos) //mx
 	return (trace.ent == self->enemy);
 }
 
-void move_harpy_dive(edict_t* self) //TODO: rename to harpy_dive_move.
+void harpy_dive_move(edict_t* self) //mxd. Named 'move_harpy_dive' in original logic.
 {
 	if (self->groundentity != NULL || !HarpyCanMove(self, 64.0f))
 	{
