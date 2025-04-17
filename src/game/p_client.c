@@ -521,16 +521,16 @@ static int PlayerThrowLeg(edict_t* self, const float damage, const int node_inde
 	return thrown_nodes;
 }
 
-void player_dismember(edict_t* self, edict_t* other, const int damage, HitLocation_t hit_location) //TODO: rename to PlayerDismember().
+void PlayerDismember(edict_t* self, edict_t* other, const int damage, HitLocation_t hl) //mxd. Named 'player_dismember' in original logic.
 {
 	//FIXME: Make sure you can still dismember and gib player while dying.
 	qboolean dismember_ok = false;
 	qboolean in_polevault = false;
 
-	if (hit_location & hl_MeleeHit)
+	if (hl & hl_MeleeHit)
 	{
 		dismember_ok = true;
-		hit_location &= ~hl_MeleeHit;
+		hl &= ~hl_MeleeHit;
 	}
 
 	// Dismember living players in deathmatch only if that dmflag set!
@@ -546,24 +546,24 @@ void player_dismember(edict_t* self, edict_t* other, const int damage, HitLocati
 			if (in_polevault)
 			{
 				// Horizontal, in air, need to alter hit_location.
-				switch (hit_location)
+				switch (hl)
 				{
 					case hl_Head:
-						hit_location = hl_TorsoFront;
+						hl = hl_TorsoFront;
 						break;
 
 					case hl_TorsoFront:
-						hit_location = hl_TorsoFront; //TODO: shouldn't this be hl_TorsoBack?..
+						hl = hl_TorsoFront; //TODO: shouldn't this be hl_TorsoBack?..
 						break;
 
 					case hl_TorsoBack:
-						hit_location = hl_Head;
+						hl = hl_Head;
 						break;
 				}
 			}
 
-			if (self->health > 0 && irand(0, 2) == 0 && hit_location != hl_Head && hit_location != hl_ArmUpperLeft && hit_location != hl_ArmUpperRight)
-				hit_location = (irand(0, 1) ? hl_ArmUpperLeft : hl_ArmUpperRight); // Deathmatch hack.
+			if (self->health > 0 && irand(0, 2) == 0 && hl != hl_Head && hl != hl_ArmUpperLeft && hl != hl_ArmUpperRight)
+				hl = (irand(0, 1) ? hl_ArmUpperLeft : hl_ArmUpperRight); // Deathmatch hack.
 		}
 	}
 	else if (self->health > 0)
@@ -574,13 +574,13 @@ void player_dismember(edict_t* self, edict_t* other, const int damage, HitLocati
 	if (!dismember_ok && ((damage < 4 && self->health > 10) || (damage < 10 && self->health > 85)))
 		return;
 
-	if (hit_location <= hl_NoneSpecific || hit_location >= hl_Max) //mxd. 'hit_location > hl_Max' in original version.
+	if (hl <= hl_NoneSpecific || hl >= hl_Max) //mxd. 'hit_location > hl_Max' in original version.
 		return;
 
 	//FIXME: special manipulations of hit locations depending on anim.
 	int thrown_nodes = 0;
 
-	switch (hit_location)
+	switch (hl)
 	{
 		case hl_Head:
 			PlayerThrowHead(self, other, (float)damage, dismember_ok); //mxd
@@ -897,7 +897,7 @@ static void PlayerMakeGib(edict_t* self, edict_t* attacker)
 		const int num_limbs = irand(1, 3);
 
 		for (int i = 0; i < num_limbs; i++)
-			player_dismember(self, attacker, irand(80, 160), irand(hl_Head, hl_LegLowerRight) | hl_MeleeHit); //mxd. 'damage' arg set using flrand() in original version.
+			PlayerDismember(self, attacker, irand(80, 160), irand(hl_Head, hl_LegLowerRight) | hl_MeleeHit); //mxd. 'damage' arg set using flrand() in original version.
 	}
 
 	const byte mag = (byte)(Clamp(VectorLength(self->mins), 1.0f, 255.0f));

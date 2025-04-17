@@ -838,7 +838,7 @@ void T_Damage(edict_t* target, edict_t* inflictor, edict_t* attacker, const vec3
 					dismemeber_dmg *= 2;
 
 				if (target->client != NULL)
-					player_dismember(target, attacker, dismemeber_dmg, hl);
+					PlayerDismember(target, attacker, dismemeber_dmg, hl);
 				else
 					QPostMessage(target, MSG_DISMEMBER, PRI_DIRECTIVE, "ii", dismemeber_dmg, hl);
 			}
