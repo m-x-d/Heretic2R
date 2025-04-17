@@ -1049,207 +1049,159 @@ void harpy_check_dodge(edict_t* self)
 	harpy_ai_glide(self, 0.0f, 0.0f, 0.0f);
 }
 
-void move_harpy_hover(edict_t *self)
+void move_harpy_hover(edict_t* self) //TODO: rename to harpy_hover_move.
 {
-	qboolean	canmove = false, dodge = false;
-	trace_t		trace;
-	edict_t		*ent = NULL;
-	vec3_t		goal, dodgedir, mins, maxs, vf, vr, vu, vec, projvec, goalpos;
-	float		dist, zd, dodgedot;
-	
-	//gi.dprintf("move_harpy_hover: entered function\n");
+	if (self->enemy == NULL && !FindTarget(self))
+		return;
 
-	if (!self->enemy)
-	{
-		if (!FindTarget(self))
-		{
-			//gi.dprintf("move_harpy_hover: Enemy lost\n");
-			return;
-		}
-	}
+	// First check to see that the player is at least 128 units away (discounting z height).
+	vec3_t goal_dir;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, goal_dir);
+	goal_dir[2] = 0.0f;
 
-	//First check to see that the player is at least 128 units away in (discounting z height)
-	VectorCopy(self->enemy->s.origin, goal);
-	goal[2] = self->s.origin[2];
-
-	VectorSubtract(goal, self->s.origin, goal);
-	dist = VectorLength(goal);
-	
-	//Face target
-	self->ideal_yaw = VectorYaw(goal);
+	// Face target.
+	self->ideal_yaw = VectorYaw(goal_dir);
 	M_ChangeYaw(self);
 
-	//If he is...
-	if (dist > HARPY_MIN_HOVER_DIST && dist < HARPY_MAX_HOVER_DIST)
+	const float goal_dist = VectorLength(goal_dir);
+
+	// If he is...
+	if (goal_dist > HARPY_MIN_HOVER_DIST && goal_dist < HARPY_MAX_HOVER_DIST)
 	{
-		//gi.dprintf("move_harpy_hover: valid player distance\n");
+		// Make sure we've got line of sight.
+		const vec3_t mins = { -1.0f, -1.0f, -1.0f };
+		const vec3_t maxs = { 1.0f,  1.0f,  1.0f };
 
-		//Make sure we've got line of sight
-		VectorSet(mins, -1, -1, -1);
-		VectorSet(maxs, 1, 1, 1);
+		trace_t trace;
+		gi.trace(self->s.origin, mins, maxs, self->enemy->s.origin, self, MASK_SHOT | MASK_WATER, &trace);
 
-		gi.trace(self->s.origin, mins, maxs, self->enemy->s.origin, self, MASK_SHOT|MASK_WATER,&trace);
-
-		//If not, try looking from a bit to the side in all six directions
+		// If not, try looking from a bit to the side in all six directions.
 		if (trace.ent != self->enemy)
 		{
-			//gi.dprintf("move_harpy_hover: lost line of sight to player\n");
-			
-			//Setup the directions
-			AngleVectors(self->s.angles, vf, vr, vu);
+			// Setup the directions.
+			vec3_t forward;
+			vec3_t right;
+			vec3_t up;
+			AngleVectors(self->s.angles, forward, right, up);
 
-			canmove = HarpyCheckDirections(self, self->enemy->s.origin, vf, vr, vu, HARPY_CHECK_DIST, goal);
-			
-			//If we can see him from one of these, go there
-			if (canmove)
+			// If we can see him from one of these, go there.
+			if (HarpyCheckDirections(self, self->enemy->s.origin, forward, right, up, HARPY_CHECK_DIST, goal_dir))
 			{
-				//gi.dprintf("move_harpy_hover: new position found, moving...\n");
-				VectorMA(self->velocity, flrand(300.0F, 400.0F), goal, self->velocity);
+				VectorMA(self->velocity, flrand(300.0f, 400.0f), goal_dir, self->velocity);
 				return;
 			}
 
-			//gi.dprintf("move_harpy_hover: no new direction found, bumping about\n");
-			
-			//Otherwise just flap around and wait, perhaps lower yourself a bit if high up
+			// Otherwise just flap around and wait, perhaps lower yourself a bit if high up.
 			self->velocity[0] = flrand(-HARPY_DRIFT_AMOUNT_X, HARPY_DRIFT_AMOUNT_X);
 			self->velocity[1] = flrand(-HARPY_DRIFT_AMOUNT_Y, HARPY_DRIFT_AMOUNT_Y);
 			self->velocity[2] = flrand(-HARPY_DRIFT_AMOUNT_Z, HARPY_DRIFT_AMOUNT_Z);
 
 			return;
 		}
-		else
+
+		vec3_t dodge_dir;
+		// Check to make sure the player isn't shooting anything.
+
+		// This won't change over the calculations.
+		vec3_t enemy_dir;
+		VectorSubtract(self->enemy->s.origin, self->s.origin, enemy_dir);
+		VectorNormalize(enemy_dir);
+
+		qboolean dodge = false;
+		edict_t* ent = NULL;
+
+		while ((ent = FindInRadius(ent, self->s.origin, HARPY_PROJECTILE_SEARCH_RADIUS)) != NULL)
 		{
-			//Check to make sure the player isn't shooting anything
+			// We're only interested in his projectiles.
+			if (ent->owner != self->enemy)
+				continue;
 
-			//This won't change over the calculations
-			VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
-			VectorNormalize(vec);
+			vec3_t proj_dir;
+			VectorCopy(ent->velocity, proj_dir);
+			VectorNormalize(proj_dir);
 
-			while ((ent = FindInRadius(ent, self->s.origin, HARPY_PROJECTILE_SEARCH_RADIUS)) != NULL)
+			if (DotProduct(proj_dir, enemy_dir) < -0.6f)
 			{
-				//We're only interested in his projectiles
-				if (ent->owner != self->enemy)
-					continue;
-				
-				VectorCopy(ent->velocity, projvec);
-				VectorNormalize(projvec);
+				dodge = true;
 
-				dodgedot = DotProduct(projvec, vec);
+				vec3_t right;
+				AngleVectors(self->s.angles, NULL, right, NULL);
 
-				//gi.dprintf("Found projectile with dot %f\n", dodgedot);
+				if (irand(0, 1) == 1)
+					Vec3ScaleAssign(-1.0f, right);
 
-				if (dodgedot < -0.6)
-				{
-					//gi.dprintf("Dodge it!\n");
+				vec3_t goal_pos;
+				VectorMA(self->s.origin, 100.0f, right, goal_pos);
 
-					dodge = true;
-					AngleVectors(self->s.angles, NULL, vr, NULL);
+				gi.trace(self->s.origin, self->mins, self->maxs, goal_pos, self, MASK_SHOT | MASK_WATER, &trace);
 
-					if (irand(0,1))
-						VectorScale(vr, -1, vr);
+				if (trace.fraction < 1 || trace.startsolid || trace.allsolid)
+					Vec3ScaleAssign(-1.0f, right);
 
-					VectorMA(self->s.origin, 100, vr, goalpos);
+				VectorCopy(right, dodge_dir);
 
-					gi.trace(self->s.origin, self->mins, self->maxs, goalpos, self, MASK_SHOT|MASK_WATER,&trace);
-
-					if (trace.fraction < 1 || trace.startsolid || trace.allsolid)
-						VectorScale(vr, -1, vr);
-
-					VectorCopy(vr, dodgedir);
-				}
+				//TODO: we found projectile to dodge. Souldn't we either break here, or compare distances with previous match to find the closest one?
 			}
+		}
 
-			if (dodge)
-			{
-				//If he is, dodge!
-				VectorMA(self->velocity, irand(300, 500), dodgedir, self->velocity);
-				return;
-			}
+		if (dodge)
+		{
+			// If he is, dodge!
+			VectorMA(self->velocity, flrand(300.0f, 500.0f), dodge_dir, self->velocity); //mxd. irand() in original logic.
+			return;
+		}
 
-			//If nothing is happening, check to swoop
-			canmove = HarpyCheckSwoop(self, self->enemy->s.origin);
+		// If nothing is happening, check to swoop. If you can - nail'em.
+		if (HarpyCheckSwoop(self, self->enemy->s.origin))
+		{
+			self->monsterinfo.jump_time = 2.0f;
+			SetAnim(self, ANIM_DIVE_GO);
 
-			//If you can--nail um
-			if (canmove)
-			{
-				//gi.dprintf("move_harpy_hover: valid swoop\n");
-				self->monsterinfo.jump_time = 2;
-				SetAnim(self, ANIM_DIVE_GO);
+			return;
+		}
 
-				return;
-			}
+		// Find the difference in the target's height and the creature's height.
+		const float z_dist = Q_fabs(self->enemy->s.origin[2] - self->s.origin[2]);
 
-			//If not, check to see if there's somewhere that you can get to that will allow it
-			//FIXME: Too many checks.. just try something simple
-
-			//If all else fails, then just pick a random direction to nudge yourself to
+		// We can't swoop because we're too low, so fly upwards if possible.
+		if (z_dist < HARPY_MIN_SWOOP_DIST)
+		{
+			if (!HarpyCanMove(self, -64.0f))
+				SetAnim(self, ANIM_FLY1);
 			else
-			{
-				//gi.dprintf("move_harpy_hover: swoop worthless\n");
-				
-				//Find the difference in the target's height and the creature's height
-				zd = Q_fabs(self->enemy->s.origin[2] - self->s.origin[2]);
-		
-				//We can't swoop because we're too low, so fly upwards if possible
-				if (zd < HARPY_MIN_SWOOP_DIST)
-				{
-					if (!HarpyCanMove(self, -64))
-					{
-						SetAnim(self, ANIM_FLY1);
-						return;
-					}
-					else
-					{
-						//gi.dprintf("Moveback ok\n");
-						SetAnim(self, ANIM_FLYBACK1);
-						return;
-					}
-				}
-				else
-				{
-					//Otherwise just flap around and wait, perhaps lower yourself a bit if high up					
-					self->velocity[0] = flrand(-HARPY_DRIFT_AMOUNT_X, HARPY_DRIFT_AMOUNT_X);
-					self->velocity[1] = flrand(-HARPY_DRIFT_AMOUNT_Y, HARPY_DRIFT_AMOUNT_Y);
-					self->velocity[2] = flrand(-HARPY_DRIFT_AMOUNT_Z, HARPY_DRIFT_AMOUNT_Z);
-
-					AngleVectors(self->s.angles, vec, NULL, NULL);
-					VectorMA(self->velocity, irand(200,300), vec, self->velocity);
-				}
-
-				return;
-			}
-
-		}
-
-		//If he's too far away trace a line (expanded) to see if you can move at him
-	}
-	else if (dist < HARPY_MIN_HOVER_DIST)
-	{
-		//gi.dprintf("move_harpy_hover: backing away\n");
-		if (!HarpyCanMove(self, -64))
-		{
-			SetAnim(self, ANIM_FLY1);
+				SetAnim(self, ANIM_FLYBACK1);
 		}
 		else
 		{
-			SetAnim(self, ANIM_FLYBACK1);
+			// Otherwise just flap around and wait, perhaps lower yourself a bit if high up.			
+			self->velocity[0] = flrand(-HARPY_DRIFT_AMOUNT_X, HARPY_DRIFT_AMOUNT_X);
+			self->velocity[1] = flrand(-HARPY_DRIFT_AMOUNT_Y, HARPY_DRIFT_AMOUNT_Y);
+			self->velocity[2] = flrand(-HARPY_DRIFT_AMOUNT_Z, HARPY_DRIFT_AMOUNT_Z);
+
+			vec3_t forward;
+			AngleVectors(self->s.angles, forward, NULL, NULL);
+			VectorMA(self->velocity, flrand(200.0f, 300.0f), forward, self->velocity); //mxd. irand() in original logic.
 		}
+
+		//FIXME: If he's too far away trace a line (expanded) to see if you can move at him.
+		return;
+	}
+
+	if (goal_dist < HARPY_MIN_HOVER_DIST)
+	{
+		if (!HarpyCanMove(self, -64.0f))
+			SetAnim(self, ANIM_FLY1);
+		else
+			SetAnim(self, ANIM_FLYBACK1);
 	}
 	else
 	{
-		//gi.dprintf("move_harpy_hover: covering ground\n");
-		if (!HarpyCanMove(self, 64))
-		{
+		if (!HarpyCanMove(self, 64.0f))
 			SetAnim(self, ANIM_FLYBACK1);
-		}
 		else
-		{
 			SetAnim(self, ANIM_FLY1);
-		}
 	}
-
-	return;
-} 
+}
 
 //New physics call that modifies the harpy's velocity and angles based on aerodynamics
 void harpy_flight_model(edict_t *self)
