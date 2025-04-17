@@ -242,16 +242,6 @@ void harpy_flap_fast_noise(edict_t* self)
 	gi.sound(self, CHAN_BODY, sounds[SND_FLAP_FAST], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void harpy_pain1_noise(edict_t* self)
-{
-	gi.sound(self, CHAN_BODY, sounds[SND_PAIN1], 1.0f, ATTN_NORM, 0.0f);
-}
-
-void harpy_pain2_noise(edict_t* self)
-{
-	gi.sound(self, CHAN_BODY, sounds[SND_PAIN2], 1.0f, ATTN_NORM, 0.0f);
-}
-
 void harpy_attack_noise(edict_t* self)
 {
 	gi.sound(self, CHAN_BODY, sounds[SND_ATTACK], 1.0f, ATTN_NORM, 0.0f);
@@ -482,7 +472,7 @@ void move_harpy_tumble(edict_t* self) //TODO: rename to harpy_tumble_move.
 	if (self->groundentity != NULL || trace.fraction < 1.0f || trace.startsolid || trace.allsolid || self->monsterinfo.jump_time < level.time)
 	{
 		gi.CreateEffect(&self->s, FX_DUST_PUFF, CEF_OWNERS_ORIGIN, self->s.origin, NULL);
-		gi.sound(self, CHAN_BODY, sounds[SND_DEATH], 1.0f, ATTN_NORM, 0.0f);
+		gi.sound(self, CHAN_BODY, sounds[SND_DEATH], 1.0f, ATTN_NORM, 0.0f); //mxd. Inline harpy_death_noise().
 
 		VectorCopy(self->s.angles, self->movedir);
 		SetAnim(self, ANIM_DIE);
@@ -698,7 +688,7 @@ static void HarpyDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. N
 			if (self->health > 0)
 			{
 				self->health = -1;
-				gi.sound(self, CHAN_BODY, sounds[SND_DEATH], 1.0f, ATTN_NORM, 0.0f);
+				gi.sound(self, CHAN_BODY, sounds[SND_DEATH], 1.0f, ATTN_NORM, 0.0f); //mxd. Inline harpy_death_noise().
 				SetAnim(self, ANIM_TUMBLE);
 				self->msgHandler = DeadMsgHandler;
 			}
@@ -724,12 +714,9 @@ static void HarpyPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'h
 	}
 	else if (force_pain || (irand(0, 10) < 2 && self->pain_debounce_time < level.time))
 	{
-		if (irand(0, 1) == 1)
-			harpy_pain1_noise(self);
-		else
-			harpy_pain2_noise(self);
-
+		gi.sound(self, CHAN_BODY, sounds[irand(SND_PAIN1, SND_PAIN2)], 1.0f, ATTN_NORM, 0.0f); //mxd. Inline harpy_pain1_noise() and harpy_pain2_noise().
 		self->pain_debounce_time = level.time + 2.0f;
+
 		SetAnim(self, ANIM_PAIN1);
 	}
 }

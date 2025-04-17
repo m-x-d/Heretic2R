@@ -61,8 +61,6 @@ void move_harpy_tumble(edict_t* self);
 void harpy_flap_noise(edict_t* self);
 void harpy_flap_fast_noise(edict_t* self);
 void harpy_dive_noise(edict_t* self);
-void harpy_pain1_noise(edict_t* self);
-void harpy_pain2_noise(edict_t* self);
 void harpy_attack_noise(edict_t* self);
 
 extern const animmove_t harpy_move_die1;
