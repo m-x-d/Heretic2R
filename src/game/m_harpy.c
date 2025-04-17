@@ -984,12 +984,12 @@ void move_harpy_dive_end(edict_t* self) //TODO: rename to harpy_dive_end_move.
 		harpy_ai_glide(self, 0.0f, 0.0f, 0.0f);
 }
 
-void harpy_dive_loop(edict_t *self)
+void harpy_dive_loop(edict_t* self)
 {
 	SetAnim(self, ANIM_DIVE_LOOP);
 }
 
-void harpy_hit_loop(edict_t *self)
+void harpy_hit_loop(edict_t* self)
 {
 	SetAnim(self, ANIM_HIT_LOOP);
 }
