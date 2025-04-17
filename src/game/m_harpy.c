@@ -434,13 +434,10 @@ void harpy_ai_hover(edict_t* self, float distance)
 	harpy_ai_glide(self, 0.0f, 0.0f, 0.0f);
 }
 
-//receiver for MSG_FLYBACK
-void harpy_flyback(edict_t *self)
+void harpy_flyback(edict_t* self)
 {
 	SetAnim(self, ANIM_FLYBACK1);
-	return;
 }
-
 
 void harpy_ai_pirch(edict_t *self)
 {
