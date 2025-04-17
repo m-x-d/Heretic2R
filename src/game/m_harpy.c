@@ -757,11 +757,6 @@ static void HarpyFlyMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ha
 	}
 }
 
-void harpy_fly(edict_t *self, G_Message_t *msg)
-{
-	SetAnim(self, ANIM_FLY1);
-}
-
 void harpy_evade(edict_t *self, G_Message_t *msg)
 {
 	if (self->curAnimID > ANIM_PIRCH1 && self->curAnimID < ANIM_PIRCH9)
