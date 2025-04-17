@@ -212,149 +212,149 @@ static const animframe_t harpy_frames_glide[] =
 };
 const animmove_t harpy_move_glide = { 12, harpy_frames_glide, NULL };
 
-// Harpy Pirch 1 Idle.
-static const animframe_t harpy_frames_pirch1_idle[] =
+// Harpy Perch 1 Idle.
+static const animframe_t harpy_frames_perch1_idle[] =
 {
-	{ FRAME_pirch1,		NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch2,		NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch3,		NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch4,		NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch5,		NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch6,		NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch7,		NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch8,		NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch9,		NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch10,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch1,		NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch2,		NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch3,		NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch4,		NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch5,		NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch6,		NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch7,		NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch8,		NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch9,		NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch10,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
 };
-const animmove_t harpy_move_pirch1_idle = { 10, harpy_frames_pirch1_idle, NULL };
+const animmove_t harpy_move_perch1_idle = { 10, harpy_frames_perch1_idle, NULL };
 
-// Harpy Pirch 2 Idle.
-static const animframe_t harpy_frames_pirch2_idle[] =
+// Harpy Perch 2 Idle.
+static const animframe_t harpy_frames_perch2_idle[] =
 {
-	{ FRAME_pirch11,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch12,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch13,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch14,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch15,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch16,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch17,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch18,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch19,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch20,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch11,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch12,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch13,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch14,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch15,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch16,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch17,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch18,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch19,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch20,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
 };
-const animmove_t harpy_move_pirch2_idle = { 10, harpy_frames_pirch2_idle, NULL };
+const animmove_t harpy_move_perch2_idle = { 10, harpy_frames_perch2_idle, NULL };
 
-// Harpy Pirch 3 Idle.
-static const animframe_t harpy_frames_pirch3_idle[] =
+// Harpy Perch 3 Idle.
+static const animframe_t harpy_frames_perch3_idle[] =
 {
-	{ FRAME_pirch21,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch22,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch23,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch24,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch25,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch26,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch27,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch28,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch29,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch30,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch21,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch22,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch23,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch24,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch25,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch26,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch27,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch28,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch29,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch30,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
 };
-const animmove_t harpy_move_pirch3_idle = { 10, harpy_frames_pirch3_idle, NULL };
+const animmove_t harpy_move_perch3_idle = { 10, harpy_frames_perch3_idle, NULL };
 
-// Harpy Pirch 4 Idle.
-static const animframe_t harpy_frames_pirch4_idle[] =
+// Harpy Perch 4 Idle.
+static const animframe_t harpy_frames_perch4_idle[] =
 {
-	{ FRAME_pirch31,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch32,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch33,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch34,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch35,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch36,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch37,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch38,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch39,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch40,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch31,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch32,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch33,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch34,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch35,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch36,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch37,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch38,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch39,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch40,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
 };
-const animmove_t harpy_move_pirch4_idle = { 10, harpy_frames_pirch4_idle, NULL };
+const animmove_t harpy_move_perch4_idle = { 10, harpy_frames_perch4_idle, NULL };
 
-// Harpy Pirch 5 Idle.
-static const animframe_t harpy_frames_pirch5_idle[] =
+// Harpy Perch 5 Idle.
+static const animframe_t harpy_frames_perch5_idle[] =
 {
-	{ FRAME_pirch41,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch42,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch43,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch44,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch45,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch46,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch47,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch48,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch49,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch50,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch41,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch42,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch43,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch44,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch45,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch46,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch47,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch48,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch49,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch50,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
 };
-const animmove_t harpy_move_pirch5_idle = { 10, harpy_frames_pirch5_idle, NULL };
+const animmove_t harpy_move_perch5_idle = { 10, harpy_frames_perch5_idle, NULL };
 
-// Harpy Pirch 6 Idle.
-static const animframe_t harpy_frames_pirch6_idle[] =
+// Harpy Perch 6 Idle.
+static const animframe_t harpy_frames_perch6_idle[] =
 {
-	{ FRAME_pirch51,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch52,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch53,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch54,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch55,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch56,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch57,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch58,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch59,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch60,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch51,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch52,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch53,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch54,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch55,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch56,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch57,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch58,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch59,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch60,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
 };
-const animmove_t harpy_move_pirch6_idle = { 10, harpy_frames_pirch6_idle, NULL };
+const animmove_t harpy_move_perch6_idle = { 10, harpy_frames_perch6_idle, NULL };
 
-// Harpy Pirch 7 Idle.
-static const animframe_t harpy_frames_pirch7_idle[] =
+// Harpy Perch 7 Idle.
+static const animframe_t harpy_frames_perch7_idle[] =
 {
-	{ FRAME_pirch61,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch62,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch63,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch64,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch65,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch66,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch67,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch68,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch69,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch70,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch61,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch62,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch63,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch64,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch65,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch66,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch67,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch68,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch69,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch70,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
 };
-const animmove_t harpy_move_pirch7_idle = { 10, harpy_frames_pirch7_idle, NULL };
+const animmove_t harpy_move_perch7_idle = { 10, harpy_frames_perch7_idle, NULL };
 
-// Harpy Pirch 8 Idle.
-static const animframe_t harpy_frames_pirch8_idle[] =
+// Harpy Perch 8 Idle.
+static const animframe_t harpy_frames_perch8_idle[] =
 {
-	{ FRAME_pirch71,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch72,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch73,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch74,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch75,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch76,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch77,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch78,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch79,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch80,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch71,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch72,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch73,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch74,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch75,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch76,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch77,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch78,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch79,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch80,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
 };
-const animmove_t harpy_move_pirch8_idle = { 10, harpy_frames_pirch8_idle, NULL };
+const animmove_t harpy_move_perch8_idle = { 10, harpy_frames_perch8_idle, NULL };
 
-// Harpy Pirch 9 Idle.
-static const animframe_t harpy_frames_pirch9_idle[] =
+// Harpy Perch 9 Idle.
+static const animframe_t harpy_frames_perch9_idle[] =
 {
-	{ FRAME_pirch81,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch82,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch83,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch84,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch85,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch86,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch87,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch88,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch89,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
-	{ FRAME_pirch90,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch81,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch82,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch83,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch84,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch85,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch86,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch87,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch88,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch89,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
+	{ FRAME_perch90,	NULL, 0, 0, 0, NULL, 0, harpy_ai_pirch },
 };
-const animmove_t harpy_move_pirch9_idle = { 10, harpy_frames_pirch9_idle, NULL };
+const animmove_t harpy_move_perch9_idle = { 10, harpy_frames_perch9_idle, NULL };
 
 // Harpy Takeoff.
 static const animframe_t harpy_frames_takeoff[] =

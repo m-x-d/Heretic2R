@@ -84,15 +84,15 @@ extern const animmove_t harpy_move_circle;
 extern const animmove_t harpy_move_circle_flap;
 
 // Perches.
-extern const animmove_t harpy_move_pirch1_idle;
-extern const animmove_t harpy_move_pirch2_idle;
-extern const animmove_t harpy_move_pirch3_idle;
-extern const animmove_t harpy_move_pirch4_idle;
-extern const animmove_t harpy_move_pirch5_idle;
-extern const animmove_t harpy_move_pirch6_idle;
-extern const animmove_t harpy_move_pirch7_idle;
-extern const animmove_t harpy_move_pirch8_idle;
-extern const animmove_t harpy_move_pirch9_idle;
+extern const animmove_t harpy_move_perch1_idle;
+extern const animmove_t harpy_move_perch2_idle;
+extern const animmove_t harpy_move_perch3_idle;
+extern const animmove_t harpy_move_perch4_idle;
+extern const animmove_t harpy_move_perch5_idle;
+extern const animmove_t harpy_move_perch6_idle;
+extern const animmove_t harpy_move_perch7_idle;
+extern const animmove_t harpy_move_perch8_idle;
+extern const animmove_t harpy_move_perch9_idle;
 
 void harpy_ai_fly(edict_t* self, float forward_offset, float right_offset, float up_offset);
 void harpy_ai_glide(edict_t* self, float forward_offset, float right_offset, float up_offset);
