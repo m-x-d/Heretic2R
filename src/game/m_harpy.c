@@ -757,11 +757,11 @@ static void HarpyFlyMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ha
 	}
 }
 
-void harpy_evade(edict_t *self, G_Message_t *msg)
+static void HarpyEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'harpy_evade' in original logic.
 {
 	if (self->curAnimID > ANIM_PIRCH1 && self->curAnimID < ANIM_PIRCH9)
 	{
-		self->mins[2] -= 4;
+		self->mins[2] -= 4.0f;
 		SetAnim(self, ANIM_TAKEOFF);
 	}
 }
@@ -1390,7 +1390,7 @@ void HarpyStaticsInit(void)
 	classStatics[CID_HARPY].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_HARPY].msgReceivers[MSG_WATCH] = harpy_perch;
 	classStatics[CID_HARPY].msgReceivers[MSG_DEATH_PAIN] = HarpyDeathPainMsgHandler;
-	classStatics[CID_HARPY].msgReceivers[MSG_EVADE] = harpy_evade;
+	classStatics[CID_HARPY].msgReceivers[MSG_EVADE] = HarpyEvadeMsgHandler;
 
 	resInfo.numAnims = NUM_ANIMS;
 	resInfo.animations = animations;
