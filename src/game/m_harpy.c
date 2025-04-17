@@ -113,39 +113,43 @@ static int HarpyHeadDie(edict_t* self, edict_t* inflictor, edict_t* attacker, in
 	return 1;
 }
 
-void harpy_head_think (edict_t *self)
+static void HarpyHeadThink(edict_t* self) //mxd. Named 'harpy_head_think' in original logic.
 {
-	vec3_t	down;
-
-	if(!self->owner || self->owner->health <= 0)
+	if (self->owner == NULL || self->owner->health <= 0)
 	{
 		self->movetype = PHYSICSTYPE_STEP;
-		self->elasticity = 0.8;
-		self->gravity = 1.0;
+		self->elasticity = 0.8f;
+		self->gravity = 1.0f;
 		self->solid = SOLID_BBOX;
 		self->takedamage = DAMAGE_YES;
 		self->clipmask = MASK_MONSTERSOLID;
-		self->nextthink = -1;
+		self->nextthink = -1.0f;
 		self->svflags |= SVF_DEADMONSTER;
 		self->health = 25;
 		self->die = HarpyHeadDie;
-		AngleVectors(self->s.angles, down, NULL, NULL);
-		VectorScale(down, 100, self->velocity);
-		VectorSet(self->mins, -4, -4, -4);
-		VectorSet(self->maxs, 4, 4, 4);
+
+		vec3_t forward;
+		AngleVectors(self->s.angles, forward, NULL, NULL);
+		VectorScale(forward, 100.0f, self->velocity);
+
+		VectorSet(self->mins, -4.0f, -4.0f, -4.0f);
+		VectorSet(self->maxs,  4.0f,  4.0f,  4.0f);
+
 		gi.linkentity(self);
-		return;
 	}
+	else
+	{
+		VectorCopy(self->owner->s.angles, self->s.angles);
+		VectorCopy(self->owner->s.origin, self->s.origin);
 
-	VectorCopy(self->owner->s.angles, self->s.angles);
-	VectorCopy(self->owner->s.origin, self->s.origin);
+		vec3_t down;
+		AngleVectors(self->s.angles, NULL, NULL, down);
+		Vec3ScaleAssign(-1.0f, down);
 
-	AngleVectors(self->s.angles, NULL, NULL, down);
-	Vec3ScaleAssign(-1, down);
+		VectorMA(self->s.origin, self->count, down, self->s.origin);
 
-	VectorMA(self->s.origin, self->count, down, self->s.origin);
-
-	self->nextthink = level.time + 0.1;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+	}
 }
 
 void harpy_take_head(edict_t *self, edict_t *victim, int BodyPart, int frame, int flags) //TODO: rename to HarpyTakeHead.
@@ -188,7 +192,7 @@ void harpy_take_head(edict_t *self, edict_t *victim, int BodyPart, int frame, in
 					victim->s.modelindex,//my modelindex
 					victim->s.number);//my number
 
-	head->think = harpy_head_think;
+	head->think = HarpyHeadThink;
 	head->nextthink = level.time + 0.1;
 
 	gi.linkentity(head);
