@@ -1203,11 +1203,6 @@ void move_harpy_hover(edict_t* self) //TODO: rename to harpy_hover_move.
 	}
 }
 
-void move_harpy_fly(edict_t* self) //TODO: remove.
-{
-
-}
-
 void HarpyStaticsInit(void)
 {
 	static ClassResourceInfo_t res_info; //mxd. Made local static.

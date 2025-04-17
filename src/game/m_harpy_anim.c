@@ -32,17 +32,17 @@ const animmove_t harpy_move_die1 = { 15,harpy_frames_die1, harpy_dead };
 static const animframe_t harpy_frames_fly1[] =
 {
 	{ FRAME_fly1,	harpy_ai_fly, 64,  0, 0, NULL, 15, harpy_flap_noise },
-	{ FRAME_fly2,	harpy_ai_fly, 64,  0, 0, NULL, 15, move_harpy_fly },
-	{ FRAME_fly3,	harpy_ai_fly, 72,  0, 0, NULL, 15, move_harpy_fly },
-	{ FRAME_fly4,	harpy_ai_fly, 128, 0, 0, NULL, 15, move_harpy_fly },
-	{ FRAME_fly5,	harpy_ai_fly, 114, 0, 0, NULL, 15, move_harpy_fly },
-	{ FRAME_fly6,	harpy_ai_fly, 108, 0, 0, NULL, 15, move_harpy_fly },
-	{ FRAME_fly7,	harpy_ai_fly, 84,  0, 0, NULL, 15, move_harpy_fly },
-	{ FRAME_fly8,	harpy_ai_fly, 72,  0, 0, NULL, 15, move_harpy_fly },
-	{ FRAME_fly9,	harpy_ai_fly, 64,  0, 0, NULL, 15, move_harpy_fly },
-	{ FRAME_fly10,	harpy_ai_fly, 52,  0, 0, NULL, 15, move_harpy_fly },
-	{ FRAME_fly11,	harpy_ai_fly, 48,  0, 0, NULL, 15, move_harpy_fly },
-	{ FRAME_fly12,	harpy_ai_fly, 52,  0, 0, NULL, 15, move_harpy_fly },
+	{ FRAME_fly2,	harpy_ai_fly, 64,  0, 0, NULL, 15, NULL },
+	{ FRAME_fly3,	harpy_ai_fly, 72,  0, 0, NULL, 15, NULL },
+	{ FRAME_fly4,	harpy_ai_fly, 128, 0, 0, NULL, 15, NULL },
+	{ FRAME_fly5,	harpy_ai_fly, 114, 0, 0, NULL, 15, NULL },
+	{ FRAME_fly6,	harpy_ai_fly, 108, 0, 0, NULL, 15, NULL },
+	{ FRAME_fly7,	harpy_ai_fly, 84,  0, 0, NULL, 15, NULL },
+	{ FRAME_fly8,	harpy_ai_fly, 72,  0, 0, NULL, 15, NULL },
+	{ FRAME_fly9,	harpy_ai_fly, 64,  0, 0, NULL, 15, NULL },
+	{ FRAME_fly10,	harpy_ai_fly, 52,  0, 0, NULL, 15, NULL },
+	{ FRAME_fly11,	harpy_ai_fly, 48,  0, 0, NULL, 15, NULL },
+	{ FRAME_fly12,	harpy_ai_fly, 52,  0, 0, NULL, 15, NULL },
 };
 const animmove_t harpy_move_fly1 = { 12, harpy_frames_fly1, harpy_pause };
 
@@ -50,11 +50,11 @@ const animmove_t harpy_move_fly1 = { 12, harpy_frames_fly1, harpy_pause };
 static const animframe_t harpy_frames_flyback1[] =
 {
 	{ FRAME_flyback1, harpy_ai_fly, -32, 0, 16, NULL, 0, harpy_flap_fast_noise },
-	{ FRAME_flyback2, harpy_ai_fly, -64, 0, 64, NULL, 0, move_harpy_fly },
-	{ FRAME_flyback3, harpy_ai_fly, -52, 0, 54, NULL, 0, move_harpy_fly },
-	{ FRAME_flyback4, harpy_ai_fly, -48, 0, 48, NULL, 0, move_harpy_fly },
-	{ FRAME_flyback5, harpy_ai_fly, -42, 0, 32, NULL, 0, move_harpy_fly },
-	{ FRAME_flyback6, harpy_ai_fly, -36, 0, 24, NULL, 0, move_harpy_fly },
+	{ FRAME_flyback2, harpy_ai_fly, -64, 0, 64, NULL, 0, NULL },
+	{ FRAME_flyback3, harpy_ai_fly, -52, 0, 54, NULL, 0, NULL },
+	{ FRAME_flyback4, harpy_ai_fly, -48, 0, 48, NULL, 0, NULL },
+	{ FRAME_flyback5, harpy_ai_fly, -42, 0, 32, NULL, 0, NULL },
+	{ FRAME_flyback6, harpy_ai_fly, -36, 0, 24, NULL, 0, NULL },
 };
 const animmove_t harpy_move_flyback1 = { 6, harpy_frames_flyback1, harpy_pause };
 
