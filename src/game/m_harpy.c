@@ -810,11 +810,11 @@ void harpy_pause(edict_t* self)
 	}
 }
 
-//end of anim func for death anim
-void harpy_dead(edict_t *self)
+// End of animation func for death animation.
+void harpy_dead(edict_t* self)
 {
-	VectorSet(self->mins, -16, -16, 0);
-	VectorSet(self->maxs, 16, 16, 12);
+	VectorCopy(dead_harpy_mins, self->mins); //mxd
+	VectorCopy(dead_harpy_maxs, self->maxs); //mxd
 
 	M_EndDeath(self);
 }
