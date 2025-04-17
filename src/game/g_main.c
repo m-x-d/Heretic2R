@@ -435,7 +435,7 @@ static void UpdatePlayerBuoys(void)
 static void G_RunFrame(void)
 {
 	if (DEATHMATCH || COOP)
-		Clamp(BLOOD_LEVEL, VIOLENCE_NONE, VIOLENCE_NORMAL);
+		ClampI(BLOOD_LEVEL, VIOLENCE_NONE, VIOLENCE_NORMAL);
 
 	// Update server ticks.
 	level.framenum++;
