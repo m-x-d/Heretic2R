@@ -661,7 +661,7 @@ void PlayerDecapitate(edict_t* self, edict_t* other) //mxd. Named 'player_decap'
 	Player_UpdateModelAttributes(self); //mxd
 }
 
-static void player_leader_effect(void) //TODO: rename to PlayerLeaderEffect().
+static void PlayerLeaderEffect(void) //mxd. Named 'player_leader_effect' in original logic.
 {
 	// If we don't want leader effects, bump outta here.
 	if (!(DMFLAGS & DF_SHOW_LEADER))
@@ -854,7 +854,7 @@ static void ClientObituary(edict_t* self, edict_t* attacker)
 			if (DEATHMATCH)
 			{
 				attacker->client->resp.score += (friendly_fire ? -1 : 1);
-				player_leader_effect();
+				PlayerLeaderEffect();
 			}
 
 			return;
@@ -871,7 +871,7 @@ static void ClientObituary(edict_t* self, edict_t* attacker)
 		if (DEATHMATCH)
 		{
 			self->client->resp.score--;
-			player_leader_effect();
+			PlayerLeaderEffect();
 		}
 
 		self->enemy = NULL;
@@ -883,7 +883,7 @@ static void ClientObituary(edict_t* self, edict_t* attacker)
 		if (DEATHMATCH)
 		{
 			self->client->resp.score--;
-			player_leader_effect();
+			PlayerLeaderEffect();
 		}
 	}
 }
@@ -1367,7 +1367,7 @@ void SpawnInitialPlayerEffects(edict_t* ent)
 	gi.CreatePersistantEffect(&ent->s, FX_PLAYER_PERSISTANT, CEF_BROADCAST | CEF_OWNERS_ORIGIN, NULL, "");
 
 	if (DEATHMATCH || COOP)
-		player_leader_effect();
+		PlayerLeaderEffect();
 }
 
 // Some information that should be persistent, like health, is still stored in the edict structure,
@@ -2205,7 +2205,7 @@ void ClientDisconnect(edict_t* ent)
 	gi.configstring(CS_PLAYERSKINS + player_num, "");
 
 	// Redo the leader effect, because this guy has gone, and he might have had it.
-	player_leader_effect();
+	PlayerLeaderEffect();
 }
 
 static edict_t* pm_passent;
