@@ -152,18 +152,15 @@ static void HarpyHeadThink(edict_t* self) //mxd. Named 'harpy_head_think' in ori
 	}
 }
 
-void harpy_take_head(edict_t *self, edict_t *victim, int BodyPart, int frame, int flags) //TODO: rename to HarpyTakeHead.
+void harpy_take_head(edict_t* self, edict_t* victim, const int bodypart_node_id, const int frame, const int flags) //TODO: rename to HarpyTakeHead.
 {
-	edict_t *head;
-	vec3_t	forward, down;
-
-	head = G_Spawn();
+	edict_t* head = G_Spawn();
 
 	head->s.effects |= EF_CAMERA_NO_CLIP;
 	head->svflags |= SVF_ALWAYS_SEND;
 	head->solid = SOLID_NOT;
 	head->movetype = PHYSICSTYPE_NOCLIP;
-	head->gravity = 0;
+	head->gravity = 0.0f;
 	head->clipmask = 0;
 	head->materialtype = victim->materialtype;
 
@@ -173,40 +170,31 @@ void harpy_take_head(edict_t *self, edict_t *victim, int BodyPart, int frame, in
 	VectorCopy(self->s.angles, head->s.angles);
 	VectorCopy(self->s.origin, head->s.origin);
 
+	vec3_t forward;
+	vec3_t down;
 	AngleVectors(head->s.angles, forward, NULL, down);
-	Vec3ScaleAssign(-1, down);
+	Vec3ScaleAssign(-1.0f, down);
 
-	head->count = 8;
+	head->count = 8; //TODO: add float harpy_head_offset name.
 	VectorMA(head->s.origin, head->count, down, head->s.origin);
-	
-	head->s.origin[2] += 100;
-	
-	gi.CreateEffect(&head->s,//owner
-					FX_BODYPART,//type
-					flags,//can't mess with this, sends only 1st byte and effects message
-					head->s.origin,//spot,
-					"ssbbb",//int int float byte
-					(short)(frame),//only 1 frame, sorry no anim
-					(short)(BodyPart),//bitwise - node(s) to leave on
-					0,//speed
-					victim->s.modelindex,//my modelindex
-					victim->s.number);//my number
+
+	head->s.origin[2] += 100.0f;
+
+	gi.CreateEffect(&head->s, FX_BODYPART, flags, head->s.origin, "ssbbb", (short)frame, (short)bodypart_node_id, 0, victim->s.modelindex, victim->s.number);
 
 	head->think = HarpyHeadThink;
-	head->nextthink = level.time + 0.1;
+	head->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
 	gi.linkentity(head);
 
 	give_head_to_harpy = NULL;
 	take_head_from = NULL;
 
-	VectorScale(forward, 200, self->velocity);
-	self->velocity[2] = 20;
-	//fix angles?
+	VectorScale(forward, 200.0f, self->velocity);
+	self->velocity[2] = 20.0f; //FIXME: fix angles?
 	self->enemy = NULL;
 
-	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-	//go into a circle?
+	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL); //FIXME: go into a circle?
 }
 
 void player_decap (edict_t *self, edict_t *other);
