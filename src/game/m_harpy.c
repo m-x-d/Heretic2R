@@ -740,23 +740,19 @@ static void HarpyPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'h
 	}
 }
 
-//receiver for MSG_STAND, MSG_HOVER 
-void harpy_hover(edict_t *self, G_Message_t *msg)
+// Receiver for MSG_FLY and MSG_RUN. 
+static void HarpyFlyMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'harpy_hover' in original logic.
 {
-	//NOTENOTE: We use the animation IDs to make sure we don't reject a stand message after leaving these animations
-	//if (self->curAnimID >= ANIM_PIRCH1 && self->curAnimID <= ANIM_PIRCH9 && self->curAnimID != ANIM_CIRCLING)
-	//	return;
-
-	if ( (self->spawnflags & MSF_PERCHING) || (self->spawnflags & MSF_SPECIAL1) )
+	if (self->spawnflags & (MSF_PERCHING | MSF_SPECIAL1))
 		return;
 
-	if(irand(1, 10) > 3)
+	if (irand(1, 10) > 3)
 	{
 		SetAnim(self, ANIM_HOVER1);
 	}
 	else
 	{
-		gi.sound(self, CHAN_BODY, sounds[SND_SCREAM], 1, ATTN_NORM, 0);		
+		gi.sound(self, CHAN_BODY, sounds[SND_SCREAM], 1.0f, ATTN_NORM, 0.0f);
 		SetAnim(self, ANIM_HOVERSCREAM);
 	}
 }
@@ -1412,9 +1408,9 @@ void HarpyStaticsInit(void)
 	static ClassResourceInfo_t resInfo;
 
 	classStatics[CID_HARPY].msgReceivers[MSG_DEATH] = HarpyDeathMsgHandler;
-	classStatics[CID_HARPY].msgReceivers[MSG_FLY] = harpy_hover;
+	classStatics[CID_HARPY].msgReceivers[MSG_FLY] = HarpyFlyMsgHandler;
 	classStatics[CID_HARPY].msgReceivers[MSG_STAND] = harpy_stand;
-	classStatics[CID_HARPY].msgReceivers[MSG_RUN] = harpy_hover;
+	classStatics[CID_HARPY].msgReceivers[MSG_RUN] = HarpyFlyMsgHandler;
 	classStatics[CID_HARPY].msgReceivers[MSG_PAIN] = HarpyPainMsgHandler;
 	classStatics[CID_HARPY].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_HARPY].msgReceivers[MSG_WATCH] = harpy_perch;
