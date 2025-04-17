@@ -230,6 +230,7 @@ struct edict_s
 		qboolean tbeast_grabbed_toy; //mxd
 		qboolean fish_ripple_spawned; //mxd
 		int gorgon_grabbed_toy_shake_mode; //mxd
+		float harpy_head_offset; //mxd
 	};
 
 	int targeted; // Used by Ogle to denote a targeted action queued up.
@@ -319,10 +320,10 @@ struct edict_s
 	int lastAnimID; //TODO: set, but never used.
 
 	// Used by monsters and player.
-	int (*pain)(edict_t* self, edict_t* other, float kick, int damage);
+	int (*pain)(edict_t* self, edict_t* other, float kick, int damage); //TODO: return value never used. Remove?
 
 	// Used by monsters, player, and some polys.
-	int (*die)(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point);
+	int (*die)(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point); //TODO: return value never used. Remove?
 
 	// Used by the Morph Ovum and Chicken.
 	void (*oldthink)(edict_t* self);

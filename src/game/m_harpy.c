@@ -115,7 +115,7 @@ static void HarpyHeadThink(edict_t* self) //mxd. Named 'harpy_head_think' in ori
 		AngleVectors(self->s.angles, NULL, NULL, down);
 		Vec3ScaleAssign(-1.0f, down);
 
-		VectorMA(self->s.origin, self->count, down, self->s.origin);
+		VectorMA(self->s.origin, self->harpy_head_offset, down, self->s.origin);
 
 		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 	}
@@ -144,8 +144,8 @@ void HarpyTakeHead(edict_t* self, edict_t* victim, const int bodypart_node_id, c
 	AngleVectors(head->s.angles, forward, NULL, down);
 	Vec3ScaleAssign(-1.0f, down);
 
-	head->count = 8; //TODO: add float harpy_head_offset name.
-	VectorMA(head->s.origin, head->count, down, head->s.origin);
+	head->harpy_head_offset = 8.0f;
+	VectorMA(head->s.origin, head->harpy_head_offset, down, head->s.origin);
 
 	head->s.origin[2] += 100.0f;
 
