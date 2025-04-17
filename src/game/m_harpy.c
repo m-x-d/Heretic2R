@@ -1024,7 +1024,7 @@ void harpy_check_dodge(edict_t* self)
 	harpy_ai_glide(self, 0.0f, 0.0f, 0.0f);
 }
 
-void move_harpy_hover(edict_t* self) //TODO: rename to harpy_hover_move.
+void harpy_hover_move(edict_t* self) //mxd. Named 'move_harpy_hover' in original logic.
 {
 	if (self->enemy == NULL && !FindTarget(self))
 		return;

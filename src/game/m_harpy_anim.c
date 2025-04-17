@@ -70,7 +70,7 @@ static const animframe_t harpy_frames_hover1[] =
 	{ FRAME_hover7, NULL, 0, 0, 0, harpy_ai_hover,  1, NULL },
 	{ FRAME_hover8, NULL, 0, 0, 0, harpy_ai_hover,  2, NULL },
 };
-const animmove_t harpy_move_hover1 = { 8, harpy_frames_hover1, move_harpy_hover };
+const animmove_t harpy_move_hover1 = { 8, harpy_frames_hover1, harpy_hover_move };
 
 // Harpy Tumble.
 static const animframe_t harpy_frames_tumble[] =
@@ -106,7 +106,7 @@ static const animframe_t harpy_frames_hoverscream[] =
 	{ FRAME_hoverscream15,NULL, 0, 0, 0, harpy_ai_hover,  1, NULL },
 	{ FRAME_hoverscream16,NULL, 0, 0, 0, harpy_ai_hover,  2, NULL },
 };
-const animmove_t harpy_move_hoverscream = { 16, harpy_frames_hoverscream, move_harpy_hover };
+const animmove_t harpy_move_hoverscream = { 16, harpy_frames_hoverscream, harpy_hover_move };
 
 // Harpy diving start.
 static const animframe_t harpy_frames_dive_go[] =
@@ -183,14 +183,14 @@ const animmove_t harpy_closeattack = { 6, harpy_frames_closeattack, harpy_pause 
 // Harpy pain.
 static const animframe_t harpy_frames_pain1[] =
 {
-	{ FRAME_pain1, NULL, 0, 0, 0, NULL,  2, move_harpy_hover },
-	{ FRAME_pain2, NULL, 0, 0, 0, NULL,  1, move_harpy_hover },
-	{ FRAME_pain3, NULL, 0, 0, 0, NULL, -1, move_harpy_hover },
-	{ FRAME_pain4, NULL, 0, 0, 0, NULL, -2, move_harpy_hover },
-	{ FRAME_pain5, NULL, 0, 0, 0, NULL, -2, move_harpy_hover },
-	{ FRAME_pain6, NULL, 0, 0, 0, NULL, -1, move_harpy_hover },
-	{ FRAME_pain7, NULL, 0, 0, 0, NULL,  1, move_harpy_hover },
-	{ FRAME_pain8, NULL, 0, 0, 0, NULL,  2, move_harpy_hover },
+	{ FRAME_pain1, NULL, 0, 0, 0, NULL,  2, harpy_hover_move },
+	{ FRAME_pain2, NULL, 0, 0, 0, NULL,  1, harpy_hover_move },
+	{ FRAME_pain3, NULL, 0, 0, 0, NULL, -1, harpy_hover_move },
+	{ FRAME_pain4, NULL, 0, 0, 0, NULL, -2, harpy_hover_move },
+	{ FRAME_pain5, NULL, 0, 0, 0, NULL, -2, harpy_hover_move },
+	{ FRAME_pain6, NULL, 0, 0, 0, NULL, -1, harpy_hover_move },
+	{ FRAME_pain7, NULL, 0, 0, 0, NULL,  1, harpy_hover_move },
+	{ FRAME_pain8, NULL, 0, 0, 0, NULL,  2, harpy_hover_move },
 };
 const animmove_t harpy_move_pain1 = { 8, harpy_frames_pain1, harpy_pause };
 

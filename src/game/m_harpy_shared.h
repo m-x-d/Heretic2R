@@ -105,7 +105,7 @@ void harpy_pause(edict_t* self);
 void harpy_flyback(edict_t* self);
 void harpy_fix_angles(edict_t* self);
 
-void move_harpy_hover(edict_t* self);
+void harpy_hover_move(edict_t* self);
 void harpy_dive_move(edict_t* self);
 void harpy_dive_end_move(edict_t* self);
 
