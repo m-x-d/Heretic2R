@@ -75,14 +75,14 @@ const animmove_t harpy_move_hover1 = { 8, harpy_frames_hover1, move_harpy_hover 
 // Harpy Tumble.
 static const animframe_t harpy_frames_tumble[] =
 {
-	{ FRAME_hover1, NULL, 0, 0, 0, NULL, 0, move_harpy_tumble },
-	{ FRAME_hover2, NULL, 0, 0, 0, NULL, 0, move_harpy_tumble },
-	{ FRAME_hover3, NULL, 0, 0, 0, NULL, 0, move_harpy_tumble },
-	{ FRAME_hover4, NULL, 0, 0, 0, NULL, 0, move_harpy_tumble },
-	{ FRAME_hover5, NULL, 0, 0, 0, NULL, 0, move_harpy_tumble },
-	{ FRAME_hover6, NULL, 0, 0, 0, NULL, 0, move_harpy_tumble },
-	{ FRAME_hover7, NULL, 0, 0, 0, NULL, 0, move_harpy_tumble },
-	{ FRAME_hover8, NULL, 0, 0, 0, NULL, 0, move_harpy_tumble },
+	{ FRAME_hover1, NULL, 0, 0, 0, NULL, 0, harpy_tumble_move },
+	{ FRAME_hover2, NULL, 0, 0, 0, NULL, 0, harpy_tumble_move },
+	{ FRAME_hover3, NULL, 0, 0, 0, NULL, 0, harpy_tumble_move },
+	{ FRAME_hover4, NULL, 0, 0, 0, NULL, 0, harpy_tumble_move },
+	{ FRAME_hover5, NULL, 0, 0, 0, NULL, 0, harpy_tumble_move },
+	{ FRAME_hover6, NULL, 0, 0, 0, NULL, 0, harpy_tumble_move },
+	{ FRAME_hover7, NULL, 0, 0, 0, NULL, 0, harpy_tumble_move },
+	{ FRAME_hover8, NULL, 0, 0, 0, NULL, 0, harpy_tumble_move },
 };
 const animmove_t harpy_move_tumble = { 8, harpy_frames_tumble, NULL };
 

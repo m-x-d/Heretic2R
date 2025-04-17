@@ -56,7 +56,7 @@ typedef enum SoundID_e
 	NUM_SOUNDS
 } SoundID_t;
 
-void move_harpy_tumble(edict_t* self);
+void harpy_tumble_move(edict_t* self);
 
 void harpy_flap_noise(edict_t* self);
 void harpy_flap_fast_noise(edict_t* self);

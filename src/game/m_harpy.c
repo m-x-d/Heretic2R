@@ -448,7 +448,7 @@ void harpy_ai_perch(edict_t* self) //mxd. Named 'harpy_ai_pirch' in original log
 	}
 }
 
-void move_harpy_tumble(edict_t* self) //TODO: rename to harpy_tumble_move.
+void harpy_tumble_move(edict_t* self) //mxd. Named 'move_harpy_tumble' in original logic.
 {
 	self->movetype = PHYSICSTYPE_STEP;
 	self->gravity = 1.0f;
