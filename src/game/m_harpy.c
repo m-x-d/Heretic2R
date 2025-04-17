@@ -38,11 +38,7 @@
 edict_t* give_head_to_harpy = NULL; // Harpy, which carries the head. //mxd. Not SUS at all :) //TODO: rename to harpy_head_carrier?
 edict_t* take_head_from = NULL; // Player or monster, who's head harpy is carrying. //TODO: rename to harpy_head_source?
 
-/*-----------------------------------------------------------------
-	harpy base info
------------------------------------------------------------------*/
-
-int BPN_for_hitloc [hl_harpy_max] = {
+int BPN_for_hitloc [hl_harpy_max] = { //TODO: remove.
 	0,
 	BPN_BACKSPIKES,//hl_backspikes	
 	BPN_HEAD|BPN_HORNS|BPN_HORN|BPN_NECKSPIKES,//hl_head
@@ -57,7 +53,7 @@ int BPN_for_hitloc [hl_harpy_max] = {
 	BPN_RLARM|BPN_RHAND//hl_rightlowerleg
 };
 
-int MESH_for_hitloc [hl_harpy_max] =
+int MESH_for_hitloc [hl_harpy_max] = //TODO: remove.
 {
 	0,
 	MESH_BACKSPIKES,//hl_backspikes	
@@ -73,13 +69,15 @@ int MESH_for_hitloc [hl_harpy_max] =
 	MESH_RLARM//hl_rightlowerleg
 };
 
-static const animmove_t *animations[NUM_ANIMS] =
+#pragma region ========================== Gorgon base info ==========================
+
+static const animmove_t* animations[NUM_ANIMS] =
 {
-	&harpy_move_die1, 
+	&harpy_move_die1,
 	&harpy_move_fly1,
 	&harpy_move_flyback1,
 	&harpy_move_hover1,
-	&harpy_move_hoverscream,	
+	&harpy_move_hoverscream,
 	&harpy_move_dive_go,
 	&harpy_move_dive_loop,
 	&harpy_move_dive_end,
@@ -87,7 +85,7 @@ static const animmove_t *animations[NUM_ANIMS] =
 	&harpy_move_glide,
 	&harpy_move_dive_trans,
 	&harpy_move_dive_hit_loop,
-	&harpy_move_tumble,	
+	&harpy_move_tumble,
 	&harpy_move_pirch1_idle,
 	&harpy_move_pirch2_idle,
 	&harpy_move_pirch3_idle,
@@ -103,6 +101,11 @@ static const animmove_t *animations[NUM_ANIMS] =
 };
 
 static int sounds[NUM_SOUNDS];
+
+static const vec3_t dead_harpy_mins = { -16.0f, -16.0f, 0.0f }; //mxd
+static const vec3_t dead_harpy_maxs = { 16.0f,  16.0f, 12.0f }; //mxd
+
+#pragma endregion
 
 
 /*===============================================================
