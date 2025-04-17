@@ -717,27 +717,25 @@ static void HarpyDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. N
 	}
 }
 
-//receiver for MSG_PAIN
-void harpy_pain(edict_t *self, G_Message_t *msg)
+static void HarpyPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'harpy_pain' in original logic.
 {
-	int				temp, damage;
-	qboolean		force_pain;
-	
+	int temp;
+	int damage;
+	qboolean force_pain;
 	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
 	if (self->curAnimID >= ANIM_PIRCH1 && self->curAnimID <= ANIM_PIRCH9)
 	{
 		SetAnim(self, ANIM_TAKEOFF);
-		return;
 	}
-	if (force_pain||((irand(0,10) < 2) && (self->pain_debounce_time < level.time)))
+	else if (force_pain || (irand(0, 10) < 2 && self->pain_debounce_time < level.time))
 	{
-		if (irand(0,1))
+		if (irand(0, 1) == 1)
 			harpy_pain1_noise(self);
 		else
 			harpy_pain2_noise(self);
 
-		self->pain_debounce_time = level.time + 2;
+		self->pain_debounce_time = level.time + 2.0f;
 		SetAnim(self, ANIM_PAIN1);
 	}
 }
@@ -1417,7 +1415,7 @@ void HarpyStaticsInit(void)
 	classStatics[CID_HARPY].msgReceivers[MSG_FLY] = harpy_hover;
 	classStatics[CID_HARPY].msgReceivers[MSG_STAND] = harpy_stand;
 	classStatics[CID_HARPY].msgReceivers[MSG_RUN] = harpy_hover;
-	classStatics[CID_HARPY].msgReceivers[MSG_PAIN] = harpy_pain;
+	classStatics[CID_HARPY].msgReceivers[MSG_PAIN] = HarpyPainMsgHandler;
 	classStatics[CID_HARPY].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_HARPY].msgReceivers[MSG_WATCH] = harpy_perch;
 	classStatics[CID_HARPY].msgReceivers[MSG_DEATH_PAIN] = HarpyDeathPainMsgHandler;
