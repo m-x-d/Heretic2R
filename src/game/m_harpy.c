@@ -262,40 +262,40 @@ static void HarpyIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'harpy_bl
 	}
 }
 
-//Various sound functions
-void harpy_flap_noise(edict_t *self)
+//TODO: replace these with generic harpy_sound() (copy gkrokon_sound())?
+void harpy_flap_noise(edict_t* self)
 {
-	gi.sound(self,CHAN_BODY,sounds[SND_FLAP],1,ATTN_NORM,0);
+	gi.sound(self, CHAN_BODY, sounds[SND_FLAP], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void harpy_flap_fast_noise(edict_t *self)
+void harpy_flap_fast_noise(edict_t* self)
 {
-	gi.sound(self,CHAN_BODY,sounds[SND_FLAP_FAST],1,ATTN_NORM,0);
+	gi.sound(self, CHAN_BODY, sounds[SND_FLAP_FAST], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void harpy_death_noise(edict_t *self)
+void harpy_death_noise(edict_t* self)
 {
-	gi.sound(self,CHAN_BODY,sounds[SND_DEATH],1,ATTN_NORM,0);
+	gi.sound(self, CHAN_BODY, sounds[SND_DEATH], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void harpy_pain1_noise(edict_t *self)
+void harpy_pain1_noise(edict_t* self)
 {
-	gi.sound(self,CHAN_BODY,sounds[SND_PAIN1],1,ATTN_NORM,0);
+	gi.sound(self, CHAN_BODY, sounds[SND_PAIN1], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void harpy_pain2_noise(edict_t *self)
+void harpy_pain2_noise(edict_t* self)
 {
-	gi.sound(self,CHAN_BODY,sounds[SND_PAIN2],1,ATTN_NORM,0);
+	gi.sound(self, CHAN_BODY, sounds[SND_PAIN2], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void harpy_attack_noise(edict_t *self)
+void harpy_attack_noise(edict_t* self)
 {
-	gi.sound(self,CHAN_BODY,sounds[SND_ATTACK],1,ATTN_NORM,0);
+	gi.sound(self, CHAN_BODY, sounds[SND_ATTACK], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void harpy_dive_noise(edict_t *self)
+void harpy_dive_noise(edict_t* self)
 {
-	gi.sound(self, CHAN_BODY, sounds[SND_DIVE], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_BODY, sounds[SND_DIVE], 1.0f, ATTN_NORM, 0.0f);
 }
 
 int harpy_check_move(edict_t *self, float dist)
