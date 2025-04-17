@@ -929,69 +929,59 @@ void move_harpy_dive(edict_t* self) //TODO: rename to harpy_dive_move.
 	}
 }
 
-void move_harpy_dive_end(edict_t *self)
+void move_harpy_dive_end(edict_t* self) //TODO: rename to harpy_dive_end_move.
 {
-	vec3_t	vec, vf, vr, vu, nvec, enemy_pos;
-	float	dist, hd, fd, dot;
-	
-	VectorSet(enemy_pos, self->enemy->s.origin[0], self->enemy->s.origin[1], self->enemy->s.origin[2] + flrand(self->maxs[2], self->enemy->maxs[2]));
+	const vec3_t enemy_pos =
+	{
+		self->enemy->s.origin[0],
+		self->enemy->s.origin[1],
+		self->enemy->s.origin[2] + flrand(self->maxs[2], self->enemy->maxs[2])
+	};
 
-	VectorCopy(self->s.origin, vec);
-	vec[2] = enemy_pos[2];
+	vec3_t diff_xy;
+	VectorCopy(self->s.origin, diff_xy);
+	Vec3SubtractAssign(enemy_pos, diff_xy);
+	diff_xy[2] = 0.0f;
 
-	VectorSubtract(enemy_pos, vec, vec);
-	hd = VectorLength(vec);
-	self->ideal_yaw = VectorYaw(vec);
-
+	self->ideal_yaw = VectorYaw(diff_xy);
 	M_ChangeYaw(self);
 
-	AngleVectors(self->s.angles, vf, vr, vu);
-	
-	self->velocity[2] *= 0.75;
-
+	self->velocity[2] *= 0.75f;
 	self->monsterinfo.jump_time *= HARPY_SWOOP_INCREMENT;
 
-	fd = self->monsterinfo.jump_time;
+	const float forward_dist = min(HARPY_MAX_SWOOP_SPEED, self->monsterinfo.jump_time);
 
-	if (fd > HARPY_MAX_SWOOP_SPEED)
-		fd = HARPY_MAX_SWOOP_SPEED;
-
-	if ((self->groundentity != NULL) || (!HarpyCanMove(self, 128)))
+	if (self->groundentity != NULL || !HarpyCanMove(self, 128.0f))
 	{
 		if (self->groundentity == self->enemy)
-			SetAnim(self, ANIM_DIVE_END);
+			SetAnim(self, ANIM_DIVE_END); //TODO: always overridden by SetAnim() call below!
 
 		SetAnim(self, ANIM_FLYBACK1);
+
 		return;
 	}
 
-	VectorSubtract(enemy_pos, self->s.origin, vec);
-	VectorCopy(vec, nvec);
-	VectorNormalize(nvec);
+	vec3_t dir;
+	VectorSubtract(enemy_pos, self->s.origin, dir);
+	const float dist = VectorLength(dir);
+	VectorNormalize(dir);
 
-	AngleVectors(self->s.angles, vf, vr, NULL);
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
 
-	dot  = DotProduct(vf, nvec);
-
-	if (dot < -0.5)
+	if (DotProduct(forward, dir) < -0.5f)
 	{
 		SetAnim(self, ANIM_FLYBACK1);
 		return;
 	}
 
-	VectorMA(self->velocity, fd, vf, self->velocity);
-	
-	//Are we about to hit the target?
-	VectorSubtract(enemy_pos, self->s.origin, vec);
-	dist = VectorLength(vec);
+	VectorMA(self->velocity, forward_dist, forward, self->velocity);
 
+	// Are we about to hit the target?
 	if (dist < HARPY_COLLISION_DIST)
-	{
 		SetAnim(self, ANIM_DIVE_END);
-		return;
-	}	
-
-	harpy_ai_glide(self, 0, 0, 0);
+	else
+		harpy_ai_glide(self, 0.0f, 0.0f, 0.0f);
 }
 
 void harpy_dive_loop(edict_t *self)
