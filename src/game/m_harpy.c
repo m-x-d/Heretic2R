@@ -316,33 +316,23 @@ static qboolean HarpyCanMove(const edict_t* self, const float distance) //mxd. N
 	return true;
 }
 
-/*-----------------------------------------------
-	harpy_ai_circle
------------------------------------------------*/
-
-#define	HARPY_CIRCLE_AMOUNT	4
-#define HARPY_CIRCLE_SPEED  64
-
-void harpy_ai_circle (edict_t *self, float fd, float rd, float ud)
+void harpy_ai_circle(edict_t* self, float forward_offset, float right_offset, float up_offset)
 {
-	vec3_t	vf;
+#define HARPY_CIRCLE_AMOUNT	4.0f
+#define HARPY_CIRCLE_SPEED  64.0f
 
-	self->s.angles[ROLL] += flrand(-1.25, 1);
-	
-	if(self->s.angles[ROLL] < -45)
-		self->s.angles[ROLL] = -45;
+	self->s.angles[ROLL] += flrand(-1.25f, 1.0f);
+	self->s.angles[ROLL] = Clamp(self->s.angles[ROLL], -45.0f, 0.0f);
 
-	if(self->s.angles[ROLL] > 0)
-		self->s.angles[ROLL] = 0;
-	
-	self->s.angles[YAW] = anglemod(self->s.angles[YAW] - (HARPY_CIRCLE_AMOUNT + (fd - 32)/4));
+	self->s.angles[YAW] = anglemod(self->s.angles[YAW] - (HARPY_CIRCLE_AMOUNT + (forward_offset - 32.0f) / 4.0f));
 
-	AngleVectors(self->s.angles, vf, NULL, NULL);
-	VectorMA(self->velocity, HARPY_CIRCLE_SPEED + fd, vf, self->velocity);
-	Vec3ScaleAssign(0.5, self->velocity);
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
+	VectorMA(self->velocity, HARPY_CIRCLE_SPEED + forward_offset, forward, self->velocity);
+	Vec3ScaleAssign(0.5f, self->velocity);
 
-	if(!irand(0, 150))
-		gi.sound(self, CHAN_VOICE, sounds[SND_SCREAM], 1, ATTN_NORM, 0);		
+	if (irand(0, 150) == 0)
+		gi.sound(self, CHAN_VOICE, sounds[SND_SCREAM], 1.0f, ATTN_NORM, 0.0f);
 }
 
 //replaces ai_walk and ai_run for harpy
