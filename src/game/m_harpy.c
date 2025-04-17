@@ -199,7 +199,7 @@ static void HarpyIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'harpy_bl
 				if (trace->ent->client != NULL)
 				{
 					trace->ent->health = 1;
-					player_decap(trace->ent, self);
+					PlayerDecapitate(trace->ent, self);
 				}
 				else
 				{

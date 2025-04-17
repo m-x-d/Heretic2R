@@ -635,7 +635,7 @@ void PlayerDismember(edict_t* self, edict_t* other, const int damage, HitLocatio
 
 #pragma endregion
 
-void player_decap(edict_t* self, edict_t* other) //TODO: rename to PlayerDecapitate().
+void PlayerDecapitate(edict_t* self, edict_t* other) //mxd. Named 'player_decap' in original logic.
 {
 	//FIXME: special manipulations of hit locations depending on anim.
 	if (self->s.fmnodeinfo[MESH__HEAD].flags & FMNI_NO_DRAW)
