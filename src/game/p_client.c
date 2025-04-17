@@ -1222,7 +1222,7 @@ void InitBodyQue(void)
 	}
 }
 
-static void player_body_die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //TODO: rename to PlayerBodyDie.
+static void PlayerBodyDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'player_body_die' in original logic.
 {
 	gi.sound(self, CHAN_BODY, gi.soundindex("misc/fleshbreak.wav"), 1.0f, ATTN_NORM, 0.0f);
 
@@ -1315,7 +1315,7 @@ static void CopyToBodyQue(edict_t* ent)
 	body->materialtype = MAT_FLESH;
 	body->health = 25;
 	body->deadflag = DEAD_NO;
-	body->die = player_body_die;
+	body->die = PlayerBodyDie;
 
 	gi.linkentity(body);
 
