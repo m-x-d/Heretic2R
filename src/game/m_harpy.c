@@ -335,60 +335,45 @@ void harpy_ai_circle(edict_t* self, float forward_offset, float right_offset, fl
 		gi.sound(self, CHAN_VOICE, sounds[SND_SCREAM], 1.0f, ATTN_NORM, 0.0f);
 }
 
-//replaces ai_walk and ai_run for harpy
-void harpy_ai_glide (edict_t *self, float fd, float rd, float ud)
+// Replaces ai_walk and ai_run for harpy.
+void harpy_ai_glide(edict_t* self, float forward_offset, float right_offset, float up_offset)
 {
-	vec3_t	vec, vf, vr, nvec;
-	float	yaw_delta, roll, dot, rdot;
-	
-	if (!self->enemy)
+	if (self->enemy == NULL)
 		return;
 
-	//Find our ideal yaw to the player and correct to it
-	VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
-	VectorCopy(vec, nvec);
-	VectorNormalize(nvec);
+	// Find our ideal yaw to the player and correct to it.
+	vec3_t diff;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
 
-	AngleVectors(self->s.angles, vf, vr, NULL);
+	vec3_t dir;
+	VectorCopy(diff, dir);
+	VectorNormalize(dir);
 
-	dot  = DotProduct(vf, nvec);
-	rdot = DotProduct(vr, nvec);
-	
-	self->ideal_yaw = VectorYaw(vec);
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
 
+	const float dot = DotProduct(forward, dir);
+
+	self->ideal_yaw = VectorYaw(diff);
 	M_ChangeYaw(self);
 
-	yaw_delta = self->ideal_yaw - self->s.angles[YAW];
+	const float yaw_delta = self->ideal_yaw - self->s.angles[YAW];
 
-	//If enough, roll the creature to simulate gliding
+	// If enough, roll the creature to simulate gliding.
 	if (Q_fabs(yaw_delta) > self->yaw_speed)
-	{		
-		if (dot < 0)
-		{
-			roll = Q_fabs(yaw_delta / 4);
-		}
+	{
+		const float roll = yaw_delta / 4.0f * Q_signf(dot);
+		self->s.angles[ROLL] += roll;
+
+		// Going right?
+		if (roll > 0.0f)
+			self->s.angles[ROLL] = min(65.0f, self->s.angles[ROLL]);
 		else
-		{
-			roll = yaw_delta / 4;
-		}
-		
-		//Going right?
-		if (roll > 0)
-		{
-			self->s.angles[ROLL] += roll;
-			if (self->s.angles[ROLL] > 65)
-				self->s.angles[ROLL] = 65;
-		}
-		else
-		{
-			self->s.angles[ROLL] += roll;	
-			if (self->s.angles[ROLL] < -65)
-				self->s.angles[ROLL] = -65;
-		}
+			self->s.angles[ROLL] = max(-65.0f, self->s.angles[ROLL]);
 	}
 	else
 	{
-		self->s.angles[ROLL] *= 0.75;
+		self->s.angles[ROLL] *= 0.75f;
 	}
 }
 
