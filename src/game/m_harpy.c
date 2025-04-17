@@ -197,71 +197,69 @@ void harpy_take_head(edict_t* self, edict_t* victim, const int bodypart_node_id,
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL); //FIXME: go into a circle?
 }
 
-void player_decap (edict_t *self, edict_t *other);
-void harpy_blocked (edict_t *self, struct trace_s *trace)
+static void HarpyIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'harpy_blocked' in original logic.
 {
-	vec3_t	vf, dir;
-	float dot;
-	int		damage;
-
-	if(!self->enemy && self->spawnflags & MSF_SPECIAL1)
+	if (self->enemy == NULL && (self->spawnflags & MSF_SPECIAL1))
 	{
 		SetAnim(self, ANIM_CIRCLING_FLAP);
 		return;
 	}
 
-	if (self->health <= 0)
+	if (self->health <= 0 || trace->ent == NULL)
 		return;
 
-	if (!trace->ent)
-		return;
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
 
-	AngleVectors(self->s.angles, vf, NULL, NULL);
+	vec3_t dir;
 	VectorCopy(self->velocity, dir);
 	VectorNormalize(dir);
-	dot = DotProduct(dir, vf);
-	if (trace->ent->takedamage && (self->curAnimID == ANIM_DIVE_GO || self->curAnimID == ANIM_DIVE_LOOP || self->curAnimID == ANIM_DIVE_END || self->curAnimID == ANIM_HIT_LOOP))
+
+	const float dot = DotProduct(dir, forward);
+
+	if (trace->ent->takedamage != DAMAGE_NO && (self->curAnimID == ANIM_DIVE_GO || self->curAnimID == ANIM_DIVE_LOOP || self->curAnimID == ANIM_DIVE_END || self->curAnimID == ANIM_HIT_LOOP))
 	{
-		if(trace->ent->client || classStatics[trace->ent->classID].msgReceivers[MSG_DISMEMBER])
+		if (trace->ent->client != NULL || classStatics[trace->ent->classID].msgReceivers[MSG_DISMEMBER] != NULL)
 		{
-			if(trace->ent->health < HARPY_DMG_MAX && trace->ent->s.origin[2] < self->s.origin[2])
-			{//also make this skill dependant
+			if (trace->ent->health < HARPY_DMG_MAX && trace->ent->s.origin[2] < self->s.origin[2])
+			{
+				// Also make this skill-dependant.
 				give_head_to_harpy = self;
 				take_head_from = trace->ent;
-				if(trace->ent->client)
+
+				if (trace->ent->client != NULL)
 				{
 					trace->ent->health = 1;
 					player_decap(trace->ent, self);
 				}
 				else
-					QPostMessage(trace->ent, MSG_DISMEMBER, PRI_DIRECTIVE, "ii", 9999999, hl_Head|hl_MeleeHit);
+				{
+					QPostMessage(trace->ent, MSG_DISMEMBER, PRI_DIRECTIVE, "ii", 9999999, hl_Head | hl_MeleeHit);
+				}
+
 				return;
 			}
 		}
 
-		damage = irand(HARPY_DMG_MIN, HARPY_DMG_MAX);
-		T_Damage (trace->ent, self, self, dir, trace->ent->s.origin, trace->plane.normal, damage, damage*2, 0,MOD_DIED);
-		if(trace->ent->health>0)
-		{
-			if(trace->ent->client)
-			{
-				if(!irand(0, 5))
-				{
-					if(trace->ent->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
-						P_KnockDownPlayer(&trace->ent->client->playerinfo);
-				}
-			}
-		}
+		const int damage = irand(HARPY_DMG_MIN, HARPY_DMG_MAX);
+		T_Damage(trace->ent, self, self, dir, trace->ent->s.origin, trace->plane.normal, damage, damage * 2, 0, MOD_DIED);
+
+		// 16% chance to knock down player.
+		if (trace->ent->health > 0 && trace->ent->client != NULL && irand(0, 5) == 0 && trace->ent->client->playerinfo.lowerseq != ASEQ_KNOCKDOWN)
+			P_KnockDownPlayer(&trace->ent->client->playerinfo);
+
 		SetAnim(self, ANIM_FLYBACK1);
-		return;
 	}
-	else if(self->damage_debounce_time < level.time || dot>0)
-	{//only back up from a block once every 2 seconds
-		self->damage_debounce_time = level.time + 2;
+	else if (self->damage_debounce_time < level.time || dot > 0.0f)
+	{
+		// Only back up from a block once every 2 seconds.
+		self->damage_debounce_time = level.time + 2.0f;
 		SetAnim(self, ANIM_FLYBACK1);
-		return;
 	}
-	SetAnim(self, ANIM_FLY1);
+	else
+	{
+		SetAnim(self, ANIM_FLY1);
+	}
 }
 
 //Various sound functions
@@ -1639,8 +1637,8 @@ void SP_monster_harpy(edict_t *self)
 	self->s.modelindex = classStatics[CID_HARPY].resInfo->modelIndex;
 	self->s.skinnum = 0;
 
-	self->isBlocked = harpy_blocked;
-	self->bounced = harpy_blocked;
+	self->isBlocked = HarpyIsBlocked;
+	self->bounced = HarpyIsBlocked;
 
 	if (!self->s.scale)
 	{
