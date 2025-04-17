@@ -994,66 +994,59 @@ void harpy_hit_loop(edict_t* self)
 	SetAnim(self, ANIM_HIT_LOOP);
 }
 
-void harpy_check_dodge(edict_t *self)
+void harpy_check_dodge(edict_t* self)
 {
-	qboolean	dodge = false;
-	trace_t		trace;
-	edict_t		*ent = NULL;
-	vec3_t		vec, vr, projvec, dodgedir, goalpos;
-	float		dodgedot;
-
-	if (!self->enemy)
+	if (self->enemy == NULL)
 		return;
 
-	VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
-	VectorNormalize(vec);
+	vec3_t enemy_dir;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, enemy_dir);
+	VectorNormalize(enemy_dir);
 
+	vec3_t dodge_dir;
+	qboolean dodge = false;
+
+	edict_t* ent = NULL;
 	while ((ent = FindInRadius(ent, self->s.origin, HARPY_PROJECTILE_SEARCH_RADIUS)) != NULL)
 	{
-		//We're only interested in his projectiles
+		// We're only interested in his projectiles.
 		if (ent->owner != self->enemy)
 			continue;
-		
-		//VectorCopy(ent->velocity, projvec);
-		VectorNormalize2(ent->velocity, projvec);
 
-		dodgedot = DotProduct(projvec, vec);
+		vec3_t proj_dir;
+		VectorNormalize2(ent->velocity, proj_dir);
 
-		//gi.dprintf("Found projectile with dot %f\n", dodgedot);
-
-		if (dodgedot < -0.85 && irand(0,1))
+		if (DotProduct(proj_dir, enemy_dir) < -0.85f && irand(0, 1) == 1)
 		{
-			//gi.dprintf("Dodge it!\n");
-
 			dodge = true;
-			AngleVectors(self->s.angles, NULL, vr, NULL);
 
-			if (irand(0,1))
-				VectorScale(vr, -1, vr);
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, NULL);
 
-			VectorMA(self->s.origin, 100, vr, goalpos);
+			if (irand(0, 1) == 1)
+				Vec3ScaleAssign(-1.0f, right);
 
-			gi.trace(self->s.origin, self->mins, self->maxs, goalpos, self, MASK_SHOT|MASK_WATER,&trace);
+			vec3_t goal_pos;
+			VectorMA(self->s.origin, 100.0f, right, goal_pos);
 
-			if (trace.fraction < 1 || trace.startsolid || trace.allsolid)
-				VectorScale(vr, -1, dodgedir);
-			else
-				VectorCopy(vr, dodgedir);
+			trace_t trace;
+			gi.trace(self->s.origin, self->mins, self->maxs, goal_pos, self, MASK_SHOT | MASK_WATER, &trace);
+
+			VectorCopy(right, dodge_dir);
+
+			if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
+				Vec3ScaleAssign(-1.0f, dodge_dir);
 		}
 	}
 
-	if (dodge)
+	if (dodge && self->monsterinfo.misc_debounce_time < level.time) // If he is, dodge!
 	{
-		//If he is, dodge!
-		if (self->monsterinfo.misc_debounce_time < level.time)
-		{
-			Vec3ScaleAssign(flrand(300,500), dodgedir);
-			VectorAdd(dodgedir, self->velocity, self->velocity);
-			self->monsterinfo.misc_debounce_time = level.time + irand(2,4);
-		}
-	}	
-	
-	harpy_ai_glide(self, 0, 0, 0);
+		Vec3ScaleAssign(flrand(300.0f, 500.0f), dodge_dir);
+		Vec3AddAssign(dodge_dir, self->velocity);
+		self->monsterinfo.misc_debounce_time = level.time + flrand(2.0f, 4.0f); //mxd. irand() in original logic.
+	}
+
+	harpy_ai_glide(self, 0.0f, 0.0f, 0.0f);
 }
 
 void move_harpy_hover(edict_t *self)
