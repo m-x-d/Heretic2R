@@ -56,12 +56,6 @@ typedef enum SoundID_e
 	NUM_SOUNDS
 } SoundID_t;
 
-void harpy_tumble_move(edict_t* self);
-
-void harpy_flap_noise(edict_t* self);
-void harpy_flap_fast_noise(edict_t* self);
-void harpy_dive_noise(edict_t* self);
-
 extern const animmove_t harpy_move_die1;
 extern const animmove_t harpy_move_fly1;
 extern const animmove_t harpy_move_flyback1;
@@ -90,24 +84,29 @@ extern const animmove_t harpy_move_perch7_idle;
 extern const animmove_t harpy_move_perch8_idle;
 extern const animmove_t harpy_move_perch9_idle;
 
-void harpy_ai_fly(edict_t* self, float forward_offset, float right_offset, float up_offset);
-void harpy_ai_glide(edict_t* self, float forward_offset, float right_offset, float up_offset);
-void harpy_ai_circle(edict_t* self, float forward_offset, float right_offset, float up_offset);
-void harpy_ai_perch(edict_t* self);
-void harpy_ai_hover(edict_t* self, float distance);
+extern void harpy_ai_fly(edict_t* self, float forward_offset, float right_offset, float up_offset);
+extern void harpy_ai_glide(edict_t* self, float forward_offset, float right_offset, float up_offset);
+extern void harpy_ai_circle(edict_t* self, float forward_offset, float right_offset, float up_offset);
+extern void harpy_ai_perch(edict_t* self);
+extern void harpy_ai_hover(edict_t* self, float distance);
 
-void harpy_dive_loop(edict_t* self);
-void harpy_hit_loop(edict_t* self);
-void harpy_check_dodge(edict_t* self);
-void harpy_dead(edict_t* self);
-void harpy_hit(edict_t* self);
-void harpy_pause(edict_t* self);
-void harpy_flyback(edict_t* self);
-void harpy_fix_angles(edict_t* self);
+extern void harpy_flap_noise(edict_t* self);
+extern void harpy_flap_fast_noise(edict_t* self);
+extern void harpy_dive_noise(edict_t* self);
 
-void harpy_hover_move(edict_t* self);
-void harpy_dive_move(edict_t* self);
-void harpy_dive_end_move(edict_t* self);
+extern void harpy_dive_loop(edict_t* self);
+extern void harpy_hit_loop(edict_t* self);
+extern void harpy_check_dodge(edict_t* self);
+extern void harpy_dead(edict_t* self);
+extern void harpy_hit(edict_t* self);
+extern void harpy_pause(edict_t* self);
+extern void harpy_flyback(edict_t* self);
+extern void harpy_fix_angles(edict_t* self);
+
+extern void harpy_hover_move(edict_t* self);
+extern void harpy_dive_move(edict_t* self);
+extern void harpy_dive_end_move(edict_t* self);
+extern void harpy_tumble_move(edict_t* self);
 
 #define hl_backspikes		1
 #define hl_head				2
