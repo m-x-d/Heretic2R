@@ -561,27 +561,20 @@ void harpy_fix_angles(edict_t* self)
 	}
 }
 
-/*===============================================================
-
-	Harpy Message Functions
-
-===============================================================*/
-
-//receiver for MSG_DEATH 
-void harpy_dead_pain(edict_t *self, G_Message_t *msg)
+static void HarpyDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'harpy_dead_pain' in original logic.
 {
-	if(self->health <= -40) //gib death
+	if (self->health <= -40) // Gib death.
 	{
-		//harpy_throw_wings(self);
 		BecomeDebris(self);
 		self->think = NULL;
-		self->nextthink = 0;	
-		gi.linkentity (self);
-		return;
-	}
-	else if(msg)
-		DismemberMsgHandler(self, msg);
+		self->nextthink = 0.0f;
 
+		gi.linkentity(self);
+	}
+	else if (msg != NULL)
+	{
+		DismemberMsgHandler(self, msg);
+	}
 }
 
 void harpy_die(edict_t *self, G_Message_t *msg)
@@ -1470,7 +1463,7 @@ void HarpyStaticsInit(void)
 	classStatics[CID_HARPY].msgReceivers[MSG_PAIN] = harpy_pain;
 	classStatics[CID_HARPY].msgReceivers[MSG_DISMEMBER] = DismemberMsgHandler;
 	classStatics[CID_HARPY].msgReceivers[MSG_WATCH] = harpy_perch;
-	classStatics[CID_HARPY].msgReceivers[MSG_DEATH_PAIN] = harpy_dead_pain;
+	classStatics[CID_HARPY].msgReceivers[MSG_DEATH_PAIN] = HarpyDeathPainMsgHandler;
 	classStatics[CID_HARPY].msgReceivers[MSG_EVADE] = harpy_evade;
 
 	resInfo.numAnims = NUM_ANIMS;
