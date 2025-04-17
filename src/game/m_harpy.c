@@ -35,8 +35,8 @@
 #define HARPY_PROJECTILE_SEARCH_RADIUS	1024.0f //mxd. Named 'HARPY_PROJECTILE_RADIUS' in original logic.
 
 //TODO: what happens when several harpies try to carry a head?..
-edict_t* give_head_to_harpy = NULL; // Harpy, which carries the head. //mxd. Not SUS at all :) //TODO: rename to harpy_head_carrier?
-edict_t* take_head_from = NULL; // Player or monster, who's head harpy is carrying. //TODO: rename to harpy_head_source?
+edict_t* harpy_head_carrier = NULL; // Harpy, which carries the head. //mxd. Named 'give_head_to_harpy' in original logic. Not SUS at all :)
+edict_t* harpy_head_source = NULL; // Player or monster, who's head harpy is carrying. //mxd. Named 'take_head_from' in original logic.
 
 #pragma region ========================== Gorgon base info ==========================
 
@@ -156,8 +156,8 @@ void HarpyTakeHead(edict_t* self, edict_t* victim, const int bodypart_node_id, c
 
 	gi.linkentity(head);
 
-	give_head_to_harpy = NULL;
-	take_head_from = NULL;
+	harpy_head_carrier = NULL;
+	harpy_head_source = NULL;
 
 	VectorScale(forward, 200.0f, self->velocity);
 	self->velocity[2] = 20.0f; //FIXME: fix angles?
@@ -193,8 +193,8 @@ static void HarpyIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'harpy_bl
 			if (trace->ent->health < HARPY_DMG_MAX && trace->ent->s.origin[2] < self->s.origin[2])
 			{
 				// Also make this skill-dependant.
-				give_head_to_harpy = self;
-				take_head_from = trace->ent;
+				harpy_head_carrier = self;
+				harpy_head_source = trace->ent;
 
 				if (trace->ent->client != NULL)
 				{

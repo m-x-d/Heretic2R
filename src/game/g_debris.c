@@ -230,9 +230,9 @@ void ThrowBodyPart(const edict_t* self, const vec3_t* spot, const int body_part,
 	if (self->materialtype == MAT_INSECT)
 		fx_flags |= CEF_FLAG8;
 
-	if (give_head_to_harpy != NULL && take_head_from == self)
+	if (harpy_head_carrier != NULL && harpy_head_source == self)
 	{
-		HarpyTakeHead(give_head_to_harpy, self, body_part, frame, fx_flags);
+		HarpyTakeHead(harpy_head_carrier, self, body_part, frame, fx_flags);
 		SprayDebris(self, *spot, 5, damage);
 	}
 	else
