@@ -793,19 +793,22 @@ void harpy_hit(edict_t* self)
 	}
 }
 
-void harpy_pause (edict_t *self)
+void harpy_pause(edict_t* self)
 {
 	if (M_ValidTarget(self, self->enemy))
-		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-	else if(self->curAnimID == ANIM_CIRCLING)
 	{
-		if(!irand(0, 6))
+		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+	}
+	else if (self->curAnimID == ANIM_CIRCLING)
+	{
+		if (irand(0, 6) == 0)
 			SetAnim(self, ANIM_CIRCLING_FLAP);
 	}
-	else if(self->curAnimID == ANIM_CIRCLING_FLAP && irand(0, 1))
+	else if (self->curAnimID == ANIM_CIRCLING_FLAP && irand(0, 1) == 1)
+	{
 		SetAnim(self, ANIM_CIRCLING);
+	}
 }
-
 
 //end of anim func for death anim
 void harpy_dead(edict_t *self)
