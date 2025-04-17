@@ -1203,28 +1203,9 @@ void move_harpy_hover(edict_t* self) //TODO: rename to harpy_hover_move.
 	}
 }
 
-//New physics call that modifies the harpy's velocity and angles based on aerodynamics
-void harpy_flight_model(edict_t *self)
+void move_harpy_fly(edict_t* self) //TODO: remove.
 {
-}
 
-void move_harpy_fly(edict_t *self)
-{	
-	edict_t *dummy;
-	dummy = self;
-	
-	return;
-}
-
-void move_harpy_die(edict_t *self)
-{
-	//fall to the floor
-	return;
-}
-
-void harpy_hover_anim(edict_t *self)
-{
-	SetAnim(self, ANIM_HOVER1);
 }
 
 /*===============================================================
