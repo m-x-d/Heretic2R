@@ -107,10 +107,10 @@ static const vec3_t dead_harpy_maxs = { 16.0f,  16.0f, 12.0f }; //mxd
 
 #pragma endregion
 
-int head_die(edict_t *self, edict_t *inflictor, edict_t *attacker,int damage,vec3_t point)
+static int HarpyHeadDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'head_die' in original logic.
 {
 	BecomeDebris(self);
-	return true;
+	return 1;
 }
 
 void harpy_head_think (edict_t *self)
@@ -128,7 +128,7 @@ void harpy_head_think (edict_t *self)
 		self->nextthink = -1;
 		self->svflags |= SVF_DEADMONSTER;
 		self->health = 25;
-		self->die = head_die;
+		self->die = HarpyHeadDie;
 		AngleVectors(self->s.angles, down, NULL, NULL);
 		VectorScale(down, 100, self->velocity);
 		VectorSet(self->mins, -4, -4, -4);
