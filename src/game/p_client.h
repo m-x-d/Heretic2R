@@ -25,6 +25,7 @@ extern void ClientBeginServerFrame(edict_t* ent);
 extern int player_pain(edict_t* self, edict_t* other, float kick, int damage);
 extern int player_die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point);
 extern void player_dismember(edict_t* self, edict_t* other, int damage, HitLocation_t hit_location);
+extern void player_decap(edict_t* self, edict_t* other); //mxd
 extern void ResetPlayerBaseNodes(edict_t* ent);
 extern void player_repair_skin(edict_t* self);
 extern void SelectSpawnPoint(const edict_t* ent, vec3_t origin, vec3_t angles); //mxd
