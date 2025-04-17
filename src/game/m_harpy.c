@@ -298,25 +298,20 @@ void harpy_dive_noise(edict_t* self)
 	gi.sound(self, CHAN_BODY, sounds[SND_DIVE], 1.0f, ATTN_NORM, 0.0f);
 }
 
-int harpy_check_move(edict_t *self, float dist)
+static qboolean HarpyCanMove(const edict_t* self, const float distance) //mxd. Named 'harpy_check_move' in original logic.
 {
-	trace_t	trace;
-	vec3_t	vec, vf;
+	vec3_t end_pos;
+	VectorCopy(self->s.origin, end_pos);
 
-	VectorCopy(self->s.origin, vec);
-	
-	AngleVectors(self->s.angles, vf, NULL, NULL);
-	VectorMA(vec, dist, vf, vec);
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
+	VectorMA(end_pos, distance, forward, end_pos);
 
-	gi.trace(self->s.origin, self->mins, self->maxs, vec, self, MASK_SHOT|MASK_WATER,&trace);
+	trace_t trace;
+	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_SHOT | MASK_WATER, &trace);
 
-	if (trace.fraction < 1 || trace.allsolid || trace.startsolid)
-	{
-		if (trace.ent == self->enemy)
-			return true;
-
+	if ((trace.fraction < 1.0f || trace.allsolid || trace.startsolid) && trace.ent != self->enemy)
 		return false;
-	}
 
 	return true;
 }
@@ -425,7 +420,7 @@ void harpy_ai_fly (edict_t *self, float fd, float rd, float ud)
 
 	M_ChangeYaw(self);
 
-	if (!harpy_check_move(self, fd/10))
+	if (!HarpyCanMove(self, fd/10))
 	{
 		SetAnim(self, ANIM_HOVER1);
 		return;
@@ -1148,7 +1143,7 @@ void move_harpy_dive(edict_t *self)
 	VectorSubtract(enemy_pos, vec, vec);
 	hd = VectorLength(vec);
 
-	if ((self->groundentity != NULL) || (!harpy_check_move(self, 64)))
+	if ((self->groundentity != NULL) || (!HarpyCanMove(self, 64)))
 	{
 		if (self->groundentity == self->enemy)
 			SetAnim(self, ANIM_DIVE_END);
@@ -1209,7 +1204,7 @@ void move_harpy_dive_end(edict_t *self)
 	if (fd > HARPY_MAX_SWOOP_SPEED)
 		fd = HARPY_MAX_SWOOP_SPEED;
 
-	if ((self->groundentity != NULL) || (!harpy_check_move(self, 128)))
+	if ((self->groundentity != NULL) || (!HarpyCanMove(self, 128)))
 	{
 		if (self->groundentity == self->enemy)
 			SetAnim(self, ANIM_DIVE_END);
@@ -1463,7 +1458,7 @@ void move_harpy_hover(edict_t *self)
 				//We can't swoop because we're too low, so fly upwards if possible
 				if (zd < HARPY_MIN_SWOOP_DIST)
 				{
-					if (!harpy_check_move(self, -64))
+					if (!HarpyCanMove(self, -64))
 					{
 						SetAnim(self, ANIM_FLY1);
 						return;
@@ -1496,7 +1491,7 @@ void move_harpy_hover(edict_t *self)
 	else if (dist < HARPY_MIN_HOVER_DIST)
 	{
 		//gi.dprintf("move_harpy_hover: backing away\n");
-		if (!harpy_check_move(self, -64))
+		if (!HarpyCanMove(self, -64))
 		{
 			SetAnim(self, ANIM_FLY1);
 		}
@@ -1508,7 +1503,7 @@ void move_harpy_hover(edict_t *self)
 	else
 	{
 		//gi.dprintf("move_harpy_hover: covering ground\n");
-		if (!harpy_check_move(self, 64))
+		if (!HarpyCanMove(self, 64))
 		{
 			SetAnim(self, ANIM_FLYBACK1);
 		}
