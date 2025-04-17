@@ -1,54 +1,42 @@
-/*-------------------------------------------------------------------
-m_harpy.c
+//
+// m_harpy.c
+//
+// Copyright 1998 Raven Software
+//
 
-Heretic II
-Copyright 1998 Raven Software
-
-  AI:
-
-  HOVER1	:hovering in midair
-  FLY1		:flying forwards
-  FLYBACK	:flying backwards
-
--------------------------------------------------------------------*/
-
-#include "g_local.h"
 #include "m_harpy.h"
 #include "m_harpy_shared.h"
 #include "m_harpy_anim.h"
-#include "Utilities.h"
+#include "g_debris.h" //mxd
 #include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
-#include "Random.h"
-#include "vector.h"
-#include "fx.h"
-#include "g_HitLocation.h"
-#include "g_debris.h" //mxd
 #include "m_stats.h"
-#include "p_anim_branch.h"
 #include "p_anims.h"
-#include "p_actions.h"
+#include "p_client.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_local.h"
 
-#define HARPY_CHECK_DIST		128
-#define	HARPY_COLLISION_DIST	148
-#define HARPY_MIN_SSWOOP_DIST	128
-#define HARPY_MIN_HOVER_DIST	128
-#define HARPY_MAX_HOVER_DIST	512
-#define HARPY_MIN_SWOOP_DIST	108
+#define HARPY_CHECK_DIST		128.0f
+#define	HARPY_COLLISION_DIST	148.0f
+#define HARPY_MIN_SWOOP_DIST	128.0f //mxd. Named 'HARPY_MIN_SSWOOP_DIST' in original logic.
+#define HARPY_MIN_HOVER_DIST	128.0f
+#define HARPY_MAX_HOVER_DIST	512.0f
+#define HARPY_MAX_DIVE_DIST		108.0f //mxd. Named 'HARPY_MIN_SWOOP_DIST' in original logic.
 
-#define HARPY_DRIFT_AMOUNT_X	128
-#define HARPY_DRIFT_AMOUNT_Y	128
-#define HARPY_DRIFT_AMOUNT_Z	64
+#define HARPY_DRIFT_AMOUNT_X	128.0f
+#define HARPY_DRIFT_AMOUNT_Y	128.0f
+#define HARPY_DRIFT_AMOUNT_Z	64.0f
 
-#define HARPY_SWOOP_INCR		2
-#define	HARPY_SWOOP_SPEED_MAX	512
+#define HARPY_SWOOP_INCREMENT	2 //mxd. Named 'HARPY_SWOOP_INCR' in original logic.
+#define HARPY_MAX_SWOOP_SPEED	512.0f //mxd. Named 'HARPY_SWOOP_SPEED_MAX' in original logic.
 
-#define HARPY_PROJECTILE_RADIUS	1024
+#define HARPY_PROJECTILE_SEARCH_RADIUS	1024.0f //mxd. Named 'HARPY_PROJECTILE_RADIUS' in original logic.
 
-edict_t* give_head_to_harpy = NULL; //mxd. Not SUS at all :)
-edict_t* take_head_from = NULL;
-
-void harpy_blocked (edict_t *self, struct trace_s *trace);
+//TODO: what happens when several harpies try to carry a head?..
+edict_t* give_head_to_harpy = NULL; // Harpy, which carries the head. //mxd. Not SUS at all :) //TODO: rename to harpy_head_carrier?
+edict_t* take_head_from = NULL; // Player or monster, who's head harpy is carrying. //TODO: rename to harpy_head_source?
 
 /*-----------------------------------------------------------------
 	harpy base info
@@ -1148,7 +1136,7 @@ qboolean harpy_check_swoop(edict_t *self, vec3_t goal)
 	//Find the difference in the target's height and the creature's height
 	zd = Q_fabs(self->enemy->s.origin[2] - self->s.origin[2]);
 	
-	if (zd < HARPY_MIN_SSWOOP_DIST)
+	if (zd < HARPY_MIN_SWOOP_DIST)
 		return false;
 
 	zd -= zd/4;
@@ -1214,7 +1202,7 @@ void move_harpy_dive(edict_t *self)
 	else if (forward < 0)
 		forward = 0;
 
-	if (dist > HARPY_MIN_SWOOP_DIST)
+	if (dist > HARPY_MAX_DIVE_DIST)
 	{
 		VectorMA(vf, forward, vf, self->velocity);
 		self->velocity[2] = -dist*2.25;
@@ -1250,12 +1238,12 @@ void move_harpy_dive_end(edict_t *self)
 	
 	self->velocity[2] *= 0.75;
 
-	self->monsterinfo.jump_time *= HARPY_SWOOP_INCR;
+	self->monsterinfo.jump_time *= HARPY_SWOOP_INCREMENT;
 
 	fd = self->monsterinfo.jump_time;
 
-	if (fd > HARPY_SWOOP_SPEED_MAX)
-		fd = HARPY_SWOOP_SPEED_MAX;
+	if (fd > HARPY_MAX_SWOOP_SPEED)
+		fd = HARPY_MAX_SWOOP_SPEED;
 
 	if ((self->groundentity != NULL) || (!harpy_check_move(self, 128)))
 	{
@@ -1319,7 +1307,7 @@ void harpy_check_dodge(edict_t *self)
 	VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
 	VectorNormalize(vec);
 
-	while ((ent = FindInRadius(ent, self->s.origin, HARPY_PROJECTILE_RADIUS)) != NULL)
+	while ((ent = FindInRadius(ent, self->s.origin, HARPY_PROJECTILE_SEARCH_RADIUS)) != NULL)
 	{
 		//We're only interested in his projectiles
 		if (ent->owner != self->enemy)
@@ -1443,7 +1431,7 @@ void move_harpy_hover(edict_t *self)
 			VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
 			VectorNormalize(vec);
 
-			while ((ent = FindInRadius(ent, self->s.origin, HARPY_PROJECTILE_RADIUS)) != NULL)
+			while ((ent = FindInRadius(ent, self->s.origin, HARPY_PROJECTILE_SEARCH_RADIUS)) != NULL)
 			{
 				//We're only interested in his projectiles
 				if (ent->owner != self->enemy)
@@ -1509,7 +1497,7 @@ void move_harpy_hover(edict_t *self)
 				zd = Q_fabs(self->enemy->s.origin[2] - self->s.origin[2]);
 		
 				//We can't swoop because we're too low, so fly upwards if possible
-				if (zd < HARPY_MIN_SSWOOP_DIST)
+				if (zd < HARPY_MIN_SWOOP_DIST)
 				{
 					if (!harpy_check_move(self, -64))
 					{
