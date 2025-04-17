@@ -38,37 +38,6 @@
 edict_t* give_head_to_harpy = NULL; // Harpy, which carries the head. //mxd. Not SUS at all :) //TODO: rename to harpy_head_carrier?
 edict_t* take_head_from = NULL; // Player or monster, who's head harpy is carrying. //TODO: rename to harpy_head_source?
 
-int BPN_for_hitloc [hl_harpy_max] = { //TODO: remove.
-	0,
-	BPN_BACKSPIKES,//hl_backspikes	
-	BPN_HEAD|BPN_HORNS|BPN_HORN|BPN_NECKSPIKES,//hl_head
-	BPN_STINGER,//hl_stinger			
-	BPN_LWING,//hl_lwing			
-	BPN_LHAND,//hl_lefthand		
-	BPN_RWING,//hl_rwing			
-	BPN_RHAND,//hl_righthand	
-	BPN_LUARM|BPN_LLARM|BPN_LHAND,//hl_leftupperleg	
-	BPN_LLARM|BPN_LHAND,//hl_leftlowerleg	
-	BPN_RUARM|BPN_RLARM|BPN_RHAND,//hl_rightupperleg
-	BPN_RLARM|BPN_RHAND//hl_rightlowerleg
-};
-
-int MESH_for_hitloc [hl_harpy_max] = //TODO: remove.
-{
-	0,
-	MESH_BACKSPIKES,//hl_backspikes	
-	MESH_HEAD,//hl_head
-	MESH_STINGER,//hl_stinger			
-	MESH_LWING,//hl_lwing			
-	MESH_LHAND,//hl_lefthand		
-	MESH_RWING,//hl_rwing			
-	MESH_RHAND,//hl_righthand	
-	MESH_LUARM,//hl_leftupperleg	
-	MESH_LLARM,//hl_leftlowerleg	
-	MESH_RUARM,//hl_rightupperleg
-	MESH_RLARM//hl_rightlowerleg
-};
-
 #pragma region ========================== Gorgon base info ==========================
 
 static const animmove_t* animations[NUM_ANIMS] =
@@ -610,131 +579,128 @@ static void HarpyDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 	}
 }
 
-void harpy_dismember(edict_t *self, int damage, int HitLocation)
+static void HarpyDismember(edict_t* self, int damage, HitLocation_t hl) //mxd. Named 'harpy_dismember' in original logic.
 {
-	int				throw_nodes, MeshLoc;
-	vec3_t			gore_spot;
+	static const int bones_per_node_for_hitloc[hl_harpy_max] = //mxd. Made local static.
+	{
+		0,
+		BPN_BACKSPIKES,						// hl_backspikes
+		BPN_HEAD | BPN_HORNS | BPN_HORN | BPN_NECKSPIKES, // hl_head
+		BPN_STINGER,						// hl_stinger
+		BPN_LWING,							// hl_lwing
+		BPN_LHAND,							// hl_lefthand
+		BPN_RWING,							// hl_rwing
+		BPN_RHAND,							// hl_righthand
+		BPN_LUARM | BPN_LLARM | BPN_LHAND,	// hl_leftupperleg
+		BPN_LLARM | BPN_LHAND,				// hl_leftlowerleg
+		BPN_RUARM | BPN_RLARM | BPN_RHAND,	// hl_rightupperleg
+		BPN_RLARM | BPN_RHAND				// hl_rightlowerleg
+	};
+
+	static const int mesh_for_hitloc[hl_harpy_max] = //mxd. Made local static.
+	{
+		0,
+		MESH_BACKSPIKES,	// hl_backspikes
+		MESH_HEAD,			// hl_head
+		MESH_STINGER,		// hl_stinger
+		MESH_LWING,			// hl_lwing
+		MESH_LHAND,			// hl_lefthand
+		MESH_RWING,			// hl_rwing
+		MESH_RHAND,			// hl_righthand
+		MESH_LUARM,			// hl_leftupperleg
+		MESH_LLARM,			// hl_leftlowerleg
+		MESH_RUARM,			// hl_rightupperleg
+		MESH_RLARM			// hl_rightlowerleg
+	};
+
 	qboolean dismember_ok = false;
 
-	if(HitLocation & hl_MeleeHit)
+	if (hl & hl_MeleeHit)
 	{
 		dismember_ok = true;
-		HitLocation &= ~hl_MeleeHit;
+		hl &= ~hl_MeleeHit;
 	}
 
-	if(HitLocation>hl_WingedPoints)
+	if (hl < hl_NoneSpecific || hl >= hl_WingedPoints) //mxd. Added lower bound check. //BUGFIX: mxd. 'if (hl > hl_WingedPoints)' in original logic. Will cause mesh_for_hitloc[] overrun when hl == hl_WingedPoints.
 		return;
 
-	if (HitLocation==hl_backspikes)
-		HitLocation = irand(hl_lwing, hl_rwing);
+	if (hl == hl_backspikes)
+		hl = irand(hl_lwing, hl_rwing);
 
-	switch (HitLocation)
+	switch (hl)
 	{
 		case hl_head:
-			
-			if (self->s.fmnodeinfo[MESH_HEAD].flags & FMNI_NO_DRAW)
+			if ((self->s.fmnodeinfo[MESH_HEAD].flags & FMNI_NO_DRAW) || irand(0, 10) > 2)
 				dismember_ok = false;
-			
-			if (irand(0,10) > 2)
-				dismember_ok = false;
-			
 			break;
-			
-		case hl_rightlowerleg: 
+
+		case hl_rightlowerleg:
 		case hl_rightupperleg:
-			
-			if (self->s.fmnodeinfo[MESH_RUARM].flags & FMNI_NO_DRAW)
+			if ((self->s.fmnodeinfo[MESH_RUARM].flags & FMNI_NO_DRAW) || irand(0, 10) > 4)
 				dismember_ok = false;
-			
-			if (irand(0,10) > 4)
-				dismember_ok = false;
-			
 			break;
-			
-		case hl_leftlowerleg: 
-		case hl_leftupperleg:	
-			
-			if (self->s.fmnodeinfo[MESH_LUARM].flags & FMNI_NO_DRAW)
+
+		case hl_leftlowerleg:
+		case hl_leftupperleg:
+			if ((self->s.fmnodeinfo[MESH_LUARM].flags & FMNI_NO_DRAW) || irand(0, 10) > 4)
 				dismember_ok = false;
-			
-			if (irand(0,10) > 4)
-				dismember_ok = false;
-			
 			break;
-			
-		case hl_rwing:	
-			
-			if (self->s.fmnodeinfo[MESH_RWING].flags & FMNI_NO_DRAW)
+
+		case hl_rwing:
+			if ((self->s.fmnodeinfo[MESH_RWING].flags & FMNI_NO_DRAW) || irand(0, 10) > 6)
 				dismember_ok = false;
-			
-			if (irand(0,10) > 6)
-				dismember_ok = false;
-			
 			break;
-			
-		case hl_lwing:	
-			
-			if (self->s.fmnodeinfo[MESH_LWING].flags & FMNI_NO_DRAW)
+
+		case hl_lwing:
+			if ((self->s.fmnodeinfo[MESH_LWING].flags & FMNI_NO_DRAW) || irand(0, 10) > 6)
 				dismember_ok = false;
-			
-			if (irand(0,10) > 6)
-				dismember_ok = false;
-			
 			break;
-			
-		default	:	
-			
+
+		default:
 			dismember_ok = false;
-			
 			break;
 	}
+
+	const int mesh_loc = mesh_for_hitloc[hl];
 
 	if (dismember_ok)
 	{
-		VectorCopy(vec3_origin, gore_spot);
-		gore_spot[2]+=10;
-		
-		throw_nodes = BPN_for_hitloc[HitLocation];
+		const vec3_t gore_spot = { 0.0f, 0.0f, 10.0f };
+		const int throw_nodes = bones_per_node_for_hitloc[hl];
 
-		MeshLoc = MESH_for_hitloc[HitLocation];
-	
-		ThrowBodyPart(self, &gore_spot, throw_nodes, damage, FRAME_partfly1);
-		
-		switch(MeshLoc)
+		ThrowBodyPart(self, &gore_spot, throw_nodes, (float)damage, FRAME_partfly1);
+
+		switch (mesh_loc)
 		{
-			case hl_head :			
-				
+			case hl_head:
 				self->s.fmnodeinfo[MESH_HEAD].flags |= FMNI_NO_DRAW;
 				self->s.fmnodeinfo[MESH_HORN].flags |= FMNI_NO_DRAW;
 				self->s.fmnodeinfo[MESH_HORNS].flags |= FMNI_NO_DRAW;
 				break;
-				
-			case hl_leftlowerleg : 	
-			case hl_leftupperleg :	
-				
+
+			case hl_leftlowerleg:
+			case hl_leftupperleg:
 				self->s.fmnodeinfo[MESH_LUARM].flags |= FMNI_NO_DRAW;
 				self->s.fmnodeinfo[MESH_LLARM].flags |= FMNI_NO_DRAW;
 				self->s.fmnodeinfo[MESH_LHAND].flags |= FMNI_NO_DRAW;
 				break;
-				
-			case hl_rightlowerleg :	
-			case hl_rightupperleg :	
-				
+
+			case hl_rightlowerleg:
+			case hl_rightupperleg:
 				self->s.fmnodeinfo[MESH_RUARM].flags |= FMNI_NO_DRAW;
 				self->s.fmnodeinfo[MESH_RLARM].flags |= FMNI_NO_DRAW;
 				self->s.fmnodeinfo[MESH_RHAND].flags |= FMNI_NO_DRAW;
 				break;
-				
-			default	:				
-				
-				self->s.fmnodeinfo[MeshLoc].flags |= FMNI_NO_DRAW;
+
+			default:
+				self->s.fmnodeinfo[mesh_loc].flags |= FMNI_NO_DRAW;
 				break;
 		}
 
-		if (HitLocation == hl_rwing || HitLocation == hl_lwing || HitLocation == hl_head) 
+		if (hl == hl_rwing || hl == hl_lwing || hl == hl_head)
 		{
-			self->monsterinfo.jump_time = level.time + 2;
-			
+			self->monsterinfo.jump_time = level.time + 2.0f;
+
 			if (self->health > 0)
 			{
 				self->health = -1;
@@ -744,18 +710,10 @@ void harpy_dismember(edict_t *self, int damage, int HitLocation)
 			}
 		}
 	}
-	else
+	else if (irand(0, 10) == 0 && !(self->s.fmnodeinfo[mesh_loc].flags & FMNI_USE_SKIN))
 	{
-		if (irand(0,10) < 1)
-		{
-			MeshLoc = MESH_for_hitloc[HitLocation];
-
-			if (!(self->s.fmnodeinfo[MeshLoc].flags & FMNI_USE_SKIN))
-			{
-				self->s.fmnodeinfo[MeshLoc].flags |= FMNI_USE_SKIN;
-				self->s.fmnodeinfo[MeshLoc].skin = self->s.skinnum+1;
-			}
-		}
+		self->s.fmnodeinfo[mesh_loc].flags |= FMNI_USE_SKIN;
+		self->s.fmnodeinfo[mesh_loc].skin = self->s.skinnum + 1;
 	}
 }
 
@@ -1510,7 +1468,7 @@ void SP_monster_harpy(edict_t *self)
 		return;				// Failed initialization
 
 	self->msgHandler = DefaultMsgHandler;
-	self->monsterinfo.dismember = harpy_dismember;
+	self->monsterinfo.dismember = HarpyDismember;
 
 	if (!self->health)
 		self->health = HARPY_HEALTH;
