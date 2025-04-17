@@ -892,55 +892,41 @@ static qboolean HarpyCheckSwoop(const edict_t* self, const vec3_t goal_pos) //mx
 	return (trace.ent == self->enemy);
 }
 
-void move_harpy_dive(edict_t *self)
+void move_harpy_dive(edict_t* self) //TODO: rename to harpy_dive_move.
 {
-	vec3_t	vec, vf, enemy_pos;
-	float	dist, zd, hd, forward;
-
-	VectorSet(enemy_pos, self->enemy->s.origin[0], self->enemy->s.origin[1], self->enemy->s.origin[2] + flrand(self->maxs[2], self->enemy->maxs[2]));
-	//Find out the Z and Horizontal deltas to target
-	zd = Q_fabs(self->s.origin[2] - enemy_pos[2]);
-	
-	AngleVectors(self->s.angles, vf, NULL, NULL);
-
-	VectorCopy(self->s.origin, vec);
-	vec[2] = enemy_pos[2];
-
-	VectorSubtract(enemy_pos, vec, vec);
-	hd = VectorLength(vec);
-
-	if ((self->groundentity != NULL) || (!HarpyCanMove(self, 64)))
+	if (self->groundentity != NULL || !HarpyCanMove(self, 64.0f))
 	{
 		if (self->groundentity == self->enemy)
-			SetAnim(self, ANIM_DIVE_END);
+			SetAnim(self, ANIM_DIVE_END); //TODO: always overridden by SetAnim() call below!
 
 		SetAnim(self, ANIM_FLYBACK1);
+
 		return;
 	}
 
-	dist = Q_fabs(self->s.origin[2] - enemy_pos[2]);
+	// Find out the Z and Horizontal deltas to target.
+	const float enemy_z = self->enemy->s.origin[2] + flrand(self->maxs[2], self->enemy->maxs[2]);
+	const float z_dist = Q_fabs(self->s.origin[2] - enemy_z);
 
-	forward = (256 - (dist*0.85));
-
-	if (forward > 256)
-		forward = 256;
-	else if (forward < 0)
-		forward = 0;
-
-	if (dist > HARPY_MAX_DIVE_DIST)
+	if (z_dist > HARPY_MAX_DIVE_DIST)
 	{
-		VectorMA(vf, forward, vf, self->velocity);
-		self->velocity[2] = -dist*2.25;
-		if (self->velocity[2] < -300)
-			self->velocity[2] = -300;
+		vec3_t forward;
+		AngleVectors(self->s.angles, forward, NULL, NULL);
+
+		float forward_dist = 256.0f - z_dist * 0.85f;
+		forward_dist = Clamp(forward_dist, 0.0f, 256.0f);
+
+		VectorMA(forward, forward_dist, forward, self->velocity);
+
+		self->velocity[2] = -z_dist * 2.25f;
+		self->velocity[2] = max(-300.0f, self->velocity[2]);
+
+		harpy_ai_glide(self, 0.0f, 0.0f, 0.0f);
 	}
 	else
 	{
 		SetAnim(self, ANIM_DIVE_TRANS);
-		return;
 	}
-
-	harpy_ai_glide(self, 0, 0, 0);
 }
 
 void move_harpy_dive_end(edict_t *self)
