@@ -242,11 +242,6 @@ void harpy_flap_fast_noise(edict_t* self)
 	gi.sound(self, CHAN_BODY, sounds[SND_FLAP_FAST], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void harpy_attack_noise(edict_t* self)
-{
-	gi.sound(self, CHAN_BODY, sounds[SND_ATTACK], 1.0f, ATTN_NORM, 0.0f);
-}
-
 void harpy_dive_noise(edict_t* self)
 {
 	gi.sound(self, CHAN_BODY, sounds[SND_DIVE], 1.0f, ATTN_NORM, 0.0f);
@@ -1210,7 +1205,7 @@ void HarpyStaticsInit(void)
 	sounds[SND_DEATH] = gi.soundindex("monsters/harpy/death.wav");
 	sounds[SND_PAIN1] = gi.soundindex("monsters/harpy/pain1.wav");
 	sounds[SND_PAIN2] = gi.soundindex("monsters/harpy/pain2.wav");
-	sounds[SND_ATTACK] = gi.soundindex("monsters/harpy/attack.wav");
+	//sounds[SND_ATTACK] = gi.soundindex("monsters/harpy/attack.wav");
 	sounds[SND_IDLE1] = gi.soundindex("monsters/harpy/pain1.wav");
 	sounds[SND_IDLE2] = gi.soundindex("monsters/harpy/pain2.wav");
 

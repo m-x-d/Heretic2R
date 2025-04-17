@@ -48,7 +48,7 @@ typedef enum SoundID_e
 	SND_DEATH,
 	SND_PAIN1,
 	SND_PAIN2,
-	SND_ATTACK,
+	SND_ATTACK, //TODO: unused.
 	SND_GIB,
 	SND_IDLE1,
 	SND_IDLE2,
@@ -61,7 +61,6 @@ void move_harpy_tumble(edict_t* self);
 void harpy_flap_noise(edict_t* self);
 void harpy_flap_fast_noise(edict_t* self);
 void harpy_dive_noise(edict_t* self);
-void harpy_attack_noise(edict_t* self);
 
 extern const animmove_t harpy_move_die1;
 extern const animmove_t harpy_move_fly1;
