@@ -444,28 +444,28 @@ void harpy_ai_pirch(edict_t* self) //TODO: rename to harpy_ai_perch.
 	if (right_dot < 0.0f) // Left.
 	{
 		if (right_dot < -0.8f)
-			SetAnim(self, ANIM_PIRCH9);
+			SetAnim(self, ANIM_PERCH9);
 		else if (right_dot < -0.6f)
-			SetAnim(self, ANIM_PIRCH8);
+			SetAnim(self, ANIM_PERCH8);
 		else if (right_dot < -0.4f)
-			SetAnim(self, ANIM_PIRCH7);
+			SetAnim(self, ANIM_PERCH7);
 		else if (right_dot < -0.2f)
-			SetAnim(self, ANIM_PIRCH6);
+			SetAnim(self, ANIM_PERCH6);
 		else
-			SetAnim(self, ANIM_PIRCH5);
+			SetAnim(self, ANIM_PERCH5);
 	}
 	else // Right.
 	{
 		if (right_dot > 0.8f)
-			SetAnim(self, ANIM_PIRCH1);
+			SetAnim(self, ANIM_PERCH1);
 		else if (right_dot > 0.6f)
-			SetAnim(self, ANIM_PIRCH2);
+			SetAnim(self, ANIM_PERCH2);
 		else if (right_dot > 0.4f)
-			SetAnim(self, ANIM_PIRCH3);
+			SetAnim(self, ANIM_PERCH3);
 		else if (right_dot > 0.2f)
-			SetAnim(self, ANIM_PIRCH4);
+			SetAnim(self, ANIM_PERCH4);
 		else
-			SetAnim(self, ANIM_PIRCH5);
+			SetAnim(self, ANIM_PERCH5);
 	}
 }
 
@@ -724,7 +724,7 @@ static void HarpyPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'h
 	qboolean force_pain;
 	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
-	if (self->curAnimID >= ANIM_PIRCH1 && self->curAnimID <= ANIM_PIRCH9)
+	if (self->curAnimID >= ANIM_PERCH1 && self->curAnimID <= ANIM_PERCH9)
 	{
 		SetAnim(self, ANIM_TAKEOFF);
 	}
@@ -759,7 +759,7 @@ static void HarpyFlyMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'ha
 
 static void HarpyEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'harpy_evade' in original logic.
 {
-	if (self->curAnimID > ANIM_PIRCH1 && self->curAnimID < ANIM_PIRCH9)
+	if (self->curAnimID > ANIM_PERCH1 && self->curAnimID < ANIM_PERCH9)
 	{
 		self->mins[2] -= 4.0f;
 		SetAnim(self, ANIM_TAKEOFF);
@@ -768,7 +768,7 @@ static void HarpyEvadeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named '
 
 static void HarpyWatchMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'harpy_perch' in original logic.
 {
-	SetAnim(self, ANIM_PIRCH5);
+	SetAnim(self, ANIM_PERCH5);
 }
 
 void harpy_hit(edict_t* self)
@@ -1297,7 +1297,7 @@ void SP_monster_harpy(edict_t* self)
 	if (self->spawnflags & MSF_PERCHING)
 	{
 		self->s.origin[2] += 4.0f;
-		SetAnim(self, ANIM_PIRCH5);
+		SetAnim(self, ANIM_PERCH5);
 	}
 	else if (self->spawnflags & MSF_SPECIAL1)
 	{
