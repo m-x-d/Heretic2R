@@ -1208,15 +1208,9 @@ void move_harpy_fly(edict_t* self) //TODO: remove.
 
 }
 
-/*===============================================================
-
-	Harpy Spawn Functions
-
-===============================================================*/
-
 void HarpyStaticsInit(void)
 {
-	static ClassResourceInfo_t resInfo;
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
 	classStatics[CID_HARPY].msgReceivers[MSG_DEATH] = HarpyDeathMsgHandler;
 	classStatics[CID_HARPY].msgReceivers[MSG_FLY] = HarpyFlyMsgHandler;
@@ -1228,26 +1222,26 @@ void HarpyStaticsInit(void)
 	classStatics[CID_HARPY].msgReceivers[MSG_DEATH_PAIN] = HarpyDeathPainMsgHandler;
 	classStatics[CID_HARPY].msgReceivers[MSG_EVADE] = HarpyEvadeMsgHandler;
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	resInfo.modelIndex = gi.modelindex("models/monsters/harpy/tris.fm");
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = sounds;
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/harpy/tris.fm");
 
-	sounds[SND_GIB]=gi.soundindex("misc/fleshbreak.wav");	
-	sounds[SND_FLAP]=gi.soundindex("monsters/harpy/flap.wav");	
-	sounds[SND_SCREAM]=gi.soundindex("monsters/harpy/scream.wav");	
-	sounds[SND_FLAP_FAST]=gi.soundindex("monsters/harpy/flap_quick.wav");	
-	sounds[SND_DIVE]=gi.soundindex("monsters/harpy/dive.wav");	
-	sounds[SND_DEATH]=gi.soundindex("monsters/harpy/death.wav");	
-	sounds[SND_PAIN1]=gi.soundindex("monsters/harpy/pain1.wav");	
-	sounds[SND_PAIN2]=gi.soundindex("monsters/harpy/pain2.wav");	
-	sounds[SND_ATTACK]=gi.soundindex("monsters/harpy/attack.wav");	
-	
-	sounds[SND_IDLE1]=gi.soundindex("monsters/harpy/pain1.wav");	
-	sounds[SND_IDLE2]=gi.soundindex("monsters/harpy/pain2.wav");	
+	sounds[SND_GIB] = gi.soundindex("misc/fleshbreak.wav");
+	sounds[SND_FLAP] = gi.soundindex("monsters/harpy/flap.wav");
+	sounds[SND_SCREAM] = gi.soundindex("monsters/harpy/scream.wav");
+	sounds[SND_FLAP_FAST] = gi.soundindex("monsters/harpy/flap_quick.wav");
+	sounds[SND_DIVE] = gi.soundindex("monsters/harpy/dive.wav");
+	sounds[SND_DEATH] = gi.soundindex("monsters/harpy/death.wav");
+	sounds[SND_PAIN1] = gi.soundindex("monsters/harpy/pain1.wav");
+	sounds[SND_PAIN2] = gi.soundindex("monsters/harpy/pain2.wav");
+	sounds[SND_ATTACK] = gi.soundindex("monsters/harpy/attack.wav");
+	sounds[SND_IDLE1] = gi.soundindex("monsters/harpy/pain1.wav");
+	sounds[SND_IDLE2] = gi.soundindex("monsters/harpy/pain2.wav");
 
-	classStatics[CID_HARPY].resInfo = &resInfo;
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
+
+	classStatics[CID_HARPY].resInfo = &res_info;
 }
 
 /*QUAKED monster_harpy(1 .5 0) (-16 -16 -12) (16 16 12) AMBUSH ASLEEP PERCHING CIRCLING
