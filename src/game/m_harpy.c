@@ -78,10 +78,9 @@ static const vec3_t dead_harpy_maxs = {  16.0f,  16.0f, 12.0f }; //mxd
 
 #pragma region ========================== Head grabbing functions =========================
 
-static int HarpyHeadDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'head_die' in original logic.
+static void HarpyHeadDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'head_die' in original logic.
 {
 	BecomeDebris(self);
-	return 1;
 }
 
 static void HarpyHeadThink(edict_t* self) //mxd. Named 'harpy_head_think' in original logic.

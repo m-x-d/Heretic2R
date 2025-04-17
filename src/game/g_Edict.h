@@ -323,7 +323,7 @@ struct edict_s
 	void (*pain)(edict_t* self, edict_t* other, float kick, int damage); //mxd. Returned int in original logic (was unused). //TODO: replace with MSG_PAIN message handler?
 
 	// Used by monsters, player, and some polys.
-	int (*die)(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point); //TODO: return value never used. Remove?
+	void (*die)(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point); //mxd. Returned int in original logic (was unused). //TODO: replace with MSG_DEATH message handler?
 
 	// Used by the Morph Ovum and Chicken.
 	void (*oldthink)(edict_t* self);

@@ -215,7 +215,7 @@ static void ObjBarrelExplodeThink(edict_t* self) //mxd. Named 'barrel_explode_th
 	G_SetToFree(self);
 }
 
-static int ObjBarrelDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'barrel_explode_think' in original logic.
+static void ObjBarrelDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'barrel_explode_think' in original logic.
 {
 	self->think = ObjBarrelExplodeThink;
 	self->nextthink = level.time + FRAMETIME;
@@ -231,8 +231,6 @@ static int ObjBarrelDie(edict_t* self, edict_t* inflictor, edict_t* attacker, in
 	self->bounced = NULL;
 
 	gi.linkentity(self);
-
-	return 1;
 }
 
 // QUAKED obj_barrel (1 .5 0) (-12 -12 -19) (12 12 19) INVULNERABLE x EXPLODING NOPUSH
@@ -661,12 +659,10 @@ static void ObjDyingElfPain(edict_t* self, edict_t* other, float kick, int damag
 		dying_elf_sounds(self, DYING_ELF_PAIN_VOICE);
 }
 
-static int ObjDyingElfDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'dying_elf_die' in original logic.
+static void ObjDyingElfDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'dying_elf_die' in original logic.
 {
 	gi.sound(self, CHAN_VOICE, gi.soundindex(va("monsters/plagueElf/death%i.wav", irand(1, 3))), 1.0f, ATTN_NORM, 0.0f);
 	BecomeDebris(self);
-
-	return 0;
 }
 
 // QUAKED obj_dying_elf (1 .5 0) (-30 -12 0) (30 12 5) INVULNERABLE

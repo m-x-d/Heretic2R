@@ -1809,7 +1809,7 @@ void morcalavin_postthink(edict_t *self)
 	self->next_post_think = level.time + 0.05;
 }
 
-int	morcalavin_resist_death (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
+static void morcalavin_resist_death (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
 	vec3_t	vf, vr, temp;
 
@@ -1860,8 +1860,6 @@ int	morcalavin_resist_death (edict_t *self, edict_t *inflictor, edict_t *attacke
 	*/
 
 	//TODO: Create a barrier around him so the player cannot get close to him
-
-	return false;
 }
 
 /*QUAKED monster_morcalavin(1 .5 0) (-24 -24 -50) (24 24 40)

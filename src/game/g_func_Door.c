@@ -307,7 +307,7 @@ static void FuncDoorBlocked(edict_t* self, edict_t* other) //mxd. Named 'door_bl
 	}
 }
 
-static int FuncDoorKilled(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'door_killed' in original logic.
+static void FuncDoorKilled(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'door_killed' in original logic.
 {
 	for (edict_t* ent = self->teammaster; ent != NULL; ent = ent->teamchain)
 	{
@@ -316,7 +316,6 @@ static int FuncDoorKilled(edict_t* self, edict_t* inflictor, edict_t* attacker, 
 	}
 
 	FuncDoorUse(self->teammaster, attacker, attacker);
-	return 0;
 }
 
 static void FuncDoorTouch(edict_t* self, trace_t* trace) //mxd. Named 'door_killed' in original logic.
@@ -790,12 +789,10 @@ static void FuncDoorSecretBlocked(edict_t* self, edict_t* other) //mxd. Named 'd
 	}
 }
 
-static int FuncDoorSecretDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'door_secret_die' in original logic.
+static void FuncDoorSecretDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'door_secret_die' in original logic.
 {
 	self->takedamage = DAMAGE_NO;
 	FuncDoorSecretUse(self, attacker, attacker);
-
-	return 0;
 }
 
 // QUAKED func_door_secret (0 .5 .8) ? ALWAYS_SHOOT 1ST_LEFT 1ST_DOWN

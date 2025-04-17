@@ -904,7 +904,7 @@ static void PlayerMakeGib(edict_t* self, edict_t* attacker)
 	self->takedamage = DAMAGE_NO;
 }
 
-int PlayerDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'player_die' in original logic.
+void PlayerDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'player_die' in original logic.
 {
 	//FIXME: Make sure you can still dismember and gib player while dying.
 	assert(self->client != NULL);
@@ -1083,8 +1083,6 @@ int PlayerDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, 
 
 	ClientObituary(self, attacker);
 	gi.linkentity(self);
-
-	return 0;
 }
 
 #pragma region ========================== SelectSpawnPoint logic ==========================
@@ -1224,7 +1222,7 @@ void InitBodyQue(void)
 	}
 }
 
-static int player_body_die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point)
+static void player_body_die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //TODO: rename to PlayerBodyDie.
 {
 	gi.sound(self, CHAN_BODY, gi.soundindex("misc/fleshbreak.wav"), 1.0f, ATTN_NORM, 0.0f);
 
@@ -1254,8 +1252,6 @@ static int player_body_die(edict_t* self, edict_t* inflictor, edict_t* attacker,
 	self->s.modelindex = 0;
 
 	gi.linkentity(self);
-
-	return 1;
 }
 
 static void CopyToBodyQue(edict_t* ent)

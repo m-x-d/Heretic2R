@@ -364,7 +364,7 @@ void priestess_proj1_think( edict_t *self )
 	priestess_proj2_die
 -----------------------------------------------*/
 
-int priestess_proj2_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
+static void priestess_proj2_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
 	gi.sound (self, CHAN_AUTO, sounds[SND_BUGHIT], 1, ATTN_NORM, 0);
 
@@ -378,8 +378,6 @@ int priestess_proj2_die(edict_t *self, edict_t *inflictor, edict_t *attacker, in
 
 	self->think = G_FreeEdict;
 	self->nextthink = level.time + 0.1;
-
-	return 1;
 }
 
 /*-----------------------------------------------
