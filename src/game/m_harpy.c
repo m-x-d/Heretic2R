@@ -107,34 +107,6 @@ static const vec3_t dead_harpy_maxs = { 16.0f,  16.0f, 12.0f }; //mxd
 
 #pragma endregion
 
-
-/*===============================================================
-
-	Harpy Helper Functions
-
-===============================================================*/
-
-void harpy_throw_wings(edict_t *self)
-{
-	int				throw_nodes = 0;
-	vec3_t			gore_spot;
-
-	if (!(self->s.fmnodeinfo[MESH_RWING].flags & FMNI_NO_DRAW))
-	{
-		throw_nodes |= BPN_for_hitloc[hl_rwing];
-	}
-
-	if (!(self->s.fmnodeinfo[MESH_LWING].flags & FMNI_NO_DRAW))
-	{
-		throw_nodes |= BPN_for_hitloc[hl_lwing];
-	}
-
-	VectorCopy(vec3_origin, gore_spot);
-	gore_spot[2]+=10;
-
-	ThrowBodyPart(self, &gore_spot, throw_nodes, 50, FRAME_partfly1);
-}
-
 int head_die(edict_t *self, edict_t *inflictor, edict_t *attacker,int damage,vec3_t point)
 {
 	BecomeDebris(self);
