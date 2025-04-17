@@ -500,32 +500,22 @@ void harpy_ai_pirch(edict_t* self) //TODO: rename to harpy_ai_perch.
 	}
 }
 
-void move_harpy_tumble(edict_t *self)
+void move_harpy_tumble(edict_t* self) //TODO: rename to harpy_tumble_move.
 {
-	trace_t	trace;
-	vec3_t	endpos;
-
 	self->movetype = PHYSICSTYPE_STEP;
-	self->gravity = 1;
+	self->gravity = 1.0f;
 
-	VectorSet(self->mins, -16, -16, 0);
-	VectorSet(self->maxs, 16, 16, 12);
+	VectorCopy(dead_harpy_mins, self->mins); //mxd
+	VectorCopy(dead_harpy_maxs, self->maxs); //mxd
 
-	/*
-	if (!self->avelocity[PITCH] && !self->avelocity[YAW] && !self->avelocity[ROLL])
-	{
-		self->avelocity[PITCH] = flrand(128.0F, 256.0F);
-		self->avelocity[YAW] = flrand(64.0F, 512.0F);
-		self->avelocity[ROLL] = flrand(64.0F, 512.0F);
-	}
-	*/
+	vec3_t end_pos;
+	VectorCopy(self->s.origin, end_pos);
+	end_pos[2] -= 32.0f;
 
-	VectorCopy(self->s.origin, endpos);
-	endpos[2] -= 32;
+	trace_t trace;
+	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_MONSTERSOLID, &trace);
 
-	gi.trace(self->s.origin, self->mins, self->maxs, endpos, self, MASK_MONSTERSOLID,&trace);
-
-	if ( (self->groundentity != NULL) || (trace.fraction != 1) || (trace.startsolid) || (trace.allsolid) || (self->monsterinfo.jump_time < level.time) )
+	if (self->groundentity != NULL || trace.fraction < 1.0f || trace.startsolid || trace.allsolid || self->monsterinfo.jump_time < level.time)
 	{
 		gi.CreateEffect(&self->s, FX_DUST_PUFF, CEF_OWNERS_ORIGIN, self->s.origin, NULL);
 
