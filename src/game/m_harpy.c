@@ -103,7 +103,6 @@ static const animmove_t *animations[NUM_ANIMS] =
 };
 
 static int sounds[NUM_SOUNDS];
-static ClassResourceInfo_t resInfo;
 
 
 /*===============================================================
@@ -1589,6 +1588,8 @@ void harpy_hover_anim(edict_t *self)
 
 void HarpyStaticsInit(void)
 {
+	static ClassResourceInfo_t resInfo;
+
 	classStatics[CID_HARPY].msgReceivers[MSG_DEATH] = harpy_die;
 	classStatics[CID_HARPY].msgReceivers[MSG_FLY] = harpy_hover;
 	classStatics[CID_HARPY].msgReceivers[MSG_STAND] = harpy_stand;
