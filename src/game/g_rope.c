@@ -130,7 +130,7 @@ static void TutorialChickenUse(edict_t* self, edict_t* other, edict_t* activator
 	}
 }
 
-static int TutorialChickenPain(edict_t* self, edict_t* other, float kick, int damage) //mxd. Named 'hanging_chicken_pain' in original logic.
+static void TutorialChickenPain(edict_t* self, edict_t* other, float kick, int damage) //mxd. Named 'hanging_chicken_pain' in original logic.
 {
 	self->health = NATE_HEALTH;
 	self->svflags &= ~SVF_ONFIRE;
@@ -150,8 +150,6 @@ static int TutorialChickenPain(edict_t* self, edict_t* other, float kick, int da
 
 	gi.CreateEffect(&self->s, FX_CHICKEN_EXPLODE, fx_flags, NULL, "");
 	gi.sound(self, CHAN_AUTO, gi.soundindex(va("monsters/chicken/pain%i.wav", irand(1, 2))), 1.0f, ATTN_NORM, 0.0f);
-
-	return 1;
 }
 
 static void TutorialChickenThink(edict_t* self) //mxd. Named 'hanging_chicken_think' in original logic.

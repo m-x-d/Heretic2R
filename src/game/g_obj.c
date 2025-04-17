@@ -651,7 +651,7 @@ static void ObjDyingElfTouch(edict_t* self, edict_t* other, cplane_t* plane, csu
 	}
 }
 
-static int ObjDyingElfPain(edict_t* self, edict_t* other, float kick, int damage) //mxd. Named 'dying_elf_pain' in original logic.
+static void ObjDyingElfPain(edict_t* self, edict_t* other, float kick, int damage) //mxd. Named 'dying_elf_pain' in original logic.
 {
 	self->enemy = other;
 	self->think = ObjDyingElfReachAnim;
@@ -659,8 +659,6 @@ static int ObjDyingElfPain(edict_t* self, edict_t* other, float kick, int damage
 
 	if (self->enemy->client != NULL || (self->enemy->svflags & SVF_MONSTER))
 		dying_elf_sounds(self, DYING_ELF_PAIN_VOICE);
-
-	return 1;
 }
 
 static int ObjDyingElfDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'dying_elf_die' in original logic.

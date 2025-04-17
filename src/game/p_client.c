@@ -61,9 +61,8 @@ void SP_info_player_coop(edict_t* self)
 void SP_info_player_intermission(edict_t* self) { }
 
 // Player pain is handled at the end of the frame in P_DamageFeedback().
-int PlayerPain(edict_t* self, edict_t* other, float kick, int damage) //mxd. Named 'player_pain' in original logic.
+void PlayerPain(edict_t* self, edict_t* other, float kick, int damage) //mxd. Named 'player_pain' in original logic. //TODO: can be removed?
 {
-	return 0;
 }
 
 static void BleederThink(edict_t* self)
