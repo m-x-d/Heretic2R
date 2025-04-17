@@ -51,7 +51,7 @@ void imp_blocked (edict_t *self, struct trace_s *trace);
 	imp base info
 -----------------------------------------------------------------*/
 
-static animmove_t *animations[NUM_ANIMS] =
+static const animmove_t *animations[NUM_ANIMS] =
 {
 	&imp_move_die1, 
 	&imp_move_fly1,
