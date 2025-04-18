@@ -823,11 +823,9 @@ static void ImpProjectileInit(const edict_t* self, edict_t* proj) //mxd. Named '
 	VectorCopy(self->s.origin, proj->s.origin);
 }
 
-edict_t *ImpFireballReflect(edict_t *self, edict_t *other, vec3_t vel)
+edict_t* ImpFireballReflect(edict_t* self, edict_t* other, const vec3_t vel)
 {
-	edict_t	*fireball;
-
-	fireball = G_Spawn();
+	edict_t* fireball = G_Spawn();
 
 	ImpProjectileInit(self, fireball);
 
@@ -835,33 +833,25 @@ edict_t *ImpFireballReflect(edict_t *self, edict_t *other, vec3_t vel)
 	VectorCopy(self->s.origin, fireball->s.origin);
 	fireball->owner = other;
 	fireball->enemy = self->owner;
-	fireball->nextthink=self->nextthink;
-	VectorScale(self->avelocity, -0.5, fireball->avelocity);
+	fireball->nextthink = self->nextthink;
+	VectorScale(self->avelocity, -0.5f, fireball->avelocity);
 	VectorCopy(vel, fireball->velocity);
 	VectorNormalize2(vel, fireball->movedir);
 	AnglesFromDir(fireball->movedir, fireball->s.angles);
 	fireball->classID = self->classID;
-	fireball->reflect_debounce_time = self->reflect_debounce_time -1;
-	fireball->reflected_time=self->reflected_time;
+	fireball->reflect_debounce_time = self->reflect_debounce_time - 1;
+	fireball->reflected_time = self->reflected_time;
 	fireball->ideal_yaw = self->ideal_yaw;
 
-	gi.CreateEffect(&fireball->s,
-				FX_M_EFFECTS,
-				CEF_OWNERS_ORIGIN,
-				NULL,
-				"bv",
-				FX_IMP_FIRE,
-				fireball->velocity);
+	gi.CreateEffect(&fireball->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, NULL, "bv", FX_IMP_FIRE, fireball->velocity);
 
-	G_LinkMissile(fireball); 
-
+	G_LinkMissile(fireball);
 	G_SetToFree(self);
 
 	gi.CreateEffect(&fireball->s, FX_LIGHTNING_HIT, CEF_OWNERS_ORIGIN, NULL, "t", vel);
 
-	return(fireball);
+	return fireball;
 }
-
 
 void fireball_blocked( edict_t *self, trace_t *trace )
 {	
