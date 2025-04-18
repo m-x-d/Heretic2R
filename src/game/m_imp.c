@@ -519,112 +519,101 @@ void move_imp_dive(edict_t* self) //TODO: rename to imp_dive_move.
 	ImpAIGlide(self);
 }
 
-void imp_dive_loop(edict_t *self)
+void imp_dive_loop(edict_t* self)
 {
 	SetAnim(self, ANIM_DIVE_LOOP);
 }
 
-void imp_check_dodge(edict_t *self)
+void imp_check_dodge(edict_t* self)
 {
-	qboolean	dodge = false;
-	trace_t		trace;
-	edict_t		*ent = NULL;
-	vec3_t		vec, vr, projvec, ddir, goalpos, vu;
-	float		dodgedot;
-	qboolean	vert = false;
-
-	if (!self->enemy)
+	if (self->enemy == NULL || (self->spawnflags & MSF_FIXED))
 		return;
 
-	if(self->spawnflags&MSF_FIXED)
-		return;
+	vec3_t enemy_dir;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, enemy_dir);
+	VectorNormalize(enemy_dir);
 
-	VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
-	VectorNormalize(vec);
+	vec3_t dodge_dir;
+	qboolean dodge = false;
+	qboolean vertical_dodge = false;
 
+	edict_t* ent = NULL;
 	while ((ent = FindInRadius(ent, self->s.origin, IMP_PROJECTILE_SEARCH_RADIUS)) != NULL)
 	{
-		//We're only interested in his projectiles
+		// We're only interested in his projectiles.
 		if (ent->owner != self->enemy)
 			continue;
-		
-		VectorCopy(ent->velocity, projvec);
-		VectorNormalize(projvec);
 
-		dodgedot = DotProduct(projvec, vec);
+		vec3_t proj_dir;
+		VectorNormalize2(ent->velocity, proj_dir);
 
-		//gi.dprintf("Found projectile with dot %f\n", dodgedot);
-
-		if (dodgedot < -0.85 && irand(0,1))
+		if (DotProduct(proj_dir, enemy_dir) < -0.85f && irand(0, 1) == 1)
 		{
-			//gi.dprintf("Dodge it!\n");
-
 			dodge = true;
-			AngleVectors(self->s.angles, NULL, vr, vu);
 
-			VectorCopy(self->s.origin, goalpos);
+			vec3_t up;
+			vec3_t right;
+			AngleVectors(self->s.angles, NULL, right, up);
 
-			if (irand(0,1))
+			vec3_t goal_pos;
+			VectorCopy(self->s.origin, goal_pos);
+
+			// Pick horizontal or vertical dodge direction.
+			if (irand(0, 1) == 1)
 			{
-				if (irand(0,1))
-					VectorScale(vr, -1, ddir);
-				else
-					VectorScale(vr, 1, ddir);
+				VectorScale(right, Q_signf(flrand(-1.0f, 0.0f)), dodge_dir);
 			}
 			else
 			{
-				vert = true;
-				if (irand(0,1))
-					VectorScale(vu, -1, ddir);
-				else
-					VectorScale(vu, 1, ddir);
+				VectorScale(up, Q_signf(flrand(-1.0f, 0.0f)), dodge_dir);
+				vertical_dodge = true;
 			}
 
-			VectorMA(goalpos, 100, ddir, goalpos);
+			VectorMA(goal_pos, 100.0f, dodge_dir, goal_pos);
 
-			gi.trace(self->s.origin, self->mins, self->maxs, goalpos, self, MASK_SHOT|MASK_WATER,&trace);
+			trace_t trace;
+			gi.trace(self->s.origin, self->mins, self->maxs, goal_pos, self, MASK_SHOT | MASK_WATER, &trace);
 
-			if (trace.fraction < 1)//bad dir, try other
-				VectorScale(ddir, -1, ddir);
+			if (trace.fraction < 1.0f) // Bad direction, try another.
+			{
+				Vec3ScaleAssign(-1.0f, dodge_dir);
 
-			if(vert)
-			{//ok, better check this new opposite dir
-				gi.trace(self->s.origin, self->mins, self->maxs, goalpos, self, MASK_SHOT|MASK_WATER,&trace);
+				if (vertical_dodge)
+				{
+					// Ok, better check this new opposite dir.
+					gi.trace(self->s.origin, self->mins, self->maxs, goal_pos, self, MASK_SHOT | MASK_WATER, &trace);
 
-				if (trace.fraction < 1)
-				{//uh-oh, let's go for a side dir
-					if (irand(0,1))
-						VectorScale(vr, 1, ddir);
-					else
-						VectorScale(vr, -1, ddir);
+					if (trace.fraction < 1.0f)
+					{
+						// Uh-oh, let's go for a side dir.
+						VectorScale(right, Q_signf(flrand(-1.0f, 0.0f)), dodge_dir);
+
+						gi.trace(self->s.origin, self->mins, self->maxs, goal_pos, self, MASK_SHOT | MASK_WATER, &trace);
+
+						if (trace.fraction < 1.0f)// What the hell? Just go the other way...
+							VectorScale(dodge_dir, -1, dodge_dir);
+					}
 				}
-
-				gi.trace(self->s.origin, self->mins, self->maxs, goalpos, self, MASK_SHOT|MASK_WATER,&trace);
-
-				if (trace.fraction < 1)//what the hell, just go the other way
-					VectorScale(ddir, -1, ddir);
-
 			}
+
+			//TODO: we found projectile to dodge. Shouldn't we either break here, or compare distances with previous match to find the closest one?
 		}
 	}
 
-	if (dodge)
+	if (dodge && self->monsterinfo.misc_debounce_time < level.time) // If he is, dodge!
 	{
-		//If he is, dodge!
-		if (self->monsterinfo.misc_debounce_time < level.time)
+		if (self->curAnimID != ANIM_FIREBALL)
 		{
-			if(self->curAnimID!=ANIM_FIREBALL)
-			{
-				if(ddir[2] > 0.1)
-					SetAnim(self, ANIM_DUP);
-				else if(ddir[2] < -0.1)
-					SetAnim(self, ANIM_DDOWN);
-			}
-			VectorMA(self->velocity, irand(300, 500), ddir, self->velocity);
-			self->monsterinfo.misc_debounce_time = level.time + irand(2,4);
+			if (dodge_dir[2] > 0.1f)
+				SetAnim(self, ANIM_DUP);
+			else if (dodge_dir[2] < -0.1f)
+				SetAnim(self, ANIM_DDOWN);
 		}
-	}	
-	
+
+		VectorMA(self->velocity, flrand(300.0f, 500.0f), dodge_dir, self->velocity); //mxd. irand() in original logic.
+		self->monsterinfo.misc_debounce_time = level.time + flrand(2.0f, 4.0f); //mxd. irand() in original logic.
+	}
+
 	ImpAIGlide(self);
 }
 
