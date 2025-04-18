@@ -213,13 +213,10 @@ void imp_ai_hover(edict_t* self, float distance) //TODO: very similar to harpy_a
 	ImpAIGlide(self);
 }
 
-//receiver for MSG_FLYBACK
-void imp_flyback(edict_t *self)
+void imp_flyback(edict_t* self)
 {
 	SetAnim(self, ANIM_FLYBACK1);
-	return;
 }
-
 
 void imp_ai_pirch(edict_t *self)
 {
