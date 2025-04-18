@@ -82,20 +82,15 @@ static void ImpIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'imp_blocke
 	}
 }
 
-//Various sound functions
-void imp_flap_noise(edict_t *self)
+// Various sound functions.
+void imp_flap_noise(edict_t* self)
 {
-	gi.sound(self,CHAN_ITEM,sounds[SND_FLAP],1,ATTN_NORM,0);
+	gi.sound(self, CHAN_ITEM, sounds[SND_FLAP], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void imp_death_noise(edict_t *self)
+void imp_dive_noise(edict_t* self)
 {
-	gi.sound(self,CHAN_VOICE,sounds[SND_DEATH],1,ATTN_NORM,0);
-}
-
-void imp_dive_noise(edict_t *self)
-{
-	gi.sound(self,CHAN_VOICE,sounds[SND_DIVE],1,ATTN_NORM,0);
+	gi.sound(self, CHAN_VOICE, sounds[SND_DIVE], 1.0f, ATTN_NORM, 0.0f);
 }
 
 int imp_check_move(edict_t *self, float dist)
@@ -313,10 +308,9 @@ void move_imp_tumble(edict_t *self)
 	if (self->groundentity != NULL || self->monsterinfo.jump_time < level.time)
 	{
 		gi.CreateEffect(&self->s, FX_DUST_PUFF, CEF_OWNERS_ORIGIN, self->s.origin, NULL);
+		gi.sound(self, CHAN_VOICE, sounds[SND_DEATH], 1.0f, ATTN_NORM, 0.0f); //mxd. Inline imp_death_noise().
 
 		VectorCopy(self->s.angles, self->movedir);
-		imp_death_noise(self);
-
 		SetAnim(self, ANIM_DIE);
 	}
 }
