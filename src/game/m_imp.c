@@ -799,7 +799,7 @@ static void ImpFireballFizzle(edict_t* self) //mxd. Named 'FireFizzle' in origin
 	G_SetToFree(self);
 }
 
-static void fireball_blocked(edict_t* self, trace_t* trace); //TODO: remove.
+static void ImpFireballBlocked(edict_t* self, trace_t* trace); //TODO: remove.
 
 static void ImpProjectileInit(const edict_t* self, edict_t* proj) //mxd. Named 'create_imp_proj' in original logic.
 {
@@ -814,9 +814,9 @@ static void ImpProjectileInit(const edict_t* self, edict_t* proj) //mxd. Named '
 	proj->enemy = self->enemy;
 	proj->reflect_debounce_time = MAX_REFLECT;
 
-	proj->isBlocked = fireball_blocked;
-	proj->isBlocking = fireball_blocked;
-	proj->bounced = fireball_blocked;
+	proj->isBlocked = ImpFireballBlocked;
+	proj->isBlocking = ImpFireballBlocked;
+	proj->bounced = ImpFireballBlocked;
 
 	VectorSet(proj->mins, -1.0f, -1.0f, -1.0f);
 	VectorSet(proj->maxs,  1.0f,  1.0f,  1.0f);
@@ -853,57 +853,40 @@ edict_t* ImpFireballReflect(edict_t* self, edict_t* other, const vec3_t vel)
 	return fireball;
 }
 
-void fireball_blocked( edict_t *self, trace_t *trace )
-{	
-	if(trace->surface)
+static void ImpFireballBlocked(edict_t* self, trace_t* trace) //mxd. Named 'fireball_blocked' in original logic.
+{
+	if (trace->surface != NULL && (trace->surface->flags & SURF_SKY))
 	{
-		if(trace->surface->flags & SURF_SKY)
-		{
-			SkyFly(self);
-			return;
-		}
+		SkyFly(self);
+		return;
 	}
 
-	if(trace->contents&CONTENTS_WATER || trace->contents&CONTENTS_SLIME)
+	if ((trace->contents & CONTENTS_WATER) || (trace->contents & CONTENTS_SLIME))
 	{
 		ImpFireballFizzle(self);
 		return;
 	}
 
-	if(trace->ent)
+	if (trace->ent != NULL && EntReflecting(trace->ent, true, true) && self->reflect_debounce_time > 0)
 	{
-		if (EntReflecting(trace->ent, true, true) && self->reflect_debounce_time)
-		{
-			Create_rand_relect_vect(self->velocity, self->velocity);
-			Vec3ScaleAssign(self->ideal_yaw, self->velocity);
-			ImpFireballReflect(self, trace->ent, self->velocity);
+		Create_rand_relect_vect(self->velocity, self->velocity);
+		Vec3ScaleAssign(self->ideal_yaw, self->velocity);
+		ImpFireballReflect(self, trace->ent, self->velocity);
 
-			return;
-		}
+		return;
 	}
 
-	if (trace->ent->takedamage )
+	if (trace->ent->takedamage != DAMAGE_NO)
 	{
-		vec3_t	hitDir;
-		float	damage = flrand(2,5);
-	
-		if(self->dmg)
-			damage += self->dmg;
-		VectorCopy( self->velocity, hitDir );
-		VectorNormalize( hitDir );
+		vec3_t hit_dir;
+		VectorNormalize2(self->velocity, hit_dir);
 
-		T_Damage(trace->ent, self, self->owner, hitDir, self->s.origin, trace->plane.normal, damage, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK,MOD_DIED);
+		const int damage = max(0, self->dmg) + irand(2, 5); //mxd. float in original logic.
+		T_Damage(trace->ent, self, self->owner, hit_dir, self->s.origin, trace->plane.normal, damage, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK, MOD_DIED);
 	}
 
-	gi.sound(self, CHAN_BODY, sounds[SND_FBHIT], 1, ATTN_NORM, 0);
-
-	gi.CreateEffect(&self->s,
-				FX_M_EFFECTS,
-				CEF_OWNERS_ORIGIN,
-				self->s.origin,
-				"bv",
-				FX_IMP_FBEXPL,
-				vec3_origin);
+	gi.sound(self, CHAN_BODY, sounds[SND_FBHIT], 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(&self->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, self->s.origin, "bv", FX_IMP_FBEXPL, vec3_origin);
 
 	G_SetToFree(self);
 }
