@@ -781,11 +781,6 @@ void move_imp_hover(edict_t* self) //TODO: rename to imp_hover_move.
 	}
 }
 
-//New physics call that modifies the imp's velocity and angles based on aerodynamics
-void imp_flight_model(edict_t *self)
-{
-}
-
 void move_imp_fly(edict_t *self)
 {	
 	edict_t *dummy;
@@ -794,12 +789,6 @@ void move_imp_fly(edict_t *self)
 	if(!irand(0,3))
 		imp_check_dodge(self);
 
-	return;
-}
-
-void move_imp_die(edict_t *self)
-{
-	//fall to the floor
 	return;
 }
 
