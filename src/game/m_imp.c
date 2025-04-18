@@ -337,28 +337,22 @@ static void ImpDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'im
 	}
 }
 
-//receiver for MSG_PAIN
-void imp_pain(edict_t *self, G_Message_t *msg)
+static void ImpPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp_pain' in original logic.
 {
-	int				temp, damage;
-	qboolean		force_pain;
-	
+	int temp;
+	int damage;
+	qboolean force_pain;
 	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
 
 	if (self->curAnimID == ANIM_PERCH)
 	{
 		SetAnim(self, ANIM_TAKEOFF);
-		return;
 	}
-	if (force_pain||((irand(0,10) < 2) && (self->pain_debounce_time < level.time)))
+	else if (force_pain || (irand(0, 10) < 2 && self->pain_debounce_time < level.time))
 	{
-/*		if (irand(0,1))
-			imp_pain1_noise(self);
-		else
-			imp_pain2_noise(self);*/
+		self->pain_debounce_time = level.time + 2.0f;
 
-		self->pain_debounce_time = level.time + 2;
-		if(self->curAnimID == ANIM_DIVE_GO || self->curAnimID == ANIM_DIVE_LOOP)
+		if (self->curAnimID == ANIM_DIVE_GO || self->curAnimID == ANIM_DIVE_LOOP)
 			SetAnim(self, ANIM_DIVE_END);
 		else
 			SetAnim(self, ANIM_PAIN1);
@@ -1243,7 +1237,7 @@ void ImpStaticsInit(void)
 	classStatics[CID_IMP].msgReceivers[MSG_FLY] = imp_hover;
 	classStatics[CID_IMP].msgReceivers[MSG_STAND] = imp_stand;
 	classStatics[CID_IMP].msgReceivers[MSG_RUN] = imp_hover;
-	classStatics[CID_IMP].msgReceivers[MSG_PAIN] = imp_pain;
+	classStatics[CID_IMP].msgReceivers[MSG_PAIN] = ImpPainMsgHandler;
 	classStatics[CID_IMP].msgReceivers[MSG_WATCH] = imp_perch;
 	classStatics[CID_IMP].msgReceivers[MSG_DEATH_PAIN] = ImpDeathPainMsgHandler;
 
