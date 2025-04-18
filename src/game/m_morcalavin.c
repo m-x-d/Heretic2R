@@ -31,7 +31,7 @@ static ClassResourceInfo_t resInfo;
 
 void create_morcalavin_proj(edict_t *self,edict_t *proj);
 
-static animmove_t *animations[NUM_ANIMS] =
+static const animmove_t *animations[NUM_ANIMS] =
 {
 	&morcalavin_move_float,
 	&morcalavin_move_hurtidle,
