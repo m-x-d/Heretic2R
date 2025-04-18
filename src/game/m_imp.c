@@ -58,34 +58,26 @@ static const vec3_t dead_imp_maxs = {  16.0f,  16.0f, 16.0f }; //mxd
 
 #pragma endregion
 
-/*===============================================================
-
-	Imp Helper Functions
-
-===============================================================*/
-
-void imp_blocked (edict_t *self, struct trace_s *trace)
+static void ImpIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'imp_blocked' in original logic.
 {
-	vec3_t	vf;
-	int		damage;
-
-	if (self->health <= 0)
+	if (self->health <= 0 || trace->ent == NULL)
 		return;
 
-	if (!trace->ent)
-		return;
-
-	if(self->curAnimID == ANIM_DIVE_GO || self->curAnimID == ANIM_DIVE_LOOP || self->curAnimID == ANIM_DIVE_END)
+	if (self->curAnimID == ANIM_DIVE_GO || self->curAnimID == ANIM_DIVE_LOOP || self->curAnimID == ANIM_DIVE_END)
 	{
-		if(!stricmp(trace->ent->classname, "player"))
-		{
-			if(!irand(0,4))
-				P_KnockDownPlayer(&trace->ent->client->playerinfo);
-		}
-		damage = irand(IMP_DMG_MIN, IMP_DMG_MAX);
-		T_Damage (trace->ent, self, self, vf, trace->ent->s.origin, trace->plane.normal, damage, damage*2, 0,MOD_DIED);
-		gi.sound(self, CHAN_BODY, sounds[SND_HIT], 1, ATTN_NORM, 0);
-		if(self->curAnimID != ANIM_DIVE_END)
+		if (Q_stricmp(trace->ent->classname, "player") == 0 && irand(0, 4) == 0) //mxd. stricmp -> Q_stricmp. //TODO: check ent->client instead?
+			P_KnockDownPlayer(&trace->ent->client->playerinfo);
+
+		vec3_t dir; //BUGFIX: mxd. Not initialized in original logic.
+		VectorCopy(self->velocity, dir);
+		VectorNormalize(dir);
+
+		const int damage = irand(IMP_DMG_MIN, IMP_DMG_MAX);
+		T_Damage(trace->ent, self, self, dir, trace->ent->s.origin, trace->plane.normal, damage, damage * 2, 0, MOD_DIED);
+
+		gi.sound(self, CHAN_BODY, sounds[SND_HIT], 1.0f, ATTN_NORM, 0.0f);
+
+		if (self->curAnimID != ANIM_DIVE_END)
 			SetAnim(self, ANIM_DIVE_END);
 	}
 }
@@ -1426,7 +1418,7 @@ void SP_monster_imp(edict_t *self)
 	self->s.modelindex = classStatics[CID_IMP].resInfo->modelIndex;
 	self->s.skinnum = 0;
 
-	self->isBlocked = imp_blocked;
+	self->isBlocked = ImpIsBlocked;
 
 	if (!self->s.scale)
 		self->monsterinfo.scale = self->s.scale = flrand(0.7, 1.2);
