@@ -939,15 +939,9 @@ void imp_fireball(edict_t* self)
 	gi.linkentity(proj);
 }
 
-/*===============================================================
-
-	Imp Spawn Functions
-
-===============================================================*/
-
 void ImpStaticsInit(void)
 {
-	static ClassResourceInfo_t resInfo;
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
 
 	classStatics[CID_IMP].msgReceivers[MSG_DEATH] = ImpDeathMsgHandler;
 	classStatics[CID_IMP].msgReceivers[MSG_FLY] = ImpFlyMsgHandler;
@@ -957,23 +951,24 @@ void ImpStaticsInit(void)
 	classStatics[CID_IMP].msgReceivers[MSG_WATCH] = ImpWatchMsgHandler;
 	classStatics[CID_IMP].msgReceivers[MSG_DEATH_PAIN] = ImpDeathPainMsgHandler;
 
-	resInfo.numAnims = NUM_ANIMS;
-	resInfo.animations = animations;
-	resInfo.modelIndex = gi.modelindex("models/monsters/imp/tris.fm");
-	resInfo.numSounds = NUM_SOUNDS;
-	resInfo.sounds = sounds;
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/imp/tris.fm"); //TODO: no such model!
 
-	sounds[SND_GIB]=gi.soundindex("misc/fleshbreak.wav");	
-	sounds[SND_FLAP]=gi.soundindex("monsters/imp/fly.wav");	
-	sounds[SND_SCREAM]=gi.soundindex("monsters/imp/up.wav");	
-	sounds[SND_DIVE]=gi.soundindex("monsters/imp/swoop.wav");	
-	sounds[SND_DEATH]=gi.soundindex("monsters/imp/die.wav");	
-	sounds[SND_HIT]=gi.soundindex("monsters/imp/swoophit.wav");	
-	sounds[SND_ATTACK]=gi.soundindex("monsters/imp/fireball.wav");	
-	sounds[SND_FIZZLE]=gi.soundindex("monsters/imp/fout.wav");
-	sounds[SND_FBHIT]=gi.soundindex("monsters/imp/fbfire.wav");
+	sounds[SND_GIB] = gi.soundindex("misc/fleshbreak.wav");
+	sounds[SND_FLAP] = gi.soundindex("monsters/imp/fly.wav");
+	sounds[SND_SCREAM] = gi.soundindex("monsters/imp/up.wav");
+	sounds[SND_DIVE] = gi.soundindex("monsters/imp/swoop.wav");
+	sounds[SND_DEATH] = gi.soundindex("monsters/imp/die.wav");
+	sounds[SND_HIT] = gi.soundindex("monsters/imp/swoophit.wav");
+	sounds[SND_ATTACK] = gi.soundindex("monsters/imp/fireball.wav");
+	sounds[SND_FIZZLE] = gi.soundindex("monsters/imp/fout.wav");
+	sounds[SND_FBHIT] = gi.soundindex("monsters/imp/fbfire.wav");
 
-	classStatics[CID_IMP].resInfo = &resInfo;
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
+
+	classStatics[CID_IMP].resInfo = &res_info;
 }
 
 /*QUAKED monster_imp(1 .5 0) (-16 -16 0) (16 16 32) AMBUSH ASLEEP Perching 8 16 32 64 FIXED
