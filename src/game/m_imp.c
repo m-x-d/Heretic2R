@@ -238,7 +238,7 @@ void imp_ai_perch(edict_t* self) //mxd. Named 'imp_ai_pirch' in original logic.
 	}
 }
 
-void move_imp_tumble(edict_t* self) //TODO: rename to imp_tumble_move.
+void imp_tumble_move(edict_t* self) //mxd. Named 'move_imp_tumble' in original logic.
 {
 	self->movetype = PHYSICSTYPE_STEP;
 	self->gravity = 1.0f;

@@ -78,6 +78,6 @@ extern void imp_fix_angles(edict_t* self);
 extern void move_imp_hover(edict_t* self);
 extern void move_imp_fly(edict_t* self);
 extern void move_imp_dive(edict_t* self);
-extern void move_imp_tumble(edict_t* self);
+extern void imp_tumble_move(edict_t* self);
 
 extern void imp_fireball(edict_t* self);
