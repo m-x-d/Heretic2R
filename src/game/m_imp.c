@@ -218,46 +218,26 @@ void imp_flyback(edict_t* self)
 	SetAnim(self, ANIM_FLYBACK1);
 }
 
-void imp_ai_pirch(edict_t *self)
+void imp_ai_pirch(edict_t* self) //TODO: rename to imp_ai_perch.
 {
-	monsterinfo_t *monsterinfo = &self->monsterinfo;
-	vec3_t	vec, vf, vr;
-	float	dot, len;
-
-	if (!M_ValidTarget(self, self->enemy))
+	if (!M_ValidTarget(self, self->enemy) || !AI_IsVisible(self, self->enemy))
 		return;
 
-	if(!AI_IsVisible(self, self->enemy))
-		return;
+	vec3_t diff;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
+	const float dist = VectorNormalize(diff);
 
-	VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
-	len = VectorNormalize(vec);
-	
-	if (len < 150)
+	if (dist < 150.0f)
 	{
 		SetAnim(self, ANIM_TAKEOFF);
-		return;
 	}
-
-/*
-	if (irand(0,100) < 10 && self->monsterinfo.attack_finished < level.time)
+	else
 	{
-		self->monsterinfo.attack_finished = level.time + 5;
+		vec3_t forward;
+		AngleVectors(self->s.angles, forward, NULL, NULL);
 
-		if (irand(0,1))
-			gi.sound (self, CHAN_VOICE, sounds[SND_IDLE1], 1, ATTN_NORM, 0);
-		else
-			gi.sound (self, CHAN_VOICE, sounds[SND_IDLE2], 1, ATTN_NORM, 0);
-	}
-*/
-	AngleVectors(self->s.angles, vf, vr, NULL);
-
-	dot = DotProduct(vec, vf);
-
-	if (dot < 0)
-	{
-		SetAnim(self, ANIM_TAKEOFF);
-		return;
+		if (DotProduct(diff, forward) < 0.0f)
+			SetAnim(self, ANIM_TAKEOFF);
 	}
 }
 
