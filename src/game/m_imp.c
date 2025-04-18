@@ -372,11 +372,6 @@ static void ImpStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'im
 		SetAnim(self, ANIM_HOVER1);
 }
 
-void imp_fly(edict_t *self, G_Message_t *msg)
-{
-	SetAnim(self, ANIM_FLY1);
-}
-
 void imp_perch(edict_t *self, G_Message_t *msg)
 {
 	SetAnim(self, ANIM_PERCH);
