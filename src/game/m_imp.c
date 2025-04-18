@@ -493,50 +493,28 @@ static qboolean ImpCheckSwoop(const edict_t* self, const vec3_t goal_pos) //mxd.
 	return (trace.ent == self->enemy);
 }
 
-void move_imp_dive(edict_t *self)
+void move_imp_dive(edict_t* self) //TODO: rename to imp_dive_move.
 {
-	vec3_t	vec, vf;
-	float	dist, zd, hd, forward;
-
-	//Find out the Z and Horizontal deltas to target
-	zd = Q_fabs(self->s.origin[2] - self->enemy->s.origin[2]);
-	
-	AngleVectors(self->s.angles, vf, NULL, NULL);
-
-	VectorCopy(self->s.origin, vec);
-	vec[2] = self->enemy->s.origin[2];
-
-	VectorSubtract(self->enemy->s.origin, vec, vec);
-	hd = VectorLength(vec);
-
-	if ((self->groundentity != NULL) || (!ImpCanMove(self, 64)))
+	if (self->groundentity != NULL || !ImpCanMove(self, 64.0f))
 	{
 		if (self->groundentity == self->enemy)
 			imp_hit(self, true);
+
 		return;
 	}
 
-	dist = Q_fabs(self->s.origin[2] - self->enemy->s.origin[2]);
+	const float z_dist = Q_fabs(self->s.origin[2] - self->enemy->s.origin[2]);
 
-	forward = (256 - (dist*0.85));
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
 
-	if (forward > 256)
-		forward = 256;
-	else if (forward < 0)
-		forward = 0;
+	float forward_dist = 256.0f - z_dist * 0.85f;
+	forward_dist = Clamp(forward_dist, 0.0f, 256.0f);
 
-//	if (dist > IMP_MIN_SWOOP_DIST)
-//	{
-		VectorMA(vf, forward, vf, self->velocity);
-		self->velocity[2] = -dist*2.25;
-		if (self->velocity[2] < -300)
-			self->velocity[2] = -300;
-//	}
-/*	else
-	{
-		SetAnim(self, ANIM_DIVE_TRANS);
-		return;
-	}*/
+	VectorMA(forward, forward_dist, forward, self->velocity);
+
+	self->velocity[2] = -z_dist * 2.25f;
+	self->velocity[2] = max(-300.0f, self->velocity[2]);
 
 	ImpAIGlide(self);
 }
