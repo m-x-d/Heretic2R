@@ -798,7 +798,7 @@ void harpy_tumble_move(edict_t* self) //mxd. Named 'move_harpy_tumble' in origin
 
 void harpy_fix_angles(edict_t* self)
 {
-	// Pitch.
+	// Apply pitch delta.
 	if (self->movedir[PITCH] > 0.0f)
 	{
 		self->s.angles[PITCH] -= self->movedir[PITCH] / 2.0f;
@@ -814,7 +814,7 @@ void harpy_fix_angles(edict_t* self)
 			self->s.angles[PITCH] = 0.0f;
 	}
 
-	// Roll.
+	// Apply roll delta.
 	if (self->movedir[ROLL] > 0.0f)
 	{
 		self->s.angles[ROLL] -= self->movedir[ROLL] / 2.0f;
@@ -1024,17 +1024,18 @@ void harpy_check_dodge(edict_t* self)
 			trace_t trace;
 			gi.trace(self->s.origin, self->mins, self->maxs, goal_pos, self, MASK_SHOT | MASK_WATER, &trace);
 
+			if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
+				Vec3ScaleAssign(-1.0f, right);
+
 			VectorCopy(right, dodge_dir);
 
-			if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
-				Vec3ScaleAssign(-1.0f, dodge_dir);
+			//TODO: we found projectile to dodge. Shouldn't we either break here, or compare distances with previous match to find the closest one?
 		}
 	}
 
 	if (dodge && self->monsterinfo.misc_debounce_time < level.time) // If he is, dodge!
 	{
-		Vec3ScaleAssign(flrand(300.0f, 500.0f), dodge_dir);
-		Vec3AddAssign(dodge_dir, self->velocity);
+		VectorMA(self->velocity, flrand(300.0f, 500.0f), dodge_dir, self->velocity);
 		self->monsterinfo.misc_debounce_time = level.time + flrand(2.0f, 4.0f); //mxd. irand() in original logic.
 	}
 
@@ -1062,7 +1063,7 @@ void harpy_hover_move(edict_t* self) //mxd. Named 'move_harpy_hover' in original
 	{
 		// Make sure we've got line of sight.
 		const vec3_t mins = { -1.0f, -1.0f, -1.0f };
-		const vec3_t maxs = { 1.0f,  1.0f,  1.0f };
+		const vec3_t maxs = {  1.0f,  1.0f,  1.0f };
 
 		trace_t trace;
 		gi.trace(self->s.origin, mins, maxs, self->enemy->s.origin, self, MASK_SHOT | MASK_WATER, &trace);
@@ -1109,8 +1110,7 @@ void harpy_hover_move(edict_t* self) //mxd. Named 'move_harpy_hover' in original
 				continue;
 
 			vec3_t proj_dir;
-			VectorCopy(ent->velocity, proj_dir);
-			VectorNormalize(proj_dir);
+			VectorNormalize2(ent->velocity, proj_dir);
 
 			if (DotProduct(proj_dir, enemy_dir) < -0.6f)
 			{
@@ -1127,12 +1127,12 @@ void harpy_hover_move(edict_t* self) //mxd. Named 'move_harpy_hover' in original
 
 				gi.trace(self->s.origin, self->mins, self->maxs, goal_pos, self, MASK_SHOT | MASK_WATER, &trace);
 
-				if (trace.fraction < 1 || trace.startsolid || trace.allsolid)
+				if (trace.fraction < 1.0f || trace.startsolid || trace.allsolid)
 					Vec3ScaleAssign(-1.0f, right);
 
 				VectorCopy(right, dodge_dir);
 
-				//TODO: we found projectile to dodge. Souldn't we either break here, or compare distances with previous match to find the closest one?
+				//TODO: we found projectile to dodge. Shouldn't we either break here, or compare distances with previous match to find the closest one?
 			}
 		}
 
