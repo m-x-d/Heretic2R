@@ -30,23 +30,21 @@
 
 #define IMP_PROJECTILE_SEARCH_RADIUS	1024.0f //mxd. Named 'IMP_PROJECTILE_RADIUS' in original logic.
 
-/*-----------------------------------------------------------------
-	imp base info
------------------------------------------------------------------*/
+#pragma region ========================== Imp base info ==========================
 
-static const animmove_t *animations[NUM_ANIMS] =
+static const animmove_t* animations[NUM_ANIMS] =
 {
-	&imp_move_die1, 
+	&imp_move_die1,
 	&imp_move_fly1,
 	&imp_move_flyback,
 	&imp_move_hover1,
-	&imp_move_fireball,	
+	&imp_move_fireball,
 	&imp_move_dive_go,
 	&imp_move_dive_loop,
 	&imp_move_dive_end,
 	&imp_move_dive_out,
 	&imp_move_pain1,
-	&imp_move_tumble,	
+	&imp_move_tumble,
 	&imp_move_perch,
 	&imp_move_takeoff,
 	&imp_move_dup,
@@ -54,8 +52,11 @@ static const animmove_t *animations[NUM_ANIMS] =
 };
 
 static int sounds[NUM_SOUNDS];
-static ClassResourceInfo_t resInfo;
 
+static const vec3_t dead_imp_mins = { -16.0f, -16.0f, 0.0f }; //mxd
+static const vec3_t dead_imp_maxs = {  16.0f,  16.0f, 16.0f }; //mxd
+
+#pragma endregion
 
 /*===============================================================
 
@@ -1322,6 +1323,8 @@ void imp_fireball (edict_t *self)
 
 void ImpStaticsInit(void)
 {
+	static ClassResourceInfo_t resInfo;
+
 	classStatics[CID_IMP].msgReceivers[MSG_DEATH] = imp_die;
 	classStatics[CID_IMP].msgReceivers[MSG_FLY] = imp_hover;
 	classStatics[CID_IMP].msgReceivers[MSG_STAND] = imp_stand;
