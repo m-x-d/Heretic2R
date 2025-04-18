@@ -191,29 +191,23 @@ void imp_ai_fly(edict_t* self, float forward_offset, float right_offset, float u
 		self->velocity[2] += 32.0f;
 }
 
-//replaces ai_stand for imp
-void imp_ai_hover(edict_t *self, float dist)
+// Replaces ai_stand for imp.
+void imp_ai_hover(edict_t* self, float distance) //TODO: very similar to harpy_ai_hover. Move to mg_ai.c as ai_hover()?
 {
-	vec3_t	vec;
+	if (self->enemy == NULL && !FindTarget(self))
+		return;
 
-	if (!self->enemy)
-	{
-		if (!FindTarget(self))
-			return;
-	}
+	// Add "friction" to the movement to allow graceful flowing motion, not jittering.
+	Vec3ScaleAssign(0.8f, self->velocity);
 
-	//Add "friction" to the movement to allow graceful flowing motion, not jittering
-	self->velocity[0] *= 0.8;
-	self->velocity[1] *= 0.8;
-	self->velocity[2] *= 0.8;
-	
-	//Make sure we're not tilted after a turn
-	self->s.angles[ROLL] *= 0.25;
-	
-	//Find our ideal yaw to the player and correc to it
-	VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
-	self->ideal_yaw = VectorYaw(vec);
+	// Make sure we're not tilted after a turn.
+	self->s.angles[ROLL] *= 0.25f;
 
+	// Find our ideal yaw to the player and correct to it.
+	vec3_t diff;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
+
+	self->ideal_yaw = VectorYaw(diff);
 	M_ChangeYaw(self);
 
 	ImpAIGlide(self);
