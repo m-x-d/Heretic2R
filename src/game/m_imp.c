@@ -266,50 +266,38 @@ void move_imp_tumble(edict_t* self) //TODO: rename to imp_tumble_move.
 	}
 }
 
-void imp_fix_angles(edict_t *self)
+void imp_fix_angles(edict_t* self) //TODO: harpy_fix_angles() duplicate.
 {
-	float pitch_delta, roll_delta;
-
-	pitch_delta = self->movedir[PITCH];
-	roll_delta = self->movedir[ROLL];
-
-	if (pitch_delta > 0)
+	// Apply pitch delta.
+	if (self->movedir[PITCH] > 0.0f)
 	{
-		self->s.angles[PITCH] -= pitch_delta / 2;
-	
-		if (self->s.angles[PITCH] < 2)
-		{
-			self->s.angles[PITCH] = 0;
-		}
+		self->s.angles[PITCH] -= self->movedir[PITCH] / 2.0f;
+
+		if (self->s.angles[PITCH] < 2.0f)
+			self->s.angles[PITCH] = 0.0f;
 	}
 	else
 	{
-		self->s.angles[PITCH] += pitch_delta / 2;
-	
-		if (self->s.angles[PITCH] > 2)
-		{
-			self->s.angles[PITCH] = 0;
-		}
+		self->s.angles[PITCH] += self->movedir[PITCH] / 2.0f;
+
+		if (self->s.angles[PITCH] > 2.0f)
+			self->s.angles[PITCH] = 0.0f;
 	}
 
-	//Roll
-	if (roll_delta > 0)
+	// Apply roll delta.
+	if (self->movedir[ROLL] > 0.0f)
 	{
-		self->s.angles[ROLL] -= roll_delta / 2;
-	
-		if (self->s.angles[ROLL] < 2)
-		{
-			self->s.angles[ROLL] = 0;
-		}
+		self->s.angles[ROLL] -= self->movedir[ROLL] / 2.0f;
+
+		if (self->s.angles[ROLL] < 2.0f)
+			self->s.angles[ROLL] = 0.0f;
 	}
 	else
 	{
-		self->s.angles[ROLL] += roll_delta / 15;
-	
-		if (self->s.angles[ROLL] > 2)
-		{
-			self->s.angles[ROLL] = 0;
-		}
+		self->s.angles[ROLL] += self->movedir[ROLL] / 15.0f;
+
+		if (self->s.angles[ROLL] > 2.0f)
+			self->s.angles[ROLL] = 0.0f;
 	}
 }
 
