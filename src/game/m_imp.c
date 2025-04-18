@@ -891,62 +891,52 @@ static void ImpFireballBlocked(edict_t* self, trace_t* trace) //mxd. Named 'fire
 	G_SetToFree(self);
 }
 
-void imp_fireball (edict_t *self)
+void imp_fireball(edict_t* self)
 {
-	edict_t	*proj;
-	vec3_t	vf, vr, check_lead;
+	// Spawn the projectile.
+	edict_t* proj = G_Spawn();
 
-	// Spawn the projectile
+	ImpProjectileInit(self, proj);
 
-	proj = G_Spawn();
-
-	ImpProjectileInit(self,proj);
 	proj->reflect_debounce_time = MAX_REFLECT;
-
 	proj->owner = self;
-	
 	proj->dmg = irand(10, 20);
 
-	AngleVectors(self->s.angles, vf, vr, NULL);
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
 
-	if(self->classID == CID_IMP)
+	if (self->classID == CID_IMP) //TODO: imp_fireball() is used by Imp only.
 	{
-		VectorMA(self->s.origin, -4*self->monsterinfo.scale, vf, proj->s.origin);
-		VectorMA(proj->s.origin, 16*self->monsterinfo.scale, vr, proj->s.origin);
-		proj->s.origin[2] += 32*self->monsterinfo.scale;
-		gi.sound(proj,CHAN_BODY,sounds[SND_ATTACK],1,ATTN_NORM,0);
+		VectorMA(self->s.origin, -4.0f * self->monsterinfo.scale, forward, proj->s.origin);
+		VectorMA(proj->s.origin, 16.0f * self->monsterinfo.scale, right, proj->s.origin);
+		proj->s.origin[2] += 32.0f * self->monsterinfo.scale;
+
+		gi.sound(proj, CHAN_BODY, sounds[SND_ATTACK], 1.0f, ATTN_NORM, 0.0f);
 	}
 	else
 	{
 		VectorCopy(self->s.origin, proj->s.origin);
-		VectorMA(proj->s.origin, 16, vf, proj->s.origin);
-		proj->s.origin[2] += 12;
-		gi.sound(proj, CHAN_BODY, gi.soundindex("monsters/imp/fireball.wav"), 1, ATTN_NORM, 0);
+		VectorMA(proj->s.origin, 16.0f, forward, proj->s.origin);
+		proj->s.origin[2] += 12.0f;
+
+		gi.sound(proj, CHAN_BODY, gi.soundindex("monsters/imp/fireball.wav"), 1.0f, ATTN_NORM, 0.0f);
 	}
 
-	ExtrapolateFireDirection (self, proj->s.origin, 666, self->enemy, 0.3, check_lead);
-	if(Vec3IsZero(check_lead))
-	{
-		VectorScale(vf, 666, proj->velocity);
-	}
+	vec3_t check_lead;
+	ExtrapolateFireDirection(self, proj->s.origin, 666.0f, self->enemy, 0.3f, check_lead);
+
+	if (Vec3IsZero(check_lead))
+		VectorScale(forward, 666.0f, proj->velocity);
 	else
-	{
-		VectorScale(check_lead, 666, proj->velocity);
-	}
+		VectorScale(check_lead, 666.0f, proj->velocity);
 
 	VectorCopy(proj->velocity, proj->movedir);
 	VectorNormalize(proj->movedir);
 	vectoangles(proj->movedir, proj->s.angles);
 
-	gi.CreateEffect(&proj->s,
-				FX_M_EFFECTS,//just so I don't have to make a new FX_ id
-				CEF_OWNERS_ORIGIN,
-				NULL,
-				"bv",
-				FX_IMP_FIRE,
-				proj->velocity);
-
-	gi.linkentity(proj); 
+	gi.CreateEffect(&proj->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, NULL, "bv", FX_IMP_FIRE, proj->velocity);
+	gi.linkentity(proj);
 }
 
 /*===============================================================
