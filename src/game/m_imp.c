@@ -799,17 +799,18 @@ static void ImpFireballFizzle(edict_t* self) //mxd. Named 'FireFizzle' in origin
 	G_SetToFree(self);
 }
 
-void fireball_blocked( edict_t *self, trace_t *trace );
-void create_imp_proj(edict_t *self,edict_t *proj)
+static void fireball_blocked(edict_t* self, trace_t* trace); //TODO: remove.
+
+static void ImpProjectileInit(const edict_t* self, edict_t* proj) //mxd. Named 'create_imp_proj' in original logic.
 {
 	proj->svflags |= SVF_ALWAYS_SEND;
 	proj->movetype = PHYSICSTYPE_FLY;
-	proj->gravity = 0;
+	proj->gravity = 0.0f;
 	proj->solid = SOLID_BBOX;
 	proj->classname = "imp fireball";
-	proj->s.scale = 1.0;
-	proj->clipmask = (MASK_SHOT|CONTENTS_WATER);
-	proj->s.effects=EF_MARCUS_FLAG1;
+	proj->s.scale = 1.0f;
+	proj->clipmask = (MASK_SHOT | CONTENTS_WATER);
+	proj->s.effects = EF_MARCUS_FLAG1;
 	proj->enemy = self->enemy;
 	proj->reflect_debounce_time = MAX_REFLECT;
 
@@ -817,11 +818,10 @@ void create_imp_proj(edict_t *self,edict_t *proj)
 	proj->isBlocking = fireball_blocked;
 	proj->bounced = fireball_blocked;
 
-	VectorSet(proj->mins, -1.0, -1.0, -1.0);
-	VectorSet(proj->maxs,  1.0,  1.0,  1.0);
+	VectorSet(proj->mins, -1.0f, -1.0f, -1.0f);
+	VectorSet(proj->maxs,  1.0f,  1.0f,  1.0f);
 	VectorCopy(self->s.origin, proj->s.origin);
 }
-
 
 edict_t *ImpFireballReflect(edict_t *self, edict_t *other, vec3_t vel)
 {
@@ -829,7 +829,7 @@ edict_t *ImpFireballReflect(edict_t *self, edict_t *other, vec3_t vel)
 
 	fireball = G_Spawn();
 
-	create_imp_proj(self, fireball);
+	ImpProjectileInit(self, fireball);
 
 	fireball->s.modelindex = self->s.modelindex;
 	VectorCopy(self->s.origin, fireball->s.origin);
@@ -927,7 +927,7 @@ void imp_fireball (edict_t *self)
 
 	proj = G_Spawn();
 
-	create_imp_proj(self,proj);
+	ImpProjectileInit(self,proj);
 	proj->reflect_debounce_time = MAX_REFLECT;
 
 	proj->owner = self;
