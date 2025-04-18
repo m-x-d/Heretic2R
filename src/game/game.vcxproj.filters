@@ -881,7 +881,7 @@
     <ClInclude Include="m_imp_anim.h">
       <Filter>src\Monsters\Imp</Filter>
     </ClInclude>
-    <ClInclude Include="m_morcalavin_local.h">
+    <ClInclude Include="m_morcalavin_shared.h">
       <Filter>src\Monsters\Morcalavin</Filter>
     </ClInclude>
     <ClInclude Include="m_morcalavin_anim.h">

@@ -9,7 +9,7 @@
 
 #include "g_local.h"
 #include "m_morcalavin.h"
-#include "m_morcalavin_local.h"
+#include "m_morcalavin_shared.h"
 #include "m_morcalavin_anim.h"
 #include "Utilities.h"
 #include "g_DefaultMessageHandler.h"
