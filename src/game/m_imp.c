@@ -778,7 +778,7 @@ void imp_hover_move(edict_t* self) //mxd. Named 'move_imp_hover' in original log
 	}
 }
 
-void move_imp_fly(edict_t* self)
+void imp_fly_move(edict_t* self) //mxd. Named 'move_imp_fly' in original logic.
 {
 	if (irand(0, 3) == 0)
 		imp_check_dodge(self);
