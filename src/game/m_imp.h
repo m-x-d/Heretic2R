@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "g_Edict.h"
+
 void SP_monster_imp(edict_t* self);
-edict_t* ImpFireballReflect(edict_t* self, edict_t* other, vec3_t vel);
+edict_t* ImpFireballReflect(edict_t* self, edict_t* other, const vec3_t vel);
 void ImpStaticsInit(void);

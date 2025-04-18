@@ -25,7 +25,7 @@ static const animframe_t imp_frames_die1[] =
 	{ FRAME_death13,	NULL, 0, 0, 0, NULL, 0, imp_fix_angles },
 	{ FRAME_death14,	NULL, 0, 0, 0, NULL, 0, imp_fix_angles },
 };
-const animmove_t imp_move_die1 = { 14,imp_frames_die1, imp_dead };
+const animmove_t imp_move_die1 = { 14, imp_frames_die1, imp_dead };
 
 // Imp flying 1.
 static const animframe_t imp_frames_fly1[] =

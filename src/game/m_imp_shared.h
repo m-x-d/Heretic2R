@@ -44,12 +44,6 @@ typedef enum SoundID_e
 	NUM_SOUNDS
 } SoundID_t;
 
-void move_imp_tumble(edict_t* self);
-
-void imp_flap_noise(edict_t* self);
-void imp_dive_noise(edict_t* self);
-void imp_death_noise(edict_t* self);
-
 extern const animmove_t imp_move_die1;
 extern const animmove_t imp_move_fly1;
 extern const animmove_t imp_move_flyback;
@@ -66,34 +60,24 @@ extern const animmove_t imp_move_perch;
 extern const animmove_t imp_move_dup;
 extern const animmove_t imp_move_ddown;
 
-void imp_ai_fly(edict_t* self, float fd, float rd, float ud);
-void imp_ai_pirch(edict_t* self);
-void imp_ai_hover(edict_t* self, float dist);
+extern void imp_ai_fly(edict_t* self, float forward_offset, float right_offset, float up_offset);
+extern void imp_ai_pirch(edict_t* self);
+extern void imp_ai_hover(edict_t* self, float distance);
 
-void imp_flight_model(edict_t* self);
+extern void imp_flap_noise(edict_t* self);
+extern void imp_dive_noise(edict_t* self);
 
-void imp_dive_loop(edict_t* self);
-void imp_check_dodge(edict_t* self);
+extern void imp_dive_loop(edict_t* self);
+extern void imp_check_dodge(edict_t* self);
+extern void imp_dead(edict_t* self);
+extern void imp_hit(edict_t* self, float stop_swoop);
+extern void imp_pause(edict_t* self);
+extern void imp_flyback(edict_t* self);
+extern void imp_fix_angles(edict_t* self);
 
-void imp_dead(edict_t* self);
-void imp_hit(edict_t* self, float stop_swoop);
-void imp_pause(edict_t* self);
-void imp_die(edict_t* self, G_Message_t* msg);
-void imp_fly(edict_t* self, G_Message_t* msg);
-void imp_flyback(edict_t* self);
-void imp_hover(edict_t* self, G_Message_t* msg);
-void imp_stand(edict_t* self, G_Message_t* msg);
-void imp_pain(edict_t* self, G_Message_t* msg);
-void imp_perch(edict_t* self, G_Message_t* msg);
+extern void move_imp_hover(edict_t* self);
+extern void move_imp_fly(edict_t* self);
+extern void move_imp_dive(edict_t* self);
+extern void move_imp_tumble(edict_t* self);
 
-void imp_fix_angles(edict_t* self);
-
-void move_imp_die(edict_t* self);
-void move_imp_hover(edict_t* self);
-void move_imp_fly(edict_t* self);
-void move_imp_dive(edict_t* self);
-void move_imp_dive_end(edict_t* self);
-
-void imp_hover_anim(edict_t* self);
-void imp_fireball(edict_t* self);
-void imp_death_pain(edict_t* self, G_Message_t* msg);
+extern void imp_fireball(edict_t* self);
