@@ -93,25 +93,20 @@ void imp_dive_noise(edict_t* self)
 	gi.sound(self, CHAN_VOICE, sounds[SND_DIVE], 1.0f, ATTN_NORM, 0.0f);
 }
 
-int imp_check_move(edict_t *self, float dist)
+static qboolean ImpCanMove(const edict_t* self, const float dist) //mxd. Named 'imp_check_move' in original logic. //TODO: very similar to HarpyCanMove(). Move to m_move.c as M_FlyMonsterCanMove().
 {
-	trace_t	trace;
-	vec3_t	vec, vf;
+	vec3_t end_pos;
+	VectorCopy(self->s.origin, end_pos);
 
-	VectorCopy(self->s.origin, vec);
-	
-	AngleVectors(self->s.angles, vf, NULL, NULL);
-	VectorMA(vec, dist, vf, vec);
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
+	VectorMA(end_pos, dist, forward, end_pos);
 
-	gi.trace(self->s.origin, self->mins, self->maxs, vec, self, MASK_SHOT|MASK_WATER,&trace);
+	trace_t trace;
+	gi.trace(self->s.origin, self->mins, self->maxs, end_pos, self, MASK_SHOT | MASK_WATER, &trace);
 
-	if (trace.fraction < 1)
-	{
-		if (trace.ent == self->enemy)
-			return true;
-
+	if (trace.fraction < 1.0f && trace.ent != self->enemy) //TODO: HarpyCanMove() also checks trace.allsolid and trace.startsolid here.
 		return false;
-	}
 
 	return true;
 }
@@ -191,7 +186,7 @@ void imp_ai_fly (edict_t *self, float fd, float rd, float ud)
 
 	M_ChangeYaw(self);
 
-	if (!imp_check_move(self, fd/10))
+	if (!ImpCanMove(self, fd/10))
 	{
 		SetAnim(self, ANIM_HOVER1);
 		return;
@@ -666,7 +661,7 @@ void move_imp_dive(edict_t *self)
 	VectorSubtract(self->enemy->s.origin, vec, vec);
 	hd = VectorLength(vec);
 
-	if ((self->groundentity != NULL) || (!imp_check_move(self, 64)))
+	if ((self->groundentity != NULL) || (!ImpCanMove(self, 64)))
 	{
 		if (self->groundentity == self->enemy)
 			imp_hit(self, true);
@@ -723,7 +718,7 @@ void move_imp_dive_end(edict_t *self)
 	if (fd > IMP_MAX_SWOOP_SPEED)
 		fd = IMP_MAX_SWOOP_SPEED;
 
-	if ((self->groundentity != NULL) || (!imp_check_move(self, 128)))
+	if ((self->groundentity != NULL) || (!ImpCanMove(self, 128)))
 	{
 		if (self->groundentity == self->enemy)
 			SetAnim(self, ANIM_DIVE_END);
@@ -1021,7 +1016,7 @@ void move_imp_hover(edict_t *self)
 				//We can't swoop because we're too low, so fly upwards if possible
 				if (zd < IMP_MIN_SWOOP_DIST)
 				{
-					if (!imp_check_move(self, -64))
+					if (!ImpCanMove(self, -64))
 					{
 						SetAnim(self, ANIM_FLY1);
 						return;
@@ -1053,7 +1048,7 @@ void move_imp_hover(edict_t *self)
 	}
 	else if (dist < IMP_MIN_HOVER_DIST)
 	{
-		if (!imp_check_move(self, -64))
+		if (!ImpCanMove(self, -64))
 		{
 			SetAnim(self, ANIM_FLY1);
 		}
@@ -1064,7 +1059,7 @@ void move_imp_hover(edict_t *self)
 	}
 	else
 	{
-		if (!imp_check_move(self, 64))
+		if (!ImpCanMove(self, 64))
 		{
 			SetAnim(self, ANIM_FLYBACK1);
 		}
