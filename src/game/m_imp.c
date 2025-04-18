@@ -241,19 +241,19 @@ void imp_ai_pirch(edict_t* self) //TODO: rename to imp_ai_perch.
 	}
 }
 
-void move_imp_tumble(edict_t *self)
+void move_imp_tumble(edict_t* self) //TODO: rename to imp_tumble_move.
 {
 	self->movetype = PHYSICSTYPE_STEP;
-	self->gravity = 1;
+	self->gravity = 1.0f;
 
-	VectorSet(self->mins, -16, -16, 0);
-	VectorSet(self->maxs, 16, 16, 16);
+	VectorCopy(dead_imp_mins, self->mins); //mxd
+	VectorCopy(dead_imp_maxs, self->maxs); //mxd
 
-	if (!self->avelocity[PITCH] && !self->avelocity[YAW] && !self->avelocity[ROLL])
+	if (Vec3IsZeroEpsilon(self->avelocity)) //mxd. Avoid direct floating point number comparisons.
 	{
-		self->avelocity[PITCH] = flrand(128.0F, 256.0F);
-		self->avelocity[YAW] = flrand(64.0F, 512.0F);
-		self->avelocity[ROLL] = flrand(64.0F, 512.0F);
+		self->avelocity[PITCH] = flrand(128.0f, 256.0f);
+		self->avelocity[YAW] = flrand(64.0f, 512.0f);
+		self->avelocity[ROLL] = flrand(64.0f, 512.0f);
 	}
 
 	if (self->groundentity != NULL || self->monsterinfo.jump_time < level.time)
