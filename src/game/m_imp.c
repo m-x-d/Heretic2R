@@ -153,42 +153,42 @@ static void ImpAIGlide(edict_t* self) //mxd. Named 'imp_ai_glide' in original lo
 	}
 }
 
-void imp_ai_fly (edict_t *self, float fd, float rd, float ud)
-{	
-	vec3_t	vec, vf, vr, vu;
-	
-	if (!self->enemy)
+void imp_ai_fly(edict_t* self, float forward_offset, float right_offset, float up_offset)
+{
+	if (self->enemy == NULL)
 		return;
 
-	//Add "friction" to the movement to allow graceful flowing motion, not jittering
-	self->velocity[0] *= 0.8;
-	self->velocity[1] *= 0.8;
-	self->velocity[2] *= 0.8;
+	// Add "friction" to the movement to allow graceful flowing motion, not jittering.
+	Vec3ScaleAssign(0.8f, self->velocity);
 
-	//Find our ideal yaw to the player and correct to it
-	VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
-	self->ideal_yaw = VectorYaw(vec);
+	// Find our ideal yaw to the player and correct to it.
+	vec3_t diff;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, diff);
 
+	self->ideal_yaw = VectorYaw(diff);
 	M_ChangeYaw(self);
 
-	if (!ImpCanMove(self, fd/10))
+	if (!ImpCanMove(self, forward_offset / 10.0f))
 	{
 		SetAnim(self, ANIM_HOVER1);
 		return;
 	}
 
-	if(self->spawnflags&MSF_FIXED)
+	if (self->spawnflags & MSF_FIXED)
 		return;
 
-	//Add in the movements relative to the creature's facing
-	AngleVectors(self->s.angles, vf, vr, vu);
-	
-	VectorMA(self->velocity, fd, vf, self->velocity);
-	VectorMA(self->velocity, rd, vr, self->velocity);
-	VectorMA(self->velocity, ud, vu, self->velocity);
+	// Add in the movements relative to the creature's facing.
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(self->s.angles, forward, right, up);
 
-	if (self->groundentity)
-		self->velocity[2] += 32;
+	VectorMA(self->velocity, forward_offset, forward, self->velocity);
+	VectorMA(self->velocity, right_offset, right, self->velocity);
+	VectorMA(self->velocity, up_offset, up, self->velocity);
+
+	if (self->groundentity != NULL)
+		self->velocity[2] += 32.0f;
 }
 
 //replaces ai_stand for imp
