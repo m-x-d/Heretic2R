@@ -301,19 +301,10 @@ void imp_fix_angles(edict_t* self) //TODO: harpy_fix_angles() duplicate.
 	}
 }
 
-/*===============================================================
-
-	Imp Message Functions
-
-===============================================================*/
-
-void imp_death_pain (edict_t *self, G_Message_t *msg)
+static void ImpDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp_death_pain' in original logic.
 {
-	if(self->health <= -40) //gib death
-	{
+	if (self->health <= -40) // Gib death.
 		BecomeDebris(self);
-		return;
-	}
 }
 
 //receiver for MSG_DEATH 
@@ -1256,7 +1247,7 @@ void ImpStaticsInit(void)
 	classStatics[CID_IMP].msgReceivers[MSG_RUN] = imp_hover;
 	classStatics[CID_IMP].msgReceivers[MSG_PAIN] = imp_pain;
 	classStatics[CID_IMP].msgReceivers[MSG_WATCH] = imp_perch;
-	classStatics[CID_IMP].msgReceivers[MSG_DEATH_PAIN] = imp_death_pain;
+	classStatics[CID_IMP].msgReceivers[MSG_DEATH_PAIN] = ImpDeathPainMsgHandler;
 
 	resInfo.numAnims = NUM_ANIMS;
 	resInfo.animations = animations;
