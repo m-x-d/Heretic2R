@@ -145,7 +145,7 @@ static const animframe_t imp_frames_hover1[] =
 	{ FRAME_impfly19,	NULL, 0, 0, 0, imp_ai_hover,  2, NULL },
 	{ FRAME_impfly20,	NULL, 0, 0, 0, imp_ai_hover,  2, imp_check_dodge },
 };
-const animmove_t imp_move_hover1 = { 20, imp_frames_hover1, move_imp_hover };
+const animmove_t imp_move_hover1 = { 20, imp_frames_hover1, imp_hover_move };
 
 // Imp tumble.
 static const animframe_t imp_frames_tumble[] =
@@ -200,7 +200,7 @@ static const animframe_t imp_frames_fireball[] =
 	{ FRAME_impfir20,	NULL, 0, 0, 0, imp_ai_hover,  1, NULL },
 	{ FRAME_impfir21,	NULL, 0, 0, 0, imp_ai_hover, -1, NULL },
 };
-const animmove_t imp_move_fireball = { 21, imp_frames_fireball, move_imp_hover };
+const animmove_t imp_move_fireball = { 21, imp_frames_fireball, imp_hover_move };
 
 // Imp diving and attacking.
 static const animframe_t imp_frames_dive_go[] =
@@ -261,11 +261,11 @@ const animmove_t imp_move_dive_loop = { 24, imp_frames_dive_loop, NULL };
 // Imp pain.
 static const animframe_t imp_frames_pain1[] =
 {
-	{ FRAME_death1,		NULL, 0, 0, 0, NULL,  2, move_imp_hover },
-	{ FRAME_death2,		NULL, 0, 0, 0, NULL,  1, move_imp_hover },
-	{ FRAME_death3,		NULL, 0, 0, 0, NULL, -1, move_imp_hover },
-	{ FRAME_death2,		NULL, 0, 0, 0, NULL, -2, move_imp_hover },
-	{ FRAME_death1,		NULL, 0, 0, 0, NULL, -2, move_imp_hover },
+	{ FRAME_death1,		NULL, 0, 0, 0, NULL,  2, imp_hover_move },
+	{ FRAME_death2,		NULL, 0, 0, 0, NULL,  1, imp_hover_move },
+	{ FRAME_death3,		NULL, 0, 0, 0, NULL, -1, imp_hover_move },
+	{ FRAME_death2,		NULL, 0, 0, 0, NULL, -2, imp_hover_move },
+	{ FRAME_death1,		NULL, 0, 0, 0, NULL, -2, imp_hover_move },
 };
 const animmove_t imp_move_pain1 = { 5, imp_frames_pain1, imp_pause };
 

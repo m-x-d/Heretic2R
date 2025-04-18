@@ -614,7 +614,7 @@ void imp_check_dodge(edict_t* self)
 	ImpAIGlide(self);
 }
 
-void move_imp_hover(edict_t* self) //TODO: rename to imp_hover_move.
+void imp_hover_move(edict_t* self) //mxd. Named 'move_imp_hover' in original logic.
 {
 	if (self->enemy == NULL || !FindTarget(self))
 		return;
