@@ -490,7 +490,7 @@ static qboolean ImpCheckSwoop(const edict_t* self, const vec3_t goal_pos) //mxd.
 	return (trace.ent == self->enemy);
 }
 
-void move_imp_dive(edict_t* self) //TODO: rename to imp_dive_move.
+void imp_dive_move(edict_t* self) //mxd. Named 'move_imp_dive' in original logic.
 {
 	if (self->groundentity != NULL || !ImpCanMove(self, 64.0f))
 	{
