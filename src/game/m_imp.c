@@ -372,7 +372,7 @@ static void ImpStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'im
 		SetAnim(self, ANIM_HOVER1);
 }
 
-void imp_perch(edict_t *self, G_Message_t *msg)
+static void ImpWatchMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp_perch' in original logic.
 {
 	SetAnim(self, ANIM_PERCH);
 }
@@ -1228,7 +1228,7 @@ void ImpStaticsInit(void)
 	classStatics[CID_IMP].msgReceivers[MSG_STAND] = ImpStandMsgHandler;
 	classStatics[CID_IMP].msgReceivers[MSG_RUN] = ImpFlyMsgHandler;
 	classStatics[CID_IMP].msgReceivers[MSG_PAIN] = ImpPainMsgHandler;
-	classStatics[CID_IMP].msgReceivers[MSG_WATCH] = imp_perch;
+	classStatics[CID_IMP].msgReceivers[MSG_WATCH] = ImpWatchMsgHandler;
 	classStatics[CID_IMP].msgReceivers[MSG_DEATH_PAIN] = ImpDeathPainMsgHandler;
 
 	resInfo.numAnims = NUM_ANIMS;
