@@ -403,18 +403,17 @@ void imp_hit(edict_t* self, float stop_swoop)
 	}
 }
 
-void imp_pause (edict_t *self)
+void imp_pause(edict_t* self)
 {
 	if (M_ValidTarget(self, self->enemy))
 		QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
 }
 
-
-//end of anim func for death anim
-void imp_dead(edict_t *self)
+// End of animation func for death animation.
+void imp_dead(edict_t* self)
 {
-	VectorSet(self->mins, -16, -16, 0);
-	VectorSet(self->maxs, 16, 16, 16);
+	VectorCopy(dead_imp_mins, self->mins); //mxd
+	VectorCopy(dead_imp_maxs, self->maxs); //mxd
 
 	M_EndDeath(self);
 }
