@@ -25,9 +25,6 @@
 #define IMP_DRIFT_AMOUNT_Y	128.0f
 #define IMP_DRIFT_AMOUNT_Z	64.0f
 
-#define IMP_SWOOP_INCREMENT	2 //mxd. Named 'IMP_SWOOP_INCR' in original logic.
-#define IMP_MAX_SWOOP_SPEED	512.0f //mxd. Named 'IMP_SWOOP_SPEED_MAX' in original logic.
-
 #define IMP_PROJECTILE_SEARCH_RADIUS	1024.0f //mxd. Named 'IMP_PROJECTILE_RADIUS' in original logic.
 
 #pragma region ========================== Imp base info ==========================
@@ -218,7 +215,7 @@ void imp_flyback(edict_t* self)
 	SetAnim(self, ANIM_FLYBACK1);
 }
 
-void imp_ai_pirch(edict_t* self) //TODO: rename to imp_ai_perch.
+void imp_ai_perch(edict_t* self) //mxd. Named 'imp_ai_pirch' in original logic.
 {
 	if (!M_ValidTarget(self, self->enemy) || !AI_IsVisible(self, self->enemy))
 		return;

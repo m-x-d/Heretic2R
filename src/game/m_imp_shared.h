@@ -61,7 +61,7 @@ extern const animmove_t imp_move_dup;
 extern const animmove_t imp_move_ddown;
 
 extern void imp_ai_fly(edict_t* self, float forward_offset, float right_offset, float up_offset);
-extern void imp_ai_pirch(edict_t* self);
+extern void imp_ai_perch(edict_t* self);
 extern void imp_ai_hover(edict_t* self, float distance);
 
 extern void imp_flap_noise(edict_t* self);
