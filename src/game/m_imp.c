@@ -359,14 +359,11 @@ static void ImpPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp
 	}
 }
 
-//receiver for MSG_STAND, MSG_HOVER 
-//FIXME -- is MSG_HOVER redundant?
-void imp_hover(edict_t *self, G_Message_t *msg)
+// Receiver for MSG_RUN and MSG_FLY.
+static void ImpFlyMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp_hover' in original logic.
 {
-	if (self->curAnimID == ANIM_PERCH)
-		return;
-
-	SetAnim(self, ANIM_HOVER1);
+	if (self->curAnimID != ANIM_PERCH)
+		SetAnim(self, ANIM_HOVER1);
 }
 
 void imp_stand(edict_t *self, G_Message_t *msg)
@@ -1234,9 +1231,9 @@ void ImpStaticsInit(void)
 	static ClassResourceInfo_t resInfo;
 
 	classStatics[CID_IMP].msgReceivers[MSG_DEATH] = ImpDeathMsgHandler;
-	classStatics[CID_IMP].msgReceivers[MSG_FLY] = imp_hover;
+	classStatics[CID_IMP].msgReceivers[MSG_FLY] = ImpFlyMsgHandler;
 	classStatics[CID_IMP].msgReceivers[MSG_STAND] = imp_stand;
-	classStatics[CID_IMP].msgReceivers[MSG_RUN] = imp_hover;
+	classStatics[CID_IMP].msgReceivers[MSG_RUN] = ImpFlyMsgHandler;
 	classStatics[CID_IMP].msgReceivers[MSG_PAIN] = ImpPainMsgHandler;
 	classStatics[CID_IMP].msgReceivers[MSG_WATCH] = imp_perch;
 	classStatics[CID_IMP].msgReceivers[MSG_DEATH_PAIN] = ImpDeathPainMsgHandler;
