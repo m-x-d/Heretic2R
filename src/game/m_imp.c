@@ -307,37 +307,35 @@ static void ImpDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named
 		BecomeDebris(self);
 }
 
-//receiver for MSG_DEATH 
-void imp_die(edict_t *self, G_Message_t *msg)
+static void ImpDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp_die' in original logic.
 {
-	if(self->monsterinfo.aiflags&AI_DONT_THINK)
+	if (self->monsterinfo.aiflags & AI_DONT_THINK)
 	{
 		SetAnim(self, ANIM_DIE);
 		return;
 	}
 
 	self->movetype = PHYSICSTYPE_STEP;
-	self->gravity = 1;
-	self->elasticity = 1.1;
+	self->gravity = 1.0f;
+	self->elasticity = 1.1f;
 
-	VectorSet(self->mins, -16, -16, 0);
-	VectorSet(self->maxs, 16, 16, 16);
-	
-	if(self->health <= -40) //gib death
+	VectorCopy(dead_imp_mins, self->mins); //mxd
+	VectorCopy(dead_imp_maxs, self->maxs); //mxd
+
+	if (self->health <= -40) // Gib death.
 	{
 		BecomeDebris(self);
 		self->think = NULL;
-		self->nextthink = 0;	
-		gi.linkentity (self);
-		return;
+		self->nextthink = 0.0f;
+
+		gi.linkentity(self);
 	}
-
-	self->msgHandler = DeadMsgHandler;
-
-	SetAnim(self, ANIM_DIE);
-	return;
+	else
+	{
+		self->msgHandler = DeadMsgHandler;
+		SetAnim(self, ANIM_DIE);
+	}
 }
-
 
 //receiver for MSG_PAIN
 void imp_pain(edict_t *self, G_Message_t *msg)
@@ -1241,7 +1239,7 @@ void ImpStaticsInit(void)
 {
 	static ClassResourceInfo_t resInfo;
 
-	classStatics[CID_IMP].msgReceivers[MSG_DEATH] = imp_die;
+	classStatics[CID_IMP].msgReceivers[MSG_DEATH] = ImpDeathMsgHandler;
 	classStatics[CID_IMP].msgReceivers[MSG_FLY] = imp_hover;
 	classStatics[CID_IMP].msgReceivers[MSG_STAND] = imp_stand;
 	classStatics[CID_IMP].msgReceivers[MSG_RUN] = imp_hover;
