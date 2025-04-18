@@ -377,31 +377,29 @@ static void ImpWatchMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'im
 	SetAnim(self, ANIM_PERCH);
 }
 
-void imp_hit(edict_t *self, float stop_swoop)
+void imp_hit(edict_t* self, float stop_swoop)
 {
-	trace_t	trace;
-	edict_t	*victim;
-	vec3_t	vf;//, hitPos, mins, maxs;
-	float	movedist, damage;
+	trace_t trace;
+	edict_t* victim = M_CheckMeleeHit(self, VectorLength(self->velocity), &trace);
 
-	AngleVectors(self->s.angles, vf, NULL, NULL);
-	movedist = VectorLength(self->velocity);
+	if (victim == NULL)
+		return;
 
-	victim = M_CheckMeleeHit( self, movedist, &trace);
-
-	if (victim)
+	if (victim == self && (qboolean)stop_swoop)
 	{
-		if (victim == self && stop_swoop)
-		{
-			SetAnim(self, ANIM_DIVE_OUT);
-		}
-		else
-		{
-			damage = irand(IMP_DMG_MIN, IMP_DMG_MAX);
-			gi.sound(self, CHAN_BODY, sounds[SND_HIT], 1, ATTN_NORM, 0);
-			T_Damage (victim, self, self, vf, self->enemy->s.origin, trace.plane.normal, damage, damage*2, 0,MOD_DIED);
-			SetAnim(self, ANIM_DIVE_END);
-		}
+		SetAnim(self, ANIM_DIVE_OUT);
+	}
+	else
+	{
+		gi.sound(self, CHAN_BODY, sounds[SND_HIT], 1.0f, ATTN_NORM, 0.0f);
+
+		vec3_t forward;
+		AngleVectors(self->s.angles, forward, NULL, NULL);
+
+		const int damage = irand(IMP_DMG_MIN, IMP_DMG_MAX);
+		T_Damage(victim, self, self, forward, self->enemy->s.origin, trace.plane.normal, damage, damage * 2, 0, MOD_DIED);
+
+		SetAnim(self, ANIM_DIVE_END);
 	}
 }
 
