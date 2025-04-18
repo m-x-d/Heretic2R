@@ -781,20 +781,10 @@ void move_imp_hover(edict_t* self) //TODO: rename to imp_hover_move.
 	}
 }
 
-void move_imp_fly(edict_t *self)
-{	
-	edict_t *dummy;
-	dummy = self;
-	
-	if(!irand(0,3))
-		imp_check_dodge(self);
-
-	return;
-}
-
-void imp_hover_anim(edict_t *self)
+void move_imp_fly(edict_t* self)
 {
-	SetAnim(self, ANIM_HOVER1);
+	if (irand(0, 3) == 0)
+		imp_check_dodge(self);
 }
 
 //===============================
