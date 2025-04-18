@@ -787,23 +787,15 @@ void move_imp_fly(edict_t* self)
 		imp_check_dodge(self);
 }
 
-//===============================
-
-//IMP FIREBALL
-
-//===============================
-
-
-void FireFizzle (edict_t *self)
+static void ImpFireballFizzle(edict_t* self) //mxd. Named 'FireFizzle' in original logic.
 {
-	vec3_t dir;
-	gi.sound (self, CHAN_BODY, sounds[SND_FIZZLE], 1, ATTN_NORM, 0);
-	VectorSet(dir, flrand(0, 1),flrand(0, 1), flrand(0.5, 1));
+	gi.sound(self, CHAN_BODY, sounds[SND_FIZZLE], 1.0f, ATTN_NORM, 0.0f);
+
+	vec3_t dir = { flrand(0.0f, 1.0f), flrand(0.0f, 1.0f), flrand(0.5f, 1.0f) };
 	VectorNormalize(dir);
-	gi.CreateEffect(&self->s,
-					FX_ENVSMOKE,
-					CEF_BROADCAST,self->s.origin,
-					"bdbbb",irand(1,3),dir,irand(1,2),irand(3, 4),irand(1,2));
+
+	gi.CreateEffect(&self->s, FX_ENVSMOKE, CEF_BROADCAST, self->s.origin, "bdbbb", irand(1, 3), dir, irand(1, 2), irand(3, 4), irand(1, 2));
+
 	G_SetToFree(self);
 }
 
@@ -884,7 +876,7 @@ void fireball_blocked( edict_t *self, trace_t *trace )
 
 	if(trace->contents&CONTENTS_WATER || trace->contents&CONTENTS_SLIME)
 	{
-		FireFizzle(self);
+		ImpFireballFizzle(self);
 		return;
 	}
 
