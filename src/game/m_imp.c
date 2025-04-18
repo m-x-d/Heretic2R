@@ -519,69 +519,6 @@ void move_imp_dive(edict_t* self) //TODO: rename to imp_dive_move.
 	ImpAIGlide(self);
 }
 
-void move_imp_dive_end(edict_t *self)
-{
-	vec3_t	vec, vf, vr, vu, nvec;
-	float	hd, fd, dot;
-	
-	VectorCopy(self->s.origin, vec);
-	vec[2] = self->enemy->s.origin[2];
-
-	VectorSubtract(self->enemy->s.origin, vec, vec);
-	hd = VectorLength(vec);
-	self->ideal_yaw = VectorYaw(vec);
-
-	M_ChangeYaw(self);
-
-	AngleVectors(self->s.angles, vf, vr, vu);
-	
-	self->velocity[2] *= 0.75;
-
-	self->monsterinfo.jump_time *= IMP_SWOOP_INCREMENT;
-
-	fd = self->monsterinfo.jump_time;
-
-	if (fd > IMP_MAX_SWOOP_SPEED)
-		fd = IMP_MAX_SWOOP_SPEED;
-
-	if ((self->groundentity != NULL) || (!ImpCanMove(self, 128)))
-	{
-		if (self->groundentity == self->enemy)
-			SetAnim(self, ANIM_DIVE_END);
-
-		SetAnim(self, ANIM_FLYBACK1);
-		return;
-	}
-
-	VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
-	VectorCopy(vec, nvec);
-	VectorNormalize(nvec);
-
-	AngleVectors(self->s.angles, vf, vr, NULL);
-
-	dot  = DotProduct(vf, nvec);
-
-	if (dot < -0.5)
-	{
-		SetAnim(self, ANIM_FLYBACK1);
-		return;
-	}
-
-	VectorMA(self->velocity, fd, vf, self->velocity);
-	
-	//Are we about to hit the target?
-/*	VectorSubtract(self->enemy->s.origin, self->s.origin, vec);
-	dist = VectorLength(vec);
-
-	if (dist < IMP_COLLISION_DIST)
-	{
-		SetAnim(self, ANIM_DIVE_END);
-		return;
-	}	*/
-
-	ImpAIGlide(self);
-}
-
 void imp_dive_loop(edict_t *self)
 {
 	SetAnim(self, ANIM_DIVE_LOOP);
