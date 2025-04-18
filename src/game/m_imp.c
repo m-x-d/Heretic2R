@@ -55,40 +55,7 @@ static const vec3_t dead_imp_maxs = {  16.0f,  16.0f, 16.0f }; //mxd
 
 #pragma endregion
 
-static void ImpIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'imp_blocked' in original logic.
-{
-	if (self->health <= 0 || trace->ent == NULL)
-		return;
-
-	if (self->curAnimID == ANIM_DIVE_GO || self->curAnimID == ANIM_DIVE_LOOP || self->curAnimID == ANIM_DIVE_END)
-	{
-		if (Q_stricmp(trace->ent->classname, "player") == 0 && irand(0, 4) == 0) //mxd. stricmp -> Q_stricmp. //TODO: check ent->client instead?
-			P_KnockDownPlayer(&trace->ent->client->playerinfo);
-
-		vec3_t dir; //BUGFIX: mxd. Not initialized in original logic.
-		VectorCopy(self->velocity, dir);
-		VectorNormalize(dir);
-
-		const int damage = irand(IMP_DMG_MIN, IMP_DMG_MAX);
-		T_Damage(trace->ent, self, self, dir, trace->ent->s.origin, trace->plane.normal, damage, damage * 2, 0, MOD_DIED);
-
-		gi.sound(self, CHAN_BODY, sounds[SND_HIT], 1.0f, ATTN_NORM, 0.0f);
-
-		if (self->curAnimID != ANIM_DIVE_END)
-			SetAnim(self, ANIM_DIVE_END);
-	}
-}
-
-// Various sound functions.
-void imp_flap_noise(edict_t* self)
-{
-	gi.sound(self, CHAN_ITEM, sounds[SND_FLAP], 1.0f, ATTN_NORM, 0.0f);
-}
-
-void imp_dive_noise(edict_t* self)
-{
-	gi.sound(self, CHAN_VOICE, sounds[SND_DIVE], 1.0f, ATTN_NORM, 0.0f);
-}
+#pragma region ========================== Utility functions =========================
 
 static qboolean ImpCanMove(const edict_t* self, const float dist) //mxd. Named 'imp_check_move' in original logic. //TODO: very similar to HarpyCanMove(). Move to m_move.c as M_FlyMonsterCanMove().
 {
@@ -148,6 +115,204 @@ static void ImpAIGlide(edict_t* self) //mxd. Named 'imp_ai_glide' in original lo
 	{
 		self->s.angles[ROLL] *= 0.75f;
 	}
+}
+
+//TODO: identical to HarpyCheckDirections().
+static qboolean ImpCheckDirections(const edict_t* self, const vec3_t goal, const vec3_t forward, const vec3_t right, const vec3_t up, const float check_dist, vec3_t goal_direction) //mxd. Named 'imp_check_directions' in original logic.
+{
+	//mxd. Avoid modifying input vectors.
+	vec3_t directions[3];
+	VectorCopy(forward, directions[0]);
+	VectorCopy(right, directions[1]);
+	VectorCopy(up, directions[2]);
+
+	//mxd. Somewhat randomize axis check order.
+	int axis = irand(10, 12); // Offset from 0, so going in negative direction works correctly.
+	const int increment = Q_sign(irand(-1, 0));
+
+	// Check cardinal directions.
+	for (int i = 0; i < 3; i++, axis += increment)
+	{
+		vec3_t direction;
+		VectorCopy(directions[axis % 3], direction);
+
+		// Don't always check same direction first (looks mechanical).
+		if (irand(0, 1) == 1)
+			Vec3ScaleAssign(-1.0f, direction);
+
+		// Check opposite directions.
+		for (int c = 0; c < 2; c++)
+		{
+			vec3_t start_pos;
+			VectorMA(self->s.origin, check_dist, direction, start_pos);
+
+			trace_t trace;
+			gi.trace(start_pos, self->mins, self->maxs, goal, self, MASK_SHOT | MASK_WATER, &trace);
+
+			// We've found somewhere to go.
+			if (trace.ent == self->enemy)
+			{
+				VectorCopy(direction, goal_direction);
+				return true;
+			}
+
+			Vec3ScaleAssign(-1.0f, direction); //BUGFIX: mxd. Original logic checks self->s.origin position instead of check_dist offset from it when checking second direction.
+		}
+	}
+
+	return false;
+}
+
+//mxd. Very similar to HarpyCheckSwoop().
+static qboolean ImpCheckSwoop(const edict_t* self, const vec3_t goal_pos) //mxd. Named 'imp_check_swoop' in original logic.
+{
+	// Find the difference in the target's height and the creature's height.
+	float z_diff = Q_fabs(self->enemy->s.origin[2] - self->s.origin[2]);
+
+	if (z_diff < IMP_MIN_SWOOP_DIST)
+		return false;
+
+	z_diff -= z_diff / 4.0f;
+
+	vec3_t check_pos;
+	VectorCopy(self->s.origin, check_pos);
+	check_pos[2] -= z_diff;
+
+	// Trace down about that far and about one forth the distance to the target.
+	trace_t trace;
+	gi.trace(self->s.origin, self->mins, self->maxs, check_pos, self, MASK_SHOT | MASK_WATER, &trace);
+
+	if (trace.fraction < 1.0f) //mxd. HarpyCheckSwoop() also checks trace.startsolid and trace.allsolid.
+		return false;
+
+	// Trace straight to the target.
+	gi.trace(check_pos, self->mins, self->maxs, goal_pos, self, MASK_SHOT | MASK_WATER, &trace);
+
+	// If we hit our enemy, there's a clear path.
+	return (trace.ent == self->enemy);
+}
+
+#pragma endregion
+
+#pragma region ========================== Message handlers ==========================
+
+static void ImpDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp_death_pain' in original logic.
+{
+	if (self->health <= -40) // Gib death.
+		BecomeDebris(self);
+}
+
+static void ImpDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp_die' in original logic.
+{
+	if (self->monsterinfo.aiflags & AI_DONT_THINK)
+	{
+		SetAnim(self, ANIM_DIE);
+		return;
+	}
+
+	self->movetype = PHYSICSTYPE_STEP;
+	self->gravity = 1.0f;
+	self->elasticity = 1.1f;
+
+	VectorCopy(dead_imp_mins, self->mins); //mxd
+	VectorCopy(dead_imp_maxs, self->maxs); //mxd
+
+	if (self->health <= -40) // Gib death.
+	{
+		BecomeDebris(self);
+		self->think = NULL;
+		self->nextthink = 0.0f;
+
+		gi.linkentity(self);
+	}
+	else
+	{
+		self->msgHandler = DeadMsgHandler;
+		SetAnim(self, ANIM_DIE);
+	}
+}
+
+static void ImpPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp_pain' in original logic.
+{
+	int temp;
+	int damage;
+	qboolean force_pain;
+	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
+
+	if (self->curAnimID == ANIM_PERCH)
+	{
+		SetAnim(self, ANIM_TAKEOFF);
+	}
+	else if (force_pain || (irand(0, 10) < 2 && self->pain_debounce_time < level.time))
+	{
+		self->pain_debounce_time = level.time + 2.0f;
+
+		if (self->curAnimID == ANIM_DIVE_GO || self->curAnimID == ANIM_DIVE_LOOP)
+			SetAnim(self, ANIM_DIVE_END);
+		else
+			SetAnim(self, ANIM_PAIN1);
+	}
+}
+
+// Receiver for MSG_RUN and MSG_FLY.
+static void ImpFlyMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp_hover' in original logic.
+{
+	if (self->curAnimID != ANIM_PERCH)
+		SetAnim(self, ANIM_HOVER1);
+}
+
+static void ImpStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp_stand' in original logic.
+{
+	if (!(self->spawnflags & MSF_PERCHING))
+		SetAnim(self, ANIM_HOVER1);
+}
+
+static void ImpWatchMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp_perch' in original logic.
+{
+	SetAnim(self, ANIM_PERCH);
+}
+
+#pragma endregion
+
+#pragma region ========================== Edict callbacks ===========================
+
+static void ImpIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'imp_blocked' in original logic.
+{
+	if (self->health <= 0 || trace->ent == NULL)
+		return;
+
+	if (self->curAnimID == ANIM_DIVE_GO || self->curAnimID == ANIM_DIVE_LOOP || self->curAnimID == ANIM_DIVE_END)
+	{
+		if (Q_stricmp(trace->ent->classname, "player") == 0 && irand(0, 4) == 0) //mxd. stricmp -> Q_stricmp. //TODO: check ent->client instead?
+			P_KnockDownPlayer(&trace->ent->client->playerinfo);
+
+		vec3_t dir; //BUGFIX: mxd. Not initialized in original logic.
+		VectorCopy(self->velocity, dir);
+		VectorNormalize(dir);
+
+		const int damage = irand(IMP_DMG_MIN, IMP_DMG_MAX);
+		T_Damage(trace->ent, self, self, dir, trace->ent->s.origin, trace->plane.normal, damage, damage * 2, 0, MOD_DIED);
+
+		gi.sound(self, CHAN_BODY, sounds[SND_HIT], 1.0f, ATTN_NORM, 0.0f);
+
+		if (self->curAnimID != ANIM_DIVE_END)
+			SetAnim(self, ANIM_DIVE_END);
+	}
+}
+
+#pragma endregion
+
+#pragma region ========================== Action functions ==========================
+
+// Various sound functions.
+void imp_flap_noise(edict_t* self)
+{
+	gi.sound(self, CHAN_ITEM, sounds[SND_FLAP], 1.0f, ATTN_NORM, 0.0f);
+}
+
+void imp_dive_noise(edict_t* self)
+{
+	gi.sound(self, CHAN_VOICE, sounds[SND_DIVE], 1.0f, ATTN_NORM, 0.0f);
 }
 
 void imp_ai_fly(edict_t* self, float forward_offset, float right_offset, float up_offset)
@@ -298,82 +463,6 @@ void imp_fix_angles(edict_t* self) //TODO: harpy_fix_angles() duplicate.
 	}
 }
 
-static void ImpDeathPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp_death_pain' in original logic.
-{
-	if (self->health <= -40) // Gib death.
-		BecomeDebris(self);
-}
-
-static void ImpDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp_die' in original logic.
-{
-	if (self->monsterinfo.aiflags & AI_DONT_THINK)
-	{
-		SetAnim(self, ANIM_DIE);
-		return;
-	}
-
-	self->movetype = PHYSICSTYPE_STEP;
-	self->gravity = 1.0f;
-	self->elasticity = 1.1f;
-
-	VectorCopy(dead_imp_mins, self->mins); //mxd
-	VectorCopy(dead_imp_maxs, self->maxs); //mxd
-
-	if (self->health <= -40) // Gib death.
-	{
-		BecomeDebris(self);
-		self->think = NULL;
-		self->nextthink = 0.0f;
-
-		gi.linkentity(self);
-	}
-	else
-	{
-		self->msgHandler = DeadMsgHandler;
-		SetAnim(self, ANIM_DIE);
-	}
-}
-
-static void ImpPainMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp_pain' in original logic.
-{
-	int temp;
-	int damage;
-	qboolean force_pain;
-	ParseMsgParms(msg, "eeiii", &temp, &temp, &force_pain, &damage, &temp);
-
-	if (self->curAnimID == ANIM_PERCH)
-	{
-		SetAnim(self, ANIM_TAKEOFF);
-	}
-	else if (force_pain || (irand(0, 10) < 2 && self->pain_debounce_time < level.time))
-	{
-		self->pain_debounce_time = level.time + 2.0f;
-
-		if (self->curAnimID == ANIM_DIVE_GO || self->curAnimID == ANIM_DIVE_LOOP)
-			SetAnim(self, ANIM_DIVE_END);
-		else
-			SetAnim(self, ANIM_PAIN1);
-	}
-}
-
-// Receiver for MSG_RUN and MSG_FLY.
-static void ImpFlyMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp_hover' in original logic.
-{
-	if (self->curAnimID != ANIM_PERCH)
-		SetAnim(self, ANIM_HOVER1);
-}
-
-static void ImpStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp_stand' in original logic.
-{
-	if (!(self->spawnflags & MSF_PERCHING))
-		SetAnim(self, ANIM_HOVER1);
-}
-
-static void ImpWatchMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'imp_perch' in original logic.
-{
-	SetAnim(self, ANIM_PERCH);
-}
-
 void imp_hit(edict_t* self, float stop_swoop)
 {
 	trace_t trace;
@@ -413,81 +502,6 @@ void imp_dead(edict_t* self)
 	VectorCopy(dead_imp_maxs, self->maxs); //mxd
 
 	M_EndDeath(self);
-}
-
-//TODO: identical to HarpyCheckDirections().
-static qboolean ImpCheckDirections(const edict_t* self, const vec3_t goal, const vec3_t forward, const vec3_t right, const vec3_t up, const float check_dist, vec3_t goal_direction) //mxd. Named 'imp_check_directions' in original logic.
-{
-	//mxd. Avoid modifying input vectors.
-	vec3_t directions[3];
-	VectorCopy(forward, directions[0]);
-	VectorCopy(right, directions[1]);
-	VectorCopy(up, directions[2]);
-
-	//mxd. Somewhat randomize axis check order.
-	int axis = irand(10, 12); // Offset from 0, so going in negative direction works correctly.
-	const int increment = Q_sign(irand(-1, 0));
-
-	// Check cardinal directions.
-	for (int i = 0; i < 3; i++, axis += increment)
-	{
-		vec3_t direction;
-		VectorCopy(directions[axis % 3], direction);
-
-		// Don't always check same direction first (looks mechanical).
-		if (irand(0, 1) == 1)
-			Vec3ScaleAssign(-1.0f, direction);
-
-		// Check opposite directions.
-		for (int c = 0; c < 2; c++)
-		{
-			vec3_t start_pos;
-			VectorMA(self->s.origin, check_dist, direction, start_pos);
-
-			trace_t trace;
-			gi.trace(start_pos, self->mins, self->maxs, goal, self, MASK_SHOT | MASK_WATER, &trace);
-
-			// We've found somewhere to go.
-			if (trace.ent == self->enemy)
-			{
-				VectorCopy(direction, goal_direction);
-				return true;
-			}
-
-			Vec3ScaleAssign(-1.0f, direction); //BUGFIX: mxd. Original logic checks self->s.origin position instead of check_dist offset from it when checking second direction.
-		}
-	}
-
-	return false;
-}
-
-//mxd. Very similar to HarpyCheckSwoop().
-static qboolean ImpCheckSwoop(const edict_t* self, const vec3_t goal_pos) //mxd. Named 'imp_check_swoop' in original logic.
-{
-	// Find the difference in the target's height and the creature's height.
-	float z_diff = Q_fabs(self->enemy->s.origin[2] - self->s.origin[2]);
-
-	if (z_diff < IMP_MIN_SWOOP_DIST)
-		return false;
-
-	z_diff -= z_diff / 4.0f;
-
-	vec3_t check_pos;
-	VectorCopy(self->s.origin, check_pos);
-	check_pos[2] -= z_diff;
-
-	// Trace down about that far and about one forth the distance to the target.
-	trace_t trace;
-	gi.trace(self->s.origin, self->mins, self->maxs, check_pos, self, MASK_SHOT | MASK_WATER, &trace);
-
-	if (trace.fraction < 1.0f) //mxd. HarpyCheckSwoop() also checks trace.startsolid and trace.allsolid.
-		return false;
-
-	// Trace straight to the target.
-	gi.trace(check_pos, self->mins, self->maxs, goal_pos, self, MASK_SHOT | MASK_WATER, &trace);
-
-	// If we hit our enemy, there's a clear path.
-	return (trace.ent == self->enemy);
 }
 
 void imp_dive_move(edict_t* self) //mxd. Named 'move_imp_dive' in original logic.
@@ -784,6 +798,10 @@ void imp_fly_move(edict_t* self) //mxd. Named 'move_imp_fly' in original logic.
 		imp_check_dodge(self);
 }
 
+#pragma endregion
+
+#pragma region ========================== Imp Fireball ==========================
+
 static void ImpFireballFizzle(edict_t* self) //mxd. Named 'FireFizzle' in original logic.
 {
 	gi.sound(self, CHAN_BODY, sounds[SND_FIZZLE], 1.0f, ATTN_NORM, 0.0f);
@@ -796,7 +814,43 @@ static void ImpFireballFizzle(edict_t* self) //mxd. Named 'FireFizzle' in origin
 	G_SetToFree(self);
 }
 
-static void ImpFireballBlocked(edict_t* self, trace_t* trace); //TODO: remove.
+static void ImpFireballBlocked(edict_t* self, trace_t* trace) //mxd. Named 'fireball_blocked' in original logic.
+{
+	if (trace->surface != NULL && (trace->surface->flags & SURF_SKY))
+	{
+		SkyFly(self);
+		return;
+	}
+
+	if ((trace->contents & CONTENTS_WATER) || (trace->contents & CONTENTS_SLIME))
+	{
+		ImpFireballFizzle(self);
+		return;
+	}
+
+	if (trace->ent != NULL && EntReflecting(trace->ent, true, true) && self->reflect_debounce_time > 0)
+	{
+		Create_rand_relect_vect(self->velocity, self->velocity);
+		Vec3ScaleAssign(self->ideal_yaw, self->velocity);
+		ImpFireballReflect(self, trace->ent, self->velocity);
+
+		return;
+	}
+
+	if (trace->ent->takedamage != DAMAGE_NO)
+	{
+		vec3_t hit_dir;
+		VectorNormalize2(self->velocity, hit_dir);
+
+		const int damage = max(0, self->dmg) + irand(2, 5); //mxd. float in original logic.
+		T_Damage(trace->ent, self, self->owner, hit_dir, self->s.origin, trace->plane.normal, damage, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK, MOD_DIED);
+	}
+
+	gi.sound(self, CHAN_BODY, sounds[SND_FBHIT], 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(&self->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, self->s.origin, "bv", FX_IMP_FBEXPL, vec3_origin);
+
+	G_SetToFree(self);
+}
 
 static void ImpProjectileInit(const edict_t* self, edict_t* proj) //mxd. Named 'create_imp_proj' in original logic.
 {
@@ -850,44 +904,6 @@ edict_t* ImpFireballReflect(edict_t* self, edict_t* other, const vec3_t vel)
 	return fireball;
 }
 
-static void ImpFireballBlocked(edict_t* self, trace_t* trace) //mxd. Named 'fireball_blocked' in original logic.
-{
-	if (trace->surface != NULL && (trace->surface->flags & SURF_SKY))
-	{
-		SkyFly(self);
-		return;
-	}
-
-	if ((trace->contents & CONTENTS_WATER) || (trace->contents & CONTENTS_SLIME))
-	{
-		ImpFireballFizzle(self);
-		return;
-	}
-
-	if (trace->ent != NULL && EntReflecting(trace->ent, true, true) && self->reflect_debounce_time > 0)
-	{
-		Create_rand_relect_vect(self->velocity, self->velocity);
-		Vec3ScaleAssign(self->ideal_yaw, self->velocity);
-		ImpFireballReflect(self, trace->ent, self->velocity);
-
-		return;
-	}
-
-	if (trace->ent->takedamage != DAMAGE_NO)
-	{
-		vec3_t hit_dir;
-		VectorNormalize2(self->velocity, hit_dir);
-
-		const int damage = max(0, self->dmg) + irand(2, 5); //mxd. float in original logic.
-		T_Damage(trace->ent, self, self->owner, hit_dir, self->s.origin, trace->plane.normal, damage, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK, MOD_DIED);
-	}
-
-	gi.sound(self, CHAN_BODY, sounds[SND_FBHIT], 1.0f, ATTN_NORM, 0.0f);
-	gi.CreateEffect(&self->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, self->s.origin, "bv", FX_IMP_FBEXPL, vec3_origin);
-
-	G_SetToFree(self);
-}
-
 void imp_fireball(edict_t* self)
 {
 	// Spawn the projectile.
@@ -935,6 +951,8 @@ void imp_fireball(edict_t* self)
 	gi.CreateEffect(&proj->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, NULL, "bv", FX_IMP_FIRE, proj->velocity);
 	gi.linkentity(proj);
 }
+
+#pragma endregion
 
 void ImpStaticsInit(void)
 {
