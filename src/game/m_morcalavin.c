@@ -328,45 +328,43 @@ static void MorcalavinProjectile3Blocked(edict_t* self, trace_t* trace) //mxd. N
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-void morcalavin_check_lightning(edict_t *self)
+static void MorcalavinLightningThink(edict_t* self) //mxd. Named 'morcalavin_check_lightning' in original logic.
 {
-	vec3_t	vel, org, org2;
-	float	dist;
-	
-	if (!self->owner || !self->owner->enemy)
+	if (self->owner == NULL || self->owner->enemy == NULL)
 	{
-		self->nextthink = level.time + 0.1;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 		return;
 	}
 
-	VectorSubtract(self->s.origin, self->owner->enemy->s.origin, vel);
-	dist = VectorNormalize(vel);
+	vec3_t dir;
+	VectorSubtract(self->s.origin, self->owner->enemy->s.origin, dir);
+	const float dist = VectorNormalize(dir);
 
-	if (dist < 150)
+	if (dist < 150.0f)
 	{
-		T_Damage(self->owner->enemy, self, self->owner, vel, vec3_origin, vec3_origin, irand(2,4), 0, DAMAGE_SPELL, MOD_SHIELD); 
-		
+		T_Damage(self->owner->enemy, self, self->owner, dir, vec3_origin, vec3_origin, irand(2, 4), 0, DAMAGE_SPELL, MOD_SHIELD);
+
+		vec3_t vel;
 		VectorNormalize2(self->velocity, vel);
 
-		VectorMA(self->s.origin, 400*FRAMETIME, vel, org);
+		vec3_t lightning_start;
+		VectorMA(self->s.origin, 400.0f * FRAMETIME, vel, lightning_start);
 
-		VectorCopy(self->owner->enemy->s.origin, org2);
-		org2[2] += irand(-16, 32);
+		vec3_t lightning_end;
+		VectorCopy(self->owner->enemy->s.origin, lightning_end);
+		lightning_end[2] += flrand(-16.0f, 32.0f); //mxd. irand() in original logic.
 
-		gi.CreateEffect(NULL, FX_LIGHTNING, 0, 
-				org, "vbb", org2, (byte) irand(2,4), (byte) 0);
+		gi.CreateEffect(NULL, FX_LIGHTNING, 0, lightning_start, "vbb", lightning_end, irand(2, 4), 0); //TODO: play SND_LGHTNGHIT sound?
 
-		if (skill->value < 1)
+		if (SKILL < SKILL_MEDIUM)
 		{
-			VectorScale(vel, 1.0, vel);
 			VectorNormalize(self->velocity);
-			VectorAdd(self->velocity, vel, self->velocity);
-			VectorScale(self->velocity, 400, self->velocity);
+			Vec3AddAssign(vel, self->velocity);
+			Vec3ScaleAssign(400.0f, self->velocity);
 		}
-
 	}
 
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 void morcalavin_missile_update(edict_t *self)
@@ -459,7 +457,7 @@ void morcalavin_missile_update(edict_t *self)
 		VectorNormalize(vf);
 		VectorScale(vf, 400, self->velocity);
 
-		self->think = morcalavin_check_lightning;
+		self->think = MorcalavinLightningThink;
 		self->nextthink = level.time + 0.1;
 		return;
 		break;
@@ -1760,7 +1758,7 @@ static void morcalavin_resist_death (edict_t *self, edict_t *inflictor, edict_t 
 
 		VectorScale(vf, 400, self->target_ent->velocity);
 
-		self->target_ent->think = morcalavin_check_lightning;
+		self->target_ent->think = MorcalavinLightningThink;
 		self->target_ent->nextthink = level.time + 0.1;
 	}
 
