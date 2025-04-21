@@ -1425,70 +1425,62 @@ static void MorcalavinDie(edict_t* self, edict_t* inflictor, edict_t* attacker, 
 	//FIXME: Create a barrier around him so the player cannot get close to him.
 }
 
-/*QUAKED monster_morcalavin(1 .5 0) (-24 -24 -50) (24 24 40)
-
-Morky
-
-"wakeup_target" - monsters will fire this target the first time it wakes up (only once)
-
-"pain_target" - monsters will fire this target the first time it gets hurt (only once)
-
-*/
-void SP_monster_morcalavin (edict_t *self)
+// QUAKED monster_morcalavin(1 .5 0) (-24 -24 -50) (24 24 40)
+// Morky
+// wakeup_target	- Monsters will fire this target the first time it wakes up (only once).
+// pain_target		- Monsters will fire this target the first time it gets hurt (only once).
+void SP_monster_morcalavin(edict_t* self)
 {
-	if (!M_WalkmonsterStart(self))		// Failed initialization
+	if (!M_WalkmonsterStart(self)) // Failed initialization.
 		return;
 
 	self->msgHandler = DefaultMsgHandler;
 	self->classname = "monster_morcalavin";
 
-	if (!self->health)
+	if (self->health == 0)
 		self->health = MORK_HEALTH1;
 
-	//Apply to the end result (whether designer set or not)
-	self->max_health = self->health = MonsterHealth(self->health);
+	// Apply to the end result (whether designer set or not).
+	self->health = MonsterHealth(self->health);
+	self->max_health = self->health;
 
 	self->mass = MORK_MASS;
-	self->yaw_speed = 24;
-
+	self->yaw_speed = 24.0f;
 	self->movetype = PHYSICSTYPE_STEP;
-	self->solid=SOLID_BBOX;
-
-	//This is the number of times he's died (used to calculate window of opportunity for the player)
-	self->delay = 0.0;
-
-	self->s.origin[2] += 50;
-	VectorSet(self->mins, -24, -24, -48);
-	VectorSet(self->maxs, 24, 24, 40);
+	self->solid = SOLID_BBOX;
 
 	self->viewheight = 36;
-
 	self->materialtype = MAT_FLESH;
+	self->s.modelindex = (byte)classStatics[CID_MORK].resInfo->modelIndex;
+	self->s.skinnum = 0;
 
-	self->s.modelindex = classStatics[CID_MORK].resInfo->modelIndex;
-	self->s.skinnum=0;
+	self->monsterinfo.otherenemyname = "player";
 
-	self->monsterinfo.otherenemyname = "player";	
+	// This is the number of times he's died (used to calculate window of opportunity for the player).
+	self->delay = 0.0f; //TODO: add morcalavin_attack_delay name.
+
+	self->s.origin[2] += 50.0f;
+	VectorSet(self->mins, -24.0f, -24.0f, -48.0f);
+	VectorSet(self->maxs,  24.0f,  24.0f,  40.0f);
 
 	self->post_think = MorcalavinPostThink;
-	self->next_post_think = level.time + 0.1;
+	self->next_post_think = level.time + FRAMETIME; //mxd. Use define.
 
-	if (self->monsterinfo.scale)
+	if (self->monsterinfo.scale == 0.0f) //BUGFIX: mxd. 'if (self->monsterinfo.scale)' in original logic.
 	{
-		self->s.scale = self->monsterinfo.scale = MODEL_SCALE;
+		self->monsterinfo.scale = MODEL_SCALE;
+		self->s.scale = self->monsterinfo.scale;
 	}
 
-	MG_InitMoods( self );
-
+	MG_InitMoods(self);
 	QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
 
-	self->s.color.c = 0xFFFFFFFF;
-
+	self->s.color.c = 0xffffffff;
 	self->s.renderfx |= RF_GLOW;
 
 	self->monsterinfo.stepState = 0;
-	self->svflags |= SVF_BOSS | SVF_FLOAT;
-	self->count = self->s.modelindex;	// For Cinematic purposes
+	self->svflags |= (SVF_BOSS | SVF_FLOAT);
+	self->count = self->s.modelindex; // For Cinematic purposes. //TODO: unused?
 	self->gravity = MORCALAVIN_GRAVITY;
 
 	self->die = MorcalavinDie;
