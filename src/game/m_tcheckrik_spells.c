@@ -554,7 +554,6 @@ Veer(self.veer) or Veer(random()*300)
 or Veer([any number]), etc.
 =====================================================
 */
-void projectile_veer(edict_t *self, float amount);
 void projectile_homethink (edict_t *self);
 
 void yellowjacket_proj_think (edict_t *self)

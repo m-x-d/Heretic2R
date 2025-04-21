@@ -701,23 +701,17 @@ static void MorcalavinCheckKilledEnemy(edict_t* attacker) //mxd. Named 'mork_che
 	}
 }
 
-void projectile_veer(edict_t *self, float amount)
+//TODO: used only by m_tcheckrik_spells.c. Move there? Merge into MorcalavinProjectileHomeIn()?
+static void MorcalavinProjectileVeer(edict_t* self, const float amount) //mxd. Named 'projectile_veer' in original logic.
 {
-//useful code for making projectiles wander randomly to a specified degree
-	vec3_t	veerdir;
-	float	speed;
+	// Useful code for making projectiles wander randomly to a specified degree.
+	const float speed = VectorLength(self->velocity);
+	const vec3_t veer_dir = { flrand(-amount, amount), flrand(-amount, amount), flrand(-amount, amount) };
 
-	speed = VectorLength(self->velocity);
-	VectorSet(veerdir,
-		flrand(-amount, amount),
-		flrand(-amount, amount),
-		flrand(-amount, amount));
-	VectorAdd(veerdir, self->velocity, self->velocity);
+	Vec3AddAssign(veer_dir, self->velocity);
 	VectorNormalize(self->velocity);
-	Vec3ScaleAssign(speed, self->velocity);
 
-	//check to see if this is needed
-	//	self.angles=vectoangles(self.velocity);
+	Vec3ScaleAssign(speed, self->velocity);
 }
 
 void projectile_homethink (edict_t *self)
@@ -758,7 +752,7 @@ void projectile_homethink (edict_t *self)
 	VectorCopy(newdir, self->velocity);
 
 	if(self->random)
-		projectile_veer(self, self->random);
+		MorcalavinProjectileVeer(self, self->random);
 }
 
 /*
