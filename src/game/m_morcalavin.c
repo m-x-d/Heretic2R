@@ -1100,7 +1100,7 @@ static void MorcalavinMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. 
 	}
 }
 
-void morcalavin_melee( edict_t *self, G_Message_t *msg)
+static void MorcalavinMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'morcalavin_melee' in original logic.
 {
 	SetAnim(self, ANIM_ATTACK1);
 }
@@ -1116,7 +1116,7 @@ void MorcalavinStaticsInit(void)
 	static ClassResourceInfo_t resInfo; //mxd. Made local static.
 
 	classStatics[CID_MORK].msgReceivers[MSG_STAND]	= MorcalavinStandMsgHandler;
-	classStatics[CID_MORK].msgReceivers[MSG_MELEE] = morcalavin_melee;
+	classStatics[CID_MORK].msgReceivers[MSG_MELEE] = MorcalavinMeleeMsgHandler;
 	classStatics[CID_MORK].msgReceivers[MSG_MISSILE] = MorcalavinMissileMsgHandler;
 	classStatics[CID_MORK].msgReceivers[MSG_RUN] = MorcalavinRunMsgHandler;
 	classStatics[CID_MORK].msgReceivers[MSG_DEATH] = MorcalavinDeathMsgHandler;
