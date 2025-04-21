@@ -642,28 +642,29 @@ static void MorcalavinPhaseOutPreThink(edict_t* self) //mxd. Named 'morcalavin_p
 	}
 }
 
-void morcalavin_phase_in (edict_t *self)
+static void MorcalavinPhaseInPreThink(edict_t* self) //mxd. Named 'morcalavin_phase_in' in original logic.
 {
-	int	interval = 12;
-	
-	if(self->s.color.a < 255 - interval)
+#define PHASE_IN_INTERVAL	12 //mxd
+
+	if (self->s.color.a < 255 - PHASE_IN_INTERVAL)
 	{
-		self->s.color.a += irand(interval/2, interval);
-		self->pre_think = morcalavin_phase_in;
-		self->next_pre_think = level.time + 0.05;
+		self->s.color.a += irand(PHASE_IN_INTERVAL / 2, PHASE_IN_INTERVAL);
+		self->next_pre_think = level.time + 0.05f;
 	}
-	else 
+	else
 	{
 		self->svflags &= ~SVF_NO_AUTOTARGET;
 		self->s.color.c = 0xffffffff;
-		
-		if(self->health <= 0 || self->monsterinfo.lefty >= 6)
+
+		if (self->health <= 0 || self->monsterinfo.lefty >= 6)
 		{
 			self->pre_think = NULL;
-			self->next_pre_think = -1;
+			self->next_pre_think = -1.0f;
 		}
 		else
+		{
 			morcalavin_init_phase_out(self);
+		}
 	}
 }
 
@@ -678,7 +679,7 @@ static void morcalavin_init_phase_out (edict_t *self)
 
 void morcalavin_init_phase_in (edict_t *self)
 {
-	self->pre_think = morcalavin_phase_in;
+	self->pre_think = MorcalavinPhaseInPreThink;
 	self->next_pre_think = level.time + FRAMETIME;
 }
 
