@@ -1384,57 +1384,45 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 	self->next_post_think = level.time + 0.05f;
 }
 
-static void morcalavin_resist_death (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
+static void MorcalavinDie(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point) //mxd. Named 'morcalavin_resist_death' in original logic.
 {
-	vec3_t	vf, vr, temp;
-
 	self->msgHandler = DeadMsgHandler;
 
-	gi.sound(self, CHAN_VOICE, sounds[SND_FALL], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_VOICE, sounds[SND_FALL], 1.0f, ATTN_NORM, 0.0f);
 	SetAnim(self, ANIM_FALL);
-	
-	self->s.color.a = 0xFFFFFFFF;
+
+	self->s.color.c = 0xffffffff; //BUGFIX: mxd. Original logic sets color.a to 0xffffffff.
 	self->pre_think = NULL;
-	self->next_pre_think = -1;
+	self->next_pre_think = -1.0f;
 
 	self->takedamage = DAMAGE_NO;
-	self->dmg = 1;
-	self->health = self->max_health = MonsterHealth(MORK_HEALTH);
-	self->monsterinfo.sound_start = level.time + 2.5;
+	self->dmg = 1; //TODO: add morcalavin_charge_meter name.
+	self->health = MonsterHealth(MORK_HEALTH);
+	self->max_health = self->health;
+	self->monsterinfo.sound_start = level.time + 2.5f;
 	self->solid = SOLID_BBOX;
 
 	self->monsterinfo.stepState++;
 	self->monsterinfo.lefty = 6;
 
-	//Check to release a charging weapon
-	if (self->target_ent)
+	// Check to release a charging weapon.
+	if (self->target_ent != NULL)
 	{
-		AngleVectors(self->s.angles, vf, vr, NULL);
-		VectorMA(self->s.origin, 10, vf, self->target_ent->s.origin);
-		VectorMA(self->target_ent->s.origin, 14, vr, self->target_ent->s.origin);
-		self->target_ent->s.origin[2] += 42;
+		vec3_t right;
+		vec3_t forward;
+		AngleVectors(self->s.angles, forward, right, NULL);
 
-		VectorScale(vf, 400, self->target_ent->velocity);
+		VectorMA(self->s.origin, 10.0f, forward, self->target_ent->s.origin);
+		VectorMA(self->target_ent->s.origin, 14.0f, right, self->target_ent->s.origin);
+		self->target_ent->s.origin[2] += 42.0f;
+
+		VectorScale(forward, 400.0f, self->target_ent->velocity);
 
 		self->target_ent->think = MorcalavinLightningThink;
-		self->target_ent->nextthink = level.time + 0.1;
+		self->target_ent->nextthink = level.time + FRAMETIME; //mxd. Use define.
 	}
 
-	//TODO: Create an effect around him
-	VectorClear(temp);
-	temp[0] = self->delay;
-
-	/*
-	gi.CreateEffect( &self->s,
-					 FX_M_EFFECTS,
-					 CEF_OWNERS_ORIGIN,
-					 self->s.origin,
-					 "bv",
-					 FX_MORK_RECHARGE,
-					 temp);
-	*/
-
-	//TODO: Create a barrier around him so the player cannot get close to him
+	//FIXME: Create a barrier around him so the player cannot get close to him.
 }
 
 /*QUAKED monster_morcalavin(1 .5 0) (-24 -24 -50) (24 24 40)
@@ -1503,7 +1491,7 @@ void SP_monster_morcalavin (edict_t *self)
 	self->count = self->s.modelindex;	// For Cinematic purposes
 	self->gravity = MORCALAVIN_GRAVITY;
 
-	self->die = morcalavin_resist_death;
+	self->die = MorcalavinDie;
 
 	gi.linkentity(self);
 }
