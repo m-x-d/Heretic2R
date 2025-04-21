@@ -59,36 +59,36 @@ void morcalavin_end_retort(edict_t* self)
 	SetAnim(self, ANIM_WALK);
 }
 
-void morcalavin_check_lightning2(edict_t *self)
+static void MorcalavinLightning2Think(edict_t* self) //mxd. Named 'morcalavin_check_lightning2' in original logic.
 {
-	vec3_t	vel, org, org2;
-	float	dist;
-	
-	if (!self->owner->enemy)
+	if (self->owner->enemy == NULL)
 	{
-		self->nextthink = level.time + 0.1;
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 		return;
 	}
 
-	VectorSubtract(self->s.origin, self->owner->enemy->s.origin, vel);
-	dist = VectorNormalize(vel);
+	vec3_t dir;
+	VectorSubtract(self->s.origin, self->owner->enemy->s.origin, dir);
+	const float dist = VectorNormalize(dir);
 
-	if (dist < 72)
+	if (dist < 72.0f)
 	{
-		T_Damage(self->owner->enemy, self, self->owner, vel, vec3_origin, vec3_origin, 2, 0, DAMAGE_SPELL, MOD_SHIELD); 
-		
+		T_Damage(self->owner->enemy, self, self->owner, dir, vec3_origin, vec3_origin, 2, 0, DAMAGE_SPELL, MOD_SHIELD);
+
+		vec3_t vel;
 		VectorNormalize2(self->velocity, vel);
 
-		VectorMA(self->s.origin, 600*FRAMETIME, vel, org);
+		vec3_t lightning_start;
+		VectorMA(self->s.origin, 600.0f * FRAMETIME, vel, lightning_start);
 
-		VectorCopy(self->owner->enemy->s.origin, org2);
-		org2[2] += irand(-16, 32);
+		vec3_t lightning_end;
+		VectorCopy(self->owner->enemy->s.origin, lightning_end);
+		lightning_end[2] += flrand(-16.0f, 32.0f); //mxd. irand() in original logic.
 
-		gi.CreateEffect(NULL, FX_LIGHTNING, 0, 
-				org, "vbb", org2, (byte) irand(2,4), (byte) 0);
+		gi.CreateEffect(NULL, FX_LIGHTNING, 0, lightning_start, "vbb", lightning_end, irand(2, 4), 0); //TODO: play SND_LGHTNGHIT sound?
 	}
 
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 /*-----------------------------------------------
@@ -111,7 +111,7 @@ void morcalavin_big_shot( edict_t *self )
 	proj->gravity = 0;
 	proj->clipmask = MASK_SHOT;
 	
-	proj->think = morcalavin_check_lightning2;
+	proj->think = MorcalavinLightning2Think;
 	proj->nextthink = level.time + 0.1;
 
 	proj->isBlocked = proj->isBlocking = proj->bounced = morcalavin_proj3_blocked;
