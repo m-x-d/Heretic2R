@@ -1059,12 +1059,6 @@ static void MorcalavinRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	SetAnim(self, ((self->groundentity == NULL) ? ANIM_GLIDE : ANIM_WALK));
 }
 
-void morcalavin_rush(edict_t *self, G_Message_t *msg)
-{
-//	self->gravity = 0.0f;
-	SetAnim(self, ANIM_FLY);
-}
-
 enum
 {
 	MORK_ATTACK_FADE,
