@@ -132,78 +132,60 @@ void morcalavin_big_shot(edict_t* self)
 	gi.sound(self, CHAN_AUTO, sounds[SND_PPCHARGE], 1.0f, ATTN_NORM, 0.0f);
 }
 
-/*-----------------------------------------------
-	morcalavin_proj_track
------------------------------------------------*/
-
-void morcalavin_proj_track( edict_t *self )
+static void MorcalavinTrackingProjectileThink(edict_t* self) //mxd. Named 'morcalavin_proj_track' in original logic.
 {
-	vec3_t olddir, newdir, huntdir;
-	float oldvelmult , newveldiv, speed_mod;
-
-	//No enemy, stop tracking
-	if (!self->enemy)
+	// No enemy or enemy is dead, stop tracking.
+	if (self->enemy == NULL || self->enemy->health <= 0)
 	{
 		self->think = NULL;
 		return;
 	}
 
-	//Enemy is dead, stop tracking
-	if (self->enemy->health <= 0)
-	{
-		self->think = NULL;
-		return;
-	}
-
-	//Timeout?
+	// Timed out?
 	if (self->monsterinfo.attack_finished < level.time)
 	{
-		gi.CreateEffect(&self->s,
-					FX_HP_MISSILE,
-					CEF_OWNERS_ORIGIN,
-					self->s.origin,
-					"vb",
-					vec3_origin,
-					HPMISSILE1_EXPLODE);
+		gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE1_EXPLODE); //TODO: play SND_HOMEHIT sound?
 
 		self->think = G_FreeEdict;
-		self->nextthink = level.time + 0.1;
-		
+		self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
 		return;
 	}
 
-	VectorCopy(self->velocity, olddir);
-	VectorNormalize(olddir);
+	vec3_t old_dir;
+	VectorCopy(self->velocity, old_dir);
+	VectorNormalize(old_dir);
 
-	VectorSubtract(self->enemy->s.origin, self->s.origin, huntdir);
-	VectorNormalize(huntdir);
+	vec3_t hunt_dir;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, hunt_dir);
+	VectorNormalize(hunt_dir);
 
-	if (self->delay + 0.05 < 4.0)
-		self->delay += 0.05;
+	if (self->delay + 0.05f < 4.0f)
+		self->delay += 0.05f;
 
-	if (self->ideal_yaw + 10 < 1000)
-		self->ideal_yaw += 10;
+	if (self->ideal_yaw + 10.0f < 1000.0f)
+		self->ideal_yaw += 10.0f;
 
-	oldvelmult = self->delay;
-	newveldiv = 1/(oldvelmult + 1);
+	const float old_vel_mult = self->delay;
+	float new_vel_div = 1.0f / (old_vel_mult + 1.0f);
 
-	VectorScale(olddir, oldvelmult, olddir);
-	VectorAdd(olddir, huntdir, newdir);
-	VectorScale(newdir, newveldiv, newdir);
+	VectorScale(old_dir, old_vel_mult, old_dir);
 
-	speed_mod = DotProduct( olddir , newdir );
+	vec3_t new_dir;
+	VectorAdd(old_dir, hunt_dir, new_dir);
+	VectorScale(new_dir, new_vel_div, new_dir);
 
-	if (speed_mod < 0.05)
-		speed_mod = 0.05;
+	float speed_mod = DotProduct(old_dir, new_dir);
+	speed_mod = max(0.05f, speed_mod);
 
-	newveldiv *= self->ideal_yaw * speed_mod;
+	new_vel_div *= self->ideal_yaw * speed_mod;
 
-	VectorScale(olddir, oldvelmult, olddir);
-	VectorAdd(olddir, huntdir, newdir);
-	VectorScale(newdir, newveldiv, newdir);
+	VectorScale(old_dir, old_vel_mult, old_dir);
+	VectorAdd(old_dir, hunt_dir, new_dir);
+	VectorScale(new_dir, new_vel_div, new_dir);
 
-	VectorCopy(newdir, self->velocity);
-	self->nextthink = level.time + 0.1;
+	VectorCopy(new_dir, self->velocity);
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 /*-----------------------------------------------
@@ -256,7 +238,7 @@ void morcalavin_tracking_projectile ( edict_t *self, float pitch, float yaw, flo
 	VectorScale(vu, 16, proj->velocity);
 	proj->ideal_yaw = 300;
 
-	proj->think = morcalavin_proj_track;
+	proj->think = MorcalavinTrackingProjectileThink;
 	
 	if (skill->value < 1)
 		proj->nextthink = level.time + 2;
