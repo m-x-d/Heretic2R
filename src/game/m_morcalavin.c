@@ -25,7 +25,6 @@ static void MorcalavinProjectileInit(edict_t* self, edict_t* proj); //TODO: remo
 static void MorcalavinProjectile1Blocked(edict_t* self, trace_t* trace); //TODO: remove.
 static void MorcalavinProjectile3Blocked(edict_t* self, trace_t* trace); //TODO: remove.
 static void MorcalavinPhaseOutInit(edict_t* self); //TODO: remove.
-static void morcalavin_attack_fade_out(edict_t* self); //TODO: remove.
 
 #pragma region ========================== Morcalavin base info ==========================
 
@@ -1059,23 +1058,25 @@ static void MorcalavinRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 	SetAnim(self, ((self->groundentity == NULL) ? ANIM_GLIDE : ANIM_WALK));
 }
 
-enum
+typedef enum morcalavin_attackID_e
 {
 	MORK_ATTACK_FADE,
 	MORK_ATTACK_TRACKING,
 	MORK_ATTACK_SPHERE,
 	MORK_ATTACK_BEAM,
 	MORK_ATTACK_5SPHERE
-}; morcalavin_attackID_t;
+} morcalavin_attackID_t;
 
-void morcalavin_missile( edict_t *self, G_Message_t *msg)
+static void MorcalavinMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'morcalavin_missile' in original logic.
 {
-	int chance = irand(0, 100);
+	const int chance = irand(0, 100);
 
 	if (chance < 5 && self->wait != MORK_ATTACK_FADE)
 	{
-		morcalavin_attack_fade_out(self);
-		self->wait = MORK_ATTACK_FADE;
+		//mxd. Inline morcalavin_attack_fade_out().
+		morcalavin_fade_out(self);
+		self->monsterinfo.lefty = 8;
+		self->wait = MORK_ATTACK_FADE; //TODO: add morcalavin_attackID_t morcalavin_current_attack_id name.
 	}
 	else if (chance < 25 && self->wait != MORK_ATTACK_TRACKING)
 	{
@@ -1092,7 +1093,7 @@ void morcalavin_missile( edict_t *self, G_Message_t *msg)
 		SetAnim(self, ANIM_ATTACK3);
 		self->wait = MORK_ATTACK_BEAM;
 	}
-	else if  (self->monsterinfo.stepState > 1 && self->wait != MORK_ATTACK_5SPHERE)
+	else if (self->monsterinfo.stepState > 1 && self->wait != MORK_ATTACK_5SPHERE)
 	{
 		SetAnim(self, ANIM_ATTACK4);
 		self->wait = MORK_ATTACK_5SPHERE;
@@ -1116,7 +1117,7 @@ void MorcalavinStaticsInit(void)
 
 	classStatics[CID_MORK].msgReceivers[MSG_STAND]	= MorcalavinStandMsgHandler;
 	classStatics[CID_MORK].msgReceivers[MSG_MELEE] = morcalavin_melee;
-	classStatics[CID_MORK].msgReceivers[MSG_MISSILE] = morcalavin_missile;
+	classStatics[CID_MORK].msgReceivers[MSG_MISSILE] = MorcalavinMissileMsgHandler;
 	classStatics[CID_MORK].msgReceivers[MSG_RUN] = MorcalavinRunMsgHandler;
 	classStatics[CID_MORK].msgReceivers[MSG_DEATH] = MorcalavinDeathMsgHandler;
 	
@@ -1172,15 +1173,6 @@ void MorcalavinStaticsInit(void)
 	sounds[TAUNT_BELLY3] =gi.soundindex("monsters/mork/digest.wav");	
 
 	classStatics[CID_MORK].resInfo = &resInfo;
-}
-
-static void morcalavin_attack_fade_out(edict_t *self)
-{
-	gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1, ATTN_NORM, 0);
-	self->monsterinfo.sound_start = level.time + 2.0;
-	MorcalavinPhaseOutInit(self);
-	SetAnim(self, ANIM_FLOAT);
-	self->monsterinfo.lefty = 8;
 }
 
 void morcalavin_fade_out(edict_t *self)
