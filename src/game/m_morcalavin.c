@@ -771,57 +771,48 @@ static void MorcalavinBeamThink(edict_t* self) //mxd. Named 'beam_think' in orig
 	self->nextthink = -1.0f;
 }
 
-void morcalavin_beam( edict_t *self)
+void morcalavin_beam(edict_t* self)
 {
-	edict_t	*proj;
-	vec3_t	Forward, vf, vr, endpos;
+	// Spawn the projectile.
+	edict_t* beam = G_Spawn();
 
-	// Spawn the projectile
+	MorcalavinProjectileInit(self, beam);
 
-	proj = G_Spawn();
+	beam->reflect_debounce_time = MAX_REFLECT;
+	beam->classname = "M_Beam";
+	beam->owner = self;
 
-	MorcalavinProjectileInit(self,proj);
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
+	VectorMA(beam->s.origin, 48.0f, forward, beam->s.origin);
+	VectorMA(beam->s.origin, -20.0f, right, beam->s.origin);
+	beam->s.origin[2] += 16.0f;
 
-	proj->reflect_debounce_time = MAX_REFLECT;
-	proj->classname = "M_Beam";
+	const vec3_t end_pos = //mxd. The only difference between this and morcalavin_beam2()...
+	{
+		self->enemy->s.origin[0],
+		self->enemy->s.origin[1],
+		self->enemy->s.origin[2] + (float)self->enemy->viewheight
+	};
 
-	proj->isBlocked = MorcalavinBeamIsBlocked;
+	vec3_t dir;
+	VectorSubtract(end_pos, beam->s.origin, dir);
+	VectorNormalize(dir);
 
-	proj->owner = self;
-	
-	AngleVectors(self->s.angles, vf, vr, NULL);
-	VectorMA(proj->s.origin, 48,  vf, proj->s.origin);
-	VectorMA(proj->s.origin, -20, vr, proj->s.origin);
-	proj->s.origin[2] += 16;
+	VectorScale(dir, 1250.0f, beam->velocity);
+	vectoangles(beam->velocity, beam->s.angles);
 
-	VectorSet(endpos, self->enemy->s.origin[0], self->enemy->s.origin[1], self->enemy->s.origin[2] + self->enemy->viewheight);
-	VectorSubtract(endpos, proj->s.origin, Forward);
-	VectorNormalize(Forward);
-	
-	VectorScale(Forward, 1250, proj->velocity);
+	beam->dmg = irand(MORK_DMG_BEAM_MIN, MORK_DMG_BEAM_MAX); //mxd. flrand() in original logic.
 
-	vectoangles(proj->velocity, proj->s.angles);
+	beam->isBlocked = MorcalavinBeamIsBlocked;
+	beam->think = MorcalavinBeamThink;
+	beam->nextthink = level.time + 1.0f;
 
-	proj->dmg = flrand(MORK_DMG_BEAM_MIN, MORK_DMG_BEAM_MAX);
-
-	proj->think=MorcalavinBeamThink;
-	proj->nextthink = level.time + 1;
-
-	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/seraph/guard/spell.wav"), 1, ATTN_NORM, 0);
-
-	//TODO: Spawn a muzzle flash
-	gi.CreateEffect(&proj->s,
-				FX_M_EFFECTS,
-				CEF_OWNERS_ORIGIN,
-				vec3_origin,
-				"bv",
-				FX_M_BEAM,
-				proj->s.angles);
-
-
-	gi.linkentity(proj); 
+	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/seraph/guard/spell.wav"), 1.0f, ATTN_NORM, 0.0f); //TODO: precache in sounds[SND_BEAM]?
+	gi.CreateEffect(&beam->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, vec3_origin, "bv", FX_M_BEAM, beam->s.angles); //FIXME: Spawn a muzzle flash.
+	gi.linkentity(beam);
 }
-
 
 void morcalavin_beam2( edict_t *self)
 {
