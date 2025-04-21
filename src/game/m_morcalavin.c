@@ -1488,27 +1488,14 @@ void SP_monster_morcalavin(edict_t* self)
 	gi.linkentity(self);
 }
 
-/*QUAKED obj_morcalavin_barrier (1 .5 0) ? ?
-
-The magical barrier that prevents the player from entering the tome area and defeating 
-Morcalavin
-
-*/
-
-void morcalavin_barrier_think(edict_t *self)
+static void MorcalavinBarrierThink(edict_t* self) //mxd. Named 'morcalavin_barrier_think' in original logic.
 {
-	edict_t *owner = NULL;
-
-	//If we haven't found an owner yet, find one
-	if (!self->owner)
+	// If we haven't found an owner yet, find one.
+	if (self->owner == NULL)
 	{
-		owner = G_Find(NULL, FOFS(classname), "monster_morcalavin");
+		edict_t* owner = G_Find(NULL, FOFS(classname), "monster_morcalavin");
 
-		if (!owner)
-		{
-//			gi.dprintf("Unable to bind barrier to Morcalavin!\n");
-		}
-		else
+		if (owner != NULL)
 		{
 			self->owner = owner;
 			owner->targetEnt = self;
@@ -1526,7 +1513,7 @@ void morcalavin_barrier_think(edict_t *self)
 		self->svflags &= ~SVF_NOCLIENT;
 	}
 
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 void morcalavin_barrier_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
@@ -1575,7 +1562,7 @@ void morcalavin_barrier_use (edict_t *self, edict_t *other, edict_t *activator)
 	self->use = NULL;
 
 	//Start blocking
-	self->think = morcalavin_barrier_think;
+	self->think = MorcalavinBarrierThink;
 	self->nextthink = level.time + 0.1;
 }
 
