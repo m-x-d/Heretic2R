@@ -367,7 +367,7 @@ static void HPMissileExplode(struct client_entity_s* self, const centity_t* owne
 		smoke_puff->r.scale = flrand(0.5f, 1.0f);
 		smoke_puff->d_scale = flrand(-1.0f, -1.5f);
 
-		smoke_puff->r.flags = RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA;
+		smoke_puff->r.flags = (RF_FULLBRIGHT | RF_TRANSLUCENT | RF_TRANS_ADD | RF_TRANS_ADD_ALPHA);
 
 		VectorRandomCopy(dir, smoke_puff->velocity, flrand(64.0f, 128.0f));
 		VectorSet(smoke_puff->acceleration, flrand(-100.0f, -50.0f), flrand(-100.0f, -50.0f), flrand(-250.0f, -100.0f));
