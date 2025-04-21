@@ -851,21 +851,6 @@ void morcalavin_beam2(edict_t* self)
 }
 
 /*-----------------------------------------------
-		morcalavin_ground_attack
------------------------------------------------*/
-
-void morcalavin_ground_attack( edict_t *self )
-{
-	gi.CreateEffect(NULL, 
-					FX_M_EFFECTS, 
-					0, 
-					self->s.origin, 
-					"bv", 
-					FX_GROUND_ATTACK, 
-					self->enemy->s.origin);
-}
-
-/*-----------------------------------------------
 				morcalavin_quake_pause
 -----------------------------------------------*/
 
