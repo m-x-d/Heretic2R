@@ -1180,10 +1180,11 @@ void MorcalavinStaticsInit(void)
 	classStatics[CID_MORK].resInfo = &res_info;
 }
 
-void morcalavin_fade_out(edict_t *self)
+void morcalavin_fade_out(edict_t* self)
 {
-	gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1, ATTN_NORM, 0);
-	self->monsterinfo.sound_start = level.time + 2.0;
+	gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1.0f, ATTN_NORM, 0.0f);
+
+	self->monsterinfo.sound_start = level.time + 2.0f;
 	MorcalavinPhaseOutInit(self);
 	SetAnim(self, ANIM_FLOAT);
 }
