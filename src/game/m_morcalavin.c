@@ -932,19 +932,9 @@ void morcalavin_pause(edict_t* self)
 	}
 }
 
-/*
-
-	morcalavin Message Functions
-
-*/
-
-/*-----------------------------------------------
-	morcalavin_death
------------------------------------------------*/
-
-void morcalavin_death( edict_t *self, G_Message_t *msg )
+static void MorcalavinDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'morcalavin_death' in original logic.
 {
-	self->monsterinfo.stepState++;
+	self->monsterinfo.stepState++; //TODO: used only by m_morcalavin.c rename to morcalavin_state?
 }
 
 void morcalavin_retort( edict_t *self)
@@ -1172,7 +1162,7 @@ void MorcalavinStaticsInit(void)
 	classStatics[CID_MORK].msgReceivers[MSG_MISSILE] = morcalavin_missile;
 	classStatics[CID_MORK].msgReceivers[MSG_RUN] = morcalavin_run;
 	classStatics[CID_MORK].msgReceivers[MSG_EVADE] = morcalavin_evade;
-	classStatics[CID_MORK].msgReceivers[MSG_DEATH] = morcalavin_death;
+	classStatics[CID_MORK].msgReceivers[MSG_DEATH] = MorcalavinDeathMsgHandler;
 	
 	resInfo.numAnims = NUM_ANIMS;
 	resInfo.animations = animations;
