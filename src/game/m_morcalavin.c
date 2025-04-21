@@ -684,24 +684,19 @@ static void MorcalavinPhaseInInit(edict_t* self) //mxd. Named 'morcalavin_init_p
 	self->next_pre_think = level.time + FRAMETIME;
 }
 
-/*
-
-	morcalavin Shield Functions
-
-*/
-
-void mork_laugh (edict_t *self)
+static void MorcalavinLaughPostThink(edict_t* self) //mxd. Named 'mork_laugh' in original logic.
 {
-	gi.sound(self, CHAN_VOICE, sounds[SND_LAUGH], 1, ATTN_NONE, 0);
+	gi.sound(self, CHAN_VOICE, sounds[SND_LAUGH], 1.0f, ATTN_NONE, 0.0f);
+
 	self->post_think = NULL;
-	self->next_post_think = -1;
+	self->next_post_think = -1.0f;
 }
 
 void mork_check_killed_enemy(edict_t *attacker)
 {
 	if(attacker->enemy && attacker->enemy->health<=0)
 	{
-		attacker->post_think = mork_laugh;
+		attacker->post_think = MorcalavinLaughPostThink;
 		attacker->next_post_think = level.time + flrand(1.3, 2.3);
 	}
 }
