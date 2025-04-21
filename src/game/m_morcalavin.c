@@ -367,105 +367,107 @@ static void MorcalavinLightningThink(edict_t* self) //mxd. Named 'morcalavin_che
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-void morcalavin_missile_update(edict_t *self)
+static void MorcalavinMissileThink(edict_t* self) //mxd. Named 'morcalavin_missile_update' in original logic.
 {
-	vec3_t	vf, vr, endpos;
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->owner->s.angles, forward, right, NULL);
 
-	AngleVectors(self->owner->s.angles, vf, vr, NULL);
-	
-	switch( self->owner->s.frame )
+	switch (self->owner->s.frame)
 	{
-	case FRAME_atakc3:
-		VectorMA(self->owner->s.origin, 16, vf, self->s.origin);
-		VectorMA(self->s.origin, 10, vr, self->s.origin);
-		self->s.origin[2] += 24;
-		break;
+		case FRAME_atakc3:
+			VectorMA(self->owner->s.origin, 16.0f, forward, self->s.origin);
+			VectorMA(self->s.origin, 10.0f, right, self->s.origin);
+			self->s.origin[2] += 24.0f;
+			break;
 
-	case FRAME_atakc4:
-		VectorMA(self->owner->s.origin, 16, vf, self->s.origin);
-		VectorMA(self->s.origin, 12, vr, self->s.origin);
-		self->s.origin[2] += 26;
-		break;
+		case FRAME_atakc4:
+			VectorMA(self->owner->s.origin, 16.0f, forward, self->s.origin);
+			VectorMA(self->s.origin, 12.0f, right, self->s.origin);
+			self->s.origin[2] += 26.0f;
+			break;
 
-	case FRAME_atakc5:
-		VectorMA(self->owner->s.origin, 16, vf, self->s.origin);
-		VectorMA(self->s.origin, 14, vr, self->s.origin);
-		self->s.origin[2] += 28;
-		break;
-	
-	case FRAME_atakc6:
-		VectorMA(self->owner->s.origin, 15, vf, self->s.origin);
-		VectorMA(self->s.origin, 14, vr, self->s.origin);
-		self->s.origin[2] += 32;
-		break;
-	
-	case FRAME_atakc7:
-		VectorMA(self->owner->s.origin, 15, vf, self->s.origin);
-		VectorMA(self->s.origin, 14, vr, self->s.origin);
-		self->s.origin[2] += 36;
-		break;
-	
-	case FRAME_atakc8:
-		VectorMA(self->owner->s.origin, 14, vf, self->s.origin);
-		VectorMA(self->s.origin, 14, vr, self->s.origin);
-		self->s.origin[2] += 37;
-		break;
-	
-	case FRAME_atakc9:
-		VectorMA(self->owner->s.origin, 14, vf, self->s.origin);
-		VectorMA(self->s.origin, 14, vr, self->s.origin);
-		self->s.origin[2] += 38;
-		break;
-	
-	case FRAME_atakc10:
-		VectorMA(self->owner->s.origin, 14, vf, self->s.origin);
-		VectorMA(self->s.origin, 14, vr, self->s.origin);
-		self->s.origin[2] += 39;
-		break;
+		case FRAME_atakc5:
+			VectorMA(self->owner->s.origin, 16.0f, forward, self->s.origin);
+			VectorMA(self->s.origin, 14.0f, right, self->s.origin);
+			self->s.origin[2] += 28.0f;
+			break;
 
-	case FRAME_atakc11:
-		VectorMA(self->owner->s.origin, 14, vf, self->s.origin);
-		VectorMA(self->s.origin, 14, vr, self->s.origin);
-		self->s.origin[2] += 40;
-		break;
+		case FRAME_atakc6:
+			VectorMA(self->owner->s.origin, 15.0f, forward, self->s.origin);
+			VectorMA(self->s.origin, 14.0f, right, self->s.origin);
+			self->s.origin[2] += 32.0f;
+			break;
 
-	case FRAME_atakc12:
-		VectorMA(self->owner->s.origin, 14, vf, self->s.origin);
-		VectorMA(self->s.origin, 14, vr, self->s.origin);
-		self->s.origin[2] += 41;
-		break;
+		case FRAME_atakc7:
+			VectorMA(self->owner->s.origin, 15.0f, forward, self->s.origin);
+			VectorMA(self->s.origin, 14.0f, right, self->s.origin);
+			self->s.origin[2] += 36.0f;
+			break;
 
-	case FRAME_atakc13:
-		VectorMA(self->owner->s.origin, 14, vf, self->s.origin);
-		VectorMA(self->s.origin, 14, vr, self->s.origin);
-		self->s.origin[2] += 42;
-		break;
+		case FRAME_atakc8:
+			VectorMA(self->owner->s.origin, 14.0f, forward, self->s.origin);
+			VectorMA(self->s.origin, 14.0f, right, self->s.origin);
+			self->s.origin[2] += 37.0f;
+			break;
 
-	case FRAME_atakc14:
-		VectorMA(self->owner->s.origin, 14, vf, self->s.origin);
-		VectorMA(self->s.origin, 14, vr, self->s.origin);
-		self->s.origin[2] += 42;
-		break;
+		case FRAME_atakc9:
+			VectorMA(self->owner->s.origin, 14.0f, forward, self->s.origin);
+			VectorMA(self->s.origin, 14.0f, right, self->s.origin);
+			self->s.origin[2] += 38.0f;
+			break;
 
-	case FRAME_atakc15:
-		VectorMA(self->owner->s.origin, 16, vf, self->s.origin);
-		VectorMA(self->s.origin, 14, vr, self->s.origin);
-		self->s.origin[2] += 42;
+		case FRAME_atakc10:
+			VectorMA(self->owner->s.origin, 14.0f, forward, self->s.origin);
+			VectorMA(self->s.origin, 14.0f, right, self->s.origin);
+			self->s.origin[2] += 39.0f;
+			break;
 
-		VectorSet(endpos, self->owner->enemy->s.origin[0], self->owner->enemy->s.origin[1], self->owner->enemy->s.origin[2] + self->owner->enemy->viewheight);
-		VectorSubtract(endpos, self->s.origin, vf);
-		VectorNormalize(vf);
-		VectorScale(vf, 400, self->velocity);
+		case FRAME_atakc11:
+			VectorMA(self->owner->s.origin, 14.0f, forward, self->s.origin);
+			VectorMA(self->s.origin, 14.0f, right, self->s.origin);
+			self->s.origin[2] += 40.0f;
+			break;
 
-		self->think = MorcalavinLightningThink;
-		self->nextthink = level.time + 0.1;
-		return;
-		break;
+		case FRAME_atakc12:
+			VectorMA(self->owner->s.origin, 14.0f, forward, self->s.origin);
+			VectorMA(self->s.origin, 14.0f, right, self->s.origin);
+			self->s.origin[2] += 41.0f;
+			break;
+
+		case FRAME_atakc13:
+		case FRAME_atakc14:
+			VectorMA(self->owner->s.origin, 14.0f, forward, self->s.origin);
+			VectorMA(self->s.origin, 14.0f, right, self->s.origin);
+			self->s.origin[2] += 42.0f;
+			break;
+
+		case FRAME_atakc15:
+		{
+			VectorMA(self->owner->s.origin, 16.0f, forward, self->s.origin);
+			VectorMA(self->s.origin, 14.0f, right, self->s.origin);
+			self->s.origin[2] += 42.0f;
+
+			const vec3_t end_pos =
+			{
+				self->owner->enemy->s.origin[0],
+				self->owner->enemy->s.origin[1],
+				self->owner->enemy->s.origin[2] + (float)self->owner->enemy->viewheight
+			};
+
+			vec3_t diff;
+			VectorSubtract(end_pos, self->s.origin, diff);
+			VectorNormalize(diff);
+			VectorScale(diff, 400.0f, self->velocity);
+
+			self->think = MorcalavinLightningThink; //TODO: play SND_LIGHTNING sound?
+			self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+		} return;
 	}
 
 	gi.linkentity(self);
 
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 void morcalavin_start_missile(edict_t *self)
@@ -484,7 +486,7 @@ void morcalavin_start_missile(edict_t *self)
 	proj->gravity = 0;
 	proj->clipmask = MASK_SHOT;
 	
-	proj->think = morcalavin_missile_update;
+	proj->think = MorcalavinMissileThink;
 	proj->nextthink = level.time + 0.1;
 
 	proj->isBlocked = proj->isBlocking = proj->bounced = MorcalavinProjectile2Blocked;
