@@ -953,7 +953,7 @@ void morcalavin_getup(edict_t* self) //TODO: rename to morcalavin_get_up.
 	}
 }
 
-void morcalavin_hurtidle( edict_t *self)
+void morcalavin_hurtidle(edict_t* self) //TODO: rename to morcalavin_hurt_idle.
 {
 	SetAnim(self, ANIM_HURTIDLE);
 }
