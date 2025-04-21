@@ -894,11 +894,7 @@ void morcalavin_rush_sound(edict_t* self)
 	self->velocity[2] = 150.0f;
 }
 
-/*-----------------------------------------------
-	morcalavin_pause
------------------------------------------------*/
-
-void morcalavin_pause( edict_t *self )
+void morcalavin_pause(edict_t* self)
 {
 	if (self->monsterinfo.lefty < 6 && self->health > 0)
 	{
@@ -908,15 +904,15 @@ void morcalavin_pause( edict_t *self )
 
 	self->takedamage = DAMAGE_YES;
 	self->mood_think(self);
-	
+
 	switch (self->ai_mood)
 	{
 		case AI_MOOD_ATTACK:
-			if(self->ai_mood_flags & AI_MOOD_FLAG_MISSILE)
-				QPostMessage(self, MSG_MISSILE, PRI_DIRECTIVE, NULL);
-			else
-				QPostMessage(self, MSG_MELEE, PRI_DIRECTIVE, NULL);
-			break;
+		{
+			const int msg_id = ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE); //mxd
+			QPostMessage(self, msg_id, PRI_DIRECTIVE, NULL);
+		} break;
+
 		case AI_MOOD_PURSUE:
 		case AI_MOOD_NAVIGATE:
 			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
@@ -931,10 +927,7 @@ void morcalavin_pause( edict_t *self )
 			SetAnim(self, ANIM_WALK);
 			break;
 
-		default :
-#ifdef _DEVEL
-			gi.dprintf("mork: Unusable mood %d!\n", self->ai_mood);
-#endif
+		default:
 			break;
 	}
 }
