@@ -1266,19 +1266,17 @@ static void MorcalavinTeleportAttack(edict_t* self) //mxd. Named 'morcalavin_tel
 		gi.sound(self, CHAN_AUTO, sounds[irand(TAUNT_LAUGH2, TAUNT_LAUGH4)], 1.0f, ATTN_NONE, 0.0f);
 }
 
-void morcalavin_postthink(edict_t *self)
+static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthink' in original logic.
 {
-	int chance;
-	
-	if (!self->monsterinfo.lefty)
+	if (self->monsterinfo.lefty == 0)
 		MG_CheckEvade(self);
 
-	if (self->enemy && self->monsterinfo.stepState)
+	if (self->enemy != NULL && self->monsterinfo.stepState > 0)
 	{
 		if (self->dmg < self->max_health)
 		{
-			M_ShowLifeMeter(self->dmg, self->dmg);
-			self->dmg+=50;
+			M_ShowLifeMeter(self->dmg, self->max_health); //BUGFIX: mxd. M_ShowLifeMeter(self->dmg, self->dmg) in original logic.
+			self->dmg += 50;
 		}
 		else
 		{
@@ -1287,148 +1285,103 @@ void morcalavin_postthink(edict_t *self)
 		}
 	}
 
-	//Check for a teleport razzing
-	if (self->monsterinfo.jump_time > 0 && self->monsterinfo.jump_time < level.time)
+	// Check for a teleport razzing.
+	if (self->monsterinfo.jump_time > 0.0f && self->monsterinfo.jump_time < level.time)
 	{
-		if (self->monsterinfo.stepState)
+		if (self->monsterinfo.stepState > 0)
 		{
 			MorcalavinPhaseInInit(self);
-			self->monsterinfo.jump_time = -1;
-			self->monsterinfo.sound_start = -1;
-			MorcalavinTeleportAttack(self);
-			return;
+			self->monsterinfo.sound_start = -1.0f; //TODO: add morcalavin_taunt_time name.
 		}
-		else
-		{
-			MorcalavinTeleportAttack(self);
-			self->monsterinfo.jump_time = -1;
-			return;
-		}
+
+		MorcalavinTeleportAttack(self);
+		self->monsterinfo.jump_time = -1.0f; //TODO: add morcalavin_teleport_attack_time name.
+
+		return;
 	}
 
-	//Check for a pending taunt
+	// Check for a pending taunt.
 	if (self->monsterinfo.sound_start > 0 && self->monsterinfo.sound_start < level.time)
 	{
 		switch (self->monsterinfo.lefty)
 		{
-		case 1:
-			gi.sound(self, CHAN_AUTO, sounds[TAUNT_LAUGH1], 1, ATTN_NONE, 0);
-			self->monsterinfo.sound_start = -1;
-			self->monsterinfo.jump_time = level.time + 1.0;
-			self->monsterinfo.lefty++;
-			break;
-
-		case 2:
-			gi.sound(self, CHAN_AUTO, sounds[TAUNT_BELLY1], 1, ATTN_NONE, 0);
-			self->monsterinfo.sound_start = -1;
-			self->monsterinfo.jump_time = level.time + 8.0;
-			self->monsterinfo.lefty++;
-			break;
-		
-		case 3:
-			gi.sound(self, CHAN_AUTO, sounds[TAUNT_BELLY2], 1, ATTN_NONE, 0);
-			self->monsterinfo.sound_start = -1;
-			self->monsterinfo.jump_time = level.time + 5.0;
-			self->monsterinfo.lefty++;
-			break;
-		
-		case 4:
-			gi.sound(self, CHAN_AUTO, sounds[TAUNT_BELLY3], 1, ATTN_NONE, 0);
-			self->monsterinfo.sound_start = -1;
-			self->monsterinfo.jump_time = level.time + 7.0;
-			self->monsterinfo.lefty++;
-			break;
-		
-		case 5:
-			chance = irand(0,6);
-			switch (chance)
-			{
-			case 0:
-				gi.sound(self, CHAN_AUTO, sounds[TAUNT_LAUGH2], 1, ATTN_NONE, 0);
-				break;
-
 			case 1:
-				gi.sound(self, CHAN_AUTO, sounds[TAUNT_LAUGH3], 1, ATTN_NONE, 0);
+				gi.sound(self, CHAN_AUTO, sounds[TAUNT_LAUGH1], 1.0f, ATTN_NONE, 0.0f);
+				self->monsterinfo.sound_start = -1.0f;
+				self->monsterinfo.jump_time = level.time + 1.0f;
+				self->monsterinfo.lefty++;
 				break;
 
 			case 2:
-				gi.sound(self, CHAN_AUTO, sounds[TAUNT_LAUGH4], 1, ATTN_NONE, 0);
+				gi.sound(self, CHAN_AUTO, sounds[TAUNT_BELLY1], 1.0f, ATTN_NONE, 0.0f);
+				self->monsterinfo.sound_start = -1.0f;
+				self->monsterinfo.jump_time = level.time + 8.0f;
+				self->monsterinfo.lefty++;
 				break;
 
-			default:
-				break;
-			}
-
-			self->monsterinfo.sound_start = -1;
-			self->monsterinfo.jump_time = level.time + 1.0;
-			break;
-		
-		case 6:
-			self->monsterinfo.jump_time = -1;
-			gi.sound(self, CHAN_AUTO, sounds[TAUNT_LAUGH1], 1, ATTN_NONE, 0);
-			
-			if (!self->targetEnt)
-			{
-#ifdef _DEVEL
-				if (level.time < 5.0)		// Otherwise it will print forever after Morcalavin is dead.
-					gi.dprintf("GDE Fault: YOU NEED TO PUT A BARRIER IN THIS ROOM FOR THE GAME TO WORK!!!n");
-#endif
-				return;
-			}
-
-			self->svflags &= ~SVF_NO_AUTOTARGET;
-		
-			if (self->delay)
-			{
-				self->monsterinfo.sound_start = self->monsterinfo.attack_finished = level.time + ( self->delay );
-				self->monsterinfo.sound_start += 1.5;
-				self->targetEnt->monsterinfo.attack_finished = self->monsterinfo.attack_finished;
-				self->delay *= 2;
-			}
-			else
-			{
-				self->monsterinfo.sound_start = level.time + 3.5;
-				self->monsterinfo.attack_finished = level.time + 2.0;
-				self->delay = 2;
-			}
-			
-			self->monsterinfo.lefty++;
-			break;
-
-		case 7:
-			self->monsterinfo.sound_start = -1;
-			gi.sound(self, CHAN_AUTO, sounds[SND_LAUGH], 1, ATTN_NONE, 0);
-			self->monsterinfo.jump_time = -1;
-			break;
-
-		case 8:
-			/*
-			chance = irand(0,2);
-			switch (chance)
-			{
-			case 0:
-				gi.sound(self, CHAN_AUTO, sounds[TAUNT_LAUGH2], 1, ATTN_NONE, 0);
+			case 3:
+				gi.sound(self, CHAN_AUTO, sounds[TAUNT_BELLY2], 1.0f, ATTN_NONE, 0.0f);
+				self->monsterinfo.sound_start = -1.0f;
+				self->monsterinfo.jump_time = level.time + 5.0f;
+				self->monsterinfo.lefty++;
 				break;
 
-			case 1:
-				gi.sound(self, CHAN_AUTO, sounds[TAUNT_LAUGH3], 1, ATTN_NONE, 0);
+			case 4:
+				gi.sound(self, CHAN_AUTO, sounds[TAUNT_BELLY3], 1.0f, ATTN_NONE, 0.0f);
+				self->monsterinfo.sound_start = -1.0f;
+				self->monsterinfo.jump_time = level.time + 7.0f;
+				self->monsterinfo.lefty++;
 				break;
 
-			case 2:
-				gi.sound(self, CHAN_AUTO, sounds[TAUNT_LAUGH4], 1, ATTN_NONE, 0);
+			case 5:
+				if (irand(0, 1) == 1)
+					gi.sound(self, CHAN_AUTO, sounds[irand(TAUNT_LAUGH2, TAUNT_LAUGH4)], 1.0f, ATTN_NONE, 0.0f);
+
+				self->monsterinfo.sound_start = -1.0f;
+				self->monsterinfo.jump_time = level.time + 1.0f;
 				break;
 
-			default:
-				break;
-			}*/
+			case 6:
+				gi.sound(self, CHAN_AUTO, sounds[TAUNT_LAUGH1], 1.0f, ATTN_NONE, 0.0f);
+				self->monsterinfo.jump_time = -1.0f;
 
-			self->monsterinfo.sound_start = -1;
-			self->monsterinfo.jump_time = level.time + 1.0;
-			break;
+				if (self->targetEnt != NULL)
+				{
+					self->svflags &= ~SVF_NO_AUTOTARGET;
+
+					if (self->delay > 0.0f)
+					{
+						self->monsterinfo.attack_finished = level.time + self->delay;
+						self->monsterinfo.sound_start = self->monsterinfo.attack_finished;
+						self->monsterinfo.sound_start += 1.5f;
+						self->targetEnt->monsterinfo.attack_finished = self->monsterinfo.attack_finished;
+						self->delay *= 2.0f;
+					}
+					else
+					{
+						self->monsterinfo.sound_start = level.time + 3.5f;
+						self->monsterinfo.attack_finished = level.time + 2.0f;
+						self->delay = 2.0f;
+					}
+
+					self->monsterinfo.lefty++;
+				}
+				break;
+
+			case 7:
+				gi.sound(self, CHAN_AUTO, sounds[SND_LAUGH], 1.0f, ATTN_NONE, 0.0f);
+				self->monsterinfo.sound_start = -1.0f;
+				self->monsterinfo.jump_time = -1.0f;
+				break;
+
+			case 8:
+				self->monsterinfo.sound_start = -1.0f;
+				self->monsterinfo.jump_time = level.time + 1.0f;
+				break;
 		}
 	}
 
-	self->next_post_think = level.time + 0.05;
+	self->next_post_think = level.time + 0.05f;
 }
 
 static void morcalavin_resist_death (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
@@ -1529,7 +1482,7 @@ void SP_monster_morcalavin (edict_t *self)
 
 	self->monsterinfo.otherenemyname = "player";	
 
-	self->post_think = morcalavin_postthink;
+	self->post_think = MorcalavinPostThink;
 	self->next_post_think = level.time + 0.1;
 
 	if (self->monsterinfo.scale)
