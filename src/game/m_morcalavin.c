@@ -765,10 +765,10 @@ static void MorcalavinBeamIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 
 	G_SetToFree(self);
 }
 
-void beam_think (edict_t *self)
+static void MorcalavinBeamThink(edict_t* self) //mxd. Named 'beam_think' in original logic. //TODO: doesn't do anything useful. Can be removed?
 {
 	self->think = NULL;
-	self->nextthink = -1;
+	self->nextthink = -1.0f;
 }
 
 void morcalavin_beam( edict_t *self)
@@ -804,7 +804,7 @@ void morcalavin_beam( edict_t *self)
 
 	proj->dmg = flrand(MORK_DMG_BEAM_MIN, MORK_DMG_BEAM_MAX);
 
-	proj->think=beam_think;
+	proj->think=MorcalavinBeamThink;
 	proj->nextthink = level.time + 1;
 
 	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/seraph/guard/spell.wav"), 1, ATTN_NORM, 0);
@@ -855,7 +855,7 @@ void morcalavin_beam2( edict_t *self)
 
 	proj->dmg = flrand(MORK_DMG_BEAM_MIN, MORK_DMG_BEAM_MAX);
 
-	proj->think=beam_think;
+	proj->think=MorcalavinBeamThink;
 	proj->nextthink = level.time + 1;
 
 	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/seraph/guard/spell.wav"), 1, ATTN_NORM, 0);
