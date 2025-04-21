@@ -1243,50 +1243,27 @@ static void MorcalavinChooseTeleportDestination(edict_t* self) //mxd. Removed un
 	}
 }
 
-//Teleport in and attack the player quickly, before fading out again
-void morcalavin_teleport_attack(edict_t *self)
+// Teleport in and attack the player quickly, before fading out again.
+static void MorcalavinTeleportAttack(edict_t* self) //mxd. Named 'morcalavin_teleport_attack' in original logic.
 {
-	int chance;
-
-	//Find a valid point away from the player
+	// Find a valid point away from the player.
 	MorcalavinChooseTeleportDestination(self);
-	
-	//Start the animation for the attack
-	if (self->monsterinfo.lefty == 8)
-		SetAnim(self, ANIM_ATTACK4);
-	else
-		SetAnim(self, ANIM_ATTACK2);
 
-	//Play the teleport in sound fx
-	gi.sound(self, CHAN_AUTO, sounds[SND_MAKESHIELD], 1, ATTN_NORM, 0);	
+	// Start the animation for the attack.
+	SetAnim(self, ((self->monsterinfo.lefty == 8) ? ANIM_ATTACK4 : ANIM_ATTACK2));
 
-	//Start phasing back in
+	// Play the teleport in sound fx.
+	gi.sound(self, CHAN_AUTO, sounds[SND_MAKESHIELD], 1.0f, ATTN_NORM, 0.0f);
+
+	// Start phasing back in.
 	MorcalavinPhaseInInit(self);
 
-	//Become tangible once more
+	// Become tangible once more.
 	self->solid = SOLID_BBOX;
 
-	if (self->monsterinfo.stepState)
-	{
-		chance = irand(0,6);
-		switch (chance)
-		{
-		case 0:
-			gi.sound(self, CHAN_AUTO, sounds[TAUNT_LAUGH2], 1, ATTN_NONE, 0);
-			break;
-
-		case 1:
-			gi.sound(self, CHAN_AUTO, sounds[TAUNT_LAUGH3], 1, ATTN_NONE, 0);
-			break;
-
-		case 2:
-			gi.sound(self, CHAN_AUTO, sounds[TAUNT_LAUGH4], 1, ATTN_NONE, 0);
-			break;
-
-		default:
-			break;
-		}
-	}
+	// Taunt player?
+	if (self->monsterinfo.stepState > 0 && irand(0, 1) == 1)
+		gi.sound(self, CHAN_AUTO, sounds[irand(TAUNT_LAUGH2, TAUNT_LAUGH4)], 1.0f, ATTN_NONE, 0.0f);
 }
 
 void morcalavin_postthink(edict_t *self)
@@ -1318,12 +1295,12 @@ void morcalavin_postthink(edict_t *self)
 			MorcalavinPhaseInInit(self);
 			self->monsterinfo.jump_time = -1;
 			self->monsterinfo.sound_start = -1;
-			morcalavin_teleport_attack(self);
+			MorcalavinTeleportAttack(self);
 			return;
 		}
 		else
 		{
-			morcalavin_teleport_attack(self);
+			MorcalavinTeleportAttack(self);
 			self->monsterinfo.jump_time = -1;
 			return;
 		}
