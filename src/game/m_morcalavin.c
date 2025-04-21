@@ -991,42 +991,34 @@ void mork_ai_hover(edict_t* self, float distance) //TODO: rename to morcalavin_a
 	}
 }
 
-void mork_ai_run (edict_t *self, float dist)
+void mork_ai_run(edict_t* self, float distance) //TODO: rename to morcalavin_ai_run.
 {
-	vec3_t	forward;
-
 	if (self->health <= 0)
 		return;
 
-	if(self->curAnimID!=ANIM_FLY)
+	if (self->curAnimID == ANIM_FLY)
 	{
-		MG_AI_Run(self, dist);
-		if(!self->groundentity)
+		ai_charge(self, distance);
+		return;
+	}
+
+	MG_AI_Run(self, distance);
+
+	if (self->groundentity == NULL)
+	{
+		if (self->curAnimID == ANIM_WALK)
 		{
-			if(self->curAnimID == ANIM_WALK)
-			{
-				AngleVectors(self->s.angles, forward, NULL, NULL);
-				VectorScale(forward, 250, self->velocity);
-				self->velocity[2] = 150;
-			}
-			SetAnim(self, ANIM_GLIDE);
+			vec3_t forward;
+			AngleVectors(self->s.angles, forward, NULL, NULL);
+			VectorScale(forward, 250.0f, self->velocity);
+			self->velocity[2] = 150.0f;
 		}
-		else
-			SetAnim(self, ANIM_WALK);
+
+		SetAnim(self, ANIM_GLIDE);
 	}
 	else
 	{
-		/*
-		gi.CreateEffect(&self->s,
-					FX_M_EFFECTS,
-					0,
-					vec3_origin,
-					"bv",
-					FX_M_MOBLUR,
-					self->s.angles);
-		*/
-
-		ai_charge(self, dist);
+		SetAnim(self, ANIM_WALK);
 	}
 }
 
