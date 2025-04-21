@@ -109,7 +109,6 @@ extern const animmove_t morcalavin_move_glide;
 extern const animmove_t morcalavin_move_ground_attack;
 extern const animmove_t morcalavin_move_tracking_attack1;
 
-void morcalavin_idle(edict_t* self);
 void morcalavin_pause(edict_t* self);
 void morcalavin_retort(edict_t* self);
 void morcalavin_getup(edict_t* self);

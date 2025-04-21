@@ -932,14 +932,6 @@ void morcalavin_pause(edict_t* self)
 	}
 }
 
-/*-----------------------------------------------
-	morcalavin_idle
------------------------------------------------*/
-
-void morcalavin_idle(edict_t *self)
-{
-}
-
 /*
 
 	morcalavin Message Functions

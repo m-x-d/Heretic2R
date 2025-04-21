@@ -27,7 +27,7 @@ static const animframe_t morcalavin_frames_float[] =
 	{ FRAME_fltidl14,	NULL, 0, 0, 0, mork_ai_hover, 57, NULL },
 	{ FRAME_fltidl15,	NULL, 0, 0, 0, mork_ai_hover, 58, NULL },
 };
-const animmove_t morcalavin_move_float = { 15, morcalavin_frames_float, morcalavin_idle };
+const animmove_t morcalavin_move_float = { 15, morcalavin_frames_float, NULL };
 
 // Morcalavin Hurt Idle.
 static const animframe_t morcalavin_frames_hurtidle[] =
