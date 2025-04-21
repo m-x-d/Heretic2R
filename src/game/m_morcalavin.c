@@ -470,50 +470,41 @@ static void MorcalavinMissileThink(edict_t* self) //mxd. Named 'morcalavin_missi
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-void morcalavin_start_missile(edict_t *self)
+void morcalavin_start_missile(edict_t* self)
 {
-	edict_t	*proj;
-	vec3_t	vf, vr;
-
-	proj = G_Spawn();
+	edict_t* proj = G_Spawn();
 
 	proj->solid = SOLID_BBOX;
-
-	VectorSet(proj->mins, -4, -4, -4);
-	VectorSet(proj->maxs,  4,  4,  4);
-
 	proj->movetype = PHYSICSTYPE_FLY;
-	proj->gravity = 0;
+	proj->gravity = 0.0f;
 	proj->clipmask = MASK_SHOT;
-	
-	proj->think = MorcalavinMissileThink;
-	proj->nextthink = level.time + 0.1;
+	proj->s.effects = (EF_MARCUS_FLAG1 | EF_CAMERA_NO_CLIP);
 
-	proj->isBlocked = proj->isBlocking = proj->bounced = MorcalavinProjectile2Blocked;
+	proj->think = MorcalavinMissileThink;
+	proj->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
+	proj->isBlocked = MorcalavinProjectile2Blocked;
+	proj->isBlocking = MorcalavinProjectile2Blocked;
+	proj->bounced = MorcalavinProjectile2Blocked;
 
 	proj->owner = self;
-
 	self->target_ent = proj;
 
-	AngleVectors(self->s.angles, vf, vr, NULL);
-	VectorMA(self->s.origin, 16, vf, proj->s.origin);
-	VectorMA(proj->s.origin, 10, vr, proj->s.origin);
-	proj->s.origin[2] += 24;
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
+	VectorMA(self->s.origin, 16.0f, forward, proj->s.origin);
+	VectorMA(proj->s.origin, 10.0f, right, proj->s.origin);
+	proj->s.origin[2] += 24.0f;
 
-	proj->s.effects = EF_MARCUS_FLAG1 | EF_CAMERA_NO_CLIP;
+	VectorSet(proj->mins, -4.0f, -4.0f, -4.0f);
+	VectorSet(proj->maxs,  4.0f,  4.0f,  4.0f);
 
 	gi.linkentity(proj);
 
-	//Create the effect
-	gi.CreateEffect(&proj->s,
-					FX_M_EFFECTS,
-					CEF_OWNERS_ORIGIN,
-					proj->s.origin,
-					"bv",
-					FX_MORK_MISSILE,
-					proj->s.origin);
-    
-	gi.sound (self, CHAN_AUTO, sounds[SND_PPCHARGE], 1, ATTN_NORM, 0);
+	// Create the effect.
+	gi.CreateEffect(&proj->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, proj->s.origin, "bv", FX_MORK_MISSILE, proj->s.origin);
+	gi.sound(self, CHAN_AUTO, sounds[SND_PPCHARGE], 1.0f, ATTN_NORM, 0.0f);
 }
 
 void morcalavin_release_missile(edict_t *self)
