@@ -16,6 +16,7 @@
 #include "Utilities.h"
 #include "m_stats.h"
 #include "g_playstats.h"
+#include "m_morcalavin.h" //mxd
 
 
 static void InsectStaffThink(edict_t *self);
@@ -554,8 +555,6 @@ Veer(self.veer) or Veer(random()*300)
 or Veer([any number]), etc.
 =====================================================
 */
-void projectile_homethink (edict_t *self);
-
 void yellowjacket_proj_think (edict_t *self)
 {
 	vec3_t		vdir, edir;
@@ -572,7 +571,7 @@ void yellowjacket_proj_think (edict_t *self)
 	VectorNormalize(edir);
 
 	if(DotProduct(edir, vdir) > 0 && irand(2, 24) > self->count)
-		projectile_homethink(self);
+		MorcalavinProjectileHomeIn(self);
 
 	self->count++;
 

@@ -714,44 +714,36 @@ static void MorcalavinProjectileVeer(edict_t* self, const float amount) //mxd. N
 	Vec3ScaleAssign(speed, self->velocity);
 }
 
-void projectile_homethink (edict_t *self)
+//TODO: used only by m_tcheckrik_spells.c. Move there?
+void MorcalavinProjectileHomeIn(edict_t* self) //mxd. Named 'projectile_homethink' in original logic.
 {
-	vec3_t olddir, newdir, huntdir;
-	float oldvelmult , newveldiv, speed_mod;
-	float turnspeed;
+	vec3_t old_dir;
+	VectorNormalize2(self->velocity, old_dir);
 
-	if(self->delay)
-		turnspeed = self->delay;
-	else
-		turnspeed = 1.3;
+	vec3_t hunt_dir;
+	VectorSubtract(self->enemy->s.origin, self->s.origin, hunt_dir);
+	VectorNormalize(hunt_dir);
 
-	VectorCopy(self->velocity, olddir);
-	VectorNormalize(olddir);
+	const float old_vel_mult = ((self->delay != 0.0f) ? self->delay : 1.3f); //TODO: add projectile_turn_speed custom name?
+	Vec3ScaleAssign(old_vel_mult, old_dir);
 
-	VectorSubtract(self->enemy->s.origin, self->s.origin, huntdir);
-	VectorNormalize(huntdir);
+	vec3_t new_dir;
+	VectorAdd(old_dir, hunt_dir, new_dir);
 
-	oldvelmult = turnspeed;
-	newveldiv = 1/(oldvelmult + 1);
-	
-	VectorScale(olddir, oldvelmult, olddir);
-	VectorAdd(olddir, huntdir, newdir);
-	VectorScale(newdir, newveldiv, newdir);
+	float new_vel_div = 1.0f / (old_vel_mult + 1.0f);
+	Vec3ScaleAssign(new_vel_div, new_dir);
 
-	speed_mod = DotProduct( olddir , newdir );
+	float speed_mod = DotProduct(old_dir, new_dir);
+	speed_mod = max(0.05f, speed_mod);
 
-	if (speed_mod < 0.05)
-		speed_mod = 0.05;
+	new_vel_div *= self->ideal_yaw * speed_mod;
 
-	newveldiv *= self->ideal_yaw * speed_mod;
+	Vec3ScaleAssign(old_vel_mult, old_dir);
+	VectorAdd(old_dir, hunt_dir, new_dir);
 
-	VectorScale(olddir, oldvelmult, olddir);
-	VectorAdd(olddir, huntdir, newdir);
-	VectorScale(newdir, newveldiv, newdir);
+	VectorScale(new_dir, new_vel_div, self->velocity);
 
-	VectorCopy(newdir, self->velocity);
-
-	if(self->random)
+	if (self->random != 0.0f) //TODO: add add projectile_veer_amount custom name?
 		MorcalavinProjectileVeer(self, self->random);
 }
 
@@ -768,7 +760,7 @@ void projectile_homethink (edict_t *self)
 void morcalavin_proj1_think( edict_t *self )
 {
 	if(AI_IsClearlyVisible(self, self->enemy))
-		projectile_homethink(self);
+		MorcalavinProjectileHomeIn(self);
 
 	self->nextthink = level.time + 0.1;
 }
