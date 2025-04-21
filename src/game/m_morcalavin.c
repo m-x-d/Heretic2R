@@ -958,17 +958,10 @@ void morcalavin_hurtidle(edict_t* self) //TODO: rename to morcalavin_hurt_idle.
 	SetAnim(self, ANIM_HURTIDLE);
 }
 
-/*-----------------------------------------------
-				morcalavin_stand
------------------------------------------------*/
-
-void morcalavin_stand(edict_t *self, G_Message_t *msg)
+static void MorcalavinStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'morcalavin_stand' in original logic.
 {
-	if (self->health <= 0)
-		return;
-
-	//SetAnim(self, ANIM_ATTACK1);
-	SetAnim(self, ANIM_FLOAT);
+	if (self->health > 0)
+		SetAnim(self, ANIM_FLOAT);
 }
 
 /*-----------------------------------------------
@@ -1144,7 +1137,7 @@ void MorcalavinStaticsInit(void)
 {
 	static ClassResourceInfo_t resInfo; //mxd. Made local static.
 
-	classStatics[CID_MORK].msgReceivers[MSG_STAND]	= morcalavin_stand;
+	classStatics[CID_MORK].msgReceivers[MSG_STAND]	= MorcalavinStandMsgHandler;
 	classStatics[CID_MORK].msgReceivers[MSG_MELEE] = morcalavin_melee;
 	classStatics[CID_MORK].msgReceivers[MSG_MISSILE] = morcalavin_missile;
 	classStatics[CID_MORK].msgReceivers[MSG_RUN] = morcalavin_run;
