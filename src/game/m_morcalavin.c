@@ -937,22 +937,19 @@ static void MorcalavinDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 	self->monsterinfo.stepState++; //TODO: used only by m_morcalavin.c rename to morcalavin_state?
 }
 
-void morcalavin_retort( edict_t *self)
+void morcalavin_retort(edict_t* self)
 {
 	self->msgHandler = DefaultMsgHandler;
 	SetAnim(self, ANIM_RETORT);
 }
 
-void morcalavin_getup( edict_t *self)
+void morcalavin_getup(edict_t* self) //TODO: rename to morcalavin_get_up.
 {
-	if (self->monsterinfo.lefty==7)
+	if (self->monsterinfo.lefty == 7 && self->monsterinfo.attack_finished > 0.0f && self->monsterinfo.attack_finished < level.time)
 	{
-		if (self->monsterinfo.attack_finished > 0 && self->monsterinfo.attack_finished < level.time)
-		{
-			self->monsterinfo.attack_finished = -1;
-			gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1, ATTN_NORM, 0);
-			SetAnim(self, ANIM_GETUP);
-		}
+		self->monsterinfo.attack_finished = -1.0f;
+		gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1.0f, ATTN_NORM, 0.0f);
+		SetAnim(self, ANIM_GETUP);
 	}
 }
 
