@@ -1189,60 +1189,58 @@ void morcalavin_fade_out(edict_t* self)
 	SetAnim(self, ANIM_FLOAT);
 }
 
-qboolean morcalavin_choose_teleport_destination(edict_t *self)
+static void MorcalavinChooseTeleportDestination(edict_t* self) //mxd. Removed unused return type. Named 'morcalavin_choose_teleport_destination' in original logic.
 {
-	vec3_t	teleport_angles, forward, endpos, startpos;
-	trace_t trace;
-	int	num_tries, i;
-	edict_t	*noblockent;
-	float	tracedist;
-
-	//Instead of chance, do around self if evade, around other if ambush
-	if(!self->enemy)
+	// Instead of chance, do around self if evade, around other if ambush.
+	if (self->enemy == NULL)
 	{
-		//Phase in and become tangible again
+		// Phase in and become tangible again.
 		MorcalavinPhaseInInit(self);
 		self->takedamage = DAMAGE_YES;
 		self->monsterinfo.lefty = 10;
-		return false;
+
+		return;
 	}
 
-	num_tries = 10;
-
-	for(i = 0; i < num_tries; i++)
+	for (int i = 0; i < 10; i++)
 	{
-		VectorSet(teleport_angles, 0, anglemod(flrand(0, 360)), 0);
+		const vec3_t teleport_angles = { 0.0f, anglemod(flrand(0.0f, 360.0f)), 0.0f }; //TODO: should be flrand(0.0f, 359.0f)?
+
+		vec3_t forward;
 		AngleVectors(teleport_angles, forward, NULL, NULL);
-		VectorCopy(self->enemy->s.origin, startpos);
-		startpos[2]+=self->enemy->mins[2];
-		startpos[2]-=self->mins[2];
-		tracedist = irand(self->min_missile_range, self->missile_range);
-		VectorMA(startpos, -tracedist, forward, endpos);
-		noblockent = self->enemy;
-		
-		gi.trace(startpos, self->mins, self->maxs, endpos, noblockent, MASK_MONSTERSOLID, &trace);
-		
-		if(trace.fraction*tracedist < 100)//min origin lerp dist
+
+		vec3_t start_pos;
+		VectorCopy(self->enemy->s.origin, start_pos);
+		start_pos[2] += self->enemy->mins[2] - self->mins[2];
+
+		const float trace_dist = flrand(self->min_missile_range, self->missile_range); //mxd. irand() in original logic.
+
+		vec3_t end_pos;
+		VectorMA(start_pos, -trace_dist, forward, end_pos);
+
+		trace_t trace;
+		gi.trace(start_pos, self->mins, self->maxs, end_pos, self->enemy, MASK_MONSTERSOLID, &trace);
+
+		if (trace.allsolid || trace.startsolid || trace.fraction * trace_dist < 100.0f) // Minimum origin lerp dist.
 			continue;
 
-		if(trace.allsolid || trace.startsolid)
-			continue;
-		
-		if(vhlen(trace.endpos, self->enemy->s.origin)>=128)
+		if (vhlen(trace.endpos, self->enemy->s.origin) >= 128.0f)
 		{
-			VectorCopy(trace.endpos, startpos);
-			VectorCopy(trace.endpos, endpos);
-			endpos[2] -=64;
-			gi.trace(startpos, self->mins, self->maxs, endpos, noblockent, MASK_MONSTERSOLID,&trace);
-			if(trace.fraction<1.0 && !trace.allsolid && !trace.startsolid)//the last two should be false if trace.fraction is < 1.0 but doesn't hurt to check
+			VectorCopy(trace.endpos, start_pos);
+			VectorCopy(trace.endpos, end_pos);
+			end_pos[2] -= 64.0f;
+
+			gi.trace(start_pos, self->mins, self->maxs, end_pos, self->enemy, MASK_MONSTERSOLID, &trace);
+
+			if (trace.fraction < 1.0f && !trace.allsolid && !trace.startsolid) // The last two should be false if trace.fraction is < 1.0 but doesn't hurt to check.
 			{
 				VectorCopy(trace.endpos, self->s.origin);
 				gi.linkentity(self);
-				return true;
+
+				return;
 			}
 		}
 	}
-	return false;
 }
 
 //Teleport in and attack the player quickly, before fading out again
@@ -1251,7 +1249,7 @@ void morcalavin_teleport_attack(edict_t *self)
 	int chance;
 
 	//Find a valid point away from the player
-	morcalavin_choose_teleport_destination(self);
+	MorcalavinChooseTeleportDestination(self);
 	
 	//Start the animation for the attack
 	if (self->monsterinfo.lefty == 8)
