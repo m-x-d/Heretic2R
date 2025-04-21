@@ -884,21 +884,6 @@ void morcalavin_quake(edict_t* self, float pitch_ofs, float yaw_ofs, float roll_
 	}
 }
 
-/*
-
-	Morcalavin Helper Functions
-
-*/
-
-
-/*-----------------------------------------------
-				morcalavin_move
------------------------------------------------*/
-
-void morcalavin_move( edict_t *self, float vf, float vr, float vu )
-{
-}
-
 void morcalavin_rush_sound (edict_t *self)
 {
 	vec3_t forward;
