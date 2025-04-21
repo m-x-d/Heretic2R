@@ -507,9 +507,9 @@ void morcalavin_start_missile(edict_t* self)
 	gi.sound(self, CHAN_AUTO, sounds[SND_PPCHARGE], 1.0f, ATTN_NORM, 0.0f);
 }
 
-void morcalavin_release_missile(edict_t *self)
+void morcalavin_release_missile(edict_t* self)
 {
-	gi.sound (self, CHAN_AUTO, sounds[SND_PPFIRE], 1, ATTN_NORM, 0);
+	gi.sound(self, CHAN_AUTO, sounds[SND_PPFIRE], 1.0f, ATTN_NORM, 0.0f);
 }
 
 /*-----------------------------------------------
