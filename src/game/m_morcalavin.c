@@ -578,63 +578,51 @@ static void MorcalavinProjectileInit(edict_t* self, edict_t* proj) //mxd. Named 
 	VectorCopy(self->s.origin, proj->s.origin);
 }
 
-/*-----------------------------------------------
-	morcalavin_taunt_shot
------------------------------------------------*/
-
-void morcalavin_taunt_shot(edict_t *self)
+void morcalavin_taunt_shot(edict_t* self)
 {
-	//Bang
-	edict_t	*proj;
-	vec3_t	vf, vr, predPos;
-	vec3_t	ang, vel, startOfs, angles;
-
-	if (!self->enemy)
+	if (self->enemy == NULL)
 		return;
 
-	//Only predict once for all the missiles
-	M_PredictTargetPosition ( self->enemy, self->enemy->velocity, 5, predPos );
+	// Only predict once for all the missiles.
+	vec3_t pred_pos;
+	M_PredictTargetPosition(self->enemy, self->enemy->velocity, 5.0f, pred_pos);
 
-	AngleVectors(self->s.angles, vf, vr, NULL);
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
 
-	VectorMA(self->s.origin, -8,  vf, startOfs);
-	VectorMA(startOfs, -16, vr, startOfs);
-	startOfs[2] += 8;
+	vec3_t start_pos;
+	VectorMA(self->s.origin, -8.0f, forward, start_pos);
+	VectorMA(start_pos, -16.0f, right, start_pos);
+	start_pos[2] += 8.0f;
 
-	VectorSubtract(predPos, startOfs, vf);
-	VectorNormalize(vf);
-	
-	vectoangles( vf, angles );
+	vec3_t diff;
+	VectorSubtract(pred_pos, start_pos, diff);
+	VectorNormalize(diff);
 
-	// Spawn the projectile
-	proj = G_Spawn();
+	vec3_t angles;
+	vectoangles(diff, angles);
 
-	MorcalavinProjectileInit(self,proj);
+	angles[PITCH] = -angles[PITCH] + flrand(-4.0f, 4.0f);
+	angles[YAW] += flrand(-4.0f, 4.0f);
+
+	// Spawn the projectile.
+	edict_t* proj = G_Spawn();
+
+	MorcalavinProjectileInit(self, proj);
 	proj->owner = self;
-	
-	VectorCopy(startOfs, proj->s.origin);
-	VectorCopy(angles, ang);
 
-	ang[PITCH]  = flrand( -4, 4 ) + -ang[PITCH];
-	ang[YAW] 	+= flrand( -4, 4 );
+	VectorCopy(start_pos, proj->s.origin);
 
-	AngleVectors( ang, vel, NULL, NULL );
+	vec3_t vel;
+	AngleVectors(angles, vel, NULL, NULL);
 
-	VectorScale(vel, irand(700,800) + (skill->value * 100), proj->velocity);
-
+	VectorScale(vel, flrand(700.0f, 800.0f) + (skill->value * 100.0f), proj->velocity); //mxd. irand() in original logic.
 	vectoangles(proj->velocity, proj->s.angles);
 
-	gi.sound (self, CHAN_AUTO, sounds[SND_HOMING], 1, ATTN_NORM, 0);
-
-	gi.CreateEffect(&proj->s,
-				FX_M_EFFECTS,
-				CEF_OWNERS_ORIGIN,
-				NULL,
-				"bv",
-				FX_MORK_TRACKING_MISSILE,
-				proj->s.origin);
-
-	gi.linkentity(proj); 
+	gi.sound(self, CHAN_AUTO, sounds[SND_HOMING], 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(&proj->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, NULL, "bv", FX_MORK_TRACKING_MISSILE, proj->s.origin);
+	gi.linkentity(proj);
 }
 
 void morcalavin_phase_out (edict_t *self)
