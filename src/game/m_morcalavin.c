@@ -246,67 +246,45 @@ void morcalavin_tracking_projectile(edict_t* self, float pitch, float yaw, float
 	gi.CreateEffect(&proj->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, NULL, "bv", FX_MORK_TRACKING_MISSILE, proj->velocity);
 }
 
-/*-----------------------------------------------
-	morcalavin_proj2_blocked
------------------------------------------------*/
-
-void morcalavin_proj2_blocked( edict_t *self, trace_t *trace )
-{	
-	edict_t	*proj;
-	vec3_t	hitDir;
-	byte	exp;
-
+static void MorcalavinProjectile2Blocked(edict_t* self, trace_t* trace) //mxd. Named 'morcalavin_proj2_blocked' in original logic.
+{
 	if (trace->ent == self->owner)
 		return;
 
-	//Reflection stuff
-	if(EntReflecting(trace->ent, true, true))
+	// Reflection stuff.
+	if (EntReflecting(trace->ent, true, true))
 	{
-		proj = G_Spawn();
+		edict_t* proj = G_Spawn();
 
-		create_morcalavin_proj(self,proj);
+		create_morcalavin_proj(self, proj);
 		proj->owner = self->owner;
 		proj->ideal_yaw = self->ideal_yaw;
 
 		Create_rand_relect_vect(self->velocity, proj->velocity);
-		Vec3ScaleAssign(proj->ideal_yaw,proj->velocity);
+		Vec3ScaleAssign(proj->ideal_yaw, proj->velocity);
 		vectoangles(proj->velocity, proj->s.angles);
 
-		exp = HPMISSILE1_EXPLODE;
-
-		gi.CreateEffect(&self->s,
-					FX_HP_MISSILE,
-					CEF_OWNERS_ORIGIN,
-					self->s.origin,
-					"vb",
-					vec3_origin,
-					(unsigned char) exp);
-
-		gi.linkentity(proj); 
+		gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE1_EXPLODE); //TODO: play SND_HOMEHIT sound?
+		gi.linkentity(proj);
 
 		G_SetToFree(self);
 
 		return;
 	}
 
-	if ( trace->ent->takedamage )
+	if (trace->ent->takedamage != DAMAGE_NO)
 	{
-		VectorCopy( self->velocity, hitDir );
-		VectorNormalize( hitDir );
+		vec3_t hit_dir;
+		VectorCopy(self->velocity, hit_dir);
+		VectorNormalize(hit_dir);
 
-		T_Damage( trace->ent, self, self->owner, hitDir, self->s.origin, trace->plane.normal, 40, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK,MOD_DIED );
+		T_Damage(trace->ent, self, self->owner, hit_dir, self->s.origin, trace->plane.normal, 40, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK, MOD_DIED);
 	}
 
-	gi.CreateEffect(NULL, 
-					FX_M_EFFECTS, 
-					0, 
-					self->s.origin, 
-					"bv", 
-					FX_MORK_MISSILE_HIT, 
-					trace->plane.normal);
+	gi.CreateEffect(NULL, FX_M_EFFECTS, 0, self->s.origin, "bv", FX_MORK_MISSILE_HIT, trace->plane.normal); //TODO: play SND_HOMEHIT sound?
 
 	self->think = G_FreeEdict;
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 /*-----------------------------------------------
@@ -533,7 +511,7 @@ void morcalavin_start_missile(edict_t *self)
 	proj->think = morcalavin_missile_update;
 	proj->nextthink = level.time + 0.1;
 
-	proj->isBlocked = proj->isBlocking = proj->bounced = morcalavin_proj2_blocked;
+	proj->isBlocked = proj->isBlocking = proj->bounced = MorcalavinProjectile2Blocked;
 
 	proj->owner = self;
 
