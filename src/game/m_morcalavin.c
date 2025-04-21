@@ -747,68 +747,20 @@ void MorcalavinProjectileHomeIn(edict_t* self) //mxd. Named 'projectile_homethin
 		MorcalavinProjectileVeer(self, self->random);
 }
 
-/*-----------------------------------------------
-			morcalavin_proj1_blocked
------------------------------------------------*/
-
-void beam_blocked( edict_t *self, trace_t *trace )
-{	
-//	edict_t	*proj;
-
-	/*
-	if(EntReflecting(trace->ent, true, true) && self->reflect_debounce_time)
+static void MorcalavinBeamIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'beam_blocked' in original logic.
+{
+	if (trace->ent->takedamage != DAMAGE_NO)
 	{
-		proj = G_Spawn();
+		const int damage = irand(MORK_DMG_PROJ1_MIN, MORK_DMG_PROJ1_MAX) + max(0, self->dmg); //mxd. flrand() in original logic.
 
-		create_morcalavin_proj(self,proj);
-		proj->isBlocked = beam_blocked;
-		proj->classname = "M_ref_HMissile";
-		proj->owner = self->owner;
-		proj->ideal_yaw = self->ideal_yaw;
-		proj->classID = self->classID;
+		vec3_t hit_dir;
+		VectorNormalize2(self->velocity, hit_dir);
 
-		Create_rand_relect_vect(self->velocity, proj->velocity);
-		Vec3ScaleAssign(proj->ideal_yaw,proj->velocity);
-		vectoangles(proj->velocity, proj->s.angles);
-
-		gi.CreateEffect(&proj->s,
-					FX_M_EFFECTS,
-					CEF_OWNERS_ORIGIN,
-					NULL,
-					"bv",
-					proj->classID,
-					proj->velocity);
-
-		proj->reflect_debounce_time = self->reflect_debounce_time -1;
-		gi.linkentity(proj); 
-
-		G_SetToFree(self);
-
-		return;
-	}*/
-
-	if (trace->ent->takedamage )
-	{
-		vec3_t	hitDir;
-		float	damage = flrand(MORK_DMG_PROJ1_MIN, MORK_DMG_PROJ1_MAX);
-	
-		if(self->dmg)
-			damage += self->dmg;
-		VectorCopy( self->velocity, hitDir );
-		VectorNormalize( hitDir );
-
-		T_Damage(trace->ent, self, self->owner, hitDir, self->s.origin, trace->plane.normal, damage, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK,MOD_DIED);
+		T_Damage(trace->ent, self, self->owner, hit_dir, self->s.origin, trace->plane.normal, damage, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK, MOD_DIED);
 	}
 
-	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/seraph/guard/spellhit.wav"), 1, ATTN_NORM, 0);
-
-	gi.CreateEffect(&self->s,
-				FX_M_EFFECTS,
-				CEF_OWNERS_ORIGIN,
-				self->s.origin,
-				"bv",
-				FX_M_MISC_EXPLODE,
-				vec3_origin);
+	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/seraph/guard/spellhit.wav"), 1.0f, ATTN_NORM, 0.0f); //TODO: precache in sounds[SND_BEAMHIT]?
+	gi.CreateEffect(&self->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, self->s.origin, "bv", FX_M_MISC_EXPLODE, vec3_origin);
 
 	G_SetToFree(self);
 }
@@ -833,7 +785,7 @@ void morcalavin_beam( edict_t *self)
 	proj->reflect_debounce_time = MAX_REFLECT;
 	proj->classname = "M_Beam";
 
-	proj->isBlocked = beam_blocked;
+	proj->isBlocked = MorcalavinBeamIsBlocked;
 
 	proj->owner = self;
 	
@@ -885,7 +837,7 @@ void morcalavin_beam2( edict_t *self)
 	proj->reflect_debounce_time = MAX_REFLECT;
 	proj->classname = "M_Beam";
 
-	proj->isBlocked = beam_blocked;
+	proj->isBlocked = MorcalavinBeamIsBlocked;
 
 	proj->owner = self;
 	
