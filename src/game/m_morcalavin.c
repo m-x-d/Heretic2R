@@ -1552,23 +1552,24 @@ static void MorcalavinBarrierUse(edict_t* self, edict_t* other, edict_t* activat
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-void SP_obj_morcalavin_barrier (edict_t *self)
+// QUAKED obj_morcalavin_barrier (1 .5 0) //TODO: move to m_morcalavin_barrier.c / .h?
+// The magical barrier that prevents the player from entering the tome area and defeating Morcalavin.
+void SP_obj_morcalavin_barrier(edict_t* self)
 {
 	gi.setmodel(self, self->model);
 
 	self->solid = SOLID_TRIGGER;
 	self->movetype = PHYSICSTYPE_NONE;
 
-	self->touch = MorcalavinBarrierTouch;
-	self->use   = MorcalavinBarrierUse;
+	self->s.color.c = 0xffffffff;
+	self->count = 1; //TODO: add qboolean morcalavin_barrier_enabled name.
+	self->health = true; //TODO: unused?
 
-	self->s.color.c = 0xFFFFFFFF;
-	self->count = 1;
-	self->health = true;
+	self->touch = MorcalavinBarrierTouch;
+	self->use = MorcalavinBarrierUse;
 
 	gi.linkentity(self);
 
-	//Be invisible until used
+	// Be invisible until used.
 	self->svflags |= SVF_NOCLIENT;
 }
-
