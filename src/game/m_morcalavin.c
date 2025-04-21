@@ -850,11 +850,7 @@ void morcalavin_beam2(edict_t* self)
 	gi.linkentity(beam);
 }
 
-/*-----------------------------------------------
-				morcalavin_quake_pause
------------------------------------------------*/
-
-void morcalavin_quake_pause( edict_t *self )
+void morcalavin_quake_pause(edict_t* self)
 {
 	if (self->monsterinfo.flee_finished)
 	{
@@ -863,36 +859,28 @@ void morcalavin_quake_pause( edict_t *self )
 	}
 }
 
-/*-----------------------------------------------
-				morcalavin_quake
------------------------------------------------*/
-void morcalavin_quake(edict_t *self, float pitch_ofs, float yaw_ofs, float roll_ofs)
+void morcalavin_quake(edict_t* self, float pitch_ofs, float yaw_ofs, float roll_ofs)
 {
-	vec3_t	org, vf, vr;
+	// Create the effect.
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
 
-	//Create the effect
-	AngleVectors(self->s.angles, vf, vr, NULL);
-	
-	VectorMA(self->s.origin, 44, vf, org);
-	VectorMA(org, -14, vr, org);
+	vec3_t org;
+	VectorMA(self->s.origin, 44.0f, forward, org);
+	VectorMA(org, -14.0f, right, org);
 	org[2] += self->mins[2];
 
-	gi.CreateEffect(	NULL,
-						FX_M_EFFECTS,
-						0,
-						self->s.origin,
-						"bv",
-						FX_QUAKE_RING,
-						org);
+	gi.CreateEffect(NULL, FX_M_EFFECTS, 0, self->s.origin, "bv", FX_QUAKE_RING, org);
 
-	//Check to see if the player is on the ground, and if he is, then knock him down
-	if (self->enemy && self->enemy->groundentity && self->enemy->client)
+	// Check to see if the player is on the ground, and if he is, then knock him down.
+	if (self->enemy != NULL && self->enemy->groundentity != NULL && self->enemy->client != NULL)
 	{
-		//Knock the player down
+		// Knock the player down.
 		P_KnockDownPlayer(&self->enemy->client->playerinfo);
 
-		//Denote we've done so to follow it with an attack		
-		self->monsterinfo.flee_finished = true;
+		// Denote we've done so to follow it with an attack.
+		self->monsterinfo.flee_finished = true; //TODO: add qboolean morcalavin_quake_finished name.
 	}
 }
 
