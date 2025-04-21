@@ -625,21 +625,20 @@ void morcalavin_taunt_shot(edict_t* self)
 	gi.linkentity(proj);
 }
 
-void morcalavin_phase_out (edict_t *self)
+static void MorcalavinPhaseOutPreThink(edict_t* self) //mxd. Named 'morcalavin_phase_out' in original logic.
 {
-	int	interval = 40;
+#define PHASE_OUT_INTERVAL	40 //mxd
 
-	if(self->s.color.a > interval)
+	if (self->s.color.a > PHASE_OUT_INTERVAL)
 	{
-		self->s.color.a -= irand(interval/2, interval);
-		self->pre_think = morcalavin_phase_out;
-		self->next_pre_think = level.time + 0.05;
+		self->s.color.a -= irand(PHASE_OUT_INTERVAL / 2, PHASE_OUT_INTERVAL);
+		self->next_pre_think = level.time + 0.05f;
 	}
-	else 
+	else
 	{
 		self->s.color.a = 0;
 		self->pre_think = NULL;
-		self->next_pre_think = -1;
+		self->next_pre_think = -1.0f;
 	}
 }
 
@@ -672,7 +671,7 @@ static void morcalavin_init_phase_out (edict_t *self)
 {
 	//Become tangible once more
 	self->solid = SOLID_NOT;
-	self->pre_think = morcalavin_phase_out;
+	self->pre_think = MorcalavinPhaseOutPreThink;
 	self->next_pre_think = level.time + FRAMETIME;
 	self->svflags |= SVF_NO_AUTOTARGET;
 }
