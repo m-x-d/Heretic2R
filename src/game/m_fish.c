@@ -585,7 +585,7 @@ void fish_walkswim_finished(edict_t* self) //mxd. Named 'finished_swim' in origi
 }
 
 // The fish finished a run swim cycle, shall we just randomly change direction or perhaps target a player or a bad guy? Or maybe just idle a bit.
-void fish_runswim_finished(edict_t* self) //mxd. Named 'barrel_explode_think' in original logic.
+void fish_runswim_finished(edict_t* self) //mxd. Named 'finished_swim' in original logic.
 {
 	if (self->ai_mood == AI_MOOD_PURSUE)
 	{

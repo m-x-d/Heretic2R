@@ -122,7 +122,7 @@ static void HarpyHeadThink(edict_t* self) //mxd. Named 'harpy_head_think' in ori
 	}
 }
 
-void HarpyTakeHead(edict_t* self, edict_t* victim, const int bodypart_node_id, const int frame, const int flags) //mxd. Named 'barrel_explode_think' in original logic.
+void HarpyTakeHead(edict_t* self, edict_t* victim, const int bodypart_node_id, const int frame, const int flags) //mxd. Named 'harpy_take_head' in original logic.
 {
 	edict_t* head = G_Spawn();
 
