@@ -964,38 +964,29 @@ static void MorcalavinStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Na
 		SetAnim(self, ANIM_FLOAT);
 }
 
-/*-----------------------------------------------
-				morcalavin_run
------------------------------------------------*/
-
-void mork_ai_hover (edict_t *self, float dist)
+void mork_ai_hover(edict_t* self, float distance) //TODO: rename to morcalavin_ai_hover.
 {
-	vec3_t		bottom;
-	trace_t		trace;
-	float		desired_vel;
-
 	if (self->health <= 0)
 		return;
 
-	if(self->enemy)
-		ai_charge(self, 0);
+	if (self->enemy != NULL)
+		ai_charge(self, 0.0f);
 	else
-		ai_stand(self, 0);
+		ai_stand(self, 0.0f);
 
-	if(dist)
+	if (distance > 0.0f)
 	{
+		vec3_t bottom;
 		VectorCopy(self->s.origin, bottom);
-		bottom[2] -= dist;
+		bottom[2] -= distance;
+
+		trace_t trace;
 		gi.trace(self->s.origin, self->mins, self->maxs, bottom, self, MASK_SOLID, &trace);
 
-		if(trace.fraction<1.0)
+		if (trace.fraction < 1.0f)
 		{
-			desired_vel = (1 - trace.fraction) * dist;
-			
-			if(self->velocity[2] < desired_vel)
-				self->velocity[2] = desired_vel;
-
-			return;
+			const float desired_vel = (1.0f - trace.fraction) * distance;
+			self->velocity[2] = max(desired_vel, self->velocity[2]);
 		}
 	}
 }
