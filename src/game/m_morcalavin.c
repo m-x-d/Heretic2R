@@ -22,7 +22,7 @@
 #define MORCALAVIN_GRAVITY	0.3f //mxd. Named 'MORK_GRAV' in original logic.
 
 static void create_morcalavin_proj(edict_t* self, edict_t* proj); //TODO: remove.
-static void morcalavin_proj1_blocked(edict_t* self, trace_t* trace); //TODO: remove.
+static void MorcalavinProjectile1Blocked(edict_t* self, trace_t* trace); //TODO: remove.
 static void MorcalavinProjectile3Blocked(edict_t* self, trace_t* trace); //TODO: remove.
 static void morcalavin_init_phase_out(edict_t* self); //TODO: remove.
 static void morcalavin_attack_fade_out(edict_t* self); //TODO: remove.
@@ -231,9 +231,9 @@ void morcalavin_tracking_projectile(edict_t* self, float pitch, float yaw, float
 	VectorScale(up, 16.0f, proj->velocity);
 	proj->ideal_yaw = 300.0f;
 
-	proj->bounced = morcalavin_proj1_blocked;
-	proj->isBlocking = morcalavin_proj1_blocked;
-	proj->isBlocked = morcalavin_proj1_blocked;
+	proj->bounced = MorcalavinProjectile1Blocked;
+	proj->isBlocking = MorcalavinProjectile1Blocked;
+	proj->isBlocked = MorcalavinProjectile1Blocked;
 
 	proj->think = MorcalavinTrackingProjectileThink;
 
@@ -512,75 +512,45 @@ void morcalavin_release_missile(edict_t* self)
 	gi.sound(self, CHAN_AUTO, sounds[SND_PPFIRE], 1.0f, ATTN_NORM, 0.0f);
 }
 
-/*-----------------------------------------------
-	morcalavin_proj1_blocked
------------------------------------------------*/
-
-static void morcalavin_proj1_blocked( edict_t *self, trace_t *trace )
-{	
-	edict_t	*proj;
-	vec3_t	hitDir;
-	int		damage;
-	byte	exp;
-
-	if (trace->ent == self->owner)
+static void MorcalavinProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. Named 'morcalavin_proj1_blocked' in original logic.
+{
+	if (trace->ent == self->owner || Q_stricmp(trace->ent->classname, "Morcalavin_Missile") == 0) //mxd. stricmp -> Q_stricmp
 		return;
 
-	if (!stricmp(trace->ent->classname, "Morcalavin_Missile"))
-		return;
-
-	//Reflection stuff
-	if(EntReflecting(trace->ent, true, true))
+	// Reflection stuff.
+	if (EntReflecting(trace->ent, true, true))
 	{
-		proj = G_Spawn();
+		edict_t* proj = G_Spawn();
 
-		create_morcalavin_proj(self,proj);
+		create_morcalavin_proj(self, proj);
 		proj->owner = self->owner;
 		proj->ideal_yaw = self->ideal_yaw;
 
 		Create_rand_relect_vect(self->velocity, proj->velocity);
-		Vec3ScaleAssign(proj->ideal_yaw,proj->velocity);
+		Vec3ScaleAssign(proj->ideal_yaw, proj->velocity);
 		vectoangles(proj->velocity, proj->s.angles);
 
-		exp = HPMISSILE1_EXPLODE;
+		gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE1_EXPLODE); //TODO: play SND_HOMEHIT sound?
 
-		gi.CreateEffect(&self->s,
-					FX_HP_MISSILE,
-					CEF_OWNERS_ORIGIN,
-					self->s.origin,
-					"vb",
-					vec3_origin,
-					(unsigned char) exp);
-
-		gi.linkentity(proj); 
-
+		gi.linkentity(proj);
 		G_SetToFree(self);
 
 		return;
 	}
 
-	//Do the rest of the stuff
-	exp = HPMISSILE1_EXPLODE;
-	damage = irand(4, 8);
-
-	if ( trace->ent->takedamage )
+	// Do the rest of the stuff.
+	if (trace->ent->takedamage != DAMAGE_NO)
 	{
-		VectorCopy( self->velocity, hitDir );
-		VectorNormalize( hitDir );
+		vec3_t hit_dir;
+		VectorNormalize2(self->velocity, hit_dir);
 
-		T_Damage( trace->ent, self, self->owner, hitDir, self->s.origin, trace->plane.normal, damage, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK,MOD_DIED );
+		T_Damage(trace->ent, self, self->owner, hit_dir, self->s.origin, trace->plane.normal, irand(4, 8), 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK, MOD_DIED);
 	}
 
-	gi.CreateEffect(&self->s,
-				FX_HP_MISSILE,
-				CEF_OWNERS_ORIGIN,
-				self->s.origin,
-				"vb",
-				vec3_origin,
-				(unsigned char) exp);
+	gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE1_EXPLODE); //TODO: play SND_HOMEHIT sound?
 
 	self->think = G_FreeEdict;
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 /*-----------------------------------------------
@@ -600,7 +570,7 @@ static void create_morcalavin_proj(edict_t *self,edict_t *proj)
 	proj->clipmask = MASK_SHOT;
 	proj->nextthink = level.time + 0.1;
 	
-	proj->isBlocked = proj->isBlocking = proj->bounced = morcalavin_proj1_blocked;
+	proj->isBlocked = proj->isBlocking = proj->bounced = MorcalavinProjectile1Blocked;
 
 	proj->s.effects=EF_MARCUS_FLAG1|EF_CAMERA_NO_CLIP;
 	proj->enemy = self->enemy;
