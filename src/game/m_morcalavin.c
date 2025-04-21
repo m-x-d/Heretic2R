@@ -188,72 +188,62 @@ static void MorcalavinTrackingProjectileThink(edict_t* self) //mxd. Named 'morca
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-/*-----------------------------------------------
-	morcalavin_tracking_projectile
------------------------------------------------*/
-
-void morcalavin_tracking_projectile ( edict_t *self, float pitch, float yaw, float roll)
+void morcalavin_tracking_projectile(edict_t* self, float pitch, float yaw, float roll)
 {
-	edict_t	*proj;
-	vec3_t	vf, vr, vu, ang;
+	edict_t* proj = G_Spawn();
 
-	proj = G_Spawn();
-
-	proj->monsterinfo.attack_finished = level.time + 10;
-	proj->owner = self;
-
+	proj->monsterinfo.attack_finished = level.time + 10.0f;
 	proj->svflags |= SVF_ALWAYS_SEND;
 	proj->movetype = PHYSICSTYPE_FLY;
-	proj->gravity = 0;
+	proj->gravity = 0.0f;
 	proj->solid = SOLID_BBOX;
 	proj->classname = "Morcalavin_Tracking_Missile";
-	proj->dmg = 1.0;
-	proj->s.scale = 1.0;
+	proj->dmg = 1;
 	proj->clipmask = MASK_SHOT;
-	proj->nextthink = level.time + 0.1;
-	
-	proj->delay = 1.0;
+	proj->delay = 1.0f;
+	proj->s.scale = 1.0f;
+	proj->s.effects = (EF_MARCUS_FLAG1 | EF_CAMERA_NO_CLIP);
+
+	proj->owner = self;
+	proj->enemy = self->enemy;
+
+	VectorSet(proj->mins, -2.0f, -2.0f, -2.0f);
+	VectorSet(proj->maxs, 2.0f, 2.0f, 2.0f);
+	VectorCopy(self->s.origin, proj->s.origin);
+
+	// Determine the starting velocity of the ball.
+	vec3_t angles;
+	VectorCopy(self->s.angles, angles);
+
+	angles[PITCH] += pitch;
+	angles[YAW] += yaw;
+	angles[ROLL] += roll;
+
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	AngleVectors(angles, forward, right, up);
+
+	VectorMA(self->s.origin, 24.0f, forward, proj->s.origin);
+	VectorMA(proj->s.origin, -16.0f, right, proj->s.origin);
+	VectorMA(proj->s.origin, 52.0f, up, proj->s.origin);
+
+	VectorScale(up, 16.0f, proj->velocity);
+	proj->ideal_yaw = 300.0f;
+
 	proj->bounced = morcalavin_proj1_blocked;
 	proj->isBlocking = morcalavin_proj1_blocked;
 	proj->isBlocked = morcalavin_proj1_blocked;
 
-	proj->s.effects=EF_MARCUS_FLAG1|EF_CAMERA_NO_CLIP;
-	proj->enemy = self->enemy;
-
-	VectorSet(proj->mins, -2.0, -2.0, -2.0);	
-	VectorSet(proj->maxs,  2.0,  2.0,  2.0);
-	VectorCopy(self->s.origin, proj->s.origin);
-
-	//Determine the starting velocity of the ball
-	VectorCopy(self->s.angles, ang);
-	ang[PITCH] += pitch;
-	ang[YAW] += yaw;
-	ang[ROLL] += roll;
-
-	AngleVectors(ang, vf, vr, vu);
-	VectorMA(self->s.origin, 24, vf, proj->s.origin);	
-	VectorMA(proj->s.origin, -16, vr, proj->s.origin);
-	VectorMA(proj->s.origin, 52, vu,  proj->s.origin);
-
-	VectorScale(vu, 16, proj->velocity);
-	proj->ideal_yaw = 300;
-
 	proj->think = MorcalavinTrackingProjectileThink;
-	
-	if (skill->value < 1)
-		proj->nextthink = level.time + 2;
+
+	if (SKILL < SKILL_MEDIUM)
+		proj->nextthink = level.time + 2.0f;
 	else
-		proj->nextthink = level.time + flrand(1.5, 3.0);
+		proj->nextthink = level.time + flrand(1.5f, 3.0f);
 
-	gi.sound (self, CHAN_AUTO, sounds[SND_HOMING], 1, ATTN_NORM, 0);
-
-	gi.CreateEffect(&proj->s,
-				FX_M_EFFECTS,
-				CEF_OWNERS_ORIGIN,
-				NULL,
-				"bv",
-				FX_MORK_TRACKING_MISSILE,
-				proj->velocity);
+	gi.sound(self, CHAN_AUTO, sounds[SND_HOMING], 1.0f, ATTN_NORM, 0.0f);
+	gi.CreateEffect(&proj->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, NULL, "bv", FX_MORK_TRACKING_MISSILE, proj->velocity);
 }
 
 /*-----------------------------------------------
