@@ -34,34 +34,34 @@ typedef enum AnimID_e
 typedef enum SoundID_e
 {
 	// Quake attack.
-	SND_QUAKE,
+	SND_QUAKE, //TODO: unused. CLFX FX_QUAKE_RING plays the sound.
 
 	// Straight-fire beam.
-	SND_BEAM,
-	SND_BEAMHIT,
+	SND_BEAM, //TODO: unused.
+	SND_BEAMHIT, //TODO: unused.
 
 	// Homing balls.
 	SND_HOMING,
-	SND_HOMEHIT,
+	SND_HOMEHIT, //TODO: unused.
 
 	// Power Puff.
 	SND_PPCHARGE,
 	SND_PPFIRE,
-	SND_PPEXPLODE,
+	SND_PPEXPLODE, //TODO: unused.
 
 	// Lightning from eyes.
-	SND_LIGHTNING,
-	SND_LGHTNGHIT,
+	SND_LIGHTNING, //TODO: unused.
+	SND_LGHTNGHIT, //TODO: unused.
 
 	//Shove.
-	SND_FORCEWALL,
+	SND_FORCEWALL, //TODO: unused.
 
 	// Shield.
 	SND_MAKESHIELD,
-	SND_SHIELDHIT,
-	SND_SHIELDPULSE,
-	SND_SHIELDGONE,
-	SND_SHIELDBREAK,
+	SND_SHIELDHIT, //TODO: unused.
+	SND_SHIELDPULSE, //TODO: unused.
+	SND_SHIELDGONE, //TODO: unused.
+	SND_SHIELDBREAK, //TODO: unused.
 
 	// Fly forward.
 	SND_RUSH,
@@ -71,9 +71,9 @@ typedef enum SoundID_e
 	SND_REVIVE,
 
 	// Strafing beams attack.
-	SND_STRAFEON,
-	SND_STRFSWNG,
-	SND_STRAFEOFF,
+	SND_STRAFEON, //TODO: unused.
+	SND_STRFSWNG, //TODO: unused.
+	SND_STRAFEOFF, //TODO: unused.
 
 	// Hurt/kill player laugh.
 	SND_LAUGH,
@@ -110,7 +110,6 @@ extern const animmove_t morcalavin_move_ground_attack;
 extern const animmove_t morcalavin_move_tracking_attack1;
 
 void morcalavin_idle(edict_t* self);
-void morcalavin_move(edict_t* self, float vf, float vr, float vu);
 void morcalavin_pause(edict_t* self);
 void morcalavin_retort(edict_t* self);
 void morcalavin_getup(edict_t* self);
@@ -119,24 +118,15 @@ void morcalavin_quake(edict_t* self, float pitch_ofs, float yaw_ofs, float roll_
 void morcalavin_beam(edict_t* self);
 void morcalavin_beam2(edict_t* self);
 void morcalavin_rush_sound(edict_t* self);
-void mork_ai_run(edict_t* self, float dist);
-void mork_ai_hover(edict_t* self, float dist);
+void mork_ai_run(edict_t* self, float distance);
+void mork_ai_hover(edict_t* self, float distance);
 
-void morcalavin_ground_attack(edict_t* self);
 void morcalavin_quake_pause(edict_t* self);
-void morcalavin_init_phase_out(edict_t* self);
 void morcalavin_fade_out(edict_t* self);
 void morcalavin_taunt_shot(edict_t* self);
 
 void morcalavin_start_missile(edict_t* self);
 void morcalavin_release_missile(edict_t* self);
-void morcalavin_proj1_blocked(edict_t* self, trace_t* trace);
 void morcalavin_tracking_projectile(edict_t* self, float pitch, float yaw, float roll);
 void morcalavin_big_shot(edict_t* self);
-void morcalavin_check_lightning(edict_t* self);
-void morcalavin_proj2_blocked(edict_t* self, trace_t* trace);
-void morcalavin_attack_fade_out(edict_t* self);
 void morcalavin_end_retort(edict_t* self);
-void morcalavin_proj3_blocked(edict_t* self, trace_t* trace);
-
-#define MORK_GRAV	0.3f

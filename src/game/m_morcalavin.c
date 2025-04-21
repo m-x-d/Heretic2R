@@ -26,10 +26,16 @@
 #include "mg_guide.h" //mxd
 #include "p_actions.h"
 
+#define MORCALAVIN_GRAVITY	0.3f //mxd. Named 'MORK_GRAV' in original logic.
+
 static int sounds[NUM_SOUNDS];
 static ClassResourceInfo_t resInfo;
 
-void create_morcalavin_proj(edict_t *self,edict_t *proj);
+static void create_morcalavin_proj(edict_t* self, edict_t* proj); //TODO: remove.
+static void morcalavin_proj1_blocked(edict_t* self, trace_t* trace); //TODO: remove.
+static void morcalavin_proj3_blocked(edict_t* self, trace_t* trace); //TODO: remove.
+static void morcalavin_init_phase_out(edict_t* self); //TODO: remove.
+static void morcalavin_attack_fade_out(edict_t* self); //TODO: remove.
 
 static const animmove_t *animations[NUM_ANIMS] =
 {
@@ -352,7 +358,7 @@ void morcalavin_proj2_blocked( edict_t *self, trace_t *trace )
 	morcalavin_proj3_blocked
 -----------------------------------------------*/
 
-void morcalavin_proj3_blocked( edict_t *self, trace_t *trace )
+static void morcalavin_proj3_blocked( edict_t *self, trace_t *trace )
 {	
 	edict_t	*proj;
 	vec3_t	hitDir;
@@ -608,7 +614,7 @@ void morcalavin_release_missile(edict_t *self)
 	morcalavin_proj1_blocked
 -----------------------------------------------*/
 
-void morcalavin_proj1_blocked( edict_t *self, trace_t *trace )
+static void morcalavin_proj1_blocked( edict_t *self, trace_t *trace )
 {	
 	edict_t	*proj;
 	vec3_t	hitDir;
@@ -680,7 +686,7 @@ void morcalavin_proj1_blocked( edict_t *self, trace_t *trace )
 -----------------------------------------------*/
 
 // create the guts of morcalavin's projectile
-void create_morcalavin_proj(edict_t *self,edict_t *proj)
+static void create_morcalavin_proj(edict_t *self,edict_t *proj)
 {
 	proj->svflags |= SVF_ALWAYS_SEND;
 	proj->movetype = PHYSICSTYPE_FLY;
@@ -804,7 +810,7 @@ void morcalavin_phase_in (edict_t *self)
 	}
 }
 
-void morcalavin_init_phase_out (edict_t *self)
+static void morcalavin_init_phase_out (edict_t *self)
 {
 	//Become tangible once more
 	self->solid = SOLID_NOT;
@@ -1525,7 +1531,7 @@ void MorcalavinStaticsInit(void)
 	classStatics[CID_MORK].resInfo = &resInfo;
 }
 
-void morcalavin_attack_fade_out(edict_t *self)
+static void morcalavin_attack_fade_out(edict_t *self)
 {
 	gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1, ATTN_NORM, 0);
 	self->monsterinfo.sound_start = level.time + 2.0;
@@ -1926,7 +1932,7 @@ void SP_monster_morcalavin (edict_t *self)
 	self->monsterinfo.stepState = 0;
 	self->svflags |= SVF_BOSS | SVF_FLOAT;
 	self->count = self->s.modelindex;	// For Cinematic purposes
-	self->gravity = MORK_GRAV;
+	self->gravity = MORCALAVIN_GRAVITY;
 
 	self->die = morcalavin_resist_death;
 
