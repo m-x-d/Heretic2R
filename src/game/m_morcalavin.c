@@ -692,12 +692,12 @@ static void MorcalavinLaughPostThink(edict_t* self) //mxd. Named 'mork_laugh' in
 	self->next_post_think = -1.0f;
 }
 
-void mork_check_killed_enemy(edict_t *attacker)
+static void MorcalavinCheckKilledEnemy(edict_t* attacker) //mxd. Named 'mork_check_killed_enemy' in original logic.
 {
-	if(attacker->enemy && attacker->enemy->health<=0)
+	if (attacker->enemy != NULL && attacker->enemy->health <= 0)
 	{
 		attacker->post_think = MorcalavinLaughPostThink;
-		attacker->next_post_think = level.time + flrand(1.3, 2.3);
+		attacker->next_post_think = level.time + flrand(1.3f, 2.3f);
 	}
 }
 
@@ -1242,7 +1242,7 @@ void morcalavin_run(edict_t *self, G_Message_t *msg)
 
 	if(self->enemy->health<=0)
 	{
-		mork_check_killed_enemy(self->enemy);
+		MorcalavinCheckKilledEnemy(self->enemy);
 		SetAnim(self, ANIM_FLOAT);
 		return;
 	}
@@ -1523,7 +1523,7 @@ void morcalavin_postthink(edict_t *self)
 		else
 		{
 			M_ShowLifeMeter(self->health, self->max_health);
-			mork_check_killed_enemy(self->enemy);
+			MorcalavinCheckKilledEnemy(self->enemy);
 		}
 	}
 
