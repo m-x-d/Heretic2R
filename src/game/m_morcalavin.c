@@ -21,15 +21,15 @@
 
 #define MORCALAVIN_GRAVITY	0.3f //mxd. Named 'MORK_GRAV' in original logic.
 
-static int sounds[NUM_SOUNDS];
-
 static void create_morcalavin_proj(edict_t* self, edict_t* proj); //TODO: remove.
 static void morcalavin_proj1_blocked(edict_t* self, trace_t* trace); //TODO: remove.
 static void morcalavin_proj3_blocked(edict_t* self, trace_t* trace); //TODO: remove.
 static void morcalavin_init_phase_out(edict_t* self); //TODO: remove.
 static void morcalavin_attack_fade_out(edict_t* self); //TODO: remove.
 
-static const animmove_t *animations[NUM_ANIMS] =
+#pragma region ========================== Morcalavin base info ==========================
+
+static const animmove_t* animations[NUM_ANIMS] =
 {
 	&morcalavin_move_float,
 	&morcalavin_move_hurtidle,
@@ -50,7 +50,11 @@ static const animmove_t *animations[NUM_ANIMS] =
 	&morcalavin_move_attack4,
 };
 
-void morcalavin_end_retort(edict_t *self)
+static int sounds[NUM_SOUNDS];
+
+#pragma endregion
+
+void morcalavin_end_retort(edict_t* self)
 {
 	SetAnim(self, ANIM_WALK);
 }
