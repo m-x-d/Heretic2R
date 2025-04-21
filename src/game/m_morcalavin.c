@@ -747,24 +747,6 @@ void MorcalavinProjectileHomeIn(edict_t* self) //mxd. Named 'projectile_homethin
 		MorcalavinProjectileVeer(self, self->random);
 }
 
-/*
-
-	morcalavin Projectile Functions
-
-*/
-
-/*-----------------------------------------------
-			morcalavin_proj1_think
------------------------------------------------*/
-
-void morcalavin_proj1_think( edict_t *self )
-{
-	if(AI_IsClearlyVisible(self, self->enemy))
-		MorcalavinProjectileHomeIn(self);
-
-	self->nextthink = level.time + 0.1;
-}
-
 /*-----------------------------------------------
 			morcalavin_proj1_blocked
 -----------------------------------------------*/
