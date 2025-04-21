@@ -21,7 +21,7 @@
 
 #define MORCALAVIN_GRAVITY	0.3f //mxd. Named 'MORK_GRAV' in original logic.
 
-static void create_morcalavin_proj(edict_t* self, edict_t* proj); //TODO: remove.
+static void MorcalavinProjectileInit(edict_t* self, edict_t* proj); //TODO: remove.
 static void MorcalavinProjectile1Blocked(edict_t* self, trace_t* trace); //TODO: remove.
 static void MorcalavinProjectile3Blocked(edict_t* self, trace_t* trace); //TODO: remove.
 static void morcalavin_init_phase_out(edict_t* self); //TODO: remove.
@@ -256,7 +256,7 @@ static void MorcalavinProjectile2Blocked(edict_t* self, trace_t* trace) //mxd. N
 	{
 		edict_t* proj = G_Spawn();
 
-		create_morcalavin_proj(self, proj);
+		MorcalavinProjectileInit(self, proj);
 		proj->owner = self->owner;
 		proj->ideal_yaw = self->ideal_yaw;
 
@@ -297,7 +297,7 @@ static void MorcalavinProjectile3Blocked(edict_t* self, trace_t* trace) //mxd. N
 	{
 		edict_t* proj = G_Spawn();
 
-		create_morcalavin_proj(self, proj);
+		MorcalavinProjectileInit(self, proj);
 		proj->owner = self->owner;
 		proj->ideal_yaw = self->ideal_yaw;
 
@@ -522,7 +522,7 @@ static void MorcalavinProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. N
 	{
 		edict_t* proj = G_Spawn();
 
-		create_morcalavin_proj(self, proj);
+		MorcalavinProjectileInit(self, proj);
 		proj->owner = self->owner;
 		proj->ideal_yaw = self->ideal_yaw;
 
@@ -553,30 +553,28 @@ static void MorcalavinProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. N
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-/*-----------------------------------------------
-	create_morcalavin_proj
------------------------------------------------*/
-
-// create the guts of morcalavin's projectile
-static void create_morcalavin_proj(edict_t *self,edict_t *proj)
+// Create the guts of morcalavin's projectile.
+static void MorcalavinProjectileInit(edict_t* self, edict_t* proj) //mxd. Named 'create_morcalavin_proj' in original logic.
 {
 	proj->svflags |= SVF_ALWAYS_SEND;
 	proj->movetype = PHYSICSTYPE_FLY;
-	proj->gravity = 0;
+	proj->gravity = 0.0f;
 	proj->solid = SOLID_BBOX;
 	proj->classname = "Morcalavin_Missile";
-	proj->dmg = 1.0;
-	proj->s.scale = 1.0;
+	proj->dmg = 1;
+	proj->s.scale = 1.0f;
 	proj->clipmask = MASK_SHOT;
-	proj->nextthink = level.time + 0.1;
-	
-	proj->isBlocked = proj->isBlocking = proj->bounced = MorcalavinProjectile1Blocked;
+	proj->nextthink = level.time + FRAMETIME; //mxd. Use define.
 
-	proj->s.effects=EF_MARCUS_FLAG1|EF_CAMERA_NO_CLIP;
+	proj->isBlocked = MorcalavinProjectile1Blocked;
+	proj->isBlocking = MorcalavinProjectile1Blocked;
+	proj->bounced = MorcalavinProjectile1Blocked;
+
+	proj->s.effects = (EF_MARCUS_FLAG1 | EF_CAMERA_NO_CLIP);
 	proj->enemy = self->enemy;
 
-	VectorSet(proj->mins, -2.0, -2.0, -2.0);	
-	VectorSet(proj->maxs,  2.0,  2.0,  2.0);
+	VectorSet(proj->mins, -2.0f, -2.0f, -2.0f);
+	VectorSet(proj->maxs,  2.0f,  2.0f,  2.0f);
 	VectorCopy(self->s.origin, proj->s.origin);
 }
 
@@ -611,7 +609,7 @@ void morcalavin_taunt_shot(edict_t *self)
 	// Spawn the projectile
 	proj = G_Spawn();
 
-	create_morcalavin_proj(self,proj);
+	MorcalavinProjectileInit(self,proj);
 	proj->owner = self;
 	
 	VectorCopy(startOfs, proj->s.origin);
@@ -878,7 +876,7 @@ void morcalavin_beam( edict_t *self)
 
 	proj = G_Spawn();
 
-	create_morcalavin_proj(self,proj);
+	MorcalavinProjectileInit(self,proj);
 
 	proj->reflect_debounce_time = MAX_REFLECT;
 	proj->classname = "M_Beam";
@@ -930,7 +928,7 @@ void morcalavin_beam2( edict_t *self)
 
 	proj = G_Spawn();
 
-	create_morcalavin_proj(self,proj);
+	MorcalavinProjectileInit(self,proj);
 
 	proj->reflect_debounce_time = MAX_REFLECT;
 	proj->classname = "M_Beam";
