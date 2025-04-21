@@ -672,12 +672,13 @@ static void MorcalavinPhaseOutInit(edict_t* self) //mxd. Named 'morcalavin_init_
 {
 	// Become tangible once more.
 	self->solid = SOLID_NOT;
+	self->svflags |= SVF_NO_AUTOTARGET;
+
 	self->pre_think = MorcalavinPhaseOutPreThink;
 	self->next_pre_think = level.time + FRAMETIME;
-	self->svflags |= SVF_NO_AUTOTARGET;
 }
 
-void morcalavin_init_phase_in (edict_t *self)
+static void MorcalavinPhaseInInit(edict_t* self) //mxd. Named 'morcalavin_init_phase_in' in original logic.
 {
 	self->pre_think = MorcalavinPhaseInPreThink;
 	self->next_pre_think = level.time + FRAMETIME;
@@ -1420,7 +1421,7 @@ qboolean morcalavin_choose_teleport_destination(edict_t *self)
 	if(!self->enemy)
 	{
 		//Phase in and become tangible again
-		morcalavin_init_phase_in(self);
+		MorcalavinPhaseInInit(self);
 		self->takedamage = DAMAGE_YES;
 		self->monsterinfo.lefty = 10;
 		return false;
@@ -1482,7 +1483,7 @@ void morcalavin_teleport_attack(edict_t *self)
 	gi.sound(self, CHAN_AUTO, sounds[SND_MAKESHIELD], 1, ATTN_NORM, 0);	
 
 	//Start phasing back in
-	morcalavin_init_phase_in(self);
+	MorcalavinPhaseInInit(self);
 
 	//Become tangible once more
 	self->solid = SOLID_BBOX;
@@ -1536,7 +1537,7 @@ void morcalavin_postthink(edict_t *self)
 	{
 		if (self->monsterinfo.stepState)
 		{
-			morcalavin_init_phase_in(self);
+			MorcalavinPhaseInInit(self);
 			self->monsterinfo.jump_time = -1;
 			self->monsterinfo.sound_start = -1;
 			morcalavin_teleport_attack(self);
