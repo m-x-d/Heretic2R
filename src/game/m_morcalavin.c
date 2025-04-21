@@ -1542,17 +1542,14 @@ static void MorcalavinBarrierTouch(edict_t* self, edict_t* other, cplane_t* plan
 	}
 }
 
-void morcalavin_barrier_use (edict_t *self, edict_t *other, edict_t *activator)
+static void MorcalavinBarrierUse(edict_t* self, edict_t* other, edict_t* activator) //mxd. Named 'morcalavin_barrier_use' in original logic.
 {
-	//Become visible again
-	self->svflags &= ~SVF_NOCLIENT;
-	
-	//Never do this again
-	self->use = NULL;
+	self->svflags &= ~SVF_NOCLIENT; // Become visible again.
+	self->use = NULL; // Never do this again.
 
-	//Start blocking
+	// Start blocking.
 	self->think = MorcalavinBarrierThink;
-	self->nextthink = level.time + 0.1;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
 void SP_obj_morcalavin_barrier (edict_t *self)
@@ -1563,7 +1560,7 @@ void SP_obj_morcalavin_barrier (edict_t *self)
 	self->movetype = PHYSICSTYPE_NONE;
 
 	self->touch = MorcalavinBarrierTouch;
-	self->use   = morcalavin_barrier_use;
+	self->use   = MorcalavinBarrierUse;
 
 	self->s.color.c = 0xFFFFFFFF;
 	self->count = 1;
