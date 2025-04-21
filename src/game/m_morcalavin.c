@@ -24,7 +24,7 @@
 static void MorcalavinProjectileInit(edict_t* self, edict_t* proj); //TODO: remove.
 static void MorcalavinProjectile1Blocked(edict_t* self, trace_t* trace); //TODO: remove.
 static void MorcalavinProjectile3Blocked(edict_t* self, trace_t* trace); //TODO: remove.
-static void morcalavin_init_phase_out(edict_t* self); //TODO: remove.
+static void MorcalavinPhaseOutInit(edict_t* self); //TODO: remove.
 static void morcalavin_attack_fade_out(edict_t* self); //TODO: remove.
 
 #pragma region ========================== Morcalavin base info ==========================
@@ -663,14 +663,14 @@ static void MorcalavinPhaseInPreThink(edict_t* self) //mxd. Named 'morcalavin_ph
 		}
 		else
 		{
-			morcalavin_init_phase_out(self);
+			MorcalavinPhaseOutInit(self);
 		}
 	}
 }
 
-static void morcalavin_init_phase_out (edict_t *self)
+static void MorcalavinPhaseOutInit(edict_t* self) //mxd. Named 'morcalavin_init_phase_out' in original logic.
 {
-	//Become tangible once more
+	// Become tangible once more.
 	self->solid = SOLID_NOT;
 	self->pre_think = MorcalavinPhaseOutPreThink;
 	self->next_pre_think = level.time + FRAMETIME;
@@ -1253,7 +1253,7 @@ void morcalavin_run(edict_t *self, G_Message_t *msg)
 
 	if (self->monsterinfo.lefty == 0)
 	{
-		morcalavin_init_phase_out(self);
+		MorcalavinPhaseOutInit(self);
 		SetAnim(self, ANIM_FLOAT);
 		gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1, ATTN_NORM, 0);
 		self->solid = SOLID_NOT;
@@ -1395,7 +1395,7 @@ static void morcalavin_attack_fade_out(edict_t *self)
 {
 	gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1, ATTN_NORM, 0);
 	self->monsterinfo.sound_start = level.time + 2.0;
-	morcalavin_init_phase_out(self);
+	MorcalavinPhaseOutInit(self);
 	SetAnim(self, ANIM_FLOAT);
 	self->monsterinfo.lefty = 8;
 }
@@ -1404,7 +1404,7 @@ void morcalavin_fade_out(edict_t *self)
 {
 	gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1, ATTN_NORM, 0);
 	self->monsterinfo.sound_start = level.time + 2.0;
-	morcalavin_init_phase_out(self);
+	MorcalavinPhaseOutInit(self);
 	SetAnim(self, ANIM_FLOAT);
 }
 
