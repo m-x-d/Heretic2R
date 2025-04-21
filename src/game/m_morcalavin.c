@@ -959,16 +959,6 @@ void morcalavin_hurtidle(edict_t* self) //TODO: rename to morcalavin_hurt_idle.
 }
 
 /*-----------------------------------------------
-				morcalavin_evade
------------------------------------------------*/
-
-
-void morcalavin_evade( edict_t *self, G_Message_t *msg )
-{
-	//FIXME: Make him do something smart here...
-}
-
-/*-----------------------------------------------
 				morcalavin_stand
 -----------------------------------------------*/
 
@@ -1158,7 +1148,6 @@ void MorcalavinStaticsInit(void)
 	classStatics[CID_MORK].msgReceivers[MSG_MELEE] = morcalavin_melee;
 	classStatics[CID_MORK].msgReceivers[MSG_MISSILE] = morcalavin_missile;
 	classStatics[CID_MORK].msgReceivers[MSG_RUN] = morcalavin_run;
-	classStatics[CID_MORK].msgReceivers[MSG_EVADE] = morcalavin_evade;
 	classStatics[CID_MORK].msgReceivers[MSG_DEATH] = MorcalavinDeathMsgHandler;
 	
 	resInfo.numAnims = NUM_ANIMS;
