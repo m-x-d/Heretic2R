@@ -22,7 +22,6 @@
 #define MORCALAVIN_GRAVITY	0.3f //mxd. Named 'MORK_GRAV' in original logic.
 
 static int sounds[NUM_SOUNDS];
-static ClassResourceInfo_t resInfo;
 
 static void create_morcalavin_proj(edict_t* self, edict_t* proj); //TODO: remove.
 static void morcalavin_proj1_blocked(edict_t* self, trace_t* trace); //TODO: remove.
@@ -1463,6 +1462,8 @@ void morcalavin_melee( edict_t *self, G_Message_t *msg)
 
 void MorcalavinStaticsInit(void)
 {
+	static ClassResourceInfo_t resInfo; //mxd. Made local static.
+
 	classStatics[CID_MORK].msgReceivers[MSG_STAND]	= morcalavin_stand;
 	classStatics[CID_MORK].msgReceivers[MSG_MELEE] = morcalavin_melee;
 	classStatics[CID_MORK].msgReceivers[MSG_MISSILE] = morcalavin_missile;
