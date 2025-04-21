@@ -8,5 +8,5 @@
 
 #include "g_Edict.h"
 
-void SP_monster_elflord(edict_t* self);
-void ElflordStaticsInit(void);
+extern void SP_monster_elflord(edict_t* self);
+extern void ElflordStaticsInit(void);

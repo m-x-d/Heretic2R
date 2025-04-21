@@ -8,6 +8,6 @@
 
 #include "g_Edict.h"
 
-void SP_monster_imp(edict_t* self);
-edict_t* ImpFireballReflect(edict_t* self, edict_t* other, const vec3_t vel);
-void ImpStaticsInit(void);
+extern void SP_monster_imp(edict_t* self);
+extern edict_t* ImpFireballReflect(edict_t* self, edict_t* other, const vec3_t vel);
+extern void ImpStaticsInit(void);

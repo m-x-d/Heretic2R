@@ -8,5 +8,5 @@
 
 #include "g_Edict.h"
 
-void SP_monster_chicken(edict_t* self);
-void ChickenStaticsInit(void);
+extern void SP_monster_chicken(edict_t* self);
+extern void ChickenStaticsInit(void);
