@@ -1,30 +1,23 @@
-//==============================================================================
 //
 // m_morcalavin.c
 //
-// Heretic II
 // Copyright 1998 Raven Software
 //
-//==============================================================================
 
-#include "g_local.h"
 #include "m_morcalavin.h"
 #include "m_morcalavin_shared.h"
 #include "m_morcalavin_anim.h"
-#include "Utilities.h"
 #include "g_DefaultMessageHandler.h"
 #include "g_monster.h"
-#include "Random.h"
-#include "vector.h"
-#include "fx.h"
-#include "g_HitLocation.h"
-#include "p_main.h"
-#include "g_misc.h"
-#include "m_stats.h"
 #include "g_playstats.h"
 #include "mg_ai.h" //mxd
 #include "mg_guide.h" //mxd
-#include "p_actions.h"
+#include "m_stats.h"
+#include "p_main.h"
+#include "Random.h"
+#include "Utilities.h"
+#include "Vector.h"
+#include "g_local.h"
 
 #define MORCALAVIN_GRAVITY	0.3f //mxd. Named 'MORK_GRAV' in original logic.
 
