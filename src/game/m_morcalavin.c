@@ -1516,40 +1516,29 @@ static void MorcalavinBarrierThink(edict_t* self) //mxd. Named 'morcalavin_barri
 	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
 
-void morcalavin_barrier_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void MorcalavinBarrierTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'morcalavin_barrier_touch' in original logic.
 {
-	vec3_t	vel;
+	if (strcmp(other->classname, "player") != 0 || !self->count) //TODO: check other->client instead?
+		return;
 
-	if (!strcmp(other->classname, "player"))
+	vec3_t vel;
+	VectorSubtract(self->s.origin, other->s.origin, vel);
+	VectorNormalize(vel);
+
+	VectorScale(vel, -1.0f, vel);
+	VectorScale(vel, 512.0f, other->velocity);
+
+	other->velocity[2] = 128.0f;
+	other->client->playerinfo.flags |= PLAYER_FLAG_USE_ENT_POS;
+
+	// NOTENOTE: We should always have an owner. But this is for safety.
+	edict_t* attacker = (self->owner != NULL ? self->owner : self);
+	T_Damage(other, self, attacker, vel, other->s.origin, vel, irand(5, 10), 250, DAMAGE_AVOID_ARMOR, MOD_DIED);
+
+	if (self->delay < level.time)
 	{
-		if (self->count)
-		{
-			VectorSubtract(self->s.origin, other->s.origin, vel);
-			VectorNormalize(vel);
-			VectorScale(vel, -1, vel);
-			VectorScale(vel, 512, other->velocity);
-			other->velocity[2] = 128;
-			other->client->playerinfo.flags |= PLAYER_FLAG_USE_ENT_POS;
-
-			//NOTENOTE: We should always have an owner.. but this is for safety
-			if (self->owner)
-				T_Damage(other, self, self->owner, vel, other->s.origin, vel, irand(5, 10), 250, DAMAGE_AVOID_ARMOR, MOD_DIED);
-			else
-				T_Damage(other, self, self, vel, other->s.origin, vel, irand(5, 10), 250, DAMAGE_AVOID_ARMOR, MOD_DIED);
-
-			if (self->delay < level.time)
-			{
-				self->delay = level.time + 0.5;
-				
-				gi.CreateEffect( NULL,
-								 FX_WEAPON_STAFF_STRIKE,
-								 0,
-								 other->s.origin,
-								 "db",
-								 vel,
-								 2);
-			}
-		}
+		gi.CreateEffect(NULL, FX_WEAPON_STAFF_STRIKE, 0, other->s.origin, "db", vel, 2);
+		self->delay = level.time + 0.5f;
 	}
 }
 
@@ -1573,7 +1562,7 @@ void SP_obj_morcalavin_barrier (edict_t *self)
 	self->solid = SOLID_TRIGGER;
 	self->movetype = PHYSICSTYPE_NONE;
 
-	self->touch = morcalavin_barrier_touch;
+	self->touch = MorcalavinBarrierTouch;
 	self->use   = morcalavin_barrier_use;
 
 	self->s.color.c = 0xFFFFFFFF;
