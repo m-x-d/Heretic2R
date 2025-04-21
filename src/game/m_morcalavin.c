@@ -884,13 +884,14 @@ void morcalavin_quake(edict_t* self, float pitch_ofs, float yaw_ofs, float roll_
 	}
 }
 
-void morcalavin_rush_sound (edict_t *self)
+void morcalavin_rush_sound(edict_t* self)
 {
+	gi.sound(self, CHAN_BODY, sounds[SND_RUSH], 1.0f, ATTN_NORM, 0.0f);
+
 	vec3_t forward;
-	gi.sound(self, CHAN_BODY, sounds[SND_RUSH], 1, ATTN_NORM, 0);
 	AngleVectors(self->s.angles, forward, NULL, NULL);
-	VectorScale(forward, 250, self->velocity);
-	self->velocity[2] = 150;
+	VectorScale(forward, 250.0f, self->velocity);
+	self->velocity[2] = 150.0f;
 }
 
 /*-----------------------------------------------
