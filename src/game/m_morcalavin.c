@@ -1022,22 +1022,23 @@ void mork_ai_run(edict_t* self, float distance) //TODO: rename to morcalavin_ai_
 	}
 }
 
-void morcalavin_run(edict_t *self, G_Message_t *msg)
-{//if can't move, go into a float for a bit
-	
+static void MorcalavinRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'morcalavin_run' in original logic.
+{
+	// If can't move, go into a float for a bit.
 	if (self->health <= 0)
 		return;
 
-	if(!self->enemy)
+	if (self->enemy == NULL)
 	{
 		SetAnim(self, ANIM_FLOAT);
 		return;
 	}
 
-	if(self->enemy->health<=0)
+	if (self->enemy->health <= 0)
 	{
 		MorcalavinCheckKilledEnemy(self->enemy);
 		SetAnim(self, ANIM_FLOAT);
+
 		return;
 	}
 
@@ -1045,18 +1046,17 @@ void morcalavin_run(edict_t *self, G_Message_t *msg)
 	{
 		MorcalavinPhaseOutInit(self);
 		SetAnim(self, ANIM_FLOAT);
-		gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1, ATTN_NORM, 0);
+
+		gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1.0f, ATTN_NORM, 0.0f);
+
 		self->solid = SOLID_NOT;
-		self->monsterinfo.sound_start = level.time + 2.5;
-		self->monsterinfo.lefty++;
+		self->monsterinfo.sound_start = level.time + 2.5f;
+		self->monsterinfo.lefty++; //TODO: add morcalavin_taunt_counter name.
 
 		return;
 	}
 
-	if(!self->groundentity)
-		SetAnim(self, ANIM_GLIDE);
-	else
-		SetAnim(self, ANIM_WALK);
+	SetAnim(self, ((self->groundentity == NULL) ? ANIM_GLIDE : ANIM_WALK));
 }
 
 void morcalavin_rush(edict_t *self, G_Message_t *msg)
@@ -1123,7 +1123,7 @@ void MorcalavinStaticsInit(void)
 	classStatics[CID_MORK].msgReceivers[MSG_STAND]	= MorcalavinStandMsgHandler;
 	classStatics[CID_MORK].msgReceivers[MSG_MELEE] = morcalavin_melee;
 	classStatics[CID_MORK].msgReceivers[MSG_MISSILE] = morcalavin_missile;
-	classStatics[CID_MORK].msgReceivers[MSG_RUN] = morcalavin_run;
+	classStatics[CID_MORK].msgReceivers[MSG_RUN] = MorcalavinRunMsgHandler;
 	classStatics[CID_MORK].msgReceivers[MSG_DEATH] = MorcalavinDeathMsgHandler;
 	
 	resInfo.numAnims = NUM_ANIMS;
