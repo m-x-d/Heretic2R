@@ -1024,7 +1024,7 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 				gi.sound(self, CHAN_AUTO, sounds[TAUNT_LAUGH1], 1.0f, ATTN_NONE, 0.0f);
 				self->monsterinfo.jump_time = -1.0f;
 
-				if (self->targetEnt != NULL)
+				if (self->morcalavin_barrier != NULL)
 				{
 					self->svflags &= ~SVF_NO_AUTOTARGET;
 
@@ -1033,13 +1033,15 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 						self->monsterinfo.attack_finished = level.time + self->morcalavin_attack_delay;
 						self->monsterinfo.sound_start = self->monsterinfo.attack_finished;
 						self->monsterinfo.sound_start += 1.5f;
-						self->targetEnt->monsterinfo.attack_finished = self->monsterinfo.attack_finished;
+						self->morcalavin_barrier->monsterinfo.attack_finished = self->monsterinfo.attack_finished;
+
 						self->morcalavin_attack_delay *= 2.0f;
 					}
 					else
 					{
 						self->monsterinfo.sound_start = level.time + 3.5f;
 						self->monsterinfo.attack_finished = level.time + 2.0f;
+
 						self->morcalavin_attack_delay = 2.0f;
 					}
 

@@ -21,7 +21,7 @@ static void MorcalavinBarrierThink(edict_t* self) //mxd. Named 'morcalavin_barri
 		if (owner != NULL)
 		{
 			self->owner = owner;
-			owner->targetEnt = self;
+			owner->morcalavin_barrier = self;
 		}
 		else
 		{

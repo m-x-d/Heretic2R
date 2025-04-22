@@ -107,6 +107,7 @@ struct edict_s
 		edict_t* slavechain; //TODO: unused.
 		edict_t* rope_grab; // Used to by the rope to hold the part of the rope which the player is holding.
 		edict_t* elflord_beam; //mxd
+		edict_t* morcalavin_barrier; //mxd
 	};
 
 	union
