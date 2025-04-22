@@ -821,7 +821,7 @@ static void MorcalavinChooseTeleportDestination(edict_t* self) //mxd. Removed un
 		// Phase in and become tangible again.
 		MorcalavinPhaseInInit(self);
 		self->takedamage = DAMAGE_YES;
-		self->monsterinfo.lefty = 10;
+		self->monsterinfo.morcalavin_taunt_counter = 10;
 
 		return;
 	}
@@ -874,7 +874,7 @@ static void MorcalavinTeleportAttack(edict_t* self) //mxd. Named 'morcalavin_tel
 	MorcalavinChooseTeleportDestination(self);
 
 	// Start the animation for the attack.
-	SetAnim(self, ((self->monsterinfo.lefty == 8) ? ANIM_ATTACK4 : ANIM_ATTACK2));
+	SetAnim(self, ((self->monsterinfo.morcalavin_taunt_counter == 8) ? ANIM_ATTACK4 : ANIM_ATTACK2));
 
 	// Play the teleport in sound fx.
 	gi.sound(self, CHAN_AUTO, sounds[SND_MAKESHIELD], 1.0f, ATTN_NORM, 0.0f);
@@ -925,7 +925,7 @@ static void MorcalavinPhaseInPreThink(edict_t* self) //mxd. Named 'morcalavin_ph
 		self->svflags &= ~SVF_NO_AUTOTARGET;
 		self->s.color.c = 0xffffffff;
 
-		if (self->health <= 0 || self->monsterinfo.lefty >= 6)
+		if (self->health <= 0 || self->monsterinfo.morcalavin_taunt_counter >= 6)
 		{
 			self->pre_think = NULL;
 			self->next_pre_think = -1.0f;
@@ -947,7 +947,7 @@ static void MorcalavinLaughPostThink(edict_t* self) //mxd. Named 'mork_laugh' in
 
 static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthink' in original logic.
 {
-	if (self->monsterinfo.lefty == 0)
+	if (self->monsterinfo.morcalavin_taunt_counter == 0)
 		MG_CheckEvade(self);
 
 	if (self->enemy != NULL && self->monsterinfo.morcalavin_battle_phase > 0)
@@ -982,34 +982,34 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 	// Check for a pending taunt.
 	if (self->monsterinfo.morcalavin_taunt_time > 0.0f && self->monsterinfo.morcalavin_taunt_time < level.time)
 	{
-		switch (self->monsterinfo.lefty)
+		switch (self->monsterinfo.morcalavin_taunt_counter)
 		{
 			case 1:
 				gi.sound(self, CHAN_AUTO, sounds[TAUNT_LAUGH1], 1.0f, ATTN_NONE, 0.0f);
 				self->monsterinfo.morcalavin_taunt_time = -1.0f;
 				self->monsterinfo.morcalavin_teleport_attack_time = level.time + 1.0f;
-				self->monsterinfo.lefty++;
+				self->monsterinfo.morcalavin_taunt_counter++;
 				break;
 
 			case 2:
 				gi.sound(self, CHAN_AUTO, sounds[TAUNT_BELLY1], 1.0f, ATTN_NONE, 0.0f);
 				self->monsterinfo.morcalavin_taunt_time = -1.0f;
 				self->monsterinfo.morcalavin_teleport_attack_time = level.time + 8.0f;
-				self->monsterinfo.lefty++;
+				self->monsterinfo.morcalavin_taunt_counter++;
 				break;
 
 			case 3:
 				gi.sound(self, CHAN_AUTO, sounds[TAUNT_BELLY2], 1.0f, ATTN_NONE, 0.0f);
 				self->monsterinfo.morcalavin_taunt_time = -1.0f;
 				self->monsterinfo.morcalavin_teleport_attack_time = level.time + 5.0f;
-				self->monsterinfo.lefty++;
+				self->monsterinfo.morcalavin_taunt_counter++;
 				break;
 
 			case 4:
 				gi.sound(self, CHAN_AUTO, sounds[TAUNT_BELLY3], 1.0f, ATTN_NONE, 0.0f);
 				self->monsterinfo.morcalavin_taunt_time = -1.0f;
 				self->monsterinfo.morcalavin_teleport_attack_time = level.time + 7.0f;
-				self->monsterinfo.lefty++;
+				self->monsterinfo.morcalavin_taunt_counter++;
 				break;
 
 			case 5:
@@ -1044,7 +1044,7 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 						self->morcalavin_attack_delay = 2.0f;
 					}
 
-					self->monsterinfo.lefty++;
+					self->monsterinfo.morcalavin_taunt_counter++;
 				}
 				break;
 
@@ -1083,7 +1083,7 @@ static void MorcalavinDie(edict_t* self, edict_t* inflictor, edict_t* attacker, 
 	self->solid = SOLID_BBOX;
 
 	self->monsterinfo.morcalavin_battle_phase++;
-	self->monsterinfo.lefty = 6;
+	self->monsterinfo.morcalavin_taunt_counter = 6;
 
 	// Check to release a charging weapon.
 	if (self->target_ent != NULL)
@@ -1140,7 +1140,7 @@ static void MorcalavinRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 		return;
 	}
 
-	if (self->monsterinfo.lefty == 0)
+	if (self->monsterinfo.morcalavin_taunt_counter == 0)
 	{
 		MorcalavinPhaseOutInit(self);
 		SetAnim(self, ANIM_FLOAT);
@@ -1149,7 +1149,7 @@ static void MorcalavinRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 
 		self->solid = SOLID_NOT;
 		self->monsterinfo.morcalavin_taunt_time = level.time + 2.5f;
-		self->monsterinfo.lefty++; //TODO: add morcalavin_taunt_counter name.
+		self->monsterinfo.morcalavin_taunt_counter++;
 
 		return;
 	}
@@ -1174,7 +1174,7 @@ static void MorcalavinMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. 
 	{
 		//mxd. Inline morcalavin_attack_fade_out().
 		morcalavin_fade_out(self);
-		self->monsterinfo.lefty = 8;
+		self->monsterinfo.morcalavin_taunt_counter = 8;
 		self->wait = MORK_ATTACK_FADE; //TODO: add morcalavin_attackID_t morcalavin_current_attack_id name.
 	}
 	else if (chance < 25 && self->wait != MORK_ATTACK_TRACKING)
@@ -1259,7 +1259,7 @@ void morcalavin_rush_sound(edict_t* self)
 
 void morcalavin_pause(edict_t* self)
 {
-	if (self->monsterinfo.lefty < 6 && self->health > 0)
+	if (self->monsterinfo.morcalavin_taunt_counter < 6 && self->health > 0)
 	{
 		SetAnim(self, ANIM_FLOAT);
 		return;
@@ -1303,7 +1303,7 @@ void morcalavin_retort(edict_t* self)
 
 void morcalavin_get_up(edict_t* self) //mxd. Named 'morcalavin_getup' in original logic.
 {
-	if (self->monsterinfo.lefty == 7 && self->monsterinfo.attack_finished > 0.0f && self->monsterinfo.attack_finished < level.time)
+	if (self->monsterinfo.morcalavin_taunt_counter == 7 && self->monsterinfo.attack_finished > 0.0f && self->monsterinfo.attack_finished < level.time)
 	{
 		self->monsterinfo.attack_finished = -1.0f;
 		gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1.0f, ATTN_NORM, 0.0f);

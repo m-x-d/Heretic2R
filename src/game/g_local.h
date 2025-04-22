@@ -454,7 +454,13 @@ typedef struct
 	float misc_debounce_time;
 	vec3_t last_sighting;
 	int attack_state;
-	int lefty;
+
+	union
+	{
+		int lefty;
+		int morcalavin_taunt_counter; //mxd
+	};
+	
 	float idle_time;
 	int linkcount;
 
