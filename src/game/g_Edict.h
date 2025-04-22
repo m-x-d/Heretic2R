@@ -232,6 +232,7 @@ struct edict_s
 		qboolean fish_ripple_spawned; //mxd
 		int gorgon_grabbed_toy_shake_mode; //mxd
 		float harpy_head_offset; //mxd
+		qboolean morcalavin_barrier_enabled; //mxd
 	};
 
 	int targeted; // Used by Ogle to denote a targeted action queued up.

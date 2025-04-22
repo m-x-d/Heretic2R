@@ -36,12 +36,12 @@ static void MorcalavinBarrierThink(edict_t* self) //mxd. Named 'morcalavin_barri
 
 	if (self->monsterinfo.attack_finished > level.time)
 	{
-		self->count = false;
+		self->morcalavin_barrier_enabled = false;
 		self->svflags |= SVF_NOCLIENT;
 	}
 	else
 	{
-		self->count = true;
+		self->morcalavin_barrier_enabled = true;
 		self->svflags &= ~SVF_NOCLIENT;
 	}
 
@@ -50,7 +50,7 @@ static void MorcalavinBarrierThink(edict_t* self) //mxd. Named 'morcalavin_barri
 
 static void MorcalavinBarrierTouch(edict_t* self, edict_t* other, cplane_t* plane, csurface_t* surf) //mxd. Named 'morcalavin_barrier_touch' in original logic.
 {
-	if (strcmp(other->classname, "player") != 0 || !self->count) //TODO: check other->client instead?
+	if (strcmp(other->classname, "player") != 0 || !self->morcalavin_barrier_enabled) //TODO: check other->client instead?
 		return;
 
 	vec3_t vel;
@@ -94,8 +94,8 @@ void SP_obj_morcalavin_barrier(edict_t* self)
 	self->movetype = PHYSICSTYPE_NONE;
 
 	self->s.color.c = 0xffffffff;
-	self->count = 1; //TODO: add qboolean morcalavin_barrier_enabled name.
-	self->health = true; //TODO: unused?
+	self->morcalavin_barrier_enabled = true;
+	self->health = 1; //TODO: unused?
 
 	self->touch = MorcalavinBarrierTouch;
 	self->use = MorcalavinBarrierUse;
