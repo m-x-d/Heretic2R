@@ -965,7 +965,7 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 	}
 
 	// Check for a teleport razzing.
-	if (self->monsterinfo.jump_time > 0.0f && self->monsterinfo.jump_time < level.time)
+	if (self->monsterinfo.morcalavin_teleport_attack_time > 0.0f && self->monsterinfo.morcalavin_teleport_attack_time < level.time)
 	{
 		if (self->monsterinfo.stepState > 0)
 		{
@@ -974,7 +974,7 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 		}
 
 		MorcalavinTeleportAttack(self);
-		self->monsterinfo.jump_time = -1.0f; //TODO: add morcalavin_teleport_attack_time name.
+		self->monsterinfo.morcalavin_teleport_attack_time = -1.0f;
 
 		return;
 	}
@@ -987,28 +987,28 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 			case 1:
 				gi.sound(self, CHAN_AUTO, sounds[TAUNT_LAUGH1], 1.0f, ATTN_NONE, 0.0f);
 				self->monsterinfo.morcalavin_taunt_time = -1.0f;
-				self->monsterinfo.jump_time = level.time + 1.0f;
+				self->monsterinfo.morcalavin_teleport_attack_time = level.time + 1.0f;
 				self->monsterinfo.lefty++;
 				break;
 
 			case 2:
 				gi.sound(self, CHAN_AUTO, sounds[TAUNT_BELLY1], 1.0f, ATTN_NONE, 0.0f);
 				self->monsterinfo.morcalavin_taunt_time = -1.0f;
-				self->monsterinfo.jump_time = level.time + 8.0f;
+				self->monsterinfo.morcalavin_teleport_attack_time = level.time + 8.0f;
 				self->monsterinfo.lefty++;
 				break;
 
 			case 3:
 				gi.sound(self, CHAN_AUTO, sounds[TAUNT_BELLY2], 1.0f, ATTN_NONE, 0.0f);
 				self->monsterinfo.morcalavin_taunt_time = -1.0f;
-				self->monsterinfo.jump_time = level.time + 5.0f;
+				self->monsterinfo.morcalavin_teleport_attack_time = level.time + 5.0f;
 				self->monsterinfo.lefty++;
 				break;
 
 			case 4:
 				gi.sound(self, CHAN_AUTO, sounds[TAUNT_BELLY3], 1.0f, ATTN_NONE, 0.0f);
 				self->monsterinfo.morcalavin_taunt_time = -1.0f;
-				self->monsterinfo.jump_time = level.time + 7.0f;
+				self->monsterinfo.morcalavin_teleport_attack_time = level.time + 7.0f;
 				self->monsterinfo.lefty++;
 				break;
 
@@ -1017,12 +1017,12 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 					gi.sound(self, CHAN_AUTO, sounds[irand(TAUNT_LAUGH2, TAUNT_LAUGH4)], 1.0f, ATTN_NONE, 0.0f);
 
 				self->monsterinfo.morcalavin_taunt_time = -1.0f;
-				self->monsterinfo.jump_time = level.time + 1.0f;
+				self->monsterinfo.morcalavin_teleport_attack_time = level.time + 1.0f;
 				break;
 
 			case 6:
 				gi.sound(self, CHAN_AUTO, sounds[TAUNT_LAUGH1], 1.0f, ATTN_NONE, 0.0f);
-				self->monsterinfo.jump_time = -1.0f;
+				self->monsterinfo.morcalavin_teleport_attack_time = -1.0f;
 
 				if (self->morcalavin_barrier != NULL)
 				{
@@ -1051,12 +1051,12 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 			case 7:
 				gi.sound(self, CHAN_AUTO, sounds[SND_LAUGH], 1.0f, ATTN_NONE, 0.0f);
 				self->monsterinfo.morcalavin_taunt_time = -1.0f;
-				self->monsterinfo.jump_time = -1.0f;
+				self->monsterinfo.morcalavin_teleport_attack_time = -1.0f;
 				break;
 
 			case 8:
 				self->monsterinfo.morcalavin_taunt_time = -1.0f;
-				self->monsterinfo.jump_time = level.time + 1.0f;
+				self->monsterinfo.morcalavin_teleport_attack_time = level.time + 1.0f;
 				break;
 		}
 	}

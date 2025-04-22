@@ -460,7 +460,12 @@ typedef struct
 
 	int searchType;
 	vec3_t nav_goal;
-	float jump_time;
+
+	union
+	{
+		float jump_time;
+		float morcalavin_teleport_attack_time; //mxd
+	};
 
 	int stepState;
 
