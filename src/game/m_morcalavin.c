@@ -886,7 +886,7 @@ static void MorcalavinTeleportAttack(edict_t* self) //mxd. Named 'morcalavin_tel
 	self->solid = SOLID_BBOX;
 
 	// Taunt player?
-	if (self->monsterinfo.stepState > 0 && irand(0, 1) == 1)
+	if (self->monsterinfo.morcalavin_battle_phase > 0 && irand(0, 1) == 1)
 		gi.sound(self, CHAN_AUTO, sounds[irand(TAUNT_LAUGH2, TAUNT_LAUGH4)], 1.0f, ATTN_NONE, 0.0f);
 }
 
@@ -950,7 +950,7 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 	if (self->monsterinfo.lefty == 0)
 		MG_CheckEvade(self);
 
-	if (self->enemy != NULL && self->monsterinfo.stepState > 0)
+	if (self->enemy != NULL && self->monsterinfo.morcalavin_battle_phase > 0)
 	{
 		if (self->dmg < self->max_health)
 		{
@@ -967,7 +967,7 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 	// Check for a teleport razzing.
 	if (self->monsterinfo.morcalavin_teleport_attack_time > 0.0f && self->monsterinfo.morcalavin_teleport_attack_time < level.time)
 	{
-		if (self->monsterinfo.stepState > 0)
+		if (self->monsterinfo.morcalavin_battle_phase > 0)
 		{
 			MorcalavinPhaseInInit(self);
 			self->monsterinfo.morcalavin_taunt_time = -1.0f;
@@ -1082,7 +1082,7 @@ static void MorcalavinDie(edict_t* self, edict_t* inflictor, edict_t* attacker, 
 	self->monsterinfo.morcalavin_taunt_time = level.time + 2.5f;
 	self->solid = SOLID_BBOX;
 
-	self->monsterinfo.stepState++;
+	self->monsterinfo.morcalavin_battle_phase++;
 	self->monsterinfo.lefty = 6;
 
 	// Check to release a charging weapon.
@@ -1111,7 +1111,7 @@ static void MorcalavinDie(edict_t* self, edict_t* inflictor, edict_t* attacker, 
 
 static void MorcalavinDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'morcalavin_death' in original logic.
 {
-	self->monsterinfo.stepState++; //TODO: used only by m_morcalavin.c rename to morcalavin_state?
+	self->monsterinfo.morcalavin_battle_phase++; //TODO incremented here AND in MorcalavinDie() -> never called or incremented by 2 first time it dies (MorcalavinDie() changes DeathMsgHandler)?
 }
 
 static void MorcalavinStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'morcalavin_stand' in original logic.
@@ -1192,7 +1192,7 @@ static void MorcalavinMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. 
 		SetAnim(self, ANIM_ATTACK3);
 		self->wait = MORK_ATTACK_BEAM;
 	}
-	else if (self->monsterinfo.stepState > 1 && self->wait != MORK_ATTACK_5SPHERE)
+	else if (self->monsterinfo.morcalavin_battle_phase > 1 && self->wait != MORK_ATTACK_5SPHERE)
 	{
 		SetAnim(self, ANIM_ATTACK4);
 		self->wait = MORK_ATTACK_5SPHERE;
@@ -1513,7 +1513,7 @@ void SP_monster_morcalavin(edict_t* self)
 	self->s.color.c = 0xffffffff;
 	self->s.renderfx |= RF_GLOW;
 
-	self->monsterinfo.stepState = 0;
+	self->monsterinfo.morcalavin_battle_phase = 0;
 	self->svflags |= (SVF_BOSS | SVF_FLOAT);
 	self->count = self->s.modelindex; // For Cinematic purposes. //TODO: unused?
 	self->gravity = MORCALAVIN_GRAVITY;

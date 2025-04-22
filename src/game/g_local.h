@@ -467,7 +467,7 @@ typedef struct
 		float morcalavin_teleport_attack_time; //mxd
 	};
 
-	int stepState;
+	int morcalavin_battle_phase; //mxd. Named 'stepState' in original logic.
 
 	int ogleflags; // Ogles have special spawnflags stored in here at spawntime.
 
