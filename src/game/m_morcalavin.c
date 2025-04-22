@@ -1315,7 +1315,7 @@ void morcalavin_hurt_idle(edict_t* self) //mxd. Named 'morcalavin_hurtidle' in o
 	SetAnim(self, ANIM_HURTIDLE);
 }
 
-void mork_ai_hover(edict_t* self, float distance) //TODO: rename to morcalavin_ai_hover.
+void morcalavin_ai_hover(edict_t* self, float distance) //mxd. Named 'mork_ai_hover' in original logic.
 {
 	if (self->health <= 0)
 		return;

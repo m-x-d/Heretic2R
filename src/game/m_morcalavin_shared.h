@@ -118,7 +118,7 @@ void morcalavin_beam(edict_t* self);
 void morcalavin_beam2(edict_t* self);
 void morcalavin_rush_sound(edict_t* self);
 void mork_ai_run(edict_t* self, float distance);
-void mork_ai_hover(edict_t* self, float distance);
+void morcalavin_ai_hover(edict_t* self, float distance);
 
 void morcalavin_quake_pause(edict_t* self);
 void morcalavin_fade_out(edict_t* self);
