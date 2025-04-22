@@ -446,7 +446,13 @@ typedef struct
 
 	float pausetime;
 	float attack_finished;
-	float flee_finished;	// When a monster is done fleeing
+
+	union
+	{
+		float flee_finished; // When a monster is done fleeing.
+		qboolean morcalavin_quake_finished; //mxd
+	};
+	
 	float chase_finished;	// When the monster can look for secondary monsters.
 
 	vec3_t saved_goal;

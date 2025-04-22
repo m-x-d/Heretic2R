@@ -1215,9 +1215,9 @@ void morcalavin_end_retort(edict_t* self)
 
 void morcalavin_quake_pause(edict_t* self)
 {
-	if (self->monsterinfo.flee_finished)
+	if (self->monsterinfo.morcalavin_quake_finished)
 	{
-		self->monsterinfo.flee_finished = false;
+		self->monsterinfo.morcalavin_quake_finished = false;
 		SetAnim(self, ANIM_GROUND_ATTACK);
 	}
 }
@@ -1243,7 +1243,7 @@ void morcalavin_quake(edict_t* self, float pitch_ofs, float yaw_ofs, float roll_
 		P_KnockDownPlayer(&self->enemy->client->playerinfo);
 
 		// Denote we've done so to follow it with an attack.
-		self->monsterinfo.flee_finished = true; //TODO: add qboolean morcalavin_quake_finished name.
+		self->monsterinfo.morcalavin_quake_finished = true;
 	}
 }
 
