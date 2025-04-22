@@ -954,7 +954,8 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 	{
 		if (self->morcalavin_healthbar_buildup < self->max_health)
 		{
-			M_ShowLifeMeter(self->morcalavin_healthbar_buildup, self->max_health); //BUGFIX: mxd. M_ShowLifeMeter(self->dmg, self->dmg) in original logic.
+			// Initial healthbar buildup.
+			M_ShowLifeMeter(self->morcalavin_healthbar_buildup, self->morcalavin_healthbar_buildup);
 			self->morcalavin_healthbar_buildup += 50;
 		}
 		else

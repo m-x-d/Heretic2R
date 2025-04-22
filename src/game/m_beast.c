@@ -1165,8 +1165,9 @@ static void TBeastPostThink(edict_t* self) //mxd. Named 'tbeast_post_think' in o
 	{
 		if (self->tbeast_healthbar_buildup < self->max_health)
 		{
-			// Initial healthbar buildup. //TODO: was broken in original logic. Check animation speed... 
-			M_ShowLifeMeter((int)(ceilf((float)self->tbeast_healthbar_buildup / (float)self->max_health * TBEAST_SBAR_SIZE)), TBEAST_SBAR_SIZE); //BUGFIX: mxd. Original logic uses the same value for 'value' and 'max_value' args.
+			// Initial healthbar buildup.
+			const int val = (int)(ceilf((float)self->tbeast_healthbar_buildup / (float)self->max_health * TBEAST_SBAR_SIZE));
+			M_ShowLifeMeter(val, val);
 			self->tbeast_healthbar_buildup += self->max_health / 10;
 		}
 		else if (self->health > 0)

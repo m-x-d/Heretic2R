@@ -537,7 +537,7 @@ void elflord_update_charge_meter(edict_t* self)
 
 	if (self->elflord_charge_meter < self->max_health)
 	{
-		M_ShowLifeMeter(self->elflord_charge_meter, self->max_health); //BUGFIX: mxd. Original logic passes self->count as max_value.
+		M_ShowLifeMeter(self->elflord_charge_meter, self->elflord_charge_meter);
 		self->elflord_charge_meter += self->max_health / 20;
 	}
 }
