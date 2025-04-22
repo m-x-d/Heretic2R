@@ -1028,19 +1028,19 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 				{
 					self->svflags &= ~SVF_NO_AUTOTARGET;
 
-					if (self->delay > 0.0f)
+					if (self->morcalavin_attack_delay > 0.0f)
 					{
-						self->monsterinfo.attack_finished = level.time + self->delay;
+						self->monsterinfo.attack_finished = level.time + self->morcalavin_attack_delay;
 						self->monsterinfo.sound_start = self->monsterinfo.attack_finished;
 						self->monsterinfo.sound_start += 1.5f;
 						self->targetEnt->monsterinfo.attack_finished = self->monsterinfo.attack_finished;
-						self->delay *= 2.0f;
+						self->morcalavin_attack_delay *= 2.0f;
 					}
 					else
 					{
 						self->monsterinfo.sound_start = level.time + 3.5f;
 						self->monsterinfo.attack_finished = level.time + 2.0f;
-						self->delay = 2.0f;
+						self->morcalavin_attack_delay = 2.0f;
 					}
 
 					self->monsterinfo.lefty++;
@@ -1491,7 +1491,7 @@ void SP_monster_morcalavin(edict_t* self)
 	self->monsterinfo.otherenemyname = "player";
 
 	// This is the number of times he's died (used to calculate window of opportunity for the player).
-	self->delay = 0.0f; //TODO: add morcalavin_attack_delay name.
+	self->morcalavin_attack_delay = 0.0f;
 
 	self->s.origin[2] += 50.0f;
 	VectorSet(self->mins, -24.0f, -24.0f, -48.0f);

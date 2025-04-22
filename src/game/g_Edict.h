@@ -272,8 +272,13 @@ struct edict_s
 		int tbeast_toy_materialtype; //mxd
 		qboolean gorgon_over_water_surface; //mxd
 	};
-	
-	float delay;	// Delay before firing targets. Used by a few polys and targets.
+
+	union
+	{
+		float delay; // Delay before firing targets. Used by a few polys and targets.
+		float morcalavin_attack_delay; //mxd
+	};
+
 	float random;	// Used by func_timer and spl_meteorbarrier.
 
 	// Used to delay monster 5 before going after a player sound. Only set on player.
