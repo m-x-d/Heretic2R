@@ -615,6 +615,9 @@
     <ClCompile Include="g_func_Button.c">
       <Filter>src\Game objects</Filter>
     </ClCompile>
+    <ClCompile Include="g_morcalavin_barrier.c">
+      <Filter>src\Game objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="decals.h">
@@ -1210,6 +1213,9 @@
     </ClInclude>
     <ClInclude Include="m_assassin_local.h">
       <Filter>src\Monsters\Assassin</Filter>
+    </ClInclude>
+    <ClInclude Include="g_morcalavin_barrier.h">
+      <Filter>src\Game objects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

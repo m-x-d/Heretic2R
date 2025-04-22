@@ -19,6 +19,7 @@
 #include "g_items.h" //mxd
 #include "g_light.h" //mxd
 #include "g_misc.h" //mxd
+#include "g_morcalavin_barrier.h" //mxd
 #include "g_obj.h" //mxd
 #include "g_rope.h" //mxd
 #include "g_Shrine.h" //mxd

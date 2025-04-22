@@ -9,6 +9,5 @@
 #include "g_Edict.h"
 
 extern void SP_monster_morcalavin(edict_t* self);
-extern void SP_obj_morcalavin_barrier(edict_t* self);
 extern void MorcalavinStaticsInit(void);
 extern void MorcalavinProjectileHomeIn(edict_t* self);
