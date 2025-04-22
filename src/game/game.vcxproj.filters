@@ -88,9 +88,6 @@
     <Filter Include="src\Monsters\TcheckrikMother">
       <UniqueIdentifier>{1636a858-0a73-4fdd-9600-8007c73c46d1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Monsters\Mssithra">
-      <UniqueIdentifier>{726c33e2-1485-422e-b497-e2cae17e5552}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Monsters\Ogle">
       <UniqueIdentifier>{e8ecfc1a-a693-4f03-94c4-ead8d2f2cc6d}</UniqueIdentifier>
     </Filter>
@@ -126,6 +123,9 @@
     </Filter>
     <Filter Include="src\Monsters\Elf Lord">
       <UniqueIdentifier>{d8b3975d-98e0-4063-a7e7-918af778babe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Monsters\Mutant Ssithra">
+      <UniqueIdentifier>{726c33e2-1485-422e-b497-e2cae17e5552}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -511,10 +511,10 @@
       <Filter>src\Monsters\TcheckrikMother</Filter>
     </ClCompile>
     <ClCompile Include="m_mssithra.c">
-      <Filter>src\Monsters\Mssithra</Filter>
+      <Filter>src\Monsters\Mutant Ssithra</Filter>
     </ClCompile>
     <ClCompile Include="m_mssithra_anim.c">
-      <Filter>src\Monsters\Mssithra</Filter>
+      <Filter>src\Monsters\Mutant Ssithra</Filter>
     </ClCompile>
     <ClCompile Include="m_ogle.c">
       <Filter>src\Monsters\Ogle</Filter>
@@ -897,10 +897,10 @@
       <Filter>src\Monsters\TcheckrikMother</Filter>
     </ClInclude>
     <ClInclude Include="m_mssithra_shared.h">
-      <Filter>src\Monsters\Mssithra</Filter>
+      <Filter>src\Monsters\Mutant Ssithra</Filter>
     </ClInclude>
     <ClInclude Include="m_mssithra_anim.h">
-      <Filter>src\Monsters\Mssithra</Filter>
+      <Filter>src\Monsters\Mutant Ssithra</Filter>
     </ClInclude>
     <ClInclude Include="m_ogle_local.h">
       <Filter>src\Monsters\Ogle</Filter>
@@ -1026,7 +1026,7 @@
       <Filter>src\Monsters\Morcalavin</Filter>
     </ClInclude>
     <ClInclude Include="m_mssithra.h">
-      <Filter>src\Monsters\Mssithra</Filter>
+      <Filter>src\Monsters\Mutant Ssithra</Filter>
     </ClInclude>
     <ClInclude Include="m_ogle.h">
       <Filter>src\Monsters\Ogle</Filter>

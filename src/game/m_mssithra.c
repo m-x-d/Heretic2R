@@ -37,7 +37,7 @@ void create_ssithra_arrow(edict_t *Arrow);
 //========================================
 //INITIALIZE
 //========================================
-static animmove_t *animations[NUM_ANIMS] =
+static const animmove_t *animations[NUM_ANIMS] =
 {
 	&mssithra_move_claw1,
 	&mssithra_move_death1,
