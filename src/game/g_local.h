@@ -469,7 +469,13 @@ typedef struct
 	int supporters; // Number of supporting monsters (with common type) in the area when awoken.
 
 	float sound_finished;	// Amount of time until the monster will be finishing talking (used for voices).
-	float sound_start;		// The amount of time to wait before playing the pending sound.
+
+	union
+	{
+		float sound_start; // The amount of time to wait before playing the pending sound.
+		float morcalavin_taunt_time; //mxd
+	};
+	
 	int sound_pending;		// This monster is waiting to make a sound (used for voices) (0 if false, else sound ID).
 
 	// Cinematic fields.

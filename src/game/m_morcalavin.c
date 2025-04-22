@@ -970,7 +970,7 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 		if (self->monsterinfo.stepState > 0)
 		{
 			MorcalavinPhaseInInit(self);
-			self->monsterinfo.sound_start = -1.0f; //TODO: add morcalavin_taunt_time name.
+			self->monsterinfo.morcalavin_taunt_time = -1.0f;
 		}
 
 		MorcalavinTeleportAttack(self);
@@ -980,34 +980,34 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 	}
 
 	// Check for a pending taunt.
-	if (self->monsterinfo.sound_start > 0 && self->monsterinfo.sound_start < level.time)
+	if (self->monsterinfo.morcalavin_taunt_time > 0.0f && self->monsterinfo.morcalavin_taunt_time < level.time)
 	{
 		switch (self->monsterinfo.lefty)
 		{
 			case 1:
 				gi.sound(self, CHAN_AUTO, sounds[TAUNT_LAUGH1], 1.0f, ATTN_NONE, 0.0f);
-				self->monsterinfo.sound_start = -1.0f;
+				self->monsterinfo.morcalavin_taunt_time = -1.0f;
 				self->monsterinfo.jump_time = level.time + 1.0f;
 				self->monsterinfo.lefty++;
 				break;
 
 			case 2:
 				gi.sound(self, CHAN_AUTO, sounds[TAUNT_BELLY1], 1.0f, ATTN_NONE, 0.0f);
-				self->monsterinfo.sound_start = -1.0f;
+				self->monsterinfo.morcalavin_taunt_time = -1.0f;
 				self->monsterinfo.jump_time = level.time + 8.0f;
 				self->monsterinfo.lefty++;
 				break;
 
 			case 3:
 				gi.sound(self, CHAN_AUTO, sounds[TAUNT_BELLY2], 1.0f, ATTN_NONE, 0.0f);
-				self->monsterinfo.sound_start = -1.0f;
+				self->monsterinfo.morcalavin_taunt_time = -1.0f;
 				self->monsterinfo.jump_time = level.time + 5.0f;
 				self->monsterinfo.lefty++;
 				break;
 
 			case 4:
 				gi.sound(self, CHAN_AUTO, sounds[TAUNT_BELLY3], 1.0f, ATTN_NONE, 0.0f);
-				self->monsterinfo.sound_start = -1.0f;
+				self->monsterinfo.morcalavin_taunt_time = -1.0f;
 				self->monsterinfo.jump_time = level.time + 7.0f;
 				self->monsterinfo.lefty++;
 				break;
@@ -1016,7 +1016,7 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 				if (irand(0, 1) == 1)
 					gi.sound(self, CHAN_AUTO, sounds[irand(TAUNT_LAUGH2, TAUNT_LAUGH4)], 1.0f, ATTN_NONE, 0.0f);
 
-				self->monsterinfo.sound_start = -1.0f;
+				self->monsterinfo.morcalavin_taunt_time = -1.0f;
 				self->monsterinfo.jump_time = level.time + 1.0f;
 				break;
 
@@ -1031,15 +1031,14 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 					if (self->morcalavin_attack_delay > 0.0f)
 					{
 						self->monsterinfo.attack_finished = level.time + self->morcalavin_attack_delay;
-						self->monsterinfo.sound_start = self->monsterinfo.attack_finished;
-						self->monsterinfo.sound_start += 1.5f;
+						self->monsterinfo.morcalavin_taunt_time = self->monsterinfo.attack_finished + 1.5f;
 						self->morcalavin_barrier->monsterinfo.attack_finished = self->monsterinfo.attack_finished;
 
 						self->morcalavin_attack_delay *= 2.0f;
 					}
 					else
 					{
-						self->monsterinfo.sound_start = level.time + 3.5f;
+						self->monsterinfo.morcalavin_taunt_time = level.time + 3.5f;
 						self->monsterinfo.attack_finished = level.time + 2.0f;
 
 						self->morcalavin_attack_delay = 2.0f;
@@ -1051,12 +1050,12 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 
 			case 7:
 				gi.sound(self, CHAN_AUTO, sounds[SND_LAUGH], 1.0f, ATTN_NONE, 0.0f);
-				self->monsterinfo.sound_start = -1.0f;
+				self->monsterinfo.morcalavin_taunt_time = -1.0f;
 				self->monsterinfo.jump_time = -1.0f;
 				break;
 
 			case 8:
-				self->monsterinfo.sound_start = -1.0f;
+				self->monsterinfo.morcalavin_taunt_time = -1.0f;
 				self->monsterinfo.jump_time = level.time + 1.0f;
 				break;
 		}
@@ -1080,7 +1079,7 @@ static void MorcalavinDie(edict_t* self, edict_t* inflictor, edict_t* attacker, 
 	self->dmg = 1; //TODO: add morcalavin_charge_meter name.
 	self->health = MonsterHealth(MORK_HEALTH);
 	self->max_health = self->health;
-	self->monsterinfo.sound_start = level.time + 2.5f;
+	self->monsterinfo.morcalavin_taunt_time = level.time + 2.5f;
 	self->solid = SOLID_BBOX;
 
 	self->monsterinfo.stepState++;
@@ -1149,7 +1148,7 @@ static void MorcalavinRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Name
 		gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1.0f, ATTN_NORM, 0.0f);
 
 		self->solid = SOLID_NOT;
-		self->monsterinfo.sound_start = level.time + 2.5f;
+		self->monsterinfo.morcalavin_taunt_time = level.time + 2.5f;
 		self->monsterinfo.lefty++; //TODO: add morcalavin_taunt_counter name.
 
 		return;
@@ -1379,7 +1378,7 @@ void morcalavin_fade_out(edict_t* self)
 {
 	gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1.0f, ATTN_NORM, 0.0f);
 
-	self->monsterinfo.sound_start = level.time + 2.0f;
+	self->monsterinfo.morcalavin_taunt_time = level.time + 2.0f;
 	MorcalavinPhaseOutInit(self);
 	SetAnim(self, ANIM_FLOAT);
 }
