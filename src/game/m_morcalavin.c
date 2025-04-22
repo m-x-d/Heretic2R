@@ -20,11 +20,6 @@
 
 #define MORCALAVIN_GRAVITY	0.3f //mxd. Named 'MORK_GRAV' in original logic.
 
-static void MorcalavinProjectileInit(edict_t* self, edict_t* proj); //TODO: remove.
-static void MorcalavinProjectile1Blocked(edict_t* self, trace_t* trace); //TODO: remove.
-static void MorcalavinProjectile3Blocked(edict_t* self, trace_t* trace); //TODO: remove.
-static void MorcalavinPhaseOutInit(edict_t* self); //TODO: remove.
-
 #pragma region ========================== Morcalavin base info ==========================
 
 static const animmove_t* animations[NUM_ANIMS] =
@@ -52,10 +47,159 @@ static int sounds[NUM_SOUNDS];
 
 #pragma endregion
 
-void morcalavin_end_retort(edict_t* self)
+#pragma region ========================== Morcalavin projectiles utility functions =========================
+
+static void MorcalavinProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. Named 'morcalavin_proj1_blocked' in original logic.
 {
-	SetAnim(self, ANIM_WALK);
+	if (trace->ent == self->owner || Q_stricmp(trace->ent->classname, "Morcalavin_Missile") == 0) //mxd. stricmp -> Q_stricmp
+		return;
+
+	// Reflection stuff.
+	if (EntReflecting(trace->ent, true, true))
+	{
+		edict_t* proj = G_Spawn();
+
+		MorcalavinProjectileInit(self, proj);
+		proj->owner = self->owner;
+		proj->ideal_yaw = self->ideal_yaw;
+
+		Create_rand_relect_vect(self->velocity, proj->velocity);
+		Vec3ScaleAssign(proj->ideal_yaw, proj->velocity);
+		vectoangles(proj->velocity, proj->s.angles);
+
+		gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE1_EXPLODE); //TODO: play SND_HOMEHIT sound?
+		gi.linkentity(proj);
+
+		G_SetToFree(self);
+
+		return;
+	}
+
+	// Do the rest of the stuff.
+	if (trace->ent->takedamage != DAMAGE_NO)
+	{
+		vec3_t hit_dir;
+		VectorNormalize2(self->velocity, hit_dir);
+
+		T_Damage(trace->ent, self, self->owner, hit_dir, self->s.origin, trace->plane.normal, irand(4, 8), 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK, MOD_DIED);
+	}
+
+	gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE1_EXPLODE); //TODO: play SND_HOMEHIT sound?
+
+	self->think = G_FreeEdict;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
 }
+
+static void MorcalavinProjectile2Blocked(edict_t* self, trace_t* trace) //mxd. Named 'morcalavin_proj2_blocked' in original logic.
+{
+	if (trace->ent == self->owner)
+		return;
+
+	// Reflection stuff.
+	if (EntReflecting(trace->ent, true, true))
+	{
+		edict_t* proj = G_Spawn();
+
+		MorcalavinProjectileInit(self, proj);
+		proj->owner = self->owner;
+		proj->ideal_yaw = self->ideal_yaw;
+
+		Create_rand_relect_vect(self->velocity, proj->velocity);
+		Vec3ScaleAssign(proj->ideal_yaw, proj->velocity);
+		vectoangles(proj->velocity, proj->s.angles);
+
+		gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE1_EXPLODE); //TODO: play SND_HOMEHIT sound?
+		gi.linkentity(proj);
+
+		G_SetToFree(self);
+
+		return;
+	}
+
+	// Do the rest of the stuff.
+	if (trace->ent->takedamage != DAMAGE_NO)
+	{
+		vec3_t hit_dir;
+		VectorNormalize2(self->velocity, hit_dir);
+
+		T_Damage(trace->ent, self, self->owner, hit_dir, self->s.origin, trace->plane.normal, 40, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK, MOD_DIED);
+	}
+
+	gi.CreateEffect(NULL, FX_M_EFFECTS, 0, self->s.origin, "bv", FX_MORK_MISSILE_HIT, trace->plane.normal); //TODO: play SND_HOMEHIT sound?
+
+	self->think = G_FreeEdict;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+}
+
+static void MorcalavinProjectile3Blocked(edict_t* self, trace_t* trace) //mxd. Named 'morcalavin_proj3_blocked' in original logic.
+{
+	if (trace->ent == self->owner)
+		return;
+
+	// Reflection stuff.
+	if (EntReflecting(trace->ent, true, true))
+	{
+		edict_t* proj = G_Spawn();
+
+		MorcalavinProjectileInit(self, proj);
+		proj->owner = self->owner;
+		proj->ideal_yaw = self->ideal_yaw;
+
+		Create_rand_relect_vect(self->velocity, proj->velocity);
+		Vec3ScaleAssign(proj->ideal_yaw, proj->velocity);
+		vectoangles(proj->velocity, proj->s.angles);
+
+		gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE1_EXPLODE); //TODO: play SND_HOMEHIT sound?
+		gi.linkentity(proj);
+
+		G_SetToFree(self);
+
+		return;
+	}
+
+	// Do the rest of the stuff.
+	if (trace->ent->takedamage != DAMAGE_NO)
+	{
+		vec3_t hit_dir;
+		VectorNormalize2(self->velocity, hit_dir);
+
+		T_Damage(trace->ent, self, self->owner, hit_dir, self->s.origin, trace->plane.normal, irand(3, 5), 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK, MOD_DIED); //TODO: 'damage' arg value is the only difference between this and MorcalavinProjectile2Blocked().
+	}
+
+	gi.CreateEffect(NULL, FX_M_EFFECTS, 0, self->s.origin, "bv", FX_MORK_MISSILE_HIT, trace->plane.normal); //TODO: play SND_HOMEHIT sound?
+
+	self->think = G_FreeEdict;
+	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+}
+
+// Create the guts of morcalavin's projectile.
+static void MorcalavinProjectileInit(edict_t* self, edict_t* proj) //mxd. Named 'create_morcalavin_proj' in original logic.
+{
+	proj->svflags |= SVF_ALWAYS_SEND;
+	proj->movetype = PHYSICSTYPE_FLY;
+	proj->gravity = 0.0f;
+	proj->solid = SOLID_BBOX;
+	proj->classname = "Morcalavin_Missile";
+	proj->dmg = 1;
+	proj->s.scale = 1.0f;
+	proj->clipmask = MASK_SHOT;
+	proj->nextthink = level.time + FRAMETIME; //mxd. Use define.
+
+	proj->isBlocked = MorcalavinProjectile1Blocked;
+	proj->isBlocking = MorcalavinProjectile1Blocked;
+	proj->bounced = MorcalavinProjectile1Blocked;
+
+	proj->s.effects = (EF_MARCUS_FLAG1 | EF_CAMERA_NO_CLIP);
+	proj->enemy = self->enemy;
+
+	VectorSet(proj->mins, -2.0f, -2.0f, -2.0f);
+	VectorSet(proj->maxs, 2.0f, 2.0f, 2.0f);
+	VectorCopy(self->s.origin, proj->s.origin);
+}
+
+#pragma endregion
+
+#pragma region ========================== Morcalavin big shot =========================
 
 static void MorcalavinLightning2Think(edict_t* self) //mxd. Named 'morcalavin_check_lightning2' in original logic.
 {
@@ -94,7 +238,7 @@ void morcalavin_big_shot(edict_t* self)
 	edict_t* proj = G_Spawn();
 
 	VectorSet(proj->mins, -4.0f, -4.0f, -4.0f);
-	VectorSet(proj->maxs,  4.0f,  4.0f,  4.0f);
+	VectorSet(proj->maxs, 4.0f, 4.0f, 4.0f);
 
 	proj->solid = SOLID_BBOX;
 	proj->movetype = PHYSICSTYPE_FLY;
@@ -129,6 +273,10 @@ void morcalavin_big_shot(edict_t* self)
 	gi.CreateEffect(&proj->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, proj->s.origin, "bv", FX_MORK_MISSILE, proj->s.origin);
 	gi.sound(self, CHAN_AUTO, sounds[SND_PPCHARGE], 1.0f, ATTN_NORM, 0.0f);
 }
+
+#pragma endregion
+
+#pragma region ========================== Morcalavin tracking projectile =========================
 
 static void MorcalavinTrackingProjectileThink(edict_t* self) //mxd. Named 'morcalavin_proj_track' in original logic.
 {
@@ -244,87 +392,116 @@ void morcalavin_tracking_projectile(edict_t* self, float pitch, float yaw, float
 	gi.CreateEffect(&proj->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, NULL, "bv", FX_MORK_TRACKING_MISSILE, proj->velocity);
 }
 
-static void MorcalavinProjectile2Blocked(edict_t* self, trace_t* trace) //mxd. Named 'morcalavin_proj2_blocked' in original logic.
+#pragma endregion
+
+#pragma region ========================== Morcalavin beam and beam 2 =========================
+
+static void MorcalavinBeamIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'beam_blocked' in original logic.
 {
-	if (trace->ent == self->owner)
-		return;
-
-	// Reflection stuff.
-	if (EntReflecting(trace->ent, true, true))
-	{
-		edict_t* proj = G_Spawn();
-
-		MorcalavinProjectileInit(self, proj);
-		proj->owner = self->owner;
-		proj->ideal_yaw = self->ideal_yaw;
-
-		Create_rand_relect_vect(self->velocity, proj->velocity);
-		Vec3ScaleAssign(proj->ideal_yaw, proj->velocity);
-		vectoangles(proj->velocity, proj->s.angles);
-
-		gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE1_EXPLODE); //TODO: play SND_HOMEHIT sound?
-		gi.linkentity(proj);
-
-		G_SetToFree(self);
-
-		return;
-	}
-
 	if (trace->ent->takedamage != DAMAGE_NO)
 	{
-		vec3_t hit_dir;
-		VectorCopy(self->velocity, hit_dir);
-		VectorNormalize(hit_dir);
+		const int damage = irand(MORK_DMG_PROJ1_MIN, MORK_DMG_PROJ1_MAX) + max(0, self->dmg); //mxd. flrand() in original logic.
 
-		T_Damage(trace->ent, self, self->owner, hit_dir, self->s.origin, trace->plane.normal, 40, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK, MOD_DIED);
+		vec3_t hit_dir;
+		VectorNormalize2(self->velocity, hit_dir);
+
+		T_Damage(trace->ent, self, self->owner, hit_dir, self->s.origin, trace->plane.normal, damage, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK, MOD_DIED);
 	}
 
-	gi.CreateEffect(NULL, FX_M_EFFECTS, 0, self->s.origin, "bv", FX_MORK_MISSILE_HIT, trace->plane.normal); //TODO: play SND_HOMEHIT sound?
+	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/seraph/guard/spellhit.wav"), 1.0f, ATTN_NORM, 0.0f); //TODO: precache in sounds[SND_BEAMHIT]?
+	gi.CreateEffect(&self->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, self->s.origin, "bv", FX_M_MISC_EXPLODE, vec3_origin);
 
-	self->think = G_FreeEdict;
-	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+	G_SetToFree(self);
 }
 
-static void MorcalavinProjectile3Blocked(edict_t* self, trace_t* trace) //mxd. Named 'morcalavin_proj3_blocked' in original logic.
+static void MorcalavinBeamThink(edict_t* self) //mxd. Named 'beam_think' in original logic. //TODO: doesn't do anything useful. Can be removed?
 {
-	if (trace->ent == self->owner)
-		return;
-
-	// Reflection stuff.
-	if (EntReflecting(trace->ent, true, true))
-	{
-		edict_t* proj = G_Spawn();
-
-		MorcalavinProjectileInit(self, proj);
-		proj->owner = self->owner;
-		proj->ideal_yaw = self->ideal_yaw;
-
-		Create_rand_relect_vect(self->velocity, proj->velocity);
-		Vec3ScaleAssign(proj->ideal_yaw, proj->velocity);
-		vectoangles(proj->velocity, proj->s.angles);
-
-		gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE1_EXPLODE); //TODO: play SND_HOMEHIT sound?
-		gi.linkentity(proj);
-
-		G_SetToFree(self);
-
-		return;
-	}
-
-	if (trace->ent->takedamage != DAMAGE_NO)
-	{
-		vec3_t hit_dir;
-		VectorCopy(self->velocity, hit_dir);
-		VectorNormalize(hit_dir);
-
-		T_Damage(trace->ent, self, self->owner, hit_dir, self->s.origin, trace->plane.normal, irand(3, 5), 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK, MOD_DIED); //TODO: 'damage' arg value is the only difference between this and MorcalavinProjectile2Blocked().
-	}
-
-	gi.CreateEffect(NULL, FX_M_EFFECTS, 0, self->s.origin, "bv", FX_MORK_MISSILE_HIT, trace->plane.normal); //TODO: play SND_HOMEHIT sound?
-
-	self->think = G_FreeEdict;
-	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
+	self->think = NULL;
+	self->nextthink = -1.0f;
 }
+
+void morcalavin_beam(edict_t* self)
+{
+	// Spawn the projectile.
+	edict_t* beam = G_Spawn();
+
+	MorcalavinProjectileInit(self, beam);
+
+	beam->reflect_debounce_time = MAX_REFLECT;
+	beam->classname = "M_Beam";
+	beam->owner = self;
+
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
+	VectorMA(beam->s.origin, 48.0f, forward, beam->s.origin);
+	VectorMA(beam->s.origin, -20.0f, right, beam->s.origin);
+	beam->s.origin[2] += 16.0f;
+
+	const vec3_t end_pos = //mxd. The only difference between this and morcalavin_beam2()...
+	{
+		self->enemy->s.origin[0],
+		self->enemy->s.origin[1],
+		self->enemy->s.origin[2] + (float)self->enemy->viewheight
+	};
+
+	vec3_t dir;
+	VectorSubtract(end_pos, beam->s.origin, dir);
+	VectorNormalize(dir);
+
+	VectorScale(dir, 1250.0f, beam->velocity);
+	vectoangles(beam->velocity, beam->s.angles);
+
+	beam->dmg = irand(MORK_DMG_BEAM_MIN, MORK_DMG_BEAM_MAX); //mxd. flrand() in original logic.
+
+	beam->isBlocked = MorcalavinBeamIsBlocked;
+	beam->think = MorcalavinBeamThink;
+	beam->nextthink = level.time + 1.0f;
+
+	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/seraph/guard/spell.wav"), 1.0f, ATTN_NORM, 0.0f); //TODO: precache in sounds[SND_BEAM]?
+	gi.CreateEffect(&beam->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, vec3_origin, "bv", FX_M_BEAM, beam->s.angles); //FIXME: Spawn a muzzle flash.
+	gi.linkentity(beam);
+}
+
+void morcalavin_beam2(edict_t* self)
+{
+	// Spawn the projectile.
+	edict_t* beam = G_Spawn();
+
+	MorcalavinProjectileInit(self, beam);
+
+	beam->reflect_debounce_time = MAX_REFLECT;
+	beam->classname = "M_Beam";
+	beam->owner = self;
+
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
+	VectorMA(beam->s.origin, 48.0f, forward, beam->s.origin);
+	VectorMA(beam->s.origin, -20.0f, right, beam->s.origin);
+	beam->s.origin[2] += 16.0f;
+
+	vec3_t dir;
+	VectorSubtract(self->enemy->s.origin, beam->s.origin, dir);
+	VectorNormalize(dir);
+
+	VectorScale(dir, 1250.0f, beam->velocity);
+	vectoangles(beam->velocity, beam->s.angles);
+
+	beam->dmg = irand(MORK_DMG_BEAM_MIN, MORK_DMG_BEAM_MAX); //mxd. flrand() in original logic.
+
+	beam->isBlocked = MorcalavinBeamIsBlocked;
+	beam->think = MorcalavinBeamThink;
+	beam->nextthink = level.time + 1.0f;
+
+	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/seraph/guard/spell.wav"), 1.0f, ATTN_NORM, 0.0f); //TODO: precache in sounds[SND_BEAM]?
+	gi.CreateEffect(&beam->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, vec3_origin, "bv", FX_M_BEAM, beam->s.angles); //FIXME: Spawn a muzzle flash.
+	gi.linkentity(beam);
+}
+
+#pragma endregion
+
+#pragma region ========================== Morcalavin missile =========================
 
 static void MorcalavinLightningThink(edict_t* self) //mxd. Named 'morcalavin_check_lightning' in original logic.
 {
@@ -496,7 +673,7 @@ void morcalavin_start_missile(edict_t* self)
 	proj->s.origin[2] += 24.0f;
 
 	VectorSet(proj->mins, -4.0f, -4.0f, -4.0f);
-	VectorSet(proj->maxs,  4.0f,  4.0f,  4.0f);
+	VectorSet(proj->maxs, 4.0f, 4.0f, 4.0f);
 
 	gi.linkentity(proj);
 
@@ -510,71 +687,9 @@ void morcalavin_release_missile(edict_t* self)
 	gi.sound(self, CHAN_AUTO, sounds[SND_PPFIRE], 1.0f, ATTN_NORM, 0.0f);
 }
 
-static void MorcalavinProjectile1Blocked(edict_t* self, trace_t* trace) //mxd. Named 'morcalavin_proj1_blocked' in original logic.
-{
-	if (trace->ent == self->owner || Q_stricmp(trace->ent->classname, "Morcalavin_Missile") == 0) //mxd. stricmp -> Q_stricmp
-		return;
+#pragma endregion
 
-	// Reflection stuff.
-	if (EntReflecting(trace->ent, true, true))
-	{
-		edict_t* proj = G_Spawn();
-
-		MorcalavinProjectileInit(self, proj);
-		proj->owner = self->owner;
-		proj->ideal_yaw = self->ideal_yaw;
-
-		Create_rand_relect_vect(self->velocity, proj->velocity);
-		Vec3ScaleAssign(proj->ideal_yaw, proj->velocity);
-		vectoangles(proj->velocity, proj->s.angles);
-
-		gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE1_EXPLODE); //TODO: play SND_HOMEHIT sound?
-
-		gi.linkentity(proj);
-		G_SetToFree(self);
-
-		return;
-	}
-
-	// Do the rest of the stuff.
-	if (trace->ent->takedamage != DAMAGE_NO)
-	{
-		vec3_t hit_dir;
-		VectorNormalize2(self->velocity, hit_dir);
-
-		T_Damage(trace->ent, self, self->owner, hit_dir, self->s.origin, trace->plane.normal, irand(4, 8), 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK, MOD_DIED);
-	}
-
-	gi.CreateEffect(&self->s, FX_HP_MISSILE, CEF_OWNERS_ORIGIN, self->s.origin, "vb", vec3_origin, HPMISSILE1_EXPLODE); //TODO: play SND_HOMEHIT sound?
-
-	self->think = G_FreeEdict;
-	self->nextthink = level.time + FRAMETIME; //mxd. Use define.
-}
-
-// Create the guts of morcalavin's projectile.
-static void MorcalavinProjectileInit(edict_t* self, edict_t* proj) //mxd. Named 'create_morcalavin_proj' in original logic.
-{
-	proj->svflags |= SVF_ALWAYS_SEND;
-	proj->movetype = PHYSICSTYPE_FLY;
-	proj->gravity = 0.0f;
-	proj->solid = SOLID_BBOX;
-	proj->classname = "Morcalavin_Missile";
-	proj->dmg = 1;
-	proj->s.scale = 1.0f;
-	proj->clipmask = MASK_SHOT;
-	proj->nextthink = level.time + FRAMETIME; //mxd. Use define.
-
-	proj->isBlocked = MorcalavinProjectile1Blocked;
-	proj->isBlocking = MorcalavinProjectile1Blocked;
-	proj->bounced = MorcalavinProjectile1Blocked;
-
-	proj->s.effects = (EF_MARCUS_FLAG1 | EF_CAMERA_NO_CLIP);
-	proj->enemy = self->enemy;
-
-	VectorSet(proj->mins, -2.0f, -2.0f, -2.0f);
-	VectorSet(proj->maxs,  2.0f,  2.0f,  2.0f);
-	VectorCopy(self->s.origin, proj->s.origin);
-}
+#pragma region ========================== Morcalavin taunt missile =========================
 
 void morcalavin_taunt_shot(edict_t* self)
 {
@@ -623,48 +738,9 @@ void morcalavin_taunt_shot(edict_t* self)
 	gi.linkentity(proj);
 }
 
-static void MorcalavinPhaseOutPreThink(edict_t* self) //mxd. Named 'morcalavin_phase_out' in original logic.
-{
-#define PHASE_OUT_INTERVAL	40 //mxd
+#pragma endregion
 
-	if (self->s.color.a > PHASE_OUT_INTERVAL)
-	{
-		self->s.color.a -= irand(PHASE_OUT_INTERVAL / 2, PHASE_OUT_INTERVAL);
-		self->next_pre_think = level.time + 0.05f;
-	}
-	else
-	{
-		self->s.color.a = 0;
-		self->pre_think = NULL;
-		self->next_pre_think = -1.0f;
-	}
-}
-
-static void MorcalavinPhaseInPreThink(edict_t* self) //mxd. Named 'morcalavin_phase_in' in original logic.
-{
-#define PHASE_IN_INTERVAL	12 //mxd
-
-	if (self->s.color.a < 255 - PHASE_IN_INTERVAL)
-	{
-		self->s.color.a += irand(PHASE_IN_INTERVAL / 2, PHASE_IN_INTERVAL);
-		self->next_pre_think = level.time + 0.05f;
-	}
-	else
-	{
-		self->svflags &= ~SVF_NO_AUTOTARGET;
-		self->s.color.c = 0xffffffff;
-
-		if (self->health <= 0 || self->monsterinfo.lefty >= 6)
-		{
-			self->pre_think = NULL;
-			self->next_pre_think = -1.0f;
-		}
-		else
-		{
-			MorcalavinPhaseOutInit(self);
-		}
-	}
-}
+#pragma region ========================== Utility functions =========================
 
 static void MorcalavinPhaseOutInit(edict_t* self) //mxd. Named 'morcalavin_init_phase_out' in original logic.
 {
@@ -680,14 +756,6 @@ static void MorcalavinPhaseInInit(edict_t* self) //mxd. Named 'morcalavin_init_p
 {
 	self->pre_think = MorcalavinPhaseInPreThink;
 	self->next_pre_think = level.time + FRAMETIME;
-}
-
-static void MorcalavinLaughPostThink(edict_t* self) //mxd. Named 'mork_laugh' in original logic.
-{
-	gi.sound(self, CHAN_VOICE, sounds[SND_LAUGH], 1.0f, ATTN_NONE, 0.0f);
-
-	self->post_think = NULL;
-	self->next_post_think = -1.0f;
 }
 
 static void MorcalavinCheckKilledEnemy(edict_t* attacker) //mxd. Named 'mork_check_killed_enemy' in original logic.
@@ -743,449 +811,6 @@ void MorcalavinProjectileHomeIn(edict_t* self) //mxd. Named 'projectile_homethin
 
 	if (self->random != 0.0f) //TODO: add add projectile_veer_amount custom name?
 		MorcalavinProjectileVeer(self, self->random);
-}
-
-static void MorcalavinBeamIsBlocked(edict_t* self, trace_t* trace) //mxd. Named 'beam_blocked' in original logic.
-{
-	if (trace->ent->takedamage != DAMAGE_NO)
-	{
-		const int damage = irand(MORK_DMG_PROJ1_MIN, MORK_DMG_PROJ1_MAX) + max(0, self->dmg); //mxd. flrand() in original logic.
-
-		vec3_t hit_dir;
-		VectorNormalize2(self->velocity, hit_dir);
-
-		T_Damage(trace->ent, self, self->owner, hit_dir, self->s.origin, trace->plane.normal, damage, 0, DAMAGE_SPELL | DAMAGE_NO_KNOCKBACK, MOD_DIED);
-	}
-
-	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/seraph/guard/spellhit.wav"), 1.0f, ATTN_NORM, 0.0f); //TODO: precache in sounds[SND_BEAMHIT]?
-	gi.CreateEffect(&self->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, self->s.origin, "bv", FX_M_MISC_EXPLODE, vec3_origin);
-
-	G_SetToFree(self);
-}
-
-static void MorcalavinBeamThink(edict_t* self) //mxd. Named 'beam_think' in original logic. //TODO: doesn't do anything useful. Can be removed?
-{
-	self->think = NULL;
-	self->nextthink = -1.0f;
-}
-
-void morcalavin_beam(edict_t* self)
-{
-	// Spawn the projectile.
-	edict_t* beam = G_Spawn();
-
-	MorcalavinProjectileInit(self, beam);
-
-	beam->reflect_debounce_time = MAX_REFLECT;
-	beam->classname = "M_Beam";
-	beam->owner = self;
-
-	vec3_t forward;
-	vec3_t right;
-	AngleVectors(self->s.angles, forward, right, NULL);
-	VectorMA(beam->s.origin, 48.0f, forward, beam->s.origin);
-	VectorMA(beam->s.origin, -20.0f, right, beam->s.origin);
-	beam->s.origin[2] += 16.0f;
-
-	const vec3_t end_pos = //mxd. The only difference between this and morcalavin_beam2()...
-	{
-		self->enemy->s.origin[0],
-		self->enemy->s.origin[1],
-		self->enemy->s.origin[2] + (float)self->enemy->viewheight
-	};
-
-	vec3_t dir;
-	VectorSubtract(end_pos, beam->s.origin, dir);
-	VectorNormalize(dir);
-
-	VectorScale(dir, 1250.0f, beam->velocity);
-	vectoangles(beam->velocity, beam->s.angles);
-
-	beam->dmg = irand(MORK_DMG_BEAM_MIN, MORK_DMG_BEAM_MAX); //mxd. flrand() in original logic.
-
-	beam->isBlocked = MorcalavinBeamIsBlocked;
-	beam->think = MorcalavinBeamThink;
-	beam->nextthink = level.time + 1.0f;
-
-	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/seraph/guard/spell.wav"), 1.0f, ATTN_NORM, 0.0f); //TODO: precache in sounds[SND_BEAM]?
-	gi.CreateEffect(&beam->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, vec3_origin, "bv", FX_M_BEAM, beam->s.angles); //FIXME: Spawn a muzzle flash.
-	gi.linkentity(beam);
-}
-
-void morcalavin_beam2(edict_t* self)
-{
-	// Spawn the projectile.
-	edict_t* beam = G_Spawn();
-
-	MorcalavinProjectileInit(self, beam);
-
-	beam->reflect_debounce_time = MAX_REFLECT;
-	beam->classname = "M_Beam";
-	beam->owner = self;
-
-	vec3_t forward;
-	vec3_t right;
-	AngleVectors(self->s.angles, forward, right, NULL);
-	VectorMA(beam->s.origin, 48.0f, forward, beam->s.origin);
-	VectorMA(beam->s.origin, -20.0f, right, beam->s.origin);
-	beam->s.origin[2] += 16.0f;
-
-	vec3_t dir;
-	VectorSubtract(self->enemy->s.origin, beam->s.origin, dir);
-	VectorNormalize(dir);
-
-	VectorScale(dir, 1250.0f, beam->velocity);
-	vectoangles(beam->velocity, beam->s.angles);
-
-	beam->dmg = irand(MORK_DMG_BEAM_MIN, MORK_DMG_BEAM_MAX); //mxd. flrand() in original logic.
-
-	beam->isBlocked = MorcalavinBeamIsBlocked;
-	beam->think = MorcalavinBeamThink;
-	beam->nextthink = level.time + 1.0f;
-
-	gi.sound(self, CHAN_WEAPON, gi.soundindex("monsters/seraph/guard/spell.wav"), 1.0f, ATTN_NORM, 0.0f); //TODO: precache in sounds[SND_BEAM]?
-	gi.CreateEffect(&beam->s, FX_M_EFFECTS, CEF_OWNERS_ORIGIN, vec3_origin, "bv", FX_M_BEAM, beam->s.angles); //FIXME: Spawn a muzzle flash.
-	gi.linkentity(beam);
-}
-
-void morcalavin_quake_pause(edict_t* self)
-{
-	if (self->monsterinfo.flee_finished)
-	{
-		self->monsterinfo.flee_finished = false;
-		SetAnim(self, ANIM_GROUND_ATTACK);
-	}
-}
-
-void morcalavin_quake(edict_t* self, float pitch_ofs, float yaw_ofs, float roll_ofs)
-{
-	// Create the effect.
-	vec3_t forward;
-	vec3_t right;
-	AngleVectors(self->s.angles, forward, right, NULL);
-
-	vec3_t org;
-	VectorMA(self->s.origin, 44.0f, forward, org);
-	VectorMA(org, -14.0f, right, org);
-	org[2] += self->mins[2];
-
-	gi.CreateEffect(NULL, FX_M_EFFECTS, 0, self->s.origin, "bv", FX_QUAKE_RING, org);
-
-	// Check to see if the player is on the ground, and if he is, then knock him down.
-	if (self->enemy != NULL && self->enemy->groundentity != NULL && self->enemy->client != NULL)
-	{
-		// Knock the player down.
-		P_KnockDownPlayer(&self->enemy->client->playerinfo);
-
-		// Denote we've done so to follow it with an attack.
-		self->monsterinfo.flee_finished = true; //TODO: add qboolean morcalavin_quake_finished name.
-	}
-}
-
-void morcalavin_rush_sound(edict_t* self)
-{
-	gi.sound(self, CHAN_BODY, sounds[SND_RUSH], 1.0f, ATTN_NORM, 0.0f);
-
-	vec3_t forward;
-	AngleVectors(self->s.angles, forward, NULL, NULL);
-	VectorScale(forward, 250.0f, self->velocity);
-	self->velocity[2] = 150.0f;
-}
-
-void morcalavin_pause(edict_t* self)
-{
-	if (self->monsterinfo.lefty < 6 && self->health > 0)
-	{
-		SetAnim(self, ANIM_FLOAT);
-		return;
-	}
-
-	self->takedamage = DAMAGE_YES;
-	self->mood_think(self);
-
-	switch (self->ai_mood)
-	{
-		case AI_MOOD_ATTACK:
-		{
-			const int msg_id = ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE); //mxd
-			QPostMessage(self, msg_id, PRI_DIRECTIVE, NULL);
-		} break;
-
-		case AI_MOOD_PURSUE:
-		case AI_MOOD_NAVIGATE:
-			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_DELAY:
-		case AI_MOOD_STAND:
-			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
-			break;
-
-		case AI_MOOD_WANDER:
-			SetAnim(self, ANIM_WALK);
-			break;
-
-		default:
-			break;
-	}
-}
-
-static void MorcalavinDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'morcalavin_death' in original logic.
-{
-	self->monsterinfo.stepState++; //TODO: used only by m_morcalavin.c rename to morcalavin_state?
-}
-
-void morcalavin_retort(edict_t* self)
-{
-	self->msgHandler = DefaultMsgHandler;
-	SetAnim(self, ANIM_RETORT);
-}
-
-void morcalavin_getup(edict_t* self) //TODO: rename to morcalavin_get_up.
-{
-	if (self->monsterinfo.lefty == 7 && self->monsterinfo.attack_finished > 0.0f && self->monsterinfo.attack_finished < level.time)
-	{
-		self->monsterinfo.attack_finished = -1.0f;
-		gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1.0f, ATTN_NORM, 0.0f);
-		SetAnim(self, ANIM_GETUP);
-	}
-}
-
-void morcalavin_hurtidle(edict_t* self) //TODO: rename to morcalavin_hurt_idle.
-{
-	SetAnim(self, ANIM_HURTIDLE);
-}
-
-static void MorcalavinStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'morcalavin_stand' in original logic.
-{
-	if (self->health > 0)
-		SetAnim(self, ANIM_FLOAT);
-}
-
-void mork_ai_hover(edict_t* self, float distance) //TODO: rename to morcalavin_ai_hover.
-{
-	if (self->health <= 0)
-		return;
-
-	if (self->enemy != NULL)
-		ai_charge(self, 0.0f);
-	else
-		ai_stand(self, 0.0f);
-
-	if (distance > 0.0f)
-	{
-		vec3_t bottom;
-		VectorCopy(self->s.origin, bottom);
-		bottom[2] -= distance;
-
-		trace_t trace;
-		gi.trace(self->s.origin, self->mins, self->maxs, bottom, self, MASK_SOLID, &trace);
-
-		if (trace.fraction < 1.0f)
-		{
-			const float desired_vel = (1.0f - trace.fraction) * distance;
-			self->velocity[2] = max(desired_vel, self->velocity[2]);
-		}
-	}
-}
-
-void mork_ai_run(edict_t* self, float distance) //TODO: rename to morcalavin_ai_run.
-{
-	if (self->health <= 0)
-		return;
-
-	if (self->curAnimID == ANIM_FLY)
-	{
-		ai_charge(self, distance);
-		return;
-	}
-
-	MG_AI_Run(self, distance);
-
-	if (self->groundentity == NULL)
-	{
-		if (self->curAnimID == ANIM_WALK)
-		{
-			vec3_t forward;
-			AngleVectors(self->s.angles, forward, NULL, NULL);
-			VectorScale(forward, 250.0f, self->velocity);
-			self->velocity[2] = 150.0f;
-		}
-
-		SetAnim(self, ANIM_GLIDE);
-	}
-	else
-	{
-		SetAnim(self, ANIM_WALK);
-	}
-}
-
-static void MorcalavinRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'morcalavin_run' in original logic.
-{
-	// If can't move, go into a float for a bit.
-	if (self->health <= 0)
-		return;
-
-	if (self->enemy == NULL)
-	{
-		SetAnim(self, ANIM_FLOAT);
-		return;
-	}
-
-	if (self->enemy->health <= 0)
-	{
-		MorcalavinCheckKilledEnemy(self->enemy);
-		SetAnim(self, ANIM_FLOAT);
-
-		return;
-	}
-
-	if (self->monsterinfo.lefty == 0)
-	{
-		MorcalavinPhaseOutInit(self);
-		SetAnim(self, ANIM_FLOAT);
-
-		gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1.0f, ATTN_NORM, 0.0f);
-
-		self->solid = SOLID_NOT;
-		self->monsterinfo.sound_start = level.time + 2.5f;
-		self->monsterinfo.lefty++; //TODO: add morcalavin_taunt_counter name.
-
-		return;
-	}
-
-	SetAnim(self, ((self->groundentity == NULL) ? ANIM_GLIDE : ANIM_WALK));
-}
-
-typedef enum morcalavin_attackID_e
-{
-	MORK_ATTACK_FADE,
-	MORK_ATTACK_TRACKING,
-	MORK_ATTACK_SPHERE,
-	MORK_ATTACK_BEAM,
-	MORK_ATTACK_5SPHERE
-} morcalavin_attackID_t;
-
-static void MorcalavinMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'morcalavin_missile' in original logic.
-{
-	const int chance = irand(0, 100);
-
-	if (chance < 5 && self->wait != MORK_ATTACK_FADE)
-	{
-		//mxd. Inline morcalavin_attack_fade_out().
-		morcalavin_fade_out(self);
-		self->monsterinfo.lefty = 8;
-		self->wait = MORK_ATTACK_FADE; //TODO: add morcalavin_attackID_t morcalavin_current_attack_id name.
-	}
-	else if (chance < 25 && self->wait != MORK_ATTACK_TRACKING)
-	{
-		SetAnim(self, ANIM_TRACKING1);
-		self->wait = MORK_ATTACK_TRACKING;
-	}
-	else if (chance < 50 && self->wait != MORK_ATTACK_SPHERE)
-	{
-		SetAnim(self, ANIM_ATTACK2B);
-		self->wait = MORK_ATTACK_SPHERE;
-	}
-	else if (chance < 75 && self->wait != MORK_ATTACK_BEAM)
-	{
-		SetAnim(self, ANIM_ATTACK3);
-		self->wait = MORK_ATTACK_BEAM;
-	}
-	else if (self->monsterinfo.stepState > 1 && self->wait != MORK_ATTACK_5SPHERE)
-	{
-		SetAnim(self, ANIM_ATTACK4);
-		self->wait = MORK_ATTACK_5SPHERE;
-	}
-}
-
-static void MorcalavinMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'morcalavin_melee' in original logic.
-{
-	SetAnim(self, ANIM_ATTACK1);
-}
-
-void MorcalavinStaticsInit(void)
-{
-	static ClassResourceInfo_t res_info; //mxd. Made local static.
-
-	classStatics[CID_MORK].msgReceivers[MSG_STAND] = MorcalavinStandMsgHandler;
-	classStatics[CID_MORK].msgReceivers[MSG_MELEE] = MorcalavinMeleeMsgHandler;
-	classStatics[CID_MORK].msgReceivers[MSG_MISSILE] = MorcalavinMissileMsgHandler;
-	classStatics[CID_MORK].msgReceivers[MSG_RUN] = MorcalavinRunMsgHandler;
-	classStatics[CID_MORK].msgReceivers[MSG_DEATH] = MorcalavinDeathMsgHandler;
-
-	res_info.numAnims = NUM_ANIMS;
-	res_info.animations = animations;
-	res_info.modelIndex = gi.modelindex("models/monsters/morcalavin/tris.fm");
-
-	// Quake attack.
-	//sounds[SND_QUAKE] = gi.soundindex("monsters/mork/quake.wav");
-
-	// Straight-fire beam.
-	//sounds[SND_BEAM] = gi.soundindex("monsters/mork/beam.wav");
-	//sounds[SND_BEAMHIT] = gi.soundindex("monsters/mork/beamhit.wav");
-
-	// Homing balls.
-	sounds[SND_HOMING] = gi.soundindex("monsters/mork/homing.wav");
-	//sounds[SND_HOMEHIT] = gi.soundindex("monsters/mork/homehit.wav");
-
-	// Power Puff.
-	sounds[SND_PPCHARGE] = gi.soundindex("monsters/mork/ppcharge.wav");
-	sounds[SND_PPFIRE] = gi.soundindex("monsters/mork/ppfire.wav");
-	//sounds[SND_PPEXPLODE] = gi.soundindex("monsters/mork/ppexplode.wav");
-
-	// Lightning from eyes.
-	//sounds[SND_LIGHTNING] = gi.soundindex("monsters/mork/lightning.wav");
-	//sounds[SND_LGHTNGHIT] = gi.soundindex("monsters/mork/lghtnghit.wav");
-
-	// Shove.
-	//sounds[SND_FORCEWALL] = gi.soundindex("monsters/mork/forcewall.wav");
-
-	// Shield.
-	sounds[SND_MAKESHIELD] = gi.soundindex("monsters/mork/makeshield.wav");
-	//sounds[SND_SHIELDHIT] = gi.soundindex("monsters/mork/shieldhit.wav");
-	//sounds[SND_SHIELDPULSE] = gi.soundindex("monsters/mork/shieldpulse.wav");
-	//sounds[SND_SHIELDGONE] = gi.soundindex("monsters/mork/shieldgone.wav");
-	//sounds[SND_SHIELDBREAK] = gi.soundindex("monsters/mork/shieldbreak.wav");
-
-	// Fly forward.
-	sounds[SND_RUSH] = gi.soundindex("monsters/mork/rush.wav");
-
-	// Hurt and get up.
-	sounds[SND_FALL] = gi.soundindex("monsters/mork/fall.wav");
-	sounds[SND_REVIVE] = gi.soundindex("monsters/mork/revive.wav");
-
-	// Strafing beams attack.
-	//sounds[SND_STRAFEON] = gi.soundindex("monsters/mork/strafeon.wav");
-	//sounds[SND_STRFSWNG] = gi.soundindex("monsters/mork/strfswng.wav");
-	//sounds[SND_STRAFEOFF] = gi.soundindex("monsters/mork/strafeoff.wav");
-
-	// Hurt/kill player laugh.
-	sounds[SND_LAUGH] = gi.soundindex("monsters/mork/laugh.wav");
-
-	// Taunts.
-	sounds[TAUNT_LAUGH1] = gi.soundindex("monsters/mork/laugh1.wav");
-	sounds[TAUNT_LAUGH2] = gi.soundindex("monsters/mork/laugh2.wav");
-	sounds[TAUNT_LAUGH3] = gi.soundindex("monsters/mork/laugh3.wav");
-	sounds[TAUNT_LAUGH4] = gi.soundindex("monsters/mork/laugh4.wav");
-
-	sounds[TAUNT_BELLY1] = gi.soundindex("monsters/mork/belly.wav");
-	sounds[TAUNT_BELLY2] = gi.soundindex("monsters/mork/belly2.wav");
-	sounds[TAUNT_BELLY3] = gi.soundindex("monsters/mork/digest.wav");
-
-	res_info.numSounds = NUM_SOUNDS;
-	res_info.sounds = sounds;
-
-	classStatics[CID_MORK].resInfo = &res_info;
-}
-
-void morcalavin_fade_out(edict_t* self)
-{
-	gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1.0f, ATTN_NORM, 0.0f);
-
-	self->monsterinfo.sound_start = level.time + 2.0f;
-	MorcalavinPhaseOutInit(self);
-	SetAnim(self, ANIM_FLOAT);
 }
 
 static void MorcalavinChooseTeleportDestination(edict_t* self) //mxd. Removed unused return type. Named 'morcalavin_choose_teleport_destination' in original logic.
@@ -1263,6 +888,61 @@ static void MorcalavinTeleportAttack(edict_t* self) //mxd. Named 'morcalavin_tel
 	// Taunt player?
 	if (self->monsterinfo.stepState > 0 && irand(0, 1) == 1)
 		gi.sound(self, CHAN_AUTO, sounds[irand(TAUNT_LAUGH2, TAUNT_LAUGH4)], 1.0f, ATTN_NONE, 0.0f);
+}
+
+#pragma endregion
+
+#pragma region ========================== Edict callbacks ===========================
+
+static void MorcalavinPhaseOutPreThink(edict_t* self) //mxd. Named 'morcalavin_phase_out' in original logic.
+{
+#define PHASE_OUT_INTERVAL	40 //mxd
+
+	if (self->s.color.a > PHASE_OUT_INTERVAL)
+	{
+		self->s.color.a -= irand(PHASE_OUT_INTERVAL / 2, PHASE_OUT_INTERVAL);
+		self->next_pre_think = level.time + 0.05f;
+	}
+	else
+	{
+		self->s.color.a = 0;
+		self->pre_think = NULL;
+		self->next_pre_think = -1.0f;
+	}
+}
+
+static void MorcalavinPhaseInPreThink(edict_t* self) //mxd. Named 'morcalavin_phase_in' in original logic.
+{
+#define PHASE_IN_INTERVAL	12 //mxd
+
+	if (self->s.color.a < 255 - PHASE_IN_INTERVAL)
+	{
+		self->s.color.a += irand(PHASE_IN_INTERVAL / 2, PHASE_IN_INTERVAL);
+		self->next_pre_think = level.time + 0.05f;
+	}
+	else
+	{
+		self->svflags &= ~SVF_NO_AUTOTARGET;
+		self->s.color.c = 0xffffffff;
+
+		if (self->health <= 0 || self->monsterinfo.lefty >= 6)
+		{
+			self->pre_think = NULL;
+			self->next_pre_think = -1.0f;
+		}
+		else
+		{
+			MorcalavinPhaseOutInit(self);
+		}
+	}
+}
+
+static void MorcalavinLaughPostThink(edict_t* self) //mxd. Named 'mork_laugh' in original logic.
+{
+	gi.sound(self, CHAN_VOICE, sounds[SND_LAUGH], 1.0f, ATTN_NONE, 0.0f);
+
+	self->post_think = NULL;
+	self->next_post_think = -1.0f;
 }
 
 static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthink' in original logic.
@@ -1422,6 +1102,361 @@ static void MorcalavinDie(edict_t* self, edict_t* inflictor, edict_t* attacker, 
 	}
 
 	//FIXME: Create a barrier around him so the player cannot get close to him.
+}
+
+#pragma endregion
+
+#pragma region ========================== Message handlers ==========================
+
+static void MorcalavinDeathMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'morcalavin_death' in original logic.
+{
+	self->monsterinfo.stepState++; //TODO: used only by m_morcalavin.c rename to morcalavin_state?
+}
+
+static void MorcalavinStandMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'morcalavin_stand' in original logic.
+{
+	if (self->health > 0)
+		SetAnim(self, ANIM_FLOAT);
+}
+
+static void MorcalavinRunMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'morcalavin_run' in original logic.
+{
+	// If can't move, go into a float for a bit.
+	if (self->health <= 0)
+		return;
+
+	if (self->enemy == NULL)
+	{
+		SetAnim(self, ANIM_FLOAT);
+		return;
+	}
+
+	if (self->enemy->health <= 0)
+	{
+		MorcalavinCheckKilledEnemy(self->enemy);
+		SetAnim(self, ANIM_FLOAT);
+
+		return;
+	}
+
+	if (self->monsterinfo.lefty == 0)
+	{
+		MorcalavinPhaseOutInit(self);
+		SetAnim(self, ANIM_FLOAT);
+
+		gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1.0f, ATTN_NORM, 0.0f);
+
+		self->solid = SOLID_NOT;
+		self->monsterinfo.sound_start = level.time + 2.5f;
+		self->monsterinfo.lefty++; //TODO: add morcalavin_taunt_counter name.
+
+		return;
+	}
+
+	SetAnim(self, ((self->groundentity == NULL) ? ANIM_GLIDE : ANIM_WALK));
+}
+
+typedef enum morcalavin_attackID_e
+{
+	MORK_ATTACK_FADE,
+	MORK_ATTACK_TRACKING,
+	MORK_ATTACK_SPHERE,
+	MORK_ATTACK_BEAM,
+	MORK_ATTACK_5SPHERE
+} morcalavin_attackID_t;
+
+static void MorcalavinMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'morcalavin_missile' in original logic.
+{
+	const int chance = irand(0, 100);
+
+	if (chance < 5 && self->wait != MORK_ATTACK_FADE)
+	{
+		//mxd. Inline morcalavin_attack_fade_out().
+		morcalavin_fade_out(self);
+		self->monsterinfo.lefty = 8;
+		self->wait = MORK_ATTACK_FADE; //TODO: add morcalavin_attackID_t morcalavin_current_attack_id name.
+	}
+	else if (chance < 25 && self->wait != MORK_ATTACK_TRACKING)
+	{
+		SetAnim(self, ANIM_TRACKING1);
+		self->wait = MORK_ATTACK_TRACKING;
+	}
+	else if (chance < 50 && self->wait != MORK_ATTACK_SPHERE)
+	{
+		SetAnim(self, ANIM_ATTACK2B);
+		self->wait = MORK_ATTACK_SPHERE;
+	}
+	else if (chance < 75 && self->wait != MORK_ATTACK_BEAM)
+	{
+		SetAnim(self, ANIM_ATTACK3);
+		self->wait = MORK_ATTACK_BEAM;
+	}
+	else if (self->monsterinfo.stepState > 1 && self->wait != MORK_ATTACK_5SPHERE)
+	{
+		SetAnim(self, ANIM_ATTACK4);
+		self->wait = MORK_ATTACK_5SPHERE;
+	}
+}
+
+static void MorcalavinMeleeMsgHandler(edict_t* self, G_Message_t* msg) //mxd. Named 'morcalavin_melee' in original logic.
+{
+	SetAnim(self, ANIM_ATTACK1);
+}
+
+#pragma endregion
+
+#pragma region ========================== Action functions ==========================
+
+void morcalavin_end_retort(edict_t* self)
+{
+	SetAnim(self, ANIM_WALK);
+}
+
+void morcalavin_quake_pause(edict_t* self)
+{
+	if (self->monsterinfo.flee_finished)
+	{
+		self->monsterinfo.flee_finished = false;
+		SetAnim(self, ANIM_GROUND_ATTACK);
+	}
+}
+
+void morcalavin_quake(edict_t* self, float pitch_ofs, float yaw_ofs, float roll_ofs)
+{
+	// Create the effect.
+	vec3_t forward;
+	vec3_t right;
+	AngleVectors(self->s.angles, forward, right, NULL);
+
+	vec3_t org;
+	VectorMA(self->s.origin, 44.0f, forward, org);
+	VectorMA(org, -14.0f, right, org);
+	org[2] += self->mins[2];
+
+	gi.CreateEffect(NULL, FX_M_EFFECTS, 0, self->s.origin, "bv", FX_QUAKE_RING, org);
+
+	// Check to see if the player is on the ground, and if he is, then knock him down.
+	if (self->enemy != NULL && self->enemy->groundentity != NULL && self->enemy->client != NULL)
+	{
+		// Knock the player down.
+		P_KnockDownPlayer(&self->enemy->client->playerinfo);
+
+		// Denote we've done so to follow it with an attack.
+		self->monsterinfo.flee_finished = true; //TODO: add qboolean morcalavin_quake_finished name.
+	}
+}
+
+void morcalavin_rush_sound(edict_t* self)
+{
+	gi.sound(self, CHAN_BODY, sounds[SND_RUSH], 1.0f, ATTN_NORM, 0.0f);
+
+	vec3_t forward;
+	AngleVectors(self->s.angles, forward, NULL, NULL);
+	VectorScale(forward, 250.0f, self->velocity);
+	self->velocity[2] = 150.0f;
+}
+
+void morcalavin_pause(edict_t* self)
+{
+	if (self->monsterinfo.lefty < 6 && self->health > 0)
+	{
+		SetAnim(self, ANIM_FLOAT);
+		return;
+	}
+
+	self->takedamage = DAMAGE_YES;
+	self->mood_think(self);
+
+	switch (self->ai_mood)
+	{
+		case AI_MOOD_ATTACK:
+		{
+			const int msg_id = ((self->ai_mood_flags & AI_MOOD_FLAG_MISSILE) ? MSG_MISSILE : MSG_MELEE); //mxd
+			QPostMessage(self, msg_id, PRI_DIRECTIVE, NULL);
+		} break;
+
+		case AI_MOOD_PURSUE:
+		case AI_MOOD_NAVIGATE:
+			QPostMessage(self, MSG_RUN, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_DELAY:
+		case AI_MOOD_STAND:
+			QPostMessage(self, MSG_STAND, PRI_DIRECTIVE, NULL);
+			break;
+
+		case AI_MOOD_WANDER:
+			SetAnim(self, ANIM_WALK);
+			break;
+
+		default:
+			break;
+	}
+}
+
+void morcalavin_retort(edict_t* self)
+{
+	self->msgHandler = DefaultMsgHandler;
+	SetAnim(self, ANIM_RETORT);
+}
+
+void morcalavin_getup(edict_t* self) //TODO: rename to morcalavin_get_up.
+{
+	if (self->monsterinfo.lefty == 7 && self->monsterinfo.attack_finished > 0.0f && self->monsterinfo.attack_finished < level.time)
+	{
+		self->monsterinfo.attack_finished = -1.0f;
+		gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1.0f, ATTN_NORM, 0.0f);
+		SetAnim(self, ANIM_GETUP);
+	}
+}
+
+void morcalavin_hurtidle(edict_t* self) //TODO: rename to morcalavin_hurt_idle.
+{
+	SetAnim(self, ANIM_HURTIDLE);
+}
+
+void mork_ai_hover(edict_t* self, float distance) //TODO: rename to morcalavin_ai_hover.
+{
+	if (self->health <= 0)
+		return;
+
+	if (self->enemy != NULL)
+		ai_charge(self, 0.0f);
+	else
+		ai_stand(self, 0.0f);
+
+	if (distance > 0.0f)
+	{
+		vec3_t bottom;
+		VectorCopy(self->s.origin, bottom);
+		bottom[2] -= distance;
+
+		trace_t trace;
+		gi.trace(self->s.origin, self->mins, self->maxs, bottom, self, MASK_SOLID, &trace);
+
+		if (trace.fraction < 1.0f)
+		{
+			const float desired_vel = (1.0f - trace.fraction) * distance;
+			self->velocity[2] = max(desired_vel, self->velocity[2]);
+		}
+	}
+}
+
+void mork_ai_run(edict_t* self, float distance) //TODO: rename to morcalavin_ai_run.
+{
+	if (self->health <= 0)
+		return;
+
+	if (self->curAnimID == ANIM_FLY)
+	{
+		ai_charge(self, distance);
+		return;
+	}
+
+	MG_AI_Run(self, distance);
+
+	if (self->groundentity == NULL)
+	{
+		if (self->curAnimID == ANIM_WALK)
+		{
+			vec3_t forward;
+			AngleVectors(self->s.angles, forward, NULL, NULL);
+			VectorScale(forward, 250.0f, self->velocity);
+			self->velocity[2] = 150.0f;
+		}
+
+		SetAnim(self, ANIM_GLIDE);
+	}
+	else
+	{
+		SetAnim(self, ANIM_WALK);
+	}
+}
+
+void morcalavin_fade_out(edict_t* self)
+{
+	gi.sound(self, CHAN_VOICE, sounds[SND_REVIVE], 1.0f, ATTN_NORM, 0.0f);
+
+	self->monsterinfo.sound_start = level.time + 2.0f;
+	MorcalavinPhaseOutInit(self);
+	SetAnim(self, ANIM_FLOAT);
+}
+
+#pragma endregion
+
+void MorcalavinStaticsInit(void)
+{
+	static ClassResourceInfo_t res_info; //mxd. Made local static.
+
+	classStatics[CID_MORK].msgReceivers[MSG_STAND] = MorcalavinStandMsgHandler;
+	classStatics[CID_MORK].msgReceivers[MSG_MELEE] = MorcalavinMeleeMsgHandler;
+	classStatics[CID_MORK].msgReceivers[MSG_MISSILE] = MorcalavinMissileMsgHandler;
+	classStatics[CID_MORK].msgReceivers[MSG_RUN] = MorcalavinRunMsgHandler;
+	classStatics[CID_MORK].msgReceivers[MSG_DEATH] = MorcalavinDeathMsgHandler;
+
+	res_info.numAnims = NUM_ANIMS;
+	res_info.animations = animations;
+	res_info.modelIndex = gi.modelindex("models/monsters/morcalavin/tris.fm");
+
+	// Quake attack.
+	//sounds[SND_QUAKE] = gi.soundindex("monsters/mork/quake.wav");
+
+	// Straight-fire beam.
+	//sounds[SND_BEAM] = gi.soundindex("monsters/mork/beam.wav");
+	//sounds[SND_BEAMHIT] = gi.soundindex("monsters/mork/beamhit.wav");
+
+	// Homing balls.
+	sounds[SND_HOMING] = gi.soundindex("monsters/mork/homing.wav");
+	//sounds[SND_HOMEHIT] = gi.soundindex("monsters/mork/homehit.wav");
+
+	// Power Puff.
+	sounds[SND_PPCHARGE] = gi.soundindex("monsters/mork/ppcharge.wav");
+	sounds[SND_PPFIRE] = gi.soundindex("monsters/mork/ppfire.wav");
+	//sounds[SND_PPEXPLODE] = gi.soundindex("monsters/mork/ppexplode.wav");
+
+	// Lightning from eyes.
+	//sounds[SND_LIGHTNING] = gi.soundindex("monsters/mork/lightning.wav");
+	//sounds[SND_LGHTNGHIT] = gi.soundindex("monsters/mork/lghtnghit.wav");
+
+	// Shove.
+	//sounds[SND_FORCEWALL] = gi.soundindex("monsters/mork/forcewall.wav");
+
+	// Shield.
+	sounds[SND_MAKESHIELD] = gi.soundindex("monsters/mork/makeshield.wav");
+	//sounds[SND_SHIELDHIT] = gi.soundindex("monsters/mork/shieldhit.wav");
+	//sounds[SND_SHIELDPULSE] = gi.soundindex("monsters/mork/shieldpulse.wav");
+	//sounds[SND_SHIELDGONE] = gi.soundindex("monsters/mork/shieldgone.wav");
+	//sounds[SND_SHIELDBREAK] = gi.soundindex("monsters/mork/shieldbreak.wav");
+
+	// Fly forward.
+	sounds[SND_RUSH] = gi.soundindex("monsters/mork/rush.wav");
+
+	// Hurt and get up.
+	sounds[SND_FALL] = gi.soundindex("monsters/mork/fall.wav");
+	sounds[SND_REVIVE] = gi.soundindex("monsters/mork/revive.wav");
+
+	// Strafing beams attack.
+	//sounds[SND_STRAFEON] = gi.soundindex("monsters/mork/strafeon.wav");
+	//sounds[SND_STRFSWNG] = gi.soundindex("monsters/mork/strfswng.wav");
+	//sounds[SND_STRAFEOFF] = gi.soundindex("monsters/mork/strafeoff.wav");
+
+	// Hurt/kill player laugh.
+	sounds[SND_LAUGH] = gi.soundindex("monsters/mork/laugh.wav");
+
+	// Taunts.
+	sounds[TAUNT_LAUGH1] = gi.soundindex("monsters/mork/laugh1.wav");
+	sounds[TAUNT_LAUGH2] = gi.soundindex("monsters/mork/laugh2.wav");
+	sounds[TAUNT_LAUGH3] = gi.soundindex("monsters/mork/laugh3.wav");
+	sounds[TAUNT_LAUGH4] = gi.soundindex("monsters/mork/laugh4.wav");
+
+	sounds[TAUNT_BELLY1] = gi.soundindex("monsters/mork/belly.wav");
+	sounds[TAUNT_BELLY2] = gi.soundindex("monsters/mork/belly2.wav");
+	sounds[TAUNT_BELLY3] = gi.soundindex("monsters/mork/digest.wav");
+
+	res_info.numSounds = NUM_SOUNDS;
+	res_info.sounds = sounds;
+
+	classStatics[CID_MORK].resInfo = &res_info;
 }
 
 // QUAKED monster_morcalavin(1 .5 0) (-24 -24 -50) (24 24 40)
