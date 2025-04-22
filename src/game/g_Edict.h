@@ -211,7 +211,7 @@ struct edict_s
 		int dmg; // The damage something does.
 		qboolean elflord_last_stage; //mxd
 		int gorgon_swerve_step; //mxd
-		int morcalavin_charge_meter; //mxd
+		int morcalavin_healthbar_buildup; //mxd
 	};
 
 	union
