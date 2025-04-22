@@ -12,7 +12,7 @@
 #include "mg_ai.h" //mxd
 
 #include "m_mssithra_anim.h"
-#include "m_mssithra_local.h"
+#include "m_mssithra_shared.h"
 
 /*----------------------------------------------------------------------
   mssithra Idle - looking around and standing

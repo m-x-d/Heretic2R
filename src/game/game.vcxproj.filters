@@ -896,7 +896,7 @@
     <ClInclude Include="m_mother_anim.h">
       <Filter>src\Monsters\TcheckrikMother</Filter>
     </ClInclude>
-    <ClInclude Include="m_mssithra_local.h">
+    <ClInclude Include="m_mssithra_shared.h">
       <Filter>src\Monsters\Mssithra</Filter>
     </ClInclude>
     <ClInclude Include="m_mssithra_anim.h">
