@@ -952,10 +952,10 @@ static void MorcalavinPostThink(edict_t* self) //mxd. Named 'morcalavin_postthin
 
 	if (self->enemy != NULL && self->monsterinfo.morcalavin_battle_phase > 0)
 	{
-		if (self->dmg < self->max_health)
+		if (self->morcalavin_charge_meter < self->max_health)
 		{
-			M_ShowLifeMeter(self->dmg, self->max_health); //BUGFIX: mxd. M_ShowLifeMeter(self->dmg, self->dmg) in original logic.
-			self->dmg += 50;
+			M_ShowLifeMeter(self->morcalavin_charge_meter, self->max_health); //BUGFIX: mxd. M_ShowLifeMeter(self->dmg, self->dmg) in original logic.
+			self->morcalavin_charge_meter += 50;
 		}
 		else
 		{
@@ -1076,7 +1076,7 @@ static void MorcalavinDie(edict_t* self, edict_t* inflictor, edict_t* attacker, 
 	self->next_pre_think = -1.0f;
 
 	self->takedamage = DAMAGE_NO;
-	self->dmg = 1; //TODO: add morcalavin_charge_meter name.
+	self->morcalavin_charge_meter = 1;
 	self->health = MonsterHealth(MORK_HEALTH);
 	self->max_health = self->health;
 	self->monsterinfo.morcalavin_taunt_time = level.time + 2.5f;
