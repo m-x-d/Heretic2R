@@ -246,39 +246,39 @@ const animmove_t morcalavin_move_def2 = { 17, morcalavin_frames_def2, morcalavin
 // Morcalavin Walk.
 static const animframe_t morcalavin_frames_walk[] =
 {
-	{ FRAME_walk1,		NULL, 0, 0, 0, mork_ai_run, 6, NULL },
-	{ FRAME_walk2,		NULL, 0, 0, 0, mork_ai_run, 8, NULL },
-	{ FRAME_walk3,		NULL, 0, 0, 0, mork_ai_run, 8, NULL },
-	{ FRAME_walk4,		NULL, 0, 0, 0, mork_ai_run, 8, morcalavin_pause },
-	{ FRAME_walk5,		NULL, 0, 0, 0, mork_ai_run, 8, NULL },
-	{ FRAME_walk6,		NULL, 0, 0, 0, mork_ai_run, 6, NULL },
-	{ FRAME_walk7,		NULL, 0, 0, 0, mork_ai_run, 6, NULL },
-	{ FRAME_walk8,		NULL, 0, 0, 0, mork_ai_run, 4, morcalavin_pause },
-	{ FRAME_walk9,		NULL, 0, 0, 0, mork_ai_run, 6, NULL },
-	{ FRAME_walk10,		NULL, 0, 0, 0, mork_ai_run, 8, NULL },
-	{ FRAME_walk11,		NULL, 0, 0, 0, mork_ai_run, 8, NULL },
-	{ FRAME_walk12,		NULL, 0, 0, 0, mork_ai_run, 8, NULL },
+	{ FRAME_walk1,		NULL, 0, 0, 0, morcalavin_ai_run, 6, NULL },
+	{ FRAME_walk2,		NULL, 0, 0, 0, morcalavin_ai_run, 8, NULL },
+	{ FRAME_walk3,		NULL, 0, 0, 0, morcalavin_ai_run, 8, NULL },
+	{ FRAME_walk4,		NULL, 0, 0, 0, morcalavin_ai_run, 8, morcalavin_pause },
+	{ FRAME_walk5,		NULL, 0, 0, 0, morcalavin_ai_run, 8, NULL },
+	{ FRAME_walk6,		NULL, 0, 0, 0, morcalavin_ai_run, 6, NULL },
+	{ FRAME_walk7,		NULL, 0, 0, 0, morcalavin_ai_run, 6, NULL },
+	{ FRAME_walk8,		NULL, 0, 0, 0, morcalavin_ai_run, 4, morcalavin_pause },
+	{ FRAME_walk9,		NULL, 0, 0, 0, morcalavin_ai_run, 6, NULL },
+	{ FRAME_walk10,		NULL, 0, 0, 0, morcalavin_ai_run, 8, NULL },
+	{ FRAME_walk11,		NULL, 0, 0, 0, morcalavin_ai_run, 8, NULL },
+	{ FRAME_walk12,		NULL, 0, 0, 0, morcalavin_ai_run, 8, NULL },
 };
 const animmove_t morcalavin_move_walk = { 12, morcalavin_frames_walk, morcalavin_pause };
 
 // Morcalavin Fly.
 static const animframe_t morcalavin_frames_fly[] =
 {
-	{ FRAME_fltmve1,	NULL, 0, 0, 0, mork_ai_run, 16, morcalavin_rush_sound },
-	{ FRAME_fltmve2,	NULL, 0, 0, 0, mork_ai_run, 24, NULL },
-	{ FRAME_fltmve3,	NULL, 0, 0, 0, mork_ai_run, 24, NULL },
-	{ FRAME_fltmve4,	NULL, 0, 0, 0, mork_ai_run, 24, NULL },
-	{ FRAME_fltmve5,	NULL, 0, 0, 0, mork_ai_run, 24, NULL },
-	{ FRAME_fltmve6,	NULL, 0, 0, 0, mork_ai_run, 16, NULL },
-	{ FRAME_fltmve7,	NULL, 0, 0, 0, mork_ai_run, 16, NULL },
-	{ FRAME_fltmve8,	NULL, 0, 0, 0, mork_ai_run, 12, NULL },
-	{ FRAME_fltmve9,	NULL, 0, 0, 0, mork_ai_run, 16, NULL },
-	{ FRAME_fltmve10,	NULL, 0, 0, 0, mork_ai_run, 24, NULL },
-	{ FRAME_fltmve11,	NULL, 0, 0, 0, mork_ai_run, 24, NULL },
-	{ FRAME_fltmve12,	NULL, 0, 0, 0, mork_ai_run, 24, NULL },
-	{ FRAME_fltmve13,	NULL, 0, 0, 0, mork_ai_run, 24, NULL },
-	{ FRAME_fltmve14,	NULL, 0, 0, 0, mork_ai_run, 16, NULL },
-	{ FRAME_fltmve15,	NULL, 0, 0, 0, mork_ai_run, 16, NULL },
+	{ FRAME_fltmve1,	NULL, 0, 0, 0, morcalavin_ai_run, 16, morcalavin_rush_sound },
+	{ FRAME_fltmve2,	NULL, 0, 0, 0, morcalavin_ai_run, 24, NULL },
+	{ FRAME_fltmve3,	NULL, 0, 0, 0, morcalavin_ai_run, 24, NULL },
+	{ FRAME_fltmve4,	NULL, 0, 0, 0, morcalavin_ai_run, 24, NULL },
+	{ FRAME_fltmve5,	NULL, 0, 0, 0, morcalavin_ai_run, 24, NULL },
+	{ FRAME_fltmve6,	NULL, 0, 0, 0, morcalavin_ai_run, 16, NULL },
+	{ FRAME_fltmve7,	NULL, 0, 0, 0, morcalavin_ai_run, 16, NULL },
+	{ FRAME_fltmve8,	NULL, 0, 0, 0, morcalavin_ai_run, 12, NULL },
+	{ FRAME_fltmve9,	NULL, 0, 0, 0, morcalavin_ai_run, 16, NULL },
+	{ FRAME_fltmve10,	NULL, 0, 0, 0, morcalavin_ai_run, 24, NULL },
+	{ FRAME_fltmve11,	NULL, 0, 0, 0, morcalavin_ai_run, 24, NULL },
+	{ FRAME_fltmve12,	NULL, 0, 0, 0, morcalavin_ai_run, 24, NULL },
+	{ FRAME_fltmve13,	NULL, 0, 0, 0, morcalavin_ai_run, 24, NULL },
+	{ FRAME_fltmve14,	NULL, 0, 0, 0, morcalavin_ai_run, 16, NULL },
+	{ FRAME_fltmve15,	NULL, 0, 0, 0, morcalavin_ai_run, 16, NULL },
 };
 const animmove_t morcalavin_move_fly = { 15, morcalavin_frames_fly, morcalavin_pause };
 
@@ -372,21 +372,21 @@ const animmove_t morcalavin_move_fall = { 21, morcalavin_frames_fall, morcalavin
 // Morcalavin Glide.
 static const animframe_t morcalavin_frames_glide[] =
 {
-	{ FRAME_fltmve1,	NULL, 0, 0, 0, mork_ai_run, 6, NULL },
-	{ FRAME_fltmve2,	NULL, 0, 0, 0, mork_ai_run, 8, NULL },
-	{ FRAME_fltmve3,	NULL, 0, 0, 0, mork_ai_run, 8, NULL },
-	{ FRAME_fltmve4,	NULL, 0, 0, 0, mork_ai_run, 8, NULL },
-	{ FRAME_fltmve5,	NULL, 0, 0, 0, mork_ai_run, 8, NULL },
-	{ FRAME_fltmve6,	NULL, 0, 0, 0, mork_ai_run, 6, NULL },
-	{ FRAME_fltmve7,	NULL, 0, 0, 0, mork_ai_run, 6, NULL },
-	{ FRAME_fltmve8,	NULL, 0, 0, 0, mork_ai_run, 4, NULL },
-	{ FRAME_fltmve9,	NULL, 0, 0, 0, mork_ai_run, 6, NULL },
-	{ FRAME_fltmve10,	NULL, 0, 0, 0, mork_ai_run, 8, NULL },
-	{ FRAME_fltmve11,	NULL, 0, 0, 0, mork_ai_run, 8, NULL },
-	{ FRAME_fltmve12,	NULL, 0, 0, 0, mork_ai_run, 8, NULL },
-	{ FRAME_fltmve13,	NULL, 0, 0, 0, mork_ai_run, 6, NULL },
-	{ FRAME_fltmve14,	NULL, 0, 0, 0, mork_ai_run, 4, NULL },
-	{ FRAME_fltmve15,	NULL, 0, 0, 0, mork_ai_run, 8, NULL },
+	{ FRAME_fltmve1,	NULL, 0, 0, 0, morcalavin_ai_run, 6, NULL },
+	{ FRAME_fltmve2,	NULL, 0, 0, 0, morcalavin_ai_run, 8, NULL },
+	{ FRAME_fltmve3,	NULL, 0, 0, 0, morcalavin_ai_run, 8, NULL },
+	{ FRAME_fltmve4,	NULL, 0, 0, 0, morcalavin_ai_run, 8, NULL },
+	{ FRAME_fltmve5,	NULL, 0, 0, 0, morcalavin_ai_run, 8, NULL },
+	{ FRAME_fltmve6,	NULL, 0, 0, 0, morcalavin_ai_run, 6, NULL },
+	{ FRAME_fltmve7,	NULL, 0, 0, 0, morcalavin_ai_run, 6, NULL },
+	{ FRAME_fltmve8,	NULL, 0, 0, 0, morcalavin_ai_run, 4, NULL },
+	{ FRAME_fltmve9,	NULL, 0, 0, 0, morcalavin_ai_run, 6, NULL },
+	{ FRAME_fltmve10,	NULL, 0, 0, 0, morcalavin_ai_run, 8, NULL },
+	{ FRAME_fltmve11,	NULL, 0, 0, 0, morcalavin_ai_run, 8, NULL },
+	{ FRAME_fltmve12,	NULL, 0, 0, 0, morcalavin_ai_run, 8, NULL },
+	{ FRAME_fltmve13,	NULL, 0, 0, 0, morcalavin_ai_run, 6, NULL },
+	{ FRAME_fltmve14,	NULL, 0, 0, 0, morcalavin_ai_run, 4, NULL },
+	{ FRAME_fltmve15,	NULL, 0, 0, 0, morcalavin_ai_run, 8, NULL },
 };
 const animmove_t morcalavin_move_glide = { 15, morcalavin_frames_glide, morcalavin_pause };
 

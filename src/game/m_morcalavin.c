@@ -1342,7 +1342,7 @@ void morcalavin_ai_hover(edict_t* self, float distance) //mxd. Named 'mork_ai_ho
 	}
 }
 
-void mork_ai_run(edict_t* self, float distance) //TODO: rename to morcalavin_ai_run.
+void morcalavin_ai_run(edict_t* self, float distance) //mxd. Named 'mork_ai_run' in original logic.
 {
 	if (self->health <= 0)
 		return;
