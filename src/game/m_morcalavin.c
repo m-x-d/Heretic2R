@@ -1170,32 +1170,32 @@ static void MorcalavinMissileMsgHandler(edict_t* self, G_Message_t* msg) //mxd. 
 {
 	const int chance = irand(0, 100);
 
-	if (chance < 5 && self->wait != MORK_ATTACK_FADE)
+	if (chance < 5 && self->morcalavin_current_attack_id != MORK_ATTACK_FADE)
 	{
 		//mxd. Inline morcalavin_attack_fade_out().
 		morcalavin_fade_out(self);
 		self->monsterinfo.morcalavin_taunt_counter = 8;
-		self->wait = MORK_ATTACK_FADE; //TODO: add morcalavin_attackID_t morcalavin_current_attack_id name.
+		self->morcalavin_current_attack_id = MORK_ATTACK_FADE;
 	}
-	else if (chance < 25 && self->wait != MORK_ATTACK_TRACKING)
+	else if (chance < 25 && self->morcalavin_current_attack_id != MORK_ATTACK_TRACKING)
 	{
 		SetAnim(self, ANIM_TRACKING1);
-		self->wait = MORK_ATTACK_TRACKING;
+		self->morcalavin_current_attack_id = MORK_ATTACK_TRACKING;
 	}
-	else if (chance < 50 && self->wait != MORK_ATTACK_SPHERE)
+	else if (chance < 50 && self->morcalavin_current_attack_id != MORK_ATTACK_SPHERE)
 	{
 		SetAnim(self, ANIM_ATTACK2B);
-		self->wait = MORK_ATTACK_SPHERE;
+		self->morcalavin_current_attack_id = MORK_ATTACK_SPHERE;
 	}
-	else if (chance < 75 && self->wait != MORK_ATTACK_BEAM)
+	else if (chance < 75 && self->morcalavin_current_attack_id != MORK_ATTACK_BEAM)
 	{
 		SetAnim(self, ANIM_ATTACK3);
-		self->wait = MORK_ATTACK_BEAM;
+		self->morcalavin_current_attack_id = MORK_ATTACK_BEAM;
 	}
-	else if (self->monsterinfo.morcalavin_battle_phase > 1 && self->wait != MORK_ATTACK_5SPHERE)
+	else if (self->monsterinfo.morcalavin_battle_phase > 1 && self->morcalavin_current_attack_id != MORK_ATTACK_5SPHERE)
 	{
 		SetAnim(self, ANIM_ATTACK4);
-		self->wait = MORK_ATTACK_5SPHERE;
+		self->morcalavin_current_attack_id = MORK_ATTACK_5SPHERE;
 	}
 }
 

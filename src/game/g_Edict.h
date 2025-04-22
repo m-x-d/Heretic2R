@@ -273,6 +273,7 @@ struct edict_s
 		float wait;	// Used by polys, triggers and targets.
 		int tbeast_toy_materialtype; //mxd
 		qboolean gorgon_over_water_surface; //mxd
+		int morcalavin_current_attack_id; //mxd
 	};
 
 	union
