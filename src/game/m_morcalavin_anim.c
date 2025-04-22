@@ -367,7 +367,7 @@ static const animframe_t morcalavin_frames_fall[] =
 	{ FRAME_knkdwn20,	NULL, 0, 0, 0, ai_move, -8, NULL },
 	{ FRAME_knkdwn21,	NULL, 0, 0, 0, ai_move, -8, NULL },
 };
-const animmove_t morcalavin_move_fall = { 21, morcalavin_frames_fall, morcalavin_hurtidle };
+const animmove_t morcalavin_move_fall = { 21, morcalavin_frames_fall, morcalavin_hurt_idle };
 
 // Morcalavin Glide.
 static const animframe_t morcalavin_frames_glide[] =

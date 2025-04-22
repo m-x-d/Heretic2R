@@ -1310,7 +1310,7 @@ void morcalavin_get_up(edict_t* self) //mxd. Named 'morcalavin_getup' in origina
 	}
 }
 
-void morcalavin_hurtidle(edict_t* self) //TODO: rename to morcalavin_hurt_idle.
+void morcalavin_hurt_idle(edict_t* self) //mxd. Named 'morcalavin_hurtidle' in original logic.
 {
 	SetAnim(self, ANIM_HURTIDLE);
 }

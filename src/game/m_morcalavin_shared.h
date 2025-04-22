@@ -112,7 +112,7 @@ extern const animmove_t morcalavin_move_tracking_attack1;
 void morcalavin_pause(edict_t* self);
 void morcalavin_retort(edict_t* self);
 void morcalavin_get_up(edict_t* self);
-void morcalavin_hurtidle(edict_t* self);
+void morcalavin_hurt_idle(edict_t* self);
 void morcalavin_quake(edict_t* self, float pitch_ofs, float yaw_ofs, float roll_ofs);
 void morcalavin_beam(edict_t* self);
 void morcalavin_beam2(edict_t* self);
