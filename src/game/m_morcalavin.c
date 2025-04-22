@@ -425,7 +425,7 @@ void morcalavin_beam(edict_t* self)
 	// Spawn the projectile.
 	edict_t* beam = G_Spawn();
 
-	MorcalavinProjectileInit(self, beam);
+	MorcalavinProjectileInit(self, beam); //TODO: sets .isBlocked callback to MorcalavinProjectile1Blocked() (doesn't handle beam reflecting?)
 
 	beam->reflect_debounce_time = MAX_REFLECT;
 	beam->classname = "M_Beam";
@@ -1300,7 +1300,7 @@ void morcalavin_retort(edict_t* self)
 	SetAnim(self, ANIM_RETORT);
 }
 
-void morcalavin_getup(edict_t* self) //TODO: rename to morcalavin_get_up.
+void morcalavin_get_up(edict_t* self) //mxd. Named 'morcalavin_getup' in original logic.
 {
 	if (self->monsterinfo.lefty == 7 && self->monsterinfo.attack_finished > 0.0f && self->monsterinfo.attack_finished < level.time)
 	{

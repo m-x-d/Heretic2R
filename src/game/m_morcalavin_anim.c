@@ -50,7 +50,7 @@ static const animframe_t morcalavin_frames_hurtidle[] =
 	{ FRAME_hrtidl16,	NULL, 0, 0, 0, NULL, 0, NULL },
 	{ FRAME_hrtidl17,	NULL, 0, 0, 0, NULL, 0, NULL },
 };
-const animmove_t morcalavin_move_hurtidle = { 17, morcalavin_frames_hurtidle, morcalavin_getup };
+const animmove_t morcalavin_move_hurtidle = { 17, morcalavin_frames_hurtidle, morcalavin_get_up };
 
 // Morcalavin Attack 1.
 static const animframe_t morcalavin_frames_attack1[] =
